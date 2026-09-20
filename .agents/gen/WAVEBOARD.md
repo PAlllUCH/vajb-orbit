@@ -1,15 +1,20 @@
 # WAVEBOARD — one-file agent state
 
-**Updated: 2026-09-18 — engine wave 1 CLOSED and review-verified**
-(`engine_wave1_review2_report.md`: 8/8 fixes verified, 40/40 probe checks,
-boot gates exit 0, P1 suite 53/53, theme deterministic). Git baseline
-`2a420a7` pushed to `origin/main`. Cleanup pass in progress per
-`CLOSEOUT_PLAN.md`.
+**Updated: 2026-09-20 — physics & visuals brainstorm canonized; slice 0 +
+amended slice 2 READY TO DISPATCH** (owner rulings 8–26 in
+`docs/gameplay/18_engine_spec.md` §2.1; root `.md` files folded into `docs/`,
+only `AGENTS.md` stays at the root). Engine wave 1 CLOSED and
+review-verified (`engine_wave1_review2_report.md`: 8/8 fixes verified,
+40/40 probe checks, boot gates exit 0, P1 suite 53/53, theme deterministic).
+Git baseline `2a420a7` pushed to `origin/main`.
 
 ## Living contracts
 
 - `docs/CONTRACTS.md` — pinned interfaces, **v0** (wave 1). Briefs say "code
   against CONTRACTS.md §n"; review waves own updating it.
+- `docs/gameplay/18_engine_spec.md` — the engine contract (was the workspace
+  root `ENGINE_SPEC.md`, moved 2026-09-20). §2.1 carries the 19 new owner
+  rulings; slice 0 and slice 2 briefs code against it.
 - `staging/verify_wave.py` — mechanical wave gates: `snapshot` before a wave,
   `verify --baseline <tag> [--forbidden ...] [--expect-reports ...] [--tests]`
   after. Baselines live in `.agents/gen/_wave_state/`.
@@ -67,30 +72,39 @@ Final table kept until the cleanup report is written:
 
 ## Queued
 
-1. **Cleanup pass** — executing per `CLOSEOUT_PLAN.md` Phase C: briefs + logs
-   deleted (reports kept), MAIN_MENU_SPEC boot/loading absorbed into
-   MAIN_MENU_V2 §17, AGENTS.md doc map updated. **Deferred items (owner inputs
-   pending):** the five sealed-archive moves (need a `VAJB_ARCHIVE_OK=1`
-   session — the seal blocked even a plan draft that named the path),
-   `_mockup_station.tscn` deletion (gated on live S2 verification + wave-4
-   review), MAIN_MENU_SPEC reference repointing (same sealed pass).
-2. **Git** — done: baseline `2a420a7` on `origin/main`; repo-local identity
-   `Kamil <PAlllUCH@users.noreply.github.com>` (override anytime with your own
-   global identity). Commit at every wave boundary from now on.
-3. **Slice-2 (Fight) — READY TO DISPATCH.** Brief `.agents/gen/slice2_task.md`
-   + paste-ready prompts `.agents/gen/slice2_prompts.md` (W0 → W1–W4
-   parallel → W5 → W6 → W7/W8, `VAJB_WORKER_FILES` per dispatch). Before the
-   first dispatch: `py -3.14 staging/verify_wave.py snapshot --name
-   slice2_start` + a git commit so the wave start is diffable.
-4. **Batch-2 lane brief** — `.agents/gen/batch2_task.md` (B2-1 hover, B2-2
-   backdrops, B2-3 minimap zoom); file-disjoint from slice 2, can run in
-   parallel; hover-look verification needs the owner at the editor.
+1. **Slice-0 (Physics & Fuel) — READY TO DISPATCH, runs first.** Brief
+   `.agents/gen/slice0_task.md` + prompts `.agents/gen/slice0_prompts.md`
+   (M0 → M1–M3 parallel → M4 → M5 → M6, `VAJB_WORKER_FILES` per dispatch).
+   Owner-gated: the §13 speed-table-v2 △ rows need the owner's tick before
+   tests bake them. Before the first dispatch: `py -3.14
+   staging/verify_wave.py snapshot --name slice0_start` + a git commit.
+2. **Slice-2 (Fight) — READY, but dispatches only after slice 0.** Brief
+   `.agents/gen/slice2_task.md` (amended 2026-09-20: power draw, seeker +
+   chaff/flare, `ctx` pipeline, alien swarmers, pools bars + radial
+   speedometer) + regenerated prompts `.agents/gen/slice2_prompts.md`
+   (W0 → W1–W4 parallel → W5 → W6 → W7/W8). Before the first dispatch:
+   `py -3.14 staging/verify_wave.py snapshot --name slice2_start` + a git
+   commit.
+3. **Batch-2 lane brief** — `.agents/gen/batch2_task.md` (B2-1 hover, B2-2
+   backdrops, B2-3 minimap zoom); file-disjoint from the engine slices, can
+   run in parallel; hover-look verification needs the owner at the editor.
+4. **Slice-2.5 (Feel)** — brief written after slice-2 reports land: motion
+   blur + camera pull + dust, damage smoke/ripple/shatter, dash charge FX
+   (18_engine_spec §3.4 + FX_SPEC §7; no new gameplay systems).
+5. **Graphics designer lane (parallel, no coder)** — alien hull sheets for
+   all three families (STYLE_BIBLE §2.5 + §9.1 alien style block), the Phase
+   G FX sheets (FX_SPEC §7.2), ship rework in progress. Slice-2 W3's visual
+   pass gates on the swarmer sheets; behaviour probes never do.
+6. **Cleanup pass (deferred items)** — the five sealed-archive moves (need a
+   `VAJB_ARCHIVE_OK=1` session), `_mockup_station.tscn` deletion (gated on
+   live S2 verification + wave-4 review), MAIN_MENU_SPEC reference repointing
+   (same sealed pass).
 
 ## Parked (independent)
 
-- `TESTING_NOTES.md` batch-2: B2-1 hover look, B2-2 blurry backdrops, B2-3
-  minimap zoom inversion + untested wave-1 items. Fold into the cleanup pass's
-  TESTING_NOTES absorption when they land.
+- `docs/gameplay/19_testing_notes.md` (moved 2026-09-20) batch-2: B2-1 hover
+  look, B2-2 blurry backdrops, B2-3 minimap zoom inversion + untested wave-1
+  items. Fold into the cleanup pass's absorption when they land.
 - Mockup scenes `_mockup_main_menu.tscn` / `_mockup_station.tscn` — deleted
   when their verification close-out lands (IMPLEMENTATION_PLAN §9.6).
 
@@ -98,5 +112,6 @@ Final table kept until the cleanup report is written:
 
 - Phase C closed; Phase D menu/station M1+S1+S2 landed; P1 RPG economy
   code-complete (53-test headless suite); Phase F.1 icons shipped.
-- Engine design closed: `ENGINE_SPEC.md` is the contract (7 locked decisions,
-  brainstorm log at `.agents/gen/engine_brainstorm_notes.md`, status closed).
+- Engine design closed: `docs/gameplay/18_engine_spec.md` is the contract
+  (decisions 1–7 owner-locked 2026-09-18; rulings 8–26 owner-ruled
+  2026-09-20, §2.1).

@@ -47,9 +47,19 @@ number below and is checked in §6.
 | 2 | `comp_weap_1` (Barrel Assembly) | 0.30 | 1 |
 | 3 | `comp_pow_1` (Fuel Cell) | 0.35 | 1–2 |
 | 4 | `comp_elec_1` (Circuit Stack) | 0.20 | 1 |
+| 5 | `cm_chaff` (Chaff Dispenser) | 0.15 | 1 |
+| 6 | `cm_flare` (Flare Pack) | 0.15 | 1 |
 
 Expected haul per fighter: ≈ 1.1 items, ≈ 20 CR baseline value.
 Empty-kill probability ≈ 17 %.
+
+**Amendment 2026-09-20 (18_engine_spec §4.6):** lines 5–6 add the slice-2
+countermeasures — `cm_chaff` breaks locks with 3 ghost signatures for 3 s,
+`cm_flare` lures seeker rockets within 450 u. Each enters the fighter table
+at 0.15 chance and may enter the swarmers' table (slice-2 W3) at the same
+weight; the freighter/corvette/dreadnought tables are untouched. Expected
+haul figures above predate the amendment and are re-checked in the wave
+report, not by hand here.
 
 ### 3.2 Freighter (Grade I, cargo-flavoured)
 

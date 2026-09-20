@@ -1,0 +1,4617 @@
+{
+  "rows": [
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_bomber_back.png",
+      "name": "ship_bomber_back.png",
+      "family": "ships",
+      "size": [
+        710,
+        896
+      ],
+      "silhouette_px": 231366,
+      "alpha0_pct": 60.93,
+      "hole_px": 13492,
+      "hole_pct_of_silhouette": 5.83,
+      "hole_blobs": 84,
+      "largest_holes": [
+        3537,
+        2115,
+        1767,
+        730,
+        617,
+        546
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_bomber_front.png",
+      "name": "ship_bomber_front.png",
+      "family": "ships",
+      "size": [
+        697,
+        824
+      ],
+      "silhouette_px": 194501,
+      "alpha0_pct": 63.31,
+      "hole_px": 6954,
+      "hole_pct_of_silhouette": 3.58,
+      "hole_blobs": 84,
+      "largest_holes": [
+        1366,
+        861,
+        584,
+        482,
+        277,
+        239
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_bomber_side.png",
+      "name": "ship_bomber_side.png",
+      "family": "ships",
+      "size": [
+        908,
+        299
+      ],
+      "silhouette_px": 117947,
+      "alpha0_pct": 51.3,
+      "hole_px": 8246,
+      "hole_pct_of_silhouette": 6.99,
+      "hole_blobs": 62,
+      "largest_holes": [
+        4944,
+        530,
+        365,
+        223,
+        215,
+        159
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_bomber_three_quarter.png",
+      "name": "ship_bomber_three_quarter.png",
+      "family": "ships",
+      "size": [
+        682,
+        642
+      ],
+      "silhouette_px": 180112,
+      "alpha0_pct": 54.55,
+      "hole_px": 4125,
+      "hole_pct_of_silhouette": 2.29,
+      "hole_blobs": 76,
+      "largest_holes": [
+        621,
+        377,
+        298,
+        284,
+        191,
+        177
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_boss_boneyard.png",
+      "name": "ship_boss_boneyard.png",
+      "family": "ships",
+      "size": [
+        2011,
+        872
+      ],
+      "silhouette_px": 955775,
+      "alpha0_pct": 44.09,
+      "hole_px": 25487,
+      "hole_pct_of_silhouette": 2.67,
+      "hole_blobs": 27,
+      "largest_holes": [
+        23001,
+        498,
+        449,
+        287,
+        205,
+        150
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_boss_leviathan.png",
+      "name": "ship_boss_leviathan.png",
+      "family": "ships",
+      "size": [
+        1939,
+        1112
+      ],
+      "silhouette_px": 739108,
+      "alpha0_pct": 60.92,
+      "hole_px": 55443,
+      "hole_pct_of_silhouette": 7.5,
+      "hole_blobs": 458,
+      "largest_holes": [
+        7090,
+        4722,
+        2636,
+        2398,
+        2335,
+        2275
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_boss_maw.png",
+      "name": "ship_boss_maw.png",
+      "family": "ships",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 758130,
+      "alpha0_pct": 74.33,
+      "hole_px": 122103,
+      "hole_pct_of_silhouette": 16.11,
+      "hole_blobs": 9438,
+      "largest_holes": [
+        8580,
+        5646,
+        4856,
+        4585,
+        3619,
+        3423
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_boss_maw_mmo.png",
+      "name": "ship_boss_maw_mmo.png",
+      "family": "ships",
+      "size": [
+        1853,
+        1896
+      ],
+      "silhouette_px": 1150804,
+      "alpha0_pct": 63.98,
+      "hole_px": 134667,
+      "hole_pct_of_silhouette": 11.7,
+      "hole_blobs": 564,
+      "largest_holes": [
+        20957,
+        12796,
+        8146,
+        5538,
+        5181,
+        4281
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_boss_pyre.png",
+      "name": "ship_boss_pyre.png",
+      "family": "ships",
+      "size": [
+        2014,
+        535
+      ],
+      "silhouette_px": 469079,
+      "alpha0_pct": 55.21,
+      "hole_px": 338,
+      "hole_pct_of_silhouette": 0.07,
+      "hole_blobs": 7,
+      "largest_holes": [
+        99,
+        81,
+        78,
+        32,
+        20,
+        16
+      ],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_boss_spire.png",
+      "name": "ship_boss_spire.png",
+      "family": "ships",
+      "size": [
+        1982,
+        1078
+      ],
+      "silhouette_px": 585012,
+      "alpha0_pct": 68.16,
+      "hole_px": 42713,
+      "hole_pct_of_silhouette": 7.3,
+      "hole_blobs": 359,
+      "largest_holes": [
+        5066,
+        3822,
+        3608,
+        3494,
+        1415,
+        956
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_boss_thorn.png",
+      "name": "ship_boss_thorn.png",
+      "family": "ships",
+      "size": [
+        2003,
+        1203
+      ],
+      "silhouette_px": 1204144,
+      "alpha0_pct": 45.08,
+      "hole_px": 242989,
+      "hole_pct_of_silhouette": 20.18,
+      "hole_blobs": 790,
+      "largest_holes": [
+        19206,
+        12650,
+        11620,
+        9874,
+        9285,
+        8238
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_corvette_back.png",
+      "name": "ship_corvette_back.png",
+      "family": "ships",
+      "size": [
+        282,
+        899
+      ],
+      "silhouette_px": 95102,
+      "alpha0_pct": 49.81,
+      "hole_px": 29473,
+      "hole_pct_of_silhouette": 30.99,
+      "hole_blobs": 1070,
+      "largest_holes": [
+        19732,
+        657,
+        387,
+        348,
+        275,
+        271
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_corvette_front.png",
+      "name": "ship_corvette_front.png",
+      "family": "ships",
+      "size": [
+        276,
+        903
+      ],
+      "silhouette_px": 98524,
+      "alpha0_pct": 47.82,
+      "hole_px": 12402,
+      "hole_pct_of_silhouette": 12.59,
+      "hole_blobs": 1120,
+      "largest_holes": [
+        1673,
+        853,
+        682,
+        476,
+        436,
+        408
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_corvette_mmo_back.png",
+      "name": "ship_corvette_mmo_back.png",
+      "family": "ships",
+      "size": [
+        291,
+        903
+      ],
+      "silhouette_px": 137680,
+      "alpha0_pct": 43.08,
+      "hole_px": 7689,
+      "hole_pct_of_silhouette": 5.58,
+      "hole_blobs": 55,
+      "largest_holes": [
+        1385,
+        1291,
+        606,
+        598,
+        411,
+        324
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_corvette_mmo_front.png",
+      "name": "ship_corvette_mmo_front.png",
+      "family": "ships",
+      "size": [
+        281,
+        910
+      ],
+      "silhouette_px": 141155,
+      "alpha0_pct": 40.23,
+      "hole_px": 9159,
+      "hole_pct_of_silhouette": 6.49,
+      "hole_blobs": 62,
+      "largest_holes": [
+        1668,
+        1010,
+        827,
+        710,
+        657,
+        440
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_corvette_mmo_side.png",
+      "name": "ship_corvette_mmo_side.png",
+      "family": "ships",
+      "size": [
+        893,
+        234
+      ],
+      "silhouette_px": 111327,
+      "alpha0_pct": 41.16,
+      "hole_px": 15142,
+      "hole_pct_of_silhouette": 13.6,
+      "hole_blobs": 56,
+      "largest_holes": [
+        5622,
+        3544,
+        1219,
+        1086,
+        695,
+        306
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_corvette_mmo_three_quarter.png",
+      "name": "ship_corvette_mmo_three_quarter.png",
+      "family": "ships",
+      "size": [
+        686,
+        791
+      ],
+      "silhouette_px": 163040,
+      "alpha0_pct": 67.57,
+      "hole_px": 11009,
+      "hole_pct_of_silhouette": 6.75,
+      "hole_blobs": 68,
+      "largest_holes": [
+        1616,
+        1308,
+        699,
+        663,
+        516,
+        464
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_corvette_side.png",
+      "name": "ship_corvette_side.png",
+      "family": "ships",
+      "size": [
+        888,
+        231
+      ],
+      "silhouette_px": 66777,
+      "alpha0_pct": 51.66,
+      "hole_px": 7782,
+      "hole_pct_of_silhouette": 11.65,
+      "hole_blobs": 833,
+      "largest_holes": [
+        537,
+        489,
+        459,
+        314,
+        312,
+        283
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_corvette_three_quarter.png",
+      "name": "ship_corvette_three_quarter.png",
+      "family": "ships",
+      "size": [
+        676,
+        784
+      ],
+      "silhouette_px": 98857,
+      "alpha0_pct": 73.27,
+      "hole_px": 16046,
+      "hole_pct_of_silhouette": 16.23,
+      "hole_blobs": 2831,
+      "largest_holes": [
+        2551,
+        507,
+        449,
+        380,
+        360,
+        344
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_destroyer_back.png",
+      "name": "ship_destroyer_back.png",
+      "family": "ships",
+      "size": [
+        330,
+        907
+      ],
+      "silhouette_px": 123633,
+      "alpha0_pct": 53.44,
+      "hole_px": 10568,
+      "hole_pct_of_silhouette": 8.55,
+      "hole_blobs": 74,
+      "largest_holes": [
+        5533,
+        843,
+        544,
+        543,
+        306,
+        306
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_destroyer_front.png",
+      "name": "ship_destroyer_front.png",
+      "family": "ships",
+      "size": [
+        378,
+        918
+      ],
+      "silhouette_px": 158760,
+      "alpha0_pct": 49.3,
+      "hole_px": 26560,
+      "hole_pct_of_silhouette": 16.73,
+      "hole_blobs": 94,
+      "largest_holes": [
+        10402,
+        3889,
+        2625,
+        2112,
+        792,
+        548
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_destroyer_side.png",
+      "name": "ship_destroyer_side.png",
+      "family": "ships",
+      "size": [
+        982,
+        217
+      ],
+      "silhouette_px": 73983,
+      "alpha0_pct": 59.59,
+      "hole_px": 2601,
+      "hole_pct_of_silhouette": 3.52,
+      "hole_blobs": 40,
+      "largest_holes": [
+        1069,
+        302,
+        99,
+        95,
+        83,
+        83
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_destroyer_three_quarter.png",
+      "name": "ship_destroyer_three_quarter.png",
+      "family": "ships",
+      "size": [
+        791,
+        802
+      ],
+      "silhouette_px": 153700,
+      "alpha0_pct": 72.71,
+      "hole_px": 10563,
+      "hole_pct_of_silhouette": 6.87,
+      "hole_blobs": 94,
+      "largest_holes": [
+        3965,
+        841,
+        741,
+        660,
+        591,
+        385
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_drone_swarm_back.png",
+      "name": "ship_drone_swarm_back.png",
+      "family": "ships",
+      "size": [
+        408,
+        804
+      ],
+      "silhouette_px": 147562,
+      "alpha0_pct": 53.58,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_drone_swarm_front.png",
+      "name": "ship_drone_swarm_front.png",
+      "family": "ships",
+      "size": [
+        396,
+        814
+      ],
+      "silhouette_px": 146048,
+      "alpha0_pct": 53.12,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_drone_swarm_side.png",
+      "name": "ship_drone_swarm_side.png",
+      "family": "ships",
+      "size": [
+        806,
+        365
+      ],
+      "silhouette_px": 137589,
+      "alpha0_pct": 51.63,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_drone_swarm_three_quarter.png",
+      "name": "ship_drone_swarm_three_quarter.png",
+      "family": "ships",
+      "size": [
+        509,
+        706
+      ],
+      "silhouette_px": 163210,
+      "alpha0_pct": 53.19,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_fighter_back.png",
+      "name": "ship_fighter_back.png",
+      "family": "ships",
+      "size": [
+        507,
+        808
+      ],
+      "silhouette_px": 116593,
+      "alpha0_pct": 60.01,
+      "hole_px": 16617,
+      "hole_pct_of_silhouette": 14.25,
+      "hole_blobs": 1098,
+      "largest_holes": [
+        5854,
+        1492,
+        1283,
+        552,
+        505,
+        286
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_fighter_choir_back.png",
+      "name": "ship_fighter_choir_back.png",
+      "family": "ships",
+      "size": [
+        513,
+        818
+      ],
+      "silhouette_px": 176158,
+      "alpha0_pct": 54.73,
+      "hole_px": 6439,
+      "hole_pct_of_silhouette": 3.66,
+      "hole_blobs": 67,
+      "largest_holes": [
+        3397,
+        304,
+        213,
+        209,
+        183,
+        170
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_fighter_choir_front.png",
+      "name": "ship_fighter_choir_front.png",
+      "family": "ships",
+      "size": [
+        499,
+        791
+      ],
+      "silhouette_px": 168568,
+      "alpha0_pct": 54.38,
+      "hole_px": 3957,
+      "hole_pct_of_silhouette": 2.35,
+      "hole_blobs": 50,
+      "largest_holes": [
+        1295,
+        874,
+        153,
+        136,
+        119,
+        113
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_fighter_choir_side.png",
+      "name": "ship_fighter_choir_side.png",
+      "family": "ships",
+      "size": [
+        815,
+        348
+      ],
+      "silhouette_px": 127285,
+      "alpha0_pct": 50.75,
+      "hole_px": 3686,
+      "hole_pct_of_silhouette": 2.9,
+      "hole_blobs": 61,
+      "largest_holes": [
+        944,
+        269,
+        197,
+        148,
+        148,
+        147
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_fighter_choir_three_quarter.png",
+      "name": "ship_fighter_choir_three_quarter.png",
+      "family": "ships",
+      "size": [
+        631,
+        689
+      ],
+      "silhouette_px": 179744,
+      "alpha0_pct": 55.44,
+      "hole_px": 3985,
+      "hole_pct_of_silhouette": 2.22,
+      "hole_blobs": 81,
+      "largest_holes": [
+        242,
+        237,
+        200,
+        186,
+        185,
+        175
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_fighter_concord_back.png",
+      "name": "ship_fighter_concord_back.png",
+      "family": "ships",
+      "size": [
+        513,
+        823
+      ],
+      "silhouette_px": 159453,
+      "alpha0_pct": 57.86,
+      "hole_px": 29343,
+      "hole_pct_of_silhouette": 18.4,
+      "hole_blobs": 68,
+      "largest_holes": [
+        5397,
+        5351,
+        4985,
+        4018,
+        2683,
+        1108
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_fighter_concord_front.png",
+      "name": "ship_fighter_concord_front.png",
+      "family": "ships",
+      "size": [
+        499,
+        791
+      ],
+      "silhouette_px": 154427,
+      "alpha0_pct": 56.22,
+      "hole_px": 20690,
+      "hole_pct_of_silhouette": 13.4,
+      "hole_blobs": 75,
+      "largest_holes": [
+        5912,
+        2539,
+        2232,
+        2146,
+        1996,
+        1186
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_fighter_concord_side.png",
+      "name": "ship_fighter_concord_side.png",
+      "family": "ships",
+      "size": [
+        814,
+        349
+      ],
+      "silhouette_px": 116033,
+      "alpha0_pct": 53.83,
+      "hole_px": 16259,
+      "hole_pct_of_silhouette": 14.01,
+      "hole_blobs": 51,
+      "largest_holes": [
+        7695,
+        4649,
+        1374,
+        394,
+        248,
+        220
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_fighter_concord_three_quarter.png",
+      "name": "ship_fighter_concord_three_quarter.png",
+      "family": "ships",
+      "size": [
+        631,
+        689
+      ],
+      "silhouette_px": 160391,
+      "alpha0_pct": 58.15,
+      "hole_px": 12546,
+      "hole_pct_of_silhouette": 7.82,
+      "hole_blobs": 88,
+      "largest_holes": [
+        2911,
+        2060,
+        1352,
+        932,
+        925,
+        441
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_fighter_front.png",
+      "name": "ship_fighter_front.png",
+      "family": "ships",
+      "size": [
+        489,
+        698
+      ],
+      "silhouette_px": 119694,
+      "alpha0_pct": 54.57,
+      "hole_px": 14577,
+      "hole_pct_of_silhouette": 12.18,
+      "hole_blobs": 1165,
+      "largest_holes": [
+        3743,
+        1737,
+        575,
+        571,
+        488,
+        390
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_fighter_meridian_back.png",
+      "name": "ship_fighter_meridian_back.png",
+      "family": "ships",
+      "size": [
+        513,
+        812
+      ],
+      "silhouette_px": 165948,
+      "alpha0_pct": 56.45,
+      "hole_px": 27058,
+      "hole_pct_of_silhouette": 16.31,
+      "hole_blobs": 39,
+      "largest_holes": [
+        7617,
+        5933,
+        5844,
+        5399,
+        710,
+        542
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_fighter_meridian_front.png",
+      "name": "ship_fighter_meridian_front.png",
+      "family": "ships",
+      "size": [
+        499,
+        791
+      ],
+      "silhouette_px": 173804,
+      "alpha0_pct": 53.3,
+      "hole_px": 5897,
+      "hole_pct_of_silhouette": 3.39,
+      "hole_blobs": 28,
+      "largest_holes": [
+        3390,
+        1771,
+        142,
+        65,
+        61,
+        50
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_fighter_meridian_side.png",
+      "name": "ship_fighter_meridian_side.png",
+      "family": "ships",
+      "size": [
+        816,
+        351
+      ],
+      "silhouette_px": 142062,
+      "alpha0_pct": 46.98,
+      "hole_px": 2643,
+      "hole_pct_of_silhouette": 1.86,
+      "hole_blobs": 27,
+      "largest_holes": [
+        1226,
+        619,
+        112,
+        97,
+        74,
+        60
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_fighter_meridian_three_quarter.png",
+      "name": "ship_fighter_meridian_three_quarter.png",
+      "family": "ships",
+      "size": [
+        632,
+        690
+      ],
+      "silhouette_px": 187062,
+      "alpha0_pct": 54.37,
+      "hole_px": 7839,
+      "hole_pct_of_silhouette": 4.19,
+      "hole_blobs": 43,
+      "largest_holes": [
+        4765,
+        433,
+        409,
+        279,
+        267,
+        241
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_fighter_mmo_back.png",
+      "name": "ship_fighter_mmo_back.png",
+      "family": "ships",
+      "size": [
+        514,
+        814
+      ],
+      "silhouette_px": 173257,
+      "alpha0_pct": 55.57,
+      "hole_px": 11301,
+      "hole_pct_of_silhouette": 6.52,
+      "hole_blobs": 46,
+      "largest_holes": [
+        4182,
+        3896,
+        1017,
+        287,
+        197,
+        158
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_fighter_mmo_front.png",
+      "name": "ship_fighter_mmo_front.png",
+      "family": "ships",
+      "size": [
+        499,
+        790
+      ],
+      "silhouette_px": 175930,
+      "alpha0_pct": 52.84,
+      "hole_px": 5712,
+      "hole_pct_of_silhouette": 3.25,
+      "hole_blobs": 28,
+      "largest_holes": [
+        2031,
+        1973,
+        953,
+        270,
+        50,
+        47
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_fighter_mmo_side.png",
+      "name": "ship_fighter_mmo_side.png",
+      "family": "ships",
+      "size": [
+        814,
+        351
+      ],
+      "silhouette_px": 137415,
+      "alpha0_pct": 48.27,
+      "hole_px": 6305,
+      "hole_pct_of_silhouette": 4.59,
+      "hole_blobs": 19,
+      "largest_holes": [
+        3263,
+        1824,
+        388,
+        312,
+        164,
+        64
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_fighter_mmo_three_quarter.png",
+      "name": "ship_fighter_mmo_three_quarter.png",
+      "family": "ships",
+      "size": [
+        631,
+        688
+      ],
+      "silhouette_px": 181440,
+      "alpha0_pct": 55.23,
+      "hole_px": 4375,
+      "hole_pct_of_silhouette": 2.41,
+      "hole_blobs": 29,
+      "largest_holes": [
+        924,
+        856,
+        450,
+        326,
+        313,
+        268
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_fighter_side.png",
+      "name": "ship_fighter_side.png",
+      "family": "ships",
+      "size": [
+        817,
+        290
+      ],
+      "silhouette_px": 73691,
+      "alpha0_pct": 52.46,
+      "hole_px": 12244,
+      "hole_pct_of_silhouette": 16.62,
+      "hole_blobs": 642,
+      "largest_holes": [
+        6170,
+        663,
+        658,
+        443,
+        359,
+        279
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_fighter_three_quarter.png",
+      "name": "ship_fighter_three_quarter.png",
+      "family": "ships",
+      "size": [
+        595,
+        645
+      ],
+      "silhouette_px": 115872,
+      "alpha0_pct": 57.02,
+      "hole_px": 20103,
+      "hole_pct_of_silhouette": 17.35,
+      "hole_blobs": 2042,
+      "largest_holes": [
+        4017,
+        2308,
+        849,
+        775,
+        625,
+        613
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_freighter_back.png",
+      "name": "ship_freighter_back.png",
+      "family": "ships",
+      "size": [
+        299,
+        826
+      ],
+      "silhouette_px": 113453,
+      "alpha0_pct": 39.79,
+      "hole_px": 12633,
+      "hole_pct_of_silhouette": 11.14,
+      "hole_blobs": 1526,
+      "largest_holes": [
+        2948,
+        543,
+        284,
+        242,
+        172,
+        172
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_freighter_front.png",
+      "name": "ship_freighter_front.png",
+      "family": "ships",
+      "size": [
+        290,
+        825
+      ],
+      "silhouette_px": 117363,
+      "alpha0_pct": 37.53,
+      "hole_px": 12827,
+      "hole_pct_of_silhouette": 10.93,
+      "hole_blobs": 1592,
+      "largest_holes": [
+        939,
+        504,
+        501,
+        490,
+        402,
+        340
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_freighter_mmo_back.png",
+      "name": "ship_freighter_mmo_back.png",
+      "family": "ships",
+      "size": [
+        307,
+        886
+      ],
+      "silhouette_px": 167367,
+      "alpha0_pct": 32.54,
+      "hole_px": 10371,
+      "hole_pct_of_silhouette": 6.2,
+      "hole_blobs": 77,
+      "largest_holes": [
+        3009,
+        1825,
+        878,
+        673,
+        485,
+        396
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_freighter_mmo_front.png",
+      "name": "ship_freighter_mmo_front.png",
+      "family": "ships",
+      "size": [
+        297,
+        886
+      ],
+      "silhouette_px": 166358,
+      "alpha0_pct": 31.3,
+      "hole_px": 6638,
+      "hole_pct_of_silhouette": 3.99,
+      "hole_blobs": 77,
+      "largest_holes": [
+        1013,
+        998,
+        507,
+        378,
+        372,
+        357
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_freighter_mmo_side.png",
+      "name": "ship_freighter_mmo_side.png",
+      "family": "ships",
+      "size": [
+        899,
+        256
+      ],
+      "silhouette_px": 133668,
+      "alpha0_pct": 36.03,
+      "hole_px": 2464,
+      "hole_pct_of_silhouette": 1.84,
+      "hole_blobs": 53,
+      "largest_holes": [
+        660,
+        244,
+        166,
+        158,
+        98,
+        74
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_freighter_mmo_three_quarter.png",
+      "name": "ship_freighter_mmo_three_quarter.png",
+      "family": "ships",
+      "size": [
+        710,
+        716
+      ],
+      "silhouette_px": 173491,
+      "alpha0_pct": 62.48,
+      "hole_px": 9441,
+      "hole_pct_of_silhouette": 5.44,
+      "hole_blobs": 60,
+      "largest_holes": [
+        6882,
+        353,
+        177,
+        157,
+        124,
+        118
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_freighter_side.png",
+      "name": "ship_freighter_side.png",
+      "family": "ships",
+      "size": [
+        892,
+        251
+      ],
+      "silhouette_px": 95100,
+      "alpha0_pct": 44.08,
+      "hole_px": 10235,
+      "hole_pct_of_silhouette": 10.76,
+      "hole_blobs": 1231,
+      "largest_holes": [
+        1389,
+        929,
+        490,
+        395,
+        251,
+        233
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_freighter_three_quarter.png",
+      "name": "ship_freighter_three_quarter.png",
+      "family": "ships",
+      "size": [
+        700,
+        707
+      ],
+      "silhouette_px": 125850,
+      "alpha0_pct": 66.71,
+      "hole_px": 17210,
+      "hole_pct_of_silhouette": 13.68,
+      "hole_blobs": 3746,
+      "largest_holes": [
+        1090,
+        933,
+        758,
+        709,
+        407,
+        342
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_gunship_back.png",
+      "name": "ship_gunship_back.png",
+      "family": "ships",
+      "size": [
+        695,
+        802
+      ],
+      "silhouette_px": 241911,
+      "alpha0_pct": 51.8,
+      "hole_px": 26427,
+      "hole_pct_of_silhouette": 10.92,
+      "hole_blobs": 121,
+      "largest_holes": [
+        5803,
+        4475,
+        2693,
+        2644,
+        2188,
+        2022
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_gunship_front.png",
+      "name": "ship_gunship_front.png",
+      "family": "ships",
+      "size": [
+        710,
+        746
+      ],
+      "silhouette_px": 250082,
+      "alpha0_pct": 46.71,
+      "hole_px": 23962,
+      "hole_pct_of_silhouette": 9.58,
+      "hole_blobs": 138,
+      "largest_holes": [
+        2888,
+        2228,
+        2094,
+        1771,
+        1109,
+        946
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_gunship_side.png",
+      "name": "ship_gunship_side.png",
+      "family": "ships",
+      "size": [
+        859,
+        385
+      ],
+      "silhouette_px": 135703,
+      "alpha0_pct": 53.35,
+      "hole_px": 17112,
+      "hole_pct_of_silhouette": 12.61,
+      "hole_blobs": 60,
+      "largest_holes": [
+        7652,
+        2758,
+        1652,
+        1298,
+        1171,
+        557
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_gunship_three_quarter.png",
+      "name": "ship_gunship_three_quarter.png",
+      "family": "ships",
+      "size": [
+        842,
+        725
+      ],
+      "silhouette_px": 224559,
+      "alpha0_pct": 58.35,
+      "hole_px": 16002,
+      "hole_pct_of_silhouette": 7.13,
+      "hole_blobs": 157,
+      "largest_holes": [
+        2074,
+        1394,
+        703,
+        649,
+        611,
+        551
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_interceptor_back.png",
+      "name": "ship_interceptor_back.png",
+      "family": "ships",
+      "size": [
+        173,
+        902
+      ],
+      "silhouette_px": 58671,
+      "alpha0_pct": 55.89,
+      "hole_px": 763,
+      "hole_pct_of_silhouette": 1.3,
+      "hole_blobs": 30,
+      "largest_holes": [
+        124,
+        105,
+        89,
+        81,
+        52,
+        39
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_interceptor_front.png",
+      "name": "ship_interceptor_front.png",
+      "family": "ships",
+      "size": [
+        147,
+        871
+      ],
+      "silhouette_px": 57769,
+      "alpha0_pct": 48.18,
+      "hole_px": 784,
+      "hole_pct_of_silhouette": 1.36,
+      "hole_blobs": 13,
+      "largest_holes": [
+        317,
+        242,
+        53,
+        46,
+        34,
+        24
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_interceptor_side.png",
+      "name": "ship_interceptor_side.png",
+      "family": "ships",
+      "size": [
+        940,
+        107
+      ],
+      "silhouette_px": 35736,
+      "alpha0_pct": 56.67,
+      "hole_px": 535,
+      "hole_pct_of_silhouette": 1.5,
+      "hole_blobs": 26,
+      "largest_holes": [
+        132,
+        60,
+        55,
+        50,
+        43,
+        42
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_interceptor_three_quarter.png",
+      "name": "ship_interceptor_three_quarter.png",
+      "family": "ships",
+      "size": [
+        671,
+        777
+      ],
+      "silhouette_px": 65433,
+      "alpha0_pct": 85.61,
+      "hole_px": 815,
+      "hole_pct_of_silhouette": 1.25,
+      "hole_blobs": 23,
+      "largest_holes": [
+        325,
+        80,
+        71,
+        54,
+        53,
+        38
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_mine_layer_back.png",
+      "name": "ship_mine_layer_back.png",
+      "family": "ships",
+      "size": [
+        360,
+        855
+      ],
+      "silhouette_px": 124912,
+      "alpha0_pct": 54.88,
+      "hole_px": 9992,
+      "hole_pct_of_silhouette": 8.0,
+      "hole_blobs": 68,
+      "largest_holes": [
+        3103,
+        1637,
+        655,
+        401,
+        381,
+        325
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_mine_layer_front.png",
+      "name": "ship_mine_layer_front.png",
+      "family": "ships",
+      "size": [
+        385,
+        834
+      ],
+      "silhouette_px": 115658,
+      "alpha0_pct": 59.17,
+      "hole_px": 14067,
+      "hole_pct_of_silhouette": 12.16,
+      "hole_blobs": 62,
+      "largest_holes": [
+        8504,
+        1737,
+        443,
+        403,
+        350,
+        284
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_mine_layer_side.png",
+      "name": "ship_mine_layer_side.png",
+      "family": "ships",
+      "size": [
+        943,
+        228
+      ],
+      "silhouette_px": 102031,
+      "alpha0_pct": 46.56,
+      "hole_px": 5256,
+      "hole_pct_of_silhouette": 5.15,
+      "hole_blobs": 47,
+      "largest_holes": [
+        2473,
+        718,
+        390,
+        283,
+        239,
+        152
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_mine_layer_three_quarter.png",
+      "name": "ship_mine_layer_three_quarter.png",
+      "family": "ships",
+      "size": [
+        747,
+        705
+      ],
+      "silhouette_px": 137764,
+      "alpha0_pct": 71.3,
+      "hole_px": 15999,
+      "hole_pct_of_silhouette": 11.61,
+      "hole_blobs": 46,
+      "largest_holes": [
+        5096,
+        2177,
+        1170,
+        1122,
+        1097,
+        975
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_miner_back.png",
+      "name": "ship_miner_back.png",
+      "family": "ships",
+      "size": [
+        621,
+        836
+      ],
+      "silhouette_px": 262701,
+      "alpha0_pct": 45.41,
+      "hole_px": 22719,
+      "hole_pct_of_silhouette": 8.65,
+      "hole_blobs": 83,
+      "largest_holes": [
+        16529,
+        1149,
+        899,
+        710,
+        329,
+        266
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_miner_front.png",
+      "name": "ship_miner_front.png",
+      "family": "ships",
+      "size": [
+        812,
+        810
+      ],
+      "silhouette_px": 319207,
+      "alpha0_pct": 48.13,
+      "hole_px": 8574,
+      "hole_pct_of_silhouette": 2.69,
+      "hole_blobs": 103,
+      "largest_holes": [
+        3285,
+        757,
+        375,
+        266,
+        256,
+        244
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_miner_side.png",
+      "name": "ship_miner_side.png",
+      "family": "ships",
+      "size": [
+        986,
+        342
+      ],
+      "silhouette_px": 178191,
+      "alpha0_pct": 41.74,
+      "hole_px": 10288,
+      "hole_pct_of_silhouette": 5.77,
+      "hole_blobs": 54,
+      "largest_holes": [
+        4489,
+        2900,
+        470,
+        358,
+        266,
+        187
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_miner_three_quarter.png",
+      "name": "ship_miner_three_quarter.png",
+      "family": "ships",
+      "size": [
+        821,
+        695
+      ],
+      "silhouette_px": 295146,
+      "alpha0_pct": 44.67,
+      "hole_px": 22946,
+      "hole_pct_of_silhouette": 7.77,
+      "hole_blobs": 87,
+      "largest_holes": [
+        14646,
+        1890,
+        847,
+        493,
+        459,
+        400
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_patrol_back.png",
+      "name": "ship_patrol_back.png",
+      "family": "ships",
+      "size": [
+        317,
+        859
+      ],
+      "silhouette_px": 122418,
+      "alpha0_pct": 50.28,
+      "hole_px": 4980,
+      "hole_pct_of_silhouette": 4.07,
+      "hole_blobs": 56,
+      "largest_holes": [
+        746,
+        717,
+        548,
+        378,
+        377,
+        249
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_patrol_front.png",
+      "name": "ship_patrol_front.png",
+      "family": "ships",
+      "size": [
+        325,
+        921
+      ],
+      "silhouette_px": 138513,
+      "alpha0_pct": 48.87,
+      "hole_px": 9536,
+      "hole_pct_of_silhouette": 6.88,
+      "hole_blobs": 56,
+      "largest_holes": [
+        6047,
+        714,
+        421,
+        412,
+        240,
+        154
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_patrol_side.png",
+      "name": "ship_patrol_side.png",
+      "family": "ships",
+      "size": [
+        1053,
+        289
+      ],
+      "silhouette_px": 100347,
+      "alpha0_pct": 63.1,
+      "hole_px": 9609,
+      "hole_pct_of_silhouette": 9.58,
+      "hole_blobs": 39,
+      "largest_holes": [
+        3254,
+        1939,
+        1566,
+        431,
+        344,
+        260
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_patrol_three_quarter.png",
+      "name": "ship_patrol_three_quarter.png",
+      "family": "ships",
+      "size": [
+        796,
+        718
+      ],
+      "silhouette_px": 146729,
+      "alpha0_pct": 71.6,
+      "hole_px": 17078,
+      "hole_pct_of_silhouette": 11.64,
+      "hole_blobs": 39,
+      "largest_holes": [
+        12275,
+        1571,
+        857,
+        600,
+        454,
+        211
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_trader_back.png",
+      "name": "ship_trader_back.png",
+      "family": "ships",
+      "size": [
+        276,
+        902
+      ],
+      "silhouette_px": 146778,
+      "alpha0_pct": 35.31,
+      "hole_px": 4729,
+      "hole_pct_of_silhouette": 3.22,
+      "hole_blobs": 54,
+      "largest_holes": [
+        1136,
+        554,
+        330,
+        277,
+        198,
+        170
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_trader_front.png",
+      "name": "ship_trader_front.png",
+      "family": "ships",
+      "size": [
+        217,
+        913
+      ],
+      "silhouette_px": 128177,
+      "alpha0_pct": 29.21,
+      "hole_px": 4154,
+      "hole_pct_of_silhouette": 3.24,
+      "hole_blobs": 45,
+      "largest_holes": [
+        1267,
+        471,
+        295,
+        251,
+        160,
+        154
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_trader_side.png",
+      "name": "ship_trader_side.png",
+      "family": "ships",
+      "size": [
+        973,
+        287
+      ],
+      "silhouette_px": 137926,
+      "alpha0_pct": 43.55,
+      "hole_px": 12344,
+      "hole_pct_of_silhouette": 8.95,
+      "hole_blobs": 60,
+      "largest_holes": [
+        3239,
+        1808,
+        1525,
+        1173,
+        1021,
+        902
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_trader_three_quarter.png",
+      "name": "ship_trader_three_quarter.png",
+      "family": "ships",
+      "size": [
+        701,
+        789
+      ],
+      "silhouette_px": 175090,
+      "alpha0_pct": 64.72,
+      "hole_px": 5373,
+      "hole_pct_of_silhouette": 3.07,
+      "hole_blobs": 73,
+      "largest_holes": [
+        1425,
+        913,
+        452,
+        202,
+        197,
+        186
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_turret_platform.png",
+      "name": "ship_turret_platform.png",
+      "family": "ships",
+      "size": [
+        1903,
+        1726
+      ],
+      "silhouette_px": 874273,
+      "alpha0_pct": 70.01,
+      "hole_px": 101579,
+      "hole_pct_of_silhouette": 11.62,
+      "hole_blobs": 459,
+      "largest_holes": [
+        25437,
+        5869,
+        5128,
+        4889,
+        3690,
+        2421
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_vanguard_back.png",
+      "name": "ship_vanguard_back.png",
+      "family": "ships",
+      "size": [
+        560,
+        898
+      ],
+      "silhouette_px": 186133,
+      "alpha0_pct": 51.14,
+      "hole_px": 16665,
+      "hole_pct_of_silhouette": 8.95,
+      "hole_blobs": 2478,
+      "largest_holes": [
+        904,
+        412,
+        410,
+        410,
+        397,
+        290
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_vanguard_damaged_back.png",
+      "name": "ship_vanguard_damaged_back.png",
+      "family": "ships",
+      "size": [
+        563,
+        899
+      ],
+      "silhouette_px": 173638,
+      "alpha0_pct": 54.11,
+      "hole_px": 15653,
+      "hole_pct_of_silhouette": 9.01,
+      "hole_blobs": 2224,
+      "largest_holes": [
+        997,
+        700,
+        527,
+        477,
+        451,
+        283
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_vanguard_damaged_front.png",
+      "name": "ship_vanguard_damaged_front.png",
+      "family": "ships",
+      "size": [
+        542,
+        841
+      ],
+      "silhouette_px": 161979,
+      "alpha0_pct": 52.5,
+      "hole_px": 19010,
+      "hole_pct_of_silhouette": 11.74,
+      "hole_blobs": 1933,
+      "largest_holes": [
+        2311,
+        874,
+        840,
+        577,
+        523,
+        418
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_vanguard_damaged_side.png",
+      "name": "ship_vanguard_damaged_side.png",
+      "family": "ships",
+      "size": [
+        907,
+        389
+      ],
+      "silhouette_px": 123537,
+      "alpha0_pct": 53.72,
+      "hole_px": 13803,
+      "hole_pct_of_silhouette": 11.17,
+      "hole_blobs": 1351,
+      "largest_holes": [
+        2378,
+        2240,
+        542,
+        268,
+        247,
+        229
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_vanguard_damaged_three_quarter.png",
+      "name": "ship_vanguard_damaged_three_quarter.png",
+      "family": "ships",
+      "size": [
+        747,
+        812
+      ],
+      "silhouette_px": 178900,
+      "alpha0_pct": 59.12,
+      "hole_px": 25782,
+      "hole_pct_of_silhouette": 14.41,
+      "hole_blobs": 3391,
+      "largest_holes": [
+        4978,
+        1973,
+        1084,
+        969,
+        731,
+        618
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_vanguard_front.png",
+      "name": "ship_vanguard_front.png",
+      "family": "ships",
+      "size": [
+        540,
+        837
+      ],
+      "silhouette_px": 160442,
+      "alpha0_pct": 50.51,
+      "hole_px": 13874,
+      "hole_pct_of_silhouette": 8.65,
+      "hole_blobs": 2437,
+      "largest_holes": [
+        507,
+        411,
+        347,
+        292,
+        210,
+        192
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_vanguard_mmo_back.png",
+      "name": "ship_vanguard_mmo_back.png",
+      "family": "ships",
+      "size": [
+        568,
+        897
+      ],
+      "silhouette_px": 247290,
+      "alpha0_pct": 47.19,
+      "hole_px": 24243,
+      "hole_pct_of_silhouette": 9.8,
+      "hole_blobs": 110,
+      "largest_holes": [
+        6811,
+        3575,
+        1888,
+        1389,
+        1169,
+        784
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_vanguard_mmo_front.png",
+      "name": "ship_vanguard_mmo_front.png",
+      "family": "ships",
+      "size": [
+        549,
+        840
+      ],
+      "silhouette_px": 222734,
+      "alpha0_pct": 46.63,
+      "hole_px": 40858,
+      "hole_pct_of_silhouette": 18.34,
+      "hole_blobs": 116,
+      "largest_holes": [
+        15532,
+        4897,
+        3798,
+        2145,
+        1184,
+        1183
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_vanguard_mmo_side.png",
+      "name": "ship_vanguard_mmo_side.png",
+      "family": "ships",
+      "size": [
+        907,
+        394
+      ],
+      "silhouette_px": 173810,
+      "alpha0_pct": 46.47,
+      "hole_px": 11222,
+      "hole_pct_of_silhouette": 6.46,
+      "hole_blobs": 76,
+      "largest_holes": [
+        2058,
+        1718,
+        1479,
+        839,
+        730,
+        662
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_vanguard_mmo_three_quarter.png",
+      "name": "ship_vanguard_mmo_three_quarter.png",
+      "family": "ships",
+      "size": [
+        739,
+        813
+      ],
+      "silhouette_px": 225756,
+      "alpha0_pct": 58.42,
+      "hole_px": 30136,
+      "hole_pct_of_silhouette": 13.35,
+      "hole_blobs": 94,
+      "largest_holes": [
+        12065,
+        3729,
+        2198,
+        2196,
+        1813,
+        1073
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_vanguard_side.png",
+      "name": "ship_vanguard_side.png",
+      "family": "ships",
+      "size": [
+        905,
+        387
+      ],
+      "silhouette_px": 126312,
+      "alpha0_pct": 50.25,
+      "hole_px": 9824,
+      "hole_pct_of_silhouette": 7.78,
+      "hole_blobs": 1640,
+      "largest_holes": [
+        328,
+        314,
+        290,
+        191,
+        175,
+        158
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ships/ship_vanguard_three_quarter.png",
+      "name": "ship_vanguard_three_quarter.png",
+      "family": "ships",
+      "size": [
+        741,
+        807
+      ],
+      "silhouette_px": 169900,
+      "alpha0_pct": 60.22,
+      "hole_px": 23845,
+      "hole_pct_of_silhouette": 14.03,
+      "hole_blobs": 4872,
+      "largest_holes": [
+        1076,
+        911,
+        755,
+        633,
+        519,
+        431
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_arena_barricade.png",
+      "name": "env_arena_barricade.png",
+      "family": "env",
+      "size": [
+        954,
+        1484
+      ],
+      "silhouette_px": 335203,
+      "alpha0_pct": 74.17,
+      "hole_px": 8105,
+      "hole_pct_of_silhouette": 2.42,
+      "hole_blobs": 149,
+      "largest_holes": [
+        799,
+        275,
+        269,
+        264,
+        262,
+        253
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_arena_nav_pylon.png",
+      "name": "env_arena_nav_pylon.png",
+      "family": "env",
+      "size": [
+        887,
+        936
+      ],
+      "silhouette_px": 220106,
+      "alpha0_pct": 70.44,
+      "hole_px": 14414,
+      "hole_pct_of_silhouette": 6.55,
+      "hole_blobs": 73,
+      "largest_holes": [
+        5159,
+        3237,
+        1218,
+        553,
+        449,
+        368
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_asteroid_b1.png",
+      "name": "env_asteroid_b1.png",
+      "family": "env",
+      "size": [
+        618,
+        771
+      ],
+      "silhouette_px": 125671,
+      "alpha0_pct": 70.77,
+      "hole_px": 5036,
+      "hole_pct_of_silhouette": 4.01,
+      "hole_blobs": 55,
+      "largest_holes": [
+        1228,
+        427,
+        260,
+        257,
+        168,
+        161
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_asteroid_b2.png",
+      "name": "env_asteroid_b2.png",
+      "family": "env",
+      "size": [
+        632,
+        623
+      ],
+      "silhouette_px": 122906,
+      "alpha0_pct": 65.05,
+      "hole_px": 4895,
+      "hole_pct_of_silhouette": 3.98,
+      "hole_blobs": 51,
+      "largest_holes": [
+        1517,
+        364,
+        333,
+        289,
+        237,
+        237
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_asteroid_b3.png",
+      "name": "env_asteroid_b3.png",
+      "family": "env",
+      "size": [
+        559,
+        538
+      ],
+      "silhouette_px": 112571,
+      "alpha0_pct": 56.74,
+      "hole_px": 28349,
+      "hole_pct_of_silhouette": 25.18,
+      "hole_blobs": 68,
+      "largest_holes": [
+        14068,
+        3686,
+        977,
+        935,
+        837,
+        834
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_asteroid_b4.png",
+      "name": "env_asteroid_b4.png",
+      "family": "env",
+      "size": [
+        567,
+        657
+      ],
+      "silhouette_px": 157401,
+      "alpha0_pct": 53.35,
+      "hole_px": 12771,
+      "hole_pct_of_silhouette": 8.11,
+      "hole_blobs": 82,
+      "largest_holes": [
+        4578,
+        2386,
+        483,
+        435,
+        423,
+        342
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_asteroid_b5.png",
+      "name": "env_asteroid_b5.png",
+      "family": "env",
+      "size": [
+        404,
+        413
+      ],
+      "silhouette_px": 61504,
+      "alpha0_pct": 60.13,
+      "hole_px": 2003,
+      "hole_pct_of_silhouette": 3.26,
+      "hole_blobs": 31,
+      "largest_holes": [
+        907,
+        350,
+        173,
+        86,
+        78,
+        41
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_asteroid_b6.png",
+      "name": "env_asteroid_b6.png",
+      "family": "env",
+      "size": [
+        433,
+        466
+      ],
+      "silhouette_px": 79827,
+      "alpha0_pct": 53.78,
+      "hole_px": 6862,
+      "hole_pct_of_silhouette": 8.6,
+      "hole_blobs": 43,
+      "largest_holes": [
+        1584,
+        833,
+        538,
+        506,
+        315,
+        313
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_asteroid_L1.png",
+      "name": "env_asteroid_L1.png",
+      "family": "env",
+      "size": [
+        649,
+        676
+      ],
+      "silhouette_px": 186628,
+      "alpha0_pct": 44.78,
+      "hole_px": 32769,
+      "hole_pct_of_silhouette": 17.56,
+      "hole_blobs": 3339,
+      "largest_holes": [
+        4027,
+        1390,
+        1186,
+        1023,
+        841,
+        783
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_asteroid_L2.png",
+      "name": "env_asteroid_L2.png",
+      "family": "env",
+      "size": [
+        555,
+        642
+      ],
+      "silhouette_px": 121843,
+      "alpha0_pct": 52.44,
+      "hole_px": 33551,
+      "hole_pct_of_silhouette": 27.54,
+      "hole_blobs": 2928,
+      "largest_holes": [
+        8578,
+        1384,
+        1301,
+        528,
+        482,
+        482
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_asteroid_L3.png",
+      "name": "env_asteroid_L3.png",
+      "family": "env",
+      "size": [
+        636,
+        649
+      ],
+      "silhouette_px": 158763,
+      "alpha0_pct": 49.29,
+      "hole_px": 39507,
+      "hole_pct_of_silhouette": 24.88,
+      "hole_blobs": 3371,
+      "largest_holes": [
+        4664,
+        3120,
+        2258,
+        1348,
+        868,
+        773
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_asteroid_M1.png",
+      "name": "env_asteroid_M1.png",
+      "family": "env",
+      "size": [
+        522,
+        482
+      ],
+      "silhouette_px": 79068,
+      "alpha0_pct": 59.32,
+      "hole_px": 16197,
+      "hole_pct_of_silhouette": 20.48,
+      "hole_blobs": 1726,
+      "largest_holes": [
+        2757,
+        1019,
+        1002,
+        551,
+        386,
+        253
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_asteroid_M2.png",
+      "name": "env_asteroid_M2.png",
+      "family": "env",
+      "size": [
+        499,
+        552
+      ],
+      "silhouette_px": 91110,
+      "alpha0_pct": 55.11,
+      "hole_px": 16150,
+      "hole_pct_of_silhouette": 17.73,
+      "hole_blobs": 2126,
+      "largest_holes": [
+        1377,
+        1151,
+        596,
+        538,
+        356,
+        318
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_asteroid_M3.png",
+      "name": "env_asteroid_M3.png",
+      "family": "env",
+      "size": [
+        539,
+        519
+      ],
+      "silhouette_px": 92006,
+      "alpha0_pct": 54.64,
+      "hole_px": 48060,
+      "hole_pct_of_silhouette": 52.24,
+      "hole_blobs": 2002,
+      "largest_holes": [
+        27293,
+        3222,
+        2194,
+        626,
+        503,
+        381
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_asteroid_S1.png",
+      "name": "env_asteroid_S1.png",
+      "family": "env",
+      "size": [
+        314,
+        329
+      ],
+      "silhouette_px": 35483,
+      "alpha0_pct": 53.64,
+      "hole_px": 4723,
+      "hole_pct_of_silhouette": 13.31,
+      "hole_blobs": 608,
+      "largest_holes": [
+        386,
+        338,
+        258,
+        190,
+        177,
+        163
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_asteroid_S2.png",
+      "name": "env_asteroid_S2.png",
+      "family": "env",
+      "size": [
+        370,
+        361
+      ],
+      "silhouette_px": 45551,
+      "alpha0_pct": 55.9,
+      "hole_px": 10805,
+      "hole_pct_of_silhouette": 23.72,
+      "hole_blobs": 1074,
+      "largest_holes": [
+        1204,
+        577,
+        571,
+        543,
+        434,
+        339
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_asteroid_S3.png",
+      "name": "env_asteroid_S3.png",
+      "family": "env",
+      "size": [
+        336,
+        340
+      ],
+      "silhouette_px": 35851,
+      "alpha0_pct": 56.66,
+      "hole_px": 8373,
+      "hole_pct_of_silhouette": 23.35,
+      "hole_blobs": 845,
+      "largest_holes": [
+        3023,
+        695,
+        235,
+        223,
+        206,
+        161
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_base_defense.png",
+      "name": "env_base_defense.png",
+      "family": "env",
+      "size": [
+        1744,
+        1670
+      ],
+      "silhouette_px": 1303024,
+      "alpha0_pct": 50.47,
+      "hole_px": 341896,
+      "hole_pct_of_silhouette": 26.24,
+      "hole_blobs": 688,
+      "largest_holes": [
+        93591,
+        56465,
+        16178,
+        15741,
+        14548,
+        13047
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_base_mining.png",
+      "name": "env_base_mining.png",
+      "family": "env",
+      "size": [
+        1955,
+        1722
+      ],
+      "silhouette_px": 763389,
+      "alpha0_pct": 74.12,
+      "hole_px": 89015,
+      "hole_pct_of_silhouette": 11.66,
+      "hole_blobs": 455,
+      "largest_holes": [
+        15675,
+        9726,
+        4486,
+        3324,
+        2836,
+        2419
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_base_shipyard.png",
+      "name": "env_base_shipyard.png",
+      "family": "env",
+      "size": [
+        1929,
+        1105
+      ],
+      "silhouette_px": 744329,
+      "alpha0_pct": 59.26,
+      "hole_px": 180889,
+      "hole_pct_of_silhouette": 24.3,
+      "hole_blobs": 573,
+      "largest_holes": [
+        29370,
+        17534,
+        10266,
+        7823,
+        6331,
+        4662
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_base_trade.png",
+      "name": "env_base_trade.png",
+      "family": "env",
+      "size": [
+        2004,
+        1344
+      ],
+      "silhouette_px": 988347,
+      "alpha0_pct": 59.2,
+      "hole_px": 326257,
+      "hole_pct_of_silhouette": 33.01,
+      "hole_blobs": 392,
+      "largest_holes": [
+        175383,
+        46891,
+        16833,
+        16370,
+        11719,
+        9103
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_bg_body_plate.png",
+      "name": "env_bg_body_plate.png",
+      "family": "env",
+      "size": [
+        2048,
+        1152
+      ],
+      "silhouette_px": 2359296,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_body_ice_moon.png",
+      "name": "env_body_ice_moon.png",
+      "family": "env",
+      "size": [
+        1839,
+        1873
+      ],
+      "silhouette_px": 1062285,
+      "alpha0_pct": 64.01,
+      "hole_px": 140249,
+      "hole_pct_of_silhouette": 13.2,
+      "hole_blobs": 1040,
+      "largest_holes": [
+        11403,
+        9762,
+        8095,
+        7727,
+        7368,
+        5728
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_body_ore_moon.png",
+      "name": "env_body_ore_moon.png",
+      "family": "env",
+      "size": [
+        1871,
+        1906
+      ],
+      "silhouette_px": 2190049,
+      "alpha0_pct": 33.52,
+      "hole_px": 538107,
+      "hole_pct_of_silhouette": 24.57,
+      "hole_blobs": 1442,
+      "largest_holes": [
+        237704,
+        27630,
+        11487,
+        8639,
+        8495,
+        5880
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_body_shattered.png",
+      "name": "env_body_shattered.png",
+      "family": "env",
+      "size": [
+        1870,
+        1891
+      ],
+      "silhouette_px": 1319482,
+      "alpha0_pct": 57.55,
+      "hole_px": 137399,
+      "hole_pct_of_silhouette": 10.41,
+      "hole_blobs": 899,
+      "largest_holes": [
+        11448,
+        9567,
+        8517,
+        5847,
+        5413,
+        4265
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_debris_field.png",
+      "name": "env_debris_field.png",
+      "family": "env",
+      "size": [
+        1986,
+        1956
+      ],
+      "silhouette_px": 2218256,
+      "alpha0_pct": 40.78,
+      "hole_px": 2042,
+      "hole_pct_of_silhouette": 0.09,
+      "hole_blobs": 206,
+      "largest_holes": [
+        972,
+        57,
+        47,
+        38,
+        37,
+        31
+      ],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_ice_field.png",
+      "name": "env_ice_field.png",
+      "family": "env",
+      "size": [
+        1891,
+        1869
+      ],
+      "silhouette_px": 1395209,
+      "alpha0_pct": 54.63,
+      "hole_px": 199298,
+      "hole_pct_of_silhouette": 14.28,
+      "hole_blobs": 1152,
+      "largest_holes": [
+        15418,
+        9174,
+        7500,
+        6476,
+        6442,
+        5282
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_jump_gate.png",
+      "name": "env_jump_gate.png",
+      "family": "env",
+      "size": [
+        1936,
+        1277
+      ],
+      "silhouette_px": 904021,
+      "alpha0_pct": 60.15,
+      "hole_px": 69831,
+      "hole_pct_of_silhouette": 7.72,
+      "hole_blobs": 273,
+      "largest_holes": [
+        7196,
+        7184,
+        6672,
+        5542,
+        4630,
+        4005
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_jump_gate_ring.png",
+      "name": "env_jump_gate_ring.png",
+      "family": "env",
+      "size": [
+        1636,
+        1590
+      ],
+      "silhouette_px": 945074,
+      "alpha0_pct": 60.26,
+      "hole_px": 133928,
+      "hole_pct_of_silhouette": 14.17,
+      "hole_blobs": 348,
+      "largest_holes": [
+        29221,
+        27702,
+        25697,
+        19949,
+        2992,
+        1571
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_loading_bg.png",
+      "name": "env_loading_bg.png",
+      "family": "env",
+      "size": [
+        2048,
+        1152
+      ],
+      "silhouette_px": 2359296,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_menu_bg.png",
+      "name": "env_menu_bg.png",
+      "family": "env",
+      "size": [
+        2048,
+        1152
+      ],
+      "silhouette_px": 2359296,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_mine.png",
+      "name": "env_mine.png",
+      "family": "env",
+      "size": [
+        1396,
+        1588
+      ],
+      "silhouette_px": 1122282,
+      "alpha0_pct": 48.53,
+      "hole_px": 840,
+      "hole_pct_of_silhouette": 0.07,
+      "hole_blobs": 14,
+      "largest_holes": [
+        243,
+        169,
+        129,
+        62,
+        55,
+        55
+      ],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_nebula_veil.png",
+      "name": "env_nebula_veil.png",
+      "family": "env",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 4194304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_ore_cluster.png",
+      "name": "env_ore_cluster.png",
+      "family": "env",
+      "size": [
+        1790,
+        1803
+      ],
+      "silhouette_px": 1259177,
+      "alpha0_pct": 56.1,
+      "hole_px": 144374,
+      "hole_pct_of_silhouette": 11.47,
+      "hole_blobs": 903,
+      "largest_holes": [
+        12457,
+        7495,
+        7038,
+        5020,
+        4522,
+        4315
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_outpost_defense.png",
+      "name": "env_outpost_defense.png",
+      "family": "env",
+      "size": [
+        1156,
+        1591
+      ],
+      "silhouette_px": 970675,
+      "alpha0_pct": 41.52,
+      "hole_px": 76793,
+      "hole_pct_of_silhouette": 7.91,
+      "hole_blobs": 460,
+      "largest_holes": [
+        8108,
+        7331,
+        5151,
+        2658,
+        2351,
+        2175
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_outpost_mining.png",
+      "name": "env_outpost_mining.png",
+      "family": "env",
+      "size": [
+        1220,
+        1843
+      ],
+      "silhouette_px": 1194941,
+      "alpha0_pct": 46.18,
+      "hole_px": 3484,
+      "hole_pct_of_silhouette": 0.29,
+      "hole_blobs": 15,
+      "largest_holes": [
+        1410,
+        1346,
+        155,
+        77,
+        71,
+        66
+      ],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_outpost_relay.png",
+      "name": "env_outpost_relay.png",
+      "family": "env",
+      "size": [
+        636,
+        1864
+      ],
+      "silhouette_px": 378117,
+      "alpha0_pct": 64.07,
+      "hole_px": 71933,
+      "hole_pct_of_silhouette": 19.02,
+      "hole_blobs": 209,
+      "largest_holes": [
+        10677,
+        8182,
+        7035,
+        5882,
+        5463,
+        5260
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_outpost_repair.png",
+      "name": "env_outpost_repair.png",
+      "family": "env",
+      "size": [
+        1350,
+        1934
+      ],
+      "silhouette_px": 1855801,
+      "alpha0_pct": 27.91,
+      "hole_px": 2564,
+      "hole_pct_of_silhouette": 0.14,
+      "hole_blobs": 15,
+      "largest_holes": [
+        1165,
+        471,
+        277,
+        178,
+        174,
+        112
+      ],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_pickup_ammo_pod.png",
+      "name": "env_pickup_ammo_pod.png",
+      "family": "env",
+      "size": [
+        725,
+        443
+      ],
+      "silhouette_px": 181992,
+      "alpha0_pct": 37.79,
+      "hole_px": 11047,
+      "hole_pct_of_silhouette": 6.07,
+      "hole_blobs": 51,
+      "largest_holes": [
+        2553,
+        1436,
+        1128,
+        977,
+        800,
+        511
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_pickup_bonus_box.png",
+      "name": "env_pickup_bonus_box.png",
+      "family": "env",
+      "size": [
+        755,
+        463
+      ],
+      "silhouette_px": 236768,
+      "alpha0_pct": 27.72,
+      "hole_px": 5662,
+      "hole_pct_of_silhouette": 2.39,
+      "hole_blobs": 74,
+      "largest_holes": [
+        999,
+        425,
+        409,
+        301,
+        276,
+        254
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_pickup_ore_pod.png",
+      "name": "env_pickup_ore_pod.png",
+      "family": "env",
+      "size": [
+        760,
+        463
+      ],
+      "silhouette_px": 266936,
+      "alpha0_pct": 19.69,
+      "hole_px": 13156,
+      "hole_pct_of_silhouette": 4.93,
+      "hole_blobs": 112,
+      "largest_holes": [
+        1110,
+        1007,
+        814,
+        588,
+        573,
+        455
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_pickup_repair_pod.png",
+      "name": "env_pickup_repair_pod.png",
+      "family": "env",
+      "size": [
+        728,
+        510
+      ],
+      "silhouette_px": 220817,
+      "alpha0_pct": 34.77,
+      "hole_px": 29772,
+      "hole_pct_of_silhouette": 13.48,
+      "hole_blobs": 74,
+      "largest_holes": [
+        4786,
+        4011,
+        3837,
+        3553,
+        2907,
+        2385
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_pickup_shield_pod.png",
+      "name": "env_pickup_shield_pod.png",
+      "family": "env",
+      "size": [
+        524,
+        502
+      ],
+      "silhouette_px": 103722,
+      "alpha0_pct": 55.58,
+      "hole_px": 39745,
+      "hole_pct_of_silhouette": 38.32,
+      "hole_blobs": 45,
+      "largest_holes": [
+        34570,
+        851,
+        597,
+        518,
+        507,
+        481
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_pickup_speed_pod.png",
+      "name": "env_pickup_speed_pod.png",
+      "family": "env",
+      "size": [
+        780,
+        284
+      ],
+      "silhouette_px": 129978,
+      "alpha0_pct": 35.55,
+      "hole_px": 17372,
+      "hole_pct_of_silhouette": 13.37,
+      "hole_blobs": 30,
+      "largest_holes": [
+        7019,
+        6339,
+        2048,
+        637,
+        411,
+        177
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_planet_moon.png",
+      "name": "env_planet_moon.png",
+      "family": "env",
+      "size": [
+        1601,
+        1650
+      ],
+      "silhouette_px": 1991505,
+      "alpha0_pct": 23.83,
+      "hole_px": 7732,
+      "hole_pct_of_silhouette": 0.39,
+      "hole_blobs": 49,
+      "largest_holes": [
+        3959,
+        902,
+        317,
+        300,
+        264,
+        172
+      ],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_prop_drive_core.png",
+      "name": "env_prop_drive_core.png",
+      "family": "env",
+      "size": [
+        631,
+        748
+      ],
+      "silhouette_px": 188646,
+      "alpha0_pct": 52.93,
+      "hole_px": 7587,
+      "hole_pct_of_silhouette": 4.02,
+      "hole_blobs": 84,
+      "largest_holes": [
+        2979,
+        937,
+        389,
+        386,
+        329,
+        220
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_prop_hull_mid.png",
+      "name": "env_prop_hull_mid.png",
+      "family": "env",
+      "size": [
+        581,
+        755
+      ],
+      "silhouette_px": 253974,
+      "alpha0_pct": 35.11,
+      "hole_px": 13664,
+      "hole_pct_of_silhouette": 5.38,
+      "hole_blobs": 109,
+      "largest_holes": [
+        3182,
+        2667,
+        2184,
+        801,
+        609,
+        547
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_prop_hull_nose.png",
+      "name": "env_prop_hull_nose.png",
+      "family": "env",
+      "size": [
+        584,
+        864
+      ],
+      "silhouette_px": 218503,
+      "alpha0_pct": 50.99,
+      "hole_px": 30752,
+      "hole_pct_of_silhouette": 14.07,
+      "hole_blobs": 88,
+      "largest_holes": [
+        9506,
+        4827,
+        3678,
+        2532,
+        2141,
+        1409
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_prop_hull_stern.png",
+      "name": "env_prop_hull_stern.png",
+      "family": "env",
+      "size": [
+        591,
+        816
+      ],
+      "silhouette_px": 191549,
+      "alpha0_pct": 53.94,
+      "hole_px": 23178,
+      "hole_pct_of_silhouette": 12.1,
+      "hole_blobs": 107,
+      "largest_holes": [
+        9040,
+        2647,
+        1921,
+        1614,
+        1404,
+        1054
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_prop_plate_section.png",
+      "name": "env_prop_plate_section.png",
+      "family": "env",
+      "size": [
+        551,
+        823
+      ],
+      "silhouette_px": 231992,
+      "alpha0_pct": 43.91,
+      "hole_px": 26707,
+      "hole_pct_of_silhouette": 11.51,
+      "hole_blobs": 136,
+      "largest_holes": [
+        8024,
+        5389,
+        2575,
+        1804,
+        1221,
+        1095
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_prop_rib_cluster.png",
+      "name": "env_prop_rib_cluster.png",
+      "family": "env",
+      "size": [
+        580,
+        826
+      ],
+      "silhouette_px": 146458,
+      "alpha0_pct": 64.74,
+      "hole_px": 2794,
+      "hole_pct_of_silhouette": 1.91,
+      "hole_blobs": 72,
+      "largest_holes": [
+        224,
+        179,
+        148,
+        145,
+        127,
+        120
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_sector_1_bg.png",
+      "name": "env_sector_1_bg.png",
+      "family": "env",
+      "size": [
+        2048,
+        1152
+      ],
+      "silhouette_px": 2359296,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_sector_2_bg.png",
+      "name": "env_sector_2_bg.png",
+      "family": "env",
+      "size": [
+        2048,
+        1152
+      ],
+      "silhouette_px": 2359296,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_sector_3_bg.png",
+      "name": "env_sector_3_bg.png",
+      "family": "env",
+      "size": [
+        2048,
+        1152
+      ],
+      "silhouette_px": 2359296,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_sector_4_bg.png",
+      "name": "env_sector_4_bg.png",
+      "family": "env",
+      "size": [
+        2048,
+        1152
+      ],
+      "silhouette_px": 2359296,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_sector_5_bg.png",
+      "name": "env_sector_5_bg.png",
+      "family": "env",
+      "size": [
+        2048,
+        1152
+      ],
+      "silhouette_px": 2359296,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_sector_6_bg.png",
+      "name": "env_sector_6_bg.png",
+      "family": "env",
+      "size": [
+        2048,
+        1152
+      ],
+      "silhouette_px": 2359296,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_sector_7_bg.png",
+      "name": "env_sector_7_bg.png",
+      "family": "env",
+      "size": [
+        2048,
+        1152
+      ],
+      "silhouette_px": 2359296,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_stars_layer1.png",
+      "name": "env_stars_layer1.png",
+      "family": "env",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 4194304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_stars_layer2.png",
+      "name": "env_stars_layer2.png",
+      "family": "env",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 4194304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_stars_layer3.png",
+      "name": "env_stars_layer3.png",
+      "family": "env",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 4194304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_station.png",
+      "name": "env_station.png",
+      "family": "env",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 824884,
+      "alpha0_pct": 70.13,
+      "hole_px": 134948,
+      "hole_pct_of_silhouette": 16.36,
+      "hole_blobs": 11715,
+      "largest_holes": [
+        17386,
+        3757,
+        3254,
+        2984,
+        2647,
+        2639
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_station_mmo.png",
+      "name": "env_station_mmo.png",
+      "family": "env",
+      "size": [
+        1942,
+        1531
+      ],
+      "silhouette_px": 785649,
+      "alpha0_pct": 69.9,
+      "hole_px": 60891,
+      "hole_pct_of_silhouette": 7.75,
+      "hole_blobs": 509,
+      "largest_holes": [
+        5032,
+        2419,
+        2101,
+        2056,
+        1881,
+        1528
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_station_ruined.png",
+      "name": "env_station_ruined.png",
+      "family": "env",
+      "size": [
+        1810,
+        1626
+      ],
+      "silhouette_px": 777005,
+      "alpha0_pct": 69.06,
+      "hole_px": 118088,
+      "hole_pct_of_silhouette": 15.2,
+      "hole_blobs": 427,
+      "largest_holes": [
+        15040,
+        11126,
+        11034,
+        10230,
+        9983,
+        9189
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/env_wreck_hulk.png",
+      "name": "env_wreck_hulk.png",
+      "family": "env",
+      "size": [
+        1877,
+        1487
+      ],
+      "silhouette_px": 1091129,
+      "alpha0_pct": 46.15,
+      "hole_px": 227427,
+      "hole_pct_of_silhouette": 20.84,
+      "hole_blobs": 15124,
+      "largest_holes": [
+        45569,
+        20164,
+        4964,
+        4296,
+        2890,
+        2401
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/env/panel_asteroids_b.png",
+      "name": "panel_asteroids_b.png",
+      "family": "env",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 665591,
+      "alpha0_pct": 82.15,
+      "hole_px": 59927,
+      "hole_pct_of_silhouette": 9.0,
+      "hole_blobs": 333,
+      "largest_holes": [
+        14068,
+        4578,
+        3686,
+        2386,
+        1584,
+        1517
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/fx/fx_anomaly_grave_glow.png",
+      "name": "fx_anomaly_grave_glow.png",
+      "family": "fx",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 4194304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/fx/fx_anomaly_rift.png",
+      "name": "fx_anomaly_rift.png",
+      "family": "fx",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 4194304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/fx/fx_anomaly_shimmer.png",
+      "name": "fx_anomaly_shimmer.png",
+      "family": "fx",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 4194304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/fx/fx_cargo_pulse.png",
+      "name": "fx_cargo_pulse.png",
+      "family": "fx",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 4194304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/fx/fx_ember_pulse.png",
+      "name": "fx_ember_pulse.png",
+      "family": "fx",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 4194304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/fx/fx_emp_arc.png",
+      "name": "fx_emp_arc.png",
+      "family": "fx",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 4194304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/fx/fx_engine_trail.png",
+      "name": "fx_engine_trail.png",
+      "family": "fx",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 4194304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/fx/fx_explosion.png",
+      "name": "fx_explosion.png",
+      "family": "fx",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 4194304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/fx/fx_hull_critical_vignette.png",
+      "name": "fx_hull_critical_vignette.png",
+      "family": "fx",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 4194304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/fx/fx_jump_portal.png",
+      "name": "fx_jump_portal.png",
+      "family": "fx",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 4194304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/fx/fx_laser_bolt.png",
+      "name": "fx_laser_bolt.png",
+      "family": "fx",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 4194304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/fx/fx_mining_beam.png",
+      "name": "fx_mining_beam.png",
+      "family": "fx",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 4194304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/fx/fx_missile_trail.png",
+      "name": "fx_missile_trail.png",
+      "family": "fx",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 4194304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/fx/fx_muzzle_flash.png",
+      "name": "fx_muzzle_flash.png",
+      "family": "fx",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 4194304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/fx/fx_repair_pulse.png",
+      "name": "fx_repair_pulse.png",
+      "family": "fx",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 4194304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/fx/fx_secondary_explosion.png",
+      "name": "fx_secondary_explosion.png",
+      "family": "fx",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 4194304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/fx/fx_shield_break.png",
+      "name": "fx_shield_break.png",
+      "family": "fx",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 4194304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/fx/fx_shield_ripple.png",
+      "name": "fx_shield_ripple.png",
+      "family": "fx",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 4194304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/fx/fx_tractor_beam.png",
+      "name": "fx_tractor_beam.png",
+      "family": "fx",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 4194304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/logo_vajb_orbit.png",
+      "name": "logo_vajb_orbit.png",
+      "family": "ui",
+      "size": [
+        2048,
+        2048
+      ],
+      "silhouette_px": 535306,
+      "alpha0_pct": 87.09,
+      "hole_px": 28085,
+      "hole_pct_of_silhouette": 5.25,
+      "hole_blobs": 1279,
+      "largest_holes": [
+        8516,
+        3046,
+        2976,
+        1900,
+        1893,
+        1829
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_backdrop_hangar.png",
+      "name": "ui_backdrop_hangar.png",
+      "family": "ui",
+      "size": [
+        2048,
+        1152
+      ],
+      "silhouette_px": 2359296,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_backdrop_login.png",
+      "name": "ui_backdrop_login.png",
+      "family": "ui",
+      "size": [
+        2048,
+        1152
+      ],
+      "silhouette_px": 2359296,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_backdrop_starmap.png",
+      "name": "ui_backdrop_starmap.png",
+      "family": "ui",
+      "size": [
+        2048,
+        1152
+      ],
+      "silhouette_px": 2359296,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_bar_caps.png",
+      "name": "ui_bar_caps.png",
+      "family": "ui",
+      "size": [
+        42,
+        14
+      ],
+      "silhouette_px": 515,
+      "alpha0_pct": 7.14,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_bar_caps@2x.png",
+      "name": "ui_bar_caps@2x.png",
+      "family": "ui",
+      "size": [
+        84,
+        28
+      ],
+      "silhouette_px": 2058,
+      "alpha0_pct": 8.72,
+      "hole_px": 2,
+      "hole_pct_of_silhouette": 0.1,
+      "hole_blobs": 2,
+      "largest_holes": [
+        1,
+        1
+      ],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_button_plate_disabled.png",
+      "name": "ui_button_plate_disabled.png",
+      "family": "ui",
+      "size": [
+        280,
+        56
+      ],
+      "silhouette_px": 14975,
+      "alpha0_pct": 0.18,
+      "hole_px": 7,
+      "hole_pct_of_silhouette": 0.05,
+      "hole_blobs": 2,
+      "largest_holes": [
+        4,
+        3
+      ],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_button_plate_disabled@2x.png",
+      "name": "ui_button_plate_disabled@2x.png",
+      "family": "ui",
+      "size": [
+        560,
+        112
+      ],
+      "silhouette_px": 59896,
+      "alpha0_pct": 2.23,
+      "hole_px": 26,
+      "hole_pct_of_silhouette": 0.04,
+      "hole_blobs": 3,
+      "largest_holes": [
+        14,
+        10,
+        2
+      ],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_button_plate_hover.png",
+      "name": "ui_button_plate_hover.png",
+      "family": "ui",
+      "size": [
+        280,
+        56
+      ],
+      "silhouette_px": 14211,
+      "alpha0_pct": 4.76,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_button_plate_hover@2x.png",
+      "name": "ui_button_plate_hover@2x.png",
+      "family": "ui",
+      "size": [
+        560,
+        112
+      ],
+      "silhouette_px": 57411,
+      "alpha0_pct": 5.39,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_button_plate_normal.png",
+      "name": "ui_button_plate_normal.png",
+      "family": "ui",
+      "size": [
+        280,
+        56
+      ],
+      "silhouette_px": 14376,
+      "alpha0_pct": 3.98,
+      "hole_px": 89,
+      "hole_pct_of_silhouette": 0.62,
+      "hole_blobs": 4,
+      "largest_holes": [
+        40,
+        36,
+        11,
+        2
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_button_plate_normal@2x.png",
+      "name": "ui_button_plate_normal@2x.png",
+      "family": "ui",
+      "size": [
+        560,
+        112
+      ],
+      "silhouette_px": 58440,
+      "alpha0_pct": 0.72,
+      "hole_px": 364,
+      "hole_pct_of_silhouette": 0.62,
+      "hole_blobs": 3,
+      "largest_holes": [
+        191,
+        163,
+        10
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_button_plate_pressed.png",
+      "name": "ui_button_plate_pressed.png",
+      "family": "ui",
+      "size": [
+        280,
+        56
+      ],
+      "silhouette_px": 11491,
+      "alpha0_pct": 12.45,
+      "hole_px": 366,
+      "hole_pct_of_silhouette": 3.19,
+      "hole_blobs": 23,
+      "largest_holes": [
+        121,
+        106,
+        22,
+        14,
+        13,
+        12
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_button_plate_pressed@2x.png",
+      "name": "ui_button_plate_pressed@2x.png",
+      "family": "ui",
+      "size": [
+        560,
+        112
+      ],
+      "silhouette_px": 46538,
+      "alpha0_pct": 13.34,
+      "hole_px": 967,
+      "hole_pct_of_silhouette": 2.08,
+      "hole_blobs": 32,
+      "largest_holes": [
+        407,
+        85,
+        54,
+        49,
+        48,
+        46
+      ],
+      "flag": true
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_insignia_mic.png",
+      "name": "ui_insignia_mic.png",
+      "family": "ui",
+      "size": [
+        776,
+        889
+      ],
+      "silhouette_px": 495132,
+      "alpha0_pct": 27.4,
+      "hole_px": 38,
+      "hole_pct_of_silhouette": 0.01,
+      "hole_blobs": 1,
+      "largest_holes": [
+        38
+      ],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_insignia_mmo.png",
+      "name": "ui_insignia_mmo.png",
+      "family": "ui",
+      "size": [
+        779,
+        891
+      ],
+      "silhouette_px": 497483,
+      "alpha0_pct": 27.49,
+      "hole_px": 154,
+      "hole_pct_of_silhouette": 0.03,
+      "hole_blobs": 6,
+      "largest_holes": [
+        61,
+        45,
+        16,
+        13,
+        11,
+        8
+      ],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_insignia_neutral.png",
+      "name": "ui_insignia_neutral.png",
+      "family": "ui",
+      "size": [
+        780,
+        894
+      ],
+      "silhouette_px": 499222,
+      "alpha0_pct": 27.59,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_insignia_ven.png",
+      "name": "ui_insignia_ven.png",
+      "family": "ui",
+      "size": [
+        783,
+        894
+      ],
+      "silhouette_px": 500361,
+      "alpha0_pct": 27.71,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_minimap_bezel.png",
+      "name": "ui_minimap_bezel.png",
+      "family": "ui",
+      "size": [
+        200,
+        200
+      ],
+      "silhouette_px": 39988,
+      "alpha0_pct": 0.0,
+      "hole_px": 7,
+      "hole_pct_of_silhouette": 0.02,
+      "hole_blobs": 4,
+      "largest_holes": [
+        3,
+        2,
+        1,
+        1
+      ],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_minimap_bezel@2x.png",
+      "name": "ui_minimap_bezel@2x.png",
+      "family": "ui",
+      "size": [
+        400,
+        400
+      ],
+      "silhouette_px": 159945,
+      "alpha0_pct": 0.01,
+      "hole_px": 29,
+      "hole_pct_of_silhouette": 0.02,
+      "hole_blobs": 5,
+      "largest_holes": [
+        10,
+        7,
+        6,
+        5,
+        1
+      ],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_panel_frame.png",
+      "name": "ui_panel_frame.png",
+      "family": "ui",
+      "size": [
+        96,
+        96
+      ],
+      "silhouette_px": 9106,
+      "alpha0_pct": 0.53,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_panel_frame@2x.png",
+      "name": "ui_panel_frame@2x.png",
+      "family": "ui",
+      "size": [
+        192,
+        192
+      ],
+      "silhouette_px": 36256,
+      "alpha0_pct": 0.82,
+      "hole_px": 32,
+      "hole_pct_of_silhouette": 0.09,
+      "hole_blobs": 3,
+      "largest_holes": [
+        30,
+        1,
+        1
+      ],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_slot_cargo_disabled.png",
+      "name": "ui_slot_cargo_disabled.png",
+      "family": "ui",
+      "size": [
+        40,
+        40
+      ],
+      "silhouette_px": 1600,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_slot_cargo_disabled@2x.png",
+      "name": "ui_slot_cargo_disabled@2x.png",
+      "family": "ui",
+      "size": [
+        80,
+        80
+      ],
+      "silhouette_px": 6400,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_slot_cargo_hover.png",
+      "name": "ui_slot_cargo_hover.png",
+      "family": "ui",
+      "size": [
+        40,
+        40
+      ],
+      "silhouette_px": 1600,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_slot_cargo_hover@2x.png",
+      "name": "ui_slot_cargo_hover@2x.png",
+      "family": "ui",
+      "size": [
+        80,
+        80
+      ],
+      "silhouette_px": 6400,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_slot_cargo_normal.png",
+      "name": "ui_slot_cargo_normal.png",
+      "family": "ui",
+      "size": [
+        40,
+        40
+      ],
+      "silhouette_px": 1600,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_slot_cargo_normal@2x.png",
+      "name": "ui_slot_cargo_normal@2x.png",
+      "family": "ui",
+      "size": [
+        80,
+        80
+      ],
+      "silhouette_px": 6400,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_slot_cargo_pressed.png",
+      "name": "ui_slot_cargo_pressed.png",
+      "family": "ui",
+      "size": [
+        40,
+        40
+      ],
+      "silhouette_px": 1600,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_slot_cargo_pressed@2x.png",
+      "name": "ui_slot_cargo_pressed@2x.png",
+      "family": "ui",
+      "size": [
+        80,
+        80
+      ],
+      "silhouette_px": 6400,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_slot_inventory_disabled.png",
+      "name": "ui_slot_inventory_disabled.png",
+      "family": "ui",
+      "size": [
+        56,
+        56
+      ],
+      "silhouette_px": 3136,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_slot_inventory_disabled@2x.png",
+      "name": "ui_slot_inventory_disabled@2x.png",
+      "family": "ui",
+      "size": [
+        112,
+        112
+      ],
+      "silhouette_px": 12544,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_slot_inventory_hover.png",
+      "name": "ui_slot_inventory_hover.png",
+      "family": "ui",
+      "size": [
+        56,
+        56
+      ],
+      "silhouette_px": 3136,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_slot_inventory_hover@2x.png",
+      "name": "ui_slot_inventory_hover@2x.png",
+      "family": "ui",
+      "size": [
+        112,
+        112
+      ],
+      "silhouette_px": 12544,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_slot_inventory_normal.png",
+      "name": "ui_slot_inventory_normal.png",
+      "family": "ui",
+      "size": [
+        56,
+        56
+      ],
+      "silhouette_px": 3136,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_slot_inventory_normal@2x.png",
+      "name": "ui_slot_inventory_normal@2x.png",
+      "family": "ui",
+      "size": [
+        112,
+        112
+      ],
+      "silhouette_px": 12544,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_slot_inventory_pressed.png",
+      "name": "ui_slot_inventory_pressed.png",
+      "family": "ui",
+      "size": [
+        56,
+        56
+      ],
+      "silhouette_px": 3136,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_slot_inventory_pressed@2x.png",
+      "name": "ui_slot_inventory_pressed@2x.png",
+      "family": "ui",
+      "size": [
+        112,
+        112
+      ],
+      "silhouette_px": 12544,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_slot_weapon_disabled.png",
+      "name": "ui_slot_weapon_disabled.png",
+      "family": "ui",
+      "size": [
+        48,
+        48
+      ],
+      "silhouette_px": 2304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_slot_weapon_disabled@2x.png",
+      "name": "ui_slot_weapon_disabled@2x.png",
+      "family": "ui",
+      "size": [
+        96,
+        96
+      ],
+      "silhouette_px": 9216,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_slot_weapon_hover.png",
+      "name": "ui_slot_weapon_hover.png",
+      "family": "ui",
+      "size": [
+        48,
+        48
+      ],
+      "silhouette_px": 2304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_slot_weapon_hover@2x.png",
+      "name": "ui_slot_weapon_hover@2x.png",
+      "family": "ui",
+      "size": [
+        96,
+        96
+      ],
+      "silhouette_px": 9216,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_slot_weapon_normal.png",
+      "name": "ui_slot_weapon_normal.png",
+      "family": "ui",
+      "size": [
+        48,
+        48
+      ],
+      "silhouette_px": 2304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_slot_weapon_normal@2x.png",
+      "name": "ui_slot_weapon_normal@2x.png",
+      "family": "ui",
+      "size": [
+        96,
+        96
+      ],
+      "silhouette_px": 9216,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_slot_weapon_pressed.png",
+      "name": "ui_slot_weapon_pressed.png",
+      "family": "ui",
+      "size": [
+        48,
+        48
+      ],
+      "silhouette_px": 2304,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    },
+    {
+      "path": "G:/M\u00f3j dysk/Projekty/Vajb Orbit/vajb-orbit/assets/ui/ui_slot_weapon_pressed@2x.png",
+      "name": "ui_slot_weapon_pressed@2x.png",
+      "family": "ui",
+      "size": [
+        96,
+        96
+      ],
+      "silhouette_px": 9216,
+      "alpha0_pct": 0.0,
+      "hole_px": 0,
+      "hole_pct_of_silhouette": 0.0,
+      "hole_blobs": 0,
+      "largest_holes": [],
+      "flag": false
+    }
+  ],
+  "flagged": 139
+}

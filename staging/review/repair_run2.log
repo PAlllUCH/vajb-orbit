@@ -1,0 +1,33 @@
+sprites to process: 1445
+  {'repaired': 828, 'passthrough': 20, 'review': 597}
+
+sprites still showing damage after repair: 28
+sprite                                         mode   encl px  damage  blobs
+env_body_ice_moon.png                          void    753669    6623      6
+icon_credits.png                               white    87742    2883      2
+env_planet_moon.png                            white     2294    2294      3
+icon_module_s_ion.png                          white     6139    2275      2
+icon_ingot_krilium.png                         white      758     758      1
+env_outpost_repair.png                         white      638     638      3
+icon_ingot_titanium.png                        white     1060     540      1
+icon_ingot_palladium.png                       white     3141     499      3
+icon_ingot_neodymium.png                       white     1513     492      1
+env_body_shattered.png                         void    111860     455      2
+logo_vajb_orbit.png                            white    18371     443      4
+env_debris_field.png                           white      406     406      1
+icon_mineral_krilium.png                       white      300     300      1
+env_station_ruined.png                         void    525697     298      1
+icon_module_s_heavy.png                        white     9942     220      1
+env_station.png                                void     43227     214      2
+icon_ingot_gold.png                            white      371     209      1
+icon_mineral_osmium.png                        white      809     203      1
+env_body_ore_moon.png                          void     82307     186      1
+ship_boss_boneyard.png                         white    22195     171      2
+icon_mineral_neodymium.png                     white     1811     158      1
+icon_mineral_aluminium.png                     white      480     150      1
+icon_mineral_silver.png                        white     1019     143      1
+icon_mineral_iridium.png                       white      926     120      1
+icon_ingot_platinum.png                        white      807     112      1
+
+report -> asset-library/_repair_report.json
+output -> asset-library/_cuts

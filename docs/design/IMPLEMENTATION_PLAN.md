@@ -411,7 +411,7 @@ Execution evidence: `.agents/gen/fix_wave1_w7_report.md`.
 
 ### 9.9 Engine wave amendments (2026-09-18) — flight, mining, sectors
 
-Amendments transcribed from `ENGINE_SPEC.md` (workspace root, owner-locked 2026-09-18; folded into `docs/gameplay/` as doc 18 when the engine phase closes) before any engine code was written. The spec is the contract; every number below lives there, in §13.
+Amendments transcribed from `docs/gameplay/18_engine_spec.md` (owner-locked 2026-09-18 as the workspace-root `ENGINE_SPEC.md`; moved into `docs/gameplay/` as doc 18 on 2026-09-20) before any engine code was written. The spec is the contract; every number below lives there, in §13. The 2026-09-20 rulings 8–26 in the spec's §2.1 extend this section with slice 0 (physics & fuel) and the amended slice 2 scope — transcribed by the slice-0/slice-2 doc-check workers, not here.
 
 Decisions 1–7 of ENGINE_SPEC §2 are law for the engine phase:
 

@@ -1,0 +1,33 @@
+sprites to process: 1445
+  {'repaired': 844, 'passthrough': 20, 'review': 581}
+
+sprites still showing damage after repair: 26
+sprite                                         mode   encl px  damage  blobs
+icon_credits.png                               white    87742    2883      2
+icon_module_s_ion.png                          white     6139    2275      2
+env_planet_moon.png                            white     1863    1863      2
+icon_ingot_krilium.png                         white      758     758      1
+icon_ingot_titanium.png                        white     1060     540      1
+icon_ingot_palladium.png                       white     3141     499      3
+icon_ingot_neodymium.png                       white     1513     492      1
+logo_vajb_orbit.png                            white    18371     443      4
+env_debris_field.png                           white      396     396      1
+env_body_shattered.png                         void     99026     358      2
+icon_mineral_krilium.png                       white      300     300      1
+env_station_ruined.png                         void    525697     298      1
+env_outpost_repair.png                         white      249     249      2
+icon_module_s_heavy.png                        white     9942     220      1
+env_station.png                                void     43227     214      2
+icon_ingot_gold.png                            white      371     209      1
+icon_mineral_osmium.png                        white      809     203      1
+icon_mineral_neodymium.png                     white     1811     158      1
+icon_mineral_aluminium.png                     white      480     150      1
+ship_boss_boneyard.png                         white    14530     147      2
+icon_mineral_silver.png                        white     1019     143      1
+icon_mineral_iridium.png                       white      926     120      1
+icon_ingot_platinum.png                        white      807     112      1
+icon_mineral_cobalt.png                        white     1473     111      1
+ship_vanguard_mmo_front.png                    void     13799      83      1
+
+report -> asset-library/_repair_report.json
+output -> asset-library/_cuts

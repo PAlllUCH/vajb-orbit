@@ -10,6 +10,8 @@
 Exception: the shield hit ripple uses Steel Highlight `#565C63` because the shield is **not a danger state** — it regenerates, and orange stays reserved for damage and weapons (mirrors UI_SPEC §3.1 shield bar logic).
 Nothing else ever emits. No blue, no green, no purple, no teal, no yellow glow. Emissive content in FX is always small, hot, and contained — never ambient.
 
+**Alien-family exception (owner ruling 24, 2026-09-20, STYLE_BIBLE §2.5):** alien-entity FX glow in that family's signature colour only — Bioluminescent Green `#4AE86C` (swarmers, slice 2), Corrupted Plasma Cyan `#2BE8E8` (Sibelon, slice 3), Void Magenta `#E82BE8` (Apex, slice 4) — mirroring the ember rule one-to-one: signature FX are small, hot, contained. Human FX never borrow these colours, and no alien FX ever carries ember.
+
 **Sanctioned exceptions (STYLE_BIBLE §3 amendment 2026-09-17):** (1) the shield ripple's Steel Highlight `#565C63`; (2) frame-1 "white-hot" flash frames of muzzle flash (§1.2) and explosion (§1.4) — in generated art these stay a brightened, desaturated Ember Glow `#E8703A` hot core (no pure white pixels); the true white read comes from engine-side bloom on top of `#E8703A`; (3) the **field repair pulse** (`fx_repair_pulse.png`, added 2026-09-17) — an expanding Steel Highlight `#565C63` maintenance ring with fine engineering sparks, on the same reasoning as (1): a repair is not a danger state, so the ember pair stays reserved.
 
 **Amendment 2026-09-18 (Phase F, anomaly trio):** `docs/gameplay/11_galactic_map.md` §3.2 defines three anomalies — ore bloom, grave cache and void rift. Only the rift is a hazard, so `FX_SPEC` §0's threat rule assigns the palette accordingly, and the trio becomes the fourth sanctioned non-ember glow site:
@@ -141,3 +143,50 @@ Three files, three distinct forms (hollow ring / dense point glow / vertical tea
 Snake_case throughout; all live under `vajb-orbit/assets/fx/`.
 
 **Amendment 2026-09-17:** `docs/design/ASSET_EXPANSION_SPEC.md` §7 extends this inventory with `fx_jump_portal.png`, `fx_missile_trail.png` and `fx_shield_break.png` (wave 1), plus `fx_tractor_beam.png`, `fx_emp_arc.png`, `fx_secondary_explosion.png` and `fx_repair_pulse.png` (wave 2). They obey §0 and §0.1 unchanged: void black background, no alpha keying, RGB output for additive blending, no glow colour outside the ember pair (and the sanctioned steel-highlight shield exception).
+
+---
+
+## 7. Phase G — speed fantasy, damage states & alien FX (rulings 18/20/24, 2026-09-20)
+
+Owner-approved additions from the `PHYSICS_SPEC.md`/`GRAPHICS_IDEAS.md`
+brainstorm, absorbed after `docs/gameplay/18_engine_spec.md` §2.1. Existing
+§0–§3 rules stand unchanged.
+
+### 7.1 Engine-side FX (no generation — code + shader work)
+
+| Effect | Node | Law |
+|---|---|---|
+| Directional motion blur | screen-space `ColorRect` shader on a `CanvasLayer` | Active from `FX_BLUR_ONSET` 0.70 of v_max; inputs `blur_strength` (0.1 cruise → 0.8 dash), `blur_direction = v/|v|`, `chromatic_aberration` scaled with strength. Engine spec §3.4. |
+| Camera pull-back | `Camera2D.zoom` multiplier | `lerp(1.0, 0.82, (ratio − 0.7)/0.3)`, stacks with wheel zoom. |
+| Dust streaks | `GPUParticles2D` on the camera | Emits counter-velocity micro streaks while the ratio is high; texture `fx_dust_streak.png` below. |
+| Damage smoke + arcs | two parented `GPUParticles2D` on the hull | Spawn while hull < 25 %: persistent black plume puffs (`fx_smoke_plume.png`) + intermittent electrical arcs (`fx_arc_spark.png`). Ember sparks only inside the arc sprite — the plume itself is `#232629`/`#2B2F35`, non-emissive. |
+| Shield shatter | one-shot `GPUParticles2D` burst | Fires when the shield pool hits 0 (ruling 20): glass-like shards of Steel Highlight `#565C63` outward over 0.4 s; texture `fx_shield_shatter.png`. The existing `fx_shield_break.png` (ASSET_EXPANSION_SPEC §7) covers the same event — reuse it; this row defines behaviour, not a second asset. |
+
+### 7.2 New generated assets
+
+| Asset | Composition | Palette / rule |
+|---|---|---|
+| `fx_bio_plasma.png` | Swarmer projectile: pulsing organic orb + falling bio-spore motes (single frame, spores engine-emitted) | Bioluminescent Green `#4AE86C` glow on Corrosive Dark `#1A281F` mass; alien block addendum (STYLE_BIBLE §9.1); never alpha-keyed. Sibelon/Apex variants re-tint in engine or get per-family sheets at slice 3/4. |
+| `fx_acid_burn.png` | Corrosion DoT emitter puff: dissolving bio-acid wisps parented to the target hull for the 3 s Corrosion window | `#3D6E49` body, `#4AE86C` hot flecks; non-additive `MIX` blend — the only MIX effect in the inventory (stains, not light). |
+| `fx_shield_shatter.png` | 4-frame sheet (2×2): shard burst → spread → scatter → empty | Steel Highlight `#565C63` only (shield family, not a danger state); 0.4 s one-shot. |
+| `fx_smoke_plume.png` | Single painterly black smoke puff, soft alpha column | `#232629`/`#2B2F35`, non-emissive; RGB on Void Black per §0.1 (no alpha keying). |
+| `fx_arc_spark.png` | 4-frame sheet: jagged electrical arc snapping between frames | Steel Highlight `#565C63` arc with a brightened-ember core flash (same frame-1 rule as §1.2); 0.2 s per arc. |
+| `fx_dust_streak.png` | Single micro streak, thin, low alpha | `#1A2230`→transparent; camera-space, never additively blown. |
+| `fx_dash_charge.png` | Charge ring + streak burst for the fold/dash (ruling 9) | Ember pair (it is an engine state): `#C8461B` rim, `#E8703A` hot edge; single frame, engine scales it. |
+| `fx_lock_channel.png` | Thin progress arc texture for the reticle lock ring (§4.1) | Steel Highlight `#565C63` arc; the ring completes to `metal_light` when the lock lands. Engine may draw it in `_draw()` instead — texture is the fallback. |
+
+All: 2K masters, Void Black `#0A0E14` background, isolated subjects, §0.1
+negative list, generation log next to the assets.
+
+### 7.3 Wiring contract
+
+- One-shot sheets (`AnimatedSprite2D`, `loop = false`,
+  `animation_finished → queue_free()`): muzzle flash, explosion, chip sparks,
+  shatter, arc spark.
+- Continuous/parented emitters (smoke plume, acid burn, dust, bio-spores):
+  `GPUParticles2D` with a lifetime owner — the emitter frees with its target.
+- The speed-fantasy stack (§7.1 rows 1–3) keys off `speed_ratio` only
+  (engine spec §3.4); the damage states key off `PlayerState` pool signals —
+  no new gameplay coupling.
+- HUD surfacing for the radial speedometer is UI_SPEC §3.6; the prograde
+  needle's cyan is a navigation colour, not an FX glow (STYLE_BIBLE §3).

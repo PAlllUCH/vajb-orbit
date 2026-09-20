@@ -31,6 +31,14 @@ the tier mix in §1.1, enemy mix and density, and hazards, **never by size**
 (ENGINE_SPEC §2 decision 4, §8). The per-sector tier table in §1.1 stays
 authoritative.
 
+**Nebula gas clouds (2026-09-20, 18_engine_spec §8 / ruling 25).** The hazard
+set gains the nebula gas cloud: 0–2 per sector as a registry row, a
+desaturated blue-grey/teal wash (STYLE_BIBLE §7.2 — no new palette) that
+tints hulls inside and **degrades radar and locks**: passive tags inside
+refresh slowly and a lock channel cannot complete while its line crosses the
+cloud. Escaping into a cloud breaks an enemy's channel — cover is a tactic.
+Pricing/placement stay engine-side; no station or gate rule changes.
+
 ### 1.1 Amendment to 02 §5
 
 The abstract range table in 02 §5 is superseded by these per-sector tier

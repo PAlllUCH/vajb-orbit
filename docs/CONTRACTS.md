@@ -5,7 +5,8 @@ between workers. Every worker brief says "code against CONTRACTS.md §n" instead
 re-pasting signatures; every review/fix wave owns updating it (additions and
 amendments recorded at the bottom in the changelog). Never edit it mid-wave while
 workers hold the same files — the orchestrator merges review-wave changes after a
-wave closes. Numbers here are transcribed from `ENGINE_SPEC.md`, the gameplay docs,
+wave closes. Numbers here are transcribed from `docs/gameplay/18_engine_spec.md`,
+the gameplay docs,
 and the wave-1 brief; deviations are reported, never invented.
 
 Conventions and forbidden files are defined in `AGENTS.md` (§ Rules) and apply to
@@ -179,6 +180,7 @@ it as a gate; use scene runs or `load()` probes.
 ## §10 Changelog
 
 - **v0 (2026-09-18)** — seeded from the engine wave-1 pinned interfaces
-  (evidence: `.agents/gen/engine_wave1_w1_report.md`) + `ENGINE_SPEC.md`
+  (evidence: `.agents/gen/engine_wave1_w1_report.md`) +
+  `docs/gameplay/18_engine_spec.md`
   §2/§3/§7/§9/§13. Slices 2–4 (combat,
   travel, integration) append their sections here at their review gates.

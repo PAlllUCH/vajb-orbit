@@ -22,10 +22,12 @@ All colours are defined once as theme colours on the base `Theme` (see §6) and 
 | `text_dim` | `#6b7484` | Secondary labels, disabled text |
 | `accent_danger` | `#c8471f` | Single burnt orange-red accent — damage, danger, alerts, active fire mode |
 | `accent_danger_bright` | `#e8622a` | Same hue one step brighter — hover state of danger elements only |
+| `accent_nav` | `#6fb8c4` | Prograde-needle cyan (§3.6, added 2026-09-20) — velocity-vector navigation read, never a glow, never a danger colour |
 
 **Rules:**
 
 - Exactly one accent colour (`accent_danger`). No rainbow. Success/info states are expressed with `metal_light` + `text_primary`, not green/blue.
+- `accent_nav` (2026-09-20) is the single navigation-exception colour: it colours only the speedometer prograde needle (§3.6) and nothing else; it is desaturated steel-cyan so it reads as an instrument, not a glow.
 - Contrast floor: `text_primary` on `void_base` ≈ 11:1; `text_dim` on `void_base` ≈ 4.0:1 (large text / labels only, never body).
 - Danger is reserved: if it is not damage, an alert, or an armed weapon, it is not orange.
 - Thin bevels: 1 px only. Bevels are drawn by StyleBox borders (`metal_light` top/left, `metal_dark` bottom/right), never gradients.
@@ -110,6 +112,22 @@ HUD (Control, MOUSE_FILTER_IGNORE, full rect)
 - **Shield**: fill stylebox bg `metal_light` (shield is not a danger state — it regenerates; orange stays reserved). Border `metal_mid`, bg `void_base`.
 - Both bars: size 260×14, `progress_bg`/`progress_fill` styleboxes from §2.1, corner radius 0.
 
+### 3.1b Energy & fuel bars (rulings 10/14, 2026-09-20)
+
+Amends the TopLeft `VBoxContainer`: below `ShieldBlock` sit two more blocks,
+same pattern:
+
+- **Energy**: `ProgressBar` 260×14, fill `metal_light` (the buffer is not a
+  danger state — same reasoning as shield), label `ENERGY` with the
+  current/max readout. Emergency Flight Mode (fuel 0): the fill turns
+  `accent_danger` while the mode lasts.
+- **Fuel**: fill `metal_mid`; at ≤ 15 % of max the fill and label turn
+  `accent_danger`. Label `FUEL`. While fuel == 0 an `EMERGENCY FLIGHT`
+  banner Label appears above the blocks in `accent_danger_bright`.
+- HUD API: `set_pool(kind: StringName, value: float, maximum: float)` with
+  `kind` ∈ `&"energy" | &"fuel"`; `set_emergency(active: bool)`.
+- No new tokens: every colour above is an existing token role.
+
 ### 3.2 Ammo & weapon slots
 
 - `AmmoPanel` is a `PanelContainer` with the `panel_raised` stylebox; inner `VBoxContainer` separation 4.
@@ -126,6 +144,9 @@ HUD (Control, MOUSE_FILTER_IGNORE, full rect)
 
 - `MinimapPanel` (`PanelContainer`, `panel` stylebox) anchored bottom-right; 200×200 map `Control` with custom `_draw()` — dots for ships/POIs, `accent_danger` for hostiles, `text_dim` for neutral, `text_primary` for self.
 - Zoom is two `TextureButton`s (16×16) in the footer `HBoxContainer`; sector name `Label` in `text_dim`.
+- **Chaff ghosts (2026-09-20, engine spec §4.6):** blip kind `&"ghost"` — a
+  dim `text_dim` dot that flickers (alpha 0.3–0.7 at 6 Hz) for the 3 s ghost
+  window; never hostile-red, so ghosts are distinguishable at a glance.
 
 ### 3.4 Cargo panel
 
@@ -138,6 +159,31 @@ HUD (Control, MOUSE_FILTER_IGNORE, full rect)
 - `TargetReticle` is a bare `Control` with custom `_draw()`, repositioned each frame to the target's screen position (script projects world→screen via `get_viewport().get_screen_transform()` chain from the camera node).
 - Drawing: corner brackets (4 × 8 px L-shapes) in `accent_danger`, 1 px, with a target-hull micro-bar (60×4 `ProgressBar`, `show_percentage = false`) underneath bracketed by a `VBoxContainer` inside the reticle `Control`. When no target: hidden.
 - `mouse_filter = IGNORE` on everything in `CenterOverlay` so the reticle never eats clicks.
+- **Lock channel ring (2026-09-20, engine spec §4.1):** while the lock
+  channel runs, the reticle draws a thin arc around the brackets —
+  Steel Highlight `#565C63`, completing clockwise over the 1.2 s; the arc
+  completes to `metal_light` and stays for the lock's lifetime. HUD API:
+  `set_lock_progress(progress: float)` (empty hides).
+
+### 3.6 Radial speedometer (ruling 19, 2026-09-20)
+
+- Anchored bottom-centre inside `BottomLeft`'s parent column (below the
+  ammo panel), a 120×120 `Control` with custom `_draw()`, `mouse_filter =
+  IGNORE`.
+- **Dial:** 10 segments across 270° (gap at the bottom); segment `i` filled
+  with `metal_mid` when `speed_ratio ≥ i/10`, the current topmost segment
+  filled `accent_danger` only while `speed_ratio > 0.9` (overdrive read).
+- **Prograde needle:** a 10 px cyan line from centre at the ship's actual
+  velocity bearing. **The needle cyan is the HUD's one sanctioned cyan** —
+  it marks the velocity vector (navigation read, not danger), mirroring the
+  shield-ripple steel exception in STYLE_BIBLE §3. `#2BE8E8` is NOT used;
+  the needle colour is a new HUD-only token `accent_nav` — added to §1
+  tokens with this amendment (`accent_nav = #6FB8C4`, desaturated so it
+  never reads as a glow).
+- **Heading marker:** a 6 px white (`bone_text`) tick at the ship's facing
+  bearing on the same dial.
+- HUD API: `set_speedometer(ratio: float, prograde: Vector2, heading: Vector2)`
+  (angles in radians, world space); hidden while docked.
 
 ## 4. Settings
 

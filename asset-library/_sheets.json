@@ -1,0 +1,4742 @@
+{
+ "note": "One entry per gathered raw sheet. `grid` is [cols, rows]; `cuts` is the panel order, left to right then top to bottom. `mode` single means one panel, nothing to split. `master` names ship as the whole sheet. `plan_from` records where the layout came from; `superseded` records a panel renamed because another sheet owns the plain name. Panels are cut at their boundaries only: no background keying, no trimming.",
+ "counts": {
+  "sheets": 163,
+  "panels": 525,
+  "by_family": {
+   "ships": 33,
+   "env": 54,
+   "ui": 16,
+   "icons": 35,
+   "fx": 25
+  }
+ },
+ "sheets": [
+  {
+   "family": "env",
+   "stamp": "20260917-230055",
+   "run_key": "body_ice_moon",
+   "raw": "raw/body_ice_moon.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_sheet_1x1_20260917_230055"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-213632",
+   "run_key": "deep-space-nebula-veil-a-single-square",
+   "raw": "raw/deep-space-nebula-veil-a-single-square.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_sheet_1x1_20260917_213632"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": true,
+   "plate_because": "the prompt says 'nebula veil'",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260918-112357",
+   "run_key": "env_arena",
+   "raw": "raw/env_arena.png",
+   "produced": [
+    "env_arena_barricade",
+    "env_arena_nav_pylon"
+   ],
+   "shipped": [
+    "env_arena_barricade",
+    "env_arena_nav_pylon"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    1
+   ],
+   "cuts": [
+    "env_arena_nav_pylon",
+    "env_arena_barricade"
+   ],
+   "mode": "panel_white",
+   "plan_from": "spec env_arena_props (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 2
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-183047",
+   "run_key": "env_asteroid",
+   "raw": "raw/env_asteroid.png",
+   "produced": [
+    "env_asteroid_L1",
+    "env_asteroid_L2",
+    "env_asteroid_L3",
+    "env_asteroid_M1",
+    "env_asteroid_M2",
+    "env_asteroid_M3",
+    "env_asteroid_S1",
+    "env_asteroid_S2",
+    "env_asteroid_S3"
+   ],
+   "shipped": [
+    "env_asteroid_L1",
+    "env_asteroid_L2",
+    "env_asteroid_L3",
+    "env_asteroid_M1",
+    "env_asteroid_M2",
+    "env_asteroid_M3",
+    "env_asteroid_S1",
+    "env_asteroid_S2",
+    "env_asteroid_S3"
+   ],
+   "master": [],
+   "grid": [
+    3,
+    3
+   ],
+   "cuts": [
+    "env_asteroid_L1",
+    "env_asteroid_L2",
+    "env_asteroid_L3",
+    "env_asteroid_M1",
+    "env_asteroid_M2",
+    "env_asteroid_M3",
+    "env_asteroid_S1",
+    "env_asteroid_S2",
+    "env_asteroid_S3"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt rows: row 1 three large, row 2 three medium, row 3 three small, left to right; names carry the L/M/S size and a per-row index",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 9
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-230454",
+   "run_key": "env_asteroid_b",
+   "raw": "raw/env_asteroid_b.png",
+   "produced": [
+    "env_asteroid_b1",
+    "env_asteroid_b2",
+    "env_asteroid_b3",
+    "env_asteroid_b4",
+    "env_asteroid_b5",
+    "env_asteroid_b6"
+   ],
+   "shipped": [
+    "env_asteroid_b1",
+    "env_asteroid_b2",
+    "env_asteroid_b3",
+    "env_asteroid_b4",
+    "env_asteroid_b5",
+    "env_asteroid_b6"
+   ],
+   "master": [],
+   "grid": [
+    3,
+    2
+   ],
+   "cuts": [
+    "env_asteroid_b1",
+    "env_asteroid_b2",
+    "env_asteroid_b3",
+    "env_asteroid_b4",
+    "env_asteroid_b5",
+    "env_asteroid_b6"
+   ],
+   "mode": "panel_white",
+   "plan_from": "spec panel_asteroids_b (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 6
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-225636",
+   "run_key": "env_base_defense",
+   "raw": "raw/env_base_defense.png",
+   "produced": [
+    "env_base_defense"
+   ],
+   "shipped": [
+    "env_base_defense"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_base_defense"
+   ],
+   "mode": "single_trim",
+   "plan_from": "spec base_defense (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-225308",
+   "run_key": "env_base_mining",
+   "raw": "raw/env_base_mining.png",
+   "produced": [
+    "env_base_mining"
+   ],
+   "shipped": [
+    "env_base_mining"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_base_mining"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-225718",
+   "run_key": "env_base_shipyard",
+   "raw": "raw/env_base_shipyard.png",
+   "produced": [
+    "env_base_shipyard"
+   ],
+   "shipped": [
+    "env_base_shipyard"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_base_shipyard"
+   ],
+   "mode": "single_trim",
+   "plan_from": "spec base_shipyard (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-225554",
+   "run_key": "env_base_trade",
+   "raw": "raw/env_base_trade.png",
+   "produced": [
+    "env_base_trade"
+   ],
+   "shipped": [
+    "env_base_trade"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_base_trade"
+   ],
+   "mode": "single_trim",
+   "plan_from": "spec base_trade (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-230246",
+   "run_key": "env_bg_body_plate",
+   "raw": "raw/env_bg_body_plate.png",
+   "produced": [
+    "env_bg_body_plate"
+   ],
+   "shipped": [
+    "env_bg_body_plate"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_bg_body_plate"
+   ],
+   "mode": "single_full",
+   "plan_from": "spec bg_body_plate (recovered)",
+   "plate": true,
+   "plate_because": "the recovered spec says single_full",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260918-133217",
+   "run_key": "env_body_ice_moon",
+   "raw": "raw/env_body_ice_moon.png",
+   "produced": [
+    "env_body_ice_moon"
+   ],
+   "shipped": [
+    "env_body_ice_moon"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_body_ice_moon"
+   ],
+   "mode": "single_trim",
+   "plan_from": "spec body_ice_moon (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-230140",
+   "run_key": "env_body_ore_moon",
+   "raw": "raw/env_body_ore_moon.png",
+   "produced": [
+    "env_body_ore_moon"
+   ],
+   "shipped": [
+    "env_body_ore_moon"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_body_ore_moon"
+   ],
+   "mode": "single_trim",
+   "plan_from": "spec body_ore_moon (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-230214",
+   "run_key": "env_body_shattered",
+   "raw": "raw/env_body_shattered.png",
+   "produced": [
+    "env_body_shattered"
+   ],
+   "shipped": [
+    "env_body_shattered"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_body_shattered"
+   ],
+   "mode": "single_trim",
+   "plan_from": "spec body_shattered (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-213550",
+   "run_key": "env_debris_field",
+   "raw": "raw/env_debris_field.png",
+   "produced": [
+    "env_debris_field"
+   ],
+   "shipped": [
+    "env_debris_field"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_debris_field"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-220025",
+   "run_key": "env_ice_field",
+   "raw": "raw/env_ice_field.png",
+   "produced": [
+    "env_ice_field"
+   ],
+   "shipped": [
+    "env_ice_field"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_ice_field"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-213508",
+   "run_key": "env_jump_gate",
+   "raw": "raw/env_jump_gate.png",
+   "produced": [
+    "env_jump_gate"
+   ],
+   "shipped": [
+    "env_jump_gate"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_jump_gate"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260918-112132",
+   "run_key": "env_jump_gate_ring",
+   "raw": "raw/env_jump_gate_ring.png",
+   "produced": [
+    "env_jump_gate_ring"
+   ],
+   "shipped": [
+    "env_jump_gate_ring"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_jump_gate_ring"
+   ],
+   "mode": "single_trim",
+   "plan_from": "spec env_jump_gate_ring (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-183150",
+   "run_key": "env_loading_bg",
+   "raw": "raw/env_loading_bg.png",
+   "produced": [
+    "env_loading_bg"
+   ],
+   "shipped": [
+    "env_loading_bg"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_loading_bg"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": true,
+   "plate_because": "it is a shipped background plate",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-183105",
+   "run_key": "env_menu_bg",
+   "raw": "raw/env_menu_bg.png",
+   "produced": [
+    "env_menu_bg"
+   ],
+   "shipped": [
+    "env_menu_bg"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_menu_bg"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": true,
+   "plate_because": "it is a shipped background plate",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-230535",
+   "run_key": "env_mine",
+   "raw": "raw/env_mine.png",
+   "produced": [
+    "env_mine"
+   ],
+   "shipped": [
+    "env_mine"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_mine"
+   ],
+   "mode": "single_trim",
+   "plan_from": "spec env_mine (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-214913",
+   "run_key": "env_nebula_veil",
+   "raw": "raw/env_nebula_veil.png",
+   "produced": [
+    "env_nebula_veil"
+   ],
+   "shipped": [
+    "env_nebula_veil"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_nebula_veil"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": true,
+   "plate_because": "the prompt says 'full-frame'",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-220107",
+   "run_key": "env_ore_cluster",
+   "raw": "raw/env_ore_cluster.png",
+   "produced": [
+    "env_ore_cluster"
+   ],
+   "shipped": [
+    "env_ore_cluster"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_ore_cluster"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-225832",
+   "run_key": "env_outpost_defense",
+   "raw": "raw/env_outpost_defense.png",
+   "produced": [
+    "env_outpost_defense"
+   ],
+   "shipped": [
+    "env_outpost_defense"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_outpost_defense"
+   ],
+   "mode": "single_trim",
+   "plan_from": "spec outpost_defense (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-225750",
+   "run_key": "env_outpost_mining",
+   "raw": "raw/env_outpost_mining.png",
+   "produced": [
+    "env_outpost_mining"
+   ],
+   "shipped": [
+    "env_outpost_mining"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_outpost_mining"
+   ],
+   "mode": "single_trim",
+   "plan_from": "spec outpost_mining (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-225903",
+   "run_key": "env_outpost_relay",
+   "raw": "raw/env_outpost_relay.png",
+   "produced": [
+    "env_outpost_relay"
+   ],
+   "shipped": [
+    "env_outpost_relay"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_outpost_relay"
+   ],
+   "mode": "single_trim",
+   "plan_from": "spec outpost_relay (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-225934",
+   "run_key": "env_outpost_repair",
+   "raw": "raw/env_outpost_repair.png",
+   "produced": [
+    "env_outpost_repair"
+   ],
+   "shipped": [
+    "env_outpost_repair"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_outpost_repair"
+   ],
+   "mode": "single_trim",
+   "plan_from": "spec outpost_repair (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-213619",
+   "run_key": "env_pickup",
+   "raw": "raw/env_pickup.png",
+   "produced": [
+    "env_pickup_ammo_pod",
+    "env_pickup_bonus_box",
+    "env_pickup_ore_pod",
+    "env_pickup_repair_pod",
+    "env_pickup_shield_pod",
+    "env_pickup_speed_pod"
+   ],
+   "shipped": [
+    "env_pickup_ammo_pod",
+    "env_pickup_bonus_box",
+    "env_pickup_ore_pod",
+    "env_pickup_repair_pod",
+    "env_pickup_shield_pod",
+    "env_pickup_speed_pod"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    3
+   ],
+   "cuts": [
+    "env_pickup_bonus_box",
+    "env_pickup_repair_pod",
+    "env_pickup_shield_pod",
+    "env_pickup_speed_pod",
+    "env_pickup_ammo_pod",
+    "env_pickup_ore_pod"
+   ],
+   "mode": "panel_white",
+   "plan_from": "spec panel_pickups (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 6
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-213437",
+   "run_key": "env_planet_moon",
+   "raw": "raw/env_planet_moon.png",
+   "produced": [
+    "env_planet_moon"
+   ],
+   "shipped": [
+    "env_planet_moon"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_planet_moon"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-220029",
+   "run_key": "env_prop",
+   "raw": "raw/env_prop.png",
+   "produced": [
+    "env_prop_drive_core",
+    "env_prop_hull_mid",
+    "env_prop_hull_nose",
+    "env_prop_hull_stern",
+    "env_prop_plate_section",
+    "env_prop_rib_cluster"
+   ],
+   "shipped": [
+    "env_prop_drive_core",
+    "env_prop_hull_mid",
+    "env_prop_hull_nose",
+    "env_prop_hull_stern",
+    "env_prop_plate_section",
+    "env_prop_rib_cluster"
+   ],
+   "master": [],
+   "grid": [
+    3,
+    2
+   ],
+   "cuts": [
+    "env_prop_hull_nose",
+    "env_prop_hull_mid",
+    "env_prop_hull_stern",
+    "env_prop_plate_section",
+    "env_prop_drive_core",
+    "env_prop_rib_cluster"
+   ],
+   "mode": "panel_white",
+   "plan_from": "spec panel_props (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 6
+  },
+  {
+   "family": "env",
+   "stamp": "20260918-113137",
+   "run_key": "env_sector_1_bg",
+   "raw": "raw/env_sector_1_bg.png",
+   "produced": [
+    "env_sector_1_bg"
+   ],
+   "shipped": [
+    "env_sector_1_bg"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_sector_1_bg"
+   ],
+   "mode": "single_full",
+   "plan_from": "spec sector_1_bg (recovered)",
+   "plate": true,
+   "plate_because": "the recovered spec says single_full",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260918-113206",
+   "run_key": "env_sector_2_bg",
+   "raw": "raw/env_sector_2_bg.png",
+   "produced": [
+    "env_sector_2_bg"
+   ],
+   "shipped": [
+    "env_sector_2_bg"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_sector_2_bg"
+   ],
+   "mode": "single_full",
+   "plan_from": "spec sector_2_bg (recovered)",
+   "plate": true,
+   "plate_because": "the recovered spec says single_full",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260918-111858",
+   "run_key": "env_sector_3_bg",
+   "raw": "raw/env_sector_3_bg.png",
+   "produced": [
+    "env_sector_3_bg"
+   ],
+   "shipped": [
+    "env_sector_3_bg"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_sector_3_bg"
+   ],
+   "mode": "single_full",
+   "plan_from": "spec sector_3_bg (recovered)",
+   "plate": true,
+   "plate_because": "the recovered spec says single_full",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260918-113251",
+   "run_key": "env_sector_4_bg",
+   "raw": "raw/env_sector_4_bg.png",
+   "produced": [
+    "env_sector_4_bg"
+   ],
+   "shipped": [
+    "env_sector_4_bg"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_sector_4_bg"
+   ],
+   "mode": "single_full",
+   "plan_from": "spec sector_4_bg (recovered)",
+   "plate": true,
+   "plate_because": "the recovered spec says single_full",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260918-111956",
+   "run_key": "env_sector_5_bg",
+   "raw": "raw/env_sector_5_bg.png",
+   "produced": [
+    "env_sector_5_bg"
+   ],
+   "shipped": [
+    "env_sector_5_bg"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_sector_5_bg"
+   ],
+   "mode": "single_full",
+   "plan_from": "spec sector_5_bg (recovered)",
+   "plate": true,
+   "plate_because": "the recovered spec says single_full",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260918-112024",
+   "run_key": "env_sector_6_bg",
+   "raw": "raw/env_sector_6_bg.png",
+   "produced": [
+    "env_sector_6_bg"
+   ],
+   "shipped": [
+    "env_sector_6_bg"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_sector_6_bg"
+   ],
+   "mode": "single_full",
+   "plan_from": "spec sector_6_bg (recovered)",
+   "plate": true,
+   "plate_because": "the recovered spec says single_full",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260918-113320",
+   "run_key": "env_sector_7_bg",
+   "raw": "raw/env_sector_7_bg.png",
+   "produced": [
+    "env_sector_7_bg"
+   ],
+   "shipped": [
+    "env_sector_7_bg"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_sector_7_bg"
+   ],
+   "mode": "single_full",
+   "plan_from": "spec sector_7_bg (recovered)",
+   "plate": true,
+   "plate_because": "the recovered spec says single_full",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-183757",
+   "run_key": "env_stars_layer1",
+   "raw": "raw/env_stars_layer1.png",
+   "produced": [
+    "env_stars_layer1"
+   ],
+   "shipped": [
+    "env_stars_layer1"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_stars_layer1"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": true,
+   "plate_because": "the prompt says 'Seamless'",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-184004",
+   "run_key": "env_stars_layer2",
+   "raw": "raw/env_stars_layer2.png",
+   "produced": [
+    "env_stars_layer2"
+   ],
+   "shipped": [
+    "env_stars_layer2"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_stars_layer2"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": true,
+   "plate_because": "the prompt says 'Seamless'",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-184230",
+   "run_key": "env_stars_layer3",
+   "raw": "raw/env_stars_layer3.png",
+   "produced": [
+    "env_stars_layer3"
+   ],
+   "shipped": [
+    "env_stars_layer3"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_stars_layer3"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": true,
+   "plate_because": "the prompt says 'Seamless'",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-183246",
+   "run_key": "env_station",
+   "raw": "raw/env_station.png",
+   "produced": [
+    "env_station"
+   ],
+   "shipped": [
+    "env_station"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_station"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-215900",
+   "run_key": "env_station_mmo",
+   "raw": "raw/env_station_mmo.png",
+   "produced": [
+    "env_station_mmo"
+   ],
+   "shipped": [
+    "env_station_mmo"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_station_mmo"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-215943",
+   "run_key": "env_station_ruined",
+   "raw": "raw/env_station_ruined.png",
+   "produced": [
+    "env_station_ruined"
+   ],
+   "shipped": [
+    "env_station_ruined"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_station_ruined"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-183215",
+   "run_key": "env_wreck_hulk",
+   "raw": "raw/env_wreck_hulk.png",
+   "produced": [
+    "env_wreck_hulk"
+   ],
+   "shipped": [
+    "env_wreck_hulk"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_wreck_hulk"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260918-123247",
+   "run_key": "f1_ice_moon",
+   "raw": "raw/f1_ice_moon.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_sheet_1x1_20260918_123247"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-225351",
+   "run_key": "mining-base-structure-a-station-scale-i",
+   "raw": "raw/mining-base-structure-a-station-scale-i.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_sheet_1x1_20260917_225351"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": true,
+   "plate_because": "the prompt says 'backdrop'",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-184059",
+   "run_key": "seamless-repeating-pattern-wallpaper-tex",
+   "raw": "raw/seamless-repeating-pattern-wallpaper-tex.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_sheet_1x1_20260917_184059"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": true,
+   "plate_because": "the prompt says 'Seamless'",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-183347",
+   "run_key": "seamless-tileable-foreground-dust-layer",
+   "raw": "raw/seamless-tileable-foreground-dust-layer.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_sheet_1x1_20260917_183347"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": true,
+   "plate_because": "the prompt says 'Seamless'",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-183242",
+   "run_key": "seamless-tileable-starfield-layer-a-fla",
+   "raw": "raw/seamless-tileable-starfield-layer-a-fla.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_sheet_1x1_20260917_183242"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": true,
+   "plate_because": "the prompt says 'Seamless'",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-183315",
+   "run_key": "seamless-tileable-void-haze-layer-soft",
+   "raw": "raw/seamless-tileable-void-haze-layer-soft.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_sheet_1x1_20260917_183315"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": true,
+   "plate_because": "the prompt says 'Seamless'",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260917-183847",
+   "run_key": "seamless-tileable-void-haze-texture-abs",
+   "raw": "raw/seamless-tileable-void-haze-texture-abs.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_sheet_1x1_20260917_183847"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": true,
+   "plate_because": "the prompt says 'Seamless'",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260918-111724",
+   "run_key": "sector-backdrop-plate-a-wide-16-9-cinem",
+   "raw": "raw/sector-backdrop-plate-a-wide-16-9-cinem__20260918-111724.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_sheet_1x1_20260918_111724"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": true,
+   "plate_because": "the prompt says 'Sector backdrop'",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260918-111829",
+   "run_key": "sector-backdrop-plate-a-wide-16-9-cinem",
+   "raw": "raw/sector-backdrop-plate-a-wide-16-9-cinem__20260918-111829.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_sheet_1x1_20260918_111829"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": true,
+   "plate_because": "the prompt says 'Sector backdrop'",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260918-111927",
+   "run_key": "sector-backdrop-plate-a-wide-16-9-cinem",
+   "raw": "raw/sector-backdrop-plate-a-wide-16-9-cinem__20260918-111927.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_sheet_1x1_20260918_111927"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": true,
+   "plate_because": "the prompt says 'Sector backdrop'",
+   "name_count": 1
+  },
+  {
+   "family": "env",
+   "stamp": "20260918-112053",
+   "run_key": "sector-backdrop-plate-a-wide-16-9-cinem",
+   "raw": "raw/sector-backdrop-plate-a-wide-16-9-cinem__20260918-112053.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "env_sheet_1x1_20260918_112053"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": true,
+   "plate_because": "the prompt says 'Sector backdrop'",
+   "name_count": 1
+  },
+  {
+   "family": "fx",
+   "stamp": "20260917-183223",
+   "run_key": "4-frame-horizontal-sprite-sheet-of-a-wea",
+   "raw": "raw/4-frame-horizontal-sprite-sheet-of-a-wea.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    4,
+    1
+   ],
+   "cuts": [
+    "fx_sheet_4x1_20260917_183223__p01",
+    "fx_sheet_4x1_20260917_183223__p02",
+    "fx_sheet_4x1_20260917_183223__p03",
+    "fx_sheet_4x1_20260917_183223__p04"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "fx",
+   "stamp": "20260917-183734",
+   "run_key": "full-screen-vignette-burnt-ember-c8461",
+   "raw": "raw/full-screen-vignette-burnt-ember-c8461.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "fx_sheet_1x1_20260917_183734"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": true,
+   "plate_because": "the prompt says 'vignette'",
+   "name_count": 1
+  },
+  {
+   "family": "fx",
+   "stamp": "20260918-112253",
+   "run_key": "fx_anomaly_grave_glow",
+   "raw": "raw/fx_anomaly_grave_glow.png",
+   "produced": [
+    "fx_anomaly_grave_glow"
+   ],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "fx_anomaly_grave_glow"
+   ],
+   "mode": "fx_void",
+   "plan_from": "spec fx_anomaly_grave_glow (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "fx",
+   "stamp": "20260918-112322",
+   "run_key": "fx_anomaly_rift",
+   "raw": "raw/fx_anomaly_rift.png",
+   "produced": [
+    "fx_anomaly_rift"
+   ],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "fx_anomaly_rift"
+   ],
+   "mode": "fx_void",
+   "plan_from": "spec fx_anomaly_rift (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "fx",
+   "stamp": "20260918-112214",
+   "run_key": "fx_anomaly_shimmer",
+   "raw": "raw/fx_anomaly_shimmer.png",
+   "produced": [
+    "fx_anomaly_shimmer"
+   ],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "fx_anomaly_shimmer"
+   ],
+   "mode": "fx_void",
+   "plan_from": "spec fx_anomaly_shimmer (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "fx",
+   "stamp": "20260917-185429",
+   "run_key": "fx_cargo_pulse",
+   "raw": "raw/fx_cargo_pulse.png",
+   "produced": [
+    "fx_cargo_pulse"
+   ],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "fx_cargo_pulse"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "fx",
+   "stamp": "20260917-184137",
+   "run_key": "fx_ember_pulse",
+   "raw": "raw/fx_ember_pulse.png",
+   "produced": [
+    "fx_ember_pulse"
+   ],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "fx_ember_pulse"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "fx",
+   "stamp": "20260917-215923",
+   "run_key": "fx_emp_arc",
+   "raw": "raw/fx_emp_arc.png",
+   "produced": [
+    "fx_emp_arc"
+   ],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "fx_emp_arc"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "fx",
+   "stamp": "20260917-184022",
+   "run_key": "fx_engine_trail",
+   "raw": "raw/fx_engine_trail.png",
+   "produced": [
+    "fx_engine_trail"
+   ],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "fx_engine_trail"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "fx",
+   "stamp": "20260917-183424",
+   "run_key": "fx_explosion",
+   "raw": "raw/fx_explosion.png",
+   "produced": [
+    "fx_explosion"
+   ],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "fx_explosion"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "fx",
+   "stamp": "20260917-184102",
+   "run_key": "fx_hull_critical_vignette",
+   "raw": "raw/fx_hull_critical_vignette.png",
+   "produced": [
+    "fx_hull_critical_vignette"
+   ],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "fx_hull_critical_vignette"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": true,
+   "plate_because": "the prompt says 'vignette'",
+   "name_count": 1
+  },
+  {
+   "family": "fx",
+   "stamp": "20260917-213705",
+   "run_key": "fx_jump_portal",
+   "raw": "raw/fx_jump_portal.png",
+   "produced": [
+    "fx_jump_portal"
+   ],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "fx_jump_portal"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "fx",
+   "stamp": "20260917-183134",
+   "run_key": "fx_laser_bolt",
+   "raw": "raw/fx_laser_bolt.png",
+   "produced": [
+    "fx_laser_bolt"
+   ],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "fx_laser_bolt"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "fx",
+   "stamp": "20260917-183540",
+   "run_key": "fx_mining_beam",
+   "raw": "raw/fx_mining_beam.png",
+   "produced": [
+    "fx_mining_beam"
+   ],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "fx_mining_beam"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "fx",
+   "stamp": "20260917-213710",
+   "run_key": "fx_missile_trail",
+   "raw": "raw/fx_missile_trail.png",
+   "produced": [
+    "fx_missile_trail"
+   ],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "fx_missile_trail"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "fx",
+   "stamp": "20260917-185402",
+   "run_key": "fx_muzzle_flash",
+   "raw": "raw/fx_muzzle_flash.png",
+   "produced": [
+    "fx_muzzle_flash"
+   ],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "fx_muzzle_flash"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "fx",
+   "stamp": "20260917-220026",
+   "run_key": "fx_repair_pulse",
+   "raw": "raw/fx_repair_pulse.png",
+   "produced": [
+    "fx_repair_pulse"
+   ],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "fx_repair_pulse"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "fx",
+   "stamp": "20260917-215955",
+   "run_key": "fx_secondary_explosion",
+   "raw": "raw/fx_secondary_explosion.png",
+   "produced": [
+    "fx_secondary_explosion"
+   ],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "fx_secondary_explosion"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "fx",
+   "stamp": "20260917-213747",
+   "run_key": "fx_shield_break",
+   "raw": "raw/fx_shield_break.png",
+   "produced": [
+    "fx_shield_break"
+   ],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "fx_shield_break"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "fx",
+   "stamp": "20260917-183506",
+   "run_key": "fx_shield_ripple",
+   "raw": "raw/fx_shield_ripple.png",
+   "produced": [
+    "fx_shield_ripple"
+   ],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "fx_shield_ripple"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "fx",
+   "stamp": "20260917-215852",
+   "run_key": "fx_tractor_beam",
+   "raw": "raw/fx_tractor_beam.png",
+   "produced": [
+    "fx_tractor_beam"
+   ],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "fx_tractor_beam"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "fx",
+   "stamp": "20260917-183628",
+   "run_key": "single-small-energy-ring-burnt-ember-c",
+   "raw": "raw/single-small-energy-ring-burnt-ember-c__20260917-183628.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "fx_sheet_1x1_20260917_183628"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "fx",
+   "stamp": "20260917-184216",
+   "run_key": "single-small-energy-ring-burnt-ember-c",
+   "raw": "raw/single-small-energy-ring-burnt-ember-c__20260917-184216.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "fx_sheet_1x1_20260917_184216"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "fx",
+   "stamp": "20260917-183334",
+   "run_key": "single-thin-horizontal-ember-streak-bur",
+   "raw": "raw/single-thin-horizontal-ember-streak-bur.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "fx_sheet_1x1_20260917_183334"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "fx",
+   "stamp": "20260917-183824",
+   "run_key": "small-radial-ember-glow-orb-soft-radial",
+   "raw": "raw/small-radial-ember-glow-orb-soft-radial.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "fx_sheet_1x1_20260917_183824"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-112946",
+   "run_key": "flat-vector-icon-sheet-2x2-grid-icons",
+   "raw": "raw/flat-vector-icon-sheet-2x2-grid-icons.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "icon_sheet_2x2_20260918_112946__p01",
+    "icon_sheet_2x2_20260918_112946__p02",
+    "icon_sheet_2x2_20260918_112946__p03",
+    "icon_sheet_2x2_20260918_112946__p04"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-110409",
+   "run_key": "flat-vector-icon-sheet-3x3-grid-icons",
+   "raw": "raw/flat-vector-icon-sheet-3x3-grid-icons__20260918-110409.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    3,
+    3
+   ],
+   "cuts": [
+    "icon_sheet_3x3_20260918_110409__p01",
+    "icon_sheet_3x3_20260918_110409__p02",
+    "icon_sheet_3x3_20260918_110409__p03",
+    "icon_sheet_3x3_20260918_110409__p04",
+    "icon_sheet_3x3_20260918_110409__p05",
+    "icon_sheet_3x3_20260918_110409__p06",
+    "icon_sheet_3x3_20260918_110409__p07",
+    "icon_sheet_3x3_20260918_110409__p08",
+    "icon_sheet_3x3_20260918_110409__p09"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 9
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-110458",
+   "run_key": "flat-vector-icon-sheet-3x3-grid-icons",
+   "raw": "raw/flat-vector-icon-sheet-3x3-grid-icons__20260918-110458.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    3,
+    3
+   ],
+   "cuts": [
+    "icon_sheet_3x3_20260918_110458__p01",
+    "icon_sheet_3x3_20260918_110458__p02",
+    "icon_sheet_3x3_20260918_110458__p03",
+    "icon_sheet_3x3_20260918_110458__p04",
+    "icon_sheet_3x3_20260918_110458__p05",
+    "icon_sheet_3x3_20260918_110458__p06",
+    "icon_sheet_3x3_20260918_110458__p07",
+    "icon_sheet_3x3_20260918_110458__p08",
+    "icon_sheet_3x3_20260918_110458__p09"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 9
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-110547",
+   "run_key": "flat-vector-icon-sheet-3x3-grid-icons",
+   "raw": "raw/flat-vector-icon-sheet-3x3-grid-icons__20260918-110547.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    3,
+    3
+   ],
+   "cuts": [
+    "icon_sheet_3x3_20260918_110547__p01",
+    "icon_sheet_3x3_20260918_110547__p02",
+    "icon_sheet_3x3_20260918_110547__p03",
+    "icon_sheet_3x3_20260918_110547__p04",
+    "icon_sheet_3x3_20260918_110547__p05",
+    "icon_sheet_3x3_20260918_110547__p06",
+    "icon_sheet_3x3_20260918_110547__p07",
+    "icon_sheet_3x3_20260918_110547__p08",
+    "icon_sheet_3x3_20260918_110547__p09"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 9
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-110642",
+   "run_key": "flat-vector-icon-sheet-4x2-grid-icons",
+   "raw": "raw/flat-vector-icon-sheet-4x2-grid-icons__20260918-110642.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    4,
+    2
+   ],
+   "cuts": [
+    "icon_sheet_4x2_20260918_110642__p01",
+    "icon_sheet_4x2_20260918_110642__p02",
+    "icon_sheet_4x2_20260918_110642__p03",
+    "icon_sheet_4x2_20260918_110642__p04",
+    "icon_sheet_4x2_20260918_110642__p05",
+    "icon_sheet_4x2_20260918_110642__p06",
+    "icon_sheet_4x2_20260918_110642__p07",
+    "icon_sheet_4x2_20260918_110642__p08"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 8
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-110921",
+   "run_key": "flat-vector-icon-sheet-4x2-grid-icons",
+   "raw": "raw/flat-vector-icon-sheet-4x2-grid-icons__20260918-110921.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    4,
+    2
+   ],
+   "cuts": [
+    "icon_sheet_4x2_20260918_110921__p01",
+    "icon_sheet_4x2_20260918_110921__p02",
+    "icon_sheet_4x2_20260918_110921__p03",
+    "icon_sheet_4x2_20260918_110921__p04",
+    "icon_sheet_4x2_20260918_110921__p05",
+    "icon_sheet_4x2_20260918_110921__p06",
+    "icon_sheet_4x2_20260918_110921__p07",
+    "icon_sheet_4x2_20260918_110921__p08"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 8
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-110236",
+   "run_key": "flat-vector-icon-sheet-5x4-grid-icons",
+   "raw": "raw/flat-vector-icon-sheet-5x4-grid-icons__20260918-110236.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    5,
+    4
+   ],
+   "cuts": [
+    "icon_sheet_5x4_20260918_110236__p01",
+    "icon_sheet_5x4_20260918_110236__p02",
+    "icon_sheet_5x4_20260918_110236__p03",
+    "icon_sheet_5x4_20260918_110236__p04",
+    "icon_sheet_5x4_20260918_110236__p05",
+    "icon_sheet_5x4_20260918_110236__p06",
+    "icon_sheet_5x4_20260918_110236__p07",
+    "icon_sheet_5x4_20260918_110236__p08",
+    "icon_sheet_5x4_20260918_110236__p09",
+    "icon_sheet_5x4_20260918_110236__p10",
+    "icon_sheet_5x4_20260918_110236__p11",
+    "icon_sheet_5x4_20260918_110236__p12",
+    "icon_sheet_5x4_20260918_110236__p13",
+    "icon_sheet_5x4_20260918_110236__p14",
+    "icon_sheet_5x4_20260918_110236__p15",
+    "icon_sheet_5x4_20260918_110236__p16",
+    "icon_sheet_5x4_20260918_110236__p17",
+    "icon_sheet_5x4_20260918_110236__p18",
+    "icon_sheet_5x4_20260918_110236__p19",
+    "icon_sheet_5x4_20260918_110236__p20"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 20
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-110318",
+   "run_key": "flat-vector-icon-sheet-5x4-grid-icons",
+   "raw": "raw/flat-vector-icon-sheet-5x4-grid-icons__20260918-110318.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    5,
+    4
+   ],
+   "cuts": [
+    "icon_sheet_5x4_20260918_110318__p01",
+    "icon_sheet_5x4_20260918_110318__p02",
+    "icon_sheet_5x4_20260918_110318__p03",
+    "icon_sheet_5x4_20260918_110318__p04",
+    "icon_sheet_5x4_20260918_110318__p05",
+    "icon_sheet_5x4_20260918_110318__p06",
+    "icon_sheet_5x4_20260918_110318__p07",
+    "icon_sheet_5x4_20260918_110318__p08",
+    "icon_sheet_5x4_20260918_110318__p09",
+    "icon_sheet_5x4_20260918_110318__p10",
+    "icon_sheet_5x4_20260918_110318__p11",
+    "icon_sheet_5x4_20260918_110318__p12",
+    "icon_sheet_5x4_20260918_110318__p13",
+    "icon_sheet_5x4_20260918_110318__p14",
+    "icon_sheet_5x4_20260918_110318__p15",
+    "icon_sheet_5x4_20260918_110318__p16",
+    "icon_sheet_5x4_20260918_110318__p17",
+    "icon_sheet_5x4_20260918_110318__p18",
+    "icon_sheet_5x4_20260918_110318__p19",
+    "icon_sheet_5x4_20260918_110318__p20"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 20
+  },
+  {
+   "family": "icons",
+   "stamp": "20260917-183109",
+   "run_key": "flat-vector-icon-sheet-for-a-dark-sci-fi",
+   "raw": "raw/flat-vector-icon-sheet-for-a-dark-sci-fi.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    2,
+    3
+   ],
+   "cuts": [
+    "icon_sheet_2x3_20260917_183109__p01",
+    "icon_sheet_2x3_20260917_183109__p02",
+    "icon_sheet_2x3_20260917_183109__p03",
+    "icon_sheet_2x3_20260917_183109__p04",
+    "icon_sheet_2x3_20260917_183109__p05",
+    "icon_sheet_2x3_20260917_183109__p06"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 6
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-111044",
+   "run_key": "grimdark-painted-sci-fi-semi-realistic",
+   "raw": "raw/grimdark-painted-sci-fi-semi-realistic__20260918-111044.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    4,
+    2
+   ],
+   "cuts": [
+    "icon_sheet_4x2_20260918_111044__p01",
+    "icon_sheet_4x2_20260918_111044__p02",
+    "icon_sheet_4x2_20260918_111044__p03",
+    "icon_sheet_4x2_20260918_111044__p04",
+    "icon_sheet_4x2_20260918_111044__p05",
+    "icon_sheet_4x2_20260918_111044__p06",
+    "icon_sheet_4x2_20260918_111044__p07",
+    "icon_sheet_4x2_20260918_111044__p08"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 8
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-111327",
+   "run_key": "grimdark-painted-sci-fi-semi-realistic",
+   "raw": "raw/grimdark-painted-sci-fi-semi-realistic__20260918-111327.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    3,
+    3
+   ],
+   "cuts": [
+    "icon_sheet_3x3_20260918_111327__p01",
+    "icon_sheet_3x3_20260918_111327__p02",
+    "icon_sheet_3x3_20260918_111327__p03",
+    "icon_sheet_3x3_20260918_111327__p04",
+    "icon_sheet_3x3_20260918_111327__p05",
+    "icon_sheet_3x3_20260918_111327__p06",
+    "icon_sheet_3x3_20260918_111327__p07",
+    "icon_sheet_3x3_20260918_111327__p08",
+    "icon_sheet_3x3_20260918_111327__p09"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 9
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-111411",
+   "run_key": "grimdark-painted-sci-fi-semi-realistic",
+   "raw": "raw/grimdark-painted-sci-fi-semi-realistic__20260918-111411.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    3,
+    3
+   ],
+   "cuts": [
+    "icon_sheet_3x3_20260918_111411__p01",
+    "icon_sheet_3x3_20260918_111411__p02",
+    "icon_sheet_3x3_20260918_111411__p03",
+    "icon_sheet_3x3_20260918_111411__p04",
+    "icon_sheet_3x3_20260918_111411__p05",
+    "icon_sheet_3x3_20260918_111411__p06",
+    "icon_sheet_3x3_20260918_111411__p07",
+    "icon_sheet_3x3_20260918_111411__p08",
+    "icon_sheet_3x3_20260918_111411__p09"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 9
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-111450",
+   "run_key": "grimdark-painted-sci-fi-semi-realistic",
+   "raw": "raw/grimdark-painted-sci-fi-semi-realistic__20260918-111450.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    3,
+    3
+   ],
+   "cuts": [
+    "icon_sheet_3x3_20260918_111450__p01",
+    "icon_sheet_3x3_20260918_111450__p02",
+    "icon_sheet_3x3_20260918_111450__p03",
+    "icon_sheet_3x3_20260918_111450__p04",
+    "icon_sheet_3x3_20260918_111450__p05",
+    "icon_sheet_3x3_20260918_111450__p06",
+    "icon_sheet_3x3_20260918_111450__p07",
+    "icon_sheet_3x3_20260918_111450__p08",
+    "icon_sheet_3x3_20260918_111450__p09"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 9
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-113357",
+   "run_key": "grimdark-painted-sci-fi-semi-realistic",
+   "raw": "raw/grimdark-painted-sci-fi-semi-realistic__20260918-113357.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "icon_sheet_2x2_20260918_113357__p01",
+    "icon_sheet_2x2_20260918_113357__p02",
+    "icon_sheet_2x2_20260918_113357__p03",
+    "icon_sheet_2x2_20260918_113357__p04"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-123214",
+   "run_key": "grimdark-painted-sci-fi-semi-realistic",
+   "raw": "raw/grimdark-painted-sci-fi-semi-realistic__20260918-123214.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "icon_sheet_2x2_20260918_123214__p01",
+    "icon_sheet_2x2_20260918_123214__p02",
+    "icon_sheet_2x2_20260918_123214__p03",
+    "icon_sheet_2x2_20260918_123214__p04"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-133035",
+   "run_key": "grimdark-painted-sci-fi-semi-realistic",
+   "raw": "raw/grimdark-painted-sci-fi-semi-realistic__20260918-133035.png",
+   "produced": [
+    "icon_credits",
+    "icon_shield",
+    "icon_zoom_minus",
+    "icon_zoom_plus"
+   ],
+   "shipped": [
+    "icon_credits",
+    "icon_shield",
+    "icon_zoom_minus",
+    "icon_zoom_plus"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "icon_zoom_plus",
+    "icon_zoom_minus",
+    "icon_credits",
+    "icon_shield"
+   ],
+   "mode": "panel_white",
+   "plan_from": "spec f1_glyph_outline (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "icons",
+   "stamp": "20260917-230320",
+   "run_key": "icon_booster",
+   "raw": "raw/icon_booster.png",
+   "produced": [
+    "icon_booster_damage",
+    "icon_booster_emp",
+    "icon_booster_repair",
+    "icon_booster_shield",
+    "icon_booster_speed",
+    "icon_booster_teleport"
+   ],
+   "shipped": [
+    "icon_booster_damage",
+    "icon_booster_emp",
+    "icon_booster_repair",
+    "icon_booster_shield",
+    "icon_booster_speed",
+    "icon_booster_teleport"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    3
+   ],
+   "cuts": [
+    "icon_booster_speed",
+    "icon_booster_damage",
+    "icon_booster_shield",
+    "icon_booster_repair",
+    "icon_booster_emp",
+    "icon_booster_teleport"
+   ],
+   "mode": "panel_white",
+   "plan_from": "spec panel_boosters (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 6
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-123143",
+   "run_key": "icon_cargo_data_core",
+   "raw": "raw/icon_cargo_data_core.png",
+   "produced": [
+    "icon_cargo_data_core"
+   ],
+   "shipped": [
+    "icon_cargo_data_core"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "icon_cargo_data_core"
+   ],
+   "mode": "panel_white",
+   "plan_from": "spec f1_data_core (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-114723",
+   "run_key": "icon_contract",
+   "raw": "raw/icon_contract.png",
+   "produced": [
+    "icon_contract_escort",
+    "icon_contract_expedition",
+    "icon_contract_gather",
+    "icon_contract_haul",
+    "icon_contract_hunt"
+   ],
+   "shipped": [
+    "icon_contract_escort",
+    "icon_contract_expedition",
+    "icon_contract_gather",
+    "icon_contract_haul",
+    "icon_contract_hunt"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    3
+   ],
+   "cuts": [
+    "icon_contract_haul",
+    "icon_contract_hunt",
+    "icon_contract_gather",
+    "icon_contract_escort",
+    "icon_contract_expedition"
+   ],
+   "mode": "panel_white",
+   "plan_from": "spec p2_contracts (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 5
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-111243",
+   "run_key": "icon_ingot",
+   "raw": "raw/icon_ingot.png",
+   "produced": [
+    "icon_ingot_aluminium",
+    "icon_ingot_cerulite",
+    "icon_ingot_chromium",
+    "icon_ingot_cobalt",
+    "icon_ingot_copper",
+    "icon_ingot_emberite",
+    "icon_ingot_gold",
+    "icon_ingot_iridium",
+    "icon_ingot_iron",
+    "icon_ingot_krilium",
+    "icon_ingot_neodymium",
+    "icon_ingot_nickel",
+    "icon_ingot_osmium",
+    "icon_ingot_palladium",
+    "icon_ingot_platinum",
+    "icon_ingot_silicon",
+    "icon_ingot_silver",
+    "icon_ingot_titanium",
+    "icon_ingot_tungsten",
+    "icon_ingot_voidglass"
+   ],
+   "shipped": [
+    "icon_ingot_aluminium",
+    "icon_ingot_cerulite",
+    "icon_ingot_chromium",
+    "icon_ingot_cobalt",
+    "icon_ingot_copper",
+    "icon_ingot_emberite",
+    "icon_ingot_gold",
+    "icon_ingot_iridium",
+    "icon_ingot_iron",
+    "icon_ingot_krilium",
+    "icon_ingot_neodymium",
+    "icon_ingot_nickel",
+    "icon_ingot_osmium",
+    "icon_ingot_palladium",
+    "icon_ingot_platinum",
+    "icon_ingot_silicon",
+    "icon_ingot_silver",
+    "icon_ingot_titanium",
+    "icon_ingot_tungsten",
+    "icon_ingot_voidglass"
+   ],
+   "master": [],
+   "grid": [
+    5,
+    4
+   ],
+   "cuts": [
+    "icon_ingot_iron",
+    "icon_ingot_copper",
+    "icon_ingot_chromium",
+    "icon_ingot_silicon",
+    "icon_ingot_aluminium",
+    "icon_ingot_titanium",
+    "icon_ingot_nickel",
+    "icon_ingot_cobalt",
+    "icon_ingot_tungsten",
+    "icon_ingot_silver",
+    "icon_ingot_gold",
+    "icon_ingot_platinum",
+    "icon_ingot_neodymium",
+    "icon_ingot_iridium",
+    "icon_ingot_osmium",
+    "icon_ingot_palladium",
+    "icon_ingot_cerulite",
+    "icon_ingot_emberite",
+    "icon_ingot_voidglass",
+    "icon_ingot_krilium"
+   ],
+   "mode": "panel_white",
+   "plan_from": "spec p0_minerals_ingot (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 20
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-113435",
+   "run_key": "icon_insignia",
+   "raw": "raw/icon_insignia.png",
+   "produced": [
+    "icon_insignia_choir",
+    "icon_insignia_concord",
+    "icon_insignia_meridian"
+   ],
+   "shipped": [
+    "icon_insignia_choir",
+    "icon_insignia_concord",
+    "icon_insignia_meridian"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "icon_insignia_concord",
+    "icon_insignia_meridian",
+    "icon_insignia_choir"
+   ],
+   "mode": "panel_white",
+   "plan_from": "spec p2_faction_insignia (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 3
+  },
+  {
+   "family": "icons",
+   "stamp": "20260917-213529",
+   "run_key": "icon_map",
+   "raw": "raw/icon_map.png",
+   "produced": [
+    "icon_map_bookmark",
+    "icon_map_node_asteroid",
+    "icon_map_node_danger",
+    "icon_map_node_gate",
+    "icon_map_node_home",
+    "icon_map_node_neutral",
+    "icon_map_node_pvp",
+    "icon_map_node_station",
+    "icon_map_route"
+   ],
+   "shipped": [
+    "icon_map_bookmark",
+    "icon_map_node_asteroid",
+    "icon_map_node_danger",
+    "icon_map_node_gate",
+    "icon_map_node_home",
+    "icon_map_node_neutral",
+    "icon_map_node_pvp",
+    "icon_map_node_station",
+    "icon_map_route"
+   ],
+   "master": [],
+   "grid": [
+    3,
+    3
+   ],
+   "cuts": [
+    "icon_map_node_home",
+    "icon_map_node_neutral",
+    "icon_map_node_pvp",
+    "icon_map_node_danger",
+    "icon_map_node_asteroid",
+    "icon_map_node_station",
+    "icon_map_node_gate",
+    "icon_map_bookmark",
+    "icon_map_route"
+   ],
+   "mode": "panel_white",
+   "plan_from": "spec panel_map_markers (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 9
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-111209",
+   "run_key": "icon_mineral",
+   "raw": "raw/icon_mineral.png",
+   "produced": [
+    "icon_mineral_aluminium",
+    "icon_mineral_cerulite",
+    "icon_mineral_chromium",
+    "icon_mineral_cobalt",
+    "icon_mineral_copper",
+    "icon_mineral_emberite",
+    "icon_mineral_gold",
+    "icon_mineral_iridium",
+    "icon_mineral_iron",
+    "icon_mineral_krilium",
+    "icon_mineral_neodymium",
+    "icon_mineral_nickel",
+    "icon_mineral_osmium",
+    "icon_mineral_palladium",
+    "icon_mineral_platinum",
+    "icon_mineral_silicon",
+    "icon_mineral_silver",
+    "icon_mineral_titanium",
+    "icon_mineral_tungsten",
+    "icon_mineral_voidglass"
+   ],
+   "shipped": [
+    "icon_mineral_aluminium",
+    "icon_mineral_cerulite",
+    "icon_mineral_chromium",
+    "icon_mineral_cobalt",
+    "icon_mineral_copper",
+    "icon_mineral_emberite",
+    "icon_mineral_gold",
+    "icon_mineral_iridium",
+    "icon_mineral_iron",
+    "icon_mineral_krilium",
+    "icon_mineral_neodymium",
+    "icon_mineral_nickel",
+    "icon_mineral_osmium",
+    "icon_mineral_palladium",
+    "icon_mineral_platinum",
+    "icon_mineral_silicon",
+    "icon_mineral_silver",
+    "icon_mineral_titanium",
+    "icon_mineral_tungsten",
+    "icon_mineral_voidglass"
+   ],
+   "master": [],
+   "grid": [
+    5,
+    4
+   ],
+   "cuts": [
+    "icon_mineral_iron",
+    "icon_mineral_copper",
+    "icon_mineral_chromium",
+    "icon_mineral_silicon",
+    "icon_mineral_aluminium",
+    "icon_mineral_titanium",
+    "icon_mineral_nickel",
+    "icon_mineral_cobalt",
+    "icon_mineral_tungsten",
+    "icon_mineral_silver",
+    "icon_mineral_gold",
+    "icon_mineral_platinum",
+    "icon_mineral_neodymium",
+    "icon_mineral_iridium",
+    "icon_mineral_osmium",
+    "icon_mineral_palladium",
+    "icon_mineral_cerulite",
+    "icon_mineral_emberite",
+    "icon_mineral_voidglass",
+    "icon_mineral_krilium"
+   ],
+   "mode": "panel_white",
+   "plan_from": "spec p0_minerals_ore (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 20
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-114107",
+   "run_key": "icon_module",
+   "raw": "raw/icon_module__20260918-114107.png",
+   "produced": [
+    "icon_module_h_composite",
+    "icon_module_h_plate_heavy",
+    "icon_module_h_plate_light",
+    "icon_module_p_std",
+    "icon_module_s_heavy",
+    "icon_module_s_ion",
+    "icon_module_s_light",
+    "icon_module_w_mining",
+    "icon_module_w_railgun"
+   ],
+   "shipped": [
+    "icon_module_h_composite",
+    "icon_module_h_plate_heavy",
+    "icon_module_h_plate_light",
+    "icon_module_p_std",
+    "icon_module_s_heavy",
+    "icon_module_s_ion",
+    "icon_module_s_light",
+    "icon_module_w_mining",
+    "icon_module_w_railgun"
+   ],
+   "master": [],
+   "grid": [
+    3,
+    3
+   ],
+   "cuts": [
+    "icon_module_w_railgun",
+    "icon_module_w_mining",
+    "icon_module_s_light",
+    "icon_module_s_heavy",
+    "icon_module_s_ion",
+    "icon_module_h_plate_light",
+    "icon_module_h_plate_heavy",
+    "icon_module_h_composite",
+    "icon_module_p_std"
+   ],
+   "mode": "panel_white",
+   "plan_from": "spec p0_panel_modules_a (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 9
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-114156",
+   "run_key": "icon_module",
+   "raw": "raw/icon_module__20260918-114156.png",
+   "produced": [
+    "icon_module_b_afterburner",
+    "icon_module_b_fold",
+    "icon_module_c_scanner",
+    "icon_module_c_target",
+    "icon_module_e_ion",
+    "icon_module_e_std",
+    "icon_module_e_vector",
+    "icon_module_p_core",
+    "icon_module_p_mk2"
+   ],
+   "shipped": [
+    "icon_module_b_afterburner",
+    "icon_module_b_fold",
+    "icon_module_c_scanner",
+    "icon_module_c_target",
+    "icon_module_e_ion",
+    "icon_module_e_std",
+    "icon_module_e_vector",
+    "icon_module_p_core",
+    "icon_module_p_mk2"
+   ],
+   "master": [],
+   "grid": [
+    3,
+    3
+   ],
+   "cuts": [
+    "icon_module_p_mk2",
+    "icon_module_p_core",
+    "icon_module_e_std",
+    "icon_module_e_ion",
+    "icon_module_e_vector",
+    "icon_module_b_afterburner",
+    "icon_module_b_fold",
+    "icon_module_c_target",
+    "icon_module_c_scanner"
+   ],
+   "mode": "panel_white",
+   "plan_from": "spec p0_panel_modules_b (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 9
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-114240",
+   "run_key": "icon_module",
+   "raw": "raw/icon_module__20260918-114240.png",
+   "produced": [
+    "icon_module_c_ewar",
+    "icon_module_c_nexus",
+    "icon_module_c_twin",
+    "icon_module_u_cargo",
+    "icon_module_u_drones",
+    "icon_module_u_holds",
+    "icon_module_u_refine",
+    "icon_module_u_salvage",
+    "icon_module_u_tractor"
+   ],
+   "shipped": [
+    "icon_module_c_ewar",
+    "icon_module_c_nexus",
+    "icon_module_c_twin",
+    "icon_module_u_cargo",
+    "icon_module_u_drones",
+    "icon_module_u_holds",
+    "icon_module_u_refine",
+    "icon_module_u_salvage",
+    "icon_module_u_tractor"
+   ],
+   "master": [],
+   "grid": [
+    3,
+    3
+   ],
+   "cuts": [
+    "icon_module_c_twin",
+    "icon_module_c_ewar",
+    "icon_module_c_nexus",
+    "icon_module_u_cargo",
+    "icon_module_u_salvage",
+    "icon_module_u_refine",
+    "icon_module_u_drones",
+    "icon_module_u_tractor",
+    "icon_module_u_holds"
+   ],
+   "mode": "panel_white",
+   "plan_from": "spec p0_panel_modules_c (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 9
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-114358",
+   "run_key": "icon_service",
+   "raw": "raw/icon_service.png",
+   "produced": [
+    "icon_service_bounty",
+    "icon_service_insurance",
+    "icon_service_vault"
+   ],
+   "shipped": [
+    "icon_service_bounty",
+    "icon_service_insurance",
+    "icon_service_vault"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "icon_service_vault",
+    "icon_service_insurance",
+    "icon_service_bounty"
+   ],
+   "mode": "panel_white",
+   "plan_from": "spec p2_service_glyphs (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 3
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-114324",
+   "run_key": "icon_slot",
+   "raw": "raw/icon_slot.png",
+   "produced": [
+    "icon_slot_b",
+    "icon_slot_c",
+    "icon_slot_engine",
+    "icon_slot_h",
+    "icon_slot_power",
+    "icon_slot_s",
+    "icon_slot_u",
+    "icon_slot_w"
+   ],
+   "shipped": [
+    "icon_slot_b",
+    "icon_slot_c",
+    "icon_slot_engine",
+    "icon_slot_h",
+    "icon_slot_power",
+    "icon_slot_s",
+    "icon_slot_u",
+    "icon_slot_w"
+   ],
+   "master": [],
+   "grid": [
+    4,
+    2
+   ],
+   "cuts": [
+    "icon_slot_engine",
+    "icon_slot_power",
+    "icon_slot_w",
+    "icon_slot_s",
+    "icon_slot_h",
+    "icon_slot_c",
+    "icon_slot_b",
+    "icon_slot_u"
+   ],
+   "mode": "panel_white",
+   "plan_from": "spec p0_slots (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 8
+  },
+  {
+   "family": "icons",
+   "stamp": "20260917-230412",
+   "run_key": "icon_status",
+   "raw": "raw/icon_status.png",
+   "produced": [
+    "icon_status_burning",
+    "icon_status_cloaked",
+    "icon_status_disabled",
+    "icon_status_drained",
+    "icon_status_locked",
+    "icon_status_radiated",
+    "icon_status_repairing",
+    "icon_status_shielded",
+    "icon_status_slowed"
+   ],
+   "shipped": [
+    "icon_status_burning",
+    "icon_status_cloaked",
+    "icon_status_disabled",
+    "icon_status_drained",
+    "icon_status_locked",
+    "icon_status_radiated",
+    "icon_status_repairing",
+    "icon_status_shielded",
+    "icon_status_slowed"
+   ],
+   "master": [],
+   "grid": [
+    3,
+    3
+   ],
+   "cuts": [
+    "icon_status_burning",
+    "icon_status_slowed",
+    "icon_status_disabled",
+    "icon_status_shielded",
+    "icon_status_repairing",
+    "icon_status_locked",
+    "icon_status_cloaked",
+    "icon_status_radiated",
+    "icon_status_drained"
+   ],
+   "mode": "panel_white",
+   "plan_from": "spec panel_status (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 9
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-112903",
+   "run_key": "p2_contracts",
+   "raw": "raw/p2_contracts.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    2,
+    3
+   ],
+   "cuts": [
+    "icon_sheet_2x3_20260918_112903__p01",
+    "icon_sheet_2x3_20260918_112903__p02",
+    "icon_sheet_2x3_20260918_112903__p03",
+    "icon_sheet_2x3_20260918_112903__p04",
+    "icon_sheet_2x3_20260918_112903__p05",
+    "icon_sheet_2x3_20260918_112903__p06"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 6
+  },
+  {
+   "family": "icons",
+   "stamp": "20260918-113028",
+   "run_key": "p2_faction_insignia",
+   "raw": "raw/p2_faction_insignia.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "icon_sheet_2x2_20260918_113028__p01",
+    "icon_sheet_2x2_20260918_113028__p02",
+    "icon_sheet_2x2_20260918_113028__p03",
+    "icon_sheet_2x2_20260918_113028__p04"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "icons",
+   "stamp": "20260917-183446",
+   "run_key": "panel_cargo",
+   "raw": "raw/panel_cargo.png",
+   "produced": [
+    "panel_cargo"
+   ],
+   "shipped": [
+    "panel_cargo"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "panel_cargo"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": true,
+   "plate_because": "it is a shipped panel asset, a sheet in its own right",
+   "name_count": 1
+  },
+  {
+   "family": "icons",
+   "stamp": "20260917-213441",
+   "run_key": "panel_equipment",
+   "raw": "raw/panel_equipment.png",
+   "produced": [
+    "icon_ammo_laser",
+    "icon_ammo_rocket",
+    "icon_equip_drone",
+    "icon_equip_engine",
+    "icon_equip_extra",
+    "icon_equip_generator",
+    "icon_equip_module",
+    "icon_equip_pet",
+    "icon_equip_shield_gen"
+   ],
+   "shipped": [
+    "icon_ammo_laser",
+    "icon_ammo_rocket",
+    "icon_equip_drone",
+    "icon_equip_engine",
+    "icon_equip_extra",
+    "icon_equip_generator",
+    "icon_equip_module",
+    "icon_equip_pet",
+    "icon_equip_shield_gen"
+   ],
+   "master": [],
+   "grid": [
+    3,
+    3
+   ],
+   "cuts": [
+    "icon_equip_generator",
+    "icon_equip_shield_gen",
+    "icon_equip_engine",
+    "icon_equip_extra",
+    "icon_equip_module",
+    "icon_equip_drone",
+    "icon_equip_pet",
+    "icon_ammo_laser",
+    "icon_ammo_rocket"
+   ],
+   "mode": "panel_white",
+   "plan_from": "spec panel_equipment (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 9
+  },
+  {
+   "family": "icons",
+   "stamp": "20260917-183722",
+   "run_key": "panel_glyphs",
+   "raw": "raw/panel_glyphs.png",
+   "produced": [
+    "panel_glyphs"
+   ],
+   "shipped": [
+    "panel_glyphs"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "panel_glyphs"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": true,
+   "plate_because": "it is a shipped panel asset, a sheet in its own right",
+   "name_count": 1
+  },
+  {
+   "family": "icons",
+   "stamp": "20260917-183245",
+   "run_key": "panel_weapons",
+   "raw": "raw/panel_weapons.png",
+   "produced": [
+    "panel_weapons"
+   ],
+   "shipped": [
+    "panel_weapons"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "panel_weapons"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": true,
+   "plate_because": "it is a shipped panel asset, a sheet in its own right",
+   "name_count": 1
+  },
+  {
+   "family": "ships",
+   "stamp": "20260917-215948",
+   "run_key": "livery_maw",
+   "raw": "raw/livery_maw.png",
+   "produced": [
+    "livery_maw",
+    "ship_boss_maw_mmo"
+   ],
+   "shipped": [
+    "ship_boss_maw_mmo"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "ship_boss_maw_mmo"
+   ],
+   "mode": "i2i_single",
+   "plan_from": "spec livery_maw (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "ships",
+   "stamp": "20260918-112624",
+   "run_key": "same-2x2-rotation-sheet-of-the-same-enem",
+   "raw": "raw/same-2x2-rotation-sheet-of-the-same-enem__20260918-112624.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ship_sheet_2x2_20260918_112624__p01",
+    "ship_sheet_2x2_20260918_112624__p02",
+    "ship_sheet_2x2_20260918_112624__p03",
+    "ship_sheet_2x2_20260918_112624__p04"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ships",
+   "stamp": "20260918-112721",
+   "run_key": "same-2x2-rotation-sheet-of-the-same-enem",
+   "raw": "raw/same-2x2-rotation-sheet-of-the-same-enem__20260918-112721.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ship_sheet_2x2_20260918_112721__p01",
+    "ship_sheet_2x2_20260918_112721__p02",
+    "ship_sheet_2x2_20260918_112721__p03",
+    "ship_sheet_2x2_20260918_112721__p04"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ships",
+   "stamp": "20260918-112813",
+   "run_key": "same-2x2-rotation-sheet-of-the-same-enem",
+   "raw": "raw/same-2x2-rotation-sheet-of-the-same-enem__20260918-112813.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ship_sheet_2x2_20260918_112813__p01",
+    "ship_sheet_2x2_20260918_112813__p02",
+    "ship_sheet_2x2_20260918_112813__p03",
+    "ship_sheet_2x2_20260918_112813__p04"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ships",
+   "stamp": "20260917-215858",
+   "run_key": "ship_bomber",
+   "raw": "raw/ship_bomber.png",
+   "produced": [
+    "ship_bomber_back",
+    "ship_bomber_front",
+    "ship_bomber_side",
+    "ship_bomber_three_quarter"
+   ],
+   "shipped": [
+    "ship_bomber_back",
+    "ship_bomber_front",
+    "ship_bomber_side",
+    "ship_bomber_three_quarter"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ship_bomber_front",
+    "ship_bomber_three_quarter",
+    "ship_bomber_side",
+    "ship_bomber_back"
+   ],
+   "mode": "ship_sheet",
+   "plan_from": "spec ship_bomber (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ships",
+   "stamp": "20260918-112453",
+   "run_key": "ship_boss_boneyard",
+   "raw": "raw/ship_boss_boneyard.png",
+   "produced": [
+    "ship_boss_boneyard"
+   ],
+   "shipped": [
+    "ship_boss_boneyard"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "ship_boss_boneyard"
+   ],
+   "mode": "i2i_single",
+   "plan_from": "spec ship_boss_boneyard (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "ships",
+   "stamp": "20260917-220108",
+   "run_key": "ship_boss_leviathan",
+   "raw": "raw/ship_boss_leviathan.png",
+   "produced": [
+    "ship_boss_leviathan"
+   ],
+   "shipped": [
+    "ship_boss_leviathan"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "ship_boss_leviathan"
+   ],
+   "mode": "single_trim",
+   "plan_from": "spec ship_boss_leviathan (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "ships",
+   "stamp": "20260917-183626",
+   "run_key": "ship_boss_maw",
+   "raw": "raw/ship_boss_maw.png",
+   "produced": [
+    "ship_boss_maw"
+   ],
+   "shipped": [
+    "ship_boss_maw"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "ship_boss_maw"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "ships",
+   "stamp": "20260918-112531",
+   "run_key": "ship_boss_pyre",
+   "raw": "raw/ship_boss_pyre.png",
+   "produced": [
+    "ship_boss_pyre"
+   ],
+   "shipped": [
+    "ship_boss_pyre"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "ship_boss_pyre"
+   ],
+   "mode": "i2i_single",
+   "plan_from": "spec ship_boss_pyre (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "ships",
+   "stamp": "20260917-213650",
+   "run_key": "ship_boss_spire",
+   "raw": "raw/ship_boss_spire.png",
+   "produced": [
+    "ship_boss_spire"
+   ],
+   "shipped": [
+    "ship_boss_spire"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "ship_boss_spire"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "ships",
+   "stamp": "20260917-213607",
+   "run_key": "ship_boss_thorn",
+   "raw": "raw/ship_boss_thorn.png",
+   "produced": [
+    "ship_boss_thorn"
+   ],
+   "shipped": [
+    "ship_boss_thorn"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "ship_boss_thorn"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "ships",
+   "stamp": "20260917-183440",
+   "run_key": "ship_corvette",
+   "raw": "raw/ship_corvette.png",
+   "produced": [
+    "ship_corvette_back",
+    "ship_corvette_front",
+    "ship_corvette_side",
+    "ship_corvette_three_quarter"
+   ],
+   "shipped": [
+    "ship_corvette_back",
+    "ship_corvette_front",
+    "ship_corvette_side",
+    "ship_corvette_three_quarter"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ship_corvette_front",
+    "ship_corvette_three_quarter",
+    "ship_corvette_side",
+    "ship_corvette_back"
+   ],
+   "mode": "panel",
+   "plan_from": "name suffix (ship rotation)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ships",
+   "stamp": "20260917-213627",
+   "run_key": "ship_corvette_mmo",
+   "raw": "raw/ship_corvette_mmo.png",
+   "produced": [
+    "ship_corvette_mmo_back",
+    "ship_corvette_mmo_front",
+    "ship_corvette_mmo_side",
+    "ship_corvette_mmo_three_quarter"
+   ],
+   "shipped": [
+    "ship_corvette_mmo_back",
+    "ship_corvette_mmo_front",
+    "ship_corvette_mmo_side",
+    "ship_corvette_mmo_three_quarter"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ship_corvette_mmo_front",
+    "ship_corvette_mmo_three_quarter",
+    "ship_corvette_mmo_side",
+    "ship_corvette_mmo_back"
+   ],
+   "mode": "i2i_sheet",
+   "plan_from": "spec livery_corvette (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ships",
+   "stamp": "20260917-213554",
+   "run_key": "ship_destroyer",
+   "raw": "raw/ship_destroyer.png",
+   "produced": [
+    "ship_destroyer_back",
+    "ship_destroyer_front",
+    "ship_destroyer_side",
+    "ship_destroyer_three_quarter"
+   ],
+   "shipped": [
+    "ship_destroyer_back",
+    "ship_destroyer_front",
+    "ship_destroyer_side",
+    "ship_destroyer_three_quarter"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ship_destroyer_front",
+    "ship_destroyer_three_quarter",
+    "ship_destroyer_side",
+    "ship_destroyer_back"
+   ],
+   "mode": "ship_sheet",
+   "plan_from": "spec ship_destroyer (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ships",
+   "stamp": "20260917-213637",
+   "run_key": "ship_drone_swarm",
+   "raw": "raw/ship_drone_swarm__20260917-213637.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ship_sheet_2x2_20260917_213637__p01",
+    "ship_sheet_2x2_20260917_213637__p02",
+    "ship_sheet_2x2_20260917_213637__p03",
+    "ship_sheet_2x2_20260917_213637__p04"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ships",
+   "stamp": "20260918-133108",
+   "run_key": "ship_drone_swarm",
+   "raw": "raw/ship_drone_swarm__20260918-133108.png",
+   "produced": [
+    "ship_drone_swarm_back",
+    "ship_drone_swarm_front",
+    "ship_drone_swarm_side",
+    "ship_drone_swarm_three_quarter"
+   ],
+   "shipped": [
+    "ship_drone_swarm_back",
+    "ship_drone_swarm_front",
+    "ship_drone_swarm_side",
+    "ship_drone_swarm_three_quarter"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ship_drone_swarm_front",
+    "ship_drone_swarm_three_quarter",
+    "ship_drone_swarm_side",
+    "ship_drone_swarm_back"
+   ],
+   "mode": "ship_sheet",
+   "plan_from": "spec f2_drone_swarm (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ships",
+   "stamp": "20260917-183314",
+   "run_key": "ship_fighter",
+   "raw": "raw/ship_fighter.png",
+   "produced": [
+    "ship_fighter_back",
+    "ship_fighter_front",
+    "ship_fighter_side",
+    "ship_fighter_three_quarter"
+   ],
+   "shipped": [
+    "ship_fighter_back",
+    "ship_fighter_front",
+    "ship_fighter_side",
+    "ship_fighter_three_quarter"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ship_fighter_front",
+    "ship_fighter_three_quarter",
+    "ship_fighter_side",
+    "ship_fighter_back"
+   ],
+   "mode": "panel",
+   "plan_from": "name suffix (ship rotation)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ships",
+   "stamp": "20260918-115046",
+   "run_key": "ship_fighter_choir",
+   "raw": "raw/ship_fighter_choir.png",
+   "produced": [
+    "ship_fighter_choir_back",
+    "ship_fighter_choir_front",
+    "ship_fighter_choir_side",
+    "ship_fighter_choir_three_quarter"
+   ],
+   "shipped": [
+    "ship_fighter_choir_back",
+    "ship_fighter_choir_front",
+    "ship_fighter_choir_side",
+    "ship_fighter_choir_three_quarter"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ship_fighter_choir_front",
+    "ship_fighter_choir_three_quarter",
+    "ship_fighter_choir_side",
+    "ship_fighter_choir_back"
+   ],
+   "mode": "i2i_sheet",
+   "plan_from": "spec livery_fighter_choir (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ships",
+   "stamp": "20260918-114850",
+   "run_key": "ship_fighter_concord",
+   "raw": "raw/ship_fighter_concord.png",
+   "produced": [
+    "ship_fighter_concord_back",
+    "ship_fighter_concord_front",
+    "ship_fighter_concord_side",
+    "ship_fighter_concord_three_quarter"
+   ],
+   "shipped": [
+    "ship_fighter_concord_back",
+    "ship_fighter_concord_front",
+    "ship_fighter_concord_side",
+    "ship_fighter_concord_three_quarter"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ship_fighter_concord_front",
+    "ship_fighter_concord_three_quarter",
+    "ship_fighter_concord_side",
+    "ship_fighter_concord_back"
+   ],
+   "mode": "i2i_sheet",
+   "plan_from": "spec livery_fighter_concord (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ships",
+   "stamp": "20260918-114951",
+   "run_key": "ship_fighter_meridian",
+   "raw": "raw/ship_fighter_meridian.png",
+   "produced": [
+    "ship_fighter_meridian_back",
+    "ship_fighter_meridian_front",
+    "ship_fighter_meridian_side",
+    "ship_fighter_meridian_three_quarter"
+   ],
+   "shipped": [
+    "ship_fighter_meridian_back",
+    "ship_fighter_meridian_front",
+    "ship_fighter_meridian_side",
+    "ship_fighter_meridian_three_quarter"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ship_fighter_meridian_front",
+    "ship_fighter_meridian_three_quarter",
+    "ship_fighter_meridian_side",
+    "ship_fighter_meridian_back"
+   ],
+   "mode": "i2i_sheet",
+   "plan_from": "spec livery_fighter_meridian (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ships",
+   "stamp": "20260917-213536",
+   "run_key": "ship_fighter_mmo",
+   "raw": "raw/ship_fighter_mmo.png",
+   "produced": [
+    "ship_fighter_mmo_back",
+    "ship_fighter_mmo_front",
+    "ship_fighter_mmo_side",
+    "ship_fighter_mmo_three_quarter"
+   ],
+   "shipped": [
+    "ship_fighter_mmo_back",
+    "ship_fighter_mmo_front",
+    "ship_fighter_mmo_side",
+    "ship_fighter_mmo_three_quarter"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ship_fighter_mmo_front",
+    "ship_fighter_mmo_three_quarter",
+    "ship_fighter_mmo_side",
+    "ship_fighter_mmo_back"
+   ],
+   "mode": "i2i_sheet",
+   "plan_from": "spec livery_fighter (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ships",
+   "stamp": "20260917-183532",
+   "run_key": "ship_freighter",
+   "raw": "raw/ship_freighter.png",
+   "produced": [
+    "ship_freighter_back",
+    "ship_freighter_front",
+    "ship_freighter_side",
+    "ship_freighter_three_quarter"
+   ],
+   "shipped": [
+    "ship_freighter_back",
+    "ship_freighter_front",
+    "ship_freighter_side",
+    "ship_freighter_three_quarter"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ship_freighter_front",
+    "ship_freighter_three_quarter",
+    "ship_freighter_side",
+    "ship_freighter_back"
+   ],
+   "mode": "panel",
+   "plan_from": "name suffix (ship rotation)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ships",
+   "stamp": "20260917-215857",
+   "run_key": "ship_freighter_mmo",
+   "raw": "raw/ship_freighter_mmo.png",
+   "produced": [
+    "ship_freighter_mmo_back",
+    "ship_freighter_mmo_front",
+    "ship_freighter_mmo_side",
+    "ship_freighter_mmo_three_quarter"
+   ],
+   "shipped": [
+    "ship_freighter_mmo_back",
+    "ship_freighter_mmo_front",
+    "ship_freighter_mmo_side",
+    "ship_freighter_mmo_three_quarter"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ship_freighter_mmo_front",
+    "ship_freighter_mmo_three_quarter",
+    "ship_freighter_mmo_side",
+    "ship_freighter_mmo_back"
+   ],
+   "mode": "i2i_sheet",
+   "plan_from": "spec livery_freighter (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ships",
+   "stamp": "20260917-213510",
+   "run_key": "ship_gunship",
+   "raw": "raw/ship_gunship.png",
+   "produced": [
+    "ship_gunship_back",
+    "ship_gunship_front",
+    "ship_gunship_side",
+    "ship_gunship_three_quarter"
+   ],
+   "shipped": [
+    "ship_gunship_back",
+    "ship_gunship_front",
+    "ship_gunship_side",
+    "ship_gunship_three_quarter"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ship_gunship_front",
+    "ship_gunship_three_quarter",
+    "ship_gunship_side",
+    "ship_gunship_back"
+   ],
+   "mode": "ship_sheet",
+   "plan_from": "spec ship_gunship (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ships",
+   "stamp": "20260917-213427",
+   "run_key": "ship_interceptor",
+   "raw": "raw/ship_interceptor.png",
+   "produced": [
+    "ship_interceptor_back",
+    "ship_interceptor_front",
+    "ship_interceptor_side",
+    "ship_interceptor_three_quarter"
+   ],
+   "shipped": [
+    "ship_interceptor_back",
+    "ship_interceptor_front",
+    "ship_interceptor_side",
+    "ship_interceptor_three_quarter"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ship_interceptor_front",
+    "ship_interceptor_three_quarter",
+    "ship_interceptor_side",
+    "ship_interceptor_back"
+   ],
+   "mode": "ship_sheet",
+   "plan_from": "spec ship_interceptor (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ships",
+   "stamp": "20260917-215942",
+   "run_key": "ship_mine_layer",
+   "raw": "raw/ship_mine_layer.png",
+   "produced": [
+    "ship_mine_layer_back",
+    "ship_mine_layer_front",
+    "ship_mine_layer_side",
+    "ship_mine_layer_three_quarter"
+   ],
+   "shipped": [
+    "ship_mine_layer_back",
+    "ship_mine_layer_front",
+    "ship_mine_layer_side",
+    "ship_mine_layer_three_quarter"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ship_mine_layer_front",
+    "ship_mine_layer_three_quarter",
+    "ship_mine_layer_side",
+    "ship_mine_layer_back"
+   ],
+   "mode": "ship_sheet",
+   "plan_from": "spec ship_mine_layer (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ships",
+   "stamp": "20260918-111643",
+   "run_key": "ship_miner",
+   "raw": "raw/ship_miner.png",
+   "produced": [
+    "ship_miner_back",
+    "ship_miner_front",
+    "ship_miner_side",
+    "ship_miner_three_quarter"
+   ],
+   "shipped": [
+    "ship_miner_back",
+    "ship_miner_front",
+    "ship_miner_side",
+    "ship_miner_three_quarter"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ship_miner_front",
+    "ship_miner_three_quarter",
+    "ship_miner_side",
+    "ship_miner_back"
+   ],
+   "mode": "ship_sheet",
+   "plan_from": "spec ship_miner (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ships",
+   "stamp": "20260917-213521",
+   "run_key": "ship_patrol",
+   "raw": "raw/ship_patrol.png",
+   "produced": [
+    "ship_patrol_back",
+    "ship_patrol_front",
+    "ship_patrol_side",
+    "ship_patrol_three_quarter"
+   ],
+   "shipped": [
+    "ship_patrol_back",
+    "ship_patrol_front",
+    "ship_patrol_side",
+    "ship_patrol_three_quarter"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ship_patrol_front",
+    "ship_patrol_three_quarter",
+    "ship_patrol_side",
+    "ship_patrol_back"
+   ],
+   "mode": "ship_sheet",
+   "plan_from": "spec ship_patrol (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ships",
+   "stamp": "20260917-213439",
+   "run_key": "ship_trader",
+   "raw": "raw/ship_trader.png",
+   "produced": [
+    "ship_trader_back",
+    "ship_trader_front",
+    "ship_trader_side",
+    "ship_trader_three_quarter"
+   ],
+   "shipped": [
+    "ship_trader_back",
+    "ship_trader_front",
+    "ship_trader_side",
+    "ship_trader_three_quarter"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ship_trader_front",
+    "ship_trader_three_quarter",
+    "ship_trader_side",
+    "ship_trader_back"
+   ],
+   "mode": "ship_sheet",
+   "plan_from": "spec ship_trader (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ships",
+   "stamp": "20260917-220025",
+   "run_key": "ship_turret_platform",
+   "raw": "raw/ship_turret_platform.png",
+   "produced": [
+    "ship_turret_platform"
+   ],
+   "shipped": [
+    "ship_turret_platform"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "ship_turret_platform"
+   ],
+   "mode": "single_trim",
+   "plan_from": "spec ship_turret_platform (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "ships",
+   "stamp": "20260917-183041",
+   "run_key": "ship_vanguard",
+   "raw": "raw/ship_vanguard.png",
+   "produced": [
+    "ship_vanguard_back",
+    "ship_vanguard_front",
+    "ship_vanguard_side",
+    "ship_vanguard_three_quarter"
+   ],
+   "shipped": [
+    "ship_vanguard_back",
+    "ship_vanguard_front",
+    "ship_vanguard_side",
+    "ship_vanguard_three_quarter"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ship_vanguard_front",
+    "ship_vanguard_three_quarter",
+    "ship_vanguard_side",
+    "ship_vanguard_back"
+   ],
+   "mode": "panel",
+   "plan_from": "name suffix (ship rotation)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ships",
+   "stamp": "20260917-183739",
+   "run_key": "ship_vanguard_damaged",
+   "raw": "raw/ship_vanguard_damaged.png",
+   "produced": [
+    "ship_vanguard_damaged_back",
+    "ship_vanguard_damaged_front",
+    "ship_vanguard_damaged_side",
+    "ship_vanguard_damaged_three_quarter"
+   ],
+   "shipped": [
+    "ship_vanguard_damaged_back",
+    "ship_vanguard_damaged_front",
+    "ship_vanguard_damaged_side",
+    "ship_vanguard_damaged_three_quarter"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ship_vanguard_damaged_front",
+    "ship_vanguard_damaged_three_quarter",
+    "ship_vanguard_damaged_side",
+    "ship_vanguard_damaged_back"
+   ],
+   "mode": "panel",
+   "plan_from": "name suffix (ship rotation)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ships",
+   "stamp": "20260917-213447",
+   "run_key": "ship_vanguard_mmo",
+   "raw": "raw/ship_vanguard_mmo.png",
+   "produced": [
+    "ship_vanguard_mmo_back",
+    "ship_vanguard_mmo_front",
+    "ship_vanguard_mmo_side",
+    "ship_vanguard_mmo_three_quarter"
+   ],
+   "shipped": [
+    "ship_vanguard_mmo_back",
+    "ship_vanguard_mmo_front",
+    "ship_vanguard_mmo_side",
+    "ship_vanguard_mmo_three_quarter"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ship_vanguard_mmo_front",
+    "ship_vanguard_mmo_three_quarter",
+    "ship_vanguard_mmo_side",
+    "ship_vanguard_mmo_back"
+   ],
+   "mode": "i2i_sheet",
+   "plan_from": "spec livery_vanguard (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ui",
+   "stamp": "20260918-123330",
+   "run_key": "f1_panel_frame",
+   "raw": "raw/f1_panel_frame.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "ui_sheet_1x1_20260918_123330"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "ui",
+   "stamp": "20260917-183801",
+   "run_key": "logo-vajb-orbit-the-word-vajb-orbit-as",
+   "raw": "raw/logo-vajb-orbit-the-word-vajb-orbit-as.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "ui_sheet_1x1_20260917_183801"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "ui",
+   "stamp": "20260917-183929",
+   "run_key": "logo_vajb_orbit",
+   "raw": "raw/logo_vajb_orbit.png",
+   "produced": [
+    "logo_vajb_orbit"
+   ],
+   "shipped": [
+    "logo_vajb_orbit"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "logo_vajb_orbit"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "ui",
+   "stamp": "20260917-183655",
+   "run_key": "ui-bar-caps-and-ui-minimap-bezel-one-pa",
+   "raw": "raw/ui-bar-caps-and-ui-minimap-bezel-one-pa.png",
+   "produced": [
+    "ui_bar_caps",
+    "ui_minimap_bezel"
+   ],
+   "shipped": [
+    "ui_bar_caps",
+    "ui_minimap_bezel"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    1
+   ],
+   "cuts": [
+    "ui_bar_caps",
+    "ui_minimap_bezel"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt: two groups on one row, bar end caps left, minimap bezel right",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 2
+  },
+  {
+   "family": "ui",
+   "stamp": "20260917-183232",
+   "run_key": "ui-button-plate-a-square-panel-with-fou",
+   "raw": "raw/ui-button-plate-a-square-panel-with-fou.png",
+   "produced": [],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ui_sheet_2x2_20260917_183232__p01",
+    "ui_sheet_2x2_20260917_183232__p02",
+    "ui_sheet_2x2_20260917_183232__p03",
+    "ui_sheet_2x2_20260917_183232__p04"
+   ],
+   "mode": "panel",
+   "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
+   "unnamed": true,
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ui",
+   "stamp": "20260917-215850",
+   "run_key": "ui_backdrop_hangar",
+   "raw": "raw/ui_backdrop_hangar.png",
+   "produced": [
+    "ui_backdrop_hangar"
+   ],
+   "shipped": [
+    "ui_backdrop_hangar"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "ui_backdrop_hangar"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": true,
+   "plate_because": "the prompt says 'backdrop'",
+   "name_count": 1
+  },
+  {
+   "family": "ui",
+   "stamp": "20260917-215951",
+   "run_key": "ui_backdrop_login",
+   "raw": "raw/ui_backdrop_login.png",
+   "produced": [
+    "ui_backdrop_login"
+   ],
+   "shipped": [
+    "ui_backdrop_login"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "ui_backdrop_login"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": true,
+   "plate_because": "the prompt says 'backdrop'",
+   "name_count": 1
+  },
+  {
+   "family": "ui",
+   "stamp": "20260917-215921",
+   "run_key": "ui_backdrop_starmap",
+   "raw": "raw/ui_backdrop_starmap.png",
+   "produced": [
+    "ui_backdrop_starmap"
+   ],
+   "shipped": [
+    "ui_backdrop_starmap"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "ui_backdrop_starmap"
+   ],
+   "mode": "single",
+   "plan_from": "single-panel sheet",
+   "plate": true,
+   "plate_because": "the prompt says 'backdrop'",
+   "name_count": 1
+  },
+  {
+   "family": "ui",
+   "stamp": "20260917-185457",
+   "run_key": "ui_button_plate",
+   "raw": "raw/ui_button_plate__20260917-185457.png",
+   "produced": [
+    "ui_button_plate_disabled",
+    "ui_button_plate_hover",
+    "ui_button_plate_normal",
+    "ui_button_plate_panel",
+    "ui_button_plate_pressed"
+   ],
+   "shipped": [],
+   "master": [
+    "ui_button_plate_panel"
+   ],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ui_button_plate_normal__20260917-185457",
+    "ui_button_plate_hover__20260917-185457",
+    "ui_button_plate_pressed__20260917-185457",
+    "ui_button_plate_disabled__20260917-185457"
+   ],
+   "mode": "panel",
+   "plan_from": "name suffix (slot state)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4,
+   "superseded": [
+    {
+     "name": "ui_button_plate_normal",
+     "cut_as": "ui_button_plate_normal__20260917-185457",
+     "superseded_by": "raw/ui_button_plate__20260918-133142.png"
+    },
+    {
+     "name": "ui_button_plate_hover",
+     "cut_as": "ui_button_plate_hover__20260917-185457",
+     "superseded_by": "raw/ui_button_plate__20260918-133142.png"
+    },
+    {
+     "name": "ui_button_plate_pressed",
+     "cut_as": "ui_button_plate_pressed__20260917-185457",
+     "superseded_by": "raw/ui_button_plate__20260918-133142.png"
+    },
+    {
+     "name": "ui_button_plate_disabled",
+     "cut_as": "ui_button_plate_disabled__20260917-185457",
+     "superseded_by": "raw/ui_button_plate__20260918-133142.png"
+    }
+   ]
+  },
+  {
+   "family": "ui",
+   "stamp": "20260918-133142",
+   "run_key": "ui_button_plate",
+   "raw": "raw/ui_button_plate__20260918-133142.png",
+   "produced": [
+    "ui_button_plate_disabled",
+    "ui_button_plate_hover",
+    "ui_button_plate_normal",
+    "ui_button_plate_pressed"
+   ],
+   "shipped": [
+    "ui_button_plate_disabled",
+    "ui_button_plate_hover",
+    "ui_button_plate_normal",
+    "ui_button_plate_pressed"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ui_button_plate_normal",
+    "ui_button_plate_hover",
+    "ui_button_plate_pressed",
+    "ui_button_plate_disabled"
+   ],
+   "mode": "panel_white",
+   "plan_from": "spec f2_button_plates (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ui",
+   "stamp": "20260917-213659",
+   "run_key": "ui_insignia",
+   "raw": "raw/ui_insignia.png",
+   "produced": [
+    "ui_insignia_mic",
+    "ui_insignia_mmo",
+    "ui_insignia_neutral",
+    "ui_insignia_ven"
+   ],
+   "shipped": [
+    "ui_insignia_mic",
+    "ui_insignia_mmo",
+    "ui_insignia_neutral",
+    "ui_insignia_ven"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ui_insignia_mmo",
+    "ui_insignia_mic",
+    "ui_insignia_ven",
+    "ui_insignia_neutral"
+   ],
+   "mode": "panel_white",
+   "plan_from": "spec panel_insignia (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ui",
+   "stamp": "20260917-183136",
+   "run_key": "ui_panel_frame",
+   "raw": "raw/ui_panel_frame__20260917-183136.png",
+   "produced": [
+    "ui_panel_frame"
+   ],
+   "shipped": [],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "ui_panel_frame__20260917-183136"
+   ],
+   "mode": "single_trim",
+   "plan_from": "spec f1_panel_frame (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1,
+   "superseded": [
+    {
+     "name": "ui_panel_frame",
+     "cut_as": "ui_panel_frame__20260917-183136",
+     "superseded_by": "raw/ui_panel_frame__20260918-133002.png"
+    }
+   ]
+  },
+  {
+   "family": "ui",
+   "stamp": "20260918-133002",
+   "run_key": "ui_panel_frame",
+   "raw": "raw/ui_panel_frame__20260918-133002.png",
+   "produced": [
+    "ui_panel_frame"
+   ],
+   "shipped": [
+    "ui_panel_frame"
+   ],
+   "master": [],
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "ui_panel_frame"
+   ],
+   "mode": "single_trim",
+   "plan_from": "spec f1_panel_frame (recovered)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 1
+  },
+  {
+   "family": "ui",
+   "stamp": "20260917-183426",
+   "run_key": "ui_slot_cargo",
+   "raw": "raw/ui_slot_cargo.png",
+   "produced": [
+    "ui_slot_cargo_disabled",
+    "ui_slot_cargo_hover",
+    "ui_slot_cargo_normal",
+    "ui_slot_cargo_pressed"
+   ],
+   "shipped": [
+    "ui_slot_cargo_disabled",
+    "ui_slot_cargo_hover",
+    "ui_slot_cargo_normal",
+    "ui_slot_cargo_pressed"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ui_slot_cargo_normal",
+    "ui_slot_cargo_hover",
+    "ui_slot_cargo_pressed",
+    "ui_slot_cargo_disabled"
+   ],
+   "mode": "panel",
+   "plan_from": "name suffix (slot state)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ui",
+   "stamp": "20260917-183551",
+   "run_key": "ui_slot_inventory",
+   "raw": "raw/ui_slot_inventory.png",
+   "produced": [
+    "ui_slot_inventory_disabled",
+    "ui_slot_inventory_hover",
+    "ui_slot_inventory_normal",
+    "ui_slot_inventory_pressed"
+   ],
+   "shipped": [
+    "ui_slot_inventory_disabled",
+    "ui_slot_inventory_hover",
+    "ui_slot_inventory_normal",
+    "ui_slot_inventory_pressed"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ui_slot_inventory_normal",
+    "ui_slot_inventory_hover",
+    "ui_slot_inventory_pressed",
+    "ui_slot_inventory_disabled"
+   ],
+   "mode": "panel",
+   "plan_from": "name suffix (slot state)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  },
+  {
+   "family": "ui",
+   "stamp": "20260917-183336",
+   "run_key": "ui_slot_weapon",
+   "raw": "raw/ui_slot_weapon.png",
+   "produced": [
+    "ui_slot_weapon_disabled",
+    "ui_slot_weapon_hover",
+    "ui_slot_weapon_normal",
+    "ui_slot_weapon_pressed"
+   ],
+   "shipped": [
+    "ui_slot_weapon_disabled",
+    "ui_slot_weapon_hover",
+    "ui_slot_weapon_normal",
+    "ui_slot_weapon_pressed"
+   ],
+   "master": [],
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ui_slot_weapon_normal",
+    "ui_slot_weapon_hover",
+    "ui_slot_weapon_pressed",
+    "ui_slot_weapon_disabled"
+   ],
+   "mode": "panel",
+   "plan_from": "name suffix (slot state)",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 4
+  }
+ ]
+}

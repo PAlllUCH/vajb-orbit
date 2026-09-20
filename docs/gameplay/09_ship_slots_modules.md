@@ -86,6 +86,15 @@ The railgun's earlier "ignores 50 % of armour" effect is **retired**
 (ENGINE_SPEC §4.1): armour plating is hull points, so there is nothing for a
 weapon to ignore. Its 60 DPS and ammo situation are unchanged.
 
+**Amendment 2026-09-20 (energy draw, 18_engine_spec §4.1/§4.4):** the weapon
+families split by *what they consume while firing* — energy weapons (`w_laser`,
+`w_plasma`) and the mining laser drain the **Energy pool** per second of fire
+(rates 6/10/5 E/s in the §13 table, playtest-tunable), while kinetics spend
+Cannon Shells, rockets Rocket rounds and mines Mine Rack — ammo as before,
+no Energy. §2's small-integer power budget is the *fitting* budget and is
+unchanged; the firing drain is the new in-flight resource, and a dry Energy
+pool means an energy weapon that cannot fire while the pack-fed ones can.
+
 ### 3.2 SHIELDS (S slots)
 
 | Module | Tier | Draw | Effect | Cost |
@@ -132,8 +141,8 @@ slot type with explicit stacking rules: damage computers stack additively
 
 | Module | Tier | Draw | Effect | Cost |
 |--------|------|:----:|--------|-----:|
-| `b_afterburner` | I | 2 | +60 % speed for 3 s, 8 s cooldown | 1 900 |
-| `b_fold` | III | 2 | short-range blink: 400 units, 20 s cooldown | 6 800 |
+| `b_afterburner` | I | 2 | +60 % speed for 3 s, 8 s cooldown, burns BOOST_FUEL 3.0/s while active (2026-09-20) | 1 900 |
+| `b_fold` | III | 2 | Hyperdrive Dash: 400 units, 20 s cooldown, burns DASH_FUEL 25/burst, 0.8 s invulnerability (2026-09-20 rename) | 6 800 |
 
 No Tier II booster: the jump from "go faster" to "teleport" is the
 progression beat. Boosters interact with armour mass (§3.3).

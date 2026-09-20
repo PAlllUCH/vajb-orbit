@@ -1,7 +1,38 @@
-# Engine Slice 2 — Fight. Task brief (2026-09-18)
+# Engine Slice 2 — Fight. Task brief (2026-09-18, amended 2026-09-20)
 
-Owner-approved slice 2 of `ENGINE_SPEC.md` §14: **fight** — weapons fire,
-projectiles, the damage pipeline, NPC archetypes on one brain, loot, death.
+**2026-09-20 amendments (owner rulings in `docs/gameplay/18_engine_spec.md`
+§2.1): slice 2 now runs AFTER slice 0** (`slice0_task.md` — the RigidBody2D
+migration, the energy/fuel pools and `impact.gd` have landed by then). The
+amendments fold in here:
+
+- **W1** (weapons/projectile): energy weapons drain Energy via
+  `PlayerState.try_spend_energy(amount)` (false = dry, no shot — pinned
+  interface 1 below gains it from slice 0); the rocket is the **first
+  seeker** (§4.6): homing follows the lock, and a `cm_flare` within
+  `FLARE_LURE` (450 u) retargets it; `cm_chaff` activation (one-shot item,
+  3 ghosts, `CHAFF_WINDOW` 3.0 s, locks break and cannot re-acquire the
+  real hull while ghosts live) is W1's `weapons.gd` seam; both items ride
+  the W4 tables.
+- **W2** (damage pipeline): the pipeline lands with the **`ctx` parameter**
+  (`damage(amount, bypass_shield := false, ctx := {})` — `direction`,
+  `impulse`, `family`) and routes collision/knockback/explosion impulses
+  through slice 0's `game/impact.gd` helpers (§4.2 items 5–8). Quadrant
+  reading is slice-3 scope; W2 only populates `ctx`.
+- **W3** (NPCs): ships **human pirates AND alien swarmers** (ruling 24) —
+  swarmer is a new `npc_registry` archetype row on the same brain,
+  pirate-like behaviour, alien hulls from STYLE_BIBLE §2.5 with
+  **swap-ready sprite paths and placeholder art**; behaviour probes never
+  gate on art.
+- **W5** (HUD/wiring): adds the **Energy/Fuel pool bars** (`set_pool` exists
+  from slice 0; UI_SPEC §3.1b) and the **radial speedometer + lock ring +
+  ghost blips** (`set_speedometer`/`set_lock_progress`, UI_SPEC §3.5/§3.6,
+  token `accent_nav`).
+
+---
+
+Owner-approved slice 2 of `docs/gameplay/18_engine_spec.md` §14: **fight** —
+weapons fire, projectiles, the damage pipeline, NPC archetypes on one brain,
+loot, death.
 Spec sections §4 (combat), §5 (NPCs), §7 (death), §13 (calibration) are law;
 `docs/CONTRACTS.md` §2/§3/§4/§5 (ShipStats/ShipFit/PlayerShip seams) are law.
 **Stay to spec: implement exactly what the spec and the numbered gameplay docs
@@ -18,24 +49,28 @@ MED = one fixer pass, LOW → backlog (`.agents/gen/LOW_BACKLOG.md`).
 ## W0 — doc check (run first)
 
 Files: `docs/design/IMPLEMENTATION_PLAN.md`, optionally
-`docs/gameplay/06_loot_and_progression.md`.
+  `docs/gameplay/06_loot_drops.md`.
 
 1. Confirm `IMPLEMENTATION_PLAN.md` §9.9 records the slice-2 scope (weapons
    families, damage pipeline, six NPC archetypes, loot). If the engine-wave
    section lacks a slice-2 line, append one — transcription from
-   `ENGINE_SPEC.md` §14, no new numbers.
+   `docs/gameplay/18_engine_spec.md` §14, no new numbers.
 2. Confirm `09_ship_slots_modules.md` §3.1 carries the family + shield-rule
-   columns (wave-1 W0 added them). If anything slice-2 needs is missing from
-   08/09/06/13, add the missing transcription; if 06's loot tables need no
-   change, report "no doc changes needed".
+   columns (wave-1 W0 added them) **and** the 2026-09-20 amendment blocks
+   already applied to 09 §3.1/§3.5, `14_station_services.md`,
+   `06_loot_drops.md` and `11_galactic_map.md` (verify against
+   `docs/gameplay/18_engine_spec.md` §12 items 7–10 — do not redo them). If
+   anything slice-2 needs is missing from 08/09/06/13, add the missing
+   transcription; if 06's loot tables need no change, report "no doc changes
+   needed".
 3. Report: `.agents/gen/slice2_w0_report.md`.
 
 ## Global rules (all workers)
 
 - Engine Godot 4.7.2, GDScript; workspace `G:/Mój dysk/Projekty/Vajb Orbit`;
   code in `vajb-orbit/`. Read first, in order: `AGENTS.md`,
-  `docs/CONTRACTS.md` (§1–§9), `ENGINE_SPEC.md` §4/§5/§7/§13, then your
-  section below.
+  `docs/CONTRACTS.md` (§1–§9), `docs/gameplay/18_engine_spec.md`
+  §4/§5/§7/§13, then your section below.
 - **Do not edit:** `project.godot`, `addons/godot_ai/`,
   `ui/theme/vajb_theme.tres`, `tools/build_theme.gd`, `docs/**` (except W0's
   named files), `assets/**`, any file not in your section. The dispatch sets
@@ -65,11 +100,17 @@ Files: `docs/design/IMPLEMENTATION_PLAN.md`, optionally
 ## Pinned interfaces (code against these exactly; source: current code verified 2026-09-18)
 
 1. **`PlayerState`** (`game/player_state.gd`, existing): `damage(amount:
-   float, bypass_shield: bool = false)` already implements shield-first absorb
-   with no carry-over (wave-1 verified). `WEAPONS: Array[StringName]`
-   `[&"laser", &"cannon", &"rocket", &"mine", &"plasma"]`; ammo via
-   `set_ammo(slot, value)` + `weapon_changed` signal. W2 may only ADD
-   regen-timing helpers (below) — do not reshape existing signals or methods.
+   float, bypass_shield: bool = false, ctx: Dictionary = {})` implements
+   shield-first absorb with no carry-over (wave-1 verified; the `ctx`
+   parameter is slice 0's amendment — accepted, recorded on the damage
+   event, no-op until slice 3's quadrants). Slice-0 additions live there:
+   `energy`/`fuel` pools with `energy_changed`/`fuel_changed`,
+   `try_spend_energy(amount) -> bool`, `try_spend_fuel`, `emergency_mode`,
+   `consume_fuel_cell()`. `WEAPONS: Array[StringName]`
+   `[&"laser", &"cannon", &"rocket", &"mine", &"plasma", &"railgun"]`;
+   ammo via `set_ammo(slot, value)` + `weapon_changed` signal. W2 may only
+   ADD regen-timing helpers and the `ctx` route — do not reshape existing
+   signals or methods.
 2. **`WeaponComponent`** — `class_name WeaponComponent extends Node2D` in
    `game/weapons.gd`; mounted/managed by PlayerShip like MiningLaser (a seam
    const + `set_active` pattern already exists).
@@ -82,14 +123,24 @@ Files: `docs/design/IMPLEMENTATION_PLAN.md`, optionally
      feedback, no shot. Mining laser spends no ammo.
    - The family table (DPS, range, travel, shield rule, burst cycles) lives in
      `weapons.gd` as a typed const — single owner — transcribed from
-     `ENGINE_SPEC.md` §4.1 + §13 (laser 500 / plasma 450 / cannon 600 burst
+     `docs/gameplay/18_engine_spec.md` §4.1 + §13 (laser 500 / plasma 450 /
+     cannon 600 burst
      0.35 on/0.25 off / railgun 800 slug 1400 u/s, shares the cannon pack /
      rocket 900 lock 900 / mine arm 2 s trigger 60 u). Do NOT edit
      `ship_fit.gd`.
    - Energy = instant circle hit-test at the cursor's ray point, capped at
      range; kinetics = spawn `Projectile`; rocket with a lock homes, without
      dumb-fires; mine = dropped. Guns on rocks: `Asteroid.apply_work` at the
-     10 % rate (existing seam).
+     10 % chip rate (existing seam; chips deplete, never extract ore —
+     ruling 17).
+   - **Power draw (§4.4):** firing an energy weapon calls
+     `PlayerState.try_spend_energy(draw_rate * delta)` first — short pool =
+     dry-fire feedback, no shot; the mining laser spends Energy while beamed
+     (its existing path gains the same gate via slice 0's pools).
+   - **Seeker + countermeasures (§4.6):** a chaff use spawns 3 ghost
+     signatures for `CHAFF_WINDOW` (3.0 s) and breaks locks; a flare inside
+     `FLARE_LURE` (450 u) retargets a homing rocket; both are W1 seams
+     (`weapons.gd` owns activation, `projectile.gd` owns retargeting).
 3. **`Projectile`** — `class_name Projectile extends Area2D` in
    `game/projectile.gd`:
    - `configure(config: Dictionary) -> void` with keys `kind`
@@ -137,7 +188,12 @@ Files: `docs/design/IMPLEMENTATION_PLAN.md`, optionally
    `set_target_info`, `clear_target`, `set_reticle_state` stay):
    - `set_target_info(info: Dictionary)` payload gains `in_range: bool`
      (selected weapon range vs distance) and `threat: StringName`.
-   - Reticle states map to in-range/out-of-range/hostile (§10).
+   - Reticle states map to in-range/out-of-range/hostile (§10); the lock
+     channel ring (`set_lock_progress(progress)`) draws per UI_SPEC §3.5.
+   - **Pools + speedometer (2026-09-20):** the Energy/Fuel bars read
+     `set_pool` (slice 0 seam, UI_SPEC §3.1b); the radial speedometer
+     (`set_speedometer(ratio, prograde, heading)`, UI_SPEC §3.6, token
+     `accent_nav`) and minimap `&"ghost"` blips (§3.3) land here.
    - Hit markers on confirmed hits (small, no numbers): HUD exposes
      `hit_marker()`; game.gd calls it from the damage feedback signal.
 10. **Wiring** (W5 owns `game/game.gd`, `game/sector.gd` spawn hook):
@@ -178,18 +234,26 @@ Files: `docs/design/IMPLEMENTATION_PLAN.md`, optionally
   1400 u/s bypasses shields, rocket homes at 2.2 rad/s with a lock and dies to
   one hit, mine arms at 2 s and triggers at 60 u; dry-fire on empty pack.
 - W2: probe applies shield-first absorb (no carry-over), regen resumes 4 s
-  after last hit at base 2/s.
-- W3: probe spawns each archetype, walks the brain states on synthetic
-  positions (LOS blocked by a rock), leash + `AGGRO_COOLDOWN` clears, pirate
-  flees at 30 % hull, trader flees on Suspect+.
+  after last hit at base 2/s; `ctx` rides every damage call (probe prints
+  direction/impulse round-trip); collision/knockback/explosions route
+  through `impact.gd`.
+- W3: probe spawns each archetype **including the alien swarmer** (on
+  placeholder art), walks the brain states on synthetic positions (LOS
+  blocked by a rock), leash + `AGGRO_COOLDOWN` clears, pirate flees at
+  30 % hull, trader flees on Suspect+.
 - W4: probe rolls each 06 table across tiers and prints weight sums = 1.0
   (or the table's own total) and non-empty yields.
 - W5: scene run spawns the sector with NPC counts per §13 (probe prints
-  counts); lock marks inside lock range; HUD shows range state + hit markers;
-  boot gates (game/menu/settings/station) exit 0; test gate green.
+  counts); lock **channel** completes after 1.2 s clean LOS and shows the
+  ring; HUD shows range state + hit markers + pools bars + the radial
+  speedometer; a chaff use breaks the lock and spawns 3 ghost blips for 3 s;
+  a flare retargets a homing rocket inside 450 u; boot gates
+  (game/menu/settings/station) exit 0; test gate green.
 - W6/W8: measure, never trust reports — re-run probes, check every number
-  against `ENGINE_SPEC.md` §13 and 08/09/06/13, verify the pinned interfaces
-  match across all files, flag any invented constant; update
+  against `docs/gameplay/18_engine_spec.md` §13 and 08/09/06/13, verify the pinned interfaces
+  match across all files, flag any invented constant; check the 2026-09-20
+  amendments landed (power draw, seeker/countermeasures, `ctx` pipeline,
+  swarmers, pools bars + speedometer); update
   `docs/CONTRACTS.md` (new slice-2 section + changelog v1) — the ONLY writer
   of CONTRACTS.md in this wave.
 

@@ -1,0 +1,977 @@
+{
+ "note": "Sheet layout specs recovered from the deleted Phase D/E/F drivers in git history (commit b454fde). Only the fields the cutter needs are kept: family, mode, grid = [cols, rows], the ordered cut names, and out for single-panel runs. Provenance: git show HEAD:staging/phase_d/wave1.py, staging/phase_e/wave_e.py, staging/phase_f/wave_f.py",
+ "source": "git history at b454fde",
+ "sheets": {
+  "base_defense": {
+   "family": "env",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": "env_base_defense"
+  },
+  "base_mining": {
+   "family": "env",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": "env_base_mining_control"
+  },
+  "base_mining_alpha": {
+   "family": "env",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": "env_base_mining_alpha"
+  },
+  "base_shipyard": {
+   "family": "env",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": "env_base_shipyard"
+  },
+  "base_trade": {
+   "family": "env",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": "env_base_trade"
+  },
+  "bg_body_plate": {
+   "family": "env",
+   "mode": "single_full",
+   "grid": null,
+   "cuts": null,
+   "out": "env_bg_body_plate"
+  },
+  "body_ice_moon": {
+   "family": "env",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": "env_body_ice_moon"
+  },
+  "body_ore_moon": {
+   "family": "env",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": "env_body_ore_moon"
+  },
+  "body_shattered": {
+   "family": "env",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": "env_body_shattered"
+  },
+  "env_arena_props": {
+   "family": "env",
+   "mode": "panel_white",
+   "grid": [
+    2,
+    1
+   ],
+   "cuts": [
+    "env_arena_nav_pylon",
+    "env_arena_barricade"
+   ],
+   "out": null
+  },
+  "env_debris_field": {
+   "family": "env",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": null
+  },
+  "env_ice_field": {
+   "family": "env",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": null
+  },
+  "env_jump_gate": {
+   "family": "env",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": null
+  },
+  "env_jump_gate_ring": {
+   "family": "env",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": "env_jump_gate_ring"
+  },
+  "env_mine": {
+   "family": "env",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": "env_mine"
+  },
+  "env_nebula_veil": {
+   "family": "env",
+   "mode": "single_full",
+   "grid": null,
+   "cuts": null,
+   "out": null
+  },
+  "env_ore_cluster": {
+   "family": "env",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": null
+  },
+  "env_planet_moon": {
+   "family": "env",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": null
+  },
+  "env_station_mmo": {
+   "family": "env",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": null
+  },
+  "env_station_ruined": {
+   "family": "env",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": null
+  },
+  "f1_data_core": {
+   "family": "icons",
+   "mode": "panel_white",
+   "grid": [
+    1,
+    1
+   ],
+   "cuts": [
+    "icon_cargo_data_core"
+   ],
+   "out": null
+  },
+  "f1_glyph_outline": {
+   "family": "icons",
+   "mode": "panel_white",
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "icon_zoom_plus",
+    "icon_zoom_minus",
+    "icon_credits",
+    "icon_shield"
+   ],
+   "out": null
+  },
+  "f1_ice_moon": {
+   "family": "env",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": "env_body_ice_moon"
+  },
+  "f1_panel_frame": {
+   "family": "ui",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": "ui_panel_frame"
+  },
+  "f2_button_plates": {
+   "family": "ui",
+   "mode": "panel_white",
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "ui_button_plate_normal",
+    "ui_button_plate_hover",
+    "ui_button_plate_pressed",
+    "ui_button_plate_disabled"
+   ],
+   "out": null
+  },
+  "f2_drone_swarm": {
+   "family": "ships",
+   "mode": "ship_sheet",
+   "grid": null,
+   "cuts": [
+    "ship_drone_swarm_front",
+    "ship_drone_swarm_three_quarter",
+    "ship_drone_swarm_side",
+    "ship_drone_swarm_back"
+   ],
+   "out": null
+  },
+  "f2_glyph_heavy": {
+   "family": "icons",
+   "mode": "panel_white",
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "icon_zoom_plus",
+    "icon_zoom_minus",
+    "icon_credits",
+    "icon_shield"
+   ],
+   "out": null
+  },
+  "f2_ice_moon": {
+   "family": "env",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": "env_body_ice_moon"
+  },
+  "f2_panel_frame": {
+   "family": "ui",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": "ui_panel_frame-master"
+  },
+  "fx_anomaly_grave_glow": {
+   "family": "fx",
+   "mode": "fx_void",
+   "grid": null,
+   "cuts": null,
+   "out": "fx_anomaly_grave_glow"
+  },
+  "fx_anomaly_rift": {
+   "family": "fx",
+   "mode": "fx_void",
+   "grid": null,
+   "cuts": null,
+   "out": "fx_anomaly_rift"
+  },
+  "fx_anomaly_shimmer": {
+   "family": "fx",
+   "mode": "fx_void",
+   "grid": null,
+   "cuts": null,
+   "out": "fx_anomaly_shimmer"
+  },
+  "fx_emp_arc": {
+   "family": "fx",
+   "mode": "fx_void",
+   "grid": null,
+   "cuts": null,
+   "out": null
+  },
+  "fx_jump_portal": {
+   "family": "fx",
+   "mode": "fx_void",
+   "grid": null,
+   "cuts": null,
+   "out": null
+  },
+  "fx_missile_trail": {
+   "family": "fx",
+   "mode": "fx_void",
+   "grid": null,
+   "cuts": null,
+   "out": null
+  },
+  "fx_repair_pulse": {
+   "family": "fx",
+   "mode": "fx_void",
+   "grid": null,
+   "cuts": null,
+   "out": null
+  },
+  "fx_secondary_explosion": {
+   "family": "fx",
+   "mode": "fx_void",
+   "grid": null,
+   "cuts": null,
+   "out": null
+  },
+  "fx_shield_break": {
+   "family": "fx",
+   "mode": "fx_void",
+   "grid": null,
+   "cuts": null,
+   "out": null
+  },
+  "fx_tractor_beam": {
+   "family": "fx",
+   "mode": "fx_void",
+   "grid": null,
+   "cuts": null,
+   "out": null
+  },
+  "livery_corvette": {
+   "family": "ships",
+   "mode": "i2i_sheet",
+   "grid": null,
+   "cuts": [
+    "ship_corvette_mmo_front",
+    "ship_corvette_mmo_three_quarter",
+    "ship_corvette_mmo_side",
+    "ship_corvette_mmo_back"
+   ],
+   "out": null
+  },
+  "livery_fighter": {
+   "family": "ships",
+   "mode": "i2i_sheet",
+   "grid": null,
+   "cuts": [
+    "ship_fighter_mmo_front",
+    "ship_fighter_mmo_three_quarter",
+    "ship_fighter_mmo_side",
+    "ship_fighter_mmo_back"
+   ],
+   "out": null
+  },
+  "livery_fighter_choir": {
+   "family": "ships",
+   "mode": "i2i_sheet",
+   "grid": null,
+   "cuts": [
+    "ship_fighter_choir_front",
+    "ship_fighter_choir_three_quarter",
+    "ship_fighter_choir_side",
+    "ship_fighter_choir_back"
+   ],
+   "out": null
+  },
+  "livery_fighter_concord": {
+   "family": "ships",
+   "mode": "i2i_sheet",
+   "grid": null,
+   "cuts": [
+    "ship_fighter_concord_front",
+    "ship_fighter_concord_three_quarter",
+    "ship_fighter_concord_side",
+    "ship_fighter_concord_back"
+   ],
+   "out": null
+  },
+  "livery_fighter_meridian": {
+   "family": "ships",
+   "mode": "i2i_sheet",
+   "grid": null,
+   "cuts": [
+    "ship_fighter_meridian_front",
+    "ship_fighter_meridian_three_quarter",
+    "ship_fighter_meridian_side",
+    "ship_fighter_meridian_back"
+   ],
+   "out": null
+  },
+  "livery_freighter": {
+   "family": "ships",
+   "mode": "i2i_sheet",
+   "grid": null,
+   "cuts": [
+    "ship_freighter_mmo_front",
+    "ship_freighter_mmo_three_quarter",
+    "ship_freighter_mmo_side",
+    "ship_freighter_mmo_back"
+   ],
+   "out": null
+  },
+  "livery_maw": {
+   "family": "ships",
+   "mode": "i2i_single",
+   "grid": null,
+   "cuts": null,
+   "out": "ship_boss_maw_mmo"
+  },
+  "livery_vanguard": {
+   "family": "ships",
+   "mode": "i2i_sheet",
+   "grid": null,
+   "cuts": [
+    "ship_vanguard_mmo_front",
+    "ship_vanguard_mmo_three_quarter",
+    "ship_vanguard_mmo_side",
+    "ship_vanguard_mmo_back"
+   ],
+   "out": null
+  },
+  "outpost_defense": {
+   "family": "env",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": "env_outpost_defense"
+  },
+  "outpost_mining": {
+   "family": "env",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": "env_outpost_mining"
+  },
+  "outpost_relay": {
+   "family": "env",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": "env_outpost_relay"
+  },
+  "outpost_repair": {
+   "family": "env",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": "env_outpost_repair"
+  },
+  "p0_minerals_ingot": {
+   "family": "icons",
+   "mode": "panel_white",
+   "grid": [
+    5,
+    4
+   ],
+   "cuts": [
+    "icon_ingot_iron",
+    "icon_ingot_copper",
+    "icon_ingot_chromium",
+    "icon_ingot_silicon",
+    "icon_ingot_aluminium",
+    "icon_ingot_titanium",
+    "icon_ingot_nickel",
+    "icon_ingot_cobalt",
+    "icon_ingot_tungsten",
+    "icon_ingot_silver",
+    "icon_ingot_gold",
+    "icon_ingot_platinum",
+    "icon_ingot_neodymium",
+    "icon_ingot_iridium",
+    "icon_ingot_osmium",
+    "icon_ingot_palladium",
+    "icon_ingot_cerulite",
+    "icon_ingot_emberite",
+    "icon_ingot_voidglass",
+    "icon_ingot_krilium"
+   ],
+   "out": null
+  },
+  "p0_minerals_ore": {
+   "family": "icons",
+   "mode": "panel_white",
+   "grid": [
+    5,
+    4
+   ],
+   "cuts": [
+    "icon_mineral_iron",
+    "icon_mineral_copper",
+    "icon_mineral_chromium",
+    "icon_mineral_silicon",
+    "icon_mineral_aluminium",
+    "icon_mineral_titanium",
+    "icon_mineral_nickel",
+    "icon_mineral_cobalt",
+    "icon_mineral_tungsten",
+    "icon_mineral_silver",
+    "icon_mineral_gold",
+    "icon_mineral_platinum",
+    "icon_mineral_neodymium",
+    "icon_mineral_iridium",
+    "icon_mineral_osmium",
+    "icon_mineral_palladium",
+    "icon_mineral_cerulite",
+    "icon_mineral_emberite",
+    "icon_mineral_voidglass",
+    "icon_mineral_krilium"
+   ],
+   "out": null
+  },
+  "p0_panel_modules_a": {
+   "family": "icons",
+   "mode": "panel_white",
+   "grid": [
+    3,
+    3
+   ],
+   "cuts": [
+    "icon_module_w_railgun",
+    "icon_module_w_mining",
+    "icon_module_s_light",
+    "icon_module_s_heavy",
+    "icon_module_s_ion",
+    "icon_module_h_plate_light",
+    "icon_module_h_plate_heavy",
+    "icon_module_h_composite",
+    "icon_module_p_std"
+   ],
+   "out": null
+  },
+  "p0_panel_modules_b": {
+   "family": "icons",
+   "mode": "panel_white",
+   "grid": [
+    3,
+    3
+   ],
+   "cuts": [
+    "icon_module_p_mk2",
+    "icon_module_p_core",
+    "icon_module_e_std",
+    "icon_module_e_ion",
+    "icon_module_e_vector",
+    "icon_module_b_afterburner",
+    "icon_module_b_fold",
+    "icon_module_c_target",
+    "icon_module_c_scanner"
+   ],
+   "out": null
+  },
+  "p0_panel_modules_c": {
+   "family": "icons",
+   "mode": "panel_white",
+   "grid": [
+    3,
+    3
+   ],
+   "cuts": [
+    "icon_module_c_twin",
+    "icon_module_c_ewar",
+    "icon_module_c_nexus",
+    "icon_module_u_cargo",
+    "icon_module_u_salvage",
+    "icon_module_u_refine",
+    "icon_module_u_drones",
+    "icon_module_u_tractor",
+    "icon_module_u_holds"
+   ],
+   "out": null
+  },
+  "p0_slots": {
+   "family": "icons",
+   "mode": "panel_white",
+   "grid": [
+    4,
+    2
+   ],
+   "cuts": [
+    "icon_slot_engine",
+    "icon_slot_power",
+    "icon_slot_w",
+    "icon_slot_s",
+    "icon_slot_h",
+    "icon_slot_c",
+    "icon_slot_b",
+    "icon_slot_u"
+   ],
+   "out": null
+  },
+  "p2_contracts": {
+   "family": "icons",
+   "mode": "panel_white",
+   "grid": [
+    2,
+    3
+   ],
+   "cuts": [
+    "icon_contract_haul",
+    "icon_contract_hunt",
+    "icon_contract_gather",
+    "icon_contract_escort",
+    "icon_contract_expedition"
+   ],
+   "out": null
+  },
+  "p2_faction_insignia": {
+   "family": "icons",
+   "mode": "panel_white",
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "icon_insignia_concord",
+    "icon_insignia_meridian",
+    "icon_insignia_choir"
+   ],
+   "out": null
+  },
+  "p2_service_glyphs": {
+   "family": "icons",
+   "mode": "panel_white",
+   "grid": [
+    2,
+    2
+   ],
+   "cuts": [
+    "icon_service_vault",
+    "icon_service_insurance",
+    "icon_service_bounty"
+   ],
+   "out": null
+  },
+  "panel_asteroids_b": {
+   "family": "env",
+   "mode": "panel_white",
+   "grid": [
+    3,
+    2
+   ],
+   "cuts": [
+    "env_asteroid_b1",
+    "env_asteroid_b2",
+    "env_asteroid_b3",
+    "env_asteroid_b4",
+    "env_asteroid_b5",
+    "env_asteroid_b6"
+   ],
+   "out": null
+  },
+  "panel_boosters": {
+   "family": "icons",
+   "mode": "panel_white",
+   "grid": [
+    2,
+    3
+   ],
+   "cuts": [
+    "icon_booster_speed",
+    "icon_booster_damage",
+    "icon_booster_shield",
+    "icon_booster_repair",
+    "icon_booster_emp",
+    "icon_booster_teleport"
+   ],
+   "out": null
+  },
+  "panel_equipment": {
+   "family": "icons",
+   "mode": "panel_white",
+   "grid": null,
+   "cuts": [
+    "icon_equip_generator",
+    "icon_equip_shield_gen",
+    "icon_equip_engine",
+    "icon_equip_extra",
+    "icon_equip_module",
+    "icon_equip_drone",
+    "icon_equip_pet",
+    "icon_ammo_laser",
+    "icon_ammo_rocket"
+   ],
+   "out": null
+  },
+  "panel_insignia": {
+   "family": "ui",
+   "mode": "panel_white",
+   "grid": null,
+   "cuts": [
+    "ui_insignia_mmo",
+    "ui_insignia_mic",
+    "ui_insignia_ven",
+    "ui_insignia_neutral"
+   ],
+   "out": null
+  },
+  "panel_map_markers": {
+   "family": "icons",
+   "mode": "panel_white",
+   "grid": [
+    3,
+    3
+   ],
+   "cuts": [
+    "icon_map_node_home",
+    "icon_map_node_neutral",
+    "icon_map_node_pvp",
+    "icon_map_node_danger",
+    "icon_map_node_asteroid",
+    "icon_map_node_station",
+    "icon_map_node_gate",
+    "icon_map_bookmark",
+    "icon_map_route"
+   ],
+   "out": null
+  },
+  "panel_pickups": {
+   "family": "env",
+   "mode": "panel_white",
+   "grid": null,
+   "cuts": [
+    "env_pickup_bonus_box",
+    "env_pickup_repair_pod",
+    "env_pickup_shield_pod",
+    "env_pickup_speed_pod",
+    "env_pickup_ammo_pod",
+    "env_pickup_ore_pod"
+   ],
+   "out": null
+  },
+  "panel_props": {
+   "family": "env",
+   "mode": "panel_white",
+   "grid": [
+    3,
+    2
+   ],
+   "cuts": [
+    "env_prop_hull_nose",
+    "env_prop_hull_mid",
+    "env_prop_hull_stern",
+    "env_prop_plate_section",
+    "env_prop_drive_core",
+    "env_prop_rib_cluster"
+   ],
+   "out": null
+  },
+  "panel_status": {
+   "family": "icons",
+   "mode": "panel_white",
+   "grid": [
+    3,
+    3
+   ],
+   "cuts": [
+    "icon_status_burning",
+    "icon_status_slowed",
+    "icon_status_disabled",
+    "icon_status_shielded",
+    "icon_status_repairing",
+    "icon_status_locked",
+    "icon_status_cloaked",
+    "icon_status_radiated",
+    "icon_status_drained"
+   ],
+   "out": null
+  },
+  "sector_1_bg": {
+   "family": "env",
+   "mode": "single_full",
+   "grid": null,
+   "cuts": null,
+   "out": "env_sector_1_bg"
+  },
+  "sector_2_bg": {
+   "family": "env",
+   "mode": "single_full",
+   "grid": null,
+   "cuts": null,
+   "out": "env_sector_2_bg"
+  },
+  "sector_3_bg": {
+   "family": "env",
+   "mode": "single_full",
+   "grid": null,
+   "cuts": null,
+   "out": "env_sector_3_bg"
+  },
+  "sector_4_bg": {
+   "family": "env",
+   "mode": "single_full",
+   "grid": null,
+   "cuts": null,
+   "out": "env_sector_4_bg"
+  },
+  "sector_5_bg": {
+   "family": "env",
+   "mode": "single_full",
+   "grid": null,
+   "cuts": null,
+   "out": "env_sector_5_bg"
+  },
+  "sector_6_bg": {
+   "family": "env",
+   "mode": "single_full",
+   "grid": null,
+   "cuts": null,
+   "out": "env_sector_6_bg"
+  },
+  "sector_7_bg": {
+   "family": "env",
+   "mode": "single_full",
+   "grid": null,
+   "cuts": null,
+   "out": "env_sector_7_bg"
+  },
+  "ship_bomber": {
+   "family": "ships",
+   "mode": "ship_sheet",
+   "grid": null,
+   "cuts": [
+    "ship_bomber_front",
+    "ship_bomber_three_quarter",
+    "ship_bomber_side",
+    "ship_bomber_back"
+   ],
+   "out": null
+  },
+  "ship_boss_boneyard": {
+   "family": "ships",
+   "mode": "i2i_single",
+   "grid": null,
+   "cuts": null,
+   "out": "ship_boss_boneyard"
+  },
+  "ship_boss_leviathan": {
+   "family": "ships",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": "ship_boss_leviathan"
+  },
+  "ship_boss_pyre": {
+   "family": "ships",
+   "mode": "i2i_single",
+   "grid": null,
+   "cuts": null,
+   "out": "ship_boss_pyre"
+  },
+  "ship_boss_spire": {
+   "family": "ships",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": null
+  },
+  "ship_boss_thorn": {
+   "family": "ships",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": null
+  },
+  "ship_destroyer": {
+   "family": "ships",
+   "mode": "ship_sheet",
+   "grid": null,
+   "cuts": [
+    "ship_destroyer_front",
+    "ship_destroyer_three_quarter",
+    "ship_destroyer_side",
+    "ship_destroyer_back"
+   ],
+   "out": null
+  },
+  "ship_drone_swarm": {
+   "family": "ships",
+   "mode": "ship_sheet",
+   "grid": null,
+   "cuts": [
+    "ship_drone_swarm_front",
+    "ship_drone_swarm_three_quarter",
+    "ship_drone_swarm_side",
+    "ship_drone_swarm_back"
+   ],
+   "out": null
+  },
+  "ship_gunship": {
+   "family": "ships",
+   "mode": "ship_sheet",
+   "grid": null,
+   "cuts": [
+    "ship_gunship_front",
+    "ship_gunship_three_quarter",
+    "ship_gunship_side",
+    "ship_gunship_back"
+   ],
+   "out": null
+  },
+  "ship_interceptor": {
+   "family": "ships",
+   "mode": "ship_sheet",
+   "grid": null,
+   "cuts": [
+    "ship_interceptor_front",
+    "ship_interceptor_three_quarter",
+    "ship_interceptor_side",
+    "ship_interceptor_back"
+   ],
+   "out": null
+  },
+  "ship_mine_layer": {
+   "family": "ships",
+   "mode": "ship_sheet",
+   "grid": null,
+   "cuts": [
+    "ship_mine_layer_front",
+    "ship_mine_layer_three_quarter",
+    "ship_mine_layer_side",
+    "ship_mine_layer_back"
+   ],
+   "out": null
+  },
+  "ship_miner": {
+   "family": "ships",
+   "mode": "ship_sheet",
+   "grid": null,
+   "cuts": [
+    "ship_miner_front",
+    "ship_miner_three_quarter",
+    "ship_miner_side",
+    "ship_miner_back"
+   ],
+   "out": null
+  },
+  "ship_patrol": {
+   "family": "ships",
+   "mode": "ship_sheet",
+   "grid": null,
+   "cuts": [
+    "ship_patrol_front",
+    "ship_patrol_three_quarter",
+    "ship_patrol_side",
+    "ship_patrol_back"
+   ],
+   "out": null
+  },
+  "ship_trader": {
+   "family": "ships",
+   "mode": "ship_sheet",
+   "grid": null,
+   "cuts": [
+    "ship_trader_front",
+    "ship_trader_three_quarter",
+    "ship_trader_side",
+    "ship_trader_back"
+   ],
+   "out": null
+  },
+  "ship_turret_platform": {
+   "family": "ships",
+   "mode": "single_trim",
+   "grid": null,
+   "cuts": null,
+   "out": "ship_turret_platform"
+  },
+  "ui_backdrop_hangar": {
+   "family": "ui",
+   "mode": "single_full",
+   "grid": null,
+   "cuts": null,
+   "out": null
+  },
+  "ui_backdrop_login": {
+   "family": "ui",
+   "mode": "single_full",
+   "grid": null,
+   "cuts": null,
+   "out": null
+  },
+  "ui_backdrop_starmap": {
+   "family": "ui",
+   "mode": "single_full",
+   "grid": null,
+   "cuts": null,
+   "out": null
+  }
+ }
+}

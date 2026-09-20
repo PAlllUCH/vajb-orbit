@@ -1,7 +1,8 @@
 # Batch-2 playtest lane — brief (2026-09-18)
 
 Independent of engine waves (file-disjoint) and can run **in parallel** with
-any engine wave. Source: `TESTING_NOTES.md` (owner's playtest notes, 2026-09-18).
+any engine wave. Source: `docs/gameplay/19_testing_notes.md` (owner's
+playtest notes, 2026-09-18; moved from the root 2026-09-20).
 
 Items:
 
@@ -26,5 +27,5 @@ screenshot step with the owner** (godot-ai editor screenshot at ≥1152 px) —
 a worker cannot approve its own hover look.
 
 Report: `.agents/gen/batch2_report.md`. On closure, the three dispositions in
-`TESTING_NOTES.md` get ticked and the file is absorbed into an
-IMPLEMENTATION_PLAN amendment (per `CLEANUP_PLAN.md`).
+`docs/gameplay/19_testing_notes.md` get ticked and the file is absorbed into
+an IMPLEMENTATION_PLAN amendment (per `docs/design/CLEANUP_PLAN.md`).

@@ -51,11 +51,13 @@ shield). Ships are bought without modules except the mandatory starter fit
 stats.
 
 **Flight handling is a separate table.** For engine purposes the flight-stat
-source is the **handling column of `ENGINE_SPEC.md` §13** (per class: max
-speed, accel time, coast time, turn rate, turn spin-up). §13 is the single
+source is the **handling column of `docs/gameplay/18_engine_spec.md` §13**
+(per class: max speed, accel time, coast time, turn rate, turn spin-up, and —
+2026-09-20 — hull mass; the §13 speed table v2 replaces the ×450 anchor once
+the owner ticks its △ interpolations). §13 is the single
 source and this doc references it instead of restating the values; `Base
 speed` above stays the progression column, and §13's max speeds are that
-percentage × 450 u/s.
+percentage × 450 u/s until the v2 tick lands.
 
 ### 2.1 How to read the progression
 
