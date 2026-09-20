@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://bar566uc441wg"]
+
+[ext_resource type="Script" uid="uid://cl63txknckawf" path="res://game/game.gd" id="1_game"]
+[ext_resource type="Texture2D" uid="uid://o68c15elst7g" path="res://assets/env/env_stars_layer1.png" id="2_stars1"]
+[ext_resource type="Texture2D" uid="uid://c4l2b7bxc00k4" path="res://assets/env/env_stars_layer2.png" id="3_stars2"]
+[ext_resource type="Texture2D" uid="uid://bipbl3vgvqekw" path="res://assets/env/env_stars_layer3.png" id="4_stars3"]
+
+[node name="Game" type="Node2D" unique_id=414674867]
+script = ExtResource("1_game")
+
+[node name="ParallaxBackground" type="ParallaxBackground" parent="." unique_id=1854469274]
+
+[node name="StarsLayer1" type="ParallaxLayer" parent="ParallaxBackground" unique_id=399599708]
+motion_mirroring = Vector2(2048, 2048)
+
+[node name="Stars" type="TextureRect" parent="ParallaxBackground/StarsLayer1" unique_id=2117988711]
+texture_repeat = 2
+offset_right = 2048.0
+offset_bottom = 2048.0
+texture = ExtResource("2_stars1")
+
+[node name="StarsLayer2" type="ParallaxLayer" parent="ParallaxBackground" unique_id=989822083]
+motion_mirroring = Vector2(2048, 2048)
+
+[node name="Stars" type="TextureRect" parent="ParallaxBackground/StarsLayer2" unique_id=1745456960]
+texture_repeat = 2
+offset_right = 2048.0
+offset_bottom = 2048.0
+texture = ExtResource("3_stars2")
+
+[node name="StarsLayer3" type="ParallaxLayer" parent="ParallaxBackground" unique_id=146576334]
+motion_mirroring = Vector2(2048, 2048)
+
+[node name="Stars" type="TextureRect" parent="ParallaxBackground/StarsLayer3" unique_id=1393440994]
+texture_repeat = 2
+offset_right = 2048.0
+offset_bottom = 2048.0
+texture = ExtResource("4_stars3")
+
+[node name="Camera" type="Camera2D" parent="." unique_id=1486277996]
+position_smoothing_enabled = true

@@ -1,0 +1,75 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://ui/station/outfitting_panel.gd" id="1_outfitting"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_equip_module_48.png" id="2_pane_icon"]
+
+[node name="Outfitting" type="VBoxContainer"]
+unique_name_in_owner = true
+theme_override_constants/separation = 12
+script = ExtResource("1_outfitting")
+
+[node name="PaneHeader" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PaneIcon" type="TextureRect" parent="PaneHeader"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("2_pane_icon")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TitleBox" type="VBoxContainer" parent="PaneHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+
+[node name="PaneTitle" type="Label" parent="PaneHeader/TitleBox"]
+layout_mode = 2
+theme_type_variation = &"StationPanelTitle"
+text = "OUTFITTING"
+
+[node name="PaneSubtitle" type="Label" parent="PaneHeader/TitleBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "AMMUNITION AND CONSUMABLES"
+
+[node name="PanelTag" type="Label" parent="PaneHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationCaption"
+
+[node name="HeaderMargin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 0
+
+[node name="OutfittingHeader" type="HBoxContainer" parent="HeaderMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="OutfittingScroll" type="ScrollContainer" parent="."]
+unique_name_in_owner = true
+horizontal_scroll_mode = 0
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="OutfittingRows" type="VBoxContainer" parent="OutfittingScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="PaneFooter" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "HOLD CAPACITY IS ADVISORY · A PURCHASE IS NEVER CLAMPED"

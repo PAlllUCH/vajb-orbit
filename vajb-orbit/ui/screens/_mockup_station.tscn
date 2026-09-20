@@ -1,0 +1,751 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://ui/screens/_mockup_station.gd" id="1_mockup"]
+[ext_resource type="Theme" path="res://ui/theme/vajb_theme.tres" id="2_vajb_theme"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_backdrop_hangar.png" id="3_hangar"]
+[ext_resource type="NoiseTexture2D" path="res://ui/theme/grain.tres" id="4_grain"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_map_node_station_48.png" id="5_mark"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_equip_module_48.png" id="6_outfitting"]
+[ext_resource type="Texture2D" path="res://assets/icons/tint/icon_hull_48.png" id="7_shipyard"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_equip_generator_48.png" id="8_upgrades"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_map_route_48.png" id="9_launch"]
+[ext_resource type="Texture2D" path="res://assets/icons/tint/icon_credits_48.png" id="10_credits"]
+
+[node name="Station" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_vajb_theme")
+script = ExtResource("1_mockup")
+
+[node name="Backdrop" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_hangar")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="BackdropDim" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Grain" type="TextureRect" parent="."]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0.08)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("4_grain")
+expand_mode = 1
+stretch_mode = 1
+texture_repeat = 2
+
+[node name="Layout" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="Page" type="VBoxContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Header" type="HBoxContainer" parent="Layout/Page"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 76)
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="StationMark" type="TextureRect" parent="Layout/Page/Header"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("5_mark")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TitleBox" type="VBoxContainer" parent="Layout/Page/Header"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+
+[node name="StationName" type="Label" parent="Layout/Page/Header/TitleBox"]
+layout_mode = 2
+theme_type_variation = &"HeroTitle"
+text = "ORBITAL DRYDOCK KEPLER-9"
+
+[node name="StationLocation" type="Label" parent="Layout/Page/Header/TitleBox"]
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "DOCKING RING 04 · SECTOR K-9 · HULL TRAFFIC LOW"
+
+[node name="Spacer" type="Control" parent="Layout/Page/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="CreditsPanel" type="PanelContainer" parent="Layout/Page/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"PanelRaised"
+
+[node name="CreditsMargin" type="MarginContainer" parent="Layout/Page/Header/CreditsPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 8
+
+[node name="CreditsRow" type="HBoxContainer" parent="Layout/Page/Header/CreditsPanel/CreditsMargin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="CreditsIcon" type="TextureRect" parent="Layout/Page/Header/CreditsPanel/CreditsMargin/CreditsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("10_credits")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CreditsBox" type="VBoxContainer" parent="Layout/Page/Header/CreditsPanel/CreditsMargin/CreditsRow"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 0
+
+[node name="CreditsLabel" type="Label" parent="Layout/Page/Header/CreditsPanel/CreditsMargin/CreditsRow/CreditsBox"]
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "CREDITS"
+
+[node name="CreditsValue" type="Label" parent="Layout/Page/Header/CreditsPanel/CreditsMargin/CreditsRow/CreditsBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationValue"
+text = "0"
+
+[node name="Body" type="HBoxContainer" parent="Layout/Page"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="ModuleRail" type="PanelContainer" parent="Layout/Page/Body"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+size_flags_vertical = 3
+theme_type_variation = &"PanelRaised"
+
+[node name="RailMargin" type="MarginContainer" parent="Layout/Page/Body/ModuleRail"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="RailBox" type="VBoxContainer" parent="Layout/Page/Body/ModuleRail/RailMargin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="RailCaption" type="Label" parent="Layout/Page/Body/ModuleRail/RailMargin/RailBox"]
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "MODULES"
+
+[node name="ModuleButtons" type="VBoxContainer" parent="Layout/Page/Body/ModuleRail/RailMargin/RailBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="RailSpacer" type="Control" parent="Layout/Page/Body/ModuleRail/RailMargin/RailBox"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="SessionCaption" type="Label" parent="Layout/Page/Body/ModuleRail/RailMargin/RailBox"]
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "SESSION"
+
+[node name="SessionButtons" type="VBoxContainer" parent="Layout/Page/Body/ModuleRail/RailMargin/RailBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ModuleHost" type="PanelContainer" parent="Layout/Page/Body"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_type_variation = &"PanelRaised"
+
+[node name="HostMargin" type="MarginContainer" parent="Layout/Page/Body/ModuleHost"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="Outfitting" type="VBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PaneHeader" type="HBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Outfitting"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PaneIcon" type="TextureRect" parent="Layout/Page/Body/ModuleHost/HostMargin/Outfitting/PaneHeader"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("6_outfitting")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TitleBox" type="VBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Outfitting/PaneHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+
+[node name="PaneTitle" type="Label" parent="Layout/Page/Body/ModuleHost/HostMargin/Outfitting/PaneHeader/TitleBox"]
+layout_mode = 2
+theme_type_variation = &"StationPanelTitle"
+text = "OUTFITTING"
+
+[node name="PaneSubtitle" type="Label" parent="Layout/Page/Body/ModuleHost/HostMargin/Outfitting/PaneHeader/TitleBox"]
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "AMMUNITION AND CONSUMABLES · 5 PACKS IN THE CATALOGUE"
+
+[node name="PanelTag" type="Label" parent="Layout/Page/Body/ModuleHost/HostMargin/Outfitting/PaneHeader"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationCaption"
+text = "IDS laser · cannon · rocket · mine · plasma"
+
+[node name="HeaderMargin" type="MarginContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Outfitting"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 0
+
+[node name="OutfittingHeader" type="HBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Outfitting/HeaderMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="OutfittingScroll" type="ScrollContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Outfitting"]
+horizontal_scroll_mode = 0
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="OutfittingRows" type="VBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Outfitting/OutfittingScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="PaneFooter" type="Label" parent="Layout/Page/Body/ModuleHost/HostMargin/Outfitting"]
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "HOLD CAPACITY IS ADVISORY · A PURCHASE IS NEVER CLAMPED"
+
+[node name="Shipyard" type="VBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PaneHeader" type="HBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ShipyardIcon" type="TextureRect" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard/PaneHeader"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("7_shipyard")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TitleBox" type="VBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard/PaneHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+
+[node name="PaneTitle" type="Label" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard/PaneHeader/TitleBox"]
+layout_mode = 2
+theme_type_variation = &"StationPanelTitle"
+text = "SHIPYARD"
+
+[node name="PaneSubtitle" type="Label" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard/PaneHeader/TitleBox"]
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "BUY AND SWITCH HULLS · 4 IN THE CRADLE · SIDE VIEWS ONLY"
+
+[node name="PanelTag" type="Label" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard/PaneHeader"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationCaption"
+text = "DEFAULT HULL ship_vanguard"
+
+[node name="ShipyardBody" type="HBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="ShipListBox" type="VBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard/ShipyardBody"]
+custom_minimum_size = Vector2(340, 0)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ShipListCaption" type="Label" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard/ShipyardBody/ShipListBox"]
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "HULLS IN THE CRADLE"
+
+[node name="ShipScroll" type="ScrollContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard/ShipyardBody/ShipListBox"]
+horizontal_scroll_mode = 0
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ShipList" type="VBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard/ShipyardBody/ShipListBox/ShipScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="PreviewFrame" type="PanelContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard/ShipyardBody"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_type_variation = &"PanelRaised"
+
+[node name="PreviewMargin" type="MarginContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard/ShipyardBody/PreviewFrame"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="PreviewBox" type="VBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard/ShipyardBody/PreviewFrame/PreviewMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PreviewCaption" type="Label" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard/ShipyardBody/PreviewFrame/PreviewMargin/PreviewBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+autowrap_mode = 3
+
+[node name="PreviewCenter" type="CenterContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard/ShipyardBody/PreviewFrame/PreviewMargin/PreviewBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="PreviewImage" type="TextureRect" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard/ShipyardBody/PreviewFrame/PreviewMargin/PreviewBox/PreviewCenter"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PreviewName" type="Label" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard/ShipyardBody/PreviewFrame/PreviewMargin/PreviewBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationPanelTitle"
+text = "VANGUARD"
+
+[node name="StatsBox" type="VBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard/ShipyardBody"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="StatsCaption" type="Label" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard/ShipyardBody/StatsBox"]
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "COMPARISON VS ACTIVE HULL"
+
+[node name="ShipStats" type="VBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard/ShipyardBody/StatsBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="HardpointCaption" type="Label" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard/ShipyardBody/StatsBox"]
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "HARDPOINT PLATES · 7 MAXIMUM"
+
+[node name="HardpointSlots" type="HBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard/ShipyardBody/StatsBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_constants/separation = 4
+
+[node name="StatsSpacer" type="Control" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard/ShipyardBody/StatsBox"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="PriceCaption" type="Label" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard/ShipyardBody/StatsBox"]
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "PRICE"
+
+[node name="ShipPrice" type="Label" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard/ShipyardBody/StatsBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationValue"
+text = "0"
+
+[node name="ShipAction" type="Button" parent="Layout/Page/Body/ModuleHost/HostMargin/Shipyard/ShipyardBody/StatsBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+theme_type_variation = &"StationButton"
+text = "IN SERVICE"
+
+[node name="Upgrades" type="VBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PaneHeader" type="HBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Upgrades"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PaneIcon" type="TextureRect" parent="Layout/Page/Body/ModuleHost/HostMargin/Upgrades/PaneHeader"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("8_upgrades")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TitleBox" type="VBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Upgrades/PaneHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+
+[node name="PaneTitle" type="Label" parent="Layout/Page/Body/ModuleHost/HostMargin/Upgrades/PaneHeader/TitleBox"]
+layout_mode = 2
+theme_type_variation = &"StationPanelTitle"
+text = "UPGRADES"
+
+[node name="PaneSubtitle" type="Label" parent="Layout/Page/Body/ModuleHost/HostMargin/Upgrades/PaneHeader/TitleBox"]
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "PERMANENT REFITS · 6 SLOTS · ONE UPGRADE PER SLOT"
+
+[node name="PanelTag" type="Label" parent="Layout/Page/Body/ModuleHost/HostMargin/Upgrades/PaneHeader"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationCaption"
+text = "NO UNINSTALL API IN V1"
+
+[node name="HeaderMargin" type="MarginContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Upgrades"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 0
+
+[node name="UpgradesHeader" type="HBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Upgrades/HeaderMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="UpgradesScroll" type="ScrollContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Upgrades"]
+horizontal_scroll_mode = 0
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="UpgradeRows" type="VBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Upgrades/UpgradesScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="PaneFooter" type="Label" parent="Layout/Page/Body/ModuleHost/HostMargin/Upgrades"]
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "INSTALLING CHARGES CREDITS AND IS PERMANENT FOR V1"
+
+[node name="Launch" type="VBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PaneHeader" type="HBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Launch"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PaneIcon" type="TextureRect" parent="Layout/Page/Body/ModuleHost/HostMargin/Launch/PaneHeader"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("9_launch")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TitleBox" type="VBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Launch/PaneHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+
+[node name="PaneTitle" type="Label" parent="Layout/Page/Body/ModuleHost/HostMargin/Launch/PaneHeader/TitleBox"]
+layout_mode = 2
+theme_type_variation = &"StationPanelTitle"
+text = "LAUNCH"
+
+[node name="PaneSubtitle" type="Label" parent="Layout/Page/Body/ModuleHost/HostMargin/Launch/PaneHeader/TitleBox"]
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "UNDOCK AND RETURN TO OPEN SPACE · LOADING BRIDGE DESTINATION game"
+
+[node name="PanelTag" type="Label" parent="Layout/Page/Body/ModuleHost/HostMargin/Launch/PaneHeader"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationCaption"
+text = "TWO PRESSES · 3 s WINDOW"
+
+[node name="LaunchBody" type="HBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Launch"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="BriefBox" type="VBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Launch/LaunchBody"]
+custom_minimum_size = Vector2(560, 0)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BriefCaption" type="Label" parent="Layout/Page/Body/ModuleHost/HostMargin/Launch/LaunchBody/BriefBox"]
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "FLIGHT BRIEFING"
+
+[node name="BriefRows" type="VBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Launch/LaunchBody/BriefBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="CargoCaption" type="Label" parent="Layout/Page/Body/ModuleHost/HostMargin/Launch/LaunchBody/BriefBox"]
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "CARGO HOLD · 3 STACKS"
+
+[node name="CargoSlots" type="HBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Launch/LaunchBody/BriefBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="CargoList" type="ItemList" parent="Layout/Page/Body/ModuleHost/HostMargin/Launch/LaunchBody/BriefBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 110)
+layout_mode = 2
+
+[node name="BriefSpacer" type="Control" parent="Layout/Page/Body/ModuleHost/HostMargin/Launch/LaunchBody/BriefBox"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="BriefNote" type="Label" parent="Layout/Page/Body/ModuleHost/HostMargin/Launch/LaunchBody/BriefBox"]
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "CARGO ITEM IDS ARE STUB DATA · A MINING/LOOT SPEC OWNS THE ITEM CATALOGUE"
+autowrap_mode = 3
+
+[node name="LaunchSpacer" type="Control" parent="Layout/Page/Body/ModuleHost/HostMargin/Launch/LaunchBody"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="LaunchActionBox" type="VBoxContainer" parent="Layout/Page/Body/ModuleHost/HostMargin/Launch/LaunchBody"]
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ActionCaption" type="Label" parent="Layout/Page/Body/ModuleHost/HostMargin/Launch/LaunchBody/LaunchActionBox"]
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "DECK CONTROL"
+
+[node name="ActionSpacer" type="Control" parent="Layout/Page/Body/ModuleHost/HostMargin/Launch/LaunchBody/LaunchActionBox"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="LaunchButton" type="Button" parent="Layout/Page/Body/ModuleHost/HostMargin/Launch/LaunchBody/LaunchActionBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+theme_type_variation = &"StationButton"
+text = "LAUNCH"
+
+[node name="ConfirmStrip" type="Label" parent="Layout/Page/Body/ModuleHost/HostMargin/Launch/LaunchBody/LaunchActionBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationValue"
+text = "PRESS LAUNCH TO ARM · A SECOND PRESS CONFIRMS WITHIN 3 s"
+autowrap_mode = 3
+
+[node name="Footer" type="HBoxContainer" parent="Layout/Page"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="StatusBeacon" type="ColorRect" parent="Layout/Page/Footer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+
+[node name="StatusLabel" type="Label" parent="Layout/Page/Footer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationCaption"
+text = "DOCKED · ALL SYSTEMS NOMINAL"
+
+[node name="FooterSpacer" type="Control" parent="Layout/Page/Footer"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="HintLabel" type="Label" parent="Layout/Page/Footer"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationCaption"
+text = "ARROWS MOVE · ENTER CONFIRM · TAB RAIL · PGUP/PGDN MODULE · ESC BACK"
+
+[node name="LeaveConfirm" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="LeaveDimmer" type="ColorRect" parent="LeaveConfirm"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="LeaveCenter" type="CenterContainer" parent="LeaveConfirm"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="LeavePanel" type="PanelContainer" parent="LeaveConfirm/LeaveCenter"]
+custom_minimum_size = Vector2(520, 0)
+layout_mode = 2
+theme_type_variation = &"PanelRaised"
+
+[node name="LeaveMargin" type="MarginContainer" parent="LeaveConfirm/LeaveCenter/LeavePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="LeaveBox" type="VBoxContainer" parent="LeaveConfirm/LeaveCenter/LeavePanel/LeaveMargin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="LeaveTitle" type="Label" parent="LeaveConfirm/LeaveCenter/LeavePanel/LeaveMargin/LeaveBox"]
+layout_mode = 2
+theme_type_variation = &"StationPanelTitle"
+text = "LEAVE THE STATION"
+
+[node name="LeaveBody" type="Label" parent="LeaveConfirm/LeaveCenter/LeavePanel/LeaveMargin/LeaveBox"]
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "Logging out returns to the main menu. To fly instead, stay docked and use LAUNCH. Credits, hulls, ammunition and upgrades are saved automatically."
+autowrap_mode = 3
+
+[node name="LeaveButtons" type="HBoxContainer" parent="LeaveConfirm/LeaveCenter/LeavePanel/LeaveMargin/LeaveBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 2
+
+[node name="LeaveCancel" type="Button" parent="LeaveConfirm/LeaveCenter/LeavePanel/LeaveMargin/LeaveBox/LeaveButtons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(190, 52)
+layout_mode = 2
+theme_type_variation = &"StationButton"
+text = "STAY DOCKED"
+
+[node name="LeaveLogout" type="Button" parent="LeaveConfirm/LeaveCenter/LeavePanel/LeaveMargin/LeaveBox/LeaveButtons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(190, 52)
+layout_mode = 2
+theme_type_variation = &"StationButton"
+text = "LOG OUT"
+
+[node name="Fade" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0)

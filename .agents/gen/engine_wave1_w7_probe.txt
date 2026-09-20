@@ -1,0 +1,69 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+--- H3: PlayerState.damage(amount, bypass_shield) ---
+damage() args=2 ; shield 100, damage(150) -> hull=500.0 shield=0.0 ; events shield=1 hull=0
+[OK]   H3 a: a live shield absorbs, no carry-over | args=2 hull=500.0 shield=0.0
+[OK]   H3 a: the absorbed hit is still announced on the HUD channel | shield events=1 hull events=0
+[OK]   H3 b: with the shield down the hull takes it | hull=450.0 shield=0.0
+[OK]   H3 c: bypass_shield reaches the hull and leaves the shield | hull=350.0 shield=100.0
+[OK]   H3 d: a partial hit leaves the shield standing, hull untouched | hull=500.0 shield=60.0
+[OK]   H3 e: a non-positive amount is still a no-op | hull=500.0 shield=60.0
+--- H2: rock collision on the shipped player_ship.tscn ---
+collision bodies=1 ; body=HullBody layer=2 mask=1 radius=30.0
+[OK]   H2 a: the ship carries exactly one collision body, on its own layer | bodies=1 layer=2 mask=1
+[OK]   H2 b: the body's shape is the hull circle | radius=30.0
+rock radius=66.0 ; ship stopped at x=103.999862670898 ; contact at x=104.0
+[OK]   H2 c: the rock stops the ship at the rock's surface | stopped=103.999862670898 contact=104.0
+negative control (not in tree): end x=2201.72631835938 (rock at 200)
+[OK]   H2 d: without the body in the space the same run passes through | end x=2201.72631835938
+--- H2 f: the shipped spawns are clear of rocks ---
+  sector_1 rocks=70 spawn=(0.0, 420.0)
+  sector_2 rocks=39 spawn=(0.0, 420.0)
+  sector_3 rocks=53 spawn=(0.0, 420.0)
+  sector_4 rocks=73 spawn=(0.0, 420.0)
+  sector_5 rocks=71 spawn=(0.0, 420.0)
+  sector_6 rocks=39 spawn=(0.0, 420.0)
+  sector_7 rocks=66 spawn=(0.0, 420.0)
+closest rock surface to a spawn across 7 sectors: 1308.78930664063 u
+[OK]   H2 f: no shipped spawn starts inside a rock | clearance=1308.78930664063 radius=30.0
+--- live game.tscn ---
+ship hold=40 ; PlayerState.cargo_max=40 ; HUD footer=CARGO 38/40 ; laser=MiningLaser:<Node2D#101216946568> reticle=TargetReticle:<Control#91284834124>
+[OK]   M1 a: the ship's hold, PlayerState and the HUD agree at boot | hold=40 state=40 footer=CARGO 38/40
+--- H1: profile cargo -> PlayerState -> HUD ---
+[OK]   H1 a: the 0.1 s HUD refresh mirrors the profile manifest | profile=34 state=34 footer=CARGO 34/40
+[OK]   H1 b: a profile cargo change mirrors with no frame in between | profile 34 -> 37 state=37
+[OK]   H1 c: the cargo readout follows on the same call | footer=CARGO 37/40
+cargo cells filled=37 of 40
+[OK]   H1 d: the cargo cells fill with the mirrored count | filled=37 used=37
+[OK]   H1 e: a collected pickup moves the readout immediately | profile 35 -> 37 state=37 footer=CARGO 37/40
+--- M1: a hull the station catalogue does not sell still collects ---
+hulls whose ShipFit hold differs from the station catalogue: 5 of 9
+active_ship=ship_miner (StationCatalog hold=missing) ; collected=true (cargo 36 -> 37)
+[OK]   M1 b: the miner hull collects with the catalogue row missing | catalog=missing cargo 36 -> 37
+stand-in hold=40 (ShipFit 40) ; ship_miner stand-in hold=55 (ShipFit 55) ; collected=true
+[OK]   M1 c: a stand-in without the accessor falls back to the ShipFit hold | hold=40 miner=55 collected=true
+--- M1: the hold-full gate uses that same hold ---
+hold=40 fill=40 range=42.4264068603516 ; footer='CARGO 40/40' danger=true ; blocked pickup position=(30.0, 450.0)
+[OK]   M1 d: a full hold leaves an in-range pickup drifting | range=42.4264068603516 fill 40 -> 40 pos=(30.0, 450.0)
+[OK]   H1 f: the hold-full HUD state is live at the same fill | footer='CARGO 40/40' danger=true
+[OK]   H1 f: emptying the hold clears the alert again | footer='CARGO 0/40'
+--- H2 e: what the ship's mask can see in the live scene ---
+layer-1 objects in the live scene: 63 rock bodies, 0 other bodies, 1 areas
+[OK]   H2 e: every physics body on the rock layer is an asteroid | rocks=63 other=0 areas=1
+--- H4: the mining reticle state ---
+reticle at rest=0 ; laser active=true has_target=true -> state=1 (1=IN_RANGE)
+[OK]   H4 a: an active beam with a rock under the cursor reads IN_RANGE | rest=0 acquired=true state=1
+laser active, no rock -> has_target=false state=2 (2=OUT_OF_RANGE)
+[OK]   H4 b: an active beam with nothing under it reads OUT_OF_RANGE | state=2
+[OK]   H4 c: releasing the trigger returns the reticle to PLAIN | state=0
+--- the input guards hold with interact/warp still unapplied ---
+dock prompt away [false] inside [true 'F · DOCK'] ; interact=false warp=false
+[OK]   the dock prompt still works while the actions are unapplied | away=false inside=[true 'F · DOCK']
+profile cargo restored: 38 units in 5 stacks
+--- M2: SettingsManager.REBINDABLE_ACTIONS ---
+rebindable_actions=17 ; tail=[&"interact", &"warp"] ; binding_text(interact,0)=''
+[OK]   M2 a: exactly 17 actions in the patch order | size=17
+[OK]   M2 b: the two new rows read as unbound while the map lacks them | interact=false warp=false
+=== w7 fix probe: checks 29, failures 0 ===
+cleanup C:/Users/Kamil/AppData/Roaming/Godot/app_userdata/Vajb Orbit/_w7_probe_log.txt -> error 0

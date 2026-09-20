@@ -1,0 +1,25 @@
+{
+  "task_id": "b32cd07645dffebdbd3e87c1465521a4",
+  "model": "gpt-image-2-5-flare-text-to-image",
+  "input": {
+    "prompt": "ui_slot_weapon: a square panel with four square weapon slot plates arranged in a 2 by 2 grid, generous gaps between the cells, no grid lines, no labels, no text. Each slot is one square plate with a 1 px border, hard corners, subtle film grain, and inside each plate a single faint generic laser blaster hardpoint silhouette in steel highlight #565C63 drawn as flat rim-lit geometry with no glow and no ember, centred and fully inside the plate. Top-left normal state: plate gunmetal dark #2B2F35, border panel steel #2A2E35, silhouette steel highlight #565C63. Top-right hover state: plate brightened one step to gunmetal mid #3A3F46, border ash text #8D939B, silhouette unchanged, no ember, no glow, no halo. Bottom-left pressed state: plate darkened to iron black #232629, silhouette unchanged, inset bevel. Bottom-right disabled state: the same gunmetal dark #2B2F35 plate with the weapon silhouette at 40 percent opacity, plate and details flattened and desaturated. All four plates identical in size and shape, evenly spaced, recessed slot look. Plain solid pure white background with clean white margins.\ngrimdark painted sci-fi, semi-realistic weathered metal, harsh directional rim light from upper-left with a thin cold pale steel rim tracing shadow-side silhouettes, subtle film grain over the whole image, top-down orthographic view. Fixed palette: gunmetal mid #3A3F46, gunmetal dark #2B2F35, iron black #232629, steel highlight #565C63, rusted ochre #6E5B4A, dry rust #8A6A50, grimy umber #4A423B, void black #0A0E14, deep void blue #111823, void haze #1A2230, burnt ember #C8461B, ember glow #E8703A, panel black #15181D, panel steel #2A2E35, ash text #8D939B, bone text #C9CDD2. Metal colour is desaturated gunmetal and rusted steel, dark and tired, with scratches, oil stains, hull grime, rust streaks, pitted metal, scorch marks and battle damage. Glow colours are burnt ember #C8461B and ember glow #E8703A only, small and hot, used exclusively for engines, weapons and warning lights; no other glow or accent colour exists anywhere in the image. Backgrounds are near-black blue void, void black #0A0E14 to deep void blue #111823, sparse faint stars, desaturated throughout, no saturated colours, no chrome, no neon, no gloss, no clean surfaces, moody and menacing.",
+    "aspect_ratio": "1:1",
+    "resolution": "2K"
+  },
+  "urls": [
+    "https://tempfile.aiquickdraw.com/p/b32cd07645dffebdbd3e87c1465521a4_1_1789662809_3018.png"
+  ],
+  "local_paths": [
+    "G:\\Mój dysk\\Projekty\\Vajb Orbit\\vajb-orbit\\assets\\ui\\20260917-183336\\ui-slot-weapon-a-square-panel-with-four-1.png"
+  ],
+  "alpha_paths": [
+    "G:\\Mój dysk\\Projekty\\Vajb Orbit\\vajb-orbit\\assets\\ui\\20260917-183336\\ui-slot-weapon-a-square-panel-with-four-1-alpha.png"
+  ],
+  "upscaled_paths": [],
+  "asset_paths": [
+    "G:\\Mój dysk\\Projekty\\Vajb Orbit\\vajb-orbit\\assets\\ui\\20260917-183336\\ui-slot-weapon-a-square-panel-with-four-asset-01.png",
+    "G:\\Mój dysk\\Projekty\\Vajb Orbit\\vajb-orbit\\assets\\ui\\20260917-183336\\ui-slot-weapon-a-square-panel-with-four-asset-02.png",
+    "G:\\Mój dysk\\Projekty\\Vajb Orbit\\vajb-orbit\\assets\\ui\\20260917-183336\\ui-slot-weapon-a-square-panel-with-four-asset-03.png",
+    "G:\\Mój dysk\\Projekty\\Vajb Orbit\\vajb-orbit\\assets\\ui\\20260917-183336\\ui-slot-weapon-a-square-panel-with-four-asset-04.png"
+  ]
+}

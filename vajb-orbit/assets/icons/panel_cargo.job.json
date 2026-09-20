@@ -1,0 +1,27 @@
+{
+  "task_id": "04e356b4b7f8c74d2fdd3a5fcf4f3dcd",
+  "model": "gpt-image-2-5-flare-text-to-image",
+  "input": {
+    "prompt": "grimdark painted sci-fi, semi-realistic weathered metal, harsh directional rim light from upper-left with a thin cold pale steel rim tracing shadow-side silhouettes, subtle film grain over the whole image, top-down orthographic view. Fixed palette: gunmetal mid #3A3F46, gunmetal dark #2B2F35, iron black #232629, steel highlight #565C63, rusted ochre #6E5B4A, dry rust #8A6A50, grimy umber #4A423B, void black #0A0E14, deep void blue #111823, void haze #1A2230, burnt ember #C8461B, ember glow #E8703A, panel black #15181D, panel steel #2A2E35, ash text #8D939B, bone text #C9CDD2. Metal colour is desaturated gunmetal and rusted steel, dark and tired, with scratches, oil stains, hull grime, rust streaks, pitted metal, scorch marks and battle damage. Glow colours are burnt ember #C8461B and ember glow #E8703A only, small and hot, used exclusively for engines, weapons and warning lights; no other glow or accent colour exists anywhere in the image. Backgrounds are near-black blue void, void black #0A0E14 to deep void blue #111823, sparse faint stars, desaturated throughout, no saturated colours, no chrome, no neon, no gloss, no clean surfaces, moody and menacing.\n\nflat vector icon sheet for a dark sci-fi spaceship interface, six cargo and ore icons on a 2x3 grid of two columns and three rows, arranged left to right and top to bottom. Render this as a flat vector icon sheet and not as painted metal: every icon is a solid single-colour iron black #232629 silhouette with clean uniform strokes on a plain solid pure white background, with no weathering, no rust, no scratches, no rim light, no film grain, no shading, no gloss, no glow, no ember highlights, no stars and no dark background. Row one: raw ore chunk icon in the left cell, cargo crate icon in the right cell. Row two: iso-container icon in the left cell, fuel cell canister icon in the right cell. Row three: torn hull plate icon in the left cell, data core icon in the right cell. All six icons have identical visual mass and generous even gaps between them. Icon one, raw ore chunk: angular faceted rock with one flat cleaved face, silhouette-dominant. No sparkle, no crystals shooting light, no gem facets, no pickaxe, no shadow. Icon two, plain cargo crate: rectangular box with a lid seam and two clamp edges, three-quarter-flat front view. No rivets, no stencilled text, no hazard stripes, no wood grain, no rounded corners. Icon three, iso-container: long rectangular pod with corner brackets and one central seam line, front view. No corrugation, no doors ajar, no windows, no stacking, no perspective tilt. Icon four, fuel cell canister: vertical cylinder with a capped top valve and a single horizontal band. No flame, no droplet, no gauge, no glow, no rounded dome cap. Icon five, torn hull plate fragment: irregular angular scrap with one sheared edge and two bolt holes. No skull, no wrench, no treasure chest, no coins, no jagged saw teeth, no blood. Icon six, data core: square slab with a central square inset and two corner cut notches. No circuit traces, no glowing lines, no chip pins, no key symbol, no rounded corners. Every icon is drawn as a single-colour flat silhouette in iron black #232629 with clean uniform strokes, isolated object, no shadows, no glow, no grid lines, no labels, no text, no watermark.\n\nflat vector icon sheet, 2x3 grid (icons arranged in two columns and three rows), generous even gaps between icons, plain solid pure white background, no grid lines, no labels, no text, no watermark, isolated objects, no shadows, no glow, icons drawn as single-colour flat silhouettes in iron black #232629 with clean uniform strokes, hard mitred corners, corner radius zero. For this sheet only, the flat vector interpretation overrides the painted metal style.",
+    "aspect_ratio": "1:1",
+    "resolution": "2K"
+  },
+  "urls": [
+    "https://tempfile.aiquickdraw.com/p/04e356b4b7f8c74d2fdd3a5fcf4f3dcd_1_1789662876_4540.png"
+  ],
+  "local_paths": [
+    "G:\\Mój dysk\\Projekty\\Vajb Orbit\\vajb-orbit\\assets\\icons\\20260917-183446\\grimdark-painted-sci-fi-semi-realistic-1.png"
+  ],
+  "alpha_paths": [
+    "G:\\Mój dysk\\Projekty\\Vajb Orbit\\vajb-orbit\\assets\\icons\\20260917-183446\\grimdark-painted-sci-fi-semi-realistic-1-alpha.png"
+  ],
+  "upscaled_paths": [],
+  "asset_paths": [
+    "G:\\Mój dysk\\Projekty\\Vajb Orbit\\vajb-orbit\\assets\\icons\\20260917-183446\\grimdark-painted-sci-fi-semi-realistic-asset-01.png",
+    "G:\\Mój dysk\\Projekty\\Vajb Orbit\\vajb-orbit\\assets\\icons\\20260917-183446\\grimdark-painted-sci-fi-semi-realistic-asset-02.png",
+    "G:\\Mój dysk\\Projekty\\Vajb Orbit\\vajb-orbit\\assets\\icons\\20260917-183446\\grimdark-painted-sci-fi-semi-realistic-asset-03.png",
+    "G:\\Mój dysk\\Projekty\\Vajb Orbit\\vajb-orbit\\assets\\icons\\20260917-183446\\grimdark-painted-sci-fi-semi-realistic-asset-04.png",
+    "G:\\Mój dysk\\Projekty\\Vajb Orbit\\vajb-orbit\\assets\\icons\\20260917-183446\\grimdark-painted-sci-fi-semi-realistic-asset-05.png",
+    "G:\\Mój dysk\\Projekty\\Vajb Orbit\\vajb-orbit\\assets\\icons\\20260917-183446\\grimdark-painted-sci-fi-semi-realistic-asset-06.png"
+  ]
+}

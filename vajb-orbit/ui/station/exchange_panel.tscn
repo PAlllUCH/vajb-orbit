@@ -1,0 +1,183 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://ui/station/exchange_panel.gd" id="1_exchange"]
+[ext_resource type="Texture2D" path="res://assets/icons/tint/icon_credits_48.png" id="2_pane_icon"]
+
+[node name="Exchange" type="VBoxContainer"]
+unique_name_in_owner = true
+theme_override_constants/separation = 12
+script = ExtResource("1_exchange")
+
+[node name="PaneHeader" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PaneIcon" type="TextureRect" parent="PaneHeader"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("2_pane_icon")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TitleBox" type="VBoxContainer" parent="PaneHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+
+[node name="PaneTitle" type="Label" parent="PaneHeader/TitleBox"]
+layout_mode = 2
+theme_type_variation = &"StationPanelTitle"
+text = "EXCHANGE"
+
+[node name="PaneSubtitle" type="Label" parent="PaneHeader/TitleBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "MINERALS AND SURPLUS"
+
+[node name="PanelTag" type="Label" parent="PaneHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationCaption"
+
+[node name="ExchangeBody" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="HoldBox" type="VBoxContainer" parent="ExchangeBody"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(340, 0)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HoldCaption" type="Label" parent="ExchangeBody/HoldBox"]
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "YOUR HOLD"
+
+[node name="HoldScroll" type="ScrollContainer" parent="ExchangeBody/HoldBox"]
+unique_name_in_owner = true
+horizontal_scroll_mode = 0
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HoldRows" type="VBoxContainer" parent="ExchangeBody/HoldBox/HoldScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="MarketBoard" type="VBoxContainer" parent="ExchangeBody"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="BoardCaption" type="Label" parent="ExchangeBody/MarketBoard"]
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "MARKET BOARD"
+
+[node name="BoardScroll" type="ScrollContainer" parent="ExchangeBody/MarketBoard"]
+unique_name_in_owner = true
+horizontal_scroll_mode = 0
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="BoardRows" type="VBoxContainer" parent="ExchangeBody/MarketBoard/BoardScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="TradeBox" type="VBoxContainer" parent="ExchangeBody"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TradeCaption" type="Label" parent="ExchangeBody/TradeBox"]
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "SALE"
+
+[node name="TradeTitle" type="Label" parent="ExchangeBody/TradeBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationValue"
+
+[node name="StepperRow" type="HBoxContainer" parent="ExchangeBody/TradeBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="StepMinus" type="Button" parent="ExchangeBody/TradeBox/StepperRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationButton"
+text = "-"
+
+[node name="StepValue" type="Label" parent="ExchangeBody/TradeBox/StepperRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_type_variation = &"StationValue"
+text = "0 UNITS"
+horizontal_alignment = 1
+
+[node name="StepPlus" type="Button" parent="ExchangeBody/TradeBox/StepperRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationButton"
+text = "+"
+
+[node name="ConfirmStrip" type="Label" parent="ExchangeBody/TradeBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationValue"
+autowrap_mode = 3
+
+[node name="SellButton" type="Button" parent="ExchangeBody/TradeBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+theme_type_variation = &"StationButton"
+text = "SELL"
+
+[node name="SellAllButton" type="Button" parent="ExchangeBody/TradeBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+theme_type_variation = &"StationButton"
+text = "SELL ALL RAW"
+
+[node name="CancelButton" type="Button" parent="ExchangeBody/TradeBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+theme_type_variation = &"StationButton"
+text = "CANCEL"
+
+[node name="TradeSlack" type="Control" parent="ExchangeBody/TradeBox"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="PaneFooter" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "THE STATION BUYS · IT NEVER SELLS IN V1"

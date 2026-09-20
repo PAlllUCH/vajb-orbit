@@ -1,0 +1,15 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+=== W3 probe D: W4 sector seam and W2 laser mount ===
+--- 1. W4's Sector.populate builds real fields ---
+  sector_1 populated: spawn point (0.0, 420.0), fields 8
+  fields with real rocks 8, bare markers 0, rocks total 70
+  blips 9 { &"friendly": 1, &"neutral": 8 } (one neutral blip per field, plus the station)
+  clock refresh at the same stamp consumed 0 bands (no respawn due)
+--- 2. W2's PlayerShip mounts mining_laser.tscn ---
+  player_ship.tscn (res://game/player_ship.tscn):<PackedScene#-9223371993250789567>
+  ship script (res://game/player_ship.gd):<GDScript#-9223371994391640263>, group player_ship=true
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+  ship children after one frame: ["Hull", "MiningLaser"]
+  mounted child MiningLaser MiningLaser:<Node2D#49526343171>
+=== checks 202, failures 0 ===

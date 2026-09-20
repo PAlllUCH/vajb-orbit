@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://ui/dialogs/dialog.tscn" id="1_dialog"]
+
+[node name="QuitConfirm" instance=ExtResource("1_dialog")]
+default_title = "Quit Vajb Orbit?"
+default_body = "You are docked in the hangar. Progress is saved."
+default_confirm_text = "QUIT"
+default_cancel_text = "CANCEL"
+focus_confirm = false

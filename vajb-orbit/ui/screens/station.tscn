@@ -1,0 +1,329 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://ui/screens/station.gd" id="1_station"]
+[ext_resource type="Theme" path="res://ui/theme/vajb_theme.tres" id="2_vajb_theme"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_backdrop_hangar.png" id="3_hangar"]
+[ext_resource type="NoiseTexture2D" path="res://ui/theme/grain.tres" id="4_grain"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_map_node_station_48.png" id="5_mark"]
+[ext_resource type="Texture2D" path="res://assets/icons/tint/icon_credits_48.png" id="6_credits"]
+
+[node name="Station" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_vajb_theme")
+script = ExtResource("1_station")
+
+[node name="Backdrop" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_hangar")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="BackdropDim" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Grain" type="TextureRect" parent="."]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0.06)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("4_grain")
+expand_mode = 1
+stretch_mode = 1
+texture_repeat = 2
+
+[node name="Layout" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="Page" type="VBoxContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Header" type="HBoxContainer" parent="Layout/Page"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 76)
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="StationMark" type="TextureRect" parent="Layout/Page/Header"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("5_mark")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TitleBox" type="VBoxContainer" parent="Layout/Page/Header"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+
+[node name="StationName" type="Label" parent="Layout/Page/Header/TitleBox"]
+layout_mode = 2
+theme_type_variation = &"HeroTitle"
+text = "ORBITAL DRYDOCK KEPLER-9"
+
+[node name="StationLocation" type="Label" parent="Layout/Page/Header/TitleBox"]
+layout_mode = 2
+theme_type_variation = &"FlavourText"
+text = "DOCKING RING 04 · HELIOS DRIFT · HULL TRAFFIC LOW"
+
+[node name="Spacer" type="Control" parent="Layout/Page/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="CreditsPanel" type="PanelContainer" parent="Layout/Page/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"PanelRaised"
+
+[node name="CreditsMargin" type="MarginContainer" parent="Layout/Page/Header/CreditsPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 8
+
+[node name="CreditsRow" type="HBoxContainer" parent="Layout/Page/Header/CreditsPanel/CreditsMargin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="CreditsIcon" type="TextureRect" parent="Layout/Page/Header/CreditsPanel/CreditsMargin/CreditsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("6_credits")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CreditsBox" type="VBoxContainer" parent="Layout/Page/Header/CreditsPanel/CreditsMargin/CreditsRow"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 0
+
+[node name="CreditsLabel" type="Label" parent="Layout/Page/Header/CreditsPanel/CreditsMargin/CreditsRow/CreditsBox"]
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "CREDITS"
+
+[node name="CreditsValue" type="Label" parent="Layout/Page/Header/CreditsPanel/CreditsMargin/CreditsRow/CreditsBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationValue"
+text = "0"
+
+[node name="Body" type="HBoxContainer" parent="Layout/Page"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="ModuleRail" type="PanelContainer" parent="Layout/Page/Body"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+size_flags_vertical = 3
+theme_type_variation = &"PanelRaised"
+
+[node name="RailMargin" type="MarginContainer" parent="Layout/Page/Body/ModuleRail"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="RailBox" type="VBoxContainer" parent="Layout/Page/Body/ModuleRail/RailMargin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="RailCaption" type="Label" parent="Layout/Page/Body/ModuleRail/RailMargin/RailBox"]
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "MODULES"
+
+[node name="ModuleButtons" type="VBoxContainer" parent="Layout/Page/Body/ModuleRail/RailMargin/RailBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="RailSpacer" type="Control" parent="Layout/Page/Body/ModuleRail/RailMargin/RailBox"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="SessionCaption" type="Label" parent="Layout/Page/Body/ModuleRail/RailMargin/RailBox"]
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "SESSION"
+
+[node name="SessionButtons" type="VBoxContainer" parent="Layout/Page/Body/ModuleRail/RailMargin/RailBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ModuleHost" type="PanelContainer" parent="Layout/Page/Body"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_type_variation = &"PanelRaised"
+
+[node name="HostMargin" type="MarginContainer" parent="Layout/Page/Body/ModuleHost"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="Footer" type="HBoxContainer" parent="Layout/Page"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="StatusBeacon" type="ColorRect" parent="Layout/Page/Footer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+
+[node name="StatusLabel" type="Label" parent="Layout/Page/Footer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationCaption"
+text = "DOCKED · ALL SYSTEMS NOMINAL"
+
+[node name="FooterSpacer" type="Control" parent="Layout/Page/Footer"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="HintLabel" type="Label" parent="Layout/Page/Footer"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationCaption"
+text = "ARROWS MOVE · ENTER CONFIRM · TAB RAIL · PGUP/PGDN MODULE · ESC BACK"
+
+[node name="LeaveConfirm" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="LeaveDimmer" type="ColorRect" parent="LeaveConfirm"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="LeaveCenter" type="CenterContainer" parent="LeaveConfirm"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="LeavePanel" type="PanelContainer" parent="LeaveConfirm/LeaveCenter"]
+custom_minimum_size = Vector2(520, 0)
+layout_mode = 2
+theme_type_variation = &"PanelRaised"
+
+[node name="LeaveMargin" type="MarginContainer" parent="LeaveConfirm/LeaveCenter/LeavePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="LeaveBox" type="VBoxContainer" parent="LeaveConfirm/LeaveCenter/LeavePanel/LeaveMargin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="LeaveTitle" type="Label" parent="LeaveConfirm/LeaveCenter/LeavePanel/LeaveMargin/LeaveBox"]
+layout_mode = 2
+theme_type_variation = &"StationPanelTitle"
+text = "LEAVE THE STATION"
+
+[node name="LeaveBody" type="Label" parent="LeaveConfirm/LeaveCenter/LeavePanel/LeaveMargin/LeaveBox"]
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "Logging out returns to the main menu. To fly instead, stay docked and use LAUNCH. Credits, hulls, ammunition and upgrades are saved automatically."
+autowrap_mode = 3
+
+[node name="LeaveButtons" type="HBoxContainer" parent="LeaveConfirm/LeaveCenter/LeavePanel/LeaveMargin/LeaveBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 2
+
+[node name="LeaveCancel" type="Button" parent="LeaveConfirm/LeaveCenter/LeavePanel/LeaveMargin/LeaveBox/LeaveButtons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(190, 52)
+layout_mode = 2
+theme_type_variation = &"StationButton"
+text = "STAY DOCKED"
+
+[node name="LeaveLogout" type="Button" parent="LeaveConfirm/LeaveCenter/LeavePanel/LeaveMargin/LeaveBox/LeaveButtons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(190, 52)
+layout_mode = 2
+theme_type_variation = &"StationButton"
+text = "LOG OUT"
+
+[node name="Fade" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0)

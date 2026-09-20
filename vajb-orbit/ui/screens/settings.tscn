@@ -1,0 +1,357 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://ui/screens/settings.gd" id="1_settings"]
+[ext_resource type="Theme" path="res://ui/theme/vajb_theme.tres" id="2_vajb_theme"]
+
+[node name="Settings" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_vajb_theme")
+script = ExtResource("1_settings")
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="Layout" type="VBoxContainer" parent="Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Header" type="HBoxContainer" parent="Panel/Margin/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="Panel/Margin/Layout/Header"]
+layout_mode = 2
+theme_type_variation = &"ScreenTitle"
+text = "SETTINGS"
+
+[node name="Spacer" type="Control" parent="Panel/Margin/Layout/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="BackButton" type="Button" parent="Panel/Margin/Layout/Header"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 32)
+layout_mode = 2
+size_flags_vertical = 4
+text = "BACK"
+
+[node name="Tabs" type="TabContainer" parent="Panel/Margin/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GRAPHICS" type="VBoxContainer" parent="Panel/Margin/Layout/Tabs"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ResolutionRow" type="HBoxContainer" parent="Panel/Margin/Layout/Tabs/GRAPHICS"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Label" type="Label" parent="Panel/Margin/Layout/Tabs/GRAPHICS/ResolutionRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "RESOLUTION"
+
+[node name="ResolutionOption" type="OptionButton" parent="Panel/Margin/Layout/Tabs/GRAPHICS/ResolutionRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 32)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="DisplayModeRow" type="HBoxContainer" parent="Panel/Margin/Layout/Tabs/GRAPHICS"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Label" type="Label" parent="Panel/Margin/Layout/Tabs/GRAPHICS/DisplayModeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "DISPLAY MODE"
+
+[node name="DisplayModeOption" type="OptionButton" parent="Panel/Margin/Layout/Tabs/GRAPHICS/DisplayModeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 32)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="VSyncRow" type="HBoxContainer" parent="Panel/Margin/Layout/Tabs/GRAPHICS"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Label" type="Label" parent="Panel/Margin/Layout/Tabs/GRAPHICS/VSyncRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "V-SYNC"
+
+[node name="VSyncCheck" type="CheckButton" parent="Panel/Margin/Layout/Tabs/GRAPHICS/VSyncRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+button_pressed = true
+
+[node name="RenderScaleRow" type="HBoxContainer" parent="Panel/Margin/Layout/Tabs/GRAPHICS"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Label" type="Label" parent="Panel/Margin/Layout/Tabs/GRAPHICS/RenderScaleRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "RENDER SCALE"
+
+[node name="RenderScaleSlider" type="HSlider" parent="Panel/Margin/Layout/Tabs/GRAPHICS/RenderScaleRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
+size_flags_vertical = 4
+min_value = 0.5
+max_value = 2.0
+step = 0.05
+value = 1.0
+
+[node name="RenderScaleValue" type="Label" parent="Panel/Margin/Layout/Tabs/GRAPHICS/RenderScaleRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(72, 0)
+layout_mode = 2
+size_flags_vertical = 4
+text = "1.00x"
+horizontal_alignment = 2
+
+[node name="EffectsRow" type="HBoxContainer" parent="Panel/Margin/Layout/Tabs/GRAPHICS"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Label" type="Label" parent="Panel/Margin/Layout/Tabs/GRAPHICS/EffectsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "EFFECTS QUALITY"
+
+[node name="EffectsOption" type="OptionButton" parent="Panel/Margin/Layout/Tabs/GRAPHICS/EffectsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 32)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="AUDIO" type="VBoxContainer" parent="Panel/Margin/Layout/Tabs"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="MasterRow" type="HBoxContainer" parent="Panel/Margin/Layout/Tabs/AUDIO"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Label" type="Label" parent="Panel/Margin/Layout/Tabs/AUDIO/MasterRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "MASTER"
+
+[node name="MasterSlider" type="HSlider" parent="Panel/Margin/Layout/Tabs/AUDIO/MasterRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="MasterValue" type="Label" parent="Panel/Margin/Layout/Tabs/AUDIO/MasterRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(72, 0)
+layout_mode = 2
+size_flags_vertical = 4
+text = "100%"
+horizontal_alignment = 2
+
+[node name="MusicRow" type="HBoxContainer" parent="Panel/Margin/Layout/Tabs/AUDIO"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Label" type="Label" parent="Panel/Margin/Layout/Tabs/AUDIO/MusicRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "MUSIC"
+
+[node name="MusicSlider" type="HSlider" parent="Panel/Margin/Layout/Tabs/AUDIO/MusicRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="MusicValue" type="Label" parent="Panel/Margin/Layout/Tabs/AUDIO/MusicRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(72, 0)
+layout_mode = 2
+size_flags_vertical = 4
+text = "100%"
+horizontal_alignment = 2
+
+[node name="SfxRow" type="HBoxContainer" parent="Panel/Margin/Layout/Tabs/AUDIO"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Label" type="Label" parent="Panel/Margin/Layout/Tabs/AUDIO/SfxRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "SFX"
+
+[node name="SfxSlider" type="HSlider" parent="Panel/Margin/Layout/Tabs/AUDIO/SfxRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="SfxValue" type="Label" parent="Panel/Margin/Layout/Tabs/AUDIO/SfxRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(72, 0)
+layout_mode = 2
+size_flags_vertical = 4
+text = "100%"
+horizontal_alignment = 2
+
+[node name="UiAudioRow" type="HBoxContainer" parent="Panel/Margin/Layout/Tabs/AUDIO"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Label" type="Label" parent="Panel/Margin/Layout/Tabs/AUDIO/UiAudioRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UI"
+
+[node name="UiSlider" type="HSlider" parent="Panel/Margin/Layout/Tabs/AUDIO/UiAudioRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="UiValue" type="Label" parent="Panel/Margin/Layout/Tabs/AUDIO/UiAudioRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(72, 0)
+layout_mode = 2
+size_flags_vertical = 4
+text = "100%"
+horizontal_alignment = 2
+
+[node name="CONTROLS" type="VBoxContainer" parent="Panel/Margin/Layout/Tabs"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="RebindScroll" type="ScrollContainer" parent="Panel/Margin/Layout/Tabs/CONTROLS"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RebindRows" type="VBoxContainer" parent="Panel/Margin/Layout/Tabs/CONTROLS/RebindScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="Footer" type="HBoxContainer" parent="Panel/Margin/Layout/Tabs/CONTROLS"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="ResetAllButton" type="Button" parent="Panel/Margin/Layout/Tabs/CONTROLS/Footer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 32)
+layout_mode = 2
+size_flags_vertical = 4
+text = "RESET ALL"
+
+[node name="Spacer" type="Control" parent="Panel/Margin/Layout/Tabs/CONTROLS/Footer"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="SaveButton" type="Button" parent="Panel/Margin/Layout/Tabs/CONTROLS/Footer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 32)
+layout_mode = 2
+size_flags_vertical = 4
+text = "SAVE"
+
+[node name="INTERFACE" type="VBoxContainer" parent="Panel/Margin/Layout/Tabs"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="UiScaleRow" type="HBoxContainer" parent="Panel/Margin/Layout/Tabs/INTERFACE"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Label" type="Label" parent="Panel/Margin/Layout/Tabs/INTERFACE/UiScaleRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UI SCALE"
+
+[node name="UiScaleSlider" type="HSlider" parent="Panel/Margin/Layout/Tabs/INTERFACE/UiScaleRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
+size_flags_vertical = 4
+min_value = 0.85
+max_value = 1.5
+step = 0.05
+value = 1.0
+
+[node name="UiScaleValue" type="Label" parent="Panel/Margin/Layout/Tabs/INTERFACE/UiScaleRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(72, 0)
+layout_mode = 2
+size_flags_vertical = 4
+text = "1.00x"
+horizontal_alignment = 2
+
+[node name="HudOpacityRow" type="HBoxContainer" parent="Panel/Margin/Layout/Tabs/INTERFACE"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Label" type="Label" parent="Panel/Margin/Layout/Tabs/INTERFACE/HudOpacityRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "HUD OPACITY"
+
+[node name="HudOpacitySlider" type="HSlider" parent="Panel/Margin/Layout/Tabs/INTERFACE/HudOpacityRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
+size_flags_vertical = 4
+min_value = 0.4
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="HudOpacityValue" type="Label" parent="Panel/Margin/Layout/Tabs/INTERFACE/HudOpacityRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(72, 0)
+layout_mode = 2
+size_flags_vertical = 4
+text = "100%"
+horizontal_alignment = 2

@@ -1,0 +1,592 @@
+[gd_scene load_steps=16 format=3]
+
+[ext_resource type="Script" path="res://ui/hud/hud.gd" id="1_hud"]
+[ext_resource type="Theme" path="res://ui/theme/vajb_theme.tres" id="2_theme"]
+[ext_resource type="Script" path="res://ui/hud/minimap.gd" id="3_minimap"]
+[ext_resource type="Script" path="res://ui/hud/target_reticle.gd" id="4_reticle"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_bar_caps.png" id="5_bar_caps"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_minimap_bezel.png" id="6_bezel"]
+[ext_resource type="Texture2D" path="res://assets/icons/tint/icon_hull_16.png" id="7_hull"]
+[ext_resource type="Texture2D" path="res://assets/icons/tint/icon_shield_16.png" id="8_shield"]
+[ext_resource type="Texture2D" path="res://assets/icons/tint/icon_ammo_16.png" id="9_ammo"]
+[ext_resource type="Texture2D" path="res://assets/icons/tint/icon_cargo_container_48.png" id="10_cargo"]
+[ext_resource type="Texture2D" path="res://assets/icons/tint/icon_zoom_minus_96.png" id="11_zoom_minus"]
+[ext_resource type="Texture2D" path="res://assets/icons/tint/icon_zoom_plus_96.png" id="12_zoom_plus"]
+[ext_resource type="Texture2D" path="res://assets/icons/tint/icon_close_16.png" id="13_close"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bar_cap_left"]
+atlas = ExtResource("5_bar_caps")
+region = Rect2(0, 0, 20, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bar_cap_right"]
+atlas = ExtResource("5_bar_caps")
+region = Rect2(22, 0, 20, 14)
+
+[node name="Hud" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_hud")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="TopLeft" type="MarginContainer" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 0
+mouse_filter = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="Blocks" type="VBoxContainer" parent="CanvasLayer/TopLeft"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="HullBlock" type="VBoxContainer" parent="CanvasLayer/TopLeft/Blocks"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 2
+
+[node name="HullHeader" type="HBoxContainer" parent="CanvasLayer/TopLeft/Blocks/HullBlock"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="HullIcon" type="TextureRect" parent="CanvasLayer/TopLeft/Blocks/HullBlock/HullHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("7_hull")
+
+[node name="HullTitle" type="Label" parent="CanvasLayer/TopLeft/Blocks/HullBlock/HullHeader"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"SectionHeader"
+text = "HULL"
+
+[node name="HullSpacer" type="Control" parent="CanvasLayer/TopLeft/Blocks/HullBlock/HullHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="HullValue" type="Label" parent="CanvasLayer/TopLeft/Blocks/HullBlock/HullHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"HudReadout"
+text = "812/1000"
+
+[node name="HullBarRow" type="HBoxContainer" parent="CanvasLayer/TopLeft/Blocks/HullBlock"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="HullCapLeft" type="TextureRect" parent="CanvasLayer/TopLeft/Blocks/HullBlock/HullBarRow"]
+custom_minimum_size = Vector2(20, 14)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = SubResource("AtlasTexture_bar_cap_left")
+
+[node name="HullBar" type="ProgressBar" parent="CanvasLayer/TopLeft/Blocks/HullBlock/HullBarRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 14)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"HudHullBar"
+max_value = 100.0
+value = 81.2
+show_percentage = false
+
+[node name="HullCapRight" type="TextureRect" parent="CanvasLayer/TopLeft/Blocks/HullBlock/HullBarRow"]
+custom_minimum_size = Vector2(20, 14)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = SubResource("AtlasTexture_bar_cap_right")
+
+[node name="ShieldBlock" type="VBoxContainer" parent="CanvasLayer/TopLeft/Blocks"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 2
+
+[node name="ShieldHeader" type="HBoxContainer" parent="CanvasLayer/TopLeft/Blocks/ShieldBlock"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="ShieldIcon" type="TextureRect" parent="CanvasLayer/TopLeft/Blocks/ShieldBlock/ShieldHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("8_shield")
+
+[node name="ShieldTitle" type="Label" parent="CanvasLayer/TopLeft/Blocks/ShieldBlock/ShieldHeader"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"SectionHeader"
+text = "SHIELD"
+
+[node name="ShieldSpacer" type="Control" parent="CanvasLayer/TopLeft/Blocks/ShieldBlock/ShieldHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="ShieldValue" type="Label" parent="CanvasLayer/TopLeft/Blocks/ShieldBlock/ShieldHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"HudReadout"
+text = "600/600"
+
+[node name="ShieldBarRow" type="HBoxContainer" parent="CanvasLayer/TopLeft/Blocks/ShieldBlock"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="ShieldCapLeft" type="TextureRect" parent="CanvasLayer/TopLeft/Blocks/ShieldBlock/ShieldBarRow"]
+custom_minimum_size = Vector2(20, 14)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = SubResource("AtlasTexture_bar_cap_left")
+
+[node name="ShieldBar" type="ProgressBar" parent="CanvasLayer/TopLeft/Blocks/ShieldBlock/ShieldBarRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 14)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"HudShieldBar"
+max_value = 100.0
+value = 100.0
+show_percentage = false
+
+[node name="ShieldCapRight" type="TextureRect" parent="CanvasLayer/TopLeft/Blocks/ShieldBlock/ShieldBarRow"]
+custom_minimum_size = Vector2(20, 14)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = SubResource("AtlasTexture_bar_cap_right")
+
+[node name="TopRight" type="MarginContainer" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+grow_horizontal = 0
+mouse_filter = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="TargetPanel" type="PanelContainer" parent="CanvasLayer/TopRight"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"PanelRaised"
+
+[node name="TargetBox" type="VBoxContainer" parent="CanvasLayer/TopRight/TargetPanel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="TargetCaption" type="Label" parent="CanvasLayer/TopRight/TargetPanel/TargetBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"SectionHeader"
+text = "TARGET"
+
+[node name="TargetName" type="Label" parent="CanvasLayer/TopRight/TargetPanel/TargetBox"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"StationValue"
+
+[node name="TargetHullRow" type="HBoxContainer" parent="CanvasLayer/TopRight/TargetPanel/TargetBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="TargetHullCaption" type="Label" parent="CanvasLayer/TopRight/TargetPanel/TargetBox/TargetHullRow"]
+custom_minimum_size = Vector2(52, 0)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"StationCaption"
+text = "HULL"
+
+[node name="TargetHullBar" type="ProgressBar" parent="CanvasLayer/TopRight/TargetPanel/TargetBox/TargetHullRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 10)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"HudHullBar"
+max_value = 1.0
+show_percentage = false
+
+[node name="TargetShieldRow" type="HBoxContainer" parent="CanvasLayer/TopRight/TargetPanel/TargetBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="TargetShieldCaption" type="Label" parent="CanvasLayer/TopRight/TargetPanel/TargetBox/TargetShieldRow"]
+custom_minimum_size = Vector2(52, 0)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"StationCaption"
+text = "SHIELD"
+
+[node name="TargetShieldBar" type="ProgressBar" parent="CanvasLayer/TopRight/TargetPanel/TargetBox/TargetShieldRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 10)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"HudShieldBar"
+max_value = 1.0
+show_percentage = false
+
+[node name="TargetDistance" type="Label" parent="CanvasLayer/TopRight/TargetPanel/TargetBox"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"StationCaption"
+
+[node name="TargetThreat" type="Label" parent="CanvasLayer/TopRight/TargetPanel/TargetBox"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"StationCaption"
+
+[node name="BottomLeft" type="MarginContainer" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="Blocks" type="VBoxContainer" parent="CanvasLayer/BottomLeft"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="AmmoPanel" type="PanelContainer" parent="CanvasLayer/BottomLeft/Blocks"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+
+[node name="AmmoBox" type="VBoxContainer" parent="CanvasLayer/BottomLeft/Blocks/AmmoPanel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="AmmoRow" type="HBoxContainer" parent="CanvasLayer/BottomLeft/Blocks/AmmoPanel/AmmoBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="AmmoIcon" type="TextureRect" parent="CanvasLayer/BottomLeft/Blocks/AmmoPanel/AmmoBox/AmmoRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("9_ammo")
+
+[node name="AmmoLabel" type="Label" parent="CanvasLayer/BottomLeft/Blocks/AmmoPanel/AmmoBox/AmmoRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"HudReadout"
+text = "Laser MkII  240/300"
+
+[node name="WeaponGrid" type="GridContainer" parent="CanvasLayer/BottomLeft/Blocks/AmmoPanel/AmmoBox"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 4
+columns = 5
+
+[node name="CargoToggle" type="TextureButton" parent="CanvasLayer/BottomLeft/Blocks"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+focus_mode = 0
+texture_normal = ExtResource("10_cargo")
+stretch_mode = 5
+
+[node name="BottomRight" type="MarginContainer" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="MinimapPanel" type="PanelContainer" parent="CanvasLayer/BottomRight"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+
+[node name="MinimapBox" type="VBoxContainer" parent="CanvasLayer/BottomRight/MinimapPanel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="Bezel" type="NinePatchRect" parent="CanvasLayer/BottomRight/MinimapPanel/MinimapBox"]
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("6_bezel")
+patch_margin_left = 16
+patch_margin_top = 16
+patch_margin_right = 16
+patch_margin_bottom = 16
+
+[node name="MinimapView" type="Control" parent="CanvasLayer/BottomRight/MinimapPanel/MinimapBox/Bezel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_minimap")
+
+[node name="MinimapFooter" type="HBoxContainer" parent="CanvasLayer/BottomRight/MinimapPanel/MinimapBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="SectorLabel" type="Label" parent="CanvasLayer/BottomRight/MinimapPanel/MinimapBox/MinimapFooter"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"FlavourText"
+
+[node name="ZoomMinus" type="TextureButton" parent="CanvasLayer/BottomRight/MinimapPanel/MinimapBox/MinimapFooter"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+focus_mode = 0
+texture_normal = ExtResource("11_zoom_minus")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="ZoomPlus" type="TextureButton" parent="CanvasLayer/BottomRight/MinimapPanel/MinimapBox/MinimapFooter"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+focus_mode = 0
+texture_normal = ExtResource("12_zoom_plus")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="BottomCenter" type="MarginContainer" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 20
+
+[node name="PromptBlock" type="VBoxContainer" parent="CanvasLayer/BottomCenter"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="WarpBlock" type="VBoxContainer" parent="CanvasLayer/BottomCenter/PromptBlock"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+theme_override_constants/separation = 2
+
+[node name="WarpHeader" type="HBoxContainer" parent="CanvasLayer/BottomCenter/PromptBlock/WarpBlock"]
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="WarpCaption" type="Label" parent="CanvasLayer/BottomCenter/PromptBlock/WarpBlock/WarpHeader"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"StationCaption"
+text = "WARP"
+
+[node name="WarpSpacer" type="Control" parent="CanvasLayer/BottomCenter/PromptBlock/WarpBlock/WarpHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="WarpValue" type="Label" parent="CanvasLayer/BottomCenter/PromptBlock/WarpBlock/WarpHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"HudReadout"
+
+[node name="WarpBar" type="ProgressBar" parent="CanvasLayer/BottomCenter/PromptBlock/WarpBlock"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 14)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+theme_type_variation = &"HudShieldBar"
+max_value = 100.0
+value = 0.0
+show_percentage = false
+
+[node name="PromptLabel" type="Label" parent="CanvasLayer/BottomCenter/PromptBlock"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"StationCaption"
+horizontal_alignment = 1
+
+[node name="CenterOverlay" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TargetReticle" type="Control" parent="CanvasLayer/CenterOverlay"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 1
+offset_right = 48.0
+offset_bottom = 48.0
+mouse_filter = 2
+script = ExtResource("4_reticle")
+
+[node name="ReticleBarBox" type="VBoxContainer" parent="CanvasLayer/CenterOverlay/TargetReticle"]
+visible = false
+layout_mode = 1
+offset_left = -6.0
+offset_top = 50.0
+offset_right = 54.0
+offset_bottom = 54.0
+mouse_filter = 2
+
+[node name="ReticleHullBar" type="ProgressBar" parent="CanvasLayer/CenterOverlay/TargetReticle/ReticleBarBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(60, 4)
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"HudHullBar"
+value = 100.0
+show_percentage = false
+
+[node name="CargoPanel" type="PanelContainer" parent="CanvasLayer/CenterOverlay"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -12.0
+offset_top = -12.0
+offset_right = -12.0
+offset_bottom = -12.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="CargoBox" type="VBoxContainer" parent="CanvasLayer/CenterOverlay/CargoPanel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="CargoGrid" type="GridContainer" parent="CanvasLayer/CenterOverlay/CargoPanel/CargoBox"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/h_separation = 0
+theme_override_constants/v_separation = 2
+columns = 5
+
+[node name="CargoFooter" type="HBoxContainer" parent="CanvasLayer/CenterOverlay/CargoPanel/CargoBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="CargoFooterLabel" type="Label" parent="CanvasLayer/CenterOverlay/CargoPanel/CargoBox/CargoFooter"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+text = "CARGO 12/40"
+
+[node name="CargoSpacer" type="Control" parent="CanvasLayer/CenterOverlay/CargoPanel/CargoBox/CargoFooter"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="CargoClose" type="TextureButton" parent="CanvasLayer/CenterOverlay/CargoPanel/CargoBox/CargoFooter"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+focus_mode = 0
+texture_normal = ExtResource("13_close")

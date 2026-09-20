@@ -1,0 +1,65 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+== A. theme focus items (effective runtime theme) ==
+A theme /focus = StyleBoxFlat border=1 colour=(0.9098, 0.3843, 0.1647, 1.0) draw_center=false min=(2.0, 2.0)
+A theme Button/focus = StyleBoxFlat border=1 colour=(0.9098, 0.3843, 0.1647, 1.0) draw_center=false min=(2.0, 2.0)
+A theme MenuButton/focus = StyleBoxFlat border=1 colour=(0.9098, 0.3843, 0.1647, 1.0) draw_center=false min=(2.0, 2.0)
+A theme MenuButtonPlate/focus = StyleBoxEmpty min=(0.0, 0.0)
+A theme StationButton/focus = StyleBoxFlat border=1 colour=(0.9098, 0.3843, 0.1647, 1.0) draw_center=false min=(2.0, 2.0)
+A theme TabContainer/tab_focus = StyleBoxFlat border=1 colour=(0.9098, 0.3843, 0.1647, 1.0) draw_center=false min=(2.0, 2.0)
+A theme ItemList/cursor = StyleBoxFlat border=1 colour=(0.9098, 0.3843, 0.1647, 1.0) draw_center=false min=(2.0, 2.0)
+A theme Tree/cursor = StyleBoxFlat border=1 colour=(0.9098, 0.3843, 0.1647, 1.0) draw_center=false min=(2.0, 2.0)
+A theme LineEdit/focus = StyleBoxFlat border=1 colour=(0.2392, 0.2745, 0.3294, 1.0) draw_center=true min=(2.0, 2.0)
+A base Button in tree: has_focus=true has_focus(true)=true override=false box=StyleBoxFlat border=1 colour=(0.9098, 0.3843, 0.1647, 1.0) draw_center=false min=(2.0, 2.0)
+== B. main menu ==
+B backdrop pos=(-0.013323, -0.013323) size=(2016.0, 1176.0) offset_right=95.99 offset_bottom=95.99
+B play plate variation=MenuButtonPlate has_focus=true has_focus(true)=true override=false box=StyleBoxEmpty min=(0.0, 0.0)
+B ticks visible=1.0 0.0 0.0
+B plate rect=(350.0, 70.0) min=(77.0, 35.0) root_control size=(350.0, 70.0) min=(350.0, 70.0)
+B theme MenuButtonPlate styleboxes=["disabled", "focus", "hover", "hover_pressed", "normal", "pressed"]
+B theme StationButton styleboxes=["disabled", "focus", "hover", "hover_pressed", "normal", "pressed"]
+== C. station rail ==
+C station rail StationButton count=23
+C rail entry '' variation=StationButton has_focus(true)=true override=false box=StyleBoxFlat border=1 colour=(0.9098, 0.3843, 0.1647, 1.0) draw_center=false min=(2.0, 2.0)
+== D. refinery action buttons ==
+D RefineButton text='REFINE 1' size=(360.0, 88.0) min=(0.0, 88.0) parent=VBoxContainer focus_override=false
+D RefineAllButton text='REFINERY ALL' size=(360.0, 88.0) min=(0.0, 88.0) parent=VBoxContainer focus_override=false
+D CancelButton text='CANCEL' size=(360.0, 88.0) min=(0.0, 88.0) parent=VBoxContainer focus_override=false
+== E. hud threat tint ==
+E HOSTILE text='HOSTILE' override=true colour=(0.7843, 0.2784, 0.1216, 1.0) panel_visible=true
+E NEUTRAL text='NEUTRAL' override=false colour=(0.4196, 0.4549, 0.5176, 1.0)
+E cleared override=false colour=(0.4196, 0.4549, 0.5176, 1.0) panel_visible=false
+== F. fonts ==
+F bare Oxanium FontFile name='Oxanium ExtraLight' style='ExtraLight' weight=200 supported_variations={ 2003265652: (200, 800, 200) }
+F ScreenTitle = FontVariation over res://assets/fonts/Oxanium[wght].ttf { &"wght": 700 }
+F HeroTitle = FontVariation over res://assets/fonts/Oxanium[wght].ttf { &"wght": 700 }
+F StationPanelTitle = FontVariation over res://assets/fonts/Oxanium[wght].ttf { &"wght": 700 }
+F DialogTitle = FontVariation over res://assets/fonts/Oxanium[wght].ttf { &"wght": 700 }
+F HudReadout = FontVariation over res://assets/fonts/Oxanium[wght].ttf { &"wght": 700 }
+F MenuButtonPlate = FontVariation over res://assets/fonts/Oxanium[wght].ttf { &"wght": 700 }
+F StationValue = FontFile res://assets/fonts/Rajdhani-SemiBold.ttf
+F SectionHeader = FontFile res://assets/fonts/Rajdhani-Medium.ttf
+F StationCaption = FontFile res://assets/fonts/Rajdhani-Medium.ttf
+F Version = FontFile res://assets/fonts/SairaStencilOne-Regular.ttf
+F FlavourText = FontFile res://assets/fonts/SairaStencilOne-Regular.ttf
+F default_font = FontFile res://assets/fonts/Rajdhani-Regular.ttf
+== G. textures / mipmaps ==
+G ship_interceptor_side.png size=(940.0, 107.0) class=CompressedTexture2D has_mipmaps()=false
+G ship_vanguard_side.png size=(905.0, 387.0) class=CompressedTexture2D has_mipmaps()=false
+G icon_zoom_plus_96.png size=(96.0, 96.0) class=CompressedTexture2D has_mipmaps()=false
+G icon_zoom_plus_48.png size=(48.0, 48.0) class=CompressedTexture2D has_mipmaps()=false
+== H. router font-size table coverage ==
+H theme items=28 router items=28 missing_in_router=[] extra_in_router=[]
+== I. assert semantics in headless --script ==
+SCRIPT ERROR: Assertion failed: review2 probe: intentional failing assert
+   at: _assert_probe (res://tools/_review2_probe.gd:239)
+   GDScript backtrace (most recent call first):
+       [0] _assert_probe (res://tools/_review2_probe.gd:239)
+       [1] _run (res://tools/_review2_probe.gd:222)
+I reached code after the failing assert (assert is non-halting here)
+== probe done ==
+WARNING: 8 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 4 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

@@ -1,0 +1,18 @@
+{
+  "task_id": "6aaa2fb7b389726d801487aacc607019",
+  "model": "gpt-image-2-5-flare-text-to-image",
+  "input": {
+    "prompt": "Sector backdrop plate, a wide 16:9 cinematic top-down orthographic painted plate for a space playfield background, no interface elements baked in, no markers, no nodes, no lines, no text, no logos, no ships, no wreck hulks, no stations, no asteroids in the frame centre. Subject: Ashveil Expanse, the contested edge: a contested frontier backdrop: a torn veil of dark ash-grey dust drifting in bands across the frame with ragged frayed edges, a faint ashen haze in void haze #1A2230 and grimy umber #4A423B over void black #0A0E14, faint cinder-dark smoke wisps far off in the lower right, unsettled and scuffed, no ships, no fire. Composition: extremely low contrast, one value step darker than ships, the centre of the frame stays the quietest and darkest region so gameplay and interface read on top of it, with all interest pushed toward the frame edges and corners. Subtle film grain. no planets with atmospheres, no clouds, no bright nebula, no saturated colours, no second accent colour, no chrome, no neon, no text, no watermark, no grid lines, no ships, no figures.\ngrimdark painted sci-fi, semi-realistic weathered metal, harsh directional rim light from upper-left with a thin cold pale steel rim tracing shadow-side silhouettes, subtle film grain over the whole image, top-down orthographic view. Fixed palette: gunmetal mid #3A3F46, gunmetal dark #2B2F35, iron black #232629, steel highlight #565C63, rusted ochre #6E5B4A, dry rust #8A6A50, grimy umber #4A423B, void black #0A0E14, deep void blue #111823, void haze #1A2230, burnt ember #C8461B, ember glow #E8703A, panel black #15181D, panel steel #2A2E35, ash text #8D939B, bone text #C9CDD2. Metal colour is desaturated gunmetal and rusted steel, dark and tired, with scratches, oil stains, hull grime, rust streaks, pitted metal, scorch marks and battle damage. Glow colours are burnt ember #C8461B and ember glow #E8703A only, small and hot, used exclusively for engines, weapons and warning lights; no other glow or accent colour exists anywhere in the image. Backgrounds are near-black blue void, void black #0A0E14 to deep void blue #111823, sparse faint stars, desaturated throughout, no saturated colours, no chrome, no neon, no gloss, no clean surfaces, moody and menacing.",
+    "aspect_ratio": "16:9",
+    "resolution": "2K"
+  },
+  "urls": [
+    "https://tempfile.aiquickdraw.com/p/6aaa2fb7b389726d801487aacc607019_1_1789723164_4655.png"
+  ],
+  "local_paths": [
+    "G:\\Mój dysk\\Projekty\\Vajb Orbit\\staging\\phase_f\\env\\20260918-111927\\sector-backdrop-plate-a-wide-16-9-cinem-1.png"
+  ],
+  "alpha_paths": [],
+  "upscaled_paths": [],
+  "asset_paths": []
+}

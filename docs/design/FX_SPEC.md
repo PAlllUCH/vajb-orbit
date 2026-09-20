@@ -1,0 +1,143 @@
+# Vajb Orbit — FX Spec
+
+**Status:** final 2026-09-17. Visual effects inventory: purpose, composition, palette, timing, and generation prompt notes for every in-game effect sprite. Palette and rules are copied verbatim from `docs/design/STYLE_BIBLE.md`; HUD surfacing follows `docs/design/UI_SPEC.md`; effect names align with SFX cues in `docs/design/AUDIO_SPEC.md` (S1 lasers, S3 rocket detonation, S5 shield hits, S7/S8 mining, S4 impacts).
+
+---
+
+## 0. Master Emission Rule
+
+**Only Burnt Ember `#C8461B` and Ember Glow `#E8703A` may glow.**
+Exception: the shield hit ripple uses Steel Highlight `#565C63` because the shield is **not a danger state** — it regenerates, and orange stays reserved for damage and weapons (mirrors UI_SPEC §3.1 shield bar logic).
+Nothing else ever emits. No blue, no green, no purple, no teal, no yellow glow. Emissive content in FX is always small, hot, and contained — never ambient.
+
+**Sanctioned exceptions (STYLE_BIBLE §3 amendment 2026-09-17):** (1) the shield ripple's Steel Highlight `#565C63`; (2) frame-1 "white-hot" flash frames of muzzle flash (§1.2) and explosion (§1.4) — in generated art these stay a brightened, desaturated Ember Glow `#E8703A` hot core (no pure white pixels); the true white read comes from engine-side bloom on top of `#E8703A`; (3) the **field repair pulse** (`fx_repair_pulse.png`, added 2026-09-17) — an expanding Steel Highlight `#565C63` maintenance ring with fine engineering sparks, on the same reasoning as (1): a repair is not a danger state, so the ember pair stays reserved.
+
+**Amendment 2026-09-18 (Phase F, anomaly trio):** `docs/gameplay/11_galactic_map.md` §3.2 defines three anomalies — ore bloom, grave cache and void rift. Only the rift is a hazard, so `FX_SPEC` §0's threat rule assigns the palette accordingly, and the trio becomes the fourth sanctioned non-ember glow site:
+
+| File | Anomaly | Glow |
+|---|---|---|
+| `fx_anomaly_shimmer.png` | ore bloom (reward) | Steel Highlight `#565C63` only — a wide thin cold refraction ring, hollow centre, suspended non-glowing `#6E5B4A`/`#8A6A50` ore flecks. No ember, no warm colour. |
+| `fx_anomaly_grave_glow.png` | grave cache (reward) | Steel Highlight `#565C63` core over an unlit Deep Void Blue `#111823`/Void Haze `#1A2230` halo, rising pale motes, a flat Iron Black `#232629` debris-haze ring at the base. No ember, no warm colour, no gravestone shape. |
+| `fx_anomaly_rift.png` | void rift (hazard) | the ember pair alone — Burnt Ember `#C8461B` tear rim with a thin Ember Glow `#E8703A` edge line and crooked ember stress cracks. Danger state, so the existing accent applies unchanged. |
+
+Three files, three distinct forms (hollow ring / dense point glow / vertical tear), exactly one accent per file, no new palette hex. All three are RGB on Void Black `#0A0E14` and are **never alpha-keyed** (§0.1).
+
+## 0.1 Generation Rules (all sheets)
+
+- Every sheet is generated from `vajb-orbit/assets/style-block.txt` **verbatim as the prompt preamble**, then the asset-specific subject below.
+- Background: **flat black `#0A0E14` (Void Black), NOT white** — these are emissive effects composited in Godot with additive blending; a white background would bleed.
+- Resolution 2K, aspect 1:1, then split into frames in Godot.
+- Effects are generated as **isolated objects**: no ship parts, no text, no labels, no grid lines, no frames, no UI chrome.
+- **Negative list (every panel, every prompt, copied from STYLE_BIBLE §8):** no purple, no green, no teal, no yellow, no blue, no rainbow, no chrome, no glossy highlights, no text, no watermark.
+- Subtle film grain applies (style block carries it).
+
+---
+
+## 1. FX Inventory
+
+### 1.1 Laser bolt — player light and medium
+
+| Field | Value |
+|---|---|
+| Purpose | Player primary weapon projectile (pairs with S1 Lasers). Two sizes: light (thin, 4:1) and medium (6:1 elongation). |
+| Composition | Burnt Ember `#C8461B` core line with an Ember Glow `#E8703A` soft halo, stretched along the travel direction (facing right in the sheet). Slight painterly hot-tip at the head. |
+| Palette | `#C8461B` core, `#E8703A` halo, Void Black `#0A0E14` bg. |
+| Timing | Single frame per tier; motion is handled by the engine (position + rotation). Light bolt ~64×16 px region, medium ~96×16 px region in the sheet. |
+| Prompt notes | "single elongated energy bolt, horizontal, burnt ember #C8461B core with ember glow #E8703A halo, isolated on flat void black #0A0E14 background, 2K, 1:1" + style block. Generate both tiers on one sheet, spaced grid cells. |
+
+### 1.2 Muzzle flash
+
+| Field | Value |
+|---|---|
+| Purpose | Weapon port flash on fire (pairs with S1/S2). Plays once per shot over the muzzle. |
+| Composition | 4-frame sheet: **f1** brightened desaturated-ember hot core (engine bloom renders it white-hot; art stays `#E8703A`-based, no pure white pixels) → **f2** burnt ember `#C8461B`/ember glow `#E8703A` expanding flare → **f3** ember flare collapsing with iron black `#232629` smoke wisps → **f4** smoke-dark residual puff. |
+| Palette | `#E8703A` hot core (desaturated/brightened in art), `#C8461B`, `#E8703A`, `#232629` smoke, `#0A0E14` bg. |
+| Timing | 4 frames at 20 FPS = 0.2 s total, one-shot, no loop. |
+| Prompt notes | "4-frame horizontal sprite sheet of a weapon muzzle flash: frame 1 brightened pale-ember hot starburst core, frame 2 burnt ember #C8461B and ember glow #E8703A flare, frame 3 ember flare with iron black #232629 smoke, frame 4 dark smoke dissipating, isolated effects only, flat void black #0A0E14 background, 2K, 1:1" + style block. |
+
+### 1.3 Engine trail
+
+| Field | Value |
+|---|---|
+| Purpose | Continuous thrust streak behind the player (pairs with S16 Thruster loop). Spawned per-frame while thrusting. |
+| Composition | Thin fading ember streak: burnt ember `#C8461B` hot head, ember glow `#E8703A` mid, alpha falloff to transparent tail. Slight painterly wobble allowed. |
+| Palette | `#C8461B`, `#E8703A`, alpha fade, `#0A0E14` bg. |
+| Timing | Alpha falloff over **0.4 s** per streak particle; engine-side fade, single frame texture. |
+| Prompt notes | "single thin horizontal ember streak, burnt ember #C8461B core fading to ember glow #E8703A and transparent tail, isolated on flat void black #0A0E14 background, 2K, 1:1" + style block. One texture; length and alpha animated in engine. |
+
+### 1.4 Explosion
+
+| Field | Value |
+|---|---|
+| Purpose | Ship / hostile destruction (pairs with S3 rocket detonation, S4 impacts). |
+| Composition | **5-frame 2×3 grid sheet**: f1 brightened desaturated-ember hot flash (no pure white pixels; engine bloom whitens it) → f2 ember bloom (`#C8461B` core, `#E8703A` rim) → f3 ember and iron black `#232629` smoke expansion → f4 dissolving debris streaks (gunmetal `#2B2F35` fragments against ember glow) → f5 empty. |
+| Palette | `#E8703A` hot flash (brightened in art), `#C8461B`, `#E8703A`, `#232629` smoke, `#2B2F35` debris, `#0A0E14` bg. |
+| Timing | 5 frames at 15 FPS ≈ 0.33 s, one-shot. |
+| Prompt notes | "sprite sheet, 2 by 3 grid, 5 frames of a space explosion sequence: brightened pale-ember hot flash, burnt ember #C8461B bloom with ember glow #E8703A rim, ember and iron black #232629 smoke cloud, dissolving gunmetal debris streaks, last cell empty, isolated effects only, flat void black #0A0E14 background, 2K, 1:1" + style block. |
+
+### 1.5 Shield hit ripple
+
+| Field | Value |
+|---|---|
+| Purpose | Shield absorbing a hit (pairs with S5 Shield hits). **The single non-ember glow exception** — shield is not a danger state. |
+| Composition | Expanding ring in Steel Highlight `#565C63`, thin cold pale rim, faint inner haze, no ember anywhere. |
+| Palette | `#565C63` only, `#0A0E14` bg. |
+| Timing | Single frame texture; ring scale animated 0→1.5× over **0.3 s** with alpha fade in engine. |
+| Prompt notes | "single expanding energy ripple ring, cold pale steel highlight #565C63 only, thin rim, no orange, no ember, isolated on flat void black #0A0E14 background, 2K, 1:1" + style block. Add "no orange glow" explicitly to the negative list for this panel. |
+
+### 1.6 Mining beam
+
+| Field | Value |
+|---|---|
+| Purpose | Asteroid mining beam and contact feedback (pairs with S7 Mining beam loop + S8 Mining chip hit). |
+| Composition | Thin burnt ember `#C8461B` line with ember glow `#E8703A` edge (line drawn in engine between ship and target) plus a chip-sparks burst texture at the contact point: small angular ember sparks radiating from the impact. |
+| Palette | `#C8461B`, `#E8703A`, `#0A0E14` bg. |
+| Timing | Beam: continuous, subtle width flicker 0.1 s cycle in engine. Chip sparks: **4-frame mini sheet** at 20 FPS = 0.2 s, one-shot per S8 chip event. |
+| Prompt notes | "4-frame horizontal sprite sheet of mining chip sparks: frame 1 small angular spark burst, burnt ember #C8461B and ember glow #E8703A sparks radiating from a point, frames 2 to 4 the sparks dissipate outward and fade, frame 4 nearly empty, isolated effects only, flat void black #0A0E14 background, 2K, 1:1" + style block. The beam line itself is engine-drawn; no texture needed. |
+
+### 1.7 Cargo pickup pulse
+
+| Field | Value |
+|---|---|
+| Purpose | Confirmation flourish when cargo is collected. Small, subtle, non-urgent. |
+| Composition | Small ember ring pulse: burnt ember `#C8461B` ring with ember glow `#E8703A` inner glow, compact (~64 px). |
+| Palette | `#C8461B`, `#E8703A`, `#0A0E14` bg. |
+| Timing | Single frame texture; scale 0.5→1.2× and alpha 1→0 over **0.25 s** in engine. |
+| Prompt notes | "single small energy ring, burnt ember #C8461B with ember glow #E8703A inner glow, isolated on flat void black #0A0E14 background, 2K, 1:1" + style block. |
+
+### 1.8 Hull-critical screen vignette
+
+| Field | Value |
+|---|---|
+| Purpose | Static full-screen overlay when hull fraction < 25 % — ties to the damage-overlay stack in `docs/assets/research/grimdark_ui_hud.md` section C (C1/C2/C3 class of assets) and to the HUD hull-critical state in UI_SPEC §3.1 (fill/label switch to `accent_danger_bright`). |
+| Composition | Ember-dark gradient at screen edges: deep burnt ember `#C8461B` smouldering inward from all four edges to transparent centre, painterly, heavy at corners. Screen centre stays clear so gameplay and HUD stay legible. |
+| Palette | `#C8461B` at the rim fading to transparent; `#232629` smoke texture inside the ember; `#0A0E14` bg (discarded on import — centre must be fully transparent). |
+| Timing | Static art; alpha pulsing (0.6→1.0, 1.2 s sine) done in engine, matching the sin-driven alpha pattern documented for the C2 reference. |
+| Prompt notes | "full-screen vignette, burnt ember #C8461B dark gradient glowing inward from all screen edges, corners heaviest, iron black #232629 smoke texture within the ember, transparent empty centre, isolated overlay only, flat void black #0A0E14 background, 2K, 1:1" + style block. Single frame, no sheet. |
+
+---
+
+## 2. Generation Plan
+
+1. One run per sheet/prompt in §1, each = `style-block.txt` verbatim + asset subject + "flat black #0A0E14 background, NOT white — emissive effect for additive blending" + "2K, 1:1" + the §0.1 negative list.
+2. Sheets are the shipped masters, split in Godot (`AtlasTexture` over the 2K PNG): `fx_muzzle_flash.png` (4 frames) and `fx_explosion.png` (5 frames) are the masters; the per-frame names in §3 are optional split exports, produced only if AtlasTexture is insufficient.
+3. Import with additive blend intent; verify each frame against the §0 master emission rule before commit.
+4. Record generator, prompt, seed, and date per asset in a generation log next to `vajb-orbit/assets/` (AI art is not CC0 — per AGENTS.md).
+
+## 3. File Naming
+
+| Asset | File |
+|---|---|
+| Laser bolt sheet (light + medium) | `fx_laser_bolt.png` |
+| Muzzle flash sheet (4-frame master) | `fx_muzzle_flash.png` (split exports `fx_muzzle_flash_f1.png` … `_f4.png` optional) |
+| Engine trail streak (§1.3) | `fx_engine_trail.png` |
+| Explosion sheet (5-frame master) | `fx_explosion.png` (split exports `fx_explosion_f1.png` … `_f5.png` optional) |
+| Shield hit ripple | `fx_shield_ripple.png` |
+| Mining beam chip sparks (4-frame sheet) | `fx_mining_beam.png` |
+| Cargo pickup pulse | `fx_cargo_pulse.png` |
+| Hull-critical vignette | `fx_hull_critical_vignette.png` |
+| Menu wreck ember pulse (MAIN_MENU_SPEC §5) | `fx_ember_pulse.png` |
+
+Snake_case throughout; all live under `vajb-orbit/assets/fx/`.
+
+**Amendment 2026-09-17:** `docs/design/ASSET_EXPANSION_SPEC.md` §7 extends this inventory with `fx_jump_portal.png`, `fx_missile_trail.png` and `fx_shield_break.png` (wave 1), plus `fx_tractor_beam.png`, `fx_emp_arc.png`, `fx_secondary_explosion.png` and `fx_repair_pulse.png` (wave 2). They obey §0 and §0.1 unchanged: void black background, no alpha keying, RGB output for additive blending, no glow colour outside the ember pair (and the sanctioned steel-highlight shield exception).

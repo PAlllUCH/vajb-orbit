@@ -1,0 +1,164 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://ui/station/shipyard_panel.gd" id="1_shipyard"]
+[ext_resource type="Texture2D" path="res://assets/icons/tint/icon_hull_48.png" id="2_pane_icon"]
+
+[node name="Shipyard" type="VBoxContainer"]
+unique_name_in_owner = true
+theme_override_constants/separation = 12
+script = ExtResource("1_shipyard")
+
+[node name="PaneHeader" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PaneIcon" type="TextureRect" parent="PaneHeader"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("2_pane_icon")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TitleBox" type="VBoxContainer" parent="PaneHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+
+[node name="PaneTitle" type="Label" parent="PaneHeader/TitleBox"]
+layout_mode = 2
+theme_type_variation = &"StationPanelTitle"
+text = "SHIPYARD"
+
+[node name="PaneSubtitle" type="Label" parent="PaneHeader/TitleBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "BUY AND SWITCH HULLS"
+
+[node name="PanelTag" type="Label" parent="PaneHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationCaption"
+
+[node name="ShipyardBody" type="HBoxContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="ShipListBox" type="VBoxContainer" parent="ShipyardBody"]
+custom_minimum_size = Vector2(340, 0)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ShipListCaption" type="Label" parent="ShipyardBody/ShipListBox"]
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "HULLS IN THE CRADLE"
+
+[node name="ShipScroll" type="ScrollContainer" parent="ShipyardBody/ShipListBox"]
+horizontal_scroll_mode = 0
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ShipList" type="VBoxContainer" parent="ShipyardBody/ShipListBox/ShipScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="PreviewFrame" type="PanelContainer" parent="ShipyardBody"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_type_variation = &"PanelRaised"
+
+[node name="PreviewMargin" type="MarginContainer" parent="ShipyardBody/PreviewFrame"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="PreviewBox" type="VBoxContainer" parent="ShipyardBody/PreviewFrame/PreviewMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PreviewCaption" type="Label" parent="ShipyardBody/PreviewFrame/PreviewMargin/PreviewBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+autowrap_mode = 3
+
+[node name="PreviewCenter" type="CenterContainer" parent="ShipyardBody/PreviewFrame/PreviewMargin/PreviewBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="PreviewImage" type="TextureRect" parent="ShipyardBody/PreviewFrame/PreviewMargin/PreviewBox/PreviewCenter"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PreviewName" type="Label" parent="ShipyardBody/PreviewFrame/PreviewMargin/PreviewBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationPanelTitle"
+
+[node name="StatsBox" type="VBoxContainer" parent="ShipyardBody"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="StatsCaption" type="Label" parent="ShipyardBody/StatsBox"]
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "COMPARISON VS ACTIVE HULL"
+
+[node name="ShipStats" type="VBoxContainer" parent="ShipyardBody/StatsBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="HardpointCaption" type="Label" parent="ShipyardBody/StatsBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+
+[node name="HardpointSlots" type="HBoxContainer" parent="ShipyardBody/StatsBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_constants/separation = 4
+
+[node name="StatsSpacer" type="Control" parent="ShipyardBody/StatsBox"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="PriceCaption" type="Label" parent="ShipyardBody/StatsBox"]
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "PRICE"
+
+[node name="ShipPrice" type="Label" parent="ShipyardBody/StatsBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationValue"
+text = "0"
+
+[node name="ShipAction" type="Button" parent="ShipyardBody/StatsBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+theme_type_variation = &"StationButton"
+text = "IN SERVICE"

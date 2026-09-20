@@ -1,0 +1,79 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[P1h] PASS root carries the PlayerProfile autoload
+[P1h] PASS station scene instantiates
+[P1h] PASS REFINERY panel is the real scene, not the offline placeholder
+[P1h] PASS panel carries the shell contract
+[P1h] PASS nothing is armed before a row is chosen
+[P1h] PASS OUTFITTING is laid out and visible for the width comparison
+[P1h] PASS REFINERY is the visible module after the rail press
+[P1h] PASS Refinery.stacks reports two convertible minerals
+[P1h] PASS table draws one toggle row per stack
+[P1h] PASS rows are named after their mineral
+[P1h] PASS rows are toggle buttons on the 76 px grid
+[P1h] PASS row reads the catalogue name
+[P1h] PASS row meta reads the ore held
+[P1h] PASS ORE column matches Refinery.stacks
+[P1h] PASS INGOTS column matches Refinery.convertible
+[P1h] PASS FEE column matches Refinery.fee_for
+[P1h] PASS a mineral below 3 ore has no row
+[P1h] PASS tag counts the stacks and their conversions
+[P1h] PASS footer states the rule from the Refinery constants
+[P1h] PASS row icon is the derived ore stencil
+[P1h] PASS row icon carries the tier tint at the idle alpha
+[P1h] geometry: pane (1440.0, 839.0) @(20.0, 20.0) | table (1064.0, 749.0) @(0.0, 0.0) | scroll (1064.0, 710.0) @(0.0, 39.0) | rows (1062.0, 164.0) @(1.0, 1.0) | row (1062.0, 76.0) @(0.0, 0.0) | box (360.0, 749.0) @(1080.0, 0.0) | host (1480.0, 879.0) @(8.0, 8.0)
+[P1h] geometry: icon (40.0, 60.0) @(0.0, 0.0) | title (550.0, 46.0) @(52.0, 7.0) | ore (130.0, 26.0) @(614.0, 17.0) | ingots (110.0, 26.0) @(756.0, 17.0) | fee (160.0, 26.0) @(878.0, 17.0)
+[P1h] geometry: OUTFITTING pane (1440.0, 839.0) @(20.0, 20.0) | row width 1438.0 (same host grid, no deck column)
+[P1h] PASS row fills the table column with no overflow
+[P1h] PASS rows VBox spans the scroll content box (1 px panel inset per side)
+[P1h] PASS scroll spans the table column
+[P1h] PASS table + 16 gap + RefineBox spans the pane (5.7 two-column body)
+[P1h] PASS pane spans the host content box (HostMargin 20 per side)
+[P1h] PASS row sits on the 76 px grid
+[P1h] PASS row inner margin is 12 / 8
+[P1h] PASS icon column is 40 px
+[P1h] PASS value columns are 130 / 110 / 160 (section 3.1)
+[P1h] PASS title column absorbs the slack
+[P1h] PASS same grid as the other panes (pane width == OUTFITTING pane width)
+[P1h] PASS the table column is the OUTFITTING row minus the deck column
+[P1h] PASS RefineBox is exactly the 360 px LAUNCH deck-control width
+[P1h] PASS row press arms the box with the whole stack
+[P1h] PASS stage 2 totals are 6 ore / 2 ingots / 30 CR
+[P1h] PASS stepper + is disabled at the stack maximum
+[P1h] PASS stepper - drops to one conversion and rewrites the totals
+[P1h] PASS stepper - is disabled at the minimum
+[P1h] PASS stepper + restores the whole stack
+[P1h] PASS an affordable fee is not painted as danger
+[P1h] PASS REFINE N takes the whole gold stack (8 ore leaves 2: whole conversions only)
+[P1h] PASS REFINE N charges the batch fee once (30 CR)
+[P1h] PASS the converted stack left the table
+[P1h] PASS success strip names the mineral, ingots and fee
+[P1h] PASS tag follows the rebuilt table
+[P1h] PASS selection cleared and the box back to idle
+[P1h] PASS one REFINE line in the economy log, ending at the new balance
+[P1h] PASS unaffordable fee is painted as danger before the press (5.6 channel 1)
+[P1h] PASS the row's own FEE cell is painted too
+[P1h] PASS the press is still offered (affordability is presentation only)
+[P1h] PASS refusal strip carries the fee the module would have charged
+[P1h] PASS refusal moved nothing
+[P1h] PASS refusal left the table and the selection alone
+[P1h] PASS refusal wrote no economy log line
+[P1h] PASS REFINERY ALL stays armed for the whole hold
+[P1h] PASS balance restored to 2000
+[P1h] PASS REFINERY ALL converts the remaining stack
+[P1h] PASS REFINERY ALL charges one fee for the batch (60 CR)
+[P1h] PASS success strip names the batch
+[P1h] PASS one combined REFINE line for the batch
+[P1h] PASS empty state: single NO ORE TO REFINE caption row
+[P1h] PASS empty state: the caption row cannot take focus
+[P1h] PASS empty state: every RefineBox control is disabled
+[P1h] PASS empty state: footer names the belt
+[P1h] PASS empty state: tag reads no stacks
+[P1h] PASS empty state: totals read zero
+[P1h] PASS empty state: a zero fee is not painted as danger
+[P1h] PASS empty state: disarm reports nothing to clear
+[P1h] PASS empty state: REFINERY ALL refuses without spending or logging
+[P1h] user://profile.cfg mtime 1789725053 -> 1789725053 (unchanged: true)
+[P1h] 70 checks, 0 failed
+PROBE OK

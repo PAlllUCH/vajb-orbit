@@ -1,0 +1,50 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+--- H3: PlayerState.damage(amount, bypass_shield) ---
+args=2 ; shield 100 vs damage(150) -> hull=500.0 shield=0.0 ; events shield=1 hull=0
+[OK]   H3 a: the shield absorbs the whole hit, the hull keeps its points | args=2 hull=500.0 shield=0.0
+[OK]   H3 a: no carry-over into the hull, and the HUD channel still fires | shield events=1 hull events=0
+[OK]   H3 b: the next point comes off the hull | hull=499.0 shield=0.0
+[OK]   H3 c: bypass_shield lands on the hull and leaves the shield | hull=350.0 shield=100.0
+[OK]   H3 d: a hit larger than the shield does not spill into the hull | hull=500.0 shield=0.0
+[OK]   H3 e: a non-positive amount is a no-op | hull=500.0 shield=0.0
+[OK]   H3 f: a lethal hit still announces death on the hull channel | hull=0.0 deaths=1
+--- H2: rock collision, ship in the tree, rock at x=300.0 ---
+collision bodies=1 (CharacterBody2D) ; body=HullBody layer=2 mask=1 motion_mode=1 shape=CircleShape2D radius=30.0 ; sprite 905 px x 0.06629999727011 = 60.0014975294471 u long (half 30.0007487647235)
+[OK]   H2 a: one collision body, on the ship's own layer, masking only the rock layer | bodies=1 layer=2 mask=1
+[OK]   H2 b: the shape is the hull circle and its radius is the art half-length | shape=CircleShape2D radius=30.0 art half-length=30.0007487647235
+rock radius=66.0 ; contact x=204.0 ; stopped at x=203.999862670898 ; after 150 more thrust x=203.999862670898 ; speed=406.6 (max 406.6) ; body local offset=0.0
+[OK]   H2 c: the rock stops the ship at its surface | stopped=203.999862670898 contact=204.0
+[OK]   H2 c: the stop is the rock, not a brake (thrust is pinned, momentum intact) | pinned=203.999862670898 stopped=203.999862670898 speed=406.6
+[OK]   H2 c: the ship still owns its transform (the body is re-zeroed) | body offset=0.0 ship pos=(203.9999, 0.0)
+negative control (not in tree): end x=2201.72631835938 past the rock at 300.0
+[OK]   H2 d: without the body in the space the same run passes through | end x=2201.72631835938
+--- H2 f: shipped spawn clearance over all seven rows, two seeds each ---
+  sector_1 rocks=49 spawn=(0.0, 420.0)
+  sector_2 rocks=62 spawn=(0.0, 420.0)
+  sector_3 rocks=58 spawn=(0.0, 420.0)
+  sector_4 rocks=44 spawn=(0.0, 420.0)
+  sector_5 rocks=42 spawn=(0.0, 420.0)
+  sector_6 rocks=33 spawn=(0.0, 420.0)
+  sector_7 rocks=64 spawn=(0.0, 420.0)
+closest rock surface to any shipped spawn: 1070.76440429688 u (hull radius 30.0)
+[OK]   H2 f: no shipped spawn starts inside a rock | clearance=1070.76440429688
+--- M3 a: the resolved fit's module ids ---
+MINING_MODULE=w_mining ; standard ids=[&"w_laser", &"s_light", &"h_plate_light", &"e_std", &"p_std"] ; mining ids=[&"w_mining", &"s_light", &"h_plate_light", &"e_std", &"p_std"]
+[OK]   M3 a1: the standard fit carries no w_mining | ids=[&"w_laser", &"s_light", &"h_plate_light", &"e_std", &"p_std"]
+[OK]   M3 a2: a fit carrying w_mining resolves with the module in its ids | ids=[&"w_mining", &"s_light", &"h_plate_light", &"e_std", &"p_std"]
+--- M3: mining on the 09 section 7 standard fit (no w_mining) ---
+laser=false reach=212.0 ; yield 5 -> 5 (1 cycle) -> 5 (2 cycles) ; pickups 0 -> 0
+[OK]   M3 c: without w_mining no laser mounts and E mines nothing | laser=false yield 5 -> 5 pickups=0 reach=212.0
+--- M3: mining on a fit carrying w_mining ---
+laser=true reach=212.0 ; yield 5 -> 4 (1 cycle) -> 3 (2 cycles) ; pickups 1 -> 2
+[OK]   M3 b: with w_mining the laser mounts and one cycle mines one unit | laser=true yield 5 -> 4 pickups=1 reach=212.0
+[OK]   M3 b: a second cycle mines a second unit and spawns a second pickup | yield 4 -> 3 pickups=2
+--- M3 d: the pinned setup(stats, state), then a hull swap ---
+pinned setup(stats, state): laser=<Object#null> ; +w_mining: mounted=true live-lasers=0 ; back to standard: laser=<Object#null> ; hull_max=1000.0 group=true
+[OK]   M3 d: the pinned call still runs (no W slot, no laser) | laser=<Object#null> hull_max=1000.0
+[OK]   M3 d: the module mounts on demand and a hull swap releases it | mounted_on_demand=true out=<Object#null> live=0
+--- live game.tscn ---
+launch: hold=40 state.cargo_max=40 footer='CARGO 0/40' game._laser=<Object#null> reticle=0
+[OK]   M1 a: the ship's hold, PlayerState and the HUD agree at boot | hold=40 state=40 footer=CARGO 0/40

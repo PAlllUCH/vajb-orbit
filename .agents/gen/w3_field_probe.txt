@@ -1,0 +1,50 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+=== W3 probe A: asteroid field, work model, respawn window ===
+--- 0. scripts load (parse gate) ---
+asteroid.gd       (res://game/asteroid.gd):<GDScript#-9223372009491135021>
+asteroid_field.gd (res://game/asteroid_field.gd):<GDScript#-9223372009776347695>
+mining_laser.gd   (res://game/mining_laser.gd):<GDScript#-9223372008920709673>
+pickup.gd         (res://game/pickup.gd):<GDScript#-9223372009205922347>
+mining_laser.tscn (res://game/mining_laser.tscn):<PackedScene#-9223371998434949619>
+--- 1. population, all seven sectors (§8: 6-12 rocks each) ---
+  sector_1  rocks  9  tiers { 1: 9 }  radius<=400  weights { 1: 100 }
+  sector_2  rocks  9  tiers { 1: 7, 2: 2 }  radius<=400  weights { 1: 55, 2: 45 }
+  sector_3  rocks  9  tiers { 2: 8, 1: 1 }  radius<=400  weights { 1: 20, 2: 80 }
+  sector_4  rocks  9  tiers { 2: 7, 3: 2 }  radius<=400  weights { 2: 60, 3: 40 }
+  sector_5  rocks  9  tiers { 3: 6, 2: 3 }  radius<=400  weights { 2: 35, 3: 65 }
+  sector_6  rocks  9  tiers { 3: 7, 4: 2 }  radius<=400  weights { 3: 55, 4: 45 }
+  sector_7  rocks  9  tiers { 3: 5, 4: 4 }  radius<=400  weights { 3: 40, 4: 60 }
+--- 2. tier weight distribution (11 §1.1), 360 rocks per sector ---
+  sector_1  n=360  T1 100.0% vs 100%  
+  sector_2  n=360  T1 51.1% vs 55%  T2 48.9% vs 45%  
+  sector_3  n=360  T1 16.4% vs 20%  T2 83.6% vs 80%  
+  sector_4  n=360  T2 57.8% vs 60%  T3 42.2% vs 40%  
+  sector_5  n=360  T2 32.5% vs 35%  T3 67.5% vs 65%  
+  sector_6  n=360  T3 51.1% vs 55%  T4 48.9% vs 45%  
+  sector_7  n=360  T3 36.7% vs 40%  T4 63.3% vs 60%  
+--- 3. default count when none is handed in (band 6..12) ---
+  twelve default fields: [6, 6, 8, 11, 8, 10, 8, 7, 7, 12, 12, 10]
+--- 4. work model (WORK_PER_UNIT 1.0) ---
+  rock 1: mineral chromium tier 1 yield 8  (look 1, radius 23.4 u)
+  8 cycles -> 8 units (yield now 0, residual work 0.000000)
+  gun seam: 10 hits of 0.1 work -> 1 unit(s) of a 7-unit rock
+  cracked signal fired 1 time(s) at yield 0; live rocks 4
+  every rock cracked: depleted=true  last_depleted_time=1000000 (WorldClock 1000000)
+--- 5. 02 §8 respawn and the x0.7 diminishing window ---
+  virgin T2 field (no stamp): [7, 4, 6, 5, 7, 5, 4, 3, 7, 6, 6, 3]
+  T2 full band 3..8, x0.7 band 2..5
+  respawned=true  last_respawn_time=1001200  rocks=12
+  respawn yields: [3, 3, 2, 2, 3, 4, 2, 2, 5, 5, 4, 4]
+  window query: stamp true | stamp+299 true | stamp+300 false
+--- 6. malformed config (no weights) ---
+WARNING: AsteroidField: empty tier weights, field left bare
+   at: push_warning (core/variant/variant_utility.cpp:1033)
+   GDScript backtrace (most recent call first):
+       [0] _roll_rocks (res://game/asteroid_field.gd:142)
+       [1] setup (res://game/asteroid_field.gd:80)
+       [2] _empty_weights (res://tools/_probe_w3_field.gd:272)
+       [3] _initialize (res://tools/_probe_w3_field.gd:47)
+  rocks 0, depleted true (one warning above, not six)
+=== checks 604, failures 0 ===
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)

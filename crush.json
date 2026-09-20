@@ -1,0 +1,74 @@
+{
+  "$schema": "https://charm.land/crush.json",
+  "mcp": {
+    "godot-ai": {
+      "type": "stdio",
+      "command": "C:\\Users\\Kamil\\.local\\bin\\uvx.exe",
+      "args": [
+        "--isolated",
+        "--no-config",
+        "--no-env-file",
+        "--no-sources",
+        "--no-build",
+        "--index-strategy",
+        "first-index",
+        "--keyring-provider",
+        "disabled",
+        "--index",
+        "https://pypi.org/simple",
+        "--default-index",
+        "https://pypi.org/simple",
+        "--find-links",
+        "https://pypi.org/simple/godot-ai/",
+        "--link-mode",
+        "copy",
+        "--from",
+        "godot-ai==4.1.0",
+        "godot-ai",
+        "attach",
+        "--port",
+        "8000",
+        "--ws-port",
+        "9500"
+      ],
+      "env": {
+        "UV_LINK_MODE": "copy"
+      }
+    },
+    "assetmcp": {
+      "type": "stdio",
+      "command": "C:\\Users\\Kamil\\AppData\\Local\\crush\\tools\\assetmcp\\.venv\\Scripts\\python.exe",
+      "args": ["-m", "assetmcp.server"],
+      "env": {
+        "ASSETMCP_LIBRARY_DIR": "G:\\Mój dysk\\Projekty\\Vajb Orbit\\asset-library",
+        "ASSETMCP_PREVIEW_DIR": "G:\\Mój dysk\\Projekty\\Vajb Orbit\\asset-library\\.previews",
+        "ASSETMCP_MAX_DOWNLOAD_MB": "512"
+      }
+    }
+  },
+  "lsp": {
+    "gdscript": {
+      "command": "C:\\Users\\Kamil\\AppData\\Local\\Programs\\godot-lsp-bridge\\bin\\godot-lsp-bridge.exe",
+      "args": []
+    }
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "^(view|edit|write|multiedit|bash|grep|glob|ls|agent)$",
+        "command": "py -3.14 \"G:/Mój dysk/Projekty/Vajb Orbit/.crush/hooks/protect_archive.py\""
+      },
+      {
+        "matcher": "^(edit|write|multiedit)$",
+        "command": "py -3.14 \"G:/Mój dysk/Projekty/Vajb Orbit/.crush/hooks/enforce_worker_files.py\""
+      }
+    ]
+  },
+  "options": {
+    "skills_paths": [
+      "G:/Mój dysk/Projekty/crush-main/additional-skills/godot",
+      "G:/Mój dysk/Projekty/crush-main/additional-skills/godot/godot-master",
+      "G:/Mój dysk/Projekty/Vajb Orbit/skills"
+    ]
+  }
+}

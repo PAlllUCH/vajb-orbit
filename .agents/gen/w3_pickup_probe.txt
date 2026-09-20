@@ -1,0 +1,27 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+=== W3 probe C: pickup tractor, collection, hold-full, lifetime ===
+hold: active ship ship_vanguard, catalogue cargo column 40 units
+--- 1. constants (ENGINE_SPEC §13, 02 §7) ---
+  LIFETIME 60.0 s | TRACTOR_RANGE 120 u | TRACTOR_SPEED 90 u/s | ARRIVAL_RADIUS 16 u
+  spawned 5 pickups (300 u, 110 u, 30 u ore, 30 u cache, aged) in group true
+  pod sprite 760x463 px scaled to 20.0 u, item id mineral_iron
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+--- 2. motion gate and pull after 30 physics frames ---
+  300 u pickup at (300.0, 0.0) (drifted 0.00 u)
+  110 u pickup travelled 45.0 u in 30 frames (1.5 u/frame predicts 45.0 u)
+  arrival: 30 u ore pickup collected=true; hold 0 -> 1
+  credit cache: collected=true; credits 10000 -> 10250
+  aged pickup (59.95 s of its 60 s) alive=false
+--- 3. the last free unit ---
+  hold parked at 39 of 40; one pickup spawned at 30 u
+  boundary pickup collected=true; hold now 40 of 40
+  a further pickup spawned at (30, 30) with the hold full
+--- 4. hold-full pickup and the economy log ---
+  hold-full pickup alive=true at (30.0, 30.0) (hold 40 of 40)
+  user://test_w3_pickup_log.txt (3 lines):
+    2026-09-18T14:37:27, MINE, mineral_iron, 1, +0, 10000
+    2026-09-18T14:37:27, CACHE, credits, 250, +250, 10250
+    2026-09-18T14:37:28, MINE, mineral_iron, 1, +0, 10250
+  scratch profile and log removed; user://profile.cfg and economy_log.txt untouched
+=== checks 20, failures 0 ===

@@ -1,0 +1,138 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://ui/station/repairs_panel.gd" id="1_repairs"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_status_repairing_48.png" id="2_pane_icon"]
+
+[node name="Repairs" type="VBoxContainer"]
+unique_name_in_owner = true
+theme_override_constants/separation = 12
+script = ExtResource("1_repairs")
+
+[node name="PaneHeader" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PaneIcon" type="TextureRect" parent="PaneHeader"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("2_pane_icon")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TitleBox" type="VBoxContainer" parent="PaneHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+
+[node name="PaneTitle" type="Label" parent="PaneHeader/TitleBox"]
+layout_mode = 2
+theme_type_variation = &"StationPanelTitle"
+text = "REPAIRS"
+
+[node name="PaneSubtitle" type="Label" parent="PaneHeader/TitleBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "HULL AND SHIELD"
+
+[node name="PanelTag" type="Label" parent="PaneHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationCaption"
+
+[node name="RepairsBody" type="HBoxContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="DamageReportBox" type="VBoxContainer" parent="RepairsBody"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(560, 0)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ReportCaption" type="Label" parent="RepairsBody/DamageReportBox"]
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "DAMAGE REPORT"
+
+[node name="ReportRows" type="VBoxContainer" parent="RepairsBody/DamageReportBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ReportSpacer" type="Control" parent="RepairsBody/DamageReportBox"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="BodySpacer" type="Control" parent="RepairsBody"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="RepairBox" type="VBoxContainer" parent="RepairsBody"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ControlCaption" type="Label" parent="RepairsBody/RepairBox"]
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "REPAIR CONTROL"
+
+[node name="HullFrame" type="PanelContainer" parent="RepairsBody/RepairBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_type_variation = &"PanelRaised"
+
+[node name="HullMargin" type="MarginContainer" parent="RepairsBody/RepairBox/HullFrame"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="HullCenter" type="CenterContainer" parent="RepairsBody/RepairBox/HullFrame/HullMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+
+[node name="HullImage" type="TextureRect" parent="RepairsBody/RepairBox/HullFrame/HullMargin/HullCenter"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="RepairButton" type="Button" parent="RepairsBody/RepairBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+theme_type_variation = &"StationButton"
+text = "REPAIR"
+
+[node name="RepairStrip" type="Label" parent="RepairsBody/RepairBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationValue"
+autowrap_mode = 3
+
+[node name="RepairCaption" type="Label" parent="RepairsBody/RepairBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "OPTIONAL · A DAMAGED HULL LAUNCHES FROM THE LAUNCH DECK"
+autowrap_mode = 3
+
+[node name="PaneFooter" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "FEE · 1 CR PER 2 MISSING HULL · 1 CR PER 3 MISSING SHIELD"

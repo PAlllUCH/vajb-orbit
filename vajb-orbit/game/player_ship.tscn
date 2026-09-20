@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://game/player_ship.gd" id="1_ship"]
+[ext_resource type="Texture2D" uid="uid://cmi25sgdnd7ga" path="res://assets/ships/ship_vanguard_side.png" id="2_hull"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_hull"]
+radius = 30.0
+
+[node name="PlayerShip" type="Node2D" groups=["player_ship"]]
+script = ExtResource("1_ship")
+
+[node name="Hull" type="Sprite2D" parent="."]
+texture = ExtResource("2_hull")
+scale = Vector2(0.0663, 0.0663)
+
+[node name="HullBody" type="CharacterBody2D" parent="."]
+collision_layer = 2
+collision_mask = 1
+motion_mode = 1
+
+[node name="Shape" type="CollisionShape2D" parent="HullBody"]
+shape = SubResource("CircleShape2D_hull")

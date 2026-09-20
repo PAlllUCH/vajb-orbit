@@ -1,0 +1,20 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[P1h] PASS root carries the PlayerProfile autoload
+[P1h] PASS station scene instantiates
+[P1h] PASS empty pass: REFINERY is the real scene
+[P1h] PASS empty pass: no convertible stack in the hold
+[P1h] PASS empty pass: one row node, no payload rows
+[P1h] PASS empty pass: single disabled NO ORE TO REFINE caption row
+[P1h] PASS empty pass: every RefineBox control is disabled
+[P1h] PASS empty pass: footer names the belt
+[P1h] PASS empty pass: tag reads no stacks
+[P1h] PASS empty pass: totals read zero
+[P1h] PASS empty pass: disarm reports nothing to clear
+[P1h] PASS empty pass: focus_primary hands the ring to REFINERY ALL, the brief's third branch (owner: RefineAllButton (Layout/Page/Body/ModuleHost/HostMargin/Refinery/RefineryBody/RefineBox/RefineAllButton))
+[P1h] PASS empty pass: REFINERY ALL refuses with the danger strip
+[P1h] PASS empty pass: nothing was written to the economy log
+[P1h] user://profile.cfg mtime 1789725053 -> 1789725053 (unchanged: true)
+[P1h] 14 checks, 0 failed
+PROBE OK

@@ -1,0 +1,100 @@
+{
+ "fit": "contain",
+ "sizes": [
+  16,
+  48,
+  96,
+  192
+ ],
+ "applied": false,
+ "rows": [
+  {
+   "family": "icon_credits",
+   "source": "master",
+   "master": [
+    624,
+    719
+   ],
+   "status": "MISMATCH",
+   "fit": "contain",
+   "boxes": {
+    "16": "14x16",
+    "48": "42x48",
+    "96": "83x96",
+    "192": "167x192"
+   },
+   "min_stroke": {
+    "16": 3.0,
+    "48": 8.0,
+    "96": 17.0,
+    "192": 35.0
+   }
+  },
+  {
+   "family": "icon_shield",
+   "source": "master",
+   "master": [
+    594,
+    744
+   ],
+   "status": "MISMATCH",
+   "fit": "contain",
+   "boxes": {
+    "16": "13x16",
+    "48": "38x48",
+    "96": "77x96",
+    "192": "153x192"
+   },
+   "min_stroke": {
+    "16": 3.0,
+    "48": 6.0,
+    "96": 13.0,
+    "192": 26.0
+   }
+  },
+  {
+   "family": "icon_zoom_minus",
+   "source": "master",
+   "master": [
+    718,
+    703
+   ],
+   "status": "MISMATCH",
+   "fit": "contain",
+   "boxes": {
+    "16": "16x16",
+    "48": "48x47",
+    "96": "96x94",
+    "192": "192x188"
+   },
+   "min_stroke": {
+    "16": 3.5,
+    "48": 7.0,
+    "96": 14.0,
+    "192": 27.0
+   }
+  },
+  {
+   "family": "icon_zoom_plus",
+   "source": "master",
+   "master": [
+    712,
+    702
+   ],
+   "status": "MISMATCH",
+   "fit": "contain",
+   "boxes": {
+    "16": "16x16",
+    "48": "48x47",
+    "96": "96x95",
+    "192": "192x189"
+   },
+   "min_stroke": {
+    "16": 2.5,
+    "48": 6.0,
+    "96": 13.0,
+    "192": 26.0
+   }
+  }
+ ]
+}

@@ -1,0 +1,22 @@
+{
+  "task_id": "f9489227b4578b6535ce440cc96fe2e2",
+  "model": "gpt-image-2-5-flare-image-to-image",
+  "input": {
+    "prompt": "Same 2x2 rotation sheet of the same Vanguard cutter player ship, identical silhouette, identical proportions, identical framing, identical camera, identical lighting and identical engine glow; re-render only the hull plate pattern and the weathering distribution. New plate pattern: heavy horizontal riveted plate rows stacked across the hull with chevron weld seams running along the flanks, industrial mining-company refit look. Weathering: extra hull grime film and industrial dust over the standard scratches and oil stains. Keep the asymmetric weapon mount pods, the twin trailing engines and the burnt ember C8461B engine flares exactly as in the reference, keep the four cells on a fully transparent background with empty transparent margins, and keep the same reading order: front, three-quarter, side, back. no chrome, no neon, no saturated colours, no second accent, no perspective, no tilt, no text, no watermark, no grid lines, no labels.\ngrimdark painted sci-fi, semi-realistic weathered metal, harsh directional rim light from upper-left with a thin cold pale steel rim tracing shadow-side silhouettes, subtle film grain over the whole image, top-down orthographic view. Fixed palette: gunmetal mid #3A3F46, gunmetal dark #2B2F35, iron black #232629, steel highlight #565C63, rusted ochre #6E5B4A, dry rust #8A6A50, grimy umber #4A423B, void black #0A0E14, deep void blue #111823, void haze #1A2230, burnt ember #C8461B, ember glow #E8703A, panel black #15181D, panel steel #2A2E35, ash text #8D939B, bone text #C9CDD2. Metal colour is desaturated gunmetal and rusted steel, dark and tired, with scratches, oil stains, hull grime, rust streaks, pitted metal, scorch marks and battle damage. Glow colours are burnt ember #C8461B and ember glow #E8703A only, small and hot, used exclusively for engines, weapons and warning lights; no other glow or accent colour exists anywhere in the image. Backgrounds are near-black blue void, void black #0A0E14 to deep void blue #111823, sparse faint stars, desaturated throughout, no saturated colours, no chrome, no neon, no gloss, no clean surfaces, moody and menacing.",
+    "aspect_ratio": "1:1",
+    "resolution": "2K",
+    "input_urls": [
+      "https://tempfile.redpandaai.co/kieai/11467482/vanguard-cutter-player-ship-rotation-she-1-alpha.png/1789673640407-dp8u8asf9mb.png"
+    ],
+    "background": "transparent"
+  },
+  "urls": [
+    "https://tempfile.aiquickdraw.com/p/f9489227b4578b6535ce440cc96fe2e2_1_1789673682_1186.png"
+  ],
+  "local_paths": [
+    "G:\\Mój dysk\\Projekty\\Vajb Orbit\\staging\\phase_d\\ships\\20260917-213447\\same-2x2-rotation-sheet-of-the-same-vang-1.png"
+  ],
+  "alpha_paths": [],
+  "upscaled_paths": [],
+  "asset_paths": []
+}

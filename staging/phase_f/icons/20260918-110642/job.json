@@ -1,0 +1,20 @@
+{
+  "task_id": "3c1922202eaf820a7b4af55a636903fd",
+  "model": "gpt-image-2-5-flare-text-to-image",
+  "input": {
+    "prompt": "flat vector icon sheet, 4x2 grid (icons arranged left to right, top to bottom), generous even gaps between icons, plain solid pure white background, isolated objects, icons drawn as single-colour flat silhouettes in iron black #232629 with clean uniform strokes, hard mitred corners, corner radius zero. For this sheet only, the flat vector interpretation overrides the painted metal style. Subjects in reading order: 1 an engine slot socket: one trapezoidal nozzle block on a flat mount plate; 2 a power slot socket: a reactor core block with three vertical coil bars on its face; 3 a weapon slot socket: a hardpoint mount plate with two clamp jaws gripping a socket mouth; 4 a shield slot socket: an arc emitter half-ring set into a flat base plate; 5 an armour slot socket: three flat plates stacked in an offset step; 6 a computer slot socket: a square board with one raised central node block; 7 a booster slot socket: a vent block carrying a single bold chevron burst; 8 a utility slot socket: an open pod socket with a latch bracket across its mouth. no chrome, no neon, no saturated colours, no second accent, no gradient, no glow, no shadows, no text, no watermark, no grid lines, no labels, no multicolour, no rounded corners, no rounded stroke ends, no tapering strokes.\ngrimdark painted sci-fi, semi-realistic weathered metal, harsh directional rim light from upper-left with a thin cold pale steel rim tracing shadow-side silhouettes, subtle film grain over the whole image, top-down orthographic view. Fixed palette: gunmetal mid #3A3F46, gunmetal dark #2B2F35, iron black #232629, steel highlight #565C63, rusted ochre #6E5B4A, dry rust #8A6A50, grimy umber #4A423B, void black #0A0E14, deep void blue #111823, void haze #1A2230, burnt ember #C8461B, ember glow #E8703A, panel black #15181D, panel steel #2A2E35, ash text #8D939B, bone text #C9CDD2. Metal colour is desaturated gunmetal and rusted steel, dark and tired, with scratches, oil stains, hull grime, rust streaks, pitted metal, scorch marks and battle damage. Glow colours are burnt ember #C8461B and ember glow #E8703A only, small and hot, used exclusively for engines, weapons and warning lights; no other glow or accent colour exists anywhere in the image. Backgrounds are near-black blue void, void black #0A0E14 to deep void blue #111823, sparse faint stars, desaturated throughout, no saturated colours, no chrome, no neon, no gloss, no clean surfaces, moody and menacing.",
+    "aspect_ratio": "1:1",
+    "resolution": "2K"
+  },
+  "urls": [
+    "https://tempfile.aiquickdraw.com/p/3c1922202eaf820a7b4af55a636903fd_1_1789722398_6138.png"
+  ],
+  "local_paths": [
+    "G:\\Mój dysk\\Projekty\\Vajb Orbit\\staging\\phase_f\\icons\\20260918-110642\\flat-vector-icon-sheet-4x2-grid-icons-1.png"
+  ],
+  "alpha_paths": [
+    "G:\\Mój dysk\\Projekty\\Vajb Orbit\\staging\\phase_f\\icons\\20260918-110642\\flat-vector-icon-sheet-4x2-grid-icons-1-alpha.png"
+  ],
+  "upscaled_paths": [],
+  "asset_paths": []
+}

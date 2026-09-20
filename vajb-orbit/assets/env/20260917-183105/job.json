@@ -1,0 +1,18 @@
+{
+  "task_id": "a31c34c580e9a84faeeb76e48021c1af",
+  "model": "gpt-image-2-5-flare-text-to-image",
+  "input": {
+    "prompt": "Wide cinematic top-down orthographic vista of a wreck-strewn battlefield drifting in deep void blue, no perspective tilt. Scattered torn hull fragments and debris shards, faint pitted-metal wreckage shapes half lost in shadow, drifting dust veils in void haze, sparse faint stars. Harsh upper-left key light with cold steel highlight rims on fragment edges, heavy film grain over the whole frame. Exactly one small distant burning wreck, off-centre in the lower-right third, burnt ember core with a faint ember glow halo, no other accent or glow anywhere. Composition: the left side and centre-left stay quiet, dark, low-detail negative space for a title lockup and a button stack, busiest wreckage detail sits lower-right around and behind the burning wreck, detail density falling off toward the left and upper-left, edge zones kept as void and dust so a slow UV scroll wraps cleanly. Dark overall and desaturated, background sits in the void black to deep void blue value band with lit debris edges only one step brighter. No planets, no bright nebula, no saturated colour, no second accent colour, no text, no watermark, no grid lines.\ngrimdark painted sci-fi, semi-realistic weathered metal, harsh directional rim light from upper-left with a thin cold pale steel rim tracing shadow-side silhouettes, subtle film grain over the whole image, top-down orthographic view. Fixed palette: gunmetal mid #3A3F46, gunmetal dark #2B2F35, iron black #232629, steel highlight #565C63, rusted ochre #6E5B4A, dry rust #8A6A50, grimy umber #4A423B, void black #0A0E14, deep void blue #111823, void haze #1A2230, burnt ember #C8461B, ember glow #E8703A, panel black #15181D, panel steel #2A2E35, ash text #8D939B, bone text #C9CDD2. Metal colour is desaturated gunmetal and rusted steel, dark and tired, with scratches, oil stains, hull grime, rust streaks, pitted metal, scorch marks and battle damage. Glow colours are burnt ember #C8461B and ember glow #E8703A only, small and hot, used exclusively for engines, weapons and warning lights; no other glow or accent colour exists anywhere in the image. Backgrounds are near-black blue void, void black #0A0E14 to deep void blue #111823, sparse faint stars, desaturated throughout, no saturated colours, no chrome, no neon, no gloss, no clean surfaces, moody and menacing.",
+    "aspect_ratio": "16:9",
+    "resolution": "2K"
+  },
+  "urls": [
+    "https://tempfile.aiquickdraw.com/p/a31c34c580e9a84faeeb76e48021c1af_1_1789662655_4678.png"
+  ],
+  "local_paths": [
+    "G:\\Mój dysk\\Projekty\\Vajb Orbit\\vajb-orbit\\assets\\env\\20260917-183105\\wide-cinematic-top-down-orthographic-vis-1.png"
+  ],
+  "alpha_paths": [],
+  "upscaled_paths": [],
+  "asset_paths": []
+}

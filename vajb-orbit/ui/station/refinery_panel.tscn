@@ -1,0 +1,211 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://ui/station/refinery_panel.gd" id="1_refinery"]
+[ext_resource type="Texture2D" path="res://assets/icons/tint/icon_cargo_ore_48.png" id="2_pane_icon"]
+
+[node name="Refinery" type="VBoxContainer"]
+unique_name_in_owner = true
+theme_override_constants/separation = 12
+script = ExtResource("1_refinery")
+
+[node name="PaneHeader" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PaneIcon" type="TextureRect" parent="PaneHeader"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("2_pane_icon")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TitleBox" type="VBoxContainer" parent="PaneHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+
+[node name="PaneTitle" type="Label" parent="PaneHeader/TitleBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationPanelTitle"
+text = "REFINERY"
+
+[node name="PaneSubtitle" type="Label" parent="PaneHeader/TitleBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "ORE PROCESSING"
+
+[node name="PanelTag" type="Label" parent="PaneHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationCaption"
+
+[node name="RefineryBody" type="HBoxContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="RefineryTable" type="VBoxContainer" parent="RefineryBody"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="HeaderMargin" type="MarginContainer" parent="RefineryBody/RefineryTable"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 0
+
+[node name="RefineryHeader" type="HBoxContainer" parent="RefineryBody/RefineryTable/HeaderMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="RefineryScroll" type="ScrollContainer" parent="RefineryBody/RefineryTable"]
+unique_name_in_owner = true
+horizontal_scroll_mode = 0
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RefineryRows" type="VBoxContainer" parent="RefineryBody/RefineryTable/RefineryScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="RefineBox" type="VBoxContainer" parent="RefineryBody"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ConversionCaption" type="Label" parent="RefineryBody/RefineBox"]
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "CONVERSION"
+
+[node name="SelectedName" type="Label" parent="RefineryBody/RefineBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationValue"
+
+[node name="StepperRow" type="HBoxContainer" parent="RefineryBody/RefineBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="StepperLess" type="Button" parent="RefineryBody/RefineBox/StepperRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+theme_type_variation = &"StationButton"
+text = "-"
+
+[node name="StepperValue" type="Label" parent="RefineryBody/RefineBox/StepperRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_type_variation = &"StationValue"
+horizontal_alignment = 1
+
+[node name="StepperMore" type="Button" parent="RefineryBody/RefineBox/StepperRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+theme_type_variation = &"StationButton"
+text = "+"
+
+[node name="TotalsBox" type="VBoxContainer" parent="RefineryBody/RefineBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="OreInRow" type="HBoxContainer" parent="RefineryBody/RefineBox/TotalsBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="OreInCaption" type="Label" parent="RefineryBody/RefineBox/TotalsBox/OreInRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"StationCaption"
+text = "ORE IN"
+
+[node name="OreInValue" type="Label" parent="RefineryBody/RefineBox/TotalsBox/OreInRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+theme_type_variation = &"StationValue"
+horizontal_alignment = 2
+
+[node name="IngotsOutRow" type="HBoxContainer" parent="RefineryBody/RefineBox/TotalsBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="IngotsOutCaption" type="Label" parent="RefineryBody/RefineBox/TotalsBox/IngotsOutRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"StationCaption"
+text = "INGOTS OUT"
+
+[node name="IngotsOutValue" type="Label" parent="RefineryBody/RefineBox/TotalsBox/IngotsOutRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+theme_type_variation = &"StationValue"
+horizontal_alignment = 2
+
+[node name="FeeRow" type="HBoxContainer" parent="RefineryBody/RefineBox/TotalsBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="FeeCaption" type="Label" parent="RefineryBody/RefineBox/TotalsBox/FeeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"StationCaption"
+text = "FEE"
+
+[node name="FeeValue" type="Label" parent="RefineryBody/RefineBox/TotalsBox/FeeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+theme_type_variation = &"StationValue"
+horizontal_alignment = 2
+
+[node name="RefineSpacer" type="Control" parent="RefineryBody/RefineBox"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="RefineButton" type="Button" parent="RefineryBody/RefineBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+theme_type_variation = &"StationButton"
+text = "REFINE 1"
+
+[node name="RefineAllButton" type="Button" parent="RefineryBody/RefineBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+theme_type_variation = &"StationButton"
+text = "REFINERY ALL"
+
+[node name="CancelButton" type="Button" parent="RefineryBody/RefineBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+theme_type_variation = &"StationButton"
+text = "CANCEL"
+
+[node name="PaneFooter" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"

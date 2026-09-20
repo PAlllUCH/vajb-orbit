@@ -1,0 +1,153 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://ui/station/launch_panel.gd" id="1_launch"]
+[ext_resource type="Texture2D" path="res://assets/icons/icon_map_route_48.png" id="2_pane_icon"]
+
+[node name="Launch" type="VBoxContainer"]
+unique_name_in_owner = true
+theme_override_constants/separation = 12
+script = ExtResource("1_launch")
+
+[node name="PaneHeader" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PaneIcon" type="TextureRect" parent="PaneHeader"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("2_pane_icon")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TitleBox" type="VBoxContainer" parent="PaneHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+
+[node name="PaneTitle" type="Label" parent="PaneHeader/TitleBox"]
+layout_mode = 2
+theme_type_variation = &"StationPanelTitle"
+text = "LAUNCH"
+
+[node name="PaneSubtitle" type="Label" parent="PaneHeader/TitleBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "UNDOCK AND RETURN TO OPEN SPACE"
+
+[node name="PanelTag" type="Label" parent="PaneHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationCaption"
+
+[node name="LaunchBody" type="HBoxContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="BriefBox" type="VBoxContainer" parent="LaunchBody"]
+custom_minimum_size = Vector2(560, 0)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BriefCaption" type="Label" parent="LaunchBody/BriefBox"]
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "FLIGHT BRIEFING"
+
+[node name="BriefRows" type="VBoxContainer" parent="LaunchBody/BriefBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="CargoCaption" type="Label" parent="LaunchBody/BriefBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+
+[node name="CargoSlots" type="HBoxContainer" parent="LaunchBody/BriefBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="CargoList" type="ItemList" parent="LaunchBody/BriefBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 110)
+layout_mode = 2
+
+[node name="BriefSpacer" type="Control" parent="LaunchBody/BriefBox"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="BriefNote" type="Label" parent="LaunchBody/BriefBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+autowrap_mode = 3
+
+[node name="LaunchSpacer" type="Control" parent="LaunchBody"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="LaunchActionBox" type="VBoxContainer" parent="LaunchBody"]
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ActionCaption" type="Label" parent="LaunchBody/LaunchActionBox"]
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "DECK CONTROL"
+
+[node name="HullFrame" type="PanelContainer" parent="LaunchBody/LaunchActionBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_type_variation = &"PanelRaised"
+
+[node name="HullMargin" type="MarginContainer" parent="LaunchBody/LaunchActionBox/HullFrame"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="HullBox" type="VBoxContainer" parent="LaunchBody/LaunchActionBox/HullFrame/HullMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HullCenter" type="CenterContainer" parent="LaunchBody/LaunchActionBox/HullFrame/HullMargin/HullBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="HullImage" type="TextureRect" parent="LaunchBody/LaunchActionBox/HullFrame/HullMargin/HullBox/HullCenter"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HullCaption" type="Label" parent="LaunchBody/LaunchActionBox/HullFrame/HullMargin/HullBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+
+[node name="LaunchButton" type="Button" parent="LaunchBody/LaunchActionBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+theme_type_variation = &"StationButton"
+text = "LAUNCH"
+
+[node name="ConfirmStrip" type="Label" parent="LaunchBody/LaunchActionBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationValue"
+autowrap_mode = 3

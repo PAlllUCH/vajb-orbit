@@ -1,0 +1,56 @@
+{
+ "applied": true,
+ "bright": 175,
+ "neutral": 0.72,
+ "warm_radius": 2,
+ "rows": [
+  {
+   "file": "ship_drone_swarm_front.png",
+   "recoloured": 218,
+   "pale_before": 299,
+   "pale_after": 81,
+   "protected_px": 81,
+   "target_lum_before": 218.7,
+   "target_lum_after": 66.7,
+   "visible_pale_before": 253,
+   "visible_pale_after": 81,
+   "path": "G:\\M\u00f3j dysk\\Projekty\\Vajb Orbit\\staging\\phase_f\\ships\\ship_drone_swarm_front.png"
+  },
+  {
+   "file": "ship_drone_swarm_three_quarter.png",
+   "recoloured": 143,
+   "pale_before": 183,
+   "pale_after": 40,
+   "protected_px": 40,
+   "target_lum_before": 207.6,
+   "target_lum_after": 75.4,
+   "visible_pale_before": 166,
+   "visible_pale_after": 40,
+   "path": "G:\\M\u00f3j dysk\\Projekty\\Vajb Orbit\\staging\\phase_f\\ships\\ship_drone_swarm_three_quarter.png"
+  },
+  {
+   "file": "ship_drone_swarm_side.png",
+   "recoloured": 328,
+   "pale_before": 397,
+   "pale_after": 69,
+   "protected_px": 69,
+   "target_lum_before": 215.2,
+   "target_lum_after": 67.3,
+   "visible_pale_before": 370,
+   "visible_pale_after": 69,
+   "path": "G:\\M\u00f3j dysk\\Projekty\\Vajb Orbit\\staging\\phase_f\\ships\\ship_drone_swarm_side.png"
+  },
+  {
+   "file": "ship_drone_swarm_back.png",
+   "recoloured": 323,
+   "pale_before": 406,
+   "pale_after": 83,
+   "protected_px": 83,
+   "target_lum_before": 215.9,
+   "target_lum_after": 64.4,
+   "visible_pale_before": 332,
+   "visible_pale_after": 83,
+   "path": "G:\\M\u00f3j dysk\\Projekty\\Vajb Orbit\\staging\\phase_f\\ships\\ship_drone_swarm_back.png"
+  }
+ ]
+}

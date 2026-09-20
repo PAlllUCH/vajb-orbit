@@ -1,0 +1,19 @@
+{
+  "total": 461,
+  "moved": 461,
+  "imported": 461,
+  "catalogued": 461,
+  "missing": {
+    "NOT_MOVED": [],
+    "NOT_IMPORTED": [],
+    "NOT_CATALOGUED": []
+  },
+  "masters": 119,
+  "panels": [
+    "panel_boosters.png",
+    "panel_cargo.png",
+    "panel_glyphs.png",
+    "panel_status.png",
+    "panel_weapons.png"
+  ]
+}

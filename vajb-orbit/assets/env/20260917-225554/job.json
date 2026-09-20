@@ -1,0 +1,19 @@
+{
+  "task_id": "f276d001d4d723468000aa39484ed35d",
+  "model": "gpt-image-2-5-flare-text-to-image",
+  "input": {
+    "prompt": "Trade and refinery base structure, a station-scale commercial platform. Silhouette: a wide circular docking ring with mooring arms projecting left and right, a central plaza deck inside the ring with two cargo transfer cranes swinging over it, clusters of fuel cell drums mounted along the ring's outer rim, a small control cupola on the ring. The docking ring and crane gantries dominate the outline; no ore silos, no weapon batteries. Weathering: busy industrial wear, oil stains around the cranes, rust streaks from the rivet lines, hull grime. Emissive: a few small hot burnt ember C8461B docking lamps spaced along the ring only, contained, no ember glow halo, no floodlights. one single centred top-down orthographic render, the structure occupying about 60 percent of the frame width, no tilt and no perspective, isolated on a fully transparent background, no background colour, no backdrop, no ground shadow. Platework in gunmetal mid #3A3F46 and gunmetal dark #2B2F35 with cold steel highlight #565C63 rim on the shadow side, harsh directional key light from the upper left, heavy hull grime, oil stains, rust streaks, pitted metal, weld beads over old repairs, subtle film grain, everything one value step darker than ships. no planets with atmospheres, no clouds, no bright nebula, no saturated colours, no second accent colour, no chrome, no neon, no text, no watermark, no grid lines, no ships, no figures.\ngrimdark painted sci-fi, semi-realistic weathered metal, harsh directional rim light from upper-left with a thin cold pale steel rim tracing shadow-side silhouettes, subtle film grain over the whole image, top-down orthographic view. Fixed palette: gunmetal mid #3A3F46, gunmetal dark #2B2F35, iron black #232629, steel highlight #565C63, rusted ochre #6E5B4A, dry rust #8A6A50, grimy umber #4A423B, void black #0A0E14, deep void blue #111823, void haze #1A2230, burnt ember #C8461B, ember glow #E8703A, panel black #15181D, panel steel #2A2E35, ash text #8D939B, bone text #C9CDD2. Metal colour is desaturated gunmetal and rusted steel, dark and tired, with scratches, oil stains, hull grime, rust streaks, pitted metal, scorch marks and battle damage. Glow colours are burnt ember #C8461B and ember glow #E8703A only, small and hot, used exclusively for engines, weapons and warning lights; no other glow or accent colour exists anywhere in the image. Backgrounds are near-black blue void, void black #0A0E14 to deep void blue #111823, sparse faint stars, desaturated throughout, no saturated colours, no chrome, no neon, no gloss, no clean surfaces, moody and menacing.",
+    "aspect_ratio": "1:1",
+    "resolution": "2K",
+    "background": "transparent"
+  },
+  "urls": [
+    "https://tempfile.aiquickdraw.com/p/f276d001d4d723468000aa39484ed35d_1_1789678547_4042.png"
+  ],
+  "local_paths": [
+    "G:\\Mój dysk\\Projekty\\Vajb Orbit\\staging\\phase_e\\env\\20260917-225554\\trade-and-refinery-base-structure-a-sta-1.png"
+  ],
+  "alpha_paths": [],
+  "upscaled_paths": [],
+  "asset_paths": []
+}

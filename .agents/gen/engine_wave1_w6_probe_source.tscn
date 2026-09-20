@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://tools/_probe_w6_review.gd" id="1_probe"]
+
+[node name="ProbeW6Review" type="Node"]
+script = ExtResource("1_probe")

@@ -1,0 +1,93 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+--- ENGINE_SPEC section 13 constants as shipped ---
+BRAKE_MULT=1.8 SLOW_DOWN=240.0 ARRIVE=40.0 WARP_QUIET=5.0 MINE_CYCLE=1.2 LASER_RANGE=220.0
+PICKUP lifetime=60.0 tractor=120.0/90.0 | SECTOR_SIZE=(10000.0, 10000.0) WARP_CHANNEL=3.0
+[OK]   section 13 globals | all match section 13
+--- handling (shipped player_ship.tscn, vanguard standard fit, manual 120 Hz) ---
+stats max_speed=406.6 accel=2.52 coast=2.1 turn=3.0 spinup=0.525
+[OK]   resolved vanguard handling = section 13 + the plate multiplier | 406.6/2.52/2.1/3.0/0.525 expected
+[OK]   accel time | measured=2.525
+[OK]   coast time | measured=2.1
+[OK]   brake time = accel_time / BRAKE_MULT | measured=1.38333333333333 expected=1.4
+[OK]   turn spin-up | measured=0.525
+[OK]   autopilot arrives inside ARRIVE_RADIUS | distance=36.2652587890625
+[OK]   player_ship.tscn has no collision body | bodies=0
+--- mining: work model + shipped laser cycle ---
+[OK]   field 6..12 rocks | rocks=6
+[OK]   N cycles = N units | yield=8 mined=8
+[OK]   ten 0.1 hits = 1 unit (10 % gun rate) | units=1
+laser acquired=true ; pickups at 1.1 s = 0, at 1.3 s = 1
+[OK]   MINE_CYCLE 1.2 s -> one unit and one pickup after, none before | 1.1s=0 1.3s=1
+--- pickup: tractor, collection, hold-full, lifetime ---
+active_ship=ship_vanguard ; StationCatalog hold=40 ; ShipStats hold=40
+[OK]   tractor pull 90 u/s (45 u in 30 frames) | travelled=45.0
+[OK]   cache pays through add_credits | 1468 -> 1718
+[OK]   ore goes through add_cargo | 12 -> 13
+[OK]   pickup despawns at 60 s | valid=false
+[OK]   hold full -> pickup drifts, not pulled or collected | total 40 -> 40, pos (30.0, 30.0)
+--- sector spawn counts (all 7 rows, one seed each) ---
+[OK]   registry rows | rows=7
+sector_1 fields=5 rocks=48 blips=6 station=true
+[OK]   sector_1 fields 4..8 / rocks 6..12 each | fields=5 rocks=48
+[OK]   sector_1 blips = fields + station | blips=6
+sector_2 fields=8 rocks=71 blips=9 station=true
+[OK]   sector_2 fields 4..8 / rocks 6..12 each | fields=8 rocks=71
+[OK]   sector_2 blips = fields + station | blips=9
+sector_3 fields=7 rocks=67 blips=8 station=true
+[OK]   sector_3 fields 4..8 / rocks 6..12 each | fields=7 rocks=67
+[OK]   sector_3 blips = fields + station | blips=8
+sector_4 fields=4 rocks=38 blips=5 station=true
+[OK]   sector_4 fields 4..8 / rocks 6..12 each | fields=4 rocks=38
+[OK]   sector_4 blips = fields + station | blips=5
+sector_5 fields=7 rocks=61 blips=8 station=true
+[OK]   sector_5 fields 4..8 / rocks 6..12 each | fields=7 rocks=61
+[OK]   sector_5 blips = fields + station | blips=8
+sector_6 fields=7 rocks=76 blips=8 station=true
+[OK]   sector_6 fields 4..8 / rocks 6..12 each | fields=7 rocks=76
+[OK]   sector_6 blips = fields + station | blips=8
+sector_7 fields=8 rocks=74 blips=8 station=false
+[OK]   sector_7 fields 4..8 / rocks 6..12 each | fields=8 rocks=74
+[OK]   sector_7 blips = fields + station | blips=8
+--- live game scene ---
+[OK]   game scene boots with a populated sector and a ship | sector=Sector:<Node2D#101116283004> ship=PlayerShip:<Node2D#106015230358>
+--- seam 1: cargo fill (profile -> PlayerState.set_cargo_used) ---
+profile cargo 30 -> 33 ; PlayerState.cargo_used=0 ; HUD footer=CARGO 0/40
+[FAIL] seam 1: profile cargo reaches PlayerState | profile=33 state=0 footer=CARGO 0/40
+[OK]   seam 1 (end to end): a collected pickup never moves the HUD readout | profile=35 state=0
+--- seam 2: reticle state push ---
+laser active=true has_target=true ; reticle state=0 (0=PLAIN)
+[FAIL] seam 2: something pushes the mining reticle state | pusher=false live_state=0
+--- seam 3: rock collision ---
+rock radius=66.0 ; ship end x=2201.72631835938 ; ship collision bodies=0
+[FAIL] seam 3: the ship is stopped by a rock (section 6) | end x=2201.72631835938 rock near surface=134.0 bodies=0
+--- seam 4: PlayerState.damage ---
+damage() args=1 ; after damage(150) with shield=100: hull=350.0 shield=100.0
+[FAIL] seam 4: damage(amount, bypass_shield), shield absorbs first | args=1 hull=350.0 shield=100.0
+--- seam 5: REBINDABLE_ACTIONS vs PROJECT_SETTINGS_PATCH section 2 ---
+rebindable_actions=15 ; InputMap interact=false warp=false ; patch lists 17
+[FAIL] seam 5: REBINDABLE_ACTIONS tracks the 17-action patch | rebindable=15 interact=false warp=false
+--- the pickup hold source vs ShipStats ---
+  ship_miner: ShipFit=55 StationCatalog=-1
+  ship_trader: ShipFit=60 StationCatalog=-1
+  ship_corvette: ShipFit=35 StationCatalog=-1
+  ship_freighter: ShipFit=120 StationCatalog=-1
+  ship_patrol: ShipFit=60 StationCatalog=-1
+hulls where the two hold sources disagree: 5 of 9
+active_ship=ship_miner: pickup collected=false (cargo 35 -> 35) ; ShipStats hold=55 StationCatalog=missing
+--- mining laser vs the fitted w_mining module ---
+standard fit lists w_mining=false ; ship mounts MiningLaser=true
+--- HUD wiring in the live game scene ---
+prompt away [false ''] inside [true 'F · DOCK']
+[OK]   dock prompt only inside the dock zone | away [false ''] inside [true 'F · DOCK']
+[OK]   warp bar shows while channelling and hides on cancel | channelling=true after cancel=false
+[OK]   the static ESC dock hint is retired | labels=0
+=== w6 review probe: checks 42, failures 5 ===
+ERROR: 1 RID allocations of type 'PN13RendererDummy14TextureStorage12DummyTextureE' were leaked at exit.
+WARNING: 6 RIDs of type "CanvasItem" were leaked.
+   at: _free_rids (servers/rendering/renderer_canvas_cull.cpp:2735)
+WARNING: 16 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 4 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
