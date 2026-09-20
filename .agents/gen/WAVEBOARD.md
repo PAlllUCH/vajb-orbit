@@ -77,10 +77,14 @@ Final table kept until the cleanup report is written:
 2. **Git** — done: baseline `2a420a7` on `origin/main`; repo-local identity
    `Kamil <PAlllUCH@users.noreply.github.com>` (override anytime with your own
    global identity). Commit at every wave boundary from now on.
-3. **Slice-2 pre-brief** (combat) from ENGINE_SPEC §14 — brief + prompts with
-   CONTRACTS inlined + `VAJB_WORKER_FILES` per worker.
-4. **Batch-2 lane brief** (B2-1 hover, B2-2 backdrops, B2-3 minimap zoom) —
-   the parallel lane for the next engine wave.
+3. **Slice-2 (Fight) — READY TO DISPATCH.** Brief `.agents/gen/slice2_task.md`
+   + paste-ready prompts `.agents/gen/slice2_prompts.md` (W0 → W1–W4
+   parallel → W5 → W6 → W7/W8, `VAJB_WORKER_FILES` per dispatch). Before the
+   first dispatch: `py -3.14 staging/verify_wave.py snapshot --name
+   slice2_start` + a git commit so the wave start is diffable.
+4. **Batch-2 lane brief** — `.agents/gen/batch2_task.md` (B2-1 hover, B2-2
+   backdrops, B2-3 minimap zoom); file-disjoint from slice 2, can run in
+   parallel; hover-look verification needs the owner at the editor.
 
 ## Parked (independent)
 
