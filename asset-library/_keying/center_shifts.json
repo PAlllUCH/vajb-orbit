@@ -1,0 +1,3110 @@
+{
+ "cut/env/body/env_body_ice_moon.png": {
+  "was": [
+   3.0,
+   1.5
+  ],
+  "shift": [
+   -3,
+   -2
+  ],
+  "px": [
+   2011,
+   2022
+  ]
+ },
+ "cut/env/body/env_body_shattered.png": {
+  "was": [
+   2.0,
+   0.0
+  ],
+  "shift": [
+   -2,
+   0
+  ],
+  "px": [
+   2079,
+   2096
+  ]
+ },
+ "cut/env/pickup/env_pickup_ore_pod.png": {
+  "was": [
+   1.5,
+   0.5
+  ],
+  "shift": [
+   -2,
+   0
+  ],
+  "px": [
+   851,
+   596
+  ]
+ },
+ "cut/env/pickup/env_pickup_shield_pod.png": {
+  "was": [
+   -2.5,
+   0.0
+  ],
+  "shift": [
+   2,
+   0
+  ],
+  "px": [
+   851,
+   596
+  ]
+ },
+ "cut/env/pickup/env_pickup_speed_pod.png": {
+  "was": [
+   0.5,
+   5.0
+  ],
+  "shift": [
+   0,
+   -5
+  ],
+  "px": [
+   851,
+   596
+  ]
+ },
+ "cut/env/poi/env_base_defense.png": {
+  "was": [
+   -13.0,
+   -92.5
+  ],
+  "shift": [
+   13,
+   92
+  ],
+  "px": [
+   1987,
+   2083
+  ]
+ },
+ "cut/env/poi/env_base_mining.png": {
+  "was": [
+   0.0,
+   -178.0
+  ],
+  "shift": [
+   0,
+   178
+  ],
+  "px": [
+   2168,
+   1940
+  ]
+ },
+ "cut/env/poi/env_base_mining_alt.png": {
+  "was": [
+   1.0,
+   -19.0
+  ],
+  "shift": [
+   -1,
+   19
+  ],
+  "px": [
+   2048,
+   2048
+  ]
+ },
+ "cut/env/poi/env_base_shipyard.png": {
+  "was": [
+   5.5,
+   -1.0
+  ],
+  "shift": [
+   -6,
+   1
+  ],
+  "px": [
+   2146,
+   1331
+  ]
+ },
+ "cut/env/poi/env_base_trade.png": {
+  "was": [
+   2.0,
+   1.0
+  ],
+  "shift": [
+   -2,
+   -1
+  ],
+  "px": [
+   2225,
+   1703
+  ]
+ },
+ "cut/env/poi/env_jump_gate.png": {
+  "was": [
+   0.0,
+   -102.0
+  ],
+  "shift": [
+   0,
+   102
+  ],
+  "px": [
+   2146,
+   2047
+  ]
+ },
+ "cut/env/poi/env_jump_gate_ring.png": {
+  "was": [
+   7.0,
+   3.5
+  ],
+  "shift": [
+   -7,
+   -4
+  ],
+  "px": [
+   1833,
+   1765
+  ]
+ },
+ "cut/env/poi/env_outpost_relay.png": {
+  "was": [
+   -0.5,
+   3.0
+  ],
+  "shift": [
+   0,
+   -3
+  ],
+  "px": [
+   842,
+   2069
+  ]
+ },
+ "cut/env/poi/env_outpost_repair.png": {
+  "was": [
+   -0.5,
+   -8.5
+  ],
+  "shift": [
+   0,
+   8
+  ],
+  "px": [
+   1534,
+   2142
+  ]
+ },
+ "cut/env/poi/env_station.png": {
+  "was": [
+   2.5,
+   -10.0
+  ],
+  "shift": [
+   -2,
+   10
+  ],
+  "px": [
+   2060,
+   2073
+  ]
+ },
+ "cut/env/poi/env_station_mmo.png": {
+  "was": [
+   -10.5,
+   -122.5
+  ],
+  "shift": [
+   10,
+   122
+  ],
+  "px": [
+   2188,
+   1759
+  ]
+ },
+ "cut/env/prop/env_arena_barricade.png": {
+  "was": [
+   0.0,
+   79.0
+  ],
+  "shift": [
+   0,
+   -79
+  ],
+  "px": [
+   1217,
+   1915
+  ]
+ },
+ "cut/env/prop/env_asteroid_b1.png": {
+  "was": [
+   -2.5,
+   5.5
+  ],
+  "shift": [
+   2,
+   -6
+  ],
+  "px": [
+   714,
+   866
+  ]
+ },
+ "cut/env/prop/env_asteroid_b2.png": {
+  "was": [
+   -2.0,
+   1.0
+  ],
+  "shift": [
+   2,
+   -1
+  ],
+  "px": [
+   714,
+   866
+  ]
+ },
+ "cut/env/prop/env_asteroid_b3.png": {
+  "was": [
+   1.0,
+   3.5
+  ],
+  "shift": [
+   -1,
+   -4
+  ],
+  "px": [
+   714,
+   866
+  ]
+ },
+ "cut/env/prop/env_asteroid_b5.png": {
+  "was": [
+   6.0,
+   0.0
+  ],
+  "shift": [
+   -6,
+   0
+  ],
+  "px": [
+   714,
+   866
+  ]
+ },
+ "cut/env/prop/env_debris_field.png": {
+  "was": [
+   8.5,
+   -8.5
+  ],
+  "shift": [
+   -8,
+   8
+  ],
+  "px": [
+   2224,
+   2196
+  ]
+ },
+ "cut/env/prop/env_ice_field.png": {
+  "was": [
+   4.0,
+   1.0
+  ],
+  "shift": [
+   -4,
+   -1
+  ],
+  "px": [
+   2099,
+   2077
+  ]
+ },
+ "cut/env/prop/env_prop_hull_stern.png": {
+  "was": [
+   -1.0,
+   -17.0
+  ],
+  "shift": [
+   1,
+   17
+  ],
+  "px": [
+   714,
+   952
+  ]
+ },
+ "cut/env/prop/env_wreck_hulk.png": {
+  "was": [
+   2.0,
+   3.5
+  ],
+  "shift": [
+   -2,
+   -4
+  ],
+  "px": [
+   2106,
+   1717
+  ]
+ },
+ "cut/icons/alt/icon_alt_angled_armor_plates.png": {
+  "was": [
+   0.0,
+   -82.0
+  ],
+  "shift": [
+   0,
+   82
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_angled_pipe_weapon.png": {
+  "was": [
+   0.5,
+   33.0
+  ],
+  "shift": [
+   0,
+   -33
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_angled_side_enemy_ship.png": {
+  "was": [
+   3.0,
+   -5.5
+  ],
+  "shift": [
+   -3,
+   6
+  ],
+  "px": [
+   884,
+   884
+  ]
+ },
+ "cut/icons/alt/icon_alt_arched_glowing_vent.png": {
+  "was": [
+   5.0,
+   31.0
+  ],
+  "shift": [
+   -5,
+   -31
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_armored_node_panel.png": {
+  "was": [
+   1.5,
+   1.5
+  ],
+  "shift": [
+   -2,
+   -2
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_battery_cells.png": {
+  "was": [
+   24.0,
+   0.0
+  ],
+  "shift": [
+   -24,
+   0
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_chevron_armor_plate.png": {
+  "was": [
+   -0.5,
+   -84.5
+  ],
+  "shift": [
+   0,
+   84
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_chevron_marked_hatch.png": {
+  "was": [
+   -20.5,
+   -51.0
+  ],
+  "shift": [
+   20,
+   51
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_chevron_striped_canister.png": {
+  "was": [
+   -1.5,
+   -2.0
+  ],
+  "shift": [
+   2,
+   2
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_chunky_dark_rock.png": {
+  "was": [
+   5.5,
+   0.5
+  ],
+  "shift": [
+   -6,
+   0
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_circular_ring_hatch.png": {
+  "was": [
+   -1.5,
+   0.0
+  ],
+  "shift": [
+   2,
+   0
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_clawed_cone_lamp.png": {
+  "was": [
+   0.5,
+   1.5
+  ],
+  "shift": [
+   0,
+   -2
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_crosshair_target_reticle.png": {
+  "was": [
+   0.5,
+   9.0
+  ],
+  "shift": [
+   0,
+   -9
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_cubic_rusty_block.png": {
+  "was": [
+   6.0,
+   1.0
+  ],
+  "shift": [
+   -6,
+   -1
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_dark_jagged_boulder.png": {
+  "was": [
+   3.5,
+   0.0
+  ],
+  "shift": [
+   -4,
+   0
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_diamond_box_module.png": {
+  "was": [
+   1.5,
+   -1.5
+  ],
+  "shift": [
+   -2,
+   2
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_dish_antenna_device.png": {
+  "was": [
+   2.0,
+   0.5
+  ],
+  "shift": [
+   -2,
+   0
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_double_arrow_marker.png": {
+  "was": [
+   -28.0,
+   -0.5
+  ],
+  "shift": [
+   28,
+   0
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_double_barreled_cannon.png": {
+  "was": [
+   2.0,
+   2.0
+  ],
+  "shift": [
+   -2,
+   -2
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_embedded_metal_rock.png": {
+  "was": [
+   1.5,
+   0.0
+  ],
+  "shift": [
+   -2,
+   0
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_exhaust_thruster_nozzle.png": {
+  "was": [
+   -7.5,
+   1.5
+  ],
+  "shift": [
+   8,
+   -2
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_flat_angular_slab.png": {
+  "was": [
+   2.0,
+   -0.5
+  ],
+  "shift": [
+   -2,
+   0
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_front_view_enemy_ship.png": {
+  "was": [
+   -0.5,
+   7.5
+  ],
+  "shift": [
+   0,
+   -8
+  ],
+  "px": [
+   884,
+   884
+  ]
+ },
+ "cut/icons/alt/icon_alt_glowing_arched_handle.png": {
+  "was": [
+   3.0,
+   -1.0
+  ],
+  "shift": [
+   -3,
+   1
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_glowing_barrel_weapon.png": {
+  "was": [
+   29.0,
+   28.0
+  ],
+  "shift": [
+   -29,
+   -28
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_glowing_coil_module.png": {
+  "was": [
+   1.5,
+   0.5
+  ],
+  "shift": [
+   -2,
+   0
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_glowing_vertical_core.png": {
+  "was": [
+   -5.5,
+   74.5
+  ],
+  "shift": [
+   6,
+   -74
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_golden_porous_rock.png": {
+  "was": [
+   0.5,
+   2.0
+  ],
+  "shift": [
+   0,
+   -2
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_gripper_claw_device.png": {
+  "was": [
+   2.0,
+   2.5
+  ],
+  "shift": [
+   -2,
+   -2
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_hangar_fighter_bay.png": {
+  "was": [
+   0.0,
+   1.5
+  ],
+  "shift": [
+   0,
+   -2
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_hangar_fighters.png": {
+  "was": [
+   -2.5,
+   -0.5
+  ],
+  "shift": [
+   2,
+   0
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_lattice_patterned_plate.png": {
+  "was": [
+   1.5,
+   2.0
+  ],
+  "shift": [
+   -2,
+   -2
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_layered_dark_stone.png": {
+  "was": [
+   0.0,
+   49.5
+  ],
+  "shift": [
+   0,
+   -50
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_octagonal_frame_hatch.png": {
+  "was": [
+   5.5,
+   5.0
+  ],
+  "shift": [
+   -6,
+   -5
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_open_metal_crate.png": {
+  "was": [
+   -0.5,
+   3.0
+  ],
+  "shift": [
+   0,
+   -3
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_orange_arc_gauge.png": {
+  "was": [
+   0.0,
+   115.5
+  ],
+  "shift": [
+   0,
+   -116
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_orange_veined_rock.png": {
+  "was": [
+   -19.5,
+   -10.0
+  ],
+  "shift": [
+   20,
+   10
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_perforated_metal_block.png": {
+  "was": [
+   0.0,
+   -65.5
+  ],
+  "shift": [
+   0,
+   66
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_pointed_rocket_missile.png": {
+  "was": [
+   2.0,
+   -33.0
+  ],
+  "shift": [
+   -2,
+   33
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_rear_view_enemy_ship.png": {
+  "was": [
+   0.5,
+   -7.0
+  ],
+  "shift": [
+   0,
+   7
+  ],
+  "px": [
+   884,
+   884
+  ]
+ },
+ "cut/icons/alt/icon_alt_ringed_glowing_device.png": {
+  "was": [
+   -0.5,
+   -52.5
+  ],
+  "shift": [
+   0,
+   52
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_riveted_side_panel.png": {
+  "was": [
+   7.5,
+   3.5
+  ],
+  "shift": [
+   -8,
+   -4
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_robotic_claw_arm.png": {
+  "was": [
+   8.5,
+   2.5
+  ],
+  "shift": [
+   -8,
+   -2
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_rusty_cone_lamp.png": {
+  "was": [
+   -5.5,
+   21.0
+  ],
+  "shift": [
+   6,
+   -21
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_rusty_fractured_rock.png": {
+  "was": [
+   1.5,
+   3.5
+  ],
+  "shift": [
+   -2,
+   -4
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_sensor_targeting_modules.png": {
+  "was": [
+   3.0,
+   3.5
+  ],
+  "shift": [
+   -3,
+   -4
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_shield.png": {
+  "was": [
+   46.5,
+   -23.5
+  ],
+  "shift": [
+   -46,
+   24
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_side_view_enemy_ship.png": {
+  "was": [
+   7.0,
+   0.0
+  ],
+  "shift": [
+   -7,
+   0
+  ],
+  "px": [
+   884,
+   884
+  ]
+ },
+ "cut/icons/alt/icon_alt_spiked_naval_mine.png": {
+  "was": [
+   0.5,
+   5.0
+  ],
+  "shift": [
+   0,
+   -5
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_square_circuit_block.png": {
+  "was": [
+   24.5,
+   5.5
+  ],
+  "shift": [
+   -24,
+   -6
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_square_circuit_panel.png": {
+  "was": [
+   1.0,
+   -1.5
+  ],
+  "shift": [
+   -1,
+   2
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_square_metal_plate.png": {
+  "was": [
+   0.0,
+   3.5
+  ],
+  "shift": [
+   0,
+   -4
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_stacked_flat_stones.png": {
+  "was": [
+   0.5,
+   2.0
+  ],
+  "shift": [
+   0,
+   -2
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_stacked_metal_plates.png": {
+  "was": [
+   0.0,
+   -102.5
+  ],
+  "shift": [
+   0,
+   102
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_thick_arched_handle.png": {
+  "was": [
+   2.0,
+   3.5
+  ],
+  "shift": [
+   -2,
+   -4
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_thin_arched_handle.png": {
+  "was": [
+   3.0,
+   -0.5
+  ],
+  "shift": [
+   -3,
+   0
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_thruster_engine_block.png": {
+  "was": [
+   2.0,
+   1.5
+  ],
+  "shift": [
+   -2,
+   -2
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_trapezoid_vent_panel.png": {
+  "was": [
+   -0.5,
+   9.5
+  ],
+  "shift": [
+   0,
+   -10
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_vault_door.png": {
+  "was": [
+   1.0,
+   5.0
+  ],
+  "shift": [
+   -1,
+   -5
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_vented_power_block.png": {
+  "was": [
+   0.0,
+   14.0
+  ],
+  "shift": [
+   0,
+   -14
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_vented_trapezoid_thruster.png": {
+  "was": [
+   -0.5,
+   101.0
+  ],
+  "shift": [
+   0,
+   -101
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/alt/icon_alt_vertical_storage_containers.png": {
+  "was": [
+   0.5,
+   3.0
+  ],
+  "shift": [
+   0,
+   -3
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/booster/icon_booster_damage.png": {
+  "was": [
+   -33.5,
+   -36.0
+  ],
+  "shift": [
+   34,
+   36
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/booster/icon_booster_emp.png": {
+  "was": [
+   31.5,
+   7.5
+  ],
+  "shift": [
+   -32,
+   -8
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/booster/icon_booster_repair.png": {
+  "was": [
+   0.0,
+   -56.5
+  ],
+  "shift": [
+   0,
+   56
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/booster/icon_booster_shield.png": {
+  "was": [
+   3.5,
+   13.0
+  ],
+  "shift": [
+   -4,
+   -13
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/booster/icon_booster_speed.png": {
+  "was": [
+   0.0,
+   36.0
+  ],
+  "shift": [
+   0,
+   -36
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/booster/icon_booster_teleport.png": {
+  "was": [
+   19.5,
+   -51.5
+  ],
+  "shift": [
+   -20,
+   52
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/cargo/icon_cargo_data_core.png": {
+  "was": [
+   9.5,
+   -8.0
+  ],
+  "shift": [
+   -10,
+   8
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/contract/icon_contract_haul.png": {
+  "was": [
+   14.5,
+   -1.0
+  ],
+  "shift": [
+   -14,
+   1
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/equip/icon_equip_drone.png": {
+  "was": [
+   -46.5,
+   2.5
+  ],
+  "shift": [
+   46,
+   -2
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/equip/icon_equip_engine.png": {
+  "was": [
+   -2.5,
+   52.5
+  ],
+  "shift": [
+   2,
+   -52
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/equip/icon_equip_extra.png": {
+  "was": [
+   41.0,
+   -30.0
+  ],
+  "shift": [
+   -41,
+   30
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/equip/icon_equip_module.png": {
+  "was": [
+   -0.5,
+   7.0
+  ],
+  "shift": [
+   0,
+   -7
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/equip/icon_equip_pet.png": {
+  "was": [
+   0.0,
+   1.5
+  ],
+  "shift": [
+   0,
+   -2
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/equip/icon_equip_shield_gen.png": {
+  "was": [
+   -0.5,
+   5.5
+  ],
+  "shift": [
+   0,
+   -6
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/hud/icon_logout.png": {
+  "was": [
+   24.0,
+   0.0
+  ],
+  "shift": [
+   -24,
+   0
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/hud/icon_zoom_minus.png": {
+  "was": [
+   -51.5,
+   -51.0
+  ],
+  "shift": [
+   52,
+   51
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/hud/icon_zoom_plus.png": {
+  "was": [
+   -52.0,
+   -52.5
+  ],
+  "shift": [
+   52,
+   52
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/ingot/icon_ingot_copper.png": {
+  "was": [
+   1.0,
+   -1.5
+  ],
+  "shift": [
+   -1,
+   2
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/insignia/icon_insignia_choir.png": {
+  "was": [
+   0.0,
+   17.5
+  ],
+  "shift": [
+   0,
+   -18
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/insignia/icon_insignia_concord.png": {
+  "was": [
+   24.5,
+   26.0
+  ],
+  "shift": [
+   -24,
+   -26
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/insignia/icon_insignia_meridian.png": {
+  "was": [
+   22.5,
+   14.5
+  ],
+  "shift": [
+   -22,
+   -14
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/map/icon_map_bookmark.png": {
+  "was": [
+   0.5,
+   2.5
+  ],
+  "shift": [
+   0,
+   -2
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/map/icon_map_node_asteroid.png": {
+  "was": [
+   21.5,
+   21.0
+  ],
+  "shift": [
+   -22,
+   -21
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/map/icon_map_node_danger.png": {
+  "was": [
+   2.5,
+   0.5
+  ],
+  "shift": [
+   -2,
+   0
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/map/icon_map_node_gate.png": {
+  "was": [
+   0.5,
+   4.0
+  ],
+  "shift": [
+   0,
+   -4
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/map/icon_map_node_home.png": {
+  "was": [
+   5.0,
+   1.0
+  ],
+  "shift": [
+   -5,
+   -1
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/map/icon_map_node_neutral.png": {
+  "was": [
+   5.5,
+   30.0
+  ],
+  "shift": [
+   -6,
+   -30
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/map/icon_map_node_pvp.png": {
+  "was": [
+   -32.5,
+   -2.0
+  ],
+  "shift": [
+   32,
+   2
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/map/icon_map_route.png": {
+  "was": [
+   8.0,
+   0.5
+  ],
+  "shift": [
+   -8,
+   0
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/module/icon_module_b_fold.png": {
+  "was": [
+   -4.0,
+   -0.5
+  ],
+  "shift": [
+   4,
+   0
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/module/icon_module_c_ewar.png": {
+  "was": [
+   31.5,
+   -0.5
+  ],
+  "shift": [
+   -32,
+   0
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/module/icon_module_c_target.png": {
+  "was": [
+   15.5,
+   4.0
+  ],
+  "shift": [
+   -16,
+   -4
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/module/icon_module_c_twin.png": {
+  "was": [
+   -21.5,
+   0.0
+  ],
+  "shift": [
+   22,
+   0
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/module/icon_module_p_core.png": {
+  "was": [
+   -20.5,
+   0.0
+  ],
+  "shift": [
+   20,
+   0
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/module/icon_module_p_std.png": {
+  "was": [
+   0.0,
+   -25.5
+  ],
+  "shift": [
+   0,
+   26
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/module/icon_module_u_drones.png": {
+  "was": [
+   13.0,
+   0.0
+  ],
+  "shift": [
+   -13,
+   0
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/module/icon_module_u_holds.png": {
+  "was": [
+   0.0,
+   16.0
+  ],
+  "shift": [
+   0,
+   -16
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/service/icon_service_vault.png": {
+  "was": [
+   13.0,
+   -1.5
+  ],
+  "shift": [
+   -13,
+   2
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/slot/icon_slot_b.png": {
+  "was": [
+   -22.5,
+   -37.0
+  ],
+  "shift": [
+   22,
+   37
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/slot/icon_slot_power.png": {
+  "was": [
+   0.0,
+   14.0
+  ],
+  "shift": [
+   0,
+   -14
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/status/icon_status_locked.png": {
+  "was": [
+   -14.5,
+   0.0
+  ],
+  "shift": [
+   14,
+   0
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/status/icon_status_repairing.png": {
+  "was": [
+   -2.0,
+   0.0
+  ],
+  "shift": [
+   2,
+   0
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/icons/weapon/icon_ammo.png": {
+  "was": [
+   -19.5,
+   0.0
+  ],
+  "shift": [
+   20,
+   0
+  ],
+  "px": [
+   512,
+   512
+  ]
+ },
+ "cut/ships/ship_bomber_back.png": {
+  "was": [
+   0.5,
+   9.0
+  ],
+  "shift": [
+   0,
+   -9
+  ],
+  "px": [
+   1013,
+   991
+  ]
+ },
+ "cut/ships/ship_bomber_front.png": {
+  "was": [
+   0.0,
+   -7.5
+  ],
+  "shift": [
+   0,
+   8
+  ],
+  "px": [
+   1013,
+   991
+  ]
+ },
+ "cut/ships/ship_bomber_side.png": {
+  "was": [
+   14.0,
+   -0.5
+  ],
+  "shift": [
+   -14,
+   0
+  ],
+  "px": [
+   1013,
+   991
+  ]
+ },
+ "cut/ships/ship_bomber_three_quarter.png": {
+  "was": [
+   -2.5,
+   -9.0
+  ],
+  "shift": [
+   2,
+   9
+  ],
+  "px": [
+   1013,
+   991
+  ]
+ },
+ "cut/ships/ship_boss_boneyard.png": {
+  "was": [
+   1.0,
+   -17.0
+  ],
+  "shift": [
+   -1,
+   17
+  ],
+  "px": [
+   2232,
+   1091
+  ]
+ },
+ "cut/ships/ship_boss_leviathan.png": {
+  "was": [
+   -2.5,
+   58.0
+  ],
+  "shift": [
+   2,
+   -58
+  ],
+  "px": [
+   2157,
+   1849
+  ]
+ },
+ "cut/ships/ship_boss_maw.png": {
+  "was": [
+   0.0,
+   -4.0
+  ],
+  "shift": [
+   0,
+   4
+  ],
+  "px": [
+   2061,
+   2110
+  ]
+ },
+ "cut/ships/ship_boss_maw_mmo.png": {
+  "was": [
+   0.5,
+   -199.0
+  ],
+  "shift": [
+   0,
+   199
+  ],
+  "px": [
+   2062,
+   2110
+  ]
+ },
+ "cut/ships/ship_boss_pyre.png": {
+  "was": [
+   28.5,
+   0.5
+  ],
+  "shift": [
+   -28,
+   0
+  ],
+  "px": [
+   2235,
+   752
+  ]
+ },
+ "cut/ships/ship_boss_spire.png": {
+  "was": [
+   47.0,
+   -75.5
+  ],
+  "shift": [
+   -47,
+   76
+  ],
+  "px": [
+   2223,
+   1522
+  ]
+ },
+ "cut/ships/ship_boss_thorn.png": {
+  "was": [
+   7.0,
+   -128.0
+  ],
+  "shift": [
+   -7,
+   128
+  ],
+  "px": [
+   2225,
+   2114
+  ]
+ },
+ "cut/ships/ship_corvette_back.png": {
+  "was": [
+   -0.5,
+   11.5
+  ],
+  "shift": [
+   0,
+   -12
+  ],
+  "px": [
+   982,
+   995
+  ]
+ },
+ "cut/ships/ship_corvette_front.png": {
+  "was": [
+   -0.5,
+   -16.0
+  ],
+  "shift": [
+   0,
+   16
+  ],
+  "px": [
+   982,
+   995
+  ]
+ },
+ "cut/ships/ship_corvette_mmo_front.png": {
+  "was": [
+   0.0,
+   -15.5
+  ],
+  "shift": [
+   0,
+   16
+  ],
+  "px": [
+   979,
+   997
+  ]
+ },
+ "cut/ships/ship_corvette_mmo_side.png": {
+  "was": [
+   15.5,
+   -1.0
+  ],
+  "shift": [
+   -16,
+   1
+  ],
+  "px": [
+   979,
+   997
+  ]
+ },
+ "cut/ships/ship_corvette_side.png": {
+  "was": [
+   18.0,
+   -0.5
+  ],
+  "shift": [
+   -18,
+   0
+  ],
+  "px": [
+   982,
+   995
+  ]
+ },
+ "cut/ships/ship_corvette_three_quarter.png": {
+  "was": [
+   8.0,
+   -10.5
+  ],
+  "shift": [
+   -8,
+   10
+  ],
+  "px": [
+   982,
+   995
+  ]
+ },
+ "cut/ships/ship_destroyer_back.png": {
+  "was": [
+   0.0,
+   9.5
+  ],
+  "shift": [
+   0,
+   -10
+  ],
+  "px": [
+   1094,
+   1029
+  ]
+ },
+ "cut/ships/ship_destroyer_front.png": {
+  "was": [
+   -0.5,
+   -6.5
+  ],
+  "shift": [
+   0,
+   6
+  ],
+  "px": [
+   1094,
+   1029
+  ]
+ },
+ "cut/ships/ship_destroyer_side.png": {
+  "was": [
+   17.0,
+   -45.0
+  ],
+  "shift": [
+   -17,
+   45
+  ],
+  "px": [
+   1094,
+   1029
+  ]
+ },
+ "cut/ships/ship_destroyer_three_quarter.png": {
+  "was": [
+   3.0,
+   0.0
+  ],
+  "shift": [
+   -3,
+   0
+  ],
+  "px": [
+   1094,
+   1029
+  ]
+ },
+ "cut/ships/ship_drone_swarm_back.png": {
+  "was": [
+   -0.5,
+   5.5
+  ],
+  "shift": [
+   0,
+   -6
+  ],
+  "px": [
+   867,
+   874
+  ]
+ },
+ "cut/ships/ship_drone_swarm_front.png": {
+  "was": [
+   0.0,
+   -8.0
+  ],
+  "shift": [
+   0,
+   8
+  ],
+  "px": [
+   867,
+   874
+  ]
+ },
+ "cut/ships/ship_drone_swarm_side.png": {
+  "was": [
+   9.5,
+   -1.5
+  ],
+  "shift": [
+   -10,
+   2
+  ],
+  "px": [
+   867,
+   874
+  ]
+ },
+ "cut/ships/ship_drone_swarm_three_quarter.png": {
+  "was": [
+   1.5,
+   -6.5
+  ],
+  "shift": [
+   -2,
+   6
+  ],
+  "px": [
+   867,
+   874
+  ]
+ },
+ "cut/ships/ship_fighter_back.png": {
+  "was": [
+   -0.5,
+   15.0
+  ],
+  "shift": [
+   0,
+   -15
+  ],
+  "px": [
+   896,
+   895
+  ]
+ },
+ "cut/ships/ship_fighter_choir_side.png": {
+  "was": [
+   20.0,
+   0.0
+  ],
+  "shift": [
+   -20,
+   0
+  ],
+  "px": [
+   896,
+   893
+  ]
+ },
+ "cut/ships/ship_fighter_concord_front.png": {
+  "was": [
+   -1.0,
+   -16.5
+  ],
+  "shift": [
+   1,
+   16
+  ],
+  "px": [
+   896,
+   900
+  ]
+ },
+ "cut/ships/ship_fighter_concord_side.png": {
+  "was": [
+   2.5,
+   0.0
+  ],
+  "shift": [
+   -2,
+   0
+  ],
+  "px": [
+   896,
+   900
+  ]
+ },
+ "cut/ships/ship_fighter_front.png": {
+  "was": [
+   -0.5,
+   -21.5
+  ],
+  "shift": [
+   0,
+   22
+  ],
+  "px": [
+   896,
+   895
+  ]
+ },
+ "cut/ships/ship_fighter_meridian_front.png": {
+  "was": [
+   0.5,
+   -17.0
+  ],
+  "shift": [
+   0,
+   17
+  ],
+  "px": [
+   896,
+   891
+  ]
+ },
+ "cut/ships/ship_fighter_mmo_front.png": {
+  "was": [
+   0.0,
+   -16.0
+  ],
+  "shift": [
+   0,
+   16
+  ],
+  "px": [
+   895,
+   889
+  ]
+ },
+ "cut/ships/ship_fighter_mmo_side.png": {
+  "was": [
+   25.5,
+   -1.0
+  ],
+  "shift": [
+   -26,
+   1
+  ],
+  "px": [
+   895,
+   889
+  ]
+ },
+ "cut/ships/ship_fighter_side.png": {
+  "was": [
+   29.0,
+   1.0
+  ],
+  "shift": [
+   -29,
+   -1
+  ],
+  "px": [
+   896,
+   895
+  ]
+ },
+ "cut/ships/ship_fighter_three_quarter.png": {
+  "was": [
+   11.0,
+   -11.5
+  ],
+  "shift": [
+   -11,
+   12
+  ],
+  "px": [
+   896,
+   895
+  ]
+ },
+ "cut/ships/ship_freighter_back.png": {
+  "was": [
+   0.5,
+   -127.5
+  ],
+  "shift": [
+   0,
+   128
+  ],
+  "px": [
+   983,
+   972
+  ]
+ },
+ "cut/ships/ship_freighter_front.png": {
+  "was": [
+   2.5,
+   -143.0
+  ],
+  "shift": [
+   -2,
+   143
+  ],
+  "px": [
+   983,
+   972
+  ]
+ },
+ "cut/ships/ship_freighter_mmo_back.png": {
+  "was": [
+   0.0,
+   -42.5
+  ],
+  "shift": [
+   0,
+   42
+  ],
+  "px": [
+   987,
+   975
+  ]
+ },
+ "cut/ships/ship_freighter_mmo_front.png": {
+  "was": [
+   -1.0,
+   -3.5
+  ],
+  "shift": [
+   1,
+   4
+  ],
+  "px": [
+   987,
+   975
+  ]
+ },
+ "cut/ships/ship_freighter_mmo_side.png": {
+  "was": [
+   5.0,
+   -0.5
+  ],
+  "shift": [
+   -5,
+   0
+  ],
+  "px": [
+   987,
+   975
+  ]
+ },
+ "cut/ships/ship_freighter_mmo_three_quarter.png": {
+  "was": [
+   -1.5,
+   -0.5
+  ],
+  "shift": [
+   2,
+   0
+  ],
+  "px": [
+   987,
+   975
+  ]
+ },
+ "cut/ships/ship_freighter_side.png": {
+  "was": [
+   10.5,
+   -0.5
+  ],
+  "shift": [
+   -10,
+   0
+  ],
+  "px": [
+   983,
+   972
+  ]
+ },
+ "cut/ships/ship_freighter_three_quarter.png": {
+  "was": [
+   2.0,
+   -2.0
+  ],
+  "shift": [
+   -2,
+   2
+  ],
+  "px": [
+   983,
+   972
+  ]
+ },
+ "cut/ships/ship_gunship_back.png": {
+  "was": [
+   4.5,
+   2.5
+  ],
+  "shift": [
+   -4,
+   -2
+  ],
+  "px": [
+   964,
+   892
+  ]
+ },
+ "cut/ships/ship_gunship_front.png": {
+  "was": [
+   6.0,
+   0.5
+  ],
+  "shift": [
+   -6,
+   0
+  ],
+  "px": [
+   964,
+   892
+  ]
+ },
+ "cut/ships/ship_gunship_side.png": {
+  "was": [
+   10.0,
+   -134.5
+  ],
+  "shift": [
+   -10,
+   134
+  ],
+  "px": [
+   964,
+   892
+  ]
+ },
+ "cut/ships/ship_gunship_three_quarter.png": {
+  "was": [
+   0.0,
+   4.0
+  ],
+  "shift": [
+   0,
+   -4
+  ],
+  "px": [
+   964,
+   892
+  ]
+ },
+ "cut/ships/ship_interceptor_back.png": {
+  "was": [
+   -0.5,
+   7.5
+  ],
+  "shift": [
+   0,
+   -8
+  ],
+  "px": [
+   1048,
+   1029
+  ]
+ },
+ "cut/ships/ship_interceptor_front.png": {
+  "was": [
+   -0.5,
+   -10.0
+  ],
+  "shift": [
+   0,
+   10
+  ],
+  "px": [
+   1048,
+   1029
+  ]
+ },
+ "cut/ships/ship_interceptor_side.png": {
+  "was": [
+   43.0,
+   -2.0
+  ],
+  "shift": [
+   -43,
+   2
+  ],
+  "px": [
+   1048,
+   1029
+  ]
+ },
+ "cut/ships/ship_interceptor_three_quarter.png": {
+  "was": [
+   6.0,
+   -8.0
+  ],
+  "shift": [
+   -6,
+   8
+  ],
+  "px": [
+   1048,
+   1029
+  ]
+ },
+ "cut/ships/ship_mine_layer_back.png": {
+  "was": [
+   0.0,
+   25.0
+  ],
+  "shift": [
+   0,
+   -25
+  ],
+  "px": [
+   1046,
+   954
+  ]
+ },
+ "cut/ships/ship_mine_layer_front.png": {
+  "was": [
+   -0.5,
+   -25.0
+  ],
+  "shift": [
+   0,
+   25
+  ],
+  "px": [
+   1046,
+   954
+  ]
+ },
+ "cut/ships/ship_mine_layer_side.png": {
+  "was": [
+   28.5,
+   3.0
+  ],
+  "shift": [
+   -28,
+   -3
+  ],
+  "px": [
+   1046,
+   954
+  ]
+ },
+ "cut/ships/ship_mine_layer_three_quarter.png": {
+  "was": [
+   5.5,
+   0.0
+  ],
+  "shift": [
+   -6,
+   0
+  ],
+  "px": [
+   1046,
+   954
+  ]
+ },
+ "cut/ships/ship_miner_back.png": {
+  "was": [
+   -1.5,
+   -0.5
+  ],
+  "shift": [
+   2,
+   0
+  ],
+  "px": [
+   1089,
+   932
+  ]
+ },
+ "cut/ships/ship_miner_side.png": {
+  "was": [
+   18.5,
+   -0.5
+  ],
+  "shift": [
+   -18,
+   0
+  ],
+  "px": [
+   1089,
+   932
+  ]
+ },
+ "cut/ships/ship_patrol_back.png": {
+  "was": [
+   0.0,
+   11.5
+  ],
+  "shift": [
+   0,
+   -12
+  ],
+  "px": [
+   1169,
+   1042
+  ]
+ },
+ "cut/ships/ship_patrol_front.png": {
+  "was": [
+   -3.0,
+   -19.5
+  ],
+  "shift": [
+   3,
+   20
+  ],
+  "px": [
+   1169,
+   1042
+  ]
+ },
+ "cut/ships/ship_patrol_side.png": {
+  "was": [
+   26.5,
+   -14.0
+  ],
+  "shift": [
+   -26,
+   14
+  ],
+  "px": [
+   1169,
+   1042
+  ]
+ },
+ "cut/ships/ship_patrol_three_quarter.png": {
+  "was": [
+   9.5,
+   -8.0
+  ],
+  "shift": [
+   -10,
+   8
+  ],
+  "px": [
+   1169,
+   1042
+  ]
+ },
+ "cut/ships/ship_trader_back.png": {
+  "was": [
+   0.0,
+   -73.0
+  ],
+  "shift": [
+   0,
+   73
+  ],
+  "px": [
+   1083,
+   1015
+  ]
+ },
+ "cut/ships/ship_trader_front.png": {
+  "was": [
+   0.0,
+   -41.0
+  ],
+  "shift": [
+   0,
+   41
+  ],
+  "px": [
+   1083,
+   1015
+  ]
+ },
+ "cut/ships/ship_trader_side.png": {
+  "was": [
+   20.5,
+   -3.0
+  ],
+  "shift": [
+   -20,
+   3
+  ],
+  "px": [
+   1083,
+   1015
+  ]
+ },
+ "cut/ships/ship_trader_three_quarter.png": {
+  "was": [
+   12.0,
+   -12.5
+  ],
+  "shift": [
+   -12,
+   12
+  ],
+  "px": [
+   1083,
+   1015
+  ]
+ },
+ "cut/ships/ship_turret_platform.png": {
+  "was": [
+   1.0,
+   4.5
+  ],
+  "shift": [
+   -1,
+   -4
+  ],
+  "px": [
+   2112,
+   1935
+  ]
+ },
+ "cut/ships/ship_vanguard_back.png": {
+  "was": [
+   -103.5,
+   17.0
+  ],
+  "shift": [
+   104,
+   -17
+  ],
+  "px": [
+   1009,
+   995
+  ]
+ },
+ "cut/ships/ship_vanguard_damaged_back.png": {
+  "was": [
+   -105.0,
+   17.0
+  ],
+  "shift": [
+   105,
+   -17
+  ],
+  "px": [
+   1023,
+   997
+  ]
+ },
+ "cut/ships/ship_vanguard_damaged_front.png": {
+  "was": [
+   21.5,
+   -17.5
+  ],
+  "shift": [
+   -22,
+   18
+  ],
+  "px": [
+   1023,
+   997
+  ]
+ },
+ "cut/ships/ship_vanguard_damaged_side.png": {
+  "was": [
+   23.0,
+   -36.0
+  ],
+  "shift": [
+   -23,
+   36
+  ],
+  "px": [
+   1023,
+   997
+  ]
+ },
+ "cut/ships/ship_vanguard_damaged_three_quarter.png": {
+  "was": [
+   -20.5,
+   9.5
+  ],
+  "shift": [
+   20,
+   -10
+  ],
+  "px": [
+   1023,
+   997
+  ]
+ },
+ "cut/ships/ship_vanguard_front.png": {
+  "was": [
+   21.5,
+   -14.0
+  ],
+  "shift": [
+   -22,
+   14
+  ],
+  "px": [
+   1009,
+   995
+  ]
+ },
+ "cut/ships/ship_vanguard_mmo_front.png": {
+  "was": [
+   -40.0,
+   -9.5
+  ],
+  "shift": [
+   40,
+   10
+  ],
+  "px": [
+   995,
+   985
+  ]
+ },
+ "cut/ships/ship_vanguard_mmo_side.png": {
+  "was": [
+   21.0,
+   15.5
+  ],
+  "shift": [
+   -21,
+   -16
+  ],
+  "px": [
+   995,
+   985
+  ]
+ },
+ "cut/ships/ship_vanguard_mmo_three_quarter.png": {
+  "was": [
+   7.0,
+   -5.5
+  ],
+  "shift": [
+   -7,
+   6
+  ],
+  "px": [
+   995,
+   985
+  ]
+ },
+ "cut/ships/ship_vanguard_side.png": {
+  "was": [
+   23.0,
+   12.5
+  ],
+  "shift": [
+   -23,
+   -12
+  ],
+  "px": [
+   1009,
+   995
+  ]
+ },
+ "cut/ships/ship_vanguard_three_quarter.png": {
+  "was": [
+   -9.5,
+   9.0
+  ],
+  "shift": [
+   10,
+   -9
+  ],
+  "px": [
+   1009,
+   995
+  ]
+ },
+ "cut/ui/ui_button_plate_disabled.png": {
+  "was": [
+   0.0,
+   -38.5
+  ],
+  "shift": [
+   0,
+   38
+  ],
+  "px": [
+   1041,
+   1087
+  ]
+ },
+ "cut/ui/ui_button_plate_hover.png": {
+  "was": [
+   3.5,
+   12.0
+  ],
+  "shift": [
+   -4,
+   -12
+  ],
+  "px": [
+   1041,
+   1087
+  ]
+ },
+ "cut/ui/ui_button_plate_normal.png": {
+  "was": [
+   21.0,
+   31.0
+  ],
+  "shift": [
+   -21,
+   -31
+  ],
+  "px": [
+   1041,
+   1087
+  ]
+ },
+ "cut/ui/ui_button_plate_pressed.png": {
+  "was": [
+   27.0,
+   28.0
+  ],
+  "shift": [
+   -27,
+   -28
+  ],
+  "px": [
+   1041,
+   1087
+  ]
+ },
+ "cut/ui/ui_slot_cargo_hover.png": {
+  "was": [
+   1.0,
+   -6.0
+  ],
+  "shift": [
+   -1,
+   6
+  ],
+  "px": [
+   873,
+   864
+  ]
+ },
+ "cut/ui/ui_slot_cargo_normal.png": {
+  "was": [
+   2.0,
+   -7.0
+  ],
+  "shift": [
+   -2,
+   7
+  ],
+  "px": [
+   873,
+   864
+  ]
+ },
+ "cut/ui/ui_slot_cargo_pressed.png": {
+  "was": [
+   2.5,
+   -2.0
+  ],
+  "shift": [
+   -2,
+   2
+  ],
+  "px": [
+   873,
+   864
+  ]
+ },
+ "cut/ui/ui_slot_inventory_disabled.png": {
+  "was": [
+   -0.5,
+   -7.5
+  ],
+  "shift": [
+   0,
+   8
+  ],
+  "px": [
+   882,
+   870
+  ]
+ },
+ "cut/ui/ui_slot_inventory_hover.png": {
+  "was": [
+   0.0,
+   -9.0
+  ],
+  "shift": [
+   0,
+   9
+  ],
+  "px": [
+   882,
+   870
+  ]
+ },
+ "cut/ui/ui_slot_inventory_normal.png": {
+  "was": [
+   -1.0,
+   -116.0
+  ],
+  "shift": [
+   1,
+   116
+  ],
+  "px": [
+   882,
+   870
+  ]
+ },
+ "cut/ui/ui_slot_inventory_pressed.png": {
+  "was": [
+   -1.5,
+   -22.0
+  ],
+  "shift": [
+   2,
+   22
+  ],
+  "px": [
+   882,
+   870
+  ]
+ },
+ "cut/ui/ui_slot_weapon_disabled.png": {
+  "was": [
+   7.5,
+   28.0
+  ],
+  "shift": [
+   -8,
+   -28
+  ],
+  "px": [
+   880,
+   876
+  ]
+ },
+ "cut/ui/ui_slot_weapon_hover.png": {
+  "was": [
+   6.5,
+   27.5
+  ],
+  "shift": [
+   -6,
+   -28
+  ],
+  "px": [
+   880,
+   876
+  ]
+ },
+ "cut/ui/ui_slot_weapon_normal.png": {
+  "was": [
+   8.5,
+   26.5
+  ],
+  "shift": [
+   -8,
+   -26
+  ],
+  "px": [
+   880,
+   876
+  ]
+ },
+ "cut/ui/ui_slot_weapon_pressed.png": {
+  "was": [
+   9.0,
+   26.5
+  ],
+  "shift": [
+   -9,
+   -26
+  ],
+  "px": [
+   880,
+   876
+  ]
+ }
+}

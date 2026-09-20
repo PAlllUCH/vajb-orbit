@@ -1,0 +1,214 @@
+env 20260917-230055 body_ice_moon grid [1, 1] cuts 1 mode panel
+   raw: raw/body_ice_moon.png
+   cuts: ['env_sheet_1x1_20260917_230055']
+   vision[raw]: NONE
+
+env 20260917-213632 deep-space-nebula-veil-a-single-square grid [1, 1] cuts 1 mode panel
+   raw: raw/deep-space-nebula-veil-a-single-square.png
+   cuts: ['env_sheet_1x1_20260917_213632']
+   vision[raw]: NONE
+
+env 20260918-123247 f1_ice_moon grid [1, 1] cuts 1 mode panel
+   raw: raw/f1_ice_moon.png
+   cuts: ['env_sheet_1x1_20260918_123247']
+   vision[raw]: NONE
+
+env 20260917-225351 mining-base-structure-a-station-scale-i grid [1, 1] cuts 1 mode panel
+   raw: raw/mining-base-structure-a-station-scale-i.png
+   cuts: ['env_sheet_1x1_20260917_225351']
+   vision[raw]: NONE
+
+env 20260917-184059 seamless-repeating-pattern-wallpaper-tex grid [1, 1] cuts 1 mode panel
+   raw: raw/seamless-repeating-pattern-wallpaper-tex.png
+   cuts: ['env_sheet_1x1_20260917_184059']
+   vision[raw]: NONE
+
+env 20260917-183347 seamless-tileable-foreground-dust-layer grid [1, 1] cuts 1 mode panel
+   raw: raw/seamless-tileable-foreground-dust-layer.png
+   cuts: ['env_sheet_1x1_20260917_183347']
+   vision[raw]: NONE
+
+env 20260917-183242 seamless-tileable-starfield-layer-a-fla grid [1, 1] cuts 1 mode panel
+   raw: raw/seamless-tileable-starfield-layer-a-fla.png
+   cuts: ['env_sheet_1x1_20260917_183242']
+   vision[raw]: NONE
+
+env 20260917-183315 seamless-tileable-void-haze-layer-soft grid [1, 1] cuts 1 mode panel
+   raw: raw/seamless-tileable-void-haze-layer-soft.png
+   cuts: ['env_sheet_1x1_20260917_183315']
+   vision[raw]: NONE
+
+env 20260917-183847 seamless-tileable-void-haze-texture-abs grid [1, 1] cuts 1 mode panel
+   raw: raw/seamless-tileable-void-haze-texture-abs.png
+   cuts: ['env_sheet_1x1_20260917_183847']
+   vision[raw]: NONE
+
+env 20260918-111724 sector-backdrop-plate-a-wide-16-9-cinem grid [1, 1] cuts 1 mode panel
+   raw: raw/sector-backdrop-plate-a-wide-16-9-cinem__20260918-111724.png
+   cuts: ['env_sheet_1x1_20260918_111724']
+   vision[raw]: NONE
+
+env 20260918-111829 sector-backdrop-plate-a-wide-16-9-cinem grid [1, 1] cuts 1 mode panel
+   raw: raw/sector-backdrop-plate-a-wide-16-9-cinem__20260918-111829.png
+   cuts: ['env_sheet_1x1_20260918_111829']
+   vision[raw]: NONE
+
+env 20260918-111927 sector-backdrop-plate-a-wide-16-9-cinem grid [1, 1] cuts 1 mode panel
+   raw: raw/sector-backdrop-plate-a-wide-16-9-cinem__20260918-111927.png
+   cuts: ['env_sheet_1x1_20260918_111927']
+   vision[raw]: NONE
+
+env 20260918-112053 sector-backdrop-plate-a-wide-16-9-cinem grid [1, 1] cuts 1 mode panel
+   raw: raw/sector-backdrop-plate-a-wide-16-9-cinem__20260918-112053.png
+   cuts: ['env_sheet_1x1_20260918_112053']
+   vision[raw]: NONE
+
+fx 20260917-183223 4-frame-horizontal-sprite-sheet-of-a-wea grid [4, 1] cuts 4 mode panel
+   raw: raw/4-frame-horizontal-sprite-sheet-of-a-wea.png
+   cuts: ['fx_sheet_4x1_20260917_183223__p01', 'fx_sheet_4x1_20260917_183223__p02', 'fx_sheet_4x1_20260917_183223__p03', 'fx_sheet_4x1_20260917_183223__p04']
+   vision[raw]: NONE
+
+fx 20260917-183734 full-screen-vignette-burnt-ember-c8461 grid [1, 1] cuts 1 mode panel
+   raw: raw/full-screen-vignette-burnt-ember-c8461.png
+   cuts: ['fx_sheet_1x1_20260917_183734']
+   vision[raw]: NONE
+
+fx 20260917-183628 single-small-energy-ring-burnt-ember-c grid [1, 1] cuts 1 mode panel
+   raw: raw/single-small-energy-ring-burnt-ember-c__20260917-183628.png
+   cuts: ['fx_sheet_1x1_20260917_183628']
+   vision[raw]: NONE
+
+fx 20260917-184216 single-small-energy-ring-burnt-ember-c grid [1, 1] cuts 1 mode panel
+   raw: raw/single-small-energy-ring-burnt-ember-c__20260917-184216.png
+   cuts: ['fx_sheet_1x1_20260917_184216']
+   vision[raw]: NONE
+
+fx 20260917-183334 single-thin-horizontal-ember-streak-bur grid [1, 1] cuts 1 mode panel
+   raw: raw/single-thin-horizontal-ember-streak-bur.png
+   cuts: ['fx_sheet_1x1_20260917_183334']
+   vision[raw]: NONE
+
+fx 20260917-183824 small-radial-ember-glow-orb-soft-radial grid [1, 1] cuts 1 mode panel
+   raw: raw/small-radial-ember-glow-orb-soft-radial.png
+   cuts: ['fx_sheet_1x1_20260917_183824']
+   vision[raw]: NONE
+
+icons 20260918-112946 flat-vector-icon-sheet-2x2-grid-icons grid [2, 2] cuts 4 mode panel
+   raw: raw/flat-vector-icon-sheet-2x2-grid-icons.png
+   cuts: ['icon_sheet_2x2_20260918_112946__p01', 'icon_sheet_2x2_20260918_112946__p02', 'icon_sheet_2x2_20260918_112946__p03', 'icon_sheet_2x2_20260918_112946__p04']
+   vision[raw]: NONE
+
+icons 20260918-110409 flat-vector-icon-sheet-3x3-grid-icons grid [3, 3] cuts 9 mode panel
+   raw: raw/flat-vector-icon-sheet-3x3-grid-icons__20260918-110409.png
+   cuts: ['icon_sheet_3x3_20260918_110409__p01', 'icon_sheet_3x3_20260918_110409__p02', 'icon_sheet_3x3_20260918_110409__p03', 'icon_sheet_3x3_20260918_110409__p04', 'icon_sheet_3x3_20260918_110409__p05', 'icon_sheet_3x3_20260918_110409__p06', 'icon_sheet_3x3_20260918_110409__p07', 'icon_sheet_3x3_20260918_110409__p08', 'icon_sheet_3x3_20260918_110409__p09']
+   vision[raw]: NONE
+
+icons 20260918-110458 flat-vector-icon-sheet-3x3-grid-icons grid [3, 3] cuts 9 mode panel
+   raw: raw/flat-vector-icon-sheet-3x3-grid-icons__20260918-110458.png
+   cuts: ['icon_sheet_3x3_20260918_110458__p01', 'icon_sheet_3x3_20260918_110458__p02', 'icon_sheet_3x3_20260918_110458__p03', 'icon_sheet_3x3_20260918_110458__p04', 'icon_sheet_3x3_20260918_110458__p05', 'icon_sheet_3x3_20260918_110458__p06', 'icon_sheet_3x3_20260918_110458__p07', 'icon_sheet_3x3_20260918_110458__p08', 'icon_sheet_3x3_20260918_110458__p09']
+   vision[raw]: NONE
+
+icons 20260918-110547 flat-vector-icon-sheet-3x3-grid-icons grid [3, 3] cuts 9 mode panel
+   raw: raw/flat-vector-icon-sheet-3x3-grid-icons__20260918-110547.png
+   cuts: ['icon_sheet_3x3_20260918_110547__p01', 'icon_sheet_3x3_20260918_110547__p02', 'icon_sheet_3x3_20260918_110547__p03', 'icon_sheet_3x3_20260918_110547__p04', 'icon_sheet_3x3_20260918_110547__p05', 'icon_sheet_3x3_20260918_110547__p06', 'icon_sheet_3x3_20260918_110547__p07', 'icon_sheet_3x3_20260918_110547__p08', 'icon_sheet_3x3_20260918_110547__p09']
+   vision[raw]: NONE
+
+icons 20260918-110642 flat-vector-icon-sheet-4x2-grid-icons grid [4, 2] cuts 8 mode panel
+   raw: raw/flat-vector-icon-sheet-4x2-grid-icons__20260918-110642.png
+   cuts: ['icon_sheet_4x2_20260918_110642__p01', 'icon_sheet_4x2_20260918_110642__p02', 'icon_sheet_4x2_20260918_110642__p03', 'icon_sheet_4x2_20260918_110642__p04', 'icon_sheet_4x2_20260918_110642__p05', 'icon_sheet_4x2_20260918_110642__p06', 'icon_sheet_4x2_20260918_110642__p07', 'icon_sheet_4x2_20260918_110642__p08']
+   vision[raw]: NONE
+
+icons 20260918-110921 flat-vector-icon-sheet-4x2-grid-icons grid [4, 2] cuts 8 mode panel
+   raw: raw/flat-vector-icon-sheet-4x2-grid-icons__20260918-110921.png
+   cuts: ['icon_sheet_4x2_20260918_110921__p01', 'icon_sheet_4x2_20260918_110921__p02', 'icon_sheet_4x2_20260918_110921__p03', 'icon_sheet_4x2_20260918_110921__p04', 'icon_sheet_4x2_20260918_110921__p05', 'icon_sheet_4x2_20260918_110921__p06', 'icon_sheet_4x2_20260918_110921__p07', 'icon_sheet_4x2_20260918_110921__p08']
+   vision[raw]: NONE
+
+icons 20260918-110236 flat-vector-icon-sheet-5x4-grid-icons grid [5, 4] cuts 20 mode panel
+   raw: raw/flat-vector-icon-sheet-5x4-grid-icons__20260918-110236.png
+   cuts: ['icon_sheet_5x4_20260918_110236__p01', 'icon_sheet_5x4_20260918_110236__p02', 'icon_sheet_5x4_20260918_110236__p03', 'icon_sheet_5x4_20260918_110236__p04', 'icon_sheet_5x4_20260918_110236__p05', 'icon_sheet_5x4_20260918_110236__p06', 'icon_sheet_5x4_20260918_110236__p07', 'icon_sheet_5x4_20260918_110236__p08', 'icon_sheet_5x4_20260918_110236__p09', 'icon_sheet_5x4_20260918_110236__p10', 'icon_sheet_5x4_20260918_110236__p11', 'icon_sheet_5x4_20260918_110236__p12', 'icon_sheet_5x4_20260918_110236__p13', 'icon_sheet_5x4_20260918_110236__p14', 'icon_sheet_5x4_20260918_110236__p15', 'icon_sheet_5x4_20260918_110236__p16', 'icon_sheet_5x4_20260918_110236__p17', 'icon_sheet_5x4_20260918_110236__p18', 'icon_sheet_5x4_20260918_110236__p19', 'icon_sheet_5x4_20260918_110236__p20']
+   vision[raw]: NONE
+
+icons 20260918-110318 flat-vector-icon-sheet-5x4-grid-icons grid [5, 4] cuts 20 mode panel
+   raw: raw/flat-vector-icon-sheet-5x4-grid-icons__20260918-110318.png
+   cuts: ['icon_sheet_5x4_20260918_110318__p01', 'icon_sheet_5x4_20260918_110318__p02', 'icon_sheet_5x4_20260918_110318__p03', 'icon_sheet_5x4_20260918_110318__p04', 'icon_sheet_5x4_20260918_110318__p05', 'icon_sheet_5x4_20260918_110318__p06', 'icon_sheet_5x4_20260918_110318__p07', 'icon_sheet_5x4_20260918_110318__p08', 'icon_sheet_5x4_20260918_110318__p09', 'icon_sheet_5x4_20260918_110318__p10', 'icon_sheet_5x4_20260918_110318__p11', 'icon_sheet_5x4_20260918_110318__p12', 'icon_sheet_5x4_20260918_110318__p13', 'icon_sheet_5x4_20260918_110318__p14', 'icon_sheet_5x4_20260918_110318__p15', 'icon_sheet_5x4_20260918_110318__p16', 'icon_sheet_5x4_20260918_110318__p17', 'icon_sheet_5x4_20260918_110318__p18', 'icon_sheet_5x4_20260918_110318__p19', 'icon_sheet_5x4_20260918_110318__p20']
+   vision[raw]: NONE
+
+icons 20260917-183109 flat-vector-icon-sheet-for-a-dark-sci-fi grid [2, 3] cuts 6 mode panel
+   raw: raw/flat-vector-icon-sheet-for-a-dark-sci-fi.png
+   cuts: ['icon_sheet_2x3_20260917_183109__p01', 'icon_sheet_2x3_20260917_183109__p02', 'icon_sheet_2x3_20260917_183109__p03', 'icon_sheet_2x3_20260917_183109__p04', 'icon_sheet_2x3_20260917_183109__p05', 'icon_sheet_2x3_20260917_183109__p06']
+   vision[raw]: NONE
+
+icons 20260918-111044 grimdark-painted-sci-fi-semi-realistic grid [4, 2] cuts 8 mode panel
+   raw: raw/grimdark-painted-sci-fi-semi-realistic__20260918-111044.png
+   cuts: ['icon_sheet_4x2_20260918_111044__p01', 'icon_sheet_4x2_20260918_111044__p02', 'icon_sheet_4x2_20260918_111044__p03', 'icon_sheet_4x2_20260918_111044__p04', 'icon_sheet_4x2_20260918_111044__p05', 'icon_sheet_4x2_20260918_111044__p06', 'icon_sheet_4x2_20260918_111044__p07', 'icon_sheet_4x2_20260918_111044__p08']
+   vision[raw]: NONE
+
+icons 20260918-111327 grimdark-painted-sci-fi-semi-realistic grid [3, 3] cuts 9 mode panel
+   raw: raw/grimdark-painted-sci-fi-semi-realistic__20260918-111327.png
+   cuts: ['icon_sheet_3x3_20260918_111327__p01', 'icon_sheet_3x3_20260918_111327__p02', 'icon_sheet_3x3_20260918_111327__p03', 'icon_sheet_3x3_20260918_111327__p04', 'icon_sheet_3x3_20260918_111327__p05', 'icon_sheet_3x3_20260918_111327__p06', 'icon_sheet_3x3_20260918_111327__p07', 'icon_sheet_3x3_20260918_111327__p08', 'icon_sheet_3x3_20260918_111327__p09']
+   vision[raw]: NONE
+
+icons 20260918-111411 grimdark-painted-sci-fi-semi-realistic grid [3, 3] cuts 9 mode panel
+   raw: raw/grimdark-painted-sci-fi-semi-realistic__20260918-111411.png
+   cuts: ['icon_sheet_3x3_20260918_111411__p01', 'icon_sheet_3x3_20260918_111411__p02', 'icon_sheet_3x3_20260918_111411__p03', 'icon_sheet_3x3_20260918_111411__p04', 'icon_sheet_3x3_20260918_111411__p05', 'icon_sheet_3x3_20260918_111411__p06', 'icon_sheet_3x3_20260918_111411__p07', 'icon_sheet_3x3_20260918_111411__p08', 'icon_sheet_3x3_20260918_111411__p09']
+   vision[raw]: NONE
+
+icons 20260918-111450 grimdark-painted-sci-fi-semi-realistic grid [3, 3] cuts 9 mode panel
+   raw: raw/grimdark-painted-sci-fi-semi-realistic__20260918-111450.png
+   cuts: ['icon_sheet_3x3_20260918_111450__p01', 'icon_sheet_3x3_20260918_111450__p02', 'icon_sheet_3x3_20260918_111450__p03', 'icon_sheet_3x3_20260918_111450__p04', 'icon_sheet_3x3_20260918_111450__p05', 'icon_sheet_3x3_20260918_111450__p06', 'icon_sheet_3x3_20260918_111450__p07', 'icon_sheet_3x3_20260918_111450__p08', 'icon_sheet_3x3_20260918_111450__p09']
+   vision[raw]: NONE
+
+icons 20260918-113357 grimdark-painted-sci-fi-semi-realistic grid [2, 2] cuts 4 mode panel
+   raw: raw/grimdark-painted-sci-fi-semi-realistic__20260918-113357.png
+   cuts: ['icon_sheet_2x2_20260918_113357__p01', 'icon_sheet_2x2_20260918_113357__p02', 'icon_sheet_2x2_20260918_113357__p03', 'icon_sheet_2x2_20260918_113357__p04']
+   vision[raw]: NONE
+
+icons 20260918-123214 grimdark-painted-sci-fi-semi-realistic grid [2, 2] cuts 4 mode panel
+   raw: raw/grimdark-painted-sci-fi-semi-realistic__20260918-123214.png
+   cuts: ['icon_sheet_2x2_20260918_123214__p01', 'icon_sheet_2x2_20260918_123214__p02', 'icon_sheet_2x2_20260918_123214__p03', 'icon_sheet_2x2_20260918_123214__p04']
+   vision[raw]: NONE
+
+icons 20260918-112903 p2_contracts grid [2, 3] cuts 6 mode panel
+   raw: raw/p2_contracts.png
+   cuts: ['icon_sheet_2x3_20260918_112903__p01', 'icon_sheet_2x3_20260918_112903__p02', 'icon_sheet_2x3_20260918_112903__p03', 'icon_sheet_2x3_20260918_112903__p04', 'icon_sheet_2x3_20260918_112903__p05', 'icon_sheet_2x3_20260918_112903__p06']
+   vision[raw]: NONE
+
+icons 20260918-113028 p2_faction_insignia grid [2, 2] cuts 4 mode panel
+   raw: raw/p2_faction_insignia.png
+   cuts: ['icon_sheet_2x2_20260918_113028__p01', 'icon_sheet_2x2_20260918_113028__p02', 'icon_sheet_2x2_20260918_113028__p03', 'icon_sheet_2x2_20260918_113028__p04']
+   vision[raw]: NONE
+
+ships 20260918-112624 same-2x2-rotation-sheet-of-the-same-enem grid [2, 2] cuts 4 mode panel
+   raw: raw/same-2x2-rotation-sheet-of-the-same-enem__20260918-112624.png
+   cuts: ['ship_sheet_2x2_20260918_112624__p01', 'ship_sheet_2x2_20260918_112624__p02', 'ship_sheet_2x2_20260918_112624__p03', 'ship_sheet_2x2_20260918_112624__p04']
+   vision[raw]: NONE
+
+ships 20260918-112721 same-2x2-rotation-sheet-of-the-same-enem grid [2, 2] cuts 4 mode panel
+   raw: raw/same-2x2-rotation-sheet-of-the-same-enem__20260918-112721.png
+   cuts: ['ship_sheet_2x2_20260918_112721__p01', 'ship_sheet_2x2_20260918_112721__p02', 'ship_sheet_2x2_20260918_112721__p03', 'ship_sheet_2x2_20260918_112721__p04']
+   vision[raw]: NONE
+
+ships 20260918-112813 same-2x2-rotation-sheet-of-the-same-enem grid [2, 2] cuts 4 mode panel
+   raw: raw/same-2x2-rotation-sheet-of-the-same-enem__20260918-112813.png
+   cuts: ['ship_sheet_2x2_20260918_112813__p01', 'ship_sheet_2x2_20260918_112813__p02', 'ship_sheet_2x2_20260918_112813__p03', 'ship_sheet_2x2_20260918_112813__p04']
+   vision[raw]: NONE
+
+ships 20260917-213637 ship_drone_swarm grid [2, 2] cuts 4 mode panel
+   raw: raw/ship_drone_swarm__20260917-213637.png
+   cuts: ['ship_sheet_2x2_20260917_213637__p01', 'ship_sheet_2x2_20260917_213637__p02', 'ship_sheet_2x2_20260917_213637__p03', 'ship_sheet_2x2_20260917_213637__p04']
+   vision[raw]: NONE
+
+ui 20260918-123330 f1_panel_frame grid [1, 1] cuts 1 mode panel
+   raw: raw/f1_panel_frame.png
+   cuts: ['ui_sheet_1x1_20260918_123330']
+   vision[raw]: NONE
+
+ui 20260917-183801 logo-vajb-orbit-the-word-vajb-orbit-as grid [1, 1] cuts 1 mode panel
+   raw: raw/logo-vajb-orbit-the-word-vajb-orbit-as.png
+   cuts: ['ui_sheet_1x1_20260917_183801']
+   vision[raw]: NONE
+
+ui 20260917-183232 ui-button-plate-a-square-panel-with-fou grid [2, 2] cuts 4 mode panel
+   raw: raw/ui-button-plate-a-square-panel-with-fou.png
+   cuts: ['ui_sheet_2x2_20260917_183232__p01', 'ui_sheet_2x2_20260917_183232__p02', 'ui_sheet_2x2_20260917_183232__p03', 'ui_sheet_2x2_20260917_183232__p04']
+   vision[raw]: NONE

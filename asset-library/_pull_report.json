@@ -1,0 +1,33 @@
+{
+ "generated": "2026-09-21T00:37:43",
+ "copied": 488,
+ "left_alone": 0,
+ "bytes": 466028527,
+ "families": {
+  "env/backdrop": 16,
+  "env/body": 5,
+  "env/pickup": 6,
+  "env/poi": 15,
+  "env/prop": 26,
+  "env/tile": 4,
+  "fx": 25,
+  "icons/alt": 131,
+  "icons/booster": 6,
+  "icons/cargo": 7,
+  "icons/contract": 5,
+  "icons/equip": 7,
+  "icons/hud": 7,
+  "icons/ingot": 20,
+  "icons/insignia": 3,
+  "icons/map": 9,
+  "icons/mineral": 20,
+  "icons/module": 27,
+  "icons/service": 3,
+  "icons/slot": 8,
+  "icons/status": 9,
+  "icons/weapon": 8,
+  "ships": 92,
+  "ui": 29
+ },
+ "name_issues_still_shipped": {}
+}

@@ -1,12 +1,13 @@
-"""Ask DeepSeek to read each sheet's layout from the render, and record it in the plan.
+"""Ask DeepSeek to read each sheet's layout from the render, and record the answer.
 
 The prompts are ambiguous about a sheet's arrangement: one says "2x3 grid (three columns, two
 rows)" and the next says "2x3 grid (two columns, three rows)", and a few renders simply
 ignore what was asked. The cell *count* is known -- it is how many panels the plan names --
 but which way round those cells lie decides what each icon is called. This pass shows the
 render to a vision model and asks it for the arrangement and the cut lines, then writes the
-answer back into asset-library/_sheets.json as the sheet's `grid`, keeping the old value as
-`planned_grid` so the change is visible.
+answer into asset-library/_layout_deepseek.json, which `cut_sheets.py` reads in preference to
+the plan's arrangement. Keeping it in its own file means the plan can be rebuilt from the
+manifests at any time without throwing the models' answers away.
 
 Only the arrangement is taken from the model. It is accepted when it holds the same number of
 cells as the plan, so no panel can lose its name; anything else, or an unparseable answer, is
@@ -36,12 +37,13 @@ from PIL import Image
 WORKSPACE = Path(__file__).resolve().parents[2]
 LIBRARY = WORKSPACE / "asset-library"
 PLAN = LIBRARY / "_sheets.json"
+ANSWER = LIBRARY / "_layout_deepseek.json"
 CRUSH = Path("C:/Users/Kamil/AppData/Local/crush/crush.json")
 MODEL = "deepseek-flash"
 ENDPOINT = "https://api.deepseek.com/chat/completions"
 MAX_SIDE = 1024        # px the sheet is scaled to before sending
 QUALITY = 88           # JPEG quality of that copy
-TOKENS = 8192          # deepseek-flash reasons at length before it answers
+TOKENS = 12288         # deepseek-flash reasons at length before it answers
 
 INSTRUCTIONS = """Layout of one game texture sheet, sent scaled to {side} px. The artwork \
 sits in a grid of separate pieces on a plain background, one asset per cell, sometimes one \
@@ -81,7 +83,7 @@ def payload(path: Path) -> tuple[str, tuple[int, int]]:
 
 
 def question(sheet: dict) -> str:
-    columns, rows = sheet["planned_grid"] if "planned_grid" in sheet else sheet["grid"]
+    columns, rows = sheet.get("planned_grid") or sheet["grid"]
     return INSTRUCTIONS.format(side=MAX_SIDE, cols=columns, rows=rows,
                                cells=columns * rows, named=len(sheet["cuts"]))
 
@@ -124,7 +126,7 @@ def usable(answer: dict, sheet: dict) -> tuple[bool, str]:
     columns, rows = answer.get("columns"), answer.get("rows")
     if not isinstance(columns, int) or not isinstance(rows, int):
         return False, "no integer columns/rows"
-    planned = sheet["planned_grid"]
+    planned = tuple(sheet.get("planned_grid") or sheet["grid"])
     if columns * rows != planned[0] * planned[1]:
         return False, (f"it says {columns}x{rows} = {columns * rows} cells but the plan names "
                        f"{planned[0] * planned[1]}")
@@ -145,7 +147,9 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--only", default="", help="only sheets whose raw stem contains this")
     parser.add_argument("--dry-run", action="store_true", help="show the questions, call nothing")
-    parser.add_argument("--readonly", action="store_true", help="call, report, do not write the plan")
+    parser.add_argument("--readonly", action="store_true", help="call and report, write nothing")
+    parser.add_argument("--redo", action="store_true",
+                        help="re-ask sheets that already have an answer (costs tokens again)")
     args = parser.parse_args()
 
     plan = json.loads(PLAN.read_text(encoding="utf-8"))
@@ -162,6 +166,14 @@ def main() -> int:
         return 0
 
     key = api_key()
+    answers = {}
+    if ANSWER.exists():
+        answers = json.loads(ANSWER.read_text(encoding="utf-8")).get("sheets", {})
+    if not args.redo:
+        done = [s for s in targets if s["raw"] in answers]
+        targets = [s for s in targets if s["raw"] not in answers]
+        if done:
+            print(f"{len(done)} sheet(s) already answered, skipping (--redo to ask again)")
     agreed = changed = refused = 0
     spent = 0
     for sheet in targets:
@@ -178,10 +190,14 @@ def main() -> int:
             continue
 
         spent += reply.get("usage", {}).get("total_tokens", 0)
-        answer = parse(reply["choices"][0]["message"].get("content") or "")
+        choice = reply["choices"][0]
+        answer = parse(choice["message"].get("content") or "")
         if answer is None:
-            print(f"  {sheet['raw']:60} unparseable: "
-                  f"{(reply['choices'][0]['message'].get('content') or '')[:60]!r}")
+            usage = reply.get("usage", {})
+            print(f"  {sheet['raw']:60} unparseable ({choice.get('finish_reason')}, "
+                  f"{usage.get('completion_tokens')} tokens, "
+                  f"{usage.get('completion_tokens_details', {}).get('reasoning_tokens')} reasoning): "
+                  f"{(choice['message'].get('content') or '')[:60]!r}")
             refused += 1
             continue
 
@@ -191,21 +207,55 @@ def main() -> int:
             refused += 1
             continue
 
+        planned = tuple(sheet.get("planned_grid") or sheet["grid"])
         found = [answer["columns"], answer["rows"]]
-        if found == sheet["planned_grid"]:
+        if found == list(planned):
             agreed += 1
             verdict = "agrees"
         else:
             changed += 1
-            verdict = f"re-read {sheet['planned_grid'][0]}x{sheet['planned_grid'][1]} -> {found[0]}x{found[1]}"
+            verdict = f"re-read {planned[0]}x{planned[1]} -> {found[0]}x{found[1]}"
         print(f"  {sheet['raw']:60} {verdict:28} "
-              f"{answer.get('confidence', '?'):4} {(answer.get('note') or '')[:40]}")
+              f"{answer.get('confidence', '?'):4} {(answer.get('note') or '')[:40]}", flush=True)
+        if not args.readonly:
+            write_answers(answers)
 
-        sheet["layout_from"] = f"deepseek:{MODEL}"
-        sheet["deepseek"] = {"columns": answer["columns"], "rows": answer["rows"],
-                             "cut_x": answer["cut_x"], "cut_y": answer["cut_y"],
-                             "confidence": answer.get("confidence"), "note": answer.get("note"),
-                             "image": list(size)}
-        sheet["grid"] = found
+        answers[sheet["raw"]] = {
+            "planned": list(planned),
+            "columns": answer["columns"],
+            "rows": answer["rows"],
+            "cut_x": answer["cut_x"],
+            "cut_y": answer["cut_y"],
+            "confidence": answer.get("confidence"),
+            "note": answer.get("note"),
+            "image": list(size),
+            "model": MODEL,
+        }
 
-    print(f"\n{agreed} agreement(s), {cha
+    print(f"\n{agreed} agreement(s), {changed} re-read, {refused} refused, "
+          f"{spent} tokens across {len(targets)} sheet(s)")
+    if args.readonly:
+        print("read-only, nothing written")
+        return 0
+    write_answers(answers)
+    print(f"wrote {ANSWER} ({len(answers)} sheet(s))")
+    return 0
+
+
+def write_answers(answers: dict) -> None:
+    """Save after every sheet, so a kill or a crash keeps the answers already paid for."""
+    ANSWER.write_text(json.dumps({
+        "note": (
+            "Sheet layouts read from the render by a vision model, keyed by raw sheet. "
+            f"`planned` is the arrangement the prompt asked for; `columns`/`rows` is what the "
+            f"model counted and `cut_x`/`cut_y` are the fractions it says a cut could pass "
+            f"through. `cut_sheets.py` prefers this arrangement when it holds the same number "
+            f"of cells as the plan, so no panel can lose its name. Model: {MODEL}."
+        ),
+        "model": MODEL,
+        "sheets": answers,
+    }, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

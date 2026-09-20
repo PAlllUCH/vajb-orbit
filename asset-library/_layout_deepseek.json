@@ -1,0 +1,1600 @@
+{
+ "note": "Sheet layouts read from the render by a vision model, keyed by raw sheet. `planned` is the arrangement the prompt asked for; `columns`/`rows` is what the model counted and `cut_x`/`cut_y` are the fractions it says a cut could pass through. `cut_sheets.py` prefers this arrangement when it holds the same number of cells as the plan, so no panel can lose its name. Model: deepseek-flash.",
+ "model": "deepseek-flash",
+ "sheets": {
+  "raw/ship_bomber.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "Four spaceship assets in clear 2x2 grid.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/icon_map.png": {
+   "planned": [
+    3,
+    3
+   ],
+   "columns": 3,
+   "rows": 3,
+   "cut_x": [
+    0.34,
+    0.67
+   ],
+   "cut_y": [
+    0.34,
+    0.67
+   ],
+   "confidence": "high",
+   "note": "3x3 grid of nine hexagon-themed assets, clear gaps",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/env_arena.png": {
+   "planned": [
+    2,
+    1
+   ],
+   "columns": 2,
+   "rows": 1,
+   "cut_x": [
+    0.4
+   ],
+   "cut_y": [],
+   "confidence": "high",
+   "note": "Two assets side by side, one row.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/env_asteroid.png": {
+   "planned": [
+    3,
+    3
+   ],
+   "columns": 3,
+   "rows": 3,
+   "cut_x": [
+    0.35,
+    0.66
+   ],
+   "cut_y": [
+    0.37,
+    0.7
+   ],
+   "confidence": "high",
+   "note": "3 columns by 3 rows visible.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/env_asteroid_b.png": {
+   "planned": [
+    3,
+    2
+   ],
+   "columns": 3,
+   "rows": 2,
+   "cut_x": [
+    0.34,
+    0.65
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "Visible 3 columns, 2 rows; six asteroid assets.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/env_pickup.png": {
+   "planned": [
+    2,
+    3
+   ],
+   "columns": 2,
+   "rows": 3,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.33,
+    0.65
+   ],
+   "confidence": "high",
+   "note": "2 columns, 3 rows visible.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/env_prop.png": {
+   "planned": [
+    3,
+    2
+   ],
+   "columns": 3,
+   "rows": 2,
+   "cut_x": [
+    0.33,
+    0.67
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "3 columns, 2 rows, six pieces; cuts lie in background gaps.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/4-frame-horizontal-sprite-sheet-of-a-wea.png": {
+   "planned": [
+    4,
+    1
+   ],
+   "columns": 4,
+   "rows": 1,
+   "cut_x": [
+    0.25,
+    0.5,
+    0.75
+   ],
+   "cut_y": [],
+   "confidence": "high",
+   "note": "Four visible muzzle-flash assets in one row.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/flat-vector-icon-sheet-2x2-grid-icons.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "Three assets in 2x2 grid; bottom-right cell empty.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/flat-vector-icon-sheet-3x3-grid-icons__20260918-110409.png": {
+   "planned": [
+    3,
+    3
+   ],
+   "columns": 3,
+   "rows": 3,
+   "cut_x": [
+    0.34,
+    0.67
+   ],
+   "cut_y": [
+    0.3,
+    0.61
+   ],
+   "confidence": "high",
+   "note": "Visible 3x3 grid with safe gap fractions.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/flat-vector-icon-sheet-3x3-grid-icons__20260918-110547.png": {
+   "planned": [
+    3,
+    3
+   ],
+   "columns": 3,
+   "rows": 3,
+   "cut_x": [
+    0.33,
+    0.69
+   ],
+   "cut_y": [
+    0.31,
+    0.64
+   ],
+   "confidence": "high",
+   "note": "Grid matches requested 3 columns, 3 rows.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/flat-vector-icon-sheet-4x2-grid-icons__20260918-110642.png": {
+   "planned": [
+    4,
+    2
+   ],
+   "columns": 4,
+   "rows": 2,
+   "cut_x": [
+    0.25,
+    0.5,
+    0.75
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "Clear 4x2 grid; cuts pass through empty gutters.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/flat-vector-icon-sheet-4x2-grid-icons__20260918-110921.png": {
+   "planned": [
+    4,
+    2
+   ],
+   "columns": 4,
+   "rows": 2,
+   "cut_x": [
+    0.25,
+    0.5,
+    0.75
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "4 columns, 2 rows visible; cut positions estimated.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/flat-vector-icon-sheet-5x4-grid-icons__20260918-110318.png": {
+   "planned": [
+    5,
+    4
+   ],
+   "columns": 5,
+   "rows": 4,
+   "cut_x": [
+    0.2,
+    0.4,
+    0.6,
+    0.8
+   ],
+   "cut_y": [
+    0.25,
+    0.46,
+    0.69
+   ],
+   "confidence": "high",
+   "note": "Visible 5 columns, 4 rows; 20 assets.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/flat-vector-icon-sheet-for-a-dark-sci-fi.png": {
+   "planned": [
+    2,
+    3
+   ],
+   "columns": 2,
+   "rows": 3,
+   "cut_x": [
+    0.51
+   ],
+   "cut_y": [
+    0.3,
+    0.64
+   ],
+   "confidence": "high",
+   "note": "Only five assets visible; bottom-right cell empty.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/grimdark-painted-sci-fi-semi-realistic__20260918-111044.png": {
+   "planned": [
+    4,
+    2
+   ],
+   "columns": 4,
+   "rows": 2,
+   "cut_x": [
+    0.258,
+    0.49,
+    0.749
+   ],
+   "cut_y": [
+    0.48
+   ],
+   "confidence": "high",
+   "note": "Visible 4x2 grid; cuts in empty gaps.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/grimdark-painted-sci-fi-semi-realistic__20260918-111327.png": {
+   "planned": [
+    3,
+    3
+   ],
+   "columns": 3,
+   "rows": 3,
+   "cut_x": [
+    0.34,
+    0.67
+   ],
+   "cut_y": [
+    0.32,
+    0.63
+   ],
+   "confidence": "high",
+   "note": "Visible 3x3 grid, gaps at estimated empty bands.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/grimdark-painted-sci-fi-semi-realistic__20260918-111411.png": {
+   "planned": [
+    3,
+    3
+   ],
+   "columns": 3,
+   "rows": 3,
+   "cut_x": [
+    0.33,
+    0.665
+   ],
+   "cut_y": [
+    0.35,
+    0.64
+   ],
+   "confidence": "high",
+   "note": "3x3 grid visible; gaps pass through empty background.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/grimdark-painted-sci-fi-semi-realistic__20260918-111450.png": {
+   "planned": [
+    3,
+    3
+   ],
+   "columns": 3,
+   "rows": 3,
+   "cut_x": [
+    0.33,
+    0.67
+   ],
+   "cut_y": [
+    0.33,
+    0.67
+   ],
+   "confidence": "high",
+   "note": "Visible 3x3 grid; gaps clear.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/grimdark-painted-sci-fi-semi-realistic__20260918-113357.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "Bottom-right cell empty; three assets in 2x2 grid.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/grimdark-painted-sci-fi-semi-realistic__20260918-123214.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.48
+   ],
+   "confidence": "high",
+   "note": "Four icons: two magnifiers top, hexagon and shield bottom.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/grimdark-painted-sci-fi-semi-realistic__20260918-133035.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "Four icons in a 2x2 grid.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/icon_booster.png": {
+   "planned": [
+    2,
+    3
+   ],
+   "columns": 3,
+   "rows": 2,
+   "cut_x": [
+    0.35,
+    0.65
+   ],
+   "cut_y": [
+    0.48
+   ],
+   "confidence": "high",
+   "note": "Visible 3 columns by 2 rows; gaps pass through background.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/icon_contract.png": {
+   "planned": [
+    2,
+    3
+   ],
+   "columns": 3,
+   "rows": 2,
+   "cut_x": [
+    0.35,
+    0.68
+   ],
+   "cut_y": [
+    0.52
+   ],
+   "confidence": "high",
+   "note": "3x2 visible; bottom-right empty, gaps cut cleanly",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/icon_ingot.png": {
+   "planned": [
+    5,
+    4
+   ],
+   "columns": 5,
+   "rows": 4,
+   "cut_x": [
+    0.22,
+    0.4,
+    0.6,
+    0.79
+   ],
+   "cut_y": [
+    0.29,
+    0.49,
+    0.71
+   ],
+   "confidence": "high",
+   "note": "5 by 4 visible; cuts in empty gaps.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/icon_insignia.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "3 assets visible; bottom-right cell empty.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/icon_mineral.png": {
+   "planned": [
+    5,
+    4
+   ],
+   "columns": 5,
+   "rows": 4,
+   "cut_x": [
+    0.2,
+    0.41,
+    0.59,
+    0.8
+   ],
+   "cut_y": [
+    0.26,
+    0.5,
+    0.73
+   ],
+   "confidence": "high",
+   "note": "5x4 visible; cuts pass through empty gutters.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/icon_module__20260918-114107.png": {
+   "planned": [
+    3,
+    3
+   ],
+   "columns": 3,
+   "rows": 3,
+   "cut_x": [
+    0.357,
+    0.676
+   ],
+   "cut_y": [
+    0.312,
+    0.628
+   ],
+   "confidence": "high",
+   "note": "3x3 grid visible; cuts fall in whitespace between columns and rows.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/icon_module__20260918-114156.png": {
+   "planned": [
+    3,
+    3
+   ],
+   "columns": 3,
+   "rows": 3,
+   "cut_x": [
+    0.33,
+    0.67
+   ],
+   "cut_y": [
+    0.34,
+    0.64
+   ],
+   "confidence": "high",
+   "note": "Visible 3x3 grid, gaps approximate.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/icon_module__20260918-114240.png": {
+   "planned": [
+    3,
+    3
+   ],
+   "columns": 3,
+   "rows": 3,
+   "cut_x": [
+    0.32,
+    0.68
+   ],
+   "cut_y": [
+    0.34,
+    0.66
+   ],
+   "confidence": "high",
+   "note": "Nine icons in visible 3 by 3 grid.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/icon_service.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "Three assets, bottom-right cell empty, 2x2 grid retained.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/icon_slot.png": {
+   "planned": [
+    4,
+    2
+   ],
+   "columns": 4,
+   "rows": 2,
+   "cut_x": [
+    0.25,
+    0.49,
+    0.74
+   ],
+   "cut_y": [
+    0.48
+   ],
+   "confidence": "high",
+   "note": "Four columns, two rows of icons as requested",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/icon_status.png": {
+   "planned": [
+    3,
+    3
+   ],
+   "columns": 3,
+   "rows": 3,
+   "cut_x": [
+    0.34,
+    0.67
+   ],
+   "cut_y": [
+    0.33,
+    0.65
+   ],
+   "confidence": "high",
+   "note": "Three columns, three rows, nine assets.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/p2_contracts.png": {
+   "planned": [
+    2,
+    3
+   ],
+   "columns": 3,
+   "rows": 2,
+   "cut_x": [
+    0.34,
+    0.67
+   ],
+   "cut_y": [
+    0.52
+   ],
+   "confidence": "high",
+   "note": "Visible 3 columns by 2 rows; five icons, empty bottom-right.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/p2_faction_insignia.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "Three assets visible; bottom-right cell empty.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/panel_equipment.png": {
+   "planned": [
+    3,
+    3
+   ],
+   "columns": 3,
+   "rows": 3,
+   "cut_x": [
+    0.34,
+    0.66
+   ],
+   "cut_y": [
+    0.33,
+    0.64
+   ],
+   "confidence": "high",
+   "note": "3x3 visible; cuts through empty background.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/same-2x2-rotation-sheet-of-the-same-enem__20260918-112624.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "2x2 visible; cuts through empty center gaps.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/same-2x2-rotation-sheet-of-the-same-enem__20260918-112721.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "Four ships in a 2x2 grid.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/same-2x2-rotation-sheet-of-the-same-enem__20260918-112813.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "Four visible sprites in 2x2 grid.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ship_corvette.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "Four spaceships arranged 2x2; mid-gaps clear.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ship_corvette_mmo.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "Four ships visible in 2x2 grid.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ship_destroyer.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.52
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "Four ships in 2x2 grid.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ship_drone_swarm__20260917-213637.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "Visible 2 by 2 grid; cuts at midlines clear.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ship_drone_swarm__20260918-133108.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "2x2 visible; four assets.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ship_fighter.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "2x2 visible; central vertical and horizontal cuts empty.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ship_fighter_choir.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "Four ships in 2x2 grid.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ship_fighter_concord.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "2x2 visible; central vertical and horizontal gaps clear",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ship_fighter_meridian.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "Four ships in visible 2x2 grid.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ship_fighter_mmo.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "2x2 grid, four ship views, cuts through empty space.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ship_freighter.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "Visible 2x2; four ships in quadrants",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ship_freighter_mmo.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "Four ships in a 2x2 grid.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ship_gunship.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "2x2 grid, four ships visible.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ship_interceptor.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "2x2 grid, four ship assets, midlines clear.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ship_mine_layer.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.53
+   ],
+   "cut_y": [
+    0.49
+   ],
+   "confidence": "high",
+   "note": "Four ship assets in 2x2 grid.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ship_miner.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "2x2 visible; center gaps clear.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ship_patrol.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.55
+   ],
+   "cut_y": [
+    0.51
+   ],
+   "confidence": "high",
+   "note": "Four ships in 2x2 grid; gaps at empty star background.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ship_trader.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "2x2 grid visible; central vertical and horizontal gaps empty",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ship_vanguard.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "Four distinct spaceship sprites in a 2x2 grid.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ship_vanguard_damaged.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "Four spaceships in 2x2 grid.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ship_vanguard_mmo.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "Visible 2x2 grid; central gaps.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ui-bar-caps-and-ui-minimap-bezel-one-pa.png": {
+   "planned": [
+    2,
+    1
+   ],
+   "columns": 2,
+   "rows": 1,
+   "cut_x": [
+    0.434
+   ],
+   "cut_y": [],
+   "confidence": "high",
+   "note": "Two assets: paired tags left, frame right.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ui-button-plate-a-square-panel-with-fou.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "2x2 grid, four metal plaques; central gaps clear.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ui_button_plate__20260917-185457.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "Visible 2x2 grid; cuts at midpoints through empty gaps.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ui_button_plate__20260918-133142.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "2x2 grid; four separate metal bar assets.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ui_insignia.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "Two columns, two rows; four hex assets visible; central gaps.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ui_slot_cargo.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "Four panels in 2x2 grid.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ui_slot_inventory.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "Visible 2x2 grid; central gaps clear.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/ui_slot_weapon.png": {
+   "planned": [
+    2,
+    2
+   ],
+   "columns": 2,
+   "rows": 2,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.5
+   ],
+   "confidence": "high",
+   "note": "2x2 grid, four pistol tiles visible.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/flat-vector-icon-sheet-3x3-grid-icons__20260918-110458.png": {
+   "planned": [
+    3,
+    3
+   ],
+   "columns": 3,
+   "rows": 3,
+   "cut_x": [
+    0.33,
+    0.67
+   ],
+   "cut_y": [
+    0.34,
+    0.64
+   ],
+   "confidence": "high",
+   "note": "Visible 3x3; cuts through empty gaps",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/flat-vector-icon-sheet-5x4-grid-icons__20260918-110236.png": {
+   "planned": [
+    5,
+    4
+   ],
+   "columns": 5,
+   "rows": 4,
+   "cut_x": [
+    0.2,
+    0.4,
+    0.6,
+    0.8
+   ],
+   "cut_y": [
+    0.25,
+    0.5,
+    0.75
+   ],
+   "confidence": "high",
+   "note": "5x4 grid; cuts at even intervals.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/panel_cargo.png": {
+   "planned": [
+    2,
+    3
+   ],
+   "columns": 2,
+   "rows": 3,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.34,
+    0.66
+   ],
+   "confidence": "high",
+   "note": "Visible 2 columns, 3 rows; cuts through empty gaps",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/panel_glyphs.png": {
+   "planned": [
+    3,
+    3
+   ],
+   "columns": 3,
+   "rows": 3,
+   "cut_x": [
+    0.35,
+    0.66
+   ],
+   "cut_y": [
+    0.34,
+    0.65
+   ],
+   "confidence": "high",
+   "note": "Visible 3x3 grid, nine icons, cuts pass through white gaps.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  },
+  "raw/panel_weapons.png": {
+   "planned": [
+    2,
+    3
+   ],
+   "columns": 2,
+   "rows": 3,
+   "cut_x": [
+    0.5
+   ],
+   "cut_y": [
+    0.33,
+    0.65
+   ],
+   "confidence": "high",
+   "note": "Five pieces; bottom-right cell empty.",
+   "image": [
+    1024,
+    1024
+   ],
+   "model": "deepseek-flash"
+  }
+ }
+}

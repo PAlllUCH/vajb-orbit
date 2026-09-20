@@ -186,3 +186,7 @@ Paste-ready prompts: `.agents/gen/slice0_prompts.md` (one per worker, order
 M0 → M1–M3 parallel → M4 → M5 → M6). Commit before dispatch
 (`git add -A && git commit`) so the wave start is diffable; snapshot first:
 `py -3.14 staging/verify_wave.py snapshot --name slice0_start`.
+
+**Orchestrator flow (owner's standing choice):** the owner hands the coding
+orchestrator `.agents/gen/dispatch_coder.md` instead of pasting prompts —
+that file executes this brief and the prompts file end-to-end.

@@ -1,0 +1,79 @@
+{
+ "target_stroke": 3.0,
+ "size": 16,
+ "hole_min": 16,
+ "rows": [
+  {
+   "family": "icon_zoom_plus",
+   "radius": 10,
+   "before": {
+    "stroke": 2.0,
+    "coverage": 0.617,
+    "solid": 0.228,
+    "hole": 25
+   },
+   "after": {
+    "stroke": 2.5,
+    "coverage": 0.652,
+    "solid": 0.473,
+    "hole": 16
+   },
+   "target": 3.0,
+   "applied": true
+  },
+  {
+   "family": "icon_zoom_minus",
+   "radius": 12,
+   "before": {
+    "stroke": 2.0,
+    "coverage": 0.578,
+    "solid": 0.223,
+    "hole": 35
+   },
+   "after": {
+    "stroke": 3.5,
+    "coverage": 0.609,
+    "solid": 0.5,
+    "hole": 28
+   },
+   "target": 3.0,
+   "applied": true
+  },
+  {
+   "family": "icon_credits",
+   "radius": 23,
+   "before": {
+    "stroke": 2.0,
+    "coverage": 0.512,
+    "solid": 0.16,
+    "hole": 47
+   },
+   "after": {
+    "stroke": 3.0,
+    "coverage": 0.656,
+    "solid": 0.488,
+    "hole": 24
+   },
+   "target": 3.0,
+   "applied": true
+  },
+  {
+   "family": "icon_shield",
+   "radius": 12,
+   "before": {
+    "stroke": 1.0,
+    "coverage": 0.508,
+    "solid": 0.246,
+    "hole": 38
+   },
+   "after": {
+    "stroke": 3.0,
+    "coverage": 0.586,
+    "solid": 0.42,
+    "hole": 28
+   },
+   "target": 3.0,
+   "applied": true
+  }
+ ]
+}

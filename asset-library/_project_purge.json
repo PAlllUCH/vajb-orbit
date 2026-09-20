@@ -1,0 +1,160 @@
+{
+ "at": "2026-09-20T23:08:32",
+ "reason": "the project's FX copies are removed so the library is the single source of every asset, as it already is for every other family. This family was the one the earlier prune kept, because additive FX must never be keyed.",
+ "folder": "vajb-orbit/assets/fx",
+ "files": [
+  {
+   "path": "vajb-orbit/assets/fx/fx_anomaly_grave_glow.png",
+   "bytes": 3660314
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_anomaly_grave_glow.png.import",
+   "bytes": 977
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_anomaly_rift.png",
+   "bytes": 4371523
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_anomaly_rift.png.import",
+   "bytes": 959
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_anomaly_shimmer.png",
+   "bytes": 4115922
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_anomaly_shimmer.png.import",
+   "bytes": 968
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_cargo_pulse.png",
+   "bytes": 4806737
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_cargo_pulse.png.import",
+   "bytes": 956
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_ember_pulse.png",
+   "bytes": 2637004
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_ember_pulse.png.import",
+   "bytes": 955
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_emp_arc.png",
+   "bytes": 3922822
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_emp_arc.png.import",
+   "bytes": 944
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_engine_trail.png",
+   "bytes": 2440523
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_engine_trail.png.import",
+   "bytes": 959
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_explosion.png",
+   "bytes": 5062850
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_explosion.png.import",
+   "bytes": 949
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_hull_critical_vignette.png",
+   "bytes": 4321158
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_hull_critical_vignette.png.import",
+   "bytes": 989
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_jump_portal.png",
+   "bytes": 4354768
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_jump_portal.png.import",
+   "bytes": 956
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_laser_bolt.png",
+   "bytes": 5136613
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_laser_bolt.png.import",
+   "bytes": 953
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_mining_beam.png",
+   "bytes": 4124403
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_mining_beam.png.import",
+   "bytes": 955
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_missile_trail.png",
+   "bytes": 3794635
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_missile_trail.png.import",
+   "bytes": 961
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_muzzle_flash.png",
+   "bytes": 3536618
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_muzzle_flash.png.import",
+   "bytes": 959
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_repair_pulse.png",
+   "bytes": 3863614
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_repair_pulse.png.import",
+   "bytes": 959
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_secondary_explosion.png",
+   "bytes": 3135209
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_secondary_explosion.png.import",
+   "bytes": 980
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_shield_break.png",
+   "bytes": 3430359
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_shield_break.png.import",
+   "bytes": 959
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_shield_ripple.png",
+   "bytes": 4884679
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_shield_ripple.png.import",
+   "bytes": 962
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_tractor_beam.png",
+   "bytes": 3989321
+  },
+  {
+   "path": "vajb-orbit/assets/fx/fx_tractor_beam.png.import",
+   "bytes": 958
+  }
+ ],
+ "total_bytes": 75607330
+}

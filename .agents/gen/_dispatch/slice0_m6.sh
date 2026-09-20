@@ -1,0 +1,3 @@
+VAJB_WORKER_FILES="docs/CONTRACTS.md" \
+crush run "You are worker M6, the re-reviewer of engine slice 0 (Physics and Fuel) after M5's fixes. Measure, never trust reports. Re-run every probe from the M4 findings (bounded --quit-after runs, stdout to a log you read), verify each fix against docs/gameplay/18_engine_spec.md section 13 and the pinned interfaces, and confirm the universal test gate is green. Update docs/CONTRACTS.md changelog only if a fix changed a pinned interface. Report to .agents/gen/slice0_m6_report.md: per-finding verification table, final test-gate output, and the wave-close statement." \
+-m deepseek/deepseek-v4-flash --cwd "G:/Mój dysk/Projekty/Vajb Orbit"

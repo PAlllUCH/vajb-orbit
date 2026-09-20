@@ -1,0 +1,20 @@
+{
+  "task_id": "b56f16aebe83ac92c75e4efc48c815aa",
+  "model": "gpt-image-2-5-flare-text-to-image",
+  "input": {
+    "prompt": "flat vector icon sheet, 5x4 grid (icons arranged left to right, top to bottom), generous even gaps between icons, plain solid pure white background, isolated objects, icons drawn as single-colour flat silhouettes in iron black #232629 with clean uniform strokes, hard mitred corners, corner radius zero. For this sheet only, the flat vector interpretation overrides the painted metal style. Subjects in reading order: 1 raw iron ore, a heavy blocky chunk with three flat fracture faces, squat and dense; 2 raw copper ore, a chunky lump with a curled shard edge peeling off one side; 3 raw chromium ore, a slim elongated shard with one sharp tapered tip; 4 raw silicon ore, a flat wide wedge with one broad planar cleaved face and a knife edge; 5 raw aluminium ore, a thin wide flake with a feathered folded rim; 6 raw titanium ore, a stout nugget with five clean facets meeting at a single ridge; 7 raw nickel ore, an oblong lump carrying one flat band across its face; 8 raw cobalt ore, a small rounded lobe of mineral still locked in a square host-rock corner; 9 raw tungsten ore, a dense cube-faced chunk with one corner sheared away square; 10 raw silver ore, a pointed chunk sprouting three short needle crystals; 11 raw gold ore, a lumpy nugget with one rounded drooping edge read as sagging metal; 12 raw platinum ore, a layered flake-plate chunk with a stepped bright top face; 13 raw neodymium ore, a blocky matrix chunk holding one dark angular inclusion block; 14 raw iridium ore, a dense jagged shard barbed with short spikes on every side; 15 raw osmium ore, a squat heavy chunk with a chipped flat rim; 16 raw palladium ore, a slatted crystal chunk of three flat parallel blades; 17 raw cerulite ore, a shard cluster split by one raised vein ridge running its length; 18 raw emberite ore, a chunk cut through by a single deep internal fissure crack; 19 raw voidglass ore, a smooth curved shell shard with one hooked lip, glassier and rounder than every other ore; 20 raw krilium ore, an irregular asymmetric chunk with one long spike, visibly refusing the geometry of the others. no chrome, no neon, no saturated colours, no second accent, no gradient, no glow, no shadows, no text, no watermark, no grid lines, no labels, no multicolour, no rounded corners, no rounded stroke ends, no tapering strokes.\ngrimdark painted sci-fi, semi-realistic weathered metal, harsh directional rim light from upper-left with a thin cold pale steel rim tracing shadow-side silhouettes, subtle film grain over the whole image, top-down orthographic view. Fixed palette: gunmetal mid #3A3F46, gunmetal dark #2B2F35, iron black #232629, steel highlight #565C63, rusted ochre #6E5B4A, dry rust #8A6A50, grimy umber #4A423B, void black #0A0E14, deep void blue #111823, void haze #1A2230, burnt ember #C8461B, ember glow #E8703A, panel black #15181D, panel steel #2A2E35, ash text #8D939B, bone text #C9CDD2. Metal colour is desaturated gunmetal and rusted steel, dark and tired, with scratches, oil stains, hull grime, rust streaks, pitted metal, scorch marks and battle damage. Glow colours are burnt ember #C8461B and ember glow #E8703A only, small and hot, used exclusively for engines, weapons and warning lights; no other glow or accent colour exists anywhere in the image. Backgrounds are near-black blue void, void black #0A0E14 to deep void blue #111823, sparse faint stars, desaturated throughout, no saturated colours, no chrome, no neon, no gloss, no clean surfaces, moody and menacing.",
+    "aspect_ratio": "1:1",
+    "resolution": "2K"
+  },
+  "urls": [
+    "https://tempfile.aiquickdraw.com/p/b56f16aebe83ac92c75e4efc48c815aa_1_1789722154_4133.png"
+  ],
+  "local_paths": [
+    "G:\\Mój dysk\\Projekty\\Vajb Orbit\\staging\\phase_f\\icons\\20260918-110236\\flat-vector-icon-sheet-5x4-grid-icons-1.png"
+  ],
+  "alpha_paths": [
+    "G:\\Mój dysk\\Projekty\\Vajb Orbit\\staging\\phase_f\\icons\\20260918-110236\\flat-vector-icon-sheet-5x4-grid-icons-1-alpha.png"
+  ],
+  "upscaled_paths": [],
+  "asset_paths": []
+}

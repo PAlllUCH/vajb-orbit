@@ -1,0 +1,13690 @@
+{
+ "scope": "all",
+ "tolerance_px": 1.5,
+ "sprites": 441,
+ "centred": 441,
+ "off_centre": 0,
+ "empty_alpha": 0,
+ "mean_offset": [
+  -0.07,
+  -0.11
+ ],
+ "max_offset": [
+  1.0,
+  1.0
+ ],
+ "worst": [],
+ "all": {
+  "env_prop_plate_section": {
+   "px": [
+    714,
+    952
+   ],
+   "box": [
+    90,
+    73,
+    622,
+    877
+   ],
+   "box_size": [
+    533,
+    805
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.126,
+    0.077,
+    0.127,
+    0.078
+   ],
+   "subject_pct": 43.92
+  },
+  "env_body_ice_moon": {
+   "px": [
+    2011,
+    2022
+   ],
+   "box": [
+    122,
+    120,
+    1888,
+    1900
+   ],
+   "box_size": [
+    1767,
+    1781
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.059,
+    0.061,
+    0.06
+   ],
+   "subject_pct": 60.87
+  },
+  "env_body_ice_moon_prev": {
+   "px": [
+    2040,
+    2075
+   ],
+   "box": [
+    123,
+    122,
+    1918,
+    1951
+   ],
+   "box_size": [
+    1796,
+    1830
+   ],
+   "offset": [
+    1.0,
+    -0.5
+   ],
+   "offset_px": [
+    1,
+    0
+   ],
+   "centre_margin": [
+    0.06,
+    0.059,
+    0.059,
+    0.059
+   ],
+   "subject_pct": 61.03
+  },
+  "env_body_ore_moon": {
+   "px": [
+    2077,
+    2112
+   ],
+   "box": [
+    126,
+    125,
+    1951,
+    1986
+   ],
+   "box_size": [
+    1826,
+    1862
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.059,
+    0.06,
+    0.059
+   ],
+   "subject_pct": 60.74
+  },
+  "env_body_shattered": {
+   "px": [
+    2079,
+    2096
+   ],
+   "box": [
+    127,
+    124,
+    1951,
+    1971
+   ],
+   "box_size": [
+    1825,
+    1848
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.059,
+    0.061,
+    0.059
+   ],
+   "subject_pct": 48.7
+  },
+  "env_planet_moon": {
+   "px": [
+    1776,
+    1824
+   ],
+   "box": [
+    107,
+    106,
+    1668,
+    1716
+   ],
+   "box_size": [
+    1562,
+    1611
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.06,
+    0.058,
+    0.06,
+    0.059
+   ],
+   "subject_pct": 60.86
+  },
+  "env_pickup_ammo_pod": {
+   "px": [
+    851,
+    596
+   ],
+   "box": [
+    73,
+    86,
+    777,
+    509
+   ],
+   "box_size": [
+    705,
+    424
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.086,
+    0.144,
+    0.086,
+    0.144
+   ],
+   "subject_pct": 48.74
+  },
+  "env_pickup_bonus_box": {
+   "px": [
+    851,
+    596
+   ],
+   "box": [
+    58,
+    70,
+    793,
+    525
+   ],
+   "box_size": [
+    736,
+    456
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.068,
+    0.117,
+    0.067,
+    0.117
+   ],
+   "subject_pct": 59.27
+  },
+  "env_pickup_ore_pod": {
+   "px": [
+    851,
+    596
+   ],
+   "box": [
+    56,
+    76,
+    793,
+    520
+   ],
+   "box_size": [
+    738,
+    445
+   ],
+   "offset": [
+    -0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.066,
+    0.128,
+    0.067,
+    0.126
+   ],
+   "subject_pct": 57.66
+  },
+  "env_pickup_repair_pod": {
+   "px": [
+    851,
+    596
+   ],
+   "box": [
+    72,
+    51,
+    780,
+    543
+   ],
+   "box_size": [
+    709,
+    493
+   ],
+   "offset": [
+    1.0,
+    -0.5
+   ],
+   "offset_px": [
+    1,
+    0
+   ],
+   "centre_margin": [
+    0.085,
+    0.086,
+    0.082,
+    0.087
+   ],
+   "subject_pct": 56.29
+  },
+  "env_pickup_shield_pod": {
+   "px": [
+    851,
+    596
+   ],
+   "box": [
+    178,
+    50,
+    671,
+    545
+   ],
+   "box_size": [
+    494,
+    496
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.209,
+    0.084,
+    0.21,
+    0.084
+   ],
+   "subject_pct": 35.15
+  },
+  "env_pickup_speed_pod": {
+   "px": [
+    851,
+    596
+   ],
+   "box": [
+    50,
+    161,
+    801,
+    434
+   ],
+   "box_size": [
+    752,
+    274
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.27,
+    0.058,
+    0.27
+   ],
+   "subject_pct": 34.59
+  },
+  "env_base_defense": {
+   "px": [
+    1987,
+    2083
+   ],
+   "box": [
+    135,
+    231,
+    1851,
+    1850
+   ],
+   "box_size": [
+    1717,
+    1620
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.068,
+    0.111,
+    0.068,
+    0.111
+   ],
+   "subject_pct": 44.5
+  },
+  "env_base_mining": {
+   "px": [
+    2168,
+    1940
+   ],
+   "box": [
+    130,
+    329,
+    2037,
+    1610
+   ],
+   "box_size": [
+    1908,
+    1282
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.06,
+    0.17,
+    0.06,
+    0.17
+   ],
+   "subject_pct": 23.81
+  },
+  "env_base_mining_alt": {
+   "px": [
+    2048,
+    2048
+   ],
+   "box": [
+    90,
+    148,
+    1957,
+    1899
+   ],
+   "box_size": [
+    1868,
+    1752
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.044,
+    0.072,
+    0.044,
+    0.072
+   ],
+   "subject_pct": 35.2
+  },
+  "env_base_shipyard": {
+   "px": [
+    2146,
+    1331
+   ],
+   "box": [
+    144,
+    127,
+    2000,
+    1203
+   ],
+   "box_size": [
+    1857,
+    1077
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.067,
+    0.095,
+    0.068,
+    0.095
+   ],
+   "subject_pct": 35.88
+  },
+  "env_base_trade": {
+   "px": [
+    2225,
+    1703
+   ],
+   "box": [
+    140,
+    133,
+    2084,
+    1569
+   ],
+   "box_size": [
+    1945,
+    1437
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.063,
+    0.078,
+    0.063,
+    0.078
+   ],
+   "subject_pct": 37.96
+  },
+  "env_jump_gate": {
+   "px": [
+    2146,
+    2047
+   ],
+   "box": [
+    127,
+    403,
+    2018,
+    1643
+   ],
+   "box_size": [
+    1892,
+    1241
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.197,
+    0.059,
+    0.197
+   ],
+   "subject_pct": 25.6
+  },
+  "env_jump_gate_ring": {
+   "px": [
+    1833,
+    1765
+   ],
+   "box": [
+    121,
+    111,
+    1711,
+    1652
+   ],
+   "box_size": [
+    1591,
+    1542
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.066,
+    0.063,
+    0.066,
+    0.063
+   ],
+   "subject_pct": 38.42
+  },
+  "env_mine": {
+   "px": [
+    1564,
+    1751
+   ],
+   "box": [
+    103,
+    103,
+    1460,
+    1647
+   ],
+   "box_size": [
+    1358,
+    1545
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.066,
+    0.059,
+    0.066,
+    0.059
+   ],
+   "subject_pct": 40.44
+  },
+  "env_outpost_defense": {
+   "px": [
+    1324,
+    1763
+   ],
+   "box": [
+    105,
+    111,
+    1218,
+    1652
+   ],
+   "box_size": [
+    1114,
+    1542
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.079,
+    0.063,
+    0.079,
+    0.062
+   ],
+   "subject_pct": 57.74
+  },
+  "env_outpost_mining": {
+   "px": [
+    1408,
+    2036
+   ],
+   "box": [
+    120,
+    125,
+    1287,
+    1909
+   ],
+   "box_size": [
+    1168,
+    1785
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.085,
+    0.061,
+    0.085,
+    0.062
+   ],
+   "subject_pct": 40.51
+  },
+  "env_outpost_relay": {
+   "px": [
+    842,
+    2069
+   ],
+   "box": [
+    123,
+    150,
+    717,
+    1918
+   ],
+   "box_size": [
+    595,
+    1769
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.146,
+    0.072,
+    0.147,
+    0.072
+   ],
+   "subject_pct": 24.91
+  },
+  "env_outpost_repair": {
+   "px": [
+    1534,
+    2142
+   ],
+   "box": [
+    127,
+    141,
+    1405,
+    1999
+   ],
+   "box_size": [
+    1279,
+    1859
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.083,
+    0.066,
+    0.083,
+    0.066
+   ],
+   "subject_pct": 54.6
+  },
+  "env_station": {
+   "px": [
+    2060,
+    2073
+   ],
+   "box": [
+    127,
+    129,
+    1933,
+    1943
+   ],
+   "box_size": [
+    1807,
+    1815
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.062,
+    0.062,
+    0.061,
+    0.062
+   ],
+   "subject_pct": 37.51
+  },
+  "env_station_mmo": {
+   "px": [
+    2188,
+    1759
+   ],
+   "box": [
+    144,
+    260,
+    2042,
+    1497
+   ],
+   "box_size": [
+    1899,
+    1238
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.066,
+    0.148,
+    0.066,
+    0.148
+   ],
+   "subject_pct": 27.33
+  },
+  "env_station_ruined": {
+   "px": [
+    2015,
+    1834
+   ],
+   "box": [
+    119,
+    119,
+    1895,
+    1714
+   ],
+   "box_size": [
+    1777,
+    1596
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.065,
+    0.059,
+    0.065
+   ],
+   "subject_pct": 38.09
+  },
+  "env_arena_barricade": {
+   "px": [
+    1217,
+    1915
+   ],
+   "box": [
+    115,
+    708,
+    1101,
+    1206
+   ],
+   "box_size": [
+    987,
+    499
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.094,
+    0.37,
+    0.094,
+    0.37
+   ],
+   "subject_pct": 16.16
+  },
+  "env_arena_nav_pylon": {
+   "px": [
+    1217,
+    1915
+   ],
+   "box": [
+    351,
+    497,
+    864,
+    1417
+   ],
+   "box_size": [
+    514,
+    921
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.288,
+    0.26,
+    0.289,
+    0.26
+   ],
+   "subject_pct": 13.13
+  },
+  "env_asteroid_b1": {
+   "px": [
+    714,
+    866
+   ],
+   "box": [
+    59,
+    55,
+    653,
+    809
+   ],
+   "box_size": [
+    595,
+    755
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.083,
+    0.064,
+    0.084,
+    0.065
+   ],
+   "subject_pct": 35.31
+  },
+  "env_asteroid_b2": {
+   "px": [
+    714,
+    866
+   ],
+   "box": [
+    55,
+    122,
+    658,
+    743
+   ],
+   "box_size": [
+    604,
+    622
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.077,
+    0.141,
+    0.077,
+    0.141
+   ],
+   "subject_pct": 33.97
+  },
+  "env_asteroid_b3": {
+   "px": [
+    714,
+    866
+   ],
+   "box": [
+    88,
+    138,
+    625,
+    726
+   ],
+   "box_size": [
+    538,
+    589
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.123,
+    0.159,
+    0.123,
+    0.161
+   ],
+   "subject_pct": 35.78
+  },
+  "env_asteroid_b4": {
+   "px": [
+    714,
+    866
+   ],
+   "box": [
+    83,
+    112,
+    629,
+    752
+   ],
+   "box_size": [
+    547,
+    641
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.116,
+    0.129,
+    0.118,
+    0.13
+   ],
+   "subject_pct": 38.6
+  },
+  "env_asteroid_b5": {
+   "px": [
+    714,
+    866
+   ],
+   "box": [
+    162,
+    234,
+    551,
+    631
+   ],
+   "box_size": [
+    390,
+    398
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.227,
+    0.27,
+    0.227,
+    0.27
+   ],
+   "subject_pct": 14.57
+  },
+  "env_asteroid_b6": {
+   "px": [
+    714,
+    866
+   ],
+   "box": [
+    119,
+    180,
+    594,
+    686
+   ],
+   "box_size": [
+    476,
+    507
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.167,
+    0.208,
+    0.167,
+    0.207
+   ],
+   "subject_pct": 26.51
+  },
+  "env_asteroid_L1": {
+   "px": [
+    709,
+    736
+   ],
+   "box": [
+    44,
+    44,
+    664,
+    692
+   ],
+   "box_size": [
+    621,
+    649
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.062,
+    0.06,
+    0.062,
+    0.058
+   ],
+   "subject_pct": 57.6
+  },
+  "env_asteroid_L2": {
+   "px": [
+    709,
+    736
+   ],
+   "box": [
+    86,
+    56,
+    621,
+    679
+   ],
+   "box_size": [
+    536,
+    624
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.121,
+    0.076,
+    0.123,
+    0.076
+   ],
+   "subject_pct": 44.65
+  },
+  "env_asteroid_L3": {
+   "px": [
+    709,
+    736
+   ],
+   "box": [
+    46,
+    53,
+    662,
+    683
+   ],
+   "box_size": [
+    617,
+    631
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.065,
+    0.072,
+    0.065,
+    0.071
+   ],
+   "subject_pct": 54.26
+  },
+  "env_asteroid_M1": {
+   "px": [
+    709,
+    736
+   ],
+   "box": [
+    102,
+    136,
+    605,
+    600
+   ],
+   "box_size": [
+    504,
+    465
+   ],
+   "offset": [
+    -0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.144,
+    0.185,
+    0.145,
+    0.183
+   ],
+   "subject_pct": 25.82
+  },
+  "env_asteroid_M2": {
+   "px": [
+    709,
+    736
+   ],
+   "box": [
+    115,
+    101,
+    594,
+    634
+   ],
+   "box_size": [
+    480,
+    534
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.162,
+    0.137,
+    0.161,
+    0.137
+   ],
+   "subject_pct": 33.51
+  },
+  "env_asteroid_M3": {
+   "px": [
+    709,
+    736
+   ],
+   "box": [
+    93,
+    117,
+    614,
+    617
+   ],
+   "box_size": [
+    522,
+    501
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.131,
+    0.159,
+    0.133,
+    0.16
+   ],
+   "subject_pct": 32.99
+  },
+  "env_asteroid_S1": {
+   "px": [
+    709,
+    736
+   ],
+   "box": [
+    206,
+    212,
+    502,
+    523
+   ],
+   "box_size": [
+    297,
+    312
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.291,
+    0.288,
+    0.291,
+    0.288
+   ],
+   "subject_pct": 12.27
+  },
+  "env_asteroid_S2": {
+   "px": [
+    709,
+    736
+   ],
+   "box": [
+    178,
+    196,
+    529,
+    539
+   ],
+   "box_size": [
+    352,
+    344
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.251,
+    0.266,
+    0.252,
+    0.266
+   ],
+   "subject_pct": 14.75
+  },
+  "env_asteroid_S3": {
+   "px": [
+    709,
+    736
+   ],
+   "box": [
+    191,
+    206,
+    516,
+    528
+   ],
+   "box_size": [
+    326,
+    323
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.269,
+    0.28,
+    0.271,
+    0.281
+   ],
+   "subject_pct": 12.27
+  },
+  "env_debris_field": {
+   "px": [
+    2224,
+    2196
+   ],
+   "box": [
+    138,
+    138,
+    2086,
+    2056
+   ],
+   "box_size": [
+    1949,
+    1919
+   ],
+   "offset": [
+    0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.062,
+    0.063,
+    0.062,
+    0.063
+   ],
+   "subject_pct": 47.79
+  },
+  "env_ice_field": {
+   "px": [
+    2099,
+    2077
+   ],
+   "box": [
+    126,
+    126,
+    1972,
+    1950
+   ],
+   "box_size": [
+    1847,
+    1825
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.06,
+    0.061,
+    0.06,
+    0.061
+   ],
+   "subject_pct": 43.31
+  },
+  "env_ore_cluster": {
+   "px": [
+    1983,
+    2000
+   ],
+   "box": [
+    118,
+    117,
+    1865,
+    1882
+   ],
+   "box_size": [
+    1748,
+    1766
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.06,
+    0.059,
+    0.059,
+    0.059
+   ],
+   "subject_pct": 47.93
+  },
+  "env_prop_drive_core": {
+   "px": [
+    714,
+    952
+   ],
+   "box": [
+    57,
+    117,
+    656,
+    833
+   ],
+   "box_size": [
+    600,
+    717
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.08,
+    0.123,
+    0.08,
+    0.124
+   ],
+   "subject_pct": 44.96
+  },
+  "env_prop_hull_mid": {
+   "px": [
+    714,
+    952
+   ],
+   "box": [
+    76,
+    100,
+    637,
+    851
+   ],
+   "box_size": [
+    562,
+    752
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.106,
+    0.105,
+    0.106,
+    0.105
+   ],
+   "subject_pct": 52.25
+  },
+  "env_prop_hull_nose": {
+   "px": [
+    714,
+    952
+   ],
+   "box": [
+    77,
+    56,
+    635,
+    895
+   ],
+   "box_size": [
+    559,
+    840
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.108,
+    0.059,
+    0.109,
+    0.059
+   ],
+   "subject_pct": 43.17
+  },
+  "env_prop_hull_stern": {
+   "px": [
+    714,
+    952
+   ],
+   "box": [
+    71,
+    92,
+    642,
+    859
+   ],
+   "box_size": [
+    572,
+    768
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.099,
+    0.097,
+    0.099,
+    0.097
+   ],
+   "subject_pct": 44.26
+  },
+  "env_prop_rib_cluster": {
+   "px": [
+    714,
+    952
+   ],
+   "box": [
+    75,
+    70,
+    637,
+    880
+   ],
+   "box_size": [
+    563,
+    811
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.105,
+    0.074,
+    0.106,
+    0.075
+   ],
+   "subject_pct": 27.89
+  },
+  "env_wreck_hulk": {
+   "px": [
+    2106,
+    1717
+   ],
+   "box": [
+    129,
+    126,
+    1976,
+    1589
+   ],
+   "box_size": [
+    1848,
+    1464
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.073,
+    0.061,
+    0.074
+   ],
+   "subject_pct": 49.03
+  },
+  "icon_alt_angled_armor_plates": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    137,
+    112,
+    374,
+    399
+   ],
+   "box_size": [
+    238,
+    288
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.268,
+    0.219,
+    0.268,
+    0.219
+   ],
+   "subject_pct": 22.1
+  },
+  "icon_alt_angled_metal_block": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    62,
+    482,
+    449
+   ],
+   "box_size": [
+    453,
+    388
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.121,
+    0.057,
+    0.121
+   ],
+   "subject_pct": 35.39
+  },
+  "icon_alt_angled_pipe_weapon": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    33,
+    137,
+    479,
+    374
+   ],
+   "box_size": [
+    447,
+    238
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.064,
+    0.268,
+    0.062,
+    0.268
+   ],
+   "subject_pct": 21.53
+  },
+  "icon_alt_angled_side_enemy_ship": {
+   "px": [
+    884,
+    884
+   ],
+   "box": [
+    135,
+    110,
+    748,
+    774
+   ],
+   "box_size": [
+    614,
+    665
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.153,
+    0.124,
+    0.153,
+    0.123
+   ],
+   "subject_pct": 27.85
+  },
+  "icon_alt_arched_glowing_vent": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    150,
+    185,
+    361,
+    326
+   ],
+   "box_size": [
+    212,
+    142
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.293,
+    0.361,
+    0.293,
+    0.361
+   ],
+   "subject_pct": 10.18
+  },
+  "icon_alt_armored_node_panel": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    36,
+    35,
+    474,
+    475
+   ],
+   "box_size": [
+    439,
+    441
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.07,
+    0.068,
+    0.072,
+    0.07
+   ],
+   "subject_pct": 72.92
+  },
+  "icon_alt_arrow_direction_plaque": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    40,
+    30,
+    471,
+    481
+   ],
+   "box_size": [
+    432,
+    452
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.078,
+    0.059,
+    0.078,
+    0.059
+   ],
+   "subject_pct": 73.86
+  },
+  "icon_alt_barred_container_silhouette": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    42,
+    29,
+    467,
+    482
+   ],
+   "box_size": [
+    426,
+    454
+   ],
+   "offset": [
+    -1.0,
+    0.0
+   ],
+   "offset_px": [
+    -1,
+    0
+   ],
+   "centre_margin": [
+    0.082,
+    0.057,
+    0.086,
+    0.057
+   ],
+   "subject_pct": 56.3
+  },
+  "icon_alt_barred_rectangular_module": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    49,
+    29,
+    462,
+    482
+   ],
+   "box_size": [
+    414,
+    454
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.096,
+    0.057,
+    0.096,
+    0.057
+   ],
+   "subject_pct": 27.44
+  },
+  "icon_alt_battery_cells": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    36,
+    480,
+    475
+   ],
+   "box_size": [
+    450,
+    440
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.07,
+    0.061,
+    0.07
+   ],
+   "subject_pct": 52.68
+  },
+  "icon_alt_beveled_metal_ingot": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    34,
+    481,
+    477
+   ],
+   "box_size": [
+    452,
+    444
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.066,
+    0.059,
+    0.066
+   ],
+   "subject_pct": 44.61
+  },
+  "icon_alt_beveled_plate_dark_gray": {
+   "px": [
+    974,
+    372
+   ],
+   "box": [
+    69,
+    57,
+    903,
+    314
+   ],
+   "box_size": [
+    835,
+    258
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.071,
+    0.153,
+    0.072,
+    0.153
+   ],
+   "subject_pct": 59.36
+  },
+  "icon_alt_beveled_plate_plain_dark": {
+   "px": [
+    974,
+    372
+   ],
+   "box": [
+    68,
+    56,
+    904,
+    314
+   ],
+   "box_size": [
+    837,
+    259
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.07,
+    0.151,
+    0.071,
+    0.153
+   ],
+   "subject_pct": 59.55
+  },
+  "icon_alt_beveled_plate_rust_tinge": {
+   "px": [
+    974,
+    372
+   ],
+   "box": [
+    71,
+    56,
+    901,
+    314
+   ],
+   "box_size": [
+    831,
+    259
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.073,
+    0.151,
+    0.074,
+    0.153
+   ],
+   "subject_pct": 58.9
+  },
+  "icon_alt_broken_jagged_shard": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    58,
+    30,
+    453,
+    480
+   ],
+   "box_size": [
+    396,
+    451
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.113,
+    0.059,
+    0.113,
+    0.061
+   ],
+   "subject_pct": 33.66
+  },
+  "icon_alt_buckled_crate_module": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    44,
+    480,
+    467
+   ],
+   "box_size": [
+    450,
+    424
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.086,
+    0.061,
+    0.086
+   ],
+   "subject_pct": 57.8
+  },
+  "icon_alt_chevron_armor_plate": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    150,
+    114,
+    360,
+    396
+   ],
+   "box_size": [
+    211,
+    283
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.293,
+    0.223,
+    0.295,
+    0.225
+   ],
+   "subject_pct": 20.02
+  },
+  "icon_alt_chevron_engine_module": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    44,
+    29,
+    466,
+    482
+   ],
+   "box_size": [
+    423,
+    454
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.086,
+    0.057,
+    0.088,
+    0.057
+   ],
+   "subject_pct": 71.39
+  },
+  "icon_alt_chevron_marked_hatch": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    153,
+    88,
+    357,
+    423
+   ],
+   "box_size": [
+    205,
+    336
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.299,
+    0.172,
+    0.301,
+    0.172
+   ],
+   "subject_pct": 24.34
+  },
+  "icon_alt_chevron_striped_canister": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    73,
+    31,
+    438,
+    480
+   ],
+   "box_size": [
+    366,
+    450
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.143,
+    0.061,
+    0.143,
+    0.061
+   ],
+   "subject_pct": 24.43
+  },
+  "icon_alt_chevron_vent_block": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    39,
+    30,
+    472,
+    481
+   ],
+   "box_size": [
+    434,
+    452
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.076,
+    0.059,
+    0.076,
+    0.059
+   ],
+   "subject_pct": 69.47
+  },
+  "icon_alt_chunky_dark_rock": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    55,
+    30,
+    455,
+    482
+   ],
+   "box_size": [
+    401,
+    453
+   ],
+   "offset": [
+    -0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.107,
+    0.059,
+    0.109,
+    0.057
+   ],
+   "subject_pct": 54.95
+  },
+  "icon_alt_circle_slash": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    32,
+    481,
+    478
+   ],
+   "box_size": [
+    452,
+    447
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.062,
+    0.059,
+    0.064
+   ],
+   "subject_pct": 29.84
+  },
+  "icon_alt_circular_ring_hatch": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    69,
+    30,
+    443,
+    481
+   ],
+   "box_size": [
+    375,
+    452
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.135,
+    0.059,
+    0.133,
+    0.059
+   ],
+   "subject_pct": 53.08
+  },
+  "icon_alt_claw_hook": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    96,
+    481,
+    413
+   ],
+   "box_size": [
+    452,
+    318
+   ],
+   "offset": [
+    0.0,
+    -1.0
+   ],
+   "offset_px": [
+    0,
+    -1
+   ],
+   "centre_margin": [
+    0.059,
+    0.188,
+    0.059,
+    0.191
+   ],
+   "subject_pct": 17.92
+  },
+  "icon_alt_claw_ring_coupling": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    87,
+    30,
+    423,
+    481
+   ],
+   "box_size": [
+    337,
+    452
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.17,
+    0.059,
+    0.172,
+    0.059
+   ],
+   "subject_pct": 45.12
+  },
+  "icon_alt_clawed_cone_lamp": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    82,
+    482,
+    428
+   ],
+   "box_size": [
+    453,
+    347
+   ],
+   "offset": [
+    0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.16,
+    0.057,
+    0.162
+   ],
+   "subject_pct": 33.47
+  },
+  "icon_alt_cracked_glowing_rock": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    66,
+    30,
+    444,
+    482
+   ],
+   "box_size": [
+    379,
+    453
+   ],
+   "offset": [
+    -0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.129,
+    0.059,
+    0.131,
+    0.057
+   ],
+   "subject_pct": 45.09
+  },
+  "icon_alt_crossed_frame": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    51,
+    480,
+    459
+   ],
+   "box_size": [
+    450,
+    409
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.1,
+    0.061,
+    0.102
+   ],
+   "subject_pct": 14.24
+  },
+  "icon_alt_crosshair_target_reticle": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    57,
+    43,
+    455,
+    468
+   ],
+   "box_size": [
+    399,
+    426
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.111,
+    0.084,
+    0.109,
+    0.084
+   ],
+   "subject_pct": 11.93
+  },
+  "icon_alt_crosshair_targeting_plaque": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    29,
+    37,
+    482,
+    475
+   ],
+   "box_size": [
+    454,
+    439
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.057,
+    0.072,
+    0.057,
+    0.07
+   ],
+   "subject_pct": 72.58
+  },
+  "icon_alt_crystal_cluster_rock": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    68,
+    30,
+    442,
+    481
+   ],
+   "box_size": [
+    375,
+    452
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.133,
+    0.059,
+    0.135,
+    0.059
+   ],
+   "subject_pct": 38.38
+  },
+  "icon_alt_cubic_rusty_block": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    47,
+    30,
+    464,
+    481
+   ],
+   "box_size": [
+    418,
+    452
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.092,
+    0.059,
+    0.092,
+    0.059
+   ],
+   "subject_pct": 56.54
+  },
+  "icon_alt_dark_jagged_boulder": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    37,
+    30,
+    473,
+    481
+   ],
+   "box_size": [
+    437,
+    452
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.072,
+    0.059,
+    0.074,
+    0.059
+   ],
+   "subject_pct": 53.79
+  },
+  "icon_alt_diamond_box_module": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    44,
+    480,
+    466
+   ],
+   "box_size": [
+    450,
+    423
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.086,
+    0.061,
+    0.088
+   ],
+   "subject_pct": 25.88
+  },
+  "icon_alt_dish_antenna_device": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    84,
+    31,
+    427,
+    481
+   ],
+   "box_size": [
+    344,
+    451
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.164,
+    0.061,
+    0.164,
+    0.059
+   ],
+   "subject_pct": 33.36
+  },
+  "icon_alt_dish_antenna_signal": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    70,
+    30,
+    441,
+    481
+   ],
+   "box_size": [
+    372,
+    452
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.137,
+    0.059,
+    0.137,
+    0.059
+   ],
+   "subject_pct": 28.15
+  },
+  "icon_alt_dome_arch_module": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    29,
+    101,
+    482,
+    410
+   ],
+   "box_size": [
+    454,
+    310
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.057,
+    0.197,
+    0.057,
+    0.197
+   ],
+   "subject_pct": 33.78
+  },
+  "icon_alt_double_arrow_marker": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    31,
+    480,
+    480
+   ],
+   "box_size": [
+    450,
+    450
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.061,
+    0.061,
+    0.061
+   ],
+   "subject_pct": 20.98
+  },
+  "icon_alt_double_barreled_cannon": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    32,
+    169,
+    479,
+    342
+   ],
+   "box_size": [
+    448,
+    174
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.062,
+    0.33,
+    0.062,
+    0.33
+   ],
+   "subject_pct": 17.57
+  },
+  "icon_alt_double_grooved_block": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    36,
+    481,
+    476
+   ],
+   "box_size": [
+    452,
+    441
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.07,
+    0.059,
+    0.068
+   ],
+   "subject_pct": 42.23
+  },
+  "icon_alt_double_ridged_bar": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    31,
+    481,
+    479
+   ],
+   "box_size": [
+    452,
+    449
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.061,
+    0.059,
+    0.062
+   ],
+   "subject_pct": 38.88
+  },
+  "icon_alt_double_window_panels": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    94,
+    31,
+    416,
+    480
+   ],
+   "box_size": [
+    323,
+    450
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.184,
+    0.061,
+    0.186,
+    0.061
+   ],
+   "subject_pct": 35.48
+  },
+  "icon_alt_double_winged_lamp": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    60,
+    39,
+    452,
+    473
+   ],
+   "box_size": [
+    393,
+    435
+   ],
+   "offset": [
+    0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.117,
+    0.076,
+    0.115,
+    0.074
+   ],
+   "subject_pct": 48.42
+  },
+  "icon_alt_drilled_metal_bar": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    34,
+    481,
+    477
+   ],
+   "box_size": [
+    451,
+    444
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.066,
+    0.059,
+    0.066
+   ],
+   "subject_pct": 41.19
+  },
+  "icon_alt_embedded_metal_rock": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    52,
+    479,
+    459
+   ],
+   "box_size": [
+    449,
+    408
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.102,
+    0.062,
+    0.102
+   ],
+   "subject_pct": 48.31
+  },
+  "icon_alt_exhaust_thruster_nozzle": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    40,
+    133,
+    472,
+    377
+   ],
+   "box_size": [
+    433,
+    245
+   ],
+   "offset": [
+    0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.078,
+    0.26,
+    0.076,
+    0.262
+   ],
+   "subject_pct": 18.46
+  },
+  "icon_alt_faceted_dark_crystal": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    52,
+    30,
+    460,
+    480
+   ],
+   "box_size": [
+    409,
+    451
+   ],
+   "offset": [
+    0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.102,
+    0.059,
+    0.1,
+    0.061
+   ],
+   "subject_pct": 48.4
+  },
+  "icon_alt_flame_emblem": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    61,
+    29,
+    450,
+    481
+   ],
+   "box_size": [
+    390,
+    453
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.119,
+    0.057,
+    0.119,
+    0.059
+   ],
+   "subject_pct": 51.49
+  },
+  "icon_alt_flared_tower_silhouette": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    48,
+    481,
+    463
+   ],
+   "box_size": [
+    452,
+    416
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.094,
+    0.059,
+    0.094
+   ],
+   "subject_pct": 46.33
+  },
+  "icon_alt_flat_angular_slab": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    33,
+    100,
+    478,
+    410
+   ],
+   "box_size": [
+    446,
+    311
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.064,
+    0.195,
+    0.064,
+    0.197
+   ],
+   "subject_pct": 27.94
+  },
+  "icon_alt_flat_plate_dark_gray": {
+   "px": [
+    974,
+    372
+   ],
+   "box": [
+    68,
+    56,
+    905,
+    314
+   ],
+   "box_size": [
+    838,
+    259
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.07,
+    0.151,
+    0.07,
+    0.153
+   ],
+   "subject_pct": 59.65
+  },
+  "icon_alt_flat_topped_rock": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    53,
+    481,
+    459
+   ],
+   "box_size": [
+    452,
+    407
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.104,
+    0.059,
+    0.102
+   ],
+   "subject_pct": 54.06
+  },
+  "icon_alt_front_view_enemy_ship": {
+   "px": [
+    884,
+    884
+   ],
+   "box": [
+    196,
+    58,
+    686,
+    824
+   ],
+   "box_size": [
+    491,
+    767
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.222,
+    0.066,
+    0.223,
+    0.067
+   ],
+   "subject_pct": 25.42
+  },
+  "icon_alt_glowing_arched_handle": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    33,
+    114,
+    478,
+    397
+   ],
+   "box_size": [
+    446,
+    284
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.064,
+    0.223,
+    0.064,
+    0.223
+   ],
+   "subject_pct": 17.69
+  },
+  "icon_alt_glowing_barrel_weapon": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    59,
+    152,
+    452,
+    359
+   ],
+   "box_size": [
+    394,
+    208
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.115,
+    0.297,
+    0.115,
+    0.297
+   ],
+   "subject_pct": 20.47
+  },
+  "icon_alt_glowing_coil_module": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    55,
+    30,
+    455,
+    482
+   ],
+   "box_size": [
+    401,
+    453
+   ],
+   "offset": [
+    -0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.107,
+    0.059,
+    0.109,
+    0.057
+   ],
+   "subject_pct": 63.3
+  },
+  "icon_alt_glowing_vertical_core": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    159,
+    105,
+    353,
+    407
+   ],
+   "box_size": [
+    195,
+    303
+   ],
+   "offset": [
+    0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.311,
+    0.205,
+    0.309,
+    0.203
+   ],
+   "subject_pct": 20.23
+  },
+  "icon_alt_golden_porous_rock": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    43,
+    31,
+    469,
+    480
+   ],
+   "box_size": [
+    427,
+    450
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.084,
+    0.061,
+    0.082,
+    0.061
+   ],
+   "subject_pct": 49.78
+  },
+  "icon_alt_gripper_claw_device": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    32,
+    164,
+    479,
+    348
+   ],
+   "box_size": [
+    448,
+    185
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.062,
+    0.32,
+    0.062,
+    0.318
+   ],
+   "subject_pct": 20.68
+  },
+  "icon_alt_grooved_rounded_bar": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    30,
+    478,
+    482
+   ],
+   "box_size": [
+    448,
+    453
+   ],
+   "offset": [
+    -1.0,
+    0.5
+   ],
+   "offset_px": [
+    -1,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.059,
+    0.064,
+    0.057
+   ],
+   "subject_pct": 47.09
+  },
+  "icon_alt_hangar_fighter_bay": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    60,
+    481,
+    450
+   ],
+   "box_size": [
+    452,
+    391
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.117,
+    0.059,
+    0.119
+   ],
+   "subject_pct": 64.5
+  },
+  "icon_alt_hangar_fighters": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    118,
+    480,
+    392
+   ],
+   "box_size": [
+    450,
+    275
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.23,
+    0.061,
+    0.232
+   ],
+   "subject_pct": 23.01
+  },
+  "icon_alt_hollow_metal_pipe": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    30,
+    482,
+    482
+   ],
+   "box_size": [
+    453,
+    453
+   ],
+   "offset": [
+    0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.059,
+    0.057,
+    0.057
+   ],
+   "subject_pct": 38.73
+  },
+  "icon_alt_hopper_funnel": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    42,
+    29,
+    468,
+    482
+   ],
+   "box_size": [
+    427,
+    454
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.082,
+    0.057,
+    0.084,
+    0.057
+   ],
+   "subject_pct": 69.37
+  },
+  "icon_alt_hopper_funnel_unit": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    84,
+    30,
+    427,
+    480
+   ],
+   "box_size": [
+    344,
+    451
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.164,
+    0.059,
+    0.164,
+    0.061
+   ],
+   "subject_pct": 44.12
+  },
+  "icon_alt_lattice_patterned_plate": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    60,
+    480,
+    451
+   ],
+   "box_size": [
+    451,
+    392
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.117,
+    0.061,
+    0.117
+   ],
+   "subject_pct": 58.98
+  },
+  "icon_alt_launching_pad": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    129,
+    481,
+    383
+   ],
+   "box_size": [
+    452,
+    255
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.252,
+    0.059,
+    0.25
+   ],
+   "subject_pct": 31.59
+  },
+  "icon_alt_layered_dark_stone": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    84,
+    481,
+    426
+   ],
+   "box_size": [
+    452,
+    343
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.164,
+    0.059,
+    0.166
+   ],
+   "subject_pct": 33.01
+  },
+  "icon_alt_missile_crosshair": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    60,
+    29,
+    450,
+    482
+   ],
+   "box_size": [
+    391,
+    454
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.117,
+    0.057,
+    0.119,
+    0.057
+   ],
+   "subject_pct": 66.36
+  },
+  "icon_alt_octagonal_armored_plate": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    38,
+    31,
+    474,
+    481
+   ],
+   "box_size": [
+    437,
+    451
+   ],
+   "offset": [
+    0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.074,
+    0.061,
+    0.072,
+    0.059
+   ],
+   "subject_pct": 59.97
+  },
+  "icon_alt_octagonal_bracket_frame": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    62,
+    31,
+    449,
+    480
+   ],
+   "box_size": [
+    388,
+    450
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.121,
+    0.061,
+    0.121,
+    0.061
+   ],
+   "subject_pct": 57.86
+  },
+  "icon_alt_octagonal_frame_hatch": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    66,
+    35,
+    444,
+    476
+   ],
+   "box_size": [
+    379,
+    442
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.129,
+    0.068,
+    0.131,
+    0.068
+   ],
+   "subject_pct": 58.0
+  },
+  "icon_alt_octagonal_ring_module": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    63,
+    480,
+    447
+   ],
+   "box_size": [
+    450,
+    385
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.123,
+    0.061,
+    0.125
+   ],
+   "subject_pct": 44.62
+  },
+  "icon_alt_open_clamp_module": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    91,
+    480,
+    420
+   ],
+   "box_size": [
+    450,
+    330
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.178,
+    0.061,
+    0.178
+   ],
+   "subject_pct": 49.76
+  },
+  "icon_alt_open_metal_crate": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    51,
+    33,
+    459,
+    478
+   ],
+   "box_size": [
+    409,
+    446
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.1,
+    0.064,
+    0.102,
+    0.064
+   ],
+   "subject_pct": 57.39
+  },
+  "icon_alt_orange_arc_gauge": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    114,
+    145,
+    397,
+    365
+   ],
+   "box_size": [
+    284,
+    221
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.223,
+    0.283,
+    0.223,
+    0.285
+   ],
+   "subject_pct": 15.17
+  },
+  "icon_alt_orange_lined_reactor": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    98,
+    30,
+    412,
+    481
+   ],
+   "box_size": [
+    315,
+    452
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.191,
+    0.059,
+    0.193,
+    0.059
+   ],
+   "subject_pct": 43.57
+  },
+  "icon_alt_orange_veined_rock": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    91,
+    39,
+    421,
+    472
+   ],
+   "box_size": [
+    331,
+    434
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.178,
+    0.076,
+    0.176,
+    0.076
+   ],
+   "subject_pct": 23.84
+  },
+  "icon_alt_part_4": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    34,
+    29,
+    477,
+    482
+   ],
+   "box_size": [
+    444,
+    454
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.066,
+    0.057,
+    0.066,
+    0.057
+   ],
+   "subject_pct": 72.69
+  },
+  "icon_alt_part_4_2": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    29,
+    54,
+    482,
+    455
+   ],
+   "box_size": [
+    454,
+    402
+   ],
+   "offset": [
+    0.0,
+    -1.0
+   ],
+   "offset_px": [
+    0,
+    -1
+   ],
+   "centre_margin": [
+    0.057,
+    0.105,
+    0.057,
+    0.109
+   ],
+   "subject_pct": 69.08
+  },
+  "icon_alt_part_6": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    116,
+    481,
+    393
+   ],
+   "box_size": [
+    452,
+    278
+   ],
+   "offset": [
+    0.0,
+    -1.0
+   ],
+   "offset_px": [
+    0,
+    -1
+   ],
+   "centre_margin": [
+    0.059,
+    0.227,
+    0.059,
+    0.23
+   ],
+   "subject_pct": 47.77
+  },
+  "icon_alt_perforated_metal_block": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    108,
+    97,
+    403,
+    415
+   ],
+   "box_size": [
+    296,
+    319
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.211,
+    0.189,
+    0.211,
+    0.188
+   ],
+   "subject_pct": 19.52
+  },
+  "icon_alt_pointed_rocket_missile": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    32,
+    175,
+    479,
+    336
+   ],
+   "box_size": [
+    448,
+    162
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.062,
+    0.342,
+    0.062,
+    0.342
+   ],
+   "subject_pct": 14.43
+  },
+  "icon_alt_rear_view_enemy_ship": {
+   "px": [
+    884,
+    884
+   ],
+   "box": [
+    204,
+    64,
+    680,
+    819
+   ],
+   "box_size": [
+    477,
+    756
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.231,
+    0.072,
+    0.23,
+    0.072
+   ],
+   "subject_pct": 24.41
+  },
+  "icon_alt_ridged_rectangular_bar": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    44,
+    30,
+    467,
+    480
+   ],
+   "box_size": [
+    424,
+    451
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.086,
+    0.059,
+    0.086,
+    0.061
+   ],
+   "subject_pct": 40.16
+  },
+  "icon_alt_ringed_glowing_device": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    95,
+    480,
+    415
+   ],
+   "box_size": [
+    451,
+    321
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.186,
+    0.061,
+    0.188
+   ],
+   "subject_pct": 31.92
+  },
+  "icon_alt_riveted_side_panel": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    36,
+    63,
+    474,
+    447
+   ],
+   "box_size": [
+    439,
+    385
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.07,
+    0.123,
+    0.072,
+    0.125
+   ],
+   "subject_pct": 61.13
+  },
+  "icon_alt_robotic_arm": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    29,
+    39,
+    482,
+    473
+   ],
+   "box_size": [
+    454,
+    435
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.057,
+    0.076,
+    0.057,
+    0.074
+   ],
+   "subject_pct": 44.32
+  },
+  "icon_alt_robotic_claw_arm": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    39,
+    82,
+    473,
+    430
+   ],
+   "box_size": [
+    435,
+    349
+   ],
+   "offset": [
+    0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.076,
+    0.16,
+    0.074,
+    0.158
+   ],
+   "subject_pct": 18.09
+  },
+  "icon_alt_rock_with_gem": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    47,
+    30,
+    466,
+    482
+   ],
+   "box_size": [
+    420,
+    453
+   ],
+   "offset": [
+    1.0,
+    0.5
+   ],
+   "offset_px": [
+    1,
+    0
+   ],
+   "centre_margin": [
+    0.092,
+    0.059,
+    0.088,
+    0.057
+   ],
+   "subject_pct": 52.95
+  },
+  "icon_alt_rounded_metal_brick": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    46,
+    31,
+    464,
+    480
+   ],
+   "box_size": [
+    419,
+    450
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.09,
+    0.061,
+    0.092,
+    0.061
+   ],
+   "subject_pct": 42.34
+  },
+  "icon_alt_rusty_cone_lamp": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    68,
+    62,
+    444,
+    449
+   ],
+   "box_size": [
+    377,
+    388
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.133,
+    0.121,
+    0.131,
+    0.121
+   ],
+   "subject_pct": 39.15
+  },
+  "icon_alt_rusty_fractured_rock": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    37,
+    479,
+    473
+   ],
+   "box_size": [
+    449,
+    437
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.072,
+    0.062,
+    0.074
+   ],
+   "subject_pct": 50.0
+  },
+  "icon_alt_rusty_grooved_bar": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    58,
+    481,
+    453
+   ],
+   "box_size": [
+    452,
+    396
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.113,
+    0.059,
+    0.113
+   ],
+   "subject_pct": 34.15
+  },
+  "icon_alt_sensor_targeting_modules": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    118,
+    33,
+    393,
+    477
+   ],
+   "box_size": [
+    276,
+    445
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.23,
+    0.064,
+    0.23,
+    0.066
+   ],
+   "subject_pct": 37.68
+  },
+  "icon_alt_shield": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    94,
+    54,
+    418,
+    458
+   ],
+   "box_size": [
+    325,
+    405
+   ],
+   "offset": [
+    0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.184,
+    0.105,
+    0.182,
+    0.104
+   ],
+   "subject_pct": 37.49
+  },
+  "icon_alt_side_podded_module": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    98,
+    480,
+    412
+   ],
+   "box_size": [
+    450,
+    315
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.191,
+    0.061,
+    0.193
+   ],
+   "subject_pct": 44.9
+  },
+  "icon_alt_side_view_enemy_ship": {
+   "px": [
+    884,
+    884
+   ],
+   "box": [
+    58,
+    248,
+    825,
+    635
+   ],
+   "box_size": [
+    768,
+    388
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.066,
+    0.281,
+    0.066,
+    0.281
+   ],
+   "subject_pct": 21.08
+  },
+  "icon_alt_slotted_metal_block": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    35,
+    480,
+    477
+   ],
+   "box_size": [
+    450,
+    443
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.068,
+    0.061,
+    0.066
+   ],
+   "subject_pct": 45.24
+  },
+  "icon_alt_smooth_clear_shard": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    59,
+    30,
+    452,
+    481
+   ],
+   "box_size": [
+    394,
+    452
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.115,
+    0.059,
+    0.115,
+    0.059
+   ],
+   "subject_pct": 47.01
+  },
+  "icon_alt_spiked_metal_rock": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    54,
+    31,
+    457,
+    480
+   ],
+   "box_size": [
+    404,
+    450
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.105,
+    0.061,
+    0.105,
+    0.061
+   ],
+   "subject_pct": 26.81
+  },
+  "icon_alt_spiked_naval_mine": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    39,
+    481,
+    472
+   ],
+   "box_size": [
+    451,
+    434
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.076,
+    0.059,
+    0.076
+   ],
+   "subject_pct": 43.74
+  },
+  "icon_alt_spiky_mineral_formation": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    66,
+    30,
+    444,
+    481
+   ],
+   "box_size": [
+    379,
+    452
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.129,
+    0.059,
+    0.131,
+    0.059
+   ],
+   "subject_pct": 28.76
+  },
+  "icon_alt_split_end_bar": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    36,
+    480,
+    475
+   ],
+   "box_size": [
+    450,
+    440
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.07,
+    0.061,
+    0.07
+   ],
+   "subject_pct": 38.34
+  },
+  "icon_alt_square_circuit_block": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    152,
+    149,
+    360,
+    361
+   ],
+   "box_size": [
+    209,
+    213
+   ],
+   "offset": [
+    0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.297,
+    0.291,
+    0.295,
+    0.293
+   ],
+   "subject_pct": 16.77
+  },
+  "icon_alt_square_circuit_panel": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    144,
+    142,
+    367,
+    370
+   ],
+   "box_size": [
+    224,
+    229
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.281,
+    0.277,
+    0.281,
+    0.275
+   ],
+   "subject_pct": 19.39
+  },
+  "icon_alt_square_metal_plate": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    29,
+    46,
+    482,
+    464
+   ],
+   "box_size": [
+    454,
+    419
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.057,
+    0.09,
+    0.057,
+    0.092
+   ],
+   "subject_pct": 71.87
+  },
+  "icon_alt_square_notched_block": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    60,
+    31,
+    452,
+    480
+   ],
+   "box_size": [
+    393,
+    450
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.117,
+    0.061,
+    0.115,
+    0.061
+   ],
+   "subject_pct": 46.27
+  },
+  "icon_alt_stacked_flat_stones": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    42,
+    481,
+    469
+   ],
+   "box_size": [
+    451,
+    428
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.082,
+    0.059,
+    0.082
+   ],
+   "subject_pct": 47.61
+  },
+  "icon_alt_stacked_metal_plates": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    141,
+    133,
+    370,
+    377
+   ],
+   "box_size": [
+    230,
+    245
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.275,
+    0.26,
+    0.275,
+    0.262
+   ],
+   "subject_pct": 17.7
+  },
+  "icon_alt_stacked_plate_layers": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    33,
+    481,
+    478
+   ],
+   "box_size": [
+    452,
+    446
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.064,
+    0.059,
+    0.064
+   ],
+   "subject_pct": 76.57
+  },
+  "icon_alt_stepped_angled_bar": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    36,
+    30,
+    476,
+    481
+   ],
+   "box_size": [
+    441,
+    452
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.07,
+    0.059,
+    0.068,
+    0.059
+   ],
+   "subject_pct": 38.39
+  },
+  "icon_alt_stepped_metal_block": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    69,
+    481,
+    441
+   ],
+   "box_size": [
+    452,
+    373
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.135,
+    0.059,
+    0.137
+   ],
+   "subject_pct": 34.88
+  },
+  "icon_alt_striped_dark_mineral": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    58,
+    29,
+    453,
+    481
+   ],
+   "box_size": [
+    396,
+    453
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.113,
+    0.057,
+    0.113,
+    0.059
+   ],
+   "subject_pct": 43.57
+  },
+  "icon_alt_tapered_metal_wedge": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    64,
+    481,
+    446
+   ],
+   "box_size": [
+    452,
+    383
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.125,
+    0.059,
+    0.127
+   ],
+   "subject_pct": 26.39
+  },
+  "icon_alt_thick_arched_handle": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    32,
+    93,
+    479,
+    417
+   ],
+   "box_size": [
+    448,
+    325
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.062,
+    0.182,
+    0.062,
+    0.184
+   ],
+   "subject_pct": 23.25
+  },
+  "icon_alt_thin_arched_handle": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    33,
+    116,
+    478,
+    394
+   ],
+   "box_size": [
+    446,
+    279
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.064,
+    0.227,
+    0.064,
+    0.229
+   ],
+   "subject_pct": 11.82
+  },
+  "icon_alt_thin_sharp_shard": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    69,
+    29,
+    442,
+    481
+   ],
+   "box_size": [
+    374,
+    453
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.135,
+    0.057,
+    0.135,
+    0.059
+   ],
+   "subject_pct": 23.07
+  },
+  "icon_alt_three_horizontal_bars": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    62,
+    29,
+    449,
+    482
+   ],
+   "box_size": [
+    388,
+    454
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.121,
+    0.057,
+    0.121,
+    0.057
+   ],
+   "subject_pct": 29.49
+  },
+  "icon_alt_thruster_engine_block": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    32,
+    122,
+    479,
+    388
+   ],
+   "box_size": [
+    448,
+    267
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.062,
+    0.238,
+    0.062,
+    0.24
+   ],
+   "subject_pct": 34.74
+  },
+  "icon_alt_thruster_exhaust": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    136,
+    481,
+    374
+   ],
+   "box_size": [
+    452,
+    239
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.266,
+    0.059,
+    0.268
+   ],
+   "subject_pct": 41.21
+  },
+  "icon_alt_trapezoid_cup_module": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    82,
+    482,
+    430
+   ],
+   "box_size": [
+    453,
+    349
+   ],
+   "offset": [
+    0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.16,
+    0.057,
+    0.158
+   ],
+   "subject_pct": 60.0
+  },
+  "icon_alt_trapezoid_vent_panel": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    154,
+    148,
+    356,
+    362
+   ],
+   "box_size": [
+    203,
+    215
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.301,
+    0.289,
+    0.303,
+    0.291
+   ],
+   "subject_pct": 15.66
+  },
+  "icon_alt_u_channel_bar": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    44,
+    30,
+    465,
+    481
+   ],
+   "box_size": [
+    422,
+    452
+   ],
+   "offset": [
+    -1.0,
+    0.0
+   ],
+   "offset_px": [
+    -1,
+    0
+   ],
+   "centre_margin": [
+    0.086,
+    0.059,
+    0.09,
+    0.059
+   ],
+   "subject_pct": 36.44
+  },
+  "icon_alt_vault_door": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    59,
+    35,
+    452,
+    476
+   ],
+   "box_size": [
+    394,
+    442
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.115,
+    0.068,
+    0.115,
+    0.068
+   ],
+   "subject_pct": 62.78
+  },
+  "icon_alt_vented_power_block": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    82,
+    44,
+    429,
+    467
+   ],
+   "box_size": [
+    348,
+    424
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.16,
+    0.086,
+    0.16,
+    0.086
+   ],
+   "subject_pct": 52.19
+  },
+  "icon_alt_vented_trapezoid_thruster": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    120,
+    131,
+    390,
+    380
+   ],
+   "box_size": [
+    271,
+    250
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.234,
+    0.256,
+    0.236,
+    0.256
+   ],
+   "subject_pct": 21.04
+  },
+  "icon_alt_vertical_storage_containers": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    86,
+    33,
+    426,
+    478
+   ],
+   "box_size": [
+    341,
+    446
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.168,
+    0.064,
+    0.166,
+    0.064
+   ],
+   "subject_pct": 44.66
+  },
+  "icon_alt_winged_tower_emitter": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    52,
+    481,
+    459
+   ],
+   "box_size": [
+    452,
+    408
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.102,
+    0.059,
+    0.102
+   ],
+   "subject_pct": 47.32
+  },
+  "icon_alt_x_scored_block": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    31,
+    481,
+    479
+   ],
+   "box_size": [
+    452,
+    449
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.061,
+    0.059,
+    0.062
+   ],
+   "subject_pct": 41.5
+  },
+  "icon_booster_damage": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    111,
+    66,
+    401,
+    445
+   ],
+   "box_size": [
+    291,
+    380
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.217,
+    0.129,
+    0.215,
+    0.129
+   ],
+   "subject_pct": 31.8
+  },
+  "icon_booster_emp": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    88,
+    37,
+    422,
+    473
+   ],
+   "box_size": [
+    335,
+    437
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.172,
+    0.072,
+    0.174,
+    0.074
+   ],
+   "subject_pct": 26.9
+  },
+  "icon_booster_repair": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    106,
+    86,
+    405,
+    424
+   ],
+   "box_size": [
+    300,
+    339
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.207,
+    0.168,
+    0.207,
+    0.17
+   ],
+   "subject_pct": 19.79
+  },
+  "icon_booster_shield": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    118,
+    125,
+    392,
+    386
+   ],
+   "box_size": [
+    275,
+    262
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.23,
+    0.244,
+    0.232,
+    0.244
+   ],
+   "subject_pct": 21.2
+  },
+  "icon_booster_speed": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    100,
+    66,
+    411,
+    445
+   ],
+   "box_size": [
+    312,
+    380
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.195,
+    0.129,
+    0.195,
+    0.129
+   ],
+   "subject_pct": 37.02
+  },
+  "icon_booster_teleport": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    134,
+    89,
+    376,
+    423
+   ],
+   "box_size": [
+    243,
+    335
+   ],
+   "offset": [
+    -0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.262,
+    0.174,
+    0.264,
+    0.172
+   ],
+   "subject_pct": 12.17
+  },
+  "icon_cargo_container": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    29,
+    127,
+    482,
+    383
+   ],
+   "box_size": [
+    454,
+    257
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.057,
+    0.248,
+    0.057,
+    0.25
+   ],
+   "subject_pct": 44.3
+  },
+  "icon_cargo_crate": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    114,
+    481,
+    397
+   ],
+   "box_size": [
+    452,
+    284
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.223,
+    0.059,
+    0.223
+   ],
+   "subject_pct": 48.97
+  },
+  "icon_cargo_data_core": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    32,
+    480,
+    478
+   ],
+   "box_size": [
+    450,
+    447
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.062,
+    0.061,
+    0.064
+   ],
+   "subject_pct": 17.84
+  },
+  "icon_cargo_fuel_cell": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    158,
+    30,
+    353,
+    481
+   ],
+   "box_size": [
+    196,
+    452
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.309,
+    0.059,
+    0.309,
+    0.059
+   ],
+   "subject_pct": 33.8
+  },
+  "icon_cargo_ore": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    53,
+    480,
+    457
+   ],
+   "box_size": [
+    451,
+    405
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.104,
+    0.061,
+    0.105
+   ],
+   "subject_pct": 44.72
+  },
+  "icon_cargo_salvage": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    29,
+    77,
+    481,
+    433
+   ],
+   "box_size": [
+    453,
+    357
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.057,
+    0.15,
+    0.059,
+    0.152
+   ],
+   "subject_pct": 42.12
+  },
+  "icon_credits": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    60,
+    29,
+    450,
+    481
+   ],
+   "box_size": [
+    391,
+    453
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.117,
+    0.057,
+    0.119,
+    0.059
+   ],
+   "subject_pct": 33.33
+  },
+  "icon_contract_escort": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    45,
+    31,
+    465,
+    480
+   ],
+   "box_size": [
+    421,
+    450
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.088,
+    0.061,
+    0.09,
+    0.061
+   ],
+   "subject_pct": 31.24
+  },
+  "icon_contract_expedition": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    36,
+    29,
+    476,
+    481
+   ],
+   "box_size": [
+    441,
+    453
+   ],
+   "offset": [
+    0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.07,
+    0.057,
+    0.068,
+    0.059
+   ],
+   "subject_pct": 27.27
+  },
+  "icon_contract_gather": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    105,
+    31,
+    405,
+    480
+   ],
+   "box_size": [
+    301,
+    450
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.205,
+    0.061,
+    0.207,
+    0.061
+   ],
+   "subject_pct": 51.67
+  },
+  "icon_contract_haul": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    15,
+    65,
+    497,
+    446
+   ],
+   "box_size": [
+    483,
+    382
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.029,
+    0.127,
+    0.027,
+    0.127
+   ],
+   "subject_pct": 65.98
+  },
+  "icon_contract_hunt": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    35,
+    30,
+    476,
+    481
+   ],
+   "box_size": [
+    442,
+    452
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.068,
+    0.059,
+    0.068,
+    0.059
+   ],
+   "subject_pct": 24.68
+  },
+  "icon_equip_drone": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    76,
+    47,
+    434,
+    465
+   ],
+   "box_size": [
+    359,
+    419
+   ],
+   "offset": [
+    -0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.148,
+    0.092,
+    0.15,
+    0.09
+   ],
+   "subject_pct": 27.53
+  },
+  "icon_equip_engine": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    63,
+    84,
+    447,
+    428
+   ],
+   "box_size": [
+    385,
+    345
+   ],
+   "offset": [
+    -0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.123,
+    0.164,
+    0.125,
+    0.162
+   ],
+   "subject_pct": 33.51
+  },
+  "icon_equip_extra": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    104,
+    60,
+    407,
+    451
+   ],
+   "box_size": [
+    304,
+    392
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.203,
+    0.117,
+    0.203,
+    0.117
+   ],
+   "subject_pct": 36.16
+  },
+  "icon_equip_generator": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    32,
+    30,
+    479,
+    482
+   ],
+   "box_size": [
+    448,
+    453
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.062,
+    0.059,
+    0.062,
+    0.057
+   ],
+   "subject_pct": 64.04
+  },
+  "icon_equip_module": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    115,
+    480,
+    396
+   ],
+   "box_size": [
+    451,
+    282
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.225,
+    0.061,
+    0.225
+   ],
+   "subject_pct": 42.71
+  },
+  "icon_equip_pet": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    73,
+    31,
+    438,
+    479
+   ],
+   "box_size": [
+    366,
+    449
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.143,
+    0.061,
+    0.143,
+    0.062
+   ],
+   "subject_pct": 46.57
+  },
+  "icon_equip_shield_gen": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    36,
+    36,
+    474,
+    474
+   ],
+   "box_size": [
+    439,
+    439
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.07,
+    0.07,
+    0.072,
+    0.072
+   ],
+   "subject_pct": 62.31
+  },
+  "icon_close": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    34,
+    481,
+    476
+   ],
+   "box_size": [
+    452,
+    443
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.066,
+    0.059,
+    0.068
+   ],
+   "subject_pct": 35.58
+  },
+  "icon_gear": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    37,
+    481,
+    474
+   ],
+   "box_size": [
+    452,
+    438
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.072,
+    0.059,
+    0.072
+   ],
+   "subject_pct": 48.49
+  },
+  "icon_hull": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    67,
+    480,
+    443
+   ],
+   "box_size": [
+    450,
+    377
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.131,
+    0.061,
+    0.133
+   ],
+   "subject_pct": 31.26
+  },
+  "icon_logout": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    56,
+    480,
+    454
+   ],
+   "box_size": [
+    450,
+    399
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.109,
+    0.061,
+    0.111
+   ],
+   "subject_pct": 28.47
+  },
+  "icon_shield": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    76,
+    30,
+    434,
+    481
+   ],
+   "box_size": [
+    359,
+    452
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.148,
+    0.059,
+    0.15,
+    0.059
+   ],
+   "subject_pct": 27.85
+  },
+  "icon_zoom_minus": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    36,
+    480,
+    475
+   ],
+   "box_size": [
+    450,
+    440
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.07,
+    0.061,
+    0.07
+   ],
+   "subject_pct": 29.28
+  },
+  "icon_zoom_plus": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    34,
+    480,
+    476
+   ],
+   "box_size": [
+    450,
+    443
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.066,
+    0.061,
+    0.068
+   ],
+   "subject_pct": 32.09
+  },
+  "icon_ingot_aluminium": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    81,
+    479,
+    430
+   ],
+   "box_size": [
+    450,
+    350
+   ],
+   "offset": [
+    -1.0,
+    0.0
+   ],
+   "offset_px": [
+    -1,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.158,
+    0.062,
+    0.158
+   ],
+   "subject_pct": 33.91
+  },
+  "icon_ingot_cerulite": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    79,
+    481,
+    430
+   ],
+   "box_size": [
+    452,
+    352
+   ],
+   "offset": [
+    0.0,
+    -1.0
+   ],
+   "offset_px": [
+    0,
+    -1
+   ],
+   "centre_margin": [
+    0.059,
+    0.154,
+    0.059,
+    0.158
+   ],
+   "subject_pct": 28.16
+  },
+  "icon_ingot_chromium": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    107,
+    479,
+    403
+   ],
+   "box_size": [
+    450,
+    297
+   ],
+   "offset": [
+    -1.0,
+    -0.5
+   ],
+   "offset_px": [
+    -1,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.209,
+    0.062,
+    0.211
+   ],
+   "subject_pct": 20.72
+  },
+  "icon_ingot_cobalt": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    75,
+    481,
+    435
+   ],
+   "box_size": [
+    452,
+    361
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.146,
+    0.059,
+    0.148
+   ],
+   "subject_pct": 32.31
+  },
+  "icon_ingot_copper": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    84,
+    480,
+    428
+   ],
+   "box_size": [
+    450,
+    345
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.164,
+    0.061,
+    0.162
+   ],
+   "subject_pct": 28.89
+  },
+  "icon_ingot_emberite": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    29,
+    86,
+    480,
+    424
+   ],
+   "box_size": [
+    452,
+    339
+   ],
+   "offset": [
+    -1.0,
+    -0.5
+   ],
+   "offset_px": [
+    -1,
+    0
+   ],
+   "centre_margin": [
+    0.057,
+    0.168,
+    0.061,
+    0.17
+   ],
+   "subject_pct": 31.34
+  },
+  "icon_ingot_gold": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    77,
+    480,
+    435
+   ],
+   "box_size": [
+    451,
+    359
+   ],
+   "offset": [
+    -0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.15,
+    0.061,
+    0.148
+   ],
+   "subject_pct": 34.61
+  },
+  "icon_ingot_iridium": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    82,
+    480,
+    427
+   ],
+   "box_size": [
+    450,
+    346
+   ],
+   "offset": [
+    0.0,
+    -1.0
+   ],
+   "offset_px": [
+    0,
+    -1
+   ],
+   "centre_margin": [
+    0.061,
+    0.16,
+    0.061,
+    0.164
+   ],
+   "subject_pct": 26.85
+  },
+  "icon_ingot_iron": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    92,
+    480,
+    418
+   ],
+   "box_size": [
+    451,
+    327
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.18,
+    0.061,
+    0.182
+   ],
+   "subject_pct": 30.02
+  },
+  "icon_ingot_krilium": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    99,
+    480,
+    412
+   ],
+   "box_size": [
+    450,
+    314
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.193,
+    0.061,
+    0.193
+   ],
+   "subject_pct": 24.08
+  },
+  "icon_ingot_neodymium": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    77,
+    480,
+    433
+   ],
+   "box_size": [
+    450,
+    357
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.15,
+    0.061,
+    0.152
+   ],
+   "subject_pct": 34.58
+  },
+  "icon_ingot_nickel": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    79,
+    480,
+    430
+   ],
+   "box_size": [
+    450,
+    352
+   ],
+   "offset": [
+    0.0,
+    -1.0
+   ],
+   "offset_px": [
+    0,
+    -1
+   ],
+   "centre_margin": [
+    0.061,
+    0.154,
+    0.061,
+    0.158
+   ],
+   "subject_pct": 33.41
+  },
+  "icon_ingot_osmium": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    74,
+    481,
+    435
+   ],
+   "box_size": [
+    452,
+    362
+   ],
+   "offset": [
+    0.0,
+    -1.0
+   ],
+   "offset_px": [
+    0,
+    -1
+   ],
+   "centre_margin": [
+    0.059,
+    0.145,
+    0.059,
+    0.148
+   ],
+   "subject_pct": 36.72
+  },
+  "icon_ingot_palladium": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    77,
+    481,
+    433
+   ],
+   "box_size": [
+    452,
+    357
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.15,
+    0.059,
+    0.152
+   ],
+   "subject_pct": 32.53
+  },
+  "icon_ingot_platinum": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    75,
+    480,
+    436
+   ],
+   "box_size": [
+    451,
+    362
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.146,
+    0.061,
+    0.146
+   ],
+   "subject_pct": 32.8
+  },
+  "icon_ingot_silicon": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    103,
+    481,
+    406
+   ],
+   "box_size": [
+    452,
+    304
+   ],
+   "offset": [
+    0.0,
+    -1.0
+   ],
+   "offset_px": [
+    0,
+    -1
+   ],
+   "centre_margin": [
+    0.059,
+    0.201,
+    0.059,
+    0.205
+   ],
+   "subject_pct": 28.2
+  },
+  "icon_ingot_silver": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    87,
+    481,
+    423
+   ],
+   "box_size": [
+    451,
+    337
+   ],
+   "offset": [
+    0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.17,
+    0.059,
+    0.172
+   ],
+   "subject_pct": 30.43
+  },
+  "icon_ingot_titanium": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    73,
+    480,
+    437
+   ],
+   "box_size": [
+    451,
+    365
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.143,
+    0.061,
+    0.145
+   ],
+   "subject_pct": 36.15
+  },
+  "icon_ingot_tungsten": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    45,
+    30,
+    466,
+    479
+   ],
+   "box_size": [
+    422,
+    450
+   ],
+   "offset": [
+    0.0,
+    -1.0
+   ],
+   "offset_px": [
+    0,
+    -1
+   ],
+   "centre_margin": [
+    0.088,
+    0.059,
+    0.088,
+    0.062
+   ],
+   "subject_pct": 50.7
+  },
+  "icon_ingot_voidglass": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    85,
+    480,
+    426
+   ],
+   "box_size": [
+    450,
+    342
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.166,
+    0.061,
+    0.166
+   ],
+   "subject_pct": 29.55
+  },
+  "icon_insignia_choir": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    96,
+    70,
+    415,
+    440
+   ],
+   "box_size": [
+    320,
+    371
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.188,
+    0.137,
+    0.188,
+    0.139
+   ],
+   "subject_pct": 27.12
+  },
+  "icon_insignia_concord": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    86,
+    58,
+    426,
+    453
+   ],
+   "box_size": [
+    341,
+    396
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.168,
+    0.113,
+    0.166,
+    0.113
+   ],
+   "subject_pct": 30.72
+  },
+  "icon_insignia_meridian": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    100,
+    74,
+    412,
+    438
+   ],
+   "box_size": [
+    313,
+    365
+   ],
+   "offset": [
+    0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.195,
+    0.145,
+    0.193,
+    0.143
+   ],
+   "subject_pct": 30.5
+  },
+  "icon_map_bookmark": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    81,
+    32,
+    431,
+    480
+   ],
+   "box_size": [
+    351,
+    449
+   ],
+   "offset": [
+    0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.158,
+    0.062,
+    0.156,
+    0.061
+   ],
+   "subject_pct": 29.24
+  },
+  "icon_map_node_asteroid": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    73,
+    51,
+    437,
+    460
+   ],
+   "box_size": [
+    365,
+    410
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.143,
+    0.1,
+    0.145,
+    0.1
+   ],
+   "subject_pct": 28.19
+  },
+  "icon_map_node_danger": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    100,
+    30,
+    412,
+    482
+   ],
+   "box_size": [
+    313,
+    453
+   ],
+   "offset": [
+    0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.195,
+    0.059,
+    0.193,
+    0.057
+   ],
+   "subject_pct": 19.09
+  },
+  "icon_map_node_gate": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    48,
+    482,
+    463
+   ],
+   "box_size": [
+    453,
+    416
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.094,
+    0.057,
+    0.094
+   ],
+   "subject_pct": 29.97
+  },
+  "icon_map_node_home": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    57,
+    31,
+    454,
+    480
+   ],
+   "box_size": [
+    398,
+    450
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.111,
+    0.061,
+    0.111,
+    0.061
+   ],
+   "subject_pct": 37.95
+  },
+  "icon_map_node_neutral": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    83,
+    60,
+    427,
+    451
+   ],
+   "box_size": [
+    345,
+    392
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.162,
+    0.117,
+    0.164,
+    0.117
+   ],
+   "subject_pct": 20.23
+  },
+  "icon_map_node_pvp": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    62,
+    32,
+    448,
+    479
+   ],
+   "box_size": [
+    387,
+    448
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.121,
+    0.062,
+    0.123,
+    0.062
+   ],
+   "subject_pct": 31.86
+  },
+  "icon_map_node_station": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    54,
+    30,
+    457,
+    482
+   ],
+   "box_size": [
+    404,
+    453
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.105,
+    0.059,
+    0.105,
+    0.057
+   ],
+   "subject_pct": 29.19
+  },
+  "icon_map_route": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    37,
+    34,
+    474,
+    478
+   ],
+   "box_size": [
+    438,
+    445
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.072,
+    0.066,
+    0.072,
+    0.064
+   ],
+   "subject_pct": 10.18
+  },
+  "icon_mineral_aluminium": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    118,
+    481,
+    391
+   ],
+   "box_size": [
+    452,
+    274
+   ],
+   "offset": [
+    0.0,
+    -1.0
+   ],
+   "offset_px": [
+    0,
+    -1
+   ],
+   "centre_margin": [
+    0.059,
+    0.23,
+    0.059,
+    0.234
+   ],
+   "subject_pct": 22.51
+  },
+  "icon_mineral_cerulite": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    54,
+    31,
+    456,
+    481
+   ],
+   "box_size": [
+    403,
+    451
+   ],
+   "offset": [
+    -0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.105,
+    0.061,
+    0.107,
+    0.059
+   ],
+   "subject_pct": 39.21
+  },
+  "icon_mineral_chromium": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    61,
+    30,
+    449,
+    481
+   ],
+   "box_size": [
+    389,
+    452
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.119,
+    0.059,
+    0.121,
+    0.059
+   ],
+   "subject_pct": 21.28
+  },
+  "icon_mineral_cobalt": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    67,
+    31,
+    445,
+    481
+   ],
+   "box_size": [
+    379,
+    451
+   ],
+   "offset": [
+    0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.131,
+    0.061,
+    0.129,
+    0.059
+   ],
+   "subject_pct": 45.67
+  },
+  "icon_mineral_copper": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    32,
+    47,
+    480,
+    462
+   ],
+   "box_size": [
+    449,
+    416
+   ],
+   "offset": [
+    0.5,
+    -1.0
+   ],
+   "offset_px": [
+    0,
+    -1
+   ],
+   "centre_margin": [
+    0.062,
+    0.092,
+    0.061,
+    0.096
+   ],
+   "subject_pct": 43.59
+  },
+  "icon_mineral_emberite": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    43,
+    30,
+    466,
+    480
+   ],
+   "box_size": [
+    424,
+    451
+   ],
+   "offset": [
+    -1.0,
+    -0.5
+   ],
+   "offset_px": [
+    -1,
+    0
+   ],
+   "centre_margin": [
+    0.084,
+    0.059,
+    0.088,
+    0.061
+   ],
+   "subject_pct": 50.9
+  },
+  "icon_mineral_gold": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    35,
+    31,
+    476,
+    481
+   ],
+   "box_size": [
+    442,
+    451
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.068,
+    0.061,
+    0.068,
+    0.059
+   ],
+   "subject_pct": 46.63
+  },
+  "icon_mineral_iridium": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    56,
+    29,
+    456,
+    480
+   ],
+   "box_size": [
+    401,
+    452
+   ],
+   "offset": [
+    0.5,
+    -1.0
+   ],
+   "offset_px": [
+    0,
+    -1
+   ],
+   "centre_margin": [
+    0.109,
+    0.057,
+    0.107,
+    0.061
+   ],
+   "subject_pct": 27.45
+  },
+  "icon_mineral_iron": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    36,
+    479,
+    474
+   ],
+   "box_size": [
+    449,
+    439
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.07,
+    0.062,
+    0.072
+   ],
+   "subject_pct": 54.48
+  },
+  "icon_mineral_krilium": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    33,
+    29,
+    478,
+    480
+   ],
+   "box_size": [
+    446,
+    452
+   ],
+   "offset": [
+    0.0,
+    -1.0
+   ],
+   "offset_px": [
+    0,
+    -1
+   ],
+   "centre_margin": [
+    0.064,
+    0.057,
+    0.064,
+    0.061
+   ],
+   "subject_pct": 24.91
+  },
+  "icon_mineral_neodymium": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    55,
+    30,
+    456,
+    480
+   ],
+   "box_size": [
+    402,
+    451
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.107,
+    0.059,
+    0.107,
+    0.061
+   ],
+   "subject_pct": 46.86
+  },
+  "icon_mineral_nickel": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    53,
+    480,
+    458
+   ],
+   "box_size": [
+    450,
+    406
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.104,
+    0.061,
+    0.104
+   ],
+   "subject_pct": 41.09
+  },
+  "icon_mineral_osmium": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    63,
+    480,
+    447
+   ],
+   "box_size": [
+    450,
+    385
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.123,
+    0.061,
+    0.125
+   ],
+   "subject_pct": 45.63
+  },
+  "icon_mineral_palladium": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    82,
+    29,
+    429,
+    481
+   ],
+   "box_size": [
+    348,
+    453
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.16,
+    0.057,
+    0.16,
+    0.059
+   ],
+   "subject_pct": 43.33
+  },
+  "icon_mineral_platinum": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    53,
+    480,
+    457
+   ],
+   "box_size": [
+    450,
+    405
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.104,
+    0.061,
+    0.105
+   ],
+   "subject_pct": 38.37
+  },
+  "icon_mineral_silicon": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    106,
+    481,
+    404
+   ],
+   "box_size": [
+    452,
+    299
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.207,
+    0.059,
+    0.209
+   ],
+   "subject_pct": 27.19
+  },
+  "icon_mineral_silver": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    84,
+    31,
+    428,
+    481
+   ],
+   "box_size": [
+    345,
+    451
+   ],
+   "offset": [
+    0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.164,
+    0.061,
+    0.162,
+    0.059
+   ],
+   "subject_pct": 28.69
+  },
+  "icon_mineral_titanium": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    47,
+    30,
+    465,
+    481
+   ],
+   "box_size": [
+    419,
+    452
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.092,
+    0.059,
+    0.09,
+    0.059
+   ],
+   "subject_pct": 47.07
+  },
+  "icon_mineral_tungsten": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    43,
+    30,
+    467,
+    482
+   ],
+   "box_size": [
+    425,
+    453
+   ],
+   "offset": [
+    -0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.084,
+    0.059,
+    0.086,
+    0.057
+   ],
+   "subject_pct": 54.04
+  },
+  "icon_mineral_voidglass": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    43,
+    480,
+    467
+   ],
+   "box_size": [
+    450,
+    425
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.084,
+    0.061,
+    0.086
+   ],
+   "subject_pct": 39.59
+  },
+  "icon_module_b_afterburner": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    99,
+    480,
+    412
+   ],
+   "box_size": [
+    450,
+    314
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.193,
+    0.061,
+    0.193
+   ],
+   "subject_pct": 17.85
+  },
+  "icon_module_b_fold": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    72,
+    91,
+    439,
+    419
+   ],
+   "box_size": [
+    368,
+    329
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.141,
+    0.178,
+    0.141,
+    0.18
+   ],
+   "subject_pct": 22.2
+  },
+  "icon_module_c_ewar": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    108,
+    480,
+    403
+   ],
+   "box_size": [
+    450,
+    296
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.211,
+    0.061,
+    0.211
+   ],
+   "subject_pct": 16.99
+  },
+  "icon_module_c_nexus": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    48,
+    480,
+    463
+   ],
+   "box_size": [
+    450,
+    416
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.094,
+    0.061,
+    0.094
+   ],
+   "subject_pct": 24.57
+  },
+  "icon_module_c_scanner": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    73,
+    30,
+    437,
+    481
+   ],
+   "box_size": [
+    365,
+    452
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.143,
+    0.059,
+    0.145,
+    0.059
+   ],
+   "subject_pct": 33.34
+  },
+  "icon_module_c_target": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    35,
+    480,
+    475
+   ],
+   "box_size": [
+    450,
+    441
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.068,
+    0.061,
+    0.07
+   ],
+   "subject_pct": 36.72
+  },
+  "icon_module_c_twin": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    104,
+    31,
+    406,
+    480
+   ],
+   "box_size": [
+    303,
+    450
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.203,
+    0.061,
+    0.205,
+    0.061
+   ],
+   "subject_pct": 20.52
+  },
+  "icon_module_e_ion": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    29,
+    50,
+    481,
+    462
+   ],
+   "box_size": [
+    453,
+    413
+   ],
+   "offset": [
+    -0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.057,
+    0.098,
+    0.059,
+    0.096
+   ],
+   "subject_pct": 40.11
+  },
+  "icon_module_e_std": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    71,
+    481,
+    441
+   ],
+   "box_size": [
+    452,
+    371
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.139,
+    0.059,
+    0.137
+   ],
+   "subject_pct": 39.46
+  },
+  "icon_module_e_vector": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    29,
+    67,
+    481,
+    443
+   ],
+   "box_size": [
+    453,
+    377
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.057,
+    0.131,
+    0.059,
+    0.133
+   ],
+   "subject_pct": 54.83
+  },
+  "icon_module_h_composite": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    34,
+    480,
+    477
+   ],
+   "box_size": [
+    450,
+    444
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.066,
+    0.061,
+    0.066
+   ],
+   "subject_pct": 26.7
+  },
+  "icon_module_h_plate_heavy": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    136,
+    482,
+    375
+   ],
+   "box_size": [
+    453,
+    240
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.266,
+    0.057,
+    0.266
+   ],
+   "subject_pct": 41.39
+  },
+  "icon_module_h_plate_light": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    53,
+    481,
+    458
+   ],
+   "box_size": [
+    452,
+    406
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.104,
+    0.059,
+    0.104
+   ],
+   "subject_pct": 15.06
+  },
+  "icon_module_p_core": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    50,
+    74,
+    460,
+    437
+   ],
+   "box_size": [
+    411,
+    364
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.098,
+    0.145,
+    0.1,
+    0.145
+   ],
+   "subject_pct": 38.61
+  },
+  "icon_module_p_mk2": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    34,
+    480,
+    476
+   ],
+   "box_size": [
+    450,
+    443
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.066,
+    0.061,
+    0.068
+   ],
+   "subject_pct": 36.33
+  },
+  "icon_module_p_std": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    67,
+    480,
+    443
+   ],
+   "box_size": [
+    450,
+    377
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.131,
+    0.061,
+    0.133
+   ],
+   "subject_pct": 25.66
+  },
+  "icon_module_s_heavy": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    74,
+    481,
+    437
+   ],
+   "box_size": [
+    452,
+    364
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.145,
+    0.059,
+    0.145
+   ],
+   "subject_pct": 27.23
+  },
+  "icon_module_s_ion": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    29,
+    101,
+    482,
+    409
+   ],
+   "box_size": [
+    454,
+    309
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.057,
+    0.197,
+    0.057,
+    0.199
+   ],
+   "subject_pct": 17.07
+  },
+  "icon_module_s_light": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    29,
+    123,
+    482,
+    389
+   ],
+   "box_size": [
+    454,
+    267
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.057,
+    0.24,
+    0.057,
+    0.238
+   ],
+   "subject_pct": 11.02
+  },
+  "icon_module_u_cargo": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    29,
+    46,
+    481,
+    464
+   ],
+   "box_size": [
+    453,
+    419
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.057,
+    0.09,
+    0.059,
+    0.092
+   ],
+   "subject_pct": 72.02
+  },
+  "icon_module_u_drones": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    85,
+    480,
+    425
+   ],
+   "box_size": [
+    450,
+    341
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.166,
+    0.061,
+    0.168
+   ],
+   "subject_pct": 31.18
+  },
+  "icon_module_u_holds": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    40,
+    31,
+    471,
+    480
+   ],
+   "box_size": [
+    432,
+    450
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.078,
+    0.061,
+    0.078,
+    0.061
+   ],
+   "subject_pct": 13.32
+  },
+  "icon_module_u_refine": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    53,
+    29,
+    458,
+    481
+   ],
+   "box_size": [
+    406,
+    453
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.104,
+    0.057,
+    0.104,
+    0.059
+   ],
+   "subject_pct": 45.51
+  },
+  "icon_module_u_salvage": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    116,
+    480,
+    395
+   ],
+   "box_size": [
+    450,
+    280
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.227,
+    0.061,
+    0.227
+   ],
+   "subject_pct": 27.17
+  },
+  "icon_module_u_tractor": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    126,
+    480,
+    384
+   ],
+   "box_size": [
+    450,
+    259
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.246,
+    0.061,
+    0.248
+   ],
+   "subject_pct": 20.49
+  },
+  "icon_module_w_mining": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    163,
+    481,
+    347
+   ],
+   "box_size": [
+    452,
+    185
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.318,
+    0.059,
+    0.32
+   ],
+   "subject_pct": 31.76
+  },
+  "icon_module_w_railgun": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    176,
+    480,
+    335
+   ],
+   "box_size": [
+    450,
+    160
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.344,
+    0.061,
+    0.344
+   ],
+   "subject_pct": 19.94
+  },
+  "icon_service_bounty": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    33,
+    30,
+    478,
+    481
+   ],
+   "box_size": [
+    446,
+    452
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.064,
+    0.059,
+    0.064,
+    0.059
+   ],
+   "subject_pct": 29.22
+  },
+  "icon_service_insurance": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    72,
+    29,
+    439,
+    481
+   ],
+   "box_size": [
+    368,
+    453
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.141,
+    0.057,
+    0.141,
+    0.059
+   ],
+   "subject_pct": 48.79
+  },
+  "icon_service_vault": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    112,
+    116,
+    399,
+    396
+   ],
+   "box_size": [
+    288,
+    281
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.219,
+    0.227,
+    0.219,
+    0.225
+   ],
+   "subject_pct": 19.06
+  },
+  "icon_slot_b": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    63,
+    480,
+    448
+   ],
+   "box_size": [
+    450,
+    386
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.123,
+    0.061,
+    0.123
+   ],
+   "subject_pct": 17.1
+  },
+  "icon_slot_c": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    31,
+    480,
+    479
+   ],
+   "box_size": [
+    450,
+    449
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.061,
+    0.061,
+    0.062
+   ],
+   "subject_pct": 52.81
+  },
+  "icon_slot_engine": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    29,
+    53,
+    482,
+    457
+   ],
+   "box_size": [
+    454,
+    405
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.057,
+    0.104,
+    0.057,
+    0.105
+   ],
+   "subject_pct": 61.57
+  },
+  "icon_slot_h": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    29,
+    74,
+    482,
+    437
+   ],
+   "box_size": [
+    454,
+    364
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.057,
+    0.145,
+    0.057,
+    0.145
+   ],
+   "subject_pct": 62.49
+  },
+  "icon_slot_power": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    83,
+    481,
+    428
+   ],
+   "box_size": [
+    452,
+    346
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.162,
+    0.059,
+    0.162
+   ],
+   "subject_pct": 23.32
+  },
+  "icon_slot_s": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    65,
+    481,
+    446
+   ],
+   "box_size": [
+    452,
+    382
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.127,
+    0.059,
+    0.127
+   ],
+   "subject_pct": 28.33
+  },
+  "icon_slot_u": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    34,
+    29,
+    477,
+    482
+   ],
+   "box_size": [
+    444,
+    454
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.066,
+    0.057,
+    0.066,
+    0.057
+   ],
+   "subject_pct": 44.4
+  },
+  "icon_slot_w": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    81,
+    482,
+    429
+   ],
+   "box_size": [
+    453,
+    349
+   ],
+   "offset": [
+    0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.158,
+    0.057,
+    0.16
+   ],
+   "subject_pct": 50.47
+  },
+  "icon_status_burning": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    61,
+    31,
+    449,
+    480
+   ],
+   "box_size": [
+    389,
+    450
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.119,
+    0.061,
+    0.121,
+    0.061
+   ],
+   "subject_pct": 46.08
+  },
+  "icon_status_cloaked": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    91,
+    30,
+    419,
+    481
+   ],
+   "box_size": [
+    329,
+    452
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.178,
+    0.059,
+    0.18,
+    0.059
+   ],
+   "subject_pct": 12.39
+  },
+  "icon_status_disabled": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    56,
+    30,
+    454,
+    481
+   ],
+   "box_size": [
+    399,
+    452
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.109,
+    0.059,
+    0.111,
+    0.059
+   ],
+   "subject_pct": 52.14
+  },
+  "icon_status_drained": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    132,
+    31,
+    378,
+    480
+   ],
+   "box_size": [
+    247,
+    450
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.258,
+    0.061,
+    0.26,
+    0.061
+   ],
+   "subject_pct": 19.78
+  },
+  "icon_status_locked": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    45,
+    50,
+    465,
+    461
+   ],
+   "box_size": [
+    421,
+    412
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.088,
+    0.098,
+    0.09,
+    0.098
+   ],
+   "subject_pct": 34.78
+  },
+  "icon_status_radiated": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    33,
+    31,
+    477,
+    481
+   ],
+   "box_size": [
+    445,
+    451
+   ],
+   "offset": [
+    -0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.064,
+    0.061,
+    0.066,
+    0.059
+   ],
+   "subject_pct": 32.28
+  },
+  "icon_status_repairing": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    36,
+    31,
+    475,
+    480
+   ],
+   "box_size": [
+    440,
+    450
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.07,
+    0.061,
+    0.07,
+    0.061
+   ],
+   "subject_pct": 33.47
+  },
+  "icon_status_shielded": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    34,
+    30,
+    476,
+    482
+   ],
+   "box_size": [
+    443,
+    453
+   ],
+   "offset": [
+    -0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.066,
+    0.059,
+    0.068,
+    0.057
+   ],
+   "subject_pct": 60.12
+  },
+  "icon_status_slowed": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    58,
+    30,
+    452,
+    481
+   ],
+   "box_size": [
+    395,
+    452
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.113,
+    0.059,
+    0.115,
+    0.059
+   ],
+   "subject_pct": 24.1
+  },
+  "icon_ammo": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    20,
+    29,
+    492,
+    482
+   ],
+   "box_size": [
+    473,
+    454
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.039,
+    0.057,
+    0.037,
+    0.057
+   ],
+   "subject_pct": 75.72
+  },
+  "icon_ammo_laser": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    170,
+    30,
+    341,
+    481
+   ],
+   "box_size": [
+    172,
+    452
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.332,
+    0.059,
+    0.332,
+    0.059
+   ],
+   "subject_pct": 26.86
+  },
+  "icon_ammo_rocket": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    120,
+    30,
+    390,
+    479
+   ],
+   "box_size": [
+    271,
+    450
+   ],
+   "offset": [
+    -0.5,
+    -1.0
+   ],
+   "offset_px": [
+    0,
+    -1
+   ],
+   "centre_margin": [
+    0.234,
+    0.059,
+    0.236,
+    0.062
+   ],
+   "subject_pct": 35.38
+  },
+  "icon_weapon_cannon": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    144,
+    480,
+    367
+   ],
+   "box_size": [
+    450,
+    224
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.281,
+    0.061,
+    0.281
+   ],
+   "subject_pct": 26.86
+  },
+  "icon_weapon_laser": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    176,
+    481,
+    333
+   ],
+   "box_size": [
+    452,
+    158
+   ],
+   "offset": [
+    0.0,
+    -1.0
+   ],
+   "offset_px": [
+    0,
+    -1
+   ],
+   "centre_margin": [
+    0.059,
+    0.344,
+    0.059,
+    0.348
+   ],
+   "subject_pct": 27.1
+  },
+  "icon_weapon_mine": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    43,
+    481,
+    467
+   ],
+   "box_size": [
+    452,
+    425
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.084,
+    0.059,
+    0.086
+   ],
+   "subject_pct": 34.31
+  },
+  "icon_weapon_plasma": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    30,
+    114,
+    481,
+    396
+   ],
+   "box_size": [
+    452,
+    283
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.223,
+    0.059,
+    0.225
+   ],
+   "subject_pct": 22.94
+  },
+  "icon_weapon_rocket": {
+   "px": [
+    512,
+    512
+   ],
+   "box": [
+    31,
+    167,
+    480,
+    343
+   ],
+   "box_size": [
+    450,
+    177
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.326,
+    0.061,
+    0.328
+   ],
+   "subject_pct": 21.09
+  },
+  "ship_bomber_back": {
+   "px": [
+    1013,
+    991
+   ],
+   "box": [
+    167,
+    70,
+    846,
+    920
+   ],
+   "box_size": [
+    680,
+    851
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.165,
+    0.071,
+    0.164,
+    0.071
+   ],
+   "subject_pct": 25.84
+  },
+  "ship_bomber_front": {
+   "px": [
+    1013,
+    991
+   ],
+   "box": [
+    173,
+    69,
+    839,
+    922
+   ],
+   "box_size": [
+    667,
+    854
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.171,
+    0.07,
+    0.171,
+    0.069
+   ],
+   "subject_pct": 24.99
+  },
+  "ship_bomber_side": {
+   "px": [
+    1013,
+    991
+   ],
+   "box": [
+    75,
+    345,
+    937,
+    644
+   ],
+   "box_size": [
+    863,
+    300
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.074,
+    0.348,
+    0.074,
+    0.349
+   ],
+   "subject_pct": 18.6
+  },
+  "ship_bomber_three_quarter": {
+   "px": [
+    1013,
+    991
+   ],
+   "box": [
+    175,
+    146,
+    836,
+    844
+   ],
+   "box_size": [
+    662,
+    699
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.173,
+    0.147,
+    0.174,
+    0.147
+   ],
+   "subject_pct": 26.66
+  },
+  "ship_boss_boneyard": {
+   "px": [
+    2232,
+    1091
+   ],
+   "box": [
+    149,
+    150,
+    2082,
+    940
+   ],
+   "box_size": [
+    1934,
+    791
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.067,
+    0.137,
+    0.067,
+    0.137
+   ],
+   "subject_pct": 30.68
+  },
+  "ship_boss_leviathan": {
+   "px": [
+    2157,
+    1849
+   ],
+   "box": [
+    128,
+    512,
+    2027,
+    1336
+   ],
+   "box_size": [
+    1900,
+    825
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.277,
+    0.06,
+    0.277
+   ],
+   "subject_pct": 27.0
+  },
+  "ship_boss_maw": {
+   "px": [
+    2061,
+    2110
+   ],
+   "box": [
+    126,
+    129,
+    1934,
+    1980
+   ],
+   "box_size": [
+    1809,
+    1852
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.061,
+    0.061,
+    0.061
+   ],
+   "subject_pct": 30.9
+  },
+  "ship_boss_maw_mmo": {
+   "px": [
+    2062,
+    2110
+   ],
+   "box": [
+    126,
+    322,
+    1936,
+    1787
+   ],
+   "box_size": [
+    1811,
+    1466
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.061,
+    0.153,
+    0.061,
+    0.153
+   ],
+   "subject_pct": 26.28
+  },
+  "ship_boss_pyre": {
+   "px": [
+    2235,
+    752
+   ],
+   "box": [
+    201,
+    133,
+    2034,
+    619
+   ],
+   "box_size": [
+    1834,
+    487
+   ],
+   "offset": [
+    0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.09,
+    0.177,
+    0.089,
+    0.176
+   ],
+   "subject_pct": 25.0
+  },
+  "ship_boss_spire": {
+   "px": [
+    2223,
+    1522
+   ],
+   "box": [
+    185,
+    377,
+    2037,
+    1145
+   ],
+   "box_size": [
+    1853,
+    769
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.083,
+    0.248,
+    0.083,
+    0.247
+   ],
+   "subject_pct": 18.96
+  },
+  "ship_boss_thorn": {
+   "px": [
+    2225,
+    2114
+   ],
+   "box": [
+    140,
+    472,
+    2084,
+    1641
+   ],
+   "box_size": [
+    1945,
+    1170
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.063,
+    0.223,
+    0.063,
+    0.223
+   ],
+   "subject_pct": 30.43
+  },
+  "ship_corvette_back": {
+   "px": [
+    982,
+    995
+   ],
+   "box": [
+    360,
+    69,
+    620,
+    924
+   ],
+   "box_size": [
+    261,
+    856
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.367,
+    0.069,
+    0.368,
+    0.07
+   ],
+   "subject_pct": 14.81
+  },
+  "ship_corvette_front": {
+   "px": [
+    982,
+    995
+   ],
+   "box": [
+    364,
+    75,
+    616,
+    919
+   ],
+   "box_size": [
+    253,
+    845
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.371,
+    0.075,
+    0.372,
+    0.075
+   ],
+   "subject_pct": 14.73
+  },
+  "ship_corvette_mmo_back": {
+   "px": [
+    979,
+    997
+   ],
+   "box": [
+    354,
+    58,
+    623,
+    937
+   ],
+   "box_size": [
+    270,
+    880
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.362,
+    0.058,
+    0.363,
+    0.059
+   ],
+   "subject_pct": 15.94
+  },
+  "ship_corvette_mmo_front": {
+   "px": [
+    979,
+    997
+   ],
+   "box": [
+    360,
+    74,
+    618,
+    923
+   ],
+   "box_size": [
+    259,
+    850
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.368,
+    0.074,
+    0.368,
+    0.073
+   ],
+   "subject_pct": 15.43
+  },
+  "ship_corvette_mmo_side": {
+   "px": [
+    979,
+    997
+   ],
+   "box": [
+    74,
+    392,
+    903,
+    604
+   ],
+   "box_size": [
+    830,
+    213
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.076,
+    0.393,
+    0.077,
+    0.393
+   ],
+   "subject_pct": 11.71
+  },
+  "ship_corvette_mmo_three_quarter": {
+   "px": [
+    979,
+    997
+   ],
+   "box": [
+    156,
+    113,
+    822,
+    884
+   ],
+   "box_size": [
+    667,
+    772
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.159,
+    0.113,
+    0.159,
+    0.112
+   ],
+   "subject_pct": 18.64
+  },
+  "ship_corvette_side": {
+   "px": [
+    982,
+    995
+   ],
+   "box": [
+    77,
+    392,
+    904,
+    601
+   ],
+   "box_size": [
+    828,
+    210
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.078,
+    0.394,
+    0.078,
+    0.395
+   ],
+   "subject_pct": 10.8
+  },
+  "ship_corvette_three_quarter": {
+   "px": [
+    982,
+    995
+   ],
+   "box": [
+    169,
+    122,
+    812,
+    871
+   ],
+   "box_size": [
+    644,
+    750
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.172,
+    0.123,
+    0.172,
+    0.124
+   ],
+   "subject_pct": 17.54
+  },
+  "ship_destroyer_back": {
+   "px": [
+    1094,
+    1029
+   ],
+   "box": [
+    382,
+    74,
+    711,
+    953
+   ],
+   "box_size": [
+    330,
+    880
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.349,
+    0.072,
+    0.349,
+    0.073
+   ],
+   "subject_pct": 15.29
+  },
+  "ship_destroyer_front": {
+   "px": [
+    1094,
+    1029
+   ],
+   "box": [
+    369,
+    75,
+    723,
+    952
+   ],
+   "box_size": [
+    355,
+    878
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.337,
+    0.073,
+    0.338,
+    0.074
+   ],
+   "subject_pct": 17.01
+  },
+  "ship_destroyer_side": {
+   "px": [
+    1094,
+    1029
+   ],
+   "box": [
+    82,
+    454,
+    1011,
+    574
+   ],
+   "box_size": [
+    930,
+    121
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.075,
+    0.441,
+    0.075,
+    0.441
+   ],
+   "subject_pct": 6.06
+  },
+  "ship_destroyer_three_quarter": {
+   "px": [
+    1094,
+    1029
+   ],
+   "box": [
+    162,
+    114,
+    931,
+    914
+   ],
+   "box_size": [
+    770,
+    801
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.148,
+    0.111,
+    0.148,
+    0.111
+   ],
+   "subject_pct": 19.59
+  },
+  "ship_drone_swarm_back": {
+   "px": [
+    867,
+    874
+   ],
+   "box": [
+    246,
+    56,
+    619,
+    816
+   ],
+   "box_size": [
+    374,
+    761
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.284,
+    0.064,
+    0.285,
+    0.065
+   ],
+   "subject_pct": 18.97
+  },
+  "ship_drone_swarm_front": {
+   "px": [
+    867,
+    874
+   ],
+   "box": [
+    254,
+    59,
+    612,
+    814
+   ],
+   "box_size": [
+    359,
+    756
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.293,
+    0.068,
+    0.293,
+    0.068
+   ],
+   "subject_pct": 18.5
+  },
+  "ship_drone_swarm_side": {
+   "px": [
+    867,
+    874
+   ],
+   "box": [
+    59,
+    273,
+    806,
+    601
+   ],
+   "box_size": [
+    748,
+    329
+   ],
+   "offset": [
+    -0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.068,
+    0.312,
+    0.069,
+    0.311
+   ],
+   "subject_pct": 17.51
+  },
+  "ship_drone_swarm_three_quarter": {
+   "px": [
+    867,
+    874
+   ],
+   "box": [
+    194,
+    99,
+    671,
+    773
+   ],
+   "box_size": [
+    478,
+    675
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.224,
+    0.113,
+    0.225,
+    0.114
+   ],
+   "subject_pct": 21.41
+  },
+  "ship_fighter_back": {
+   "px": [
+    896,
+    895
+   ],
+   "box": [
+    207,
+    68,
+    687,
+    826
+   ],
+   "box_size": [
+    481,
+    759
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.231,
+    0.076,
+    0.232,
+    0.076
+   ],
+   "subject_pct": 23.65
+  },
+  "ship_fighter_choir_back": {
+   "px": [
+    896,
+    893
+   ],
+   "box": [
+    204,
+    52,
+    692,
+    839
+   ],
+   "box_size": [
+    489,
+    788
+   ],
+   "offset": [
+    0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.228,
+    0.058,
+    0.227,
+    0.059
+   ],
+   "subject_pct": 25.07
+  },
+  "ship_fighter_choir_front": {
+   "px": [
+    896,
+    893
+   ],
+   "box": [
+    207,
+    59,
+    686,
+    833
+   ],
+   "box_size": [
+    480,
+    775
+   ],
+   "offset": [
+    -1.0,
+    0.0
+   ],
+   "offset_px": [
+    -1,
+    0
+   ],
+   "centre_margin": [
+    0.231,
+    0.066,
+    0.233,
+    0.066
+   ],
+   "subject_pct": 24.3
+  },
+  "ship_fighter_choir_side": {
+   "px": [
+    896,
+    893
+   ],
+   "box": [
+    72,
+    254,
+    823,
+    638
+   ],
+   "box_size": [
+    752,
+    385
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.08,
+    0.284,
+    0.08,
+    0.284
+   ],
+   "subject_pct": 20.17
+  },
+  "ship_fighter_choir_three_quarter": {
+   "px": [
+    896,
+    893
+   ],
+   "box": [
+    140,
+    109,
+    754,
+    781
+   ],
+   "box_size": [
+    615,
+    673
+   ],
+   "offset": [
+    -0.5,
+    -1.0
+   ],
+   "offset_px": [
+    0,
+    -1
+   ],
+   "centre_margin": [
+    0.156,
+    0.122,
+    0.157,
+    0.124
+   ],
+   "subject_pct": 26.43
+  },
+  "ship_fighter_concord_back": {
+   "px": [
+    896,
+    900
+   ],
+   "box": [
+    203,
+    52,
+    691,
+    845
+   ],
+   "box_size": [
+    489,
+    794
+   ],
+   "offset": [
+    -0.5,
+    -1.0
+   ],
+   "offset_px": [
+    0,
+    -1
+   ],
+   "centre_margin": [
+    0.227,
+    0.058,
+    0.228,
+    0.06
+   ],
+   "subject_pct": 24.69
+  },
+  "ship_fighter_concord_front": {
+   "px": [
+    896,
+    900
+   ],
+   "box": [
+    208,
+    80,
+    687,
+    818
+   ],
+   "box_size": [
+    480,
+    739
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.232,
+    0.089,
+    0.232,
+    0.09
+   ],
+   "subject_pct": 23.34
+  },
+  "ship_fighter_concord_side": {
+   "px": [
+    896,
+    900
+   ],
+   "box": [
+    56,
+    258,
+    840,
+    641
+   ],
+   "box_size": [
+    785,
+    384
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.062,
+    0.287,
+    0.061,
+    0.287
+   ],
+   "subject_pct": 20.56
+  },
+  "ship_fighter_concord_three_quarter": {
+   "px": [
+    896,
+    900
+   ],
+   "box": [
+    140,
+    114,
+    754,
+    785
+   ],
+   "box_size": [
+    615,
+    672
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.156,
+    0.127,
+    0.157,
+    0.127
+   ],
+   "subject_pct": 26.08
+  },
+  "ship_fighter_front": {
+   "px": [
+    896,
+    895
+   ],
+   "box": [
+    212,
+    80,
+    682,
+    815
+   ],
+   "box_size": [
+    471,
+    736
+   ],
+   "offset": [
+    -0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.237,
+    0.089,
+    0.238,
+    0.088
+   ],
+   "subject_pct": 22.9
+  },
+  "ship_fighter_meridian_back": {
+   "px": [
+    896,
+    891
+   ],
+   "box": [
+    203,
+    53,
+    691,
+    837
+   ],
+   "box_size": [
+    489,
+    785
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.227,
+    0.059,
+    0.228,
+    0.059
+   ],
+   "subject_pct": 25.02
+  },
+  "ship_fighter_meridian_front": {
+   "px": [
+    896,
+    891
+   ],
+   "box": [
+    209,
+    74,
+    687,
+    816
+   ],
+   "box_size": [
+    479,
+    743
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.233,
+    0.083,
+    0.232,
+    0.083
+   ],
+   "subject_pct": 23.72
+  },
+  "ship_fighter_meridian_side": {
+   "px": [
+    896,
+    891
+   ],
+   "box": [
+    53,
+    254,
+    843,
+    637
+   ],
+   "box_size": [
+    791,
+    384
+   ],
+   "offset": [
+    0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.059,
+    0.285,
+    0.058,
+    0.284
+   ],
+   "subject_pct": 21.85
+  },
+  "ship_fighter_meridian_three_quarter": {
+   "px": [
+    896,
+    891
+   ],
+   "box": [
+    140,
+    110,
+    754,
+    781
+   ],
+   "box_size": [
+    615,
+    672
+   ],
+   "offset": [
+    -0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.156,
+    0.123,
+    0.157,
+    0.122
+   ],
+   "subject_pct": 26.43
+  },
+  "ship_fighter_mmo_back": {
+   "px": [
+    895,
+    889
+   ],
+   "box": [
+    203,
+    52,
+    691,
+    835
+   ],
+   "box_size": [
+    489,
+    784
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.227,
+    0.058,
+    0.227,
+    0.06
+   ],
+   "subject_pct": 24.82
+  },
+  "ship_fighter_mmo_front": {
+   "px": [
+    895,
+    889
+   ],
+   "box": [
+    208,
+    73,
+    686,
+    815
+   ],
+   "box_size": [
+    479,
+    743
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.232,
+    0.082,
+    0.232,
+    0.082
+   ],
+   "subject_pct": 23.56
+  },
+  "ship_fighter_mmo_side": {
+   "px": [
+    895,
+    889
+   ],
+   "box": [
+    78,
+    252,
+    815,
+    636
+   ],
+   "box_size": [
+    738,
+    385
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.087,
+    0.283,
+    0.088,
+    0.283
+   ],
+   "subject_pct": 19.94
+  },
+  "ship_fighter_mmo_three_quarter": {
+   "px": [
+    895,
+    889
+   ],
+   "box": [
+    139,
+    108,
+    753,
+    779
+   ],
+   "box_size": [
+    615,
+    672
+   ],
+   "offset": [
+    -1.0,
+    -0.5
+   ],
+   "offset_px": [
+    -1,
+    0
+   ],
+   "centre_margin": [
+    0.155,
+    0.121,
+    0.158,
+    0.123
+   ],
+   "subject_pct": 26.35
+  },
+  "ship_fighter_side": {
+   "px": [
+    896,
+    895
+   ],
+   "box": [
+    81,
+    259,
+    814,
+    635
+   ],
+   "box_size": [
+    734,
+    377
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.09,
+    0.289,
+    0.09,
+    0.289
+   ],
+   "subject_pct": 19.44
+  },
+  "ship_fighter_three_quarter": {
+   "px": [
+    896,
+    895
+   ],
+   "box": [
+    152,
+    124,
+    743,
+    771
+   ],
+   "box_size": [
+    592,
+    648
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.17,
+    0.139,
+    0.17,
+    0.137
+   ],
+   "subject_pct": 25.0
+  },
+  "ship_freighter_back": {
+   "px": [
+    983,
+    972
+   ],
+   "box": [
+    353,
+    206,
+    630,
+    766
+   ],
+   "box_size": [
+    278,
+    561
+   ],
+   "offset": [
+    0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.359,
+    0.212,
+    0.358,
+    0.211
+   ],
+   "subject_pct": 14.57
+  },
+  "ship_freighter_front": {
+   "px": [
+    983,
+    972
+   ],
+   "box": [
+    358,
+    201,
+    625,
+    770
+   ],
+   "box_size": [
+    268,
+    570
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.364,
+    0.207,
+    0.363,
+    0.207
+   ],
+   "subject_pct": 13.15
+  },
+  "ship_freighter_mmo_back": {
+   "px": [
+    987,
+    975
+   ],
+   "box": [
+    351,
+    102,
+    635,
+    871
+   ],
+   "box_size": [
+    285,
+    770
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.356,
+    0.105,
+    0.356,
+    0.106
+   ],
+   "subject_pct": 19.21
+  },
+  "ship_freighter_mmo_front": {
+   "px": [
+    987,
+    975
+   ],
+   "box": [
+    356,
+    62,
+    630,
+    913
+   ],
+   "box_size": [
+    275,
+    852
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.361,
+    0.064,
+    0.361,
+    0.063
+   ],
+   "subject_pct": 19.29
+  },
+  "ship_freighter_mmo_side": {
+   "px": [
+    987,
+    975
+   ],
+   "box": [
+    64,
+    369,
+    922,
+    604
+   ],
+   "box_size": [
+    859,
+    236
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.065,
+    0.378,
+    0.065,
+    0.379
+   ],
+   "subject_pct": 14.72
+  },
+  "ship_freighter_mmo_three_quarter": {
+   "px": [
+    987,
+    975
+   ],
+   "box": [
+    148,
+    112,
+    839,
+    861
+   ],
+   "box_size": [
+    692,
+    750
+   ],
+   "offset": [
+    0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.15,
+    0.115,
+    0.149,
+    0.116
+   ],
+   "subject_pct": 23.59
+  },
+  "ship_freighter_side": {
+   "px": [
+    983,
+    972
+   ],
+   "box": [
+    70,
+    375,
+    913,
+    595
+   ],
+   "box_size": [
+    844,
+    221
+   ],
+   "offset": [
+    0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.071,
+    0.386,
+    0.07,
+    0.387
+   ],
+   "subject_pct": 14.68
+  },
+  "ship_freighter_three_quarter": {
+   "px": [
+    983,
+    972
+   ],
+   "box": [
+    151,
+    116,
+    831,
+    855
+   ],
+   "box_size": [
+    681,
+    740
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.154,
+    0.119,
+    0.154,
+    0.119
+   ],
+   "subject_pct": 22.84
+  },
+  "ship_gunship_back": {
+   "px": [
+    964,
+    892
+   ],
+   "box": [
+    144,
+    60,
+    820,
+    832
+   ],
+   "box_size": [
+    677,
+    773
+   ],
+   "offset": [
+    0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.149,
+    0.067,
+    0.148,
+    0.066
+   ],
+   "subject_pct": 44.12
+  },
+  "ship_gunship_front": {
+   "px": [
+    964,
+    892
+   ],
+   "box": [
+    141,
+    82,
+    822,
+    810
+   ],
+   "box_size": [
+    682,
+    729
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.146,
+    0.092,
+    0.146,
+    0.091
+   ],
+   "subject_pct": 41.3
+  },
+  "ship_gunship_side": {
+   "px": [
+    964,
+    892
+   ],
+   "box": [
+    67,
+    258,
+    896,
+    632
+   ],
+   "box_size": [
+    830,
+    375
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.07,
+    0.289,
+    0.07,
+    0.29
+   ],
+   "subject_pct": 26.69
+  },
+  "ship_gunship_three_quarter": {
+   "px": [
+    964,
+    892
+   ],
+   "box": [
+    70,
+    95,
+    893,
+    796
+   ],
+   "box_size": [
+    824,
+    702
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.073,
+    0.107,
+    0.073,
+    0.107
+   ],
+   "subject_pct": 40.43
+  },
+  "ship_interceptor_back": {
+   "px": [
+    1048,
+    1029
+   ],
+   "box": [
+    446,
+    75,
+    600,
+    952
+   ],
+   "box_size": [
+    155,
+    878
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.426,
+    0.073,
+    0.427,
+    0.074
+   ],
+   "subject_pct": 8.01
+  },
+  "ship_interceptor_front": {
+   "px": [
+    1048,
+    1029
+   ],
+   "box": [
+    458,
+    71,
+    588,
+    957
+   ],
+   "box_size": [
+    131,
+    887
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.437,
+    0.069,
+    0.438,
+    0.069
+   ],
+   "subject_pct": 7.47
+  },
+  "ship_interceptor_side": {
+   "px": [
+    1048,
+    1029
+   ],
+   "box": [
+    104,
+    472,
+    943,
+    556
+   ],
+   "box_size": [
+    840,
+    85
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.099,
+    0.459,
+    0.099,
+    0.459
+   ],
+   "subject_pct": 4.12
+  },
+  "ship_interceptor_three_quarter": {
+   "px": [
+    1048,
+    1029
+   ],
+   "box": [
+    201,
+    139,
+    846,
+    889
+   ],
+   "box_size": [
+    646,
+    751
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.192,
+    0.135,
+    0.192,
+    0.135
+   ],
+   "subject_pct": 8.88
+  },
+  "ship_mine_layer_back": {
+   "px": [
+    1046,
+    954
+   ],
+   "box": [
+    356,
+    88,
+    689,
+    865
+   ],
+   "box_size": [
+    334,
+    778
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.34,
+    0.092,
+    0.34,
+    0.092
+   ],
+   "subject_pct": 13.96
+  },
+  "ship_mine_layer_front": {
+   "px": [
+    1046,
+    954
+   ],
+   "box": [
+    340,
+    90,
+    704,
+    863
+   ],
+   "box_size": [
+    365,
+    774
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.325,
+    0.094,
+    0.326,
+    0.094
+   ],
+   "subject_pct": 14.28
+  },
+  "ship_mine_layer_side": {
+   "px": [
+    1046,
+    954
+   ],
+   "box": [
+    91,
+    374,
+    955,
+    579
+   ],
+   "box_size": [
+    865,
+    206
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.087,
+    0.392,
+    0.086,
+    0.392
+   ],
+   "subject_pct": 12.1
+  },
+  "ship_mine_layer_three_quarter": {
+   "px": [
+    1046,
+    954
+   ],
+   "box": [
+    162,
+    134,
+    882,
+    819
+   ],
+   "box_size": [
+    721,
+    686
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.155,
+    0.14,
+    0.156,
+    0.14
+   ],
+   "subject_pct": 15.72
+  },
+  "ship_miner_back": {
+   "px": [
+    1089,
+    932
+   ],
+   "box": [
+    249,
+    64,
+    840,
+    866
+   ],
+   "box_size": [
+    592,
+    803
+   ],
+   "offset": [
+    0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.229,
+    0.069,
+    0.228,
+    0.07
+   ],
+   "subject_pct": 29.33
+  },
+  "ship_miner_front": {
+   "px": [
+    1089,
+    932
+   ],
+   "box": [
+    147,
+    70,
+    939,
+    861
+   ],
+   "box_size": [
+    793,
+    792
+   ],
+   "offset": [
+    -1.0,
+    0.0
+   ],
+   "offset_px": [
+    -1,
+    0
+   ],
+   "centre_margin": [
+    0.135,
+    0.075,
+    0.137,
+    0.075
+   ],
+   "subject_pct": 37.2
+  },
+  "ship_miner_side": {
+   "px": [
+    1089,
+    932
+   ],
+   "box": [
+    83,
+    307,
+    1006,
+    623
+   ],
+   "box_size": [
+    924,
+    317
+   ],
+   "offset": [
+    0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.076,
+    0.329,
+    0.075,
+    0.33
+   ],
+   "subject_pct": 21.06
+  },
+  "ship_miner_three_quarter": {
+   "px": [
+    1089,
+    932
+   ],
+   "box": [
+    143,
+    127,
+    945,
+    803
+   ],
+   "box_size": [
+    803,
+    677
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.131,
+    0.136,
+    0.131,
+    0.137
+   ],
+   "subject_pct": 33.58
+  },
+  "ship_patrol_back": {
+   "px": [
+    1169,
+    1042
+   ],
+   "box": [
+    436,
+    107,
+    732,
+    933
+   ],
+   "box_size": [
+    297,
+    827
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.373,
+    0.103,
+    0.373,
+    0.104
+   ],
+   "subject_pct": 12.53
+  },
+  "ship_patrol_front": {
+   "px": [
+    1169,
+    1042
+   ],
+   "box": [
+    435,
+    88,
+    733,
+    954
+   ],
+   "box_size": [
+    299,
+    867
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.372,
+    0.084,
+    0.372,
+    0.083
+   ],
+   "subject_pct": 13.91
+  },
+  "ship_patrol_side": {
+   "px": [
+    1169,
+    1042
+   ],
+   "box": [
+    95,
+    388,
+    1074,
+    653
+   ],
+   "box_size": [
+    980,
+    266
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.081,
+    0.372,
+    0.08,
+    0.372
+   ],
+   "subject_pct": 10.04
+  },
+  "ship_patrol_three_quarter": {
+   "px": [
+    1169,
+    1042
+   ],
+   "box": [
+    201,
+    176,
+    966,
+    865
+   ],
+   "box_size": [
+    766,
+    690
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.172,
+    0.169,
+    0.173,
+    0.169
+   ],
+   "subject_pct": 16.2
+  },
+  "ship_trader_back": {
+   "px": [
+    1083,
+    1015
+   ],
+   "box": [
+    383,
+    174,
+    699,
+    840
+   ],
+   "box_size": [
+    317,
+    667
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.354,
+    0.171,
+    0.354,
+    0.171
+   ],
+   "subject_pct": 16.8
+  },
+  "ship_trader_front": {
+   "px": [
+    1083,
+    1015
+   ],
+   "box": [
+    381,
+    110,
+    701,
+    904
+   ],
+   "box_size": [
+    321,
+    795
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.352,
+    0.108,
+    0.352,
+    0.108
+   ],
+   "subject_pct": 18.57
+  },
+  "ship_trader_side": {
+   "px": [
+    1083,
+    1015
+   ],
+   "box": [
+    85,
+    368,
+    998,
+    646
+   ],
+   "box_size": [
+    914,
+    279
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.078,
+    0.363,
+    0.078,
+    0.363
+   ],
+   "subject_pct": 14.86
+  },
+  "ship_trader_three_quarter": {
+   "px": [
+    1083,
+    1015
+   ],
+   "box": [
+    205,
+    129,
+    877,
+    884
+   ],
+   "box_size": [
+    673,
+    756
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.189,
+    0.127,
+    0.189,
+    0.128
+   ],
+   "subject_pct": 21.38
+  },
+  "ship_turret_platform": {
+   "px": [
+    2112,
+    1935
+   ],
+   "box": [
+    132,
+    131,
+    1979,
+    1804
+   ],
+   "box_size": [
+    1848,
+    1674
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.062,
+    0.068,
+    0.062,
+    0.067
+   ],
+   "subject_pct": 29.0
+  },
+  "ship_vanguard_back": {
+   "px": [
+    1009,
+    995
+   ],
+   "box": [
+    238,
+    77,
+    771,
+    917
+   ],
+   "box_size": [
+    534,
+    841
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.236,
+    0.077,
+    0.235,
+    0.077
+   ],
+   "subject_pct": 27.95
+  },
+  "ship_vanguard_damaged_back": {
+   "px": [
+    1023,
+    997
+   ],
+   "box": [
+    243,
+    77,
+    779,
+    919
+   ],
+   "box_size": [
+    537,
+    843
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.238,
+    0.077,
+    0.238,
+    0.077
+   ],
+   "subject_pct": 27.73
+  },
+  "ship_vanguard_damaged_front": {
+   "px": [
+    1023,
+    997
+   ],
+   "box": [
+    253,
+    104,
+    768,
+    893
+   ],
+   "box_size": [
+    516,
+    790
+   ],
+   "offset": [
+    -0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.247,
+    0.104,
+    0.248,
+    0.103
+   ],
+   "subject_pct": 26.07
+  },
+  "ship_vanguard_damaged_side": {
+   "px": [
+    1023,
+    997
+   ],
+   "box": [
+    85,
+    313,
+    937,
+    683
+   ],
+   "box_size": [
+    853,
+    371
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.083,
+    0.314,
+    0.083,
+    0.314
+   ],
+   "subject_pct": 19.94
+  },
+  "ship_vanguard_damaged_three_quarter": {
+   "px": [
+    1023,
+    997
+   ],
+   "box": [
+    159,
+    107,
+    862,
+    888
+   ],
+   "box_size": [
+    704,
+    782
+   ],
+   "offset": [
+    -0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.155,
+    0.107,
+    0.156,
+    0.108
+   ],
+   "subject_pct": 28.2
+  },
+  "ship_vanguard_front": {
+   "px": [
+    1009,
+    995
+   ],
+   "box": [
+    247,
+    104,
+    760,
+    890
+   ],
+   "box_size": [
+    514,
+    787
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.245,
+    0.105,
+    0.246,
+    0.105
+   ],
+   "subject_pct": 26.23
+  },
+  "ship_vanguard_mmo_back": {
+   "px": [
+    995,
+    985
+   ],
+   "box": [
+    228,
+    59,
+    767,
+    925
+   ],
+   "box_size": [
+    540,
+    867
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.229,
+    0.06,
+    0.228,
+    0.06
+   ],
+   "subject_pct": 29.51
+  },
+  "ship_vanguard_mmo_front": {
+   "px": [
+    995,
+    985
+   ],
+   "box": [
+    233,
+    91,
+    761,
+    894
+   ],
+   "box_size": [
+    529,
+    804
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.234,
+    0.092,
+    0.234,
+    0.091
+   ],
+   "subject_pct": 28.23
+  },
+  "ship_vanguard_mmo_side": {
+   "px": [
+    995,
+    985
+   ],
+   "box": [
+    79,
+    258,
+    915,
+    725
+   ],
+   "box_size": [
+    837,
+    468
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.079,
+    0.262,
+    0.079,
+    0.263
+   ],
+   "subject_pct": 17.47
+  },
+  "ship_vanguard_mmo_three_quarter": {
+   "px": [
+    995,
+    985
+   ],
+   "box": [
+    144,
+    99,
+    850,
+    886
+   ],
+   "box_size": [
+    707,
+    788
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.145,
+    0.101,
+    0.145,
+    0.099
+   ],
+   "subject_pct": 29.76
+  },
+  "ship_vanguard_side": {
+   "px": [
+    1009,
+    995
+   ],
+   "box": [
+    83,
+    262,
+    925,
+    733
+   ],
+   "box_size": [
+    843,
+    472
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.082,
+    0.263,
+    0.082,
+    0.262
+   ],
+   "subject_pct": 19.87
+  },
+  "ship_vanguard_three_quarter": {
+   "px": [
+    1009,
+    995
+   ],
+   "box": [
+    153,
+    107,
+    856,
+    887
+   ],
+   "box_size": [
+    704,
+    781
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.152,
+    0.108,
+    0.151,
+    0.108
+   ],
+   "subject_pct": 28.54
+  },
+  "logo_vajb_orbit": {
+   "px": [
+    2170,
+    823
+   ],
+   "box": [
+    160,
+    129,
+    2009,
+    693
+   ],
+   "box_size": [
+    1850,
+    565
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.074,
+    0.157,
+    0.074,
+    0.157
+   ],
+   "subject_pct": 30.0
+  },
+  "ui_bar_caps": {
+   "px": [
+    317,
+    178
+   ],
+   "box": [
+    1,
+    1,
+    314,
+    176
+   ],
+   "box_size": [
+    314,
+    176
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.003,
+    0.006,
+    0.006,
+    0.006
+   ],
+   "subject_pct": 89.89
+  },
+  "ui_bar_caps_alt": {
+   "px": [
+    317,
+    178
+   ],
+   "box": [
+    2,
+    1,
+    314,
+    176
+   ],
+   "box_size": [
+    313,
+    176
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.006,
+    0.006,
+    0.006,
+    0.006
+   ],
+   "subject_pct": 89.61
+  },
+  "ui_button_plate_disabled": {
+   "px": [
+    1041,
+    1087
+   ],
+   "box": [
+    88,
+    473,
+    952,
+    612
+   ],
+   "box_size": [
+    865,
+    140
+   ],
+   "offset": [
+    0.0,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.085,
+    0.435,
+    0.085,
+    0.436
+   ],
+   "subject_pct": 10.6
+  },
+  "ui_button_plate_hover": {
+   "px": [
+    1041,
+    1087
+   ],
+   "box": [
+    93,
+    477,
+    946,
+    609
+   ],
+   "box_size": [
+    854,
+    133
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.089,
+    0.439,
+    0.09,
+    0.439
+   ],
+   "subject_pct": 9.81
+  },
+  "ui_button_plate_normal": {
+   "px": [
+    1041,
+    1087
+   ],
+   "box": [
+    87,
+    478,
+    953,
+    608
+   ],
+   "box_size": [
+    867,
+    131
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.084,
+    0.44,
+    0.084,
+    0.44
+   ],
+   "subject_pct": 9.94
+  },
+  "ui_button_plate_pressed": {
+   "px": [
+    1041,
+    1087
+   ],
+   "box": [
+    92,
+    475,
+    948,
+    611
+   ],
+   "box_size": [
+    857,
+    137
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.088,
+    0.437,
+    0.088,
+    0.437
+   ],
+   "subject_pct": 10.25
+  },
+  "ui_insignia_mic": {
+   "px": [
+    865,
+    976
+   ],
+   "box": [
+    57,
+    58,
+    806,
+    917
+   ],
+   "box_size": [
+    750,
+    860
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.066,
+    0.059,
+    0.067,
+    0.059
+   ],
+   "subject_pct": 57.92
+  },
+  "ui_insignia_mmo": {
+   "px": [
+    865,
+    976
+   ],
+   "box": [
+    57,
+    59,
+    807,
+    916
+   ],
+   "box_size": [
+    751,
+    858
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.066,
+    0.06,
+    0.066,
+    0.06
+   ],
+   "subject_pct": 57.8
+  },
+  "ui_insignia_neutral": {
+   "px": [
+    865,
+    976
+   ],
+   "box": [
+    57,
+    58,
+    806,
+    917
+   ],
+   "box_size": [
+    750,
+    860
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.066,
+    0.059,
+    0.067,
+    0.059
+   ],
+   "subject_pct": 57.83
+  },
+  "ui_insignia_ven": {
+   "px": [
+    865,
+    976
+   ],
+   "box": [
+    57,
+    59,
+    807,
+    916
+   ],
+   "box_size": [
+    751,
+    858
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.066,
+    0.06,
+    0.066,
+    0.06
+   ],
+   "subject_pct": 57.68
+  },
+  "ui_minimap_bezel": {
+   "px": [
+    1063,
+    1065
+   ],
+   "box": [
+    62,
+    62,
+    1000,
+    1002
+   ],
+   "box_size": [
+    939,
+    941
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.058,
+    0.058,
+    0.058,
+    0.058
+   ],
+   "subject_pct": 24.3
+  },
+  "ui_panel_frame": {
+   "px": [
+    1782,
+    1784
+   ],
+   "box": [
+    104,
+    104,
+    1677,
+    1679
+   ],
+   "box_size": [
+    1574,
+    1576
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.058,
+    0.058,
+    0.058,
+    0.058
+   ],
+   "subject_pct": 77.76
+  },
+  "ui_panel_frame_alt": {
+   "px": [
+    1841,
+    1831
+   ],
+   "box": [
+    107,
+    106,
+    1733,
+    1724
+   ],
+   "box_size": [
+    1627,
+    1619
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.058,
+    0.058,
+    0.058,
+    0.058
+   ],
+   "subject_pct": 78.03
+  },
+  "ui_slot_cargo_disabled": {
+   "px": [
+    873,
+    864
+   ],
+   "box": [
+    256,
+    237,
+    614,
+    624
+   ],
+   "box_size": [
+    359,
+    388
+   ],
+   "offset": [
+    -1.0,
+    -1.0
+   ],
+   "offset_px": [
+    -1,
+    -1
+   ],
+   "centre_margin": [
+    0.293,
+    0.274,
+    0.296,
+    0.277
+   ],
+   "subject_pct": 8.19
+  },
+  "ui_slot_cargo_hover": {
+   "px": [
+    873,
+    864
+   ],
+   "box": [
+    256,
+    236,
+    616,
+    627
+   ],
+   "box_size": [
+    361,
+    392
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.293,
+    0.273,
+    0.293,
+    0.273
+   ],
+   "subject_pct": 8.26
+  },
+  "ui_slot_cargo_normal": {
+   "px": [
+    873,
+    864
+   ],
+   "box": [
+    256,
+    236,
+    616,
+    627
+   ],
+   "box_size": [
+    361,
+    392
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.293,
+    0.273,
+    0.293,
+    0.273
+   ],
+   "subject_pct": 8.19
+  },
+  "ui_slot_cargo_pressed": {
+   "px": [
+    873,
+    864
+   ],
+   "box": [
+    257,
+    237,
+    616,
+    626
+   ],
+   "box_size": [
+    360,
+    390
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.294,
+    0.274,
+    0.293,
+    0.274
+   ],
+   "subject_pct": 8.16
+  },
+  "ui_slot_inventory_disabled": {
+   "px": [
+    882,
+    870
+   ],
+   "box": [
+    191,
+    298,
+    689,
+    572
+   ],
+   "box_size": [
+    499,
+    275
+   ],
+   "offset": [
+    -0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.217,
+    0.343,
+    0.218,
+    0.341
+   ],
+   "subject_pct": 15.07
+  },
+  "ui_slot_inventory_hover": {
+   "px": [
+    882,
+    870
+   ],
+   "box": [
+    191,
+    297,
+    690,
+    572
+   ],
+   "box_size": [
+    500,
+    276
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.217,
+    0.341,
+    0.217,
+    0.341
+   ],
+   "subject_pct": 15.1
+  },
+  "ui_slot_inventory_normal": {
+   "px": [
+    882,
+    870
+   ],
+   "box": [
+    190,
+    190,
+    691,
+    679
+   ],
+   "box_size": [
+    502,
+    490
+   ],
+   "offset": [
+    0.0,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.215,
+    0.218,
+    0.215,
+    0.218
+   ],
+   "subject_pct": 22.8
+  },
+  "ui_slot_inventory_pressed": {
+   "px": [
+    882,
+    870
+   ],
+   "box": [
+    191,
+    283,
+    691,
+    586
+   ],
+   "box_size": [
+    501,
+    304
+   ],
+   "offset": [
+    0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.217,
+    0.325,
+    0.215,
+    0.325
+   ],
+   "subject_pct": 16.14
+  },
+  "ui_slot_weapon_disabled": {
+   "px": [
+    880,
+    876
+   ],
+   "box": [
+    175,
+    288,
+    703,
+    587
+   ],
+   "box_size": [
+    529,
+    300
+   ],
+   "offset": [
+    -0.5,
+    0.0
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.199,
+    0.329,
+    0.2,
+    0.329
+   ],
+   "subject_pct": 9.52
+  },
+  "ui_slot_weapon_hover": {
+   "px": [
+    880,
+    876
+   ],
+   "box": [
+    176,
+    287,
+    704,
+    587
+   ],
+   "box_size": [
+    529,
+    301
+   ],
+   "offset": [
+    0.5,
+    -0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.2,
+    0.328,
+    0.199,
+    0.329
+   ],
+   "subject_pct": 9.43
+  },
+  "ui_slot_weapon_normal": {
+   "px": [
+    880,
+    876
+   ],
+   "box": [
+    175,
+    287,
+    705,
+    589
+   ],
+   "box_size": [
+    531,
+    303
+   ],
+   "offset": [
+    0.5,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.199,
+    0.328,
+    0.198,
+    0.326
+   ],
+   "subject_pct": 9.59
+  },
+  "ui_slot_weapon_pressed": {
+   "px": [
+    880,
+    876
+   ],
+   "box": [
+    175,
+    287,
+    704,
+    589
+   ],
+   "box_size": [
+    530,
+    303
+   ],
+   "offset": [
+    0.0,
+    0.5
+   ],
+   "offset_px": [
+    0,
+    0
+   ],
+   "centre_margin": [
+    0.199,
+    0.328,
+    0.199,
+    0.326
+   ],
+   "subject_pct": 9.54
+  }
+ }
+}

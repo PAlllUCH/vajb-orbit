@@ -1,0 +1,2610 @@
+{
+ "note": "Each unnamed sprite with its closest already-named sprites in the same family, by a normalised 32x32 grey signature. Evidence for a decision, not a rename.",
+ "threshold_strong": 0.85,
+ "matches": {
+  "cut/env_sheet_1x1_20260917_230055.png": [
+   {
+    "sprite": "cut/env_body_ice_moon.png",
+    "name": "env_body_ice_moon",
+    "score": 0.8689,
+    "subject": "ice moon"
+   },
+   {
+    "sprite": "cut/env_body_ore_moon.png",
+    "name": "env_body_ore_moon",
+    "score": 0.8452,
+    "subject": "ore moon"
+   }
+  ],
+  "cut/env_sheet_1x1_20260918_123247.png": [
+   {
+    "sprite": "cut/env_body_ice_moon.png",
+    "name": "env_body_ice_moon",
+    "score": 0.9409,
+    "subject": "ice moon"
+   },
+   {
+    "sprite": "cut/env_body_ore_moon.png",
+    "name": "env_body_ore_moon",
+    "score": 0.8804,
+    "subject": "ore moon"
+   }
+  ],
+  "cut/fx_sheet_1x1_20260917_183334.png": [
+   {
+    "sprite": "cut/fx_anomaly_grave_glow.png",
+    "name": "fx_anomaly_grave_glow",
+    "score": 0.6822,
+    "subject": "anomaly grave glow"
+   },
+   {
+    "sprite": "cut/fx_ember_pulse.png",
+    "name": "fx_ember_pulse",
+    "score": 0.6669,
+    "subject": "ember pulse orb"
+   }
+  ],
+  "cut/fx_sheet_1x1_20260917_183628.png": [
+   {
+    "sprite": "cut/fx_shield_ripple.png",
+    "name": "fx_shield_ripple",
+    "score": 0.6645,
+    "subject": "shield ripple"
+   },
+   {
+    "sprite": "cut/fx_anomaly_shimmer.png",
+    "name": "fx_anomaly_shimmer",
+    "score": 0.512,
+    "subject": "anomaly shimmer ring"
+   }
+  ],
+  "cut/fx_sheet_1x1_20260917_183824.png": [
+   {
+    "sprite": "cut/fx_anomaly_grave_glow.png",
+    "name": "fx_anomaly_grave_glow",
+    "score": 0.556,
+    "subject": "anomaly grave glow"
+   },
+   {
+    "sprite": "cut/fx_mining_beam.png",
+    "name": "fx_mining_beam",
+    "score": 0.5096,
+    "subject": "mining beam sparks"
+   }
+  ],
+  "cut/fx_sheet_1x1_20260917_184216.png": [
+   {
+    "sprite": "cut/fx_shield_ripple.png",
+    "name": "fx_shield_ripple",
+    "score": 0.6241,
+    "subject": "shield ripple"
+   },
+   {
+    "sprite": "cut/fx_anomaly_shimmer.png",
+    "name": "fx_anomaly_shimmer",
+    "score": 0.4079,
+    "subject": "anomaly shimmer ring"
+   }
+  ],
+  "cut/fx_sheet_4x1_20260917_183223__p01.png": [
+   {
+    "sprite": "cut/fx_emp_arc.png",
+    "name": "fx_emp_arc",
+    "score": 0.7394,
+    "subject": "emp arc"
+   },
+   {
+    "sprite": "cut/fx_anomaly_grave_glow.png",
+    "name": "fx_anomaly_grave_glow",
+    "score": 0.7339,
+    "subject": "anomaly grave glow"
+   }
+  ],
+  "cut/fx_sheet_4x1_20260917_183223__p02.png": [
+   {
+    "sprite": "cut/fx_ember_pulse.png",
+    "name": "fx_ember_pulse",
+    "score": 0.7704,
+    "subject": "ember pulse orb"
+   },
+   {
+    "sprite": "cut/fx_anomaly_grave_glow.png",
+    "name": "fx_anomaly_grave_glow",
+    "score": 0.7598,
+    "subject": "anomaly grave glow"
+   }
+  ],
+  "cut/fx_sheet_4x1_20260917_183223__p03.png": [
+   {
+    "sprite": "cut/fx_emp_arc.png",
+    "name": "fx_emp_arc",
+    "score": 0.7054,
+    "subject": "emp arc"
+   },
+   {
+    "sprite": "cut/fx_anomaly_grave_glow.png",
+    "name": "fx_anomaly_grave_glow",
+    "score": 0.6925,
+    "subject": "anomaly grave glow"
+   }
+  ],
+  "cut/fx_sheet_4x1_20260917_183223__p04.png": [
+   {
+    "sprite": "cut/fx_shield_break.png",
+    "name": "fx_shield_break",
+    "score": 0.6926,
+    "subject": "shield break effect"
+   },
+   {
+    "sprite": "cut/fx_tractor_beam.png",
+    "name": "fx_tractor_beam",
+    "score": 0.6492,
+    "subject": "tractor beam"
+   }
+  ],
+  "cut/icon_cargo_data_core__20260917-183446.png": [
+   {
+    "sprite": "cut/icon_service_bounty.png",
+    "name": "icon_service_bounty",
+    "score": 0.5551,
+    "subject": "bounty service icon"
+   },
+   {
+    "sprite": "cut/icon_service_vault.png",
+    "name": "icon_service_vault",
+    "score": 0.5392,
+    "subject": "service vault icon"
+   }
+  ],
+  "cut/icon_credits__20260917-183722.png": [
+   {
+    "sprite": "cut/icon_credits.png",
+    "name": "icon_credits",
+    "score": 0.9721,
+    "subject": "credits icon"
+   },
+   {
+    "sprite": "cut/icon_insignia_concord.png",
+    "name": "icon_insignia_concord",
+    "score": 0.8045,
+    "subject": "concord insignia"
+   }
+  ],
+  "cut/icon_sheet_2x2_20260918_112946__p01.png": [
+   {
+    "sprite": "cut/icon_cargo_data_core.png",
+    "name": "icon_cargo_data_core",
+    "score": 0.6732,
+    "subject": "cargo data core"
+   },
+   {
+    "sprite": "cut/icon_equip_generator.png",
+    "name": "icon_equip_generator",
+    "score": 0.6722,
+    "subject": "generator equipment"
+   }
+  ],
+  "cut/icon_sheet_2x2_20260918_112946__p02.png": [
+   {
+    "sprite": "cut/icon_equip_extra.png",
+    "name": "icon_equip_extra",
+    "score": 0.7304,
+    "subject": "armored power cell"
+   },
+   {
+    "sprite": "cut/icon_equip_pet.png",
+    "name": "icon_equip_pet",
+    "score": 0.6755,
+    "subject": "mechanical pet robot"
+   }
+  ],
+  "cut/icon_sheet_2x2_20260918_112946__p03.png": [
+   {
+    "sprite": "cut/icon_status_radiated.png",
+    "name": "icon_status_radiated",
+    "score": 0.6724,
+    "subject": "radiation status icon"
+   },
+   {
+    "sprite": "cut/icon_map_node_pvp.png",
+    "name": "icon_map_node_pvp",
+    "score": 0.5936,
+    "subject": "hexagon map node"
+   }
+  ],
+  "cut/icon_sheet_2x2_20260918_112946__p04.png": [
+   {
+    "sprite": "cut/icon_cargo_data_core.png",
+    "name": "icon_cargo_data_core",
+    "score": 0.8183,
+    "subject": "cargo data core"
+   },
+   {
+    "sprite": "cut/icon_mineral_krilium.png",
+    "name": "icon_mineral_krilium",
+    "score": 0.6454,
+    "subject": "krilium mineral icon"
+   }
+  ],
+  "cut/icon_sheet_2x2_20260918_113028__p01.png": [
+   {
+    "sprite": "cut/icon_booster_speed.png",
+    "name": "icon_booster_speed",
+    "score": 0.6599,
+    "subject": "booster engines"
+   },
+   {
+    "sprite": "cut/icon_module_c_target.png",
+    "name": "icon_module_c_target",
+    "score": 0.6474,
+    "subject": "module c target"
+   }
+  ],
+  "cut/icon_sheet_2x2_20260918_113028__p02.png": [
+   {
+    "sprite": "cut/icon_slot_c.png",
+    "name": "icon_slot_c",
+    "score": 0.7576,
+    "subject": "icon slot"
+   },
+   {
+    "sprite": "cut/icon_slot_w.png",
+    "name": "icon_slot_w",
+    "score": 0.6786,
+    "subject": "icon slot"
+   }
+  ],
+  "cut/icon_sheet_2x2_20260918_113028__p03.png": [
+   {
+    "sprite": "cut/icon_map_node_neutral.png",
+    "name": "icon_map_node_neutral",
+    "score": 0.7167,
+    "subject": "hexagon map node"
+   },
+   {
+    "sprite": "cut/icon_module_c_target.png",
+    "name": "icon_module_c_target",
+    "score": 0.7162,
+    "subject": "module c target"
+   }
+  ],
+  "cut/icon_sheet_2x2_20260918_113028__p04.png": [
+   {
+    "sprite": "cut/icon_cargo_data_core.png",
+    "name": "icon_cargo_data_core",
+    "score": 0.7085,
+    "subject": "cargo data core"
+   },
+   {
+    "sprite": "cut/icon_hull.png",
+    "name": "icon_hull",
+    "score": 0.6912,
+    "subject": "cracked hull icon"
+   }
+  ],
+  "cut/icon_sheet_2x2_20260918_113357__p01.png": [
+   {
+    "sprite": "cut/icon_module_b_fold.png",
+    "name": "icon_module_b_fold",
+    "score": 0.5371,
+    "subject": "white arrow"
+   },
+   {
+    "sprite": "cut/icon_map_bookmark.png",
+    "name": "icon_map_bookmark",
+    "score": 0.5006,
+    "subject": "metal flag marker"
+   }
+  ],
+  "cut/icon_sheet_2x2_20260918_113357__p02.png": [
+   {
+    "sprite": "cut/icon_service_insurance.png",
+    "name": "icon_service_insurance",
+    "score": 0.8525,
+    "subject": "shield insurance icon"
+   },
+   {
+    "sprite": "cut/icon_insignia_meridian.png",
+    "name": "icon_insignia_meridian",
+    "score": 0.744,
+    "subject": "meridian insignia"
+   }
+  ],
+  "cut/icon_sheet_2x2_20260918_113357__p03.png": [
+   {
+    "sprite": "cut/icon_service_bounty.png",
+    "name": "icon_service_bounty",
+    "score": 0.9704,
+    "subject": "bounty service icon"
+   },
+   {
+    "sprite": "cut/icon_credits.png",
+    "name": "icon_credits",
+    "score": 0.6836,
+    "subject": "credits icon"
+   }
+  ],
+  "cut/icon_sheet_2x2_20260918_123214__p01.png": [
+   {
+    "sprite": "cut/icon_zoom_plus.png",
+    "name": "icon_zoom_plus",
+    "score": 0.9838,
+    "subject": "zoom plus icon"
+   },
+   {
+    "sprite": "cut/icon_zoom_minus.png",
+    "name": "icon_zoom_minus",
+    "score": 0.9507,
+    "subject": "zoom minus icon"
+   }
+  ],
+  "cut/icon_sheet_2x2_20260918_123214__p02.png": [
+   {
+    "sprite": "cut/icon_zoom_minus.png",
+    "name": "icon_zoom_minus",
+    "score": 0.9889,
+    "subject": "zoom minus icon"
+   },
+   {
+    "sprite": "cut/icon_zoom_plus.png",
+    "name": "icon_zoom_plus",
+    "score": 0.9413,
+    "subject": "zoom plus icon"
+   }
+  ],
+  "cut/icon_sheet_2x2_20260918_123214__p03.png": [
+   {
+    "sprite": "cut/icon_credits.png",
+    "name": "icon_credits",
+    "score": 0.9812,
+    "subject": "credits icon"
+   },
+   {
+    "sprite": "cut/icon_insignia_concord.png",
+    "name": "icon_insignia_concord",
+    "score": 0.765,
+    "subject": "concord insignia"
+   }
+  ],
+  "cut/icon_sheet_2x2_20260918_123214__p04.png": [
+   {
+    "sprite": "cut/icon_shield.png",
+    "name": "icon_shield",
+    "score": 0.9825,
+    "subject": "shield icon"
+   },
+   {
+    "sprite": "cut/icon_credits.png",
+    "name": "icon_credits",
+    "score": 0.7898,
+    "subject": "credits icon"
+   }
+  ],
+  "cut/icon_sheet_2x3_20260917_183109__p01.png": [
+   {
+    "sprite": "cut/icon_module_b_fold.png",
+    "name": "icon_module_b_fold",
+    "score": 0.6906,
+    "subject": "white arrow"
+   },
+   {
+    "sprite": "cut/icon_module_s_light.png",
+    "name": "icon_module_s_light",
+    "score": 0.6784,
+    "subject": "light module icon"
+   }
+  ],
+  "cut/icon_sheet_2x3_20260917_183109__p02.png": [
+   {
+    "sprite": "cut/icon_equip_module.png",
+    "name": "icon_equip_module",
+    "score": 0.6672,
+    "subject": "equipment module"
+   },
+   {
+    "sprite": "cut/icon_cargo_crate.png",
+    "name": "icon_cargo_crate",
+    "score": 0.5914,
+    "subject": "cargo crate"
+   }
+  ],
+  "cut/icon_sheet_2x3_20260917_183109__p03.png": [
+   {
+    "sprite": "cut/icon_weapon_rocket.png",
+    "name": "icon_weapon_rocket",
+    "score": 0.6218,
+    "subject": "rocket icon"
+   },
+   {
+    "sprite": "cut/icon_equip_module.png",
+    "name": "icon_equip_module",
+    "score": 0.6029,
+    "subject": "equipment module"
+   }
+  ],
+  "cut/icon_sheet_2x3_20260917_183109__p04.png": [
+   {
+    "sprite": "cut/icon_equip_pet.png",
+    "name": "icon_equip_pet",
+    "score": 0.7559,
+    "subject": "mechanical pet robot"
+   },
+   {
+    "sprite": "cut/icon_status_shielded.png",
+    "name": "icon_status_shielded",
+    "score": 0.7458,
+    "subject": "metal shield"
+   }
+  ],
+  "cut/icon_sheet_2x3_20260917_183109__p05.png": [
+   {
+    "sprite": "cut/icon_status_disabled.png",
+    "name": "icon_status_disabled",
+    "score": 0.646,
+    "subject": "cracked shield icon"
+   },
+   {
+    "sprite": "cut/icon_equip_pet.png",
+    "name": "icon_equip_pet",
+    "score": 0.5514,
+    "subject": "mechanical pet robot"
+   }
+  ],
+  "cut/icon_sheet_2x3_20260917_183109__p06.png": [
+   {
+    "sprite": "cut/icon_module_s_light.png",
+    "name": "icon_module_s_light",
+    "score": 0.8487,
+    "subject": "light module icon"
+   },
+   {
+    "sprite": "cut/icon_equip_module.png",
+    "name": "icon_equip_module",
+    "score": 0.7977,
+    "subject": "equipment module"
+   }
+  ],
+  "cut/icon_sheet_2x3_20260918_112903__p01.png": [
+   {
+    "sprite": "cut/icon_module_e_vector.png",
+    "name": "icon_module_e_vector",
+    "score": 0.5789,
+    "subject": "engine module icon"
+   },
+   {
+    "sprite": "cut/icon_ingot_palladium.png",
+    "name": "icon_ingot_palladium",
+    "score": 0.5441,
+    "subject": "palladium ingot"
+   }
+  ],
+  "cut/icon_sheet_2x3_20260918_112903__p02.png": [
+   {
+    "sprite": "cut/icon_contract_hunt.png",
+    "name": "icon_contract_hunt",
+    "score": 0.996,
+    "subject": "hunt contract icon"
+   },
+   {
+    "sprite": "cut/icon_credits.png",
+    "name": "icon_credits",
+    "score": 0.6472,
+    "subject": "credits icon"
+   }
+  ],
+  "cut/icon_sheet_2x3_20260918_112903__p03.png": [
+   {
+    "sprite": "cut/icon_contract_gather.png",
+    "name": "icon_contract_gather",
+    "score": 0.886,
+    "subject": "gather contract icon"
+   },
+   {
+    "sprite": "cut/icon_ammo_rocket.png",
+    "name": "icon_ammo_rocket",
+    "score": 0.5513,
+    "subject": "rocket ammo icon"
+   }
+  ],
+  "cut/icon_sheet_2x3_20260918_112903__p04.png": [
+   {
+    "sprite": "cut/icon_contract_escort.png",
+    "name": "icon_contract_escort",
+    "score": 0.9628,
+    "subject": "escort contract icon"
+   },
+   {
+    "sprite": "cut/icon_cargo_data_core.png",
+    "name": "icon_cargo_data_core",
+    "score": 0.6534,
+    "subject": "cargo data core"
+   }
+  ],
+  "cut/icon_sheet_2x3_20260918_112903__p05.png": [
+   {
+    "sprite": "cut/icon_contract_expedition.png",
+    "name": "icon_contract_expedition",
+    "score": 0.974,
+    "subject": "expedition contract icon"
+   },
+   {
+    "sprite": "cut/icon_cargo_data_core.png",
+    "name": "icon_cargo_data_core",
+    "score": 0.5658,
+    "subject": "cargo data core"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110409__p01.png": [
+   {
+    "sprite": "cut/icon_module_b_fold.png",
+    "name": "icon_module_b_fold",
+    "score": 0.6622,
+    "subject": "white arrow"
+   },
+   {
+    "sprite": "cut/icon_equip_module.png",
+    "name": "icon_equip_module",
+    "score": 0.6286,
+    "subject": "equipment module"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110409__p02.png": [
+   {
+    "sprite": "cut/icon_equip_module.png",
+    "name": "icon_equip_module",
+    "score": 0.619,
+    "subject": "equipment module"
+   },
+   {
+    "sprite": "cut/icon_module_b_fold.png",
+    "name": "icon_module_b_fold",
+    "score": 0.5814,
+    "subject": "white arrow"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110409__p03.png": [
+   {
+    "sprite": "cut/icon_module_u_drones.png",
+    "name": "icon_module_u_drones",
+    "score": 0.6288,
+    "subject": "drone icon"
+   },
+   {
+    "sprite": "cut/icon_mineral_aluminium.png",
+    "name": "icon_mineral_aluminium",
+    "score": 0.5963,
+    "subject": "mineral aluminium icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110409__p04.png": [
+   {
+    "sprite": "cut/icon_mineral_aluminium.png",
+    "name": "icon_mineral_aluminium",
+    "score": 0.601,
+    "subject": "mineral aluminium icon"
+   },
+   {
+    "sprite": "cut/icon_mineral_silicon.png",
+    "name": "icon_mineral_silicon",
+    "score": 0.5969,
+    "subject": "mineral icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110409__p05.png": [
+   {
+    "sprite": "cut/icon_module_u_drones.png",
+    "name": "icon_module_u_drones",
+    "score": 0.7002,
+    "subject": "drone icon"
+   },
+   {
+    "sprite": "cut/icon_mineral_aluminium.png",
+    "name": "icon_mineral_aluminium",
+    "score": 0.6351,
+    "subject": "mineral aluminium icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110409__p06.png": [
+   {
+    "sprite": "cut/icon_cargo_data_core.png",
+    "name": "icon_cargo_data_core",
+    "score": 0.8044,
+    "subject": "cargo data core"
+   },
+   {
+    "sprite": "cut/icon_slot_s.png",
+    "name": "icon_slot_s",
+    "score": 0.6255,
+    "subject": "ui slot frame"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110409__p07.png": [
+   {
+    "sprite": "cut/icon_cargo_data_core.png",
+    "name": "icon_cargo_data_core",
+    "score": 0.7116,
+    "subject": "cargo data core"
+   },
+   {
+    "sprite": "cut/icon_slot_s.png",
+    "name": "icon_slot_s",
+    "score": 0.6916,
+    "subject": "ui slot frame"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110409__p08.png": [
+   {
+    "sprite": "cut/icon_cargo_data_core.png",
+    "name": "icon_cargo_data_core",
+    "score": 0.7233,
+    "subject": "cargo data core"
+   },
+   {
+    "sprite": "cut/icon_slot_s.png",
+    "name": "icon_slot_s",
+    "score": 0.6738,
+    "subject": "ui slot frame"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110409__p09.png": [
+   {
+    "sprite": "cut/icon_cargo_data_core.png",
+    "name": "icon_cargo_data_core",
+    "score": 0.7114,
+    "subject": "cargo data core"
+   },
+   {
+    "sprite": "cut/icon_equip_generator.png",
+    "name": "icon_equip_generator",
+    "score": 0.676,
+    "subject": "generator equipment"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110458__p01.png": [
+   {
+    "sprite": "cut/icon_contract_escort.png",
+    "name": "icon_contract_escort",
+    "score": 0.641,
+    "subject": "escort contract icon"
+   },
+   {
+    "sprite": "cut/icon_module_c_twin.png",
+    "name": "icon_module_c_twin",
+    "score": 0.6273,
+    "subject": "twin module icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110458__p02.png": [
+   {
+    "sprite": "cut/icon_status_disabled.png",
+    "name": "icon_status_disabled",
+    "score": 0.6672,
+    "subject": "cracked shield icon"
+   },
+   {
+    "sprite": "cut/icon_equip_pet.png",
+    "name": "icon_equip_pet",
+    "score": 0.6603,
+    "subject": "mechanical pet robot"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110458__p03.png": [
+   {
+    "sprite": "cut/icon_equip_engine.png",
+    "name": "icon_equip_engine",
+    "score": 0.6073,
+    "subject": "engine thruster"
+   },
+   {
+    "sprite": "cut/icon_equip_pet.png",
+    "name": "icon_equip_pet",
+    "score": 0.5827,
+    "subject": "mechanical pet robot"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110458__p04.png": [
+   {
+    "sprite": "cut/icon_equip_pet.png",
+    "name": "icon_equip_pet",
+    "score": 0.6854,
+    "subject": "mechanical pet robot"
+   },
+   {
+    "sprite": "cut/icon_module_c_twin.png",
+    "name": "icon_module_c_twin",
+    "score": 0.6351,
+    "subject": "twin module icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110458__p05.png": [
+   {
+    "sprite": "cut/icon_module_u_drones.png",
+    "name": "icon_module_u_drones",
+    "score": 0.5613,
+    "subject": "drone icon"
+   },
+   {
+    "sprite": "cut/icon_module_s_heavy.png",
+    "name": "icon_module_s_heavy",
+    "score": 0.5358,
+    "subject": "heavy module icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110458__p06.png": [
+   {
+    "sprite": "cut/icon_cargo_data_core.png",
+    "name": "icon_cargo_data_core",
+    "score": 0.6192,
+    "subject": "cargo data core"
+   },
+   {
+    "sprite": "cut/icon_equip_generator.png",
+    "name": "icon_equip_generator",
+    "score": 0.5423,
+    "subject": "generator equipment"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110458__p07.png": [
+   {
+    "sprite": "cut/icon_cargo_data_core.png",
+    "name": "icon_cargo_data_core",
+    "score": 0.6563,
+    "subject": "cargo data core"
+   },
+   {
+    "sprite": "cut/icon_equip_generator.png",
+    "name": "icon_equip_generator",
+    "score": 0.6219,
+    "subject": "generator equipment"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110458__p08.png": [
+   {
+    "sprite": "cut/icon_contract_hunt.png",
+    "name": "icon_contract_hunt",
+    "score": 0.5553,
+    "subject": "hunt contract icon"
+   },
+   {
+    "sprite": "cut/icon_slot_power.png",
+    "name": "icon_slot_power",
+    "score": 0.5422,
+    "subject": "power slot icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110458__p09.png": [
+   {
+    "sprite": "cut/icon_contract_escort.png",
+    "name": "icon_contract_escort",
+    "score": 0.5953,
+    "subject": "escort contract icon"
+   },
+   {
+    "sprite": "cut/icon_equip_pet.png",
+    "name": "icon_equip_pet",
+    "score": 0.5401,
+    "subject": "mechanical pet robot"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110547__p01.png": [
+   {
+    "sprite": "cut/icon_ammo_rocket.png",
+    "name": "icon_ammo_rocket",
+    "score": 0.6335,
+    "subject": "rocket ammo icon"
+   },
+   {
+    "sprite": "cut/icon_contract_escort.png",
+    "name": "icon_contract_escort",
+    "score": 0.5903,
+    "subject": "escort contract icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110547__p02.png": [
+   {
+    "sprite": "cut/icon_module_s_light.png",
+    "name": "icon_module_s_light",
+    "score": 0.7486,
+    "subject": "light module icon"
+   },
+   {
+    "sprite": "cut/icon_module_u_salvage.png",
+    "name": "icon_module_u_salvage",
+    "score": 0.702,
+    "subject": "salvage icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110547__p03.png": [
+   {
+    "sprite": "cut/icon_contract_hunt.png",
+    "name": "icon_contract_hunt",
+    "score": 0.585,
+    "subject": "hunt contract icon"
+   },
+   {
+    "sprite": "cut/icon_mineral_krilium.png",
+    "name": "icon_mineral_krilium",
+    "score": 0.5689,
+    "subject": "krilium mineral icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110547__p04.png": [
+   {
+    "sprite": "cut/icon_cargo_data_core.png",
+    "name": "icon_cargo_data_core",
+    "score": 0.5278,
+    "subject": "cargo data core"
+   },
+   {
+    "sprite": "cut/icon_equip_generator.png",
+    "name": "icon_equip_generator",
+    "score": 0.5081,
+    "subject": "generator equipment"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110547__p05.png": [
+   {
+    "sprite": "cut/icon_ingot_krilium.png",
+    "name": "icon_ingot_krilium",
+    "score": 0.5217,
+    "subject": "krilium ingot"
+   },
+   {
+    "sprite": "cut/icon_slot_w.png",
+    "name": "icon_slot_w",
+    "score": 0.4846,
+    "subject": "icon slot"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110547__p06.png": [
+   {
+    "sprite": "cut/icon_module_c_twin.png",
+    "name": "icon_module_c_twin",
+    "score": 0.6751,
+    "subject": "twin module icon"
+   },
+   {
+    "sprite": "cut/icon_equip_pet.png",
+    "name": "icon_equip_pet",
+    "score": 0.6453,
+    "subject": "mechanical pet robot"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110547__p07.png": [
+   {
+    "sprite": "cut/icon_slot_s.png",
+    "name": "icon_slot_s",
+    "score": 0.5671,
+    "subject": "ui slot frame"
+   },
+   {
+    "sprite": "cut/icon_mineral_osmium.png",
+    "name": "icon_mineral_osmium",
+    "score": 0.5627,
+    "subject": "mineral osmium chunks"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110547__p08.png": [
+   {
+    "sprite": "cut/icon_equip_module.png",
+    "name": "icon_equip_module",
+    "score": 0.6903,
+    "subject": "equipment module"
+   },
+   {
+    "sprite": "cut/icon_module_w_railgun.png",
+    "name": "icon_module_w_railgun",
+    "score": 0.66,
+    "subject": "railgun module icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_110547__p09.png": [
+   {
+    "sprite": "cut/icon_contract_escort.png",
+    "name": "icon_contract_escort",
+    "score": 0.6476,
+    "subject": "escort contract icon"
+   },
+   {
+    "sprite": "cut/icon_module_c_target.png",
+    "name": "icon_module_c_target",
+    "score": 0.6473,
+    "subject": "module c target"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111327__p01.png": [
+   {
+    "sprite": "cut/icon_module_w_railgun.png",
+    "name": "icon_module_w_railgun",
+    "score": 0.9156,
+    "subject": "railgun module icon"
+   },
+   {
+    "sprite": "cut/icon_weapon_rocket.png",
+    "name": "icon_weapon_rocket",
+    "score": 0.852,
+    "subject": "rocket icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111327__p02.png": [
+   {
+    "sprite": "cut/icon_module_w_mining.png",
+    "name": "icon_module_w_mining",
+    "score": 0.9134,
+    "subject": "mining module icon"
+   },
+   {
+    "sprite": "cut/icon_weapon_rocket.png",
+    "name": "icon_weapon_rocket",
+    "score": 0.8858,
+    "subject": "rocket icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111327__p03.png": [
+   {
+    "sprite": "cut/icon_module_s_light.png",
+    "name": "icon_module_s_light",
+    "score": 0.9622,
+    "subject": "light module icon"
+   },
+   {
+    "sprite": "cut/icon_module_s_ion.png",
+    "name": "icon_module_s_ion",
+    "score": 0.9043,
+    "subject": "ion module icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111327__p04.png": [
+   {
+    "sprite": "cut/icon_module_s_heavy.png",
+    "name": "icon_module_s_heavy",
+    "score": 0.9217,
+    "subject": "heavy module icon"
+   },
+   {
+    "sprite": "cut/icon_module_s_ion.png",
+    "name": "icon_module_s_ion",
+    "score": 0.7669,
+    "subject": "ion module icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111327__p05.png": [
+   {
+    "sprite": "cut/icon_module_s_light.png",
+    "name": "icon_module_s_light",
+    "score": 0.9586,
+    "subject": "light module icon"
+   },
+   {
+    "sprite": "cut/icon_module_s_ion.png",
+    "name": "icon_module_s_ion",
+    "score": 0.9013,
+    "subject": "ion module icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111327__p06.png": [
+   {
+    "sprite": "cut/icon_weapon_plasma.png",
+    "name": "icon_weapon_plasma",
+    "score": 0.717,
+    "subject": "plasma weapon icon"
+   },
+   {
+    "sprite": "cut/icon_module_s_ion.png",
+    "name": "icon_module_s_ion",
+    "score": 0.717,
+    "subject": "ion module icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111327__p07.png": [
+   {
+    "sprite": "cut/icon_module_s_ion.png",
+    "name": "icon_module_s_ion",
+    "score": 0.5996,
+    "subject": "ion module icon"
+   },
+   {
+    "sprite": "cut/icon_module_u_salvage.png",
+    "name": "icon_module_u_salvage",
+    "score": 0.5733,
+    "subject": "salvage icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111327__p08.png": [
+   {
+    "sprite": "cut/icon_module_s_light.png",
+    "name": "icon_module_s_light",
+    "score": 0.6842,
+    "subject": "light module icon"
+   },
+   {
+    "sprite": "cut/icon_module_s_ion.png",
+    "name": "icon_module_s_ion",
+    "score": 0.6718,
+    "subject": "ion module icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111327__p09.png": [
+   {
+    "sprite": "cut/icon_module_p_core.png",
+    "name": "icon_module_p_core",
+    "score": 0.7105,
+    "subject": "core module icon"
+   },
+   {
+    "sprite": "cut/icon_module_p_std.png",
+    "name": "icon_module_p_std",
+    "score": 0.6935,
+    "subject": "module icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111411__p01.png": [
+   {
+    "sprite": "cut/icon_cargo_data_core.png",
+    "name": "icon_cargo_data_core",
+    "score": 0.5114,
+    "subject": "cargo data core"
+   },
+   {
+    "sprite": "cut/icon_module_s_heavy.png",
+    "name": "icon_module_s_heavy",
+    "score": 0.5,
+    "subject": "heavy module icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111411__p02.png": [
+   {
+    "sprite": "cut/icon_contract_haul.png",
+    "name": "icon_contract_haul",
+    "score": 0.6182,
+    "subject": "cargo handcart"
+   },
+   {
+    "sprite": "cut/icon_hull.png",
+    "name": "icon_hull",
+    "score": 0.5801,
+    "subject": "cracked hull icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111411__p03.png": [
+   {
+    "sprite": "cut/icon_mineral_voidglass.png",
+    "name": "icon_mineral_voidglass",
+    "score": 0.6198,
+    "subject": "voidglass shard"
+   },
+   {
+    "sprite": "cut/icon_weapon_mine.png",
+    "name": "icon_weapon_mine",
+    "score": 0.5962,
+    "subject": "naval mine"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111411__p04.png": [
+   {
+    "sprite": "cut/icon_weapon_mine.png",
+    "name": "icon_weapon_mine",
+    "score": 0.634,
+    "subject": "naval mine"
+   },
+   {
+    "sprite": "cut/icon_mineral_copper.png",
+    "name": "icon_mineral_copper",
+    "score": 0.6086,
+    "subject": "copper mineral chunk"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111411__p05.png": [
+   {
+    "sprite": "cut/icon_mineral_silicon.png",
+    "name": "icon_mineral_silicon",
+    "score": 0.6846,
+    "subject": "mineral icon"
+   },
+   {
+    "sprite": "cut/icon_ingot_silicon.png",
+    "name": "icon_ingot_silicon",
+    "score": 0.6707,
+    "subject": "silicon ingot"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111411__p06.png": [
+   {
+    "sprite": "cut/icon_slot_c.png",
+    "name": "icon_slot_c",
+    "score": 0.5728,
+    "subject": "icon slot"
+   },
+   {
+    "sprite": "cut/icon_booster_shield.png",
+    "name": "icon_booster_shield",
+    "score": 0.5578,
+    "subject": "booster shield"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111411__p07.png": [
+   {
+    "sprite": "cut/icon_module_u_holds.png",
+    "name": "icon_module_u_holds",
+    "score": 0.6894,
+    "subject": "module icon"
+   },
+   {
+    "sprite": "cut/icon_module_b_fold.png",
+    "name": "icon_module_b_fold",
+    "score": 0.6611,
+    "subject": "white arrow"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111411__p08.png": [
+   {
+    "sprite": "cut/icon_cargo_data_core.png",
+    "name": "icon_cargo_data_core",
+    "score": 0.7858,
+    "subject": "cargo data core"
+   },
+   {
+    "sprite": "cut/icon_module_c_target.png",
+    "name": "icon_module_c_target",
+    "score": 0.6609,
+    "subject": "module c target"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111411__p09.png": [
+   {
+    "sprite": "cut/icon_module_c_scanner.png",
+    "name": "icon_module_c_scanner",
+    "score": 0.8226,
+    "subject": "scanner module icon"
+   },
+   {
+    "sprite": "cut/icon_mineral_silver.png",
+    "name": "icon_mineral_silver",
+    "score": 0.6373,
+    "subject": "silver mineral icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111450__p01.png": [
+   {
+    "sprite": "cut/icon_module_c_twin.png",
+    "name": "icon_module_c_twin",
+    "score": 0.7509,
+    "subject": "twin module icon"
+   },
+   {
+    "sprite": "cut/icon_ammo_rocket.png",
+    "name": "icon_ammo_rocket",
+    "score": 0.625,
+    "subject": "rocket ammo icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111450__p02.png": [
+   {
+    "sprite": "cut/icon_module_u_tractor.png",
+    "name": "icon_module_u_tractor",
+    "score": 0.6881,
+    "subject": "tractor module icon"
+   },
+   {
+    "sprite": "cut/icon_module_s_light.png",
+    "name": "icon_module_s_light",
+    "score": 0.6605,
+    "subject": "light module icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111450__p03.png": [
+   {
+    "sprite": "cut/icon_module_c_nexus.png",
+    "name": "icon_module_c_nexus",
+    "score": 0.6633,
+    "subject": "nexus module icon"
+   },
+   {
+    "sprite": "cut/icon_module_p_core.png",
+    "name": "icon_module_p_core",
+    "score": 0.6333,
+    "subject": "core module icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111450__p04.png": [
+   {
+    "sprite": "cut/icon_slot_engine.png",
+    "name": "icon_slot_engine",
+    "score": 0.4747,
+    "subject": "icon slot engine"
+   },
+   {
+    "sprite": "cut/icon_cargo_data_core.png",
+    "name": "icon_cargo_data_core",
+    "score": 0.467,
+    "subject": "cargo data core"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111450__p05.png": [
+   {
+    "sprite": "cut/icon_module_s_ion.png",
+    "name": "icon_module_s_ion",
+    "score": 0.7786,
+    "subject": "ion module icon"
+   },
+   {
+    "sprite": "cut/icon_module_u_salvage.png",
+    "name": "icon_module_u_salvage",
+    "score": 0.7193,
+    "subject": "salvage icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111450__p06.png": [
+   {
+    "sprite": "cut/icon_module_u_refine.png",
+    "name": "icon_module_u_refine",
+    "score": 0.5638,
+    "subject": "refinery module icon"
+   },
+   {
+    "sprite": "cut/icon_mineral_voidglass.png",
+    "name": "icon_mineral_voidglass",
+    "score": 0.5551,
+    "subject": "voidglass shard"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111450__p07.png": [
+   {
+    "sprite": "cut/icon_module_u_drones.png",
+    "name": "icon_module_u_drones",
+    "score": 0.774,
+    "subject": "drone icon"
+   },
+   {
+    "sprite": "cut/icon_module_s_light.png",
+    "name": "icon_module_s_light",
+    "score": 0.6494,
+    "subject": "light module icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111450__p08.png": [
+   {
+    "sprite": "cut/icon_module_u_tractor.png",
+    "name": "icon_module_u_tractor",
+    "score": 0.7779,
+    "subject": "tractor module icon"
+   },
+   {
+    "sprite": "cut/icon_module_u_drones.png",
+    "name": "icon_module_u_drones",
+    "score": 0.6785,
+    "subject": "drone icon"
+   }
+  ],
+  "cut/icon_sheet_3x3_20260918_111450__p09.png": [
+   {
+    "sprite": "cut/icon_zoom_minus.png",
+    "name": "icon_zoom_minus",
+    "score": 0.4272,
+    "subject": "zoom minus icon"
+   },
+   {
+    "sprite": "cut/icon_cargo_data_core.png",
+    "name": "icon_cargo_data_core",
+    "score": 0.425,
+    "subject": "cargo data core"
+   }
+  ],
+  "cut/icon_sheet_4x2_20260918_110642__p01.png": [
+   {
+    "sprite": "cut/icon_booster_shield.png",
+    "name": "icon_booster_shield",
+    "score": 0.7147,
+    "subject": "booster shield"
+   },
+   {
+    "sprite": "cut/icon_ammo_laser.png",
+    "name": "icon_ammo_laser",
+    "score": 0.634,
+    "subject": "laser ammo canister"
+   }
+  ],
+  "cut/icon_sheet_4x2_20260918_110642__p02.png": [
+   {
+    "sprite": "cut/icon_ammo_laser.png",
+    "name": "icon_ammo_laser",
+    "score": 0.6459,
+    "subject": "laser ammo canister"
+   },
+   {
+    "sprite": "cut/icon_module_c_twin.png",
+    "name": "icon_module_c_twin",
+    "score": 0.5815,
+    "subject": "twin module icon"
+   }
+  ],
+  "cut/icon_sheet_4x2_20260918_110642__p03.png": [
+   {
+    "sprite": "cut/icon_equip_pet.png",
+    "name": "icon_equip_pet",
+    "score": 0.6098,
+    "subject": "mechanical pet robot"
+   },
+   {
+    "sprite": "cut/icon_status_disabled.png",
+    "name": "icon_status_disabled",
+    "score": 0.6084,
+    "subject": "cracked shield icon"
+   }
+  ],
+  "cut/icon_sheet_4x2_20260918_110642__p04.png": [
+   {
+    "sprite": "cut/icon_slot_c.png",
+    "name": "icon_slot_c",
+    "score": 0.6134,
+    "subject": "icon slot"
+   },
+   {
+    "sprite": "cut/icon_module_b_fold.png",
+    "name": "icon_module_b_fold",
+    "score": 0.5943,
+    "subject": "white arrow"
+   }
+  ],
+  "cut/icon_sheet_4x2_20260918_110642__p05.png": [
+   {
+    "sprite": "cut/icon_booster_repair.png",
+    "name": "icon_booster_repair",
+    "score": 0.718,
+    "subject": "repair drone robot"
+   },
+   {
+    "sprite": "cut/icon_equip_pet.png",
+    "name": "icon_equip_pet",
+    "score": 0.6763,
+    "subject": "mechanical pet robot"
+   }
+  ],
+  "cut/icon_sheet_4x2_20260918_110642__p06.png": [
+   {
+    "sprite": "cut/icon_slot_c.png",
+    "name": "icon_slot_c",
+    "score": 0.8093,
+    "subject": "icon slot"
+   },
+   {
+    "sprite": "cut/icon_booster_shield.png",
+    "name": "icon_booster_shield",
+    "score": 0.7933,
+    "subject": "booster shield"
+   }
+  ],
+  "cut/icon_sheet_4x2_20260918_110642__p07.png": [
+   {
+    "sprite": "cut/icon_equip_pet.png",
+    "name": "icon_equip_pet",
+    "score": 0.768,
+    "subject": "mechanical pet robot"
+   },
+   {
+    "sprite": "cut/icon_status_shielded.png",
+    "name": "icon_status_shielded",
+    "score": 0.7287,
+    "subject": "metal shield"
+   }
+  ],
+  "cut/icon_sheet_4x2_20260918_110642__p08.png": [
+   {
+    "sprite": "cut/icon_contract_escort.png",
+    "name": "icon_contract_escort",
+    "score": 0.5832,
+    "subject": "escort contract icon"
+   },
+   {
+    "sprite": "cut/icon_mineral_silver.png",
+    "name": "icon_mineral_silver",
+    "score": 0.5712,
+    "subject": "silver mineral icon"
+   }
+  ],
+  "cut/icon_sheet_4x2_20260918_110921__p01.png": [
+   {
+    "sprite": "cut/icon_module_c_twin.png",
+    "name": "icon_module_c_twin",
+    "score": 0.6284,
+    "subject": "twin module icon"
+   },
+   {
+    "sprite": "cut/icon_equip_engine.png",
+    "name": "icon_equip_engine",
+    "score": 0.5651,
+    "subject": "engine thruster"
+   }
+  ],
+  "cut/icon_sheet_4x2_20260918_110921__p02.png": [
+   {
+    "sprite": "cut/icon_contract_escort.png",
+    "name": "icon_contract_escort",
+    "score": 0.698,
+    "subject": "escort contract icon"
+   },
+   {
+    "sprite": "cut/icon_module_c_twin.png",
+    "name": "icon_module_c_twin",
+    "score": 0.6688,
+    "subject": "twin module icon"
+   }
+  ],
+  "cut/icon_sheet_4x2_20260918_110921__p03.png": [
+   {
+    "sprite": "cut/icon_booster_repair.png",
+    "name": "icon_booster_repair",
+    "score": 0.6403,
+    "subject": "repair drone robot"
+   },
+   {
+    "sprite": "cut/icon_contract_escort.png",
+    "name": "icon_contract_escort",
+    "score": 0.6346,
+    "subject": "escort contract icon"
+   }
+  ],
+  "cut/icon_sheet_4x2_20260918_110921__p04.png": [
+   {
+    "sprite": "cut/icon_module_c_twin.png",
+    "name": "icon_module_c_twin",
+    "score": 0.5194,
+    "subject": "twin module icon"
+   },
+   {
+    "sprite": "cut/icon_ammo_rocket.png",
+    "name": "icon_ammo_rocket",
+    "score": 0.4517,
+    "subject": "rocket ammo icon"
+   }
+  ],
+  "cut/icon_sheet_4x2_20260918_110921__p05.png": [
+   {
+    "sprite": "cut/icon_cargo_fuel_cell.png",
+    "name": "icon_cargo_fuel_cell",
+    "score": 0.6704,
+    "subject": "fuel cell canister"
+   },
+   {
+    "sprite": "cut/icon_booster_repair.png",
+    "name": "icon_booster_repair",
+    "score": 0.6527,
+    "subject": "repair drone robot"
+   }
+  ],
+  "cut/icon_sheet_4x2_20260918_110921__p06.png": [
+   {
+    "sprite": "cut/icon_slot_c.png",
+    "name": "icon_slot_c",
+    "score": 0.7617,
+    "subject": "icon slot"
+   },
+   {
+    "sprite": "cut/icon_booster_shield.png",
+    "name": "icon_booster_shield",
+    "score": 0.7513,
+    "subject": "booster shield"
+   }
+  ],
+  "cut/icon_sheet_4x2_20260918_110921__p07.png": [
+   {
+    "sprite": "cut/icon_booster_teleport.png",
+    "name": "icon_booster_teleport",
+    "score": 0.6337,
+    "subject": "teleport booster device"
+   },
+   {
+    "sprite": "cut/icon_ammo_laser.png",
+    "name": "icon_ammo_laser",
+    "score": 0.6327,
+    "subject": "laser ammo canister"
+   }
+  ],
+  "cut/icon_sheet_4x2_20260918_110921__p08.png": [
+   {
+    "sprite": "cut/icon_contract_escort.png",
+    "name": "icon_contract_escort",
+    "score": 0.6067,
+    "subject": "escort contract icon"
+   },
+   {
+    "sprite": "cut/icon_mineral_palladium.png",
+    "name": "icon_mineral_palladium",
+    "score": 0.5732,
+    "subject": "palladium mineral icon"
+   }
+  ],
+  "cut/icon_sheet_4x2_20260918_111044__p01.png": [
+   {
+    "sprite": "cut/icon_mineral_aluminium.png",
+    "name": "icon_mineral_aluminium",
+    "score": 0.6583,
+    "subject": "mineral aluminium icon"
+   },
+   {
+    "sprite": "cut/icon_ingot_chromium.png",
+    "name": "icon_ingot_chromium",
+    "score": 0.605,
+    "subject": "chromium ingot"
+   }
+  ],
+  "cut/icon_sheet_4x2_20260918_111044__p02.png": [
+   {
+    "sprite": "cut/icon_slot_c.png",
+    "name": "icon_slot_c",
+    "score": 0.5671,
+    "subject": "icon slot"
+   },
+   {
+    "sprite": "cut/icon_slot_s.png",
+    "name": "icon_slot_s",
+    "score": 0.5583,
+    "subject": "ui slot frame"
+   }
+  ],
+  "cut/icon_sheet_4x2_20260918_111044__p03.png": [
+   {
+    "sprite": "cut/icon_slot_s.png",
+    "name": "icon_slot_s",
+    "score": 0.5975,
+    "subject": "ui slot frame"
+   },
+   {
+    "sprite": "cut/icon_slot_w.png",
+    "name": "icon_slot_w",
+    "score": 0.586,
+    "subject": "icon slot"
+   }
+  ],
+  "cut/icon_sheet_4x2_20260918_111044__p04.png": [
+   {
+    "sprite": "cut/icon_module_s_ion.png",
+    "name": "icon_module_s_ion",
+    "score": 0.7992,
+    "subject": "ion module icon"
+   },
+   {
+    "sprite": "cut/icon_module_s_light.png",
+    "name": "icon_module_s_light",
+    "score": 0.766,
+    "subject": "light module icon"
+   }
+  ],
+  "cut/icon_sheet_4x2_20260918_111044__p05.png": [
+   {
+    "sprite": "cut/icon_mineral_iron.png",
+    "name": "icon_mineral_iron",
+    "score": 0.5719,
+    "subject": "iron mineral icon"
+   },
+   {
+    "sprite": "cut/icon_mineral_gold.png",
+    "name": "icon_mineral_gold",
+    "score": 0.5494,
+    "subject": "gold mineral icon"
+   }
+  ],
+  "cut/icon_sheet_4x2_20260918_111044__p06.png": [
+   {
+    "sprite": "cut/icon_service_bounty.png",
+    "name": "icon_service_bounty",
+    "score": 0.5717,
+    "subject": "bounty service icon"
+   },
+   {
+    "sprite": "cut/icon_service_vault.png",
+    "name": "icon_service_vault",
+    "score": 0.5529,
+    "subject": "service vault icon"
+   }
+  ],
+  "cut/icon_sheet_4x2_20260918_111044__p07.png": [
+   {
+    "sprite": "cut/icon_mineral_titanium.png",
+    "name": "icon_mineral_titanium",
+    "score": 0.5855,
+    "subject": "mineral icon"
+   },
+   {
+    "sprite": "cut/icon_mineral_neodymium.png",
+    "name": "icon_mineral_neodymium",
+    "score": 0.5299,
+    "subject": "mineral icon"
+   }
+  ],
+  "cut/icon_sheet_4x2_20260918_111044__p08.png": [
+   {
+    "sprite": "cut/icon_slot_w.png",
+    "name": "icon_slot_w",
+    "score": 0.8155,
+    "subject": "icon slot"
+   },
+   {
+    "sprite": "cut/icon_slot_power.png",
+    "name": "icon_slot_power",
+    "score": 0.5831,
+    "subject": "power slot icon"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110236__p01.png": [
+   {
+    "sprite": "cut/icon_status_shielded.png",
+    "name": "icon_status_shielded",
+    "score": 0.7761,
+    "subject": "metal shield"
+   },
+   {
+    "sprite": "cut/icon_equip_pet.png",
+    "name": "icon_equip_pet",
+    "score": 0.7708,
+    "subject": "mechanical pet robot"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110236__p02.png": [
+   {
+    "sprite": "cut/icon_status_disabled.png",
+    "name": "icon_status_disabled",
+    "score": 0.6973,
+    "subject": "cracked shield icon"
+   },
+   {
+    "sprite": "cut/icon_map_node_home.png",
+    "name": "icon_map_node_home",
+    "score": 0.6471,
+    "subject": "hexagon map node"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110236__p03.png": [
+   {
+    "sprite": "cut/icon_slot_c.png",
+    "name": "icon_slot_c",
+    "score": 0.5304,
+    "subject": "icon slot"
+   },
+   {
+    "sprite": "cut/icon_equip_engine.png",
+    "name": "icon_equip_engine",
+    "score": 0.5276,
+    "subject": "engine thruster"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110236__p04.png": [
+   {
+    "sprite": "cut/icon_equip_module.png",
+    "name": "icon_equip_module",
+    "score": 0.6842,
+    "subject": "equipment module"
+   },
+   {
+    "sprite": "cut/icon_module_b_fold.png",
+    "name": "icon_module_b_fold",
+    "score": 0.658,
+    "subject": "white arrow"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110236__p05.png": [
+   {
+    "sprite": "cut/icon_module_s_ion.png",
+    "name": "icon_module_s_ion",
+    "score": 0.615,
+    "subject": "ion module icon"
+   },
+   {
+    "sprite": "cut/icon_module_s_light.png",
+    "name": "icon_module_s_light",
+    "score": 0.608,
+    "subject": "light module icon"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110236__p06.png": [
+   {
+    "sprite": "cut/icon_status_shielded.png",
+    "name": "icon_status_shielded",
+    "score": 0.6893,
+    "subject": "metal shield"
+   },
+   {
+    "sprite": "cut/icon_equip_pet.png",
+    "name": "icon_equip_pet",
+    "score": 0.6828,
+    "subject": "mechanical pet robot"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110236__p07.png": [
+   {
+    "sprite": "cut/icon_slot_w.png",
+    "name": "icon_slot_w",
+    "score": 0.5843,
+    "subject": "icon slot"
+   },
+   {
+    "sprite": "cut/icon_equip_extra.png",
+    "name": "icon_equip_extra",
+    "score": 0.5515,
+    "subject": "armored power cell"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110236__p08.png": [
+   {
+    "sprite": "cut/icon_equip_pet.png",
+    "name": "icon_equip_pet",
+    "score": 0.6845,
+    "subject": "mechanical pet robot"
+   },
+   {
+    "sprite": "cut/icon_status_shielded.png",
+    "name": "icon_status_shielded",
+    "score": 0.6721,
+    "subject": "metal shield"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110236__p09.png": [
+   {
+    "sprite": "cut/icon_status_shielded.png",
+    "name": "icon_status_shielded",
+    "score": 0.7269,
+    "subject": "metal shield"
+   },
+   {
+    "sprite": "cut/icon_status_disabled.png",
+    "name": "icon_status_disabled",
+    "score": 0.6709,
+    "subject": "cracked shield icon"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110236__p10.png": [
+   {
+    "sprite": "cut/icon_module_b_fold.png",
+    "name": "icon_module_b_fold",
+    "score": 0.6608,
+    "subject": "white arrow"
+   },
+   {
+    "sprite": "cut/icon_equip_engine.png",
+    "name": "icon_equip_engine",
+    "score": 0.6077,
+    "subject": "engine thruster"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110236__p11.png": [
+   {
+    "sprite": "cut/icon_equip_pet.png",
+    "name": "icon_equip_pet",
+    "score": 0.6864,
+    "subject": "mechanical pet robot"
+   },
+   {
+    "sprite": "cut/icon_status_disabled.png",
+    "name": "icon_status_disabled",
+    "score": 0.6822,
+    "subject": "cracked shield icon"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110236__p12.png": [
+   {
+    "sprite": "cut/icon_slot_w.png",
+    "name": "icon_slot_w",
+    "score": 0.6477,
+    "subject": "icon slot"
+   },
+   {
+    "sprite": "cut/icon_equip_extra.png",
+    "name": "icon_equip_extra",
+    "score": 0.633,
+    "subject": "armored power cell"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110236__p13.png": [
+   {
+    "sprite": "cut/icon_status_disabled.png",
+    "name": "icon_status_disabled",
+    "score": 0.7478,
+    "subject": "cracked shield icon"
+   },
+   {
+    "sprite": "cut/icon_map_node_home.png",
+    "name": "icon_map_node_home",
+    "score": 0.6959,
+    "subject": "hexagon map node"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110236__p14.png": [
+   {
+    "sprite": "cut/icon_booster_shield.png",
+    "name": "icon_booster_shield",
+    "score": 0.5947,
+    "subject": "booster shield"
+   },
+   {
+    "sprite": "cut/icon_slot_c.png",
+    "name": "icon_slot_c",
+    "score": 0.5554,
+    "subject": "icon slot"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110236__p15.png": [
+   {
+    "sprite": "cut/icon_status_shielded.png",
+    "name": "icon_status_shielded",
+    "score": 0.6835,
+    "subject": "metal shield"
+   },
+   {
+    "sprite": "cut/icon_status_disabled.png",
+    "name": "icon_status_disabled",
+    "score": 0.6557,
+    "subject": "cracked shield icon"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110236__p16.png": [
+   {
+    "sprite": "cut/icon_equip_extra.png",
+    "name": "icon_equip_extra",
+    "score": 0.6491,
+    "subject": "armored power cell"
+   },
+   {
+    "sprite": "cut/icon_map_node_neutral.png",
+    "name": "icon_map_node_neutral",
+    "score": 0.5992,
+    "subject": "hexagon map node"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110236__p17.png": [
+   {
+    "sprite": "cut/icon_equip_extra.png",
+    "name": "icon_equip_extra",
+    "score": 0.6795,
+    "subject": "armored power cell"
+   },
+   {
+    "sprite": "cut/icon_booster_speed.png",
+    "name": "icon_booster_speed",
+    "score": 0.6262,
+    "subject": "booster engines"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110236__p18.png": [
+   {
+    "sprite": "cut/icon_equip_pet.png",
+    "name": "icon_equip_pet",
+    "score": 0.7116,
+    "subject": "mechanical pet robot"
+   },
+   {
+    "sprite": "cut/icon_status_shielded.png",
+    "name": "icon_status_shielded",
+    "score": 0.6596,
+    "subject": "metal shield"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110236__p19.png": [
+   {
+    "sprite": "cut/icon_module_b_fold.png",
+    "name": "icon_module_b_fold",
+    "score": 0.5414,
+    "subject": "white arrow"
+   },
+   {
+    "sprite": "cut/icon_map_node_danger.png",
+    "name": "icon_map_node_danger",
+    "score": 0.5031,
+    "subject": "hex map node"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110236__p20.png": [
+   {
+    "sprite": "cut/icon_module_b_fold.png",
+    "name": "icon_module_b_fold",
+    "score": 0.5886,
+    "subject": "white arrow"
+   },
+   {
+    "sprite": "cut/icon_equip_engine.png",
+    "name": "icon_equip_engine",
+    "score": 0.5801,
+    "subject": "engine thruster"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110318__p01.png": [
+   {
+    "sprite": "cut/icon_slot_c.png",
+    "name": "icon_slot_c",
+    "score": 0.5907,
+    "subject": "icon slot"
+   },
+   {
+    "sprite": "cut/icon_module_b_fold.png",
+    "name": "icon_module_b_fold",
+    "score": 0.5899,
+    "subject": "white arrow"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110318__p02.png": [
+   {
+    "sprite": "cut/icon_slot_c.png",
+    "name": "icon_slot_c",
+    "score": 0.5662,
+    "subject": "icon slot"
+   },
+   {
+    "sprite": "cut/icon_ingot_krilium.png",
+    "name": "icon_ingot_krilium",
+    "score": 0.5315,
+    "subject": "krilium ingot"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110318__p03.png": [
+   {
+    "sprite": "cut/icon_status_slowed.png",
+    "name": "icon_status_slowed",
+    "score": 0.5869,
+    "subject": "ball and chain"
+   },
+   {
+    "sprite": "cut/icon_module_p_core.png",
+    "name": "icon_module_p_core",
+    "score": 0.5404,
+    "subject": "core module icon"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110318__p04.png": [
+   {
+    "sprite": "cut/icon_module_s_light.png",
+    "name": "icon_module_s_light",
+    "score": 0.6462,
+    "subject": "light module icon"
+   },
+   {
+    "sprite": "cut/icon_slot_c.png",
+    "name": "icon_slot_c",
+    "score": 0.639,
+    "subject": "icon slot"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110318__p05.png": [
+   {
+    "sprite": "cut/icon_status_disabled.png",
+    "name": "icon_status_disabled",
+    "score": 0.5782,
+    "subject": "cracked shield icon"
+   },
+   {
+    "sprite": "cut/icon_slot_c.png",
+    "name": "icon_slot_c",
+    "score": 0.575,
+    "subject": "icon slot"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110318__p06.png": [
+   {
+    "sprite": "cut/icon_equip_pet.png",
+    "name": "icon_equip_pet",
+    "score": 0.6203,
+    "subject": "mechanical pet robot"
+   },
+   {
+    "sprite": "cut/icon_status_disabled.png",
+    "name": "icon_status_disabled",
+    "score": 0.613,
+    "subject": "cracked shield icon"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110318__p07.png": [
+   {
+    "sprite": "cut/icon_map_bookmark.png",
+    "name": "icon_map_bookmark",
+    "score": 0.57,
+    "subject": "metal flag marker"
+   },
+   {
+    "sprite": "cut/icon_status_shielded.png",
+    "name": "icon_status_shielded",
+    "score": 0.569,
+    "subject": "metal shield"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110318__p08.png": [
+   {
+    "sprite": "cut/icon_status_shielded.png",
+    "name": "icon_status_shielded",
+    "score": 0.5838,
+    "subject": "metal shield"
+   },
+   {
+    "sprite": "cut/icon_status_slowed.png",
+    "name": "icon_status_slowed",
+    "score": 0.5703,
+    "subject": "ball and chain"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110318__p09.png": [
+   {
+    "sprite": "cut/icon_status_disabled.png",
+    "name": "icon_status_disabled",
+    "score": 0.71,
+    "subject": "cracked shield icon"
+   },
+   {
+    "sprite": "cut/icon_equip_pet.png",
+    "name": "icon_equip_pet",
+    "score": 0.6924,
+    "subject": "mechanical pet robot"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110318__p10.png": [
+   {
+    "sprite": "cut/icon_slot_c.png",
+    "name": "icon_slot_c",
+    "score": 0.6122,
+    "subject": "icon slot"
+   },
+   {
+    "sprite": "cut/icon_map_bookmark.png",
+    "name": "icon_map_bookmark",
+    "score": 0.5665,
+    "subject": "metal flag marker"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110318__p11.png": [
+   {
+    "sprite": "cut/icon_slot_c.png",
+    "name": "icon_slot_c",
+    "score": 0.5821,
+    "subject": "icon slot"
+   },
+   {
+    "sprite": "cut/icon_status_slowed.png",
+    "name": "icon_status_slowed",
+    "score": 0.5534,
+    "subject": "ball and chain"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110318__p12.png": [
+   {
+    "sprite": "cut/icon_status_shielded.png",
+    "name": "icon_status_shielded",
+    "score": 0.6019,
+    "subject": "metal shield"
+   },
+   {
+    "sprite": "cut/icon_equip_pet.png",
+    "name": "icon_equip_pet",
+    "score": 0.586,
+    "subject": "mechanical pet robot"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110318__p13.png": [
+   {
+    "sprite": "cut/icon_status_shielded.png",
+    "name": "icon_status_shielded",
+    "score": 0.5493,
+    "subject": "metal shield"
+   },
+   {
+    "sprite": "cut/icon_slot_c.png",
+    "name": "icon_slot_c",
+    "score": 0.5389,
+    "subject": "icon slot"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110318__p14.png": [
+   {
+    "sprite": "cut/icon_slot_c.png",
+    "name": "icon_slot_c",
+    "score": 0.6007,
+    "subject": "icon slot"
+   },
+   {
+    "sprite": "cut/icon_status_shielded.png",
+    "name": "icon_status_shielded",
+    "score": 0.5847,
+    "subject": "metal shield"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110318__p15.png": [
+   {
+    "sprite": "cut/icon_slot_c.png",
+    "name": "icon_slot_c",
+    "score": 0.6434,
+    "subject": "icon slot"
+   },
+   {
+    "sprite": "cut/icon_status_slowed.png",
+    "name": "icon_status_slowed",
+    "score": 0.5709,
+    "subject": "ball and chain"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110318__p16.png": [
+   {
+    "sprite": "cut/icon_booster_repair.png",
+    "name": "icon_booster_repair",
+    "score": 0.6162,
+    "subject": "repair drone robot"
+   },
+   {
+    "sprite": "cut/icon_slot_w.png",
+    "name": "icon_slot_w",
+    "score": 0.6046,
+    "subject": "icon slot"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110318__p17.png": [
+   {
+    "sprite": "cut/icon_slot_c.png",
+    "name": "icon_slot_c",
+    "score": 0.5888,
+    "subject": "icon slot"
+   },
+   {
+    "sprite": "cut/icon_status_slowed.png",
+    "name": "icon_status_slowed",
+    "score": 0.553,
+    "subject": "ball and chain"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110318__p18.png": [
+   {
+    "sprite": "cut/icon_status_shielded.png",
+    "name": "icon_status_shielded",
+    "score": 0.6209,
+    "subject": "metal shield"
+   },
+   {
+    "sprite": "cut/icon_slot_c.png",
+    "name": "icon_slot_c",
+    "score": 0.6179,
+    "subject": "icon slot"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110318__p19.png": [
+   {
+    "sprite": "cut/icon_slot_c.png",
+    "name": "icon_slot_c",
+    "score": 0.5352,
+    "subject": "icon slot"
+   },
+   {
+    "sprite": "cut/icon_status_slowed.png",
+    "name": "icon_status_slowed",
+    "score": 0.5049,
+    "subject": "ball and chain"
+   }
+  ],
+  "cut/icon_sheet_5x4_20260918_110318__p20.png": [
+   {
+    "sprite": "cut/icon_status_slowed.png",
+    "name": "icon_status_slowed",
+    "score": 0.6171,
+    "subject": "ball and chain"
+   },
+   {
+    "sprite": "cut/icon_equip_pet.png",
+    "name": "icon_equip_pet",
+    "score": 0.6081,
+    "subject": "mechanical pet robot"
+   }
+  ],
+  "cut/icon_shield__20260917-183722.png": [
+   {
+    "sprite": "cut/icon_shield.png",
+    "name": "icon_shield",
+    "score": 0.9904,
+    "subject": "shield icon"
+   },
+   {
+    "sprite": "cut/icon_credits.png",
+    "name": "icon_credits",
+    "score": 0.7923,
+    "subject": "credits icon"
+   }
+  ],
+  "cut/icon_zoom_minus__20260917-183722.png": [
+   {
+    "sprite": "cut/icon_zoom_minus.png",
+    "name": "icon_zoom_minus",
+    "score": 0.9193,
+    "subject": "zoom minus icon"
+   },
+   {
+    "sprite": "cut/icon_zoom_plus.png",
+    "name": "icon_zoom_plus",
+    "score": 0.8679,
+    "subject": "zoom plus icon"
+   }
+  ],
+  "cut/icon_zoom_plus__20260917-183722.png": [
+   {
+    "sprite": "cut/icon_zoom_plus.png",
+    "name": "icon_zoom_plus",
+    "score": 0.908,
+    "subject": "zoom plus icon"
+   },
+   {
+    "sprite": "cut/icon_zoom_minus.png",
+    "name": "icon_zoom_minus",
+    "score": 0.8867,
+    "subject": "zoom minus icon"
+   }
+  ],
+  "cut/ship_sheet_2x2_20260917_213637__p01.png": [
+   {
+    "sprite": "cut/ship_drone_swarm_front.png",
+    "name": "ship_drone_swarm_front",
+    "score": 0.8912,
+    "subject": "drone ship"
+   },
+   {
+    "sprite": "cut/ship_drone_swarm_back.png",
+    "name": "ship_drone_swarm_back",
+    "score": 0.7842,
+    "subject": "drone ship"
+   }
+  ],
+  "cut/ship_sheet_2x2_20260917_213637__p02.png": [
+   {
+    "sprite": "cut/ship_drone_swarm_three_quarter.png",
+    "name": "ship_drone_swarm_three_quarter",
+    "score": 0.7768,
+    "subject": "drone torpedo ship"
+   },
+   {
+    "sprite": "cut/ship_miner_three_quarter.png",
+    "name": "ship_miner_three_quarter",
+    "score": 0.6334,
+    "subject": "mining ship"
+   }
+  ],
+  "cut/ship_sheet_2x2_20260917_213637__p03.png": [
+   {
+    "sprite": "cut/ship_trader_side.png",
+    "name": "ship_trader_side",
+    "score": 0.6658,
+    "subject": "trader ship"
+   },
+   {
+    "sprite": "cut/ship_bomber_side.png",
+    "name": "ship_bomber_side",
+    "score": 0.6269,
+    "subject": "bomber ship"
+   }
+  ],
+  "cut/ship_sheet_2x2_20260917_213637__p04.png": [
+   {
+    "sprite": "cut/ship_drone_swarm_front.png",
+    "name": "ship_drone_swarm_front",
+    "score": 0.9107,
+    "subject": "drone ship"
+   },
+   {
+    "sprite": "cut/ship_drone_swarm_back.png",
+    "name": "ship_drone_swarm_back",
+    "score": 0.8023,
+    "subject": "drone ship"
+   }
+  ],
+  "cut/ship_sheet_2x2_20260918_112624__p01.png": [
+   {
+    "sprite": "cut/ship_fighter_mmo_front.png",
+    "name": "ship_fighter_mmo_front",
+    "score": 0.9779,
+    "subject": "fighter ship"
+   },
+   {
+    "sprite": "cut/ship_fighter_concord_front.png",
+    "name": "ship_fighter_concord_front",
+    "score": 0.9738,
+    "subject": "concord fighter"
+   }
+  ],
+  "cut/ship_sheet_2x2_20260918_112624__p02.png": [
+   {
+    "sprite": "cut/ship_fighter_concord_three_quarter.png",
+    "name": "ship_fighter_concord_three_quarter",
+    "score": 0.9741,
+    "subject": "concord fighter"
+   },
+   {
+    "sprite": "cut/ship_fighter_mmo_three_quarter.png",
+    "name": "ship_fighter_mmo_three_quarter",
+    "score": 0.9735,
+    "subject": "space fighter"
+   }
+  ],
+  "cut/ship_sheet_2x2_20260918_112624__p03.png": [
+   {
+    "sprite": "cut/ship_fighter_choir_side.png",
+    "name": "ship_fighter_choir_side",
+    "score": 0.9815,
+    "subject": "rusty fighter ship"
+   },
+   {
+    "sprite": "cut/ship_fighter_side.png",
+    "name": "ship_fighter_side",
+    "score": 0.9812,
+    "subject": "fighter ship"
+   }
+  ],
+  "cut/ship_sheet_2x2_20260918_112624__p04.png": [
+   {
+    "sprite": "cut/ship_fighter_mmo_back.png",
+    "name": "ship_fighter_mmo_back",
+    "score": 0.9742,
+    "subject": "ship fighter"
+   },
+   {
+    "sprite": "cut/ship_fighter_meridian_back.png",
+    "name": "ship_fighter_meridian_back",
+    "score": 0.9737,
+    "subject": "meridian fighter"
+   }
+  ],
+  "cut/ship_sheet_2x2_20260918_112721__p01.png": [
+   {
+    "sprite": "cut/ship_fighter_mmo_front.png",
+    "name": "ship_fighter_mmo_front",
+    "score": 0.9777,
+    "subject": "fighter ship"
+   },
+   {
+    "sprite": "cut/ship_fighter_meridian_front.png",
+    "name": "ship_fighter_meridian_front",
+    "score": 0.9711,
+    "subject": "meridian fighter"
+   }
+  ],
+  "cut/ship_sheet_2x2_20260918_112721__p02.png": [
+   {
+    "sprite": "cut/ship_fighter_meridian_three_quarter.png",
+    "name": "ship_fighter_meridian_three_quarter",
+    "score": 0.9684,
+    "subject": "meridian fighter ship"
+   },
+   {
+    "sprite": "cut/ship_fighter_mmo_three_quarter.png",
+    "name": "ship_fighter_mmo_three_quarter",
+    "score": 0.9618,
+    "subject": "space fighter"
+   }
+  ],
+  "cut/ship_sheet_2x2_20260918_112721__p03.png": [
+   {
+    "sprite": "cut/ship_fighter_choir_side.png",
+    "name": "ship_fighter_choir_side",
+    "score": 0.9728,
+    "subject": "rusty fighter ship"
+   },
+   {
+    "sprite": "cut/ship_fighter_mmo_side.png",
+    "name": "ship_fighter_mmo_side",
+    "score": 0.9722,
+    "subject": "fighter ship"
+   }
+  ],
+  "cut/ship_sheet_2x2_20260918_112721__p04.png": [
+   {
+    "sprite": "cut/ship_fighter_mmo_back.png",
+    "name": "ship_fighter_mmo_back",
+    "score": 0.986,
+    "subject": "ship fighter"
+   },
+   {
+    "sprite": "cut/ship_fighter_back.png",
+    "name": "ship_fighter_back",
+    "score": 0.974,
+    "subject": "space fighter ship"
+   }
+  ],
+  "cut/ship_sheet_2x2_20260918_112813__p01.png": [
+   {
+    "sprite": "cut/ship_drone_swarm_front.png",
+    "name": "ship_drone_swarm_front",
+    "score": 0.7085,
+    "subject": "drone ship"
+   },
+   {
+    "sprite": "cut/ship_drone_swarm_back.png",
+    "name": "ship_drone_swarm_back",
+    "score": 0.6735,
+    "subject": "drone ship"
+   }
+  ],
+  "cut/ship_sheet_2x2_20260918_112813__p02.png": [
+   {
+    "sprite": "cut/ship_drone_swarm_three_quarter.png",
+    "name": "ship_drone_swarm_three_quarter",
+    "score": 0.6627,
+    "subject": "drone torpedo ship"
+   },
+   {
+    "sprite": "cut/ship_gunship_back.png",
+    "name": "ship_gunship_back",
+    "score": 0.5089,
+    "subject": "gunship"
+   }
+  ],
+  "cut/ship_sheet_2x2_20260918_112813__p03.png": [
+   {
+    "sprite": "cut/ship_drone_swarm_side.png",
+    "name": "ship_drone_swarm_side",
+    "score": 0.8568,
+    "subject": "drone ship"
+   },
+   {
+    "sprite": "cut/ship_boss_pyre.png",
+    "name": "ship_boss_pyre",
+    "score": 0.4442,
+    "subject": "boss ship"
+   }
+  ],
+  "cut/ship_sheet_2x2_20260918_112813__p04.png": [
+   {
+    "sprite": "cut/ship_drone_swarm_back.png",
+    "name": "ship_drone_swarm_back",
+    "score": 0.6757,
+    "subject": "drone ship"
+   },
+   {
+    "sprite": "cut/ship_drone_swarm_front.png",
+    "name": "ship_drone_swarm_front",
+    "score": 0.5698,
+    "subject": "drone ship"
+   }
+  ],
+  "cut/ui_button_plate_disabled__20260917-185457.png": [
+   {
+    "sprite": "cut/ui_slot_cargo_disabled.png",
+    "name": "ui_slot_cargo_disabled",
+    "score": 0.53,
+    "subject": "cargo slot"
+   },
+   {
+    "sprite": "cut/ui_slot_inventory_disabled.png",
+    "name": "ui_slot_inventory_disabled",
+    "score": 0.5044,
+    "subject": "inventory slot frame"
+   }
+  ],
+  "cut/ui_button_plate_hover__20260917-185457.png": [
+   {
+    "sprite": "cut/ui_slot_cargo_disabled.png",
+    "name": "ui_slot_cargo_disabled",
+    "score": 0.5314,
+    "subject": "cargo slot"
+   },
+   {
+    "sprite": "cut/ui_slot_inventory_disabled.png",
+    "name": "ui_slot_inventory_disabled",
+    "score": 0.516,
+    "subject": "inventory slot frame"
+   }
+  ],
+  "cut/ui_button_plate_normal__20260917-185457.png": [
+   {
+    "sprite": "cut/ui_slot_cargo_disabled.png",
+    "name": "ui_slot_cargo_disabled",
+    "score": 0.4527,
+    "subject": "cargo slot"
+   },
+   {
+    "sprite": "cut/ui_slot_inventory_disabled.png",
+    "name": "ui_slot_inventory_disabled",
+    "score": 0.4396,
+    "subject": "inventory slot frame"
+   }
+  ],
+  "cut/ui_button_plate_pressed__20260917-185457.png": [
+   {
+    "sprite": "cut/ui_slot_cargo_disabled.png",
+    "name": "ui_slot_cargo_disabled",
+    "score": 0.3695,
+    "subject": "cargo slot"
+   },
+   {
+    "sprite": "cut/ui_slot_inventory_disabled.png",
+    "name": "ui_slot_inventory_disabled",
+    "score": 0.3223,
+    "subject": "inventory slot frame"
+   }
+  ],
+  "cut/ui_panel_frame__20260917-183136.png": [
+   {
+    "sprite": "cut/ui_minimap_bezel.png",
+    "name": "ui_minimap_bezel",
+    "score": 0.9392,
+    "subject": "minimap bezel"
+   },
+   {
+    "sprite": "cut/ui_panel_frame.png",
+    "name": "ui_panel_frame",
+    "score": 0.6428,
+    "subject": "ui panel frame"
+   }
+  ],
+  "cut/ui_sheet_1x1_20260917_183801.png": [
+   {
+    "sprite": "cut/ui_button_plate_disabled.png",
+    "name": "ui_button_plate_disabled",
+    "score": 0.7921,
+    "subject": "button plate"
+   },
+   {
+    "sprite": "cut/ui_button_plate_hover.png",
+    "name": "ui_button_plate_hover",
+    "score": 0.6204,
+    "subject": "ui button plate"
+   }
+  ],
+  "cut/ui_sheet_1x1_20260918_123330.png": [
+   {
+    "sprite": "cut/ui_minimap_bezel.png",
+    "name": "ui_minimap_bezel",
+    "score": 0.8074,
+    "subject": "minimap bezel"
+   },
+   {
+    "sprite": "cut/ui_panel_frame.png",
+    "name": "ui_panel_frame",
+    "score": 0.7994,
+    "subject": "ui panel frame"
+   }
+  ],
+  "cut/ui_sheet_2x2_20260917_183232__p01.png": [
+   {
+    "sprite": "cut/ui_slot_cargo_disabled.png",
+    "name": "ui_slot_cargo_disabled",
+    "score": 0.6265,
+    "subject": "cargo slot"
+   },
+   {
+    "sprite": "cut/ui_slot_inventory_disabled.png",
+    "name": "ui_slot_inventory_disabled",
+    "score": 0.6177,
+    "subject": "inventory slot frame"
+   }
+  ],
+  "cut/ui_sheet_2x2_20260917_183232__p02.png": [
+   {
+    "sprite": "cut/ui_slot_cargo_disabled.png",
+    "name": "ui_slot_cargo_disabled",
+    "score": 0.6457,
+    "subject": "cargo slot"
+   },
+   {
+    "sprite": "cut/ui_slot_inventory_disabled.png",
+    "name": "ui_slot_inventory_disabled",
+    "score": 0.6312,
+    "subject": "inventory slot frame"
+   }
+  ],
+  "cut/ui_sheet_2x2_20260917_183232__p03.png": [
+   {
+    "sprite": "cut/ui_slot_cargo_disabled.png",
+    "name": "ui_slot_cargo_disabled",
+    "score": 0.6294,
+    "subject": "cargo slot"
+   },
+   {
+    "sprite": "cut/ui_slot_inventory_disabled.png",
+    "name": "ui_slot_inventory_disabled",
+    "score": 0.5815,
+    "subject": "inventory slot frame"
+   }
+  ],
+  "cut/ui_sheet_2x2_20260917_183232__p04.png": [
+   {
+    "sprite": "cut/ui_slot_cargo_disabled.png",
+    "name": "ui_slot_cargo_disabled",
+    "score": 0.7287,
+    "subject": "cargo slot"
+   },
+   {
+    "sprite": "cut/ui_slot_inventory_disabled.png",
+    "name": "ui_slot_inventory_disabled",
+    "score": 0.7133,
+    "subject": "inventory slot frame"
+   }
+  ]
+ }
+}

@@ -1,0 +1,73 @@
+70 sheet(s) to read, 93 skipped (single panel or whole-frame plate)
+2 sheet(s) already answered, skipping (--redo to ask again)
+  raw/env_arena.png                                            agrees                       high Two assets side by side, one row.
+  raw/env_asteroid.png                                         agrees                       high 3 columns by 3 rows visible.
+  raw/env_asteroid_b.png                                       agrees                       high Visible 3 columns, 2 rows; six asteroid 
+  raw/env_pickup.png                                           agrees                       high 2 columns, 3 rows visible.
+  raw/env_prop.png                                             agrees                       high 3 columns, 2 rows, six pieces; cuts lie 
+  raw/4-frame-horizontal-sprite-sheet-of-a-wea.png             agrees                       high Four visible muzzle-flash assets in one 
+  raw/flat-vector-icon-sheet-2x2-grid-icons.png                agrees                       high Three assets in 2x2 grid; bottom-right c
+  raw/flat-vector-icon-sheet-3x3-grid-icons__20260918-110409.png agrees                       high Visible 3x3 grid with safe gap fractions
+  raw/flat-vector-icon-sheet-3x3-grid-icons__20260918-110458.png unparseable: ''
+  raw/flat-vector-icon-sheet-3x3-grid-icons__20260918-110547.png agrees                       high Grid matches requested 3 columns, 3 rows
+  raw/flat-vector-icon-sheet-4x2-grid-icons__20260918-110642.png agrees                       high Clear 4x2 grid; cuts pass through empty 
+  raw/flat-vector-icon-sheet-4x2-grid-icons__20260918-110921.png agrees                       high 4 columns, 2 rows visible; cut positions
+  raw/flat-vector-icon-sheet-5x4-grid-icons__20260918-110236.png unparseable: ''
+  raw/flat-vector-icon-sheet-5x4-grid-icons__20260918-110318.png agrees                       high Visible 5 columns, 4 rows; 20 assets.
+  raw/flat-vector-icon-sheet-for-a-dark-sci-fi.png             agrees                       high Only five assets visible; bottom-right c
+  raw/grimdark-painted-sci-fi-semi-realistic__20260918-111044.png agrees                       high Visible 4x2 grid; cuts in empty gaps.
+  raw/grimdark-painted-sci-fi-semi-realistic__20260918-111327.png agrees                       high Visible 3x3 grid, gaps at estimated empt
+  raw/grimdark-painted-sci-fi-semi-realistic__20260918-111411.png agrees                       high 3x3 grid visible; gaps pass through empt
+  raw/grimdark-painted-sci-fi-semi-realistic__20260918-111450.png agrees                       high Visible 3x3 grid; gaps clear.
+  raw/grimdark-painted-sci-fi-semi-realistic__20260918-113357.png agrees                       high Bottom-right cell empty; three assets in
+  raw/grimdark-painted-sci-fi-semi-realistic__20260918-123214.png agrees                       high Four icons: two magnifiers top, hexagon 
+  raw/grimdark-painted-sci-fi-semi-realistic__20260918-133035.png agrees                       high Four icons in a 2x2 grid.
+  raw/icon_booster.png                                         re-read 2x3 -> 3x2           high Visible 3 columns by 2 rows; gaps pass t
+  raw/icon_contract.png                                        re-read 2x3 -> 3x2           high 3x2 visible; bottom-right empty, gaps cu
+  raw/icon_ingot.png                                           agrees                       high 5 by 4 visible; cuts in empty gaps.
+  raw/icon_insignia.png                                        agrees                       high 3 assets visible; bottom-right cell empt
+  raw/icon_mineral.png                                         agrees                       high 5x4 visible; cuts pass through empty gut
+  raw/icon_module__20260918-114107.png                         agrees                       high 3x3 grid visible; cuts fall in whitespac
+  raw/icon_module__20260918-114156.png                         agrees                       high Visible 3x3 grid, gaps approximate.
+  raw/icon_module__20260918-114240.png                         agrees                       high Nine icons in visible 3 by 3 grid.
+  raw/icon_service.png                                         agrees                       high Three assets, bottom-right cell empty, 2
+  raw/icon_slot.png                                            agrees                       high Four columns, two rows of icons as reque
+  raw/icon_status.png                                          agrees                       high Three columns, three rows, nine assets.
+  raw/p2_contracts.png                                         re-read 2x3 -> 3x2           high Visible 3 columns by 2 rows; five icons,
+  raw/p2_faction_insignia.png                                  agrees                       high Three assets visible; bottom-right cell 
+  raw/panel_equipment.png                                      agrees                       high 3x3 visible; cuts through empty backgrou
+  raw/same-2x2-rotation-sheet-of-the-same-enem__20260918-112624.png agrees                       high 2x2 visible; cuts through empty center g
+  raw/same-2x2-rotation-sheet-of-the-same-enem__20260918-112721.png agrees                       high Four ships in a 2x2 grid.
+  raw/same-2x2-rotation-sheet-of-the-same-enem__20260918-112813.png agrees                       high Four visible sprites in 2x2 grid.
+  raw/ship_corvette.png                                        agrees                       high Four spaceships arranged 2x2; mid-gaps c
+  raw/ship_corvette_mmo.png                                    agrees                       high Four ships visible in 2x2 grid.
+  raw/ship_destroyer.png                                       agrees                       high Four ships in 2x2 grid.
+  raw/ship_drone_swarm__20260917-213637.png                    agrees                       high Visible 2 by 2 grid; cuts at midlines cl
+  raw/ship_drone_swarm__20260918-133108.png                    agrees                       high 2x2 visible; four assets.
+  raw/ship_fighter.png                                         agrees                       high 2x2 visible; central vertical and horizo
+  raw/ship_fighter_choir.png                                   agrees                       high Four ships in 2x2 grid.
+  raw/ship_fighter_concord.png                                 agrees                       high 2x2 visible; central vertical and horizo
+  raw/ship_fighter_meridian.png                                agrees                       high Four ships in visible 2x2 grid.
+  raw/ship_fighter_mmo.png                                     agrees                       high 2x2 grid, four ship views, cuts through 
+  raw/ship_freighter.png                                       agrees                       high Visible 2x2; four ships in quadrants
+  raw/ship_freighter_mmo.png                                   agrees                       high Four ships in a 2x2 grid.
+  raw/ship_gunship.png                                         agrees                       high 2x2 grid, four ships visible.
+  raw/ship_interceptor.png                                     agrees                       high 2x2 grid, four ship assets, midlines cle
+  raw/ship_mine_layer.png                                      agrees                       high Four ship assets in 2x2 grid.
+  raw/ship_miner.png                                           agrees                       high 2x2 visible; center gaps clear.
+  raw/ship_patrol.png                                          agrees                       high Four ships in 2x2 grid; gaps at empty st
+  raw/ship_trader.png                                          agrees                       high 2x2 grid visible; central vertical and h
+  raw/ship_vanguard.png                                        agrees                       high Four distinct spaceship sprites in a 2x2
+  raw/ship_vanguard_damaged.png                                agrees                       high Four spaceships in 2x2 grid.
+  raw/ship_vanguard_mmo.png                                    agrees                       high Visible 2x2 grid; central gaps.
+  raw/ui-bar-caps-and-ui-minimap-bezel-one-pa.png              agrees                       high Two assets: paired tags left, frame righ
+  raw/ui-button-plate-a-square-panel-with-fou.png              agrees                       high 2x2 grid, four metal plaques; central ga
+  raw/ui_button_plate__20260917-185457.png                     agrees                       high Visible 2x2 grid; cuts at midpoints thro
+  raw/ui_button_plate__20260918-133142.png                     agrees                       high 2x2 grid; four separate metal bar assets
+  raw/ui_insignia.png                                          agrees                       high Two columns, two rows; four hex assets v
+  raw/ui_slot_cargo.png                                        agrees                       high Four panels in 2x2 grid.
+  raw/ui_slot_inventory.png                                    agrees                       high Visible 2x2 grid; central gaps clear.
+  raw/ui_slot_weapon.png                                       agrees                       high 2x2 grid, four pistol tiles visible.
+
+63 agreement(s), 3 re-read, 2 refused, 232547 tokens across 68 sheet(s)
+wrote G:\Mój dysk\Projekty\Vajb Orbit\asset-library\_layout_deepseek.json (68 sheet(s))

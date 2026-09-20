@@ -1,13 +1,13 @@
-# ASSET_PIPELINE_V2 — generation, alpha and shipping
+# ASSET_PIPELINE_V2 — from raw renders to cut sprites
 
-Status: **implemented**. Supersedes the alpha handling in `staging/phase_d/reprocess.py`.
+Status: **implemented** (cut stage). Supersedes the alpha handling in `staging/phase_d/reprocess.py`
+and the repaired `_cuts/` set it was built to rescue.
 
 ## 1. Why this exists
 
-The v1 pipeline rendered every sheet on a void-black background (the API's `transparent`
-option was ignored because the project style block names a void background), then derived
-alpha locally by keying every pixel within a colour distance of 16 of the estimated
-background.
+The v1 pipeline rendered every sheet on a void-black background (the API's `transparent` option
+was ignored because the project style block names a void background), then derived alpha locally
+by keying every pixel within a colour distance of 16 of the estimated background.
 
 Measured against the untouched raw renders, that matte deleted **rendered artwork**:
 
@@ -21,126 +21,121 @@ Measured against the untouched raw renders, that matte deleted **rendered artwor
 The deleted pixels are not flat void: they sit at neutral grey (17, 18, 20) with real surface
 texture (laplacian std 3.1–8.6), while the true background is blue-tinted (6, 10, 17) and flat
 (std 1.8). A hull's own shadowed plating falls inside the threshold, so the matte punched
-blotches straight through every ship, prop and icon; over a bright backdrop the sprites read
-as stencils.
+blotches straight through every ship, prop and icon.
 
-The raw renders are intact and good. This was our post-processing, not the generator.
+Two consequences set the shape of everything below. The raw renders are intact and good — this
+was our post-processing, not the generator. And a matte is much easier to build from a sprite
+that is already isolated, centred and named than from a 2048px sheet that still holds twenty of
+them, so cut first and key later.
 
-## 2. The pipeline rule
+## 2. The pipeline
 
-Assets live in `asset-library/`. Nothing generated lands inside the Godot project, and
-nothing is restored to the project in bulk.
-
-```
-generate  ─►  asset-library/<family>/<key>__raw.png      untouched API render  (immutable)
-          ─►  asset-library/_cuts/<family>/<sprite>.png  repaired consumer sprites
-          ─►  review sheet for owner approval
-          ─►  vajb-orbit/assets/<family>/<sprite>.png    pulled on demand, + .job.json
-          ─►  reimport + rebuild catalog
-```
-
-Pulling is explicit and per-feature:
+Assets live in `asset-library/`. Nothing generated lands inside the Godot project, and nothing
+is restored to the project in bulk.
 
 ```
-py -3.14 staging/assetpipe/pull.py --status
-py -3.14 staging/assetpipe/pull.py ships --pattern "ship_bomber_*"
-py -3.14 staging/assetpipe/pull.py ui --all
+raw/                        untouched 2048px renders, one per generation run  (immutable)
+ │  build_plan.py           grid + ordered names from the recovered Phase D/E/F specs
+ ▼                          and the exact prompts
+_sheets.json                the panel plan, with plate flags and provenance
+ │  deepseek_layout.py      a vision model reads each render's arrangement
+ ▼
+_layout_deepseek.json       which way round the cells lie, and where a cut could pass
+ │  cut_sheets.py           segment, name, centre, size
+ ▼
+cut/                        one file per asset: ship_bomber_front.png, icon_mineral_iron.png …
+ │  build_review.py         contact sheets into _review/
+ ▼
+_review/cutmap_<family>.jpg  the sheet with its cut lines drawn, and its sprites
 ```
 
-`asset-library/` sits outside the Godot project, so raw and intermediate art is never
-imported, never ships in an export and never inflates `.godot/`.
+Run in that order; each step is idempotent and `--check`/`--only` narrow it. Every step
+writes down why it decided what it decided, in the JSON it produces.
 
-## 3. The alpha repair
+`asset-library/` sits outside the Godot project, so raw and intermediate art is never imported,
+never ships in an export and never inflates `.godot/`.
 
-Two findings shaped the implementation.
+## 3. The cut stage
 
-**The damage is alpha-only.** The v1 matte only ever wrote the alpha channel
-(`img.convert("RGBA"); putalpha(alpha)`), so the RGB under every transparent pixel still
-holds the full render. Measured on the damaged sprites, their border rings are clean
-background (median distance 1–2 counts) and their enclosed transparent regions carry
-textured artwork. So the repair rebuilds alpha from each sprite's own pixels and **moves no
-cut boundary** — no grid inference, no re-split, no chance of a sprite ending up under the
-wrong name.
+**Count and names come from provenance, arrangement comes from the render.** How many panels a
+sheet holds and what each is called comes from the Phase D/E/F `RUNS` tables recovered from git
+history plus the exact prompt recorded in `_originals_manifest.json`; that is the same data the
+original pass used to name the shipped files, so names cannot drift from the set the game knows.
+The *arrangement* is contested: one prompt asks for "2x3 grid (three columns, two rows)" and the
+next for "2x3 grid (two columns, three rows)", and some renders ignore the request outright. A
+wrong guess here mis-names every icon on the sheet, so a vision model reads it off the image and
+its answer is adopted only when it holds the same number of cells as the plan — no panel can
+lose its name, and every disagreement is printed.
 
-**Threshold 8, not 16.** The distance map is smoothed (σ 1.5) before thresholding, which
-drops background noise to roughly 1 count, so the threshold can sit close to the noise floor
-while the object edge — an order of magnitude stronger — survives. Swept across five sheets,
-threshold 16 leaves 15,953 px of damage on the bomber, 45,049 on the asteroid sheet and
-35,807 on the station; **at 8 it is zero on all five**, and the jump gate's 817k-px aperture
-still reads as legitimate at every threshold.
+**Objects are found, never cut on a divider.** A divider placed a few pixels off slices an
+object in half and leaves both halves looking plausible; the first build of this stage did
+exactly that to `p2_contracts`. So the cutter masks the ink, dilates to bridge the gaps inside
+one shape, drops the film grain, and gathers every piece whose centre falls in a cell. A pylon
+and its beacon, a gate's two arcs and a glyph drawn in strokes all come back as one sprite.
 
-`staging/assetpipe/matte.py` per sprite:
+**Every sprite of a sheet is one size, and the object is centred.** The `icons` family
+additionally shares a single 512px square canvas with each icon scaled to one share of it, so a
+5x4 panel becomes 20 files of one size and one visual weight. Other families keep their own
+scale and are only centred, on a canvas the size of the largest object on that sheet — a ship
+must not change size as it turns through its four views, and an S asteroid must stay smaller
+than an L one.
 
-1. **Background** — the *dominant* colour among the sprite's transparent pixels, not the
-   median and not a border ring. Damage can cover more of the transparent area than the
-   background does, but artwork spreads over hundreds of colours while the background is one
-   flat colour plus speckle, so the most populated colour bucket is the background even when
-   it is a minority of the area. A border ring is unusable here: a button plate fills its
-   frame and a narrow hull touches the edge, so the ring is content. The estimate is
-   validated (it must sit closer to the bulk of the transparent pixels than to the opaque
-   ones) and the sprite is skipped rather than guessed at if it fails.
-2. **Candidate mask** — per-pixel max-channel distance above the threshold.
-3. **Seal and fill** — morphological closing, then `binary_fill_holes`, which establishes
-   "inside the object". Closing first is what v1 lacked: a 1 px channel from a shadowed panel
-   to the outside lets `fill_holes` miss the region entirely.
-4. **Restore** — pixels inside the silhouette but outside the mask were deleted by the
-   distance test alone. If their raw colour is further than `VOID_TOL` from the background
-   they were artwork and are restored. This is what keeps a genuine aperture open without a
-   per-asset allow list.
-5. **Edge** — a 0.8 px Gaussian on the final mask, unchanged from v1 so nothing that F.1/F.2
-   approved for edge quality regresses. Interior pixels are forced fully opaque, because
-   solid art is never legitimately semi-transparent.
+**Plates pass through.** Sheets that are whole-frame layers rather than objects — backdrops,
+tiling layers, menu and loading screens, full-frame vignettes, shipped `panel_*` assets — are
+copied untouched. `_sheets.json` records which, and why.
 
-### QC
+**No alpha yet.** `cut/` is RGB with the background still in it. Keying operates on an isolated,
+centred sprite, which is the whole point of doing it second.
 
-`alpha_metrics` reports, per sprite, the enclosed transparent area and how much of it is
-damage. Damage is decided by the **texture** of the raw pixels (laplacian std; background
-~1.8, hull shadow 3.0–4.8, lit hull 14.6), deliberately not by colour distance — the mask is
-built from colour distance, so a colour test would simply agree with itself. A review list of
-residuals is printed and recorded; every remaining item was inspected and is designed
-transparency (flat stencils with white keylines and cut-outs, the logo's counters, the moon's
-craters) or edge speckle on props, not damage.
+## 4. What was thrown away
 
-## 4. What was rebuilt
-
-Deleted, with `asset-library/_deleted_manifest.json` as the audit record and a copy of every
-PNG in `staging/_prune_backup/`:
-
-- 106 timestamped generation folders inside `vajb-orbit/assets/` (658 MB) — every sheet they
-  held was already md5-verified in `asset-library/`.
-- 889 keyed sprites plus their `.import` and `.job.json` sidecars, and the 556-file
-  `icons/tint/` set.
-
-Kept: `fx/` (RGB on void for additive blending, never keyed, so never damaged), `audio/`,
-`fonts/`.
-
-Rebuilt: **281 sprites repaired, 33 passed through** (never keyed, or nothing transparent to
-repair). 1131 files are derived sets whose transparent RGB was overwritten and are regenerated
-from their repaired parent rather than repaired: quartets via `staging/phase_f/recut_quartet.py`,
-tints via `vajb-orbit/tools/derive_icon_tints.gd`, chrome `@2x` via
-`staging/phase_f/chrome_2x.py`, then `apply_import_settings.py`, a reimport and
-`staging/phase_d/build_catalog.py`.
+- The whole repaired `_cuts/` set, and `staging/_prune_backup/`, and the v1 keyed sheets except
+  the seven the owner kept (now in `raw/` as `<name>__keyed.png`, marked with the keyed suffix so
+  they cannot be mistaken for a pristine render or picked up by the cutter).
+- `staging/assetpipe/` (the smooth-distance matte and the repair tool) wrote into that deleted
+  set and is superseded by `staging/cut/`. Its measurement of the v1 damage stands as evidence
+  in §1.
+- Every timestamped generation folder inside `vajb-orbit/assets/`; each sheet it held is
+  md5-verified in `asset-library/raw/`. `asset-library/_deleted_manifest.json` is the audit
+  record. `vajb-orbit/assets/fx/` was kept: FX are RGB on void for additive blending, never
+  keyed, so never damaged.
 
 ## 5. Acceptance
 
-1. `staging/assetpipe/repair.py` reports zero sprites needing review, and its residual list is
-   empty or inspected-clean. **Met** — 0 review, 26 inspected-clean residuals.
-2. No sprite gains an opaque rim where the raw had background: the jump gate ring and every
-   single-object sheet still show clean transparency. **Met** — 817k-px aperture preserved.
-3. `vajb-orbit/assets/` contains no timestamped folder and no `.import` for anything not
-   pulled in. **Met.**
-4. Every pulled sprite carries a `.job.json` naming its run, model, prompt and raw sheet. **Met.**
-5. The headless test gate passes: `tests/headless_runner.tscn` -> `[SUMMARY] passed=53 failed=0`.
-   **Open** — see §6.
-6. `ASSET_CATALOG.md` regenerates and matches the pulled file set. **Open** — needs the parent
-   sprites pulled back and the icon chain re-run first.
+1. `cut/` holds one file per named panel of every non-plate sheet, and `_cuts_manifest.json`
+   accounts for each one. **Met** — 510 sprites from 163 sheets, 30 of which are plates, and
+   every one of the 540 files is listed in the manifest with nothing listed that is absent.
+2. No sprite is a fragment of an object: each named panel that has artwork on its sheet gets a
+   sprite, and `_cuts_manifest.json` lists any named panel with no artwork. **Met** — 0 named
+   panels without artwork across all 163 sheets.
+3. Names carry their family prefix. **Met** for every shipped name; the sheets that never
+   shipped are `<prefix>_sheet_<cols>x<rows>_<stamp>__pNN`. Four files keep the game's own
+   unprefixed name because the docs wire them by it: `logo_vajb_orbit` and the three
+   `panel_*` atlases, whose cells are additionally cut as their 20 ICONS_SPEC §7 icons.
+4. Every sprite of a sheet is one size and its object is centred. **Met** — checked over every
+   sheet, and all 268 icon-family sprites are exactly 512×512.
+5. The contact sheets in `_review/` show each cut line on its sheet. **Met.**
+6. The headless test gate passes: `tests/headless_runner.tscn` → `[SUMMARY] passed=53 failed=0`.
+   **Open** — the sets a test preloads have to be pulled into the project first.
+7. `ASSET_CATALOG.md` regenerates and matches the pulled file set. **Open** — same reason.
 
 ## 6. Known open items
 
-- **The project is currently art-less by design.** `ships/`, `env/`, `ui/` and `icons/` hold
-  nothing until a feature pulls what it needs, so scenes referencing those textures render
-  blank and any test that preloads a missing resource will fail. Pull the set a test needs
-  before running it.
-- The 1131 derived icon files (quartets, tints, `@2x`) are not regenerated yet; that chain
-  needs the icon parents pulled back into the project first, then an editor reimport.
-- The residual QC list is a review aid, not a pass/fail gate; it has no automated threshold.
+- **Keying is the next stage and is not written.** `cut/` is RGB on the rendered background.
+  The plan is to key from an isolated sprite, where the background is the frame and the object
+  is centred in it, rather than from a sheet that still holds twenty objects.
+- **The project is art-less by design.** `vajb-orbit/assets/{ships,env,ui,icons}` hold nothing
+  until a feature pulls what it needs, so scenes referencing those textures render blank and any
+  test that preloads a missing resource will fail.
+- The icon quartets (`*_16/48/96/192`), the tint set and the chrome `@2x` cuts are not
+  regenerated. Their tools live in `staging/phase_f/` and are intact; they need the icon parents
+  in the project first, then a reimport.
+- `staging/cut/deepseek_layout.py` costs one vision call per multi-panel sheet (73 sheets,
+  ~2k tokens each, 245k tokens in total) and skips sheets already answered, so a re-run only
+  pays for what is missing. **`deepseek-flash` is the model on that key which actually reads an
+  image**: `deepseek-v4-pro` returns the same prompt-token count with and without an attachment,
+  i.e. it drops them. It reasons at length first, so the prompt asks for the JSON on the first
+  line and the budget is 12k tokens; before that, answers came back empty with only reasoning.
+- 18 sheets still report artwork crossing a cell line. That is informational: a cell line is a
+  nominal division, an object bigger than its cell is cropped whole anyway, and the report only
+  flags it so a mis-drawn sheet cannot pass unnoticed.

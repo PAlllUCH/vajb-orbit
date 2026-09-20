@@ -59,6 +59,32 @@ BESPOKE = {
         ["ui_bar_caps", "ui_minimap_bezel"],
         "prompt: two groups on one row, bar end caps left, minimap bezel right",
     ),
+    # The three Phase B icon atlases. They shipped as whole sheets, so their cells have no
+    # shipped name of their own to be read back, but ICONS_SPEC section 5 names every glyph
+    # and section 7 sanctions the twenty output names; without these entries those twenty
+    # icons the UI asks for have no sprite at all.
+    "20260917-183245": (
+        2,
+        3,
+        ["icon_weapon_laser", "icon_weapon_cannon", "icon_weapon_rocket",
+         "icon_weapon_mine", "icon_weapon_plasma"],
+        "ICONS_SPEC 5 panel 1 weapons: 2x3, laser, cannon, rocket, mine, plasma, last cell blank",
+    ),
+    "20260917-183446": (
+        2,
+        3,
+        ["icon_cargo_ore", "icon_cargo_crate", "icon_cargo_container",
+         "icon_cargo_fuel_cell", "icon_cargo_salvage", "icon_cargo_data_core"],
+        "ICONS_SPEC 5 panel 2 cargo: 2x3, ore, crate, container, fuel cell, salvage, data core",
+    ),
+    "20260917-183722": (
+        3,
+        3,
+        ["icon_gear", "icon_close", "icon_zoom_plus", "icon_zoom_minus", "icon_credits",
+         "icon_shield", "icon_hull", "icon_ammo", "icon_logout"],
+        "ICONS_SPEC 5 panel 3 glyphs: 3x3, gear, close, zoom plus, zoom minus, credits, "
+        "shield, hull, ammo, logout",
+    ),
 }
 
 WORD_NUMBERS = {
@@ -99,7 +125,7 @@ def reads_as_plate(prompt: str, mode: str | None, names: list[str]) -> tuple[boo
     if names and names[0] in PLATE_NAMES:
         return True, "it is a shipped background plate"
     if len(names) == 1 and names[0].startswith("panel_"):
-        return True, "it is a shipped panel asset, a sheet in its own right"
+        return True, "it is a shipped panel asset with no named cells"
     for match in PLATE_RE.finditer(prompt):
         if NEGATION_RE.search(prompt[:match.start()]):
             continue
@@ -227,10 +253,14 @@ def resolve_names(sheets: list[dict]) -> list[tuple]:
     cut, under `<name>__<stamp>`, so the render stays browsable without overwriting.
     """
     owner: dict[str, str] = {}
-    for sheet in sheets:
+    stamps: dict[str, str] = {}
+    for sheet in sorted(sheets, key=lambda item: item["stamp"]):
         for name in sheet["cuts"] + sheet["master"]:
             if name in sheet["shipped"]:
+                # Several runs can ship the same name (a Phase B glyph redrawn in Phase F).
+                # The newest render is the one the project held, so it keeps the plain name.
                 owner[name] = sheet["raw"]
+                stamps[name] = sheet["stamp"]
 
     clashes = []
     for sheet in sheets:
@@ -287,6 +317,7 @@ def build() -> dict:
             "produced": produced,
             "shipped": shipped,
             "master": [],
+            "planned_grid": None,
         }
 
         match = spec_index.get(frozenset(names))
@@ -324,8 +355,10 @@ def build() -> dict:
             problems.append((run["family"], run["stamp"], run["run_key"],
                              f"grid from the prompt only: {grid}, {len(names)} names"))
 
+        # Judged on the plan's own cells, not on what shipped: an atlas whose cells are now
+        # named is no longer a plate, however it was shipped.
         entry["plate"], entry["plate_because"] = reads_as_plate(
-            run["prompt"] or "", match[0][1].get("mode") if match else None, names)
+            run["prompt"] or "", match[0][1].get("mode") if match else None, entry["cuts"])
         if entry["plate"] and len(entry["cuts"]) > 1:
             problems.append((run["family"], run["stamp"], run["run_key"],
                              "reads as a whole-frame plate but the plan splits it into panels"))
@@ -335,6 +368,7 @@ def build() -> dict:
             problems.append((run["family"], run["stamp"], run["run_key"],
                              f"grid {cols}x{rows} holds {cols * rows} cells but the plan "
                              f"names {len(entry['cuts'])} panels"))
+        entry["planned_grid"] = list(entry["grid"])
         entry["name_count"] = len(entry["cuts"])
         sheets.append(entry)
 

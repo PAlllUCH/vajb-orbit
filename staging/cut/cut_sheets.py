@@ -52,20 +52,31 @@ LIBRARY = WORKSPACE / "asset-library"
 PLAN = LIBRARY / "_sheets.json"
 CUTS = LIBRARY / "cut"
 MANIFEST = LIBRARY / "_cuts_manifest.json"
+LAYOUT = LIBRARY / "_layout_deepseek.json"
 
 BORDER = 4            # px of each edge sampled to learn the sheet's outside colour
 INK_TOL = 8           # max-channel distance from the outside colour that still counts as background
+TOLERANCES = (8, 12, 16, 24, 32, 48)   # raised in turn until the ink is not the whole frame
+MAX_COMPONENT_SHARE = 0.9   # of the frame: a piece spanning more than this is background
 BAND_QUANTUM = 16     # colour quantisation when counting the outside colour
+BACKGROUND_MIN_SHARE = 0.08   # a border colour below this share is artwork, not background
+BACKGROUND_MAX_COLOURS = 4    # a flat sheet has one; a baked checkerboard has two
 BRIDGE = 10           # px of dilation, so the strokes of one object join into one blob
-MIN_OBJECT_PX = 400   # ink pixels below which a blob is grain, not artwork
+MIN_OBJECT_PX = 500   # ink pixels below which a connected piece is grain, not artwork
 MARGIN_SHARE = 0.06   # canvas margin either side, as a share of the canvas's longest side
 MIN_MARGIN = 8        # px floor on that margin
 ICON_CANVAS = 512     # the one size every icon is written at
 UNIFORM_FAMILIES = {"icons"}  # families whose objects are all scaled to the same extent
 
 
-def outside_colour(image: np.ndarray) -> tuple[int, int, int]:
-    """The sheet's own background, as the most common colour on its border."""
+def outside_colours(image: np.ndarray) -> list[tuple[int, int, int]]:
+    """The colours the sheet's outside is made of, from its border.
+
+    Usually one. Some renders answered a request for transparency by baking a checkerboard
+    into the RGB, and then the outside is two colours -- calling one of them artwork makes half
+    the frame read as ink, which is what fused a drone-swarm sheet into six blobs. Any border
+    colour holding at least `BACKGROUND_MIN_SHARE` of the border is background.
+    """
     strips = np.concatenate([
         image[:BORDER].reshape(-1, 3),
         image[-BORDER:].reshape(-1, 3),
@@ -75,14 +86,55 @@ def outside_colour(image: np.ndarray) -> tuple[int, int, int]:
     quantised = (strips // BAND_QUANTUM).astype(np.int32)
     keys = quantised[:, 0] * 4096 + quantised[:, 1] * 64 + quantised[:, 2]
     values, counts = np.unique(keys, return_counts=True)
-    mask = keys == values[counts.argmax()]
-    return tuple(int(round(value)) for value in strips[mask].mean(axis=0))
+    order = np.argsort(counts)[::-1]
+    colours = []
+    for index in order:
+        if counts[index] / len(strips) < BACKGROUND_MIN_SHARE:
+            break
+        if len(colours) >= BACKGROUND_MAX_COLOURS:
+            break
+        colours.append(tuple(int(round(value))
+                             for value in strips[keys == values[index]].mean(axis=0)))
+    return colours or [(int(round(value)) for value in strips.mean(axis=0))]
 
 
-def ink_mask(image: np.ndarray, background: tuple[int, int, int]) -> np.ndarray:
-    """Boolean mask of pixels that are not the sheet's background."""
-    delta = np.abs(image.astype(np.int16) - np.array(background, dtype=np.int16))
-    return delta.max(axis=2) > INK_TOL
+def ink_mask(image: np.ndarray, background, tol: int = INK_TOL) -> np.ndarray:
+    """Pixels that are none of the sheet's background colours."""
+    if isinstance(background, tuple):
+        background = [background]
+    pixels = image.astype(np.int16)
+    delta = np.full(image.shape[:2], 255, dtype=np.int16)
+    for colour in background:
+        delta = np.minimum(delta, np.abs(pixels - np.array(colour, dtype=np.int16)).max(axis=2))
+    return delta > tol
+
+
+def biggest_piece(mask: np.ndarray) -> int:
+    """The pixel count of the largest piece of artwork the mask holds."""
+    labelled, count = ndimage.label(mask)
+    if not count:
+        return 0
+    sizes = np.bincount(labelled.ravel())[1:]
+    sizes = sizes[sizes >= MIN_OBJECT_PX]
+    return int(sizes.max()) if len(sizes) else 0
+
+
+def artwork_mask(image: np.ndarray, background, cells: int) -> tuple[np.ndarray, int]:
+    """The ink mask, at the lowest tolerance that does not swallow the frame.
+
+    A sheet whose background is a gradient rather than a flat colour reads as ink almost
+    everywhere at threshold 8, and then one piece spans the whole frame and every cell is
+    handed the same giant object -- which is what happened to one of the two button-plate
+    sheets. Raising the tolerance until the largest piece is a sane share of a cell is what
+    separates the artwork from a noisy background; the tolerance used is reported.
+    """
+    limit = image.shape[0] * image.shape[1] * MAX_COMPONENT_SHARE * (2 if cells <= 1 else 1)
+    mask = ink_mask(image, background, TOLERANCES[0])
+    for tol in TOLERANCES:
+        mask = ink_mask(image, background, tol)
+        if biggest_piece(mask) <= limit:
+            return mask, tol
+    return mask, TOLERANCES[-1]
 
 
 def tight_box(mask: np.ndarray, window: tuple[int, int, int, int]):
@@ -97,28 +149,42 @@ def tight_box(mask: np.ndarray, window: tuple[int, int, int, int]):
             int(left + columns[-1]) + 1, int(top + rows[-1]) + 1)
 
 
-def blobs_on(mask: np.ndarray) -> list[tuple[int, int, int, int]]:
+def blobs_on(mask: np.ndarray, cells: int = 1) -> list[tuple[int, int, int, int]]:
     """Every piece of artwork on the sheet, as a bounding box in sheet coordinates.
 
-    The mask is dilated before labelling so the strokes of one shape join, then each piece's
-    box is tightened back onto the undilated mask so centring is not thrown off by the
-    bridge. A piece that is still tiny after that is film grain.
+    Grain has to go **before** anything is bridged. Measured on `icon_map`, threshold 8 leaves
+    25,064 components — the film grain the renders bake in — and bridging them joins the whole
+    frame into one blob of 1.6M px, which is what silently merged every icon on a sheet into a
+    single object. So: label, drop every component smaller than `MIN_OBJECT_PX` (real artwork on
+    these sheets is 10k px and up, grain is tens of px), then bridge what is left so the strokes
+    of one shape join, and tighten each box back onto the clean mask.
+
+    On a sheet of more than one panel, a piece whose box spans nearly the whole frame is a faint
+    backdrop structure, not an object — one button-plate sheet carries such a piece, and it
+    swallowed whichever cell its centre landed in.
     """
-    grown = ndimage.binary_dilation(mask, np.ones((BRIDGE, BRIDGE), dtype=bool))
-    labelled, count = ndimage.label(grown)
+    labelled, count = ndimage.label(mask)
     if not count:
         return []
+    sizes = np.bincount(labelled.ravel())
+    keep = np.flatnonzero(sizes >= MIN_OBJECT_PX)
+    keep = keep[keep != 0]
+    if not len(keep):
+        return []
+    clean = np.isin(labelled, keep)
+
+    height, width = mask.shape
+    grown = ndimage.binary_dilation(clean, np.ones((BRIDGE, BRIDGE), dtype=bool))
     found = []
-    for window in ndimage.find_objects(labelled):
+    for window in ndimage.find_objects(ndimage.label(grown)[0]):
         if window is None:
             continue
-        box = tight_box(mask, (window[1].start, window[0].start, window[1].stop, window[0].stop))
-        if box is None:
+        if cells > 1 and (window[1].stop - window[1].start) > width * MAX_COMPONENT_SHARE \
+                and (window[0].stop - window[0].start) > height * MAX_COMPONENT_SHARE:
             continue
-        left, top, right, bottom = box
-        if int(mask[top:bottom, left:right].sum()) < MIN_OBJECT_PX:
-            continue
-        found.append(box)
+        box = tight_box(clean, (window[1].start, window[0].start, window[1].stop, window[0].stop))
+        if box is not None:
+            found.append(box)
     return found
 
 
@@ -156,11 +222,20 @@ def fit(crop: Image.Image, canvas: tuple[int, int], uniform: bool) -> Image.Imag
                        Image.LANCZOS)
 
 
+def read_arrangements() -> dict:
+    """The arrangements a vision model read off the renders, if that pass has been run."""
+    if not LAYOUT.exists():
+        return {}
+    return json.loads(LAYOUT.read_text(encoding="utf-8")).get("sheets", {})
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--only", default="", help="only sheets whose raw stem contains this")
     parser.add_argument("--check", action="store_true", help="report only, write nothing")
     parser.add_argument("--verbose", action="store_true", help="one line per sheet")
+    parser.add_argument("--replace", action="store_true",
+                        help="clear stale .png from cut/ first (names change between runs)")
     args = parser.parse_args()
 
     plan = json.loads(PLAN.read_text(encoding="utf-8"))
@@ -170,21 +245,46 @@ def main() -> int:
         return 1
     if not args.check:
         CUTS.mkdir(exist_ok=True)
+        stale = sorted(CUTS.glob("*.png"))
+        if stale and not args.replace:
+            print(f"cut/ already holds {len(stale)} file(s) and the cutter never deletes: "
+                  f"re-run with --replace to clear them first, or the output will be a mix of "
+                  f"two runs")
+            return 1
+        if stale:
+            for path in stale:
+                path.unlink()
+            print(f"cleared {len(stale)} stale file(s) from cut/")
 
-    entries, missing, straddling, oversized = [], [], [], []
+    seen = read_arrangements()
+    entries, missing, straddling, oversized, relaid, raised = [], [], [], [], [], []
     plates = sprites = resized = 0
     for sheet in sheets:
         image = np.array(Image.open(LIBRARY / sheet["raw"]).convert("RGB"),
                          dtype=np.uint8, copy=True)
         height, width = image.shape[:2]
-        grid = tuple(sheet["grid"])
+        planned = tuple(sheet["grid"])
+        # A model that looked at the render decides the arrangement when its answer holds the
+        # same number of cells; otherwise the prompt's arrangement stands.
+        read = seen.get(sheet["raw"], {})
+        grid = planned
+        if read and len(sheet["cuts"]) > 1 and not sheet.get("plate") \
+                and read.get("columns", 0) * read.get("rows", 0) == planned[0] * planned[1]:
+            grid = (read["columns"], read["rows"])
+            if grid != planned:
+                relaid.append((sheet["raw"], f"{planned[0]}x{planned[1]}", f"{grid[0]}x{grid[1]}",
+                               f"read by {read.get('model')}, confidence {read.get('confidence')}"))
         unnamed = "unnamed" in sheet["plan_from"]
+        tolerance = INK_TOL
         entry = {
             "raw": sheet["raw"],
             "family": sheet["family"],
             "stamp": sheet["stamp"],
             "run_key": sheet["run_key"],
             "grid": list(grid),
+            "planned_grid": list(planned),
+            "ink_tolerance": tolerance,
+            "arrangement_from": "model" if grid != planned else "plan",
             "plate": bool(sheet.get("plate")),
             "plate_because": sheet.get("plate_because", ""),
             "plan_from": sheet["plan_from"],
@@ -202,8 +302,10 @@ def main() -> int:
                 print(f"  {sheet['raw']:62} plate {width}x{height} -> {sheet['cuts'][0]}")
             continue
 
-        mask = ink_mask(image, outside_colour(image))
-        pieces = blobs_on(mask)
+        mask, tolerance = artwork_mask(image, outside_colours(image), max(1, len(sheet["cuts"])))
+        if tolerance != INK_TOL:
+            raised.append((sheet["raw"], tolerance, len(sheet["cuts"])))
+        pieces = blobs_on(mask, len(sheet["cuts"]))
         columns, rows = cell_bounds(grid, width, height)
         for box in pieces:
             if any(box[0] < line < box[2] for line in columns) \
@@ -273,6 +375,14 @@ def main() -> int:
                   f"{len(pieces)} piece(s) -> {len(cells)} sprite(s)")
 
     print(f"sheets {len(entries)}  plates {plates}  sprites {sprites}  resized {resized}")
+    if raised:
+        print(f"{len(raised)} sheet(s) whose background needed a higher ink tolerance:")
+        for raw, tol, cells in raised:
+            print(f"  tolerance {tol:3} for {cells:2} cell(s)   [{raw}]")
+    if relaid:
+        print(f"{len(relaid)} sheet(s) cut in an arrangement a model read off the render:")
+        for raw, was, now, why in relaid:
+            print(f"  {was} -> {now:8} {why:44} [{raw}]")
     if straddling:
         print(f"{len(straddling)} sheet(s) with artwork across a cell line (worth an eye):")
         for raw, box in straddling:
@@ -305,7 +415,9 @@ def main() -> int:
         ),
         "counts": {"sheets": len(entries), "plates": plates, "sprites": sprites,
                    "resized": resized, "sheets_with_artwork_across_a_cell_line": len(straddling),
-                   "named_panels_without_artwork": len(missing)},
+                   "named_panels_without_artwork": len(missing),
+                   "arrangement_read_by_a_model": len(relaid),
+                   "tolerance_raised": len(raised)},
         "sheets": entries,
     }, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"wrote {MANIFEST}")

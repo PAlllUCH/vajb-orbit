@@ -1,0 +1,77 @@
+describing 710 file(s) with deepseek-chat, 8 at a time
+[10/710] 3.1/s  cut/env_asteroid_L2.png  {"subject": "asteroid rock", "kind": "asteroid", "detail": "dark craggy rust veined", "panels": 1, "flat_bg": true}
+[20/710] 3.5/s  cut/env_base_mining.png  {"subject": "mining station", "kind": "station", "detail": "cylindrical drills and mechanical arms", "panels": 1, "flat_bg": false}
+[30/710] 3.7/s  cut/env_nebula_veil.png  {"subject": "nebula veil", "kind": "backdrop", "detail": "dark blue cloudy texture", "panels": 1, "flat_bg": false}
+[40/710] 3.9/s  cut/env_outpost_repair.png  {"subject": "repair outpost", "kind": "station", "detail": "weathered industrial robotic arms", "panels": 1, "flat_bg": false}
+[50/710] 4.0/s  cut/env_prop_plate_section.png  {"subject": "torn metal plate", "kind": "debris", "detail": "rusted riveted jagged edges", "panels": 1, "flat_bg": true}
+[60/710] 4.2/s  cut/env_sheet_1x1_20260917_183315.png  {"subject": "capital ships", "kind": "ship", "detail": "weathered grey hulls with orange lights", "panels": 7, "flat_bg": false}
+[70/710] 3.9/s  cut/env_sheet_1x1_20260918_112053.png  {"subject": "space debris field", "kind": "debris", "detail": "dark wreckage ring border", "panels": 1, "flat_bg": true}
+[80/710] 4.0/s  cut/fx_emp_arc.png  {"subject": "emp arc", "kind": "fx", "detail": "orange lightning radial burst", "panels": 1, "flat_bg": true}
+[90/710] 4.0/s  cut/fx_muzzle_flash.png  {"subject": "muzzle flash", "kind": "fx", "detail": "orange sparks to smoke", "panels": 4, "flat_bg": true}
+[100/710] 4.1/s  cut/fx_sheet_4x1_20260917_183223__p02.png  {"subject": "muzzle flash", "kind": "fx", "detail": "orange fiery blast sparks", "panels": 1, "flat_bg": true}
+[110/710] 4.2/s  cut/icon_booster_damage.png  {"subject": "damage booster", "kind": "icon", "detail": "spiked conical metal drill", "panels": 1, "flat_bg": false}
+[120/710] 4.4/s  cut/icon_cargo_fuel_cell.png  {"subject": "fuel cell canister", "kind": "icon", "detail": "black canister white background", "panels": 1, "flat_bg": true}
+[130/710] 4.5/s  cut/icon_credits__20260917-183722.png  {"subject": "hexagon credit icon", "kind": "icon", "detail": "black hexagon split vertically", "panels": 1, "flat_bg": true}
+[140/710] 4.6/s  cut/icon_ingot_aluminium.png  {"subject": "aluminium ingot", "kind": "pickup", "detail": "black metal bar white edges", "panels": 1, "flat_bg": true}
+[150/710] 4.7/s  cut/icon_ingot_krilium.png  {"subject": "krilium ingot", "kind": "pickup", "detail": "black angular bar silhouette", "panels": 1, "flat_bg": true}
+[160/710] 4.8/s  cut/icon_ingot_voidglass.png  {"subject": "voidglass ingot", "kind": "icon", "detail": "black cylindrical metal bar", "panels": 1, "flat_bg": true}
+[170/710] 4.8/s  cut/icon_map_node_home.png  {"subject": "hexagon map node", "kind": "icon", "detail": "weathered metal hexagon ring", "panels": 2, "flat_bg": true}
+[180/710] 4.9/s  cut/icon_mineral_iridium.png  {"subject": "mineral iridium crystal", "kind": "pickup", "detail": "black jagged crystalline shard", "panels": 1, "flat_bg": true}
+[190/710] 5.0/s  cut/icon_mineral_titanium.png  {"subject": "mineral icon", "kind": "icon", "detail": "black faceted titanium crystal", "panels": 1, "flat_bg": true}
+[200/710] 5.0/s  cut/icon_module_e_ion.png  {"subject": "ion engine module", "kind": "icon", "detail": "black silhouette ion thruster", "panels": 1, "flat_bg": true}
+[210/710] 5.1/s  cut/icon_module_s_ion.png  {"subject": "ion module icon", "kind": "icon", "detail": "black arch with slotted core", "panels": 1, "flat_bg": true}
+[220/710] 5.1/s  cut/icon_service_insurance.png  {"subject": "shield insurance icon", "kind": "icon", "detail": "black shield with square hole", "panels": 1, "flat_bg": true}
+[230/710] 5.1/s  cut/icon_sheet_2x2_20260918_113028__p04.png  {"subject": "star field nebula", "kind": "backdrop", "detail": "dark blue starfield nebula", "panels": 1, "flat_bg": false}
+[240/710] 5.2/s  cut/icon_sheet_2x3_20260917_183109__p03.png  {"subject": "rusted missile", "kind": "prop", "detail": "weathered metal finned projectile", "panels": 1, "flat_bg": true}
+[250/710] 5.2/s  cut/icon_sheet_3x3_20260918_110409__p02.png  {"subject": "plasma cutter tool", "kind": "prop", "detail": "industrial metal cutting clamp", "panels": 1, "flat_bg": true}
+[260/710] 5.2/s  cut/icon_sheet_3x3_20260918_110458__p03.png  {"subject": "metal thruster nozzle", "kind": "prop", "detail": "rusty bell shaped exhaust cone", "panels": 1, "flat_bg": false}
+[270/710] 5.3/s  cut/icon_sheet_3x3_20260918_110547__p04.png  {"subject": "open metal chest", "kind": "prop", "detail": "rusted reinforced lid open", "panels": 1, "flat_bg": true}
+[280/710] 5.3/s  cut/icon_sheet_3x3_20260918_111327__p06.png  {"subject": "ui icon sheet", "kind": "ui_frame", "detail": "dark rectangle with corner icons", "panels": 1, "flat_bg": true}
+[290/710] 5.3/s  cut/icon_sheet_3x3_20260918_111411__p06.png  {"subject": "rank insignia", "kind": "icon", "detail": "three white chevrons badge", "panels": 1, "flat_bg": true}
+[300/710] 5.3/s  cut/icon_sheet_3x3_20260918_111450__p08.png  {"subject": "black geometric icon", "kind": "icon", "detail": "black trapezoid with three bars", "panels": 1, "flat_bg": true}
+[310/710] 5.4/s  cut/icon_sheet_4x2_20260918_110642__p08.png  {"subject": "armored hull frame", "kind": "ui_frame", "detail": "riveted metal octagonal border", "panels": 1, "flat_bg": true}
+[320/710] 5.4/s  cut/icon_sheet_4x2_20260918_111044__p02.png  {"subject": "bar icon", "kind": "icon", "detail": "three vertical white bars", "panels": 1, "flat_bg": true}
+[330/710] 5.4/s  cut/icon_sheet_5x4_20260918_110236__p06.png  {"subject": "dark metal asteroid", "kind": "asteroid", "detail": "faceted dark metallic rock", "panels": 1, "flat_bg": true}
+[340/710] 5.4/s  cut/icon_sheet_5x4_20260918_110236__p14.png  {"subject": "spiked asteroid", "kind": "asteroid", "detail": "dark jagged metallic spikes", "panels": 1, "flat_bg": true}
+[350/710] 5.4/s  cut/icon_sheet_5x4_20260918_110318__p04.png  {"subject": "stone ingot", "kind": "prop", "detail": "layered dark stone block", "panels": 1, "flat_bg": true}
+[360/710] 5.4/s  cut/icon_sheet_5x4_20260918_110318__p15.png  {"subject": "stone block", "kind": "prop", "detail": "beveled dark stone ingot", "panels": 1, "flat_bg": true}
+[370/710] 5.5/s  cut/icon_slot_c.png  {"subject": "icon slot", "kind": "ui_slot", "detail": "white square corner brackets", "panels": 1, "flat_bg": true}
+[380/710] 5.5/s  cut/icon_status_drained.png  {"subject": "battery icon frame", "kind": "ui_frame", "detail": "battered metal battery outline", "panels": 1, "flat_bg": true}
+[390/710] 5.5/s  cut/icon_weapon_rocket.png  {"subject": "rocket icon", "kind": "icon", "detail": "black silhouette rocket shape", "panels": 1, "flat_bg": true}
+[400/710] 5.5/s  cut/ship_boss_boneyard.png  {"subject": "boss boneyard ship", "kind": "ship", "detail": "battered derelict with glowing engines", "panels": 3, "flat_bg": true}
+[410/710] 5.5/s  cut/ship_corvette_mmo_back.png  {"subject": "corvette ship", "kind": "ship", "detail": "weathered hull twin engines", "panels": 1, "flat_bg": true}
+[420/710] 5.5/s  cut/ship_drone_swarm_front.png  {"subject": "drone ship", "kind": "ship", "detail": "dark rusted pointed hull", "panels": 1, "flat_bg": true}
+[430/710] 5.4/s  cut/ship_fighter_concord_three_quarter.png  {"subject": "concord fighter", "kind": "ship", "detail": "riveted rusty rocket fighter", "panels": 1, "flat_bg": true}
+[440/710] 5.4/s  cut/ship_fighter_mmo_side.png  {"subject": "fighter ship", "kind": "ship", "detail": "twin engine side profile", "panels": 1, "flat_bg": false}
+[450/710] 5.4/s  cut/ship_freighter_side.png  {"subject": "freighter ship", "kind": "ship", "detail": "boxy weathered side profile", "panels": 3, "flat_bg": true}
+[460/710] 5.5/s  cut/ship_mine_layer_side.png  {"subject": "mining ship", "kind": "ship", "detail": "weathered side profile vessel", "panels": 1, "flat_bg": false}
+[470/710] 5.5/s  cut/ship_patrol_three_quarter.png  {"subject": "patrol ship", "kind": "ship", "detail": "twin engine glowing exhaust", "panels": 1, "flat_bg": false}
+[480/710] 5.5/s  cut/ship_sheet_2x2_20260918_112721__p02.png  {"subject": "armored spaceship", "kind": "ship", "detail": "twin orange engine thrusters", "panels": 1, "flat_bg": true}
+[490/710] 5.5/s  cut/ship_trader_side.png  {"subject": "trader ship", "kind": "ship", "detail": "bulky cargo containers rusted", "panels": 1, "flat_bg": true}
+[500/710] 5.4/s  cut/ship_vanguard_mmo_side.png  {"subject": "vanguard ship", "kind": "ship", "detail": "blocky twin engine armored", "panels": 1, "flat_bg": false}
+[510/710] 5.5/s  cut/ui_button_plate_hover__20260917-185457.png  {"subject": "ui button plate", "kind": "ui_button", "detail": "dark metal glowing orange edge", "panels": 1, "flat_bg": true}
+[520/710] 5.5/s  cut/ui_minimap_bezel.png  {"subject": "minimap bezel", "kind": "ui_frame", "detail": "dark metal frame with rivets", "panels": 1, "flat_bg": false}
+[530/710] 5.5/s  cut/ui_slot_cargo_hover.png  {"subject": "cargo slot", "kind": "ui_slot", "detail": "metal frame with crate icon", "panels": 1, "flat_bg": false}
+[540/710] 5.5/s  cut/ui_slot_weapon_pressed.png  {"subject": "weapon slot frame", "kind": "ui_slot", "detail": "dark pressed pistol slot", "panels": 1, "flat_bg": false}
+[550/710] 5.4/s  raw/env_base_shipyard.png  {"sheet_subject": "large industrial space station", "kind": "station", "columns": 1, "rows": 1, "objects": ["large industrial space station"], "flat_b
+[560/710] 5.4/s  raw/env_loading_bg.png  {"sheet_subject": "derelict ship wreckage in space", "kind": "debris", "columns": 1, "rows": 1, "objects": ["central broken hull", "upper right circul
+[570/710] 5.4/s  raw/env_pickup__keyed.png  {"sheet_subject": "six weathered sci-fi pickup containers", "kind": "pickup", "columns": 2, "rows": 3, "objects": ["crate with x panel", "tool crate w
+[580/710] 5.3/s  raw/env_stars_layer1.png  {"sheet_subject": "seamless starfield layer", "kind": "backdrop", "columns": 1, "rows": 1, "objects": ["starfield layer"], "flat_bg": true}
+[590/710] 5.3/s  raw/env_wreck_hulk.png  {"sheet_subject": "derelict spaceship wreck hulk", "kind": "debris", "columns": 1, "rows": 1, "objects": ["wrecked ship hull"], "flat_bg": true}
+[600/710] 5.3/s  raw/flat-vector-icon-sheet-5x4-grid-icons__20260918-110236.png  {"sheet_subject": "dark space rock mineral icons", "kind": "prop", "columns": 5, "rows": 4, "objects": ["dark jagged boulder", "rusty fractured rock",
+[610/710] 5.2/s  raw/fx_jump_portal.png  {"sheet_subject": "glowing orange jump portal ring", "kind": "fx", "columns": 1, "rows": 1, "objects": ["orange jump portal"], "flat_bg": false}
+[620/710] 5.2/s  raw/grimdark-painted-sci-fi-semi-realistic__20260918-111044.png  {"sheet_subject": "black space station module icons", "kind": "icon", "columns": 4, "rows": 2, "objects": ["trapezoid cup module", "barred rectangular
+[630/710] 5.2/s  raw/icon_booster.png  {"sheet_subject": "space combat booster icons", "kind": "other", "columns": 3, "rows": 2, "objects": ["twin engine booster", "armored drill booster", 
+[640/710] 5.2/s  raw/logo-vajb-orbit-the-word-vajb-orbit-as.png  {"sheet_subject": "vajb orbit game logo", "kind": "logo", "columns": 1, "rows": 1, "objects": ["vajb orbit wordmark"], "flat_bg": false}
+[650/710] 5.1/s  raw/same-2x2-rotation-sheet-of-the-same-enem__20260918-112721.png  {"sheet_subject": "enemy ship rotation views", "kind": "ship", "columns": 2, "rows": 2, "objects": ["ship rear view", "ship angled view", "ship side v
+[660/710] 5.1/s  raw/seamless-tileable-void-haze-texture-abs.png  {"sheet_subject": "large weathered sci-fi battlecruiser", "kind": "ship", "columns": 1, "rows": 1, "objects": ["weathered grey battlecruiser"], "flat_
+[670/710] 5.1/s  raw/ship_corvette.png  {"sheet_subject": "corvette ship four views", "kind": "ship", "columns": 2, "rows": 2, "objects": ["corvette top view", "corvette angled view", "corve
+[680/710] 5.1/s  raw/ship_freighter.png  {"sheet_subject": "freighter ship sprite sheet", "kind": "ship", "columns": 2, "rows": 2, "objects": ["freighter angled down", "freighter angled up", 
+[690/710] 5.0/s  raw/single-small-energy-ring-burnt-ember-c__20260917-183628.png  {"sheet_subject": "burnt ember energy ring", "kind": "gate", "columns": 1, "rows": 1, "objects": ["burnt ember energy ring"], "flat_bg": false}
+[700/710] 5.0/s  raw/ui-button-plate-a-square-panel-with-fou__keyed.png  {"sheet_subject": "dark metal button plates", "kind": "ui_frame", "columns": 2, "rows": 2, "objects": ["beveled studded plate", "rusted studded plate"
+[710/710] 5.0/s  raw/ui_slot_inventory.png  {"sheet_subject": "dark metal inventory slot frames", "kind": "ui_slot", "columns": 2, "rows": 2, "objects": ["dark square slot frame", "dark square s
+
+cut: 540 answered, 0 failed
+raw: 170 answered, 0 failed
+usage: {'prompt_tokens': 400992, 'completion_tokens': 38691, 'calls': 710}
+total files answered: 710

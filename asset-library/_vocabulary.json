@@ -1,0 +1,8084 @@
+{
+ "docs": {
+  "ui_insignia_": {
+   "files": [
+    "docs/ASSETS.md",
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_WIRING_HANDOFF.md"
+   ],
+   "refs": 4
+  },
+  "ship_stats": {
+   "files": [
+    "docs/CONTRACTS.md",
+    "docs/gameplay/18_engine_spec.md"
+   ],
+   "refs": 2
+  },
+  "ship_fit": {
+   "files": [
+    "docs/CONTRACTS.md",
+    "docs/gameplay/17_coder_handoff.md",
+    "docs/gameplay/18_engine_spec.md"
+   ],
+   "refs": 4
+  },
+  "ui_hud": {
+   "files": [
+    "docs/assets/research/ships_weapons.md",
+    "docs/assets/research/REVIEW.md",
+    "docs/assets/research/grimdark_ui_hud.md",
+    "docs/assets/research/REVIEW_GRIMDARK.md"
+   ],
+   "refs": 57
+  },
+  "ui_sheet": {
+   "files": [
+    "docs/assets/research/ui_hud.md"
+   ],
+   "refs": 1
+  },
+  "ship_11": {
+   "files": [
+    "docs/assets/research/grimdark_ships.md"
+   ],
+   "refs": 2
+  },
+  "fx_repair_pulse": {
+   "files": [
+    "docs/design/STYLE_BIBLE.md",
+    "docs/design/FX_SPEC.md",
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 9
+  },
+  "fx_anomaly_shimmer": {
+   "files": [
+    "docs/design/STYLE_BIBLE.md",
+    "docs/design/FX_SPEC.md",
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 4
+  },
+  "fx_anomaly_grave_glow": {
+   "files": [
+    "docs/design/STYLE_BIBLE.md",
+    "docs/design/FX_SPEC.md",
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 4
+  },
+  "fx_anomaly_rift": {
+   "files": [
+    "docs/design/STYLE_BIBLE.md",
+    "docs/design/FX_SPEC.md",
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 4
+  },
+  "panel_raised": {
+   "files": [
+    "docs/design/UI_SPEC.md",
+    "docs/design/IMPLEMENTATION_PLAN.md",
+    "docs/design/THEME_AUDIO_EXTENSION.md"
+   ],
+   "refs": 12
+  },
+  "ui_up": {
+   "files": [
+    "docs/design/UI_SPEC.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 2
+  },
+  "ui_down": {
+   "files": [
+    "docs/design/UI_SPEC.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 2
+  },
+  "ui_click": {
+   "files": [
+    "docs/design/AUDIO_SPEC.md",
+    "docs/design/PHASE_C_STATUS.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_WIRING_HANDOFF.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/MAIN_MENU_V2.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 14
+  },
+  "ui_click_01": {
+   "files": [
+    "docs/design/AUDIO_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "ui_hover_01": {
+   "files": [
+    "docs/design/AUDIO_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "ui_hover": {
+   "files": [
+    "docs/design/AUDIO_SPEC.md",
+    "docs/design/PHASE_C_STATUS.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_WIRING_HANDOFF.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/MAIN_MENU_V2.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 10
+  },
+  "env_loading_bg": {
+   "files": [
+    "docs/design/MAIN_MENU_SPEC.md",
+    "docs/design/ENVIRONMENT_SPEC.md",
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/GENERATION_PLAN.md",
+    "docs/design/IMPLEMENTATION_PLAN.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/MAIN_MENU_V2.md"
+   ],
+   "refs": 13
+  },
+  "ui_loading_backdrop": {
+   "files": [
+    "docs/design/MAIN_MENU_SPEC.md",
+    "docs/design/ENVIRONMENT_SPEC.md",
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/MAIN_MENU_V2.md"
+   ],
+   "refs": 6
+  },
+  "fx_ember_pulse": {
+   "files": [
+    "docs/design/MAIN_MENU_SPEC.md",
+    "docs/design/FX_SPEC.md",
+    "docs/design/IMPLEMENTATION_PLAN.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/MAIN_MENU_V2.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 11
+  },
+  "env_menu_bg": {
+   "files": [
+    "docs/design/ENVIRONMENT_SPEC.md",
+    "docs/design/GENERATION_PLAN.md",
+    "docs/design/IMPLEMENTATION_PLAN.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/MAIN_MENU_V2.md"
+   ],
+   "refs": 15
+  },
+  "env_wreck_hulk": {
+   "files": [
+    "docs/design/ENVIRONMENT_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_WIRING_HANDOFF.md"
+   ],
+   "refs": 5
+  },
+  "env_station": {
+   "files": [
+    "docs/design/ENVIRONMENT_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 5
+  },
+  "env_stars_layer1": {
+   "files": [
+    "docs/design/ENVIRONMENT_SPEC.md",
+    "docs/design/IMPLEMENTATION_PLAN.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 6
+  },
+  "env_stars_layer3": {
+   "files": [
+    "docs/design/ENVIRONMENT_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 5
+  },
+  "env_planet_moon": {
+   "files": [
+    "docs/design/ENVIRONMENT_SPEC.md",
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 9
+  },
+  "env_jump_gate": {
+   "files": [
+    "docs/design/ENVIRONMENT_SPEC.md",
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 5
+  },
+  "env_debris_field": {
+   "files": [
+    "docs/design/ENVIRONMENT_SPEC.md",
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 11
+  },
+  "env_nebula_veil": {
+   "files": [
+    "docs/design/ENVIRONMENT_SPEC.md",
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 6
+  },
+  "ui_backdrop_hangar": {
+   "files": [
+    "docs/design/ENVIRONMENT_SPEC.md",
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/MAIN_MENU_V2.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 12
+  },
+  "fx_muzzle_flash": {
+   "files": [
+    "docs/design/FX_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_WIRING_HANDOFF.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 5
+  },
+  "fx_explosion": {
+   "files": [
+    "docs/design/FX_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_WIRING_HANDOFF.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 7
+  },
+  "fx_laser_bolt": {
+   "files": [
+    "docs/design/FX_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "fx_muzzle_flash_f1": {
+   "files": [
+    "docs/design/FX_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "fx_engine_trail": {
+   "files": [
+    "docs/design/FX_SPEC.md",
+    "docs/design/GENERATION_PLAN.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 5
+  },
+  "fx_explosion_f1": {
+   "files": [
+    "docs/design/FX_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "fx_shield_ripple": {
+   "files": [
+    "docs/design/FX_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "fx_mining_beam": {
+   "files": [
+    "docs/design/FX_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_WIRING_HANDOFF.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 4
+  },
+  "fx_cargo_pulse": {
+   "files": [
+    "docs/design/FX_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "fx_hull_critical_vignette": {
+   "files": [
+    "docs/design/FX_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 3
+  },
+  "fx_jump_portal": {
+   "files": [
+    "docs/design/FX_SPEC.md",
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 5
+  },
+  "fx_missile_trail": {
+   "files": [
+    "docs/design/FX_SPEC.md",
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_WIRING_HANDOFF.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 7
+  },
+  "fx_shield_break": {
+   "files": [
+    "docs/design/FX_SPEC.md",
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_WIRING_HANDOFF.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 8
+  },
+  "fx_tractor_beam": {
+   "files": [
+    "docs/design/FX_SPEC.md",
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 6
+  },
+  "fx_emp_arc": {
+   "files": [
+    "docs/design/FX_SPEC.md",
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 6
+  },
+  "fx_secondary_explosion": {
+   "files": [
+    "docs/design/FX_SPEC.md",
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 6
+  },
+  "fx_dust_streak": {
+   "files": [
+    "docs/design/FX_SPEC.md"
+   ],
+   "refs": 2
+  },
+  "fx_smoke_plume": {
+   "files": [
+    "docs/design/FX_SPEC.md"
+   ],
+   "refs": 2
+  },
+  "fx_arc_spark": {
+   "files": [
+    "docs/design/FX_SPEC.md"
+   ],
+   "refs": 2
+  },
+  "fx_shield_shatter": {
+   "files": [
+    "docs/design/FX_SPEC.md"
+   ],
+   "refs": 2
+  },
+  "fx_bio_plasma": {
+   "files": [
+    "docs/design/FX_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "fx_acid_burn": {
+   "files": [
+    "docs/design/FX_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "fx_dash_charge": {
+   "files": [
+    "docs/design/FX_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "fx_lock_channel": {
+   "files": [
+    "docs/design/FX_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "ship_miner": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/gameplay/08_ship_classes.md",
+    "docs/gameplay/16_art_design_brief.md"
+   ],
+   "refs": 6
+  },
+  "ship_boss_boneyard": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/gameplay/16_art_design_brief.md"
+   ],
+   "refs": 5
+  },
+  "ship_boss_pyre": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 4
+  },
+  "ship_vanguard_front": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 3
+  },
+  "ship_vanguard_three_quarter": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "ship_vanguard_side": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/IMPLEMENTATION_PLAN.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/STATION_HUB.md",
+    "docs/gameplay/19_testing_notes.md"
+   ],
+   "refs": 12
+  },
+  "ship_vanguard_back": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "ship_vanguard_damaged_front": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "ship_vanguard_damaged_three_quarter": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "ship_vanguard_damaged_side": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 3
+  },
+  "ship_vanguard_damaged_back": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "ship_fighter_front": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "ship_fighter_three_quarter": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "ship_fighter_side": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 4
+  },
+  "ship_fighter_back": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "ship_corvette_front": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "ship_corvette_three_quarter": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "ship_corvette_side": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "ship_corvette_back": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "ship_freighter_front": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "ship_freighter_three_quarter": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "ship_freighter_side": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "ship_freighter_back": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "ship_boss_maw": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "ship_miner_front": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "ship_miner_three_quarter": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "ship_miner_side": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "ship_miner_back": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "ship_fighter_concord_": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ICONS_SPEC.md"
+   ],
+   "refs": 2
+  },
+  "ship_fighter_meridian_": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ICONS_SPEC.md"
+   ],
+   "refs": 2
+  },
+  "ship_fighter_choir_": {
+   "files": [
+    "docs/design/SHIPS_SPEC.md",
+    "docs/design/ICONS_SPEC.md"
+   ],
+   "refs": 2
+  },
+  "icon_zoom_plus": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/IMPLEMENTATION_PLAN.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/gameplay/17_coder_handoff.md"
+   ],
+   "refs": 7
+  },
+  "icon_zoom_minus": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/IMPLEMENTATION_PLAN.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/gameplay/17_coder_handoff.md"
+   ],
+   "refs": 7
+  },
+  "icon_credits": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/IMPLEMENTATION_PLAN.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/gameplay/17_coder_handoff.md"
+   ],
+   "refs": 9
+  },
+  "icon_shield": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/IMPLEMENTATION_PLAN.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/gameplay/17_coder_handoff.md"
+   ],
+   "refs": 7
+  },
+  "icon_weapon_laser": {
+   "files": [
+    "docs/design/ICONS_SPEC.md"
+   ],
+   "refs": 3
+  },
+  "icon_weapon_cannon": {
+   "files": [
+    "docs/design/ICONS_SPEC.md"
+   ],
+   "refs": 3
+  },
+  "icon_weapon_rocket": {
+   "files": [
+    "docs/design/ICONS_SPEC.md"
+   ],
+   "refs": 3
+  },
+  "icon_weapon_mine": {
+   "files": [
+    "docs/design/ICONS_SPEC.md"
+   ],
+   "refs": 3
+  },
+  "icon_weapon_plasma": {
+   "files": [
+    "docs/design/ICONS_SPEC.md"
+   ],
+   "refs": 3
+  },
+  "icon_cargo_ore": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/gameplay/03_components.md"
+   ],
+   "refs": 4
+  },
+  "icon_cargo_crate": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/gameplay/03_components.md"
+   ],
+   "refs": 3
+  },
+  "icon_cargo_container": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/gameplay/03_components.md"
+   ],
+   "refs": 4
+  },
+  "icon_cargo_fuel_cell": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/gameplay/03_components.md"
+   ],
+   "refs": 3
+  },
+  "icon_cargo_salvage": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/gameplay/03_components.md"
+   ],
+   "refs": 3
+  },
+  "icon_cargo_data_core": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/gameplay/03_components.md"
+   ],
+   "refs": 4
+  },
+  "icon_gear": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/IMPLEMENTATION_PLAN.md"
+   ],
+   "refs": 3
+  },
+  "icon_close": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/IMPLEMENTATION_PLAN.md"
+   ],
+   "refs": 3
+  },
+  "icon_hull": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/IMPLEMENTATION_PLAN.md"
+   ],
+   "refs": 3
+  },
+  "icon_ammo": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/IMPLEMENTATION_PLAN.md"
+   ],
+   "refs": 3
+  },
+  "icon_logout": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/IMPLEMENTATION_PLAN.md"
+   ],
+   "refs": 4
+  },
+  "panel_weapons": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/GENERATION_PLAN.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 4
+  },
+  "panel_cargo": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/GENERATION_PLAN.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 4
+  },
+  "panel_glyphs": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/GENERATION_PLAN.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 4
+  },
+  "panel_equipment": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 8
+  },
+  "panel_map_markers": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 10
+  },
+  "panel_pickups": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 7
+  },
+  "panel_insignia": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 7
+  },
+  "panel_minerals_ore": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_mineral_": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/IMPLEMENTATION_PLAN.md",
+    "docs/gameplay/02_minerals.md",
+    "docs/gameplay/16_art_design_brief.md"
+   ],
+   "refs": 4
+  },
+  "panel_minerals_ingot": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_ingot_": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/IMPLEMENTATION_PLAN.md",
+    "docs/gameplay/02_minerals.md",
+    "docs/gameplay/16_art_design_brief.md"
+   ],
+   "refs": 4
+  },
+  "icon_module_": {
+   "files": [
+    "docs/design/ICONS_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "panel_modules_a": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_module_w_railgun": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 3
+  },
+  "icon_module_w_mining": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_module_s_light": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_module_s_heavy": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_module_s_ion": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_module_h_plate_light": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_module_h_plate_heavy": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_module_h_composite": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_module_p_std": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "panel_modules_b": {
+   "files": [
+    "docs/design/ICONS_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_p_mk2": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_module_p_core": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_module_e_std": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_module_e_ion": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_module_e_vector": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_module_b_afterburner": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_module_b_fold": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_module_c_target": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_module_c_scanner": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "panel_modules_c": {
+   "files": [
+    "docs/design/ICONS_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_c_twin": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_module_c_ewar": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_module_c_nexus": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_module_u_cargo": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_module_u_salvage": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_module_u_refine": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_module_u_drones": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_module_u_tractor": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_module_u_holds": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "panel_slots": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_slot_": {
+   "files": [
+    "docs/design/ICONS_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "panel_contracts": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_contract_haul": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_contract_hunt": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_contract_gather": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_contract_escort": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_contract_expedition": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "panel_service_glyphs": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_service_vault": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_service_insurance": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_service_bounty": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "panel_faction_insignia": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_insignia_concord_": {
+   "files": [
+    "docs/design/ICONS_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "icon_insignia_meridian_": {
+   "files": [
+    "docs/design/ICONS_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "icon_insignia_choir_": {
+   "files": [
+    "docs/design/ICONS_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "env_jump_gate_ring": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/gameplay/16_art_design_brief.md"
+   ],
+   "refs": 3
+  },
+  "env_sector_": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/gameplay/16_art_design_brief.md"
+   ],
+   "refs": 2
+  },
+  "env_arena_nav_pylon": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "env_arena_barricade": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_map_node_gate_16": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "panel_boosters": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 11
+  },
+  "panel_status": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 11
+  },
+  "icon_cargo_data_core_16": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/gameplay/16_art_design_brief.md"
+   ],
+   "refs": 6
+  },
+  "ship_drone_swarm_": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/gameplay/17_coder_handoff.md"
+   ],
+   "refs": 4
+  },
+  "env_outpost_": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_WIRING_HANDOFF.md"
+   ],
+   "refs": 2
+  },
+  "env_mine": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md",
+    "docs/design/ASSET_WIRING_HANDOFF.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 11
+  },
+  "ui_panel_frame": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/IMPLEMENTATION_PLAN.md",
+    "docs/design/PHASE_C_STATUS.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_WIRING_HANDOFF.md",
+    "docs/design/THEME_AUDIO_EXTENSION.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/MAIN_MENU_V2.md",
+    "docs/design/STATION_HUB.md",
+    "docs/gameplay/16_art_design_brief.md",
+    "docs/gameplay/17_coder_handoff.md"
+   ],
+   "refs": 37
+  },
+  "env_body_ice_moon": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/gameplay/17_coder_handoff.md"
+   ],
+   "refs": 9
+  },
+  "icon_weapon_laser_48": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "env_outpost_repair": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 9
+  },
+  "env_outpost_mining": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 10
+  },
+  "ui_button_plate_": {
+   "files": [
+    "docs/design/ICONS_SPEC.md",
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/IMPLEMENTATION_PLAN.md",
+    "docs/design/THEME_AUDIO_EXTENSION.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/gameplay/17_coder_handoff.md"
+   ],
+   "refs": 13
+  },
+  "ui_button_plate_normal": {
+   "files": [
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/THEME_AUDIO_EXTENSION.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/MAIN_MENU_V2.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 9
+  },
+  "ui_button_plate_hover": {
+   "files": [
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/THEME_AUDIO_EXTENSION.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 6
+  },
+  "ui_button_plate_pressed": {
+   "files": [
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/THEME_AUDIO_EXTENSION.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 6
+  },
+  "ui_button_plate_disabled": {
+   "files": [
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/THEME_AUDIO_EXTENSION.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 6
+  },
+  "ui_slot_weapon_normal": {
+   "files": [
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 7
+  },
+  "ui_slot_weapon_hover": {
+   "files": [
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 5
+  },
+  "ui_slot_weapon_pressed": {
+   "files": [
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 5
+  },
+  "ui_slot_weapon_disabled": {
+   "files": [
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 5
+  },
+  "ui_slot_cargo_normal": {
+   "files": [
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 7
+  },
+  "ui_slot_cargo_hover": {
+   "files": [
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 5
+  },
+  "ui_slot_cargo_pressed": {
+   "files": [
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 5
+  },
+  "ui_slot_cargo_disabled": {
+   "files": [
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 5
+  },
+  "ui_slot_inventory_normal": {
+   "files": [
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 6
+  },
+  "ui_slot_inventory_hover": {
+   "files": [
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 5
+  },
+  "ui_slot_inventory_pressed": {
+   "files": [
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 5
+  },
+  "ui_slot_inventory_disabled": {
+   "files": [
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 5
+  },
+  "ui_bar_caps": {
+   "files": [
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/IMPLEMENTATION_PLAN.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 7
+  },
+  "ui_minimap_bezel": {
+   "files": [
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/IMPLEMENTATION_PLAN.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 10
+  },
+  "logo_vajb_orbit": {
+   "files": [
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/GENERATION_PLAN.md",
+    "docs/design/IMPLEMENTATION_PLAN.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/MAIN_MENU_V2.md",
+    "docs/design/ASSET_PIPELINE_V2.md"
+   ],
+   "refs": 14
+  },
+  "ui_insignia_mmo": {
+   "files": [
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 8
+  },
+  "ui_insignia_mic": {
+   "files": [
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 7
+  },
+  "ui_insignia_ven": {
+   "files": [
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 7
+  },
+  "ui_insignia_neutral": {
+   "files": [
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/MAIN_MENU_V2.md"
+   ],
+   "refs": 13
+  },
+  "ui_slot_weapon_": {
+   "files": [
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/IMPLEMENTATION_PLAN.md"
+   ],
+   "refs": 3
+  },
+  "ui_slot_cargo_": {
+   "files": [
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/IMPLEMENTATION_PLAN.md"
+   ],
+   "refs": 3
+  },
+  "ui_slot_inventory_": {
+   "files": [
+    "docs/design/UI_CHROME_ASSETS_SPEC.md",
+    "docs/design/IMPLEMENTATION_PLAN.md",
+    "docs/design/PHASE_C_STATUS.md",
+    "docs/design/ASSET_WIRING_HANDOFF.md"
+   ],
+   "refs": 5
+  },
+  "env_stars_layer": {
+   "files": [
+    "docs/design/IMPLEMENTATION_PLAN.md"
+   ],
+   "refs": 1
+  },
+  "icon_weapon_": {
+   "files": [
+    "docs/design/IMPLEMENTATION_PLAN.md"
+   ],
+   "refs": 1
+  },
+  "icon_cargo_": {
+   "files": [
+    "docs/design/IMPLEMENTATION_PLAN.md"
+   ],
+   "refs": 1
+  },
+  "ui_scale": {
+   "files": [
+    "docs/design/IMPLEMENTATION_PLAN.md",
+    "docs/design/PROJECT_SETTINGS_PATCH.md",
+    "docs/design/PHASE_C_STATUS.md",
+    "docs/design/THEME_AUDIO_EXTENSION.md",
+    "docs/design/MAIN_MENU_V2.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 32
+  },
+  "ui_focus_next": {
+   "files": [
+    "docs/design/IMPLEMENTATION_PLAN.md",
+    "docs/design/PROJECT_SETTINGS_PATCH.md"
+   ],
+   "refs": 2
+  },
+  "ui_cancel": {
+   "files": [
+    "docs/design/IMPLEMENTATION_PLAN.md",
+    "docs/design/PROJECT_SETTINGS_PATCH.md",
+    "docs/design/PHASE_C_STATUS.md",
+    "docs/design/MAIN_MENU_V2.md",
+    "docs/design/STATION_HUB.md",
+    "docs/gameplay/18_engine_spec.md"
+   ],
+   "refs": 15
+  },
+  "ui_accept": {
+   "files": [
+    "docs/design/IMPLEMENTATION_PLAN.md",
+    "docs/design/PROJECT_SETTINGS_PATCH.md",
+    "docs/design/MAIN_MENU_V2.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 9
+  },
+  "panel_frame": {
+   "files": [
+    "docs/design/IMPLEMENTATION_PLAN.md",
+    "docs/design/THEME_AUDIO_EXTENSION.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 8
+  },
+  "icon_ore": {
+   "files": [
+    "docs/design/IMPLEMENTATION_PLAN.md",
+    "docs/design/STATION_HUB.md",
+    "docs/gameplay/02_minerals.md"
+   ],
+   "refs": 4
+  },
+  "icon_ingot": {
+   "files": [
+    "docs/design/IMPLEMENTATION_PLAN.md",
+    "docs/gameplay/02_minerals.md"
+   ],
+   "refs": 3
+  },
+  "ship_interceptor_side": {
+   "files": [
+    "docs/design/IMPLEMENTATION_PLAN.md",
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 5
+  },
+  "ship_interceptor": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/gameplay/08_ship_classes.md"
+   ],
+   "refs": 5
+  },
+  "ship_gunship": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/STATION_SPEC.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/gameplay/08_ship_classes.md"
+   ],
+   "refs": 7
+  },
+  "ship_destroyer": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/STATION_SPEC.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/gameplay/08_ship_classes.md"
+   ],
+   "refs": 7
+  },
+  "ship_drone_swarm": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/gameplay/08_ship_classes.md"
+   ],
+   "refs": 3
+  },
+  "ship_trader": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/gameplay/08_ship_classes.md"
+   ],
+   "refs": 4
+  },
+  "ship_patrol": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/gameplay/08_ship_classes.md"
+   ],
+   "refs": 4
+  },
+  "ship_bomber": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_PIPELINE_V2.md",
+    "docs/gameplay/08_ship_classes.md"
+   ],
+   "refs": 5
+  },
+  "ship_mine_layer": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/gameplay/08_ship_classes.md"
+   ],
+   "refs": 4
+  },
+  "ship_turret_platform": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/gameplay/08_ship_classes.md"
+   ],
+   "refs": 6
+  },
+  "ship_boss_thorn": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 4
+  },
+  "ship_boss_spire": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 4
+  },
+  "ship_boss_leviathan": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 5
+  },
+  "ship_vanguard_": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "ship_fighter_": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "ship_corvette_": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "ship_freighter_": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "ship_boss_maw_": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "icon_equip_generator": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_equip_shield_gen": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_equip_engine": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 3
+  },
+  "icon_equip_extra": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_equip_module": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_equip_drone": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_equip_pet": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_ammo_laser": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 3
+  },
+  "icon_ammo_rocket": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 3
+  },
+  "icon_map_node_home": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_map_node_neutral": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_map_node_pvp": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_map_node_danger": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 3
+  },
+  "icon_map_node_asteroid": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_map_node_station": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_map_node_gate": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_map_bookmark": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "icon_map_route": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 2
+  },
+  "env_pickup_bonus_box": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 3
+  },
+  "env_pickup_repair_pod": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 3
+  },
+  "env_pickup_shield_pod": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 3
+  },
+  "env_pickup_speed_pod": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 3
+  },
+  "env_pickup_ammo_pod": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 3
+  },
+  "env_pickup_ore_pod": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 3
+  },
+  "env_station_mmo": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 5
+  },
+  "env_station_ruined": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md",
+    "docs/design/ASSET_WIRING_HANDOFF.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 7
+  },
+  "env_ice_field": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 5
+  },
+  "env_ore_cluster": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 5
+  },
+  "ui_backdrop_starmap": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 5
+  },
+  "ui_backdrop_login": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/MAIN_MENU_V2.md"
+   ],
+   "refs": 7
+  },
+  "ship_vanguard_mmo": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "ship_fighter_mmo": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "ship_corvette_mmo": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "ship_freighter_mmo": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "ship_boss_maw_mmo": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 3
+  },
+  "panel_props": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 6
+  },
+  "ship_vanguard_mmo_side": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md",
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 4
+  },
+  "livery_freighter": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "livery_maw": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "icon_credits_": {
+   "files": [
+    "docs/design/PHASE_C_STATUS.md"
+   ],
+   "refs": 1
+  },
+  "icon_logout_": {
+   "files": [
+    "docs/design/PHASE_C_STATUS.md"
+   ],
+   "refs": 1
+  },
+  "ship_bomber_back": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_bomber_front": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_PIPELINE_V2.md"
+   ],
+   "refs": 2
+  },
+  "ship_bomber_side": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 3
+  },
+  "ship_bomber_three_quarter": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_corvette_mmo_back": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_corvette_mmo_front": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_corvette_mmo_side": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "ship_corvette_mmo_three_quarter": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_destroyer_back": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_destroyer_front": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_destroyer_side": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 5
+  },
+  "ship_destroyer_three_quarter": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_drone_swarm_back": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "ship_drone_swarm_front": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "ship_drone_swarm_side": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 3
+  },
+  "ship_drone_swarm_three_quarter": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "ship_fighter_choir_back": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_fighter_choir_front": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_fighter_choir_side": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_fighter_choir_three_quarter": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_fighter_concord_back": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_fighter_concord_front": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_fighter_concord_side": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_fighter_concord_three_quarter": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_fighter_meridian_back": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_fighter_meridian_front": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_fighter_meridian_side": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_fighter_meridian_three_quarter": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_fighter_mmo_back": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_fighter_mmo_front": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_fighter_mmo_side": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "ship_fighter_mmo_three_quarter": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_freighter_mmo_back": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_freighter_mmo_front": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_freighter_mmo_side": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "ship_freighter_mmo_three_quarter": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_gunship_back": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_gunship_front": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_gunship_side": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 5
+  },
+  "ship_gunship_three_quarter": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_interceptor_back": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_interceptor_front": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_interceptor_three_quarter": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_mine_layer_back": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_mine_layer_front": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_mine_layer_side": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 3
+  },
+  "ship_mine_layer_three_quarter": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_patrol_back": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_patrol_front": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_patrol_side": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 3
+  },
+  "ship_patrol_three_quarter": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_trader_back": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_trader_front": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_trader_side": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 3
+  },
+  "ship_trader_three_quarter": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_vanguard_mmo_back": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_vanguard_mmo_front": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ship_vanguard_mmo_three_quarter": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ammo_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ammo_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ammo_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ammo_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ammo_laser_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ammo_laser_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ammo_laser_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 7
+  },
+  "icon_ammo_laser_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ammo_rocket_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ammo_rocket_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ammo_rocket_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 7
+  },
+  "icon_ammo_rocket_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_booster_damage": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md"
+   ],
+   "refs": 2
+  },
+  "icon_booster_damage_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_booster_damage_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_booster_damage_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_booster_damage_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_booster_emp": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md"
+   ],
+   "refs": 2
+  },
+  "icon_booster_emp_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_booster_emp_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_booster_emp_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_booster_emp_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_booster_repair": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md"
+   ],
+   "refs": 2
+  },
+  "icon_booster_repair_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_booster_repair_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_booster_repair_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_booster_repair_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_booster_shield": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md"
+   ],
+   "refs": 2
+  },
+  "icon_booster_shield_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_booster_shield_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_booster_shield_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_booster_shield_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_booster_speed": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md"
+   ],
+   "refs": 2
+  },
+  "icon_booster_speed_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_booster_speed_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_booster_speed_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_booster_speed_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_booster_teleport": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md"
+   ],
+   "refs": 2
+  },
+  "icon_booster_teleport_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_booster_teleport_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_booster_teleport_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_booster_teleport_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_cargo_container_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_cargo_container_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_cargo_container_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/gameplay/02_minerals.md"
+   ],
+   "refs": 2
+  },
+  "icon_cargo_container_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_cargo_crate_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_cargo_crate_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_cargo_crate_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_cargo_crate_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_cargo_data_core_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_cargo_data_core_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 2
+  },
+  "icon_cargo_data_core_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_cargo_fuel_cell_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_cargo_fuel_cell_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_cargo_fuel_cell_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_cargo_fuel_cell_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_cargo_ore_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "icon_cargo_ore_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_cargo_ore_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/STATION_HUB.md",
+    "docs/gameplay/02_minerals.md"
+   ],
+   "refs": 4
+  },
+  "icon_cargo_ore_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_cargo_salvage_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_cargo_salvage_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_cargo_salvage_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 2
+  },
+  "icon_cargo_salvage_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_close_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_close_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_close_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_close_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_contract_escort_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_contract_escort_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_contract_escort_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_contract_escort_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_contract_expedition_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_contract_expedition_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_contract_expedition_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_contract_expedition_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_contract_gather_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_contract_gather_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_contract_gather_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_contract_gather_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_contract_haul_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_contract_haul_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_contract_haul_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_contract_haul_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_contract_hunt_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_contract_hunt_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_contract_hunt_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_contract_hunt_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_credits_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_credits_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_credits_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 7
+  },
+  "icon_credits_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_equip_drone_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_equip_drone_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_equip_drone_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 4
+  },
+  "icon_equip_drone_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_equip_engine_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_equip_engine_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_equip_engine_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 5
+  },
+  "icon_equip_engine_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_equip_extra_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_equip_extra_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_equip_extra_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 4
+  },
+  "icon_equip_extra_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_equip_generator_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "icon_equip_generator_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_equip_generator_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 6
+  },
+  "icon_equip_generator_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_equip_module_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_equip_module_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_equip_module_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 6
+  },
+  "icon_equip_module_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_equip_pet_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_equip_pet_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_equip_pet_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 4
+  },
+  "icon_equip_pet_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_equip_shield_gen_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_equip_shield_gen_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_equip_shield_gen_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 4
+  },
+  "icon_equip_shield_gen_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_gear_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_gear_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_gear_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_gear_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_hull_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "icon_hull_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_hull_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 4
+  },
+  "icon_hull_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_aluminium": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_aluminium_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_aluminium_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_aluminium_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_aluminium_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_cerulite": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_cerulite_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_cerulite_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_cerulite_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_cerulite_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_chromium": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_chromium_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_chromium_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_chromium_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_chromium_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_cobalt": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_cobalt_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_cobalt_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_cobalt_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_cobalt_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_copper": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_copper_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_copper_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_copper_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_copper_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_emberite": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_emberite_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_emberite_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_emberite_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_emberite_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_gold": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_gold_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_gold_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_gold_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_gold_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_iridium": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_iridium_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_iridium_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_iridium_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_iridium_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_iron": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_iron_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_iron_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_iron_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_iron_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_krilium": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_krilium_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_krilium_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_krilium_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_krilium_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_neodymium": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_neodymium_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_neodymium_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_neodymium_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_neodymium_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_nickel": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_nickel_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_nickel_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_nickel_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_nickel_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_osmium": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_osmium_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_osmium_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_osmium_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_osmium_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_palladium": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_palladium_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_palladium_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_palladium_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_palladium_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_platinum": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_platinum_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_platinum_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_platinum_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_platinum_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_silicon": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_silicon_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_silicon_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_silicon_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_silicon_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_silver": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_silver_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_silver_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_silver_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_silver_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_titanium": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_titanium_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_titanium_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_titanium_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_titanium_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_tungsten": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_tungsten_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_tungsten_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_tungsten_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_tungsten_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_voidglass": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_voidglass_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_voidglass_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_voidglass_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_ingot_voidglass_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_insignia_choir": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_insignia_choir_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_insignia_choir_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_insignia_choir_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_insignia_choir_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_insignia_concord": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_insignia_concord_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_insignia_concord_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_insignia_concord_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_insignia_concord_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_insignia_meridian": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_insignia_meridian_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_insignia_meridian_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_insignia_meridian_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_insignia_meridian_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_logout_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_logout_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_logout_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 5
+  },
+  "icon_logout_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_map_bookmark_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_map_bookmark_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_map_bookmark_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 4
+  },
+  "icon_map_bookmark_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_map_node_asteroid_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_map_node_asteroid_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_map_node_asteroid_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 3
+  },
+  "icon_map_node_asteroid_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_map_node_danger_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_map_node_danger_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_map_node_danger_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 3
+  },
+  "icon_map_node_danger_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_map_node_gate_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_map_node_gate_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 3
+  },
+  "icon_map_node_gate_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_map_node_home_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_map_node_home_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_map_node_home_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 3
+  },
+  "icon_map_node_home_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_map_node_neutral_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_map_node_neutral_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_map_node_neutral_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 3
+  },
+  "icon_map_node_neutral_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_map_node_pvp_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_map_node_pvp_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_map_node_pvp_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 3
+  },
+  "icon_map_node_pvp_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_map_node_station_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_map_node_station_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_map_node_station_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 6
+  },
+  "icon_map_node_station_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_map_route_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_map_route_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_map_route_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 9
+  },
+  "icon_map_route_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_aluminium": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_aluminium_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_aluminium_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_aluminium_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_aluminium_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_cerulite": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_cerulite_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_cerulite_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_cerulite_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_cerulite_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_chromium": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_chromium_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_chromium_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_chromium_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_chromium_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_cobalt": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_cobalt_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_cobalt_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_cobalt_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_cobalt_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_copper": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_copper_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_copper_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_copper_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_copper_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_emberite": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_emberite_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_emberite_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_emberite_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_emberite_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_gold": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_gold_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_gold_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_gold_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_gold_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_iridium": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_iridium_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_iridium_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_iridium_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_iridium_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_iron": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_PIPELINE_V2.md"
+   ],
+   "refs": 2
+  },
+  "icon_mineral_iron_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_iron_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_iron_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_iron_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_krilium": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_krilium_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_krilium_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_krilium_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_krilium_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_neodymium": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_neodymium_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_neodymium_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_neodymium_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_neodymium_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_nickel": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_nickel_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_nickel_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_nickel_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_nickel_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_osmium": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_osmium_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_osmium_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_osmium_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_osmium_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_palladium": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_palladium_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_palladium_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_palladium_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_palladium_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_platinum": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_platinum_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_platinum_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_platinum_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_platinum_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_silicon": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_silicon_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_silicon_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_silicon_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_silicon_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_silver": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_silver_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_silver_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_silver_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_silver_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_titanium": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_titanium_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_titanium_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_titanium_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_titanium_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_tungsten": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_tungsten_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_tungsten_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_tungsten_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_tungsten_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_voidglass": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_voidglass_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_voidglass_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_voidglass_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_mineral_voidglass_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_b_afterburner_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_b_afterburner_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_b_afterburner_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_b_afterburner_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_b_fold_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_b_fold_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_b_fold_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_b_fold_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_c_ewar_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_c_ewar_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_c_ewar_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_c_ewar_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_c_nexus_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_c_nexus_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_c_nexus_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_c_nexus_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_c_scanner_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_c_scanner_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_c_scanner_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_c_scanner_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_c_target_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_c_target_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_c_target_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_c_target_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_c_twin_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_c_twin_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_c_twin_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_c_twin_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_e_ion_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_e_ion_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_e_ion_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_e_ion_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_e_std_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_e_std_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_e_std_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_e_std_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_e_vector_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_e_vector_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_e_vector_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_e_vector_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_h_composite_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_h_composite_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_h_composite_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_h_composite_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_h_plate_heavy_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_h_plate_heavy_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_h_plate_heavy_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_h_plate_heavy_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_h_plate_light_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_h_plate_light_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_h_plate_light_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_h_plate_light_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_p_core_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_p_core_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_p_core_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_p_core_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_p_mk2_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_p_mk2_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_p_mk2_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_p_mk2_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_p_std_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_p_std_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_p_std_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_p_std_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_s_heavy_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_s_heavy_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_s_heavy_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_s_heavy_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_s_ion_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_s_ion_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_s_ion_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_s_ion_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_s_light_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_s_light_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_s_light_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_s_light_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_u_cargo_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_u_cargo_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_u_cargo_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_u_cargo_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_u_drones_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_u_drones_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_u_drones_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_u_drones_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_u_holds_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_u_holds_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_u_holds_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_u_holds_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_u_refine_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_u_refine_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_u_refine_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_u_refine_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_u_salvage_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_u_salvage_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_u_salvage_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_u_salvage_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_u_tractor_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_u_tractor_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_u_tractor_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_u_tractor_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_w_mining_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_w_mining_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_w_mining_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_w_mining_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_w_railgun_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_w_railgun_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_w_railgun_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_w_railgun_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_service_bounty_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_service_bounty_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_service_bounty_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_service_bounty_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_service_insurance_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_service_insurance_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_service_insurance_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_service_insurance_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_service_vault_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_service_vault_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_service_vault_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_service_vault_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_shield_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_shield_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_shield_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_shield_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_b": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_b_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_b_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_b_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_b_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_c": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_c_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_c_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_c_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_c_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_engine": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_engine_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_engine_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_engine_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_engine_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_h": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_h_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_h_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_h_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_h_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_power": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_power_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_power_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_power_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_power_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_s": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_s_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_s_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_s_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_s_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_u": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_u_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_u_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_u_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_u_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_w": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_w_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_w_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_w_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_slot_w_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_burning": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md"
+   ],
+   "refs": 2
+  },
+  "icon_status_burning_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_burning_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_burning_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_burning_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_cloaked": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md"
+   ],
+   "refs": 2
+  },
+  "icon_status_cloaked_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_cloaked_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_cloaked_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_cloaked_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_disabled": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md"
+   ],
+   "refs": 2
+  },
+  "icon_status_disabled_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_disabled_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_disabled_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_disabled_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_drained": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md"
+   ],
+   "refs": 2
+  },
+  "icon_status_drained_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_drained_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_drained_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_drained_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_locked": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md"
+   ],
+   "refs": 2
+  },
+  "icon_status_locked_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_locked_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_locked_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_locked_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_radiated": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md"
+   ],
+   "refs": 2
+  },
+  "icon_status_radiated_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_radiated_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_radiated_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_radiated_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_repairing": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md"
+   ],
+   "refs": 2
+  },
+  "icon_status_repairing_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_repairing_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_repairing_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_repairing_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_shielded": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md"
+   ],
+   "refs": 2
+  },
+  "icon_status_shielded_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_shielded_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_shielded_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_shielded_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_slowed": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md"
+   ],
+   "refs": 2
+  },
+  "icon_status_slowed_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_slowed_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_slowed_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_status_slowed_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_weapon_cannon_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_weapon_cannon_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_weapon_cannon_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 5
+  },
+  "icon_weapon_cannon_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_weapon_laser_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_weapon_laser_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_weapon_laser_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_weapon_mine_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_weapon_mine_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_weapon_mine_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 3
+  },
+  "icon_weapon_mine_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_weapon_plasma_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_weapon_plasma_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_weapon_plasma_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 3
+  },
+  "icon_weapon_plasma_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_weapon_rocket_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_weapon_rocket_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_weapon_rocket_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_weapon_rocket_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_zoom_minus_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_zoom_minus_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_zoom_minus_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_zoom_minus_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_zoom_plus_16": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_zoom_plus_192": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_zoom_plus_48": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "icon_zoom_plus_96": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "env_asteroid_b1": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 5
+  },
+  "env_asteroid_b2": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "env_asteroid_b3": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "env_asteroid_b4": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "env_asteroid_b5": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "env_asteroid_b6": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "env_base_defense": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 6
+  },
+  "env_base_mining": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 7
+  },
+  "env_base_shipyard": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 9
+  },
+  "env_base_trade": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 6
+  },
+  "env_bg_body_plate": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md",
+    "docs/design/ASSET_WIRING_HANDOFF.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 8
+  },
+  "env_body_ore_moon": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 5
+  },
+  "env_body_shattered": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 5
+  },
+  "env_outpost_defense": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 6
+  },
+  "env_outpost_relay": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 6
+  },
+  "env_prop_drive_core": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "env_prop_hull_mid": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "env_prop_hull_nose": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "env_prop_hull_stern": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "env_prop_plate_section": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "env_prop_rib_cluster": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "env_sector_1_bg": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "env_sector_2_bg": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "env_sector_3_bg": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "env_sector_4_bg": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "env_sector_5_bg": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "env_sector_6_bg": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "env_sector_7_bg": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "env_stars_layer2": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "panel_asteroids_b": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_EXPANSION_SPEC_E.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 8
+  },
+  "ui_click_02": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ui_click_03": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ui_click_04": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ui_click_05": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ui_confirm_01": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/MAIN_MENU_V2.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 9
+  },
+  "ui_denied_01": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 8
+  },
+  "ui_hover_02": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ui_hover_03": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md"
+   ],
+   "refs": 1
+  },
+  "ui_scroll_01": {
+   "files": [
+    "docs/design/ASSET_CATALOG.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/MAIN_MENU_V2.md",
+    "docs/design/STATION_HUB.md"
+   ],
+   "refs": 10
+  },
+  "icon_status": {
+   "files": [
+    "docs/design/ASSET_EXPANSION_SPEC_E.md"
+   ],
+   "refs": 1
+  },
+  "ui_confirm": {
+   "files": [
+    "docs/design/ASSET_WIRING_HANDOFF.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "ui_denied": {
+   "files": [
+    "docs/design/ASSET_WIRING_HANDOFF.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "ui_scroll": {
+   "files": [
+    "docs/design/ASSET_WIRING_HANDOFF.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "ui_click_": {
+   "files": [
+    "docs/design/ASSET_WIRING_HANDOFF.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "ui_hover_": {
+   "files": [
+    "docs/design/ASSET_WIRING_HANDOFF.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "env_base_": {
+   "files": [
+    "docs/design/ASSET_WIRING_HANDOFF.md"
+   ],
+   "refs": 1
+  },
+  "env_body_": {
+   "files": [
+    "docs/design/ASSET_WIRING_HANDOFF.md"
+   ],
+   "refs": 1
+  },
+  "env_asteroid_b": {
+   "files": [
+    "docs/design/ASSET_WIRING_HANDOFF.md"
+   ],
+   "refs": 1
+  },
+  "env_prop_": {
+   "files": [
+    "docs/design/ASSET_WIRING_HANDOFF.md"
+   ],
+   "refs": 1
+  },
+  "icon_booster_": {
+   "files": [
+    "docs/design/ASSET_WIRING_HANDOFF.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "icon_status_": {
+   "files": [
+    "docs/design/ASSET_WIRING_HANDOFF.md",
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "ui_backdrop_": {
+   "files": [
+    "docs/design/ASSET_WIRING_HANDOFF.md"
+   ],
+   "refs": 1
+  },
+  "ship_id": {
+   "files": [
+    "docs/design/STATION_SPEC.md",
+    "docs/gameplay/10_ship_acquisition.md",
+    "docs/gameplay/17_coder_handoff.md"
+   ],
+   "refs": 7
+  },
+  "ship_vanguard": {
+   "files": [
+    "docs/design/STATION_SPEC.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/STATION_HUB.md",
+    "docs/gameplay/08_ship_classes.md"
+   ],
+   "refs": 12
+  },
+  "ship_ids": {
+   "files": [
+    "docs/design/STATION_SPEC.md"
+   ],
+   "refs": 1
+  },
+  "ship_fighter": {
+   "files": [
+    "docs/design/STATION_SPEC.md",
+    "docs/design/ASSET_AUDIT.md",
+    "docs/design/STATION_HUB.md",
+    "docs/gameplay/08_ship_classes.md"
+   ],
+   "refs": 6
+  },
+  "ui_slot_": {
+   "files": [
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 1
+  },
+  "ship_bomber_": {
+   "files": [
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 1
+  },
+  "ship_destroyer_": {
+   "files": [
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 1
+  },
+  "ship_gunship_": {
+   "files": [
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 1
+  },
+  "ship_interceptor_": {
+   "files": [
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 1
+  },
+  "ship_mine_layer_": {
+   "files": [
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 1
+  },
+  "ship_patrol_": {
+   "files": [
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 1
+  },
+  "ship_trader_": {
+   "files": [
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 1
+  },
+  "icon_equip_": {
+   "files": [
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 4
+  },
+  "icon_map_": {
+   "files": [
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 2
+  },
+  "icon_map_node_": {
+   "files": [
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_shipyard": {
+   "files": [
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 1
+  },
+  "icon_module_launch": {
+   "files": [
+    "docs/design/ASSET_AUDIT.md"
+   ],
+   "refs": 1
+  },
+  "ship_corvette": {
+   "files": [
+    "docs/design/ASSET_PIPELINE_V2.md",
+    "docs/gameplay/08_ship_classes.md"
+   ],
+   "refs": 3
+  },
+  "env_asteroid": {
+   "files": [
+    "docs/design/ASSET_PIPELINE_V2.md"
+   ],
+   "refs": 1
+  },
+  "ship_freighter": {
+   "files": [
+    "docs/gameplay/08_ship_classes.md"
+   ],
+   "refs": 2
+  },
+  "ship_maw": {
+   "files": [
+    "docs/gameplay/08_ship_classes.md"
+   ],
+   "refs": 1
+  },
+  "ship_miner_": {
+   "files": [
+    "docs/gameplay/16_art_design_brief.md"
+   ],
+   "refs": 1
+  }
+ },
+ "catalog": {
+  "ship_bomber_back.png": "ships",
+  "ship_bomber_front.png": "ships",
+  "ship_bomber_side.png": "ships",
+  "ship_bomber_three_quarter.png": "ships",
+  "ship_boss_boneyard.png": "ships",
+  "ship_boss_leviathan.png": "ships",
+  "ship_boss_maw.png": "ships",
+  "ship_boss_maw_mmo.png": "ships",
+  "ship_boss_pyre.png": "ships",
+  "ship_boss_spire.png": "ships",
+  "ship_boss_thorn.png": "ships",
+  "ship_corvette_back.png": "ships",
+  "ship_corvette_front.png": "ships",
+  "ship_corvette_mmo_back.png": "ships",
+  "ship_corvette_mmo_front.png": "ships",
+  "ship_corvette_mmo_side.png": "ships",
+  "ship_corvette_mmo_three_quarter.png": "ships",
+  "ship_corvette_side.png": "ships",
+  "ship_corvette_three_quarter.png": "ships",
+  "ship_destroyer_back.png": "ships",
+  "ship_destroyer_front.png": "ships",
+  "ship_destroyer_side.png": "ships",
+  "ship_destroyer_three_quarter.png": "ships",
+  "ship_drone_swarm_back.png": "ships",
+  "ship_drone_swarm_front.png": "ships",
+  "ship_drone_swarm_side.png": "ships",
+  "ship_drone_swarm_three_quarter.png": "ships",
+  "ship_fighter_back.png": "ships",
+  "ship_fighter_choir_back.png": "ships",
+  "ship_fighter_choir_front.png": "ships",
+  "ship_fighter_choir_side.png": "ships",
+  "ship_fighter_choir_three_quarter.png": "ships",
+  "ship_fighter_concord_back.png": "ships",
+  "ship_fighter_concord_front.png": "ships",
+  "ship_fighter_concord_side.png": "ships",
+  "ship_fighter_concord_three_quarter.png": "ships",
+  "ship_fighter_front.png": "ships",
+  "ship_fighter_meridian_back.png": "ships",
+  "ship_fighter_meridian_front.png": "ships",
+  "ship_fighter_meridian_side.png": "ships",
+  "ship_fighter_meridian_three_quarter.png": "ships",
+  "ship_fighter_mmo_back.png": "ships",
+  "ship_fighter_mmo_front.png": "ships",
+  "ship_fighter_mmo_side.png": "ships",
+  "ship_fighter_mmo_three_quarter.png": "ships",
+  "ship_fighter_side.png": "ships",
+  "ship_fighter_three_quarter.png": "ships",
+  "ship_freighter_back.png": "ships",
+  "ship_freighter_front.png": "ships",
+  "ship_freighter_mmo_back.png": "ships",
+  "ship_freighter_mmo_front.png": "ships",
+  "ship_freighter_mmo_side.png": "ships",
+  "ship_freighter_mmo_three_quarter.png": "ships",
+  "ship_freighter_side.png": "ships",
+  "ship_freighter_three_quarter.png": "ships",
+  "ship_gunship_back.png": "ships",
+  "ship_gunship_front.png": "ships",
+  "ship_gunship_side.png": "ships",
+  "ship_gunship_three_quarter.png": "ships",
+  "ship_interceptor_back.png": "ships",
+  "ship_interceptor_front.png": "ships",
+  "ship_interceptor_side.png": "ships",
+  "ship_interceptor_three_quarter.png": "ships",
+  "ship_mine_layer_back.png": "ships",
+  "ship_mine_layer_front.png": "ships",
+  "ship_mine_layer_side.png": "ships",
+  "ship_mine_layer_three_quarter.png": "ships",
+  "ship_miner_back.png": "ships",
+  "ship_miner_front.png": "ships",
+  "ship_miner_side.png": "ships",
+  "ship_miner_three_quarter.png": "ships",
+  "ship_patrol_back.png": "ships",
+  "ship_patrol_front.png": "ships",
+  "ship_patrol_side.png": "ships",
+  "ship_patrol_three_quarter.png": "ships",
+  "ship_trader_back.png": "ships",
+  "ship_trader_front.png": "ships",
+  "ship_trader_side.png": "ships",
+  "ship_trader_three_quarter.png": "ships",
+  "ship_turret_platform.png": "ships",
+  "ship_vanguard_back.png": "ships",
+  "ship_vanguard_damaged_back.png": "ships",
+  "ship_vanguard_damaged_front.png": "ships",
+  "ship_vanguard_damaged_side.png": "ships",
+  "ship_vanguard_damaged_three_quarter.png": "ships",
+  "ship_vanguard_front.png": "ships",
+  "ship_vanguard_mmo_back.png": "ships",
+  "ship_vanguard_mmo_front.png": "ships",
+  "ship_vanguard_mmo_side.png": "ships",
+  "ship_vanguard_mmo_three_quarter.png": "ships",
+  "ship_vanguard_side.png": "ships",
+  "ship_vanguard_three_quarter.png": "ships",
+  "icon_ammo_16.png": "icons",
+  "icon_ammo_192.png": "icons",
+  "icon_ammo_48.png": "icons",
+  "icon_ammo_96.png": "icons",
+  "icon_ammo_laser.png": "icons",
+  "icon_ammo_laser_16.png": "icons",
+  "icon_ammo_laser_192.png": "icons",
+  "icon_ammo_laser_48.png": "icons",
+  "icon_ammo_laser_96.png": "icons",
+  "icon_ammo_rocket.png": "icons",
+  "icon_ammo_rocket_16.png": "icons",
+  "icon_ammo_rocket_192.png": "icons",
+  "icon_ammo_rocket_48.png": "icons",
+  "icon_ammo_rocket_96.png": "icons",
+  "icon_booster_damage.png": "icons",
+  "icon_booster_damage_16.png": "icons",
+  "icon_booster_damage_192.png": "icons",
+  "icon_booster_damage_48.png": "icons",
+  "icon_booster_damage_96.png": "icons",
+  "icon_booster_emp.png": "icons",
+  "icon_booster_emp_16.png": "icons",
+  "icon_booster_emp_192.png": "icons",
+  "icon_booster_emp_48.png": "icons",
+  "icon_booster_emp_96.png": "icons",
+  "icon_booster_repair.png": "icons",
+  "icon_booster_repair_16.png": "icons",
+  "icon_booster_repair_192.png": "icons",
+  "icon_booster_repair_48.png": "icons",
+  "icon_booster_repair_96.png": "icons",
+  "icon_booster_shield.png": "icons",
+  "icon_booster_shield_16.png": "icons",
+  "icon_booster_shield_192.png": "icons",
+  "icon_booster_shield_48.png": "icons",
+  "icon_booster_shield_96.png": "icons",
+  "icon_booster_speed.png": "icons",
+  "icon_booster_speed_16.png": "icons",
+  "icon_booster_speed_192.png": "icons",
+  "icon_booster_speed_48.png": "icons",
+  "icon_booster_speed_96.png": "icons",
+  "icon_booster_teleport.png": "icons",
+  "icon_booster_teleport_16.png": "icons",
+  "icon_booster_teleport_192.png": "icons",
+  "icon_booster_teleport_48.png": "icons",
+  "icon_booster_teleport_96.png": "icons",
+  "icon_cargo_container_16.png": "icons",
+  "icon_cargo_container_192.png": "icons",
+  "icon_cargo_container_48.png": "icons",
+  "icon_cargo_container_96.png": "icons",
+  "icon_cargo_crate_16.png": "icons",
+  "icon_cargo_crate_192.png": "icons",
+  "icon_cargo_crate_48.png": "icons",
+  "icon_cargo_crate_96.png": "icons",
+  "icon_cargo_data_core.png": "icons",
+  "icon_cargo_data_core_16.png": "icons",
+  "icon_cargo_data_core_192.png": "icons",
+  "icon_cargo_data_core_48.png": "icons",
+  "icon_cargo_data_core_96.png": "icons",
+  "icon_cargo_fuel_cell_16.png": "icons",
+  "icon_cargo_fuel_cell_192.png": "icons",
+  "icon_cargo_fuel_cell_48.png": "icons",
+  "icon_cargo_fuel_cell_96.png": "icons",
+  "icon_cargo_ore_16.png": "icons",
+  "icon_cargo_ore_192.png": "icons",
+  "icon_cargo_ore_48.png": "icons",
+  "icon_cargo_ore_96.png": "icons",
+  "icon_cargo_salvage_16.png": "icons",
+  "icon_cargo_salvage_192.png": "icons",
+  "icon_cargo_salvage_48.png": "icons",
+  "icon_cargo_salvage_96.png": "icons",
+  "icon_close_16.png": "icons",
+  "icon_close_192.png": "icons",
+  "icon_close_48.png": "icons",
+  "icon_close_96.png": "icons",
+  "icon_contract_escort.png": "icons",
+  "icon_contract_escort_16.png": "icons",
+  "icon_contract_escort_192.png": "icons",
+  "icon_contract_escort_48.png": "icons",
+  "icon_contract_escort_96.png": "icons",
+  "icon_contract_expedition.png": "icons",
+  "icon_contract_expedition_16.png": "icons",
+  "icon_contract_expedition_192.png": "icons",
+  "icon_contract_expedition_48.png": "icons",
+  "icon_contract_expedition_96.png": "icons",
+  "icon_contract_gather.png": "icons",
+  "icon_contract_gather_16.png": "icons",
+  "icon_contract_gather_192.png": "icons",
+  "icon_contract_gather_48.png": "icons",
+  "icon_contract_gather_96.png": "icons",
+  "icon_contract_haul.png": "icons",
+  "icon_contract_haul_16.png": "icons",
+  "icon_contract_haul_192.png": "icons",
+  "icon_contract_haul_48.png": "icons",
+  "icon_contract_haul_96.png": "icons",
+  "icon_contract_hunt.png": "icons",
+  "icon_contract_hunt_16.png": "icons",
+  "icon_contract_hunt_192.png": "icons",
+  "icon_contract_hunt_48.png": "icons",
+  "icon_contract_hunt_96.png": "icons",
+  "icon_credits.png": "icons",
+  "icon_credits_16.png": "icons",
+  "icon_credits_192.png": "icons",
+  "icon_credits_48.png": "icons",
+  "icon_credits_96.png": "icons",
+  "icon_equip_drone.png": "icons",
+  "icon_equip_drone_16.png": "icons",
+  "icon_equip_drone_192.png": "icons",
+  "icon_equip_drone_48.png": "icons",
+  "icon_equip_drone_96.png": "icons",
+  "icon_equip_engine.png": "icons",
+  "icon_equip_engine_16.png": "icons",
+  "icon_equip_engine_192.png": "icons",
+  "icon_equip_engine_48.png": "icons",
+  "icon_equip_engine_96.png": "icons",
+  "icon_equip_extra.png": "icons",
+  "icon_equip_extra_16.png": "icons",
+  "icon_equip_extra_192.png": "icons",
+  "icon_equip_extra_48.png": "icons",
+  "icon_equip_extra_96.png": "icons",
+  "icon_equip_generator.png": "icons",
+  "icon_equip_generator_16.png": "icons",
+  "icon_equip_generator_192.png": "icons",
+  "icon_equip_generator_48.png": "icons",
+  "icon_equip_generator_96.png": "icons",
+  "icon_equip_module.png": "icons",
+  "icon_equip_module_16.png": "icons",
+  "icon_equip_module_192.png": "icons",
+  "icon_equip_module_48.png": "icons",
+  "icon_equip_module_96.png": "icons",
+  "icon_equip_pet.png": "icons",
+  "icon_equip_pet_16.png": "icons",
+  "icon_equip_pet_192.png": "icons",
+  "icon_equip_pet_48.png": "icons",
+  "icon_equip_pet_96.png": "icons",
+  "icon_equip_shield_gen.png": "icons",
+  "icon_equip_shield_gen_16.png": "icons",
+  "icon_equip_shield_gen_192.png": "icons",
+  "icon_equip_shield_gen_48.png": "icons",
+  "icon_equip_shield_gen_96.png": "icons",
+  "icon_gear_16.png": "icons",
+  "icon_gear_192.png": "icons",
+  "icon_gear_48.png": "icons",
+  "icon_gear_96.png": "icons",
+  "icon_hull_16.png": "icons",
+  "icon_hull_192.png": "icons",
+  "icon_hull_48.png": "icons",
+  "icon_hull_96.png": "icons",
+  "icon_ingot_aluminium.png": "icons",
+  "icon_ingot_aluminium_16.png": "icons",
+  "icon_ingot_aluminium_192.png": "icons",
+  "icon_ingot_aluminium_48.png": "icons",
+  "icon_ingot_aluminium_96.png": "icons",
+  "icon_ingot_cerulite.png": "icons",
+  "icon_ingot_cerulite_16.png": "icons",
+  "icon_ingot_cerulite_192.png": "icons",
+  "icon_ingot_cerulite_48.png": "icons",
+  "icon_ingot_cerulite_96.png": "icons",
+  "icon_ingot_chromium.png": "icons",
+  "icon_ingot_chromium_16.png": "icons",
+  "icon_ingot_chromium_192.png": "icons",
+  "icon_ingot_chromium_48.png": "icons",
+  "icon_ingot_chromium_96.png": "icons",
+  "icon_ingot_cobalt.png": "icons",
+  "icon_ingot_cobalt_16.png": "icons",
+  "icon_ingot_cobalt_192.png": "icons",
+  "icon_ingot_cobalt_48.png": "icons",
+  "icon_ingot_cobalt_96.png": "icons",
+  "icon_ingot_copper.png": "icons",
+  "icon_ingot_copper_16.png": "icons",
+  "icon_ingot_copper_192.png": "icons",
+  "icon_ingot_copper_48.png": "icons",
+  "icon_ingot_copper_96.png": "icons",
+  "icon_ingot_emberite.png": "icons",
+  "icon_ingot_emberite_16.png": "icons",
+  "icon_ingot_emberite_192.png": "icons",
+  "icon_ingot_emberite_48.png": "icons",
+  "icon_ingot_emberite_96.png": "icons",
+  "icon_ingot_gold.png": "icons",
+  "icon_ingot_gold_16.png": "icons",
+  "icon_ingot_gold_192.png": "icons",
+  "icon_ingot_gold_48.png": "icons",
+  "icon_ingot_gold_96.png": "icons",
+  "icon_ingot_iridium.png": "icons",
+  "icon_ingot_iridium_16.png": "icons",
+  "icon_ingot_iridium_192.png": "icons",
+  "icon_ingot_iridium_48.png": "icons",
+  "icon_ingot_iridium_96.png": "icons",
+  "icon_ingot_iron.png": "icons",
+  "icon_ingot_iron_16.png": "icons",
+  "icon_ingot_iron_192.png": "icons",
+  "icon_ingot_iron_48.png": "icons",
+  "icon_ingot_iron_96.png": "icons",
+  "icon_ingot_krilium.png": "icons",
+  "icon_ingot_krilium_16.png": "icons",
+  "icon_ingot_krilium_192.png": "icons",
+  "icon_ingot_krilium_48.png": "icons",
+  "icon_ingot_krilium_96.png": "icons",
+  "icon_ingot_neodymium.png": "icons",
+  "icon_ingot_neodymium_16.png": "icons",
+  "icon_ingot_neodymium_192.png": "icons",
+  "icon_ingot_neodymium_48.png": "icons",
+  "icon_ingot_neodymium_96.png": "icons",
+  "icon_ingot_nickel.png": "icons",
+  "icon_ingot_nickel_16.png": "icons",
+  "icon_ingot_nickel_192.png": "icons",
+  "icon_ingot_nickel_48.png": "icons",
+  "icon_ingot_nickel_96.png": "icons",
+  "icon_ingot_osmium.png": "icons",
+  "icon_ingot_osmium_16.png": "icons",
+  "icon_ingot_osmium_192.png": "icons",
+  "icon_ingot_osmium_48.png": "icons",
+  "icon_ingot_osmium_96.png": "icons",
+  "icon_ingot_palladium.png": "icons",
+  "icon_ingot_palladium_16.png": "icons",
+  "icon_ingot_palladium_192.png": "icons",
+  "icon_ingot_palladium_48.png": "icons",
+  "icon_ingot_palladium_96.png": "icons",
+  "icon_ingot_platinum.png": "icons",
+  "icon_ingot_platinum_16.png": "icons",
+  "icon_ingot_platinum_192.png": "icons",
+  "icon_ingot_platinum_48.png": "icons",
+  "icon_ingot_platinum_96.png": "icons",
+  "icon_ingot_silicon.png": "icons",
+  "icon_ingot_silicon_16.png": "icons",
+  "icon_ingot_silicon_192.png": "icons",
+  "icon_ingot_silicon_48.png": "icons",
+  "icon_ingot_silicon_96.png": "icons",
+  "icon_ingot_silver.png": "icons",
+  "icon_ingot_silver_16.png": "icons",
+  "icon_ingot_silver_192.png": "icons",
+  "icon_ingot_silver_48.png": "icons",
+  "icon_ingot_silver_96.png": "icons",
+  "icon_ingot_titanium.png": "icons",
+  "icon_ingot_titanium_16.png": "icons",
+  "icon_ingot_titanium_192.png": "icons",
+  "icon_ingot_titanium_48.png": "icons",
+  "icon_ingot_titanium_96.png": "icons",
+  "icon_ingot_tungsten.png": "icons",
+  "icon_ingot_tungsten_16.png": "icons",
+  "icon_ingot_tungsten_192.png": "icons",
+  "icon_ingot_tungsten_48.png": "icons",
+  "icon_ingot_tungsten_96.png": "icons",
+  "icon_ingot_voidglass.png": "icons",
+  "icon_ingot_voidglass_16.png": "icons",
+  "icon_ingot_voidglass_192.png": "icons",
+  "icon_ingot_voidglass_48.png": "icons",
+  "icon_ingot_voidglass_96.png": "icons",
+  "icon_insignia_choir.png": "icons",
+  "icon_insignia_choir_16.png": "icons",
+  "icon_insignia_choir_192.png": "icons",
+  "icon_insignia_choir_48.png": "icons",
+  "icon_insignia_choir_96.png": "icons",
+  "icon_insignia_concord.png": "icons",
+  "icon_insignia_concord_16.png": "icons",
+  "icon_insignia_concord_192.png": "icons",
+  "icon_insignia_concord_48.png": "icons",
+  "icon_insignia_concord_96.png": "icons",
+  "icon_insignia_meridian.png": "icons",
+  "icon_insignia_meridian_16.png": "icons",
+  "icon_insignia_meridian_192.png": "icons",
+  "icon_insignia_meridian_48.png": "icons",
+  "icon_insignia_meridian_96.png": "icons",
+  "icon_logout_16.png": "icons",
+  "icon_logout_192.png": "icons",
+  "icon_logout_48.png": "icons",
+  "icon_logout_96.png": "icons",
+  "icon_map_bookmark.png": "icons",
+  "icon_map_bookmark_16.png": "icons",
+  "icon_map_bookmark_192.png": "icons",
+  "icon_map_bookmark_48.png": "icons",
+  "icon_map_bookmark_96.png": "icons",
+  "icon_map_node_asteroid.png": "icons",
+  "icon_map_node_asteroid_16.png": "icons",
+  "icon_map_node_asteroid_192.png": "icons",
+  "icon_map_node_asteroid_48.png": "icons",
+  "icon_map_node_asteroid_96.png": "icons",
+  "icon_map_node_danger.png": "icons",
+  "icon_map_node_danger_16.png": "icons",
+  "icon_map_node_danger_192.png": "icons",
+  "icon_map_node_danger_48.png": "icons",
+  "icon_map_node_danger_96.png": "icons",
+  "icon_map_node_gate.png": "icons",
+  "icon_map_node_gate_16.png": "icons",
+  "icon_map_node_gate_192.png": "icons",
+  "icon_map_node_gate_48.png": "icons",
+  "icon_map_node_gate_96.png": "icons",
+  "icon_map_node_home.png": "icons",
+  "icon_map_node_home_16.png": "icons",
+  "icon_map_node_home_192.png": "icons",
+  "icon_map_node_home_48.png": "icons",
+  "icon_map_node_home_96.png": "icons",
+  "icon_map_node_neutral.png": "icons",
+  "icon_map_node_neutral_16.png": "icons",
+  "icon_map_node_neutral_192.png": "icons",
+  "icon_map_node_neutral_48.png": "icons",
+  "icon_map_node_neutral_96.png": "icons",
+  "icon_map_node_pvp.png": "icons",
+  "icon_map_node_pvp_16.png": "icons",
+  "icon_map_node_pvp_192.png": "icons",
+  "icon_map_node_pvp_48.png": "icons",
+  "icon_map_node_pvp_96.png": "icons",
+  "icon_map_node_station.png": "icons",
+  "icon_map_node_station_16.png": "icons",
+  "icon_map_node_station_192.png": "icons",
+  "icon_map_node_station_48.png": "icons",
+  "icon_map_node_station_96.png": "icons",
+  "icon_map_route.png": "icons",
+  "icon_map_route_16.png": "icons",
+  "icon_map_route_192.png": "icons",
+  "icon_map_route_48.png": "icons",
+  "icon_map_route_96.png": "icons",
+  "icon_mineral_aluminium.png": "icons",
+  "icon_mineral_aluminium_16.png": "icons",
+  "icon_mineral_aluminium_192.png": "icons",
+  "icon_mineral_aluminium_48.png": "icons",
+  "icon_mineral_aluminium_96.png": "icons",
+  "icon_mineral_cerulite.png": "icons",
+  "icon_mineral_cerulite_16.png": "icons",
+  "icon_mineral_cerulite_192.png": "icons",
+  "icon_mineral_cerulite_48.png": "icons",
+  "icon_mineral_cerulite_96.png": "icons",
+  "icon_mineral_chromium.png": "icons",
+  "icon_mineral_chromium_16.png": "icons",
+  "icon_mineral_chromium_192.png": "icons",
+  "icon_mineral_chromium_48.png": "icons",
+  "icon_mineral_chromium_96.png": "icons",
+  "icon_mineral_cobalt.png": "icons",
+  "icon_mineral_cobalt_16.png": "icons",
+  "icon_mineral_cobalt_192.png": "icons",
+  "icon_mineral_cobalt_48.png": "icons",
+  "icon_mineral_cobalt_96.png": "icons",
+  "icon_mineral_copper.png": "icons",
+  "icon_mineral_copper_16.png": "icons",
+  "icon_mineral_copper_192.png": "icons",
+  "icon_mineral_copper_48.png": "icons",
+  "icon_mineral_copper_96.png": "icons",
+  "icon_mineral_emberite.png": "icons",
+  "icon_mineral_emberite_16.png": "icons",
+  "icon_mineral_emberite_192.png": "icons",
+  "icon_mineral_emberite_48.png": "icons",
+  "icon_mineral_emberite_96.png": "icons",
+  "icon_mineral_gold.png": "icons",
+  "icon_mineral_gold_16.png": "icons",
+  "icon_mineral_gold_192.png": "icons",
+  "icon_mineral_gold_48.png": "icons",
+  "icon_mineral_gold_96.png": "icons",
+  "icon_mineral_iridium.png": "icons",
+  "icon_mineral_iridium_16.png": "icons",
+  "icon_mineral_iridium_192.png": "icons",
+  "icon_mineral_iridium_48.png": "icons",
+  "icon_mineral_iridium_96.png": "icons",
+  "icon_mineral_iron.png": "icons",
+  "icon_mineral_iron_16.png": "icons",
+  "icon_mineral_iron_192.png": "icons",
+  "icon_mineral_iron_48.png": "icons",
+  "icon_mineral_iron_96.png": "icons",
+  "icon_mineral_krilium.png": "icons",
+  "icon_mineral_krilium_16.png": "icons",
+  "icon_mineral_krilium_192.png": "icons",
+  "icon_mineral_krilium_48.png": "icons",
+  "icon_mineral_krilium_96.png": "icons",
+  "icon_mineral_neodymium.png": "icons",
+  "icon_mineral_neodymium_16.png": "icons",
+  "icon_mineral_neodymium_192.png": "icons",
+  "icon_mineral_neodymium_48.png": "icons",
+  "icon_mineral_neodymium_96.png": "icons",
+  "icon_mineral_nickel.png": "icons",
+  "icon_mineral_nickel_16.png": "icons",
+  "icon_mineral_nickel_192.png": "icons",
+  "icon_mineral_nickel_48.png": "icons",
+  "icon_mineral_nickel_96.png": "icons",
+  "icon_mineral_osmium.png": "icons",
+  "icon_mineral_osmium_16.png": "icons",
+  "icon_mineral_osmium_192.png": "icons",
+  "icon_mineral_osmium_48.png": "icons",
+  "icon_mineral_osmium_96.png": "icons",
+  "icon_mineral_palladium.png": "icons",
+  "icon_mineral_palladium_16.png": "icons",
+  "icon_mineral_palladium_192.png": "icons",
+  "icon_mineral_palladium_48.png": "icons",
+  "icon_mineral_palladium_96.png": "icons",
+  "icon_mineral_platinum.png": "icons",
+  "icon_mineral_platinum_16.png": "icons",
+  "icon_mineral_platinum_192.png": "icons",
+  "icon_mineral_platinum_48.png": "icons",
+  "icon_mineral_platinum_96.png": "icons",
+  "icon_mineral_silicon.png": "icons",
+  "icon_mineral_silicon_16.png": "icons",
+  "icon_mineral_silicon_192.png": "icons",
+  "icon_mineral_silicon_48.png": "icons",
+  "icon_mineral_silicon_96.png": "icons",
+  "icon_mineral_silver.png": "icons",
+  "icon_mineral_silver_16.png": "icons",
+  "icon_mineral_silver_192.png": "icons",
+  "icon_mineral_silver_48.png": "icons",
+  "icon_mineral_silver_96.png": "icons",
+  "icon_mineral_titanium.png": "icons",
+  "icon_mineral_titanium_16.png": "icons",
+  "icon_mineral_titanium_192.png": "icons",
+  "icon_mineral_titanium_48.png": "icons",
+  "icon_mineral_titanium_96.png": "icons",
+  "icon_mineral_tungsten.png": "icons",
+  "icon_mineral_tungsten_16.png": "icons",
+  "icon_mineral_tungsten_192.png": "icons",
+  "icon_mineral_tungsten_48.png": "icons",
+  "icon_mineral_tungsten_96.png": "icons",
+  "icon_mineral_voidglass.png": "icons",
+  "icon_mineral_voidglass_16.png": "icons",
+  "icon_mineral_voidglass_192.png": "icons",
+  "icon_mineral_voidglass_48.png": "icons",
+  "icon_mineral_voidglass_96.png": "icons",
+  "icon_module_b_afterburner.png": "icons",
+  "icon_module_b_afterburner_16.png": "icons",
+  "icon_module_b_afterburner_192.png": "icons",
+  "icon_module_b_afterburner_48.png": "icons",
+  "icon_module_b_afterburner_96.png": "icons",
+  "icon_module_b_fold.png": "icons",
+  "icon_module_b_fold_16.png": "icons",
+  "icon_module_b_fold_192.png": "icons",
+  "icon_module_b_fold_48.png": "icons",
+  "icon_module_b_fold_96.png": "icons",
+  "icon_module_c_ewar.png": "icons",
+  "icon_module_c_ewar_16.png": "icons",
+  "icon_module_c_ewar_192.png": "icons",
+  "icon_module_c_ewar_48.png": "icons",
+  "icon_module_c_ewar_96.png": "icons",
+  "icon_module_c_nexus.png": "icons",
+  "icon_module_c_nexus_16.png": "icons",
+  "icon_module_c_nexus_192.png": "icons",
+  "icon_module_c_nexus_48.png": "icons",
+  "icon_module_c_nexus_96.png": "icons",
+  "icon_module_c_scanner.png": "icons",
+  "icon_module_c_scanner_16.png": "icons",
+  "icon_module_c_scanner_192.png": "icons",
+  "icon_module_c_scanner_48.png": "icons",
+  "icon_module_c_scanner_96.png": "icons",
+  "icon_module_c_target.png": "icons",
+  "icon_module_c_target_16.png": "icons",
+  "icon_module_c_target_192.png": "icons",
+  "icon_module_c_target_48.png": "icons",
+  "icon_module_c_target_96.png": "icons",
+  "icon_module_c_twin.png": "icons",
+  "icon_module_c_twin_16.png": "icons",
+  "icon_module_c_twin_192.png": "icons",
+  "icon_module_c_twin_48.png": "icons",
+  "icon_module_c_twin_96.png": "icons",
+  "icon_module_e_ion.png": "icons",
+  "icon_module_e_ion_16.png": "icons",
+  "icon_module_e_ion_192.png": "icons",
+  "icon_module_e_ion_48.png": "icons",
+  "icon_module_e_ion_96.png": "icons",
+  "icon_module_e_std.png": "icons",
+  "icon_module_e_std_16.png": "icons",
+  "icon_module_e_std_192.png": "icons",
+  "icon_module_e_std_48.png": "icons",
+  "icon_module_e_std_96.png": "icons",
+  "icon_module_e_vector.png": "icons",
+  "icon_module_e_vector_16.png": "icons",
+  "icon_module_e_vector_192.png": "icons",
+  "icon_module_e_vector_48.png": "icons",
+  "icon_module_e_vector_96.png": "icons",
+  "icon_module_h_composite.png": "icons",
+  "icon_module_h_composite_16.png": "icons",
+  "icon_module_h_composite_192.png": "icons",
+  "icon_module_h_composite_48.png": "icons",
+  "icon_module_h_composite_96.png": "icons",
+  "icon_module_h_plate_heavy.png": "icons",
+  "icon_module_h_plate_heavy_16.png": "icons",
+  "icon_module_h_plate_heavy_192.png": "icons",
+  "icon_module_h_plate_heavy_48.png": "icons",
+  "icon_module_h_plate_heavy_96.png": "icons",
+  "icon_module_h_plate_light.png": "icons",
+  "icon_module_h_plate_light_16.png": "icons",
+  "icon_module_h_plate_light_192.png": "icons",
+  "icon_module_h_plate_light_48.png": "icons",
+  "icon_module_h_plate_light_96.png": "icons",
+  "icon_module_p_core.png": "icons",
+  "icon_module_p_core_16.png": "icons",
+  "icon_module_p_core_192.png": "icons",
+  "icon_module_p_core_48.png": "icons",
+  "icon_module_p_core_96.png": "icons",
+  "icon_module_p_mk2.png": "icons",
+  "icon_module_p_mk2_16.png": "icons",
+  "icon_module_p_mk2_192.png": "icons",
+  "icon_module_p_mk2_48.png": "icons",
+  "icon_module_p_mk2_96.png": "icons",
+  "icon_module_p_std.png": "icons",
+  "icon_module_p_std_16.png": "icons",
+  "icon_module_p_std_192.png": "icons",
+  "icon_module_p_std_48.png": "icons",
+  "icon_module_p_std_96.png": "icons",
+  "icon_module_s_heavy.png": "icons",
+  "icon_module_s_heavy_16.png": "icons",
+  "icon_module_s_heavy_192.png": "icons",
+  "icon_module_s_heavy_48.png": "icons",
+  "icon_module_s_heavy_96.png": "icons",
+  "icon_module_s_ion.png": "icons",
+  "icon_module_s_ion_16.png": "icons",
+  "icon_module_s_ion_192.png": "icons",
+  "icon_module_s_ion_48.png": "icons",
+  "icon_module_s_ion_96.png": "icons",
+  "icon_module_s_light.png": "icons",
+  "icon_module_s_light_16.png": "icons",
+  "icon_module_s_light_192.png": "icons",
+  "icon_module_s_light_48.png": "icons",
+  "icon_module_s_light_96.png": "icons",
+  "icon_module_u_cargo.png": "icons",
+  "icon_module_u_cargo_16.png": "icons",
+  "icon_module_u_cargo_192.png": "icons",
+  "icon_module_u_cargo_48.png": "icons",
+  "icon_module_u_cargo_96.png": "icons",
+  "icon_module_u_drones.png": "icons",
+  "icon_module_u_drones_16.png": "icons",
+  "icon_module_u_drones_192.png": "icons",
+  "icon_module_u_drones_48.png": "icons",
+  "icon_module_u_drones_96.png": "icons",
+  "icon_module_u_holds.png": "icons",
+  "icon_module_u_holds_16.png": "icons",
+  "icon_module_u_holds_192.png": "icons",
+  "icon_module_u_holds_48.png": "icons",
+  "icon_module_u_holds_96.png": "icons",
+  "icon_module_u_refine.png": "icons",
+  "icon_module_u_refine_16.png": "icons",
+  "icon_module_u_refine_192.png": "icons",
+  "icon_module_u_refine_48.png": "icons",
+  "icon_module_u_refine_96.png": "icons",
+  "icon_module_u_salvage.png": "icons",
+  "icon_module_u_salvage_16.png": "icons",
+  "icon_module_u_salvage_192.png": "icons",
+  "icon_module_u_salvage_48.png": "icons",
+  "icon_module_u_salvage_96.png": "icons",
+  "icon_module_u_tractor.png": "icons",
+  "icon_module_u_tractor_16.png": "icons",
+  "icon_module_u_tractor_192.png": "icons",
+  "icon_module_u_tractor_48.png": "icons",
+  "icon_module_u_tractor_96.png": "icons",
+  "icon_module_w_mining.png": "icons",
+  "icon_module_w_mining_16.png": "icons",
+  "icon_module_w_mining_192.png": "icons",
+  "icon_module_w_mining_48.png": "icons",
+  "icon_module_w_mining_96.png": "icons",
+  "icon_module_w_railgun.png": "icons",
+  "icon_module_w_railgun_16.png": "icons",
+  "icon_module_w_railgun_192.png": "icons",
+  "icon_module_w_railgun_48.png": "icons",
+  "icon_module_w_railgun_96.png": "icons",
+  "icon_service_bounty.png": "icons",
+  "icon_service_bounty_16.png": "icons",
+  "icon_service_bounty_192.png": "icons",
+  "icon_service_bounty_48.png": "icons",
+  "icon_service_bounty_96.png": "icons",
+  "icon_service_insurance.png": "icons",
+  "icon_service_insurance_16.png": "icons",
+  "icon_service_insurance_192.png": "icons",
+  "icon_service_insurance_48.png": "icons",
+  "icon_service_insurance_96.png": "icons",
+  "icon_service_vault.png": "icons",
+  "icon_service_vault_16.png": "icons",
+  "icon_service_vault_192.png": "icons",
+  "icon_service_vault_48.png": "icons",
+  "icon_service_vault_96.png": "icons",
+  "icon_shield.png": "icons",
+  "icon_shield_16.png": "icons",
+  "icon_shield_192.png": "icons",
+  "icon_shield_48.png": "icons",
+  "icon_shield_96.png": "icons",
+  "icon_slot_b.png": "icons",
+  "icon_slot_b_16.png": "icons",
+  "icon_slot_b_192.png": "icons",
+  "icon_slot_b_48.png": "icons",
+  "icon_slot_b_96.png": "icons",
+  "icon_slot_c.png": "icons",
+  "icon_slot_c_16.png": "icons",
+  "icon_slot_c_192.png": "icons",
+  "icon_slot_c_48.png": "icons",
+  "icon_slot_c_96.png": "icons",
+  "icon_slot_engine.png": "icons",
+  "icon_slot_engine_16.png": "icons",
+  "icon_slot_engine_192.png": "icons",
+  "icon_slot_engine_48.png": "icons",
+  "icon_slot_engine_96.png": "icons",
+  "icon_slot_h.png": "icons",
+  "icon_slot_h_16.png": "icons",
+  "icon_slot_h_192.png": "icons",
+  "icon_slot_h_48.png": "icons",
+  "icon_slot_h_96.png": "icons",
+  "icon_slot_power.png": "icons",
+  "icon_slot_power_16.png": "icons",
+  "icon_slot_power_192.png": "icons",
+  "icon_slot_power_48.png": "icons",
+  "icon_slot_power_96.png": "icons",
+  "icon_slot_s.png": "icons",
+  "icon_slot_s_16.png": "icons",
+  "icon_slot_s_192.png": "icons",
+  "icon_slot_s_48.png": "icons",
+  "icon_slot_s_96.png": "icons",
+  "icon_slot_u.png": "icons",
+  "icon_slot_u_16.png": "icons",
+  "icon_slot_u_192.png": "icons",
+  "icon_slot_u_48.png": "icons",
+  "icon_slot_u_96.png": "icons",
+  "icon_slot_w.png": "icons",
+  "icon_slot_w_16.png": "icons",
+  "icon_slot_w_192.png": "icons",
+  "icon_slot_w_48.png": "icons",
+  "icon_slot_w_96.png": "icons",
+  "icon_status_burning.png": "icons",
+  "icon_status_burning_16.png": "icons",
+  "icon_status_burning_192.png": "icons",
+  "icon_status_burning_48.png": "icons",
+  "icon_status_burning_96.png": "icons",
+  "icon_status_cloaked.png": "icons",
+  "icon_status_cloaked_16.png": "icons",
+  "icon_status_cloaked_192.png": "icons",
+  "icon_status_cloaked_48.png": "icons",
+  "icon_status_cloaked_96.png": "icons",
+  "icon_status_disabled.png": "icons",
+  "icon_status_disabled_16.png": "icons",
+  "icon_status_disabled_192.png": "icons",
+  "icon_status_disabled_48.png": "icons",
+  "icon_status_disabled_96.png": "icons",
+  "icon_status_drained.png": "icons",
+  "icon_status_drained_16.png": "icons",
+  "icon_status_drained_192.png": "icons",
+  "icon_status_drained_48.png": "icons",
+  "icon_status_drained_96.png": "icons",
+  "icon_status_locked.png": "icons",
+  "icon_status_locked_16.png": "icons",
+  "icon_status_locked_192.png": "icons",
+  "icon_status_locked_48.png": "icons",
+  "icon_status_locked_96.png": "icons",
+  "icon_status_radiated.png": "icons",
+  "icon_status_radiated_16.png": "icons",
+  "icon_status_radiated_192.png": "icons",
+  "icon_status_radiated_48.png": "icons",
+  "icon_status_radiated_96.png": "icons",
+  "icon_status_repairing.png": "icons",
+  "icon_status_repairing_16.png": "icons",
+  "icon_status_repairing_192.png": "icons",
+  "icon_status_repairing_48.png": "icons",
+  "icon_status_repairing_96.png": "icons",
+  "icon_status_shielded.png": "icons",
+  "icon_status_shielded_16.png": "icons",
+  "icon_status_shielded_192.png": "icons",
+  "icon_status_shielded_48.png": "icons",
+  "icon_status_shielded_96.png": "icons",
+  "icon_status_slowed.png": "icons",
+  "icon_status_slowed_16.png": "icons",
+  "icon_status_slowed_192.png": "icons",
+  "icon_status_slowed_48.png": "icons",
+  "icon_status_slowed_96.png": "icons",
+  "icon_weapon_cannon_16.png": "icons",
+  "icon_weapon_cannon_192.png": "icons",
+  "icon_weapon_cannon_48.png": "icons",
+  "icon_weapon_cannon_96.png": "icons",
+  "icon_weapon_laser_16.png": "icons",
+  "icon_weapon_laser_192.png": "icons",
+  "icon_weapon_laser_48.png": "icons",
+  "icon_weapon_laser_96.png": "icons",
+  "icon_weapon_mine_16.png": "icons",
+  "icon_weapon_mine_192.png": "icons",
+  "icon_weapon_mine_48.png": "icons",
+  "icon_weapon_mine_96.png": "icons",
+  "icon_weapon_plasma_16.png": "icons",
+  "icon_weapon_plasma_192.png": "icons",
+  "icon_weapon_plasma_48.png": "icons",
+  "icon_weapon_plasma_96.png": "icons",
+  "icon_weapon_rocket_16.png": "icons",
+  "icon_weapon_rocket_192.png": "icons",
+  "icon_weapon_rocket_48.png": "icons",
+  "icon_weapon_rocket_96.png": "icons",
+  "icon_zoom_minus.png": "icons",
+  "icon_zoom_minus_16.png": "icons",
+  "icon_zoom_minus_192.png": "icons",
+  "icon_zoom_minus_48.png": "icons",
+  "icon_zoom_minus_96.png": "icons",
+  "icon_zoom_plus.png": "icons",
+  "icon_zoom_plus_16.png": "icons",
+  "icon_zoom_plus_192.png": "icons",
+  "icon_zoom_plus_48.png": "icons",
+  "icon_zoom_plus_96.png": "icons",
+  "panel_boosters.png": "icons",
+  "panel_cargo.png": "icons",
+  "panel_glyphs.png": "icons",
+  "panel_status.png": "icons",
+  "panel_weapons.png": "icons",
+  "env_arena_barricade.png": "env",
+  "env_arena_nav_pylon.png": "env",
+  "env_asteroid_b1.png": "env",
+  "env_asteroid_b2.png": "env",
+  "env_asteroid_b3.png": "env",
+  "env_asteroid_b4.png": "env",
+  "env_asteroid_b5.png": "env",
+  "env_asteroid_b6.png": "env",
+  "env_asteroid_L1.png": "env",
+  "env_asteroid_L2.png": "env",
+  "env_asteroid_L3.png": "env",
+  "env_asteroid_M1.png": "env",
+  "env_asteroid_M2.png": "env",
+  "env_asteroid_M3.png": "env",
+  "env_asteroid_S1.png": "env",
+  "env_asteroid_S2.png": "env",
+  "env_asteroid_S3.png": "env",
+  "env_base_defense.png": "env",
+  "env_base_mining.png": "env",
+  "env_base_shipyard.png": "env",
+  "env_base_trade.png": "env",
+  "env_bg_body_plate.png": "env",
+  "env_body_ice_moon.png": "env",
+  "env_body_ore_moon.png": "env",
+  "env_body_shattered.png": "env",
+  "env_debris_field.png": "env",
+  "env_ice_field.png": "env",
+  "env_jump_gate.png": "env",
+  "env_jump_gate_ring.png": "env",
+  "env_loading_bg.png": "env",
+  "env_menu_bg.png": "env",
+  "env_mine.png": "env",
+  "env_nebula_veil.png": "env",
+  "env_ore_cluster.png": "env",
+  "env_outpost_defense.png": "env",
+  "env_outpost_mining.png": "env",
+  "env_outpost_relay.png": "env",
+  "env_outpost_repair.png": "env",
+  "env_pickup_ammo_pod.png": "env",
+  "env_pickup_bonus_box.png": "env",
+  "env_pickup_ore_pod.png": "env",
+  "env_pickup_repair_pod.png": "env",
+  "env_pickup_shield_pod.png": "env",
+  "env_pickup_speed_pod.png": "env",
+  "env_planet_moon.png": "env",
+  "env_prop_drive_core.png": "env",
+  "env_prop_hull_mid.png": "env",
+  "env_prop_hull_nose.png": "env",
+  "env_prop_hull_stern.png": "env",
+  "env_prop_plate_section.png": "env",
+  "env_prop_rib_cluster.png": "env",
+  "env_sector_1_bg.png": "env",
+  "env_sector_2_bg.png": "env",
+  "env_sector_3_bg.png": "env",
+  "env_sector_4_bg.png": "env",
+  "env_sector_5_bg.png": "env",
+  "env_sector_6_bg.png": "env",
+  "env_sector_7_bg.png": "env",
+  "env_stars_layer1.png": "env",
+  "env_stars_layer2.png": "env",
+  "env_stars_layer3.png": "env",
+  "env_station.png": "env",
+  "env_station_mmo.png": "env",
+  "env_station_ruined.png": "env",
+  "env_wreck_hulk.png": "env",
+  "panel_asteroids_b.png": "env",
+  "logo_vajb_orbit.png": "ui",
+  "ui_backdrop_hangar.png": "ui",
+  "ui_backdrop_login.png": "ui",
+  "ui_backdrop_starmap.png": "ui",
+  "ui_bar_caps.png": "ui",
+  "ui_bar_caps@2x.png": "ui",
+  "ui_button_plate_disabled.png": "ui",
+  "ui_button_plate_disabled@2x.png": "ui",
+  "ui_button_plate_hover.png": "ui",
+  "ui_button_plate_hover@2x.png": "ui",
+  "ui_button_plate_normal.png": "ui",
+  "ui_button_plate_normal@2x.png": "ui",
+  "ui_button_plate_pressed.png": "ui",
+  "ui_button_plate_pressed@2x.png": "ui",
+  "ui_insignia_mic.png": "ui",
+  "ui_insignia_mmo.png": "ui",
+  "ui_insignia_neutral.png": "ui",
+  "ui_insignia_ven.png": "ui",
+  "ui_minimap_bezel.png": "ui",
+  "ui_minimap_bezel@2x.png": "ui",
+  "ui_panel_frame.png": "ui",
+  "ui_panel_frame@2x.png": "ui",
+  "ui_slot_cargo_disabled.png": "ui",
+  "ui_slot_cargo_disabled@2x.png": "ui",
+  "ui_slot_cargo_hover.png": "ui",
+  "ui_slot_cargo_hover@2x.png": "ui",
+  "ui_slot_cargo_normal.png": "ui",
+  "ui_slot_cargo_normal@2x.png": "ui",
+  "ui_slot_cargo_pressed.png": "ui",
+  "ui_slot_cargo_pressed@2x.png": "ui",
+  "ui_slot_inventory_disabled.png": "ui",
+  "ui_slot_inventory_disabled@2x.png": "ui",
+  "ui_slot_inventory_hover.png": "ui",
+  "ui_slot_inventory_hover@2x.png": "ui",
+  "ui_slot_inventory_normal.png": "ui",
+  "ui_slot_inventory_normal@2x.png": "ui",
+  "ui_slot_inventory_pressed.png": "ui",
+  "ui_slot_inventory_pressed@2x.png": "ui",
+  "ui_slot_weapon_disabled.png": "ui",
+  "ui_slot_weapon_disabled@2x.png": "ui",
+  "ui_slot_weapon_hover.png": "ui",
+  "ui_slot_weapon_hover@2x.png": "ui",
+  "ui_slot_weapon_normal.png": "ui",
+  "ui_slot_weapon_normal@2x.png": "ui",
+  "ui_slot_weapon_pressed.png": "ui",
+  "ui_slot_weapon_pressed@2x.png": "ui",
+  "fx_anomaly_grave_glow.png": "fx",
+  "fx_anomaly_rift.png": "fx",
+  "fx_anomaly_shimmer.png": "fx",
+  "fx_cargo_pulse.png": "fx",
+  "fx_ember_pulse.png": "fx",
+  "fx_emp_arc.png": "fx",
+  "fx_engine_trail.png": "fx",
+  "fx_explosion.png": "fx",
+  "fx_hull_critical_vignette.png": "fx",
+  "fx_jump_portal.png": "fx",
+  "fx_laser_bolt.png": "fx",
+  "fx_mining_beam.png": "fx",
+  "fx_missile_trail.png": "fx",
+  "fx_muzzle_flash.png": "fx",
+  "fx_repair_pulse.png": "fx",
+  "fx_secondary_explosion.png": "fx",
+  "fx_shield_break.png": "fx",
+  "fx_shield_ripple.png": "fx",
+  "fx_tractor_beam.png": "fx",
+  "amb_space_drone_01.ogg": "audio",
+  "amb_space_float_01.ogg": "audio",
+  "amb_space_float_02.ogg": "audio",
+  "amb_space_misc_01.ogg": "audio",
+  "amb_space_misc_02.ogg": "audio",
+  "amb_space_misc_03.ogg": "audio",
+  "amb_space_misc_04.ogg": "audio",
+  "amb_space_misc_05.ogg": "audio",
+  "amb_space_rumble_01.ogg": "audio",
+  "amb_space_rumble_02.ogg": "audio",
+  "amb_space_wind_01.ogg": "audio",
+  "amb_station_noise_loop_01.ogg": "audio",
+  "amb_station_pump_loop_01.ogg": "audio",
+  "amb_station_room_01.ogg": "audio",
+  "amb_station_room_02.ogg": "audio",
+  "amb_station_room_03.ogg": "audio",
+  "mus_boss_metal_01_loop.ogg": "audio",
+  "mus_boss_metal_01_opening.ogg": "audio",
+  "mus_combat_loop_01.ogg": "audio",
+  "mus_exploration_ambient_01.ogg": "audio",
+  "mus_exploration_dread_01.ogg": "audio",
+  "mus_menu_theme_01.ogg": "audio",
+  "sfx_impact_hull_01.ogg": "audio",
+  "sfx_impact_hull_02.ogg": "audio",
+  "sfx_impact_hull_03.ogg": "audio",
+  "sfx_impact_hull_04.ogg": "audio",
+  "sfx_impact_hull_05.ogg": "audio",
+  "sfx_impact_rock_01.ogg": "audio",
+  "sfx_impact_rock_02.ogg": "audio",
+  "sfx_impact_rock_03.ogg": "audio",
+  "sfx_impact_rock_04.ogg": "audio",
+  "sfx_impact_shield_hit_01.ogg": "audio",
+  "sfx_impact_shield_hit_02.ogg": "audio",
+  "sfx_impact_shield_hit_03.ogg": "audio",
+  "sfx_impact_shield_hit_04.ogg": "audio",
+  "sfx_impact_shield_hit_05.ogg": "audio",
+  "sfx_impact_shield_hit_06.ogg": "audio",
+  "sfx_impact_shield_hit_07.ogg": "audio",
+  "sfx_impact_shield_hit_08.ogg": "audio",
+  "sfx_impact_shield_hit_09.ogg": "audio",
+  "sfx_impact_shield_loop_01.ogg": "audio",
+  "sfx_mining_beam_01.ogg": "audio",
+  "sfx_mining_chip_01.ogg": "audio",
+  "sfx_mining_chip_02.ogg": "audio",
+  "sfx_mining_chip_03.ogg": "audio",
+  "sfx_mining_chip_04.ogg": "audio",
+  "sfx_ship_boost_01.ogg": "audio",
+  "sfx_ship_engine_01.ogg": "audio",
+  "sfx_ship_engine_02_loop.ogg": "audio",
+  "sfx_ship_jump_01.ogg": "audio",
+  "sfx_ship_jump_02.ogg": "audio",
+  "sfx_station_boiler_loop_01.ogg": "audio",
+  "sfx_station_breaker_off_01.ogg": "audio",
+  "sfx_station_breaker_on_01.ogg": "audio",
+  "sfx_station_hull_crack_01.ogg": "audio",
+  "sfx_station_hull_crack_02.ogg": "audio",
+  "sfx_station_hull_crack_03.ogg": "audio",
+  "sfx_station_hull_groan_01.ogg": "audio",
+  "sfx_station_hull_ring_01.ogg": "audio",
+  "sfx_station_hull_ring_02.ogg": "audio",
+  "sfx_station_hull_ring_03.ogg": "audio",
+  "sfx_station_hum_loop_01.ogg": "audio",
+  "sfx_station_machine_loop_01.ogg": "audio",
+  "sfx_station_machine_loop_02.ogg": "audio",
+  "sfx_station_machine_loop_03.ogg": "audio",
+  "sfx_station_power_off_01.ogg": "audio",
+  "sfx_stinger_anomaly_01.ogg": "audio",
+  "sfx_stinger_anomaly_02.ogg": "audio",
+  "sfx_stinger_anomaly_03.ogg": "audio",
+  "sfx_stinger_boss_roar_01.ogg": "audio",
+  "sfx_stinger_rumble_pass_01.ogg": "audio",
+  "sfx_stinger_scare_01.ogg": "audio",
+  "sfx_stinger_scare_02.ogg": "audio",
+  "sfx_weapon_cannon_01.ogg": "audio",
+  "sfx_weapon_cannon_02_medium.ogg": "audio",
+  "sfx_weapon_cannon_03_long.ogg": "audio",
+  "sfx_weapon_explosion_01.ogg": "audio",
+  "sfx_weapon_explosion_02.ogg": "audio",
+  "sfx_weapon_laser_01.ogg": "audio",
+  "sfx_weapon_laser_02.ogg": "audio",
+  "sfx_weapon_laser_03.ogg": "audio",
+  "sfx_weapon_laser_04.ogg": "audio",
+  "sfx_weapon_rocket_01.ogg": "audio",
+  "sfx_weapon_rocket_02_warhead.ogg": "audio",
+  "ui_click.ogg": "audio",
+  "ui_click_02.ogg": "audio",
+  "ui_click_03.ogg": "audio",
+  "ui_click_04.ogg": "audio",
+  "ui_click_05.ogg": "audio",
+  "ui_confirm_01.ogg": "audio",
+  "ui_denied_01.ogg": "audio",
+  "ui_hover.ogg": "audio",
+  "ui_hover_02.ogg": "audio",
+  "ui_hover_03.ogg": "audio",
+  "ui_scroll_01.ogg": "audio"
+ },
+ "code": {
+  "vajb-orbit/tools/build_theme.gd": [
+   "res://assets/fonts/Oxanium",
+   "res://assets/fonts/Rajdhani-Medium.ttf",
+   "res://assets/fonts/Rajdhani-Regular.ttf",
+   "res://assets/fonts/Rajdhani-SemiBold.ttf",
+   "res://assets/fonts/SairaStencilOne-Regular.ttf",
+   "res://assets/ui/ui_button_plate_",
+   "res://assets/ui/ui_panel_frame.png",
+   "res://assets/ui/ui_slot_cargo_",
+   "res://assets/ui/ui_slot_weapon_"
+  ],
+  "vajb-orbit/tools/derive_icon_tints.gd": [
+   "res://assets/icons",
+   "res://assets/icons/tint"
+  ],
+  "vajb-orbit/ui/paths.gd": [
+   "res://assets/audio/ambience/",
+   "res://assets/audio/music/",
+   "res://assets/audio/sfx/",
+   "res://assets/audio/ui/"
+  ],
+  "vajb-orbit/ui/theme/vajb_theme.tres": [
+   "res://assets/fonts/Oxanium",
+   "res://assets/fonts/Rajdhani-Medium.ttf",
+   "res://assets/fonts/Rajdhani-Regular.ttf",
+   "res://assets/fonts/Rajdhani-SemiBold.ttf",
+   "res://assets/fonts/SairaStencilOne-Regular.ttf",
+   "res://assets/ui/ui_button_plate_disabled.png",
+   "res://assets/ui/ui_button_plate_hover.png",
+   "res://assets/ui/ui_button_plate_normal.png",
+   "res://assets/ui/ui_button_plate_pressed.png",
+   "res://assets/ui/ui_panel_frame.png",
+   "res://assets/ui/ui_slot_cargo_disabled.png",
+   "res://assets/ui/ui_slot_cargo_hover.png",
+   "res://assets/ui/ui_slot_cargo_normal.png",
+   "res://assets/ui/ui_slot_cargo_pressed.png",
+   "res://assets/ui/ui_slot_weapon_disabled.png",
+   "res://assets/ui/ui_slot_weapon_hover.png",
+   "res://assets/ui/ui_slot_weapon_normal.png",
+   "res://assets/ui/ui_slot_weapon_pressed.png"
+  ],
+  "vajb-orbit/ui/screens/boot.tscn": [
+   "res://assets/ui/logo_vajb_orbit.png"
+  ],
+  "vajb-orbit/ui/screens/loading.tscn": [
+   "res://assets/env/env_loading_bg.png"
+  ],
+  "vajb-orbit/ui/screens/main_menu.tscn": [
+   "res://assets/env/env_menu_bg.png",
+   "res://assets/fx/fx_ember_pulse.png",
+   "res://assets/ui/logo_vajb_orbit.png",
+   "res://assets/ui/ui_insignia_neutral.png"
+  ],
+  "vajb-orbit/ui/screens/_mockup_station.gd": [
+   "res://assets/icons/icon_ammo_laser_48.png",
+   "res://assets/icons/icon_ammo_rocket_48.png",
+   "res://assets/icons/icon_equip_drone_48.png",
+   "res://assets/icons/icon_equip_engine_48.png",
+   "res://assets/icons/icon_equip_extra_48.png",
+   "res://assets/icons/icon_equip_generator_48.png",
+   "res://assets/icons/icon_equip_module_48.png",
+   "res://assets/icons/icon_equip_shield_gen_48.png",
+   "res://assets/icons/icon_map_route_48.png",
+   "res://assets/icons/tint/icon_cargo_data_core_48.png",
+   "res://assets/icons/tint/icon_cargo_ore_48.png",
+   "res://assets/icons/tint/icon_cargo_salvage_48.png",
+   "res://assets/icons/tint/icon_hull_48.png",
+   "res://assets/icons/tint/icon_logout_48.png",
+   "res://assets/icons/tint/icon_weapon_cannon_48.png",
+   "res://assets/icons/tint/icon_weapon_mine_48.png",
+   "res://assets/icons/tint/icon_weapon_plasma_48.png",
+   "res://assets/ships/ship_destroyer_side.png",
+   "res://assets/ships/ship_fighter_side.png",
+   "res://assets/ships/ship_gunship_side.png",
+   "res://assets/ships/ship_vanguard_side.png"
+  ],
+  "vajb-orbit/ui/screens/_mockup_station.tscn": [
+   "res://assets/icons/icon_equip_generator_48.png",
+   "res://assets/icons/icon_equip_module_48.png",
+   "res://assets/icons/icon_map_node_station_48.png",
+   "res://assets/icons/icon_map_route_48.png",
+   "res://assets/icons/tint/icon_credits_48.png",
+   "res://assets/icons/tint/icon_hull_48.png",
+   "res://assets/ui/ui_backdrop_hangar.png"
+  ],
+  "vajb-orbit/ui/screens/station.tscn": [
+   "res://assets/icons/icon_map_node_station_48.png",
+   "res://assets/icons/tint/icon_credits_48.png",
+   "res://assets/ui/ui_backdrop_hangar.png"
+  ],
+  "vajb-orbit/ui/screens/station.gd": [
+   "res://assets/icons/icon_equip_generator_48.png",
+   "res://assets/icons/icon_equip_module_48.png",
+   "res://assets/icons/icon_map_route_48.png",
+   "res://assets/icons/icon_status_repairing_48.png",
+   "res://assets/icons/tint/icon_cargo_ore_48.png",
+   "res://assets/icons/tint/icon_credits_48.png",
+   "res://assets/icons/tint/icon_hull_48.png",
+   "res://assets/icons/tint/icon_logout_48.png"
+  ],
+  "vajb-orbit/ui/hud/hud.gd": [
+   "res://assets/icons/tint/icon_cargo_container_48.png",
+   "res://assets/icons/tint/icon_cargo_crate_48.png",
+   "res://assets/icons/tint/icon_cargo_data_core_48.png",
+   "res://assets/icons/tint/icon_cargo_fuel_cell_48.png",
+   "res://assets/icons/tint/icon_cargo_ore_48.png",
+   "res://assets/icons/tint/icon_cargo_salvage_48.png",
+   "res://assets/icons/tint/icon_weapon_cannon_48.png",
+   "res://assets/icons/tint/icon_weapon_laser_48.png",
+   "res://assets/icons/tint/icon_weapon_mine_48.png",
+   "res://assets/icons/tint/icon_weapon_plasma_48.png",
+   "res://assets/icons/tint/icon_weapon_rocket_48.png"
+  ],
+  "vajb-orbit/ui/hud/hud.tscn": [
+   "res://assets/icons/tint/icon_ammo_16.png",
+   "res://assets/icons/tint/icon_cargo_container_48.png",
+   "res://assets/icons/tint/icon_close_16.png",
+   "res://assets/icons/tint/icon_hull_16.png",
+   "res://assets/icons/tint/icon_shield_16.png",
+   "res://assets/icons/tint/icon_zoom_minus_96.png",
+   "res://assets/icons/tint/icon_zoom_plus_96.png",
+   "res://assets/ui/ui_bar_caps.png",
+   "res://assets/ui/ui_minimap_bezel.png"
+  ],
+  "vajb-orbit/ui/station/outfitting_panel.tscn": [
+   "res://assets/icons/icon_equip_module_48.png"
+  ],
+  "vajb-orbit/ui/station/outfitting_panel.gd": [
+   "res://assets/icons/",
+   "res://assets/icons/icon_weapon_cannon_48.png",
+   "res://assets/icons/icon_weapon_mine_48.png",
+   "res://assets/icons/icon_weapon_plasma_48.png",
+   "res://assets/icons/tint/"
+  ],
+  "vajb-orbit/ui/station/upgrades_panel.tscn": [
+   "res://assets/icons/icon_equip_generator_48.png"
+  ],
+  "vajb-orbit/ui/station/shipyard_panel.tscn": [
+   "res://assets/icons/tint/icon_hull_48.png"
+  ],
+  "vajb-orbit/ui/station/launch_panel.gd": [
+   "res://assets/icons/tint/",
+   "res://assets/icons/tint/icon_cargo_crate_48.png"
+  ],
+  "vajb-orbit/ui/station/launch_panel.tscn": [
+   "res://assets/icons/icon_map_route_48.png"
+  ],
+  "vajb-orbit/ui/station/repairs_panel.tscn": [
+   "res://assets/icons/icon_status_repairing_48.png"
+  ],
+  "vajb-orbit/ui/station/refinery_panel.tscn": [
+   "res://assets/icons/tint/icon_cargo_ore_48.png"
+  ],
+  "vajb-orbit/ui/station/refinery_panel.gd": [
+   "res://assets/icons/",
+   "res://assets/icons/tint/"
+  ],
+  "vajb-orbit/ui/station/exchange_panel.tscn": [
+   "res://assets/icons/tint/icon_credits_48.png"
+  ],
+  "vajb-orbit/ui/station/exchange_panel.gd": [
+   "res://assets/icons/",
+   "res://assets/icons/tint/"
+  ],
+  "vajb-orbit/game/game.tscn": [
+   "res://assets/env/env_stars_layer1.png",
+   "res://assets/env/env_stars_layer2.png",
+   "res://assets/env/env_stars_layer3.png"
+  ],
+  "vajb-orbit/game/station_catalog.gd": [
+   "res://assets/icons/icon_ammo_laser_48.png",
+   "res://assets/icons/icon_ammo_rocket_48.png",
+   "res://assets/icons/icon_equip_drone_48.png",
+   "res://assets/icons/icon_equip_engine_48.png",
+   "res://assets/icons/icon_equip_extra_48.png",
+   "res://assets/icons/icon_equip_generator_48.png",
+   "res://assets/icons/icon_equip_module_48.png",
+   "res://assets/icons/icon_equip_shield_gen_48.png",
+   "res://assets/icons/icon_weapon_cannon_48.png",
+   "res://assets/icons/icon_weapon_mine_48.png",
+   "res://assets/icons/icon_weapon_plasma_48.png",
+   "res://assets/ships/ship_destroyer_side.png",
+   "res://assets/ships/ship_fighter_side.png",
+   "res://assets/ships/ship_gunship_side.png",
+   "res://assets/ships/ship_vanguard_side.png"
+  ],
+  "vajb-orbit/game/mineral_catalog.gd": [
+   "res://assets/icons/icon_ingot_aluminium_48.png",
+   "res://assets/icons/icon_ingot_cerulite_48.png",
+   "res://assets/icons/icon_ingot_chromium_48.png",
+   "res://assets/icons/icon_ingot_cobalt_48.png",
+   "res://assets/icons/icon_ingot_copper_48.png",
+   "res://assets/icons/icon_ingot_emberite_48.png",
+   "res://assets/icons/icon_ingot_gold_48.png",
+   "res://assets/icons/icon_ingot_iridium_48.png",
+   "res://assets/icons/icon_ingot_iron_48.png",
+   "res://assets/icons/icon_ingot_krilium_48.png",
+   "res://assets/icons/icon_ingot_neodymium_48.png",
+   "res://assets/icons/icon_ingot_nickel_48.png",
+   "res://assets/icons/icon_ingot_osmium_48.png",
+   "res://assets/icons/icon_ingot_palladium_48.png",
+   "res://assets/icons/icon_ingot_platinum_48.png",
+   "res://assets/icons/icon_ingot_silicon_48.png",
+   "res://assets/icons/icon_ingot_silver_48.png",
+   "res://assets/icons/icon_ingot_titanium_48.png",
+   "res://assets/icons/icon_ingot_tungsten_48.png",
+   "res://assets/icons/icon_ingot_voidglass_48.png",
+   "res://assets/icons/icon_mineral_aluminium_48.png",
+   "res://assets/icons/icon_mineral_cerulite_48.png",
+   "res://assets/icons/icon_mineral_chromium_48.png",
+   "res://assets/icons/icon_mineral_cobalt_48.png",
+   "res://assets/icons/icon_mineral_copper_48.png",
+   "res://assets/icons/icon_mineral_emberite_48.png",
+   "res://assets/icons/icon_mineral_gold_48.png",
+   "res://assets/icons/icon_mineral_iridium_48.png",
+   "res://assets/icons/icon_mineral_iron_48.png",
+   "res://assets/icons/icon_mineral_krilium_48.png",
+   "res://assets/icons/icon_mineral_neodymium_48.png",
+   "res://assets/icons/icon_mineral_nickel_48.png",
+   "res://assets/icons/icon_mineral_osmium_48.png",
+   "res://assets/icons/icon_mineral_palladium_48.png",
+   "res://assets/icons/icon_mineral_platinum_48.png",
+   "res://assets/icons/icon_mineral_silicon_48.png",
+   "res://assets/icons/icon_mineral_silver_48.png",
+   "res://assets/icons/icon_mineral_titanium_48.png",
+   "res://assets/icons/icon_mineral_tungsten_48.png",
+   "res://assets/icons/icon_mineral_voidglass_48.png"
+  ],
+  "vajb-orbit/game/component_catalog.gd": [
+   "res://assets/icons/icon_cargo_container_48.png",
+   "res://assets/icons/icon_cargo_crate_48.png",
+   "res://assets/icons/icon_cargo_data_core_48.png",
+   "res://assets/icons/icon_cargo_fuel_cell_48.png",
+   "res://assets/icons/icon_cargo_ore_48.png",
+   "res://assets/icons/icon_cargo_salvage_48.png"
+  ],
+  "vajb-orbit/game/sector_registry.gd": [
+   "res://assets/env/env_sector_1_bg.png",
+   "res://assets/env/env_sector_2_bg.png",
+   "res://assets/env/env_sector_3_bg.png",
+   "res://assets/env/env_sector_4_bg.png",
+   "res://assets/env/env_sector_5_bg.png",
+   "res://assets/env/env_sector_6_bg.png",
+   "res://assets/env/env_sector_7_bg.png"
+  ],
+  "vajb-orbit/game/sector.gd": [
+   "res://assets/env/env_station.png"
+  ],
+  "vajb-orbit/game/player_ship.tscn": [
+   "res://assets/ships/ship_vanguard_side.png"
+  ],
+  "vajb-orbit/game/asteroid.gd": [
+   "res://assets/env/env_asteroid_L1.png",
+   "res://assets/env/env_asteroid_L2.png",
+   "res://assets/env/env_asteroid_L3.png",
+   "res://assets/env/env_asteroid_M1.png",
+   "res://assets/env/env_asteroid_M2.png",
+   "res://assets/env/env_asteroid_M3.png",
+   "res://assets/env/env_asteroid_S1.png",
+   "res://assets/env/env_asteroid_S2.png",
+   "res://assets/env/env_asteroid_S3.png"
+  ],
+  "vajb-orbit/game/pickup.gd": [
+   "res://assets/env/env_pickup_ore_pod.png"
+  ],
+  "vajb-orbit/tests/test_p1_catalogues.gd": [
+   "res://assets/icons/icon_ingot_",
+   "res://assets/icons/icon_mineral_"
+  ]
+ },
+ "derived": {
+  "_16": "icon split, engine-side tint source, 16 px",
+  "_48": "icon split, engine-side tint source, 48 px",
+  "_96": "icon split, chrome glyph, 96 px",
+  "_192": "icon split, largest shipped icon, 192 px",
+  "@2x": "chrome plate cut at double resolution, raster of a nine-slice"
+ },
+ "families": {
+  "env": 122,
+  "fx": 47,
+  "icon": 301,
+  "logo": 3,
+  "ship": 137,
+  "ui": 48,
+  "4-frame-horizontal-sprite-sheet-of-a-wea": 1,
+  "body": 1,
+  "deep-space-nebula-veil-a-single-square": 1,
+  "f1": 3,
+  "flat-vector-icon-sheet-2x2-grid-icons": 1,
+  "flat-vector-icon-sheet-3x3-grid-icons": 3,
+  "flat-vector-icon-sheet-4x2-grid-icons": 2,
+  "flat-vector-icon-sheet-5x4-grid-icons": 2,
+  "flat-vector-icon-sheet-for-a-dark-sci-fi": 1,
+  "full-screen-vignette-burnt-ember-c8461": 1,
+  "grimdark-painted-sci-fi-semi-realistic": 7,
+  "livery": 1,
+  "logo-vajb-orbit-the-word-vajb-orbit-as": 1,
+  "mining-base-structure-a-station-scale-i": 1,
+  "p2": 2,
+  "panel": 4,
+  "same-2x2-rotation-sheet-of-the-same-enem": 3,
+  "seamless-repeating-pattern-wallpaper-tex": 1,
+  "seamless-tileable-foreground-dust-layer": 1,
+  "seamless-tileable-starfield-layer-a-fla": 1,
+  "seamless-tileable-void-haze-layer-soft": 1,
+  "seamless-tileable-void-haze-texture-abs": 1,
+  "sector-backdrop-plate-a-wide-16-9-cinem": 4,
+  "single-small-energy-ring-burnt-ember-c": 2,
+  "single-thin-horizontal-ember-streak-bur": 1,
+  "small-radial-ember-glow-orb-soft-radial": 1,
+  "ui-bar-caps-and-ui-minimap-bezel-one-pa": 2,
+  "ui-button-plate-a-square-panel-with-fou": 2
+ }
+}

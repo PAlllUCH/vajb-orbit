@@ -72,12 +72,19 @@ Final table kept until the cleanup report is written:
 
 ## Queued
 
+**Dispatch flow (owner ruling 2026-09-20):** the owner no longer pastes
+worker prompts. The coding orchestrator receives `.agents/gen/dispatch_coder.md`
+(it executes slice 0 → slice 2 → batch-2 with the briefs and prompts files
+below); the graphics orchestrator receives `.agents/gen/dispatch_designer.md`
+(ship rework → alien hulls → Phase G FX, owner-gated review sheets).
+
 1. **Slice-0 (Physics & Fuel) — READY TO DISPATCH, runs first.** Brief
    `.agents/gen/slice0_task.md` + prompts `.agents/gen/slice0_prompts.md`
    (M0 → M1–M3 parallel → M4 → M5 → M6, `VAJB_WORKER_FILES` per dispatch).
    Owner-gated: the §13 speed-table-v2 △ rows need the owner's tick before
    tests bake them. Before the first dispatch: `py -3.14
-   staging/verify_wave.py snapshot --name slice0_start` + a git commit.
+   staging/verify_wave.py snapshot --name slice0_start` + a git commit
+   (the snapshot for `slice0_start` is already taken 2026-09-20).
 2. **Slice-2 (Fight) — READY, but dispatches only after slice 0.** Brief
    `.agents/gen/slice2_task.md` (amended 2026-09-20: power draw, seeker +
    chaff/flare, `ctx` pipeline, alien swarmers, pools bars + radial
@@ -91,10 +98,12 @@ Final table kept until the cleanup report is written:
 4. **Slice-2.5 (Feel)** — brief written after slice-2 reports land: motion
    blur + camera pull + dust, damage smoke/ripple/shatter, dash charge FX
    (18_engine_spec §3.4 + FX_SPEC §7; no new gameplay systems).
-5. **Graphics designer lane (parallel, no coder)** — alien hull sheets for
-   all three families (STYLE_BIBLE §2.5 + §9.1 alien style block), the Phase
-   G FX sheets (FX_SPEC §7.2), ship rework in progress. Slice-2 W3's visual
-   pass gates on the swarmer sheets; behaviour probes never do.
+5. **Graphics orchestrator lane (parallel, no coder)** — hand the designer
+   agent `.agents/gen/dispatch_designer.md`: ship rework → alien hull sheets
+   for all three families (swarmer first — slice-2 W3's visual pass gates on
+   it; STYLE_BIBLE §2.5 + §9.1 alien style block) → Phase G FX sheets
+   (FX_SPEC §7.2). Review sheets wait for owner approval before anything
+   ships; slice-2 W3's behaviour probes never gate on art.
 6. **Cleanup pass (deferred items)** — the five sealed-archive moves (need a
    `VAJB_ARCHIVE_OK=1` session), `_mockup_station.tscn` deletion (gated on
    live S2 verification + wave-4 review), MAIN_MENU_SPEC reference repointing

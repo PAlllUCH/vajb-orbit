@@ -46,7 +46,7 @@ def font(size: int) -> ImageFont.FreeTypeFont:
 
 
 def cut_map(entry: dict, width: int = MAP_WIDTH) -> Image.Image:
-    """The raw sheet, scaled, with the cut lines and panel names drawn on it."""
+    """The raw sheet, scaled, with each sprite's artwork box and name drawn on it."""
     sheet = Image.open(RAW / Path(entry["raw"]).name).convert("RGB")
     scale = width / sheet.width
     canvas = sheet.resize((width, max(1, round(sheet.height * scale))), Image.LANCZOS)
@@ -54,17 +54,23 @@ def cut_map(entry: dict, width: int = MAP_WIDTH) -> Image.Image:
     label = font(max(11, round(width / 34)))
     small = font(max(9, round(width / 46)))
 
-    for panel in entry["panels"]:
-        left, top, right, bottom = (value * scale for value in panel["box"])
+    for sprite in entry.get("sprites", []):
+        left, top, right, bottom = (value * scale for value in sprite["source_box"])
         draw.rectangle((left, top, right - 1, bottom - 1), outline=LINE, width=2)
-        name = panel["name"]
-        drawn = small if len(name) > 20 else label
-        draw.text((left + 6, top + 4), name, font=drawn, fill=TEXT,
+        name = sprite["name"]
+        draw.text((left + 6, top + 4), name, font=small if len(name) > 20 else label, fill=TEXT,
                   stroke_width=2, stroke_fill=(0, 0, 0))
+
+    if entry.get("plate"):
+        draw.rectangle((1, 1, canvas.width - 2, canvas.height - 2), outline=(90, 150, 90), width=2)
+        draw.text((8, 8), entry.get("plate_name", ""), font=label, fill=(150, 220, 150),
+                  stroke_width=2, stroke_fill=(0, 0, 0))
+
     header = font(max(13, round(width / 26)))
-    draw.text((8, canvas.height - round(width / 14)), 
-              f"{Path(entry['raw']).stem}  {entry['grid'][0]}x{entry['grid'][1]}  "
-              f"{entry['method']}  ratio {entry['divider_ink_ratio']}",
+    grid = entry["grid"]
+    draw.text((8, canvas.height - round(width / 14)),
+              f"{Path(entry['raw']).stem}  {grid[0]}x{grid[1]}  canvas "
+              f"{entry['canvas'][0]}x{entry['canvas'][1]}",
               font=header, fill=LABEL, stroke_width=2, stroke_fill=(0, 0, 0))
     return canvas
 
@@ -143,11 +149,11 @@ def main() -> int:
 
         sprites = []
         for entry in entries:
-            for panel in entry["panels"]:
-                name = panel["name"]
+            names = [s["name"] for s in entry.get("sprites", [])]
+            if entry.get("plate"):
+                names = [entry["plate_name"]]
+            for name in names:
                 sprites.append((name, scaled(Image.open(CUT / f"{name}.png").convert("RGB"), THUMB)))
-        for name in [n for entry in entries for n in entry["master"]]:
-            sprites.append((name, scaled(Image.open(CUT / f"{name}.png").convert("RGB"), THUMB)))
         contact(sprites, THUMB_COLUMNS, THUMB, 11, f"{family} - {len(sprites)} cut sprite(s)").save(
             REVIEW / f"cuts_{family}.jpg", quality=88)
         for index in range(0, len(sprites), THUMB_COLUMNS * 2):

@@ -2,7 +2,7 @@
  "note": "One entry per gathered raw sheet. `grid` is [cols, rows]; `cuts` is the panel order, left to right then top to bottom. `mode` single means one panel, nothing to split. `master` names ship as the whole sheet. `plan_from` records where the layout came from; `superseded` records a panel renamed because another sheet owns the plain name. Panels are cut at their boundaries only: no background keying, no trimming.",
  "counts": {
   "sheets": 163,
-  "panels": 525,
+  "panels": 542,
   "by_family": {
    "ships": 33,
    "env": 54,
@@ -16,10 +16,14 @@
    "family": "env",
    "stamp": "20260917-230055",
    "run_key": "body_ice_moon",
-   "raw": "raw/body_ice_moon.png",
+   "raw": "_dropped/body_ice_moon.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -38,10 +42,14 @@
    "family": "env",
    "stamp": "20260917-213632",
    "run_key": "deep-space-nebula-veil-a-single-square",
-   "raw": "raw/deep-space-nebula-veil-a-single-square.png",
+   "raw": "_dropped/deep-space-nebula-veil-a-single-square.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -60,7 +68,7 @@
    "family": "env",
    "stamp": "20260918-112357",
    "run_key": "env_arena",
-   "raw": "raw/env_arena.png",
+   "raw": "raw/env/prop/env_arena.png",
    "produced": [
     "env_arena_barricade",
     "env_arena_nav_pylon"
@@ -70,6 +78,10 @@
     "env_arena_nav_pylon"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    1
+   ],
    "grid": [
     2,
     1
@@ -88,7 +100,7 @@
    "family": "env",
    "stamp": "20260917-183047",
    "run_key": "env_asteroid",
-   "raw": "raw/env_asteroid.png",
+   "raw": "raw/env/prop/env_asteroid.png",
    "produced": [
     "env_asteroid_L1",
     "env_asteroid_L2",
@@ -112,6 +124,10 @@
     "env_asteroid_S3"
    ],
    "master": [],
+   "planned_grid": [
+    3,
+    3
+   ],
    "grid": [
     3,
     3
@@ -137,7 +153,7 @@
    "family": "env",
    "stamp": "20260917-230454",
    "run_key": "env_asteroid_b",
-   "raw": "raw/env_asteroid_b.png",
+   "raw": "raw/env/prop/env_asteroid_b.png",
    "produced": [
     "env_asteroid_b1",
     "env_asteroid_b2",
@@ -155,6 +171,10 @@
     "env_asteroid_b6"
    ],
    "master": [],
+   "planned_grid": [
+    3,
+    2
+   ],
    "grid": [
     3,
     2
@@ -177,7 +197,7 @@
    "family": "env",
    "stamp": "20260917-225636",
    "run_key": "env_base_defense",
-   "raw": "raw/env_base_defense.png",
+   "raw": "raw/env/poi/env_base_defense.png",
    "produced": [
     "env_base_defense"
    ],
@@ -185,6 +205,10 @@
     "env_base_defense"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -202,7 +226,7 @@
    "family": "env",
    "stamp": "20260917-225308",
    "run_key": "env_base_mining",
-   "raw": "raw/env_base_mining.png",
+   "raw": "raw/env/poi/env_base_mining.png",
    "produced": [
     "env_base_mining"
    ],
@@ -210,6 +234,10 @@
     "env_base_mining"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -227,7 +255,7 @@
    "family": "env",
    "stamp": "20260917-225718",
    "run_key": "env_base_shipyard",
-   "raw": "raw/env_base_shipyard.png",
+   "raw": "raw/env/poi/env_base_shipyard.png",
    "produced": [
     "env_base_shipyard"
    ],
@@ -235,6 +263,10 @@
     "env_base_shipyard"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -252,7 +284,7 @@
    "family": "env",
    "stamp": "20260917-225554",
    "run_key": "env_base_trade",
-   "raw": "raw/env_base_trade.png",
+   "raw": "raw/env/poi/env_base_trade.png",
    "produced": [
     "env_base_trade"
    ],
@@ -260,6 +292,10 @@
     "env_base_trade"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -277,7 +313,7 @@
    "family": "env",
    "stamp": "20260917-230246",
    "run_key": "env_bg_body_plate",
-   "raw": "raw/env_bg_body_plate.png",
+   "raw": "raw/env/backdrop/env_bg_body_plate.png",
    "produced": [
     "env_bg_body_plate"
    ],
@@ -285,6 +321,10 @@
     "env_bg_body_plate"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -302,7 +342,7 @@
    "family": "env",
    "stamp": "20260918-133217",
    "run_key": "env_body_ice_moon",
-   "raw": "raw/env_body_ice_moon.png",
+   "raw": "raw/env/body/env_body_ice_moon_prev.png",
    "produced": [
     "env_body_ice_moon"
    ],
@@ -310,6 +350,10 @@
     "env_body_ice_moon"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -327,7 +371,7 @@
    "family": "env",
    "stamp": "20260917-230140",
    "run_key": "env_body_ore_moon",
-   "raw": "raw/env_body_ore_moon.png",
+   "raw": "raw/env/body/env_body_ore_moon.png",
    "produced": [
     "env_body_ore_moon"
    ],
@@ -335,6 +379,10 @@
     "env_body_ore_moon"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -352,7 +400,7 @@
    "family": "env",
    "stamp": "20260917-230214",
    "run_key": "env_body_shattered",
-   "raw": "raw/env_body_shattered.png",
+   "raw": "raw/env/body/env_body_shattered.png",
    "produced": [
     "env_body_shattered"
    ],
@@ -360,6 +408,10 @@
     "env_body_shattered"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -377,7 +429,7 @@
    "family": "env",
    "stamp": "20260917-213550",
    "run_key": "env_debris_field",
-   "raw": "raw/env_debris_field.png",
+   "raw": "raw/env/prop/env_debris_field.png",
    "produced": [
     "env_debris_field"
    ],
@@ -385,6 +437,10 @@
     "env_debris_field"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -402,7 +458,7 @@
    "family": "env",
    "stamp": "20260917-220025",
    "run_key": "env_ice_field",
-   "raw": "raw/env_ice_field.png",
+   "raw": "raw/env/prop/env_ice_field.png",
    "produced": [
     "env_ice_field"
    ],
@@ -410,6 +466,10 @@
     "env_ice_field"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -427,7 +487,7 @@
    "family": "env",
    "stamp": "20260917-213508",
    "run_key": "env_jump_gate",
-   "raw": "raw/env_jump_gate.png",
+   "raw": "raw/env/poi/env_jump_gate.png",
    "produced": [
     "env_jump_gate"
    ],
@@ -435,6 +495,10 @@
     "env_jump_gate"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -452,7 +516,7 @@
    "family": "env",
    "stamp": "20260918-112132",
    "run_key": "env_jump_gate_ring",
-   "raw": "raw/env_jump_gate_ring.png",
+   "raw": "raw/env/poi/env_jump_gate_ring.png",
    "produced": [
     "env_jump_gate_ring"
    ],
@@ -460,6 +524,10 @@
     "env_jump_gate_ring"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -477,7 +545,7 @@
    "family": "env",
    "stamp": "20260917-183150",
    "run_key": "env_loading_bg",
-   "raw": "raw/env_loading_bg.png",
+   "raw": "raw/env/backdrop/env_loading_bg.png",
    "produced": [
     "env_loading_bg"
    ],
@@ -485,6 +553,10 @@
     "env_loading_bg"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -502,7 +574,7 @@
    "family": "env",
    "stamp": "20260917-183105",
    "run_key": "env_menu_bg",
-   "raw": "raw/env_menu_bg.png",
+   "raw": "raw/env/backdrop/env_menu_bg.png",
    "produced": [
     "env_menu_bg"
    ],
@@ -510,6 +582,10 @@
     "env_menu_bg"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -527,7 +603,7 @@
    "family": "env",
    "stamp": "20260917-230535",
    "run_key": "env_mine",
-   "raw": "raw/env_mine.png",
+   "raw": "raw/env/poi/env_mine.png",
    "produced": [
     "env_mine"
    ],
@@ -535,6 +611,10 @@
     "env_mine"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -552,7 +632,7 @@
    "family": "env",
    "stamp": "20260917-214913",
    "run_key": "env_nebula_veil",
-   "raw": "raw/env_nebula_veil.png",
+   "raw": "raw/env/backdrop/env_nebula_veil.png",
    "produced": [
     "env_nebula_veil"
    ],
@@ -560,6 +640,10 @@
     "env_nebula_veil"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -577,7 +661,7 @@
    "family": "env",
    "stamp": "20260917-220107",
    "run_key": "env_ore_cluster",
-   "raw": "raw/env_ore_cluster.png",
+   "raw": "raw/env/prop/env_ore_cluster.png",
    "produced": [
     "env_ore_cluster"
    ],
@@ -585,6 +669,10 @@
     "env_ore_cluster"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -602,7 +690,7 @@
    "family": "env",
    "stamp": "20260917-225832",
    "run_key": "env_outpost_defense",
-   "raw": "raw/env_outpost_defense.png",
+   "raw": "raw/env/poi/env_outpost_defense.png",
    "produced": [
     "env_outpost_defense"
    ],
@@ -610,6 +698,10 @@
     "env_outpost_defense"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -627,7 +719,7 @@
    "family": "env",
    "stamp": "20260917-225750",
    "run_key": "env_outpost_mining",
-   "raw": "raw/env_outpost_mining.png",
+   "raw": "raw/env/poi/env_outpost_mining.png",
    "produced": [
     "env_outpost_mining"
    ],
@@ -635,6 +727,10 @@
     "env_outpost_mining"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -652,7 +748,7 @@
    "family": "env",
    "stamp": "20260917-225903",
    "run_key": "env_outpost_relay",
-   "raw": "raw/env_outpost_relay.png",
+   "raw": "raw/env/poi/env_outpost_relay.png",
    "produced": [
     "env_outpost_relay"
    ],
@@ -660,6 +756,10 @@
     "env_outpost_relay"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -677,7 +777,7 @@
    "family": "env",
    "stamp": "20260917-225934",
    "run_key": "env_outpost_repair",
-   "raw": "raw/env_outpost_repair.png",
+   "raw": "raw/env/poi/env_outpost_repair.png",
    "produced": [
     "env_outpost_repair"
    ],
@@ -685,6 +785,10 @@
     "env_outpost_repair"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -702,7 +806,7 @@
    "family": "env",
    "stamp": "20260917-213619",
    "run_key": "env_pickup",
-   "raw": "raw/env_pickup.png",
+   "raw": "raw/env/pickup/env_pickup.png",
    "produced": [
     "env_pickup_ammo_pod",
     "env_pickup_bonus_box",
@@ -720,6 +824,10 @@
     "env_pickup_speed_pod"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    3
+   ],
    "grid": [
     2,
     3
@@ -742,7 +850,7 @@
    "family": "env",
    "stamp": "20260917-213437",
    "run_key": "env_planet_moon",
-   "raw": "raw/env_planet_moon.png",
+   "raw": "raw/env/body/env_planet_moon.png",
    "produced": [
     "env_planet_moon"
    ],
@@ -750,6 +858,10 @@
     "env_planet_moon"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -767,7 +879,7 @@
    "family": "env",
    "stamp": "20260917-220029",
    "run_key": "env_prop",
-   "raw": "raw/env_prop.png",
+   "raw": "raw/env/prop/env_prop.png",
    "produced": [
     "env_prop_drive_core",
     "env_prop_hull_mid",
@@ -785,6 +897,10 @@
     "env_prop_rib_cluster"
    ],
    "master": [],
+   "planned_grid": [
+    3,
+    2
+   ],
    "grid": [
     3,
     2
@@ -807,7 +923,7 @@
    "family": "env",
    "stamp": "20260918-113137",
    "run_key": "env_sector_1_bg",
-   "raw": "raw/env_sector_1_bg.png",
+   "raw": "raw/env/backdrop/env_sector_1_bg.png",
    "produced": [
     "env_sector_1_bg"
    ],
@@ -815,6 +931,10 @@
     "env_sector_1_bg"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -832,7 +952,7 @@
    "family": "env",
    "stamp": "20260918-113206",
    "run_key": "env_sector_2_bg",
-   "raw": "raw/env_sector_2_bg.png",
+   "raw": "raw/env/backdrop/env_sector_2_bg.png",
    "produced": [
     "env_sector_2_bg"
    ],
@@ -840,6 +960,10 @@
     "env_sector_2_bg"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -857,7 +981,7 @@
    "family": "env",
    "stamp": "20260918-111858",
    "run_key": "env_sector_3_bg",
-   "raw": "raw/env_sector_3_bg.png",
+   "raw": "raw/env/backdrop/env_sector_3_bg.png",
    "produced": [
     "env_sector_3_bg"
    ],
@@ -865,6 +989,10 @@
     "env_sector_3_bg"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -882,7 +1010,7 @@
    "family": "env",
    "stamp": "20260918-113251",
    "run_key": "env_sector_4_bg",
-   "raw": "raw/env_sector_4_bg.png",
+   "raw": "raw/env/backdrop/env_sector_4_bg.png",
    "produced": [
     "env_sector_4_bg"
    ],
@@ -890,6 +1018,10 @@
     "env_sector_4_bg"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -907,7 +1039,7 @@
    "family": "env",
    "stamp": "20260918-111956",
    "run_key": "env_sector_5_bg",
-   "raw": "raw/env_sector_5_bg.png",
+   "raw": "raw/env/backdrop/env_sector_5_bg.png",
    "produced": [
     "env_sector_5_bg"
    ],
@@ -915,6 +1047,10 @@
     "env_sector_5_bg"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -932,7 +1068,7 @@
    "family": "env",
    "stamp": "20260918-112024",
    "run_key": "env_sector_6_bg",
-   "raw": "raw/env_sector_6_bg.png",
+   "raw": "raw/env/backdrop/env_sector_6_bg.png",
    "produced": [
     "env_sector_6_bg"
    ],
@@ -940,6 +1076,10 @@
     "env_sector_6_bg"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -957,7 +1097,7 @@
    "family": "env",
    "stamp": "20260918-113320",
    "run_key": "env_sector_7_bg",
-   "raw": "raw/env_sector_7_bg.png",
+   "raw": "raw/env/backdrop/env_sector_7_bg.png",
    "produced": [
     "env_sector_7_bg"
    ],
@@ -965,6 +1105,10 @@
     "env_sector_7_bg"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -982,7 +1126,7 @@
    "family": "env",
    "stamp": "20260917-183757",
    "run_key": "env_stars_layer1",
-   "raw": "raw/env_stars_layer1.png",
+   "raw": "raw/env/tile/env_stars_layer1.png",
    "produced": [
     "env_stars_layer1"
    ],
@@ -990,6 +1134,10 @@
     "env_stars_layer1"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1007,7 +1155,7 @@
    "family": "env",
    "stamp": "20260917-184004",
    "run_key": "env_stars_layer2",
-   "raw": "raw/env_stars_layer2.png",
+   "raw": "raw/env/tile/env_stars_layer2.png",
    "produced": [
     "env_stars_layer2"
    ],
@@ -1015,6 +1163,10 @@
     "env_stars_layer2"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1032,7 +1184,7 @@
    "family": "env",
    "stamp": "20260917-184230",
    "run_key": "env_stars_layer3",
-   "raw": "raw/env_stars_layer3.png",
+   "raw": "raw/env/tile/env_stars_layer3.png",
    "produced": [
     "env_stars_layer3"
    ],
@@ -1040,6 +1192,10 @@
     "env_stars_layer3"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1057,7 +1213,7 @@
    "family": "env",
    "stamp": "20260917-183246",
    "run_key": "env_station",
-   "raw": "raw/env_station.png",
+   "raw": "raw/env/poi/env_station.png",
    "produced": [
     "env_station"
    ],
@@ -1065,6 +1221,10 @@
     "env_station"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1082,7 +1242,7 @@
    "family": "env",
    "stamp": "20260917-215900",
    "run_key": "env_station_mmo",
-   "raw": "raw/env_station_mmo.png",
+   "raw": "raw/env/poi/env_station_mmo.png",
    "produced": [
     "env_station_mmo"
    ],
@@ -1090,6 +1250,10 @@
     "env_station_mmo"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1107,7 +1271,7 @@
    "family": "env",
    "stamp": "20260917-215943",
    "run_key": "env_station_ruined",
-   "raw": "raw/env_station_ruined.png",
+   "raw": "raw/env/poi/env_station_ruined.png",
    "produced": [
     "env_station_ruined"
    ],
@@ -1115,6 +1279,10 @@
     "env_station_ruined"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1132,7 +1300,7 @@
    "family": "env",
    "stamp": "20260917-183215",
    "run_key": "env_wreck_hulk",
-   "raw": "raw/env_wreck_hulk.png",
+   "raw": "raw/env/prop/env_wreck_hulk.png",
    "produced": [
     "env_wreck_hulk"
    ],
@@ -1140,6 +1308,10 @@
     "env_wreck_hulk"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1157,10 +1329,14 @@
    "family": "env",
    "stamp": "20260918-123247",
    "run_key": "f1_ice_moon",
-   "raw": "raw/f1_ice_moon.png",
+   "raw": "raw/env/body/env_body_ice_moon.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1179,10 +1355,14 @@
    "family": "env",
    "stamp": "20260917-225351",
    "run_key": "mining-base-structure-a-station-scale-i",
-   "raw": "raw/mining-base-structure-a-station-scale-i.png",
+   "raw": "raw/env/poi/env_base_mining_alt.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1201,10 +1381,14 @@
    "family": "env",
    "stamp": "20260917-184059",
    "run_key": "seamless-repeating-pattern-wallpaper-tex",
-   "raw": "raw/seamless-repeating-pattern-wallpaper-tex.png",
+   "raw": "raw/env/tile/env_stars_layer4.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1223,10 +1407,14 @@
    "family": "env",
    "stamp": "20260917-183347",
    "run_key": "seamless-tileable-foreground-dust-layer",
-   "raw": "raw/seamless-tileable-foreground-dust-layer.png",
+   "raw": "_dropped/seamless-tileable-foreground-dust-layer.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1245,10 +1433,14 @@
    "family": "env",
    "stamp": "20260917-183242",
    "run_key": "seamless-tileable-starfield-layer-a-fla",
-   "raw": "raw/seamless-tileable-starfield-layer-a-fla.png",
+   "raw": "_dropped/seamless-tileable-starfield-layer-a-fla.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1267,10 +1459,14 @@
    "family": "env",
    "stamp": "20260917-183315",
    "run_key": "seamless-tileable-void-haze-layer-soft",
-   "raw": "raw/seamless-tileable-void-haze-layer-soft.png",
+   "raw": "_dropped/seamless-tileable-void-haze-layer-soft.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1289,10 +1485,14 @@
    "family": "env",
    "stamp": "20260917-183847",
    "run_key": "seamless-tileable-void-haze-texture-abs",
-   "raw": "raw/seamless-tileable-void-haze-texture-abs.png",
+   "raw": "_dropped/seamless-tileable-void-haze-texture-abs.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1311,10 +1511,14 @@
    "family": "env",
    "stamp": "20260918-111724",
    "run_key": "sector-backdrop-plate-a-wide-16-9-cinem",
-   "raw": "raw/sector-backdrop-plate-a-wide-16-9-cinem__20260918-111724.png",
+   "raw": "raw/env/backdrop/env_sector_8_bg.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1333,10 +1537,14 @@
    "family": "env",
    "stamp": "20260918-111829",
    "run_key": "sector-backdrop-plate-a-wide-16-9-cinem",
-   "raw": "raw/sector-backdrop-plate-a-wide-16-9-cinem__20260918-111829.png",
+   "raw": "raw/env/backdrop/env_sector_9_bg.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1355,10 +1563,14 @@
    "family": "env",
    "stamp": "20260918-111927",
    "run_key": "sector-backdrop-plate-a-wide-16-9-cinem",
-   "raw": "raw/sector-backdrop-plate-a-wide-16-9-cinem__20260918-111927.png",
+   "raw": "raw/env/backdrop/env_sector_10_bg.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1377,10 +1589,14 @@
    "family": "env",
    "stamp": "20260918-112053",
    "run_key": "sector-backdrop-plate-a-wide-16-9-cinem",
-   "raw": "raw/sector-backdrop-plate-a-wide-16-9-cinem__20260918-112053.png",
+   "raw": "raw/env/backdrop/env_sector_11_bg.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1399,10 +1615,14 @@
    "family": "fx",
    "stamp": "20260917-183223",
    "run_key": "4-frame-horizontal-sprite-sheet-of-a-wea",
-   "raw": "raw/4-frame-horizontal-sprite-sheet-of-a-wea.png",
+   "raw": "raw/fx/fx_muzzle_flash_frames.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    4,
+    1
+   ],
    "grid": [
     4,
     1
@@ -1424,10 +1644,14 @@
    "family": "fx",
    "stamp": "20260917-183734",
    "run_key": "full-screen-vignette-burnt-ember-c8461",
-   "raw": "raw/full-screen-vignette-burnt-ember-c8461.png",
+   "raw": "_dropped/full-screen-vignette-burnt-ember-c8461.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1446,12 +1670,16 @@
    "family": "fx",
    "stamp": "20260918-112253",
    "run_key": "fx_anomaly_grave_glow",
-   "raw": "raw/fx_anomaly_grave_glow.png",
+   "raw": "raw/fx/fx_anomaly_grave_glow.png",
    "produced": [
     "fx_anomaly_grave_glow"
    ],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1461,20 +1689,24 @@
    ],
    "mode": "fx_void",
    "plan_from": "spec fx_anomaly_grave_glow (recovered)",
-   "plate": false,
-   "plate_because": "",
+   "plate": true,
+   "plate_because": "a single-read additive effect: the whole frame is the asset, because cropping it would move it on screen",
    "name_count": 1
   },
   {
    "family": "fx",
    "stamp": "20260918-112322",
    "run_key": "fx_anomaly_rift",
-   "raw": "raw/fx_anomaly_rift.png",
+   "raw": "raw/fx/fx_anomaly_rift.png",
    "produced": [
     "fx_anomaly_rift"
    ],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1484,20 +1716,24 @@
    ],
    "mode": "fx_void",
    "plan_from": "spec fx_anomaly_rift (recovered)",
-   "plate": false,
-   "plate_because": "",
+   "plate": true,
+   "plate_because": "a single-read additive effect: the whole frame is the asset, because cropping it would move it on screen",
    "name_count": 1
   },
   {
    "family": "fx",
    "stamp": "20260918-112214",
    "run_key": "fx_anomaly_shimmer",
-   "raw": "raw/fx_anomaly_shimmer.png",
+   "raw": "raw/fx/fx_anomaly_shimmer.png",
    "produced": [
     "fx_anomaly_shimmer"
    ],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1507,20 +1743,24 @@
    ],
    "mode": "fx_void",
    "plan_from": "spec fx_anomaly_shimmer (recovered)",
-   "plate": false,
-   "plate_because": "",
+   "plate": true,
+   "plate_because": "a single-read additive effect: the whole frame is the asset, because cropping it would move it on screen",
    "name_count": 1
   },
   {
    "family": "fx",
    "stamp": "20260917-185429",
    "run_key": "fx_cargo_pulse",
-   "raw": "raw/fx_cargo_pulse.png",
+   "raw": "raw/fx/fx_cargo_pulse.png",
    "produced": [
     "fx_cargo_pulse"
    ],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1530,20 +1770,24 @@
    ],
    "mode": "single",
    "plan_from": "single-panel sheet",
-   "plate": false,
-   "plate_because": "",
+   "plate": true,
+   "plate_because": "a single-read additive effect: the whole frame is the asset, because cropping it would move it on screen",
    "name_count": 1
   },
   {
    "family": "fx",
    "stamp": "20260917-184137",
    "run_key": "fx_ember_pulse",
-   "raw": "raw/fx_ember_pulse.png",
+   "raw": "raw/fx/fx_ember_pulse.png",
    "produced": [
     "fx_ember_pulse"
    ],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1553,20 +1797,24 @@
    ],
    "mode": "single",
    "plan_from": "single-panel sheet",
-   "plate": false,
-   "plate_because": "",
+   "plate": true,
+   "plate_because": "a single-read additive effect: the whole frame is the asset, because cropping it would move it on screen",
    "name_count": 1
   },
   {
    "family": "fx",
    "stamp": "20260917-215923",
    "run_key": "fx_emp_arc",
-   "raw": "raw/fx_emp_arc.png",
+   "raw": "raw/fx/fx_emp_arc.png",
    "produced": [
     "fx_emp_arc"
    ],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1576,20 +1824,24 @@
    ],
    "mode": "single",
    "plan_from": "single-panel sheet",
-   "plate": false,
-   "plate_because": "",
+   "plate": true,
+   "plate_because": "a single-read additive effect: the whole frame is the asset, because cropping it would move it on screen",
    "name_count": 1
   },
   {
    "family": "fx",
    "stamp": "20260917-184022",
    "run_key": "fx_engine_trail",
-   "raw": "raw/fx_engine_trail.png",
+   "raw": "raw/fx/fx_engine_trail.png",
    "produced": [
     "fx_engine_trail"
    ],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1599,20 +1851,24 @@
    ],
    "mode": "single",
    "plan_from": "single-panel sheet",
-   "plate": false,
-   "plate_because": "",
+   "plate": true,
+   "plate_because": "a single-read additive effect: the whole frame is the asset, because cropping it would move it on screen",
    "name_count": 1
   },
   {
    "family": "fx",
    "stamp": "20260917-183424",
    "run_key": "fx_explosion",
-   "raw": "raw/fx_explosion.png",
+   "raw": "raw/fx/fx_explosion.png",
    "produced": [
     "fx_explosion"
    ],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1622,20 +1878,24 @@
    ],
    "mode": "single",
    "plan_from": "single-panel sheet",
-   "plate": false,
-   "plate_because": "",
+   "plate": true,
+   "plate_because": "a single-read additive effect: the whole frame is the asset, because cropping it would move it on screen",
    "name_count": 1
   },
   {
    "family": "fx",
    "stamp": "20260917-184102",
    "run_key": "fx_hull_critical_vignette",
-   "raw": "raw/fx_hull_critical_vignette.png",
+   "raw": "raw/fx/fx_hull_critical_vignette.png",
    "produced": [
     "fx_hull_critical_vignette"
    ],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1646,19 +1906,23 @@
    "mode": "single",
    "plan_from": "single-panel sheet",
    "plate": true,
-   "plate_because": "the prompt says 'vignette'",
+   "plate_because": "a single-read additive effect: the whole frame is the asset, because cropping it would move it on screen",
    "name_count": 1
   },
   {
    "family": "fx",
    "stamp": "20260917-213705",
    "run_key": "fx_jump_portal",
-   "raw": "raw/fx_jump_portal.png",
+   "raw": "raw/fx/fx_jump_portal.png",
    "produced": [
     "fx_jump_portal"
    ],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1668,20 +1932,24 @@
    ],
    "mode": "single",
    "plan_from": "single-panel sheet",
-   "plate": false,
-   "plate_because": "",
+   "plate": true,
+   "plate_because": "a single-read additive effect: the whole frame is the asset, because cropping it would move it on screen",
    "name_count": 1
   },
   {
    "family": "fx",
    "stamp": "20260917-183134",
    "run_key": "fx_laser_bolt",
-   "raw": "raw/fx_laser_bolt.png",
+   "raw": "raw/fx/fx_laser_bolt.png",
    "produced": [
     "fx_laser_bolt"
    ],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1691,20 +1959,24 @@
    ],
    "mode": "single",
    "plan_from": "single-panel sheet",
-   "plate": false,
-   "plate_because": "",
+   "plate": true,
+   "plate_because": "a single-read additive effect: the whole frame is the asset, because cropping it would move it on screen",
    "name_count": 1
   },
   {
    "family": "fx",
    "stamp": "20260917-183540",
    "run_key": "fx_mining_beam",
-   "raw": "raw/fx_mining_beam.png",
+   "raw": "raw/fx/fx_mining_beam.png",
    "produced": [
     "fx_mining_beam"
    ],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1714,20 +1986,24 @@
    ],
    "mode": "single",
    "plan_from": "single-panel sheet",
-   "plate": false,
-   "plate_because": "",
+   "plate": true,
+   "plate_because": "a single-read additive effect: the whole frame is the asset, because cropping it would move it on screen",
    "name_count": 1
   },
   {
    "family": "fx",
    "stamp": "20260917-213710",
    "run_key": "fx_missile_trail",
-   "raw": "raw/fx_missile_trail.png",
+   "raw": "raw/fx/fx_missile_trail.png",
    "produced": [
     "fx_missile_trail"
    ],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1737,20 +2013,24 @@
    ],
    "mode": "single",
    "plan_from": "single-panel sheet",
-   "plate": false,
-   "plate_because": "",
+   "plate": true,
+   "plate_because": "a single-read additive effect: the whole frame is the asset, because cropping it would move it on screen",
    "name_count": 1
   },
   {
    "family": "fx",
    "stamp": "20260917-185402",
    "run_key": "fx_muzzle_flash",
-   "raw": "raw/fx_muzzle_flash.png",
+   "raw": "raw/fx/fx_muzzle_flash.png",
    "produced": [
     "fx_muzzle_flash"
    ],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1760,20 +2040,24 @@
    ],
    "mode": "single",
    "plan_from": "single-panel sheet",
-   "plate": false,
-   "plate_because": "",
+   "plate": true,
+   "plate_because": "a single-read additive effect: the whole frame is the asset, because cropping it would move it on screen",
    "name_count": 1
   },
   {
    "family": "fx",
    "stamp": "20260917-220026",
    "run_key": "fx_repair_pulse",
-   "raw": "raw/fx_repair_pulse.png",
+   "raw": "raw/fx/fx_repair_pulse.png",
    "produced": [
     "fx_repair_pulse"
    ],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1783,20 +2067,24 @@
    ],
    "mode": "single",
    "plan_from": "single-panel sheet",
-   "plate": false,
-   "plate_because": "",
+   "plate": true,
+   "plate_because": "a single-read additive effect: the whole frame is the asset, because cropping it would move it on screen",
    "name_count": 1
   },
   {
    "family": "fx",
    "stamp": "20260917-215955",
    "run_key": "fx_secondary_explosion",
-   "raw": "raw/fx_secondary_explosion.png",
+   "raw": "raw/fx/fx_secondary_explosion.png",
    "produced": [
     "fx_secondary_explosion"
    ],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1806,20 +2094,24 @@
    ],
    "mode": "single",
    "plan_from": "single-panel sheet",
-   "plate": false,
-   "plate_because": "",
+   "plate": true,
+   "plate_because": "a single-read additive effect: the whole frame is the asset, because cropping it would move it on screen",
    "name_count": 1
   },
   {
    "family": "fx",
    "stamp": "20260917-213747",
    "run_key": "fx_shield_break",
-   "raw": "raw/fx_shield_break.png",
+   "raw": "raw/fx/fx_shield_break.png",
    "produced": [
     "fx_shield_break"
    ],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1829,20 +2121,24 @@
    ],
    "mode": "single",
    "plan_from": "single-panel sheet",
-   "plate": false,
-   "plate_because": "",
+   "plate": true,
+   "plate_because": "a single-read additive effect: the whole frame is the asset, because cropping it would move it on screen",
    "name_count": 1
   },
   {
    "family": "fx",
    "stamp": "20260917-183506",
    "run_key": "fx_shield_ripple",
-   "raw": "raw/fx_shield_ripple.png",
+   "raw": "raw/fx/fx_shield_ripple.png",
    "produced": [
     "fx_shield_ripple"
    ],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1852,20 +2148,24 @@
    ],
    "mode": "single",
    "plan_from": "single-panel sheet",
-   "plate": false,
-   "plate_because": "",
+   "plate": true,
+   "plate_because": "a single-read additive effect: the whole frame is the asset, because cropping it would move it on screen",
    "name_count": 1
   },
   {
    "family": "fx",
    "stamp": "20260917-215852",
    "run_key": "fx_tractor_beam",
-   "raw": "raw/fx_tractor_beam.png",
+   "raw": "raw/fx/fx_tractor_beam.png",
    "produced": [
     "fx_tractor_beam"
    ],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1875,18 +2175,22 @@
    ],
    "mode": "single",
    "plan_from": "single-panel sheet",
-   "plate": false,
-   "plate_because": "",
+   "plate": true,
+   "plate_because": "a single-read additive effect: the whole frame is the asset, because cropping it would move it on screen",
    "name_count": 1
   },
   {
    "family": "fx",
    "stamp": "20260917-183628",
    "run_key": "single-small-energy-ring-burnt-ember-c",
-   "raw": "raw/single-small-energy-ring-burnt-ember-c__20260917-183628.png",
+   "raw": "raw/fx/fx_ember_ring.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1897,18 +2201,22 @@
    "mode": "panel",
    "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
    "unnamed": true,
-   "plate": false,
-   "plate_because": "",
+   "plate": true,
+   "plate_because": "a single-read additive effect: the whole frame is the asset, because cropping it would move it on screen",
    "name_count": 1
   },
   {
    "family": "fx",
    "stamp": "20260917-184216",
    "run_key": "single-small-energy-ring-burnt-ember-c",
-   "raw": "raw/single-small-energy-ring-burnt-ember-c__20260917-184216.png",
+   "raw": "raw/fx/fx_ember_ring_alt.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1919,18 +2227,22 @@
    "mode": "panel",
    "plan_from": "prompt grid, unnamed sheet - panels are numbered only",
    "unnamed": true,
-   "plate": false,
-   "plate_because": "",
+   "plate": true,
+   "plate_because": "a single-read additive effect: the whole frame is the asset, because cropping it would move it on screen",
    "name_count": 1
   },
   {
    "family": "fx",
    "stamp": "20260917-183334",
    "run_key": "single-thin-horizontal-ember-streak-bur",
-   "raw": "raw/single-thin-horizontal-ember-streak-bur.png",
+   "raw": "_dropped/single-thin-horizontal-ember-streak-bur.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1949,10 +2261,14 @@
    "family": "fx",
    "stamp": "20260917-183824",
    "run_key": "small-radial-ember-glow-orb-soft-radial",
-   "raw": "raw/small-radial-ember-glow-orb-soft-radial.png",
+   "raw": "_dropped/small-radial-ember-glow-orb-soft-radial.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -1971,10 +2287,14 @@
    "family": "icons",
    "stamp": "20260918-112946",
    "run_key": "flat-vector-icon-sheet-2x2-grid-icons",
-   "raw": "raw/flat-vector-icon-sheet-2x2-grid-icons.png",
+   "raw": "raw/icons/panel_alt_rusty_metal_sci_fi.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -1996,10 +2316,14 @@
    "family": "icons",
    "stamp": "20260918-110409",
    "run_key": "flat-vector-icon-sheet-3x3-grid-icons",
-   "raw": "raw/flat-vector-icon-sheet-3x3-grid-icons__20260918-110409.png",
+   "raw": "raw/icons/panel_alt_dark_metal_sci_fi.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    3,
+    3
+   ],
    "grid": [
     3,
     3
@@ -2026,10 +2350,14 @@
    "family": "icons",
    "stamp": "20260918-110458",
    "run_key": "flat-vector-icon-sheet-3x3-grid-icons",
-   "raw": "raw/flat-vector-icon-sheet-3x3-grid-icons__20260918-110458.png",
+   "raw": "raw/icons/panel_alt_rusty_sci_fi_machinery.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    3,
+    3
+   ],
    "grid": [
     3,
     3
@@ -2056,10 +2384,14 @@
    "family": "icons",
    "stamp": "20260918-110547",
    "run_key": "flat-vector-icon-sheet-3x3-grid-icons",
-   "raw": "raw/flat-vector-icon-sheet-3x3-grid-icons__20260918-110547.png",
+   "raw": "raw/icons/panel_alt_dark_sci_fi_modular.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    3,
+    3
+   ],
    "grid": [
     3,
     3
@@ -2086,10 +2418,14 @@
    "family": "icons",
    "stamp": "20260918-110642",
    "run_key": "flat-vector-icon-sheet-4x2-grid-icons",
-   "raw": "raw/flat-vector-icon-sheet-4x2-grid-icons__20260918-110642.png",
+   "raw": "raw/icons/panel_alt_dark_sci_fi_modular_2.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    4,
+    2
+   ],
    "grid": [
     4,
     2
@@ -2115,10 +2451,14 @@
    "family": "icons",
    "stamp": "20260918-110921",
    "run_key": "flat-vector-icon-sheet-4x2-grid-icons",
-   "raw": "raw/flat-vector-icon-sheet-4x2-grid-icons__20260918-110921.png",
+   "raw": "raw/icons/panel_alt_flat_vector_sci_fi.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    4,
+    2
+   ],
    "grid": [
     4,
     2
@@ -2144,10 +2484,14 @@
    "family": "icons",
    "stamp": "20260918-110236",
    "run_key": "flat-vector-icon-sheet-5x4-grid-icons",
-   "raw": "raw/flat-vector-icon-sheet-5x4-grid-icons__20260918-110236.png",
+   "raw": "raw/icons/panel_alt_dark_space_rock_mineral.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    5,
+    4
+   ],
    "grid": [
     5,
     4
@@ -2185,10 +2529,14 @@
    "family": "icons",
    "stamp": "20260918-110318",
    "run_key": "flat-vector-icon-sheet-5x4-grid-icons",
-   "raw": "raw/flat-vector-icon-sheet-5x4-grid-icons__20260918-110318.png",
+   "raw": "raw/icons/panel_alt_dark_metal_bar_prop.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    5,
+    4
+   ],
    "grid": [
     5,
     4
@@ -2226,10 +2574,14 @@
    "family": "icons",
    "stamp": "20260917-183109",
    "run_key": "flat-vector-icon-sheet-for-a-dark-sci-fi",
-   "raw": "raw/flat-vector-icon-sheet-for-a-dark-sci-fi.png",
+   "raw": "raw/icons/panel_alt_rusty_sci_fi_weapon.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    2,
+    3
+   ],
    "grid": [
     2,
     3
@@ -2253,10 +2605,14 @@
    "family": "icons",
    "stamp": "20260918-111044",
    "run_key": "grimdark-painted-sci-fi-semi-realistic",
-   "raw": "raw/grimdark-painted-sci-fi-semi-realistic__20260918-111044.png",
+   "raw": "raw/icons/panel_alt_black_space_station_module.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    4,
+    2
+   ],
    "grid": [
     4,
     2
@@ -2282,10 +2638,14 @@
    "family": "icons",
    "stamp": "20260918-111327",
    "run_key": "grimdark-painted-sci-fi-semi-realistic",
-   "raw": "raw/grimdark-painted-sci-fi-semi-realistic__20260918-111327.png",
+   "raw": "_dropped/grimdark-painted-sci-fi-semi-realistic__20260918-111327.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    3,
+    3
+   ],
    "grid": [
     3,
     3
@@ -2312,10 +2672,14 @@
    "family": "icons",
    "stamp": "20260918-111411",
    "run_key": "grimdark-painted-sci-fi-semi-realistic",
-   "raw": "raw/grimdark-painted-sci-fi-semi-realistic__20260918-111411.png",
+   "raw": "raw/icons/panel_alt_black_sci_fi_interface.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    3,
+    3
+   ],
    "grid": [
     3,
     3
@@ -2342,10 +2706,14 @@
    "family": "icons",
    "stamp": "20260918-111450",
    "run_key": "grimdark-painted-sci-fi-semi-realistic",
-   "raw": "raw/grimdark-painted-sci-fi-semi-realistic__20260918-111450.png",
+   "raw": "raw/icons/panel_alt_black_sci_fi_interface_2.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    3,
+    3
+   ],
    "grid": [
     3,
     3
@@ -2372,10 +2740,14 @@
    "family": "icons",
    "stamp": "20260918-113357",
    "run_key": "grimdark-painted-sci-fi-semi-realistic",
-   "raw": "raw/grimdark-painted-sci-fi-semi-realistic__20260918-113357.png",
+   "raw": "_dropped/grimdark-painted-sci-fi-semi-realistic__20260918-113357.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -2397,10 +2769,14 @@
    "family": "icons",
    "stamp": "20260918-123214",
    "run_key": "grimdark-painted-sci-fi-semi-realistic",
-   "raw": "raw/grimdark-painted-sci-fi-semi-realistic__20260918-123214.png",
+   "raw": "_dropped/grimdark-painted-sci-fi-semi-realistic__20260918-123214.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -2422,7 +2798,7 @@
    "family": "icons",
    "stamp": "20260918-133035",
    "run_key": "grimdark-painted-sci-fi-semi-realistic",
-   "raw": "raw/grimdark-painted-sci-fi-semi-realistic__20260918-133035.png",
+   "raw": "raw/icons/panel_hud_controls.png",
    "produced": [
     "icon_credits",
     "icon_shield",
@@ -2436,6 +2812,10 @@
     "icon_zoom_plus"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -2456,7 +2836,7 @@
    "family": "icons",
    "stamp": "20260917-230320",
    "run_key": "icon_booster",
-   "raw": "raw/icon_booster.png",
+   "raw": "raw/icons/panel_boosters.png",
    "produced": [
     "icon_booster_damage",
     "icon_booster_emp",
@@ -2474,6 +2854,10 @@
     "icon_booster_teleport"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    3
+   ],
    "grid": [
     2,
     3
@@ -2496,7 +2880,7 @@
    "family": "icons",
    "stamp": "20260918-123143",
    "run_key": "icon_cargo_data_core",
-   "raw": "raw/icon_cargo_data_core.png",
+   "raw": "raw/icons/cargo/icon_cargo_data_core.png",
    "produced": [
     "icon_cargo_data_core"
    ],
@@ -2504,6 +2888,10 @@
     "icon_cargo_data_core"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -2521,7 +2909,7 @@
    "family": "icons",
    "stamp": "20260918-114723",
    "run_key": "icon_contract",
-   "raw": "raw/icon_contract.png",
+   "raw": "raw/icons/panel_contracts.png",
    "produced": [
     "icon_contract_escort",
     "icon_contract_expedition",
@@ -2537,6 +2925,10 @@
     "icon_contract_hunt"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    3
+   ],
    "grid": [
     2,
     3
@@ -2558,7 +2950,7 @@
    "family": "icons",
    "stamp": "20260918-111243",
    "run_key": "icon_ingot",
-   "raw": "raw/icon_ingot.png",
+   "raw": "raw/icons/panel_minerals_ingot.png",
    "produced": [
     "icon_ingot_aluminium",
     "icon_ingot_cerulite",
@@ -2604,6 +2996,10 @@
     "icon_ingot_voidglass"
    ],
    "master": [],
+   "planned_grid": [
+    5,
+    4
+   ],
    "grid": [
     5,
     4
@@ -2640,7 +3036,7 @@
    "family": "icons",
    "stamp": "20260918-113435",
    "run_key": "icon_insignia",
-   "raw": "raw/icon_insignia.png",
+   "raw": "raw/icons/panel_faction_insignia.png",
    "produced": [
     "icon_insignia_choir",
     "icon_insignia_concord",
@@ -2652,6 +3048,10 @@
     "icon_insignia_meridian"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -2671,7 +3071,7 @@
    "family": "icons",
    "stamp": "20260917-213529",
    "run_key": "icon_map",
-   "raw": "raw/icon_map.png",
+   "raw": "raw/icons/panel_map_markers.png",
    "produced": [
     "icon_map_bookmark",
     "icon_map_node_asteroid",
@@ -2695,6 +3095,10 @@
     "icon_map_route"
    ],
    "master": [],
+   "planned_grid": [
+    3,
+    3
+   ],
    "grid": [
     3,
     3
@@ -2720,7 +3124,7 @@
    "family": "icons",
    "stamp": "20260918-111209",
    "run_key": "icon_mineral",
-   "raw": "raw/icon_mineral.png",
+   "raw": "raw/icons/panel_minerals_ore.png",
    "produced": [
     "icon_mineral_aluminium",
     "icon_mineral_cerulite",
@@ -2766,6 +3170,10 @@
     "icon_mineral_voidglass"
    ],
    "master": [],
+   "planned_grid": [
+    5,
+    4
+   ],
    "grid": [
     5,
     4
@@ -2802,7 +3210,7 @@
    "family": "icons",
    "stamp": "20260918-114107",
    "run_key": "icon_module",
-   "raw": "raw/icon_module__20260918-114107.png",
+   "raw": "raw/icons/panel_modules_a.png",
    "produced": [
     "icon_module_h_composite",
     "icon_module_h_plate_heavy",
@@ -2826,6 +3234,10 @@
     "icon_module_w_railgun"
    ],
    "master": [],
+   "planned_grid": [
+    3,
+    3
+   ],
    "grid": [
     3,
     3
@@ -2851,7 +3263,7 @@
    "family": "icons",
    "stamp": "20260918-114156",
    "run_key": "icon_module",
-   "raw": "raw/icon_module__20260918-114156.png",
+   "raw": "raw/icons/panel_modules_b.png",
    "produced": [
     "icon_module_b_afterburner",
     "icon_module_b_fold",
@@ -2875,6 +3287,10 @@
     "icon_module_p_mk2"
    ],
    "master": [],
+   "planned_grid": [
+    3,
+    3
+   ],
    "grid": [
     3,
     3
@@ -2900,7 +3316,7 @@
    "family": "icons",
    "stamp": "20260918-114240",
    "run_key": "icon_module",
-   "raw": "raw/icon_module__20260918-114240.png",
+   "raw": "raw/icons/panel_modules_c.png",
    "produced": [
     "icon_module_c_ewar",
     "icon_module_c_nexus",
@@ -2924,6 +3340,10 @@
     "icon_module_u_tractor"
    ],
    "master": [],
+   "planned_grid": [
+    3,
+    3
+   ],
    "grid": [
     3,
     3
@@ -2949,7 +3369,7 @@
    "family": "icons",
    "stamp": "20260918-114358",
    "run_key": "icon_service",
-   "raw": "raw/icon_service.png",
+   "raw": "raw/icons/panel_service_glyphs.png",
    "produced": [
     "icon_service_bounty",
     "icon_service_insurance",
@@ -2961,6 +3381,10 @@
     "icon_service_vault"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -2980,7 +3404,7 @@
    "family": "icons",
    "stamp": "20260918-114324",
    "run_key": "icon_slot",
-   "raw": "raw/icon_slot.png",
+   "raw": "raw/icons/panel_slots.png",
    "produced": [
     "icon_slot_b",
     "icon_slot_c",
@@ -3002,6 +3426,10 @@
     "icon_slot_w"
    ],
    "master": [],
+   "planned_grid": [
+    4,
+    2
+   ],
    "grid": [
     4,
     2
@@ -3026,7 +3454,7 @@
    "family": "icons",
    "stamp": "20260917-230412",
    "run_key": "icon_status",
-   "raw": "raw/icon_status.png",
+   "raw": "raw/icons/panel_status.png",
    "produced": [
     "icon_status_burning",
     "icon_status_cloaked",
@@ -3050,6 +3478,10 @@
     "icon_status_slowed"
    ],
    "master": [],
+   "planned_grid": [
+    3,
+    3
+   ],
    "grid": [
     3,
     3
@@ -3075,10 +3507,14 @@
    "family": "icons",
    "stamp": "20260918-112903",
    "run_key": "p2_contracts",
-   "raw": "raw/p2_contracts.png",
+   "raw": "_dropped/p2_contracts.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    2,
+    3
+   ],
    "grid": [
     2,
     3
@@ -3102,10 +3538,14 @@
    "family": "icons",
    "stamp": "20260918-113028",
    "run_key": "p2_faction_insignia",
-   "raw": "raw/p2_faction_insignia.png",
+   "raw": "raw/icons/panel_alt_weathered_metal_faction_insignia.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -3127,7 +3567,7 @@
    "family": "icons",
    "stamp": "20260917-183446",
    "run_key": "panel_cargo",
-   "raw": "raw/panel_cargo.png",
+   "raw": "raw/icons/panel_cargo.png",
    "produced": [
     "panel_cargo"
    ],
@@ -3135,24 +3575,40 @@
     "panel_cargo"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    3
+   ],
    "grid": [
-    1,
-    1
+    2,
+    3
    ],
    "cuts": [
-    "panel_cargo"
+    "icon_cargo_ore",
+    "icon_cargo_crate",
+    "icon_cargo_container",
+    "icon_cargo_fuel_cell",
+    "icon_cargo_salvage",
+    "icon_cargo_data_core__20260917-183446"
    ],
-   "mode": "single",
-   "plan_from": "single-panel sheet",
-   "plate": true,
-   "plate_because": "it is a shipped panel asset, a sheet in its own right",
-   "name_count": 1
+   "mode": "panel",
+   "plan_from": "ICONS_SPEC 5 panel 2 cargo: 2x3, ore, crate, container, fuel cell, salvage, data core",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 6,
+   "superseded": [
+    {
+     "name": "icon_cargo_data_core",
+     "cut_as": "icon_cargo_data_core__20260917-183446",
+     "superseded_by": "raw/icons/cargo/icon_cargo_data_core.png"
+    }
+   ]
   },
   {
    "family": "icons",
    "stamp": "20260917-213441",
    "run_key": "panel_equipment",
-   "raw": "raw/panel_equipment.png",
+   "raw": "raw/icons/panel_equipment.png",
    "produced": [
     "icon_ammo_laser",
     "icon_ammo_rocket",
@@ -3176,6 +3632,10 @@
     "icon_equip_shield_gen"
    ],
    "master": [],
+   "planned_grid": [
+    3,
+    3
+   ],
    "grid": [
     3,
     3
@@ -3201,7 +3661,7 @@
    "family": "icons",
    "stamp": "20260917-183722",
    "run_key": "panel_glyphs",
-   "raw": "raw/panel_glyphs.png",
+   "raw": "raw/icons/panel_glyphs.png",
    "produced": [
     "panel_glyphs"
    ],
@@ -3209,24 +3669,58 @@
     "panel_glyphs"
    ],
    "master": [],
+   "planned_grid": [
+    3,
+    3
+   ],
    "grid": [
-    1,
-    1
+    3,
+    3
    ],
    "cuts": [
-    "panel_glyphs"
+    "icon_gear",
+    "icon_close",
+    "icon_zoom_plus__20260917-183722",
+    "icon_zoom_minus__20260917-183722",
+    "icon_credits__20260917-183722",
+    "icon_shield__20260917-183722",
+    "icon_hull",
+    "icon_ammo",
+    "icon_logout"
    ],
-   "mode": "single",
-   "plan_from": "single-panel sheet",
-   "plate": true,
-   "plate_because": "it is a shipped panel asset, a sheet in its own right",
-   "name_count": 1
+   "mode": "panel",
+   "plan_from": "ICONS_SPEC 5 panel 3 glyphs: 3x3, gear, close, zoom plus, zoom minus, credits, shield, hull, ammo, logout",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 9,
+   "superseded": [
+    {
+     "name": "icon_zoom_plus",
+     "cut_as": "icon_zoom_plus__20260917-183722",
+     "superseded_by": "raw/icons/panel_hud_controls.png"
+    },
+    {
+     "name": "icon_zoom_minus",
+     "cut_as": "icon_zoom_minus__20260917-183722",
+     "superseded_by": "raw/icons/panel_hud_controls.png"
+    },
+    {
+     "name": "icon_credits",
+     "cut_as": "icon_credits__20260917-183722",
+     "superseded_by": "raw/icons/panel_hud_controls.png"
+    },
+    {
+     "name": "icon_shield",
+     "cut_as": "icon_shield__20260917-183722",
+     "superseded_by": "raw/icons/panel_hud_controls.png"
+    }
+   ]
   },
   {
    "family": "icons",
    "stamp": "20260917-183245",
    "run_key": "panel_weapons",
-   "raw": "raw/panel_weapons.png",
+   "raw": "raw/icons/panel_weapons.png",
    "produced": [
     "panel_weapons"
    ],
@@ -3234,24 +3728,32 @@
     "panel_weapons"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    3
+   ],
    "grid": [
-    1,
-    1
+    2,
+    3
    ],
    "cuts": [
-    "panel_weapons"
+    "icon_weapon_laser",
+    "icon_weapon_cannon",
+    "icon_weapon_rocket",
+    "icon_weapon_mine",
+    "icon_weapon_plasma"
    ],
-   "mode": "single",
-   "plan_from": "single-panel sheet",
-   "plate": true,
-   "plate_because": "it is a shipped panel asset, a sheet in its own right",
-   "name_count": 1
+   "mode": "panel",
+   "plan_from": "ICONS_SPEC 5 panel 1 weapons: 2x3, laser, cannon, rocket, mine, plasma, last cell blank",
+   "plate": false,
+   "plate_because": "",
+   "name_count": 5
   },
   {
    "family": "ships",
    "stamp": "20260917-215948",
    "run_key": "livery_maw",
-   "raw": "raw/livery_maw.png",
+   "raw": "raw/ships/livery_maw.png",
    "produced": [
     "livery_maw",
     "ship_boss_maw_mmo"
@@ -3260,6 +3762,10 @@
     "ship_boss_maw_mmo"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -3277,10 +3783,14 @@
    "family": "ships",
    "stamp": "20260918-112624",
    "run_key": "same-2x2-rotation-sheet-of-the-same-enem",
-   "raw": "raw/same-2x2-rotation-sheet-of-the-same-enem__20260918-112624.png",
+   "raw": "_dropped/same-2x2-rotation-sheet-of-the-same-enem__20260918-112624.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -3302,10 +3812,14 @@
    "family": "ships",
    "stamp": "20260918-112721",
    "run_key": "same-2x2-rotation-sheet-of-the-same-enem",
-   "raw": "raw/same-2x2-rotation-sheet-of-the-same-enem__20260918-112721.png",
+   "raw": "_dropped/same-2x2-rotation-sheet-of-the-same-enem__20260918-112721.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -3327,10 +3841,14 @@
    "family": "ships",
    "stamp": "20260918-112813",
    "run_key": "same-2x2-rotation-sheet-of-the-same-enem",
-   "raw": "raw/same-2x2-rotation-sheet-of-the-same-enem__20260918-112813.png",
+   "raw": "raw/icons/panel_alt_enemy_ship_rotation_views.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -3352,7 +3870,7 @@
    "family": "ships",
    "stamp": "20260917-215858",
    "run_key": "ship_bomber",
-   "raw": "raw/ship_bomber.png",
+   "raw": "raw/ships/ship_bomber.png",
    "produced": [
     "ship_bomber_back",
     "ship_bomber_front",
@@ -3366,6 +3884,10 @@
     "ship_bomber_three_quarter"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -3386,7 +3908,7 @@
    "family": "ships",
    "stamp": "20260918-112453",
    "run_key": "ship_boss_boneyard",
-   "raw": "raw/ship_boss_boneyard.png",
+   "raw": "raw/ships/ship_boss_boneyard.png",
    "produced": [
     "ship_boss_boneyard"
    ],
@@ -3394,6 +3916,10 @@
     "ship_boss_boneyard"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -3411,7 +3937,7 @@
    "family": "ships",
    "stamp": "20260917-220108",
    "run_key": "ship_boss_leviathan",
-   "raw": "raw/ship_boss_leviathan.png",
+   "raw": "raw/ships/ship_boss_leviathan.png",
    "produced": [
     "ship_boss_leviathan"
    ],
@@ -3419,6 +3945,10 @@
     "ship_boss_leviathan"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -3436,7 +3966,7 @@
    "family": "ships",
    "stamp": "20260917-183626",
    "run_key": "ship_boss_maw",
-   "raw": "raw/ship_boss_maw.png",
+   "raw": "raw/ships/ship_boss_maw.png",
    "produced": [
     "ship_boss_maw"
    ],
@@ -3444,6 +3974,10 @@
     "ship_boss_maw"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -3461,7 +3995,7 @@
    "family": "ships",
    "stamp": "20260918-112531",
    "run_key": "ship_boss_pyre",
-   "raw": "raw/ship_boss_pyre.png",
+   "raw": "raw/ships/ship_boss_pyre.png",
    "produced": [
     "ship_boss_pyre"
    ],
@@ -3469,6 +4003,10 @@
     "ship_boss_pyre"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -3486,7 +4024,7 @@
    "family": "ships",
    "stamp": "20260917-213650",
    "run_key": "ship_boss_spire",
-   "raw": "raw/ship_boss_spire.png",
+   "raw": "raw/ships/ship_boss_spire.png",
    "produced": [
     "ship_boss_spire"
    ],
@@ -3494,6 +4032,10 @@
     "ship_boss_spire"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -3511,7 +4053,7 @@
    "family": "ships",
    "stamp": "20260917-213607",
    "run_key": "ship_boss_thorn",
-   "raw": "raw/ship_boss_thorn.png",
+   "raw": "raw/ships/ship_boss_thorn.png",
    "produced": [
     "ship_boss_thorn"
    ],
@@ -3519,6 +4061,10 @@
     "ship_boss_thorn"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -3536,7 +4082,7 @@
    "family": "ships",
    "stamp": "20260917-183440",
    "run_key": "ship_corvette",
-   "raw": "raw/ship_corvette.png",
+   "raw": "raw/ships/ship_corvette.png",
    "produced": [
     "ship_corvette_back",
     "ship_corvette_front",
@@ -3550,6 +4096,10 @@
     "ship_corvette_three_quarter"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -3570,7 +4120,7 @@
    "family": "ships",
    "stamp": "20260917-213627",
    "run_key": "ship_corvette_mmo",
-   "raw": "raw/ship_corvette_mmo.png",
+   "raw": "raw/ships/ship_corvette_mmo.png",
    "produced": [
     "ship_corvette_mmo_back",
     "ship_corvette_mmo_front",
@@ -3584,6 +4134,10 @@
     "ship_corvette_mmo_three_quarter"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -3604,7 +4158,7 @@
    "family": "ships",
    "stamp": "20260917-213554",
    "run_key": "ship_destroyer",
-   "raw": "raw/ship_destroyer.png",
+   "raw": "raw/ships/ship_destroyer.png",
    "produced": [
     "ship_destroyer_back",
     "ship_destroyer_front",
@@ -3618,6 +4172,10 @@
     "ship_destroyer_three_quarter"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -3638,10 +4196,14 @@
    "family": "ships",
    "stamp": "20260917-213637",
    "run_key": "ship_drone_swarm",
-   "raw": "raw/ship_drone_swarm__20260917-213637.png",
+   "raw": "_dropped/ship_drone_swarm__20260917-213637.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -3663,7 +4225,7 @@
    "family": "ships",
    "stamp": "20260918-133108",
    "run_key": "ship_drone_swarm",
-   "raw": "raw/ship_drone_swarm__20260918-133108.png",
+   "raw": "raw/ships/ship_drone_swarm.png",
    "produced": [
     "ship_drone_swarm_back",
     "ship_drone_swarm_front",
@@ -3677,6 +4239,10 @@
     "ship_drone_swarm_three_quarter"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -3697,7 +4263,7 @@
    "family": "ships",
    "stamp": "20260917-183314",
    "run_key": "ship_fighter",
-   "raw": "raw/ship_fighter.png",
+   "raw": "raw/ships/ship_fighter.png",
    "produced": [
     "ship_fighter_back",
     "ship_fighter_front",
@@ -3711,6 +4277,10 @@
     "ship_fighter_three_quarter"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -3731,7 +4301,7 @@
    "family": "ships",
    "stamp": "20260918-115046",
    "run_key": "ship_fighter_choir",
-   "raw": "raw/ship_fighter_choir.png",
+   "raw": "raw/ships/ship_fighter_choir.png",
    "produced": [
     "ship_fighter_choir_back",
     "ship_fighter_choir_front",
@@ -3745,6 +4315,10 @@
     "ship_fighter_choir_three_quarter"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -3765,7 +4339,7 @@
    "family": "ships",
    "stamp": "20260918-114850",
    "run_key": "ship_fighter_concord",
-   "raw": "raw/ship_fighter_concord.png",
+   "raw": "raw/ships/ship_fighter_concord.png",
    "produced": [
     "ship_fighter_concord_back",
     "ship_fighter_concord_front",
@@ -3779,6 +4353,10 @@
     "ship_fighter_concord_three_quarter"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -3799,7 +4377,7 @@
    "family": "ships",
    "stamp": "20260918-114951",
    "run_key": "ship_fighter_meridian",
-   "raw": "raw/ship_fighter_meridian.png",
+   "raw": "raw/ships/ship_fighter_meridian.png",
    "produced": [
     "ship_fighter_meridian_back",
     "ship_fighter_meridian_front",
@@ -3813,6 +4391,10 @@
     "ship_fighter_meridian_three_quarter"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -3833,7 +4415,7 @@
    "family": "ships",
    "stamp": "20260917-213536",
    "run_key": "ship_fighter_mmo",
-   "raw": "raw/ship_fighter_mmo.png",
+   "raw": "raw/ships/ship_fighter_mmo.png",
    "produced": [
     "ship_fighter_mmo_back",
     "ship_fighter_mmo_front",
@@ -3847,6 +4429,10 @@
     "ship_fighter_mmo_three_quarter"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -3867,7 +4453,7 @@
    "family": "ships",
    "stamp": "20260917-183532",
    "run_key": "ship_freighter",
-   "raw": "raw/ship_freighter.png",
+   "raw": "raw/ships/ship_freighter.png",
    "produced": [
     "ship_freighter_back",
     "ship_freighter_front",
@@ -3881,6 +4467,10 @@
     "ship_freighter_three_quarter"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -3901,7 +4491,7 @@
    "family": "ships",
    "stamp": "20260917-215857",
    "run_key": "ship_freighter_mmo",
-   "raw": "raw/ship_freighter_mmo.png",
+   "raw": "raw/ships/ship_freighter_mmo.png",
    "produced": [
     "ship_freighter_mmo_back",
     "ship_freighter_mmo_front",
@@ -3915,6 +4505,10 @@
     "ship_freighter_mmo_three_quarter"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -3935,7 +4529,7 @@
    "family": "ships",
    "stamp": "20260917-213510",
    "run_key": "ship_gunship",
-   "raw": "raw/ship_gunship.png",
+   "raw": "raw/ships/ship_gunship.png",
    "produced": [
     "ship_gunship_back",
     "ship_gunship_front",
@@ -3949,6 +4543,10 @@
     "ship_gunship_three_quarter"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -3969,7 +4567,7 @@
    "family": "ships",
    "stamp": "20260917-213427",
    "run_key": "ship_interceptor",
-   "raw": "raw/ship_interceptor.png",
+   "raw": "raw/ships/ship_interceptor.png",
    "produced": [
     "ship_interceptor_back",
     "ship_interceptor_front",
@@ -3983,6 +4581,10 @@
     "ship_interceptor_three_quarter"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -4003,7 +4605,7 @@
    "family": "ships",
    "stamp": "20260917-215942",
    "run_key": "ship_mine_layer",
-   "raw": "raw/ship_mine_layer.png",
+   "raw": "raw/ships/ship_mine_layer.png",
    "produced": [
     "ship_mine_layer_back",
     "ship_mine_layer_front",
@@ -4017,6 +4619,10 @@
     "ship_mine_layer_three_quarter"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -4037,7 +4643,7 @@
    "family": "ships",
    "stamp": "20260918-111643",
    "run_key": "ship_miner",
-   "raw": "raw/ship_miner.png",
+   "raw": "raw/ships/ship_miner.png",
    "produced": [
     "ship_miner_back",
     "ship_miner_front",
@@ -4051,6 +4657,10 @@
     "ship_miner_three_quarter"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -4071,7 +4681,7 @@
    "family": "ships",
    "stamp": "20260917-213521",
    "run_key": "ship_patrol",
-   "raw": "raw/ship_patrol.png",
+   "raw": "raw/ships/ship_patrol.png",
    "produced": [
     "ship_patrol_back",
     "ship_patrol_front",
@@ -4085,6 +4695,10 @@
     "ship_patrol_three_quarter"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -4105,7 +4719,7 @@
    "family": "ships",
    "stamp": "20260917-213439",
    "run_key": "ship_trader",
-   "raw": "raw/ship_trader.png",
+   "raw": "raw/ships/ship_trader.png",
    "produced": [
     "ship_trader_back",
     "ship_trader_front",
@@ -4119,6 +4733,10 @@
     "ship_trader_three_quarter"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -4139,7 +4757,7 @@
    "family": "ships",
    "stamp": "20260917-220025",
    "run_key": "ship_turret_platform",
-   "raw": "raw/ship_turret_platform.png",
+   "raw": "raw/ships/ship_turret_platform.png",
    "produced": [
     "ship_turret_platform"
    ],
@@ -4147,6 +4765,10 @@
     "ship_turret_platform"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -4164,7 +4786,7 @@
    "family": "ships",
    "stamp": "20260917-183041",
    "run_key": "ship_vanguard",
-   "raw": "raw/ship_vanguard.png",
+   "raw": "raw/ships/ship_vanguard.png",
    "produced": [
     "ship_vanguard_back",
     "ship_vanguard_front",
@@ -4178,6 +4800,10 @@
     "ship_vanguard_three_quarter"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -4198,7 +4824,7 @@
    "family": "ships",
    "stamp": "20260917-183739",
    "run_key": "ship_vanguard_damaged",
-   "raw": "raw/ship_vanguard_damaged.png",
+   "raw": "raw/ships/ship_vanguard_damaged.png",
    "produced": [
     "ship_vanguard_damaged_back",
     "ship_vanguard_damaged_front",
@@ -4212,6 +4838,10 @@
     "ship_vanguard_damaged_three_quarter"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -4232,7 +4862,7 @@
    "family": "ships",
    "stamp": "20260917-213447",
    "run_key": "ship_vanguard_mmo",
-   "raw": "raw/ship_vanguard_mmo.png",
+   "raw": "raw/ships/ship_vanguard_mmo.png",
    "produced": [
     "ship_vanguard_mmo_back",
     "ship_vanguard_mmo_front",
@@ -4246,6 +4876,10 @@
     "ship_vanguard_mmo_three_quarter"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -4266,10 +4900,14 @@
    "family": "ui",
    "stamp": "20260918-123330",
    "run_key": "f1_panel_frame",
-   "raw": "raw/f1_panel_frame.png",
+   "raw": "raw/ui/ui_panel_frame_alt.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -4288,10 +4926,14 @@
    "family": "ui",
    "stamp": "20260917-183801",
    "run_key": "logo-vajb-orbit-the-word-vajb-orbit-as",
-   "raw": "raw/logo-vajb-orbit-the-word-vajb-orbit-as.png",
+   "raw": "_dropped/logo-vajb-orbit-the-word-vajb-orbit-as.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -4310,7 +4952,7 @@
    "family": "ui",
    "stamp": "20260917-183929",
    "run_key": "logo_vajb_orbit",
-   "raw": "raw/logo_vajb_orbit.png",
+   "raw": "raw/ui/logo_vajb_orbit.png",
    "produced": [
     "logo_vajb_orbit"
    ],
@@ -4318,6 +4960,10 @@
     "logo_vajb_orbit"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -4335,7 +4981,7 @@
    "family": "ui",
    "stamp": "20260917-183655",
    "run_key": "ui-bar-caps-and-ui-minimap-bezel-one-pa",
-   "raw": "raw/ui-bar-caps-and-ui-minimap-bezel-one-pa.png",
+   "raw": "raw/ui/ui_bar_caps_sheet.png",
    "produced": [
     "ui_bar_caps",
     "ui_minimap_bezel"
@@ -4345,28 +4991,38 @@
     "ui_minimap_bezel"
    ],
    "master": [],
-   "grid": [
+   "planned_grid": [
     2,
     1
    ],
+   "grid": [
+    2,
+    2
+   ],
    "cuts": [
+    "ui_minimap_bezel",
     "ui_bar_caps",
-    "ui_minimap_bezel"
+    "ui_bar_caps_alt"
    ],
    "mode": "panel",
    "plan_from": "prompt: two groups on one row, bar end caps left, minimap bezel right",
    "plate": false,
    "plate_because": "",
-   "name_count": 2
+   "name_count": 2,
+   "note": "the caps cell holds two objects and is cut as two sprites; the bezel is the other cell"
   },
   {
    "family": "ui",
    "stamp": "20260917-183232",
    "run_key": "ui-button-plate-a-square-panel-with-fou",
-   "raw": "raw/ui-button-plate-a-square-panel-with-fou.png",
+   "raw": "raw/icons/panel_alt_metal_button_plates_four.png",
    "produced": [],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -4388,7 +5044,7 @@
    "family": "ui",
    "stamp": "20260917-215850",
    "run_key": "ui_backdrop_hangar",
-   "raw": "raw/ui_backdrop_hangar.png",
+   "raw": "raw/ui/ui_backdrop_hangar.png",
    "produced": [
     "ui_backdrop_hangar"
    ],
@@ -4396,6 +5052,10 @@
     "ui_backdrop_hangar"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -4413,7 +5073,7 @@
    "family": "ui",
    "stamp": "20260917-215951",
    "run_key": "ui_backdrop_login",
-   "raw": "raw/ui_backdrop_login.png",
+   "raw": "raw/ui/ui_backdrop_login.png",
    "produced": [
     "ui_backdrop_login"
    ],
@@ -4421,6 +5081,10 @@
     "ui_backdrop_login"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -4438,7 +5102,7 @@
    "family": "ui",
    "stamp": "20260917-215921",
    "run_key": "ui_backdrop_starmap",
-   "raw": "raw/ui_backdrop_starmap.png",
+   "raw": "raw/ui/ui_backdrop_starmap.png",
    "produced": [
     "ui_backdrop_starmap"
    ],
@@ -4446,6 +5110,10 @@
     "ui_backdrop_starmap"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -4463,7 +5131,7 @@
    "family": "ui",
    "stamp": "20260917-185457",
    "run_key": "ui_button_plate",
-   "raw": "raw/ui_button_plate__20260917-185457.png",
+   "raw": "_dropped/ui_button_plate__20260917-185457.png",
    "produced": [
     "ui_button_plate_disabled",
     "ui_button_plate_hover",
@@ -4474,6 +5142,10 @@
    "shipped": [],
    "master": [
     "ui_button_plate_panel"
+   ],
+   "planned_grid": [
+    2,
+    2
    ],
    "grid": [
     2,
@@ -4494,22 +5166,22 @@
     {
      "name": "ui_button_plate_normal",
      "cut_as": "ui_button_plate_normal__20260917-185457",
-     "superseded_by": "raw/ui_button_plate__20260918-133142.png"
+     "superseded_by": "raw/icons/panel_button_plates.png"
     },
     {
      "name": "ui_button_plate_hover",
      "cut_as": "ui_button_plate_hover__20260917-185457",
-     "superseded_by": "raw/ui_button_plate__20260918-133142.png"
+     "superseded_by": "raw/icons/panel_button_plates.png"
     },
     {
      "name": "ui_button_plate_pressed",
      "cut_as": "ui_button_plate_pressed__20260917-185457",
-     "superseded_by": "raw/ui_button_plate__20260918-133142.png"
+     "superseded_by": "raw/icons/panel_button_plates.png"
     },
     {
      "name": "ui_button_plate_disabled",
      "cut_as": "ui_button_plate_disabled__20260917-185457",
-     "superseded_by": "raw/ui_button_plate__20260918-133142.png"
+     "superseded_by": "raw/icons/panel_button_plates.png"
     }
    ]
   },
@@ -4517,7 +5189,7 @@
    "family": "ui",
    "stamp": "20260918-133142",
    "run_key": "ui_button_plate",
-   "raw": "raw/ui_button_plate__20260918-133142.png",
+   "raw": "raw/icons/panel_button_plates.png",
    "produced": [
     "ui_button_plate_disabled",
     "ui_button_plate_hover",
@@ -4531,6 +5203,10 @@
     "ui_button_plate_pressed"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -4551,7 +5227,7 @@
    "family": "ui",
    "stamp": "20260917-213659",
    "run_key": "ui_insignia",
-   "raw": "raw/ui_insignia.png",
+   "raw": "raw/ui/ui_insignia.png",
    "produced": [
     "ui_insignia_mic",
     "ui_insignia_mmo",
@@ -4565,6 +5241,10 @@
     "ui_insignia_ven"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -4585,12 +5265,16 @@
    "family": "ui",
    "stamp": "20260917-183136",
    "run_key": "ui_panel_frame",
-   "raw": "raw/ui_panel_frame__20260917-183136.png",
+   "raw": "_dropped/ui_panel_frame__20260917-183136.png",
    "produced": [
     "ui_panel_frame"
    ],
    "shipped": [],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -4607,7 +5291,7 @@
     {
      "name": "ui_panel_frame",
      "cut_as": "ui_panel_frame__20260917-183136",
-     "superseded_by": "raw/ui_panel_frame__20260918-133002.png"
+     "superseded_by": "_dropped/ui_panel_frame__20260918-133002.png"
     }
    ]
   },
@@ -4615,7 +5299,7 @@
    "family": "ui",
    "stamp": "20260918-133002",
    "run_key": "ui_panel_frame",
-   "raw": "raw/ui_panel_frame__20260918-133002.png",
+   "raw": "_dropped/ui_panel_frame__20260918-133002.png",
    "produced": [
     "ui_panel_frame"
    ],
@@ -4623,6 +5307,10 @@
     "ui_panel_frame"
    ],
    "master": [],
+   "planned_grid": [
+    1,
+    1
+   ],
    "grid": [
     1,
     1
@@ -4640,7 +5328,7 @@
    "family": "ui",
    "stamp": "20260917-183426",
    "run_key": "ui_slot_cargo",
-   "raw": "raw/ui_slot_cargo.png",
+   "raw": "raw/ui/ui_slot_cargo.png",
    "produced": [
     "ui_slot_cargo_disabled",
     "ui_slot_cargo_hover",
@@ -4654,6 +5342,10 @@
     "ui_slot_cargo_pressed"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -4674,7 +5366,7 @@
    "family": "ui",
    "stamp": "20260917-183551",
    "run_key": "ui_slot_inventory",
-   "raw": "raw/ui_slot_inventory.png",
+   "raw": "raw/ui/ui_slot_inventory.png",
    "produced": [
     "ui_slot_inventory_disabled",
     "ui_slot_inventory_hover",
@@ -4688,6 +5380,10 @@
     "ui_slot_inventory_pressed"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2
@@ -4708,7 +5404,7 @@
    "family": "ui",
    "stamp": "20260917-183336",
    "run_key": "ui_slot_weapon",
-   "raw": "raw/ui_slot_weapon.png",
+   "raw": "raw/ui/ui_slot_weapon.png",
    "produced": [
     "ui_slot_weapon_disabled",
     "ui_slot_weapon_hover",
@@ -4722,6 +5418,10 @@
     "ui_slot_weapon_pressed"
    ],
    "master": [],
+   "planned_grid": [
+    2,
+    2
+   ],
    "grid": [
     2,
     2

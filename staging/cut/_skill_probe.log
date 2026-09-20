@@ -1,0 +1,5 @@
+{
+  "ok": false,
+  "error": "Task 315d8b9dedd18a985c2d79257904daba failed: image_url必须是http(s) URL",
+  "task_id": "315d8b9dedd18a985c2d79257904daba"
+}

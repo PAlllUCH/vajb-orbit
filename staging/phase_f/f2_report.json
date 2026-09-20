@@ -1,0 +1,269 @@
+{
+ "frame": [
+  {
+   "label": "pre-F.2 96",
+   "texture": [
+    96,
+    96
+   ],
+   "margin": 32,
+   "drawn_vertical": 12,
+   "drawn_horizontal": 13,
+   "verdict": "20 px short/long"
+  },
+  {
+   "label": "F.2 96",
+   "texture": [
+    96,
+    96
+   ],
+   "margin": 32,
+   "drawn_vertical": 30,
+   "drawn_horizontal": 32,
+   "verdict": "PASS"
+  },
+  {
+   "label": "pre-F.2 @2x",
+   "texture": [
+    192,
+    192
+   ],
+   "margin": 64,
+   "drawn_vertical": 25,
+   "drawn_horizontal": 25,
+   "verdict": "39 px short/long"
+  },
+  {
+   "label": "F.2 @2x",
+   "texture": [
+    192,
+    192
+   ],
+   "margin": 64,
+   "drawn_vertical": 59,
+   "drawn_horizontal": 64,
+   "verdict": "5 px short/long"
+  }
+ ],
+ "glyphs": {
+  "median": 0.2857142857142857,
+  "set_range": [
+   0.0,
+   0.6130952380952381
+  ],
+  "rows": [
+   {
+    "glyph": "icon_zoom_plus",
+    "before": {
+     "solid": 0.204,
+     "stroke": 1.0,
+     "coverage": 0.555
+    },
+    "after": {
+     "solid": 0.473,
+     "stroke": 2.5,
+     "coverage": 0.652
+    },
+    "verdict": "PASS"
+   },
+   {
+    "glyph": "icon_zoom_minus",
+    "before": {
+     "solid": 0.188,
+     "stroke": 1.0,
+     "coverage": 0.5
+    },
+    "after": {
+     "solid": 0.5,
+     "stroke": 3.5,
+     "coverage": 0.609
+    },
+    "verdict": "PASS"
+   },
+   {
+    "glyph": "icon_credits",
+    "before": {
+     "solid": 0.142,
+     "stroke": 2.0,
+     "coverage": 0.441
+    },
+    "after": {
+     "solid": 0.488,
+     "stroke": 3.0,
+     "coverage": 0.656
+    },
+    "verdict": "PASS"
+   },
+   {
+    "glyph": "icon_shield",
+    "before": {
+     "solid": 0.217,
+     "stroke": 1.0,
+     "coverage": 0.469
+    },
+    "after": {
+     "solid": 0.42,
+     "stroke": 3.0,
+     "coverage": 0.586
+    },
+    "verdict": "PASS"
+   }
+  ],
+  "pass": true
+ },
+ "drone": [
+  {
+   "file": "ships/ship_drone_swarm_front.png",
+   "band": 5819,
+   "lum_mean": 58.2,
+   "lum_mean_before": 139.2,
+   "bright_share": 0.0015,
+   "halo_px": 5,
+   "verdict": "PASS"
+  },
+  {
+   "file": "ships/ship_drone_swarm_three_quarter.png",
+   "band": 5807,
+   "lum_mean": 49.7,
+   "lum_mean_before": 141.6,
+   "bright_share": 0.0,
+   "halo_px": 0,
+   "verdict": "PASS"
+  },
+  {
+   "file": "ships/ship_drone_swarm_side.png",
+   "band": 5276,
+   "lum_mean": 50.8,
+   "lum_mean_before": 158.1,
+   "bright_share": 0.0004,
+   "halo_px": 1,
+   "verdict": "PASS"
+  },
+  {
+   "file": "ships/ship_drone_swarm_back.png",
+   "band": 5411,
+   "lum_mean": 50.8,
+   "lum_mean_before": 140.9,
+   "bright_share": 0.0091,
+   "halo_px": 33,
+   "verdict": "PASS"
+  }
+ ],
+ "moon": {
+  "ships_family_mean": 56.2,
+  "rows": [
+   {
+    "label": "pre-F.2",
+    "subject_mean": 58.0,
+    "p95": 144.2,
+    "px": 1883297,
+    "verdict": "above the family mean"
+   },
+   {
+    "label": "F.2",
+    "subject_mean": 49.6,
+    "p95": 113.6,
+    "px": 903880,
+    "verdict": "PASS"
+   }
+  ]
+ },
+ "plates": [
+  {
+   "plate": "ui_button_plate_normal",
+   "1x": {
+    "file": "ui_button_plate_normal.png",
+    "size": [
+     280,
+     56
+    ],
+    "alpha_mean": 236.5,
+    "band_mean": 56.4,
+    "band_bright_share": 0.0681
+   },
+   "2x": {
+    "file": "ui_button_plate_normal@2x.png",
+    "size": [
+     560,
+     112
+    ],
+    "alpha_mean": 236.4,
+    "band_mean": 19.5,
+    "band_bright_share": 0.0016
+   },
+   "same_art_diff": 0.26
+  },
+  {
+   "plate": "ui_button_plate_hover",
+   "1x": {
+    "file": "ui_button_plate_hover.png",
+    "size": [
+     280,
+     56
+    ],
+    "alpha_mean": 233.3,
+    "band_mean": 79.9,
+    "band_bright_share": 0.1228
+   },
+   "2x": {
+    "file": "ui_button_plate_hover@2x.png",
+    "size": [
+     560,
+     112
+    ],
+    "alpha_mean": 233.4,
+    "band_mean": 35.1,
+    "band_bright_share": 0.0054
+   },
+   "same_art_diff": 0.25
+  },
+  {
+   "plate": "ui_button_plate_pressed",
+   "1x": {
+    "file": "ui_button_plate_pressed.png",
+    "size": [
+     280,
+     56
+    ],
+    "alpha_mean": 189.0,
+    "band_mean": 38.3,
+    "band_bright_share": 0.0096
+   },
+   "2x": {
+    "file": "ui_button_plate_pressed@2x.png",
+    "size": [
+     560,
+     112
+    ],
+    "alpha_mean": 189.1,
+    "band_mean": 24.6,
+    "band_bright_share": 0.0005
+   },
+   "same_art_diff": 0.44
+  },
+  {
+   "plate": "ui_button_plate_disabled",
+   "1x": {
+    "file": "ui_button_plate_disabled.png",
+    "size": [
+     280,
+     56
+    ],
+    "alpha_mean": 241.5,
+    "band_mean": 75.5,
+    "band_bright_share": 0.007
+   },
+   "2x": {
+    "file": "ui_button_plate_disabled@2x.png",
+    "size": [
+     560,
+     112
+    ],
+    "alpha_mean": 241.9,
+    "band_mean": 16.0,
+    "band_bright_share": 0.0004
+   },
+   "same_art_diff": 0.21
+  }
+ ]
+}
