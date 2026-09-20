@@ -833,3 +833,49 @@ Owner rulings from the live walkthrough crosscheck, recorded in full in
    `FlavourText` variation (13 px, `text_dim`) for the read-out line and the `Version` stamp.
    Sizes do not change; the theme remains generated (`tools/build_theme.gd`, deterministic,
    `Router.FONT_SIZE_ITEMS` 27 -> 28).
+
+## 17. Boot and loading (absorbed from `MAIN_MENU_SPEC.md`)
+
+These are the only sections of the Phase-A `MAIN_MENU_SPEC.md` still live; the
+menu-layout sections it once carried are superseded by this spec (§3–§9).
+Transcribed 2026-09-18 from `MAIN_MENU_SPEC.md` §1–§2 and §7; the source file
+moves to the sealed archive in the next cleanup pass.
+
+### 17.1 Boot sequence (total ≤ 3 s)
+
+Scene: `vajb-orbit/ui/screens/boot.tscn`. Root `Control` full-rect,
+`vajb_theme.tres`, bg `void_base` (full-rect `ColorRect`).
+
+| t (s) | What happens |
+|---|---|
+| 0.0–0.5 | Solid `void_base`. Nothing else. |
+| 0.5–1.4 | Logo fades in (alpha 0→1, 0.9 s, ease out). The logo is the generated lockup art (UI_CHROME spec). |
+| 1.4–1.7 | One "ember flicker": logo modulate briefly (0.15 s) toward `accent_danger_bright` then back — single pulse, never looping. |
+| 1.4–2.4 | Thin 2 px progress line under the logo, width 240, centred. Fill `metal_light`; 3 scripted ticks (25 % / 60 % / 100 %) with 0.3 s gaps — preflight is cosmetic in v1 (no server). |
+| 2.4–3.0 | 0.6 s crossfade to Main Menu (`Tween` on a full-rect black `ColorRect` alpha 0→1→0 across the scene swap). |
+
+- Any key press during boot is ignored (sequence is short by design).
+- Skip guard: if the engine reports load already finished, jump to t=1.4 immediately.
+
+### 17.2 Loading screen (the only bridge into gameplay)
+
+Scene: `vajb-orbit/ui/screens/loading.tscn`. Same skeleton as boot.
+
+- Background: generated splash backdrop (UI_CHROME spec) at 40 % opacity over `void_base`.
+- Centred: destination label — "ENTERING SECTOR — <name>" in Blaec 22 px `text_primary`; placeholder v1: "ENTERING SPACE".
+- Lower third: progress bar 260×14 (`progress_bg`/`progress_fill` styleboxes from UI_SPEC §2.1). In v1 fill tweens 0→100 % over the 1.2 s minimum display time — real asset streaming replaces this later. Background: `env_loading_bg.png` (ENVIRONMENT_SPEC §3 — the wreck vista at 40 % opacity; UI_CHROME's `ui_loading_backdrop.png` plate is parked as fallback).
+- Minimum display time 1.2 s (anti-strobe). Fade-out 0.4 s into the game scene.
+- No cancel button in v1 (cancel exists only for return-to-hangar direction, which is future scope).
+
+### 17.3 Boot-related transitions
+
+| From → To | Style |
+|---|---|
+| Boot → Menu | 0.6 s black crossfade (§17.1) |
+| Menu → Loading | 0.4 s fade to `void_base`, then the loading scene handles its own fade-in |
+
+### 17.4 Boot/loading acceptance items
+
+- [ ] Boot ≤ 3 s end-to-end; no interactive elements during boot.
+- [ ] Exactly one accent colour visible; ember appears only as: logo flicker,
+      button hover bloom/focus ring, background wreck pulse.

@@ -1,8 +1,10 @@
 # WAVEBOARD — one-file agent state
 
-**Updated: 2026-09-18.** Every agent (orchestrator or fresh session) reads this
-file first; the goal is "resume from one file read". Update it at every wave
-close, dispatch, and review cycle.
+**Updated: 2026-09-18 — engine wave 1 CLOSED and review-verified**
+(`engine_wave1_review2_report.md`: 8/8 fixes verified, 40/40 probe checks,
+boot gates exit 0, P1 suite 53/53, theme deterministic). Git baseline
+`2a420a7` pushed to `origin/main`. Cleanup pass in progress per
+`CLOSEOUT_PLAN.md`.
 
 ## Living contracts
 
@@ -44,45 +46,41 @@ VAJB_WORKER_FILES="vajb-orbit/game/hud.gd,vajb-orbit/ui/hud/hud.tscn" \
 
 PowerShell form: `$env:VAJB_WORKER_FILES='...'; crush run "<prompt>" -m deepseek/deepseek-v4-flash --cwd "G:/Mój dysk/Projekty/Vajb Orbit"`
 
-## In flight — engine wave 1 (owner-dispatched, other agent)
+## In flight — none. Engine wave 1 closed.
 
-Order W0 → W1–W4 parallel → W5 → W6 → W7/W8 (max 3 fix cycles). Brief:
-`.agents/gen/engine_wave1_task.md`; prompts: `.agents/gen/engine_wave1_prompts.md`;
-spec: `ENGINE_SPEC.md` (§2 decisions, §13 calibration, §14 slices).
+Final table kept until the cleanup report is written:
 
 | Worker | Scope | Report | Status |
 |---|---|---|---|
-| W0 | doc amendments | `engine_wave1_w0_report.md` | report on disk — unverified |
-| W1 | ShipFit/ShipStats | `engine_wave1_w1_report.md` | report on disk — unverified |
-| W2 | flight + game.gd | `engine_wave1_w2_report.md` | report on disk — unverified |
-| W3 | asteroids/mining/pickups | `engine_wave1_w3_report.md` | report on disk — unverified |
-| W4 | sector/registry/station | `engine_wave1_w4_report.md` | report on disk — unverified |
-| W5 | HUD pass | `engine_wave1_w5_report.md` | report on disk — unverified |
-| W6 | mandatory review | `engine_wave1_review_report.md` | report on disk |
-| W7/W8 | fix + re-review | `..._fix_report.md` / `..._review2_report.md` | **in flight** — W7 probe (`tools/_probe_w7_seams.gd`+`.tscn`) present 2026-09-18 |
+| W0–W5 | doc amendments, fit, flight, mining, sector, HUD | `engine_wave1_w0..w5_report.md` | closed |
+| W6/W8 | review + re-review | `engine_wave1_review_report.md`, `engine_wave1_review2_report.md` | **clean — no unresolved findings** |
+| W7 | fixes (H1–H4, M1–M3) | `engine_wave1_w7_report.md` | closed |
 
-Rule: nothing runs on this side while workers are in flight. When the owner
-signals closure: read all reports → support review/fix loop if asked (owner
-dispatches) → then cleanup + git baseline.
+## Review rules for the next waves
 
-## Queued (do not start before wave 1 closes)
+- Findings tiering: **HIGH blocks the wave; MED gets one fixer pass; LOW goes
+  to a backlog file and rides with the next wave.** Max one fix+re-review
+  cycle per wave unless HIGH findings remain.
+- Every dispatch sets `VAJB_WORKER_FILES` (see Enforcement protocol below).
+- Review waves diff against `docs/CONTRACTS.md`, not against the brief.
 
-1. **Verify wave closure** — read W0–W8 reports; if the review loop is
-   unfinished, provide further fix/re-review prompts (owner dispatches).
-2. **Cleanup pass** — per `CLEANUP_PLAN.md` §4; owner ticks §3 dispositions and
-   grants `VAJB_ARCHIVE_OK=1` for the reference audit; report →
-   `.agents/gen/cleanup_pass_report.md`. Includes deleting executed briefs,
-   probe logs, mockup scenes, `engine_wave1_task.md`/`_prompts.md`,
-   `engine_brainstorm_notes.md` (reports stay).
-3. **AGENTS.md wiring** (same pass as cleanup): doc map gains `docs/CONTRACTS.md`
-   + WAVEBOARD entry; deferred from now to avoid conflicting with in-flight workers.
-4. **Git baseline commit** — repo initialized 2026-09-18 (`main`, remote
-   `github.com/PAlllUCH/vajb-orbit`, empty so far). Text-only `.gitignore` at
-   workspace root (binaries ignored by extension, incl. `assets/` images and
-   `asset-library/` packs; text like generation logs, `.import`, manifests stays
-   tracked). First commit = wave-1-closed state; commit at every wave boundary
-   thereafter. Owner sets `git config user.name/user.email` (currently unset)
-   before the first commit. No push without explicit ask.
+
+## Queued
+
+1. **Cleanup pass** — executing per `CLOSEOUT_PLAN.md` Phase C: briefs + logs
+   deleted (reports kept), MAIN_MENU_SPEC boot/loading absorbed into
+   MAIN_MENU_V2 §17, AGENTS.md doc map updated. **Deferred items (owner inputs
+   pending):** the five sealed-archive moves (need a `VAJB_ARCHIVE_OK=1`
+   session — the seal blocked even a plan draft that named the path),
+   `_mockup_station.tscn` deletion (gated on live S2 verification + wave-4
+   review), MAIN_MENU_SPEC reference repointing (same sealed pass).
+2. **Git** — done: baseline `2a420a7` on `origin/main`; repo-local identity
+   `Kamil <PAlllUCH@users.noreply.github.com>` (override anytime with your own
+   global identity). Commit at every wave boundary from now on.
+3. **Slice-2 pre-brief** (combat) from ENGINE_SPEC §14 — brief + prompts with
+   CONTRACTS inlined + `VAJB_WORKER_FILES` per worker.
+4. **Batch-2 lane brief** (B2-1 hover, B2-2 backdrops, B2-3 minimap zoom) —
+   the parallel lane for the next engine wave.
 
 ## Parked (independent)
 

@@ -4,7 +4,7 @@ extends RefCounted
 ## owner factions, backdrop ids and spawn densities.
 ## Data, not logic: no nodes, no autoload, no mutation API.
 ## Contract: docs/gameplay/11_galactic_map.md §1/§1.1/§3, ENGINE_SPEC.md §2
-## decision 4, §8 and §13. Brief: .agents/gen/engine_wave1_task.md item 8.
+## decision 4, §8 and §13. Contract: docs/CONTRACTS.md §6.
 ##
 ## Row keys are exactly the six pinned by the brief: `id`, `name`, `owner`,
 ## `tier_weights`, `backdrop_id`, `densities`. 11 §4 also names `neighbours`

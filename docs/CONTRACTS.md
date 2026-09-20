@@ -178,6 +178,7 @@ it as a gate; use scene runs or `load()` probes.
 
 ## §10 Changelog
 
-- **v0 (2026-09-18)** — seeded from the engine wave-1 brief (`engine_wave1_task.md`
-  pinned interfaces) + `ENGINE_SPEC.md` §2/§3/§7/§9/§13. Slices 2–4 (combat,
+- **v0 (2026-09-18)** — seeded from the engine wave-1 pinned interfaces
+  (evidence: `.agents/gen/engine_wave1_w1_report.md`) + `ENGINE_SPEC.md`
+  §2/§3/§7/§9/§13. Slices 2–4 (combat,
   travel, integration) append their sections here at their review gates.

@@ -73,7 +73,7 @@ ESC → dock to Kepler-9 confirmed working in the live build (hint + route both 
 
 ## Context pointers
 
-- Wave-1 evidence: `.agents/gen/fix_wave1_task.md`, `fix_wave1_w1_report.md` … `w5_report.md`,
+- Wave-1 evidence: `.agents/gen/fix_wave1_w7_report.md`, `fix_wave1_w1_report.md` … `w5_report.md`,
   `fix_wave1_review_report.md`, `fix_wave1_w7_report.md`, `fix_wave1_review2_report.md`.
 - Contract amendments: `IMPLEMENTATION_PLAN.md` §9.8, `MAIN_MENU_V2.md` §16, `UI_SPEC.md`
   §2.1–§2.2, `STATION_HUB.md` §5.7.

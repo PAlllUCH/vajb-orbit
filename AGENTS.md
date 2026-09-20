@@ -11,17 +11,28 @@ Dark Orbit clone in Godot 4.7.2 (Forward+, D3D12, Jolt physics). Project code li
 
 ## Documentation Map
 
-**Phase status (2026-09-18):** Phase C closed (`docs/design/PHASE_C_STATUS.md` — code-complete, re-reviewed clean). Phase D menu + station implementation landed (M1, S1, S2; reports in `.agents/gen/`; live S2 verification and the Wave-4 review remain outstanding per `CODING_REPORT.md` §7). **Phase P1 of the RPG layer (gameplay docs 01–05) is code-complete**: catalogues, exchange, refinery, repairs, the one world clock, save v2 migration, the REFINERY/EXCHANGE/REPAIRS station panels and a 53-test headless suite — evidence and open items in `.agents/gen/p1_report.md`; owner sign-off on the `STATION_HUB.md` P1 amendments is pending. P2 (08/09/10) is next. The mockups `ui/screens/_mockup_main_menu.tscn` and `_mockup_station.tscn` are deleted when their verification close-out lands (IMPLEMENTATION_PLAN §9.6). **Phase F.1 + F.2 (icon resolution + integrity) are shipped and closed**: the icon quartet `_{16,48,96,192}` is cut contain-fit for all 139 families, the tint set is 556, the four outline glyphs carry the heavy 16 px band, and the F.2 batch closed every F.1 open item (frame band = nine-slice margin, clean drone-swarm edges, ice-moon value) plus the last four chrome `@2x` cuts. Both records, with every measured number and the reversal paths, are in `docs/design/ICONS_SPEC.md` §9.7–§9.8 and `docs/design/UI_CHROME_ASSETS_SPEC.md` §10.
+**Phase status (2026-09-18):** **Engine wave 1 (fly-and-mine) is closed and review-verified** (`engine_wave1_review2_report.md` — see `.agents/gen/WAVEBOARD.md` for state and next steps). Phase C closed (`docs/design/PHASE_C_STATUS.md` — code-complete, re-reviewed clean). Phase D menu + station implementation landed (M1, S1, S2; reports in `.agents/gen/`; live S2 verification and the Wave-4 review remain outstanding per `CODING_REPORT.md` §7). **Phase P1 of the RPG layer (gameplay docs 01–05) is code-complete**: catalogues, exchange, refinery, repairs, the one world clock, save v2 migration, the REFINERY/EXCHANGE/REPAIRS station panels and a 53-test headless suite — evidence and open items in `.agents/gen/p1_report.md`; owner sign-off on the `STATION_HUB.md` P1 amendments is pending. P2 (08/09/10) is next. The mockup `_mockup_main_menu.tscn` is deleted; `_mockup_station.tscn` is deleted when its verification close-out lands (IMPLEMENTATION_PLAN §9.6). **Phase F.1 + F.2 (icon resolution + integrity) are shipped and closed**: the icon quartet `_{16,48,96,192}` is cut contain-fit for all 139 families, the tint set is 556, the four outline glyphs carry the heavy 16 px band, and the F.2 batch closed every F.1 open item (frame band = nine-slice margin, clean drone-swarm edges, ice-moon value) plus the last four chrome `@2x` cuts. Both records, with every measured number and the reversal paths, are in `docs/design/ICONS_SPEC.md` §9.7–§9.8 and `docs/design/UI_CHROME_ASSETS_SPEC.md` §10.
 
 `docs/design/`, by role:
 
 | Group | Files | Role |
 |---|---|---|
 | Visual + flow law | `STYLE_BIBLE.md`, `UI_SPEC.md`, `MENU_FLOW.md` | Single sources: palette/style, UI/theming tokens, screen inventory + flow |
-| Screen specs | `MAIN_MENU_SPEC.md` (boot/loading; menu layout superseded by v2), `MAIN_MENU_V2.md`, `STATION_HUB.md`, `STATION_SPEC.md`, `THEME_AUDIO_EXTENSION.md` | Contracts for shipping screens and the D3 theme/audio extension |
+| Screen specs | `MAIN_MENU_V2.md` (menu + boot/loading — the Phase-A boot/loading spec is absorbed in §17; `MAIN_MENU_SPEC.md` is superseded, pending archive), `STATION_HUB.md`, `STATION_SPEC.md`, `THEME_AUDIO_EXTENSION.md` | Contracts for shipping screens and the D3 theme/audio extension |
 | Asset specs | `SHIPS_SPEC.md`, `ICONS_SPEC.md`, `ENVIRONMENT_SPEC.md`, `FX_SPEC.md`, `UI_CHROME_ASSETS_SPEC.md`, `AUDIO_SPEC.md` | Prompt + wiring source per asset family |
 | Asset pipeline records | `GENERATION_PLAN.md` (Phase B), `ASSET_EXPANSION_SPEC.md` (D), `ASSET_EXPANSION_SPEC_E.md` (E), `ASSET_CATALOG.md` (generated), `ASSET_AUDIT.md` (D1 reachability audit), `ASSET_WIRING_HANDOFF.md` (integration contract) | Executed plans stay authoritative for model/price/split rules; catalog is regenerated, never hand-edited |
 | Phase C records | `IMPLEMENTATION_PLAN.md` (frozen interface contract, now with Phase D and P1 amendments in §9), `PROJECT_SETTINGS_PATCH.md` (applied), `PHASE_C_STATUS.md` (closed) | The coding contract every worker codes against |
+
+Workspace root, agent-facing:
+
+| File | Role |
+|---|---|
+| `ENGINE_SPEC.md` | The engine contract (§2 the seven locked decisions, §13 calibration, §14 build slices 1–4) |
+| `docs/CONTRACTS.md` | The living pinned-interface contract — every worker brief references its sections; review waves own updating it |
+| `.agents/gen/WAVEBOARD.md` | One-file agent state: wave statuses, queued/parked work, the enforcement protocol. Read first when resuming |
+| `CLEANUP_PLAN.md` / `CLOSEOUT_PLAN.md` | Cleanup dispositions and the wave-1 closeout sequence |
+
+**Agent tooling (workspace):** `staging/verify_wave.py` (`snapshot` before / `verify --baseline <tag>` after a wave; baselines in `.agents/gen/_wave_state/`), hooks `.crush/hooks/protect_archive.py` (seals the archive) and `.crush/hooks/enforce_worker_files.py` (per-worker file set via `VAJB_WORKER_FILES`), and the universal test gate `"C:/Godot_4_7_2/Godot_v4.7.2-stable_win64_console.exe" --headless --path "G:/Mój dysk/Projekty/Vajb Orbit/vajb-orbit" res://tests/headless_runner.tscn --quit-after 1200` → `[SUMMARY] passed=53 failed=0`. The repo (`github.com/PAlllUCH/vajb-orbit`) is text-only — binary assets are gitignored; commit at every wave boundary.
 
 `docs/gameplay/` — the RPG/economy layer: docs 01–17, with `17_coder_handoff.md` as its build plan. P1 (01–05, economy core) shipped; evidence and open items in `.agents/gen/p1_report.md`.
 

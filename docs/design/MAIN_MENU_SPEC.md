@@ -1,5 +1,14 @@
 # Vajb Orbit — Main Menu & Boot/Loading Spec
 
+**Status: SUPERSEDED (2026-09-18).** The menu layout sections (§3–§8) were
+replaced by `MAIN_MENU_V2.md` (written from the owner-approved mockup); the
+still-live boot/loading sections (§1–§2) were absorbed verbatim into
+`MAIN_MENU_V2.md` §17. This file moves to the sealed archive in the next
+cleanup pass; it is kept here only until that owner-granted run. Do not cite
+this file for anything — cite `MAIN_MENU_V2.md`.
+
+---
+
 **Status:** final Phase-A spec. Depends on `STYLE_BIBLE.md` (palette, motifs) and `UI_SPEC.md` (theme tokens, scene conventions). Visual asset inputs come from `ENVIRONMENT_SPEC.md` (menu background) and `UI_CHROME_ASSETS_SPEC.md` (logo, button plates, nine-patch frame).
 
 **Scope decision (A1):** Boot → Main Menu (PLAY / OPTIONS / EXIT) → Loading → placeholder game scene. The MMO screens in `MENU_FLOW.md` (Login, Company Select, Hangar, Starmap) are untouched future scope; this menu is inserted as the new post-boot screen.

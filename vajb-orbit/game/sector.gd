@@ -3,7 +3,7 @@ extends Node2D
 ## One sector's live contents: the ENGINE_SPEC §8 spawn set, the station's dock
 ## zone and the minimap blip feed. Built in code (this slice ships no scene
 ## file), so `populate(row, seed)` is the whole entry point.
-## Contract: .agents/gen/engine_wave1_task.md items 7 and 8, ENGINE_SPEC.md §7
+## Contract: docs/CONTRACTS.md §6, ENGINE_SPEC.md §7
 ## (docking, safe warp), §8 (spawn set, respawn on the one clock), §13
 ## (SECTOR_SIZE, the 300 u spawn offset), 11 §1-§3, 02 §8, 17 §4.
 ##
