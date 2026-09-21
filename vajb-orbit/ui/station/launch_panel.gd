@@ -1,9 +1,9 @@
 extends VBoxContainer
 ## LAUNCH module panel: the flight briefing, the cargo plate strip, the manifest read from
 ## PlayerProfile.cargo_items(), and the two-press arming beat that ends in the undock
-## intent. Contract: docs/design/STATION_HUB.md sections 2, 5.4, 5.6, 9 and 12,
-## docs/design/STATION_SPEC.md sections 2.3, 2.6 and 6, docs/design/IMPLEMENTATION_PLAN.md
-## section 9.2.
+## intent. Contract: docs/design/STATION_HUB.md sections 2, 5.4 (incl. the 2026-09-21 P2-A
+## amendment), 5.6, 9 and 12, docs/design/STATION_SPEC.md sections 2.3, 2.6 and 6,
+## docs/design/IMPLEMENTATION_PLAN.md section 9.2, CONTRACTS section 11.
 ##
 ## The station shell loads this scene into its host, so the panel never routes and never
 ## writes the profile: it emits launch_requested up, reads StationCatalog / PlayerProfile
@@ -64,12 +64,17 @@ const HULL_READY_FORMAT := "%s — READY"
 const COL_BRIEF := 220.0
 const BRIEF_SEPARATION := 12
 
+## CONTRACTS section 11: the two new rows are the active hull's 08 section 3 counts, read
+## through `ShipFit` for the same hull the other limits come from. The catalogue carries
+## `hardpoints` alone; `engines` and `slots` are the matrix's own numbers.
 const BRIEF_ROWS: Array[Dictionary] = [
 	{&"key": &"destination", &"label": "DESTINATION"},
 	{&"key": &"hull_name", &"label": "ACTIVE HULL"},
 	{&"key": &"hull", &"label": "HULL LIMIT"},
 	{&"key": &"shield", &"label": "SHIELD LIMIT"},
+	{&"key": &"engines", &"label": "ENGINES"},
 	{&"key": &"hardpoints", &"label": "HARDPOINTS"},
+	{&"key": &"slots", &"label": "SLOT CELLS"},
 	{&"key": &"cargo", &"label": "CARGO"},
 	{&"key": &"ammo", &"label": "AMMUNITION"},
 ]
@@ -305,7 +310,9 @@ func _refresh_brief() -> void:
 	_set_brief(&"hull_name", hull_name)
 	_set_brief(&"hull", str(int(ship.get(&"hull", 0))))
 	_set_brief(&"shield", str(int(ship.get(&"shield", 0))))
+	_set_brief(&"engines", str(int(ShipFit.grid_counts(active_id).get(&"engines", 0))))
 	_set_brief(&"hardpoints", str(int(ship.get(&"hardpoints", 0))))
+	_set_brief(&"slots", str(_slot_cell_count(active_id)))
 	_set_brief(&"cargo", CARGO_FORMAT % [_cargo_used(profile), int(ship.get(&"cargo", 0))])
 	_set_brief(&"ammo", AMMO_FORMAT % [_format_int(_ammo_total(profile)), _weapon_count()])
 
@@ -314,6 +321,16 @@ func _set_brief(key: StringName, text: String) -> void:
 	var label: Label = _brief_values.get(key)
 	if label != null:
 		label.text = text
+
+
+## How many non-gap cells the hull carries, 08 section 3's Total: every value of
+## `ShipFit.grid_counts` summed (a gap is not a cell, so it is not counted at all). 0 for
+## an unknown or NPC hull, which is what an empty briefing should read.
+func _slot_cell_count(hull_id: StringName) -> int:
+	var total := 0
+	for count: Variant in ShipFit.grid_counts(hull_id).values():
+		total += int(count)
+	return total
 
 
 func _refresh_cargo() -> void:

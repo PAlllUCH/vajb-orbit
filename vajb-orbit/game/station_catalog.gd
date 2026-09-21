@@ -58,6 +58,10 @@ const AMMO_PACKS: Array[Dictionary] = [
 	},
 ]
 
+## Nine player hulls, in 08 section 2's ladder order. Cost/hull/shield/cargo are
+## that table's frozen values (STATION_SPEC section 5.2 for the four it lists);
+## `hardpoints` is its Weapons column, which equals the hull's W-slot count
+## (ShipFit.grid_counts -> `HULLS[hull].weapons`, 08 section 3).
 const SHIPS: Array[Dictionary] = [
 	{
 		&"id": &"ship_fighter",
@@ -67,7 +71,7 @@ const SHIPS: Array[Dictionary] = [
 		&"hull": 700,
 		&"shield": 400,
 		&"cargo": 25,
-		&"hardpoints": 3,
+		&"hardpoints": 2,
 		&"description": "Light interceptor. Fast, thin plated, cheap to lose.",
 	},
 	{
@@ -78,8 +82,52 @@ const SHIPS: Array[Dictionary] = [
 		&"hull": 1000,
 		&"shield": 600,
 		&"cargo": 40,
-		&"hardpoints": 4,
+		&"hardpoints": 3,
 		&"description": "General purpose hull. The yard stick every other ship is measured against.",
+	},
+	{
+		&"id": &"ship_miner",
+		&"name": "Delver",
+		&"cost": 16000,
+		&"preview": "res://assets/ships/ship_miner_side.png",
+		&"hull": 1100,
+		&"shield": 500,
+		&"cargo": 55,
+		&"hardpoints": 2,
+		&"description": "Mining specialist. Slow, deep holds, and a hull that shrugs off rock.",
+	},
+	{
+		&"id": &"ship_trader",
+		&"name": "Courier",
+		&"cost": 21000,
+		&"preview": "res://assets/ships/ship_trader_side.png",
+		&"hull": 950,
+		&"shield": 550,
+		&"cargo": 60,
+		&"hardpoints": 1,
+		&"description": "Trade hull. Better exchange rates and a hold built for volume.",
+	},
+	{
+		&"id": &"ship_corvette",
+		&"name": "Spearhead",
+		&"cost": 27000,
+		&"preview": "res://assets/ships/ship_corvette_side.png",
+		&"hull": 1300,
+		&"shield": 700,
+		&"cargo": 35,
+		&"hardpoints": 4,
+		&"description": "Fast hunter. The quickest hull in the yard, and it pays for it in plate.",
+	},
+	{
+		&"id": &"ship_freighter",
+		&"name": "Mule",
+		&"cost": 24000,
+		&"preview": "res://assets/ships/ship_freighter_side.png",
+		&"hull": 1600,
+		&"shield": 500,
+		&"cargo": 120,
+		&"hardpoints": 1,
+		&"description": "Bulk hauler. The biggest hold in the yard, and the least interest in a fight.",
 	},
 	{
 		&"id": &"ship_gunship",
@@ -91,6 +139,17 @@ const SHIPS: Array[Dictionary] = [
 		&"cargo": 50,
 		&"hardpoints": 5,
 		&"description": "Heavy gunship. Trading manoeuvrability for gun decks and plate.",
+	},
+	{
+		&"id": &"ship_patrol",
+		&"name": "Warden",
+		&"cost": 54000,
+		&"preview": "res://assets/ships/ship_patrol_side.png",
+		&"hull": 1800,
+		&"shield": 800,
+		&"cargo": 60,
+		&"hardpoints": 4,
+		&"description": "Line patrol. Two computers, four mounts, and the plate to hold a lane.",
 	},
 	{
 		&"id": &"ship_destroyer",

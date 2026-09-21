@@ -442,3 +442,85 @@ Interface and numbers for slice 1 come from ENGINE_SPEC §9 (`ShipFit`/`ShipStat
 - **Companion doc amendments in the same wave (2026-09-20; spec §12 items 7–10).** `09_ship_slots_modules.md` §3.1 gains the weapon family + shield-rule columns and the energy-draw amendment block, and §3.5's booster rows gain their fuel burns; `14_station_services.md` gains the refuel/recharge rows as **free and instant** (owner ruling 2026-09-21); `06_loot_drops.md` §3.1 gains the `cm_chaff`/`cm_flare` countermeasure rows; `11_galactic_map.md` §1 gains the nebula gas clouds with the radar/lock-degradation rule.
 
 **Owner ruling 2026-09-21 — refuel and recharge are free station services.** Both charge no CR: refuel and recharge are free and instant, and the spec carries no refuel CR rate, so no worker may invent one. This supersedes the pinned-interface wording that sourced a rate per fuel point from `18_engine_spec` §13 (that pointer survives only in the owner-locked spec's §4.4 ruling 13 and §12 item 8; `14_station_services.md` §1 no longer repeats it) and closes M0 discrepancy D3 (`.agents/gen/MASTER_REPORT.md`, engine slice 0).
+
+### 9.10 P2-A slot-frame amendments (2026-09-21) — per-class slot counts, layouts and the nine-hull roster
+
+Amendments recorded for wave P2-A (brief `.agents/gen/p2a_slot_frames_wave_task.md`,
+pin `docs/CONTRACTS.md` §11). Every number below is transcribed from
+`docs/gameplay/08_ship_classes.md` §2/§3/§3.1/§3.2/§3.3/§6,
+`docs/gameplay/09_ship_slots_modules.md` §1–§9 and `docs/gameplay/10_ship_acquisition.md`
+§2.3; this section invents none, and the owner's six ticks on the amendments are
+recorded as resolved in the brief's §8.
+
+1. **New files.** `game/module_catalog.gd` (`class_name ModuleCatalog extends
+   RefCounted`: `MODULES` with 09 §3.1–§3.8's 32 rows — each row's `slot`/`draw`/`effects`
+   copied verbatim from `ShipFit.MODULES`, plus `name`/`tier`/`cost` from 09 §3's tables
+   and `icon` by the brief's icon rule — and `module`/`icon_path`/`slot_of`).
+   `ShipFit.MODULES` stays the indexable alias, so `game/player_ship.gd:672`,
+   `tests/test_engine_c3_flight_decay.gd:57`, `tests/test_combat_repair_c5.gd:294` and
+   `tests/probe_c3_flight_decay.gd:398` keep working; exactly one literal exists, and W1's
+   report names the direction that shipped. New suites: `tests/test_ship_grids.gd` (W1,
+   including the assertion that parses 08 §3.2's fenced block **out of the document** and
+   compares it with `SLOT_GRIDS` row by row) plus the fit, roster and flight tests of W2–W4.
+2. **`ShipFit` additions (CONTRACTS §11).** `SLOT_GRIDS` (08 §3.2's nine matrices, cosmetic
+   spaces removed), `SLOT_TOKEN_KEYS`, `FIT_SLOT_KEYS`, `MANDATORY_SLOT_KEYS`
+   (`[engines, power]`, 09 §4.1), `ENGINE_MULT_CEILING` 1.40 (09 §3.7), `MOUNT_SPREAD`
+   (0.34, 0.22) (09 §8), `STANDARD_FITS` (09 §9), and
+   `grid_rows`/`grid_size`/`grid_cells`/`grid_counts`/`slot_capacity`/`fit_legal`/
+   `standard_fit`/`mount_offset`. Additive: `resolve` still accepts the legacy singular
+   `engine` key, `fitted_ids` still starts with `weapons`, `STANDARD_FIT` resolves unchanged
+   and NPC hulls return the empty shapes with no warning (they stay outside `SLOT_GRIDS`).
+   Engine math moves from a per-engine multiplication to 09 §3.7's **sum of deltas applied
+   once**, ceiling 1.40 — a single engine resolves to exactly the pre-wave figure.
+3. **§3.9 `PlayerState` amendment.** Gains `weapons: Array[StringName]` and
+   `set_weapons(ids) -> void` (sizes `ammo`/`ammo_max` to `ids`, emits `weapon_changed` per
+   slot). `const WEAPONS` stays as the five-family default a fitless state runs on;
+   `setup()`, `set_ammo` and `game.gd`'s `_seed_ammo`/`_file_ammo_report` read `weapons`.
+4. **§3.10 `Hud` amendment.** Gains `set_hull_slots(hull_id, cells) -> void` (one entry per
+   W cell: `{slot, index, module, icon, fitted, selectable}`, layout order) and
+   `hull_slots() -> Array` for probes; the weapon grid is rebuilt with
+   `columns = mini(cells.size(), 5)` (a 7-cell capital wraps to two rows), an empty cell
+   drawing the dim `icon_slot_w` glyph and a fitted cell its module icon, with `selectable`
+   false at index ≥ `GROUPS_MAX` (5). `bind`, `_on_weapon_changed` and the ammo label path
+   are unchanged.
+5. **`PlayerProfile` (§9.3's save story).** `save_version` 3 → **4** with
+   `MIN_READABLE_VERSION` staying 1; §9.7 item 3's `save_version 2` is therefore superseded
+   twice (slice 0's fuel key took it to 3). `fits` becomes
+   `ship_id -> {slot_type -> Array[module_instance_id]}` (one entry per cell, 09 §4.5's
+   layout index), v1–v3 single-string fits load as a one-element array padded to the hull's
+   capacity and are never rewritten at load, and writes always persist the array shape. New
+   API: `fit_for`, `set_fit`, `set_fit_slot`, `clear_fit`, `base_module_id`, `module_count`,
+   `add_module`, `take_module`; no new `profile_changed` key (`&"fits"` and `&"modules"`
+   already exist).
+6. **`StationCatalog.SHIPS` grows to nine** player hulls in 08 §2's ladder order (fighter,
+   vanguard, miner, trader, corvette, freighter, gunship, patrol, destroyer) with the frozen
+   cost/hull/shield/cargo, `hardpoints` = 08 §2's weapons column (2/3/2/1/4/1/5/4/7) and
+   `preview` = `res://assets/ships/ship_<hull>_side.png` for each.
+7. **Pinned tests that move (both named in the brief's §5, nothing else).**
+   `tests/test_ui_slot_layout.gd`'s three pinned sections: the shipyard strip's cell count
+   and `columns` and the HUD's weapon cell count are read from the selected or active hull's
+   matrix through `ShipFit`, so `HARDPOINT_CELLS := 7` and the five-cell HUD count stop being
+   literals; every D3 guard property stays (`ignore_texture_size` at every plate site, 48 px
+   weapon / 40 px cargo cells, a 4096 px plate cannot grow a panel or the grid).
+   `tests/test_p1_profile.gd:204` — `save_version` 3 → 4. The gate count **grows**; the
+   figure to read is the gate's own measured total with zero failures.
+8. **§3.7 input map — unchanged this wave.** A 7-W hull's cells 6 and 7 are fitted and
+   displayed but ship `selectable: false` while `GROUPS_MAX` is 5 and the map offers
+   `weapon_1..5`; extending it (`weapon_6`/`weapon_7`) is an owner `project.godot` edit,
+   queued as a follow-up.
+9. **Staged, not in this wave.** Mount-anchor consumption in flight (09 §8/08 §3.3: the data
+   and `ShipFit.mount_offset` land now, `game/weapons.gd` fires from its own muzzle in the
+   feel wave), the fitting panel, the module shop and the legacy-UPGRADES flag day (wave
+   P2-B, 10 §5), and NPC fits (NPC hulls never fit a module in v1).
+10. **Companion doc amendments in the same wave.** `08_ship_classes.md` §2/§3/§3.1/§3.2/§3.3
+    (the counts table, the engine bands, the nine matrices and what the layout governs),
+    `09_ship_slots_modules.md` §1/§3.7/§4/§5/§7/§8/§9 (per-class counts and slot glyphs,
+    the engine sum rule, fits addressed by layout index, the amended resolution order, the
+    mandatory-set delivery, layout consumption with `MOUNT_SPREAD`, and the per-hull
+    standard fits), `10_ship_acquisition.md` §2.3 (the mandatory set a bare auction hull
+    arrives with), `STATION_HUB.md` §3.1/§4/§5.2/§5.4/§6/§7.1/§8/§12.3/§13 (the layout grid
+    replaces the seven-plate strip and the `hardpoints` meta, with the new stat and brief
+    rows), `STATION_SPEC.md` §4.1 (the pack list is ordered to `PlayerState.WEAPONS` as the
+    default, the live list being the launched fit's `weapons`) and §4.2 (nine ships, not
+    four), and `17_coder_handoff.md` §2 (`game/module_catalog.gd` built) and §3 (`fits`'
+    array shape and the version ladder).

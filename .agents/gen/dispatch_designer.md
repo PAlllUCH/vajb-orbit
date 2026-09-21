@@ -24,34 +24,34 @@ per-hull name list in `SHIPS_SPEC.md` or a name the spec sanctions.
 
 ## Current queue (execute top-down)
 
-1. **Slot-plate re-cut — BLOCKER, first.** `ui_slot_weapon_{normal,pressed,
-   hover,disabled}.png` (880×876 px) and `ui_slot_cargo_*.png` (873×864 px)
-   shipped as whole sheet cells in the 2026-09-21 00:17 re-cut; the shipyard
-   hardpoints, the launch panel's cargo slots and the HUD slot buttons
-   consume them at native size and break layout. **Check the keying cache
-   orphans first — the cache holds 235 recoverable cuts** (button plates
-   `@2x` 560×112, bezel, panel frame, bar caps, logo, backdrop plate), so
-   R7/R8 plates come back the free way; regenerate only what the cache
-   cannot cover (this retires `plates_cut.py`'s "needs regeneration,
-   $0.05" note). Then `f2_backup.py` first, owner review sheet before
-   shipping, then `apply_import_settings.py` + reimport + `qc_f2.py`.
-   **Do not run `apply_import_settings.py` unscoped** — it has no `--only`
-   and would rewrite 1080 of 1620 `.import` files; the coder lane is adding
-   the scoped flag (coder queue item 2).
-2. **Standing chrome regression scope (R7)** — menu button plates
-   (287×8.6 px, ~90 % transparent), the menu wordmark/logo (Logo slot
-   renders empty), credits frame, module-rail icons, OUTFITTING/REFINERY
-   background alignment. Recipe and measured table:
-   `ui_chrome_regression.md`.
-3. **R8 + rest** — 4K 2× backdrop cuts, tint-stencil import settings
-   (blocked on the coder lane's `--only` flag for
-   `apply_import_settings.py` — never run that script unscoped),
-   `_48` zoom buttons (minimap bezel), B2-1 hover direction (owner pick).
-4. **Owner-endorsed direction (2026-09-21):** evaluate asset-library
-   background plates for the station panels (drydock look). Propose
-   candidates as a review sheet; nothing ships without approval.
-5. Later lanes (unchanged): MMO/faction liveries, six boss hulls,
-   `ship_vanguard_damaged`, F10's credit-cache salvage glyph.
+**Closed since the last revision:** the slot-plate blocker (item 1) — the
+recovered cuts shipped, the review sheets were approved and the 19 hi-DPI cuts
+reimported with the theme's frame margin matched (`b512a63`); the R7 chrome
+regression — the recovered chrome is live; the FX re-cut (2026-09-21, 122 RGBA
+files, every effect four frames, report
+`.agents/gen/designer_fx_recut_report.md`). Do not re-run them.
+
+1. **Component icons (18) — the one real gap.** `comp_scrap_1..3`,
+   `comp_mech_1..3`, `comp_weap_1..3`, `comp_ore_1..3`, `comp_elec_1..3`,
+   `comp_pow_1..3` per `docs/gameplay/03_components.md` §3 — no icon family
+   exists, and the SHIPYARD build recipes (`10_ship_acquisition.md` §3) and the
+   crafting phase consume them. 09 §3's icon rule applies (quartet, `_96`
+   default for new consumers). Review sheet before shipping.
+2. **Re-cuts owed (existing masters):** the `_48` cuts of `icon_zoom_plus` /
+   `icon_zoom_minus` (the HUD renders the `_96` into 28 px boxes, 3.43 texels/px,
+   no mips — `ui_chrome_regression.md`); the tint-stencil import-settings pass
+   (1 080 files, mipmaps on / lossless / 3D off) — **now scoped**: T1 shipped
+   `apply_import_settings.py --only`, so run it scoped, never unscoped.
+3. **Decisions owed (a pick may add generation):** B2-1 hover direction (the
+   owner picks after a standalone 1080p/1440p look); station-panel backplates
+   (evaluate the asset-library plates; review sheet, nothing ships without
+   approval); the four `ui_slot_inventory_*` plates (L34 — ship, re-cut or
+   drop); `ship_vanguard_damaged` (exists on disk, zero consumers — wire,
+   commission more damage tiers, or park).
+4. **Gated on the owner:** the 4K 2× backdrop cuts (B2-2's display-target
+   decision) and the full backlog detail:
+   `.agents/gen/designer_generation_backlog.md` (the queue of record for the
+   graphics lane — read it in full).
 
 **Verification rule (owner, 2026-09-21):** every shipped cut gets a model-vision
 integrity check (contact sheet + measure) before it reaches the owner —
@@ -61,8 +61,12 @@ ink box vs expected plate box, no whole-cell cuts, no 90 %-transparent plates.
 
 - Generator: the image-generator skill's `kie_generate.py`, run under
   `py -3.14` (never the PATH python — TLS failure). Request `--transparent`
-  first for sprites/icons/props and verify with Pillow; **FX are never
-  keyed** — they stay RGB on Void Black for additive blending.
+  first for sprites/icons/props and verify with Pillow; FX follow FX_SPEC
+  §0.1's 2026-09-21 amendment — the four non-additive effects
+  (`fx_smoke_plume`, `fx_acid_burn`, `fx_dust_streak`,
+  `fx_hull_critical_vignette`) carry alpha, everything else stays RGB on
+  Void Black for additive blending, and every shipped frame passed the
+  ink-vs-matte QC before it reached the owner.
 - Every generated asset records prompt + seed + model + date in the family's
   generation log next to `vajb-orbit/assets/` (AI art is not CC0).
 - **The delivery order is fixed:** generate/cut → stage → **review sheet for

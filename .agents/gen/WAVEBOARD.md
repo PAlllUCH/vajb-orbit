@@ -1,6 +1,6 @@
 # WAVEBOARD — one-file agent state
 
-**Updated: 2026-09-21 (compression pass).** Full history of what every worker
+**Updated: 2026-09-21 (P2-A closed; Rock cleave next).** Full history of what every worker
 did, with known errors and open findings, now lives in
 `.agents/gen/MASTER_REPORT.md` — this board keeps only current state,
 contracts, enforcement and the queue. Executed-wave reports, briefs and
@@ -8,10 +8,12 @@ evidence were moved to `.agents/gen/_archive/` (2026-09-21, reversible) —
 citation paths of the form `.agents/gen/<report>.md` now resolve one level
 deeper.
 
-**Current state: five coding waves closed (chrome, combat repair, weapon FX wiring, flight
-feel & beam polish, slice 2.5 Feel). The project is now on the P2-A ship-slot-frame wave per
-the dispatcher's queue. Owner gates: the chrome art half, the launch fit, four spec ticks, the
-§13 turn column, and the engine-bed / vignette-strength calls slice 2.5 raised.** Engine waves closed as below
+**Current state: six coding waves closed (chrome, combat repair, weapon FX wiring, flight
+feel & beam polish, slice 2.5 Feel, P2-A ship slot frames; gate `passed=372 failed=0`). The
+queue of record is `dispatch_coder.md`: Rock cleave (item 5, next) then P2-B1 (item 6). Owner
+gates: the chrome art half, the launch fit (symptom 1 closed by P2-A; symptom 2, the
+mining-laser swap, opens with P2-B1), four spec ticks, the §13 turn column, and the
+engine-bed / vignette-strength calls slice 2.5 raised.** Engine waves closed as below
 (slice 0 + slice 2 review-verified clean; gate `passed=311 failed=0`). A full-loop live
 playtest (2026-09-21, godot-ai driven) verified the whole menu → station → launch →
 space structure but found the `ui_slot_*` chrome shipping as whole sheet cells
@@ -30,10 +32,11 @@ immovable; a ram now hands the rock 72.821 u/s and 20.323 u), the rock's missing
 sink (rides the shipped `GUN_CHIP_RATE` 0.10, no new constant), plasma's +25 % bonus
 through a live shield (`NpcShip.shield_up()`), the mine's borrowed kinetic cadence, and
 the owner-ruled drag retune (nine `coast_time` rows ×0.50: Vanguard t10 1.890 → 0.945 s,
-carry 430.32 → 216.85 u, §13 tick pending). **Two owner gates stay open:** the launch fit
-(the briefing reports five weapons / 1500 rounds while the ship mounts `[w_laser]` and no
-mining laser — the measured root cause of "shooting is not working" and "cannot shoot
-asteroids") and the §13 `coast_time` table.  The **weapon FX & audio wiring wave is Done** (reports
+carry 430.32 → 216.85 u, §13 tick pending). **Owner gates from this wave:** the §13
+`coast_time` table (still open), and the launch fit, which **P2-A closed at its measured root
+cause** — the launch now resolves the active hull's own fit and files ammo per fitted weapon
+(measured: Vanguard `[laser]` 300 rounds, Lancer `[laser, laser]` 600; was five families /
+1500), with the mining-laser swap (symptom 2) opening with P2-B1.  The **weapon FX & audio wiring wave is Done** (reports
 `.agents/gen/weapon_fx_f{1,2,3,4}_report.md`, gate 236 → 277): a projectile now draws its
 shipped sprite (bolt, slug, missile-trail sheet or mine ember) additively and turns to its
 bearing, the instant families draw an engine-side beam line, a four-frame muzzle flash fires
@@ -45,31 +48,32 @@ fixed in the fixer pass), and the mining shaft carries its beam bed. The reviewe
 measurement — every event's node, blend mode, sheet master, cue resolution and the absence of
 any moved damage/cadence/range/Energy/ammo number. Evidence:
 `.agents/gen/owner_playtest_findings_20260921.md`, `.agents/gen/playtest_fullloop_20260921.md`.
-**NEW (2026-09-21): the owner's per-class slot/layout request is designed and queued
-as wave P2-A** (Queued item 9) — `docs/gameplay/08_ship_classes.md` §3/§3.1/§3.2/§3.3,
-`09_ship_slots_modules.md` §1/§2/§3.7/§4/§5/§7/§8/§9 and `10_ship_acquisition.md` §2.3 are
-amended (per-class grids, engine sets of 1–3 cells, the nine layouts, the nine-hull
-roster), brief `.agents/gen/p2a_slot_frames_wave_task.md` and prompts are written, and
-the wave is scoped to close the open **launch-fit** gate above at its measured root
-cause (`game.gd` resolving one global `STANDARD_FIT` and seeding five fixed ammo
-families). The owner's tick list is brief §8 — **resolved 2026-09-21, all six kept
-as designed** (the one follow-up: the 7-W capital's `weapon_6`/`weapon_7`
-input-map extension, an owner `project.godot` pass; see the brief's resolution
-record).
+**P2-A (2026-09-21): the owner's per-class slot/layout request shipped — DONE** (gate
+311 → 372). Every class owns its slot count and layout: the nine matrices, the engine set
+(1–3 cells by mass band, summed deltas with the 1.40 ceiling), profile fits at save v4, the
+nine-hull `StationCatalog` roster, the launch resolving the active hull's own fit, and the
+station/HUD layout displays. Reviewer: no HIGH; one MED fixed; six LOW (L66–L71). The
+owner's §8 tick list is resolved (all six kept); the one follow-up is the 7-W capital's
+`weapon_6`/`weapon_7` input-map extension (an owner `project.godot` pass). Full entry under
+§Closed.
 
 ## Living contracts
 
-- `docs/CONTRACTS.md` — pinned interfaces, **v1.1** (wave 1 + slice 0 + slice 2).
+- `docs/CONTRACTS.md` — pinned interfaces; **§11 (P2 ship frames) landed by P2-A
+  2026-09-21** (status line v1.3; the §10 changelog carries the v0.2 P2-A entry).
   Briefs say "code against CONTRACTS.md §n"; review waves own updating it.
 - `docs/gameplay/18_engine_spec.md` — the engine contract. §2.1 carries owner
   rulings 8–26. **Owner-locked**: no worker may edit it; the six owed spec
   edits are the owner's (MASTER_REPORT §3 item 1).
 - Universal test gate: `res://tests/headless_runner.tscn` → `[SUMMARY]
-  passed=311 failed=0` (exact command in CONTRACTS.md §9; grew 53 → 78 → 219 → 226
+  passed=372 failed=0` (exact command in CONTRACTS.md §9; grew 53 → 78 → 219 → 226
   with the UI-chrome wave's `test_ui_slot_layout.gd`, 236 with the combat repair wave's
   `test_engine_c3_flight_decay.gd` and `test_combat_repair_c5.gd`, 277 with the weapon FX
-  wave's `test_weapon_fx_f{1,2,4}.gd` suites, and 294 with the flight/beam wave's
-  `test_flight_feel_g1.gd` and `test_flight_beam_g2.gd`).
+  wave's `test_weapon_fx_f{1,2,4}.gd` suites, 294 with the flight/beam wave's
+  `test_flight_feel_g1.gd` and `test_flight_beam_g2.gd`, 311 with slice 2.5's S3 pass, and
+  **372 with P2-A's suites** — `test_ship_grids.gd` (27), `test_p2a_profile_fits.gd` (11),
+  `test_p2a_launch_fit.gd` (12), `test_p2a_ship_roster.gd` (4), `test_ui_slot_layout.gd`
+  rewritten 7 → 12, `test_p2a_lint_shadow.gd` (2)).
 - `staging/verify_wave.py` — mechanical wave gates: `snapshot` before a wave,
   `verify --baseline <tag> [--forbidden ...] [--expect-reports ...] [--tests]`
   after. Baselines live in `.agents/gen/_wave_state/` (`wave1_closed`,
@@ -126,18 +130,34 @@ PowerShell form: `$env:VAJB_WORKER_FILES='...'; crush run "<prompt>" -m opencode
 
 ## In flight — none.
 
-**Queued (the queue of record is `dispatch_coder.md` §Current queue):** item 4
-**P2-A** (ship slot frames — runs next), item 5 **Rock cleave** (the owner's
-asteroid ruling: a rock-scaled explosion read + a random 2–5 fragments per
-cleaving tier in uniform directions; briefs `.agents/gen/rock_cleave_wave_task.md`
-+ prompts, parallel-safe with item 4), item 6 **P2-B1** (the weapon fit surface:
-OUTFITTING sells the six weapon modules and installs/swaps them into the hull's
-W cells through `ShipFit.fit_legal`; runs after item 4). Owner ticks open: the
+**Queued (the queue of record is `dispatch_coder.md` §Current queue):** item 5
+**Rock cleave — runs next** (the owner's asteroid ruling: a rock-scaled explosion
+read + a random 2–5 fragments per cleaving tier in uniform directions; briefs
+`.agents/gen/rock_cleave_wave_task.md` + prompts), item 6 **P2-B1** (the weapon fit
+surface: OUTFITTING sells the six weapon modules and installs/swaps them into the
+hull's W cells through `ShipFit.fit_legal`; starts after P2-A — now clear). Item 4
+**P2-A — DONE 2026-09-21** (see §Closed). **The designer phase
+is deferred to the next day (owner, 2026-09-21):** the graphics queue of record
+is `.agents/gen/dispatch_designer.md` + `designer_generation_backlog.md`
+(component icons, the `_48`/tint re-cuts, the decisions), hand-over prompt ready;
+nothing from it is in flight. Owner ticks open: the
 `18_engine_spec.md` §6 cleaving amendment (owner-locked), the rock wave's
 proposed rows (brief §1), and P2-B1's refusal wordings.
 
 ## Closed (details in MASTER_REPORT.md)
 
+- **P2-A ship slot frames — DONE 2026-09-21** (gate 311 → 372; reports
+  `.agents/gen/p2a_{d0,w1,w2,w3,w4,w5,r1,f1}_report.md`): every class owns its slot count and
+  layout — nine matrices (shipyard grids 4×3 → 5×6, columns 4×8 + 5, plates
+  8/11/12/13/13/15/14/17/23), the engine set (1–3 cells by §13 mass band, summed deltas with
+  the 1.40 ceiling; single-engine snapshots byte-identical to HEAD), profile fits at save v4
+  with v1–v3 loading clean, the nine-hull `StationCatalog` roster, the launch resolving the
+  active hull's own fit (measured: Vanguard `[laser]` 300 rounds, Lancer `[laser, laser]` 600,
+  was five families / 1500), and the station/HUD layout displays. Reviewer no HIGH, one MED
+  (a shadowing const in `test_p2a_ship_roster.gd:10`) fixed by F1 (+2 tests), six LOW →
+  `LOW_BACKLOG.md` L66–L71. **Owner launch-fit gate: symptom 1 closed at root cause;
+  symptom 2 (the mining-laser swap) opens with P2-B1.** Owner ticks (brief §8) resolved, all
+  six kept.
 - **Slice 2.5 (Feel) — DONE 2026-09-21** (gate 294 → 311, `test_slice2_5_feel` 13): S1 shipped
   all nine deliverables (motion blur via `game/speed_fantasy.gd` + `speed_blur.gdshader`, the
   camera pull-back composed with the wheel zoom, dust streaks, the hull-critical vignette,

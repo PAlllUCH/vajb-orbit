@@ -29,6 +29,9 @@ signal energy_changed(current: float, maximum: float)
 signal fuel_changed(current: float, maximum: float)
 signal died
 
+## The five-family default a `PlayerState` built without a fit still runs on: the
+## launch hands `set_weapons` the launched fit's own list, and this const stays the
+## fallback shape (and the ammo-slot order `game/weapons.gd` reads).
 const WEAPONS: Array[StringName] = [&"laser", &"cannon", &"rocket", &"mine", &"plasma"]
 const AMMO_DEFAULT := 300
 
@@ -78,6 +81,21 @@ var shield: float
 ## `Damage.REGEN_QUIET` 4 s.
 var shield_regen: float = SHIELD_REGEN_DEFAULT
 
+## The launched fit's weapon ids, one entry per **fitted** W cell in layout order
+## (CONTRACTS section 11): the launch writes it through `set_weapons`, and `setup`,
+## `set_ammo`, `game.gd:_seed_ammo` and `game.gd:_file_ammo_report` all read it. It
+## starts as `WEAPONS`' copy, so a `PlayerState` built without a fit behaves exactly
+## as it did before. Ammo stays per *family*: the packs are keyed by family id, so a
+## fit carrying two lasers draws both of its slots from the `laser` pack.
+##
+## A cell the fit leaves empty contributes no entry, so a slot's index is its position
+## among the fit's fitted cells. The HUD's own cell grid comes from
+## `game.gd:_hull_slot_cells` (one entry per W cell of the hull's matrix) and the two
+## line up while the fit fills a prefix of the cells, which every standard fit and
+## every auction fit does; a fit with a hole in it is the fitting panel's (P2-B) to
+## address, and the pinned interface here is not what would change.
+var weapons: Array[StringName] = WEAPONS.duplicate()
+
 var ammo: Array[int]
 var ammo_max: Array[int]
 var cargo_used: int
@@ -100,20 +118,39 @@ var fuel_cell_cooldown: float = 0.0
 var _last_damage_ctx: Dictionary = {}
 
 
+## The launch's fit handshake (CONTRACTS section 11): the launched fit's weapon ids
+## in W-cell order, already mapped to families (`w_laser` -> `laser`, the id the ammo
+## packs and the HUD's labels are keyed by). Sizes `ammo`/`ammo_max` to the new list
+## and announces every slot; `setup` re-seeds the same shape, so calling it before or
+## after `setup` gives the same live state. `WEAPONS` is never written.
+func set_weapons(ids: Array[StringName]) -> void:
+	weapons = ids.duplicate()
+	_resize_ammo()
+	for slot in weapons.size():
+		weapon_changed.emit(slot, weapons[slot], ammo[slot], ammo_max[slot])
+
+
+## Ammo and its ceiling follow the launched weapon list: one entry per fitted W cell,
+## seeded to `AMMO_DEFAULT`. Shared by `set_weapons` and `setup` so the two can never
+## disagree about the array's length.
+func _resize_ammo() -> void:
+	ammo = []
+	ammo_max = []
+	for slot in weapons.size():
+		ammo.append(AMMO_DEFAULT)
+		ammo_max.append(AMMO_DEFAULT)
+
+
 func setup() -> void:
 	hull = hull_max
 	shield = shield_max
 	cargo_used = 0
-	ammo = []
-	ammo_max = []
-	for slot in WEAPONS.size():
-		ammo.append(AMMO_DEFAULT)
-		ammo_max.append(AMMO_DEFAULT)
+	_resize_ammo()
 	hull_changed.emit(hull, hull_max)
 	shield_changed.emit(shield, shield_max)
 	cargo_changed.emit(cargo_used, cargo_max)
-	for slot in WEAPONS.size():
-		weapon_changed.emit(slot, WEAPONS[slot], ammo[slot], ammo_max[slot])
+	for slot in weapons.size():
+		weapon_changed.emit(slot, weapons[slot], ammo[slot], ammo_max[slot])
 	## Section 4.4: the pools are seeded full at launch (the profile's persisted
 	## fuel is applied by the docking/launch handshake, not here).
 	energy = energy_max
@@ -157,12 +194,14 @@ func set_shield(value: float) -> void:
 
 
 ## Always emits weapon_changed for the slot, so re-setting the current value
-## doubles as the "this slot is now active" announcement the HUD listens for.
+## doubles as the "this slot is now active" announcement the HUD listens for. The id
+## it announces is the launched fit's own (`weapons`), so a fit that dropped a family
+## never reports one it does not carry.
 func set_ammo(slot: int, value: int) -> void:
 	if slot < 0 or slot >= ammo.size():
 		return
 	ammo[slot] = clampi(value, 0, ammo_max[slot])
-	weapon_changed.emit(slot, WEAPONS[slot], ammo[slot], ammo_max[slot])
+	weapon_changed.emit(slot, weapons[slot], ammo[slot], ammo_max[slot])
 
 
 func set_cargo_used(used: int) -> void:

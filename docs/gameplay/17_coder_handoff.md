@@ -27,7 +27,7 @@ run, per AGENTS.md tooling).
 |------|------|-----|
 | `game/mineral_catalog.gd` | 20 minerals, ore/ingot pairs, static helpers | 02 |
 | `game/component_catalog.gd` | 18 components, static helpers | 03 |
-| `game/module_catalog.gd` | 30 modules + affix tables (15) as data | 09, 15 |
+| `game/module_catalog.gd` | **built (P2-A, 2026-09-21):** 09 §3's module rows as data — the 32 catalogue modules of 09 §3.1–§3.8 (`name`, `slot`, `draw`, `tier`, `cost`, `icon`, `effects`) plus the `module` / `icon_path` / `slot_of` lookups of CONTRACTS §11. Affixes (15 §6) are per-instance rolls in the `modules` inventory key, not catalogue rows | 09, 15 |
 | `game/sector_registry.gd` | 7 sectors: owner, tiers, neighbours, gates, densities | 11 |
 | `game/faction_registry.gd` | 3 factions: demand biases, discounts, exclusives | 12 |
 | `game/contract_registry.gd` | 5 contract types, parameterised | 14 |
@@ -99,13 +99,15 @@ Icons ship as `_{16,48,96,192}.png` cuts from retained masters (ICONS_SPEC §9,
 
 ## 3. Persistence (one save migration, one flag day)
 
-`PlayerProfile` save_version 1 → 2. New persisted state, all through the
-existing debounced `ConfigFile`:
+`PlayerProfile` save_version: v1 → v2 (P1, this section's original migration),
+v2 → v3 (engine slice 0, the fuel key) and v3 → v4 (P2-A, the fit arrays of `fits`
+below); `MIN_READABLE_VERSION` stays 1, so v1–v3 files load clean. New persisted
+state, all through the existing debounced `ConfigFile`:
 
 | Key | Shape | Doc |
 |-----|-------|-----|
 | `modules` | `module_instance_id -> {base_id, rarity, prefixes, suffixes, count}` | 15 §6 |
-| `fits` | `ship_id -> {slot_type -> module_instance_id}` | 09 §4 |
+| `fits` | `ship_id -> {slot_type -> Array[module_instance_id]}` | 09 §4/§4.5 — one entry per cell of that type, indexed by the layout index (row-major within the type, `""` = an empty cell); a v1–v3 single-string fit loads as a one-element array padded to the hull's capacity and is never rewritten at load, while writes always persist the array shape |
 | `market` | `mineral_id -> demand float`, `component_id -> stock`, timestamps | 05 §2/§4 |
 | `heat` | `faction_id -> int` | 13 |
 | `standing` | `faction_id -> int` | 12 §4 |

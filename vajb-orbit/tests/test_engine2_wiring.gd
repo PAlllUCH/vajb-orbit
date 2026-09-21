@@ -260,8 +260,12 @@ func test_the_launch_snapshot_seeds_the_pools_and_the_shield_rate() -> void:
 func test_the_ammo_packs_are_seeded_from_the_profile() -> void:
 	var profile := _tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
 	assert_true(profile != null, "the profile autoload is there")
-	for slot in _state.WEAPONS.size():
-		var weapon_id: StringName = _state.WEAPONS[slot]
+	## P2-A (CONTRACTS section 11): the live slots are the launched fit's own W cells,
+	## not the five fixed families, so the loop reads `weapons` - and `ammo` is exactly
+	## that long, which the array assertion keeps non-vacuous for a fit with no guns.
+	assert_eq(_state.ammo.size(), _state.weapons.size(), "one pack per launched weapon slot")
+	for slot in _state.weapons.size():
+		var weapon_id: StringName = _state.weapons[slot]
 		assert_eq(
 			_state.ammo[slot],
 			int(profile.call(&"ammo_of", weapon_id)),

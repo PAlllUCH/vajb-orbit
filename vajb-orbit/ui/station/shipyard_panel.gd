@@ -1,8 +1,15 @@
 extends VBoxContainer
 ## SHIPYARD module panel: the hull list, the large side-view preview, the comparison table
 ## against the active hull, the price and the BUY / SET ACTIVE action. Every value is a
-## StationCatalog or PlayerProfile read. Contract: docs/design/STATION_HUB.md sections 5.2,
-## 5.6, 7.2 and 12, docs/design/STATION_SPEC.md sections 2.4 and 6.
+## StationCatalog, PlayerProfile or ShipFit read. Contract: docs/design/STATION_HUB.md
+## sections 5.2 (incl. the 2026-09-21 P2-A amendment), 5.6, 7.2 and 12,
+## docs/design/STATION_SPEC.md sections 2.4 and 6, CONTRACTS section 11.
+##
+## The slot layout grid (`%HardpointSlots`) is rebuilt per selection from the selected
+## hull's own 08 section 3.2 matrix: one cell per matrix cell, `columns` = the matrix
+## width, a gap an empty cell and a slot cell a disabled 48 px plate carrying that type's
+## slot glyph. The caption and the ENGINES / SLOT CELLS rows read `ShipFit` for the same
+## hull, so the whole stat column moves with the selection and no count is restated here.
 ##
 ## The station shell loads this scene into its host, so the panel never routes, never
 ## writes the profile and never draws the credits readout: it emits status_requested up
@@ -33,19 +40,41 @@ const PULSE_MIN_ALPHA := 0.35
 const PULSE_DOWN_SECONDS := 0.12
 const PULSE_UP_SECONDS := 0.16
 
-const HARDPOINT_PLATES := 7
 const PLATE_VARIATION: StringName = &"SlotButtonWeapon"
 const PLATE_SIZE := 48.0
 const PLATE_SEPARATION := 4
+## ui/components/slot_button.tscn insets its glyph 6 px inside the 48 px plate; the
+## layout grid reuses that one number rather than inventing a second inset.
+const PLATE_ICON_INSET := 6.0
+
+## 09 section 1's slot glyph per slot-type key. The glyph files are named by the
+## document's own stems (`icon_slot_engine`, `icon_slot_power`, `icon_slot_w`, ...),
+## which are not the API's key names, so the mapping is stated once here.
+const SLOT_GLYPHS: Dictionary = {
+	&"engines": "engine",
+	&"power": "power",
+	&"weapons": "w",
+	&"shields": "s",
+	&"armour": "h",
+	&"computers": "c",
+	&"boosters": "b",
+	&"utility": "u",
+}
+const SLOT_GLYPH_DIR := "res://assets/icons/slot/"
+const SLOT_GLYPH_TEMPLATE := "icon_slot_%s_48.png"
 
 const PREVIEW_SCALE := 0.70
 const PREVIEW_MAX_WIDTH := 480.0
 
+## CONTRACTS section 11: `hull`, `shield` and `cargo` are catalogue fields; `engines`
+## and `slots` are the hull's 08 section 3 counts, read through `ShipFit` (see
+## `_stat_value`). No catalogue row carries them.
 const STAT_ROWS: Array[Dictionary] = [
 	{&"key": &"hull", &"label": "HULL"},
 	{&"key": &"shield", &"label": "SHIELD"},
 	{&"key": &"cargo", &"label": "CARGO"},
-	{&"key": &"hardpoints", &"label": "HARDPOINTS"},
+	{&"key": &"engines", &"label": "ENGINES"},
+	{&"key": &"slots", &"label": "SLOT CELLS"},
 ]
 const COMPARISON_CAPTION := "COMPARISON"
 const COMPARISON_SELECTED := "SELECTED"
@@ -53,8 +82,10 @@ const COMPARISON_ACTIVE := "ACTIVE"
 
 const SUBTITLE := "BUY AND SWITCH HULLS · %d IN THE CRADLE · SIDE VIEWS ONLY"
 const TAG_ACTIVE_HULL := "ACTIVE HULL %s"
-const META_FORMAT := "%d HULL · %d HP"
-const HARDPOINT_CAPTION := "HARDPOINT PLATES · %d MAXIMUM"
+const META_FORMAT := "%d HULL · %d SLOTS"
+## CONTRACTS section 11's caption: the hull's slot count (08 section 3's Total, gaps
+## excluded) and its ENGINE count. The node is still `%HardpointCaption`.
+const HARDPOINT_CAPTION := "SLOT LAYOUT · %d CELLS · %d ENGINES"
 const PRICE_ZERO := "0"
 
 const STATE_ACTIVE := "ACTIVE"
@@ -82,7 +113,7 @@ const STATUS_ACTIVE := "ACTIVE HULL IS NOW %s"
 @onready var _preview_name: Label = %PreviewName
 @onready var _stats: VBoxContainer = %ShipStats
 @onready var _hardpoint_caption: Label = %HardpointCaption
-@onready var _hardpoints: HBoxContainer = %HardpointSlots
+@onready var _hardpoints: GridContainer = %HardpointSlots
 @onready var _price: Label = %ShipPrice
 @onready var _action: Button = %ShipAction
 
@@ -96,7 +127,7 @@ var _tweens: Array[Tween] = []
 
 func _ready() -> void:
 	_build_comparison()
-	_build_hardpoints()
+	_build_layout_grid()
 	_build_rows()
 	_apply_tokens()
 	_preview_center.resized.connect(_update_preview_size)
@@ -162,7 +193,7 @@ func _build_row(ship: Dictionary) -> Dictionary:
 	var ship_id: StringName = ship.get(&"id", &"")
 	var name_text := String(ship.get(&"name", ""))
 	var complete := ship_id != &"" and not name_text.is_empty()
-	var meta := META_FORMAT % [int(ship.get(&"hull", 0)), int(ship.get(&"hardpoints", 0))]
+	var meta := META_FORMAT % [int(ship.get(&"hull", 0)), _slot_cell_count(ship_id)]
 	var row := Button.new()
 	row.name = "Ship%s" % String(ship_id).trim_prefix("ship_").to_pascal_case()
 	row.toggle_mode = true
@@ -309,20 +340,106 @@ func _make_stat_value(parent: HBoxContainer) -> Label:
 	return label
 
 
-func _build_hardpoints() -> void:
-	_hardpoint_caption.text = HARDPOINT_CAPTION % HARDPOINT_PLATES
-	_hardpoints.add_theme_constant_override(&"separation", PLATE_SEPARATION)
-	for index in HARDPOINT_PLATES:
-		var plate := _make_plate(_hardpoints, PLATE_VARIATION, PLATE_SIZE)
-		plate.name = "Hardpoint%02d" % (index + 1)
-		plate.disabled = true
+## The grid's separations are set here rather than per rebuild, so one constant drives
+## both axes (a GridContainer's `separation` is BoxContainer-only; the HBox the strip
+## used to be carried it). The cells themselves come from `_set_layout_grid`.
+func _build_layout_grid() -> void:
+	_hardpoints.add_theme_constant_override(&"h_separation", PLATE_SEPARATION)
+	_hardpoints.add_theme_constant_override(&"v_separation", PLATE_SEPARATION)
 
 
-func _make_plate(parent: HBoxContainer, variation: StringName, plate_size: float) -> TextureButton:
+## CONTRACTS section 11: one cell per 08 section 3.2 matrix cell of `hull_id`, row-major
+## (`ShipFit.grid_cells` order), `columns` = the matrix width. A gap is an empty 48 x 48
+## `Control` with no plate; a slot cell is a disabled plate carrying its type's slot
+## glyph. The caption reads the same hull, so it can never describe a previous one.
+func _set_layout_grid(hull_id: StringName) -> void:
+	for child: Node in _hardpoints.get_children():
+		_hardpoints.remove_child(child)
+		child.queue_free()
+	var cells: Array = ShipFit.grid_cells(hull_id)
+	if cells.is_empty():
+		_hardpoints.columns = 1
+		_hardpoint_caption.text = ""
+		return
+	_hardpoints.columns = ShipFit.grid_size(hull_id).x
+	var slot_cells := 0
+	for cell: Dictionary in cells:
+		if bool(cell[&"gap"]):
+			_hardpoints.add_child(_make_gap_cell())
+		else:
+			_make_slot_cell(cell)
+			slot_cells += 1
+	var engines := int(ShipFit.grid_counts(hull_id).get(&"engines", 0))
+	_hardpoint_caption.text = HARDPOINT_CAPTION % [slot_cells, engines]
+
+
+func _make_gap_cell() -> Control:
+	var cell := Control.new()
+	cell.name = "Gap"
+	cell.custom_minimum_size = Vector2(PLATE_SIZE, PLATE_SIZE)
+	cell.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return cell
+
+
+## Display cell for one non-gap matrix cell: the 48 px disabled plate plus its type's slot
+## glyph. `_make_plate` parents it (it always has), so the caller adds nothing.
+func _make_slot_cell(cell: Dictionary) -> void:
+	var plate := _make_plate(_hardpoints, PLATE_VARIATION, PLATE_SIZE)
+	plate.name = "Slot%s%02d" % [String(cell[&"token"]), int(cell[&"index"])]
+	plate.disabled = true
+	var glyph := TextureRect.new()
+	glyph.name = "Icon"
+	glyph.custom_minimum_size = Vector2(PLATE_SIZE - PLATE_ICON_INSET * 2.0, PLATE_SIZE - PLATE_ICON_INSET * 2.0)
+	glyph.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	glyph.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	glyph.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	glyph.texture = _slot_glyph(StringName(cell[&"type"]))
+	glyph.modulate = _token(&"text_dim")
+	plate.add_child(glyph)
+	glyph.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	glyph.offset_left = PLATE_ICON_INSET
+	glyph.offset_top = PLATE_ICON_INSET
+	glyph.offset_right = -PLATE_ICON_INSET
+	glyph.offset_bottom = -PLATE_ICON_INSET
+
+
+## 09 section 1's shipped slot glyph for a slot-type key: `icon_slot_<stem>_48.png`.
+## Null for a type with no glyph (never one of the eight), so the cell then draws its
+## plate alone rather than an error.
+func _slot_glyph(slot_key: StringName) -> Texture2D:
+	var stem := String(SLOT_GLYPHS.get(slot_key, ""))
+	if stem.is_empty():
+		return null
+	var path := SLOT_GLYPH_DIR + SLOT_GLYPH_TEMPLATE % stem
+	if not ResourceLoader.exists(path):
+		return null
+	return load(path) as Texture2D
+
+
+## How many non-gap cells the hull carries, which is 08 section 3's Total: every value
+## of `ShipFit.grid_counts` (gaps are not counted by the grid at all) summed.
+func _slot_cell_count(hull_id: StringName) -> int:
+	var total := 0
+	for count: Variant in ShipFit.grid_counts(hull_id).values():
+		total += int(count)
+	return total
+
+
+## One comparison cell's number: the catalogue's own field, or the hull's 08 section 3
+## count for `engines`/`slots` (which no catalogue row carries).
+func _stat_value(ship: Dictionary, ship_id: StringName, key: StringName) -> int:
+	if key == &"engines":
+		return int(ShipFit.grid_counts(ship_id).get(&"engines", 0))
+	if key == &"slots":
+		return _slot_cell_count(ship_id)
+	return int(ship.get(key, 0))
+
+
+func _make_plate(parent: GridContainer, variation: StringName, plate_size: float) -> TextureButton:
 	# ui/components/slot_button.gd copies the theme plate textures onto the node, because a
 	# TextureButton has no stylebox items, so SlotButtonWeapon/styles/* is never read by the
 	# engine on a bare theme_type_variation. The panel repeats that lookup (the mockup's own
-	# construct) so the strip also renders without instancing the HUD component.
+	# construct) so the grid also renders without instancing the HUD component.
 	var plate := TextureButton.new()
 	plate.theme_type_variation = variation
 	plate.ignore_texture_size = true
@@ -352,6 +469,8 @@ func _plate_texture(variation: StringName, state: StringName) -> Texture2D:
 
 
 func _refresh_plate_textures() -> void:
+	# A gap cell is a bare Control, so the cast filters it out; the plates re-copy the
+	# theme's four plate textures on every theme change, as before.
 	for child: Node in _hardpoints.get_children():
 		var plate := child as TextureButton
 		if plate != null:
@@ -395,7 +514,7 @@ func _refresh_preview(profile: ProfileScript) -> void:
 		_price.text = PRICE_ZERO
 		_price.remove_theme_color_override(&"font_color")
 		_refresh_comparison({}, profile)
-		_set_hardpoints(0)
+		_set_layout_grid(&"")
 		return
 	var texture := load(String(ship.get(&"preview", ""))) as Texture2D
 	_preview_image.texture = texture
@@ -410,7 +529,7 @@ func _refresh_preview(profile: ProfileScript) -> void:
 	else:
 		_price.add_theme_color_override(&"font_color", _token(&"accent_danger"))
 	_refresh_comparison(ship, profile)
-	_set_hardpoints(int(ship.get(&"hardpoints", 0)))
+	_set_layout_grid(_selected_id)
 
 
 func _update_preview_size() -> void:
@@ -427,13 +546,15 @@ func _update_preview_size() -> void:
 
 
 func _refresh_comparison(ship: Dictionary, profile: ProfileScript) -> void:
-	var active := Catalog.ship(_active_id(profile))
+	var active_id := _active_id(profile)
+	var active := Catalog.ship(active_id)
 	for stat: Dictionary in STAT_ROWS:
 		var cells: Array = _stat_cells.get(stat[&"key"], [])
 		if cells.size() < 2:
 			continue
-		var selected_value := int(ship.get(stat[&"key"], 0))
-		var active_value := int(active.get(stat[&"key"], 0))
+		var key: StringName = stat[&"key"]
+		var selected_value := _stat_value(ship, _selected_id, key)
+		var active_value := _stat_value(active, active_id, key)
 		var selected_label: Label = cells[0]
 		var active_label: Label = cells[1]
 		selected_label.text = str(selected_value)
@@ -442,13 +563,6 @@ func _refresh_comparison(ship: Dictionary, profile: ProfileScript) -> void:
 			selected_label.add_theme_color_override(&"font_color", _token(&"text_dim"))
 		else:
 			selected_label.remove_theme_color_override(&"font_color")
-
-
-func _set_hardpoints(count: int) -> void:
-	for index in _hardpoints.get_child_count():
-		var plate := _hardpoints.get_child(index) as TextureButton
-		if plate != null:
-			plate.disabled = index >= count
 
 
 func _refresh_action(profile: ProfileScript) -> void:

@@ -8,9 +8,12 @@ extends Node
 ## mercy_used) plus the vitals extension approved for the 01 section 6
 ## repairs panel. Slice-0 save v3 adds the tank to a vitals entry
 ## (18_engine_spec section 12 item 13: Fuel persists across a launch, Energy
-## recomputes) and the `profile_changed` key &"fuel". Version 1 and 2 files
-## still load; a key they never wrote comes up at its default, with no warning,
-## and writes always persist save_version 3.
+## recomputes) and the `profile_changed` key &"fuel". P2-A save v4 turns `fits`
+## into the per-cell arrays of 09 section 4.5 / CONTRACTS section 11: a v1-v3
+## single id per slot type is read as a one-element array padded to the hull's
+## capacity and is never rewritten at load, while a write persists the array
+## shape. Version 1 to 3 files still load; a key they never wrote comes up at
+## its default, with no warning, and writes always persist save_version 4.
 ## Test and support hooks, present for the P1 suites and migration fixtures
 ## only: save_path (defaults to SAVE_FILE) and reload().
 
@@ -18,10 +21,14 @@ signal profile_changed(key: StringName)
 signal purchase_failed(reason: StringName, id: StringName)
 
 const Catalog := preload("res://game/station_catalog.gd")
+## The hull and slot-grid authority behind the fit store: the eight slot types
+## and their order, each hull's per-type capacity, and the nine player hulls
+## (09 section 4.5, CONTRACTS section 11).
+const FitData := preload("res://game/ship_fit.gd")
 
 const SAVE_FILE := "user://profile.cfg"
 const SECTION := "profile"
-const SAVE_VERSION := 3
+const SAVE_VERSION := 4
 const MIN_READABLE_VERSION := 1
 const SAVE_DEBOUNCE_SECONDS := 0.5
 
@@ -45,6 +52,14 @@ const KEY_FUEL: StringName = &"fuel"
 ## whole points, so a negative value can never collide with a real reading, and the
 ## entry stays sticky: a caller that passes no fuel leaves the filed one alone.
 const FUEL_UNFILED := -1
+
+## The one scalar slot type: 09 section 4.5 rule 1 fits one module id per POWER
+## cell, so a fit stores `power` as an id and the other seven types as arrays.
+const POWER_SLOT: StringName = &"power"
+## The engine set (v4) and its pre-v4 spelling, which a migrated file still
+## carries (CONTRACTS section 11 rule 2; `engines` wins when both are present).
+const ENGINE_SLOT: StringName = &"engines"
+const LEGACY_ENGINE_SLOT: StringName = &"engine"
 
 ## Market sub-keys, present in every normalised market dictionary.
 const MARKET_KEYS: Array[String] = ["demand", "stock", "queue", "trend"]
@@ -273,6 +288,73 @@ func set_modules(value: Dictionary) -> void:
 	_touch(KEY_MODULES)
 
 
+## The base catalogue id of one inventory entry (15 section 6): a fit stores a
+## module *instance* id and `ShipFit` reads base ids, so this is the one bridge
+## between the two. An entry the inventory does not carry is returned unchanged,
+## which is what keeps a base id (`w_laser`) and every fixture that stores base
+## ids directly working exactly as they did before save v4.
+func base_module_id(entry: StringName) -> StringName:
+	if entry == &"":
+		return &""
+	var record := _module_record(entry)
+	if record.is_empty():
+		return entry
+	var base := StringName(str(record.get("base_id", "")))
+	return base if base != &"" else entry
+
+
+## How many of one inventory entry the account holds (15 section 6's `count`), 0
+## for an id the inventory does not carry. The id is the record's own key, so an
+## instance (`mod_0007`) and a plain base id answer alike; a record written
+## before the count existed reads as 0.
+func module_count(module_id: StringName) -> int:
+	var record := _module_record(module_id)
+	if record.is_empty():
+		return 0
+	return maxi(0, int(record.get("count", 0)))
+
+
+## Add `count` of one inventory entry, creating the record when the account does
+## not carry it yet. Only `count` (and a `base_id`, which for a common module is
+## the entry itself) is written: 15 section 6 rolls affixes at *creation* (drop,
+## purchase, build) and never re-rolls them, and this is the count half of the
+## inventory, not that roll, so a record already carrying `rarity`/`prefixes`/
+## `suffixes` keeps them untouched and one created here carries neither. The
+## affix roll's own layer is the P2-B fitting/inventory work.
+func add_module(module_id: StringName, count: int = 1) -> void:
+	if module_id == &"" or count <= 0:
+		return
+	var key := String(module_id)
+	var stored: Variant = _modules.get(key, null)
+	var updated: Dictionary = stored.duplicate(true) if stored is Dictionary else {}
+	if not updated.has("base_id"):
+		updated["base_id"] = key
+	updated["count"] = module_count(module_id) + count
+	_modules[key] = updated
+	_touch(KEY_MODULES)
+
+
+## Take `count` of one inventory entry out of the account (a module sold, or
+## moved into a hull). Refuses, and writes nothing, when the account holds fewer;
+## the record is erased once its count reaches zero, exactly as `remove_cargo`
+## drops an emptied item.
+func take_module(module_id: StringName, count: int = 1) -> bool:
+	if module_id == &"" or count <= 0:
+		return false
+	var held := module_count(module_id)
+	if held < count:
+		return false
+	var key := String(module_id)
+	if held == count:
+		_modules.erase(key)
+	else:
+		var record := _module_record(module_id)
+		record["count"] = held - count
+		_modules[key] = record
+	_touch(KEY_MODULES)
+	return true
+
+
 func fits() -> Dictionary:
 	return _fits.duplicate(true)
 
@@ -282,6 +364,93 @@ func set_fits(value: Dictionary) -> void:
 	if candidate == _fits:
 		return
 	_fits = candidate
+	_touch(KEY_FITS)
+
+
+## One hull's fit in the addressing shape of 09 section 4.5 (CONTRACTS section
+## 11): every list type is an Array[String] exactly `ShipFit.slot_capacity` long
+## (`""` = an empty cell, the tail padded) and `power` is one module id, because
+## POWER is one slot and not a set. The index is the layout index: the cells of
+## one type numbered row-major from the grid's top-left. The keys are the
+## `ShipFit.FIT_SLOT_KEYS` StringNames, and either spelling reads them, because
+## String and StringName are interchangeable as Dictionary keys.
+##
+## A v1-v3 file stores one id per slot type: it is read as a one-element array
+## and padded to capacity, `engine` is read as `engines` (CONTRACTS section 11
+## rule 2), and nothing is written back - the file keeps the shape it was saved
+## with until something mutates the fit. A hull the account holds no fit for
+## answers the all-empty shape, so the caller decides whether to fall back to
+## `ShipFit.standard_fit` (09 section 9); {} comes back only for a hull id that
+## is not one of the nine player hulls - an NPC hull fits nothing (CONTRACTS
+## section 11 rule 6).
+func fit_for(ship_id: StringName) -> Dictionary:
+	if not FitData.HULLS.has(ship_id):
+		return {}
+	var stored := _fit_entry(ship_id)
+	return _normalise_fit(ship_id, stored, stored, true)
+
+
+## Replace one hull's whole fit. Every type is normalised to the hull's own
+## shape - a type the caller omits comes back empty, a longer tail is cut at
+## capacity - and the write persists the array shape of save v4. An unknown hull
+## id (an NPC, or a typo) is refused without writing.
+##
+## Legality is not checked here: 09 section 4's capacity, power-budget and
+## duplicate rules are `ShipFit.fit_legal`'s, and the fitting panel (P2-B) is
+## the layer that refuses an overload, so the store keeps what it is handed at
+## the hull's shape rather than silently dropping a module.
+func set_fit(ship_id: StringName, fit: Dictionary) -> bool:
+	if not FitData.HULLS.has(ship_id):
+		return false
+	var stored := _fit_entry(ship_id)
+	var normalised := _normalise_fit(ship_id, fit, stored)
+	if stored == normalised:
+		return true
+	_fits[String(ship_id)] = normalised
+	_touch(KEY_FITS)
+	return true
+
+
+## Write one cell, addressed by 09 section 4.5's layout index. Refused, without
+## writing, for an unknown hull, for a slot type the hull has no cell of, and for
+## an index outside 0 .. capacity-1 - a cell's index is its position among the
+## cells of its own type, so a gap in the middle of the grid never takes one.
+## `&""` empties the cell.
+##
+## The module id is not validated: a fit stores an instance id (15 section 6)
+## whose base id `base_module_id` resolves, so only the caller knows the
+## catalogue that id came from.
+func set_fit_slot(
+	ship_id: StringName, slot_key: StringName, index: int, module_id: StringName
+) -> bool:
+	if not FitData.HULLS.has(ship_id) or not FitData.FIT_SLOT_KEYS.has(slot_key):
+		return false
+	if index < 0 or index >= FitData.slot_capacity(ship_id, slot_key):
+		return false
+	var stored := _fit_entry(ship_id)
+	var normalised := _normalise_fit(ship_id, stored, stored)
+	var key: Variant = _key_for(stored, slot_key)
+	if slot_key == POWER_SLOT:
+		normalised[key] = String(module_id)
+	else:
+		var cells: Array = normalised[key]
+		cells[index] = String(module_id)
+		normalised[key] = cells
+	if stored == normalised:
+		return true
+	_fits[String(ship_id)] = normalised
+	_touch(KEY_FITS)
+	return true
+
+
+## Drop one hull's stored fit; the hull stays owned. A launch for that hull then
+## falls back to `ShipFit.standard_fit` (09 section 9). Silent when the account
+## held no fit for the hull, like every other no-op setter.
+func clear_fit(ship_id: StringName) -> void:
+	var key := String(ship_id)
+	if not _fits.has(key):
+		return
+	_fits.erase(key)
 	_touch(KEY_FITS)
 
 
@@ -662,6 +831,122 @@ func _filed_fuel(stored: Variant) -> int:
 	if not record.has("fuel"):
 		return FUEL_UNFILED
 	return int(record["fuel"])
+
+
+## One inventory record (15 section 6), or an empty dictionary for an id the
+## account does not carry. Both key spellings are read: a loaded ConfigFile gives
+## String, a hand-built fixture may give StringName.
+func _module_record(module_id: StringName) -> Dictionary:
+	var record: Variant = _modules.get(module_id, null)
+	if not record is Dictionary:
+		record = _modules.get(String(module_id), null)
+	if record is Dictionary:
+		return record
+	return {}
+
+
+## The stored entry for one hull, or an empty dictionary. `_fits` is keyed by
+## String(ship_id) and its per-slot values are whatever the file was saved with:
+## one id per type before save v4, an array after it.
+func _fit_entry(ship_id: StringName) -> Dictionary:
+	var entry: Variant = _fits.get(String(ship_id), null)
+	if entry is Dictionary:
+		return entry
+	return {}
+
+
+## One hull's fit in the stored shape, from any entry: every list type an Array
+## of String exactly `slot_capacity` long and `power` one id (`""` = empty).
+## `spelling` is the entry whose key spelling the result mirrors - the stored
+## entry, so a rewrite keeps the shape the file was saved with; a brand-new fit
+## gets String, the spelling this profile writes. `typed` asks for the shape
+## `fit_for` hands out: the Array[String] values a caller may assign, and the
+## `FIT_SLOT_KEYS` StringName keys a caller may enumerate. The writers keep the
+## plain array and the file's own spelling, which is what the file persists.
+func _normalise_fit(
+	ship_id: StringName, source: Dictionary, spelling: Dictionary, typed := false
+) -> Dictionary:
+	var fit: Dictionary = {}
+	for slot_key: StringName in FitData.FIT_SLOT_KEYS:
+		var key: Variant = slot_key if typed else _key_for(spelling, slot_key)
+		if slot_key == POWER_SLOT:
+			fit[key] = _single_id(source, slot_key)
+			continue
+		var cells := _padded_ids(source, slot_key, FitData.slot_capacity(ship_id, slot_key))
+		fit[key] = _typed_ids(cells) if typed else cells
+	return fit
+
+
+## The module ids one slot type holds, in layout-index order and at the hull's
+## own capacity: an Array keeps its order and its `""` holes, a single id (the
+## v1-v3 shape) is a one-element array, a short entry is padded to capacity and a
+## longer one is cut, so the index of a cell never depends on how much of the
+## list was written.
+func _padded_ids(source: Dictionary, slot_key: StringName, capacity: int) -> Array:
+	var ids: Array = []
+	for id: String in _ids_of(_slot_value(source, slot_key)):
+		if ids.size() >= capacity:
+			break
+		ids.append(id)
+	while ids.size() < capacity:
+		ids.append("")
+	return ids
+
+
+## The one module id a scalar slot type holds (POWER, and the pre-v4 spelling of
+## every type). An Array is read as its first non-empty id, so an entry that was
+## normalised as an array still resolves to one cell.
+static func _single_id(source: Dictionary, slot_key: StringName) -> String:
+	for id: String in _ids_of(_slot_value(source, slot_key)):
+		if id != "":
+			return id
+	return ""
+
+
+## The raw value one slot type was stored with. `engines` also answers to the
+## pre-v4 singular `engine`, which `engines` wins over when both are present
+## (CONTRACTS section 11 rule 2).
+static func _slot_value(source: Dictionary, slot_key: StringName) -> Variant:
+	if source.has(slot_key):
+		return source[slot_key]
+	if slot_key == ENGINE_SLOT and source.has(LEGACY_ENGINE_SLOT):
+		return source[LEGACY_ENGINE_SLOT]
+	return null
+
+
+## The ids a stored value holds, as Strings: an Array in its own order, a single
+## id as a one-element array, anything else as nothing. A junk entry becomes the
+## empty cell at its own index rather than shifting every cell after it.
+static func _ids_of(raw: Variant) -> Array:
+	var ids: Array = []
+	if raw is Array:
+		for entry: Variant in raw as Array:
+			ids.append(String(entry) if entry is String or entry is StringName else "")
+	elif raw is StringName or raw is String:
+		ids.append(String(raw))
+	return ids
+
+
+## The typed Array[String] a caller reads out of `fit_for`, so
+## `var ids: Array[String] = fit[&"weapons"]` is a valid assignment.
+static func _typed_ids(ids: Array) -> Array[String]:
+	var typed: Array[String] = []
+	for id: Variant in ids:
+		typed.append(String(id))
+	return typed
+
+
+## The slot-type key a write uses: the spelling the entry already carries, else
+## String - the shape a ConfigFile loads and the one this profile writes - so
+## "write the same spelling the file already used" (CONTRACTS section 11) holds
+## and a rewrite cannot churn the shape. The key itself is matched rather than
+## looked up, because a Dictionary lookup crosses String and StringName (they are
+## interchangeable there) and so cannot tell the two spellings apart.
+static func _key_for(source: Dictionary, slot_key: StringName) -> Variant:
+	for key: Variant in source:
+		if String(key) == String(slot_key):
+			return key
+	return String(slot_key)
 
 
 func _market_default() -> Dictionary:

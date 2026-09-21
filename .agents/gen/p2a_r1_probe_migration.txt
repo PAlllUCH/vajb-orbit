@@ -1,0 +1,42 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[r1m] SAVE_VERSION=4 MIN_READABLE_VERSION=1
+[r1m] ok   SAVE_VERSION is 4 | got 4
+[r1m] ok   MIN_READABLE_VERSION stays 1 | got 1
+[r1m] === v2 fixture ===
+[r1m] on disk: { "save_version": 2, "credits": 4321, "owned_ships": ["ship_vanguard", "ship_freighter"], "active_ship": "ship_freighter", "cargo": { "ore_iron": 7 }, "ammo": { "laser": 111 }, "fits": { "ship_freighter": { "engine": "e_ion", "power": "p_std" }, "ship_vanguard": { "armour": "h_plate_light", "engine": "e_std", "power": "p_std", "shields": "s_light", "weapons": "w_laser" } } }
+[r1m] MARK warnings-between-start
+[r1m] MARK warnings-between-end
+[r1m] ok   the load keeps the file's own single-string shape (fits() reads it verbatim) | { "ship_freighter": { "engine": "e_ion", "power": "p_std" }, "ship_vanguard": { "armour": "h_plate_light", "engine": "e_std", "power": "p_std", "shields": "s_light", "weapons": "w_laser" } }
+[r1m] ok   the load rewrites nothing (byte-identical snapshot) | { "save_version": 2, "credits": 4321, "owned_ships": ["ship_vanguard", "ship_freighter"], "active_ship": "ship_freighter", "cargo": { "ore_iron": 7 }, "ammo": { "laser": 111 }, "fits": { "ship_freighter": { "engine": "e_ion", "power": "p_std" }, "ship_vanguard": { "armour": "h_plate_light", "engine": "e_std", "power": "p_std", "shields": "s_light", "weapons": "w_laser" } } }
+[r1m] ok   fit_for(vanguard) normalises to capacity, one element padded (E1 W3 S1 H2 C1 B1 U1 P1) | { &"engines": ["e_std"], &"weapons": ["w_laser", "", ""], &"shields": ["s_light"], &"armour": ["h_plate_light", ""], &"computers": [""], &"boosters": [""], &"utility": [""], &"power": "p_std" }
+[r1m] ok   fit_for(freighter) pads engines to three cells with the v2 value at index 0 | { &"engines": ["e_ion", "", ""], &"weapons": [""], &"shields": [""], &"armour": ["", "", ""], &"computers": [""], &"boosters": [], &"utility": ["", "", "", "", ""], &"power": "p_std" }
+[r1m] ok   every other v2 value survives the load | credits=4321 active=ship_freighter cargo={ &"ore_iron": 7 } ammo=111
+[r1m] ok   set_fit_slot(engines, 0) returns true
+[r1m] ok   the write persists save_version 4 | save_version=4
+[r1m] ok   the written vanguard row is the array shape with the engine cell changed and nothing dropped | { "armour": ["h_plate_light", ""], "boosters": [""], "computers": [""], "engines": ["e_ion"], "power": "p_std", "shields": ["s_light"], "utility": [""], "weapons": ["w_laser", "", ""] }
+[r1m] ok   the untouched second hull keeps its v2 value (shape: e_ion) | { "engine": "e_ion", "power": "p_std" }
+[r1m] ok   the untouched hull still resolves to e_ion through fit_for after the write | { &"engines": ["e_ion", "", ""], &"weapons": [""], &"shields": [""], &"armour": ["", "", ""], &"computers": [""], &"boosters": [], &"utility": ["", "", "", "", ""], &"power": "p_std" }
+[r1m] ok   every v2 key is carried over unchanged (no data loss) | { "save_version": 4, "credits": 4321, "owned_ships": ["ship_vanguard", "ship_freighter"], "active_ship": "ship_freighter", "cargo": { "ore_iron": 7 }, "ammo": { "cannon": 300, "laser": 111, "mine": 300, "plasma": 300, "rocket": 300 }, "fits": { "ship_freighter": { "engine": "e_ion", "power": "p_std" }, "ship_vanguard": { "armour": ["h_plate_light", ""], "boosters": [""], "computers": [""], "engines": ["e_ion"], "power": "p_std", "shields": ["s_light"], "utility": [""], "weapons": ["w_laser", "", ""] } }, "upgrades": [], "modules": {  }, "market": { "demand": {  }, "last_band": 0, "queue": {  }, "stock": {  }, "trend": {  } }, "heat": {  }, "standing": {  }, "contracts": [], "vaults": {  }, "insured": false, "mercy_used": false, "vitals": {  } }
+[r1m] ok   a fresh reload reads the write back cell for cell | { &"engines": ["e_ion"], &"weapons": ["w_laser", "", ""], &"shields": ["s_light"], &"armour": ["h_plate_light", ""], &"computers": [""], &"boosters": [""], &"utility": [""], &"power": "p_std" }
+[r1m] scratch user://probe_r1_migration_v2.cfg removed=true
+[r1m] === v3 fixture ===
+[r1m] on disk: { "save_version": 3, "credits": 9876, "owned_ships": ["ship_vanguard", "ship_miner"], "active_ship": "ship_miner", "cargo": { "ore_gold": 1, "ore_iron": 3 }, "ammo": { "cannon": 40, "laser": 250 }, "modules": { "mod_0007": { "base_id": "s_heavy", "count": 2 } }, "insured": true, "fits": { "ship_miner": { "engine": "e_std", "power": "p_std", "utility": "u_refine" }, "ship_vanguard": { "engine": "e_std", "power": "p_std", "weapons": "w_cannon" } }, "vitals": { "ship_miner": { "fuel": 133, "hull": 900, "shield": 400 } } }
+[r1m] MARK warnings-between-start
+[r1m] MARK warnings-between-end
+[r1m] ok   the v3 load rewrites nothing (byte-identical snapshot) | { "save_version": 3, "credits": 9876, "owned_ships": ["ship_vanguard", "ship_miner"], "active_ship": "ship_miner", "cargo": { "ore_gold": 1, "ore_iron": 3 }, "ammo": { "cannon": 40, "laser": 250 }, "modules": { "mod_0007": { "base_id": "s_heavy", "count": 2 } }, "insured": true, "fits": { "ship_miner": { "engine": "e_std", "power": "p_std", "utility": "u_refine" }, "ship_vanguard": { "engine": "e_std", "power": "p_std", "weapons": "w_cannon" } }, "vitals": { "ship_miner": { "fuel": 133, "hull": 900, "shield": 400 } } }
+[r1m] ok   every v3 value survives the load (credits, ships, cargo, ammo, modules, insured, fuel) | credits=9876 active=ship_miner cargo={ &"ore_gold": 1, &"ore_iron": 3 } ammo=250 insured=true vitals={ "hull": 900, "shield": 400, "fuel": 133 }
+[r1m] ok   base_module_id resolves the stored instance (mod_0007 -> s_heavy) | s_heavy
+[r1m] ok   fit_for(miner) normalises to the Delver's capacity (E2 W2 S1 H2 C1 B0 U3 P1) | { &"engines": ["e_std", ""], &"weapons": ["", ""], &"shields": [""], &"armour": ["", ""], &"computers": [""], &"boosters": [], &"utility": ["u_refine", "", ""], &"power": "p_std" }
+[r1m] ok   the v3 write persists save_version 4 | save_version=4
+[r1m] ok   the written miner row carries the v3 values over and adds the second engine | { "armour": ["", ""], "boosters": [], "computers": [""], "engines": ["e_std", "e_ion"], "power": "p_std", "shields": [""], "utility": ["u_refine", "", ""], "weapons": ["", ""] }
+[r1m] ok   the v3 non-fit keys are all carried over (fuel, modules, insured, cargo, ammo) | { "save_version": 4, "credits": 9876, "owned_ships": ["ship_vanguard", "ship_miner"], "active_ship": "ship_miner", "cargo": { "ore_gold": 1, "ore_iron": 3 }, "ammo": { "cannon": 40, "laser": 250, "mine": 300, "plasma": 300, "rocket": 300 }, "modules": { "mod_0007": { "base_id": "s_heavy", "count": 2 } }, "insured": true, "fits": { "ship_miner": { "armour": ["", ""], "boosters": [], "computers": [""], "engines": ["e_std", "e_ion"], "power": "p_std", "shields": [""], "utility": ["u_refine", "", ""], "weapons": ["", ""] }, "ship_vanguard": { "engine": "e_std", "power": "p_std", "weapons": "w_cannon" } }, "vitals": { "ship_miner": { "fuel": 133, "hull": 900, "shield": 400 } }, "upgrades": [], "market": { "demand": {  }, "last_band": 0, "queue": {  }, "stock": {  }, "trend": {  } }, "heat": {  }, "standing": {  }, "contracts": [], "vaults": {  }, "mercy_used": false }
+[r1m] note: ammo after the write = { "cannon": 40, "laser": 250, "mine": 300, "plasma": 300, "rocket": 300 } (the loader fills the families the file omitted)
+[r1m] ok   a fresh reload reads the v3 write back cell for cell | { &"engines": ["e_std", "e_ion"], &"weapons": ["", ""], &"shields": [""], &"armour": ["", ""], &"computers": [""], &"boosters": [], &"utility": ["u_refine", "", ""], &"power": "p_std" }
+[r1m] scratch user://probe_r1_migration_v3.cfg removed=true
+[r1m] DONE fails=0
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+WARNING: 12 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 1 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

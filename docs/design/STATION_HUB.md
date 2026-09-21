@@ -151,7 +151,7 @@ SHIPYARD's three-column body and LAUNCH's two-column body:
 | Preview housing | `PreviewFrame`, `PanelContainer`, `PanelRaised` -> `PreviewMargin` 16 -> `PreviewBox` | h 3, v 3 | `(260, 0)` | x 809..1461, y 383..963 |
 | Ship image | `PreviewCenter` (`CenterContainer`, v 3) -> `PreviewImage` (`TextureRect`) | fill | computed | ship ink x 928..1350, 423 px wide (see 7.2) |
 | Stat column | `StatsBox`, `VBoxContainer`, separation 10 | h 0 | `(300, 0)` | x 1477..1842 |
-| Hardpoint strip | `HardpointSlots`, `HBoxContainer`, separation 4 | h 0 | 7 x 48 | x 1484..1843, y 498..546 (7 cells of exactly 48 px, pitch 52) |
+| Slot layout grid | `HardpointSlots`, `GridContainer`, separation 4 | h 0 | `(matrix width) x 48` | rebuilt per selection in the stat column (x 1477..1842); one cell per matrix cell of the selected hull, `columns` = the matrix width (08 §3.2: 4 for eight hulls, 5 for the Destroyer). Supersedes the fixed seven-plate strip's measured box (x 1484..1843, y 498..546, pitch 52) |
 | Brief column | `BriefBox`, `VBoxContainer`, separation 8 | h 0 | `(560, 0)` | x 453..1013 |
 | Cargo strip | `CargoSlots`, `HBoxContainer`, separation 6 | fill | 5 x 40 | x 452..675, y 570..610 (5 cells of 40 px, pitch 46) |
 | Cargo manifest | `CargoList`, `ItemList` | fill | `(0, 110)` | x 453.., y 612..722, selected band bg `metal_mid` measured |
@@ -293,9 +293,9 @@ Station (Control, preset 15, grow 2/2, theme = vajb_theme.tres, script = _mockup
 │     │        │  │  │        └─ PreviewName (Label, unique %PreviewName, StationPanelTitle)
 │     │        │  │  └─ StatsBox (VBoxContainer, min (300,0), separation 10)
 │     │        │  │     ├─ StatsCaption (Label, SectionHeader)
-│     │        │  │     ├─ ShipStats (VBoxContainer, unique %ShipStats, separation 6)  1 header + 4 stat lines
-│     │        │  │     ├─ HardpointCaption (Label, StationCaption)
-│     │        │  │     ├─ HardpointSlots (HBoxContainer, unique %HardpointSlots, h0, separation 4)  7 plates
+│     │        │  │     ├─ ShipStats (VBoxContainer, unique %ShipStats, separation 6)  1 header + 5 stat lines
+│     │        │  │     ├─ HardpointCaption (Label, StationCaption, "SLOT LAYOUT · n CELLS · m ENGINES")
+│     │        │  │     ├─ HardpointSlots (GridContainer, unique %HardpointSlots, h0, separation 4)  1 cell per matrix cell
 │     │        │  │     ├─ StatsSpacer (Control, v3, mouse IGNORE)
 │     │        │  │     ├─ PriceCaption (Label, StationCaption)
 │     │        │  │     ├─ ShipPrice (Label, unique %ShipPrice, StationValue)
@@ -308,7 +308,7 @@ Station (Control, preset 15, grow 2/2, theme = vajb_theme.tres, script = _mockup
 │     │           ├─ LaunchBody (HBoxContainer, v3, separation 16)
 │     │           │  ├─ BriefBox (VBoxContainer, min (560,0), separation 8)
 │     │           │  │  ├─ BriefCaption (Label, SectionHeader, "FLIGHT BRIEFING")
-│     │           │  │  ├─ BriefRows (VBoxContainer, unique %BriefRows, separation 6)  7 caption/value lines
+│     │           │  │  ├─ BriefRows (VBoxContainer, unique %BriefRows, separation 6)  9 caption/value lines
 │     │           │  │  ├─ CargoCaption (Label, SectionHeader)
 │     │           │  │  ├─ CargoSlots (HBoxContainer, unique %CargoSlots, separation 6)  5 x 40 plate
 │     │           │  │  ├─ CargoList (ItemList, unique %CargoList, min (0,110))
@@ -393,14 +393,14 @@ Left: the hull list, one row per ship, `STATUS` column only. Right: the preview 
 | Column | Source | Render |
 |---|---|---|
 | title | `ship.name` | `StationValue` |
-| meta | `ship.hull`, `ship.hardpoints` | `StationCaption`: `"1000 HULL · 4 HP"` |
+| meta | `ship.hull`, `ship.hardpoints` | `StationCaption` (`META_FORMAT`): `"%d HULL · %d SLOTS"`, e.g. `"1000 HULL · 11 SLOTS"` |
 | `STATUS` | derived from profile | `ACTIVE`, `OWNED`, `FOR SALE` (owned-or-affordable), `LOCKED` (unaffordable and not owned) |
 | `PRICE` (stat column) | `ship.cost` | `StationValue`, `accent_danger` when above the balance |
 | ship image | `ship.preview` | `TextureRect`, native sprite scaled as in 7.2 |
 | description | `ship.description` | `StationCaption`, autowrap, above the image |
 | name under the image | `ship.name` | `StationPanelTitle` |
-| comparison rows | `ship.hull` / `shield` / `cargo` / `hardpoints` vs the active ship | two right-aligned `StationValue` columns of 110 px: `SELECTED` (the row's ship) and `ACTIVE`; the selected value turns `Tokens/text_dim` when it is lower than the active one |
-| hardpoint strip | `ship.hardpoints` | 7 `SlotButtonWeapon` plates of 48 px; plates at or above `hardpoints` are `disabled` |
+| comparison rows | `ship.hull` / `ship.shield` / `ship.cargo` / the hull's engine count / the hull's slot cell count (08 §3's table through `ShipFit.grid_counts(hull)`) vs the active ship | two right-aligned `StationValue` columns of 110 px: `SELECTED` (the row's ship) and `ACTIVE`; the selected value turns `Tokens/text_dim` when it is lower than the active one |
+| slot layout grid | `ShipFit.grid_cells(hull)`, `ShipFit.grid_size(hull)`, `ShipFit.grid_counts(hull)` | a `GridContainer` of one cell per matrix cell, `columns` = the matrix width, `separation` 4; a gap is an empty 48x48 `Control` with no plate, a slot cell a 48 px disabled `SlotButtonWeapon` plate carrying that type's slot glyph (`assets/icons/slot/icon_slot_<type>_48.png`); caption `SLOT LAYOUT · <n> CELLS · <m> ENGINES` (`_hardpoint_caption`; `n` = the hull's slot count, 08 §3's Total — gaps are not cells — and `m` its E count) |
 | action | derived | `ShipAction`: `IN SERVICE` (disabled) when the row is the active hull, `SET ACTIVE` when owned, `BUY` when not owned |
 
 Actions: selecting a row sets the preview (focus or click). `ui_accept` on a ship row, or `ShipAction`, calls
@@ -408,9 +408,23 @@ Actions: selecting a row sets the preview (focus or click). `ui_accept` on a shi
 hull active (`STATION_SPEC.md` section 2.4), so the status strip says `PURCHASED · BULWARK · NOT ACTIVE UNTIL
 YOU SET IT` and `ShipAction` becomes `SET ACTIVE`. Empty state: `StationCatalog.ship(preview)` returning `{}`
 means the preview cannot be drawn: show `NO HULL IN THE CRADLE` in `PreviewName`, blank the image and leave
-the stat rows at `0`. Error state: a ship with `hardpoints` 0 disables all seven plates (already the case).
+the stat rows at `0`. Error state: a hull id with no matrix (`ShipFit.grid_cells` empty — an unknown or an NPC
+hull) draws no cells at all and leaves the grid and its caption empty; the caption never reads a stale hull.
 Rendered states in one frame: `OWNED` + `ACTIVE` + two `LOCKED` (measured in
 `previews/d5_station_shipyard_1920x1080.png`).
+
+**Amendment 2026-09-21 (P2-A — the hull's own layout grid).** The fixed seven-plate
+hardpoint strip and the `hardpoints`-driven meta are superseded: the strip is now the
+selected hull's own layout, one cell per 08 §3.2 matrix cell with `columns` = the matrix
+width, a gap drawn as an empty 48x48 `Control` carrying no plate, and a slot cell a
+disabled 48 px `SlotButtonWeapon` plate carrying its type's slot glyph. The caption reads
+`SLOT LAYOUT · <n> CELLS · <m> ENGINES` (the pin's `_hardpoint_caption`), the list meta
+becomes `META_FORMAT` `"%d HULL · %d SLOTS"`, and the stat rows become
+HULL / SHIELD / CARGO / ENGINES / SLOT CELLS. The unique names (`%HardpointSlots`,
+`HardpointCaption`) and the `SlotButtonWeapon` theme item are kept, so the 48 px plate
+guard and the D3 properties (section 12.3, section 13) do not move. Reversal: restore the
+7-plate `HBoxContainer` and the `hardpoints`-driven meta, and drop 08 §3.2's matrix as the
+display's source.
 
 ### 5.3 UPGRADES (install refits)
 
@@ -440,7 +454,7 @@ Left: the flight briefing and the cargo hold. Right: DECK CONTROL.
 |---|---|---|
 | `DESTINATION` | route destination | `OPEN SPACE · SECTOR K-9` |
 | `ACTIVE HULL` | `PlayerProfile.active_ship()` -> `StationCatalog.ship(id).name` | upper case |
-| `HULL LIMIT` / `SHIELD LIMIT` / `HARDPOINTS` | the active ship's stats | integers |
+| `HULL LIMIT` / `SHIELD LIMIT` / `ENGINES` / `HARDPOINTS` / `SLOT CELLS` | the active ship's stats | integers: `HARDPOINTS` is the hull's W count, `ENGINES` its E count and `SLOT CELLS` its slot count (08 §3's table through `ShipFit.grid_counts(active_hull)`), so the three move with the hull |
 | `CARGO` | `cargo_items()` summed vs the ship's `cargo` | `"35 / 40"` |
 | `AMMUNITION` | `ammo_of()` summed over the five weapons | `"800 ROUNDS ACROSS 5 WEAPONS"` |
 | cargo strip | `cargo_items()` | 5 `SlotButtonCargo` plates of 40 px, the first `n` carrying the item icon (24 px inset 8), the rest `disabled` |
@@ -451,6 +465,13 @@ Actions: the LAUNCH button arms then fires. Empty state: an empty hold shows a s
 item in the manifest and leaves all five plates disabled (the mockup shows the stub manifest with two spare
 plates disabled). Error state: no destination is a routing bug, not a screen state; the screen still arms and
 `route_requested` is the only thing that can fail.
+
+**Amendment 2026-09-21 (P2-A).** `BRIEF_ROWS` becomes
+`destination, hull_name, hull, shield, engines, hardpoints, slots, cargo, ammo` — `ENGINES`
+and `SLOT CELLS` join `HARDPOINTS` in the stat row above (9 caption/value lines, section 4's
+node tree), all three read from the active hull's matrix through `ShipFit.grid_counts`. The
+cargo plate strip and its five 40 px plates do not change. Reversal: drop the two rows and
+the `ShipFit` source, and read the three stats from the frozen `StationCatalog` columns again.
 
 ### 5.5 LOG OUT (leave the session)
 
@@ -603,7 +624,7 @@ no `add_theme_font_size_override`, no `theme_override_font_sizes`).
 `Router.FONT_SIZE_ITEMS` carries all eight of these items (`HeroTitle`, `StationButton`, `StationPanelTitle`,
 `StationValue`, `StationCaption`, `SectionHeader`, `Label`, `Button`, `ItemList`), so `ui_scale` reaches every
 text element on the screen. Measured at `ui_scale` 1.4 through Router's live theme: the 48 px title's ink
-height grows from 36 to 50 px (a factor of 1.39), no container clips and the 7 hardpoint plates still fit the
+height grows from 36 to 50 px (a factor of 1.39), no container clips and the slot layout grid still fits the
 stat column (see `previews/d5_station_shipyard_uiscale140_1920x1080.png`).
 
 ## 7. Art map
@@ -618,7 +639,7 @@ Every path below exists on disk and appears in `ASSET_AUDIT.md` section E.2 or F
 | `res://ui/theme/grain.tres` | film grain over everything | tiled, `modulate (1,1,1,0.06..0.11)` | normal (a `NoiseTexture2D`, not a generated image) |
 | `res://assets/ui/ui_panel_frame.png` | the framed panel backing for every `PanelRaised` (theme item, `texture_margin` 32) | frame band measures 7 px + 1 px `expand_margin` = 8 px | normal, opaque interior |
 | `res://assets/ui/ui_button_plate_normal.png`, `_hover`, `_pressed`, `_disabled` | the `StationButton` plate, four states, wired in the theme | 280x56 source, stretched to each button's rect | normal |
-| `res://assets/ui/ui_slot_weapon_normal.png`, `_hover`, `_pressed`, `_disabled` | hardpoint plates (theme `SlotButtonWeapon`) | 48x48 each, 7 cells | normal |
+| `res://assets/ui/ui_slot_weapon_normal.png`, `_hover`, `_pressed`, `_disabled` | slot layout plates (theme `SlotButtonWeapon`) | 48x48 each, one plate per non-gap matrix cell of the selected hull | normal |
 | `res://assets/ui/ui_slot_cargo_normal.png`, `_hover`, `_pressed`, `_disabled` | cargo plates (theme `SlotButtonCargo`) | 40x40 each, 5 cells | normal |
 | `res://assets/icons/icon_map_node_station_48.png` | station mark, header | 48x48 | normal |
 | `res://assets/icons/tint/icon_credits_48.png` | credits readout glyph | 28x28, `modulate` `text_primary` | normal |
@@ -667,7 +688,7 @@ the leave dimmer) are drawn from `Tokens/void_base`, normal blend, no FX.
 | `StationValue` | row titles, values, prices, confirm strip |
 | `StationCaption` | captions, subtitles, footers, hints, dialog body |
 | `SectionHeader` | column headers, group captions |
-| `SlotButtonWeapon`, `SlotButtonCargo` | the hardpoint and cargo plates |
+| `SlotButtonWeapon`, `SlotButtonCargo` | the slot layout and cargo plates |
 | `ItemList` (`panel`, `selected`, `hovered`, `cursor`, `font_size`) | the cargo manifest |
 | `ScrollContainer` (`panel`), `VScrollBar` (`scroll`, `grabber`, `grabber_highlight`) | the three list scrolls |
 | `Tokens/void_base`, `void_fade`, `void_panel_raised`, `metal_dark`, `metal_mid`, `metal_light`, `text_primary`, `text_dim`, `accent_danger`, `accent_danger_bright` | all colour, pushed in script through `get_theme_color(token, &"Tokens")` |
@@ -791,7 +812,7 @@ aligned to.
 | columns | icon 40, held 130, effect 300, price 110, status 160, ship status 130, brief value 220 | fixed pixel widths |
 | ship list / preview / stat min widths | 340 / 260 / 300 | shipyard body |
 | brief / action min widths | 560 / 360 | launch body |
-| hardpoint / cargo plates | 48 / 40, 7 / 5 cells | separation 4 / 6 |
+| slot layout / cargo plates | 48 / 40 | separation 4 / 6: the grid's cell count and `columns` come from the selected hull's matrix (08 §3.2), the cargo strip is 5 cells |
 | preview scale / max width | 0.70 / 480 | ship image |
 | arm window | 3.0 s | `ARM_SECONDS` |
 | entry / module / hover / credits timings | 0.30 / 0.12 + 0.18 / 0.09 / 0.60 + 0.35 s | section 9 |
@@ -837,7 +858,7 @@ constants above.
 |---|---|
 | Headless load, 300 frames, no input | exit 0, stdout carries only the vendored `[godot_ai game_helper]` line |
 | Rendered frames at 1920x1080, four module states plus a zero-credit state | `previews/d5_station_*.png` |
-| Slot plate fix | 7 weapon cells of exactly 48 px (x 1484..1843, pitch 52) with cells 1-3 brighter than 4-7 (the Lancer's 3 hardpoints), and 5 cargo cells of exactly 40 px (x 452..675, pitch 46) with the first 3 carrying icons |
+| Slot layout grid (supersedes the 2026-09-18 slot plate row) | the fixed 7-plate strip this row used to measure — 7 weapon cells of exactly 48 px (x 1484..1843, pitch 52), cells 1-3 brighter than 4-7 — is replaced by the selected hull's own grid (amendment 5.2): one 48 px plate per non-gap matrix cell of 08 §3.2, `columns` = the matrix width, gaps drawn as empty cells, each plate carrying its type's slot glyph. The cargo half is unchanged: 5 cargo cells of exactly 40 px (x 452..675, pitch 46) with the first 3 carrying icons |
 | Focus ring | one 1390 x 76 outline of 2940 px in exact `accent_danger_bright`, and a 360 x 85 outline on LAUNCH |
 | Selected row channel | pressed `StyleBoxFlat` background (16,21,29) against (27,32,40) unselected |
 | Panel chrome | `PanelRaised` frame band measures 7 px + 1 px expand margin = 8 px on the rail, host, preview, credits housing and dialog, and it insets its child by 33 px per side (3.4) |

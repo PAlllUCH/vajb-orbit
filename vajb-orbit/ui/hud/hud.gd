@@ -59,6 +59,14 @@ const CARGO_ICONS: Array[Texture2D] = [
 	preload("res://assets/icons/tint/icon_cargo_data_core_48.png"),
 ]
 
+## CONTRACTS section 11: the weapon grid is rebuilt from the launched hull's own W cells.
+## `GROUPS_MAX` is `game/weapons.gd`'s count of selectable groups (the input map's
+## `weapon_1..5`): a hull with more W cells than that draws all of them and marks the ones
+## from `GROUPS_MAX` on not selectable, because no input group can reach them yet.
+const GROUPS_MAX: int = WeaponComponent.GROUPS_MAX
+## The empty cell's face: the weapon slot glyph (`icon_slot_w`), dimmed by the icon token.
+const SLOT_GLYPH_WEAPON: Texture2D = preload("res://assets/icons/slot/icon_slot_w_48.png")
+
 const HULL_DANGER_FRACTION: float = 0.25
 const AMMO_DANGER_FRACTION: float = 0.10
 
@@ -166,6 +174,11 @@ const RANGE_FORMAT := "%s  %s"
 var _state: PlayerState = null
 var _weapon_slots: Array[SlotButton] = []
 var _cargo_cells: Array[SlotButton] = []
+## Section 3.10 amendment (CONTRACTS section 11): the launched hull and the W cells the
+## weapon grid was built from. Empty means the grid is still `_build_weapon_slots()`' own
+## five-family default, which is the state a HUD with no pushed hull draws.
+var _hull_id: StringName = &""
+var _hull_slots: Array = []
 
 var _hull_current: float = 0.0
 var _hull_max: float = 0.0
@@ -610,6 +623,65 @@ func _build_weapon_slots() -> void:
 		slot.pressed.connect(_on_weapon_slot_pressed.bind(index))
 		_weapon_grid.add_child(slot)
 		_weapon_slots.append(slot)
+
+
+## CONTRACTS section 11: the launched hull's W cells, one entry per W cell in layout order
+## ({slot, index, module, icon, fitted, selectable}; `game.gd` builds them from
+## `ShipFit.grid_cells` + the fit + `ModuleCatalog`). The grid is rebuilt, never appended
+## to, so a re-push is idempotent and the default five-family grid is what an empty push
+## falls back to. The hull id is recorded with the cells so a probe can pair the read-back
+## with the hull it came from.
+func set_hull_slots(hull_id: StringName, cells: Array) -> void:
+	_hull_id = hull_id
+	_hull_slots = cells.duplicate()
+	_rebuild_weapon_slots()
+
+
+## Read-back for probes (`TargetReticle.state()`'s precedent): the cells the current grid
+## was built from, in layout order, as they were handed over.
+func hull_slots() -> Array:
+	return _hull_slots
+
+
+## One cell per pushed W cell. `columns` = the smaller of the cell count and `GROUPS_MAX`,
+## exactly as pinned, so a 7-cell capital wraps to two rows; a GridContainer rejects 0
+## columns, so an empty push keeps one column and simply has no children.
+func _rebuild_weapon_slots() -> void:
+	for slot: SlotButton in _weapon_slots:
+		_weapon_grid.remove_child(slot)
+		slot.queue_free()
+	_weapon_slots.clear()
+	var count: int = _hull_slots.size()
+	_weapon_grid.columns = maxi(mini(count, GROUPS_MAX), 1)
+	for index: int in count:
+		var cell: Dictionary = _hull_slots[index]
+		var slot: SlotButton = SLOT_SCENE.instantiate() as SlotButton
+		slot.configure_cell(
+			VARIATION_WEAPON, _weapon_cell_icon(cell), SlotButton.CELL_SIZE_WEAPON, TOKEN_TEXT_DIM
+		)
+		slot.disabled = not _weapon_cell_selectable(index, cell)
+		slot.pressed.connect(_on_weapon_slot_pressed.bind(index))
+		_weapon_grid.add_child(slot)
+		_weapon_slots.append(slot)
+	_refresh_weapon()
+
+
+## A fitted cell draws the module icon it was handed; an empty cell (or a cell whose icon
+## path does not resolve) draws the weapon slot glyph, which `_refresh_weapon` dims.
+func _weapon_cell_icon(cell: Dictionary) -> Texture2D:
+	if StringName(cell.get(&"module", &"")).is_empty():
+		return SLOT_GLYPH_WEAPON
+	var path := String(cell.get(&"icon", ""))
+	if path.is_empty():
+		return SLOT_GLYPH_WEAPON
+	var texture := load(path) as Texture2D
+	return texture if texture != null else SLOT_GLYPH_WEAPON
+
+
+## CONTRACTS section 11: a cell from `GROUPS_MAX` on is not selectable, whatever the
+## producer said (the input map stops at `weapon_5`); below it the cell's own flag governs.
+func _weapon_cell_selectable(index: int, cell: Dictionary) -> bool:
+	return index < GROUPS_MAX and bool(cell.get(&"selectable", true))
 
 
 ## Section 3.1b: the Energy and Fuel blocks, appended to the scene's TopLeft column

@@ -201,7 +201,7 @@ func test_v2_round_trip_for_every_key() -> void:
 
 	var on_disk := ConfigFile.new()
 	assert_eq(on_disk.load(PROFILE_PATH), OK)
-	assert_eq(int(on_disk.get_value(SECTION, "save_version", 0)), 3, "writes always persist v3")
+	assert_eq(int(on_disk.get_value(SECTION, "save_version", 0)), 4, "writes always persist v4")
 
 
 ## ---------------------------------------------------------------------------

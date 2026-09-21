@@ -68,6 +68,24 @@ func configure(variation: StringName, icon: Texture2D, number: int = 0, icon_tok
 	_push_number()
 
 
+## CONTRACTS section 11: the layout-cell variant of `configure`. Same plate lookup and same
+## icon/token push, but the caller states the cell size instead of the variation deciding it
+## and there is never a slot number (a layout cell is not a weapon group). `configure` is
+## untouched: every existing caller keeps its 48 px weapon / 40 px cargo cell and its number.
+func configure_cell(
+	variation: StringName, icon: Texture2D, cell: Vector2, icon_token: StringName = TOKEN_INACTIVE
+) -> void:
+	theme_type_variation = variation
+	ignore_texture_size = true
+	custom_minimum_size = cell
+	_icon_texture = icon
+	_icon_token = icon_token
+	_number_text = ""
+	_apply_plates(variation)
+	_push_icon()
+	_push_number()
+
+
 func set_active(active: bool) -> void:
 	if _active == active:
 		return

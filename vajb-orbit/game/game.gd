@@ -33,6 +33,10 @@ const PlayerShipScene := preload("res://game/player_ship.tscn")
 const PlayerShipScript := preload("res://game/player_ship.gd")
 const SectorScript := preload("res://game/sector.gd")
 const Registry := preload("res://game/sector_registry.gd")
+## The one module catalogue (W1, CONTRACTS section 11): reached by path like every
+## other cross-file table here, because the HUD's slot cells carry a module's own icon
+## path and the catalogue is the single owner of that rule.
+const ModuleCatalogScript := preload("res://game/module_catalog.gd")
 
 ## Slice 2's cross-file reaches, by path (never by global class name: a `class_name`
 ## resolves only after the editor has scanned the project, and this scene must load in a
@@ -164,6 +168,13 @@ const HUD_SIGNALS: Array[StringName] = [
 var _state: PlayerStateScript
 var _stats: ShipStats = null
 var _ship: PlayerShipScript = null
+
+## The launch's own hull and fit (CONTRACTS section 11): `_resolve_stats` picks both
+## once, and every reader of them - the snapshot, `PlayerState.set_weapons`, the
+## ship's fit ids, the mount anchors and the HUD's slot cells - reads these, so a
+## launch can never mix one hull's frame with another's fit.
+var _launch_hull: StringName = HULL_ID_DEFAULT
+var _launch_fit: Dictionary = {}
 var _sector: SectorScript = null
 var _pending_spawn := Vector2.ZERO
 var _sector_row_id: StringName = &""
@@ -203,10 +214,13 @@ var _lock_progress_pushed := -2.0
 ## confirmed hit (§4.2 item 4's marker). -1 means "no reading yet".
 var _target_pools_seen := -1.0
 
-## The packs as they were seeded at launch, in rounds per weapon: the dock files the
-## difference (section 4.3), so a store the launch could not load whole is never
-## overwritten by a clamped live figure.
-var _ammo_seed: Dictionary = {}
+## The packs as they were seeded at launch, **one entry per live weapon slot** in
+## `PlayerState.weapons` order: the dock files the difference (section 4.3), so a store
+## the launch could not load whole is never overwritten by a clamped live figure. Per
+## slot rather than per family, because a fit may carry two of one family (a Lancer's
+## two lasers): each slot files its own fired delta against the one pack the family
+## owns, and the two deltas add up exactly as the packs' per-family rule requires.
+var _ammo_seed: Array[int] = []
 
 var _dead := false
 
@@ -215,6 +229,10 @@ func _ready() -> void:
 	_state = PlayerStateScript.new()
 	_stats = _resolve_stats()
 	_apply_ship_maxima()
+	## The launched fit's weapon list, before `setup` sizes the ammo arrays from it
+	## (CONTRACTS section 11): the live slots are the hull's own W cells, not the five
+	## fixed families a fitless `PlayerState` still defaults to.
+	_state.set_weapons(_launch_weapons())
 	_state.setup()
 	_seed_vitals()
 	_seed_ammo()
@@ -289,10 +307,16 @@ func _set_camera_zoom(target: float) -> void:
 	).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 
 
-## ENGINE_SPEC section 9: the launch snapshot is the active hull plus the 09
-## section 7 standard fit, resolved by ShipFit; PlayerState's maxima come from it,
-## so armour, engines and computers are felt from the first module swap. P2's
-## fitting UI supplies per-hull fits from the profile instead of the v1 default.
+## ENGINE_SPEC section 9: the launch snapshot is the active hull plus **that hull's
+## own fit** - the profile's stored fit when the account holds one, 09 section 9's
+## standard fit otherwise - resolved by ShipFit; PlayerState's maxima come from it,
+## so armour, engines and computers are felt from the first module swap.
+##
+## Before this wave the launch resolved one global `ShipFit.STANDARD_FIT` (the
+## Vanguard's row) for every hull, which is the measured root cause of a Lancer
+## reporting five weapon families it does not mount (the owner's launch-fit gate).
+## The flight scene only ever *reads* the profile: a hull with no fit launches on
+## the standard fit and the fitting panel (P2-B) stays the one writer.
 func _resolve_stats() -> ShipStats:
 	var hull_id := HULL_ID_DEFAULT
 	var profile := _profile()
@@ -300,7 +324,85 @@ func _resolve_stats() -> ShipStats:
 		hull_id = StringName(profile.call(&"active_ship"))
 	if not ShipFit.HULLS.has(hull_id):
 		hull_id = HULL_ID_DEFAULT
-	return ShipFit.resolve(hull_id, ShipFit.STANDARD_FIT)
+	_launch_hull = hull_id
+	_launch_fit = _launch_fit_for(hull_id, profile)
+	return ShipFit.resolve(hull_id, _launch_fit)
+
+
+## The fit this launch flies: the profile's own when it holds one, 09 section 9's
+## `ShipFit.standard_fit(hull_id)` when the account has no fit for the hull (or holds
+## only empty cells), and `{}` for a hull with no frame at all - which `_resolve_stats`
+## has already replaced with the default hull. `standard_fit` returns `{}` only for a
+## hull outside the nine player hulls, so the fallback is always a legal fit here.
+func _launch_fit_for(hull_id: StringName, profile: Node) -> Dictionary:
+	var stored := _profile_fit(hull_id, profile)
+	if stored.is_empty():
+		return ShipFit.standard_fit(hull_id)
+	return stored
+
+
+## One hull's stored fit in the shape `ShipFit.resolve` reads, or `{}` when the profile
+## holds nothing usable for it. A fit stores a module *instance* id (15 section 6) and
+## the resolver reads base ids, so every entry goes through
+## `PlayerProfile.base_module_id`; `power` stays one id (CONTRACTS section 11 rule 1)
+## and the seven list types keep the hull's padded array shape. `{}` comes back when
+## the profile has no fit API, has no fit for the hull (a fresh account, an NPC id) or
+## holds only empty cells - the three cases the standard fit is for.
+func _profile_fit(hull_id: StringName, profile: Node) -> Dictionary:
+	if profile == null or not profile.has_method(&"fit_for"):
+		return {}
+	var normalised: Dictionary = profile.call(&"fit_for", hull_id)
+	if normalised.is_empty():
+		return {}
+	var fit: Dictionary = {}
+	var holds_one := false
+	for key: StringName in ShipFit.FIT_SLOT_KEYS:
+		if key == &"power":
+			var power := _base_module_id(StringName(str(normalised.get(key, ""))), profile)
+			fit[key] = power
+			holds_one = holds_one or power != &""
+			continue
+		var entries: Array[StringName] = []
+		var raw: Variant = normalised.get(key, [])
+		if raw is Array:
+			for entry: Variant in raw:
+				var base := _base_module_id(StringName(str(entry)), profile)
+				entries.append(base)
+				holds_one = holds_one or base != &""
+		fit[key] = entries
+	if not holds_one:
+		return {}
+	return fit
+
+
+## The catalogue id behind one fit entry: an inventory instance id resolves through the
+## profile, and a plain base id (every pre-v4 fixture, and every account that never
+## bought a rolled module) comes back unchanged. A profile without the helper keeps the
+## entry as it is rather than silently dropping a module from the fit.
+func _base_module_id(entry: StringName, profile: Node) -> StringName:
+	if entry == &"" or profile == null or not profile.has_method(&"base_module_id"):
+		return entry
+	return StringName(profile.call(&"base_module_id", entry))
+
+
+## The launched fit's weapon ids mapped to families, one entry per **fitted** W cell in
+## layout order (CONTRACTS section 11): the list `PlayerState` sizes its ammo to and
+## the ids its `weapon_changed` announcements carry. The fit stores module ids
+## (`w_laser`), while the ammo packs and the HUD's labels are keyed by family
+## (`laser`), and `Weapons.weapon_id` is that one bridge. An unfitted cell
+## contributes nothing, so a hull whose standard fit fills one of three W cells
+## launches with one weapon slot and two empty cells; a fitted cell whose module has
+## no firing family (`w_mining`, the tool that shares the W column) is a slot with no
+## pack rather than a dropped cell, so the slot order still follows the fit.
+func _launch_weapons() -> Array[StringName]:
+	var ids: Array[StringName] = []
+	var fitted: Array = _launch_fit.get(&"weapons", [])
+	for entry: Variant in fitted:
+		var module := StringName(str(entry))
+		if module == &"":
+			continue
+		ids.append(WeaponsScript.weapon_id(module))
+	return ids
 
 
 ## STATION_SPEC section 6 rule 5: the active hull owns the pool maxima. An unknown
@@ -355,10 +457,12 @@ func _spawn_ship() -> void:
 		push_warning("game: player_ship.tscn did not instantiate as a PlayerShip")
 		return
 	add_child(_ship)
-	# The launched fit gates the W-slot mining laser (09 section 4.5): the v1
-	# standard fit carries no `w_mining`, so a launch ship mounts no laser and `E`
-	# mines nothing until the module is fitted.
-	_ship.setup(_stats, _state, ShipFit.fitted_ids(ShipFit.STANDARD_FIT))
+	# The launched fit gates the W-slot mining laser (09 section 4.5): a fit that
+	# carries no `w_mining` mounts no laser and `E` mines nothing until the module is
+	# fitted. The fit is the active hull's own now, so a Lancer's two lasers and a
+	# Delver's mining laser are the fit's own list rather than one global row.
+	_ship.set_hull_id(_launch_hull)
+	_ship.setup(_stats, _state, ShipFit.fitted_ids(_launch_fit))
 	_ship.damage_taken.connect(_on_ship_damage_taken)
 	# The mount is part of `setup`, so the reference is resolved once here rather
 	# than per frame: the reticle push reads the shaft's own range and target state
@@ -1113,35 +1217,37 @@ func _file_ammo_report() -> void:
 		return
 	if not profile.has_method(&"set_ammo"):
 		return
-	for slot in _state.WEAPONS.size():
-		var weapon_id: StringName = _state.WEAPONS[slot]
-		if not _ammo_seed.has(weapon_id):
+	for slot in _state.weapons.size():
+		if slot >= _ammo_seed.size():
 			continue
-		var seeded := int(_ammo_seed[weapon_id])
+		var weapon_id: StringName = _state.weapons[slot]
+		var seeded := _ammo_seed[slot]
 		var live: int = _state.ammo[slot]
 		var fired := seeded - live
 		if fired <= 0:
 			continue
 		var stored := int(profile.call(&"ammo_of", weapon_id))
 		profile.call(&"set_ammo", weapon_id, maxi(stored - fired, 0))
-		_ammo_seed[weapon_id] = live
+		_ammo_seed[slot] = live
 		EconomyLogScript.append(
 			EVENT_AMMO, weapon_id, fired, 0, int(profile.call(&"credits"))
 		)
 
 
-## The other half of the same pattern: the launch loads each pack from the profile's own
-## store (which owns them, section 4.3), clamped by `PlayerState`'s per-slot ceiling, and
-## records what it loaded so the dock can tell a fired round from a ceiling.
+## The other half of the same pattern: the launch loads each slot from the profile's own
+## store (which owns the packs, section 4.3), clamped by `PlayerState`'s per-slot ceiling,
+## and records what it loaded so the dock can tell a fired round from a ceiling. The slots
+## are the launched fit's own (`weapons`), so a hull that mounts two lasers seeds both
+## from the one `laser` pack and a hull that mounts none seeds nothing.
 func _seed_ammo() -> void:
 	var profile := _profile()
 	if profile == null or _state == null:
 		return
 	_ammo_seed.clear()
-	for slot in _state.WEAPONS.size():
-		var weapon_id: StringName = _state.WEAPONS[slot]
+	for slot in _state.weapons.size():
+		var weapon_id: StringName = _state.weapons[slot]
 		_state.set_ammo(slot, int(profile.call(&"ammo_of", weapon_id)))
-		_ammo_seed[weapon_id] = _state.ammo[slot]
+		_ammo_seed.append(_state.ammo[slot])
 
 
 func _refresh_hud() -> void:
@@ -1258,10 +1364,48 @@ func _bind_hud() -> void:
 		return
 	_hud.call(&"bind", _state)
 	_push_sector_name()
+	_push_hull_slots()
 	_hud.call(&"set_minimap_scale", _minimap_radius)
 	_hud.connect(&"weapon_slot_selected", _on_weapon_slot_selected)
 	_hud.connect(&"cargo_toggled", _on_cargo_toggled)
 	_hud.connect(&"minimap_zoom_changed", _on_minimap_zoom_changed)
+
+
+## CONTRACTS section 11's `set_hull_slots`: the launched hull's W cells, pushed once per
+## launch because the fit only changes in the station. Guarded like every other HUD push
+## here, so a HUD that predates this wave stays inert rather than failing the launch.
+func _push_hull_slots() -> void:
+	if _hud == null or not _hud.has_method(&"set_hull_slots"):
+		return
+	_hud.call(&"set_hull_slots", _launch_hull, _hull_slot_cells())
+
+
+## One entry per W cell of the launched hull, in the matrix's own layout order (09
+## section 4 item 5's index): `module` is the fitted base id (`&""` for an unfitted
+## cell), `icon` is the catalogue's own path for it - the HUD draws the `w` slot glyph
+## for an empty cell - and `selectable` is false past the input map's five weapon
+## groups, so a 7-W capital's last two cells display without a key (CONTRACTS section
+## 11). The cells come from `ShipFit.grid_cells`, so the HUD's grid is the hull's own
+## matrix and no second layout table exists.
+func _hull_slot_cells() -> Array:
+	var cells: Array = []
+	var fitted: Array = _launch_fit.get(&"weapons", [])
+	for cell: Dictionary in ShipFit.grid_cells(_launch_hull):
+		if StringName(cell[&"type"]) != &"weapons":
+			continue
+		var index := int(cell[&"index"])
+		var module := &""
+		if index >= 0 and index < fitted.size():
+			module = StringName(str(fitted[index]))
+		cells.append({
+			&"slot": &"weapons",
+			&"index": index,
+			&"module": module,
+			&"icon": ModuleCatalogScript.icon_path(module) if module != &"" else "",
+			&"fitted": module != &"",
+			&"selectable": index < WeaponsScript.GROUPS_MAX,
+		})
+	return cells
 
 
 func _instantiate_hud() -> Control:

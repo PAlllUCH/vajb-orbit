@@ -148,10 +148,12 @@ const UNRESOLVED_HULL_MASS := 1.0
 ## --- The owner's request (2026-09-21): "ship while traveling has to make sounds
 ## (thrusters depending on speed) and thrusters should create flame fx" ------------
 
-## FX_SPEC section 1.3's anchor row, today's half: "the hull's engine cells when
+## FX_SPEC section 1.3's anchor row: "the hull's engine cells when
 ## `ShipFit.mount_offset` is available, else one tail point behind the hull's centre".
-## The fraction is the one that row names; `_hull_radius()` is the hull's own art-derived
-## half-length (the same figure the aim deadzone uses), so no new size is invented.
+## Both halves now ship (P2-A): `thruster_anchors` returns one point per engine cell
+## and falls back to this tail point for a hull with no grid. The fraction is the one
+## that row names; `_hull_radius()` is the hull's own art-derived half-length (the same
+## figure the aim deadzone uses), so no new size is invented.
 const TAIL_ANCHOR_FRACTION := 0.55
 
 ## FX_SPEC section 6 row 3 (proposed): the low-hull arcs' own cadence, one arc every
@@ -169,6 +171,12 @@ var _laser: Node = null
 var _laser_active := false
 var _guns: Node2D = null
 var _fit_ids: Array[StringName] = []
+
+## The launched hull's id, handed over by `game.gd` (additive seam, P2-A): the engine
+## cells' mount anchors are hull-local geometry (`ShipFit.mount_offset`), and the
+## snapshot carries no hull id of its own. `&""` before the launch and for a caller that
+## never sets it, which is exactly the "no grid" case `thruster_anchors` falls back on.
+var _hull_id: StringName = &""
 
 ## The frame's speed ratio, pushed by `game.gd` (the scene computes `|v| / v_max` once
 ## for its three readers - engine spec section 3.4's single input - so nothing here
@@ -218,15 +226,22 @@ func _ready() -> void:
 	_sync_weapons()
 
 
+## The launched hull's id (additive seam, P2-A, CONTRACTS section 11): `game.gd` sets
+## it from the same hull it resolved the snapshot and the fit from, and the engine
+## cells' mount anchors are read off it. Separate from `setup` so the pinned launch
+## signature is untouched; a hull that never gets one keeps the single tail anchor.
+func set_hull_id(hull_id: StringName) -> void:
+	_hull_id = hull_id
+
+
 ## Launch handshake (pinned interface): the resolved snapshot plus the scene's
 ## live pools. Safe to call again on a hull swap; the old state is released and the
 ## rigid body is re-sized for the new hull.
 ##
 ## `fit_ids` is the launched fit's module ids (`ShipFit.fitted_ids`, additive
 ## beyond the pin, defaulting to an empty fit): the W-slot gate for the mining
-## laser (09 section 4.5). The 09 section 7 standard fit carries no `w_mining`, so
-## a ship launched without that module mounts no laser and `E` mines nothing until
-## it is fitted.
+## laser (09 section 4.5). A fit that carries no `w_mining` mounts no laser and `E`
+## mines nothing until the module is fitted.
 func setup(stats: ShipStats, state: PlayerState, fit_ids: Array[StringName] = []) -> void:
 	_stats = stats
 	_release_state()
@@ -329,17 +344,48 @@ func speed_ratio() -> float:
 	return _speed_ratio
 
 
-## The hull-local points the thruster flames come from (FX_SPEC section 1.3's anchor row):
-## one tail point behind the hull's centre today. **The seam wave P2-A replaces**: when
-## `ShipFit.mount_offset(hull_id, &"engines", i)` lands, this returns one point per engine
-## cell and nothing else in this file changes - the sync below is already per anchor.
+## The hull-local points the thruster flames come from (FX_SPEC section 1.3's anchor
+## row): **one point per engine cell** now that `ShipFit.mount_offset` exists (W1,
+## CONTRACTS section 11), and the shipped single tail point only for a hull with no
+## grid (an NPC) or a scene whose body carries no radius.
+##
+## The grid's row axis is the hull's longitudinal one - 08 section 3.2 reads the matrix
+## as the hull from above, "engines and the reactor sit in the tail" - so a cell's row
+## fraction, recovered from `mount_offset`'s y by dividing `MOUNT_SPREAD.y` back out,
+## places the nozzle along the tail direction at the same `TAIL_ANCHOR_FRACTION` of the
+## art-derived radius the single-point anchor used, and the column fraction spreads the
+## cells across the hull's width. Both numbers are shipped constants and the hull's own
+## measured radius; the feel wave's art measurement (owner tick 4) re-tunes
+## `MOUNT_SPREAD` if the nozzles should sit further out.
 func thruster_anchors() -> Array[Vector2]:
 	var anchors: Array[Vector2] = []
 	var radius := _hull_radius()
 	if radius <= 0.0:
 		return anchors
-	anchors.append(Vector2(-radius * TAIL_ANCHOR_FRACTION, 0.0))
+	var engines := ShipFit.slot_capacity(_hull_id, &"engines")
+	if engines <= 0:
+		anchors.append(_tail_anchor(radius))
+		return anchors
+	for index in engines:
+		anchors.append(_engine_anchor(index, radius))
 	return anchors
+
+
+## One engine cell's nozzle: the cell's own mount anchor, mapped into the hull's local
+## frame as above. A cell `mount_offset` cannot place (it answers `Vector2.ZERO`) falls
+## back to the tail point, so the anchor count stays one per engine cell either way.
+func _engine_anchor(index: int, radius: float) -> Vector2:
+	var offset := ShipFit.mount_offset(_hull_id, &"engines", index)
+	if offset == Vector2.ZERO:
+		return _tail_anchor(radius)
+	var row_fraction := offset.y / ShipFit.MOUNT_SPREAD.y + 0.5
+	return Vector2(-radius * TAIL_ANCHOR_FRACTION * row_fraction, offset.x * radius)
+
+
+## The pre-P2-A anchor, kept for a hull whose frame has no grid: one tail point behind
+## the hull's centre.
+func _tail_anchor(radius: float) -> Vector2:
+	return Vector2(-radius * TAIL_ANCHOR_FRACTION, 0.0)
 
 
 ## The trail emitters in anchor order, one per engine cell (empty before the first frame

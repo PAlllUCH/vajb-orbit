@@ -180,7 +180,7 @@ The file is only written by the debounce timer, by `save()`, or by `flush()` wit
 | `icon` | String | `res://` path to the 48 px ammo or weapon icon. |
 | `description` | String | One-line flavour text. |
 
-One pack per weapon, five in total. The pack `id` **is** the weapon id (`&"laser"`, `&"cannon"`, `&"rocket"`, `&"mine"`, `&"plasma"`), so `buy_ammo(pack.id, pack.rounds, pack.cost)` is the whole call the screen makes: there is no separate pack id to translate. The pack lists are ordered to match `PlayerState.WEAPONS`.
+One pack per weapon, five in total. The pack `id` **is** the weapon id (`&"laser"`, `&"cannon"`, `&"rocket"`, `&"mine"`, `&"plasma"`), so `buy_ammo(pack.id, pack.rounds, pack.cost)` is the whole call the screen makes: there is no separate pack id to translate. The pack lists are ordered to match `PlayerState.WEAPONS` — which stays the **default** list, the five families a `PlayerState` built without a fit still runs on; the **live** list is the launched fit's own weapon ids (`PlayerState.weapons`, CONTRACTS §11), so a hull with two fitted lasers draws both of its W slots from the `laser` pack (ammo stays per family, never per slot).
 
 ### 4.2 Ships, `const SHIPS: Array[Dictionary]`
 
@@ -196,7 +196,7 @@ One pack per weapon, five in total. The pack `id` **is** the weapon id (`&"laser
 | `hardpoints` | int | Weapon hardpoint count. |
 | `description` | String | One-line flavour text. |
 
-Four ships: fighter, vanguard, gunship, destroyer.
+Nine ships, one per 08 §2 class and in that document's ladder order: fighter (`ship_fighter`), vanguard (`ship_vanguard`), miner (`ship_miner`), trader (`ship_trader`), corvette (`ship_corvette`), freighter (`ship_freighter`, the Hauler), gunship (`ship_gunship`), patrol (`ship_patrol`, the Frigate), destroyer (`ship_destroyer`). The four this line used to list — fighter, vanguard, gunship, destroyer — are four of the nine, and their §5.2 costs stay frozen.
 
 ### 4.3 Upgrades, `const UPGRADES: Array[Dictionary]`
 

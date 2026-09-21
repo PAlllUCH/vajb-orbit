@@ -834,6 +834,189 @@ renames at `tests/test_flight_beam_g2.gd:51`, `tests/probe_g3_shadow.gd:134` and
 `game/npc_brain.gd` 4, `game/npc_registry.gd` 3, `game/asteroid.gd` 3 and
 `ui/hud/minimap.gd` 1 (the positive control).
 
+## §11 P2 ship frames (2026-09-21)
+
+Pinned before any code worker starts, so five parallel workers agree. Additive only:
+every §2/§3/§7 pin above stays valid.
+
+```gdscript
+## game/ship_fit.gd — additive beyond §3's pin.
+const SLOT_GRIDS: Dictionary          # hull_id -> Array[String], 08 §3.2's rows, equal length
+const SLOT_TOKEN_KEYS: Dictionary     # "E" -> &"engines", "P" -> &"power", "W" -> &"weapons",
+                                      # "S" -> &"shields", "H" -> &"armour", "C" -> &"computers",
+                                      # "B" -> &"boosters", "U" -> &"utility"; "." is a gap
+const FIT_SLOT_KEYS: Array[StringName]      # [engines, weapons, shields, armour, computers, boosters, utility, power]
+                                            # — the iteration/display order (rule 3 keeps `fitted_ids`' own order)
+const MANDATORY_SLOT_KEYS: Array[StringName]  # [engines, power] — 09 §4.1
+const ENGINE_MULT_CEILING := 1.40            # 09 §3.7
+const MOUNT_SPREAD := Vector2(0.34, 0.22)    # 09 §8, hull half-extent fraction
+const STANDARD_FITS: Dictionary              # hull_id -> 09 §9's fit
+
+static func grid_rows(hull_id: StringName) -> Array           # [] for an unknown hull
+static func grid_size(hull_id: StringName) -> Vector2i        # (cols, rows); ZERO when unknown
+static func grid_cells(hull_id: StringName) -> Array          # row-major, gaps included:
+    # [{type: StringName ("" for a gap), token: String, index: int (-1 for a gap),
+    #   col: int, row: int, gap: bool}]
+static func grid_counts(hull_id: StringName) -> Dictionary    # all 8 FIT_SLOT_KEYS present, 0 when absent
+static func slot_capacity(hull_id: StringName, slot_key: StringName) -> int
+static func fit_legal(hull_id: StringName, fit: Dictionary) -> Dictionary
+    # {legal: bool, overflow: {slot_key: int}, missing: Array[StringName],
+    #  duplicates: Array[StringName], power: {out, draw, spare, legal}}
+static func standard_fit(hull_id: StringName) -> Dictionary   # {} for an unknown hull
+static func mount_offset(hull_id: StringName, slot_key: StringName, index: int) -> Vector2
+    # the cell's normalised hull-local anchor, Vector2.ZERO when the cell does not exist
+```
+
+Rules the pin fixes, so no worker has to choose:
+
+0. **`SLOT_GRIDS` is 08 §3.2's block with the cosmetic spaces removed** (the
+   Cutter's rows are `.WW.`, `HSCB`, `HWU.`, `.EP.`), and W1's suite parses that
+   fenced block out of `docs/gameplay/08_ship_classes.md` and compares it with the
+   constant, so the document and the data cannot drift apart. Nine hulls, rows of
+   equal length, tokens from `SLOT_TOKEN_KEYS` plus `.`.
+
+1. **Fit shape.** `engines`, `weapons`, `shields`, `armour`, `computers`,
+   `boosters`, `utility` are `Array` of module id (`""` = empty cell); `power` is
+   one module id. Index = 09 §4.5's layout index (row-major within the type).
+2. **Legacy compatibility.** `resolve(hull_id, fit)` accepts the old singular
+   `engine` key (a `StringName` **or** an `Array`) and `STANDARD_FIT` resolves
+   unchanged; when both `engines` and `engine` are present, `engines` wins.
+3. **Resolution order** (`fitted_ids`) stays: `weapons, shields, armour,
+   computers, boosters, utility` — then `engines`, then `power`. Weapon-group
+   order must not move.
+4. **Engine math** (09 §3.7): `speed_mult = min(1 + Σ(m − 1), ENGINE_MULT_CEILING)`,
+   `turn_mult = 1 + Σ(m − 1)` (no ceiling). Applied once, after armour, before
+   booster-on-activation. A single engine resolves to exactly today's number.
+5. **`HULLS[hull][&"weapons"]` must equal `grid_counts(hull)[&"weapons"]`** for all
+   nine player hulls — one value, two readers (`game.gd:_target_name`, the panels).
+6. **NPC hulls are not in `SLOT_GRIDS`** (`ship_swarmer`, `ship_sibur`,
+   `ship_turret_platform`, `ship_boss_maw`, `ship_sibelon`, `ship_apex`,
+   `ship_interceptor`, `ship_bomber`, `ship_drone_swarm`, `ship_mine_layer`):
+   `grid_rows`/`grid_cells` return empty, `grid_counts` returns the 8 keys at 0,
+   `slot_capacity` 0, `standard_fit` `{}` — **no `push_error`, no warning**. NPCs
+   do not fit modules and `game.gd:944` reads `HULLS` for them.
+
+```gdscript
+## game/module_catalog.gd — new file, class_name ModuleCatalog extends RefCounted.
+const MODULES: Dictionary   # id -> {name, slot, draw, tier, cost, icon, effects}
+static func module(id: StringName) -> Dictionary     # {} for an unknown id
+static func icon_path(id: StringName) -> String
+static func slot_of(id: StringName) -> StringName     # &"" for an unknown id
+```
+
+`MODULES` copies each row's `slot`/`draw`/`effects` **verbatim** from
+`ShipFit.MODULES` (no number is invented) and adds `name`, `tier`, `cost` from
+09 §3's tables plus `icon` per the rule below. `ShipFit` reads effects and draws
+through `ModuleCatalog` and keeps `ShipFit.MODULES` indexable exactly as it is
+today (`ShipFit.MODULES[id][&"effects"]`, read by `game/player_ship.gd:672`,
+`tests/test_engine_c3_flight_decay.gd:57`, `tests/test_combat_repair_c5.gd:294`
+and `tests/probe_c3_flight_decay.gd:398`). The catalogue is the one literal; the
+alias is a `const` referencing it. If the engine refuses that const reference,
+keep the literal in `ShipFit.MODULES` and have `ModuleCatalog.MODULES` reference
+*it* instead — either direction is fine as long as **exactly one literal exists**,
+and W1's report states which direction shipped and why.
+
+Icon rule: `assets/icons/module/icon_module_<id>_48.png` for every id except the
+five base weapons, which use `assets/icons/weapon/icon_weapon_<family>_48.png`
+(`w_laser`→`laser`, `w_cannon`→`cannon`, `w_rocket`→`rocket`, `w_mine`→`mine`,
+`w_plasma`→`plasma`).
+
+Name table (pin it in the catalogue; the six lineage rows keep doc 09's own words):
+
+| id | name | id | name | id | name |
+|---|---|---|---|---|---|
+| `w_laser` | Laser MkII | `s_light` | Light Shield | `b_afterburner` | Afterburner |
+| `w_cannon` | Cannon MkI | `s_heavy` | Heavy Shield | `b_fold` | Fold Drive |
+| `w_rocket` | Rocket Pod | `s_ion` | Ion Shield | `u_cargo` | Cargo Expansion |
+| `w_mine` | Mine Layer | `h_plate_light` | Light Plate | `u_salvage` | Salvage Tractor |
+| `w_plasma` | Plasma Coil | `h_plate_heavy` | Heavy Plate | `u_refine` | Refinery Module |
+| `w_railgun` | Railgun | `h_composite` | Composite Plate | `u_drones` | Repair Drone Bay |
+| `w_mining` | Mining Laser | `c_target` | Targeting Computer | `u_tractor` | Tractor Array |
+| `e_std` | Standard Drive | `c_scanner` | Deep Scanner | `u_holds` | Cargo Holds |
+| `e_ion` | Ion Drive | `c_twin` | Twin Targeting | `p_std` | Standard Reactor |
+| `e_vector` | Vector Drive | `c_ewar` | EWAR Suite | `p_mk2` | Reactor Mk2 |
+| | | `c_nexus` | Nexus Computer | `p_core` | Reactor Core |
+
+```gdscript
+## autoload/player_profile.gd — additive beyond §8's pins.
+func fit_for(ship_id: StringName) -> Dictionary   # slot_key -> Array[String] ("" = empty),
+    # every type at its hull capacity, tail padded; {} only for an unknown hull id
+func set_fit(ship_id: StringName, fit: Dictionary) -> bool
+func set_fit_slot(ship_id: StringName, slot_key: StringName, index: int, module_id: StringName) -> bool
+func clear_fit(ship_id: StringName) -> void
+func base_module_id(entry: StringName) -> StringName   # instance id -> base id; the entry itself when unknown
+func module_count(module_id: StringName) -> int
+func add_module(module_id: StringName, count: int = 1) -> void
+func take_module(module_id: StringName, count: int = 1) -> bool
+```
+
+- **Normalisation:** a v1–v3 file stores one string per slot type; `fit_for`
+  returns it as a one-element array (padded to capacity) and never rewrites the
+  file at load. Writes always persist the array shape. `SAVE_VERSION` 3 → 4,
+  `MIN_READABLE_VERSION` stays 1, v1–v3 load clean.
+- **Keys:** `_fits` is keyed by `String(ship_id)` in the shipped shape and its
+  per-slot keys may be `String` or `StringName` (a loaded `ConfigFile` gives
+  `String`). `fit_for`/`set_fit`/`set_fit_slot`/`clear_fit` accept a `StringName`
+  hull id and a `StringName` slot key, read both spellings, and write the same
+  spelling the file already used — `ShipFit._list_slot`'s tolerance is the model.
+- **Signals:** `profile_changed(&"fits")` on a fit write, `&"modules"` on an
+  inventory write. Both keys already exist.
+- `base_module_id` resolves through the existing `_modules` dict (15 §6 instance
+  shape) and returns its argument when the dict has no such instance — today's
+  tests and fixtures store base ids directly and must keep working.
+
+```gdscript
+## game/player_state.gd — additive beyond §8's pin.
+var weapons: Array[StringName]                  # the launched fit's weapon ids, W-slot order
+func set_weapons(ids: Array[StringName]) -> void  # sizes ammo/ammo_max to ids, emits weapon_changed per slot
+```
+
+`const WEAPONS` stays (the five-family default a `PlayerState` built without a fit
+still runs on) and `weapons` starts as its copy. `setup()`, `set_ammo` and
+`game.gd:_seed_ammo`/`_file_ammo_report` read `weapons`, never `WEAPONS`. Ammo
+stays **per family**: two fitted lasers draw both slots from the `laser` pack.
+
+```gdscript
+## ui/hud/hud.gd — additive beyond §7's pins.
+func set_hull_slots(hull_id: StringName, cells: Array) -> void
+    # cells: [{slot: &"weapons", index: int, module: StringName, icon: String,
+    #          fitted: bool, selectable: bool}] — one per W cell, layout order
+func hull_slots() -> Array          # read-back for probes
+```
+
+The weapon grid is rebuilt from `cells`: `columns = mini(cells.size(), 5)` (a
+7-cell capital wraps to two rows), a cell whose `module` is empty draws the slot
+glyph `icon_slot_w` dimmed, a fitted cell draws the module icon, `selectable` is
+false for indices ≥ `GROUPS_MAX` (5, the input map's `weapon_1..5`). `bind`,
+`_on_weapon_changed` and the ammo label path are unchanged: `weapon_changed`'s
+`weapon_id` is still a family id.
+
+```gdscript
+## ui/components/slot_button.gd — additive.
+func configure_cell(variation: StringName, icon: Texture2D, cell: Vector2,
+                    icon_token: StringName = TOKEN_INACTIVE) -> void
+```
+
+`configure`'s signature and behaviour do not change; `configure_cell` sets an
+explicit cell size, `ignore_texture_size = true`, no number.
+
+Panel contracts (station):
+
+- `ui/station/shipyard_panel.gd`/`.tscn`: `%HardpointSlots` becomes a
+  **`GridContainer`** (`columns` = `ShipFit.grid_size(hull).x`), rebuilt per
+  selection from `ShipFit.grid_cells(hull)`: a gap is an empty 48×48 `Control`
+  with no plate; a slot cell is a 48 px `SlotButtonWeapon` plate carrying the
+  slot glyph, `disabled` (it is a display). Caption
+  `SLOT LAYOUT · %d CELLS · %d ENGINES` (`_hardpoint_caption`; `CELLS` = the
+  hull's slot count, 08 §3's Total — gaps are not cells). `STAT_ROWS`
+  becomes `hull, shield, cargo, engines, slots` (labels `HULL`, `SHIELD`,
+  `CARGO`, `ENGINES`, `SLOT CELLS`), and the list-row meta
+  (`META_FORMAT`, `:165`) becomes `"%d HULL · %d SLOTS"`.
+- `ui/station/launch_panel.gd`: `BRIEF_ROWS` becomes
+  `destination, hull_name, hull, shield, engines, hardpoints, slots, cargo, ammo`
+  (labels `ENGINES`, `HARDPOINTS`, `SLOT CELLS`); the cargo plate strip and its
+  five plates do not change.
+
 ## §10 Changelog
 
 - **v0 (2026-09-18)** — seeded from the engine wave-1 pinned interfaces
@@ -1024,3 +1207,39 @@ renames at `tests/test_flight_beam_g2.gd:51`, `tests/probe_g3_shadow.gd:134` and
      `strafe_right` (D), and the two entries sit at positions 5 and 6 of
      `REBINDABLE_ACTIONS`. (LOW-1: `settings_manager.gd:34-36`'s "Orders 18 and 19"
      comment says the same thing wrongly and is a comment-only fix.)
+- **v0.2 (2026-09-21, P2-A slot-frames wave — D0, the wave's only CONTRACTS writer)** —
+  added **§11** above (the P2 ship frames pin), transcribed verbatim from
+  `.agents/gen/p2a_slot_frames_wave_task.md` §3: `ShipFit`'s `SLOT_GRIDS`,
+  `SLOT_TOKEN_KEYS`, `FIT_SLOT_KEYS`, `MANDATORY_SLOT_KEYS`,
+  `ENGINE_MULT_CEILING` 1.40, `MOUNT_SPREAD` (0.34, 0.22), `STANDARD_FITS`,
+  `grid_rows`/`grid_size`/`grid_cells`/`grid_counts`/`slot_capacity`/`fit_legal`/
+  `standard_fit`/`mount_offset`; the new `ModuleCatalog` (32 rows + the name table +
+  the icon rule); `PlayerProfile`'s `fit_for`/`set_fit`/`set_fit_slot`/`clear_fit`/
+  `base_module_id`/`module_count`/`add_module`/`take_module`; `PlayerState`'s
+  `weapons`/`set_weapons`; the HUD's `set_hull_slots`/`hull_slots`; and
+  `SlotButton.configure_cell`, plus the two station panel contracts. **No pinned
+  signature changed and no frozen method was dropped** — the wave is additive on
+  every file it touches: `resolve` keeps accepting the legacy singular `engine` key
+  (`engines` wins when both are present), `fitted_ids`' order still starts with
+  `weapons`, `STANDARD_FIT` resolves unchanged, and `HULLS`/`HANDLING` stay valid.
+  **Every number in §11 is transcribed** — 08 §3/§3.1/§3.2's counts, bands and
+  matrices, 09 §1–§9's slot types, power rules, engine arithmetic, fit rules,
+  resolution order, deliveries and per-hull standard fits, 09 §3.7's 1.40 ceiling,
+  09 §8's one `MOUNT_SPREAD` pair — and this wave adds none. **Pinned tests that
+  move (both named in the brief's §5, nothing else):** `tests/test_ui_slot_layout.gd`'s
+  three pinned sections (the shipyard strip and the HUD's weapon cells are read from
+  the selected or active hull's matrix through `ShipFit`, so `HARDPOINT_CELLS := 7`
+  and the five-cell HUD count stop being literals) and `tests/test_p1_profile.gd:204`
+  (`save_version` 3 → 4, `MIN_READABLE_VERSION` stays 1). **§9's expected total is
+  the gate's own measured figure with zero failures** — this entry records no
+  carried-forward count, because the wave's own suites are what move it; this pass
+  measured the pre-wave tree on 2026-09-21 as `passed=311 failed=0`, exit 0, with
+  the one pre-existing `tests/test_weapon_fx_f4.gd:176` `SCRIPT ERROR` (§9, L61)
+  still in place, and that is the baseline the wave's suites grow from. The three
+  items this wave defers: `weapon_6`/`weapon_7` in the input map (an owner
+  `project.godot` edit, so a 7-W hull's cells 6–7 ship `selectable: false`),
+  mount-anchor consumption in flight (the feel wave's; the data and
+  `ShipFit.mount_offset` land here) and the fitting panel itself (wave P2-B).
+  Evidence: `.agents/gen/p2a_d0_report.md` (this doc pass) plus the wave's worker
+  reports `p2a_w{1,2,3,4,5}_report.md`, the review `.agents/gen/p2a_r1_report.md`
+  and the brief `.agents/gen/p2a_slot_frames_wave_task.md`.
