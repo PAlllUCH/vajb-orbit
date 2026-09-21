@@ -142,3 +142,82 @@ the owner would rather not regenerate.
 - `qc_f2.py plates` audits only the four button plates and **overwrites**
   `staging/phase_f/f2_report.json` with just that section (it was clobbered once by me and
   restored from git). The batch numbers live in their own reports instead.
+
+## Wrap-up (2026-09-21, after owner approval of both review sheets)
+
+### Panel frame: the art was fixed, the theme was not
+
+`build_theme.gd:27` still carried `PANEL_FRAME_MARGIN := 8.0` with the justification
+"Measured 2026-09-18: the painted band is 8 px" - a measurement of the **pre-reband** art.
+F.2 `reband_frame.py` rebuilt the frame to a true 32 px band (`reband_report.json`: band 304
+of a 1612 px master, margin 32), the spec elected the 32 px law
+(`UI_CHROME_ASSETS_SPEC.md` section 10), and the constant never followed. Measured on the
+shipped files with `reband_frame.measure_band` / `drawn_band`:
+
+| texture | painted band | drawn at margin 8 | drawn at margin 32 |
+|---|---|---|---|
+| `ui_panel_frame.png` 96x96 | 31.8 px (edges 30/32/32/33) | 69 vertical / 119 horizontal | **30 / 32** (the F.2 PASS row) |
+| `ui_panel_frame@2x.png` 192x192 | 62.8 px | (16 px margin -> 136 / 236) | 59 / 64 |
+| pre-reband `ui_panel_frame_96.png` | 13.0 px | 21 / 31 | 12 / 13 |
+
+`PanelRaised` is live in `station.tscn`, `launch_panel.tscn`, `repairs_panel.tscn`,
+`shipyard_panel.tscn` and `hud.tscn` (16 nodes), so this was not the latent defect
+`ASSET_AUDIT.md` C1 described: every framed panel drew a 69/119 px smeared band.
+Fixed: `PANEL_FRAME_MARGIN := 32.0` with the new measurement in the comment, and
+`vajb_theme.tres` carries `texture_margin_* = 32.0` (the generated file was re-emitted;
+the rebuild dropped every `uid` in the `.tres` on this host, so the committed file was
+restored and the four margin lines re-emitted - see the follow-up below).
+
+### The 19 `@2x` cuts import to the F.1 contract
+
+The PNGs were staged with the correct bytes but Godot wrote **fresh** sidecars for them
+(they are untracked at HEAD), which means default params: `mipmaps/generate=false`,
+`detect_3d/compress_to=1`. Every one was restored from `65bc1cb^`
+(`git show 65bc1cb^:<path>`), which carries the F.1 uid plus
+`mipmaps/generate=true`, `compress/mode=0`, `detect_3d/compress_to=0` - the same trio every
+shipped `_96`/`_192` icon carries (`apply_import_settings.py` `WANT`).
+
+Reimport needed a real trigger: `filesystem_manage reimport` reports success but is a no-op
+while the source md5 is unchanged, and `touch` does not change an md5. Deleting the 19
+stale `.ctex`/`.md5` companions (copied to `_recover/_ctex_before_mip/` first) then
+`filesystem_manage scan` imported all 19. Read back out of the new `.ctex` headers
+(`recover_ctex.py`):
+
+| cut | size | mips | | cut | size | mips |
+|---|---|---|---|---|---|---|
+| `ui_slot_weapon_*@2x` | 96x96 | 7 | | `ui_button_plate_*@2x` | 560x112 | 10 |
+| `ui_slot_cargo_*@2x` | 80x80 | 7 | | `ui_minimap_bezel@2x` | 400x400 | 9 |
+| `ui_slot_inventory_*@2x` | 112x112 | 7 | | `ui_panel_frame@2x` | 192x192 | 8 |
+| `ui_bar_caps@2x` | 84x28 | 7 | | | | |
+
+All RGBA8, `compress/mode=0`. The 1x cuts keep 1 mip - the quartet rule covers
+`_96`/`_192`/`@2x` only, so 1x chrome behaves like every other 1x cut in the project.
+
+### Verification
+
+- Test gate: `godot --headless --path vajb-orbit res://tests/headless_runner.tscn
+  --quit-after 1200` -> `[SUMMARY] passed=236 failed=0`, which includes
+  `test_ui_slot_layout.gd`'s panel-minimum-versus-viewport measurements, so the extra
+  33 px inset per side did not break a screen.
+- Pixels, five consumers, all after the change: main menu (wordmark crop + the two plate
+  buttons, `PLAY` focused), station hub (`PanelRaised` band + riveted corners),
+  shipyard (7 hardpoint plates at 48 px, hull-list plates), launch (5 cargo plates at 40 px,
+  the `LAUNCH` plate + focus border), in-flight HUD (bezel nine-patch, the 5+1 slot row,
+  the four bar caps on the hull/shield/energy/fuel bars).
+
+### Follow-ups for the coder lane (not designer lane)
+
+1. **A headless `build_theme.gd` run on Linux strips every `uid` from `vajb_theme.tres`**
+   (24 ext_resource uids + the theme's own). No consumer references the theme by uid, so it
+   resolves by path either way, but the file churns. Run it from the editor, or re-save
+   after a headless run.
+2. **`filesystem_manage reimport` is a no-op when only `.import` params changed.** The
+   reliable sequence is delete the `.ctex`/`.md5` companion, then `filesystem_manage scan`.
+3. `staging/phase_f/apply_import_settings.py` now has `--only` in the working tree (not at
+   HEAD yet); R8's tint pass can be run scoped (`--only 'icons/tint/*'`) instead of hitting
+   1080 of 1620 files.
+4. Not designer lane, found while verifying: `res://tests/probe_c1_ram.gd` fails to parse
+   (`Function "_inverse_mass()" not found in base self`, lines 312/317), and
+   `game.tscn`/`player_ship.tscn` warn `invalid UID ... using text path instead` for
+   `env_stars_layer1/2/3.png` and `ship_vanguard_side.png` - stale uid references, art
+   resolves by path.
