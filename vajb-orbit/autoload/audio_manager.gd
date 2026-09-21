@@ -501,6 +501,32 @@ func bed_state(cue: StringName) -> Dictionary:
 	}
 
 
+## The voice a bed is holding, as the `AudioStreamPlayer` itself sees it:
+## `{sounding, playing, stream, pitch_scale, volume_db}`. `bed_state` reports the cue
+## table, which says a bed is sounding the moment its cue is booked - a table that can be
+## right while the player holds no stream at all. This is the read-back that cannot: the
+## stream's own path and the player's `playing` flag are the voice's, so a bed that holds a
+## cue without a sound is visible here (`.agents/gen/slice2_5_s2_report.md` section 2.1).
+func bed_voice(cue: StringName) -> Dictionary:
+	var index := _loop_cues.find(cue)
+	if index < 0:
+		return {
+			&"sounding": false,
+			&"playing": false,
+			&"stream": "",
+			&"pitch_scale": 1.0,
+			&"volume_db": SILENT_DB,
+		}
+	var player := _loop_players[index]
+	return {
+		&"sounding": true,
+		&"playing": player.playing,
+		&"stream": "" if player.stream == null else player.stream.resource_path,
+		&"pitch_scale": player.pitch_scale,
+		&"volume_db": player.volume_db,
+	}
+
+
 ## The bed in the foreground: the highest-priority one sounding, and the most recently
 ## started of equals. The two existing callers read it to check that the bed they are
 ## about to stop is their own, so the more important bed is the one they see. "" when no
@@ -688,14 +714,40 @@ func _put_loop_voice_out(index: int, fade_seconds: float) -> void:
 ## written, and the bed enters at the curve's own floor (the thruster's -24 dB, which is
 ## quiet by construction). The release path still fades out from wherever the curve left
 ## the voice (`_put_loop_voice_out`).
+##
+## Releasing the fade is also why this method owns the bed's **start**: `play_loop` hands
+## the stream to a crossfade tween whose `_start_stream` callback runs on a later frame, so
+## a bed that is shaped on its own first frame would otherwise kill that callback before it
+## ran - a voice that reports a cue while its player holds no stream at all (silent on a
+## fresh voice, and still playing the *previous* bed's file on a re-used one). The shaped
+## bed therefore sets the cue's own stream and starts it itself, and only then writes the
+## level, so the cue table and the voice can never disagree (measured, S2's HIGH 1).
 func _shape_bed(cue: StringName, pitch_scale: float, volume_db: float) -> bool:
 	var index := _loop_cues.find(cue)
 	if index < 0:
 		return false
 	_kill_loop_tween(index)
 	var player := _loop_players[index]
+	_start_bed(cue, player)
 	player.pitch_scale = pitch_scale
 	player.volume_db = volume_db
+	return true
+
+
+## A bed's own stream on its own voice, started if the voice is not already playing it.
+## Idempotent, so a bed re-asked every frame does not restart itself: a voice already
+## playing this cue's file is left alone. Returns whether the voice carries the cue's own
+## stream (false only when the cue resolves to no file).
+func _start_bed(cue: StringName, player: AudioStreamPlayer) -> bool:
+	if player == null:
+		return false
+	var stream := _load_cue(&"sfx", cue)
+	if stream == null:
+		return false
+	if player.stream == stream and player.playing:
+		return true
+	player.stream = stream
+	player.play()
 	return true
 
 

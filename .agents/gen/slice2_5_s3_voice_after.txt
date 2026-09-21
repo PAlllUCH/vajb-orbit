@@ -1,0 +1,43 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[S2V] HEADS cue_engine=res://assets/audio/sfx/sfx_ship_engine_01.ogg cue_beam=res://assets/audio/sfx/sfx_mining_beam_01.ogg
+[S2V] ARM A_beam_play_loop_only cue=sfx_mining_beam play_loop_returned=sfx_mining_beam index=0 sounding=true
+[S2V] ARM A_beam_play_loop_only frame=1 index=0 playing=true stream=res://assets/audio/sfx/sfx_mining_beam_01.ogg volume_db=-62.2222 pitch=1.0000
+[S2V] ARM A_beam_play_loop_only frame=2 index=0 playing=true stream=res://assets/audio/sfx/sfx_mining_beam_01.ogg volume_db=-44.4444 pitch=1.0000
+[S2V] ARM A_beam_play_loop_only frame=3 index=0 playing=true stream=res://assets/audio/sfx/sfx_mining_beam_01.ogg volume_db=-26.6667 pitch=1.0000
+[S2V] ARM A_beam_play_loop_only frame=10 index=0 playing=true stream=res://assets/audio/sfx/sfx_mining_beam_01.ogg volume_db=0.0000 pitch=1.0000
+[S2V] ARM A_beam_play_loop_only frame=30 index=0 playing=true stream=res://assets/audio/sfx/sfx_mining_beam_01.ogg volume_db=0.0000 pitch=1.0000
+[S2V] ARM A_beam_play_loop_only frame=90 index=0 playing=true stream=res://assets/audio/sfx/sfx_mining_beam_01.ogg volume_db=0.0000 pitch=1.0000
+[S2V] ARM B_thruster_play_loop_only cue=sfx_ship_engine_01 play_loop_returned=sfx_ship_engine_01 index=0 sounding=true
+[S2V] ARM B_thruster_play_loop_only frame=1 index=0 playing=true stream=res://assets/audio/sfx/sfx_mining_beam_01.ogg volume_db=-59.2593 pitch=1.0000
+[S2V] ARM B_thruster_play_loop_only frame=2 index=0 playing=true stream=res://assets/audio/sfx/sfx_mining_beam_01.ogg volume_db=-65.1852 pitch=1.0000
+[S2V] ARM B_thruster_play_loop_only frame=3 index=0 playing=true stream=res://assets/audio/sfx/sfx_mining_beam_01.ogg volume_db=-71.1111 pitch=1.0000
+[S2V] ARM B_thruster_play_loop_only frame=10 index=0 playing=true stream=res://assets/audio/sfx/sfx_ship_engine_01.ogg volume_db=0.0000 pitch=1.0000
+[S2V] ARM B_thruster_play_loop_only frame=30 index=0 playing=true stream=res://assets/audio/sfx/sfx_ship_engine_01.ogg volume_db=0.0000 pitch=1.0000
+[S2V] ARM B_thruster_play_loop_only frame=90 index=0 playing=true stream=res://assets/audio/sfx/sfx_ship_engine_01.ogg volume_db=0.0000 pitch=1.0000
+[S2V] ARM B2_other_loop_play_loop_only cue=sfx_ship_engine_02_loop play_loop_returned=sfx_ship_engine_02_loop index=0 sounding=true
+[S2V] ARM B2_other_loop_play_loop_only frame=1 index=0 playing=true stream=res://assets/audio/sfx/sfx_ship_engine_01.ogg volume_db=-59.2593 pitch=1.0000
+[S2V] ARM B2_other_loop_play_loop_only frame=2 index=0 playing=true stream=res://assets/audio/sfx/sfx_ship_engine_01.ogg volume_db=-65.1852 pitch=1.0000
+[S2V] ARM B2_other_loop_play_loop_only frame=3 index=0 playing=true stream=res://assets/audio/sfx/sfx_ship_engine_01.ogg volume_db=-71.1111 pitch=1.0000
+[S2V] ARM B2_other_loop_play_loop_only frame=10 index=0 playing=true stream=res://assets/audio/sfx/sfx_ship_engine_02_loop.ogg volume_db=0.0000 pitch=1.0000
+[S2V] ARM B2_other_loop_play_loop_only frame=30 index=0 playing=true stream=res://assets/audio/sfx/sfx_ship_engine_02_loop.ogg volume_db=0.0000 pitch=1.0000
+[S2V] ARM B2_other_loop_play_loop_only frame=90 index=0 playing=true stream=res://assets/audio/sfx/sfx_ship_engine_02_loop.ogg volume_db=0.0000 pitch=1.0000
+[S2V] ARM C_hold_thruster_bed held=true index=0 reported_sounding=true pitch=0.9735 volume_db=-19.0588
+[S2V] ARM C_hold_thruster_bed frame=1 index=0 playing=true stream=res://assets/audio/sfx/sfx_ship_engine_01.ogg volume_db=-19.0588 pitch=0.9735
+[S2V] ARM C_hold_thruster_bed frame=2 index=0 playing=true stream=res://assets/audio/sfx/sfx_ship_engine_01.ogg volume_db=-19.0588 pitch=0.9735
+[S2V] ARM C_hold_thruster_bed frame=3 index=0 playing=true stream=res://assets/audio/sfx/sfx_ship_engine_01.ogg volume_db=-19.0588 pitch=0.9735
+[S2V] ARM C_hold_thruster_bed frame=10 index=0 playing=true stream=res://assets/audio/sfx/sfx_ship_engine_01.ogg volume_db=-19.0588 pitch=0.9735
+[S2V] ARM C_hold_thruster_bed frame=30 index=0 playing=true stream=res://assets/audio/sfx/sfx_ship_engine_01.ogg volume_db=-19.0588 pitch=0.9735
+[S2V] ARM C_hold_thruster_bed frame=90 index=0 playing=true stream=res://assets/audio/sfx/sfx_ship_engine_01.ogg volume_db=-19.0588 pitch=0.9735
+[S2V] ARM D_beam_before_the_ask frame=0 index=0 playing=true stream=res://assets/audio/sfx/sfx_ship_engine_01.ogg volume_db=-73.2288 pitch=1.0000
+[S2V] ARM D_steal beam_index=0 thruster_index=1 beds=[sfx_ship_engine_01, sfx_mining_beam]
+[S2V] ARM D_thruster_after_the_ask frame=0 index=1 playing=true stream=res://assets/audio/sfx/sfx_ship_engine_01.ogg volume_db=-19.0588 pitch=0.9735
+[S2V] ARM E_before_death sounding=true beds=[sfx_ship_engine_01] trails=1
+[S2V] ARM E_after_death sounding=false beds=[] trail_children=0
+[S2V] ARM F_full_house returned=true bed_state_sounding=false beds=[sfx_impact_shield_loop, sfx_ship_engine_02_loop, sfx_mining_beam] cue_in_voice_table=false
+[S2V] done
+WARNING: 8 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 4 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

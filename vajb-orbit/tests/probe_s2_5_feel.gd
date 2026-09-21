@@ -49,11 +49,12 @@ const HULL: StringName = &"ship_vanguard"
 const BOOSTER: StringName = &"b_afterburner"
 const AUDIO_SERVICE: StringName = &"AudioManager"
 
-const CHARGE_SHEET := "res://assets/fx/fx_dash_charge.png"
-const ARC_SHEET := "res://assets/fx/fx_arc_spark.png"
-const DUST_SHEET := "res://assets/fx/fx_dust_streak.png"
-const TRAIL_SHEET := "res://assets/fx/fx_engine_trail.png"
-const VIGNETTE_SHEET := "res://assets/fx/fx_hull_critical_vignette.png"
+## The re-cut frames every row draws now (the 2K masters are no longer an atlas source).
+const CHARGE_SHEET := "res://assets/fx/fx_dash_charge_f1.png"
+const ARC_SHEET := "res://assets/fx/fx_arc_spark_f1.png"
+const DUST_SHEET := "res://assets/fx/fx_dust_streak_f1.png"
+const TRAIL_SHEET := "res://assets/fx/fx_engine_trail_f1.png"
+const VIGNETTE_SHEET := "res://assets/fx/fx_hull_critical_vignette_f1.png"
 
 const THRUSTER_CUE: StringName = &"sfx_ship_engine_01"
 const SHIELD_BED: StringName = &"sfx_impact_shield_loop"
@@ -217,8 +218,13 @@ func _case_dust() -> void:
 		% [
 			TAG,
 			dust.get_parent().name,
-			((dust.texture as AtlasTexture).atlas as Texture2D).resource_path,
-			"add" if dust.material is CanvasItemMaterial else "mix",
+			_source_path(dust.texture),
+			(
+				"mix"
+				if dust.material is CanvasItemMaterial
+				and (dust.material as CanvasItemMaterial).blend_mode == CanvasItemMaterial.BLEND_MODE_MIX
+				else "other"
+			),
 			str(dust.local_coords),
 			dust.lifetime,
 			dust.amount,
@@ -346,7 +352,7 @@ func _case_trail() -> void:
 		print(
 			(
 				"%s TRAIL ratio=%.2f emitters=%d amount=%d amount_ratio=%.6f rate=%.4f "
-				+ "count=%.4f length=%.4f width=%.4f scale=(%.8f,%.8f) alpha=%.4f "
+				+ "count=%.4f length=%.4f width=%.4f node_scale=(%.8f,%.8f) quad_scale=(%.8f,%.8f) alpha=%.4f "
 				+ "color_a=%.4f emitting=%s lifetime=%.2f local_coords=%s rotation_deg=%.2f pos=(%.4f,%.4f)"
 			)
 			% [
@@ -361,6 +367,8 @@ func _case_trail() -> void:
 				float(read[&"width"]),
 				trail.scale.x,
 				trail.scale.y,
+				(read[&"scale"] as Vector2).x,
+				(read[&"scale"] as Vector2).y,
 				float(read[&"alpha"]),
 				process.color.a,
 				str(trail.emitting),

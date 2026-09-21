@@ -1,0 +1,13 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Vulkan 1.4.335 - Forward+ - Using Device #0: AMD - AMD Radeon RX 6800 XT (RADV NAVI21)
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[S25P] HEAD viewport=(1920.0, 1080.0) span_px=24.0 aberration_px=2.0 line_x=200
+[S25P] BLUR case=at_rest_below_the_onset ratio=0.00 strength=0.0000 visible=false lit_px=1 span_px=1 peak=1.000 row_split_px=0.000 column_split_px=0.000
+[S25P] BLUR case=ratio_0.9 ratio=0.90 strength=0.5667 visible=true lit_px=11 span_px=11 peak=1.000 row_split_px=0.000 column_split_px=-1.278
+[S25P] BLUR case=full_speed_strength_0.8 ratio=1.00 strength=0.8000 visible=true lit_px=15 span_px=15 peak=1.000 row_split_px=0.000 column_split_px=-2.565
+[S25P] BLUR case=shader_uniform_at_1.0 strength=1.0000 lit_px=19 span_px=19 peak=1.000 row_split_px=0.000
+[S25P] VIGNETTE case=pulse_1.0 alpha=0.9997 corner_mean=0.0000 centre_mean=0.0000
+[S25P] VIGNETTE case=pulse_0.6 alpha=0.6022 corner_mean=0.0000 centre_mean=0.0000
+[S25P] VIGNETTE case=above_the_line visible=false corner_mean=0.0000 centre_mean=0.0000
+[S25P] done

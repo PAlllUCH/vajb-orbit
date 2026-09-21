@@ -20,7 +20,8 @@ extends McpTestSuite
 ## Contract: docs/design/FX_SPEC.md section 1.2 (the flash, "4 frames at 20 FPS = 0.2 s
 ## total, one-shot, no loop"), section 1.6 (the engine-drawn beam and the chip sparks,
 ## "4-frame mini sheet at 20 FPS = 0.2 s, one-shot per S8 chip event"), line 138 (the
-## chip sheet's file name) and section 0 (void-black RGB, drawn additively);
+## chip sheet's file name); the re-cut frames carry their own alpha, so the chip burst
+## is blended with it (`.agents/gen/slice2_5_s3_report.md` section 3);
 ## docs/design/AUDIO_SPEC.md section 8's S8 chip transient; docs/CONTRACTS.md section 4
 ## (`shot_fired`: "once per released shot / per beam hold").
 
@@ -33,7 +34,7 @@ const AsteroidScript := preload("res://game/asteroid.gd")
 
 const AUDIO_SERVICE: StringName = &"AudioManager"
 const FLASH_FRAME_ONE := "res://assets/fx/fx_muzzle_flash_f1.png"
-const MINING_SHEET := "res://assets/fx/fx_mining_beam.png"
+const MINING_SHEET := "res://assets/fx/fx_mining_beam_f1.png"
 
 const CHIP_FRAMES := 4
 const CHIP_FPS := 20.0
@@ -41,7 +42,7 @@ const BEAM_FRAME := 0.05
 const AIM_DISTANCE := 300.0
 const ROCKET_DISTANCE := 60.0
 const ROCK_DISTANCE := 120.0
-const ADD := CanvasItemMaterial.BLEND_MODE_ADD
+const MIX := CanvasItemMaterial.BLEND_MODE_MIX
 
 ## The two seams `weapons.gd` reaches for on its host (`apply_recoil`, `impact_body`).
 ## A probe fixture, not a hull: nothing here simulates.
@@ -234,7 +235,7 @@ func test_a_laser_chipping_a_rock_plays_the_chip_cue_and_the_burst() -> void:
 	if bursts.is_empty():
 		return
 	var burst := bursts[0]
-	_assert_additive(burst)
+	_assert_alpha(burst)
 	var sprite := burst as AnimatedSprite2D
 	assert_true(sprite != null, "the burst is an animation")
 	if sprite != null and sprite.sprite_frames != null:
@@ -465,17 +466,19 @@ func _texture_of(node: Node) -> Texture2D:
 	return null
 
 
-func _assert_additive(node: CanvasItem) -> void:
+## The re-cut sheets carry their own alpha, so every one of them is blended with it (the
+## owner's 2026-09-21 ruling; FX_SPEC section 0.1's carve-out was the same rule for the
+## four effects that were keyed first).
+func _assert_alpha(node: CanvasItem) -> void:
 	var material := node.material as CanvasItemMaterial
 	assert_true(material != null, "an fx sheet carries its own canvas material")
 	if material == null:
 		return
 	assert_eq(
 		material.blend_mode,
-		ADD,
-		"FX_SPEC section 0: RGB on void black is drawn additively"
+		MIX,
+		"the sheet's own alpha is the blend: no black box, no additive blow-out"
 	)
-
 
 ## A clean fixture between tests. A live rocket is a target on the beam's segment, so
 ## shots are cleared with the rest - but the weapons under test are not shots, so the

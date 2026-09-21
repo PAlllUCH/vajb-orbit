@@ -28,8 +28,8 @@ const SHIELD_POOL: StringName = &"sfx_impact_shield_hit"
 const CANNON_POOL: StringName = &"sfx_weapon_cannon"
 const BLAST_POOL: StringName = &"sfx_weapon_explosion"
 
-const RIPPLE_SHEET := "res://assets/fx/fx_shield_ripple.png"
-const EXPLOSION_SHEET := "res://assets/fx/fx_explosion.png"
+const RIPPLE_SHEET := "res://assets/fx/fx_shield_ripple_f1.png"
+const EXPLOSION_SHEET := "res://assets/fx/fx_explosion_f1.png"
 const EXPLOSION_FRAMES := 5
 
 ## Two more shipped looping takes, so the beds' voice count can be filled in a test.
@@ -40,7 +40,7 @@ const SPARE_BED: StringName = &"sfx_ship_engine_02_loop"
 const AIM_DISTANCE := 300.0
 const BEAM_FRAME := 0.05
 const SHIELD_POOL_DEEP := 10000.0
-const ADD := CanvasItemMaterial.BLEND_MODE_ADD
+const MIX := CanvasItemMaterial.BLEND_MODE_MIX
 
 
 ## A hull that answers the pinned sink the way a hull does, with a pool a hit can empty.
@@ -134,7 +134,7 @@ func test_a_beam_that_lands_on_a_hull_plays_the_impact_cue_and_the_ring() -> voi
 	if rings.is_empty():
 		return
 	var ring := rings[0]
-	_assert_additive(ring)
+	_assert_alpha(ring)
 	assert_true(
 		_near((ring as Node2D).global_position.distance_to(guarded.global_position), 0.0),
 		"the ring sits on the point the beam reached"
@@ -324,7 +324,7 @@ func test_a_rocket_shot_down_by_a_beam_takes_the_blast() -> void:
 	if bursts.is_empty():
 		return
 	var burst := bursts[0]
-	_assert_additive(burst)
+	_assert_alpha(burst)
 	var frames := (burst as AnimatedSprite2D).sprite_frames
 	assert_true(frames != null, "the burst is an animation")
 	if frames != null:
@@ -449,17 +449,19 @@ func _texture_of(node: Node) -> Texture2D:
 	return null
 
 
-func _assert_additive(node: CanvasItem) -> void:
+## The re-cut sheets carry their own alpha, so every one of them is blended with it (the
+## owner's 2026-09-21 ruling; FX_SPEC section 0.1's carve-out was the same rule for the
+## four effects that were keyed first).
+func _assert_alpha(node: CanvasItem) -> void:
 	var material := node.material as CanvasItemMaterial
 	assert_true(material != null, "an fx sheet carries its own canvas material")
 	if material == null:
 		return
 	assert_eq(
 		material.blend_mode,
-		ADD,
-		"FX_SPEC section 0: RGB on void black is drawn additively"
+		MIX,
+		"the sheet's own alpha is the blend: no black box, no additive blow-out"
 	)
-
 
 ## A clean fixture: no leftover effect nodes and no leftover shots (a shot of another
 ## test's would be a target on the beam's segment).

@@ -49,7 +49,12 @@ const VIGNETTE_ALPHA_MAX := 1.0
 const VIGNETTE_SECONDS := 1.2
 
 const BLUR_SHADER_PATH := "res://game/speed_blur.gdshader"
-const VIGNETTE_SHEET := "res://assets/fx/fx_hull_critical_vignette.png"
+## FX_SPEC section 1.8's vignette: the re-cut's frame 1 of its own sequence
+## (`fx_hull_critical_vignette_f1.png`), which carries the plate's own alpha - so the
+## overlay blends with it instead of adding the plate's near-black field over the frame,
+## and section 1.8's "centre must be fully transparent" is the art's own alpha rather
+## than something the wiring had to subtract.
+const VIGNETTE_SHEET := "res://assets/fx/fx_hull_critical_vignette_f1.png"
 
 ## The world draws on canvas layer 0 and the HUD on layer 10
 ## (`ui/hud/hud.tscn`), so the blur and the vignette sit between them.
@@ -275,11 +280,10 @@ func _build_screen() -> void:
 		_vignette.stretch_mode = TextureRect.STRETCH_SCALE
 		_vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_vignette.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		## The sheet is RGB on Void Black (measured: no alpha channel, centre
-		## `#05080B`), so it composites the way every other FX plate does
-		## (FX_SPEC section 0) and the "alpha pulse" of section 1.8 is this
-		## node's own modulate.
-		_vignette.material = FxScript.additive_material()
+		## The re-cut frame carries its own alpha, so the overlay blends with it (the
+		## owner's 2026-09-21 ruling: every effect is drawn with the sheet's own alpha),
+		## and the "alpha pulse" of section 1.8 is this node's own modulate.
+		_vignette.material = FxScript.alpha_material()
 		_vignette.visible = false
 		_layer.add_child(_vignette)
 
@@ -294,9 +298,9 @@ func _build_dust() -> void:
 	if not is_instance_valid(_camera):
 		return
 	var row := ProjectileScript.feedback_row(DUST_ROW)
-	if row.is_empty() or not row.has(&"region"):
+	if row.is_empty():
 		return
-	var texture := _row_texture(row)
+	var texture := ProjectileScript.feedback_texture(DUST_ROW)
 	if texture == null:
 		return
 	var base := FxScript.scale_for(
@@ -305,11 +309,11 @@ func _build_dust() -> void:
 	)
 	var emitter := GPUParticles2D.new()
 	emitter.name = DUST_NODE
-	emitter.texture = FxScript.frame(texture, row[&"region"] as Rect2)
-	## FX_SPEC section 5 row 3: "camera-space, never additively blown" - the plate is
-	## RGB on Void Black with no alpha channel (measured), so a MIX draw carries the
-	## plate's own surround at `DUST_ALPHA`; that conflict is reported, and its reversal
-	## is this one line.
+	emitter.texture = texture
+	## FX_SPEC section 5 row 3: "camera-space, never additively blown" - and the re-cut
+	## frame now carries its own alpha, so the row's MIX draw is the blend it always
+	## asked for rather than the plate's own surround at `DUST_ALPHA`.
+	emitter.material = FxScript.alpha_material()
 	emitter.process_material = _dust_material(base)
 	emitter.amount = roundi(DUST_RATE * DUST_LIFETIME)
 	emitter.lifetime = DUST_LIFETIME
@@ -400,12 +404,3 @@ func _apply_vignette() -> void:
 	var active := vignette_active()
 	_vignette.visible = active
 	_vignette.modulate = Color(1.0, 1.0, 1.0, vignette_alpha() if active else 0.0)
-
-
-## A FEEDBACK row's shipped master, or null when the file is not on disk (the same
-## guard `projectile.gd` keeps, so a missing sheet leaves the effect quiet).
-func _row_texture(row: Dictionary) -> Texture2D:
-	var path := String(row.get(&"texture", ""))
-	if path.is_empty() or not ResourceLoader.exists(path):
-		return null
-	return load(path) as Texture2D

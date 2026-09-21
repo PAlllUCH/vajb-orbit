@@ -342,9 +342,19 @@ func _case_zoom_live() -> void:
 ## --- 3. The dust (FX_SPEC section 5 row 3) ----------------------------------
 
 
+## The drawn quad the emitter asks for: the draw pass's own `quad_scale` times the frame
+## it draws (S3's fix; the node's `scale` is inert, S2's report section 2.2).
+func _drawn_quad(node: CanvasItem, source: Vector2, length: float, width: float) -> Vector2:
+	var material := node.material as ShaderMaterial
+	if material == null:
+		return node.scale * source
+	var quad := material.get_shader_parameter(&"quad_scale") as Vector2
+	return quad * source
+
+
 ## The shipped plate's own facts, read off the file.
 func _case_dust_plate() -> void:
-	var path := "res://assets/fx/fx_dust_streak.png"
+	var path := String(ProjectileScript.feedback_row(&"dust")[&"frames"][0])
 	var texture := load(path) as Texture2D
 	if texture == null:
 		print("%s DUST_PLATE missing=%s" % [TAG, path])
@@ -558,12 +568,12 @@ func _case_arcs_live() -> void:
 	var frames_that_drew := 0
 	for i in 360:
 		await get_tree().physics_frame
-		var drawn := _fx_nodes(holder, "res://assets/fx/fx_arc_spark.png").size()
+		var drawn := _fx_nodes(holder, "res://assets/fx/fx_arc_spark_f1.png").size()
 		if drawn > 0:
 			frames_that_drew += 1
 		most_nodes = maxi(most_nodes, drawn)
 	var arcs := int(ship.call(&"arc_count")) - start
-	var nodes := _fx_nodes(holder, "res://assets/fx/fx_arc_spark.png")
+	var nodes := _fx_nodes(holder, "res://assets/fx/fx_arc_spark_f1.png")
 	var interval := float(ship.call(&"arc_interval"))
 	print(
 		(
@@ -607,7 +617,7 @@ func _case_trail_live() -> void:
 			(anchors[0] as Vector2).x,
 			(anchors[0] as Vector2).y,
 			float(ship.call(&"_hull_radius")),
-			String(row[&"texture"]),
+			String(row[&"frames"][0]),
 		]
 	)
 	for ratio: float in [0.15, 1.0]:
@@ -636,14 +646,18 @@ func _case_trail_live() -> void:
 				lerpf(SPEC_TRAIL_RATE_MIN, SPEC_TRAIL_RATE_MAX, ramp) / SPEC_TRAIL_RATE_MAX,
 				trail.scale.x,
 				trail.scale.y,
-				length / source.x,
-				SPEC_TRAIL_WIDTH / source.y,
+				_drawn_quad(trail, source, length, SPEC_TRAIL_WIDTH).x,
+				_drawn_quad(trail, source, length, SPEC_TRAIL_WIDTH).y,
 				process.color.a,
 				lerpf(SPEC_TRAIL_ALPHA_MIN, SPEC_TRAIL_ALPHA_MAX, ramp),
 				str(trail.emitting),
 				trail.lifetime,
 				str(trail.local_coords),
-				("additive" if trail.material is CanvasItemMaterial else "none"),
+				(
+					"quad_pass"
+					if trail.material is ShaderMaterial
+					else ("additive" if trail.material is CanvasItemMaterial else "none")
+				),
 				trail.position.x,
 				trail.position.y,
 				(anchors[0] as Vector2).x - length * 0.5,
@@ -678,7 +692,10 @@ func _case_trail_live() -> void:
 			]
 		)
 	Input.action_release(THRUST)
-	print("%s TRAIL sheet_nodes=%d" % [TAG, _fx_nodes(holder, String(row[&"texture"])).size()])
+	print(
+		"%s TRAIL sheet_nodes=%d"
+		% [TAG, _fx_nodes(holder, String(row[&"frames"][0])).size()]
+	)
 
 
 ## --- 7. The thruster bed (AUDIO_SPEC section 4.5) ----------------------------
@@ -973,7 +990,7 @@ func _case_boost_live() -> void:
 	var holder := ship.get_parent() as Node2D
 	var audio := _audio()
 	audio.call(&"stop_thruster_bed")
-	var charge_sheet := String(ProjectileScript.feedback_row(&"dash_charge")[&"texture"])
+	var charge_sheet := String(ProjectileScript.feedback_row(&"dash_charge")[&"frames"][0])
 	Input.action_press(BOOST_ACTION)
 	_pressed.append(BOOST_ACTION)
 	for i in 2:

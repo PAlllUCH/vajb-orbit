@@ -11,11 +11,17 @@ extends McpTestSuite
 ## `AudioManager.last_sfx()` or from the plan `play_pool` returns, and every
 ## `res://assets/` path is resolved before the node that reads it is asserted on.
 ##
-## Contract: docs/design/FX_SPEC.md sections 0 (void-black/additive), 1.1 (the bolt
-## sheet), 1.2 (the four-frame flash at 20 FPS), 1.6 (the engine-drawn beam) and 7.3
-## (one-shot sheets free themselves); docs/design/AUDIO_SPEC.md section 8's cue table
-## and section 4.1's variant rules; docs/design/ASSET_WIRING_HANDOFF.md sections
-## 1.1/1.2 (the pools and their ranges) and 3 (consumer rules).
+## Contract: docs/design/FX_SPEC.md section 1.1 (the bolt's two tiers), 1.2 (the
+## four-frame flash at 20 FPS), 1.6 (the engine-drawn beam) and 7.3 (one-shot sheets free
+## themselves); docs/design/AUDIO_SPEC.md section 8's cue table and section 4.1's variant
+## rules; docs/design/ASSET_WIRING_HANDOFF.md sections 1.1/1.2 (the pools and their
+## ranges) and 3 (consumer rules).
+##
+## The 2026-09-21 re-cut put every effect on its own per-frame RGBA files, so the rows
+## name `fx_<effect>_fN.png` and every sheet is blended with its own alpha (the owner's
+## ruling; `.agents/gen/slice2_5_s3_report.md` section 3 records it and its reversal). The
+## additive assertions therefore moved to the alpha blend for the sheets, while the
+## engine-drawn beam's halo - which is not a sheet - keeps its own.
 
 const WeaponScript := preload("res://game/weapons.gd")
 const ProjectileScript := preload("res://game/projectile.gd")
@@ -30,14 +36,19 @@ const LASER_POOL: StringName = &"sfx_weapon_laser"
 const CANNON_POOL: StringName = &"sfx_weapon_cannon"
 const ROCKET_POOL: StringName = &"sfx_weapon_rocket"
 
-const BOLT_SHEET := "res://assets/fx/fx_laser_bolt.png"
-const TRAIL_SHEET := "res://assets/fx/fx_missile_trail.png"
-const MINE_SHEET := "res://assets/fx/fx_ember_pulse.png"
+## The frame each kind draws: FX_SPEC section 1.1's sheet re-cut into its four frames
+## (light bright, light dimming, medium bright, medium dimming), so the thin tier is `_f1`
+## and the thick one `_f3`.
+const BOLT_FRAME := "res://assets/fx/fx_laser_bolt_f1.png"
+const SLUG_FRAME := "res://assets/fx/fx_laser_bolt_f3.png"
+const TRAIL_FRAME := "res://assets/fx/fx_missile_trail_f1.png"
+const MINE_FRAME := "res://assets/fx/fx_mine_f1.png"
 const FLASH_FRAME_ONE := "res://assets/fx/fx_muzzle_flash_f1.png"
 const BEAM_BED_PATH := "res://assets/audio/sfx/sfx_mining_beam_01.ogg"
 
 const FLASH_FRAMES := 4
 const TRAIL_FRAMES := 4
+const MINE_FRAMES := 4
 const FLASH_FPS := 20.0
 const BOLT_LENGTH := 64.0
 const SLUG_LENGTH := 96.0
@@ -45,6 +56,7 @@ const AIM_DISTANCE := 300.0
 const WARHEAD_DELAY := 0.08
 const TOLERANCE := 0.001
 const ADD := CanvasItemMaterial.BLEND_MODE_ADD
+const MIX := CanvasItemMaterial.BLEND_MODE_MIX
 
 ## The two seams `weapons.gd` reaches for on its host (`apply_recoil`, `impact_body`).
 ## A probe fixture, not a hull: nothing here simulates.
@@ -91,7 +103,7 @@ func teardown() -> void:
 	_clear_world()
 
 
-## --- The shot's sprite (FX_SPEC sections 0/1.1, Phase G's trail sheet) ----
+## --- The shot's sprite (FX_SPEC section 1.1, Phase G's trail sheet) --------
 
 
 func test_the_bolt_kind_draws_the_bolt_sheets_thin_cut() -> void:
@@ -101,12 +113,12 @@ func test_the_bolt_kind_draws_the_bolt_sheets_thin_cut() -> void:
 	if visual == null:
 		return
 	var atlas := visual.texture as AtlasTexture
-	assert_true(atlas != null, "the sprite is a region of a shipped 2K master")
+	assert_true(atlas != null, "the sprite is a region of the kind's own frame")
 	if atlas == null:
 		return
-	assert_eq(atlas.atlas.resource_path, BOLT_SHEET, "FX_SPEC 1.1's bolt sheet")
-	assert_eq(atlas.region, ProjectileScript.SHEETS[&"bolt"][&"region"], "the sheet's thin object")
-	_assert_additive(visual)
+	assert_eq(atlas.atlas.resource_path, BOLT_FRAME, "FX_SPEC 1.1's bolt, its bright frame")
+	assert_eq(atlas.region, ProjectileScript.SHEETS[&"bolt"][&"region"], "the frame's thin object")
+	_assert_alpha(visual)
 	assert_true(
 		_near(visual.scale.x * atlas.region.size.x, BOLT_LENGTH),
 		"the light bolt reads the spec's 64 units"
@@ -121,12 +133,12 @@ func test_the_slug_kind_draws_the_bolt_sheets_other_cut() -> void:
 		return
 	var atlas := visual.texture as AtlasTexture
 	if atlas == null:
-		assert_true(false, "the slug sprite is a sheet region")
+		assert_true(false, "the slug sprite is a region of its own frame")
 		return
-	assert_eq(atlas.atlas.resource_path, BOLT_SHEET, "the same sheet, the heavier read")
-	assert_eq(atlas.region, ProjectileScript.SHEETS[&"slug"][&"region"], "the sheet's thick object")
+	assert_eq(atlas.atlas.resource_path, SLUG_FRAME, "the same effect, the heavier tier")
+	assert_eq(atlas.region, ProjectileScript.SHEETS[&"slug"][&"region"], "the frame's thick object")
 	assert_ne(atlas.region, ProjectileScript.SHEETS[&"bolt"][&"region"], "the two kinds differ")
-	_assert_additive(visual)
+	_assert_alpha(visual)
 	assert_true(
 		_near(visual.scale.x * atlas.region.size.x, SLUG_LENGTH),
 		"the medium bolt reads the spec's 96 units"
@@ -145,25 +157,32 @@ func test_the_homing_kind_animates_the_missile_trail() -> void:
 		frames.get_animation_loop(FxScript.ANIMATION),
 		"the exhaust loops for as long as the rocket flies"
 	)
-	_assert_additive(visual)
-	var first := frames.get_frame_texture(FxScript.ANIMATION, 0) as AtlasTexture
-	assert_true(first != null, "each trail frame is a region of the master")
+	_assert_alpha(visual)
+	var first := frames.get_frame_texture(FxScript.ANIMATION, 0)
+	assert_true(first != null, "frame 1 is the pre-cut export")
 	if first != null:
-		assert_eq(first.atlas.resource_path, TRAIL_SHEET, "the Phase G trail sheet")
+		assert_eq(first.resource_path, TRAIL_FRAME, "the Phase G trail sheet's first frame")
 
 
-func test_the_mine_kind_is_one_additive_frame() -> void:
+## FX_SPEC section 7.2's mine, from the owner's 2026-09-21 re-cut: the deployable's own
+## four frames (the lamp's own pulse) are the family's sprite.
+func test_the_mine_kind_draws_the_mine_familys_own_frames() -> void:
 	var shot := _staged_shot(ProjectileScript.KIND_MINE)
-	var visual := _sprite_of(shot)
+	var visual := _sprite_of(shot) as AnimatedSprite2D
 	if visual == null:
-		assert_true(false, "the deployable draws a body")
+		assert_true(false, "the deployable draws its own body")
 		return
-	var atlas := visual.texture as AtlasTexture
-	if atlas == null:
-		assert_true(false, "the mine sprite is a sheet region")
-		return
-	assert_eq(atlas.atlas.resource_path, MINE_SHEET, "an ember body, drawn from the shipped art")
-	_assert_additive(visual)
+	var frames := visual.sprite_frames
+	assert_eq(
+		frames.get_frame_count(FxScript.ANIMATION), MINE_FRAMES, "the mine family's four frames"
+	)
+	assert_true(frames.get_animation_loop(FxScript.ANIMATION), "the lamp pulses while it sits")
+	_assert_alpha(visual)
+	var first := frames.get_frame_texture(FxScript.ANIMATION, 0) as AtlasTexture
+	assert_true(first != null, "each frame is the art's own ink box in its frame")
+	if first != null:
+		assert_eq(first.atlas.resource_path, MINE_FRAME, "`fx_mine_f1.png`, the family's own art")
+		assert_eq(first.region, ProjectileScript.SHEETS[&"mine"][&"region"], "the measured mine")
 	assert_true(_near(visual.rotation, 0.0), "a mine has no bearing to carry")
 
 
@@ -195,7 +214,7 @@ func test_the_muzzle_flash_is_the_four_frame_sheet() -> void:
 	)
 	assert_false(frames.get_animation_loop(FxScript.ANIMATION), "the flash plays once")
 	assert_false(flash.centered, "the frame's own mouth, not its middle, sits on the muzzle")
-	_assert_additive(flash)
+	_assert_alpha(flash)
 	var first := frames.get_frame_texture(FxScript.ANIMATION, 0)
 	assert_true(first != null, "frame 1 is the pre-cut export")
 	if first != null:
@@ -469,25 +488,26 @@ func test_the_mining_shaft_plays_the_beam_bed_and_stops_with_it() -> void:
 func test_every_wired_sheet_and_cue_resolves() -> void:
 	for kind: StringName in ProjectileScript.SHEETS:
 		var row: Dictionary = ProjectileScript.SHEETS[kind]
-		var path := String(row.get(&"texture", ""))
-		assert_true(ResourceLoader.exists(path), "%s's sheet is on disk (%s)" % [kind, path])
-		var texture := load(path) as Texture2D
-		if texture == null:
-			assert_true(false, "%s's sheet loads" % kind)
-			continue
-		var size := texture.get_size()
-		if row.has(&"region"):
-			var region: Rect2 = row[&"region"]
+		var paths: Variant = row.get(&"frames", [])
+		assert_true(
+			paths is Array and not (paths as Array).is_empty(), "%s names its frames" % kind
+		)
+		for path: Variant in paths:
 			assert_true(
-				region.end.x <= size.x and region.end.y <= size.y,
-				"%s's region is inside its sheet" % kind
+				ResourceLoader.exists(String(path)),
+				"%s's frame is on disk (%s)" % [kind, String(path)]
 			)
-		for frame: Variant in row.get(&"regions", []):
-			var rect := frame as Rect2
-			assert_true(
-				rect.end.x <= size.x and rect.end.y <= size.y,
-				"%s's frame region is inside its sheet" % kind
-			)
+			var texture := load(String(path)) as Texture2D
+			if texture == null:
+				assert_true(false, "%s's frame loads" % kind)
+				continue
+			var size := texture.get_size()
+			if row.has(&"region"):
+				var region: Rect2 = row[&"region"]
+				assert_true(
+					region.end.x <= size.x and region.end.y <= size.y,
+					"%s's region is inside its own frame" % kind
+				)
 	for path: String in WeaponScript.FLASH_FRAMES:
 		assert_true(ResourceLoader.exists(path), "%s is on disk" % path)
 	var audio := _audio()
@@ -577,7 +597,22 @@ func _assert_additive(node: CanvasItem) -> void:
 	assert_eq(
 		material.blend_mode,
 		ADD,
-		"FX_SPEC section 0: RGB on void black is drawn additively"
+		"the engine-drawn beam's halo is not a sheet and keeps its own blend"
+	)
+
+
+## The re-cut sheets carry their own alpha, so every one of them is blended with it (the
+## owner's 2026-09-21 ruling; FX_SPEC section 0.1's carve-out was the same rule for the
+## four effects that were keyed first).
+func _assert_alpha(node: CanvasItem) -> void:
+	var material := node.material as CanvasItemMaterial
+	assert_true(material != null, "an fx sheet carries its own canvas material")
+	if material == null:
+		return
+	assert_eq(
+		material.blend_mode,
+		MIX,
+		"the sheet's own alpha is the blend: no black box, no additive blow-out"
 	)
 
 

@@ -310,8 +310,8 @@ leaves HIGH or MED.
   them from `ShipFit` instead of a literal.
 - `tests/test_p1_profile.gd:204` — `save_version` 3 → 4.
 - Nothing else moves. A test is never edited to hide a failure; the gate count
-  **grows** (the last recorded figure is **236**, measured after the
-  combat-repair wave — measure yours, never assume).
+  **grows** (the figure moves with every wave — **307** after the feel pass
+  built, higher once its fixer lands; measure yours, never assume).
 
 ## 6. Hard rules
 
@@ -408,3 +408,23 @@ with its report paths, P2-B queued behind it, the owner ticks recorded as resolv
 wave-boundary commit; report to the owner with the measured gate count, the
 per-hull grid table as implemented, the tests that moved, and R1's findings by
 tier. **Snapshot + commit before the first dispatch**, per the standing wave rule.
+
+## 10. Addendum 2026-09-21 — what landed under this brief before it runs
+
+Slice 2.5 (Feel) built while this brief was queued, and the FX tree was re-cut.
+Three consequences, each small:
+
+1. **The `thruster_anchors()` seam exists** (`game/player_ship.gd`, one tail
+   point). W4 owns `player_ship.gd` and, when `ShipFit.mount_offset(hull_id,
+   &"engines", i)` lands in W1, flips that one method to return one point per
+   engine cell — nothing else in the flight side changes. This retires §7 item 1
+   ("mount-anchor consumption is staged into the feel wave"): it happened.
+2. **Line numbers in §2 have drifted** (`game.gd` also pushes
+   `speed_fantasy.set_ratio` each frame now; `player_ship.gd` grew the trail and
+   the bed driver). The facts stand; verify each at read time and report the new
+   line when a §2 cite has moved.
+3. **`game/player_state.gd`, `ui/hud/hud.gd` and the two station panels are
+   untouched** by the feel pass, so §4's file sets hold. `game/projectile.gd`,
+   `game/fx.gd` and `autoload/audio_manager.gd` changed (per-frame RGBA FX,
+   alpha blending, the loop-bed voices) and are **not** in any P2-A file set —
+   read them, never edit them.

@@ -8,12 +8,11 @@ evidence were moved to `.agents/gen/_archive/` (2026-09-21, reversible) —
 citation paths of the form `.agents/gen/<report>.md` now resolve one level
 deeper.
 
-**Current state: four coding waves closed (chrome, combat repair, weapon FX wiring, flight
-feel & beam polish); slice 2.5 (Feel) is BUILT and REVIEWED but PAUSED before its fixer pass —
-the owner is re-cutting the FX on transparent backgrounds first, which makes the trail's draw
-problem go away by construction. Owner gates: the chrome art half, the launch fit, three spec
-ticks, and the §13 turn column.** Engine waves closed as below
-(slice 0 + slice 2 review-verified clean; gate `passed=307 failed=0` with slice 2.5's builder suite). A full-loop live
+**Current state: five coding waves closed (chrome, combat repair, weapon FX wiring, flight
+feel & beam polish, slice 2.5 Feel). The project is now on the P2-A ship-slot-frame wave per
+the dispatcher's queue. Owner gates: the chrome art half, the launch fit, four spec ticks, the
+§13 turn column, and the engine-bed / vignette-strength calls slice 2.5 raised.** Engine waves closed as below
+(slice 0 + slice 2 review-verified clean; gate `passed=311 failed=0`). A full-loop live
 playtest (2026-09-21, godot-ai driven) verified the whole menu → station → launch →
 space structure but found the `ui_slot_*` chrome shipping as whole sheet cells
 (880×876 / 873×864). The **UI-chrome code lane is Done** (D3 guard, D4 stale UIDs, D5
@@ -66,7 +65,7 @@ record).
   rulings 8–26. **Owner-locked**: no worker may edit it; the six owed spec
   edits are the owner's (MASTER_REPORT §3 item 1).
 - Universal test gate: `res://tests/headless_runner.tscn` → `[SUMMARY]
-  passed=294 failed=0` (exact command in CONTRACTS.md §9; grew 53 → 78 → 219 → 226
+  passed=311 failed=0` (exact command in CONTRACTS.md §9; grew 53 → 78 → 219 → 226
   with the UI-chrome wave's `test_ui_slot_layout.gd`, 236 with the combat repair wave's
   `test_engine_c3_flight_decay.gd` and `test_combat_repair_c5.gd`, 277 with the weapon FX
   wave's `test_weapon_fx_f{1,2,4}.gd` suites, and 294 with the flight/beam wave's
@@ -127,148 +126,27 @@ PowerShell form: `$env:VAJB_WORKER_FILES='...'; crush run "<prompt>" -m opencode
 
 ## In flight — none.
 
-## Queued
-
-**Dispatch flow (owner ruling 2026-09-20):** the owner no longer pastes
-worker prompts. The coding orchestrator receives `.agents/gen/dispatch_coder.md`
-(it executes slice 0 → slice 2 → batch-2 with the briefs and prompts files);
-the graphics orchestrator receives `.agents/gen/dispatch_designer.md`
-(ship rework → alien hulls → Phase G FX, owner-gated review sheets). Both
-lanes' queued items below are executed through those files.
-
-1. **UI chrome blocker wave (NEW 2026-09-21, before slice 2.5).** The
-   2026-09-21 00:17 chrome re-cut shipped whole sheet cells for the
-   `ui_slot_*` family: `ui_slot_weapon_*.png` 880×876 and `ui_slot_cargo_*.png`
-   873×864, consumed at native size by shipyard Hardpoint01–07, the launch
-   panel's CargoSlot01–05 and the HUD slot buttons — those panels overflow to
-   ~4 800–6 200 px and their content lands off-screen ("only pistols" /
-   "only crates"). Design lane: tight plate re-cut (`plates_cut.py` route 1)
-   plus the standing R7/R8 scope (`ui_chrome_regression.md`). **Designer
-   finding (2026-09-21, after task): the keying cache holds 235 more orphans**
-   (button plates `@2x` 560×112, bezel, panel frame, bar caps, logo, backdrop
-   plate) — R7/R8 are recoverable the free way from the cache, which retires
-   `plates_cut.py`'s "needs regeneration, $0.05" note; regenerate only what
-   the cache cannot cover. Also: `apply_import_settings.py` has **no `--only`**
-   and wants to rewrite 1080 of 1620 `.import` files (the R8 tint-stencil
-   defect) — it stays out of every batch until the coder lane adds the scoped
-   flag. Coding lane: TextureButton guard (`ignore_texture_size` +
-   `custom_minimum_size`) + stale-UID cleanup (`player_ship.tscn`,
-   `game.tscn`) + one lint pass (D4/D5 in the playtest report) — **DONE
-   2026-09-21** (brief `ui_chrome_wave_task.md`, prompts `ui_chrome_wave_prompts.md`,
-   reports `.agents/gen/ui_chrome_w{1..6}_report.md`, gate 226/0, six worker
-   reports verified by W5 with no HIGH). The art half stays owner-gated on the
-   slot review sheet, and the coder lane owes the graphics lane one small
-   tooling fix: an `--only` scope for `staging/phase_f/apply_import_settings.py`
-   before any batch may use it.
-2. **Playtest session 2 — the head of the queue, now with something to see and hear.**
-   Re-check the weapon wiring by eye and ear (the owner's original report: "no sprite and
-   no sound"), then finish the loop legs
-   session 1 could not reach: flight/fuel/reactor, mining, combat +
-   countermeasures, death/respawn, dock-back economy, save/load, boot/loading
-   logo, menu stutter (user note), and re-test the repaired rock ram, the drag
-   retune and the launch fit (the owner deferred that decision to this
-   session). Same crosscheck protocol; the notes file moved out of the root —
-   read `TO_REVIEW/` and `USER_NOTES.md` at HEAD if the root copy is absent.
-3. **Combat / collision repair wave — DONE 2026-09-21** (brief
-   `combat_repair_wave_task.md`, prompts `combat_repair_wave_prompts.md`, reports
-   `combat_repair_{c1,c2,c3,c5,c6,c7,t1}_report.md`, gate 226 → 236). C1 proved the
-   rock's `collision_mask = 0` made the physics pair solve as immovable and that the
-   40 u/s floor was not the cause; C2 overturned the wave's own premise (weapons
-   already chip rocks at `GUN_CHIP_RATE` 0.10) and found the real cause of the owner's
-   report — the launch fit — plus plasma's shield bonus and the mine's borrowed
-   cadence; C3 measured the decay and located it in the §13 `coast_time` row, not the
-   `DRAG`/`ACCELERATION` pair the brief assumed. C5 fixed four defects and applied the
-   owner's retune; C6 reviewed with no HIGH; C7 corrected the contract's own stale
-   pins. **Open owner gates: the launch fit and the §13 `coast_time` table.**
-4. **Slice-2.5 (Feel) — READY, RUNS NEXT (before P2-A).** Brief
-   `.agents/gen/slice2_5_feel_wave_task.md`, prompts
-   `.agents/gen/slice2_5_feel_wave_prompts.md` (order S1 → S2 → S3). Scope is
-   the owner's thruster request **plus** what slice 2.5 still owes after the
-   weapon-FX wave shipped the damage half: motion blur + camera pull-back + dust
-   streaks (§3.4 / FX_SPEC §5), the hull-critical vignette and the low-hull arcs
-   (FX_SPEC §6), the thruster trail behind a `thruster_anchors()` seam and the
-   S16 thruster bed with its speed curve + the boost cue (FX_SPEC §1.3/§7.1,
-   AUDIO_SPEC §4.5) — nine deliverables, all presentation, no new gameplay
-   system and no new number outside the two rows those sections mark *proposed*.
-   Already shipped by the weapon-FX wave and **not** to be rebuilt: explosion,
-   secondary, arc, shield-break, ripple and plume sheets, the low-hull plume,
-   and the per-bed loop voices with their priority table. Gate **277** before
-   it; the FX lane's own worker takes it. Snapshot + commit before the first
-   dispatch.
-5. **Owner spec pass (blocks nothing, unblocks tests):** the six
-   `18_engine_spec.md` edits listed in MASTER_REPORT §3 item 1 (R-key +
-   Z/X countermeasure rows, strike the refuel-for-CR wording, speed-table-v2 △
-   tick, mine-alpha/kinetic-cadence rows, §6 fragment wording, rock-mass row,
-   seeker-orbit and Q-marks readings).
-6. **Graphics lane, rest:** 4K 2× backdrop cuts (R8) + tint-stencil import
-   settings + `_48` zoom buttons; B2-1 hover direction waits for the owner's
-   pick; owner-endorsed direction: evaluate asset-library background plates
-   for the station panels (user note, review sheet still owner-gated);
-   F10's credit-cache salvage glyph. Later: MMO/faction liveries, six boss
-   hulls, `ship_vanguard_damaged` — i2i re-liveries gated on the owner's
-   naming overhaul.
-7. **Non-blocking spec/economy items:** F3's three-owner delivery-seam
-   refactor, F7's six doc holes, F8's `cm_*` rows in `03`, the REPAIRS panel's
-   free-service rows, HUD pool blocks into `hud.tscn` (with L19, L20, L21
-   backlog items when their files next have an owner), the mining laser's
-   5 E/s drain (L11/L26 — the next wave owning `mining_laser.gd` or
-   `player_ship.gd`), the station-boot-gate profile write (L18).
-8. **Cleanup pass (deferred items)** — the five sealed-archive moves (need a
-   `VAJB_ARCHIVE_OK=1` session), `_mockup_station.tscn` deletion (gated on
-   live S2 verification + wave-4 review), MAIN_MENU_SPEC reference repointing
-   (see `docs/design/CLOSEOUT_PLAN.md` / `CLEANUP_PLAN.md`).
-9. **Wave P2-A — ship slot frames (NEW 2026-09-21, owner's per-class
-   slot/layout request; queued behind #1's art half and #3, parallel-safe with
-   #4).** Every class gets its own slot count **and** its own layout: the nine
-   grid matrices, the engine **set** (1/2/3 cells by the §13 mass band, summed
-   deltas with a 1.40 ceiling), armour and weapons counts that rise with hull
-   size (Lancer 2 mounts, Spearhead 4), the profile's per-hull fits at save
-   **v4**, the nine-hull `StationCatalog` roster (all nine side renders exist,
-   so the 08 §4 miner gap is closed), the launch path resolving the active
-   hull's own fit instead of the one global `STANDARD_FIT`, and the
-   station/HUD layout displays reading `ShipFit.grid_cells`. Brief
-   `.agents/gen/p2a_slot_frames_wave_task.md`, prompts
-   `.agents/gen/p2a_slot_frames_wave_prompts.md`. **Docs are already amended
-   and are the law** (08 §3/§3.1/§3.2/§3.3/§6, 09 §1/§2/§3.7/§4/§5/§7/§8/§9,
-   10 §2.3); the owner's tick list is brief §8, resolved 2026-09-21 (all six
-   kept) and blocking nothing. Its
-   follow-up **P2-B (fitting panel, module install/remove, power meter, legacy
-   UPGRADES flag day)** is briefed after this wave's review. Two things are
-   staged out of it on purpose: mount-anchor **consumption** in flight (the
-   feel wave's, spec in brief §7) and the input map's five weapon groups vs a
-   7-W capital (owner's).
-
-## Parked (independent)
-
-- Mockup scenes `_mockup_main_menu.tscn` / `_mockup_station.tscn` — deleted
-  when their verification close-out lands (IMPLEMENTATION_PLAN §9.6).
-- `docs/gameplay/19_testing_notes.md` batch-2 items B2-1/B2-2 — annotated;
-  land with the graphics lane's pass.
-
-## In flight
-
-- **Slice 2.5 (Feel) — BUILT + REVIEWED, PAUSED before S3.** S1 shipped all nine deliverables
-  (gate 294 → 307, `test_slice2_5_feel` 13, no existing test moved): motion blur
-  (`game/speed_fantasy.gd` + `speed_blur.gdshader`), the camera pull-back composed with the
-  wheel zoom, dust streaks, the hull-critical vignette, low-hull arcs, the thruster trail
-  behind a `thruster_anchors()` seam, the S16 thruster bed with its speed curve and hysteresis,
-  the boost cue and the dash charge. S2's review (report `.agents/gen/slice2_5_s2_report.md`)
-  reproduced the gate and S1's probe byte-identically and left **2 HIGH, 0 MED, 6 LOW
-  (L66–L72)**:
-  (1) the thruster bed holds a voice but never plays a stream — `hold_thruster_bed` calls
-  `play_loop` then `_shape_bed` in the same frame, and `_shape_bed` kills the crossfade tween
-  before `_start_stream` ran, so a fresh voice is silent and a re-used one plays the previous
-  bed's file at the thruster's pitch/level (repro: `tests/probe_s2_5_voice.tscn`);
-  (2) the trail's streaks draw at the master's native 1401 × 86 px because
-  `GPUParticles2D.scale` is inert for the drawn quad, so §1.3's 24–56 u never reach the screen
-  (repro: `tests/probe_s2_5_trail_draw.tscn`).
-  **S3 (one fixer pass on those two) is owed when the wave resumes.** The owner paused it on
-  2026-09-21 to re-cut the FX on transparent backgrounds first — that removes HIGH 2's class by
-  construction (an alpha sheet is drawn at the quad's own size, and the wiring stops needing
-  additive-on-void) — so S3 should be briefed after the re-cut lands, with the bed fix unchanged.
-
 ## Closed (details in MASTER_REPORT.md)
 
+- **Slice 2.5 (Feel) — DONE 2026-09-21** (gate 294 → 311, `test_slice2_5_feel` 13): S1 shipped
+  all nine deliverables (motion blur via `game/speed_fantasy.gd` + `speed_blur.gdshader`, the
+  camera pull-back composed with the wheel zoom, dust streaks, the hull-critical vignette,
+  low-hull arcs, the thruster trail behind a `thruster_anchors()` seam, the S16 thruster bed
+  with its speed curve and 0.15/0.10 hysteresis, the boost cue and the dash charge). S2's review
+  reproduced the gate and S1's probe byte-identically and blocked the close with **2 HIGH, 0 MED,
+  6 LOW (L66–L72)**: the thruster bed held a voice but never loaded a stream (a fresh voice was
+  silent, a reused one played the previous bed's file), and the trail drew at the master's native
+  1401 × 86 px because `GPUParticles2D.scale` is inert for the drawn quad. The owner then re-cut
+  every effect as per-frame RGBA sheets (`fx_<effect>_f1..fN.png`, true alpha, cropped to the
+  effect's bounds) beside the untouched v1 masters, added `fx_mine.png`, and ruled the beam stays
+  an engine-drawn line. **S3 (resumed with those facts) closed both HIGHs and re-wired all 15
+  FEEDBACK rows plus the vignette to the per-frame sheets with alpha blending** — measured: the
+  bed's voice plays its own cue from frame 1 on a fresh and a re-used voice, and the trail draws
+  **22 × 6 px at ratio 0.15 → 54 × 6 at 1.0** (spec 24–56 × 6) where the node-scale lever still
+  reads 159 × 26, `fx_mine` is the mine family's sprite and burst. Reports
+  `.agents/gen/slice2_5_s{1,2,3}_report.md`. **Two owner calls raised:** which engine bed
+  (`sfx_ship_engine_01` vs `_02_loop`) and whether the vignette under alpha needs a strength
+  compensation (it draws 0.41× its additive reading, one line to reverse).
 - **Flight feel & beam polish wave** (2026-09-21, gate 277 → 294): G1 the nose follows the
   cursor while `thrust_forward` is held (heading holds otherwise), A/D strafe derived from
   the class's own `max_speed`/`accel_time`, the nine `turn_rate` rows ×0.50 (Vanguard 3.0 →

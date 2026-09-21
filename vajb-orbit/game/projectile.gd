@@ -71,47 +71,64 @@ const HIT_RADIUS := 4.0
 
 ## --- The shot's art (FX_SPEC sections 0 and 1.1, Phase G's trail sheet) -----
 ##
-## One row per kind: the sheet, the sub-frame the kind draws (an `AtlasTexture` over
-## the shipped 2K master, never a re-cut file), the region's own pixel size, the
-## length it reads at in world units, and - for a multi-frame row - the frame rate
-## and whether it loops.
+## One row per kind: the per-frame file the kind draws, the art's own ink box inside that
+## frame (the re-cut frames share one canvas per effect, so a single-frame read takes the
+## object's own box), that box's pixel size, the length it reads at in world units, and -
+## for a multi-frame row - the frame rate and whether it loops.
 ##
-## FX_SPEC section 1.1 gives the bolt sheet's two objects a 64 px light and a 96 px
-## medium read, so the thin and thick cuts of that sheet are exactly those lengths on
-## screen; the mine and the trail have no size row and take a third of a hull and a
-## hull's own length plus a little (measured against the 43 px Vanguard side view,
-## reported).
+## The re-cut (2026-09-21) ships `fx_<effect>_fN.png` beside the untouched 2K masters and
+## every frame carries its own alpha, so the masters are no longer an atlas source and the
+## blend is the sheet's own alpha (`Fx.alpha_material`). FX_SPEC section 2's amendment is
+## the reason the frames are separate files at all: a `GPUParticles2D` draws its texture at
+## the texture's own size.
+##
+## FX_SPEC section 1.1 gives the bolt sheet's two objects a 64 px light and a 96 px medium
+## read, so the thin and thick cuts of that sheet are exactly those lengths on screen - and
+## the sheet's own four frames are those two tiers bright and dimming (`_f1`/`_f2` light,
+## `_f3`/`_f4` medium), so the still each kind draws is the tier's bright frame. The mine
+## and the trail have no size row and take a third of a hull and a hull's own length plus a
+## little (measured against the 43 px Vanguard side view, reported).
 ##
 ## Tier mapping: the cannon's `bolt` is the sheet's thin object and the railgun's
 ## heavier `slug` its thick one.
 const SHEETS: Dictionary = {
 	&"bolt": {
-		&"texture": "res://assets/fx/fx_laser_bolt.png",
-		&"region": Rect2(194.0, 604.0, 1718.0, 105.0),
-		&"source": Vector2(1718.0, 105.0),
+		&"frames": ["res://assets/fx/fx_laser_bolt_f1.png"],
+		&"region": Rect2(245.0, 35.0, 310.0, 92.0),
+		&"source": Vector2(310.0, 92.0),
 		&"world": 64.0,
 	},
 	&"slug": {
-		&"texture": "res://assets/fx/fx_laser_bolt.png",
-		&"region": Rect2(232.0, 1189.0, 1680.0, 178.0),
-		&"source": Vector2(1680.0, 178.0),
+		&"frames": ["res://assets/fx/fx_laser_bolt_f3.png"],
+		&"region": Rect2(75.0, 37.0, 651.0, 89.0),
+		&"source": Vector2(651.0, 89.0),
 		&"world": 96.0,
 	},
+	## FX_SPEC section 7.2's mine: the deployable's own art, all four of its frames (the
+	## lamp's own pulse), read at the row's own 22 u. It replaces the `fx_ember_pulse`
+	## crop the wiring used until 2026-09-21 (owner ruling), and its frames are the mine
+	## family's burst too (`FEEDBACK`'s `mine_burst`).
 	&"mine": {
-		&"texture": "res://assets/fx/fx_ember_pulse.png",
-		&"region": Rect2(811.0, 791.0, 423.0, 421.0),
-		&"source": Vector2(423.0, 421.0),
+		&"frames": [
+			"res://assets/fx/fx_mine_f1.png",
+			"res://assets/fx/fx_mine_f2.png",
+			"res://assets/fx/fx_mine_f3.png",
+			"res://assets/fx/fx_mine_f4.png",
+		],
+		&"region": Rect2(41.0, 42.0, 661.0, 653.0),
+		&"source": Vector2(661.0, 653.0),
 		&"world": 22.0,
+		&"fps": FxScript.DEFAULT_FPS,
+		&"loop": true,
 	},
 	&"rocket": {
-		&"texture": "res://assets/fx/fx_missile_trail.png",
-		&"regions": [
-			Rect2(79.0, 960.0, 243.0, 61.0),
-			Rect2(490.0, 911.0, 374.0, 109.0),
-			Rect2(906.0, 941.0, 535.0, 72.0),
-			Rect2(1670.0, 982.0, 109.0, 17.0),
+		&"frames": [
+			"res://assets/fx/fx_missile_trail_f1.png",
+			"res://assets/fx/fx_missile_trail_f2.png",
+			"res://assets/fx/fx_missile_trail_f3.png",
+			"res://assets/fx/fx_missile_trail_f4.png",
 		],
-		&"source": Vector2(535.0, 109.0),
+		&"source": Vector2(552.0, 248.0),
 		&"world": 48.0,
 		&"fps": 12.0,
 		&"loop": true,
@@ -228,23 +245,40 @@ const TRAIL_TURN := PI
 ## has one.
 const AUDIO_SERVICE: StringName = &"AudioManager"
 
-## One row per effect: the shipped 2K master, the objects in the sheet's own reading
-## order, the largest object's pixel size, the length its longest side reads at in
-## world units, and - for a multi-frame row - the frame rate and whether it loops.
+## One row per effect: the per-frame files the effect draws, in the art's own reading
+## order, the largest object's pixel size, the length its longest side reads at in world
+## units, and - for a multi-frame row - the frame rate and whether it loops.
 ##
-## The regions are measured off the shipped master's ink (the objects are found by
-## masking the ink, never by cutting on a divider - AGENTS.md's asset rule), not taken
-## from a nominal grid: `fx_explosion` is FX_SPEC section 1.4's 2x3 sheet whose five
-## objects do not respect the cell midlines. `world` is measured against the shipped
-## Vanguard side view, 59 x 30 world units at the scene's own 0.0663 sprite scale,
-## where the spec states no size (reported).
+## Every row addresses `fx_<effect>_fN.png` directly. The 2026-09-21 re-cut put every
+## effect on its own frames (beside the untouched 2K masters, which are no longer an atlas
+## source) and gave each frame its own alpha, so the rows carry the *files* and the blend
+## is the sheet's own alpha.
+##
+## A row that **plays a sequence** (the explosion, the secondary burst, the arc, the chip
+## sparks, the shatter) draws its frames whole: the re-cut gives a sequence's frames one
+## shared canvas on purpose, so a frame's object grows and shrinks inside a fixed box and
+## the relative size survives the split. `source` is then that canvas, measured off the
+## files.
+##
+## A row that draws **one frame** of a sequence (the streak, the ring, the plume, the dust,
+## the charge) carries that frame's own ink box as `region`, so the row's `world` reads the
+## *object* rather than the frame's margin - which is also what keeps the trail's streak
+## on the engine instead of floating behind it. The region is measured off the frame's ink
+## (the objects are found by masking the ink, never by cutting on a divider - AGENTS.md's
+## asset rule). FX_SPEC section 2's amendment blesses the one-frame read: "a one-frame
+## consumer can always draw `_f1`".
+##
+## `world` is measured against the shipped Vanguard side view, 59 x 30 world units at the
+## scene's own 0.0663 sprite scale, where the spec states no size (reported).
 ##
 ## Rates are the spec's own: 15 FPS for the explosion (section 1.4), 20 FPS for the arc
 ## (section 7.2's "0.2 s per arc" over four frames), 10 FPS for the shield break
 ## (section 7.1's "outward over 0.4 s" over four frames), section 1.5's 0.3 s for
 ## the ripple, and section 1.6's "4-frame mini sheet at 20 FPS = 0.2 s" for the chip
 ## sparks. The secondary burst is the one rate ASSET_EXPANSION_SPEC section 7
-## leaves unstated; it takes the explosion's own.
+## leaves unstated; it takes the explosion's own. The mine's own frames are the one
+## sequence the spec gives no rate, so they take `Fx.DEFAULT_FPS` (the helper's
+## documented fallback, reported).
 ##
 ## `chip` is FX_SPEC section 1.6's mining chip sparks, the sheet line 138 names
 ## (`fx_mining_beam.png`) for exactly this. It is a beam's read rather than a
@@ -254,101 +288,117 @@ const AUDIO_SERVICE: StringName = &"AudioManager"
 ## (reported).
 const FEEDBACK: Dictionary = {
 	&"explosion": {
-		&"texture": "res://assets/fx/fx_explosion.png",
-		&"regions": [
-			Rect2(146.0, 30.0, 728.0, 640.0),
-			Rect2(1118.0, 5.0, 781.0, 707.0),
-			Rect2(90.0, 755.0, 781.0, 632.0),
-			Rect2(1134.0, 758.0, 777.0, 631.0),
-			Rect2(137.0, 1379.0, 688.0, 550.0),
+		&"frames": [
+			"res://assets/fx/fx_explosion_f1.png",
+			"res://assets/fx/fx_explosion_f2.png",
+			"res://assets/fx/fx_explosion_f3.png",
+			"res://assets/fx/fx_explosion_f4.png",
+			"res://assets/fx/fx_explosion_f5.png",
 		],
-		&"source": Vector2(781.0, 707.0),
+		&"source": Vector2(904.0, 776.0),
 		&"world": 96.0,
 		&"fps": 15.0,
 	},
 	&"secondary": {
-		&"texture": "res://assets/fx/fx_secondary_explosion.png",
-		&"regions": [
-			Rect2(177.0, 891.0, 219.0, 208.0),
-			Rect2(630.0, 863.0, 248.0, 247.0),
-			Rect2(1080.0, 833.0, 359.0, 300.0),
-			Rect2(1694.0, 924.0, 179.0, 161.0),
+		&"frames": [
+			"res://assets/fx/fx_secondary_explosion_f1.png",
+			"res://assets/fx/fx_secondary_explosion_f2.png",
+			"res://assets/fx/fx_secondary_explosion_f3.png",
+			"res://assets/fx/fx_secondary_explosion_f4.png",
 		],
-		&"source": Vector2(359.0, 300.0),
+		&"source": Vector2(352.0, 312.0),
 		&"world": 48.0,
 		&"fps": 15.0,
 	},
 	&"arc": {
-		&"texture": "res://assets/fx/fx_arc_spark.png",
-		&"regions": [
-			Rect2(118.0, 328.0, 809.0, 424.0),
-			Rect2(1126.0, 242.0, 817.0, 594.0),
-			Rect2(121.0, 1275.0, 804.0, 492.0),
-			Rect2(1128.0, 1273.0, 815.0, 488.0),
+		&"frames": [
+			"res://assets/fx/fx_arc_spark_f1.png",
+			"res://assets/fx/fx_arc_spark_f2.png",
+			"res://assets/fx/fx_arc_spark_f3.png",
+			"res://assets/fx/fx_arc_spark_f4.png",
 		],
-		&"source": Vector2(817.0, 594.0),
+		&"source": Vector2(912.0, 672.0),
 		&"world": 40.0,
 		&"fps": 20.0,
 	},
 	&"shield_break": {
-		&"texture": "res://assets/fx/fx_shield_break.png",
-		&"regions": [
-			Rect2(63.0, 752.0, 356.0, 457.0),
-			Rect2(514.0, 715.0, 483.0, 526.0),
-			Rect2(1050.0, 739.0, 439.0, 485.0),
-			Rect2(1624.0, 798.0, 355.0, 359.0),
+		&"frames": [
+			"res://assets/fx/fx_shield_break_f1.png",
+			"res://assets/fx/fx_shield_break_f2.png",
+			"res://assets/fx/fx_shield_break_f3.png",
+			"res://assets/fx/fx_shield_break_f4.png",
 		],
-		&"source": Vector2(483.0, 526.0),
+		&"source": Vector2(536.0, 624.0),
 		&"world": 64.0,
 		&"fps": 10.0,
 	},
 	&"chip": {
-		&"texture": "res://assets/fx/fx_mining_beam.png",
-		&"regions": [
-			Rect2(0.0, 752.0, 500.0, 500.0),
-			Rect2(500.0, 759.0, 500.0, 500.0),
-			Rect2(1019.0, 771.0, 500.0, 500.0),
-			Rect2(1548.0, 755.0, 500.0, 500.0),
+		&"frames": [
+			"res://assets/fx/fx_mining_beam_f1.png",
+			"res://assets/fx/fx_mining_beam_f2.png",
+			"res://assets/fx/fx_mining_beam_f3.png",
+			"res://assets/fx/fx_mining_beam_f4.png",
 		],
-		&"source": Vector2(500.0, 500.0),
+		&"source": Vector2(440.0, 424.0),
 		&"world": 40.0,
 		&"fps": 20.0,
 	},
 	&"ripple": {
-		&"texture": "res://assets/fx/fx_shield_ripple.png",
-		&"region": Rect2(394.0, 379.0, 1240.0, 1212.0),
-		&"source": Vector2(1240.0, 1212.0),
+		&"frames": ["res://assets/fx/fx_shield_ripple_f1.png"],
+		&"region": Rect2(196.0, 192.0, 343.0, 334.0),
+		&"source": Vector2(343.0, 334.0),
 		&"world": 64.0,
 	},
 	&"plume": {
-		&"texture": "res://assets/fx/fx_smoke_plume.png",
-		&"region": Rect2(641.0, 199.0, 755.0, 1580.0),
-		&"source": Vector2(755.0, 1580.0),
+		&"frames": ["res://assets/fx/fx_smoke_plume_f1.png"],
+		&"region": Rect2(110.0, 58.0, 244.0, 882.0),
+		&"source": Vector2(244.0, 882.0),
 		&"world": 40.0,
 	},
 	## FX_SPEC section 1.3's single streak, the row the thruster emitters draw from. The
 	## section's own amendment gives it a length *pair* (24 u -> 56 u by ratio), so the row
-	## carries the art and its measured size and the lengths live in `TRAIL_*` above.
+	## carries the art and its measured size and the lengths live in `TRAIL_*` above. The
+	## frame's ink box is what the emitter draws, so the drawn quad is the streak itself
+	## (24 x 6 u at the floor) rather than the frame's own canvas.
 	&"trail": {
-		&"texture": "res://assets/fx/fx_engine_trail.png",
-		&"region": Rect2(331.0, 960.0, 1401.0, 86.0),
-		&"source": Vector2(1401.0, 86.0),
+		&"frames": ["res://assets/fx/fx_engine_trail_f1.png"],
+		&"region": Rect2(253.0, 18.0, 159.0, 26.0),
+		&"source": Vector2(159.0, 26.0),
 	},
-	## FX_SPEC section 5 row 3's dust streak: the camera's own read (one object, 967 x 52).
+	## FX_SPEC section 5 row 3's dust streak: the camera's own read (one object, 147 x 29).
 	&"dust": {
-		&"texture": "res://assets/fx/fx_dust_streak.png",
-		&"region": Rect2(526.0, 997.0, 967.0, 52.0),
-		&"source": Vector2(967.0, 52.0),
+		&"frames": ["res://assets/fx/fx_dust_streak_f1.png"],
+		&"region": Rect2(222.0, 17.0, 147.0, 29.0),
+		&"source": Vector2(147.0, 29.0),
 		&"world": 12.0,
 	},
 	## FX_SPEC section 7.1's dash charge ("one-shot on booster activation, proposed 32 u,
 	## 0.2 s"): a single frame the engine scales, so the row carries the read and the fade.
 	&"dash_charge": {
-		&"texture": "res://assets/fx/fx_dash_charge.png",
-		&"region": Rect2(429.0, 343.0, 1193.0, 1256.0),
-		&"source": Vector2(1193.0, 1256.0),
+		&"frames": ["res://assets/fx/fx_dash_charge_f1.png"],
+		&"region": Rect2(178.0, 194.0, 580.0, 572.0),
+		&"source": Vector2(580.0, 572.0),
 		&"world": 32.0,
 		&"seconds": 0.2,
+	},
+	## The mine family's own burst (owner ruling 2026-09-21: "fx_mine ... gives the mine
+	## family its own sprite and burst"). It is the mine's own four frames, read at the
+	## mine's own 22 u, played once at the point a mine detonates - the same art as the
+	## deployed sprite, which is the one asset the mine family owns, so no size or rate is
+	## new: `world` is `SHEETS`' mine row and the rate is the helper's documented fallback.
+	## The detonation keeps FX_SPEC section 1.4's explosion beside it, so removing this row
+	## is the whole reversal.
+	&"mine_burst": {
+		&"frames": [
+			"res://assets/fx/fx_mine_f1.png",
+			"res://assets/fx/fx_mine_f2.png",
+			"res://assets/fx/fx_mine_f3.png",
+			"res://assets/fx/fx_mine_f4.png",
+		],
+		&"region": Rect2(41.0, 42.0, 661.0, 653.0),
+		&"source": Vector2(661.0, 653.0),
+		&"world": 22.0,
+		&"fps": FxScript.DEFAULT_FPS,
 	},
 }
 
@@ -768,6 +818,9 @@ func _mine_victim() -> Node2D:
 ## Section 4.2 item 8: "every detonation applies I(d) = P0 / (1 + d^2) as an
 ## outward impulse over EXPLOSION_WINDOW to every rigid body in range". The push
 ## itself is `Impact.apply_shockwave` (slice 0's helper, never reimplemented here).
+##
+## A mine's own detonation adds the mine family's burst (`spawn_mine_burst`) beside
+## section 1.4's explosion: the deployable's own art, played once where it went off.
 func _detonate(at: Vector2, victim: Node2D = null) -> void:
 	if _spent:
 		return
@@ -776,6 +829,8 @@ func _detonate(at: Vector2, victim: Node2D = null) -> void:
 		_deliver(victim, damage, bypass_shield, at, Vector2.ZERO)
 	_push_bodies(at)
 	_blast(at)
+	if kind == KIND_MINE:
+		spawn_mine_burst(_fx_parent(), at)
 	detonated.emit(at, damage, bypass_shield)
 	queue_free()
 
@@ -946,26 +1001,23 @@ func _clear_visual() -> void:
 
 
 ## The kind's row as a parented node (these are `Fx`'s spawn calls, which own the
-## `add_child`), or null when the row or its file is missing - a missing sheet leaves
+## `add_child`), or null when the row or its files are missing - a missing sheet leaves
 ## the shot invisible rather than crashing the run.
 func _build_visual() -> Node2D:
 	var row: Variant = SHEETS.get(kind)
 	if not row is Dictionary:
 		return null
 	var entry := row as Dictionary
-	var path := String(entry.get(&"texture", ""))
-	if path.is_empty() or not ResourceLoader.exists(path):
-		return null
-	var texture := load(path) as Texture2D
-	if texture == null:
+	var textures := _row_textures(entry)
+	if textures.is_empty():
 		return null
 	var scale_factor := FxScript.scale_for(
-		entry.get(&"source", texture.get_size()) as Vector2, float(entry.get(&"world", 0.0))
+		entry.get(&"source", (textures[0] as Texture2D).get_size()) as Vector2,
+		float(entry.get(&"world", 0.0))
 	)
-	if entry.has(&"regions"):
-		var frames := FxScript.sheet_frames(
-			texture,
-			entry[&"regions"],
+	if textures.size() > 1:
+		var frames := FxScript.texture_frames(
+			textures,
 			float(entry.get(&"fps", FxScript.DEFAULT_FPS)),
 			bool(entry.get(&"loop", false))
 		)
@@ -975,16 +1027,13 @@ func _build_visual() -> Node2D:
 		animated.name = VISUAL_NODE
 		animated.sprite_frames = frames
 		animated.animation = FxScript.ANIMATION
-		animated.material = FxScript.additive_material()
+		animated.material = FxScript.alpha_material()
 		animated.scale = Vector2.ONE * scale_factor
 		animated.z_index = VISUAL_Z
 		add_child(animated)
 		animated.play(FxScript.ANIMATION)
 		return animated
-	var region: Variant = entry.get(&"region")
-	if not region is Rect2:
-		return null
-	var still := FxScript.display(self, FxScript.frame(texture, region as Rect2))
+	var still := FxScript.display(self, textures[0] as Texture2D)
 	if still == null:
 		return null
 	still.name = VISUAL_NODE
@@ -1167,29 +1216,36 @@ static func feedback_row(row_name: StringName) -> Dictionary:
 	return {}
 
 
-## FX_SPEC sections 2/7.3: a one-shot sheet, spawned additively through F1's helper
-## (which also frees it on `animation_finished`), placed at `at` in world space and
-## returned. Null when the row, the file or the frames are unavailable - a missing sheet
-## leaves the hit quiet rather than crashing a run.
+## A row's drawn frame as a texture, for the callers that live outside this file (the
+## dust streak is `speed_fantasy.gd`'s emitter): the same read every spawn helper makes,
+## so a row's file and its measured region have one owner.
+static func feedback_texture(row_name: StringName) -> Texture2D:
+	return _row_texture(feedback_row(row_name))
+
+
+## FX_SPEC sections 2/7.3: a one-shot sheet, spawned through F1's helper (which also frees
+## it on `animation_finished`) with the sheet's own alpha, placed at `at` in world space
+## and returned. Null when the row, its files or its frames are unavailable - a missing
+## sheet leaves the hit quiet rather than crashing a run.
 static func spawn_sheet(parent: Node, fx_name: StringName, at: Vector2) -> AnimatedSprite2D:
 	if parent == null:
 		return null
 	var row := feedback_row(fx_name)
-	if row.is_empty() or not row.has(&"regions"):
+	if row.is_empty():
 		return null
-	var texture := _texture_of(row)
-	if texture == null:
+	var textures := _row_textures(row)
+	if textures.is_empty():
 		return null
-	var frames := FxScript.sheet_frames(
-		texture,
-		row[&"regions"],
+	var frames := FxScript.texture_frames(
+		textures,
 		float(row.get(&"fps", FxScript.DEFAULT_FPS)),
 		bool(row.get(&"loop", false))
 	)
 	if frames.get_frame_count(FxScript.ANIMATION) == 0:
 		return null
 	var scale_factor := FxScript.scale_for(
-		row.get(&"source", texture.get_size()) as Vector2, float(row.get(&"world", 0.0))
+		row.get(&"source", (textures[0] as Texture2D).get_size()) as Vector2,
+		float(row.get(&"world", 0.0))
 	)
 	var sprite := FxScript.play_once(parent, frames, Vector2.ZERO, 0.0, scale_factor)
 	if sprite == null:
@@ -1230,6 +1286,14 @@ static func spawn_shield_break(parent: Node, at: Vector2) -> AnimatedSprite2D:
 	return spawn_sheet(parent, &"shield_break", at)
 
 
+## The mine family's own burst (owner ruling 2026-09-21: `fx_mine` "gives the mine family
+## its own sprite and burst"): the mine's own frames, played once where it goes off, beside
+## FX_SPEC section 1.4's explosion. The deployed sprite is the same art (`SHEETS`' mine
+## row), so the family owns one asset and this row is the burst's read of it.
+static func spawn_mine_burst(parent: Node, at: Vector2) -> AnimatedSprite2D:
+	return spawn_sheet(parent, &"mine_burst", at)
+
+
 ## FX_SPEC section 1.5: the single-frame steel ring, collapsed and grown 0 -> 1.5x over
 ## the spec's 0.3 s while F1's `fade_and_free` takes its alpha out and frees it. Null
 ## when the sheet is missing.
@@ -1237,17 +1301,15 @@ static func spawn_shield_ripple(parent: Node, at: Vector2) -> Sprite2D:
 	if parent == null:
 		return null
 	var row := feedback_row(&"ripple")
-	if row.is_empty() or not row.has(&"region"):
+	if row.is_empty():
 		return null
-	var texture := _texture_of(row)
+	var texture := _row_texture(row)
 	if texture == null:
 		return null
 	var scale_factor := FxScript.scale_for(
 		row.get(&"source", texture.get_size()) as Vector2, float(row.get(&"world", 0.0))
 	)
-	var sprite := FxScript.display(
-		parent, FxScript.frame(texture, row[&"region"] as Rect2), Vector2.ZERO, 0.0, scale_factor
-	)
+	var sprite := FxScript.display(parent, texture, Vector2.ZERO, 0.0, scale_factor)
 	if sprite == null:
 		return null
 	sprite.name = "shield_ripple"
@@ -1274,15 +1336,15 @@ static func spawn_smoke_plume(hull: Node2D) -> GPUParticles2D:
 	if existing != null:
 		return existing
 	var row := feedback_row(&"plume")
-	if row.is_empty() or not row.has(&"region"):
+	if row.is_empty():
 		return null
-	var texture := _texture_of(row)
+	var texture := _row_texture(row)
 	if texture == null:
 		return null
 	var emitter := GPUParticles2D.new()
 	emitter.name = PLUME_NODE
-	emitter.texture = FxScript.frame(texture, row[&"region"] as Rect2)
-	emitter.material = FxScript.additive_material()
+	emitter.texture = texture
+	emitter.material = FxScript.alpha_material()
 	emitter.process_material = _plume_material(
 		FxScript.scale_for(
 			row.get(&"source", texture.get_size()) as Vector2, float(row.get(&"world", 0.0))
@@ -1336,15 +1398,18 @@ static func trail_alpha(ratio: float) -> float:
 
 ## One engine cell's own numbers for a frame: the rate, the streak's length and alpha, and
 ## the two emitter settings that carry them - `amount_ratio` (the rate against the
-## emitter's own top-rate capacity) and a non-uniform node scale, because the section
-## gives a length *and* a width and the master's own aspect is neither.
+## emitter's own top-rate capacity) and the **draw pass's** quad scale, because the section
+## gives a length *and* a width and the drawn frame's own aspect is neither.
+##
+## `scale` is the quad's size in the drawn frame's texels, and it is applied through
+## `Fx.set_quad_scale` - the emitter's node `scale` never reaches what a
+## `GPUParticles2D` draws (S2's report section 2.2), and the process material's own
+## `scale_min/max` is uniform, so it could not give 6 u of width at any length.
 static func trail_read(ratio: float, source: Vector2) -> Dictionary:
 	var length := trail_length(ratio)
 	var rate := trail_rate(ratio)
 	var capacity := roundi(TRAIL_RATE_MAX * TRAIL_LIFETIME)
-	var scale := Vector2.ONE
-	if source.x > 0.0 and source.y > 0.0:
-		scale = Vector2(length / source.x, TRAIL_WIDTH / source.y)
+	var scale := FxScript.quad_scale_for(source, length, TRAIL_WIDTH)
 	return {
 		&"ramp": trail_ramp(ratio),
 		&"rate": rate,
@@ -1370,12 +1435,12 @@ static func sync_thruster_trails(
 	if hull == null or not is_instance_valid(hull):
 		return emitters
 	var row := feedback_row(&"trail")
-	var texture := _texture_of(row) if not row.is_empty() else null
+	var texture := _row_texture(row)
 	var read := trail_read(ratio, row.get(&"source", Vector2.ZERO) as Vector2)
 	for index in anchors.size():
 		var emitter := _trail_emitter(hull, index)
-		if emitter == null and texture != null and row.has(&"region"):
-			emitter = _make_trail(hull, index, texture, row[&"region"] as Rect2)
+		if emitter == null and texture != null:
+			emitter = _make_trail(hull, index, texture)
 		if emitter == null:
 			continue
 		_shape_trail(emitter, anchors[index] as Vector2, read, active)
@@ -1399,17 +1464,15 @@ static func spawn_dash_charge(parent: Node, at: Vector2) -> Sprite2D:
 	if parent == null:
 		return null
 	var row := feedback_row(&"dash_charge")
-	if row.is_empty() or not row.has(&"region"):
+	if row.is_empty():
 		return null
-	var texture := _texture_of(row)
+	var texture := _row_texture(row)
 	if texture == null:
 		return null
 	var scale_factor := FxScript.scale_for(
 		row.get(&"source", texture.get_size()) as Vector2, float(row.get(&"world", 0.0))
 	)
-	var sprite := FxScript.display(
-		parent, FxScript.frame(texture, row[&"region"] as Rect2), Vector2.ZERO, 0.0, scale_factor
-	)
+	var sprite := FxScript.display(parent, texture, Vector2.ZERO, 0.0, scale_factor)
 	if sprite == null:
 		return null
 	sprite.name = "dash_charge"
@@ -1558,17 +1621,16 @@ static func _trail_emitter(hull: Node2D, index: int) -> GPUParticles2D:
 	return node as GPUParticles2D
 
 
-## One engine cell's emitter (FX_SPEC section 1.3's amendment): the streak's own art as
-## an `AtlasTexture` over the shipped master, drawn additively, emitting in world space so
-## the streaks it leaves behind the flying hull are what reads as thrust. It carries no
-## velocity of its own - the hull's motion is the trail - so no number is needed for one.
-static func _make_trail(
-	hull: Node2D, index: int, texture: Texture2D, region: Rect2
-) -> GPUParticles2D:
+## One engine cell's emitter (FX_SPEC section 1.3's amendment): the streak's own frame,
+## drawn through the draw pass so its quad is the section's own size, emitting in world
+## space so the streaks it leaves behind the flying hull are what reads as thrust. It
+## carries no velocity of its own - the hull's motion is the trail - so no number is
+## needed for one.
+static func _make_trail(hull: Node2D, index: int, texture: Texture2D) -> GPUParticles2D:
 	var emitter := GPUParticles2D.new()
 	emitter.name = TRAIL_NODE_PREFIX + str(index)
-	emitter.texture = FxScript.frame(texture, region)
-	emitter.material = FxScript.additive_material()
+	emitter.texture = texture
+	emitter.material = FxScript.quad_material()
 	emitter.process_material = _trail_material()
 	emitter.amount = roundi(TRAIL_RATE_MAX * TRAIL_LIFETIME)
 	emitter.lifetime = TRAIL_LIFETIME
@@ -1593,8 +1655,12 @@ static func _trail_material() -> ParticleProcessMaterial:
 	return trail
 
 
-## One frame of one engine cell: where it sits, how long and how bright its streak is,
-## and whether it is emitting at all.
+## One frame of one engine cell: where it sits, how long and how bright its streak is, and
+## whether it is emitting at all. The size goes to the **draw pass** (`Fx.set_quad_scale`),
+## because the drawn quad is what the ratio's 24-56 u x 6 u is a statement about and the
+## node's own `scale` does not reach it (S2's report section 2.2; `probe_s3_trail_quad.tscn`
+## measures the rectangle this writes). The node itself stays unscaled, which is the state
+## the probe reads.
 static func _shape_trail(
 	emitter: GPUParticles2D, anchor: Vector2, read: Dictionary, active: bool
 ) -> void:
@@ -1602,7 +1668,8 @@ static func _shape_trail(
 		return
 	var length := float(read.get(&"length", 0.0))
 	emitter.position = anchor - Vector2(length * 0.5, 0.0)
-	emitter.scale = read.get(&"scale", Vector2.ONE) as Vector2
+	emitter.scale = Vector2.ONE
+	FxScript.set_quad_scale(emitter.material, read.get(&"scale", Vector2.ONE) as Vector2)
 	emitter.amount_ratio = float(read.get(&"amount_ratio", 0.0))
 	var material := emitter.process_material as ParticleProcessMaterial
 	if material != null:
@@ -1625,12 +1692,25 @@ static func _drop_extra_trails(hull: Node2D, kept: int) -> void:
 		index += 1
 
 
-## A row's shipped master, or null when the file is not on disk.
-static func _texture_of(row: Dictionary) -> Texture2D:
-	var path := String(row.get(&"texture", ""))
-	if path.is_empty() or not ResourceLoader.exists(path):
-		return null
-	return load(path) as Texture2D
+## A row's shipped frame files as the textures it draws: every frame whole, or - for a
+## row that draws one frame of a sequence - that frame at the art's own measured ink box.
+## Empty when a row names no file or a file is missing, so a missing sheet leaves the
+## caller quiet rather than half-drawn.
+static func _row_textures(row: Dictionary) -> Array:
+	var paths: Variant = row.get(&"frames", [])
+	if not paths is Array:
+		return []
+	var region: Variant = row.get(&"region")
+	return FxScript.frame_textures(
+		paths, region as Rect2 if region is Rect2 else Rect2()
+	)
+
+
+## A row's drawn frame: the single texture a one-frame read (an emitter, a still sprite)
+## takes from it, or null when the row or its file is missing.
+static func _row_texture(row: Dictionary) -> Texture2D:
+	var textures := _row_textures(row)
+	return textures[0] as Texture2D if not textures.is_empty() else null
 
 
 ## A sheet's own point in world space: set after it is parented, because it is spawned
@@ -1642,4 +1722,3 @@ static func _place(node: Node2D, at: Vector2) -> void:
 		node.global_position = at
 		return
 	node.position = at
-

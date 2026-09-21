@@ -34,11 +34,13 @@ const HULL: StringName = &"ship_vanguard"
 const BOOSTER: StringName = &"b_afterburner"
 
 const BLUR_SHADER := "res://game/speed_blur.gdshader"
-const VIGNETTE_SHEET := "res://assets/fx/fx_hull_critical_vignette.png"
-const TRAIL_SHEET := "res://assets/fx/fx_engine_trail.png"
-const DUST_SHEET := "res://assets/fx/fx_dust_streak.png"
-const ARC_SHEET := "res://assets/fx/fx_arc_spark.png"
-const CHARGE_SHEET := "res://assets/fx/fx_dash_charge.png"
+## The re-cut frames: every effect draws its own per-frame file now, and the rows that read
+## one frame of a sequence name that frame (`_f1`).
+const VIGNETTE_SHEET := "res://assets/fx/fx_hull_critical_vignette_f1.png"
+const TRAIL_SHEET := "res://assets/fx/fx_engine_trail_f1.png"
+const DUST_SHEET := "res://assets/fx/fx_dust_streak_f1.png"
+const ARC_SHEET := "res://assets/fx/fx_arc_spark_f1.png"
+const CHARGE_SHEET := "res://assets/fx/fx_dash_charge_f1.png"
 
 const THRUSTER_CUE: StringName = &"sfx_ship_engine_01"
 const SHIELD_BED: StringName = &"sfx_impact_shield_loop"
@@ -46,6 +48,7 @@ const BEAM_BED: StringName = &"sfx_mining_beam"
 const BOOST_CUE: StringName = &"sfx_ship_boost_01"
 
 const ADD := CanvasItemMaterial.BLEND_MODE_ADD
+const MIX := CanvasItemMaterial.BLEND_MODE_MIX
 const PHYSICS_STEP := 1.0 / 60.0
 const ARC_SECONDS := 6.0
 ## The tolerance every float comparison against a spec value carries: the arithmetic is
@@ -245,15 +248,17 @@ func test_the_dust_emits_only_above_the_onset_and_lies_along_the_velocity() -> v
 	assert_eq(dust.amount, 15, "and a capacity of the rate over that lifetime")
 	assert_false(dust.emitting, "off until the ratio is high")
 	assert_true(
-		dust.material == null,
-		"never additively blown: it draws with the default MIX blend, not an ADD material"
+		dust.material is CanvasItemMaterial
+			and (dust.material as CanvasItemMaterial).blend_mode == MIX,
+		"never additively blown: it draws with the sheet's own alpha (MIX), not ADD"
 	)
 	var process := dust.process_material as ParticleProcessMaterial
 	assert_true(process != null, "its process material carries the low alpha")
 	assert_true(_near(process.color.a, 0.35), "which is the ember trail's own alpha floor")
 	var frame := dust.texture as AtlasTexture
-	assert_true(frame != null, "the streak is a region of the shipped master")
-	assert_eq(frame.atlas.resource_path, DUST_SHEET, "which is `fx_dust_streak.png`")
+	assert_true(frame != null, "the streak is the art's own ink box in its re-cut frame")
+	assert_eq(frame.atlas.resource_path, DUST_SHEET, "which is `fx_dust_streak_f1.png`")
+	assert_eq(frame.region, ProjectileScript.FEEDBACK[&"dust"][&"region"], "the measured object")
 	fantasy.call(&"set_ratio", 0.9, Vector2(0.0, 100.0))
 	assert_true(dust.emitting and dust.visible, "at speed it emits")
 	assert_true(_near(dust.rotation, Vector2.DOWN.angle()), "with the streaks along the velocity")
@@ -272,11 +277,11 @@ func test_the_hull_critical_vignette_pulses_and_is_removed_above_the_line() -> v
 	var fantasy: Variant = _fantasy()
 	var rect := fantasy.call(&"vignette_rect") as TextureRect
 	assert_true(rect != null, "the overlay is built")
-	assert_eq(rect.texture.resource_path, VIGNETTE_SHEET, "from the shipped vignette master")
+	assert_eq(rect.texture.resource_path, VIGNETTE_SHEET, "from the re-cut vignette frame")
 	assert_true(
 		rect.material is CanvasItemMaterial
-		and (rect.material as CanvasItemMaterial).blend_mode == ADD,
-		"composited additively: the sheet is RGB on Void Black with no alpha channel"
+			and (rect.material as CanvasItemMaterial).blend_mode == MIX,
+		"blended with the frame's own alpha: the plate's transparent centre now draws nothing"
 	)
 	assert_false(rect.visible, "a healthy hull draws nothing")
 	fantasy.call(&"set_hull_fraction", 0.2)
@@ -355,7 +360,7 @@ func test_the_low_hull_arcs_fire_on_the_sections_cadence_through_the_shipped_row
 		)
 	assert_true(
 		arcs.size() > 0 and (arcs[0] as CanvasItem).material is CanvasItemMaterial,
-		"drawn additively like every FX plate"
+		"drawn with the sheet's own alpha, like every re-cut FX plate"
 	)
 
 
@@ -375,7 +380,10 @@ func test_a_hull_above_the_line_never_arcs() -> void:
 func test_the_thruster_trail_is_one_emitter_per_anchor_shaped_by_the_ratio() -> void:
 	var row := ProjectileScript.feedback_row(&"trail")
 	var source := row.get(&"source", Vector2.ZERO) as Vector2
-	assert_true(source.x > 0.0 and source.y > 0.0, "the trail row carries the master's own size")
+	assert_true(
+		source.x > 0.0 and source.y > 0.0,
+		"the trail row carries the drawn frame's own ink box"
+	)
 	var low := ProjectileScript.trail_read(0.15, source)
 	assert_true(_near(float(low[&"rate"]), 20.0), "20 streaks/s at the amendment's 0.15 floor")
 	assert_true(_near(float(low[&"length"]), 24.0), "24 u long there")
@@ -388,7 +396,7 @@ func test_the_thruster_trail_is_one_emitter_per_anchor_shaped_by_the_ratio() -> 
 	)
 	assert_true(
 		(low[&"scale"] as Vector2).is_equal_approx(Vector2(24.0 / source.x, 6.0 / source.y)),
-		"the non-uniform node scale reads the master's pixels as 24 x 6 u"
+		"the quad scale reads the frame's pixels as 24 x 6 u"
 	)
 	var high := ProjectileScript.trail_read(1.0, source)
 	assert_true(_near(float(high[&"rate"]), 60.0), "60 streaks/s at full speed")
@@ -421,8 +429,12 @@ func test_the_thruster_trail_is_one_emitter_per_anchor_shaped_by_the_ratio() -> 
 	assert_false(trail.local_coords, "and trails in world space, as the amendment requires")
 	assert_true(_near(trail.rotation, PI), "turned half a turn so the streak's head is the anchor")
 	assert_true(
-		trail.scale.is_equal_approx(Vector2(56.0 / source.x, 6.0 / source.y)),
-		"at full speed it reads 56 x 6 u"
+		trail.scale.is_equal_approx(Vector2.ONE),
+		"the node itself is unscaled: its `scale` does not reach what is drawn (S2 section 2.2)"
+	)
+	assert_true(
+		_quad_scale(trail).is_equal_approx(Vector2(56.0 / source.x, 6.0 / source.y)),
+		"the draw pass carries 56 x 6 u at full speed"
 	)
 	assert_true(
 		_near(trail.amount_ratio, 1.0),
@@ -433,13 +445,13 @@ func test_the_thruster_trail_is_one_emitter_per_anchor_shaped_by_the_ratio() -> 
 		"its origin is pulled back by half a streak, so the head - not the middle - rides the engine"
 	)
 	assert_true(
-		trail.material is CanvasItemMaterial
-		and (trail.material as CanvasItemMaterial).blend_mode == ADD,
-		"additively blended ember (section 1.3's own blend row)"
+		trail.material is ShaderMaterial,
+		"and the quad is sized through the draw pass, not the node (S2's HIGH 2)"
 	)
 	var frame := trail.texture as AtlasTexture
-	assert_true(frame != null, "the streak is a region of the shipped master")
-	assert_eq(frame.atlas.resource_path, TRAIL_SHEET, "which is `fx_engine_trail.png`")
+	assert_true(frame != null, "the streak is the art's own ink box in its re-cut frame")
+	assert_eq(frame.atlas.resource_path, TRAIL_SHEET, "which is `fx_engine_trail_f1.png`")
+	assert_eq(frame.region, row[&"region"], "the measured streak, not the frame's canvas")
 	var material := trail.process_material as ParticleProcessMaterial
 	assert_true(_near(material.color.a, 0.85), "and the row's own alpha is on the particle")
 	## The active rule: the thrust input, or the ratio's own 0.15 floor (the drift case).
@@ -483,6 +495,62 @@ func test_the_trail_seam_takes_one_emitter_per_anchor_and_drops_the_extra() -> v
 
 
 ## --- Deliverable 7: the thruster bed (AUDIO_SPEC section 4.5) ----------------
+
+
+## S2's HIGH 1, pinned where it failed: `bed_state`/`sounding_loops` read the cue table,
+## which said the bed was sounding while the voice's own player held **no stream** - silent
+## on a fresh voice, and still playing the *previous* bed's file on a re-used one, because
+## `hold_thruster_bed` shaped the bed on the same frame it started it and the shape killed
+## the crossfade tween's `_start_stream` callback. The shaped bed now owns its start, so
+## this reads the voice itself: the cue's own file and `playing` true from the first frame,
+## and never the file the voice held before.
+func test_the_thruster_beds_voice_plays_its_own_stream_from_its_first_frame() -> void:
+	var audio := _audio()
+	if audio == null:
+		assert_true(false, "the AudioManager autoload is live")
+		return
+	## A voice this bed will re-use, in the state S2's arm C measured: the manager's voices
+	## are shared, so the thruster can land on one left playing the previous bed's file.
+	var other := load("res://assets/audio/sfx/sfx_ship_engine_02_loop.ogg") as AudioStream
+	assert_true(other != null, "the alternative take is on disk")
+	for player: AudioStreamPlayer in audio.get(&"_loop_players"):
+		player.stream = other
+		player.play()
+	assert_true(bool(audio.call(&"hold_thruster_bed", 0.5, true)), "the thruster bed is held")
+	var voice := audio.call(&"bed_voice", THRUSTER_CUE) as Dictionary
+	assert_true(bool(voice[&"sounding"]), "the cue table reports it sounding")
+	assert_true(
+		bool(voice[&"playing"]),
+		"and the voice's own player is playing: a held bed that never plays a stream is the bug"
+	)
+	assert_eq(
+		String(voice[&"stream"]),
+		"res://assets/audio/sfx/sfx_ship_engine_01.ogg",
+		"the voice plays the bed's own cue, not whatever it held before"
+	)
+	assert_true(
+		_near(float(voice[&"pitch_scale"]), 0.973529, 1e-4)
+		and _near(float(voice[&"volume_db"]), -19.058823, 1e-4),
+		"at the curve's own level for 0.5"
+	)
+	## A fresh voice is the shipped case (the first time a hull flies): the same read.
+	audio.call(&"stop_thruster_bed")
+	for player: AudioStreamPlayer in audio.get(&"_loop_players"):
+		player.stop()
+		player.stream = null
+	assert_false(
+		bool((audio.call(&"bed_voice", THRUSTER_CUE) as Dictionary)[&"sounding"]),
+		"the bed is out"
+	)
+	assert_true(bool(audio.call(&"hold_thruster_bed", 1.0, false)), "re-held at full speed")
+	voice = audio.call(&"bed_voice", THRUSTER_CUE) as Dictionary
+	assert_true(bool(voice[&"playing"]), "a fresh voice plays on the frame it is asked for")
+	assert_eq(
+		String(voice[&"stream"]),
+		"res://assets/audio/sfx/sfx_ship_engine_01.ogg",
+		"with the cue's own file"
+	)
+	audio.call(&"stop_thruster_bed")
 
 
 func test_the_thruster_bed_holds_by_ratio_with_hysteresis_and_its_own_cue() -> void:
@@ -621,6 +689,158 @@ func test_the_afterburner_activation_fires_the_boost_cue_and_the_dash_charge_onc
 	assert_eq(_fx_nodes(holder, CHARGE_SHEET).size(), 1, "so exactly one charge exists")
 
 
+## --- The re-cut wiring (owner ruling 2026-09-21) ------------------------------
+
+
+## S2's HIGH 2's lever, pinned in the gate: FX_SPEC section 1.3's 24-56 u x 6 u is a
+## statement about the rectangle the emitter **draws**, and a particle emitter draws its
+## texture at the texture's own size - the node's `scale` never reaches it (measured on
+## three scales, S2's report section 2.2) and the process material's `scale_min/max` is
+## uniform, so it cannot give a length and a width. The draw pass can, and this pins the
+## pass itself; the rectangle it produces is `probe_s3_trail_quad.tscn`'s measurement.
+func test_the_trails_quad_is_sized_through_a_vertex_scaling_draw_pass() -> void:
+	var material := FxScript.quad_material(Vector2(0.25, 0.5))
+	assert_true(material is ShaderMaterial, "the quad's material is a draw-pass shader")
+	assert_true(material.shader != null, "on the shader the library builds once")
+	assert_true(
+		material.shader.code.contains("VERTEX *="),
+		"whose vertex stage scales the quad's own vertices"
+	)
+	assert_true(
+		_material_quad_scale(material).is_equal_approx(Vector2(0.25, 0.5)),
+		"and the uniform is the quad's size in the drawn frame's texels"
+	)
+	assert_true(
+		FxScript.set_quad_scale(material, Vector2(0.1, 0.2)), "a shaped emitter re-sizes it"
+	)
+	assert_true(
+		_material_quad_scale(material).is_equal_approx(Vector2(0.1, 0.2)),
+		"which is what the ratio writes"
+	)
+	assert_false(
+		FxScript.set_quad_scale(FxScript.alpha_material(), Vector2.ONE),
+		"and a sheet's own material is not a quad pass, so there is nothing to re-size"
+	)
+	var ship: Variant = PlayerShipScene.instantiate()
+	_host().add_child(ship)
+	_staged.append(ship)
+	ship.call(&"set_speed_ratio", 0.15)
+	ship.call(&"_update_thrust_feedback", true)
+	var trail := (ship.call(&"thruster_trails") as Array)[0] as GPUParticles2D
+	var source := ProjectileScript.feedback_row(&"trail").get(&"source", Vector2.ZERO) as Vector2
+	assert_true(
+		_quad_scale(trail).is_equal_approx(Vector2(24.0 / source.x, 6.0 / source.y)),
+		"at the 0.15 floor the shipped emitter draws section 1.3's 24 x 6 u"
+	)
+
+
+## Every effect addresses its own per-frame files now (owner ruling 2026-09-21): the 2K
+## masters are no longer an atlas source, and each frame carries its own alpha - which is
+## what the blend is. A row that plays a sequence names every frame; a row that reads one
+## frame names that one and carries the art's measured ink box.
+func test_every_effect_row_addresses_its_own_per_frame_files() -> void:
+	var rows: Array = []
+	for name: Variant in ProjectileScript.FEEDBACK:
+		rows.append([String(name), ProjectileScript.FEEDBACK[name]])
+	for kind: Variant in ProjectileScript.SHEETS:
+		rows.append([String(kind), ProjectileScript.SHEETS[kind]])
+	assert_true(rows.size() >= 13, "the two tables carry every wired effect")
+	for entry: Array in rows:
+		var name: String = entry[0]
+		var row: Dictionary = entry[1]
+		var paths: Variant = row.get(&"frames", [])
+		assert_true(
+			paths is Array and not (paths as Array).is_empty(), "%s names its frames" % name
+		)
+		for path: Variant in paths:
+			var file := String(path)
+			assert_true(ResourceLoader.exists(file), "%s's frame is on disk (%s)" % [name, file])
+			assert_true(
+				file.ends_with(".png") and file.contains("_f"),
+				"%s addresses a per-frame file, not a master (%s)" % [name, file]
+			)
+			var texture := load(file) as Texture2D
+			assert_true(texture != null, "%s's frame loads" % name)
+			if texture == null:
+				continue
+			var image := texture.get_image()
+			assert_true(
+				image != null and image.detect_alpha() != Image.ALPHA_NONE,
+				"%s's frame carries its own alpha, which is the blend (%s)" % [name, file]
+			)
+			if row.has(&"region"):
+				var region: Rect2 = row[&"region"]
+				assert_true(
+					region.end.x <= texture.get_size().x
+					and region.end.y <= texture.get_size().y,
+					"%s's region is inside its own frame" % name
+				)
+		if paths is Array and (paths as Array).size() > 1:
+			assert_true(
+				float(row.get(&"fps", 0.0)) > 0.0, "%s plays its sequence at a rate" % name
+			)
+
+
+## FX_SPEC section 7.2's mine, from the owner's ruling: the mine family owns `fx_mine` -
+## its own sprite on the deployable (four frames, the lamp's own pulse) and its own burst
+## where it goes off - replacing the `fx_ember_pulse` crop the wiring used before.
+func test_the_mine_family_owns_its_sprite_and_its_burst() -> void:
+	var sprite: Dictionary = ProjectileScript.SHEETS[&"mine"]
+	assert_eq(
+		String((sprite[&"frames"] as Array)[0]),
+		"res://assets/fx/fx_mine_f1.png",
+		"the deployable's sprite is the family's own art"
+	)
+	var row := ProjectileScript.feedback_row(&"mine_burst")
+	assert_false(row.is_empty(), "and its burst is a row in the feedback table")
+	assert_eq(row[&"frames"], sprite[&"frames"], "the burst is that same art, frame for frame")
+	assert_eq(row[&"region"], sprite[&"region"], "read at the same measured box")
+	assert_true(
+		_near(float(row[&"world"]), float(sprite[&"world"])),
+		"and at the same 22 u read, so the burst invents no size"
+	)
+	var shot: Variant = ProjectileScript.new()
+	shot.call(&"configure", {&"kind": ProjectileScript.KIND_MINE, &"damage": 1.0})
+	var holder := Node2D.new()
+	holder.name = &"MineWorld"
+	_host().add_child(holder)
+	_staged.append(holder)
+	holder.add_child(shot)
+	shot.call(&"_detonate", Vector2(10.0, 20.0))
+	var burst := holder.get_node_or_null(NodePath(&"mine_burst")) as AnimatedSprite2D
+	assert_true(burst != null, "a mine's own detonation draws its own burst")
+	if burst == null:
+		return
+	assert_eq(
+		burst.sprite_frames.get_frame_count(FxScript.ANIMATION),
+		(sprite[&"frames"] as Array).size(),
+		"all four of its frames"
+	)
+	assert_false(
+		burst.sprite_frames.get_animation_loop(FxScript.ANIMATION),
+		"played once, as section 7.3's one-shot rows do"
+	)
+	assert_true(
+		burst.material is CanvasItemMaterial
+		and (burst.material as CanvasItemMaterial).blend_mode == MIX,
+		"blended with the sheet's own alpha"
+	)
+	assert_true(
+		_near(burst.global_position.distance_to(Vector2(10.0, 20.0)), 0.0, 1e-3),
+		"where the mine went off"
+	)
+	assert_eq(
+		_fx_nodes(holder, "res://assets/fx/fx_mine_f1.png").size(),
+		2,
+		"the family's art is on the deployable's own body and on the burst"
+	)
+	assert_eq(
+		_fx_nodes(holder, "res://assets/fx/fx_explosion_f1.png").size(),
+		1,
+		"and FX_SPEC section 1.4's explosion is still drawn beside it"
+	)
+
+
 ## --- The stage's own wiring of the one input ---------------------------------
 
 
@@ -654,6 +874,26 @@ func test_the_stage_pushes_one_ratio_to_the_stack_and_to_the_hull() -> void:
 
 
 ## --- Fixtures and helpers ---------------------------------------------------
+
+
+## The draw pass's own quad size: the size a particle emitter cannot get from its node
+## (S2's report section 2.2). The measured rectangle that size produces is
+## `probe_s3_trail_quad.tscn`'s - a window is needed to draw, so the gate pins the lever
+## and the probe pins the pixels.
+func _quad_scale(node: CanvasItem) -> Vector2:
+	var material := node.material as ShaderMaterial
+	if material == null:
+		return Vector2.ZERO
+	return material.get_shader_parameter(&"quad_scale") as Vector2
+
+
+## The same read on a material a caller holds directly (the draw pass itself, before any
+## node carries it).
+func _material_quad_scale(material: Material) -> Vector2:
+	var quad := material as ShaderMaterial
+	if quad == null:
+		return Vector2.ZERO
+	return quad.get_shader_parameter(&"quad_scale") as Vector2
 
 
 ## A detached/buildable SpeedFantasy, in the tree so `_ready` builds the screen stack; its

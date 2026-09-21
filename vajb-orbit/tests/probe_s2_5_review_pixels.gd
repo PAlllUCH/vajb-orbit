@@ -90,7 +90,7 @@ func _case_amount_ratio_synthetic() -> void:
 func _case_trail_area() -> void:
 	var holder := Node2D.new()
 	add_child(holder)
-	var sheet := "res://assets/fx/fx_engine_trail.png"
+	var sheet := "res://assets/fx/fx_engine_trail_f1.png"
 	var row := ProjectileScript.feedback_row(&"trail")
 	var areas := {}
 	for ratio: float in [0.15, 1.0]:

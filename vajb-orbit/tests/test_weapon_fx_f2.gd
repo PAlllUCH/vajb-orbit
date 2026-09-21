@@ -12,11 +12,13 @@ extends McpTestSuite
 ## `AudioManager.last_sfx()` - or `current_loop()` for the shield's held bed - and every
 ## `res://assets/` path is resolved before the node that reads it is asserted on.
 ##
-## Contract: FX_SPEC sections 0 (void-black sheets are drawn additively), 1.4 (the
-## five-frame explosion at 15 FPS), 1.5 (the ripple, 0 -> 1.5x over 0.3 s), 7.1/7.2/7.3
-## (the shield shatter, the arc, the plume and the one-shot lifetime); AUDIO_SPEC section
-## 8's cue table and section 4.1's variant rules; ASSET_WIRING_HANDOFF.md sections
-## 1.1/1.2 (the cue table and the variant pools) and 3 (consumer rules).
+## Contract: FX_SPEC sections 1.4 (the five-frame explosion at 15 FPS), 1.5 (the ripple,
+## 0 -> 1.5x over 0.3 s), 7.1/7.2/7.3 (the shield shatter, the arc, the plume and the
+## one-shot lifetime); AUDIO_SPEC section 8's cue table and section 4.1's variant rules;
+## ASSET_WIRING_HANDOFF.md sections 1.1/1.2 (the cue table and the variant pools) and 3
+## (consumer rules). The 2026-09-21 re-cut put every effect on its own per-frame RGBA
+## files and gave each frame its own alpha, so the rows name `fx_<effect>_fN.png` and
+## every sheet is blended with that alpha (`.agents/gen/slice2_5_s3_report.md` section 3).
 
 const ProjectileScript := preload("res://game/projectile.gd")
 const FxScript := preload("res://game/fx.gd")
@@ -32,12 +34,12 @@ const HULL_POOL: StringName = &"sfx_impact_hull"
 const SHIELD_POOL: StringName = &"sfx_impact_shield_hit"
 const BLAST_POOL: StringName = &"sfx_weapon_explosion"
 
-const EXPLOSION_SHEET := "res://assets/fx/fx_explosion.png"
-const SECONDARY_SHEET := "res://assets/fx/fx_secondary_explosion.png"
-const ARC_SHEET := "res://assets/fx/fx_arc_spark.png"
-const RIPPLE_SHEET := "res://assets/fx/fx_shield_ripple.png"
-const BREAK_SHEET := "res://assets/fx/fx_shield_break.png"
-const PLUME_SHEET := "res://assets/fx/fx_smoke_plume.png"
+const EXPLOSION_SHEET := "res://assets/fx/fx_explosion_f1.png"
+const SECONDARY_SHEET := "res://assets/fx/fx_secondary_explosion_f1.png"
+const ARC_SHEET := "res://assets/fx/fx_arc_spark_f1.png"
+const RIPPLE_SHEET := "res://assets/fx/fx_shield_ripple_f1.png"
+const BREAK_SHEET := "res://assets/fx/fx_shield_break_f1.png"
+const PLUME_SHEET := "res://assets/fx/fx_smoke_plume_f1.png"
 
 const EXPLOSION_FRAMES := 5
 const ARC_FRAMES := 4
@@ -51,6 +53,7 @@ const NPC_HULL: StringName = &"ship_fighter"
 const NPC_SPRITE := "res://assets/ships/ship_fighter_side.png"
 const PLAYER_HULL: StringName = &"ship_vanguard"
 const ADD := CanvasItemMaterial.BLEND_MODE_ADD
+const MIX := CanvasItemMaterial.BLEND_MODE_MIX
 const TOLERANCE := 0.001
 
 
@@ -196,7 +199,7 @@ func test_the_shield_ring_draws_at_the_hit_and_starts_collapsed() -> void:
 	assert_true(ring != null, "FX_SPEC 1.5's ripple is drawn on the shielded hit")
 	if ring == null:
 		return
-	_assert_additive(ring)
+	_assert_alpha(ring)
 	var atlas := _sheet_texture(ring) as AtlasTexture
 	assert_true(atlas != null, "the ring is a region of the shipped master")
 	if atlas != null:
@@ -248,7 +251,7 @@ func test_the_railguns_slug_arcs_on_its_hit() -> void:
 	assert_true(arc != null, "the railgun's slug is the heavy kinetic, so its hit arcs")
 	if arc == null:
 		return
-	_assert_additive(arc)
+	_assert_alpha(arc)
 	var animated := arc as AnimatedSprite2D
 	assert_true(animated != null, "the arc is the four-frame sheet")
 	if animated != null:
@@ -281,7 +284,7 @@ func test_a_hull_death_draws_the_explosion_the_secondary_and_the_blast() -> void
 	)
 	if blast == null:
 		return
-	_assert_additive(blast)
+	_assert_alpha(blast)
 	var animated := blast as AnimatedSprite2D
 	assert_true(animated != null, "the explosion is the animated sheet")
 	if animated == null:
@@ -352,11 +355,11 @@ func test_a_hull_below_a_quarter_trails_the_plume() -> void:
 	if plume == null:
 		return
 	assert_true(plume.emitting, "the emitter is live")
-	_assert_additive(plume)
+	_assert_alpha(plume)
 	var atlas := plume.texture as AtlasTexture
 	assert_true(
 		atlas != null and atlas.atlas != null and atlas.atlas.resource_path == PLUME_SHEET,
-		"drawn from the shipped plume sheet"
+		"drawn from the plume's own re-cut frame"
 	)
 	var row: Dictionary = ProjectileScript.FEEDBACK[&"plume"]
 	var base := FxScript.scale_for(row[&"source"] as Vector2, float(row[&"world"]))
@@ -384,7 +387,7 @@ func test_the_players_own_low_hull_trails_the_plume() -> void:
 	assert_true(plume != null, "the player's own damage state is the same plume")
 	if plume == null:
 		return
-	_assert_additive(plume)
+	_assert_alpha(plume)
 
 
 ## --- Every wired path resolves (handoff section 4) ------------------------
@@ -393,25 +396,26 @@ func test_the_players_own_low_hull_trails_the_plume() -> void:
 func test_every_wired_sheet_region_and_cue_resolves() -> void:
 	for name: Variant in ProjectileScript.FEEDBACK:
 		var row: Dictionary = ProjectileScript.FEEDBACK[name]
-		var path := String(row.get(&"texture", ""))
-		assert_true(ResourceLoader.exists(path), "%s's sheet is on disk (%s)" % [name, path])
-		var texture := load(path) as Texture2D
-		if texture == null:
-			assert_true(false, "%s's sheet loads" % name)
-			continue
-		var size := texture.get_size()
-		if row.has(&"region"):
-			var region: Rect2 = row[&"region"]
+		var paths: Variant = row.get(&"frames", [])
+		assert_true(
+			paths is Array and not (paths as Array).is_empty(), "%s names its frames" % name
+		)
+		for path: Variant in paths:
 			assert_true(
-				region.end.x <= size.x and region.end.y <= size.y,
-				"%s's region is inside its sheet" % name
+				ResourceLoader.exists(String(path)),
+				"%s's frame is on disk (%s)" % [name, String(path)]
 			)
-		for frame: Variant in row.get(&"regions", []):
-			var rect := frame as Rect2
-			assert_true(
-				rect.end.x <= size.x and rect.end.y <= size.y,
-				"%s's frame region is inside its sheet (%s)" % [name, rect]
-			)
+			var texture := load(String(path)) as Texture2D
+			if texture == null:
+				assert_true(false, "%s's frame loads" % name)
+				continue
+			var size := texture.get_size()
+			if row.has(&"region"):
+				var region: Rect2 = row[&"region"]
+				assert_true(
+					region.end.x <= size.x and region.end.y <= size.y,
+					"%s's region is inside its own frame" % name
+				)
 	var audio := _audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
@@ -524,12 +528,21 @@ func _player_state() -> Object:
 ## a hit that draws nothing is a null rather than an absence nobody checked.
 func _sheet_up(sheet: String) -> Node:
 	for node: Node in _root.get_children():
-		var texture := _sheet_texture(node)
-		if texture is AtlasTexture:
-			var atlas := texture as AtlasTexture
-			if atlas.atlas != null and atlas.atlas.resource_path == sheet:
-				return node
+		if _drawn_from(_sheet_texture(node), sheet):
+			return node
 	return null
+
+
+## Whether a drawn texture is the named frame: the frame itself (a sequence row draws its
+## frames whole) or the frame an `AtlasTexture` reads its region from (a one-frame row
+## cuts its frame to the art's own ink box).
+func _drawn_from(texture: Texture2D, sheet: String) -> bool:
+	if texture == null:
+		return false
+	if texture is AtlasTexture:
+		var atlas := texture as AtlasTexture
+		return atlas.atlas != null and atlas.atlas.resource_path == sheet
+	return texture.resource_path == sheet
 
 
 func _sheet_texture(node: Node) -> Texture2D:
@@ -551,7 +564,22 @@ func _assert_additive(node: CanvasItem) -> void:
 	assert_eq(
 		material.blend_mode,
 		ADD,
-		"FX_SPEC section 0: RGB on void black is drawn additively"
+		"the engine-drawn beam's halo is not a sheet and keeps its own blend"
+	)
+
+
+## The re-cut sheets carry their own alpha, so every one of them is blended with it (the
+## owner's 2026-09-21 ruling; FX_SPEC section 0.1's carve-out was the same rule for the
+## four effects that were keyed first).
+func _assert_alpha(node: CanvasItem) -> void:
+	var material := node.material as CanvasItemMaterial
+	assert_true(material != null, "an fx sheet carries its own canvas material")
+	if material == null:
+		return
+	assert_eq(
+		material.blend_mode,
+		MIX,
+		"the sheet's own alpha is the blend: no black box, no additive blow-out"
 	)
 
 

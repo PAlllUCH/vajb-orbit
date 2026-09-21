@@ -1,0 +1,96 @@
+[S2R] HEAD probe=s2_review
+[S2R] BLUR ratio=0.0000 strength=0.000000 spec=0.000000 match=true visible=false chromatic=0.000000 dir=(0.6000,-0.8000) dir_spec=(0.6000,-0.8000) layer=1 rect_size=(1920.0, 1080.0) viewport=(1920.0, 1080.0)
+[S2R] BLUR ratio=0.5000 strength=0.000000 spec=0.000000 match=true visible=false chromatic=0.000000 dir=(0.6000,-0.8000) dir_spec=(0.6000,-0.8000) layer=1 rect_size=(1920.0, 1080.0) viewport=(1920.0, 1080.0)
+[S2R] BLUR ratio=0.6900 strength=0.000000 spec=0.000000 match=true visible=false chromatic=0.000000 dir=(0.6000,-0.8000) dir_spec=(0.6000,-0.8000) layer=1 rect_size=(1920.0, 1080.0) viewport=(1920.0, 1080.0)
+[S2R] BLUR ratio=0.7000 strength=0.000000 spec=0.000000 match=true visible=false chromatic=0.000000 dir=(0.6000,-0.8000) dir_spec=(0.6000,-0.8000) layer=1 rect_size=(1920.0, 1080.0) viewport=(1920.0, 1080.0)
+[S2R] BLUR ratio=0.7001 strength=0.100233 spec=0.100233 match=true visible=true chromatic=0.100233 dir=(0.6000,-0.8000) dir_spec=(0.6000,-0.8000) layer=1 rect_size=(1920.0, 1080.0) viewport=(1920.0, 1080.0)
+[S2R] BLUR ratio=0.7100 strength=0.123333 spec=0.123333 match=true visible=true chromatic=0.123333 dir=(0.6000,-0.8000) dir_spec=(0.6000,-0.8000) layer=1 rect_size=(1920.0, 1080.0) viewport=(1920.0, 1080.0)
+[S2R] BLUR ratio=0.8500 strength=0.450000 spec=0.450000 match=true visible=true chromatic=0.450000 dir=(0.6000,-0.8000) dir_spec=(0.6000,-0.8000) layer=1 rect_size=(1920.0, 1080.0) viewport=(1920.0, 1080.0)
+[S2R] BLUR ratio=0.9000 strength=0.566667 spec=0.566667 match=true visible=true chromatic=0.566667 dir=(0.6000,-0.8000) dir_spec=(0.6000,-0.8000) layer=1 rect_size=(1920.0, 1080.0) viewport=(1920.0, 1080.0)
+[S2R] BLUR ratio=1.0000 strength=0.800000 spec=0.800000 match=true visible=true chromatic=0.800000 dir=(0.6000,-0.8000) dir_spec=(0.6000,-0.8000) layer=1 rect_size=(1920.0, 1080.0) viewport=(1920.0, 1080.0)
+[S2R] DUST_PLATE size=(2048, 2048) region=[P: (526.0, 997.0), S: (967.0, 52.0)] region_inside=(967, 52) alpha_mode=0 min=0.0627 min_rgb=(6,11,16) max=0.2941 max_rgb=(47,57,75)
+[S2R] ZOOM wheel=0.70 ratio=0.00 pullback=1.000000 spec_pull=1.000000 applied=0.700000 spec_applied=0.700000 camera=0.700000 wheel_readback=0.7000 delta=0.000000012 match=true
+[S2R] ZOOM wheel=0.70 ratio=0.50 pullback=1.000000 spec_pull=1.000000 applied=0.700000 spec_applied=0.700000 camera=0.700000 wheel_readback=0.7000 delta=0.000000012 match=true
+[S2R] ZOOM wheel=0.70 ratio=0.70 pullback=1.000000 spec_pull=1.000000 applied=0.700000 spec_applied=0.700000 camera=0.700000 wheel_readback=0.7000 delta=0.000000012 match=true
+[S2R] ZOOM wheel=0.70 ratio=0.85 pullback=0.910000 spec_pull=0.910000 applied=0.637000 spec_applied=0.637000 camera=0.637000 wheel_readback=0.7000 delta=0.000000024 match=true
+[S2R] ZOOM wheel=0.70 ratio=1.00 pullback=0.820000 spec_pull=0.820000 applied=0.574000 spec_applied=0.574000 camera=0.574000 wheel_readback=0.7000 delta=0.000000001 match=true
+[S2R] ZOOM wheel=1.00 ratio=0.00 pullback=1.000000 spec_pull=1.000000 applied=1.000000 spec_applied=1.000000 camera=1.000000 wheel_readback=1.0000 delta=0.000000000 match=true
+[S2R] ZOOM wheel=1.00 ratio=0.50 pullback=1.000000 spec_pull=1.000000 applied=1.000000 spec_applied=1.000000 camera=1.000000 wheel_readback=1.0000 delta=0.000000000 match=true
+[S2R] ZOOM wheel=1.00 ratio=0.70 pullback=1.000000 spec_pull=1.000000 applied=1.000000 spec_applied=1.000000 camera=1.000000 wheel_readback=1.0000 delta=0.000000000 match=true
+[S2R] ZOOM wheel=1.00 ratio=0.85 pullback=0.910000 spec_pull=0.910000 applied=0.910000 spec_applied=0.910000 camera=0.910000 wheel_readback=1.0000 delta=0.000000026 match=true
+[S2R] ZOOM wheel=1.00 ratio=1.00 pullback=0.820000 spec_pull=0.820000 applied=0.820000 spec_applied=0.820000 camera=0.820000 wheel_readback=1.0000 delta=0.000000007 match=true
+[S2R] ZOOM wheel=1.30 ratio=0.00 pullback=1.000000 spec_pull=1.000000 applied=1.300000 spec_applied=1.300000 camera=1.300000 wheel_readback=1.3000 delta=0.000000048 match=true
+[S2R] ZOOM wheel=1.30 ratio=0.50 pullback=1.000000 spec_pull=1.000000 applied=1.300000 spec_applied=1.300000 camera=1.300000 wheel_readback=1.3000 delta=0.000000048 match=true
+[S2R] ZOOM wheel=1.30 ratio=0.70 pullback=1.000000 spec_pull=1.000000 applied=1.300000 spec_applied=1.300000 camera=1.300000 wheel_readback=1.3000 delta=0.000000048 match=true
+[S2R] ZOOM wheel=1.30 ratio=0.85 pullback=0.910000 spec_pull=0.910000 applied=1.183000 spec_applied=1.183000 camera=1.183000 wheel_readback=1.3000 delta=0.000000031 match=true
+[S2R] ZOOM wheel=1.30 ratio=1.00 pullback=0.820000 spec_pull=0.820000 applied=1.066000 spec_applied=1.066000 camera=1.066000 wheel_readback=1.3000 delta=0.000000015 match=true
+[S2R] ZOOM wheel=1.50 ratio=0.00 pullback=1.000000 spec_pull=1.000000 applied=1.500000 spec_applied=1.500000 camera=1.500000 wheel_readback=1.5000 delta=0.000000000 match=true
+[S2R] ZOOM wheel=1.50 ratio=0.50 pullback=1.000000 spec_pull=1.000000 applied=1.500000 spec_applied=1.500000 camera=1.500000 wheel_readback=1.5000 delta=0.000000000 match=true
+[S2R] ZOOM wheel=1.50 ratio=0.70 pullback=1.000000 spec_pull=1.000000 applied=1.500000 spec_applied=1.500000 camera=1.500000 wheel_readback=1.5000 delta=0.000000000 match=true
+[S2R] ZOOM wheel=1.50 ratio=0.85 pullback=0.910000 spec_pull=0.910000 applied=1.365000 spec_applied=1.365000 camera=1.365000 wheel_readback=1.5000 delta=0.000000010 match=true
+[S2R] ZOOM wheel=1.50 ratio=1.00 pullback=0.820000 spec_pull=0.820000 applied=1.230000 spec_applied=1.230000 camera=1.230000 wheel_readback=1.5000 delta=0.000000019 match=true
+[S2R] ZOOM_LIVE set=2.0 clamped=1.5000 shown_at_once=1.0000 tween=true
+[S2R] ZOOM_LIVE mid_tween shown=1.143402 strictly_between=true
+[S2R] ZOOM_LIVE settled wheel_target=1.500000 wheel_shown=1.500000 pushed_to_stack=1.500000 ratio=0.9500 pullback=0.850000 camera=1.275000 spec_applied=1.275000 composes=true wheel_untouched_by_pullback=true
+[S2R] ZOOM_LIVE set=0.10 clamped=0.7000 shown=0.700000 camera=0.595000 ratio=0.9500
+[S2R] ZOOM_LIVE pullback_writeback before=0.700000 after=0.700000 unchanged=true
+[S2R] DUST_EMITTER parent=@Camera2D@60 parent_is_camera=true sheet=res://assets/fx/fx_dust_streak.png node_material=<Object#null> local_coords=false lifetime=0.5000 amount=15 color_a=0.3500 scale_min=0.012410 visibility_rect=[P: (-100.0, -100.0), S: (200.0, 200.0)]
+[S2R] DUST ratio=0.00 emitting=false visible=false spec_on=false amount_ratio=1.000000 expected_count=0.00
+[S2R] DUST ratio=0.50 emitting=false visible=false spec_on=false amount_ratio=1.000000 expected_count=0.00
+[S2R] DUST ratio=0.69 emitting=false visible=false spec_on=false amount_ratio=1.000000 expected_count=0.00
+[S2R] DUST ratio=0.70 emitting=true visible=true spec_on=true amount_ratio=1.000000 expected_count=15.00
+[S2R] DUST ratio=0.71 emitting=true visible=true spec_on=true amount_ratio=1.000000 expected_count=15.00
+[S2R] DUST ratio=1.00 emitting=true visible=true spec_on=true amount_ratio=1.000000 expected_count=15.00
+[S2R] VIGNETTE_PLATE alpha_mode=0 centre=(5,8,11) corner=(44,20,13) min=0.0000 edge_max=0.9176
+[S2R] VIGNETTE hull=0.3000 active=false visible=false modulate_a=0.000000
+[S2R] VIGNETTE hull=0.2501 active=false visible=false modulate_a=0.000000
+[S2R] VIGNETTE hull=0.2500 active=false visible=false modulate_a=0.000000
+[S2R] VIGNETTE hull=0.2499 active=true visible=true modulate_a=0.800000
+[S2R] VIGNETTE hull=0.2000 active=true visible=true modulate_a=0.800000
+[S2R] VIGNETTE_LIVE frames=90 step=0.016667 clock=1.5000 low=0.6000 high=1.0000 worst_sine_gap=0.0174
+[S2R] VIGNETTE_LIVE half_period=-0.6000 spec_half_period=0.6000 (the peaks' own spacing)
+[S2R] VIGNETTE_LIVE above_the_line visible=false modulate_a=0.000000
+[S2R] ARCS_LIVE hull=0.20 frames=360 seconds=6.0 count=2 nodes_now=0 most_nodes_at_once=1 frames_that_drew=22 next_interval=2.375923
+[S2R] ARCS_LIVE hull=0.80 seconds=6.0 count=0
+[S2R] TRAIL anchors=1 first=(-16.5000,0.0000) radius=30.0000 sheet=res://assets/fx/fx_engine_trail.png
+[S2R] TRAIL ratio=0.15 emitters=1 amount=24 amount_ratio=0.333333 spec_amount_ratio=0.333333 scale=(0.01713062,0.06976745) spec_scale=(0.01713062,0.06976744) alpha=0.3500 spec_alpha=0.3500 emitting=true lifetime=0.4000 local_coords=false material=additive pos=(-28.5000,0.0000) spec_pos=(-28.5000,0.0000) in_tree=true
+[S2R] TRAIL ratio=1.00 emitters=1 amount=24 amount_ratio=1.000000 spec_amount_ratio=1.000000 scale=(0.03997145,0.06976745) spec_scale=(0.03997145,0.06976744) alpha=0.8500 spec_alpha=0.8500 emitting=true lifetime=0.4000 local_coords=false material=additive pos=(-44.5000,0.0000) spec_pos=(-44.5000,0.0000) in_tree=true
+[S2R] TRAIL case=at_rest_no_stick ratio=0.00 thrusting=false emitting=false visible=false
+[S2R] TRAIL case=at_rest_stick_down ratio=0.00 thrusting=true emitting=true visible=true
+[S2R] TRAIL case=the_floor_drifting ratio=0.15 thrusting=false emitting=true visible=true
+[S2R] TRAIL case=drifting ratio=0.50 thrusting=false emitting=true visible=true
+[S2R] TRAIL sheet_nodes=0
+[S2R] BED ratio=0.00 held=false sounding=false pitch=1.000000 spec_pitch=0.850000 volume_db=-80.000000 spec_volume=-24.000000
+[S2R] BED ratio=0.15 held=true sounding=true pitch=0.850000 spec_pitch=0.850000 volume_db=-24.000000 spec_volume=-24.000000
+[S2R] BED ratio=0.50 held=true sounding=true pitch=0.973529 spec_pitch=0.973529 volume_db=-19.058823 spec_volume=-19.058824
+[S2R] BED ratio=0.90 held=true sounding=true pitch=1.114706 spec_pitch=1.114706 volume_db=-13.411765 spec_volume=-13.411765
+[S2R] BED ratio=1.00 held=true sounding=true pitch=1.150000 spec_pitch=1.150000 volume_db=-12.000000 spec_volume=-12.000000
+[S2R] BED_HYST below_on ratio=0.120 held=false sounding=false
+[S2R] BED_HYST at_on ratio=0.150 held=true sounding=true
+[S2R] BED_HYST latched_above_off ratio=0.120 held=true sounding=true
+[S2R] BED_HYST at_off ratio=0.100 held=true sounding=true
+[S2R] BED_HYST just_below_off ratio=0.095 held=false sounding=false
+[S2R] BED_HYST re_armed ratio=0.150 held=true sounding=true
+[S2R] BED_HYST re_latched_holding ratio=0.095 held=false sounding=false
+[S2R] BED thrust_only held_at_ratio_zero=true
+[S2R] BED priority=1 cue=sfx_ship_engine_01 path=res://assets/audio/sfx/sfx_ship_engine_01.ogg
+[S2R] BED_SCOPE sounding_at_once=3 beds=[sfx_impact_shield_loop, sfx_ship_engine_01, sfx_mining_beam]
+[S2R] BED_SCOPE after_thruster_stop=2 beds=[sfx_impact_shield_loop, sfx_mining_beam] shield_kept=true beam_kept=true
+[S2R] BED_VOICE start cues=[sfx_ship_engine_01, , ] players=3
+[S2R] BED_VOICE asked cues=[sfx_ship_engine_01, , ] index=0
+[S2R] BED_VOICE frame=1 index=0 playing=false stream=<none> volume_db=-19.0588 pitch=0.9735
+[S2R] BED_VOICE frame=2 index=0 playing=false stream=<none> volume_db=-19.0588 pitch=0.9735
+[S2R] BED_VOICE frame=3 index=0 playing=false stream=<none> volume_db=-19.0588 pitch=0.9735
+[S2R] BED_VOICE frame=10 index=0 playing=false stream=<none> volume_db=-19.0588 pitch=0.9735
+[S2R] BED_VOICE frame=30 index=0 playing=false stream=<none> volume_db=-19.0588 pitch=0.9735
+[S2R] BED_VOICE sounding_reported=true beds=[sfx_ship_engine_01]
+[S2R] BEAM_BED with_thruster=false foreground=sfx_impact_shield_loop beam_still_sounding_after_stop=true beds=[sfx_impact_shield_loop, sfx_mining_beam]
+[S2R] BEAM_BED with_thruster=true foreground=sfx_impact_shield_loop beam_still_sounding_after_stop=true beds=[sfx_impact_shield_loop, sfx_ship_engine_01, sfx_mining_beam]
+[S2R] BED_SHIPPED cue_index=0 reported_sounding=true pitch=1.1062 volume_db=-13.7506 playing=false stream=<none> matching_stream=false
+[S2R] DEATH_RELEASE trail_children=0 thruster_bed_sounding=true beds=[sfx_ship_engine_01]
+[S2R] DEATH dead=true ratio=0.9183 blur_strength=0.6093 blur_visible=true dust_emitting=true vignette_active=false vignette_visible=false alpha=0.8000 trail_emitting=0
+[S2R] TRAIL_SEAM three_anchors_returned=3 three_anchors_drawn=3 after_shrink=1 after_clear=0
+[S2R] BOOST activations=1 cue=sfx_ship_boost_01 last_sfx=sfx_ship_boost_01 charges=1
+[S2R] BOOST charge_scale=0.02547771 world_u=32.0000 spec_world_u=32.0000 on_hull=true fade_seconds=0.20
+[S2R] BOOST after_burn_frames activations=1 charges=0 (the charge fades and frees)
+[S2R] done

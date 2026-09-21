@@ -48,26 +48,43 @@ func _ready() -> void:
 ## material's `scale_min/max` (the dust row's route)?
 func _case_scale_lever() -> void:
 	var row := ProjectileScript.feedback_row(&"trail")
-	var texture := load(String(row[&"texture"])) as Texture2D
-	for mode: String in ["node_scale", "particle_scale"]:
+	var texture := ProjectileScript.feedback_texture(&"trail")
+	for mode: String in ["node_scale", "particle_scale", "quad_pass"]:
 		var emitter := GPUParticles2D.new()
-		emitter.texture = FxScript.frame(texture, row[&"region"] as Rect2)
-		emitter.material = FxScript.additive_material()
+		## `feedback_texture` already cuts the frame to the art's own ink box, so the
+		## texture is drawn as it comes (a second region over an `AtlasTexture` draws
+		## nothing).
+		emitter.texture = texture
+		emitter.material = FxScript.alpha_material()
 		var process := ParticleProcessMaterial.new()
 		process.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_POINT
 		process.initial_velocity_min = 0.0
 		process.initial_velocity_max = 0.0
 		process.gravity = Vector3.ZERO
+		var source := row[&"source"] as Vector2
+		var length := 24.0
 		if mode == "particle_scale":
-			process.scale_min = 0.017131
-			process.scale_max = 0.017131
+			## The process material's `scale_min/max` is one number: the quad can only
+			## follow the frame's own aspect, so it cannot give section 1.3's 6 u of width
+			## at a 24 u length.
+			process.scale_min = length / source.x
+			process.scale_max = length / source.x
 			process.color = Color(1.0, 1.0, 1.0, 0.35)
 			emitter.scale = Vector2.ONE
+		elif mode == "quad_pass":
+			## S3's lever: the draw pass scales the quad's own vertices, so the length
+			## *and* the width are the section's own numbers (`probe_s3_levers.tscn`
+			## isolates the lever; `probe_s3_trail_quad.tscn` measures the shipped one).
+			process.scale_min = 1.0
+			process.scale_max = 1.0
+			process.color = Color(1.0, 1.0, 1.0, 0.35)
+			emitter.scale = Vector2.ONE
+			emitter.material = FxScript.quad_material(Vector2(length / source.x, 6.0 / source.y))
 		else:
 			process.scale_min = 1.0
 			process.scale_max = 1.0
 			process.color = Color(1.0, 1.0, 1.0, 0.35)
-			emitter.scale = Vector2(0.017131, 0.069767)
+			emitter.scale = Vector2(length / source.x, 6.0 / source.y)
 		emitter.process_material = process
 		emitter.amount = 24
 		emitter.lifetime = 0.4
@@ -122,17 +139,19 @@ func _case_shipped() -> void:
 	var trails: Array = ship.call(&"thruster_trails")
 	var trail := trails[0] as GPUParticles2D
 	print(
-		"%s SHIPPED ship_speed_ratio=%.4f emitters=%d emitting=%s label_streak_scale=%s pos=(%.2f,%.2f) lit=%d max=%.4f"
+		"%s SHIPPED ship_speed_ratio=%.4f emitters=%d emitting=%s node_scale=%s quad_scale=%s pos=(%.2f,%.2f) lit=%d max=%.4f box=%s"
 		% [
 			TAG,
 			float(ship.call(&"speed_ratio")),
 			trails.size(),
 			str(trail.emitting),
 			str(trail.scale),
+			str(_quad_scale(trail)),
 			trail.global_position.x,
 			trail.global_position.y,
 			_lit(image),
 			_max(image),
+			str(_box(image)),
 		]
 	)
 	## The trail's own contribution on the shipped scene: its emitters off, then on, from
@@ -189,6 +208,15 @@ func _case_shipped() -> void:
 	await RenderingServer.frame_post_draw
 
 
+## The draw pass's own quad size (S3's fix: the size a particle emitter cannot get from
+## its node). Vector2.ZERO when the emitter is not drawn through the quad pass.
+func _quad_scale(node: CanvasItem) -> Vector2:
+	var material := node.material as ShaderMaterial
+	if material == null:
+		return Vector2.ZERO
+	return material.get_shader_parameter(&"quad_scale") as Vector2
+
+
 ## The pixels that changed between two frames, and their bounding box.
 func _delta(before: Image, after: Image) -> Dictionary:
 	var changed := 0
@@ -223,12 +251,12 @@ func _delta(before: Image, after: Image) -> Dictionary:
 ## The trail's own master, drawn once, additively, at the emitter's own transform.
 func _case_plate() -> void:
 	var row := ProjectileScript.feedback_row(&"trail")
-	var texture := load(String(row[&"texture"])) as Texture2D
+	var texture := ProjectileScript.feedback_texture(&"trail")
 	var region := row[&"region"] as Rect2
 	var source := row[&"source"] as Vector2
 	var sprite := Sprite2D.new()
-	sprite.texture = FxScript.frame(texture, region)
-	sprite.material = FxScript.additive_material()
+	sprite.texture = texture
+	sprite.material = FxScript.alpha_material()
 	sprite.centered = true
 	sprite.position = Vector2(-12.0, 0.0)
 	sprite.rotation = PI
@@ -246,7 +274,7 @@ func _case_plate() -> void:
 		)
 		% [
 			TAG,
-			String(row[&"texture"]),
+			String(row[&"frames"][0]),
 			str(region),
 			sprite.scale.x,
 			sprite.scale.y,
