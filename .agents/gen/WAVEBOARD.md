@@ -8,9 +8,9 @@ evidence were moved to `.agents/gen/_archive/` (2026-09-21, reversible) —
 citation paths of the form `.agents/gen/<report>.md` now resolve one level
 deeper.
 
-**Current state: two coding waves closed, the combat repair measured and fixed; the
-chrome art half and the launch fit wait on the owner.** Engine waves closed as below
-(slice 0 + slice 2 review-verified clean; gate `passed=236 failed=0`). A full-loop live
+**Current state: three coding waves closed (chrome, combat repair, weapon FX wiring);
+the chrome art half and the launch fit wait on the owner.** Engine waves closed as below
+(slice 0 + slice 2 review-verified clean; gate `passed=277 failed=0`). A full-loop live
 playtest (2026-09-21, godot-ai driven) verified the whole menu → station → launch →
 space structure but found the `ui_slot_*` chrome shipping as whole sheet cells
 (880×876 / 873×864). The **UI-chrome code lane is Done** (D3 guard, D4 stale UIDs, D5
@@ -31,8 +31,29 @@ the owner-ruled drag retune (nine `coast_time` rows ×0.50: Vanguard t10 1.890 �
 carry 430.32 → 216.85 u, §13 tick pending). **Two owner gates stay open:** the launch fit
 (the briefing reports five weapons / 1500 rounds while the ship mounts `[w_laser]` and no
 mining laser — the measured root cause of "shooting is not working" and "cannot shoot
-asteroids") and the §13 `coast_time` table. Evidence:
+asteroids") and the §13 `coast_time` table.  The **weapon FX & audio wiring wave is Done** (reports
+`.agents/gen/weapon_fx_f{1,2,3,4}_report.md`, gate 236 → 277): a projectile now draws its
+shipped sprite (bolt, slug, missile-trail sheet or mine ember) additively and turns to its
+bearing, the instant families draw an engine-side beam line, a four-frame muzzle flash fires
+per release, and every family plays its cue through a new cue-pool API (`sfx_weapon_laser`
+round-robin 01–04 with ±10 % pitch / −3..0 dB, cannon tiers, the rocket's +80 ms warhead
+layer); hits play `sfx_impact_{rock,hull,shield_hit}` plus the shield bed and spawn the
+explosion/arc/ripple/break/plume sheets, a beam's own hits now read (the reviewer's one HIGH,
+fixed in the fixer pass), and the mining shaft carries its beam bed. The reviewer verified by
+measurement — every event's node, blend mode, sheet master, cue resolution and the absence of
+any moved damage/cadence/range/Energy/ammo number. Evidence:
 `.agents/gen/owner_playtest_findings_20260921.md`, `.agents/gen/playtest_fullloop_20260921.md`.
+**NEW (2026-09-21): the owner's per-class slot/layout request is designed and queued
+as wave P2-A** (Queued item 9) — `docs/gameplay/08_ship_classes.md` §3/§3.1/§3.2/§3.3,
+`09_ship_slots_modules.md` §1/§2/§3.7/§4/§5/§7/§8/§9 and `10_ship_acquisition.md` §2.3 are
+amended (per-class grids, engine sets of 1–3 cells, the nine layouts, the nine-hull
+roster), brief `.agents/gen/p2a_slot_frames_wave_task.md` and prompts are written, and
+the wave is scoped to close the open **launch-fit** gate above at its measured root
+cause (`game.gd` resolving one global `STANDARD_FIT` and seeding five fixed ammo
+families). The owner's tick list is brief §8 — **resolved 2026-09-21, all six kept
+as designed** (the one follow-up: the 7-W capital's `weapon_6`/`weapon_7`
+input-map extension, an owner `project.godot` pass; see the brief's resolution
+record).
 
 ## Living contracts
 
@@ -42,9 +63,10 @@ asteroids") and the §13 `coast_time` table. Evidence:
   rulings 8–26. **Owner-locked**: no worker may edit it; the six owed spec
   edits are the owner's (MASTER_REPORT §3 item 1).
 - Universal test gate: `res://tests/headless_runner.tscn` → `[SUMMARY]
-  passed=236 failed=0` (exact command in CONTRACTS.md §9; grew 53 → 78 → 219 → 226
-  with the UI-chrome wave's `test_ui_slot_layout.gd`, then 236 with the combat repair
-  wave's `test_engine_c3_flight_decay.gd` and `test_combat_repair_c5.gd`).
+  passed=277 failed=0` (exact command in CONTRACTS.md §9; grew 53 → 78 → 219 → 226
+  with the UI-chrome wave's `test_ui_slot_layout.gd`, 236 with the combat repair wave's
+  `test_engine_c3_flight_decay.gd` and `test_combat_repair_c5.gd`, and 277 with the weapon
+  FX wave's `test_weapon_fx_f{1,2,4}.gd` suites).
 - `staging/verify_wave.py` — mechanical wave gates: `snapshot` before a wave,
   `verify --baseline <tag> [--forbidden ...] [--expect-reports ...] [--tests]`
   after. Baselines live in `.agents/gen/_wave_state/` (`wave1_closed`,
@@ -130,7 +152,9 @@ lanes' queued items below are executed through those files.
    slot review sheet, and the coder lane owes the graphics lane one small
    tooling fix: an `--only` scope for `staging/phase_f/apply_import_settings.py`
    before any batch may use it.
-2. **Playtest session 2 — now the head of the queue.** Finish the loop legs
+2. **Playtest session 2 — the head of the queue, now with something to see and hear.**
+   Re-check the weapon wiring by eye and ear (the owner's original report: "no sprite and
+   no sound"), then finish the loop legs
    session 1 could not reach: flight/fuel/reactor, mining, combat +
    countermeasures, death/respawn, dock-back economy, save/load, boot/loading
    logo, menu stutter (user note), and re-test the repaired rock ram, the drag
@@ -189,7 +213,8 @@ lanes' queued items below are executed through those files.
    `.agents/gen/p2a_slot_frames_wave_task.md`, prompts
    `.agents/gen/p2a_slot_frames_wave_prompts.md`. **Docs are already amended
    and are the law** (08 §3/§3.1/§3.2/§3.3/§6, 09 §1/§2/§3.7/§4/§5/§7/§8/§9,
-   10 §2.3); the owner's tick list is brief §8 and blocks nothing. Its
+   10 §2.3); the owner's tick list is brief §8, resolved 2026-09-21 (all six
+   kept) and blocking nothing. Its
    follow-up **P2-B (fitting panel, module install/remove, power meter, legacy
    UPGRADES flag day)** is briefed after this wave's review. Two things are
    staged out of it on purpose: mount-anchor **consumption** in flight (the
@@ -205,6 +230,10 @@ lanes' queued items below are executed through those files.
 
 ## Closed (details in MASTER_REPORT.md)
 
+- **Weapon FX & audio wiring wave** (2026-09-21, gate 236 → 277): F1 fire & travel, F2 impact
+  & death, F3 review (1 HIGH, 3 MED, 11 LOW), F4 closed all four. Reports
+  `.agents/gen/weapon_fx_f{1,2,3,4}_report.md`; the 11 LOW items are L48–L59 in
+  `LOW_BACKLOG.md`. No balance number moved.
 - **Combat/collision repair wave** (2026-09-21, gate 226 → 236): C1–C3 measured, C5
   fixed (rock `collision_mask` 0 → 2, the rock's ram sink on the shipped
   `GUN_CHIP_RATE`, plasma's live-shield bonus, the mine's cadence fallback, and the

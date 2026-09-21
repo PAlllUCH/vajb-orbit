@@ -20,7 +20,12 @@ extends Node2D
 ## What this file does not own, by the wave's file sets: the damage pipeline
 ## (`damage.gd`, W2), the lock channel and the reticle (`hud.gd`/the wiring, W5),
 ## the mining laser's own 5 E/s beam drain (mining_laser.gd is in no slice-2 set -
-## reported), and every visual (slice 2.5).
+## reported), and the hit site's own visuals (the impact and death pass).
+##
+## Fire and travel feedback is this file's: `shot_fired` drives the muzzle flash
+## (FX_SPEC section 1.2) and the family's cue (AUDIO_SPEC section 8 through the
+## handoff's pools), and the instant families draw FX_SPEC section 1.6's
+## engine-drawn shaft. Nothing here reads or writes a balance number.
 
 ## Raised when a shot actually leaves: one per released projectile (cannon,
 ## railgun, rocket, mine) and once per beam hold for the instant families, which
@@ -37,6 +42,7 @@ signal countermeasure_used(item_id: StringName)
 const PlayerStateScript := preload("res://game/player_state.gd")
 const ProjectileScript := preload("res://game/projectile.gd")
 const ImpactScript := preload("res://game/impact.gd")
+const FxScript := preload("res://game/fx.gd")
 
 ## ENGINE_SPEC section 4.1's family table with section 13's calibration rows. One
 ## row per family, keyed by the weapon id the fit and `PlayerState.WEAPONS` use.
@@ -165,6 +171,73 @@ const FLARE_NODE_NAME: StringName = &"CountermeasureFlare"
 const PROJECTILE_GROUP: StringName = &"projectile"
 const PROJECTILE_NODE_NAME: StringName = &"Projectile"
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
+const AUDIO_SERVICE: StringName = &"AudioManager"
+
+## --- Fire feedback: what a released shot looks and sounds like -------------
+##
+## One row per firing family: the cue the family's shot plays, plus the pool tier the
+## cannon family fires at. AUDIO_SPEC section 8's S1 is the player's light and medium
+## energy weapons (one cue, a four-take round-robin), S2 is the heavy cannon's three
+## tiers by length (take 0 the cannon's own, take 1 the heavier railgun's, take 2 the
+## long charge-up left to the pool), S3 is the rocket's launch + warhead pair. The
+## mine is absent on purpose: section 8 states no deployable cue (reported).
+const FIRE_CUES: Dictionary = {
+	&"laser": {&"cue": &"sfx_weapon_laser"},
+	&"plasma": {&"cue": &"sfx_weapon_laser"},
+	&"cannon": {&"cue": &"sfx_weapon_cannon", &"take": 0},
+	&"railgun": {&"cue": &"sfx_weapon_cannon", &"take": 1},
+	&"rocket": {&"cue": &"sfx_weapon_rocket"},
+}
+
+## FX_SPEC section 1.2's muzzle flash: the four pre-cut frames at the spec's own
+## 20 FPS (0.2 s, one-shot), the frame's own mouth sitting on the muzzle (the frames
+## carry the barrel to the left of it, ~135 px in from the frame's left ink edge) and
+## the flash reading about a hull's length.
+const FLASH_FRAMES: Array[String] = [
+	"res://assets/fx/fx_muzzle_flash_f1.png",
+	"res://assets/fx/fx_muzzle_flash_f2.png",
+	"res://assets/fx/fx_muzzle_flash_f3.png",
+	"res://assets/fx/fx_muzzle_flash_f4.png",
+]
+const FLASH_FRAME_SIZE := Vector2(535.0, 487.0)
+const FLASH_MUZZLE_PX := Vector2(135.0, 243.5)
+const FLASH_WORLD := 44.0
+const FLASH_FPS := 20.0
+
+## FX_SPEC section 1.6 sanctions the engine-drawn beam ("the beam line itself is
+## engine-drawn; no texture needed"), so the instant families draw theirs the way
+## `mining_laser.gd` draws the mining shaft: a wide dim halo under a thin bright core.
+## The tones come from the generated theme (no hex literals outside
+## `tools/build_theme.gd`); a weapon is a danger state, so they are the ember pair.
+const BEAM_NAMES: Array[StringName] = [&"Beam", &"BeamCore"]
+const BEAM_HALO_WIDTH := 5.0
+const BEAM_CORE_WIDTH := 2.0
+const BEAM_HALO_ALPHA := 0.45
+const BEAM_CORE_ALPHA := 0.95
+const BEAM_HALO_TOKEN: StringName = &"accent_danger"
+const BEAM_CORE_TOKEN: StringName = &"accent_danger_bright"
+const THEME_PATH := "res://ui/theme/vajb_theme.tres"
+const TOKENS_TYPE: StringName = &"Tokens"
+
+## A beam lands on a hull every frame, so its hits read through the same two doors a
+## landed projectile uses (`Projectile.play_impact` / `spawn_shield_ripple`): the cue for
+## what took the hit and the shield's ring. The read is rate-gated per contact - one on
+## the frame the contact starts and one every `BEAM_HIT_INTERVAL` after - because a cue
+## per frame is a machine gun, not a beam.
+##
+## AUDIO_SPEC states no rate for a beam's hits, and the impact takes it plays run
+## 0.117-0.364 s, so a quarter second is a sustained read rather than a stack (proposed).
+const BEAM_HIT_INTERVAL := 0.25
+
+## The held beam's bed. The library ships exactly one energy-emission loop (S6's shield
+## hum and S7's mining bed are the same source, `staging/audio/build_audio.py`), and the
+## mining bed is its only shipped looping take, so a held weapon beam rides that bed;
+## a dedicated `sfx_weapon_beam_loop` is the ideal asset (proposed).
+const BEAM_BED_CUE: StringName = &"sfx_mining_beam"
+
+## Fire feedback draws over the hull that fired it (the hull's own sprite sits at the
+## default 0 on the same canvas).
+const FEEDBACK_Z := 2
 
 ## A hull's collider is its own `HullBody` (`RigidBody2D`), which carries no damage
 ## method, so a hit that lands on one has to be handed to the ship behind it. These
@@ -184,6 +257,16 @@ var _dry_noted := false
 var _shot_timer := 0.0
 var _burst_phase := 0.0
 var _beam_live := false
+
+## The instant families' two engine-drawn lines (FX_SPEC section 1.6), built in code
+## because the component itself is mounted in code.
+var _beam_halo: Line2D = null
+var _beam_core: Line2D = null
+
+## The beam's own hit feedback: the target the rate guard is counting for and how long
+## that contact has been held since it was last read (a fresh contact reads at once).
+var _beam_contact: Object = null
+var _beam_hit_clock := 0.0
 
 ## The lock the seeker follows (section 4.1/4.6). The channel that earns it is
 ## W5's; this is the seam it lands on.
@@ -210,6 +293,20 @@ var _ctx_arity: Dictionary = {}
 func setup(stats: ShipStats, state: PlayerState) -> void:
 	_stats = stats
 	_state = state
+	_connect_feedback()
+
+
+func _ready() -> void:
+	_connect_feedback()
+
+
+## The fire feedback hangs off this component's own `shot_fired`, so a released
+## projectile, a beam's opening frame and the mine's drop all take one route.
+## Connected from `setup` as well as `_ready`: a fixture that is never added to a tree
+## still fires, and the second call is a no-op.
+func _connect_feedback() -> void:
+	if not shot_fired.is_connected(_on_shot_fired):
+		shot_fired.connect(_on_shot_fired)
 
 
 ## The fitted weapon ids, in group order (`weapon_1` is index 0). Module ids are
@@ -371,6 +468,7 @@ func tick(delta: float) -> void:
 	if not _firing:
 		_was_firing = false
 		_beam_live = false
+		_hide_beam()
 		return
 	_was_firing = true
 	var id := selected_weapon()
@@ -411,14 +509,20 @@ func _burst_open(row: Dictionary) -> bool:
 func _fire_beam(weapon_id: StringName, row: Dictionary, delta: float) -> void:
 	if not _spend_energy(float(row.get(&"draw", 0.0)) * maxf(delta, 0.0)):
 		_beam_live = false
+		_hide_beam()
 		_dry(weapon_id)
 		return
 	var from := global_position
 	var offset := _aim_point() - from
 	var reach := minf(offset.length(), float(row.get(&"range", 0.0)))
 	if reach <= 0.0:
+		_hide_beam()
 		return
 	var to := from + offset.normalized() * reach
+	## FX_SPEC section 1.6's engine-drawn beam: the shaft is drawn to the weapon's own
+	## reach this frame, before the target is resolved, so a miss still shows the shot
+	## (the impact visual is the hit site's business, not the beam's).
+	_draw_beam(to)
 	var target := _beam_target(from, to)
 	if target.is_empty():
 		_beam_started(weapon_id)
@@ -426,8 +530,13 @@ func _fire_beam(weapon_id: StringName, row: Dictionary, delta: float) -> void:
 	_beam_started(weapon_id)
 	var collider: Variant = target[&"collider"]
 	if bool(target[&"projectile"]):
-		## Section 4.1: a rocket dies to any weapon hit, and the beam stops there.
+		## Section 4.1: a rocket dies to any weapon hit, and the beam stops there. The
+		## kill is a destruction like every other, so it takes the explosion and the blast
+		## cue the projectile route gives it (reported: the beam's kill was silent beside
+		## the projectile's).
 		(collider as Node).call(&"fizzle")
+		ProjectileScript.play_blast(self)
+		ProjectileScript.spawn_explosion(_hit_fx_parent(collider), target[&"point"])
 		return
 	_apply_beam(weapon_id, row, collider, target[&"point"], delta)
 
@@ -504,15 +613,49 @@ func _apply_beam(
 	## against live shields on the body's silence.
 	var target := _sink_for(collider)
 	var bypass := bool(row.get(&"bypass_shield", false))
+	## Whether this frame's damage is going into a shield: the same read the delivered
+	## hit makes, so the cue, the ring and the damage can never disagree.
+	var shielded := not bypass and _shield_up(target)
 	## Section 4.1: plasma is "+25 % to hull once shields are down". Only a target
 	## whose shield the weapon can read gets the bonus, so the family can never
 	## out-damage its own row.
 	var bonus := float(row.get(&"hull_bonus", 1.0))
 	if bonus > 1.0 and not bypass and not _shield_up(target):
 		amount *= bonus
+	_beam_hit_feedback(target, shielded, point, delta)
 	_deliver(
 		target, amount, bypass, point, StringName(row.get(&"family", &"energy")), Vector2.ZERO
 	)
+
+
+## The hit's other half for a beam: the cue for what is taking the damage and, once the
+## shield absorbs it, section 1.5's ring and S6's bed - the same doors a landed
+## projectile uses, so a beam's hits read exactly like a shot's.
+##
+## Rate-gated per contact, because the damage is per frame: `target` changing reads at
+## once, and the frames after that are held back until the contact has lasted
+## `BEAM_HIT_INTERVAL` again. `_hide_beam` clears the contact, so a new hold on the same
+## hull reads from its own first frame.
+func _beam_hit_feedback(target: Object, shielded: bool, point: Vector2, delta: float) -> void:
+	if target == null:
+		_beam_contact = null
+		_beam_hit_clock = 0.0
+		return
+	if target != _beam_contact:
+		_beam_contact = target
+		_beam_hit_clock = BEAM_HIT_INTERVAL
+	_beam_hit_clock += maxf(delta, 0.0)
+	if _beam_hit_clock < BEAM_HIT_INTERVAL:
+		return
+	_beam_hit_clock = 0.0
+	var kind := (
+		ProjectileScript.IMPACT_KIND_SHIELD if shielded else ProjectileScript.IMPACT_KIND_HULL
+	)
+	ProjectileScript.play_impact(self, kind)
+	if not shielded:
+		return
+	ProjectileScript.spawn_shield_ripple(_hit_fx_parent(target), point)
+	ProjectileScript.hold_shield(self)
 
 
 ## Once per beam hold: the weapon announces that it opened fire (the per-frame
@@ -529,6 +672,170 @@ func _dry(weapon_id: StringName) -> void:
 		return
 	_dry_noted = true
 	dry_fired.emit(weapon_id)
+
+
+## --- Fire and travel feedback --------------------------------------------
+
+
+## One released shot's feedback, hung off `shot_fired` so every family takes the same
+## route: the muzzle flash at the muzzle and the family's own fire cue. Cadence,
+## damage, Energy and ammo are untouched - this only draws and sounds what the shot
+## already did.
+func _on_shot_fired(weapon_id: StringName) -> void:
+	_spawn_muzzle_flash(_aim_direction())
+	_play_fire_cue(weapon_id)
+
+
+## FX_SPEC section 1.2's four-frame flash on the muzzle. The muzzle is this
+## component's own origin - the point a shot leaves from and a beam launches from -
+## and the frame is offset so the flash's mouth, not its middle, sits there. Freed by
+## the animation itself (`Fx.play_once`).
+func _spawn_muzzle_flash(direction: Vector2) -> void:
+	var textures: Array = []
+	for path: String in FLASH_FRAMES:
+		if not ResourceLoader.exists(path):
+			return
+		textures.append(load(path))
+	var frames := FxScript.texture_frames(textures, FLASH_FPS)
+	if frames.get_frame_count(FxScript.ANIMATION) == 0:
+		return
+	var scale_factor := FxScript.scale_for(FLASH_FRAME_SIZE, FLASH_WORLD)
+	var flash := FxScript.play_once(
+		self,
+		frames,
+		-FLASH_MUZZLE_PX * scale_factor,
+		direction.angle() - global_rotation,
+		scale_factor,
+		false
+	)
+	if flash != null:
+		flash.z_index = FEEDBACK_Z
+
+
+## The family's cue, through the audio service's pool route (the extra takes on disk
+## are unreachable through a plain `play_sfx` - ASSET_WIRING_HANDOFF section 1.2). A
+## family AUDIO_SPEC gives no cue plays none.
+func _play_fire_cue(weapon_id: StringName) -> void:
+	var cue := fire_cue_of(weapon_id)
+	if cue == &"":
+		return
+	var audio := _audio()
+	if audio == null or not audio.has_method(&"play_pool"):
+		return
+	audio.call(&"play_pool", cue, fire_take_of(weapon_id))
+
+
+func _audio() -> Node:
+	if not is_inside_tree():
+		return null
+	return get_tree().root.get_node_or_null(NodePath(AUDIO_SERVICE))
+
+
+## The instant families' shaft: two lines from this muzzle to `to`, drawn in this
+## component's own space (the convention `mining_laser.gd` uses). Built lazily, so a
+## component that is never in a tree still has somewhere to draw.
+func _draw_beam(to: Vector2) -> void:
+	_sync_beam()
+	if _beam_halo == null or _beam_core == null:
+		return
+	var local_end := to_local(to)
+	var points := PackedVector2Array([Vector2.ZERO, local_end])
+	_beam_halo.points = points
+	_beam_core.points = points
+	_beam_halo.visible = true
+	_beam_core.visible = true
+	## A held beam is an emission that lasts, so it rides a bed: S7's held-loop model
+	## (`mining_laser.gd:_play_beam_loop`), through the manager's loop route.
+	_play_beam_bed()
+
+
+func _hide_beam() -> void:
+	if _beam_halo != null and is_instance_valid(_beam_halo):
+		_beam_halo.visible = false
+	if _beam_core != null and is_instance_valid(_beam_core):
+		_beam_core.visible = false
+	## The beam is not held any more, so nothing is in contact and nothing is sounding.
+	_beam_contact = null
+	_beam_hit_clock = 0.0
+	_stop_beam_bed()
+
+
+## Leaving the tree (a hull swap, a death, a scene change) must not leave the bed
+## sounding under a beam that no longer exists.
+func _exit_tree() -> void:
+	_stop_beam_bed()
+
+
+## The held beam's bed, on the mining laser's model: a looping cue through
+## `play_loop`, which is idempotent, so the per-frame call costs nothing once the bed is
+## up. The library's one energy-emission loop is the mining bed's take (see
+## `BEAM_BED_CUE`).
+func _play_beam_bed() -> void:
+	var audio := _audio()
+	if audio == null or not audio.has_method(&"play_loop"):
+		return
+	audio.call(&"play_loop", BEAM_BED_CUE)
+
+
+## The bed goes out with the beam. The manager's cue-scoped stop is preferred: the guarded
+## route below (`mining_laser.gd:_stop_beam_loop`'s, kept for a service that has no
+## `stop_bed`) can only name the foreground bed, and a held beam's bed is not the
+## foreground one while an impact hum is up - measured, and the reason `stop_bed` exists.
+func _stop_beam_bed() -> void:
+	var audio := _audio()
+	if audio == null:
+		return
+	if audio.has_method(&"stop_bed"):
+		audio.call(&"stop_bed", BEAM_BED_CUE)
+		return
+	if not audio.has_method(&"current_loop") or not audio.has_method(&"stop_loop"):
+		return
+	if StringName(audio.call(&"current_loop")) != BEAM_BED_CUE:
+		return
+	audio.call(&"stop_loop")
+
+
+## Where a hit's effect hangs: the world node the thing that was hit lives in, so the
+## ring stays on the point that was hit instead of riding the ship that fired. A target
+## with no parent falls back to the world node, the scene `_spawn_shot` uses.
+func _hit_fx_parent(target: Object) -> Node:
+	var node := target as Node
+	if node != null and is_instance_valid(node) and node.get_parent() != null:
+		return node.get_parent()
+	return _world_parent()
+
+
+func _sync_beam() -> void:
+	if _beam_halo != null and is_instance_valid(_beam_halo):
+		return
+	var theme := load(THEME_PATH) as Theme
+	_beam_halo = _make_beam(
+		BEAM_NAMES[0], BEAM_HALO_WIDTH, BEAM_HALO_TOKEN, BEAM_HALO_ALPHA, theme
+	)
+	_beam_core = _make_beam(
+		BEAM_NAMES[1], BEAM_CORE_WIDTH, BEAM_CORE_TOKEN, BEAM_CORE_ALPHA, theme
+	)
+	add_child(_beam_halo)
+	add_child(_beam_core)
+
+
+## One line of the shaft. Both tones come from the generated theme and are drawn
+## additively (an ember weapon beam is light, not ink).
+func _make_beam(
+	node_name: StringName, width: float, token: StringName, alpha: float, theme: Theme
+) -> Line2D:
+	var line := Line2D.new()
+	line.name = node_name
+	line.width = width
+	var color := Color.WHITE
+	if theme != null:
+		color = theme.get_color(token, TOKENS_TYPE)
+	color.a = alpha
+	line.default_color = color
+	line.material = FxScript.additive_material()
+	line.z_index = FEEDBACK_Z
+	line.visible = false
+	return line
 
 
 ## --- Aim and targeting ----------------------------------------------------
@@ -1017,6 +1324,23 @@ static func weapon_ids() -> Array[StringName]:
 static func family_of(weapon_id: StringName) -> StringName:
 	var row := row_of(weapon_id)
 	return StringName(row.get(&"family", &""))
+
+
+## The cue a family's released shot plays ("" for the one family AUDIO_SPEC states
+## none for).
+static func fire_cue_of(weapon_id: StringName) -> StringName:
+	var row: Variant = FIRE_CUES.get(weapon_id)
+	if row is Dictionary:
+		return StringName((row as Dictionary).get(&"cue", &""))
+	return &""
+
+
+## The pool tier a family fires at; -1 leaves the choice to the pool's own mode.
+static func fire_take_of(weapon_id: StringName) -> int:
+	var row: Variant = FIRE_CUES.get(weapon_id)
+	if row is Dictionary:
+		return int((row as Dictionary).get(&"take", -1))
+	return -1
 
 
 static func range_of(weapon_id: StringName) -> float:

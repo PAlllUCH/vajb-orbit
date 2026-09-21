@@ -1,0 +1,143 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[F3] boot game=true guns=true stub_installed=true launched_fit=[&"laser"] selected=laser
+[F3] FIRE family=laser instant=true cue_of=sfx_weapon_laser shots=0 flashes=1 cues=play_pool(sfx_weapon_laser)
+[F3]   node=@AnimatedSprite2D@54 class=AnimatedSprite2D additive=true frames=4 fps=20 loop=false frame_paths=[res://assets/fx/fx_muzzle_flash_f1.png,res://assets/fx/fx_muzzle_flash_f2.png,res://assets/fx/fx_muzzle_flash_f3.png,res://assets/fx/fx_muzzle_flash_f4.png] sheet=res://assets/fx/fx_muzzle_flash_f1.png (whole) region=[P: (0.0, 0.0), S: (535.0, 487.0)] scale=(0.082243, 0.082243) world=44x40
+[F3]   beam Beam visible=true width=5.0 reach=300.0
+[F3]   beam BeamCore visible=true width=2.0 reach=300.0
+[F3] FIRE family=plasma instant=true cue_of=sfx_weapon_laser shots=0 flashes=1 cues=play_pool(sfx_weapon_laser)
+[F3]   node=@AnimatedSprite2D@55 class=AnimatedSprite2D additive=true frames=4 fps=20 loop=false frame_paths=[res://assets/fx/fx_muzzle_flash_f1.png,res://assets/fx/fx_muzzle_flash_f2.png,res://assets/fx/fx_muzzle_flash_f3.png,res://assets/fx/fx_muzzle_flash_f4.png] sheet=res://assets/fx/fx_muzzle_flash_f1.png (whole) region=[P: (0.0, 0.0), S: (535.0, 487.0)] scale=(0.082243, 0.082243) world=44x40
+[F3]   beam Beam visible=true width=5.0 reach=300.0
+[F3]   beam BeamCore visible=true width=2.0 reach=300.0
+[F3] FIRE family=cannon instant=false cue_of=sfx_weapon_cannon shots=1 flashes=1 cues=play_pool(sfx_weapon_cannon,0)
+[F3]   node=@AnimatedSprite2D@57 class=AnimatedSprite2D additive=true frames=4 fps=20 loop=false frame_paths=[res://assets/fx/fx_muzzle_flash_f1.png,res://assets/fx/fx_muzzle_flash_f2.png,res://assets/fx/fx_muzzle_flash_f3.png,res://assets/fx/fx_muzzle_flash_f4.png] sheet=res://assets/fx/fx_muzzle_flash_f1.png (whole) region=[P: (0.0, 0.0), S: (535.0, 487.0)] scale=(0.082243, 0.082243) world=44x40
+[F3]   shot kind=bolt visual=Sprite2D
+[F3]     node=Visual class=Sprite2D additive=true sheet=res://assets/fx/fx_laser_bolt.png region=[P: (194.0, 604.0), S: (1718.0, 105.0)] atlas=(2048.0, 2048.0) inside=true scale=(0.037253, 0.037253) world=64x4
+[F3]   beam Beam visible=false width=5.0 reach=300.0
+[F3]   beam BeamCore visible=false width=2.0 reach=300.0
+[F3] FIRE family=railgun instant=false cue_of=sfx_weapon_cannon shots=1 flashes=1 cues=play_pool(sfx_weapon_cannon,1)
+[F3]   node=@AnimatedSprite2D@60 class=AnimatedSprite2D additive=true frames=4 fps=20 loop=false frame_paths=[res://assets/fx/fx_muzzle_flash_f1.png,res://assets/fx/fx_muzzle_flash_f2.png,res://assets/fx/fx_muzzle_flash_f3.png,res://assets/fx/fx_muzzle_flash_f4.png] sheet=res://assets/fx/fx_muzzle_flash_f1.png (whole) region=[P: (0.0, 0.0), S: (535.0, 487.0)] scale=(0.082243, 0.082243) world=44x40
+[F3]   shot kind=slug visual=Sprite2D
+[F3]     node=Visual class=Sprite2D additive=true sheet=res://assets/fx/fx_laser_bolt.png region=[P: (232.0, 1189.0), S: (1680.0, 178.0)] atlas=(2048.0, 2048.0) inside=true scale=(0.057143, 0.057143) world=96x10
+[F3]   beam Beam visible=false width=5.0 reach=300.0
+[F3]   beam BeamCore visible=false width=2.0 reach=300.0
+[F3] FIRE family=rocket instant=false cue_of=sfx_weapon_rocket shots=1 flashes=1 cues=play_pool(sfx_weapon_rocket)
+[F3]   node=@AnimatedSprite2D@62 class=AnimatedSprite2D additive=true frames=4 fps=20 loop=false frame_paths=[res://assets/fx/fx_muzzle_flash_f1.png,res://assets/fx/fx_muzzle_flash_f2.png,res://assets/fx/fx_muzzle_flash_f3.png,res://assets/fx/fx_muzzle_flash_f4.png] sheet=res://assets/fx/fx_muzzle_flash_f1.png (whole) region=[P: (0.0, 0.0), S: (535.0, 487.0)] scale=(0.082243, 0.082243) world=44x40
+[F3]   shot kind=rocket visual=AnimatedSprite2D
+[F3]     node=Visual class=AnimatedSprite2D additive=true frames=4 fps=12 loop=true frame_paths=[res://assets/fx/fx_missile_trail.png@[P: (79.0, 960.0), S: (243.0, 61.0)],res://assets/fx/fx_missile_trail.png@[P: (490.0, 911.0), S: (374.0, 109.0)],res://assets/fx/fx_missile_trail.png@[P: (906.0, 941.0), S: (535.0, 72.0)],res://assets/fx/fx_missile_trail.png@[P: (1670.0, 982.0), S: (109.0, 17.0)]] sheet=res://assets/fx/fx_missile_trail.png region=[P: (79.0, 960.0), S: (243.0, 61.0)] atlas=(2048.0, 2048.0) inside=true scale=(0.08972, 0.08972) world=22x5
+[F3]   beam Beam visible=false width=5.0 reach=300.0
+[F3]   beam BeamCore visible=false width=2.0 reach=300.0
+[F3] FIRE family=mine instant=false cue_of= shots=1 flashes=1 cues=none
+[F3]   node=@AnimatedSprite2D@65 class=AnimatedSprite2D additive=true frames=4 fps=20 loop=false frame_paths=[res://assets/fx/fx_muzzle_flash_f1.png,res://assets/fx/fx_muzzle_flash_f2.png,res://assets/fx/fx_muzzle_flash_f3.png,res://assets/fx/fx_muzzle_flash_f4.png] sheet=res://assets/fx/fx_muzzle_flash_f1.png (whole) region=[P: (0.0, 0.0), S: (535.0, 487.0)] scale=(0.082243, 0.082243) world=44x40
+[F3]   shot kind=mine visual=Sprite2D
+[F3]     node=Visual class=Sprite2D additive=true sheet=res://assets/fx/fx_ember_pulse.png region=[P: (811.0, 791.0), S: (423.0, 421.0)] atlas=(2048.0, 2048.0) inside=true scale=(0.052009, 0.052009) world=22x22
+[F3]   beam Beam visible=false width=5.0 reach=300.0
+[F3]   beam BeamCore visible=false width=2.0 reach=300.0
+[F3] EVENT rock spawned=1 nodes=Look cues=play_pool(sfx_impact_rock) target=asteroid
+[F3]   node=Look class=Sprite2D additive=false sheet=res://assets/env/prop/env_asteroid_M2.png (whole) region=[P: (0.0, 0.0), S: (709.0, 736.0)] scale=(0.118477, 0.118477) world=84x87
+[F3] EVENT hull spawned=0 nodes=- cues=play_pool(sfx_impact_hull) target=hull shield=down
+[F3] EVENT shield spawned=1 nodes=shield_ripple cues=play_pool(sfx_impact_shield_hit),play_loop(sfx_impact_shield_loop) target=hull shield=up bed=sfx_impact_shield_loop
+[F3]   node=shield_ripple class=Sprite2D additive=true sheet=res://assets/fx/fx_shield_ripple.png region=[P: (394.0, 379.0), S: (1240.0, 1212.0)] atlas=(2048.0, 2048.0) inside=true scale=(0.00001, 0.00001) world=0x0
+[F3] EVENT shield_break spawned=2 nodes=shield_ripple,shield_break cues=play_pool(sfx_impact_shield_hit),stop_loop(sfx_impact_shield_loop) target=hull shield=0 bed=
+[F3]   node=shield_ripple class=Sprite2D additive=true sheet=res://assets/fx/fx_shield_ripple.png region=[P: (394.0, 379.0), S: (1240.0, 1212.0)] atlas=(2048.0, 2048.0) inside=true scale=(0.00001, 0.00001) world=0x0
+[F3]   node=shield_break class=AnimatedSprite2D additive=true frames=4 fps=10 loop=false frame_paths=[res://assets/fx/fx_shield_break.png@[P: (63.0, 752.0), S: (356.0, 457.0)],res://assets/fx/fx_shield_break.png@[P: (514.0, 715.0), S: (483.0, 526.0)],res://assets/fx/fx_shield_break.png@[P: (1050.0, 739.0), S: (439.0, 485.0)],res://assets/fx/fx_shield_break.png@[P: (1624.0, 798.0), S: (355.0, 359.0)]] sheet=res://assets/fx/fx_shield_break.png region=[P: (63.0, 752.0), S: (356.0, 457.0)] atlas=(2048.0, 2048.0) inside=true scale=(0.121673, 0.121673) world=43x56
+[F3] EVENT bolt_hit spawned=0 nodes=- cues=play_pool(sfx_impact_hull) kind=bolt control=no-arc
+[F3] EVENT railgun_hit spawned=1 nodes=arc cues=play_pool(sfx_impact_hull) kind=slug
+[F3]   node=arc class=AnimatedSprite2D additive=true frames=4 fps=20 loop=false frame_paths=[res://assets/fx/fx_arc_spark.png@[P: (118.0, 328.0), S: (809.0, 424.0)],res://assets/fx/fx_arc_spark.png@[P: (1126.0, 242.0), S: (817.0, 594.0)],res://assets/fx/fx_arc_spark.png@[P: (121.0, 1275.0), S: (804.0, 492.0)],res://assets/fx/fx_arc_spark.png@[P: (1128.0, 1273.0), S: (815.0, 488.0)]] sheet=res://assets/fx/fx_arc_spark.png region=[P: (118.0, 328.0), S: (809.0, 424.0)] atlas=(2048.0, 2048.0) inside=true scale=(0.04896, 0.04896) world=40x21
+[F3] EVENT npc_death spawned=4 nodes=Hull,DamagePlume,explosion,secondary cues=play_pool(sfx_weapon_explosion) archetype=pirate
+[F3]   node=Hull class=Sprite2D additive=false sheet=res://assets/ships/ship_fighter_side.png (whole) region=[P: (0.0, 0.0), S: (897.0, 415.0)] scale=(0.0663, 0.0663) world=59x28
+[F3]   node=DamagePlume class=GPUParticles2D additive=true amount=16 lifetime=1.4 emitting=true local=false pscale=0.0127..0.0278 pvel=8..24 sheet=res://assets/fx/fx_smoke_plume.png region=[P: (641.0, 199.0), S: (755.0, 1580.0)] atlas=(2048.0, 2048.0) inside=true scale=(1.0, 1.0) world=755x1580
+[F3]   node=explosion class=AnimatedSprite2D additive=true frames=5 fps=15 loop=false frame_paths=[res://assets/fx/fx_explosion.png@[P: (146.0, 30.0), S: (728.0, 640.0)],res://assets/fx/fx_explosion.png@[P: (1118.0, 5.0), S: (781.0, 707.0)],res://assets/fx/fx_explosion.png@[P: (90.0, 755.0), S: (781.0, 632.0)],res://assets/fx/fx_explosion.png@[P: (1134.0, 758.0), S: (777.0, 631.0)],res://assets/fx/fx_explosion.png@[P: (137.0, 1379.0), S: (688.0, 550.0)]] sheet=res://assets/fx/fx_explosion.png region=[P: (146.0, 30.0), S: (728.0, 640.0)] atlas=(2048.0, 2048.0) inside=true scale=(0.122919, 0.122919) world=89x79
+[F3]   node=secondary class=AnimatedSprite2D additive=true frames=4 fps=15 loop=false frame_paths=[res://assets/fx/fx_secondary_explosion.png@[P: (177.0, 891.0), S: (219.0, 208.0)],res://assets/fx/fx_secondary_explosion.png@[P: (630.0, 863.0), S: (248.0, 247.0)],res://assets/fx/fx_secondary_explosion.png@[P: (1080.0, 833.0), S: (359.0, 300.0)],res://assets/fx/fx_secondary_explosion.png@[P: (1694.0, 924.0), S: (179.0, 161.0)]] sheet=res://assets/fx/fx_secondary_explosion.png region=[P: (177.0, 891.0), S: (219.0, 208.0)] atlas=(2048.0, 2048.0) inside=true scale=(0.133705, 0.133705) world=29x28
+[F3] EVENT player_death spawned=4 nodes=Hull,DamagePlume,explosion,secondary cues=play_pool(sfx_weapon_explosion) hull=0
+[F3]   node=Hull class=Sprite2D additive=false sheet=res://assets/ships/ship_vanguard_side.png (whole) region=[P: (0.0, 0.0), S: (960.0, 521.0)] scale=(0.0663, 0.0663) world=64x35
+[F3]   node=DamagePlume class=GPUParticles2D additive=true amount=16 lifetime=1.4 emitting=true local=false pscale=0.0127..0.0278 pvel=8..24 sheet=res://assets/fx/fx_smoke_plume.png region=[P: (641.0, 199.0), S: (755.0, 1580.0)] atlas=(2048.0, 2048.0) inside=true scale=(1.0, 1.0) world=755x1580
+[F3]   node=explosion class=AnimatedSprite2D additive=true frames=5 fps=15 loop=false frame_paths=[res://assets/fx/fx_explosion.png@[P: (146.0, 30.0), S: (728.0, 640.0)],res://assets/fx/fx_explosion.png@[P: (1118.0, 5.0), S: (781.0, 707.0)],res://assets/fx/fx_explosion.png@[P: (90.0, 755.0), S: (781.0, 632.0)],res://assets/fx/fx_explosion.png@[P: (1134.0, 758.0), S: (777.0, 631.0)],res://assets/fx/fx_explosion.png@[P: (137.0, 1379.0), S: (688.0, 550.0)]] sheet=res://assets/fx/fx_explosion.png region=[P: (146.0, 30.0), S: (728.0, 640.0)] atlas=(2048.0, 2048.0) inside=true scale=(0.122919, 0.122919) world=89x79
+[F3]   node=secondary class=AnimatedSprite2D additive=true frames=4 fps=15 loop=false frame_paths=[res://assets/fx/fx_secondary_explosion.png@[P: (177.0, 891.0), S: (219.0, 208.0)],res://assets/fx/fx_secondary_explosion.png@[P: (630.0, 863.0), S: (248.0, 247.0)],res://assets/fx/fx_secondary_explosion.png@[P: (1080.0, 833.0), S: (359.0, 300.0)],res://assets/fx/fx_secondary_explosion.png@[P: (1694.0, 924.0), S: (179.0, 161.0)]] sheet=res://assets/fx/fx_secondary_explosion.png region=[P: (177.0, 891.0), S: (219.0, 208.0)] atlas=(2048.0, 2048.0) inside=true scale=(0.133705, 0.133705) world=29x28
+[F3] EVENT detonation spawned=1 nodes=explosion cues=play_pool(sfx_weapon_explosion) kind=rocket
+[F3]   node=explosion class=AnimatedSprite2D additive=true frames=5 fps=15 loop=false frame_paths=[res://assets/fx/fx_explosion.png@[P: (146.0, 30.0), S: (728.0, 640.0)],res://assets/fx/fx_explosion.png@[P: (1118.0, 5.0), S: (781.0, 707.0)],res://assets/fx/fx_explosion.png@[P: (90.0, 755.0), S: (781.0, 632.0)],res://assets/fx/fx_explosion.png@[P: (1134.0, 758.0), S: (777.0, 631.0)],res://assets/fx/fx_explosion.png@[P: (137.0, 1379.0), S: (688.0, 550.0)]] sheet=res://assets/fx/fx_explosion.png region=[P: (146.0, 30.0), S: (728.0, 640.0)] atlas=(2048.0, 2048.0) inside=true scale=(0.122919, 0.122919) world=89x79
+[F3] EVENT shot_down spawned=1 nodes=explosion cues=play_pool(sfx_weapon_explosion) kind=rocket victim_alive=true
+[F3]   node=explosion class=AnimatedSprite2D additive=true frames=5 fps=15 loop=false frame_paths=[res://assets/fx/fx_explosion.png@[P: (146.0, 30.0), S: (728.0, 640.0)],res://assets/fx/fx_explosion.png@[P: (1118.0, 5.0), S: (781.0, 707.0)],res://assets/fx/fx_explosion.png@[P: (90.0, 755.0), S: (781.0, 632.0)],res://assets/fx/fx_explosion.png@[P: (1134.0, 758.0), S: (777.0, 631.0)],res://assets/fx/fx_explosion.png@[P: (137.0, 1379.0), S: (688.0, 550.0)]] sheet=res://assets/fx/fx_explosion.png region=[P: (146.0, 30.0), S: (728.0, 640.0)] atlas=(2048.0, 2048.0) inside=true scale=(0.122919, 0.122919) world=89x79
+[F3] EVENT low_hull spawned=2 nodes=Hull,DamagePlume cues=none max=950 fraction=0.10 plume=GPUParticles2D
+[F3]   node=Hull class=Sprite2D additive=false sheet=res://assets/ships/ship_fighter_side.png (whole) region=[P: (0.0, 0.0), S: (897.0, 415.0)] scale=(0.0663, 0.0663) world=59x28
+[F3]   node=DamagePlume class=GPUParticles2D additive=true amount=16 lifetime=1.4 emitting=true local=false pscale=0.0127..0.0278 pvel=8..24 sheet=res://assets/fx/fx_smoke_plume.png region=[P: (641.0, 199.0), S: (755.0, 1580.0)] atlas=(2048.0, 2048.0) inside=true scale=(1.0, 1.0) world=755x1580
+[F3]   low_hull recovered plume_present=true queued_for_deletion=true cues=none
+[F3] EVENT mining_shaft active=true loop=sfx_mining_beam cues=play_sfx(sfx_mining_chip_01),play_loop(sfx_mining_beam)
+[F3]   mining_release loop= cues=stop_loop(sfx_mining_beam)
+[F3]   mining_exit_tree loop= cues=stop_loop(sfx_mining_beam)
+[F3] CONTROL invented_resource=false invented_file=false real_resource=true real_file=true
+[F3] CONTROL alpha_reads_additive=false alpha_reads_alpha=true
+[F3] E2E rock released=1 frames=7 shots_left=0 cues=play_pool(sfx_weapon_cannon,1),play_pool(sfx_impact_rock)
+[F3]   e2e_rock_fx node=arc class=AnimatedSprite2D additive=true frames=4 fps=20 loop=false frame_paths=[res://assets/fx/fx_arc_spark.png@[P: (118.0, 328.0), S: (809.0, 424.0)],res://assets/fx/fx_arc_spark.png@[P: (1126.0, 242.0), S: (817.0, 594.0)],res://assets/fx/fx_arc_spark.png@[P: (121.0, 1275.0), S: (804.0, 492.0)],res://assets/fx/fx_arc_spark.png@[P: (1128.0, 1273.0), S: (815.0, 488.0)]] sheet=res://assets/fx/fx_arc_spark.png region=[P: (118.0, 328.0), S: (809.0, 424.0)] atlas=(2048.0, 2048.0) inside=true scale=(0.04896, 0.04896) world=40x21
+[F3] E2E hull released=1 frames=6 shots_left=0 hull_left=- cues=play_pool(sfx_weapon_cannon,1),play_pool(sfx_impact_hull),play_pool(sfx_weapon_explosion)
+[F3]   e2e_hull_fx node=explosion class=AnimatedSprite2D additive=true frames=5 fps=15 loop=false frame_paths=[res://assets/fx/fx_explosion.png@[P: (146.0, 30.0), S: (728.0, 640.0)],res://assets/fx/fx_explosion.png@[P: (1118.0, 5.0), S: (781.0, 707.0)],res://assets/fx/fx_explosion.png@[P: (90.0, 755.0), S: (781.0, 632.0)],res://assets/fx/fx_explosion.png@[P: (1134.0, 758.0), S: (777.0, 631.0)],res://assets/fx/fx_explosion.png@[P: (137.0, 1379.0), S: (688.0, 550.0)]] sheet=res://assets/fx/fx_explosion.png region=[P: (146.0, 30.0), S: (728.0, 640.0)] atlas=(2048.0, 2048.0) inside=true scale=(0.122919, 0.122919) world=89x79
+[F3]   e2e_hull_fx node=secondary class=AnimatedSprite2D additive=true frames=4 fps=15 loop=false frame_paths=[res://assets/fx/fx_secondary_explosion.png@[P: (177.0, 891.0), S: (219.0, 208.0)],res://assets/fx/fx_secondary_explosion.png@[P: (630.0, 863.0), S: (248.0, 247.0)],res://assets/fx/fx_secondary_explosion.png@[P: (1080.0, 833.0), S: (359.0, 300.0)],res://assets/fx/fx_secondary_explosion.png@[P: (1694.0, 924.0), S: (179.0, 161.0)]] sheet=res://assets/fx/fx_secondary_explosion.png region=[P: (177.0, 891.0), S: (219.0, 208.0)] atlas=(2048.0, 2048.0) inside=true scale=(0.133705, 0.133705) world=29x28
+[F3]   e2e_hull_fx node=arc class=AnimatedSprite2D additive=true frames=4 fps=20 loop=false frame_paths=[res://assets/fx/fx_arc_spark.png@[P: (118.0, 328.0), S: (809.0, 424.0)],res://assets/fx/fx_arc_spark.png@[P: (1126.0, 242.0), S: (817.0, 594.0)],res://assets/fx/fx_arc_spark.png@[P: (121.0, 1275.0), S: (804.0, 492.0)],res://assets/fx/fx_arc_spark.png@[P: (1128.0, 1273.0), S: (815.0, 488.0)]] sheet=res://assets/fx/fx_arc_spark.png region=[P: (118.0, 328.0), S: (809.0, 424.0)] atlas=(2048.0, 2048.0) inside=true scale=(0.04896, 0.04896) world=40x21
+[F3] DURATION cue=sfx_weapon_laser sfx_weapon_laser_01=0.092s,sfx_weapon_laser_02=0.077s,sfx_weapon_laser_03=0.064s,sfx_weapon_laser_04=1.244s
+[F3] DURATION cue=sfx_weapon_cannon sfx_weapon_cannon_01=3.460s,sfx_weapon_cannon_02_medium=8.381s,sfx_weapon_cannon_03_long=17.974s
+[F3] DURATION cue=sfx_weapon_rocket sfx_weapon_rocket_01=2.051s
+[F3] DURATION cue=sfx_weapon_explosion sfx_weapon_explosion_01=1.840s,sfx_weapon_explosion_02=1.229s
+[F3] DURATION cue=sfx_impact_hull sfx_impact_hull_01=0.168s,sfx_impact_hull_02=0.359s,sfx_impact_hull_03=0.117s,sfx_impact_hull_04=0.207s,sfx_impact_hull_05=0.364s
+[F3] DURATION cue=sfx_impact_shield_hit sfx_impact_shield_hit_01=0.921s,sfx_impact_shield_hit_02=0.941s,sfx_impact_shield_hit_03=0.928s,sfx_impact_shield_hit_04=0.924s,sfx_impact_shield_hit_05=0.941s,sfx_impact_shield_hit_06=0.923s,sfx_impact_shield_hit_07=0.922s,sfx_impact_shield_hit_08=0.901s,sfx_impact_shield_hit_09=0.912s
+[F3] CADENCE family=laser interval=0.00s cue=sfx_weapon_laser take=-1
+[F3] CADENCE family=plasma interval=0.00s cue=sfx_weapon_laser take=-1
+[F3] CADENCE family=cannon interval=0.60s cue=sfx_weapon_cannon take=0
+[F3] CADENCE family=railgun interval=0.60s cue=sfx_weapon_cannon take=1
+[F3] CADENCE family=rocket interval=1.20s cue=sfx_weapon_rocket take=-1
+[F3] CADENCE family=mine interval=0.00s cue= take=-1
+[F3] ITEM mine_drop cue_of= cues=none shots=1
+[F3] ITEM mine_detonation cues=play_pool(sfx_weapon_explosion)
+[F3] ITEM beam_shotdown rocket_spent=true ballistic_cues=play_pool(sfx_weapon_laser)
+[F3] ITEM beam_hold ticks=10 seconds=0.50 flashes=1 cues=play_pool(sfx_weapon_laser)
+[F3] ITEM beam_hit hull=950.0->950.0 shield=600.0->598.5 damage_landed=true fx_spawned=0 cues=play_pool(sfx_weapon_laser)
+[F3] ITEM muzzle flash_pos=(-11.1028, -20.02617) mouth_local=(0.0, 0.0) shot_spawn_offset=(0.0, 0.0)
+[F3] ITEM loop_voice shield=sfx_impact_shield_loop then_beam=sfx_mining_beam after_release=sfx_mining_beam
+[F3] RESOLVE cue=sfx_impact_hull path=res://assets/audio/sfx/sfx_impact_hull_01.ogg resource=true file=true stream=true
+[F3] RESOLVE cue=sfx_impact_rock path=res://assets/audio/sfx/sfx_impact_rock_01.ogg resource=true file=true stream=true
+[F3] RESOLVE cue=sfx_impact_shield_hit path=res://assets/audio/sfx/sfx_impact_shield_hit_01.ogg resource=true file=true stream=true
+[F3] RESOLVE cue=sfx_impact_shield_loop path=res://assets/audio/sfx/sfx_impact_shield_loop_01.ogg resource=true file=true stream=true
+[F3] RESOLVE cue=sfx_weapon_explosion path=res://assets/audio/sfx/sfx_weapon_explosion_01.ogg resource=true file=true stream=true
+[F3] RESOLVE cue=sfx_weapon_laser path=res://assets/audio/sfx/sfx_weapon_laser_01.ogg resource=true file=true stream=true
+[F3] RESOLVE cue=sfx_weapon_rocket path=res://assets/audio/sfx/sfx_weapon_rocket_01.ogg resource=true file=true stream=true
+[F3] POOLTABLE cues=6 takes=24
+[F3] POOLROW cue=sfx_weapon_laser has_pool=true takes=4 resolvable=4 sfx_weapon_laser_01=res://assets/audio/sfx/sfx_weapon_laser_01.ogg,sfx_weapon_laser_02=res://assets/audio/sfx/sfx_weapon_laser_02.ogg,sfx_weapon_laser_03=res://assets/audio/sfx/sfx_weapon_laser_03.ogg,sfx_weapon_laser_04=res://assets/audio/sfx/sfx_weapon_laser_04.ogg
+[F3] POOLROW cue=sfx_weapon_cannon has_pool=true takes=3 resolvable=3 sfx_weapon_cannon_01=res://assets/audio/sfx/sfx_weapon_cannon_01.ogg,sfx_weapon_cannon_02_medium=res://assets/audio/sfx/sfx_weapon_cannon_02_medium.ogg,sfx_weapon_cannon_03_long=res://assets/audio/sfx/sfx_weapon_cannon_03_long.ogg
+[F3] POOLROW cue=sfx_weapon_rocket has_pool=true takes=1 resolvable=1 sfx_weapon_rocket_01=res://assets/audio/sfx/sfx_weapon_rocket_01.ogg
+[F3] POOLROW cue=sfx_weapon_explosion has_pool=true takes=2 resolvable=2 sfx_weapon_explosion_01=res://assets/audio/sfx/sfx_weapon_explosion_01.ogg,sfx_weapon_explosion_02=res://assets/audio/sfx/sfx_weapon_explosion_02.ogg
+[F3] POOLROW cue=sfx_impact_hull has_pool=true takes=5 resolvable=5 sfx_impact_hull_01=res://assets/audio/sfx/sfx_impact_hull_01.ogg,sfx_impact_hull_02=res://assets/audio/sfx/sfx_impact_hull_02.ogg,sfx_impact_hull_03=res://assets/audio/sfx/sfx_impact_hull_03.ogg,sfx_impact_hull_04=res://assets/audio/sfx/sfx_impact_hull_04.ogg,sfx_impact_hull_05=res://assets/audio/sfx/sfx_impact_hull_05.ogg
+[F3] POOLROW cue=sfx_impact_shield_hit has_pool=true takes=9 resolvable=9 sfx_impact_shield_hit_01=res://assets/audio/sfx/sfx_impact_shield_hit_01.ogg,sfx_impact_shield_hit_02=res://assets/audio/sfx/sfx_impact_shield_hit_02.ogg,sfx_impact_shield_hit_03=res://assets/audio/sfx/sfx_impact_shield_hit_03.ogg,sfx_impact_shield_hit_04=res://assets/audio/sfx/sfx_impact_shield_hit_04.ogg,sfx_impact_shield_hit_05=res://assets/audio/sfx/sfx_impact_shield_hit_05.ogg,sfx_impact_shield_hit_06=res://assets/audio/sfx/sfx_impact_shield_hit_06.ogg,sfx_impact_shield_hit_07=res://assets/audio/sfx/sfx_impact_shield_hit_07.ogg,sfx_impact_shield_hit_08=res://assets/audio/sfx/sfx_impact_shield_hit_08.ogg,sfx_impact_shield_hit_09=res://assets/audio/sfx/sfx_impact_shield_hit_09.ogg
+[F3] POOL round_robin=[0, 1, 2, 3, 0, 1, 2, 3] pitch_out_of_range=0 volume_out_of_range=0
+[F3] POOL tier_take=sfx_weapon_cannon_02_medium path=res://assets/audio/sfx/sfx_weapon_cannon_02_medium.ogg layers=[]
+[F3] POOL rocket_take=sfx_weapon_rocket_01 layers=[{ &"take": &"sfx_weapon_rocket_02_warhead", &"delay": 0.08 }]
+[F3] PLAIN_SFX cue=sfx_station_breaker_on_01 last=sfx_station_breaker_on_01 voice=2->3 path=res://assets/audio/sfx/sfx_station_breaker_on_01.ogg
+[F3] PLAIN_SFX cue=sfx_ship_boost_01 last=sfx_ship_boost_01 voice=3->0 path=res://assets/audio/sfx/sfx_ship_boost_01.ogg
+[F3] PLAIN_SFX cue=sfx_ship_jump_01 last=sfx_ship_jump_01 voice=0->1 path=res://assets/audio/sfx/sfx_ship_jump_01.ogg
+[F3] PLAIN_SFX cue=sfx_mining_chip_01 last=sfx_mining_chip_01 voice=1->2 path=res://assets/audio/sfx/sfx_mining_chip_01.ogg
+[F3] PLAIN_SFX cue=sfx_weapon_laser last=sfx_weapon_laser voice=2->3 path=res://assets/audio/sfx/sfx_weapon_laser_01.ogg
+[F3] GATE unresolved_cues=0
+[F3] PLAIN_CUE bus=ui cue=ui_click path=res://assets/audio/ui/ui_click.ogg
+[F3] PLAIN_CUE bus=ui cue=ui_hover path=res://assets/audio/ui/ui_hover.ogg
+[F3] PLAIN_CUE bus=ui cue=ui_confirm path=res://assets/audio/ui/ui_confirm_01.ogg
+[F3] PLAIN_CUE bus=music cue=mus_menu_theme path=res://assets/audio/music/mus_menu_theme_01.ogg
+[F3] SHEET path=res://assets/env/prop/env_asteroid_M2.png resource=true file=true texture=true size=(709.0, 736.0) alpha=alpha disk=/home/kamil-paluszkiewicz/VajbOrbit/vajb-orbit/assets/env/prop/env_asteroid_M2.png
+[F3] SHEET path=res://assets/fx/fx_arc_spark.png resource=true file=true texture=true size=(2048.0, 2048.0) alpha=none disk=/home/kamil-paluszkiewicz/VajbOrbit/vajb-orbit/assets/fx/fx_arc_spark.png
+[F3] SHEET path=res://assets/fx/fx_ember_pulse.png resource=true file=true texture=true size=(2048.0, 2048.0) alpha=none disk=/home/kamil-paluszkiewicz/VajbOrbit/vajb-orbit/assets/fx/fx_ember_pulse.png
+[F3] SHEET path=res://assets/fx/fx_explosion.png resource=true file=true texture=true size=(2048.0, 2048.0) alpha=none disk=/home/kamil-paluszkiewicz/VajbOrbit/vajb-orbit/assets/fx/fx_explosion.png
+[F3] SHEET path=res://assets/fx/fx_laser_bolt.png resource=true file=true texture=true size=(2048.0, 2048.0) alpha=none disk=/home/kamil-paluszkiewicz/VajbOrbit/vajb-orbit/assets/fx/fx_laser_bolt.png
+[F3] SHEET path=res://assets/fx/fx_missile_trail.png resource=true file=true texture=true size=(2048.0, 2048.0) alpha=none disk=/home/kamil-paluszkiewicz/VajbOrbit/vajb-orbit/assets/fx/fx_missile_trail.png
+[F3] SHEET path=res://assets/fx/fx_muzzle_flash_f1.png resource=true file=true texture=true size=(535.0, 487.0) alpha=none disk=/home/kamil-paluszkiewicz/VajbOrbit/vajb-orbit/assets/fx/fx_muzzle_flash_f1.png
+[F3] SHEET path=res://assets/fx/fx_muzzle_flash_f2.png resource=true file=true texture=true size=(535.0, 487.0) alpha=none disk=/home/kamil-paluszkiewicz/VajbOrbit/vajb-orbit/assets/fx/fx_muzzle_flash_f2.png
+[F3] SHEET path=res://assets/fx/fx_muzzle_flash_f3.png resource=true file=true texture=true size=(535.0, 487.0) alpha=none disk=/home/kamil-paluszkiewicz/VajbOrbit/vajb-orbit/assets/fx/fx_muzzle_flash_f3.png
+[F3] SHEET path=res://assets/fx/fx_muzzle_flash_f4.png resource=true file=true texture=true size=(535.0, 487.0) alpha=none disk=/home/kamil-paluszkiewicz/VajbOrbit/vajb-orbit/assets/fx/fx_muzzle_flash_f4.png
+[F3] SHEET path=res://assets/fx/fx_secondary_explosion.png resource=true file=true texture=true size=(2048.0, 2048.0) alpha=none disk=/home/kamil-paluszkiewicz/VajbOrbit/vajb-orbit/assets/fx/fx_secondary_explosion.png
+[F3] SHEET path=res://assets/fx/fx_shield_break.png resource=true file=true texture=true size=(2048.0, 2048.0) alpha=none disk=/home/kamil-paluszkiewicz/VajbOrbit/vajb-orbit/assets/fx/fx_shield_break.png
+[F3] SHEET path=res://assets/fx/fx_shield_ripple.png resource=true file=true texture=true size=(2048.0, 2048.0) alpha=none disk=/home/kamil-paluszkiewicz/VajbOrbit/vajb-orbit/assets/fx/fx_shield_ripple.png
+[F3] SHEET path=res://assets/fx/fx_smoke_plume.png resource=true file=true texture=true size=(2048.0, 2048.0) alpha=none disk=/home/kamil-paluszkiewicz/VajbOrbit/vajb-orbit/assets/fx/fx_smoke_plume.png
+[F3] SHEET path=res://assets/ships/ship_fighter_side.png resource=true file=true texture=true size=(897.0, 415.0) alpha=alpha disk=/home/kamil-paluszkiewicz/VajbOrbit/vajb-orbit/assets/ships/ship_fighter_side.png
+[F3] SHEET path=res://assets/ships/ship_vanguard_side.png resource=true file=true texture=true size=(960.0, 521.0) alpha=alpha disk=/home/kamil-paluszkiewicz/VajbOrbit/vajb-orbit/assets/ships/ship_vanguard_side.png
+[F3] SHEETS total=16 missing=0
+WARNING: 15 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 6 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

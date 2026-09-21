@@ -117,6 +117,11 @@ const IMPACT := preload("res://game/impact.gd")
 ## interfaces 1 and 4; W2 report section "What the wave still owes", items 2 and 4).
 const DAMAGE := preload("res://game/damage.gd")
 
+## The hit's feedback seam F1's `game/fx.gd` sits behind: the death blast, the low-hull
+## plume and the shield's held bed are `projectile.gd`'s (the hit site's own table), so
+## the player and an NPC hull read one copy of it.
+const PROJECTILE := preload("res://game/projectile.gd")
+
 ## Mass used when the launch snapshot carries no `hull_mass`: the section 13 class
 ## column is M2's field on ShipStats, and the migration stands on its own until it is
 ## there (the hull flies either way, because the flight maths is mass-independent, see
@@ -182,6 +187,9 @@ func setup(stats: ShipStats, state: PlayerState, fit_ids: Array[StringName] = []
 	_vitals_seeded = true
 	_state.hull_changed.connect(_on_hull_changed)
 	_state.shield_changed.connect(_on_shield_changed)
+	## The death blast (F2) is hung off the state's own door, so a hull that dies from
+	## any route - a shot, a ram, a warp-damage tick - draws it exactly once.
+	_state.died.connect(_on_hull_death)
 
 
 ## Autopilot order (ENGINE_SPEC section 3.1). `pos` is a global position,
@@ -838,11 +846,35 @@ func _release_state() -> void:
 		_state.hull_changed.disconnect(_on_hull_changed)
 	if _state.shield_changed.is_connected(_on_shield_changed):
 		_state.shield_changed.disconnect(_on_shield_changed)
+	if _state.died.is_connected(_on_hull_death):
+		_state.died.disconnect(_on_hull_death)
 
 
 func _on_hull_changed(current: float, _maximum: float) -> void:
 	_note_vitals(_last_hull, current)
 	_last_hull = current
+	_note_damage_state()
+
+
+## ENGINE_SPEC section 7's death, the hull's own half: the blast is FX_SPEC section
+## 1.4's explosion plus section 7.2's secondary, on the wreck's own position, and the
+## shield's bed stops with the ship that was holding it. What the death means for the
+## hold, the wreck and the respawn stays `game.gd`'s (`_on_ship_died`).
+func _on_hull_death() -> void:
+	PROJECTILE.spawn_hull_death(self, self)
+	PROJECTILE.release_shield(self)
+
+
+## FX_SPEC sections 7.1/7.3, the damage state the HUD's own critical line marks
+## (section 1.8's "hull fraction < 25 %"): below it the hull trails the plume, above it
+## the plume comes off again.
+func _note_damage_state() -> void:
+	if _state == null or _state.hull_max <= 0.0:
+		return
+	if _state.hull / _state.hull_max < PROJECTILE.LOW_HULL_FRACTION:
+		PROJECTILE.spawn_smoke_plume(self)
+		return
+	PROJECTILE.clear_smoke_plume(self)
 
 
 func _on_shield_changed(current: float, _maximum: float) -> void:

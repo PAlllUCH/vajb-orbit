@@ -47,6 +47,11 @@ const BrainScript := preload("res://game/npc_brain.gd")
 const AsteroidScript := preload("res://game/asteroid.gd")
 const IMPACT := preload("res://game/impact.gd")
 
+## The hit's feedback seam F1's `game/fx.gd` sits behind: a hull's death blast and the
+## low-hull plume are `projectile.gd`'s (the hit site's own table), so an NPC and the
+## player hull read one copy of it.
+const PROJECTILE := preload("res://game/projectile.gd")
+
 const GROUP: StringName = &"npc_ship"
 const PLAYER_GROUP: StringName = &"player_ship"
 
@@ -346,8 +351,21 @@ func set_shield(value: float) -> void:
 func set_hull(value: float) -> void:
 	var was_alive := _hull > 0.0
 	_hull = clampf(value, 0.0, _hull_max)
+	_note_damage_state()
 	if was_alive and _hull <= 0.0:
 		_die()
+
+
+## FX_SPEC sections 7.1/7.3, ruling 20's damage states: below a quarter hull the ship
+## trails section 7.2's plume, parented to the hull so it frees with it; recovering above
+## the line takes it off again. One emitter per hull (`spawn_smoke_plume` is idempotent).
+func _note_damage_state() -> void:
+	if _hull_max <= 0.0:
+		return
+	if _hull / _hull_max < PROJECTILE.LOW_HULL_FRACTION:
+		PROJECTILE.spawn_smoke_plume(self)
+		return
+	PROJECTILE.clear_smoke_plume(self)
 
 
 ## Section 7's death, minus the wiring: the signal goes up with what the wiring needs
@@ -357,6 +375,12 @@ func _die() -> void:
 	if _done:
 		return
 	died.emit(global_position, _archetype)
+	## F2's half: the wreck's blast is FX_SPEC section 1.4's explosion plus section
+	## 7.2's secondary, on the wreck's own position and parented to the world so it
+	## outlives the hull (`spawn_hull_death`), and the shield's held bed goes out with
+	## the ship that was holding it.
+	PROJECTILE.spawn_hull_death(self, self)
+	PROJECTILE.release_shield(self)
 	despawn()
 
 

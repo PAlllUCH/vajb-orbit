@@ -1,0 +1,32 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[F2] world=true audio=true
+[F2] event=rock cue=sfx_impact_rock pool=none path=res://assets/audio/sfx/sfx_impact_rock_01.ogg target=asteroid
+[F2] event=hull cue=sfx_impact_hull_01 pool=sfx_impact_hull path=res://assets/audio/sfx/sfx_impact_hull_01.ogg target=hull shield=down
+[F2] event=shield cue=sfx_impact_shield_hit_01 pool=sfx_impact_shield_hit path=res://assets/audio/sfx/sfx_impact_shield_hit_01.ogg target=hull shield=up bed=sfx_impact_shield_loop
+[F2]   sheet=res://assets/fx/fx_shield_ripple.png frames=1 fps=0 loop=false additive=true read=64x63 scale=0.0000 at=(400.0, 300.0)
+[F2] event=shield_break cue=sfx_impact_shield_hit_02 pool=sfx_impact_shield_hit path=res://assets/audio/sfx/sfx_impact_shield_hit_02.ogg target=hull shield=0 bed=
+[F2]   sheet=res://assets/fx/fx_shield_ripple.png frames=1 fps=0 loop=false additive=true read=64x63 scale=0.0000 at=(400.0, 300.0)
+[F2]   sheet=res://assets/fx/fx_shield_break.png frames=4 fps=10 loop=false additive=true read=43x56 scale=0.1217 at=(400.0, 300.0)
+[F2] event=bolt_hit cue=sfx_impact_hull_02 pool=sfx_impact_hull path=res://assets/audio/sfx/sfx_impact_hull_02.ogg kind=bolt control=no-arc
+[F2] event=railgun_hit cue=sfx_impact_hull_03 pool=sfx_impact_hull path=res://assets/audio/sfx/sfx_impact_hull_03.ogg kind=slug
+[F2]   sheet=res://assets/fx/fx_arc_spark.png frames=4 fps=20 loop=false additive=true read=40x21 scale=0.0490 at=(400.0, 300.0)
+[F2] event=npc_death cue=sfx_weapon_explosion_01 pool=sfx_weapon_explosion path=res://assets/audio/sfx/sfx_weapon_explosion_01.ogg archetype=pirate at=(400.0, 300.0)
+[F2]   sheet=res://assets/fx/fx_explosion.png frames=5 fps=15 loop=false additive=true read=89x79 scale=0.1229 at=(400.0, 300.0)
+[F2]   sheet=res://assets/fx/fx_secondary_explosion.png frames=4 fps=15 loop=false additive=true read=29x28 scale=0.1337 at=(400.0, 300.0)
+[F2] event=player_death cue=sfx_weapon_explosion_02 pool=sfx_weapon_explosion path=res://assets/audio/sfx/sfx_weapon_explosion_02.ogg hull=0 at=(400.0, 300.0)
+[F2]   sheet=res://assets/fx/fx_explosion.png frames=5 fps=15 loop=false additive=true read=89x79 scale=0.1229 at=(400.0, 300.0)
+[F2]   sheet=res://assets/fx/fx_secondary_explosion.png frames=4 fps=15 loop=false additive=true read=29x28 scale=0.1337 at=(400.0, 300.0)
+[F2] event=detonation cue=sfx_weapon_explosion_01 pool=sfx_weapon_explosion path=res://assets/audio/sfx/sfx_weapon_explosion_01.ogg kind=rocket
+[F2]   sheet=res://assets/fx/fx_explosion.png frames=5 fps=15 loop=false additive=true read=89x79 scale=0.1229 at=(400.0, 300.0)
+[F2] event=shot_down cue=sfx_weapon_explosion_02 pool=sfx_weapon_explosion path=res://assets/audio/sfx/sfx_weapon_explosion_02.ogg kind=rocket victim=true
+[F2]   sheet=res://assets/fx/fx_explosion.png frames=5 fps=15 loop=false additive=true read=89x79 scale=0.1229 at=(400.0, 300.0)
+[F2] event=low_hull cue=none pool=none path= hull_fraction=0.20
+[F2]   plume=DamagePlume sheet=res://assets/fx/fx_smoke_plume.png amount=16 lifetime=1.4 emitting=true additive=true local=false puff=10x20..21x44
+[F2] cues sfx_impact_rock->res://assets/audio/sfx/sfx_impact_rock_01.ogg sfx_impact_hull->res://assets/audio/sfx/sfx_impact_hull_01.ogg sfx_impact_shield_hit->res://assets/audio/sfx/sfx_impact_shield_hit_01.ogg sfx_impact_shield_loop->res://assets/audio/sfx/sfx_impact_shield_loop_01.ogg sfx_weapon_explosion->res://assets/audio/sfx/sfx_weapon_explosion_01.ogg
+[F2] done
+WARNING: 12 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 4 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

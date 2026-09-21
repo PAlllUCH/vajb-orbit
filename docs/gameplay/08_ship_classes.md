@@ -94,7 +94,7 @@ percentage × 450 u/s until the v2 tick lands.
 
 **Amendment 2026-09-21 (owner request: every class gets its own slot count *and*
 its own layout).** The engine count is now a class column, the weapons and armour
-counts rise with hull size, and each class's grid is written as a **mirrored
+counts rise with hull size, and each class's grid is written as a **hull-plan
 matrix** (§3.2) which is the single source of the counts in §3's table. The
 original table (every class at `Engine 1`, `Power 1`, and the weapons column
 3/4/2/1/3/1/5/4/7) is superseded. Rows this amendment moved are marked △ and are
@@ -149,14 +149,22 @@ only their counts move with the class.
 
 ### 3.2 Slot layouts (new — the matrix is the authority)
 
-Each hull's grid is one **mirrored matrix**: rows top to bottom, cells left to
+Each hull's grid is one **hull-plan matrix**: rows top to bottom, cells left to
 right, letters are 09 §1's slot types (`E` engine, `P` power, `W` weapon,
 `S` shield, `H` armour, `C` computer, `B` booster/drive, `U` utility) and `.` is a
 gap — the hull's own silhouette, not a slot. §3's counts are **derived from these
 matrices**, never kept beside them, so a count and a layout cannot disagree.
 
+The block below prints a row with cosmetic spaces for readability; a row's cells
+are its characters, so the Cutter's first row is `.WW.` and its third is `HWU.`.
+The code's `SLOT_GRIDS` carries exactly these rows with the spaces removed, and a
+test parses this block and compares it with the constant, so the document and the
+data cannot drift apart. A layout is not required to be symmetric — odd counts
+(3 weapons, 5 utility cells) make symmetry impossible — it is a hull *plan*, read
+like a silhouette.
+
 ```text
-Fighter  (4 cols x 3 rows)   E1 P1 W2 S1 H1 C1 B1 U0   = 8
+Fighter  (4 x 3)             E1 P1 W2 S1 H1 C1 B1 U0   = 8
 . W W .
 H S C B
 . E P .
@@ -183,7 +191,7 @@ Corvette (4 x 4)             E1 P1 W4 S2 H2 C1 B1 U1   = 13
 . W W .
 H S S H
 W C B W
-. E P .
+. E P U
 
 Hauler   (4 x 5)             E3 P1 W1 S1 H3 C1 B0 U5   = 15
 . W . .

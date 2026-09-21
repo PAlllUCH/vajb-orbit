@@ -43,9 +43,15 @@ const AUDIO_SERVICE: StringName = &"AudioManager"
 
 ## AUDIO_SPEC S8's chip transient, one per extracted unit. `_01` and not a
 ## round-robin over 01-04: `sfx_mining_chip_04` is a documented 21 s outlier
-## (ASSET_AUDIT item 8), and the S7 beam bed is a `loop = true` stream that the
-## shared `play_sfx` voice must not be handed (see the W3 report's open points).
+## (ASSET_AUDIT item 8).
 const CHIP_CUE: StringName = &"sfx_mining_chip_01"
+
+## AUDIO_SPEC S7's beam bed, the loop that sounds for as long as the shaft is on a
+## rock. It goes out through `AudioManager.play_loop`, which owns a dedicated voice
+## (`play_sfx` would hand a looping stream to a one-shot voice that the next shot
+## steals), and it resolves through the cue's own `_01` take. The chip transient
+## above keeps playing per unit alongside it.
+const BEAM_LOOP_CUE: StringName = &"sfx_mining_beam"
 
 const THEME_PATH := "res://ui/theme/vajb_theme.tres"
 const TOKENS_TYPE: StringName = &"Tokens"
@@ -216,12 +222,42 @@ func _exclusions() -> Array[RID]:
 
 
 func _play_chip() -> void:
+	_play_cue(CHIP_CUE)
+
+
+## S7's beam bed: the loop rides the shaft, so it starts when the shaft has a rock
+## under it and stops with it. `play_loop` is idempotent, so the per-frame call costs
+## nothing once the bed is up.
+func _play_beam_loop() -> void:
+	_play_cue(BEAM_LOOP_CUE, true)
+
+
+func _stop_beam_loop() -> void:
 	if not is_inside_tree():
 		return
 	var audio := get_tree().root.get_node_or_null(NodePath(AUDIO_SERVICE))
-	if audio == null or not audio.has_method(&"play_sfx"):
+	if audio == null or not audio.has_method(&"current_loop"):
 		return
-	audio.call(&"play_sfx", CHIP_CUE)
+	## Only the bed this laser started is stopped - another miner's shaft is not ours
+	## to silence.
+	if StringName(audio.call(&"current_loop")) != BEAM_LOOP_CUE:
+		return
+	audio.call(&"stop_loop")
+
+
+## The one door to the audio service, so a held bed and a one-shot chip cannot drift
+## apart: a missing service is a no-op, exactly as before.
+func _play_cue(cue: StringName, loop := false) -> void:
+	if not is_inside_tree():
+		return
+	var audio := get_tree().root.get_node_or_null(NodePath(AUDIO_SERVICE))
+	if audio == null:
+		return
+	if loop and audio.has_method(&"play_loop"):
+		audio.call(&"play_loop", cue)
+		return
+	if not loop and audio.has_method(&"play_sfx"):
+		audio.call(&"play_sfx", cue)
 
 
 func _draw_beam() -> void:
@@ -230,6 +266,8 @@ func _draw_beam() -> void:
 	_core.points = PackedVector2Array([Vector2.ZERO, local_end])
 	_halo.visible = true
 	_core.visible = true
+	## The shaft is live on a rock, so the S7 bed plays under the chip transients.
+	_play_beam_loop()
 
 
 func _extinguish() -> void:
@@ -237,6 +275,13 @@ func _extinguish() -> void:
 	_cycle = 0.0
 	_halo.visible = false
 	_core.visible = false
+	_stop_beam_loop()
+
+
+## Leaving the tree (a hull swap, a death, a scene change) must not leave the bed
+## sounding under a shaft that no longer exists.
+func _exit_tree() -> void:
+	_stop_beam_loop()
 
 
 ## Both tones come from the generated theme (no hex literals outside

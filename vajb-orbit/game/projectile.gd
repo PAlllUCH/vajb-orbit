@@ -4,8 +4,9 @@ extends Area2D
 ## slug, rocket, mine) plus section 4.2 items 7/8's push physics at the hit site.
 ##
 ## Built entirely in code by `configure(config)` (the slice-2 brief's pinned key
-## set), so there is no scene file and no art: the visual pass is slice 2.5's and
-## W3's (FX_SPEC section 7), and nothing here touches `assets/`.
+## set), so there is no scene file: the shot's sprite is built here out of the
+## shipped `assets/fx/` sheets (`_sync_visual`) - the same art every other effect
+## draws from, never a re-cut or a re-key of it (ASSET_WIRING_HANDOFF section 3).
 ##
 ## Contract: ENGINE_SPEC sections 4.1 (families, travel, shield rule, "kinetics
 ## fizzle at max range", "rockets require a lock to home, without a lock they
@@ -32,6 +33,7 @@ extends Area2D
 signal detonated(pos: Vector2, damage: float, bypass_shield: bool)
 
 const ImpactScript := preload("res://game/impact.gd")
+const FxScript := preload("res://game/fx.gd")
 
 const KIND_BOLT: StringName = &"bolt"
 const KIND_SLUG: StringName = &"slug"
@@ -63,9 +65,207 @@ const TARGET_MASK := ROCK_LAYER_MASK | HULL_LAYER_MASK
 
 ## The shape's own radius: how close a shot must pass a body to touch it, and how
 ## close a shot must come to a decoy to detonate on it. No spec value exists for a
-## projectile's cross-section, so this is a detection radius, reported as such;
-## the render size is slice 2.5's and does not read it.
+## projectile's cross-section, so this is a detection radius, reported as such; the
+## sprite's size comes from the sheet's own pixels (`SHEETS`) and never reads this.
 const HIT_RADIUS := 4.0
+
+## --- The shot's art (FX_SPEC sections 0 and 1.1, Phase G's trail sheet) -----
+##
+## One row per kind: the sheet, the sub-frame the kind draws (an `AtlasTexture` over
+## the shipped 2K master, never a re-cut file), the region's own pixel size, the
+## length it reads at in world units, and - for a multi-frame row - the frame rate
+## and whether it loops.
+##
+## FX_SPEC section 1.1 gives the bolt sheet's two objects a 64 px light and a 96 px
+## medium read, so the thin and thick cuts of that sheet are exactly those lengths on
+## screen; the mine and the trail have no size row and take a third of a hull and a
+## hull's own length plus a little (measured against the 43 px Vanguard side view,
+## reported).
+##
+## Tier mapping: the cannon's `bolt` is the sheet's thin object and the railgun's
+## heavier `slug` its thick one.
+const SHEETS: Dictionary = {
+	&"bolt": {
+		&"texture": "res://assets/fx/fx_laser_bolt.png",
+		&"region": Rect2(194.0, 604.0, 1718.0, 105.0),
+		&"source": Vector2(1718.0, 105.0),
+		&"world": 64.0,
+	},
+	&"slug": {
+		&"texture": "res://assets/fx/fx_laser_bolt.png",
+		&"region": Rect2(232.0, 1189.0, 1680.0, 178.0),
+		&"source": Vector2(1680.0, 178.0),
+		&"world": 96.0,
+	},
+	&"mine": {
+		&"texture": "res://assets/fx/fx_ember_pulse.png",
+		&"region": Rect2(811.0, 791.0, 423.0, 421.0),
+		&"source": Vector2(423.0, 421.0),
+		&"world": 22.0,
+	},
+	&"rocket": {
+		&"texture": "res://assets/fx/fx_missile_trail.png",
+		&"regions": [
+			Rect2(79.0, 960.0, 243.0, 61.0),
+			Rect2(490.0, 911.0, 374.0, 109.0),
+			Rect2(906.0, 941.0, 535.0, 72.0),
+			Rect2(1670.0, 982.0, 109.0, 17.0),
+		],
+		&"source": Vector2(535.0, 109.0),
+		&"world": 48.0,
+		&"fps": 12.0,
+		&"loop": true,
+	},
+}
+
+## The sprite's node name, so a probe (or a tracer) can find it without a walk.
+const VISUAL_NODE: StringName = &"Visual"
+
+## Above the rocks and hulls a shot crosses (both draw at the default 0).
+const VISUAL_Z := 1
+
+## --- The hit's feedback (F2): the cue per target kind and the blast sheets -------
+##
+## The shot's own fire is `weapons.gd`'s half of this wave; the hit is this file's.
+## AUDIO_SPEC section 8 gives an impact its own cue per target kind (S4 impacts, S5
+## shield hits) and S6 a barrier bed for a shield that holds; FX_SPEC section 1.4 gives
+## a destruction the five-frame explosion and section 7.2 the arc, the shield break and
+## the low-hull plume. F1's `fx.gd` owns the mechanics (frame, material, scale,
+## lifetime) and every sheet here is spawned through it.
+##
+## The three target kinds a shot can land on. A rock and a hull are two different
+## sounds; a shield takes the third and reads as its own bed while it holds.
+const IMPACT_KIND_ROCK: StringName = &"rock"
+const IMPACT_KIND_HULL: StringName = &"hull"
+const IMPACT_KIND_SHIELD: StringName = &"shield"
+
+const IMPACT_CUES: Dictionary = {
+	IMPACT_KIND_ROCK: &"sfx_impact_rock",
+	IMPACT_KIND_HULL: &"sfx_impact_hull",
+	IMPACT_KIND_SHIELD: &"sfx_impact_shield_hit",
+}
+
+## AUDIO_SPEC S6's shield-up bed (a loop-material file, handoff section 1.4), held
+## while a shield holds and put out when it drops.
+const SHIELD_LOOP_CUE: StringName = &"sfx_impact_shield_loop"
+
+## The wave's blast cue: AUDIO_SPEC S3's warhead bang, the pool F1 published
+## (`sfx_weapon_explosion_01/02`, F1 report section "Pools added to AudioManager").
+const BLAST_CUE: StringName = &"sfx_weapon_explosion"
+
+## FX_SPEC section 1.8 and Phase G's section 7.1 both put a hull's damage states at
+## "hull fraction < 25 %", so the plume comes up below exactly that line.
+const LOW_HULL_FRACTION := 0.25
+
+## The plume emitter's node name, so a hull can find and drop its own.
+const PLUME_NODE: StringName = &"DamagePlume"
+
+## Above the shot's own sprite (VISUAL_Z): a hit reads over the art.
+const FEEDBACK_Z := 2
+
+## FX_SPEC section 1.5: the ripple grows 0 -> 1.5x with the alpha fade over 0.3 s.
+const RIPPLE_SCALE := 1.5
+const RIPPLE_SECONDS := 0.3
+
+## The plume emitters' engine numbers. FX_SPEC section 7.2 fixes the look and 7.3 the
+## node ("a lifetime owner - the emitter frees with its target") but states no rate,
+## size or speed; these are the wiring's own and are reported as such. The two scale
+## constants are factors on the row's own read, so a puff is a plume-sheet-sized puff
+## rather than the master's 755 x 1580 pixels.
+const PLUME_AMOUNT := 16
+const PLUME_LIFETIME := 1.4
+const PLUME_PREPROCESS := 0.6
+const PLUME_RADIUS := 14.0
+const PLUME_SPREAD := 25.0
+const PLUME_SPEED_MIN := 8.0
+const PLUME_SPEED_MAX := 24.0
+const PLUME_SCALE_MIN := 0.5
+const PLUME_SCALE_MAX := 1.1
+
+## The audio service, reached the way every other caller reaches it (anchor at the
+## tree root). A static helper has no tree of its own, so a caller passes the node that
+## has one.
+const AUDIO_SERVICE: StringName = &"AudioManager"
+
+## One row per effect: the shipped 2K master, the objects in the sheet's own reading
+## order, the largest object's pixel size, the length its longest side reads at in
+## world units, and - for a multi-frame row - the frame rate and whether it loops.
+##
+## The regions are measured off the shipped master's ink (the objects are found by
+## masking the ink, never by cutting on a divider - AGENTS.md's asset rule), not taken
+## from a nominal grid: `fx_explosion` is FX_SPEC section 1.4's 2x3 sheet whose five
+## objects do not respect the cell midlines. `world` is measured against the shipped
+## Vanguard side view, 59 x 30 world units at the scene's own 0.0663 sprite scale,
+## where the spec states no size (reported).
+##
+## Rates are the spec's own: 15 FPS for the explosion (section 1.4), 20 FPS for the arc
+## (section 7.2's "0.2 s per arc" over four frames), 10 FPS for the shield break
+## (section 7.1's "outward over 0.4 s" over four frames) and section 1.5's 0.3 s for
+## the ripple. The secondary burst is the one rate ASSET_EXPANSION_SPEC section 7
+## leaves unstated; it takes the explosion's own.
+const FEEDBACK: Dictionary = {
+	&"explosion": {
+		&"texture": "res://assets/fx/fx_explosion.png",
+		&"regions": [
+			Rect2(146.0, 30.0, 728.0, 640.0),
+			Rect2(1118.0, 5.0, 781.0, 707.0),
+			Rect2(90.0, 755.0, 781.0, 632.0),
+			Rect2(1134.0, 758.0, 777.0, 631.0),
+			Rect2(137.0, 1379.0, 688.0, 550.0),
+		],
+		&"source": Vector2(781.0, 707.0),
+		&"world": 96.0,
+		&"fps": 15.0,
+	},
+	&"secondary": {
+		&"texture": "res://assets/fx/fx_secondary_explosion.png",
+		&"regions": [
+			Rect2(177.0, 891.0, 219.0, 208.0),
+			Rect2(630.0, 863.0, 248.0, 247.0),
+			Rect2(1080.0, 833.0, 359.0, 300.0),
+			Rect2(1694.0, 924.0, 179.0, 161.0),
+		],
+		&"source": Vector2(359.0, 300.0),
+		&"world": 48.0,
+		&"fps": 15.0,
+	},
+	&"arc": {
+		&"texture": "res://assets/fx/fx_arc_spark.png",
+		&"regions": [
+			Rect2(118.0, 328.0, 809.0, 424.0),
+			Rect2(1126.0, 242.0, 817.0, 594.0),
+			Rect2(121.0, 1275.0, 804.0, 492.0),
+			Rect2(1128.0, 1273.0, 815.0, 488.0),
+		],
+		&"source": Vector2(817.0, 594.0),
+		&"world": 40.0,
+		&"fps": 20.0,
+	},
+	&"shield_break": {
+		&"texture": "res://assets/fx/fx_shield_break.png",
+		&"regions": [
+			Rect2(63.0, 752.0, 356.0, 457.0),
+			Rect2(514.0, 715.0, 483.0, 526.0),
+			Rect2(1050.0, 739.0, 439.0, 485.0),
+			Rect2(1624.0, 798.0, 355.0, 359.0),
+		],
+		&"source": Vector2(483.0, 526.0),
+		&"world": 64.0,
+		&"fps": 10.0,
+	},
+	&"ripple": {
+		&"texture": "res://assets/fx/fx_shield_ripple.png",
+		&"region": Rect2(394.0, 379.0, 1240.0, 1212.0),
+		&"source": Vector2(1240.0, 1212.0),
+		&"world": 64.0,
+	},
+	&"plume": {
+		&"texture": "res://assets/fx/fx_smoke_plume.png",
+		&"region": Rect2(641.0, 199.0, 755.0, 1580.0),
+		&"source": Vector2(755.0, 1580.0),
+		&"world": 40.0,
+	},
+}
 
 ## Section 4.2 item 7's terms: the shooter's recoil is `mass x muzzle_speed` and a
 ## hit's knockback is 40 % of `0.5 x mass x speed^2`. Section 13 pins neither a
@@ -104,6 +304,10 @@ var _lock_target: Node2D = null
 var _decoy: Node2D = null
 var _source: Node2D = null
 var _shape: CollisionShape2D = null
+## The sprite the shot is drawn with, and the kind it was built for (the kind is
+## fixed by `configure`, so the two can only differ while a node is being rebuilt).
+var _visual: Node2D = null
+var _visual_kind: StringName = &""
 var _travelled := 0.0
 var _armed := false
 var _arm_clock := 0.0
@@ -153,11 +357,13 @@ func configure(config: Dictionary) -> void:
 	if source is Node2D:
 		_source = source as Node2D
 	_sync_shape()
+	_sync_visual()
 
 
 func _ready() -> void:
 	add_to_group(PROJECTILE_GROUP)
 	_sync_shape()
+	_sync_visual()
 
 
 ## Flight. A travelling shot sweeps for what is in front of it this frame (a ray,
@@ -217,6 +423,12 @@ func source() -> Node2D:
 	return _source
 
 
+## The sprite this shot flies with (null while its sheet is missing). The wiring
+## tests read it; a trail renderer would too.
+func visual() -> Node2D:
+	return _visual
+
+
 ## Section 4.6's half that belongs here: a live flare overrides the lock target,
 ## so the shot keeps flying (and keeps turning) at the decoy instead. Harmless on
 ## a non-seeker: a mine and a ballistic shot are not homing, so the override is
@@ -249,6 +461,7 @@ func _step_flight(delta: float) -> void:
 	_drive(delta)
 	if _velocity.is_zero_approx():
 		return
+	_face_travel()
 	var from := global_position
 	var to := from + _velocity * delta
 	var hit := _nearest(from, to)
@@ -382,6 +595,10 @@ func _shot_down(collider: Variant, point: Vector2) -> void:
 		return
 	(collider as Node).call(&"fizzle")
 	global_position = point + _velocity.normalized() * HIT_RADIUS
+	## F1's item 11: a rocket killed in flight is a destruction, so it takes FX_SPEC
+	## section 1.4's explosion (the sheet the spec pairs with S3's detonations) and the
+	## blast cue. The shooter's own shot flies on - only the warhead leaves.
+	_blast(point)
 
 
 ## Section 6, ruling 17: a gun's work on a rock is `10 %` of its DPS-equivalent
@@ -390,6 +607,10 @@ func _shot_down(collider: Variant, point: Vector2) -> void:
 func _hit_rock(rock: Node, point: Vector2) -> void:
 	if chip > 0.0 and rock.has_method(&"apply_work"):
 		rock.call(&"apply_work", damage * chip)
+	## FX_SPEC section 1.4 / AUDIO_SPEC S4: the hit's other half. A rock is its own
+	## sound (the mining shaft keeps its chip cue; this is the weapon's own hit).
+	play_impact(self, IMPACT_KIND_ROCK)
+	_spawn_weapon_hit(point)
 	if _is_explosive():
 		_detonate(point)
 		return
@@ -407,7 +628,14 @@ func _hit_body(target: Node, point: Vector2) -> void:
 	if share > 0.0 and target_mass > 0.0:
 		impulse = _velocity.normalized() * sqrt(2.0 * share * target_mass)
 		_apply_push(target, impulse)
-	_deliver(target, damage, bypass_shield, point, impulse)
+	## The sink is resolved once for the shield read and the delivery, so the cue, the
+	## ring and the damage can never disagree about what took the hit.
+	var sink := _sink_for(target)
+	var shielded := not bypass_shield and _shield_up(sink)
+	_report_hit(point, shielded)
+	_deliver(sink, damage, bypass_shield, point, impulse)
+	_note_shield(sink, point, shielded)
+	_spawn_weapon_hit(point)
 	if _is_explosive():
 		_detonate(point)
 		return
@@ -462,6 +690,7 @@ func _detonate(at: Vector2, victim: Node2D = null) -> void:
 	if victim != null and damage > 0.0:
 		_deliver(victim, damage, bypass_shield, at, Vector2.ZERO)
 	_push_bodies(at)
+	_blast(at)
 	detonated.emit(at, damage, bypass_shield)
 	queue_free()
 
@@ -603,6 +832,94 @@ func _mass_of(target: Object) -> float:
 	return 0.0
 
 
+## --- The shot's sprite ----------------------------------------------------
+
+
+## The sprite is built once per kind, from the kind's row in `SHEETS`: a single
+## additive frame for a bolt, a slug and a mine, and the four-frame trail sheet's
+## own animation for the seeker. Idempotent, so `configure` and `_ready` can both
+## ask and only the first one builds.
+func _sync_visual() -> void:
+	if _visual != null and _visual_kind == kind and is_instance_valid(_visual):
+		return
+	_clear_visual()
+	_visual_kind = kind
+	var sprite := _build_visual()
+	if sprite == null:
+		return
+	_visual = sprite
+	_face_travel()
+
+
+func _clear_visual() -> void:
+	if _visual == null or not is_instance_valid(_visual):
+		_visual = null
+		return
+	remove_child(_visual)
+	_visual.free()
+	_visual = null
+
+
+## The kind's row as a parented node (these are `Fx`'s spawn calls, which own the
+## `add_child`), or null when the row or its file is missing - a missing sheet leaves
+## the shot invisible rather than crashing the run.
+func _build_visual() -> Node2D:
+	var row: Variant = SHEETS.get(kind)
+	if not row is Dictionary:
+		return null
+	var entry := row as Dictionary
+	var path := String(entry.get(&"texture", ""))
+	if path.is_empty() or not ResourceLoader.exists(path):
+		return null
+	var texture := load(path) as Texture2D
+	if texture == null:
+		return null
+	var scale_factor := FxScript.scale_for(
+		entry.get(&"source", texture.get_size()) as Vector2, float(entry.get(&"world", 0.0))
+	)
+	if entry.has(&"regions"):
+		var frames := FxScript.sheet_frames(
+			texture,
+			entry[&"regions"],
+			float(entry.get(&"fps", FxScript.DEFAULT_FPS)),
+			bool(entry.get(&"loop", false))
+		)
+		if frames.get_frame_count(FxScript.ANIMATION) == 0:
+			return null
+		var animated := AnimatedSprite2D.new()
+		animated.name = VISUAL_NODE
+		animated.sprite_frames = frames
+		animated.animation = FxScript.ANIMATION
+		animated.material = FxScript.additive_material()
+		animated.scale = Vector2.ONE * scale_factor
+		animated.z_index = VISUAL_Z
+		add_child(animated)
+		animated.play(FxScript.ANIMATION)
+		return animated
+	var region: Variant = entry.get(&"region")
+	if not region is Rect2:
+		return null
+	var still := FxScript.display(self, FxScript.frame(texture, region as Rect2))
+	if still == null:
+		return null
+	still.name = VISUAL_NODE
+	still.position = Vector2.ZERO
+	still.scale = Vector2.ONE * scale_factor
+	still.z_index = VISUAL_Z
+	return still
+
+
+## The sheets' objects point right, so the sprite carries the shot's own bearing: a
+## homing rocket's exhaust swings with every turn. A mine has no velocity and keeps
+## the bearing it was dropped at.
+func _face_travel() -> void:
+	if _visual == null or not is_instance_valid(_visual):
+		return
+	if _velocity.is_zero_approx():
+		return
+	_visual.rotation = _velocity.angle()
+
+
 ## --- Collision plumbing ---------------------------------------------------
 
 
@@ -693,3 +1010,333 @@ func _number(value: Variant, fallback: float = 0.0) -> float:
 	if value is float or value is int:
 		return float(value)
 	return fallback
+
+
+## --- The hit's feedback: the cue, the ring and the blast (F2) --------------------
+##
+## Everything a landed hit draws and sounds, kept out of `_damage`'s path so no number
+## there moves: the cue per target kind, the shield's ring and bed, the railgun's arc
+## and the blast every destruction shares. The sheets are F1's `Fx` calls, spawned
+## additively (FX_SPEC section 0: the masters are RGB on Void Black).
+
+
+## The cue a landed hit plays for `target_kind`, or "" for a kind AUDIO_SPEC gives none.
+static func impact_cue_of(target_kind: StringName) -> StringName:
+	return StringName(IMPACT_CUES.get(target_kind, &""))
+
+
+## One cue through the audio service: a pooled row (S4's `sfx_impact_hull`, S5's
+## `sfx_impact_shield_hit`, S3's explosion) takes a take through `play_pool`; a plain
+## one (`sfx_impact_rock`) plays through the same call, which falls back to `play_sfx`.
+## A missing service is a no-op, exactly like every other cue in the project; a headless
+## probe reads `AudioManager.last_sfx()` and the `play_pool` plan instead of listening.
+static func play_cue(host: Node, cue: StringName) -> void:
+	var audio := _audio(host)
+	if audio == null or not audio.has_method(&"play_pool"):
+		return
+	audio.call(&"play_pool", cue)
+
+
+## The cue a hit on `target_kind` plays, and the cue name back. A kind the table does
+## not carry (AUDIO_SPEC section 8 has these three) plays nothing.
+static func play_impact(host: Node, target_kind: StringName) -> StringName:
+	var cue := impact_cue_of(target_kind)
+	if cue == &"":
+		return &""
+	play_cue(host, cue)
+	return cue
+
+
+## The blast cue, through the same pool route.
+static func play_blast(host: Node) -> StringName:
+	play_cue(host, BLAST_CUE)
+	return BLAST_CUE
+
+
+## S6's shield bed: asked for on every absorbed hit, which `play_loop` answers as a
+## no-op while that bed is already the one playing.
+static func hold_shield(host: Node) -> void:
+	var audio := _audio(host)
+	if audio == null or not audio.has_method(&"play_loop"):
+		return
+	audio.call(&"play_loop", SHIELD_LOOP_CUE)
+
+
+## The bed goes out when the shield drops. Only the bed the shield started is stopped -
+## the mining shaft's S7 bed is not this one's to silence (the manager owns one loop
+## voice, reported).
+static func release_shield(host: Node) -> void:
+	var audio := _audio(host)
+	if audio == null or not audio.has_method(&"current_loop"):
+		return
+	if StringName(audio.call(&"current_loop")) != SHIELD_LOOP_CUE:
+		return
+	audio.call(&"stop_loop")
+
+
+## A feedback row, or an empty dictionary for a name the table does not carry.
+static func feedback_row(name: StringName) -> Dictionary:
+	var row: Variant = FEEDBACK.get(name)
+	if row is Dictionary:
+		return row as Dictionary
+	return {}
+
+
+## FX_SPEC sections 2/7.3: a one-shot sheet, spawned additively through F1's helper
+## (which also frees it on `animation_finished`), placed at `at` in world space and
+## returned. Null when the row, the file or the frames are unavailable - a missing sheet
+## leaves the hit quiet rather than crashing a run.
+static func spawn_sheet(parent: Node, name: StringName, at: Vector2) -> AnimatedSprite2D:
+	if parent == null:
+		return null
+	var row := feedback_row(name)
+	if row.is_empty() or not row.has(&"regions"):
+		return null
+	var texture := _texture_of(row)
+	if texture == null:
+		return null
+	var frames := FxScript.sheet_frames(
+		texture,
+		row[&"regions"],
+		float(row.get(&"fps", FxScript.DEFAULT_FPS)),
+		bool(row.get(&"loop", false))
+	)
+	if frames.get_frame_count(FxScript.ANIMATION) == 0:
+		return null
+	var scale_factor := FxScript.scale_for(
+		row.get(&"source", texture.get_size()) as Vector2, float(row.get(&"world", 0.0))
+	)
+	var sprite := FxScript.play_once(parent, frames, Vector2.ZERO, 0.0, scale_factor)
+	if sprite == null:
+		return null
+	sprite.name = String(name)
+	sprite.z_index = FEEDBACK_Z
+	_place(sprite, at)
+	return sprite
+
+
+## FX_SPEC section 1.4's five-frame explosion, at a hull's death, a detonation or a shot
+## down in flight.
+static func spawn_explosion(parent: Node, at: Vector2) -> AnimatedSprite2D:
+	return spawn_sheet(parent, &"explosion", at)
+
+
+## ASSET_EXPANSION_SPEC section 7's secondary burst - what a hull's death adds over the
+## single explosion.
+static func spawn_secondary_explosion(parent: Node, at: Vector2) -> AnimatedSprite2D:
+	return spawn_sheet(parent, &"secondary", at)
+
+
+## FX_SPEC section 7.2's four-frame arc: the railgun's own hit signature.
+static func spawn_arc_spark(parent: Node, at: Vector2) -> AnimatedSprite2D:
+	return spawn_sheet(parent, &"arc", at)
+
+
+## ASSET_EXPANSION_SPEC section 7 / FX_SPEC section 7.1's shield shatter, on the hit
+## that empties the shield pool.
+static func spawn_shield_break(parent: Node, at: Vector2) -> AnimatedSprite2D:
+	return spawn_sheet(parent, &"shield_break", at)
+
+
+## FX_SPEC section 1.5: the single-frame steel ring, collapsed and grown 0 -> 1.5x over
+## the spec's 0.3 s while F1's `fade_and_free` takes its alpha out and frees it. Null
+## when the sheet is missing.
+static func spawn_shield_ripple(parent: Node, at: Vector2) -> Sprite2D:
+	if parent == null:
+		return null
+	var row := feedback_row(&"ripple")
+	if row.is_empty() or not row.has(&"region"):
+		return null
+	var texture := _texture_of(row)
+	if texture == null:
+		return null
+	var scale_factor := FxScript.scale_for(
+		row.get(&"source", texture.get_size()) as Vector2, float(row.get(&"world", 0.0))
+	)
+	var sprite := FxScript.display(
+		parent, FxScript.frame(texture, row[&"region"] as Rect2), Vector2.ZERO, 0.0, scale_factor
+	)
+	if sprite == null:
+		return null
+	sprite.name = "shield_ripple"
+	sprite.z_index = FEEDBACK_Z
+	_place(sprite, at)
+	if not sprite.is_inside_tree():
+		return sprite
+	sprite.scale = Vector2.ZERO
+	var grow := sprite.create_tween()
+	grow.tween_property(
+		sprite, "scale", Vector2.ONE * scale_factor * RIPPLE_SCALE, RIPPLE_SECONDS
+	)
+	FxScript.fade_and_free(sprite, RIPPLE_SECONDS)
+	return sprite
+
+
+## FX_SPEC sections 7.1/7.3, the low-hull damage state: a plume parented to the hull, so
+## it rides the damage and frees with its owner. Idempotent - a hull that already
+## carries one keeps it. Returns the emitter, or null when the sheet is missing.
+static func spawn_smoke_plume(hull: Node2D) -> GPUParticles2D:
+	if hull == null or not is_instance_valid(hull):
+		return null
+	var existing := hull.get_node_or_null(NodePath(PLUME_NODE)) as GPUParticles2D
+	if existing != null:
+		return existing
+	var row := feedback_row(&"plume")
+	if row.is_empty() or not row.has(&"region"):
+		return null
+	var texture := _texture_of(row)
+	if texture == null:
+		return null
+	var emitter := GPUParticles2D.new()
+	emitter.name = PLUME_NODE
+	emitter.texture = FxScript.frame(texture, row[&"region"] as Rect2)
+	emitter.material = FxScript.additive_material()
+	emitter.process_material = _plume_material(
+		FxScript.scale_for(
+			row.get(&"source", texture.get_size()) as Vector2, float(row.get(&"world", 0.0))
+		)
+	)
+	emitter.amount = PLUME_AMOUNT
+	emitter.lifetime = PLUME_LIFETIME
+	emitter.preprocess = PLUME_PREPROCESS
+	emitter.local_coords = false
+	emitter.emitting = true
+	emitter.z_index = FEEDBACK_Z
+	hull.add_child(emitter)
+	return emitter
+
+
+## FX_SPEC section 7.1's "spawn while hull < 25 %": a hull that climbs back above the
+## line drops the plume it was carrying.
+static func clear_smoke_plume(hull: Node2D) -> void:
+	if hull == null or not is_instance_valid(hull):
+		return
+	var existing := hull.get_node_or_null(NodePath(PLUME_NODE))
+	if existing == null:
+		return
+	existing.queue_free()
+
+
+## A hull's death: FX_SPEC section 1.4's explosion plus section 7.2's secondary burst,
+## both parented to the world so they outlive the hull that died, and the blast cue.
+## `host` is the dying hull itself - it has the tree the cue needs.
+static func spawn_hull_death(host: Node, hull: Node2D) -> void:
+	if hull == null or not is_instance_valid(hull):
+		return
+	var parent: Node = hull.get_parent()
+	if parent == null:
+		parent = hull
+	var at := hull.global_position
+	spawn_explosion(parent, at)
+	spawn_secondary_explosion(parent, at)
+	play_blast(host)
+
+
+## The world node a hit's effect hangs from: the shot's own parent (the scene node
+## `weapons.gd` spawns shots into), because the shot leaves the tree the frame it lands.
+func _fx_parent() -> Node:
+	var parent := get_parent()
+	return parent if parent != null else self
+
+
+## The cue and the ring for one landed hit. A shield that took the hit reads as the
+## shield (S5) and draws section 1.5's ring at the contact; every other hull hit reads
+## as S4's hull foley.
+func _report_hit(point: Vector2, shielded: bool) -> void:
+	play_impact(self, IMPACT_KIND_SHIELD if shielded else IMPACT_KIND_HULL)
+	if shielded:
+		spawn_shield_ripple(_fx_parent(), point)
+
+
+## After the damage lands: a shield that is still holding keeps S6's bed up, and one
+## this hit emptied draws section 7.1's shatter and puts the bed out.
+func _note_shield(sink: Object, point: Vector2, shielded: bool) -> void:
+	if not shielded:
+		return
+	if _shield_up(sink):
+		hold_shield(self)
+		return
+	spawn_shield_break(_fx_parent(), point)
+	release_shield(self)
+
+
+## FX_SPEC section 7.2's arc is the heavy kinetic's own read, so only the railgun's slug
+## arcs; every other kind hits quietly.
+func _spawn_weapon_hit(point: Vector2) -> void:
+	if kind == KIND_SLUG:
+		spawn_arc_spark(_fx_parent(), point)
+
+
+## The blast every destruction shares: section 1.4's explosion and the wave's cue. A
+## hull's death adds the secondary burst (`spawn_hull_death`).
+func _blast(at: Vector2) -> void:
+	spawn_explosion(_fx_parent(), at)
+	play_blast(self)
+
+
+## Whether a target's shields are still up. The same read order `weapons.gd._shield_up`
+## makes (`shield_up()`, a `shield` number, a `state` object's own pool), so the shield
+## rule, plasma's bonus and this file's cue can never disagree.
+func _shield_up(target: Object) -> bool:
+	if target == null:
+		return false
+	if target.has_method(&"shield_up"):
+		return bool(target.call(&"shield_up"))
+	var direct: Variant = target.get(&"shield")
+	if direct is float or direct is int:
+		return float(direct) > 0.0
+	var state: Variant = target.get(&"state")
+	if state is Object and state != null:
+		var pooled: Variant = (state as Object).get(&"shield")
+		if pooled is float or pooled is int:
+			return float(pooled) > 0.0
+	return false
+
+
+## The audio service, reached the way every other caller reaches it. A static has no
+## tree of its own, so the caller passes the node that has one.
+static func _audio(host: Node) -> Node:
+	if host == null or not is_instance_valid(host) or not host.is_inside_tree():
+		return null
+	var tree := host.get_tree()
+	if tree == null:
+		return null
+	return tree.root.get_node_or_null(NodePath(AUDIO_SERVICE))
+
+
+## The plume's seeded behaviour: puffs rising from the hull's own middle. FX_SPEC states
+## the emitter and its palette, not its numbers (reported). `base` is the row's own read
+## (a puff's length in world units over the master's pixels), so the two scale factors
+## below vary a plume-sized puff instead of the master's raw pixels.
+static func _plume_material(base: float) -> ParticleProcessMaterial:
+	var material := ParticleProcessMaterial.new()
+	material.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+	material.emission_sphere_radius = PLUME_RADIUS
+	material.direction = Vector3(0.0, -1.0, 0.0)
+	material.spread = PLUME_SPREAD
+	material.initial_velocity_min = PLUME_SPEED_MIN
+	material.initial_velocity_max = PLUME_SPEED_MAX
+	material.scale_min = base * PLUME_SCALE_MIN
+	material.scale_max = base * PLUME_SCALE_MAX
+	material.gravity = Vector3.ZERO
+	return material
+
+
+## A row's shipped master, or null when the file is not on disk.
+static func _texture_of(row: Dictionary) -> Texture2D:
+	var path := String(row.get(&"texture", ""))
+	if path.is_empty() or not ResourceLoader.exists(path):
+		return null
+	return load(path) as Texture2D
+
+
+## A sheet's own point in world space: set after it is parented, because it is spawned
+## into whichever world node survives the shot that spawned it.
+static func _place(node: Node2D, at: Vector2) -> void:
+	if node == null or not is_instance_valid(node):
+		return
+	if node.is_inside_tree():
+		node.global_position = at
+		return
+	node.position = at
+

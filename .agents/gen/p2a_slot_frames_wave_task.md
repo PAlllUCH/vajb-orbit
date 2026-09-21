@@ -13,12 +13,24 @@ ships to have different amount of slots with different layouts. so cruiser have 
 slots for weapons/hull while fighters for example can have like 2 weapons. ship
 classes should have different amount of engines/drives/hull."*
 
+**This wave also closes the owner's open launch-fit gate.** `WAVEBOARD.md`'s
+current state records it as one of two open owner gates: *"the briefing reports
+five weapons / 1500 rounds while the ship mounts `[w_laser]` and no mining laser —
+the measured root cause of 'shooting is not working' and 'cannot shoot
+asteroids'"*. The root cause is exactly §2's `game.gd:276` line (the launch
+resolves one global `STANDARD_FIT` for every hull and seeds ammo for five fixed
+families) plus the panels' fixed five-cell strips. W4 resolves the active hull's
+own fit and seeds ammo per **fitted** weapon; W5 makes the panels read the hull's
+grid. The orchestrator must re-measure that gate's two symptoms after W4/W5 land
+and report them as closed (or as still open, with the numbers) — it is a
+deliverable of this wave, not a side effect.
+
 ## 1. What that means, in the docs already amended
 
 The design landed in the docs before this brief was written (docs-first, AGENTS.md):
 
 - **Every class has its own count per slot type** — 08 §3's table, derived from
-  08 §3.2's mirrored matrix, which is the single source of the counts.
+  08 §3.2's hull-plan matrix, which is the single source of the counts.
 - **The engine is a set, not a slot** — 08 §3.1: 1 engine cell at ≤ 110 t, 2 at
   140–220 t, 3 at ≥ 260 t, all of them mandatory (09 §4.1). Drives (`B`, burst
   systems) and hull plates (`H`, armour) keep their own columns and their counts
@@ -102,6 +114,7 @@ const SLOT_TOKEN_KEYS: Dictionary     # "E" -> &"engines", "P" -> &"power", "W" 
                                       # "S" -> &"shields", "H" -> &"armour", "C" -> &"computers",
                                       # "B" -> &"boosters", "U" -> &"utility"; "." is a gap
 const FIT_SLOT_KEYS: Array[StringName]      # [engines, weapons, shields, armour, computers, boosters, utility, power]
+                                            # — the iteration/display order (rule 3 keeps `fitted_ids`' own order)
 const MANDATORY_SLOT_KEYS: Array[StringName]  # [engines, power] — 09 §4.1
 const ENGINE_MULT_CEILING := 1.40            # 09 §3.7
 const MOUNT_SPREAD := Vector2(0.34, 0.22)    # 09 §8, hull half-extent fraction
@@ -123,6 +136,12 @@ static func mount_offset(hull_id: StringName, slot_key: StringName, index: int) 
 ```
 
 Rules the pin fixes, so no worker has to choose:
+
+0. **`SLOT_GRIDS` is 08 §3.2's block with the cosmetic spaces removed** (the
+   Cutter's rows are `.WW.`, `HSCB`, `HWU.`, `.EP.`), and W1's suite parses that
+   fenced block out of `docs/gameplay/08_ship_classes.md` and compares it with the
+   constant, so the document and the data cannot drift apart. Nine hulls, rows of
+   equal length, tokens from `SLOT_TOKEN_KEYS` plus `.`.
 
 1. **Fit shape.** `engines`, `weapons`, `shields`, `armour`, `computers`,
    `boosters`, `utility` are `Array` of module id (`""` = empty cell); `power` is
@@ -156,10 +175,14 @@ static func slot_of(id: StringName) -> StringName     # &"" for an unknown id
 `MODULES` copies each row's `slot`/`draw`/`effects` **verbatim** from
 `ShipFit.MODULES` (no number is invented) and adds `name`, `tier`, `cost` from
 09 §3's tables plus `icon` per the rule below. `ShipFit` reads effects and draws
-through `ModuleCatalog` and keeps `ShipFit.MODULES` as the one alias existing
-callers and tests already index (`game/player_ship.gd:672`,
-`tests/test_engine_c3_flight_decay.gd:57`, `tests/test_combat_repair_c5.gd:294`,
-`tests/probe_c3_flight_decay.gd:398`).
+through `ModuleCatalog` and keeps `ShipFit.MODULES` indexable exactly as it is
+today (`ShipFit.MODULES[id][&"effects"]`, read by `game/player_ship.gd:672`,
+`tests/test_engine_c3_flight_decay.gd:57`, `tests/test_combat_repair_c5.gd:294`
+and `tests/probe_c3_flight_decay.gd:398`). The catalogue is the one literal; the
+alias is a `const` referencing it. If the engine refuses that const reference,
+keep the literal in `ShipFit.MODULES` and have `ModuleCatalog.MODULES` reference
+*it* instead — either direction is fine as long as **exactly one literal exists**,
+and W1's report states which direction shipped and why.
 
 Icon rule: `assets/icons/module/icon_module_<id>_48.png` for every id except the
 five base weapons, which use `assets/icons/weapon/icon_weapon_<family>_48.png`
@@ -199,6 +222,11 @@ func take_module(module_id: StringName, count: int = 1) -> bool
   returns it as a one-element array (padded to capacity) and never rewrites the
   file at load. Writes always persist the array shape. `SAVE_VERSION` 3 → 4,
   `MIN_READABLE_VERSION` stays 1, v1–v3 load clean.
+- **Keys:** `_fits` is keyed by `String(ship_id)` in the shipped shape and its
+  per-slot keys may be `String` or `StringName` (a loaded `ConfigFile` gives
+  `String`). `fit_for`/`set_fit`/`set_fit_slot`/`clear_fit` accept a `StringName`
+  hull id and a `StringName` slot key, read both spellings, and write the same
+  spelling the file already used — `ShipFit._list_slot`'s tolerance is the model.
 - **Signals:** `profile_changed(&"fits")` on a fit write, `&"modules"` on an
   inventory write. Both keys already exist.
 - `base_module_id` resolves through the existing `_modules` dict (15 §6 instance
@@ -247,7 +275,8 @@ Panel contracts (station):
   selection from `ShipFit.grid_cells(hull)`: a gap is an empty 48×48 `Control`
   with no plate; a slot cell is a 48 px `SlotButtonWeapon` plate carrying the
   slot glyph, `disabled` (it is a display). Caption
-  `SLOT LAYOUT · %d CELLS · %d ENGINES` (`_hardpoint_caption`). `STAT_ROWS`
+  `SLOT LAYOUT · %d CELLS · %d ENGINES` (`_hardpoint_caption`; `CELLS` = the
+  hull's slot count, 08 §3's Total — gaps are not cells). `STAT_ROWS`
   becomes `hull, shield, cargo, engines, slots` (labels `HULL`, `SHIELD`,
   `CARGO`, `ENGINES`, `SLOT CELLS`), and the list-row meta
   (`META_FORMAT`, `:165`) becomes `"%d HULL · %d SLOTS"`.
@@ -260,8 +289,8 @@ Panel contracts (station):
 
 | ID | Role | `VAJB_WORKER_FILES` | Deliverable |
 |---|---|---|---|
-| **D0** | docs — land the pin | `docs/` | `docs/CONTRACTS.md` gains §11 **verbatim** from §3 of this brief (plus a `§10 Changelog` v0.2 line naming this wave). `docs/design/STATION_HUB.md` §5.2's "hardpoint strip" row and its `meta` row are replaced by the layout-grid construct and the new stat rows; §5.4's brief-row table gains the three rows. `docs/design/IMPLEMENTATION_PLAN.md` gains **§9.10** (P2-A amendments, the house pattern of §9.7/§9.9): the §3.9/§3.10 amendments, the new files, and the pinned tests that move. `docs/gameplay/17_coder_handoff.md` §2 gains `game/module_catalog.gd` as built and §3's `fits` shape becomes `slot_type -> Array[module_instance_id]`. **No code, no gameplay numbers** — transcribe, never design. |
-| **W1** | coder — the frame data | `vajb-orbit/game/ship_fit.gd,vajb-orbit/game/module_catalog.gd,vajb-orbit/tests/` | §3's `ShipFit` additions (grids, cells, counts, capacity, legality, standard fits, mount offsets, engine sum + ceiling, legacy `engine` acceptance) and the new `ModuleCatalog` (32 rows + the name table + the icon rule), with `ShipFit.MODULES` kept as the alias. New `tests/test_ship_grids.gd`: every matrix in 08 §3.2 parses; counts equal 08 §3's table for all nine hulls (cell by cell); `HULLS[hull].weapons == grid_counts(...).weapons`; capacities sum to the totals 8/11/12/13/13/15/14/17/23; every `STANDARD_FITS` row is `fit_legal` on its own hull; a single engine resolves exactly as before; `e_vector`+`e_vector` is refused while `e_std`+`e_ion`+`e_vector` resolves to 1.40; unknown/NPC hulls return the empty shapes with no error. |
+| **D0** | docs — land the pin | `docs/` | `docs/CONTRACTS.md` gains §11 **verbatim** from §3 of this brief (plus a `§10 Changelog` v0.2 line naming this wave). `docs/design/STATION_HUB.md`: **grep the file for every seven-plate / `hardpoints` reference** — §5.2's hardpoint-strip row and its `meta` row, §3.1's measurement note, §7.1's art-map row, §12's plate table and §13's verification note — and replace each with the layout-grid construct (a `GridContainer`, one cell per matrix cell, `columns` = the matrix width, gaps drawn empty) and the new stat/brief rows. `docs/design/STATION_SPEC.md` §4.2's "Four ships: fighter, vanguard, gunship, destroyer." becomes the nine-hull ladder; §4.1's ordering note keeps `PlayerState.WEAPONS` as the default list and adds that the live list is the launched fit's (`weapons`). `docs/design/IMPLEMENTATION_PLAN.md` gains **§9.10** (P2-A amendments, the house pattern of §9.7/§9.9): the §3.9/§3.10 amendments, the new files, and the pinned tests that move. `docs/gameplay/17_coder_handoff.md` §2 gains `game/module_catalog.gd` as built and §3's `fits` shape becomes `slot_type -> Array[module_instance_id]`. **No code, no gameplay numbers** — transcribe, never design. |
+| **W1** | coder — the frame data | `vajb-orbit/game/ship_fit.gd,vajb-orbit/game/module_catalog.gd,vajb-orbit/tests/` | §3's `ShipFit` additions (grids, cells, counts, capacity, legality, standard fits, mount offsets, engine sum + ceiling, legacy `engine` acceptance) and the new `ModuleCatalog` (32 rows + the name table + the icon rule), with `ShipFit.MODULES` kept as the alias. New `tests/test_ship_grids.gd`: 08 §3.2's fenced block is parsed **out of the document** and equals `SLOT_GRIDS` hull by hull and row by row (spaces removed); counts equal 08 §3's table for all nine hulls (cell by cell); `HULLS[hull].weapons == grid_counts(...).weapons`; capacities sum to the totals 8/11/12/13/13/15/14/17/23; every `STANDARD_FITS` row is `fit_legal` on its own hull; a single engine resolves exactly as before; `e_vector`+`e_vector` is refused while `e_std`+`e_ion`+`e_vector` resolves to 1.40; unknown/NPC hulls return the empty shapes with no error. |
 | **W2** | coder — profile fits | `vajb-orbit/autoload/player_profile.gd,vajb-orbit/tests/` | §3's profile API, the normalisation rule, `base_module_id`, the inventory helpers, save **v4** with v1–v3 loading clean, `profile_changed` keys. Update `tests/test_p1_profile.gd:204` (the version digit is now 4) and add fit round-trip / migration / addressing tests (a 3-engine hull's `engines` is three long, a v2 fixture's single-string fit normalises to one element and pads to capacity, a write persists the array shape). |
 | **W3** | coder — the nine-hull roster | `vajb-orbit/game/station_catalog.gd,vajb-orbit/tests/` | `SHIPS` grows to all nine player hulls in 08 §2's ladder order (fighter, vanguard, miner, trader, corvette, freighter, gunship, patrol, destroyer) with the frozen cost/hull/shield/cargo, `hardpoints` = 08 §2's weapons column (2/3/2/1/4/1/5/4/7), `preview` = `res://assets/ships/ship_<hull>_side.png`, and a description in the existing voice. A test asserts nine rows, the ladder order, every preview path exists on disk, and `hardpoints` equals `ShipFit.HULLS[id].weapons`. |
 | **W4** | coder — flight wiring | `vajb-orbit/game/game.gd,vajb-orbit/game/player_ship.gd,vajb-orbit/game/player_state.gd,vajb-orbit/tests/` | `_resolve_stats()` resolves the **active hull's own fit** (profile → base ids → `ShipFit.resolve`, falling back to `ShipFit.standard_fit(hull)`); `PlayerState.set_weapons` from the fit's W ids before `setup`; `_seed_ammo`/`_file_ammo_report` read `weapons`; a `_push_hull_slots()` that hands the HUD §3's `cells` array (built from `ShipFit.grid_cells` + the fit + `ModuleCatalog`). Tests: a Lancer's 2-W fit launches 2 weapon slots and a Vanguard's 3-W fit 3; a 3-engine hull's resolved speed is the summed set, not a product; ammo seeds per fitted family; the fallback fit path is exercised with an empty profile fit. |
@@ -281,7 +310,8 @@ leaves HIGH or MED.
   them from `ShipFit` instead of a literal.
 - `tests/test_p1_profile.gd:204` — `save_version` 3 → 4.
 - Nothing else moves. A test is never edited to hide a failure; the gate count
-  **grows** (the last recorded figure is 226 — measure yours, never assume).
+  **grows** (the last recorded figure is **236**, measured after the
+  combat-repair wave — measure yours, never assume).
 
 ## 6. Hard rules
 
@@ -341,12 +371,40 @@ leaves HIGH or MED.
 6. **The layout displays' wording** (`SLOT LAYOUT · n CELLS · m ENGINES`,
    `SLOT CELLS`) — cosmetic, and the panels' spec is D0's.
 
+**Resolution record (2026-09-21): all six kept as designed.** Each item was
+re-proved against the amended docs before ticking (the nine matrices parsed and
+compared with §3's table; §13's masses mapped onto §3.1's bands; the §3.7
+arithmetic; §8's formula read against its one constant; `project.godot`'s
+`weapon_1..5` against `weapons.gd:134`'s `GROUPS_MAX`):
+
+1. **The △ rows — kept.** All nine engine counts derive exactly from the §13
+   mass bands (80/90/110 → 1, 140/160/190/220 → 2, 260/300 → 3; no hull in a
+   gap), armour spans 1–4, and the three weapons moves are the owner's request
+   restated. Reversal remains 08 §3's amendment note.
+2. **Mandatory-set delivery — kept** (09 §7). The alternative (auto-fit on
+   launch) would write the profile from the flight scene; §9's `STANDARD_FITS`
+   already covers the fitless fallback with the mandatory set.
+3. **`ENGINE_MULT_CEILING` 1.40 + no-duplicate rule — kept.** The arithmetic is
+   exact: `e_std`+`e_ion`+`e_vector` = 1.40, a single engine resolves to the
+   pre-amendment figure, and `turn_mult` stays unclamped.
+4. **`MOUNT_SPREAD` (0.34, 0.22) — kept** as the one constant for all nine
+   hulls; it is normalised, so the feel wave can re-tune it with no data change,
+   and that wave's same-origin probe is where the anchors get measured against
+   the art.
+5. **Five weapon groups vs the 7-W capital — kept for this wave.** Cells 6–7
+   fit and display but ship `selectable: false`; extending the input map
+   (`weapon_6`/`weapon_7`) is an owner `project.godot` edit, queued as a
+   follow-up — the capital's last two guns stay display-only until it lands.
+6. **Layout captions — kept as specced, count pinned:** `SLOT LAYOUT ·
+   n CELLS · m ENGINES` with `n` = the hull's slot count (08 §3's Total,
+   non-gap cells) and `m` its E count; `SLOT CELLS` is the same `n`.
+
 ## 9. Close-out (orchestrator)
 
 Gate re-run (record the measured count); `python3 staging/verify_wave.py verify
 --baseline p2a_start --forbidden project.godot --expect-reports
 <the wave's reports> --tests`; `.agents/gen/WAVEBOARD.md` updated (this wave Done
-with its report paths, P2-B queued behind it, the owner ticks listed as open);
+with its report paths, P2-B queued behind it, the owner ticks recorded as resolved);
 wave-boundary commit; report to the owner with the measured gate count, the
 per-hull grid table as implemented, the tests that moved, and R1's findings by
 tier. **Snapshot + commit before the first dispatch**, per the standing wave rule.

@@ -44,8 +44,11 @@ the batch-2 playtest lane and the doc lanes. Do not re-dispatch them.
    fit, and the station/HUD layout displays. **The gameplay docs are already
    amended and are the law**: `08_ship_classes.md` §3/§3.1/§3.2/§3.3,
    `09_ship_slots_modules.md` §1/§2/§3.7/§4/§5/§7/§8/§9, `10_ship_acquisition.md`
-   §2.3. The owner's tick list (brief §8) is recorded as open and **does not
-   block the wave** — a reversal is a doc edit plus the one constant it names.
+   §2.3. The owner's tick list (brief §8) is **resolved 2026-09-21 — all six
+   kept as designed** and does not block the wave; the one follow-up is the
+   7-W capital's `weapon_6`/`weapon_7` input-map extension (an owner
+   `project.godot` pass). A reversal stays a doc edit plus the one constant it
+   names.
    Run it after the in-flight waves close, in parallel with nothing that owns
    `game/ship_fit.gd`, `autoload/player_profile.gd`, `ui/hud/hud.gd` or the two
    station panels. Its follow-up **P2-B (the fitting panel)** is briefed after
