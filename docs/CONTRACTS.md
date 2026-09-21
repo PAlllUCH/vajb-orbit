@@ -679,7 +679,8 @@ a running game through the editor's input injection.
 ## §10 Changelog
 
 - **v0 (2026-09-18)** — seeded from the engine wave-1 pinned interfaces
-  (evidence: `.agents/gen/engine_wave1_w1_report.md`) +
+  (the wave-1 reports were consolidated into `.agents/gen/MASTER_REPORT.md`
+  on 2026-09-21) +
   `docs/gameplay/18_engine_spec.md`
   §2/§3/§7/§9/§13. Slices 2–4 (combat,
   travel, integration) append their sections here at their review gates.
@@ -771,6 +772,7 @@ a running game through the editor's input injection.
   W8's probe, F3/F5–F11 recorded where W6 left them (F9 and F11 are now closed by the doc
   pass: 06's prose reads 2.15 / 28.375 / 11.83 %, 2.30, 1.50 and 6.375 with the 1025 floor
   and the 1584.75 mean, and `11_galactic_map.md` §3 cites `18_engine_spec §13`). Evidence:
-  `.agents/gen/slice2_w8_probe.txt`, `slice2_w8_w6probe.txt`, `slice2_w8_testgate.txt`,
-  the five `slice2_w8_boot_*.txt` logs and the report
-  `.agents/gen/slice2_w8_report.md`; the fixer's own record is `.agents/gen/slice2_w7_report.md`.
+  the probe and boot-gate logs behind this entry were consolidated into
+  `.agents/gen/MASTER_REPORT.md` (2026-09-21 cleanup); the surviving reports are
+  `.agents/gen/slice2_review_report.md` and `.agents/gen/slice2_w8_report.md`;
+  the fixer's own record is `.agents/gen/slice2_w7_report.md`.

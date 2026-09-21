@@ -80,7 +80,8 @@ ESC → dock to Kepler-9 confirmed working in the live build (hint + route both 
 
 ## Known low-severity items (from the wave-1 reviews, not fixed)
 
-- `fix_wave1_review2_report.md` N-2/N-3: the Oxanium display-role guard is a
+- Wave-1 review findings (reported in the fix-wave-1 chain, now consolidated
+  into `.agents/gen/MASTER_REPORT.md`): N-2/N-3 — the Oxanium display-role guard is a
   non-halting, export-stripped `assert` that accepts any `FontVariation`.
 - N-5: the `"HOSTILE"` string has two owners (`game.gd` / `hud.gd`) — mock-era; P2 replaces
   the mock target with real ship data.
@@ -90,8 +91,8 @@ ESC → dock to Kepler-9 confirmed working in the live build (hint + route both 
 
 ## Context pointers
 
-- Wave-1 evidence: `.agents/gen/fix_wave1_w7_report.md`, `fix_wave1_w1_report.md` … `w5_report.md`,
-  `fix_wave1_review_report.md`, `fix_wave1_w7_report.md`, `fix_wave1_review2_report.md`.
+- Wave-1 evidence: the fix-wave-1 report chain was consolidated into
+  `.agents/gen/MASTER_REPORT.md` (2026-09-21 cleanup).
 - Contract amendments: `IMPLEMENTATION_PLAN.md` §9.8, `MAIN_MENU_V2.md` §16, `UI_SPEC.md`
   §2.1–§2.2, `STATION_HUB.md` §5.7.
 - Fonts: `vajb-orbit/assets/fonts/` (OFL, provenance in its README).

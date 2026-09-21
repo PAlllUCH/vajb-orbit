@@ -1,9 +1,0 @@
-All four files read and cross-checked programmatically. Writing the review.Audit written to `.agents/gen/naming_review.md` — 28 problems found, keyed P1–P28:
-
-- **3 collisions** with canonical.txt: the renames to `panel_modules_a/b/c` (TSV lines 21–23) land on names `canonical.txt:856-858` already lists; §8.1's reservation rule and the sanctioned rename contradict each other.
-- **9 grammar breaks** (P4–P12): all 7 `keep` rows carry timestamped, hyphen-bearing names (forbidden by §1), plus two spec bugs — §4's uppercase `_L1`–`_S3` variants and §5's `@2x` both violate §1's charset.
-- **4 variants outside §4**: `env_sector_8..11_bg`, `_prev`, `left`/`right`, `icon_alt_` (§10 decisions 1, 3, 4, 6).
-- **1 sanctioned name on unordered art** (P17): `raw/ui_button_plate__20260918-133142.png` → `panel_button_plates` with mislabelled `icons-spec-8.2` evidence, an admitted invented name.
-- **11 extra**: the false `stamp-absent` claim on `raw/ship_drone_swarm__20260918-133108.png` (canonical:960 holds the plain name) and 10 files carrying two contradictory rows each — the worst being drop-vs-owner on the four `cut/ui_button_plate_*__20260917-185457.png` twins and keep-vs-drop-pending on the drone-swarm sheet.
-
-Clean: no duplicate `new_name`, no master with a derived suffix, no `owner`-evidence row with a name set.

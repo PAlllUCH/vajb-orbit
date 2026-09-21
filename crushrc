@@ -1,0 +1,136 @@
+#!/usr/bin/env bash
+# ---------------------------------------------------------------------------
+# Vajb Orbit -- host-specific Crush config.
+#
+# crush.json keeps the host-neutral parts (lsp, skills_paths, and the Windows
+# originals under `_windows_*_legacy`). THIS file is the only live source for
+# the parts that differ per host:
+#
+#   skills   -> the installed Godot skill library + this project's skills/
+#   mcp      -> godot-ai and assetmcp, both behind tools/mcp-legacy-shim.py
+#   lsp      -> godot-lsp-bridge (needs the editor open, TCP 6005-6014)
+#   hooks    -> the archive / worker-file guards, run with this host's python
+#
+# Why the originals moved out of crush.json instead of being overridden here:
+# `mcp add` / `hook add` append, they do not replace. A server or hook defined
+# in both files ends up defined twice -- the mcp args arrive doubled (the
+# command becomes garbage and the server dies) and every hook runs twice. The
+# original values are preserved in crush.json as `_windows_mcp_legacy` and
+# `_windows_hooks_legacy`.
+#
+# Why the shim: Crush on the SEP-2575 protocol revision opens every MCP
+# connection with a `server/discover` probe. Both servers run on mcp < 2.0
+# (godot-ai pins mcp==1.29.1; assetmcp needs `mcp<2` for `mcp.server.fastmcp`)
+# and cannot answer it, so the handshake died with "client is closing: EOF".
+# The shim answers the probe with a legacy-only version list, which makes the
+# client fall back to the legacy `initialize` handshake (go-sdk mcp/client.go).
+# Drop the shim once the servers ship mcp >= 2.0.
+# ---------------------------------------------------------------------------
+
+WORKSPACE="$HOME/VajbOrbit"
+CRUSH_TOOLS="$HOME/.local/share/crush/tools"
+SKILLS="$HOME/.local/share/crush/additional-skills/godot"
+SHIM="$CRUSH_TOOLS/mcp-legacy-shim.py"
+
+if [ -d "$WORKSPACE/.crush/hooks" ]; then
+
+    # ===================== Linux ==========================================
+
+    # ---- skills ----------------------------------------------------------
+    # Two entries for the Godot library: Crush scans one level per path, so
+    # godot-master/ (routing index + 96 subskills) is listed on its own.
+    option reset skill-path
+    option skill-path "$SKILLS"
+    option skill-path "$SKILLS/godot-master"
+    option skill-path "$WORKSPACE/skills"
+
+    # ---- godot-ai: drives the live editor (HTTP 8000, WS 9500) -----------
+    mcp remove godot-ai
+    mcp add godot-ai --type stdio --command /usr/bin/python3 \
+        --args "$SHIM" --args "$HOME/.local/bin/uvx" \
+        --args --isolated --args --no-config --args --no-env-file \
+        --args --no-sources --args --no-build \
+        --args --index-strategy --args first-index \
+        --args --keyring-provider --args disabled \
+        --args --index --args https://pypi.org/simple \
+        --args --default-index --args https://pypi.org/simple \
+        --args --find-links --args https://pypi.org/simple/godot-ai/ \
+        --args --link-mode --args copy \
+        --args --from --args godot-ai==4.1.0 \
+        --args godot-ai --args attach --args --port --args 8000 \
+        --args --ws-port --args 9500 \
+        --env UV_LINK_MODE copy
+
+    # ---- assetmcp: CC0 asset search, licence check, download -------------
+    mcp remove assetmcp
+    mcp add assetmcp --type stdio --command /usr/bin/python3 \
+        --args "$SHIM" \
+        --args "$CRUSH_TOOLS/assetmcp/.venv/bin/python" \
+        --args -m --args assetmcp.server \
+        --env ASSETMCP_LIBRARY_DIR "$WORKSPACE/asset-library" \
+        --env ASSETMCP_PREVIEW_DIR "$WORKSPACE/asset-library/.previews" \
+        --env ASSETMCP_MAX_DOWNLOAD_MB 512
+
+    # ---- gdscript LSP (host build of godot-lsp-bridge) -------------------
+    lsp remove gdscript
+    if [ -n "$GODOT_PATH" ]; then
+        lsp add gdscript \
+            --command "$CRUSH_TOOLS/godot-lsp-bridge/bin/godot-lsp-bridge" \
+            --args --godot-path --args "$GODOT_PATH"
+    else
+        lsp add gdscript \
+            --command "$CRUSH_TOOLS/godot-lsp-bridge/bin/godot-lsp-bridge"
+    fi
+
+    # ---- PreToolUse guards (crush.json used `py -3.14` + G: paths) -------
+    hook remove PreToolUse
+    hook add PreToolUse --name protect-archive \
+        --matcher '^(view|edit|write|multiedit|bash|grep|glob|ls|agent)$' \
+        --command "python3 \"$WORKSPACE/.crush/hooks/protect_archive.py\""
+    hook add PreToolUse --name enforce-worker-files \
+        --matcher '^(edit|write|multiedit)$' \
+        --command "python3 \"$WORKSPACE/.crush/hooks/enforce_worker_files.py\""
+
+else
+
+    # ===================== Windows ========================================
+    # Verbatim from the original `mcp` / `hooks` blocks, which now live in
+    # crush.json as `_windows_mcp_legacy` / `_windows_hooks_legacy`.
+    # skills_paths and lsp stay in crush.json -- they are host-neutral here.
+    #
+    # If this machine's Crush predates `crushrc` support, restore those two JSON
+    # blocks (drop the leading underscores) and delete this branch.
+
+    mcp remove godot-ai
+    mcp add godot-ai --type stdio \
+        --command 'C:\Users\Kamil\.local\bin\uvx.exe' \
+        --args --isolated --args --no-config --args --no-env-file \
+        --args --no-sources --args --no-build \
+        --args --index-strategy --args first-index \
+        --args --keyring-provider --args disabled \
+        --args --index --args https://pypi.org/simple \
+        --args --default-index --args https://pypi.org/simple \
+        --args --find-links --args https://pypi.org/simple/godot-ai/ \
+        --args --link-mode --args copy \
+        --args --from --args godot-ai==4.1.0 \
+        --args godot-ai --args attach --args --port --args 8000 \
+        --args --ws-port --args 9500 \
+        --env UV_LINK_MODE copy
+
+    mcp remove assetmcp
+    mcp add assetmcp --type stdio \
+        --command 'C:\Users\Kamil\AppData\Local\crush\tools\assetmcp\.venv\Scripts\python.exe' \
+        --args -m --args assetmcp.server \
+        --env ASSETMCP_LIBRARY_DIR 'G:\Mój dysk\Projekty\Vajb Orbit\asset-library' \
+        --env ASSETMCP_PREVIEW_DIR 'G:\Mój dysk\Projekty\Vajb Orbit\asset-library\.previews' \
+        --env ASSETMCP_MAX_DOWNLOAD_MB 512
+
+    hook remove PreToolUse
+    hook add PreToolUse --name protect-archive \
+        --matcher '^(view|edit|write|multiedit|bash|grep|glob|ls|agent)$' \
+        --command 'py -3.14 "G:/Mój dysk/Projekty/Vajb Orbit/.crush/hooks/protect_archive.py"'
+    hook add PreToolUse --name enforce-worker-files \
+        --matcher '^(edit|write|multiedit)$' \
+        --command 'py -3.14 "G:/Mój dysk/Projekty/Vajb Orbit/.crush/hooks/enforce_worker_files.py"'
+
+fi

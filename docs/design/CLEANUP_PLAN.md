@@ -11,7 +11,10 @@ disposition needs the owner's tick before it happens.
 
 1. **Evidence chains survive.** Reports (`*_report.md`) are cited by the
    design docs as proof — they are never deleted; executed *task briefs* are
-   (AGENTS.md already sets this rule).
+   (AGENTS.md already sets this rule). **Amendment 2026-09-21 (owner):** the
+   chains are consolidated, not deleted outright — per-worker reports and run
+   logs went, wave-level + review reports and `.agents/gen/MASTER_REPORT.md`
+   remain as the cited evidence.
 2. **Archive, don't vanish.** Retired records move to `docs/archive/` with a
    one-line README index; links from AGENTS.md/ENGINE_SPEC are repointed in
    the same pass. Hard deletion is reserved for true dead weight (executed
@@ -75,13 +78,13 @@ disposition needs the owner's tick before it happens.
 |---|---|---|
 | `AGENTS.md`, `ENGINE_SPEC.md`, `crush.json` | KEEP-ACTIVE | AGENTS.md doc map updated in the pass |
 | `TESTING_NOTES.md` | MERGE → DELETE | after batch-2 items land: dispositions become IMPLEMENTATION_PLAN amendment lines, then the file goes |
-| `.agents/gen/engine_brainstorm_notes.md` | DELETE | decision trail; `ENGINE_SPEC.md` is the artifact |
-| `.agents/gen/engine_wave1_task.md`, `engine_wave1_prompts.md` | DELETE | after engine wave 1 closes (reports stay) |
-| `.agents/gen/fix_wave1_task.md`, `fix_report.md` | DELETE | executed briefs; `fix_wave1_*_report.md` stay |
-| `.agents/gen/d1..d6, m1, s1, s2, p1*` `*_task.md` | DELETE | executed briefs (Phase C/D, station, P1); their `*_report.md` stay |
-| `.agents/gen/*_report.md` (all) | KEEP | the evidence chain the docs cite |
-| `.agents/gen/w5_*`, `w7_*`, `p1h_*`, `p1l_*`, `fix_wave1_review2_*` (`.txt`, `.ps1`, `.py` run logs) | ARCHIVE or DELETE | run logs behind reports; keep only ones a report explicitly cites as evidence, delete the rest — decided file-by-file in the pass |
-| `.agents/gen/d6_measure.py`, `d6_preview.py`, `w5_probe_source.gd`, `w7_ctex_mips.py` | DELETE | probe scripts, value extracted into reports |
+| `.agents/gen/engine_brainstorm_notes.md` | DELETED 2026-09-21 | decision trail; `18_engine_spec.md` is the artifact |
+| `.agents/gen/engine_wave1_task.md`, `engine_wave1_prompts.md` | DELETED 2026-09-21 | executed briefs; wave-1 summary in `MASTER_REPORT.md` |
+| `.agents/gen/fix_wave1_task.md`, `fix_report.md` | DELETED 2026-09-21 | executed briefs; summary in `MASTER_REPORT.md` |
+| `.agents/gen/d1..d6, m1, s1, s2, p1*` `*_task.md` | DELETED 2026-09-21 | executed briefs (Phase C/D, station, P1) |
+| `.agents/gen/*_report.md` | TRIMMED 2026-09-21 | per-worker chains deleted; wave-level + review reports kept as the cited evidence (see `MASTER_REPORT.md`) |
+| `.agents/gen/w5_*`, `w7_*`, `p1h_*`, `p1l_*`, `fix_wave1_review2_*` and all probe/boot/gate logs | DELETED 2026-09-21 | run logs behind the consolidated report |
+| `.agents/gen/d6_measure.py`, `d6_preview.py`, `w5_probe_source.gd`, `w7_ctex_mips.py` | DELETED 2026-09-21 | probe scripts, value extracted into reports |
 | `.agents/gen/profile_backup_20260918.cfg` | KEEP | safety backup until the next save-version migration |
 | `.agents/gen/previews/` | KEEP | owner-approved screen renders |
 

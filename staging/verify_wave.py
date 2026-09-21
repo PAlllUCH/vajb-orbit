@@ -15,7 +15,7 @@ Modes:
 
 Examples:
   py -3.14 staging/verify_wave.py snapshot --name wave2_start
-  py -3.14 staging/verify_wave.py verify --baseline wave2_start --forbidden project.godot --expect-reports .agents/gen/engine_wave2_w1_report.md --tests
+  py -3.14 staging/verify_wave.py verify --baseline wave2_start --forbidden project.godot --expect-reports .agents/gen/slice2_w9_report.md --tests
 """
 
 import argparse

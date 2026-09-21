@@ -658,8 +658,9 @@ READOUT   = ["ENTER THE STATION HUB", "OPEN SYSTEM AND INTERFACE SETTINGS", "END
 
 ## 14. Resolved decisions
 
-All five came from the owner's review of the first render
-(`.agents/gen/previews/menu_v2_mockup_1920x1080.jpg`). Each row records what was done and
+All five came from the owner's review of the first render (the mockup sheet was
+never committed to git and is gone since the 2026-09-21 `.agents/gen` cleanup;
+the decisions below carry the measurements). Each row records what was done and
 what it measured.
 
 | # | Decision | Outcome | Evidence |

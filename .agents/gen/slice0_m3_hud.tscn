@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://tools/_probe_s0m3_hud.gd" id="1_probe"]
-
-[node name="ProbeS0M3Hud" type="Node"]
-script = ExtResource("1_probe")
