@@ -158,12 +158,12 @@ func test_mineral_icons_are_the_dedicated_glyphs() -> void:
 		var ingot := String(entry.get(&"icon_ingot", ""))
 		assert_eq(
 			ore,
-			"res://assets/icons/icon_mineral_%s_48.png" % mineral_id,
+			"res://assets/icons/mineral/icon_mineral_%s_48.png" % mineral_id,
 			"%s icon_ore" % mineral_id
 		)
 		assert_eq(
 			ingot,
-			"res://assets/icons/icon_ingot_%s_48.png" % mineral_id,
+			"res://assets/icons/ingot/icon_ingot_%s_48.png" % mineral_id,
 			"%s icon_ingot" % mineral_id
 		)
 		assert_true(ResourceLoader.exists(ore), "%s is missing on disk" % ore)

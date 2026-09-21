@@ -1,0 +1,20 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+WARNING: res://game/player_ship.tscn:4 - ext_resource, invalid UID: uid://cmi25sgdnd7ga - using text path instead: res://assets/ships/ship_vanguard_side.png
+   at: load (scene/resources/resource_format_text.cpp:501)
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+=== slice0 M4 probe B: live hull, collision, reactor wiring ===
+[OK]   setup: the shipped hull flies with the resolved snapshot | mass=80.0 max_speed=427.5
+[OK]   flight: throttle reaches the class max speed within accel_time (+-10 %) | reached 424.106689453125 u/s at t=2.08333333333333 s (class accel_time 2.0 s, peak 427.499969482422)
+[OK]   flight: it holds the maximum rather than sailing past it | 402.053497314453 u/s (want <= 450)
+[OK]   flight: the autopilot arrives inside ARRIVE_RADIUS | closest 39.9171447753906 u (radius 40)
+[OK]   collision: a flat-wall hit at the measured speed deals the reduced-mass figure | approach 424.553527832031 u/s -> hull 950.0 -> 805.803441604301 (dealt 144.196558395699, formula 144.196558395699, section 16 wants 162 at 450)
+[OK]   collision: damage_taken reports the same amount | signal=144.196558395699 hull delta=144.196558395699
+[OK]   emergency: at fuel 0 the hull ignores thrust (ruling 14) | fuel=0.0, speed after 1 s of full throttle = 0.0 u/s (want 0)
+[OK]   emergency: at fuel 0 the afterburner is locked out (ruling 14) | boost_remaining=0.0 s after pressing boost with an empty tank
+[OK]   boost: a second of afterburner burns BOOST_FUEL 3.0 (section 13) | fuel 200.0 -> 196.999999999999 (burned 3.00000000000068, spec 3.0)
+[OK]   boost: the afterburner itself did engage (the burn is the only thing missing) | boost_remaining=2.01666666666667
+[OK]   reactor: spending 10 Energy burns FUEL_PER_ENERGY 0.10 per point | fuel 200.0 -> 199.0 while energy 100.0 -> 90.0
+[OK]   reactor: a spent buffer refills at energy_regen 5/s in the shipped hull | energy 90.0 -> 94.9999999999997 after 1 s (refill 4.99999999999972, spec 5.0; reactor_efficiency 1.0)
+[OK]   input: the consume_fuel_cell action (C) exists in the input map (section 11) | InputMap.has_action('consume_fuel_cell') = true
+[SUMMARY] ok=13 failed=0

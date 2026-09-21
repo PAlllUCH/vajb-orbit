@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://ui/station/repairs_panel.gd" id="1_repairs"]
-[ext_resource type="Texture2D" path="res://assets/icons/icon_status_repairing_48.png" id="2_pane_icon"]
+[ext_resource type="Texture2D" path="res://assets/icons/status/icon_status_repairing_48.png" id="2_pane_icon"]
 
 [node name="Repairs" type="VBoxContainer"]
 unique_name_in_owner = true

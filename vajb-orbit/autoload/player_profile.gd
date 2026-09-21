@@ -6,8 +6,11 @@ extends Node
 ## P1 save v2: keys added by docs/gameplay/17_coder_handoff.md section 3
 ## (modules, fits, market, heat, standing, contracts, vaults, insured,
 ## mercy_used) plus the vitals extension approved for the 01 section 6
-## repairs panel. Version 1 files still load; the new keys come up at their
-## defaults, with no warning, and writes always persist save_version 2.
+## repairs panel. Slice-0 save v3 adds the tank to a vitals entry
+## (18_engine_spec section 12 item 13: Fuel persists across a launch, Energy
+## recomputes) and the `profile_changed` key &"fuel". Version 1 and 2 files
+## still load; a key they never wrote comes up at its default, with no warning,
+## and writes always persist save_version 3.
 ## Test and support hooks, present for the P1 suites and migration fixtures
 ## only: save_path (defaults to SAVE_FILE) and reload().
 
@@ -18,7 +21,7 @@ const Catalog := preload("res://game/station_catalog.gd")
 
 const SAVE_FILE := "user://profile.cfg"
 const SECTION := "profile"
-const SAVE_VERSION := 2
+const SAVE_VERSION := 3
 const MIN_READABLE_VERSION := 1
 const SAVE_DEBOUNCE_SECONDS := 0.5
 
@@ -32,6 +35,16 @@ const KEY_CARGO: StringName = &"cargo"
 const KEY_MODULES: StringName = &"modules"
 const KEY_FITS: StringName = &"fits"
 const KEY_STANDING: StringName = &"standing"
+
+## Signal key added by engine slice 0 (18_engine_spec section 12 item 13): the filed
+## tank moved. A vitals write is otherwise silent (17 section 3); fuel is the one
+## exception, so a station-side refuel can tell the flight side.
+const KEY_FUEL: StringName = &"fuel"
+
+## `set_vitals`'s "this caller is not filing a tank" sentinel. Fuel is stored in
+## whole points, so a negative value can never collide with a real reading, and the
+## entry stays sticky: a caller that passes no fuel leaves the filed one alone.
+const FUEL_UNFILED := -1
 
 ## Market sub-keys, present in every normalised market dictionary.
 const MARKET_KEYS: Array[String] = ["demand", "stock", "queue", "trend"]
@@ -336,6 +349,11 @@ func set_mercy_used(value: bool) -> void:
 	_mark_dirty()
 
 
+## The stored report for one hull: {hull, shield} plus `fuel` once a launch or a
+## station has filed a tank (18_engine_spec section 12 item 13). A record written
+## before save v3 simply carries no fuel entry, which the launch handshake reads as
+## "nothing filed" rather than as an empty tank, so a migrated profile never starts
+## in Emergency Flight Mode. Deep-copied: a caller cannot mutate account state.
 func vitals_of(ship_id: StringName) -> Dictionary:
 	var entry: Variant = _vitals.get(String(ship_id), null)
 	if entry is Dictionary:
@@ -344,18 +362,32 @@ func vitals_of(ship_id: StringName) -> Dictionary:
 	return {}
 
 
-func set_vitals(ship_id: StringName, hull: int, shield: int) -> void:
+## Files hull, shield and (save v3) the tank for one hull. Silent, like every other
+## vitals write (17 section 3), except for the one channel 18_engine_spec section 12
+## item 13 names: a tank reading that actually moved emits `profile_changed` with
+## &"fuel". `fuel` is optional and sticky — a caller that passes none (the REPAIRS
+## restore) keeps the filed tank, and a report that never carried fuel still carries
+## none.
+func set_vitals(ship_id: StringName, hull: int, shield: int, fuel: int = FUEL_UNFILED) -> void:
 	if ship_id == &"":
 		return
+	var key := String(ship_id)
+	var stored: Variant = _vitals.get(key, null)
+	var filed := _filed_fuel(stored)
+	var tank := filed if fuel < 0 else maxi(0, fuel)
 	var entry: Dictionary = {
 		"hull": maxi(0, hull),
 		"shield": maxi(0, shield),
 	}
-	var key := String(ship_id)
-	if _vitals.get(key, null) == entry:
+	if tank >= 0:
+		entry["fuel"] = tank
+	if stored != null and stored == entry:
 		return
 	_vitals[key] = entry
-	_mark_dirty()
+	if tank == filed:
+		_mark_dirty()
+	else:
+		_touch(KEY_FUEL)
 
 
 func save() -> void:
@@ -583,10 +615,16 @@ func _read_vitals() -> Dictionary:
 			push_warning("PlayerProfile: vitals.%s is not a dictionary; ignored" % String(ship_id))
 			continue
 		var record: Dictionary = entry
-		parsed[String(ship_id)] = {
+		var parsed_entry: Dictionary = {
 			"hull": _vital_number(record, "hull"),
 			"shield": _vital_number(record, "shield"),
 		}
+		## Save v3 key, read only when the file carries it: an older report keeps the
+		## shape it was written with, so "never filed" stays distinguishable from
+		## "filed empty" (the game seeds a launch tank only from a filed reading).
+		if record.has("fuel"):
+			parsed_entry["fuel"] = _vital_number(record, "fuel")
+		parsed[String(ship_id)] = parsed_entry
 	return parsed
 
 
@@ -596,6 +634,16 @@ func _vital_number(entry: Dictionary, key: String) -> int:
 		return maxi(0, int(raw))
 	push_warning("PlayerProfile: vitals entry %s is not a number; using 0" % key)
 	return 0
+
+
+## The tank a stored report carries, or FUEL_UNFILED when it never carried one.
+func _filed_fuel(stored: Variant) -> int:
+	if not stored is Dictionary:
+		return FUEL_UNFILED
+	var record: Dictionary = stored
+	if not record.has("fuel"):
+		return FUEL_UNFILED
+	return int(record["fuel"])
 
 
 func _market_default() -> Dictionary:

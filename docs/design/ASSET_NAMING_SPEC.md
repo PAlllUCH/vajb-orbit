@@ -153,6 +153,7 @@ A rename that ignores these leaves the game loading files that are not there.
 | What | Where | Action |
 |---|---|---|
 | 201 literal `res://assets/...` paths | 34 files under `vajb-orbit/` | rewritten by exact match from the rename map |
+| the one-level tree the rename introduced | `icons/<group>/`, `env/<group>/` | **found late (2026-09-21)**: the rename rewrote names but not the folder prefix, so code still said `res://assets/icons/icon_gear_48.png` and `res://assets/env/env_sector_1_bg.png` while the files sat one level down. `staging/cut/refile_asset_paths.py --check|--apply` resolves every `res://assets/...png` reference against the real tree and rewrites the ones that moved: 96 icon refs in 12 files, then 14 env refs in 6 files; it now reports 187 correct and none to move |
 | path built by concatenation | `ui/station/launch_panel.gd`, `refinery_panel.gd`, `exchange_panel.gd`, `outfitting_panel.gd`, `ui/hud/hud.gd` build `res://assets/icons/<name>_48.png` | the base names in those tables are rewritten too |
 | names cited by prose | `ASSET_CATALOG.md`, `ICONS_SPEC.md`, `SHIPS_SPEC.md`, `UI_CHROME_ASSETS_SPEC.md`, `ASSET_WIRING_HANDOFF.md`, `MAIN_MENU_V2.md`, `IMPLEMENTATION_PLAN.md`, `docs/CONTRACTS.md`, `asset-library/README.md`, `AGENTS.md` | amended in the same change |
 | the catalog itself | `docs/design/ASSET_CATALOG.md` | regenerated, never hand-edited |

@@ -129,15 +129,30 @@ def legacy_sources() -> dict[str, Image.Image]:
     return out
 
 
-def families() -> list[str]:
-    """Every icon family that already ships a cut, in stable order."""
-    bases = set()
-    for path in ICONS.glob("icon_*_[0-9]*.png"):
+def master_index() -> dict[str, Path]:
+    """base name -> master path, walking the icons tree.
+
+    The masters moved from a flat `assets/icons/` into subfolders
+    (`assets/icons/<group>/icon_<name>.png`) when the naming pass filed the library, so a
+    lookup by bare name has to walk. Derived cuts (`_16`/`_48`/`_96`/`_192`/`@2x`) are skipped.
+    """
+    index: dict[str, Path] = {}
+    for path in ICONS.rglob("icon_*.png"):
         stem = path.stem
-        base, _, size = stem.rpartition("_")
-        if size.isdigit() and base:
-            bases.add(base)
-    return sorted(bases)
+        if stem.endswith(("_16", "_48", "_96", "_192")) or stem.endswith("@2x"):
+            continue
+        index.setdefault(stem, path)
+    return index
+
+
+def families() -> list[str]:
+    """Every icon family that has a master, in stable order.
+
+    The list comes from the masters, not from existing cuts: after a pull the project holds
+    masters only (the derived quartet is rebuilt from them), and an earlier version of this
+    function read the cuts it was about to write, so a clean project produced an empty list.
+    """
+    return sorted(master_index())
 
 
 # ------------------------------------------------------------------ geometry
@@ -185,7 +200,7 @@ def source_check(base: str) -> str:
     byte for byte. A mismatch means the master is not the true source and the
     family must be flagged rather than re-cut.
     """
-    master = ICONS / f"{base}.png"
+    master = master_index().get(base, ICONS / f"{base}.png")
     shipped = ICONS / f"{base}_48.png"
     if not master.is_file():
         return "legacy-panel"
@@ -210,14 +225,17 @@ def main() -> int:
     bases = families()
     if wanted:
         bases = [b for b in bases if b in wanted]
-    legacy = legacy_sources()
+    index = master_index()
+    # The naming pass cut per-icon masters for all 20 Phase B panel families, so the
+    # panel-cell fallback is only needed for a family that has no master anywhere.
+    legacy = legacy_sources() if any(not index.get(b) for b in bases) else {}
 
     rows = []
     mismatched = []
     print(f"{'family':34s} {'src':13s} {'master':>11s} " +
           " ".join(f"{'bbox@' + str(s):>11s}" for s in sizes) + "  smallest stroke")
     for base in bases:
-        master_path = ICONS / f"{base}.png"
+        master_path = index.get(base, ICONS / f"{base}.png")
         if master_path.is_file():
             master = Image.open(master_path).convert("RGBA")
             src = "master"
@@ -245,8 +263,8 @@ def main() -> int:
         if args.apply:
             BACKUP.mkdir(parents=True, exist_ok=True)
             for size, img in made.items():
-                dest = ICONS / f"{base}_{size}.png"
-                if dest.is_file() and not (BACKUP / dest.name).exists():
+                dest = master_path.parent / f"{base}_{size}.png"
+                if dest.is_file() and not (BACKUP / dest.name).exists():  # keep one copy per name
                     shutil.copy2(dest, BACKUP / dest.name)
                 img.save(dest)
         rows.append({"family": base, "source": src, "master": master.size,

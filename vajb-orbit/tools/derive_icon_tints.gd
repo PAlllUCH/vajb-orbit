@@ -39,23 +39,40 @@ func _run() -> void:
 
 
 func _collect_sources() -> PackedStringArray:
-	var names: PackedStringArray = PackedStringArray()
-	var dir: DirAccess = DirAccess.open(SOURCE_DIR)
-	if dir == null:
-		printerr("derive_icon_tints: cannot open %s" % SOURCE_DIR)
-		return names
-	dir.list_dir_begin()
-	var entry: String = dir.get_next()
-	while entry != "":
-		if not dir.current_is_dir() and _is_icon_source(entry):
-			names.append(entry)
-		entry = dir.get_next()
-	dir.list_dir_end()
-	names.sort()
 	var paths: PackedStringArray = PackedStringArray()
-	for name: String in names:
-		paths.append(SOURCE_DIR + "/" + name)
+	for group: String in _icon_groups():
+		var dir: DirAccess = DirAccess.open(SOURCE_DIR + "/" + group)
+		if dir == null:
+			continue
+		dir.list_dir_begin()
+		var entry: String = dir.get_next()
+		while entry != "":
+			if not dir.current_is_dir() and _is_icon_source(entry):
+				paths.append(SOURCE_DIR + "/" + group + "/" + entry)
+			entry = dir.get_next()
+		dir.list_dir_end()
+	paths.sort()
 	return paths
+
+
+## The naming pass filed the cuts into one folder per group (ASSET_NAMING_SPEC section 2), so
+## the sources live one level down; the tint set itself stays a flat namespace, keyed by file
+## name, because every icon stem is unique across groups.
+func _icon_groups() -> PackedStringArray:
+	var groups: PackedStringArray = PackedStringArray()
+	var root: DirAccess = DirAccess.open(SOURCE_DIR)
+	if root == null:
+		printerr("derive_icon_tints: cannot open %s" % SOURCE_DIR)
+		return groups
+	root.list_dir_begin()
+	var entry: String = root.get_next()
+	while entry != "":
+		if root.current_is_dir() and entry != "tint" and not entry.begins_with("."):
+			groups.append(entry)
+		entry = root.get_next()
+	root.list_dir_end()
+	groups.sort()
+	return groups
 
 
 func _is_icon_source(entry: String) -> bool:

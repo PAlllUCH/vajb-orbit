@@ -1,8 +1,10 @@
 class_name StationCatalog
 extends RefCounted
-## Read-only station stock: ammo packs, ships, upgrades.
+## Read-only station stock: ammo packs, ships, upgrades, services.
 ## Data, not logic: no nodes, no autoload, no mutation API.
-## Contract: docs/design/STATION_SPEC.md.
+## Contract: docs/design/STATION_SPEC.md; the service rows are
+## docs/gameplay/14_station_services.md section 1 and 18_engine_spec section 12
+## item 8.
 
 const UPGRADE_SLOTS: Array[StringName] = [
 	&"generator",
@@ -19,7 +21,7 @@ const AMMO_PACKS: Array[Dictionary] = [
 		&"name": "Laser Cells",
 		&"rounds": 300,
 		&"cost": 120,
-		&"icon": "res://assets/icons/icon_ammo_laser_48.png",
+		&"icon": "res://assets/icons/weapon/icon_ammo_laser_48.png",
 		&"description": "Standard laser capacitors. Cheap, and the laser is thirsty.",
 	},
 	{
@@ -27,7 +29,7 @@ const AMMO_PACKS: Array[Dictionary] = [
 		&"name": "Cannon Shells",
 		&"rounds": 300,
 		&"cost": 180,
-		&"icon": "res://assets/icons/icon_weapon_cannon_48.png",
+		&"icon": "res://assets/icons/weapon/icon_weapon_cannon_48.png",
 		&"description": "Kinetic slugs for the autocannon. No guidance, no mercy.",
 	},
 	{
@@ -35,7 +37,7 @@ const AMMO_PACKS: Array[Dictionary] = [
 		&"name": "Rocket Pod",
 		&"rounds": 60,
 		&"cost": 240,
-		&"icon": "res://assets/icons/icon_ammo_rocket_48.png",
+		&"icon": "res://assets/icons/weapon/icon_ammo_rocket_48.png",
 		&"description": "Sixty warheads. Reserved for targets that are still moving.",
 	},
 	{
@@ -43,7 +45,7 @@ const AMMO_PACKS: Array[Dictionary] = [
 		&"name": "Mine Rack",
 		&"rounds": 40,
 		&"cost": 200,
-		&"icon": "res://assets/icons/icon_weapon_mine_48.png",
+		&"icon": "res://assets/icons/weapon/icon_weapon_mine_48.png",
 		&"description": "Proximity mines. Best deployed while running away.",
 	},
 	{
@@ -51,7 +53,7 @@ const AMMO_PACKS: Array[Dictionary] = [
 		&"name": "Plasma Cells",
 		&"rounds": 50,
 		&"cost": 320,
-		&"icon": "res://assets/icons/icon_weapon_plasma_48.png",
+		&"icon": "res://assets/icons/weapon/icon_weapon_plasma_48.png",
 		&"description": "Superheated cells. Hard on the barrel, harder on the hull.",
 	},
 ]
@@ -108,7 +110,7 @@ const UPGRADES: Array[Dictionary] = [
 		&"id": &"upgrade_generator",
 		&"name": "Reactor Mk2",
 		&"cost": 4200,
-		&"icon": "res://assets/icons/icon_equip_generator_48.png",
+		&"icon": "res://assets/icons/equip/icon_equip_generator_48.png",
 		&"slot": &"generator",
 		&"effect": {"shield_regen": 0.30, "energy_regen": 0.20},
 		&"description": "Bigger reactor. Faster shield and capacitor recovery.",
@@ -117,7 +119,7 @@ const UPGRADES: Array[Dictionary] = [
 		&"id": &"upgrade_shield",
 		&"name": "Shield Amplifier",
 		&"cost": 5200,
-		&"icon": "res://assets/icons/icon_equip_shield_gen_48.png",
+		&"icon": "res://assets/icons/equip/icon_equip_shield_gen_48.png",
 		&"slot": &"shield",
 		&"effect": {"shield_max": 0.20},
 		&"description": "Amplified emitter geometry. Twenty percent more shield.",
@@ -126,7 +128,7 @@ const UPGRADES: Array[Dictionary] = [
 		&"id": &"upgrade_engine",
 		&"name": "Ion Drive",
 		&"cost": 3800,
-		&"icon": "res://assets/icons/icon_equip_engine_48.png",
+		&"icon": "res://assets/icons/equip/icon_equip_engine_48.png",
 		&"slot": &"engine",
 		&"effect": {"speed": 0.15},
 		&"description": "Ion thruster refit. Fifteen percent more top speed.",
@@ -135,7 +137,7 @@ const UPGRADES: Array[Dictionary] = [
 		&"id": &"upgrade_module",
 		&"name": "Deep Scanner",
 		&"cost": 4600,
-		&"icon": "res://assets/icons/icon_equip_module_48.png",
+		&"icon": "res://assets/icons/equip/icon_equip_module_48.png",
 		&"slot": &"module",
 		&"effect": {"scanner_range": 0.25},
 		&"description": "Long range sensor array. Finds contacts before they find you.",
@@ -144,7 +146,7 @@ const UPGRADES: Array[Dictionary] = [
 		&"id": &"upgrade_extra",
 		&"name": "Cargo Expansion",
 		&"cost": 3000,
-		&"icon": "res://assets/icons/icon_equip_extra_48.png",
+		&"icon": "res://assets/icons/equip/icon_equip_extra_48.png",
 		&"slot": &"extra",
 		&"effect": {"cargo_max": 0.25},
 		&"description": "Collapsible hold extension. Twenty five percent more cargo space.",
@@ -153,16 +155,51 @@ const UPGRADES: Array[Dictionary] = [
 		&"id": &"upgrade_drone",
 		&"name": "Repair Drone Bay",
 		&"cost": 6800,
-		&"icon": "res://assets/icons/icon_equip_drone_48.png",
+		&"icon": "res://assets/icons/equip/icon_equip_drone_48.png",
 		&"slot": &"drone",
 		&"effect": {"hull_repair_rate": 0.50},
 		&"description": "Autonomous repair drones. The hull mends itself while you fight.",
 	},
 ]
 
+## Station services (14 section 1, as amended 2026-09-20; owner ruling 2026-09-21):
+## refuel and recharge are offered at **every** station, free and instant. The
+## ruling retired the CR-per-fuel-point rate, so these rows carry no price at all —
+## "free and instant, no CR charged" is the rate, and the service functions report
+## it as a `fee` of 0. `availability` &"all" transcribes 14 section 1's amended
+## table row; `free`/`instant` transcribe the same row's wording. No icon path:
+## the asset tree is being re-laid into per-family folders, so a path here would be
+## a fresh unresolvable reference, and the rows are read by `Repairs.refuel` /
+## `Repairs.recharge` (the service owner) rather than by a panel.
+const SERVICE_REFUEL: StringName = &"refuel"
+const SERVICE_RECHARGE: StringName = &"recharge"
+
+const SERVICES: Array[Dictionary] = [
+	{
+		&"id": SERVICE_REFUEL,
+		&"name": "REFUEL",
+		&"availability": &"all",
+		&"free": true,
+		&"instant": true,
+		&"description": "Station tanks top the fuel reserve back up. Free, and it takes no time.",
+	},
+	{
+		&"id": SERVICE_RECHARGE,
+		&"name": "RECHARGE",
+		&"availability": &"all",
+		&"free": true,
+		&"instant": true,
+		&"description": "Capacitor refill. Energy recomputes at launch either way, so the station does it for free.",
+	},
+]
+
 
 static func ammo_pack(id: StringName) -> Dictionary:
 	return _find(AMMO_PACKS, id)
+
+
+static func service(id: StringName) -> Dictionary:
+	return _find(SERVICES, id)
 
 
 static func ship(id: StringName) -> Dictionary:
@@ -183,6 +220,10 @@ static func ship_ids() -> Array[StringName]:
 
 static func upgrade_ids() -> Array[StringName]:
 	return _ids(UPGRADES)
+
+
+static func service_ids() -> Array[StringName]:
+	return _ids(SERVICES)
 
 
 static func _find(entries: Array[Dictionary], id: StringName) -> Dictionary:

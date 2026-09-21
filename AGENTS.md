@@ -7,7 +7,7 @@ Dark Orbit clone in Godot 4.7.2 (Forward+, D3D12, Jolt physics). Project code li
 - `vajb-orbit/project.godot` — engine config. Do not hand-edit except documented keys (`editor_plugins`).
 - `docs/` — design and spec documents (create as features are specced; spec before code). Full map below.
 - `docs/design/ASSET_CATALOG.md` — index of every shipped file in `vajb-orbit/assets/` (path, size, alpha, purpose, Phase B/D/E, audio facts). Check it before wiring art or audio into scenes.
-- `asset-library/` — **where every generated asset lives.** Search here first for any art; `vajb-orbit/assets/` holds only what a feature has actually pulled in. `raw/` is the untouched renders, `cut/` is one centred, named file per asset, `_review/` is the contact sheets. How to rebuild any of it, and what each generated file records, is in `asset-library/README.md`.
+- `asset-library/` — **where every generated asset lives.** Search here first for any art; `vajb-orbit/assets/` holds only what a feature has actually pulled in. `raw/` is the untouched renders, `cut/` is one centred, named file per asset, `_review/` is the contact sheets; the first two plus `_dropped/` are zipped into `_archive/` (see the rule below). How to rebuild any of it, and what each generated file records, is in `asset-library/README.md`.
 - This file — agent rules and commands. Read before any work.
 
 ## Documentation Map
@@ -110,6 +110,8 @@ Additionally, `skills/` at the workspace root holds a project-local skill (`vajb
 
 ## Asset Generation (kie.ai)
 
+**Phase G lane (2026-09-21).** Driver `staging/phase_g/wave_g.py` (one `RUNS` entry per render: style source, aspect, alpha, cut mode, cell plan), keying `staging/phase_g/key_new.py` (recraft over explicit paths, cache keyed by source md5 — the generator's own slug is shared across runs because every prompt opens with the same style block), shipping `staging/phase_g/ship_batch_g.py` (`review_only` runs are refused), review pages `staging/phase_g/build_review.py`, report `.agents/gen/designer_phase_g_report.md`. Alien assets use `vajb-orbit/assets/style-block-alien.txt` (STYLE_BIBLE §9.1, verbatim) as the prompt preamble; human assets use `style-block.txt` the same way. `flare` never returns native alpha on this project: cut `--post-only` after keying.
+
 - Generator script: `C:/Users/Kamil/AppData/Local/crush/skills/image-generator/scripts/kie_generate.py`. Batch plans: `docs/design/GENERATION_PLAN.md` (Phase B, executed), `docs/design/ASSET_EXPANSION_SPEC.md` (Phase D, executed), `docs/design/ASSET_EXPANSION_SPEC_E.md` (Phase E, executed) and `docs/gameplay/16_art_design_brief.md` (Phase F). Batch drivers: `staging/phase_d/wave1.py`, `staging/phase_e/wave_e.py`, `staging/phase_f/wave_f.py`.
 - **Run it under the python.org interpreter, not the PATH `python`.** The PATH `python` is Inkscape's bundled 3.12 (`C:\Program Files\Inkscape\bin\python.exe`) and ships no CA roots, so every call dies with `CERTIFICATE_VERIFY_FAILED ... unable to get local issuer certificate` (nothing is billed). Use `py -3.14` (python.org 3.14, verifies TLS, ships Pillow 12), or run Inkscape's python with `SSL_CERT_FILE` pointed at a `cacert.pem`.
 - Price basis: **10 credits = $0.05 per 2K run** (kie.ai console, user-verified). The script's printed estimate (30 credits, "$0.15") is a stale hint and `usage-ledger.jsonl` therefore over-reports spend 3x; the console is the authority.
@@ -121,7 +123,7 @@ Additionally, `skills/` at the workspace root holds a project-local skill (`vajb
 ## Rules
 
 - Update docs first, then code, then tests — never the reverse.
-- **Assets live in `asset-library/`, not in the project.** Generated art flows one way: `raw/` → `cut/` → `vajb-orbit/assets/<family>/` only when a feature needs it. Never bulk-restore the project's art. The four steps, in order:
+- **Assets live in `asset-library/`, not in the project.** Generated art flows one way: `raw/` → `cut/` → `vajb-orbit/assets/<family>/` only when a feature needs it. Never bulk-restore the project's art. **`raw/`, `cut/` and `_dropped/` are archived (2026-09-21) to `asset-library/_archive/*.zip` and are not loose**: every one of the 488 shippable cuts is in the project, so run `py -3.14 staging/cut/archive.py --restore cut` (or `raw`) before any step below that reads that tree, and `--make`/`--prune` to re-archive. `_prekey_backup/` and `_keying/` stay loose (the keying pass's reversal store and its paid answer cache). The four steps, in order:
   `py -3.14 staging/cut/build_plan.py` → re-derive `_sheets.json` from the manifests;
   `py -3.14 staging/cut/deepseek_layout.py` → ask a vision model for each sheet's arrangement;
   `py -3.14 staging/cut/cut_sheets.py` → cut every sheet (`--check` reports only, `--only <text>` narrows it);

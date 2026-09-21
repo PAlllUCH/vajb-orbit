@@ -61,7 +61,7 @@ static func _static_init() -> void:
 			&"name": "Halcyon Reach",
 			&"owner": &"concord",
 			&"tier_weights": MineralCatalogScript.SECTOR_TIER_MIX[1],
-			&"backdrop_id": "res://assets/env/env_sector_1_bg.png",
+			&"backdrop_id": "res://assets/env/backdrop/env_sector_1_bg.png",
 			&"densities": _densities(0, 1, 1, 0, 1),
 		},
 		{
@@ -69,7 +69,7 @@ static func _static_init() -> void:
 			&"name": "Iron Marches",
 			&"owner": &"concord",
 			&"tier_weights": MineralCatalogScript.SECTOR_TIER_MIX[2],
-			&"backdrop_id": "res://assets/env/env_sector_2_bg.png",
+			&"backdrop_id": "res://assets/env/backdrop/env_sector_2_bg.png",
 			&"densities": _densities(1, 2, 1, 1, 1),
 		},
 		{
@@ -77,7 +77,7 @@ static func _static_init() -> void:
 			&"name": "Meridian Span",
 			&"owner": &"meridian",
 			&"tier_weights": MineralCatalogScript.SECTOR_TIER_MIX[3],
-			&"backdrop_id": "res://assets/env/env_sector_3_bg.png",
+			&"backdrop_id": "res://assets/env/backdrop/env_sector_3_bg.png",
 			&"densities": _densities(2, 3, 1, 0, 1),
 		},
 		{
@@ -85,7 +85,7 @@ static func _static_init() -> void:
 			&"name": "Ashveil Expanse",
 			&"owner": &"meridian",
 			&"tier_weights": MineralCatalogScript.SECTOR_TIER_MIX[4],
-			&"backdrop_id": "res://assets/env/env_sector_4_bg.png",
+			&"backdrop_id": "res://assets/env/backdrop/env_sector_4_bg.png",
 			&"densities": _densities(3, 4, 1, 1, 1),
 		},
 		{
@@ -93,7 +93,7 @@ static func _static_init() -> void:
 			&"name": "Cinder Verge",
 			&"owner": &"choir",
 			&"tier_weights": MineralCatalogScript.SECTOR_TIER_MIX[5],
-			&"backdrop_id": "res://assets/env/env_sector_5_bg.png",
+			&"backdrop_id": "res://assets/env/backdrop/env_sector_5_bg.png",
 			&"densities": _densities(3, 5, 1, 1, 1),
 		},
 		{
@@ -101,7 +101,7 @@ static func _static_init() -> void:
 			&"name": "The Hollows",
 			&"owner": &"choir",
 			&"tier_weights": MineralCatalogScript.SECTOR_TIER_MIX[6],
-			&"backdrop_id": "res://assets/env/env_sector_6_bg.png",
+			&"backdrop_id": "res://assets/env/backdrop/env_sector_6_bg.png",
 			&"densities": _densities(4, 6, 1, 0, 1),
 		},
 		{
@@ -109,7 +109,7 @@ static func _static_init() -> void:
 			&"name": "Maw Belt",
 			&"owner": UNALIGNED,
 			&"tier_weights": MineralCatalogScript.SECTOR_TIER_MIX[7],
-			&"backdrop_id": "res://assets/env/env_sector_7_bg.png",
+			&"backdrop_id": "res://assets/env/backdrop/env_sector_7_bg.png",
 			&"densities": _densities(6, 8, 0, 0, 0),
 		},
 	]

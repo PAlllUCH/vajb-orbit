@@ -1,0 +1,5 @@
+I'll start by reading the required context files in order.Done. Report: `.agents/gen/slice0_m0_report.md`
+
+- Verified §12 items 7–12 (no re-edits): `06`, `08`, `02` match; `09` (power column), `14` (§2 rows), `11` (hazard column) carry their block as prose/elsewhere — 6 discrepancies logged, incl. **D3 MED**: `14:20` cites a §13 refuel CR rate that §13 does not contain (M3 will need that number).
+- Edited `docs/gameplay/01_economy_core.md` §6 (+465 B, 7 lines, now 01:180–185) and `docs/design/IMPLEMENTATION_PLAN.md` §9.9 (+1 295 B, para at line 436).
+- Test gate run twice: `passed=52 failed=1` — the failure is external (`assets/icons/` mid-migration into per-family subdirs during this session, `icon_mineral_iron_48.png` moved; `mineral_catalog.gd`/`test_p1_catalogues.gd:161` still flat). No code or asset touched; M4 should re-run once that lane settles.

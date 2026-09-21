@@ -1,10 +1,12 @@
 class_name Hud
 extends Control
-## In-game HUD: hull/shield bars, weapon and cargo slots, minimap, the cursor and
-## lock reticle, the target stats window, the interaction prompt strip and the
-## safe-warp channel bar. Contract: docs/design/IMPLEMENTATION_PLAN.md sections
-## 3.10, 4.7, the 9.8 flight-placeholder amendments and the 9.9 engine-wave
-## amendments (prompt strip, warp bar, friendly blips, reticle states).
+## In-game HUD: hull/shield/energy/fuel bars, weapon and cargo slots, minimap, the
+## cursor and lock reticle, the target stats window, the interaction prompt strip,
+## the safe-warp channel bar and the Emergency Flight Mode banner. Contract:
+## docs/design/IMPLEMENTATION_PLAN.md sections 3.10, 4.7, the 9.8 flight-placeholder
+## amendments and the 9.9 engine-wave amendments (prompt strip, warp bar, friendly
+## blips, reticle states), plus UI_SPEC section 3.1b for the two pool bars and the
+## banner (ENGINE_SPEC section 10).
 ## Reads PlayerState and its signals only; never mutates gameplay state. The
 ## gameplay side pushes everything else down through the section 3.10 API.
 
@@ -17,6 +19,9 @@ const TOKEN_TEXT_PRIMARY: StringName = &"text_primary"
 const TOKEN_TEXT_DIM: StringName = &"text_dim"
 const TOKEN_DANGER: StringName = &"accent_danger"
 const TOKEN_DANGER_BRIGHT: StringName = &"accent_danger_bright"
+const TOKEN_METAL_LIGHT: StringName = &"metal_light"
+const TOKEN_METAL_MID: StringName = &"metal_mid"
+const TOKEN_VOID_BASE: StringName = &"void_base"
 
 const SETTINGS_SECTION: StringName = &"interface"
 const SETTINGS_KEY_OPACITY: StringName = &"hud_opacity"
@@ -47,6 +52,26 @@ const CARGO_ICONS: Array[Texture2D] = [
 
 const HULL_DANGER_FRACTION: float = 0.25
 const AMMO_DANGER_FRACTION: float = 0.10
+
+## UI_SPEC section 3.1b: the Fuel fill and readout turn `accent_danger` at or below
+## this share of the tank. The Energy fill has no share of its own — it follows
+## Emergency Flight Mode, which is `fuel <= 0` (ENGINE_SPEC section 4.4 ruling 14).
+const FUEL_DANGER_FRACTION: float = 0.15
+const POOL_KIND_ENERGY: StringName = &"energy"
+const POOL_KIND_FUEL: StringName = &"fuel"
+const POOL_TITLE_ENERGY := "ENERGY"
+const POOL_TITLE_FUEL := "FUEL"
+const POOL_BLOCK_ENERGY := "EnergyBlock"
+const POOL_BLOCK_FUEL := "FuelBlock"
+const EMERGENCY_BANNER := "EmergencyBanner"
+const EMERGENCY_BANNER_TEXT := "EMERGENCY FLIGHT"
+## UI_SPEC section 3.1b: the same 260 x 14 readout the hull and shield bars use.
+const POOL_BAR_SIZE := Vector2(260.0, 14.0)
+## The scene's own block/header/row separations (hud.tscn, HullBlock pattern).
+const POOL_BLOCK_SEPARATION := 2
+const POOL_HEADER_SEPARATION := 6
+const POOL_ROW_SEPARATION := 0
+const POOL_VALUE_FORMAT := "%d/%d"
 const ZOOM_DELTA_MINUS: int = -1
 const ZOOM_DELTA_PLUS: int = 1
 const CARGO_PANEL_GAP: float = 8.0
@@ -62,6 +87,9 @@ const PERCENT_FORMAT := "%d%%"
 const THREAT_HOSTILE := "HOSTILE"
 
 @onready var _top_left: MarginContainer = $CanvasLayer/TopLeft
+## Section 3.1b: the column the HULL and SHIELD blocks live in. The two pool blocks
+## are appended to it (below ShieldBlock) by `_build_pool_blocks`.
+@onready var _blocks: VBoxContainer = $CanvasLayer/TopLeft/Blocks
 @onready var _top_right: MarginContainer = $CanvasLayer/TopRight
 @onready var _bottom_left: MarginContainer = $CanvasLayer/BottomLeft
 @onready var _bottom_right: MarginContainer = $CanvasLayer/BottomRight
@@ -136,10 +164,24 @@ var _reticle_state: int = TargetReticle.State.PLAIN
 
 var _hull_fill_danger: StyleBoxFlat
 
+## Section 3.1b state: one entry per pool kind, keyed by POOL_KIND_*, plus the
+## banner, its flag and the token-composed stylebox caches. A theme change clears
+## the caches, because a cached box holds the colours of the theme it was built
+## from; `_pool_fills` is keyed by the token name it was built for.
+var _pool_bars: Dictionary = {}
+var _pool_values: Dictionary = {}
+var _pool_current: Dictionary = {}
+var _pool_maximum: Dictionary = {}
+var _emergency: bool = false
+var _emergency_banner: Label = null
+var _pool_background_box: StyleBoxFlat = null
+var _pool_fill_boxes: Dictionary = {}
+
 
 func _ready() -> void:
 	_apply_zone_theme()
 	_apply_ammo_panel_style()
+	_build_pool_blocks()
 	_build_weapon_slots()
 	_place_cargo_panel()
 	_cargo_panel.visible = false
@@ -165,12 +207,16 @@ func _ready() -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_THEME_CHANGED and is_node_ready():
 		_hull_fill_danger = null
+		_pool_background_box = null
+		_pool_fill_boxes.clear()
 		_apply_zone_theme()
 		_apply_ammo_panel_style()
 		_refresh_static_tints()
 		_refresh_hull()
 		_refresh_weapon()
 		_refresh_cargo()
+		_apply_emergency()
+		_refresh_pools()
 
 
 func bind(state: PlayerState) -> void:
@@ -181,6 +227,8 @@ func bind(state: PlayerState) -> void:
 		return
 	_state.hull_changed.connect(_on_hull_changed)
 	_state.shield_changed.connect(_on_shield_changed)
+	_state.energy_changed.connect(_on_energy_changed)
+	_state.fuel_changed.connect(_on_fuel_changed)
 	_state.weapon_changed.connect(_on_weapon_changed)
 	_state.cargo_changed.connect(_on_cargo_changed)
 	_pull_state()
@@ -252,6 +300,30 @@ func set_warp_channel(progress: float) -> void:
 	_apply_warp_channel()
 
 
+## Section 3.1b / ENGINE_SPEC section 10: one of the two pool bars, `kind` being
+## &"energy" or &"fuel" (`POOL_KIND_*`). An unknown kind is ignored rather than
+## fatal: the seam is called behind a method guard from a scene that may be older
+## than this HUD, and a bar that does not exist must not break the caller.
+func set_pool(kind: StringName, value: float, maximum: float) -> void:
+	if not _pool_bars.has(kind):
+		return
+	_pool_current[kind] = maxf(value, 0.0)
+	_pool_maximum[kind] = maxf(maximum, 0.0)
+	_refresh_pool(kind)
+
+
+## Section 3.1b / ENGINE_SPEC section 10: Emergency Flight Mode (fuel 0). The banner
+## appears above the blocks in `accent_danger_bright`, and the Energy fill turns
+## `accent_danger` for as long as the mode lasts — the buffer is not a danger state,
+## but running dry is. Only the Fuel readout follows a danger reading (section 3.1b).
+func set_emergency(active: bool) -> void:
+	if active == _emergency:
+		return
+	_emergency = active
+	_apply_emergency()
+	_refresh_pool(POOL_KIND_ENERGY)
+
+
 ## Section 9.9 / ENGINE_SPEC section 10: the reticle's state, `TargetReticle.State`
 ## (plain / in-range / out-of-range / hostile). The HUD only relays the gameplay
 ## side's reading; the reticle itself follows the cursor.
@@ -268,6 +340,10 @@ func _release_state() -> void:
 		_state.hull_changed.disconnect(_on_hull_changed)
 	if _state.shield_changed.is_connected(_on_shield_changed):
 		_state.shield_changed.disconnect(_on_shield_changed)
+	if _state.energy_changed.is_connected(_on_energy_changed):
+		_state.energy_changed.disconnect(_on_energy_changed)
+	if _state.fuel_changed.is_connected(_on_fuel_changed):
+		_state.fuel_changed.disconnect(_on_fuel_changed)
 	if _state.weapon_changed.is_connected(_on_weapon_changed):
 		_state.weapon_changed.disconnect(_on_weapon_changed)
 	if _state.cargo_changed.is_connected(_on_cargo_changed):
@@ -277,6 +353,8 @@ func _release_state() -> void:
 func _pull_state() -> void:
 	_on_hull_changed(_state.hull, _state.hull_max)
 	_on_shield_changed(_state.shield, _state.shield_max)
+	_on_energy_changed(_state.energy, _state.energy_max)
+	_on_fuel_changed(_state.fuel, _state.fuel_max)
 	var weapon_id: StringName = WEAPON_IDS[_active_slot] if _active_slot < WEAPON_IDS.size() else &""
 	_on_weapon_changed(_active_slot, weapon_id, _ammo_of(_active_slot), _ammo_max_of(_active_slot))
 	_on_cargo_changed(_state.cargo_used, _state.cargo_max)
@@ -336,6 +414,84 @@ func _build_weapon_slots() -> void:
 		_weapon_slots.append(slot)
 
 
+## Section 3.1b: the Energy and Fuel blocks, appended to the scene's TopLeft column
+## below ShieldBlock, plus the Emergency Flight banner that sits above them. The
+## blocks are built here rather than in `hud.tscn` because the scene is not in this
+## worker's file set, so the builder mirrors the HullBlock/ShieldBlock pattern
+## exactly (header row over a 260 x 14 bar) and styles the bars from the theme's
+## `Tokens` roles, the way the hull bar's danger fill already does. That keeps
+## section 3.1b's rule intact: no new theme item, no font-size override, no hex
+## literal. The scene's atlas bar caps are deliberately not reproduced — they are
+## .tscn sub-resources, and the two bars read as the same readout without them.
+func _build_pool_blocks() -> void:
+	if _blocks == null:
+		return
+	_emergency_banner = Label.new()
+	_emergency_banner.name = EMERGENCY_BANNER
+	_emergency_banner.theme_type_variation = &"SectionHeader"
+	_emergency_banner.text = EMERGENCY_BANNER_TEXT
+	_emergency_banner.visible = false
+	_emergency_banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_blocks.add_child(_emergency_banner)
+	## "Above the blocks" (section 3.1b): the column stacks HULL then SHIELD, so the
+	## new child is moved to the top of it.
+	_blocks.move_child(_emergency_banner, 0)
+	_register_pool(POOL_KIND_ENERGY, POOL_TITLE_ENERGY, POOL_BLOCK_ENERGY)
+	_register_pool(POOL_KIND_FUEL, POOL_TITLE_FUEL, POOL_BLOCK_FUEL)
+	_apply_emergency()
+	_refresh_pools()
+
+
+## One pool block: a header row (title, spacer, current/max readout) over a bar row.
+## Every node ignores the mouse, as the scene's HUD nodes do, so the flight view
+## keeps the clicks that set a move target.
+func _register_pool(kind: StringName, title: String, block_name: String) -> void:
+	var block := VBoxContainer.new()
+	block.name = block_name
+	block.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	block.add_theme_constant_override(&"separation", POOL_BLOCK_SEPARATION)
+	var header := HBoxContainer.new()
+	header.name = "%sHeader" % block_name
+	header.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	header.add_theme_constant_override(&"separation", POOL_HEADER_SEPARATION)
+	var caption := Label.new()
+	caption.name = "%sTitle" % block_name
+	caption.theme_type_variation = &"SectionHeader"
+	caption.text = title
+	caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var spacer := Control.new()
+	spacer.name = "%sSpacer" % block_name
+	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var value := Label.new()
+	value.name = "%sValue" % block_name
+	value.theme_type_variation = &"HudReadout"
+	value.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	value.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	header.add_child(caption)
+	header.add_child(spacer)
+	header.add_child(value)
+	var row := HBoxContainer.new()
+	row.name = "%sBarRow" % block_name
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_theme_constant_override(&"separation", POOL_ROW_SEPARATION)
+	var bar := ProgressBar.new()
+	bar.name = "%sBar" % block_name
+	bar.custom_minimum_size = POOL_BAR_SIZE
+	bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	bar.show_percentage = false
+	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bar.add_theme_stylebox_override(&"background", _pool_background())
+	row.add_child(bar)
+	block.add_child(header)
+	block.add_child(row)
+	_blocks.add_child(block)
+	_pool_bars[kind] = bar
+	_pool_values[kind] = value
+	_pool_current[kind] = 0.0
+	_pool_maximum[kind] = 0.0
+
+
 func _ensure_cargo_cells(count: int) -> void:
 	var wanted: int = maxi(count, 0)
 	while _cargo_cells.size() > wanted:
@@ -389,6 +545,19 @@ func _on_cargo_changed(used: int, maximum: int) -> void:
 	_refresh_cargo()
 
 
+func _on_energy_changed(current: float, maximum: float) -> void:
+	set_pool(POOL_KIND_ENERGY, current, maximum)
+
+
+## The tank channel carries the mode with it: Emergency Flight Mode is exactly
+## `fuel <= 0` (ENGINE_SPEC section 4.4 ruling 14), and `PlayerState` is the one that
+## decides it — the HUD reads the flag instead of re-deriving the rule, so the banner
+## can never disagree with the hull about whether it can thrust.
+func _on_fuel_changed(current: float, maximum: float) -> void:
+	set_pool(POOL_KIND_FUEL, current, maximum)
+	set_emergency(_state != null and _state.emergency_mode)
+
+
 func _refresh_hull() -> void:
 	var critical: bool = _hull_is_critical()
 	if _hull_bar != null:
@@ -436,6 +605,81 @@ func _refresh_cargo() -> void:
 	_set_text_alert(_cargo_footer_label, full, TOKEN_DANGER)
 	for index: int in _cargo_cells.size():
 		_cargo_cells[index].set_icon_token(TOKEN_TEXT_PRIMARY if index < _cargo_used else TOKEN_TEXT_DIM)
+
+
+func _refresh_pools() -> void:
+	for kind: StringName in _pool_bars:
+		_refresh_pool(kind)
+
+
+func _refresh_pool(kind: StringName) -> void:
+	if not _pool_bars.has(kind):
+		return
+	var maximum: float = _pool_maximum[kind]
+	var current: float = _pool_current[kind]
+	var bar: ProgressBar = _pool_bars[kind]
+	bar.max_value = maxf(maximum, 1.0)
+	bar.value = current
+	bar.add_theme_stylebox_override(&"fill", _pool_fill(_pool_fill_token(kind)))
+	var label: Label = _pool_values[kind]
+	if label != null:
+		label.text = POOL_VALUE_FORMAT % [int(round(current)), int(round(maximum))]
+	_set_text_alert(label, kind == POOL_KIND_FUEL and _pool_in_danger(kind), TOKEN_DANGER)
+
+
+## Section 3.1b: the Energy fill is `metal_light` — the buffer is not a danger state,
+## the same reasoning the shield bar follows — and it takes `accent_danger` only while
+## Emergency Flight Mode runs. The Fuel fill is `metal_mid` until the 15 % line.
+func _pool_fill_token(kind: StringName) -> StringName:
+	if kind == POOL_KIND_FUEL:
+		return TOKEN_DANGER if _pool_in_danger(kind) else TOKEN_METAL_MID
+	return TOKEN_DANGER if _emergency else TOKEN_METAL_LIGHT
+
+
+func _pool_in_danger(kind: StringName) -> bool:
+	if kind != POOL_KIND_FUEL:
+		return _emergency
+	var maximum: float = _pool_maximum[kind]
+	return maximum > 0.0 and _pool_current[kind] / maximum <= FUEL_DANGER_FRACTION
+
+
+## The bar styleboxes are composed from the theme's `Tokens` roles, exactly as the
+## hull bar's danger fill is: section 3.1b adds no theme item, and a hex literal is
+## not legal in HUD code. They are cached because a pool refresh runs at HUD cadence;
+## a theme change clears the caches and re-applies them (see `_notification`).
+func _pool_background() -> StyleBoxFlat:
+	if _pool_background_box == null:
+		var box := StyleBoxFlat.new()
+		box.set_border_width_all(1)
+		box.set_corner_radius_all(0)
+		box.bg_color = _token(TOKEN_VOID_BASE)
+		box.border_color = _token(TOKEN_METAL_MID)
+		_pool_background_box = box
+	return _pool_background_box
+
+
+func _pool_fill(token: StringName) -> StyleBoxFlat:
+	var cached: StyleBoxFlat = _pool_fill_boxes.get(token, null)
+	if cached != null:
+		return cached
+	var colour: Color = _token(token)
+	var box := StyleBoxFlat.new()
+	box.set_border_width_all(1)
+	box.set_corner_radius_all(0)
+	box.bg_color = colour
+	box.border_color = colour
+	_pool_fill_boxes[token] = box
+	return box
+
+
+## Section 3.1b: the banner's own colour is fixed at `accent_danger_bright` rather
+## than toggled, so it is re-applied on a theme change instead of only when the mode
+## flips; the readout beside a full bar is never tinged by it.
+func _apply_emergency() -> void:
+	if _emergency_banner == null:
+		return
+	_emergency_banner.visible = _emergency
+	_emergency_banner.add_theme_color_override(&"font_color", _token(TOKEN_DANGER_BRIGHT))
 
 
 func _refresh_static_tints() -> void:

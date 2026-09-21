@@ -177,6 +177,13 @@ of this document). Mechanics:
 - No repair fee is charged for shield alone at ≥ 90 %; trivial trips should
   not be taxed.
 
+**Amendment 2026-09-20 (18_engine_spec §12 item 13):** the persisted vitals
+record gains `fuel` beside `hull` and `shield` — Energy recomputes at launch,
+Fuel persists across it — with the `profile_changed` key `&"fuel"` and the
+save-schema bump per the P1 migration pattern (save v3). `set_vitals` grows the
+field while its callers' contract is unchanged: the shield-alone exemption
+above still governs the fee, so a shield-only docking report is not taxed.
+
 ## 7. Persistence and transaction integrity
 
 - Credits, cargo and sell results persist through the existing

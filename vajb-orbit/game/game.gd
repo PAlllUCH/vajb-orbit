@@ -191,7 +191,11 @@ func _resolve_stats() -> ShipStats:
 
 
 ## STATION_SPEC section 6 rule 5: the active hull owns the pool maxima. An unknown
-## hull keeps PlayerState's defaults, which are the Cutter's.
+## hull keeps PlayerState's defaults, which are the Cutter's. The reactor figures
+## join in engine slice 0 (ENGINE_SPEC section 9): the snapshot is the one owner of
+## `energy_max`/`energy_regen`/`fuel_max`, so a hull whose tank differs from the
+## 100/200 base is felt from the first frame, and the station's refuel fills the
+## same tank this seeds.
 func _apply_ship_maxima() -> void:
 	if _stats == null:
 		return
@@ -201,6 +205,12 @@ func _apply_ship_maxima() -> void:
 		_state.shield_max = _stats.shield_max
 	if _stats.cargo_max > 0:
 		_state.cargo_max = _stats.cargo_max
+	if _stats.energy_max > 0.0:
+		_state.energy_max = _stats.energy_max
+	if _stats.energy_regen > 0.0:
+		_state.energy_regen = _stats.energy_regen
+	if _stats.fuel_max > 0.0:
+		_state.fuel_max = _stats.fuel_max
 
 
 ## Section 8: the sector populates on entry; W4's `populate` returns the player
@@ -476,8 +486,13 @@ func _sync_cargo() -> void:
 	_state.set_cargo_used(used)
 
 
-## 01 section 6: seed the live pools from the stored damage report, so a ship that
-## was launched damaged comes back the way it left. No record means full pools.
+## 01 section 6: seed the live pools from the stored report, so a ship that was
+## launched damaged comes back the way it left. No record means full pools.
+## Fuel persists across the launch (ENGINE_SPEC section 12 item 13, section 4.4) and
+## Energy does not — `setup` has already recomputed the buffer — so only a report
+## that actually filed a tank moves this one: a pre-v3 record, or one a dock filed
+## while the tank was never reported, leaves the launch-full tank alone instead of
+## dropping the ship into Emergency Flight Mode with no fuel to fly on.
 func _seed_vitals() -> void:
 	var profile := _profile()
 	if profile == null:
@@ -490,21 +505,32 @@ func _seed_vitals() -> void:
 		return
 	_state.set_hull(minf(float(record.get("hull", _state.hull_max)), _state.hull_max))
 	_state.set_shield(minf(float(record.get("shield", _state.shield_max)), _state.shield_max))
+	if record.has("fuel"):
+		_state.set_fuel(minf(float(record["fuel"]), _state.fuel_max))
 
 
-## 01 section 6: the station's REPAIRS module reads the profile's vitals, so the
-## live state is filed as this ship's damage report on the way back to the dock.
+## 01 section 6 / ENGINE_SPEC section 12 item 13: the station's REPAIRS module reads
+## the profile's vitals, so docking files the live state as this ship's damage report
+## — hull and shield for the repair fee, the tank for the free refuel service, which
+## is the same report and the same write.
 func _file_damage_report() -> void:
 	var profile := _profile()
 	if profile == null:
 		return
-	profile.call(&"set_vitals", profile.call(&"active_ship"), int(_state.hull), int(_state.shield))
+	profile.call(
+		&"set_vitals",
+		profile.call(&"active_ship"),
+		int(_state.hull),
+		int(_state.shield),
+		int(round(_state.fuel)),
+	)
 
 
 func _refresh_hud() -> void:
 	if _hud == null:
 		return
 	_sync_cargo()
+	_push_pools()
 	# String keys: the HUD minimap reads blip["pos"] / blip["kind"] (section 3.10).
 	var blips: Array[Dictionary] = []
 	if _ship != null:
@@ -512,6 +538,21 @@ func _refresh_hud() -> void:
 	if _sector != null:
 		blips.append_array(_sector.blips())
 	_hud.call(&"set_minimap_blips", blips)
+
+
+## ENGINE_SPEC section 10 / UI_SPEC section 3.1b: the Energy and Fuel bars and the
+## Emergency Flight Mode banner. PlayerState is the single source (section 3.9), so
+## the values are read from it here rather than mirrored in this scene; the calls are
+## method-guarded and the HUD is addressed dynamically for the same cross-wave reason
+## as the prompt strip and the warp bar (a HUD that predates slice 0 stays inert).
+func _push_pools() -> void:
+	if _hud == null or _state == null:
+		return
+	if _hud.has_method(&"set_pool"):
+		_hud.call(&"set_pool", &"energy", _state.energy, _state.energy_max)
+		_hud.call(&"set_pool", &"fuel", _state.fuel, _state.fuel_max)
+	if _hud.has_method(&"set_emergency"):
+		_hud.call(&"set_emergency", _state.emergency_mode)
 
 
 func _select_weapon(slot: int) -> void:

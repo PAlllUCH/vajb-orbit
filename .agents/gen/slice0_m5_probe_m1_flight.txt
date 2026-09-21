@@ -1,0 +1,70 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+WARNING: res://game/player_ship.tscn:4 - ext_resource, invalid UID: uid://cmi25sgdnd7ga - using text path instead: res://assets/ships/ship_vanguard_side.png
+   at: load (scene/resources/resource_format_text.cpp:501)
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+=== slice0 M1 probe: rigid-body flight + Impact helpers ===
+--- Impact constants (18_engine_spec section 13) ---
+COLLISION_FACTOR=0.00002 COLLISION_MIN_DV=40.0 KNOCKBACK_FRACTION=0.4 EXPLOSION_P0=4000.0 EXPLOSION_WINDOW=0.2
+[OK]   constants: transcribed exactly from section 13 | see the printed row above
+--- Impact helpers ---
+[OK]   collision a: the section 16 worked example (80 t, 450 u/s, flat wall) = 162 | got 162.0
+[OK]   collision b: below COLLISION_MIN_DV (40 u/s) a contact costs nothing | dv=39 -> 0.0
+[OK]   collision c: the reduced mass is symmetric between two moving hulls | a=500,b=200 -> 289.285714285714 ; swapped 289.285714285714
+[OK]   knockback: 40 % of the projectile's remaining KE | got 4000.0 (want 4000)
+[OK]   recoil: projectile_mass * muzzle_velocity | 1 kg at 1000 u/s -> 1000.0 impulse-units
+[OK]   explosion: I(d) = P0 / (1 + d^2) | d=0 -> 4000.0 ; d=10 -> 39.6039603960396
+--- the shipped player_ship.tscn body ---
+body class=RigidBody2D layer=2 mask=1 radius=30.0 mass=80.0 inertia=36000.0 gravity_scale=0.0 contact_monitor=true max_contacts=4 can_sleep=false
+linear_damp=0.625 (1/coast_time=0.625) ; angular_damp=2.5 (1/turn_spinup=2.5) ; damp modes=1/1
+[OK]   scene a: the hull body is a RigidBody2D on the ship layer, masking rocks | layer=2 mask=1
+[OK]   scene b: the shape is still the hull circle (half-length) | radius=30.0
+[OK]   scene c: contact monitor on, 4 contacts reported, never sleeps | monitor=true max=4 sleep=false
+[OK]   scene d: mass and inertia come from the snapshot | mass=80.0 inertia=36000.0 (m*r^2/2 = 36000.0)
+[OK]   scene e: the section 13 damp, with the project default replaced | linear=0.625 angular=2.5 modes=1/1
+[OK]   scene f: gravity is off for a space hull | gravity_scale=0.0
+[OK]   scene g: the frozen group is still declared | groups=[&"player_ship", &"_vp_unhandled_input26155681230"]
+--- gravity ---
+project defaults: gravity=980.0 vector=(0.0, 1.0) linear_damp=0.1 angular_damp=1.0
+[OK]   gravity: the hull does not fall and does not creep | moved 0.0 u, drift 0.0 u/s over 1 s
+--- flight (section 3.2 feel, by derivation) ---
+[OK]   accel a: throttle reaches max speed within accel_time +-10 % | reached 450.0 u/s at t=1.98333333333333 s (accel_time 2.0 s)
+[OK]   accel b: it holds at the class maximum, no overshoot | held 450.0 u/s after 1 s more, peak 446.25 u/s
+[OK]   coast a: the decay lands within coast_time +-10 % | fell to 5 % of max at t=1.53333333333333 s (coast_time 1.6 s)
+[OK]   coast b: the deceleration is the class's own (max_speed / coast_time) | implied 278.949634093844 u/s^2 over 362.96875 u (class 281.25 u/s^2)
+[OK]   brake a: S stops the hull shorter than a coast | brake 253.762512207031 u from 450.0 u/s vs coast 362.96875 u
+[OK]   brake b: the brake rate is BRAKE_MULT 1.8 x the class accel (+-10 %) | implied 398.995104199613 u/s^2 (1.8 x 225.0 = 405.0)
+[OK]   damp: a sideways push decays with the coast_time time constant | lateral 98.9583282470703 -> 36.2142333984375 u/s over 1.6 s (ratio 0.36595437736196, 1/e 0.36787944117144)
+--- angular inertia (section 3.2) ---
+[OK]   turn a: the rate spins up over turn_spinup (+-10 %) | reached 3.4 rad/s at t=0.4 s (turn_spinup 0.4 s)
+[OK]   turn b: it stops at the class turn rate, no overshoot | peak 3.39999961853027 rad/s (class 3.4 rad/s)
+[OK]   turn c: turning does not translate the hull | moved 0.0 u in 0.70833325386047 rad of turn
+[OK]   turn d: releasing the key damps the spin back to a stop | 0.0 rad/s one second after release
+[OK]   mirror: the node rides the body's transform | offset 0.0 u, rotation skew 0.0 rad
+--- the force is mass-scaled (ruling 8) ---
+[OK]   class: the Destroyer's 300 t hull accelerates at its own class rate | mass 300.0 t, 49.2187538146973 u/s after 1 s (class accel 49.21875 u/s^2), vs the Fighter's 80 t / 225 u/s^2
+--- autopilot arrive steering ---
+[OK]   autopilot a: the order arrives inside ARRIVE_RADIUS | closest 37.859375 u at t=2.48333333333333 s (ARRIVE_RADIUS 40.0, SLOW_DOWN_RADIUS 240.0)
+[OK]   autopilot b: the hull then settles instead of sailing past | resting 32.03125 u from the order at 0.0 u/s
+[OK]   autopilot c: manual thrust cancels the order | has_move_target=false
+--- flat-wall impact (section 4.2 item 6, section 16 example) ---
+impact 450.0 u/s ; hull 700.0 -> 538.0 ; stopped at x=660.43798828125 (contact x=660.0) ; damage_taken=[162.0]
+[OK]   collision a: a 450 u/s flat-wall hit deals 162 +-10 % hull damage | dealt 162.0 (want 162) at an impact speed of 450.0 u/s
+[OK]   collision b: damage_taken announces the same wound | events=[162.0]
+[OK]   collision c: the wall is solid and the hull stops at its face | stopped 660.43798828125 vs contact 660.0
+--- recoil (section 4.2 item 7) ---
+recoil: -12.3697910308838 u/s immediately, -0.00000000000002 u/s after 0.5 s (expected impulse -12.5 u/s on 80.0 t)
+[OK]   recoil a: a shot pushes the hull back by projectile_mass * muzzle_velocity / mass | kicked -12.3697910308838 u/s, expected -12.5 u/s
+[OK]   recoil b: the class's own coast law then arrests the drift | -12.3697910308838 -> -0.00000000000002 u/s
+--- explosion pressure (section 4.2 item 8, EXPLOSION_WINDOW 0.2 s) ---
+I(10.0 u) = 39.6039603960396 impulse-units ; expected dv 3.96039603960396 u/s ; at half the window 1.98019826412201 ; after it 3.96039652824402
+[OK]   shockwave a: the momentum delivered is I(d) / mass | got 3.96039652824402 u/s, expected 3.96039603960396 u/s
+[OK]   shockwave b: it arrives across the window, not in one blow | half-window 1.98019826412201 u/s of 3.96039652824402 u/s
+[OK]   shockwave c: the push is outward | velocity=(3.960397, 0.0)
+--- frozen API of pinned item 1 ---
+[OK]   api a: every frozen method is still there | missing=[]
+[OK]   api b: the damage_taken signal is still declared | signals=["damage_taken", "script_changed", "property_list_changed", "ready", "renamed", "tree_entered", "tree_exiting", "tree_exited", "child_entered_tree", "child_exiting_tree", "child_order_changed", "replacing_by", "editor_description_changed", "editor_state_changed", "draw", "visibility_changed", "hidden", "item_rect_changed"]
+[OK]   api c: the additive push seams exist (velocity / impact_body / apply_impulse / apply_recoil) | missing=[]
+[OK]   api d: the w_mining mount seam still mounts the laser | laser=MiningLaser:<Node2D#68232939149>
+[OK]   api e: a fit without the module still releases it | laser=<Object#null>
+=== slice0 M1 probe: checks 44, failures 0 ===

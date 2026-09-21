@@ -1,0 +1,11 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Resource file not found: res://assets/env/env_menu_bg.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:325)
+ERROR: res://ui/screens/main_menu.tscn:51 - Parse Error: [ext_resource] referenced non-existent resource at: res://assets/env/env_menu_bg.png.
+   at: _printerr (scene/resources/resource_format_text.cpp:41)
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+WARNING: 4 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 2 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

@@ -848,7 +848,7 @@ func _tint_path(icon_path: String) -> String:
 	## resort for art without a derived stencil.
 	if not icon_path.begins_with(ICON_DIR):
 		return icon_path
-	var candidate := icon_path.replace(ICON_DIR, TINT_DIR)
+	var candidate := TINT_DIR + icon_path.get_file()
 	if ResourceLoader.exists(candidate):
 		return candidate
 	return icon_path

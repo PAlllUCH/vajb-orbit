@@ -1,0 +1,12 @@
+Now the pool builders, inserted after `_build_weapon_slots`:Now the pool refreshers and signal handlers:M3 complete. Report: `.agents/gen/slice0_m3_report.md`.
+
+**Landed** (my five files only; `git diff`: repairs +113, station_catalog +67, player_profile +64, hud +254, game +53)
+- `repairs.gd`: `refuel()`/`recharge()` — all-or-nothing like `repair()`, `fee: 0` from a single `FREE_FEE` const (no rate, no price invented), tank from `ShipFit`'s snapshot, both logged via `economy_log`.
+- `station_catalog.gd`: `SERVICES` rows + `service()`/`service_ids()` (`availability: all`, `free`, `instant`), no price field, no icon path.
+- `player_profile.gd`: save **v3**, `set_vitals(..., fuel)` (optional + sticky so P1 callers' records stay exact), `profile_changed &"fuel"` on a real tank move only, v2 reports read back with no fuel key.
+- `hud.gd`: `set_pool(kind, value, maximum)` + `set_emergency(active)`, Energy/Fuel blocks under ShieldBlock, `EMERGENCY FLIGHT` banner above, all colours from existing `Tokens` roles.
+- `game.gd`: snapshot maxima into the pools, filed tank seeded at launch, fuel filed with the damage report on dock, `_push_pools()` into the HUD.
+
+**Measured**: probes A/B/C `26/0`, `23/0`, `14/0`, exit 0 (logs `slice0_m3_probe_{station,hud,game}.txt`); boot gates all exit 0 with the same pre-existing `env_*` asset errors as before; real `profile.cfg` md5 unchanged by every probe.
+**Gate**: `passed=77 failed=1` — the sole failure is `test_p1_profile.gd.test_v2_round_trip_for_every_key` asserting `save_version == 2`, i.e. the stale P1 assertion the mandated v3 bump falsifies (one line, outside my file set → reported, not patched).
+**Deferred** (report §5): `recharge` persists nothing because §12 item 13 keeps Energy out of the record; the REPAIRS panel rows and moving the HUD blocks into `hud.tscn` need files outside M3's set; `game.gd`'s runtime was measured through a one-line-stubbed copy while `sector.gd`/`game.tscn` art paths are stale.

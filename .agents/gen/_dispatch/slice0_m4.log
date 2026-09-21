@@ -1,0 +1,14 @@
+I'll start by loading the environment skill and reading the key context.Slice-0 review complete. Report: `.agents/gen/slice0_m4_report.md`; LOW items: `.agents/gen/LOW_BACKLOG.md`; CONTRACTS.md updated (§1/§2/§4/§5/§7/§8, new §8.1, §9 count, §10 changelog with both owner rulings).
+
+**Measured, not trusted** (11 bounded runs, all logged and reproduced):
+- Gate `passed=77 failed=1` (78 tests = wave-1's 53 + M2's 16 pools + 9 cleaving); the one red is `test_p1_profile.gd:204`, the wave-1 `save_version 2` assertion slice 0's mandated v3 falsified.
+- Every worker hash reproduces; probe A transcribes §13 by hand and matched all 9 handling rows, all impact/cleave/pool constants, §16's 162, services, save v3 + v2 migration → `ok=36 failed=0`. M1's 44-check flight probe, M2's 31/0 + 24/0, M3's 26/0 + 23/0 + 14/0 all re-run green; 4 boot gates exit 0.
+
+| Tier | Item |
+|---|---|
+| **HIGH** | F1 red gate — one line in `tests/test_p1_profile.gd` (in no worker set → must be added to M5's) |
+| **MED** | F2 thrust not ignored at fuel 0 (203.6 u/s measured); F3 boost burns 0.0/s and arms on an empty tank, `BOOST_FUEL`/`DASH_FUEL` owned only by a test; F4 `PlayerState.tick()` has no caller (refill 0.0/s); F5 `consume_fuel_cell` (C) absent from the input map and uncalled; F6 the probe/`tools/` hook gap (M1 D10, reproduced — I had to shell-write my probes too); F7 the superseded refuel rate still inside the owner-locked spec |
+| **LOW** | 18 items in LOW_BACKLOG.md |
+| **Deferred** | 14 stale env asset refs in 6 files (graphics lane; M2 6.1/6.3 re-tiered per the owner ruling, not findings) |
+
+Incident (reported as D3): my probe's 0.5 s profile debounce fired after I restored `save_path`, leaking one `fuel` key into the dev `profile.cfg`; removed and re-verified (byte-stable across a gate run, no parse warning). `tools/` is back to `build_theme.gd` + `derive_icon_tints.gd`; my probe sources archived under `.agents/gen/`; no slice-0 source file was modified.

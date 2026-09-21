@@ -1,0 +1,30 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+=== slice0 M2 probe B: rock body + cleaving ===
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[OK]   body a: the rock is a rigid body | RigidBody2D
+[OK]   body b: mass is ROCK_MASS_MULT x the class column (560.0 t) | mass=560.0 t (reference ship_miner, x4.0)
+[OK]   body c: gravity is off (rocks do not fall)
+[OK]   body d: damping replaces the project default | linear_damp=3.71000003814697 mode=1 (project default 0.1)
+[OK]   body e: it never sleeps, so a contact always answers (ruling 15)
+[OK]   body f: the layer is the rock layer and it masks nothing | layer=1 mask=0
+[OK]   body g: the three look rows are the three cleaving classes | field of 12: { 1: 6, 0: 4, 2: 2 }
+[OK]   body h: the collision circle is sized from the sprite | radius=42.0 u
+[OK]   drift: 409.0 u/s decays under the 10.0 u/s ceiling within 1 s | 409.0 u/s -> 8.88226318359375 u/s after 1.00 s, having moved 101.179824829102 u
+[OK]   cleave L a: a depleted Large spawns 2-3 Medium fragments | 9 Large rocks -> fragment counts [3, 3, 3, 3, 3, 3, 3, 2, 2]
+[OK]   cleave L b: fragments inherit the parent's mineral with a re-rolled yield
+[OK]   cleave L c: each fragment ejects at the parent's velocity x 1.2 | parent 120.0 u/s -> fragments at x1.2
+[OK]   cleave L d: the eject direction stays inside the +-15 deg cone | widest deviation 13.2448467063949 deg
+[OK]   cleave M a: a depleted Medium spawns exactly 2 Small fragments | 2 fragment(s), class 0
+[OK]   cleave F a: fragments count toward the same field | rock_count 35 -> 36 (2 fragment(s))
+[OK]   bare a: a 0-unit rock reports that it does not cleave
+[OK]   cleave S a: a depleted Small spawns no rock fragments | 0 new rock(s) of 35
+[OK]   cleave S b: a depleted Small bursts 1-2 pickups | 1 pickup(s) in the world
+[OK]   bare b: it still cracks
+[OK]   bare c: it despawns bare, with no fragments | rock_count 35 -> 35 (0 fragment(s)), freed=true
+[OK]   bare d: a rock that rolled ore does cleave
+[OK]   work a: a 6-unit rock starts at 6
+[OK]   work b: ten 0.1 hits mine exactly one ore unit (the 10 % chip rate) | mined=1 left=5
+[OK]   work c: the fractional remainder is kept, not rounded away | work=0.0
+[OK]   work d: zero work mines nothing
+[SUMMARY] ok=25 failed=0 blocked=0

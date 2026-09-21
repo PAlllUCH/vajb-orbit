@@ -86,7 +86,6 @@ const STATUS_REFUSED_EMPTY := "REFUSED · NO ORE TO REFINE"
 const STATUS_REFUSED_UNKNOWN := "REFUSED · UNKNOWN MINERAL"
 const STATUS_IDLE := "REFINERY IDLE · SELECT A STACK"
 
-const ICON_DIR := "res://assets/icons/"
 const TINT_DIR := "res://assets/icons/tint/"
 ## ICONS_SPEC §8.1 names the dedicated ore glyphs `icon_mineral_<id>_48.png`. A mineral that
 ## carries one is drawn with that art as it is: the file name is the one signal that tells a
@@ -403,7 +402,7 @@ func _icon_source(entry: Dictionary) -> String:
 	var icon_path := String(entry.get(&"icon_ore", ""))
 	if icon_path.is_empty():
 		return ""
-	var stencil := icon_path.replace(ICON_DIR, TINT_DIR)
+	var stencil := TINT_DIR + icon_path.get_file()
 	if stencil != icon_path and ResourceLoader.exists(stencil):
 		return stencil
 	return icon_path

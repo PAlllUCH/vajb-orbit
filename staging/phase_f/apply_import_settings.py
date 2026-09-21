@@ -36,7 +36,9 @@ WANT = {
 def targets() -> list[Path]:
     found: list[Path] = []
     for family in ("icons", "ui"):
-        for path in sorted((ASSETS / family).glob("*.png.import")):
+        # rglob: the naming pass filed the masters into subfolders, so the derived cuts
+        # sit next to them (`icons/<group>/icon_<name>_96.png.import`) rather than flat.
+        for path in sorted((ASSETS / family).rglob("*.png.import")):
             stem = path.name[: -len(".png.import")]
             if family == "ui":
                 if stem.endswith("@2x"):

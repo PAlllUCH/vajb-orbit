@@ -159,7 +159,17 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
     parser.add_argument("--json-only", action="store_true")
+    parser.add_argument("--allow-archived", action="store_true")
     args = parser.parse_args()
+
+    ## `raw/` and `cut/` live in `asset-library/_archive/*.zip` after the 2026-09-21 pass, and
+    ## indexing an empty tree would overwrite the real index with nothing. Restore first
+    ## (`py -3.14 staging/cut/archive.py --restore raw cut`) or pass --allow-archived.
+    present = any(next(LIBRARY.joinpath(d).rglob("*.png"), None) is not None for d in ("cut", "raw"))
+    if not args.allow_archived and not present:
+        print("cut/ and raw/ hold no PNGs (archived to _archive/): restore them first, "
+              "or pass --allow-archived to index what is here")
+        raise SystemExit(2)
 
     vision = load("_vision.json").get("files", {})
     sheets = load("_sheets.json").get("sheets", [])

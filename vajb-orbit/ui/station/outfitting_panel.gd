@@ -72,11 +72,10 @@ const STATUS_BOUGHT := "PURCHASED · %s · +%d ROUNDS"
 ## derived icons/tint/ stencil moderated with Tokens/text_primary instead. Every other
 ## catalogue icon is painted and is drawn at full colour.
 const FLAT_GLYPH_ICONS: Array[String] = [
-	"res://assets/icons/icon_weapon_cannon_48.png",
-	"res://assets/icons/icon_weapon_mine_48.png",
-	"res://assets/icons/icon_weapon_plasma_48.png",
+	"res://assets/icons/weapon/icon_weapon_cannon_48.png",
+	"res://assets/icons/weapon/icon_weapon_mine_48.png",
+	"res://assets/icons/weapon/icon_weapon_plasma_48.png",
 ]
-const ICON_DIR := "res://assets/icons/"
 const TINT_DIR := "res://assets/icons/tint/"
 
 @onready var _subtitle: Label = %PaneSubtitle
@@ -321,7 +320,7 @@ func _is_flat_glyph(icon_path: String) -> bool:
 func _icon_source(icon_path: String) -> String:
 	if not _is_flat_glyph(icon_path):
 		return icon_path
-	return icon_path.replace(ICON_DIR, TINT_DIR)
+	return TINT_DIR + icon_path.get_file()
 
 
 func _add_slack() -> void:

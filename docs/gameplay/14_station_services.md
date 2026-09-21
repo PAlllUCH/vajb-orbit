@@ -17,7 +17,7 @@ come from the owning faction (12 §2). One station per faction is the
 | Service | Concord capital | Meridian capital | Choir capital |
 |---------|-----------------|------------------|---------------|
 | Contracts board | ✔ | ✔ (best rates) | ✔ |
-| Refuel / recharge | ✔ | ✔ | ✔ (2026-09-20: every station; CR rate per 18_engine_spec §13) |
+| Refuel / recharge | ✔ | ✔ | ✔ (2026-09-20: every station; free and instant, no CR charged; owner ruling 2026-09-21) |
 | Insurance | ✔ (cheapest) | ✔ | ✖ (the Choir does not believe in accidents) |
 | Storage rental | ✔ | ✔ (largest vaults) | ✔ |
 | Boss arena contract | ✖ | ✔ (expedition desk) | ✔ (rite of the Choir) |

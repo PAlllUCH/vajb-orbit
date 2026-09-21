@@ -1,0 +1,28 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+=== slice0 M3 probe B: the Energy and Fuel bars and the emergency banner ===
+[OK]   structure a: the banner sits above the blocks, the pools below the shield | ["EmergencyBanner", "HullBlock", "ShieldBlock", "EnergyBlock", "FuelBlock"]
+[OK]   structure b: the banner reads EMERGENCY FLIGHT and starts hidden | banner=EMERGENCY FLIGHT
+[OK]   structure c: the two blocks carry the section 3.1b titles | ["ENERGY", "FUEL"]
+[OK]   structure d: every new node ignores the mouse, so flight clicks survive | mouse_filter
+[OK]   structure e: both bars are the 260 x 14 readout with no percentage | energy=(260.0, 14.0) fuel=(260.0, 14.0)
+[OK]   structure f: the readout uses the existing HudReadout variation, no new font size | HudReadout
+[OK]   fill a: Energy is metal_light (the buffer is not a danger state) | (0.2392, 0.2745, 0.3294, 1.0)
+[OK]   fill b: Fuel is metal_mid above the danger line | (0.1647, 0.1922, 0.2353, 1.0)
+[OK]   fill c: both readouts print current/max | 75/100 | 150/200
+[OK]   fill d: the bars carry the values | energy=75.0/100.0 fuel=150.0/200.0
+[OK]   danger a: at exactly 15 % the fill and the readout turn accent_danger | fill=(0.7843, 0.2784, 0.1216, 1.0) label=(0.7843, 0.2784, 0.1216, 1.0)
+[OK]   danger b: the Energy readout does not follow a danger reading (only Fuel does) | override=false
+[OK]   danger c: above 15 % the fill and readout return to metal_mid | (0.1647, 0.1922, 0.2353, 1.0)
+[OK]   emergency a: the banner appears in accent_danger_bright | visible=true colour=(0.9098, 0.3843, 0.1647, 1.0)
+[OK]   emergency b: the Energy fill turns accent_danger while the mode lasts | (0.7843, 0.2784, 0.1216, 1.0)
+[OK]   emergency c: the Fuel fill is not what marks the mode | (0.1647, 0.1922, 0.2353, 1.0)
+[OK]   emergency d: clearing the mode hides the banner and restores metal_light | visible=false
+[OK]   state a: bind seeds both bars from the pools | 100/100 | 200/200
+[OK]   state b: an Energy change reaches the bar | 40/100
+[OK]   state c: fuel 0 raises the banner through the state's own signal (ruling 14) | visible=true emergency=true
+[OK]   state d: the empty bar is also at the danger line, so the red fill is truthful | (0.7843, 0.2784, 0.1216, 1.0)
+[OK]   state e: burning a fuel cell ends the mode and hides the banner | visible=false fuel=30.0
+[OK]   seam a: an unknown pool kind is ignored instead of fatal | energy=40/100 after=40/100
+[SUMMARY] ok=23 failed=0

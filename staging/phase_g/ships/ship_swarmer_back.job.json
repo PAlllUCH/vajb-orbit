@@ -1,0 +1,19 @@
+{
+  "task_id": "0b99c11c9e742a84d780c8a2841f7316",
+  "model": "gpt-image-2-5-flare-text-to-image",
+  "input": {
+    "prompt": "grimdark painted sci-fi alien bioform, semi-realistic weathered chitin plating, harsh directional rim light from upper-left with a thin cold pale steel rim tracing shadow-side silhouettes, subtle film grain over the whole image, top-down orthographic view. Fixed palette per family — swarmer: corrosive dark #1A281F, chitin green #3D6E49, bioluminescent green #4AE86C glow; sibelon: abyssal void #1C1F2B, deep teal #3A4B6E, corrupted plasma cyan #2BE8E8 glow; apex: warp purple #2B1A28, mutated violet #6E3A63, void magenta #E82BE8 glow. Chitin plates are near-black desaturated and organic — jagged swarmer plates, curved bio-mechanical Sibelon pods, massive tendril-backed Apex leviathan hulls. Exactly one glow colour per family (the signature above), small and hot, used for engines, weapons and warning lamps; no ember, no orange anywhere on an alien asset. Backgrounds are near-black blue void, void black #0A0E14 to deep void blue #111823, sparse faint stars, desaturated throughout, no chrome, no neon, no gloss, no clean surfaces, moody and menacing.\n\nsingle rear view of the Swarmer combat drone, alien hostile bioform: the ship seen from directly behind, its stern thruster filling the middle of the silhouette with one small hot bioluminescent green #4AE86C engine signature, the jagged chitin-plate cluster splayed outward around it, insectoid mandible tips just visible past the hull on both sides, segmented plates in corrosive dark #1A281F with chitin green #3D6E49 plate edges, no ember, no orange, no metal plating, no insignia. Alien chitin, not a human ship: no gunmetal, no rivets, no painted panels. Single object centred, bow pointing down, top-down orthographic, facing right, ship occupies about 60 percent of frame width, centroid at frame centre, background flat void black #0A0E14. no chrome, no neon, no saturated colours, no second accent, no perspective, no tilt, no text, no watermark, no grid lines, no labels",
+    "aspect_ratio": "1:1",
+    "resolution": "2K",
+    "background": "transparent"
+  },
+  "urls": [
+    "https://tempfile.aiquickdraw.com/gpt-image-2-5/image_1789947827832_469r9p.png"
+  ],
+  "local_paths": [
+    "G:\\Mój dysk\\Projekty\\Vajb Orbit\\staging\\phase_g\\ships\\20260921-014348\\grimdark-painted-sci-fi-alien-bioform-s-1.png"
+  ],
+  "alpha_paths": [],
+  "upscaled_paths": [],
+  "asset_paths": []
+}

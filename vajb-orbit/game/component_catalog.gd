@@ -15,7 +15,7 @@ const COMPONENTS: Array[Dictionary] = [
 		&"value": 12,
 		&"units": 1,
 		&"description": "Ripped hull plate, still wearing someone else's paint.",
-		&"icon": "res://assets/icons/icon_cargo_salvage_48.png",
+		&"icon": "res://assets/icons/cargo/icon_cargo_salvage_48.png",
 	},
 	{
 		&"id": &"comp_scrap_2",
@@ -25,7 +25,7 @@ const COMPONENTS: Array[Dictionary] = [
 		&"value": 30,
 		&"units": 1,
 		&"description": "Cut from a hull that stopped working, and good enough to weld into yours.",
-		&"icon": "res://assets/icons/icon_cargo_salvage_48.png",
+		&"icon": "res://assets/icons/cargo/icon_cargo_salvage_48.png",
 	},
 	{
 		&"id": &"comp_scrap_3",
@@ -35,7 +35,7 @@ const COMPONENTS: Array[Dictionary] = [
 		&"value": 75,
 		&"units": 1,
 		&"description": "Slag off a capital's spine; nothing lighter survives the job it does.",
-		&"icon": "res://assets/icons/icon_cargo_salvage_48.png",
+		&"icon": "res://assets/icons/cargo/icon_cargo_salvage_48.png",
 	},
 	{
 		&"id": &"comp_mech_1",
@@ -45,7 +45,7 @@ const COMPONENTS: Array[Dictionary] = [
 		&"value": 18,
 		&"units": 1,
 		&"description": "A drive coupling that outlived its ship; engine refits are built on them.",
-		&"icon": "res://assets/icons/icon_cargo_crate_48.png",
+		&"icon": "res://assets/icons/cargo/icon_cargo_crate_48.png",
 	},
 	{
 		&"id": &"comp_mech_2",
@@ -55,7 +55,7 @@ const COMPONENTS: Array[Dictionary] = [
 		&"value": 45,
 		&"units": 1,
 		&"description": "A generator block gutted from a wreck; reactors and shield generators start here.",
-		&"icon": "res://assets/icons/icon_cargo_crate_48.png",
+		&"icon": "res://assets/icons/cargo/icon_cargo_crate_48.png",
 	},
 	{
 		&"id": &"comp_mech_3",
@@ -65,7 +65,7 @@ const COMPONENTS: Array[Dictionary] = [
 		&"value": 110,
 		&"units": 1,
 		&"description": "The core of a capital drive. Heavy, hot, and worth the losses it took.",
-		&"icon": "res://assets/icons/icon_cargo_crate_48.png",
+		&"icon": "res://assets/icons/cargo/icon_cargo_crate_48.png",
 	},
 	{
 		&"id": &"comp_elec_1",
@@ -75,7 +75,7 @@ const COMPONENTS: Array[Dictionary] = [
 		&"value": 20,
 		&"units": 1,
 		&"description": "Boards pried out of a dead cockpit; targeting computers run on them.",
-		&"icon": "res://assets/icons/icon_cargo_data_core_48.png",
+		&"icon": "res://assets/icons/cargo/icon_cargo_data_core_48.png",
 	},
 	{
 		&"id": &"comp_elec_2",
@@ -85,7 +85,7 @@ const COMPONENTS: Array[Dictionary] = [
 		&"value": 50,
 		&"units": 1,
 		&"description": "A logic array that still answers power. Scanners and guidance systems want it.",
-		&"icon": "res://assets/icons/icon_cargo_data_core_48.png",
+		&"icon": "res://assets/icons/cargo/icon_cargo_data_core_48.png",
 	},
 	{
 		&"id": &"comp_elec_3",
@@ -95,7 +95,7 @@ const COMPONENTS: Array[Dictionary] = [
 		&"value": 120,
 		&"units": 1,
 		&"description": "A neural core with a dead pilot's fire control still loaded.",
-		&"icon": "res://assets/icons/icon_cargo_data_core_48.png",
+		&"icon": "res://assets/icons/cargo/icon_cargo_data_core_48.png",
 	},
 	{
 		&"id": &"comp_weap_1",
@@ -105,7 +105,7 @@ const COMPONENTS: Array[Dictionary] = [
 		&"value": 22,
 		&"units": 1,
 		&"description": "A barrel assembly, straight enough to shoot again.",
-		&"icon": "res://assets/icons/icon_cargo_container_48.png",
+		&"icon": "res://assets/icons/cargo/icon_cargo_container_48.png",
 	},
 	{
 		&"id": &"comp_weap_2",
@@ -115,7 +115,7 @@ const COMPONENTS: Array[Dictionary] = [
 		&"value": 55,
 		&"units": 1,
 		&"description": "Emitter housing with the lens intact; lasers and plasma are built around it.",
-		&"icon": "res://assets/icons/icon_cargo_container_48.png",
+		&"icon": "res://assets/icons/cargo/icon_cargo_container_48.png",
 	},
 	{
 		&"id": &"comp_weap_3",
@@ -125,7 +125,7 @@ const COMPONENTS: Array[Dictionary] = [
 		&"value": 130,
 		&"units": 1,
 		&"description": "A firing chamber out of the Maw's own guns. It was not sold willingly.",
-		&"icon": "res://assets/icons/icon_cargo_container_48.png",
+		&"icon": "res://assets/icons/cargo/icon_cargo_container_48.png",
 	},
 	{
 		&"id": &"comp_pow_1",
@@ -135,7 +135,7 @@ const COMPONENTS: Array[Dictionary] = [
 		&"value": 15,
 		&"units": 1,
 		&"description": "A fuel cell with a charge left in it; capacitors and boost systems take it.",
-		&"icon": "res://assets/icons/icon_cargo_fuel_cell_48.png",
+		&"icon": "res://assets/icons/cargo/icon_cargo_fuel_cell_48.png",
 	},
 	{
 		&"id": &"comp_pow_2",
@@ -145,7 +145,7 @@ const COMPONENTS: Array[Dictionary] = [
 		&"value": 40,
 		&"units": 1,
 		&"description": "A capacitor bank that still holds a bite; shield capacitors feed on it.",
-		&"icon": "res://assets/icons/icon_cargo_fuel_cell_48.png",
+		&"icon": "res://assets/icons/cargo/icon_cargo_fuel_cell_48.png",
 	},
 	{
 		&"id": &"comp_pow_3",
@@ -155,7 +155,7 @@ const COMPONENTS: Array[Dictionary] = [
 		&"value": 100,
 		&"units": 1,
 		&"description": "An ember cell, warm through the crate, for systems that should not exist.",
-		&"icon": "res://assets/icons/icon_cargo_fuel_cell_48.png",
+		&"icon": "res://assets/icons/cargo/icon_cargo_fuel_cell_48.png",
 	},
 	{
 		&"id": &"comp_ore_1",
@@ -165,7 +165,7 @@ const COMPONENTS: Array[Dictionary] = [
 		&"value": 25,
 		&"units": 1,
 		&"description": "Ore burned clean down to the useful part; a low tier crafting catalyst.",
-		&"icon": "res://assets/icons/icon_cargo_ore_48.png",
+		&"icon": "res://assets/icons/cargo/icon_cargo_ore_48.png",
 	},
 	{
 		&"id": &"comp_ore_2",
@@ -175,7 +175,7 @@ const COMPONENTS: Array[Dictionary] = [
 		&"value": 60,
 		&"units": 1,
 		&"description": "A lattice seed grown for shield work, and sold to whoever is still buying.",
-		&"icon": "res://assets/icons/icon_cargo_ore_48.png",
+		&"icon": "res://assets/icons/cargo/icon_cargo_ore_48.png",
 	},
 	{
 		&"id": &"comp_ore_3",
@@ -185,7 +185,7 @@ const COMPONENTS: Array[Dictionary] = [
 		&"value": 140,
 		&"units": 1,
 		&"description": "A voidshard. It does not throw light back the way it should, and exotic work needs it.",
-		&"icon": "res://assets/icons/icon_cargo_ore_48.png",
+		&"icon": "res://assets/icons/cargo/icon_cargo_ore_48.png",
 	},
 ]
 

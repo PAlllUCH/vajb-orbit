@@ -1,8 +1,0 @@
-4 sheet(s) to read, 3 skipped (single panel or whole-frame plate)
-1 sheet(s) already answered, skipping (--redo to ask again)
-  raw/panel_cargo.png                                          agrees                       high Visible 2 columns, 3 rows; cuts through 
-  raw/panel_glyphs.png                                         agrees                       high Visible 3x3 grid, nine icons, cuts pass 
-  raw/panel_weapons.png                                        agrees                       high Five pieces; bottom-right cell empty.
-
-3 agreement(s), 0 re-read, 0 refused, 11436 tokens across 3 sheet(s)
-wrote G:\Mój dysk\Projekty\Vajb Orbit\asset-library\_layout_deepseek.json (73 sheet(s))

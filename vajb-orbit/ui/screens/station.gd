@@ -69,13 +69,13 @@ const MODULE_LABELS: Array[String] = [
 	"LAUNCH",
 ]
 const MODULE_ICONS: Array[String] = [
-	"res://assets/icons/icon_equip_module_48.png",
+	"res://assets/icons/equip/icon_equip_module_48.png",
 	"res://assets/icons/tint/icon_cargo_ore_48.png",
 	"res://assets/icons/tint/icon_credits_48.png",
 	"res://assets/icons/tint/icon_hull_48.png",
-	"res://assets/icons/icon_equip_generator_48.png",
-	"res://assets/icons/icon_status_repairing_48.png",
-	"res://assets/icons/icon_map_route_48.png",
+	"res://assets/icons/equip/icon_equip_generator_48.png",
+	"res://assets/icons/status/icon_status_repairing_48.png",
+	"res://assets/icons/map/icon_map_route_48.png",
 ]
 const MODULE_TINTED: Array[bool] = [false, true, true, true, false, false, false]
 const MODULE_BEDS: Array[StringName] = [

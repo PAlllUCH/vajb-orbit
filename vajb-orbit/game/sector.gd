@@ -31,7 +31,7 @@ const ASTEROID_FIELD_SCRIPT := "res://game/asteroid_field.gd"
 ## The dockable station POI (ENVIRONMENT_SPEC §6, ASSET_CATALOG). `env_base_*`
 ## and `env_station_mmo.png` are station-scale alternatives but neither is
 ## catalogued as the dockable station.
-const StationTexture := preload("res://assets/env/env_station.png")
+const StationTexture := preload("res://assets/env/poi/env_station.png")
 
 const UNALIGNED: StringName = &"unaligned"
 

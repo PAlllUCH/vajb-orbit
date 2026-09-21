@@ -1,0 +1,19 @@
+{
+  "task_id": "585906dc48788708e67ba94b1f0f5b7a",
+  "model": "gpt-image-2-5-flare-text-to-image",
+  "input": {
+    "prompt": "grimdark painted sci-fi alien bioform, semi-realistic weathered chitin plating, harsh directional rim light from upper-left with a thin cold pale steel rim tracing shadow-side silhouettes, subtle film grain over the whole image, top-down orthographic view. Fixed palette per family — swarmer: corrosive dark #1A281F, chitin green #3D6E49, bioluminescent green #4AE86C glow; sibelon: abyssal void #1C1F2B, deep teal #3A4B6E, corrupted plasma cyan #2BE8E8 glow; apex: warp purple #2B1A28, mutated violet #6E3A63, void magenta #E82BE8 glow. Chitin plates are near-black desaturated and organic — jagged swarmer plates, curved bio-mechanical Sibelon pods, massive tendril-backed Apex leviathan hulls. Exactly one glow colour per family (the signature above), small and hot, used for engines, weapons and warning lamps; no ember, no orange anywhere on an alien asset. Backgrounds are near-black blue void, void black #0A0E14 to deep void blue #111823, sparse faint stars, desaturated throughout, no chrome, no neon, no gloss, no clean surfaces, moody and menacing.\n\nsingle Apex leviathan, alien apex bioform capital hull hull, a massive hunched leviathan body whose long tendrils read as part of the outline, tendril bundle trailing from the stern and two shorter tendril arms framing the bow, thick mutated tissue over grown plate in warp purple #2B1A28 with mutated violet #6E3A63 plate mid-tones, one small hot void magenta #E82BE8 energy signature burning in a recessed stern socket and dim along the tendril roots, no detached wisps, no ember, no orange, no human plating, no insignia. A panel of four views of the SAME ship in an evenly spaced 2x2 grid, one view per cell, generous gaps of flat void black between cells, no grid lines, no labels, no text, no border. top-left cell: bow pointing up (front view). top-right cell: bow rotated 45 degrees (three-quarter view). bottom-left cell: bow pointing right (side view). bottom-right cell: bow pointing down (rear view). Each view occupies about 60 percent of its own cell width, centroid at the centre of its cell, top-down orthographic, facing right, ship occupies about 60 percent of frame width, centroid at frame centre, background flat void black #0A0E14. no chrome, no neon, no saturated colours, no second accent, no perspective, no tilt, no text, no watermark, no grid lines, no labels Alien bioform, not a human ship: no gunmetal, no rivets, no painted panels.",
+    "aspect_ratio": "1:1",
+    "resolution": "2K",
+    "background": "transparent"
+  },
+  "urls": [
+    "https://tempfile.aiquickdraw.com/gpt-image-2-5/image_1789948939277_iylbeq.png"
+  ],
+  "local_paths": [
+    "G:\\Mój dysk\\Projekty\\Vajb Orbit\\staging\\phase_g\\ships\\20260921-020224\\grimdark-painted-sci-fi-alien-bioform-s-1.png"
+  ],
+  "alpha_paths": [],
+  "upscaled_paths": [],
+  "asset_paths": []
+}

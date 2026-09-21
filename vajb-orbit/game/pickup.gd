@@ -44,7 +44,7 @@ const EVENT_CACHE := "CACHE"
 ## with visible rusted-ochre ore veins at the seam"), drawn at a hold-sized 20 u
 ## across. Credit caches are slice-2 content with no dedicated prop, so the seam
 ## reuses this one; see the W3 report's art-gap note.
-const POD_TEXTURE := preload("res://assets/env/env_pickup_ore_pod.png")
+const POD_TEXTURE := preload("res://assets/env/pickup/env_pickup_ore_pod.png")
 const POD_WIDTH := 20.0
 
 const PICKUP_GROUP: StringName = &"pickup"

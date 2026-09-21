@@ -1,0 +1,161 @@
+diff lines 160
+--- before
++++ after
+@@ -9,7 +9,14 @@
+ ## so no flight number is duplicated here. The constants that do live here are the
+ ## section 13 values that belong to no class and to no module (brake multiplier,
+-## arrive-steering radii) plus the section 7 warp quiet time.
+-## Contract: ENGINE_SPEC sections 3, 4.2 (items 6-8, ruling 16's push physics), 6, 7,
+-## 9, 13; engine-wave-1 brief section W2; slice-0 brief pinned interface item 1.
++## arrive-steering radii, the afterburner's and the dash's fuel burn) plus the
++## section 7 warp quiet time.
++## This node also owns the reactor chain's hull half (section 4.4, rulings 11/14,
++## pinned in CONTRACTS sections 4 and 8.1): its physics frame is the frame that ticks
++## `PlayerState` (reactor refill and fuel-cell cooldown), it burns BOOST_FUEL through
++## `try_spend_fuel` while the afterburner runs, it reads `emergency_mode` to lock
++## thrust out, and it is where section 11's fuel-cell key spends a cell.
++## Contract: ENGINE_SPEC sections 3, 4.2 (items 6-8, ruling 16's push physics), 4.4,
++## 6, 7, 9, 13; engine-wave-1 brief section W2; slice-0 brief pinned interface item 1;
++## CONTRACTS sections 4 and 8.1.
+ 
+ ## Raised when the live pools lose points (hull or shield). The warp channel
+@@ -49,4 +56,9 @@
+ const MINE_ACTION: StringName = &"mine"
+ 
++## Section 11's in-flight refuel (ruling 13): one `fuel_cell` cargo item becomes
++## FUEL_CELL_UNITS of tank fuel. The action's binding is the input map's business; the
++## hull only reads it, guarded, so a build without the binding still flies.
++const FUEL_CELL_ACTION: StringName = &"consume_fuel_cell"
++
+ ## 09 section 3.5 boosters. `b_afterburner` is v1's only implemented booster;
+ ## `b_fold` is expected in a fit (ShipFit carries it as data) and its 400 u blink
+@@ -59,4 +71,14 @@
+ const SLOW_DOWN_RADIUS := 240.0
+ const ARRIVE_RADIUS := 40.0
++
++## ENGINE_SPEC section 13 "Energy & fuel (rulings 10-14)": the afterburner burns
++## BOOST_FUEL 3.0 per second while it runs and a fold/dash burst spends DASH_FUEL 25.
++## Both are global calibration rows -- no class column and no module effect carries
++## them -- so the hull that spends them is their single owner, exactly as it is for
++## the brake multiplier and the arrive radii above (slice-0 review finding F3; the
++## dash's own activation and displacement stay slice 4's booster work, CONTRACTS
++## section 8.1). Both are spent through `PlayerState.try_spend_fuel`.
++const BOOST_FUEL := 3.0
++const DASH_FUEL := 25.0
+ 
+ ## ENGINE_SPEC section 7: safe warp is available after 5 s without a hit.
+@@ -224,15 +246,21 @@
+ 	_update_boosters(delta)
+ 	_update_mining_laser()
++	_step_reactor(delta)
++	_update_fuel_cell()
+ 	_damage_quiet += delta
+ 	if _stats == null or _body == null:
+ 		return
+ 
+-	var throttle := _manual_throttle()
++	## The stick is sampled raw: it is what cancels an autopilot order (section 3.1)
++	## and the reaction wheels keep answering it. Only the *thrust* is gated by ruling
++	## 14's lockout, so a dry tank still turns and still drifts (see `_thrust_locked`).
++	var stick := _manual_throttle()
+ 	var turn := _manual_turn()
+-	if _has_move_target and (not is_zero_approx(throttle) or not is_zero_approx(turn)):
++	if _has_move_target and (not is_zero_approx(stick) or not is_zero_approx(turn)):
+ 		cancel_orders()
+ 	if _has_move_target and global_position.distance_to(_move_target) <= ARRIVE_RADIUS:
+ 		cancel_orders()
+ 
++	var throttle := 0.0 if _thrust_locked() else stick
+ 	var desired_turn := 0.0
+ 	var desired_speed := 0.0
+@@ -241,4 +269,8 @@
+ 		desired_turn = _order_turn()
+ 		desired_speed = _order_speed()
++		## The autopilot commands thrust too, so ruling 14 locks it with the stick: a
++		## dry tank steers towards the order and coasts instead of accelerating.
++		if _thrust_locked():
++			desired_speed = 0.0
+ 		if absf(desired_speed) > absf(_velocity_along_heading()):
+ 			rate = _accel_rate()
+@@ -278,4 +310,12 @@
+ 		return 0.0
+ 	return Input.get_action_strength(TURN_RIGHT) - Input.get_action_strength(TURN_LEFT)
++
++
++## Ruling 14 / section 4.4: a dry tank is Emergency Flight Mode, which locks thrust
++## out. The ship drifts on the momentum the body already has and coasts it down at its
++## class coast rate, while the reaction wheels (`_manual_turn`) stay live. Read through
++## the state, so a hull that has not launched yet never locks its own controls.
++func _thrust_locked() -> bool:
++	return _state != null and _state.emergency_mode
+ 
+ 
+@@ -531,4 +571,10 @@
+ 	if _boost_remaining > 0.0:
+ 		_boost_remaining = maxf(_boost_remaining - delta, 0.0)
++		## Ruling 11 / section 13: the afterburner runs on the tank, BOOST_FUEL per
++		## second through the spending gate. A tank that cannot pay for the frame ends
++		## the burn at once, so a dry tank's afterburner dies the frame it runs dry
++		## instead of burning on credit.
++		if not _burn_boost_fuel(delta):
++			_boost_remaining = 0.0
+ 	if _boost_remaining > 0.0 or _boost_cooldown > 0.0:
+ 		return
+@@ -536,8 +582,24 @@
+ 		return
+ 	if not InputMap.has_action(BOOST_ACTION) or not Input.is_action_pressed(BOOST_ACTION):
++		return
++	## The burn is charged *before* the afterburner lights: an empty tank refuses to arm
++	## it (ruling 14 locks boost out) and the arm frame pays its own share, so a lit
++	## afterburner has burned BOOST_FUEL for every frame it ran.
++	if not _burn_boost_fuel(delta):
+ 		return
+ 	var effect := _booster_effect(BOOSTER_AFTERBURNER)
+ 	_boost_remaining = float(effect.get(&"duration", 0.0))
+ 	_boost_cooldown = float(effect.get(&"cooldown", 0.0))
++
++
++## The afterburner's burn (ruling 11, section 13's BOOST_FUEL 3.0/s) through
++## `PlayerState.try_spend_fuel` -- the one gate boost and the dash share, so the tank
++## itself is the authority on whether a booster may run. A hull with no reactor yet (a
++## scene smoke test before `setup`) has no tank to bill and keeps the booster seam
++## working, exactly as `_manual_throttle` tolerates a missing input action.
++func _burn_boost_fuel(delta: float) -> bool:
++	if _state == null:
++		return true
++	return _state.try_spend_fuel(BOOST_FUEL * delta)
+ 
+ 
+@@ -622,4 +684,32 @@
+ 
+ 
++## Section 4.4, and the contract pinned in CONTRACTS sections 4 and 8.1: the hull's
++## physics frame *is* the reactor's frame, so the refill (`energy_regen` at the
++## reactor's efficiency) and the fuel-cell cooldown advance here, once per physics
++## step, whatever the throttle is doing. Nothing else in the shipped game steps the
++## reactor, so without this call the two pools never refill in flight.
++func _step_reactor(delta: float) -> void:
++	if _state == null:
++		return
++	_state.tick(delta)
++
++
++## Section 11's `consume_fuel_cell` key is ruling 13's in-flight jerry can: one
++## `fuel_cell` cargo item becomes FUEL_CELL_UNITS of tank fuel, off cooldown, and it is
++## the only door out of Emergency Flight Mode in flight. Polled the way every other
++## one-shot in the shipped game is (game.gd reads its actions with the same call) and
++## guarded, so a hull on a build whose input map has not been patched behind it is
++## still safe. A refused burn -- cooling down, no cell aboard, tank already full -- is
++## a silent no-op: the fuel bar is the feedback.
++func _update_fuel_cell() -> void:
++	if _state == null:
++		return
++	if not InputMap.has_action(FUEL_CELL_ACTION):
++		return
++	if not Input.is_action_just_pressed(FUEL_CELL_ACTION):
++		return
++	_state.consume_fuel_cell()
++
++
+ func _release_state() -> void:
+ 	if _state == null:

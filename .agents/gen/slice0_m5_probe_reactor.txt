@@ -1,0 +1,18 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+WARNING: res://game/player_ship.tscn:4 - ext_resource, invalid UID: uid://cmi25sgdnd7ga - using text path instead: res://assets/ships/ship_vanguard_side.png
+   at: load (scene/resources/resource_format_text.cpp:501)
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+=== slice0 M5 probe: reactor chain's hull side (F2-F5) ===
+[OK]   owner: the hull declares section 13's afterburner burn (BOOST_FUEL 3.0) | PlayerShip.BOOST_FUEL = 3.0
+[OK]   owner: the hull declares section 13's fold/dash cost (DASH_FUEL 25) | PlayerShip.DASH_FUEL = 25.0
+[OK]   owner: ShipFit duplicates neither name (exactly one owner) | ShipFit consts carry neither BOOST_FUEL nor DASH_FUEL
+[OK]   input: section 11's consume_fuel_cell action is in the input map | events = [InputEventKey: keycode=67 (C), mods=none, physical=false, location=unspecified, pressed=false, echo=false]
+[OK]   fuel cell: the C key reaches PlayerState.consume_fuel_cell through the hull | consume_fuel_cell calls 0 -> 1 over one 4-frame press
+[OK]   fuel cell: a held key spends once, not once per frame (it is an edge) | still 1 calls after holding the key 4 frames
+[OK]   fuel cell: a second press spends again | consume_fuel_cell calls = 2 after two presses
+[OK]   emergency: the reaction wheels still turn the hull at fuel 0 (ruling 14) | |angular_velocity| = 3.39999985694885 rad/s after 0.5 s of turn input at fuel 0
+[OK]   emergency: an autopilot order cannot thrust either at fuel 0 | speed = 0.0 u/s after 1 s of a 400 u order at fuel 0
+[OK]   emergency: the same order does thrust with fuel aboard (the control) | peak speed = 203.571319580078 u/s in the first second with a full tank
+[OK]   boost: a tank that runs dry ends the burn instead of burning on credit | fuel 0.05 -> 0.0, boost_remaining = 0.0 s after 0.3 s of boost
+[SUMMARY] ok=11 failed=0

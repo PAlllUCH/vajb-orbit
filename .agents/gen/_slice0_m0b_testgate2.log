@@ -1,0 +1,64 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[PASS] test_p1_catalogues.gd.test_component_catalogue_shape
+[PASS] test_p1_catalogues.gd.test_component_grade_sums
+[PASS] test_p1_catalogues.gd.test_component_values_match_docs
+[PASS] test_p1_catalogues.gd.test_item_id_derivation_and_policy
+[PASS] test_p1_catalogues.gd.test_mineral_catalogue_shape
+[FAIL] test_p1_catalogues.gd.test_mineral_icons_are_the_dedicated_glyphs: res://assets/icons/icon_mineral_iron_48.png is missing on disk
+[PASS] test_p1_catalogues.gd.test_mineral_units_are_one
+[PASS] test_p1_catalogues.gd.test_mineral_values_match_docs
+[PASS] test_p1_catalogues.gd.test_sector_tier_mix_matches_map
+[PASS] test_p1_catalogues.gd.test_seeded_rolls_are_tier_scoped
+[PASS] test_p1_catalogues.gd.test_tier_base_yield_and_variance
+[PASS] test_p1_clock_log.gd.test_band_seconds_and_bands_between_edges
+[PASS] test_p1_clock_log.gd.test_log_line_shape_and_append
+[PASS] test_p1_clock_log.gd.test_override_pins_and_restores_now
+WARNING: EconomyLog: could not open user://p1l_missing_dir_do_not_create/economy_log.txt (error 7)
+   at: push_warning (core/variant/variant_utility.cpp:1033)
+   GDScript backtrace (most recent call first):
+       [0] append (res://game/economy_log.gd:28)
+       [1] test_unwritable_log_path_is_survivable (res://tests/test_p1_clock_log.gd:94)
+       [2] _run_file (res://tests/headless_runner.gd:110)
+       [3] _ready (res://tests/headless_runner.gd:28)
+[PASS] test_p1_clock_log.gd.test_unwritable_log_path_is_survivable
+[PASS] test_p1_market.gd.test_component_sale_respects_quota
+[PASS] test_p1_market.gd.test_drift_clamps_at_ceiling
+[PASS] test_p1_market.gd.test_drift_clamps_at_floor
+[PASS] test_p1_market.gd.test_first_evaluation_stamps_and_restocks
+[PASS] test_p1_market.gd.test_mineral_sale_quote_and_payment
+[PASS] test_p1_market.gd.test_one_band_drifts_within_range
+[PASS] test_p1_market.gd.test_queue_payout_on_next_band
+[PASS] test_p1_market.gd.test_queue_with_empty_stock_pays_nothing
+[PASS] test_p1_market.gd.test_reentrant_quote_during_a_sale_keeps_the_fresh_market
+[PASS] test_p1_market.gd.test_refusals_leave_state_untouched
+[PASS] test_p1_market.gd.test_sale_demand_floor
+[PASS] test_p1_market.gd.test_sell_all_skips_ingots
+[PASS] test_p1_market.gd.test_three_bands_in_one_call
+[PASS] test_p1_pricing.gd.test_commission_floor
+[PASS] test_p1_pricing.gd.test_component_worked_example
+[PASS] test_p1_pricing.gd.test_exchange_price_routing
+[PASS] test_p1_pricing.gd.test_gold_batch_worked_example
+[PASS] test_p1_pricing.gd.test_unit_net_reproduces_the_section_3_table
+[PASS] test_p1_profile.gd.test_equal_sets_are_silent
+[PASS] test_p1_profile.gd.test_existing_api_emits_its_keys
+[PASS] test_p1_profile.gd.test_fresh_defaults_without_a_file
+[PASS] test_p1_profile.gd.test_getter_copies_cannot_mutate_state
+[PASS] test_p1_profile.gd.test_signal_keys_for_emitting_setters
+[PASS] test_p1_profile.gd.test_silent_setters_emit_nothing
+[PASS] test_p1_profile.gd.test_spend_over_balance_refuses
+[PASS] test_p1_profile.gd.test_v1_profile_migrates_to_defaults
+[PASS] test_p1_profile.gd.test_v2_round_trip_for_every_key
+[PASS] test_p1_refinery.gd.test_iron_three_ore_becomes_one_ingot
+[PASS] test_p1_refinery.gd.test_nothing_to_refine
+[PASS] test_p1_refinery.gd.test_partial_stack_converts_whole_units_only
+[PASS] test_p1_refinery.gd.test_refine_all_charges_one_combined_fee
+[PASS] test_p1_refinery.gd.test_refusals_leave_everything_untouched
+[PASS] test_p1_refinery.gd.test_stacks_lists_only_convertible_minerals
+[PASS] test_p1_repairs.gd.test_full_pools_report_no_damage
+[PASS] test_p1_repairs.gd.test_insufficient_credits_refuses
+[PASS] test_p1_repairs.gd.test_missing_damage_report_refuses
+[PASS] test_p1_repairs.gd.test_shield_exemption_is_free
+[PASS] test_p1_repairs.gd.test_vanguard_home_fee_and_repair
+[SUMMARY] passed=52 failed=1

@@ -18,6 +18,10 @@ extends RefCounted
 ## * Regen is base + the best single shield module value ("best value", 09 section 5).
 ## * The booster-on-activation speed multiplier is not baked into the snapshot
 ##   (it depends on whether the booster is firing); `boosters` carries the ids.
+## * `hull_mass` is the ENGINE_SPEC section 13 class column (which gains the
+##   mass row v2 of that table describes) times any plating `mass_add`; the two
+##   power pools are the section 13 flat base (100 / 200 / 5 per second), not a
+##   class column.
 
 const MAX_SPEED_SCALE := 450.0
 const SPEED_FLOOR_RATIO := 0.4
@@ -27,6 +31,16 @@ const BASE_SCAN_RANGE := 900.0
 const BASE_TRACTOR_RANGE := 120.0
 const BASE_TRACTOR_SPEED := 90.0
 const BASE_TRACTOR_STREAMS := 1
+
+## ENGINE_SPEC section 13 "Energy & fuel (rulings 10-14)", verbatim: the two pools
+## are a flat base, not a class column -- `energy_max` 100 / `fuel_max` 200 with
+## `energy_regen` 5/s (the doc's `recharge_rate`). Modules move them in a later
+## pass (09 section 3), which is why they are resolved here rather than read off a
+## hull row. `POOL_CEILING_MULT` (09 section 5 step 4) applies to each pool against
+## its own base, exactly as it does for hull and shield.
+const BASE_ENERGY_MAX := 100.0
+const BASE_FUEL_MAX := 200.0
+const BASE_ENERGY_REGEN := 5.0
 
 const SINGLE_SLOT_KEYS: Array[StringName] = [&"engine", &"power"]
 const LIST_SLOT_KEYS: Array[StringName] = [
@@ -131,6 +145,7 @@ const HANDLING: Dictionary = {
 		&"coast_time": 1.6,
 		&"turn_rate": 3.4,
 		&"turn_spinup": 0.4,
+		&"hull_mass": 80.0,
 	},
 	&"ship_vanguard": {
 		&"max_speed": 428.0,
@@ -138,6 +153,7 @@ const HANDLING: Dictionary = {
 		&"coast_time": 2.0,
 		&"turn_rate": 3.0,
 		&"turn_spinup": 0.5,
+		&"hull_mass": 110.0,
 	},
 	&"ship_miner": {
 		&"max_speed": 338.0,
@@ -145,6 +161,7 @@ const HANDLING: Dictionary = {
 		&"coast_time": 3.4,
 		&"turn_rate": 2.0,
 		&"turn_spinup": 1.0,
+		&"hull_mass": 140.0,
 	},
 	&"ship_trader": {
 		&"max_speed": 383.0,
@@ -152,6 +169,7 @@ const HANDLING: Dictionary = {
 		&"coast_time": 2.6,
 		&"turn_rate": 2.4,
 		&"turn_spinup": 0.7,
+		&"hull_mass": 160.0,
 	},
 	&"ship_corvette": {
 		&"max_speed": 495.0,
@@ -159,6 +177,7 @@ const HANDLING: Dictionary = {
 		&"coast_time": 1.8,
 		&"turn_rate": 3.2,
 		&"turn_spinup": 0.45,
+		&"hull_mass": 90.0,
 	},
 	&"ship_freighter": {
 		&"max_speed": 293.0,
@@ -166,6 +185,7 @@ const HANDLING: Dictionary = {
 		&"coast_time": 5.2,
 		&"turn_rate": 1.5,
 		&"turn_spinup": 1.4,
+		&"hull_mass": 260.0,
 	},
 	&"ship_gunship": {
 		&"max_speed": 360.0,
@@ -173,6 +193,7 @@ const HANDLING: Dictionary = {
 		&"coast_time": 3.8,
 		&"turn_rate": 1.9,
 		&"turn_spinup": 1.0,
+		&"hull_mass": 190.0,
 	},
 	&"ship_patrol": {
 		&"max_speed": 383.0,
@@ -180,6 +201,7 @@ const HANDLING: Dictionary = {
 		&"coast_time": 3.4,
 		&"turn_rate": 2.1,
 		&"turn_spinup": 0.9,
+		&"hull_mass": 220.0,
 	},
 	&"ship_destroyer": {
 		&"max_speed": 315.0,
@@ -187,6 +209,7 @@ const HANDLING: Dictionary = {
 		&"coast_time": 5.6,
 		&"turn_rate": 1.6,
 		&"turn_spinup": 1.2,
+		&"hull_mass": 300.0,
 	},
 }
 
@@ -383,7 +406,8 @@ static func resolve(hull_id: StringName, fit: Dictionary) -> ShipStats:
 		return null
 
 	var stats := ShipStats.new()
-	# 1. Hull base (08 section 2 + ENGINE_SPEC section 13 handling column).
+	# 1. Hull base (08 section 2 + ENGINE_SPEC section 13 handling column, which
+	# now carries `hull_mass` too).
 	stats.hull_max = float(hull[&"hull"])
 	stats.shield_max = float(hull[&"shield"])
 	stats.cargo_max = int(hull[&"cargo"])
@@ -392,12 +416,16 @@ static func resolve(hull_id: StringName, fit: Dictionary) -> ShipStats:
 	stats.coast_time = float(handling[&"coast_time"])
 	stats.turn_rate = float(handling[&"turn_rate"])
 	stats.turn_spinup = float(handling[&"turn_spinup"])
+	stats.hull_mass = float(handling[&"hull_mass"])
 	stats.shield_regen = BASE_SHIELD_REGEN
 	stats.damage_mult = 1.0
 	stats.scan_range = BASE_SCAN_RANGE
 	stats.tractor_range = BASE_TRACTOR_RANGE
 	stats.tractor_speed = BASE_TRACTOR_SPEED
 	stats.tractor_streams = BASE_TRACTOR_STREAMS
+	stats.energy_max = BASE_ENERGY_MAX
+	stats.energy_regen = BASE_ENERGY_REGEN
+	stats.fuel_max = BASE_FUEL_MAX
 
 	var ids := fitted_ids(fit)
 	_warn_unknown(ids)
@@ -475,6 +503,12 @@ static func _apply_speed(stats: ShipStats, ids: Array[StringName]) -> void:
 		stats.accel_time *= mass
 		stats.coast_time *= mass
 		stats.turn_spinup *= mass
+		# ENGINE_SPEC section 3.2 "Mass sources: hull class + armour plating": a
+		# plating module's own `mass_add` (09 section 3.3, only `h_composite`
+		# carries one today) is the collision/inertia mass the class column does
+		# not know about. The handling-time multiplier above is the feel; this is
+		# the number the collision formula and the rigid body read.
+		stats.hull_mass *= 1.0 + _effect(row, &"mass_add", 0.0)
 	for id: StringName in ids:
 		var row := _row(id)
 		if row.is_empty() or row[&"slot"] != &"engine":
@@ -532,7 +566,9 @@ static func _apply_boosters(stats: ShipStats, ids: Array[StringName]) -> void:
 
 static func _clamp(stats: ShipStats, hull: Dictionary, handling: Dictionary) -> void:
 	# 09 section 5 step 4: speed never below 40 % of the hull's base, and no pool
-	# above 3x its own base.
+	# above 3x its own base. The slice-0 pools join the rule against their own
+	# ENGINE_SPEC section 13 base (nothing moves them yet; a module that does will
+	# not be able to exceed the ceiling).
 	stats.max_speed = maxf(
 		stats.max_speed, float(handling[&"max_speed"]) * SPEED_FLOOR_RATIO
 	)
@@ -540,6 +576,8 @@ static func _clamp(stats: ShipStats, hull: Dictionary, handling: Dictionary) -> 
 	stats.shield_max = minf(
 		stats.shield_max, float(hull[&"shield"]) * POOL_CEILING_MULT
 	)
+	stats.energy_max = minf(stats.energy_max, BASE_ENERGY_MAX * POOL_CEILING_MULT)
+	stats.fuel_max = minf(stats.fuel_max, BASE_FUEL_MAX * POOL_CEILING_MULT)
 
 
 static func _row(id: StringName) -> Dictionary:

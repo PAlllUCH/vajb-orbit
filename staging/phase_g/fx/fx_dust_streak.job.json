@@ -1,0 +1,18 @@
+{
+  "task_id": "1c64e0d57c15310c1ea098b9f204c76f",
+  "model": "gpt-image-2-5-flare-text-to-image",
+  "input": {
+    "prompt": "grimdark painted sci-fi, semi-realistic weathered metal, harsh directional rim light from upper-left with a thin cold pale steel rim tracing shadow-side silhouettes, subtle film grain over the whole image, top-down orthographic view. Fixed palette: gunmetal mid #3A3F46, gunmetal dark #2B2F35, iron black #232629, steel highlight #565C63, rusted ochre #6E5B4A, dry rust #8A6A50, grimy umber #4A423B, void black #0A0E14, deep void blue #111823, void haze #1A2230, burnt ember #C8461B, ember glow #E8703A, panel black #15181D, panel steel #2A2E35, ash text #8D939B, bone text #C9CDD2. Metal colour is desaturated gunmetal and rusted steel, dark and tired, with scratches, oil stains, hull grime, rust streaks, pitted metal, scorch marks and battle damage. Glow colours are burnt ember #C8461B and ember glow #E8703A only, small and hot, used exclusively for engines, weapons and warning lights; no other glow or accent colour exists anywhere in the image. Backgrounds are near-black blue void, void black #0A0E14 to deep void blue #111823, sparse faint stars, desaturated throughout, no saturated colours, no chrome, no neon, no gloss, no clean surfaces, moody and menacing.\n\nsingle game FX sprite, one object centred: one thin horizontal micro streak of dust, a short soft smear no thicker than a hair with soft fading ends, void haze #1A2230 fading to nothing at both tips, very low contrast, non-emissive, no glow, isolated on flat void black #0A0E14, nothing else in frame. no text, no watermark, no grid lines, no labels, no border, no frame, no vignette, no lens flare, no bokeh, no second glow colour",
+    "aspect_ratio": "1:1",
+    "resolution": "2K"
+  },
+  "urls": [
+    "https://tempfile.aiquickdraw.com/gpt-image-2-5/1789948557526-f8spqdlmbjl.png"
+  ],
+  "local_paths": [
+    "G:\\Mój dysk\\Projekty\\Vajb Orbit\\staging\\phase_g\\fx\\20260921-015602\\grimdark-painted-sci-fi-semi-realistic-1.png"
+  ],
+  "alpha_paths": [],
+  "upscaled_paths": [],
+  "asset_paths": []
+}
