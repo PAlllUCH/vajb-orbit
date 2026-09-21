@@ -113,3 +113,20 @@ reproduction**, not a code fix yet.
 | C4 | coder — hangar fire: does the station preview mount a live `WeaponComponent` | yes/no + the mount site |
 | C5 | fixer — only what C1–C4 prove broken, one pass | before/after measurement per finding |
 | W? | reviewer — re-runs every probe byte-identically | tiers, and CONTRACTS.md drift |
+
+## Owner rulings, second round (2026-09-21, after the C1–C3 measurements)
+
+1. **Launch fit: decide later.** The owner will judge in a playtest whether the launch
+   should mount the five-weapon fit plus the mining laser or keep v1's single-weapon
+   `STANDARD_FIT` and correct the briefing instead. **C5 must not change the fit**;
+   C2's measurement of the mismatch stays an open owner gate.
+2. **Ruling 1 re-scoped and confirmed:** no separate damage→work constant. Weapons
+   already chip rocks at the shipped `GUN_CHIP_RATE` 0.10 (§6 / ruling 17); the only
+   rock no-op among the five families is the mine.
+3. **Drag retune route: the §13 `coast_time` rows.** All nine rows are scaled × 0.50
+   (owner's pick): measured Vanguard t10 1.890 s → ≈ 0.95 s and carry 430.32 u →
+   ≈ 108 u. C5 applies the scale in `ship_fit.gd` and hands the owner the per-class
+   before/after table to write into §13, which stays the owner's file.
+4. **C5 scope: all four measured defects** — the rock's `collision_mask` 0 → 2, the
+   rock's ram sink (`apply_collision_damage`), plasma's shield bonus (C2-F1) and the
+   mine's interval fallback (C2-F4).

@@ -2,9 +2,12 @@
 
 - Batch: the **slot-plate re-cut**, the BLOCKER at the top of the graphics queue.
 - Date: 2026-09-21. Spend: **0 kie.ai runs** - this batch is local recovery, not generation.
-- Status: **staged, awaiting the owner review sheet.** Nothing shipped.
+- Status: **staged and integrity-checked, awaiting the owner review sheet.** Nothing shipped.
 - Review sheet: `staging/phase_f/_preview/review_slots.png` (+
   `review_slots_table.txt` for the numbers, `recut_slots_report.json` for the raw data).
+- Integrity check (owner's rule, 2026-09-21): `staging/phase_f/_preview/qc_slots.png` +
+  `qc_slots_table.txt` + `qc_slots.json` - **24 of 24 cuts pass** ink-box-vs-plate-box and
+  opacity, and the sheet was looked at (the read is in "The vision check" below).
 
 ## What the shipped files actually are
 
@@ -74,6 +77,46 @@ cache. That is what proves the recovered cell is the cell F.1 used, and therefor
 Boxes are `UI_CHROME_ASSETS_SPEC` sections 4 and 5 plus section 10's `@2x` table: weapon
 48x48 / 96x96, cargo 40x40 / 80x80, inventory 56x56 / 112x112. 24 files staged in
 `staging/phase_f/ui/`.
+
+## The vision check
+
+`staging/phase_f/qc_cuts.py` is the tool the owner's rule asks for: it measures every cut
+(canvas against the expected box, alpha>0 and alpha>=128 ink boxes, alpha mean, solid and
+clear shares) and draws the same cuts on a mid-grey checkerboard at 3x with the expected
+box outlined, so a missing border, a gutter, a neighbouring cell's ink or a clipped plate
+is visible rather than asserted.
+
+Measure - 24 of 24 pass:
+
+| family | canvas | ink box | alpha mean | solid | clear |
+|---|---|---|---|---|---|
+| weapon 1x / @2x | 48x48 / 96x96 | the full box, all 4 states | 254.2-255.0 | 91.1-99.9 % | 0.0 % |
+| cargo 1x / @2x | 40x40 / 80x80 | the full box, all 4 states | 254.3-254.9 | 92.9-98.5 % | 0.0 % |
+| inventory 1x / @2x | 56x56 / 112x112 | the full box, all 4 states | 254.3-254.8 | 92.1-97.9 % | 0.0 % |
+
+Look (the sheet, `qc_slots.png`): every tile's ink reaches the ember outline on all four
+sides - no gutter, no neighbouring cell's ink, no clipped silhouette. Each family reads as
+a dark gunmetal plate with its own thin border and film grain, with the state ladder
+visible: normal flat, hover one step brighter on both plate and border, pressed darkened
+with a deep inset frame, disabled flattened and desaturated with the silhouette at roughly
+40 %. No tile is the shipped defect (a floating silhouette on transparency). The plates are
+deliberately quiet - `UI_CHROME_ASSETS_SPEC` section 3's policy is that HUD slots never
+glow - so a dark recessed read is the design, not a keying loss.
+
+## Files touched
+
+| file | note |
+|---|---|
+| `staging/phase_f/recover_ctex.py` | new: GST2 -> PNG decoder, `--list`/`--orphans`/`--inventory`/`--get`, writes `provenance.json` |
+| `staging/phase_f/recut_slots.py` | new: the re-cut + the @2x-vs-cache proof + `--backup` |
+| `staging/phase_f/qc_cuts.py` | new: the integrity check (measure + contact sheet) |
+| `staging/phase_f/build_slot_review.py` | new: the owner review sheet |
+| `staging/phase_f/chrome_2x.py` | portability only: `WORKSPACE` derived from `__file__` instead of the hardcoded Windows path |
+| `staging/phase_f/apply_import_settings.py` | portability only, same one-line change |
+| `staging/phase_f/ui/generation_log_phase_f.md` | the recovery provenance section (ships next to the family) |
+| `staging/phase_f/ui/*.png` | 24 staged cuts |
+| `staging/phase_f/_recover/ui_slots/` | 12 source cells + 6 raw 2K sheets + `provenance.json` |
+| `staging/phase_f/_recover/_shipped_before/` | the restore point (12 shipped PNGs + their `.import`) |
 
 ## Exactly what happens on approval
 

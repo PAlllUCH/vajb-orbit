@@ -1,0 +1,89 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[C2] ENV display=headless physics_ticks=60 physics_delta=0.016667 time_scale=1.00
+[C2] ENV input_action_present=true (never read: the trigger is set_firing)
+[C2] TABLE id=laser family=energy range=500.0 dps=30.0 draw=6.0 bypass=false instant=true
+[C2] TABLE id=laser shot_damage=0.000 interval=0.000 chip=0.100 ammo_slot=0
+[C2] TABLE id=plasma family=energy range=450.0 dps=70.0 draw=10.0 bypass=false instant=true
+[C2] TABLE id=plasma shot_damage=0.000 interval=0.000 chip=0.100 ammo_slot=4
+[C2] TABLE id=cannon family=kinetic range=600.0 dps=45.0 draw=0.0 bypass=true instant=false
+[C2] TABLE id=cannon shot_damage=27.000 interval=0.600 chip=0.100 ammo_slot=1
+[C2] TABLE id=railgun family=kinetic range=800.0 dps=60.0 draw=0.0 bypass=true instant=false
+[C2] TABLE id=railgun shot_damage=36.000 interval=0.600 chip=0.100 ammo_slot=1
+[C2] TABLE id=rocket family=missile range=900.0 dps=0.0 draw=0.0 bypass=true instant=false
+[C2] TABLE id=rocket shot_damage=180.000 interval=1.200 chip=0.100 ammo_slot=2
+[C2] TABLE id=mine family=deployable range=0.0 dps=0.0 draw=0.0 bypass=true instant=false
+[C2] TABLE id=mine shot_damage=180.000 interval=0.000 chip=0.100 ammo_slot=3
+[C2] SINK npc take_damage=true damage=false apply_work=false shield_up=true
+[C2] TARGET npc archetype=pirate hull_id=ship_fighter hull_max=950.0 shield_max=600.0 layer=2
+[C2] SINK rock take_damage=false damage=false apply_work=true shield_up=false
+[C2] TARGET rock group=true layer=1 mask=2 work=0.000 yield=100
+[C2] CASE target=npc shield=up weapon=laser frames=60 dist=200 external_trigger=true shots=1 dry_events=0 dry_before="" dry_after="" projectiles=0 recoil=0 hull=950.000->950.000 (d=+0.000 of 950.000) shield=600.000->570.000 (d=-30.000 of 600.000)
+[C2] CASE target=npc shield=up weapon=plasma frames=60 dist=200 external_trigger=true shots=1 dry_events=0 dry_before="" dry_after="" projectiles=0 recoil=0 hull=950.000->950.000 (d=+0.000 of 950.000) shield=600.000->530.000 (d=-70.000 of 600.000)
+[C2] CASE target=npc shield=up weapon=cannon frames=180 dist=200 external_trigger=true shots=5 dry_events=0 dry_before="" dry_after="" projectiles=0 recoil=5 hull=950.000->815.000 (d=-135.000 of 950.000) shield=600.000->600.000 (d=+0.000 of 600.000)
+[C2] CASE target=npc shield=up weapon=railgun frames=180 dist=200 external_trigger=true shots=5 dry_events=0 dry_before="" dry_after="" projectiles=0 recoil=5 hull=950.000->770.000 (d=-180.000 of 950.000) shield=600.000->600.000 (d=+0.000 of 600.000)
+[C2] CASE target=npc shield=up weapon=rocket frames=300 dist=200 external_trigger=true shots=5 dry_events=0 dry_before="" dry_after="" projectiles=1 recoil=5 hull=950.000->230.000 (d=-720.000 of 950.000) shield=600.000->600.000 (d=+0.000 of 600.000)
+[C2] CASE target=npc shield=up weapon=mine frames=150 dist=40 external_trigger=true shots=1 dry_events=0 dry_before="" dry_after="" projectiles=0 recoil=0 hull=950.000->770.000 (d=-180.000 of 950.000) shield=600.000->600.000 (d=+0.000 of 600.000)
+[C2] CASE target=npc shield=down weapon=laser frames=60 dist=200 external_trigger=true shots=1 dry_events=0 dry_before="" dry_after="" projectiles=0 recoil=0 hull=950.000->920.000 (d=-30.000 of 950.000) shield=0.000->0.000 (d=+0.000 of 0.000)
+[C2] CASE target=npc shield=down weapon=plasma frames=60 dist=200 external_trigger=true shots=1 dry_events=0 dry_before="" dry_after="" projectiles=0 recoil=0 hull=950.000->862.500 (d=-87.500 of 950.000) shield=0.000->0.000 (d=+0.000 of 0.000)
+[C2] CASE target=npc shield=down weapon=cannon frames=180 dist=200 external_trigger=true shots=5 dry_events=0 dry_before="" dry_after="" projectiles=0 recoil=5 hull=950.000->815.000 (d=-135.000 of 950.000) shield=0.000->0.000 (d=+0.000 of 0.000)
+[C2] CASE target=npc shield=down weapon=railgun frames=180 dist=200 external_trigger=true shots=5 dry_events=0 dry_before="" dry_after="" projectiles=0 recoil=5 hull=950.000->770.000 (d=-180.000 of 950.000) shield=0.000->0.000 (d=+0.000 of 0.000)
+[C2] CASE target=npc shield=down weapon=rocket frames=300 dist=200 external_trigger=true shots=5 dry_events=0 dry_before="" dry_after="" projectiles=1 recoil=5 hull=950.000->230.000 (d=-720.000 of 950.000) shield=0.000->0.000 (d=+0.000 of 0.000)
+[C2] CASE target=npc shield=down weapon=mine frames=150 dist=40 external_trigger=true shots=1 dry_events=0 dry_before="" dry_after="" projectiles=0 recoil=0 hull=950.000->770.000 (d=-180.000 of 950.000) shield=0.000->0.000 (d=+0.000 of 0.000)
+[C2] CASE target=rock shield=up weapon=laser frames=60 dist=200 external_trigger=true shots=1 dry_events=0 dry_before="" dry_after="" projectiles=0 recoil=0 work=0.000->0.000 units=100->97 (extracted=3) work_credited=3.000 alive=true
+[C2] CASE target=rock shield=up weapon=plasma frames=60 dist=200 external_trigger=true shots=1 dry_events=0 dry_before="" dry_after="" projectiles=0 recoil=0 work=0.000->0.000 units=100->93 (extracted=7) work_credited=7.000 alive=true
+[C2] CASE target=rock shield=up weapon=cannon frames=180 dist=200 external_trigger=true shots=5 dry_events=0 dry_before="" dry_after="" projectiles=0 recoil=5 work=0.000->0.500 units=100->87 (extracted=13) work_credited=13.500 alive=true
+[C2] CASE target=rock shield=up weapon=railgun frames=180 dist=200 external_trigger=true shots=5 dry_events=0 dry_before="" dry_after="" projectiles=0 recoil=5 work=0.000->0.000 units=100->82 (extracted=18) work_credited=18.000 alive=true
+[C2] CASE target=rock shield=up weapon=rocket frames=300 dist=200 external_trigger=true shots=5 dry_events=0 dry_before="" dry_after="" projectiles=0 recoil=5 work=0.000->0.000 units=100->10 (extracted=90) work_credited=90.000 alive=true
+[C2] CASE target=rock shield=up weapon=mine frames=150 dist=40 external_trigger=true shots=1 dry_events=0 dry_before="" dry_after="" projectiles=1 recoil=0 work=0.000->0.000 units=100->100 (extracted=0) work_credited=0.000 alive=true
+[C2] CASE target=rock shield=up weapon=laser frames=180 dist=200 external_trigger=true shots=1 dry_events=0 dry_before="" dry_after="" projectiles=0 recoil=0 work=0.000->FREED units=5->0 cracked=true
+[C2] CASE target=rock shield=up weapon=cannon frames=180 dist=200 external_trigger=true shots=5 dry_events=0 dry_before="" dry_after="" projectiles=1 recoil=5 work=0.000->FREED units=5->0 cracked=true
+[C2] CASE target=sink_body shield=up weapon=laser frames=120 dist=200 external_trigger=true shots=1 dry_events=0 dry_before="" dry_after="" projectiles=0 recoil=0 hits=0->120 taken=0.000->60.000
+[C2] CASE target=sink_body shield=up weapon=cannon frames=120 dist=200 external_trigger=true shots=4 dry_events=0 dry_before="" dry_after="" projectiles=0 recoil=4 hits=0->4 taken=0.000->108.000
+[C2] CASE target=bare_body shield=up weapon=laser frames=120 dist=200 external_trigger=true shots=1 dry_events=0 dry_before="" dry_after="" projectiles=0 recoil=0 bare_speed=0.000->0.000 bare_pos=200.0->200.0
+[C2] CASE target=bare_body shield=up weapon=cannon frames=120 dist=200 external_trigger=true shots=4 dry_events=0 dry_before="" dry_after="" projectiles=1 recoil=4 bare_speed=0.000->527.312 bare_pos=200.0->1249.7
+[C2] SEAM Damage.apply(npc, 100.0, false) -> shield 600.000->500.000 (d=-100.000)
+[C2] SEAM Damage.apply(rock, 100.0, false) -> work 0.000->0.000 units 100->100 (no-op: _hit_method empty)
+[C2] SEAM Damage.apply(sink_body, 100.0, false) -> taken 0.000->100.000 (control)
+[C2] SEAM Damage.apply(bare_body, 100.0, false) -> speed 0.000->0.000 (no-op)
+[C2] SEAM weapons._deliver(rock, 100.0, false, kinetic) -> work 0.000->0.000 units 100->100 (no-op: neither sink name)
+[C2] SEAM weapons._deliver(sink_body, 100.0, false, kinetic) -> taken 100.000->200.000 (control)
+[C2] SEAM weapons._deliver(bare_body, 100.0, false, kinetic) -> speed 0.000->0.000 (no-op)
+[C2] SEAM weapons._shield_up(npc)=true _shield_up(shield_reader)=true (the plasma bonus gate)
+[C2] DRY weapon=laser drained=energy dry_reason="energy"
+[C2] DRY weapon=laser fired_for=60 shots=0 dry_events=1 dry_ids=[&"laser"] hull_d=0.000 shield_d=0.000 dry_after="energy"
+[C2] DRY weapon=plasma drained=energy dry_reason="energy"
+[C2] DRY weapon=plasma fired_for=60 shots=0 dry_events=1 dry_ids=[&"plasma"] hull_d=0.000 shield_d=0.000 dry_after="energy"
+[C2] DRY weapon=cannon drained=ammo slot=1 dry_reason="ammo"
+[C2] DRY weapon=cannon fired_for=60 shots=0 dry_events=1 dry_ids=[&"cannon"] hull_d=0.000 shield_d=0.000 dry_after="ammo"
+[C2] DRY weapon=railgun drained=ammo slot=1 dry_reason="ammo"
+[C2] DRY weapon=railgun fired_for=60 shots=0 dry_events=1 dry_ids=[&"railgun"] hull_d=0.000 shield_d=0.000 dry_after="ammo"
+[C2] DRY weapon=rocket drained=ammo slot=2 dry_reason="ammo"
+[C2] DRY weapon=rocket fired_for=60 shots=0 dry_events=1 dry_ids=[&"rocket"] hull_d=0.000 shield_d=0.000 dry_after="ammo"
+[C2] DRY weapon=mine drained=ammo slot=3 dry_reason="ammo"
+[C2] DRY weapon=mine fired_for=60 shots=0 dry_events=1 dry_ids=[&"mine"] hull_d=0.000 shield_d=0.000 dry_after="ammo"
+[C2] LAUNCH-PANEL packs=5 ids=[&"laser", &"cannon", &"rocket", &"mine", &"plasma"] player_state_ammo_default=300
+[C2] LAUNCH-PANEL profile_holdings=["laser=300", "cannon=300", "rocket=300", "mine=300", "plasma=300"] total=1500
+[C2] LAUNCH-FIT ShipFit.STANDARD_FIT ids=[&"w_laser", &"s_light", &"h_plate_light", &"e_std", &"p_std"] (game.gd:_spawn_ship installs this)
+[C2] LAUNCH-FIT mining_gate module=w_mining in_standard_fit=false in_five_weapon_fit=false
+[C2] LAUNCH-FIT fitted_after_filter=[&"laser"] groups=5
+[C2] LAUNCH-FIT shipped group=1 selected="laser" dry_reason=""
+[C2] LAUNCH-FIT shipped group=2 selected="" dry_reason="none"
+[C2] LAUNCH-FIT shipped group=3 selected="" dry_reason="none"
+[C2] LAUNCH-FIT shipped group=4 selected="" dry_reason="none"
+[C2] LAUNCH-FIT shipped group=5 selected="" dry_reason="none"
+[C2] LAUNCH-FIT state rounds_per_slot=[300, 300, 300, 300, 300] total=1500 energy=100.0
+[C2] LAUNCH-FIT five-weapon fit modules=[&"w_laser", &"w_cannon", &"w_rocket", &"w_mine", &"w_plasma"] weapons=[&"laser", &"cannon", &"rocket", &"mine", &"plasma"]
+[C2] LAUNCH-FIRE group=1 weapon=laser dry_before="" shots=1 hull_d=+0.000 shield_d=-30.000 dry_after=""
+[C2] LAUNCH-FIRE group=2 weapon=cannon dry_before="" shots=5 hull_d=-135.000 shield_d=+0.000 dry_after=""
+[C2] LAUNCH-FIRE group=3 weapon=rocket dry_before="" shots=5 hull_d=-720.000 shield_d=+0.000 dry_after=""
+[C2] LAUNCH-FIRE group=4 weapon=mine dry_before="" shots=1 hull_d=-180.000 shield_d=+0.000 dry_after=""
+[C2] LAUNCH-FIRE group=5 weapon=plasma dry_before="" shots=1 hull_d=+0.000 shield_d=-70.000 dry_after=""
+[C2] MOUNT fit=STANDARD_FIT mining_laser_mounted=false weapon_component_mounted=true guns_fitted=[&"laser"]
+[C2] MOUNT fit=STANDARD_FIT+w_mining mining_laser_mounted=true weapon_component_mounted=true guns_fitted=[&"laser"]
+[C2] MOUNT fit=five_weapon_fit mining_laser_mounted=false weapon_component_mounted=true guns_fitted=[&"laser", &"cannon", &"rocket", &"mine", &"plasma"]
+[C2] MOUNT fit=five_weapon_fit+w_mining mining_laser_mounted=true weapon_component_mounted=true guns_fitted=[&"laser", &"cannon", &"rocket", &"mine", &"plasma"]
+[C2] MOUNT-FIRE ship=player_ship.tscn fit=five_weapon_fit+w_mining group=1 weapon=laser rock_units=5->0 rock_freed=true
+[C2] done stepped_frames=4920
+EXIT=0

@@ -120,3 +120,38 @@ textures were audited and 286 have no source file on disk any more.
   are restored from git (`65bc1cb^`), so the F.1 uid and the `@2x` import settings
   (mipmaps on, lossless, 3D detection off) come back unchanged.
 - Status: staged, awaiting the owner review sheet `_preview/review_slots.png`.
+
+---
+
+## R7 chrome - recovered from the import cache and re-cut (2026-09-21) - free, local, no API call
+
+Not a generation. The 2026-09-21 cut redesign pulled the chrome into `assets/ui/` as whole
+sheet cells, so the theme stretched a cell into every plate, the nine-patches drew a thin
+band, the engine's bar-cap windows cropped the wrong part of the sheet, and the frozen
+wordmark crop looked past the bottom of the file. All of it came back out of
+`.godot/imported` (`recover_ctex.py`; 3698 textures audited, 286 orphans) and every band
+was re-cut locally by `recut_chrome.py`. Report: `.agents/gen/designer_chrome_recovery_report.md`.
+
+- Recovered `@2x` artefacts, shipped verbatim (they are the F.1/F.2 files the redesign
+  deleted): `ui_button_plate_{normal,hover,pressed,disabled}@2x.png` 560x112,
+  `ui_minimap_bezel@2x.png` 400x400, `ui_panel_frame@2x.png` 192x192,
+  `ui_bar_caps@2x.png` 84x28, `ui_panel_frame_96.png` 96x96. Their ctex hashes and Godot's
+  own `source_md5` are in `_recover/ui_chrome/provenance.json`.
+- The 1x band in each is the `@2x` halved, justified per family: the F.2 button plates
+  measured 0.21-0.44 levels between the pair, the bar caps are the same two caps at 20x14 /
+  40x28 with a 2/4 px gap, the F.2 frame was rebuilt as 3x3 tiles of exactly size/3 (32 px
+  band at 96), and the F.1 bezel is a 16 px band at 200. Cross-check: the F.1 recipe re-run
+  from the recovered bezel cell agrees with the halved `@2x` to mean 0.2019 on the 1x.
+- `ui_button_plate_*` 280x56, `ui_bar_caps` 42x14, `ui_minimap_bezel` 200x200,
+  `ui_panel_frame` 96x96, `logo_vajb_orbit` 2048x2048 - 15 files.
+- The wordmark is keyed out of the recovered raw render (keep components that are bright and
+  large: `lum >= 90` and `alpha >= 32`, 1/4-scale labels, >= 12 cells, 8 px dilation, then
+  gate the matte's alpha), normalised by 1.1081 x 1.1322 onto `IMPLEMENTATION_PLAN.md` line
+  46's frozen imprint. Staged ink box (56,719,1993,1310), exactly the imprint.
+- Integrity: 15/15 cuts pass ink-box-vs-plate-box and opacity (`qc_chrome.png`,
+  `qc_chrome_table.txt`), and the sheet was looked at before the review sheet
+  (`review_chrome.png`).
+- Paired change owed by the coder lane: `build_theme.gd`'s `PANEL_FRAME_MARGIN` is 8.0 while
+  the F.2 art's band is 32 px - the art must not ship without the constant.
+- Status: staged, awaiting the owner review sheet. Backdrop-plate candidates for the station
+  panels (queue item 4) sit in `_recover/ui_chrome/_plates/` - proposal only.

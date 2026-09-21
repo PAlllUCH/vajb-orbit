@@ -1,0 +1,256 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+WARNING: The local variable "source" is shadowing an already-declared function at line 216 in the current class.
+     at: GDScript::reload (res://game/projectile.gd:152)
+WARNING: The local function parameter "decoy" is shadowing an already-declared function at line 204 in the current class.
+     at: GDScript::reload (res://game/projectile.gd:224)
+WARNING: The local variable "decoy" is shadowing an already-declared function at line 204 in the current class.
+     at: GDScript::reload (res://game/projectile.gd:300)
+WARNING: The local function parameter "weapon_ids" is shadowing an already-declared function at line 1010 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:222)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1082 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:252)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1082 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:411)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1082 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:438)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1082 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:457)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1082 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:491)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1082 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:520)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1082 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:527)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1082 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:562)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1082 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:768)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1082 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:779)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1082 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:1003)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1082 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:1017)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1082 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:1022)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1082 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:1026)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1082 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:1040)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1082 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:1059)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1082 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:1070)
+WARNING: The local variable "owner" is shadowing an already-declared property in the base class "Node".
+     at: GDScript::reload (res://game/weapons.gd:1074)
+[godot_ai game_helper] registered mcp capture (debugger active=true, logger=true)
+[C3] engine=4.7.2-stable (official) physics_hz=60 max_fps=0
+[C3] cmdline=res://tests/probe_c3_flight_decay.tscn
+[C3] input thrust_forward=true boost=true
+[C3] config case=shipped_base hull=ship_vanguard hull_mass=110.0 max_speed=406.600 accel_time=2.520 coast_time=1.050 damp_1_over_coast=0.952381 accel_rate=161.349 coast_rate=387.238 boost=false note=the shipped launch, throttle released at cruise
+[C3] legacy case=shipped_base no_DRAG_no_ACCELERATION_in_tree=true obsolete_pair=DRAG:120,ACCELERATION:420 replaced_by=coast_time(1/coast_time damp + max_speed/coast_time brake),accel_time(max_speed/accel_time) boost=false
+[C3] accel case=shipped_base phase=base t=0.100 speed=16.135
+[C3] accel case=shipped_base phase=base t=0.200 speed=32.270
+[C3] accel case=shipped_base phase=base t=0.300 speed=48.405
+[C3] accel case=shipped_base phase=base t=0.400 speed=64.540
+[C3] accel case=shipped_base phase=base t=0.500 speed=80.675
+[C3] accel case=shipped_base phase=base t=0.600 speed=96.810
+[C3] accel case=shipped_base phase=base t=0.700 speed=112.944
+[C3] accel case=shipped_base phase=base t=0.800 speed=129.079
+[C3] accel case=shipped_base phase=base t=0.900 speed=145.214
+[C3] accel case=shipped_base phase=base t=1.000 speed=161.349
+[C3] accel case=shipped_base phase=base t=1.100 speed=177.484
+[C3] accel case=shipped_base phase=base t=1.200 speed=193.619
+[C3] accel case=shipped_base phase=base t=1.300 speed=209.754
+[C3] accel case=shipped_base phase=base t=1.400 speed=225.889
+[C3] accel case=shipped_base phase=base t=1.500 speed=242.024
+[C3] accel case=shipped_base phase=base t=1.600 speed=258.159
+[C3] accel case=shipped_base phase=base t=1.700 speed=274.294
+[C3] accel case=shipped_base phase=base t=1.800 speed=290.429
+[C3] accel case=shipped_base phase=base t=1.900 speed=306.564
+[C3] accel case=shipped_base phase=base t=2.000 speed=322.698
+[C3] accel case=shipped_base phase=base t=2.100 speed=338.833
+[C3] accel case=shipped_base phase=base t=2.200 speed=354.968
+[C3] accel case=shipped_base phase=base t=2.300 speed=371.103
+[C3] accel case=shipped_base phase=base t=2.400 speed=387.238
+[C3] accel case=shipped_base phase=base t=2.500 speed=403.373
+[C3] phase case=shipped_base t_accel_total=2.533 speed=406.600 (the accelerate leg a retune must not lengthen)
+[C3] curve case=shipped_base t=0.000 speed=406.600 along=406.600 s=0.000 drift=0.000
+[C3] curve case=shipped_base t=0.100 speed=367.876 along=367.876 s=39.047 drift=0.000
+[C3] curve case=shipped_base t=0.200 speed=329.152 along=329.152 s=74.221 drift=0.000
+[C3] curve case=shipped_base t=0.300 speed=290.429 along=290.429 s=105.522 drift=0.000
+[C3] curve case=shipped_base t=0.400 speed=251.705 along=251.705 s=132.952 drift=0.000
+[C3] curve case=shipped_base t=0.500 speed=212.981 along=212.981 s=156.509 drift=0.000
+[C3] curve case=shipped_base t=0.600 speed=174.257 along=174.257 s=176.193 drift=0.000
+[C3] curve case=shipped_base t=0.700 speed=135.533 along=135.533 s=192.006 drift=0.000
+[C3] curve case=shipped_base t=0.800 speed=96.809 along=96.809 s=203.945 drift=0.000
+[C3] curve case=shipped_base t=0.900 speed=58.086 along=58.086 s=212.013 drift=0.000
+[C3] curve case=shipped_base t=1.000 speed=19.362 along=19.362 s=216.208 drift=0.000
+[C3] curve case=shipped_base t=1.100 speed=0.000 along=0.000 s=216.853 drift=0.000
+[C3] result case=shipped_base v_release=406.600 t10=0.945 dist10=213.90 t_stop=1.100 dist_stop=216.85 samples=12 monotone=true
+[C3] derived case=shipped_base ideal_t10=0.945 ideal_t_stop=1.050 ideal_dist=213.47
+[C3] config case=fighter_base hull=ship_fighter hull_mass=80.0 max_speed=427.500 accel_time=2.100 coast_time=0.840 damp_1_over_coast=1.190476 accel_rate=203.571 coast_rate=508.929 boost=false note=the fastest class in the section 13 column, same release
+[C3] legacy case=fighter_base no_DRAG_no_ACCELERATION_in_tree=true obsolete_pair=DRAG:120,ACCELERATION:420 replaced_by=coast_time(1/coast_time damp + max_speed/coast_time brake),accel_time(max_speed/accel_time) boost=false
+[C3] accel case=fighter_base phase=base t=0.100 speed=20.357
+[C3] accel case=fighter_base phase=base t=0.200 speed=40.714
+[C3] accel case=fighter_base phase=base t=0.300 speed=61.071
+[C3] accel case=fighter_base phase=base t=0.400 speed=81.429
+[C3] accel case=fighter_base phase=base t=0.500 speed=101.786
+[C3] accel case=fighter_base phase=base t=0.600 speed=122.143
+[C3] accel case=fighter_base phase=base t=0.700 speed=142.500
+[C3] accel case=fighter_base phase=base t=0.800 speed=162.857
+[C3] accel case=fighter_base phase=base t=0.900 speed=183.214
+[C3] accel case=fighter_base phase=base t=1.000 speed=203.572
+[C3] accel case=fighter_base phase=base t=1.100 speed=223.929
+[C3] accel case=fighter_base phase=base t=1.200 speed=244.286
+[C3] accel case=fighter_base phase=base t=1.300 speed=264.643
+[C3] accel case=fighter_base phase=base t=1.400 speed=285.000
+[C3] accel case=fighter_base phase=base t=1.500 speed=305.357
+[C3] accel case=fighter_base phase=base t=1.600 speed=325.715
+[C3] accel case=fighter_base phase=base t=1.700 speed=346.072
+[C3] accel case=fighter_base phase=base t=1.800 speed=366.429
+[C3] accel case=fighter_base phase=base t=1.900 speed=386.786
+[C3] accel case=fighter_base phase=base t=2.000 speed=407.143
+[C3] accel case=fighter_base phase=base t=2.100 speed=427.500
+[C3] phase case=fighter_base t_accel_total=2.100 speed=427.500 (the accelerate leg a retune must not lengthen)
+[C3] curve case=fighter_base t=0.000 speed=427.500 along=427.500 s=0.000 drift=0.000
+[C3] curve case=fighter_base t=0.100 speed=376.607 along=376.607 s=40.629 drift=0.000
+[C3] curve case=fighter_base t=0.200 speed=325.714 along=325.714 s=76.170 drift=0.000
+[C3] curve case=fighter_base t=0.300 speed=274.822 along=274.822 s=106.621 drift=0.000
+[C3] curve case=fighter_base t=0.400 speed=223.929 along=223.929 s=131.982 drift=0.000
+[C3] curve case=fighter_base t=0.500 speed=173.036 along=173.036 s=152.255 drift=0.000
+[C3] curve case=fighter_base t=0.600 speed=122.143 along=122.143 s=167.438 drift=0.000
+[C3] curve case=fighter_base t=0.700 speed=71.250 along=71.250 s=177.531 drift=0.000
+[C3] curve case=fighter_base t=0.800 speed=20.357 along=20.357 s=182.536 drift=0.000
+[C3] curve case=fighter_base t=0.900 speed=0.000 along=0.000 s=183.130 drift=0.000
+[C3] result case=fighter_base v_release=427.500 t10=0.756 dist10=180.33 t_stop=0.900 dist_stop=183.13 samples=10 monotone=true
+[C3] derived case=fighter_base ideal_t10=0.756 ideal_t_stop=0.840 ideal_dist=179.55
+[C3] config case=shipped_afterburner hull=ship_vanguard hull_mass=110.0 max_speed=406.600 accel_time=2.520 coast_time=1.050 damp_1_over_coast=0.952381 accel_rate=161.349 coast_rate=387.238 boost=true note=burn lit at cruise, then thrust and burn released
+[C3] legacy case=shipped_afterburner no_DRAG_no_ACCELERATION_in_tree=true obsolete_pair=DRAG:120,ACCELERATION:420 replaced_by=coast_time(1/coast_time damp + max_speed/coast_time brake),accel_time(max_speed/accel_time) boost=true
+[C3] accel case=shipped_afterburner phase=base t=0.100 speed=16.135
+[C3] accel case=shipped_afterburner phase=base t=0.200 speed=32.270
+[C3] accel case=shipped_afterburner phase=base t=0.300 speed=48.405
+[C3] accel case=shipped_afterburner phase=base t=0.400 speed=64.540
+[C3] accel case=shipped_afterburner phase=base t=0.500 speed=80.675
+[C3] accel case=shipped_afterburner phase=base t=0.600 speed=96.810
+[C3] accel case=shipped_afterburner phase=base t=0.700 speed=112.944
+[C3] accel case=shipped_afterburner phase=base t=0.800 speed=129.079
+[C3] accel case=shipped_afterburner phase=base t=0.900 speed=145.214
+[C3] accel case=shipped_afterburner phase=base t=1.000 speed=161.349
+[C3] accel case=shipped_afterburner phase=base t=1.100 speed=177.484
+[C3] accel case=shipped_afterburner phase=base t=1.200 speed=193.619
+[C3] accel case=shipped_afterburner phase=base t=1.300 speed=209.754
+[C3] accel case=shipped_afterburner phase=base t=1.400 speed=225.889
+[C3] accel case=shipped_afterburner phase=base t=1.500 speed=242.024
+[C3] accel case=shipped_afterburner phase=base t=1.600 speed=258.159
+[C3] accel case=shipped_afterburner phase=base t=1.700 speed=274.294
+[C3] accel case=shipped_afterburner phase=base t=1.800 speed=290.429
+[C3] accel case=shipped_afterburner phase=base t=1.900 speed=306.564
+[C3] accel case=shipped_afterburner phase=base t=2.000 speed=322.698
+[C3] accel case=shipped_afterburner phase=base t=2.100 speed=338.833
+[C3] accel case=shipped_afterburner phase=base t=2.200 speed=354.968
+[C3] accel case=shipped_afterburner phase=base t=2.300 speed=371.103
+[C3] accel case=shipped_afterburner phase=base t=2.400 speed=387.238
+[C3] accel case=shipped_afterburner phase=base t=2.500 speed=403.373
+[C3] accel case=shipped_afterburner phase=boost t=0.100 speed=422.735
+[C3] accel case=shipped_afterburner phase=boost t=0.200 speed=438.870
+[C3] accel case=shipped_afterburner phase=boost t=0.300 speed=455.005
+[C3] accel case=shipped_afterburner phase=boost t=0.400 speed=471.140
+[C3] accel case=shipped_afterburner phase=boost t=0.500 speed=487.275
+[C3] accel case=shipped_afterburner phase=boost t=0.600 speed=503.410
+[C3] accel case=shipped_afterburner phase=boost t=0.700 speed=519.544
+[C3] accel case=shipped_afterburner phase=boost t=0.800 speed=535.679
+[C3] accel case=shipped_afterburner phase=boost t=0.900 speed=551.814
+[C3] accel case=shipped_afterburner phase=boost t=1.000 speed=567.949
+[C3] accel case=shipped_afterburner phase=boost t=1.100 speed=584.084
+[C3] accel case=shipped_afterburner phase=boost t=1.200 speed=600.219
+[C3] accel case=shipped_afterburner phase=boost t=1.300 speed=616.354
+[C3] accel case=shipped_afterburner phase=boost t=1.400 speed=632.489
+[C3] accel case=shipped_afterburner phase=boost t=1.500 speed=648.624
+[C3] phase case=shipped_afterburner t_accel_total=4.050 speed=650.560 (the accelerate leg a retune must not lengthen)
+[C3] curve case=shipped_afterburner t=0.000 speed=650.560 along=650.560 s=0.000 drift=0.000
+[C3] curve case=shipped_afterburner t=0.100 speed=611.836 along=611.836 s=63.443 drift=0.000
+[C3] curve case=shipped_afterburner t=0.200 speed=573.112 along=573.112 s=123.013 drift=0.000
+[C3] curve case=shipped_afterburner t=0.300 speed=534.389 along=534.389 s=178.710 drift=0.000
+[C3] curve case=shipped_afterburner t=0.400 speed=495.665 along=495.665 s=230.536 drift=0.000
+[C3] curve case=shipped_afterburner t=0.500 speed=456.941 along=456.941 s=278.489 drift=0.000
+[C3] curve case=shipped_afterburner t=0.600 speed=418.217 along=418.217 s=322.569 drift=0.000
+[C3] curve case=shipped_afterburner t=0.700 speed=379.493 along=379.493 s=362.777 drift=0.000
+[C3] curve case=shipped_afterburner t=0.800 speed=340.770 along=340.770 s=399.113 drift=0.000
+[C3] curve case=shipped_afterburner t=0.900 speed=302.046 along=302.046 s=431.577 drift=0.000
+[C3] curve case=shipped_afterburner t=1.000 speed=263.322 along=263.322 s=460.168 drift=0.000
+[C3] curve case=shipped_afterburner t=1.100 speed=224.598 along=224.598 s=484.886 drift=0.000
+[C3] curve case=shipped_afterburner t=1.200 speed=185.874 along=185.874 s=505.733 drift=0.000
+[C3] curve case=shipped_afterburner t=1.300 speed=147.150 along=147.150 s=522.707 drift=0.000
+[C3] curve case=shipped_afterburner t=1.400 speed=108.427 along=108.427 s=535.808 drift=0.000
+[C3] curve case=shipped_afterburner t=1.500 speed=69.703 along=69.703 s=545.037 drift=0.000
+[C3] curve case=shipped_afterburner t=1.600 speed=30.979 along=30.979 s=550.394 drift=0.000
+[C3] curve case=shipped_afterburner t=1.700 speed=0.000 along=0.000 s=551.900 drift=0.000
+[C3] result case=shipped_afterburner v_release=650.560 t10=1.512 dist10=545.68 t_stop=1.700 dist_stop=551.90 samples=18 monotone=true
+[C3] derived case=shipped_afterburner ideal_t10=1.512 ideal_t_stop=1.680 ideal_dist=546.47
+[C3] config case=shipped_afterburner_burn_lit hull=ship_vanguard hull_mass=110.0 max_speed=406.600 accel_time=2.520 coast_time=1.050 damp_1_over_coast=0.952381 accel_rate=161.349 coast_rate=387.238 boost=true note=burn lit at cruise, thrust released, burn still held (control)
+[C3] legacy case=shipped_afterburner_burn_lit no_DRAG_no_ACCELERATION_in_tree=true obsolete_pair=DRAG:120,ACCELERATION:420 replaced_by=coast_time(1/coast_time damp + max_speed/coast_time brake),accel_time(max_speed/accel_time) boost=true
+[C3] accel case=shipped_afterburner_burn_lit phase=base t=0.100 speed=16.135
+[C3] accel case=shipped_afterburner_burn_lit phase=base t=0.200 speed=32.270
+[C3] accel case=shipped_afterburner_burn_lit phase=base t=0.300 speed=48.405
+[C3] accel case=shipped_afterburner_burn_lit phase=base t=0.400 speed=64.540
+[C3] accel case=shipped_afterburner_burn_lit phase=base t=0.500 speed=80.675
+[C3] accel case=shipped_afterburner_burn_lit phase=base t=0.600 speed=96.810
+[C3] accel case=shipped_afterburner_burn_lit phase=base t=0.700 speed=112.944
+[C3] accel case=shipped_afterburner_burn_lit phase=base t=0.800 speed=129.079
+[C3] accel case=shipped_afterburner_burn_lit phase=base t=0.900 speed=145.214
+[C3] accel case=shipped_afterburner_burn_lit phase=base t=1.000 speed=161.349
+[C3] accel case=shipped_afterburner_burn_lit phase=base t=1.100 speed=177.484
+[C3] accel case=shipped_afterburner_burn_lit phase=base t=1.200 speed=193.619
+[C3] accel case=shipped_afterburner_burn_lit phase=base t=1.300 speed=209.754
+[C3] accel case=shipped_afterburner_burn_lit phase=base t=1.400 speed=225.889
+[C3] accel case=shipped_afterburner_burn_lit phase=base t=1.500 speed=242.024
+[C3] accel case=shipped_afterburner_burn_lit phase=base t=1.600 speed=258.159
+[C3] accel case=shipped_afterburner_burn_lit phase=base t=1.700 speed=274.294
+[C3] accel case=shipped_afterburner_burn_lit phase=base t=1.800 speed=290.429
+[C3] accel case=shipped_afterburner_burn_lit phase=base t=1.900 speed=306.564
+[C3] accel case=shipped_afterburner_burn_lit phase=base t=2.000 speed=322.698
+[C3] accel case=shipped_afterburner_burn_lit phase=base t=2.100 speed=338.833
+[C3] accel case=shipped_afterburner_burn_lit phase=base t=2.200 speed=354.968
+[C3] accel case=shipped_afterburner_burn_lit phase=base t=2.300 speed=371.103
+[C3] accel case=shipped_afterburner_burn_lit phase=base t=2.400 speed=387.238
+[C3] accel case=shipped_afterburner_burn_lit phase=base t=2.500 speed=403.373
+[C3] accel case=shipped_afterburner_burn_lit phase=boost t=0.100 speed=422.735
+[C3] accel case=shipped_afterburner_burn_lit phase=boost t=0.200 speed=438.870
+[C3] accel case=shipped_afterburner_burn_lit phase=boost t=0.300 speed=455.005
+[C3] accel case=shipped_afterburner_burn_lit phase=boost t=0.400 speed=471.140
+[C3] accel case=shipped_afterburner_burn_lit phase=boost t=0.500 speed=487.275
+[C3] accel case=shipped_afterburner_burn_lit phase=boost t=0.600 speed=503.410
+[C3] accel case=shipped_afterburner_burn_lit phase=boost t=0.700 speed=519.544
+[C3] accel case=shipped_afterburner_burn_lit phase=boost t=0.800 speed=535.679
+[C3] accel case=shipped_afterburner_burn_lit phase=boost t=0.900 speed=551.814
+[C3] accel case=shipped_afterburner_burn_lit phase=boost t=1.000 speed=567.949
+[C3] accel case=shipped_afterburner_burn_lit phase=boost t=1.100 speed=584.084
+[C3] accel case=shipped_afterburner_burn_lit phase=boost t=1.200 speed=600.219
+[C3] accel case=shipped_afterburner_burn_lit phase=boost t=1.300 speed=616.354
+[C3] accel case=shipped_afterburner_burn_lit phase=boost t=1.400 speed=632.489
+[C3] accel case=shipped_afterburner_burn_lit phase=boost t=1.500 speed=648.624
+[C3] phase case=shipped_afterburner_burn_lit t_accel_total=4.050 speed=650.560 (the accelerate leg a retune must not lengthen)
+[C3] curve case=shipped_afterburner_burn_lit t=0.000 speed=650.560 along=650.560 s=0.000 drift=0.000
+[C3] curve case=shipped_afterburner_burn_lit t=0.100 speed=611.836 along=611.836 s=63.443 drift=0.000
+[C3] curve case=shipped_afterburner_burn_lit t=0.200 speed=573.112 along=573.112 s=123.013 drift=0.000
+[C3] curve case=shipped_afterburner_burn_lit t=0.300 speed=534.389 along=534.389 s=178.710 drift=0.000
+[C3] curve case=shipped_afterburner_burn_lit t=0.400 speed=495.665 along=495.665 s=230.536 drift=0.000
+[C3] curve case=shipped_afterburner_burn_lit t=0.500 speed=456.941 along=456.941 s=278.489 drift=0.000
+[C3] curve case=shipped_afterburner_burn_lit t=0.600 speed=418.217 along=418.217 s=322.569 drift=0.000
+[C3] curve case=shipped_afterburner_burn_lit t=0.700 speed=379.493 along=379.493 s=362.777 drift=0.000
+[C3] curve case=shipped_afterburner_burn_lit t=0.800 speed=340.770 along=340.770 s=399.113 drift=0.000
+[C3] curve case=shipped_afterburner_burn_lit t=0.900 speed=302.046 along=302.046 s=431.577 drift=0.000
+[C3] curve case=shipped_afterburner_burn_lit t=1.000 speed=263.322 along=263.322 s=460.168 drift=0.000
+[C3] curve case=shipped_afterburner_burn_lit t=1.100 speed=224.598 along=224.598 s=484.886 drift=0.000
+[C3] curve case=shipped_afterburner_burn_lit t=1.200 speed=185.874 along=185.874 s=505.733 drift=0.000
+[C3] curve case=shipped_afterburner_burn_lit t=1.300 speed=147.150 along=147.150 s=522.707 drift=0.000
+[C3] curve case=shipped_afterburner_burn_lit t=1.400 speed=108.427 along=108.427 s=535.808 drift=0.000
+[C3] curve case=shipped_afterburner_burn_lit t=1.500 speed=69.703 along=69.703 s=545.037 drift=0.000
+[C3] curve case=shipped_afterburner_burn_lit t=1.600 speed=30.979 along=30.979 s=550.394 drift=0.000
+[C3] curve case=shipped_afterburner_burn_lit t=1.700 speed=0.000 along=0.000 s=551.900 drift=0.000
+[C3] result case=shipped_afterburner_burn_lit v_release=650.560 t10=1.512 dist10=545.68 t_stop=1.700 dist_stop=551.90 samples=18 monotone=true
+[C3] derived case=shipped_afterburner_burn_lit ideal_t10=1.512 ideal_t_stop=1.680 ideal_dist=546.47
+[C3] clock iterations=1088 physics_frames=1089 wall_ms=356
+[C3] done cases=4 failures=0

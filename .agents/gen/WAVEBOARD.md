@@ -8,25 +8,31 @@ evidence were moved to `.agents/gen/_archive/` (2026-09-21, reversible) —
 citation paths of the form `.agents/gen/<report>.md` now resolve one level
 deeper.
 
-**Current state: UI-chrome code lane closed, its art half staged for the owner,
-combat/collision findings open.** Engine waves closed as below (slice 0 + slice 2
-review-verified clean; gate `passed=226 failed=0`; last wave commit `1044983`). A
-full-loop live playtest (2026-09-21, godot-ai driven, owner crosschecking in
-`USER_NOTES.md`) verified the whole menu → station → launch → space structure but
-found the `ui_slot_*` chrome shipping as whole sheet cells (880×876 / 873×864). The
-code lane is **Done** (D3 guard, D4 stale UIDs, D5 lint, D6 docs; reports
-`.agents/gen/ui_chrome_w{1..6}_report.md`; reviewer verdict no HIGH, two MED — both
-fixed — and ten LOW; measured: shipyard strip 6184 → 360 px, launch panel 4781 →
-952 px with the oversized art still on disk, gate 219 → 226). **The art half is
-owner-gated**: the graphics lane measured that the shipped alpha holds only the
-silhouette (the paid matte keyed the plate out), so no crop recovers it — the
-pre-redesign cells came back from Godot's import cache and await approval on
-`staging/phase_f/_preview/review_slots.png`. **New owner findings from the same
-session — combat, collision damage, rock push, flight drag, reticle drift, a hangar
-shot — are recorded with their measured evidence in
-`.agents/gen/owner_playtest_findings_20260921.md`; the combat/collision repair wave
-goes before slice 2.5.** Findings + evidence:
-`.agents/gen/playtest_fullloop_20260921.md`.
+**Current state: two coding waves closed, the combat repair measured and fixed; the
+chrome art half and the launch fit wait on the owner.** Engine waves closed as below
+(slice 0 + slice 2 review-verified clean; gate `passed=236 failed=0`). A full-loop live
+playtest (2026-09-21, godot-ai driven) verified the whole menu → station → launch →
+space structure but found the `ui_slot_*` chrome shipping as whole sheet cells
+(880×876 / 873×864). The **UI-chrome code lane is Done** (D3 guard, D4 stale UIDs, D5
+lint, D6 docs; reports `.agents/gen/ui_chrome_w{1..6}_report.md`; no HIGH, two MED
+fixed, ten LOW; measured: shipyard strip 6184 → 360 px, launch panel 4781 → 952 px
+with the oversized art still on disk, gate 219 → 226). **Its art half is owner-gated**:
+the graphics lane measured that the shipped alpha holds only the silhouette (the paid
+matte keyed the plate out), so no crop recovers it — the pre-redesign cells came back
+from Godot's import cache and await approval on
+`staging/phase_f/_preview/review_slots.png`. The **combat/collision repair wave is Done**
+(reports `.agents/gen/combat_repair_{c1,c2,c3,c5,c6,c7,t1}_report.md`; reviewer verdict
+no HIGH, two MED — one an orchestrator record error, one the contract's own stale pins —
+both fixed). Measured and fixed: the rock's `collision_mask` 0 → 2 (the pair solved as
+immovable; a ram now hands the rock 72.821 u/s and 20.323 u), the rock's missing ram
+sink (rides the shipped `GUN_CHIP_RATE` 0.10, no new constant), plasma's +25 % bonus
+through a live shield (`NpcShip.shield_up()`), the mine's borrowed kinetic cadence, and
+the owner-ruled drag retune (nine `coast_time` rows ×0.50: Vanguard t10 1.890 → 0.945 s,
+carry 430.32 → 216.85 u, §13 tick pending). **Two owner gates stay open:** the launch fit
+(the briefing reports five weapons / 1500 rounds while the ship mounts `[w_laser]` and no
+mining laser — the measured root cause of "shooting is not working" and "cannot shoot
+asteroids") and the §13 `coast_time` table. Evidence:
+`.agents/gen/owner_playtest_findings_20260921.md`, `.agents/gen/playtest_fullloop_20260921.md`.
 
 ## Living contracts
 
@@ -36,8 +42,9 @@ goes before slice 2.5.** Findings + evidence:
   rulings 8–26. **Owner-locked**: no worker may edit it; the six owed spec
   edits are the owner's (MASTER_REPORT §3 item 1).
 - Universal test gate: `res://tests/headless_runner.tscn` → `[SUMMARY]
-  passed=226 failed=0` (exact command in CONTRACTS.md §9; grew 53 → 78 → 219 → 226
-  with the UI-chrome wave's `test_ui_slot_layout.gd`).
+  passed=236 failed=0` (exact command in CONTRACTS.md §9; grew 53 → 78 → 219 → 226
+  with the UI-chrome wave's `test_ui_slot_layout.gd`, then 236 with the combat repair
+  wave's `test_engine_c3_flight_decay.gd` and `test_combat_repair_c5.gd`).
 - `staging/verify_wave.py` — mechanical wave gates: `snapshot` before a wave,
   `verify --baseline <tag> [--forbidden ...] [--expect-reports ...] [--tests]`
   after. Baselines live in `.agents/gen/_wave_state/` (`wave1_closed`,
@@ -123,24 +130,25 @@ lanes' queued items below are executed through those files.
    slot review sheet, and the coder lane owes the graphics lane one small
    tooling fix: an `--only` scope for `staging/phase_f/apply_import_settings.py`
    before any batch may use it.
-2. **Playtest session 2 (after #1's art half).** Finish the loop legs session 1
-   could not reach: flight/fuel/reactor, mining, combat + countermeasures,
-   death/respawn, dock-back economy, save/load, boot/loading logo, menu
-   stutter (user note), plus the owner's live findings below. Same crosscheck
-   protocol against `USER_NOTES.md`.
-3. **Combat / collision repair wave (NEW 2026-09-21, owner's live findings,
-   before slice 2.5).** Recorded with their evidence in
-   `.agents/gen/owner_playtest_findings_20260921.md`: weapons cannot damage
-   rocks (no `take_damage`/`damage` on `Asteroid` — a spec question, owner
-   ruling), a rock's half of a ram has no receiver (`Asteroid` implements no
-   `apply_collision_damage`) and `collision_mask = 0` may one-way the pair,
-   collision damage has §13's 40 u/s floor, flight drag/inertia feel, reticle
-   drift on launch, and a hangar shot that no code path explains. Four of the
-   six are **measurement first** (deterministic headless probes, never an
-   unfocused live window — CONTRACTS §9's trap list), and two are owner
-   rulings. Measured so far: the trigger, the energy spend and the beam path
-   all work in a direct-scene run.
-4. **Slice-2.5 (Feel) — READY, first engine wave after #1/#2.** Motion blur + camera
+2. **Playtest session 2 — now the head of the queue.** Finish the loop legs
+   session 1 could not reach: flight/fuel/reactor, mining, combat +
+   countermeasures, death/respawn, dock-back economy, save/load, boot/loading
+   logo, menu stutter (user note), and re-test the repaired rock ram, the drag
+   retune and the launch fit (the owner deferred that decision to this
+   session). Same crosscheck protocol; the notes file moved out of the root —
+   read `TO_REVIEW/` and `USER_NOTES.md` at HEAD if the root copy is absent.
+3. **Combat / collision repair wave — DONE 2026-09-21** (brief
+   `combat_repair_wave_task.md`, prompts `combat_repair_wave_prompts.md`, reports
+   `combat_repair_{c1,c2,c3,c5,c6,c7,t1}_report.md`, gate 226 → 236). C1 proved the
+   rock's `collision_mask = 0` made the physics pair solve as immovable and that the
+   40 u/s floor was not the cause; C2 overturned the wave's own premise (weapons
+   already chip rocks at `GUN_CHIP_RATE` 0.10) and found the real cause of the owner's
+   report — the launch fit — plus plasma's shield bonus and the mine's borrowed
+   cadence; C3 measured the decay and located it in the §13 `coast_time` row, not the
+   `DRAG`/`ACCELERATION` pair the brief assumed. C5 fixed four defects and applied the
+   owner's retune; C6 reviewed with no HIGH; C7 corrected the contract's own stale
+   pins. **Open owner gates: the launch fit and the §13 `coast_time` table.**
+4. **Slice-2.5 (Feel) — READY, first engine wave after #2/#3.** Motion blur + camera
    pull-back + dust streaks (§3.4), damage smoke/ripple/shatter (FX_SPEC §6),
    dash charge FX (FX_SPEC §7) — no new gameplay systems, every number already
    in §13. All signals exist: the hull publishes `velocity()`, the HUD has
@@ -178,6 +186,12 @@ lanes' queued items below are executed through those files.
 
 ## Closed (details in MASTER_REPORT.md)
 
+- **Combat/collision repair wave** (2026-09-21, gate 226 → 236): C1–C3 measured, C5
+  fixed (rock `collision_mask` 0 → 2, the rock's ram sink on the shipped
+  `GUN_CHIP_RATE`, plasma's live-shield bonus, the mine's cadence fallback, and the
+  owner's nine `coast_time` rows ×0.50), C6 reviewed with no HIGH, C7 corrected
+  CONTRACTS §4/§5/§8.2/§9 and wrote the v1.2 changelog, T1 gave the import tool its
+  `--only` scope. Reports `.agents/gen/combat_repair_*_report.md`.
 - **UI-chrome wave, code lane** (2026-09-21, gate 219 → 226): W1–W4 built the D3
   `TextureButton` size guard (six sites, measured shipyard strip 6184 → 360 px and
   launch panel 4781 → 952 px with the oversized art still on disk, new

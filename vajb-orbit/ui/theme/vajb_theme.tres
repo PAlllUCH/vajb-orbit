@@ -89,10 +89,10 @@ border_color = Color(0.16470589, 0.19215687, 0.23529412, 1)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ast51"]
 texture = ExtResource("1_d6u4y")
-texture_margin_left = 8.0
-texture_margin_top = 8.0
-texture_margin_right = 8.0
-texture_margin_bottom = 8.0
+texture_margin_left = 32.0
+texture_margin_top = 32.0
+texture_margin_right = 32.0
+texture_margin_bottom = 32.0
 expand_margin_left = 1.0
 expand_margin_top = 1.0
 expand_margin_right = 1.0

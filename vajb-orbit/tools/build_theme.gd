@@ -20,11 +20,13 @@ const TAB_FONT_SIZE := 14
 ## The panel frame is a 96x96 source with a 32 px border band (UI_SPEC section 5.3).
 ## A StyleBoxTexture has no border_width, so the theme's 1 px border convention is
 ## carried as a 1 px expand margin and the frame's own painted border is not tinted.
-## Measured 2026-09-18: the painted band is 8 px, not 32, so the margin matches the
-## art. At 32 the nine-patch also inset every framed panel's children by 33 px on
-## each side, which is what made the station credits housing 123 px tall.
-## Evidence: docs/design/ASSET_AUDIT.md anomaly C1.
-const PANEL_FRAME_MARGIN := 8.0
+## Measured 2026-09-21 on the shipped F.2 re-band (reband_frame.measure_band): the
+## painted band is 31.8 px (edges 30/32/32/33), so a 32 px margin is what matches the
+## art. At 8 the nine-patch stretches that band to 69 px vertically and 119 px
+## horizontally across every framed panel; at 32 it draws 30/32, the F.2 acceptance
+## row. The previous 8 px margin was measured on the pre-reband 13 px art.
+## Evidence: docs/design/UI_CHROME_ASSETS_SPEC.md section 10, staging/phase_f/reband_report.json.
+const PANEL_FRAME_MARGIN := 32.0
 const FRAME_EXPAND_MARGIN := 1.0
 const SCROLL_CONTENT_MARGIN := 5.0
 

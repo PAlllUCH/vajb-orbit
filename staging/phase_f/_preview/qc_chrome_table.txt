@@ -1,0 +1,16 @@
+cut                                canvas       box          ink box  alpha  solid  clear  verdict
+ui_bar_caps.png                     42x14     42x14       0,0..42,14  222.4  66.8%   3.9%  pass
+ui_bar_caps@2x.png                  84x28     84x28       0,0..84,28  222.5  77.8%   8.7%  pass
+ui_button_plate_disabled.png       280x56    280x56      0,0..280,56  241.5  86.9%   0.2%  pass
+ui_button_plate_disabled@2x.png    560x112   560x112     0,0..560,112  241.9  91.1%   2.2%  pass
+ui_button_plate_hover.png          280x56    280x56      0,0..280,56  233.3  84.9%   4.6%  pass
+ui_button_plate_hover@2x.png      560x112   560x112     0,0..560,112  233.4  88.3%   5.4%  pass
+ui_button_plate_normal.png         280x56    280x56      0,0..280,56  236.5  85.7%   4.0%  pass
+ui_button_plate_normal@2x.png     560x112   560x112     0,0..560,112  236.4  88.4%   0.7%  pass
+ui_button_plate_pressed.png        280x56    280x56      0,0..280,56  189.0  55.6%  12.5%  pass
+ui_button_plate_pressed@2x.png    560x112   560x112     0,0..560,112  189.1  60.1%  13.3%  pass
+ui_minimap_bezel.png              200x200   200x200     0,0..200,200  254.7  98.7%   0.0%  pass
+ui_minimap_bezel@2x.png           400x400   400x400     0,0..400,400  254.7  99.3%   0.0%  pass
+ui_panel_frame.png                  96x96     96x96       0,0..96,96  249.9  90.6%   0.5%  pass
+ui_panel_frame@2x.png             192x192   192x192     0,0..192,192  249.9  94.6%   0.8%  pass
+logo_vajb_orbit.png             2048x2048 2048x2048 56,719..1993,1310   26.8   8.4%  87.7%  pass

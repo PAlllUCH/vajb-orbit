@@ -1,0 +1,189 @@
+[
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/_sheets/ui-button-plate-a-square-panel-with-fou-1.png",
+  "ctex": "vajb-orbit/.godot/imported/ui-button-plate-a-square-panel-with-fou-1.png-75b66f4d8f70f6770e941a32f7c946d2.ctex",
+  "ctex_hash": "75b66f4d8f70f6770e941a32f7c946d2",
+  "source_file": "ui-button-plate-a-square-panel-with-fou-1.png",
+  "source_md5": "acd2dfb1c7a0acb479b86ca82a1cd1d5",
+  "size": [
+   2048,
+   2048
+  ],
+  "mode": "RGB",
+  "md5": "32b9944a235b3b7e39eb39e2ea4b9f81",
+  "mip_levels": 1,
+  "format": "RGB8",
+  "ctex_bytes": 2049886,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/_sheets/ui-button-plate-a-square-panel-with-fou-1-alpha.png",
+  "ctex": "vajb-orbit/.godot/imported/ui-button-plate-a-square-panel-with-fou-1-alpha.png-4ce9536173f7eddd0b7ff61511a04234.ctex",
+  "ctex_hash": "4ce9536173f7eddd0b7ff61511a04234",
+  "source_file": "ui-button-plate-a-square-panel-with-fou-1-alpha.png",
+  "source_md5": "f96ed482febe3a1a50b515ea83db24af",
+  "size": [
+   2048,
+   2048
+  ],
+  "mode": "RGBA",
+  "md5": "999460715bf5d18de83a7a232e620e21",
+  "mip_levels": 1,
+  "format": "RGBA8",
+  "ctex_bytes": 2073778,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/_sheets/2x2-grid-panel-of-four-very-wide-thin-ho-1.png",
+  "ctex": "vajb-orbit/.godot/imported/2x2-grid-panel-of-four-very-wide-thin-ho-1.png-dcc332eb55a6148525e848b45fb03777.ctex",
+  "ctex_hash": "dcc332eb55a6148525e848b45fb03777",
+  "source_file": "2x2-grid-panel-of-four-very-wide-thin-ho-1.png",
+  "source_md5": "c304296d18814fef2d926e7a8dd1b01d",
+  "size": [
+   2048,
+   2048
+  ],
+  "mode": "RGB",
+  "md5": "c89694d111b7b9384a5f5651206e8a46",
+  "mip_levels": 1,
+  "format": "RGB8",
+  "ctex_bytes": 2013158,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/_sheets/2x2-grid-panel-of-four-very-wide-thin-ho-1-alpha.png",
+  "ctex": "vajb-orbit/.godot/imported/2x2-grid-panel-of-four-very-wide-thin-ho-1-alpha.png-3764ef3092190c6f25c575f86d9f6389.ctex",
+  "ctex_hash": "3764ef3092190c6f25c575f86d9f6389",
+  "source_file": "2x2-grid-panel-of-four-very-wide-thin-ho-1-alpha.png",
+  "source_md5": "ee4edb04b8c561015beb4955ee8abee8",
+  "size": [
+   2048,
+   2048
+  ],
+  "mode": "RGBA",
+  "md5": "309fc8a5ad38ed167058767e3e4959cf",
+  "mip_levels": 1,
+  "format": "RGBA8",
+  "ctex_bytes": 2065734,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/_sheets/ui-panel-frame-a-single-square-painted-1.png",
+  "ctex": "vajb-orbit/.godot/imported/ui-panel-frame-a-single-square-painted-1.png-58fd1c80090c3ea8cf90b54070cf0fc6.ctex",
+  "ctex_hash": "58fd1c80090c3ea8cf90b54070cf0fc6",
+  "source_file": "ui-panel-frame-a-single-square-painted-1.png",
+  "source_md5": "08505faae8baf64259cee2d59b2a3aac",
+  "size": [
+   2048,
+   2048
+  ],
+  "mode": "RGB",
+  "md5": "d080311fa81dd76e62e6ec71b3aa6ccd",
+  "mip_levels": 1,
+  "format": "RGB8",
+  "ctex_bytes": 2933770,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/_sheets/ui-panel-frame-a-single-square-painted-1-alpha.png",
+  "ctex": "vajb-orbit/.godot/imported/ui-panel-frame-a-single-square-painted-1-alpha.png-c1d77b3661770acfb301d5828f584045.ctex",
+  "ctex_hash": "c1d77b3661770acfb301d5828f584045",
+  "source_file": "ui-panel-frame-a-single-square-painted-1-alpha.png",
+  "source_md5": "3f5a4a2d9bbb2df38bd13cb61bbe1088",
+  "size": [
+   2048,
+   2048
+  ],
+  "mode": "RGBA",
+  "md5": "da1d0b6b8452f7e2178849000d376fc6",
+  "mip_levels": 1,
+  "format": "RGBA8",
+  "ctex_bytes": 2951326,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/_sheets/ui-bar-caps-and-ui-minimap-bezel-one-pa-1.png",
+  "ctex": "vajb-orbit/.godot/imported/ui-bar-caps-and-ui-minimap-bezel-one-pa-1.png-1475d0a43270b5b1781a037031833d81.ctex",
+  "ctex_hash": "1475d0a43270b5b1781a037031833d81",
+  "source_file": "ui-bar-caps-and-ui-minimap-bezel-one-pa-1.png",
+  "source_md5": "0025a261ec9df22fc048105bb68db0c8",
+  "size": [
+   2048,
+   2048
+  ],
+  "mode": "RGB",
+  "md5": "dbdd8daf095e988241f94557aac46028",
+  "mip_levels": 1,
+  "format": "RGB8",
+  "ctex_bytes": 1791862,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/_sheets/ui-bar-caps-and-ui-minimap-bezel-one-pa-1-alpha.png",
+  "ctex": "vajb-orbit/.godot/imported/ui-bar-caps-and-ui-minimap-bezel-one-pa-1-alpha.png-ff441cae6e290eba7f6a7caf295ad0a7.ctex",
+  "ctex_hash": "ff441cae6e290eba7f6a7caf295ad0a7",
+  "source_file": "ui-bar-caps-and-ui-minimap-bezel-one-pa-1-alpha.png",
+  "source_md5": "5ebdc101f08bfd7ee9f9806ebc643846",
+  "size": [
+   2048,
+   2048
+  ],
+  "mode": "RGBA",
+  "md5": "0de3eb4d0d9a32b1c783e6a64028dcdd",
+  "mip_levels": 1,
+  "format": "RGBA8",
+  "ctex_bytes": 1707134,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/_sheets/logo-vajb-orbit-the-word-vajb-orbit-as-1.png",
+  "ctex": "vajb-orbit/.godot/imported/logo-vajb-orbit-the-word-vajb-orbit-as-1.png-beca329e218a803866d7325ee25a74b8.ctex",
+  "ctex_hash": "beca329e218a803866d7325ee25a74b8",
+  "source_file": "logo-vajb-orbit-the-word-vajb-orbit-as-1.png",
+  "source_md5": "d6f12bc1d2281a4e43a1986ae434f9cb",
+  "size": [
+   2048,
+   2048
+  ],
+  "mode": "RGB",
+  "md5": "de9a98fc51aa8c2385a553957a8d46f2",
+  "mip_levels": 1,
+  "format": "RGB8",
+  "ctex_bytes": 3637632,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/_sheets/logo-vajb-orbit-the-word-vajb-orbit-as-1-alpha.png",
+  "ctex": "vajb-orbit/.godot/imported/logo-vajb-orbit-the-word-vajb-orbit-as-1-alpha.png-aba95707c56a589fa36f3bd651694937.ctex",
+  "ctex_hash": "aba95707c56a589fa36f3bd651694937",
+  "source_file": "logo-vajb-orbit-the-word-vajb-orbit-as-1-alpha.png",
+  "source_md5": "4224d7c6895a228b8183eb3ef2cb98e0",
+  "size": [
+   2048,
+   2048
+  ],
+  "mode": "RGBA",
+  "md5": "2b362d2de0a12184df796c1177eb5add",
+  "mip_levels": 1,
+  "format": "RGBA8",
+  "ctex_bytes": 4150894,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/_sheets/background-body-plate-a-wide-16-9-paint-1.png",
+  "ctex": "vajb-orbit/.godot/imported/background-body-plate-a-wide-16-9-paint-1.png-226c2a199b1a0dcbd07501e72a51f268.ctex",
+  "ctex_hash": "226c2a199b1a0dcbd07501e72a51f268",
+  "source_file": "background-body-plate-a-wide-16-9-paint-1.png",
+  "source_md5": "abe3a099cc097f44c42a65984ca92588",
+  "size": [
+   2048,
+   1152
+  ],
+  "mode": "RGB",
+  "md5": "c9ff595352760d66bbbf13abad44f207",
+  "mip_levels": 1,
+  "format": "RGB8",
+  "ctex_bytes": 1787440,
+  "mip": 0
+ }
+]

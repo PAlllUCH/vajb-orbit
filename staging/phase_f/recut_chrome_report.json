@@ -1,0 +1,348 @@
+{
+ "applied": true,
+ "files": 8,
+ "cross_checks": [
+  {
+   "file": "ui_minimap_bezel",
+   "source_cell": "ui-bar-caps-and-ui-minimap-bezel-one-pa-asset-03.png",
+   "at2x_vs_cache": {
+    "exact": false,
+    "mean_abs_diff": 0.0193,
+    "max_abs_diff": 255
+   },
+   "one_x_vs_shipped_route": {
+    "exact": false,
+    "mean_abs_diff": 0.2019,
+    "max_abs_diff": 16
+   }
+  }
+ ],
+ "rows": [
+  {
+   "file": "ui_bar_caps",
+   "route": "cache-2x",
+   "logical": [
+    42,
+    14
+   ],
+   "at2x": [
+    84,
+    28
+   ],
+   "justification": "84x28 halved: the engine crops (0,0,20,14) and (22,0,20,14)",
+   "at2x_source": "recovered from the import cache, shipped verbatim",
+   "one_x_source": "the @2x halved (LANCZOS)",
+   "cache_2x_md5": "6b606bc27555cb667df848c5afef8edb",
+   "one_x_alpha": {
+    "alpha_mean": 222.4,
+    "alpha_255_share": 0.6684,
+    "transparent_share": 0.0391
+   },
+   "at2x_alpha": {
+    "alpha_mean": 222.5,
+    "alpha_255_share": 0.7785,
+    "transparent_share": 0.0872
+   },
+   "one_x_ink": [
+    0,
+    0,
+    42,
+    14
+   ],
+   "at2x_ink": [
+    0,
+    0,
+    84,
+    28
+   ]
+  },
+  {
+   "file": "ui_button_plate_disabled",
+   "route": "cache-2x",
+   "logical": [
+    280,
+    56
+   ],
+   "at2x": [
+    560,
+    112
+   ],
+   "justification": "F.2 plates_report same-art 0.21 levels",
+   "at2x_source": "recovered from the import cache, shipped verbatim",
+   "one_x_source": "the @2x halved (LANCZOS)",
+   "cache_2x_md5": "0fa8f5f5c9cc8e60d420b8c961957a5b",
+   "one_x_alpha": {
+    "alpha_mean": 241.5,
+    "alpha_255_share": 0.8688,
+    "transparent_share": 0.0018
+   },
+   "at2x_alpha": {
+    "alpha_mean": 241.9,
+    "alpha_255_share": 0.9111,
+    "transparent_share": 0.0223
+   },
+   "one_x_ink": [
+    0,
+    0,
+    280,
+    56
+   ],
+   "at2x_ink": [
+    0,
+    0,
+    560,
+    112
+   ]
+  },
+  {
+   "file": "ui_button_plate_hover",
+   "route": "cache-2x",
+   "logical": [
+    280,
+    56
+   ],
+   "at2x": [
+    560,
+    112
+   ],
+   "justification": "F.2 plates_report same-art 0.25 levels",
+   "at2x_source": "recovered from the import cache, shipped verbatim",
+   "one_x_source": "the @2x halved (LANCZOS)",
+   "cache_2x_md5": "fd1aaae3f11d8e14002a481422a6ed77",
+   "one_x_alpha": {
+    "alpha_mean": 233.3,
+    "alpha_255_share": 0.8485,
+    "transparent_share": 0.0463
+   },
+   "at2x_alpha": {
+    "alpha_mean": 233.4,
+    "alpha_255_share": 0.8827,
+    "transparent_share": 0.0539
+   },
+   "one_x_ink": [
+    0,
+    0,
+    280,
+    56
+   ],
+   "at2x_ink": [
+    0,
+    0,
+    560,
+    112
+   ]
+  },
+  {
+   "file": "ui_button_plate_normal",
+   "route": "cache-2x",
+   "logical": [
+    280,
+    56
+   ],
+   "at2x": [
+    560,
+    112
+   ],
+   "justification": "F.2 plates_report same-art 0.21 levels",
+   "at2x_source": "recovered from the import cache, shipped verbatim",
+   "one_x_source": "the @2x halved (LANCZOS)",
+   "cache_2x_md5": "ce95a5fc7f002dafe4ab8ee9b01027fa",
+   "one_x_alpha": {
+    "alpha_mean": 236.5,
+    "alpha_255_share": 0.8573,
+    "transparent_share": 0.0399
+   },
+   "at2x_alpha": {
+    "alpha_mean": 236.4,
+    "alpha_255_share": 0.884,
+    "transparent_share": 0.0072
+   },
+   "one_x_ink": [
+    0,
+    0,
+    280,
+    56
+   ],
+   "at2x_ink": [
+    0,
+    0,
+    560,
+    112
+   ]
+  },
+  {
+   "file": "ui_button_plate_pressed",
+   "route": "cache-2x",
+   "logical": [
+    280,
+    56
+   ],
+   "at2x": [
+    560,
+    112
+   ],
+   "justification": "F.2 plates_report same-art 0.44 levels",
+   "at2x_source": "recovered from the import cache, shipped verbatim",
+   "one_x_source": "the @2x halved (LANCZOS)",
+   "cache_2x_md5": "4a714e7a7d1b48088c457b7f76198084",
+   "one_x_alpha": {
+    "alpha_mean": 189.0,
+    "alpha_255_share": 0.5563,
+    "transparent_share": 0.1247
+   },
+   "at2x_alpha": {
+    "alpha_mean": 189.1,
+    "alpha_255_share": 0.6011,
+    "transparent_share": 0.1334
+   },
+   "one_x_ink": [
+    0,
+    0,
+    280,
+    56
+   ],
+   "at2x_ink": [
+    0,
+    0,
+    560,
+    112
+   ]
+  },
+  {
+   "file": "ui_minimap_bezel",
+   "route": "cache-2x",
+   "logical": [
+    200,
+    200
+   ],
+   "at2x": [
+    400,
+    400
+   ],
+   "justification": "F.1 nine-patch, 16 px band at 200 and 32 px at 400",
+   "at2x_source": "recovered from the import cache, shipped verbatim",
+   "one_x_source": "the @2x halved (LANCZOS)",
+   "cache_2x_md5": "0d959795718de90d71c8de330dcb5a69",
+   "one_x_alpha": {
+    "alpha_mean": 254.7,
+    "alpha_255_share": 0.9869,
+    "transparent_share": 0.0
+   },
+   "at2x_alpha": {
+    "alpha_mean": 254.7,
+    "alpha_255_share": 0.9932,
+    "transparent_share": 0.0001
+   },
+   "one_x_ink": [
+    0,
+    0,
+    200,
+    200
+   ],
+   "at2x_ink": [
+    0,
+    0,
+    400,
+    400
+   ]
+  },
+  {
+   "file": "ui_panel_frame",
+   "route": "cache-2x",
+   "logical": [
+    96,
+    96
+   ],
+   "at2x": [
+    192,
+    192
+   ],
+   "justification": "F.2 built 3x3 tiles of size/3: 32 px band at 96, 64 at 192",
+   "at2x_source": "recovered from the import cache, shipped verbatim",
+   "one_x_source": "the @2x halved (LANCZOS)",
+   "cache_2x_md5": "ffc409a50fd2d969f45138bf2d1f5ecc",
+   "one_x_alpha": {
+    "alpha_mean": 249.9,
+    "alpha_255_share": 0.9057,
+    "transparent_share": 0.0055
+   },
+   "at2x_alpha": {
+    "alpha_mean": 249.9,
+    "alpha_255_share": 0.9463,
+    "transparent_share": 0.0082
+   },
+   "one_x_ink": [
+    0,
+    0,
+    96,
+    96
+   ],
+   "at2x_ink": [
+    0,
+    0,
+    192,
+    192
+   ]
+  },
+  {
+   "file": "logo_vajb_orbit",
+   "route": "logo",
+   "logical": [
+    2048,
+    2048
+   ],
+   "at2x": null,
+   "expected_ink": [
+    56,
+    719,
+    1993,
+    1310
+   ],
+   "logo": {
+    "bright_components": 293,
+    "kept_components": 13,
+    "min_component_px": 192,
+    "dilate_px": 8,
+    "kept_brightness": 90,
+    "ink_box_in_render": [
+     155,
+     697,
+     1903,
+     1219
+    ],
+    "render_ink_size": [
+     1748,
+     522
+    ],
+    "normalised_to": [
+     56,
+     719,
+     1937,
+     591
+    ],
+    "scale": [
+     1.1081,
+     1.1322
+    ],
+    "frozen_ink_box": [
+     56,
+     719,
+     1993,
+     1310
+    ],
+    "on_imprint": true
+   },
+   "one_x_alpha": {
+    "alpha_mean": 26.8,
+    "alpha_255_share": 0.0844,
+    "transparent_share": 0.8771
+   },
+   "one_x_ink": [
+    56,
+    719,
+    1993,
+    1310
+   ]
+  }
+ ]
+}

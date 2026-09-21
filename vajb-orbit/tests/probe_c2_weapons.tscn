@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://tests/probe_c2_weapons.gd" id="1_probe_c2_weapons"]
+
+[node name="ProbeC2Weapons" type="Node2D"]
+script = ExtResource("1_probe_c2_weapons")

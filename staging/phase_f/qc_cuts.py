@@ -48,6 +48,8 @@ EMBER = (232, 112, 58)
 
 ZOOM = 3
 BOX_TOLERANCE = 1          # px the ink box may fall short of the canvas
+INK_TOLERANCE = 3          # px an inset art's ink box may drift from its imprint
+INSET_INK_MEAN = 60.0      # an inset art's ink region must carry real art
 SOLID_MEAN = 180.0         # a plate is opaque; the failed cells measure ~20-40
 SOLID_TRANSPARENT = 0.50   # the failed cells are 77-92 % transparent
 
@@ -69,7 +71,7 @@ def checkerboard(size: tuple[int, int], cell: int = 6) -> Image.Image:
     return board
 
 
-def measure(path: Path, box: int) -> dict:
+def measure(path: Path, box: tuple[int, int], expected_ink: list[int] | None = None) -> dict:
     image = Image.open(path).convert("RGBA")
     alpha = np.asarray(image)[..., 3]
     total = alpha.size
@@ -79,14 +81,27 @@ def measure(path: Path, box: int) -> dict:
                [int(ink[1].min()), int(ink[0].min()),
                 int(ink[1].max()) + 1, int(ink[0].max()) + 1])
     transparent = float((alpha == 0).mean())
-    fills = (image.width == box and image.height == box and ink_box is not None
-             and ink_box[0] <= BOX_TOLERANCE and ink_box[1] <= BOX_TOLERANCE
-             and ink_box[2] >= box - BOX_TOLERANCE and ink_box[3] >= box - BOX_TOLERANCE)
-    solid = transparent <= SOLID_TRANSPARENT and float(alpha.mean()) >= SOLID_MEAN
+    on_canvas = [image.width, image.height] == [int(box[0]), int(box[1])]
+    if expected_ink is None:
+        fills = (on_canvas and ink_box is not None
+                 and ink_box[0] <= BOX_TOLERANCE and ink_box[1] <= BOX_TOLERANCE
+                 and ink_box[2] >= image.width - BOX_TOLERANCE
+                 and ink_box[3] >= image.height - BOX_TOLERANCE)
+        solid = transparent <= SOLID_TRANSPARENT and float(alpha.mean()) >= SOLID_MEAN
+    else:
+        # An inset art (the wordmark sits inside its shadow pad and the canvas is
+        # deliberately larger than the ink): the ink box is the thing to match, and
+        # solidity is judged on the ink rather than on the whole canvas.
+        fills = (on_canvas and ink_box is not None
+                 and all(abs(ink_box[i] - expected_ink[i]) <= INK_TOLERANCE
+                         for i in range(4)))
+        inside = alpha[ink_box[1]:ink_box[3], ink_box[0]:ink_box[2]]
+        solid = float(inside.mean()) >= INSET_INK_MEAN
     return {
         "name": path.name,
         "canvas": [image.width, image.height],
-        "expected_box": box,
+        "expected_box": [int(box[0]), int(box[1])],
+        "expected_ink": expected_ink,
         "ink_box": ink_box,
         "core_box": (None if not len(core[0]) else
                      [int(core[1].min()), int(core[0].min()),
@@ -96,33 +111,44 @@ def measure(path: Path, box: int) -> dict:
         "transparent_share": round(transparent, 4),
         "ink_pixels": int((alpha > 0).sum()),
         "alpha_pixels_total": int(total),
-        "canvas_is_box": image.width == box and image.height == box,
+        "canvas_is_box": on_canvas,
         "ink_fills_box": bool(fills),
         "mostly_solid": bool(solid),
         "verdict": "pass" if fills and solid else "FAIL",
-    }
+      }
 
+def expectations(args) -> list[tuple[Path, tuple[int, int], list[int] | None]]:
+    pairs: list[tuple[Path, tuple[int, int], list[int] | None]] = []
 
-def expectations(args) -> list[tuple[Path, int]]:
-    pairs: list[tuple[Path, int]] = []
+    def size(text: str) -> tuple[int, int]:
+        parts = text.lower().split("x")
+        return (int(parts[0]), int(parts[0])) if len(parts) == 1 else (int(parts[0]),
+                                                                     int(parts[1]))
+
     if args.report:
         report = json.loads(Path(args.report).read_text(encoding="utf-8"))
         directory = Path(args.dir)
         for row in report["rows"]:
-            pairs.append((directory / f"{row['file']}.png", row["logical"][0]))
-            if (directory / f"{row['file']}@2x.png").is_file():
-                pairs.append((directory / f"{row['file']}@2x.png", row["at2x"][0]))
+            ink = row.get("expected_ink")
+            logical = row["logical"]
+            box = (logical[0], logical[-1])
+            pairs.append((directory / f"{row['file']}.png", box, ink))
+            if row.get("at2x") and (directory / f"{row['file']}@2x.png").is_file():
+                pairs.append((directory / f"{row['file']}@2x.png",
+                              (row["at2x"][0], row["at2x"][-1]), None))
     for spec in args.px:
-        name, _, size = spec.partition("=")
-        pairs.append((Path(args.dir) / name, int(size)))
-    missing = [str(p) for p, _ in pairs if not p.is_file()]
+        name, _, dimensions = spec.partition("=")
+        pairs.append((Path(args.dir) / name, size(dimensions), None))
+    missing = [str(p) for p, _b, _i in pairs if not p.is_file()]
     if missing:
         raise SystemExit("not staged: " + ", ".join(missing))
     return pairs
 
 
 def sheet(rows: list[dict], directory: Path, tag: str) -> Image.Image:
-    tile = max(row["expected_box"] for row in rows) * ZOOM
+    # Capped: one row here is a 2048 px logo, and sizing every tile to that would build a
+    # 700-megapixel sheet.
+    tile = min(max(max(row["expected_box"]) for row in rows) * ZOOM, 420)
     pad = 12
     columns = 6
     lines = 44
@@ -142,24 +168,25 @@ def sheet(rows: list[dict], directory: Path, tag: str) -> Image.Image:
         x = pad + column * (tile + pad)
         y = 74 + line * (tile + lines + pad)
         plate = Image.open(directory / row["name"]).convert("RGBA")
-        scaled = plate.resize((plate.width * ZOOM, plate.height * ZOOM), Image.NEAREST)
-        board = checkerboard(scaled.size)
-        board.paste(scaled.convert("RGB"), (0, 0), scaled)
+        scale = min(tile / plate.width, tile / plate.height)
+        big = plate.resize((max(1, int(plate.width * scale)),
+                            max(1, int(plate.height * scale))), Image.NEAREST)
+        board = checkerboard(big.size)
+        board.paste(big.convert("RGB"), (0, 0), big)
         image.paste(board, (x, y))
-        draw.rectangle([x, y, x + plate.width * ZOOM - 1, y + plate.height * ZOOM - 1],
+        draw.rectangle([x - 1, y - 1, x + big.width, y + big.height],
                        outline=EMBER if row["verdict"] == "pass" else BAD)
-        box = row["expected_box"]
-        draw.rectangle([x - 1, y - 1, x + box * ZOOM, y + box * ZOOM],
-                       outline=EMBER)
         tone = GOOD if row["verdict"] == "pass" else BAD
         draw.text((x, y + tile + 2), row["name"], font=font(14), fill=tone)
+        ink = row["ink_box"]
         draw.text((x, y + tile + 18),
-                  f"{row['canvas'][0]}x{row['canvas'][1]} box {box} "
-                  f"ink {row['ink_box'][2] - row['ink_box'][0]}x"
-                  f"{row['ink_box'][3] - row['ink_box'][1]}", font=font(13), fill=DIM)
+                  f"{row['canvas'][0]}x{row['canvas'][1]} box "
+                  f"{row['expected_box'][0]}x{row['expected_box'][1]}", font=font(13),
+                  fill=DIM)
         draw.text((x, y + tile + 32),
-                  f"alpha {row['alpha_mean']:.0f} solid {row['alpha_255_share'] * 100:.0f}% "
-                  f"clear {row['transparent_share'] * 100:.0f}%", font=font(13), fill=DIM)
+                  f"ink {ink[2] - ink[0]}x{ink[3] - ink[1]} alpha "
+                  f"{row['alpha_mean']:.0f} clear {row['transparent_share'] * 100:.0f}%",
+                  font=font(13), fill=DIM)
     return image
 
 
@@ -175,22 +202,23 @@ def main() -> int:
     if not directory.is_absolute():
         directory = ROOT / directory
     pairs = expectations(args)
-    rows = [measure(path, box) for path, box in pairs]
+    rows = [measure(path, box, ink) for path, box, ink in pairs]
     tag = args.tag or (Path(args.report).stem.replace("recut_", "").replace("_report", "")
                        if args.report else directory.name)
     OUT.mkdir(parents=True, exist_ok=True)
     table = OUT / f"qc_{tag}_table.txt"
     record = STAGE / f"qc_{tag}.json"
     record.write_text(json.dumps({"rows": rows}, indent=1), encoding="utf-8")
-    header = (f"{'cut':34s} {'canvas':>9} {'box':>4} {'ink box':>14} {'alpha':>6} "
+    header = (f"{'cut':30s} {'canvas':>10} {'box':>9} {'ink box':>16} {'alpha':>6} "
               f"{'solid':>6} {'clear':>6}  verdict")
     lines = [header]
     for row in rows:
         ink = row["ink_box"]
         canvas = f"{row['canvas'][0]}x{row['canvas'][1]}"
         bounds = f"{ink[0]},{ink[1]}..{ink[2]},{ink[3]}"
-        lines.append(f"{row['name']:34s} {canvas:>9} {row['expected_box']:>4} "
-                     f"{bounds:>14} {row['alpha_mean']:>6.1f} "
+        expected = f"{row['expected_box'][0]}x{row['expected_box'][1]}"
+        lines.append(f"{row['name']:30s} {canvas:>10} {expected:>9} "
+                     f"{bounds:>16} {row['alpha_mean']:>6.1f} "
                      f"{row['alpha_255_share'] * 100:>5.1f}% "
                      f"{row['transparent_share'] * 100:>5.1f}%  {row['verdict']}")
     table.write_text("\n".join(lines), encoding="utf-8")

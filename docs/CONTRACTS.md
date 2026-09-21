@@ -1,6 +1,6 @@
 # CONTRACTS.md — living interface contract
 
-**Status: v1.1 (engine wave 1 + engine slices 0 and 2, re-reviewed 2026-09-21).** This file is the single source of pinned interfaces
+**Status: v1.2 (engine wave 1 + engine slices 0 and 2 + the combat/collision repair wave, re-reviewed 2026-09-21).** This file is the single source of pinned interfaces
 between workers. Every worker brief says "code against CONTRACTS.md §n" instead of
 re-pasting signatures; every review/fix wave owns updating it (additions and
 amendments recorded at the bottom in the changelog). Never edit it mid-wave while
@@ -111,7 +111,17 @@ laser stay with the hull. Thrust is `mass × the class acceleration`
 (`max_speed / accel_time`), the brake is `BRAKE_MULT ×` that, the coast is
 `max_speed / coast_time` with `linear_damp = 1 / coast_time`, and torque is
 `inertia × (alpha + angular_damp × omega)` with `inertia = m·r²/2` and
-`angular_damp = 1 / turn_spinup` — all derived from §13, nothing retuned.
+`angular_damp = 1 / turn_spinup` — all derived from §13 **with one owner-sanctioned
+exception: `coast_time` is retuned ×0.50** (all nine `ShipFit.HANDLING` rows, owner
+ruling of 2026-09-21; §13 itself is not ticked and still carries the pre-retune
+column). Measured by the C3 flight-decay probe on the shipped launch, whose resolved
+row is `§13 × 1.05` (the launched `h_plate_light` penalty), so `coast_time` is
+1.050 s: time to 10 % of the release speed `1.890 → 0.945 s`, carried distance
+`430.32 → 216.85 u`, and both accelerate legs unchanged (`t_accel_total` 2.533 / 2.100
+/ 4.050 / 4.050). The same column also halves every NPC hull's coast and doubles its
+damp (it reaches them through `ShipStats`), which is ruling 3's own "all nine rows",
+not drift. Reversal: multiply the nine rows by 2.0 and re-run the probe. Nothing else
+from §13 moved.
 Body-body contacts past `COLLISION_MIN_DV` charge `Impact.collision_damage(ship
 mass, peer mass, closing speed)` to the player through `PlayerState.damage`, and
 offer the peer's half to `apply_collision_damage(amount)` when the peer has it.
@@ -157,10 +167,18 @@ world_radius() -> float          # the collision circle's radius
 signal cracked                   # bare, unchanged: the field binds the rock itself
 ```
 
-The body (slice 0, ruling 8): mass = `ROCK_MASS_MULT` 4 × the §13 `hull_mass` of
-`ROCK_MASS_REFERENCE` `ship_miner` = 560 t, `linear_damp` 3.71 with REPLACE mode,
-`gravity_scale` 0, `can_sleep = false`, layer 1 / mask 0 (so rocks do not collide
-with each other). The size class is a look *and* the cleaving class:
+The body (slice 0, ruling 8; the mask corrected by the combat/collision repair wave,
+2026-09-21): mass = `ROCK_MASS_MULT` 4 × the §13 `hull_mass` of `ROCK_MASS_REFERENCE`
+`ship_miner` = 560 t, `linear_damp` 3.71 with REPLACE mode, `gravity_scale` 0,
+`can_sleep = false`, **layer 1 / mask 2**. The mask names the *hull* layer, never the
+rock's own: Godot pairs two bodies from both sides, and `mask 2 & layer 1 == 0` is what
+keeps two rocks apart while the rock's mass now enters a ship contact. **The pre-wave
+`mask 0` was the defect, not the guarantee:** with it the rock's inverse mass was
+forced to 0 by the solver, so the ship's half landed while the rock's was dropped — C1
+measured `v_peak = 0.000 u/s`, `pos_delta = 0.000 u`, both pools unchanged, and the
+same ram on the shipped tree reads `v_peak 72.821` / `pos_delta 20.323` (C6's re-run);
+a `mask 1` control still reads `0.000`, so the bit must be the hull's layer. The size
+class is a look *and* the cleaving class:
 `FRAGMENT_SPLIT` L (2,3) → M, M (2,2) → S, `PICKUP_BURST` (1,2) for an S, ejection
 `× 1.2` inside a ±15° cone, fragment mineral **and tier** inherited from the parent
 with the yield re-rolled through the 02 §5 path (the §13 row and §12 item 12 are
@@ -514,6 +532,8 @@ intent() -> Dictionary                     # state, waypoint, speed, fire, targe
 engaged_with(node: Node) -> bool           # §7's safe-warp gate: Alert/Engage on that node
 blip_kind() / archetype() / hull_id() / row() / faction() / space_owner() / home()
 hull() / hull_max() / shield() / shield_max() / hull_fraction() / is_alive()
+shield_up() -> bool                        # §4.1's shield reads; added 2026-09-21,
+                                           # already pinned on PlayerShip (player_ship.gd:258)
 state_name() / target() / heat_on_kill() / standing_on_kill() / art_ready()
 impact_body() / velocity() / apply_impulse() / last_damage_ctx()
 signal died(position: Vector2, archetype: StringName)
@@ -636,7 +656,7 @@ actually fired.
 "C:/Godot_4_7_2/Godot_v4.7.2-stable_win64_console.exe" --headless --path "G:/Mój dysk/Projekty/Vajb Orbit/vajb-orbit" res://tests/headless_runner.tscn --quit-after 1200
 ```
 
-Expected: `[SUMMARY] passed=226 failed=0` (re-measured on this host 2026-09-21),
+Expected: `[SUMMARY] passed=236 failed=0` (re-measured on this host 2026-09-21),
 exit 0, no `SCRIPT ERROR`. A wave is
 done = gate green + the worker added tests for their slice. The suite held **53**
 tests through engine wave 1; engine slice 0 added `tests/test_engine2_pools.gd`
@@ -644,9 +664,11 @@ tests through engine wave 1; engine slice 0 added `tests/test_engine2_pools.gd`
 `tests/test_engine2_*.gd` suites — `weapons` (**29**), `npc` (**28**), `damage`
 (**20**), `hud` (**19**), `loot` (**13**) and `wiring` (**13**) — the slice-2 fixer
 pass added `tests/test_engine2_fixes.gd` (**17**) and the slice-2 close added
-`tests/test_engine2_dock.gd` (**2**), and the UI-chrome wave added
-`tests/test_ui_slot_layout.gd` (**7**), so the total is **226** (the 219 measured
-before that wave, plus this suite's 7) and the count
+`tests/test_engine2_dock.gd` (**2**), the UI-chrome wave added
+`tests/test_ui_slot_layout.gd` (**7**), and the combat/collision repair wave added
+`tests/test_engine_c3_flight_decay.gd` (**3**) and `tests/test_combat_repair_c5.gd`
+(**7**), so the total is **236** (the 226 measured before the repair wave, plus its
+10) and the count
 to read is the measured one with zero failures, never a stale total. Discovery is
 automatic (`tests/headless_runner.gd` finds `test_*.gd`); no
 registration file exists to edit. **Measured 2026-09-21 (W6 review, slice 2):
@@ -661,7 +683,15 @@ exit 0, no `SCRIPT ERROR`, no RID-leak line**, per suite `engine2_cleaving 9 ·
 engine2_damage 20 · engine2_fixes 17 · engine2_hud 19 · engine2_loot 13 ·
 engine2_npc 28 · engine2_pools 16 · engine2_weapons 29 · engine2_wiring 13 ·
 p1_catalogues 11 · p1_clock_log 4 · p1_market 13 · p1_pricing 5 · p1_profile 9 ·
-p1_refinery 6 · p1_repairs 5`. **Known trap:**
+p1_refinery 6 · p1_repairs 5`. **Measured 2026-09-21 (combat/collision repair
+wave review — C6): `passed=236 failed=0`, exit 0, no `SCRIPT ERROR`**, per suite
+`combat_repair_c5 7 · engine2_cleaving 9 · engine2_damage 20 · engine2_dock 2 ·
+engine2_fixes 17 · engine2_hud 19 · engine2_loot 13 · engine2_npc 28 ·
+engine2_pools 16 · engine2_weapons 29 · engine2_wiring 13 · engine_c3_flight_decay
+3 · p1_catalogues 11 · p1_clock_log 4 · p1_market 13 · p1_pricing 5 · p1_profile 9 ·
+p1_refinery 6 · p1_repairs 5 · ui_slot_layout 7` — the 18 pre-existing suites are
+unchanged and the wave's 10 are C3's `tests/test_engine_c3_flight_decay.gd` (**3**)
+and C5's `tests/test_combat_repair_c5.gd` (**7**). **Known trap:**
 headless `--check-only --script` cannot resolve autoload singletons — never use it
 as a gate; use scene runs or `load()` probes. **Second form of the same trap
 (measured in the slice-2 review):** a `--script` probe must reach an autoload-touching
@@ -788,3 +818,37 @@ ledger exists.
   `.agents/gen/MASTER_REPORT.md` (2026-09-21 cleanup); the surviving reports are
   `.agents/gen/slice2_review_report.md` and `.agents/gen/slice2_w8_report.md`;
   the fixer's own record is `.agents/gen/slice2_w7_report.md`.
+- **v1.2 (2026-09-21, combat/collision repair wave — C7, this wave's only CONTRACTS
+  writer)** — records the wave, its one retune and the four contradictions the C6
+  review found in this file (`.agents/gen/combat_repair_c6_report.md` §9, finding
+  MED-2; the changelog itself was backlog **L37**). **The wave** (brief
+  `.agents/gen/combat_repair_wave_task.md`; owner rulings of 2026-09-21, both rounds):
+  a rock is now damageable. `Asteroid` carries **layer 1 / mask 2** (the mask names the
+  *hull* layer, so the rock's mass enters a ship contact while `mask & layer == 0`
+  still keeps two rocks apart — the pre-wave `mask 0` was C1's measured defect, not a
+  guarantee), and it implements `apply_collision_damage(amount)` (the §4 ram name,
+  now reachable: C1 measures the rock's half at `v_peak 72.821`, `pos_delta 20.323`
+  against `0.000 / 0.000` before). A shot or a ram chips a rock through
+  `WeaponComponent.GUN_CHIP_RATE` 0.10, the single owner; the owner's second-round
+  re-scope rejected a second damage→work constant, so **no new feel number was
+  invented** and the only constant the game-side diff adds is the layer bit. `NpcShip`
+  gains the `shield_up() -> bool` reader the weapon side already consumed, which fixes
+  plasma landing its +25 % on live shields (measured `87.500` on a 600-shield hull
+  before, the family's own `70.000` after). **No pinned signature was renamed,
+  retyped, reordered or removed** — the whole `vajb-orbit/game/` diff adds four
+  definitions (`COLLISION_MASK := 2`, the `weapons.gd` preload, `apply_collision_damage`,
+  `shield_up`). **The one retune:** `coast_time` ×0.50 on all nine `ShipFit.HANDLING`
+  rows (owner ruling; second-round ruling 3 specifies it), measured on the shipped
+  launch as `t10 1.890 → 0.945 s` and carry `430.32 → 216.85 u` with both accelerate
+  legs unchanged; it also halves every NPC hull's coast and doubles its damp through
+  `ShipStats` (inside the ruling's "all nine rows"), and ruling 3's "≈ 108 u" carry is
+  2× low — measured 216.85 u. **§13 is not ticked:** the spec still carries the
+  pre-retune column, and both its tick and the new chaff/kinetic feel numbers remain
+  the owner's. **The four corrections** the C6 review required, all in this entry's
+  wave: §4's body pin said "nothing retuned" and now records the exception with its
+  evidence; §5's rock body pin said "layer 1 / mask 0" and now reads **layer 1 /
+  mask 2**; §8.2's `NpcShip` list was missing `shield_up() -> bool`; §9's expected
+  gate said `passed=226` and now reads the measured **236** with the wave's 10 tests
+  broken out. Evidence: `.agents/gen/combat_repair_c6_report.md` (the review) and
+  `.agents/gen/combat_repair_c{1,2,3,5}_report.md`, with every raw log under
+  `.agents/gen/c6/`; the wave's LOW block is `.agents/gen/LOW_BACKLOG.md` L38–L47.

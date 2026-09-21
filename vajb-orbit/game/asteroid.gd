@@ -50,18 +50,31 @@ const WORK_PER_UNIT := 1.0
 const WORK_EPSILON := 0.0001
 
 ## Physics layer 1 (bit 0). Rocks are solid to ships and block shots and beams
-## (ENGINE_SPEC §6), so this body carries the layer and no mask: the mining laser's
-## cursor ray masks the rock layer, and a ship that collides with rocks is the
-## moving body masking it (`player_ship.tscn`'s `HullBody`: layer 2, mask 1). The
-## solver pairs the two from the ship's side, so a rock needs no mask of its own —
-## which also keeps rocks from colliding with each other.
+## (ENGINE_SPEC §6), so this body carries the rock layer and, for the hull layer, a
+## mask. Godot pairs two bodies from both sides: `interacts_with` (either mask) decides
+## the pair exists, and `collides_with` (this body's mask ∩ the peer's layer) decides
+## whether this body's mass enters the solve. With the shipped `collision_mask` 0 the
+## rock's inverse mass was forced to 0, so the solver resolved every contact as if the
+## rock were immovable: the ship's half landed and the rock's half was dropped (C1
+## measured `v_peak = 0.000 u/s`, `pos_delta = 0.000 u`). The mask names the hull layer
+## (`player_ship.tscn`'s `HullBody` is layer 2 / mask 1), never the rock's own: two
+## rocks are both layer 1, so `mask 2 & layer 1 = 0` and rocks still do not collide
+## with each other.
 const COLLISION_LAYER := 1
+const COLLISION_MASK := 2
 const ROCK_GROUP: StringName = &"asteroid"
 
 ## The §13 class mass column's single owner: `ShipFit.HANDLING`. Read as data
 ## only, so the rock's mass cannot drift from the hull table (§13 v2 puts
 ## `hull_mass` in that table and nowhere else).
 const ShipFitScript := preload("res://game/ship_fit.gd")
+
+## The ram sink's conversion is the shipped 10 % gun chip (ENGINE_SPEC §6, ruling 17),
+## read from its single owner `WeaponComponent.GUN_CHIP_RATE` rather than re-declared:
+## the owner's 2026-09-21 re-scope rejected a second damage-to-work constant, so a ram
+## and a shot chip a rock through the same arithmetic. Reached by path and not by the
+## global class name, which only resolves once the editor has scanned the project.
+const WeaponsScript := preload("res://game/weapons.gd")
 
 ## The look rows of `LOOK_TEXTURES`: three size tiers (S, M, L) times three
 ## silhouettes. Row order is S1-S3, M1-M3, L1-L3, so the size class of a look is
@@ -191,7 +204,7 @@ func setup(
 	_bore_ore = yield_units > 0
 	add_to_group(ROCK_GROUP)
 	collision_layer = COLLISION_LAYER
-	collision_mask = 0
+	collision_mask = COLLISION_MASK
 	_configure_body()
 	_build_look(size_class)
 
@@ -211,6 +224,19 @@ func apply_work(amount: float) -> int:
 	if yield_units <= 0:
 		_crack()
 	return units
+
+
+## The other half of a body-body impact (ENGINE_SPEC §4.2 item 6, CONTRACTS §4): the
+## hull's contact monitor charges its own side and offers the peer's half through this
+## method, which `NpcShip` answers by passing it to `take_damage`. A rock carries no
+## hull pool, so its half goes through the rock's own mining channel at the shipped gun
+## chip rate, exactly what a beam (`weapons.gd:_apply_beam`) and a bolt
+## (`projectile.gd:_hit_rock`) apply, and is therefore readable as `work` and
+## `yield_units` rather than vanishing. Measured (C1's 450 u/s ram at a 560 t medium
+## rock): the offer is 186.179, so the rock gains 18.618 work, 18 ore units leave it and
+## the rock moves 73.351 u/s / 21.056 u.
+func apply_collision_damage(amount: float) -> void:
+	apply_work(amount * WeaponsScript.GUN_CHIP_RATE)
 
 
 func is_depleted() -> bool:

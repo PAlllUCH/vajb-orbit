@@ -110,7 +110,17 @@ func test_rock_is_a_heavy_damped_rigid_body() -> void:
 		"the project's default damp must not be added on top")
 	assert_false(body.can_sleep, "a rock never sleeps (contacts must answer)")
 	assert_eq(body.collision_layer, AsteroidScript.COLLISION_LAYER, "rock layer")
-	assert_eq(body.collision_mask, 0, "rocks mask nothing (the ship masks them)")
+	## The rock's mask is the hull layer, and it must be: Godot pairs two bodies from both
+	## sides, and a body whose mask misses the peer's layer is solved with a forced-zero
+	## inverse mass (C1 measured a rock handed 0.000 u/s and moved 0.000 u by a 450 u/s
+	## ram). "Rocks mask nothing" was half of the engine rule; `mask 2 & layer 1 = 0` is
+	## what still keeps two rocks apart.
+	assert_eq(body.collision_mask, AsteroidScript.COLLISION_MASK, "the rock masks the hull layer")
+	assert_eq(
+		AsteroidScript.COLLISION_MASK & AsteroidScript.COLLISION_LAYER,
+		0,
+		"and nothing else: two rocks are both layer 1, so rocks do not collide with rocks"
+	)
 	assert_gt(float(rock.call(&"world_radius")), 0.0, "the shape follows the sprite")
 	assert_eq(field.call(&"rock_count"), ROCK_COUNT, "the field rolled its rocks")
 

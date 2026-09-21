@@ -1,0 +1,325 @@
+[
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/ui_button_plate_normal@2x.png",
+  "ctex": "vajb-orbit/.godot/imported/ui_button_plate_normal@2x.png-784a5e25b28ccff5c437263308f1a80c.ctex",
+  "ctex_hash": "784a5e25b28ccff5c437263308f1a80c",
+  "source_file": "ui_button_plate_normal@2x.png",
+  "source_md5": "6ccaea44eb0d0debc045b419a20b4921",
+  "size": [
+   560,
+   112
+  ],
+  "mode": "RGBA",
+  "md5": "ce95a5fc7f002dafe4ab8ee9b01027fa",
+  "mip_levels": 10,
+  "format": "RGBA8",
+  "ctex_bytes": 110238,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/ui_button_plate_hover@2x.png",
+  "ctex": "vajb-orbit/.godot/imported/ui_button_plate_hover@2x.png-fee0e9cabc5c7a124a908b0c1d0fe990.ctex",
+  "ctex_hash": "fee0e9cabc5c7a124a908b0c1d0fe990",
+  "source_file": "ui_button_plate_hover@2x.png",
+  "source_md5": "fa2c3e5519cd1bdcc76bb1e22de8edd9",
+  "size": [
+   560,
+   112
+  ],
+  "mode": "RGBA",
+  "md5": "fd1aaae3f11d8e14002a481422a6ed77",
+  "mip_levels": 10,
+  "format": "RGBA8",
+  "ctex_bytes": 130336,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/ui_button_plate_pressed@2x.png",
+  "ctex": "vajb-orbit/.godot/imported/ui_button_plate_pressed@2x.png-6bfdc5a1bd7ec19e9a942c6ba5e7e7b6.ctex",
+  "ctex_hash": "6bfdc5a1bd7ec19e9a942c6ba5e7e7b6",
+  "source_file": "ui_button_plate_pressed@2x.png",
+  "source_md5": "8f486c04b2bc7fd8417e1e74ff70a856",
+  "size": [
+   560,
+   112
+  ],
+  "mode": "RGBA",
+  "md5": "4a714e7a7d1b48088c457b7f76198084",
+  "mip_levels": 10,
+  "format": "RGBA8",
+  "ctex_bytes": 123484,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/ui_button_plate_disabled@2x.png",
+  "ctex": "vajb-orbit/.godot/imported/ui_button_plate_disabled@2x.png-b1a46278b31f4b4afe5d1f82e7bf4a8c.ctex",
+  "ctex_hash": "b1a46278b31f4b4afe5d1f82e7bf4a8c",
+  "source_file": "ui_button_plate_disabled@2x.png",
+  "source_md5": "d1f4ef207e49d247450306be0a9c739d",
+  "size": [
+   560,
+   112
+  ],
+  "mode": "RGBA",
+  "md5": "0fa8f5f5c9cc8e60d420b8c961957a5b",
+  "mip_levels": 10,
+  "format": "RGBA8",
+  "ctex_bytes": 106896,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/ui_minimap_bezel@2x.png",
+  "ctex": "vajb-orbit/.godot/imported/ui_minimap_bezel@2x.png-ca0ffdec5d3866ecb32cc43d9714ab2c.ctex",
+  "ctex_hash": "ca0ffdec5d3866ecb32cc43d9714ab2c",
+  "source_file": "ui_minimap_bezel@2x.png",
+  "source_md5": "6b966927cc1adabb90dbb5c8c1b75b65",
+  "size": [
+   400,
+   400
+  ],
+  "mode": "RGBA",
+  "md5": "0d959795718de90d71c8de330dcb5a69",
+  "mip_levels": 9,
+  "format": "RGBA8",
+  "ctex_bytes": 165422,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/ui_panel_frame@2x.png",
+  "ctex": "vajb-orbit/.godot/imported/ui_panel_frame@2x.png-3bd44ed105f93d1676ad71a8896d1f76.ctex",
+  "ctex_hash": "3bd44ed105f93d1676ad71a8896d1f76",
+  "source_file": "ui_panel_frame@2x.png",
+  "source_md5": "2f3199f539fee9736f1221c5c628ffa4",
+  "size": [
+   192,
+   192
+  ],
+  "mode": "RGBA",
+  "md5": "ffc409a50fd2d969f45138bf2d1f5ecc",
+  "mip_levels": 8,
+  "format": "RGBA8",
+  "ctex_bytes": 53028,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/ui_bar_caps@2x.png",
+  "ctex": "vajb-orbit/.godot/imported/ui_bar_caps@2x.png-9e4a4d912698c354d77c83f97a3d6e0a.ctex",
+  "ctex_hash": "9e4a4d912698c354d77c83f97a3d6e0a",
+  "source_file": "ui_bar_caps@2x.png",
+  "source_md5": "2f01322d527b567aecad19a52710945b",
+  "size": [
+   84,
+   28
+  ],
+  "mode": "RGBA",
+  "md5": "6b606bc27555cb667df848c5afef8edb",
+  "mip_levels": 7,
+  "format": "RGBA8",
+  "ctex_bytes": 5544,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/ui_panel_frame_96.png",
+  "ctex": "vajb-orbit/.godot/imported/ui_panel_frame_96.png-bf8f14d6e19b1cb5135d1cafd9b4fb51.ctex",
+  "ctex_hash": "bf8f14d6e19b1cb5135d1cafd9b4fb51",
+  "source_file": "ui_panel_frame_96.png",
+  "source_md5": "213eedb1b8e93617fb9cf4c6c1229dc6",
+  "size": [
+   96,
+   96
+  ],
+  "mode": "RGBA",
+  "md5": "4726454d436c8406942eb6047877b02b",
+  "mip_levels": 1,
+  "format": "RGBA8",
+  "ctex_bytes": 8242,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/2x2-grid-panel-of-four-very-wide-thin-ho-asset-01.png",
+  "ctex": "vajb-orbit/.godot/imported/2x2-grid-panel-of-four-very-wide-thin-ho-asset-01.png-a0c95ce1265fdb4ff1e1396823f16ee7.ctex",
+  "ctex_hash": "a0c95ce1265fdb4ff1e1396823f16ee7",
+  "source_file": "2x2-grid-panel-of-four-very-wide-thin-ho-asset-01.png",
+  "source_md5": "1571b1706a3dd0124854b29987732935",
+  "size": [
+   993,
+   209
+  ],
+  "mode": "RGBA",
+  "md5": "2be14053b11857b7ccb91c75bb7b0b7b",
+  "mip_levels": 1,
+  "format": "RGBA8",
+  "ctex_bytes": 238338,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/2x2-grid-panel-of-four-very-wide-thin-ho-asset-02.png",
+  "ctex": "vajb-orbit/.godot/imported/2x2-grid-panel-of-four-very-wide-thin-ho-asset-02.png-51a9feb3dcdd88a4cbcd73cb1e55345d.ctex",
+  "ctex_hash": "51a9feb3dcdd88a4cbcd73cb1e55345d",
+  "source_file": "2x2-grid-panel-of-four-very-wide-thin-ho-asset-02.png",
+  "source_md5": "eeeec47118e5676df020b11e55ff95db",
+  "size": [
+   994,
+   213
+  ],
+  "mode": "RGBA",
+  "md5": "ca655324449650f500eb33a974d15ea6",
+  "mip_levels": 1,
+  "format": "RGBA8",
+  "ctex_bytes": 259616,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/2x2-grid-panel-of-four-very-wide-thin-ho-asset-03.png",
+  "ctex": "vajb-orbit/.godot/imported/2x2-grid-panel-of-four-very-wide-thin-ho-asset-03.png-3fb6b926028227081abc821190d50b10.ctex",
+  "ctex_hash": "3fb6b926028227081abc821190d50b10",
+  "source_file": "2x2-grid-panel-of-four-very-wide-thin-ho-asset-03.png",
+  "source_md5": "00b2a4c15acd45762160e13413c5fa80",
+  "size": [
+   994,
+   220
+  ],
+  "mode": "RGBA",
+  "md5": "3e9ecc2bbb65985f86564e78cad1fe1f",
+  "mip_levels": 1,
+  "format": "RGBA8",
+  "ctex_bytes": 239866,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/2x2-grid-panel-of-four-very-wide-thin-ho-asset-04.png",
+  "ctex": "vajb-orbit/.godot/imported/2x2-grid-panel-of-four-very-wide-thin-ho-asset-04.png-7e5afacb949a96db30171824e73d1a38.ctex",
+  "ctex_hash": "7e5afacb949a96db30171824e73d1a38",
+  "source_file": "2x2-grid-panel-of-four-very-wide-thin-ho-asset-04.png",
+  "source_md5": "212986d1d8a2e691fe78aa3b208a8462",
+  "size": [
+   993,
+   220
+  ],
+  "mode": "RGBA",
+  "md5": "87d7c85d36f3e1baf723e388e8e50b66",
+  "mip_levels": 1,
+  "format": "RGBA8",
+  "ctex_bytes": 250600,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/ui-button-plate-a-square-panel-with-fou-asset-01.png",
+  "ctex": "vajb-orbit/.godot/imported/ui-button-plate-a-square-panel-with-fou-asset-01.png-f69478d282411f01575bbb8b7b371702.ctex",
+  "ctex_hash": "f69478d282411f01575bbb8b7b371702",
+  "source_file": "ui-button-plate-a-square-panel-with-fou-asset-01.png",
+  "source_md5": "6bdb4f99485a5f4e9d527180212177a9",
+  "size": [
+   890,
+   287
+  ],
+  "mode": "RGBA",
+  "md5": "1f678a13445fcf3f98577e5862d5c8ca",
+  "mip_levels": 1,
+  "format": "RGBA8",
+  "ctex_bytes": 280552,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/ui-button-plate-a-square-panel-with-fou-asset-02.png",
+  "ctex": "vajb-orbit/.godot/imported/ui-button-plate-a-square-panel-with-fou-asset-02.png-903c7548485b57765ea6661e493e7f92.ctex",
+  "ctex_hash": "903c7548485b57765ea6661e493e7f92",
+  "source_file": "ui-button-plate-a-square-panel-with-fou-asset-02.png",
+  "source_md5": "365be5a5bf8cffe8f9d5e0ed9fbb204b",
+  "size": [
+   886,
+   288
+  ],
+  "mode": "RGBA",
+  "md5": "f12f87fd17ed699dc38dbf288ff076f1",
+  "mip_levels": 1,
+  "format": "RGBA8",
+  "ctex_bytes": 296858,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/ui-button-plate-a-square-panel-with-fou-asset-03.png",
+  "ctex": "vajb-orbit/.godot/imported/ui-button-plate-a-square-panel-with-fou-asset-03.png-f6eb2d499dcd39ac0fd69dacd3ac473b.ctex",
+  "ctex_hash": "f6eb2d499dcd39ac0fd69dacd3ac473b",
+  "source_file": "ui-button-plate-a-square-panel-with-fou-asset-03.png",
+  "source_md5": "75fb1fc7437d46dbe789fea629cbcd20",
+  "size": [
+   890,
+   287
+  ],
+  "mode": "RGBA",
+  "md5": "89ce6c3149dbd1af2250f81f715eef93",
+  "mip_levels": 1,
+  "format": "RGBA8",
+  "ctex_bytes": 244502,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/ui-button-plate-a-square-panel-with-fou-asset-04.png",
+  "ctex": "vajb-orbit/.godot/imported/ui-button-plate-a-square-panel-with-fou-asset-04.png-b513244abcf0d386b33218cbf3685dee.ctex",
+  "ctex_hash": "b513244abcf0d386b33218cbf3685dee",
+  "source_file": "ui-button-plate-a-square-panel-with-fou-asset-04.png",
+  "source_md5": "8d051f54cb39f20e5fb32819a6409e42",
+  "size": [
+   886,
+   286
+  ],
+  "mode": "RGBA",
+  "md5": "66998a4d05cf609134143d7d46a37ebb",
+  "mip_levels": 1,
+  "format": "RGBA8",
+  "ctex_bytes": 224204,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/ui-bar-caps-and-ui-minimap-bezel-one-pa-asset-01.png",
+  "ctex": "vajb-orbit/.godot/imported/ui-bar-caps-and-ui-minimap-bezel-one-pa-asset-01.png-f2c9290ca0fbebd5a41d70528f9a60dd.ctex",
+  "ctex_hash": "f2c9290ca0fbebd5a41d70528f9a60dd",
+  "source_file": "ui-bar-caps-and-ui-minimap-bezel-one-pa-asset-01.png",
+  "source_md5": "f1de7ee03d0c09ec6edc4ab65470f7bf",
+  "size": [
+   333,
+   194
+  ],
+  "mode": "RGBA",
+  "md5": "469228172fa7e4e3d8ccc90c421bba52",
+  "mip_levels": 1,
+  "format": "RGBA8",
+  "ctex_bytes": 61854,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/ui-bar-caps-and-ui-minimap-bezel-one-pa-asset-02.png",
+  "ctex": "vajb-orbit/.godot/imported/ui-bar-caps-and-ui-minimap-bezel-one-pa-asset-02.png-fcf4db00ac29e2049744ea13306428e9.ctex",
+  "ctex_hash": "fcf4db00ac29e2049744ea13306428e9",
+  "source_file": "ui-bar-caps-and-ui-minimap-bezel-one-pa-asset-02.png",
+  "source_md5": "6250c138038aaedac153c5487c09599a",
+  "size": [
+   333,
+   194
+  ],
+  "mode": "RGBA",
+  "md5": "22e0971620ea21b990773997859071b5",
+  "mip_levels": 1,
+  "format": "RGBA8",
+  "ctex_bytes": 61508,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/ui-bar-caps-and-ui-minimap-bezel-one-pa-asset-03.png",
+  "ctex": "vajb-orbit/.godot/imported/ui-bar-caps-and-ui-minimap-bezel-one-pa-asset-03.png-9093f389c64ec7c34c7a8f4822208e47.ctex",
+  "ctex_hash": "9093f389c64ec7c34c7a8f4822208e47",
+  "source_file": "ui-bar-caps-and-ui-minimap-bezel-one-pa-asset-03.png",
+  "source_md5": "c9bd99e45a78ba497e8d1b15977a14b4",
+  "size": [
+   969,
+   971
+  ],
+  "mode": "RGBA",
+  "md5": "bdab7ecfb179da74a4a907a9b57ba48b",
+  "mip_levels": 1,
+  "format": "RGBA8",
+  "ctex_bytes": 582026,
+  "mip": 0
+ }
+]

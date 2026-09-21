@@ -776,6 +776,18 @@ func shield() -> float:
 	return _shield
 
 
+## Whether the shield is still up: the reader section 4.1's shield rules ask for
+## (`weapons.gd:_shield_up` reads a `shield_up()` method, a `shield` property or a
+## `state` property). This hull publishes its pools as `hull()`/`shield()` *methods*
+## and carries no `shield`/`state` property, so without this reader the weapon side read
+## every NPC as shields-down and plasma's "+25 % once shields are down" landed on live
+## NPC shields: measured, 1 s of plasma on a 600-shield hull removed 87.500 = 70 x 1.25,
+## where the family's own row is 70.000 (C2-F1). Mirrors `player_ship.gd:258`; only
+## which pool the multiplier may touch changes, never the multiplier.
+func shield_up() -> bool:
+	return _shield > 0.0
+
+
 func shield_max() -> float:
 	return _shield_max
 

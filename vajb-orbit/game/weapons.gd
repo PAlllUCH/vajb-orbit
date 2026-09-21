@@ -138,7 +138,8 @@ const GUN_CHIP_RATE := 0.10
 
 ## The cadence a kinetic weapon with no burst cycle of its own borrows. Derived,
 ## not invented: the cannon's burst cycle (0.35 s on + 0.25 s off) is the only
-## shot cadence section 13 states.
+## shot cadence section 13 states. `interval_of` gates it on the row's family, so a
+## non-kinetic row that states no cadence (the mine) reads 0.0 instead.
 const KINETIC_INTERVAL := 0.6
 
 ## Rocks are layer 1 (`Asteroid.COLLISION_LAYER`) and hulls layer 2
@@ -1030,6 +1031,12 @@ static func dps_of(weapon_id: StringName) -> float:
 ## states one (the rocket's 1.2 s), the cannon's burst cycle where it states a
 ## cycle, and the burst cycle's length for the kinetics that state neither
 ## (section 4.1 blesses no rate of fire anywhere - reported).
+##
+## The fallback is family-aware (C2-F4): `KINETIC_INTERVAL` is the cannon's burst
+## cycle, a *kinetic* row's own shape, so only a kinetic row may borrow it. A family
+## that states no cadence and is not kinetic has none - the mine is `edge`, one per
+## trigger pull, and reads 0.0 rather than a borrowed gun cadence. Its damage is the
+## row's `alpha`, so `shot_damage` never reads this fallback.
 static func interval_of(weapon_id: StringName) -> float:
 	var row := row_of(weapon_id)
 	if row.is_empty() or bool(row.get(&"instant", false)):
@@ -1040,7 +1047,9 @@ static func interval_of(weapon_id: StringName) -> float:
 	var off := float(row.get(&"burst_off", 0.0))
 	if on > 0.0 or off > 0.0:
 		return on + off
-	return KINETIC_INTERVAL
+	if family_of(weapon_id) == &"kinetic":
+		return KINETIC_INTERVAL
+	return 0.0
 
 
 ## The damage one released shot carries: section 4.1's `alpha` where the row

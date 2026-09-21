@@ -41,7 +41,7 @@ VAJB_WORKER_FILES="staging/phase_f/apply_import_settings.py" \
 ## C5 — fixer (after C1–C3)
 
 ```bash
-VAJB_WORKER_FILES="vajb-orbit/game/asteroid.gd,vajb-orbit/game/weapons.gd,vajb-orbit/game/projectile.gd,vajb-orbit/game/player_ship.gd,vajb-orbit/game/impact.gd,vajb-orbit/tests/" \
+VAJB_WORKER_FILES="vajb-orbit/game/asteroid.gd,vajb-orbit/game/weapons.gd,vajb-orbit/game/projectile.gd,vajb-orbit/game/ship_fit.gd,vajb-orbit/game/npc_ship.gd,vajb-orbit/game/player_ship.gd,vajb-orbit/tests/" \
   crush run "Read .agents/gen/combat_repair_wave_task.md in full first - it is the law - then the C1, C2 and C3 reports in .agents/gen/, which are the authority on what is broken. You are C5, the one-pass fixer, and you own three jobs. First, the rock's collision half: make a ram push the rock and charge both sides per CONTRACTS section 4 and the owner ruling, using C1's measurement of whether the one-way pair or the missing sink is the cause. Second, the owner ruling that weapon fire damages asteroids: give the rock the damage sink and route weapon damage through its existing cleave channel, apply_work, with the damage-to-work conversion as ONE named constant that you propose explicitly in your report together with its reversal path and its section 13 tick request. Third, the drag retune the owner asked for: use C3's measured curve, keep every section 13 row it must not move untouched, and report the old and new constants with the after curve. Add a test per fix, keep the gate green and grow its count, and re-measure each fix with the same probe the reviewer will re-run. Do not touch assets, the theme, project.godot, addons or docs. Write your report to .agents/gen/combat_repair_c5_report.md." \
   -m deepseek/deepseek-v4-flash --cwd /home/kamil-paluszkiewicz/VajbOrbit
 ```
@@ -61,3 +61,12 @@ VAJB_WORKER_FILES="<per-finding sets from the C6 report>" \
   crush run "Read .agents/gen/combat_repair_c6_report.md in full - it is the authority on every finding - and .agents/gen/combat_repair_wave_task.md for the wave rules. You are C7 and you fix only the HIGH and MED findings assigned to you, one pass. Re-measure each finding before and after with the reviewer's own command, and keep the gate green. Do not touch assets, the theme, project.godot, addons or docs. Write your report to .agents/gen/combat_repair_c7_report.md with the per-finding evidence." \
   -m deepseek/deepseek-v4-flash --cwd /home/kamil-paluszkiewicz/VajbOrbit
 ```
+
+> **Set amendment, 2026-09-21 (C6's MED-1).** The C5 block above originally tabled
+> `game/projectile.gd`, `game/player_ship.gd` and `game/impact.gd`. The dispatch that
+> actually ran carried the set now shown in the block: it adds `game/ship_fit.gd`
+> (the nine `coast_time` rows, owner ruling 3) and `game/npc_ship.gd` (the added
+> `shield_up()`, C2-F1), and drops `game/impact.gd` (C1 refuted the 40 u/s floor as the
+> cause, so nothing there changed). The reviewer's finding was about the record, not the
+> writes: the two files the owner's rulings required were omitted from the table while
+> being present in the dispatch, and the brief's C5 row now carries them with this note.

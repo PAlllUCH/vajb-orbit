@@ -1,0 +1,504 @@
+{
+ "rows": [
+  {
+   "name": "ui_bar_caps.png",
+   "canvas": [
+    42,
+    14
+   ],
+   "expected_box": [
+    42,
+    14
+   ],
+   "expected_ink": null,
+   "ink_box": [
+    0,
+    0,
+    42,
+    14
+   ],
+   "core_box": [
+    0,
+    0,
+    42,
+    14
+   ],
+   "alpha_mean": 222.4,
+   "alpha_255_share": 0.6684,
+   "transparent_share": 0.0391,
+   "ink_pixels": 565,
+   "alpha_pixels_total": 588,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_bar_caps@2x.png",
+   "canvas": [
+    84,
+    28
+   ],
+   "expected_box": [
+    84,
+    28
+   ],
+   "expected_ink": null,
+   "ink_box": [
+    0,
+    0,
+    84,
+    28
+   ],
+   "core_box": [
+    0,
+    0,
+    84,
+    28
+   ],
+   "alpha_mean": 222.5,
+   "alpha_255_share": 0.7785,
+   "transparent_share": 0.0872,
+   "ink_pixels": 2147,
+   "alpha_pixels_total": 2352,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_button_plate_disabled.png",
+   "canvas": [
+    280,
+    56
+   ],
+   "expected_box": [
+    280,
+    56
+   ],
+   "expected_ink": null,
+   "ink_box": [
+    0,
+    0,
+    280,
+    56
+   ],
+   "core_box": [
+    1,
+    1,
+    279,
+    55
+   ],
+   "alpha_mean": 241.5,
+   "alpha_255_share": 0.8688,
+   "transparent_share": 0.0018,
+   "ink_pixels": 15651,
+   "alpha_pixels_total": 15680,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_button_plate_disabled@2x.png",
+   "canvas": [
+    560,
+    112
+   ],
+   "expected_box": [
+    560,
+    112
+   ],
+   "expected_ink": null,
+   "ink_box": [
+    0,
+    0,
+    560,
+    112
+   ],
+   "core_box": [
+    2,
+    2,
+    558,
+    110
+   ],
+   "alpha_mean": 241.9,
+   "alpha_255_share": 0.9111,
+   "transparent_share": 0.0223,
+   "ink_pixels": 61322,
+   "alpha_pixels_total": 62720,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_button_plate_hover.png",
+   "canvas": [
+    280,
+    56
+   ],
+   "expected_box": [
+    280,
+    56
+   ],
+   "expected_ink": null,
+   "ink_box": [
+    0,
+    0,
+    280,
+    56
+   ],
+   "core_box": [
+    1,
+    1,
+    279,
+    55
+   ],
+   "alpha_mean": 233.3,
+   "alpha_255_share": 0.8485,
+   "transparent_share": 0.0463,
+   "ink_pixels": 14954,
+   "alpha_pixels_total": 15680,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_button_plate_hover@2x.png",
+   "canvas": [
+    560,
+    112
+   ],
+   "expected_box": [
+    560,
+    112
+   ],
+   "expected_ink": null,
+   "ink_box": [
+    0,
+    0,
+    560,
+    112
+   ],
+   "core_box": [
+    2,
+    2,
+    558,
+    110
+   ],
+   "alpha_mean": 233.4,
+   "alpha_255_share": 0.8827,
+   "transparent_share": 0.0539,
+   "ink_pixels": 59342,
+   "alpha_pixels_total": 62720,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_button_plate_normal.png",
+   "canvas": [
+    280,
+    56
+   ],
+   "expected_box": [
+    280,
+    56
+   ],
+   "expected_ink": null,
+   "ink_box": [
+    0,
+    0,
+    280,
+    56
+   ],
+   "core_box": [
+    1,
+    1,
+    279,
+    55
+   ],
+   "alpha_mean": 236.5,
+   "alpha_255_share": 0.8573,
+   "transparent_share": 0.0399,
+   "ink_pixels": 15054,
+   "alpha_pixels_total": 15680,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_button_plate_normal@2x.png",
+   "canvas": [
+    560,
+    112
+   ],
+   "expected_box": [
+    560,
+    112
+   ],
+   "expected_ink": null,
+   "ink_box": [
+    0,
+    0,
+    560,
+    112
+   ],
+   "core_box": [
+    2,
+    2,
+    558,
+    110
+   ],
+   "alpha_mean": 236.4,
+   "alpha_255_share": 0.884,
+   "transparent_share": 0.0072,
+   "ink_pixels": 62271,
+   "alpha_pixels_total": 62720,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_button_plate_pressed.png",
+   "canvas": [
+    280,
+    56
+   ],
+   "expected_box": [
+    280,
+    56
+   ],
+   "expected_ink": null,
+   "ink_box": [
+    0,
+    0,
+    280,
+    56
+   ],
+   "core_box": [
+    1,
+    1,
+    279,
+    55
+   ],
+   "alpha_mean": 189.0,
+   "alpha_255_share": 0.5563,
+   "transparent_share": 0.1247,
+   "ink_pixels": 13724,
+   "alpha_pixels_total": 15680,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_button_plate_pressed@2x.png",
+   "canvas": [
+    560,
+    112
+   ],
+   "expected_box": [
+    560,
+    112
+   ],
+   "expected_ink": null,
+   "ink_box": [
+    0,
+    0,
+    560,
+    112
+   ],
+   "core_box": [
+    2,
+    2,
+    558,
+    110
+   ],
+   "alpha_mean": 189.1,
+   "alpha_255_share": 0.6011,
+   "transparent_share": 0.1334,
+   "ink_pixels": 54351,
+   "alpha_pixels_total": 62720,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_minimap_bezel.png",
+   "canvas": [
+    200,
+    200
+   ],
+   "expected_box": [
+    200,
+    200
+   ],
+   "expected_ink": null,
+   "ink_box": [
+    0,
+    0,
+    200,
+    200
+   ],
+   "core_box": [
+    0,
+    0,
+    200,
+    200
+   ],
+   "alpha_mean": 254.7,
+   "alpha_255_share": 0.9869,
+   "transparent_share": 0.0,
+   "ink_pixels": 39999,
+   "alpha_pixels_total": 40000,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_minimap_bezel@2x.png",
+   "canvas": [
+    400,
+    400
+   ],
+   "expected_box": [
+    400,
+    400
+   ],
+   "expected_ink": null,
+   "ink_box": [
+    0,
+    0,
+    400,
+    400
+   ],
+   "core_box": [
+    0,
+    0,
+    400,
+    400
+   ],
+   "alpha_mean": 254.7,
+   "alpha_255_share": 0.9932,
+   "transparent_share": 0.0001,
+   "ink_pixels": 159982,
+   "alpha_pixels_total": 160000,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_panel_frame.png",
+   "canvas": [
+    96,
+    96
+   ],
+   "expected_box": [
+    96,
+    96
+   ],
+   "expected_ink": null,
+   "ink_box": [
+    0,
+    0,
+    96,
+    96
+   ],
+   "core_box": [
+    0,
+    0,
+    96,
+    96
+   ],
+   "alpha_mean": 249.9,
+   "alpha_255_share": 0.9057,
+   "transparent_share": 0.0055,
+   "ink_pixels": 9165,
+   "alpha_pixels_total": 9216,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_panel_frame@2x.png",
+   "canvas": [
+    192,
+    192
+   ],
+   "expected_box": [
+    192,
+    192
+   ],
+   "expected_ink": null,
+   "ink_box": [
+    0,
+    0,
+    192,
+    192
+   ],
+   "core_box": [
+    0,
+    0,
+    192,
+    192
+   ],
+   "alpha_mean": 249.9,
+   "alpha_255_share": 0.9463,
+   "transparent_share": 0.0082,
+   "ink_pixels": 36562,
+   "alpha_pixels_total": 36864,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "logo_vajb_orbit.png",
+   "canvas": [
+    2048,
+    2048
+   ],
+   "expected_box": [
+    2048,
+    2048
+   ],
+   "expected_ink": [
+    56,
+    719,
+    1993,
+    1310
+   ],
+   "ink_box": [
+    56,
+    719,
+    1993,
+    1310
+   ],
+   "core_box": [
+    57,
+    719,
+    1992,
+    1309
+   ],
+   "alpha_mean": 26.8,
+   "alpha_255_share": 0.0844,
+   "transparent_share": 0.8771,
+   "ink_pixels": 515436,
+   "alpha_pixels_total": 4194304,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  }
+ ]
+}

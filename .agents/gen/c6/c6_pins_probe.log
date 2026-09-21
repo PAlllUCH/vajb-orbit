@@ -1,0 +1,11 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[C6-PIN] probe start engine=4.7.2-stable (official)
+[C6-PIN] scene player_ship.tscn HullBody layer=2 mask=1
+[C6-PIN] class Asteroid.COLLISION_LAYER=1 COLLISION_MASK=2
+[C6-PIN] shipped rock after setup: layer=1 mask=2 units=100
+[C6-PIN] mask=0 old_pin(mask==0)=true new_pin(mask==2)=false rocks_apart=true rock_in_solve=false hull_in_solve=true
+[C6-PIN] mask=1 old_pin(mask==0)=false new_pin(mask==2)=false rocks_apart=true rock_in_solve=false hull_in_solve=true
+[C6-PIN] mask=2 old_pin(mask==0)=false new_pin(mask==2)=true rocks_apart=true rock_in_solve=true hull_in_solve=true
+[C6-PIN] done

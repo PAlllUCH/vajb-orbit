@@ -1,0 +1,188 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[C1-RAM] probe start engine=4.7.2-stable (official) physics_ticks=60 hull=ship_vanguard approach=450.0 gap=400.0 seed=20260921
+[C1-RAM] medium rock (pinned SIZE_MEDIUM + seed): radius=42.000 mass=560.0
+[C1-RAM] --- S1 SHIPPED ---
+[C1-RAM] S1 SHIPPED kind=asteroid driven=true rock layer=1 mask=2 mass=560.0 damp=3.710 radius=42.00
+[C1-RAM] S1 SHIPPED hull body layer=2 mask=1 mass=110.0 damp=0.952 radius=30.00 monitor=true contacts=4 sleep=false
+[C1-RAM] S1 SHIPPED rock sinks: apply_collision_damage=true take_damage=false damage=false apply_work=true
+[C1-RAM] S1 SHIPPED solver view: rock mode=2 mass=560.000 inv_mass=0.001786 | hull mode=2 mass=110.000 inv_mass=0.009091
+[C1-RAM] S1 SHIPPED start gap=400.00 ship_v=(450.00, 0.00) rock_v=(0.00, 0.00)
+[C1-RAM] S1 SHIPPED pre  f42   gap=  89.53 ship_v=( 443.55,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S1 SHIPPED pre  f43   gap=  82.14 ship_v=( 443.55,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S1 SHIPPED pre  f44   gap=  74.74 ship_v=( 443.55,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S1 SHIPPED pre  f45   gap=  67.35 ship_v=( 443.55,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S1 SHIPPED contact=YES frame=45 gap=67.35 closing=450.00 peer=Rock (res://game/asteroid.gd) layer=1 mask=2
+[C1-RAM] S1 SHIPPED closing arithmetic: hull _last_velocity=(450.000, 0.000) rock_v_pre=(0.000, 0.000) dot=450.00
+[C1-RAM] S1 SHIPPED engine view: contact_count=1 colliding_bodies=1 peer_has_sink=true
+[C1-RAM] S1 SHIPPED Impact.collision_damage(110.0, 560.0, 450.00)=186.179 (floor COLLISION_MIN_DV=40.0)
+[C1-RAM] S1 SHIPPED post f46   gap=  70.83 ship_v=(  72.82,   0.00) rock_v=(  72.82,   0.00)
+[C1-RAM] S1 SHIPPED post f47   gap=  71.56 ship_v=(  66.37,   0.00) rock_v=(  68.32,   0.00)
+[C1-RAM] S1 SHIPPED post f48   gap=  71.74 ship_v=(  59.91,   0.00) rock_v=(  64.09,   0.00)
+[C1-RAM] S1 SHIPPED post f49   gap=  71.85 ship_v=(  53.46,   0.00) rock_v=(  60.13,   0.00)
+[C1-RAM] S1 SHIPPED post f50   gap=  72.01 ship_v=(  47.01,   0.00) rock_v=(  56.41,   0.00)
+[C1-RAM] S1 SHIPPED post f51   gap=  72.22 ship_v=(  40.55,   0.00) rock_v=(  52.92,   0.00)
+[C1-RAM] S1 SHIPPED post f52   gap=  72.47 ship_v=(  34.10,   0.00) rock_v=(  49.65,   0.00)
+[C1-RAM] S1 SHIPPED post f53   gap=  72.79 ship_v=(  27.64,   0.00) rock_v=(  46.58,   0.00)
+[C1-RAM] S1 SHIPPED rock: v_at_contact=(0.000, 0.000) v_peak=72.821 v_final=(0.037, 0.000) pos_delta=(20.323, 0.000) |d|=20.323
+[C1-RAM] S1 SHIPPED rock pools: yield 100 -> 82, work 0.0 -> 0.6179104477612, sink_hits=<no sink> sink_total=<no sink>
+[C1-RAM] S1 SHIPPED ship pools: hull 1250.000 -> 1250.000 (delta +0.000) shield 800.000 -> 613.821 (delta -186.179)
+[C1-RAM] S1 SHIPPED ship body end: pos=(-63.471, 0.000) travelled=336.529 v=(0.000, 0.000)
+[C1-RAM] --- S2 MASK2 ---
+[C1-RAM] S2 MASK2 kind=asteroid driven=true rock layer=1 mask=2 mass=560.0 damp=3.710 radius=42.00
+[C1-RAM] S2 MASK2 hull body layer=2 mask=1 mass=110.0 damp=0.952 radius=30.00 monitor=true contacts=4 sleep=false
+[C1-RAM] S2 MASK2 rock sinks: apply_collision_damage=true take_damage=false damage=false apply_work=true
+[C1-RAM] S2 MASK2 solver view: rock mode=2 mass=560.000 inv_mass=0.001786 | hull mode=2 mass=110.000 inv_mass=0.009091
+[C1-RAM] S2 MASK2 start gap=400.00 ship_v=(450.00, 0.00) rock_v=(0.00, 0.00)
+[C1-RAM] S2 MASK2 pre  f42   gap=  89.53 ship_v=( 443.55,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S2 MASK2 pre  f43   gap=  82.14 ship_v=( 443.55,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S2 MASK2 pre  f44   gap=  74.74 ship_v=( 443.55,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S2 MASK2 pre  f45   gap=  67.35 ship_v=( 443.55,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S2 MASK2 contact=YES frame=45 gap=67.35 closing=450.00 peer=Rock (res://game/asteroid.gd) layer=1 mask=2
+[C1-RAM] S2 MASK2 closing arithmetic: hull _last_velocity=(450.000, 0.000) rock_v_pre=(0.000, 0.000) dot=450.00
+[C1-RAM] S2 MASK2 engine view: contact_count=1 colliding_bodies=1 peer_has_sink=true
+[C1-RAM] S2 MASK2 Impact.collision_damage(110.0, 560.0, 450.00)=186.179 (floor COLLISION_MIN_DV=40.0)
+[C1-RAM] S2 MASK2 post f46   gap=  70.83 ship_v=(  72.82,   0.00) rock_v=(  72.82,   0.00)
+[C1-RAM] S2 MASK2 post f47   gap=  71.56 ship_v=(  66.37,   0.00) rock_v=(  68.32,   0.00)
+[C1-RAM] S2 MASK2 post f48   gap=  71.74 ship_v=(  59.91,   0.00) rock_v=(  64.09,   0.00)
+[C1-RAM] S2 MASK2 post f49   gap=  71.85 ship_v=(  53.46,   0.00) rock_v=(  60.13,   0.00)
+[C1-RAM] S2 MASK2 post f50   gap=  72.01 ship_v=(  47.01,   0.00) rock_v=(  56.41,   0.00)
+[C1-RAM] S2 MASK2 post f51   gap=  72.22 ship_v=(  40.55,   0.00) rock_v=(  52.92,   0.00)
+[C1-RAM] S2 MASK2 post f52   gap=  72.47 ship_v=(  34.10,   0.00) rock_v=(  49.65,   0.00)
+[C1-RAM] S2 MASK2 post f53   gap=  72.79 ship_v=(  27.64,   0.00) rock_v=(  46.58,   0.00)
+[C1-RAM] S2 MASK2 rock: v_at_contact=(0.000, 0.000) v_peak=72.821 v_final=(0.037, 0.000) pos_delta=(20.323, 0.000) |d|=20.323
+[C1-RAM] S2 MASK2 rock pools: yield 100 -> 82, work 0.0 -> 0.6179104477612, sink_hits=<no sink> sink_total=<no sink>
+[C1-RAM] S2 MASK2 ship pools: hull 1250.000 -> 1250.000 (delta +0.000) shield 800.000 -> 613.821 (delta -186.179)
+[C1-RAM] S2 MASK2 ship body end: pos=(-63.471, 0.000) travelled=336.529 v=(0.000, 0.000)
+[C1-RAM] --- S2b MASK1 ---
+[C1-RAM] S2b MASK1 kind=asteroid driven=true rock layer=1 mask=1 mass=560.0 damp=3.710 radius=42.00
+[C1-RAM] S2b MASK1 hull body layer=2 mask=1 mass=110.0 damp=0.952 radius=30.00 monitor=true contacts=4 sleep=false
+[C1-RAM] S2b MASK1 rock sinks: apply_collision_damage=true take_damage=false damage=false apply_work=true
+[C1-RAM] S2b MASK1 solver view: rock mode=2 mass=560.000 inv_mass=0.001786 | hull mode=2 mass=110.000 inv_mass=0.009091
+[C1-RAM] S2b MASK1 start gap=400.00 ship_v=(450.00, 0.00) rock_v=(0.00, 0.00)
+[C1-RAM] S2b MASK1 pre  f42   gap=  89.53 ship_v=( 443.55,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S2b MASK1 pre  f43   gap=  82.14 ship_v=( 443.55,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S2b MASK1 pre  f44   gap=  74.74 ship_v=( 443.55,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S2b MASK1 pre  f45   gap=  67.35 ship_v=( 443.55,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S2b MASK1 contact=YES frame=45 gap=67.35 closing=450.00 peer=Rock (res://game/asteroid.gd) layer=1 mask=1
+[C1-RAM] S2b MASK1 closing arithmetic: hull _last_velocity=(450.000, 0.000) rock_v_pre=(0.000, 0.000) dot=450.00
+[C1-RAM] S2b MASK1 engine view: contact_count=1 colliding_bodies=1 peer_has_sink=true
+[C1-RAM] S2b MASK1 Impact.collision_damage(110.0, 560.0, 450.00)=186.179 (floor COLLISION_MIN_DV=40.0)
+[C1-RAM] S2b MASK1 post f46   gap=  70.83 ship_v=(   0.00,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S2b MASK1 post f47   gap=  71.53 ship_v=(   0.00,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S2b MASK1 post f48   gap=  71.67 ship_v=(   0.00,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S2b MASK1 post f49   gap=  71.69 ship_v=(   0.00,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S2b MASK1 post f50   gap=  71.70 ship_v=(   0.00,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S2b MASK1 post f51   gap=  71.70 ship_v=(   0.00,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S2b MASK1 post f52   gap=  71.70 ship_v=(   0.00,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S2b MASK1 post f53   gap=  71.70 ship_v=(   0.00,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S2b MASK1 rock: v_at_contact=(0.000, 0.000) v_peak=0.000 v_final=(0.000, 0.000) pos_delta=(0.000, 0.000) |d|=0.000
+[C1-RAM] S2b MASK1 rock pools: yield 100 -> 82, work 0.0 -> 0.6179104477612, sink_hits=<no sink> sink_total=<no sink>
+[C1-RAM] S2b MASK1 ship pools: hull 1250.000 -> 1250.000 (delta +0.000) shield 800.000 -> 613.821 (delta -186.179)
+[C1-RAM] S2b MASK1 ship body end: pos=(-71.700, 0.000) travelled=328.300 v=(0.000, 0.000)
+[C1-RAM] --- S3 SINK ---
+[C1-RAM] S3 SINK kind=stub driven=true rock layer=1 mask=2 mass=560.0 damp=3.710 radius=42.00
+[C1-RAM] S3 SINK hull body layer=2 mask=1 mass=110.0 damp=0.952 radius=30.00 monitor=true contacts=4 sleep=false
+[C1-RAM] S3 SINK rock sinks: apply_collision_damage=true take_damage=false damage=false apply_work=true
+[C1-RAM] S3 SINK solver view: rock mode=2 mass=560.000 inv_mass=0.001786 | hull mode=2 mass=110.000 inv_mass=0.009091
+[C1-RAM] S3 SINK start gap=400.00 ship_v=(450.00, 0.00) rock_v=(0.00, 0.00)
+[C1-RAM] S3 SINK pre  f42   gap=  89.53 ship_v=( 443.55,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S3 SINK pre  f43   gap=  82.14 ship_v=( 443.55,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S3 SINK pre  f44   gap=  74.74 ship_v=( 443.55,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S3 SINK pre  f45   gap=  67.35 ship_v=( 443.55,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S3 SINK contact=YES frame=45 gap=67.35 closing=450.00 peer=Rock (res://tests/c1_stub_rock.gd) layer=1 mask=2
+[C1-RAM] S3 SINK closing arithmetic: hull _last_velocity=(450.000, 0.000) rock_v_pre=(0.000, 0.000) dot=450.00
+[C1-RAM] S3 SINK engine view: contact_count=1 colliding_bodies=1 peer_has_sink=true
+[C1-RAM] S3 SINK Impact.collision_damage(110.0, 560.0, 450.00)=186.179 (floor COLLISION_MIN_DV=40.0)
+[C1-RAM] S3 SINK post f46   gap=  70.83 ship_v=(  72.82,   0.00) rock_v=(  72.82,   0.00)
+[C1-RAM] S3 SINK post f47   gap=  71.56 ship_v=(  66.37,   0.00) rock_v=(  68.32,   0.00)
+[C1-RAM] S3 SINK post f48   gap=  71.74 ship_v=(  59.91,   0.00) rock_v=(  64.09,   0.00)
+[C1-RAM] S3 SINK post f49   gap=  71.85 ship_v=(  53.46,   0.00) rock_v=(  60.13,   0.00)
+[C1-RAM] S3 SINK post f50   gap=  72.01 ship_v=(  47.01,   0.00) rock_v=(  56.41,   0.00)
+[C1-RAM] S3 SINK post f51   gap=  72.22 ship_v=(  40.55,   0.00) rock_v=(  52.92,   0.00)
+[C1-RAM] S3 SINK post f52   gap=  72.47 ship_v=(  34.10,   0.00) rock_v=(  49.65,   0.00)
+[C1-RAM] S3 SINK post f53   gap=  72.79 ship_v=(  27.64,   0.00) rock_v=(  46.58,   0.00)
+[C1-RAM] S3 SINK rock: v_at_contact=(0.000, 0.000) v_peak=72.821 v_final=(0.037, 0.000) pos_delta=(20.323, 0.000) |d|=20.323
+[C1-RAM] S3 SINK rock pools: yield 100 -> 100, work 0.0 -> 0.0, sink_hits=1 sink_total=186.179104477612
+[C1-RAM] S3 SINK ship pools: hull 1250.000 -> 1250.000 (delta +0.000) shield 800.000 -> 613.821 (delta -186.179)
+[C1-RAM] S3 SINK ship body end: pos=(-63.471, 0.000) travelled=336.529 v=(0.000, 0.000)
+[C1-RAM] --- C1 CONTROL ---
+[C1-RAM] C1 CONTROL kind=bare driven=true rock layer=1 mask=0 mass=560.0 damp=3.710 radius=42.00
+[C1-RAM] C1 CONTROL hull body layer=2 mask=1 mass=110.0 damp=0.952 radius=30.00 monitor=true contacts=4 sleep=false
+[C1-RAM] C1 CONTROL rock sinks: apply_collision_damage=false take_damage=false damage=false apply_work=false
+[C1-RAM] C1 CONTROL solver view: rock mode=2 mass=560.000 inv_mass=0.001786 | hull mode=2 mass=110.000 inv_mass=0.009091
+[C1-RAM] C1 CONTROL start gap=400.00 ship_v=(450.00, 0.00) rock_v=(0.00, 0.00)
+[C1-RAM] C1 CONTROL pre  f42   gap=  89.53 ship_v=( 443.55,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] C1 CONTROL pre  f43   gap=  82.14 ship_v=( 443.55,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] C1 CONTROL pre  f44   gap=  74.74 ship_v=( 443.55,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] C1 CONTROL pre  f45   gap=  67.35 ship_v=( 443.55,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] C1 CONTROL contact=YES frame=45 gap=67.35 closing=450.00 peer=BareControl (<none>) layer=1 mask=0
+[C1-RAM] C1 CONTROL closing arithmetic: hull _last_velocity=(450.000, 0.000) rock_v_pre=(0.000, 0.000) dot=450.00
+[C1-RAM] C1 CONTROL engine view: contact_count=1 colliding_bodies=1 peer_has_sink=false
+[C1-RAM] C1 CONTROL Impact.collision_damage(110.0, 560.0, 450.00)=186.179 (floor COLLISION_MIN_DV=40.0)
+[C1-RAM] C1 CONTROL post f46   gap=  70.83 ship_v=(   0.00,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] C1 CONTROL post f47   gap=  71.53 ship_v=(   0.00,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] C1 CONTROL post f48   gap=  71.67 ship_v=(   0.00,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] C1 CONTROL post f49   gap=  71.69 ship_v=(   0.00,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] C1 CONTROL post f50   gap=  71.70 ship_v=(   0.00,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] C1 CONTROL post f51   gap=  71.70 ship_v=(   0.00,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] C1 CONTROL post f52   gap=  71.70 ship_v=(   0.00,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] C1 CONTROL post f53   gap=  71.70 ship_v=(   0.00,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] C1 CONTROL rock: v_at_contact=(0.000, 0.000) v_peak=0.000 v_final=(0.000, 0.000) pos_delta=(0.000, 0.000) |d|=0.000
+[C1-RAM] C1 CONTROL rock pools: yield <none> -> <none>, work <none> -> <none>, sink_hits=<no sink> sink_total=<no sink>
+[C1-RAM] C1 CONTROL ship pools: hull 1250.000 -> 1250.000 (delta +0.000) shield 800.000 -> 613.821 (delta -186.179)
+[C1-RAM] C1 CONTROL ship body end: pos=(-71.700, 0.000) travelled=328.300 v=(0.000, 0.000)
+[C1-RAM] --- S5 COAST ---
+[C1-RAM] S5 COAST kind=asteroid driven=false rock layer=1 mask=2 mass=560.0 damp=3.710 radius=42.00
+[C1-RAM] S5 COAST hull body layer=2 mask=1 mass=110.0 damp=0.952 radius=30.00 monitor=true contacts=4 sleep=false
+[C1-RAM] S5 COAST rock sinks: apply_collision_damage=true take_damage=false damage=false apply_work=true
+[C1-RAM] S5 COAST solver view: rock mode=2 mass=560.000 inv_mass=0.001786 | hull mode=2 mass=110.000 inv_mass=0.009091
+[C1-RAM] S5 COAST start gap=400.00 ship_v=(450.00, 0.00) rock_v=(0.00, 0.00)
+[C1-RAM] S5 COAST NO CONTACT in 300 frames: min gap=143.06 ship_v=(0.00, 0.00) rock moved=0.000
+[C1-RAM] S5 COAST pre  f297  gap= 143.06 ship_v=(   0.00,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S5 COAST pre  f298  gap= 143.06 ship_v=(   0.00,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S5 COAST pre  f299  gap= 143.06 ship_v=(   0.00,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S5 COAST pre  f300  gap= 143.06 ship_v=(   0.00,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S5 COAST contact=NO
+[C1-RAM] S5 COAST rock: v_at_contact=(0.000, 0.000) v_peak=0.000 v_final=(0.000, 0.000) pos_delta=(0.000, 0.000) |d|=0.000
+[C1-RAM] S5 COAST rock pools: yield 100 -> 100, work 0.0 -> 0.0, sink_hits=<no sink> sink_total=<no sink>
+[C1-RAM] S5 COAST ship pools: hull 1250.000 -> 1250.000 (delta +0.000) shield 800.000 -> 800.000 (delta +0.000)
+[C1-RAM] S5 COAST ship body end: pos=(-143.064, 0.000) travelled=256.936 v=(0.000, 0.000)
+[C1-RAM] --- S6 FIXED ---
+[C1-RAM] S6 FIXED kind=stub driven=true rock layer=1 mask=2 mass=560.0 damp=3.710 radius=42.00
+[C1-RAM] S6 FIXED hull body layer=2 mask=1 mass=110.0 damp=0.952 radius=30.00 monitor=true contacts=4 sleep=false
+[C1-RAM] S6 FIXED rock sinks: apply_collision_damage=true take_damage=false damage=false apply_work=true
+[C1-RAM] S6 FIXED solver view: rock mode=2 mass=560.000 inv_mass=0.001786 | hull mode=2 mass=110.000 inv_mass=0.009091
+[C1-RAM] S6 FIXED start gap=400.00 ship_v=(450.00, 0.00) rock_v=(0.00, 0.00)
+[C1-RAM] S6 FIXED pre  f42   gap=  89.53 ship_v=( 443.55,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S6 FIXED pre  f43   gap=  82.14 ship_v=( 443.55,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S6 FIXED pre  f44   gap=  74.74 ship_v=( 443.55,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S6 FIXED pre  f45   gap=  67.35 ship_v=( 443.55,   0.00) rock_v=(   0.00,   0.00)
+[C1-RAM] S6 FIXED contact=YES frame=45 gap=67.35 closing=450.00 peer=Rock (res://tests/c1_stub_rock.gd) layer=1 mask=2
+[C1-RAM] S6 FIXED closing arithmetic: hull _last_velocity=(450.000, 0.000) rock_v_pre=(0.000, 0.000) dot=450.00
+[C1-RAM] S6 FIXED engine view: contact_count=1 colliding_bodies=1 peer_has_sink=true
+[C1-RAM] S6 FIXED Impact.collision_damage(110.0, 560.0, 450.00)=186.179 (floor COLLISION_MIN_DV=40.0)
+[C1-RAM] S6 FIXED post f46   gap=  70.83 ship_v=(  72.82,   0.00) rock_v=(  72.82,   0.00)
+[C1-RAM] S6 FIXED post f47   gap=  71.56 ship_v=(  66.37,   0.00) rock_v=(  68.32,   0.00)
+[C1-RAM] S6 FIXED post f48   gap=  71.74 ship_v=(  59.91,   0.00) rock_v=(  64.09,   0.00)
+[C1-RAM] S6 FIXED post f49   gap=  71.85 ship_v=(  53.46,   0.00) rock_v=(  60.13,   0.00)
+[C1-RAM] S6 FIXED post f50   gap=  72.01 ship_v=(  47.01,   0.00) rock_v=(  56.41,   0.00)
+[C1-RAM] S6 FIXED post f51   gap=  72.22 ship_v=(  40.55,   0.00) rock_v=(  52.92,   0.00)
+[C1-RAM] S6 FIXED post f52   gap=  72.47 ship_v=(  34.10,   0.00) rock_v=(  49.65,   0.00)
+[C1-RAM] S6 FIXED post f53   gap=  72.79 ship_v=(  27.64,   0.00) rock_v=(  46.58,   0.00)
+[C1-RAM] S6 FIXED rock: v_at_contact=(0.000, 0.000) v_peak=72.821 v_final=(0.037, 0.000) pos_delta=(20.323, 0.000) |d|=20.323
+[C1-RAM] S6 FIXED rock pools: yield 100 -> 100, work 0.0 -> 0.0, sink_hits=1 sink_total=186.179104477612
+[C1-RAM] S6 FIXED ship pools: hull 1250.000 -> 1250.000 (delta +0.000) shield 800.000 -> 613.821 (delta -186.179)
+[C1-RAM] S6 FIXED ship body end: pos=(-63.471, 0.000) travelled=336.529 v=(0.000, 0.000)
+[C1-RAM] floor sweep: Impact.collision_damage(110.0, 560.0, v), COLLISION_MIN_DV=40.0 COLLISION_FACTOR=0.00002000
+[C1-RAM] floor sweep v=   0.000 -> damage=  0.000000
+[C1-RAM] floor sweep v=  20.000 -> damage=  0.000000
+[C1-RAM] floor sweep v=  39.900 -> damage=  0.000000
+[C1-RAM] floor sweep v=  40.000 -> damage=  1.471045
+[C1-RAM] floor sweep v=  41.000 -> damage=  1.545516
+[C1-RAM] floor sweep v= 100.000 -> damage=  9.194030
+[C1-RAM] floor sweep v= 272.171 -> damage= 68.106664
+[C1-RAM] floor sweep v= 446.770 -> damage=183.515992
+[C1-RAM] floor sweep v= 450.000 -> damage=186.179104
+[C1-RAM] done

@@ -138,11 +138,23 @@ const HULLS: Dictionary = {
 
 ## ENGINE_SPEC section 13 handling column; max speed is 08 section 2's base-speed
 ## percentage x `MAX_SPEED_SCALE`.
+##
+## **The `coast_time` column is retuned (owner ruling, 2026-09-21): all nine rows are
+## scaled x 0.50.** The owner's "weird drag - I release and it still goes forward for a
+## second" is this column: `coast_time` is the only free number in the release path, and
+## it sets both the release brake (`max_speed / coast_time`) and the body's damp
+## (`1 / coast_time`), so halving it halves the carry and the lateral settle together and
+## leaves every other section 13 row where it was. Measured by the C3 flight-decay probe
+## on the shipped launch (the launch fit's `h_plate_light` multiplies the row by 1.05, so
+## the Vanguard's resolved coast time is 1.05 s): time to 10 % of the release speed
+## 1.890 s -> 0.945 s, carried distance 430.32 u -> 216.85 u, and the two accelerate legs
+## are unchanged. **Reversal: multiply the nine rows below by 2.0 and re-run the probe**;
+## no other file reads this column.
 const HANDLING: Dictionary = {
 	&"ship_fighter": {
 		&"max_speed": 450.0,
 		&"accel_time": 2.0,
-		&"coast_time": 1.6,
+		&"coast_time": 0.8,
 		&"turn_rate": 3.4,
 		&"turn_spinup": 0.4,
 		&"hull_mass": 80.0,
@@ -150,7 +162,7 @@ const HANDLING: Dictionary = {
 	&"ship_vanguard": {
 		&"max_speed": 428.0,
 		&"accel_time": 2.4,
-		&"coast_time": 2.0,
+		&"coast_time": 1.0,
 		&"turn_rate": 3.0,
 		&"turn_spinup": 0.5,
 		&"hull_mass": 110.0,
@@ -158,7 +170,7 @@ const HANDLING: Dictionary = {
 	&"ship_miner": {
 		&"max_speed": 338.0,
 		&"accel_time": 4.0,
-		&"coast_time": 3.4,
+		&"coast_time": 1.7,
 		&"turn_rate": 2.0,
 		&"turn_spinup": 1.0,
 		&"hull_mass": 140.0,
@@ -166,7 +178,7 @@ const HANDLING: Dictionary = {
 	&"ship_trader": {
 		&"max_speed": 383.0,
 		&"accel_time": 3.0,
-		&"coast_time": 2.6,
+		&"coast_time": 1.3,
 		&"turn_rate": 2.4,
 		&"turn_spinup": 0.7,
 		&"hull_mass": 160.0,
@@ -174,7 +186,7 @@ const HANDLING: Dictionary = {
 	&"ship_corvette": {
 		&"max_speed": 495.0,
 		&"accel_time": 2.2,
-		&"coast_time": 1.8,
+		&"coast_time": 0.9,
 		&"turn_rate": 3.2,
 		&"turn_spinup": 0.45,
 		&"hull_mass": 90.0,
@@ -182,7 +194,7 @@ const HANDLING: Dictionary = {
 	&"ship_freighter": {
 		&"max_speed": 293.0,
 		&"accel_time": 6.0,
-		&"coast_time": 5.2,
+		&"coast_time": 2.6,
 		&"turn_rate": 1.5,
 		&"turn_spinup": 1.4,
 		&"hull_mass": 260.0,
@@ -190,7 +202,7 @@ const HANDLING: Dictionary = {
 	&"ship_gunship": {
 		&"max_speed": 360.0,
 		&"accel_time": 4.4,
-		&"coast_time": 3.8,
+		&"coast_time": 1.9,
 		&"turn_rate": 1.9,
 		&"turn_spinup": 1.0,
 		&"hull_mass": 190.0,
@@ -198,7 +210,7 @@ const HANDLING: Dictionary = {
 	&"ship_patrol": {
 		&"max_speed": 383.0,
 		&"accel_time": 4.0,
-		&"coast_time": 3.4,
+		&"coast_time": 1.7,
 		&"turn_rate": 2.1,
 		&"turn_spinup": 0.9,
 		&"hull_mass": 220.0,
@@ -206,7 +218,7 @@ const HANDLING: Dictionary = {
 	&"ship_destroyer": {
 		&"max_speed": 315.0,
 		&"accel_time": 6.4,
-		&"coast_time": 5.6,
+		&"coast_time": 2.8,
 		&"turn_rate": 1.6,
 		&"turn_spinup": 1.2,
 		&"hull_mass": 300.0,

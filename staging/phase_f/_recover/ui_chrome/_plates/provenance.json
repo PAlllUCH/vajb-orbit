@@ -1,0 +1,104 @@
+[
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/_plates/station-interior-wall-backdrop-a-wide-1-1.png",
+  "ctex": "vajb-orbit/.godot/imported/station-interior-wall-backdrop-a-wide-1-1.png-42ee5f165f2e4f5edeb61a7d4697df28.ctex",
+  "ctex_hash": "42ee5f165f2e4f5edeb61a7d4697df28",
+  "source_file": "station-interior-wall-backdrop-a-wide-1-1.png",
+  "source_md5": "b91cb81791b5564880a3e7726ac111a6",
+  "size": [
+   2048,
+   1152
+  ],
+  "mode": "RGB",
+  "md5": "8fc239f333e79adcdba6237ade73f044",
+  "mip_levels": 1,
+  "format": "RGB8",
+  "ctex_bytes": 2480712,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/_plates/docking-bay-interior-backdrop-a-wide-16-1.png",
+  "ctex": "vajb-orbit/.godot/imported/docking-bay-interior-backdrop-a-wide-16-1.png-4786343e31e884e489de22978001e82c.ctex",
+  "ctex_hash": "4786343e31e884e489de22978001e82c",
+  "source_file": "docking-bay-interior-backdrop-a-wide-16-1.png",
+  "source_md5": "8a5d805958cbbea9af338d42d90384ba",
+  "size": [
+   2048,
+   1152
+  ],
+  "mode": "RGB",
+  "md5": "74ee824d9b78badab830a0598c114b07",
+  "mip_levels": 1,
+  "format": "RGB8",
+  "ctex_bytes": 2164938,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/_plates/starmap-backdrop-a-wide-16-9-cinematic-1.png",
+  "ctex": "vajb-orbit/.godot/imported/starmap-backdrop-a-wide-16-9-cinematic-1.png-b0dac634476f273e2bfe2a703d0bb2ec.ctex",
+  "ctex_hash": "b0dac634476f273e2bfe2a703d0bb2ec",
+  "source_file": "starmap-backdrop-a-wide-16-9-cinematic-1.png",
+  "source_md5": "810c3743b08dc60c276071c739b5ee71",
+  "size": [
+   2048,
+   1152
+  ],
+  "mode": "RGB",
+  "md5": "9a9332f4b7a356d4677a818f51da1080",
+  "mip_levels": 1,
+  "format": "RGB8",
+  "ctex_bytes": 1843400,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/_plates/wide-cinematic-top-down-orthographic-vis-1.png",
+  "ctex": "vajb-orbit/.godot/imported/wide-cinematic-top-down-orthographic-vis-1.png-5c2dc94447a1a88cd68c8c754739d794.ctex",
+  "ctex_hash": "5c2dc94447a1a88cd68c8c754739d794",
+  "source_file": "wide-cinematic-top-down-orthographic-vis-1.png",
+  "source_md5": "f3afd573d43a79262dfbfdada553b798",
+  "size": [
+   2048,
+   1152
+  ],
+  "mode": "RGB",
+  "md5": "ba845e27f615f6df59960b4a3698f067",
+  "mip_levels": 1,
+  "format": "RGB8",
+  "ctex_bytes": 1867396,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/_plates/darker-tighter-recentered-crop-of-the-1.png",
+  "ctex": "vajb-orbit/.godot/imported/darker-tighter-recentered-crop-of-the-1.png-8d4dc9c4eca75cc205f516612b935300.ctex",
+  "ctex_hash": "8d4dc9c4eca75cc205f516612b935300",
+  "source_file": "darker-tighter-recentered-crop-of-the-1.png",
+  "source_md5": "5a789cd96c1bd666a0336993dd4465e3",
+  "size": [
+   2048,
+   1152
+  ],
+  "mode": "RGB",
+  "md5": "88d52bac77cbbacb5e6ad47e7d0c50d7",
+  "mip_levels": 1,
+  "format": "RGB8",
+  "ctex_bytes": 2034620,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_chrome/_plates/background-body-plate-a-wide-16-9-paint-1.png",
+  "ctex": "vajb-orbit/.godot/imported/background-body-plate-a-wide-16-9-paint-1.png-226c2a199b1a0dcbd07501e72a51f268.ctex",
+  "ctex_hash": "226c2a199b1a0dcbd07501e72a51f268",
+  "source_file": "background-body-plate-a-wide-16-9-paint-1.png",
+  "source_md5": "abe3a099cc097f44c42a65984ca92588",
+  "size": [
+   2048,
+   1152
+  ],
+  "mode": "RGB",
+  "md5": "c9ff595352760d66bbbf13abad44f207",
+  "mip_levels": 1,
+  "format": "RGB8",
+  "ctex_bytes": 1787440,
+  "mip": 0
+ }
+]

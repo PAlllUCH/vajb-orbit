@@ -1,0 +1,157 @@
+# Phase F - generation log
+
+Model: `gpt-image-2-5-flare-text-to-image` (`flare`; `flare-i2i` for reference edits), 2K.
+Work order: `docs/gameplay/16_art_design_brief.md`. Style law: `docs/design/STYLE_BIBLE.md`, `docs/design/ICONS_SPEC.md` (section 1 + section 8 amendment), `docs/design/SHIPS_SPEC.md` (section 1 framing constant, sections 3.7-3.9).
+Style block: `vajb-orbit/assets/style-block.txt` verbatim via `--style-file` on every run.
+Price basis: 10 credits = $0.05 per 2K run (kie.ai console, user-verified); the script's printed 30-credit estimate is the stale hint and the `usage-ledger.jsonl` total over-reports 3x.
+Alpha: `--transparent` native first, local matte fallback (`staging/phase_d/reprocess.py`). FX stay RGB on void black for additive blending and are never alpha-keyed (FX_SPEC 0.1).
+AI-generated art is not CC0 (AGENTS.md).
+
+---
+
+## f1_panel_frame
+
+- Date/time: 2026-09-18 12:33 local
+- Model: `gpt-image-2-5-flare-text-to-image` (`flare`), 2K, 1:1
+- Job id: `8f1c2499ecb22accbe0bad9db27fa100` (elapsed 37.6s)
+- Style block: `style-block.txt` verbatim via --style-file
+- Reference: none (text-to-image)
+- Alpha: local matte bg=#FEFEFE alpha0=36% dropped=0; run folder `20260918-123330` keeps `job.json`
+- Final files: ui_panel_frame.png (+ 2 size cuts)
+- Status: success
+
+Full SUBJECT text:
+
+> ui_panel_frame: a single square painted gunmetal metal panel frame, top-down orthographic, grimdark painted sci-fi. The painted border band is EXACTLY ONE THIRD of the square's total width on all four sides, that is 32 px thick at a final texture size of 96 px and 64 px thick at 192 px, so the recessed interior opening is the central third square. The band is uniform and straight so the left edge band is identical top to bottom, the top edge band identical left to right, and the frame stretches cleanly when tiled over a larger panel. Border face is panel steel #2A2E35 with a 1 px steel highlight #565C63 inner edge catch against the interior and an iron black #232629 outer edge giving a shallow bevelled read, no deep 3D bevel. Recessed interior fill is panel black #15181D with a very subtle inner shadow just inside the frame edge. Corners bevelled with chamfered 45 degree corner cuts, never rounded, never arcs. Each corner carries a riveted corner detail of two or three small rivet heads with pitted metal speckle and a steel highlight catch set into a slightly denser corner plate, and those rivets stay entirely inside the corner squares and never bleed into the straight edge bands. Subtle film grain at reduced opacity, faint hull grime toward the frame, at most a few faint scratches, no rust streaks, no oil stains, no gloss, no chrome, no text, no labels, no grid lines, no glow. The square frame is centred on a plain solid pure white background with clean pure white margins all around it for background removal.
+
+---
+
+## f2_panel_frame
+
+- Date/time: 2026-09-18 13:30 local
+- Model: `gpt-image-2-5-flare-text-to-image` (`flare`), 2K, 1:1
+- Job id: `9f67a39b5f978a6f45655aa560b0cf9f` (elapsed 27.3s)
+- Style block: `style-block.txt` verbatim via --style-file
+- Reference: none (text-to-image)
+- Alpha: local matte bg=#FEFEFE alpha0=40% dropped=0; run folder `20260918-133002` keeps `job.json`
+- Final files: ui_panel_frame-master.png
+- Status: success
+
+Full SUBJECT text:
+
+> ui_panel_frame: a single square painted gunmetal metal panel frame, top-down orthographic, grimdark painted sci-fi. THE BORDER IS THE SUBJECT: the frame is an extremely heavy square ring whose painted band is EXACTLY ONE THIRD of the square's total width on all four sides, so the recessed interior opening is only the central third square - a small opening surrounded by a band as thick as a third of the whole image, 32 px thick at a final texture size of 96 px and 64 px thick at 192 px. The band is uniform and straight so the left edge band is identical top to bottom, the top edge band identical left to right, and the frame stretches cleanly when tiled over a larger panel. Border face is panel steel #2A2E35 with a 1 px steel highlight #565C63 inner edge catch against the interior and an iron black #232629 outer edge giving a shallow bevelled read, no deep 3D bevel. Recessed interior fill is panel black #15181D with a very subtle inner shadow just inside the frame edge. Corners bevelled with chamfered 45 degree corner cuts, never rounded, never arcs. Each corner carries a riveted corner detail of two or three small rivet heads with pitted metal speckle and a steel highlight catch set into a slightly denser corner plate; every rivet, plate and chamfer is small, no more than one sixth of the band's own width, so the whole corner detail sits deep inside the band and never touches or crosses the interior opening. Subtle film grain at reduced opacity, faint hull grime toward the frame, at most a few faint scratches, no rust streaks, no oil stains, no gloss, no chrome, no text, no labels, no grid lines, no glow. The square frame is centred on a plain solid pure white background with clean pure white margins all around it for background removal.
+
+---
+
+## f2_button_plates
+
+- Date/time: 2026-09-18 13:31 local
+- Model: `gpt-image-2-5-flare-text-to-image` (`flare`), 2K, 1:1
+- Job id: `fedb0cffdd53586ed8867a0936684f73` (elapsed 29.6s)
+- Style block: `style-block.txt` verbatim via --style-file
+- Reference: none (text-to-image)
+- Alpha: local matte bg=#01080E alpha0=89% dropped=38, grid split; run folder `20260918-133142` keeps `job.json`
+- Final files: ui_button_plate_normal.png, ui_button_plate_hover.png, ui_button_plate_pressed.png, ui_button_plate_disabled.png
+- Status: success
+
+Full SUBJECT text:
+
+> 2x2 grid panel of four very wide thin horizontal gunmetal button plates, each plate exactly five times as wide as it is tall, long narrow painted metal plates centred in each square cell, drawn perfectly horizontal and perfectly straight, spanning about 80 percent of the cell width, with large plain solid pure white margins above and below every plate, top-left plate normal gunmetal with two small rivets at its two ends, top-right plate one step brighter with a faint burnt ember under-light baked along the lower bevel only, bottom-left plate darker and slightly inset with a shallow pressed bevel, bottom-right plate dimmed and desaturated with no glow, no text, no glyphs, no icons on any plate. Each plate has a clean crisp dark edge all the way around it: no white or pale halo, no white or pale fringe, no soft or feathered edge, no glow around the plate, no cast shadow and no drop shadow on the white background, no white highlight larger than a hairline, plain solid pure white background, 2K, 1:1
+
+---
+
+
+## f2 post-passes (C1 frame, chrome plates) - free, local, no API call
+
+- Date/time: 2026-09-18 13:58 local
+- `reband_frame.py` measured the regenerated master's painted band (304 px, the four edges
+  within 6.9 %) and rebuilt the nine-slice as 3x3 tiles of exactly size/3:
+  `ui_panel_frame.png` 96x96 with a 32 px band, `ui_panel_frame@2x.png` 192x192 with 64 px.
+  A drawn nine-patch panel now measures a painted band of 30 of 32 px (was 12) and 59 of
+  64 px (was 25), so the band equals the margin and `PANEL_FRAME_MARGIN` stays 32.
+  Report: `reband_report.json`; preview `_preview/f2_frame_reband.png`.
+- `plates_cut.py` cut the logical 280x56 and the 560x112 `@2x` for all four button plates out
+  of the same F.2 cells (same-art diff <= 0.44 levels); the cell masters stay in staging as
+  `ui_button_plate_*-master.png`. Report: `plates_report.json`.
+- The shipped 1x plates are a new generation and read darker/flatter than the F.1 set, which
+  was glossier than STYLE_BIBLE section 2 allows. Pre-F.2 bytes: `_f2_backup/`.
+
+---
+
+## slot plates - recovered and re-cut (2026-09-21) - free, local, no API call
+
+Not a generation. The 2026-09-21 cut redesign pulled
+`ui_slot_{weapon,cargo,inventory}_*` into `assets/ui/` as whole sheet cells (880x876 /
+873x864 / 882x870, ~90 % transparent, the interior silhouette only): the paid matte had
+keyed the dark slot *plate* out together with the white sheet background, so the plate is
+absent from the alpha of every shipped file. The shipyard hardpoints, the launch panel's
+cargo slots and the HUD slot buttons consume these at native size and were stretching a
+sheet cell into 48/40/56 px. A tight crop of the shipped files cannot fix it - their ink
+box *is* the silhouette box.
+
+Everything below came back out of Godot's import cache, bit-exact, not re-rendered:
+`.godot/imported/<source>-<hash>.ctex` is a `GST2` blob whose payload is the imported
+image as lossless WebP. `staging/phase_f/recover_ctex.py` decoded it; all 3698 cached
+textures were audited and 286 have no source file on disk any more.
+
+- Source cells recovered (12): `_recover/ui_slots/ui-slot-<...>-asset-0{1..4}.png`, the
+  four 2x2 states in reading order normal, hover, pressed, disabled, 797-806 px square.
+  Each one's own `source_md5` (Godot's sidecar) and the decoded md5 are in
+  `_recover/ui_slots/provenance.json`.
+- Raw sheets recovered (6) as provenance: the three 2048x2048 renders and their keyed
+  alpha versions, in `_recover/ui_slots/_sheets/`.
+- Recipe: `staging/phase_f/recut_slots.py`, importing `chrome_2x.SIMPLE` (the F.1 source
+  map) and `chrome_2x.content_crop` - alpha bounding box, no pad, then LANCZOS to the box.
+  Both bands are cut from the same cell by the same rule, which is why the proof below
+  covers the 1x cut as well.
+- Proof: the derived `@2x` against the F.1 `@2x` recovered from the same cache - 12 of 12
+  proven by `chrome_2x.proven()`'s own bar (byte-exact, or <= 4 levels worst / <= 0.1
+  mean). Measured: byte-exact on `ui_slot_weapon_disabled`, mean <= 0.0023 / max 3 levels
+  on the other eleven. Table: `_preview/review_slots_table.txt`; numbers:
+  `recut_slots_report.json`.
+- Boxes: weapon 48x48 / 96x96, cargo 40x40 / 80x80, inventory 56x56 / 112x112
+  (UI_CHROME_ASSETS_SPEC sections 4 and 5, and section 10's `@2x` table). Every 1x cut
+  inks its full box (alpha mean 254.3-255.0, solid share 91-99.9 %) - a plate, not a
+  silhouette.
+- Final files: `ui_slot_weapon_{normal,hover,pressed,disabled}.png` plus `@2x`, the same
+  for cargo and inventory - 24 files, staged in `staging/phase_f/ui/`.
+- Restore point for the twelve shipped 1x files and their `.import` sidecars:
+  `_recover/_shipped_before/`. The twelve `*@2x.png.import` sidecars the redesign deleted
+  are restored from git (`65bc1cb^`), so the F.1 uid and the `@2x` import settings
+  (mipmaps on, lossless, 3D detection off) come back unchanged.
+- Status: staged, awaiting the owner review sheet `_preview/review_slots.png`.
+
+---
+
+## R7 chrome - recovered from the import cache and re-cut (2026-09-21) - free, local, no API call
+
+Not a generation. The 2026-09-21 cut redesign pulled the chrome into `assets/ui/` as whole
+sheet cells, so the theme stretched a cell into every plate, the nine-patches drew a thin
+band, the engine's bar-cap windows cropped the wrong part of the sheet, and the frozen
+wordmark crop looked past the bottom of the file. All of it came back out of
+`.godot/imported` (`recover_ctex.py`; 3698 textures audited, 286 orphans) and every band
+was re-cut locally by `recut_chrome.py`. Report: `.agents/gen/designer_chrome_recovery_report.md`.
+
+- Recovered `@2x` artefacts, shipped verbatim (they are the F.1/F.2 files the redesign
+  deleted): `ui_button_plate_{normal,hover,pressed,disabled}@2x.png` 560x112,
+  `ui_minimap_bezel@2x.png` 400x400, `ui_panel_frame@2x.png` 192x192,
+  `ui_bar_caps@2x.png` 84x28, `ui_panel_frame_96.png` 96x96. Their ctex hashes and Godot's
+  own `source_md5` are in `_recover/ui_chrome/provenance.json`.
+- The 1x band in each is the `@2x` halved, justified per family: the F.2 button plates
+  measured 0.21-0.44 levels between the pair, the bar caps are the same two caps at 20x14 /
+  40x28 with a 2/4 px gap, the F.2 frame was rebuilt as 3x3 tiles of exactly size/3 (32 px
+  band at 96), and the F.1 bezel is a 16 px band at 200. Cross-check: the F.1 recipe re-run
+  from the recovered bezel cell agrees with the halved `@2x` to mean 0.2019 on the 1x.
+- `ui_button_plate_*` 280x56, `ui_bar_caps` 42x14, `ui_minimap_bezel` 200x200,
+  `ui_panel_frame` 96x96, `logo_vajb_orbit` 2048x2048 - 15 files.
+- The wordmark is keyed out of the recovered raw render (keep components that are bright and
+  large: `lum >= 90` and `alpha >= 32`, 1/4-scale labels, >= 12 cells, 8 px dilation, then
+  gate the matte's alpha), normalised by 1.1081 x 1.1322 onto `IMPLEMENTATION_PLAN.md` line
+  46's frozen imprint. Staged ink box (56,719,1993,1310), exactly the imprint.
+- Integrity: 15/15 cuts pass ink-box-vs-plate-box and opacity (`qc_chrome.png`,
+  `qc_chrome_table.txt`), and the sheet was looked at before the review sheet
+  (`review_chrome.png`).
+- Paired change owed by the coder lane: `build_theme.gd`'s `PANEL_FRAME_MARGIN` is 8.0 while
+  the F.2 art's band is 32 px - the art must not ship without the constant.
+- Status: staged, awaiting the owner review sheet. Backdrop-plate candidates for the station
+  panels (queue item 4) sit in `_recover/ui_chrome/_plates/` - proposal only.
