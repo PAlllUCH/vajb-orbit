@@ -22,6 +22,12 @@ animated ember flicker/breathing on the halo, directional glow, ember carried by
 band instead of a rectangle). Needs an owner pick before implementation; then a small
 `MAIN_MENU_V2` amendment + coder task.
 
+**Batch-2 verdict (2026-09-21): not fixed, not approved.** Not a button-code or colour
+defect — the hover plate art ships as a whole sheet cell, so the theme stretches a mostly
+transparent canvas and the plate renders as a thin bar; the look direction pick (flicker /
+directional glow / tick-carried ember) is still the owner's. Evidence:
+`.agents/gen/batch2_report.md` §3 B2-1 and `.agents/gen/ui_chrome_regression.md`.
+
 ### B2-2 — Station backgrounds still blurry
 > "while on station the backgrounds are still blurry."
 
@@ -35,7 +41,12 @@ for batch 2 (needs direction + likely an art batch):
 Also still deferred from wave 1: the **credits frame** re-design ("maybe new one") and the
 **flight-scale ship cut** (ship reads as a scribble at ~60 px).
 
-### B2-3 — Minimap zoom is inverted
+**Batch-2 verdict (2026-09-21): not a filter or mip defect — source resolution.** Every
+`@2x` cut was deleted by the redesign, so the backdrops upscale above 1080p; the display
+target to design for is still the owner's call. Evidence: `.agents/gen/batch2_report.md`
+§3 B2-2 and `.agents/gen/ui_chrome_regression.md`.
+
+### B2-3 — Minimap zoom is inverted — FIXED (batch 2, measured)
 > "minimap works in reverse + with -"
 
 Current wiring: `ZoomPlus` emits `+1` → game.gd adds +800 to the world radius
@@ -43,6 +54,12 @@ Current wiring: `ZoomPlus` emits `+1` → game.gd adds +800 to the world radius
 Owner expects `+` = zoom in. Batch-2 fix: invert the emitted deltas (or the step sign) so
 `+` reduces the radius (zoom in) and `−` increases it (zoom out); keep the clamp 800–6400
 and the step 800. Tiny coder task + a line in `IMPLEMENTATION_PLAN` §9.8 follow-up.
+
+**Fixed 2026-09-21 (batch 2, measured).** `ui/hud/hud.gd`: the zoom deltas are renamed to
+the direction they mean and the two `pressed` bindings are swapped, so `%ZoomPlus` emits
+`-1` (world radius 3200 → 2400 = zoom in) and `%ZoomMinus` `+1` (3200 → 4000 = zoom out);
+clamp 800–6400, step 800 and the wheel-zoom camera are untouched. Evidence:
+`.agents/gen/batch2_report.md` §3 B2-3.
 
 ### B2-4 — PASSED in wave 1
 > "docking to kelper works."

@@ -1,0 +1,6 @@
+I'll start by reading the required context files.Done. Report at `.agents/gen/batch2_docs_report.md`.
+
+- `docs/gameplay/19_testing_notes.md` 4335 → **5504** bytes: B2-3 heading marked `FIXED (batch 2, measured)` plus its measured verdict line; one annotation each on B2-1 (hover plate art = whole sheet cell, not approved, owner owns the look pick) and B2-2 (source resolution, `@2x` cuts deleted), both citing `batch2_report.md` and `ui_chrome_regression.md`.
+- `docs/design/IMPLEMENTATION_PLAN.md` 49163 → **50280** bytes: one new §9.8 item 6 recording B2-3 fixed/measured and B2-1/B2-2 as measured art-side regressions awaiting the owner, with both evidence files named.
+
+No number invented (all trace to the two evidence files or the pre-existing doc text); no asset, theme, scene or code file touched. Two reported deviations: the plan file already carried another lane's uncommitted slice-2 hunks (untouched, so its `git diff` shows four hunks of which only one is mine), and `19_testing_notes.md`'s preamble line "Nothing here is fixed yet" was left as-is though it is now stale for B2-3.

@@ -1,0 +1,121 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+=== slice2 W5 probe: sector NPCs, lock channel, target window, dial, death ===
+[env] physics_ticks_per_second=60
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[sector] per-row population (seed 20260921), §13 bands + §8 blip classes
+      sector_1  hostiles=1/2  patrol=1  convoy=3  blips={ &"hostile": 1, &"neutral": 3 }
+      sector_2  hostiles=3/3  patrol=1  convoy=2  blips={ &"hostile": 3, &"neutral": 2 }
+      sector_3  hostiles=3/4  patrol=1  convoy=3  blips={ &"hostile": 3, &"neutral": 3 }
+      sector_4  hostiles=5/5  patrol=1  convoy=2  blips={ &"hostile": 5, &"neutral": 2 }
+      sector_5  hostiles=4/6  patrol=1  convoy=3  blips={ &"hostile": 4, &"neutral": 3 }
+      sector_6  hostiles=7/7  patrol=1  convoy=3  blips={ &"hostile": 7, &"neutral": 3 }
+      sector_7  hostiles=7/8  patrol=0  convoy=0  blips={ &"hostile": 7 }
+[ok]   every sector's hostile total sits in §13's band
+[ok]   every archetype's live count sits in its own expanded registry band
+[ok]   every hull publishes §8's blip class (pirates/swarmers/patrols hostile, the convoy neutral)
+[sector] art ready 46/46 (printed, never gated: ruling two, the graphics lane owns assets)
+WARNING: res://game/player_ship.tscn:4 - ext_resource, invalid UID: uid://cmi25sgdnd7ga - using text path instead: res://assets/ships/ship_vanguard_side.png
+   at: load (scene/resources/resource_format_text.cpp:501)
+   GDScript backtrace (most recent call first):
+       [0] _check_scene (res://tools/_probe_s2w5_wiring.gd:186)
+       [1] _init (res://tools/_probe_s2w5_wiring.gd:68)
+       [2] _check_sector_population (res://tools/_probe_s2w5_wiring.gd:179)
+       [3] _step (res://tools/_probe_s2w5_wiring.gd:89)
+WARNING: res://game/game.tscn:4 - ext_resource, invalid UID: uid://o68c15elst7g - using text path instead: res://assets/env/tile/env_stars_layer1.png
+   at: load (scene/resources/resource_format_text.cpp:501)
+   GDScript backtrace (most recent call first):
+       [0] _check_scene (res://tools/_probe_s2w5_wiring.gd:186)
+       [1] _init (res://tools/_probe_s2w5_wiring.gd:68)
+       [2] _check_sector_population (res://tools/_probe_s2w5_wiring.gd:179)
+       [3] _step (res://tools/_probe_s2w5_wiring.gd:89)
+WARNING: res://game/game.tscn:5 - ext_resource, invalid UID: uid://c4l2b7bxc00k4 - using text path instead: res://assets/env/tile/env_stars_layer2.png
+   at: load (scene/resources/resource_format_text.cpp:501)
+   GDScript backtrace (most recent call first):
+       [0] _check_scene (res://tools/_probe_s2w5_wiring.gd:186)
+       [1] _init (res://tools/_probe_s2w5_wiring.gd:68)
+       [2] _check_sector_population (res://tools/_probe_s2w5_wiring.gd:179)
+       [3] _step (res://tools/_probe_s2w5_wiring.gd:89)
+WARNING: res://game/game.tscn:6 - ext_resource, invalid UID: uid://bipbl3vgvqekw - using text path instead: res://assets/env/tile/env_stars_layer3.png
+   at: load (scene/resources/resource_format_text.cpp:501)
+   GDScript backtrace (most recent call first):
+       [0] _check_scene (res://tools/_probe_s2w5_wiring.gd:186)
+       [1] _init (res://tools/_probe_s2w5_wiring.gd:68)
+       [2] _check_sector_population (res://tools/_probe_s2w5_wiring.gd:179)
+       [3] _step (res://tools/_probe_s2w5_wiring.gd:89)
+[ok]   the scene spawns its ship, its HUD and its sector
+[damage] the five items W2 measured but could not close
+[ok]   the fit's weapon module mounted a WeaponComponent
+[ok]   PlayerShip.take_damage forwards into PlayerState.damage (shield 1000 -> 950)
+[ok]   the hull reads its own shield state for §4.1's rules
+[ok]   a ram charges the shield through the pipeline (about 83 for 110 t into 560 t at 300 u/s)
+[ok]   the ram records §4.2 item 5's context (direction + collision family)
+[damage] ram charged 82.594, ctx { &"direction": 0.00816174503416, &"impulse": 0.0, &"family": &"collision" }
+[ok]   PlayerState.shield_regen is the resolved fit's rate (base 2 + s_light 4 = 6)
+[ok]   the snapshot agrees with the state's rate
+[ok]   Damage.regen resumes 4 s after the last hit at the state's rate (6/s +/- 1)
+[damage] §4.2 item 5 delivery, measured on a real hull (this is the wave's HIGH)
+[ok]   Damage.apply(hull, ...) charges the hull's own shield pool
+[ok]   Damage.apply(hull_body, ...) charges NOTHING (the ray's own collider)
+[lock] §4.1's channel: 1.2 s clean LOS, a rock resets it, ESC clears it
+[ok]   a click on a hostile hull inside lock range picks it
+[ok]   the same point picks nothing with a non-hostile class (the convoy's own pick)
+[ok]   the channel starts at zero and nothing is locked yet
+[ok]   the ring is a fraction of the way round at 0.6 s
+[ok]   the channel completes at 1.2 s and the lock lands on the hull
+[ok]   the completed ring stays drawn at full (UI_SPEC §3.5)
+[ok]   the hull/rock on the line is what the ray hits
+[ok]   a hull/rock in the way resets the channel (§4.1's uninterrupted LOS)
+[ok]   nothing is locked while the line is blocked
+[ok]   clearing the line lets the channel land again
+[ok]   ESC clears the mark, the lock and the ring
+[ok]   the reticle reads HOSTILE over a hostile hull (TargetReticle.State.HOSTILE = 3)
+[ok]   the reticle reads PLAIN over empty space
+[ok]   the target window carries a name, a hull fraction, a distance and §10's readings
+[ok]   the range state is the selected laser's own range against the live distance
+[ok]   a confirmed hit flashes the reticle's marker
+[ok]   the marker has faded out again
+[weapons] §4.3's groups and the `fire_primary` trigger through the mounted component
+[ok]   the HUD's slot 2 selects group 2 on the component
+[ok]   slot 1 selects group 1 again
+[ok]   holding Space fires the selected group (shot_fired raised)
+[ok]   the energy family pays for the beam through try_spend_energy (6 E/s drawn against a 5 E/s refill)
+[ok]   the beam's delivery reached the hull BODY and charged nothing (the HIGH above)
+[cm] §4.6: chaff breaks the lock and shows 3 ghosts for 3 s; the flare lures a rocket
+[ok]   a lock is held before the chaff
+[ok]   one chaff use spends an item and spawns 3 ghost signatures
+[ok]   the chaff breaks the active lock immediately
+[ok]   the ghosts reach the minimap feed as their own blip kind
+[ok]   and the component refuses re-acquisition while they live (jamming, no lock)
+[ok]   the ghosts are still alive at 2.0 s of the 3.0 s window
+[ok]   the window closes at 3.0 s: no ghosts and no jamming
+[ok]   the rocket family launches a live seeker
+[ok]   the flare is live and inside the lure radius of the rocket's own launch point
+[ok]   every rocket inside FLARE_LURE retargeted onto the decoy (§4.6)
+[hud] §3.1b's live pools, §3.6's dial, §3.5's ring and the reticle states
+[ok]   the Energy bar reads PlayerState (§3.1b)
+[ok]   the Fuel bar reads PlayerState
+[ok]   the Emergency Flight banner is dark with a tank aboard
+[ok]   the radial dial is the 120 x 120 control UI_SPEC §3.6 asks for
+[ok]   the dial's ratio follows the hull's speed against its class maximum
+[ok]   the needle is the one sanctioned cyan (§3.6's accent_nav)
+[hud] dial ratio 0.587, filled segments 6, overdrive segment -1
+[ok]   the scene pushes a reticle state without a pointer (§9.9's inert default)
+[warp] §7's gate: a hostile in Alert/Engage on the player closes it
+[ok]   a quiet sector has no engagement
+[ok]   and safe warp is offered (quiet hull + station in sector)
+[ok]   a pirate 250 u away engages the player and closes the warp gate
+[ok]   the hull still reports itself warp-quiet (the gate is the aggro, not damage)
+[death] §7: hull 0 drops the hold at the wreck and respawns docked
+[ok]   the hull is still alive when the death flow is exercised
+[death] hold before the wreck: { &"cm_chaff": 1, &"cm_flare": 1, &"mineral_iron": 4, &"comp_scrap_1": 2 }
+[ok]   the scene marks itself dead and switches the wreck off
+[ok]   the whole hold dropped as pickups at the wreck (one per stack)
+[ok]   every drop carries decision 7's 5-minute window (>= 295 s of life)
+[ok]   the hold is empty in the profile afterwards
+[ok]   the credits are not cargo and stay in the wallet
+[ok]   nothing filed a dead hull as this ship's vitals (the next launch must not die on frame one)
+[ok]   the lock and the ring are cleared by death
+[death] the respawn route is inert in a probe (no listener); the station screen is
+        reached in the shipped game, and 14 §3's insurance half is slice 4
+[SUMMARY] ok=65 failed=0 blocked=0

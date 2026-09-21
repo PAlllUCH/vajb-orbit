@@ -9,9 +9,17 @@ stopping for the owner at every approval gate.
 asset generation + pipeline rules), `docs/design/STYLE_BIBLE.md` (§2.5 alien
 palettes, §9.1 alien style block addendum, §8 prompt rules),
 `docs/design/FX_SPEC.md` (§0 emission rule, §0.1 generation rules, §7 Phase G
-inventory), `docs/design/ASSET_WIRING_HANDOFF.md`, and
+inventory), `docs/design/ASSET_WIRING_HANDOFF.md`, `docs/design/ASSET_NAMING_SPEC.md`
+(the name law — §1 grammar, §4 closed variant list), and
 `docs/design/ASSET_CATALOG.md` before wiring anything into scenes. The style
 bible is verbatim law for every prompt.
+
+**Ship naming law (ASSET_NAMING_SPEC §1–§4 + SHIPS_SPEC):**
+`ship_<hull>[_<qualifier>][_<angle>]` — hull first (class/identity),
+livery/state as qualifier (`ship_fighter_concord_`, `_damaged_`), then the
+closed angle list `_front` / `_three_quarter` / `_side` / `_back` (bosses:
+single centred render, no angle). Never invent a name; use the exact
+per-hull name list in `SHIPS_SPEC.md` or a name the spec sanctions.
 
 ## Current queue (execute top-down)
 

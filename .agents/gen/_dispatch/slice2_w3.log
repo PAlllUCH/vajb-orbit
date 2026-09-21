@@ -1,0 +1,11 @@
+Now I have the full contract. Writing the three files plus tests/probe.Now the test gate:W3 shipped and measured. `.agents/gen/slice2_w3_report.md` is the evidence chain.
+
+**Delivered** (new, all via the `write` tool):
+- `game/npc_registry.gd` (28 937 B) — 9 archetype rows (six of §5 + ruling 24's swarmer/sibelon/apex), §13's per-sector band with patrols owned-space-only and one convoy per inhabited sector, doc 13 §3 heat tiers, swap-ready sprite paths, seam rows that never spawn.
+- `game/npc_brain.gd` (18 789 B) — one state set IDLE→PATROL/SCAN→ALERT→ENGAGE→FLEE→RETURN/DESPAWN, injected LOS (rocks block), leash 2 500, `AGGRO_COOLDOWN` 5.0, intent-only (no forces).
+- `game/npc_ship.gd` (30 262 B) — `RigidBody2D` hull on PlayerShip's physics law and `ShipStats` snapshot, `take_damage(amount, bypass_shield, ctx)` mirroring `damage.gd`'s sink, `died(position, archetype)`, `engaged_with()` for the warp gate, `despawn()` for the sector recycle.
+- `tests/test_engine2_npc.gd` — 28 tests; probe `tools/_probe_s2w3_npc.gd` archived to `.agents/gen/slice2_w3_probe_source.gd` and deleted with its `.uid` (W1's two probes remain in `tools/`, not mine to delete).
+
+**Gates:** probe 22/22 exit 0; universal gate `passed=168 failed=0` exit 0, no `SCRIPT ERROR`, no RID leak; five boot scenes exit 0.
+
+**Reported, not guessed** (report §6): the human/alien split of §13's band (fill-order rule, sums exact), the patrol count (proposed 1..1), alien hulls have no 08 class row, the turret has no class row and no damage number, NPC armament is unspecified (the `fire` intent ships unarmed), no stand-off row, no turret scan radius — plus the deviations (flight-maths duplication forced by the file set, `HULL_SCALE`'s third home, ships not pairing with ships).

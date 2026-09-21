@@ -1,0 +1,16 @@
+I'll start by reading the required files in order.Now the W4 report (F1, the loot worker).Now I have the measured authority. Landing job one in `06_loot_drops.md`:Independently verifying the landed figures against 03's catalogue values before trusting them:Both jobs landed, report written.
+
+**Job one — `docs/gameplay/06_loot_drops.md`** (6 486 → 6 769 bytes):
+
+| § | Figure | Before → after |
+|---|---|---|
+| 3.1 | fighter | `≈ 1.1 items, ≈ 20 CR`, `≈ 17 %` → **`≈ 2.15 items, ≈ 28.375 CR`, `≈ 11.83 %`** |
+| 3.2 | freighter | `≈ 1.6 items` → **`≈ 2.30 items`** |
+| 3.3 | corvette | `≈ 1.3 items` → **`≈ 1.50 items`** |
+| 3.4 | maw | no units line → **`≈ 6.375 items`**; `≈ 500–900 CR minimum, up to ≈ 1 300+` → **`floor of 1025 CR, a mean of 1584.75 CR`** |
+
+Drift record kept verbatim; a dated `**Re-check 2026-09-21:**` line added at `06_loot_drops.md:64-67`. No other number, table, §5 rule or §6 check changed.
+
+**Job two — `docs/gameplay/11_galactic_map.md`** (7 281 → 7 303 bytes): `| Pirates | per 13 §4 / 18_engine_spec §13 |` — chain now ends in §13's numbers (`18_engine_spec.md:537-539`).
+
+I reproduced all eight figures from 06's amended tables and 03 §3.1's CR values before transcribing (2.15 / 11.83 % / 28.375 / 2.30 / 1.50 / 6.375 / 1025 / 1584.75 all exact). Two disclosed calls: the Maw's stale `up to ≈ 1 300+` half had to go with the minimum it shared a sentence with (measured ceiling 2185, not authorised, so not written), and the new Maw units sentence mirrors §3.1–§3.3's shape. `18_engine_spec.md` read only, byte-identical; no code, asset, or engine process touched. Report: `.agents/gen/slice2_lootdocs_report.md`.

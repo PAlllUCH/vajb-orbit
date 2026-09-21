@@ -1,7 +1,7 @@
 # WAVEBOARD — one-file agent state
 
-**Updated: 2026-09-21 — engine slice 0 (Physics & Fuel) CLOSED and
-review-verified; slice 2 (Fight) is next** (owner rulings 8–26 in
+**Updated: 2026-09-21 — engine slices 0 (Physics & Fuel) and 2 (Fight) are
+CLOSED and review-verified; slice 2.5 (Feel) is next** (owner rulings 8–26 in
 `docs/gameplay/18_engine_spec.md` §2.1; root `.md` files folded into `docs/`,
 only `AGENTS.md` stays at the root). Engine wave 1 CLOSED and
 review-verified (`engine_wave1_review2_report.md`: 8/8 fixes verified,
@@ -10,12 +10,20 @@ Git baseline `2a420a7` pushed to `origin/main`. **Slice 0: M4 review found 1
 HIGH + 6 MED, M5 fixed every code finding, M6 re-verified all of them clean;
 the universal gate reads 78/78 with zero failures — wave report
 `.agents/gen/slice0_report.md`, evidence chain `slice0_m0..m6_report.md`,
-owner rulings in `slice0_owner_rulings.md`.**
+owner rulings in `slice0_owner_rulings.md`. **Slice 2: W6 review found 1 HIGH
+(no weapon damaged a real ship) + 10 MED, W7 fixed F1/F2/F4, the closing pass W9
+fixed the one MED the re-review found, and W8 verified all of it clean; the gate
+reads 219/219 with zero failures — wave report `.agents/gen/slice2_report.md`,
+evidence chain `slice2_w0..w9_report.md` + `slice2_review_report.md`, owner
+rulings in `slice2_owner_rulings.md`.**
 
 ## Living contracts
 
-- `docs/CONTRACTS.md` — pinned interfaces, **v0** (wave 1). Briefs say "code
-  against CONTRACTS.md §n"; review waves own updating it.
+- `docs/CONTRACTS.md` — pinned interfaces, **v1.1** (wave 1 + slice 0 + slice 2).
+  Briefs say "code against CONTRACTS.md §n"; review waves own updating it.
+- Universal test gate: `res://tests/headless_runner.tscn` → `[SUMMARY]
+  passed=219 failed=0` (exact command in CONTRACTS.md §9; the suite grew 53 → 78
+  with slice 0's two suites and 78 → 219 with slice 2's six).
 - `docs/gameplay/18_engine_spec.md` — the engine contract (was the workspace
   root `ENGINE_SPEC.md`, moved 2026-09-20). §2.1 carries the 19 new owner
   rulings; slice 0 and slice 2 briefs code against it.
@@ -23,9 +31,8 @@ owner rulings in `slice0_owner_rulings.md`.**
   `verify --baseline <tag> [--forbidden ...] [--expect-reports ...] [--tests]`
   after. Baselines live in `.agents/gen/_wave_state/`.
 - Universal test gate: `res://tests/headless_runner.tscn` → `[SUMMARY]
-  passed=78 failed=0` (exact command in CONTRACTS.md §9; the suite grew from 53
-  with slice 0's `test_engine2_pools.gd` (+16) and `test_engine2_cleaving.gd`
-  (+9)).
+  passed=219 failed=0` (the figure above is superseded by this line; the count is
+  the measured one).
 
 ## Enforcement protocol (how workers are held to CONTRACTS/WAVEBOARD)
 
@@ -57,7 +64,7 @@ VAJB_WORKER_FILES="vajb-orbit/game/hud.gd,vajb-orbit/ui/hud/hud.tscn" \
 
 PowerShell form: `$env:VAJB_WORKER_FILES='...'; crush run "<prompt>" -m deepseek/deepseek-v4-flash --cwd "G:/Mój dysk/Projekty/Vajb Orbit"`
 
-## In flight — none. Engine wave 1 and slice 0 are both closed.
+## In flight — none. Engine wave 1, slice 0 and slice 2 are all closed.
 
 Engine wave 1, final table kept until the cleanup report is written:
 
@@ -77,6 +84,22 @@ Engine slice 0 (Physics & Fuel), 2026-09-21:
 | M3 | refuel/recharge, save v3, HUD pools | `slice0_m3_report.md` | closed (26/0 + 23/0 + 14/0) |
 | M4/M6 | review 1 HIGH + 6 MED + 18 LOW; re-review | `slice0_m4_report.md`, `slice0_m6_report.md` | **clean — every finding verified fixed** |
 | M5 | F1–F5 fixes | `slice0_m5_report.md` | closed (gate 77/1 → 78/0) |
+
+Engine slice 2 (Fight), 2026-09-21:
+
+| Worker | Scope | Report | Status |
+|---|---|---|---|
+| W0, W0b | doc check + the NPC-count transcription | `slice2_w0_report.md`, `slice2_w0b_report.md` | closed |
+| W1 | weapons + projectiles (+29 tests) | `slice2_w1_report.md` | closed (probe 95/0) |
+| W2 | damage pipeline (+16 in `test_engine2_damage.gd`) | `slice2_w2_report.md` | closed |
+| W3 | NPC registry/brain/ship (+28 tests) | `slice2_w3_report.md` | closed (probe 22/0) |
+| W4 | loot tables (+13 tests) | `slice2_w4_report.md` | closed |
+| W5 | HUD widgets + all the wiring (+32 tests) | `slice2_w5_report.md` | closed (probe 65/0) |
+| W6/W8 | review 1 HIGH + 10 MED + 11 LOW; re-review | `slice2_review_report.md`, `slice2_w8_report.md` | **clean — every assigned fix verified** |
+| W7 | F1 HIGH + F2 + F4 fixes (+17 tests) | `slice2_w7_report.md` | closed (probe 124/2 → 126/0) |
+| W9 | the one MED the re-review found (idempotent ammo settle) | `slice2_w9_report.md` | closed (297 → 297, negative control) |
+| batch-2 lane | B2-1/2/3 playtest + its doc close-out | `batch2_report.md`, `batch2_docs_report.md` | B2-3 fixed; B2-1/B2-2 measured and routed to the art lane |
+| doc lanes | 06's stale hauls + the 11 §3 pointer | `slice2_lootdocs_report.md` | closed |
 
 ## Review rules for the next waves
 
@@ -108,23 +131,32 @@ below); the graphics orchestrator receives `.agents/gen/dispatch_designer.md`
    pool blocks are built in `hud.gd` rather than in `hud.tscn`;
    (c) `18_engine_spec.md` §11 still says `consume_fuel_cell` = C while the
    owner ruled cargo keeps C and the action ships on **R**.
-2. **Slice-2 (Fight) — READY, dispatches now that slice 0 has closed.** Brief
-   `.agents/gen/slice2_task.md` (amended 2026-09-20: power draw, seeker +
-   chaff/flare, `ctx` pipeline, alien swarmers, pools bars + radial
-   speedometer) + regenerated prompts `.agents/gen/slice2_prompts.md`
-   (W0 → W1–W4 parallel → W5 → W6 → W7/W8). Before the first dispatch:
-   `py -3.14 staging/verify_wave.py snapshot --name slice2_start` + a git
-   commit.
-3. **Batch-2 lane brief** — `.agents/gen/batch2_task.md` (B2-1 hover, B2-2
-   backdrops, B2-3 minimap zoom); file-disjoint from the engine slices, can
-   run in parallel; hover-look verification needs the owner at the editor.
-   Dispatch prepared at `.agents/gen/_dispatch/batch2.sh` (set:
-   `vajb-orbit/ui/hud/`, `ui/screens/main_menu.gd`, `vajb-orbit/tools/`); it
-   was held back until slice 0's `hud.gd` left review so the reviewer would not
-   measure a moving file.
-4. **Slice-2.5 (Feel)** — brief written after slice-2 reports land: motion
-   blur + camera pull + dust, damage smoke/ripple/shatter, dash charge FX
-   (18_engine_spec §3.4 + FX_SPEC §7; no new gameplay systems).
+2. **Slice-2 (Fight) — CLOSED 2026-09-21.** Report `.agents/gen/slice2_report.md`;
+   dispatch + verify evidence in `.agents/gen/_dispatch/slice2_w*.sh|log` and
+   `_slice2_verify.log` (`problems: []`, gate 219/0). **What carries forward:**
+   (a) the spec is owner-locked and owes six edits — §11's `consume_fuel_cell` = C
+   → R and the two `countermeasure_chaff`/`countermeasure_flare` rows (Z/X), the
+   superseded refuel wording, the speed-table-v2 △ tick, and the mine's 180 alpha
+   + the kinetics' 0.6 s cadence as their own rows (ruling R6);
+   (b) the graphics lane owes the UI chrome re-cut (ruling R7) and 4K 2× backdrop
+   cuts (R8) — `.agents/gen/ui_chrome_regression.md`;
+   (c) W6's F3 (the item-5 delivery seam still has three owners), F7 (W3's six doc
+   holes), F8 (`cm_*` have no `03` §3 row), F10 (a credit cache has no visual) and
+   the slice-0 REPAIRS-panel rows are all open with owners and block nothing.
+3. **Batch-2 lane — CLOSED 2026-09-21.** B2-3 (the minimap zoom inversion) was a
+   real code defect and is fixed and measured in `ui/hud/hud.gd`; B2-1 (hover look)
+   and B2-2 (soft backdrops) are art-side, measured, and routed to the graphics
+   lane — reports `batch2_report.md` + `batch2_docs_report.md`, evidence
+   `batch2_evidence/`, handover `.agents/gen/ui_chrome_regression.md`. B2-1's look
+   direction and B2-2's display target are settled: 4K (ruling R8), art re-cut
+   (R7).
+4. **Slice-2.5 (Feel) — READY, the next engine wave.** Brief written after
+   slice-2 reports landed: motion blur + camera pull-back + dust streaks (§3.4),
+   damage smoke/ripple/shatter (FX_SPEC §6), dash charge FX (FX_SPEC §7) — no new
+   gameplay systems, every number already in §13. All the signals it needs now
+   exist: the hull publishes `velocity()`, the HUD has `set_speedometer`, the
+   damage pipeline fires, and `hit_marker`/`set_lock_progress` are wired. Snapshot
+   + commit before its first dispatch, as always.
 5. **Graphics orchestrator lane (parallel, no coder)** — hand the designer
    agent `.agents/gen/dispatch_designer.md`: ship rework → alien hull sheets
    for all three families (swarmer first — slice-2 W3's visual pass gates on
@@ -134,12 +166,20 @@ below); the graphics orchestrator receives `.agents/gen/dispatch_designer.md`
    **State 2026-09-21, night run** (`designer_phase_g_report.md`): the
    **swarmer sheet is done and in the game** (so W3's visual pass is unblocked
    on art), Sibelon and Apex hulls and seven Phase G FX are shipped and
-   imported (`fx_shield_shatter` retired by owner ruling — `fx_shield_break` is
-   the shield-shatter asset), and the five human rework sheets are staged in
-   `staging/phase_g/ships/` awaiting the owner's approval (nothing overwritten;
-   ship them with `py -3.14 staging/phase_g/ship_batch_g.py ships --review
-   --replace`). Review pages: `staging/phase_g/_review/g_ships.jpg` (all),
-   `g_alien2.jpg`, `g_fx.jpg`, `g_human_a/b.jpg`, `g_fighter.jpg`.
+   imported — the hulls rebuilt per cell after the owner caught panel-level
+   keying eating one hull, the 2x2 grid clipping two others, and two sheets
+   repeating the front where a rear belonged (order is law: render, find the
+   objects, cut each one, key each one, trim; the duplicate-view check lives in
+   `staging/phase_g/refit_panels.py`). `fx_shield_shatter` retired by owner
+   ruling — `fx_shield_break` is the shield-shatter asset. The five human rework
+   hulls were then approved by the owner ("look good, go ahead") and **the whole
+   human roster was reworked the same way** — 14 hulls, the five core classes
+   plus `ASSET_EXPANSION_SPEC.md` section 3 classes 7-15 — so 65 files shipped
+   in total. Still on the old art: the MMO/faction liveries, the six boss hulls
+   and `ship_vanguard_damaged`, all i2i re-liveries that wait on the owner's
+   naming overhaul. Review pages: `staging/phase_g/_review/g_ships.jpg` (all 65),
+   `g_roster.jpg`, `g_turret.jpg`, `g_alien2.jpg`, `g_back_fixed.jpg`,
+   `g_fx.jpg`, `g_human_a/b.jpg`, `g_fighter.jpg`.
 6. **Cleanup pass (deferred items)** — the five sealed-archive moves (need a
    `VAJB_ARCHIVE_OK=1` session), `_mockup_station.tscn` deletion (gated on
    live S2 verification + wave-4 review), MAIN_MENU_SPEC reference repointing

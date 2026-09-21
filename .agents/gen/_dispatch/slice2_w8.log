@@ -1,0 +1,17 @@
+I'll start by reading my context file and the key documents.Restoring/re-running W6's probe. I'll run it byte-identically in place (md5-provable) and write my own probe separately.Now writing my own independent probe with the `write` tool:I leaked the owner's profile in my own section C (a throwaway instance's default `save_path` is the real file). Repairing it first with the shipped writer:F1/F2/F4 verified green by my own probe (132 ok), with one recorded finding. Now the live key-event test through the editor:Cleaning up the live-profile cargo I added before the next step:The Z chain is measured end to end. Now X (flare) and R (fuel cell):Now updating `docs/CONTRACTS.md` (v1.1) — the pass's sole writer:Now the changelog entry:**W8 re-review done. All three assigned fixes verified genuinely fixed; one new MED finding. The wave is not clean until that one line lands.**
+
+| Fix | Claim | Measured | Verdict |
+|---|---|---|---|
+| F1 HIGH | `_sink_for` resolves the hull body to the ship | W6's archived probe run byte-identically (md5 `a6778c82…`): **126/0** (was 124/2); 1 s laser drains shield **800→770** (30 dps, Energy paid); bolt charges hull **by 27**; `_sink_for(body)==ship` in both files, NPC half too; rock/plain/fixture unchanged; plasma **70** shields-up vs **87.5** shields-down | fixed |
+| F2 MED | `PlayerProfile.set_ammo` + the dock guard | live `game.tscn`, shipped `_file_damage_report`: fired 3 → **300→297**, cannon untouched; file round trip 175; unknown id refused; −5 clamps 0 | fixed |
+| F4 MED | minimap `ghost`/`swarmer` | themed map: swarmer == hostile == `accent_danger`, flicker **0.7000 / 0.3000**, 60 samples in band, clock only with a ghost, no `Color(`/hex added | fixed |
+| F5 | Z/X bound | 20 actions; Z=90, X=88, R=82, C=67; **three real key events in a live game** reached their spends (chaff 1→0 + 3 ghosts + jamming; flare 1→0 + live decoy; fuel 20→60, cooldown 10) | fixed |
+| F9/F11 | docs | 06 reads 2.15/28.375/11.83 %, 2.30, 1.50, 6.375 (1025 floor, 1584.75 mean); `11` line 103 cites `18_engine_spec §13` | closed |
+
+**Gates:** universal **217/0 exit 0** (16 suites, `engine2_fixes` 17); my own probe **133/0**; five boot gates exit 0 with logs **byte-identical to the pre-fix review's**; wave diff shows no forbidden file touched (`hud.tscn`, theme, `addons/` untouched, L19 stands); `verify_wave.py` → `problems: []`.
+
+**New finding R1 (MED, one line, `game/game.gd`):** `_file_ammo_report` is not idempotent within one launch — 300 → 297 → **294** on a second call with no further firing, reachable because `_request_dock` has no re-entry guard while `Router.route()` awaits its 0.2 s fade. Cure: `_ammo_seed[weapon_id] = live` after the write, or a `_docking` flag. It's a seam this wave's own F2 fix turned on.
+
+**Disclosure:** my own probe's section C leaked `laser: 0` onto the owner's `profile.cfg` (a throwaway `PlayerProfile` keeps the shipped `SAVE_FILE` default). Repaired with the shipped writer — all five packs 300, credits 10000, cargo empty, verified — and the probe now hashes the owner's file and fails if it moves (final run: byte- and mtime-identical; `economy_log.txt` never touched). Full detail in §6 of `.agents/gen/slice2_w8_report.md`.
+
+`docs/CONTRACTS.md` is **v1.1** (Z/X applied in §1, minimap implemented in §7, `set_ammo` pinned in §8, rulings R5/R6 + the closed HIGH + R1 in §8.2, gate total 217 in §9, two new probe-trap forms recorded). `tools/` holds only `build_theme.gd` + `derive_icon_tints.gd`; the probe source is archived at `.agents/gen/slice2_w8_probe_source.gd`.

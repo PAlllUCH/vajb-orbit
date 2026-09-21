@@ -1,0 +1,48 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+=== slice2 W3 probe: registry + brain + NPC hull ===
+-- registry: section 13's per-sector shape --
+   sector_1 owner=concord hostiles=(0, 1) patrol=(1, 1) convoy=(1, 1) (section 13 band (0, 1))
+   sector_2 owner=concord hostiles=(1, 2) patrol=(1, 1) convoy=(1, 1) (section 13 band (1, 2))
+   sector_3 owner=meridian hostiles=(2, 3) patrol=(1, 1) convoy=(1, 1) (section 13 band (2, 3))
+   sector_4 owner=meridian hostiles=(3, 4) patrol=(1, 1) convoy=(1, 1) (section 13 band (3, 4))
+   sector_5 owner=choir hostiles=(3, 5) patrol=(1, 1) convoy=(1, 1) (section 13 band (3, 5))
+   sector_6 owner=choir hostiles=(4, 6) patrol=(1, 1) convoy=(1, 1) (section 13 band (4, 6))
+   sector_7 owner=unaligned hostiles=(6, 8) patrol=(0, 0) convoy=(0, 0) (section 13 band (6, 8))
+[OK]   bands: pirate+swarmer per sector equal section 13's S1 0-1 ... S7 6-8 | patrols only where the owner is a faction; the convoy only where the sector is inhabited
+[OK]   spawns: only pirate/swarmer/patrol/trader reach a sector | spawned archetypes across all seven sectors: [&"pirate", &"patrol", &"trader", &"swarmer"]
+[OK]   sector 7 is unaligned: no patrol, no convoy | 
+-- hulls: one of each shipping archetype --
+[OK]   spawn pirate: art, body and row are live | hull=ship_fighter sprite=res://assets/ships/ship_fighter_side.png mass=80 t radius=29.7 u blip=hostile state=idle
+[OK]   spawn swarmer: art, body and row are live | hull=ship_fighter sprite=res://assets/ships/ship_swarmer_side.png mass=80 t radius=35.5 u blip=hostile state=idle
+[OK]   spawn patrol: art, body and row are live | hull=ship_patrol sprite=res://assets/ships/ship_patrol_side.png mass=220 t radius=33.4 u blip=hostile state=idle
+[OK]   spawn trader: art, body and row are live | hull=ship_freighter sprite=res://assets/ships/ship_freighter_side.png mass=260 t radius=32.6 u blip=neutral state=idle
+WARNING: NPC 'turret' (ship_turret_platform): no ShipStats snapshot, so the hull has no pools to charge and no class handling; it holds position and dies on its first hit. 08 section 5 gives this hull no class row (W3 report).
+   at: push_warning (core/variant/variant_utility.cpp:1033)
+   GDScript backtrace (most recent call first):
+       [0] setup (res://game/npc_ship.gd:186)
+       [1] _spawn (res://tools/_probe_s2w3_npc.gd:240)
+       [2] _report_archetypes (res://tools/_probe_s2w3_npc.gd:173)
+       [3] _init (res://tools/_probe_s2w3_npc.gd:60)
+[OK]   spawn turret: static, frozen, no snapshot (the 08 gap is reported) | freeze=true mass=1.0 art=true state=idle
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[OK]   swarmer craft: ruling 24's alien hull is the row's own sprite | sprite=res://assets/ships/ship_swarmer_side.png art_ready=true
+[OK]   swarmer behaviour: pirate-like on the same brain (ruling 24) | aggro=900.0 flee=0.3 hostility=everything blip=hostile
+-- brain: the state walk on synthetic positions --
+[OK]   brain walk: idle -> patrol -> alert -> engage -> (grace) -> flee -> return | observed [&"idle", &"patrol", &"alert", &"engage", &"engage", &"flee", &"return"]
+-- LOS: the shipping ray against a real rock --
+[OK]   LOS blocked: a rock between hull and player keeps the state in Alert | pirate at (0.0, 0.0), rock at (150.0, 0.0), player at (300.0, 0.0) -> state=alert
+[OK]   LOS clear: the same contact, an open line, becomes an engage | state=engage fire=true los=true target=ProbePlayer:<Node2D#49492788757>
+[OK]   safe-warp gate: `engaged_with(player)` is true while the brain holds it | target=ProbePlayer:<Node2D#49492788757>
+-- aggro: the cooldown grace, the re-acquire and the leash --
+[OK]   grace: an aggro state holds for AGGRO_COOLDOWN after the player leaves, then not | at 4.7 s: engage; at 5.3 s: return (player 4000 u away, hull 1133 u from its POI)
+[OK]   release: the safe-warp gate opens with the aggro | engaged_with(player) = false
+[OK]   re-acquire: a returning contact re-enters the fight | state=engage
+[OK]   leash: a chase past 2500 u from the POI ends in a return | hull at (2900.0, 0.0) (leash 2500.0) with the player 300 u away -> state=return
+-- sink: damage.gd -> NpcShip.take_damage (brief item 4) --
+[OK]   sink: Damage.apply reaches take_damage(amount, bypass, ctx) and the shield absorbs | shield 1000 -> 880, hull 2050 (unchanged), ctx direction=-3.142 family=laser
+[OK]   sink: a bypassing hit lands on the hull | hull 2050 -> 2010 after a 40 bypass hit
+-- heat: the player's tier reaching the brain (doc 13) --
+[OK]   heat: a Suspect player makes a neutral convoy run (doc 13 section 5) | heat 20 in concord -> tier suspect -> state=flee
+[OK]   heat: the tier cooling ends the flight | heat 0 -> state=patrol (back to its route once the run is over)
+[SUMMARY] ok=22 failed=0

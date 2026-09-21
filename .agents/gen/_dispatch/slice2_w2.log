@@ -1,0 +1,7 @@
+I'll start by loading the project environment skill and reading the required context files.Now the real probe. Writing it with real scenes, physics and frames:Now the report:W2 done. Report: `.agents/gen/slice2_w2_report.md`.
+
+**Shipped** — `game/damage.gd` (new, `Damage extends RefCounted`): `apply`, `regen(state, delta, quiet_since)` with `REGEN_QUIET := 4.0`, the item-5 `context`/`bearing` (direction = radians off the nose, 0 ahead, +PI/2 starboard, −PI astern), and `ram`/`knockback`/`detonate` routing every impulse through `impact.gd`. `player_state.gd` gained 21 insertions, 0 deletions (`SHIELD_REGEN_DEFAULT` 2.0 + `shield_regen`).
+
+**Measured** (probe `ok=16 failed=0`): 900 hit → shield 0, hull untouched; 4 s window floor; +5.99999999999966 over one second at the resolved 6/s; ctx round trip through `PlayerState`; ram `9.19402985074623` vs `Impact`'s `9.19402985074627`; impulse `6633.2495807108` = `sqrt(2·E·M)`; blast Δv `0.27472528815269` vs `0.27472527472527`. Gate **`passed=139 failed=0`**, suite **20/20**, probe + `.uid` deleted.
+
+**Five wiring items W2's file set cannot close** (in `player_ship.gd`/`game.gd`, all measured): no `take_damage` on the hull, no ctx on the ram, no `shield_regen` seed, nothing calls `regen`, and W1's `weapons.gd`/`projectile.gd` keep private copies of the delivery seam (suggested MED for W6).

@@ -1,0 +1,101 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+=== slice2 W1 probe: weapon families, draw, seeker, countermeasures ===
+[env] physics_ticks_per_second=60
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[ok] String key is visible to a StringName lookup
+[ok] StringName key is visible to a String lookup
+[ok] range laser = 500.0
+[ok] range plasma = 450.0
+[ok] range cannon = 600.0
+[ok] range railgun = 800.0
+[ok] range rocket = 900.0
+[ok] range mine = 0.0
+[ok] laser 30 DPS
+[ok] plasma 70 DPS
+[ok] cannon 45 DPS
+[ok] railgun 60 DPS
+[ok] rocket alpha 180
+[ok] cannon bolt 1000 u/s
+[ok] railgun slug 1400 u/s
+[ok] rocket 900 u/s, 2.2 rad/s, 1.2 s
+[ok] mine arm 2 s, trigger 60 u
+[ok] cannon burst 0.35 on / 0.25 off
+[ok] energy draw laser 6 / plasma 10
+[ok] shield rules: laser/plasma first, kinetic/missile/deployable bypass
+[ok] plasma hull bonus 1.25
+[ok] chaff 3 ghosts / 3.0 s
+[ok] flare lure 450 u
+[ok] railgun shares the cannon pack
+[ok] shot_damage follows DPS x interval
+[ok] module ids normalize to weapon ids
+[ok] weapon_3 selects the third fitted weapon
+[ok] the group range clamps to weapon_1..5
+[ok] group 0 clamps to 1
+[ok] the sixth family is kept in the fit and reported through fitted()
+[ok] an unknown id cannot become a dead group
+[ok] laser deals 30 DPS to a live shield
+[ok] laser leaves the hull alone while the shield holds
+[ok] laser draws 6 E/s
+[ok] the energy toll burned fuel through the reactor
+[ok] laser does not bypass shields
+[ok] ctx rides the damage call (family/direction/impulse)
+[ok] no damage past the 500 u cap
+[ok] plasma deals 70 DPS to a live shield
+[ok] plasma draws 10 E/s
+[ok] plasma adds no hull bonus while the shield holds
+[ok] plasma melts armour: 87.5 DPS with the shields down
+[ok] an empty pool dry-fires once and deals nothing
+[ok] dry_reason reports the empty pool
+[ok] a cannon shot spawns a bolt
+[ok] bolt travels 1000 u/s
+[ok] bolt carries 27 damage (45 DPS x 0.6 s)
+[ok] bolt bypasses shields
+[ok] one round leaves the pack per bolt
+[ok] recoil reaches the hull
+[ok] recoil is m x v opposite the muzzle
+[ok] the first shot is announced once
+[ok] the cannon fires one bolt per burst cycle (0.6 s = 36 frames)
+[ok] a held trigger keeps replacing the bolt that fizzles
+[ok] a railgun shot spawns a slug
+[ok] slug travels 1400 u/s
+[ok] the railgun spends the cannon pack
+[ok] a slug bypasses the shield into the hull
+[ok] an empty pack dry-fires once and fires nothing
+[ok] dry_reason reports the empty pack
+[ok] a rocket spawns on the trigger
+[ok] the rocket carries 180 alpha
+[ok] the rocket is destructible in flight
+[ok] the rocket took the lock as its target
+[ok] homing turns at 2.2 rad/s
+[ok] speed is held while turning
+[ok] the rocket reaches its locked hull and detonates
+[ok] the rocket spends one rocket round
+[ok] a rocket without a lock flies straight (dumb-fire)
+[ok] a weapon hit destroys the rocket in flight
+[ok] the mine drops on the trigger
+[ok] a dropped mine is stationary
+[ok] the mine spends one mine round
+[ok] a mine does not trigger before its 2 s arm time
+[ok] an armed mine detonates on a hull inside 60 u
+[ok] a mine at 61 u arms and stays silent
+[ok] a chaff use spends one item
+[ok] chaff breaks the active lock
+[ok] chaff spawns 3 ghosts
+[ok] every ghost answers the ghost blip kind
+[ok] locks cannot re-acquire while the ghosts live
+[ok] the ghosts are still live at 2 s
+[ok] the 3.0 s window ends and the ghosts clear
+[ok] ghosts drift away from the moving hull
+[ok] a second chaff use spends the last item
+[ok] a chaff use with no item left refuses
+[ok] a flare use spawns a decoy and spends one item
+[ok] a rocket inside 450 u retargets to the flare
+[ok] a rocket outside 450 u keeps its own target
+[ok] the lured rocket detonates on the flare
+[ok] the detonation lands at the decoy
+[ok] the decoy is freed once nothing is chasing it
+[ok] a laser chips a rock at 10 % of its DPS (3 work over 1 s)
+[ok] chips never extract ore (no pickup spawned)
+[ok] the rock lost depletion
+[SUMMARY] ok=95 failed=0 blocked=0

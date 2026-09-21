@@ -1,0 +1,10 @@
+I'll start by reading the required contracts and context.Now I have the full contract. Writing the two files.Now the probe. I'll add two small read-only accessors first, then write it.Now the probe fixes (per-stage fit, group-mapping checks, seeker arrival, typed-array crash):The rocket's 1.2 s interval (spec) explains the delay — my probe's cooldown was shorter. Cleaning up and re-running for the final evidence log:Now the report:Done. Engine slice 2 W1 is complete.
+
+**Files (all new, nothing outside my set touched):**
+- `vajb-orbit/game/weapons.gd` (35 272 B) — `WeaponComponent`: the §4.1/§13 six-family table, trigger, ammo + Energy draw, lock seam, chaff/flare, gun chips, recoil.
+- `vajb-orbit/game/projectile.gd` (23 243 B) — `Projectile`: pinned `configure` keys, flight + 2.2 rad/s homing, mine arm/trigger, range fizzle, `retarget`, knockback + blast wave, `detonated`.
+- `vajb-orbit/tests/test_engine2_weapons.gd` (29 tests) + evidence + `.agents/gen/slice2_w1_report.md`; probes deleted with their `.uid` (archived in `.agents/gen/`).
+
+**Measured:** probe `ok=95 failed=0` (every acceptance item: range cap, 1000/1400 u/s travel, shield bypass, homing 2.2 rad/s, 180 alpha, mine 2 s/60 u, dry fire, 6/10 E/s draw, plasma 87.5 DPS meltdown, 3 ghosts/3.0 s, flare lure 450 u, 10 % rock chips with no ore, recoil). Gate `passed=168 failed=0` exit 0; `game.tscn` boot clean. Probe written with the write tool, runs bounded with stdout logged.
+
+**Reported, not guessed (ruling 4):** the spec pins no kinetic rate of fire (cadence derived from the cannon's burst cycle, shot damage = DPS×interval), no mine alpha (used the rocket's 180), no projectile mass (unit), no flare lifetime (decoy lives while chasing), no seeker fuse (409 u turn radius means abeam locks orbit — owner call), beams apply no recoil; plus three seams for others: `shield_up()` for plasma's bonus, `PlayerState.WEAPONS` lacking a railgun slot, and six families vs five groups.

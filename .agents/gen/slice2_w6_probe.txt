@@ -1,0 +1,163 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+WARNING: res://game/player_ship.tscn:4 - ext_resource, invalid UID: uid://cmi25sgdnd7ga - using text path instead: res://assets/ships/ship_vanguard_side.png
+   at: load (scene/resources/resource_format_text.cpp:501)
+=== W6 slice-2 review probe ===
+-- A. constant tables vs section 13 / docs 06, 09, 13 --
+[PASS] range laser | got 500.0 want 500.0
+[PASS] range plasma | got 450.0 want 450.0
+[PASS] range cannon | got 600.0 want 600.0
+[PASS] range railgun | got 800.0 want 800.0
+[PASS] range rocket | got 900.0 want 900.0
+[PASS] dps laser | got 30.0 want 30.0
+[PASS] dps plasma | got 70.0 want 70.0
+[PASS] dps cannon | got 45.0 want 45.0
+[PASS] dps railgun | got 60.0 want 60.0
+[PASS] cannon bolt 1000 u/s | got 1000.0
+[PASS] railgun slug 1400 u/s | got 1400.0
+[PASS] cannon burst 0.35 on / 0.25 off | on=0.35 off=0.25
+[PASS] rocket 180 alpha / 2.2 rad/s / 1.2 s interval | alpha=180.0 turn=2.2 interval=1.2
+[PASS] mine arm 2 s / trigger 60 u | arm=2.0 trigger=60.0
+[PASS] draw laser | got 6.0 want 6.0
+[PASS] draw plasma | got 10.0 want 10.0
+[PASS] kinetics spend no Energy (cannon) | draw 0.0
+[PASS] kinetics spend no Energy (railgun) | draw 0.0
+[PASS] kinetics spend no Energy (rocket) | draw 0.0
+[PASS] kinetics spend no Energy (mine) | draw 0.0
+[PASS] plasma hull bonus +25 % | got 1.25
+[PASS] shield rules: laser/plasma shields-first, kinetics/rocket/mine bypass | laser=false cannon=true rocket=true
+[PASS] CHAFF_WINDOW 3.0 s / 3 ghosts | window=3.0 ghosts=3
+[PASS] FLARE_LURE 450 u | got 450.0
+[PASS] Damage.REGEN_QUIET 4.0 s | got 4.0
+[PASS] standard fit shield_regen = base 2 + s_light 4 | resolved 6.0
+[PASS] PlayerState base shield_regen 2/s | got 2.0
+[PASS] pirate aggro 900 / flee 0.30 | aggro=900.0 flee=0.3
+[PASS] swarmer mirrors the pirate row (aggro 900 / flee 0.30 / hostile) | aggro=900.0 hostility=everything
+[PASS] patrol scan 1000 | got 1000.0
+[PASS] turret aggro 750 | got 750.0
+[PASS] LEASH_RADIUS 2500 / AGGRO_COOLDOWN 5.0 | leash=2500.0 cooldown=5.0
+[PASS] heat on kill: pirate -3 / trader +15 / patrol +25 / turret +25 | pirate=-3 trader=15 patrol=25 turret=25
+[PASS] heat tiers clean 0 / suspect 20 / wanted 50 / outlaw 80 | 20=suspect 50=wanted 80=outlaw
+[PASS] Impact constants: 2.0e-5 / 40 / 0.40 / 4000 / 0.2 | factor=0.00002 dv=40.0 frac=0.4 p0=4000.0 window=0.2
+[PASS] 06 fighter table has 6 lines with cm_chaff/cm_flare at 0.15 | lines=6 last=cm_chaff/cm_flare
+[PASS] the other three 06 tables carry no countermeasure row | freighter/corvette/maw clean
+-- B. a real laser on a real hull, and the range cap --
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[PASS] PlayerShip mounts the WeaponComponent for the standard fit | node WeaponComponent:<Node2D#37262198282>
+[PASS] weapon groups: the standard fit's w_laser selects as laser | selected=laser fitted=[&"laser"]
+[PASS] the victim's HullBody is the shot's collider (layer 2, shaped) | body=HullBody:<RigidBody2D#37346084367> shape=(res://game/player_ship.tscn::CircleShape2D_hull):<CircleShape2D#-9223372005481380369>
+[PASS] the victim's HullBody answers no damage method (the delivery question) | body methods: take_damage=false damage=false
+   [measure] 1 s laser at 300 u: victim shield 800.0 -> 800.0, shooter energy 100.0 -> 98.9166666666667
+[PASS] the shooter spent Energy for the beam (section 4.4) | energy 100.0 -> 98.9166666666667
+[FAIL] HIGH/delivery: a laser hit on a real hull charges its shield | shield 800.0 -> 800.0 (unchanged means the hit reached the hull's body, not the hull)
+   [measure] Damage.apply(ship node, 120) -> shield 680.0
+[PASS] control: Damage.apply reaches the ship node and moves the shield | shield 800.0 -> 680.0
+   [measure] rocks at (0.0, 300.0) (radius 66.0) and (0.0, 620.0) (radius 66.0)
+[PASS] the rock fixture carries a collision circle on the rock layer | radius 66.0 shape ():<CircleShape2D#-9223371987429095850>
+   [diag] shooter at (0.0, 0.0), victim node at (300.0, 0.0), victim body at (300.0, 0.0), component at (0.0, 0.0)
+   [diag] the ray to the rock finds @RigidBody2D@10:<RigidBody2D#49392125458> at (0.0, 234.0); the component's own _beam_target finds @RigidBody2D@10:<RigidBody2D#49392125458>
+   [measure] 1 s of laser on a rock at 300 u drained 3 ore units
+[PASS] guns chip a rock at the 10 % rate (30 dps x 10 % = 3 work/s, section 6 / ruling 17) | drained 3 units (expected ~3)
+[PASS] a gun chip extracts no ore (ruling 17: no pickup is spawned) | pickups 0 -> 0
+   [measure] 60 synchronous ticks drained 3 ore units
+[PASS] the same chip measured through 60 synchronous ticks | drained 3 units (expected ~3)
+[PASS] range cap: the laser at 620 u reaches nothing (0 work) | drained 0 units
+   [measure] laser draw over 1 s of fire = 1.08333333333327 Energy (6/s draw, 5/s refill)
+[PASS] the laser's 6 E/s draw nets about 1 Energy/s against the 5/s reactor refill | drawn 1.08333333333327
+-- C. bolt/slug travel, rocket homing + destructibility, mine arm/trigger --
+[PASS] cannon bolt travels 1000 u/s | got 1000.0
+[PASS] railgun slug travels 1400 u/s | got 1400.0
+[PASS] the slug bypasses shields (row rule) | bypass=true
+   [measure] rocket speed 900.0 u/s, course change 2.20000013709068 rad/s over one frame
+[PASS] rocket flies at 900 u/s | got 900.0
+[PASS] rocket homes at 2.2 rad/s toward the lock | got 2.20000013709068
+[PASS] rocket flight is destructible (section 4.1) | is_destructible=true
+   [diag] before the bolt: dry_reason= shot_timer=1.15 burst=0.0 cannon ammo=300
+   [diag] after the bolt attempt: shot_timer=0.6, projectiles in the group=1
+   [measure] a cannon bolt at a hull 300 u away: released=true, target hull 1250.0 -> 1250.0 (27 per bolt)
+[FAIL] a cannon bolt charges a real hull (bypass -> hull) | hull 1250.0 -> 1250.0 (unchanged means the bolt reached the hull's body, not the hull)
+   [diag] mine at (-1.053664, -5.811866) armed=false with a hull at (40.0, 0.0) (the trigger radius is 60 u)
+[PASS] the mine is silent before its 2 s arm with a hull at 40 u | hull 1250.0 -> 1250.0
+   [measure] mine blast on a hull at 40 u: hull 1250.0 -> 1070.0 (alpha 180), shield 800.0
+[PASS] the mine triggers after 2 s and charges the hull for its 180 alpha | hull 1250.0 -> 1070.0
+[PASS] the mine's bypass rule leaves the shield alone | shield 800.0 -> 800.0
+-- D. the energy gate: a short pool dry-fires, no shot --
+[PASS] dry pool: dry_fired is raised once for the pull | dry_fired count 1
+[PASS] dry pool: shot_fired is not raised | shot_fired count 0
+[PASS] dry pool: the target takes nothing | shield 800.0 -> 800.0
+[PASS] dry_reason reads 'energy' with an empty pool | dry_reason=energy
+[PASS] a full pool: shot_fired is raised for the beam hold | shot_fired count 1
+[PASS] a full pool: Energy falls while the beam is up | energy 99.7166666666667 of 100.0
+[PASS] try_spend_energy refuses a short pool and accepts a covered one | 
+-- E. shield-first absorb, the 4 s quiet window, the ctx round trip --
+[PASS] shield-first absorb with no carry-over: 900 into an 800 shield | shield 0.0 hull 1000.0
+[PASS] a bypassing hit lands on the hull | shield 0.0 hull 750.0
+[PASS] regen stays off just inside the 4 s window | shield 100.0
+[PASS] regen resumes at REGEN_QUIET, at the state's own rate | gained 2.0 at a rate of 2.0/s
+[PASS] a fitted s_light regenerates at 6/s (base 2 + 4) | shield 6.0
+[PASS] ctx round trip: direction/impulse/family recorded verbatim | recorded { &"direction": 0.0, &"impulse": 1234.5, &"family": &"kinetic" }
+[PASS] bearing reads prow 0 / starboard +PI/2 / port -PI/2 / stern +/-PI | prow=0.0 starboard=1.57079637050629 stern=-3.14159256616701
+-- F. the brain state walk, the swarmer, flee/leash/AGGRO_COOLDOWN --
+[PASS] no contact: the hull patrols | state=patrol
+[PASS] a player inside the 900 u aggro radius: engage, fire, LOS clear | state=engage fire=true los=true
+[PASS] a blocked LOS holds the hull in alert and it does not fire | state=alert fire=false
+[PASS] a pirate at 29 % hull flees | state=flee
+[PASS] a pirate at 31 % hull does not flee | state=return
+[PASS] the aggro holds for the whole AGGRO_COOLDOWN (the safe warp stays shut) | engaged at start=true still engaged at 4.6 s=true
+[PASS] the aggro clears after AGGRO_COOLDOWN | engaged after 5.5 s = false
+[PASS] past the 2500 u leash: return, not chase | state=return
+[PASS] a trader flees at Suspect+ | state=flee
+[PASS] a patrol ignores a Clean player (no engage, no scan) | state=patrol
+[PASS] a patrol scans a Suspect player at 1000 u | state=scan
+[PASS] a patrol attacks an Outlaw | state=engage fire=true
+[PASS] the alien swarmer engages on the same brain | state=engage
+-- G. loot weight sums and the countermeasure rows --
+[PASS] fighter chance sum = 1.7 (the table's own total, not 1.0) | sum 1.7
+[PASS] swarmer chance sum = 1.7 (the table's own total, not 1.0) | sum 1.7
+[PASS] freighter chance sum = 1.4 (the table's own total, not 1.0) | sum 1.4
+[PASS] corvette chance sum = 1.35 (the table's own total, not 1.0) | sum 1.35
+[PASS] maw chance sum = 4.0 (the table's own total, not 1.0) | sum 4.0
+[PASS] 06 section 6 check 2: no table exceeds its band | violations []
+[PASS] the only uncatalogued loot ids are the two countermeasures | uncatalogued [&"cm_chaff", &"cm_flare"]
+[PASS] fighter expected units = 2.15 | got 2.15
+[PASS] freighter expected units = 2.3 | got 2.3
+[PASS] corvette expected units = 1.5 | got 1.5
+[PASS] maw expected units = 6.375 | got 6.375
+[PASS] a seeded roll is reproducible and pays only 06 ids | [{ &"item_id": &"comp_scrap_1", &"amount": 1, &"is_credit_cache": false }, { &"item_id": &"comp_weap_1", &"amount": 1, &"is_credit_cache": false }, { &"item_id": &"comp_pow_1", &"amount": 2, &"is_credit_cache": false }] vs [{ &"item_id": &"comp_scrap_1", &"amount": 1, &"is_credit_cache": false }, { &"item_id": &"comp_weap_1", &"amount": 1, &"is_credit_cache": false }, { &"item_id": &"comp_pow_1", &"amount": 2, &"is_credit_cache": false }]
+-- H. sector NPC counts vs the section 13 / doc 13 section 4 shape --
+[PASS] sector_1 hostile band = (0, 1) | got (0, 1)
+[PASS] sector_2 hostile band = (1, 2) | got (1, 2)
+[PASS] sector_3 hostile band = (2, 3) | got (2, 3)
+[PASS] sector_4 hostile band = (3, 4) | got (3, 4)
+[PASS] sector_5 hostile band = (3, 5) | got (3, 5)
+[PASS] sector_6 hostile band = (4, 6) | got (4, 6)
+[PASS] sector_7 hostile band = (6, 8) | got (6, 8)
+   [measure] patrol density per sector: { &"sector_1": (1, 1), &"sector_2": (1, 1), &"sector_3": (1, 1), &"sector_4": (1, 1), &"sector_5": (1, 1), &"sector_6": (1, 1), &"sector_7": (0, 0) }
+[PASS] the unowned sector spawns no patrol | patrols { &"sector_1": (1, 1), &"sector_2": (1, 1), &"sector_3": (1, 1), &"sector_4": (1, 1), &"sector_5": (1, 1), &"sector_6": (1, 1), &"sector_7": (0, 0) }
+   [measure] convoy density per sector: { &"sector_1": (1, 1), &"sector_2": (1, 1), &"sector_3": (1, 1), &"sector_4": (1, 1), &"sector_5": (1, 1), &"sector_6": (1, 1), &"sector_7": (0, 0) }
+[PASS] each inhabited sector rolls exactly one convoy | convoys { &"sector_1": (1, 1), &"sector_2": (1, 1), &"sector_3": (1, 1), &"sector_4": (1, 1), &"sector_5": (1, 1), &"sector_6": (1, 1), &"sector_7": (0, 0) }
+[PASS] no seam row (hunter/boss) or station row (turret) reaches a sector spawn list | leaked []
+   [measure] doc 13 section 4 transcription present: true
+-- I. the lock ring, the radial speedometer, the pools, the target payload --
+[PASS] set_lock_progress(0.417) reads back 0.417 | got 0.417
+[PASS] a zero lock progress hides the ring | progress 0.0 visible false
+[PASS] set_speedometer's ratio reads back (0.587) | got 0.587
+[PASS] the dial node exists with a 120 x 120 box | size (120.0, 120.0)
+[PASS] an unknown pool kind is ignored, not fatal | no error raised
+[PASS] set_target_info carries in_range and threat | info { "name": "Lancer", "hull": 1.0, "shield": 1.0, "distance_m": 1240.0, "threat": "HOSTILE", "in_range": true, "has_range": true }
+[PASS] the hit marker exists and is a small reticle mark, not a damage number | node HitMarker:<Control#79339456374> size (48.0, 48.0)
+-- J. chaff ghosts and flare retargeting (section 4.6) --
+   [diag] PlayerProfile present: true
+[PASS] chaff without the item aboard is refused and fires nothing | returned false, ghosts 0
+[PASS] an unknown item id is refused too | returned true
+[PASS] chaff deploys exactly 3 ghost signatures | ghosts 3
+[PASS] every ghost answers the UI_SPEC section 3.3 blip kind 'ghost' | kinds ["ghost", "ghost", "ghost"]
+[PASS] chaff breaks the active lock immediately | locks_broken 1, lock target <null>
+[PASS] jamming() is true while the ghosts live | jamming true
+[PASS] the ghosts are still live at 2.0 s | ghosts 3
+[PASS] the ghosts are gone after the 3.0 s CHAFF_WINDOW and the jam has lifted | ghosts 0 jamming false
+[PASS] a rocket inside FLARE_LURE retargets to the live flare | flare CountermeasureFlare:<Node2D#88617256655>, the rocket's decoy CountermeasureFlare:<Node2D#88617256655>
+   [measure] the lured rocket valid after 1.5 s: false (it detonates on the decoy)
+[PASS] the lured rocket detonates on the decoy rather than the hull | rocket alive false, detonated false
+   [measure] a rocket beyond the lure radius: lock target @Node2D@58:<Node2D#84808829087>, decoy CountermeasureFlare:<Node2D#91335165622>
+[SUMMARY] ok=124 failed=2

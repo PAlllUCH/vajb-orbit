@@ -2,8 +2,8 @@ class_name PlayerShip
 extends Node2D
 ## The player's hull: hybrid flight on a real physics body (ENGINE_SPEC section 3.1
 ## and ruling 8), mass-scaled inertia with the arrive-steering autopilot (section
-## 3.2), the booster seam, the mining-laser mount (W3's scene, mounted only when the
-## resolved fit spends a W slot on `w_mining`) and the rock collision body (section 6).
+## 3.2), the booster seam, the weapon and mining-laser mounts (the resolved fit's
+## W-slot modules) and the rock collision body (section 6).
 ## Flight reads *only* the ShipStats snapshot ShipFit resolves (section 3.3): the
 ## per-class handling column and the booster activation numbers stay in ship_fit.gd,
 ## so no flight number is duplicated here. The constants that do live here are the
@@ -15,9 +15,14 @@ extends Node2D
 ## `PlayerState` (reactor refill and fuel-cell cooldown), it burns BOOST_FUEL through
 ## `try_spend_fuel` while the afterburner runs, it reads `emergency_mode` to lock
 ## thrust out, and it is where section 11's fuel-cell key spends a cell.
-## Contract: ENGINE_SPEC sections 3, 4.2 (items 6-8, ruling 16's push physics), 4.4,
-## 6, 7, 9, 13; engine-wave-1 brief section W2; slice-0 brief pinned interface item 1;
-## CONTRACTS sections 4 and 8.1.
+## Slice 2 adds three seams the pinned interfaces name and no other file may own: the
+## damage sink (`take_damage` forwards into `PlayerState.damage`, so the pipeline and
+## every weapon reach the player), the shield-regeneration frame step and the ram's
+## item-5 context, both through `game/damage.gd`; and the weapon mount
+## (`WeaponComponent`, the same pattern as the mining laser).
+## Contract: ENGINE_SPEC sections 3, 4.2 (items 1-8, ruling 16's push physics), 4.3,
+## 4.4, 6, 7, 9, 13; engine-wave-1 brief section W2; slice-0 brief pinned interface
+## item 1; slice-2 brief pinned interfaces 1, 2, 4 and 5; CONTRACTS sections 4 and 8.1.
 
 ## Raised when the live pools lose points (hull or shield). The warp channel
 ## breaks on damage (ENGINE_SPEC section 7); game.gd listens to this instead of
@@ -27,6 +32,22 @@ signal damage_taken(amount: float)
 
 const MINING_LASER_NODE: StringName = &"MiningLaser"
 const MINING_LASER_SCENE := "res://game/mining_laser.tscn"
+
+## Section 4.3's fitted weapons, mounted exactly as the mining laser is: a child node at
+## the hull's origin, handed the launch snapshot and the fit. The node name is the one
+## the wiring resolves (`game.gd` reads the same const), and the component is reached by
+## path because a `class_name` only resolves after the editor has scanned the project.
+##
+## The component reads the trigger (`fire_primary`, held), the cursor, the ammo and the
+## Energy gates itself, so the hull only mounts it; the mining laser's `E` stays the tool
+## key and is untouched.
+const WEAPONS_NODE: StringName = &"WeaponComponent"
+const WEAPONS_SCRIPT := "res://game/weapons.gd"
+
+## 09 section 3.1/4.5: a fit with no weapon module carries no weapon node at all, the
+## same W-slot rule the mining laser follows (`w_mining` gates the tool). The v1 standard
+## fit carries `w_laser`, so a launched ship mounts one group.
+const WEAPONS: GDScript = preload("res://game/weapons.gd")
 
 ## 09 section 4.5 (the owner's mining-laser rule) and ENGINE_SPEC section 4.3/6:
 ## the mining laser is the `w_mining` tool that occupies a **W slot**, Tier I,
@@ -90,6 +111,12 @@ const WARP_DAMAGE_QUIET := 5.0
 ## while the wave is still being written (game.gd reaches this very file the same way).
 const IMPACT := preload("res://game/impact.gd")
 
+## W2's damage pipeline (`game/damage.gd`), reached by path for the same reason: the pin
+## lives in one file, so the hull's ram context and its shield-regen frame step are the
+## pipeline's own arithmetic and not a private copy of it (slice-2 brief, pinned
+## interfaces 1 and 4; W2 report section "What the wave still owes", items 2 and 4).
+const DAMAGE := preload("res://game/damage.gd")
+
 ## Mass used when the launch snapshot carries no `hull_mass`: the section 13 class
 ## column is M2's field on ShipStats, and the migration stands on its own until it is
 ## there (the hull flies either way, because the flight maths is mass-independent, see
@@ -102,6 +129,7 @@ var _state: PlayerState = null
 var _body: RigidBody2D = null
 var _laser: Node = null
 var _laser_active := false
+var _guns: Node2D = null
 var _fit_ids: Array[StringName] = []
 
 var _move_target := Vector2.ZERO
@@ -127,6 +155,7 @@ func _ready() -> void:
 	if _body != null:
 		_body.body_entered.connect(_on_hull_body_entered)
 	_sync_mining_laser()
+	_sync_weapons()
 
 
 ## Launch handshake (pinned interface): the resolved snapshot plus the scene's
@@ -145,6 +174,7 @@ func setup(stats: ShipStats, state: PlayerState, fit_ids: Array[StringName] = []
 	_fit_ids = fit_ids.duplicate()
 	_apply_rigid_body()
 	_sync_mining_laser()
+	_sync_weapons()
 	if _state == null:
 		return
 	_last_hull = _state.hull
@@ -210,6 +240,25 @@ func impact_body() -> RigidBody2D:
 	return _body
 
 
+## The pinned damage sink (slice-2 brief, pinned interface item 4; W2's measured gap 1):
+## `Damage.apply(target, ...)` and every weapon's delivery reach the ship node, which
+## forwards into `PlayerState.damage`, so the wave-1 verified shield-first absorb with no
+## carry-over is what gates the player's hull and `ctx` (section 4.2 item 5) rides every
+## hit. A hull that has not launched has no pools and takes nothing.
+func take_damage(amount: float, bypass_shield: bool = false, ctx: Dictionary = {}) -> void:
+	if _state == null:
+		return
+	_state.damage(amount, bypass_shield, ctx)
+
+
+## Whether the shield is still up, for section 4.1's shield rules (W1 report finding 3:
+## `weapons.gd` reads a target's shields through `shield_up()`, a `shield` property or a
+## `state` property, so this one-line reader is what lets plasma's +25 % hull bonus land
+## on a real ship instead of never applying).
+func shield_up() -> bool:
+	return _state != null and _state.shield > 0.0
+
+
 ## Generic push (section 4.2 items 7/8): knockback from a hit and the edge of a blast
 ## both arrive as an impulse, so both land here and neither needs to know about the
 ## body. Instant, like every other impulse in the pipeline.
@@ -248,6 +297,11 @@ func _physics_process(delta: float) -> void:
 	_step_reactor(delta)
 	_update_fuel_cell()
 	_damage_quiet += delta
+	## Section 4.2 item 2: one frame of shield regeneration at the state's own rate, once
+	## the hull has been quiet for `Damage.REGEN_QUIET` (the timer above is this hull's, so
+	## the window keeps one owner). Nothing else in the shipped game spends the rate, so
+	## without this call a shield never recovers in flight (W2 report, gap 4).
+	DAMAGE.regen(_state, delta, _damage_quiet)
 	if _stats == null or _body == null:
 		return
 
@@ -410,12 +464,17 @@ func _sync_hull_transform() -> void:
 func _on_hull_body_entered(other: Node) -> void:
 	if _state == null or other == null:
 		return
-	var damage := IMPACT.collision_damage(
-		_hull_mass(), _peer_mass(other), _closing_speed(other)
+	## Section 4.2 item 5 through the pipeline rather than by hand: `Damage.ram` computes
+	## the same `Impact.collision_damage` figure and records the item-5 context off the
+	## contact's own geometry (the peer's bearing relative to this hull), so the player's
+	## half of a ram is on the record from the first bump (W2 report, gap 2).
+	var peer := other as Node2D
+	var peer_position := peer.global_position if peer != null else global_position
+	var damage := DAMAGE.ram(
+		self, peer_position, _hull_mass(), _peer_mass(other), _closing_speed(other)
 	)
 	if damage <= 0.0:
 		return
-	_state.damage(damage)
 	if other.has_method(&"apply_collision_damage"):
 		other.call(&"apply_collision_damage", damage)
 
@@ -667,6 +726,67 @@ func _bind_laser() -> void:
 		return
 	if _laser.has_method(&"bind"):
 		_laser.call(&"bind", _stats)
+
+
+## Section 4.3: the fitted weapons ride the same W-slot rule as the mining laser. A fit
+## with no weapon module carries no weapon node, and a later hull swap to such a fit
+## releases it again, so the trigger and the HUD's slots both read "no guns" the same way
+## they read "no laser" today.
+func _sync_weapons() -> void:
+	if not _has_weapon_module():
+		_release_weapons()
+		return
+	_mount_weapons()
+	_bind_weapons()
+
+
+## Whether the launched fit spends any slot on a weapon. `WeaponComponent.weapon_id`
+## normalizes module ids (`w_laser` -> `laser`) and answers `&""` for anything the family
+## table does not know, so an unknown id is not a gun.
+func _has_weapon_module() -> bool:
+	for id: StringName in _fit_ids:
+		if WEAPONS.weapon_id(id) != &"":
+			return true
+	return false
+
+
+func _release_weapons() -> void:
+	if _guns == null:
+		return
+	remove_child(_guns)
+	_guns.queue_free()
+	_guns = null
+
+
+## Mounted by guarded path, the same convention the mining laser and the HUD use, so this
+## scene loads before W1's file lands in a headless run.
+func _mount_weapons() -> void:
+	if _guns != null:
+		return
+	var existing := get_node_or_null(NodePath(WEAPONS_NODE))
+	if existing != null and not existing.is_queued_for_deletion():
+		_guns = existing as Node2D
+		return
+	var script := load(WEAPONS_SCRIPT) as GDScript
+	if script == null:
+		return
+	_guns = script.new() as Node2D
+	if _guns == null:
+		return
+	_guns.name = WEAPONS_NODE
+	add_child(_guns)
+
+
+## The launch handshake (pinned interface item 2): the resolved snapshot, the live pools
+## and the fit's module ids. The component keeps the whole list (six families, five
+## groups) and clamps the selected group itself.
+func _bind_weapons() -> void:
+	if _guns == null or _stats == null or _state == null:
+		return
+	if _guns.has_method(&"setup"):
+		_guns.call(&"setup", _stats, _state)
+	if _guns.has_method(&"set_fitted"):
+		_guns.call(&"set_fitted", _fit_ids)
 
 
 ## Hold `mine` (E) to fire the mining laser (ENGINE_SPEC section 4.3). The laser

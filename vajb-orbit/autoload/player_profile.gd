@@ -158,6 +158,24 @@ func buy_ammo(weapon_id: StringName, rounds: int, cost: int) -> bool:
 	return true
 
 
+## The absolute writer the dock's pack report needs (18_engine_spec section 4.3 /
+## 01 section 6): a launch seeds `PlayerState` from this store and the *fired
+## deltas* come back on dock, and `buy_ammo` can only ever add, so the filing
+## negates its own delta and needs a setter. `rounds` is the pack's new holding,
+## clamped at zero; an id outside `AMMO_MAX` is refused silently, exactly as
+## `buy_ammo` refuses to sell one, so a typo cannot open a sixth pack. A write that
+## changes nothing neither dirties the file nor emits `profile_changed`, which
+## keeps the every-dock report from signalling when nothing was fired.
+func set_ammo(weapon_id: StringName, rounds: int) -> void:
+	if not AMMO_MAX.has(weapon_id):
+		return
+	var holding := maxi(0, rounds)
+	if int(_ammo.get(weapon_id, 0)) == holding:
+		return
+	_ammo[weapon_id] = holding
+	_touch(KEY_AMMO)
+
+
 func owns_ship(ship_id: StringName) -> bool:
 	return _owned_ships.has(ship_id)
 

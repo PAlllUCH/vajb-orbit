@@ -50,8 +50,8 @@ number below and is checked in §6.
 | 5 | `cm_chaff` (Chaff Dispenser) | 0.15 | 1 |
 | 6 | `cm_flare` (Flare Pack) | 0.15 | 1 |
 
-Expected haul per fighter: ≈ 1.1 items, ≈ 20 CR baseline value.
-Empty-kill probability ≈ 17 %.
+Expected haul per fighter: ≈ 2.15 items, ≈ 28.375 CR baseline value.
+Empty-kill probability ≈ 11.83 %.
 
 **Amendment 2026-09-20 (18_engine_spec §4.6):** lines 5–6 add the slice-2
 countermeasures — `cm_chaff` breaks locks with 3 ghost signatures for 3 s,
@@ -60,6 +60,11 @@ at 0.15 chance and may enter the swarmers' table (slice-2 W3) at the same
 weight; the freighter/corvette/dreadnought tables are untouched. Expected
 haul figures above predate the amendment and are re-checked in the wave
 report, not by hand here.
+
+**Re-check 2026-09-21:** the expected-haul sentences in §3.1–§3.4 now carry
+the re-checked figures that amendment deferred to the wave report,
+recomputed from §3's own tables (`slice2_review_report.md` F9,
+`slice2_w4_report.md` F1).
 
 ### 3.2 Freighter (Grade I, cargo-flavoured)
 
@@ -70,7 +75,7 @@ report, not by hand here.
 | 3 | `comp_ore_1` (Purged Ore) | 0.30 | 1–2 |
 | 4 | Credit cache (§5, small) | 0.15 | 40–80 CR |
 
-Expected haul per freighter: ≈ 1.6 items + occasional cache, ≈ 40 CR.
+Expected haul per freighter: ≈ 2.30 items + occasional cache, ≈ 40 CR.
 Freighters are the "profit target": slow, fat, rewarding, defended.
 
 ### 3.3 Corvette (Grade II, elite variant of the v1 roster)
@@ -83,7 +88,7 @@ Freighters are the "profit target": slow, fat, rewarding, defended.
 | 4 | `comp_elec_2` (Logic Array) | 0.20 | 1 |
 | 5 | Credit cache (§5, medium) | 0.10 | 120–250 CR |
 
-Expected haul per corvette: ≈ 1.3 items, ≈ 60 CR + caches. Corvettes are
+Expected haul per corvette: ≈ 1.50 items, ≈ 60 CR + caches. Corvettes are
 rarer in v1 spawns; the table is written now so the v1 roster needs no
 amendment when they enter the rotation.
 
@@ -98,9 +103,9 @@ amendment when they enter the rotation.
 | 5 | `comp_ore_3` (Voidshard) | 0.25 | 1 |
 | 6 | Credit cache (§5, large) | 1.00 | 800–1 200 CR |
 
-Guaranteed minimum: line 1 + line 6 always pay. A Maw kill is a
-progression event: **≈ 500–900 CR minimum, up to ≈ 1 300+ with all lines**,
-plus the only Voidshard source in v1.
+Expected haul per Maw: ≈ 6.375 items. Guaranteed minimum: line 1 + line 6
+always pay. A Maw kill is a progression event: **a guaranteed floor of
+1025 CR, a mean of 1584.75 CR**, plus the only Voidshard source in v1.
 
 ## 4. Wreck persistence
 

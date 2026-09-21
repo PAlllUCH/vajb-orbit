@@ -58,6 +58,10 @@ are two dials on the same relationship: standing is your *reputation*
 
 - Pirates exist per-sector per 11 §3's spawn rules; their density
   multiplies by tier band (S1 rare, S7 swarming).
+- Per-sector NPC counts (the density shape's numbers live in
+  18_engine_spec §13): S1 0–1 · S2 1–2 · S3 2–3 · S4 3–4 · S5 3–5 ·
+  S6 4–6 · S7 6–8, patrols only in owned space, one convoy per inhabited
+  sector.
 - Killing pirates in faction X's space: +1 standing, −3 heat with X. This
   is the intended "honest income" loop of the fighter lifestyle: pirate
   hunting pays loot (06), standing and heat-clearing.

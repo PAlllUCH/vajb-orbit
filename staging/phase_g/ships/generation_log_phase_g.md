@@ -501,3 +501,105 @@ Full prompt:
 
 ---
 
+## ship_sibelon_back_single
+
+- Date/time: 2026-09-21 07:22 local
+- Model: `gpt-image-2-5-flare-text-to-image` (`flare`), 2K, 1:1
+- Job id: `post-only` (elapsed post-onlys)
+- Style: `style-block-alien.txt` verbatim as the prompt preamble (STYLE_BIBLE section 8)
+- Alpha: recraft matte (grimdark-painted-sci-fi-alien-bioform-s-1-keyed.png); run folder `20260921-072058` keeps `job.json`
+- Review-only: False
+- Final files: ship_sibelon_back.png
+- Status: success
+
+Full prompt:
+
+> single rear view of the Sibelon pod, alien hostile bio-mechanical vessel: the pod seen from directly behind, its blunt stern filling the frame with one small hot corrupted plasma cyan #2BE8E8 vent signature centred in the middle of the rear face and a dim second one just above it, the curved grown plating and the stubby vented fins splayed outward around the stern, abyssal void #1C1F2B body with deep teal #3A4B6E plate mid-tones, no ember, no orange, no human plating, no insignia. Alien bio-mechanical chitin, not a human ship: no gunmetal, no rivets, no painted panels. Single object centred, bow pointing away from the viewer, top-down orthographic, facing right, ship occupies about 60 percent of frame width, centroid at frame centre, background flat void black #0A0E14. no chrome, no neon, no saturated colours, no second accent, no perspective, no tilt, no text, no watermark, no grid lines, no labels
+
+---
+
+## ship_miner_back_single
+
+- Date/time: 2026-09-21 07:22 local
+- Model: `gpt-image-2-5-flare-text-to-image` (`flare`), 2K, 1:1
+- Job id: `post-only` (elapsed post-onlys)
+- Style: `style-block.txt` verbatim as the prompt preamble (STYLE_BIBLE section 8)
+- Alpha: recraft matte (grimdark-painted-sci-fi-semi-realistic-1-keyed.png); run folder `20260921-072158` keeps `job.json`
+- Review-only: True
+- Final files: ship_miner_back.png
+- Status: success
+
+Full prompt:
+
+> single rear view of the Delver mining platform, human player industrial hull: the ship seen from directly behind, the broad flat slab foreshortened so its trailing edge fills the frame, the two twin outboard engine pods flanking the stern with dim civilian burnt ember #C8461B flares and faint small ember glow #E8703A halos, the boxed lidded dorsal ore bin seen end-on between them, gunmetal mid #3A3F46 and gunmetal dark #2B2F35 plates, steel highlight #565C63 rim, ore dust staining, hull grime, oil stains around the engine pods, rust streaks, pitted metal, scratches. Single ship centred, bow pointing away from the viewer, top-down orthographic, facing right, ship occupies about 60 percent of frame width, centroid at frame centre, background flat void black #0A0E14. no chrome, no neon, no saturated colours, no second accent, no perspective, no tilt, no text, no watermark, no grid lines, no labels
+
+---
+
+## ship_turret_platform_single
+
+- Date/time: 2026-09-21 07:37 local
+- Model: `gpt-image-2-5-flare-text-to-image` (`flare`), 2K, 1:1
+- Job id: `post-only` (elapsed post-onlys)
+- Style: `style-block.txt` verbatim as the prompt preamble (STYLE_BIBLE section 8)
+- Alpha: recraft matte (grimdark-painted-sci-fi-semi-realistic-1-keyed.png); run folder `20260921-073515` keeps `job.json`
+- Review-only: False
+- Final files: ship_turret_platform.png
+- Status: success
+
+Full prompt:
+
+> single turret platform, human hostile static emplacement: a symmetric hexagonal emplacement with a single long barrel on a pivot ring at its centre, no hull axis, radially symmetric, gunmetal mid #3A3F46 and gunmetal dark #2B2F35 plates, steel highlight #565C63 rim on the shadow-side silhouette, heavy pitted metal, scorch marks around the barrel, battle damage, rust streaks, hull grime, a single small hot burnt ember #C8461B warning lamp on the ring, no engine plume. Single object centred, seen from above, top-down orthographic, facing right, ship occupies about 60 percent of frame width, centroid at frame centre, background flat void black #0A0E14. no chrome, no neon, no saturated colours, no second accent, no perspective, no tilt, no text, no watermark, no grid lines, no labels
+
+---
+
+## ship_gunship_back_single
+
+- Date/time: 2026-09-21 07:40 local
+- Model: `gpt-image-2-5-flare-text-to-image` (`flare`), 2K, 1:1
+- Job id: `post-only` (elapsed post-onlys)
+- Style: `style-block.txt` verbatim as the prompt preamble (STYLE_BIBLE section 8)
+- Alpha: recraft matte (grimdark-painted-sci-fi-semi-realistic-1-keyed.png); run folder `20260921-073842` keeps `job.json`
+- Review-only: False
+- Final files: ship_gunship_back.png
+- Status: success
+
+Full prompt:
+
+> single rear view of the gunship, human hostile warship: the broad short hull seen from directly behind, its two oversized broadside weapon pods flanking the squat core with their muzzles pointing away, twin recessed nozzles centred at the trailing edge with burnt ember #C8461B flares with small hot ember glow #E8703A halos, gunmetal mid #3A3F46 and gunmetal dark #2B2F35 plates, steel highlight #565C63 rim on the shadow-side silhouette, heavy battle damage, scorch-blackened craters, rust streaks, oil stains, hull grime, pitted metal, scratches. Single ship centred, bow pointing away from the viewer, top-down orthographic, facing right, ship occupies about 60 percent of frame width, centroid at frame centre, background flat void black #0A0E14. no chrome, no neon, no saturated colours, no second accent, no perspective, no tilt, no text, no watermark, no grid lines, no labels
+
+---
+
+## ship_drone_swarm_back_single
+
+- Date/time: 2026-09-21 07:40 local
+- Model: `gpt-image-2-5-flare-text-to-image` (`flare`), 2K, 1:1
+- Job id: `post-only` (elapsed post-onlys)
+- Style: `style-block.txt` verbatim as the prompt preamble (STYLE_BIBLE section 8)
+- Alpha: recraft matte (grimdark-painted-sci-fi-semi-realistic-1-keyed.png); run folder `20260921-073916` keeps `job.json`
+- Review-only: False
+- Final files: ship_drone_swarm_back.png
+- Status: success
+
+Full prompt:
+
+> single rear view of the drone swarm unit, human hostile swarm shard seen from directly behind: a tiny angular shard body with one stubby thruster centred in the middle of its trailing face, one small hot burnt ember #C8461B thruster flare, no cockpit, minimal appendages, gunmetal mid #3A3F46 and gunmetal dark #2B2F35 plates, steel highlight #565C63 rim on the shadow-side silhouette, light weathering, scratches only. Single ship centred, bow pointing away from the viewer, top-down orthographic, facing right, ship occupies about 60 percent of frame width, centroid at frame centre, background flat void black #0A0E14. no chrome, no neon, no saturated colours, no second accent, no perspective, no tilt, no text, no watermark, no grid lines, no labels
+
+---
+
+## ship_trader_back_single
+
+- Date/time: 2026-09-21 07:40 local
+- Model: `gpt-image-2-5-flare-text-to-image` (`flare`), 2K, 1:1
+- Job id: `post-only` (elapsed post-onlys)
+- Style: `style-block.txt` verbatim as the prompt preamble (STYLE_BIBLE section 8)
+- Alpha: recraft matte (grimdark-painted-sci-fi-semi-realistic-1-keyed.png); run folder `20260921-073954` keeps `job.json`
+- Review-only: False
+- Final files: ship_trader_back.png
+- Status: success
+
+Full prompt:
+
+> single rear view of the trader, human civilian hull seen from directly behind: the boxy segmented hull end-on with its external container racks flanking it on both sides, two engines side by side centred at the stern with burnt ember #C8461B flares with small hot ember glow #E8703A halos, gunmetal mid #3A3F46 and gunmetal dark #2B2F35 plates, steel highlight #565C63 rim on the shadow-side silhouette, heavy hull grime, rust streaks, oil stains, scratches, no battle damage. Single ship centred, bow pointing away from the viewer, top-down orthographic, facing right, ship occupies about 60 percent of frame width, centroid at frame centre, background flat void black #0A0E14. no chrome, no neon, no saturated colours, no second accent, no perspective, no tilt, no text, no watermark, no grid lines, no labels
+
+---
+

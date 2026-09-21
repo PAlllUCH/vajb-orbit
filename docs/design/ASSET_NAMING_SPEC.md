@@ -25,6 +25,13 @@ a rename must move with it.
 - `<variant>` is from the closed list in section 4.
 - `<index>` is a trailing digit only where a family is genuinely numbered: asteroid size bands,
   star layers, sectors.
+- **Ship law, restated by the owner 2026-09-21:** a hull is `ship_<hull>[_<qualifier>][_<angle>].png`
+  — `ship_fighter_front.png`, `ship_fighter_concord_back.png`. The angle is the last component and
+  always one of `front`, `three_quarter`, `side`, `back`. The alien hulls added 2026-09-21
+  (`ship_swarmer_*`, `ship_sibelon_*`, `ship_apex_*`) obey this shape and are therefore legal names,
+  not provisional ones: a new hull family is a `<hull>` token like any other, and its liveries and
+  variants attach as qualifiers. **No render carries a version marker**: a reworked hull replaces
+  its file, it never ships as `_v2`.
 
 ## 2. Families and folders
 

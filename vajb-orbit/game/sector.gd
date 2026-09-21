@@ -1,17 +1,18 @@
 class_name Sector
 extends Node2D
-## One sector's live contents: the ENGINE_SPEC §8 spawn set, the station's dock
-## zone and the minimap blip feed. Built in code (this slice ships no scene
-## file), so `populate(row, seed)` is the whole entry point.
+## One sector's live contents: the ENGINE_SPEC §8 spawn set (asteroid fields, the
+## station's dock zone, the NPC hulls the registry's per-sector band calls for) and
+## the minimap blip feed. Built in code (this slice ships no scene file), so
+## `populate(row, seed)` is the whole entry point.
 ## Contract: docs/CONTRACTS.md §6, ENGINE_SPEC.md §7
 ## (docking, safe warp), §8 (spawn set, respawn on the one clock), §13
 ## (SECTOR_SIZE, the 300 u spawn offset), 11 §1-§3, 02 §8, 17 §4.
 ##
 ## Scope note (brief §W4 item 2): this file spawns the asteroid fields, the
-## primary station and its DockZone, and the *plan* for the rest. Wreck fields,
-## hulks, derelicts, anomalies and beacons are slice 3; pirates, patrols and
-## convoys are slice 2. Their counts are rolled into `spawn_plan()` and nothing
-## is instantiated for them yet.
+## primary station and its DockZone, and the slice-2 NPC hulls (`_spawn_npcs`, from
+## `NpcRegistry.spawns_for`). Wreck fields, hulks, derelicts, anomalies and beacons
+## are slice 3; their counts stay rollable through `spawn_plan()` and nothing is
+## instantiated for them.
 ##
 ## `game/asteroid_field.gd` is W3's file, written in parallel: this file places
 ## the field nodes and hands each one its generation config, while the field owns
@@ -22,6 +23,15 @@ extends Node2D
 
 const Registry := preload("res://game/sector_registry.gd")
 const Clock := preload("res://autoload/world_clock.gd")
+
+## W3's NPC layer (slice 2): the registry owns the archetype rows, the per-sector
+## counts, the factions and the swap-ready sprite paths; the hull owns its body, its
+## brain and its vital pools. The sector only rolls the band, places the hull on a POI
+## and hands it the options bag, reached by path like every other cross-file reach here
+## (a brand-new `class_name` is only in the global table after a project scan).
+const NpcRegistryScript := preload("res://game/npc_registry.gd")
+const NpcShipScript := preload("res://game/npc_ship.gd")
+const ShipFitScript := preload("res://game/ship_fit.gd")
 
 ## W3's field script, loaded by path (project convention: never depend on the
 ## global class table, so a headless caller and the editor agree). Absent until
@@ -67,12 +77,19 @@ const FIELD_SLOT_JITTER := 0.25
 ## owns no Timer. This gate only throttles the read; it is not a second clock.
 const CLOCK_POLL_SECONDS := 1.0
 
+## Raised for every NPC hull this sector spawns, so the wiring (`game.gd`) can bind a
+## hull's `died` before the first shot without polling the tree. A re-population raises
+## it again for the fresh set.
+signal npc_spawned(ship: Node2D)
+
 var _row: Dictionary = {}
 var _plan: Dictionary = {}
 var _fields: Array[Node2D] = []
 var _field_script: GDScript = null
 var _station: Sprite2D = null
 var _dock_zone: Area2D = null
+var _npcs: Array[Node2D] = []
+var _npc_anchor_index := 0
 var _spawn_point := Vector2.ZERO
 var _rng := RandomNumberGenerator.new()
 var _last_band := 0
@@ -122,6 +139,9 @@ func populate(row: Dictionary, random_seed: int = 0) -> Vector2:
 		# 11 §3: one per corridor plus one per gate. Corridors and gates are
 		# gate-slice data, so the plan carries 0 until slice 3.
 		&"beacons": 0,
+		# The rolled §8 counts for a probe to read; the live hulls are `npcs()` and come
+		# from the registry's own per-sector band (the same §13 numbers, split between
+		# pirates and swarmers), so this entry is the plan's pirate share, not the set.
 		&"pirates": _roll_range(densities, &"pirate_min", &"pirate_max"),
 		# 11 §3: patrols exist in faction space only, so unaligned space has
 		# none. §13 gives no patrol count, so the plan carries the presence flag.
@@ -129,6 +149,10 @@ func populate(row: Dictionary, random_seed: int = 0) -> Vector2:
 		&"convoys": int(densities.get(&"convoys", 0)),
 	}
 	_spawn_point = centre + SPAWN_BEARING * (DOCK_RING_RADIUS + PLAYER_SPAWN_OFFSET)
+	## §8's on-entry set: the fields above are placed by count, the NPC hulls by the
+	## registry's own per-sector band (the `_plan` entries are the rolled counts for a
+	## probe to read; the hulls themselves are the live set).
+	_spawn_npcs()
 	_last_band = Clock.now()
 	_clock_accumulator = 0.0
 	_populated = true
@@ -185,15 +209,30 @@ func fields() -> Array[Node2D]:
 
 
 ## Minimap feed for game.gd (brief item 7): one blip per field, not per rock, plus
-## the station. Key names are the string keys the shipped HUD minimap reads
-## (`"pos"` / `"kind"`); kinds are the 11 §3 classes. Hostile blips arrive with
-## slice 2's NPCs.
+## the station and the live NPC hulls. Key names are the string keys the shipped HUD
+## minimap reads (`"pos"` / `"kind"`); kinds are the 11 §3 / ENGINE_SPEC §8 classes.
+## A hull's own class comes off its registry row (`NpcShip.blip_kind()`: hostile for
+## pirates, swarmers and patrols, neutral for a convoy).
 func blips() -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	if _station != null:
 		out.append({"pos": _station.global_position, "kind": &"friendly"})
 	for field: Node2D in _fields:
 		out.append({"pos": field.global_position, "kind": &"neutral"})
+	for ship: Node2D in _npcs:
+		if not is_instance_valid(ship):
+			continue
+		out.append({"pos": ship.global_position, "kind": _npc_blip_kind(ship)})
+	return out
+
+
+## The live NPC hulls this sector spawned (the wiring binds their `died`; a probe counts
+## them against §13's band).
+func npcs() -> Array[Node2D]:
+	var out: Array[Node2D] = []
+	for ship: Node2D in _npcs:
+		if is_instance_valid(ship):
+			out.append(ship)
 	return out
 
 
@@ -237,6 +276,15 @@ func _respawn_cycle() -> void:
 			continue
 		if field.has_method(&"respawn"):
 			field.call(&"respawn")
+	## §8: the sector re-rolls on the same clock, so the hulls go with the fields. A
+	## despawn is not a kill (no `died`, no loot, no heat - W3's contract), and the fresh
+	## set is re-spawned from the registry's band, so a band that drifted low is refilled.
+	for ship: Node2D in npcs():
+		if ship.has_method(&"despawn"):
+			ship.call(&"despawn")
+	_npcs.clear()
+	_npc_anchor_index = 0
+	_spawn_npcs()
 
 
 ## Even angular slots with a small jitter: 4-8 clusters land on a ring between
@@ -280,6 +328,79 @@ func _add_field(position: Vector2, tier_weights: Dictionary, densities: Dictiona
 		field.call(&"setup", config)
 
 
+## ENGINE_SPEC §8's on-entry set (and §5's spawn model: the sector populates on entry
+## and re-rolls on the 20-minute clock): one hull per `NpcRegistry.spawns_for` row,
+## rolled inside the row's own per-sector band. The registry owns which archetype, how
+## many, whose space it is and which sprite it wears; this method only rolls the band,
+## places the hull on a POI and hands over the options bag.
+func _spawn_npcs() -> void:
+	for spawn: Dictionary in NpcRegistryScript.spawns_for(sector_id()):
+		var count := _rng.randi_range(
+			int(spawn.get(NpcRegistryScript.KEY_MIN, 0)),
+			int(spawn.get(NpcRegistryScript.KEY_MAX, 0))
+		)
+		for _index in count:
+			_add_npc(spawn)
+
+
+## One hull: the archetype's row drives its behaviour, the resolved `ShipFit` snapshot
+## drives its flight law (null is legal - the static rows have no 08 class row, W3's
+## report D4) and the registry's swap-ready sprite path dresses it. The hull is added
+## before `setup` so its `_ready` build exists when the handshake lands, which is the
+## order W3's interface documents.
+func _add_npc(spawn: Dictionary) -> void:
+	var archetype := StringName(spawn.get(NpcRegistryScript.KEY_ARCHETYPE, &""))
+	var hull_id := StringName(spawn.get(NpcRegistryScript.KEY_HULL_ID, &""))
+	var anchor := _npc_anchor(spawn)
+	var ship: Node2D = NpcShipScript.new()
+	ship.name = "Npc%s%d" % [String(archetype).capitalize(), _npcs.size() + 1]
+	add_child(ship)
+	ship.global_position = anchor
+	ship.call(
+		&"setup",
+		archetype,
+		ShipFitScript.resolve(hull_id, ShipFitScript.STANDARD_FIT),
+		hull_id,
+		{
+			NpcShipScript.OPT_HOME: anchor,
+			NpcShipScript.OPT_SPACE_OWNER: StringName(
+				spawn.get(NpcRegistryScript.KEY_FACTION_ID, &"")
+			),
+			NpcShipScript.OPT_SPRITE_PATH: String(spawn.get(NpcRegistryScript.KEY_SPRITE_PATH, "")),
+		}
+	)
+	_npcs.append(ship)
+	npc_spawned.emit(ship)
+
+
+## Where a hull is placed. §5 gives each archetype a home and no doc gives a sector a
+## spawn radius, so a hull is placed **on an existing POI** rather than on an invented
+## offset: a hull hostile to everything "guards asteroid fields/wrecks" and takes the
+## next field (round-robin, so a band spreads over the sector's own fields), and a hull
+## with the local faction's rules (a patrol) or none (a convoy) takes the station, or the
+## arena centre in a sector without one. A hull therefore spawns on top of its POI and two
+## hulls of one row share an anchor until the solver separates them; a scatter radius or a
+## patrol-route row is the owner's call (reported).
+func _npc_anchor(spawn: Dictionary) -> Vector2:
+	var hostility := StringName(
+		spawn.get(NpcRegistryScript.KEY_HOSTILITY, NpcRegistryScript.HOSTILITY_NONE)
+	)
+	if hostility != NpcRegistryScript.HOSTILITY_EVERYTHING:
+		return _station.global_position if _station != null else Vector2.ZERO
+	if _fields.is_empty():
+		return _station.global_position if _station != null else Vector2.ZERO
+	var guard: Node2D = _fields[_npc_anchor_index % _fields.size()]
+	_npc_anchor_index += 1
+	return guard.global_position
+
+
+## §8's minimap class for one hull, read off the hull's own registry row.
+func _npc_blip_kind(ship: Node2D) -> StringName:
+	if ship.has_method(&"blip_kind"):
+		return StringName(ship.call(&"blip_kind"))
+	return NpcRegistryScript.BLIP_HOSTILE
+
+
 func _spawn_station(centre: Vector2) -> void:
 	_station = Sprite2D.new()
 	_station.name = "Station"
@@ -308,6 +429,8 @@ func _spawn_station(centre: Vector2) -> void:
 ## fresh set in the same frame.
 func _clear() -> void:
 	_fields.clear()
+	_npcs.clear()
+	_npc_anchor_index = 0
 	_station = null
 	_dock_zone = null
 	_plan.clear()

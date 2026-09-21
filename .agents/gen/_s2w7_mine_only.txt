@@ -1,0 +1,42 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[RUN] suites=test_engine2_fixes
+WARNING: res://game/player_ship.tscn:4 - ext_resource, invalid UID: uid://cmi25sgdnd7ga - using text path instead: res://assets/ships/ship_vanguard_side.png
+   at: load (scene/resources/resource_format_text.cpp:501)
+   GDScript backtrace (most recent call first):
+       [0] _run_file (res://tests/headless_runner.gd:75)
+       [1] _ready (res://tests/headless_runner.gd:28)
+WARNING: res://game/game.tscn:4 - ext_resource, invalid UID: uid://o68c15elst7g - using text path instead: res://assets/env/tile/env_stars_layer1.png
+   at: load (scene/resources/resource_format_text.cpp:501)
+   GDScript backtrace (most recent call first):
+       [0] _run_file (res://tests/headless_runner.gd:75)
+       [1] _ready (res://tests/headless_runner.gd:28)
+WARNING: res://game/game.tscn:5 - ext_resource, invalid UID: uid://c4l2b7bxc00k4 - using text path instead: res://assets/env/tile/env_stars_layer2.png
+   at: load (scene/resources/resource_format_text.cpp:501)
+   GDScript backtrace (most recent call first):
+       [0] _run_file (res://tests/headless_runner.gd:75)
+       [1] _ready (res://tests/headless_runner.gd:28)
+WARNING: res://game/game.tscn:6 - ext_resource, invalid UID: uid://bipbl3vgvqekw - using text path instead: res://assets/env/tile/env_stars_layer3.png
+   at: load (scene/resources/resource_format_text.cpp:501)
+   GDScript backtrace (most recent call first):
+       [0] _run_file (res://tests/headless_runner.gd:75)
+       [1] _ready (res://tests/headless_runner.gd:28)
+[PASS] test_engine2_fixes.gd.test_a_beam_hit_on_a_hull_body_charges_the_ships_shield
+[PASS] test_engine2_fixes.gd.test_a_beam_hit_with_the_shields_down_charges_the_ships_hull
+[PASS] test_engine2_fixes.gd.test_a_ghost_blip_flickers_between_the_spec_alphas
+[PASS] test_engine2_fixes.gd.test_a_ghost_is_the_neutral_colour_with_only_its_alpha_moving
+[PASS] test_engine2_fixes.gd.test_a_gun_still_chips_a_rock_and_extracts_nothing
+[PASS] test_engine2_fixes.gd.test_a_hull_body_is_walked_to_the_ship_behind_it
+[PASS] test_engine2_fixes.gd.test_a_mine_blast_still_lands_on_the_ship_it_triggers
+[PASS] test_engine2_fixes.gd.test_a_projectile_hit_on_a_hull_body_charges_the_ship
+[PASS] test_engine2_fixes.gd.test_a_swarmer_blip_is_drawn_as_a_hostile_blip
+[PASS] test_engine2_fixes.gd.test_an_npc_hull_is_reached_through_its_body_too
+[PASS] test_engine2_fixes.gd.test_set_ammo_ignores_an_unknown_pack_and_a_write_that_changes_nothing
+[PASS] test_engine2_fixes.gd.test_set_ammo_writes_the_pack_and_survives_the_file
+[PASS] test_engine2_fixes.gd.test_the_dock_report_settles_a_fired_pack
+[PASS] test_engine2_fixes.gd.test_the_existing_blip_colours_are_unchanged
+[PASS] test_engine2_fixes.gd.test_the_flicker_driver_runs_only_while_a_ghost_is_on_the_feed
+[PASS] test_engine2_fixes.gd.test_the_plasma_bonus_reads_the_ships_shields_not_the_bodys_silence
+[PASS] test_engine2_fixes.gd.test_the_sink_leaves_a_target_that_answers_for_itself_alone
+[SUMMARY] passed=17 failed=0

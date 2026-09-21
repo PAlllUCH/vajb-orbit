@@ -1,0 +1,11 @@
+I'll start by loading the project context and reading the required files.Now I'll write the review probe.Now let me rewrite the rock block cleanly:Now let me add the countermeasure section and fix the tick loop:Now the changelog entry:Slice 2 reviewed and measured — **one HIGH blocks the wave**.
+
+| Tier | Count | Headline |
+|---|---|---|
+| HIGH | 1 | **No weapon damages a real ship**: a hull's collider is its bare `HullBody` and neither `weapons.gd:_deliver` (664) nor `projectile.gd:_deliver` (502) resolves an owner. 1 s of laser at 300 u left the shield at 800 while the beam spent its Energy; `Damage.apply(ship_node, 120)` moved it 800 → 680; a bolt crossing the same 300 u left the hull at 1250. Mines are unaffected (group-resolved). |
+| MED | 10 | ammo filing inert (no `PlayerProfile` pack writer); the delivery seam's three owners; the missing chaff-blip flicker + `swarmer` sub-kind; unbound countermeasures; the mine alpha 180 / kinetic cadence 0.6 s owner tick; W3's six doc holes; `cm_*` have no 03 row; stale 06 prose hauls; no cache visual. |
+| LOW | 11 | appended as L19–L29 (`hud.tscn` ruled **acceptable**, shared art scale, duplicated flight maths, ship-vs-ship rams, wreck persistence, hit-marker signal, mining laser's 5 E/s, …). |
+
+Gates: universal **passed=200 failed=0** (exit 0, no `SCRIPT ERROR`, per-suite breakdown recorded); my own probe **124/2** (both reds are the one HIGH); five boot gates exit 0; `hud.tscn` and `project.godot` untouched. Every §13/06/09/13 number checked is a verbatim transcription; all five W2 wiring items are closed; chaff/flare, the energy gate, brain walk (incl. the swarmer), loot sums and sector bands all measure green.
+
+Written: `.agents/gen/slice2_review_report.md`, `docs/CONTRACTS.md` (§1, §7, new **§8.2**, §9 = measured 200, changelog **v1** + the four standing rulings), `.agents/gen/LOW_BACKLOG.md` L19–L29. Probe archived, `tools/` clean. One disclosure: a single in-probe text replacement used a `py -3.14` heredoc (recorded in report §8).

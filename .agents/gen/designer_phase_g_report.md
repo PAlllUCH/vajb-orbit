@@ -13,45 +13,61 @@ preamble (STYLE_BIBLE §8: the block goes first, and `--style-file` appends it a
 | Alien hulls, **Swarmer** (dispatch priority: slice-2 W3 gates its visual pass on it) | `assets/ships/ship_swarmer_{front,three_quarter,side,back}.png` | `staging/phase_g/_review/g_ships_ship_swarmer.jpg` |
 | Alien hulls, Sibelon | `assets/ships/ship_sibelon_{front,three_quarter,side,back}.png` | `_review/g_alien2.jpg` |
 | Alien hulls, Apex | `assets/ships/ship_apex_{front,three_quarter,side,back}.png` | `_review/g_alien2.jpg` |
+| **Human hull rework, core five** (owner-approved 2026-09-21: "look good, go ahead") | `assets/ships/ship_{vanguard,fighter,corvette,freighter,miner}_{front,three_quarter,side,back}.png` — replaces the old art | `_review/g_human_a/b.jpg`, `g_fighter.jpg` |
+| **Human hull rework, the rest of the roster** (ASSET_EXPANSION_SPEC §3 classes 7–15) | `assets/ships/ship_{interceptor,gunship,destroyer,drone_swarm,trader,patrol,bomber,mine_layer}_{front,three_quarter,side,back}.png` and `ship_turret_platform.png` (radially symmetric, one centred render) | `_review/g_roster.jpg`, `g_turret.jpg` |
 | Phase G FX (FX_SPEC §7.2) | `assets/fx/fx_{bio_plasma,acid_burn,smoke_plume,arc_spark,dust_streak,dash_charge,lock_channel}.png` — 7 files | `_review/g_fx.jpg` |
 | Phase G FX, retired before shipping | `fx_shield_shatter` — the owner ruled 2026-09-21 that it duplicates the shipped `fx_shield_break.png` (which FX_SPEC §7.1 already names for that event). Generated, reviewed, dropped from the project and from the log; the render stays in `staging/phase_g/fx/` as provenance, and FX_SPEC §7.2 now carries the ruling | - |
 
-Generation logs: `vajb-orbit/assets/ships/generation_log_phase_g.md` and
-`vajb-orbit/assets/fx/generation_log_phase_g.md` (prompt, job id, alpha route per file).
-All shipped files are imported in the editor (`.import` sidecars present, `filesystem_manage scan`
-+ `reimport` run).
+65 files shipped in total (the family log `assets/ships/generation_log_phase_g.md` has a row per
+file), all imported in the editor.
 
-## What is staged and awaiting your approval (nothing overwritten)
+**The rework now covers 14 human hulls of the roster** (the five core classes plus classes 7–15 of
+`ASSET_EXPANSION_SPEC.md` §3). Still on the old art, untouched by this lane: the MMO/faction
+liveries (`ship_*_mmo`, `_concord`, `_meridian`, `_choir`), the six boss hulls and
+`ship_vanguard_damaged`. Those are i2i re-liveries rather than new renders, and the naming
+overhaul the owner has planned lands first.
 
-The human rework sheets, each 4 views at 2K, tight-trimmed to the hull like the shipped set —
-**these are the reason `assets/ships/` does not contain every graphic this lane generated**:
-they carry the same file names as art you already approved, so the dispatch's review gate keeps
-them out of the game until you say go. To ship them once you have looked at the pages:
+## Awaiting the naming overhaul
 
-```
-py -3.14 staging/phase_g/ship_batch_g.py ships --review --replace
-```
-
-`--review` includes the `review_only` runs, `--replace` allows the overwrite of the shipped
-files (without it the copy is refused, because a silent overwrite of art is indistinguishable
-from art that never changed).
-
-| Hull | Files staged | Review page |
-|---|---|---|
-| Vanguard (player) | `staging/phase_g/ships/ship_vanguard_{front,three_quarter,side,back}.png` | `_review/g_human_a.jpg` |
-| Fighter | `…ship_fighter_…` | `_review/g_fighter.jpg` |
-| Corvette | `…ship_corvette_…` | `_review/g_human_b.jpg` |
-| Freighter | `…ship_freighter_…` | `_review/g_human_b.jpg` |
-| Delver miner | `…ship_miner_…` | `_review/g_human_b.jpg` |
-
-They are marked `review_only` in the run registry, so `ship_batch_g.py` refuses to copy them.
-Note the scope: this lane reworked **five** hull classes (player vanguard, fighter, corvette,
-freighter, miner). The rest of the roster — bomber, interceptor, trader, patrol, destroyer,
-mine layer, gunship, drone swarm, turret platform, the MMO liveries and the boss hulls — is
-untouched and keeps the art already shipped.
+Nothing is left unshipped: the five core hulls were approved ("look good, go ahead"), and every
+other sheet this lane generated is additive art that replaced its own old file. What remains is
+the owner's planned naming overhaul of the hull set (the MMO/faction liveries and the six boss
+hulls still carry the previous art, and those are i2i re-liveries rather than fresh renders).
 
 ## Facts the next agent needs
 
+- **A repaired sheet cuts three cells, and `cells` is the authority.** Two more defects the owner
+  caught on 2026-09-21, after the panel-order fix:
+  1. **The model draws the front twice.** On a 2×2 sheet the bottom-right cell is often a *second
+     front view* and no rear exists at all — measured by silhouette IoU against the front cut:
+     `ship_miner_back` **0.91**, `ship_sibelon_back` **0.83** (the swarmer and fighter sheets had
+     the same flaw and were already repaired that way). A legal front/rear pair of a boxy hull
+     scores 0.74–0.78, so 0.80 is the line, and `refit_panels.py` now reports any pair above it
+     instead of shipping (it runs the check on the cuts it just wrote).
+  2. **A stale `cuts` list can plan a file twice.** `ship_batch_g.py` showed
+     `ship_sibelon_back.png` twice — once from the sheet's old four-name list, once from its own
+     `*_back_single` run. `cuts` is now always derived from `cells`, so a dropped view cannot come
+     back.
+  Both hulls now have four distinct views (`miner` front/side 0.77, `sibelon` front/side 0.76, all
+  pairs under the line) and the rear of each is its own run: `ship_sibelon_back_single`,
+  `ship_miner_back_single`. The alien set was re-shipped and reimported.
+- **Panel order is law, and the first pass got it wrong.** The owner caught two defects on
+  2026-09-21, both now fixed and both measurable:
+  1. **Panel-level keying eats objects.** `recraft/remove-background` on a whole 2×2 render picks
+     the strongest subject and trims the rest — on `ship_apex_sheet` it deleted the bottom 299 px
+     of the bottom-right hull (ink box height 933 px, keyed alpha height 634 px, alpha fill 17 %
+     against 50-70 % on the other cells), so `ship_apex_back` shipped without its tail.
+  2. **Objects cross the quadrant midlines.** The apex and sibelon sheets each hold a hull whose
+     ink starts left of x = 1024 and runs to x = 1121, so the 2×2 grid cut truncated it: that is
+     the clipped `ship_apex_side`.
+  The repair is `staging/phase_g/panels.py` (find the objects, group the ink into the four cells
+  **by pixel mass inside a quadrant**, crop each object with its neighbours blacked out) plus
+  `staging/phase_g/refit_panels.py <run-id>`, which keys each crop on its own and **verifies the
+  keyed alpha box against the ink box**, restoring an ember engine flame the matte trimmed as one
+  connected component when the box comes up short. All eight sheets were rebuilt this way and all
+  twelve alien hulls re-shipped: every cell now verifies (e.g. `ship_apex_back` ink 473×933 →
+  alpha 475×935; `ship_apex_side` ink 1090×373 → alpha 1092×373; the vanguard's two cells needed
+  the flame restore, 8348 and 11525 px).
 - **`flare` never returns native alpha on this project.** 15 of 15 ship renders came back opaque
   RGB, exactly as STYLE_BIBLE §9 predicts (the block names a void background and wins). The route
   is: `--transparent` → if opaque, `key_new.py <file>` (recraft/remove-background, 1 credit,
@@ -81,16 +97,18 @@ untouched and keeps the art already shipped.
   is pale steel with a hot core. Reshipped with `--replace` and reimported.
 - **`fx_arc_spark` sits beside the shipped `fx_emp_arc.png`** (both are arcs, different events:
   hull damage versus an EMP burst). Left as generated; the §7.2 table is the inventory.
-- **Alien hull names are provisional.** `ship_{swarmer,sibelon,apex}_<view>` follows the shipped
-  `<hull>_<view>` shape but no spec sanctions it, and the owner plans a naming overhaul for the
-  hull set — so treat these four-view sets as the art, not as the final names.
+- **Alien hull names follow the owner's ship law** (restated 2026-09-21, now written into
+  `docs/design/ASSET_NAMING_SPEC.md` section 1): `ship_<hull>[_<qualifier>][_<angle>]`, e.g.
+  `ship_fighter_front.png` or `ship_fighter_concord_back.png`, where the angle is always one of
+  `front`, `three_quarter`, `side`, `back` and is always last. `ship_swarmer_*`, `ship_sibelon_*`
+  and `ship_apex_*` obey it, so they are legal names rather than provisional ones. A reworked hull
+  replaces its own file: no `_v2`, no version markers.
 
 ## Spend
 
-19 generation runs (7 FX shipped + 1 retired sheet + 10 ship sheets/singles, plus the arc
-regeneration) at the console's 10-credit = $0.05 / 2K basis ≈ **$0.95**, plus 10 recraft keying
-calls (1 credit each) ≈ **$0.05**. The script's printed estimate (30 credits / $0.15) is the stale
-hint and `usage-ledger.jsonl` over-reports 3×.
+33 generation runs at the console's 10-credit = gosh.05 / 2K basis ≈ **.65**, plus **83 keyed
+files** through recraft/remove-background (1 credit each) ≈ **gosh.42**. The script's printed
+estimate (30 credits / gosh.15) is the stale hint and  over-reports 3×.
 
 ## Same night, outside this lane
 

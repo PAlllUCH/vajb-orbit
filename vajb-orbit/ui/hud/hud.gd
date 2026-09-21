@@ -2,13 +2,22 @@ class_name Hud
 extends Control
 ## In-game HUD: hull/shield/energy/fuel bars, weapon and cargo slots, minimap, the
 ## cursor and lock reticle, the target stats window, the interaction prompt strip,
-## the safe-warp channel bar and the Emergency Flight Mode banner. Contract:
+## the safe-warp channel bar, the Emergency Flight Mode banner and (slice 2) the
+## lock-channel ring, the hit marker and the radial speedometer. Contract:
 ## docs/design/IMPLEMENTATION_PLAN.md sections 3.10, 4.7, the 9.8 flight-placeholder
 ## amendments and the 9.9 engine-wave amendments (prompt strip, warp bar, friendly
 ## blips, reticle states), plus UI_SPEC section 3.1b for the two pool bars and the
-## banner (ENGINE_SPEC section 10).
+## banner, 3.5 for the lock ring, 3.6 for the dial and ENGINE_SPEC section 10
+## (ENGINE_SPEC section 10).
 ## Reads PlayerState and its signals only; never mutates gameplay state. The
 ## gameplay side pushes everything else down through the section 3.10 API.
+##
+## The slice-2 widgets are built in code by this file (`_build_lock_ring`,
+## `_build_hit_marker`, `_build_speedometer`), the same way slice 0 built the pool
+## blocks: the ring belongs to the reticle's `ui/hud/target_reticle.gd` and the dial
+## is a bare `_draw` Control, and neither file is this worker's. Styling stays on the
+## theme's tokens through `_token()`, with the one sanctioned exception UI_SPEC
+## section 1 records (`accent_nav`, the prograde needle).
 
 signal weapon_slot_selected(slot: int)
 signal cargo_toggled(open: bool)
@@ -72,8 +81,14 @@ const POOL_BLOCK_SEPARATION := 2
 const POOL_HEADER_SEPARATION := 6
 const POOL_ROW_SEPARATION := 0
 const POOL_VALUE_FORMAT := "%d/%d"
-const ZOOM_DELTA_MINUS: int = -1
-const ZOOM_DELTA_PLUS: int = 1
+## B2-3 (owner report: "minimap works in reverse + with -"). The signal carries the
+## world-radius delta the gameplay side adds to the map
+## (`game.gd::_on_minimap_zoom_changed`, `delta * MINIMAP_RADIUS_STEP`), and a smaller
+## world radius magnifies the map, so the button that reads "+" emits the negative
+## step and "-" the positive one. The wheel-zoom camera keeps its own direction
+## (game.gd section 9.8 item 4); only this HUD path is inverted.
+const ZOOM_DELTA_IN: int = -1
+const ZOOM_DELTA_OUT: int = 1
 const CARGO_PANEL_GAP: float = 8.0
 
 ## Section 3.10 amendment 9.8: the target window's captions carry a grouped
@@ -82,9 +97,30 @@ const DISTANCE_FORMAT := "%s m"
 
 const PERCENT_FORMAT := "%d%%"
 
+## UI_SPEC section 3.6 / ENGINE_SPEC section 10: the 120 x 120 radial dial (UI_SPEC's own
+## size; its segments, sweep, needle lengths and overdrive line live on the widget below).
+const RADIAL_DIAL := "RadialDial"
+const DIAL_SIZE := Vector2(120.0, 120.0)
+
+## UI_SPEC section 3.5's lock ring and section 4.2 item 4's hit marker: the widget node
+## names, and nothing else - each widget owns its own geometry (see the classes at the end
+## of this file).
+const LOCK_RING := "LockRing"
+const HIT_MARKER := "HitMarker"
+
+## The ammo column the dial joins: UI_SPEC section 3.6's "below the ammo panel".
+const BOTTOM_LEFT_COLUMN := "Blocks"
+
 ## The one threat reading that colours the label (W6-4). Every other string the caller may
 ## pass (NEUTRAL, SCANNING, ...) keeps the theme colour.
 const THREAT_HOSTILE := "HOSTILE"
+
+## Section 3.10's range state (IMPLEMENTATION_PLAN section 9.9): the target window's
+## payload carries `in_range` and the distance row prints it. The two readings are the
+## spec's own words in section 10 ("in/out of range for the selected weapon").
+const RANGE_IN := "IN RANGE"
+const RANGE_OUT := "OUT OF RANGE"
+const RANGE_FORMAT := "%s  %s"
 
 @onready var _top_left: MarginContainer = $CanvasLayer/TopLeft
 ## Section 3.1b: the column the HULL and SHIELD blocks live in. The two pool blocks
@@ -157,10 +193,21 @@ var _target_info_hull: float = 0.0
 var _target_info_shield: float = 0.0
 var _target_info_distance_m: float = 0.0
 var _target_info_threat: String = ""
+var _target_info_in_range: bool = false
+var _target_info_has_range: bool = false
 
 var _prompt_text: String = ""
 var _warp_progress: float = -1.0
 var _reticle_state: int = TargetReticle.State.PLAIN
+
+## Slice 2's readings, mirrored here so a caller (and a probe) can assert what the HUD
+## drew without reaching into a sub-node: the lock channel's progress (-1 = no channel),
+## the dial's ratio and the marker's live flag.
+var _lock_progress: float = -1.0
+var _speedometer_ratio: float = 0.0
+var _lock_ring: LockRing = null
+var _hit_marker: HitMarker = null
+var _speedometer: Speedometer = null
 
 var _hull_fill_danger: StyleBoxFlat
 
@@ -182,13 +229,14 @@ func _ready() -> void:
 	_apply_zone_theme()
 	_apply_ammo_panel_style()
 	_build_pool_blocks()
+	_build_hud_widgets()
 	_build_weapon_slots()
 	_place_cargo_panel()
 	_cargo_panel.visible = false
 	_cargo_toggle.pressed.connect(_on_cargo_toggle_pressed)
 	_cargo_close.pressed.connect(_on_cargo_close_pressed)
-	_zoom_minus.pressed.connect(_on_zoom_pressed.bind(ZOOM_DELTA_MINUS))
-	_zoom_plus.pressed.connect(_on_zoom_pressed.bind(ZOOM_DELTA_PLUS))
+	_zoom_minus.pressed.connect(_on_zoom_pressed.bind(ZOOM_DELTA_OUT))
+	_zoom_plus.pressed.connect(_on_zoom_pressed.bind(ZOOM_DELTA_IN))
 	_bind_zoom_feedback(_zoom_minus)
 	_bind_zoom_feedback(_zoom_plus)
 	_refresh_static_tints()
@@ -217,6 +265,7 @@ func _notification(what: int) -> void:
 		_refresh_cargo()
 		_apply_emergency()
 		_refresh_pools()
+		_refresh_widget_theme()
 
 
 func bind(state: PlayerState) -> void:
@@ -257,14 +306,21 @@ func set_target(screen_position: Vector2, hull_fraction: float) -> void:
 	_apply_target()
 
 
-## Section 9.8 item 4: the target stats window. `info` is the section 3.10 dictionary
-## the caller fills; `hull` and `shield` are fractions, `distance_m` is metres.
+## Section 9.8 item 4 / section 3.10: the target stats window. `info` is the section 3.10
+## dictionary the caller fills; `hull` and `shield` are fractions, `distance_m` is metres.
+## Slice 2 adds the two keys section 10 names: `in_range` (the selected weapon's range
+## against the distance) and `threat` (section 8's blip class). The threat reading is
+## normalised to the upper case the panel prints whatever case the caller sends, so a
+## caller may pass the spec's own `&"hostile"` vocabulary, and `in_range` is only rendered
+## when the key is present, so a caller that predates it keeps the old text.
 func set_target_info(info: Dictionary) -> void:
 	_target_info_name = String(info.get("name", ""))
 	_target_info_hull = clampf(float(info.get("hull", 0.0)), 0.0, 1.0)
 	_target_info_shield = clampf(float(info.get("shield", 0.0)), 0.0, 1.0)
 	_target_info_distance_m = maxf(float(info.get("distance_m", 0.0)), 0.0)
-	_target_info_threat = String(info.get("threat", ""))
+	_target_info_threat = String(info.get("threat", "")).to_upper()
+	_target_info_has_range = info.has("in_range")
+	_target_info_in_range = bool(info.get("in_range", false))
 	_target_info_set = true
 	_apply_target_info()
 
@@ -331,6 +387,79 @@ func set_reticle_state(state: int) -> void:
 	_reticle_state = clampi(state, TargetReticle.State.PLAIN, TargetReticle.State.HOSTILE)
 	if _reticle != null:
 		_reticle.set_state(_reticle_state)
+
+
+## UI_SPEC section 3.5 / ENGINE_SPEC section 10: the lock channel's ring, `progress` over
+## 0..1 as the channel runs. A progress of zero or less hides it (the same empty convention
+## the warp bar uses), and a full ring stays drawn - "the arc completes to `metal_light` and
+## stays for the lock's lifetime".
+func set_lock_progress(progress: float) -> void:
+	_lock_progress = progress
+	if _lock_ring == null:
+		return
+	_lock_ring.progress = clampf(progress, 0.0, 1.0)
+	_lock_ring.complete = progress >= 1.0
+	_lock_ring.visible = progress > 0.0
+	_lock_ring.queue_redraw()
+
+
+## UI_SPEC section 3.6 / ENGINE_SPEC section 10: the radial speedometer. `ratio` is the
+## hull's speed against its class maximum, `prograde` the actual velocity vector and
+## `heading` the nose, both in world space (the dial takes the two angles). A ratio of
+## zero still draws the dial; the caller hides it by pushing zero when docked.
+func set_speedometer(ratio: float, prograde: Vector2, heading: Vector2) -> void:
+	_speedometer_ratio = clampf(ratio, 0.0, 1.0)
+	if _speedometer == null:
+		return
+	_speedometer.set_reading(_speedometer_ratio, prograde, heading)
+
+
+## Section 4.2 item 4 / ENGINE_SPEC section 10: the hit marker on a confirmed hit. Small,
+## no numbers, and faded out by a Tween rather than a per-frame step (the house rule for UI
+## animation).
+func hit_marker() -> void:
+	if _hit_marker == null:
+		return
+	_hit_marker.flash()
+
+
+## Read-only mirrors of the three slice-2 readings, so a caller (or a headless probe) can
+## assert what the HUD was told without reaching into a sub-node - the same reason
+## `TargetReticle.state()` exists.
+func lock_progress() -> float:
+	return _lock_progress
+
+
+func speedometer_ratio() -> float:
+	return _speedometer_ratio
+
+
+func lock_ring() -> Control:
+	return _lock_ring
+
+
+func speedometer() -> Control:
+	return _speedometer
+
+
+func hit_marker_node() -> Control:
+	return _hit_marker
+
+
+## The target window's payload as the HUD holds it (`{}` before the first push), read back
+## for the same reason.
+func target_info() -> Dictionary:
+	if not _target_info_set:
+		return {}
+	return {
+		"name": _target_info_name,
+		"hull": _target_info_hull,
+		"shield": _target_info_shield,
+		"distance_m": _target_info_distance_m,
+		"threat": _target_info_threat,
+		"in_range": _target_info_in_range,
+		"has_range": _target_info_has_range,
+	}
 
 
 func _release_state() -> void:
@@ -405,6 +534,74 @@ func _apply_ammo_panel_style() -> void:
 		_ammo_panel.add_theme_stylebox_override(&"panel", raised)
 
 
+## Slice 2's three widgets, all built in code for the same reason the pool blocks are: the
+## lock ring belongs on the reticle (`ui/hud/target_reticle.gd` is another worker's file),
+## and the marker and the dial are bare `_draw` Controls this file owns. Idempotent, so a
+## theme change or a re-`_ready` cannot double them.
+func _build_hud_widgets() -> void:
+	_build_lock_ring()
+	_build_hit_marker()
+	_build_speedometer()
+
+
+## UI_SPEC section 3.5's lock ring: a full-rect child of the reticle, so it rides the
+## reticle's position (the cursor, or the marked hull) and draws around the brackets.
+func _build_lock_ring() -> void:
+	if _reticle == null or _lock_ring != null:
+		return
+	_lock_ring = LockRing.new()
+	_lock_ring.name = LOCK_RING
+	_lock_ring.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_lock_ring.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_lock_ring.visible = false
+	_reticle.add_child(_lock_ring)
+	_lock_ring.apply_theme()
+
+
+## Section 4.2 item 4: the marker sits on the same reticle, so it appears where the shot
+## landed (the marked hull) or under the cursor when nothing is marked.
+func _build_hit_marker() -> void:
+	if _reticle == null or _hit_marker != null:
+		return
+	_hit_marker = HitMarker.new()
+	_hit_marker.name = HIT_MARKER
+	_hit_marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_hit_marker.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_hit_marker.visible = false
+	_reticle.add_child(_hit_marker)
+	_hit_marker.apply_theme()
+
+
+## UI_SPEC section 3.6: the 120 x 120 dial. The spec places it "bottom-centre inside
+## BottomLeft's parent column (below the ammo panel)"; the column below the ammo panel is
+## `CanvasLayer/BottomLeft/Blocks` (that container's MarginContainer is anchored
+## bottom-left, not bottom-centre), so the dial joins that column and centres itself in it.
+## Reported for the owner's reading.
+func _build_speedometer() -> void:
+	if _bottom_left == null or _speedometer != null:
+		return
+	var column := _bottom_left.get_node_or_null(NodePath(BOTTOM_LEFT_COLUMN)) as VBoxContainer
+	if column == null:
+		return
+	_speedometer = Speedometer.new()
+	_speedometer.name = RADIAL_DIAL
+	_speedometer.custom_minimum_size = DIAL_SIZE
+	_speedometer.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_speedometer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(_speedometer)
+	_speedometer.apply_theme()
+
+
+## The three widgets re-read their tokens on a theme change (see `_notification`).
+func _refresh_widget_theme() -> void:
+	if _lock_ring != null:
+		_lock_ring.apply_theme()
+	if _hit_marker != null:
+		_hit_marker.apply_theme()
+	if _speedometer != null:
+		_speedometer.apply_theme()
+
+
 func _build_weapon_slots() -> void:
 	for index: int in WEAPON_IDS.size():
 		var slot: SlotButton = SLOT_SCENE.instantiate() as SlotButton
@@ -416,7 +613,7 @@ func _build_weapon_slots() -> void:
 
 ## Section 3.1b: the Energy and Fuel blocks, appended to the scene's TopLeft column
 ## below ShieldBlock, plus the Emergency Flight banner that sits above them. The
-## blocks are built here rather than in `hud.tscn` because the scene is not in this
+## blocks are built here rather than in `hud.tscn` because the scene was not in that
 ## worker's file set, so the builder mirrors the HullBlock/ShieldBlock pattern
 ## exactly (header row over a 260 x 14 bar) and styles the bars from the theme's
 ## `Tokens` roles, the way the hull bar's danger fill already does. That keeps
@@ -776,7 +973,14 @@ func _apply_target_info() -> void:
 	if _target_shield_bar != null:
 		_target_shield_bar.value = _target_info_shield
 	if _target_distance_label != null:
-		_target_distance_label.text = DISTANCE_FORMAT % _format_int(int(round(_target_info_distance_m)))
+		var distance := DISTANCE_FORMAT % _format_int(int(round(_target_info_distance_m)))
+		## Section 10's range state prints with the distance it qualifies, and only when
+		## the caller sent one.
+		if _target_info_has_range:
+			distance = RANGE_FORMAT % [
+				distance, RANGE_IN if _target_info_in_range else RANGE_OUT
+			]
+		_target_distance_label.text = distance
 	if _target_threat_label != null:
 		_target_threat_label.text = _target_info_threat
 
@@ -872,3 +1076,240 @@ func _token(token: StringName) -> Color:
 	if has_theme_color(token, TOKENS_TYPE):
 		return get_theme_color(token, TOKENS_TYPE)
 	return Color.WHITE
+
+
+## --- Slice 2's widgets -------------------------------------------------------------
+##
+## Each widget is its own inner class and self-contained: it reads its tokens off the
+## theme itself (an inner class cannot see the enclosing class's constants, the same
+## limitation `weapons.gd`'s `ChaffGhost` documents), so the Hud only builds, positions and
+## drives them.
+
+
+## UI_SPEC section 3.5: the lock channel's ring - a thin arc drawn clockwise from the top
+## as the channel runs, in the running colour, and left complete in `metal_light` while the
+## lock holds. A child of the reticle, so it needs no position of its own.
+class LockRing extends Control:
+	const TOKENS_TYPE: StringName = &"Tokens"
+	const WIDTH := 1.0
+
+	var progress: float = 0.0
+	var complete: bool = false
+
+	var _running: Color = Color.WHITE
+	var _done: Color = Color.WHITE
+
+	func apply_theme() -> void:
+		## The spec's running colour is "Steel Highlight #565C63", which no theme token
+		## carries (and `accent_nav` is the HUD's single sanctioned literal), so the running
+		## arc takes the nearest existing steel and the completed arc takes `metal_light`,
+		## exactly as UI_SPEC section 3.5 writes it.
+		_running = _token(&"text_dim")
+		_done = _token(&"metal_light")
+		queue_redraw()
+
+	func stroke() -> float:
+		return WIDTH
+
+	func _draw() -> void:
+		if progress <= 0.0 or size.x <= 0.0 or size.y <= 0.0:
+			return
+		var centre: Vector2 = size * 0.5
+		## The bracket box's inscribed circle, less half the stroke, so the ring hugs the
+		## brackets: the reticle insets its own brackets by half a stroke, and this reads
+		## the same geometry instead of inventing a radius.
+		var radius: float = minf(size.x, size.y) * 0.5 - WIDTH * 0.5
+		if radius <= 0.0:
+			return
+		var start := -PI * 0.5
+		draw_arc(
+			centre,
+			radius,
+			start,
+			start + TAU * clampf(progress, 0.0, 1.0),
+			64,
+			_done if complete else _running,
+			WIDTH,
+			true
+		)
+
+	func _token(token: StringName) -> Color:
+		if has_theme_color(token, TOKENS_TYPE):
+			return get_theme_color(token, TOKENS_TYPE)
+		return Color.WHITE
+
+
+## §4.2 item 4's marker: a small cross drawn over the reticle's centre, flashed by a Tween
+## on its own modulate (the house rule: no per-frame UI animation).
+class HitMarker extends Control:
+	const TOKENS_TYPE: StringName = &"Tokens"
+	const ARM := 4.0
+	const SECONDS := 0.25
+	const WIDTH := 1.0
+
+	var _colour: Color = Color.WHITE
+	var _fade: Tween = null
+
+	func apply_theme() -> void:
+		_colour = _token(&"accent_danger_bright")
+		queue_redraw()
+
+	## One flash: full alpha, then a fade over `SECONDS`. Re-entrant, so a second hit during
+	## a fade restarts it rather than queueing another.
+	func flash() -> void:
+		visible = true
+		modulate.a = 1.0
+		queue_redraw()
+		if _fade != null and _fade.is_valid():
+			_fade.kill()
+		_fade = create_tween()
+		_fade.tween_property(self, "modulate:a", 0.0, SECONDS)
+		_fade.finished.connect(_on_faded)
+
+	func fading() -> bool:
+		return visible and modulate.a > 0.0
+
+	func _on_faded() -> void:
+		visible = false
+
+	func _draw() -> void:
+		var centre: Vector2 = size * 0.5
+		draw_line(
+			centre + Vector2(-ARM, -ARM), centre + Vector2(ARM, ARM), _colour, WIDTH
+		)
+		draw_line(
+			centre + Vector2(-ARM, ARM), centre + Vector2(ARM, -ARM), _colour, WIDTH
+		)
+
+	func _token(token: StringName) -> Color:
+		if has_theme_color(token, TOKENS_TYPE):
+			return get_theme_color(token, TOKENS_TYPE)
+		return Color.WHITE
+
+
+## UI_SPEC section 3.6's radial dial: 10 segments across 270 degrees with the gap at the
+## bottom, a `metal_mid` fill per segment, the topmost filled segment in `accent_danger`
+## above 0.9 (the overdrive read), a prograde needle in `accent_nav` at the velocity's own
+## bearing and a heading marker at the nose. Both legs are world-space vectors, so the dial
+## draws their own angles - a world bearing and a screen bearing agree because both axes
+## point the same way on screen.
+class Speedometer extends Control:
+	const TOKENS_TYPE: StringName = &"Tokens"
+	const SEGMENTS := 10
+	const SWEEP := PI * 1.5
+	const OVERDRIVE := 0.9
+	const NEEDLE_LENGTH := 10.0
+	const HEADING_LENGTH := 6.0
+	const WIDTH := 1.0
+	## The fill's stroke thickness: the one render detail UI_SPEC section 3.6 does not state
+	## (it is a line weight, not a gameplay value), onetenth of the dial's own short side.
+	const THICKNESS_RATIO := 0.05
+	## UI_SPEC section 1's `accent_nav` (2026-09-20): the HUD's single sanctioned cyan and
+	## the one hex literal it may hold, because the shipped `ui/theme/vajb_theme.tres` (out
+	## of this worker's file set) does not carry the token yet. The theme wins when it lands.
+	const TOKEN_NAV: StringName = &"accent_nav"
+	const NAV_FALLBACK := Color("#6fb8c4")
+	## The heading marker's `bone_text` has no such carve-out, so it falls back to the
+	## nearest existing near-white and is reported.
+	const TOKEN_HEADING: StringName = &"bone_text"
+	const HEADING_FALLBACK: StringName = &"text_primary"
+
+	var ratio: float = 0.0
+	var prograde: Vector2 = Vector2.ZERO
+	var heading: Vector2 = Vector2.ZERO
+
+	var _fill: Color = Color.WHITE
+	var _overdrive: Color = Color.WHITE
+	var _needle: Color = Color.WHITE
+	var _heading: Color = Color.WHITE
+
+	func apply_theme() -> void:
+		_fill = _token(&"metal_mid")
+		_overdrive = _token(&"accent_danger")
+		_needle = _token_or(TOKEN_NAV, NAV_FALLBACK)
+		_heading = _token(&"text_primary") if not has_theme_color(TOKEN_HEADING, TOKENS_TYPE) else _token(TOKEN_HEADING)
+		queue_redraw()
+
+	## The dial's readings, one call per frame in flight.
+	func set_reading(speed_ratio: float, prograde_vector: Vector2, heading_vector: Vector2) -> void:
+		var wanted := clampf(speed_ratio, 0.0, 1.0)
+		## The needle moves every frame in flight; the guard is for a docked or idling hull,
+		## where the dial is redrawn only when one of the three readings actually moved.
+		if (
+			is_equal_approx(wanted, ratio)
+			and is_equal_approx(prograde_vector.angle(), prograde.angle())
+			and is_equal_approx(heading_vector.angle(), heading.angle())
+		):
+			return
+		ratio = wanted
+		prograde = prograde_vector
+		heading = heading_vector
+		queue_redraw()
+
+	## The segments the dial fills at its current ratio, UI_SPEC section 3.6's own rule
+	## ("segment i filled when `speed_ratio >= i/10`"), and the topmost of them - the one the
+	## overdrive read colours.
+	func filled_segments() -> int:
+		var count := 0
+		for index in SEGMENTS:
+			if ratio >= float(index) / float(SEGMENTS):
+				count += 1
+		return count
+
+	func overdrive_segment() -> int:
+		if ratio <= OVERDRIVE:
+			return -1
+		return maxi(filled_segments() - 1, 0)
+
+	func needle_colour() -> Color:
+		return _needle
+
+	func _draw() -> void:
+		var centre: Vector2 = size * 0.5
+		var thickness: float = minf(size.x, size.y) * THICKNESS_RATIO
+		var radius: float = minf(size.x, size.y) * 0.5 - thickness
+		if radius <= 0.0:
+			return
+		## UI_SPEC section 3.6: the dial sweeps 270 degrees clockwise and leaves the gap at
+		## the bottom (screen coordinates, +Y down), which is a start of 135 degrees.
+		var start := PI * 0.75
+		var step := SWEEP / float(SEGMENTS)
+		var filled := filled_segments()
+		var overdrive := overdrive_segment()
+		for index in SEGMENTS:
+			if index >= filled:
+				continue
+			draw_arc(
+				centre,
+				radius,
+				start + step * index,
+				start + step * (index + 1),
+				8,
+				_overdrive if index == overdrive else _fill,
+				thickness,
+				true
+			)
+		if not prograde.is_zero_approx():
+			draw_line(
+				centre,
+				centre + Vector2.RIGHT.rotated(prograde.angle()) * NEEDLE_LENGTH,
+				_needle,
+				WIDTH
+			)
+		if not heading.is_zero_approx():
+			draw_line(
+				centre,
+				centre + Vector2.RIGHT.rotated(heading.angle()) * HEADING_LENGTH,
+				_heading,
+				WIDTH
+			)
+
+	func _token(token: StringName) -> Color:
+		if has_theme_color(token, TOKENS_TYPE):
+			return get_theme_color(token, TOKENS_TYPE)
+		return Color.WHITE
+
+	func _token_or(token: StringName, fallback: Color) -> Color:
+		if has_theme_color(token, TOKENS_TYPE):
+			return get_theme_color(token, TOKENS_TYPE)
+		return fallback

@@ -15,6 +15,11 @@ extends Resource
 ## section 9) and a `tick(delta)` drives the reactor refill and the fuel-cell
 ## cooldown; both are the ship's physics frame's business, so they are helpers
 ## here rather than a `_process` of their own.
+##
+## Engine slice 2 adds one figure: `shield_regen`, the shield's own regeneration rate
+## (ENGINE_SPEC section 4.2 item 2), which `game/damage.gd`'s `Damage.regen` spends once
+## the hull has been quiet for `Damage.REGEN_QUIET`. The `damage(amount, bypass_shield,
+## ctx)` route and the recorded context were already here (wave 1 and slice 0).
 
 signal hull_changed(current: float, maximum: float)
 signal shield_changed(current: float, maximum: float)
@@ -34,6 +39,14 @@ const AMMO_DEFAULT := 300
 const ENERGY_MAX_DEFAULT := 100.0
 const FUEL_MAX_DEFAULT := 200.0
 const ENERGY_REGEN_DEFAULT := 5.0
+
+## ENGINE_SPEC section 4.2 item 2 / section 13's "Shield regen" row: the shield's
+## regeneration rate as a base of 2 points per second. `ShipFit` resolves the same figure
+## into `ShipStats.shield_regen` as this base plus the best fitted S module's `regen_add`
+## (s_light +4, s_heavy +5, s_ion +9), so this is the rate a `PlayerState` created without
+## a snapshot (a probe, a unit test) still regenerates at, and the value the launch
+## snapshot replaces.
+const SHIELD_REGEN_DEFAULT := 2.0
 
 ## Ruling 11's fuel toll: every 1 point of Energy spent burns this much Fuel.
 const FUEL_PER_ENERGY := 0.10
@@ -57,6 +70,14 @@ var shield_max: float = 600.0
 var cargo_max: int = 40
 var hull: float
 var shield: float
+
+## The resolved shield regeneration rate, in points per second (ENGINE_SPEC section 4.2
+## item 2): the base plus the fitted shield module's value. `game.gd` seeds it off the
+## launch snapshot's `ShipStats.shield_regen`, exactly as it seeds the pool maxima, and
+## `Damage.regen` spends it per frame once the hull has been quiet for
+## `Damage.REGEN_QUIET` 4 s.
+var shield_regen: float = SHIELD_REGEN_DEFAULT
+
 var ammo: Array[int]
 var ammo_max: Array[int]
 var cargo_used: int

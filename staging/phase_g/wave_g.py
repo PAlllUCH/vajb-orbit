@@ -225,6 +225,149 @@ for _id, _subject in (("ship_vanguard_sheet", VANGUARD),
         cuts=[f"{_id[:-6]}_{view}" for view in VIEWS], review_only=True,
     )
 
+## The fighter's sheet: cell 3 came back as a broken fragment (two engine bells and a wing edge,
+## no hull), so it is cut as three cells and the rear view comes from its own single run
+## (`ship_fighter_back_single`) — the same repair the swarmer sheet needed.
+RUNS["ship_fighter_sheet"]["cells"] = [
+    [0, "ship_fighter_front", 0],
+    [1, "ship_fighter_three_quarter", 0],
+    [2, "ship_fighter_side", 0],
+]
+
+## Rear views the panels did not deliver. The model's recurring failure is to draw the **front a
+## second time** in the bottom-right cell and never a rear; measured by silhouette IoU against the
+## front view (`miner` 0.91, `sibelon` 0.83, and the swarmer sheet before it). Those sheets are cut
+## as three cells and the rear comes from its own single run, the same repair as the fighter's cell.
+RUNS["ship_miner_sheet"]["cells"] = [
+    [0, "ship_miner_front", 0],
+    [1, "ship_miner_three_quarter", 0],
+    [2, "ship_miner_side", 0],
+]
+RUNS["ship_miner_back_single"] = dict(
+    family="ships", source="human", mode="single", alpha=True, out="ship_miner_back",
+    subject=("single rear view of the Delver mining platform, human player industrial hull: the "
+             "ship seen from directly behind, the broad flat slab foreshortened so its trailing "
+             "edge fills the frame, the two twin outboard engine pods flanking the stern with "
+             "dim civilian burnt ember #C8461B flares and faint small ember glow #E8703A halos, "
+             "the boxed lidded dorsal ore bin seen end-on between them, gunmetal mid #3A3F46 and "
+             "gunmetal dark #2B2F35 plates, steel highlight #565C63 rim, ore dust staining, hull "
+             "grime, oil stains around the engine pods, rust streaks, pitted metal, scratches. "
+             "Single ship centred, bow pointing away from the viewer, " + FRAME + ". " + NEG),
+    review_only=True,
+)
+RUNS["ship_sibelon_sheet"]["cells"] = [
+    [0, "ship_sibelon_front", 0],
+    [1, "ship_sibelon_three_quarter", 0],
+    [2, "ship_sibelon_side", 0],
+]
+RUNS["ship_sibelon_back_single"] = dict(
+    family="ships", source="alien", mode="single", alpha=True, out="ship_sibelon_back",
+    subject=("single rear view of the Sibelon pod, alien hostile bio-mechanical vessel: the pod "
+             "seen from directly behind, its blunt stern filling the frame with one small hot "
+             "corrupted plasma cyan #2BE8E8 vent signature centred in the middle of the rear face "
+             "and a dim second one just above it, the curved grown plating and the stubby vented "
+             "fins splayed outward around the stern, abyssal void #1C1F2B body with deep teal "
+             "#3A4B6E plate mid-tones, no ember, no orange, no human plating, no insignia. Alien "
+             "bio-mechanical chitin, not a human ship: no gunmetal, no rivets, no painted panels. "
+             "Single object centred, bow pointing away from the viewer, " + FRAME + ". " + NEG),
+    review_only=False,
+)
+
+## Hull classes 7 to 15 of `ASSET_EXPANSION_SPEC.md` section 3, restored to the same four-view
+## standard as the five core hulls. Silhouette, class markers, weathering density and engine count
+## are that table's own wording; the palette stays STYLE_BIBLE section 2.
+PLATE = ("gunmetal mid #3A3F46 and gunmetal dark #2B2F35 plates, steel highlight #565C63 rim on the "
+         "shadow-side silhouette")
+EMBER = "burnt ember #C8461B flares with small hot ember glow #E8703A halos"
+ROSTER = (
+    ("ship_interceptor_sheet",
+     ("a narrow needle hull with swept-forward twin prongs at the bow and no spine mass, a single "
+      "central engine at the tail, " + PLATE + ", " + EMBER + ", scratches, hull grime, oil "
+      "stains, light pitted metal on the older plates")),
+    ("ship_gunship_sheet",
+     ("a broad short hull with two oversized broadside weapon pods flanking a squat core, twin "
+      "recessed nozzles at the tail with " + EMBER + ", " + PLATE + ", heavy battle damage, "
+      "scorch-blackened craters, scorch marks at the gun ports, rust streaks, oil stains, hull "
+      "grime, pitted metal, scratches")),
+    ("ship_destroyer_sheet",
+     ("a long wedge hull with a row of dorsal turret blocks along its spine and a flared stern, "
+      "four engines in paired stern blocks with " + EMBER + ", " + PLATE + ", the heaviest "
+      "weathering of the roster: battle damage, torn plate edges, weld beads over repairs, rust "
+      "streaks, scorch marks, pitted metal, scratches")),
+    ("ship_drone_swarm_sheet",
+     ("a tiny angular shard body with one stubby thruster at the tail and no cockpit, minimal "
+      "appendages, " + PLATE + ", one small hot burnt ember #C8461B thruster flare, light "
+      "weathering: scratches only")),
+    ("ship_trader_sheet",
+     ("a boxy segmented hull with external container racks along both flanks, the racks are the "
+      "read, two engines side by side at the stern with " + EMBER + ", " + PLATE + ", heavy hull "
+      "grime, rust streaks, oil stains, scratches, no battle damage")),
+    ("ship_patrol_sheet",
+     ("a mid-length hull with a forward lance mount and one dorsal fin, clean plated sides, two "
+      "engines at the tail with " + EMBER + ", " + PLATE + ", moderate weathering: scratches, hull "
+      "grime, oil stains")),
+    ("ship_bomber_sheet",
+     ("a fat fuselage with an underslung ordnance bay and two stub wings, the bay is the read, two "
+      "engines at the tail with " + EMBER + ", " + PLATE + ", heavy weathering: scorch marks, "
+      "battle damage, oil stains, rust streaks, hull grime, scratches")),
+    ("ship_mine_layer_sheet",
+     ("a blunt bow with a wide flat stern rack carrying visible mine cradles, two engines in the "
+      "stern block with " + EMBER + ", " + PLATE + ", heavy weathering: rust streaks, battle "
+      "damage, scorch marks, oil stains, hull grime, pitted metal, scratches")),
+)
+for _id, _detail in ROSTER:
+    RUNS[_id] = dict(
+        family="ships", source="human", mode="sheet4", alpha=True,
+        hull=_id.split("ship_")[1].split("_sheet")[0], subject=hull(
+            f"{_id.split('_')[1].replace('_', ' ')} hull, human warship of the Vajb Orbit roster",
+            _detail),
+        cuts=[f"{_id[:-6]}_{view}" for view in VIEWS], review_only=False,
+    )
+
+## Hull 15 is radially symmetric (no bow, no stern), so a rotation sheet would be four pictures of
+## the same thing: one centred render, cut like any single.
+RUNS["ship_turret_platform_single"] = dict(
+    family="ships", source="human", mode="single", alpha=True, out="ship_turret_platform",
+    subject=("single turret platform, human hostile static emplacement: a symmetric hexagonal "
+             "emplacement with a single long barrel on a pivot ring at its centre, no hull axis, "
+             "radially symmetric, " + PLATE + ", heavy pitted metal, scorch marks around the "
+             "barrel, battle damage, rust streaks, hull grime, a single small hot burnt ember "
+             "#C8461B warning lamp on the ring, no engine plume. Single object centred, seen from "
+             "above, " + FRAME + ". " + NEG),
+    review_only=False,
+)
+
+## Three more of the roster's sheets repeated the front in the bottom-right cell; the duplicate
+## check in `refit_panels.py` caught them (`ship_trader_back` 0.91 against its front, `ship_gunship`
+## 0.83, `ship_drone_swarm` 0.82). Each gets its own rear run and cuts three cells.
+REAR_SINGLES = (
+    ("ship_gunship_sheet", "ship_gunship_back", "ship_gunship",
+     "single rear view of the gunship, human hostile warship: the broad short hull seen from "
+     "directly behind, its two oversized broadside weapon pods flanking the squat core with their "
+     "muzzles pointing away, twin recessed nozzles centred at the trailing edge with " + EMBER +
+     ", " + PLATE + ", heavy battle damage, scorch-blackened craters, rust streaks, oil stains, "
+     "hull grime, pitted metal, scratches"),
+    ("ship_drone_swarm_sheet", "ship_drone_swarm_back", "ship_drone_swarm",
+     "single rear view of the drone swarm unit, human hostile swarm shard seen from directly "
+     "behind: a tiny angular shard body with one stubby thruster centred in the middle of its "
+     "trailing face, one small hot burnt ember #C8461B thruster flare, no cockpit, minimal "
+     "appendages, " + PLATE + ", light weathering, scratches only"),
+    ("ship_trader_sheet", "ship_trader_back", "ship_trader",
+     "single rear view of the trader, human civilian hull seen from directly behind: the boxy "
+     "segmented hull end-on with its external container racks flanking it on both sides, two "
+     "engines side by side centred at the stern with " + EMBER + ", " + PLATE + ", heavy hull "
+     "grime, rust streaks, oil stains, scratches, no battle damage"),
+)
+for _sheet, _out, _hull, _detail in REAR_SINGLES:
+    RUNS[_sheet]["cells"] = [[0, f"{_hull}_front", 0], [1, f"{_hull}_three_quarter", 0],
+                             [2, f"{_hull}_side", 0]]
+    RUNS[f"{_out}_single"] = dict(
+        family="ships", source="human", mode="single", alpha=True, out=_out,
+        subject=(f"{_detail}. Single ship centred, bow pointing away from the viewer, "
+                 + FRAME + ". " + NEG),
+        review_only=False,
+    )
+
 RUNS["ship_fighter_back_single"] = dict(
     family="ships", source="human", mode="single", alpha=True, out="ship_fighter_back",
     subject=("single rear view of the Fighter, human hostile warship: the ship seen from directly "
@@ -255,6 +398,13 @@ for _id, _subject, _source, _mode in (
 ## shield-shatter event. The render stays in `staging/phase_g/fx/` as provenance; `ships=False`
 ## keeps `ship_batch_g.py` from copying it.
 RUNS["fx_shield_shatter"]["ships"] = False
+
+## `cells` is the authority on what a sheet produces: a repaired sheet cuts three cells, not four.
+## Deriving `cuts` from it stops a stale four-name list from planning one file twice (the sibelon
+## and miner sheets each still declared `back` after their cell plan stopped cutting one).
+for _spec in RUNS.values():
+    if _spec.get("cells"):
+        _spec["cuts"] = [name for _index, name, _rotate in _spec["cells"]]
 
 
 def log_run(family: str, markdown: str) -> None:
@@ -482,7 +632,7 @@ if __name__ == "__main__":
     if not args or "--list" in sys.argv:
         for key, spec in RUNS.items():
             print(f"{key:24s} {spec['family']:6s} {spec['source']:6s} {spec['mode']:9s} "
-                  f"{'review-only  ' if spec['review_only'] else 'ship-to-game '} "
+                  f"{'retired      ' if spec.get('ships') is False else ('review-only  ' if spec['review_only'] else 'ship-to-game ')}"
                   f"{', '.join(spec.get('cuts', [])) or spec.get('out', '')}")
         sys.exit(0)
     ## Every run is attempted even when an earlier one comes back opaque: an opaque render is a

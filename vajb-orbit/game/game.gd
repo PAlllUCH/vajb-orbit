@@ -9,6 +9,18 @@ extends Node2D
 ## state is pushed from the shaft (`_push_reticle_state`). Retired by section 9.9:
 ## the MOCK_* constants, the mock shield/hull drain, the orbiting mock target and
 ## ESC docking.
+##
+## Slice 2 (fight) adds the targeting and death wiring, all of it this scene's because
+## every part of it spans two owners:
+##   * the NPC hulls the sector spawns (§8) and their live blips;
+##   * the timed lock channel of §4.1 (a click on a hostile inside `lock_range` starts
+##     1.2 s of line of sight, rocks and hulls blocking) and its reticle ring;
+##   * the target window's payload (§10: range state and threat) and the reticle reading
+##     (in range / out of range / hostile);
+##   * the two countermeasures' triggers (§4.6) and the hit marker (§4.2 item 4);
+##   * the radial speedometer push (§10, UI_SPEC §3.6) and the chaff ghost blips (§4.6);
+##   * the real safe-warp gate (§7) and the death flow (§7: cargo drops at the wreck,
+##     respawn docked).
 ## The HUD, the ship and the sector are preloaded by path (project convention, see
 ## _instantiate_hud): the scene must load while a parallel wave's file is still
 ## landing, and a headless caller and the editor agree on the same tables.
@@ -21,6 +33,20 @@ const PlayerShipScene := preload("res://game/player_ship.tscn")
 const PlayerShipScript := preload("res://game/player_ship.gd")
 const SectorScript := preload("res://game/sector.gd")
 const Registry := preload("res://game/sector_registry.gd")
+
+## Slice 2's cross-file reaches, by path (never by global class name: a `class_name`
+## resolves only after the editor has scanned the project, and this scene must load in a
+## headless run of a tree a parallel worker is still writing). Every one of them is a
+## single-owner table read through its own API: the registry's rows and bands, the hull's
+## published queries, the pipe's context arithmetic and the pickup's handshake.
+const NpcRegistryScript := preload("res://game/npc_registry.gd")
+const NpcShipScript := preload("res://game/npc_ship.gd")
+const AsteroidScript := preload("res://game/asteroid.gd")
+const DamageScript := preload("res://game/damage.gd")
+const ImpactScript := preload("res://game/impact.gd")
+const PickupScript := preload("res://game/pickup.gd")
+const WeaponsScript := preload("res://game/weapons.gd")
+const EconomyLogScript := preload("res://game/economy_log.gd")
 
 const ROUTE_LOADING: StringName = &"loading"
 const PARAM_DESTINATION: StringName = &"destination"
@@ -66,6 +92,49 @@ const WARP_ACTION: StringName = &"warp"
 ## ENGINE_SPEC section 13 `WARP_CHANNEL`.
 const WARP_CHANNEL := 3.0
 
+## ENGINE_SPEC section 13, "Lock & countermeasures (rulings 21/22)": the lock channel's
+## 1.2 s of uninterrupted line of sight, the passive radius the radar tags within, and
+## the two countermeasure items the hold's stacks are spent by (section 4.6).
+const LOCK_CHANNEL := 1.2
+const PASSIVE_RADIUS := 1500.0
+const CHAFF_ITEM: StringName = &"cm_chaff"
+const FLARE_ITEM: StringName = &"cm_flare"
+
+## Section 4.1: "rocks and hulls block it". The channel's ray therefore tests the rock
+## layer and the hull layer - the same pair `weapons.gd` masks for its shots - read off
+## their owners rather than restated (`Asteroid.COLLISION_LAYER`, `NpcShip.HULL_LAYER`).
+const LOCK_LOS_MASK: int = AsteroidScript.COLLISION_LAYER | NpcShipScript.HULL_LAYER
+
+## Section 11 names no key for either countermeasure (`interact`/`warp`/
+## `consume_fuel_cell` are the three it adds), so the two triggers are read behind
+## `InputMap.has_action` guards and these are the action names the orchestrator would
+## bind. The mechanic ships either way: `WeaponComponent.use_countermeasure` is the seam
+## a binding, a probe or a future panel reaches.
+const COUNTERMEASURE_ACTIONS: Dictionary = {
+	CHAFF_ITEM: &"countermeasure_chaff",
+	FLARE_ITEM: &"countermeasure_flare",
+}
+
+## Section 11's `target_next` (Q in the shipped input map, section 3.1 "cycles locks").
+const TARGET_NEXT_ACTION: StringName = &"target_next"
+
+## Section 2.7 / decision 7: a death's cargo drops at the wreck with a 5-minute recovery
+## window. `Pickup` owns a 60 s lifetime (section 13) and publishes no override, so the
+## window is expressed through its own age clock; a `lifetime` argument on
+## `Pickup.setup` is the clean fix (reported, slice 4).
+const DROP_WINDOW := 300.0
+
+## The group `PlayerShip` joins in `_ready` and both the pickups' tractor and the NPCs'
+## early-warning checks resolve the player through (`Pickup.PLAYER_GROUP`,
+## `NpcShip.PLAYER_GROUP`). The wreck leaves it on death (see `_switch_ship_off`).
+const PLAYER_GROUP: StringName = &"player_ship"
+
+## 01 section 7's log vocabulary, extended by the three events this scene adds: the packs
+## filed on dock, the hold dropped at a wreck and the hull that was lost.
+const EVENT_AMMO := "AMMO"
+const EVENT_DROP := "DROP"
+const EVENT_KILL := "KILL"
+
 const HUD_METHODS: Array[StringName] = [
 	&"bind",
 	&"set_sector_name",
@@ -93,6 +162,7 @@ var _sector_row_id: StringName = &""
 var _sector_name := SECTOR_NAME
 var _hud: Control = null
 var _laser: Node = null
+var _guns: Node2D = null
 var _reticle_state: int = TargetReticle.State.PLAIN
 var _weapon_index := 0
 var _minimap_radius := MINIMAP_RADIUS_DEFAULT
@@ -105,6 +175,28 @@ var _warp_active := false
 var _warp_elapsed := 0.0
 var _warp_progress := -1.0
 
+## The marked signature (ENGINE_SPEC section 4.1): the hull a click is channelling at, or
+## the one the lock landed on, or the one Q tagged from the passive radar. `_lock_elapsed`
+## is the channel's clock, `_lock_channeling` says whether it is still running, and the
+## landed lock itself stays the component's own answer (`WeaponComponent.lock_target`), so
+## no second copy of it lives here.
+var _lock_target: Node2D = null
+var _lock_elapsed := 0.0
+var _lock_channeling := false
+var _lock_progress := -1.0
+var _lock_progress_pushed := -2.0
+
+## The target's pool total as it was the last time the window was pushed, so a drop is a
+## confirmed hit (§4.2 item 4's marker). -1 means "no reading yet".
+var _target_pools_seen := -1.0
+
+## The packs as they were seeded at launch, in rounds per weapon: the dock files the
+## difference (section 4.3), so a store the launch could not load whole is never
+## overwritten by a clamped live figure.
+var _ammo_seed: Dictionary = {}
+
+var _dead := false
+
 
 func _ready() -> void:
 	_state = PlayerStateScript.new()
@@ -112,9 +204,11 @@ func _ready() -> void:
 	_apply_ship_maxima()
 	_state.setup()
 	_seed_vitals()
+	_seed_ammo()
 	_hud = _instantiate_hud()
 	_bind_hud()
 	_connect_profile()
+	_state.died.connect(_on_ship_died)
 	_spawn_sector(_row_for(String(_sector_row_id)))
 	_spawn_ship()
 	_refresh_hud()
@@ -127,12 +221,20 @@ func _exit_tree() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if _dead:
+		## Section 7's death flow replaces the ship; until the loading route lands the
+		## wreck neither flies nor fires (the hull is switched off in `_on_ship_died`).
+		return
 	_update_weapon_input()
+	_update_countermeasure_input()
+	_update_target_input()
+	_update_lock(delta)
 	_update_cargo_input()
 	_update_cancel_input()
 	_update_dock_prompt()
 	_update_warp(delta)
 	_push_reticle_state()
+	_push_speedometer()
 	_follow_ship()
 	_hud_accumulator += delta
 	if _hud_accumulator >= HUD_REFRESH_INTERVAL:
@@ -154,18 +256,9 @@ func on_route(params: Dictionary) -> void:
 	_push_sector_name()
 
 
-## Section 9.8 item 4: the wheel zooms the flight camera. `_unhandled_input`, so a
-## UI control that wants the wheel keeps it, and the input map is not touched.
-func _unhandled_input(event: InputEvent) -> void:
-	var button := event as InputEventMouseButton
-	if button == null or not button.pressed:
-		return
-	if button.button_index == MOUSE_BUTTON_WHEEL_UP:
-		_set_camera_zoom(_camera_zoom + CAMERA_ZOOM_STEP)
-	elif button.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-		_set_camera_zoom(_camera_zoom - CAMERA_ZOOM_STEP)
-
-
+## Section 9.8 item 4: the wheel zooms the flight camera, and section 3.1's LMB
+## lock order rides the same handler (`_unhandled_input`, so a UI control that wants the
+## click keeps it, and the input map is not touched).
 func _set_camera_zoom(target: float) -> void:
 	_camera_zoom = clampf(target, CAMERA_ZOOM_MIN, CAMERA_ZOOM_MAX)
 	if _camera_zoom_tween != null and _camera_zoom_tween.is_valid():
@@ -211,6 +304,11 @@ func _apply_ship_maxima() -> void:
 		_state.energy_regen = _stats.energy_regen
 	if _stats.fuel_max > 0.0:
 		_state.fuel_max = _stats.fuel_max
+	## Section 4.2 item 2: the shield's regeneration rate is the fit's own (base 2/s plus
+	## the S module's `regen_add`, resolved by `ShipFit`), so a fitted shield recovers at
+	## its real rate instead of `PlayerState`'s base default (W2 report, gap 3).
+	if _stats.shield_regen > 0.0:
+		_state.shield_regen = _stats.shield_regen
 
 
 ## Section 8: the sector populates on entry; W4's `populate` returns the player
@@ -219,8 +317,12 @@ func _spawn_sector(row: Dictionary) -> void:
 	if _sector == null:
 		_sector = SectorScript.new()
 		_sector.name = &"Sector"
+		## Section 8's hulls are spawned *inside* `populate`, so the handler is bound
+		## before the first population and stays bound across a transition.
+		_sector.connect(&"npc_spawned", _on_npc_spawned)
 		add_child(_sector)
 	_sector_row_id = StringName(row.get(&"id", SECTOR_ID_DEFAULT))
+	_cancel_lock()
 	if _ship != null:
 		_seat_ship(_sector.populate(row))
 		return
@@ -242,6 +344,12 @@ func _spawn_ship() -> void:
 	# than per frame: the reticle push reads the shaft's own range and target state
 	# through it, and stays inert while the fit carries no laser.
 	_laser = _ship.get_node_or_null(NodePath(PlayerShipScript.MINING_LASER_NODE))
+	# The weapons mount the same way (slice 2): the HUD's slots, the lock and the two
+	# countermeasures all address the component, and it is absent on a fit that carries no
+	# weapon module, exactly as the laser is absent without `w_mining`.
+	_guns = _ship.get_node_or_null(NodePath(PlayerShipScript.WEAPONS_NODE))
+	if _guns != null:
+		_guns.connect(&"locks_broken", _on_locks_broken)
 	_seat_ship(_pending_spawn)
 
 
@@ -274,6 +382,7 @@ func _update_cancel_input() -> void:
 		return
 	if _ship != null:
 		_ship.cancel_orders()
+	_cancel_lock()
 	if _hud != null:
 		_hud.call(&"clear_target")
 
@@ -313,6 +422,12 @@ func _request_dock() -> void:
 ## query) and a station in the sector to land at.
 func _update_warp(delta: float) -> void:
 	if _warp_active:
+		## Section 7: the channel "breaks on damage or new aggro". Damage rides the ship's
+		## own signal (`_on_ship_damage_taken`); new aggro is the gate above, re-read every
+		## frame while the channel runs.
+		if _enemy_engaged():
+			_cancel_warp()
+			return
 		_warp_elapsed += delta
 		if _warp_elapsed >= WARP_CHANNEL:
 			_finish_warp()
@@ -335,10 +450,23 @@ func _warp_ready() -> bool:
 	return _sector.has_station()
 
 
-## Section 5's aggro states do not exist yet (slice 2 ships the NPC brain), so
-## nothing can be engaged. Slice 2 replaces the body with the "hostile in Alert or
-## Engage, targeting the player" test of section 7.
+## Section 7's "no hostile is engaged": a hostile signature (section 8's blip class, so
+## pirates, swarmers and patrols count and a convoy does not) in Alert or Engage with the
+## player as its target. `NpcShip.engaged_with` is the hull's own answer to exactly that
+## question, so the gate reads the real brain state instead of guessing from a distance.
+##
+## The 5 s damage half of the gate is the ship's own query (`warp_available`,
+## `WARP_DAMAGE_QUIET`) and is ANDed in `_warp_ready`.
 func _enemy_engaged() -> bool:
+	if _ship == null or not is_inside_tree():
+		return false
+	for node: Node in get_tree().get_nodes_in_group(NpcRegistryScript.GROUP):
+		if node == null or not node.has_method(&"engaged_with"):
+			continue
+		if not _is_hostile(node):
+			continue
+		if bool(node.call(&"engaged_with", _ship)):
+			return true
 	return false
 
 
@@ -392,41 +520,462 @@ func _push_sector_name() -> void:
 	_hud.call(&"set_sector_name", _sector_name)
 
 
-## ENGINE_SPEC section 10 / IMPLEMENTATION_PLAN section 9.9: the mining reticle
-## states, pushed every physics frame so the cursor reticle reads the trigger at
-## input rate. `MINE_LASER_RANGE` (220 u) and the cycle live in `MiningLaser`, so
-## `has_target()` already answers "the beam reaches the rock under the cursor" for
-## the cursor's ray. Slice 1 ships the plain and mining states (section 14); slice 2
-## replaces the reading with the targeting one (hostile, plus the selected weapon's
-## range state). The value is mirrored so the HUD is only addressed on a change.
+## ENGINE_SPEC section 10 / IMPLEMENTATION_PLAN section 9.9: the cursor reticle's
+## reading, pushed every physics frame so it follows the cursor at input rate. Slice 2's
+## order is targeting first, mining second: a hull under the cursor reads `HOSTILE` when
+## section 8 calls it hostile and in/out of range otherwise (the selected weapon's range
+## against the distance, section 10), and only with no hull under the cursor does the
+## mining laser's own reading (`MINE_LASER_RANGE` 220 u and the cycle live in
+## `MiningLaser`, so `has_target()` already answers "the beam reaches the rock under the
+## cursor") still drive the box. The value is mirrored so the HUD is only addressed on a
+## change.
 func _push_reticle_state() -> void:
 	if _hud == null or not _hud.has_method(&"set_reticle_state"):
 		return
-	var state: int = TargetReticle.State.PLAIN
-	if _laser != null and bool(_laser.call(&"is_active")):
-		state = (
-			TargetReticle.State.IN_RANGE
-			if bool(_laser.call(&"has_target"))
-			else TargetReticle.State.OUT_OF_RANGE
-		)
+	var state := _reticle_state_for(_cursor_world_position())
 	if state == _reticle_state:
 		return
 	_reticle_state = state
 	_hud.call(&"set_reticle_state", state)
 
 
+## The reticle reading for one world point, so a caller (the frame loop, a probe) can ask
+## the question at a point of its own instead of only at the cursor.
+func _reticle_state_for(world_point: Vector2) -> int:
+	var hull := _pick_hull(world_point)
+	if hull != null:
+		if _is_hostile(hull):
+			return TargetReticle.State.HOSTILE
+		return (
+			TargetReticle.State.IN_RANGE
+			if _in_weapon_range(hull)
+			else TargetReticle.State.OUT_OF_RANGE
+		)
+	if _laser != null and bool(_laser.call(&"is_active")):
+		return (
+			TargetReticle.State.IN_RANGE
+			if bool(_laser.call(&"has_target"))
+			else TargetReticle.State.OUT_OF_RANGE
+		)
+	return TargetReticle.State.PLAIN
+
+
+## Section 4.3: `weapon_1..5` selects a group. The trigger itself is *not* read here any
+## more: the mounted `WeaponComponent` samples `fire_primary` (held = fire the selected
+## group) and owns the shot, its pack and its Energy draw, so the slice-1 placeholder that
+## spent a round per key press is retired (it would double-spend against the real shot).
 func _update_weapon_input() -> void:
 	for slot in WEAPON_ACTIONS.size():
 		if Input.is_action_just_pressed(WEAPON_ACTIONS[slot]):
 			_select_weapon(slot)
-	if Input.is_action_just_pressed(&"fire_primary"):
-		_fire(_weapon_index)
+
+
+## Section 4.6's two one-shot items. Section 11 binds no key for either, so both triggers
+## are read behind `InputMap.has_action` guards and the mechanic ships through the seam
+## (`WeaponComponent.use_countermeasure`), spend and all.
+func _update_countermeasure_input() -> void:
+	if _guns == null:
+		return
+	for item: StringName in COUNTERMEASURE_ACTIONS:
+		var action: StringName = COUNTERMEASURE_ACTIONS[item]
+		if not InputMap.has_action(action):
+			continue
+		if Input.is_action_just_pressed(action):
+			_guns.call(&"use_countermeasure", item)
 
 
 func _update_cargo_input() -> void:
 	if _hud == null or not Input.is_action_just_pressed(&"cargo_toggle"):
 		return
 	_hud.call(&"set_cargo_open", not _cargo_open)
+
+
+## --- Targeting: the lock channel and the target window (ENGINE_SPEC §4.1/§10) -----
+
+
+## One hull under a world point, resolved from whatever body the point query returns (a
+## hull's collider is its own `HullBody`, whose owner is the ship). Null when the point is
+## empty space. Public in the sense that a probe or a future aiming mode may ask it; it
+## reads nothing but the physics state.
+func _pick_hull(world_point: Vector2) -> Node2D:
+	if not is_inside_tree() or _ship == null:
+		return null
+	var space := get_world_2d().direct_space_state
+	if space == null:
+		return null
+	var query := PhysicsPointQueryParameters2D.new()
+	query.position = world_point
+	query.collision_mask = NpcShipScript.HULL_LAYER
+	query.collide_with_bodies = true
+	query.collide_with_areas = false
+	var best: Node2D = null
+	var best_distance := INF
+	for hit: Dictionary in space.intersect_point(query, NpcShipScript.HULL_LAYER):
+		var hull := _hull_of(hit.get("collider"))
+		if hull == null:
+			continue
+		var distance := _ship.global_position.distance_to(hull.global_position)
+		if distance < best_distance:
+			best_distance = distance
+			best = hull
+	return best
+
+
+## Section 4.1's "clicking a hostile inside lock range", so the pick is a hostile hull
+## under the cursor and inside `ShipStats.lock_range` (the scanner's range, section 9,
+## which is what gives `c_scanner` a combat job). Anything else - an empty point, a
+## friendly hull, a hostile out of range - is not a lock order and falls through to the
+## ship's own fly-to.
+func _pick_lock_target(world_point: Vector2) -> Node2D:
+	var hull := _pick_hull(world_point)
+	if hull == null or not _is_hostile(hull):
+		return null
+	if _ship.global_position.distance_to(hull.global_position) > _lock_range():
+		return null
+	return hull
+
+
+## The hull a collider belongs to: the collider itself when it is one (a future hull with
+## a script), else its nearest ancestor in the NPC group.
+func _hull_of(collider: Variant) -> Node2D:
+	var node := collider as Node
+	if node == null:
+		return null
+	var cursor: Node = node
+	while cursor != null:
+		if cursor.is_in_group(NpcRegistryScript.GROUP):
+			return cursor as Node2D
+		cursor = cursor.get_parent()
+	return null
+
+
+## Section 8's blip class for a hull, which is also what §7's warp gate and §4.1's lock
+## order read: only a hostile signature is a lock target, so a convoy cannot be locked.
+func _is_hostile(node: Node) -> bool:
+	if node == null or not node.has_method(&"blip_kind"):
+		return false
+	return StringName(node.call(&"blip_kind")) == NpcRegistryScript.BLIP_HOSTILE
+
+
+func _lock_range() -> float:
+	return _stats.lock_range if _stats != null else 0.0
+
+
+## The selected group's own range against the target's distance (§10's range state). A
+## family with no range row (the mine is dropped, not aimed) has no envelope of its own,
+## so it reads against the lock's range - the only range the weapon has.
+func _in_weapon_range(target: Node2D) -> bool:
+	if target == null or _ship == null:
+		return false
+	return _ship.global_position.distance_to(target.global_position) <= _weapon_range()
+
+
+func _weapon_range() -> float:
+	var reach := 0.0
+	if _guns != null and _guns.has_method(&"selected_weapon"):
+		reach = WeaponsScript.range_of(StringName(_guns.call(&"selected_weapon")))
+	return reach if reach > 0.0 else _lock_range()
+
+
+## Section 3.1: LMB on a hostile hull starts the channel instead of ordering a fly-to. The
+## ship's own handler has already taken the click by the time this runs (it is a later
+## child, and unhandled input walks the tree bottom-up), so a lock order cancels the
+## order the same click placed - deferred, so the outcome does not depend on that order.
+func _unhandled_input(event: InputEvent) -> void:
+	var button := event as InputEventMouseButton
+	if button == null or not button.pressed:
+		return
+	if button.button_index == MOUSE_BUTTON_LEFT:
+		_on_left_click()
+		return
+	if button.button_index == MOUSE_BUTTON_WHEEL_UP:
+		_set_camera_zoom(_camera_zoom + CAMERA_ZOOM_STEP)
+	elif button.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+		_set_camera_zoom(_camera_zoom - CAMERA_ZOOM_STEP)
+
+
+func _on_left_click() -> void:
+	if _dead:
+		return
+	var target := _pick_lock_target(_cursor_world_position())
+	if target == null:
+		return
+	if _ship != null:
+		_ship.call_deferred(&"cancel_orders")
+	_start_lock(target)
+
+
+## One frame of the lock channel (§4.1): 1.2 s of uninterrupted line of sight, restarted
+## from zero by anything that breaks it, and the lock lands when the clock completes. A
+## target that died, left the scanner's range or left the tree drops the lock entirely.
+func _update_lock(delta: float) -> void:
+	_prune_lock()
+	if _lock_target == null or not _lock_channeling:
+		return
+	var target_position: Vector2 = _lock_target.global_position
+	if not _in_lock_range(target_position) or not _lock_clear_line(target_position):
+		_reset_lock_channel()
+		return
+	_lock_elapsed += delta
+	_lock_progress = clampf(_lock_elapsed / LOCK_CHANNEL, 0.0, 1.0)
+	_push_lock_progress()
+	if _lock_elapsed >= LOCK_CHANNEL:
+		_acquire_lock()
+
+
+func _in_lock_range(target_position: Vector2) -> bool:
+	return _ship != null and _ship.global_position.distance_to(target_position) <= _lock_range()
+
+
+## "rocks and hulls block it": a ray from the hull to the target against the rock and hull
+## layers, with both hulls' own bodies excluded (a hull does not block its own lock). An
+## unobstructed ray is an empty hit.
+func _lock_clear_line(target_position: Vector2) -> bool:
+	if not is_inside_tree() or _ship == null:
+		return false
+	var space := get_world_2d().direct_space_state
+	if space == null:
+		return false
+	var from: Vector2 = _ship.global_position
+	var query := PhysicsRayQueryParameters2D.create(
+		from, target_position, LOCK_LOS_MASK, _lock_exclusions()
+	)
+	query.collide_with_areas = false
+	query.collide_with_bodies = true
+	return space.intersect_ray(query).is_empty()
+
+
+## Both hulls' collision bodies, so the ray tests the world between them and not the two
+## endpoints: the ship's own body (a `HullBody` at its origin) and the target's.
+func _lock_exclusions() -> Array[RID]:
+	var out: Array[RID] = []
+	for root: Node in [_ship, _lock_target]:
+		if root == null:
+			continue
+		var stack: Array[Node] = [root]
+		while not stack.is_empty():
+			var node: Node = stack.pop_back()
+			var body := node as CollisionObject2D
+			if body != null and not body.is_queued_for_deletion():
+				out.append(body.get_rid())
+			for child: Node in node.get_children():
+				stack.append(child)
+	return out
+
+
+## Section 4.1: the channel starts here, and section 4.6's chaff refuses it - "active locks
+## break immediately and cannot re-acquire the real hull while ghosts live".
+func _start_lock(target: Node2D) -> void:
+	if _jamming():
+		return
+	_lock_target = target
+	_lock_elapsed = 0.0
+	_lock_channeling = true
+	_lock_progress = 0.0
+	if _guns != null and _guns.has_method(&"clear_lock_target"):
+		_guns.call(&"clear_lock_target")
+	_push_lock_progress()
+
+
+## An interrupted channel restarts from zero ("uninterrupted line of sight"), but the mark
+## stays: the player can re-acquire by holding the position, which is what the ring going
+## dark under a rock is telling them.
+func _reset_lock_channel() -> void:
+	_lock_elapsed = 0.0
+	_lock_progress = 0.0
+	_push_lock_progress()
+
+
+func _acquire_lock() -> void:
+	_lock_channeling = false
+	_lock_progress = 1.0
+	_target_pools_seen = -1.0
+	if _guns != null and _guns.has_method(&"set_lock_target"):
+		_guns.call(&"set_lock_target", _lock_target)
+	_push_lock_progress()
+
+
+## ESC, a dead target, a broken lock and a sector transition all land here: the mark, the
+## channel, the lock the seeker follows and the ring all clear together.
+func _cancel_lock() -> void:
+	_lock_target = null
+	_lock_elapsed = 0.0
+	_lock_channeling = false
+	_lock_progress = -1.0
+	_target_pools_seen = -1.0
+	if _guns != null and _guns.has_method(&"clear_lock_target"):
+		_guns.call(&"clear_lock_target")
+	_push_lock_progress()
+
+
+## §4.6: chaff breaks the lock the moment it fires; the component raises this and clears
+## its own target, and the channel's owner does the same on its side.
+func _on_locks_broken() -> void:
+	_cancel_lock()
+
+
+func _jamming() -> bool:
+	return _guns != null and _guns.has_method(&"jamming") and bool(_guns.call(&"jamming"))
+
+
+## A mark with no lock: Q cycles the passive radar's tags (§3.1's `target_next`, §4.1's
+## "passive radar auto-tags signatures within `PASSIVE_RADIUS`"). A tag is a reading, not a
+## lock - the ring and the seeker still need the channel.
+func _update_target_input() -> void:
+	if not InputMap.has_action(TARGET_NEXT_ACTION):
+		return
+	if not Input.is_action_just_pressed(TARGET_NEXT_ACTION):
+		return
+	_cycle_mark()
+
+
+## Q's cycle: the nearest hostile signature that is not already the mark, wrapping back to
+## the only contact when it is the only one. Nearest-first rather than list-order, so the
+## cycle stays predictable while everything in the sector is moving.
+func _cycle_mark() -> void:
+	var signatures := _passive_signatures()
+	if signatures.is_empty():
+		_cancel_lock()
+		return
+	var nearest: Node2D = null
+	var nearest_distance := INF
+	for hull: Node2D in signatures:
+		if hull == _lock_target:
+			continue
+		var distance: float = _ship.global_position.distance_to(hull.global_position)
+		if distance < nearest_distance:
+			nearest_distance = distance
+			nearest = hull
+	_mark(nearest if nearest != null else signatures[0])
+
+
+## Every hostile signature inside `PASSIVE_RADIUS` (§4.1's passive radar).
+func _passive_signatures() -> Array[Node2D]:
+	var out: Array[Node2D] = []
+	if _ship == null or not is_inside_tree():
+		return out
+	for node: Node in get_tree().get_nodes_in_group(NpcRegistryScript.GROUP):
+		var hull := node as Node2D
+		if hull == null or not _is_hostile(hull):
+			continue
+		if _ship.global_position.distance_to(hull.global_position) <= PASSIVE_RADIUS:
+			out.append(hull)
+	return out
+
+
+func _mark(target: Node2D) -> void:
+	_lock_target = target
+	_lock_elapsed = 0.0
+	_lock_channeling = false
+	_lock_progress = -1.0
+	_target_pools_seen = -1.0
+	if _guns != null and _guns.has_method(&"clear_lock_target"):
+		_guns.call(&"clear_lock_target")
+	_push_lock_progress()
+
+
+## A target that died, left the tree or left the scanner's range is no target (§4.1's lock
+## is dropped when the contact is lost).
+func _prune_lock() -> void:
+	if _lock_target == null:
+		return
+	if not is_instance_valid(_lock_target):
+		_cancel_lock()
+		return
+	if _lock_target.has_method(&"is_alive") and not bool(_lock_target.call(&"is_alive")):
+		_cancel_lock()
+		return
+	if not _in_lock_range(_lock_target.global_position):
+		_cancel_lock()
+
+
+func _push_lock_progress() -> void:
+	if _hud == null or not _hud.has_method(&"set_lock_progress"):
+		return
+	if is_equal_approx(_lock_progress, _lock_progress_pushed):
+		return
+	_lock_progress_pushed = _lock_progress
+	_hud.call(&"set_lock_progress", _lock_progress)
+
+
+## §10's target window: the marked hull's name (08 §2's own hull name where the hull has a
+## row), its two pools as fractions, the distance, §10's range state and §8's threat class.
+## The pushed reading is also where a confirmed hit is noticed (§4.2 item 4's marker): the
+## marked target's pools only ever move down on a hit or up on regeneration, so a drop
+## between two pushes is a hit that landed.
+func _push_target() -> void:
+	if _hud == null:
+		return
+	if _lock_target == null or not is_instance_valid(_lock_target):
+		_hud.call(&"clear_target")
+		_target_pools_seen = -1.0
+		return
+	var hull := _hull_read(_lock_target, &"hull")
+	var shield := _hull_read(_lock_target, &"shield")
+	var hull_max := maxf(_hull_read(_lock_target, &"hull_max"), 0.0)
+	var shield_max := maxf(_hull_read(_lock_target, &"shield_max"), 0.0)
+	var distance: float = _ship.global_position.distance_to(_lock_target.global_position)
+	_hud.call(
+		&"set_target",
+		_screen_position_of(_lock_target.global_position),
+		clampf(hull / hull_max, 0.0, 1.0) if hull_max > 0.0 else 0.0
+	)
+	_hud.call(
+		&"set_target_info",
+		{
+			"name": _target_name(_lock_target),
+			"hull": clampf(hull / hull_max, 0.0, 1.0) if hull_max > 0.0 else 0.0,
+			"shield": clampf(shield / shield_max, 0.0, 1.0) if shield_max > 0.0 else 0.0,
+			"distance_m": distance,
+			"in_range": _in_weapon_range(_lock_target),
+			"threat": _threat_reading(_lock_target),
+		}
+	)
+	var pools := hull + shield
+	if _target_pools_seen >= 0.0 and pools < _target_pools_seen - 0.0001:
+		_hud.call(&"hit_marker")
+	_target_pools_seen = pools
+
+
+## 08 §2's hull name ("Lancer", "Vanguard", ...) for the hull the target flies, falling back
+## to the archetype's own id where the hull has no class row (W3's D9: the turret platform).
+func _target_name(target: Node2D) -> String:
+	if target.has_method(&"hull_id"):
+		var row: Dictionary = ShipFit.HULLS.get(StringName(target.call(&"hull_id")), {})
+		var hull_name := String(row.get(&"name", ""))
+		if not hull_name.is_empty():
+			return hull_name
+	if target.has_method(&"archetype"):
+		return String(target.call(&"archetype")).to_upper()
+	return ""
+
+
+func _threat_reading(target: Node2D) -> StringName:
+	if target.has_method(&"blip_kind"):
+		return StringName(target.call(&"blip_kind"))
+	return &""
+
+
+func _hull_read(target: Node2D, method: StringName) -> float:
+	if not target.has_method(method):
+		return 0.0
+	return float(target.call(method))
+
+
+## Where a world point lands on screen, for the reticle's marked-target position
+## (`set_target`): the viewport's canvas transform is the camera's own world-to-viewport
+## mapping, so the reticle stays on the hull at every zoom.
+func _screen_position_of(world_position: Vector2) -> Vector2:
+	var viewport := get_viewport()
+	if viewport == null:
+		return world_position
+	return viewport.get_canvas_transform() * world_position
+
+
+func _cursor_world_position() -> Vector2:
+	if _ship != null:
+		return _ship.get_global_mouse_position()
+	return get_global_mouse_position()
 
 
 func _follow_ship() -> void:
@@ -512,7 +1061,8 @@ func _seed_vitals() -> void:
 ## 01 section 6 / ENGINE_SPEC section 12 item 13: the station's REPAIRS module reads
 ## the profile's vitals, so docking files the live state as this ship's damage report
 ## — hull and shield for the repair fee, the tank for the free refuel service, which
-## is the same report and the same write.
+## is the same report and the same write. The packs are filed in the same breath
+## (section 4.3), so one dock event settles everything the flight scene owns.
 func _file_damage_report() -> void:
 	var profile := _profile()
 	if profile == null:
@@ -524,6 +1074,54 @@ func _file_damage_report() -> void:
 		int(_state.shield),
 		int(round(_state.fuel)),
 	)
+	_file_ammo_report()
+
+
+## Section 4.3 / 01 section 6: the packs are profile-owned, `PlayerState` seeds them at
+## launch and the *deltas* go back on dock. The seed is remembered in `_ammo_seed`, so a
+## store the launch's own ceiling could not load whole is never overwritten by a clamped
+## live figure - the filing only ever spends what was actually fired.
+##
+## `PlayerProfile` publishes no writer for a pack today (it owns `ammo_of`/`ammo_max`/
+## `buy_ammo`, and `buy_ammo` only ever adds, while a fired delta is always a subtraction),
+## so the write rides a guarded `set_ammo` and the missing method is reported as the one
+## line this closes with; until then the seam is inert and the packs keep the behaviour
+## they ship with today (reseeded to `AMMO_DEFAULT` at every launch).
+func _file_ammo_report() -> void:
+	var profile := _profile()
+	if profile == null or _state == null:
+		return
+	if not profile.has_method(&"set_ammo"):
+		return
+	for slot in _state.WEAPONS.size():
+		var weapon_id: StringName = _state.WEAPONS[slot]
+		if not _ammo_seed.has(weapon_id):
+			continue
+		var seeded := int(_ammo_seed[weapon_id])
+		var live: int = _state.ammo[slot]
+		var fired := seeded - live
+		if fired <= 0:
+			continue
+		var stored := int(profile.call(&"ammo_of", weapon_id))
+		profile.call(&"set_ammo", weapon_id, maxi(stored - fired, 0))
+		_ammo_seed[weapon_id] = live
+		EconomyLogScript.append(
+			EVENT_AMMO, weapon_id, fired, 0, int(profile.call(&"credits"))
+		)
+
+
+## The other half of the same pattern: the launch loads each pack from the profile's own
+## store (which owns them, section 4.3), clamped by `PlayerState`'s per-slot ceiling, and
+## records what it loaded so the dock can tell a fired round from a ceiling.
+func _seed_ammo() -> void:
+	var profile := _profile()
+	if profile == null or _state == null:
+		return
+	_ammo_seed.clear()
+	for slot in _state.WEAPONS.size():
+		var weapon_id: StringName = _state.WEAPONS[slot]
+		_state.set_ammo(slot, int(profile.call(&"ammo_of", weapon_id)))
+		_ammo_seed[weapon_id] = _state.ammo[slot]
 
 
 func _refresh_hud() -> void:
@@ -531,13 +1129,49 @@ func _refresh_hud() -> void:
 		return
 	_sync_cargo()
 	_push_pools()
+	_push_target()
 	# String keys: the HUD minimap reads blip["pos"] / blip["kind"] (section 3.10).
 	var blips: Array[Dictionary] = []
 	if _ship != null:
 		blips.append({"pos": _ship.global_position, "kind": &"self"})
 	if _sector != null:
 		blips.append_array(_sector.blips())
+	blips.append_array(_ghost_blips())
 	_hud.call(&"set_minimap_blips", blips)
+
+
+## Section 4.6 / UI_SPEC section 3.3: the chaff's ghost signatures ride the minimap as
+## their own blip kind while the component keeps them alive (3.0 s), so the blip count and
+## the window cannot disagree with the lock rule - both read the component's list. (The
+## kind's 6 Hz alpha flicker is the minimap's draw and is reported: `ui/hud/minimap.gd` is
+## outside this worker's file set.)
+func _ghost_blips() -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	if _guns == null or not _guns.has_method(&"ghosts"):
+		return out
+	for ghost: Variant in _guns.call(&"ghosts"):
+		var node := ghost as Node2D
+		if node == null or not is_instance_valid(node):
+			continue
+		out.append({"pos": node.global_position, "kind": &"ghost"})
+	return out
+
+
+## ENGINE_SPEC section 10 / UI_SPEC section 3.6: the radial speedometer. The ratio is the
+## hull's live speed against its class maximum (`ShipStats.max_speed`, the same figure the
+## flight law reads), the prograde leg is the actual velocity vector and the heading leg is
+## the nose, so the dial needs no second opinion about either - the HUD takes the angles.
+func _push_speedometer() -> void:
+	if _hud == null or _ship == null or _stats == null:
+		return
+	if not _hud.has_method(&"set_speedometer"):
+		return
+	var velocity: Vector2 = _ship.velocity()
+	var maximum: float = _stats.max_speed
+	var ratio := 0.0
+	if maximum > 0.0:
+		ratio = clampf(velocity.length() / maximum, 0.0, 1.0)
+	_hud.call(&"set_speedometer", ratio, velocity, Vector2.RIGHT.rotated(_ship.global_rotation))
 
 
 ## ENGINE_SPEC section 10 / UI_SPEC section 3.1b: the Energy and Fuel bars and the
@@ -555,20 +1189,16 @@ func _push_pools() -> void:
 		_hud.call(&"set_emergency", _state.emergency_mode)
 
 
+## Section 4.3: the HUD's slot (0-based, `weapon_1` first) addresses the same group on the
+## mounted component (1-based, `GROUPS_MAX` 5). A fit with no guns carries no node and the
+## selection stays a `PlayerState` reading, exactly as it was in slice 1.
 func _select_weapon(slot: int) -> void:
 	if slot < 0 or slot >= _state.ammo.size():
 		return
 	_weapon_index = slot
 	_state.set_ammo(slot, _state.ammo[slot])
-
-
-func _fire(slot: int) -> void:
-	if slot < 0 or slot >= _state.ammo.size():
-		return
-	var remaining: int = _state.ammo[slot]
-	if remaining <= 0:
-		return
-	_state.set_ammo(slot, remaining - 1)
+	if _guns != null and _guns.has_method(&"select_group"):
+		_guns.call(&"select_group", slot + 1)
 
 
 func _bind_hud() -> void:
@@ -629,3 +1259,194 @@ func _on_minimap_zoom_changed(delta: int) -> void:
 		MINIMAP_RADIUS_MAX,
 	)
 	_hud.call(&"set_minimap_scale", _minimap_radius)
+
+
+## --- NPCs and death (ENGINE_SPEC §5/§7) -------------------------------------------
+
+
+## Section 5's spawn model, seen from this side: the sector spawns the hulls and this scene
+## binds what a hull's death means. `NpcShip._die` raises `died` with where and what and
+## then leaves the tree deferred, so every listener runs on a live node. The victim is bound
+## into the handler, because two hulls of one archetype (the band's own common case) make
+## the archetype alone ambiguous.
+func _on_npc_spawned(ship: Node2D) -> void:
+	if ship == null or not ship.has_signal(&"died"):
+		return
+	if not ship.is_connected(&"died", _on_npc_died):
+		ship.connect(&"died", _on_npc_died.bind(ship))
+
+
+## Section 5's "on death" column and doc 13's heat/standing table: what ships now is the
+## heat and the standing the kill is worth, read off the victim's own row and filed where
+## doc 13 keeps them (the profile, the only heat owner), plus one `economy_log` line.
+##
+## What does not ship in this slice, and is reported rather than guessed: the loot roll's
+## payouts (W4's tables roll, but the wreck's pickups are §7's and slice 4's), the witness
+## rule (13 §2/§5 - a kill only counts when someone saw it) and the bounty payout window
+## (14 §7).
+func _on_npc_died(_position: Vector2, archetype: StringName, ship: Node2D) -> void:
+	if _lock_target == ship:
+		_cancel_lock()
+	var profile := _profile()
+	if profile == null:
+		push_warning("game: an NPC died with no profile service; heat and standing not filed")
+		return
+	var heat := int(ship.call(&"heat_on_kill"))
+	var standing := int(ship.call(&"standing_on_kill"))
+	if heat != 0:
+		_apply_heat(profile, heat)
+	if standing != 0:
+		_apply_standing(profile, standing)
+	EconomyLogScript.append(EVENT_KILL, archetype, 1, 0, int(profile.call(&"credits")))
+
+
+## 13 §4's per-kill heat, filed through the profile (the only heat owner, 13 §1) under the
+## space owner's key - the key `NpcShip._read_heat_tier` reads it back with, so a patrol's
+## scan of the player and the player's own crime score can never disagree.
+func _apply_heat(profile: Node, delta: int) -> void:
+	var heat: Dictionary = profile.call(&"heat")
+	var key := String(_sector_owner())
+	heat[key] = int(heat.get(key, 0)) + delta
+	profile.call(&"set_heat", heat)
+
+
+func _apply_standing(profile: Node, delta: int) -> void:
+	var standing: Dictionary = profile.call(&"standing")
+	var key := String(_sector_owner())
+	standing[key] = int(standing.get(key, 0)) + delta
+	profile.call(&"set_standing", standing)
+
+
+func _sector_owner() -> StringName:
+	if _sector == null or not is_inside_tree():
+		return NpcRegistryScript.UNALIGNED
+	return NpcRegistryScript.space_owner(_sector_row_id)
+
+
+## Section 7's death flow, the minimal shape the brief pins: hull 0 → the wreck's
+## explosion (the shockwave §13's `EXPLOSION_P0` is labelled for), the hold dropped at the
+## wreck with its recovery window, then a respawn docked. 14 §3's insurance, the mercy
+## clause and the hull replacement are slice 4 and are reported, not guessed.
+##
+## Nothing is filed to the profile's vitals here on purpose: a 0-hull record would be the
+## next launch's starting state, and the ship that comes back is 14 §3's business.
+func _on_ship_died() -> void:
+	if _dead:
+		return
+	_dead = true
+	_cancel_lock()
+	_switch_ship_off()
+	if _hud != null:
+		_hud.call(&"clear_target")
+		_hud.call(&"set_prompt", "")
+		_hud.call(&"set_warp_channel", 0.0)
+		_hud.call(&"set_speedometer", 0.0, Vector2.ZERO, Vector2.ZERO)
+	_explode_wreck()
+	_drop_cargo_at_wreck()
+	_respawn_docked()
+
+
+## The wreck stops flying and stops firing the frame it dies: the hull's own physics and
+## unhandled input are switched off (its reactor ticks, its guns' trigger and the fly-to
+## order all live there), and it leaves the `player_ship` group, because a wreck is not a
+## hull anything tractors to - without that, the hold's pickups (spawned on the wreck) would
+## be pulled straight back aboard by the dead ship and an uncollected death would cost
+## nothing.
+##
+## This is the wiring's own gate: `PlayerShip` has no death state and this pass may not
+## reshape its flight code (reported for slice 4).
+func _switch_ship_off() -> void:
+	if _ship != null:
+		_ship.set_physics_process(false)
+		_ship.set_process_unhandled_input(false)
+		_ship.remove_from_group(PLAYER_GROUP)
+	if _guns != null:
+		_guns.set_physics_process(false)
+
+
+## §4.2 item 8 / §13's `EXPLOSION_P0` row, whose own label is "(ship death)": the outward
+## impulse `I(d) = P₀ / (1 + d²)` over `EXPLOSION_WINDOW`, sliced across the window's ticks,
+## to every rigid body the sector holds (the curve is the range) plus the hull itself. The
+## blast's *face* - the bloom, the debris - is FX and slice 2.5's (reported).
+func _explode_wreck() -> void:
+	if _ship == null:
+		return
+	var epicentre: Vector2 = _ship.global_position
+	for body: Node in _bodies_near():
+		ImpactScript.apply_shockwave(epicentre, body, ImpactScript.EXPLOSION_WINDOW)
+
+
+## Every `RigidBody2D` in the sector plus the player's own body.
+func _bodies_near() -> Array[Node]:
+	var out: Array[Node] = []
+	if _sector != null:
+		var stack: Array[Node] = [_sector]
+		while not stack.is_empty():
+			var node: Node = stack.pop_back()
+			var body := node as RigidBody2D
+			if body != null and not body.is_queued_for_deletion():
+				out.append(body)
+			for child: Node in node.get_children():
+				stack.append(child)
+	if _ship != null:
+		var hull_body: RigidBody2D = _ship.call(&"impact_body")
+		if hull_body != null:
+			out.append(hull_body)
+	return out
+
+
+## Decision 7 / §2.7: "cargo spawns as pickups at the wreck with a 5-minute recovery
+## window". The hold goes over the side through the only cargo owner (`remove_cargo`, 17
+## §5 rule 2) as one pickup per stack, one `economy_log` line each, and the window rides
+## `Pickup`'s own age clock (see `DROP_WINDOW`).
+##
+## Reported: the recovery itself needs the wreck to outlive the transition to the station
+## screen, which today's single-scene world cannot do (the flight scene is discarded on the
+## respawn route), so a death costs the hold until slice 4 persists the wreck.
+func _drop_cargo_at_wreck() -> void:
+	var profile := _profile()
+	if profile == null or _ship == null:
+		return
+	var wreck: Vector2 = _ship.global_position
+	var items: Dictionary = profile.call(&"cargo_items")
+	for raw_id: Variant in items.keys():
+		var item_id := StringName(raw_id)
+		var amount := int(items[raw_id])
+		if amount <= 0:
+			continue
+		if not bool(profile.call(&"remove_cargo", item_id, amount)):
+			continue
+		_spawn_drop(item_id, amount, wreck)
+		EconomyLogScript.append(
+			EVENT_DROP, item_id, amount, 0, int(profile.call(&"credits"))
+		)
+
+
+## One dropped stack. Credits are not cargo (they are the wallet) so the drop is always a
+## cargo pickup; the window is expressed as the pickup's starting age, because
+## `Pickup.LIFETIME` is the only lifetime knob it has and it is a constant.
+func _spawn_drop(item_id: StringName, amount: int, wreck: Vector2) -> void:
+	var pickup: Node2D = PickupScript.new() as Node2D
+	add_child(pickup)
+	pickup.global_position = wreck
+	pickup.call(&"setup", item_id, amount, false)
+	pickup.set(&"_age", PickupScript.LIFETIME - DROP_WINDOW)
+
+
+## 14 §3's first clause, the only one this slice can honour: "on death you respawn docked
+## at the last station visited". In a session the last station visited *is* the one being
+## orbited (the player launched from it), so the respawn is the same dock route the dock
+## prompt and the safe warp use. A sector with no station (S7) has nowhere to respawn and
+## says so; the insurance payout, the mercy clause and the replacement hull are slice 4.
+func _respawn_docked() -> void:
+	if _sector == null or not _sector.has_station():
+		push_warning(
+			"game: the hull was lost in a sector with no station; 14 section 3's respawn "
+			+ "has no destination here (the sector record is slice 4's)."
+		)
+		return
+	## A standalone run (a probe, a scene smoke test) has nothing listening, so the route
+	## stays inert rather than emitting into nothing - the same guard docking uses.
+	if route_requested.get_connections().is_empty():
+		return
+	route_requested.emit(ROUTE_LOADING, {PARAM_DESTINATION: DESTINATION_STATION})

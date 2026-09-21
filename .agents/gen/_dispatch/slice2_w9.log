@@ -1,0 +1,7 @@
+I'll start by reading the required context in order.Now the "before" measurement — running W8's archived probe in place (unmodified, so its R1 check asserts the bug):Before-measurement captured (300 → 297 → 294, `ok=133 failed=0`). Now copying the archived probe into `tools/` and flipping its R1 check:Fix verified by the probe (`297 -> 297`, `ok=133 failed=0`). Now the new test suite:Both green. Negative control — verifying the tests actually catch R1 (temporarily reverting the one line):The tests catch R1 exactly (297 → 294). Restoring the fix:Now the full universal gate:Final probe run against the frozen tree:Now the report:R1 closed. Report at `.agents/gen/slice2_w9_report.md`.
+
+**The line:** `vajb-orbit/game/game.gd:1107` — `_ammo_seed[weapon_id] = live`, added after the pack write in `_file_ammo_report` (chosen over the `_docking` flag: it only touches the function R1 names, closes re-entry from any caller, and keeps `fired` meaning "since the last settle").
+
+**Double call, before → after:** W8's own probe on live `game.tscn`, 3 rounds fired, no further firing — before `300 → 297 → 294`, after `300 → 297 → 297`.
+
+**Gates:** reviewer's probe `ok=133 failed=0` (section D 11/0), universal gate `passed=219 failed=0` exit 0 (217 + the 2 new `tests/test_engine2_dock.gd` tests), and a negative control with the line removed that fails `0/2` at exactly `297 -> 294` — so the green is causal. Owner's `profile.cfg` byte-identical; `tools/` holds only `build_theme.gd` and `derive_icon_tints.gd`.

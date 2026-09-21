@@ -100,7 +100,7 @@ Per-sector population targets (spawn densities, not hard counts):
 | Anomalies | 1–2 per sector | §3.2 |
 | Nav beacons | 1 per corridor + 1 per gate | flight aids; scanning one reveals its sector's POIs (§3.3) |
 | Stations | 1 primary + 0–1 outpost | per 14 §2 |
-| Pirates | per 13 §4 | the risk tax |
+| Pirates | per 13 §4 / 18_engine_spec §13 | the risk tax |
 | Patrols | Concord/Meridian/Choir space only | ambience + heat enforcement (13 §3) |
 | Trade convoys | 1 active per inhabited sector | escort contract targets (14 §6) |
 

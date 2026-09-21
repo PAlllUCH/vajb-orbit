@@ -1,0 +1,4 @@
+== slice2_w2_cleavingonly.log
+   [SUMMARY] passed=9 failed=0
+== slice2_w2_poolsonly.log
+   [SUMMARY] passed=16 failed=0
