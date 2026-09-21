@@ -13,15 +13,28 @@ preamble (STYLE_BIBLE §8: the block goes first, and `--style-file` appends it a
 | Alien hulls, **Swarmer** (dispatch priority: slice-2 W3 gates its visual pass on it) | `assets/ships/ship_swarmer_{front,three_quarter,side,back}.png` | `staging/phase_g/_review/g_ships_ship_swarmer.jpg` |
 | Alien hulls, Sibelon | `assets/ships/ship_sibelon_{front,three_quarter,side,back}.png` | `_review/g_alien2.jpg` |
 | Alien hulls, Apex | `assets/ships/ship_apex_{front,three_quarter,side,back}.png` | `_review/g_alien2.jpg` |
-| Phase G FX (FX_SPEC §7.2) | `assets/fx/fx_{bio_plasma,acid_burn,shield_shatter,smoke_plume,arc_spark,dust_streak,dash_charge,lock_channel}.png` | `_review/g_fx.jpg` |
+| Phase G FX (FX_SPEC §7.2) | `assets/fx/fx_{bio_plasma,acid_burn,smoke_plume,arc_spark,dust_streak,dash_charge,lock_channel}.png` — 7 files | `_review/g_fx.jpg` |
+| Phase G FX, retired before shipping | `fx_shield_shatter` — the owner ruled 2026-09-21 that it duplicates the shipped `fx_shield_break.png` (which FX_SPEC §7.1 already names for that event). Generated, reviewed, dropped from the project and from the log; the render stays in `staging/phase_g/fx/` as provenance, and FX_SPEC §7.2 now carries the ruling | - |
 
 Generation logs: `vajb-orbit/assets/ships/generation_log_phase_g.md` and
 `vajb-orbit/assets/fx/generation_log_phase_g.md` (prompt, job id, alpha route per file).
-All 20 files are imported in the editor (`.import` sidecars present, `filesystem_manage scan` run).
+All shipped files are imported in the editor (`.import` sidecars present, `filesystem_manage scan`
++ `reimport` run).
 
 ## What is staged and awaiting your approval (nothing overwritten)
 
-The human rework sheets, each 4 views at 2K, tight-trimmed to the hull like the shipped set:
+The human rework sheets, each 4 views at 2K, tight-trimmed to the hull like the shipped set —
+**these are the reason `assets/ships/` does not contain every graphic this lane generated**:
+they carry the same file names as art you already approved, so the dispatch's review gate keeps
+them out of the game until you say go. To ship them once you have looked at the pages:
+
+```
+py -3.14 staging/phase_g/ship_batch_g.py ships --review --replace
+```
+
+`--review` includes the `review_only` runs, `--replace` allows the overwrite of the shipped
+files (without it the copy is refused, because a silent overwrite of art is indistinguishable
+from art that never changed).
 
 | Hull | Files staged | Review page |
 |---|---|---|
@@ -32,7 +45,10 @@ The human rework sheets, each 4 views at 2K, tight-trimmed to the hull like the 
 | Delver miner | `…ship_miner_…` | `_review/g_human_b.jpg` |
 
 They are marked `review_only` in the run registry, so `ship_batch_g.py` refuses to copy them.
-Approve (or reject) and I run `ship_batch_g.py ships --only …`-style shipping for them.
+Note the scope: this lane reworked **five** hull classes (player vanguard, fighter, corvette,
+freighter, miner). The rest of the roster — bomber, interceptor, trader, patrol, destroyer,
+mine layer, gunship, drone swarm, turret platform, the MMO liveries and the boss hulls — is
+untouched and keeps the art already shipped.
 
 ## Facts the next agent needs
 
@@ -54,20 +70,27 @@ Approve (or reject) and I run `ship_batch_g.py ships --only …`-style shipping 
   is trimmed the same way and the game draws these centred on a node. `keep_main()` drops stray
   fragments before trimming: a cell boundary can carry a sliver of its neighbour's tail, and a
   sliver survives a trim and ships as if it were part of the hull.
-- **Two overlaps to rule on**: `fx_shield_shatter` (FX_SPEC §7.2) covers the same event as the
-  shipped `fx_shield_break.png`, which §7.1 says to reuse; and `fx_arc_spark` sits beside the
-  shipped `fx_emp_arc.png`. The §7.2 table is what this lane generated against.
-- **One palette deviation to look at**: `fx_arc_spark`'s arcs render rust-red rather than steel
-  highlight `#565C63` with only a core flash (FX_SPEC §7.2 / §1.2). The ember core is sanctioned;
-  the whole arc reading ember is not. Re-prompt on request.
-- **Alien hull names are new.** `ship_{swarmer,sibelon,apex}_<view>` follows the shipped
-  `<hull>_<view>` shape but no spec sanctions it yet — the naming pass should adopt or correct it.
+- **`fx_shield_shatter` is retired — the shipped `fx_shield_break.png` is the asset** (owner
+  ruling 2026-09-21). The sheet was generated, reviewed and dropped: out of `assets/fx/`, out of
+  the family log, and its FX_SPEC §7.2 row now records the ruling instead of ordering a render.
+  `RUNS["fx_shield_shatter"]["ships"] = False` keeps every downstream tool from copying it again,
+  and `build_review.py` reads that flag so the review page matches what shipped (7 FX, not 8).
+- **`fx_arc_spark` was regenerated to the documentation** (owner ruling 2026-09-21): the first
+  render's arcs were rust-red end to end, while FX_SPEC §7.2 wants a steel highlight `#565C63` arc
+  with only a brightened-ember core flash. The new prompt says exactly that and the second render
+  is pale steel with a hot core. Reshipped with `--replace` and reimported.
+- **`fx_arc_spark` sits beside the shipped `fx_emp_arc.png`** (both are arcs, different events:
+  hull damage versus an EMP burst). Left as generated; the §7.2 table is the inventory.
+- **Alien hull names are provisional.** `ship_{swarmer,sibelon,apex}_<view>` follows the shipped
+  `<hull>_<view>` shape but no spec sanctions it, and the owner plans a naming overhaul for the
+  hull set — so treat these four-view sets as the art, not as the final names.
 
 ## Spend
 
-18 generation runs (8 FX + 10 ship sheets/singles) at the console's 10-credit = $0.05 / 2K basis
-≈ **$0.90**, plus 10 recraft keying calls (1 credit each) ≈ **$0.05**. The script's printed
-estimate (30 credits / $0.15) is the stale hint and `usage-ledger.jsonl` over-reports 3×.
+19 generation runs (7 FX shipped + 1 retired sheet + 10 ship sheets/singles, plus the arc
+regeneration) at the console's 10-credit = $0.05 / 2K basis ≈ **$0.95**, plus 10 recraft keying
+calls (1 credit each) ≈ **$0.05**. The script's printed estimate (30 credits / $0.15) is the stale
+hint and `usage-ledger.jsonl` over-reports 3×.
 
 ## Same night, outside this lane
 

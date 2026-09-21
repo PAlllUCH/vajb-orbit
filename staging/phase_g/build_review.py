@@ -12,6 +12,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import io
 from pathlib import Path
 
 from PIL import Image, ImageDraw
@@ -57,15 +58,24 @@ def build(family: str, only: str = "", cell: int = 256, cols: int = 4) -> Path |
                   fill=(205, 205, 210))
     REVIEW.mkdir(parents=True, exist_ok=True)
     out = REVIEW / f"g_{family}{'_' + only if only else ''}.jpg"
+    ## Sizes are measured in memory, not with `stat`: this mount's stat lags a fresh write, which
+    ## made the first version of this loop miss a 204 KB page entirely.
+    def encoded(image: Image.Image, quality: int) -> bytes:
+        buffer = io.BytesIO()
+        image.save(buffer, format="JPEG", quality=quality)
+        return buffer.getvalue()
+
+    payload = encoded(sheet, 74)
     for quality in (82, 74, 66, 58, 50):
-        sheet.save(out, quality=quality)
-        if out.stat().st_size <= 195_000:
+        payload = encoded(sheet, quality)
+        if len(payload) <= 195_000:
             break
-    while out.stat().st_size > 195_000 and sheet.size[0] > 320:
+    while len(payload) > 195_000 and sheet.size[0] > 320:
         ## The image viewer refuses a decode past ~200 KB; shrink rather than fail on a big page.
         sheet = sheet.resize((int(sheet.size[0] * 0.85), int(sheet.size[1] * 0.85)), Image.LANCZOS)
-        sheet.save(out, quality=74)
-    print(f"{out.relative_to(ROOT)}  {sheet.size}  {out.stat().st_size / 1000:.0f} KB  "
+        payload = encoded(sheet, 74)
+    out.write_bytes(payload)
+    print(f"{out.relative_to(ROOT)}  {sheet.size}  {len(payload) / 1000:.0f} KB  "
           f"{len(paths)} file(s)")
     return out
 

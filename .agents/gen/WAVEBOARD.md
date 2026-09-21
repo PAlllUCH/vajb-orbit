@@ -133,11 +133,13 @@ below); the graphics orchestrator receives `.agents/gen/dispatch_designer.md`
    ships; slice-2 W3's behaviour probes never gate on art.
    **State 2026-09-21, night run** (`designer_phase_g_report.md`): the
    **swarmer sheet is done and in the game** (so W3's visual pass is unblocked
-   on art), Sibelon and Apex hulls and all eight Phase G FX are shipped and
-   imported, and the five human rework sheets are staged in
-   `staging/phase_g/ships/` awaiting the owner's approval (nothing overwritten).
-   Review pages: `staging/phase_g/_review/g_ships.jpg` (all), `g_alien2.jpg`,
-   `g_fx.jpg`, `g_human_a/b.jpg`, `g_fighter.jpg`.
+   on art), Sibelon and Apex hulls and seven Phase G FX are shipped and
+   imported (`fx_shield_shatter` retired by owner ruling — `fx_shield_break` is
+   the shield-shatter asset), and the five human rework sheets are staged in
+   `staging/phase_g/ships/` awaiting the owner's approval (nothing overwritten;
+   ship them with `py -3.14 staging/phase_g/ship_batch_g.py ships --review
+   --replace`). Review pages: `staging/phase_g/_review/g_ships.jpg` (all),
+   `g_alien2.jpg`, `g_fx.jpg`, `g_human_a/b.jpg`, `g_fighter.jpg`.
 6. **Cleanup pass (deferred items)** — the five sealed-archive moves (need a
    `VAJB_ARCHIVE_OK=1` session), `_mockup_station.tscn` deletion (gated on
    live S2 verification + wave-4 review), MAIN_MENU_SPEC reference repointing
