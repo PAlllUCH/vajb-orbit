@@ -3,16 +3,20 @@
 **Updated: 2026-09-21 (compression pass).** Full history of what every worker
 did, with known errors and open findings, now lives in
 `.agents/gen/MASTER_REPORT.md` — this board keeps only current state,
-contracts, enforcement and the queue.
+contracts, enforcement and the queue. Executed-wave reports, briefs and
+evidence were moved to `.agents/gen/_archive/` (2026-09-21, reversible) —
+citation paths of the form `.agents/gen/<report>.md` now resolve one level
+deeper.
 
-**Current state: nothing in flight.** Engine wave 1 (fly-and-mine), engine
-slice 0 (Physics & Fuel) and engine slice 2 (Fight) are **CLOSED and
-review-verified clean**. Batch-2 (B2-3 fixed in code; B2-1/B2-2 measured and
-routed to the art lane), the two doc lanes and the Phase G graphics lane (65
-files shipped: swarmer + Sibelon + Apex hulls, 14 human hulls reworked, 7 FX)
-are also closed. Universal test gate: **`passed=219 failed=0`, exit 0**. Last
-commit `c24ed3f` closes slice 2. Next engine wave: **slice 2.5 (Feel), READY**
-— snapshot + commit before its first dispatch.
+**Current state: UI chrome blocker open, one playtest session done.** Engine
+waves closed as below (slice 0 + slice 2 review-verified clean; gate
+`passed=219 failed=0`; last commit `c24ed3f`). A full-loop live playtest
+(2026-09-21, godot-ai driven, owner crosschecking in `USER_NOTES.md`) verified
+the whole menu → station → launch → space structure but found the `ui_slot_*`
+chrome shipping as whole sheet cells (880×876 / 873×864), visually breaking
+the shipyard, the launch panel and the in-flight HUD. **The UI chrome fix
+wave goes before slice 2.5.** Findings + evidence:
+`.agents/gen/playtest_fullloop_20260921.md`.
 
 ## Living contracts
 
@@ -84,30 +88,47 @@ the graphics orchestrator receives `.agents/gen/dispatch_designer.md`
 (ship rework → alien hulls → Phase G FX, owner-gated review sheets). Both
 lanes' queued items below are executed through those files.
 
-1. **Slice-2.5 (Feel) — READY, the next engine wave.** Motion blur + camera
+1. **UI chrome blocker wave (NEW 2026-09-21, before slice 2.5).** The
+   2026-09-21 00:17 chrome re-cut shipped whole sheet cells for the
+   `ui_slot_*` family: `ui_slot_weapon_*.png` 880×876 and `ui_slot_cargo_*.png`
+   873×864, consumed at native size by shipyard Hardpoint01–07, the launch
+   panel's CargoSlot01–05 and the HUD slot buttons — those panels overflow to
+   ~4 800–6 200 px and their content lands off-screen ("only pistols" /
+   "only crates"). Design lane: tight plate re-cut (`plates_cut.py` route 1)
+   plus the standing R7/R8 scope (`ui_chrome_regression.md`). Coding lane:
+   TextureButton guard (`ignore_texture_size` + `custom_minimum_size`) +
+   stale-UID cleanup (`player_ship.tscn`, `game.tscn`) + one lint pass
+   (D4/D5 in the playtest report). Dispatchers below were rewritten for this
+   wave on 2026-09-21.
+2. **Playtest session 2 (after #1).** Finish the loop legs session 1 could
+   not reach: flight/fuel/reactor, mining, combat + countermeasures, death/
+   respawn, dock-back economy, save/load, boot/loading logo, menu stutter
+   (user note). Same crosscheck protocol against `USER_NOTES.md`.
+3. **Slice-2.5 (Feel) — READY, first engine wave after #1/#2.** Motion blur + camera
    pull-back + dust streaks (§3.4), damage smoke/ripple/shatter (FX_SPEC §6),
    dash charge FX (FX_SPEC §7) — no new gameplay systems, every number already
    in §13. All signals exist: the hull publishes `velocity()`, the HUD has
    `set_speedometer`, the damage pipeline fires, `hit_marker`/
    `set_lock_progress` are wired. Snapshot + commit before the first dispatch.
-2. **Owner spec pass (blocks nothing, unblocks tests):** the six
+4. **Owner spec pass (blocks nothing, unblocks tests):** the six
    `18_engine_spec.md` edits listed in MASTER_REPORT §3 item 1 (R-key +
    Z/X countermeasure rows, strike the refuel-for-CR wording, speed-table-v2 △
    tick, mine-alpha/kinetic-cadence rows, §6 fragment wording, rock-mass row,
    seeker-orbit and Q-marks readings).
-3. **Graphics lane, next pass:** the chrome re-cut (R7) + 4K 2× backdrop cuts
-   (R8) + tint-stencil import settings + `_48` zoom buttons (recipe:
-   `ui_chrome_regression.md`); B2-1 hover direction waits for the owner's pick;
+5. **Graphics lane, rest:** 4K 2× backdrop cuts (R8) + tint-stencil import
+   settings + `_48` zoom buttons; B2-1 hover direction waits for the owner's
+   pick; owner-endorsed direction: evaluate asset-library background plates
+   for the station panels (user note, review sheet still owner-gated);
    F10's credit-cache salvage glyph. Later: MMO/faction liveries, six boss
    hulls, `ship_vanguard_damaged` — i2i re-liveries gated on the owner's
    naming overhaul.
-4. **Non-blocking spec/economy items:** F3's three-owner delivery-seam
+6. **Non-blocking spec/economy items:** F3's three-owner delivery-seam
    refactor, F7's six doc holes, F8's `cm_*` rows in `03`, the REPAIRS panel's
    free-service rows, HUD pool blocks into `hud.tscn` (with L19, L20, L21
    backlog items when their files next have an owner), the mining laser's
    5 E/s drain (L11/L26 — the next wave owning `mining_laser.gd` or
    `player_ship.gd`), the station-boot-gate profile write (L18).
-5. **Cleanup pass (deferred items)** — the five sealed-archive moves (need a
+7. **Cleanup pass (deferred items)** — the five sealed-archive moves (need a
    `VAJB_ARCHIVE_OK=1` session), `_mockup_station.tscn` deletion (gated on
    live S2 verification + wave-4 review), MAIN_MENU_SPEC reference repointing
    (see `docs/design/CLOSEOUT_PLAN.md` / `CLEANUP_PLAN.md`).

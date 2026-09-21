@@ -34,8 +34,27 @@ SKIP_DIRS = {
 }
 MAX_FILE_BYTES = 10 * 1024 * 1024
 
+def _godot_binary():
+    """Resolve the headless Godot binary for this host.
+
+    Order: $VAJB_GODOT, then the Windows console build (so the mirrored Windows
+    workspace keeps working unchanged), then a bare `godot` on PATH - the Linux
+    host symlinks it to the 4.7.2 stable build.
+    """
+    override = os.environ.get("VAJB_GODOT")
+    if override:
+        return override
+    windows = "C:/Godot_4_7_2/Godot_v4.7.2-stable_win64_console.exe"
+    if os.path.exists(windows):
+        return windows
+    linux = os.path.expanduser("~/.local/bin/godot")
+    if os.path.exists(linux):
+        return linux
+    return "godot"
+
+
 TEST_CMD = [
-    "C:/Godot_4_7_2/Godot_v4.7.2-stable_win64_console.exe",
+    _godot_binary(),
     "--headless",
     "--path",
     os.path.join(WORKSPACE, "vajb-orbit"),
