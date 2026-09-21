@@ -1,0 +1,640 @@
+{
+ "fx_acid_burn_f1": {
+  "box": [
+   168,
+   172,
+   681,
+   687
+  ],
+  "image": "staging/cut/_fx_review/final/fx_acid_burn_f1_verify.jpg",
+  "subject": "green toxic splash effect",
+  "outline_intact": true,
+  "holes": 3,
+  "holes_where": "small magenta specks within green body",
+  "background_clear": true,
+  "artifact": "",
+  "verdict": "pass",
+  "_raw": "{\"subject\": \"green toxic splash effect\", \"outline_intact\": true, \"holes\": 3, \"holes_where\": \"small magenta specks within green body\", \"background_clear\": true, \"artifact\": \"\", \"verdict\": \"pass\"}",
+  "_reads": [
+   "pass",
+   "pass",
+   "pass"
+  ]
+ },
+ "fx_anomaly_grave_glow_f1": {
+  "box": [
+   173,
+   182,
+   578,
+   688
+  ],
+  "image": "staging/cut/_fx_review/final/fx_anomaly_grave_glow_f1_verify.jpg",
+  "subject": "blue swirling magic particle effect",
+  "outline_intact": true,
+  "holes": 0,
+  "holes_where": "",
+  "background_clear": true,
+  "artifact": "grey fringe at square edges",
+  "verdict": "pass",
+  "_raw": "{\"subject\": \"blue swirling magic particle effect\", \"outline_intact\": true, \"holes\": 0, \"holes_where\": \"\", \"background_clear\": true, \"artifact\": \"grey fringe at square edges\", \"verdict\": \"fail\"}",
+  "_reads": [
+   "fail",
+   "pass",
+   "pass"
+  ]
+ },
+ "fx_anomaly_rift_f1": {
+  "box": [
+   139,
+   34,
+   421,
+   974
+  ],
+  "image": "staging/cut/_fx_review/final/fx_anomaly_rift_f1_verify.jpg",
+  "subject": "orange lightning energy beam",
+  "outline_intact": true,
+  "holes": 0,
+  "holes_where": "",
+  "background_clear": true,
+  "artifact": "",
+  "verdict": "pass",
+  "_raw": "{\"subject\": \"orange lightning energy beam\", \"outline_intact\": true, \"holes\": 0, \"holes_where\": \"\", \"background_clear\": true, \"artifact\": \"\", \"verdict\": \"pass\"}",
+  "_reads": [
+   "pass",
+   "fail",
+   "pass"
+  ]
+ },
+ "fx_anomaly_shimmer_f1": {
+  "box": [
+   5,
+   14,
+   778,
+   753
+  ],
+  "image": "staging/cut/_fx_review/final/fx_anomaly_shimmer_f1_verify.jpg",
+  "subject": "dark magic ring effect",
+  "outline_intact": true,
+  "holes": 0,
+  "holes_where": "",
+  "background_clear": true,
+  "artifact": "",
+  "verdict": "pass",
+  "_raw": "{\"subject\": \"dark magic ring effect\", \"outline_intact\": true, \"holes\": 0, \"holes_where\": \"\", \"background_clear\": true, \"artifact\": \"\", \"verdict\": \"pass\"}",
+  "_reads": [
+   "pass",
+   "pass",
+   "fail"
+  ]
+ },
+ "fx_bio_plasma_f1": {
+  "box": [
+   118,
+   114,
+   624,
+   613
+  ],
+  "image": "staging/cut/_fx_review/final/fx_bio_plasma_f1_verify.jpg",
+  "subject": "green energy burst effect",
+  "outline_intact": true,
+  "holes": 0,
+  "holes_where": "",
+  "background_clear": true,
+  "artifact": "",
+  "verdict": "pass",
+  "_raw": "{\"subject\": \"green energy burst effect\", \"outline_intact\": true, \"holes\": 0, \"holes_where\": \"\", \"background_clear\": true, \"artifact\": \"\", \"verdict\": \"pass\"}",
+  "_reads": [
+   "pass",
+   "pass",
+   "pass"
+  ]
+ },
+ "fx_cargo_pulse_f1": {
+  "box": [
+   72,
+   60,
+   343,
+   323
+  ],
+  "image": "staging/cut/_fx_review/final/fx_cargo_pulse_f1_verify.jpg",
+  "subject": "pixel fire ring effect",
+  "outline_intact": true,
+  "holes": 1,
+  "holes_where": "center of ring",
+  "background_clear": false,
+  "artifact": "dark halo around edges",
+  "verdict": "fail",
+  "_raw": "{\"subject\": \"pixel fire ring effect\", \"outline_intact\": true, \"holes\": 1, \"holes_where\": \"center of ring\", \"background_clear\": false, \"artifact\": \"dark halo around edges\", \"verdict\": \"fail\"}",
+  "_reads": [
+   "fail",
+   null,
+   "fail"
+  ]
+ },
+ "fx_dash_charge_f1": {
+  "box": [
+   138,
+   154,
+   797,
+   804
+  ],
+  "image": "staging/cut/_fx_review/final/fx_dash_charge_f1_verify.jpg",
+  "subject": "glowing stone ring portal",
+  "outline_intact": true,
+  "holes": 1,
+  "holes_where": "center of ring",
+  "background_clear": true,
+  "artifact": "",
+  "verdict": "pass",
+  "_raw": "{\"subject\": \"glowing stone ring portal\", \"outline_intact\": true, \"holes\": 1, \"holes_where\": \"center of ring\", \"background_clear\": true, \"artifact\": \"\", \"verdict\": \"pass\"}",
+  "_reads": [
+   "pass",
+   "pass",
+   "pass"
+  ]
+ },
+ "fx_dust_streak_f1": {
+  "box": [
+   183,
+   0,
+   408,
+   64
+  ],
+  "image": "staging/cut/_fx_review/final/fx_dust_streak_f1_verify.jpg",
+  "subject": "dark horizontal energy beam effect",
+  "outline_intact": true,
+  "holes": 0,
+  "holes_where": "",
+  "background_clear": true,
+  "artifact": "",
+  "verdict": "pass",
+  "_raw": "{\"subject\": \"dark horizontal energy beam effect\", \"outline_intact\": true, \"holes\": 0, \"holes_where\": \"\", \"background_clear\": true, \"artifact\": \"\", \"verdict\": \"pass\"}",
+  "_reads": [
+   "pass",
+   "pass",
+   "pass"
+  ]
+ },
+ "fx_ember_pulse_f1": {
+  "box": [
+   53,
+   51,
+   483,
+   481
+  ],
+  "image": "staging/cut/_fx_review/final/fx_ember_pulse_f1_verify.jpg",
+  "subject": "glowing lava rock sphere",
+  "outline_intact": true,
+  "holes": 0,
+  "holes_where": "",
+  "background_clear": true,
+  "artifact": "",
+  "verdict": "pass",
+  "_raw": "{\"subject\": \"glowing lava rock sphere\", \"outline_intact\": true, \"holes\": 0, \"holes_where\": \"\", \"background_clear\": true, \"artifact\": \"\", \"verdict\": \"pass\"}",
+  "_reads": [
+   "pass",
+   "pass",
+   "pass"
+  ]
+ },
+ "fx_ember_ring_alt_f1": {
+  "box": [
+   7,
+   4,
+   831,
+   818
+  ],
+  "image": "staging/cut/_fx_review/final/fx_ember_ring_alt_f1_verify.jpg",
+  "subject": "stone ring portal frame",
+  "outline_intact": true,
+  "holes": 1,
+  "holes_where": "central opening",
+  "background_clear": true,
+  "artifact": "",
+  "verdict": "pass",
+  "_raw": "{\"subject\": \"stone ring portal frame\", \"outline_intact\": true, \"holes\": 1, \"holes_where\": \"central opening\", \"background_clear\": true, \"artifact\": \"\", \"verdict\": \"pass\"}\nCentral opening is the only enclosed hole; edges cleanly cut.",
+  "_reads": [
+   "pass",
+   "pass",
+   "pass"
+  ]
+ },
+ "fx_ember_ring_f1": {
+  "box": [
+   7,
+   6,
+   841,
+   840
+  ],
+  "image": "staging/cut/_fx_review/final/fx_ember_ring_f1_verify.jpg",
+  "subject": "stone ring portal effect",
+  "outline_intact": true,
+  "holes": 1,
+  "holes_where": "center opening",
+  "background_clear": true,
+  "artifact": "",
+  "verdict": "pass",
+  "_raw": "{\"subject\": \"stone ring portal effect\", \"outline_intact\": true, \"holes\": 1, \"holes_where\": \"center opening\", \"background_clear\": true, \"artifact\": \"\", \"verdict\": \"pass\"}",
+  "_reads": [
+   "pass",
+   "pass",
+   "pass"
+  ]
+ },
+ "fx_emp_arc_f1": {
+  "box": [
+   114,
+   72,
+   702,
+   800
+  ],
+  "image": "staging/cut/_fx_review/final/fx_emp_arc_f1_verify.jpg",
+  "subject": "blue electric lightning bolt",
+  "outline_intact": true,
+  "holes": 0,
+  "holes_where": "",
+  "background_clear": true,
+  "artifact": "",
+  "verdict": "pass",
+  "_raw": "{\"subject\": \"blue electric lightning bolt\", \"outline_intact\": true, \"holes\": 0, \"holes_where\": \"\", \"background_clear\": true, \"artifact\": \"\", \"verdict\": \"pass\"}",
+  "_reads": [
+   "pass",
+   "pass",
+   "pass"
+  ]
+ },
+ "fx_engine_trail_f1": {
+  "box": [
+   197,
+   0,
+   514,
+   64
+  ],
+  "image": "staging/cut/_fx_review/final/fx_engine_trail_f1_verify.jpg",
+  "subject": "orange glowing horizontal energy streak",
+  "outline_intact": true,
+  "holes": 0,
+  "holes_where": "",
+  "background_clear": false,
+  "artifact": "faint black rectangular box remains",
+  "verdict": "fail",
+  "_raw": "{\"subject\": \"orange glowing horizontal energy streak\", \"outline_intact\": true, \"holes\": 0, \"holes_where\": \"\", \"background_clear\": false, \"artifact\": \"faint black rectangular box remains\", \"verdict\": \"fail\"}",
+  "_reads": [
+   "fail",
+   "fail",
+   "pass"
+  ]
+ },
+ "fx_hull_critical_vignette_f1": {
+  "box": [
+   17,
+   18,
+   968,
+   937
+  ],
+  "image": "staging/cut/_fx_review/final/fx_hull_critical_vignette_f1_verify.jpg",
+  "subject": "four sided fire particle frame",
+  "outline_intact": true,
+  "holes": 0,
+  "holes_where": "",
+  "background_clear": true,
+  "artifact": "slight grey fringe on inner edge",
+  "verdict": "pass",
+  "_raw": "{\"subject\": \"four sided fire particle frame\", \"outline_intact\": true, \"holes\": 0, \"holes_where\": \"\", \"background_clear\": true, \"artifact\": \"slight grey fringe on inner edge\", \"verdict\": \"pass\"}",
+  "_reads": [
+   "pass",
+   "pass",
+   "fail"
+  ]
+ },
+ "fx_jump_portal_f1": {
+  "box": [
+   195,
+   0,
+   409,
+   680
+  ],
+  "image": "staging/cut/_fx_review/final/fx_jump_portal_f1_verify.jpg",
+  "subject": "vertical glowing orange energy effect",
+  "outline_intact": true,
+  "holes": 0,
+  "holes_where": "",
+  "background_clear": true,
+  "artifact": "",
+  "verdict": "pass",
+  "_raw": "{\"subject\": \"vertical glowing orange energy effect\", \"outline_intact\": true, \"holes\": 0, \"holes_where\": \"\", \"background_clear\": true, \"artifact\": \"\", \"verdict\": \"pass\"}",
+  "_reads": [
+   "pass",
+   "pass",
+   "pass"
+  ]
+ },
+ "fx_laser_bolt_f1": {
+  "box": [
+   284,
+   0,
+   1105,
+   232
+  ],
+  "image": "staging/cut/_fx_review/final/fx_laser_bolt_f1_verify.jpg",
+  "subject": "horizontal fiery plasma beam effect",
+  "outline_intact": true,
+  "holes": 0,
+  "holes_where": "",
+  "background_clear": true,
+  "artifact": "magenta halo bleed",
+  "verdict": "pass",
+  "_raw": "{\"subject\": \"horizontal fiery plasma beam effect\", \"outline_intact\": true, \"holes\": 0, \"holes_where\": \"\", \"background_clear\": true, \"artifact\": \"magenta halo bleed\", \"verdict\": \"pass\"}",
+  "_reads": [
+   "pass",
+   "pass",
+   "pass"
+  ]
+ },
+ "fx_lock_channel_f1": {
+  "box": [
+   166,
+   204,
+   376,
+   347
+  ],
+  "image": "staging/cut/_fx_review/final/fx_lock_channel_f1_verify.jpg",
+  "subject": "curved grey slash effect",
+  "outline_intact": true,
+  "holes": 0,
+  "holes_where": "",
+  "background_clear": false,
+  "artifact": "black box and blocky dark halo remain",
+  "verdict": "fail",
+  "_raw": "{\"subject\": \"curved grey slash effect\", \"outline_intact\": true, \"holes\": 0, \"holes_where\": \"\", \"background_clear\": false, \"artifact\": \"black box and blocky dark halo remain\", \"verdict\": \"fail\"}",
+  "_reads": [
+   "fail",
+   "fail",
+   "fail"
+  ]
+ },
+ "fx_mine_f1": {
+  "box": [
+   1,
+   2,
+   741,
+   733
+  ],
+  "image": "staging/cut/_fx_review/final/fx_mine_f1_verify.jpg",
+  "subject": "circular spiked metal shield",
+  "outline_intact": true,
+  "holes": 0,
+  "holes_where": "",
+  "background_clear": true,
+  "artifact": "",
+  "verdict": "pass",
+  "_raw": "{\"subject\": \"circular spiked metal shield\", \"outline_intact\": true, \"holes\": 0, \"holes_where\": \"\", \"background_clear\": true, \"artifact\": \"\", \"verdict\": \"pass\"}",
+  "_reads": [
+   "pass",
+   "pass",
+   "pass"
+  ]
+ },
+ "fx_mining_beam_f1": {
+  "box": [
+   25,
+   17,
+   414,
+   406
+  ],
+  "image": "staging/cut/_fx_review/final/fx_mining_beam_f1_verify.jpg",
+  "subject": "orange spark burst effect",
+  "outline_intact": true,
+  "holes": 0,
+  "holes_where": "",
+  "background_clear": true,
+  "artifact": "",
+  "verdict": "pass",
+  "_raw": "{\"subject\": \"orange spark burst effect\", \"outline_intact\": true, \"holes\": 0, \"holes_where\": \"\", \"background_clear\": true, \"artifact\": \"\", \"verdict\": \"pass\"}",
+  "_reads": [
+   "pass",
+   "fail",
+   "pass"
+  ]
+ },
+ "fx_repair_pulse_f1": {
+  "box": [
+   224,
+   228,
+   654,
+   666
+  ],
+  "image": "staging/cut/_fx_review/final/fx_repair_pulse_f1_verify.jpg",
+  "subject": "metal ring with sparks",
+  "outline_intact": true,
+  "holes": 0,
+  "holes_where": "",
+  "background_clear": true,
+  "artifact": "",
+  "verdict": "pass",
+  "_raw": "{\"subject\": \"metal ring with sparks\", \"outline_intact\": true, \"holes\": 0, \"holes_where\": \"\", \"background_clear\": true, \"artifact\": \"\", \"verdict\": \"pass\"}",
+  "_reads": [
+   "pass",
+   "pass",
+   "fail"
+  ]
+ },
+ "fx_shield_ripple_f1": {
+  "box": [
+   156,
+   157,
+   577,
+   565
+  ],
+  "image": "staging/cut/_fx_review/final/fx_shield_ripple_f1_verify.jpg",
+  "subject": "ring shaped shockwave effect",
+  "outline_intact": true,
+  "holes": 1,
+  "holes_where": "lower inner ring center",
+  "background_clear": true,
+  "artifact": "black square center and pixelated fringe",
+  "verdict": "fail",
+  "_raw": "{\"subject\": \"ring shaped shockwave effect\", \"outline_intact\": true, \"holes\": 1, \"holes_where\": \"lower inner ring center\", \"background_clear\": true, \"artifact\": \"black square center and pixelated fringe\", \"verdict\": \"fail\"}",
+  "_reads": [
+   "fail",
+   "fail",
+   "fail"
+  ]
+ },
+ "fx_smoke_plume_f1": {
+  "box": [
+   71,
+   19,
+   384,
+   969
+  ],
+  "image": "staging/cut/_fx_review/final/fx_smoke_plume_f1_verify.jpg",
+  "subject": "dark wispy smoke effect",
+  "outline_intact": true,
+  "holes": 2,
+  "holes_where": "small gaps in upper and middle smoke",
+  "background_clear": true,
+  "artifact": "dark grey speckles",
+  "verdict": "pass",
+  "_raw": "{\"subject\": \"dark wispy smoke effect\", \"outline_intact\": true, \"holes\": 2, \"holes_where\": \"small gaps in upper and middle smoke\", \"background_clear\": true, \"artifact\": \"dark grey speckles\", \"verdict\": \"fail\"}",
+  "_reads": [
+   "fail",
+   "pass",
+   "pass"
+  ]
+ },
+ "fx_tractor_beam_f1": {
+  "box": [
+   12,
+   0,
+   833,
+   104
+  ],
+  "image": "staging/cut/_fx_review/final/fx_tractor_beam_f1_verify.jpg",
+  "subject": "orange horizontal laser beam glow",
+  "outline_intact": true,
+  "holes": 0,
+  "holes_where": "",
+  "background_clear": true,
+  "artifact": "",
+  "verdict": "pass",
+  "_raw": "{\"subject\": \"orange horizontal laser beam glow\", \"outline_intact\": true, \"holes\": 0, \"holes_where\": \"\", \"background_clear\": true, \"artifact\": \"\", \"verdict\": \"pass\"}",
+  "_reads": [
+   "pass",
+   "pass",
+   "pass"
+  ]
+ },
+ "fx_arc_spark_f1": {
+  "box": [
+   0,
+   78,
+   908,
+   595
+  ],
+  "image": "staging/cut/_fx_review/final/fx_arc_spark_f1_verify.jpg",
+  "subject": "blue lightning branching effect",
+  "outline_intact": true,
+  "holes": 0,
+  "holes_where": "",
+  "background_clear": true,
+  "artifact": "soft grey glow fringe",
+  "verdict": "pass",
+  "_raw": "{\"subject\": \"blue lightning branching effect\", \"outline_intact\": true, \"holes\": 0, \"holes_where\": \"\", \"background_clear\": true, \"artifact\": \"soft grey glow fringe\", \"verdict\": \"pass\"}",
+  "_reads": [
+   "pass",
+   "pass",
+   "pass"
+  ]
+ },
+ "fx_explosion_f1": {
+  "box": [
+   0,
+   0,
+   904,
+   776
+  ],
+  "image": "staging/cut/_fx_review/final/fx_explosion_f1_verify.jpg",
+  "subject": "orange fire explosion burst",
+  "outline_intact": true,
+  "holes": 0,
+  "holes_where": "",
+  "background_clear": true,
+  "artifact": "faint grey smoke halo",
+  "verdict": "pass",
+  "_raw": "{\"subject\": \"orange fire explosion burst\", \"outline_intact\": true, \"holes\": 0, \"holes_where\": \"\", \"background_clear\": true, \"artifact\": \"faint grey smoke halo\", \"verdict\": \"pass\"}",
+  "_reads": [
+   "pass",
+   "pass",
+   "fail"
+  ]
+ },
+ "fx_missile_trail_f1": {
+  "box": [
+   95,
+   27,
+   458,
+   222
+  ],
+  "image": "staging/cut/_fx_review/final/fx_missile_trail_f1_verify.jpg",
+  "subject": "fiery glowing ship projectile",
+  "outline_intact": true,
+  "holes": 0,
+  "holes_where": "",
+  "background_clear": true,
+  "artifact": "grey blocky fringe",
+  "verdict": "fail",
+  "_raw": "{\"subject\": \"fiery glowing ship projectile\", \"outline_intact\": true, \"holes\": 0, \"holes_where\": \"\", \"background_clear\": true, \"artifact\": \"grey blocky fringe\", \"verdict\": \"fail\"}",
+  "_reads": [
+   "fail",
+   "pass",
+   "fail"
+  ]
+ },
+ "fx_muzzle_flash_f1": {
+  "box": [
+   0,
+   0,
+   504,
+   496
+  ],
+  "image": "staging/cut/_fx_review/final/fx_muzzle_flash_f1_verify.jpg",
+  "subject": "orange starburst explosion effect",
+  "outline_intact": true,
+  "holes": 0,
+  "holes_where": "",
+  "background_clear": true,
+  "artifact": "faint grey fringe",
+  "verdict": "pass",
+  "_raw": "{\"subject\": \"orange starburst explosion effect\", \"outline_intact\": true, \"holes\": 0, \"holes_where\": \"\", \"background_clear\": true, \"artifact\": \"faint grey fringe\", \"verdict\": \"pass\"}",
+  "_reads": [
+   "pass",
+   "pass",
+   "pass"
+  ]
+ },
+ "fx_secondary_explosion_f1": {
+  "box": [
+   24,
+   0,
+   326,
+   311
+  ],
+  "image": "staging/cut/_fx_review/final/fx_secondary_explosion_f1_verify.jpg",
+  "subject": "fireball explosion with sparks",
+  "outline_intact": true,
+  "holes": 0,
+  "holes_where": "",
+  "background_clear": false,
+  "artifact": "faint dark square halo",
+  "verdict": "fail",
+  "_raw": "{\"subject\": \"fireball explosion with sparks\", \"outline_intact\": true, \"holes\": 0, \"holes_where\": \"\", \"background_clear\": false, \"artifact\": \"faint dark square halo\", \"verdict\": \"fail\"}",
+  "_reads": [
+   "fail",
+   "fail",
+   "fail"
+  ]
+ },
+ "fx_shield_break_f1": {
+  "box": [
+   35,
+   32,
+   521,
+   586
+  ],
+  "image": "staging/cut/_fx_review/final/fx_shield_break_f1_verify.jpg",
+  "subject": "radial ice shatter burst effect",
+  "outline_intact": true,
+  "holes": 0,
+  "holes_where": "",
+  "background_clear": true,
+  "artifact": "grey halo fringe around shards",
+  "verdict": "pass",
+  "_raw": "{\"subject\": \"radial ice shatter burst effect\", \"outline_intact\": true, \"holes\": 0, \"holes_where\": \"\", \"background_clear\": true, \"artifact\": \"grey halo fringe around shards\", \"verdict\": \"pass\"}",
+  "_reads": [
+   "pass",
+   "pass",
+   "pass"
+  ]
+ }
+}

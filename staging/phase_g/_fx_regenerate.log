@@ -1,0 +1,9 @@
+[fx_mining_beam_v2] submitting
+[fx_mining_beam_v2] ok task=0f342737dbad93ae9d318a9d43695381 42.9s master=/home/kamil-paluszkiewicz/VajbOrbit/staging/phase_g/fx/20260921-203011/grimdark-painted-sci-fi-semi-realistic-1.png
+[fx_mining_beam_v2] final fx_mining_beam_v2.png (2048, 2048) RGB
+[fx_laser_bolt_v2] submitting
+[fx_laser_bolt_v2] ok task=878657f40e552bbdf61d3a6a064eae3c 37.6s master=/home/kamil-paluszkiewicz/VajbOrbit/staging/phase_g/fx/20260921-203050/grimdark-painted-sci-fi-semi-realistic-1.png
+[fx_laser_bolt_v2] final fx_laser_bolt_v2.png (2048, 2048) RGB
+[fx_mine] submitting
+[fx_mine] ok task=4c70e40fb28da85b4051fdc4d9fe06fc 48.2s master=/home/kamil-paluszkiewicz/VajbOrbit/staging/phase_g/fx/20260921-203139/grimdark-painted-sci-fi-semi-realistic-1.png
+[fx_mine] opaque render, no alpha - key it, then re-run with --post-only

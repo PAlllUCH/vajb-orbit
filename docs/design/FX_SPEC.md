@@ -33,6 +33,29 @@ Three files, three distinct forms (hollow ring / dense point glow / vertical tea
 - **Negative list (every panel, every prompt, copied from STYLE_BIBLE §8):** no purple, no green, no teal, no yellow, no blue, no rainbow, no chrome, no glossy highlights, no text, no watermark.
 - Subtle film grain applies (style block carries it).
 
+**Amendment 2026-09-21 — the alpha carve-out (owner scoping of the FX re-cut).** "Never
+alpha-keyed" holds for every effect composited **additively**: RGB on Void Black adds its own
+light and a black background pixel adds nothing, so keying buys nothing there. Four effects are
+not additive and must therefore carry alpha, because a MIX-blended effect draws its own dark
+pixels and an opaque black box would occlude what is behind it:
+
+| File | Why it needs alpha | Route shipped |
+|---|---|---|
+| `fx_smoke_plume.png` | §7.1's plume is smoke, not light: its opacity follows density, not brightness | `recraft/remove-background` |
+| `fx_acid_burn.png` | §7.3's "the only MIX effect in the inventory" — a stain, not a light | `recraft/remove-background` |
+| `fx_dust_streak.png` | §5 row 3's camera-space streak, "never additively blown" | `recraft/remove-background` |
+| `fx_hull_critical_vignette.png` | §1.8's overlay: its "background is discarded on import" and its centre must be fully transparent | `staging/cut/key_luminance.py` — the paid matte kept 99.7% of the frame (measured 4 179 224 of 4 194 304 px opaque) and left the centre black |
+
+The routes were measured, not assumed: both were run for all four and compared side by side on
+`staging/cut/_fx_review/fx_alpha_all.jpg`, with numbers from `staging/cut/qc_fx_alpha.py`
+(box containment, enclosed-transparency share, inverted-matte guard) and the read of
+`staging/cut/verify_fx_alpha.py` (deepseek-chat vision, majority of three). The matte won the
+smoke, the acid and the streak; the luminance key won the vignette — the one effect whose
+opacity really is its brightness. Reversal per file: run the other route
+(`staging/cut/key_luminance.py --check <file>`), re-run both checks, reimport.
+
+Every other effect stays RGB on Void Black exactly as §0.1 says.
+
 ---
 
 ## 1. FX Inventory
@@ -145,19 +168,41 @@ value's own row.
 3. Import with additive blend intent; verify each frame against the §0 master emission rule before commit.
 4. Record generator, prompt, seed, and date per asset in a generation log next to `vajb-orbit/assets/` (AI art is not CC0 — per AGENTS.md).
 
+**Amendment 2026-09-21 — the sheets are split to files (owner instruction).** §2 item 2's
+"optional split exports, produced only if AtlasTexture is insufficient" is now the shipped
+route for every multi-object sheet: the frames are separate PNGs, because a `GPUParticles2D`
+draws its texture at the texture's own size (`scale` is inert for the drawn quad), so a frame
+that is a 2K region of a master cannot be drawn at a design size without the master's pixels
+around it. `staging/cut/split_fx.py` does the cut and records what it found:
+
+- **Objects are found by masking the ink**, never by cutting on a divider; the nominal grid is
+  only the window a component is grouped into, so a burst that drifts off its cell's centre is
+  still whole. Each frame is the union of its cell's ink components, with film-grain specks
+  (3-64 px against bursts of 1 280-26 732 px) dropped by area.
+- **Every frame of a sheet shares one canvas** and its object is centred on it, so relative size
+  within a sequence survives the split. Canvas sizes: explosion 904x776, muzzle flash 504x496,
+  secondary explosion 352x312, arc 912x672, laser bolt 2040x280, missile trail 552x248, shield
+  break 536x624, mining chip sparks 400x408.
+- A sheet that resolves to fewer frames than this spec states is refused and reported rather
+  than cut short: `fx_mining_beam` resolves to **3** frames (see §7.3's row) until a render with
+  four lands.
+
 ## 3. File Naming
 
 | Asset | File |
 |---|---|
-| Laser bolt sheet (light + medium) | `fx_laser_bolt.png` |
-| Muzzle flash sheet (4-frame master) | `fx_muzzle_flash.png` (split exports `fx_muzzle_flash_f1.png` … `_f4.png` optional) |
+| Laser bolt sheet (light + medium) | `fx_laser_bolt.png` (frames `fx_laser_bolt_f1.png` thin, `_f2.png` thick) |
+| Muzzle flash sheet (4-frame master) | `fx_muzzle_flash.png`, frames `fx_muzzle_flash_f1.png` … `_f4.png` |
 | Engine trail streak (§1.3) | `fx_engine_trail.png` |
-| Explosion sheet (5-frame master) | `fx_explosion.png` (split exports `fx_explosion_f1.png` … `_f5.png` optional) |
+| Explosion sheet (5-frame master) | `fx_explosion.png`, frames `fx_explosion_f1.png` … `_f5.png` |
 | Shield hit ripple | `fx_shield_ripple.png` |
-| Mining beam chip sparks (4-frame sheet) | `fx_mining_beam.png` |
+| Mining beam chip sparks (4-frame sheet) | `fx_mining_beam.png`, frames `fx_mining_beam_f1.png` … `_f4.png` |
 | Cargo pickup pulse | `fx_cargo_pulse.png` |
 | Hull-critical vignette | `fx_hull_critical_vignette.png` |
 | Menu wreck ember pulse (MAIN_MENU_SPEC §5) | `fx_ember_pulse.png` |
+
+Frames of the sheets §7 adds follow the same shape: `fx_missile_trail_f1..f4`,
+`fx_shield_break_f1..f4`, `fx_secondary_explosion_f1..f4`, `fx_arc_spark_f1..f4`.
 
 Snake_case throughout; all live under `vajb-orbit/assets/fx/`.
 
@@ -237,9 +282,26 @@ brainstorm, absorbed after `docs/gameplay/18_engine_spec.md` §2.1. Existing
 | `fx_dust_streak.png` | Single micro streak, thin, low alpha | `#1A2230`→transparent; camera-space, never additively blown. |
 | `fx_dash_charge.png` | Charge ring + streak burst for the fold/dash (ruling 9) | Ember pair (it is an engine state): `#C8461B` rim, `#E8703A` hot edge; single frame, engine scales it. |
 | `fx_lock_channel.png` | Thin progress arc texture for the reticle lock ring (§4.1) | Steel Highlight `#565C63` arc; the ring completes to `metal_light` when the lock lands. Engine may draw it in `_draw()` instead — texture is the fallback. |
+| `fx_mine.png` | Deployable contact mine for the mine-layer's payload (LOW_BACKLOG L58): a riveted iron-black drum with four spiked prongs and one ember warning lamp, seen face-on | `#232629` armour with `#2B2F35` banding, `#3A3F46` cap, the lamp the only emitter (`#C8461B` with a dim `#E8703A` pilot). **Alpha-keyed**, unlike every ember effect: a solid object drawn additively would erase its own dark hull. Replaces the hand-picked `fx_ember_pulse` crop the wiring used until 2026-09-21. |
 
 All: 2K masters, Void Black `#0A0E14` background, isolated subjects, §0.1
 negative list, generation log next to the assets.
+
+**Amendment 2026-09-21 — every FX carries at least four frames (owner instruction).** "i want all
+fx to have at least 4 frames like explosion" so a client can animate them. Sixteen effects shipped
+as one texture (an engine-scaled ring, a pulsing orb, a streak) and each now has a four-frame
+cycle whose cells are that effect's own phases in reading order: 21 sheets were generated on
+`gpt-image-2-5-flare-text-to-image` (2K, 1:1), cut to `fx_<name>_f1..f4.png` by
+`staging/cut/split_fx.py`, and the five of them that render non-additively (`fx_acid_burn`,
+`fx_smoke_plume`, `fx_dust_streak`, `fx_hull_critical_vignette`, `fx_mine` — see §0.1's carve-out)
+were keyed frame by frame. `fx_laser_bolt`'s two tiers become four frames: light bright, light
+dimming, medium bright, medium dimming.
+
+This **supersedes the "single frame texture" wording** in §1.3 (engine trail), §1.5 (shield
+ripple), §1.7 (cargo pulse), §1.8 (vignette) and §5 (dust streak) wherever it appears: those rows
+keep their engine-side animation (scale, alpha, fade), and the frames are the art's own sequence
+for a client that would rather play frames than drive one texture. A one-frame consumer can always
+draw `_f1`. The deviation is deliberate and recorded here rather than silently editing five rows.
 
 ### 7.3 Wiring contract
 

@@ -1,0 +1,10 @@
+{
+ "source_md5": "cbcd9b90bc86e96d4c4608df899c885e",
+ "job_id": "78c7bc6d0399cb9146f919a1d8fcad44",
+ "payload_field": "image",
+ "upload_url": "https://tempfile.redpandaai.co/kieai/11467482/fx_smoke_plume_f3.png/1790017758989-eb96x2s1l7.png",
+ "result_url": "https://tempfile.aiquickdraw.com/js/g4/f5f54dea44ab.png",
+ "result": "_keying/recraft/fx_smoke_plume_f3-cbcd9b90-recraft.png",
+ "source": "staging/cut/_fx_cycles/fx_smoke_plume_v2/fx_smoke_plume_f3.png",
+ "at": "2026-09-21 21:09:27"
+}

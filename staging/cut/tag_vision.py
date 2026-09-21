@@ -43,6 +43,7 @@ import argparse
 import base64
 import io
 import json
+import os
 import re
 import threading
 import time
@@ -60,7 +61,13 @@ RAW = LIBRARY / "raw"
 CUT = LIBRARY / "cut"
 SHEETS = LIBRARY / "_sheets.json"
 ANSWER = LIBRARY / "_vision.json"
-CRUSH = Path("C:/Users/Kamil/AppData/Local/crush/crush.json")
+## The Crush config that holds `providers.deepseek.api_key`. It lives under a different
+## prefix per host (AGENTS.md, host portability), so the path is resolved rather than
+## hard-coded: `CRUSH_CONFIG` wins, then the Windows install, then `~/.local/share/crush`.
+_WINDOWS_CRUSH = Path("C:/Users/Kamil/AppData/Local/crush/crush.json")
+CRUSH = Path(os.environ.get("CRUSH_CONFIG")
+             or (_WINDOWS_CRUSH if _WINDOWS_CRUSH.is_file()
+                 else Path.home() / ".local/share/crush/crush.json"))
 MODEL = "deepseek-chat"
 ENDPOINT = "https://api.deepseek.com/chat/completions"
 

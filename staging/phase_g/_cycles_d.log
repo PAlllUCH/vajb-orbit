@@ -1,0 +1,12 @@
+[fx_repair_pulse_v2] submitting
+[fx_repair_pulse_v2] ok task=67471e56130f750737a36e28f36a98ca 37.8s master=/home/kamil-paluszkiewicz/VajbOrbit/staging/phase_g/fx/20260921-203925/grimdark-painted-sci-fi-semi-realistic-1.png
+[fx_repair_pulse_v2] final fx_repair_pulse_v2.png (2048, 2048) RGB
+[fx_shield_ripple_v2] submitting
+[fx_shield_ripple_v2] ok task=db3aca0c47541a16da12708013f74f09 37.9s master=/home/kamil-paluszkiewicz/VajbOrbit/staging/phase_g/fx/20260921-204003/grimdark-painted-sci-fi-semi-realistic-1.png
+[fx_shield_ripple_v2] final fx_shield_ripple_v2.png (2048, 2048) RGB
+[fx_tractor_beam_v2] submitting
+[fx_tractor_beam_v2] ok task=fdc8afba8ff4e79b4a32d4d9a3366f25 37.8s master=/home/kamil-paluszkiewicz/VajbOrbit/staging/phase_g/fx/20260921-204042/grimdark-painted-sci-fi-semi-realistic-1.png
+[fx_tractor_beam_v2] final fx_tractor_beam_v2.png (2048, 2048) RGB
+[fx_laser_bolt_v3] submitting
+[fx_laser_bolt_v3] ok task=c91459ef65947dbc246b215450e3d6a3 48.6s master=/home/kamil-paluszkiewicz/VajbOrbit/staging/phase_g/fx/20260921-204132/grimdark-painted-sci-fi-semi-realistic-1.png
+[fx_laser_bolt_v3] final fx_laser_bolt_v3.png (2048, 2048) RGB

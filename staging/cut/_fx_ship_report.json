@@ -1,0 +1,1102 @@
+{
+ "shipped": [
+  {
+   "kind": "alpha",
+   "source": "staging/cut/_fx_ship/fx_acid_burn-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_acid_burn.png",
+   "state": "same",
+   "source_md5": "e88bc340b37d27a04d813391329004c2",
+   "replaced_md5": "e88bc340b37d27a04d813391329004c2",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_acid_burn_v2/fx_acid_burn_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_acid_burn_f1.png",
+   "state": "replaced",
+   "source_md5": "c34d7ee4e361328ec15c0ee1344759f4",
+   "replaced_md5": "c313b108ca1c4c752749d758af22f330",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_acid_burn_v2/fx_acid_burn_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_acid_burn_f2.png",
+   "state": "replaced",
+   "source_md5": "f50a911d7b97b091b1e59bc09d25f713",
+   "replaced_md5": "1cd76323d559689db71015ad36da04e9",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_acid_burn_v2/fx_acid_burn_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_acid_burn_f3.png",
+   "state": "replaced",
+   "source_md5": "720d9c959b005d1c7ff64ee055b4932a",
+   "replaced_md5": "02119e8bf3899290734cd8f95ea5fd85",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_acid_burn_v2/fx_acid_burn_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_acid_burn_f4.png",
+   "state": "replaced",
+   "source_md5": "05dd19fb16a4655c335adb5094332efd",
+   "replaced_md5": "266830507a7fc9ebbb8f8620311607a1",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_anomaly_grave_glow_v2/fx_anomaly_grave_glow_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_anomaly_grave_glow_f1.png",
+   "state": "replaced",
+   "source_md5": "2d21563bf6d57ffe9e87dcf7d570e1d5",
+   "replaced_md5": "5813e1f5dbc12ff1351fb27359d2c8b3",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_anomaly_grave_glow_v2/fx_anomaly_grave_glow_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_anomaly_grave_glow_f2.png",
+   "state": "replaced",
+   "source_md5": "309c2fc124343f8e517c878cc1c3a9b0",
+   "replaced_md5": "24a839924e27f61997810545ac9f9ed9",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_anomaly_grave_glow_v2/fx_anomaly_grave_glow_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_anomaly_grave_glow_f3.png",
+   "state": "replaced",
+   "source_md5": "060e40080eec1f65db4fae649d000b4b",
+   "replaced_md5": "27bf3a9a66f2ba05d3f83afd39d20b64",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_anomaly_grave_glow_v2/fx_anomaly_grave_glow_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_anomaly_grave_glow_f4.png",
+   "state": "replaced",
+   "source_md5": "51c465d3cf7459862f2c655971369866",
+   "replaced_md5": "4b860974bb24ad35e44e6c11369b0c29",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_anomaly_rift_v2/fx_anomaly_rift_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_anomaly_rift_f1.png",
+   "state": "replaced",
+   "source_md5": "6d5da07d1e7223fbe642ddcdcdec9f9d",
+   "replaced_md5": "63e2ef282ab949fca87f17c44cd10287",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_anomaly_rift_v2/fx_anomaly_rift_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_anomaly_rift_f2.png",
+   "state": "replaced",
+   "source_md5": "faec81de0262611e08bf7ad04848afa6",
+   "replaced_md5": "1c4e259cd3ffc01daf87fb852a94ebf1",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_anomaly_rift_v2/fx_anomaly_rift_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_anomaly_rift_f3.png",
+   "state": "replaced",
+   "source_md5": "b035041e0ee570b1a26110f13aaf63f6",
+   "replaced_md5": "de62e0efbd4126b4eec6ad920db7c2a2",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_anomaly_rift_v2/fx_anomaly_rift_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_anomaly_rift_f4.png",
+   "state": "replaced",
+   "source_md5": "2639e04a0f89d15ba7f1818896f2af59",
+   "replaced_md5": "fbcfacb618f7cada506411e1dc0bc2ad",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_anomaly_shimmer_v2/fx_anomaly_shimmer_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_anomaly_shimmer_f1.png",
+   "state": "replaced",
+   "source_md5": "10511b59922db2a43993c865a8474e4a",
+   "replaced_md5": "e8557d1496a86e7af390d626f940d4e4",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_anomaly_shimmer_v2/fx_anomaly_shimmer_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_anomaly_shimmer_f2.png",
+   "state": "replaced",
+   "source_md5": "a8f651c05617106640fc7bbaa62fc33b",
+   "replaced_md5": "f7c124050ab30e20f426e69993c12792",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_anomaly_shimmer_v2/fx_anomaly_shimmer_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_anomaly_shimmer_f3.png",
+   "state": "replaced",
+   "source_md5": "cdab56eb524d9f018d73b0dc0a32d797",
+   "replaced_md5": "553ff25797d1608853d0f5f5aa8c08e5",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_anomaly_shimmer_v2/fx_anomaly_shimmer_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_anomaly_shimmer_f4.png",
+   "state": "replaced",
+   "source_md5": "d2892e8f0083f05a32cda19057c054dc",
+   "replaced_md5": "55d7b6ca4d94bbb8ecb86b0f256d894c",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_frames/fx_arc_spark/fx_arc_spark_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_arc_spark_f1.png",
+   "state": "replaced",
+   "source_md5": "dd22247a907ed2aab5d6cf5ecc43492d",
+   "replaced_md5": "3f9b281ef6c6f19e46162161120cc77f",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_frames/fx_arc_spark/fx_arc_spark_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_arc_spark_f2.png",
+   "state": "replaced",
+   "source_md5": "5815eb3862a375e02c5a795f8b0f0dfd",
+   "replaced_md5": "b14ade2a6b699e83b3c6c4e2c386eebc",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_frames/fx_arc_spark/fx_arc_spark_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_arc_spark_f3.png",
+   "state": "replaced",
+   "source_md5": "04c7d3d413eeb4523fc71739defb3ddb",
+   "replaced_md5": "264dea5118383eede8b1b535402c73a0",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_frames/fx_arc_spark/fx_arc_spark_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_arc_spark_f4.png",
+   "state": "replaced",
+   "source_md5": "1bba4df13822c95869d315baf80289f6",
+   "replaced_md5": "e674801935de528514fd5e71cff51635",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_bio_plasma_v2/fx_bio_plasma_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_bio_plasma_f1.png",
+   "state": "replaced",
+   "source_md5": "0e9227b1efb0fd2c8bf5c1db402ec362",
+   "replaced_md5": "13eb2ceead2dfe0727cbefb2496c7894",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_bio_plasma_v2/fx_bio_plasma_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_bio_plasma_f2.png",
+   "state": "replaced",
+   "source_md5": "74da1a0f0ee8c545aa5c59f619d7777d",
+   "replaced_md5": "94a789678b1e9bd6a7f082d5e6f526bd",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_bio_plasma_v2/fx_bio_plasma_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_bio_plasma_f3.png",
+   "state": "replaced",
+   "source_md5": "8334eba0970465ce6b2f9626bafab3cb",
+   "replaced_md5": "40baab97bf7016b5e5907b721d9fabbe",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_bio_plasma_v2/fx_bio_plasma_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_bio_plasma_f4.png",
+   "state": "replaced",
+   "source_md5": "f9e59b410c596e6bbd3b51d60a14d9d9",
+   "replaced_md5": "9494aa6ccc6469e8786e921cbfd0b8e6",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_cargo_pulse_v2/fx_cargo_pulse_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_cargo_pulse_f1.png",
+   "state": "replaced",
+   "source_md5": "137af12f6f6f3a96116df991d5faa002",
+   "replaced_md5": "6ed73f31f62000b8416fd50fc70b1c24",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_cargo_pulse_v2/fx_cargo_pulse_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_cargo_pulse_f2.png",
+   "state": "replaced",
+   "source_md5": "f1bf1888d2c6bfda227668971423db70",
+   "replaced_md5": "7786fb14dd09926499c5d8a9e1d7eec8",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_cargo_pulse_v2/fx_cargo_pulse_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_cargo_pulse_f3.png",
+   "state": "replaced",
+   "source_md5": "ee52628f817f789bd4697148afc44677",
+   "replaced_md5": "633ae084acf4679237dd7f72438f670b",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_cargo_pulse_v2/fx_cargo_pulse_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_cargo_pulse_f4.png",
+   "state": "replaced",
+   "source_md5": "e33a8afe76ac371bf0a3464f73595c0c",
+   "replaced_md5": "08dec6bee0012b5e666618f2b2455e0b",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_dash_charge_v2/fx_dash_charge_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_dash_charge_f1.png",
+   "state": "replaced",
+   "source_md5": "93a76af0354fc0ebe0801b16a9bd6202",
+   "replaced_md5": "0a704f58900c5c4576c8ce40a6688a2d",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_dash_charge_v2/fx_dash_charge_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_dash_charge_f2.png",
+   "state": "replaced",
+   "source_md5": "7e91fc0132d6ee0d27514cbfce0c0b86",
+   "replaced_md5": "0030d1220d070f6b03a0ae764879e853",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_dash_charge_v2/fx_dash_charge_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_dash_charge_f3.png",
+   "state": "replaced",
+   "source_md5": "0aa1e662c24d4c7dbf5381438d566b22",
+   "replaced_md5": "212e5126d28eef0c938b634f9befd345",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_dash_charge_v2/fx_dash_charge_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_dash_charge_f4.png",
+   "state": "replaced",
+   "source_md5": "d0e4d731fa535ec34522e3126bef04ea",
+   "replaced_md5": "17626582d991add94d0604ade089ca6d",
+   "keyed": true
+  },
+  {
+   "kind": "alpha",
+   "source": "staging/cut/_fx_ship/fx_dust_streak-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_dust_streak.png",
+   "state": "same",
+   "source_md5": "a9d1fd9ef7875a784dc6586ae58cf464",
+   "replaced_md5": "a9d1fd9ef7875a784dc6586ae58cf464",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_dust_streak_v2/fx_dust_streak_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_dust_streak_f1.png",
+   "state": "replaced",
+   "source_md5": "7678231a09888fae85d038c65a925c15",
+   "replaced_md5": "0055165c4a25c739fbfe948309102aaa",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_dust_streak_v2/fx_dust_streak_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_dust_streak_f2.png",
+   "state": "replaced",
+   "source_md5": "8036bc22b7c5cfaabb6e06c124b1ba7c",
+   "replaced_md5": "6d962e9f167cb87d06e5cabe1b881839",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_dust_streak_v2/fx_dust_streak_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_dust_streak_f3.png",
+   "state": "replaced",
+   "source_md5": "98c9c831fbdd21d30ea9c6e9bace0ea9",
+   "replaced_md5": "799a3694b12298e5e64f94444b23ae12",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_dust_streak_v2/fx_dust_streak_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_dust_streak_f4.png",
+   "state": "replaced",
+   "source_md5": "c2aacab262edffda617a0456615c7a24",
+   "replaced_md5": "388417b2109af29670c33824f403817a",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_ember_pulse_v2/fx_ember_pulse_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_ember_pulse_f1.png",
+   "state": "replaced",
+   "source_md5": "5c49a00ca0a9c8daf3d0cffdcc0b7b1c",
+   "replaced_md5": "5f50888b889435c553814632522a9c1f",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_ember_pulse_v2/fx_ember_pulse_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_ember_pulse_f2.png",
+   "state": "replaced",
+   "source_md5": "221c751ea6af28bbd0f207df5a7cb826",
+   "replaced_md5": "cd982e8cbd4e988fd031f8a327be2734",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_ember_pulse_v2/fx_ember_pulse_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_ember_pulse_f3.png",
+   "state": "replaced",
+   "source_md5": "63a8b97f14adf1035c9aea1e22748603",
+   "replaced_md5": "1ad0e6f593dc315a7132fad03508270a",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_ember_pulse_v2/fx_ember_pulse_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_ember_pulse_f4.png",
+   "state": "replaced",
+   "source_md5": "76059bc3dfa07ffe86d85da2ba4e44e9",
+   "replaced_md5": "93261f74e2d784342f527d5cedc0c0eb",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_ember_ring_alt_v2/fx_ember_ring_alt_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_ember_ring_alt_f1.png",
+   "state": "replaced",
+   "source_md5": "c57b170aab37bcd6fa1dec260c46ed6e",
+   "replaced_md5": "8ec2793bc07c71f07ac4263a37363d5d",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_ember_ring_alt_v2/fx_ember_ring_alt_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_ember_ring_alt_f2.png",
+   "state": "replaced",
+   "source_md5": "a3769d024dcdd6ea59c1176c7956bc02",
+   "replaced_md5": "69c064a9b123c8e71839dc4e78af1cc6",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_ember_ring_alt_v2/fx_ember_ring_alt_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_ember_ring_alt_f3.png",
+   "state": "replaced",
+   "source_md5": "9a015056aedf523482a957a36e182bb1",
+   "replaced_md5": "e7f0489c115edcf408479224a54ad2d5",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_ember_ring_alt_v2/fx_ember_ring_alt_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_ember_ring_alt_f4.png",
+   "state": "replaced",
+   "source_md5": "a8fe49989aafea725fb4bb9a19cef4c7",
+   "replaced_md5": "3ed17da87c17f609d4910e537b5d04b1",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_ember_ring_v2/fx_ember_ring_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_ember_ring_f1.png",
+   "state": "replaced",
+   "source_md5": "7e27517c7dd0971d2cd91a4e63881768",
+   "replaced_md5": "26d9bd900dd434e79ec9850c25d4d281",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_ember_ring_v2/fx_ember_ring_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_ember_ring_f2.png",
+   "state": "replaced",
+   "source_md5": "dbdcf6a415526525728f4e1bb70e9b64",
+   "replaced_md5": "c308b81d8cd48b771cfc0b54585d15cd",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_ember_ring_v2/fx_ember_ring_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_ember_ring_f3.png",
+   "state": "replaced",
+   "source_md5": "fa25ce7ca3fc73da5659875f50d26484",
+   "replaced_md5": "af7b439d05900a30b35317d52f1ee067",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_ember_ring_v2/fx_ember_ring_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_ember_ring_f4.png",
+   "state": "replaced",
+   "source_md5": "fe18216cba39bd283801b3bcc692727e",
+   "replaced_md5": "b150f10f138b063579090f9316a8c8eb",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_emp_arc_v2/fx_emp_arc_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_emp_arc_f1.png",
+   "state": "replaced",
+   "source_md5": "3cc7006a954b781826e0e4f8fbc1548e",
+   "replaced_md5": "44a436692f3b6d36775ed2cb3996e680",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_emp_arc_v2/fx_emp_arc_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_emp_arc_f2.png",
+   "state": "replaced",
+   "source_md5": "254257a59ef991bbf46d71db08bf20d9",
+   "replaced_md5": "cf85d679ee84323ba7a51b24d6d3c4c0",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_emp_arc_v2/fx_emp_arc_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_emp_arc_f3.png",
+   "state": "replaced",
+   "source_md5": "7e0c9f33a8949b3e8f15071ced9aa5b1",
+   "replaced_md5": "adfd84ce0cf42ae2dcc8d8b889974636",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_emp_arc_v2/fx_emp_arc_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_emp_arc_f4.png",
+   "state": "replaced",
+   "source_md5": "8fe837f72390f52fc66305853267eefe",
+   "replaced_md5": "9de9b2006bb4535170bb740a2c606697",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_engine_trail_v2/fx_engine_trail_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_engine_trail_f1.png",
+   "state": "replaced",
+   "source_md5": "4621c72143a2611437feb950c65b2064",
+   "replaced_md5": "05cbd87f1022bfb6ddcd4ee4488ba77d",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_engine_trail_v2/fx_engine_trail_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_engine_trail_f2.png",
+   "state": "replaced",
+   "source_md5": "f41fd566b563249d6781ece081cd099c",
+   "replaced_md5": "4cd2a91df271d1d63458697671cf8518",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_engine_trail_v2/fx_engine_trail_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_engine_trail_f3.png",
+   "state": "replaced",
+   "source_md5": "4da4237bfccc7b47ae27a7ef4f687a3a",
+   "replaced_md5": "181b4ab0283b7d1746316b4695857ff5",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_engine_trail_v2/fx_engine_trail_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_engine_trail_f4.png",
+   "state": "replaced",
+   "source_md5": "18c6ebe307c98d4451d817ffc5b36edf",
+   "replaced_md5": "4c0b0a849c23a55ad73eda13c0355167",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_frames/fx_explosion/fx_explosion_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_explosion_f1.png",
+   "state": "replaced",
+   "source_md5": "63fc49bf88544a956f861e652eafc8be",
+   "replaced_md5": "c4fb3c9743257aa0922e14fe245d18f8",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_frames/fx_explosion/fx_explosion_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_explosion_f2.png",
+   "state": "replaced",
+   "source_md5": "c93df014cd62dea228847d47b886ec7f",
+   "replaced_md5": "ef81fe03c2a4991970ddbe7641d891ec",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_frames/fx_explosion/fx_explosion_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_explosion_f3.png",
+   "state": "replaced",
+   "source_md5": "c3921d171baa40e0be63049119b0557f",
+   "replaced_md5": "04f6d03226ff18ffe1dad89e4b05de49",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_frames/fx_explosion/fx_explosion_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_explosion_f4.png",
+   "state": "replaced",
+   "source_md5": "5e1372dbb87d53a1fa4bdcc78a3ed363",
+   "replaced_md5": "756ab2011aefc237a8ca665dffe624af",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_frames/fx_explosion/fx_explosion_f5-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_explosion_f5.png",
+   "state": "replaced",
+   "source_md5": "45e8380c02acb58c1318cfbd49348d23",
+   "replaced_md5": "6c9b55a9e6f67740d69719e93c420c86",
+   "keyed": true
+  },
+  {
+   "kind": "alpha",
+   "source": "staging/cut/_fx_ship/fx_hull_critical_vignette-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_hull_critical_vignette.png",
+   "state": "same",
+   "source_md5": "eb877b282795a27a8273a0d19c88daaf",
+   "replaced_md5": "eb877b282795a27a8273a0d19c88daaf",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_hull_critical_vignette_v2/fx_hull_critical_vignette_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_hull_critical_vignette_f1.png",
+   "state": "replaced",
+   "source_md5": "c4b5dd8a311b466789934ec3e167a3e2",
+   "replaced_md5": "007056932c5bc98cbcb33d135b161c30",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_hull_critical_vignette_v2/fx_hull_critical_vignette_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_hull_critical_vignette_f2.png",
+   "state": "replaced",
+   "source_md5": "c8f156edae47a240c75b6be25acb88fb",
+   "replaced_md5": "05524f752aace7635aac0679b487e7f6",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_hull_critical_vignette_v2/fx_hull_critical_vignette_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_hull_critical_vignette_f3.png",
+   "state": "replaced",
+   "source_md5": "8c23fef44552cb8d52ca6bfc7927232c",
+   "replaced_md5": "39e9d7306cfcd748e53ce6216a29fbf4",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_hull_critical_vignette_v2/fx_hull_critical_vignette_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_hull_critical_vignette_f4.png",
+   "state": "replaced",
+   "source_md5": "3f10e45e4c6b032e4991cc58c1dabcb7",
+   "replaced_md5": "d82ab614397a036d53129a65cd1fb515",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_jump_portal_v2/fx_jump_portal_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_jump_portal_f1.png",
+   "state": "replaced",
+   "source_md5": "72464eb2996a34c39541b4b003eb2b40",
+   "replaced_md5": "cdd477355c0fb78a236da670be6d6955",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_jump_portal_v2/fx_jump_portal_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_jump_portal_f2.png",
+   "state": "replaced",
+   "source_md5": "3665c434e5a92110c6bfe5235e4c919d",
+   "replaced_md5": "0897d407674e337c432d21b135554abb",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_jump_portal_v2/fx_jump_portal_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_jump_portal_f3.png",
+   "state": "replaced",
+   "source_md5": "6d163c7cadd7f59d9eee7df003b6bc61",
+   "replaced_md5": "99e78cdf600b287d91e86b219b1ade86",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_jump_portal_v2/fx_jump_portal_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_jump_portal_f4.png",
+   "state": "replaced",
+   "source_md5": "7de9f9b6e4a5d95a508b927e636c92d5",
+   "replaced_md5": "b325408c189c574f3f4bb31bc1271755",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_laser_bolt_v3/fx_laser_bolt_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_laser_bolt_f1.png",
+   "state": "replaced",
+   "source_md5": "973fadf948d47fe5f9fac156cf744398",
+   "replaced_md5": "f68fb214aba2d608e3fd0a0535bb7643",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_laser_bolt_v3/fx_laser_bolt_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_laser_bolt_f2.png",
+   "state": "replaced",
+   "source_md5": "db9f772cace85463f2c9dfc309672c35",
+   "replaced_md5": "1184251c60de408ac4b964792ef74dfa",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_laser_bolt_v3/fx_laser_bolt_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_laser_bolt_f3.png",
+   "state": "replaced",
+   "source_md5": "1d7e7a957dd12009169f0a68e95417e0",
+   "replaced_md5": "a1306d18e8428a249e08fd72ff8c3e86",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_laser_bolt_v3/fx_laser_bolt_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_laser_bolt_f4.png",
+   "state": "replaced",
+   "source_md5": "942d64274ef45cdfd236ea0bd73702a7",
+   "replaced_md5": "d85206430f30e17a69de2c0a80309f8e",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_lock_channel_v2/fx_lock_channel_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_lock_channel_f1.png",
+   "state": "replaced",
+   "source_md5": "b67dfb066f0e171b83451f3858f9191d",
+   "replaced_md5": "fb4051f11ea576299371f67e6f20df75",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_lock_channel_v2/fx_lock_channel_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_lock_channel_f2.png",
+   "state": "replaced",
+   "source_md5": "044aadf51c105979cac13d7f4d35f278",
+   "replaced_md5": "325b6cc761083abad98aa77b03878954",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_lock_channel_v2/fx_lock_channel_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_lock_channel_f3.png",
+   "state": "replaced",
+   "source_md5": "320caea7ef698e9ff9782b33d27e8b21",
+   "replaced_md5": "242a415b4ff1e685483a50af8921e891",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_lock_channel_v2/fx_lock_channel_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_lock_channel_f4.png",
+   "state": "replaced",
+   "source_md5": "9ece1b6a634cf6c85a20a9d3e66d40d1",
+   "replaced_md5": "0595dd6ec1b82df3614a00febb59426f",
+   "keyed": true
+  },
+  {
+   "kind": "alpha",
+   "source": "staging/phase_g/fx/fx_mine_final.png",
+   "dest": "vajb-orbit/assets/fx/fx_mine.png",
+   "state": "same",
+   "source_md5": "f4636d0bb7cd0cd229faa9c53451b9bd",
+   "replaced_md5": "f4636d0bb7cd0cd229faa9c53451b9bd",
+   "keyed": false
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_mine_v2/fx_mine_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_mine_f1.png",
+   "state": "replaced",
+   "source_md5": "0bad7621adc3237f0ef353c693c6c560",
+   "replaced_md5": "ed6e3454a22b728f512e315625e9e7c4",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_mine_v2/fx_mine_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_mine_f2.png",
+   "state": "replaced",
+   "source_md5": "61e6013f26ed102ad2b037a7bf2bf03f",
+   "replaced_md5": "24d701015edb1887705805209001b377",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_mine_v2/fx_mine_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_mine_f3.png",
+   "state": "replaced",
+   "source_md5": "f5d7ba3627d9a4aec67f08ef96b2f87d",
+   "replaced_md5": "8e3e376712228081a5d04e419192956f",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_mine_v2/fx_mine_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_mine_f4.png",
+   "state": "replaced",
+   "source_md5": "9828c6c8c5da105809182d581ab22ef9",
+   "replaced_md5": "613783db1a77f00b4e30eef282b3a3d1",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_mining_beam_v2/fx_mining_beam_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_mining_beam_f1.png",
+   "state": "replaced",
+   "source_md5": "97d22446a9221737c84999833c1501f1",
+   "replaced_md5": "8f9f97606c56819097464e3fc6467777",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_mining_beam_v2/fx_mining_beam_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_mining_beam_f2.png",
+   "state": "replaced",
+   "source_md5": "deeb252e60c0b33c62acef8bf3c0d390",
+   "replaced_md5": "8076924f7c59e9b73751ee5528590700",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_mining_beam_v2/fx_mining_beam_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_mining_beam_f3.png",
+   "state": "replaced",
+   "source_md5": "5917cc58b6c9a5f8bde5a51baaa8b09c",
+   "replaced_md5": "2f77aa19267375a40eaf658850b03ddc",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_mining_beam_v2/fx_mining_beam_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_mining_beam_f4.png",
+   "state": "replaced",
+   "source_md5": "c75787e99c30e3fe6c59adbb1fcd4072",
+   "replaced_md5": "60f88eb89be718bb711f75776252a8c8",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_frames/fx_missile_trail/fx_missile_trail_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_missile_trail_f1.png",
+   "state": "replaced",
+   "source_md5": "87362e1886d2540834116e2394091ee4",
+   "replaced_md5": "0268916d8b2849027bdd9093ff3f005f",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_frames/fx_missile_trail/fx_missile_trail_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_missile_trail_f2.png",
+   "state": "replaced",
+   "source_md5": "b3659ec66bf4ec1534c4a9b0b1c866b9",
+   "replaced_md5": "d51f0a706ee5bc006539ac2552bd893f",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_frames/fx_missile_trail/fx_missile_trail_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_missile_trail_f3.png",
+   "state": "replaced",
+   "source_md5": "f7ca672f1e09c0e2a1686c55a9d4474f",
+   "replaced_md5": "9eea9bc3ee3c3653a4132a476854926c",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_frames/fx_missile_trail/fx_missile_trail_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_missile_trail_f4.png",
+   "state": "replaced",
+   "source_md5": "0b941ece52ed615bbfe4221395535eb7",
+   "replaced_md5": "742b6b93835b423b62ae51bda941fb83",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_frames/fx_muzzle_flash/fx_muzzle_flash_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_muzzle_flash_f1.png",
+   "state": "replaced",
+   "source_md5": "71faf77f449f78dd9a3353964645b2e7",
+   "replaced_md5": "671df4ed64db6c3ac65adc5c3dd432a6",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_frames/fx_muzzle_flash/fx_muzzle_flash_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_muzzle_flash_f2.png",
+   "state": "replaced",
+   "source_md5": "6d6dbb7dbe4400d1e46f4a94b2cdefc5",
+   "replaced_md5": "096f1058aa40111d080a4220248607b4",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_frames/fx_muzzle_flash/fx_muzzle_flash_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_muzzle_flash_f3.png",
+   "state": "replaced",
+   "source_md5": "d868e7bbcf3dea157bbc9049a42b00d0",
+   "replaced_md5": "4f68fb87d43ae4ae3e3ac83ce5e071d1",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_frames/fx_muzzle_flash/fx_muzzle_flash_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_muzzle_flash_f4.png",
+   "state": "replaced",
+   "source_md5": "6a49e21001337add4c37ace27bd0d584",
+   "replaced_md5": "6e43c03705426dfbe21ae793b9bd4e0a",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_repair_pulse_v2/fx_repair_pulse_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_repair_pulse_f1.png",
+   "state": "replaced",
+   "source_md5": "441b7d52a0c3e10097ce82524c6da43e",
+   "replaced_md5": "4d6e14e2ee2ef4e57aab741bb41ccdf9",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_repair_pulse_v2/fx_repair_pulse_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_repair_pulse_f2.png",
+   "state": "replaced",
+   "source_md5": "7a3be10ac790aa0fbb86dd5e21a0a688",
+   "replaced_md5": "f9528c452f4c911d3756ef87ad5eff24",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_repair_pulse_v2/fx_repair_pulse_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_repair_pulse_f3.png",
+   "state": "replaced",
+   "source_md5": "2b96190ac4d18ac03da109c446a92704",
+   "replaced_md5": "e6584be2a61e90fa34797add7c13cec5",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_repair_pulse_v2/fx_repair_pulse_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_repair_pulse_f4.png",
+   "state": "replaced",
+   "source_md5": "762a335cdbddb6b7a40df78e23683edf",
+   "replaced_md5": "3145b720535d767b14e7ac172b9ba826",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_frames/fx_secondary_explosion/fx_secondary_explosion_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_secondary_explosion_f1.png",
+   "state": "replaced",
+   "source_md5": "30b57719432b5aae54d38abccfdbb3ba",
+   "replaced_md5": "b967c5c997477be2799119645c8274de",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_frames/fx_secondary_explosion/fx_secondary_explosion_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_secondary_explosion_f2.png",
+   "state": "replaced",
+   "source_md5": "502bdd795f49906ee0fec65923a31075",
+   "replaced_md5": "913029f539b135cfe0cab00a81831371",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_frames/fx_secondary_explosion/fx_secondary_explosion_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_secondary_explosion_f3.png",
+   "state": "replaced",
+   "source_md5": "97bc93eb8eadb681abbda2b37dc7356a",
+   "replaced_md5": "37887498a53a52f391b82c8f244c4dad",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_frames/fx_secondary_explosion/fx_secondary_explosion_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_secondary_explosion_f4.png",
+   "state": "replaced",
+   "source_md5": "044c865a6fa2e984b8350710e11e20b6",
+   "replaced_md5": "c9087b9d20068aa6b0cf7d354ba57505",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_frames/fx_shield_break/fx_shield_break_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_shield_break_f1.png",
+   "state": "replaced",
+   "source_md5": "6c3157aa8fc138863f4e81042f8bd784",
+   "replaced_md5": "e7b88c3461f530672127f621c9582486",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_frames/fx_shield_break/fx_shield_break_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_shield_break_f2.png",
+   "state": "replaced",
+   "source_md5": "8844d6020043e63c790e01a260e9a2aa",
+   "replaced_md5": "8f898e70496084823c732f4053f86816",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_frames/fx_shield_break/fx_shield_break_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_shield_break_f3.png",
+   "state": "replaced",
+   "source_md5": "d375a072db3fcdf460f9c25d615dcb88",
+   "replaced_md5": "ef15d3b994d74da7a8f515eab2f13cb9",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_frames/fx_shield_break/fx_shield_break_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_shield_break_f4.png",
+   "state": "replaced",
+   "source_md5": "b3ee67dc9c6da8fbda5af2d0064f789c",
+   "replaced_md5": "0cd928a8fa8716b3597769ac18ae406e",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_shield_ripple_v2/fx_shield_ripple_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_shield_ripple_f1.png",
+   "state": "replaced",
+   "source_md5": "ea2f7e28730820182d5cd6b379ac91df",
+   "replaced_md5": "3cb6bf9b361d957edc91223b4732ad27",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_shield_ripple_v2/fx_shield_ripple_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_shield_ripple_f2.png",
+   "state": "replaced",
+   "source_md5": "b7422429771fd80745b0bc3ca5430f18",
+   "replaced_md5": "d1c72109d29284bad7c7716b00802ba1",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_shield_ripple_v2/fx_shield_ripple_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_shield_ripple_f3.png",
+   "state": "replaced",
+   "source_md5": "c9260800b4137ce4d336458a009281ef",
+   "replaced_md5": "94fd271abda69b3abd704b558e986758",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_shield_ripple_v2/fx_shield_ripple_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_shield_ripple_f4.png",
+   "state": "replaced",
+   "source_md5": "8d16e8352bfce6b1905c3798589882f2",
+   "replaced_md5": "162552433e23f1023f86dc3b50b28b9d",
+   "keyed": true
+  },
+  {
+   "kind": "alpha",
+   "source": "staging/cut/_fx_ship/fx_smoke_plume-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_smoke_plume.png",
+   "state": "same",
+   "source_md5": "ebededfc62cd8e869881710965190634",
+   "replaced_md5": "ebededfc62cd8e869881710965190634",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_smoke_plume_v2/fx_smoke_plume_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_smoke_plume_f1.png",
+   "state": "replaced",
+   "source_md5": "691b2e1e79b0e633709b4b8b808aecc5",
+   "replaced_md5": "e68d135639a905d613afbba56f7e6cf4",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_smoke_plume_v2/fx_smoke_plume_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_smoke_plume_f2.png",
+   "state": "replaced",
+   "source_md5": "c9d3533d5fb0d45546f9cdfb9a8e7125",
+   "replaced_md5": "61eb3cb7b7a28a6a78746ef583a6ae94",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_smoke_plume_v2/fx_smoke_plume_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_smoke_plume_f3.png",
+   "state": "replaced",
+   "source_md5": "8c2c35ef3117dac2b9af8866b4021ad8",
+   "replaced_md5": "6d8a3fbdf2107d0060b8cd70ee7ec3b6",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_smoke_plume_v2/fx_smoke_plume_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_smoke_plume_f4.png",
+   "state": "replaced",
+   "source_md5": "24aa28bf82116866a7166294c1fdf362",
+   "replaced_md5": "e6d7dfc14d39bb4e30a3fe90f937e0bb",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_tractor_beam_v2/fx_tractor_beam_f1-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_tractor_beam_f1.png",
+   "state": "replaced",
+   "source_md5": "4d340f8e7dce8a97ed4cb9f5fef9908d",
+   "replaced_md5": "574624de77bc7a51906c0acff5c63ff1",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_tractor_beam_v2/fx_tractor_beam_f2-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_tractor_beam_f2.png",
+   "state": "replaced",
+   "source_md5": "358b009f990dab7026b42c78c8e0d7fc",
+   "replaced_md5": "d6f41ed6a44aa7476c152ee0e18f7a6c",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_tractor_beam_v2/fx_tractor_beam_f3-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_tractor_beam_f3.png",
+   "state": "replaced",
+   "source_md5": "4fbeadf33f51c86eca9b2b8c7b86f976",
+   "replaced_md5": "16d9fcb500e8e8faff847dd99e11a24f",
+   "keyed": true
+  },
+  {
+   "kind": "frame",
+   "source": "staging/cut/_fx_cycles/fx_tractor_beam_v2/fx_tractor_beam_f4-keyed.png",
+   "dest": "vajb-orbit/assets/fx/fx_tractor_beam_f4.png",
+   "state": "replaced",
+   "source_md5": "9202c4a527346d973f6a77012475efa9",
+   "replaced_md5": "1e8aad753fae71f000e4212931af2bc6",
+   "keyed": true
+  }
+ ]
+}

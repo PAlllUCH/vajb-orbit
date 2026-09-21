@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -29,7 +30,14 @@ ROOT = Path(__file__).resolve().parents[2]
 LIBRARY = ROOT / "asset-library"
 KEYING = LIBRARY / "_keying"
 RECRAFT_DIR = KEYING / "recraft"
-SKILL_SCRIPTS = Path("C:/Users/Kamil/AppData/Local/crush/skills/image-generator/scripts")
+## The image-generator skill's scripts own the kie.ai client and live under a different
+## prefix per host (AGENTS.md, host portability), so the path is resolved rather than
+## hard-coded: `KIE_SKILL_SCRIPTS` wins, then the Windows install, then this host's
+## `~/.local/share/crush`, which is also where the skill reads `KIE_API_KEY` from.
+_WINDOWS_SKILL = Path("C:/Users/Kamil/AppData/Local/crush/skills/image-generator/scripts")
+SKILL_SCRIPTS = Path(os.environ.get("KIE_SKILL_SCRIPTS")
+                     or (_WINDOWS_SKILL if _WINDOWS_SKILL.is_dir()
+                         else Path.home() / ".local/share/crush/skills/image-generator/scripts"))
 MODEL = "recraft/remove-background"
 
 

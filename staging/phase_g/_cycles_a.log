@@ -1,0 +1,18 @@
+[fx_acid_burn_v2] submitting
+[fx_acid_burn_v2] ok task=36e13b65cecb2890697739470ade8645 48.0s master=/home/kamil-paluszkiewicz/VajbOrbit/staging/phase_g/fx/20260921-203922/grimdark-painted-sci-fi-semi-realistic-1.png
+[fx_acid_burn_v2] final fx_acid_burn_v2.png (2048, 2048) RGB
+[fx_smoke_plume_v2] submitting
+[fx_smoke_plume_v2] ok task=6f6a8c41d8620cc77b2d0938386778e9 37.5s master=/home/kamil-paluszkiewicz/VajbOrbit/staging/phase_g/fx/20260921-204001/grimdark-painted-sci-fi-semi-realistic-1.png
+[fx_smoke_plume_v2] final fx_smoke_plume_v2.png (2048, 2048) RGB
+[fx_dust_streak_v2] submitting
+[fx_dust_streak_v2] ok task=12dd363319e95c5631d975992c7a3228 37.6s master=/home/kamil-paluszkiewicz/VajbOrbit/staging/phase_g/fx/20260921-204039/grimdark-painted-sci-fi-semi-realistic-1.png
+[fx_dust_streak_v2] final fx_dust_streak_v2.png (2048, 2048) RGB
+[fx_hull_critical_vignette_v2] submitting
+[fx_hull_critical_vignette_v2] ok task=2251e4ec01b9598f28b806a112a496b4 48.3s master=/home/kamil-paluszkiewicz/VajbOrbit/staging/phase_g/fx/20260921-204129/grimdark-painted-sci-fi-semi-realistic-1.png
+[fx_hull_critical_vignette_v2] final fx_hull_critical_vignette_v2.png (2048, 2048) RGB
+[fx_anomaly_rift_v2] submitting
+[fx_anomaly_rift_v2] ok task=bd595ae6270e0f74929ab72343a1f021 204.9s master=/home/kamil-paluszkiewicz/VajbOrbit/staging/phase_g/fx/20260921-204455/grimdark-painted-sci-fi-semi-realistic-1.png
+[fx_anomaly_rift_v2] final fx_anomaly_rift_v2.png (2048, 2048) RGB
+[fx_anomaly_shimmer_v2] submitting
+[fx_anomaly_shimmer_v2] ok task=1fc278578ccb0f765716988459d69259 37.6s master=/home/kamil-paluszkiewicz/VajbOrbit/staging/phase_g/fx/20260921-204534/grimdark-painted-sci-fi-semi-realistic-1.png
+[fx_anomaly_shimmer_v2] final fx_anomaly_shimmer_v2.png (2048, 2048) RGB

@@ -36,7 +36,14 @@ STAGE = ROOT / "staging" / "phase_g"
 ASSETS = ROOT / "vajb-orbit" / "assets"
 STYLE_HUMAN = ASSETS / "style-block.txt"
 STYLE_ALIEN = ASSETS / "style-block-alien.txt"
-SKILL = Path(r"C:/Users/Kamil/AppData/Local/crush/skills/image-generator/scripts/kie_generate.py")
+## The image-generator skill's script, which lives under a different prefix per host (AGENTS.md,
+## host portability): `KIE_SKILL_SCRIPTS` wins, then the Windows install, then this host's.
+_WINDOWS_SKILL_DIR = Path("C:/Users/Kamil/AppData/Local/crush/skills/image-generator/scripts")
+SKILL = (Path(os.environ["KIE_SKILL_SCRIPTS"]) / "kie_generate.py"
+         if os.environ.get("KIE_SKILL_SCRIPTS")
+         else (_WINDOWS_SKILL_DIR / "kie_generate.py" if _WINDOWS_SKILL_DIR.is_dir()
+               else Path.home() / ".local/share/crush/skills/image-generator/scripts"
+               / "kie_generate.py"))
 CA_BUNDLE = ROOT.parent / "cacert.pem"
 PY = sys.executable
 
@@ -177,6 +184,222 @@ LOCK_CHANNEL = ("single game FX sprite, one centred ring: a thin circular progre
                 "clearly cut end, even thickness, cold pale steel highlight #565C63 only, no "
                 "glow, no ticks, no numbers, isolated on flat void black #0A0E14, nothing else "
                 "in frame, seen face-on. " + NEG_FX)
+
+# ------------------------------------------------- the three re-cuts the specs still owe
+#
+# Owner scoping 2026-09-21 (LOW_BACKLOG L52/L57/L58). Each of these is a gap between a spec row
+# and the shipped art, not a new idea:
+#
+# - `fx_mining_beam_v2`: FX_SPEC 1.6 states a four-frame chip-spark sheet. The shipped master
+#   holds three bursts (measured by `staging/cut/split_fx.py`: cells resolve at 29 248 / 12 116 /
+#   2 379 / 467 ink px, the fourth under the cell floor), so this run asks for the four the spec
+#   describes, in one row of four cells.
+# - `fx_laser_bolt_v2`: FX_SPEC 1.1 states light 4:1 and medium 6:1. The shipped objects measure
+#   16.4:1 and 9.4:1 (L57's probe: regions 1718x105 and 1680x178 read at world 64 and 96), so the
+#   prompt states the two ratios in numbers rather than "elongated" and hopes.
+# - `fx_mine`: FX_SPEC has no mine row at all, and the wiring borrows a 423x421 crop of
+#   `fx_ember_pulse.png` - a file the spec names for the menu's wreck pulse (L58). A mine is a
+#   solid object, so unlike every ember effect it needs alpha to draw at all.
+MINING_CHIPS_V2 = ("a one-row four-cell animation sheet of asteroid mining chip sparks, four "
+                   "evenly spaced cells across one horizontal strip, generous gaps of flat void "
+                   "black between cells, no grid lines, no labels, no border: first cell a small "
+                   "angular spark burst radiating from one point, burnt ember #C8461B sparks with "
+                   "hot ember glow #E8703A tips; second cell the same sparks flying further "
+                   "outward and dimming; third cell the sparks scattered and fading; fourth cell "
+                   "only a few nearly extinct sparks left. Small, hard-edged, hot; no beam line, "
+                   "no ship, no rock, no second glow colour. Isolated on flat void black #0A0E14. "
+                   + NEG_FX)
+LASER_BOLT_V2 = ("a one-column two-cell projectile sheet, two energy bolts in two evenly spaced "
+                 "cells stacked one above the other, generous gaps of flat void black between "
+                 "cells, no grid lines, no labels, no border: the upper cell holds one short thick "
+                 "bolt whose length is about four times its own width, and the lower cell holds "
+                 "one longer bolt whose length is about six times its own width at a similar "
+                 "thickness. Both are horizontal, pointing right, a burnt ember #C8461B hot core "
+                 "line inside a soft ember glow #E8703A halo, painterly but hard-edged along the "
+                 "core, fat capsule shapes rather than thin scratches, no ship, no muzzle, no "
+                 "beam, no streak. Isolated on flat void black #0A0E14. " + NEG_FX)
+MINE = ("single game object sprite, one object centred: a small deployable contact mine, a short "
+        "riveted drum of iron black #232629 armour with gunmetal dark #2B2F35 banding and a "
+        "gunmetal mid #3A3F46 upper cap, four short spiked contact prongs projecting in a cross "
+        "from the drum's middle, one small hot burnt ember #C8461B warning lamp on the cap with a "
+        "dim ember glow #E8703A pilot light beside it, the armour is non-emissive with only the "
+        "lamp glowing, seen face-on, isolated on flat void black #0A0E14, nothing else in frame. "
+        + NEG_FX)
+
+## --------------------------------------------------- four-frame cycles for every FX
+##
+## Owner instruction 2026-09-21: "i want all fx to have at least 4 frames like explosion", so a
+## client can animate them. These effects shipped as single textures (tiled/pulsed in the engine);
+## each now gets a four-cell sheet whose cells are the phases of its own read, in reading order.
+## Cells stay RGB on void black (FX_SPEC section 0.1) except where the master is listed as needing
+## alpha, and every sheet is 2x2 so `staging/cut/split_fx.py` cuts it to `_f1.._f4`.
+def fx_cycle(subject: str, phases: tuple[str, str, str, str]) -> str:
+    return ("a 2x2 animation sheet of " + subject + ", four evenly spaced cells, generous gaps of "
+            "flat void black between the cells, no grid lines, no labels, no border: top-left "
+            "cell " + phases[0] + "; top-right cell " + phases[1] + "; bottom-left cell "
+            + phases[2] + "; bottom-right cell " + phases[3] + ". Each cell holds one object, "
+            "the same effect at a later moment, at the same size and place within its cell. "
+            "Isolated on flat void black #0A0E14, nothing else in frame, one effect only. " + NEG_FX)
+
+
+EMBER_GLOW = "burnt ember #C8461B with ember glow #E8703A"
+STEEL = "cold pale steel highlight #565C63"
+VOID_HAZE = "void haze #1A2230 fading to nothing at the tips"
+
+## (run id, alpha needed, subject with its palette, the four phases)
+FX_CYCLES: tuple[tuple[str, bool, str, tuple[str, str, str, str]], ...] = (
+    ("fx_acid_burn_v2", True,
+     "a dissolving bio-acid stain, chitin green #3D6E49 body with hot bioluminescent green "
+     "#4AE86C flecks, matte stain-looking corrosion rather than light",
+     ("a small acid puff just starting to dissolve",
+      "the acid spreading into a widening stain",
+      "the full dissolving stain with hot green flecks at its edges",
+      "the stain thinning out into faint wisps")),
+    ("fx_smoke_plume_v2", True,
+     "one painterly black smoke plume, iron black #232629 core with gunmetal dark #2B2F35 on the "
+     "lit side, non-emissive, no glow",
+     ("a thin wisp of black soot rising",
+      "the wisp swelling into a rounded puff",
+      "a full column of dense sooty smoke",
+      "the column thinning and breaking up")),
+    ("fx_dust_streak_v2", True,
+     "one thin horizontal micro streak of dust no thicker than a hair, " + VOID_HAZE
+     + ", very low contrast, non-emissive",
+     ("one short faint hair-thin dust smear",
+      "the smear stretching longer and slightly brighter",
+      "a long soft dust streak at its full length",
+      "the streak fading away at both ends")),
+    ("fx_hull_critical_vignette_v2", True,
+     "a full-frame damage vignette, dark " + EMBER_GLOW + " smouldering inward from all four "
+     "screen edges with an iron black #232629 smoke texture inside it and a completely empty "
+     "centre",
+     ("a faint dark ember rim just appearing at the frame edges",
+      "the ember rim strengthening all round",
+      "heavy smouldering ember edges with the centre still clear",
+      "the ember rim dimming back toward the edges")),
+    ("fx_anomaly_rift_v2", False,
+     "a vertical void rift tear, " + EMBER_GLOW + " rim with crooked ember stress cracks",
+     ("a thin vertical ember crack with a hair-thin hot line",
+      "the crack opening into a narrow tear with crooked stress cracks",
+      "a wide torn rift with a hot ember rim and crooked cracks",
+      "the tear closing back to a thin bright line")),
+    ("fx_anomaly_shimmer_v2", False,
+     "a wide thin cold refraction ring, " + STEEL + " only, hollow centre, a few suspended dull "
+     "ore flecks, no warm colour",
+     ("a faint cold thin refraction ring",
+      "the ring widening and sharpening",
+      "a wide hollow steel ring with suspended dull ore flecks",
+      "the ring thinning and fading")),
+    ("fx_anomaly_grave_glow_v2", False,
+     "a pale " + STEEL + " core glow over an unlit deep void blue #111823 haze with pale motes "
+     "rising through it, no warm colour",
+     ("a small dim steel core glow with a haze of rising motes",
+      "the halo widening with more motes rising",
+      "a full pale core over a broad halo with dense rising motes",
+      "the glow settling and the motes thinning")),
+    ("fx_bio_plasma_v2", False,
+     "a pulsing organic plasma orb with a ragged living outline, bioluminescent green #4AE86C "
+     "hot glow over a corrosive dark #1A281F organic mass",
+     ("a small organic green orb just coalescing",
+      "the orb pulsing bright with its ragged living outline",
+      "the orb at full brightness trailing bio-spore motes",
+      "the orb shrinking and dimming")),
+    ("fx_cargo_pulse_v2", False,
+     "a small compact energy ring pulse, " + EMBER_GLOW,
+     ("a tiny ember ring just igniting",
+      "the ring expanding with a warm inner glow",
+      "a full compact ember ring at its widest",
+      "the ring thinning and fading out")),
+    ("fx_dash_charge_v2", False,
+     "a circular charge ring with short streaks breaking outward from its rim, " + EMBER_GLOW
+     + " inner edge, symmetric, face-on",
+     ("a charge ring still forming with no streaks yet",
+      "short streaks breaking outward from the ring rim",
+      "the full charge burst with streaks all round",
+      "the ring collapsing and dimming")),
+    ("fx_ember_pulse_v2", False,
+     "a small round ember orb pulse, " + EMBER_GLOW,
+     ("a dim ember orb",
+      "the orb swelling brighter",
+      "the orb at its hottest with a rounded halo",
+      "the orb dimming back down")),
+    ("fx_ember_ring_v2", False,
+     "a heavy gate ring of dark banded stone with an ember-lit rim, " + EMBER_GLOW
+     + " running along the band",
+     ("a dim ember gate ring with a dark stone band",
+      "the ring's rim lighting up warm ember",
+      "the full bright ember ring with a hot inner edge",
+      "the ring's glow fading along the band")),
+    ("fx_ember_ring_alt_v2", False,
+     "a heavy alternate gate ring of banded stone with ember studs on the band, " + EMBER_GLOW,
+     ("a dim alternate ember gate ring with a heavy band",
+      "the rim brightening with the ember studs lit",
+      "the full alternate ring glowing with a hot inner edge",
+      "the glow retreating around the band")),
+    ("fx_emp_arc_v2", False,
+     "a jagged electrical arc discharge, " + STEEL + " arcs with one small hot brightened ember "
+     "core flash, the arcs themselves never ember",
+     ("one single crooked electrical arc",
+      "the arc forking into three branches",
+      "a full electrical discharge with arcs all around",
+      "the arcs breaking up into dying sparks")),
+    ("fx_engine_trail_v2", False,
+     "one thin horizontal ember thrust streak, burnt ember #C8461B hot head fading through ember "
+     "glow #E8703A to nothing at the tail",
+     ("one short bright ember streak",
+      "the streak stretching longer",
+      "a long ember streak at its full length with a soft tail",
+      "the streak fading out along its tail")),
+    ("fx_jump_portal_v2", False,
+     "a wide ember jump aperture ring, burnt ember #C8461B core with ember glow #E8703A rim, "
+     "thin and contained, no field fill",
+     ("a narrow vertical ember slit",
+      "the slit opening into a small oval aperture",
+      "a wide ember jump aperture ring, thin and contained",
+      "the aperture narrowing and dimming")),
+    ("fx_lock_channel_v2", False,
+     "a thin circular progress arc of even thickness with a clearly cut end, " + STEEL
+     + " only, seen face-on",
+     ("a short cold steel progress arc stub",
+      "the arc grown to a quarter circle",
+      "the arc three quarters around the circle",
+      "the arc closing into a full thin ring")),
+    ("fx_mine_v2", True,
+     "a small deployable contact mine, a short riveted drum of iron black #232629 armour with "
+     "gunmetal dark #2B2F35 banding and four short spiked prongs, one ember warning lamp, "
+     "seen face-on",
+     ("the mine's warning lamp unlit, armour only",
+      "the warning lamp lit with a small hot ember point",
+      "the lamp bright with a dim ember pilot glow beside it",
+      "the lamp dimming back toward unlit")),
+    ("fx_repair_pulse_v2", False,
+     "a cold " + STEEL + " maintenance ring with fine engineering sparks along its rim",
+     ("a small cold steel maintenance ring",
+      "the ring expanding with fine sparks at its rim",
+      "a wide steel ring with engineering sparks around it",
+      "the ring thinning and fading")),
+    ("fx_shield_ripple_v2", False,
+     "an expanding shield ripple ring, " + STEEL + " only, thin cold pale rim, faint inner haze, "
+     "no ember",
+     ("a small cold steel ripple ring",
+      "the ring expanding and thinning",
+      "a wide thin steel ring with a faint inner haze",
+      "the ring fading to a faint cold rim")),
+    ("fx_tractor_beam_v2", False,
+     "a thin horizontal ember tractor beam line, " + EMBER_GLOW,
+     ("a thin ember tractor beam line",
+      "the beam pulsing thicker",
+      "a full ember beam with small motes drawn along it",
+      "the beam flickering thin again")),
+    ("fx_laser_bolt_v3", False,
+     "two horizontal energy bolt projectiles, burnt ember #C8461B hot core inside a soft ember "
+     "glow #E8703A halo, fat capsule shapes, the upper pair about four times as long as wide and "
+     "the lower pair about six times",
+     ("a short thick light bolt at full brightness",
+      "the same light bolt dimming along its tail",
+      "a longer medium bolt at full brightness",
+      "the medium bolt dimming along its tail")),
+)
 
 RUNS: dict[str, dict] = {}
 
@@ -392,6 +615,25 @@ for _id, _subject, _source, _mode in (
 ):
     RUNS[_id] = dict(family="fx", source=_source, mode=_mode, alpha=False,
                      out=_id, subject=_subject, review_only=False)
+
+## The 2026-09-21 re-cuts. The two sheets stay RGB on void black (they are additive, FX_SPEC
+## section 0.1); the mine is a `single` with alpha, so it needs `key_new.py` before it can be
+## cut, exactly like a hull.
+RUNS["fx_mining_beam_v2"] = dict(family="fx", source="human", mode="fx_sheet", alpha=False,
+                                 out="fx_mining_beam_v2", subject=MINING_CHIPS_V2,
+                                 review_only=False)
+RUNS["fx_laser_bolt_v2"] = dict(family="fx", source="human", mode="fx_sheet", alpha=False,
+                                out="fx_laser_bolt_v2", subject=LASER_BOLT_V2,
+                                review_only=False)
+RUNS["fx_mine"] = dict(family="fx", source="human", mode="single", alpha=False,
+                       out="fx_mine", subject=MINE, review_only=False)
+
+## The four-frame cycles (owner instruction 2026-09-21). They land as `_v2` renders and cut to
+## the shipped `_f1.._f4` names, so a client animates the effect without a rename.
+for _id, _needs_key, _subject, _phases in FX_CYCLES:
+    RUNS[_id] = dict(family="fx", source="human", mode="fx_sheet", alpha=False, out=_id,
+                     subject=fx_cycle(_subject, _phases), review_only=False,
+                     needs_key=_needs_key)
 
 ## Retired before shipping: the owner ruled (2026-09-21) that this four-frame sheet duplicates the
 ## shipped `fx_shield_break.png`, which FX_SPEC section 7.1 already names as the asset for the
