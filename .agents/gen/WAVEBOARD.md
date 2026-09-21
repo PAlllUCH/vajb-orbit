@@ -1,6 +1,6 @@
 # WAVEBOARD — one-file agent state
 
-**Updated: 2026-09-21 (P2-A closed; Rock cleave next).** Full history of what every worker
+**Updated: 2026-09-22 (Rock cleave closed; P2-B1 next).** Full history of what every worker
 did, with known errors and open findings, now lives in
 `.agents/gen/MASTER_REPORT.md` — this board keeps only current state,
 contracts, enforcement and the queue. Executed-wave reports, briefs and
@@ -8,12 +8,13 @@ evidence were moved to `.agents/gen/_archive/` (2026-09-21, reversible) —
 citation paths of the form `.agents/gen/<report>.md` now resolve one level
 deeper.
 
-**Current state: six coding waves closed (chrome, combat repair, weapon FX wiring, flight
-feel & beam polish, slice 2.5 Feel, P2-A ship slot frames; gate `passed=372 failed=0`). The
-queue of record is `dispatch_coder.md`: Rock cleave (item 5, next) then P2-B1 (item 6). Owner
-gates: the chrome art half, the launch fit (symptom 1 closed by P2-A; symptom 2, the
-mining-laser swap, opens with P2-B1), four spec ticks, the §13 turn column, and the
-engine-bed / vignette-strength calls slice 2.5 raised.** Engine waves closed as below
+**Current state: seven coding waves closed (chrome, combat repair, weapon FX wiring, flight
+feel & beam polish, slice 2.5 Feel, P2-A ship slot frames, Rock cleave; gate `passed=378
+failed=0`). The queue of record is `dispatch_coder.md`: P2-B1 (item 6) next. Owner gates: the
+chrome art half, the **`18_engine_spec.md` §6/§13/§15 cleaving amendment** (owner-locked; §15
+is the test checklist and now contradicts the shipped suite), the launch fit (symptom 1
+closed by P2-A; symptom 2, the mining-laser swap, opens with P2-B1), four spec ticks, the §13
+turn column, and the engine-bed / vignette-strength calls slice 2.5 raised.** Engine waves closed as below
 (slice 0 + slice 2 review-verified clean; gate `passed=311 failed=0`). A full-loop live
 playtest (2026-09-21, godot-ai driven) verified the whole menu → station → launch →
 space structure but found the `ui_slot_*` chrome shipping as whole sheet cells
@@ -60,20 +61,24 @@ owner's §8 tick list is resolved (all six kept); the one follow-up is the 7-W c
 ## Living contracts
 
 - `docs/CONTRACTS.md` — pinned interfaces; **§11 (P2 ship frames) landed by P2-A
-  2026-09-21** (status line v1.3; the §10 changelog carries the v0.2 P2-A entry).
-  Briefs say "code against CONTRACTS.md §n"; review waves own updating it.
+  2026-09-21** and **§5's cleaving sentence merged by Rock cleave (v1.4, 2026-09-22)**
+  (status line v1.3; the §10 changelog carries the v0.2 and v1.4 entries). §9's expected
+  gate figure is still the stale 294 — the next review wave owns it. Briefs say "code
+  against CONTRACTS.md §n"; review waves own updating it.
 - `docs/gameplay/18_engine_spec.md` — the engine contract. §2.1 carries owner
   rulings 8–26. **Owner-locked**: no worker may edit it; the six owed spec
   edits are the owner's (MASTER_REPORT §3 item 1).
 - Universal test gate: `res://tests/headless_runner.tscn` → `[SUMMARY]
-  passed=372 failed=0` (exact command in CONTRACTS.md §9; grew 53 → 78 → 219 → 226
+  passed=378 failed=0` (exact command in CONTRACTS.md §9; grew 53 → 78 → 219 → 226
   with the UI-chrome wave's `test_ui_slot_layout.gd`, 236 with the combat repair wave's
   `test_engine_c3_flight_decay.gd` and `test_combat_repair_c5.gd`, 277 with the weapon FX
   wave's `test_weapon_fx_f{1,2,4}.gd` suites, 294 with the flight/beam wave's
   `test_flight_feel_g1.gd` and `test_flight_beam_g2.gd`, 311 with slice 2.5's S3 pass, and
   **372 with P2-A's suites** — `test_ship_grids.gd` (27), `test_p2a_profile_fits.gd` (11),
   `test_p2a_launch_fit.gd` (12), `test_p2a_ship_roster.gd` (4), `test_ui_slot_layout.gd`
-  rewritten 7 → 12, `test_p2a_lint_shadow.gd` (2)).
+  rewritten 7 → 12, `test_p2a_lint_shadow.gd` (2)), then 378 with Rock cleave's
+  `test_engine2_cleaving.gd` 9 → 15 (the only suite whose count moved; the rock brief's
+  311 was stale — its baseline measured 372 against a stashed tree).
 - `staging/verify_wave.py` — mechanical wave gates: `snapshot` before a wave,
   `verify --baseline <tag> [--forbidden ...] [--expect-reports ...] [--tests]`
   after. Baselines live in `.agents/gen/_wave_state/` (`wave1_closed`,
@@ -130,22 +135,31 @@ PowerShell form: `$env:VAJB_WORKER_FILES='...'; crush run "<prompt>" -m opencode
 
 ## In flight — none.
 
-**Queued (the queue of record is `dispatch_coder.md` §Current queue):** item 5
-**Rock cleave — runs next** (the owner's asteroid ruling: a rock-scaled explosion
-read + a random 2–5 fragments per cleaving tier in uniform directions; briefs
-`.agents/gen/rock_cleave_wave_task.md` + prompts), item 6 **P2-B1** (the weapon fit
-surface: OUTFITTING sells the six weapon modules and installs/swaps them into the
-hull's W cells through `ShipFit.fit_legal`; starts after P2-A — now clear). Item 4
-**P2-A — DONE 2026-09-21** (see §Closed). **The designer phase
+**Queued (the queue of record is `dispatch_coder.md` §Current queue):** item 6
+**P2-B1 — runs next** (the weapon fit surface: OUTFITTING sells the six weapon modules
+and installs/swaps them into the hull's W cells through `ShipFit.fit_legal`; brief
+`.agents/gen/p2b1_weapon_fit_wave_task.md` + prompts). Items 4 **P2-A** and 5
+**Rock cleave** — **DONE** (see §Closed). **The designer phase
 is deferred to the next day (owner, 2026-09-21):** the graphics queue of record
 is `.agents/gen/dispatch_designer.md` + `designer_generation_backlog.md`
 (component icons, the `_48`/tint re-cuts, the decisions), hand-over prompt ready;
 nothing from it is in flight. Owner ticks open: the
-`18_engine_spec.md` §6 cleaving amendment (owner-locked), the rock wave's
-proposed rows (brief §1), and P2-B1's refusal wordings.
+`18_engine_spec.md` §6/§13/§15 cleaving amendment (owner-locked — the wave shipped,
+the spec text lags) and P2-B1's refusal wordings.
 
 ## Closed (details in MASTER_REPORT.md)
 
+- **Rock cleave — DONE 2026-09-22** (gate 372 → 378; reports
+  `.agents/gen/rock_cleave_a{1,2,3}_report.md`): every depletion now draws FX_SPEC §1.4's
+  explosion at the rock's centre (`clamp(1.2 × diameter, 96, 224) u`, five frames, MIX,
+  self-freeing), plays S4's rock cue through the new four-take `CUE_POOLS` row, and shoves
+  reachable bodies with the shipped `Impact.apply_shockwave`; fragments are a uniform **2–5**
+  on both cleaving tiers in **uniform 360°** directions at the shipped ×1.2 speed (measured:
+  Large {2:80, 3:69, 4:72, 5:79}, Medium {2:78, 3:69, 4:70, 5:83}; widest fragment pair
+  179.8°; 529/529 at exactly ×1.2); a Small keeps its 1–2 pickups; a yield-0 rock cracks
+  bare but still plays the break read. Reviewer: no HIGH, one MED (`CONTRACTS.md` §5's
+  retired cleaving sentence) fixed by A3 (+ v1.4 changelog), four LOW → L72–L75. **Owner
+  tick owed: the §6/§13/§15 dated amendment (spec owner-locked).**
 - **P2-A ship slot frames — DONE 2026-09-21** (gate 311 → 372; reports
   `.agents/gen/p2a_{d0,w1,w2,w3,w4,w5,r1,f1}_report.md`): every class owns its slot count and
   layout — nine matrices (shipyard grids 4×3 → 5×6, columns 4×8 + 5, plates

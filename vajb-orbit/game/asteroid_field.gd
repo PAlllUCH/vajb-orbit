@@ -13,6 +13,16 @@ extends Node2D
 ## 17_coder_handoff.md §4 (one 20-minute accumulator, no per-consumer Timers);
 ## slice-0 brief §M2 and pinned interface item 5.
 ##
+## **The owner's asteroid ruling (2026-09-21) amends the two cleaving rows quoted
+## above** -- "asteroids breaking effects (they should somehow explode, random
+## fragments from 2 to 5 moving in random directions)": the split is a uniform random
+## 2-5 per tier, the ejection direction is uniform over the full circle, and every
+## depletion reads as a break (FX_SPEC §1.4's explosion at the rock's own centre,
+## scaled to it, + S4's rock cue + §4.2 item 8's blast on the neighbours it can
+## reach) -- including a yield-0 rock, which still cleaves into nothing. The tick for
+## §6/§13/§15 is the owner's; the counts, the scale and the cue are the wave brief's
+## table, never this file's own numbers.
+##
 ## Consumer contract — W4's `game/sector.gd` binds this script duck-typed, so the
 ## three names below are the frozen handoff:
 ##   * `setup(config)` with `{&"tier_weights": Dictionary, &"rocks": int,
@@ -25,16 +35,26 @@ extends Node2D
 ## is the band itself (ENGINE_SPEC §8, 17 §4), not a second schedule.
 ##
 ## **Slice 0's split of labour:** `asteroid.gd` owns the cleaving *rules* (the size
-## class, the split table, the ejection arithmetic); this file owns the *spawning*,
-## because it holds the generation RNG, the field count and the pickups' world
-## parent. Fragments are built by the same code path as the field's own rocks, so
-## they are field members from birth: `rocks()`, `rock_count()` and `is_depleted()`
-## see them, and a field with live fragments is not depleted (no respawn fires while
-## a cleave is still being chewed through).
+## class, the split table, the ejection arithmetic); this file owns the *spawning*
+## and the break's *read* (the FX, the cue and the blast), because it holds the
+## generation RNG, the field count and the pickups' world parent. Fragments are built
+## by the same code path as the field's own rocks, so they are field members from
+## birth: `rocks()`, `rock_count()` and `is_depleted()` see them, and a field with
+## live fragments is not depleted (no respawn fires while a cleave is still being
+## chewed through).
 
 const AsteroidScript := preload("res://game/asteroid.gd")
 const MineralCatalogScript := preload("res://game/mineral_catalog.gd")
 const Clock := preload("res://autoload/world_clock.gd")
+
+## The break's FX and cue come from the files that own them (FX_SPEC §1.4's explosion
+## sheet through `projectile.gd`'s sheet helper, its S4 rock cue through the same
+## `play_impact` door, and `impact.gd`'s shockwave helper for the blast). Reached by
+## path, not by the global class name, for the same reason `asteroid.gd` reaches
+## `ship_fit.gd` and `weapons.gd` that way: the global name only resolves once the
+## editor has scanned the project.
+const ProjectileScript := preload("res://game/projectile.gd")
+const ImpactScript := preload("res://game/impact.gd")
 
 ## `Pickup` is loaded lazily, exactly as the mining laser loads it: this field must
 ## be able to build, roll and cleave a rock field whether or not the pickup leaf
@@ -227,20 +247,90 @@ func _new_rock(
 	return rock
 
 
-## Ruling 17, on the way out: a depleted rock cleaves into fragments (or, at the
-## small end, bursts into pickups) before it is freed. The `cracked` emission is
-## synchronous inside `apply_work`, so the rock is still valid here and its velocity
-## is still readable -- which is what `× 1.2` is measured against.
+## Ruling 17, on the way out: a depleted rock reads as a break (the owner's
+## 2026-09-21 asteroid ruling -- it "should somehow explode") and then cleaves into
+## fragments, or, at the small end, bursts into pickups, before it is freed. The
+## `cracked` emission is synchronous inside `apply_work`, so the rock is still valid
+## here and its velocity and radius are still readable -- which is what `× 1.2` and
+## the explosion's own scale are measured against.
 func _on_rock_cracked(rock: Node2D) -> void:
 	_rocks.erase(rock)
+	_break_read(rock)
 	_cleave(rock)
 	if _rocks.is_empty():
 		last_depleted_time = Clock.now()
 
 
-## §13's "Fragment split: L → 2-3 M · M → 2 S · S → 1-2 pickups". A yield-0 rock
-## carries nothing to break and despawns bare (§6/§15). A small never spawns rock
-## fragments: its cleave is the pickup burst.
+## Ruling 17's "a yield-0 rock still cracks and despawns bare" read the *cleaving*
+## half; the owner's 2026-09-21 ruling makes the break read the rock's **death**, not
+## an ore event, so every path through here reads the same way -- a Large that
+## cleaves, a Small that bursts pickups, and a rock that rolled no ore at all. It
+## runs *before* `_cleave`, so the read belongs to the rock and not to its children:
+## the fragments are born after the blast and are not shoved by their parent's death.
+##
+## Three pieces, all of them existing owners' work:
+##   1. FX_SPEC §1.4's five-frame explosion at the rock's own centre, sized to the
+##      rock (`Projectile.spawn_rock_break` -- §7.3's one-shot wiring: the sheet
+##      plays once and frees itself);
+##   2. S4's rock cue, through the same `play_impact` door a bolt's rock hit uses and
+##      the pool row `AudioManager.CUE_POOLS` now carries (L53: the four takes were
+##      on disk with no row);
+##   3. §4.2 item 8's blast on the bodies the break is nearest.
+func _break_read(rock: Node2D) -> void:
+	var centre: Vector2 = rock.global_position
+	var diameter := 2.0 * maxf(float(rock.call(&"world_radius")), 0.0)
+	ProjectileScript.spawn_rock_break(_world_parent(), centre, diameter)
+	ProjectileScript.play_impact(self, ProjectileScript.IMPACT_KIND_ROCK)
+	_push_neighbours(centre)
+
+
+## §4.2 item 8's outward impulse over `EXPLOSION_WINDOW`, on the bodies this break
+## can actually reach: the rocks still standing in this field (a rock that breaks
+## nudges its neighbours) and the hulls the tree exposes, walked to their physics body
+## through `impact_body` exactly as `game.gd`'s wreck blast walks to the player's. The
+## push itself is `Impact.apply_shockwave`; `I(d) = P0 / (1 + d^2)` is its own range,
+## so the gate is the same floor `projectile.gd`'s own blast query stops at
+## (`MIN_SHOCKWAVE_IMPULSE`, about 63 u) and no radius is invented here. A body past
+## that floor is left alone rather than handed a blast it cannot feel.
+func _push_neighbours(centre: Vector2) -> void:
+	for body: Variant in _blast_targets():
+		var rigid := body as RigidBody2D
+		if rigid == null:
+			continue
+		var distance: float = rigid.global_position.distance_to(centre)
+		if ImpactScript.explosion_impulse(distance) < ProjectileScript.MIN_SHOCKWAVE_IMPULSE:
+			continue
+		ImpactScript.apply_shockwave(centre, rigid, ImpactScript.EXPLOSION_WINDOW)
+
+
+## The bodies a break is offered to: this field's live rocks, plus every hull in the
+## tree's two hull groups, resolved through `impact_body` when the ship exposes one
+## (both shipped hulls do). Rocks are the near ones by construction -- the field's own
+## 400 u cluster -- and the ships are filtered by the impulse floor above, so a sector
+## whose hulls are thousands of units away pays two group lookups and nothing else.
+func _blast_targets() -> Array:
+	var out := []
+	for rock: Node2D in rocks():
+		out.append(rock)
+	if not is_inside_tree():
+		return out
+	var tree := get_tree()
+	if tree == null:
+		return out
+	for group: StringName in [ProjectileScript.PLAYER_GROUP, ProjectileScript.NPC_GROUP]:
+		for node: Node in tree.get_nodes_in_group(group):
+			var body: Variant = node
+			if node.has_method(&"impact_body"):
+				body = node.call(&"impact_body")
+			if body is RigidBody2D:
+				out.append(body)
+	return out
+
+
+## §13's "Fragment split", as amended by the owner's 2026-09-21 ruling: `L -> 2-5 M`,
+## `M -> 2-5 S` (both tiers' row is `FRAGMENT_SPLIT`), and `S -> 1-2 pickups`. A
+## yield-0 rock carries nothing to break and cleaves into nothing (§6/§15, ruling 17);
+## a small never spawns rock fragments, because its cleave *is* the pickup burst.
 func _cleave(rock: Node2D) -> void:
 	if not bool(rock.call(&"cleaves")):
 		return
@@ -342,10 +432,16 @@ func _report_missing_pickup(reason: String) -> void:
 	)
 
 
-## Pickups live in world space and outlive the rock that burst: `current_scene` is
-## the running scene (the same parent the mining laser's pickups use), and the tree
-## root is the fallback for a field outside a scene (a probe).
+## The break read's FX parent and the pickups' parent: `current_scene` is the running
+## scene (the same parent the mining laser's pickups use), and the tree root is the
+## fallback for a field outside a scene. A field that is not in a tree at all (a probe,
+## or `tests/test_engine2_cleaving.gd`'s detached fixture) parents to itself, which is
+## the only answer that keeps its effects and its ore together - and it is why this
+## checks `is_inside_tree()` rather than asking `get_tree()`, which the engine reports
+## as an error on a node that has no tree.
 func _world_parent() -> Node:
+	if not is_inside_tree():
+		return self
 	var tree := get_tree()
 	if tree == null:
 		return self

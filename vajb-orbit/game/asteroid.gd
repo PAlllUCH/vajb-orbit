@@ -11,6 +11,17 @@ extends RigidBody2D
 ## despawn bare"); docs/gameplay/02_minerals.md §5 (the mineral and yield rolls) and
 ## §7 (the mining flow); slice-0 brief §M2 and pinned interface item 5.
 ##
+## **The owner's asteroid ruling (2026-09-21, verbatim: "asteroids breaking effects
+## (they should somehow explode, random fragments from 2 to 5 moving in random
+## directions)") amends §6/§13's two cleaving rows and §15's read of them**: both
+## cleaving tiers now split into a uniform random 2-5, and the ejection direction is
+## uniform over the full circle (the ±15° cone is retired; see the constants), while
+## the `x 1.2` speed is untouched. The explosion, the break cue and the blast the
+## rock's death owes its neighbours are the field's (§7.3's wiring contract), because
+## the field is what spawns. The tick for §6/§13/§15 is the owner's (the engine spec
+## is owner-locked); this file and `asteroid_field.gd` cite the amendment until it
+## lands.
+##
 ## Work, not damage: `apply_work` accumulates fractional work and converts it to
 ## whole ore units at `WORK_PER_UNIT`, so 02 §7.1's "one completed extraction cycle
 ## pops one ore unit" and ENGINE_SPEC §6's 10 % gun rate are the same arithmetic
@@ -85,20 +96,32 @@ const SIZE_MEDIUM := 1
 const SIZE_LARGE := 2
 const SIZE_ANY := -1
 
-## §13 "Cleaving (ruling 17)", verbatim: `L -> 2-3 M`, `M -> 2 S`, `S -> 1-2
-## pickups`. A small's row reads (0, 0) fragments because its cleave *is* the
+## §13 "Cleaving (ruling 17)" as amended by the owner's 2026-09-21 asteroid ruling:
+## a cleaving rock splits into a **uniform random 2-5** fragments -- `L -> 2-5 M`,
+## `M -> 2-5 S`, replacing the shipped fixed (2,3)/(2,2) rows. One pair per tier:
+## the row's own two numbers, rolled by the field (`AsteroidField._cleave`), which
+## owns the RNG. A small's row reads (0, 0) fragments because its cleave *is* the
 ## pickup burst in `PICKUP_BURST`; a large's fragments are Medium, a medium's are
 ## Small (the row below it), which is what `fragment_size()` returns.
+## Reversal: restore the two retired rows.
 const FRAGMENT_SPLIT: Dictionary = {
 	SIZE_SMALL: Vector2i(0, 0),
-	SIZE_MEDIUM: Vector2i(2, 2),
-	SIZE_LARGE: Vector2i(2, 3),
+	SIZE_MEDIUM: Vector2i(2, 5),
+	SIZE_LARGE: Vector2i(2, 5),
 }
 const PICKUP_BURST: Vector2i = Vector2i(1, 2)
 
-## §13: fragments "eject at `current_velocity × 1.2` + random ±15° cone".
+## §13's ejection row, speed half: fragments still "eject at `current_velocity x
+## 1.2`" -- the owner's ruling changes the *direction*, never the speed.
 const FRAGMENT_EJECT_MULT := 1.2
-const FRAGMENT_EJECT_CONE_DEG := 15.0
+
+## §13's ejection row, direction half, as amended by the owner's 2026-09-21 ruling
+## ("random fragments ... moving in random directions"): the field rotates the
+## parent's own velocity by `randf_range(-cone, +cone)`, so a cone of **360.0** is
+## the whole circle and the direction is uniform over it (the shipped ±15° cone is
+## retired). One constant swap: `0.0` fires every fragment straight ahead and
+## `15.0` restores the retired cone exactly.
+const FRAGMENT_EJECT_CONE_DEG := 360.0
 
 ## §13's class mass column (the engine-slice-0 `hull_mass` row) × 4 — the brief's
 ## "heavy mass (class `hull_mass` × 4, proposed)". A rock has no class of its own
@@ -263,7 +286,8 @@ func cleaves() -> bool:
 
 ## The velocity the fragments inherit: `current_velocity × 1.2` of the §13 cleaving
 ## row, read while the rock still exists (the `cracked` emission happens before the
-## free). The ±15° cone is the field's roll, because it owns the RNG.
+## free). The direction is the field's roll over `FRAGMENT_EJECT_CONE_DEG`, because
+## the field owns the RNG: 360° there means uniform over the full circle.
 func eject_velocity() -> Vector2:
 	return linear_velocity * FRAGMENT_EJECT_MULT
 

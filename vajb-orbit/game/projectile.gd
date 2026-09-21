@@ -416,6 +416,19 @@ const SHAPE_NODE: StringName = &"Shape"
 const MIN_SHOCKWAVE_IMPULSE := 1.0
 const MAX_SHOCKWAVE_BODIES := 32
 
+## The rock break's own read of section 1.4's explosion (the owner's 2026-09-21
+## asteroid ruling: rocks "should somehow explode"). A hull dies at the row's shipped
+## 96 u; a rock is a thing of its own size, so its break is `diameter x 1.2`, clamped
+## to the row's own 96 u floor and a 224 u ceiling. The floor is the row's own `world`
+## (a small rock's 1.2 x read - about 58 u - would otherwise draw a spark), and the
+## ceiling sits above the largest shipped look's read (LOOK_WIDTHS' 132 u x 1.2 =
+## 158.4 u) so a stray radius cannot blow the effect up past the spec's own scale.
+## One optional `world` argument on `spawn_sheet` is the whole mechanism; these three
+## constants are the reversal.
+const ROCK_BREAK_WORLD_SCALE := 1.2
+const ROCK_BREAK_WORLD_MIN := 96.0
+const ROCK_BREAK_WORLD_MAX := 224.0
+
 var kind: StringName = KIND_BOLT
 var speed := 0.0
 var damage := 0.0
@@ -1227,7 +1240,14 @@ static func feedback_texture(row_name: StringName) -> Texture2D:
 ## it on `animation_finished`) with the sheet's own alpha, placed at `at` in world space
 ## and returned. Null when the row, its files or its frames are unavailable - a missing
 ## sheet leaves the hit quiet rather than crashing a run.
-static func spawn_sheet(parent: Node, fx_name: StringName, at: Vector2) -> AnimatedSprite2D:
+##
+## `world` is the row's own size unless a caller has one of its own (0 means "the row's"):
+## the rock break is the only such caller, and it is the one effect whose subject is a
+## body of a variable size rather than a hull (`spawn_rock_break`). The scale is the same
+## `Fx.scale_for` computation either way, so the override changes no mechanic.
+static func spawn_sheet(
+	parent: Node, fx_name: StringName, at: Vector2, world: float = 0.0
+) -> AnimatedSprite2D:
 	if parent == null:
 		return null
 	var row := feedback_row(fx_name)
@@ -1245,7 +1265,7 @@ static func spawn_sheet(parent: Node, fx_name: StringName, at: Vector2) -> Anima
 		return null
 	var scale_factor := FxScript.scale_for(
 		row.get(&"source", (textures[0] as Texture2D).get_size()) as Vector2,
-		float(row.get(&"world", 0.0))
+		world if world > 0.0 else float(row.get(&"world", 0.0))
 	)
 	var sprite := FxScript.play_once(parent, frames, Vector2.ZERO, 0.0, scale_factor)
 	if sprite == null:
@@ -1260,6 +1280,21 @@ static func spawn_sheet(parent: Node, fx_name: StringName, at: Vector2) -> Anima
 ## down in flight.
 static func spawn_explosion(parent: Node, at: Vector2) -> AnimatedSprite2D:
 	return spawn_sheet(parent, &"explosion", at)
+
+
+## The rock break's explosion (the owner's 2026-09-21 asteroid ruling): the same
+## section 1.4 sequence, at the rock's own centre and read at the rock's size -
+## `diameter x ROCK_BREAK_WORLD_SCALE`, clamped to the row's floor and the ceiling above
+## the largest shipped look. `diameter` is the rock's collision diameter
+## (`2 x Asteroid.world_radius()`), so a Large rock's break covers it and a Small's does
+## not read as a hull-sized blast.
+static func spawn_rock_break(parent: Node, at: Vector2, diameter: float) -> AnimatedSprite2D:
+	var world := clampf(
+		maxf(diameter, 0.0) * ROCK_BREAK_WORLD_SCALE,
+		ROCK_BREAK_WORLD_MIN,
+		ROCK_BREAK_WORLD_MAX
+	)
+	return spawn_sheet(parent, &"explosion", at, world)
 
 
 ## ASSET_EXPANSION_SPEC section 7's secondary burst - what a hull's death adds over the

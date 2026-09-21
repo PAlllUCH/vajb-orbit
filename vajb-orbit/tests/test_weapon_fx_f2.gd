@@ -31,6 +31,7 @@ const ShipFitScript := preload("res://game/ship_fit.gd")
 
 const AUDIO_SERVICE: StringName = &"AudioManager"
 const HULL_POOL: StringName = &"sfx_impact_hull"
+const ROCK_POOL: StringName = &"sfx_impact_rock"
 const SHIELD_POOL: StringName = &"sfx_impact_shield_hit"
 const BLAST_POOL: StringName = &"sfx_weapon_explosion"
 
@@ -139,10 +140,13 @@ func test_a_hit_on_a_rock_plays_the_rock_cue() -> void:
 	var rock := _rock()
 	var shot := _shot(ProjectileScript.KIND_BOLT)
 	shot.call(&"_hit_rock", rock, HIT_POINT)
-	assert_eq(
-		StringName(audio.call(&"last_sfx")),
-		&"sfx_impact_rock",
-		"a weapon hit on a rock is its own sound (the mining shaft keeps its chip cue)"
+	## The cue is S4's rock cue and since 2026-09-21 it resolves through its own pool row
+	## (the rock-cleave wave's L53 fix: the four takes that sat on disk with no row), so
+	## what comes back is a take of that row rather than the bare cue name.
+	assert_true(
+		AudioScript.CUE_POOLS[ROCK_POOL][&"takes"].has(StringName(audio.call(&"last_sfx"))),
+		"a weapon hit on a rock is its own sound, one of S4's four rock takes (played %s)"
+		% StringName(audio.call(&"last_sfx"))
 	)
 	assert_true(_sheet_up(ARC_SHEET) == null, "and a bolt arcs nowhere")
 

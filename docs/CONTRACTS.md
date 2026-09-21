@@ -262,13 +262,22 @@ forced to 0 by the solver, so the ship's half landed while the rock's was droppe
 measured `v_peak = 0.000 u/s`, `pos_delta = 0.000 u`, both pools unchanged, and the
 same ram on the shipped tree reads `v_peak 72.821` / `pos_delta 20.323` (C6's re-run);
 a `mask 1` control still reads `0.000`, so the bit must be the hull's layer. The size
-class is a look *and* the cleaving class:
-`FRAGMENT_SPLIT` L (2,3) → M, M (2,2) → S, `PICKUP_BURST` (1,2) for an S, ejection
-`× 1.2` inside a ±15° cone, fragment mineral **and tier** inherited from the parent
-with the yield re-rolled through the 02 §5 path (the §13 row and §12 item 12 are
-law; §6's "re-rolled tier" parenthetical is not representable, since a mineral
-fixes its tier). `AsteroidField` does the spawning on `cracked`, so fragments are
-field members from birth and count toward `rocks()`/`is_depleted()`.
+class is a look *and* the cleaving class: `FRAGMENT_SPLIT` is a **uniform 2–5 on both
+cleaving tiers** (`(2,5)` L → M and M → S), `PICKUP_BURST` `(1,2)` for an S, and
+ejection `× 1.2` in a **uniform 360°** direction (`FRAGMENT_EJECT_CONE_DEG` 360.0 —
+the reversals are those two constants themselves: restore the fixed `(2,3)`/`(2,2)`
+rows, or set the cone to `15.0`), fragment mineral **and tier** inherited from the
+parent with the yield re-rolled through the 02 §5 path (the §13 row and §12 item 12
+are law; §6's "re-rolled tier" parenthetical is not representable, since a mineral
+fixes its tier). Every depletion — a cleave, a Small's burst or a yield-0 crack —
+also reads as the rock's **death**, not an ore event: FX_SPEC §1.4's explosion at the
+rock's own centre scaled `clamp(1.2 × diameter, 96, 224) u` through
+`Projectile.spawn_rock_break` (§7.3's one-shot wiring), S4's rock cue through the
+four-take `sfx_impact_rock` row `CUE_POOLS` now carries, and
+`Impact.apply_shockwave` on the bodies inside `I(d) ≥ MIN_SHOCKWAVE_IMPULSE` (about
+63 u — §13's own floor, so no radius is invented here). `AsteroidField` does the
+spawning on `cracked`, so fragments are field members from birth and count toward
+`rocks()`/`is_depleted()`.
 
 Rocks are solid to ships, block shots/beams, crack at yield 0. Gun work = 10 %
 efficiency (slice-2 seam: expose `apply_work`, ship nothing else).
@@ -1243,3 +1252,27 @@ Panel contracts (station):
   Evidence: `.agents/gen/p2a_d0_report.md` (this doc pass) plus the wave's worker
   reports `p2a_w{1,2,3,4,5}_report.md`, the review `.agents/gen/p2a_r1_report.md`
   and the brief `.agents/gen/p2a_slot_frames_wave_task.md`.
+- **v1.4 (2026-09-22, rock-cleave wave — its review A2, whose authored text the
+  wave's fixer A3 landed)** — the owner's 2026-09-21 asteroid ruling ("asteroid
+  breaking effects (they should somehow explode, random fragments from 2 to 5 moving
+  in random directions)") is now what **§5** states, closing the review's one MED
+  (`.agents/gen/rock_cleave_a2_report.md` §6). §5's cleaving sentence was three
+  clauses out of date: it still read the retired fixed split rows and the retired
+  ejection cone, and it was silent about the break read the ruling adds. It now reads
+  the shipped constants with their shipped values — `FRAGMENT_SPLIT` a **uniform**
+  2–5 on both cleaving tiers, ejection `× 1.2` in a **uniform 360°** direction, and
+  every depletion (a cleave, a Small's burst or a yield-0 crack) also drawing FX_SPEC
+  §1.4's explosion at the rock's own centre scaled `clamp(1.2 × diameter, 96, 224) u`,
+  playing S4's rock cue through the new four-take `sfx_impact_rock` `CUE_POOLS` row, and
+  applying `Impact.apply_shockwave` on the bodies inside
+  `I(d) ≥ MIN_SHOCKWAVE_IMPULSE` — and it names the two reversals (the constants
+  themselves: the fixed rows, or a `15.0` cone). **No pinned signature changed**: the
+  fix is one paragraph of §5 plus this entry, and `vajb-orbit/` is untouched by it. The
+  wave's gate is the measured `passed=378 failed=0`, exit 0, on a pre-wave tree
+  measured at **372** — the whole growth is `test_engine2_cleaving` 9 → 15, which is
+  A1's and not this pass's. The retired cleaving rows in the owner-locked
+  `docs/gameplay/18_engine_spec.md` §6/§13/**§15** stay the owner's tick. Evidence:
+  `.agents/gen/rock_cleave_a3_report.md` (this fix, with every before/after command)
+  and the re-runnable guard `.agents/gen/rock_cleave_a3_check.sh` — 12 checks proving
+  the retired statements are gone and every value §5 now names equals the constant its
+  owner declares.

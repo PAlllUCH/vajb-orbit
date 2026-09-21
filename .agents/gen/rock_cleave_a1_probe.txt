@@ -1,0 +1,44 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[RC] boot audio=true pickup_leaf=true rocks=6
+[RC] SPLIT L=(2, 5) M=(2, 5) S=(0, 0) pickup=(1, 2) eject_mult=1.20 cone=360.0
+[RC] ok   split_rows - both cleaving tiers 2-5, a Small still fragments into nothing
+[RC] ok   eject_constants - x1.2 speed, full-circle direction
+[RC] COUNT Large rolls=[4, 2, 4, 3, 4, 4, 4, 4] min=2 max=4 tiers_landed_in=1 landed=[1]
+[RC] ok   count_Large_bounds - every Large cleave rolled inside 2-5
+[RC] ok   count_Large_variety - the count varies roll to roll (seen 2..4 over 8 cleaves)
+[RC] ok   count_Large_size - a Large's fragments are one tier down
+[RC] COUNT Medium rolls=[5, 4, 3, 4, 4, 4, 2, 3] min=2 max=5 tiers_landed_in=1 landed=[0]
+[RC] ok   count_Medium_bounds - every Medium cleave rolled inside 2-5
+[RC] ok   count_Medium_variety - the count varies roll to roll (seen 2..5 over 8 cleaves)
+[RC] ok   count_Medium_size - a Medium's fragments are one tier down
+[RC] DIR deviations_deg=[-6.255, 25.124, -75.346, 140.673, -33.178, 19.816, 108.772, 38.404, 85.695, -54.437, 175.57, -99.089, -76.718, 44.241, 76.794, -174.393, 123.014, -166.488, -112.738, 13.746, 165.2, 86.157, 100.553, 60.892, 25.6, 40.543, 53.454]
+[RC] DIR widest_pair=179.766 deg (cleave 5: [163.121419116939, -126.380547495877, -72.6310568413784, 53.8534427185714, -154.69323888871]) past_15=25 of 27 past_90=10
+[RC] SPEED ratio_min=1.2000 ratio_max=1.2000 fragments=27
+[RC] ok   direction_full_circle - a fragment lands more than 90 deg off the parent's heading: the +-15 deg cone cannot produce one
+[RC] ok   direction_pair_spread - two fragments of one cleave landed 179.8 deg apart (cleave 5)
+[RC] ok   eject_speed - every fragment ejects at the parent's velocity x 1.2
+[RC] FX large radius=66.0000 diameter=132.0000 expected_world=158.4000 sprite=true at=(240.0, -80.0) scale=0.175221 row=(world 96.0, source (904.0, 776.0)), sprite_frames=5 alive_names=["explosion", "explosion2", "explosion3", "explosion4", "explosion5", "explosion6", "explosion7", "explosion8", "explosion9", "explosion10", "explosion11", "explosion12", "explosion13", "explosion14", "explosion15", "explosion16", "explosion17", "explosion18", "explosion19", "explosion20", "explosion21", "explosion22", "explosion23", "explosion24", "explosion25"]
+[RC] ok   fx_spawn - one explosion sprite per break (24 -> 25)
+[RC] ok   fx_centre - the sequence sits on the rock's centre (240.0, -80.0)
+[RC] ok   fx_scale - scaled to 158.40 world units (row source (904.0, 776.0))
+[RC] CUE played=sfx_impact_rock_01 (before sfx_impact_rock_04) pool_takes=[&"sfx_impact_rock_01", &"sfx_impact_rock_02", &"sfx_impact_rock_03", &"sfx_impact_rock_04"] mode=round_robin in_pool=true row_pitch=0.0 volume=[0.0, 0.0]
+[RC] ok   cue_pool_row - L53's four takes are a round-robin row
+[RC] ok   cue_plays - the break played a take from that row
+[RC] CUE round_robin=["sfx_impact_rock_01", "sfx_impact_rock_02", "sfx_impact_rock_03", "sfx_impact_rock_04", "sfx_impact_rock_01"]
+[RC] ok   cue_rotates - consecutive reads of the row do not repeat the previous take
+[RC] FX small diameter=48.0000 raw_1.2x=57.6000 expected_world=96.0000 scale=0.106195
+[RC] ok   fx_scale_floor - a Small's break takes the row's own 96 u floor (its raw 1.2x read is 57.60 u)
+[RC] BARE cleaves=false fragments=0 fx=26->27 cue=sfx_impact_rock_03 (was sfx_impact_rock_02) live=96->95
+[RC] ok   bare_no_fragments - a yield-0 rock cleaves into nothing
+[RC] ok   bare_break_read - but it still explodes and still plays the break cue
+[RC] BURST pickups_per_small=[1, 1, 1, 2, 2, 1]
+[RC] ok   pickup_burst - a Small bursts 1-2 pickups of its mineral
+[RC] BLAST offset=20.0 curve=9.9751 window=0.2 velocity 0.000000 -> 0.254471 dv_x=0.254471
+[RC] ok   blast_shoves_neighbour - the neighbour 20 u away was pushed outward by the break
+[RC] done failures=0
+WARNING: 4 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 2 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

@@ -1,0 +1,43 @@
+# A2 rock-cleave warning ledger (CONTRACTS section 9's instrument) — measured 2026-09-22
+
+$ godot --headless --debug --path vajb-orbit res://tests/probe_rock_cleave_lint.tscn --quit-after 900
+
+## Distinct warning sites per file (attribution read off the 'at: GDScript::reload (res://file:line)' line)
+         2 at: GDScript::reload (res://game/asteroid.gd:220
+         2 at: GDScript::reload (res://game/asteroid.gd:329
+         2 at: GDScript::reload (res://game/asteroid.gd:350
+         2 at: GDScript::reload (res://game/npc_brain.gd:104
+         1 at: GDScript::reload (res://game/npc_brain.gd:450
+         1 at: GDScript::reload (res://game/npc_brain.gd:477
+         1 at: GDScript::reload (res://game/npc_registry.gd:541
+         1 at: GDScript::reload (res://game/npc_registry.gd:578
+         1 at: GDScript::reload (res://game/npc_registry.gd:739
+         2 at: GDScript::reload (res://game/npc_ship.gd:168
+         1 at: GDScript::reload (res://game/npc_ship.gd:623
+         1 at: GDScript::reload (res://game/npc_ship.gd:662
+         2 at: GDScript::reload (res://game/projectile.gd:1443
+         2 at: GDScript::reload (res://game/projectile.gd:1447
+         2 at: GDScript::reload (res://game/projectile.gd:1709
+
+## Warnings whose attribution is one of the wave's files
+         6 WARNING: The local function parameter "size_class" is shadowing an already-declared function at line 277 in the current class.
+         2 WARNING: The local function parameter "source" is shadowing an already-declared function at line 570 in the current class.
+         2 WARNING: The local variable "material" is shadowing an already-declared property in the base class "CanvasItem".
+         2 WARNING: The local variable "scale" is shadowing an already-declared property in the base class "Node2D".
+
+## A/B: the same run with asteroid.gd + projectile.gd stashed (HEAD 8d189bf)
+$ git stash push -- vajb-orbit/game/asteroid.gd vajb-orbit/game/projectile.gd
+$ ... --quit-after 900 -- --only=res://game/asteroid.gd --only=res://game/projectile.gd
+         1 at: GDScript::reload (res://game/asteroid.gd:197
+         1 at: GDScript::reload (res://game/asteroid.gd:305
+         1 at: GDScript::reload (res://game/asteroid.gd:326
+         2 at: GDScript::reload (res://game/projectile.gd:1408
+         2 at: GDScript::reload (res://game/projectile.gd:1412
+         2 at: GDScript::reload (res://game/projectile.gd:1674
+   (the same six sites, at HEAD's pre-wave line numbers — every surviving row is pre-existing)
+
+## The A2 probe itself
+   [RC-LINT] BEGIN ONLY res://tests/probe_rock_cleave_a2.gd
+   WARNING: The local function parameter "source" is shadowing an already-declared function at line 570 in the current class.
+        at: GDScript::reload (res://game/projectile.gd:1443)
+   (warnings attributed to it: 0; the rows printed around it belong to projectile.gd/asteroid.gd, its dependencies)

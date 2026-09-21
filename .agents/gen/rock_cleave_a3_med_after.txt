@@ -1,0 +1,81 @@
+### AFTER (working tree, md5 020a23eb49759748a7cc017b8d651429)
+
+--- A2's own reproducing command (§6 MED), run again ---
+$ git grep -n "±15° cone" docs/CONTRACTS.md
+exit=1 (1 = no match, which is the fix)
+
+--- the same command widened to the retired rows ---
+$ git grep -n 'L (2,3)\|M (2,2)' docs/CONTRACTS.md
+exit=1 (1 = no match)
+
+--- the paragraph, raw (docs/CONTRACTS.md:265-280) ---
+class is a look *and* the cleaving class: `FRAGMENT_SPLIT` is a **uniform 2–5 on both
+cleaving tiers** (`(2,5)` L → M and M → S), `PICKUP_BURST` `(1,2)` for an S, and
+ejection `× 1.2` in a **uniform 360°** direction (`FRAGMENT_EJECT_CONE_DEG` 360.0 —
+the reversals are those two constants themselves: restore the fixed `(2,3)`/`(2,2)`
+rows, or set the cone to `15.0`), fragment mineral **and tier** inherited from the
+parent with the yield re-rolled through the 02 §5 path (the §13 row and §12 item 12
+are law; §6's "re-rolled tier" parenthetical is not representable, since a mineral
+fixes its tier). Every depletion — a cleave, a Small's burst or a yield-0 crack —
+also reads as the rock's **death**, not an ore event: FX_SPEC §1.4's explosion at the
+rock's own centre scaled `clamp(1.2 × diameter, 96, 224) u` through
+`Projectile.spawn_rock_break` (§7.3's one-shot wiring), S4's rock cue through the
+four-take `sfx_impact_rock` row `CUE_POOLS` now carries, and
+`Impact.apply_shockwave` on the bodies inside `I(d) ≥ MIN_SHOCKWAVE_IMPULSE` (about
+63 u — §13's own floor, so no radius is invented here). `AsteroidField` does the
+spawning on `cracked`, so fragments are field members from birth and count toward
+`rocks()`/`is_depleted()`.
+
+--- the same counts as the before log ---
+count of 'L (2,3)'  : 0
+count of 'M (2,2)'  : 0
+count of '±15° cone': 0
+count of 'FRAGMENT_EJECT_CONE_DEG': 1
+count of 'MIN_SHOCKWAVE_IMPULSE'  : 2
+count of 'sfx_impact_rock'        : 2
+count of 'clamp(1.2 × diameter, 96, 224)': 2
+count of 'uniform 2–5'            : 1
+count of '360'                    : 2
+
+--- the changelog entry, raw ---
+- **v1.4 (2026-09-22, rock-cleave wave — its review A2, whose authored text the
+  wave's fixer A3 landed)** — the owner's 2026-09-21 asteroid ruling ("asteroid
+  breaking effects (they should somehow explode, random fragments from 2 to 5 moving
+  in random directions)") is now what **§5** states, closing the review's one MED
+  (`.agents/gen/rock_cleave_a2_report.md` §6). §5's cleaving sentence was three
+  clauses out of date: it still read the retired fixed split rows and the retired
+  ejection cone, and it was silent about the break read the ruling adds. It now reads
+  the shipped constants with their shipped values — `FRAGMENT_SPLIT` a **uniform**
+  2–5 on both cleaving tiers, ejection `× 1.2` in a **uniform 360°** direction, and
+  every depletion (a cleave, a Small's burst or a yield-0 crack) also drawing FX_SPEC
+  §1.4's explosion at the rock's own centre scaled `clamp(1.2 × diameter, 96, 224) u`,
+  playing S4's rock cue through the new four-take `sfx_impact_rock` `CUE_POOLS` row, and
+  applying `Impact.apply_shockwave` on the bodies inside
+  `I(d) ≥ MIN_SHOCKWAVE_IMPULSE` — and it names the two reversals (the constants
+  themselves: the fixed rows, or a `15.0` cone). **No pinned signature changed**: the
+  fix is one paragraph of §5 plus this entry, and `vajb-orbit/` is untouched by it. The
+  wave's gate is the measured `passed=378 failed=0`, exit 0, on a pre-wave tree
+  measured at **372** — the whole growth is `test_engine2_cleaving` 9 → 15, which is
+  A1's and not this pass's. The retired cleaving rows in the owner-locked
+  `docs/gameplay/18_engine_spec.md` §6/§13/**§15** stay the owner's tick. Evidence:
+  `.agents/gen/rock_cleave_a3_report.md` (this fix, with every before/after command)
+  and the re-runnable guard `.agents/gen/rock_cleave_a3_check.sh` — 12 checks proving
+  the retired statements are gone and every value §5 now names equals the constant its
+  owner declares.
+
+--- every mention of the retired pair now sits on a reversal line ---
+268:the reversals are those two constants themselves: restore the fixed `(2,3)`/`(2,2)`
+
+--- no other stale cleaving claim in the doc ---
+docs/CONTRACTS.md:248:cleaves() -> bool                # false when the rock rolled no ore (slice 0)
+docs/CONTRACTS.md:265:class is a look *and* the cleaving class: `FRAGMENT_SPLIT` is a **uniform 2–5 on both
+docs/CONTRACTS.md:266:cleaving tiers** (`(2,5)` L → M and M → S), `PICKUP_BURST` `(1,2)` for an S, and
+docs/CONTRACTS.md:269:rows, or set the cone to `15.0`), fragment mineral **and tier** inherited from the
+docs/CONTRACTS.md:272:fixes its tier). Every depletion — a cleave, a Small's burst or a yield-0 crack —
+docs/CONTRACTS.md:279:spawning on `cracked`, so fragments are field members from birth and count toward
+docs/CONTRACTS.md:759:(**16**) and `tests/test_engine2_cleaving.gd` (**9**), engine slice 2 added six
+docs/CONTRACTS.md:772:`engine2_cleaving 9 · engine2_damage 20 · engine2_hud 19 · engine2_loot 13 ·
+docs/CONTRACTS.md:778:exit 0, no `SCRIPT ERROR`, no RID-leak line**, per suite `engine2_cleaving 9 ·
+docs/CONTRACTS.md:784:`combat_repair_c5 7 · engine2_cleaving 9 · engine2_damage 20 · engine2_dock 2 ·
+docs/CONTRACTS.md:819:weapon_fx_f2 13 · weapon_fx_f4 6 · combat_repair_c5 7 · engine2_cleaving 9 ·
+docs/CONTRACTS.md:1045:  cleaving and rock-body contract), §7 (`set_pool`/`set_emergency`) and §8

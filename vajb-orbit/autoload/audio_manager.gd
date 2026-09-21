@@ -122,6 +122,26 @@ const CUE_POOLS: Dictionary = {
 		&"pitch": 0.0,
 		&"volume_db": [0.0, 0.0],
 	},
+	## S4's fourth row and L53's: the four asteroid takes
+	## (`assets/audio/sfx/sfx_impact_rock_01..04.ogg`, S4 asteroid impact 1/4-4/4 in
+	## the generation log) have been on disk since the audio pass with no pool row, so
+	## the cue fell back to `play_sfx` and always played take 01. Round-robin over the
+	## four, which is AUDIO_SPEC section 4.1's "no immediate repeats" (N > 2) answered
+	## by the cycle itself. The section 4.2 S4 layer recipe - a foley at pitch
+	## 0.60-0.85 plus a sub-thump at pitch 0.5, -9 dB - is a composite this manager's
+	## one-voice-per-pool model does not build (reported); the takes ship as imported,
+	## exactly as the `sfx_impact_hull` row above does.
+	&"sfx_impact_rock": {
+		&"takes": [
+			&"sfx_impact_rock_01",
+			&"sfx_impact_rock_02",
+			&"sfx_impact_rock_03",
+			&"sfx_impact_rock_04",
+		],
+		&"mode": POOL_ROUND_ROBIN,
+		&"pitch": 0.0,
+		&"volume_db": [0.0, 0.0],
+	},
 }
 
 ## The default crossfade a loop voice fades in and out over.

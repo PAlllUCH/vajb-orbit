@@ -1,0 +1,60 @@
+# A2 rock-cleave gate — the universal gate (CONTRACTS section 9), measured 2026-09-22
+
+$ godot --headless --path vajb-orbit res://tests/headless_runner.tscn --quit-after 1200
+
+## AFTER (this wave's tree): [SUMMARY] passed=378 failed=0, exit 0
+# PASS lines: 378
+# FAIL lines: 0
+
+## Non-[PASS] lines (identical positions to A1's log):
+6:ERROR: Parameter "data.tree" is null.
+228:WARNING: EconomyLog: could not open user://p1l_missing_dir_do_not_create/economy_log.txt (error 7)
+416:SCRIPT ERROR: Cannot call method 'call' on a previously freed instance.
+427:WARNING: 34 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+429:ERROR: 16 resources still in use at exit (run with --verbose for details).
+
+## Per-suite counts, BEFORE vs AFTER (the only diff)
+   2c2
+   <       9 test_engine2_cleaving
+   ---
+   >      15 test_engine2_cleaving
+
+## BEFORE the wave: HEAD 8d189bf, the six wave files stashed (git stash push), same command
+   [SUMMARY] passed=372 failed=0, exit 0
+   [PASS] test_weapon_fx_f4.gd.test_a_repeated_take_re_uses_its_own_voice
+   [PASS] test_weapon_fx_f4.gd.test_a_rocket_shot_down_by_a_beam_takes_the_blast
+   [PASS] test_weapon_fx_f4.gd.test_the_two_world_beds_sound_at_once
+   [SUMMARY] passed=372 failed=0
+
+## AFTER, per suite:
+      7 test_combat_repair_c5
+     15 test_engine2_cleaving
+     20 test_engine2_damage
+      2 test_engine2_dock
+     17 test_engine2_fixes
+     19 test_engine2_hud
+     13 test_engine2_loot
+     28 test_engine2_npc
+     16 test_engine2_pools
+     29 test_engine2_weapons
+     13 test_engine2_wiring
+      3 test_engine_c3_flight_decay
+      5 test_flight_beam_g2
+     12 test_flight_feel_g1
+     11 test_p1_catalogues
+      4 test_p1_clock_log
+     13 test_p1_market
+      5 test_p1_pricing
+      9 test_p1_profile
+      6 test_p1_refinery
+      5 test_p1_repairs
+     12 test_p2a_launch_fit
+      2 test_p2a_lint_shadow
+     11 test_p2a_profile_fits
+      4 test_p2a_ship_roster
+     27 test_ship_grids
+     17 test_slice2_5_feel
+     12 test_ui_slot_layout
+     22 test_weapon_fx_f1
+     13 test_weapon_fx_f2
+      6 test_weapon_fx_f4

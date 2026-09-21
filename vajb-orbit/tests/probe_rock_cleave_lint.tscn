@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://tests/probe_rock_cleave_lint.gd" id="1_probe_rc_lint"]
+
+[node name="ProbeRockCleaveLint" type="Node"]
+script = ExtResource("1_probe_rc_lint")

@@ -1,0 +1,89 @@
+# A2 rock-cleave review probe — measured 2026-09-22 (Linux, godot 4.7.2.stable.official.ed1daf0bf)
+
+$ godot --headless --path vajb-orbit res://tests/probe_rock_cleave_a2.tscn --quit-after 900
+# byte-identical over two consecutive runs (md5 d6b3605bf537c9314ea8ce38c275edac), exit 0, failures=0
+
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[A2] boot audio=true rocks=6 source=(904.0, 776.0) pickup_leaf=true
+[A2] CONST split={ 0: (0, 0), 1: (2, 5), 2: (2, 5) } pickup=(1, 2) mult=1.2000 cone=360.0000
+[A2] ok   const_large_row - Large -> uniform 2-5 (was (2,3))
+[A2] ok   const_medium_row - Medium -> uniform 2-5 (was (2,2))
+[A2] ok   const_small_row - Small -> no rock fragments
+[A2] ok   const_pickup_and_speed - small bursts 1-2 pickups and ejection stays x1.2
+[A2] ok   const_cone_is_full_circle - the +-15 deg cone is retired (360.0 = the whole circle)
+[A2] COUNT Large n=300 min=2 max=5 hist={2:80, 3:69, 4:72, 5:79} chi2=1.15 landed=[1]
+[A2] ok   count_Large_bounds - every one of 300 Large cleaves rolled inside 2-5
+[A2] ok   count_Large_all_values - all four counts 2,3,4,5 came up
+[A2] ok   count_Large_uniform - chi-square 1.15 against uniform over 4 counts (95% critical 7.81, 99.9% 16.27)
+[A2] ok   count_Large_size - a Large's fragments are one tier down ([1])
+[A2] COUNT Medium n=300 min=2 max=5 hist={2:78, 3:69, 4:70, 5:83} chi2=1.79 landed=[0]
+[A2] ok   count_Medium_bounds - every one of 300 Medium cleaves rolled inside 2-5
+[A2] ok   count_Medium_all_values - all four counts 2,3,4,5 came up
+[A2] ok   count_Medium_uniform - chi-square 1.79 against uniform over 4 counts (95% critical 7.81, 99.9% 16.27)
+[A2] ok   count_Medium_size - a Medium's fragments are one tier down ([0])
+[A2] DIR n=529 resultant=0.0638 chi2_8sector=4.49 sectors=[75, 74, 66, 56, 62, 64, 70, 62] widest_pair=179.812 (cleave 79) inside_15=8.9% min=-179.616 max=179.769
+[A2] ok   dir_full_circle - fragments land on both far sides of the parent heading (-179.6 / 179.8 deg): a +-15 deg cone cannot
+[A2] ok   dir_uniform_resultant - mean resultant length 0.0638 over 529 fragments (0 = uniform; a cone reads near 1)
+[A2] ok   dir_uniform_sectors - 8-sector chi-square 4.49 (95% critical 14.07, 99.9% 24.32) over counts [75, 74, 66, 56, 62, 64, 70, 62]
+[A2] ok   dir_pair_spread - the widest within-cleave pair is 179.8 deg (cleave 79)
+[A2] SPEED n=529 min=1.200000 max=1.200000 parent_speed=137.000
+[A2] ok   speed_is_x1_2 - every one of 529 fragments ejects at the parent's velocity x 1.2
+[A2] FX Large rock_local=(-280.0, 260.0) rock_global=(-243.0, 241.0) sprite_local=(-243.0, 241.0) sprite_global=(-243.0, 241.0) diameter=132.0000 world=158.4000 scale=0.175221 frames=5 fps=15.0 loop=false mix=0 freed_on_finish=1 z=2
+[A2] ok   fx_Large_count - one explosion sprite for one Large break (0 -> 1)
+[A2] ok   fx_Large_centre - the sequence sits on the rock's own global centre (-243.0, 241.0) (field offset (37.0, -19.0))
+[A2] ok   fx_Large_world - scaled to clamp(1.2 x 132.0 u, 96, 224) = 158.40 u (scale 0.175221)
+[A2] ok   fx_Large_wiring - FX_SPEC 1.4/7.3: 5 frames, loop false, alpha blend, freed on animation_finished
+[A2] FX Medium rock_local=(-340.0, 260.0) rock_global=(-303.0, 241.0) sprite_local=(-303.0, 241.0) sprite_global=(-303.0, 241.0) diameter=84.0000 world=100.8000 scale=0.111504 frames=5 fps=15.0 loop=false mix=0 freed_on_finish=1 z=2
+[A2] ok   fx_Medium_count - one explosion sprite for one Medium break (1 -> 2)
+[A2] ok   fx_Medium_centre - the sequence sits on the rock's own global centre (-303.0, 241.0) (field offset (37.0, -19.0))
+[A2] ok   fx_Medium_world - scaled to clamp(1.2 x 84.0 u, 96, 224) = 100.80 u (scale 0.111504)
+[A2] ok   fx_Medium_wiring - FX_SPEC 1.4/7.3: 5 frames, loop false, alpha blend, freed on animation_finished
+[A2] FX Small rock_local=(-400.0, 260.0) rock_global=(-363.0, 241.0) sprite_local=(-363.0, 241.0) sprite_global=(-363.0, 241.0) diameter=48.0000 world=96.0000 scale=0.106195 frames=5 fps=15.0 loop=false mix=0 freed_on_finish=1 z=2
+[A2] ok   fx_Small_count - one explosion sprite for one Small break (2 -> 3)
+[A2] ok   fx_Small_centre - the sequence sits on the rock's own global centre (-363.0, 241.0) (field offset (37.0, -19.0))
+[A2] ok   fx_Small_world - scaled to clamp(1.2 x 48.0 u, 96, 224) = 96.00 u (scale 0.106195)
+[A2] ok   fx_Small_wiring - FX_SPEC 1.4/7.3: 5 frames, loop false, alpha blend, freed on animation_finished
+[A2] CUE row takes=[&"sfx_impact_rock_01", &"sfx_impact_rock_02", &"sfx_impact_rock_03", &"sfx_impact_rock_04"] mode=round_robin pitch=0.0 volume=[0.0, 0.0] files=["res://assets/audio/sfx/sfx_impact_rock_01.ogg", "res://assets/audio/sfx/sfx_impact_rock_02.ogg", "res://assets/audio/sfx/sfx_impact_rock_03.ogg", "res://assets/audio/sfx/sfx_impact_rock_04.ogg"]
+[A2] ok   cue_row_shape - four takes, round-robin, pitch 0.0, volume_db [0.0, 0.0]
+[A2] ok   cue_takes_resolve - every one of the four take files loads (["res://assets/audio/sfx/sfx_impact_rock_01.ogg", "res://assets/audio/sfx/sfx_impact_rock_02.ogg", "res://assets/audio/sfx/sfx_impact_rock_03.ogg", "res://assets/audio/sfx/sfx_impact_rock_04.ogg"])
+[A2] ok   cue_has_pool - AudioManager.has_pool(sfx_impact_rock) is true
+[A2] CUE break played=sfx_impact_rock_02 (seeded sfx_impact_hull) in_row=true
+[A2] ok   cue_break_plays_a_take - the break played sfx_impact_rock_02, a take of the row
+[A2] CUE round_robin=["sfx_impact_rock_02", "sfx_impact_rock_03", "sfx_impact_rock_04", "sfx_impact_rock_01", "sfx_impact_rock_02", "sfx_impact_rock_03"]
+[A2] ok   cue_round_robin_advances - consecutive reads never repeat the previous take
+[A2] BARE cleaves=false fragments=0 fx=0->1 cue=sfx_impact_rock_04 (seeded sfx_impact_hull) live=18->17
+[A2] ok   bare_no_fragments_but_zero_yield - ruling 17: a yield-0 rock cracks, leaves no fragment and despawns
+[A2] ok   bare_still_reads_the_break - but it still explodes and still plays the rock cue
+[A2] BURST n=40 counts=[2, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 2, 2, 2, 2, 1, 2, 2, 1, 1, 2, 1, 2, 1, 1, 1, 1, 2, 2, 1, 1, 1, 2, 2, 2, 1, 2, 1, 1, 2] min=1 max=2 ore_id=mineral_iron items=[&"mineral_iron"] small_fragments=0
+[A2] ok   burst_bounds - 40 Small breaks burst 1-2 pickups (min 1, max 2)
+[A2] ok   burst_is_the_rocks_own_ore - every pickup carries the rock's mineral (mineral_iron)
+[A2] ok   burst_no_rock_fragments - a Small spawns no rock fragments (there is no tier below it)
+[A2] INHERIT cleaves=30 n=97 parent=(iron,1) minerals=[&"iron"] tiers=[1] classes=[0] yields=[7, 6, 5, 7, 4, 7, 7, 5, 9, 7, 3, 6, 3, 8, 3, 3, 4, 5, 7, 6, 4, 9, 4, 5, 3, 6, 7, 6, 4, 4, 9, 7, 6, 7, 5, 4, 8, 7, 4, 6, 6, 6, 8, 4, 9, 5, 7, 5, 8, 6, 6, 9, 7, 5, 6, 4, 8, 5, 5, 9, 5, 4, 7, 7, 7, 3, 7, 7, 5, 8, 8, 7, 5, 6, 4, 4, 7, 4, 8, 4, 8, 4, 7, 6, 5, 6, 3, 4, 7, 6, 5, 5, 6, 9, 6, 7, 4] band=3-9
+[A2] ok   inherit_mineral_and_tier - 02 section 5: every fragment carries the parent's mineral and tier
+[A2] ok   inherit_size_class - a Medium's fragments are Small
+[A2] ok   inherit_yield_rerolled - the yield is re-rolled inside the tier's band 3-9 ([7, 6, 5, 7, 4, 7, 7, 5, 9, 7, 3, 6, 3, 8, 3, 3, 4, 5, 7, 6, 4, 9, 4, 5, 3, 6, 7, 6, 4, 4, 9, 7, 6, 7, 5, 4, 8, 7, 4, 6, 6, 6, 8, 4, 9, 5, 7, 5, 8, 6, 6, 9, 7, 5, 6, 4, 8, 5, 5, 9, 5, 4, 7, 7, 7, 3, 7, 7, 5, 8, 8, 7, 5, 6, 4, 4, 7, 4, 8, 4, 8, 4, 7, 6, 5, 6, 3, 4, 7, 6, 5, 5, 6, 9, 6, 7, 4])
+[A2] INVARIANT work_per_unit=1.0000 epsilon=0.000100 mine_cycle=1.2000 range=220.0000 chip_rate=0.1000
+[A2] INVARIANT mass=560.0000 ref=ship_miner damp=3.7100 damp_mode=1 gravity=0.00 sleep=false layer=1 mask=2 group=asteroid chip(5.0)->work 0.5000 units=4 chip(5.0 more)->work 0.0000 units=1
+[A2] INVARIANT collision_factor=0.00002 min_dv=40.00 knockback=0.4000 p0=4000.00 window=0.2000 min_shockwave=1.0000 max_bodies=32
+[A2] ok   invariant_mining_rates - WORK_PER_UNIT 1.0, epsilon 1e-4, MINE_CYCLE 1.2 s, range 220 u, gun chip 10 percent
+[A2] ok   invariant_body - ruling 8 intact: mass 4 x ship_miner, damp 3.71 REPLACE, no gravity, layer 1 / mask 2
+[A2] ok   invariant_gun_chip - 5.0 of gun work lands as 0.5 rock work (the 10 percent chip); a second 5.0 completes the 1.0 unit
+[A2] ok   invariant_collision_rows - section 13 collision/recoil/explosion rows unchanged (P0 4000, window 0.2, floor 1.0)
+[A2] BLAST reach=63.2376 near_offset=20.0 near 0.000000 -> 0.254471 (dx=0.254471) far_offset=200.0 far 0.000000 -> 0.000000 impulse(near)=9.9751 impulse(far)=0.1000
+[A2] ok   blast_reach_is_the_curve - the push's own reach is sqrt(P0 / MIN - 1) = 63.2376 u - no radius constant exists
+[A2] ok   blast_pushes_inside_reach - a rock 20 u away gains outward velocity from the break
+[A2] ok   blast_spares_past_reach - a rock 200 u away is not moved (impulse 0.1000 below the 1.0 floor)
+[A2] RESPAWN virgin_depleted=false virgin_window=false live=6 respawn_before_depleted=false depleted=true stamped=true respawned=true count=6 respawn_stamp=1000 window@299=true window@300=false fake_now_yields=[6, 4, 7, 3, 8, 4]
+[A2] RESPAWN realnow respawned=true stamp_positive=true age=0 yields=[3, 4, 4, 4, 2, 2]
+[A2] RESPAWN constants window=300 mult=0.70 rocks_band=6-12
+[A2] ok   respawn_window_constants - 02 section 8: 300 s window, x0.7, 6-12 rocks per field
+[A2] ok   respawn_guard_and_stamp - no respawn while rocks live; a full depletion stamps last_depleted_time; respawn re-rolls 6
+[A2] ok   respawn_diminishing_window - the x0.7 window is open at +299 s and closed at +300 s
+[A2] ok   respawn_diminished_yields - a field respawned inside the window rolls T1 yields <= 6 (the unmodified band tops at 9): [3, 4, 4, 4, 2, 2]
+[A2] done failures=0
+WARNING: 34 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 8 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

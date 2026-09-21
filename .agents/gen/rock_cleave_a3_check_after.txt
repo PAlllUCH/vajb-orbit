@@ -1,0 +1,29 @@
+== 1. the retired numbers are gone from docs/CONTRACTS.md (A2's reproducing command, widened) ==
+  ok   absent: ±15° cone
+  ok   absent: L (2,3)
+  ok   absent: M (2,2)
+
+== 1b. the retired pair survives only as the reversal note ==
+  ok   every (2,3)/(2,2) mention sits on the reversal line
+
+== 2. the fragment count the doc states is the shipped row, on both tiers ==
+  ok   vajb-orbit/game/asteroid.gd ships one row for both cleaving tiers: (2,5)
+  ok   docs/CONTRACTS.md names the shipped pair (2,5)
+
+== 3. the ejection the doc states is the shipped speed and direction ==
+  ok   vajb-orbit/game/asteroid.gd's FRAGMENT_EJECT_MULT 1.2 is the doc's × 1.2
+  ok   vajb-orbit/game/asteroid.gd's FRAGMENT_EJECT_CONE_DEG 360 is named with its value in docs/CONTRACTS.md
+
+== 4. the small-end burst the doc states is the shipped row ==
+  ok   vajb-orbit/game/asteroid.gd's PICKUP_BURST (1,2) is the doc's (1,2)
+
+== 5. the explosion the doc states is the shipped scale and clamp ==
+  ok   vajb-orbit/game/projectile.gd's clamp(1.2 × diameter, 96, 224) is the doc's clamp(1.2 × diameter, 96, 224)
+
+== 6. the cue the doc states is the shipped pool row, four takes ==
+  ok   vajb-orbit/autoload/audio_manager.gd's sfx_impact_rock row holds 4 takes and docs/CONTRACTS.md names it
+
+== 7. the blast the doc states is the shipped helper and its shipped gate ==
+  ok   docs/CONTRACTS.md names Impact.apply_shockwave and vajb-orbit/game/projectile.gd's MIN_SHOCKWAVE_IMPULSE, which vajb-orbit/game/asteroid_field.gd calls
+
+== PASS: 12 checks, 0 failures ==
