@@ -130,3 +130,22 @@ reproduction**, not a code fix yet.
 4. **C5 scope: all four measured defects** — the rock's `collision_mask` 0 → 2, the
    rock's ram sink (`apply_collision_damage`), plasma's shield bonus (C2-F1) and the
    mine's interval fallback (C2-F4).
+
+## Owner findings, third round (2026-09-21, after the FX wiring landed)
+
+> "are all weapons implemented? i like the animation at the start of laser firing and
+> sound but they should loop i think. i dont like how fast ship turn, while pressing A/D
+> they should strafe to the side and when pressing WA/WD strafe and rotate, might work
+> better. no fx of hitting asteroid and no effects. when the laser hits target it goes
+> through him."
+
+### Measured (orchestrator, before any fix)
+
+| # | Finding | Measurement |
+|---|---|---|
+| **W1** | *Are all weapons implemented?* | **Yes — six families are implemented and all fire and land.** `weapons.gd` `FAMILIES` carries `laser`, `plasma`, `cannon`, `railgun`, `rocket`, `mine`; `ship_fit.gd` carries the matching `w_*` modules (`w_laser`, `w_cannon`, `w_rocket`, `w_mine`, `w_plasma`, `w_railgun`, plus `w_mining` the tool). The HUD shows five (`laser, cannon, rocket, mine, plasma`), so `railgun` is implemented but has no HUD slot. **The launch still fits only `w_laser`** — the deferred owner gate, and the reason "only the laser" is what the owner sees. C2 measured all families firing and landing when fitted |
+| **W2** | the beam **passes through** the target | `weapons.gd:517-521`: the shaft is drawn to the aim point/range **before** the target is resolved — deliberate per the file's own comment ("a miss still shows the shot"), but it is exactly the owner's reading. Fix: draw to the resolved hit point when there is one, keeping the reach for a miss |
+| **W3** | **no FX and no effect** when a laser hits a rock | `weapons.gd` `_apply_beam`'s rock branch calls `apply_work` and `return`s immediately — no cue, no chip FX, no spark, unlike the hull branch F4 fixed. `sfx_impact_rock` is played only by projectile hits |
+| **W4** | the fire feedback should **loop** while the trigger is held | the muzzle flash plays once per *release*: `shot_fired` is emitted once per hold for the instant families (`_beam_started` guards on `_beam_live`), so a held beam gets one 4-frame flash and a bed-less shaft |
+| **W5** | **the ship turns too fast** | `ship_fit.gd` per-class `turn_rate` (Vanguard **3.0 rad/s ≈ 172°/s**, fighter 3.4, corvette 3.2, freighter 1.5). These are §13's turn column, which ruling 26 put behind the owner's tick — so a retune is the owner's number, like the `coast_time` one |
+| **W6** | **A/D should strafe**, W+A/D strafe + rotate | the input map has `thrust_forward`, `thrust_backward`, `turn_left`, `turn_right` only — **no strafe actions exist**, and §4.3's control row says "A/D turn". The owner's scheme is a design change: new actions, a §4.3 amendment, and the flight model gaining lateral thrust |
