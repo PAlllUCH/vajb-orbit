@@ -75,3 +75,48 @@ Full SUBJECT text:
   `ui_button_plate_*-master.png`. Report: `plates_report.json`.
 - The shipped 1x plates are a new generation and read darker/flatter than the F.1 set, which
   was glossier than STYLE_BIBLE section 2 allows. Pre-F.2 bytes: `_f2_backup/`.
+
+---
+
+## slot plates - recovered and re-cut (2026-09-21) - free, local, no API call
+
+Not a generation. The 2026-09-21 cut redesign pulled
+`ui_slot_{weapon,cargo,inventory}_*` into `assets/ui/` as whole sheet cells (880x876 /
+873x864 / 882x870, ~90 % transparent, the interior silhouette only): the paid matte had
+keyed the dark slot *plate* out together with the white sheet background, so the plate is
+absent from the alpha of every shipped file. The shipyard hardpoints, the launch panel's
+cargo slots and the HUD slot buttons consume these at native size and were stretching a
+sheet cell into 48/40/56 px. A tight crop of the shipped files cannot fix it - their ink
+box *is* the silhouette box.
+
+Everything below came back out of Godot's import cache, bit-exact, not re-rendered:
+`.godot/imported/<source>-<hash>.ctex` is a `GST2` blob whose payload is the imported
+image as lossless WebP. `staging/phase_f/recover_ctex.py` decoded it; all 3698 cached
+textures were audited and 286 have no source file on disk any more.
+
+- Source cells recovered (12): `_recover/ui_slots/ui-slot-<...>-asset-0{1..4}.png`, the
+  four 2x2 states in reading order normal, hover, pressed, disabled, 797-806 px square.
+  Each one's own `source_md5` (Godot's sidecar) and the decoded md5 are in
+  `_recover/ui_slots/provenance.json`.
+- Raw sheets recovered (6) as provenance: the three 2048x2048 renders and their keyed
+  alpha versions, in `_recover/ui_slots/_sheets/`.
+- Recipe: `staging/phase_f/recut_slots.py`, importing `chrome_2x.SIMPLE` (the F.1 source
+  map) and `chrome_2x.content_crop` - alpha bounding box, no pad, then LANCZOS to the box.
+  Both bands are cut from the same cell by the same rule, which is why the proof below
+  covers the 1x cut as well.
+- Proof: the derived `@2x` against the F.1 `@2x` recovered from the same cache - 12 of 12
+  proven by `chrome_2x.proven()`'s own bar (byte-exact, or <= 4 levels worst / <= 0.1
+  mean). Measured: byte-exact on `ui_slot_weapon_disabled`, mean <= 0.0023 / max 3 levels
+  on the other eleven. Table: `_preview/review_slots_table.txt`; numbers:
+  `recut_slots_report.json`.
+- Boxes: weapon 48x48 / 96x96, cargo 40x40 / 80x80, inventory 56x56 / 112x112
+  (UI_CHROME_ASSETS_SPEC sections 4 and 5, and section 10's `@2x` table). Every 1x cut
+  inks its full box (alpha mean 254.3-255.0, solid share 91-99.9 %) - a plate, not a
+  silhouette.
+- Final files: `ui_slot_weapon_{normal,hover,pressed,disabled}.png` plus `@2x`, the same
+  for cargo and inventory - 24 files, staged in `staging/phase_f/ui/`.
+- Restore point for the twelve shipped 1x files and their `.import` sidecars:
+  `_recover/_shipped_before/`. The twelve `*@2x.png.import` sidecars the redesign deleted
+  are restored from git (`65bc1cb^`), so the F.1 uid and the `@2x` import settings
+  (mipmaps on, lossless, 3D detection off) come back unchanged.
+- Status: staged, awaiting the owner review sheet `_preview/review_slots.png`.

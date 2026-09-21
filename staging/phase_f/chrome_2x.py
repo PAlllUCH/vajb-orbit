@@ -26,7 +26,10 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-WORKSPACE = Path(r"G:/Mój dysk/Projekty/Vajb Orbit")
+# Derived from this file's location, not hardcoded: `staging/phase_f/x.py` sits two
+# levels under the workspace root on every host (the mirror runs Windows `G:/...` and
+# Linux `~/VajbOrbit`).
+WORKSPACE = Path(__file__).resolve().parents[2]
 ASSETS = WORKSPACE / "vajb-orbit" / "assets"
 UI = ASSETS / "ui"
 STAGE = WORKSPACE / "staging" / "phase_f" / "ui"

@@ -1,0 +1,24 @@
+slot plate re-cut - measured (staging/phase_f/recut_slots_report.json)
+
+file                              cell  box       1x ink box  alpha  solid     @2x vs F.1 cache  shipped before
+ui_slot_cargo_disabled      (797, 790)   40       0,0..40,40  254.6  94.1%    mean 0.0005 max 1  873x864 (85.5 off the F.1 cut)
+ui_slot_cargo_hover         (798, 789)   40       0,0..40,40  254.4  92.9%    mean 0.0001 max 1  873x864 (94.6 off the F.1 cut)
+ui_slot_cargo_normal        (798, 787)   40       0,0..40,40  254.8  97.6%    mean 0.0010 max 2  873x864 (82.1 off the F.1 cut)
+ui_slot_cargo_pressed       (798, 790)   40       0,0..40,40  254.9  97.6%    mean 0.0002 max 1  873x864 (77.7 off the F.1 cut)
+ui_slot_inventory_disabled  (806, 796)   56       0,0..56,56  254.7  96.5%    mean 0.0006 max 3  882x870 (77.7 off the F.1 cut)
+ui_slot_inventory_hover     (806, 794)   56       0,0..56,56  254.3  92.1%    mean 0.0014 max 3  882x870 (87.9 off the F.1 cut)
+ui_slot_inventory_normal    (804, 793)   56       0,0..56,56  254.7  95.2%    mean 0.0007 max 3  882x870 (70.8 off the F.1 cut)
+ui_slot_inventory_pressed   (803, 792)   56       0,0..56,56  254.8  95.9%    mean 0.0003 max 2  882x870 (69.9 off the F.1 cut)
+ui_slot_weapon_disabled     (806, 801)   48       0,0..48,48  254.8  97.8%                exact  880x876 (81.8 off the F.1 cut)
+ui_slot_weapon_hover        (806, 801)   48       0,0..48,48  254.3  91.1%    mean 0.0004 max 2  880x876 (97.2 off the F.1 cut)
+ui_slot_weapon_normal       (805, 800)   48       0,0..48,48  254.4  92.8%    mean 0.0023 max 2  880x876 (81.7 off the F.1 cut)
+ui_slot_weapon_pressed      (805, 801)   48       0,0..48,48  255.0  99.9%    mean 0.0000 max 1  880x876 (76.6 off the F.1 cut)
+
+logical boxes: UI_CHROME_ASSETS_SPEC section 4/5, and section 10's @2x table -
+weapon 48x48 / 96x96, cargo 40x40 / 80x80, inventory 56x56 / 112x112.
+Both cuts come from the same recovered cell by the same rule, so the
+@2x-versus-cache column proves the 1x cut as well: the cache copy is the F.1
+artifact itself, recovered bit-exact from .godot/imported (recover_ctex.py).
+
+1x inks the full box on every file (a plate, not a floating silhouette); the
+shipped files are 70-97 mean levels away from the F.1 cut at the same box.

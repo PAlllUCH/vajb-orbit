@@ -345,9 +345,9 @@ func _make_inner(button: Button, margin: Vector2i) -> HBoxContainer:
 	return box
 
 
-func _make_icon(icon_path: String, tinted: bool, size: float) -> TextureRect:
+func _make_icon(icon_path: String, tinted: bool, icon_size: float) -> TextureRect:
 	var icon := TextureRect.new()
-	icon.custom_minimum_size = Vector2(size, size)
+	icon.custom_minimum_size = Vector2(icon_size, icon_size)
 	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -404,8 +404,8 @@ func _focus_active_panel() -> void:
 	var panel := _panel_for(_module)
 	if panel != null and panel.has_method(&"focus_primary"):
 		panel.call(&"focus_primary")
-		var owner := get_viewport().gui_get_focus_owner()
-		if owner != null and panel.is_ancestor_of(owner):
+		var focus_owner := get_viewport().gui_get_focus_owner()
+		if focus_owner != null and panel.is_ancestor_of(focus_owner):
 			return
 	_focus_current_rail_entry()
 

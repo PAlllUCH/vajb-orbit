@@ -246,9 +246,9 @@ func _kill_ambience_tween() -> void:
 	_ambience_tween = null
 
 
-func _service(name: StringName) -> Node:
+func _service(service_name: StringName) -> Node:
 	## Autoload names are not resolvable identifiers until the project patch lands
 	## (project.godot is applied by the orchestrator), so services are looked up by name.
 	if not is_inside_tree():
 		return null
-	return get_tree().root.get_node_or_null(NodePath(name))
+	return get_tree().root.get_node_or_null(NodePath(service_name))

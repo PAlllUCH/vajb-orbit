@@ -42,8 +42,8 @@ extends RefCounted
 
 ## Preloaded by path on purpose: this file must not depend on autoload nodes or
 ## on the global class table, so a headless caller and the editor agree.
-const MineralCatalog := preload("res://game/mineral_catalog.gd")
-const ComponentCatalog := preload("res://game/component_catalog.gd")
+const MineralCatalogScript := preload("res://game/mineral_catalog.gd")
+const ComponentCatalogScript := preload("res://game/component_catalog.gd")
 const Clock := preload("res://autoload/world_clock.gd")
 const Log := preload("res://game/economy_log.gd")
 
@@ -117,12 +117,12 @@ static func component_unit_price(value: int) -> int:
 ## The sell baseline behind an item id: ore -> ore_value, ingot -> ingot_value,
 ## component -> value. A bare mineral id (or anything unknown) has none: 0.
 static func baseline_of(item_id: StringName) -> int:
-	if MineralCatalog.is_ore(item_id):
-		return int(MineralCatalog.entry_for_item(item_id).get(&"ore_value", 0))
-	if MineralCatalog.is_ingot(item_id):
-		return int(MineralCatalog.entry_for_item(item_id).get(&"ingot_value", 0))
+	if MineralCatalogScript.is_ore(item_id):
+		return int(MineralCatalogScript.entry_for_item(item_id).get(&"ore_value", 0))
+	if MineralCatalogScript.is_ingot(item_id):
+		return int(MineralCatalogScript.entry_for_item(item_id).get(&"ingot_value", 0))
 	if is_component(item_id):
-		return int(ComponentCatalog.component(item_id).get(&"value", 0))
+		return int(ComponentCatalogScript.component(item_id).get(&"value", 0))
 	return 0
 
 
@@ -131,20 +131,20 @@ static func baseline_of(item_id: StringName) -> int:
 static func exchange_price(item_id: StringName, demand: float) -> int:
 	if is_component(item_id):
 		return component_unit_price(baseline_of(item_id))
-	if MineralCatalog.is_ore(item_id) or MineralCatalog.is_ingot(item_id):
+	if MineralCatalogScript.is_ore(item_id) or MineralCatalogScript.is_ingot(item_id):
 		return unit_net(baseline_of(item_id), demand)
 	return 0
 
 
 static func is_component(item_id: StringName) -> bool:
-	return not ComponentCatalog.component(item_id).is_empty()
+	return not ComponentCatalogScript.component(item_id).is_empty()
 
 
 ## Everything the exchange buys: ore, ingots and components (05 section 1).
 static func is_sellable(item_id: StringName) -> bool:
 	return (
-		MineralCatalog.is_ore(item_id)
-		or MineralCatalog.is_ingot(item_id)
+		MineralCatalogScript.is_ore(item_id)
+		or MineralCatalogScript.is_ingot(item_id)
 		or is_component(item_id)
 	)
 
@@ -302,11 +302,11 @@ static func sell_all(profile: Node, now: int, rng: RandomNumberGenerator = null)
 static func _bulk_ids(profile: Node) -> Array[StringName]:
 	var ids: Array[StringName] = []
 	var cargo: Dictionary = profile.cargo_items()
-	for mineral_id: StringName in MineralCatalog.mineral_ids():
-		var ore_id := MineralCatalog.ore_id(mineral_id)
+	for mineral_id: StringName in MineralCatalogScript.mineral_ids():
+		var ore_id := MineralCatalogScript.ore_id(mineral_id)
 		if ore_id != &"" and _integer(cargo, ore_id, 0) > 0:
 			ids.append(ore_id)
-	for entry: Dictionary in ComponentCatalog.COMPONENTS:
+	for entry: Dictionary in ComponentCatalogScript.COMPONENTS:
 		var component_id: StringName = entry.get(&"id", &"")
 		if component_id != &"" and _integer(cargo, component_id, 0) > 0:
 			ids.append(component_id)
@@ -383,7 +383,7 @@ static func _log_sale(item_id: StringName, result: Dictionary, profile: Node) ->
 static func _drift_demand(state: Dictionary, rng: RandomNumberGenerator) -> void:
 	var demand := _bucket(state, &"demand")
 	var trend := _bucket(state, &"trend")
-	for mineral_id: StringName in MineralCatalog.mineral_ids():
+	for mineral_id: StringName in MineralCatalogScript.mineral_ids():
 		var step := _step(rng)
 		var drifted := _demand_from(state, mineral_id) + step
 		demand[String(mineral_id)] = clampf(drifted, DEMAND_MIN, DEMAND_MAX)
@@ -401,7 +401,7 @@ static func _step(rng: RandomNumberGenerator) -> float:
 static func _restock_missing(state: Dictionary) -> bool:
 	var stock := _bucket(state, &"stock")
 	var changed := false
-	for entry: Dictionary in ComponentCatalog.COMPONENTS:
+	for entry: Dictionary in ComponentCatalogScript.COMPONENTS:
 		var component_id: StringName = entry.get(&"id", &"")
 		if component_id == &"" or _lookup(stock, component_id) != null:
 			continue
@@ -414,7 +414,7 @@ static func _restock_missing(state: Dictionary) -> bool:
 ## quota is set, not topped up, so a cycle that sold nothing still starts clean.
 static func _restock(state: Dictionary) -> void:
 	var stock := _bucket(state, &"stock")
-	for entry: Dictionary in ComponentCatalog.COMPONENTS:
+	for entry: Dictionary in ComponentCatalogScript.COMPONENTS:
 		var component_id: StringName = entry.get(&"id", &"")
 		if component_id == &"":
 			continue
@@ -426,7 +426,7 @@ static func _restock(state: Dictionary) -> void:
 static func _flush_queue(profile: Node, state: Dictionary) -> void:
 	var stock := _bucket(state, &"stock")
 	var queue := _bucket(state, &"queue")
-	for entry: Dictionary in ComponentCatalog.COMPONENTS:
+	for entry: Dictionary in ComponentCatalogScript.COMPONENTS:
 		var component_id: StringName = entry.get(&"id", &"")
 		if component_id == &"":
 			continue
@@ -471,14 +471,14 @@ static func _refuse(result: Dictionary, reason: StringName) -> Dictionary:
 
 
 static func _demand_from(state: Dictionary, mineral_id: StringName) -> float:
-	var resolved := MineralCatalog.mineral_id_of_item(mineral_id)
+	var resolved := MineralCatalogScript.mineral_id_of_item(mineral_id)
 	if resolved == &"":
 		return DEMAND_DEFAULT
 	return _number(_bucket(state, &"demand"), resolved, DEMAND_DEFAULT)
 
 
 static func _set_demand(state: Dictionary, item_id: StringName, value: float) -> void:
-	var resolved := MineralCatalog.mineral_id_of_item(item_id)
+	var resolved := MineralCatalogScript.mineral_id_of_item(item_id)
 	if resolved == &"":
 		return
 	_bucket(state, &"demand")[String(resolved)] = value

@@ -1,0 +1,363 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=true, logger=true)
+[W5-LINT] debugger_active=true
+[W5-LINT] BEGIN D5 res://autoload/settings_manager.gd
+[W5-LINT] END   D5 res://autoload/settings_manager.gd loaded=true
+[W5-LINT] BEGIN D5 res://autoload/router.gd
+[W5-LINT] END   D5 res://autoload/router.gd loaded=true
+[W5-LINT] BEGIN D5 res://autoload/audio_manager.gd
+[W5-LINT] END   D5 res://autoload/audio_manager.gd loaded=true
+[W5-LINT] BEGIN D5 res://autoload/dialog_manager.gd
+[W5-LINT] END   D5 res://autoload/dialog_manager.gd loaded=true
+[W5-LINT] BEGIN D5 res://autoload/player_profile.gd
+[W5-LINT] END   D5 res://autoload/player_profile.gd loaded=true
+[W5-LINT] BEGIN D5 res://ui/screen.gd
+[W5-LINT] END   D5 res://ui/screen.gd loaded=true
+[W5-LINT] BEGIN D5 res://ui/screens/station.gd
+[W5-LINT] END   D5 res://ui/screens/station.gd loaded=true
+[W5-LINT] BEGIN D5 res://ui/station/refinery_panel.gd
+[W5-LINT] END   D5 res://ui/station/refinery_panel.gd loaded=true
+[W5-LINT] BEGIN D5 res://game/exchange.gd
+[W5-LINT] END   D5 res://game/exchange.gd loaded=true
+[W5-LINT] BEGIN W1 res://ui/components/slot_button.gd
+WARNING: The local variable "pressed" is shadowing an already-declared signal in the base class "BaseButton".
+     at: GDScript::reload (res://ui/components/slot_button.gd:95)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:59)
+WARNING: The local variable "disabled" is shadowing an already-declared property in the base class "BaseButton".
+     at: GDScript::reload (res://ui/components/slot_button.gd:96)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:59)
+[W5-LINT] END   W1 res://ui/components/slot_button.gd loaded=true
+[W5-LINT] BEGIN W1 res://ui/station/shipyard_panel.gd
+WARNING: The local function parameter "size" is shadowing an already-declared property in the base class "Control".
+     at: GDScript::reload (res://ui/station/shipyard_panel.gd:321)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:59)
+[W5-LINT] END   W1 res://ui/station/shipyard_panel.gd loaded=true
+[W5-LINT] BEGIN W1 res://ui/station/launch_panel.gd
+WARNING: The local function parameter "size" is shadowing an already-declared property in the base class "Control".
+     at: GDScript::reload (res://ui/station/launch_panel.gd:246)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:59)
+[W5-LINT] END   W1 res://ui/station/launch_panel.gd loaded=true
+[W5-LINT] BEGIN W1 res://ui/hud/hud.gd
+WARNING: The local function parameter "world_radius" is shadowing an already-declared function at line 113 in the current class.
+     at: GDScript::reload (res://ui/hud/minimap.gd:82)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:59)
+WARNING: The local function parameter "state" is shadowing an already-declared function at line 95 in the current class.
+     at: GDScript::reload (res://ui/hud/target_reticle.gd:86)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:59)
+[W5-LINT] END   W1 res://ui/hud/hud.gd loaded=true
+[W5-LINT] BEGIN W2 res://game/pickup.gd
+[W5-LINT] END   W2 res://game/pickup.gd loaded=true
+[W5-LINT] BEGIN W2 res://game/sector.gd
+WARNING: The local function parameter "heat_tier" is shadowing an already-declared function at line 561 in the current class.
+     at: GDScript::reload (res://game/npc_registry.gd:541)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The function parameter "floor" has the same name as a built-in function.
+     at: GDScript::reload (res://game/npc_registry.gd:578)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local variable "ids" is shadowing an already-declared function at line 523 in the current class.
+     at: GDScript::reload (res://game/npc_registry.gd:739)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local variable "source" is shadowing an already-declared function at line 216 in the current class.
+     at: GDScript::reload (res://game/projectile.gd:152)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "decoy" is shadowing an already-declared function at line 204 in the current class.
+     at: GDScript::reload (res://game/projectile.gd:224)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local variable "decoy" is shadowing an already-declared function at line 204 in the current class.
+     at: GDScript::reload (res://game/projectile.gd:300)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "weapon_ids" is shadowing an already-declared function at line 1009 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:221)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:251)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:410)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:437)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:456)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:490)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:519)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:526)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:561)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:767)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:778)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:1002)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:1016)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:1021)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:1025)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:1033)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:1050)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:1061)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local variable "owner" is shadowing an already-declared property in the base class "Node".
+     at: GDScript::reload (res://game/weapons.gd:1065)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "archetype" is shadowing an already-declared function at line 155 in the current class.
+     at: GDScript::reload (res://game/npc_brain.gd:104)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "row" is shadowing an already-declared function at line 159 in the current class.
+     at: GDScript::reload (res://game/npc_brain.gd:104)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The variable "floor" has the same name as a built-in function.
+     at: GDScript::reload (res://game/npc_brain.gd:450)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: Integer used when an enum value is expected. If this is intended, cast the integer to the enum type using the "as" keyword.
+     at: GDScript::reload (res://game/npc_brain.gd:477)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "size_class" is shadowing an already-declared function at line 228 in the current class.
+     at: GDScript::reload (res://game/asteroid.gd:184)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "size_class" is shadowing an already-declared function at line 228 in the current class.
+     at: GDScript::reload (res://game/asteroid.gd:279)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "size_class" is shadowing an already-declared function at line 228 in the current class.
+     at: GDScript::reload (res://game/asteroid.gd:300)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "archetype" is shadowing an already-declared function at line 731 in the current class.
+     at: GDScript::reload (res://game/npc_ship.gd:163)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "hull_id" is shadowing an already-declared function at line 735 in the current class.
+     at: GDScript::reload (res://game/npc_ship.gd:163)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "hostility" is shadowing an already-declared function at line 745 in the current class.
+     at: GDScript::reload (res://game/npc_ship.gd:599)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local "for" iterator variable "faction" is shadowing an already-declared function at line 755 in the current class.
+     at: GDScript::reload (res://game/npc_ship.gd:638)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local variable "fields" is shadowing an already-declared function at line 204 in the current class.
+     at: GDScript::reload (res://game/sector.gd:125)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+WARNING: The local function parameter "position" is shadowing an already-declared property in the base class "Node2D".
+     at: GDScript::reload (res://game/sector.gd:309)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:60)
+[W5-LINT] END   W2 res://game/sector.gd loaded=true
+[W5-LINT] BEGIN W2 res://game/sector_registry.gd
+[W5-LINT] END   W2 res://game/sector_registry.gd loaded=true
+[W5-LINT] BEGIN POSITIVE-CONTROL res://game/weapons.gd
+WARNING: The local function parameter "weapon_ids" is shadowing an already-declared function at line 1009 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:221)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:61)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:251)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:61)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:410)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:61)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:437)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:61)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:456)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:61)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:490)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:61)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:519)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:61)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:526)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:61)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:561)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:61)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:767)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:61)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:778)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:61)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:1002)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:61)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:1016)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:61)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:1021)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:61)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:1025)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:61)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:1033)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:61)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:1050)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:61)
+WARNING: The local function parameter "weapon_id" is shadowing an already-declared function at line 1073 in the current class.
+     at: GDScript::reload (res://game/weapons.gd:1061)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:61)
+WARNING: The local variable "owner" is shadowing an already-declared property in the base class "Node".
+     at: GDScript::reload (res://game/weapons.gd:1065)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:61)
+[W5-LINT] END   POSITIVE-CONTROL res://game/weapons.gd loaded=true
+[W5-LINT] BEGIN POSITIVE-CONTROL res://ui/hud/minimap.gd
+WARNING: The local function parameter "world_radius" is shadowing an already-declared function at line 113 in the current class.
+     at: GDScript::reload (res://ui/hud/minimap.gd:82)
+     GDScript backtrace (most recent call first):
+         [0] _lint_group (res://tests/probe_w5_lint.gd:70)
+         [1] _ready (res://tests/probe_w5_lint.gd:61)
+[W5-LINT] END   POSITIVE-CONTROL res://ui/hud/minimap.gd loaded=true
+[W5-LINT] BEGIN NEGATIVE-CONTROL res://autoload/world_clock.gd
+[W5-LINT] END   NEGATIVE-CONTROL res://autoload/world_clock.gd loaded=true
+[W5-LINT] done

@@ -325,6 +325,7 @@ func _make_plate(parent: HBoxContainer, variation: StringName, size: float) -> T
 	# construct) so the strip also renders without instancing the HUD component.
 	var plate := TextureButton.new()
 	plate.theme_type_variation = variation
+	plate.ignore_texture_size = true
 	plate.custom_minimum_size = Vector2(size, size)
 	plate.focus_mode = Control.FOCUS_NONE
 	plate.mouse_filter = Control.MOUSE_FILTER_IGNORE

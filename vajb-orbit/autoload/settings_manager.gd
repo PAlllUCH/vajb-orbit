@@ -388,7 +388,7 @@ func _dict_to_event(data: Variant) -> InputEvent:
 			return key
 		"mouse":
 			var mouse := InputEventMouseButton.new()
-			var button: MouseButton = int(source.get("button", 1))
+			var button: MouseButton = int(source.get("button", 1)) as MouseButton
 			mouse.button_index = button
 			mouse.ctrl_pressed = bool(source.get("ctrl", false))
 			mouse.alt_pressed = bool(source.get("alt", false))
@@ -397,12 +397,12 @@ func _dict_to_event(data: Variant) -> InputEvent:
 			return mouse
 		"joy_button":
 			var pad := InputEventJoypadButton.new()
-			var pad_button: JoyButton = int(source.get("button", 0))
+			var pad_button: JoyButton = int(source.get("button", 0)) as JoyButton
 			pad.button_index = pad_button
 			return pad
 		"joy_axis":
 			var motion := InputEventJoypadMotion.new()
-			var axis: JoyAxis = int(source.get("axis", 0))
+			var axis: JoyAxis = int(source.get("axis", 0)) as JoyAxis
 			motion.axis = axis
 			motion.axis_value = float(source.get("axis_value", 1.0))
 			return motion
@@ -424,9 +424,9 @@ func _modifier_prefix(ctrl: bool, alt: bool, shift: bool, meta: bool) -> String:
 	return "+".join(parts) + "+"
 
 
-func _service(name: StringName) -> Node:
+func _service(service_name: StringName) -> Node:
 	## Autoload names are not resolvable identifiers until the project patch lands
 	## (project.godot is applied by the orchestrator), so services are looked up by name.
 	if not is_inside_tree():
 		return null
-	return get_tree().root.get_node_or_null(NodePath(name))
+	return get_tree().root.get_node_or_null(NodePath(service_name))

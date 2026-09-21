@@ -530,7 +530,7 @@ func _refresh_footer() -> void:
 	]
 
 
-func _on_row_focused(row: Button, payload: Dictionary) -> void:
+func _on_row_focused(_row: Button, payload: Dictionary) -> void:
 	_arm(payload, true)
 	status_requested.emit(
 		STATUS_READY % [

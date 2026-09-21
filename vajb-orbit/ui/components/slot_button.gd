@@ -58,6 +58,7 @@ func _draw() -> void:
 
 func configure(variation: StringName, icon: Texture2D, number: int = 0, icon_token: StringName = TOKEN_INACTIVE) -> void:
 	theme_type_variation = variation
+	ignore_texture_size = true
 	custom_minimum_size = CELL_SIZE_WEAPON if variation == VARIATION_WEAPON else CELL_SIZE_CARGO
 	_icon_texture = icon
 	_icon_token = icon_token

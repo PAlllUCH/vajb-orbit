@@ -53,7 +53,8 @@ Current wiring: `ZoomPlus` emits `+1` → game.gd adds +800 to the world radius
 (3200 → 4000) = the map shows **more** world, i.e. zooms **out**; `ZoomMinus` zooms in.
 Owner expects `+` = zoom in. Batch-2 fix: invert the emitted deltas (or the step sign) so
 `+` reduces the radius (zoom in) and `−` increases it (zoom out); keep the clamp 800–6400
-and the step 800. Tiny coder task + a line in `IMPLEMENTATION_PLAN` §9.8 follow-up.
+and the step 800. Landed 2026-09-21, recorded in `IMPLEMENTATION_PLAN` §9.8 item 6
+with the measured bindings (see the fix note below).
 
 **Fixed 2026-09-21 (batch 2, measured).** `ui/hud/hud.gd`: the zoom deltas are renamed to
 the direction they mean and the two `pressed` bindings are swapped, so `%ZoomPlus` emits

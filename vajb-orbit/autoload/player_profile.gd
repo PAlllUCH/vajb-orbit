@@ -573,9 +573,9 @@ func _read_names(key: String) -> Array[StringName]:
 		push_warning("PlayerProfile: %s.%s is not an array; ignored" % [SECTION, key])
 		return names
 	for value: Variant in raw:
-		var name := StringName(str(value))
-		if name != &"":
-			names.append(name)
+		var entry_name := StringName(str(value))
+		if entry_name != &"":
+			names.append(entry_name)
 	return names
 
 
@@ -732,8 +732,8 @@ func _write_profile() -> void:
 
 func _names_to_strings(names: Array[StringName]) -> Array:
 	var out: Array = []
-	for name: StringName in names:
-		out.append(String(name))
+	for entry_name: StringName in names:
+		out.append(String(entry_name))
 	return out
 
 

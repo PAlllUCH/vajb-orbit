@@ -28,16 +28,24 @@ per-hull name list in `SHIPS_SPEC.md` or a name the spec sanctions.
    hover,disabled}.png` (880×876 px) and `ui_slot_cargo_*.png` (873×864 px)
    shipped as whole sheet cells in the 2026-09-21 00:17 re-cut; the shipyard
    hardpoints, the launch panel's cargo slots and the HUD slot buttons
-   consume them at native size and break layout. Re-cut tight plates
-   (`staging/phase_f/plates_cut.py` route 1, `box_1x` target ~64–96 px per
-   UI_CHROME_ASSETS_SPEC), `f2_backup.py` first, owner review sheet before
+   consume them at native size and break layout. **Check the keying cache
+   orphans first — the cache holds 235 recoverable cuts** (button plates
+   `@2x` 560×112, bezel, panel frame, bar caps, logo, backdrop plate), so
+   R7/R8 plates come back the free way; regenerate only what the cache
+   cannot cover (this retires `plates_cut.py`'s "needs regeneration,
+   $0.05" note). Then `f2_backup.py` first, owner review sheet before
    shipping, then `apply_import_settings.py` + reimport + `qc_f2.py`.
+   **Do not run `apply_import_settings.py` unscoped** — it has no `--only`
+   and would rewrite 1080 of 1620 `.import` files; the coder lane is adding
+   the scoped flag (coder queue item 2).
 2. **Standing chrome regression scope (R7)** — menu button plates
    (287×8.6 px, ~90 % transparent), the menu wordmark/logo (Logo slot
    renders empty), credits frame, module-rail icons, OUTFITTING/REFINERY
    background alignment. Recipe and measured table:
    `ui_chrome_regression.md`.
-3. **R8 + rest** — 4K 2× backdrop cuts, tint-stencil import settings,
+3. **R8 + rest** — 4K 2× backdrop cuts, tint-stencil import settings
+   (blocked on the coder lane's `--only` flag for
+   `apply_import_settings.py` — never run that script unscoped),
    `_48` zoom buttons (minimap bezel), B2-1 hover direction (owner pick).
 4. **Owner-endorsed direction (2026-09-21):** evaluate asset-library
    background plates for the station panels (drydock look). Propose

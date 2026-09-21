@@ -1,0 +1,50 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[PROBE] W2 start
+[UID] res://game/player_ship.tscn res://game/player_ship.gd declared=uid://bxmaw3m6d4wav engine=uid://bxmaw3m6d4wav OK
+[UID] res://game/player_ship.tscn res://assets/ships/ship_vanguard_side.png declared=uid://c7myl1rn82g5b engine=uid://c7myl1rn82g5b OK
+[UID] res://game/game.tscn res://game/game.gd declared=uid://cl63txknckawf engine=uid://cl63txknckawf OK
+[UID] res://game/game.tscn res://assets/env/tile/env_stars_layer1.png declared=uid://fv4vfbadcprt engine=uid://fv4vfbadcprt OK
+[UID] res://game/game.tscn res://assets/env/tile/env_stars_layer2.png declared=uid://b4nhnjtgrej5n engine=uid://b4nhnjtgrej5n OK
+[UID] res://game/game.tscn res://assets/env/tile/env_stars_layer3.png declared=uid://di3dmpv64ldaa engine=uid://di3dmpv64ldaa OK
+[LOAD] res://game/player_ship.tscn ok (2 ext_resources, 4 nodes)
+[PROP] player_ship group=true texture=res://assets/ships/ship_vanguard_side.png scale=(0.0663, 0.0663) layer=2 mask=1 gravity=0.0
+[PROP] player_ship contact_monitor=true max_contacts=4 can_sleep=false damp=lin:1/ang:1 radius=30.0
+[LOAD] res://game/game.tscn ok (4 ext_resources, 9 nodes)
+[PROP] game StarsLayer1 texture=res://assets/env/tile/env_stars_layer1.png repeat=2 mirror=(2048.0, 2048.0) size=(2048.0, 2048.0)
+[PROP] game StarsLayer2 texture=res://assets/env/tile/env_stars_layer2.png repeat=2 mirror=(2048.0, 2048.0) size=(2048.0, 2048.0)
+[PROP] game StarsLayer3 texture=res://assets/env/tile/env_stars_layer3.png repeat=2 mirror=(2048.0, 2048.0) size=(2048.0, 2048.0)
+[LIT] res://game/pickup.gd res://game/economy_log.gd OK
+[LIT] res://game/pickup.gd res://game/ship_fit.gd OK
+[LIT] res://game/pickup.gd res://game/mineral_catalog.gd OK
+[LIT] res://game/pickup.gd res://assets/env/pickup/env_pickup_ore_pod.png OK
+[LIT] res://game/sector.gd res://game/sector_registry.gd OK
+[LIT] res://game/sector.gd res://autoload/world_clock.gd OK
+[LIT] res://game/sector.gd res://game/npc_registry.gd OK
+[LIT] res://game/sector.gd res://game/npc_ship.gd OK
+[LIT] res://game/sector.gd res://game/ship_fit.gd OK
+[LIT] res://game/sector.gd res://game/asteroid_field.gd OK
+[LIT] res://game/sector.gd res://assets/env/poi/env_station.png OK
+[LIT] res://game/sector_registry.gd res://game/mineral_catalog.gd OK
+[LIT] res://game/sector_registry.gd res://assets/env/backdrop/env_sector_1_bg.png OK
+[LIT] res://game/sector_registry.gd res://assets/env/backdrop/env_sector_2_bg.png OK
+[LIT] res://game/sector_registry.gd res://assets/env/backdrop/env_sector_3_bg.png OK
+[LIT] res://game/sector_registry.gd res://assets/env/backdrop/env_sector_4_bg.png OK
+[LIT] res://game/sector_registry.gd res://assets/env/backdrop/env_sector_5_bg.png OK
+[LIT] res://game/sector_registry.gd res://assets/env/backdrop/env_sector_6_bg.png OK
+[LIT] res://game/sector_registry.gd res://assets/env/backdrop/env_sector_7_bg.png OK
+[LIT] res://ui/screens/loading.tscn res://ui/screens/loading.gd OK
+[LIT] res://ui/screens/loading.tscn res://ui/theme/vajb_theme.tres OK
+[LIT] res://ui/screens/loading.tscn res://assets/env/backdrop/env_loading_bg.png OK
+[LIT] res://ui/screens/main_menu.tscn res://ui/theme/vajb_theme.tres OK
+[LIT] res://ui/screens/main_menu.tscn res://assets/env/backdrop/env_menu_bg.png OK
+[LIT] res://ui/screens/main_menu.tscn res://assets/fx/fx_ember_pulse.png OK
+[LIT] res://ui/screens/main_menu.tscn res://ui/theme/grain.tres OK
+[LIT] res://ui/screens/main_menu.tscn res://ui/components/menu_button.tscn OK
+[LIT] res://ui/screens/main_menu.tscn res://assets/ui/logo_vajb_orbit.png OK
+[LIT] res://ui/screens/main_menu.tscn res://assets/ui/ui_insignia_neutral.png OK
+[LIT] res://ui/screens/main_menu.tscn res://ui/screens/main_menu.gd OK
+[SWEEP] scenes=26 stale_in_sweep=0
+[L16] checked=30 missing=0
+[PROBE] stale_uids=0 missing_literals=0

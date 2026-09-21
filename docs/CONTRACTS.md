@@ -636,13 +636,17 @@ actually fired.
 "C:/Godot_4_7_2/Godot_v4.7.2-stable_win64_console.exe" --headless --path "G:/Mój dysk/Projekty/Vajb Orbit/vajb-orbit" res://tests/headless_runner.tscn --quit-after 1200
 ```
 
-Expected: `[SUMMARY] passed=217 failed=0`, exit 0, no `SCRIPT ERROR`. A wave is
+Expected: `[SUMMARY] passed=226 failed=0` (re-measured on this host 2026-09-21),
+exit 0, no `SCRIPT ERROR`. A wave is
 done = gate green + the worker added tests for their slice. The suite held **53**
 tests through engine wave 1; engine slice 0 added `tests/test_engine2_pools.gd`
 (**16**) and `tests/test_engine2_cleaving.gd` (**9**), engine slice 2 added six
 `tests/test_engine2_*.gd` suites — `weapons` (**29**), `npc` (**28**), `damage`
-(**20**), `hud` (**19**), `loot` (**13**) and `wiring` (**13**) — and the slice-2 fixer
-pass added `tests/test_engine2_fixes.gd` (**17**), so the total is **217** and the count
+(**20**), `hud` (**19**), `loot` (**13**) and `wiring` (**13**) — the slice-2 fixer
+pass added `tests/test_engine2_fixes.gd` (**17**) and the slice-2 close added
+`tests/test_engine2_dock.gd` (**2**), and the UI-chrome wave added
+`tests/test_ui_slot_layout.gd` (**7**), so the total is **226** (the 219 measured
+before that wave, plus this suite's 7) and the count
 to read is the measured one with zero failures, never a stale total. Discovery is
 automatic (`tests/headless_runner.gd` finds `test_*.gd`); no
 registration file exists to edit. **Measured 2026-09-21 (W6 review, slice 2):
@@ -652,7 +656,7 @@ engine2_npc 28 · engine2_pools 16 · engine2_weapons 29 · engine2_wiring 13 ·
 p1_catalogues 11 · p1_clock_log 4 · p1_market 13 · p1_pricing 5 · p1_profile 9 ·
 p1_refinery 6 · p1_repairs 5`. The one red of the slice-0 era
 (`test_p1_profile.gd:204`, the save-version digit) stays fixed. **Measured again
-2026-09-21 (W8 re-review, the number this file now expects): `passed=217 failed=0`,
+2026-09-21 (W8 re-review, before the slot suite): `passed=217 failed=0`,
 exit 0, no `SCRIPT ERROR`, no RID-leak line**, per suite `engine2_cleaving 9 ·
 engine2_damage 20 · engine2_fixes 17 · engine2_hud 19 · engine2_loot 13 ·
 engine2_npc 28 · engine2_pools 16 · engine2_weapons 29 · engine2_wiring 13 ·
@@ -674,7 +678,15 @@ measured the same pass:** a `--script` run cannot exercise an `Input` action's s
 `Input.parse_input_event(Z)` leaves `is_action_pressed` false and the strength 0.0 there
 (and in a live but *unfocused* game window it is unreliable), so a probe proves a binding
 with `InputMap.event_is_action(event, action)` and the live key press itself is measured in
-a running game through the editor's input injection.
+a running game through the editor's input injection. **Fifth harness limit, measured in the
+UI-chrome wave (2026-09-21):** a headless run *can* observe warnings after all, which the
+wave's D5 pass assumed it could not — `--headless --debug` attaches the local stdout
+debugger and prints every `WARNING: ...` attributed as
+`at: GDScript::reload (res://file:line)`, so a per-file lint ledger is buildable by loading
+one file at a time between printed markers (`vajb-orbit/tests/probe_w5_lint.tscn` is the
+reference implementation: zero warnings in all nine D5 files, 19 in the `weapons.gd`
+positive control). Never record "verified by reading the source" while this one-command
+ledger exists.
 
 ## §10 Changelog
 

@@ -80,15 +80,15 @@ func _exit_tree() -> void:
 		_tween.kill()
 
 
-func route(route: StringName, params: Dictionary = {}) -> void:
+func route(route_name: StringName, params: Dictionary = {}) -> void:
 	if _busy:
 		return
-	if not Paths.route_exists(route):
-		push_warning("Router: no scene is available for route '%s'" % route)
+	if not Paths.route_exists(route_name):
+		push_warning("Router: no scene is available for route '%s'" % route_name)
 		return
-	var packed := load(Paths.route_path(route)) as PackedScene
+	var packed := load(Paths.route_path(route_name)) as PackedScene
 	if packed == null:
-		push_warning("Router: route '%s' is not a PackedScene" % route)
+		push_warning("Router: route '%s' is not a PackedScene" % route_name)
 		return
 	_busy = true
 	_fade_rect.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -96,27 +96,27 @@ func route(route: StringName, params: Dictionary = {}) -> void:
 	var previous_name := _current_scene_name()
 	get_tree().change_scene_to_packed(packed)
 	var root := await _await_scene(previous_name)
-	_route = route
+	_route = route_name
 	if root is Control:
 		(root as Control).theme = live_theme()
 	_bind_intents(root)
 	if root != null and root.has_method(&"on_route"):
 		root.call(&"on_route", params)
-	screen_changed.emit(route)
+	screen_changed.emit(route_name)
 	await _fade_to(0.0).finished
 	_fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_busy = false
 
 
-func push_overlay(route: StringName, params: Dictionary = {}) -> void:
-	if _busy or _find_overlay(route) != null:
+func push_overlay(route_name: StringName, params: Dictionary = {}) -> void:
+	if _busy or _find_overlay(route_name) != null:
 		return
-	if not Paths.route_exists(route):
-		push_warning("Router: no scene is available for overlay '%s'" % route)
+	if not Paths.route_exists(route_name):
+		push_warning("Router: no scene is available for overlay '%s'" % route_name)
 		return
-	var packed := load(Paths.route_path(route)) as PackedScene
+	var packed := load(Paths.route_path(route_name)) as PackedScene
 	if packed == null:
-		push_warning("Router: overlay '%s' is not a PackedScene" % route)
+		push_warning("Router: overlay '%s' is not a PackedScene" % route_name)
 		return
 	var instance := packed.instantiate()
 	if instance == null:
@@ -130,8 +130,8 @@ func push_overlay(route: StringName, params: Dictionary = {}) -> void:
 	_bind_intents(instance)
 	if instance.has_method(&"on_route"):
 		instance.call(&"on_route", params)
-	_overlays.append({&"route": route, &"node": instance, &"opener": opener})
-	overlay_pushed.emit(route)
+	_overlays.append({&"route": route_name, &"node": instance, &"opener": opener})
+	overlay_pushed.emit(route_name)
 
 
 func pop_overlay() -> void:
@@ -232,12 +232,12 @@ func _bind_intents(node: Node) -> void:
 		node.connect(&"overlay_close_requested", _on_overlay_close_requested.bind(node))
 
 
-func _on_route_requested(route: StringName, params: Dictionary) -> void:
-	route(route, params)
+func _on_route_requested(route_name: StringName, params: Dictionary) -> void:
+	route(route_name, params)
 
 
-func _on_overlay_requested(route: StringName, params: Dictionary, _source: Node) -> void:
-	push_overlay(route, params)
+func _on_overlay_requested(route_name: StringName, params: Dictionary, _source: Node) -> void:
+	push_overlay(route_name, params)
 
 
 func _on_overlay_close_requested(source: Node) -> void:
@@ -261,9 +261,9 @@ func _pop_entries(count: int) -> void:
 		overlay_popped.emit(entry[&"route"])
 
 
-func _find_overlay(route: StringName) -> Node:
+func _find_overlay(route_name: StringName) -> Node:
 	for entry: Dictionary in _overlays:
-		if entry[&"route"] == route:
+		if entry[&"route"] == route_name:
 			var tracked: Variant = entry[&"node"]
 			if is_instance_valid(tracked):
 				return tracked as Node
@@ -281,10 +281,10 @@ func _focus_weakref() -> WeakRef:
 	var viewport := get_viewport()
 	if viewport == null:
 		return null
-	var owner := viewport.gui_get_focus_owner()
-	if owner == null:
+	var focus_owner := viewport.gui_get_focus_owner()
+	if focus_owner == null:
 		return null
-	return weakref(owner)
+	return weakref(focus_owner)
 
 
 func _restore_focus(reference: Variant) -> void:
@@ -333,9 +333,9 @@ func _requested_ui_scale() -> float:
 	return float(settings.call(&"ui_scale"))
 
 
-func _service(name: StringName) -> Node:
+func _service(service_name: StringName) -> Node:
 	## Autoload names are not resolvable identifiers until the project patch lands
 	## (project.godot is applied by the orchestrator), so services are looked up by name.
 	if not is_inside_tree():
 		return null
-	return get_tree().root.get_node_or_null(NodePath(name))
+	return get_tree().root.get_node_or_null(NodePath(service_name))

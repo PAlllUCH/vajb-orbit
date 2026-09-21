@@ -605,6 +605,7 @@ func _refresh_widget_theme() -> void:
 func _build_weapon_slots() -> void:
 	for index: int in WEAPON_IDS.size():
 		var slot: SlotButton = SLOT_SCENE.instantiate() as SlotButton
+		slot.ignore_texture_size = true
 		slot.configure(VARIATION_WEAPON, WEAPON_ICONS[index], index + 1, TOKEN_TEXT_DIM)
 		slot.pressed.connect(_on_weapon_slot_pressed.bind(index))
 		_weapon_grid.add_child(slot)
@@ -697,6 +698,7 @@ func _ensure_cargo_cells(count: int) -> void:
 	while _cargo_cells.size() < wanted:
 		var index: int = _cargo_cells.size()
 		var cell: SlotButton = SLOT_SCENE.instantiate() as SlotButton
+		cell.ignore_texture_size = true
 		cell.configure(VARIATION_CARGO, CARGO_ICONS[index % CARGO_ICONS.size()], 0, TOKEN_TEXT_DIM)
 		_cargo_grid.add_child(cell)
 		_cargo_cells.append(cell)

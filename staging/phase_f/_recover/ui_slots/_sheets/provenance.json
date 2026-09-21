@@ -1,0 +1,104 @@
+[
+ {
+  "recovered": "staging/phase_f/_recover/ui_slots/_sheets/ui-slot-weapon-a-square-panel-with-four-1.png",
+  "ctex": "vajb-orbit/.godot/imported/ui-slot-weapon-a-square-panel-with-four-1.png-4a8d9f50946ca139de861637313a6617.ctex",
+  "ctex_hash": "4a8d9f50946ca139de861637313a6617",
+  "source_file": "ui-slot-weapon-a-square-panel-with-four-1.png",
+  "source_md5": "43db35dd391212c1bc65e4bb2a77521a",
+  "size": [
+   2048,
+   2048
+  ],
+  "mode": "RGB",
+  "md5": "ed38cdb5798b78f8d28ab563611ed565",
+  "mip_levels": 1,
+  "format": "RGB8",
+  "ctex_bytes": 2976990,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_slots/_sheets/ui-slot-weapon-a-square-panel-with-four-1-alpha.png",
+  "ctex": "vajb-orbit/.godot/imported/ui-slot-weapon-a-square-panel-with-four-1-alpha.png-9cf2a20087b91b5d906cf1d1fb157cd4.ctex",
+  "ctex_hash": "9cf2a20087b91b5d906cf1d1fb157cd4",
+  "source_file": "ui-slot-weapon-a-square-panel-with-four-1-alpha.png",
+  "source_md5": "927c84e16ddf3899c88bb15b748d3685",
+  "size": [
+   2048,
+   2048
+  ],
+  "mode": "RGBA",
+  "md5": "d5de13e2295d9a7bf4bfc10ec200df01",
+  "mip_levels": 1,
+  "format": "RGBA8",
+  "ctex_bytes": 3030808,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_slots/_sheets/ui-slot-cargo-a-square-panel-with-four-1.png",
+  "ctex": "vajb-orbit/.godot/imported/ui-slot-cargo-a-square-panel-with-four-1.png-a6b18844f455c4ff2eca98aa57a23a23.ctex",
+  "ctex_hash": "a6b18844f455c4ff2eca98aa57a23a23",
+  "source_file": "ui-slot-cargo-a-square-panel-with-four-1.png",
+  "source_md5": "5d53a0c8a16de9d5863ed2ad2a5fc8c3",
+  "size": [
+   2048,
+   2048
+  ],
+  "mode": "RGB",
+  "md5": "28c32228a61b04762a02896813fceb07",
+  "mip_levels": 1,
+  "format": "RGB8",
+  "ctex_bytes": 2739304,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_slots/_sheets/ui-slot-cargo-a-square-panel-with-four-1-alpha.png",
+  "ctex": "vajb-orbit/.godot/imported/ui-slot-cargo-a-square-panel-with-four-1-alpha.png-1dc111242b942c2103a08e29d99cfb4e.ctex",
+  "ctex_hash": "1dc111242b942c2103a08e29d99cfb4e",
+  "source_file": "ui-slot-cargo-a-square-panel-with-four-1-alpha.png",
+  "source_md5": "74ea006cbace5e854feb285590571482",
+  "size": [
+   2048,
+   2048
+  ],
+  "mode": "RGBA",
+  "md5": "630ca84df4ecd085928b64f1d71e7591",
+  "mip_levels": 1,
+  "format": "RGBA8",
+  "ctex_bytes": 2769644,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_slots/_sheets/ui-slot-inventory-a-square-panel-with-f-1.png",
+  "ctex": "vajb-orbit/.godot/imported/ui-slot-inventory-a-square-panel-with-f-1.png-bcb2a63c4608a14d7e81f3d99d9fbb22.ctex",
+  "ctex_hash": "bcb2a63c4608a14d7e81f3d99d9fbb22",
+  "source_file": "ui-slot-inventory-a-square-panel-with-f-1.png",
+  "source_md5": "502de6c9a84560aedff8c0045b1d1992",
+  "size": [
+   2048,
+   2048
+  ],
+  "mode": "RGB",
+  "md5": "21312dc36e284764d330886702d4652d",
+  "mip_levels": 1,
+  "format": "RGB8",
+  "ctex_bytes": 2850608,
+  "mip": 0
+ },
+ {
+  "recovered": "staging/phase_f/_recover/ui_slots/_sheets/ui-slot-inventory-a-square-panel-with-f-1-alpha.png",
+  "ctex": "vajb-orbit/.godot/imported/ui-slot-inventory-a-square-panel-with-f-1-alpha.png-2d9497789f7d14857a68aa71a4b0e3ab.ctex",
+  "ctex_hash": "2d9497789f7d14857a68aa71a4b0e3ab",
+  "source_file": "ui-slot-inventory-a-square-panel-with-f-1-alpha.png",
+  "source_md5": "0f9d0ec993c45a5c7e5f8bc259092a52",
+  "size": [
+   2048,
+   2048
+  ],
+  "mode": "RGBA",
+  "md5": "2ba56a8461eb52355417a173345e522a",
+  "mip_levels": 1,
+  "format": "RGBA8",
+  "ctex_bytes": 2906798,
+  "mip": 0
+ }
+]
