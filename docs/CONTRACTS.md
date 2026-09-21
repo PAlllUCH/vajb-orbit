@@ -1,6 +1,6 @@
 # CONTRACTS.md — living interface contract
 
-**Status: v1.2 (engine wave 1 + engine slices 0 and 2 + the combat/collision repair wave, re-reviewed 2026-09-21).** This file is the single source of pinned interfaces
+**Status: v1.3 (engine wave 1 + engine slices 0 and 2 + the combat/collision repair wave + the flight-feel & beam wave, re-reviewed 2026-09-21).** This file is the single source of pinned interfaces
 between workers. Every worker brief says "code against CONTRACTS.md §n" instead of
 re-pasting signatures; every review/fix wave owns updating it (additions and
 amendments recorded at the bottom in the changelog). Never edit it mid-wave while
@@ -24,6 +24,7 @@ every agent; they are not restated here.
 | `boost` | existing | afterburner |
 | `consume_fuel_cell` | R | new, engine slice 0 (§8.1, §11 of the engine spec); orchestrator-applied via godot-ai after the wave. **Owner ruling R3 (2026-09-21): the key is R, not §11's C** — C stays `cargo_toggle`, so §11's "C" is superseded |
 | `countermeasure_chaff` / `countermeasure_flare` | **Z / X** | **applied** by the orchestrator via godot-ai after the wave (owner ruling **R5**, 2026-09-21): `countermeasure_chaff` **Z** (keycode 90), `countermeasure_flare` **X** (88). The code was already ready and guarded (`game.gd`'s `COUNTERMEASURE_ACTIONS`, both read behind `InputMap.has_action`); W6 finding F5 is closed |
+| `strafe_left` / `strafe_right` | **A / D** | **shipped**: bound in the pre-wave commit `c37fbe3` and read by the flight-feel & beam wave (§4) — `strafe_left` keycode 65, `strafe_right` keycode 68. `turn_left` / `turn_right` keep their actions **and** their `REBINDABLE_ACTIONS` slots with `"events": []`, so a pad axis or a Controls-tab re-bind still turns; **A and D no longer turn** (owner ruling 2026-09-21, third round) |
 
 Code defensively: `InputMap.has_action(&"warp")` / `&"interact"` /
 `&"consume_fuel_cell"` guards — the actions land in `project.godot` after the
@@ -43,6 +44,14 @@ input injection) and reached their spend: **Z** → `use_countermeasure(&"cm_cha
 **X** → `use_countermeasure(&"cm_flare")` (hold 1 → 0, a live `CountermeasureFlare`
 decoy at the signal), **R** → `PlayerState.consume_fuel_cell` (fuel 20 → 60, cooldown
 10 s, hold 1 → 0).
+**Measured 2026-09-21 (flight-feel & beam wave — G4 review, re-confirmed by the G5
+fixer pass):** the map now holds **22 actions** (W8's 20 plus `strafe_left` /
+`strafe_right`, added by commit `c37fbe3` before the wave landed), and the four
+strafe/turn entries read `strafe_left` **A** (keycode 65), `strafe_right` **D** (68),
+`turn_left` `"events": []`, `turn_right` `"events": []`. All four are read behind
+`InputMap.has_action` guards in `player_ship.gd`, and `turn_left`/`turn_right` still
+have exactly one reader each (`_manual_turn`, `player_ship.gd:429-432` — the only
+reader in the project), so a re-bind or a pad deflection still turns.
 
 ## §2 ShipStats — `class_name ShipStats extends RefCounted`, `game/ship_stats.gd`
 
@@ -95,6 +104,8 @@ velocity() -> Vector2
 impact_body() -> RigidBody2D
 apply_impulse(impulse: Vector2) -> void
 apply_recoil(projectile_velocity: Vector2, projectile_mass: float) -> void
+# the flight-feel & beam wave (2026-09-21, v1.3), additive beyond the pin:
+set_aim_point(point: Vector2) -> void / clear_aim_point() -> void   # the probe seam
 ```
 
 `fit_ids` is the launched fit's module ids (`ShipFit.fitted_ids`), the W-slot gate
@@ -111,11 +122,14 @@ laser stay with the hull. Thrust is `mass × the class acceleration`
 (`max_speed / accel_time`), the brake is `BRAKE_MULT ×` that, the coast is
 `max_speed / coast_time` with `linear_damp = 1 / coast_time`, and torque is
 `inertia × (alpha + angular_damp × omega)` with `inertia = m·r²/2` and
-`angular_damp = 1 / turn_spinup` — all derived from §13 **with one owner-sanctioned
-exception: `coast_time` is retuned ×0.50** (all nine `ShipFit.HANDLING` rows, owner
-ruling of 2026-09-21; §13 itself is not ticked and still carries the pre-retune
-column). Measured by the C3 flight-decay probe on the shipped launch, whose resolved
-row is `§13 × 1.05` (the launched `h_plate_light` penalty), so `coast_time` is
+`angular_damp = 1 / turn_spinup` — all derived from §13 **with two owner-sanctioned
+exceptions, both owner rulings of 2026-09-21: `coast_time` is retuned ×0.50** (all
+nine `ShipFit.HANDLING` rows; §13 itself is not ticked and still carries the
+pre-retune column) **and `turn_rate` is retuned ×0.50** (the same nine rows; its own
+before/after table and measurements are two paragraphs below, and it is the only
+column the flight-feel & beam wave moved). Measured by the C3 flight-decay probe on
+the shipped launch, whose resolved row is `§13 × 1.05` (the launched `h_plate_light`
+penalty), so `coast_time` is
 1.050 s: time to 10 % of the release speed `1.890 → 0.945 s`, carried distance
 `430.32 → 216.85 u`, and both accelerate legs unchanged (`t_accel_total` 2.533 / 2.100
 / 4.050 / 4.050). The same column also halves every NPC hull's coast and doubles its
@@ -126,13 +140,83 @@ Body-body contacts past `COLLISION_MIN_DV` charge `Impact.collision_damage(ship
 mass, peer mass, closing speed)` to the player through `PlayerState.damage`, and
 offer the peer's half to `apply_collision_damage(amount)` when the peer has it.
 
-Flight (ENGINE_SPEC §3): WASD throttle/turn (S = reverse thrust + active brake at
-`BRAKE_MULT` 1.8), angular spin-up/damping, linear coasting — constants arrive via
-`ShipStats`, no literals in movement code. Autopilot: LMB on empty space sets a
-move target, arrive steering (slow-down radius 240 u, arrive radius 40 u), the
-same physics; **any** thrust/turn input cancels it, firing does not. Boosters:
-`boost` = afterburner (+60 %, 3 s, 8 s cooldown) reading `ShipStats.boosters`;
-blink/fold (`b_fold`) is recognised as data and inert.
+**The turn retune (owner ruling 2026-09-21, third round).** `turn_rate` is the
+**second** §13 column this project retunes ×0.50 — all nine `ShipFit.HANDLING`
+rows, the same nine `coast_time` moved — and it is the **only** column the
+flight-feel & beam wave moved. §13 is not ticked and still carries the pre-retune
+column, so the owner's tick is still owed (the v1.3 changelog entry in §10 carries
+the full tick list). Measured by G4's re-run of `probe_g1_flight_feel`
+(`--fixed-fps 60`), which re-derives every row against §13's own column quoted as
+a const:
+
+| hull | §13 class | `turn_rate` before (= §13, = HEAD) | after | after °/s | ratio | `turn_spinup` |
+|---|---|---:|---:|---:|---:|---:|
+| ship_fighter | Fighter | 3.400 | 1.700 | 97.4 | 0.5000 | 0.40 |
+| ship_vanguard | Cutter | 3.000 | 1.500 | 85.9 | 0.5000 | 0.50 |
+| ship_miner | Miner | 2.000 | 1.000 | 57.3 | 0.5000 | 1.00 |
+| ship_trader | Trader | 2.400 | 1.200 | 68.8 | 0.5000 | 0.70 |
+| ship_corvette | Corvette | 3.200 | 1.600 | 91.7 | 0.5000 | 0.45 |
+| ship_freighter | Hauler | 1.500 | 0.750 | 43.0 | 0.5000 | 1.40 |
+| ship_gunship | Gunship | 1.900 | 0.950 | 54.4 | 0.5000 | 1.00 |
+| ship_patrol | Frigate | 2.100 | 1.050 | 60.2 | 0.5000 | 0.90 |
+| ship_destroyer | Destroyer | 1.600 | 0.800 | 45.8 | 0.5000 | 1.20 |
+
+`turn_curve classes=9 mismatched=0 retune=x0.50`; `max_speed`, `accel_time`,
+`coast_time`, `turn_spinup`, `hull_mass` and the key set are byte-identical to
+HEAD. The column reaches **every NPC hull** too (it arrives through `ShipStats`),
+the same shape the retuned `coast_time` already has. The one pre-existing assertion
+the ruling moved is `tests/test_combat_repair_c5.gd:288` (`turn_rate` 3.0 → 1.5,
+with the ruling named inline); every other column of that test is still pinned.
+Reversal: multiply the nine rows by 2.0 and re-run `probe_g1_flight_feel`.
+
+Flight (ENGINE_SPEC §3; **the control scheme was amended 2026-09-21, third round —
+this and the next three paragraphs are the shipped truth, and §3.1's "A/D turn" is
+now the spec-side leftover the owner tick list names**): **W/S throttle** (S = reverse
+thrust + active brake at `BRAKE_MULT` 1.8), **A/D strafe** (A left, D right:
+`strafe_left` keycode 65 and `strafe_right` keycode 68 are in the project's input
+map; `turn_left`/`turn_right` keep their actions and their slots with
+`"events": []`, so a pad axis or a Controls-tab re-bind still turns),
+angular spin-up/damping, linear coasting — constants arrive via `ShipStats`, no
+literals in movement code.
+
+**The nose follows the cursor while `thrust_forward` is held, and the heading holds
+when it is not.** `_manual_desired_turn(stick, turn)` answers a deflected turn
+action first, then `_aim_turn()` while the throttle is up, then **0.0** — which is
+what holds the heading. `_aim_turn` is the autopilot's own `_turn_toward` arrive
+steering, so one law serves both the fly-to order and the cursor and there is no
+second steering model to keep in step; `turn_rate` and `turn_spinup` still bound how
+fast the nose may move. Its deadzone is the art-derived hull radius (the camera
+centres the hull, so that is where the pointer rests at launch), not an invented
+constant. Measured (G4's re-run of `probe_g1_flight_feel`): the peak turn rate is
+the class rate to three decimals on all three launched cases — Vanguard
+`omega_peak=1.500 rate=1.500 ratio=1.000`, Fighter `1.700/1.700 ratio=1.000`, Hauler
+`0.750/0.750 ratio=1.000` — and a released stick leaves the heading held with drift
+`0.00000000` and speed `0.00000000` (`hold_at_rest`), spinning down to zero in
+`t_omega_zero` 0.150 s (Vanguard) / 1.467 s (Hauler) against the class
+`turn_spinup` 0.50 / 1.40.
+
+**The strafe is §13's own two rows and nothing else.** `_command_velocity(throttle,
+lateral)` caps the stick at unit magnitude and scales it by the class `max_speed`,
+and `_step_strafe` runs the **same** `_thrust_axis` chase that `_step_speed` runs on
+the nose, on `_strafe_axis()` = `RIGHT.rotated(heading + PI/2)`, at `_accel_rate()`
+(= `max_speed / accel_time`, pre-existing). No new balance number exists between the
+§13 rows and the strafe: `grep -rn "STRAFE_FRACTION" vajb-orbit/` is empty, so the
+one named constant G1 proposed was **not** added and its reversal path stays in
+`.agents/gen/flight_beam_g1_report.md` §4. Measured by G4 on the shipped launch
+(`h_plate_light`, so every ceiling is the §13 row × 1.05): Vanguard `t_90` 2.283 s
+against a derived 2.268 s, lateral peak 368.414 of a 406.600 ceiling, 417.536 u of
+travel that is 100 % lateral (forward travel −0.000 u) and heading drift
+`0.00000000`; Fighter 1.900 s / 386.786 / 427.500; Hauler 5.683 s / 251.104 /
+278.350; `right_is_right=true` on all three. `W+D` reaches the class ceiling
+406.600, not √2 × it (575.019), so §3.4's `|v| / v_max` onset never leaves 1.0
+(`track_deg=45.03`). **The strafe is thrust, so ruling 14's Emergency lock covers
+it** — a dry tank strafes nowhere — while the cursor turn stays live.
+
+Autopilot: LMB on empty space sets a move target, arrive steering (slow-down radius
+240 u, arrive radius 40 u), the same physics; **any** throttle, strafe or turn input
+cancels it, firing does not. Boosters: `boost` = afterburner (+60 %, 3 s, 8 s
+cooldown) reading `ShipStats.boosters`; blink/fold (`b_fold`) is recognised as data
+and inert.
 
 **The reactor chain's hull side (slice 0, rulings 11/14) — the contract the fixer
 and slice 2 code against:** the hull's `_physics_process` is the reactor's frame,
@@ -446,7 +530,7 @@ like the mining laser; the mount is gated on the fit carrying a weapon module.
 
 ```gdscript
 setup(stats: ShipStats, state: PlayerState) -> void
-set_fitted(weapon_ids: Array[StringName]) -> void   # module ids and weapon ids both land
+set_fitted(ids: Array[StringName]) -> void          # module ids and weapon ids both land
 select_group(group: int) -> void                    # weapon_1..5; clamps to 1..5
 selected_group() -> int / selected_weapon() -> StringName / fitted() / is_fitted(id)
 set_firing(active: bool) / poll_input() / is_firing() -> bool   # the explicit trigger seam
@@ -485,7 +569,7 @@ configure(config: Dictionary) -> void   # kind (&"bolt"/&"slug"/&"rocket"/&"mine
 family() -> StringName / is_destructible() -> bool / hit_radius() -> float
 damage_amount() / bypasses_shield() -> bool / velocity() -> Vector2 / source() -> Node2D
 lock_target() -> Node2D / decoy() -> Node2D      # decoy = the live flare that lured it
-retarget(decoy: Node2D) -> void                  # §4.6's half
+retarget(lure: Node2D) -> void                   # §4.6's half
 fizzle() -> void                                 # a weapon hit kills a rocket, §4.1
 signal detonated(pos: Vector2, damage: float, bypass_shield: bool)
 ```
@@ -656,8 +740,11 @@ actually fired.
 "C:/Godot_4_7_2/Godot_v4.7.2-stable_win64_console.exe" --headless --path "G:/Mój dysk/Projekty/Vajb Orbit/vajb-orbit" res://tests/headless_runner.tscn --quit-after 1200
 ```
 
-Expected: `[SUMMARY] passed=236 failed=0` (re-measured on this host 2026-09-21),
-exit 0, no `SCRIPT ERROR`. A wave is
+Expected: `[SUMMARY] passed=294 failed=0` (measured on this host 2026-09-21 by the
+flight-feel & beam wave's review — the wave's own 17 tests are the whole growth from
+the pre-wave 277; the previously recorded 236 was the combat/collision repair wave's
+total),
+exit 0. A wave is
 done = gate green + the worker added tests for their slice. The suite held **53**
 tests through engine wave 1; engine slice 0 added `tests/test_engine2_pools.gd`
 (**16**) and `tests/test_engine2_cleaving.gd` (**9**), engine slice 2 added six
@@ -717,6 +804,35 @@ one file at a time between printed markers (`vajb-orbit/tests/probe_w5_lint.tscn
 reference implementation: zero warnings in all nine D5 files, 19 in the `weapons.gd`
 positive control). Never record "verified by reading the source" while this one-command
 ledger exists.
+
+**Measured 2026-09-21 (flight-feel & beam wave — G4 review, re-confirmed by the G5
+fixer pass): `passed=294 failed=0`, exit 0**, per suite `weapon_fx_f1 22 ·
+weapon_fx_f2 13 · weapon_fx_f4 6 · combat_repair_c5 7 · engine2_cleaving 9 ·
+engine2_damage 20 · engine2_dock 2 · engine2_fixes 17 · engine2_hud 19 ·
+engine2_loot 13 · engine2_npc 28 · engine2_pools 16 · engine2_weapons 29 ·
+engine2_wiring 13 · engine_c3_flight_decay 3 · flight_beam_g2 5 · flight_feel_g1 12 ·
+p1_catalogues 11 · p1_clock_log 4 · p1_market 13 · p1_pricing 5 · p1_profile 9 ·
+p1_refinery 6 · p1_repairs 5 · ui_slot_layout 7` (26 suites; the three `weapon_fx_*`
+ones were missing from the previously recorded per-suite list, which is why the
+numbers above are read off the log rather than carried forward). The wave's whole
+growth is **277 + 12 + 5 = 294**
+(`test_flight_feel_g1` 12, `test_flight_beam_g2` 5) and nothing else moved: G4's HEAD
+A/B, with the wave's eleven modified files stashed and its two new suites moved
+aside, reads `passed=277 failed=0`. **The green run carries exactly one
+`SCRIPT ERROR`, and it is pre-existing** — `Cannot call method 'call' on a
+previously freed instance.` at `tests/test_weapon_fx_f4.gd:176`, where line 175's
+`_clear()` frees the rig's `guns` node before line 176 calls it; the same block
+appears in the HEAD A/B and the file is unmodified, while the test still passes and
+the exit code is 0. It is `.agents/gen/LOW_BACKLOG.md` L61, owed to that file's next
+owner (move the `_hide_beam` call above the `_clear()`). So the number to read is
+`passed=294 failed=0` with exit 0, and that one `SCRIPT ERROR` line is not evidence
+of a regression until L61 is fixed. **The warning ledger's count**, from the §9
+instrument (`probe_g4_lint.tscn` under `--headless --debug`): the wave's eleven
+touched files went **37 sites → 0** and its seven new files **3 → 0** (G5's three
+renames at `tests/test_flight_beam_g2.gd:51`, `tests/probe_g3_shadow.gd:134` and
+`:139`), leaving **15 rows in five files no worker owned** — `game/npc_ship.gd` 4,
+`game/npc_brain.gd` 4, `game/npc_registry.gd` 3, `game/asteroid.gd` 3 and
+`ui/hud/minimap.gd` 1 (the positive control).
 
 ## §10 Changelog
 
@@ -852,3 +968,59 @@ ledger exists.
   broken out. Evidence: `.agents/gen/combat_repair_c6_report.md` (the review) and
   `.agents/gen/combat_repair_c{1,2,3,5}_report.md`, with every raw log under
   `.agents/gen/c6/`; the wave's LOW block is `.agents/gen/LOW_BACKLOG.md` L38–L47.
+- **v1.3 (2026-09-21, flight-feel & beam wave — its review pass: G4's review plus this
+  G5 fixer, the wave's only CONTRACTS writer)** — records the four shipped behaviours
+  the wave left undocumented (review finding **MED-1**,
+  `.agents/gen/flight_beam_g4_report.md` §11) and clears the three shadowing sites its
+  own new files added (**MED-2**, same report §9). **The wave** (brief
+  `.agents/gen/flight_beam_wave_task.md`; owner rulings of 2026-09-21, third round,
+  evidence `.agents/gen/owner_playtest_findings_20260921.md`; worker reports
+  `.agents/gen/flight_beam_g{1,2,3}_report.md`). **§4** now pins the shipped control
+  scheme and the two new handling behaviours with G4's measurements: W/S throttle,
+  **A/D strafe** (keycodes 65/68 bound; `turn_left`/`turn_right` keep their actions
+  and their slots with `"events": []`, so a pad axis or a Controls-tab re-bind still
+  turns), **the nose follows the cursor while `thrust_forward` is held and the heading
+  holds when it is not** (`_manual_desired_turn` answers a deflected turn action
+  first, then `_aim_turn` — the autopilot's own arrive steering — then `0.0`; the peak
+  turn rate equals the class rate to three decimals on all three launched cases and a
+  released stick leaves drift `0.00000000`), **the strafe derived from §13's own two
+  rows** (`max_speed` + `accel_time` through `_accel_rate`; the one named constant G1
+  proposed, `STRAFE_FRACTION`, is **not** in the tree), and the **`turn_rate` ×0.50
+  retune** with its nine-row before/after table — the project's second retuned §13
+  column after `coast_time`, and the same shape: it reaches every NPC hull through
+  `ShipStats`. §4's additive API gains the `set_aim_point`/`clear_aim_point` probe
+  seam. **§8.2**'s two stale parameter-name pins are corrected to the shipped truth
+  (`set_fitted(ids)`, `retarget(lure)`; the G4 report's list also named
+  `feedback_row(name)` and `spawn_sheet(parent, name)`, which this file never pinned,
+  so those two had nothing to correct). **§9**'s expected gate moves to the measured
+  **294** with the wave's 17 tests broken out, its HEAD A/B (`277`) recorded beside
+  it, the pre-existing `tests/test_weapon_fx_f4.gd:176` `SCRIPT ERROR` named rather
+  than assumed away, and the warning ledger's before/after counts added. **No pinned
+  signature was renamed or removed and no frozen method was dropped** — the whole
+  `vajb-orbit/` diff is additive (`weapons.gd` +3 definitions, `projectile.gd` +1,
+  `player_ship.gd` +11, `REBINDABLE_ACTIONS` 17 → 19 with nothing dropped); `FAMILIES`,
+  `IMPACT_CUES`, every weapon scalar, `ShipFit.HANDLING`'s other five columns,
+  `project.godot`, the theme and `addons/` are byte-identical to HEAD. The wave's one
+  pre-existing test edit is `tests/test_combat_repair_c5.gd:288` (`turn_rate` 3.0 →
+  1.5, with the ruling named inline) and every other column of that test is still
+  pinned. Evidence: `.agents/gen/flight_beam_g4_report.md` (the review) and
+  `.agents/gen/flight_beam_g5_report.md` (the fixer pass, with every before/after
+  command); the wave's LOW block is `.agents/gen/LOW_BACKLOG.md` L48–L61.
+- **Owner tick list this v1.3 entry defers** (every file below is owner-locked, so no
+  worker may edit it — these are spec-side leftovers, recorded here only):
+  1. `docs/gameplay/18_engine_spec.md:67` reads `**A/D** turn.`; the shipped map is
+     **A/D strafe**, so §3.1's line needs the owner's amendment to match §4 above.
+  2. `docs/gameplay/18_engine_spec.md:389` — §11's "Everything else stays:
+     thrust/turn/fire/boost/mine/cargo/weapon_1..5/Q" bullet still names `turn` as a
+     bound control and does not mention the two strafe actions. (§11's
+     `consume_fuel_cell` = C is separately superseded by ruling R3, already recorded
+     in §1.)
+  3. `docs/gameplay/18_engine_spec.md` §13's handling table — the `turn_rate` column
+     still carries the pre-retune values (the before/after table is §4 above). The
+     same tick is still owed for `coast_time` from the combat/collision repair wave,
+     so one §13 pass can close both.
+  4. `docs/design/IMPLEMENTATION_PLAN.md:231` — the frozen input-map row reads
+     `turn_left` (A) · `turn_right` (D); the shipped truth is `strafe_left` (A) ·
+     `strafe_right` (D), and the two entries sit at positions 5 and 6 of
+     `REBINDABLE_ACTIONS`. (LOW-1: `settings_manager.gd:34-36`'s "Orders 18 and 19"
+     comment says the same thing wrongly and is a comment-only fix.)

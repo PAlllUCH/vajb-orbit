@@ -243,7 +243,7 @@ func _build_cargo_plates() -> void:
 		_plate_icons.append(icon)
 
 
-func _make_plate(parent: HBoxContainer, variation: StringName, size: float) -> TextureButton:
+func _make_plate(parent: HBoxContainer, variation: StringName, plate_size: float) -> TextureButton:
 	# ui/components/slot_button.gd copies the theme plate textures onto the node, because a
 	# TextureButton has no stylebox items, so SlotButtonCargo/styles/* is never read by the
 	# engine on a bare theme_type_variation. The panel repeats that lookup (the mockup's own
@@ -251,7 +251,7 @@ func _make_plate(parent: HBoxContainer, variation: StringName, size: float) -> T
 	var plate := TextureButton.new()
 	plate.theme_type_variation = variation
 	plate.ignore_texture_size = true
-	plate.custom_minimum_size = Vector2(size, size)
+	plate.custom_minimum_size = Vector2(plate_size, plate_size)
 	plate.focus_mode = Control.FOCUS_NONE
 	plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	parent.add_child(plate)

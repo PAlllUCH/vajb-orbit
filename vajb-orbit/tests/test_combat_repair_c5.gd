@@ -17,7 +17,9 @@ extends McpTestSuite
 ##    *kinetic* row's cadence, so a family that states none (the mine) reads 0.0 and no
 ##    gun cadence is invented for it;
 ## 5. the retune: all nine section 13 `coast_time` rows are scaled x 0.50 and nothing
-##    else in the handling column moved.
+##    else in the handling column moved (the later flight-feel wave's x 0.50 on
+##    `turn_rate` is asserted at its retuned value in the same test, with the ruling
+##    that moved it named there).
 ##
 ## Nothing awaits a frame: the timed halves - the ram itself, the per-frame beam, the
 ## decay curve - are measured by C1's, C2's and C3's probes, which are the probes a
@@ -282,10 +284,17 @@ func test_the_coast_column_is_the_retuned_half_of_the_section_13_rows() -> void:
 		)
 	## The rest of the shipped hull's row is the section 13 column untouched: a retune of
 	## the release must not have moved the speed or the accelerate leg with it.
+	## `turn_rate` is the one column that moved *after* this suite was written -- the
+	## flight-feel wave's owner ruling (2026-09-21, third round) scaled all nine rows
+	## x 0.50, so the Vanguard's 3.0 rad/s is 1.5 -- and it is asserted at its retuned
+	## value here so this file keeps proving the coast retune's own blast radius.
 	var vanguard: Dictionary = ShipFitScript.HANDLING[&"ship_vanguard"]
 	assert_true(_near(float(vanguard[&"max_speed"]), 428.0), "max_speed is still 428")
 	assert_true(_near(float(vanguard[&"accel_time"]), 2.4), "accel_time is still 2.4")
-	assert_true(_near(float(vanguard[&"turn_rate"]), 3.0), "turn_rate is still 3.0")
+	assert_true(
+		_near(float(vanguard[&"turn_rate"]), 1.5),
+		"turn_rate is the flight-feel x 0.50 (3.0 -> 1.5)"
+	)
 	assert_true(_near(float(vanguard[&"turn_spinup"]), 0.5), "turn_spinup is still 0.5")
 	assert_true(_near(float(vanguard[&"hull_mass"]), 110.0), "hull_mass is still 110")
 	## The plating multiplier still rides on the retuned row (C3: the launch fit's

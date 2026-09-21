@@ -204,6 +204,14 @@ const FLASH_MUZZLE_PX := Vector2(135.0, 243.5)
 const FLASH_WORLD := 44.0
 const FLASH_FPS := 20.0
 
+## FX_SPEC section 1.2 fixes the flash at "4 frames at 20 FPS = 0.2 s total, one-shot,
+## no loop", so a held trigger cannot loop the animation itself: it replays that same
+## one-shot - and the family's cue with it - once per this cycle
+## (`_advance_fire_feedback`), which is the "they should loop" read the owner gave the
+## fire feedback in his third round (2026-09-21). Derived from the row above, not
+## invented: `FLASH_FRAMES.size() / FLASH_FPS`, and the suite checks the two agree.
+const FLASH_SECONDS := 0.2
+
 ## FX_SPEC section 1.6 sanctions the engine-drawn beam ("the beam line itself is
 ## engine-drawn; no texture needed"), so the instant families draw theirs the way
 ## `mining_laser.gd` draws the mining shaft: a wide dim halo under a thin bright core.
@@ -228,6 +236,13 @@ const TOKENS_TYPE: StringName = &"Tokens"
 ## AUDIO_SPEC states no rate for a beam's hits, and the impact takes it plays run
 ## 0.117-0.364 s, so a quarter second is a sustained read rather than a stack (proposed).
 const BEAM_HIT_INTERVAL := 0.25
+
+## AUDIO_SPEC section 8's S8, "Mining chip hit": the transient a gun makes chipping a
+## rock, and the cue FX_SPEC section 1.6 pairs with the chip-sparks burst. It is the
+## same take `mining_laser.gd`'s own `CHIP_CUE` names - `_01` and not the 01-04
+## round-robin, because `sfx_mining_chip_04` is a documented 21 s outlier (ASSET_AUDIT
+## item 8) - and the suite keeps the two constants equal, so they cannot drift.
+const CHIP_CUE: StringName = &"sfx_mining_chip_01"
 
 ## The held beam's bed. The library ships exactly one energy-emission loop (S6's shield
 ## hum and S7's mining bed are the same source, `staging/audio/build_audio.py`), and the
@@ -267,6 +282,11 @@ var _beam_core: Line2D = null
 ## that contact has been held since it was last read (a fresh contact reads at once).
 var _beam_contact: Object = null
 var _beam_hit_clock := 0.0
+
+## The held beam's fire-feedback clock: how long it is since the muzzle flash and the
+## family's cue last played. Cleared when the beam opens and when it goes out, so each
+## hold starts from its own opening flash.
+var _beam_feedback_clock := 0.0
 
 ## The lock the seeker follows (section 4.1/4.6). The channel that earns it is
 ## W5's; this is the seam it lands on.
@@ -316,9 +336,9 @@ func _connect_feedback() -> void:
 ## groups; the whole list is otherwise kept, because six families exist while the
 ## input map offers five `weapon_1..5` keys, so a fit can carry more weapons than
 ## there are selectable groups (reported).
-func set_fitted(weapon_ids: Array[StringName]) -> void:
+func set_fitted(ids: Array[StringName]) -> void:
 	_fitted.clear()
-	for value: StringName in weapon_ids:
+	for value: StringName in ids:
 		var id := weapon_id(value)
 		if id == &"" or _fitted.has(id):
 			continue
@@ -346,8 +366,8 @@ func fitted() -> Array[StringName]:
 	return _fitted.duplicate()
 
 
-func is_fitted(weapon_id: StringName) -> bool:
-	return _fitted.has(weapon_id)
+func is_fitted(weapon: StringName) -> bool:
+	return _fitted.has(weapon)
 
 
 ## The trigger: held means fire the selected group. Called by `_physics_process`
@@ -506,11 +526,11 @@ func _burst_open(row: Dictionary) -> bool:
 ## ray point (circle hit test), capped at the weapon's range", for `dps x delta` of
 ## damage, paid for out of the Energy pool first (section 4.4): a pool that cannot
 ## pay the frame means no shot and dry-fire feedback.
-func _fire_beam(weapon_id: StringName, row: Dictionary, delta: float) -> void:
+func _fire_beam(weapon: StringName, row: Dictionary, delta: float) -> void:
 	if not _spend_energy(float(row.get(&"draw", 0.0)) * maxf(delta, 0.0)):
 		_beam_live = false
 		_hide_beam()
-		_dry(weapon_id)
+		_dry(weapon)
 		return
 	var from := global_position
 	var offset := _aim_point() - from
@@ -519,15 +539,20 @@ func _fire_beam(weapon_id: StringName, row: Dictionary, delta: float) -> void:
 		_hide_beam()
 		return
 	var to := from + offset.normalized() * reach
-	## FX_SPEC section 1.6's engine-drawn beam: the shaft is drawn to the weapon's own
-	## reach this frame, before the target is resolved, so a miss still shows the shot
-	## (the impact visual is the hit site's business, not the beam's).
-	_draw_beam(to)
+	## FX_SPEC section 1.6's engine-drawn beam. The target is resolved **before** the
+	## shaft is drawn, so the shaft stops on the point the ray actually reached
+	## (`target[&"point"]`) instead of running through it to the aim point; a miss still
+	## draws the weapon's own reach, so an empty shot shows exactly as it did.
+	## (The impact visual stays the hit site's business, not the beam's.)
 	var target := _beam_target(from, to)
+	var endpoint := to
+	if not target.is_empty():
+		endpoint = target[&"point"]
+	_draw_beam(endpoint)
+	_beam_started(weapon)
+	_advance_fire_feedback(weapon, delta)
 	if target.is_empty():
-		_beam_started(weapon_id)
 		return
-	_beam_started(weapon_id)
 	var collider: Variant = target[&"collider"]
 	if bool(target[&"projectile"]):
 		## Section 4.1: a rocket dies to any weapon hit, and the beam stops there. The
@@ -536,34 +561,34 @@ func _fire_beam(weapon_id: StringName, row: Dictionary, delta: float) -> void:
 		## the projectile's).
 		(collider as Node).call(&"fizzle")
 		ProjectileScript.play_blast(self)
-		ProjectileScript.spawn_explosion(_hit_fx_parent(collider), target[&"point"])
+		ProjectileScript.spawn_explosion(_hit_fx_parent(collider), endpoint)
 		return
-	_apply_beam(weapon_id, row, collider, target[&"point"], delta)
+	_apply_beam(weapon, row, collider, endpoint, delta)
 
 
 ## A travelling family (section 4.1): a shot leaves at its own speed toward the
 ## cursor, spends one round from its pack, and pushes the hull back with section
 ## 4.2 item 7's term through the hull's own `apply_recoil` seam.
-func _fire_projectile(weapon_id: StringName, row: Dictionary, edge: bool) -> void:
+func _fire_projectile(weapon: StringName, row: Dictionary, edge: bool) -> void:
 	if bool(row.get(&"edge", false)) and not edge:
 		return
 	if _shot_timer > 0.0 or not _burst_open(row):
 		return
-	if not _ammo_available(weapon_id):
-		_dry(weapon_id)
+	if not _ammo_available(weapon):
+		_dry(weapon)
 		return
 	var speed := float(row.get(&"speed", 0.0))
 	var direction := _aim_direction() if speed > 0.0 else Vector2.ZERO
-	var shot := _spawn_shot(weapon_id, row, direction)
+	var shot := _spawn_shot(weapon, row, direction)
 	if shot == null:
 		return
-	_consume_ammo(weapon_id)
-	_shot_timer = interval_of(weapon_id)
+	_consume_ammo(weapon)
+	_shot_timer = interval_of(weapon)
 	_apply_recoil(direction * speed)
-	shot_fired.emit(weapon_id)
+	shot_fired.emit(weapon)
 
 
-func _spawn_shot(weapon_id: StringName, row: Dictionary, direction: Vector2) -> Node2D:
+func _spawn_shot(weapon: StringName, row: Dictionary, direction: Vector2) -> Node2D:
 	var parent := _world_parent()
 	if parent == null:
 		return null
@@ -574,10 +599,10 @@ func _spawn_shot(weapon_id: StringName, row: Dictionary, direction: Vector2) -> 
 	shot.call(&"configure", {
 		&"kind": StringName(row.get(&"kind", &"bolt")),
 		&"speed": float(row.get(&"speed", 0.0)),
-		&"damage": shot_damage(weapon_id),
+		&"damage": shot_damage(weapon),
 		&"bypass_shield": bool(row.get(&"bypass_shield", false)),
 		&"homing": bool(row.get(&"homing", false)),
-		&"target": _seeker_target(weapon_id),
+		&"target": _seeker_target(weapon),
 		&"turn_rate": float(row.get(&"turn_rate", 0.0)),
 		&"source": _host(),
 		&"direction": direction,
@@ -594,18 +619,26 @@ func _spawn_shot(weapon_id: StringName, row: Dictionary, direction: Vector2) -> 
 
 ## The beam's business, once the shot has spent its Energy: a rock takes section
 ## 6's chip work (depletion only - the units `apply_work` reports are the mining
-## laser's extraction and are discarded here, ruling 17); a hull takes `dps x delta`
-## of damage under its family's shield rule.
+## laser's extraction and are discarded here, ruling 17) plus section 1.6's own
+## contact read, and a hull takes `dps x delta` of damage under its family's shield
+## rule.
 func _apply_beam(
-	weapon_id: StringName, row: Dictionary, collider: Variant, point: Vector2, delta: float
+	weapon: StringName, row: Dictionary, collider: Variant, point: Vector2, delta: float
 ) -> void:
-	var amount := dps_of(weapon_id) * maxf(delta, 0.0)
+	var amount := dps_of(weapon) * maxf(delta, 0.0)
 	if amount <= 0.0:
 		return
 	var hull_body := collider as Node
 	if hull_body != null and hull_body.is_in_group(ProjectileScript.ROCK_GROUP):
 		if hull_body.has_method(&"apply_work"):
 			hull_body.call(&"apply_work", amount * GUN_CHIP_RATE)
+		## A gun chipping a rock reads the way the mining shaft does: S8's chip transient
+		## and FX_SPEC section 1.6's chip-sparks burst at the contact, on the same
+		## per-contact rate guard the hull read below uses (a chip per frame is a machine
+		## gun, not a beam).
+		if _beam_read_due(collider, delta):
+			_play_chip_cue()
+			ProjectileScript.spawn_chip_sparks(_hit_fx_parent(collider), point)
 		return
 	## The sink is resolved once and read for both the shield rule and the delivery:
 	## a hull's collider is that hull's own `HullBody`, which cannot answer
@@ -628,26 +661,34 @@ func _apply_beam(
 	)
 
 
-## The hit's other half for a beam: the cue for what is taking the damage and, once the
-## shield absorbs it, section 1.5's ring and S6's bed - the same doors a landed
-## projectile uses, so a beam's hits read exactly like a shot's.
-##
-## Rate-gated per contact, because the damage is per frame: `target` changing reads at
-## once, and the frames after that are held back until the contact has lasted
-## `BEAM_HIT_INTERVAL` again. `_hide_beam` clears the contact, so a new hold on the same
-## hull reads from its own first frame.
-func _beam_hit_feedback(target: Object, shielded: bool, point: Vector2, delta: float) -> void:
+## The beam's per-contact rate guard, shared by both reads it makes: true on the frame a
+## contact starts and once every `BEAM_HIT_INTERVAL` after, false on the frames between.
+## One guard for a hull's cue and a rock's chip, so a beam cannot read one contact at a
+## different cadence than another. `_hide_beam` clears the contact, so a new hold on the
+## same thing reads from its own first frame.
+func _beam_read_due(target: Object, delta: float) -> bool:
 	if target == null:
 		_beam_contact = null
 		_beam_hit_clock = 0.0
-		return
+		return false
 	if target != _beam_contact:
 		_beam_contact = target
 		_beam_hit_clock = BEAM_HIT_INTERVAL
 	_beam_hit_clock += maxf(delta, 0.0)
 	if _beam_hit_clock < BEAM_HIT_INTERVAL:
-		return
+		return false
 	_beam_hit_clock = 0.0
+	return true
+
+
+## The hit's other half for a beam: the cue for what is taking the damage and, once the
+## shield absorbs it, section 1.5's ring and S6's bed - the same doors a landed
+## projectile uses, so a beam's hits read exactly like a shot's.
+##
+## Rate-gated per contact through `_beam_read_due`, because the damage is per frame.
+func _beam_hit_feedback(target: Object, shielded: bool, point: Vector2, delta: float) -> void:
+	if not _beam_read_due(target, delta):
+		return
 	var kind := (
 		ProjectileScript.IMPACT_KIND_SHIELD if shielded else ProjectileScript.IMPACT_KIND_HULL
 	)
@@ -658,20 +699,48 @@ func _beam_hit_feedback(target: Object, shielded: bool, point: Vector2, delta: f
 	ProjectileScript.hold_shield(self)
 
 
+## S8's chip transient, through the one-shot SFX route the mining laser's own
+## `_play_chip` uses. A missing audio service is a no-op.
+func _play_chip_cue() -> void:
+	var audio := _audio()
+	if audio == null or not audio.has_method(&"play_sfx"):
+		return
+	audio.call(&"play_sfx", CHIP_CUE)
+
+
 ## Once per beam hold: the weapon announces that it opened fire (the per-frame
-## damage is not a shot, so it is not per-frame signal traffic).
-func _beam_started(weapon_id: StringName) -> void:
+## damage is not a shot, so it is not per-frame signal traffic). The feedback clock
+## starts here too, so the hold's opening flash and the replays after it are one cycle
+## apart.
+func _beam_started(weapon: StringName) -> void:
 	if _beam_live:
 		return
 	_beam_live = true
-	shot_fired.emit(weapon_id)
+	_beam_feedback_clock = 0.0
+	shot_fired.emit(weapon)
 
 
-func _dry(weapon_id: StringName) -> void:
+## A held trigger's fire feedback, on FX_SPEC section 1.2's own clock. The flash is a
+## one-shot ("4 frames at 20 FPS = 0.2 s total, one-shot, no loop"), so a held beam cannot
+## loop the animation: it replays the same one-shot - and the family's cue with it - once
+## per flash cycle for as long as the beam is up, instead of one flash per release (the
+## owner's third-round finding W4, "they should loop").
+##
+## `shot_fired` is deliberately NOT re-emitted: section 4.1's pinned signal stays one per
+## hold, and only what the hold looks and sounds like repeats.
+func _advance_fire_feedback(weapon: StringName, delta: float) -> void:
+	_beam_feedback_clock += maxf(delta, 0.0)
+	if _beam_feedback_clock < FLASH_SECONDS:
+		return
+	_beam_feedback_clock = fmod(_beam_feedback_clock, FLASH_SECONDS)
+	_on_shot_fired(weapon)
+
+
+func _dry(weapon: StringName) -> void:
 	if _dry_noted:
 		return
 	_dry_noted = true
-	dry_fired.emit(weapon_id)
+	dry_fired.emit(weapon)
 
 
 ## --- Fire and travel feedback --------------------------------------------
@@ -681,9 +750,9 @@ func _dry(weapon_id: StringName) -> void:
 ## route: the muzzle flash at the muzzle and the family's own fire cue. Cadence,
 ## damage, Energy and ammo are untouched - this only draws and sounds what the shot
 ## already did.
-func _on_shot_fired(weapon_id: StringName) -> void:
+func _on_shot_fired(weapon: StringName) -> void:
 	_spawn_muzzle_flash(_aim_direction())
-	_play_fire_cue(weapon_id)
+	_play_fire_cue(weapon)
 
 
 ## FX_SPEC section 1.2's four-frame flash on the muzzle. The muzzle is this
@@ -715,14 +784,14 @@ func _spawn_muzzle_flash(direction: Vector2) -> void:
 ## The family's cue, through the audio service's pool route (the extra takes on disk
 ## are unreachable through a plain `play_sfx` - ASSET_WIRING_HANDOFF section 1.2). A
 ## family AUDIO_SPEC gives no cue plays none.
-func _play_fire_cue(weapon_id: StringName) -> void:
-	var cue := fire_cue_of(weapon_id)
+func _play_fire_cue(weapon: StringName) -> void:
+	var cue := fire_cue_of(weapon)
 	if cue == &"":
 		return
 	var audio := _audio()
 	if audio == null or not audio.has_method(&"play_pool"):
 		return
-	audio.call(&"play_pool", cue, fire_take_of(weapon_id))
+	audio.call(&"play_pool", cue, fire_take_of(weapon))
 
 
 func _audio() -> Node:
@@ -754,9 +823,11 @@ func _hide_beam() -> void:
 		_beam_halo.visible = false
 	if _beam_core != null and is_instance_valid(_beam_core):
 		_beam_core.visible = false
-	## The beam is not held any more, so nothing is in contact and nothing is sounding.
+	## The beam is not held any more, so nothing is in contact, nothing is sounding and
+	## the fire feedback's clock starts fresh on the next hold.
 	_beam_contact = null
 	_beam_hit_clock = 0.0
+	_beam_feedback_clock = 0.0
 	_stop_beam_bed()
 
 
@@ -866,8 +937,8 @@ func _host_rotation() -> float:
 ## The rocket's target at launch: the lock target while it is valid and inside the
 ## scanner's lock range (section 4.1 ruling 21: "lock range = the scanner's range").
 ## Without one, `configure` gets no target and the rocket dumb-fires at the cursor.
-func _seeker_target(weapon_id: StringName) -> Node2D:
-	if weapon_id != &"rocket":
+func _seeker_target(weapon: StringName) -> Node2D:
+	if weapon != &"rocket":
 		return null
 	if _lock_target == null or not is_instance_valid(_lock_target):
 		return null
@@ -1072,10 +1143,10 @@ func _spend_energy(amount: float) -> bool:
 	return _state.try_spend_energy(amount)
 
 
-func _ammo_available(weapon_id: StringName) -> bool:
+func _ammo_available(weapon: StringName) -> bool:
 	if _state == null:
 		return false
-	var slot := ammo_slot(weapon_id)
+	var slot := ammo_slot(weapon)
 	if slot < 0 or slot >= _state.ammo.size():
 		return false
 	return _state.ammo[slot] > 0
@@ -1083,10 +1154,10 @@ func _ammo_available(weapon_id: StringName) -> bool:
 
 ## Section 4.3: the round leaves the pack through `PlayerState.set_ammo`, which is
 ## the HUD's own channel (`weapon_changed`).
-func _consume_ammo(weapon_id: StringName) -> void:
+func _consume_ammo(weapon: StringName) -> void:
 	if _state == null:
 		return
-	var slot := ammo_slot(weapon_id)
+	var slot := ammo_slot(weapon)
 	if slot < 0 or slot >= _state.ammo.size():
 		return
 	_state.set_ammo(slot, _state.ammo[slot] - 1)
@@ -1307,8 +1378,8 @@ func _profile() -> Node:
 ## --- The family table, read-only (the single owner stays this file) -------
 
 
-static func row_of(weapon_id: StringName) -> Dictionary:
-	var row: Variant = FAMILIES.get(weapon_id)
+static func row_of(id: StringName) -> Dictionary:
+	var row: Variant = FAMILIES.get(id)
 	if row is Dictionary:
 		return row as Dictionary
 	return {}
@@ -1321,34 +1392,34 @@ static func weapon_ids() -> Array[StringName]:
 	return out
 
 
-static func family_of(weapon_id: StringName) -> StringName:
-	var row := row_of(weapon_id)
+static func family_of(id: StringName) -> StringName:
+	var row := row_of(id)
 	return StringName(row.get(&"family", &""))
 
 
 ## The cue a family's released shot plays ("" for the one family AUDIO_SPEC states
 ## none for).
-static func fire_cue_of(weapon_id: StringName) -> StringName:
-	var row: Variant = FIRE_CUES.get(weapon_id)
+static func fire_cue_of(id: StringName) -> StringName:
+	var row: Variant = FIRE_CUES.get(id)
 	if row is Dictionary:
 		return StringName((row as Dictionary).get(&"cue", &""))
 	return &""
 
 
 ## The pool tier a family fires at; -1 leaves the choice to the pool's own mode.
-static func fire_take_of(weapon_id: StringName) -> int:
-	var row: Variant = FIRE_CUES.get(weapon_id)
+static func fire_take_of(id: StringName) -> int:
+	var row: Variant = FIRE_CUES.get(id)
 	if row is Dictionary:
 		return int((row as Dictionary).get(&"take", -1))
 	return -1
 
 
-static func range_of(weapon_id: StringName) -> float:
-	return float(row_of(weapon_id).get(&"range", 0.0))
+static func range_of(id: StringName) -> float:
+	return float(row_of(id).get(&"range", 0.0))
 
 
-static func dps_of(weapon_id: StringName) -> float:
-	return float(row_of(weapon_id).get(&"dps", 0.0))
+static func dps_of(id: StringName) -> float:
+	return float(row_of(id).get(&"dps", 0.0))
 
 
 ## The seconds between one released shot and the next: the spec's own where it
@@ -1361,8 +1432,8 @@ static func dps_of(weapon_id: StringName) -> float:
 ## that states no cadence and is not kinetic has none - the mine is `edge`, one per
 ## trigger pull, and reads 0.0 rather than a borrowed gun cadence. Its damage is the
 ## row's `alpha`, so `shot_damage` never reads this fallback.
-static func interval_of(weapon_id: StringName) -> float:
-	var row := row_of(weapon_id)
+static func interval_of(id: StringName) -> float:
+	var row := row_of(id)
 	if row.is_empty() or bool(row.get(&"instant", false)):
 		return 0.0
 	if row.has(&"interval"):
@@ -1371,7 +1442,7 @@ static func interval_of(weapon_id: StringName) -> float:
 	var off := float(row.get(&"burst_off", 0.0))
 	if on > 0.0 or off > 0.0:
 		return on + off
-	if family_of(weapon_id) == &"kinetic":
+	if family_of(id) == &"kinetic":
 		return KINETIC_INTERVAL
 	return 0.0
 
@@ -1380,25 +1451,25 @@ static func interval_of(weapon_id: StringName) -> float:
 ## states one (rocket 180, mine 180), else `DPS x interval`, so a stream of hits
 ## delivers exactly the spec's DPS. The instant families carry none (their damage
 ## is per second, not per shot).
-static func shot_damage(weapon_id: StringName) -> float:
-	var row := row_of(weapon_id)
+static func shot_damage(id: StringName) -> float:
+	var row := row_of(id)
 	if row.is_empty() or bool(row.get(&"instant", false)):
 		return 0.0
 	if row.has(&"alpha"):
 		return float(row[&"alpha"])
-	return dps_of(weapon_id) * interval_of(weapon_id)
+	return dps_of(id) * interval_of(id)
 
 
 ## The `PlayerState` ammo slot a weapon spends: its own id where the array has one,
 ## else the pack it shares (`SHARED_PACK`, section 4.3). -1 means no slot at all.
-static func ammo_slot(weapon_id: StringName) -> int:
-	var slot := PlayerStateScript.WEAPONS.find(weapon_id)
+static func ammo_slot(id: StringName) -> int:
+	var slot := PlayerStateScript.WEAPONS.find(id)
 	if slot >= 0:
 		return slot
-	var owner: Variant = SHARED_PACK.get(weapon_id)
-	if owner == null:
+	var pack: Variant = SHARED_PACK.get(id)
+	if pack == null:
 		return -1
-	return PlayerStateScript.WEAPONS.find(StringName(owner))
+	return PlayerStateScript.WEAPONS.find(StringName(pack))
 
 
 ## `w_laser` -> `laser`; anything already a weapon id passes through. Unknown ids

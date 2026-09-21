@@ -10,13 +10,26 @@ contract), the wave brief you are executing, then `.agents/gen/WAVEBOARD.md`
 (state + enforcement protocol). The wave brief is law — never redesign, never
 invent a number; deviations go in worker reports.
 
+**How the owner hands you work (standing format, AGENTS.md §"Designer lane"):**
+this file plus one short paragraph naming the queue item, the brief, the prompts,
+the run order, the stop condition and the report-back contents — nothing else.
+Each wave's brief and prompts live in `.agents/gen/<wave>_wave_task.md` and
+`<wave>_wave_prompts.md`; a wave is finished only when its brief's close-out
+section has run (gate re-run, `verify_wave.py verify --baseline <tag>`,
+WAVEBOARD updated, wave-boundary commit) and you have reported the measured gate
+count, the builders' numbers, the reviewer's findings by tier and the owner
+ticks.
+
 ## Current queue (execute top-down)
 
 **Closed since the last revision (evidence in `WAVEBOARD.md` §Closed and
 `.agents/gen/MASTER_REPORT.md`):** slice 0 (Physics & Fuel), slice 2 (Fight),
 the batch-2 playtest lane and the doc lanes. Do not re-dispatch them.
 
-1. **UI-chrome wave, code lane — IN FLIGHT.** Brief
+1. **UI-chrome wave, code lane — CLOSED 2026-09-21** (reports
+   `.agents/gen/ui_chrome_w{1..6}_report.md`, gate 219 → 226, its art half
+   shipped and reimported and the theme's frame margin matched to the art).
+   Superseded below. Its brief
    `.agents/gen/ui_chrome_wave_task.md`, prompts `.agents/gen/ui_chrome_wave_prompts.md`
    (order W1–W4 parallel → W5 → W6 if W5 leaves HIGH/MED). Defects D3 (the
    `TextureButton` size guard), D4 (stale `ext_resource` UIDs), D5 (one
@@ -24,16 +37,24 @@ the batch-2 playtest lane and the doc lanes. Do not re-dispatch them.
    blocker is the **graphics** orchestrator's lane
    (`.agents/gen/dispatch_designer.md` items 1–3) and runs in parallel —
    coder workers never touch `assets/**` or the theme.
-2. **Playtest session 2 — gated on the graphics lane's slot plates.** The
+2. **Playtest session 2 — its art gate has shipped (the slot plates and the
+   chrome are live); it is now blocked only by not being run.** The
    legs session 1 could not reach: flight/fuel/reactor, mining, combat +
    countermeasures, death/respawn, dock-back economy, save/load, boot/loading
    logo, menu stutter. Checklist and tooling notes:
    `.agents/gen/playtest_fullloop_20260921.md` §"Not covered" + §"Tooling
    notes". Same crosscheck protocol against `USER_NOTES.md`.
-3. **Slice 2.5 (Feel) — READY, first engine wave after #1/#2.** Brief owed
-   (write it from `18_engine_spec.md` §14 + `FX_SPEC.md` §6/§7; no new
-   gameplay systems, every number already in §13). Snapshot + commit before
-   its first dispatch.
+3. **Slice 2.5 (Feel) — READY, RUNS NEXT, before item 4.** Brief
+   `.agents/gen/slice2_5_feel_wave_task.md`, prompts
+   `.agents/gen/slice2_5_feel_wave_prompts.md` (order S1 → S2 → S3 if the review
+   leaves HIGH/MED). It is the owner's thruster request plus what slice 2.5
+   still owes after the weapon-FX wave shipped the damage half: motion blur,
+   camera pull-back, dust, the hull-critical vignette, low-hull arcs, the
+   thruster trail behind a `thruster_anchors()` seam, the S16 thruster bed with
+   its speed curve and the boost cue — nine deliverables, all presentation, no
+   gameplay number. The FX lane's own worker takes it (its `fx.gd`, the
+   `audio_manager` loop beds and the `FEEDBACK` table are the warm context).
+   Gate **277** before it. Snapshot + commit before the first dispatch.
 4. **Wave P2-A — ship slot frames (QUEUED 2026-09-21, the owner's per-class
    slot/layout request).** Brief `.agents/gen/p2a_slot_frames_wave_task.md`,
    prompts `.agents/gen/p2a_slot_frames_wave_prompts.md` (order D0 → W1 · W2 ·
@@ -49,7 +70,9 @@ the batch-2 playtest lane and the doc lanes. Do not re-dispatch them.
    7-W capital's `weapon_6`/`weapon_7` input-map extension (an owner
    `project.godot` pass). A reversal stays a doc edit plus the one constant it
    names.
-   Run it after the in-flight waves close, in parallel with nothing that owns
+   Run it **after item 3** (slice 2.5 owns `game/game.gd`, `game/player_ship.gd`,
+   `game/projectile.gd` and the camera, which this wave's W4/W5 also touch —
+   they may not run at once), and in parallel with nothing that owns
    `game/ship_fit.gd`, `autoload/player_profile.gd`, `ui/hud/hud.gd` or the two
    station panels. Its follow-up **P2-B (the fitting panel)** is briefed after
    this wave's review.

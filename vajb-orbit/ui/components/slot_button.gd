@@ -92,16 +92,16 @@ func _apply_plates(variation: StringName) -> void:
 		return
 	var normal: Texture2D = _plate_texture(variation, STATE_NORMAL)
 	var hover: Texture2D = _plate_texture(variation, STATE_HOVER)
-	var pressed: Texture2D = _plate_texture(variation, STATE_PRESSED)
-	var disabled: Texture2D = _plate_texture(variation, STATE_DISABLED)
+	var pressed_plate: Texture2D = _plate_texture(variation, STATE_PRESSED)
+	var disabled_plate: Texture2D = _plate_texture(variation, STATE_DISABLED)
 	if normal != null:
 		texture_normal = normal
 	if hover != null:
 		texture_hover = hover
-	if pressed != null:
-		texture_pressed = pressed
-	if disabled != null:
-		texture_disabled = disabled
+	if pressed_plate != null:
+		texture_pressed = pressed_plate
+	if disabled_plate != null:
+		texture_disabled = disabled_plate
 
 
 func _plate_texture(variation: StringName, state: StringName) -> Texture2D:

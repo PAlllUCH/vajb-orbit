@@ -21,8 +21,8 @@ extends VBoxContainer
 const TOKENS_TYPE: StringName = &"Tokens"
 
 const ExchangeScript := preload("res://game/exchange.gd")
-const MineralCatalog := preload("res://game/mineral_catalog.gd")
-const ComponentCatalog := preload("res://game/component_catalog.gd")
+const MineralCatalogScript := preload("res://game/mineral_catalog.gd")
+const ComponentCatalogScript := preload("res://game/component_catalog.gd")
 const Clock := preload("res://autoload/world_clock.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
 
@@ -242,8 +242,8 @@ func _evaluate() -> void:
 func _build_header() -> void:
 	_subtitle.text = SUBTITLE
 	_tag.text = TAG_FORMAT % [
-		MineralCatalog.MINERALS.size(),
-		ComponentCatalog.COMPONENTS.size(),
+		MineralCatalogScript.MINERALS.size(),
+		ComponentCatalogScript.COMPONENTS.size(),
 	]
 
 
@@ -266,10 +266,10 @@ func _board_specs() -> Array[Dictionary]:
 	## book, in catalogue order. The minerals row quotes the ingot form, which is the price
 	## 05 section 2 and section 3 publish for a mineral.
 	var specs: Array[Dictionary] = []
-	for mineral_id: StringName in MineralCatalog.mineral_ids():
-		var mineral: Dictionary = MineralCatalog.mineral(mineral_id)
+	for mineral_id: StringName in MineralCatalogScript.mineral_ids():
+		var mineral: Dictionary = MineralCatalogScript.mineral(mineral_id)
 		specs.append({
-			&"item": MineralCatalog.ingot_id(mineral_id),
+			&"item": MineralCatalogScript.ingot_id(mineral_id),
 			&"mineral": mineral_id,
 			&"name": String(mineral.get(&"name", String(mineral_id))).to_upper(),
 			&"meta": META_INGOT,
@@ -281,7 +281,7 @@ func _board_specs() -> Array[Dictionary]:
 				{&"key": &"trend", &"width": COL_TREND, &"caption": CAPTION_BAND},
 			],
 		})
-	for entry: Dictionary in ComponentCatalog.COMPONENTS:
+	for entry: Dictionary in ComponentCatalogScript.COMPONENTS:
 		var component_id: StringName = entry.get(&"id", &"")
 		if component_id == &"":
 			continue
@@ -411,13 +411,13 @@ func _sellable_ids(profile: ProfileScript) -> Array[StringName]:
 	if profile == null:
 		return ids
 	var cargo: Dictionary = profile.call(&"cargo_items")
-	for mineral_id: StringName in MineralCatalog.mineral_ids():
+	for mineral_id: StringName in MineralCatalogScript.mineral_ids():
 		for item_id: StringName in [
-			MineralCatalog.ore_id(mineral_id), MineralCatalog.ingot_id(mineral_id)
+			MineralCatalogScript.ore_id(mineral_id), MineralCatalogScript.ingot_id(mineral_id)
 		]:
 			if item_id != &"" and _qty(cargo, item_id) > 0 and ExchangeScript.is_sellable(item_id):
 				ids.append(item_id)
-	for entry: Dictionary in ComponentCatalog.COMPONENTS:
+	for entry: Dictionary in ComponentCatalogScript.COMPONENTS:
 		var component_id: StringName = entry.get(&"id", &"")
 		if (
 			component_id != &""
@@ -482,7 +482,7 @@ func _refresh_hold() -> void:
 		var demand := ExchangeScript.DEMAND_DEFAULT
 		if profile != null:
 			held = int(profile.call(&"cargo_qty", item_id))
-			demand = ExchangeScript.demand_of(profile, MineralCatalog.mineral_id_of_item(item_id))
+			demand = ExchangeScript.demand_of(profile, MineralCatalogScript.mineral_id_of_item(item_id))
 		(payload[&"qty"] as Label).text = _format_int(held)
 		(payload[&"unit"] as Label).text = _format_int(
 			ExchangeScript.exchange_price(item_id, demand)
@@ -833,11 +833,11 @@ func _clear(parent: Node) -> void:
 
 
 func _icon_path(item_id: StringName) -> String:
-	if MineralCatalog.is_ore(item_id):
-		return String(MineralCatalog.entry_for_item(item_id).get(&"icon_ore", ""))
-	if MineralCatalog.is_ingot(item_id):
-		return String(MineralCatalog.entry_for_item(item_id).get(&"icon_ingot", ""))
-	return String(ComponentCatalog.component(item_id).get(&"icon", ""))
+	if MineralCatalogScript.is_ore(item_id):
+		return String(MineralCatalogScript.entry_for_item(item_id).get(&"icon_ore", ""))
+	if MineralCatalogScript.is_ingot(item_id):
+		return String(MineralCatalogScript.entry_for_item(item_id).get(&"icon_ingot", ""))
+	return String(ComponentCatalogScript.component(item_id).get(&"icon", ""))
 
 
 func _tint_path(icon_path: String) -> String:
@@ -878,42 +878,42 @@ func _icon_tint(icon_path: String, tint: Color) -> Color:
 
 func _tint_of(item_id: StringName) -> Color:
 	if ExchangeScript.is_component(item_id):
-		return _grade_tint(int(ComponentCatalog.component(item_id).get(&"grade", 0)))
-	return _tier_tint(int(MineralCatalog.entry_for_item(item_id).get(&"tier", 0)))
+		return _grade_tint(int(ComponentCatalogScript.component(item_id).get(&"grade", 0)))
+	return _tier_tint(int(MineralCatalogScript.entry_for_item(item_id).get(&"tier", 0)))
 
 
 func _tier_tint(tier: int) -> Color:
-	if MineralCatalog.TIER_TINTS.has(tier):
-		return MineralCatalog.TIER_TINTS[tier]
+	if MineralCatalogScript.TIER_TINTS.has(tier):
+		return MineralCatalogScript.TIER_TINTS[tier]
 	return Color.WHITE
 
 
 func _grade_tint(grade: int) -> Color:
-	if ComponentCatalog.GRADE_TINTS.has(grade):
-		return ComponentCatalog.GRADE_TINTS[grade]
+	if ComponentCatalogScript.GRADE_TINTS.has(grade):
+		return ComponentCatalogScript.GRADE_TINTS[grade]
 	return Color.WHITE
 
 
 func _item_name(item_id: StringName) -> String:
 	if item_id == &"":
 		return ""
-	if MineralCatalog.is_ore(item_id):
+	if MineralCatalogScript.is_ore(item_id):
 		return "%s ORE" % String(
-			MineralCatalog.entry_for_item(item_id).get(&"name", String(item_id))
+			MineralCatalogScript.entry_for_item(item_id).get(&"name", String(item_id))
 		).to_upper()
-	if MineralCatalog.is_ingot(item_id):
+	if MineralCatalogScript.is_ingot(item_id):
 		return "%s INGOT" % String(
-			MineralCatalog.entry_for_item(item_id).get(&"name", String(item_id))
+			MineralCatalogScript.entry_for_item(item_id).get(&"name", String(item_id))
 		).to_upper()
-	return String(ComponentCatalog.component(item_id).get(&"name", String(item_id))).to_upper()
+	return String(ComponentCatalogScript.component(item_id).get(&"name", String(item_id))).to_upper()
 
 
 func _meta_of(item_id: StringName) -> String:
-	if MineralCatalog.is_ore(item_id):
+	if MineralCatalogScript.is_ore(item_id):
 		return META_ORE
-	if MineralCatalog.is_ingot(item_id):
+	if MineralCatalogScript.is_ingot(item_id):
 		return META_INGOT
-	return _family_label(ComponentCatalog.component(item_id).get(&"family", &""))
+	return _family_label(ComponentCatalogScript.component(item_id).get(&"family", &""))
 
 
 func _family_label(family: Variant) -> String:

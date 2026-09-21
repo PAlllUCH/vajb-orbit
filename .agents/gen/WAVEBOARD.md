@@ -8,9 +8,10 @@ evidence were moved to `.agents/gen/_archive/` (2026-09-21, reversible) —
 citation paths of the form `.agents/gen/<report>.md` now resolve one level
 deeper.
 
-**Current state: three coding waves closed (chrome, combat repair, weapon FX wiring);
-the chrome art half and the launch fit wait on the owner.** Engine waves closed as below
-(slice 0 + slice 2 review-verified clean; gate `passed=277 failed=0`). A full-loop live
+**Current state: four coding waves closed (chrome, combat repair, weapon FX wiring, flight
+feel & beam polish); the chrome art half, the launch fit and three spec ticks wait on the
+owner.** Engine waves closed as below
+(slice 0 + slice 2 review-verified clean; gate `passed=294 failed=0`). A full-loop live
 playtest (2026-09-21, godot-ai driven) verified the whole menu → station → launch →
 space structure but found the `ui_slot_*` chrome shipping as whole sheet cells
 (880×876 / 873×864). The **UI-chrome code lane is Done** (D3 guard, D4 stale UIDs, D5
@@ -63,14 +64,19 @@ record).
   rulings 8–26. **Owner-locked**: no worker may edit it; the six owed spec
   edits are the owner's (MASTER_REPORT §3 item 1).
 - Universal test gate: `res://tests/headless_runner.tscn` → `[SUMMARY]
-  passed=277 failed=0` (exact command in CONTRACTS.md §9; grew 53 → 78 → 219 → 226
+  passed=294 failed=0` (exact command in CONTRACTS.md §9; grew 53 → 78 → 219 → 226
   with the UI-chrome wave's `test_ui_slot_layout.gd`, 236 with the combat repair wave's
-  `test_engine_c3_flight_decay.gd` and `test_combat_repair_c5.gd`, and 277 with the weapon
-  FX wave's `test_weapon_fx_f{1,2,4}.gd` suites).
+  `test_engine_c3_flight_decay.gd` and `test_combat_repair_c5.gd`, 277 with the weapon FX
+  wave's `test_weapon_fx_f{1,2,4}.gd` suites, and 294 with the flight/beam wave's
+  `test_flight_feel_g1.gd` and `test_flight_beam_g2.gd`).
 - `staging/verify_wave.py` — mechanical wave gates: `snapshot` before a wave,
   `verify --baseline <tag> [--forbidden ...] [--expect-reports ...] [--tests]`
   after. Baselines live in `.agents/gen/_wave_state/` (`wave1_closed`,
   `slice0_start`, `slice2_start`, `pipeline_v2_start`, `cleanup_delete_list`).
+- **`AGENTS.md` §"Designer lane — the output format"** — the standing rule for
+  how planning work is delivered: docs amended first, one brief, one prompts
+  file, queued in this board and in `dispatch_coder.md`, handed over with the
+  short paragraph template. Read it before planning or dispatching anything.
 
 ## Enforcement protocol (how workers are held to CONTRACTS/WAVEBOARD)
 
@@ -172,12 +178,21 @@ lanes' queued items below are executed through those files.
    `DRAG`/`ACCELERATION` pair the brief assumed. C5 fixed four defects and applied the
    owner's retune; C6 reviewed with no HIGH; C7 corrected the contract's own stale
    pins. **Open owner gates: the launch fit and the §13 `coast_time` table.**
-4. **Slice-2.5 (Feel) — READY, first engine wave after #2/#3.** Motion blur + camera
-   pull-back + dust streaks (§3.4), damage smoke/ripple/shatter (FX_SPEC §6),
-   dash charge FX (FX_SPEC §7) — no new gameplay systems, every number already
-   in §13. All signals exist: the hull publishes `velocity()`, the HUD has
-   `set_speedometer`, the damage pipeline fires, `hit_marker`/
-   `set_lock_progress` are wired. Snapshot + commit before the first dispatch.
+4. **Slice-2.5 (Feel) — READY, RUNS NEXT (before P2-A).** Brief
+   `.agents/gen/slice2_5_feel_wave_task.md`, prompts
+   `.agents/gen/slice2_5_feel_wave_prompts.md` (order S1 → S2 → S3). Scope is
+   the owner's thruster request **plus** what slice 2.5 still owes after the
+   weapon-FX wave shipped the damage half: motion blur + camera pull-back + dust
+   streaks (§3.4 / FX_SPEC §5), the hull-critical vignette and the low-hull arcs
+   (FX_SPEC §6), the thruster trail behind a `thruster_anchors()` seam and the
+   S16 thruster bed with its speed curve + the boost cue (FX_SPEC §1.3/§7.1,
+   AUDIO_SPEC §4.5) — nine deliverables, all presentation, no new gameplay
+   system and no new number outside the two rows those sections mark *proposed*.
+   Already shipped by the weapon-FX wave and **not** to be rebuilt: explosion,
+   secondary, arc, shield-break, ripple and plume sheets, the low-hull plume,
+   and the per-bed loop voices with their priority table. Gate **277** before
+   it; the FX lane's own worker takes it. Snapshot + commit before the first
+   dispatch.
 5. **Owner spec pass (blocks nothing, unblocks tests):** the six
    `18_engine_spec.md` edits listed in MASTER_REPORT §3 item 1 (R-key +
    Z/X countermeasure rows, strike the refuel-for-CR wording, speed-table-v2 △
@@ -230,6 +245,18 @@ lanes' queued items below are executed through those files.
 
 ## Closed (details in MASTER_REPORT.md)
 
+- **Flight feel & beam polish wave** (2026-09-21, gate 277 → 294): G1 the nose follows the
+  cursor while `thrust_forward` is held (heading holds otherwise), A/D strafe derived from
+  the class's own `max_speed`/`accel_time`, the nine `turn_rate` rows ×0.50 (Vanguard 3.0 →
+  1.5 rad/s) and the two strafe actions in the Controls list; G2 the beam stops on the point
+  its ray resolved (was drawn to the aim point, so it passed through), a laser chipping a
+  rock plays the chip cue and the 4-frame burst, a held beam's feedback repeats, plus 29
+  shadowing warnings cleared; G3 the UI/game warning sweep (75 → 65 raw rows); G4 reviewed
+  with no HIGH (two MED, both fixed by G5) and found the gate's `SCRIPT ERROR` is pre-existing
+  in `tests/test_weapon_fx_f4.gd:176`; G5 recorded the behaviours in CONTRACTS v1.3 and cleared
+  the wave's own three new warning sites. Reports `.agents/gen/flight_beam_g{1..5}_report.md`.
+  **Owner ticks owed:** `18_engine_spec.md:67` and `IMPLEMENTATION_PLAN.md:231` still say
+  "A/D turn", and §13's turn column needs the ×0.50 tick.
 - **Weapon FX & audio wiring wave** (2026-09-21, gate 236 → 277): F1 fire & travel, F2 impact
   & death, F3 review (1 HIGH, 3 MED, 11 LOW), F4 closed all four. Reports
   `.agents/gen/weapon_fx_f{1,2,3,4}_report.md`; the 11 LOW items are L48–L59 in

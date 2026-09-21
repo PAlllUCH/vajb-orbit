@@ -122,14 +122,14 @@ func populate(row: Dictionary, random_seed: int = 0) -> Vector2:
 	var stations := int(densities.get(&"stations", 0))
 	if stations > 0:
 		_spawn_station(centre)
-	var fields := _roll_range(densities, &"fields_min", &"fields_max")
-	_spawn_fields(centre, fields, _row.get(&"tier_weights", {}), densities)
+	var rolled_fields := _roll_range(densities, &"fields_min", &"fields_max")
+	_spawn_fields(centre, rolled_fields, _row.get(&"tier_weights", {}), densities)
 	var wreck_fields := _roll_range(densities, &"wrecks_min", &"wrecks_max")
 	var hulks := 0
 	for _field_index in wreck_fields:
 		hulks += _roll_range(densities, &"hulks_min", &"hulks_max")
 	_plan = {
-		&"fields": fields,
+		&"fields": rolled_fields,
 		&"stations": stations,
 		&"outposts": int(densities.get(&"outposts", 0)),
 		&"wreck_fields": wreck_fields,
@@ -306,7 +306,7 @@ func _spawn_fields(
 		_add_field(centre + Vector2.RIGHT.rotated(angle) * radius, tier_weights, densities)
 
 
-func _add_field(position: Vector2, tier_weights: Dictionary, densities: Dictionary) -> void:
+func _add_field(field_position: Vector2, tier_weights: Dictionary, densities: Dictionary) -> void:
 	var field: Node2D = null
 	if _field_script != null:
 		field = _field_script.new() as Node2D
@@ -315,7 +315,7 @@ func _add_field(position: Vector2, tier_weights: Dictionary, densities: Dictiona
 		# the minimap and the plan, and the W7 fixer swaps in the real field.
 		field = Node2D.new()
 	field.name = "Field%d" % (_fields.size() + 1)
-	field.position = position
+	field.position = field_position
 	field.add_to_group(&"asteroid_field")
 	add_child(field)
 	_fields.append(field)

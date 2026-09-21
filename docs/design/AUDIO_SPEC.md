@@ -173,6 +173,39 @@ Master
 - Boss entry: M4's *opening* part plays as a one-shot, then the *loop* part starts on
   `finished` — the nene asset is pre-split exactly this way.
 
+### 4.5 Held state beds (amendment 2026-09-21)
+
+A **bed** is a looping stream that belongs to a held state, not to an event. The
+player's own ship needs three of them at once, and `AudioManager` holds them as
+per-bed voices with a priority, a lease and a cue-scoped stop
+(`LOOP_VOICE_COUNT` **3**, `LOOP_LEASE` 1.2 s, `LOOP_PRIORITY`) — a bed that is
+re-asked every frame it is held never expires, and a bed nobody re-asks is
+released.
+
+| Bed | Cue | Priority | Curve |
+|---|---|---|---|
+| Shield hum | `sfx_impact_shield_loop` (S6) | **2** | as-is while a shield hit is recent |
+| Mining beam | `sfx_mining_beam` (S7) | **1** | pitch per asteroid tier 0.8/1.0/1.2 (§4.2) |
+| **Thruster** | `sfx_ship_engine_01` (S16) | **1** | see below |
+| Thruster, alternative take | `sfx_ship_engine_02_loop` (S16b) | — | the one-constant swap: the owner auditions `_01` against `_02_loop` and only the bed's cue name changes |
+
+**Thruster bed curve (proposed — the owner's audition and the playtest tune it).**
+Held while the thrust input is down **or** `speed_ratio ≥ 0.15` (engine spec
+§3.4's single input), with hysteresis: on at **0.15**, off below **0.10**, so a
+drifting hull keeps its hum and a standstill does not chatter.
+
+| Field | Value | Reversal |
+|---|---|---|
+| `pitch_scale` | 0.85 at ratio 0.15 → 1.15 at 1.0 (linear) | one constant pair |
+| `volume_db` | −24 dB at ratio 0.15 → −12 dB at 1.0 | one constant pair |
+| Re-ask | every frame while held (the lease model) | — |
+
+One-shots that pair with a bed keep their own rows: **S12**
+(`sfx_ship_boost_01`, `loop = false`) fires once on **booster activation** — the
+afterburner's own activation in v1, since `b_fold`'s movement is slice 4's — and
+its take is the cue the station already plays at launch, so no second asset is
+owed.
+
 ---
 
 ## 5. Format, conversion and looping

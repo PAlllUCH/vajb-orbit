@@ -200,9 +200,17 @@ const AUDIO_SERVICE: StringName = &"AudioManager"
 ##
 ## Rates are the spec's own: 15 FPS for the explosion (section 1.4), 20 FPS for the arc
 ## (section 7.2's "0.2 s per arc" over four frames), 10 FPS for the shield break
-## (section 7.1's "outward over 0.4 s" over four frames) and section 1.5's 0.3 s for
-## the ripple. The secondary burst is the one rate ASSET_EXPANSION_SPEC section 7
+## (section 7.1's "outward over 0.4 s" over four frames), section 1.5's 0.3 s for
+## the ripple, and section 1.6's "4-frame mini sheet at 20 FPS = 0.2 s" for the chip
+## sparks. The secondary burst is the one rate ASSET_EXPANSION_SPEC section 7
 ## leaves unstated; it takes the explosion's own.
+##
+## `chip` is FX_SPEC section 1.6's mining chip sparks, the sheet line 138 names
+## (`fx_mining_beam.png`) for exactly this. It is a beam's read rather than a
+## projectile's in this table's terms: `weapons.gd`'s rock branch spawns it when a gun
+## chips an asteroid, through `spawn_chip_sparks`. Section 1.6 states no world size for
+## the burst, so `world` is the wiring's own and matches section 7.2's arc read of 40
+## (reported).
 const FEEDBACK: Dictionary = {
 	&"explosion": {
 		&"texture": "res://assets/fx/fx_explosion.png",
@@ -252,6 +260,18 @@ const FEEDBACK: Dictionary = {
 		&"source": Vector2(483.0, 526.0),
 		&"world": 64.0,
 		&"fps": 10.0,
+	},
+	&"chip": {
+		&"texture": "res://assets/fx/fx_mining_beam.png",
+		&"regions": [
+			Rect2(0.0, 752.0, 500.0, 500.0),
+			Rect2(500.0, 759.0, 500.0, 500.0),
+			Rect2(1019.0, 771.0, 500.0, 500.0),
+			Rect2(1548.0, 755.0, 500.0, 500.0),
+		],
+		&"source": Vector2(500.0, 500.0),
+		&"world": 40.0,
+		&"fps": 20.0,
 	},
 	&"ripple": {
 		&"texture": "res://assets/fx/fx_shield_ripple.png",
@@ -353,9 +373,9 @@ func configure(config: Dictionary) -> void:
 	var target: Variant = cfg.get(&"target")
 	if target is Node2D:
 		_lock_target = target as Node2D
-	var source: Variant = cfg.get(&"source")
-	if source is Node2D:
-		_source = source as Node2D
+	var src: Variant = cfg.get(&"source")
+	if src is Node2D:
+		_source = src as Node2D
 	_sync_shape()
 	_sync_visual()
 
@@ -433,10 +453,10 @@ func visual() -> Node2D:
 ## so the shot keeps flying (and keeps turning) at the decoy instead. Harmless on
 ## a non-seeker: a mine and a ballistic shot are not homing, so the override is
 ## stored and never read.
-func retarget(decoy: Node2D) -> void:
-	if decoy == null or not is_instance_valid(decoy):
+func retarget(lure: Node2D) -> void:
+	if lure == null or not is_instance_valid(lure):
 		return
-	_decoy = decoy
+	_decoy = lure
 
 
 ## A weapon hit on a destructible shot (section 4.1). No detonation: the warhead is
@@ -510,11 +530,11 @@ func _homing_target() -> Node2D:
 ## arrived at one detonates on the spot. "Arrived" is this frame's own travel, so
 ## no separate proximity radius is invented.
 func _reaches_decoy(to: Vector2, delta: float) -> bool:
-	var decoy := _homing_target()
-	if decoy == null or decoy is CollisionObject2D:
+	var lure := _homing_target()
+	if lure == null or lure is CollisionObject2D:
 		return false
 	var reach := maxf(_velocity.length() * delta, HIT_RADIUS)
-	if to.distance_to(decoy.global_position) > reach:
+	if to.distance_to(lure.global_position) > reach:
 		return false
 	_detonate(to)
 	return true
@@ -1075,8 +1095,8 @@ static func release_shield(host: Node) -> void:
 
 
 ## A feedback row, or an empty dictionary for a name the table does not carry.
-static func feedback_row(name: StringName) -> Dictionary:
-	var row: Variant = FEEDBACK.get(name)
+static func feedback_row(row_name: StringName) -> Dictionary:
+	var row: Variant = FEEDBACK.get(row_name)
 	if row is Dictionary:
 		return row as Dictionary
 	return {}
@@ -1086,10 +1106,10 @@ static func feedback_row(name: StringName) -> Dictionary:
 ## (which also frees it on `animation_finished`), placed at `at` in world space and
 ## returned. Null when the row, the file or the frames are unavailable - a missing sheet
 ## leaves the hit quiet rather than crashing a run.
-static func spawn_sheet(parent: Node, name: StringName, at: Vector2) -> AnimatedSprite2D:
+static func spawn_sheet(parent: Node, fx_name: StringName, at: Vector2) -> AnimatedSprite2D:
 	if parent == null:
 		return null
-	var row := feedback_row(name)
+	var row := feedback_row(fx_name)
 	if row.is_empty() or not row.has(&"regions"):
 		return null
 	var texture := _texture_of(row)
@@ -1109,7 +1129,7 @@ static func spawn_sheet(parent: Node, name: StringName, at: Vector2) -> Animated
 	var sprite := FxScript.play_once(parent, frames, Vector2.ZERO, 0.0, scale_factor)
 	if sprite == null:
 		return null
-	sprite.name = String(name)
+	sprite.name = String(fx_name)
 	sprite.z_index = FEEDBACK_Z
 	_place(sprite, at)
 	return sprite
@@ -1130,6 +1150,13 @@ static func spawn_secondary_explosion(parent: Node, at: Vector2) -> AnimatedSpri
 ## FX_SPEC section 7.2's four-frame arc: the railgun's own hit signature.
 static func spawn_arc_spark(parent: Node, at: Vector2) -> AnimatedSprite2D:
 	return spawn_sheet(parent, &"arc", at)
+
+
+## FX_SPEC section 1.6's four-frame chip-sparks burst (`fx_mining_beam.png`, line 138's
+## own sheet), one-shot per S8 chip event at the spec's 20 FPS: what a gun chipping an
+## asteroid draws at the contact. The reader is `weapons.gd`'s rock branch.
+static func spawn_chip_sparks(parent: Node, at: Vector2) -> AnimatedSprite2D:
+	return spawn_sheet(parent, &"chip", at)
 
 
 ## ASSET_EXPANSION_SPEC section 7 / FX_SPEC section 7.1's shield shatter, on the hit
@@ -1309,17 +1336,17 @@ static func _audio(host: Node) -> Node:
 ## (a puff's length in world units over the master's pixels), so the two scale factors
 ## below vary a plume-sized puff instead of the master's raw pixels.
 static func _plume_material(base: float) -> ParticleProcessMaterial:
-	var material := ParticleProcessMaterial.new()
-	material.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
-	material.emission_sphere_radius = PLUME_RADIUS
-	material.direction = Vector3(0.0, -1.0, 0.0)
-	material.spread = PLUME_SPREAD
-	material.initial_velocity_min = PLUME_SPEED_MIN
-	material.initial_velocity_max = PLUME_SPEED_MAX
-	material.scale_min = base * PLUME_SCALE_MIN
-	material.scale_max = base * PLUME_SCALE_MAX
-	material.gravity = Vector3.ZERO
-	return material
+	var plume := ParticleProcessMaterial.new()
+	plume.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+	plume.emission_sphere_radius = PLUME_RADIUS
+	plume.direction = Vector3(0.0, -1.0, 0.0)
+	plume.spread = PLUME_SPREAD
+	plume.initial_velocity_min = PLUME_SPEED_MIN
+	plume.initial_velocity_max = PLUME_SPEED_MAX
+	plume.scale_min = base * PLUME_SCALE_MIN
+	plume.scale_max = base * PLUME_SCALE_MAX
+	plume.gravity = Vector3.ZERO
+	return plume
 
 
 ## A row's shipped master, or null when the file is not on disk.

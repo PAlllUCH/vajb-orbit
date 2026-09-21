@@ -30,11 +30,17 @@ const DEFAULT_RESOLUTION := Vector2i(1920, 1080)
 ## appends as orders 16 and 17, so the Controls tab lists the same 17 actions the
 ## project should apply. Each entry is guarded by `InputMap.has_action` at every read,
 ## so the list leads the input map without depending on it.
+## Orders 18 and 19 are the flight-feel wave's two strafe actions (owner ruling
+## 2026-09-21, third round): `strafe_left` A and `strafe_right` D are in the project's
+## input map and the hull reads them, and `turn_left` / `turn_right` keep their slots
+## with no key bound, so the Controls tab lists them for a pad or a re-bind.
 const REBINDABLE_ACTIONS: Array[StringName] = [
 	&"thrust_forward",
 	&"thrust_backward",
 	&"turn_left",
 	&"turn_right",
+	&"strafe_left",
+	&"strafe_right",
 	&"fire_primary",
 	&"fire_secondary",
 	&"mine",

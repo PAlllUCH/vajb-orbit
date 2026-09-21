@@ -150,12 +150,26 @@ const HULLS: Dictionary = {
 ## 1.890 s -> 0.945 s, carried distance 430.32 u -> 216.85 u, and the two accelerate legs
 ## are unchanged. **Reversal: multiply the nine rows below by 2.0 and re-run the probe**;
 ## no other file reads this column.
+##
+## **The `turn_rate` column is retuned (owner ruling, 2026-09-21, third round): all
+## nine rows are scaled x 0.50.** "i dont like how fast ship turn" is this column,
+## and the ruling makes it the only handling number of the flight-feel wave (the
+## wave's other two behaviours, the cursor steering and the strafe, derive from these
+## rows and invent no number of their own): the Vanguard's 3.0 rad/s - 172 deg/s - is
+## 1.5 rad/s - 86 deg/s. `turn_spinup` and every other column are untouched, so the
+## nose still spins up to the rate over its class spin-up and the autopilot and the
+## cursor steering both reach their bearing at half the old rate. Nothing else reads
+## this column by hand: it reaches every hull through `ShipStats`, so the nine NPC
+## hulls turn at the retuned rate for the same reason the retuned `coast_time` halves
+## every NPC's carry. **Reversal: multiply the nine rows below by 2.0 and re-run
+## `tests/probe_g1_flight_feel.tscn`;** the turn curve's before/after table is in
+## `.agents/gen/flight_beam_g1_report.md`.
 const HANDLING: Dictionary = {
 	&"ship_fighter": {
 		&"max_speed": 450.0,
 		&"accel_time": 2.0,
 		&"coast_time": 0.8,
-		&"turn_rate": 3.4,
+		&"turn_rate": 1.7,
 		&"turn_spinup": 0.4,
 		&"hull_mass": 80.0,
 	},
@@ -163,7 +177,7 @@ const HANDLING: Dictionary = {
 		&"max_speed": 428.0,
 		&"accel_time": 2.4,
 		&"coast_time": 1.0,
-		&"turn_rate": 3.0,
+		&"turn_rate": 1.5,
 		&"turn_spinup": 0.5,
 		&"hull_mass": 110.0,
 	},
@@ -171,7 +185,7 @@ const HANDLING: Dictionary = {
 		&"max_speed": 338.0,
 		&"accel_time": 4.0,
 		&"coast_time": 1.7,
-		&"turn_rate": 2.0,
+		&"turn_rate": 1.0,
 		&"turn_spinup": 1.0,
 		&"hull_mass": 140.0,
 	},
@@ -179,7 +193,7 @@ const HANDLING: Dictionary = {
 		&"max_speed": 383.0,
 		&"accel_time": 3.0,
 		&"coast_time": 1.3,
-		&"turn_rate": 2.4,
+		&"turn_rate": 1.2,
 		&"turn_spinup": 0.7,
 		&"hull_mass": 160.0,
 	},
@@ -187,7 +201,7 @@ const HANDLING: Dictionary = {
 		&"max_speed": 495.0,
 		&"accel_time": 2.2,
 		&"coast_time": 0.9,
-		&"turn_rate": 3.2,
+		&"turn_rate": 1.6,
 		&"turn_spinup": 0.45,
 		&"hull_mass": 90.0,
 	},
@@ -195,7 +209,7 @@ const HANDLING: Dictionary = {
 		&"max_speed": 293.0,
 		&"accel_time": 6.0,
 		&"coast_time": 2.6,
-		&"turn_rate": 1.5,
+		&"turn_rate": 0.75,
 		&"turn_spinup": 1.4,
 		&"hull_mass": 260.0,
 	},
@@ -203,7 +217,7 @@ const HANDLING: Dictionary = {
 		&"max_speed": 360.0,
 		&"accel_time": 4.4,
 		&"coast_time": 1.9,
-		&"turn_rate": 1.9,
+		&"turn_rate": 0.95,
 		&"turn_spinup": 1.0,
 		&"hull_mass": 190.0,
 	},
@@ -211,7 +225,7 @@ const HANDLING: Dictionary = {
 		&"max_speed": 383.0,
 		&"accel_time": 4.0,
 		&"coast_time": 1.7,
-		&"turn_rate": 2.1,
+		&"turn_rate": 1.05,
 		&"turn_spinup": 0.9,
 		&"hull_mass": 220.0,
 	},
@@ -219,7 +233,7 @@ const HANDLING: Dictionary = {
 		&"max_speed": 315.0,
 		&"accel_time": 6.4,
 		&"coast_time": 2.8,
-		&"turn_rate": 1.6,
+		&"turn_rate": 0.8,
 		&"turn_spinup": 1.2,
 		&"hull_mass": 300.0,
 	},

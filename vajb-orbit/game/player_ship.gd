@@ -10,6 +10,13 @@ extends Node2D
 ## section 13 values that belong to no class and to no module (brake multiplier,
 ## arrive-steering radii, the afterburner's and the dash's fuel burn) plus the
 ## section 7 warp quiet time.
+## The manual stick is three inputs, and all three are the class's own rows turned
+## into a command: `thrust_forward` / `thrust_backward` are the nose axis, the
+## cursor is the nose bearing while `thrust_forward` is held (the autopilot's own
+## arrive steering, owner ruling 2026-09-21), and `strafe_left` / `strafe_right`
+## are the hull's sideways axis (the same ruling). The two strafe actions are
+## derived from the class's `max_speed` and `accel_time` and invent no number; see
+## `_command_velocity` and `_step_strafe`.
 ## This node also owns the reactor chain's hull half (section 4.4, rulings 11/14,
 ## pinned in CONTRACTS sections 4 and 8.1): its physics frame is the frame that ticks
 ## `PlayerState` (reactor refill and fuel-cell cooldown), it burns BOOST_FUEL through
@@ -22,7 +29,8 @@ extends Node2D
 ## (`WeaponComponent`, the same pattern as the mining laser).
 ## Contract: ENGINE_SPEC sections 3, 4.2 (items 1-8, ruling 16's push physics), 4.3,
 ## 4.4, 6, 7, 9, 13; engine-wave-1 brief section W2; slice-0 brief pinned interface
-## item 1; slice-2 brief pinned interfaces 1, 2, 4 and 5; CONTRACTS sections 4 and 8.1.
+## item 1; slice-2 brief pinned interfaces 1, 2, 4 and 5; flight-feel brief (owner
+## rulings 2026-09-21, third round); CONTRACTS sections 4 and 8.1.
 
 ## Raised when the live pools lose points (hull or shield). The warp channel
 ## breaks on damage (ENGINE_SPEC section 7); game.gd listens to this instead of
@@ -73,6 +81,14 @@ const THRUST_FORWARD: StringName = &"thrust_forward"
 const THRUST_BACKWARD: StringName = &"thrust_backward"
 const TURN_LEFT: StringName = &"turn_left"
 const TURN_RIGHT: StringName = &"turn_right"
+
+## The owner's A/D strafe (owner ruling 2026-09-21, third round). The two actions are in
+## the project's input map (A and D) and `turn_left` / `turn_right` carry no key, but the
+## turn actions keep their reader below: a pad axis or a re-bind in the Controls tab still
+## answers, so nothing the owner already had stopped working.
+const STRAFE_LEFT: StringName = &"strafe_left"
+const STRAFE_RIGHT: StringName = &"strafe_right"
+
 const BOOST_ACTION: StringName = &"boost"
 const MINE_ACTION: StringName = &"mine"
 
@@ -140,6 +156,12 @@ var _fit_ids: Array[StringName] = []
 var _move_target := Vector2.ZERO
 var _has_move_target := false
 
+## The aim override (additive seam, the same pair `game/weapons.gd` carries): a probe aims
+## deterministically by handing the hull a point, and a non-mouse aiming mode replaces the
+## cursor. The cursor itself is read only while this is unset.
+var _aim_override := Vector2.ZERO
+var _has_aim_override := false
+
 var _boost_remaining := 0.0
 var _boost_cooldown := 0.0
 
@@ -202,6 +224,18 @@ func set_move_target(pos: Vector2) -> void:
 
 func cancel_orders() -> void:
 	_has_move_target = false
+
+
+## The aim override (additive seam): while `thrust_forward` is held the nose chases this
+## point instead of the cursor. A headless run has no cursor, and the same override exists
+## on the weapon component so both halves of a probe aim at one point.
+func set_aim_point(point: Vector2) -> void:
+	_has_aim_override = true
+	_aim_override = point
+
+
+func clear_aim_point() -> void:
+	_has_aim_override = false
 
 
 ## Safe-warp state query for game.gd's gate (ENGINE_SPEC section 7): the hull is
@@ -317,14 +351,21 @@ func _physics_process(delta: float) -> void:
 	## and the reaction wheels keep answering it. Only the *thrust* is gated by ruling
 	## 14's lockout, so a dry tank still turns and still drifts (see `_thrust_locked`).
 	var stick := _manual_throttle()
+	var strafe := _manual_strafe()
 	var turn := _manual_turn()
-	if _has_move_target and (not is_zero_approx(stick) or not is_zero_approx(turn)):
+	if _has_move_target and (
+		not is_zero_approx(stick) or not is_zero_approx(strafe) or not is_zero_approx(turn)
+	):
 		cancel_orders()
 	if _has_move_target and global_position.distance_to(_move_target) <= ARRIVE_RADIUS:
 		cancel_orders()
 
 	var throttle := 0.0 if _thrust_locked() else stick
+	## The strafe is thrust, so ruling 14 locks it with the throttle: a dry tank strafes
+	## nowhere. Its *turn* is not thrust, so the cursor steering below stays live.
+	var lateral := 0.0 if _thrust_locked() else strafe
 	var desired_turn := 0.0
+	var desired_lateral := 0.0
 	var desired_speed := 0.0
 	var rate := _coast_rate()
 	if _has_move_target:
@@ -337,12 +378,15 @@ func _physics_process(delta: float) -> void:
 		if absf(desired_speed) > absf(_velocity_along_heading()):
 			rate = _accel_rate()
 	else:
-		desired_turn = turn * _stats.turn_rate
-		desired_speed = throttle * _max_speed()
+		desired_turn = _manual_desired_turn(stick, turn)
+		var command := _command_velocity(throttle, lateral)
+		desired_speed = command.x
+		desired_lateral = command.y
 		if not is_zero_approx(throttle):
 			rate = _accel_rate() * (BRAKE_MULT if throttle < 0.0 else 1.0)
 	_step_turn(desired_turn, delta)
 	_step_speed(desired_speed, rate, delta)
+	_step_strafe(desired_lateral, delta)
 	_last_velocity = _body.linear_velocity
 
 
@@ -367,10 +411,38 @@ func _manual_throttle() -> float:
 	)
 
 
+## The hull's sideways stick (owner ruling 2026-09-21, third round): D is right, A is left,
+## positive is towards the hull's own right hand, which is the sign `_strafe_axis` turns.
+## Guarded like every other reader here, so a build whose input map predates the two
+## actions still flies.
+func _manual_strafe() -> float:
+	if not InputMap.has_action(STRAFE_RIGHT) or not InputMap.has_action(STRAFE_LEFT):
+		return 0.0
+	return (
+		Input.get_action_strength(STRAFE_RIGHT) - Input.get_action_strength(STRAFE_LEFT)
+	)
+
+
+## The yaw stick. The shipped input map binds no key to `turn_left` / `turn_right` (A and D
+## strafe now), but the reader stays: a pad axis or a Controls-tab re-bind answers it, and
+## it takes priority over the cursor steering while it is deflected.
 func _manual_turn() -> float:
 	if not InputMap.has_action(TURN_RIGHT) or not InputMap.has_action(TURN_LEFT):
 		return 0.0
 	return Input.get_action_strength(TURN_RIGHT) - Input.get_action_strength(TURN_LEFT)
+
+
+## The manual branch's commanded turn, and the whole of the owner's ruling (2026-09-21,
+## third round): a deflected turn action answers first, then the cursor while
+## `thrust_forward` is held, and **nothing at all otherwise** -- which is what holds the
+## heading when the throttle is released. `stick` is the raw throttle, not the locked one,
+## so a dry tank holding W still turns (ruling 14 keeps the reaction wheels live).
+func _manual_desired_turn(stick: float, turn: float) -> float:
+	if not is_zero_approx(turn):
+		return turn * _stats.turn_rate
+	if stick > 0.0:
+		return _aim_turn()
+	return 0.0
 
 
 ## Ruling 14 / section 4.4: a dry tank is Emergency Flight Mode, which locks thrust
@@ -381,13 +453,46 @@ func _thrust_locked() -> bool:
 	return _state != null and _state.emergency_mode
 
 
-## Arrive steering: the desired heading is the bearing to the order, expressed as
-## a fraction of the class turn rate (one radian of error is full deflection).
-## The turn model spins up to it, so heavy hulls arc and overshoot (section 3.2).
-func _order_turn() -> float:
-	var bearing := (_move_target - global_position).angle()
+## The point the nose chases while `thrust_forward` is held (see `_aim_turn`): the cursor's
+## own world point, the same point an LMB order aims at. Falls back to the hull's position
+## outside the tree, where there is no viewport to read a cursor from (the weapon
+## component's own `_aim_point` makes the same fallback).
+func _aim_point() -> Vector2:
+	if _has_aim_override:
+		return _aim_override
+	if not is_inside_tree():
+		return global_position
+	return get_global_mouse_position()
+
+
+## Arrive steering towards a point: the desired heading is the bearing to the point,
+## expressed as a fraction of the class turn rate (one radian of error is full deflection).
+## The turn model spins up to it, so heavy hulls arc and overshoot (section 3.2). One law
+## serves both callers -- an LMB order's fly-to point and the cursor -- so there is no
+## second steering model to keep in step.
+func _turn_toward(point: Vector2) -> float:
+	var bearing := (point - global_position).angle()
 	var error := wrapf(bearing - _heading(), -PI, PI)
 	return clampf(error, -1.0, 1.0) * _stats.turn_rate
+
+
+## Arrive steering on the fly-to order (section 3.1).
+func _order_turn() -> float:
+	return _turn_toward(_move_target)
+
+
+## The cursor turn (owner ruling 2026-09-21, third round): while `thrust_forward` is held
+## the nose chases the cursor through the autopilot's own arrive steering, so the class's
+## `turn_rate` and `turn_spinup` still govern how fast the nose may move. A cursor closer
+## than the hull's own radius has no bearing worth chasing -- the camera centres the hull,
+## so that is exactly where the pointer rests at launch -- and the deadzone is the
+## art-derived hull radius rather than an invented constant.
+func _aim_turn() -> float:
+	var point := _aim_point()
+	var radius := _hull_radius()
+	if point.distance_squared_to(global_position) <= radius * radius:
+		return 0.0
+	return _turn_toward(point)
 
 
 ## Arrive steering: the desired speed falls from the class maximum to zero across
@@ -422,25 +527,67 @@ func _step_turn(desired_turn: float, delta: float) -> void:
 	_body.apply_torque(torque)
 
 
+## The manual command as one body-frame velocity (x = the nose, y = the hull's right side),
+## and the whole of the strafe's derivation: the stick's own vector is capped at unit
+## magnitude, then scaled by the class's own `max_speed` -- the section 13 column the class
+## already flies by. Every axis is therefore commanded to that ceiling and no axis can
+## exceed it: W+D is a 45 degree diagonal at the class maximum instead of a square-cornered
+## sqrt(2) x maximum that would break section 3.4's `|v| / v_max` onset, and a single axis
+## is passed through to the digit, because its magnitude is 1 to begin with. No new balance
+## number exists between those rows and the strafe.
+func _command_velocity(throttle: float, lateral: float) -> Vector2:
+	var ceiling := _max_speed()
+	var stick := Vector2(throttle, lateral)
+	var magnitude := stick.length()
+	if magnitude > 1.0:
+		stick /= magnitude
+	return stick * ceiling
+
+
+## The hull's right-hand side: the nose turned 90 degrees. Godot 2D is y-down, so with the
+## nose on +X this is +Y -- the side the pilot's right hand points at, and the sign
+## `_manual_strafe` and the turn actions share.
+func _strafe_axis() -> Vector2:
+	return Vector2.RIGHT.rotated(_heading() + PI * 0.5)
+
+
+## Lateral thrust (owner ruling 2026-09-21, third round: "while pressing A/D they should
+## strafe to the side"): the same chase law `_step_speed` runs on the nose, turned 90
+## degrees, at the class's own acceleration (`max_speed / accel_time`, `_accel_rate`) --
+## the strafe's strength is those two section 13 rows and nothing else, so a light hull
+## snaps sideways and a Hauler labours across. The damp is compensated for on this axis
+## only while a strafe is commanded; released, the axis belongs to the body again and the
+## sideways velocity settles over the class's coast time, exactly as a hit's push does.
+func _step_strafe(desired_lateral: float, delta: float) -> void:
+	if _body == null or delta <= 0.0 or is_zero_approx(desired_lateral):
+		return
+	_thrust_axis(_strafe_axis(), desired_lateral, _accel_rate(), delta)
+
+
+## One axis of thrust: the velocity along `axis` chases `desired_speed` at `rate`, and the
+## body's linear damp is compensated for along that same axis so the chase is the class
+## rate rather than the class rate minus drag. `_step_speed` is this law on the nose and
+## `_step_strafe` is it on the hull's side; the damp still owns every *other* axis (a hit's
+## push, a released strafe's tail), which is the degree of freedom real physics adds.
+func _thrust_axis(axis: Vector2, desired_speed: float, rate: float, delta: float) -> void:
+	if _body == null or delta <= 0.0:
+		return
+	var along := _body.linear_velocity.dot(axis)
+	var accel := clampf((desired_speed - along) / delta, -rate, rate)
+	var force := _hull_mass() * (accel + _linear_damp() * along)
+	if is_zero_approx(force):
+		return
+	_body.apply_central_force(axis * force)
+
+
 ## Linear motion, on the body's velocity (ruling 8: thrust is `mass x acceleration`,
 ## and the acceleration is the class's own). The velocity *along the heading* is asked
 ## to chase `desired_speed` at `rate` (the same move_toward the hybrid model always
 ## used, now expressed as the acceleration it implies), so throttle reaches max_speed
 ## over accel_time, S brakes at BRAKE_MULT times that, and the autopilot's arrive
-## ramp obeys the same law. The body's linear damp is compensated for along that axis,
-## so the chase is the class rate rather than the class rate minus drag; the damp
-## still owns the *lateral* velocity, the degree of freedom real physics adds (a hit
-## or a blast pushes the hull sideways and it settles over coast_time).
+## ramp obeys the same law.
 func _step_speed(desired_speed: float, rate: float, delta: float) -> void:
-	if _body == null or delta <= 0.0:
-		return
-	var forward := Vector2.RIGHT.rotated(_heading())
-	var along := _body.linear_velocity.dot(forward)
-	var accel := clampf((desired_speed - along) / delta, -rate, rate)
-	var force := _hull_mass() * (accel + _linear_damp() * along)
-	if is_zero_approx(force):
-		return
-	_body.apply_central_force(forward * force)
+	_thrust_axis(Vector2.RIGHT.rotated(_heading()), desired_speed, rate, delta)
 
 
 ## The body owns the hull's live transform and this node mirrors it: the sprite, the

@@ -136,6 +136,44 @@ The project session DB was malformed (`database disk image is malformed (11)`) a
 - `recraft/remove-background` is a rescue tool, not a default (its matte is softer and costs a call per asset). Its endpoint rejects the skill's `image_url` list with `image is required`; the accepted field is `image` as a string.
 - Batch driver: `staging/phase_d/wave1.py <run-id> ...` — one paid API call per run, with alpha-keying, splitting, renaming, downscaling and log writing done locally for free. Output is staged outside `vajb-orbit/` while an editor session holds the project open, then moved into `vajb-orbit/assets/<family>/` and reimported.
 
+## Designer lane — the output format (standing rule, owner 2026-09-21)
+
+When the owner asks for design or planning work (a feature, an overhaul, a
+rework, a wave), the deliverable is always these five pieces, in this order. The
+fifth is the only thing the owner pastes anywhere.
+
+1. **Docs first.** Amend the owning docs (`docs/gameplay/*`, `docs/design/*`) with
+   the actual numbers — a dated amendment block, every new value carrying its
+   reversal path, and the owner's tick list marked. Nothing downstream may invent
+   a number. `docs/gameplay/18_engine_spec.md` stays owner-locked.
+2. **One wave brief** `.agents/gen/<wave>_wave_task.md`: the law to read in order,
+   the owner's request verbatim, what is already measured (with `file:line`), the
+   pinned interface as verbatim code blocks plus the rules that fix every
+   ambiguity, a worker table (`ID | role | VAJB_WORKER_FILES | deliverable`), the
+   run order, the tests that move, hard rules, staged/deferred items, the owner
+   tick list, and the close-out steps.
+3. **One prompts file** `.agents/gen/<wave>_wave_prompts.md`: the fenced `crush
+   run` blocks, one per worker ID, each with its `VAJB_WORKER_FILES`, its model
+   and its report path, plus the `verify_wave.py snapshot` + commit line that runs
+   before the first dispatch.
+4. **Queue it twice.** The wave becomes a numbered item in
+   `.agents/gen/dispatch_coder.md` (the orchestrator's queue) and a line in
+   `.agents/gen/WAVEBOARD.md` §Queued, stating its position and the file
+   collisions that force that order.
+5. **Hand off with the short prompt.** The owner gives the orchestrator
+   `dispatch_coder.md` plus this one paragraph and nothing else:
+
+   ```text
+   Read .agents/gen/dispatch_coder.md and execute queue item N only — <wave name>. Brief: <brief path>. Prompts: <prompts path>. Snapshot + commit before the first dispatch, run <builder> → <reviewer>, and the fixer only if the review leaves HIGH or MED. Stop before item N+1. Close out per the brief's close-out section (gate re-run, verify_wave.py verify --baseline <tag>, WAVEBOARD update, wave-boundary commit), then report back: the measured gate count, the builder's per-deliverable numbers, the reviewer's findings by tier, and the owner ticks.
+   ```
+
+Format rules: the owner never pastes worker prompts; the brief is law (a worker
+who believes a number is wrong reports it and leaves it); every wave ends in a
+mandatory review, and a fixer only if that review leaves HIGH or MED; a number
+the planner cannot derive from an existing doc is written **proposed** with its
+reversal, never left for a worker to choose; and every wave states which existing
+test numbers move and why.
+
 ## Rules
 
 - Update docs first, then code, then tests — never the reverse.

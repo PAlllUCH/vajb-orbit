@@ -67,6 +67,25 @@ Three files, three distinct forms (hollow ring / dense point glow / vertical tea
 | Timing | Alpha falloff over **0.4 s** per streak particle; engine-side fade, single frame texture. |
 | Prompt notes | "single thin horizontal ember streak, burnt ember #C8461B core fading to ember glow #E8703A and transparent tail, isolated on flat void black #0A0E14 background, 2K, 1:1" + style block. One texture; length and alpha animated in engine. |
 
+**Amendment 2026-09-21 — the engine-side numbers (owner request: thrusters must
+read while travelling).** §1.3 left "length and alpha animated in engine" open,
+which is the whole effect; these are the values the emitter uses, all keyed off
+`speed_ratio = |v| / v_max` (engine spec §3.4's single input). They are
+**proposals** — playtest-tunable, one constant each, and the reversal is the
+value's own row.
+
+| Field | Value | Reversal |
+|---|---|---|
+| Emitter | one `GPUParticles2D` per engine cell, parented to the hull, `local_coords = false` so the streaks trail in world space | — |
+| Active while | thrust input is held **or** `speed_ratio ≥ 0.15` (the drift case still reads as motion) | drop the ratio half to make it input-only |
+| Spawn rate | 20 streaks/s at ratio 0.15 → 60/s at 1.0 (linear) | one constant pair |
+| Lifetime | **0.4 s** (§1.3's own falloff) | §1.3 |
+| World length | 24 u at ratio 0.15 → 56 u at 1.0 | one constant pair |
+| Width | 6 u | one constant |
+| Alpha | 0.35 at ratio 0.15 → 0.85 at 1.0 | one constant pair |
+| Blend | additive, `#C8461B` head → `#E8703A` mid → transparent tail (§1.3) | §1.3 |
+| Anchor | the hull's engine cells when `ShipFit.mount_offset` is available, else one tail point behind the hull's centre | see the brief's seam rule |
+
 ### 1.4 Explosion
 
 | Field | Value |
@@ -146,6 +165,48 @@ Snake_case throughout; all live under `vajb-orbit/assets/fx/`.
 
 ---
 
+**Amendment 2026-09-21 — §4–§6 written (they were cited before they existed).**
+`18_engine_spec.md` §2.1 item 18 and §3.4 cite "FX_SPEC §5" for the
+speed-fantasy shader inputs, and the slice-2.5 queue cites "FX_SPEC §6" for the
+damage states; both sections, and §4, were missing from this file after the
+Phase G absorption (its content had moved into §7.1/§7.2). §5 and §6 below
+**transcribe** those rows — no number is new except the two marked **proposed** —
+so every existing citation resolves. §4 is unused: this file numbers by
+inventory first and has no fourth chapter.
+
+## 4. (unused)
+
+Reserved. Nothing cites it; leave the number alone so §5/§6 keep their cited
+names.
+
+## 5. Speed fantasy — shader and emitter inputs
+
+One input drives all three rows: `speed_ratio = |v| / v_max`, onset
+`FX_BLUR_ONSET` **0.70** (engine spec §3.4, ruling 18). All of it is feedback;
+zero gameplay numbers live here.
+
+| Effect | Node | Values |
+|---|---|---|
+| Directional motion blur | screen-space `ColorRect` with a `canvas_item` shader on its own `CanvasLayer`, above the world and below the HUD | `blur_strength` clamps **0.1** at cruise → **0.8** during a dash; `blur_direction = v / |v|`; `chromatic_aberration` scales with strength; strength is 0 below the 0.70 onset |
+| Camera pull-back | the flight camera's `zoom` | multiplied by `lerp(1.0, 0.82, (speed_ratio − 0.7) / 0.3)` — it **stacks with the wheel zoom**, never replaces it (the wheel owns the target, this owns the applied value) |
+| Dust streaks | `GPUParticles2D` parented to the camera | emits micro streaks opposite the velocity vector while the ratio is high; texture `fx_dust_streak.png`; **proposed:** 30/s at ratio 1.0, 0.5 s lifetime, 12 u, low alpha, never additively blown |
+
+## 6. Damage states
+
+All four key off `PlayerState`'s own pool signals — no new gameplay coupling
+(§7.3).
+
+| State | Trigger | Effect |
+|---|---|---|
+| Hull-critical vignette | hull fraction < **25 %** | `fx_hull_critical_vignette.png` as a static full-screen overlay, alpha pulsing **0.6 → 1.0 at 1.2 s** (sine, §1.8), removed above the threshold |
+| Damage smoke | hull fraction < 25 % | persistent non-emissive plume, `fx_smoke_plume.png`, `#232629`/`#2B2F35`; one emitter per hull, idempotent (**shipped** in the weapon-FX wave: `Projectile.spawn_smoke_plume` / `clear_smoke_plume`) |
+| Electrical arcs | hull fraction < 25 % | intermittent `fx_arc_spark.png` bursts, **proposed:** one arc every 1.6–2.6 s (random), 0.2 s per arc (§7.2's own rate) |
+| Shield shatter | shield pool reaches 0 (ruling 20) | one-shot `fx_shield_break.png` burst, 0.4 s, 10 FPS (**shipped**) |
+| Shield hit ripple | a landed hit on a live shield | `fx_shield_ripple.png`, 0.3 s (§1.5) (**shipped**) |
+
+---
+
+
 ## 7. Phase G — speed fantasy, damage states & alien FX (rulings 18/20/24, 2026-09-20)
 
 Owner-approved additions from the `PHYSICS_SPEC.md`/`GRAPHICS_IDEAS.md`
@@ -159,7 +220,9 @@ brainstorm, absorbed after `docs/gameplay/18_engine_spec.md` §2.1. Existing
 | Directional motion blur | screen-space `ColorRect` shader on a `CanvasLayer` | Active from `FX_BLUR_ONSET` 0.70 of v_max; inputs `blur_strength` (0.1 cruise → 0.8 dash), `blur_direction = v/|v|`, `chromatic_aberration` scaled with strength. Engine spec §3.4. |
 | Camera pull-back | `Camera2D.zoom` multiplier | `lerp(1.0, 0.82, (ratio − 0.7)/0.3)`, stacks with wheel zoom. |
 | Dust streaks | `GPUParticles2D` on the camera | Emits counter-velocity micro streaks while the ratio is high; texture `fx_dust_streak.png` below. |
-| Damage smoke + arcs | two parented `GPUParticles2D` on the hull | Spawn while hull < 25 %: persistent black plume puffs (`fx_smoke_plume.png`) + intermittent electrical arcs (`fx_arc_spark.png`). Ember sparks only inside the arc sprite — the plume itself is `#232629`/`#2B2F35`, non-emissive. |
+| Thruster trail | one `GPUParticles2D` per engine cell, parented to the hull | §1.3's engine-side table: 20–60 streaks/s, 0.4 s lifetime, 24–56 u, alpha 0.35–0.85, all by `speed_ratio`; additive ember. The thruster **loop** is S16 in AUDIO_SPEC §4.5. |
+| Dash charge | one-shot on booster activation | `fx_dash_charge.png`, ember pair, engine-scaled (proposed: 32 u, 0.2 s); fires for `b_afterburner` today — `b_fold`'s movement is slice 4's, so its charge waits with it. |
+| Damage smoke + arcs | two parented `GPUParticles2D` on the hull | Spawn while hull < 25 %: persistent black plume puffs (`fx_smoke_plume.png`) + intermittent electrical arcs (`fx_arc_spark.png`). Ember sparks only inside the arc sprite — the plume itself is `#232629`/`#2B2F35`, non-emissive. **The plume half shipped 2026-09-21** (`Projectile.spawn_smoke_plume`, called from `player_ship.gd` and `npc_ship.gd`); the arcs' cadence is FX_SPEC §6's. |
 | Shield shatter | one-shot `GPUParticles2D` burst | Fires when the shield pool hits 0 (ruling 20): glass-like shards of Steel Highlight `#565C63` outward over 0.4 s; texture `fx_shield_shatter.png`. The existing `fx_shield_break.png` (ASSET_EXPANSION_SPEC §7) covers the same event — reuse it; this row defines behaviour, not a second asset. |
 
 ### 7.2 New generated assets
