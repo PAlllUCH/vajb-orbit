@@ -63,11 +63,13 @@ def to_box(path: Path, box: int, zoom: int = ZOOM,
 
 def contact_sheet() -> Image.Image:
     report = json.loads((STAGE / "recut_slots_report.json").read_text(encoding="utf-8"))
+    qc = json.loads((STAGE / "qc_slots.json").read_text(encoding="utf-8"))["rows"]
+    passed = sum(1 for row in qc if row["verdict"] == "pass")
     rows = {row["file"]: row for row in report["rows"]}
     tile = 48 * ZOOM
     pad = 10
     left = 96
-    head = 86
+    head = 110
     band = tile + 30
     width = left + 12 * (tile + pad) + pad + 300
     sheet = Image.new("RGB", (width, head + 3 * band + 34), VOID)
@@ -77,6 +79,9 @@ def contact_sheet() -> Image.Image:
     draw.text((20, 44), f"grid cells at {ZOOM}x the logical box ({tile} px), so the @2x "
                         f"band is 1:1 and the 1x band is 2:1; all on #07090d",
               font=font(15), fill=DIM)
+    draw.text((20, 62), f"cut integrity: {passed}/{len(qc)} cuts pass ink-box-vs-plate-box "
+                        f"and opacity (qc_slots.png, qc_slots_table.txt)",
+              font=font(15), fill=GOOD if passed == len(qc) else BAD)
     draw.text((width - 288, 12), "green = proven against the cache", font=font(15),
               fill=GOOD)
     draw.text((width - 288, 32), "the recipe is chrome_2x.py:", font=font(15), fill=DIM)

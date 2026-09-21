@@ -1,0 +1,700 @@
+{
+ "rows": [
+  {
+   "name": "ui_slot_cargo_disabled.png",
+   "canvas": [
+    40,
+    40
+   ],
+   "expected_box": 40,
+   "ink_box": [
+    0,
+    0,
+    40,
+    40
+   ],
+   "core_box": [
+    0,
+    0,
+    40,
+    40
+   ],
+   "alpha_mean": 254.6,
+   "alpha_255_share": 0.9413,
+   "transparent_share": 0.0,
+   "ink_pixels": 1600,
+   "alpha_pixels_total": 1600,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_slot_cargo_disabled@2x.png",
+   "canvas": [
+    80,
+    80
+   ],
+   "expected_box": 80,
+   "ink_box": [
+    0,
+    0,
+    80,
+    80
+   ],
+   "core_box": [
+    0,
+    0,
+    80,
+    80
+   ],
+   "alpha_mean": 254.6,
+   "alpha_255_share": 0.9537,
+   "transparent_share": 0.0,
+   "ink_pixels": 6400,
+   "alpha_pixels_total": 6400,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_slot_cargo_hover.png",
+   "canvas": [
+    40,
+    40
+   ],
+   "expected_box": 40,
+   "ink_box": [
+    0,
+    0,
+    40,
+    40
+   ],
+   "core_box": [
+    0,
+    0,
+    40,
+    40
+   ],
+   "alpha_mean": 254.4,
+   "alpha_255_share": 0.9287,
+   "transparent_share": 0.0,
+   "ink_pixels": 1600,
+   "alpha_pixels_total": 1600,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_slot_cargo_hover@2x.png",
+   "canvas": [
+    80,
+    80
+   ],
+   "expected_box": 80,
+   "ink_box": [
+    0,
+    0,
+    80,
+    80
+   ],
+   "core_box": [
+    0,
+    0,
+    80,
+    80
+   ],
+   "alpha_mean": 254.3,
+   "alpha_255_share": 0.9383,
+   "transparent_share": 0.0,
+   "ink_pixels": 6400,
+   "alpha_pixels_total": 6400,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_slot_cargo_normal.png",
+   "canvas": [
+    40,
+    40
+   ],
+   "expected_box": 40,
+   "ink_box": [
+    0,
+    0,
+    40,
+    40
+   ],
+   "core_box": [
+    0,
+    0,
+    40,
+    40
+   ],
+   "alpha_mean": 254.8,
+   "alpha_255_share": 0.9756,
+   "transparent_share": 0.0,
+   "ink_pixels": 1600,
+   "alpha_pixels_total": 1600,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_slot_cargo_normal@2x.png",
+   "canvas": [
+    80,
+    80
+   ],
+   "expected_box": 80,
+   "ink_box": [
+    0,
+    0,
+    80,
+    80
+   ],
+   "core_box": [
+    0,
+    0,
+    80,
+    80
+   ],
+   "alpha_mean": 254.8,
+   "alpha_255_share": 0.9789,
+   "transparent_share": 0.0,
+   "ink_pixels": 6400,
+   "alpha_pixels_total": 6400,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_slot_cargo_pressed.png",
+   "canvas": [
+    40,
+    40
+   ],
+   "expected_box": 40,
+   "ink_box": [
+    0,
+    0,
+    40,
+    40
+   ],
+   "core_box": [
+    0,
+    0,
+    40,
+    40
+   ],
+   "alpha_mean": 254.9,
+   "alpha_255_share": 0.9762,
+   "transparent_share": 0.0,
+   "ink_pixels": 1600,
+   "alpha_pixels_total": 1600,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_slot_cargo_pressed@2x.png",
+   "canvas": [
+    80,
+    80
+   ],
+   "expected_box": 80,
+   "ink_box": [
+    0,
+    0,
+    80,
+    80
+   ],
+   "core_box": [
+    0,
+    0,
+    80,
+    80
+   ],
+   "alpha_mean": 254.9,
+   "alpha_255_share": 0.9853,
+   "transparent_share": 0.0,
+   "ink_pixels": 6400,
+   "alpha_pixels_total": 6400,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_slot_inventory_disabled.png",
+   "canvas": [
+    56,
+    56
+   ],
+   "expected_box": 56,
+   "ink_box": [
+    0,
+    0,
+    56,
+    56
+   ],
+   "core_box": [
+    0,
+    0,
+    56,
+    56
+   ],
+   "alpha_mean": 254.7,
+   "alpha_255_share": 0.9646,
+   "transparent_share": 0.0,
+   "ink_pixels": 3136,
+   "alpha_pixels_total": 3136,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_slot_inventory_disabled@2x.png",
+   "canvas": [
+    112,
+    112
+   ],
+   "expected_box": 112,
+   "ink_box": [
+    0,
+    0,
+    112,
+    112
+   ],
+   "core_box": [
+    0,
+    0,
+    112,
+    112
+   ],
+   "alpha_mean": 254.7,
+   "alpha_255_share": 0.9683,
+   "transparent_share": 0.0,
+   "ink_pixels": 12544,
+   "alpha_pixels_total": 12544,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_slot_inventory_hover.png",
+   "canvas": [
+    56,
+    56
+   ],
+   "expected_box": 56,
+   "ink_box": [
+    0,
+    0,
+    56,
+    56
+   ],
+   "core_box": [
+    0,
+    0,
+    56,
+    56
+   ],
+   "alpha_mean": 254.3,
+   "alpha_255_share": 0.9212,
+   "transparent_share": 0.0,
+   "ink_pixels": 3136,
+   "alpha_pixels_total": 3136,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_slot_inventory_hover@2x.png",
+   "canvas": [
+    112,
+    112
+   ],
+   "expected_box": 112,
+   "ink_box": [
+    0,
+    0,
+    112,
+    112
+   ],
+   "core_box": [
+    0,
+    0,
+    112,
+    112
+   ],
+   "alpha_mean": 254.3,
+   "alpha_255_share": 0.939,
+   "transparent_share": 0.0,
+   "ink_pixels": 12544,
+   "alpha_pixels_total": 12544,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_slot_inventory_normal.png",
+   "canvas": [
+    56,
+    56
+   ],
+   "expected_box": 56,
+   "ink_box": [
+    0,
+    0,
+    56,
+    56
+   ],
+   "core_box": [
+    0,
+    0,
+    56,
+    56
+   ],
+   "alpha_mean": 254.7,
+   "alpha_255_share": 0.9525,
+   "transparent_share": 0.0,
+   "ink_pixels": 3136,
+   "alpha_pixels_total": 3136,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_slot_inventory_normal@2x.png",
+   "canvas": [
+    112,
+    112
+   ],
+   "expected_box": 112,
+   "ink_box": [
+    0,
+    0,
+    112,
+    112
+   ],
+   "core_box": [
+    0,
+    0,
+    112,
+    112
+   ],
+   "alpha_mean": 254.7,
+   "alpha_255_share": 0.9658,
+   "transparent_share": 0.0,
+   "ink_pixels": 12544,
+   "alpha_pixels_total": 12544,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_slot_inventory_pressed.png",
+   "canvas": [
+    56,
+    56
+   ],
+   "expected_box": 56,
+   "ink_box": [
+    0,
+    0,
+    56,
+    56
+   ],
+   "core_box": [
+    0,
+    0,
+    56,
+    56
+   ],
+   "alpha_mean": 254.8,
+   "alpha_255_share": 0.9592,
+   "transparent_share": 0.0,
+   "ink_pixels": 3136,
+   "alpha_pixels_total": 3136,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_slot_inventory_pressed@2x.png",
+   "canvas": [
+    112,
+    112
+   ],
+   "expected_box": 112,
+   "ink_box": [
+    0,
+    0,
+    112,
+    112
+   ],
+   "core_box": [
+    0,
+    0,
+    112,
+    112
+   ],
+   "alpha_mean": 254.8,
+   "alpha_255_share": 0.9767,
+   "transparent_share": 0.0,
+   "ink_pixels": 12544,
+   "alpha_pixels_total": 12544,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_slot_weapon_disabled.png",
+   "canvas": [
+    48,
+    48
+   ],
+   "expected_box": 48,
+   "ink_box": [
+    0,
+    0,
+    48,
+    48
+   ],
+   "core_box": [
+    0,
+    0,
+    48,
+    48
+   ],
+   "alpha_mean": 254.8,
+   "alpha_255_share": 0.9783,
+   "transparent_share": 0.0,
+   "ink_pixels": 2304,
+   "alpha_pixels_total": 2304,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_slot_weapon_disabled@2x.png",
+   "canvas": [
+    96,
+    96
+   ],
+   "expected_box": 96,
+   "ink_box": [
+    0,
+    0,
+    96,
+    96
+   ],
+   "core_box": [
+    0,
+    0,
+    96,
+    96
+   ],
+   "alpha_mean": 254.7,
+   "alpha_255_share": 0.9787,
+   "transparent_share": 0.0,
+   "ink_pixels": 9216,
+   "alpha_pixels_total": 9216,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_slot_weapon_hover.png",
+   "canvas": [
+    48,
+    48
+   ],
+   "expected_box": 48,
+   "ink_box": [
+    0,
+    0,
+    48,
+    48
+   ],
+   "core_box": [
+    0,
+    0,
+    48,
+    48
+   ],
+   "alpha_mean": 254.3,
+   "alpha_255_share": 0.9115,
+   "transparent_share": 0.0,
+   "ink_pixels": 2304,
+   "alpha_pixels_total": 2304,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_slot_weapon_hover@2x.png",
+   "canvas": [
+    96,
+    96
+   ],
+   "expected_box": 96,
+   "ink_box": [
+    0,
+    0,
+    96,
+    96
+   ],
+   "core_box": [
+    0,
+    0,
+    96,
+    96
+   ],
+   "alpha_mean": 254.2,
+   "alpha_255_share": 0.9346,
+   "transparent_share": 0.0,
+   "ink_pixels": 9216,
+   "alpha_pixels_total": 9216,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_slot_weapon_normal.png",
+   "canvas": [
+    48,
+    48
+   ],
+   "expected_box": 48,
+   "ink_box": [
+    0,
+    0,
+    48,
+    48
+   ],
+   "core_box": [
+    0,
+    0,
+    48,
+    48
+   ],
+   "alpha_mean": 254.4,
+   "alpha_255_share": 0.928,
+   "transparent_share": 0.0,
+   "ink_pixels": 2304,
+   "alpha_pixels_total": 2304,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_slot_weapon_normal@2x.png",
+   "canvas": [
+    96,
+    96
+   ],
+   "expected_box": 96,
+   "ink_box": [
+    0,
+    0,
+    96,
+    96
+   ],
+   "core_box": [
+    0,
+    0,
+    96,
+    96
+   ],
+   "alpha_mean": 254.4,
+   "alpha_255_share": 0.9416,
+   "transparent_share": 0.0,
+   "ink_pixels": 9216,
+   "alpha_pixels_total": 9216,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_slot_weapon_pressed.png",
+   "canvas": [
+    48,
+    48
+   ],
+   "expected_box": 48,
+   "ink_box": [
+    0,
+    0,
+    48,
+    48
+   ],
+   "core_box": [
+    0,
+    0,
+    48,
+    48
+   ],
+   "alpha_mean": 255.0,
+   "alpha_255_share": 0.9991,
+   "transparent_share": 0.0,
+   "ink_pixels": 2304,
+   "alpha_pixels_total": 2304,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  },
+  {
+   "name": "ui_slot_weapon_pressed@2x.png",
+   "canvas": [
+    96,
+    96
+   ],
+   "expected_box": 96,
+   "ink_box": [
+    0,
+    0,
+    96,
+    96
+   ],
+   "core_box": [
+    0,
+    0,
+    96,
+    96
+   ],
+   "alpha_mean": 255.0,
+   "alpha_255_share": 0.9993,
+   "transparent_share": 0.0,
+   "ink_pixels": 9216,
+   "alpha_pixels_total": 9216,
+   "canvas_is_box": true,
+   "ink_fills_box": true,
+   "mostly_solid": true,
+   "verdict": "pass"
+  }
+ ]
+}

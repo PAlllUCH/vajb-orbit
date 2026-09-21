@@ -87,6 +87,22 @@ reproduction**, not a code fix yet.
   the collision pipeline is slice-0's (`§4`, `impact.gd`), so a repair wave must diff
   against CONTRACTS.md and add a test per fix, exactly as the slice waves did.
 
+## Owner rulings on these findings (2026-09-21, after this report was written)
+
+1. **Weapon fire must damage asteroids** — the rock gains the damage sink and weapon
+   damage reaches it through the existing cleave channel (`apply_work`); the
+   damage→work conversion is one named constant proposed for the §13 tick.
+2. **The flight drag/inertia is retuned now** (inertia kept, the ~1 s carry trimmed),
+   measured before and after.
+3. **The reticle jump and the hangar shot are dropped** — the owner reports both
+   resolved, and `ui/screens/station.gd` contains no `WeaponComponent` or fire
+   handling, so the hangar observation had no weapon path.
+4. **Approved: the measurement wave runs now** (C1 ram, C2 weapons, C3 decay, T1 the
+   `--only` tooling flag, C5 fixer, C6 review) — brief
+   `.agents/gen/combat_repair_wave_task.md`, prompts
+   `.agents/gen/combat_repair_wave_prompts.md`. The hook's absolute-path cure (L31)
+   was **not** approved and stays in `LOW_BACKLOG.md`.
+
 ## Proposed wave shape (for the owner to approve)
 
 | ID | Job | Evidence it must produce |
