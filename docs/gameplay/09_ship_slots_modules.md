@@ -10,20 +10,35 @@ spec (future amendment to STATION_HUB.md).
 
 ## 1. Slot types
 
-Nine slot types. ENGINE and POWER are mandatory and exactly one per hull
-(08 §3). Every other slot type is optional capacity — an empty slot costs
-nothing but is wasted potential.
+Eight slot types. **ENGINE and POWER are mandatory, and the engine is a set, not
+a single slot**: a hull has as many ENGINE cells as 08 §3.1 gives it (1–3) and
+every one of them must be filled to launch (§4.1). POWER stays exactly one per
+hull. Every other slot type is optional capacity — an empty slot costs nothing
+but is wasted potential.
 
-| Type | Icon family | Mandatory | What plugs in |
-|------|-------------|-----------|---------------|
-| **ENGINE** | engine | 1, always | sublight drives: speed/acceleration |
-| **POWER** | generator | 1, always | reactors: total power output |
-| **W** (weapon) | weapons | no | hardpoint weapons (§4.1) |
-| **S** (shield) | shield | no | shield generators and amplifiers |
-| **H** (armour) | hull | no | armour plating: hull points at a speed cost |
-| **C** (computer) | module | no | targeting, scanners, utility electronics |
-| **B** (booster) | engine | no | one-shot burst systems: boost, afterburner |
-| **U** (utility) | extra | no | cargo, drones, salvage gear, mining tools |
+**Amendment 2026-09-21 (owner request: per-class counts and layouts).** The
+`Count` column is new and is the class's own cell count, read from 08 §3's grid
+matrix. The icon column now names the shipped **slot glyph** (the cell's face in
+the layout display), because the slot art exists:
+`vajb-orbit/assets/icons/slot/icon_slot_{engine,power,w,s,h,c,b,u}_{16,48,96,192}.png`.
+
+| Type | Count | Slot glyph | Mandatory | What plugs in |
+|------|-------|-----------|-----------|---------------|
+| **ENGINE** | 1–3, per class (08 §3.1) | `icon_slot_engine` | all of them | sublight thrusters: speed/acceleration |
+| **POWER** | 1 | `icon_slot_power` | yes | reactors: total power output |
+| **W** (weapon) | 1–7, per class | `icon_slot_w` | no | hardpoint weapons (§4.1) |
+| **S** (shield) | 1–3, per class | `icon_slot_s` | no | shield generators and amplifiers |
+| **H** (armour) | 1–4, per class | `icon_slot_h` | no | armour plating: hull points at a speed cost |
+| **C** (computer) | 1–2, per class | `icon_slot_c` | no | targeting, scanners, utility electronics |
+| **B** (booster/drive) | 0–1, per class | `icon_slot_b` | no | burst drives: afterburner, fold dash |
+| **U** (utility) | 0–5, per class | `icon_slot_u` | no | cargo, drones, salvage gear, mining tools |
+
+**Vocabulary, so briefs and code agree:** *engines* are the ENGINE cells
+(sublight thrusters, `e_std`/`e_ion`/`e_vector`); *drives* are the B cells
+(one-shot burst systems, `b_afterburner`/`b_fold`); *hull* cells are the H cells
+(armour plating, `h_plate_*`/`h_composite`). "Hull" as a stat (the `hull` number
+of 08 §2) is base structure and is **not** an H cell.
+
 
 Note: **H armour is a slot, not a hull stat.** The hull's `hull` number
 (08 §2) is base structure; every point beyond it is bought as plating that
@@ -45,8 +60,12 @@ while `Σ draws ≤ power output` (08 §2's Power out column).
 | U utility | 0–1 |
 
 - **POWER modules raise the ceiling; ENGINE modules are free of the budget**
-  (an engine draws from itself). The choice "bigger reactor or bigger guns"
-  is therefore a real slot-vs-slot trade: both sit in the same grid.
+  (an engine draws from itself, however many the hull carries). The choice
+  "bigger reactor or bigger guns" is therefore a real slot-vs-slot trade: both
+  sit in the same grid.
+- **A hull's engine count never changes its budget.** A 3-engine Hauler pays the
+  same power for its thrusters as a 1-engine Lancer — zero. What the count buys
+  is granularity (§3.7) and the mass the hull already carries (08 §3.1).
 - Draws and outputs are small integers on purpose: a player must be able to
   do the arithmetic in their head while fitting.
 - Illegal fits are refused at the fitting panel with the overload shown
@@ -162,7 +181,7 @@ Lineage: `upgrade_extra_cargo` (+25 % cargo, 3 000 CR) and
 `upgrade_drone` (+50 % repair rate, 6 800 CR) are the existing catalog's
 U-slot ancestors; `u_refine`/`u_tractor` are the Delver's reason to exist.
 
-### 3.7 ENGINES (mandatory)
+### 3.7 ENGINES (mandatory set)
 
 | Module | Tier | Draw | Effect | Cost |
 |--------|------|:----:|--------|-----:|
@@ -171,6 +190,37 @@ U-slot ancestors; `u_refine`/`u_tractor` are the Delver's reason to exist.
 | `e_vector` | III | — | +25 % speed, +20 % turn rate | 6 200 |
 
 Lineage: `upgrade_engine` (+15 % speed, 3 800 CR) maps 1:1 to `e_ion`.
+
+**Amendment 2026-09-21 — how N engines stack (new rule).** A hull with E engine
+cells fits one engine module per cell, and the resolved multipliers are the
+**sum of the modules' deltas, never their product**:
+
+```text
+speed_mult = 1 + Σ (module.speed_mult - 1)
+turn_mult  = 1 + Σ (module.turn_mult  - 1)
+speed_mult is then clamped to ENGINE_MULT_CEILING = 1.40
+```
+
+Three consequences the coder and the balance ledger both rely on:
+
+1. **No duplicate module id inside one hull.** `e_std` + `e_std` is legal (both
+   are the reference engine), but `e_vector` + `e_vector` is refused by the fit
+   validator — one of each engine per hull, exactly like the computers' stacking
+   rule (§3.4). With three cells the best legal set is
+   `e_std` + `e_ion` + `e_vector` = **1.40**, which is why the ceiling is 1.40.
+2. **A single engine resolves exactly as it did before this amendment** —
+   `e_vector` alone is `1 + 0.25` = 1.25, the same figure the multiplication
+   gave. Nothing in the shipped Vanguard fit moves.
+3. **Bigger hulls climb in steps, not in leaps.** A 3-engine Hauler can buy its
+   1.40 in three purchases of ~3 200 CR; a 1-engine Lancer must buy the single
+   best engine (6 200 CR) to reach 1.25. Same ceiling, different curve — that is
+   what an engine *count* buys.
+
+Reversal: multiply the modules' multipliers per engine again (the pre-amendment
+behaviour) and delete the duplicate rule and the ceiling; the only fits that
+resolve differently are those with two identical engines, which the rule above
+forbids anyway.
+
 
 ### 3.8 POWER (mandatory)
 
@@ -186,25 +236,37 @@ existing upgrade retires into the auction book as a legacy entry (10 §5).
 
 ## 4. Fit rules (the actual constraints)
 
-1. **Mandatory pair:** a fit without exactly one ENGINE and one POWER
-   module cannot launch. The panel marks these slots with the ember accent
-   when empty (danger semantics, ICONS_SPEC §1).
+1. **Mandatory set:** a fit without every ENGINE cell filled (08 §3.1) and
+   exactly one POWER module cannot launch. The panel marks these slots with the
+   ember accent when empty (danger semantics, ICONS_SPEC §1). In practice they
+   are never empty: a hull is delivered with its mandatory set (§7).
 2. **Power budget:** Σ module draws ≤ hull power output + power module
    output (§2).
 3. **One module per slot, slots are typed:** a weapon never sits in an H
    slot. No dual-fitting, no adapters.
-4. **The Obliterator crunch (08 §6):** with `p_std`, seven top weapons +
+4. **No duplicate module id inside one hull** for the types whose effects stack
+   from the same module (ENGINE §3.7, COMPUTER §3.4): `e_ion` twice is refused,
+   `e_ion` + `e_vector` is not. Armour, shields, weapons and utility modules may
+   repeat, because their rows are written to repeat (two heavy plates are an
+   intended fit).
+5. **Slots are addressed by the layout index (new).** A fit is
+   `slot_type -> Array[module_id]`, index 0..n-1 in the order the type's cells
+   appear in 08 §3.2's matrix (row-major, top-left first). An empty cell is `""`
+   (or a missing tail), so a 3-engine hull's `engines` array is three long even
+   when two are `e_std`. The layout display, the fitting panel and the saved
+   profile all use that same index — there is no second ordering.
+6. **The Obliterator crunch (08 §6):** with `p_std`, seven top weapons +
    shields do not fit the 15-power budget. The intended endgame fit chain is
    `p_std` → `p_mk2` → `p_core`, spending 3 600/7 000 CR to unlock the grid
    the hull advertises. This is the progression guideline in action.
-5. **Mining laser rule (user decision):** the mining laser is a **weapon
+7. **Mining laser rule (user decision):** the mining laser is a **weapon
    module** (`w_mining`, Tier I, draw 1, cost 600) that occupies a W slot.
    Any hull that gives up a gun for it can mine; the Delver mines *well*
    because its U slots carry `u_refine`/`u_tractor` and its power output
    (10) runs a mining laser plus shields without starving. The mining laser
    is also how the fighter can dabble in mining, exactly as the user specced:
    1 weapon slot buys the ability, at the price of one gun.
-6. **Swapping is free at the station; modules are never destroyed by
+8. **Swapping is free at the station; modules are never destroyed by
    removing** — they go to the player's module inventory (10 §6).
    In-space refitting does not exist in v1.
 
@@ -216,10 +278,16 @@ For the coder: how hull + modules become the live `PlayerState` stats.
 2. Add flat module effects (shield pools, hull plates, cargo units, power
    output).
 3. Apply multiplicative effects in this order: speed modifiers (armour, then
-   engine, then booster-on-activation) → damage modifiers (computers) →
-   scanner (best value) → regen (best value).
+   the engine set's summed deltas §3.7 clamped to 1.40, then
+   booster-on-activation) → damage modifiers (computers) → scanner (best value)
+   → regen (best value).
 4. Clamp: nothing may reduce speed below 40 % of hull base, or raise a
    pool above 3× hull base.
+
+**Amendment 2026-09-21:** step 3's engine term is now the **sum of the engine
+set's deltas applied once** (§3.7) instead of a per-engine multiplication. For a
+single-engine hull the resolved number is identical; for a multi-engine hull the
+sum is what stops three vector drives from tripling a hull's speed.
 
 \* `cargo_max` in the frozen stats (25–80) is re-expressed as the class's
 **base hold** (structural space), and `u_cargo`/`u_holds` add on top. The
@@ -236,22 +304,83 @@ role. The coder implements the tables; the ledger is what playtests check.
 
 | Class | Reference fit (≈ cost) | Expected performance |
 |-------|------------------------|----------------------|
-| Fighter | 3× `w_laser`, `s_light`, `h_plate_light`, `e_std`, `p_std` (≈ 9 k) | fastest TTK in Tier-I fights, dies to focus fire |
+| Fighter | 2× `w_laser`, `s_light`, `h_plate_light`, `e_std`, `p_std` (≈ 9 k) | fastest TTK in Tier-I fights, dies to focus fire |
 | Cutter | 2× `w_cannon`, `w_laser`, `s_light`, `h_plate_light`, `c_target` (≈ 12 k) | steady, flexible, no weakness to exploit |
 | Delver | `w_mining`, 3× U (refine/tractor/cargo), `s_light` (≈ 11 k) | mining income +40 % vs Cutter fit; loses any fight |
 | Courier | 3× U (cargo×2, salvage), `e_ion`, `c_scanner` (≈ 12 k) | trade bonuses (10 §4); can outrun most threats |
-| Spearhead | 3× `w_cannon`, `s_heavy`, `b_afterburner` (≈ 15 k) | wins the 1v1 it initiates, struggles in prolonged brawls |
+| Spearhead | 4× `w_cannon`, `s_heavy`, `b_afterburner` (≈ 16 k) | wins the 1v1 it initiates, struggles in prolonged brawls |
 | Mule | `h_plate_heavy`×2, `s_light`, `w_cannon`, 4× U cargo (≈ 16 k) | 200+ effective cargo; escapes anything it cannot kill |
 | Bulwark | 5× mixed W, `s_heavy`×2, `h_plate_heavy` (≈ 20 k) | stationary fort; DPS wall at close range |
 | Warden | 4× W, 2× C (twin/nexus), `s_ion` (≈ 24 k) | counter-build platform; beats mirror-price fits it has scanned |
 | Obliterator | 7× W (mixed), `p_core`, `s_ion`, 2× `h_composite` (≈ 40 k) | the wall; slow, nearly unkillable, power-starved until `p_core` |
 
-## 7. Starter fit (what a new player owns)
+## 7. What a hull arrives with (amendment 2026-09-21)
 
-The Vanguard starts with the **standard fit, included in its 18 000 CR
-price**: `e_std`, `p_std`, 1× `w_laser`, `s_light`, `h_plate_light`. This
-matches the frozen stats (1 000 hull + 250 plate ≈ the historical 1 000 /
-600 shield feel) and gives the fitting panel something to show on day one.
-The Lancer's frozen price likewise includes a lighter standard fit
-(2× `w_laser`, `s_light`). All other hulls are bought **bare** (10 §2) —
-the standard fit is a starter courtesy, not a class rule.
+**Every hull is delivered with its mandatory set: one `e_std` per ENGINE cell
+(08 §3.1) and one `p_std`.** It is included in the hull's price, it is never
+empty (a fit that is missing any of it cannot launch, §4.1), and an engine or
+reactor cell may be *replaced* by a better module — the removed `e_std`/`p_std`
+returns to the module inventory — but never left empty. This is what keeps a bare
+auction hull launchable and what makes a 3-engine capital's price honest.
+
+On top of the mandatory set:
+
+- The **Vanguard** (18 000 CR) keeps its full **standard fit**: `e_std`, `p_std`,
+  1× `w_laser`, `s_light`, `h_plate_light`. This matches the frozen stats
+  (1 000 hull + 250 plate ≈ the historical 1 000 / 600 shield feel) and gives the
+  fitting panel something to show on day one.
+- The **Lancer** (9 000 CR) keeps its lighter one: `e_std`, `p_std`,
+  2× `w_laser`, `s_light`.
+- **All other hulls are bought bare** (10 §2) apart from the mandatory set — the
+  full fit is a starter courtesy, not a class rule.
+
+Reversal: return to "bare hulls launch on the v1 standard fit" by having the
+launch path fall back to the hull's standard fit when the profile holds none
+(§9); no data is lost either way.
+
+## 8. Layouts (new — how the matrix is consumed)
+
+08 §3.2's matrix is the single source of a hull's slot arrangement. Three
+consumers, one ordering:
+
+1. **Counts** — `ShipFit.grid_counts(hull_id)` derives per-type counts from the
+   matrix (never a parallel table).
+2. **Addressing** — §4.5's index: cells of one type are numbered row-major from
+   the matrix's top-left. `engines[0]` is the topmost/leftmost E cell.
+3. **Display** — the station's layout grid is one cell per matrix cell,
+   `columns` = the matrix width, `.` drawn as an empty cell. Each cell's face is
+   the slot glyph of its type (`assets/icons/slot/icon_slot_<type>_48.png`), and
+   a fitted cell shows the module's own icon instead
+   (`assets/icons/module/icon_module_<id>_48.png`, all 27 module icons ship).
+
+**Mount anchors.** A cell's own row/column is also its hull-local mount point:
+`ShipFit.mount_offset(hull_id, slot_type, index) -> Vector2` returns the cell's
+normalised position, `((col + 0.5) / cols - 0.5, (row + 0.5) / rows - 0.5)`,
+scaled by one documented constant pair `MOUNT_SPREAD` (the hull's half-extents
+fraction the grid covers). No per-hull anchor table exists, so art changes and
+layout edits cannot desynchronise the geometry. **Consumption in flight is
+staged** (weapons firing from their own mount, engine FX at their own nozzle) and
+belongs to the feel wave — this document pins the data and the API only.
+
+## 9. Per-hull standard fits (new)
+
+`ShipFit.STANDARD_FITS` is one fit per hull, built from §7: the mandatory set for
+every hull, plus the full fit for the two starter hulls. It is the fallback a
+launch uses when the profile holds no fit for the active hull, and the fit the
+auction delivers with those two hulls.
+
+| Hull | `engines` | `power` | `weapons` | `shields` | `armour` | other |
+|------|-----------|---------|-----------|-----------|----------|-------|
+| Lancer | `[e_std]` | `p_std` | `[w_laser, w_laser]` | `[s_light]` | `[h_plate_light]` | — |
+| Vanguard | `[e_std]` | `p_std` | `[w_laser]` | `[s_light]` | `[h_plate_light]` | — |
+| Delver | `[e_std, e_std]` | `p_std` | — | — | — | — |
+| Courier | `[e_std, e_std]` | `p_std` | — | — | — | — |
+| Spearhead | `[e_std]` | `p_std` | — | — | — | — |
+| Mule | `[e_std, e_std, e_std]` | `p_std` | — | — | — | — |
+| Bulwark | `[e_std, e_std]` | `p_std` | — | — | — | — |
+| Warden | `[e_std, e_std]` | `p_std` | — | — | — | — |
+| Obliterator | `[e_std, e_std, e_std]` | `p_std` | — | — | — | — |
+
+`STANDARD_FIT` (the Vanguard row) stays as the one alias existing callers and
+tests already use; the Lancer's two-laser fit is the second full fit the auction
+delivers (10 §2.3).

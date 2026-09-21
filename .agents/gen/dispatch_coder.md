@@ -34,6 +34,22 @@ the batch-2 playtest lane and the doc lanes. Do not re-dispatch them.
    (write it from `18_engine_spec.md` §14 + `FX_SPEC.md` §6/§7; no new
    gameplay systems, every number already in §13). Snapshot + commit before
    its first dispatch.
+4. **Wave P2-A — ship slot frames (QUEUED 2026-09-21, the owner's per-class
+   slot/layout request).** Brief `.agents/gen/p2a_slot_frames_wave_task.md`,
+   prompts `.agents/gen/p2a_slot_frames_wave_prompts.md` (order D0 → W1 · W2 ·
+   W3 parallel → W4 · W5 parallel → R1 → F1). It makes every class's own slot
+   count and layout real: the nine grid matrices, the engine **set** (1–3 cells
+   by mass band, summed not multiplied), the profile's per-hull fits at save
+   v4, the nine-hull catalogue, the launch path resolving the active hull's own
+   fit, and the station/HUD layout displays. **The gameplay docs are already
+   amended and are the law**: `08_ship_classes.md` §3/§3.1/§3.2/§3.3,
+   `09_ship_slots_modules.md` §1/§2/§3.7/§4/§5/§7/§8/§9, `10_ship_acquisition.md`
+   §2.3. The owner's tick list (brief §8) is recorded as open and **does not
+   block the wave** — a reversal is a doc edit plus the one constant it names.
+   Run it after the in-flight waves close, in parallel with nothing that owns
+   `game/ship_fit.gd`, `autoload/player_profile.gd`, `ui/hud/hud.gd` or the two
+   station panels. Its follow-up **P2-B (the fitting panel)** is briefed after
+   this wave's review.
 
 ## Per-wave execution protocol
 

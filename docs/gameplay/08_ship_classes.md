@@ -55,8 +55,9 @@ the Vanguard 3 (was 4) and the Spearhead 4 (was 3) — the owner's ruling that a
 fighter mounts "like two" weapons while a cruiser-class hull mounts more than a
 fighter, in both guns and plate. §3's grid table is the authority; this column is
 its weapons count restated for the progression read. Reversal: restore 3 / 4 / 3
-in this column and in §3's grid, and the §6 ledger rows below to their 2026-09-20
-text. `Weapons` is the `hardpoints` stat the code has always read
+in this column and in §3's grid, and delete §6's amendment note below plus 09
+§6's Fighter and Spearhead ledger rows back to their 2026-09-20 text.
+`Weapons` is the `hardpoints` stat the code has always read
 (`StationCatalog.SHIPS`), so the two move together.
 
 Engine, drive and plate counts are **not** in this table: they are per-class in
@@ -98,8 +99,9 @@ matrix** (§3.2) which is the single source of the counts in §3's table. The
 original table (every class at `Engine 1`, `Power 1`, and the weapons column
 3/4/2/1/3/1/5/4/7) is superseded. Rows this amendment moved are marked △ and are
 the owner's tick list. Reversal: restore the original table, delete §3.1–§3.3,
-and restore §2's weapons column and §6's three ledger rows to their 2026-09-20
-text; nothing outside this document reads the matrices.
+and restore §2's weapons column, §6's amendment note and 09 §6's Fighter and
+Spearhead ledger rows to their 2026-09-20 text; nothing outside this document
+reads the matrices.
 
 Slot counts per class (09 §1 defines each type; W counts weapon mounts and equals
 the `hardpoints` stat the code reads):
@@ -250,13 +252,15 @@ ASSET_EXPANSION_SPEC §4 are enemy skins and do not affect player hulls):
 | `ship_destroyer` | Destroyer (Obliterator) | frozen |
 | `ship_freighter` | Hauler (Mule) | Phase D hull 5 |
 | `ship_trader` | Trader (Courier) | Phase D hull 11 |
-| **`ship_miner`** | Miner (Delver) | **asset gap** — one new Phase E hull: wide flat mining frame, ventral cutter bar, dorsal ore bin, twin side engines, same framing constant and palette as SHIPS_SPEC §1 |
+| `ship_miner` | Miner (Delver) | shipped (`assets/ships/ship_miner_side.png`) — the 2026-09-18 gap is closed; twin side engines, matching §3.1's two engine slots |
 | `ship_maw` | — | boss only, not player-ownable in v1 |
 | `ship_interceptor`, `ship_bomber`, `ship_drone_swarm`, `ship_mine_layer`, `ship_turret_platform` | — | enemy-only in v1; class entries may be added later as amendments |
 
-The `ship_miner` gap is the only art dependency of this document. It is
-filed as an amendment candidate for `ASSET_EXPANSION_SPEC.md` §3 (hull 16)
-and must be generated before the Miner class ships.
+**Amendment 2026-09-21:** the `ship_miner` gap this section used to carry is
+closed — `vajb-orbit/assets/ships/ship_miner_side.png` is on disk, so all nine
+player classes have their base hull and the class ladder in §2 is fully
+buildable. No class has an art dependency left. Reversal: none owed; the row is
+a statement of what is on disk.
 
 ## 5. Player fleet
 
@@ -280,3 +284,17 @@ and must be generated before the Miner class ships.
 | Bulwark | refuses to die, slow | survives encounters the Spearhead cannot |
 | Warden | brings two computers' worth of tricks | flex-fit platform, hardest to counter-build |
 | Obliterator | the endgame wall | power-limited: cannot equip its full 7 W grid with top weapons — 09 §4's crunch is the point |
+
+**Amendment 2026-09-21 — what the grid change does to these intents.** Three rows
+move and none of them changes its target:
+
+- **Fighter** drops to 2 mounts. Its "DPS per credit highest" now leans on
+  handling (the Lancer keeps §13's best turn rate and shortest accel) and on the
+  cheap Tier-I fit, not on a third gun; if playtest shows it lost the crown, the
+  lever is the weapon tiers' costs, never this grid.
+- **Cutter** drops to 3 mounts and gains a second plate cell: the starter hull
+  trades a gun for survivability, which is what "never the best, never wrong"
+  means in a brawl.
+- **Spearhead** rises to 4 mounts and a second plate: "wins the 1v1 it initiates"
+  is now backed by a grid that out-guns a Lancer, exactly the owner's ruling that
+  a cruiser-class hull carries more than a fighter.

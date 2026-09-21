@@ -56,9 +56,11 @@ reads as progression:
 ### 2.3 Buying rules
 
 - Buyout price = **list price** (08 §2). A hull bought at auction arrives
-  **bare** (no modules) except the two frozen starter hulls, which include
-  their standard fits (09 §7) — those two are also the only hulls whose
-  frozen prices (9 000 / 18 000) already bundle a fit.
+  **bare** (no modules) except its **mandatory set** (09 §7: one `e_std` per
+  ENGINE cell plus one `p_std`, included in the price and never empty) and the
+  two frozen starter hulls, which include their full standard fits (09 §7/§9) —
+  those two are also the only hulls whose frozen prices (9 000 / 18 000) already
+  bundle a fit.
 - **Selling back** to the auction: 60 % of list, any condition, no questions
   (the garage-sale rule; prevents ship-flipping arbitrage because 60 % < the
   130 % premium you paid, 01 §4 invariant 4).

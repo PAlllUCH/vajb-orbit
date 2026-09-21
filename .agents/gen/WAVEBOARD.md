@@ -176,6 +176,25 @@ lanes' queued items below are executed through those files.
    `VAJB_ARCHIVE_OK=1` session), `_mockup_station.tscn` deletion (gated on
    live S2 verification + wave-4 review), MAIN_MENU_SPEC reference repointing
    (see `docs/design/CLOSEOUT_PLAN.md` / `CLEANUP_PLAN.md`).
+9. **Wave P2-A — ship slot frames (NEW 2026-09-21, owner's per-class
+   slot/layout request; queued behind #1's art half and #3, parallel-safe with
+   #4).** Every class gets its own slot count **and** its own layout: the nine
+   grid matrices, the engine **set** (1/2/3 cells by the §13 mass band, summed
+   deltas with a 1.40 ceiling), armour and weapons counts that rise with hull
+   size (Lancer 2 mounts, Spearhead 4), the profile's per-hull fits at save
+   **v4**, the nine-hull `StationCatalog` roster (all nine side renders exist,
+   so the 08 §4 miner gap is closed), the launch path resolving the active
+   hull's own fit instead of the one global `STANDARD_FIT`, and the
+   station/HUD layout displays reading `ShipFit.grid_cells`. Brief
+   `.agents/gen/p2a_slot_frames_wave_task.md`, prompts
+   `.agents/gen/p2a_slot_frames_wave_prompts.md`. **Docs are already amended
+   and are the law** (08 §3/§3.1/§3.2/§3.3/§6, 09 §1/§2/§3.7/§4/§5/§7/§8/§9,
+   10 §2.3); the owner's tick list is brief §8 and blocks nothing. Its
+   follow-up **P2-B (fitting panel, module install/remove, power meter, legacy
+   UPGRADES flag day)** is briefed after this wave's review. Two things are
+   staged out of it on purpose: mount-anchor **consumption** in flight (the
+   feel wave's, spec in brief §7) and the input map's five weapon groups vs a
+   7-W capital (owner's).
 
 ## Parked (independent)
 
