@@ -76,6 +76,29 @@ the batch-2 playtest lane and the doc lanes. Do not re-dispatch them.
    `game/ship_fit.gd`, `autoload/player_profile.gd`, `ui/hud/hud.gd` or the two
    station panels. Its follow-up **P2-B (the fitting panel)** is briefed after
    this wave's review.
+5. **Wave Rock cleave — asteroid destruction effects (QUEUED 2026-09-21, the
+   owner's ruling).** Brief `.agents/gen/rock_cleave_wave_task.md`, prompts
+   `.agents/gen/rock_cleave_wave_prompts.md` (order A1 → A2 → A3 if the review
+   leaves HIGH/MED). Depletion explodes: one rock-scaled `fx_explosion` read plus
+   a break cue, and a **random 2–5** fragments per cleaving tier in **uniformly
+   random** directions at the shipped ×1.2 speed — the deterministic (2,3)/(2,2)
+   split and the ±15° cone retire. Small keeps its 1–2 pickup burst; ruling 17's
+   yield-0 path keeps despawning bare but plays the break read. `18_engine_spec.md`
+   §6 is owner-locked, so its dated amendment is the owner's tick. Gate **311**
+   before it. Parallel-safe with item 4 (disjoint file sets), after item 3.
+6. **Wave P2-B1 — the weapon fit surface (QUEUED 2026-09-21, the owner's
+   weapons-gating request).** Brief `.agents/gen/p2b1_weapon_fit_wave_task.md`,
+   prompts `.agents/gen/p2b1_weapon_fit_wave_prompts.md` (order D0 → W1 → W2 →
+   R1 → F1). Only fitted weapons are usable — the door: OUTFITTING sells the six
+   weapon modules of 09 §3.1 into the profile's inventory (10 §5's interim
+   pattern, retired when the AUCTION lands), and the panel installs / swaps /
+   removes them into the active hull's W cells through `ShipFit.fit_legal` with
+   the over-by refusal shown; the mandatory engine/reactor set is untouchable
+   from this surface; the flight side changes nothing (P2-A's W4 already mounts
+   only fitted weapons). **Runs after item 4** — it consumes P2-A's APIs and
+   reads its reports. Its successor **P2-B proper** (per-slot fitting, the power
+   meter, affixes, the legacy-UPGRADES flag day) is briefed after this wave's
+   review.
 
 ## Per-wave execution protocol
 

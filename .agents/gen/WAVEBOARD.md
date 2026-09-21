@@ -126,6 +126,16 @@ PowerShell form: `$env:VAJB_WORKER_FILES='...'; crush run "<prompt>" -m opencode
 
 ## In flight — none.
 
+**Queued (the queue of record is `dispatch_coder.md` §Current queue):** item 4
+**P2-A** (ship slot frames — runs next), item 5 **Rock cleave** (the owner's
+asteroid ruling: a rock-scaled explosion read + a random 2–5 fragments per
+cleaving tier in uniform directions; briefs `.agents/gen/rock_cleave_wave_task.md`
++ prompts, parallel-safe with item 4), item 6 **P2-B1** (the weapon fit surface:
+OUTFITTING sells the six weapon modules and installs/swaps them into the hull's
+W cells through `ShipFit.fit_legal`; runs after item 4). Owner ticks open: the
+`18_engine_spec.md` §6 cleaving amendment (owner-locked), the rock wave's
+proposed rows (brief §1), and P2-B1's refusal wordings.
+
 ## Closed (details in MASTER_REPORT.md)
 
 - **Slice 2.5 (Feel) — DONE 2026-09-21** (gate 294 → 311, `test_slice2_5_feel` 13): S1 shipped
