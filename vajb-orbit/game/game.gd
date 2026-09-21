@@ -47,6 +47,11 @@ const ImpactScript := preload("res://game/impact.gd")
 const PickupScript := preload("res://game/pickup.gd")
 const WeaponsScript := preload("res://game/weapons.gd")
 const EconomyLogScript := preload("res://game/economy_log.gd")
+## The screen-space speed fantasy and the hull-critical vignette (FX_SPEC section 5,
+## section 6 row 1): one node owns the blur, the camera's applied zoom, the dust and the
+## vignette, and this scene pushes it the single input it reads.
+const SpeedFantasyScript := preload("res://game/speed_fantasy.gd")
+const SPEED_FANTASY_NODE: StringName = &"SpeedFantasy"
 
 const ROUTE_LOADING: StringName = &"loading"
 const PARAM_DESTINATION: StringName = &"destination"
@@ -152,6 +157,9 @@ const HUD_SIGNALS: Array[StringName] = [
 ]
 
 @onready var _camera: Camera2D = $Camera
+@onready var _speed_fantasy: SpeedFantasyScript = (
+	get_node_or_null(NodePath(SPEED_FANTASY_NODE)) as SpeedFantasyScript
+)
 
 var _state: PlayerStateScript
 var _stats: ShipStats = null
@@ -167,7 +175,12 @@ var _reticle_state: int = TargetReticle.State.PLAIN
 var _weapon_index := 0
 var _minimap_radius := MINIMAP_RADIUS_DEFAULT
 var _cargo_open := false
+## The wheel's clamped target. `_camera_zoom_shown` is the same wheel value after the
+## 0.18 s tween, and it is the one `speed_fantasy.gd` multiplies by the pull-back: this
+## scene owns the target and the smoothing, the effects node owns the applied value, so
+## neither ever writes the other's number and the pull-back never returns to the wheel.
 var _camera_zoom := 1.0
+var _camera_zoom_shown := 1.0
 var _camera_zoom_tween: Tween = null
 var _hud_accumulator := 0.0
 var _prompt := ""
@@ -211,6 +224,7 @@ func _ready() -> void:
 	_state.died.connect(_on_ship_died)
 	_spawn_sector(_row_for(String(_sector_row_id)))
 	_spawn_ship()
+	_bind_speed_fantasy()
 	_refresh_hud()
 
 
@@ -259,13 +273,19 @@ func on_route(params: Dictionary) -> void:
 ## Section 9.8 item 4: the wheel zooms the flight camera, and section 3.1's LMB
 ## lock order rides the same handler (`_unhandled_input`, so a UI control that wants the
 ## click keeps it, and the input map is not touched).
+##
+## The target is clamped and the shown value is tweened to it, exactly as it was when the
+## tween wrote `Camera2D.zoom` directly; what changed with the speed fantasy (2026-09-21)
+## is only *who* writes the camera: `speed_fantasy.gd` applies
+## `_camera_zoom_shown * pullback(ratio)`, so the pull-back stacks with the wheel instead
+## of fighting it, and `Camera2D.zoom` has one writer.
 func _set_camera_zoom(target: float) -> void:
 	_camera_zoom = clampf(target, CAMERA_ZOOM_MIN, CAMERA_ZOOM_MAX)
 	if _camera_zoom_tween != null and _camera_zoom_tween.is_valid():
 		_camera_zoom_tween.kill()
 	_camera_zoom_tween = create_tween()
 	_camera_zoom_tween.tween_property(
-		_camera, "zoom", Vector2(_camera_zoom, _camera_zoom), CAMERA_ZOOM_SECONDS
+		self, "_camera_zoom_shown", _camera_zoom, CAMERA_ZOOM_SECONDS
 	).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 
 
@@ -1161,17 +1181,49 @@ func _ghost_blips() -> Array[Dictionary]:
 ## hull's live speed against its class maximum (`ShipStats.max_speed`, the same figure the
 ## flight law reads), the prograde leg is the actual velocity vector and the heading leg is
 ## the nose, so the dial needs no second opinion about either - the HUD takes the angles.
+##
+## That one ratio is engine spec section 3.4's single input, so it is computed here and
+## nowhere else, and the three readers all take this frame's value: the screen-space stack
+## (blur, pull-back, dust), the hull's own thruster driver (trail and bed) and the dial.
 func _push_speedometer() -> void:
-	if _hud == null or _ship == null or _stats == null:
-		return
-	if not _hud.has_method(&"set_speedometer"):
+	if _ship == null or _stats == null:
 		return
 	var velocity: Vector2 = _ship.velocity()
 	var maximum: float = _stats.max_speed
 	var ratio := 0.0
 	if maximum > 0.0:
 		ratio = clampf(velocity.length() / maximum, 0.0, 1.0)
+	_push_speed_fantasy(ratio, velocity)
+	if _ship.has_method(&"set_speed_ratio"):
+		_ship.call(&"set_speed_ratio", ratio)
+	if _hud == null or not _hud.has_method(&"set_speedometer"):
+		return
 	_hud.call(&"set_speedometer", ratio, velocity, Vector2.RIGHT.rotated(_ship.global_rotation))
+
+
+## The screen-space stack's own push: the wheel's shown value, the frame's ratio and the
+## hull's fraction. FX_SPEC section 6: the damage states key off `PlayerState`'s pools, so
+## the fraction comes from the same state the HUD's hull bar reads.
+func _push_speed_fantasy(ratio: float, velocity: Vector2) -> void:
+	if _speed_fantasy == null:
+		return
+	_speed_fantasy.set_wheel_zoom(_camera_zoom_shown)
+	_speed_fantasy.set_ratio(ratio, velocity)
+	_speed_fantasy.set_hull_fraction(_hull_fraction())
+
+
+## The flight camera and the screen-space stack meet here: the dust emitter is parented to
+## the camera (FX_SPEC section 5 row 3), and the camera's zoom has exactly one writer.
+func _bind_speed_fantasy() -> void:
+	if _speed_fantasy == null:
+		return
+	_speed_fantasy.bind_camera(_camera)
+
+
+func _hull_fraction() -> float:
+	if _state == null or _state.hull_max <= 0.0:
+		return 1.0
+	return clampf(_state.hull / _state.hull_max, 0.0, 1.0)
 
 
 ## ENGINE_SPEC section 10 / UI_SPEC section 3.1b: the Energy and Fuel bars and the

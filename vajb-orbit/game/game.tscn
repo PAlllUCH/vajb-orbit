@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://fv4vfbadcprt" path="res://assets/env/tile/env_stars_layer1.png" id="2_stars1"]
 [ext_resource type="Texture2D" uid="uid://b4nhnjtgrej5n" path="res://assets/env/tile/env_stars_layer2.png" id="3_stars2"]
 [ext_resource type="Texture2D" uid="uid://di3dmpv64ldaa" path="res://assets/env/tile/env_stars_layer3.png" id="4_stars3"]
+[ext_resource type="Script" path="res://game/speed_fantasy.gd" id="5_speed"]
 
 [node name="Game" type="Node2D" unique_id=414674867]
 script = ExtResource("1_game")
@@ -36,6 +37,9 @@ texture_repeat = 2
 offset_right = 2048.0
 offset_bottom = 2048.0
 texture = ExtResource("4_stars3")
+
+[node name="SpeedFantasy" type="Node" parent="." unique_id=1053318724]
+script = ExtResource("5_speed")
 
 [node name="Camera" type="Camera2D" parent="." unique_id=1486277996]
 position_smoothing_enabled = true

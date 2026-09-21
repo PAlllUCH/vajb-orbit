@@ -145,6 +145,23 @@ const PROJECTILE := preload("res://game/projectile.gd")
 ## missing field is announced in `setup` rather than flown at a wrong weight).
 const UNRESOLVED_HULL_MASS := 1.0
 
+## --- The owner's request (2026-09-21): "ship while traveling has to make sounds
+## (thrusters depending on speed) and thrusters should create flame fx" ------------
+
+## FX_SPEC section 1.3's anchor row, today's half: "the hull's engine cells when
+## `ShipFit.mount_offset` is available, else one tail point behind the hull's centre".
+## The fraction is the one that row names; `_hull_radius()` is the hull's own art-derived
+## half-length (the same figure the aim deadzone uses), so no new size is invented.
+const TAIL_ANCHOR_FRACTION := 0.55
+
+## FX_SPEC section 6 row 3 (proposed): the low-hull arcs' own cadence, one arc every
+## 1.6-2.6 s, 0.2 s each (the sheet's four frames at 20 FPS). The seed is this hull's
+## determinism seam - it makes an otherwise random cadence reproducible for a probe, and
+## it is not a spec value; the reversal is to draw from the global generator instead.
+const ARC_INTERVAL_MIN := 1.6
+const ARC_INTERVAL_MAX := 2.6
+const ARC_SEED := 20260921
+
 var _stats: ShipStats = null
 var _state: PlayerState = null
 var _body: RigidBody2D = null
@@ -152,6 +169,21 @@ var _laser: Node = null
 var _laser_active := false
 var _guns: Node2D = null
 var _fit_ids: Array[StringName] = []
+
+## The frame's speed ratio, pushed by `game.gd` (the scene computes `|v| / v_max` once
+## for its three readers - engine spec section 3.4's single input - so nothing here
+## recomputes it). It is what the thruster trail's length, rate and alpha read.
+var _speed_ratio := 0.0
+## One emitter per engine-cell anchor, in anchor order (rebuilt every frame by the sync).
+var _thruster_trails: Array[GPUParticles2D] = []
+## The low-hull arcs' own clock, the interval currently drawn and how many have fired.
+var _arc_clock := 0.0
+var _arc_next := 0.0
+var _arc_count := 0
+var _arc_rng := RandomNumberGenerator.new()
+## How many afterburner activations this hull has lit, so "one charge and one cue per
+## activation" is measurable after the 0.2 s charge has freed itself.
+var _boost_activations := 0
 
 var _move_target := Vector2.ZERO
 var _has_move_target := false
@@ -178,6 +210,7 @@ var _last_velocity := Vector2.ZERO
 
 func _ready() -> void:
 	add_to_group(&"player_ship")
+	_arc_rng.seed = ARC_SEED
 	_body = get_node_or_null(NodePath(HULL_BODY_NODE)) as RigidBody2D
 	if _body != null:
 		_body.body_entered.connect(_on_hull_body_entered)
@@ -280,6 +313,55 @@ func velocity() -> Vector2:
 ## slice 2's detonations walk hulls and rocks. Null before the scene is ready.
 func impact_body() -> RigidBody2D:
 	return _body
+
+
+## --- The thrust feedback's own seams (FX_SPEC section 1.3, AUDIO_SPEC 4.5) ------
+
+
+## The frame's ratio, handed over by `game.gd` once per frame. Engine spec section 3.4 has
+## exactly one input and the scene already computes it for the dial and the screen-space
+## stack, so nothing here recomputes `|v| / v_max`.
+func set_speed_ratio(ratio: float) -> void:
+	_speed_ratio = clampf(ratio, 0.0, 1.0)
+
+
+func speed_ratio() -> float:
+	return _speed_ratio
+
+
+## The hull-local points the thruster flames come from (FX_SPEC section 1.3's anchor row):
+## one tail point behind the hull's centre today. **The seam wave P2-A replaces**: when
+## `ShipFit.mount_offset(hull_id, &"engines", i)` lands, this returns one point per engine
+## cell and nothing else in this file changes - the sync below is already per anchor.
+func thruster_anchors() -> Array[Vector2]:
+	var anchors: Array[Vector2] = []
+	var radius := _hull_radius()
+	if radius <= 0.0:
+		return anchors
+	anchors.append(Vector2(-radius * TAIL_ANCHOR_FRACTION, 0.0))
+	return anchors
+
+
+## The trail emitters in anchor order, one per engine cell (empty before the first frame
+## the hull is set up, and for a hull whose anchors are unknown).
+func thruster_trails() -> Array[GPUParticles2D]:
+	return _thruster_trails
+
+
+## The low-hull arcs' own counters, so "how many fired" is a reading rather than a count
+## of nodes that have already freed themselves.
+func arc_count() -> int:
+	return _arc_count
+
+
+func arc_interval() -> float:
+	return _arc_next
+
+
+## How many times the afterburner has lit on this hull. FX_SPEC section 7.1's dash charge
+## and AUDIO_SPEC section 4.5's boost cue both fire on that one event.
+func boost_activations() -> int:
+	return _boost_activations
 
 
 ## The pinned damage sink (slice-2 brief, pinned interface item 4; W2's measured gap 1):
@@ -387,6 +469,12 @@ func _physics_process(delta: float) -> void:
 	_step_turn(desired_turn, delta)
 	_step_speed(desired_speed, rate, delta)
 	_step_strafe(desired_lateral, delta)
+	## The owner's 2026-09-21 request ("ship while traveling has to make sounds ... and
+	## thrusters should create flame fx"), the hull's half: one trail per engine cell and
+	## one held bed, both reading the ratio `game.gd` already pushed and the thrust input
+	## the flight law above already resolved, plus the low-hull arcs' clock.
+	_update_thrust_feedback(not is_zero_approx(throttle))
+	_update_damage_arcs(delta)
 	_last_velocity = _body.linear_velocity
 
 
@@ -804,6 +892,10 @@ func _update_boosters(delta: float) -> void:
 	var effect := _booster_effect(BOOSTER_AFTERBURNER)
 	_boost_remaining = float(effect.get(&"duration", 0.0))
 	_boost_cooldown = float(effect.get(&"cooldown", 0.0))
+	## The activation, not the burn: FX_SPEC section 7.1's dash charge and AUDIO_SPEC
+	## section 4.5's S12 cue both hang off this one event, and this is the only line that
+	## lights a burner, so neither can fire twice in a burn.
+	_on_booster_activated()
 
 
 ## The afterburner's burn (ruling 11, section 13's BOOST_FUEL 3.0/s) through
@@ -989,6 +1081,7 @@ func _update_fuel_cell() -> void:
 func _release_state() -> void:
 	if _state == null:
 		return
+	PROJECTILE.release_thruster(self)
 	if _state.hull_changed.is_connected(_on_hull_changed):
 		_state.hull_changed.disconnect(_on_hull_changed)
 	if _state.shield_changed.is_connected(_on_shield_changed):
@@ -1010,6 +1103,11 @@ func _on_hull_changed(current: float, _maximum: float) -> void:
 func _on_hull_death() -> void:
 	PROJECTILE.spawn_hull_death(self, self)
 	PROJECTILE.release_shield(self)
+	## A wreck does not thrust: the bed goes out by its own cue and the emitters stop with
+	## the hull they were parented to.
+	PROJECTILE.release_thruster(self)
+	PROJECTILE.clear_thruster_trails(self)
+	_thruster_trails.clear()
 
 
 ## FX_SPEC sections 7.1/7.3, the damage state the HUD's own critical line marks
@@ -1022,6 +1120,62 @@ func _note_damage_state() -> void:
 		PROJECTILE.spawn_smoke_plume(self)
 		return
 	PROJECTILE.clear_smoke_plume(self)
+
+
+## One frame of the owner's request: the thruster's flame (FX_SPEC section 1.3's
+## amendment, one emitter per anchor) and the thruster's hum (AUDIO_SPEC section 4.5).
+##
+## The two share the section's own floor but not the same test: the trail is *active* while
+## the thrust input is held or the ratio is at or above 0.15 (the flame reads whether the
+## stick is down), while the bed's held state carries the 0.15/0.10 hysteresis and lives
+## in the manager, which is why one call asks and the answer is the manager's.
+func _update_thrust_feedback(thrusting: bool) -> void:
+	var active := thrusting or _speed_ratio >= PROJECTILE.TRAIL_RATIO_MIN
+	_thruster_trails = PROJECTILE.sync_thruster_trails(
+		self, thruster_anchors(), _speed_ratio, active
+	)
+	PROJECTILE.hold_thruster(self, _speed_ratio, thrusting)
+
+
+## FX_SPEC section 6 row 3 / section 7.1's "intermittent electrical arcs" while the hull is
+## below the 25 % line: one `fx_arc_spark.png` burst every 1.6-2.6 s (the section's own
+## proposed cadence), drawn at a point on the hull's own radius. The spawn is
+## `Projectile.spawn_arc_spark` - the shipped FEEDBACK row and helper the railgun's own hit
+## uses - so there is no second spawn path for the same sheet.
+func _update_damage_arcs(delta: float) -> void:
+	if _state == null or _state.hull_max <= 0.0:
+		_arc_clock = 0.0
+		return
+	if _state.hull / _state.hull_max >= PROJECTILE.LOW_HULL_FRACTION:
+		_arc_clock = 0.0
+		return
+	if _arc_next <= 0.0:
+		_arc_next = _arc_rng.randf_range(ARC_INTERVAL_MIN, ARC_INTERVAL_MAX)
+	_arc_clock += delta
+	if _arc_clock < _arc_next:
+		return
+	_arc_clock = 0.0
+	_arc_next = _arc_rng.randf_range(ARC_INTERVAL_MIN, ARC_INTERVAL_MAX)
+	_arc_count += 1
+	PROJECTILE.spawn_arc_spark(self, _arc_point())
+
+
+## A point on the hull's own edge, at the hull's own art-derived radius - the same figure
+## the aim deadzone and the body's inertia read, so the arcs land on the drawn hull rather
+## than at an invented distance from it.
+func _arc_point() -> Vector2:
+	var radius := _hull_radius()
+	return global_position + Vector2.RIGHT.rotated(_arc_rng.randf_range(0.0, TAU)) * radius
+
+
+## The afterburner lighting, the one event FX_SPEC section 7.1 (dash charge) and
+## AUDIO_SPEC section 4.5 (S12) both hang off. `b_fold`'s own dash is slice 4's, so only
+## the afterburner is here and its charge waits with that movement.
+func _on_booster_activated() -> void:
+	_boost_activations += 1
+	PROJECTILE.play_boost(self)
+	var parent := get_parent()
+	PROJECTILE.spawn_dash_charge(parent if parent != null else self, global_position)
 
 
 func _on_shield_changed(current: float, _maximum: float) -> void:

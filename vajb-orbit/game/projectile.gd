@@ -153,6 +153,12 @@ const SHIELD_LOOP_CUE: StringName = &"sfx_impact_shield_loop"
 ## (`sfx_weapon_explosion_01/02`, F1 report section "Pools added to AudioManager").
 const BLAST_CUE: StringName = &"sfx_weapon_explosion"
 
+## AUDIO_SPEC section 4.5: S12, the one-shot that pairs with the thruster bed - "fires
+## once on booster activation", and its take is the cue the station already plays at
+## launch, so no second asset is owed. It has no pool row, so the cue door falls back to
+## `play_sfx` (the same route the station's LAUNCH cue takes).
+const BOOST_CUE: StringName = &"sfx_ship_boost_01"
+
 ## FX_SPEC section 1.8 and Phase G's section 7.1 both put a hull's damage states at
 ## "hull fraction < 25 %", so the plume comes up below exactly that line.
 const LOW_HULL_FRACTION := 0.25
@@ -181,6 +187,41 @@ const PLUME_SPEED_MIN := 8.0
 const PLUME_SPEED_MAX := 24.0
 const PLUME_SCALE_MIN := 0.5
 const PLUME_SCALE_MAX := 1.1
+
+## --- The thruster trail's engine numbers (FX_SPEC section 1.3, amended 2026-09-21) --
+##
+## The amendment is the one place these values exist: one `GPUParticles2D` per engine
+## cell, parented to the hull, `local_coords = false` so the streaks trail in world
+## space; active while the thrust input is held **or** the ratio is at or above 0.15;
+## 20 streaks/s at that floor rising linearly to 60/s at 1.0; 0.4 s per streak (the
+## section's own alpha falloff); a 24 u streak at the floor rising to 56 u; 6 u wide;
+## additive ember at alpha 0.35 rising to 0.85.
+##
+## The emitter's capacity is the spec's own top rate over its own lifetime (24), and the
+## per-frame rate rides `amount_ratio` on top of it - the documented way to scale a GPU
+## emitter's output without reallocating its buffer (which would drop every live streak).
+##
+## The tail point is a seam: `PlayerShip.thruster_anchors()` returns one point behind the
+## hull's centre today and one point per engine cell once `ShipFit.mount_offset` lands
+## (wave P2-A). Nothing here knows which.
+const TRAIL_NODE_PREFIX := "ThrusterTrail"
+const TRAIL_RATIO_MIN := 0.15
+const TRAIL_RATE_MIN := 20.0
+const TRAIL_RATE_MAX := 60.0
+const TRAIL_LIFETIME := 0.4
+const TRAIL_LENGTH_MIN := 24.0
+const TRAIL_LENGTH_MAX := 56.0
+const TRAIL_WIDTH := 6.0
+const TRAIL_ALPHA_MIN := 0.35
+const TRAIL_ALPHA_MAX := 0.85
+
+## FX_SPEC section 1.3's streak points its hot head away from its transparent tail, and
+## the shipped master reads exactly that way (measured: mean luminance 37.6 -> 18.2 ->
+## 9.9 over the plate's thirds, left to right). A hull-local emitter therefore turns half
+## a turn so the head sits on the anchor and the tail streams behind it, and its origin
+## is pulled back by half a streak so the head - not the streak's middle - is the point
+## that rides the engine.
+const TRAIL_TURN := PI
 
 ## The audio service, reached the way every other caller reaches it (anchor at the
 ## tree root). A static helper has no tree of its own, so a caller passes the node that
@@ -284,6 +325,30 @@ const FEEDBACK: Dictionary = {
 		&"region": Rect2(641.0, 199.0, 755.0, 1580.0),
 		&"source": Vector2(755.0, 1580.0),
 		&"world": 40.0,
+	},
+	## FX_SPEC section 1.3's single streak, the row the thruster emitters draw from. The
+	## section's own amendment gives it a length *pair* (24 u -> 56 u by ratio), so the row
+	## carries the art and its measured size and the lengths live in `TRAIL_*` above.
+	&"trail": {
+		&"texture": "res://assets/fx/fx_engine_trail.png",
+		&"region": Rect2(331.0, 960.0, 1401.0, 86.0),
+		&"source": Vector2(1401.0, 86.0),
+	},
+	## FX_SPEC section 5 row 3's dust streak: the camera's own read (one object, 967 x 52).
+	&"dust": {
+		&"texture": "res://assets/fx/fx_dust_streak.png",
+		&"region": Rect2(526.0, 997.0, 967.0, 52.0),
+		&"source": Vector2(967.0, 52.0),
+		&"world": 12.0,
+	},
+	## FX_SPEC section 7.1's dash charge ("one-shot on booster activation, proposed 32 u,
+	## 0.2 s"): a single frame the engine scales, so the row carries the read and the fade.
+	&"dash_charge": {
+		&"texture": "res://assets/fx/fx_dash_charge.png",
+		&"region": Rect2(429.0, 343.0, 1193.0, 1256.0),
+		&"source": Vector2(1193.0, 1256.0),
+		&"world": 32.0,
+		&"seconds": 0.2,
 	},
 }
 
@@ -1244,6 +1309,144 @@ static func clear_smoke_plume(hull: Node2D) -> void:
 	existing.queue_free()
 
 
+## --- The thruster trail (FX_SPEC section 1.3's 2026-09-21 amendment) -------
+
+
+## The section's shared ramp for its three ratio rows: 0 at the 0.15 floor, 1 at 1.0.
+static func trail_ramp(ratio: float) -> float:
+	if ratio <= TRAIL_RATIO_MIN:
+		return 0.0
+	return clampf((ratio - TRAIL_RATIO_MIN) / (1.0 - TRAIL_RATIO_MIN), 0.0, 1.0)
+
+
+## "20 streaks/s at ratio 0.15 -> 60/s at 1.0 (linear)".
+static func trail_rate(ratio: float) -> float:
+	return lerpf(TRAIL_RATE_MIN, TRAIL_RATE_MAX, trail_ramp(ratio))
+
+
+## "24 u at ratio 0.15 -> 56 u at 1.0".
+static func trail_length(ratio: float) -> float:
+	return lerpf(TRAIL_LENGTH_MIN, TRAIL_LENGTH_MAX, trail_ramp(ratio))
+
+
+## "0.35 at ratio 0.15 -> 0.85 at 1.0".
+static func trail_alpha(ratio: float) -> float:
+	return lerpf(TRAIL_ALPHA_MIN, TRAIL_ALPHA_MAX, trail_ramp(ratio))
+
+
+## One engine cell's own numbers for a frame: the rate, the streak's length and alpha, and
+## the two emitter settings that carry them - `amount_ratio` (the rate against the
+## emitter's own top-rate capacity) and a non-uniform node scale, because the section
+## gives a length *and* a width and the master's own aspect is neither.
+static func trail_read(ratio: float, source: Vector2) -> Dictionary:
+	var length := trail_length(ratio)
+	var rate := trail_rate(ratio)
+	var capacity := roundi(TRAIL_RATE_MAX * TRAIL_LIFETIME)
+	var scale := Vector2.ONE
+	if source.x > 0.0 and source.y > 0.0:
+		scale = Vector2(length / source.x, TRAIL_WIDTH / source.y)
+	return {
+		&"ramp": trail_ramp(ratio),
+		&"rate": rate,
+		&"length": length,
+		&"width": TRAIL_WIDTH,
+		&"alpha": trail_alpha(ratio),
+		&"amount": capacity,
+		&"amount_ratio": rate / TRAIL_RATE_MAX,
+		&"count": float(capacity) * (rate / TRAIL_RATE_MAX),
+		&"scale": scale,
+	}
+
+
+## One emitter per anchor, parented to the hull (FX_SPEC section 1.3's amendment), shaped
+## from the frame's ratio. Idempotent: a hull that already carries its emitters keeps
+## them, a shorter anchor list drops the extras, and a missing sheet leaves the hull
+## without a trail rather than crashing a run. Returns the emitters in anchor order, so a
+## caller - or a probe - can read what it got.
+static func sync_thruster_trails(
+	hull: Node2D, anchors: Array, ratio: float, active: bool
+) -> Array[GPUParticles2D]:
+	var emitters: Array[GPUParticles2D] = []
+	if hull == null or not is_instance_valid(hull):
+		return emitters
+	var row := feedback_row(&"trail")
+	var texture := _texture_of(row) if not row.is_empty() else null
+	var read := trail_read(ratio, row.get(&"source", Vector2.ZERO) as Vector2)
+	for index in anchors.size():
+		var emitter := _trail_emitter(hull, index)
+		if emitter == null and texture != null and row.has(&"region"):
+			emitter = _make_trail(hull, index, texture, row[&"region"] as Rect2)
+		if emitter == null:
+			continue
+		_shape_trail(emitter, anchors[index] as Vector2, read, active)
+		emitters.append(emitter)
+	_drop_extra_trails(hull, anchors.size())
+	return emitters
+
+
+## A hull that stops carrying a trail (an anchor list that shrank, a hull swap) drops the
+## emitters it no longer has an anchor for.
+static func clear_thruster_trails(hull: Node2D) -> void:
+	if hull == null or not is_instance_valid(hull):
+		return
+	_drop_extra_trails(hull, 0)
+
+
+## FX_SPEC section 7.1's dash charge: one frame, engine-scaled (the row's `world` of 32 u)
+## and faded out over the row's 0.2 s, on the afterburner's own activation. Null when the
+## sheet is missing.
+static func spawn_dash_charge(parent: Node, at: Vector2) -> Sprite2D:
+	if parent == null:
+		return null
+	var row := feedback_row(&"dash_charge")
+	if row.is_empty() or not row.has(&"region"):
+		return null
+	var texture := _texture_of(row)
+	if texture == null:
+		return null
+	var scale_factor := FxScript.scale_for(
+		row.get(&"source", texture.get_size()) as Vector2, float(row.get(&"world", 0.0))
+	)
+	var sprite := FxScript.display(
+		parent, FxScript.frame(texture, row[&"region"] as Rect2), Vector2.ZERO, 0.0, scale_factor
+	)
+	if sprite == null:
+		return null
+	sprite.name = "dash_charge"
+	sprite.z_index = FEEDBACK_Z
+	_place(sprite, at)
+	if not sprite.is_inside_tree():
+		return sprite
+	FxScript.fade_and_free(sprite, float(row.get(&"seconds", 0.0)))
+	return sprite
+
+
+## AUDIO_SPEC section 4.5's last paragraph: S12's one-shot on **booster activation** (the
+## afterburner's, in v1 - `b_fold`'s movement is slice 4's, so its charge waits with it).
+static func play_boost(host: Node) -> StringName:
+	play_cue(host, BOOST_CUE)
+	return BOOST_CUE
+
+
+## AUDIO_SPEC section 4.5's thruster bed, asked for once a frame by its driver: the curve,
+## the hysteresis and the voice all live in `AudioManager` (`hold_thruster_bed`), so the
+## caller owns *when* and the manager owns *what*.
+static func hold_thruster(host: Node, ratio: float, thrusting: bool) -> bool:
+	var audio := _audio(host)
+	if audio == null or not audio.has_method(&"hold_thruster_bed"):
+		return false
+	return bool(audio.call(&"hold_thruster_bed", ratio, thrusting))
+
+
+## The bed goes out by its own cue, never by "whatever is in the foreground": the mining
+## shaft's bed and the shield hum are other holders of the manager's voices.
+static func release_thruster(host: Node) -> bool:
+	var audio := _audio(host)
+	if audio == null or not audio.has_method(&"stop_thruster_bed"):
+		return false
+	return bool(audio.call(&"stop_thruster_bed"))
+
+
 ## A hull's death: FX_SPEC section 1.4's explosion plus section 7.2's secondary burst,
 ## both parented to the world so they outlive the hull that died, and the blast cue.
 ## `host` is the dying hull itself - it has the tree the cue needs.
@@ -1347,6 +1550,79 @@ static func _plume_material(base: float) -> ParticleProcessMaterial:
 	plume.scale_max = base * PLUME_SCALE_MAX
 	plume.gravity = Vector3.ZERO
 	return plume
+
+
+## The emitter an anchor already has, by the same name-and-index rule the sync uses.
+static func _trail_emitter(hull: Node2D, index: int) -> GPUParticles2D:
+	var node := hull.get_node_or_null(NodePath(TRAIL_NODE_PREFIX + str(index)))
+	return node as GPUParticles2D
+
+
+## One engine cell's emitter (FX_SPEC section 1.3's amendment): the streak's own art as
+## an `AtlasTexture` over the shipped master, drawn additively, emitting in world space so
+## the streaks it leaves behind the flying hull are what reads as thrust. It carries no
+## velocity of its own - the hull's motion is the trail - so no number is needed for one.
+static func _make_trail(
+	hull: Node2D, index: int, texture: Texture2D, region: Rect2
+) -> GPUParticles2D:
+	var emitter := GPUParticles2D.new()
+	emitter.name = TRAIL_NODE_PREFIX + str(index)
+	emitter.texture = FxScript.frame(texture, region)
+	emitter.material = FxScript.additive_material()
+	emitter.process_material = _trail_material()
+	emitter.amount = roundi(TRAIL_RATE_MAX * TRAIL_LIFETIME)
+	emitter.lifetime = TRAIL_LIFETIME
+	emitter.local_coords = false
+	emitter.rotation = TRAIL_TURN
+	emitter.emitting = false
+	emitter.visible = false
+	hull.add_child(emitter)
+	return emitter
+
+
+static func _trail_material() -> ParticleProcessMaterial:
+	var trail := ParticleProcessMaterial.new()
+	trail.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_POINT
+	trail.direction = Vector3(1.0, 0.0, 0.0)
+	trail.spread = 0.0
+	trail.initial_velocity_min = 0.0
+	trail.initial_velocity_max = 0.0
+	trail.gravity = Vector3.ZERO
+	trail.scale_min = 1.0
+	trail.scale_max = 1.0
+	return trail
+
+
+## One frame of one engine cell: where it sits, how long and how bright its streak is,
+## and whether it is emitting at all.
+static func _shape_trail(
+	emitter: GPUParticles2D, anchor: Vector2, read: Dictionary, active: bool
+) -> void:
+	if emitter == null or not is_instance_valid(emitter):
+		return
+	var length := float(read.get(&"length", 0.0))
+	emitter.position = anchor - Vector2(length * 0.5, 0.0)
+	emitter.scale = read.get(&"scale", Vector2.ONE) as Vector2
+	emitter.amount_ratio = float(read.get(&"amount_ratio", 0.0))
+	var material := emitter.process_material as ParticleProcessMaterial
+	if material != null:
+		material.color = Color(1.0, 1.0, 1.0, float(read.get(&"alpha", 1.0)))
+	emitter.emitting = active
+	emitter.visible = active
+
+
+## Every emitter past `kept` anchors goes, so a hull whose anchor list shrank carries
+## exactly one emitter per engine cell it still has.
+static func _drop_extra_trails(hull: Node2D, kept: int) -> void:
+	if hull == null or not is_instance_valid(hull):
+		return
+	var index := kept
+	while true:
+		var emitter := _trail_emitter(hull, index)
+		if emitter == null:
+			return
+		emitter.queue_free()
+		index += 1
 
 
 ## A row's shipped master, or null when the file is not on disk.

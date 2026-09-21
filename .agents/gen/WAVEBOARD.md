@@ -9,9 +9,11 @@ citation paths of the form `.agents/gen/<report>.md` now resolve one level
 deeper.
 
 **Current state: four coding waves closed (chrome, combat repair, weapon FX wiring, flight
-feel & beam polish); the chrome art half, the launch fit and three spec ticks wait on the
-owner.** Engine waves closed as below
-(slice 0 + slice 2 review-verified clean; gate `passed=294 failed=0`). A full-loop live
+feel & beam polish); slice 2.5 (Feel) is BUILT and REVIEWED but PAUSED before its fixer pass —
+the owner is re-cutting the FX on transparent backgrounds first, which makes the trail's draw
+problem go away by construction. Owner gates: the chrome art half, the launch fit, three spec
+ticks, and the §13 turn column.** Engine waves closed as below
+(slice 0 + slice 2 review-verified clean; gate `passed=307 failed=0` with slice 2.5's builder suite). A full-loop live
 playtest (2026-09-21, godot-ai driven) verified the whole menu → station → launch →
 space structure but found the `ui_slot_*` chrome shipping as whole sheet cells
 (880×876 / 873×864). The **UI-chrome code lane is Done** (D3 guard, D4 stale UIDs, D5
@@ -242,6 +244,28 @@ lanes' queued items below are executed through those files.
   when their verification close-out lands (IMPLEMENTATION_PLAN §9.6).
 - `docs/gameplay/19_testing_notes.md` batch-2 items B2-1/B2-2 — annotated;
   land with the graphics lane's pass.
+
+## In flight
+
+- **Slice 2.5 (Feel) — BUILT + REVIEWED, PAUSED before S3.** S1 shipped all nine deliverables
+  (gate 294 → 307, `test_slice2_5_feel` 13, no existing test moved): motion blur
+  (`game/speed_fantasy.gd` + `speed_blur.gdshader`), the camera pull-back composed with the
+  wheel zoom, dust streaks, the hull-critical vignette, low-hull arcs, the thruster trail
+  behind a `thruster_anchors()` seam, the S16 thruster bed with its speed curve and hysteresis,
+  the boost cue and the dash charge. S2's review (report `.agents/gen/slice2_5_s2_report.md`)
+  reproduced the gate and S1's probe byte-identically and left **2 HIGH, 0 MED, 6 LOW
+  (L66–L72)**:
+  (1) the thruster bed holds a voice but never plays a stream — `hold_thruster_bed` calls
+  `play_loop` then `_shape_bed` in the same frame, and `_shape_bed` kills the crossfade tween
+  before `_start_stream` ran, so a fresh voice is silent and a re-used one plays the previous
+  bed's file at the thruster's pitch/level (repro: `tests/probe_s2_5_voice.tscn`);
+  (2) the trail's streaks draw at the master's native 1401 × 86 px because
+  `GPUParticles2D.scale` is inert for the drawn quad, so §1.3's 24–56 u never reach the screen
+  (repro: `tests/probe_s2_5_trail_draw.tscn`).
+  **S3 (one fixer pass on those two) is owed when the wave resumes.** The owner paused it on
+  2026-09-21 to re-cut the FX on transparent backgrounds first — that removes HIGH 2's class by
+  construction (an alpha sheet is drawn at the quad's own size, and the wiring stops needing
+  additive-on-void) — so S3 should be briefed after the re-cut lands, with the bed fix unchanged.
 
 ## Closed (details in MASTER_REPORT.md)
 

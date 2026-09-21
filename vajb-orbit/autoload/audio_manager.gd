@@ -148,12 +148,33 @@ const LOOP_VOICE_COUNT := 3
 const LOOP_LEASE := 1.2
 
 ## Which bed gives way first when every voice is busy: the higher number keeps its voice
-## against a lower one. An impact read (S6's hum) outranks a held tool's own bed.
+## against a lower one. An impact read (S6's hum) outranks a held tool's own bed and the
+## thruster's, which are peers at 1 (AUDIO_SPEC section 4.5's own priority column).
 const LOOP_PRIORITY: Dictionary = {
 	&"sfx_impact_shield_loop": 2,
 	&"sfx_mining_beam": 1,
+	&"sfx_ship_engine_01": 1,
 }
 const LOOP_PRIORITY_DEFAULT := 1
+
+## --- The thruster bed (AUDIO_SPEC section 4.5) ----------------------------
+##
+## The player's own hull holds a hum while it is under way: "held while the thrust input
+## is down **or** `speed_ratio >= 0.15`, with hysteresis: on at 0.15, off below 0.10, so
+## a drifting hull keeps its hum and a standstill does not chatter", with `pitch_scale`
+## 0.85 at ratio 0.15 rising linearly to 1.15 at 1.0 and `volume_db` -24 dB rising to
+## -12 dB, re-asked every frame it is held.
+##
+## The bed is S16 `sfx_ship_engine_01` - the spec's pinned default. `sfx_ship_engine_02_loop`
+## is the owner's alternative take and swapping the bed is this one constant.
+const THRUSTER_CUE: StringName = &"sfx_ship_engine_01"
+const THRUSTER_ON_RATIO := 0.15
+const THRUSTER_OFF_RATIO := 0.10
+const THRUSTER_RATIO_MIN := 0.15
+const THRUSTER_PITCH_MIN := 0.85
+const THRUSTER_PITCH_MAX := 1.15
+const THRUSTER_VOLUME_MIN_DB := -24.0
+const THRUSTER_VOLUME_MAX_DB := -12.0
 
 var _ui_player: AudioStreamPlayer
 var _sfx_players: Array[AudioStreamPlayer] = []
@@ -180,6 +201,10 @@ var _loop_started: Array[int] = []
 var _loop_asked: Array[int] = []
 var _loop_tweens: Array[Tween] = []
 var _loop_clock := 0
+## Whether the thruster's own hysteresis is latched on: the bed is held while the thrust
+## input is down, and a released throttle keeps it while the ratio stays above
+## `THRUSTER_OFF_RATIO` (AUDIO_SPEC section 4.5).
+var _thruster_latched := false
 ## Per-cue round-robin cursor and the last cue the SFX bus was handed (a headless
 ## probe cannot hear a cue, so it reads this instead).
 var _pool_next: Dictionary = {}
@@ -366,6 +391,11 @@ func play_loop(cue: StringName, fade_seconds: float = LOOP_FADE) -> StringName:
 		return current_loop()
 	_set_loop(stream)
 	_clear_loop_voice(index)
+	## A fresh bed starts at the plain pitch. Only the thruster bed shapes its voice
+	## (`hold_thruster_bed`), and a voice it hands back must not carry its pitch into the
+	## next bed - the mining shaft's per-tier pitch reads the voice's own (AUDIO_SPEC
+	## section 4.2), so a leak here would retune another bed.
+	_loop_players[index].pitch_scale = 1.0
 	_loop_cues[index] = cue
 	_loop_started[index] = _loop_clock
 	_loop_asked[index] = _now_ms()
@@ -403,6 +433,72 @@ func stop_bed(cue: StringName, fade_seconds: float = LOOP_FADE) -> bool:
 		return false
 	_put_loop_voice_out(index, fade_seconds)
 	return true
+
+
+## --- The thruster bed's one call (AUDIO_SPEC section 4.5) -----------------
+
+
+## One frame of the thruster's held state, from its single input (`speed_ratio`) plus
+## whether the thrust input is down. The caller asks every frame it is under way; this
+## decides what that means, so the curve and the hysteresis have one owner:
+##
+##   * `thrusting` holds the bed outright (a hull standing on its thrust reads);
+##   * a released throttle holds it only while the ratio keeps the hysteresis latched -
+##     on at 0.15, off below 0.10, so a drifting hull keeps its hum and a standstill does
+##     not chatter;
+##   * while it is held the bed's own voice carries the curve: `pitch_scale` 0.85 -> 1.15
+##     and `volume_db` -24 -> -12 dB, both linear from ratio 0.15 to 1.0.
+##
+## Returns whether the bed is sounding. The stop is this method's own (`stop_bed` by cue),
+## so the thruster can never take another holder's bed down with it.
+func hold_thruster_bed(ratio: float, thrusting: bool) -> bool:
+	_expire_loops()
+	var latched := _thruster_latched and _loop_cues.has(THRUSTER_CUE)
+	var held := thrusting
+	if not held:
+		held = ratio >= (THRUSTER_OFF_RATIO if latched else THRUSTER_ON_RATIO)
+	_thruster_latched = held
+	if not held:
+		stop_thruster_bed()
+		return false
+	play_loop(THRUSTER_CUE)
+	var ramp := thruster_ramp(ratio)
+	_shape_bed(
+		THRUSTER_CUE,
+		lerpf(THRUSTER_PITCH_MIN, THRUSTER_PITCH_MAX, ramp),
+		lerpf(THRUSTER_VOLUME_MIN_DB, THRUSTER_VOLUME_MAX_DB, ramp)
+	)
+	return true
+
+
+## The thruster's bed goes out by its own cue (never "whatever is in the foreground"),
+## and the hysteresis is released with it, so the next hold arms at `THRUSTER_ON_RATIO`
+## again. Returns whether the bed was sounding.
+func stop_thruster_bed(fade_seconds: float = LOOP_FADE) -> bool:
+	_thruster_latched = false
+	return stop_bed(THRUSTER_CUE, fade_seconds)
+
+
+## The thruster curve's own ramp: 0 at its 0.15 floor, 1 at full speed. Public because it
+## is the curve's arithmetic rather than a call (a probe reads the same numbers).
+static func thruster_ramp(ratio: float) -> float:
+	if ratio <= THRUSTER_RATIO_MIN:
+		return 0.0
+	return clampf((ratio - THRUSTER_RATIO_MIN) / (1.0 - THRUSTER_RATIO_MIN), 0.0, 1.0)
+
+
+## What a bed's own voice is running at, for a caller that shapes it and for a probe that
+## cannot hear it: `{sounding, pitch_scale, volume_db}`.
+func bed_state(cue: StringName) -> Dictionary:
+	var index := _loop_cues.find(cue)
+	if index < 0:
+		return {&"sounding": false, &"pitch_scale": 1.0, &"volume_db": SILENT_DB}
+	var player := _loop_players[index]
+	return {
+		&"sounding": true,
+		&"pitch_scale": player.pitch_scale,
+		&"volume_db": player.volume_db,
+	}
 
 
 ## The bed in the foreground: the highest-priority one sounding, and the most recently
@@ -583,6 +679,24 @@ func _put_loop_voice_out(index: int, fade_seconds: float) -> void:
 	if player.playing:
 		_loop_tweens[index] = _fade_out(player, fade_seconds)
 	_clear_loop_voice(index)
+
+
+## A bed's own level, written on its own voice: pitch and volume, no fade.
+##
+## A bed whose driver sets its level every frame cannot also be faded in by the manager -
+## the two would write one property - so the fade tween is released the moment a level is
+## written, and the bed enters at the curve's own floor (the thruster's -24 dB, which is
+## quiet by construction). The release path still fades out from wherever the curve left
+## the voice (`_put_loop_voice_out`).
+func _shape_bed(cue: StringName, pitch_scale: float, volume_db: float) -> bool:
+	var index := _loop_cues.find(cue)
+	if index < 0:
+		return false
+	_kill_loop_tween(index)
+	var player := _loop_players[index]
+	player.pitch_scale = pitch_scale
+	player.volume_db = volume_db
+	return true
 
 
 ## A bed nobody has asked for inside `LOOP_LEASE` goes out by itself: the two existing
