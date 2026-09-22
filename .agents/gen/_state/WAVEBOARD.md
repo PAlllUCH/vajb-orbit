@@ -166,7 +166,15 @@ PowerShell form: `$env:VAJB_WORKER_FILES='...'; crush run "<prompt>" -m opencode
 - Probe hygiene (L17): a probe that repoints `PlayerProfile.save_path` must
   stop/flush the 0.5 s debounce before restoring `save_path`.
 
-## In flight — none.
+## In flight — none. **Graphics D2 (designer #1) is DONE 2026-09-22** (commit `7c1ae06`,
+verified by the designer-session re-measure: **135 SVG + 164 raster masters + 540 tint
+stencils = 839 files** (2 478 → 839, 1 774 deleted), zero non-tint `_16/_48/_96/_192/@2x`
+left, `asset_path_fallout` **0 unresolvable** (367 refs), gate **457/0** held through the
+catalog/test/tool re-points. Owner amendments of the run recorded in `D2_SPLIT.md` §6 (96
+grid supersedes 48, batches ≤ ~10 icons, the sanctioned palette ramp). `validate_names
+--library` is environment-deferred on the Linux host (`asset-library/cut/` + `_archive`
+are Windows-side only; `archive.py --restore` reports "no archive"). **Coder item 9 (S3)
+is unblocked and starts next.**
 
 **Queued:** items 4 **P2-A**,
 5 **Rock cleave**, 6 **P2-B1**, 7 **P2-B proper** and 8 **S2.6 truth-and-feel** — all **DONE**
@@ -183,9 +191,10 @@ file collisions (S3 and S4 both hold `outfitting_panel.gd`). **The graphics lane
 designer #1's only job is D2, the icon unification — glyph-type icons remade as
 hand-authored SVG masters (kie.ai has no SVG generator), every other icon kept as ONE
 raster master with all size variants deleted project-side (Godot scales from the master;
-`asset-library/` keeps provenance). It runs parallel to coder item 8 and must close
-before item 9 (its reference sweep touches `ui/station/*`). Designer #2 (chrome re-cut,
-tint rework, 4K backdrops, B2-1 hover) waits for the owner's later dispatch.** Owner ticks open: the
+`asset-library/` keeps provenance; Phase C's write set is **owner-extended** to the four
+`game/*_catalog.gd`, five test files and two tools — re-point only). Coder item 8 is
+closed, so D2 runs now and must close before item 9 (the extended set overlaps S3's).
+Designer #2 (chrome re-cut, tint rework, 4K backdrops, B2-1 hover) waits for the owner's later dispatch.** Owner ticks open: the
 `18_engine_spec.md` §6/§13/§15 cleaving amendment (owner-locked — the wave shipped,
 the spec text lags; it now also covers `FRAGMENT_OUTWARD_KICK` and the two
   flight multipliers `ACCEL_TIME_MULT`/`COAST_TIME_MULT`), the §13 turn/`coast_time`
