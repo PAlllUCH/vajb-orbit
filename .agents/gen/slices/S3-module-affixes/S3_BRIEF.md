@@ -177,6 +177,13 @@ and leaves the full gate to the orchestrator.
   reports it and leaves it.
 - No shell-based file edits; workspace-relative `VAJB_WORKER_FILES` paths (L92a). An
   absolute path inside the set is still denied by the hook.
+- **Never boot the profile against the live `user://` (T-93, measured this wave).** A
+  probe or script that instantiates the autoload writes the owner's real account and
+  appends to their real `economy_log.txt`; S3-K1's first dispatch did exactly that
+  (`_incident/README.md`). A probe must set `PlayerProfile.save_path` to a scratch
+  path **and** run under its own `XDG_DATA_HOME`, and only `headless_runner.tscn`
+  (whose sandbox is the sanctioned live-path reader) may touch the default path.
+  Never leave a probe that does otherwise in the tree.
 - Bounded probes only (hard iteration bounds — L82). Never leave a background job.
 - A number not in the pinned docs: **report it, never invent it.**
 
