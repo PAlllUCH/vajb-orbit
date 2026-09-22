@@ -53,6 +53,23 @@ reads as progression:
 | Frigate | 30 % |
 | Destroyer | 20 % (the wall should feel rare without being grind-gated) |
 
+**Pinned 2026-09-23 (S3, K2's measured finding): the two half-sentences above cannot
+both hold exactly, and here is which one bends.** §2.1 asks for **6 hulls** on the shelf
+while §2.2's own chances over nine classes average **5.2** listings, so a shelf that is
+always six and a shelf that honours these nine numbers are different shelves. **The six
+is the law and the chances are the draw's probabilities**: Fighter and Cutter are forced
+in first (both read "always listed"), then each of the other seven is drawn against its
+own chance, and a draw that lands short of or past six is reconciled **by these chances**
+— the highest chance fills first, the lowest drops first, ties keep `StationCatalog.SHIPS`
+order. Measured over 2 000 shelves at the S3 gate: `fighter`/`vanguard` 1.0000,
+`miner` 0.9165, `trader` 0.8755, `freighter` 0.8220, `corvette` 0.6105, `gunship` 0.4175,
+`patrol` 0.2240, `destroyer` 0.1340 — strictly ordered by the column above, and above
+their literals for the mid classes because the shelf is held at six. **Owner tick:** the
+one-word alternative is to read §2.1 as "**up to** six hulls", which makes every number
+above exact and lets the shelf fall short; the code reversal is one ordered key
+(`Auction._reconciles_before` — chance instead of `HULL_ORDER` position). Reversal of the
+whole block: delete it and the sentence above it stands as written.
+
 *(Naming corrected 2026-09-22, S3 docs pass: the 60 % row read "Delver, Trader, Hauler",
 a ship name where every other row is a class. The shelf keys off 08 §2's **asset ids**
 (`ship_fighter`, `ship_vanguard`, `ship_miner`, `ship_trader`, `ship_corvette`,

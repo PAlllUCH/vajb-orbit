@@ -104,10 +104,10 @@ func test_a_v4_file_with_all_six_upgrades_loads_as_six_modules() -> void:
 			profile.module_count(SUCCESSORS[index]), 1, "%s came over once" % SUCCESSORS[index]
 		)
 		assert_eq(profile.module_count(RETIRED[index]), 0, "%s is never an inventory id" % RETIRED[index])
-	## The flag day wrote the file itself: v5, no record, the six modules on disk.
+	## The flag day wrote the file itself: v6 (S3), no record, the six modules on disk.
 	var on_disk := ConfigFile.new()
 	assert_eq(on_disk.load(PROFILE_PATH), OK, "the migrated file reads back")
-	assert_eq(int(on_disk.get_value(SECTION, "save_version", 0)), 5, "writes always persist v5")
+	assert_eq(int(on_disk.get_value(SECTION, "save_version", 0)), 6, "writes always persist v6")
 	assert_false(on_disk.has_section_key(SECTION, "upgrades"), "the retired key is gone")
 	var stored: Dictionary = on_disk.get_value(SECTION, "modules", {})
 	assert_eq(stored.size(), 6, "the six records are on disk")
@@ -115,7 +115,7 @@ func test_a_v4_file_with_all_six_upgrades_loads_as_six_modules() -> void:
 	assert_eq(profile.retire_legacy_upgrades(), 0, "the migration is idempotent")
 	var again = _fresh()
 	again.reload()
-	assert_eq(again.modules().size(), 6, "a v5 file loads as six modules, not twelve")
+	assert_eq(again.modules().size(), 6, "a v6 file loads as six modules, not twelve")
 	assert_eq(again.retire_legacy_upgrades(), 0, "and has nothing left to migrate")
 
 

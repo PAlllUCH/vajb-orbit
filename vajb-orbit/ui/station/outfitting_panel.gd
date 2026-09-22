@@ -1,24 +1,23 @@
 extends VBoxContainer
-## OUTFITTING module panel: the FITTED WEAPONS strip and the MODULES section (the six
-## weapon modules of 09 section 3.1 plus 09 section 4 item 7's mining laser, the seventh
-## weapon slot id) above one row per StationCatalog.AMMO_PACKS entry,
-## held and capped from PlayerProfile. Contract: docs/design/STATION_HUB.md sections 5.1,
-## 5.6, 10 and 12, docs/design/STATION_SPEC.md sections 2.3 and 6, docs/CONTRACTS.md
-## section 12 and docs/gameplay/09_ship_slots_modules.md sections 1, 2, 3.1, 4 and 9.
+## OUTFITTING module panel: the FITTED WEAPONS strip above one row per
+## StationCatalog.AMMO_PACKS entry, held and capped from PlayerProfile.
+## Contract: docs/design/STATION_HUB.md sections 5.1 (the 2026-09-22 S3 amendment that
+## retires the MODULES rows into the AUCTION), 5.6, 10 and 12;
+## docs/design/STATION_SPEC.md sections 2.3 and 6; docs/CONTRACTS.md sections 12 and 15.
 ##
 ## The station shell loads this scene into its host, so the panel never routes, never
 ## writes the profile and never draws the credits readout: it emits status_requested up
-## and reads StationCatalog / PlayerProfile / ModuleCatalog / ShipFit down. Every later
-## module panel copies this shape (STATION_HUB section 12.4).
+## and reads StationCatalog / PlayerProfile / ShipFit down. Every later module panel
+## copies this shape (STATION_HUB section 12.4).
 ##
-## The MODULES section is a request surface, never a store (STATION_HUB section 12.4,
-## CONTRACTS section 12 rule 2): BUY is `PlayerProfile.buy_module` with the catalogue's
-## own price, INSTALL and SWAP are `set_fit_slot` behind `ShipFit.fit_legal`, and REMOVE
-## is `set_fit_slot(..., "")` plus `add_module`. Every fit write is preceded by
-## `_seed_fit`, because a hull the account holds no fit for would otherwise be
-## materialised from nothing and lose 09 section 7's mandatory set. A refused fit writes
-## nothing and renders in the footer strip the panel owns (`status_requested`), never a
-## dialog, and nothing auto-removes (09 section 2, CONTRACTS section 12 rule 3).
+## **The MODULES section is retired** (section 5.1's S3 amendment, 10 section 2.4): the
+## AUCTION's shelf sells the rolled instances now, so this pane is ammunition plus the
+## FITTED WEAPONS strip, and `PlayerProfile.buy_module` / `ModuleCatalog` stay the price
+## source the migration table reads with no new UI caller here. The strip's REMOVE is
+## untouched by that retirement: it is the strip's own control, not a row of the retired
+## table, and its write goes through the profile's public fit API
+## (`set_fit_slot` + `add_module`), preceded by `_seed_fit` so a hull the account holds no
+## fit for cannot be materialised without 09 section 7's mandatory set.
 ##
 ## Panel contract with the shell:
 ##   signal status_requested(message: String, danger: bool)   write the footer strip
@@ -39,19 +38,14 @@ const COL_ICON := 40.0
 const COL_HELD := 130.0
 const COL_PRICE := 110.0
 const COL_TAG := 160.0
+const COL_ACTION := 160.0
 const ROW_INNER_MARGIN := Vector2i(12, 8)
 const COLUMN_SEPARATION := 12
 const CELL_SEPARATION := 2
 ## Fix Wave 1 W2.2: _header_cells() and a row's own grid declare the same five columns in
 ## the same order, so the header can be re-fitted from a live row instead of repeating the
-## declared widths (see _fit_header).
+## declared widths (see _fit_section).
 const GRID_CELLS: Array[StringName] = [&"Icon", &"TitleBox", &"Held", &"Price", &"Status"]
-## The MODULES rows' own grid, in their own column order (STATION_HUB section 5.1's
-## amendment): the same Icon/TitleBox/Price/Status cells plus the effect text and the
-## ACTION word, so one `_fit_section` pass fits both headers.
-const MODULE_GRID_CELLS: Array[StringName] = [
-	&"Icon", &"TitleBox", &"Effect", &"Price", &"Status", &"Action"
-]
 ## Frames the header fit retries while its host has not laid the rows out yet.
 const HEADER_FIT_RETRIES := 8
 const ROW_ICON_IDLE_ALPHA := 0.72
@@ -85,88 +79,15 @@ const UNAVAILABLE_VALUE := "0 / 0"
 const STATUS_HINT := "ENTER BUY · %s · %s CREDITS"
 const STATUS_BOUGHT := "PURCHASED · %s · +%d ROUNDS"
 
-## --------------------------------------------------------------- modules (P2-B1)
-## The MODULES section and the FITTED WEAPONS strip (STATION_HUB section 5.1's
-## amendment, transcribed from the wave brief's section 3; every number below is 09
-## section 3.1's or 09 section 9's).
-
-## 09 section 3.1's WEAPONS table, in its own row order, plus 09 section 4 item 7's mining
-## laser as its seventh row: every weapon-slot id the catalogue ships has a row here, which
-## is what gives `w_mining` a door (P2-B1 F1, R1's MED-2). `w_mining` has no section 3.1 row
-## of its own; its tier, draw and 600 CR cost are 09 section 4 item 7's.
-const MODULE_ROWS: Array[StringName] = [
-	&"w_laser",
-	&"w_cannon",
-	&"w_rocket",
-	&"w_mine",
-	&"w_plasma",
-	&"w_railgun",
-	&"w_mining",
-]
-
-## 09 section 3.1's Effect column, verbatim, plus 09 section 4 item 7's mining laser, whose
-## words are 09 section 3.1's own family / shield-rule note (family tool, shield rule rocks
-## only) and item 7's W slot sentence: the catalogue carries the ids, the slot, the draw and
-## the cost, and this prose lives only in the document, so it is transcribed here and
-## `tests/test_p2b1_outfitting_panel.gd` parses the table back out of
-## docs/gameplay/09_ship_slots_modules.md and compares, so the two cannot drift.
-const EFFECT_TEXT: Dictionary = {
-	&"w_laser": "laser hardpoint, 30 DPS, uses Laser Cells",
-	&"w_cannon": "kinetic hardpoint, 45 DPS burst, Cannon Shells",
-	&"w_rocket": "rocket pod, high alpha, Rocket rounds",
-	&"w_mine": "mine layer, area denial, Mine Rack",
-	&"w_plasma": "plasma lance, 70 DPS, melts armour, Plasma Cells",
-	&"w_railgun": "railgun, 60 DPS",
-	&"w_mining": "mining laser, tool family, rocks only; occupies a W slot",
-}
-
+## The strip (STATION_HUB section 5.1's 2022-09-22 P2-B1 amendment, kept by the S3 one):
+## one line per W cell of the active hull, each fitted line carrying REMOVE.
 const WEAPON_SLOT: StringName = &"weapons"
-const COL_MODULE_ICON := 48.0
-const COL_EFFECT := 300.0
-const COL_ACTION := 160.0
 const STRIP_LINE_HEIGHT := 48.0
 ## The row the strip's REMOVE plate takes its width from, so the strip's control column
-## and the rows' ACTION column are one column.
+## and the retired rows' ACTION column were one column.
 const STRIP_REMOVE := "REMOVE"
-## 09 section 4 item 5's layout index of the cell a SWAP displaces: the wave's INSTALL
-## targets the first empty W cell (brief section 7 item 3, no slot picker in this wave),
-## so SWAP takes the same first cell rather than a second rule.
-const SWAP_INDEX := 0
-
-const HEADER_MODULE := "MODULE"
-const HEADER_EFFECT := "EFFECT"
-const HEADER_ACTION := "ACTION"
-const META_DRAW := "W SLOT · DRAW %d"
-
-## STATION_HUB section 5.1's four STATUS states and four ACTION states.
-const STATUS_FITTED := "FITTED (W%d)"
-const STATUS_OWNED := "OWNED ×%d"
-const STATUS_FOR_SALE := "FOR SALE"
-const STATUS_LOCKED := "LOCKED"
-const ACTION_BUY: StringName = &"BUY"
-const ACTION_INSTALL: StringName = &"INSTALL"
-const ACTION_SWAP: StringName = &"SWAP"
-const ACTION_REMOVE: StringName = &"REMOVE"
-
-## The strip's two line shapes, verbatim from STATION_HUB section 5.1 (`W1 LASER MKII` /
-## `W2 — EMPTY`).
 const STRIP_LINE := "W%d %s"
 const STRIP_EMPTY := "— EMPTY"
-
-## STATION_HUB section 5.1's two refusal wordings (owner tick 2 of the wave brief). The
-## overload line is 09 section 2's own over-by format: the sum of the candidate fit's
-## non-engine draws, the hull's output plus its power module, and the difference.
-const REFUSAL_OVERLOAD := "%d / %d PWR — OVER BY %d"
-const REFUSAL_SLOTS_FULL := "W SLOTS FULL — SWAP OR REMOVE FIRST"
-## Unreachable from this surface's own writes (a W cell is written in place, the mandatory
-## set is untouched and 09 section 4 item 4 guards engines and computers, not weapons), so
-## it is the guard for a fit that arrived already illegal rather than a fifth state.
-const REFUSAL_FIT_ILLEGAL := "REFUSED · FIT ILLEGAL"
-
-const STATUS_MODULE_HINT := "ENTER %s · %s · %s CREDITS"
-const STATUS_MODULE_BOUGHT := "PURCHASED · %s · %s CREDITS"
-const STATUS_INSTALLED := "INSTALLED · %s · W%d"
-const STATUS_SWAPPED := "SWAPPED · %s · %s BACK IN INVENTORY"
 const STATUS_REMOVED := "REMOVED · %s · BACK IN INVENTORY"
 
 ## Audit anomaly C16: these three catalogue icons are flat Phase B glyphs (mean RGB about
@@ -186,17 +107,12 @@ const TINT_DIR := "res://assets/icons/tint/"
 @onready var _scroll: ScrollContainer = %OutfittingScroll
 @onready var _rows: VBoxContainer = %OutfittingRows
 @onready var _strip: VBoxContainer = %FittedStrip
-@onready var _module_header: HBoxContainer = %ModulesHeader
-@onready var _module_rows: VBoxContainer = %ModuleRows
 
 var _payloads: Array[Dictionary] = []
-var _module_payloads: Array[Dictionary] = []
 var _strip_lines: Array[Dictionary] = []
-## The two header/rows pairs (`{header, margin, rows, cells, queued, retries}`), so the
-## ammo header and the module header are fitted by the same pass instead of two copies of
-## it. Built by `_connect_layout`, which runs before the row builders that fill them.
+## The header/rows pair (`{header, rows, cells, queued, retries}`) the fit pass drives.
+## Built by `_connect_layout`, which runs before the row builder that fills it.
 var _ammo_section: Dictionary = {}
-var _module_section: Dictionary = {}
 var _sections: Array[Dictionary] = []
 var _selected_row: Button = null
 var _tweens: Array[Tween] = []
@@ -206,8 +122,6 @@ func _ready() -> void:
 	_connect_layout()
 	_build_header()
 	_build_rows()
-	_build_module_header()
-	_build_module_rows()
 	_build_strip()
 	_apply_tokens()
 	_connect_scroll()
@@ -227,32 +141,24 @@ func _exit_tree() -> void:
 
 
 func refresh_profile(key: StringName) -> void:
-	## STATION_HUB section 12.4 plus the wave brief's section 3: &"credits" moves every
-	## price and tag, &"ammo" the held counts, &"fits" the fitted strip and every module
-	## state, &"modules" the inventory side of the same, and &"ships" the active hull both
-	## of them are read from (a hull switch changes the strip's cell count). Every other
-	## key belongs to another panel. Nothing here rebuilds a node: the profile emits
-	## mid-handler and the row whose press started it is still on the stack.
-	if key == &"credits" or key == &"modules" or key == &"fits" or key == &"ships":
-		_refresh_module_rows()
-	if key == &"fits" or key == &"ships":
-		_refresh_strip()
+	## STATION_HUB section 12.4 plus the S3 amendment's retirement: `&"credits"` moves every
+	## price and tag, `&"ammo"` the held counts, `&"fits"` the fitted strip, and `&"ships"`
+	## the active hull the strip is read from (a hull switch changes its cell count). The
+	## inventory keys belong to the AUCTION pane now. Nothing here rebuilds a node: the
+	## profile emits mid-handler and the row whose press started it is still on the stack.
 	if key == &"credits" or key == &"ammo":
 		_refresh_rows()
+	if key == &"fits" or key == &"ships":
+		_refresh_strip()
 
 
 func focus_primary() -> void:
-	## STATION_HUB section 5.1's focus order: the fitted strip first, then the module rows,
-	## then the ammo rows.
+	## STATION_HUB section 5.1's focus order, read from this pass as two groups: the fitted
+	## strip first, then the ammo rows.
 	for line: Dictionary in _strip_lines:
 		var remove: Button = line[&"remove"]
 		if remove.visible and not remove.disabled:
 			remove.grab_focus()
-			return
-	for payload: Dictionary in _module_payloads:
-		var row: Button = payload[&"row"]
-		if not row.disabled:
-			row.grab_focus()
 			return
 	for payload: Dictionary in _payloads:
 		var row: Button = payload[&"row"]
@@ -263,8 +169,6 @@ func focus_primary() -> void:
 
 func _apply_tokens() -> void:
 	for payload: Dictionary in _payloads:
-		_apply_icon_token(payload)
-	for payload: Dictionary in _module_payloads:
 		_apply_icon_token(payload)
 
 
@@ -478,22 +382,20 @@ func _connect_scroll() -> void:
 
 
 func _connect_layout() -> void:
-	## Fix Wave 1 W2.2, kept for both column headers. A header cannot trust its declared
-	## column widths: a caption that outgrows its column (HELD / MAX over capacity is 143 px
-	## against the declared 130) widens that cell, so any event that can move the rows'
-	## columns queues a re-fit of that header onto its own rows' box.
+	## Fix Wave 1 W2.2, kept. A header cannot trust its declared column widths: a caption
+	## that outgrows its column (HELD / MAX over capacity is 143 px against the declared 130)
+	## widens that cell, so any event that can move the rows' columns queues a re-fit of that
+	## header onto its own rows' box.
 	##
-	## The margins are the scene's own 12 px and are no longer measured: both headers now sit
-	## in the scrolling body directly above their own rows, so the header's MarginContainer
-	## and the rows' `RowInner` have the same left and right inset by construction. Measuring
-	## them would feed the margin back into the body's minimum width and with it the rows'
-	## box, which is a growth loop rather than a fit (measured: 927 -> 939 -> 951 px per
-	## pass with a measured trailing margin).
+	## The margins are the scene's own 12 px and are no longer measured: the header now sits
+	## in the scrolling body directly above its own rows, so the header's MarginContainer and
+	## the rows' `RowInner` have the same left and right inset by construction. Measuring them
+	## would feed the margin back into the body's minimum width and with it the rows' box,
+	## which is a growth loop rather than a fit (measured: 927 -> 939 -> 951 px per pass with
+	## a measured trailing margin).
 	_sections.clear()
 	_ammo_section = _make_section(_header, _rows, GRID_CELLS)
-	_module_section = _make_section(_module_header, _module_rows, MODULE_GRID_CELLS)
 	_sections.append(_ammo_section)
-	_sections.append(_module_section)
 	_scroll.resized.connect(_queue_header_fit)
 	_scroll.get_v_scroll_bar().visibility_changed.connect(_queue_header_fit)
 	for section: Dictionary in _sections:
@@ -747,267 +649,15 @@ func _refresh_strip() -> void:
 			text.text = STRIP_LINE % [index + 1, _module_name(module_id)]
 
 
-## ------------------------------------------------------------------ the modules
-
-
-func _build_module_header() -> void:
-	for cell: Dictionary in _module_header_cells():
-		_module_header.add_child(_make_header_cell(cell))
-
-
-func _module_header_cells() -> Array[Dictionary]:
-	return [
-		{&"text": "", &"width": COL_MODULE_ICON, &"expand": false},
-		{&"text": HEADER_MODULE, &"width": 0.0, &"expand": true},
-		{&"text": HEADER_EFFECT, &"width": COL_EFFECT, &"expand": false},
-		{&"text": HEADER_PRICE, &"width": COL_PRICE, &"expand": false},
-		{&"text": HEADER_STATUS, &"width": COL_TAG, &"expand": false},
-		{&"text": HEADER_ACTION, &"width": COL_ACTION, &"expand": false},
-	]
-
-
-func _build_module_rows() -> void:
-	_module_payloads.clear()
-	for module_id: StringName in MODULE_ROWS:
-		_module_payloads.append(_build_module_row(module_id))
-
-
-func _build_module_row(module_id: StringName) -> Dictionary:
-	var module_row := ModuleCatalog.module(module_id)
-	var name_text := String(module_row.get(&"name", ""))
-	var cost := int(module_row.get(&"cost", 0))
-	var draw := int(module_row.get(&"draw", 0))
-	var icon_path := String(module_row.get(&"icon", ""))
-	var complete := module_id != &"" and not name_text.is_empty() and cost >= 0
-	var row := Button.new()
-	row.name = "Module%s" % String(module_id).trim_prefix("w_").to_pascal_case()
-	row.toggle_mode = true
-	row.focus_mode = Control.FOCUS_ALL
-	row.custom_minimum_size = Vector2(0.0, ROW_HEIGHT)
-	row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	row.disabled = not complete
-	row.set_meta(&"id", module_id)
-	var box := _make_inner(row)
-	var icon := _make_icon(icon_path, COL_MODULE_ICON)
-	if icon != null:
-		box.add_child(icon)
-	box.add_child(_make_title_box(name_text, META_DRAW % draw, complete))
-	var effect := _make_cell(box, COL_EFFECT, "", HEADER_EFFECT, "Effect")
-	var price := _make_cell(box, COL_PRICE, "", PRICE_CAPTION, "Price")
-	var tag := _make_cell(box, COL_TAG, "", "", "Status")
-	var action := _make_cell(box, COL_ACTION, "", "", "Action")
-	if complete:
-		effect[0].text = String(EFFECT_TEXT.get(module_id, ""))
-		effect[0].autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_connect_cells(box, _module_section)
-	var payload := {
-		&"id": module_id,
-		&"name": name_text,
-		&"cost": cost,
-		&"draw": draw,
-		&"complete": complete,
-		&"row": row,
-		&"icon": icon,
-		&"tinted": _is_flat_glyph(icon_path),
-		&"price": price[0],
-		&"tag": tag[0],
-		&"action": action[0],
-	}
-	if complete:
-		row.pressed.connect(_on_module_pressed.bind(payload))
-		row.focus_entered.connect(_on_module_focused.bind(row, payload))
-		row.mouse_entered.connect(_on_row_hovered.bind(payload, true))
-		row.mouse_exited.connect(_on_row_hovered.bind(payload, false))
-	_module_rows.add_child(row)
-	return payload
-
-
-## The MODULES rows' ids in render order: the row set, read back for probes and tests.
-func module_row_ids() -> Array[StringName]:
-	var ids: Array[StringName] = []
-	for payload: Dictionary in _module_payloads:
-		ids.append(payload[&"id"])
-	return ids
-
-
-func _on_module_pressed(payload: Dictionary) -> void:
-	AudioManager.play_ui(AudioManager.UiCue.CLICK)
-	var row: Button = payload[&"row"]
-	row.set_pressed_no_signal(true)
-	_selected_row = row
-	var module_id: StringName = payload[&"id"]
-	match module_action(module_id):
-		ACTION_BUY:
-			buy_module(module_id)
-		ACTION_INSTALL:
-			install_module(module_id)
-		ACTION_SWAP:
-			swap_module(module_id)
-		ACTION_REMOVE:
-			remove_module(fit_index_of(module_id))
-
-
-func _on_module_focused(row: Button, payload: Dictionary) -> void:
-	AudioManager.play_ui(AudioManager.UiCue.HOVER)
-	if _selected_row != null and _selected_row != row and is_instance_valid(_selected_row):
-		_selected_row.set_pressed_no_signal(false)
-	_selected_row = row
-	row.set_pressed_no_signal(true)
-	status_requested.emit(
-		STATUS_MODULE_HINT
-		% [
-			String(module_action(payload[&"id"])),
-			String(payload[&"name"]).to_upper(),
-			_format_int(int(payload[&"cost"])),
-		],
-		false
-	)
-
-
 func _on_strip_remove(index: int) -> void:
 	AudioManager.play_ui(AudioManager.UiCue.CLICK)
 	remove_module(index)
 
 
-## --------------------------------------------------------------- the state machine
-
-
-## STATION_HUB section 5.1's ACTION chain, one state per row: BUY while the account holds
-## none, INSTALL while a W cell is empty (09 section 4 item 4 lets a weapon repeat, so a
-## fitted module is installed a second time rather than pinned to REMOVE), SWAP once no cell
-## is empty, and REMOVE for a module that is already on the hull of a full grid - the last
-## state of the pin's chain, where taking the module off is the only thing left to do. A
-## fitted module is removable from the strip's own line whatever the grid holds.
-func module_action(module_id: StringName) -> StringName:
-	var profile := _profile()
-	if profile == null or module_id == &"":
-		return &""
-	var owned := int(profile.call(&"module_count", module_id))
-	if _first_empty_cell(profile) >= 0:
-		return ACTION_INSTALL if owned > 0 else ACTION_BUY
-	if fit_index_of(module_id) >= 0:
-		return ACTION_REMOVE
-	return ACTION_SWAP if owned > 0 else ACTION_BUY
-
-
-## The W cell (09 section 4 item 5's layout index) the module is fitted in on the active
-## hull, -1 when it is not fitted. The fit stores a module *instance* id and the row's id
-## is a catalogue base id, so the two are compared through `base_module_id`.
-func fit_index_of(module_id: StringName) -> int:
-	var profile := _profile()
-	if profile == null or module_id == &"":
-		return -1
-	var cells := _weapon_cells(profile)
-	for index in cells.size():
-		if _base_id(profile, StringName(cells[index])) == module_id:
-			return index
-	return -1
-
-
-## The MODULES rows' STATUS and ACTION for one module, in one place, so the label and the
-## press cannot disagree.
-func _module_state(profile: ProfileScript, module_id: StringName) -> Dictionary:
-	var index := fit_index_of(module_id)
-	var owned := 0
-	var affordable := true
-	if profile != null:
-		owned = int(profile.call(&"module_count", module_id))
-		var cost := int(ModuleCatalog.module(module_id).get(&"cost", 0))
-		affordable = bool(profile.call(&"can_afford", cost))
-	var status := STATUS_LOCKED
-	if index >= 0:
-		status = STATUS_FITTED % (index + 1)
-	elif owned > 0:
-		status = STATUS_OWNED % owned
-	elif affordable:
-		status = STATUS_FOR_SALE
-	return {&"status": status, &"action": module_action(module_id)}
-
-
-## ---------------------------------------------------------------- the four actions
-
-
-## BUY: the profile's own `buy_module` with the catalogue's price (CONTRACTS section 12;
-## the panel invents no price and the seam decides). A refusal is the shell's
-## `purchase_failed` render, so the row only marks its price cell.
-func buy_module(module_id: StringName) -> bool:
-	var profile := _profile()
-	var row := ModuleCatalog.module(module_id)
-	if profile == null or row.is_empty():
-		return false
-	var cost := int(row[&"cost"])
-	if not bool(profile.call(&"buy_module", module_id, cost)):
-		_pulse(_price_label(module_id))
-		return false
-	AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
-	status_requested.emit(
-		STATUS_MODULE_BOUGHT % [_module_name(module_id), _format_int(cost)], false
-	)
-	return true
-
-
-## INSTALL: the first empty W cell. 09 section 4's legality is checked on the candidate fit
-## first, so a refusal writes nothing and the module never leaves the inventory; no empty
-## cell is the pin's `W SLOTS FULL` refusal rather than a silent no-op.
-func install_module(module_id: StringName) -> bool:
-	var profile := _profile()
-	if profile == null or ModuleCatalog.slot_of(module_id) != WEAPON_SLOT:
-		return false
-	var hull := _active_hull(profile)
-	var cells := _weapon_cells(profile)
-	var index := cells.find("")
-	if index < 0:
-		return _refuse(REFUSAL_SLOTS_FULL)
-	if int(profile.call(&"module_count", module_id)) <= 0:
-		return false
-	var legal := ShipFit.fit_legal(hull, _candidate_fit(profile, cells, index, module_id))
-	if not bool(legal.get(&"legal", false)):
-		return _refuse_fit(legal)
-	_seed_fit(profile, hull)
-	profile.call(&"take_module", module_id, 1)
-	if not bool(profile.call(&"set_fit_slot", hull, WEAPON_SLOT, index, module_id)):
-		profile.call(&"add_module", module_id, 1)
-		return false
-	AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
-	status_requested.emit(STATUS_INSTALLED % [_module_name(module_id), index + 1], false)
-	return true
-
-
-## SWAP: the same write into a cell that is already full, with the displaced module handed
-## back to the inventory - never destroyed (09 section 4 item 8). `SWAP_INDEX` is the first
-## W cell, the same "first" rule INSTALL uses.
-func swap_module(module_id: StringName, index: int = SWAP_INDEX) -> bool:
-	var profile := _profile()
-	if profile == null or ModuleCatalog.slot_of(module_id) != WEAPON_SLOT:
-		return false
-	var hull := _active_hull(profile)
-	var cells := _weapon_cells(profile)
-	if index < 0 or index >= cells.size():
-		return false
-	var displaced := StringName(cells[index])
-	if displaced == module_id or int(profile.call(&"module_count", module_id)) <= 0:
-		return false
-	var legal := ShipFit.fit_legal(hull, _candidate_fit(profile, cells, index, module_id))
-	if not bool(legal.get(&"legal", false)):
-		return _refuse_fit(legal)
-	_seed_fit(profile, hull)
-	profile.call(&"take_module", module_id, 1)
-	if not bool(profile.call(&"set_fit_slot", hull, WEAPON_SLOT, index, module_id)):
-		profile.call(&"add_module", module_id, 1)
-		return false
-	var returned := _base_id(profile, displaced)
-	if returned != &"":
-		profile.call(&"add_module", returned, 1)
-	AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
-	status_requested.emit(
-		STATUS_SWAPPED % [_module_name(module_id), _module_name(returned)], false
-	)
-	return true
-
-
 ## REMOVE: the cell is emptied and the module goes back to the inventory (09 section 4 item
 ## 8, 10 section 6). The write comes first, so a cell that could not be written hands
-## nothing back.
+## nothing back. The strip's own control, not a retired MODULES row (section 5.1's S3
+## amendment).
 func remove_module(index: int) -> bool:
 	var profile := _profile()
 	if profile == null:
@@ -1028,25 +678,7 @@ func remove_module(index: int) -> bool:
 	return true
 
 
-## The overload line is 09 section 2's own format over the candidate fit's arithmetic
-## (`Σ draws / output — over by`), rendered in the footer strip with the danger colour and
-## the denied cue; nothing is written and nothing auto-removes.
-func _refuse_fit(legal: Dictionary) -> bool:
-	var power: Dictionary = legal.get(&"power", {})
-	if not bool(power.get(&"legal", false)):
-		var draw := int(power.get(&"draw", 0))
-		var out := int(power.get(&"out", 0))
-		return _refuse(REFUSAL_OVERLOAD % [draw, out, draw - out])
-	return _refuse(REFUSAL_FIT_ILLEGAL)
-
-
-func _refuse(message: String) -> bool:
-	AudioManager.play_ui(AudioManager.UiCue.DENIED)
-	status_requested.emit(message, true)
-	return false
-
-
-## ------------------------------------------------------------- the fit the panel reads
+## ------------------------------------------------------------- the fit the pane reads
 
 
 ## The fit the panel shows and writes against: the account's own when it holds one, else
@@ -1112,24 +744,6 @@ func _weapon_cells(profile: ProfileScript) -> Array:
 	return cells
 
 
-## The resolved fit with one W cell rewritten: the fit `ShipFit.fit_legal` judges before
-## anything is written.
-func _candidate_fit(
-	profile: ProfileScript, cells: Array, index: int, module_id: StringName
-) -> Dictionary:
-	var fit: Dictionary = _resolved_fit(profile, _active_hull(profile)).duplicate(true)
-	var updated: Array = []
-	for cell: Variant in cells:
-		updated.append(String(cell))
-	updated[index] = String(module_id)
-	fit[WEAPON_SLOT] = updated
-	return fit
-
-
-func _first_empty_cell(profile: ProfileScript) -> int:
-	return _weapon_cells(profile).find("")
-
-
 func _active_hull(profile: ProfileScript) -> StringName:
 	if profile == null:
 		return &""
@@ -1147,48 +761,12 @@ func _module_name(module_id: StringName) -> String:
 	return name_text.to_upper() if not name_text.is_empty() else String(module_id).to_upper()
 
 
-func _price_label(module_id: StringName) -> Label:
-	for payload: Dictionary in _module_payloads:
-		if payload[&"id"] == module_id:
-			return payload[&"price"]
-	return null
-
-
 ## ------------------------------------------------------------------- the refresh
 
 
 func _refresh_all() -> void:
 	_refresh_rows()
-	_refresh_module_rows()
 	_refresh_strip()
-
-
-func _refresh_module_rows() -> void:
-	var profile := _profile()
-	for payload: Dictionary in _module_payloads:
-		_refresh_module_row(payload, profile)
-
-
-func _refresh_module_row(payload: Dictionary, profile: ProfileScript) -> void:
-	var price: Label = payload[&"price"]
-	var tag: Label = payload[&"tag"]
-	var action: Label = payload[&"action"]
-	if not bool(payload[&"complete"]):
-		price.text = ""
-		price.remove_theme_color_override(&"font_color")
-		tag.text = TAG_UNAVAILABLE
-		action.text = ""
-		return
-	var cost := int(payload[&"cost"])
-	var affordable := profile == null or bool(profile.call(&"can_afford", cost))
-	if affordable:
-		price.remove_theme_color_override(&"font_color")
-	else:
-		price.add_theme_color_override(&"font_color", _token(&"accent_danger"))
-	price.text = _format_int(cost)
-	var state := _module_state(profile, payload[&"id"])
-	tag.text = String(state[&"status"])
-	action.text = String(state[&"action"])
 
 
 func _profile() -> ProfileScript:

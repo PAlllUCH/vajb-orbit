@@ -333,8 +333,11 @@ func _delete_file(path: String) -> void:
 ## tint, and the retired pane's two files are gone. Measured both on the script's own tables and
 ## on the assembled shell, so the entry the player sees is the one asserted.
 func test_the_rail_entry_is_fitting_and_the_upgrades_pane_is_gone() -> void:
-	var module := 4
-	assert_eq(StationScript.MODULE_LABELS[module], "FITTING", "the fifth rail entry is FITTING")
+	## FITTING is the sixth rail entry since AUCTION took index 3 (STATION_HUB section
+	## 5.10's S3 amendment, "directly after EXCHANGE"): the retired UPGRADES position is
+	## still the one it took, shifted by that insertion.
+	var module := 5
+	assert_eq(StationScript.MODULE_LABELS[module], "FITTING", "the sixth rail entry is FITTING")
 	assert_eq(StationScript.MODULE_FILES[module], "fitting", "and it loads the FITTING pane")
 	assert_eq(
 		StationScript.MODULE_ICONS[module],
@@ -360,7 +363,7 @@ func test_the_rail_entry_is_fitting_and_the_upgrades_pane_is_gone() -> void:
 	assert_true(
 		ResourceLoader.exists("res://ui/station/fitting_panel.tscn"), "FITTING's scene ships"
 	)
-	## The assembled shell: five entries, the fifth FITTING, and one pane per module with no
+	## The assembled shell: eight entries, the sixth FITTING, and one pane per module with no
 	## Upgrades pane among them.
 	var screen := StationScene.instantiate() as Control
 	_host.add_child(screen)
@@ -371,7 +374,7 @@ func test_the_rail_entry_is_fitting_and_the_upgrades_pane_is_gone() -> void:
 		"one rail entry per module"
 	)
 	var entry := buttons.get_child(module) as Button
-	assert_eq(entry.name, "FittingEntry", "the fifth entry is named for its label")
+	assert_eq(entry.name, "FittingEntry", "the sixth entry is named for its label")
 	var label := _first_label(entry)
 	assert_eq(label.text, "FITTING", "and carries the FITTING label")
 	var icon := _first_icon(entry)

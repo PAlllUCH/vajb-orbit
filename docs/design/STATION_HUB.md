@@ -781,6 +781,15 @@ change that rule first. **Reversal:** one computed line.
 MODULES anatomy, aggregated by `base_id`) with `SELL` at `base × rarity × 60 %`
 (15 §6). Hull sell-back keeps 10 §2.3's 60 %.
 
+**Amendment 2026-09-23 (S3, as built — K2's measured deviation 1).** A sell price is a
+property of an **instance** (two instances of one base id can be a Common and a Rare), so
+the sub-list's rows are §5.3's per-instance sub-rows — rolled name, rarity tint, the base
+id's `OWNED ×<n>` and `SELL` — ordered by `base_id` (`FIT_SLOT_KEYS` then catalogue order,
+creation order inside a base). The base-id aggregation survives as the ordering and the
+`OWNED ×<n>` column rather than as the row key. **Reversal:** one `Auction.sell_rows` loop
+and the two sell-row builders; the literal reading above then returns, and collapses two
+rarities of one base id onto one row, which is why it is not the build.
+
 **Batteries in the FITTED WEAPONS strip (S4, 09 §10).** §5.1's strip rows group by
 `base_id`: `3× LASER MKII · W1·W2·W3 · OWNED ×<n>` with `FIT ALL` / `REMOVE ALL` /
 `SWAP ALL` and a per-barrel expander (`▸`) restoring the single-cell actions. The
@@ -893,6 +902,7 @@ the leave dimmer) are drawn from `Tokens/void_base`, normal blend, no FX.
 | `ItemList` (`panel`, `selected`, `hovered`, `cursor`, `font_size`) | the cargo manifest |
 | `ScrollContainer` (`panel`), `VScrollBar` (`scroll`, `grabber`, `grabber_highlight`) | the three list scrolls |
 | `Tokens/void_base`, `void_fade`, `void_panel_raised`, `metal_dark`, `metal_mid`, `metal_light`, `text_primary`, `text_dim`, `accent_danger`, `accent_danger_bright` | all colour, pushed in script through `get_theme_color(token, &"Tokens")` |
+| `Tokens/colors/rarity_common` (`#C9D1DC`, the default label colour), `rarity_magic` (`#565C63`), `rarity_rare` (`#E8703A`) | §5.10's rarity ramp, added with S3 (`vajb_theme.tres`); the AUCTION, FITTING and the shipyard read them with the hexes above as their fallback (`has_theme_color`) |
 
 Two implementation notes that are not the mockup's to fix: the `ScrollContainer`'s `horizontal_scroll_mode` is
 set to `0` on all three lists because the theme registers no `HScrollBar` chrome (a horizontal bar would fall

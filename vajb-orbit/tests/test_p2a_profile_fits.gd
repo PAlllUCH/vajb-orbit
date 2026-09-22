@@ -5,6 +5,12 @@ extends McpTestSuite
 ## its capacity padding, the v1-v3 single-string migration read, the layout
 ## index, and the module inventory helpers.
 ##
+## Save v6 (S3, CONTRACTS section 15) makes every inventory record 15 section 6's
+## six-key instance, so `add_module` writes the Common floor with no affix rows and
+## a short fixture (`{count: n}`, or a bare numeric `rarity`) is read canonically
+## rather than refused; the instance suites are `test_s3_instances.gd` and
+## `test_s3_migration.gd`.
+##
 ## Profiles are throwaway instances of the autoload script whose `save_path` is
 ## repointed at a scratch file before the first mutation, so `user://profile.cfg`
 ## is never touched. No instance is added to the tree, so the debounced save
@@ -259,9 +265,9 @@ func test_a_v2_single_string_fit_reads_as_a_padded_array() -> void:
 	assert_eq(raw_entry["weapons"], "w_laser", "fits() reads the file's own shape")
 
 
-func test_a_v3_fit_loads_clean_and_the_first_write_persists_version_5() -> void:
+func test_a_v3_fit_loads_clean_and_the_first_write_persists_version_6() -> void:
 	assert_eq(Profile.MIN_READABLE_VERSION, 1, "v1 to v3 files stay readable")
-	assert_eq(Profile.SAVE_VERSION, 5, "writes persist save v5 (P2-B proper, CONTRACTS section 13)")
+	assert_eq(Profile.SAVE_VERSION, 6, "writes persist save v6 (S3, CONTRACTS section 15)")
 	var fixture := ConfigFile.new()
 	fixture.set_value(SECTION, "save_version", 3)
 	fixture.set_value(SECTION, "credits", 2500)
@@ -287,7 +293,7 @@ func test_a_v3_fit_loads_clean_and_the_first_write_persists_version_5() -> void:
 	profile.save()
 	var on_disk := ConfigFile.new()
 	assert_eq(on_disk.load(PROFILE_PATH), OK)
-	assert_eq(int(on_disk.get_value(SECTION, "save_version", 0)), 5, "a write persists save v5")
+	assert_eq(int(on_disk.get_value(SECTION, "save_version", 0)), 6, "a write persists save v6")
 	var stored: Dictionary = on_disk.get_value(SECTION, "fits", {})
 	var entry: Dictionary = stored["ship_miner"]
 	assert_eq(entry["engines"], ["e_std", "e_ion"], "the write persists the array shape")
@@ -439,13 +445,17 @@ func test_module_counts_add_and_take() -> void:
 	assert_eq(profile.module_count(&"w_laser"), 0)
 	assert_false(profile.modules().has("w_laser"), "an emptied entry is erased, like remove_cargo")
 
-	## A record created here carries the base id and the count only: 15 section 6
-	## rolls affixes at creation, and this helper is not that roll.
+	## A record created here carries the v6 six-key shape (CONTRACTS section 15): the
+	## base id, the Common floor and no affix rows. 15 section 6 rolls affixes at
+	## creation, and this helper is not that roll.
 	profile.add_module(&"mod_0009", 2)
 	var record: Dictionary = profile.modules()["mod_0009"]
 	assert_eq(record["base_id"], "mod_0009", "a common module's base id is itself")
 	assert_eq(int(record["count"]), 2, "and its count")
-	assert_false(record.has("rarity"), "no affix roll is invented here")
+	assert_eq(record["rarity"], "common", "no affix roll is invented here")
+	assert_eq(record["prefixes"], [], "and no prefix row")
+	assert_eq(record["suffixes"], [], "and no suffix")
+	assert_eq(record.keys().size(), 6, "the record is 15 section 6's six keys")
 
 	profile.save()
 	var reloaded = _fresh()

@@ -48,15 +48,18 @@ const ENTRY_AMBIENCE_FADE := 2.0
 const SWITCH_AMBIENCE_FADE := 1.0
 const EXIT_AMBIENCE_FADE := 1.0
 
-## The fifth entry is FITTING (STATION_HUB section 5.3's amendment, 2026-09-22): it takes the
-## retired UPGRADES entry's rail position, icon and tint, and the retired pane files are gone.
-## Reversal: restore the UPGRADES label, the pane file name and the pane's two files.
-enum Module { OUTFITTING, REFINERY, EXCHANGE, SHIPYARD, FITTING, REPAIRS, LAUNCH }
+## The fourth entry is AUCTION (STATION_HUB section 5.10's amendment, 2026-09-22): it takes
+## the rail position directly after EXCHANGE, with the same icon family and tint. The fifth
+## is FITTING (section 5.3's amendment of the same date), which took the retired UPGRADES
+## entry's rail position, icon and tint when that pane's two files were deleted.
+## Reversal: drop AUCTION from the five arrays and restore the UPGRADES label and pane files.
+enum Module { OUTFITTING, REFINERY, EXCHANGE, AUCTION, SHIPYARD, FITTING, REPAIRS, LAUNCH }
 
 const MODULE_FILES: Array[String] = [
 	"outfitting",
 	"refinery",
 	"exchange",
+	"auction",
 	"shipyard",
 	"fitting",
 	"repairs",
@@ -66,6 +69,7 @@ const MODULE_LABELS: Array[String] = [
 	"OUTFITTING",
 	"REFINERY",
 	"EXCHANGE",
+	"AUCTION",
 	"SHIPYARD",
 	"FITTING",
 	"REPAIRS",
@@ -75,14 +79,15 @@ const MODULE_ICONS: Array[String] = [
 	"res://assets/icons/equip/icon_equip_module.png",
 	"res://assets/icons/cargo/icon_cargo_ore.svg",
 	"res://assets/icons/cargo/icon_credits.svg",
+	"res://assets/icons/cargo/icon_credits.svg",
 	"res://assets/icons/hud/icon_hull.svg",
 	"res://assets/icons/equip/icon_equip_generator.png",
 	"res://assets/icons/status/icon_status_repairing.png",
 	"res://assets/icons/map/icon_map_route.png",
 ]
-const MODULE_TINTED: Array[bool] = [false, true, true, true, false, false, false]
+const MODULE_TINTED: Array[bool] = [false, true, true, true, true, false, false, false]
 const MODULE_BEDS: Array[StringName] = [
-	BED_ROOM, BED_PUMP, BED_NOISE, BED_PUMP, BED_NOISE, BED_ROOM, BED_ROOM
+	BED_ROOM, BED_PUMP, BED_NOISE, BED_NOISE, BED_PUMP, BED_NOISE, BED_ROOM, BED_ROOM
 ]
 const ICON_LOGOUT := "res://assets/icons/hud/icon_logout.svg"
 
@@ -482,8 +487,10 @@ func _entry_cost(id: StringName) -> int:
 func _entry(id: StringName) -> Dictionary:
 	## purchase_failed carries only the reason and the id, so the copy resolves the
 	## entry and its price from the catalogue the panel bought from: the ammo packs,
-	## the ships and the modules (P2-B1's OUTFITTING rows). The retired upgrades rows
-	## are gone with save v5 (CONTRACTS section 13), so they are not resolved here.
+	## the ships and the modules. The retired upgrades rows are gone with save v5
+	## (CONTRACTS section 13). A rolled **instance** id resolves to nothing here, which
+	## is why the AUCTION pane owns its own footer strip (STATION_HUB section 5.10's
+	## S3 amendment): this copy would read `0 NEEDED` and the raw id as the name.
 	var entry := Catalog.ammo_pack(id)
 	if entry.is_empty():
 		entry = Catalog.ship(id)

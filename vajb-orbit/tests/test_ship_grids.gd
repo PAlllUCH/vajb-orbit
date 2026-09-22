@@ -87,6 +87,13 @@ const MODULE_ROWS: Array[Dictionary] = [
 	{"id": &"p_std", "name": "Standard Reactor", "slot": &"power", "draw": 0, "tier": 1, "cost": 900},
 	{"id": &"p_mk2", "name": "Reactor Mk2", "slot": &"power", "draw": 0, "tier": 2, "cost": 3600},
 	{"id": &"p_core", "name": "Reactor Core", "slot": &"power", "draw": 0, "tier": 3, "cost": 7000},
+	## 15 section 9.1's three faction exclusives (proposed by the S3 docs pass, one owner
+	## tick): the two weapons take the weapon family's tier-III top line (`w_railgun`'s
+	## draw 3 / 5 200) and `u_vault` takes `u_holds`'s (`draw` 0 / 4 500), so the table
+	## the catalogue may be checked against is 35 rows and not 09 section 3's 32.
+	{"id": &"w_proton", "name": "Proton Missile Launcher", "slot": &"weapons", "draw": 3, "tier": 3, "cost": 5200},
+	{"id": &"w_flak", "name": "Flak Battery", "slot": &"weapons", "draw": 3, "tier": 3, "cost": 5200},
+	{"id": &"u_vault", "name": "Station Vault Access", "slot": &"utility", "draw": 0, "tier": 3, "cost": 4500},
 ]
 
 ## 09 section 3's stat effects, verbatim (the rows CONTRACTS section 11 says the
@@ -114,6 +121,9 @@ const MODULE_EFFECTS: Dictionary = {
 	&"p_std": {&"power_add": 0.0},
 	&"p_mk2": {&"power_add": 2.0},
 	&"p_core": {&"power_add": 4.0},
+	## 15 section 9.1's exclusive utility carries 14 section 4's own effect; the two
+	## exclusive weapons carry none, like every other weapon row.
+	&"u_vault": {&"vault_add": 20},
 }
 
 ## The five base weapon families draw the weapon-icon set; every other id draws the
@@ -782,7 +792,7 @@ func test_mount_offset_is_zero_where_there_is_no_cell() -> void:
 
 
 func test_module_catalog_carries_the_pinned_rows() -> void:
-	assert_eq(Catalog.MODULES.size(), MODULE_ROWS.size(), "32 rows (09 section 3)")
+	assert_eq(Catalog.MODULES.size(), MODULE_ROWS.size(), "35 rows (09 section 3 + 15 section 9.1)")
 	for row: Dictionary in MODULE_ROWS:
 		var id: StringName = row["id"]
 		var published := Catalog.module(id)
@@ -837,6 +847,11 @@ func test_module_icon_rule_and_files_on_disk() -> void:
 		var expected := "res://assets/icons/module/icon_module_%s.svg" % id
 		if WEAPON_ICON_FAMILIES.has(id):
 			expected = "res://assets/icons/weapon/icon_weapon_%s.svg" % WEAPON_ICON_FAMILIES[id]
+		## 15 section 9.1's three exclusives draw an existing file instead of a master of
+		## their own -- the frozen `assets/` tree gains nothing for them -- so the reuse
+		## table is read first, exactly as `ModuleCatalog.icon_path` reads it.
+		if Catalog.ICON_REUSE.has(id):
+			expected = String(Catalog.ICON_REUSE[id])
 		assert_eq(Catalog.icon_path(id), expected, "%s follows the icon rule" % id)
 		assert_eq(
 			String(Catalog.module(id).get(&"icon", "")),

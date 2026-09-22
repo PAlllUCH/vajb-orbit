@@ -21,6 +21,16 @@ extends Node
 ## file carries no `upgrades` key at all and a v1-v3 file never had one. The
 ## same save adds the two composed fitting transactions of the FITTING panel's
 ## per-cell install and remove, `fit_module_at` and `clear_fit_slot`.
+## S3 save v6 turns `modules` into an `instance_id -> record` dictionary of 15
+## section 6/8's module instances (CONTRACTS section 15): the record is
+## `{instance_id, base_id, rarity, prefixes, suffixes, count}`, `count` is 1 in the
+## bag and 0 while the module is fitted, and a fitted record is **never erased** --
+## that is how REMOVE/SWAP hand the same instance back. A v5 `{base_id, count}`
+## record becomes `count` Common instances through `migrate_module_instances`,
+## called from the load path for a file below v6 (the P2-B flag-day pattern). The
+## same save adds the two new top-level keys -- `instance_counter`, the `mod_%04d`
+## mint, and `auction`, the shelf -- and a fit cell now holds an instance id, so
+## every fit judgement goes through `base_fit`.
 ## Test and support hooks, present for the P1 suites and migration fixtures
 ## only: save_path (defaults to SAVE_FILE) and reload().
 
@@ -41,7 +51,7 @@ const Log := preload("res://game/economy_log.gd")
 
 const SAVE_FILE := "user://profile.cfg"
 const SECTION := "profile"
-const SAVE_VERSION := 5
+const SAVE_VERSION := 6
 const MIN_READABLE_VERSION := 1
 const SAVE_DEBOUNCE_SECONDS := 0.5
 
@@ -81,6 +91,33 @@ const LEGACY_ENGINE_SLOT: StringName = &"engine"
 ## Market sub-keys, present in every normalised market dictionary.
 const MARKET_KEYS: Array[String] = ["demand", "stock", "queue", "trend"]
 
+## 15 section 8's instance mint (CONTRACTS section 15): one per-profile counter,
+## `instance_counter` in the save, formats every module instance id. Every roll
+## takes the next number -- inventory, drop and the AUCTION shelf's listings -- and
+## the counter never rewinds, not even when an unbought listing is discarded at
+## restock.
+const INSTANCE_ID_FORMAT := "mod_%04d"
+
+## The six keys of one v6 inventory record (CONTRACTS section 15, 17 section 3).
+## Written and read as Strings, which is what a `ConfigFile` gives back, so a live
+## record and a loaded one are the same dictionary.
+const KEY_INSTANCE_ID := "instance_id"
+const KEY_BASE_ID := "base_id"
+const KEY_RARITY := "rarity"
+const KEY_PREFIXES := "prefixes"
+const KEY_SUFFIXES := "suffixes"
+const KEY_COUNT := "count"
+
+## The AUCTION shelf's home (CONTRACTS section 15): a **top-level** key, not a
+## `market` sub-key, because `_normalise_market` rebuilds that dictionary from
+## `MARKET_KEYS` and would drop a stranger on load.
+const KEY_AUCTION := "auction"
+const KEY_INSTANCE_COUNTER := "instance_counter"
+
+## The shelf state's four members, in the pin's own order: the restock band, the
+## listed hull ids, the rolled module listings and the one discounted listing id.
+const AUCTION_KEYS: Array[String] = ["last_band", "hulls", "modules", "hot"]
+
 const REASON_INSUFFICIENT: StringName = &"insufficient_credits"
 const REASON_ALREADY_OWNED: StringName = &"already_owned"
 const REASON_UNKNOWN: StringName = &"unknown_id"
@@ -91,6 +128,11 @@ const REASON_UNKNOWN: StringName = &"unknown_id"
 ## removed cell.
 const EVENT_BUY_MODULE := "BUY_MODULE"
 const EVENT_FIT_MODULE := "FIT_MODULE"
+## Selling a module instance (15 section 6/8). The word is the exchange's own
+## `SELL` -- the nearest shipped event id, which CONTRACTS section 12 rule 1
+## licenses -- and the line's item field carries the instance's **base** id, so a
+## replay aggregates by item while the price delta carries the rarity.
+const EVENT_SELL_MODULE := "SELL"
 
 ## The save v5 retirement table (CONTRACTS section 13), 09 section 4 item 13's
 ## one-way door: each of the six retired `StationCatalog.UPGRADES` rows names the
@@ -140,6 +182,8 @@ var _vaults: Dictionary = {}
 var _insured := false
 var _mercy_used := false
 var _vitals: Dictionary = {}
+var _instance_counter := 0
+var _auction: Dictionary = {"last_band": 0, "hulls": [], "modules": {}, "hot": &""}
 
 
 func _ready() -> void:
@@ -290,8 +334,12 @@ func modules() -> Dictionary:
 	return _modules.duplicate(true)
 
 
+## Replace the whole bag. Normalised first -- keys as Strings, every record 15
+## section 6/8's six-key shape -- so a fixture that hands in a short record (a
+## `{base_id, count}` pair, or a bare `{count: n}`) is read canonically and a second
+## identical set stays silent.
 func set_modules(value: Dictionary) -> void:
-	var candidate: Dictionary = _to_plain(value)
+	var candidate := _normalise_instances(_to_plain(value))
 	if candidate == _modules:
 		return
 	_modules = candidate
@@ -325,22 +373,20 @@ func module_count(module_id: StringName) -> int:
 
 
 ## Add `count` of one inventory entry, creating the record when the account does
-## not carry it yet. Only `count` (and a `base_id`, which for a common module is
-## the entry itself) is written: 15 section 6 rolls affixes at *creation* (drop,
-## purchase, build) and never re-rolls them, and this is the count half of the
-## inventory, not that roll, so a record already carrying `rarity`/`prefixes`/
-## `suffixes` keeps them untouched and one created here carries neither. The
-## affix roll's own layer is the P2-B fitting/inventory work.
+## not carry it yet. Since save v6 the record is 15 section 6/8's own shape -- the
+## six keys of CONTRACTS section 15 -- with the entry's id as both `instance_id` and
+## `base_id` and `rarity` Common, because this is the *count* half of the inventory
+## and not 15 section 6's affix roll: a record already carrying `rarity`/
+## `prefixes`/`suffixes` keeps them untouched, and one created here carries the
+## Common defaults and no affix rows. A short record handed in (a v5-shaped
+## fixture) is read in that canonical shape first.
 func add_module(module_id: StringName, count: int = 1) -> void:
 	if module_id == &"" or count <= 0:
 		return
 	var key := String(module_id)
-	var stored: Variant = _modules.get(key, null)
-	var updated: Dictionary = stored.duplicate(true) if stored is Dictionary else {}
-	if not updated.has("base_id"):
-		updated["base_id"] = key
-	updated["count"] = module_count(module_id) + count
-	_modules[key] = updated
+	var record := _normalise_instance(key, _module_record(module_id))
+	record[KEY_COUNT] = int(record.get(KEY_COUNT, 0)) + count
+	_modules[key] = record
 	_touch(KEY_MODULES)
 
 
@@ -383,6 +429,278 @@ func buy_module(module_id: StringName, cost: int) -> bool:
 	add_module(module_id, 1)
 	Log.append(EVENT_BUY_MODULE, module_id, 1, -cost, _credits)
 	return true
+
+
+## ---------------------------------------------------------------- instances
+##
+## A module instance is 15 section 6/8's record, keyed by its own minted id in
+## `_modules`:
+##
+##     mod_0007 -> {instance_id: "mod_0007", base_id: "s_heavy", rarity: "magic",
+##                  prefixes: [{id, value}], suffixes: [id], count: 1}
+##
+## `count` is 1 while the instance sits in the bag and 0 while it is fitted, and a
+## fitted record is **never erased** (CONTRACTS section 15): `instance` still
+## answers its affixes and REMOVE/SWAP hand the *same* instance back. A `count`-0
+## record is invisible to `instances_of`, to every `OWNED x<n>` aggregate and to
+## `sell_instance`.
+##
+## A record keyed by its own base id -- every pre-instance inventory entry, and
+## every `add_module` -- is that same shape with `instance_id` and `base_id` both
+## the base, so an account that never bought a rolled module reads exactly as it
+## always did (CONTRACTS section 11's own tolerance), and a fit that stores base
+## ids is still a fit the launch, the panels and every judgement understand.
+
+
+## Mint one instance of `base_id` into the bag at `count` 1: 15 section 8's
+## creation entry point for anything that already knows the rarity (a seeded test,
+## a future drop table, the shipyard's always-Common build). `rarity` is one of
+## 15 section 1's three ids; `prefixes` and `suffixes` are 15 section 3/4's rows in
+## the shape the record keeps (`[{id, value}]` and `[id]`), and a plain id is
+## accepted and kept. Answers the minted id, or `&""` -- writing nothing -- for a
+## blank base id or a rarity outside 15 section 1's three.
+func add_instance(
+	base_id: StringName, rarity: StringName, prefixes: Array, suffixes: Array
+) -> StringName:
+	if base_id == &"" or not ModuleData.RARITY_ORDER.has(String(rarity)):
+		return &""
+	var id := _mint_instance_id()
+	_modules[id] = _instance_record(id, String(base_id), String(rarity), prefixes, suffixes, 1)
+	_touch(KEY_MODULES)
+	return StringName(id)
+
+
+## One inventory record (15 section 6), `{}` for an id the bag does not carry, as a
+## deep copy so a caller cannot reach into account state. A **fitted** instance
+## (`count` 0) is still answered: the record survives its fitting, which is what
+## lets a panel show the rolled name of the module in a cell.
+func instance(id: StringName) -> Dictionary:
+	var record := _module_record(id)
+	if record.is_empty():
+		return {}
+	return record.duplicate(true)
+
+
+## The ids of the instances of `base_id` that are **in the bag** (`count` 1), in
+## creation order: the mint order for a live profile, the file's own order for a
+## loaded one. A fitted instance is out of the bag and does not appear.
+func instances_of(base_id: StringName) -> Array[StringName]:
+	var ids: Array[StringName] = []
+	if base_id == &"":
+		return ids
+	for key: Variant in _modules:
+		var record: Variant = _modules[key]
+		if not record is Dictionary:
+			continue
+		var entry: Dictionary = record
+		if int(entry.get(KEY_COUNT, 0)) <= 0:
+			continue
+		if StringName(str(entry.get(KEY_BASE_ID, key))) == base_id:
+			ids.append(StringName(str(key)))
+	return ids
+
+
+## Roll one instance of `base_id` from `source`'s 15 section 2 table and put it in
+## the bag: the creation path for a drop, a derelict, an arena reward or a crafted
+## module (15 section 8: "a roll happens when an instance is created"). Reads the
+## **global** RNG -- tests seed it first -- and answers the minted id, or `&""`
+## writing nothing when the catalogue does not ship the base id or the source is not
+## one of `ModuleCatalog.SOURCE_ROLLS`' rows. The outcome persists in the record
+## and is never re-rolled (15 section 6).
+func roll_instance(base_id: StringName, source: StringName) -> StringName:
+	if ModuleData.module(base_id).is_empty():
+		return &""
+	var rarity := ModuleData.roll_rarity(source, base_id)
+	if rarity == "":
+		return &""
+	var affixes := ModuleData.roll_affixes(base_id, rarity)
+	return add_instance(base_id, StringName(rarity), affixes["prefixes"], affixes["suffixes"])
+
+
+## The AUCTION shelf's restock draw (15 section 8: "auction modules when the shelf
+## is drawn at restock"): the same roll as `roll_instance`, but the record is handed
+## back **instead of entering the bag**, because a listing is not owned until it is
+## bought. It does take the next `mod_%04d` -- CONTRACTS section 15: "every roll --
+## inventory, drop, shelf listing -- takes the next number" -- so the counter moves
+## even if the listing is later discarded at restock (it never rewinds). The caller
+## keeps the record on the shelf through `set_auction`; `{}` for the two refusals
+## `roll_instance` has, and for those the counter does not move either.
+func roll_listing(base_id: StringName, source: StringName) -> Dictionary:
+	if ModuleData.module(base_id).is_empty():
+		return {}
+	var rarity := ModuleData.roll_rarity(source, base_id)
+	if rarity == "":
+		return {}
+	var affixes := ModuleData.roll_affixes(base_id, rarity)
+	var id := _mint_instance_id()
+	_mark_dirty()
+	return _instance_record(id, String(base_id), rarity, affixes["prefixes"], affixes["suffixes"], 1)
+
+
+## Buy one listing off the shelf, at the price the row shows (CONTRACTS section 15):
+## charges `cost` and **moves** the record from the shelf into the bag at `count` 1.
+## 17 section 5's transaction law, all-or-nothing: verify (an id the shelf does not
+## list, or a negative cost, is `unknown_id`), charge (`insufficient_credits` when
+## the balance is short), give, emit and log. A refusal writes no credits, moves no
+## record and logs nothing. The price is the caller's arithmetic -- 09 list x 15
+## section 1's rarity multiplier, 10 section 2.1's hot slot applied after
+## (`ModuleCatalog.list_price` / `hot_price`) -- taken here as the number the row
+## shows, exactly as `buy_module` takes its catalogue price.
+func buy_instance(id: StringName, cost: int) -> bool:
+	var listing := _listing_record(id)
+	if listing.is_empty() or cost < 0:
+		return _refuse(REASON_UNKNOWN, id)
+	if not _charge(cost):
+		return _refuse(REASON_INSUFFICIENT, id)
+	var key := String(id)
+	_remove_listing(key)
+	listing[KEY_COUNT] = 1
+	_modules[key] = listing
+	_touch(KEY_MODULES)
+	var base := StringName(str(listing.get(KEY_BASE_ID, key)))
+	Log.append(EVENT_BUY_MODULE, base, 1, -cost, _credits)
+	return true
+
+
+## Sell one instance out of the bag for 15 section 6's `base x rarity multiplier x
+## 60 %` (`ModuleCatalog.sell_price`), paid immediately, the record erased -- the
+## counter never rewinds, so the next mint still moves forward. Refuses, writing
+## nothing and paying nothing, for an id the bag does not carry, for a **fitted**
+## instance (`count` 0 is invisible to a sale, CONTRACTS section 15; the reason is
+## the nearest shipped one, `unknown_id`, since CONTRACTS section 12 rule 1 forbids
+## a new wording) and for a base id the catalogue cannot price. A stacked entry (a
+## base-keyed record with `count > 1`) sells one unit, exactly as `take_module`
+## takes one.
+func sell_instance(id: StringName) -> bool:
+	var record := _module_record(id)
+	var held := maxi(0, int(record.get(KEY_COUNT, 0)))
+	if record.is_empty() or held <= 0:
+		return _refuse(REASON_UNKNOWN, id)
+	var base := StringName(str(record.get(KEY_BASE_ID, "")))
+	var price := ModuleData.sell_price(base, StringName(str(record.get(KEY_RARITY, ""))))
+	if price <= 0:
+		return _refuse(REASON_UNKNOWN, id)
+	var key := String(id)
+	if held <= 1:
+		_modules.erase(key)
+	else:
+		record[KEY_COUNT] = held - 1
+		_modules[key] = record
+	_touch(KEY_MODULES)
+	add_credits(price)
+	Log.append(EVENT_SELL_MODULE, base, 1, price, _credits)
+	return true
+
+
+## 1 -> 0: take one instance out of the bag and into a fit (CONTRACTS section 15).
+## The **record survives** at `count` 0, so the fitted instance keeps its affixes
+## and `restore_instance` can hand the same one back. False, writing nothing, for an
+## id the bag does not carry or one that is already out of it; a stacked entry gives
+## up one unit, like `take_module`.
+func take_instance(id: StringName) -> bool:
+	var record := _module_record(id)
+	var held := maxi(0, int(record.get(KEY_COUNT, 0)))
+	if record.is_empty() or held <= 0:
+		return false
+	record[KEY_COUNT] = held - 1
+	_modules[String(id)] = record
+	_touch(KEY_MODULES)
+	return true
+
+
+## 0 -> 1: the fitted instance comes back into the bag, the *same* instance (15
+## section 8's "REMOVE/SWAP hands the same instance back", L80's cure): same id,
+## same rarity, same affixes, never a fresh mint. False, writing nothing, for an id
+## the bag does not carry or one that is already in it (`count` is not 0).
+func restore_instance(id: StringName) -> bool:
+	var record := _module_record(id)
+	if record.is_empty() or int(record.get(KEY_COUNT, 0)) != 0:
+		return false
+	record[KEY_COUNT] = 1
+	_modules[String(id)] = record
+	_touch(KEY_MODULES)
+	return true
+
+
+## The same fit with every cell exchanged for the base catalogue id behind it, in
+## `fit_for`'s own cell shape and the input's own key spelling. A fit cell holds an
+## **instance** id (15 section 8) while `ShipFit` reads base ids, so this is the
+## translation every fit judgement goes through: the two composed transactions
+## below and the three panels that preview a fit (CONTRACTS section 15) -- without
+## it `fit_legal` scores an instance as draw 0, and two instances of a
+## duplicate-guarded module would read as two different modules. An entry the bag
+## does not carry (a plain base id, a delivered module) comes back unchanged, so a
+## fit of base ids translates to itself and a pre-instance fixture keeps working.
+func base_fit(fit: Dictionary) -> Dictionary:
+	var translated: Dictionary = {}
+	for key: Variant in fit:
+		var value: Variant = fit[key]
+		if value is Array:
+			var cells: Array = []
+			for entry: Variant in (value as Array):
+				cells.append(String(base_module_id(StringName(str(entry)))))
+			translated[key] = cells
+		elif value is String or value is StringName:
+			translated[key] = String(base_module_id(StringName(value)))
+		else:
+			translated[key] = value
+	return translated
+
+
+## The AUCTION shelf's state (CONTRACTS section 15): `{last_band: int,
+## hulls: Array[String], modules: Dictionary, hot: StringName}`, a deep copy, so a
+## caller cannot reach into the store. `modules` holds the shelf's rolled listings
+## keyed by their minted instance id, each an ordinary instance record, and `hot`
+## names the one listing 10 section 2.1 discounts. The four keys are always present,
+## at their defaults for an account that has never restocked.
+func auction() -> Dictionary:
+	return _auction.duplicate(true)
+
+
+## Replace the shelf: normalised to the four pinned members and their types, with
+## every listing an instance record. Silent when the write changes nothing, like
+## every other store setter here. The shelf is written by the restock and read by
+## the pane through `auction`'s copy -- never mutated through that copy.
+func set_auction(state: Dictionary) -> void:
+	var candidate := _normalise_auction(_to_plain(state))
+	if candidate == _auction:
+		return
+	_auction = candidate
+	_mark_dirty()
+
+
+## The save v6 migration and its one-way door (15 section 8, CONTRACTS section 15):
+## every v5 `{base_id, count}` record in the bag becomes `count` **Common**
+## instances -- v5 stock was never rolled, so Common with no affixes is the honest
+## default -- each with its own minted id, and the old key goes with them. Answers
+## how many instances were created: 0 for a bag whose records all carry an
+## `instance_id` (every v6 file), 0 for an empty bag, and 0 again on a second call,
+## which is the idempotence the pin asks for. `_load_profile` is its only production
+## caller, for a file whose save_version is below 6, after the v5 retirement has
+## run (whose own `add_module` calls already write v6 records, so they are skipped).
+func migrate_module_instances() -> int:
+	var migrated := 0
+	var changed := false
+	for raw_key: Variant in _modules.keys():
+		var key := String(raw_key)
+		var stored: Variant = _modules.get(key, null)
+		if not stored is Dictionary:
+			continue
+		var record: Dictionary = stored
+		if record.has(KEY_INSTANCE_ID):
+			continue
+		var base := StringName(str(record.get(KEY_BASE_ID, key)))
+		if base == &"":
+			continue
+		var count := maxi(0, int(record.get(KEY_COUNT, 0)))
+		_modules.erase(key)
+		changed = true
+		for _index: int in count:
+			add_instance(base, ModuleData.RARITY_COMMON, [], [])
+			migrated += 1
+	if changed:
+		_mark_dirty()
+	return migrated
 
 
 func fits() -> Dictionary:
@@ -510,9 +828,18 @@ func clear_fit(ship_id: StringName) -> void:
 ## cell set to `module_id`, so the panel's preview of the same cell is judged on
 ## exactly the fit this call writes.
 ##
-## On success, in this order: the displaced module, when the cell was not empty,
-## returns to the inventory with `add_module` (so a swap can never lose it);
-## `take_module` takes the incoming one; the candidate is written whole with
+## A cell holds the *entry* the caller names - an instance id from the bag, or a
+## base id - and the legality judgement reads every cell through `base_fit`
+## (CONTRACTS section 15). So an instance of a module fits exactly as its base
+## does, two instances of a duplicate-guarded module are still a duplicate, and the
+## launch's own fit (which resolves base ids itself) is the fit the panel
+## previewed.
+##
+## On success, in this order: the displaced entry, when the cell was not empty,
+## returns to the inventory through `_bank_entry` (an instance taken for fitting
+## comes back as the *same* instance; anything else enters through `add_module`),
+## so a swap can never lose it; `take_instance` takes the incoming one; the
+## candidate is written whole with
 ## `set_fit` - the launch's fit with that one cell set, which is the same write
 ## `set_fit_slot` makes once that fit is the stored one, and a hull with no stored
 ## fit keeps the launch's mandatory cells instead of being left a one-module fit
@@ -529,13 +856,17 @@ func fit_module_at(
 		return false
 	var base := resolved_fit(ship_id)
 	var candidate := _with_cell(base, slot_key, index, module_id)
-	if not bool(FitData.fit_legal(ship_id, candidate)[&"legal"]):
+	# The candidate is judged on its **base ids** (CONTRACTS section 15): the cell
+	# holds an instance id, so `fit_legal` would score it as draw 0 and would miss
+	# two instances of one duplicate-guarded module. The write below keeps the
+	# instance ids.
+	if not bool(FitData.fit_legal(ship_id, base_fit(candidate))[&"legal"]):
 		return false
 	var stored := _fit_entry(ship_id)
 	var displaced := StringName(_cell_id(fit_for(ship_id), slot_key, index))
 	if displaced != &"":
-		add_module(displaced, 1)
-	take_module(module_id, 1)
+		_bank_entry(displaced)
+	take_instance(module_id)
 	set_fit(ship_id, candidate)
 	_announce_fit(ship_id, stored)
 	Log.append(EVENT_FIT_MODULE, module_id, 1, 0, _credits)
@@ -544,8 +875,8 @@ func fit_module_at(
 
 ## The composed remove behind the FITTING panel's per-cell ACTION (09 section 4
 ## item 10, CONTRACTS section 13): the cell's module goes back to the inventory
-## with `add_module` and the cell is written `&""`. The hull, slot-key and index
-## guards are `fit_module_at`'s, plus the mandatory set: a key in
+## through `_bank_entry` and the cell is written `&""`. The hull, slot-key and
+## index guards are `fit_module_at`'s, plus the mandatory set: a key in
 ## `FitData.MANDATORY_SLOT_KEYS` is refused before anything else, so the engines
 ## and the reactor of a delivered hull can be swapped but never emptied (09
 ## section 4.1). A cell that holds nothing is refused too - there is no module to
@@ -560,7 +891,8 @@ func fit_module_at(
 ## fit holds a module, so the two reads are the same fit and this write is the
 ## `set_fit_slot` write, whole.
 ##
-## On success: the module back, the cell empty, one `EVENT_FIT_MODULE` line (the
+## On success: the same instance back (or the same base-keyed entry), the cell
+## empty, one `EVENT_FIT_MODULE` line (the
 ## module id, qty 1, delta 0 - the log's own shape; the panel's footer carries
 ## the words), and both keys signal.
 func clear_fit_slot(ship_id: StringName, slot_key: StringName, index: int) -> bool:
@@ -572,10 +904,11 @@ func clear_fit_slot(ship_id: StringName, slot_key: StringName, index: int) -> bo
 	if module_id == &"":
 		return false
 	var candidate := _with_cell(resolved_fit(ship_id), slot_key, index, &"")
-	if not bool(FitData.fit_legal(ship_id, candidate)[&"legal"]):
+	# Judged on base ids, exactly as `fit_module_at` judges its candidate.
+	if not bool(FitData.fit_legal(ship_id, base_fit(candidate))[&"legal"]):
 		return false
 	var stored := _fit_entry(ship_id)
-	add_module(module_id, 1)
+	_bank_entry(module_id)
 	set_fit(ship_id, candidate)
 	_announce_fit(ship_id, stored)
 	Log.append(EVENT_FIT_MODULE, module_id, 1, 0, _credits)
@@ -824,6 +1157,17 @@ func _load_profile() -> void:
 	# already is v5 has no record to convert and the call answers 0.
 	if version < 5:
 		retire_legacy_upgrades()
+	# Save v6's flag day (CONTRACTS section 15): the v5 `{base_id, count}` records
+	# a file below v6 carries become Common instances, and the records every path
+	# writes are canonical six-key ones. The retirement above runs first, and it
+	# writes v6 records of its own, so the migration finds nothing to convert
+	# there.
+	if version < 6:
+		migrate_module_instances()
+	# Memory only: a record the file spelled short reads in the canonical shape,
+	# and the file is not rewritten for it (17 section 3's "never rewritten at
+	# load", the same rule the fitting arrays keep).
+	_modules = _normalise_instances(_modules)
 
 
 func _apply_defaults() -> void:
@@ -845,6 +1189,8 @@ func _apply_defaults() -> void:
 	_insured = false
 	_mercy_used = false
 	_vitals.clear()
+	_instance_counter = 0
+	_auction = _auction_default()
 
 
 func _read_values() -> void:
@@ -871,6 +1217,8 @@ func _read_values() -> void:
 	_insured = _read_bool("insured", false)
 	_mercy_used = _read_bool("mercy_used", false)
 	_vitals = _read_vitals()
+	_instance_counter = maxi(0, _read_int(KEY_INSTANCE_COUNTER, 0))
+	_auction = _normalise_auction(_read_plain_dict(KEY_AUCTION))
 
 
 func _read_int(key: String, fallback: int) -> int:
@@ -1089,6 +1437,194 @@ func _module_record(module_id: StringName) -> Dictionary:
 	return {}
 
 
+## The bag in its canonical shape: every key a String, every record 15 section 6's
+## six keys. The loader and `set_modules` run this, so a live record and a loaded
+## one are the same dictionary whatever shape the file or the caller had, and the
+## migration's own shape test stays meaningful.
+func _normalise_instances(source: Dictionary) -> Dictionary:
+	var bag: Dictionary = {}
+	for key: Variant in source:
+		var entry: Variant = source[key]
+		if not entry is Dictionary:
+			continue
+		bag[String(key)] = _normalise_instance(String(key), entry)
+	return bag
+
+
+## One record in its canonical six-key shape (CONTRACTS section 15). A missing
+## `instance_id` or `base_id` defaults to the record's own key, which is how a v5
+## `{base_id, count}` record reads (`base_id` kept) and a bare `{count: n}` fixture
+## reads (`base_id` = the key, the pre-v6 tolerance `base_module_id` has always
+## had); a missing or illegal `rarity` is Common, 15 section 1's floor for a record
+## that was never rolled; `count` is clamped at zero. Affixes keep the shipped
+## `[{id, value}]` / `[id]` rows with junk entries dropped.
+static func _normalise_instance(key: String, raw: Dictionary) -> Dictionary:
+	var instance_id := str(raw.get(KEY_INSTANCE_ID, key))
+	var base := str(raw.get(KEY_BASE_ID, key))
+	# `str()` and not the `String()` constructor: the constructor has no int
+	# overload, so a fixture whose `rarity` is a bare number (every pre-instance
+	# one, `rarity: 2`) aborted the whole normalise and left an empty record.
+	var rarity := str(raw.get(KEY_RARITY, ModuleData.RARITY_COMMON))
+	if not ModuleData.RARITY_ORDER.has(rarity):
+		rarity = ModuleData.RARITY_COMMON
+	return _instance_record(
+		instance_id if instance_id != "" else key,
+		base if base != "" else key,
+		rarity,
+		raw.get(KEY_PREFIXES, []),
+		raw.get(KEY_SUFFIXES, []),
+		maxi(0, int(raw.get(KEY_COUNT, 0)))
+	)
+
+
+## One instance record, canonical: CONTRACTS section 15's six keys, ids as Strings
+## (what a ConfigFile gives back, so a live record and a loaded one compare equal),
+## the affixes as 15 section 3's `{id: String, value: float}` rows and section 4's
+## suffix ids, and `count` as an int.
+static func _instance_record(
+	id: String, base: String, rarity: String, prefixes: Variant, suffixes: Variant, count: int
+) -> Dictionary:
+	return {
+		KEY_INSTANCE_ID: id,
+		KEY_BASE_ID: base,
+		KEY_RARITY: rarity,
+		KEY_PREFIXES: _affix_rows(prefixes),
+		KEY_SUFFIXES: _affix_names(suffixes),
+		KEY_COUNT: count,
+	}
+
+
+## 15 section 3's prefix rows as a record stores them: the catalogue id plus the
+## value the band column gave it at the module's tier. A plain id (a hand-built
+## fixture) is kept with value 0.0 and a junk entry is dropped, so the shape is
+## stable whatever the caller passed.
+static func _affix_rows(raw: Variant) -> Array:
+	var rows: Array = []
+	if not raw is Array:
+		return rows
+	for entry: Variant in (raw as Array):
+		if entry is Dictionary:
+			var row: Dictionary = entry
+			var id := str(row.get("id", ""))
+			if id != "":
+				rows.append({"id": id, "value": float(row.get("value", 0.0))})
+		elif entry is String or entry is StringName:
+			var named := String(entry)
+			if named != "":
+				rows.append({"id": named, "value": 0.0})
+	return rows
+
+
+## 15 section 4's suffix ids as a record stores them: one String each.
+static func _affix_names(raw: Variant) -> Array:
+	var names: Array = []
+	if not raw is Array:
+		return names
+	for entry: Variant in (raw as Array):
+		var suffix_id := ""
+		if entry is Dictionary:
+			suffix_id = str((entry as Dictionary).get("id", ""))
+		elif entry is String or entry is StringName:
+			suffix_id = String(entry)
+		if suffix_id != "":
+			names.append(suffix_id)
+	return names
+
+
+## The next free instance id (CONTRACTS section 15): the counter increments and its
+## `mod_%04d` is taken unless the bag or the shelf already holds that id, in which
+## case the next number is tried. The counter never rewinds, so a discarded listing
+## spends its number for good.
+func _mint_instance_id() -> String:
+	var candidate := ""
+	while candidate == "" or _modules.has(candidate) or _shelf_listings().has(candidate):
+		_instance_counter += 1
+		candidate = INSTANCE_ID_FORMAT % _instance_counter
+	return candidate
+
+
+## The shelf's listing dictionary, read in place: the restock and `buy_instance`
+## both write through it, and it holds 10 section 2.1's rolled listings keyed by
+## their minted instance id.
+func _shelf_listings() -> Dictionary:
+	var listings: Variant = _auction.get("modules", null)
+	if listings is Dictionary:
+		return listings
+	return {}
+
+
+## One shelf listing as a fresh canonical record, `{}` for an id the shelf does not
+## list. Nothing here is in the bag: a listing is owned only once `buy_instance`
+## moves it.
+func _listing_record(id: StringName) -> Dictionary:
+	var listing: Variant = _shelf_listings().get(String(id), null)
+	if not listing is Dictionary:
+		return {}
+	return _normalise_instance(String(id), listing)
+
+
+## Drop one listing from the shelf. `buy_instance`'s move and 10 section 2.1's
+## restock discard both ride this; the state keeps its four members.
+func _remove_listing(key: String) -> void:
+	var state := _auction.duplicate(true)
+	var listings: Dictionary = state.get("modules", {})
+	listings.erase(key)
+	state["modules"] = listings
+	_auction = state
+	_mark_dirty()
+
+
+## The displaced-entry half of the two composed transactions (CONTRACTS section
+## 13/15). An entry the bag still holds at `count` 0 -- an instance that was taken
+## for fitting -- comes back as the **same** instance through `restore_instance`;
+## anything else (a base-keyed entry, a delivered module the bag never held, an id
+## with no record at all) enters through `add_module`, exactly as before save v6.
+## One bag write either way, so a swap still emits one `&"modules"` signal per side.
+func _bank_entry(entry: StringName) -> void:
+	var record := _module_record(entry)
+	if not record.is_empty() and int(record.get(KEY_COUNT, 0)) == 0:
+		restore_instance(entry)
+		return
+	add_module(entry, 1)
+
+
+## The empty shelf: the four pinned members at their defaults.
+func _auction_default() -> Dictionary:
+	return {"last_band": 0, "hulls": [], "modules": {}, "hot": &""}
+
+
+## A shelf state in the pin's shape (CONTRACTS section 15): `last_band` as an int,
+## `hulls` an Array[String] of ids, `modules` the listings keyed by their minted id
+## and each one canonical, `hot` one StringName. The four keys are always present,
+## whatever the caller passed, so `auction` can hand out the same shape to every
+## reader; a key the state does not carry keeps its default.
+func _normalise_auction(source: Dictionary) -> Dictionary:
+	var normalised := _auction_default()
+	var band: Variant = source.get("last_band", null)
+	if band is int or band is float:
+		normalised["last_band"] = int(band)
+	var hulls: Variant = source.get("hulls", null)
+	if hulls is Array:
+		var ids: Array[String] = []
+		for entry: Variant in (hulls as Array):
+			var ship_id := String(entry)
+			if ship_id != "":
+				ids.append(ship_id)
+		normalised["hulls"] = ids
+	var listings: Variant = source.get("modules", null)
+	if listings is Dictionary:
+		var shelf: Dictionary = {}
+		for key: Variant in (listings as Dictionary):
+			var entry: Variant = listings[key]
+			if entry is Dictionary:
+				shelf[String(key)] = _normalise_instance(String(key), entry)
+		normalised["modules"] = shelf
+	var hot: Variant = source.get("hot", null)
+	if hot is StringName or hot is String:
+		normalised["hot"] = StringName(str(hot))
+	return normalised
+
+
 ## The stored entry for one hull, or an empty dictionary. `_fits` is keyed by
 ## String(ship_id) and its per-slot values are whatever the file was saved with:
 ## one id per type before save v4, an array after it.
@@ -1242,6 +1778,8 @@ func _write_profile() -> void:
 	_config.set_value(SECTION, "cargo", _keys_to_strings(_cargo))
 	_config.set_value(SECTION, "ammo", _keys_to_strings(_ammo))
 	_config.set_value(SECTION, "modules", _modules)
+	_config.set_value(SECTION, "instance_counter", _instance_counter)
+	_config.set_value(SECTION, "auction", _auction)
 	_config.set_value(SECTION, "fits", _fits)
 	_config.set_value(SECTION, "market", _market)
 	_config.set_value(SECTION, "heat", _heat)

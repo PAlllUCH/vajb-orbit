@@ -12,6 +12,11 @@ extends McpTestSuite
 ## none, the defaults no longer name it, and the migration itself - and the flag
 ## day's write - has its own suite, `test_p2b_retirement.gd`.
 ##
+## Save v6 (S3, CONTRACTS section 15) turns `modules` into the `instance_id ->
+## record` dictionary of 15 section 6/8's instances, so the round trip below writes
+## one canonical six-key record; the migration has its own suite,
+## `test_s3_migration.gd`.
+##
 ## Profiles are throwaway instances of the autoload script whose save_path is
 ## repointed at a scratch file before the first mutation; `user://profile.cfg`
 ## is never touched. Note that these instances are never added to the tree, so
@@ -153,14 +158,19 @@ func test_v1_profile_migrates_to_defaults() -> void:
 
 func test_v2_round_trip_for_every_key() -> void:
 	var first = _fresh()
+	## Save v6's instance record (15 section 6/8, CONTRACTS section 15): the six keys
+	## `{instance_id, base_id, rarity, prefixes[], suffixes[], count}`, the affixes in
+	## the shape a record stores them (`{id, value}` per prefix, one id per suffix),
+	## and `count` 3 -- the stacked stock a v5 file migrates into three instances.
 	first.set_modules(
 		{
 			"mod_0001":
 			{
-				"base_id": "upgrade_generator",
-				"rarity": 2,
-				"prefixes": ["hot"],
-				"suffixes": [],
+				"instance_id": "mod_0001",
+				"base_id": "s_light",
+				"rarity": "rare",
+				"prefixes": [{"id": "sturdy", "value": 0.2}, {"id": "vigilant", "value": 0.35}],
+				"suffixes": ["whale", "ledger"],
 				"count": 3,
 			},
 		}
@@ -210,7 +220,11 @@ func test_v2_round_trip_for_every_key() -> void:
 
 	var on_disk := ConfigFile.new()
 	assert_eq(on_disk.load(PROFILE_PATH), OK)
-	assert_eq(int(on_disk.get_value(SECTION, "save_version", 0)), 5, "writes always persist v5")
+	assert_eq(
+		int(on_disk.get_value(SECTION, "save_version", 0)),
+		6,
+		"writes always persist save v6 (S3, CONTRACTS section 15)"
+	)
 
 
 ## ---------------------------------------------------------------------------
