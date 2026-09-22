@@ -275,7 +275,51 @@ existing upgrade retires into the auction book as a legacy entry (10 §5).
    the weapon fit surface):** until the AUCTION module (10 §2) exists, the
    surface that buys the weapon modules into the inventory is **OUTFITTING**
    (`STATION_HUB.md` §5.1's amendment; the same note is in 10 §6), and those
-   rows retire into AUCTION when it ships.
+   rows retire into AUCTION when it ships. The surface that then fits,
+   swaps and removes those modules per cell is **FITTING** (`STATION_HUB.md`
+   §5.3; items 9 to 13 below).
+9. **Per-cell install is one composed transaction (`fit_module_at`).** The
+   fitting surface's install and swap are the single call
+   `PlayerProfile.fit_module_at(ship_id, slot_key, index, module_id)`
+   (CONTRACTS §13). It refuses (false, no write) when the hull is not one of
+   the nine; the slot key is not in `FitData.FIT_SLOT_KEYS`; the index is
+   outside `0 .. slot_capacity-1`; `module_count(module_id) == 0`; or the
+   candidate fit fails `ShipFit.fit_legal` (the candidate being
+   `fit_for(ship_id)` with that one cell set to `module_id`). On success, in
+   this order: the displaced module (when the cell was non-empty) returns
+   with `add_module`; `take_module(module_id, 1)`;
+   `set_fit_slot(ship_id, slot_key, index, module_id)`; one log line
+   (`EVENT_FIT_MODULE`); and both `profile_changed(&"fits")` and
+   `profile_changed(&"modules")`. Every refusal precedes every write, and
+   the displacement happens before the take, so a swap can never lose the
+   displaced module.
+10. **Per-cell remove is composed too, and a mandatory cell is never
+    emptied.** `PlayerProfile.clear_fit_slot(ship_id, slot_key, index)`
+    takes the same guards as item 9, plus a key in
+    `FitData.MANDATORY_SLOT_KEYS` (`[&"engines", &"power"]`, §4.1, the one
+    source) is always refused, so the mandatory set is never empty from the
+    panel. The cell's module returns to the inventory with `add_module`;
+    the cell is written `&""`; one log line (`EVENT_FIT_MODULE` with the
+    module id, qty 1, delta 0); both keys emit. `clear_fit` stays as it is,
+    the whole-fit reset used by the seed and the tests (CONTRACTS §13).
+11. **Legality is previewed once and re-checked once, both through the same
+    function.** The fitting pane calls `ShipFit.fit_legal` on the candidate
+    fit to colour the power meter and to gate its ACTION; `fit_module_at` /
+    `clear_fit_slot` re-check on commit. Both read the same function, and
+    nothing auto-removes on an illegal fit (§2).
+12. **The pane never mutates directly.** Panels request, the profile
+    mutates (STATION_HUB §12.4). The fitting surface may only call the two
+    composed APIs, `fit_for`, `module_count`, `modules`, `ShipFit.*` and
+    `Repairs.*` (CONTRACTS §13).
+13. **The legacy six-row UPGRADES surface retires into the module
+    inventory.** The six `StationCatalog.UPGRADES` rows, `upgrade()`,
+    `upgrade_ids()`, `has_upgrade`, `installed_upgrades`, `install_upgrade`
+    and the profile's `upgrades` record are removed; a v4 file with all six
+    upgrades installed loads as six inventory modules (one each) and no
+    upgrade records, and a v5 file has no `upgrades` record at all
+    (`retire_legacy_upgrades`, idempotent, called from the load path when
+    the file's version is below 5; CONTRACTS §13). The fitting surface
+    itself is **FITTING** (`STATION_HUB.md` §5.3).
 
 ## 5. Stats resolution order
 
@@ -340,6 +384,12 @@ On top of the mandatory set:
   2× `w_laser`, `s_light`.
 - **All other hulls are bought bare** (10 §2) apart from the mandatory set — the
   full fit is a starter courtesy, not a class rule.
+
+**Note 2026-09-22 (P2-B proper — the fitting surface is FITTING).** The surface that fits, swaps and
+removes this mandatory set per cell is **FITTING** (`STATION_HUB.md` §5.3; CONTRACTS §13). An engine or
+reactor cell may be replaced there by a better module (the removed `e_std`/`p_std` returns to the module
+inventory) but is never left empty: `clear_fit_slot` refuses any key of `FitData.MANDATORY_SLOT_KEYS`
+(`[&"engines", &"power"]`, §4.1), so the delivered launchable fit stays launchable through the panel.
 
 Reversal: return to "bare hulls launch on the v1 standard fit" by having the
 launch path fall back to the hull's standard fit when the profile holds none

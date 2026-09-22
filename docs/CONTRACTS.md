@@ -749,10 +749,10 @@ actually fired.
 "C:/Godot_4_7_2/Godot_v4.7.2-stable_win64_console.exe" --headless --path "G:/Mój dysk/Projekty/Vajb Orbit/vajb-orbit" res://tests/headless_runner.tscn --quit-after 1200
 ```
 
-Expected: `[SUMMARY] passed=389 failed=0` (measured on this host 2026-09-22 by the P2-B1
-weapon-fit wave's fixer pass — the wave closed 378 → 387 → 389, with P2-A's slot-grid
-wave (311 → 372) and the rock-cleave wave (372 → 378) before it; the previously recorded
-294 was the flight-feel & beam wave's review),
+Expected: `[SUMMARY] passed=437 failed=0` (measured on this host 2026-09-22 by the P2-B proper
+fitting wave's fixer pass — the wave closed 389 → 402 → 420 → 431 → 437, with P2-B1's
+weapon-fit wave (378 → 389), P2-A's slot-grid wave (311 → 372) and the rock-cleave wave
+(372 → 378) before it),
 exit 0. A wave is
 done = gate green + the worker added tests for their slice. The suite held **53**
 tests through engine wave 1; engine slice 0 added `tests/test_engine2_pools.gd`
@@ -1084,6 +1084,125 @@ Rules the pin fixes, so no worker has to choose:
    launch, because the launch already resolves the hull's fit; in-space refitting
    does not exist in v1 (09 §4.8).
 
+## §13 P2-B proper fitting (2026-09-22)
+
+Pinned before the wave's code workers start, so they agree. Additive only: every
+§2/§3/§7/§8/§11/§12 pin above stays valid.
+
+```gdscript
+## autoload/player_profile.gd — additive beyond §12's pin.
+const SAVE_VERSION := 5              # was 4; a v4 file still reads (MIN_READABLE_VERSION 1)
+const LEGACY_UPGRADE_MODULES: Dictionary = {          # the six-row retirement table, 09's own
+    &"upgrade_generator": &"p_mk2",   &"upgrade_shield": &"s_heavy",
+    &"upgrade_engine":    &"e_ion",   &"upgrade_module": &"c_scanner",
+    &"upgrade_extra":     &"u_cargo", &"upgrade_drone":  &"u_drones",
+}
+const EVENT_FIT_MODULE := "FIT_MODULE"   # the fitting transaction's own log id
+
+func fit_module_at(ship_id: StringName, slot_key: StringName, index: int,
+                   module_id: StringName) -> bool
+    # The composed install. Refuses (false, no write) when: the hull is not one of
+    # the nine; the slot key is not in FitData.FIT_SLOT_KEYS; the index is outside
+    # 0 .. slot_capacity-1; module_count(module_id) == 0; or the candidate fit fails
+    # ShipFit.fit_legal — the candidate being resolved_fit(ship_id) with that one
+    # cell set to module_id (resolved_fit, below, is the fit the launch would fly,
+    # so the pane's preview and this commit read one shape — R1's MED-1, cured by
+    # F1 2026-09-22). On success, in this order: the displaced module (when the
+    # cell was non-empty) returns with add_module; take_module(module_id, 1);
+    # set_fit_slot(ship_id, slot_key, index, module_id); one Log.append(EVENT_FIT_MODULE,
+    # module_id, 1, 0, credits) line; profile_changed(&"fits") and (&"modules").
+func resolved_fit(ship_id: StringName) -> Dictionary
+    # The fit the launch would fly: fit_for(ship_id) when that fit holds any module
+    # at all, else ShipFit.standard_fit(ship_id) (game.gd's own launch fallback);
+    # {} for an NPC hull, exactly as fit_for answers. The panes read it for display
+    # and the two composed transactions use it as their candidate.
+func clear_fit_slot(ship_id: StringName, slot_key: StringName, index: int) -> bool
+    # The composed remove. Same guards, plus: a key in FitData.MANDATORY_SLOT_KEYS is
+    # always refused (09 §4.1's mandatory set is never empty). The candidate is
+    # resolved_fit(ship_id) with the cell emptied. The cell's module returns to
+    # the inventory with add_module; the cell is written &""; one log line
+    # (EVENT_FIT_MODULE with a negative qty is not used — use the module id, qty 1,
+    # delta 0 and let the caller's footer carry the words); emits both keys.
+func retire_legacy_upgrades() -> int
+    # The v5 migration step, idempotent. For every id in the `upgrades` record whose
+    # value is true: add_module(LEGACY_UPGRADE_MODULES[id], 1) and drop the record.
+    # Returns how many were migrated (0 on a v5 file). Called from the load path when
+    # the file's save_version < 5, after the record is read.
+```
+
+Rules the pin fixes, so no worker has to choose:
+
+1. **The mandatory-key list is not re-declared.** `FitData.MANDATORY_SLOT_KEYS`
+   (`game/ship_fit.gd:117`, `[&"engines", &"power"]`) is the one source, exactly as
+   `FitData.FIT_SLOT_KEYS` already is at `player_profile.gd:456`.
+2. **The migration is a one-way door.** A v4 file with all six upgrades installed loads as
+   six inventory modules (one each) and no upgrade records; a v5 file has no `upgrades`
+   record at all. `has_upgrade` / `installed_upgrades` / `install_upgrade` and the
+   `upgrades` key are **removed** from the profile; a v1–v3 file still loads (it never had
+   the key). Fixture: the wave's own test builds a v4 file with all six set and asserts the
+   six modules afterwards and `retire_legacy_upgrades() == 0` on the second call.
+3. **`fit_module_at` never half-writes.** Every refusal precedes every write; the
+   displacement happens before the take, so a swap can never lose the displaced module.
+4. **`clear_fit` stays as it is** (whole-fit reset, used by the seed and tests);
+   `clear_fit_slot` is the pane's per-cell remove.
+5. **The pane never mutates directly** (STATION_HUB §12.4): panels request, the profile
+   mutates. The pane may only call the two composed APIs, `resolved_fit`, `fit_for`,
+   `module_count`, `modules`, `ShipFit.*` and `Repairs.*`.
+6. **Legality is previewed, not enforced twice.** The pane calls `ShipFit.fit_legal` on the
+   candidate fit to colour the power meter and to gate the ACTION; the profile re-checks on
+   commit. Both read the same function.
+
+(The brief's rule list carries one duplicated "2."; §13 numbers the six rules 1–6 in reading
+order with no text change.)
+
+Consumer rules (the `STATION_HUB.md` §5.3 amendment — the same bullets are the surface's
+contract there; every number in them is 08 §3.2's, 09 §8's or section 5.1's own):
+
+- **Rail:** `Module.UPGRADES` becomes `Module.FITTING`; the label becomes `FITTING`; the
+  entry keeps the retired entry's rail position, its icon path and its tint. The retired
+  `ui/station/upgrades_panel.gd` and `.tscn` are deleted; nothing else in the rail moves.
+- **Anatomy** — the §5.1 host-pane construct, two stacked sections:
+  - **SLOT LAYOUT** — the active hull's grid, **the shipyard's own recipe** (`ShipFit.grid_cells`,
+    `SlotButtonWeapon` 48 px plates, gaps as empty `Control`s, the type's slot glyph, the
+    caption `SLOT LAYOUT · <n> CELLS · <m> ENGINES`). Unlike the shipyard's display, these
+    cells are **selectable**: one selected at a time, `FOCUS_ALL`, the selected cell carrying
+    the theme's focus ring; a cell's identity is its `slot_key` + `index` (09 §4.5's layout
+    index). The recipe is shared with the shipyard (lift it into a helper both panes call, or
+    duplicate it byte-equivalently) — the reviewer checks both grids render identically.
+  - **OWNED MODULES** — one row per owned module **id** (aggregated by id), ordered by
+    `ShipFit.FIT_SLOT_KEYS` then catalogue order: 48 px module icon, name, the meta
+    `SLOT <TYPE> · DRAW <n>`, `OWNED ×<n>`, and ACTION.
+- **ACTION per state:** `FIT` when a cell of the module's own type is selected and the
+  module is legal there (calls `fit_module_at`); `SWAP` when that cell already holds another
+  module (same call — the displaced one returns to the inventory); `SELECT A CELL`
+  (disabled) when no cell is selected or the module's type has no selected cell.
+- **The power meter** (footer strip, always visible): idle `PWR <Σ draws> / <out + power module>`;
+  with a cell selected, the candidate's own line `PWR <Σ> / <out> · CANDIDATE <Σ'> / <out>`;
+  when the candidate is over budget the same line renders in the danger colour and ends
+  `— OVER BY <n>`. The numbers are `fit_legal`'s own `power` dictionary.
+- **Hover / selection info (owner request 1):** the selected cell's line reads
+  `<TYPE><n> · <MODULE NAME or EMPTY> · OWNED ×<n>`; the shipyard's plates gain the same line
+  on hover (`shipyard_panel.gd`), reading the selected hull's `fit_for` entry.
+- **Refusals** (footer strip, never a dialog): `13 / 11 PWR — OVER BY 2` (09 §2's own
+  format, already pinned), `MANDATORY CELL — SWAP ONLY, NEVER EMPTY` (new this pass),
+  and `REFUSED · FIT ILLEGAL` as the catch-all for a fit illegal for any other reason
+  (L77's guard, now named here as the third pinned refusal). The footer is never blank.
+- **Focus order:** the SLOT LAYOUT cells first (row-major), then the OWNED MODULES rows,
+  then the pane's own footer, then the rail (STATION_HUB §10).
+- **Empty states:** an account that owns no modules shows one disabled row
+  `NO MODULES OWNED · BUY THEM IN OUTFITTING`; a hull with every cell filled and nothing
+  selected shows the meter and the grid, no refusal.
+
+LAUNCH's service rows (the `STATION_HUB.md` §5.4 amendment — owner request 4):
+
+- §5.4's DECK CONTROL gains `REFUEL` and `RECHARGE` actions for the active hull, calling
+  `Repairs.refuel(profile, active_ship)` / `Repairs.recharge(profile, active_ship)` and
+  rendering the service's own result in the pane's status line (`fuel_max` / `energy_max`
+  on success; the service's refusal reason otherwise). Free and instant — **no price column,
+  no credits move** (14 §1's rate; `FREE_FEE` is 0).
+- Already-full and no-damage-report states are the service's refusals, rendered, never
+  hidden — the button stays pressable and the footer says why.
+
 ## §10 Changelog
 
 - **v0 (2026-09-18)** — seeded from the engine wave-1 pinned interfaces
@@ -1387,3 +1506,48 @@ Rules the pin fixes, so no worker has to choose:
   wording, the ACTION precedence tick, the seam's price trust, the base-id hand-back, the
   `set_fit` seed, probe housekeeping and the 48/40 px icon tension; plus D0's two stale
   cross-references).
+- **v0.5 (2026-09-22, P2-B proper fitting wave — D0, the wave's only CONTRACTS writer)** —
+  added **§13** above, transcribed from `.agents/gen/p2b_proper_wave_task.md` §3:
+  `SAVE_VERSION` 5, `LEGACY_UPGRADE_MODULES` (the six-row retirement table),
+  `EVENT_FIT_MODULE`, `fit_module_at`, `clear_fit_slot`, `retire_legacy_upgrades`, the six
+  rules, §3.2's pane contract and §3.3's LAUNCH service rows. It also records the wave's
+  surface work in the docs it owns: `STATION_HUB.md` §5.3 is rewritten as **FITTING** (§3.2
+  verbatim, the rail swap, the retirement and its reversal), §5.4 gains the `REFUEL` /
+  `RECHARGE` rows (§3.3), §5.2 gains the plates' hover line, §7.1 records the reused icon,
+  and the retired surface's references are cleared out of sections 1–12; `09_ship_slots_modules.md`
+  §4 gains items 9–13 (the composed install and remove, the never-emptied mandatory cell,
+  legality previewed and re-checked, the pane's request-only rule, the legacy retirement),
+  §7 names **FITTING** as the fitting surface, and §4 item 8's interim note points at it;
+  `10_ship_acquisition.md` §6's interim note names FITTING as the install surface beside
+  OUTFITTING's shop; `15_module_affixes.md` §6 gains the dated note that affixes are the
+  **next** wave and this one's fitting inventory aggregates by id. **Two drifts recorded
+  rather than invented:** the wave prompts name a `FIT_MANDATORY_KEYS` constant, which
+  §13's rule 1 verbatim resolves (the mandatory-key list is **not** re-declared;
+  `FitData.MANDATORY_SLOT_KEYS`, `game/ship_fit.gd:117`, is the one source) — no such
+  constant is pinned here and none may ship; and the brief's rule list carries one
+  duplicated "2.", so §13 numbers the six rules 1–6 in reading order with no text change.
+  **No pinned signature changed and no frozen method was dropped** — this pass is `docs/**`
+  only, W1/W2/W3's additive code follows §13. **No number is this pass's:** every cost,
+  draw, capacity, cell count and refusal wording is 09's, 08 §3.2's, 12's, the pin's own or
+  the brief's transcription of them. **§9's expected total is the wave's own to move**
+  (R1 measures the final count after the worker suites land; the close-out writes it into
+  §9): the pre-wave gate stands at the P2-B1 close-out's recorded **389**
+  (`passed=389 failed=0`, the gate 389 commit `1f794cc` §9 records), and this documentation
+  pass records no post-wave count of its own.
+  Evidence: `.agents/gen/p2b_proper_d0_report.md` (this pass, with the exact line per
+  pinned item) plus the brief `.agents/gen/p2b_proper_wave_task.md`.
+- **v0.6 (2026-09-22, P2-B proper close-out — the orchestrator's review-wave merge)** —
+  corrects §13 to the reviewed code and closes the wave's two MED findings. R1 left no HIGH
+  and two MED; F1 cured both: **MED-1** (§13's candidate sentence, above) now reads
+  `resolved_fit(ship_id)`, the fit the launch would fly, so the pane's preview and the
+  profile's commit agree on a hull with no stored fit — `resolved_fit` is added to the pin
+  and to rule 5's allowed-call list; **MED-2** was one line in the pane (a refusal's footer
+  line no longer outlives the successful action that follows it) and needs no pin text.
+  §9 above carries the wave's measured **437** (389 → 402 → 420 → 431 → 437). Findings left
+  open and parked: `.agents/gen/LOW_BACKLOG.md` L85–L92 (the module's-slot-type check, the
+  empty-cell remove refusal, the retired Phase C mockup's own UPGRADES rows, the signature
+  audit's two-line blind spot, 09 §3.8's generator-lineage sentence, three data-dependent
+  test assumptions against a live profile, the nondeterministic exit-time leak lines and the
+  carried-forward harness items), plus F1's measured residual (a bare hull's delivered
+  mandatory cell still offers REMOVE and refuses with the pinned wording — W2's disclosed
+  reading, ticked at the close-out).

@@ -1,14 +1,16 @@
 extends VBoxContainer
 ## LAUNCH module panel: the flight briefing, the cargo plate strip, the manifest read from
-## PlayerProfile.cargo_items(), and the two-press arming beat that ends in the undock
-## intent. Contract: docs/design/STATION_HUB.md sections 2, 5.4 (incl. the 2026-09-21 P2-A
-## amendment), 5.6, 9 and 12, docs/design/STATION_SPEC.md sections 2.3, 2.6 and 6,
-## docs/design/IMPLEMENTATION_PLAN.md section 9.2, CONTRACTS section 11.
+## PlayerProfile.cargo_items(), DECK CONTROL's two station services, and the two-press arming
+## beat that ends in the undock intent. Contract: docs/design/STATION_HUB.md sections 2, 5.4
+## (incl. the 2026-09-21 P2-A and 2026-09-22 amendments), 5.6, 9 and 12,
+## docs/design/STATION_SPEC.md sections 2.3, 2.6 and 6,
+## docs/design/IMPLEMENTATION_PLAN.md section 9.2, CONTRACTS sections 8 and 11.
 ##
 ## The station shell loads this scene into its host, so the panel never routes and never
 ## writes the profile: it emits launch_requested up, reads StationCatalog / PlayerProfile
-## down, and leaves the boost and jump cues and the fade to the shell and the Router
-## (STATION_HUB sections 2 and 12.4).
+## down, leaves the boost and jump cues and the fade to the shell and the Router, and asks
+## `Repairs` for the two free power services instead of touching credits or vitals itself
+## (STATION_HUB sections 2, 5.4 and 12.4).
 ##
 ## Panel contract with the shell:
 ##   signal status_requested(message: String, danger: bool)   write the footer strip
@@ -16,11 +18,13 @@ extends VBoxContainer
 ##   func refresh_profile(key: StringName) -> void             react to profile_changed
 ##   func focus_primary() -> void                              focus entry after a switch
 ##   func disarm() -> bool                                     ui_cancel step 2
+##   func refuel_button() / recharge_button() -> Button         the two service actions
 
 const TOKENS_TYPE: StringName = &"Tokens"
 
 const Paths := preload("res://ui/paths.gd")
 const Catalog := preload("res://game/station_catalog.gd")
+const RepairsService := preload("res://game/repairs.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
@@ -60,6 +64,22 @@ const CARGO_ICON_FALLBACK := "res://assets/icons/tint/icon_cargo_crate_48.png"
 ## of the frame's width, aspect kept.
 const PREVIEW_FIT := 0.70
 const HULL_READY_FORMAT := "%s — READY"
+
+## STATION_HUB section 5.4's 2026-09-22 amendment (owner request 4): DECK CONTROL gains the
+## station's two power services for the active hull. The labels are `StationCatalog.SERVICES`'
+## own names and the report is the service's own result - its figure key and value on success,
+## its own reason on a refusal - so no wording and no number is invented here. Nothing is
+## priced: refuel and recharge are free and instant, no credits move, and the spec carries no
+## rate to print (14 section 1; `Repairs.FREE_FEE` is 0).
+const SERVICE_ROW_HEIGHT := 56.0
+const SERVICE_ROW_SEPARATION := 12
+## CONTRACTS section 8's two service ids, which are `Repairs`' own function names.
+const SERVICE_REFUEL: StringName = &"refuel"
+const SERVICE_RECHARGE: StringName = &"recharge"
+## CONTRACTS section 8's two success keys: `refuel` answers `fuel_max`, `recharge` `energy_max`.
+const FIGURE_FUEL_MAX: StringName = &"fuel_max"
+const FIGURE_ENERGY_MAX: StringName = &"energy_max"
+const SERVICE_REPORT := "%s %d"
 
 const COL_BRIEF := 220.0
 const BRIEF_SEPARATION := 12
@@ -118,6 +138,10 @@ const STATUS_FIRED := "LAUNCH CONFIRMED · UNDOCKING"
 var _brief_values: Dictionary = {}
 var _plates: Array[TextureButton] = []
 var _plate_icons: Array[TextureRect] = []
+## The two service actions, built into DECK CONTROL's own box (the section 5.4 amendment); the
+## labels are the catalogue's, so nothing here is a literal to drift.
+var _refuel_button: Button = null
+var _recharge_button: Button = null
 var _arm_timer: Timer
 var _armed := false
 var _arm_tween: Tween = null
@@ -129,10 +153,11 @@ func _ready() -> void:
 	_build_brief_rows()
 	_build_cargo_plates()
 	_build_arm_timer()
+	_build_service_rows()
 	_subtitle.text = SUBTITLE % [_bridge_label(), String(destination_route()).to_upper()]
 	_tag.text = TAG_FORMAT % int(ARM_SECONDS)
 	_brief_note.text = BRIEF_NOTE
-	_confirm_strip.text = _idle_text()
+	_set_confirm(_idle_text(), false)
 	_apply_tokens()
 	_hull_center.resized.connect(_update_preview_size)
 	_launch_button.pressed.connect(_on_launch_pressed)
@@ -169,7 +194,7 @@ func disarm() -> bool:
 	if not _armed:
 		return false
 	_clear_arm()
-	_confirm_strip.text = _idle_text()
+	_set_confirm(_idle_text(), false)
 	status_requested.emit(STATUS_DISARMED, false)
 	return true
 
@@ -284,6 +309,96 @@ func _plate_texture(variation: StringName, state: StringName) -> Texture2D:
 func _refresh_plate_textures() -> void:
 	for plate: TextureButton in _plates:
 		_apply_plate_textures(plate)
+
+
+## DECK CONTROL's two service actions (STATION_HUB section 5.4's 2026-09-22 amendment), built
+## above the LAUNCH button so the primary action stays the last and lowest control in the box.
+## The row is built here rather than in the scene file because this pass owns the panel's
+## script only; the two buttons are named after the catalogue's own services.
+func _build_service_rows() -> void:
+	var box := _launch_button.get_parent()
+	if box == null:
+		return
+	var row := HBoxContainer.new()
+	row.name = &"ServiceRow"
+	row.add_theme_constant_override(&"separation", SERVICE_ROW_SEPARATION)
+	_refuel_button = _make_service_button(row, SERVICE_REFUEL)
+	_recharge_button = _make_service_button(row, SERVICE_RECHARGE)
+	box.add_child(row)
+	box.move_child(row, _launch_button.get_index())
+
+
+## One service action: the catalogue's own `name` on a `StationButton` of the secondary height,
+## so a catalogue that renames a service moves the button with it and no label is a literal.
+func _make_service_button(parent: HBoxContainer, service_id: StringName) -> Button:
+	var service: Dictionary = Catalog.service(service_id)
+	var label := String(service.get(&"name", String(service_id)))
+	var button := Button.new()
+	button.name = "%sButton" % label.to_pascal_case()
+	button.theme_type_variation = &"StationButton"
+	button.custom_minimum_size = Vector2(0.0, SERVICE_ROW_HEIGHT)
+	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	button.text = label
+	button.pressed.connect(_on_service_pressed.bind(service_id))
+	button.focus_entered.connect(_on_service_focused)
+	parent.add_child(button)
+	return button
+
+
+func refuel_button() -> Button:
+	return _refuel_button
+
+
+func recharge_button() -> Button:
+	return _recharge_button
+
+
+func _on_service_focused() -> void:
+	AudioManager.play_ui(AudioManager.UiCue.HOVER)
+
+
+func _on_service_pressed(service_id: StringName) -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	_run_service(service_id)
+
+
+## One service call on the active hull. The panel requests and the service owns the write, so
+## nothing here touches credits, cargo or the profile: `Repairs` is the one owner of both calls
+## and of their refusals (CONTRACTS section 8, STATION_HUB section 12.4).
+func _run_service(service_id: StringName) -> void:
+	var profile := _profile()
+	if profile == null:
+		return
+	var active_id := _active_id(profile)
+	if service_id == SERVICE_REFUEL:
+		_render_service(RepairsService.refuel(profile, active_id), FIGURE_FUEL_MAX)
+	else:
+		_render_service(RepairsService.recharge(profile, active_id), FIGURE_ENERGY_MAX)
+
+
+## The service's own result, in this pane's status line and in the shell's strip: the result
+## key and its figure on success, the service's own reason on a refusal, and the refusal in the
+## danger colour. Free and instant, so no price is printed and no credits move; a full tank or
+## an unfiled hull is the service's refusal, rendered rather than hidden, and the button stays
+## pressable (section 5.4).
+func _render_service(result: Dictionary, figure: StringName) -> void:
+	var ok := bool(result.get(&"ok", false))
+	var text := SERVICE_REPORT % [String(figure).to_upper(), int(result.get(figure, 0))]
+	if not ok:
+		# The service's own reason constant, upper case like every other line in this pane.
+		text = String(result.get(&"reason", &"")).to_upper()
+	_set_confirm(text, not ok)
+	status_requested.emit(text, not ok)
+
+
+## The pane's one status-line writer: the arming copy and a service report share it, so a
+## refusal's danger colour never outlives the line it described.
+func _set_confirm(text: String, danger: bool) -> void:
+	_confirm_strip.text = text
+	if danger:
+		_confirm_strip.add_theme_color_override(&"font_color", _token(&"accent_danger"))
+	else:
+		_confirm_strip.remove_theme_color_override(&"font_color")
 
 
 func _build_arm_timer() -> void:
@@ -482,7 +597,7 @@ func _arm() -> void:
 	_armed = true
 	AudioManager.play_sfx(SFX_ARM)
 	_launch_button.add_theme_color_override(&"font_color", _token(&"accent_danger_bright"))
-	_confirm_strip.text = ARM_TEXT % int(ARM_SECONDS)
+	_set_confirm(ARM_TEXT % int(ARM_SECONDS), false)
 	status_requested.emit(STATUS_ARMED, false)
 	_arm_timer.start()
 	_arm_tween = _make_tween()
@@ -496,7 +611,7 @@ func _fire() -> void:
 	## Inside the window: the shell owns the boost and jump cues, the ambience stop and the
 	## route; the panel only declares the intent (section 11 and the Screen contract).
 	_clear_arm()
-	_confirm_strip.text = FIRED_TEXT % [_bridge_label(), String(destination_route()).to_upper()]
+	_set_confirm(FIRED_TEXT % [_bridge_label(), String(destination_route()).to_upper()], false)
 	status_requested.emit(STATUS_FIRED, false)
 	launch_requested.emit()
 
@@ -505,7 +620,7 @@ func _on_arm_timeout() -> void:
 	_armed = false
 	_launch_button.remove_theme_color_override(&"font_color")
 	_launch_button.modulate.a = 1.0
-	_confirm_strip.text = EXPIRED_TEXT
+	_set_confirm(EXPIRED_TEXT, false)
 	status_requested.emit(STATUS_EXPIRED, false)
 
 

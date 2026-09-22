@@ -259,9 +259,9 @@ func test_a_v2_single_string_fit_reads_as_a_padded_array() -> void:
 	assert_eq(raw_entry["weapons"], "w_laser", "fits() reads the file's own shape")
 
 
-func test_a_v3_fit_loads_clean_and_the_first_write_persists_version_4() -> void:
+func test_a_v3_fit_loads_clean_and_the_first_write_persists_version_5() -> void:
 	assert_eq(Profile.MIN_READABLE_VERSION, 1, "v1 to v3 files stay readable")
-	assert_eq(Profile.SAVE_VERSION, 4, "writes persist save v4")
+	assert_eq(Profile.SAVE_VERSION, 5, "writes persist save v5 (P2-B proper, CONTRACTS section 13)")
 	var fixture := ConfigFile.new()
 	fixture.set_value(SECTION, "save_version", 3)
 	fixture.set_value(SECTION, "credits", 2500)
@@ -287,7 +287,7 @@ func test_a_v3_fit_loads_clean_and_the_first_write_persists_version_4() -> void:
 	profile.save()
 	var on_disk := ConfigFile.new()
 	assert_eq(on_disk.load(PROFILE_PATH), OK)
-	assert_eq(int(on_disk.get_value(SECTION, "save_version", 0)), 4, "a write persists save v4")
+	assert_eq(int(on_disk.get_value(SECTION, "save_version", 0)), 5, "a write persists save v5")
 	var stored: Dictionary = on_disk.get_value(SECTION, "fits", {})
 	var entry: Dictionary = stored["ship_miner"]
 	assert_eq(entry["engines"], ["e_std", "e_ion"], "the write persists the array shape")

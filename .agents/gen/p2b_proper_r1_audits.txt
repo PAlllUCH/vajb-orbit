@@ -1,0 +1,128 @@
+# R1 evidence — the pinned signatures, the format law, and the drift greps
+
+## The two audit tools the P2-B1 review left in the tree
+
+```text
+$ python3 vajb-orbit/tools/r1_p2b1_signature_audit.py
+  game/player_state.gd::set_weapons -> EXACT
+  ui/hud/hud.gd::set_hull_slots -> EXACT
+  ui/hud/hud.gd::hull_slots -> EXACT
+--- CONTRACTS §12 ---
+  autoload/player_profile.gd::buy_module -> EXACT
+  autoload/player_profile.gd::clear_fit_slot -> EXACT
+  autoload/player_profile.gd::retire_legacy_upgrades -> EXACT
+--- CONTRACTS §8 (the two seams this wave could touch) ---
+  autoload/player_profile.gd::set_ammo -> EXACT
+  game/economy_log.gd::append -> EXACT
+
+signatures checked: 27, drift: 0
+exit=0
+
+$ python3 vajb-orbit/tools/r1_p2b1_format_law.py
+PASS  EFFECT w_plasma
+PASS  EFFECT w_railgun
+PASS  CONTRACTS §12 buy_module signature
+
+format-law checks: 21, failures: 0
+the two shipped refusal wordings, rendered:
+  '13 / 11 PWR — OVER BY 2'
+  '"W SLOTS FULL — SWAP OR REMOVE FIRST"'
+```
+
+**Tool gap (R1 finding LOW-4):** the audit's signature regex needs `func name(params)` on one line, so CONTRACTS §13's two-line `fit_module_at` pin is never audited (27 signatures checked; `fit_module_at` is not among them). Verified by hand instead:
+
+```text
+$ rg -n "func fit_module_at|func clear_fit_slot|func retire_legacy_upgrades" -A 2 vajb-orbit/autoload/player_profile.gd
+501:func fit_module_at(
+502-	ship_id: StringName, slot_key: StringName, index: int, module_id: StringName
+503-) -> bool:
+--
+534:func clear_fit_slot(ship_id: StringName, slot_key: StringName, index: int) -> bool:
+535-	if not _fit_cell_exists(ship_id, slot_key, index):
+536-		return false
+--
+561:func retire_legacy_upgrades() -> int:
+562-	var migrated := 0
+563-	for upgrade_id: StringName in _legacy_upgrade_ids():
+
+# CONTRACTS §13 pins the same three signatures (lines 1102-1118):
+func fit_module_at(ship_id: StringName, slot_key: StringName, index: int,
+                   module_id: StringName) -> bool
+    # The composed install. Refuses (false, no write) when: the hull is not one of
+    # the nine; the slot key is not in FitData.FIT_SLOT_KEYS; the index is outside
+    # 0 .. slot_capacity-1; module_count(module_id) == 0; or the candidate fit fails
+    # ShipFit.fit_legal — the candidate being fit_for(ship_id) with that one cell
+    # set to module_id. On success, in this order: the displaced module (when the
+    # cell was non-empty) returns with add_module; take_module(module_id, 1);
+    # set_fit_slot(ship_id, slot_key, index, module_id); one Log.append(EVENT_FIT_MODULE,
+    # module_id, 1, 0, credits) line; profile_changed(&"fits") and (&"modules").
+func clear_fit_slot(ship_id: StringName, slot_key: StringName, index: int) -> bool
+    # The composed remove. Same guards, plus: a key in FitData.MANDATORY_SLOT_KEYS is
+    # always refused (09 §4.1's mandatory set is never empty). The cell's module returns to
+    # the inventory with add_module; the cell is written &""; one log line
+    # (EVENT_FIT_MODULE with a negative qty is not used — use the module id, qty 1,
+    # delta 0 and let the caller's footer carry the words); emits both keys.
+func retire_legacy_upgrades() -> int
+```
+
+## The mandatory-key law: one source, no re-declaration
+
+```text
+$ rg -n "FIT_MANDATORY_KEYS" vajb-orbit/   # (no output: the constant D0's drift note forbids does not exist in code)
+(no output)
+
+$ rg -n "MANDATORY_SLOT_KEYS|FIT_SLOT_KEYS" vajb-orbit/autoload/player_profile.gd vajb-orbit/ui/station/fitting_panel.gd | rg -v "^[^:]+:[0-9]+:##"
+vajb-orbit/ui/station/fitting_panel.gd:321:	if ShipFit.MANDATORY_SLOT_KEYS.has(slot_key):
+vajb-orbit/ui/station/fitting_panel.gd:529:	for slot_key: StringName in ShipFit.FIT_SLOT_KEYS:
+vajb-orbit/ui/station/fitting_panel.gd:893:	for key: StringName in ShipFit.FIT_SLOT_KEYS:
+vajb-orbit/autoload/player_profile.gd:456:	if not FitData.HULLS.has(ship_id) or not FitData.FIT_SLOT_KEYS.has(slot_key):
+vajb-orbit/autoload/player_profile.gd:537:	if FitData.MANDATORY_SLOT_KEYS.has(slot_key):
+vajb-orbit/autoload/player_profile.gd:982:	if not FitData.HULLS.has(ship_id) or not FitData.FIT_SLOT_KEYS.has(slot_key):
+vajb-orbit/autoload/player_profile.gd:1058:	for slot_key: StringName in FitData.FIT_SLOT_KEYS:
+```
+
+## No 09 or 08 number moved: the frozen files are untouched
+
+```text
+$ git diff --stat -- vajb-orbit/game/ship_fit.gd vajb-orbit/game/module_catalog.gd vajb-orbit/game/player_state.gd vajb-orbit/game/game.gd vajb-orbit/game/repairs.gd vajb-orbit/project.godot vajb-orbit/ui/theme/ vajb-orbit/assets/ vajb-orbit/addons/ docs/gameplay/08_ship_classes.md
+(no output: every frozen file is byte-identical to HEAD)
+```
+
+## Every 09 §3 row against the shipped catalogue (32 rows, dump + comparison)
+
+```text
+catalogue rows: 32 (the pins checked: name via the CONTRACTS section 11 name table, draw and cost here)
+w_laser        catalogue draw=1 cost=900 | 09 tier=I   draw=1   cost=900   -> MATCH
+w_cannon       catalogue draw=1 cost=1200 | 09 tier=I   draw=1   cost=1200  -> MATCH
+w_rocket       catalogue draw=2 cost=2400 | 09 tier=II  draw=2   cost=2400  -> MATCH
+w_mine         catalogue draw=1 cost=1800 | 09 tier=II  draw=1   cost=1800  -> MATCH
+w_plasma       catalogue draw=3 cost=4800 | 09 tier=III draw=3   cost=4800  -> MATCH
+w_railgun      catalogue draw=3 cost=5200 | 09 tier=III draw=3   cost=5200  -> MATCH
+s_light        catalogue draw=2 cost=1400 | 09 tier=I   draw=2   cost=1400  -> MATCH
+s_heavy        catalogue draw=3 cost=3200 | 09 tier=II  draw=3   cost=3200  -> MATCH
+s_ion          catalogue draw=3 cost=5600 | 09 tier=III draw=3   cost=5600  -> MATCH
+h_plate_light  catalogue draw=0 cost=1100 | 09 tier=I   draw=0   cost=1100  -> MATCH
+h_plate_heavy  catalogue draw=0 cost=2900 | 09 tier=II  draw=0   cost=2900  -> MATCH
+h_composite    catalogue draw=0 cost=5800 | 09 tier=III draw=0   cost=5800  -> MATCH
+c_target       catalogue draw=1 cost=1600 | 09 tier=I   draw=1   cost=1600  -> MATCH
+c_scanner      catalogue draw=1 cost=1500 | 09 tier=I   draw=1   cost=1500  -> MATCH
+c_twin         catalogue draw=1 cost=3400 | 09 tier=II  draw=1   cost=3400  -> MATCH
+c_ewar         catalogue draw=1 cost=3800 | 09 tier=II  draw=1   cost=3800  -> MATCH
+c_nexus        catalogue draw=1 cost=6400 | 09 tier=III draw=1   cost=6400  -> MATCH
+b_afterburner  catalogue draw=2 cost=1900 | 09 tier=I   draw=2   cost=1900  -> MATCH
+b_fold         catalogue draw=2 cost=6800 | 09 tier=III draw=2   cost=6800  -> MATCH
+u_cargo        catalogue draw=0 cost=1200 | 09 tier=I   draw=0   cost=1200  -> MATCH
+u_salvage      catalogue draw=0 cost=1000 | 09 tier=I   draw=0   cost=1000  -> MATCH
+u_refine       catalogue draw=1 cost=2600 | 09 tier=II  draw=1   cost=2600  -> MATCH
+u_drones       catalogue draw=1 cost=3000 | 09 tier=II  draw=1   cost=3000  -> MATCH
+u_tractor      catalogue draw=1 cost=2200 | 09 tier=II  draw=1   cost=2200  -> MATCH
+u_holds        catalogue draw=0 cost=4500 | 09 tier=III draw=0   cost=4500  -> MATCH
+e_std          catalogue draw=0 cost=800 | 09 tier=I   draw=—   cost=800   -> MATCH
+e_ion          catalogue draw=0 cost=3200 | 09 tier=II  draw=—   cost=3200  -> MATCH
+e_vector       catalogue draw=0 cost=6200 | 09 tier=III draw=—   cost=6200  -> MATCH
+p_std          catalogue draw=0 cost=900 | 09 tier=I   draw=—   cost=900   -> MATCH
+p_mk2          catalogue draw=0 cost=3600 | 09 tier=II  draw=—   cost=3600  -> MATCH
+p_core         catalogue draw=0 cost=7000 | 09 tier=III draw=—   cost=7000  -> MATCH
+
+differences: ['w_mining: no 09 table row']
+```

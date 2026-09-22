@@ -166,7 +166,12 @@ refusal wordings and focus order are `STATION_HUB.md` §5.1's amendment) — 09
 a second economy. When AUCTION ships, those rows retire into it and OUTFITTING
 returns to ammunition. Reversal: none owed while §2 is unbuilt; if AUCTION is
 dropped, the OUTFITTING rows become the permanent home and this note becomes the
-rule.
+rule. **The install surface beside it (2026-09-22, P2-B proper):** the modules
+this inventory holds are fitted, swapped and emptied per cell on the **FITTING**
+surface (`STATION_HUB.md` §5.3), which requests the composed transactions
+`PlayerProfile.fit_module_at` / `PlayerProfile.clear_fit_slot` (CONTRACTS §13)
+and never mutates the profile directly. OUTFITTING's rows buy modules into this
+inventory; FITTING is what installs, swaps and removes them.
 
 ## 7. Acquisition pacing (check against 01 §5.4)
 

@@ -19,15 +19,18 @@ extends McpTestSuite
 ## length of each test and flushed before it is handed back, so the owner's `user://profile.cfg`
 ## is never written - the discipline `test_engine2_fixes.gd` records for the same seam.
 
-const WeaponsScript := preload("res://game/weapons.gd")
 const Log := preload("res://game/economy_log.gd")
 
 const GAME_SCENE := "res://game/game.tscn"
 const SCRATCH_PROFILE := "user://test_engine2_dock.cfg"
 const SCRATCH_LOG := "user://test_engine2_dock_log.txt"
 
-## The pack that is fired and the pack that is not. The slot index is asked for through
-## `WeaponsScript.ammo_slot` rather than assumed from `PlayerState.WEAPONS`' order.
+## The pack that is fired and the pack that is not. The fired pack's slot is read off the
+## launched state's own `weapons` (`PlayerState.set_weapons`, the fit-ordered sizing the
+## launch writes) and never off `PlayerState.WEAPONS`' catalogue order, because a launched
+## fit need not follow that order: the owner's Vanguard fit is
+## `["w_cannon", "w_laser", "w_laser"]`, where the catalogue's slot 0 is the *cannon*'s pack
+## (`.agents/gen/p2b_proper_r1_report.md` section 7, LOW-6).
 const FIRED_WEAPON: StringName = &"laser"
 const IDLE_WEAPON: StringName = &"cannon"
 const FIRED_ROUNDS := 3
@@ -201,8 +204,11 @@ func _store() -> Node:
 	return _tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
 
 
+## The fired pack's slot as this launch sized it: the index of the fired family in the live
+## `PlayerState.weapons` array, so the test charges the pack it names whatever order the fit
+## holds its W cells in (LOW-6).
 func _slot() -> int:
-	return int(WeaponsScript.ammo_slot(FIRED_WEAPON))
+	return int((_state.get(&"weapons") as Array).find(FIRED_WEAPON))
 
 
 ## The scratch handover, in the order the finding's own measurements use: repoint the writer

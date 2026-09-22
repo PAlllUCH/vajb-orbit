@@ -1,0 +1,32 @@
+# R1 evidence — the gate, measured twice on the sandboxed user:// (2026-09-22)
+
+## run 1
+```text
+$ XDG_DATA_HOME=/tmp/r1_sandbox godot --headless --path vajb-orbit res://tests/headless_runner.tscn --quit-after 1200
+479:[SUMMARY] passed=431 failed=0
+
+$ rg -c "SCRIPT ERROR" /tmp/r1_gate_sandbox.log
+1
+
+$ rg -n "SCRIPT ERROR" /tmp/r1_gate_sandbox.log
+469:SCRIPT ERROR: Cannot call method 'call' on a previously freed instance.
+
+$ rg -n "WARNING|ERROR:" /tmp/r1_gate_sandbox.log
+6:ERROR: Parameter "data.tree" is null.
+228:WARNING: EconomyLog: could not open user://p1l_missing_dir_do_not_create/economy_log.txt (error 7)
+469:SCRIPT ERROR: Cannot call method 'call' on a previously freed instance.
+```
+
+## run 2 (a second scratch XDG root, same tree)
+```text
+$ XDG_DATA_HOME=/tmp/r1_sb2 godot --headless --path vajb-orbit res://tests/headless_runner.tscn --quit-after 1200
+479:[SUMMARY] passed=431 failed=0
+$ rg -c "SCRIPT ERROR"
+1
+```
+
+## the growth arithmetic
+```text
+389 (P2-B1 close-out, CONTRACTS section 9) + 13 (test_p2b_retirement) + 18 (test_p2b_fitting_panel) + 11 (test_p2b_services) = 431
+[PASS] lines in the log: 431
+```

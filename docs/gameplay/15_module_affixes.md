@@ -114,6 +114,15 @@ rule the map was built to deliver.
   thing we do NOT want; the multipliers in §1/§2 are the whole economy of
   rarity.
 
+**Note 2026-09-22 (P2-B proper): affixes are the next wave.** This wave's
+fitting surface aggregates the module inventory **by module id** (`OWNED ×<n>`,
+STATION_HUB.md §5.3) and stores base ids: the per-instance records of this
+section's first bullet (`{base_id, rarity, prefixes[], suffixes[]}`) are not
+created yet, and no roll happens at purchase or drop. The ripple this defers is
+the one pinned above: a fit may later store a 15 §6 instance id, which §11's
+`set_fit_slot` already tolerates. Reversal: none owed; the instance shape is
+this document's own.
+
 ## 7. Naming grammar (for UI text)
 
 `[Prefix1] [Prefix2] <Module Name> of <Suffix1> of <Suffix2>` — e.g.

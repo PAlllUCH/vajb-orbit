@@ -1,0 +1,16 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[RUN] suites=test_p2b_services
+[PASS] test_p2b_services.gd.test_an_unfiled_hull_refuses_with_the_services_own_reason
+[PASS] test_p2b_services.gd.test_hovering_a_plate_publishes_its_line_and_costs_the_plate_nothing
+[PASS] test_p2b_services.gd.test_recharge_reports_the_energy_figure_and_files_nothing
+[PASS] test_p2b_services.gd.test_refuel_fills_the_tank_and_reports_the_figures_own_key
+[PASS] test_p2b_services.gd.test_the_full_tank_refusal_is_rendered
+[PASS] test_p2b_services.gd.test_the_hover_line_reads_a_fitted_cell
+[PASS] test_p2b_services.gd.test_the_hover_line_reads_a_hull_the_account_does_not_own
+[PASS] test_p2b_services.gd.test_the_hover_line_reads_an_empty_cell
+[PASS] test_p2b_services.gd.test_the_launch_pane_only_asks_the_service_and_never_touches_credits
+[PASS] test_p2b_services.gd.test_the_service_actions_are_deck_controls_own_catalogued_names
+[PASS] test_p2b_services.gd.test_the_shipyard_reads_the_fit_without_ever_writing_it
+[SUMMARY] passed=11 failed=0

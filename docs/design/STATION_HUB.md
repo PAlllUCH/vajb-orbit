@@ -8,6 +8,18 @@ patterns in section 3.1: same pane construct, same 76 px row grid, same 130/110/
 action column, same refusal path. No new measurements and no new theme items are introduced. Data sources:
 `MineralCatalog`, `ComponentCatalog`, `game/exchange.gd`, `game/refinery.gd`, `game/repairs.gd`; state stays in
 `PlayerProfile` (including the `vitals` section the repairs panel reads, 01 §6 extension).
+**Amendment 2026-09-22 (P2-B proper — the FITTING surface).** Transcribed from
+`.agents/gen/p2b_proper_wave_task.md` §3; every number in it is 08 §3.2's, 09 §8's, section 5.1's own or the
+pin's, and none is this pass's. The rail's UPGRADES module retires: `Module.UPGRADES` becomes
+`Module.FITTING` and its label becomes `FITTING`, keeping the retired entry's rail position, its icon path
+and its tint (section 2's table, section 5.3). The retired `ui/station/upgrades_panel.gd` and `.tscn` are
+deleted and nothing else in the rail moves. Section 5.3 is the pane's whole spec; section 5.4's DECK CONTROL
+gains `REFUEL` and `RECHARGE`; section 5.2's shipyard plates gain the same line the fitting surface shows
+for its selected cell; section 7.1's art map records the reused icon; sections 8, 10, 11 and 12 follow the
+new name and the two new profile keys. **Reversal (owner tick 1 of the wave brief):** restore the label, the
+entry and the pane files. Two references stay as the retired mockup's own record and do not describe the
+FITTING pane: section 3.1's `Upgrades*` node rows and its `UPGRADES` column set (the deleted table pane) and
+section 13's verification table (the mockup it measured).
 **Implements (future):** `vajb-orbit/ui/screens/station.tscn` plus module panels under `vajb-orbit/ui/station/`.
 **Contract sources:** `IMPLEMENTATION_PLAN.md` section 9.2, 9.4, 9.5, 9.6; `STATION_SPEC.md`; `UI_SPEC.md`;
 `THEME_AUDIO_EXTENSION.md`; `ASSET_AUDIT.md` sections E.2 and F; `MAIN_MENU_V2.md` (the sibling screen, for
@@ -26,7 +38,7 @@ things obvious without a tutorial:
 
 1. **What I have and what it costs.** A credits readout that never leaves the frame, and one row per catalogue
    entry showing its real name, price and the consequence of buying it (`HELD / MAX`, `INSTALLED`, `ACTIVE`).
-2. **Which of the four things I came here for.** Ammunition (OUTFITTING), hulls (SHIPYARD), refits (UPGRADES),
+2. **Which of the four things I came here for.** Ammunition (OUTFITTING), hulls (SHIPYARD), fitting (FITTING),
    leaving (LAUNCH). The rail keeps all four visible at once, so a player who bounced in for a resupply is one
    press from undocking.
 
@@ -47,7 +59,7 @@ every module draws into. There are no tabs and no nested pages.
 | REFINERY | rail entry 2 | no | the player's ore stacks, the 3:1 conversion stepper (amendment, section 5.7) |
 | EXCHANGE | rail entry 3 | no | the hold, the market board, sell and SELL ALL RAW (amendment, section 5.8) |
 | SHIPYARD | rail entry 4 | no | 4 hulls, `StationCatalog.SHIPS`, plus the preview and the stat comparison |
-| UPGRADES | rail entry 5 | no | 6 refits, `StationCatalog.UPGRADES` |
+| FITTING | rail entry 5 | no | the active hull's own SLOT LAYOUT grid and the module inventory's OWNED MODULES rows, `ShipFit.grid_cells` / `PlayerProfile.modules` (amendment, section 5.3) |
 | REPAIRS | rail entry 6 | no | the damage report and the repair fee (amendment, section 5.9) |
 | LAUNCH | rail entry 7 | yes, `route_requested(&"loading", {destination: &"game"})` | the flight briefing, the cargo hold and the two-press launch control |
 | LOG OUT | session group, below the spacer | yes, `route_requested(&"main_menu")` | a confirm dialog first (LOG OUT is destructive of nothing, but it is the way out of the session) |
@@ -56,11 +68,11 @@ The seven entries fit the existing rail stack without a new measurement: seven 5
 separation measure 428 px inside the 769 px rail content box (section 3.1); the spacer absorbs the remainder.
 
 **Why the rail, not tabs or cards.** Shopping at a station is not a linear task: the player buys ammo, then
-notices the hull is worse than a hull they can afford, then checks whether an upgrade fits, then buys more
-ammo. Tabs hide the siblings and force a return trip through the tab bar every time; cards make the four
+notices the hull is worse than a hull they can afford, then checks whether a module fits their grid, then buys
+more ammo. Tabs hide the siblings and force a return trip through the tab bar every time; cards make the four
 modules compete for the same canvas and cannot show a 6 row list and a 480 px ship at once. A fixed rail plus
 one host keeps the two things a shopping player needs at all times in the same screen position (the exit and
-the balance) while the host is free to be a table (OUTFITTING, UPGRADES), a two-column yard (SHIPYARD) or a
+the balance) while the host is free to be a table (OUTFITTING, FITTING), a two-column yard (SHIPYARD) or a
 briefing (LAUNCH). It also gives the pad a stable meaning: shoulder buttons cycle modules from anywhere.
 
 **How the player moves between modules.**
@@ -105,7 +117,7 @@ screen is placed by a hand-tuned offset; the only full-rect overlay is the leave
 | Footer band | `Footer`, `HBoxContainer`, separation 16 | child of `Page` | v 0 | none | y 1038..1056 (status ink y 1041..1052) |
 | Module rail | `ModuleRail`, `PanelContainer`, `PanelRaised` | child of `Body` | v 3 | `(360, 0)` | x 23..384, y 163..1021 (frame bands 23..30, 377..384, 163..170, 1015..1021) |
 | Module host | `ModuleHost`, `PanelContainer`, `PanelRaised` | child of `Body` | h 3, v 3 | none | x 399..1896, y 163..1021 (frame bands 399..406, 1889..1895) |
-| Panes | `Outfitting` / `Shipyard` / `Upgrades` / `Launch`, `VBoxContainer`, separation 12 | child of `HostMargin` | fill | none | content box x 453..1842, y 216..969 |
+| Panes | `Outfitting` / `Shipyard` / `Fitting` / `Launch`, `VBoxContainer`, separation 12 | child of `HostMargin` | fill | none | content box x 453..1842, y 216..969 |
 | Credits housing | `CreditsPanel`, `PanelContainer`, `PanelRaised` with `CreditsMargin` 16/8 | child of `Header` | v 4 | none | x 1709..1896, y 23..147 (frame bands 1709..1716 and 1889..1895) |
 
 The rail's own grid:
@@ -356,8 +368,9 @@ control. Both use theme items, so neither falls back to engine defaults.
 
 ## 5. Per-module spec
 
-Data source for every row, in the shipping screen: `StationCatalog.AMMO_PACKS`, `StationCatalog.SHIPS`,
-`StationCatalog.UPGRADES` (ids, names, prices, stats and icon paths are the catalogue's, never literals).
+Data source for every row, in the shipping screen: `StationCatalog.AMMO_PACKS`, `StationCatalog.SHIPS`
+(ids, names, prices, stats and icon paths are the catalogue's, never literals); the FITTING pane reads
+`ShipFit`, `ModuleCatalog` and `PlayerProfile` instead (section 5.3).
 State source: `PlayerProfile`. The mockup's local copies are listed in section 11.
 
 ### 5.1 OUTFITTING (buy ammunition and weapon modules)
@@ -462,25 +475,76 @@ guard and the D3 properties (section 12.3, section 13) do not move. Reversal: re
 7-plate `HBoxContainer` and the `hardpoints`-driven meta, and drop 08 §3.2's matrix as the
 display's source.
 
-### 5.3 UPGRADES (install refits)
+**Amendment 2026-09-22 (P2-B proper — the plates' hover line, owner request 1).** The shipyard's slot
+layout plates gain the fitting surface's own line: a plate reads
+`<TYPE><n> · <MODULE NAME or EMPTY> · OWNED ×<n>` on hover, resolving the cell's module from the selected
+hull's own `fit_for` entry (`PlayerProfile.fit_for`, the same source the grid is built from; the line is
+section 5.3's, and `shipyard_panel.gd` is its owner). The grid stays a display: no plate becomes selectable,
+none carries a focus ring, and none mutates anything (section 12.4). Reversal: drop the hover line from
+`shipyard_panel.gd`; the plates, the caption and `STAT_ROWS` do not move.
 
-One row per upgrade, six rows, catalogue order (one per slot).
+### 5.3 FITTING (fit, swap and remove modules per cell)
 
-| Column | Source | Render |
-|---|---|---|
-| icon | `upgrade.icon` | 40 px painted equipment glyph |
-| title | `upgrade.name` | `StationValue` |
-| meta | `upgrade.slot` | `StationCaption`: `"SLOT GENERATOR"` |
-| `EFFECT` | `upgrade.effect` | `StationValue`: every key as `<LABEL> +<n>%` joined with ` · ` (fractions are displayed as percentages: `0.30` -> `+30%`) |
-| `PRICE` | `upgrade.cost` | as OUTFITTING |
-| `STATUS` | `PlayerProfile.has_upgrade(id)` | `INSTALLED`, `AVAILABLE` (affordable), `LOCKED` |
+**Amendment 2026-09-22 (P2-B proper — FITTING replaces UPGRADES).** Transcribed from
+`.agents/gen/p2b_proper_wave_task.md` §3.2; every number in it is the shipyard recipe's, section 5.1's or the
+pin's (CONTRACTS §13), and none is this pass's.
 
-Action: `install_upgrade(id, cost)`. Success -> status `INSTALLED · REACTOR MK2 · PERMANENT FOR V1`, the row
-becomes `INSTALLED` and no longer spends. Refusal -> 5.6. Empty state: none (six upgrades exist). The
-nothing-left-to-buy state is all six rows `INSTALLED`, and the pane footer should then read
-`EVERY SLOT IS FILLED · NO UNINSTALL API IN V1` instead of the default line. Error state: an `effect` key the
-screen has no label for is rendered as the upper-cased key itself (never dropped, never blank).
-Rendered states in one frame: `INSTALLED`, `AVAILABLE` and `LOCKED` together.
+**The rail.** `Module.UPGRADES` becomes `Module.FITTING`; the label becomes `FITTING`; the entry keeps the
+retired entry's rail position, its icon path and its tint. The retired `ui/station/upgrades_panel.gd` and
+`.tscn` are deleted; nothing else in the rail moves.
+
+**Anatomy** — the section 5.1 host-pane construct, two stacked sections:
+
+- **SLOT LAYOUT** — the active hull's grid, **the shipyard's own recipe** (`ShipFit.grid_cells`,
+  `SlotButtonWeapon` 48 px plates, gaps as empty `Control`s, the type's slot glyph, the caption
+  `SLOT LAYOUT · <n> CELLS · <m> ENGINES`). Unlike the shipyard's display, these cells are **selectable**:
+  one selected at a time, `FOCUS_ALL`, the selected cell carrying the theme's focus ring; a cell's identity
+  is its `slot_key` + `index` (09 §4.5's layout index). The recipe is shared with the shipyard (lift it into
+  a helper both panes call, or duplicate it byte-equivalently); the reviewer checks both grids render
+  identically.
+- **OWNED MODULES** — one row per owned module **id** (aggregated by id), ordered by
+  `ShipFit.FIT_SLOT_KEYS` then catalogue order: 48 px module icon, name, the meta `SLOT <TYPE> · DRAW <n>`,
+  `OWNED ×<n>`, and ACTION.
+
+**ACTION per state:** `FIT` when a cell of the module's own type is selected and the module is legal there
+(calls `fit_module_at`); `SWAP` when that cell already holds another module (same call; the displaced one
+returns to the inventory); `SELECT A CELL` (disabled) when no cell is selected or the module's type has no
+selected cell.
+
+**The power meter** (footer strip, always visible): idle `PWR <Σ draws> / <out + power module>`; with a cell
+selected, the candidate's own line `PWR <Σ> / <out> · CANDIDATE <Σ'> / <out>`; when the candidate is over
+budget the same line renders in the danger colour and ends `— OVER BY <n>`. The numbers are `fit_legal`'s own
+`power` dictionary.
+
+**Hover / selection info (owner request 1):** the selected cell's line reads
+`<TYPE><n> · <MODULE NAME or EMPTY> · OWNED ×<n>`; the shipyard's plates gain the same line on hover
+(`shipyard_panel.gd`), reading the selected hull's `fit_for` entry (section 5.2's amendment).
+
+**Refusals** (footer strip, never a dialog): `13 / 11 PWR — OVER BY 2` (09 §2's own format, already pinned),
+`MANDATORY CELL — SWAP ONLY, NEVER EMPTY` (new this pass), and `REFUSED · FIT ILLEGAL` as the catch-all for
+a fit illegal for any other reason (L77's guard, now named here as the third pinned refusal). The footer is
+never blank.
+
+**Focus order:** the SLOT LAYOUT cells first (row-major), then the OWNED MODULES rows, then the pane's own
+footer, then the rail (section 10).
+
+**Empty states:** an account that owns no modules shows one disabled row
+`NO MODULES OWNED · BUY THEM IN OUTFITTING`; a hull with every cell filled and nothing selected shows the
+meter and the grid, no refusal.
+
+**The per-cell transactions.** The pane only requests; the profile mutates. Install and swap are the one
+composed call `PlayerProfile.fit_module_at(ship_id, slot_key, index, module_id)` and remove is the composed
+`clear_fit_slot(ship_id, slot_key, index)`; a candidate that fails `ShipFit.fit_legal` is refused before any
+write, a module the inventory does not hold is refused, and a cell whose key is in
+`FitData.MANDATORY_SLOT_KEYS` (`[&"engines", &"power"]`) is never emptied (09 §4 items 9 to 13, CONTRACTS
+§13).
+
+**The retirement and its reversal.** The six legacy `UPGRADES` rows retire with their effects migrated into
+the module catalogue, one successor module per row, carried by `PlayerProfile.LEGACY_UPGRADE_MODULES`; a v4
+file with all six installed loads as six inventory modules (one each) and no upgrade records, and the profile
+no longer carries `has_upgrade` / `installed_upgrades` / `install_upgrade` or the `upgrades` record at all
+(CONTRACTS §13). Reversal (owner ticks 1 and 2 of the wave brief): restore the label, the entry and the pane
+files, and restore the mapping constant plus the catalogue rows.
 
 ### 5.4 LAUNCH (leave the station)
 
@@ -495,6 +559,8 @@ Left: the flight briefing and the cargo hold. Right: DECK CONTROL.
 | `AMMUNITION` | `ammo_of()` summed over the five weapons | `"800 ROUNDS ACROSS 5 WEAPONS"` |
 | cargo strip | `cargo_items()` | 5 `SlotButtonCargo` plates of 40 px, the first `n` carrying the item icon (24 px inset 8), the rest `disabled` |
 | manifest | `cargo_items()` | `ItemList`, one item per stack as `"<name>   <qty>"`, first item auto-selected |
+| `REFUEL` | `Repairs.refuel(profile, active_ship)` | an action in DECK CONTROL, for the active hull: the service's own result in the pane's status line (`fuel_max` on success; the service's refusal reason otherwise) |
+| `RECHARGE` | `Repairs.recharge(profile, active_ship)` | as `REFUEL`, for `energy_max` |
 | launch control | - | two-press arm/fire per section 2 |
 
 Actions: the LAUNCH button arms then fires. Empty state: an empty hold shows a single disabled `HOLD EMPTY`
@@ -508,6 +574,17 @@ and `SLOT CELLS` join `HARDPOINTS` in the stat row above (9 caption/value lines,
 node tree), all three read from the active hull's matrix through `ShipFit.grid_counts`. The
 cargo plate strip and its five 40 px plates do not change. Reversal: drop the two rows and
 the `ShipFit` source, and read the three stats from the frozen `StationCatalog` columns again.
+
+**Amendment 2026-09-22 (P2-B proper — the two service rows, owner request 4).** Transcribed from
+`.agents/gen/p2b_proper_wave_task.md` §3.3. DECK CONTROL gains the `REFUEL` and `RECHARGE` actions for the
+active hull, calling `Repairs.refuel(profile, active_ship)` / `Repairs.recharge(profile, active_ship)` and
+rendering the service's own result in the pane's status line (`fuel_max` on success; `energy_max` for
+`RECHARGE`; the service's refusal reason otherwise). The services are free and instant: **no price column
+and no credits move** (14 §1's rate; `FREE_FEE` is 0). Already-full and no-damage-report states are the
+service's own refusals, rendered and never hidden: the button stays pressable and the footer says why (the
+full tank is `REASON_FUEL_FULL`; `recharge` has no full case). Reversal: drop the two actions, their
+`Repairs` calls and their status-line writes; the brief, the cargo strip, the manifest and the launch control
+do not move.
 
 ### 5.5 LOG OUT (leave the session)
 
@@ -538,7 +615,7 @@ and transactions; the panel computes no price itself and hardcodes no number.
 
 Body: two columns, `RefineryTable` (h 3) + `RefineBox` (h 0, min 360 — the LAUNCH deck-control width).
 
-`RefineryTable` reuses the OUTFITTING/UPGRADES construct exactly (column strip, scroll, rows, 76 px pitch,
+`RefineryTable` reuses the OUTFITTING/FITTING construct exactly (column strip, scroll, rows, 76 px pitch,
 one row per mineral with 3 or more ore held, per 04 section 5):
 
 | Column | Source | Render |
@@ -682,12 +759,12 @@ Every path below exists on disk and appears in `ASSET_AUDIT.md` section E.2 or F
 | `res://assets/icons/tint/icon_logout_48.png` | LOG OUT rail icon | 40x40, tinted | normal |
 | `res://assets/icons/icon_equip_module_48.png` | OUTFITTING icon | 40x40 | normal |
 | `res://assets/icons/tint/icon_hull_48.png` | SHIPYARD icon (gap G1 has no dedicated drydock glyph) | 40x40, tinted with `text_primary` | normal |
-| `res://assets/icons/icon_equip_generator_48.png` | UPGRADES icon | 40x40 | normal |
+| `res://assets/icons/icon_equip_generator_48.png` | the FITTING rail entry's icon: the retired UPGRADES entry's own icon path and tint, reused (amendment 5.3; no new art) | 40x40 | normal |
 | `res://assets/icons/icon_map_route_48.png` | LAUNCH icon (gap G2 has no dedicated bay glyph) | 40x40 | normal |
 | `res://assets/icons/tint/icon_weapon_cannon_48.png`, `..._mine_48.png`, `..._plasma_48.png` | the three ammo rows whose catalogue icon is a flat Phase B glyph (audit anomaly C16) | 40x40, tinted | normal |
 | `res://assets/icons/icon_ammo_laser_48.png`, `icon_ammo_rocket_48.png` | painted ammo rows, used untinted | 40x40 | normal |
 | `res://assets/icons/module/icon_module_<id>_48.png` for every module id except the five base weapons, which use `res://assets/icons/weapon/icon_weapon_<family>_48.png` (`w_laser`→`laser`, `w_cannon`→`cannon`, `w_rocket`→`rocket`, `w_mine`→`mine`, `w_plasma`→`plasma`) | the MODULES rows' icons (amendment 5.1; the rule is CONTRACTS §11's icon rule) | 48x48 | normal |
-| `res://assets/icons/icon_equip_engine_48.png`, `_shield_gen_48.png`, `_module_48.png`, `_extra_48.png`, `_drone_48.png` | UPGRADES row icons | 40x40 | normal |
+| `res://assets/icons/icon_equip_engine_48.png`, `_shield_gen_48.png`, `_module_48.png`, `_extra_48.png`, `_drone_48.png` | the retired UPGRADES row icons (no live pane draws them; the FITTING rows draw `icon_module_<id>_48.png`) | 40x40 | normal |
 | `res://assets/icons/tint/icon_cargo_ore_48.png`, `icon_cargo_data_core_48.png`, `icon_cargo_salvage_48.png` | cargo plate art and manifest glyphs | 24 px inside a 40 px plate | normal |
 | `res://assets/ships/ship_fighter_side.png`, `ship_vanguard_side.png`, `ship_gunship_side.png`, `ship_destroyer_side.png` | the shipyard preview, per catalogue `preview` | see 7.2 | normal |
 
@@ -725,7 +802,7 @@ the leave dimmer) are drawn from `Tokens/void_base`, normal blend, no FX.
 | `StationValue` | row titles, values, prices, confirm strip |
 | `StationCaption` | captions, subtitles, footers, hints, dialog body |
 | `SectionHeader` | column headers, group captions |
-| `SlotButtonWeapon`, `SlotButtonCargo` | the slot layout and cargo plates |
+| `SlotButtonWeapon`, `SlotButtonCargo` | the slot layout plates (the shipyard's display and FITTING's selectable grid, section 5.3) and the cargo plates |
 | `ItemList` (`panel`, `selected`, `hovered`, `cursor`, `font_size`) | the cargo manifest |
 | `ScrollContainer` (`panel`), `VScrollBar` (`scroll`, `grabber`, `grabber_highlight`) | the three list scrolls |
 | `Tokens/void_base`, `void_fade`, `void_panel_raised`, `metal_dark`, `metal_mid`, `metal_light`, `text_primary`, `text_dim`, `accent_danger`, `accent_danger_bright` | all colour, pushed in script through `get_theme_color(token, &"Tokens")` |
@@ -768,7 +845,8 @@ local array and killed in `_exit_tree()` when it is still valid. Curves are Godo
 | Input | Context | Effect |
 |---|---|---|
 | `ui_down` / `ui_up` | any focused control | Godot's default focus neighbour walk (tree order), which stays inside the visible pane and then crosses to the next pane or the rail |
-| `Tab` / `Shift+Tab` | anywhere | next / previous focusable in tree order: rail entries (OUTFITTING, SHIPYARD, UPGRADES, LAUNCH, LOG OUT) then the active pane's controls (rows, or the cargo `ItemList` and `LaunchButton`), then wraps |
+| `Tab` / `Shift+Tab` | anywhere | next / previous focusable in tree order: rail entries (OUTFITTING, SHIPYARD, FITTING, LAUNCH, LOG OUT) then the active pane's controls (rows, or the cargo `ItemList` and `LaunchButton`), then wraps |
+| `Tab` / `ui_down` / `ui_up` | the FITTING pane | the SLOT LAYOUT cells first (row-major), then the OWNED MODULES rows, then the pane's own footer, then the rail (section 5.3) |
 | `ui_accept` | a row | buy / install / set active / select the hull for the preview |
 | `ui_accept` | a rail entry | switch module (the rail entry is a `toggle_mode` button; the pressed state is pushed with `set_pressed_no_signal`) |
 | `PageUp` / `PageDown` | anywhere | previous / next module, wrapping (mockup reads `KEY_PAGEUP`/`KEY_PAGEDOWN` directly because `station_prev_module` / `station_next_module` are not in the input map yet, section 14 item 6) |
@@ -792,7 +870,7 @@ selected row adds a second, non-colour channel: the row's background switches to
 |---|---|---|
 | Station entered | `play_ambience(&"amb_station_room_01", 2.0)` | `res://assets/audio/ambience/amb_station_room_01.ogg` |
 | SHIPYARD entered | `play_ambience(&"amb_station_pump_loop_01", 1.0)` | `res://assets/audio/ambience/amb_station_pump_loop_01.ogg` |
-| UPGRADES entered | `play_ambience(&"amb_station_noise_loop_01", 1.0)` | `res://assets/audio/ambience/amb_station_noise_loop_01.ogg` |
+| FITTING entered | `play_ambience(&"amb_station_noise_loop_01", 1.0)` | `res://assets/audio/ambience/amb_station_noise_loop_01.ogg` (the retired UPGRADES module's cue, kept under the new label) |
 | Module switched (rail, PageUp/Down, shoulder) | `play_sfx(&"sfx_station_breaker_on_01")` | `res://assets/audio/sfx/sfx_station_breaker_on_01.ogg` |
 | Row hover / focus move | `play_ui(AudioManager.UiCue.HOVER)` | `res://assets/audio/ui/ui_hover.ogg` |
 | Row press, rail press, dialog button | `play_ui(AudioManager.UiCue.CLICK)` | `res://assets/audio/ui/ui_click.ogg` |
@@ -819,7 +897,7 @@ StringName)` that searches the `ui` directory; until then purchase, refusal and 
 | `vajb-orbit/ui/screens/station.tscn` | `Control` root, preset 15, `extends Screen`, bakes `theme = vajb_theme.tres` (Router replaces it with the live theme). Contains the backdrop, the grain, the safe area, the header, the rail, the host and the footer, and instances the four panels. |
 | `vajb-orbit/ui/station/outfitting_panel.tscn` | OUTFITTING: header, columns, scroll, rows, footer. |
 | `vajb-orbit/ui/station/shipyard_panel.tscn` | SHIPYARD: hull list, preview housing, stat column. |
-| `vajb-orbit/ui/station/upgrades_panel.tscn` | UPGRADES: header, columns, scroll, rows, footer. |
+| `vajb-orbit/ui/station/fitting_panel.tscn` | FITTING: the SLOT LAYOUT grid (the shipyard's recipe with selectable cells, section 5.3), the OWNED MODULES rows, the power meter and the footer strip. |
 | `vajb-orbit/ui/station/launch_panel.tscn` | LAUNCH: brief, cargo strip, manifest, deck control. |
 | `vajb-orbit/ui/station/refinery_panel.tscn` | REFINERY: ore table, conversion stepper, totals, actions (amendment 5.7). |
 | `vajb-orbit/ui/station/exchange_panel.tscn` | EXCHANGE: hold, market board, trade column (amendment 5.8). |
@@ -860,14 +938,14 @@ never writes `user://profile.cfg` and never mutates a catalogue entry.
 - Panels get the profile by `get_node_or_null(^"PlayerProfile")` (autoload names are not resolvable
   identifiers until the project patch lands, the same reason `router.gd` looks services up by name).
 - `profile_changed(key)`: `&"credits"` refreshes the readout and every price/tag; `&"ammo"` rebuilds
-  OUTFITTING's held counts; `&"ships"` rebuilds SHIPYARD; `&"upgrades"` rebuilds UPGRADES; `&"cargo"` rebuilds
-  LAUNCH's manifest and plate strip.
+  OUTFITTING's held counts; `&"ships"` rebuilds SHIPYARD; `&"fits"` and `&"modules"` rebuild FITTING's grid,
+  OWNED MODULES rows and power meter; `&"cargo"` rebuilds LAUNCH's manifest and plate strip.
 - `purchase_failed(reason, id)`: map `&"insufficient_credits"` -> `REFUSED · NOT ENOUGH CREDITS`,
   `&"already_owned"` -> `REFUSED · ALREADY OWNED` / `REFUSED · ALREADY ACTIVE`, `&"unknown_id"` ->
   `REFUSED · NOT FOR SALE`, write it into the status strip in `accent_danger`, run the 4-step pulse on the
   credits housing, and leave focus and the selection alone. Never open a dialog for a refusal.
 - Affordability is presentation only: grey the price with `can_afford(cost)` and the tag with `owns_ship` /
-  `has_upgrade`, but always let the profile make the decision.
+  `module_count`, but always let the profile make the decision.
 - `LAUNCH` declares `route_requested(&"loading", {destination: &"game"})`; `LOG OUT` declares
   `route_requested(&"main_menu")`. The screen does not call `change_scene`, does not import `PlayerState` and
   does not seed it (that is `game.gd`'s job).
@@ -877,9 +955,9 @@ never writes `user://profile.cfg` and never mutates a catalogue entry.
 
 **12.5 Values the mockup copies and the coder must read instead (all of them).** Every ammo pack
 (`id`, `name`, `rounds`, `cost`, `icon`), every ship (`id`, `name`, `cost`, `preview`, `hull`, `shield`,
-`cargo`, `hardpoints`), every upgrade (`id`, `name`, `cost`, `icon`, `slot`, `effect`), the five advisory hold
+`cargo`, `hardpoints`), the five advisory hold
 capacities, the stub credit balance 4900, the owned ships `[ship_vanguard, ship_fighter]`, the active ship
-`ship_vanguard`, the installed upgrades `[upgrade_engine, upgrade_extra]`, the ammo counts
+`ship_vanguard`, the ammo counts
 `{laser 300, cannon 140, rocket 60, mine 300, plasma 0}` and the cargo manifest
 (`ore_fragment` 22, `data_core` 2, `salvage_plate` 11). None of these are literals in the shipping screen:
 they are `StationCatalog` reads and `PlayerProfile` calls. The mockup also hard-codes two strings the real

@@ -105,7 +105,9 @@ the batch-2 playtest lane and the doc lanes. Do not re-dispatch them.
    meter, affixes, the legacy-UPGRADES flag day) is briefed after this wave's
    review.
 7. **Wave P2-B proper — the fitting panel (QUEUED 2026-09-22, owner order "lets
-   start with p2-b").** Brief `.agents/gen/p2b_proper_wave_task.md`, prompts
+   start with p2-b") — DONE 2026-09-22 (gate 389 → 437, reports
+   `.agents/gen/p2b_proper_{d0,w1,w2,w3,r1,f1,f2}_report.md`; see `WAVEBOARD.md`
+   §Closed).** Brief `.agents/gen/p2b_proper_wave_task.md`, prompts
    `.agents/gen/p2b_proper_wave_prompts.md` (order D0 → W1 → W2 → W3 → R1 → F1).
    The scope the owner ticked on 2026-09-22: the **FITTING** pane takes the
    UPGRADES rail entry and installs / swaps / removes modules **cell by cell**

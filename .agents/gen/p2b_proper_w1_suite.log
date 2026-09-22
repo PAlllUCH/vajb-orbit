@@ -1,0 +1,18 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[RUN] suites=test_p2b_retirement
+[PASS] test_p2b_retirement.gd.test_a_mandatory_cell_is_never_emptied
+[PASS] test_p2b_retirement.gd.test_a_pre_v5_file_without_the_record_is_left_alone
+[PASS] test_p2b_retirement.gd.test_a_swap_hands_the_displaced_module_back
+[PASS] test_p2b_retirement.gd.test_a_v1_file_with_a_record_migrates_too
+[PASS] test_p2b_retirement.gd.test_a_v4_file_with_all_six_upgrades_loads_as_six_modules
+[PASS] test_p2b_retirement.gd.test_an_over_budget_candidate_refuses_before_any_write
+[PASS] test_p2b_retirement.gd.test_an_unowned_module_refuses
+[PASS] test_p2b_retirement.gd.test_clear_returns_the_module_and_empties_the_cell
+[PASS] test_p2b_retirement.gd.test_one_fit_module_line_per_successful_transaction
+[PASS] test_p2b_retirement.gd.test_the_cell_guards_refuse_before_any_write
+[PASS] test_p2b_retirement.gd.test_the_install_targets_the_cell_it_is_given
+[PASS] test_p2b_retirement.gd.test_the_retired_surface_is_gone_from_the_two_sources
+[PASS] test_p2b_retirement.gd.test_the_retirement_table_is_09s_lineage_rows
+[SUMMARY] passed=13 failed=0

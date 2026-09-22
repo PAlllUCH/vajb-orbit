@@ -115,8 +115,8 @@ func _run_v2() -> void:
 	var after_write := _snapshot(path)
 	_check("set_fit_slot(engines, 0) returns true", wrote)
 	_check(
-		"the write persists save_version 4",
-		int(after_write["save_version"]) == 4,
+		"the write persists save_version 5",
+		int(after_write["save_version"]) == 5,
 		"save_version=%s" % str(after_write["save_version"])
 	)
 	var written_fits: Dictionary = after_write["fits"]
@@ -246,7 +246,7 @@ func _run_v3() -> void:
 	first.set_fit_slot(&"ship_miner", &"engines", 1, &"e_ion")
 	first.save()
 	var after_write := _snapshot(path)
-	_check("the v3 write persists save_version 4", int(after_write["save_version"]) == 4, "save_version=%s" % str(after_write["save_version"]))
+	_check("the v3 write persists save_version 5", int(after_write["save_version"]) == 5, "save_version=%s" % str(after_write["save_version"]))
 	var written: Dictionary = after_write["fits"]["ship_miner"]
 	_check(
 		"the written miner row carries the v3 values over and adds the second engine",

@@ -1,0 +1,139 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[R1-PANES] rail enum=["OUTFITTING", "REFINERY", "EXCHANGE", "SHIPYARD", "FITTING", "REPAIRS", "LAUNCH"] (FITTING present=true, UPGRADES present=false)
+[R1-PANES] rail labels=["OUTFITTING", "REFINERY", "EXCHANGE", "SHIPYARD", "FITTING", "REPAIRS", "LAUNCH"]
+[R1-PANES] rail files=["outfitting", "refinery", "exchange", "shipyard", "fitting", "repairs", "launch"]
+[R1-PANES] entry 4: label=FITTING file=fitting icon=res://assets/icons/equip/icon_equip_generator_48.png tinted=false bed=amb_station_noise_loop_01
+[R1-PANES] retired files on disk: upgrades_panel.gd=false .tscn=false ; fitting pane: .gd=true .tscn=true
+[R1-PANES] StationCatalog constants: UPGRADES=false UPGRADE_SLOTS=false SHIPS=true SERVICES=true
+[R1-PANES] shell rail entries: ["OutfittingEntry=OUTFITTING", "RefineryEntry=REFINERY", "ExchangeEntry=EXCHANGE", "ShipyardEntry=SHIPYARD", "FittingEntry=FITTING", "RepairsEntry=REPAIRS", "LaunchEntry=LAUNCH"]
+[R1-PANES] shell panes under HostMargin: ["Outfitting", "Refinery", "Exchange", "Shipyard", "Fitting", "Repairs", "Launch"]
+[R1-PANES] shell has Fitting=true Upgrades=false
+[R1-PANES] FITTING grid: cells=16 gaps=5 columns=4 h_sep=4 caption=SLOT LAYOUT · 11 CELLS · 1 ENGINES
+[R1-PANES] shipyard grid: cells=16 columns=4 h_sep=4 caption=SLOT LAYOUT · 11 CELLS · 1 ENGINES
+[R1-PANES] the two grids agree on 16 of 16 cells' cell size
+[R1-PANES] a FITTING cell: class=Button variation=SlotButtonWeapon focus=2 toggle=true disabled=false min=(48.0, 48.0)
+[R1-PANES] the cell's focus ring: StyleBoxFlat border=1 colour=(0.9098, 0.3843, 0.1647, 1.0)
+[R1-PANES] the grid's first child is a gap Control: Control
+[R1-PANES] pinned wordings checked=17 mismatches=0 []
+[R1-PANES] the pane's own keys: REFUSAL_OVERLOAD=%d / %d PWR — OVER BY %d, REFUSAL_MANDATORY=MANDATORY CELL — SWAP ONLY, NEVER EMPTY, REFUSAL_FIT_ILLEGAL=REFUSED · FIT ILLEGAL, METER_OVER= — OVER BY %d, SELECTION_FORMAT=%s%d · %s · OWNED ×%d, HARDPOINT_CAPTION=SLOT LAYOUT · %d CELLS · %d ENGINES
+[R1-PANES] idle: pane=PWR 3 / 8 fit_legal={ &"out": 8, &"draw": 3, &"spare": 5, &"legal": true } expected=PWR 3 / 8 equal=true
+[R1-PANES] candidate: pane=PWR 3 / 8 · CANDIDATE 4 / 8 fit_legal={ &"out": 8, &"draw": 4, &"spare": 4, &"legal": true } expected=PWR 3 / 8 · CANDIDATE 4 / 8 equal=true
+[R1-PANES] one plasma installed: weapons=["w_plasma", "w_laser"] power={ &"out": 6, &"draw": 6, &"spare": 0, &"legal": true }
+[R1-PANES] over budget: pane=PWR 6 / 6 · CANDIDATE 8 / 6 — OVER BY 2 expected=PWR 6 / 6 · CANDIDATE 8 / 6 — OVER BY 2 equal=true danger_colour=true
+[R1-PANES] danger colour=(0.7843, 0.2784, 0.1216, 1.0) Tokens/accent_danger=(0.7843, 0.2784, 0.1216, 1.0) equal=true
+[R1-PANES] the over-budget press refuses: footer=8 / 6 PWR — OVER BY 2 danger=true strip=8 / 6 PWR — OVER BY 2
+[R1-PANES] the refused over-budget call wrote nothing: weapons=["w_plasma", "w_laser"] plasma=1
+[R1-PANES] rows: shipped=[&"w_laser", &"w_cannon", &"s_heavy", &"u_cargo"]
+[R1-PANES] rows: expected=[&"w_laser", &"w_cannon", &"s_heavy", &"u_cargo"] equal=true
+[R1-PANES] a row's cells: title=Laser MkII meta=SLOT WEAPONS · DRAW 1 owned=OWNED ×1 action=SELECT A CELL
+[R1-PANES] empty state: rows=1 text=NO MODULES OWNED · BUY THEM IN OUTFITTING disabled=true pinned=true
+[R1-PANES] W2 selected (holds ): cannon ACTION=FIT laser ACTION=FIT
+[R1-PANES] after the row press: weapons=["w_laser", "w_cannon", ""] (cell 0 untouched=true) cannon=0 laser=2
+[R1-PANES] the swapped-in cell reads W2 · CANNON MKI · OWNED ×0; the selection survived as { &"type": &"weapons", &"token": "W", &"index": 1 }
+[R1-PANES] swap into W1 (held a laser): weapons=["w_cannon", "", ""] laser 2 -> 3 cannon=0
+[R1-PANES] E1 selected (holds e_std): can_remove=true remove_selected=false
+[R1-PANES] footer=MANDATORY CELL — SWAP ONLY, NEVER EMPTY danger=true strip=MANDATORY CELL — SWAP ONLY, NEVER EMPTY engines=["e_std"]
+[R1-PANES] the profile underneath refuses it too: false
+[R1-PANES] REMOVE on the delivered shield: true shields=[""] s_light back=1
+[R1-PANES] refused REMOVE=false footer=MANDATORY CELL — SWAP ONLY, NEVER EMPTY
+[R1-PANES] then a legal swap on the same cell: ok=true engines=["e_ion"]
+[R1-PANES] footer now=MANDATORY CELL — SWAP ONLY, NEVER EMPTY (still the refusal=true) meter=PWR 3 / 8 · CANDIDATE 3 / 8
+[R1-PANES] after clear_selection footer=SELECT A CELL
+[R1-PANES] unfit hull: stored fit holds a module=false action=SWAP meter=PWR 4 / 6 · CANDIDATE 4 / 6
+[R1-PANES] unfit hull: install through the pane=false footer=REFUSED · FIT ILLEGAL
+[R1-PANES] unfit hull: the stored candidate fit_legal={ &"legal": false, &"overflow": {  }, &"missing": [&"engines", &"power"], &"duplicates": [], &"power": { &"out": 6, &"draw": 0, &"spare": 6, &"legal": true } }
+[R1-PANES] unfit hull: stored={ &"engines": [""], &"weapons": ["", ""], &"shields": [""], &"armour": [""], &"computers": [""], &"boosters": [""], &"utility": [], &"power": "" }
+[R1-PANES] hover fitted=W1 · LASER MKII · OWNED ×3
+[R1-PANES] hover empty=W2 · EMPTY · OWNED ×0
+[R1-PANES] hover gap= (a gap carries no line)
+[R1-PANES] after a fit write, W2 hovers as W2 · LASER MKII · OWNED ×2
+[R1-PANES] a hull with no stored fit: W1 · EMPTY · OWNED ×0
+[R1-PANES] FREE_FEE=0 fuel pool=200 energy pool=100
+[R1-PANES] REFUEL: strip=FUEL_MAX 200 danger=false fuel=200 credits 10000 -> 10000
+[R1-PANES] REFUEL label=REFUEL (catalogue name=REFUEL)
+[R1-PANES] RECHARGE: strip=ENERGY_MAX 100 danger=false label=RECHARGE (catalogue name=RECHARGE)
+[R1-PANES] full tank: strip=FUEL_FULL danger=true credits 10000 -> 10000 fuel=200 disabled=false
+[R1-PANES] the service's own full-tank result={ &"ok": false, &"reason": &"fuel_full" }
+[R1-PANES] no report: strip=NO_DAMAGE_REPORT danger=true
+[R1-PANES] DECK CONTROL children: ["0:ActionCaption", "1:HullFrame", "2:ServiceRow", "3:LaunchButton", "4:ConfirmStrip"]
+[R1-PANES] retired-token scan: files=235 hits=73
+[R1-PANES]   res://ui/screens/station.gd:52 UPGRADES
+[R1-PANES]   res://ui/screens/station.gd:53 UPGRADES
+[R1-PANES]   res://ui/screens/_mockup_station.tscn:474 UPGRADES
+[R1-PANES]   res://ui/screens/_mockup_station.gd:22 install_upgrade
+[R1-PANES]   res://ui/screens/_mockup_station.gd:39 UPGRADES
+[R1-PANES]   res://ui/screens/_mockup_station.gd:145 UPGRADES
+[R1-PANES]   res://ui/screens/_mockup_station.gd:243 UPGRADES
+[R1-PANES]   res://ui/screens/_mockup_station.gd:244 UPGRADES
+[R1-PANES]   res://ui/screens/_mockup_station.gd:263 UPGRADES
+[R1-PANES]   res://ui/screens/_mockup_station.gd:344 UPGRADES
+[R1-PANES]   res://ui/screens/_mockup_station.gd:544 UPGRADES
+[R1-PANES]   res://ui/screens/_mockup_station.gd:574 UPGRADES
+[R1-PANES]   res://autoload/player_profile.gd:56 UPGRADES
+[R1-PANES]   res://autoload/player_profile.gd:96 UPGRADES
+[R1-PANES]   res://autoload/player_profile.gd:563 upgrade_ids
+[R1-PANES]   res://autoload/player_profile.gd:569 UPGRADES
+[R1-PANES]   res://autoload/player_profile.gd:570 UPGRADES
+[R1-PANES]   res://autoload/player_profile.gd:871 upgrade_ids
+[R1-PANES]   res://autoload/player_profile.gd:873 UPGRADES
+[R1-PANES]   res://autoload/player_profile.gd:875 UPGRADES
+[R1-PANES]   res://game/station_catalog.gd:9 UPGRADES
+[R1-PANES]   res://tests/probe_r1_fit_panes.gd:73 has_upgrade
+[R1-PANES]   res://tests/probe_r1_fit_panes.gd:73 installed_upgrades
+[R1-PANES]   res://tests/probe_r1_fit_panes.gd:73 install_upgrade
+[R1-PANES]   res://tests/probe_r1_fit_panes.gd:74 Catalog.upgrade
+[R1-PANES]   res://tests/probe_r1_fit_panes.gd:74 UPGRADES
+[R1-PANES]   res://tests/probe_r1_fit_panes.gd:74 UPGRADE_SLOTS
+[R1-PANES]   res://tests/probe_r1_fit_panes.gd:74 upgrades_panel
+[R1-PANES]   res://tests/probe_r1_fit_panes.gd:74 upgrade_ids
+[R1-PANES]   res://tests/probe_r1_fit_panes.gd:235 UPGRADES
+[R1-PANES]   res://tests/probe_r1_fit_panes.gd:236 UPGRADES
+[R1-PANES]   res://tests/probe_r1_fit_panes.gd:247 upgrades_panel
+[R1-PANES]   res://tests/probe_r1_fit_panes.gd:248 upgrades_panel
+[R1-PANES]   res://tests/probe_r1_fit_panes.gd:249 upgrades_panel
+[R1-PANES]   res://tests/probe_r1_fit_panes.gd:255 UPGRADES
+[R1-PANES]   res://tests/probe_r1_fit_panes.gd:255 UPGRADE_SLOTS
+[R1-PANES]   res://tests/probe_r1_fit_panes.gd:256 UPGRADES
+[R1-PANES]   res://tests/probe_r1_fit_panes.gd:256 UPGRADE_SLOTS
+[R1-PANES]   res://tests/test_p2b_services.gd:392 install_upgrade
+[R1-PANES]   res://tests/test_p2b_fitting_panel.gd:4 UPGRADES
+[R1-PANES]   res://tests/test_p2b_fitting_panel.gd:332 UPGRADES
+[R1-PANES]   res://tests/test_p2b_fitting_panel.gd:350 UPGRADES
+[R1-PANES]   res://tests/test_p2b_fitting_panel.gd:351 UPGRADES
+[R1-PANES]   res://tests/test_p2b_fitting_panel.gd:353 upgrades_panel
+[R1-PANES]   res://tests/test_p2b_fitting_panel.gd:357 upgrades_panel
+[R1-PANES]   res://tests/test_p2b_fitting_panel.gd:390 UPGRADES
+[R1-PANES]   res://tests/test_p2b_fitting_panel.gd:1000 install_upgrade
+[R1-PANES]   res://tests/test_p2b_retirement.gd:154 has_upgrade
+[R1-PANES]   res://tests/test_p2b_retirement.gd:154 installed_upgrades
+[R1-PANES]   res://tests/test_p2b_retirement.gd:154 install_upgrade
+[R1-PANES]   res://tests/test_p2b_retirement.gd:154 UPGRADES
+[R1-PANES]   res://tests/test_p2b_retirement.gd:158 UPGRADES
+[R1-PANES]   res://tests/test_p2b_retirement.gd:158 UPGRADE_SLOTS
+[R1-PANES]   res://tests/test_p2b_retirement.gd:158 upgrade_ids
+[R1-PANES]   res://tests/test_p2b_retirement.gd:163 has_upgrade
+[R1-PANES]   res://tests/test_p2b_retirement.gd:163 installed_upgrades
+[R1-PANES]   res://tests/test_p2b_retirement.gd:163 install_upgrade
+[R1-PANES]   res://tests/probe_r1_v5_migration.gd:236 has_upgrade
+[R1-PANES]   res://tests/probe_r1_v5_migration.gd:236 installed_upgrades
+[R1-PANES]   res://tests/probe_r1_v5_migration.gd:236 install_upgrade
+[R1-PANES]   res://tests/probe_r1_v5_migration.gd:240 has_upgrade
+[R1-PANES]   res://tests/probe_r1_v5_migration.gd:240 installed_upgrades
+[R1-PANES]   res://tests/probe_r1_v5_migration.gd:240 install_upgrade
+[R1-PANES]   res://tests/probe_r1_v5_migration.gd:241 has_upgrade
+[R1-PANES]   res://tests/probe_r1_v5_migration.gd:241 installed_upgrades
+[R1-PANES]   res://tests/probe_r1_v5_migration.gd:241 install_upgrade
+[R1-PANES]   res://tests/probe_r1_v5_migration.gd:244 UPGRADES
+[R1-PANES]   res://tests/probe_r1_v5_migration.gd:245 UPGRADES
+[R1-PANES]   res://tests/probe_r1_v5_migration.gd:246 UPGRADES
+[R1-PANES]   res://tests/probe_r1_v5_migration.gd:255 UPGRADES
+[R1-PANES]   res://tests/probe_r1_v5_migration.gd:255 UPGRADE_SLOTS
+[R1-PANES]   res://tests/probe_r1_v5_migration.gd:256 UPGRADES
+[R1-PANES]   res://tests/probe_r1_v5_migration.gd:256 UPGRADE_SLOTS
+[R1-PANES] done
+WARNING: 8 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 4 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

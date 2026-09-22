@@ -477,11 +477,14 @@ func test_set_ammo_ignores_an_unknown_pack_and_a_write_that_changes_nothing() ->
 
 ## The dock's ammo report, end to end: the launch seeds the live pack from the profile's
 ## store, three rounds are fired, `game.gd:_file_ammo_report` files the delta and the
-## store reads three rounds lighter. The structure cannot be swapped here (the runner is
-## inside its own `_ready`, so `/root` is blocked for `add_child` - measured), so the
-## shipped autoload is *borrowed* instead: its `save_path` is pointed at a scratch file,
-## the one pack the report touches is snapshotted and written back, and the store is
-## flushed while the scratch path is still in place, so the owner's `profile.cfg` is
+## store reads three rounds lighter. The slot is the fired family's own index in the live
+## `PlayerState.weapons` - the fit-ordered sizing the launch writes - and not
+## `PlayerState.WEAPONS`' catalogue order, which a launched fit need not follow
+## (`.agents/gen/p2b_proper_r1_report.md` section 7, LOW-6). The structure cannot be swapped
+## here (the runner is inside its own `_ready`, so `/root` is blocked for `add_child` -
+## measured), so the shipped autoload is *borrowed* instead: its `save_path` is pointed at a
+## scratch file, the one pack the report touches is snapshotted and written back, and the
+## store is flushed while the scratch path is still in place, so the owner's `profile.cfg` is
 ## never written and the live store ends exactly as it started.
 func test_the_dock_report_settles_a_fired_pack() -> void:
 	if _scene == null or _state == null:
@@ -500,7 +503,7 @@ func test_the_dock_report_settles_a_fired_pack() -> void:
 	_delete_file(SCRATCH_PROFILE)
 	_delete_file(SCRATCH_LOG)
 	_scene.call(&"_seed_ammo")
-	var slot: int = WeaponsScript.ammo_slot(&"laser")
+	var slot: int = int((_state.get(&"weapons") as Array).find(&"laser"))
 	var live: int = int((_state.get(&"ammo") as Array)[slot])
 	var ceiling: int = int((_state.get(&"ammo_max") as Array)[slot])
 	_state.set_ammo(slot, live - 3)

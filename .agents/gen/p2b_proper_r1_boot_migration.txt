@@ -1,0 +1,68 @@
+# R1 evidence — the save v5 flag day on a real boot, from R1's own hand-written v4 file
+
+The fixture below was written by hand (not by the code under test), the boot scene is the shipped one, and the profile is sandboxed.
+
+```text
+# the fixture, written by hand into the sandbox before the boot (the boot sweeps it to v5):
+$ cat > /tmp/r1_boot/godot/app_userdata/"Vajb Orbit"/profile.cfg <<'EOF'
+[profile]
+
+save_version=4
+credits=4321
+owned_ships=["ship_vanguard"]
+active_ship="ship_vanguard"
+upgrades=["upgrade_generator", "upgrade_shield", "upgrade_engine", "upgrade_module", "upgrade_extra", "upgrade_drone"]
+EOF
+
+$ XDG_DATA_HOME=/tmp/r1_boot godot --headless --path vajb-orbit res://ui/screens/boot.tscn --quit-after 400   # exit 0
+$ rg -n "upgrade" <the file after the boot>   # exit 1 = no token
+exit=1
+$ rg -n "save_version|modules" -A 20 <the file after the boot>
+[profile]
+
+save_version=5
+credits=4321
+owned_ships=["ship_vanguard"]
+active_ship="ship_vanguard"
+cargo={}
+ammo={
+"cannon": 300,
+"laser": 300,
+"mine": 300,
+"plasma": 300,
+"rocket": 300
+}
+modules={
+"c_scanner": {
+"base_id": "c_scanner",
+"count": 1
+},
+"e_ion": {
+"base_id": "e_ion",
+"count": 1
+},
+"p_mk2": {
+"base_id": "p_mk2",
+"count": 1
+},
+"s_heavy": {
+"base_id": "s_heavy",
+"count": 1
+},
+"u_cargo": {
+"base_id": "u_cargo",
+"count": 1
+},
+"u_drones": {
+"base_id": "u_drones",
+"count": 1
+}
+}
+```
+
+## The boot log: no SCRIPT ERROR, no WARNING
+
+```text
+$ rg -n "SCRIPT ERROR|WARNING|ERROR" /tmp/r1_boot.log
+(no output above)
+```

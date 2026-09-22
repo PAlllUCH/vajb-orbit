@@ -1,0 +1,9 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[W1-HOLE] e_std slot=engine, cell under test=weapons[0] slot=weapons
+[W1-HOLE] before: weapons=["w_laser", "w_laser"] inventory={ "e_std": { "base_id": "e_std", "count": 1 } }
+[W1-HOLE] fit_legal on the candidate: legal=true overflow={  } missing=[] duplicates=[] power={ &"out": 6, &"draw": 3, &"spare": 3, &"legal": true }
+[W1-HOLE] fit_module_at(weapons, 0, e_std) -> true
+[W1-HOLE] after:  weapons=["e_std", "w_laser"] inventory={ "w_laser": { "base_id": "w_laser", "count": 1 } }
+[W1-HOLE] done

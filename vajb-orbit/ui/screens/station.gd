@@ -48,14 +48,17 @@ const ENTRY_AMBIENCE_FADE := 2.0
 const SWITCH_AMBIENCE_FADE := 1.0
 const EXIT_AMBIENCE_FADE := 1.0
 
-enum Module { OUTFITTING, REFINERY, EXCHANGE, SHIPYARD, UPGRADES, REPAIRS, LAUNCH }
+## The fifth entry is FITTING (STATION_HUB section 5.3's amendment, 2026-09-22): it takes the
+## retired UPGRADES entry's rail position, icon and tint, and the retired pane files are gone.
+## Reversal: restore the UPGRADES label, the pane file name and the pane's two files.
+enum Module { OUTFITTING, REFINERY, EXCHANGE, SHIPYARD, FITTING, REPAIRS, LAUNCH }
 
 const MODULE_FILES: Array[String] = [
 	"outfitting",
 	"refinery",
 	"exchange",
 	"shipyard",
-	"upgrades",
+	"fitting",
 	"repairs",
 	"launch",
 ]
@@ -64,7 +67,7 @@ const MODULE_LABELS: Array[String] = [
 	"REFINERY",
 	"EXCHANGE",
 	"SHIPYARD",
-	"UPGRADES",
+	"FITTING",
 	"REPAIRS",
 	"LAUNCH",
 ]
@@ -459,11 +462,12 @@ func _refusal_text(reason: StringName, id: StringName) -> String:
 
 
 func _owned_state_text(id: StringName) -> String:
+	## FITTING refuses in the pane's own footer strip, with its own pinned wordings
+	## (STATION_HUB section 5.3), so this copy path only ever names a hull or a catalogue row
+	## that still answers to `purchase_failed`.
 	var profile := _profile()
 	if profile != null and id == StringName(profile.call(&"active_ship")):
 		return "ALREADY THE ACTIVE HULL"
-	if not Catalog.upgrade(id).is_empty():
-		return "ALREADY INSTALLED"
 	return "ALREADY OWNED"
 
 
@@ -478,12 +482,11 @@ func _entry_cost(id: StringName) -> int:
 func _entry(id: StringName) -> Dictionary:
 	## purchase_failed carries only the reason and the id, so the copy resolves the
 	## entry and its price from the catalogue the panel bought from: the ammo packs,
-	## the ships, the upgrades and the modules (P2-B1's OUTFITTING rows).
+	## the ships and the modules (P2-B1's OUTFITTING rows). The retired upgrades rows
+	## are gone with save v5 (CONTRACTS section 13), so they are not resolved here.
 	var entry := Catalog.ammo_pack(id)
 	if entry.is_empty():
 		entry = Catalog.ship(id)
-	if entry.is_empty():
-		entry = Catalog.upgrade(id)
 	if entry.is_empty():
 		entry = ModuleCatalog.module(id)
 	return entry

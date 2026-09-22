@@ -1,6 +1,6 @@
 # WAVEBOARD — one-file agent state
 
-**Updated: 2026-09-22 (P2-B1 closed; P2-B proper next).** Full history of what every worker
+**Updated: 2026-09-22 (P2-B proper closed; the affixes wave is next).** Full history of what every worker
 did, with known errors and open findings, now lives in
 `.agents/gen/MASTER_REPORT.md` — this board keeps only current state,
 contracts, enforcement and the queue. Executed-wave reports, briefs and
@@ -8,12 +8,12 @@ evidence were moved to `.agents/gen/_archive/` (2026-09-21, reversible) —
 citation paths of the form `.agents/gen/<report>.md` now resolve one level
 deeper.
 
-**Current state: eight coding waves closed (chrome, combat repair, weapon FX wiring, flight
-feel & beam polish, slice 2.5 Feel, P2-A ship slot frames, Rock cleave, P2-B1 weapon fit;
-gate `passed=389
-failed=0`). The queue of record is `dispatch_coder.md`: items 4/5/6 are all DONE and
-**P2-B proper** is the next brief (owner's stop condition — no new work starts until this
-wave's report is read). Owner gates: the
+**Current state: nine coding waves closed (chrome, combat repair, weapon FX wiring, flight
+feel & beam polish, slice 2.5 Feel, P2-A ship slot frames, Rock cleave, P2-B1 weapon fit,
+P2-B proper fitting panel; gate `passed=437
+failed=0`). The queue of record is `dispatch_coder.md`: items 4/5/6/7 are all DONE and
+**the module-affixes wave (doc 15) is the next brief** (the owner's own tick: affixes were
+deferred out of P2-B proper), with the AUCTION (10 §2) behind it. Owner gates: the
 chrome art half, the **`18_engine_spec.md` §6/§13/§15 cleaving amendment** (owner-locked; §15
 is the test checklist and now contradicts the shipped suite), the launch fit (**both symptoms
 closed** — symptom 1 by P2-A, symptom 2 by P2-B1's `w_mining` row), four spec ticks, the §13
@@ -67,14 +67,17 @@ owner's §8 tick list is resolved (all six kept); the one follow-up is the 7-W c
   2026-09-21**, **§5's cleaving sentence merged by Rock cleave (v1.4, 2026-09-22)**, and
   **§12 (the weapon-fit pin) landed by P2-B1 and resolved at its close-out (v0.4,
   2026-09-22 — the MODULES row set is seven, `w_mining` included, and MED-1's shell price
-  reads the module catalogue)**; the §10 changelog carries the v0.2, v1.4, v0.3 and v0.4
-  entries, and §9's gate figure is the measured **389**. Briefs say "code
+  reads the module catalogue)**, and **§13 (the fitting pin) landed by P2-B proper and
+  corrected at its close-out (v0.5/v0.6, 2026-09-22 — the composed `fit_module_at` /
+  `clear_fit_slot` transactions, the six-row retirement table, save v5 and `resolved_fit`,
+  the fit the launch would fly)**; the §10 changelog carries the v0.2, v1.4, v0.3, v0.4,
+  v0.5 and v0.6 entries, and §9's gate figure is the measured **437**. Briefs say "code
   against CONTRACTS.md §n"; review waves own updating it.
 - `docs/gameplay/18_engine_spec.md` — the engine contract. §2.1 carries owner
   rulings 8–26. **Owner-locked**: no worker may edit it; the six owed spec
   edits are the owner's (MASTER_REPORT §3 item 1).
 - Universal test gate: `res://tests/headless_runner.tscn` → `[SUMMARY]
-  passed=389 failed=0` (exact command in CONTRACTS.md §9; grew 53 → 78 → 219 → 226
+  passed=437 failed=0` (exact command in CONTRACTS.md §9; grew 53 → 78 → 219 → 226
   with the UI-chrome wave's `test_ui_slot_layout.gd`, 236 with the combat repair wave's
   `test_engine_c3_flight_decay.gd` and `test_combat_repair_c5.gd`, 277 with the weapon FX
   wave's `test_weapon_fx_f{1,2,4}.gd` suites, 294 with the flight/beam wave's
@@ -86,7 +89,10 @@ owner's §8 tick list is resolved (all six kept); the one follow-up is the 7-W c
   311 was stale — its baseline measured 372 against a stashed tree), then **389 with P2-B1**
   (`test_p2b1_outfitting_panel.gd` 0 → 7, then 7 → 9 with F1's two guards; W1's profile
   refusals ride `test_p1_profile.gd`'s +47 assertions and the row count's 6 → 7 move rides
-  F1's seventh row).
+  F1's seventh row), then **437 with P2-B proper** (`test_p2b_retirement.gd` 13,
+  `test_p2b_fitting_panel.gd` 18 → 20 with F1's two, `test_p2b_services.gd` 11 → 12 with F1's
+  one; F1's profile-fallback tests ride the retirement suite, and F2 cured three pre-existing
+  engine2 fixture assumptions to take the **live-profile** gate from 434/3 to 437/0).
 - `staging/verify_wave.py` — mechanical wave gates: `snapshot` before a wave,
   `verify --baseline <tag> [--forbidden ...] [--expect-reports ...] [--tests]`
   after. Baselines live in `.agents/gen/_wave_state/` (`wave1_closed`,
@@ -144,31 +150,31 @@ PowerShell form: `$env:VAJB_WORKER_FILES='...'; crush run "<prompt>" -m opencode
 ## In flight — none.
 
 **Queued (the queue of record is `dispatch_coder.md` §Current queue):** items 4 **P2-A**,
-5 **Rock cleave** and 6 **P2-B1** — all **DONE** (see §Closed). **Item 7, P2-B proper — the
-fitting panel — is IN FLIGHT** (owner order 2026-09-22: "lets start with p2-b"): brief
-`.agents/gen/p2b_proper_wave_task.md`, prompts `.agents/gen/p2b_proper_wave_prompts.md`,
-order D0 → W1 → W2 → W3 → R1 → F1. Owner-ticked scope: FITTING takes the UPGRADES rail
-entry and fits cell by cell across all eight types with the power meter; the six legacy
-UPGRADES rows retire at save v5 (each installed row migrates to its 09-lineage successor
-module); the owner's four station requests ride along; **affixes (15) are the next wave**.
-**The designer phase
+5 **Rock cleave**, 6 **P2-B1** and 7 **P2-B proper** — all **DONE** (see §Closed). **Next is
+the module-affixes wave (15)** — the owner deferred affixes out of P2-B proper on 2026-09-22,
+so the instance shape (`{base_id, rarity, prefixes[], suffixes[]}`), the roll sources and the
+15 §7 naming/stat grammar are its brief; the **AUCTION** (10 §2) follows. **The designer phase
 is deferred to the next day (owner, 2026-09-21):** the graphics queue of record
 is `.agents/gen/dispatch_designer.md` + `designer_generation_backlog.md`
 (component icons, the `_48`/tint re-cuts, the decisions), hand-over prompt ready;
 nothing from it is in flight. Owner ticks open: the
 `18_engine_spec.md` §6/§13/§15 cleaving amendment (owner-locked — the wave shipped,
-the spec text lags), P2-B1's refusal wordings, the MODULES row set of seven (R1 MED-2,
-resolved seven at the close-out with the brief's §1 list — one-constant reversal), and
-L78's ACTION precedence (now designed away by P2-B proper's FIT/SWAP/SELECT A CELL state
-machine — tick it at that wave's close-out).
+the spec text lags), P2-B1's refusal wordings, the MODULES row set of seven (R1 MED-2),
+P2-B proper's five ticks (§Closed — the rail entry, the six-row retirement table, the pinned
+strings, the four requests, affixes next), and the measured residual (a bare hull's delivered
+mandatory cell offers REMOVE and refuses with the pinned wording — W2's disclosed reading).
 
 **Owner requests queued 2026-09-22 (recorded, not briefed — the owner's stop
 condition is item 6, and each needs its own docs-first brief before any code):**
 
-1. Shipyard — hovering a module shows what it is and how many the player owns.
-2. OUTFITTING — an inventory of every item the player owns.
-3. OUTFITTING — the same ship module/slot-grid layout the shipyard shows.
-4. LAUNCH / REPAIRS — a REFUEL button beside the existing service actions.
+1. ~~Shipyard — hovering a module shows what it is and how many the player owns.~~ **DONE** in
+   P2-B proper (the hover line, `shipyard_panel.gd`).
+2. ~~OUTFITTING — an inventory of every item the player owns.~~ **DONE** in P2-B proper (the
+   FITTING pane's OWNED MODULES section).
+3. ~~OUTFITTING — the same ship module/slot-grid layout the shipyard shows.~~ **DONE** in
+   P2-B proper (FITTING's SLOT LAYOUT reuses the shipyard's own plate recipe, cell for cell).
+4. ~~LAUNCH / REPAIRS — a REFUEL button beside the existing service actions.~~ **DONE** in
+   P2-B proper (REFUEL and RECHARGE rows in LAUNCH, `Repairs.refuel`/`recharge`).
 5. Rock cleave follow-up — after a rock breaks, its fragments should move a bit
    outward from the centre (radial motion on top of today's 360° spread).
 6. Weapon FX — a beam's hit should spawn its impact FX somewhat randomly across
@@ -178,6 +184,34 @@ condition is item 6, and each needs its own docs-first brief before any code):**
 
 ## Closed (details in MASTER_REPORT.md)
 
+- **P2-B proper fitting panel — DONE 2026-09-22** (gate 389 → 402 → 420 → 431 → 437; reports
+  `.agents/gen/p2b_proper_{d0,w1,w2,w3,r1,f1,f2}_report.md`): the station now has a **FITTING**
+  pane where it had the pre-module UPGRADES rows — the UPGRADES rail entry becomes FITTING
+  and its pane files are gone, the active hull's own slot grid renders with the shipyard's
+  plate recipe and **selectable cells**, and per-cell install / swap / remove go through the
+  two new composed profile transactions (`fit_module_at`, `clear_fit_slot`) with the power
+  meter showing the candidate's arithmetic before commit and the pinned refusals
+  (`13 / 11 PWR — OVER BY 2`, `MANDATORY CELL — SWAP ONLY, NEVER EMPTY`, `REFUSED · FIT
+  ILLEGAL`) in the footer. The **save v5 flag day** retires the six legacy upgrade rows: each
+  installed row migrates to its 09-lineage successor module (`upgrade_generator` → `p_mk2`,
+  `upgrade_shield` → `s_heavy`, `upgrade_engine` → `e_ion`, `upgrade_module` → `c_scanner`,
+  `upgrade_extra` → `u_cargo`, `upgrade_drone` → `u_drones`), idempotently, with `has_upgrade`
+  / `install_upgrade` deleted (measured: a v4 file with all six reads back as six inventory
+  modules and a second migration call returns 0). The owner's four station requests shipped:
+  the shipyard hover line (`W1 · LASER MKII · OWNED ×3`), the OWNED MODULES inventory, the
+  shipyard-recipe grid, and LAUNCH's REFUEL/RECHARGE rows (free and instant, no credits move).
+  Reviewer: **no HIGH, two MED** — MED-1 (the pane previewed the launch's fallback fit while
+  the profile committed against the stored fit, so FITTING was dead on any hull with no
+  stored fit; cured profile-side with `resolved_fit`, the fit the launch would fly, so preview
+  and commit read one shape) and MED-2 (a refusal's footer line outlived the successful action
+  that followed it) — both fixed by F1 (+6 tests). Eight LOW → `LOW_BACKLOG.md` L85–L92. The
+  orchestrator's F2 then cured a **pre-existing** fixture assumption R1 diagnosed (three
+  engine2 dock/fixes tests resolved the ammo slot from the catalogue order while the launched
+  fit sizes it, which the owner's own cannon-first Vanguard exposed): 434/3 → **437/0** on the
+  canonical gate with the live profile. **Owner ticks: 1–5 as briefed (§7) — the rail entry,
+  the six-row retirement table, the pinned strings, the four requests, and affixes next —
+  all measured landed; one measured residual rides to the backlog (a bare hull's delivered
+  mandatory cell offers REMOVE and refuses with the pinned wording — W2's disclosed reading).**
 - **P2-B1 weapon fit surface — DONE 2026-09-22** (gate 378 → 387 → 389; reports
   `.agents/gen/p2b1_{d0,w1,w2,r1,f1}_report.md`): OUTFITTING now sells the weapon modules
   into the profile inventory and installs/swaps/removes them through `ShipFit.fit_legal` —

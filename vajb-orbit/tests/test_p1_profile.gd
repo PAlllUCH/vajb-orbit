@@ -7,6 +7,11 @@ extends McpTestSuite
 ## contract, the pre-existing API and the P2-B1 module purchase
 ## (`buy_module`, CONTRACTS section 12).
 ##
+## Save v5 (P2-B proper, CONTRACTS section 13) retires the pre-module `upgrades`
+## key, so nothing here reads or writes it any more: the v1 fixture below carries
+## none, the defaults no longer name it, and the migration itself - and the flag
+## day's write - has its own suite, `test_p2b_retirement.gd`.
+##
 ## Profiles are throwaway instances of the autoload script whose save_path is
 ## repointed at a scratch file before the first mutation; `user://profile.cfg`
 ## is never touched. Note that these instances are never added to the tree, so
@@ -77,7 +82,6 @@ func test_fresh_defaults_without_a_file() -> void:
 	assert_eq(ships.size(), 1, "one ship owned by default")
 	assert_eq(ships[0], &"ship_vanguard", "owned ships default to [ship_vanguard]")
 	assert_eq(profile.active_ship(), &"ship_vanguard", "active ship default")
-	assert_true(profile.installed_upgrades().is_empty(), "upgrades default to empty")
 	assert_true(profile.cargo_items().is_empty(), "cargo defaults to empty")
 	assert_eq(Profile.AMMO_MAX.size(), 5, "the five weapons of section 2.8")
 	for weapon: StringName in Profile.AMMO_MAX:
@@ -105,7 +109,6 @@ func test_v1_profile_migrates_to_defaults() -> void:
 	fixture.set_value(SECTION, "credits", 1234)
 	fixture.set_value(SECTION, "owned_ships", ["ship_fighter", "ship_vanguard"])
 	fixture.set_value(SECTION, "active_ship", "ship_fighter")
-	fixture.set_value(SECTION, "upgrades", ["upgrade_engine"])
 	fixture.set_value(SECTION, "cargo", {"mineral_iron": 7})
 	fixture.set_value(SECTION, "ammo", {"laser": 120})
 	assert_eq(fixture.save(PROFILE_PATH), OK, "fixture written")
@@ -120,7 +123,6 @@ func test_v1_profile_migrates_to_defaults() -> void:
 	assert_true(ships.has(&"ship_fighter"))
 	assert_true(ships.has(&"ship_vanguard"))
 	assert_eq(profile.active_ship(), &"ship_fighter")
-	assert_true(profile.installed_upgrades().has(&"upgrade_engine"))
 	assert_eq(profile.cargo_qty(&"mineral_iron"), 7)
 	assert_eq(profile.ammo_of(&"laser"), 120)
 	assert_eq(profile.ammo_of(&"cannon"), 300, "weapons the v1 file never wrote keep the default")
@@ -141,7 +143,9 @@ func test_v1_profile_migrates_to_defaults() -> void:
 		assert_true((market[key] as Dictionary).is_empty(), "market.%s default" % key)
 	assert_eq(int(market["last_band"]), 0)
 
-	# The migration read never rewrites the file.
+	# The migration read never rewrites the file. A file that *does* carry the key
+	# save v5 retired is the one exception, and `test_p2b_retirement.gd` measures
+	# that one; this fixture has nothing to migrate.
 	var on_disk := ConfigFile.new()
 	assert_eq(on_disk.load(PROFILE_PATH), OK)
 	assert_eq(int(on_disk.get_value(SECTION, "save_version", 0)), 1, "still a v1 file on disk")
@@ -206,7 +210,7 @@ func test_v2_round_trip_for_every_key() -> void:
 
 	var on_disk := ConfigFile.new()
 	assert_eq(on_disk.load(PROFILE_PATH), OK)
-	assert_eq(int(on_disk.get_value(SECTION, "save_version", 0)), 4, "writes always persist v4")
+	assert_eq(int(on_disk.get_value(SECTION, "save_version", 0)), 5, "writes always persist v5")
 
 
 ## ---------------------------------------------------------------------------
@@ -407,8 +411,7 @@ func test_buy_module_refuses_unknown_and_insufficient() -> void:
 	assert_true(_signals.is_empty(), "a refused buy emits nothing: %s" % str(_signals))
 	assert_eq(_log_lines().size(), 0, "a refused buy logs nothing")
 
-	## A negative price is not a price, exactly as buy_ship and install_upgrade
-	## refuse one.
+	## A negative price is not a price, exactly as buy_ship refuses one.
 	_failures.clear()
 	assert_false(profile.buy_module(&"w_cannon", -1))
 	assert_eq(_failures.size(), 1, "one refusal")

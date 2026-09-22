@@ -1,15 +1,20 @@
 extends VBoxContainer
 ## SHIPYARD module panel: the hull list, the large side-view preview, the comparison table
 ## against the active hull, the price and the BUY / SET ACTIVE action. Every value is a
-## StationCatalog, PlayerProfile or ShipFit read. Contract: docs/design/STATION_HUB.md
-## sections 5.2 (incl. the 2026-09-21 P2-A amendment), 5.6, 7.2 and 12,
-## docs/design/STATION_SPEC.md sections 2.4 and 6, CONTRACTS section 11.
+## StationCatalog, PlayerProfile, ShipFit or ModuleCatalog read. Contract:
+## docs/design/STATION_HUB.md sections 5.2 (incl. the 2026-09-21 P2-A and 2026-09-22
+## amendments), 5.6, 7.2 and 12, docs/design/STATION_SPEC.md sections 2.4 and 6,
+## CONTRACTS section 11.
 ##
 ## The slot layout grid (`%HardpointSlots`) is rebuilt per selection from the selected
 ## hull's own 08 section 3.2 matrix: one cell per matrix cell, `columns` = the matrix
 ## width, a gap an empty cell and a slot cell a disabled 48 px plate carrying that type's
 ## slot glyph. The caption and the ENGINES / SLOT CELLS rows read `ShipFit` for the same
 ## hull, so the whole stat column moves with the selection and no count is restated here.
+## A plate also answers the pointer: hovering one publishes the fitting surface's own line
+## (`<TYPE><n> · <MODULE NAME or EMPTY> · OWNED ×<n>`) into the shell's strip, read from the
+## selected hull's `fit_for` entry and `module_count` - the grid stays a display, and the
+## plate's size, glyph, separation and caption do not move for it (section 5.2's amendment).
 ##
 ## The station shell loads this scene into its host, so the panel never routes, never
 ## writes the profile and never draws the credits readout: it emits status_requested up
@@ -86,6 +91,15 @@ const META_FORMAT := "%d HULL · %d SLOTS"
 ## CONTRACTS section 11's caption: the hull's slot count (08 section 3's Total, gaps
 ## excluded) and its ENGINE count. The node is still `%HardpointCaption`.
 const HARDPOINT_CAPTION := "SLOT LAYOUT · %d CELLS · %d ENGINES"
+## STATION_HUB section 5.2's 2026-09-22 amendment (owner request 1): a slot plate reads the
+## fitting surface's own line on hover, `<TYPE><n> · <MODULE NAME or EMPTY> · OWNED ×<n>`,
+## resolved from the selected hull's `fit_for` entry and the account's `module_count`. The grid
+## stays a display - the plate is still disabled, carries no focus ring and mutates nothing -
+## and the plate's size, its glyph, its separation and the caption above do not move.
+const HOVER_FORMAT := "%s%d · %s · OWNED ×%d"
+const HOVER_EMPTY := "EMPTY"
+## `power` is one id, not a set of cells (CONTRACTS section 11 rule 1).
+const POWER_SLOT: StringName = &"power"
 const PRICE_ZERO := "0"
 
 const STATE_ACTIVE := "ACTIVE"
@@ -382,11 +396,18 @@ func _make_gap_cell() -> Control:
 
 
 ## Display cell for one non-gap matrix cell: the 48 px disabled plate plus its type's slot
-## glyph. `_make_plate` parents it (it always has), so the caller adds nothing.
+## glyph, wired to the section 5.2 amendment's hover line. `_make_plate` parents it (it always
+## has), so the caller adds nothing.
 func _make_slot_cell(cell: Dictionary) -> void:
 	var plate := _make_plate(_hardpoints, PLATE_VARIATION, PLATE_SIZE)
 	plate.name = "Slot%s%02d" % [String(cell[&"token"]), int(cell[&"index"])]
 	plate.disabled = true
+	# The plate stays a display - disabled, no focus ring, no mutation - but it answers the
+	# pointer, which is what the section 5.2 amendment's hover line needs (`_make_plate` leaves
+	# the filter at IGNORE, and a filter that ignores the mouse never reports a hover).
+	plate.mouse_filter = Control.MOUSE_FILTER_STOP
+	plate.mouse_entered.connect(_on_plate_hovered.bind(cell))
+	plate.mouse_exited.connect(_on_plate_unhovered)
 	var glyph := TextureRect.new()
 	glyph.name = "Icon"
 	glyph.custom_minimum_size = Vector2(PLATE_SIZE - PLATE_ICON_INSET * 2.0, PLATE_SIZE - PLATE_ICON_INSET * 2.0)
@@ -414,6 +435,88 @@ func _slot_glyph(slot_key: StringName) -> Texture2D:
 	if not ResourceLoader.exists(path):
 		return null
 	return load(path) as Texture2D
+
+
+## The hover line for one grid cell (STATION_HUB section 5.2's 2026-09-22 amendment): the
+## cell's own type token and layout index, the selected hull's module in that cell - or the
+## pin's `EMPTY` - and how many of it the account holds. A hull the account owns reads the fit
+## the launch would fly (`resolved_fit`, the profile's own fallback: the stored fit when it
+## holds a module, else 09 section 9's `ShipFit.standard_fit`), so the line agrees with the
+## FITTING pane's preview and with the ship this hull would launch as; a hull it does not own
+## keeps reading `fit_for`, whose all-empty shape answers `EMPTY` for every cell. An instance
+## id resolves through the profile's own `base_module_id` bridge, the way the fitting pane
+## names its modules; `&""` for a gap, which carries no plate to hover.
+func hover_line(cell: Dictionary) -> String:
+	if bool(cell.get(&"gap", false)):
+		return ""
+	var slot_key: StringName = cell.get(&"type", &"")
+	var index := int(cell.get(&"index", -1))
+	var profile := _profile()
+	var module_id := &""
+	if profile != null:
+		var read := &"fit_for"
+		if _owned_ids(profile).has(_selected_id):
+			read = &"resolved_fit"
+		module_id = _fit_cell_module(profile.call(read, _selected_id), slot_key, index)
+	if module_id == &"":
+		return HOVER_FORMAT % [String(cell.get(&"token", "")), index + 1, HOVER_EMPTY, 0]
+	var base := _base_id(profile, module_id)
+	var owned := 0
+	if profile != null:
+		owned = int(profile.call(&"module_count", base))
+	return HOVER_FORMAT % [String(cell.get(&"token", "")), index + 1, _module_name(base), owned]
+
+
+## The module id one fit cell holds, `&""` for an empty cell and for an index the hull does not
+## carry. POWER is one id rather than a set of cells (CONTRACTS section 11 rule 1), so it is
+## read as a single value; every other type is the layout-indexed array 09 section 4.5
+## describes.
+func _fit_cell_module(fit: Dictionary, slot_key: StringName, index: int) -> StringName:
+	if slot_key == POWER_SLOT:
+		var single: Variant = fit.get(slot_key, fit.get(String(slot_key), ""))
+		return StringName(String(single)) if single != null else &""
+	var raw: Variant = fit.get(slot_key, fit.get(String(slot_key), []))
+	if not raw is Array:
+		return &""
+	var cells: Array = raw as Array
+	if index < 0 or index >= cells.size():
+		return &""
+	return StringName(String(cells[index]))
+
+
+## The fit stores a module *instance* id (15 section 6) and the catalogue reads base ids, so
+## every id the line names goes through the profile's own bridge.
+func _base_id(profile: ProfileScript, entry: StringName) -> StringName:
+	if profile == null or entry == &"":
+		return entry
+	return StringName(profile.call(&"base_module_id", entry))
+
+
+## The catalogue's own name for a module, in this pane's upper case; an id the catalogue cannot
+## name reads as the id itself rather than as a blank line.
+func _module_name(module_id: StringName) -> String:
+	var name_text := String(ModuleCatalog.module(module_id).get(&"name", ""))
+	return name_text.to_upper() if not name_text.is_empty() else String(module_id).to_upper()
+
+
+## Hovering a plate publishes its line on the channel every hint in this pane uses
+## (`status_requested`); leaving it puts the selected hull's own hint back, so the shell's strip
+## never keeps a line for a cell the pointer has left.
+func _on_plate_hovered(cell: Dictionary) -> void:
+	status_requested.emit(hover_line(cell), false)
+
+
+func _on_plate_unhovered() -> void:
+	var payload := _payload(_selected_id)
+	if not payload.is_empty():
+		status_requested.emit(_row_hint(payload), false)
+
+
+func _payload(ship_id: StringName) -> Dictionary:
+	for payload: Dictionary in _payloads:
+		if payload[&"id"] == ship_id:
+			return payload
+	return {}
 
 
 ## How many non-gap cells the hull carries, which is 08 section 3's Total: every value

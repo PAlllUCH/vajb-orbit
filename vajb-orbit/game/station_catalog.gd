@@ -1,19 +1,16 @@
 class_name StationCatalog
 extends RefCounted
-## Read-only station stock: ammo packs, ships, upgrades, services.
+## Read-only station stock: ammo packs, ships, services.
 ## Data, not logic: no nodes, no autoload, no mutation API.
 ## Contract: docs/design/STATION_SPEC.md; the service rows are
 ## docs/gameplay/14_station_services.md section 1 and 18_engine_spec section 12
 ## item 8.
-
-const UPGRADE_SLOTS: Array[StringName] = [
-	&"generator",
-	&"shield",
-	&"engine",
-	&"module",
-	&"extra",
-	&"drone",
-]
+##
+## The six pre-module `UPGRADES` rows (and the slot labels that went with them)
+## retired in save v5 (09 section 4 item 13, docs/gameplay/10 section 5): their
+## effects are modules in `ModuleCatalog`, an installed upgrade converts to one
+## inventory module per `PlayerProfile.LEGACY_UPGRADE_MODULES`, and nothing reads
+## a row from here any more.
 
 const AMMO_PACKS: Array[Dictionary] = [
 	{
@@ -164,63 +161,6 @@ const SHIPS: Array[Dictionary] = [
 	},
 ]
 
-const UPGRADES: Array[Dictionary] = [
-	{
-		&"id": &"upgrade_generator",
-		&"name": "Reactor Mk2",
-		&"cost": 4200,
-		&"icon": "res://assets/icons/equip/icon_equip_generator_48.png",
-		&"slot": &"generator",
-		&"effect": {"shield_regen": 0.30, "energy_regen": 0.20},
-		&"description": "Bigger reactor. Faster shield and capacitor recovery.",
-	},
-	{
-		&"id": &"upgrade_shield",
-		&"name": "Shield Amplifier",
-		&"cost": 5200,
-		&"icon": "res://assets/icons/equip/icon_equip_shield_gen_48.png",
-		&"slot": &"shield",
-		&"effect": {"shield_max": 0.20},
-		&"description": "Amplified emitter geometry. Twenty percent more shield.",
-	},
-	{
-		&"id": &"upgrade_engine",
-		&"name": "Ion Drive",
-		&"cost": 3800,
-		&"icon": "res://assets/icons/equip/icon_equip_engine_48.png",
-		&"slot": &"engine",
-		&"effect": {"speed": 0.15},
-		&"description": "Ion thruster refit. Fifteen percent more top speed.",
-	},
-	{
-		&"id": &"upgrade_module",
-		&"name": "Deep Scanner",
-		&"cost": 4600,
-		&"icon": "res://assets/icons/equip/icon_equip_module_48.png",
-		&"slot": &"module",
-		&"effect": {"scanner_range": 0.25},
-		&"description": "Long range sensor array. Finds contacts before they find you.",
-	},
-	{
-		&"id": &"upgrade_extra",
-		&"name": "Cargo Expansion",
-		&"cost": 3000,
-		&"icon": "res://assets/icons/equip/icon_equip_extra_48.png",
-		&"slot": &"extra",
-		&"effect": {"cargo_max": 0.25},
-		&"description": "Collapsible hold extension. Twenty five percent more cargo space.",
-	},
-	{
-		&"id": &"upgrade_drone",
-		&"name": "Repair Drone Bay",
-		&"cost": 6800,
-		&"icon": "res://assets/icons/equip/icon_equip_drone_48.png",
-		&"slot": &"drone",
-		&"effect": {"hull_repair_rate": 0.50},
-		&"description": "Autonomous repair drones. The hull mends itself while you fight.",
-	},
-]
-
 ## Station services (14 section 1, as amended 2026-09-20; owner ruling 2026-09-21):
 ## refuel and recharge are offered at **every** station, free and instant. The
 ## ruling retired the CR-per-fuel-point rate, so these rows carry no price at all —
@@ -265,20 +205,12 @@ static func ship(id: StringName) -> Dictionary:
 	return _find(SHIPS, id)
 
 
-static func upgrade(id: StringName) -> Dictionary:
-	return _find(UPGRADES, id)
-
-
 static func ammo_ids() -> Array[StringName]:
 	return _ids(AMMO_PACKS)
 
 
 static func ship_ids() -> Array[StringName]:
 	return _ids(SHIPS)
-
-
-static func upgrade_ids() -> Array[StringName]:
-	return _ids(UPGRADES)
 
 
 static func service_ids() -> Array[StringName]:

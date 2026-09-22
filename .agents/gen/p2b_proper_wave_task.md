@@ -77,7 +77,6 @@ lineage notes already name each one's successor module (§2's table below).
 ```gdscript
 ## autoload/player_profile.gd — additive beyond §12's pin.
 const SAVE_VERSION := 5              # was 4; a v4 file still reads (MIN_READABLE_VERSION 1)
-const FIT_MANDATORY_KEYS: Array[StringName] = [&"engines", &"power"]   # 09 §4.1
 const LEGACY_UPGRADE_MODULES: Dictionary = {          # the six-row retirement table, 09's own
     &"upgrade_generator": &"p_mk2",   &"upgrade_shield": &"s_heavy",
     &"upgrade_engine":    &"e_ion",   &"upgrade_module": &"c_scanner",
@@ -96,8 +95,8 @@ func fit_module_at(ship_id: StringName, slot_key: StringName, index: int,
     # set_fit_slot(ship_id, slot_key, index, module_id); one Log.append(EVENT_FIT_MODULE,
     # module_id, 1, 0, credits) line; profile_changed(&"fits") and (&"modules").
 func clear_fit_slot(ship_id: StringName, slot_key: StringName, index: int) -> bool
-    # The composed remove. Same guards, plus: a key in FIT_MANDATORY_KEYS is always
-    # refused (09 §4.1's mandatory set is never empty). The cell's module returns to
+    # The composed remove. Same guards, plus: a key in FitData.MANDATORY_SLOT_KEYS is
+    # always refused (09 §4.1's mandatory set is never empty). The cell's module returns to
     # the inventory with add_module; the cell is written &""; one log line
     # (EVENT_FIT_MODULE with a negative qty is not used — use the module id, qty 1,
     # delta 0 and let the caller's footer carry the words); emits both keys.
@@ -110,7 +109,10 @@ func retire_legacy_upgrades() -> int
 
 **Rules the pin fixes, so no worker has to choose:**
 
-1. **The migration is a one-way door.** A v4 file with all six upgrades installed loads as
+1. **The mandatory-key list is not re-declared.** `FitData.MANDATORY_SLOT_KEYS`
+   (`game/ship_fit.gd:117`, `[&"engines", &"power"]`) is the one source, exactly as
+   `FitData.FIT_SLOT_KEYS` already is at `player_profile.gd:456`.
+2. **The migration is a one-way door.** A v4 file with all six upgrades installed loads as
    six inventory modules (one each) and no upgrade records; a v5 file has no `upgrades`
    record at all. `has_upgrade` / `installed_upgrades` / `install_upgrade` and the
    `upgrades` key are **removed** from the profile; a v1–v3 file still loads (it never had
@@ -181,7 +183,7 @@ func retire_legacy_upgrades() -> int
 | ID | Role | `VAJB_WORKER_FILES` | Deliverable |
 |---|---|---|---|
 | **D0** | docs | `docs/` | `STATION_HUB.md` §5.3 becomes **FITTING** verbatim from §3.2 (UPGRADES' retirement recorded with its reversal), §5.4 gains §3.3's rows, §5.2 gains the hover line, §7.1's art map notes the FITTING rail entry reusing the retired icon; `09_ship_slots_modules.md` §4 gains the per-slot/mandatory-swap rules and §7 the retirement note; `10_ship_acquisition.md` §6's interim note names FITTING as the install surface; `15_module_affixes.md` gains the dated note that affixes are the next wave; `CONTRACTS.md` gains **§13** verbatim from §3 plus the v0.5 changelog line (and §9's expected gate figure moves when R1 measures it). No code, no number beyond the transcription. |
-| **W1** | coder — profile & retirement | `vajb-orbit/autoload/player_profile.gd,vajb-orbit/game/station_catalog.gd,vajb-orbit/tests/` | §3.1 exactly: `SAVE_VERSION` 5, `LEGACY_UPGRADE_MODULES`, `FIT_MANDATORY_KEYS`, `EVENT_FIT_MODULE`, `fit_module_at`, `clear_fit_slot`, `retire_legacy_upgrades`; the six legacy rows, `upgrade()`, `upgrade_ids()`, `has_upgrade`, `installed_upgrades`, `install_upgrade` and the `upgrades` key go; tests: the v4 fixture migration (all six → six modules, idempotent), the composed install/swap/remove round trip, the mandatory refusal, the not-owned refusal, the power refusal. |
+| **W1** | coder — profile & retirement | `vajb-orbit/autoload/player_profile.gd,vajb-orbit/game/station_catalog.gd,vajb-orbit/tests/` | §3.1 exactly: `SAVE_VERSION` 5, `LEGACY_UPGRADE_MODULES`, `EVENT_FIT_MODULE`, `fit_module_at`, `clear_fit_slot`, `retire_legacy_upgrades`; the six legacy rows, `upgrade()`, `upgrade_ids()`, `has_upgrade`, `installed_upgrades`, `install_upgrade` and the `upgrades` key go; tests: the v4 fixture migration (all six → six modules, idempotent), the composed install/swap/remove round trip, the mandatory refusal, the not-owned refusal, the power refusal. |
 | **W2** | coder — the FITTING pane | `vajb-orbit/ui/station/fitting_panel.gd,vajb-orbit/ui/station/fitting_panel.tscn,vajb-orbit/ui/station/upgrades_panel.gd,vajb-orbit/ui/station/upgrades_panel.tscn,vajb-orbit/ui/screens/station.gd,vajb-orbit/tests/` | §3.2: the pane, the rail swap (`Module.FITTING`), the deleted UPGRADES pane, the power meter, the refusals, the focus order, the empty state; tests: the grid renders the active hull's cells (gaps included), a per-cell install targets **that** cell, the swap returns the displaced module, the mandatory cell refuses with the pinned wording, the meter's numbers equal `fit_legal`'s. |
 | **W3** | coder — shipyard hover & LAUNCH services | `vajb-orbit/ui/station/shipyard_panel.gd,vajb-orbit/ui/station/launch_panel.gd,vajb-orbit/tests/` | §3.2's hover line on the shipyard's plates (owner request 1) and §3.3's REFUEL/RECHARGE rows (owner request 4); tests: the hover line's text for a fitted cell, an empty cell and an unknown hull; refuel/recharge success and the full-tank refusal rendered. |
 | **R1** | coder — reviewer (**mandatory**) | `vajb-orbit/tests/,vajb-orbit/tools/` | Verify, never trust: re-run W1/W2/W3's probes byte-identically; re-measure the migration (build the v4 fixture yourself), the composed round trip, the mandatory refusal, the meter's arithmetic against `fit_legal`, the rail swap, the two service calls, and the shipyard hover; confirm the six legacy rows are gone from the catalogue and the panel; grep CONTRACTS §11/§12/§13 for drift; confirm no §13/§8 value moved and no weapon/engine/power number changed; tier HIGH/MED/LOW with the exact command and raw output; LOW → `.agents/gen/LOW_BACKLOG.md`. |

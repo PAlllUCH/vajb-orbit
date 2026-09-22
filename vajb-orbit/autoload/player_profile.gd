@@ -1,5 +1,5 @@
 extends Node
-## Persistent account state: credits, owned ships, upgrades, cargo, ammo.
+## Persistent account state: credits, owned ships, modules, cargo, ammo.
 ## No class_name: the autoload is named PlayerProfile, and Godot rejects a
 ## global class that hides an autoload singleton (parse error at registration).
 ## Contract: docs/design/STATION_SPEC.md.
@@ -14,6 +14,13 @@ extends Node
 ## capacity and is never rewritten at load, while a write persists the array
 ## shape. Version 1 to 3 files still load; a key they never wrote comes up at
 ## its default, with no warning, and writes always persist save_version 4.
+## P2-B proper save v5 retires the pre-module `upgrades` record (09 section 4
+## item 13, CONTRACTS section 13): a file below v5 has its installed upgrades
+## converted to one inventory module each by `retire_legacy_upgrades`, called
+## from the load path right after the record is read, and the key goes; a v5
+## file carries no `upgrades` key at all and a v1-v3 file never had one. The
+## same save adds the two composed fitting transactions of the FITTING panel's
+## per-cell install and remove, `fit_module_at` and `clear_fit_slot`.
 ## Test and support hooks, present for the P1 suites and migration fixtures
 ## only: save_path (defaults to SAVE_FILE) and reload().
 
@@ -34,15 +41,19 @@ const Log := preload("res://game/economy_log.gd")
 
 const SAVE_FILE := "user://profile.cfg"
 const SECTION := "profile"
-const SAVE_VERSION := 4
+const SAVE_VERSION := 5
 const MIN_READABLE_VERSION := 1
 const SAVE_DEBOUNCE_SECONDS := 0.5
 
 const KEY_CREDITS: StringName = &"credits"
 const KEY_AMMO: StringName = &"ammo"
 const KEY_SHIPS: StringName = &"ships"
-const KEY_UPGRADES: StringName = &"upgrades"
 const KEY_CARGO: StringName = &"cargo"
+
+## The retired `upgrades` key (save v5): every id in the record is converted to
+## one inventory module and the key is dropped. No live writer or reader of it
+## survives the migration, and `_write_profile` no longer persists it.
+const KEY_RETIRED_UPGRADES: String = "upgrades"
 
 ## Signal keys added by P1 (17 section 3). Every other new key persists silently.
 const KEY_MODULES: StringName = &"modules"
@@ -75,8 +86,21 @@ const REASON_ALREADY_OWNED: StringName = &"already_owned"
 const REASON_UNKNOWN: StringName = &"unknown_id"
 
 ## 01 section 7 log vocabulary, plus the P2-B1 module purchase (CONTRACTS
-## section 12): one line per module bought into the inventory.
+## section 12): one line per module bought into the inventory, and the P2-B
+## fitting transactions (CONTRACTS section 13): one line per installed or
+## removed cell.
 const EVENT_BUY_MODULE := "BUY_MODULE"
+const EVENT_FIT_MODULE := "FIT_MODULE"
+
+## The save v5 retirement table (CONTRACTS section 13), 09 section 4 item 13's
+## one-way door: each of the six retired `StationCatalog.UPGRADES` rows names the
+## module that carries its effect, per 09's own lineage rows and 10 section 5.
+## `retire_legacy_upgrades` is its one reader.
+const LEGACY_UPGRADE_MODULES: Dictionary = {
+	&"upgrade_generator": &"p_mk2",   &"upgrade_shield": &"s_heavy",
+	&"upgrade_engine":    &"e_ion",   &"upgrade_module": &"c_scanner",
+	&"upgrade_extra":     &"u_cargo", &"upgrade_drone":  &"u_drones",
+}
 
 const DEFAULT_CREDITS := 10000
 const DEFAULT_SHIP: StringName = &"ship_vanguard"
@@ -102,11 +126,9 @@ var _dirty := false
 var _credits := DEFAULT_CREDITS
 var _owned_ships: Array[StringName] = []
 var _active_ship: StringName = DEFAULT_SHIP
-var _upgrades: Array[StringName] = []
 var _cargo: Dictionary = {}
 var _ammo: Dictionary = {}
 var _known_ships: Dictionary = {}
-var _known_upgrades: Dictionary = {}
 
 var _modules: Dictionary = {}
 var _fits: Dictionary = {}
@@ -235,28 +257,6 @@ func set_active_ship(ship_id: StringName) -> bool:
 	return true
 
 
-func has_upgrade(upgrade_id: StringName) -> bool:
-	return _upgrades.has(upgrade_id)
-
-
-func installed_upgrades() -> Array[StringName]:
-	var upgrades: Array[StringName] = []
-	upgrades.append_array(_upgrades)
-	return upgrades
-
-
-func install_upgrade(upgrade_id: StringName, cost: int) -> bool:
-	if not _known_upgrades.has(upgrade_id) or cost < 0:
-		return _refuse(REASON_UNKNOWN, upgrade_id)
-	if _upgrades.has(upgrade_id):
-		return _refuse(REASON_ALREADY_OWNED, upgrade_id)
-	if not _charge(cost):
-		return _refuse(REASON_INSUFFICIENT, upgrade_id)
-	_upgrades.append(upgrade_id)
-	_touch(KEY_UPGRADES)
-	return true
-
-
 func cargo_qty(item_id: StringName) -> int:
 	return int(_cargo.get(item_id, 0))
 
@@ -366,8 +366,8 @@ func take_module(module_id: StringName, count: int = 1) -> bool:
 
 
 ## Buy one module into the inventory (CONTRACTS section 12, P2-B1). `cost` is the
-## catalogue's own price, passed by the caller exactly as `buy_ammo`, `buy_ship`
-## and `install_upgrade` take theirs (17 section 5 item 4 keeps the price in the
+## catalogue's own price, passed by the caller exactly as `buy_ammo` and
+## `buy_ship` take theirs (17 section 5 item 4 keeps the price in the
 ## catalogue and out of the UI, so the one caller that reads it passes it in).
 ## 17 section 5's transaction law, all-or-nothing: verify (an id the catalogue
 ## does not ship, or a negative cost, is `unknown_id`), charge
@@ -418,6 +418,22 @@ func fit_for(ship_id: StringName) -> Dictionary:
 		return {}
 	var stored := _fit_entry(ship_id)
 	return _normalise_fit(ship_id, stored, stored, true)
+
+
+## The fit this hull would launch with, in `fit_for`'s own shape: the account's
+## stored fit when it holds any module at all, and 09 section 9's
+## `ShipFit.standard_fit` otherwise. That is the launch's own fallback - the
+## launch resolves the hull's stored fit and hands the empty one to
+## `ShipFit.standard_fit` (`game.gd:_launch_fit_for`) - so a caller that previews
+## against this accessor previews against the fit the launch flies, and the two
+## composed transactions below compose their candidate from the same shape.
+## `{}` still comes back for a hull outside the nine, exactly as `fit_for`
+## answers it (an NPC hull fits nothing).
+func resolved_fit(ship_id: StringName) -> Dictionary:
+	var stored := fit_for(ship_id)
+	if _holds_a_module(stored):
+		return stored
+	return FitData.standard_fit(ship_id)
 
 
 ## Replace one hull's whole fit. Every type is normalised to the hull's own
@@ -482,6 +498,110 @@ func clear_fit(ship_id: StringName) -> void:
 		return
 	_fits.erase(key)
 	_touch(KEY_FITS)
+
+
+## The composed install behind the FITTING panel's ACTION (09 section 4 item 9,
+## CONTRACTS section 13): one cell of one hull, filled out of the module
+## inventory, in one transaction. Refused, with nothing written, when the hull is
+## not one of the nine, the slot key is not in `FitData.FIT_SLOT_KEYS`, the index
+## is outside 0 .. `slot_capacity`-1, the account holds no `module_id`, or the
+## candidate fit fails `FitData.fit_legal` - the candidate being
+## `resolved_fit(ship_id)` (the launch's own fallback, see above) with that one
+## cell set to `module_id`, so the panel's preview of the same cell is judged on
+## exactly the fit this call writes.
+##
+## On success, in this order: the displaced module, when the cell was not empty,
+## returns to the inventory with `add_module` (so a swap can never lose it);
+## `take_module` takes the incoming one; the candidate is written whole with
+## `set_fit` - the launch's fit with that one cell set, which is the same write
+## `set_fit_slot` makes once that fit is the stored one, and a hull with no stored
+## fit keeps the launch's mandatory cells instead of being left a one-module fit
+## that would fly lacking them; one `EVENT_FIT_MODULE` line goes to the economy
+## log; and the fit and the inventory both signal. Every refusal precedes every
+## write, so a refused transaction leaves the credits, the inventory and the fit
+## exactly as they were.
+func fit_module_at(
+	ship_id: StringName, slot_key: StringName, index: int, module_id: StringName
+) -> bool:
+	if not _fit_cell_exists(ship_id, slot_key, index):
+		return false
+	if module_count(module_id) == 0:
+		return false
+	var base := resolved_fit(ship_id)
+	var candidate := _with_cell(base, slot_key, index, module_id)
+	if not bool(FitData.fit_legal(ship_id, candidate)[&"legal"]):
+		return false
+	var stored := _fit_entry(ship_id)
+	var displaced := StringName(_cell_id(fit_for(ship_id), slot_key, index))
+	if displaced != &"":
+		add_module(displaced, 1)
+	take_module(module_id, 1)
+	set_fit(ship_id, candidate)
+	_announce_fit(ship_id, stored)
+	Log.append(EVENT_FIT_MODULE, module_id, 1, 0, _credits)
+	return true
+
+
+## The composed remove behind the FITTING panel's per-cell ACTION (09 section 4
+## item 10, CONTRACTS section 13): the cell's module goes back to the inventory
+## with `add_module` and the cell is written `&""`. The hull, slot-key and index
+## guards are `fit_module_at`'s, plus the mandatory set: a key in
+## `FitData.MANDATORY_SLOT_KEYS` is refused before anything else, so the engines
+## and the reactor of a delivered hull can be swapped but never emptied (09
+## section 4.1). A cell that holds nothing is refused too - there is no module to
+## return, and the log line the success path owes would be a phantom one.
+##
+## The cell's own module is read from the stored fit (`fit_for`), not from the
+## launch's: only a module the stored fit holds goes back to the inventory, so
+## this call can never hand over a delivered module the account has not got. The
+## candidate the write persists is composed from `resolved_fit(ship_id)` instead
+## - the launch's own fallback, `fit_module_at`'s own read - so both transactions
+## judge the shape the panel previews. Anywhere the read above succeeds the stored
+## fit holds a module, so the two reads are the same fit and this write is the
+## `set_fit_slot` write, whole.
+##
+## On success: the module back, the cell empty, one `EVENT_FIT_MODULE` line (the
+## module id, qty 1, delta 0 - the log's own shape; the panel's footer carries
+## the words), and both keys signal.
+func clear_fit_slot(ship_id: StringName, slot_key: StringName, index: int) -> bool:
+	if not _fit_cell_exists(ship_id, slot_key, index):
+		return false
+	if FitData.MANDATORY_SLOT_KEYS.has(slot_key):
+		return false
+	var module_id := StringName(_cell_id(fit_for(ship_id), slot_key, index))
+	if module_id == &"":
+		return false
+	var candidate := _with_cell(resolved_fit(ship_id), slot_key, index, &"")
+	if not bool(FitData.fit_legal(ship_id, candidate)[&"legal"]):
+		return false
+	var stored := _fit_entry(ship_id)
+	add_module(module_id, 1)
+	set_fit(ship_id, candidate)
+	_announce_fit(ship_id, stored)
+	Log.append(EVENT_FIT_MODULE, module_id, 1, 0, _credits)
+	return true
+
+
+## The save v5 migration and its one-way door (09 section 4 item 13, CONTRACTS
+## section 13 rule 2). Every pre-module upgrade the loaded file still records
+## becomes one inventory module through `LEGACY_UPGRADE_MODULES`, and the retired
+## key is dropped from the loaded file as well, so the next write cannot put it
+## back. Answers how many were migrated: 0 for a file that carries no record
+## (every v5 file, and a v1-v3 file, which never had the key), and 0 again on a
+## second call - which is the idempotence the pin asks for. `_load_profile` is
+## its only caller, for a file whose save_version is below 5.
+func retire_legacy_upgrades() -> int:
+	var migrated := 0
+	for upgrade_id: StringName in _legacy_upgrade_ids():
+		var module_id: StringName = LEGACY_UPGRADE_MODULES.get(upgrade_id, &"")
+		if module_id == &"":
+			continue
+		add_module(module_id, 1)
+		migrated += 1
+	if _config.has_section_key(SECTION, KEY_RETIRED_UPGRADES):
+		_config.erase_section_key(SECTION, KEY_RETIRED_UPGRADES)
+		_mark_dirty()
+	return migrated
 
 
 func standing() -> Dictionary:
@@ -631,7 +751,6 @@ func reset_to_defaults() -> void:
 	_touch(KEY_CREDITS)
 	_touch(KEY_AMMO)
 	_touch(KEY_SHIPS)
-	_touch(KEY_UPGRADES)
 	_touch(KEY_CARGO)
 
 
@@ -670,15 +789,10 @@ func _charge(cost: int) -> bool:
 
 func _load_catalog() -> void:
 	_known_ships.clear()
-	_known_upgrades.clear()
 	for entry: Dictionary in Catalog.SHIPS:
 		var ship_id: StringName = entry.get(&"id", &"")
 		if ship_id != &"":
 			_known_ships[ship_id] = true
-	for entry: Dictionary in Catalog.UPGRADES:
-		var upgrade_id: StringName = entry.get(&"id", &"")
-		if upgrade_id != &"":
-			_known_upgrades[upgrade_id] = true
 
 
 func _load_profile() -> void:
@@ -704,6 +818,12 @@ func _load_profile() -> void:
 	# Version 1 is a migration read: keys it never wrote fall back to their
 	# defaults silently. Writes always persist SAVE_VERSION.
 	_read_values()
+	# Save v5's flag day (CONTRACTS section 13): the retired `upgrades` record a
+	# v1-v4 file carries is converted to inventory modules right after it was
+	# read, and the key goes with it. 5 is the pin's own threshold; a file that
+	# already is v5 has no record to convert and the call answers 0.
+	if version < 5:
+		retire_legacy_upgrades()
 
 
 func _apply_defaults() -> void:
@@ -711,7 +831,6 @@ func _apply_defaults() -> void:
 	_owned_ships.clear()
 	_owned_ships.append(DEFAULT_SHIP)
 	_active_ship = DEFAULT_SHIP
-	_upgrades.clear()
 	_cargo.clear()
 	_ammo.clear()
 	for weapon: StringName in AMMO_MAX:
@@ -737,8 +856,6 @@ func _read_values() -> void:
 	_active_ship = StringName(str(_config.get_value(SECTION, "active_ship", DEFAULT_SHIP)))
 	if not _owned_ships.has(_active_ship):
 		_active_ship = _owned_ships[0]
-	_upgrades.clear()
-	_upgrades.append_array(_read_names("upgrades"))
 	_cargo = _read_qty("cargo")
 	_ammo = _read_qty("ammo")
 	for weapon: StringName in AMMO_MAX:
@@ -776,6 +893,31 @@ func _read_names(key: String) -> Array[StringName]:
 		if entry_name != &"":
 			names.append(entry_name)
 	return names
+
+
+## The installed upgrades a pre-v5 file still records, for `retire_legacy_upgrades`
+## (CONTRACTS section 13). The shipped shape is the Array of ids `_write_profile`
+## used to persist; a record written as a dictionary of flags reads as its truthy
+## keys, so the migration's own wording ("every id whose value is true") covers
+## both spellings of a hand-built fixture.
+func _legacy_upgrade_ids() -> Array[StringName]:
+	var ids: Array[StringName] = []
+	if not _config.has_section_key(SECTION, KEY_RETIRED_UPGRADES):
+		return ids
+	var raw: Variant = _config.get_value(SECTION, KEY_RETIRED_UPGRADES)
+	if raw is Dictionary:
+		var record: Dictionary = raw
+		for key: Variant in record:
+			if bool(record[key]):
+				var flagged := StringName(str(key))
+				if flagged != &"":
+					ids.append(flagged)
+	elif raw is Array:
+		for value: Variant in raw:
+			var listed := StringName(str(value))
+			if listed != &"":
+				ids.append(listed)
+	return ids
 
 
 func _read_qty(key: String) -> Dictionary:
@@ -861,6 +1003,78 @@ func _filed_fuel(stored: Variant) -> int:
 	if not record.has("fuel"):
 		return FUEL_UNFILED
 	return int(record["fuel"])
+
+
+## The hull/slot/index half of the two composed transactions' guards (CONTRACTS
+## section 13): a hull that is not one of the nine, a slot key outside
+## `FitData.FIT_SLOT_KEYS`, and an index outside 0 .. `slot_capacity`-1 are all
+## refusals, named once so the install and the remove cannot drift apart. A gap
+## in the grid is not a cell of any type, so it never takes an index.
+func _fit_cell_exists(ship_id: StringName, slot_key: StringName, index: int) -> bool:
+	if not FitData.HULLS.has(ship_id) or not FitData.FIT_SLOT_KEYS.has(slot_key):
+		return false
+	return index >= 0 and index < FitData.slot_capacity(ship_id, slot_key)
+
+
+## One cell's module id out of a fit in `fit_for`'s shape: the id at the cell's
+## layout index, `""` for an empty cell. POWER is the one scalar slot type (09
+## section 4.5 rule 1), so its one id is the whole answer.
+static func _cell_id(fit: Dictionary, slot_key: StringName, index: int) -> String:
+	if slot_key == POWER_SLOT:
+		return String(fit.get(slot_key, ""))
+	var cells: Array = fit.get(slot_key, [])
+	if index < 0 or index >= cells.size():
+		return ""
+	return String(cells[index])
+
+
+## `resolved_fit`'s answer with one cell set - the candidate `fit_module_at` and
+## `clear_fit_slot` hand to `FitData.fit_legal` and then write whole. Deep-copied,
+## so the caller's fit is never touched by the preview. The cell's own type grows
+## to its layout index when the fit does not carry that many cells yet, which is
+## the shape a launch-fallback fit arrives in: 09 section 9's
+## `ShipFit.standard_fit` names only the types the hull is delivered with, so a
+## cell of a type it leaves out is composed here rather than read. POWER is the
+## one scalar slot type (09 section 4.5 rule 1), so it is one id, not a cell.
+static func _with_cell(
+	fit: Dictionary, slot_key: StringName, index: int, module_id: StringName
+) -> Dictionary:
+	var candidate := fit.duplicate(true)
+	if slot_key == POWER_SLOT:
+		candidate[slot_key] = String(module_id)
+		return candidate
+	var cells: Array = candidate.get(slot_key, candidate.get(String(slot_key), []))
+	while cells.size() <= index:
+		cells.append("")
+	cells[index] = String(module_id)
+	candidate[slot_key] = cells
+	return candidate
+
+
+## Whether a fit holds any module at all, either key spelling, in `fit_for`'s own
+## shape: the launch's own test, so an all-empty stored fit resolves to the
+## standard fit on both sides. `resolved_fit` is its only caller.
+static func _holds_a_module(fit: Dictionary) -> bool:
+	for key: StringName in FitData.FIT_SLOT_KEYS:
+		var raw: Variant = fit.get(key, fit.get(String(key), null))
+		if raw is Array:
+			for entry: Variant in raw as Array:
+				if String(entry) != "":
+					return true
+		elif raw is String or raw is StringName:
+			if String(raw) != "":
+				return true
+	return false
+
+
+## `set_fit` is silent when the write changes nothing - the no-op contract every
+## setter here keeps - so a composed transaction announces the fits key itself in
+## that one case; `before` is the stored fit taken ahead of the write. The normal
+## path signals exactly once, from the candidate that transaction writes whole,
+## and never twice.
+func _announce_fit(ship_id: StringName, before: Dictionary) -> void:
+	if _fit_entry(ship_id) == before:
+		profile_changed.emit(KEY_FITS)
 
 
 ## One inventory record (15 section 6), or an empty dictionary for an id the
@@ -1025,7 +1239,6 @@ func _write_profile() -> void:
 	_config.set_value(SECTION, "credits", _credits)
 	_config.set_value(SECTION, "owned_ships", _names_to_strings(_owned_ships))
 	_config.set_value(SECTION, "active_ship", String(_active_ship))
-	_config.set_value(SECTION, "upgrades", _names_to_strings(_upgrades))
 	_config.set_value(SECTION, "cargo", _keys_to_strings(_cargo))
 	_config.set_value(SECTION, "ammo", _keys_to_strings(_ammo))
 	_config.set_value(SECTION, "modules", _modules)
