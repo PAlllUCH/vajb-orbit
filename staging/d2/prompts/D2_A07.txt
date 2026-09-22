@@ -1,0 +1,43 @@
+You are hand-authoring flat SVG icon masters for the grimdark sci-fi game Vajb Orbit.
+This is careful, detailed icon work - take the time to design each glyph properly.
+Write EXACTLY the files listed below, at the exact paths given, and nothing else.
+No reports, no README, no extra files, no changes to existing files.
+
+HARD RULES - a validator rejects any violation:
+1. Root element exactly: <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+2. Fills only. Never use stroke. No gradients, no filters, no text, no embedded
+   images, no opacity below 1. Solid flat colours only.
+3. Shapes: path, rect, circle, ellipse, polygon. A wrapper like <g fill="...">
+   is fine. Use fill-rule="evenodd" for holes and cutouts.
+4. Colours: at most TWO distinct colours per file, only from this set:
+   #C9CDD2 (default body), #8D939B, #565C63, #3A3F46, #2B2F35, #232629.
+   In EMBER OK files only, ONE ember tone #C8461B or #E8703A is allowed as the
+   second colour. Never invent another colour.
+5. The 96 grid: 1 unit = 1 px at the 96 px render. Use integer or .5
+   coordinates within the 0..96 canvas. DETAIL LEVEL: 8 to 14 flat shapes per
+   icon - a bold outer silhouette plus layered interior plates, seams, bolts or
+   marks. The style reference is the SIMPLICITY FLOOR, not the ceiling: go
+   clearly more detailed than it. Keep the outer silhouette thick enough to read
+   at 16 px (identity-carrying features at least 5 units); interior detail may
+   go down to 2 units. Symmetric subjects use mirrored coordinates.
+6. Style reference file: staging/d2/style_ref_rocket.svg - same construction
+   style (flat fills, evenodd cutouts, hard industrial geometry), but on the 96
+   grid and more detailed. The listed master PNG shows the current artwork:
+   take the SUBJECT and the silhouette and design a crisp flat symbol from it -
+   never trace pixel noise, texture or shading.
+
+FILES - one line per output: path | subject | detail | shape note | master PNG
+
+BATCH NOTE: Ship-module glyphs, classes h hull, p power, s shield. Shared module family language: layered plated silhouettes, distinct outer shape per class.
+
+- staging/d2/svg/icon_module_h_composite.svg | subject: module icon | white geometric shapes on black | master: vajb-orbit/assets/icons/module/icon_module_h_composite.png | steel only
+- staging/d2/svg/icon_module_h_plate_heavy.svg | subject: heavy armor plate | hexagonal black plate holes | master: vajb-orbit/assets/icons/module/icon_module_h_plate_heavy.png | steel only
+- staging/d2/svg/icon_module_h_plate_light.svg | subject: h plate icon | white diagonal stripes symbol | master: vajb-orbit/assets/icons/module/icon_module_h_plate_light.png | steel only
+- staging/d2/svg/icon_module_p_core.svg | subject: core module icon | hexagonal silhouette with corner notches | master: vajb-orbit/assets/icons/module/icon_module_p_core.png | steel only
+- staging/d2/svg/icon_module_p_mk2.svg | subject: ship module icon | black white geometric module | master: vajb-orbit/assets/icons/module/icon_module_p_mk2.png | steel only
+- staging/d2/svg/icon_module_p_std.svg | subject: module icon | black slot with three bars | master: vajb-orbit/assets/icons/module/icon_module_p_std.png | steel only
+- staging/d2/svg/icon_module_s_heavy.svg | subject: heavy module icon | black arched heavy frame | master: vajb-orbit/assets/icons/module/icon_module_s_heavy.png | steel only
+- staging/d2/svg/icon_module_s_ion.svg | subject: ion module icon | black arch with slotted core | master: vajb-orbit/assets/icons/module/icon_module_s_ion.png | steel only
+- staging/d2/svg/icon_module_s_light.svg | subject: light module icon | black arch with square feet | master: vajb-orbit/assets/icons/module/icon_module_s_light.png | steel only
+
+Output ONLY the .svg files listed above.

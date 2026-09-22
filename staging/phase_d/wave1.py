@@ -17,7 +17,7 @@ from pathlib import Path
 
 from PIL import Image
 
-WORKSPACE = Path(r"G:/Mój dysk/Projekty/Vajb Orbit")
+WORKSPACE = Path(__file__).resolve().parents[2]
 PROJECT = WORKSPACE / "vajb-orbit"
 STAGE = WORKSPACE / "staging" / "phase_d"
 STYLE_FILE = PROJECT / "assets" / "style-block.txt"

@@ -174,9 +174,9 @@ const STATUS_REMOVED := "REMOVED · %s · BACK IN INVENTORY"
 ## derived icons/tint/ stencil moderated with Tokens/text_primary instead. Every other
 ## catalogue icon is painted and is drawn at full colour.
 const FLAT_GLYPH_ICONS: Array[String] = [
-	"res://assets/icons/weapon/icon_weapon_cannon_48.png",
-	"res://assets/icons/weapon/icon_weapon_mine_48.png",
-	"res://assets/icons/weapon/icon_weapon_plasma_48.png",
+	"res://assets/icons/weapon/icon_weapon_cannon.svg",
+	"res://assets/icons/weapon/icon_weapon_mine.svg",
+	"res://assets/icons/weapon/icon_weapon_plasma.svg",
 ]
 const TINT_DIR := "res://assets/icons/tint/"
 
@@ -456,6 +456,8 @@ func _is_flat_glyph(icon_path: String) -> bool:
 
 
 func _icon_source(icon_path: String) -> String:
+	if icon_path.ends_with(".svg"):
+		return icon_path
 	if not _is_flat_glyph(icon_path):
 		return icon_path
 	return TINT_DIR + icon_path.get_file()

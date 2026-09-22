@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="#C9CDD2">
+    <path fill-rule="evenodd" d="M12 18 H84 L54 48 H42 Z M26 22 H70 V30 H26 Z"/>
+    <path d="M34 34 H62 L56 44 H40 Z" fill="#565C63"/>
+    <rect x="42" y="46" width="12" height="10"/>
+    <path d="M24 56 H72 L78 62 V74 L72 80 H24 L18 74 V62 Z"/>
+    <rect x="24" y="62" width="48" height="4" fill="#565C63"/>
+    <rect x="24" y="72" width="48" height="4" fill="#565C63"/>
+    <circle cx="26" cy="68" r="2" fill="#565C63"/>
+    <circle cx="70" cy="68" r="2" fill="#565C63"/>
+    <path d="M42 80 H54 L52 90 H44 Z"/>
+    <rect x="44" y="86" width="8" height="4" fill="#565C63"/>
+  </g>
+</svg>

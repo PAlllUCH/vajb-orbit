@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://ui/station/refinery_panel.gd" id="1_refinery"]
-[ext_resource type="Texture2D" path="res://assets/icons/tint/icon_cargo_ore_48.png" id="2_pane_icon"]
+[ext_resource type="Texture2D" path="res://assets/icons/cargo/icon_cargo_ore.svg" id="2_pane_icon"]
 
 [node name="Refinery" type="VBoxContainer"]
 unique_name_in_owner = true

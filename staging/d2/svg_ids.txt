@@ -1,0 +1,20 @@
+# D2 icon unification - the SVG list.
+# Write the global cell IDs (from the mark sheets, #1..#274) that must be
+# remade as SVG masters. Format: integers separated by spaces, commas or
+# newlines. Lines starting with # are comments. Ranges are NOT supported -
+# list every ID (a range line is reported and skipped).
+# Everything NOT listed keeps ONE raster master in Phase C (all size
+# variants are deleted either way; an X'd symbol's tint stencils die too).
+#
+# Example:
+#   1 2 3 4 5 6 7 8        # slot glyphs
+#   9 10 11 12 13          # contracts
+#
+1 to 30,
+31,
+34 to 60,
+61 to 90,
+91 to 105,
+147 to 149,
+155, 157, 159, 164, 168, 169, 174, 176, 177, 178, 182, 188, 189,
+202, 204, 207, 209, 213, 214, 219, 220, 221, 228, 237, 251, 259, 261, 262, 269,

@@ -44,19 +44,19 @@ const VARIATION_CARGO: StringName = &"SlotButtonCargo"
 const WEAPON_IDS: Array[StringName] = [&"laser", &"cannon", &"rocket", &"mine", &"plasma"]
 const WEAPON_LABELS: Array[String] = ["Laser MkII", "Cannon MkI", "Rocket Pod", "Mine Layer", "Plasma Coil"]
 const WEAPON_ICONS: Array[Texture2D] = [
-	preload("res://assets/icons/tint/icon_weapon_laser_48.png"),
-	preload("res://assets/icons/tint/icon_weapon_cannon_48.png"),
-	preload("res://assets/icons/tint/icon_weapon_rocket_48.png"),
-	preload("res://assets/icons/tint/icon_weapon_mine_48.png"),
-	preload("res://assets/icons/tint/icon_weapon_plasma_48.png"),
+	preload("res://assets/icons/weapon/icon_weapon_laser.svg"),
+	preload("res://assets/icons/weapon/icon_weapon_cannon.svg"),
+	preload("res://assets/icons/weapon/icon_weapon_rocket.svg"),
+	preload("res://assets/icons/weapon/icon_weapon_mine.svg"),
+	preload("res://assets/icons/weapon/icon_weapon_plasma.svg"),
 ]
 const CARGO_ICONS: Array[Texture2D] = [
-	preload("res://assets/icons/tint/icon_cargo_ore_48.png"),
-	preload("res://assets/icons/tint/icon_cargo_crate_48.png"),
-	preload("res://assets/icons/tint/icon_cargo_container_48.png"),
-	preload("res://assets/icons/tint/icon_cargo_fuel_cell_48.png"),
-	preload("res://assets/icons/tint/icon_cargo_salvage_48.png"),
-	preload("res://assets/icons/tint/icon_cargo_data_core_48.png"),
+	preload("res://assets/icons/cargo/icon_cargo_ore.svg"),
+	preload("res://assets/icons/cargo/icon_cargo_crate.svg"),
+	preload("res://assets/icons/cargo/icon_cargo_container.svg"),
+	preload("res://assets/icons/cargo/icon_cargo_fuel_cell.svg"),
+	preload("res://assets/icons/cargo/icon_cargo_salvage.svg"),
+	preload("res://assets/icons/cargo/icon_cargo_data_core.svg"),
 ]
 
 ## CONTRACTS section 11: the weapon grid is rebuilt from the launched hull's own W cells.
@@ -65,7 +65,7 @@ const CARGO_ICONS: Array[Texture2D] = [
 ## from `GROUPS_MAX` on not selectable, because no input group can reach them yet.
 const GROUPS_MAX: int = WeaponComponent.GROUPS_MAX
 ## The empty cell's face: the weapon slot glyph (`icon_slot_w`), dimmed by the icon token.
-const SLOT_GLYPH_WEAPON: Texture2D = preload("res://assets/icons/slot/icon_slot_w_48.png")
+const SLOT_GLYPH_WEAPON: Texture2D = preload("res://assets/icons/slot/icon_slot_w.svg")
 
 const HULL_DANGER_FRACTION: float = 0.25
 const AMMO_DANGER_FRACTION: float = 0.10

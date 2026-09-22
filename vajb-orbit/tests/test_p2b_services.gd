@@ -39,7 +39,7 @@ const PLATE_SEPARATION := 4
 const PLATE_ICON_INSET := 6.0
 const PLATE_VARIATION: StringName = &"SlotButtonWeapon"
 const GLYPH_DIR := "res://assets/icons/slot/"
-const GLYPH_TEMPLATE := "icon_slot_%s_48.png"
+const GLYPH_TEMPLATE := "icon_slot_%s.svg"
 
 ## STATION_HUB section 5.2's own line and section 5.4's report form, transcribed here (not read
 ## off the panels) so a drift in either direction is a red assertion. The caption is the

@@ -38,7 +38,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-WORKSPACE = Path(r"G:/Mój dysk/Projekty/Vajb Orbit")
+WORKSPACE = Path(__file__).resolve().parents[2]
 ASSETS = WORKSPACE / "vajb-orbit" / "assets"
 ICONS = ASSETS / "icons"
 STAGE = WORKSPACE / "staging" / "phase_f"

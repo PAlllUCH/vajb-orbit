@@ -338,7 +338,7 @@ func test_the_rail_entry_is_fitting_and_the_upgrades_pane_is_gone() -> void:
 	assert_eq(StationScript.MODULE_FILES[module], "fitting", "and it loads the FITTING pane")
 	assert_eq(
 		StationScript.MODULE_ICONS[module],
-		"res://assets/icons/equip/icon_equip_generator_48.png",
+		"res://assets/icons/equip/icon_equip_generator.png",
 		"and keeps the retired entry's icon"
 	)
 	assert_eq(StationScript.MODULE_TINTED[module], false, "and its untinted treatment")
@@ -379,7 +379,7 @@ func test_the_rail_entry_is_fitting_and_the_upgrades_pane_is_gone() -> void:
 	if icon != null:
 		assert_eq(
 			icon.texture.resource_path,
-			"res://assets/icons/equip/icon_equip_generator_48.png",
+			"res://assets/icons/equip/icon_equip_generator.png",
 			"the retired entry's own icon, not new art"
 		)
 	var host := screen.get_node("%HostMargin") as MarginContainer
@@ -459,7 +459,7 @@ func test_the_grid_renders_the_active_hulls_cells_with_gaps() -> void:
 		var stem: String = SLOT_GLYPH_STEMS.get(cell[&"type"], "")
 		assert_eq(
 			glyph.texture.resource_path,
-			SLOT_GLYPH_DIR + "icon_slot_%s_48.png" % stem,
+			SLOT_GLYPH_DIR + "icon_slot_%s.svg" % stem,
 			"cell %d draws its type's slot glyph" % index
 		)
 		assert_eq(

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="#C9CDD2">
+    <path fill-rule="evenodd" d="M18 14 L78 14 L90 48 L78 82 L18 82 L6 48 Z M32 32 L64 32 L64 64 L32 64 Z M22 22 L30 22 L30 30 L22 30 Z M66 22 L74 22 L74 30 L66 30 Z M22 66 L30 66 L30 74 L22 74 Z M66 66 L74 66 L74 74 L66 74 Z"/>
+    <rect x="44" y="32" width="8" height="32"/>
+    <rect x="32" y="44" width="32" height="8"/>
+  </g>
+  <g fill="#3A3F46">
+    <rect x="30" y="14" width="36" height="5"/>
+    <rect x="30" y="77" width="36" height="5"/>
+    <polygon points="6,48 17,41 17,55"/>
+    <polygon points="90,48 79,41 79,55"/>
+    <circle cx="38" cy="26" r="2"/>
+    <circle cx="58" cy="26" r="2"/>
+    <circle cx="38" cy="70" r="2"/>
+    <circle cx="58" cy="70" r="2"/>
+  </g>
+</svg>

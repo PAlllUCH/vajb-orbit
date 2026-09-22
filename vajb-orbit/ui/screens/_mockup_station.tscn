@@ -4,12 +4,12 @@
 [ext_resource type="Theme" path="res://ui/theme/vajb_theme.tres" id="2_vajb_theme"]
 [ext_resource type="Texture2D" path="res://assets/ui/ui_backdrop_hangar.png" id="3_hangar"]
 [ext_resource type="NoiseTexture2D" path="res://ui/theme/grain.tres" id="4_grain"]
-[ext_resource type="Texture2D" path="res://assets/icons/map/icon_map_node_station_48.png" id="5_mark"]
-[ext_resource type="Texture2D" path="res://assets/icons/equip/icon_equip_module_48.png" id="6_outfitting"]
-[ext_resource type="Texture2D" path="res://assets/icons/tint/icon_hull_48.png" id="7_shipyard"]
-[ext_resource type="Texture2D" path="res://assets/icons/equip/icon_equip_generator_48.png" id="8_upgrades"]
-[ext_resource type="Texture2D" path="res://assets/icons/map/icon_map_route_48.png" id="9_launch"]
-[ext_resource type="Texture2D" path="res://assets/icons/tint/icon_credits_48.png" id="10_credits"]
+[ext_resource type="Texture2D" path="res://assets/icons/map/icon_map_node_station.png" id="5_mark"]
+[ext_resource type="Texture2D" path="res://assets/icons/equip/icon_equip_module.png" id="6_outfitting"]
+[ext_resource type="Texture2D" path="res://assets/icons/hud/icon_hull.svg" id="7_shipyard"]
+[ext_resource type="Texture2D" path="res://assets/icons/equip/icon_equip_generator.png" id="8_upgrades"]
+[ext_resource type="Texture2D" path="res://assets/icons/map/icon_map_route.png" id="9_launch"]
+[ext_resource type="Texture2D" path="res://assets/icons/cargo/icon_credits.svg" id="10_credits"]
 
 [node name="Station" type="Control"]
 layout_mode = 3

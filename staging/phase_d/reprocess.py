@@ -42,6 +42,8 @@ STYLE_TEXT = STYLE_FILE.read_text(encoding="utf-8").strip()
 
 
 def load_kg():
+    if not Path(SKILL).exists():
+        return None
     spec = importlib.util.spec_from_file_location("kg", SKILL)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://ui/station/launch_panel.gd" id="1_launch"]
-[ext_resource type="Texture2D" path="res://assets/icons/map/icon_map_route_48.png" id="2_pane_icon"]
+[ext_resource type="Texture2D" path="res://assets/icons/map/icon_map_route.png" id="2_pane_icon"]
 
 [node name="Launch" type="VBoxContainer"]
 unique_name_in_owner = true

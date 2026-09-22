@@ -66,7 +66,7 @@ const SLOT_GLYPHS: Dictionary = {
 	&"utility": "u",
 }
 const SLOT_GLYPH_DIR := "res://assets/icons/slot/"
-const SLOT_GLYPH_TEMPLATE := "icon_slot_%s_48.png"
+const SLOT_GLYPH_TEMPLATE := "icon_slot_%s.svg"
 
 const PREVIEW_SCALE := 0.70
 const PREVIEW_MAX_WIDTH := 480.0

@@ -1,0 +1,42 @@
+You are hand-authoring flat SVG icon masters for the grimdark sci-fi game Vajb Orbit.
+This is careful, detailed icon work - take the time to design each glyph properly.
+Write EXACTLY the files listed below, at the exact paths given, and nothing else.
+No reports, no README, no extra files, no changes to existing files.
+
+HARD RULES - a validator rejects any violation:
+1. Root element exactly: <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+2. Fills only. Never use stroke. No gradients, no filters, no text, no embedded
+   images, no opacity below 1. Solid flat colours only.
+3. Shapes: path, rect, circle, ellipse, polygon. A wrapper like <g fill="...">
+   is fine. Use fill-rule="evenodd" for holes and cutouts.
+4. Colours: at most TWO distinct colours per file, only from this set:
+   #C9CDD2 (default body), #8D939B, #565C63, #3A3F46, #2B2F35, #232629.
+   In EMBER OK files only, ONE ember tone #C8461B or #E8703A is allowed as the
+   second colour. Never invent another colour.
+5. The 96 grid: 1 unit = 1 px at the 96 px render. Use integer or .5
+   coordinates within the 0..96 canvas. DETAIL LEVEL: 8 to 14 flat shapes per
+   icon - a bold outer silhouette plus layered interior plates, seams, bolts or
+   marks. The style reference is the SIMPLICITY FLOOR, not the ceiling: go
+   clearly more detailed than it. Keep the outer silhouette thick enough to read
+   at 16 px (identity-carrying features at least 5 units); interior detail may
+   go down to 2 units. Symmetric subjects use mirrored coordinates.
+6. Style reference file: staging/d2/style_ref_rocket.svg - same construction
+   style (flat fills, evenodd cutouts, hard industrial geometry), but on the 96
+   grid and more detailed. The listed master PNG shows the current artwork:
+   take the SUBJECT and the silhouette and design a crisp flat symbol from it -
+   never trace pixel noise, texture or shading.
+
+FILES - one line per output: path | subject | detail | shape note | master PNG
+
+BATCH NOTE: Slot glyphs. These depict slot SOCKETS, not module art, and NO letterform is ever baked into a glyph. Hard industrial geometry, one visual family.
+
+- staging/d2/svg/icon_slot_b.svg | subject: upward chevron icon | white chevron on black | shape: a chevron burst vent | master: vajb-orbit/assets/icons/slot/icon_slot_b.png | steel only
+- staging/d2/svg/icon_slot_c.svg | subject: icon slot | white square corner brackets | shape: a square board with a central node | master: vajb-orbit/assets/icons/slot/icon_slot_c.png | steel only
+- staging/d2/svg/icon_slot_engine.svg | subject: icon slot engine | black trapezoid with white cutouts | shape: a single nozzle block | master: vajb-orbit/assets/icons/slot/icon_slot_engine.png | steel only
+- staging/d2/svg/icon_slot_h.svg | subject: slot icon | three diagonal striped bars | shape: a three-layer plate stack | master: vajb-orbit/assets/icons/slot/icon_slot_h.png | steel only
+- staging/d2/svg/icon_slot_power.svg | subject: power slot icon | three vertical bar slot | shape: a reactor core with three coil bars | master: vajb-orbit/assets/icons/slot/icon_slot_power.png | steel only
+- staging/d2/svg/icon_slot_s.svg | subject: ui slot frame | black arch slot frame | shape: an arc emitter half-ring | master: vajb-orbit/assets/icons/slot/icon_slot_s.png | steel only
+- staging/d2/svg/icon_slot_u.svg | subject: ui slot frame | black bracket style border | shape: an open pod socket with a latch bracket | master: vajb-orbit/assets/icons/slot/icon_slot_u.png | steel only
+- staging/d2/svg/icon_slot_w.svg | subject: icon slot | black angular frame with cut corners | shape: a hardpoint mount with two clamp jaws | master: vajb-orbit/assets/icons/slot/icon_slot_w.png | steel only
+
+Output ONLY the .svg files listed above.

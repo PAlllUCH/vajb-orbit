@@ -1020,6 +1020,17 @@ five base weapons, which use `assets/icons/weapon/icon_weapon_<family>_48.png`
 (`w_laser`→`laser`, `w_cannon`→`cannon`, `w_rocket`→`rocket`, `w_mine`→`mine`,
 `w_plasma`→`plasma`).
 
+**D2 amendment (2026-09-22, icon unification — owner-ruled):** the icon rule above
+keeps its shape but changes extension and loses the size suffix. Every id draws
+`assets/icons/module/icon_module_<id>.svg` (hand-authored SVG master, one per
+symbol, imported at 192 px) except the five base weapons at
+`assets/icons/weapon/icon_weapon_<family>.svg`. The `_48.png` raster bands are
+deleted project-side for the whole SVG-side set; `tests/test_ship_grids.gd`'s
+two-way agreement assert carries the new shape. Reversal: re-point back to the
+raster masters, which are preserved in `asset-library/cut/`
+(`.agents/gen/slices/D2-icon-unification/phase_c_manifest.json`; the cut tree and
+its `_archive` zips live on the Windows mirror).
+
 Name table (pin it in the catalogue; the six lineage rows keep doc 09's own words):
 
 | id | name | id | name | id | name |

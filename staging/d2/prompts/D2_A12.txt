@@ -1,0 +1,44 @@
+You are hand-authoring flat SVG icon masters for the grimdark sci-fi game Vajb Orbit.
+This is careful, detailed icon work - take the time to design each glyph properly.
+Write EXACTLY the files listed below, at the exact paths given, and nothing else.
+No reports, no README, no extra files, no changes to existing files.
+
+HARD RULES - a validator rejects any violation:
+1. Root element exactly: <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+2. Fills only. Never use stroke. No gradients, no filters, no text, no embedded
+   images, no opacity below 1. Solid flat colours only.
+3. Shapes: path, rect, circle, ellipse, polygon. A wrapper like <g fill="...">
+   is fine. Use fill-rule="evenodd" for holes and cutouts.
+4. Colours: at most TWO distinct colours per file, only from this set:
+   #C9CDD2 (default body), #8D939B, #565C63, #3A3F46, #2B2F35, #232629.
+   In EMBER OK files only, ONE ember tone #C8461B or #E8703A is allowed as the
+   second colour. Never invent another colour.
+5. The 96 grid: 1 unit = 1 px at the 96 px render. Use integer or .5
+   coordinates within the 0..96 canvas. DETAIL LEVEL: 8 to 14 flat shapes per
+   icon - a bold outer silhouette plus layered interior plates, seams, bolts or
+   marks. The style reference is the SIMPLICITY FLOOR, not the ceiling: go
+   clearly more detailed than it. Keep the outer silhouette thick enough to read
+   at 16 px (identity-carrying features at least 5 units); interior detail may
+   go down to 2 units. Symmetric subjects use mirrored coordinates.
+6. Style reference file: staging/d2/style_ref_rocket.svg - same construction
+   style (flat fills, evenodd cutouts, hard industrial geometry), but on the 96
+   grid and more detailed. The listed master PNG shows the current artwork:
+   take the SUBJECT and the silhouette and design a crisp flat symbol from it -
+   never trace pixel noise, texture or shading.
+
+FILES - one line per output: path | subject | detail | shape note | master PNG
+
+BATCH NOTE: Ten ingot glyphs. Same bar-family language as the other ingot batch: beveled bar, layered face plus end cap, differentiated only by tier mark.
+
+- staging/d2/svg/icon_ingot_neodymium.svg | subject: neodymium ingot | black rectangular metal bar | master: vajb-orbit/assets/icons/ingot/icon_ingot_neodymium.png | steel only
+- staging/d2/svg/icon_ingot_nickel.svg | subject: nickel ingot | black metal bar icon | master: vajb-orbit/assets/icons/ingot/icon_ingot_nickel.png | steel only
+- staging/d2/svg/icon_ingot_osmium.svg | subject: osmium ingot | black metal bar icon | master: vajb-orbit/assets/icons/ingot/icon_ingot_osmium.png | steel only
+- staging/d2/svg/icon_ingot_palladium.svg | subject: palladium ingot | black white outline bar | master: vajb-orbit/assets/icons/ingot/icon_ingot_palladium.png | steel only
+- staging/d2/svg/icon_ingot_platinum.svg | subject: platinum ingot | black outlined metal bar | master: vajb-orbit/assets/icons/ingot/icon_ingot_platinum.png | steel only
+- staging/d2/svg/icon_ingot_silicon.svg | subject: silicon ingot | stepped black metal bar | master: vajb-orbit/assets/icons/ingot/icon_ingot_silicon.png | steel only
+- staging/d2/svg/icon_ingot_silver.svg | subject: silver ingot | silhouette metal bar icon | master: vajb-orbit/assets/icons/ingot/icon_ingot_silver.png | steel only
+- staging/d2/svg/icon_ingot_titanium.svg | subject: titanium ingot | black metal bar icon | master: vajb-orbit/assets/icons/ingot/icon_ingot_titanium.png | steel only
+- staging/d2/svg/icon_ingot_tungsten.svg | subject: tungsten ingot | black cubic metal ingot | master: vajb-orbit/assets/icons/ingot/icon_ingot_tungsten.png | steel only
+- staging/d2/svg/icon_ingot_voidglass.svg | subject: voidglass ingot | black cylindrical metal bar | master: vajb-orbit/assets/icons/ingot/icon_ingot_voidglass.png | steel only
+
+Output ONLY the .svg files listed above.

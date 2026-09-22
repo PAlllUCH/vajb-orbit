@@ -55,9 +55,9 @@ const CARGO_PLATE_SIZE := 40.0
 const CARGO_PLATE_SEPARATION := 6
 const CARGO_ICON_SIZE := 24.0
 const CARGO_ICON_INSET := 8.0
-const CARGO_ICON_DIR := "res://assets/icons/tint/"
-const CARGO_ICON_TEMPLATE := "icon_cargo_%s_48.png"
-const CARGO_ICON_FALLBACK := "res://assets/icons/tint/icon_cargo_crate_48.png"
+const CARGO_ICON_DIR := "res://assets/icons/cargo/"
+const CARGO_ICON_TEMPLATE := "icon_cargo_%s.svg"
+const CARGO_ICON_FALLBACK := "res://assets/icons/cargo/icon_cargo_crate.svg"
 
 ## The free area of the deck-control column carries the active hull's side render, with the
 ## readiness line under it (the same empty frame REPAIRS fills). Contain-fit to this share

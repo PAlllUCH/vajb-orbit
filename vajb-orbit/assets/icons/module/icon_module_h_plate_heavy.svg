@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <g fill="#C9CDD2">
+    <path fill-rule="evenodd" d="M18 20 L78 20 L86 28 L86 44 L78 52 L18 52 L10 44 L10 28 Z M32 29 L38 32.5 L38 39.5 L32 43 L26 39.5 L26 32.5 Z M48 29 L54 32.5 L54 39.5 L48 43 L42 39.5 L42 32.5 Z M64 29 L70 32.5 L70 39.5 L64 43 L58 39.5 L58 32.5 Z"/>
+    <polygon points="14,56 82,56 88,74 8,74"/>
+  </g>
+  <g fill="#565C63">
+    <rect x="18" y="20" width="60" height="5"/>
+    <rect x="44" y="48" width="8" height="16"/>
+    <rect x="14" y="30" width="8" height="12"/>
+    <rect x="74" y="30" width="8" height="12"/>
+    <circle cx="26" cy="69" r="2.5"/>
+    <circle cx="48" cy="69" r="2.5"/>
+    <circle cx="70" cy="69" r="2.5"/>
+  </g>
+</svg>

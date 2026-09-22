@@ -1,6 +1,6 @@
 # Vajb Orbit - Asset Catalog
 
-**Generated:** 2026-09-20 18:42 from `vajb-orbit/assets/` by `staging/phase_d/build_catalog.py`. Tables are mechanical (filesystem); do not hand-edit - regenerate instead.
+**Generated:** 2026-09-22 23:46 from `vajb-orbit/assets/` by `staging/phase_d/build_catalog.py`. Tables are mechanical (filesystem); do not hand-edit - regenerate instead.
 
 **Scope:** Phase B (109 files, `GENERATION_PLAN.md`) + Phase D expansion (141 files, `ASSET_EXPANSION_SPEC.md`) + Phase E expansion (67 files, `ASSET_EXPANSION_SPEC_E.md`) + Phase F RPG/economy layer (`docs/gameplay/16_art_design_brief.md`) + the F.1 resolution and integrity pass (icon quartet, `ICONS_SPEC.md` 9.7) + the audio family (95 files, `AUDIO_SPEC.md` section 8), all imported by the live editor.
 
@@ -18,12 +18,12 @@
 
 | Folder | Files | Phase B | Phase D | Phase E | Phase F |
 |---|---|---|---|---|---|
-| `res://assets/ships/` | 92 | 21 | 53 | 0 | 18 |
-| `res://assets/icons/` | 685 | 88 | 90 | 77 | 430 |
-| `res://assets/env/` | 66 | 16 | 20 | 20 | 10 |
-| `res://assets/ui/` | 46 | 39 | 7 | 0 | 0 |
-| `res://assets/fx/` | 19 | 9 | 7 | 0 | 3 |
-| **Total** | **908** | **173** | **177** | **97** | **461** |
+| `res://assets/ships/` | 104 | 33 | 53 | 0 | 18 |
+| `res://assets/icons/` | 270 | 151 | 18 | 15 | 86 |
+| `res://assets/env/` | 0 | 0 | 0 | 0 | 0 |
+| `res://assets/ui/` | 29 | 22 | 7 | 0 | 0 |
+| `res://assets/fx/` | 146 | 96 | 35 | 0 | 15 |
+| **Total** | **549** | **302** | **113** | **15** | **119** |
 
 | Audio folder | Files |
 |---|---|
@@ -37,859 +37,390 @@
 
 | File | px | a | ph | Purpose |
 |---|---|---|---|---|
-| `ship_bomber_back.png` | 710x896 | rgba | D | Bomber, hostile ordnance (expansion spec 3 #13). Rotation sheet: back view, bow down. |
-| `ship_bomber_front.png` | 697x824 | rgba | D | Bomber, hostile ordnance (expansion spec 3 #13). Rotation sheet: front view, bow up. |
-| `ship_bomber_side.png` | 908x299 | rgba | D | Bomber, hostile ordnance (expansion spec 3 #13). Rotation sheet: side view, bow right. |
-| `ship_bomber_three_quarter.png` | 682x642 | rgba | D | Bomber, hostile ordnance (expansion spec 3 #13). Rotation sheet: three-quarter view, bow 45 deg. |
-| `ship_boss_boneyard.png` | 2011x872 | rgba | F | Boneyard Behemoth, S3 Meridian arena boss (SHIPS_SPEC 3.8). Single centred render. |
-| `ship_boss_leviathan.png` | 1939x1112 | rgba | D | Leviathan, hammerhead boss (expansion spec 3). Single centred render. |
-| `ship_boss_maw.png` | 2048x2048 | rgba | B | Maw dreadnought, boss (SHIPS_SPEC 3.6). Single centred render. |
-| `ship_boss_maw_mmo.png` | 1853x1896 | rgba | D | Maw dreadnought, boss (SHIPS_SPEC 3.6). Single centred render. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
-| `ship_boss_pyre.png` | 2014x535 | rgba | F | Pyre Hierophant, S6 Choir arena boss (SHIPS_SPEC 3.9). Single centred render. |
-| `ship_boss_spire.png` | 1982x1078 | rgba | D | Spire, relay leviathan boss (expansion spec 3). Single centred render. |
-| `ship_boss_thorn.png` | 2003x1203 | rgba | D | Thorn, hive-mother boss (expansion spec 3). Single centred render. |
-| `ship_corvette_back.png` | 282x899 | rgba | B | Corvette, enemy hull class (SHIPS_SPEC 3.4). Rotation sheet: back view, bow down. |
-| `ship_corvette_front.png` | 276x903 | rgba | B | Corvette, enemy hull class (SHIPS_SPEC 3.4). Rotation sheet: front view, bow up. |
-| `ship_corvette_mmo_back.png` | 291x903 | rgba | D | Corvette, enemy hull class (SHIPS_SPEC 3.4). Rotation sheet: back view, bow down. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
-| `ship_corvette_mmo_front.png` | 281x910 | rgba | D | Corvette, enemy hull class (SHIPS_SPEC 3.4). Rotation sheet: front view, bow up. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
-| `ship_corvette_mmo_side.png` | 893x234 | rgba | D | Corvette, enemy hull class (SHIPS_SPEC 3.4). Rotation sheet: side view, bow right. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
-| `ship_corvette_mmo_three_quarter.png` | 686x791 | rgba | D | Corvette, enemy hull class (SHIPS_SPEC 3.4). Rotation sheet: three-quarter view, bow 45 deg. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
-| `ship_corvette_side.png` | 888x231 | rgba | B | Corvette, enemy hull class (SHIPS_SPEC 3.4). Rotation sheet: side view, bow right. |
-| `ship_corvette_three_quarter.png` | 676x784 | rgba | B | Corvette, enemy hull class (SHIPS_SPEC 3.4). Rotation sheet: three-quarter view, bow 45 deg. |
-| `ship_destroyer_back.png` | 330x907 | rgba | D | Destroyer, hostile capital (expansion spec 3 #9). Rotation sheet: back view, bow down. |
-| `ship_destroyer_front.png` | 378x918 | rgba | D | Destroyer, hostile capital (expansion spec 3 #9). Rotation sheet: front view, bow up. |
-| `ship_destroyer_side.png` | 982x217 | rgba | D | Destroyer, hostile capital (expansion spec 3 #9). Rotation sheet: side view, bow right. |
-| `ship_destroyer_three_quarter.png` | 791x802 | rgba | D | Destroyer, hostile capital (expansion spec 3 #9). Rotation sheet: three-quarter view, bow 45 deg. |
-| `ship_drone_swarm_back.png` | 408x804 | rgba | D | Drone swarm unit (expansion spec 3 #10). Rotation sheet: back view, bow down. |
-| `ship_drone_swarm_front.png` | 396x814 | rgba | D | Drone swarm unit (expansion spec 3 #10). Rotation sheet: front view, bow up. |
-| `ship_drone_swarm_side.png` | 806x365 | rgba | D | Drone swarm unit (expansion spec 3 #10). Rotation sheet: side view, bow right. |
-| `ship_drone_swarm_three_quarter.png` | 509x706 | rgba | D | Drone swarm unit (expansion spec 3 #10). Rotation sheet: three-quarter view, bow 45 deg. |
-| `ship_fighter_back.png` | 507x808 | rgba | B | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: back view, bow down. |
-| `ship_fighter_choir_back.png` | 513x818 | rgba | F | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: back view, bow down. Ember Choir bounty-hunter livery of the base hull (pattern/weathering only; brief P1). |
-| `ship_fighter_choir_front.png` | 499x791 | rgba | F | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: front view, bow up. Ember Choir bounty-hunter livery of the base hull (pattern/weathering only; brief P1). |
-| `ship_fighter_choir_side.png` | 815x348 | rgba | F | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: side view, bow right. Ember Choir bounty-hunter livery of the base hull (pattern/weathering only; brief P1). |
-| `ship_fighter_choir_three_quarter.png` | 631x689 | rgba | F | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: three-quarter view, bow 45 deg. Ember Choir bounty-hunter livery of the base hull (pattern/weathering only; brief P1). |
-| `ship_fighter_concord_back.png` | 513x823 | rgba | F | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: back view, bow down. Concord of Iron bounty-hunter livery of the base hull (pattern/weathering only; brief P1). |
-| `ship_fighter_concord_front.png` | 499x791 | rgba | F | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: front view, bow up. Concord of Iron bounty-hunter livery of the base hull (pattern/weathering only; brief P1). |
-| `ship_fighter_concord_side.png` | 814x349 | rgba | F | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: side view, bow right. Concord of Iron bounty-hunter livery of the base hull (pattern/weathering only; brief P1). |
-| `ship_fighter_concord_three_quarter.png` | 631x689 | rgba | F | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: three-quarter view, bow 45 deg. Concord of Iron bounty-hunter livery of the base hull (pattern/weathering only; brief P1). |
-| `ship_fighter_front.png` | 489x698 | rgba | B | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: front view, bow up. |
-| `ship_fighter_meridian_back.png` | 513x812 | rgba | F | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: back view, bow down. Meridian Free Ports bounty-hunter livery of the base hull (pattern/weathering only; brief P1). |
-| `ship_fighter_meridian_front.png` | 499x791 | rgba | F | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: front view, bow up. Meridian Free Ports bounty-hunter livery of the base hull (pattern/weathering only; brief P1). |
-| `ship_fighter_meridian_side.png` | 816x351 | rgba | F | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: side view, bow right. Meridian Free Ports bounty-hunter livery of the base hull (pattern/weathering only; brief P1). |
-| `ship_fighter_meridian_three_quarter.png` | 632x690 | rgba | F | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: three-quarter view, bow 45 deg. Meridian Free Ports bounty-hunter livery of the base hull (pattern/weathering only; brief P1). |
-| `ship_fighter_mmo_back.png` | 514x814 | rgba | D | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: back view, bow down. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
-| `ship_fighter_mmo_front.png` | 499x790 | rgba | D | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: front view, bow up. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
-| `ship_fighter_mmo_side.png` | 814x351 | rgba | D | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: side view, bow right. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
-| `ship_fighter_mmo_three_quarter.png` | 631x688 | rgba | D | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: three-quarter view, bow 45 deg. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
-| `ship_fighter_side.png` | 817x290 | rgba | B | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: side view, bow right. |
-| `ship_fighter_three_quarter.png` | 595x645 | rgba | B | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: three-quarter view, bow 45 deg. |
-| `ship_freighter_back.png` | 299x826 | rgba | B | Freighter, enemy hull class (SHIPS_SPEC 3.5). Rotation sheet: back view, bow down. |
-| `ship_freighter_front.png` | 290x825 | rgba | B | Freighter, enemy hull class (SHIPS_SPEC 3.5). Rotation sheet: front view, bow up. |
-| `ship_freighter_mmo_back.png` | 307x886 | rgba | D | Freighter, enemy hull class (SHIPS_SPEC 3.5). Rotation sheet: back view, bow down. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
-| `ship_freighter_mmo_front.png` | 297x886 | rgba | D | Freighter, enemy hull class (SHIPS_SPEC 3.5). Rotation sheet: front view, bow up. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
-| `ship_freighter_mmo_side.png` | 899x256 | rgba | D | Freighter, enemy hull class (SHIPS_SPEC 3.5). Rotation sheet: side view, bow right. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
-| `ship_freighter_mmo_three_quarter.png` | 710x716 | rgba | D | Freighter, enemy hull class (SHIPS_SPEC 3.5). Rotation sheet: three-quarter view, bow 45 deg. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
-| `ship_freighter_side.png` | 892x251 | rgba | B | Freighter, enemy hull class (SHIPS_SPEC 3.5). Rotation sheet: side view, bow right. |
-| `ship_freighter_three_quarter.png` | 700x707 | rgba | B | Freighter, enemy hull class (SHIPS_SPEC 3.5). Rotation sheet: three-quarter view, bow 45 deg. |
-| `ship_gunship_back.png` | 695x802 | rgba | D | Gunship, hostile mid-tier (expansion spec 3 #8). Rotation sheet: back view, bow down. |
-| `ship_gunship_front.png` | 710x746 | rgba | D | Gunship, hostile mid-tier (expansion spec 3 #8). Rotation sheet: front view, bow up. |
-| `ship_gunship_side.png` | 859x385 | rgba | D | Gunship, hostile mid-tier (expansion spec 3 #8). Rotation sheet: side view, bow right. |
-| `ship_gunship_three_quarter.png` | 842x725 | rgba | D | Gunship, hostile mid-tier (expansion spec 3 #8). Rotation sheet: three-quarter view, bow 45 deg. |
-| `ship_interceptor_back.png` | 173x902 | rgba | D | Interceptor, hostile fast attack (expansion spec 3 #7). Rotation sheet: back view, bow down. |
-| `ship_interceptor_front.png` | 147x871 | rgba | D | Interceptor, hostile fast attack (expansion spec 3 #7). Rotation sheet: front view, bow up. |
-| `ship_interceptor_side.png` | 940x107 | rgba | D | Interceptor, hostile fast attack (expansion spec 3 #7). Rotation sheet: side view, bow right. |
-| `ship_interceptor_three_quarter.png` | 671x777 | rgba | D | Interceptor, hostile fast attack (expansion spec 3 #7). Rotation sheet: three-quarter view, bow 45 deg. |
-| `ship_mine_layer_back.png` | 360x855 | rgba | D | Mine layer, hostile support (expansion spec 3 #14). Rotation sheet: back view, bow down. |
-| `ship_mine_layer_front.png` | 385x834 | rgba | D | Mine layer, hostile support (expansion spec 3 #14). Rotation sheet: front view, bow up. |
-| `ship_mine_layer_side.png` | 943x228 | rgba | D | Mine layer, hostile support (expansion spec 3 #14). Rotation sheet: side view, bow right. |
-| `ship_mine_layer_three_quarter.png` | 747x705 | rgba | D | Mine layer, hostile support (expansion spec 3 #14). Rotation sheet: three-quarter view, bow 45 deg. |
-| `ship_miner_back.png` | 621x836 | rgba | F | Delver miner, player mining hull (SHIPS_SPEC 3.7, brief P1). Rotation sheet: back view, bow down. |
-| `ship_miner_front.png` | 812x810 | rgba | F | Delver miner, player mining hull (SHIPS_SPEC 3.7, brief P1). Rotation sheet: front view, bow up. |
-| `ship_miner_side.png` | 986x342 | rgba | F | Delver miner, player mining hull (SHIPS_SPEC 3.7, brief P1). Rotation sheet: side view, bow right. |
-| `ship_miner_three_quarter.png` | 821x695 | rgba | F | Delver miner, player mining hull (SHIPS_SPEC 3.7, brief P1). Rotation sheet: three-quarter view, bow 45 deg. |
-| `ship_patrol_back.png` | 317x859 | rgba | D | Patrol, neutral enforcer (expansion spec 3 #12). Rotation sheet: back view, bow down. |
-| `ship_patrol_front.png` | 325x921 | rgba | D | Patrol, neutral enforcer (expansion spec 3 #12). Rotation sheet: front view, bow up. |
-| `ship_patrol_side.png` | 1053x289 | rgba | D | Patrol, neutral enforcer (expansion spec 3 #12). Rotation sheet: side view, bow right. |
-| `ship_patrol_three_quarter.png` | 796x718 | rgba | D | Patrol, neutral enforcer (expansion spec 3 #12). Rotation sheet: three-quarter view, bow 45 deg. |
-| `ship_trader_back.png` | 276x902 | rgba | D | Trader, neutral civil (expansion spec 3 #11). Rotation sheet: back view, bow down. |
-| `ship_trader_front.png` | 217x913 | rgba | D | Trader, neutral civil (expansion spec 3 #11). Rotation sheet: front view, bow up. |
-| `ship_trader_side.png` | 973x287 | rgba | D | Trader, neutral civil (expansion spec 3 #11). Rotation sheet: side view, bow right. |
-| `ship_trader_three_quarter.png` | 701x789 | rgba | D | Trader, neutral civil (expansion spec 3 #11). Rotation sheet: three-quarter view, bow 45 deg. |
-| `ship_turret_platform.png` | 1903x1726 | rgba | D | Turret platform, hostile static (expansion spec 3 #15). Single centred render. |
-| `ship_vanguard_back.png` | 560x898 | rgba | B | Player Vanguard cutter (SHIPS_SPEC 3.1). Rotation sheet: back view, bow down. |
-| `ship_vanguard_damaged_back.png` | 563x899 | rgba | B | Player Vanguard cutter, damaged variant (SHIPS_SPEC 3.2). Rotation sheet: back view, bow down. |
-| `ship_vanguard_damaged_front.png` | 542x841 | rgba | B | Player Vanguard cutter, damaged variant (SHIPS_SPEC 3.2). Rotation sheet: front view, bow up. |
-| `ship_vanguard_damaged_side.png` | 907x389 | rgba | B | Player Vanguard cutter, damaged variant (SHIPS_SPEC 3.2). Rotation sheet: side view, bow right. |
-| `ship_vanguard_damaged_three_quarter.png` | 747x812 | rgba | B | Player Vanguard cutter, damaged variant (SHIPS_SPEC 3.2). Rotation sheet: three-quarter view, bow 45 deg. |
-| `ship_vanguard_front.png` | 540x837 | rgba | B | Player Vanguard cutter (SHIPS_SPEC 3.1). Rotation sheet: front view, bow up. |
-| `ship_vanguard_mmo_back.png` | 568x897 | rgba | D | Player Vanguard cutter (SHIPS_SPEC 3.1). Rotation sheet: back view, bow down. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
-| `ship_vanguard_mmo_front.png` | 549x840 | rgba | D | Player Vanguard cutter (SHIPS_SPEC 3.1). Rotation sheet: front view, bow up. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
-| `ship_vanguard_mmo_side.png` | 907x394 | rgba | D | Player Vanguard cutter (SHIPS_SPEC 3.1). Rotation sheet: side view, bow right. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
-| `ship_vanguard_mmo_three_quarter.png` | 739x813 | rgba | D | Player Vanguard cutter (SHIPS_SPEC 3.1). Rotation sheet: three-quarter view, bow 45 deg. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
-| `ship_vanguard_side.png` | 905x387 | rgba | B | Player Vanguard cutter (SHIPS_SPEC 3.1). Rotation sheet: side view, bow right. |
-| `ship_vanguard_three_quarter.png` | 741x807 | rgba | B | Player Vanguard cutter (SHIPS_SPEC 3.1). Rotation sheet: three-quarter view, bow 45 deg. |
+| `ship_apex_back.png` | 549x1009 | rgba | B | Ship sprite. |
+| `ship_apex_front.png` | 531x1046 | rgba | B | Ship sprite. |
+| `ship_apex_side.png` | 1180x461 | rgba | B | Ship sprite. |
+| `ship_apex_three_quarter.png` | 944x899 | rgba | B | Ship sprite. |
+| `ship_bomber_back.png` | 797x903 | rgba | D | Bomber, hostile ordnance (expansion spec 3 #13). Rotation sheet: back view, bow down. |
+| `ship_bomber_front.png` | 746x906 | rgba | D | Bomber, hostile ordnance (expansion spec 3 #13). Rotation sheet: front view, bow up. |
+| `ship_bomber_side.png` | 954x543 | rgba | D | Bomber, hostile ordnance (expansion spec 3 #13). Rotation sheet: side view, bow right. |
+| `ship_bomber_three_quarter.png` | 758x759 | rgba | D | Bomber, hostile ordnance (expansion spec 3 #13). Rotation sheet: three-quarter view, bow 45 deg. |
+| `ship_boss_boneyard.png` | 2232x1091 | rgba | F | Boneyard Behemoth, S3 Meridian arena boss (SHIPS_SPEC 3.8). Single centred render. |
+| `ship_boss_leviathan.png` | 2157x1849 | rgba | D | Leviathan, hammerhead boss (expansion spec 3). Single centred render. |
+| `ship_boss_maw.png` | 2061x2110 | rgba | B | Maw dreadnought, boss (SHIPS_SPEC 3.6). Single centred render. |
+| `ship_boss_maw_mmo.png` | 2062x2110 | rgba | D | Maw dreadnought, boss (SHIPS_SPEC 3.6). Single centred render. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
+| `ship_boss_pyre.png` | 2235x752 | rgba | F | Pyre Hierophant, S6 Choir arena boss (SHIPS_SPEC 3.9). Single centred render. |
+| `ship_boss_spire.png` | 2223x1522 | rgba | D | Spire, relay leviathan boss (expansion spec 3). Single centred render. |
+| `ship_boss_thorn.png` | 2225x2114 | rgba | D | Thorn, hive-mother boss (expansion spec 3). Single centred render. |
+| `ship_corvette_back.png` | 289x935 | rgba | B | Corvette, enemy hull class (SHIPS_SPEC 3.4). Rotation sheet: back view, bow down. |
+| `ship_corvette_front.png` | 303x953 | rgba | B | Corvette, enemy hull class (SHIPS_SPEC 3.4). Rotation sheet: front view, bow up. |
+| `ship_corvette_mmo_back.png` | 979x997 | rgba | D | Corvette, enemy hull class (SHIPS_SPEC 3.4). Rotation sheet: back view, bow down. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
+| `ship_corvette_mmo_front.png` | 979x997 | rgba | D | Corvette, enemy hull class (SHIPS_SPEC 3.4). Rotation sheet: front view, bow up. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
+| `ship_corvette_mmo_side.png` | 979x997 | rgba | D | Corvette, enemy hull class (SHIPS_SPEC 3.4). Rotation sheet: side view, bow right. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
+| `ship_corvette_mmo_three_quarter.png` | 979x997 | rgba | D | Corvette, enemy hull class (SHIPS_SPEC 3.4). Rotation sheet: three-quarter view, bow 45 deg. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
+| `ship_corvette_side.png` | 1038x246 | rgba | B | Corvette, enemy hull class (SHIPS_SPEC 3.4). Rotation sheet: side view, bow right. |
+| `ship_corvette_three_quarter.png` | 879x806 | rgba | B | Corvette, enemy hull class (SHIPS_SPEC 3.4). Rotation sheet: three-quarter view, bow 45 deg. |
+| `ship_destroyer_back.png` | 389x1004 | rgba | D | Destroyer, hostile capital (expansion spec 3 #9). Rotation sheet: back view, bow down. |
+| `ship_destroyer_front.png` | 440x1019 | rgba | D | Destroyer, hostile capital (expansion spec 3 #9). Rotation sheet: front view, bow up. |
+| `ship_destroyer_side.png` | 1028x349 | rgba | D | Destroyer, hostile capital (expansion spec 3 #9). Rotation sheet: side view, bow right. |
+| `ship_destroyer_three_quarter.png` | 902x853 | rgba | D | Destroyer, hostile capital (expansion spec 3 #9). Rotation sheet: three-quarter view, bow 45 deg. |
+| `ship_drone_swarm_back.png` | 1260x940 | rgba | D | Drone swarm unit (expansion spec 3 #10). Rotation sheet: back view, bow down. |
+| `ship_drone_swarm_front.png` | 465x844 | rgba | D | Drone swarm unit (expansion spec 3 #10). Rotation sheet: front view, bow up. |
+| `ship_drone_swarm_side.png` | 950x349 | rgba | D | Drone swarm unit (expansion spec 3 #10). Rotation sheet: side view, bow right. |
+| `ship_drone_swarm_three_quarter.png` | 670x670 | rgba | D | Drone swarm unit (expansion spec 3 #10). Rotation sheet: three-quarter view, bow 45 deg. |
+| `ship_fighter_back.png` | 1659x1539 | rgba | B | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: back view, bow down. |
+| `ship_fighter_choir_back.png` | 896x893 | rgba | F | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: back view, bow down. Ember Choir bounty-hunter livery of the base hull (pattern/weathering only; brief P1). |
+| `ship_fighter_choir_front.png` | 896x893 | rgba | F | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: front view, bow up. Ember Choir bounty-hunter livery of the base hull (pattern/weathering only; brief P1). |
+| `ship_fighter_choir_side.png` | 896x893 | rgba | F | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: side view, bow right. Ember Choir bounty-hunter livery of the base hull (pattern/weathering only; brief P1). |
+| `ship_fighter_choir_three_quarter.png` | 896x893 | rgba | F | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: three-quarter view, bow 45 deg. Ember Choir bounty-hunter livery of the base hull (pattern/weathering only; brief P1). |
+| `ship_fighter_concord_back.png` | 896x900 | rgba | F | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: back view, bow down. Concord of Iron bounty-hunter livery of the base hull (pattern/weathering only; brief P1). |
+| `ship_fighter_concord_front.png` | 896x900 | rgba | F | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: front view, bow up. Concord of Iron bounty-hunter livery of the base hull (pattern/weathering only; brief P1). |
+| `ship_fighter_concord_side.png` | 896x900 | rgba | F | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: side view, bow right. Concord of Iron bounty-hunter livery of the base hull (pattern/weathering only; brief P1). |
+| `ship_fighter_concord_three_quarter.png` | 896x900 | rgba | F | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: three-quarter view, bow 45 deg. Concord of Iron bounty-hunter livery of the base hull (pattern/weathering only; brief P1). |
+| `ship_fighter_front.png` | 676x843 | rgba | B | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: front view, bow up. |
+| `ship_fighter_meridian_back.png` | 896x891 | rgba | F | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: back view, bow down. Meridian Free Ports bounty-hunter livery of the base hull (pattern/weathering only; brief P1). |
+| `ship_fighter_meridian_front.png` | 896x891 | rgba | F | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: front view, bow up. Meridian Free Ports bounty-hunter livery of the base hull (pattern/weathering only; brief P1). |
+| `ship_fighter_meridian_side.png` | 896x891 | rgba | F | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: side view, bow right. Meridian Free Ports bounty-hunter livery of the base hull (pattern/weathering only; brief P1). |
+| `ship_fighter_meridian_three_quarter.png` | 896x891 | rgba | F | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: three-quarter view, bow 45 deg. Meridian Free Ports bounty-hunter livery of the base hull (pattern/weathering only; brief P1). |
+| `ship_fighter_mmo_back.png` | 895x889 | rgba | D | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: back view, bow down. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
+| `ship_fighter_mmo_front.png` | 895x889 | rgba | D | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: front view, bow up. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
+| `ship_fighter_mmo_side.png` | 895x889 | rgba | D | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: side view, bow right. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
+| `ship_fighter_mmo_three_quarter.png` | 895x889 | rgba | D | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: three-quarter view, bow 45 deg. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
+| `ship_fighter_side.png` | 897x415 | rgba | B | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: side view, bow right. |
+| `ship_fighter_three_quarter.png` | 718x665 | rgba | B | Fighter, enemy hull class (SHIPS_SPEC 3.3). Rotation sheet: three-quarter view, bow 45 deg. |
+| `ship_freighter_back.png` | 344x936 | rgba | B | Freighter, enemy hull class (SHIPS_SPEC 3.5). Rotation sheet: back view, bow down. |
+| `ship_freighter_front.png` | 336x961 | rgba | B | Freighter, enemy hull class (SHIPS_SPEC 3.5). Rotation sheet: front view, bow up. |
+| `ship_freighter_mmo_back.png` | 987x975 | rgba | D | Freighter, enemy hull class (SHIPS_SPEC 3.5). Rotation sheet: back view, bow down. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
+| `ship_freighter_mmo_front.png` | 987x975 | rgba | D | Freighter, enemy hull class (SHIPS_SPEC 3.5). Rotation sheet: front view, bow up. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
+| `ship_freighter_mmo_side.png` | 987x975 | rgba | D | Freighter, enemy hull class (SHIPS_SPEC 3.5). Rotation sheet: side view, bow right. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
+| `ship_freighter_mmo_three_quarter.png` | 987x975 | rgba | D | Freighter, enemy hull class (SHIPS_SPEC 3.5). Rotation sheet: three-quarter view, bow 45 deg. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
+| `ship_freighter_side.png` | 982x342 | rgba | B | Freighter, enemy hull class (SHIPS_SPEC 3.5). Rotation sheet: side view, bow right. |
+| `ship_freighter_three_quarter.png` | 827x757 | rgba | B | Freighter, enemy hull class (SHIPS_SPEC 3.5). Rotation sheet: three-quarter view, bow 45 deg. |
+| `ship_gunship_back.png` | 2107x1245 | rgba | D | Gunship, hostile mid-tier (expansion spec 3 #8). Rotation sheet: back view, bow down. |
+| `ship_gunship_front.png` | 777x882 | rgba | D | Gunship, hostile mid-tier (expansion spec 3 #8). Rotation sheet: front view, bow up. |
+| `ship_gunship_side.png` | 983x644 | rgba | D | Gunship, hostile mid-tier (expansion spec 3 #8). Rotation sheet: side view, bow right. |
+| `ship_gunship_three_quarter.png` | 923x838 | rgba | D | Gunship, hostile mid-tier (expansion spec 3 #8). Rotation sheet: three-quarter view, bow 45 deg. |
+| `ship_interceptor_back.png` | 380x953 | rgba | D | Interceptor, hostile fast attack (expansion spec 3 #7). Rotation sheet: back view, bow down. |
+| `ship_interceptor_front.png` | 325x966 | rgba | D | Interceptor, hostile fast attack (expansion spec 3 #7). Rotation sheet: front view, bow up. |
+| `ship_interceptor_side.png` | 1016x299 | rgba | D | Interceptor, hostile fast attack (expansion spec 3 #7). Rotation sheet: side view, bow right. |
+| `ship_interceptor_three_quarter.png` | 813x778 | rgba | D | Interceptor, hostile fast attack (expansion spec 3 #7). Rotation sheet: three-quarter view, bow 45 deg. |
+| `ship_mine_layer_back.png` | 441x933 | rgba | D | Mine layer, hostile support (expansion spec 3 #14). Rotation sheet: back view, bow down. |
+| `ship_mine_layer_front.png` | 493x951 | rgba | D | Mine layer, hostile support (expansion spec 3 #14). Rotation sheet: front view, bow up. |
+| `ship_mine_layer_side.png` | 1062x381 | rgba | D | Mine layer, hostile support (expansion spec 3 #14). Rotation sheet: side view, bow right. |
+| `ship_mine_layer_three_quarter.png` | 929x807 | rgba | D | Mine layer, hostile support (expansion spec 3 #14). Rotation sheet: three-quarter view, bow 45 deg. |
+| `ship_miner_back.png` | 1929x1258 | rgba | F | Delver miner, player mining hull (SHIPS_SPEC 3.7, brief P1). Rotation sheet: back view, bow down. |
+| `ship_miner_front.png` | 595x881 | rgba | F | Delver miner, player mining hull (SHIPS_SPEC 3.7, brief P1). Rotation sheet: front view, bow up. |
+| `ship_miner_side.png` | 981x355 | rgba | F | Delver miner, player mining hull (SHIPS_SPEC 3.7, brief P1). Rotation sheet: side view, bow right. |
+| `ship_miner_three_quarter.png` | 882x790 | rgba | F | Delver miner, player mining hull (SHIPS_SPEC 3.7, brief P1). Rotation sheet: three-quarter view, bow 45 deg. |
+| `ship_patrol_back.png` | 402x972 | rgba | D | Patrol, neutral enforcer (expansion spec 3 #12). Rotation sheet: back view, bow down. |
+| `ship_patrol_front.png` | 383x983 | rgba | D | Patrol, neutral enforcer (expansion spec 3 #12). Rotation sheet: front view, bow up. |
+| `ship_patrol_side.png` | 1007x384 | rgba | D | Patrol, neutral enforcer (expansion spec 3 #12). Rotation sheet: side view, bow right. |
+| `ship_patrol_three_quarter.png` | 906x773 | rgba | D | Patrol, neutral enforcer (expansion spec 3 #12). Rotation sheet: three-quarter view, bow 45 deg. |
+| `ship_sibelon_back.png` | 2030x1536 | rgba | B | Ship sprite. |
+| `ship_sibelon_front.png` | 431x927 | rgba | B | Ship sprite. |
+| `ship_sibelon_side.png` | 1057x409 | rgba | B | Ship sprite. |
+| `ship_sibelon_three_quarter.png` | 860x770 | rgba | B | Ship sprite. |
+| `ship_swarmer_back.png` | 1540x2049 | rgba | B | Ship sprite. |
+| `ship_swarmer_front.png` | 553x917 | rgba | B | Ship sprite. |
+| `ship_swarmer_side.png` | 1071x504 | rgba | B | Ship sprite. |
+| `ship_swarmer_three_quarter.png` | 918x693 | rgba | B | Ship sprite. |
+| `ship_trader_back.png` | 2033x1097 | rgba | D | Trader, neutral civil (expansion spec 3 #11). Rotation sheet: back view, bow down. |
+| `ship_trader_front.png` | 461x970 | rgba | D | Trader, neutral civil (expansion spec 3 #11). Rotation sheet: front view, bow up. |
+| `ship_trader_side.png` | 1022x389 | rgba | D | Trader, neutral civil (expansion spec 3 #11). Rotation sheet: side view, bow right. |
+| `ship_trader_three_quarter.png` | 840x782 | rgba | D | Trader, neutral civil (expansion spec 3 #11). Rotation sheet: three-quarter view, bow 45 deg. |
+| `ship_turret_platform.png` | 1862x1455 | rgba | D | Turret platform, hostile static (expansion spec 3 #15). Single centred render. |
+| `ship_vanguard_back.png` | 578x939 | rgba | B | Player Vanguard cutter (SHIPS_SPEC 3.1). Rotation sheet: back view, bow down. |
+| `ship_vanguard_damaged_back.png` | 1023x997 | rgba | B | Player Vanguard cutter, damaged variant (SHIPS_SPEC 3.2). Rotation sheet: back view, bow down. |
+| `ship_vanguard_damaged_front.png` | 1023x997 | rgba | B | Player Vanguard cutter, damaged variant (SHIPS_SPEC 3.2). Rotation sheet: front view, bow up. |
+| `ship_vanguard_damaged_side.png` | 1023x997 | rgba | B | Player Vanguard cutter, damaged variant (SHIPS_SPEC 3.2). Rotation sheet: side view, bow right. |
+| `ship_vanguard_damaged_three_quarter.png` | 1023x997 | rgba | B | Player Vanguard cutter, damaged variant (SHIPS_SPEC 3.2). Rotation sheet: three-quarter view, bow 45 deg. |
+| `ship_vanguard_front.png` | 653x897 | rgba | B | Player Vanguard cutter (SHIPS_SPEC 3.1). Rotation sheet: front view, bow up. |
+| `ship_vanguard_mmo_back.png` | 995x985 | rgba | D | Player Vanguard cutter (SHIPS_SPEC 3.1). Rotation sheet: back view, bow down. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
+| `ship_vanguard_mmo_front.png` | 995x985 | rgba | D | Player Vanguard cutter (SHIPS_SPEC 3.1). Rotation sheet: front view, bow up. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
+| `ship_vanguard_mmo_side.png` | 995x985 | rgba | D | Player Vanguard cutter (SHIPS_SPEC 3.1). Rotation sheet: side view, bow right. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
+| `ship_vanguard_mmo_three_quarter.png` | 995x985 | rgba | D | Player Vanguard cutter (SHIPS_SPEC 3.1). Rotation sheet: three-quarter view, bow 45 deg. MMO-livery refit of the base hull (pattern/weathering only; expansion spec 4). |
+| `ship_vanguard_side.png` | 960x521 | rgba | B | Player Vanguard cutter (SHIPS_SPEC 3.1). Rotation sheet: side view, bow right. |
+| `ship_vanguard_three_quarter.png` | 785x776 | rgba | B | Player Vanguard cutter (SHIPS_SPEC 3.1). Rotation sheet: three-quarter view, bow 45 deg. |
 
 ## icons - glyphs, item art, starmap markers
 
 | File | px | a | ph | Purpose |
 |---|---|---|---|---|
-| `icon_ammo_16.png` | 16x16 | rgba | B | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ammo_192.png` | 192x192 | rgba | B | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ammo_48.png` | 48x48 | rgba | B | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ammo_96.png` | 96x96 | rgba | B | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ammo_laser.png` | 230x569 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_ammo_laser_16.png` | 16x16 | rgba | D | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_ammo_laser_192.png` | 192x192 | rgba | D | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_ammo_laser_48.png` | 48x48 | rgba | D | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_ammo_laser_96.png` | 96x96 | rgba | D | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_ammo_rocket.png` | 358x584 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_ammo_rocket_16.png` | 16x16 | rgba | D | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_ammo_rocket_192.png` | 192x192 | rgba | D | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_ammo_rocket_48.png` | 48x48 | rgba | D | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_ammo_rocket_96.png` | 96x96 | rgba | D | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_booster_damage.png` | 470x601 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_booster_damage_16.png` | 16x16 | rgba | E | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_booster_damage_192.png` | 192x192 | rgba | E | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_booster_damage_48.png` | 48x48 | rgba | E | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_booster_damage_96.png` | 96x96 | rgba | E | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_booster_emp.png` | 488x676 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_booster_emp_16.png` | 16x16 | rgba | E | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_booster_emp_192.png` | 192x192 | rgba | E | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_booster_emp_48.png` | 48x48 | rgba | E | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_booster_emp_96.png` | 96x96 | rgba | E | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_booster_repair.png` | 573x645 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_booster_repair_16.png` | 16x16 | rgba | E | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_booster_repair_192.png` | 192x192 | rgba | E | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_booster_repair_48.png` | 48x48 | rgba | E | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_booster_repair_96.png` | 96x96 | rgba | E | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_booster_shield.png` | 587x564 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_booster_shield_16.png` | 16x16 | rgba | E | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_booster_shield_192.png` | 192x192 | rgba | E | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_booster_shield_48.png` | 48x48 | rgba | E | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_booster_shield_96.png` | 96x96 | rgba | E | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_booster_speed.png` | 575x692 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_booster_speed_16.png` | 16x16 | rgba | E | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_booster_speed_192.png` | 192x192 | rgba | E | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_booster_speed_48.png` | 48x48 | rgba | E | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_booster_speed_96.png` | 96x96 | rgba | E | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_booster_teleport.png` | 503x690 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_booster_teleport_16.png` | 16x16 | rgba | E | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_booster_teleport_192.png` | 192x192 | rgba | E | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_booster_teleport_48.png` | 48x48 | rgba | E | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_booster_teleport_96.png` | 96x96 | rgba | E | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_cargo_container_16.png` | 16x16 | rgba | B | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_cargo_container_192.png` | 192x192 | rgba | B | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_cargo_container_48.png` | 48x48 | rgba | B | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_cargo_container_96.png` | 96x96 | rgba | B | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_cargo_crate_16.png` | 16x16 | rgba | B | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_cargo_crate_192.png` | 192x192 | rgba | B | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_cargo_crate_48.png` | 48x48 | rgba | B | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_cargo_crate_96.png` | 96x96 | rgba | B | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_cargo_data_core.png` | 906x901 | rgba | B | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_cargo_data_core_16.png` | 16x16 | rgba | B | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_cargo_data_core_192.png` | 192x192 | rgba | B | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_cargo_data_core_48.png` | 48x48 | rgba | B | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_cargo_data_core_96.png` | 96x96 | rgba | B | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_cargo_fuel_cell_16.png` | 16x16 | rgba | B | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_cargo_fuel_cell_192.png` | 192x192 | rgba | B | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_cargo_fuel_cell_48.png` | 48x48 | rgba | B | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_cargo_fuel_cell_96.png` | 96x96 | rgba | B | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_cargo_ore_16.png` | 16x16 | rgba | B | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_cargo_ore_192.png` | 192x192 | rgba | B | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_cargo_ore_48.png` | 48x48 | rgba | B | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_cargo_ore_96.png` | 96x96 | rgba | B | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_cargo_salvage_16.png` | 16x16 | rgba | B | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_cargo_salvage_192.png` | 192x192 | rgba | B | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_cargo_salvage_48.png` | 48x48 | rgba | B | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_cargo_salvage_96.png` | 96x96 | rgba | B | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_close_16.png` | 16x16 | rgba | B | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_close_192.png` | 192x192 | rgba | B | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_close_48.png` | 48x48 | rgba | B | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_close_96.png` | 96x96 | rgba | B | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_contract_escort.png` | 530x565 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_contract_escort_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_contract_escort_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_contract_escort_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_contract_escort_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_contract_expedition.png` | 548x560 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_contract_expedition_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_contract_expedition_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_contract_expedition_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_contract_expedition_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_contract_gather.png` | 494x728 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_contract_gather_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_contract_gather_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_contract_gather_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_contract_gather_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_contract_haul.png` | 587x394 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_contract_haul_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_contract_haul_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_contract_haul_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_contract_haul_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_contract_hunt.png` | 573x585 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_contract_hunt_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_contract_hunt_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_contract_hunt_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_contract_hunt_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_credits.png` | 624x719 | rgba | B | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_credits_16.png` | 16x16 | rgba | B | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_credits_192.png` | 192x192 | rgba | B | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_credits_48.png` | 48x48 | rgba | B | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_credits_96.png` | 96x96 | rgba | B | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_equip_drone.png` | 462x535 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_equip_drone_16.png` | 16x16 | rgba | D | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_drone_192.png` | 192x192 | rgba | D | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_drone_48.png` | 48x48 | rgba | D | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_drone_96.png` | 96x96 | rgba | D | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_engine.png` | 524x471 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_equip_engine_16.png` | 16x16 | rgba | D | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_engine_192.png` | 192x192 | rgba | D | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_engine_48.png` | 48x48 | rgba | D | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_engine_96.png` | 96x96 | rgba | D | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_extra.png` | 406x518 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_equip_extra_16.png` | 16x16 | rgba | D | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_extra_192.png` | 192x192 | rgba | D | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_extra_48.png` | 48x48 | rgba | D | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_extra_96.png` | 96x96 | rgba | D | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_generator.png` | 511x515 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_equip_generator_16.png` | 16x16 | rgba | D | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_generator_192.png` | 192x192 | rgba | D | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_generator_48.png` | 48x48 | rgba | D | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_generator_96.png` | 96x96 | rgba | D | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_module.png` | 539x351 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_equip_module_16.png` | 16x16 | rgba | D | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_module_192.png` | 192x192 | rgba | D | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_module_48.png` | 48x48 | rgba | D | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_module_96.png` | 96x96 | rgba | D | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_pet.png` | 422x517 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_equip_pet_16.png` | 16x16 | rgba | D | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_pet_192.png` | 192x192 | rgba | D | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_pet_48.png` | 48x48 | rgba | D | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_pet_96.png` | 96x96 | rgba | D | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_shield_gen.png` | 473x481 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_equip_shield_gen_16.png` | 16x16 | rgba | D | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_shield_gen_192.png` | 192x192 | rgba | D | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_shield_gen_48.png` | 48x48 | rgba | D | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_equip_shield_gen_96.png` | 96x96 | rgba | D | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_gear_16.png` | 16x16 | rgba | B | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_gear_192.png` | 192x192 | rgba | B | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_gear_48.png` | 48x48 | rgba | B | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_gear_96.png` | 96x96 | rgba | B | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_hull_16.png` | 16x16 | rgba | B | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_hull_192.png` | 192x192 | rgba | B | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_hull_48.png` | 48x48 | rgba | B | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_hull_96.png` | 96x96 | rgba | B | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_aluminium.png` | 315x249 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_ingot_aluminium_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_aluminium_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_aluminium_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_aluminium_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_cerulite.png` | 343x272 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_ingot_cerulite_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_cerulite_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_cerulite_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_cerulite_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_chromium.png` | 348x234 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_ingot_chromium_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_chromium_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_chromium_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_chromium_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_cobalt.png` | 328x266 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_ingot_cobalt_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_cobalt_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_cobalt_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_cobalt_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_copper.png` | 330x256 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_ingot_copper_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_copper_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_copper_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_copper_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_emberite.png` | 334x255 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_ingot_emberite_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_emberite_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_emberite_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_emberite_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_gold.png` | 332x267 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_ingot_gold_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_gold_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_gold_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_gold_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_iridium.png` | 332x259 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_ingot_iridium_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_iridium_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_iridium_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_iridium_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_iron.png` | 354x266 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_ingot_iron_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_iron_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_iron_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_iron_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_krilium.png` | 343x243 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_ingot_krilium_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_krilium_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_krilium_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_krilium_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_neodymium.png` | 335x269 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_ingot_neodymium_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_neodymium_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_neodymium_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_neodymium_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_nickel.png` | 331x263 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_ingot_nickel_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_nickel_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_nickel_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_nickel_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_osmium.png` | 323x263 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_ingot_osmium_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_osmium_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_osmium_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_osmium_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_palladium.png` | 339x272 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_ingot_palladium_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_palladium_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_palladium_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_palladium_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_platinum.png` | 345x280 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_ingot_platinum_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_platinum_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_platinum_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_platinum_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_silicon.png` | 372x257 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_ingot_silicon_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_silicon_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_silicon_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_silicon_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_silver.png` | 337x257 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_ingot_silver_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_silver_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_silver_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_silver_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_titanium.png` | 342x280 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_ingot_titanium_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_titanium_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_titanium_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_titanium_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_tungsten.png` | 273x290 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_ingot_tungsten_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_tungsten_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_tungsten_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_tungsten_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_voidglass.png` | 338x260 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_ingot_voidglass_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_voidglass_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_voidglass_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_ingot_voidglass_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_insignia_choir.png` | 678x783 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_insignia_choir_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_insignia_choir_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_insignia_choir_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_insignia_choir_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_insignia_concord.png` | 678x789 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_insignia_concord_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_insignia_concord_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_insignia_concord_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_insignia_concord_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_insignia_meridian.png` | 681x787 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_insignia_meridian_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_insignia_meridian_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_insignia_meridian_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_insignia_meridian_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_logout_16.png` | 16x16 | rgba | B | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_logout_192.png` | 192x192 | rgba | B | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_logout_48.png` | 48x48 | rgba | B | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_logout_96.png` | 96x96 | rgba | B | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_map_bookmark.png` | 411x506 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_map_bookmark_16.png` | 16x16 | rgba | D | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_bookmark_192.png` | 192x192 | rgba | D | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_bookmark_48.png` | 48x48 | rgba | D | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_bookmark_96.png` | 96x96 | rgba | D | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_asteroid.png` | 539x682 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_map_node_asteroid_16.png` | 16x16 | rgba | D | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_asteroid_192.png` | 192x192 | rgba | D | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_asteroid_48.png` | 48x48 | rgba | D | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_asteroid_96.png` | 96x96 | rgba | D | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_danger.png` | 394x657 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_map_node_danger_16.png` | 16x16 | rgba | D | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_danger_192.png` | 192x192 | rgba | D | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_danger_48.png` | 48x48 | rgba | D | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_danger_96.png` | 96x96 | rgba | D | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_gate.png` | 531x471 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_map_node_gate_16.png` | 16x16 | rgba | D | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_gate_192.png` | 192x192 | rgba | D | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_gate_48.png` | 48x48 | rgba | D | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_gate_96.png` | 96x96 | rgba | D | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_home.png` | 433x572 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_map_node_home_16.png` | 16x16 | rgba | D | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_home_192.png` | 192x192 | rgba | D | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_home_48.png` | 48x48 | rgba | D | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_home_96.png` | 96x96 | rgba | D | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_neutral.png` | 514x563 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_map_node_neutral_16.png` | 16x16 | rgba | D | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_neutral_192.png` | 192x192 | rgba | D | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_neutral_48.png` | 48x48 | rgba | D | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_neutral_96.png` | 96x96 | rgba | D | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_pvp.png` | 486x468 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_map_node_pvp_16.png` | 16x16 | rgba | D | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_pvp_192.png` | 192x192 | rgba | D | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_pvp_48.png` | 48x48 | rgba | D | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_pvp_96.png` | 96x96 | rgba | D | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_station.png` | 485x541 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_map_node_station_16.png` | 16x16 | rgba | D | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_station_192.png` | 192x192 | rgba | D | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_station_48.png` | 48x48 | rgba | D | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_node_station_96.png` | 96x96 | rgba | D | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_route.png` | 516x503 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_map_route_16.png` | 16x16 | rgba | D | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_route_192.png` | 192x192 | rgba | D | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_route_48.png` | 48x48 | rgba | D | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_map_route_96.png` | 96x96 | rgba | D | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_mineral_aluminium.png` | 363x227 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_mineral_aluminium_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_aluminium_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_aluminium_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_aluminium_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_cerulite.png` | 313x342 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_mineral_cerulite_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_cerulite_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_cerulite_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_cerulite_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_chromium.png` | 292x334 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_mineral_chromium_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_chromium_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_chromium_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_chromium_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_cobalt.png` | 283x333 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_mineral_cobalt_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_cobalt_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_cobalt_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_cobalt_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_copper.png` | 341x316 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_mineral_copper_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_copper_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_copper_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_copper_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_emberite.png` | 298x315 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_mineral_emberite_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_emberite_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_emberite_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_emberite_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_gold.png` | 326x332 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_mineral_gold_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_gold_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_gold_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_gold_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_iridium.png` | 337x376 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_mineral_iridium_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_iridium_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_iridium_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_iridium_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_iron.png` | 333x323 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_mineral_iron_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_iron_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_iron_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_iron_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_krilium.png` | 357x349 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_mineral_krilium_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_krilium_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_krilium_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_krilium_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_neodymium.png` | 299x332 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_mineral_neodymium_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_neodymium_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_neodymium_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_neodymium_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_nickel.png` | 335x304 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_mineral_nickel_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_nickel_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_nickel_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_nickel_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_osmium.png` | 353x407 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_mineral_osmium_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_osmium_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_osmium_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_osmium_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_palladium.png` | 249x317 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_mineral_palladium_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_palladium_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_palladium_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_palladium_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_platinum.png` | 333x302 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_mineral_platinum_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_platinum_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_platinum_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_platinum_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_silicon.png` | 383x259 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_mineral_silicon_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_silicon_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_silicon_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_silicon_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_silver.png` | 304x391 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_mineral_silver_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_silver_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_silver_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_silver_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_titanium.png` | 319x342 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_mineral_titanium_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_titanium_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_titanium_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_titanium_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_tungsten.png` | 319x339 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_mineral_tungsten_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_tungsten_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_tungsten_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_tungsten_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_voidglass.png` | 318x301 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_mineral_voidglass_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_voidglass_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_voidglass_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_mineral_voidglass_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_b_afterburner.png` | 531x377 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_b_afterburner_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_b_afterburner_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_b_afterburner_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_b_afterburner_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_b_fold.png` | 458x452 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_b_fold_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_b_fold_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_b_fold_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_b_fold_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_c_ewar.png` | 575x385 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_c_ewar_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_c_ewar_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_c_ewar_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_c_ewar_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_c_nexus.png` | 460x427 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_c_nexus_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_c_nexus_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_c_nexus_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_c_nexus_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_c_scanner.png` | 424x520 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_c_scanner_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_c_scanner_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_c_scanner_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_c_scanner_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_c_target.png` | 473x464 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_c_target_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_c_target_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_c_target_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_c_target_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_c_twin.png` | 353x515 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_c_twin_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_c_twin_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_c_twin_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_c_twin_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_e_ion.png` | 495x453 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_e_ion_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_e_ion_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_e_ion_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_e_ion_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_e_std.png` | 502x416 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_e_std_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_e_std_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_e_std_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_e_std_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_e_vector.png` | 575x481 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_e_vector_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_e_vector_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_e_vector_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_e_vector_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_h_composite.png` | 490x484 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_h_composite_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_h_composite_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_h_composite_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_h_composite_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_h_plate_heavy.png` | 604x329 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_h_plate_heavy_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_h_plate_heavy_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_h_plate_heavy_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_h_plate_heavy_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_h_plate_light.png` | 497x448 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_h_plate_light_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_h_plate_light_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_h_plate_light_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_h_plate_light_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_p_core.png` | 562x453 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_p_core_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_p_core_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_p_core_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_p_core_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_p_mk2.png` | 488x481 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_p_mk2_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_p_mk2_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_p_mk2_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_p_mk2_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_p_std.png` | 514x434 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_p_std_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_p_std_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_p_std_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_p_std_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_s_heavy.png` | 554x450 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_s_heavy_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_s_heavy_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_s_heavy_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_s_heavy_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_s_ion.png` | 559x388 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_s_ion_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_s_ion_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_s_ion_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_s_ion_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_s_light.png` | 545x328 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_s_light_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_s_light_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_s_light_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_s_light_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_u_cargo.png` | 499x462 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_u_cargo_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_u_cargo_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_u_cargo_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_u_cargo_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_u_drones.png` | 548x420 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_u_drones_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_u_drones_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_u_drones_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_u_drones_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_u_holds.png` | 468x487 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_u_holds_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_u_holds_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_u_holds_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_u_holds_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_u_refine.png` | 489x542 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_u_refine_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_u_refine_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_u_refine_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_u_refine_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_u_salvage.png` | 610x386 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_u_salvage_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_u_salvage_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_u_salvage_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_u_salvage_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_u_tractor.png` | 610x360 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_u_tractor_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_u_tractor_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_u_tractor_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_u_tractor_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_w_mining.png` | 552x235 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_w_mining_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_w_mining_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_w_mining_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_w_mining_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_w_railgun.png` | 644x242 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_module_w_railgun_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_w_railgun_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_w_railgun_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_module_w_railgun_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_service_bounty.png` | 692x701 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_service_bounty_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_service_bounty_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_service_bounty_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_service_bounty_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_service_insurance.png` | 610x746 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_service_insurance_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_service_insurance_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_service_insurance_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_service_insurance_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_service_vault.png` | 761x726 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_service_vault_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_service_vault_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_service_vault_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_service_vault_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_shield.png` | 594x744 | rgba | B | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_shield_16.png` | 16x16 | rgba | B | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_shield_192.png` | 192x192 | rgba | B | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_shield_48.png` | 48x48 | rgba | B | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_shield_96.png` | 96x96 | rgba | B | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_b.png` | 404x349 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_slot_b_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_b_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_b_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_b_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_c.png` | 371x370 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_slot_c_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_c_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_c_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_c_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_engine.png` | 405x365 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_slot_engine_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_engine_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_engine_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_engine_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_h.png` | 396x321 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_slot_h_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_h_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_h_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_h_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_power.png` | 408x384 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_slot_power_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_power_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_power_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_power_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_s.png` | 431x366 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_slot_s_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_s_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_s_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_s_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_u.png` | 408x415 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_slot_u_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_u_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_u_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_u_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_w.png` | 414x322 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_slot_w_16.png` | 16x16 | rgba | F | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_w_192.png` | 192x192 | rgba | F | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_w_48.png` | 48x48 | rgba | F | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_slot_w_96.png` | 96x96 | rgba | F | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_status_burning.png` | 437x462 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_status_burning_16.png` | 16x16 | rgba | E | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_burning_192.png` | 192x192 | rgba | E | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_burning_48.png` | 48x48 | rgba | E | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_burning_96.png` | 96x96 | rgba | E | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_cloaked.png` | 418x536 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_status_cloaked_16.png` | 16x16 | rgba | E | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_cloaked_192.png` | 192x192 | rgba | E | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_cloaked_48.png` | 48x48 | rgba | E | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_cloaked_96.png` | 96x96 | rgba | E | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_disabled.png` | 439x493 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_status_disabled_16.png` | 16x16 | rgba | E | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_disabled_192.png` | 192x192 | rgba | E | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_disabled_48.png` | 48x48 | rgba | E | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_disabled_96.png` | 96x96 | rgba | E | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_drained.png` | 269x475 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_status_drained_16.png` | 16x16 | rgba | E | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_drained_192.png` | 192x192 | rgba | E | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_drained_48.png` | 48x48 | rgba | E | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_drained_96.png` | 96x96 | rgba | E | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_locked.png` | 456x436 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_status_locked_16.png` | 16x16 | rgba | E | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_locked_192.png` | 192x192 | rgba | E | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_locked_48.png` | 48x48 | rgba | E | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_locked_96.png` | 96x96 | rgba | E | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_radiated.png` | 498x498 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_status_radiated_16.png` | 16x16 | rgba | E | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_radiated_192.png` | 192x192 | rgba | E | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_radiated_48.png` | 48x48 | rgba | E | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_radiated_96.png` | 96x96 | rgba | E | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_repairing.png` | 457x467 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_status_repairing_16.png` | 16x16 | rgba | E | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_repairing_192.png` | 192x192 | rgba | E | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_repairing_48.png` | 48x48 | rgba | E | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_repairing_96.png` | 96x96 | rgba | E | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_shielded.png` | 489x638 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_status_shielded_16.png` | 16x16 | rgba | E | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_shielded_192.png` | 192x192 | rgba | E | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_shielded_48.png` | 48x48 | rgba | E | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_shielded_96.png` | 96x96 | rgba | E | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_slowed.png` | 470x531 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
-| `icon_status_slowed_16.png` | 16x16 | rgba | E | Painted icon split, 16 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_slowed_192.png` | 192x192 | rgba | E | Painted icon split, 192 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_slowed_48.png` | 48x48 | rgba | E | Painted icon split, 48 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_status_slowed_96.png` | 96x96 | rgba | E | Painted icon split, 96 px. Direct consumer, no tint derivation (expansion spec 11.2). |
-| `icon_weapon_cannon_16.png` | 16x16 | rgba | B | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_weapon_cannon_192.png` | 192x192 | rgba | B | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_weapon_cannon_48.png` | 48x48 | rgba | B | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_weapon_cannon_96.png` | 96x96 | rgba | B | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_weapon_laser_16.png` | 16x16 | rgba | B | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_weapon_laser_192.png` | 192x192 | rgba | B | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_weapon_laser_48.png` | 48x48 | rgba | B | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_weapon_laser_96.png` | 96x96 | rgba | B | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_weapon_mine_16.png` | 16x16 | rgba | B | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_weapon_mine_192.png` | 192x192 | rgba | B | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_weapon_mine_48.png` | 48x48 | rgba | B | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_weapon_mine_96.png` | 96x96 | rgba | B | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_weapon_plasma_16.png` | 16x16 | rgba | B | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_weapon_plasma_192.png` | 192x192 | rgba | B | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_weapon_plasma_48.png` | 48x48 | rgba | B | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_weapon_plasma_96.png` | 96x96 | rgba | B | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_weapon_rocket_16.png` | 16x16 | rgba | B | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_weapon_rocket_192.png` | 192x192 | rgba | B | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_weapon_rocket_48.png` | 48x48 | rgba | B | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_weapon_rocket_96.png` | 96x96 | rgba | B | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_zoom_minus.png` | 718x703 | rgba | B | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_zoom_minus_16.png` | 16x16 | rgba | B | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_zoom_minus_192.png` | 192x192 | rgba | B | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_zoom_minus_48.png` | 48x48 | rgba | B | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_zoom_minus_96.png` | 96x96 | rgba | B | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_zoom_plus.png` | 712x702 | rgba | B | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
-| `icon_zoom_plus_16.png` | 16x16 | rgba | B | Flat single-colour glyph, 16 px, micro chip band (HUD spots; ICONS_SPEC 6 legibility check); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_zoom_plus_192.png` | 192x192 | rgba | B | Flat single-colour glyph, 192 px, detail band (inspect panes, 4K + UI-scale headroom); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_zoom_plus_48.png` | 48x48 | rgba | B | Flat single-colour glyph, 48 px, legacy consumer band (never silently re-pointed); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `icon_zoom_plus_96.png` | 96x96 | rgba | B | Flat single-colour glyph, 96 px, default band for new consumers (1:1 at 4K / 2x canvas); contain-fit cut from the master, tintable via icons/tint/ (ICONS_SPEC 9.2/9.6). |
-| `panel_boosters.png` | 2048x2048 | rgba | E | Icon atlas panel, 2K (booster consumable icons, 2x3 - spec E 6). Source of the cut icon_* sprites; not a runtime sprite. |
-| `panel_cargo.png` | 2048x2048 | rgb | B | Icon atlas panel, 2K (cargo item glyphs, 2x3). Source of the cut icon_* sprites; not a runtime sprite. |
-| `panel_glyphs.png` | 2048x2048 | rgb | B | Icon atlas panel, 2K (HUD glyphs, 3x3). Source of the cut icon_* sprites; not a runtime sprite. |
-| `panel_status.png` | 2048x2048 | rgba | E | Icon atlas panel, 2K (HUD status effect icons, 3x3 - spec E 6). Source of the cut icon_* sprites; not a runtime sprite. |
-| `panel_weapons.png` | 2048x2048 | rgb | B | Icon atlas panel, 2K (weapon glyphs, 2x3). Source of the cut icon_* sprites; not a runtime sprite. |
+| `icon_alt_angled_armor_plates.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_angled_metal_block.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_angled_pipe_weapon.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_angled_side_enemy_ship.png` | 884x884 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_arched_glowing_vent.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_armored_node_panel.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_arrow_direction_plaque.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_barred_container_silhouette.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_barred_rectangular_module.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_battery_cells.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_beveled_metal_ingot.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_beveled_plate_dark_gray.png` | 974x372 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_beveled_plate_plain_dark.png` | 974x372 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_beveled_plate_rust_tinge.png` | 974x372 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_broken_jagged_shard.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_buckled_crate_module.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_chevron_armor_plate.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_chevron_engine_module.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_chevron_marked_hatch.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_chevron_striped_canister.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_chevron_vent_block.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_chunky_dark_rock.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_circle_slash.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_circular_ring_hatch.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_claw_hook.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_claw_ring_coupling.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_clawed_cone_lamp.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_cracked_glowing_rock.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_crossed_frame.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_crosshair_target_reticle.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_crosshair_targeting_plaque.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_crystal_cluster_rock.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_cubic_rusty_block.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_dark_jagged_boulder.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_diamond_box_module.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_dish_antenna_device.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_dish_antenna_signal.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_dome_arch_module.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_double_arrow_marker.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_double_barreled_cannon.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_double_grooved_block.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_double_ridged_bar.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_double_window_panels.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_double_winged_lamp.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_drilled_metal_bar.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_embedded_metal_rock.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_exhaust_thruster_nozzle.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_faceted_dark_crystal.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_flame_emblem.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_flared_tower_silhouette.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_flat_angular_slab.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_flat_plate_dark_gray.png` | 974x372 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_flat_topped_rock.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_front_view_enemy_ship.png` | 884x884 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_glowing_arched_handle.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_glowing_barrel_weapon.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_glowing_coil_module.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_glowing_vertical_core.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_golden_porous_rock.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_gripper_claw_device.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_grooved_rounded_bar.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_hangar_fighter_bay.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_hangar_fighters.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_hollow_metal_pipe.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_hopper_funnel.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_hopper_funnel_unit.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_lattice_patterned_plate.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_launching_pad.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_layered_dark_stone.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_missile_crosshair.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_octagonal_armored_plate.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_octagonal_bracket_frame.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_octagonal_frame_hatch.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_octagonal_ring_module.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_open_clamp_module.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_open_metal_crate.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_orange_arc_gauge.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_orange_lined_reactor.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_orange_veined_rock.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_part_4.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_part_4_2.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_part_6.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_perforated_metal_block.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_pointed_rocket_missile.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_rear_view_enemy_ship.png` | 884x884 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_ridged_rectangular_bar.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_ringed_glowing_device.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_riveted_side_panel.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_robotic_arm.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_robotic_claw_arm.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_rock_with_gem.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_rounded_metal_brick.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_rusty_cone_lamp.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_rusty_fractured_rock.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_rusty_grooved_bar.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_sensor_targeting_modules.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_shield.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_side_podded_module.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_side_view_enemy_ship.png` | 884x884 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_slotted_metal_block.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_smooth_clear_shard.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_spiked_metal_rock.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_spiked_naval_mine.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_spiky_mineral_formation.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_split_end_bar.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_square_circuit_block.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_square_circuit_panel.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_square_metal_plate.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_square_notched_block.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_stacked_flat_stones.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_stacked_metal_plates.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_stacked_plate_layers.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_stepped_angled_bar.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_stepped_metal_block.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_striped_dark_mineral.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_tapered_metal_wedge.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_thick_arched_handle.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_thin_arched_handle.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_thin_sharp_shard.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_three_horizontal_bars.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_thruster_engine_block.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_thruster_exhaust.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_trapezoid_cup_module.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_trapezoid_vent_panel.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_u_channel_bar.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_vault_door.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_vented_power_block.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_vented_trapezoid_thruster.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_vertical_storage_containers.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_alt_winged_tower_emitter.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_alt_x_scored_block.png` | 512x512 | rgba | B | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_booster_damage.png` | 512x512 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_booster_emp.png` | 512x512 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_booster_repair.png` | 512x512 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_booster_shield.png` | 512x512 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_booster_speed.png` | 512x512 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_booster_teleport.png` | 512x512 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_cargo_container.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_cargo_crate.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_cargo_data_core.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_cargo_fuel_cell.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_cargo_ore.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_cargo_salvage.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_credits.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_contract_escort.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_contract_expedition.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_contract_gather.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_contract_haul.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_contract_hunt.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_equip_drone.png` | 512x512 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_equip_engine.png` | 512x512 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_equip_extra.png` | 512x512 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_equip_generator.png` | 512x512 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_equip_module.png` | 512x512 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_equip_pet.png` | 512x512 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_equip_shield_gen.png` | 512x512 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_close.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_gear.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_hull.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_logout.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_shield.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_zoom_minus.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_zoom_plus.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_ingot_aluminium.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_ingot_cerulite.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_ingot_chromium.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_ingot_cobalt.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_ingot_copper.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_ingot_emberite.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_ingot_gold.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_ingot_iridium.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_ingot_iron.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_ingot_krilium.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_ingot_neodymium.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_ingot_nickel.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_ingot_osmium.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_ingot_palladium.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_ingot_platinum.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_ingot_silicon.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_ingot_silver.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_ingot_titanium.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_ingot_tungsten.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_ingot_voidglass.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_insignia_choir.png` | 512x512 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
+| `icon_insignia_concord.png` | 512x512 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
+| `icon_insignia_meridian.png` | 512x512 | rgba | F | Flat single-colour glyph master (retained re-cut source of the _16/_48/_96/_192 cuts). |
+| `icon_map_bookmark.png` | 512x512 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_map_node_asteroid.png` | 512x512 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_map_node_danger.png` | 512x512 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_map_node_gate.png` | 512x512 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_map_node_home.png` | 512x512 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_map_node_neutral.png` | 512x512 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_map_node_pvp.png` | 512x512 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_map_node_station.png` | 512x512 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_map_route.png` | 512x512 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_mineral_aluminium.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_mineral_cerulite.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_mineral_chromium.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_mineral_cobalt.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_mineral_copper.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_mineral_emberite.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_mineral_gold.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_mineral_iridium.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_mineral_iron.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_mineral_krilium.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_mineral_neodymium.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_mineral_nickel.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_mineral_osmium.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_mineral_palladium.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_mineral_platinum.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_mineral_silicon.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_mineral_silver.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_mineral_titanium.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_mineral_tungsten.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_mineral_voidglass.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_b_afterburner.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_b_fold.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_c_ewar.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_c_nexus.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_c_scanner.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_c_target.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_c_twin.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_e_ion.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_e_std.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_e_vector.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_h_composite.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_h_plate_heavy.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_h_plate_light.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_p_core.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_p_mk2.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_p_std.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_s_heavy.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_s_ion.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_s_light.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_u_cargo.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_u_drones.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_u_holds.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_u_refine.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_u_salvage.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_u_tractor.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_w_mining.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_module_w_railgun.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_service_bounty.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_service_insurance.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_service_vault.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_slot_b.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_slot_c.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_slot_engine.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_slot_h.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_slot_power.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_slot_s.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_slot_u.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_slot_w.svg` | 96x96 | rgba | F | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_status_burning.png` | 512x512 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_status_cloaked.png` | 512x512 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_status_disabled.png` | 512x512 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_status_drained.png` | 512x512 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_status_locked.png` | 512x512 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_status_radiated.png` | 512x512 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_status_repairing.png` | 512x512 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_status_shielded.png` | 512x512 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_status_slowed.png` | 512x512 | rgba | E | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_ammo.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_ammo_laser.png` | 512x512 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_ammo_rocket.png` | 512x512 | rgba | D | Painted icon master (source of the icon splits; not a runtime sprite). |
+| `icon_weapon_cannon.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_weapon_laser.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_weapon_mine.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_weapon_plasma.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
+| `icon_weapon_rocket.svg` | 96x96 | rgba | B | Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family and its tint stencils (D2 icon unification, 2026-09-22). |
 
 ## env - scenery, POIs, pickups, props
 
 | File | px | a | ph | Purpose |
 |---|---|---|---|---|
-| `env_arena_barricade.png` | 954x1484 | rgba | F | Arena prop: bolted barricade plate run, no lamps (brief P1, 14 section 5). |
-| `env_arena_nav_pylon.png` | 887x936 | rgba | F | Arena prop: nav-pylon ring beacon post, ember lamps (brief P1, 14 section 5). |
-| `env_asteroid_b1.png` | 618x771 | rgba | E | Rock look 2: large elongated cigar body (spec E 7). |
-| `env_asteroid_b2.png` | 632x623 | rgba | E | Rock look 2: large twin-lobed body (spec E 7). |
-| `env_asteroid_b3.png` | 559x538 | rgba | E | Rock look 2: medium heavily pitted body (spec E 7). |
-| `env_asteroid_b4.png` | 567x657 | rgba | E | Rock look 2: medium ore-flecked body (spec E 7). |
-| `env_asteroid_b5.png` | 404x413 | rgba | E | Rock look 2: small flat shard (spec E 7). |
-| `env_asteroid_b6.png` | 433x466 | rgba | E | Rock look 2: small rubble cluster (spec E 7). |
-| `env_asteroid_L1.png` | 649x676 | rgba | B | Asteroid sprite, size tier L1 (S/M/L x1-3; ENVIRONMENT_SPEC 4). |
-| `env_asteroid_L2.png` | 555x642 | rgba | B | Asteroid sprite, size tier L2 (S/M/L x1-3; ENVIRONMENT_SPEC 4). |
-| `env_asteroid_L3.png` | 636x649 | rgba | B | Asteroid sprite, size tier L3 (S/M/L x1-3; ENVIRONMENT_SPEC 4). |
-| `env_asteroid_M1.png` | 522x482 | rgba | B | Asteroid sprite, size tier M1 (S/M/L x1-3; ENVIRONMENT_SPEC 4). |
-| `env_asteroid_M2.png` | 499x552 | rgba | B | Asteroid sprite, size tier M2 (S/M/L x1-3; ENVIRONMENT_SPEC 4). |
-| `env_asteroid_M3.png` | 539x519 | rgba | B | Asteroid sprite, size tier M3 (S/M/L x1-3; ENVIRONMENT_SPEC 4). |
-| `env_asteroid_S1.png` | 314x329 | rgba | B | Asteroid sprite, size tier S1 (S/M/L x1-3; ENVIRONMENT_SPEC 4). |
-| `env_asteroid_S2.png` | 370x361 | rgba | B | Asteroid sprite, size tier S2 (S/M/L x1-3; ENVIRONMENT_SPEC 4). |
-| `env_asteroid_S3.png` | 336x340 | rgba | B | Asteroid sprite, size tier S3 (S/M/L x1-3; ENVIRONMENT_SPEC 4). |
-| `env_base_defense.png` | 1744x1670 | rgba | E | Defense fortress: terraced casemates, battery row, sensor masts (spec E 3). |
-| `env_base_mining.png` | 1955x1722 | rgba | E | Mining base, station-scale POI: silo row, crusher derrick, conveyor arms (spec E 3). |
-| `env_base_shipyard.png` | 1929x1105 | rgba | E | Shipyard/drydock: empty construction cradle between gantry towers (spec E 3). |
-| `env_base_trade.png` | 2004x1344 | rgba | E | Trade/refinery base: docking ring, mooring arms, transfer cranes (spec E 3). |
-| `env_bg_body_plate.png` | 2048x1152 | rgb | E | Background body plate, 16:9 opaque parallax layer (spec E 5). |
-| `env_body_ice_moon.png` | 1839x1873 | rgba | E | Airless ice moon, top-down body sprite (spec E 5). |
-| `env_body_ore_moon.png` | 1871x1906 | rgba | E | Airless mining-scarred moon with ore seams (spec E 5). |
-| `env_body_shattered.png` | 1870x1891 | rgba | E | Airless shattered moon with a chunk ring (spec E 5). |
-| `env_debris_field.png` | 1986x1956 | rgba | D | Scattered torn-hull debris field (expansion spec 6). |
-| `env_ice_field.png` | 1891x1869 | rgba | D | Frozen fragment cluster (expansion spec 6). |
-| `env_jump_gate.png` | 1936x1277 | rgba | D | Jump gate structure, welded pylons + segmented ring (expansion spec 6). |
-| `env_jump_gate_ring.png` | 1636x1590 | rgba | F | Jump gate ring: segmented radial structure with four engine blocks, no aperture glow (brief P1, 11 section 2.1). |
-| `env_loading_bg.png` | 2048x1152 | rgb | B | Loading screen background, 16:9 opaque. |
-| `env_menu_bg.png` | 2048x1152 | rgb | B | Main menu background, 16:9 opaque (MAIN_MENU_SPEC). |
-| `env_mine.png` | 1396x1588 | rgba | E | Deployed mine world object: spiked sphere, ember seam lamp (spec E 7). |
-| `env_nebula_veil.png` | 2048x2048 | rgb | D | Tiling nebula haze, very low contrast, RGB (expansion spec 6). |
-| `env_ore_cluster.png` | 1790x1803 | rgba | D | Dense mineable ore cluster with veins (expansion spec 6). |
-| `env_outpost_defense.png` | 1156x1591 | rgba | E | Defense outpost: stacked turrets on an armoured drum (spec E 4). |
-| `env_outpost_mining.png` | 1220x1843 | rgba | E | Mining outpost: drill tower anchored on a rock chunk (spec E 4). |
-| `env_outpost_relay.png` | 636x1864 | rgba | E | Comms relay outpost: lattice mast with three dishes (spec E 4). |
-| `env_outpost_repair.png` | 1350x1934 | rgba | E | Repair post: open cradle, clamp arms, tool rack (spec E 4). |
-| `env_pickup_ammo_pod.png` | 725x443 | rgba | D | World pickup: ammo canister (expansion spec 5). |
-| `env_pickup_bonus_box.png` | 755x463 | rgba | D | World pickup: sealed ordnance crate (expansion spec 5). |
-| `env_pickup_ore_pod.png` | 760x463 | rgba | D | World pickup: ore container (expansion spec 5). |
-| `env_pickup_repair_pod.png` | 728x510 | rgba | D | World pickup: repair pod (expansion spec 5). |
-| `env_pickup_shield_pod.png` | 524x502 | rgba | D | World pickup: shield emitter pod (expansion spec 5). |
-| `env_pickup_speed_pod.png` | 780x284 | rgba | D | World pickup: speed boost pod (expansion spec 5). |
-| `env_planet_moon.png` | 1601x1650 | rgba | D | Airless dead moon (map/skybox POI; expansion spec 6). |
-| `env_prop_drive_core.png` | 631x748 | rgba | D | Wreck fragment: drive core (expansion spec 9). |
-| `env_prop_hull_mid.png` | 581x755 | rgba | D | Wreck fragment: mid section (expansion spec 9). |
-| `env_prop_hull_nose.png` | 584x864 | rgba | D | Wreck fragment: bow section (expansion spec 9). |
-| `env_prop_hull_stern.png` | 591x816 | rgba | D | Wreck fragment: stern section (expansion spec 9). |
-| `env_prop_plate_section.png` | 551x823 | rgba | D | Wreck fragment: plate section (expansion spec 9). |
-| `env_prop_rib_cluster.png` | 580x826 | rgba | D | Wreck fragment: rib cluster (expansion spec D 9). |
-| `env_sector_1_bg.png` | 2048x1152 | rgb | F | Sector backdrop: Halcyon Reach, ordered home space, 2048x1152 opaque (brief P1, 11 section 1). |
-| `env_sector_2_bg.png` | 2048x1152 | rgb | F | Sector backdrop: Iron Marches, the industrial belt, 2048x1152 opaque (brief P1). |
-| `env_sector_3_bg.png` | 2048x1152 | rgb | F | Sector backdrop: Meridian Span, the trade crossroads, 2048x1152 opaque (brief P1). |
-| `env_sector_4_bg.png` | 2048x1152 | rgb | F | Sector backdrop: Ashveil Expanse, the contested edge, 2048x1152 opaque (brief P1). |
-| `env_sector_5_bg.png` | 2048x1152 | rgb | F | Sector backdrop: Cinder Verge, exotic territory, 2048x1152 opaque (brief P1). |
-| `env_sector_6_bg.png` | 2048x1152 | rgb | F | Sector backdrop: The Hollows, the deep exotic belt, 2048x1152 opaque (brief P1). |
-| `env_sector_7_bg.png` | 2048x1152 | rgb | F | Sector backdrop: Maw Belt, lawless arena belt, 2048x1152 opaque (brief P1). |
-| `env_stars_layer1.png` | 2048x2048 | rgb | B | Parallax star layer 1 (tiling, RGB; ENVIRONMENT_SPEC 2). |
-| `env_stars_layer2.png` | 2048x2048 | rgb | B | Parallax star layer 2 (tiling, RGB; ENVIRONMENT_SPEC 2). |
-| `env_stars_layer3.png` | 2048x2048 | rgb | B | Parallax star layer 3 (tiling, RGB; ENVIRONMENT_SPEC 2). |
-| `env_station.png` | 2048x2048 | rgba | B | Dockable station (POI). |
-| `env_station_mmo.png` | 1942x1531 | rgba | D | Station in MMO plate pattern (expansion spec 6). |
-| `env_station_ruined.png` | 1810x1626 | rgba | D | Gutted hostile station, torn ring (expansion spec 6). |
-| `env_wreck_hulk.png` | 1877x1487 | rgba | B | Wreck hulk, salvage POI. |
-| `panel_asteroids_b.png` | 2048x2048 | rgba | E | Asteroid sheet master, 2K (source of env_asteroid_b1..b6; not a runtime sprite). |
 
 ## ui - chrome, insignia, backdrops
 
@@ -900,71 +431,181 @@
 | `ui_backdrop_login.png` | 2048x1152 | rgb | D | Login/company-select backdrop, 16:9 opaque (expansion spec 8) |
 | `ui_backdrop_starmap.png` | 2048x1152 | rgb | D | Starmap screen backdrop, 16:9 opaque (expansion spec 8) |
 | `ui_bar_caps.png` | 42x14 | rgba | B | Status bar end caps (42x14) |
-| `ui_bar_caps@2x.png` | 84x28 | rgba | B | Status bar end caps (42x14) (2x cut, UI_CHROME_ASSETS_SPEC 10). |
+| `ui_bar_caps_alt.png` | 317x178 | rgba | B | UI sprite. |
 | `ui_button_plate_disabled.png` | 280x56 | rgba | B | UI button plate, disabled state, 280x56 (UI_CHROME_ASSETS_SPEC). |
-| `ui_button_plate_disabled@2x.png` | 560x112 | rgba | B | UI button plate, disabled state, 560x112 2x cut (UI_CHROME_ASSETS_SPEC 10). |
 | `ui_button_plate_hover.png` | 280x56 | rgba | B | UI button plate, hover state, 280x56 (UI_CHROME_ASSETS_SPEC). |
-| `ui_button_plate_hover@2x.png` | 560x112 | rgba | B | UI button plate, hover state, 560x112 2x cut (UI_CHROME_ASSETS_SPEC 10). |
 | `ui_button_plate_normal.png` | 280x56 | rgba | B | UI button plate, normal state, 280x56 (UI_CHROME_ASSETS_SPEC). |
-| `ui_button_plate_normal@2x.png` | 560x112 | rgba | B | UI button plate, normal state, 560x112 2x cut (UI_CHROME_ASSETS_SPEC 10). |
 | `ui_button_plate_pressed.png` | 280x56 | rgba | B | UI button plate, pressed state, 280x56 (UI_CHROME_ASSETS_SPEC). |
-| `ui_button_plate_pressed@2x.png` | 560x112 | rgba | B | UI button plate, pressed state, 560x112 2x cut (UI_CHROME_ASSETS_SPEC 10). |
-| `ui_insignia_mic.png` | 776x889 | rgba | D | Company emblem: Miner's Incorporated (MENU_FLOW 3.3-3.7) |
-| `ui_insignia_mmo.png` | 779x891 | rgba | D | Company emblem: Mars Mining Operations (MENU_FLOW 3.3-3.7) |
-| `ui_insignia_neutral.png` | 780x894 | rgba | D | Company emblem: neutral plate (MENU_FLOW 3.3-3.7) |
-| `ui_insignia_ven.png` | 783x894 | rgba | D | Company emblem: Venus Resources (MENU_FLOW 3.3-3.7) |
+| `ui_insignia_mic.png` | 865x976 | rgba | D | Company emblem: Miner's Incorporated (MENU_FLOW 3.3-3.7) |
+| `ui_insignia_mmo.png` | 865x976 | rgba | D | Company emblem: Mars Mining Operations (MENU_FLOW 3.3-3.7) |
+| `ui_insignia_neutral.png` | 865x976 | rgba | D | Company emblem: neutral plate (MENU_FLOW 3.3-3.7) |
+| `ui_insignia_ven.png` | 865x976 | rgba | D | Company emblem: Venus Resources (MENU_FLOW 3.3-3.7) |
 | `ui_minimap_bezel.png` | 200x200 | rgba | B | Minimap bezel ring, 200x200. |
-| `ui_minimap_bezel@2x.png` | 400x400 | rgba | B | Minimap bezel ring, 200x200 (2x cut, UI_CHROME_ASSETS_SPEC 10). |
 | `ui_panel_frame.png` | 96x96 | rgba | B | 9-slice panel frame, 96x96 with a 32 px painted border band (the nine-slice margin; ICONS_SPEC 9.8 C1) |
-| `ui_panel_frame@2x.png` | 192x192 | rgba | B | 9-slice panel frame, 192x192 with a 64 px painted border band, 2x cut of the 96x96 frame (ICONS_SPEC 9.8 C1; UI_CHROME_ASSETS_SPEC 10). |
+| `ui_panel_frame_alt.png` | 1841x1831 | rgba | B | UI sprite. |
 | `ui_slot_cargo_disabled.png` | 40x40 | rgba | B | Slot plate: cargo slot, disabled state (UI_CHROME_ASSETS_SPEC). |
-| `ui_slot_cargo_disabled@2x.png` | 80x80 | rgba | B | Slot plate: cargo slot, disabled state, 2x cut (UI_CHROME_ASSETS_SPEC 10). |
 | `ui_slot_cargo_hover.png` | 40x40 | rgba | B | Slot plate: cargo slot, hover state (UI_CHROME_ASSETS_SPEC). |
-| `ui_slot_cargo_hover@2x.png` | 80x80 | rgba | B | Slot plate: cargo slot, hover state, 2x cut (UI_CHROME_ASSETS_SPEC 10). |
 | `ui_slot_cargo_normal.png` | 40x40 | rgba | B | Slot plate: cargo slot, normal state (UI_CHROME_ASSETS_SPEC). |
-| `ui_slot_cargo_normal@2x.png` | 80x80 | rgba | B | Slot plate: cargo slot, normal state, 2x cut (UI_CHROME_ASSETS_SPEC 10). |
 | `ui_slot_cargo_pressed.png` | 40x40 | rgba | B | Slot plate: cargo slot, pressed state (UI_CHROME_ASSETS_SPEC). |
-| `ui_slot_cargo_pressed@2x.png` | 80x80 | rgba | B | Slot plate: cargo slot, pressed state, 2x cut (UI_CHROME_ASSETS_SPEC 10). |
 | `ui_slot_inventory_disabled.png` | 56x56 | rgba | B | Slot plate: inventory slot, disabled state (UI_CHROME_ASSETS_SPEC). |
-| `ui_slot_inventory_disabled@2x.png` | 112x112 | rgba | B | Slot plate: inventory slot, disabled state, 2x cut (UI_CHROME_ASSETS_SPEC 10). |
 | `ui_slot_inventory_hover.png` | 56x56 | rgba | B | Slot plate: inventory slot, hover state (UI_CHROME_ASSETS_SPEC). |
-| `ui_slot_inventory_hover@2x.png` | 112x112 | rgba | B | Slot plate: inventory slot, hover state, 2x cut (UI_CHROME_ASSETS_SPEC 10). |
 | `ui_slot_inventory_normal.png` | 56x56 | rgba | B | Slot plate: inventory slot, normal state (UI_CHROME_ASSETS_SPEC). |
-| `ui_slot_inventory_normal@2x.png` | 112x112 | rgba | B | Slot plate: inventory slot, normal state, 2x cut (UI_CHROME_ASSETS_SPEC 10). |
 | `ui_slot_inventory_pressed.png` | 56x56 | rgba | B | Slot plate: inventory slot, pressed state (UI_CHROME_ASSETS_SPEC). |
-| `ui_slot_inventory_pressed@2x.png` | 112x112 | rgba | B | Slot plate: inventory slot, pressed state, 2x cut (UI_CHROME_ASSETS_SPEC 10). |
 | `ui_slot_weapon_disabled.png` | 48x48 | rgba | B | Slot plate: weapon slot, disabled state (UI_CHROME_ASSETS_SPEC). |
-| `ui_slot_weapon_disabled@2x.png` | 96x96 | rgba | B | Slot plate: weapon slot, disabled state, 2x cut (UI_CHROME_ASSETS_SPEC 10). |
 | `ui_slot_weapon_hover.png` | 48x48 | rgba | B | Slot plate: weapon slot, hover state (UI_CHROME_ASSETS_SPEC). |
-| `ui_slot_weapon_hover@2x.png` | 96x96 | rgba | B | Slot plate: weapon slot, hover state, 2x cut (UI_CHROME_ASSETS_SPEC 10). |
 | `ui_slot_weapon_normal.png` | 48x48 | rgba | B | Slot plate: weapon slot, normal state (UI_CHROME_ASSETS_SPEC). |
-| `ui_slot_weapon_normal@2x.png` | 96x96 | rgba | B | Slot plate: weapon slot, normal state, 2x cut (UI_CHROME_ASSETS_SPEC 10). |
 | `ui_slot_weapon_pressed.png` | 48x48 | rgba | B | Slot plate: weapon slot, pressed state (UI_CHROME_ASSETS_SPEC). |
-| `ui_slot_weapon_pressed@2x.png` | 96x96 | rgba | B | Slot plate: weapon slot, pressed state, 2x cut (UI_CHROME_ASSETS_SPEC 10). |
 
 ## fx - combat and screen effects
 
 | File | px | a | ph | Purpose |
 |---|---|---|---|---|
+| `fx_acid_burn.png` | 2048x2048 | rgba | B | FX sprite.. |
+| `fx_acid_burn_f1.png` | 864x880 | rgba | B | FX sprite.. |
+| `fx_acid_burn_f2.png` | 864x880 | rgba | B | FX sprite.. |
+| `fx_acid_burn_f3.png` | 864x880 | rgba | B | FX sprite.. |
+| `fx_acid_burn_f4.png` | 864x880 | rgba | B | FX sprite.. |
 | `fx_anomaly_grave_glow.png` | 2048x2048 | rgb | F | Grave-cache anomaly glow, steel highlight core, RGB on void black (brief P1) |
+| `fx_anomaly_grave_glow_f1.png` | 752x872 | rgba | F | FX sprite.. |
+| `fx_anomaly_grave_glow_f2.png` | 752x872 | rgba | F | FX sprite.. |
+| `fx_anomaly_grave_glow_f3.png` | 752x872 | rgba | F | FX sprite.. |
+| `fx_anomaly_grave_glow_f4.png` | 752x872 | rgba | F | FX sprite.. |
 | `fx_anomaly_rift.png` | 2048x2048 | rgb | F | Void-rift anomaly tear, ember pair (hazard), RGB on void black (brief P1) |
+| `fx_anomaly_rift_f1.png` | 536x1024 | rgba | F | FX sprite.. |
+| `fx_anomaly_rift_f2.png` | 536x1024 | rgba | F | FX sprite.. |
+| `fx_anomaly_rift_f3.png` | 536x1024 | rgba | F | FX sprite.. |
+| `fx_anomaly_rift_f4.png` | 536x1024 | rgba | F | FX sprite.. |
 | `fx_anomaly_shimmer.png` | 2048x2048 | rgb | F | Ore-bloom anomaly shimmer, steel highlight only, RGB on void black (brief P1, 11 section 3.2) |
+| `fx_anomaly_shimmer_f1.png` | 784x768 | rgba | F | FX sprite.. |
+| `fx_anomaly_shimmer_f2.png` | 784x768 | rgba | F | FX sprite.. |
+| `fx_anomaly_shimmer_f3.png` | 784x768 | rgba | F | FX sprite.. |
+| `fx_anomaly_shimmer_f4.png` | 784x768 | rgba | F | FX sprite.. |
+| `fx_arc_spark.png` | 2048x2048 | rgb | B | FX sprite.. |
+| `fx_arc_spark_f1.png` | 912x672 | rgba | B | FX sprite.. |
+| `fx_arc_spark_f2.png` | 912x672 | rgba | B | FX sprite.. |
+| `fx_arc_spark_f3.png` | 912x672 | rgba | B | FX sprite.. |
+| `fx_arc_spark_f4.png` | 912x672 | rgba | B | FX sprite.. |
+| `fx_bio_plasma.png` | 2048x2048 | rgb | B | FX sprite.. |
+| `fx_bio_plasma_f1.png` | 744x728 | rgba | B | FX sprite.. |
+| `fx_bio_plasma_f2.png` | 744x728 | rgba | B | FX sprite.. |
+| `fx_bio_plasma_f3.png` | 744x728 | rgba | B | FX sprite.. |
+| `fx_bio_plasma_f4.png` | 744x728 | rgba | B | FX sprite.. |
 | `fx_cargo_pulse.png` | 2048x2048 | rgb | B | Cargo tractor pulse. |
+| `fx_cargo_pulse_f1.png` | 416x384 | rgba | B | FX sprite.. |
+| `fx_cargo_pulse_f2.png` | 416x384 | rgba | B | FX sprite.. |
+| `fx_cargo_pulse_f3.png` | 416x384 | rgba | B | FX sprite.. |
+| `fx_cargo_pulse_f4.png` | 416x384 | rgba | B | FX sprite.. |
+| `fx_dash_charge.png` | 2048x2048 | rgb | B | FX sprite.. |
+| `fx_dash_charge_f1.png` | 936x960 | rgba | B | FX sprite.. |
+| `fx_dash_charge_f2.png` | 936x960 | rgba | B | FX sprite.. |
+| `fx_dash_charge_f3.png` | 936x960 | rgba | B | FX sprite.. |
+| `fx_dash_charge_f4.png` | 936x960 | rgba | B | FX sprite.. |
+| `fx_dust_streak.png` | 2048x2048 | rgba | B | FX sprite.. |
+| `fx_dust_streak_f1.png` | 592x64 | rgba | B | FX sprite.. |
+| `fx_dust_streak_f2.png` | 592x64 | rgba | B | FX sprite.. |
+| `fx_dust_streak_f3.png` | 592x64 | rgba | B | FX sprite.. |
+| `fx_dust_streak_f4.png` | 592x64 | rgba | B | FX sprite.. |
 | `fx_ember_pulse.png` | 2048x2048 | rgb | B | Ember pulse, generic danger bloom. |
+| `fx_ember_pulse_f1.png` | 536x536 | rgba | B | FX sprite.. |
+| `fx_ember_pulse_f2.png` | 536x536 | rgba | B | FX sprite.. |
+| `fx_ember_pulse_f3.png` | 536x536 | rgba | B | FX sprite.. |
+| `fx_ember_pulse_f4.png` | 536x536 | rgba | B | FX sprite.. |
+| `fx_ember_ring.png` | 2048x2048 | rgb | B | FX sprite.. |
+| `fx_ember_ring_alt.png` | 2048x2048 | rgb | B | FX sprite.. |
+| `fx_ember_ring_alt_f1.png` | 840x824 | rgba | B | FX sprite.. |
+| `fx_ember_ring_alt_f2.png` | 840x824 | rgba | B | FX sprite.. |
+| `fx_ember_ring_alt_f3.png` | 840x824 | rgba | B | FX sprite.. |
+| `fx_ember_ring_alt_f4.png` | 840x824 | rgba | B | FX sprite.. |
+| `fx_ember_ring_f1.png` | 848x848 | rgba | B | FX sprite.. |
+| `fx_ember_ring_f2.png` | 848x848 | rgba | B | FX sprite.. |
+| `fx_ember_ring_f3.png` | 848x848 | rgba | B | FX sprite.. |
+| `fx_ember_ring_f4.png` | 848x848 | rgba | B | FX sprite.. |
 | `fx_emp_arc.png` | 2048x2048 | rgb | D | EMP arc discharge (expansion spec 7) |
+| `fx_emp_arc_f1.png` | 824x872 | rgba | D | FX sprite.. |
+| `fx_emp_arc_f2.png` | 824x872 | rgba | D | FX sprite.. |
+| `fx_emp_arc_f3.png` | 824x872 | rgba | D | FX sprite.. |
+| `fx_emp_arc_f4.png` | 824x872 | rgba | D | FX sprite.. |
 | `fx_engine_trail.png` | 2048x2048 | rgb | B | Engine trail. |
+| `fx_engine_trail_f1.png` | 712x64 | rgba | B | FX sprite.. |
+| `fx_engine_trail_f2.png` | 712x64 | rgba | B | FX sprite.. |
+| `fx_engine_trail_f3.png` | 712x64 | rgba | B | FX sprite.. |
+| `fx_engine_trail_f4.png` | 712x64 | rgba | B | FX sprite.. |
 | `fx_explosion.png` | 2048x2048 | rgb | B | Explosion, 5-frame sheet. |
-| `fx_hull_critical_vignette.png` | 2048x2048 | rgb | B | Hull-critical screen vignette (single) |
+| `fx_explosion_f1.png` | 904x776 | rgba | B | FX sprite.. |
+| `fx_explosion_f2.png` | 904x776 | rgba | B | FX sprite.. |
+| `fx_explosion_f3.png` | 904x776 | rgba | B | FX sprite.. |
+| `fx_explosion_f4.png` | 904x776 | rgba | B | FX sprite.. |
+| `fx_explosion_f5.png` | 904x776 | rgba | B | FX sprite.. |
+| `fx_hull_critical_vignette.png` | 2048x2048 | rgba | B | Hull-critical screen vignette (single) |
+| `fx_hull_critical_vignette_f1.png` | 984x960 | rgba | B | FX sprite.. |
+| `fx_hull_critical_vignette_f2.png` | 984x960 | rgba | B | FX sprite.. |
+| `fx_hull_critical_vignette_f3.png` | 984x960 | rgba | B | FX sprite.. |
+| `fx_hull_critical_vignette_f4.png` | 984x960 | rgba | B | FX sprite.. |
 | `fx_jump_portal.png` | 2048x2048 | rgb | D | Jump aperture ring, ember (single frame; expansion spec 7) |
+| `fx_jump_portal_f1.png` | 608x680 | rgba | D | FX sprite.. |
+| `fx_jump_portal_f2.png` | 608x680 | rgba | D | FX sprite.. |
+| `fx_jump_portal_f3.png` | 608x680 | rgba | D | FX sprite.. |
+| `fx_jump_portal_f4.png` | 608x680 | rgba | D | FX sprite.. |
 | `fx_laser_bolt.png` | 2048x2048 | rgb | B | Laser bolt projectile (single frame) |
+| `fx_laser_bolt_f1.png` | 800x160 | rgba | B | FX sprite.. |
+| `fx_laser_bolt_f2.png` | 800x160 | rgba | B | FX sprite.. |
+| `fx_laser_bolt_f3.png` | 800x160 | rgba | B | FX sprite.. |
+| `fx_laser_bolt_f4.png` | 800x160 | rgba | B | FX sprite.. |
+| `fx_lock_channel.png` | 2048x2048 | rgb | B | FX sprite.. |
+| `fx_lock_channel_f1.png` | 544x552 | rgba | B | FX sprite.. |
+| `fx_lock_channel_f2.png` | 544x552 | rgba | B | FX sprite.. |
+| `fx_lock_channel_f3.png` | 544x552 | rgba | B | FX sprite.. |
+| `fx_lock_channel_f4.png` | 544x552 | rgba | B | FX sprite.. |
+| `fx_mine.png` | 1784x1784 | rgba | B | FX sprite.. |
+| `fx_mine_f1.png` | 744x736 | rgba | B | FX sprite.. |
+| `fx_mine_f2.png` | 744x736 | rgba | B | FX sprite.. |
+| `fx_mine_f3.png` | 744x736 | rgba | B | FX sprite.. |
+| `fx_mine_f4.png` | 744x736 | rgba | B | FX sprite.. |
 | `fx_mining_beam.png` | 2048x2048 | rgb | B | Mining beam, 4-frame sheet. |
+| `fx_mining_beam_f1.png` | 440x424 | rgba | B | FX sprite.. |
+| `fx_mining_beam_f2.png` | 440x424 | rgba | B | FX sprite.. |
+| `fx_mining_beam_f3.png` | 440x424 | rgba | B | FX sprite.. |
+| `fx_mining_beam_f4.png` | 440x424 | rgba | B | FX sprite.. |
 | `fx_missile_trail.png` | 2048x2048 | rgb | D | Missile trail, 4-frame sheet (expansion spec 7) |
+| `fx_missile_trail_f1.png` | 552x248 | rgba | D | FX sprite.. |
+| `fx_missile_trail_f2.png` | 552x248 | rgba | D | FX sprite.. |
+| `fx_missile_trail_f3.png` | 552x248 | rgba | D | FX sprite.. |
+| `fx_missile_trail_f4.png` | 552x248 | rgba | D | FX sprite.. |
 | `fx_muzzle_flash.png` | 2048x2048 | rgb | B | Muzzle flash, 4-frame sheet. |
+| `fx_muzzle_flash_f1.png` | 504x496 | rgba | B | FX sprite.. |
+| `fx_muzzle_flash_f2.png` | 504x496 | rgba | B | FX sprite.. |
+| `fx_muzzle_flash_f3.png` | 504x496 | rgba | B | FX sprite.. |
+| `fx_muzzle_flash_f4.png` | 504x496 | rgba | B | FX sprite.. |
 | `fx_repair_pulse.png` | 2048x2048 | rgb | D | Repair pulse ring, steel highlight (non-ember exception; expansion spec 7) |
+| `fx_repair_pulse_f1.png` | 888x904 | rgba | D | FX sprite.. |
+| `fx_repair_pulse_f2.png` | 888x904 | rgba | D | FX sprite.. |
+| `fx_repair_pulse_f3.png` | 888x904 | rgba | D | FX sprite.. |
+| `fx_repair_pulse_f4.png` | 888x904 | rgba | D | FX sprite.. |
 | `fx_secondary_explosion.png` | 2048x2048 | rgb | D | Secondary explosion (expansion spec 7) |
+| `fx_secondary_explosion_f1.png` | 352x312 | rgba | D | FX sprite.. |
+| `fx_secondary_explosion_f2.png` | 352x312 | rgba | D | FX sprite.. |
+| `fx_secondary_explosion_f3.png` | 352x312 | rgba | D | FX sprite.. |
+| `fx_secondary_explosion_f4.png` | 352x312 | rgba | D | FX sprite.. |
 | `fx_shield_break.png` | 2048x2048 | rgb | D | Shield collapse, 4-frame sheet, no ember (expansion spec 7) |
+| `fx_shield_break_f1.png` | 536x624 | rgba | D | FX sprite.. |
+| `fx_shield_break_f2.png` | 536x624 | rgba | D | FX sprite.. |
+| `fx_shield_break_f3.png` | 536x624 | rgba | D | FX sprite.. |
+| `fx_shield_break_f4.png` | 536x624 | rgba | D | FX sprite.. |
 | `fx_shield_ripple.png` | 2048x2048 | rgb | B | Shield hit ripple (steel highlight) |
+| `fx_shield_ripple_f1.png` | 736x720 | rgba | B | FX sprite.. |
+| `fx_shield_ripple_f2.png` | 736x720 | rgba | B | FX sprite.. |
+| `fx_shield_ripple_f3.png` | 736x720 | rgba | B | FX sprite.. |
+| `fx_shield_ripple_f4.png` | 736x720 | rgba | B | FX sprite.. |
+| `fx_smoke_plume.png` | 2048x2048 | rgba | B | FX sprite.. |
+| `fx_smoke_plume_f1.png` | 464x1024 | rgba | B | FX sprite.. |
+| `fx_smoke_plume_f2.png` | 464x1024 | rgba | B | FX sprite.. |
+| `fx_smoke_plume_f3.png` | 464x1024 | rgba | B | FX sprite.. |
+| `fx_smoke_plume_f4.png` | 464x1024 | rgba | B | FX sprite.. |
 | `fx_tractor_beam.png` | 2048x2048 | rgb | D | Tractor beam (expansion spec 7) |
+| `fx_tractor_beam_f1.png` | 848x104 | rgba | D | FX sprite.. |
+| `fx_tractor_beam_f2.png` | 848x104 | rgba | D | FX sprite.. |
+| `fx_tractor_beam_f3.png` | 848x104 | rgba | D | FX sprite.. |
+| `fx_tractor_beam_f4.png` | 848x104 | rgba | D | FX sprite.. |
 
 ## audio - music, sfx, ambience, ui
 
@@ -1071,8 +712,8 @@ Cue resolution and the names the code can pass today: `docs/design/ASSET_WIRING_
 ## Provenance appendix
 
 - Audio (`audio/generation_log_audio.md`): every file is CC0 1.0, no attribution required. 25 sources were downloaded into `asset-library/` and recorded in `asset-library/ASSET_MANIFEST.json` with their checksums; the per-file source pack, author and URL are in the table above and in the generation log.
-- Run folders (`assets/<family>/20260917-*/`): 105 directories holding the raw generator downloads and their `job.json`; kept for provenance, not consumers.
-- `icons/tint/`: 556 PNGs, derived white stencils (RGB = white, alpha byte-identical) of every `icons/icon_*_{16,48}.png` source, written by `tools/derive_icon_tints.gd`. Engine-side modulate tints them with theme colours. The flat glyphs (Phase B and Phase F) are the intended consumers; the painted Phase D/E icon splits are never consumed tinted, so their stencils are unused.
+- Run folders (`assets/<family>/20260917-*/`): 0 directories holding the raw generator downloads and their `job.json`; kept for provenance, not consumers.
+- `icons/tint/`: 540 PNGs, derived white stencils (RGB = white, alpha byte-identical) of the raster-kept icon masters' historical size cuts, written by `tools/derive_icon_tints.gd`. Engine-side modulate tints them with theme colours. The 135 SVG-side symbols' stencils were retired with their raster families (D2 icon unification, 2026-09-22); the painted D/E stencils stay unused until the tint rework (D3 item 2).
 - Phase D panel masters (`panel_equipment`, `panel_map_markers`, `panel_pickups`, `panel_insignia`, `panel_props`) were consumed during splitting and deleted with the other intermediates; only the splits ship (deviation from expansion spec 2.6, recorded in 12).
 - Phase F panel masters (`panel_minerals_ore`, `panel_minerals_ingot`, `panel_modules_a/b/c`, `panel_slots`, `panel_contracts`, `panel_service_glyphs`, `panel_faction_insignia`) never entered `assets/`: they stay in `staging/phase_f/<family>/` with their `job.json` files as provenance, and only the cut sprites ship. Per-family evidence: `assets/<family>/generation_log_phase_f.md`.
 

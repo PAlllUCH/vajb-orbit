@@ -81,8 +81,8 @@ const SLOT_GLYPH_STEMS: Dictionary = {
 	&"utility": "u",
 }
 const SLOT_GLYPH_DIR := "res://assets/icons/slot/"
-const SLOT_GLYPH_TEMPLATE := "icon_slot_%s_48.png"
-const SLOT_GLYPH_WEAPON := "res://assets/icons/slot/icon_slot_w_48.png"
+const SLOT_GLYPH_TEMPLATE := "icon_slot_%s.svg"
+const SLOT_GLYPH_WEAPON := "res://assets/icons/slot/icon_slot_w.svg"
 ## The one module the pushed HUD cells fit, so a fitted cell's icon is a real catalogue path
 ## (`ModuleCatalog.icon_path`) rather than a hand-written string.
 const FITTED_MODULE := &"w_laser"

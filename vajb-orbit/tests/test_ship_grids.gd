@@ -834,9 +834,9 @@ func test_module_catalog_is_the_one_literal_ship_fit_aliases() -> void:
 func test_module_icon_rule_and_files_on_disk() -> void:
 	for row: Dictionary in MODULE_ROWS:
 		var id: StringName = row["id"]
-		var expected := "res://assets/icons/module/icon_module_%s_48.png" % id
+		var expected := "res://assets/icons/module/icon_module_%s.svg" % id
 		if WEAPON_ICON_FAMILIES.has(id):
-			expected = "res://assets/icons/weapon/icon_weapon_%s_48.png" % WEAPON_ICON_FAMILIES[id]
+			expected = "res://assets/icons/weapon/icon_weapon_%s.svg" % WEAPON_ICON_FAMILIES[id]
 		assert_eq(Catalog.icon_path(id), expected, "%s follows the icon rule" % id)
 		assert_eq(
 			String(Catalog.module(id).get(&"icon", "")),

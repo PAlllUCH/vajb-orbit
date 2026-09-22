@@ -18,7 +18,7 @@ const AMMO_PACKS: Array[Dictionary] = [
 		&"name": "Laser Cells",
 		&"rounds": 300,
 		&"cost": 120,
-		&"icon": "res://assets/icons/weapon/icon_ammo_laser_48.png",
+		&"icon": "res://assets/icons/weapon/icon_ammo_laser.png",
 		&"description": "Standard laser capacitors. Cheap, and the laser is thirsty.",
 	},
 	{
@@ -26,7 +26,7 @@ const AMMO_PACKS: Array[Dictionary] = [
 		&"name": "Cannon Shells",
 		&"rounds": 300,
 		&"cost": 180,
-		&"icon": "res://assets/icons/weapon/icon_weapon_cannon_48.png",
+		&"icon": "res://assets/icons/weapon/icon_weapon_cannon.svg",
 		&"description": "Kinetic slugs for the autocannon. No guidance, no mercy.",
 	},
 	{
@@ -34,7 +34,7 @@ const AMMO_PACKS: Array[Dictionary] = [
 		&"name": "Rocket Pod",
 		&"rounds": 60,
 		&"cost": 240,
-		&"icon": "res://assets/icons/weapon/icon_ammo_rocket_48.png",
+		&"icon": "res://assets/icons/weapon/icon_ammo_rocket.png",
 		&"description": "Sixty warheads. Reserved for targets that are still moving.",
 	},
 	{
@@ -42,7 +42,7 @@ const AMMO_PACKS: Array[Dictionary] = [
 		&"name": "Mine Rack",
 		&"rounds": 40,
 		&"cost": 200,
-		&"icon": "res://assets/icons/weapon/icon_weapon_mine_48.png",
+		&"icon": "res://assets/icons/weapon/icon_weapon_mine.svg",
 		&"description": "Proximity mines. Best deployed while running away.",
 	},
 	{
@@ -50,7 +50,7 @@ const AMMO_PACKS: Array[Dictionary] = [
 		&"name": "Plasma Cells",
 		&"rounds": 50,
 		&"cost": 320,
-		&"icon": "res://assets/icons/weapon/icon_weapon_plasma_48.png",
+		&"icon": "res://assets/icons/weapon/icon_weapon_plasma.svg",
 		&"description": "Superheated cells. Hard on the barrel, harder on the hull.",
 	},
 ]

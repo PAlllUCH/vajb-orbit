@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <path fill="#232629" d="M48 8 L80 26 L80 70 L48 88 L16 70 L16 26 Z"/>
+  <g fill="#C9CDD2">
+    <path d="M26 30 H70 L74 38 H22 Z"/>
+    <path d="M24 44 H72 L74 52 H22 Z"/>
+    <path d="M22 58 H74 L70 66 H26 Z"/>
+    <rect x="44" y="16" width="8" height="4"/>
+    <rect x="44" y="76" width="8" height="4"/>
+    <circle cx="19.5" cy="48" r="2.5"/>
+    <circle cx="76.5" cy="48" r="2.5"/>
+  </g>
+  <g fill="#232629">
+    <rect x="34" y="44" width="3" height="8"/>
+    <rect x="59" y="44" width="3" height="8"/>
+  </g>
+</svg>

@@ -9,6 +9,7 @@ Run: py -3.14 staging/phase_d/build_catalog.py
 from __future__ import annotations
 
 import json
+import re
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -238,6 +239,10 @@ def icon_purpose(name: str) -> str:
         base = next((k for k in PANEL_PURPOSE if stem == k), None)
         what = f" ({PANEL_PURPOSE[base]})" if base else ""
         return f"Icon atlas panel, 2K{what}. Source of the cut icon_* sprites; not a runtime sprite."
+    if name.endswith(".svg"):
+        return ("Hand-authored SVG master (flat fills on the 96 grid, imported at 192 px via svg/scale=2). "
+                "The one master per symbol - Godot scales it. Replaces the _16/_48/_96/_192 raster family "
+                "and its tint stencils (D2 icon unification, 2026-09-22).")
     base, suffix = stem, ""
     for s in ("_16", "_48", "_96", "_192"):
         if stem.endswith(s):
@@ -342,11 +347,31 @@ def audio_rows() -> tuple[list[str], dict[str, int]]:
     return rows, by_bus
 
 
+def family_files(family: str) -> list[Path]:
+    root = ASSETS / family
+    files = [p for p in sorted(root.iterdir()) if p.suffix in (".png", ".svg")]
+    if family == "icons":
+        for sub in sorted(root.iterdir()):
+            if sub.is_dir() and sub.name != "tint" and not sub.name.startswith("2026"):
+                files += [p for p in sorted(sub.iterdir()) if p.suffix in (".png", ".svg")]
+    return files
+
+
+def svg_size(path: Path) -> str:
+    head = path.read_text(encoding="utf-8", errors="replace")[:400]
+    w = re.search(r'width="(\d+)', head)
+    h = re.search(r'height="(\d+)', head)
+    return f"{w.group(1) if w else '?'}x{h.group(1) if h else '?'}"
+
+
 def row(family: str, path: Path) -> str:
-    im = Image.open(path)
-    alpha = "rgba" if im.mode == "RGBA" else "rgb"
+    if path.suffix == ".svg":
+        size, alpha = svg_size(path), "rgba"
+    else:
+        im = Image.open(path)
+        size, alpha = f"{im.size[0]}x{im.size[1]}", ("rgba" if im.mode == "RGBA" else "rgb")
     ph = phase_label(family, path.name)
-    return f"| `{path.name}` | {im.size[0]}x{im.size[1]} | {alpha} | {ph} | {PURPOSE[family](path.name)} |"
+    return f"| `{path.name}` | {size} | {alpha} | {ph} | {PURPOSE[family](path.name)} |"
 
 
 def main() -> None:
@@ -386,7 +411,7 @@ def main() -> None:
     family_rows: dict[str, list[str]] = {}
     stats: dict[str, tuple[int, int, int, int]] = {}
     for family in ("ships", "icons", "env", "ui", "fx"):
-        files = sorted((ASSETS / family).glob("*.png"))
+        files = family_files(family)
         family_rows[family] = [row(family, p) for p in files]
         labels = [phase_label(family, p.name) for p in files]
         stats[family] = (labels.count("B"), labels.count("D"), labels.count("E"), labels.count("F"))
@@ -441,10 +466,11 @@ def main() -> None:
     tint = len(list((ASSETS / "icons" / "tint").glob("*.png")))
     lines.append(f"- Run folders (`assets/<family>/20260917-*/`): {run_dirs} directories holding the raw generator "
                  "downloads and their `job.json`; kept for provenance, not consumers.")
-    lines.append(f"- `icons/tint/`: {tint} PNGs, derived white stencils (RGB = white, alpha byte-identical) of every "
-                 "`icons/icon_*_{16,48}.png` source, written by `tools/derive_icon_tints.gd`. Engine-side modulate "
-                 "tints them with theme colours. The flat glyphs (Phase B and Phase F) are the intended consumers; "
-                 "the painted Phase D/E icon splits are never consumed tinted, so their stencils are unused.")
+    lines.append(f"- `icons/tint/`: {tint} PNGs, derived white stencils (RGB = white, alpha byte-identical) of the "
+                 "raster-kept icon masters' historical size cuts, written by `tools/derive_icon_tints.gd`. Engine-side "
+                 "modulate tints them with theme colours. The 135 SVG-side symbols' stencils were retired with their "
+                 "raster families (D2 icon unification, 2026-09-22); the painted D/E stencils stay unused until the "
+                 "tint rework (D3 item 2).")
     lines.append("- Phase D panel masters (`panel_equipment`, `panel_map_markers`, `panel_pickups`, "
                  "`panel_insignia`, `panel_props`) were consumed during splitting and deleted with the other "
                  "intermediates; only the splits ship (deviation from expansion spec 2.6, recorded in 12).")

@@ -25,7 +25,7 @@ extends RefCounted
 
 const MODULE_ICON_DIR := "res://assets/icons/module/"
 const WEAPON_ICON_DIR := "res://assets/icons/weapon/"
-const ICON_SUFFIX := "_48.png"
+const ICON_SUFFIX := ".svg"
 
 ## The five base weapon families and the weapon-icon stem each one draws. The
 ## railgun and the mining laser are not here: they have their own module glyphs.
@@ -45,7 +45,7 @@ const MODULES: Dictionary = {
 		&"draw": 1,
 		&"tier": 1,
 		&"cost": 900,
-		&"icon": "res://assets/icons/weapon/icon_weapon_laser_48.png",
+		&"icon": "res://assets/icons/weapon/icon_weapon_laser.svg",
 		&"effects": {},
 	},
 	&"w_cannon": {
@@ -54,7 +54,7 @@ const MODULES: Dictionary = {
 		&"draw": 1,
 		&"tier": 1,
 		&"cost": 1200,
-		&"icon": "res://assets/icons/weapon/icon_weapon_cannon_48.png",
+		&"icon": "res://assets/icons/weapon/icon_weapon_cannon.svg",
 		&"effects": {},
 	},
 	&"w_rocket": {
@@ -63,7 +63,7 @@ const MODULES: Dictionary = {
 		&"draw": 2,
 		&"tier": 2,
 		&"cost": 2400,
-		&"icon": "res://assets/icons/weapon/icon_weapon_rocket_48.png",
+		&"icon": "res://assets/icons/weapon/icon_weapon_rocket.svg",
 		&"effects": {},
 	},
 	&"w_mine": {
@@ -72,7 +72,7 @@ const MODULES: Dictionary = {
 		&"draw": 1,
 		&"tier": 2,
 		&"cost": 1800,
-		&"icon": "res://assets/icons/weapon/icon_weapon_mine_48.png",
+		&"icon": "res://assets/icons/weapon/icon_weapon_mine.svg",
 		&"effects": {},
 	},
 	&"w_plasma": {
@@ -81,7 +81,7 @@ const MODULES: Dictionary = {
 		&"draw": 3,
 		&"tier": 3,
 		&"cost": 4800,
-		&"icon": "res://assets/icons/weapon/icon_weapon_plasma_48.png",
+		&"icon": "res://assets/icons/weapon/icon_weapon_plasma.svg",
 		&"effects": {},
 	},
 	&"w_railgun": {
@@ -90,7 +90,7 @@ const MODULES: Dictionary = {
 		&"draw": 3,
 		&"tier": 3,
 		&"cost": 5200,
-		&"icon": "res://assets/icons/module/icon_module_w_railgun_48.png",
+		&"icon": "res://assets/icons/module/icon_module_w_railgun.svg",
 		&"effects": {},
 	},
 	&"w_mining": {
@@ -99,7 +99,7 @@ const MODULES: Dictionary = {
 		&"draw": 1,
 		&"tier": 1,
 		&"cost": 600,
-		&"icon": "res://assets/icons/module/icon_module_w_mining_48.png",
+		&"icon": "res://assets/icons/module/icon_module_w_mining.svg",
 		&"effects": {},
 	},
 	&"s_light": {
@@ -108,7 +108,7 @@ const MODULES: Dictionary = {
 		&"draw": 2,
 		&"tier": 1,
 		&"cost": 1400,
-		&"icon": "res://assets/icons/module/icon_module_s_light_48.png",
+		&"icon": "res://assets/icons/module/icon_module_s_light.svg",
 		&"effects": {&"shield_add": 200.0, &"regen_add": 4.0},
 	},
 	&"s_heavy": {
@@ -117,7 +117,7 @@ const MODULES: Dictionary = {
 		&"draw": 3,
 		&"tier": 2,
 		&"cost": 3200,
-		&"icon": "res://assets/icons/module/icon_module_s_heavy_48.png",
+		&"icon": "res://assets/icons/module/icon_module_s_heavy.svg",
 		&"effects": {&"shield_add": 400.0, &"regen_add": 5.0},
 	},
 	&"s_ion": {
@@ -126,7 +126,7 @@ const MODULES: Dictionary = {
 		&"draw": 3,
 		&"tier": 3,
 		&"cost": 5600,
-		&"icon": "res://assets/icons/module/icon_module_s_ion_48.png",
+		&"icon": "res://assets/icons/module/icon_module_s_ion.svg",
 		&"effects": {&"shield_add": 350.0, &"regen_add": 9.0},
 	},
 	&"h_plate_light": {
@@ -135,7 +135,7 @@ const MODULES: Dictionary = {
 		&"draw": 0,
 		&"tier": 1,
 		&"cost": 1100,
-		&"icon": "res://assets/icons/module/icon_module_h_plate_light_48.png",
+		&"icon": "res://assets/icons/module/icon_module_h_plate_light.svg",
 		&"effects": {&"hull_add": 250.0, &"speed_penalty": -0.05},
 	},
 	&"h_plate_heavy": {
@@ -144,7 +144,7 @@ const MODULES: Dictionary = {
 		&"draw": 0,
 		&"tier": 2,
 		&"cost": 2900,
-		&"icon": "res://assets/icons/module/icon_module_h_plate_heavy_48.png",
+		&"icon": "res://assets/icons/module/icon_module_h_plate_heavy.svg",
 		&"effects": {&"hull_add": 600.0, &"speed_penalty": -0.12},
 	},
 	&"h_composite": {
@@ -153,7 +153,7 @@ const MODULES: Dictionary = {
 		&"draw": 0,
 		&"tier": 3,
 		&"cost": 5800,
-		&"icon": "res://assets/icons/module/icon_module_h_composite_48.png",
+		&"icon": "res://assets/icons/module/icon_module_h_composite.svg",
 		&"effects": {&"hull_add": 1000.0, &"speed_penalty": -0.10, &"mass_add": 0.10},
 	},
 	&"c_target": {
@@ -162,7 +162,7 @@ const MODULES: Dictionary = {
 		&"draw": 1,
 		&"tier": 1,
 		&"cost": 1600,
-		&"icon": "res://assets/icons/module/icon_module_c_target_48.png",
+		&"icon": "res://assets/icons/module/icon_module_c_target.svg",
 		&"effects": {&"damage_add": 0.15},
 	},
 	&"c_scanner": {
@@ -171,7 +171,7 @@ const MODULES: Dictionary = {
 		&"draw": 1,
 		&"tier": 1,
 		&"cost": 1500,
-		&"icon": "res://assets/icons/module/icon_module_c_scanner_48.png",
+		&"icon": "res://assets/icons/module/icon_module_c_scanner.svg",
 		&"effects": {&"scanner_add": 0.25},
 	},
 	&"c_twin": {
@@ -180,7 +180,7 @@ const MODULES: Dictionary = {
 		&"draw": 1,
 		&"tier": 2,
 		&"cost": 3400,
-		&"icon": "res://assets/icons/module/icon_module_c_twin_48.png",
+		&"icon": "res://assets/icons/module/icon_module_c_twin.svg",
 		&"effects": {&"damage_add": 0.15},
 	},
 	&"c_ewar": {
@@ -189,7 +189,7 @@ const MODULES: Dictionary = {
 		&"draw": 1,
 		&"tier": 2,
 		&"cost": 3800,
-		&"icon": "res://assets/icons/module/icon_module_c_ewar_48.png",
+		&"icon": "res://assets/icons/module/icon_module_c_ewar.svg",
 		&"effects": {},
 	},
 	&"c_nexus": {
@@ -198,7 +198,7 @@ const MODULES: Dictionary = {
 		&"draw": 1,
 		&"tier": 3,
 		&"cost": 6400,
-		&"icon": "res://assets/icons/module/icon_module_c_nexus_48.png",
+		&"icon": "res://assets/icons/module/icon_module_c_nexus.svg",
 		&"effects": {&"damage_add": 0.15, &"scanner_add": 0.25},
 	},
 	&"b_afterburner": {
@@ -207,7 +207,7 @@ const MODULES: Dictionary = {
 		&"draw": 2,
 		&"tier": 1,
 		&"cost": 1900,
-		&"icon": "res://assets/icons/module/icon_module_b_afterburner_48.png",
+		&"icon": "res://assets/icons/module/icon_module_b_afterburner.svg",
 		&"effects": {&"boost_speed_mult": 1.6, &"duration": 3.0, &"cooldown": 8.0},
 	},
 	&"b_fold": {
@@ -216,7 +216,7 @@ const MODULES: Dictionary = {
 		&"draw": 2,
 		&"tier": 3,
 		&"cost": 6800,
-		&"icon": "res://assets/icons/module/icon_module_b_fold_48.png",
+		&"icon": "res://assets/icons/module/icon_module_b_fold.svg",
 		&"effects": {&"blink_distance": 400.0, &"cooldown": 20.0},
 	},
 	&"u_cargo": {
@@ -225,7 +225,7 @@ const MODULES: Dictionary = {
 		&"draw": 0,
 		&"tier": 1,
 		&"cost": 1200,
-		&"icon": "res://assets/icons/module/icon_module_u_cargo_48.png",
+		&"icon": "res://assets/icons/module/icon_module_u_cargo.svg",
 		&"effects": {&"cargo_add": 15},
 	},
 	&"u_salvage": {
@@ -234,7 +234,7 @@ const MODULES: Dictionary = {
 		&"draw": 0,
 		&"tier": 1,
 		&"cost": 1000,
-		&"icon": "res://assets/icons/module/icon_module_u_salvage_48.png",
+		&"icon": "res://assets/icons/module/icon_module_u_salvage.svg",
 		&"effects": {&"tractor_range_mult": 2.0, &"tractor_speed_mult": 2.0},
 	},
 	&"u_refine": {
@@ -243,7 +243,7 @@ const MODULES: Dictionary = {
 		&"draw": 1,
 		&"tier": 2,
 		&"cost": 2600,
-		&"icon": "res://assets/icons/module/icon_module_u_refine_48.png",
+		&"icon": "res://assets/icons/module/icon_module_u_refine.svg",
 		&"effects": {},
 	},
 	&"u_drones": {
@@ -252,7 +252,7 @@ const MODULES: Dictionary = {
 		&"draw": 1,
 		&"tier": 2,
 		&"cost": 3000,
-		&"icon": "res://assets/icons/module/icon_module_u_drones_48.png",
+		&"icon": "res://assets/icons/module/icon_module_u_drones.svg",
 		&"effects": {},
 	},
 	&"u_tractor": {
@@ -261,7 +261,7 @@ const MODULES: Dictionary = {
 		&"draw": 1,
 		&"tier": 2,
 		&"cost": 2200,
-		&"icon": "res://assets/icons/module/icon_module_u_tractor_48.png",
+		&"icon": "res://assets/icons/module/icon_module_u_tractor.svg",
 		&"effects": {&"tractor_streams_add": 1},
 	},
 	&"u_holds": {
@@ -270,7 +270,7 @@ const MODULES: Dictionary = {
 		&"draw": 0,
 		&"tier": 3,
 		&"cost": 4500,
-		&"icon": "res://assets/icons/module/icon_module_u_holds_48.png",
+		&"icon": "res://assets/icons/module/icon_module_u_holds.svg",
 		&"effects": {&"cargo_add": 40},
 	},
 	&"e_std": {
@@ -279,7 +279,7 @@ const MODULES: Dictionary = {
 		&"draw": 0,
 		&"tier": 1,
 		&"cost": 800,
-		&"icon": "res://assets/icons/module/icon_module_e_std_48.png",
+		&"icon": "res://assets/icons/module/icon_module_e_std.svg",
 		&"effects": {&"speed_mult": 1.0},
 	},
 	&"e_ion": {
@@ -288,7 +288,7 @@ const MODULES: Dictionary = {
 		&"draw": 0,
 		&"tier": 2,
 		&"cost": 3200,
-		&"icon": "res://assets/icons/module/icon_module_e_ion_48.png",
+		&"icon": "res://assets/icons/module/icon_module_e_ion.svg",
 		&"effects": {&"speed_mult": 1.15},
 	},
 	&"e_vector": {
@@ -297,7 +297,7 @@ const MODULES: Dictionary = {
 		&"draw": 0,
 		&"tier": 3,
 		&"cost": 6200,
-		&"icon": "res://assets/icons/module/icon_module_e_vector_48.png",
+		&"icon": "res://assets/icons/module/icon_module_e_vector.svg",
 		&"effects": {&"speed_mult": 1.25, &"turn_mult": 1.20},
 	},
 	&"p_std": {
@@ -306,7 +306,7 @@ const MODULES: Dictionary = {
 		&"draw": 0,
 		&"tier": 1,
 		&"cost": 900,
-		&"icon": "res://assets/icons/module/icon_module_p_std_48.png",
+		&"icon": "res://assets/icons/module/icon_module_p_std.svg",
 		&"effects": {&"power_add": 0.0},
 	},
 	&"p_mk2": {
@@ -315,7 +315,7 @@ const MODULES: Dictionary = {
 		&"draw": 0,
 		&"tier": 2,
 		&"cost": 3600,
-		&"icon": "res://assets/icons/module/icon_module_p_mk2_48.png",
+		&"icon": "res://assets/icons/module/icon_module_p_mk2.svg",
 		&"effects": {&"power_add": 2.0},
 	},
 	&"p_core": {
@@ -324,7 +324,7 @@ const MODULES: Dictionary = {
 		&"draw": 0,
 		&"tier": 3,
 		&"cost": 7000,
-		&"icon": "res://assets/icons/module/icon_module_p_core_48.png",
+		&"icon": "res://assets/icons/module/icon_module_p_core.svg",
 		&"effects": {&"power_add": 4.0},
 	},
 }
