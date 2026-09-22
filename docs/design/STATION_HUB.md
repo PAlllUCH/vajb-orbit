@@ -377,6 +377,17 @@ State source: `PlayerProfile`. The mockup's local copies are listed in section 1
 
 Three groups, in render order: the FITTED WEAPONS strip, the MODULES rows, then the five ammo packs.
 
+**Amendment 2026-09-22 (S3 — the MODULES rows retire into the AUCTION).** §5.10's
+shelf sells the rolled instances, so this pane returns to ammunition. Read the
+sentence above from this pass as **two groups, in render order: the FITTED WEAPONS
+strip, then the five ammo packs.** The `MODULES` caption, the seven rows, their
+`MODULE_ROWS`/`EFFECT_TEXT`/`STATUS_*` constants and their focus slot go with the
+retirement; `PlayerProfile.buy_module` and `ModuleCatalog` stay as the price source
+with no new UI caller (10 §2.4, CONTRACTS §12/§15). The strip, the ammo rows, the
+refusal wordings (§5.6, 09 §2's `<n> NEEDED`) and the audio hooks are untouched.
+**Reversal:** restore the P2-B1 amendment above and its row set — the rows and their
+tests are in git history at the S3 wave boundary.
+
 **Amendment 2026-09-22 (P2-B1 — the weapon fit surface: the MODULES section and the FITTED WEAPONS
 strip).** Transcribed from `.agents/gen/p2b1_weapon_fit_wave_task.md` §3; every number in it is 09
 §3.1's and none is this pass's.
@@ -502,9 +513,18 @@ retired entry's rail position, its icon path and its tint. The retired `ui/stati
   is its `slot_key` + `index` (09 §4.5's layout index). The recipe is shared with the shipyard (lift it into
   a helper both panes call, or duplicate it byte-equivalently); the reviewer checks both grids render
   identically.
-- **OWNED MODULES** — one row per owned module **id** (aggregated by id), ordered by
+- **OWNED MODULES** — one row per owned **base id** (aggregated by base id), ordered by
   `ShipFit.FIT_SLOT_KEYS` then catalogue order: 48 px module icon, name, the meta `SLOT <TYPE> · DRAW <n>`,
-  `OWNED ×<n>`, and ACTION.
+  `OWNED ×<n>`, and ACTION. **Amendment 2026-09-22 (S3 — instances):** the aggregation is by
+  `base_id` (the shipped reader already resolves each inventory key through
+  `PlayerProfile.base_module_id`), and a row whose base id owns **more than one instance**
+  carries a `▸` expander: opening it lists one indented sub-row per instance, each showing
+  the 15 §7 full rolled name, the rarity-tinted name cell (§5.10's three tints) and the
+  instance's own ACTION. A base id the account holds exactly one of shows no expander, so
+  today's single-instance surface is unchanged in shape. Two same-base instances stay
+  distinguishable by their rolled names and their ids, which is what makes L80's
+  remove/swap round trip observable. **Reversal:** collapse the sub-rows to the aggregate
+  row (one constant).
 
 **ACTION per state:** `FIT` when a cell of the module's own type is selected and the module is legal there
 (calls `fit_module_at`); `SWAP` when that cell already holds another module (same call; the displaced one
@@ -519,6 +539,11 @@ budget the same line renders in the danger colour and ends `— OVER BY <n>`. Th
 **Hover / selection info (owner request 1):** the selected cell's line reads
 `<TYPE><n> · <MODULE NAME or EMPTY> · OWNED ×<n>`; the shipyard's plates gain the same line on hover
 (`shipyard_panel.gd`), reading the selected hull's `fit_for` entry (section 5.2's amendment).
+**Amendment 2026-09-22 (S3):** where the cell holds an **instance**, the name in that line is
+15 §7's full rolled name in its rarity tint and the pane adds the instance's stat block below it —
+the base module's catalogue stats plus one line per rolled affix (15 §7's two-line block). The
+`OWNED ×<n>` tail keeps counting the base id's held instances. The stat lines are **display**: no
+affix changes a flight stat in S3 (15 §9.3). **Reversal:** print the base name and hide the block.
 
 **Refusals** (footer strip, never a dialog): `13 / 11 PWR — OVER BY 2` (09 §2's own format, already pinned),
 `MANDATORY CELL — SWAP ONLY, NEVER EMPTY` (new this pass), and `REFUSED · FIT ILLEGAL` as the catch-all for
@@ -530,7 +555,9 @@ footer, then the rail (section 10).
 
 **Empty states:** an account that owns no modules shows one disabled row
 `NO MODULES OWNED · BUY THEM IN OUTFITTING`; a hull with every cell filled and nothing selected shows the
-meter and the grid, no refusal.
+meter and the grid, no refusal. A fitted instance keeps its record at `count` 0 and is not
+owned-visible until it is removed again (CONTRACTS §15), so a hull fitted full can still read
+`NO MODULES OWNED` — correct, not a bug.
 
 **The per-cell transactions.** The pane only requests; the profile mutates. Install and swap are the one
 composed call `PlayerProfile.fit_module_at(ship_id, slot_key, index, module_id)` and remove is the composed
@@ -731,15 +758,24 @@ same icon family and tint as EXCHANGE. No other entry moves (owner tick: positio
 - **HULLS (6)** — one row per listed hull: 48 px class icon slot, name, class,
   `LIST <n> CR` (08 §2 column), the hot-slot line `WAS <n> CR` when discounted, ACTION
   `BUY` (10 §2.3's buyout; refusal `<n> NEEDED` per §5.6). Fighter and Cutter are
-  always listed.
+  always listed. **No class icon ships** (measured: `station_catalog.gd`'s nine rows
+  carry `preview` only and there is no `assets/icons/ship/`), so the slot draws each
+  hull's own `preview` exactly as the shipyard row does (§5.2) — no new art.
 - **MODULES (10)** — one row per listed **rolled instance**: 48 px module icon, the
   15 §7 full rolled name, the meta `SLOT <TYPE> · DRAW <n> · <RARITY>`, price (09 list
   × 15 §1's rarity multiplier, −20 % after for the hot slot), ACTION `BUY`. Rows are
   tinted by the rarity table below. The three exclusives (15 §5) carry the tag
-  `F LOT` while 15 §8's interim is on.
+  `F LOT` while 15 §8's interim is on; **the F lot's rarity split is 15 §9.2's
+  85 % Magic / 15 % Rare**, and its catalogue rows are 15 §9.1.
 
 **Rotation footer:** `NEXT RESTOCK <m:ss>` (20-minute station clock, 10 §2.1) and the
-hot slot's marker on its row. The shelf persists with the save (10 §2.1).
+hot slot's marker on its row. The shelf persists with the save (10 §2.1). **Amendment
+2026-09-22 (S3):** the `m:ss` is computed **at pane entry** from `WorldClock.now()` and
+its `BAND_SECONDS` 1200 — the clock ships exactly four statics (`now`, `bands_between`,
+`set_override`, `clear_override`), has no remaining-time accessor, and its own header
+forbids a per-consumer Timer (05 §8's rule, restated for the same clock). The line is a
+**reading, not a countdown**; a wave that wants it to tick must add the accessor and
+change that rule first. **Reversal:** one computed line.
 
 **Selling:** a `SELL MODULES` sub-list of the player's inventory rows (the §5.3 OWNED
 MODULES anatomy, aggregated by `base_id`) with `SELL` at `base × rarity × 60 %`
@@ -760,6 +796,14 @@ values live in the theme as `rarity_common` / `rarity_magic` / `rarity_rare`
 
 **Focus order:** the two lists in row order (HULLS then MODULES), then the sell
 sub-list, then the footer, then the rail (§10).
+
+**Amendment 2026-09-22 (S3 — the footer is the pane's own).** The AUCTION owns its
+refusal/status strip the way FITTING does, not the station shell's: `station.gd`'s copy
+prices by catalogue id (`Catalog.ammo_pack` → `Catalog.ship` → `ModuleCatalog.module`)
+and an instance id resolves to `{}`, so it would render `0 NEEDED` and the raw id as the
+name (`station.gd:456-492`). The wordings are unchanged — §13's three plus 09 §2's
+`<n> NEEDED` — only their owner is. **Reversal:** route the strip back through the
+shell once the shell can price an instance.
 
 ## 6. Type scale
 
@@ -888,7 +932,7 @@ local array and killed in `_exit_tree()` when it is still valid. Curves are Godo
 | Input | Context | Effect |
 |---|---|---|
 | `ui_down` / `ui_up` | any focused control | Godot's default focus neighbour walk (tree order), which stays inside the visible pane and then crosses to the next pane or the rail |
-| `Tab` / `Shift+Tab` | anywhere | next / previous focusable in tree order: rail entries (OUTFITTING, SHIPYARD, FITTING, LAUNCH, LOG OUT) then the active pane's controls (rows, or the cargo `ItemList` and `LaunchButton`), then wraps |
+| `Tab` / `Shift+Tab` | anywhere | next / previous focusable in tree order: rail entries (the shipped order is OUTFITTING, REFINERY, EXCHANGE, **AUCTION**, SHIPYARD, FITTING, REPAIRS, LAUNCH, plus LOG OUT — `station.gd`'s `MODULE_LABELS`) then the active pane's controls (rows, or the cargo `ItemList` and `LaunchButton`), then wraps |
 | `Tab` / `ui_down` / `ui_up` | the FITTING pane | the SLOT LAYOUT cells first (row-major), then the OWNED MODULES rows, then the pane's own footer, then the rail (section 5.3) |
 | `ui_accept` | a row | buy / install / set active / select the hull for the preview |
 | `ui_accept` | a rail entry | switch module (the rail entry is a `toggle_mode` button; the pressed state is pushed with `set_pressed_no_signal`) |
@@ -937,7 +981,7 @@ StringName)` that searches the `ui` directory; until then purchase, refusal and 
 
 | Path | Contents |
 |---|---|
-| `vajb-orbit/ui/screens/station.tscn` | `Control` root, preset 15, `extends Screen`, bakes `theme = vajb_theme.tres` (Router replaces it with the live theme). Contains the backdrop, the grain, the safe area, the header, the rail, the host and the footer, and instances the four panels. |
+| `vajb-orbit/ui/screens/station.tscn` | `Control` root, preset 15, `extends Screen`, bakes `theme = vajb_theme.tres` (Router replaces it with the live theme). Contains the backdrop, the grain, the safe area, the header, the rail, the host and the footer, and hosts one panel per rail entry (the panels are loaded from `MODULE_FILES`, so adding AUCTION needs no `station.tscn` edit). |
 | `vajb-orbit/ui/station/outfitting_panel.tscn` | OUTFITTING: header, columns, scroll, rows, footer. |
 | `vajb-orbit/ui/station/shipyard_panel.tscn` | SHIPYARD: hull list, preview housing, stat column. |
 | `vajb-orbit/ui/station/fitting_panel.tscn` | FITTING: the SLOT LAYOUT grid (the shipyard's recipe with selectable cells, section 5.3), the OWNED MODULES rows, the power meter and the footer strip. |
@@ -945,12 +989,13 @@ StringName)` that searches the `ui` directory; until then purchase, refusal and 
 | `vajb-orbit/ui/station/refinery_panel.tscn` | REFINERY: ore table, conversion stepper, totals, actions (amendment 5.7). |
 | `vajb-orbit/ui/station/exchange_panel.tscn` | EXCHANGE: hold, market board, trade column (amendment 5.8). |
 | `vajb-orbit/ui/station/repairs_panel.tscn` | REPAIRS: damage report, fee, repair control (amendment 5.9). |
+| `vajb-orbit/ui/station/auction_panel.tscn` | AUCTION: the HULLS and MODULES lists, the `SELL MODULES` sub-list, the rotation footer (amendment 5.10). |
 | `vajb-orbit/ui/paths.gd` (edit) | add `&"station": "res://ui/screens/station.tscn"` to `ROUTES`. |
 | `vajb-orbit/ui/screens/loading.gd` (edit) | map `destination == &"station"` to the station route. |
 
 **12.2 Build order.** Backdrop and grain first (they are the only full-rect layers), then the safe area and the
 three bands, then the rail (it is the navigation contract and the focus entry point), then the host and one
-panel, then the other three panels by copying the first. Do not build the header credits housing before the
+panel, then the other panels by copying the first. Do not build the header credits housing before the
 rail: the rail's 56 px entry height and the 360 px rail width are the two numbers the rest of the screen is
 aligned to.
 

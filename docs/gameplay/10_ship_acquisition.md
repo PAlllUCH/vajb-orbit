@@ -48,10 +48,17 @@ reads as progression:
 | Class | In rotation chance |
 |-------|--------------------|
 | Fighter, Cutter | always listed (the two starter hulls never leave the shelf) |
-| Delver, Trader, Hauler | 60 % |
+| Miner (Delver), Trader (Courier), Hauler (Mule) | 60 % |
 | Corvette, Gunship | 45 % |
 | Frigate | 30 % |
 | Destroyer | 20 % (the wall should feel rare without being grind-gated) |
+
+*(Naming corrected 2026-09-22, S3 docs pass: the 60 % row read "Delver, Trader, Hauler",
+a ship name where every other row is a class. The shelf keys off 08 §2's **asset ids**
+(`ship_fighter`, `ship_vanguard`, `ship_miner`, `ship_trader`, `ship_corvette`,
+`ship_freighter`, `ship_gunship`, `ship_patrol`, `ship_destroyer`), carried in that order
+by `StationCatalog.SHIPS`; the class name is the shelf's display column only. Reversal:
+restore the old row.)*
 
 ### 2.3 Buying rules
 
@@ -82,6 +89,22 @@ screen spec and CONTRACTS §15 is the pin.
 - Selling back: §2.3's 60 % of list, made rarity-aware per 15 §6/§8.
 - OUTFITTING's seven weapon rows retire into this shelf (§5's flag-day rule and
   §6's interim note), and OUTFITTING returns to ammunition.
+
+**Ticked 2026-09-22 (S3 docs pass, answering K0's findings).** Three things the first
+draft of this amendment left open, now pinned where they belong:
+
+- **The shelf's home is a top-level `auction` key** with `{last_band, hulls, modules,
+  hot}`, not a `market` sub-key: `PlayerProfile._normalise_market` rebuilds that
+  dictionary from `MARKET_KEYS` and would drop a stranger on load (CONTRACTS §15).
+  The `mod_%04d` counter is its own top-level `instance_counter`.
+- **The F lot's split is 15 §9.2's 85 % Magic / 15 % Rare**, and the three exclusives'
+  catalogue rows — which existed nowhere in the tree — are 15 §9.1.
+- **Hull rows reuse each hull's `preview`** as their icon: no class-icon asset ships
+  and `assets/` is frozen this wave (STATION_HUB §5.10).
+
+The restock footer's `m:ss` is a **reading taken at pane entry**, not a countdown — the
+shared clock has no remaining-time accessor and forbids per-consumer Timers
+(STATION_HUB §5.10, 05 §8).
 
 ## 3. The Shipyard build path
 

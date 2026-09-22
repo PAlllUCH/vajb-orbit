@@ -110,7 +110,8 @@ if H0 finds the fire side needs the seam first).
 ## Close-out (the orchestrator runs these, in order)
 
 1. Gate twice (scratch profile; identical counts) + the live-profile untouched check.
-2. `python3 staging/verify_wave.py verify --baseline s4_start --forbidden vajb-orbit/project.godot,vajb-orbit/docs/gameplay/18_engine_spec.md --expect-reports S4-H0_report.md,S4-H3_review.md --tests`
+2. `python3 staging/verify_wave.py verify --baseline s4_start --forbidden vajb-orbit/project.godot docs/gameplay/18_engine_spec.md --tests --expect-reports .agents/gen/slices/S4-weapon-batteries/S4-H0_report.md .agents/gen/slices/S4-weapon-batteries/S4-H3_review.md`
+   *(Corrected 2026-09-22 in the S3 docs pass: the flags are `nargs="*"`, so comma-joined tokens became one path, the engine spec's snapshot key has no `vajb-orbit/` prefix, and `--expect-reports` resolves under the workspace root — the v1 line exited 1 with an inert frozen-file guard. Re-measured working form above.)*
 3. CONTRACTS §9 figure + §10 measured note updated by H3; 09 §10 ticked.
-4. `_state/WAVEBOARD.md` row closed; LOW findings appended as L94+.
+4. `_state/WAVEBOARD.md` row closed; LOW findings appended at the next free row — L94–L106 are taken as of 2026-09-22, so the file's own counter law applies (next free global ticket id **T-93**).
 5. Wave-boundary commit.

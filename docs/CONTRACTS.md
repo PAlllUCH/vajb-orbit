@@ -799,12 +799,18 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
-Expected: **`[SUMMARY] passed=455 failed=2`** (measured at the S2.6 review, 2026-09-22:
-**457 tests over 40 suites**), where the two failures are the two assertions the wave's
-hit-FX jitter moved and the brief's tests-that-move list did not carry —
-`tests/test_flight_beam_g2.gd:256-258` and `tests/test_weapon_fx_f4.gd:138-140`, both
-pinning the contact FX exactly on the resolved hit point; with those two re-derived the
-reading is **`passed=457 failed=0`**. The last green reading was
+Expected: **`[SUMMARY] passed=457 failed=0`**, exit 0 (measured twice on 2026-09-22, the
+S3 docs pass, on a scratch store; **457 tests over 40 suites**). The reading between the
+S2.6 wave's builder pass and its fixer pass was `passed=455 failed=2` — the two
+assertions its hit-FX jitter moved, `tests/test_flight_beam_g2.gd:256-258` and
+`tests/test_weapon_fx_f4.gd:138-140`, both pinning the contact FX exactly on the
+resolved hit point; the fixer re-derived them (`:256-261`, `:138-143`) and
+`passed=457 failed=0` has held since. **The gate is hermetic as of S2.6** (CONTRACTS
+§14): the canonical command above runs against a scratch store the runner points
+itself at, so it no longer needs an `XDG_DATA_HOME` wrapper and it no longer drifts
+with the owner's live account — the one `SCRIPT ERROR` in the log is L61's
+pre-existing line, now printed at `tests/test_weapon_fx_f4.gd:178`. The last green
+reading before that was
 `[SUMMARY] passed=437 failed=0` (measured on this host 2026-09-22 by the P2-B proper
 fitting wave's fixer pass — the wave closed 389 → 402 → 420 → 431 → 437, with P2-B1's
 weapon-fit wave (378 → 389), P2-A's slot-grid wave (311 → 372) and the rock-cleave wave
@@ -1369,33 +1375,87 @@ LAUNCH's service rows (the `STATION_HUB.md` §5.4 amendment — owner request 4)
 
 ## §15 S3 item economy — instances and the AUCTION (2026-09-22)
 
+**Amended v0.7.3 (2026-09-22, the S3 docs pass — K0's seven HIGH findings).** The
+first draft pinned seven functions and left the record, the shelf store, the buy
+price, the fitted-instance round trip and the affix route undecided; every gap is
+now a pinned value, a pinned shape, or a stated deferral, each with its reversal
+(15 §9 carries the exclusive rows and the content numbers). **A worker implements
+this text; only the developer session changes it.**
+
 ```gdscript
 # PlayerProfile — additive. The §13 transactions keep their signatures and accept
-# instance ids where they accepted module ids.
+# instance ids where they accepted module ids; only their bodies change.
+const INSTANCE_ID_FORMAT := "mod_%04d"
 add_instance(base_id: StringName, rarity: StringName, prefixes: Array, suffixes: Array) -> StringName
-instance(id: StringName) -> Dictionary      # the 15 §8 record; {} when absent
-instances_of(base_id: StringName) -> Array  # ids, for the grouped rows
-buy_instance(id: StringName) -> bool        # the auction shelf's rolled instance
-sell_instance(id: StringName) -> bool       # base × rarity multiplier × 60 %
-roll_instance(base_id: StringName, source: StringName) -> StringName  # 15 §2's tables
+instance(id: StringName) -> Dictionary      # the record below; {} when absent
+instances_of(base_id: StringName) -> Array  # ids held in the bag (count 1), creation order
+roll_instance(base_id: StringName, source: StringName) -> StringName  # 15 §2/§9's tables, rolls + adds
+buy_instance(id: StringName, cost: int) -> bool   # the shelf's listing, at the price it shows
+sell_instance(id: StringName) -> bool             # base × rarity multiplier × 60 %
+take_instance(id: StringName) -> bool             # 1 -> 0: fitting; the record survives
+restore_instance(id: StringName) -> bool          # 0 -> 1: REMOVE/SWAP hands the same instance back
+auction() -> Dictionary
+set_auction(state: Dictionary) -> void
 SAVE_VERSION := 6
 ```
 
-- The instance record is `{instance_id, base_id, rarity, prefixes[], suffixes[]}`
-  (15 §8); `instance_id` = `mod_%04d`, one per-profile counter. Rolls happen at
-  creation (15 §8's timing) on the global RNG; outcomes persist and never re-roll.
-- Save v6 migration: each v5 `{base_id, count}` record becomes `count` **Common**
-  instances, idempotently (the P2-B flag-day pattern). A fit cell stores the
-  `instance_id`; `resolved_fit` / `fit_legal` see through `instance()[&"base_id"]`.
-- The AUCTION state (10 §2.1: 6 hulls + 10 modules, 20-minute station-clock restock,
-  one hot slot, hull weights 10 §2.2, tier weights I 50 / II 35 / III 15) persists
-  in the profile's market family; module listings are rolled instances drawn at
-  restock (15 §8's faction-lot interim included).
-- OUTFITTING's seven weapon rows retire (10 §2.4). `PlayerProfile.buy_module` and
-  `ModuleCatalog` (§12) remain as the price source and the migration table's home
+- **The record** is `{instance_id, base_id, rarity, prefixes[], suffixes[], count}`
+  under `modules: instance_id -> record` — 17 §3's shape, which is 15 §8's with the
+  `count` every consumer already reads. `count` is **1 while the instance sits in
+  the bag and 0 while it is fitted**; the record is never erased (15 §6's "never
+  destroyed"), so `instance(id)` still answers a fitted module's affixes and
+  `restore_instance` puts the *same* instance back (L80's cure). A `count`-0 record
+  is invisible to `instances_of`, to every `OWNED ×<n>` aggregate and to
+  `sell_instance`, which settles H4 and H5 without moving a §13 signature.
+- **The two new keys.** `instance_counter: int` (mints `mod_%04d`, one per profile:
+  every roll — inventory, drop, shelf listing — takes the next number) and the
+  shelf, `auction: {last_band: int, hulls: Array[String], modules: Dictionary,
+  hot: StringName}`, are top-level `[profile]` keys added to `_read_values` and to
+  `_write_profile`'s fixed list. The shelf is **not** a `market` sub-key:
+  `_normalise_market` rebuilds that dictionary from `MARKET_KEYS` and would drop a
+  stranger on load.
+- **The shelf.** `auction.modules` holds the 10 module **listings** as ordinary
+  instance records keyed by their minted id (the rolled name and price are visible
+  on the shelf — 15 §8's "hunting the good roll"); `auction.hulls` holds the 6 hull
+  ids and `auction.hot` the one discounted listing id. `buy_instance(id, cost)`
+  charges the price the row shows and **moves** the record from the shelf into
+  `modules` at `count: 1`; the hull side stays `buy_ship(id, cost)`. A restock
+  draws a fresh shelf and discards the unbought listings (their ids are spent, the
+  counter never rewinds).
+- **Prices.** `base × 15 §1's rarity multiplier`, the hot slot's −20 % applied
+  after, exactly as STATION_HUB §5.10 renders it; no catalogue cost moves. Every
+  09/15 cost is a multiple of 100, so ×1.6/×2.6/×60 % need no rounding rule. Sell
+  is `base × rarity × 60 %` with **no suffix term** (15 §6 verbatim).
+- **Affixes are stored, named, priced and displayed in S3; applying them to flight
+  stats is not.** The pin's own arithmetic is base-id: a fit cell stores the
+  `instance_id` and `resolved_fit` / `fit_legal` read through
+  `instance()[&"base_id"]`. So the composed transactions and the three panels
+  translate cells through `base_module_id` **before** judging a fit, which is what
+  stops `fit_legal` scoring an instance as draw 0 (K0 H6). 15 §7's two-line stat
+  block (base stats + one affix line each) is K3's display surface. The
+  affix-application wave — `game.gd`'s fit→flight bridge and the weapon-stat
+  families (`weapons.gd`/`ship_stats.gd`) — is **staged, owner tick**; it is the
+  reason no S3 worker set contains those files.
+- **The F lot.** `AUCTION_FACTION_LOTS_INTERIM := true`: one listing per shelf is
+  one of 15 §5's three exclusives, rolled at its Magic+ floor with the two legal
+  rarities split **85 % Magic / 15 % Rare** (15 §2's own 30:5 auction ratio
+  renormalised over the two rarities that are legal for an exclusive), carrying the
+  `F LOT` tag. The exclusives' catalogue rows — which did not exist anywhere before
+  this pass — are 15 §9.
+- **The restock footer** renders `NEXT RESTOCK <m:ss>` from `WorldClock.now()` and
+  `BAND_SECONDS` **at pane entry**; the clock has no remaining-time accessor and
+  its own header forbids a per-consumer Timer, so the line is a reading, not a
+  countdown.
+- **Refusals** gain no wording (§13's three + 09 §2's `<n> NEEDED`), but the AUCTION
+  owns its footer strip the way FITTING does: the shell's `station.gd` copy prices
+  by catalogue id and would read `0 NEEDED` for an instance.
+- **Save v6 migration:** each v5 `{base_id, count}` record becomes `count` **Common**
+  instances, idempotently (the P2-B flag-day pattern). Reversal: restore the v5
+  saver; v6→v5 is lossy (collapses to base ids, drops affixes).
+- **OUTFITTING's seven weapon rows retire** (10 §2.4) and `test_ship_grids.gd`'s
+  32-row catalogue assertions grow with 15 §9's three rows. `PlayerProfile.buy_module`
+  and `ModuleCatalog` (§12) remain the price source and the migration table's home
   and gain no new UI callers.
-- Refusals gain none: §13's three pinned wordings plus 09 §2's `<n> NEEDED` cover
-  the auction's buy refusals.
 
 ## §16 S4 weapon batteries (2026-09-22)
 
@@ -1805,3 +1865,19 @@ battery(base_id: StringName) -> Array   # this battery's W indices
   `18_engine_spec.md`, `08_ship_slots_modules.md`, `assets/`, `addons/` or theme file
   moved). Findings: `.agents/gen/slices/S2.6-truth-and-feel/S2.6-R6_review.md`;
   LOW rows `L94`+ in `.agents/gen/_state/LOW_BACKLOG.md`.
+- **v0.7.3 (2026-09-22, the S3 item-economy docs pass — the developer session,
+  answering K0's seven HIGH findings before any builder ran)** — **§15 is re-pinned**
+  (the record gains `count` with the 1-in-the-bag/0-fitted meaning, the two new
+  top-level keys `instance_counter`/`auction` with the shelf's shape, the buy price
+  parameter, `take_instance`/`restore_instance` as the fitted-instance round trip,
+  and the "affixes are displayed in S3, applied in a staged wave" rule that keeps
+  every S3 worker set free of `game.gd`/`weapons.gd`). **§9's expected figure moves
+  455/2 → 457/0** (the S2.6 fixer pass landed; measured twice this pass on a scratch
+  store, `passed=457 failed=0` exit 0, the pre-existing L61 `SCRIPT ERROR` now
+  printing at `test_weapon_fx_f4.gd:178`). The content numbers the auction cannot
+  work without — the three faction exclusives' catalogue rows, the F lot's 85/15
+  Magic/Rare split, and the ten suffixes' "stored and displayed, not yet applied"
+  rule — live in `15_module_affixes.md` §9, dated and reversed there. No base price,
+  roll weight or §3.1 stat moved; `project.godot`, `18_engine_spec.md`, `assets/`
+  and `addons/` are untouched by this pass. Findings: `.agents/gen/slices/S3-
+  module-affixes/S3-K0_report.md`.

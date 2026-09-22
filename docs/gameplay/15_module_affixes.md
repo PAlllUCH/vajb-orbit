@@ -38,8 +38,13 @@ Every module instance rolls 0–2 affixes:
 | Crafting (07, later) | 40 % | 45 % | 15 % |
 
 Faction exclusives (12 §5): `w_proton` and friends **only spawn at faction
-stations** — but any of their rarity rolls. The proton missile you covet may
-be a plain Common or a named Rare; hunting the good roll is endgame.
+stations** — but their rarity rolls span the whole legal range for an exclusive.
+Their **floor is Magic** (§5: "Exclusives never spawn Common"), so the proton missile
+you covet is never plain: it is a named Magic or a named Rare, and hunting the good
+roll is endgame. Until faction stations exist (§8's interim) the auction shelf carries
+one tagged `F LOT` of them. *(Corrected 2026-09-22, S3 docs pass: this paragraph used
+to read "any of their rarity rolls … may be a plain Common", which §5 and §8
+contradict. Reversal: restore the sentence and §9.2's split becomes moot.)*
 
 ## 3. Prefixes (stat modifiers)
 
@@ -163,3 +168,76 @@ Dated numbers for the wave that implements §1–§7; each carries its reversal.
   **Reversal:** set false and the exclusives wait for faction stations.
 - **Sell value.** §6's `base × rarity multiplier × 60 %` is the auction's sell
   side too (10 §2.3's garage-sale rule, rarity-aware).
+
+---
+
+## 9. Amendment 2026-09-22 (S3 docs pass — the three exclusives' rows, the F lot)
+
+§5 names three exclusives and §8 makes every auction shelf carry one tagged `F LOT` of
+them, but no document gave them a catalogue row: measured before this pass, none of the
+three exists in `game/module_catalog.gd` and none has an asset. This section is the
+missing content, written by the developer session because the wave cannot be built
+without it. **Every value below is proposed by the planner (no price table for these
+three exists anywhere), each carries its reversal, and the block as a whole is one
+owner tick.**
+
+### 9.1 The rows (proposed)
+
+| Module | Slot | Tier | Draw | Effect | Cost |
+|---|---|---|---|---|---|
+| `w_proton` | `weapons` | III | 3 | none — no weapon row carries an `effects` dict | 5 200 |
+| `w_flak` | `weapons` | III | 3 | none, as above | 5 200 |
+| `u_vault` | `utility` | III | 0 | `{&"vault_add": 20}` (§5's own words: "+20 units all vaults") | 4 500 |
+
+Derivations, so each reversal is one edit:
+
+- **Slot** is the id-prefix law the whole catalogue keeps (`w_` weapons, `u_` utility).
+- **Tier III** is the faction's top line: 12 §5 calls each exclusive its faction's own,
+  and §5 gives them a Rare ceiling.
+- **Draw and cost are the family's own tier-III top line** — weapons 3 / 5 200
+  (`w_railgun`, 09 §3.1) and utility 0 / 4 500 (`u_holds`, 09 §3.6). The two weapons
+  therefore share a price, which is what "the family's top price" means.
+- **Icons** use two existing files, so `assets/` stays frozen: both weapons take
+  `res://assets/icons/module/icon_module_w_railgun.svg` (16 §3: "`w_proton`/`w_flak`/
+  `w_railgun` share family silhouettes") and `u_vault` takes
+  `res://assets/icons/service/icon_service_vault.svg` — the same reuse precedent
+  STATION_HUB §7.1 records for its two chrome gaps.
+- **`u_vault` is a module here and a station technology in 14 §4, and both are true:**
+  the row is the U-slot item a player buys and fits (`vault_add: 20`), while 14 §4's
+  40-unit Meridian vaults are those stations' own furniture. 14 §4 is not amended.
+- **Behaviour:** the two weapons have **no `weapons.gd` `FAMILIES` entry**, so a fitted
+  one fires nothing yet — the status the catalogue's `u_refine`, `u_drones` and
+  `c_ewar` rows already ship with. Their firing behaviour is a weapon-family pass, not
+  S3's (owner tick).
+
+**Reversal:** drop the three rows from `module_catalog.gd` (one table) and set
+`AUCTION_FACTION_LOTS_INTERIM := false`; the exclusives then wait for faction stations.
+
+### 9.2 The F lot's rarity split (proposed)
+
+§8 pins "one of the three exclusives, rolled at its Magic+ floor" but §2's auction row
+(65/30/5) bans Common for an exclusive and renormalises to no pair. Proposed: **Magic
+85 % / Rare 15 %** — §2's own 30:5 ratio renormalised over the two rarities that are
+legal for an exclusive (30/35 = 85.7 %, 5/35 = 14.3 %). **Reversal:** one constant pair;
+§8's own flag turns the whole lot off.
+
+### 9.3 What an affix does in S3, and what it does not
+
+Affixes are **rolled, stored, priced, named (§7) and displayed** — the two-line stat
+block (base stats plus one line per affix) in FITTING's hover per STATION_HUB §5.3.
+**No affix changes a flight stat in S3.** That is the pin's own arithmetic (CONTRACTS
+§15): a fit cell stores the instance id and `resolved_fit` / `fit_legal` read through
+the base id, so the launch path stays byte-identically the base module it always was.
+Applying `+10..20 % pool`, `+8..16 % damage` or `−15..25 % ammo consumption` means
+teaching `game.gd`'s fit→flight bridge and the weapon-stat families those keys — files
+in no S3 worker set. That work is the **staged affix-application wave** (owner tick).
+
+The same rule covers §4's ten suffixes: all ten roll, are named and show their perk
+line; **none is applied**, which is what keeps §6's sell formula (`base × rarity × 60 %`)
+exactly as pinned while `of the Ledger` reads "+25 % sell value" on the stat line. The
+five perks with no system at all (`of Embers`, `of Leeches`, `of Silence`, `of the
+Cartograph`, `of the Vault`) are the same shape as §2's crafting, derelict and arena
+roll sources: content that ships with no caller until its system does.
+
+**Reversal:** each applied perk is one hook in the affix-application wave; nothing here
+has to be undone to add them.

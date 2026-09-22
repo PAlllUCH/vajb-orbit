@@ -100,13 +100,17 @@ Icons ship as `_{16,48,96,192}.png` cuts from retained masters (ICONS_SPEC §9,
 ## 3. Persistence (one save migration, one flag day)
 
 `PlayerProfile` save_version: v1 → v2 (P1, this section's original migration),
-v2 → v3 (engine slice 0, the fuel key) and v3 → v4 (P2-A, the fit arrays of `fits`
-below); `MIN_READABLE_VERSION` stays 1, so v1–v3 files load clean. New persisted
-state, all through the existing debounced `ConfigFile`:
+v2 → v3 (engine slice 0, the fuel key), v3 → v4 (P2-A, the fit arrays of `fits`
+below) and **v5 → v6 (S3, the module instances and the auction shelf)**;
+`MIN_READABLE_VERSION` stays 1, so v1–v3 files load clean. *(This list stopped at v4
+until the 2026-09-22 S3 docs pass; the tree has been v5 since P2-B proper.)* New
+persisted state, all through the existing debounced `ConfigFile`:
 
 | Key | Shape | Doc |
 |-----|-------|-----|
-| `modules` | `module_instance_id -> {base_id, rarity, prefixes, suffixes, count}` | 15 §6 |
+| `modules` | `instance_id -> {instance_id, base_id, rarity, prefixes, suffixes, count}` | 15 §6/§8 + CONTRACTS §15 — `count` is **1 in the bag, 0 while fitted**, and the record is never erased, so a fitted instance keeps its affixes until REMOVE/SWAP hands the same instance back |
+| `instance_counter` | `int`, mints `mod_%04d`, one per profile | CONTRACTS §15 (new with S3) |
+| `auction` | `{last_band: int, hulls: Array[String], modules: Dictionary, hot: StringName}` | 10 §2.1/§2.4 + CONTRACTS §15 — a **top-level** key, deliberately not a `market` sub-key (`_normalise_market` would drop it); its `modules` holds the shelf's rolled listings by their minted id |
 | `fits` | `ship_id -> {slot_type -> Array[module_instance_id]}` | 09 §4/§4.5 — one entry per cell of that type, indexed by the layout index (row-major within the type, `""` = an empty cell); a v1–v3 single-string fit loads as a one-element array padded to the hull's capacity and is never rewritten at load, while writes always persist the array shape |
 | `market` | `mineral_id -> demand float`, `component_id -> stock`, timestamps | 05 §2/§4 |
 | `heat` | `faction_id -> int` | 13 |

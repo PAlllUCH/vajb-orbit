@@ -3,7 +3,7 @@ slice: S3
 phase: P2
 lane: code
 status: draft
-gate_baseline: "437/0 (sandboxed; 433/4 on the live save — L93)"
+gate_baseline: "457/0 (hermetic — S2.6 closed the live-profile coupling; measured twice 2026-09-22, scratch store)"
 ---
 
 > Draft created 2026-09-22 under the folder law (`_templates/README.md`); scope
