@@ -1206,45 +1206,65 @@ LAUNCH's service rows (the `STATION_HUB.md` §5.4 amendment — owner request 4)
 ## §14 S2.6 truth-and-feel (2026-09-22)
 
 - **Gate hermeticity (L90/L93).** `tests/headless_runner.gd` redirects the profile
-  store to `user://_gate_scratch/profile.cfg` at runner boot and seeds a
-  deterministic default profile, so a gate run **never touches the live
-  `user://profile.cfg`** and its result is independent of any live save state. The
-  four live-coupled tests (`test_engine2_dock.gd` ×2, `test_engine2_fixes.gd` ×1,
-  `test_engine2_wiring.gd` ×1) additionally build their own fixtures (their own fit
-  with the weapons they name, or expectations derived from the launched fit).
-  Acceptance: two consecutive gate runs with a mutated live profile present both
-  read `passed=<total> failed=0` with identical counts, and `profile.cfg`'s md5 is
-  unchanged across the runs. §9's command stands; the sandbox is harness-side and
-  host-independent.
-- **Fragment burst** — `Asteroid` (§5) gains `FRAGMENT_OUTWARD_KICK := 150.0` u/s:
-  a fragment's eject velocity is its §5 shape (`linear_velocity × 1.2`, uniform 360°
-  roll) **plus** `FRAGMENT_OUTWARD_KICK` along the outward radial (rock centre →
-  spawn point), so slow and stationary rocks burst visibly (owner: "when breaking
-  asteroids they should move when exploding"). Reversal: `0.0` = §5's current
-  behaviour exactly.
-- **Beam feel** — `BEAM_SINK := 0.45` and `HIT_FX_JITTER_MULT := 0.35` (clamp
-  `8..48 u`), FX_SPEC §1.6's amendment: beam lines end nearer the struck body's
-  middle and contact FX scatter across the struck surface. Both apply to the mining
-  laser's chip read, which closes L65 here (`mining_laser.gd` plays the chip sparks
-  beside `_play_chip`, exactly the wiring `weapons.gd` already has). Reversal:
-  both `0.0`.
+  store to `user://_gate_scratch/profile.cfg` at runner boot **and** (a) creates the
+  directory first (`DirAccess.make_dir_recursive_absolute` — `ConfigFile.save` into a
+  missing dir fails `err=7` and `PlayerProfile._write_profile` silently drops the
+  write), (b) resets the **in-memory** profile after repointing (`reset_to_defaults()`
+  — the autoload loaded the live file before the runner's `_ready`), and (c) seeds a
+  deterministic default profile. The four live-coupled tests (`test_engine2_dock.gd`
+  ×2, `test_engine2_fixes.gd` ×1, `test_engine2_wiring.gd` ×1) build their own
+  fixtures (their own fit with the weapons they name, or expectations derived from
+  the launched fit) **and guard the slot index** (`_slot()` may answer −1 and
+  GDScript's negative indexing silently reads the last pack). Acceptance (the
+  load-bearing half): two consecutive gate runs with a mutated live profile present
+  both read `passed=<total> failed=0` with identical counts; the live file's md5
+  unchanged is a **secondary** check (measured: the file is rewritten — mtime moves —
+  but content-identical). The sandbox is harness-side and host-independent.
+- **Fragment burst** — `AsteroidField._cleave` (**the field** owns the fragments'
+  spawn placement and velocity) adds `FRAGMENT_OUTWARD_KICK := 150.0` u/s: a
+  fragment's velocity is §5's shape (`eject_velocity()` = `linear_velocity × 1.2`,
+  uniform 360° roll) **plus** `FRAGMENT_OUTWARD_KICK` along the outward radial
+  (rock centre → spawn point — exactly the placement direction `_cleave` already
+  computes), so slow and stationary rocks burst visibly (owner: "when breaking
+  asteroids they should move when exploding"). §5's `eject_velocity()` comment
+  stays true as the shape's half; the radial lives beside the placement.
+  Reversal: `0.0` = today exactly.
+- **Beam feel** — `BEAM_SINK := 0.45` and `HIT_FX_JITTER_MULT := 0.35` (FX_SPEC
+  §1.6's amendment): drawn beam lines end at `hit_point.lerp(body_centre, 0.45)`
+  and contact FX scatter in a disc of `clamp(0.35 × collision radius, 8, 48) u`
+  around the resolved hit. **The radius object:** rocks answer `world_radius()`
+  (measured 24/42/66 u → jitter 8.4/14.7/23.1), hulls their
+  `CollisionShape2D.radius` (30 u → 10.5); a destructible projectile has no radius
+  and the 8 u floor binds there. The 48 u ceiling is inert for every shipped object.
+  **The jitter readers are exactly three:** `spawn_chip_sparks` (weapon beams), the
+  mining chip read closing L65 (`mining_laser.gd` beside `_play_chip`, the wiring
+  `weapons.gd:641` already has), and `spawn_shield_ripple` — a beam on a bare hull
+  spawns no sheet today and none is added. Reversal: both `0.0`.
 - **Flight feel (owner rulings 2026-09-22 — four items riding this wave as R4/R5).**
-  The §4 HANDLING pattern (the §13 column × one multiplier, as the two ×0.50
-  retunes) gains: `ACCEL_TIME_MULT := 2.0` on the `accel_time` rows — a hull takes
-  roughly double the time to reach 90 % of its `max_speed` (owner: "the
-  acceleration is too fast for ship, it shouldn't reach top speed that quickly");
-  `COAST_TIME_MULT := 2.0` on **today's** `coast_time` rows — the documented revert
-  of the combat wave's ×0.50 drag retune, landing exactly on §13's own column
-  (owner: "ship loses speed way too fast and inertia works weird, like ship slides
-  in one side" — and the slide must be **symmetric**: mirrored maneuvers produce
-  mirrored trajectories within 1 %, root cause diagnosed first, never masked).
-  Turning must not translate: a full 360° neutral turn at zero throttle displaces
-  the hull ≤ `TURN_TRANSLATE_LEAK_MAX := 5.0` u (owner: "when ship is pause trying
-  to turn around moves it way too much forward, a ship in space should somewhat be
-  able to do neutral turn"). Motion blur excludes the player hull (FX_SPEC §5's
-  amendment). Reversals: the two multipliers `1.0`; the leak bound and the
-  symmetry tolerance are acceptance bounds only. The owner-locked §13 tick list
-  grows by these two multipliers.
+  The HANDLING derivation in `game/ship_fit.gd` (today bare literals of the §13
+  column) gains the multiplier pattern: `ACCEL_TIME_MULT := 2.0` on `accel_time`
+  (a hull takes roughly double the time to reach 90 % of `max_speed`; owner: "the
+  acceleration is too fast for ship, it shouldn't reach top speed that quickly")
+  and `COAST_TIME_MULT := 2.0` on **today's** `coast_time` rows — the documented
+  revert of the combat wave's ×0.50 drag retune, landing exactly on §13's own
+  column (owner: "ship loses speed way too fast"). The revert is **forward-only**:
+  lateral decay keeps today's time constant (`LATERAL_DAMP_MULT := 1.0` of today,
+  applied as an explicit lateral drag), because the lateral damp *is* the outward
+  skid in a turn (owner: "inertia works weird, like ship slides in one side") —
+  forward carry grows, sideways slide does not. **Steering is throttle-independent**
+  (`STEER_WITHOUT_THROTTLE := true`): the nose follows the cursor at zero throttle
+  and a turn input applies torque only, so a 360° turn at rest displaces the hull ≤
+  `TURN_TRANSLATE_LEAK_MAX := 5.0` u (owner: "when ship is pause trying to turn
+  around moves it way too much forward, a ship in space should somewhat be able to
+  do neutral turn"). This **supersedes §4's "the nose follows the cursor while
+  `thrust_forward` is held, and the heading holds when it is not"** (reversal: the
+  W-gate, one condition). AC6 is measured on the **cursor route at zero throttle**,
+  never on a synthetic `turn_left` press (that route is torque-only today and would
+  pass before any fix). Mirrored maneuvers must produce mirrored trajectories
+  within 1 %. **Disclosure:** the two multipliers reach every NPC hull through
+  `ShipStats` — NPCs accelerate slower and carry further; no NPC file is edited and
+  `test_engine2_npc.gd` is where it may show. Reversals: the multipliers `1.0`;
+  the bounds are bounds only.
 
 ## §15 S3 item economy — instances and the AUCTION (2026-09-22)
 

@@ -100,7 +100,9 @@ owner's §8 tick list is resolved (all six kept); the one follow-up is the 7-W c
   F1's seventh row), then **437 with P2-B proper** (`test_p2b_retirement.gd` 13,
   `test_p2b_fitting_panel.gd` 18 → 20 with F1's two, `test_p2b_services.gd` 11 → 12 with F1's
   one; F1's profile-fallback tests ride the retirement suite, and F2 cured three pre-existing
-  engine2 fixture assumptions to take the **live-profile** gate from 434/3 to 437/0).
+  engine2 fixture assumptions to take the **live-profile** gate from 434/3 to 437/0 —
+  that live-profile reading does **not** reproduce: 433/4 measured twice on
+  2026-09-22 (L93; S2.6-R0/F10 confirms 433/4 on a byte-copy of the live profile).
 - `staging/verify_wave.py` — mechanical wave gates: `snapshot` before a wave,
   `verify --baseline <tag> [--forbidden ...] [--expect-reports ...] [--tests]`
   after. Baselines live in `.agents/gen/_state/_wave_state/` (`wave1_closed`,
@@ -179,7 +181,8 @@ was `.agents/gen/dispatch_designer.md` + `designer_generation_backlog.md`
 from the docs when the lane resumes: component icons, the `_48`/tint re-cuts, the decisions);
 nothing from it is in flight. Owner ticks open: the
 `18_engine_spec.md` §6/§13/§15 cleaving amendment (owner-locked — the wave shipped,
-the spec text lags; it now also covers `FRAGMENT_OUTWARD_KICK`), the §13 turn/`coast_time`
+the spec text lags; it now also covers `FRAGMENT_OUTWARD_KICK` and the two
+  flight multipliers `ACCEL_TIME_MULT`/`COAST_TIME_MULT`), the §13 turn/`coast_time`
 column ticks, slice 2.5's two calls (engine bed, vignette strength), L83's icon-size pick,
 and S3's three ticks (the v5 migration's Common-vs-retro-roll, the F-lot interim, the
 AUCTION rail position). P2-A/P2-B1/P2-B proper tick lists are resolved.
@@ -228,7 +231,9 @@ condition is item 6, and each needs its own docs-first brief before any code):**
   orchestrator's F2 then cured a **pre-existing** fixture assumption R1 diagnosed (three
   engine2 dock/fixes tests resolved the ammo slot from the catalogue order while the launched
   fit sizes it, which the owner's own cannon-first Vanguard exposed): 434/3 → **437/0** on the
-  canonical gate with the live profile. **Owner ticks: 1–5 as briefed (§7) — the rail entry,
+  canonical gate with the live profile — **corrected 2026-09-22**: the live-profile
+  gate reads 433/4 (L93; S2.6-R0/F10 confirms 433/4 on a byte-copy of the live
+  profile); F2's cure was measured against a profile state that no longer holds. **Owner ticks: 1–5 as briefed (§7) — the rail entry,
   the six-row retirement table, the pinned strings, the four requests, and affixes next —
   all measured landed; one measured residual rides to the backlog (a bare hull's delivered
   mandatory cell offers REMOVE and refuses with the pinned wording — W2's disclosed reading).**

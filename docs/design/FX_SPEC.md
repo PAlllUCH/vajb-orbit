@@ -145,7 +145,7 @@ section sanctions (weapon beams included) gains two numbers:
 | Field | Value |
 |---|---|
 | Termination pull | `BEAM_SINK := 0.45` — the drawn beam ends at `hit_point.lerp(body_centre, 0.45)`, so a beam connects to more of the object's middle instead of stopping at the rim (owner request 7). Reversal: `0.0` = today's rim hit. |
-| Hit FX scatter | `HIT_FX_JITTER_MULT := 0.35`, clamped `8..48 u` — the contact FX (the chip sparks here, the impact sheets for weapon beams) spawn at a uniform random point in a disc of that radius around the resolved hit, so a held beam scatters its reads across the struck surface instead of hammering one point (owner request 6). Reversal: `0.0` = the fixed contact point. |
+| Hit FX scatter | `HIT_FX_JITTER_MULT := 0.35`, disc radius `clamp(0.35 × collision radius, 8, 48) u` — the contact FX spawn at a uniform random point in that disc around the resolved hit. The readers are exactly three: the chip sparks (weapon beams and the mining beam's L65 chip read) and the shield ripple — a beam on a bare hull spawns no sheet and none is added. Radius source: rocks `world_radius()` (24/42/66 u), hulls `CollisionShape2D.radius` (30 u); radius-less targets (destructible projectiles) take the 8 u floor (owner request 6). Reversal: `0.0` = the fixed contact point. |
 
 Both apply to the mining beam and the weapon beams' contact reads (§7.3's wiring);
 the beam line's width, flicker and palette are unchanged.
@@ -247,12 +247,16 @@ zero gameplay numbers live here.
 | Camera pull-back | the flight camera's `zoom` | multiplied by `lerp(1.0, 0.82, (speed_ratio − 0.7) / 0.3)` — it **stacks with the wheel zoom**, never replaces it (the wheel owns the target, this owns the applied value) |
 | Dust streaks | `GPUParticles2D` parented to the camera | emits micro streaks opposite the velocity vector while the ratio is high; texture `fx_dust_streak.png`; **proposed:** 30/s at ratio 1.0, 0.5 s lifetime, 12 u, low alpha, never additively blown |
 
-**Amendment 2026-09-22 (S2.6, owner ruling).** "when motion blur happens the ship
-shouldn't be blurred, everything else can be." The player hull renders **outside
-the blur pass** — sharp, on top (`SPEED_BLUR_EXCLUDE_PLAYER := true`; the route is
-implementation's: a canvas/layer split or a shader-side exclusion). Acceptance: at
-full blur strength the hull-region pixels match the unblurred render while the
-background differs measurably. Reversal: the flag.
+**Amendment 2026-09-22 (S2.6, owner ruling; route pinned by S2.6-R0/F4).** "when
+motion blur happens the ship shouldn't be blurred, everything else can be." The
+player hull is excluded **shader-side** (`SPEED_BLUR_EXCLUDE_PLAYER := true`, driven
+from `speed_fantasy.gd`, which owns the camera and can read the `&"player_ship"`
+group): the blur smear **and its chromatic split** are skipped in the hull's screen
+region. A canvas/layer split is **forbidden** — it would also lift the hull above
+the hull-critical vignette (both live on `SCREEN_LAYER` 1), so a damaged hull would
+lose its tint. Acceptance: at full blur strength the hull-region pixels match the
+unblurred render (split included) while the background differs measurably.
+Reversal: the flag.
 
 ## 6. Damage states
 
