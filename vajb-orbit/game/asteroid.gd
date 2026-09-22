@@ -287,7 +287,10 @@ func cleaves() -> bool:
 ## The velocity the fragments inherit: `current_velocity × 1.2` of the §13 cleaving
 ## row, read while the rock still exists (the `cracked` emission happens before the
 ## free). The direction is the field's roll over `FRAGMENT_EJECT_CONE_DEG`, because
-## the field owns the RNG: 360° there means uniform over the full circle.
+## the field owns the RNG: 360° there means uniform over the full circle. This is the
+## shape's half only — CONTRACTS §14's outward burst is `AsteroidField`'s
+## (`FRAGMENT_OUTWARD_KICK` along the spawn radial), because the fragment's spawn
+## point is the field's to compute.
 func eject_velocity() -> Vector2:
 	return linear_velocity * FRAGMENT_EJECT_MULT
 

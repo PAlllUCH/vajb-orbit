@@ -223,7 +223,7 @@ const HULLS: Dictionary = {
 ## ENGINE_SPEC section 13 handling column; max speed is 08 section 2's base-speed
 ## percentage x `MAX_SPEED_SCALE`.
 ##
-## **The `coast_time` column is retuned (owner ruling, 2026-09-21): all nine rows are
+## **The `coast_time` column was retuned (owner ruling, 2026-09-21): all nine rows are
 ## scaled x 0.50.** The owner's "weird drag - I release and it still goes forward for a
 ## second" is this column: `coast_time` is the only free number in the release path, and
 ## it sets both the release brake (`max_speed / coast_time`) and the body's damp
@@ -232,8 +232,11 @@ const HULLS: Dictionary = {
 ## on the shipped launch (the launch fit's `h_plate_light` multiplies the row by 1.05, so
 ## the Vanguard's resolved coast time is 1.05 s): time to 10 % of the release speed
 ## 1.890 s -> 0.945 s, carried distance 430.32 u -> 216.85 u, and the two accelerate legs
-## are unchanged. **Reversal: multiply the nine rows below by 2.0 and re-run the probe**;
-## no other file reads this column.
+## are unchanged. **The rows below still carry that x 0.50, and `COAST_TIME_MULT` below is
+## the reverse of it** (owner ruling 2026-09-22: "ship loses speed way too fast" - x 2.0
+## lands the resolved column back on section 13's own); the older reversal sentence
+## (multiply the nine rows by 2.0) is superseded by the constant, so the revert is one
+## number and not a nine-row edit. No other file reads this column by hand.
 ##
 ## **The `turn_rate` column is retuned (owner ruling, 2026-09-21, third round): all
 ## nine rows are scaled x 0.50.** "i dont like how fast ship turn" is this column,
@@ -323,6 +326,34 @@ const HANDLING: Dictionary = {
 	},
 }
 
+## CONTRACTS section 14 (owner rulings 2026-09-22): the HANDLING derivation gains the
+## multiplier pattern. The rows above stay the shipped literals -- the table the module
+## costs were balanced against -- and these three constants are what `resolve()` applies to
+## them, so each ruling is one number to flip rather than a nine-row edit.
+##
+## - `ACCEL_TIME_MULT` **2.0** on `accel_time`: a hull takes about twice as long to reach
+##   its top speed. The owner: "the acceleration is too fast for ship, it shouldn't reach
+##   top speed that quickly". Measured by `tests/probe_s2_6_flight.tscn` on the launched
+##   Vanguard: t_90 2.283 -> 4.567 s, the accelerate leg doubling per class and every hull's
+##   ceiling unmoved (`max_speed` never moves). **Reversal: 1.0.**
+## - `COAST_TIME_MULT` **2.0** on **today's** `coast_time` rows, which is exactly section
+##   13's own column: the documented revert of the combat wave's x 0.50 drag retune. The
+##   owner: "ship loses speed way too fast". Measured on the same launch: time to 10 % of
+##   the release speed 0.945 -> 1.890 s, carried distance 214.59 -> ~429 u. It reaches every
+##   NPC hull through `ShipStats` (NPCs carry further, as they did before the retune).
+##   **Reversal: 1.0.**
+## - `LATERAL_DAMP_MULT` **1.0** of today: the sideways decay keeps today's time constant
+##   while the forward carry grows, because in this model the lateral damp *is* the outward
+##   skid in a turn (the owner: "inertia works weird, like ship slides in one side").
+##   `PlayerShip._lateral_damp` reads it and turns it into the explicit lateral drag; 0.0
+##   removes that drag, so the sideways decay rides the forward revert instead. **Reversal:
+##   0.0.** (The resolved snapshot's `coast_time` is the *forward* one, so this constant is
+##   read from `player_ship.gd` rather than through `ShipStats` -- section 2's field list is
+##   frozen and carries no lateral field.)
+const ACCEL_TIME_MULT := 2.0
+const COAST_TIME_MULT := 2.0
+const LATERAL_DAMP_MULT := 1.0
+
 ## 09 section 3's module catalogue lives in `game/module_catalog.gd` -- the one
 ## literal, carrying `name`, `tier`, `cost` and `icon` alongside the `slot`,
 ## `draw` and `effects` a `ShipStats` snapshot needs. This const is its alias,
@@ -403,13 +434,16 @@ static func resolve(hull_id: StringName, fit: Dictionary) -> ShipStats:
 
 	var stats := ShipStats.new()
 	# 1. Hull base (08 section 2 + ENGINE_SPEC section 13 handling column, which
-	# now carries `hull_mass` too).
+	# now carries `hull_mass` too). The two times are the row times the ruling
+	# multipliers (CONTRACTS section 14: the accelerate leg x 2.0, the release back
+	# on section 13's own column), so the literals above stay the shipped table and
+	# a reversal is one constant. `max_speed` takes no multiplier and never moves.
 	stats.hull_max = float(hull[&"hull"])
 	stats.shield_max = float(hull[&"shield"])
 	stats.cargo_max = int(hull[&"cargo"])
 	stats.max_speed = float(handling[&"max_speed"])
-	stats.accel_time = float(handling[&"accel_time"])
-	stats.coast_time = float(handling[&"coast_time"])
+	stats.accel_time = float(handling[&"accel_time"]) * ACCEL_TIME_MULT
+	stats.coast_time = float(handling[&"coast_time"]) * COAST_TIME_MULT
 	stats.turn_rate = float(handling[&"turn_rate"])
 	stats.turn_spinup = float(handling[&"turn_spinup"])
 	stats.hull_mass = float(handling[&"hull_mass"])

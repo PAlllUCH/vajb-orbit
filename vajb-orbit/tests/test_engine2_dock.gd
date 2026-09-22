@@ -36,8 +36,23 @@ const IDLE_WEAPON: StringName = &"cannon"
 const FIRED_ROUNDS := 3
 const LATER_ROUNDS := 5
 
+## The fixture's own fit (CONTRACTS section 14): both packs this suite names must be
+## mounted whatever the account holds - the live Vanguard fit is `["w_mining",
+## "w_cannon", ""]`, which mounts no laser at all (F11) - so the store's fit for the
+## active hull is replaced before `game.tscn` is instantiated and put back in
+## `suite_teardown`. Both writes are flushed while the harness's own scratch `save_path`
+## is still in place (`headless_runner.gd:_seed_scratch_store`), never the owner's file.
+const FIXTURE_FIT: Dictionary = {
+	&"engines": [&"e_std"],
+	&"power": &"p_std",
+	&"weapons": [&"w_laser", &"w_cannon"],
+	&"shields": [&"s_light"],
+	&"armour": [&"h_plate_light"],
+}
+
 var _scene: Node2D = null
 var _state: Variant = null
+var _previous_fits: Dictionary = {}
 
 
 func suite_name() -> String:
@@ -45,6 +60,7 @@ func suite_name() -> String:
 
 
 func suite_setup(_ctx: Dictionary) -> void:
+	_stage_fixture_fit()
 	var packed := load(GAME_SCENE) as PackedScene
 	if packed == null:
 		fail_setup("game.tscn did not load")
@@ -71,6 +87,7 @@ func suite_teardown() -> void:
 	_delete_file(SCRATCH_PROFILE)
 	_delete_file(SCRATCH_LOG)
 	Log.log_path = Log.DEFAULT_PATH
+	_restore_fits()
 
 
 ## Every test hands the store back itself, so this only clears what a failed run left behind.
@@ -96,11 +113,18 @@ func test_the_dock_report_is_idempotent_within_one_launch() -> void:
 	assert_true(profile != null, "the PlayerProfile autoload is the dock's store")
 	if profile == null:
 		return
+	var slot := _slot()
+	assert_true(
+		slot >= 0,
+		"the fixture's own fit mounts the pack this test fires (%s of %s)"
+		% [FIRED_WEAPON, _state.get(&"weapons")]
+	)
+	if slot < 0:
+		return
 	var previous_path: String = _repoint(profile)
 	var stored_before: int = int(profile.call(&"ammo_of", FIRED_WEAPON))
 	var idle_before: int = int(profile.call(&"ammo_of", IDLE_WEAPON))
 	_scene.call(&"_seed_ammo")
-	var slot := _slot()
 	var live: int = int((_state.get(&"ammo") as Array)[slot])
 	var ceiling: int = int((_state.get(&"ammo_max") as Array)[slot])
 	assert_true(
@@ -152,10 +176,17 @@ func test_a_settle_charges_the_rounds_fired_since_the_last_one() -> void:
 	assert_true(profile != null, "the PlayerProfile autoload is the dock's store")
 	if profile == null:
 		return
+	var slot := _slot()
+	assert_true(
+		slot >= 0,
+		"the fixture's own fit mounts the pack this test fires (%s of %s)"
+		% [FIRED_WEAPON, _state.get(&"weapons")]
+	)
+	if slot < 0:
+		return
 	var previous_path: String = _repoint(profile)
 	var stored_before: int = int(profile.call(&"ammo_of", FIRED_WEAPON))
 	_scene.call(&"_seed_ammo")
-	var slot := _slot()
 	var live: int = int((_state.get(&"ammo") as Array)[slot])
 	assert_true(
 		live >= LATER_ROUNDS,
@@ -206,9 +237,33 @@ func _store() -> Node:
 
 ## The fired pack's slot as this launch sized it: the index of the fired family in the live
 ## `PlayerState.weapons` array, so the test charges the pack it names whatever order the fit
-## holds its W cells in (LOW-6).
+## holds its W cells in (LOW-6). It answers -1 when the launch mounts no such pack, and
+## GDScript's negative indexing would then silently read the **last** pack rather than
+## failing, so every caller guards the value before it indexes `ammo` (F11).
 func _slot() -> int:
 	return int((_state.get(&"weapons") as Array).find(FIRED_WEAPON))
+
+
+## The suite's own fit, written before the scene is instantiated: `set_fit` is the store's
+## plain per-hull setter (no inventory or power-budget legality - that is `fit_legal`'s and
+## the fitting panel's), and the stored value is captured first so the account ends this
+## suite exactly as it started.
+func _stage_fixture_fit() -> void:
+	var profile: Node = _store()
+	if profile == null:
+		return
+	_previous_fits = profile.call(&"fits")
+	profile.call(&"set_fit", StringName(profile.call(&"active_ship")), FIXTURE_FIT)
+	profile.call(&"flush")
+
+
+func _restore_fits() -> void:
+	var profile: Node = _store()
+	if profile == null:
+		return
+	profile.call(&"set_fits", _previous_fits)
+	profile.call(&"flush")
+	_previous_fits = {}
 
 
 ## The scratch handover, in the order the finding's own measurements use: repoint the writer

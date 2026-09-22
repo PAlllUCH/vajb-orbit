@@ -89,6 +89,18 @@ const DIMINISHING_YIELD_MULT := 0.7
 ## exists for a spawn ring and none is invented as a gameplay value.
 const FRAGMENT_ANGLE_JITTER := 0.25
 
+## CONTRACTS §14's "Fragment burst" (the owner's "when breaking asteroids they
+## should move when exploding"): every fragment also carries this much speed along
+## its own outward radial -- **the placement direction above**, rock centre to spawn
+## point, so no second direction is invented. It is additive on top of §5's shape
+## (`eject_velocity()` = the parent's velocity × 1.2, rolled over
+## `FRAGMENT_EJECT_CONE_DEG`): a rock at rest ejects at 0.0 today and now bursts
+## visibly, while a drifting rock keeps its inherited component exactly. The field
+## owns it because the field is what rolls the spawn point; the rock keeps the
+## shape's half. Reversal: `0.0` is today exactly (measured before the change: a
+## resting rock's four fragments all read radial 0.000 u/s).
+const FRAGMENT_OUTWARD_KICK := 150.0
+
 ## 02 §7's floating pickup prop and the group `Pickup.setup` joins. The burst's ore
 ## is placed on the same ring as the fragments, for the same reason.
 const PICKUP_GROUP: StringName = &"pickup"
@@ -360,7 +372,10 @@ func _cleave(rock: Node2D) -> void:
 		var angle := TAU * float(index) / float(count)
 		angle += rng.randf_range(-FRAGMENT_ANGLE_JITTER, FRAGMENT_ANGLE_JITTER)
 		var distance := ring + float(fragment.call(&"world_radius"))
-		fragment.global_position = origin + Vector2.RIGHT.rotated(angle) * distance
+		## One direction, two uses: this is the placement radial, and §14's kick rides
+		## the same vector, so a fragment always leaves along the ray it was born on.
+		var outward := Vector2.RIGHT.rotated(angle)
+		fragment.global_position = origin + outward * distance
 		fragment.linear_velocity = velocity.rotated(
 			deg_to_rad(
 				rng.randf_range(
@@ -368,7 +383,7 @@ func _cleave(rock: Node2D) -> void:
 					AsteroidScript.FRAGMENT_EJECT_CONE_DEG
 				)
 			)
-		)
+		) + outward * FRAGMENT_OUTWARD_KICK
 
 
 ## The row below: a Large's fragments are Medium, a Medium's are Small (§13).

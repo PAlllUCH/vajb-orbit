@@ -1,0 +1,124 @@
+{
+ "baseline": "s26_start",
+ "modified": [
+  ".agents/gen/_state/LOW_BACKLOG.md",
+  ".agents/gen/_state/WAVEBOARD.md",
+  ".agents/gen/slices/S2.6-truth-and-feel/S2.6_BRIEF.md",
+  ".agents/gen/slices/S2.6-truth-and-feel/S2.6_prompts.md",
+  "AGENTS.md",
+  "docs/CONTRACTS.md",
+  "docs/design/FX_SPEC.md",
+  "vajb-orbit/game/asteroid.gd",
+  "vajb-orbit/game/asteroid_field.gd",
+  "vajb-orbit/game/mining_laser.gd",
+  "vajb-orbit/game/player_ship.gd",
+  "vajb-orbit/game/projectile.gd",
+  "vajb-orbit/game/ship_fit.gd",
+  "vajb-orbit/game/speed_blur.gdshader",
+  "vajb-orbit/game/speed_fantasy.gd",
+  "vajb-orbit/game/weapons.gd",
+  "vajb-orbit/tests/headless_runner.gd",
+  "vajb-orbit/tests/probe_g1_flight_feel.gd",
+  "vajb-orbit/tests/probe_rock_cleave.gd",
+  "vajb-orbit/tests/probe_rock_cleave_a2.gd",
+  "vajb-orbit/tests/test_combat_repair_c5.gd",
+  "vajb-orbit/tests/test_engine2_cleaving.gd",
+  "vajb-orbit/tests/test_engine2_dock.gd",
+  "vajb-orbit/tests/test_engine2_fixes.gd",
+  "vajb-orbit/tests/test_engine2_pools.gd",
+  "vajb-orbit/tests/test_engine2_wiring.gd",
+  "vajb-orbit/tests/test_engine_c3_flight_decay.gd",
+  "vajb-orbit/tests/test_flight_beam_g2.gd",
+  "vajb-orbit/tests/test_flight_feel_g1.gd",
+  "vajb-orbit/tests/test_weapon_fx_f4.gd"
+ ],
+ "added": [
+  ".agents/gen/dispatch_designer.md",
+  ".agents/gen/slices/D2-icon-unification/D2_SPLIT.md",
+  ".agents/gen/slices/D2-icon-unification/SLICE.md",
+  ".agents/gen/slices/S2.6-truth-and-feel/S2.6-R0_report.md",
+  ".agents/gen/slices/S2.6-truth-and-feel/S2.6-R1_report.md",
+  ".agents/gen/slices/S2.6-truth-and-feel/S2.6-R2_report.md",
+  ".agents/gen/slices/S2.6-truth-and-feel/S2.6-R3_report.md",
+  ".agents/gen/slices/S2.6-truth-and-feel/S2.6-R4_report.md",
+  ".agents/gen/slices/S2.6-truth-and-feel/S2.6-R5_report.md",
+  ".agents/gen/slices/S2.6-truth-and-feel/S2.6-R6_review.md",
+  ".agents/gen/slices/S2.6-truth-and-feel/_incident/README.md",
+  ".agents/gen/slices/S2.6-truth-and-feel/_incident/profile.r1_reconstructed_artifact.cfg",
+  ".agents/gen/slices/S2.6-truth-and-feel/_incident/profile.r1_reconstruction.cfg",
+  ".agents/gen/slices/S2.6-truth-and-feel/_incident/r1_gate_runA.log",
+  ".agents/gen/slices/S2.6-truth-and-feel/_r7/r7_gate_mutated_C.log",
+  ".agents/gen/slices/S2.6-truth-and-feel/_r7/r7_gate_real_A.log",
+  ".agents/gen/slices/S2.6-truth-and-feel/_r7/r7_gate_real_B.log",
+  ".agents/gen/slices/S2.6-truth-and-feel/_r7/r7_scoped.log",
+  ".agents/gen/slices/S2.6-truth-and-feel/_r7/r7_verify_wave.log",
+  ".agents/gen/slices/S2.6-truth-and-feel/_r7/scratch_root.txt",
+  ".crush/shell-output/output-1153679184.log",
+  ".crush/shell-output/output-4128263021.log",
+  "PROMPTS.md",
+  "gear.svg",
+  "gear_96.svg",
+  "lasergun.svg",
+  "lasergun_96.svg",
+  "staging/d2/_check_sheet01.jpg",
+  "staging/d2/_masters_alt.png",
+  "staging/d2/_masters_catalog.png",
+  "staging/d2/_view_alt_0.jpg",
+  "staging/d2/_view_alt_1.jpg",
+  "staging/d2/_view_catalog_0.jpg",
+  "staging/d2/_view_catalog_1.jpg",
+  "staging/d2/build_mark_sheets.py",
+  "staging/d2/mark_sheets/D2_MARKS_READ.tsv",
+  "staging/d2/mark_sheets/D2_MARK_01.png",
+  "staging/d2/mark_sheets/D2_MARK_02.png",
+  "staging/d2/mark_sheets/D2_MARK_03.png",
+  "staging/d2/mark_sheets/D2_MARK_04.png",
+  "staging/d2/mark_sheets/D2_MARK_05.png",
+  "staging/d2/mark_sheets/D2_MARK_06.png",
+  "staging/d2/mark_sheets/D2_MARK_07.png",
+  "staging/d2/mark_sheets/D2_MARK_08.png",
+  "staging/d2/mark_sheets/D2_MARK_09.png",
+  "staging/d2/mark_sheets/D2_MARK_10.png",
+  "staging/d2/mark_sheets/MARK_INDEX.tsv",
+  "staging/d2/read_marks.py",
+  "staging/d2/svg_ids.txt",
+  "staging/d2/svg_picked.tsv",
+  "vajb-orbit/tests/probe_s2_6_burst.gd",
+  "vajb-orbit/tests/probe_s2_6_burst.gd.uid",
+  "vajb-orbit/tests/probe_s2_6_flight.gd",
+  "vajb-orbit/tests/probe_s2_6_flight.gd.uid",
+  "vajb-orbit/tests/probe_s2_6_flight.tscn",
+  "vajb-orbit/tests/test_s2_6_beam.gd",
+  "vajb-orbit/tests/test_s2_6_beam.gd.uid",
+  "vajb-orbit/tests/test_s2_6_blur.gd",
+  "vajb-orbit/tests/test_s2_6_blur.gd.uid",
+  "vajb-orbit/tests/test_s2_6_burst.gd",
+  "vajb-orbit/tests/test_s2_6_burst.gd.uid",
+  "vajb-orbit/tests/test_s2_6_flight.gd",
+  "vajb-orbit/tests/test_s2_6_flight.gd.uid",
+  "vajb-orbit/tests/test_s2_6_gate_hygiene.gd",
+  "vajb-orbit/tests/test_s2_6_gate_hygiene.gd.uid"
+ ],
+ "deleted": [
+  "RCLONE_TEST"
+ ],
+ "problems": [
+  "expected report missing/empty: S2.6-R0_report.md,S2.6-R6_review.md"
+ ]
+}
+--- running headless test gate ---
+     GDScript backtrace (most recent call first):
+         [0] append (res://game/economy_log.gd:28)
+         [1] test_unwritable_log_path_is_survivable (res://tests/test_p1_clock_log.gd:94)
+         [2] _run_file (res://tests/headless_runner.gd:163)
+         [3] _ready (res://tests/headless_runner.gd:39)
+SCRIPT ERROR: Cannot call method 'call' on a previously freed instance.
+          at: test_a_held_beam_reads_one_hit_per_contact_interval (res://tests/test_weapon_fx_f4.gd:178)
+          GDScript backtrace (most recent call first):
+              [0] test_a_held_beam_reads_one_hit_per_contact_interval (res://tests/test_weapon_fx_f4.gd:178)
+              [1] _run_file (res://tests/headless_runner.gd:163)
+              [2] _ready (res://tests/headless_runner.gd:39)
+WARNING: 26 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 12 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

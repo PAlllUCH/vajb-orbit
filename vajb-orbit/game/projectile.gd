@@ -280,10 +280,11 @@ const AUDIO_SERVICE: StringName = &"AudioManager"
 ## sequence the spec gives no rate, so they take `Fx.DEFAULT_FPS` (the helper's
 ## documented fallback, reported).
 ##
-## `chip` is FX_SPEC section 1.6's mining chip sparks, the sheet line 138 names
-## (`fx_mining_beam.png`) for exactly this. It is a beam's read rather than a
+## `chip` is FX_SPEC section 1.6 / section 3's mining chip sparks, the sheet
+## `fx_mining_beam.png` names for exactly this. It is a beam's read rather than a
 ## projectile's in this table's terms: `weapons.gd`'s rock branch spawns it when a gun
-## chips an asteroid, through `spawn_chip_sparks`. Section 1.6 states no world size for
+## chips an asteroid, through `spawn_chip_sparks`, and `mining_laser.gd`'s own chip read
+## (L65) takes the same door. Section 1.6 states no world size for
 ## the burst, so `world` is the wiring's own and matches section 7.2's arc read of 40
 ## (reported).
 const FEEDBACK: Dictionary = {
@@ -1308,9 +1309,10 @@ static func spawn_arc_spark(parent: Node, at: Vector2) -> AnimatedSprite2D:
 	return spawn_sheet(parent, &"arc", at)
 
 
-## FX_SPEC section 1.6's four-frame chip-sparks burst (`fx_mining_beam.png`, line 138's
-## own sheet), one-shot per S8 chip event at the spec's 20 FPS: what a gun chipping an
-## asteroid draws at the contact. The reader is `weapons.gd`'s rock branch.
+## FX_SPEC section 1.6 / section 3's four-frame chip-sparks burst (`fx_mining_beam.png`,
+## the sheet section 3 names), one-shot per S8 chip event at the spec's 20 FPS: what a gun
+## chipping an asteroid draws at the contact. The readers are `weapons.gd`'s rock branch
+## and `mining_laser.gd`'s own chip read (L65).
 static func spawn_chip_sparks(parent: Node, at: Vector2) -> AnimatedSprite2D:
 	return spawn_sheet(parent, &"chip", at)
 
@@ -1757,3 +1759,48 @@ static func _place(node: Node2D, at: Vector2) -> void:
 		node.global_position = at
 		return
 	node.position = at
+
+
+## --- The contact FX's scatter (FX_SPEC section 1.6's 2026-09-22 amendment) --
+
+
+## The radius FX_SPEC section 1.6's scatter disc is measured from: the target's own.
+## A rock answers `world_radius()` (24/42/66 u by class, `asteroid.gd:296`); a hull does
+## not, and its figure lives in the `CircleShape2D` its body carries (30 u,
+## `player_ship.tscn`'s `HullBody/Shape`), so the subtree is searched rather than the
+## node alone - a ray hands back the bare collider for a hull but the ship above it for
+## the shield rule, and both have to read the same number. 0.0 means the target carries
+## no radius at all, which is where the caller's floor binds (a destructible shot's own
+## 4 u detection circle is far below it, so it lands on the floor too).
+static func collision_radius(target: Object) -> float:
+	var node := target as Node
+	if node == null or not is_instance_valid(node):
+		return 0.0
+	if node.has_method(&"world_radius"):
+		return maxf(float(node.call(&"world_radius")), 0.0)
+	return _circle_radius(node)
+
+
+## A uniform random point in the disc of `radius` u around `at`, drawn from the caller's
+## own generator so one component's effects never perturb another's stream (or the global
+## one the rock looks roll on). `sqrt` on the reach is what makes it uniform per unit
+## area; without it every spark would crowd the rim. `radius <= 0.0` hands `at` back
+## untouched, which is the amendment's own reversal (`HIT_FX_JITTER_MULT 0.0`).
+static func scatter_in_disc(rng: RandomNumberGenerator, at: Vector2, radius: float) -> Vector2:
+	if rng == null or radius <= 0.0:
+		return at
+	return at + Vector2.RIGHT.rotated(rng.randf_range(0.0, TAU)) * (radius * sqrt(rng.randf()))
+
+
+## The first `CircleShape2D` radius in `node`'s own subtree, in child order. Depth-first,
+## so a hull's own collider (the first body under the ship) wins over anything mounted
+## after it; 0.0 when the subtree carries no circle at all.
+static func _circle_radius(node: Node) -> float:
+	for child: Node in node.get_children():
+		var shape := child as CollisionShape2D
+		if shape != null and shape.shape is CircleShape2D:
+			return maxf((shape.shape as CircleShape2D).radius, 0.0)
+		var deeper := _circle_radius(child)
+		if deeper > 0.0:
+			return deeper
+	return 0.0

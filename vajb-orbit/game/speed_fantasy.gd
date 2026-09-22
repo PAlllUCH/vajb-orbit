@@ -69,6 +69,25 @@ const DUST_NODE: StringName = &"DustStreaks"
 const BLUR_SPAN_PX := 24.0
 const ABERRATION_PX := 2.0
 
+## FX_SPEC section 5's 2026-09-22 amendment (S2.6 truth-and-feel, the owner's ruling: "when
+## motion blur happens the ship shouldn't be blurred, everything else can be"). The player
+## hull's own screen region draws through the blur untouched - the smear and its chromatic
+## split are both skipped there, shader-side, because a canvas/layer split would also lift
+## the hull above the hull-critical vignette (the two are siblings on `SCREEN_LAYER`).
+##
+## The hull is found through the group the amendment names, and its screen region is the
+## hull's own radius (the radius object CONTRACTS section 14's F16 pins for a hull:
+## `CollisionShape2D.radius`, measured 30 u on the shipped `player_ship.tscn`) scaled by the
+## camera's zoom. Nothing is invented: a scene with no player hull, or a hull whose collider
+## carries no circle, pushes the flag off and the blur stays full-screen (reversal: the flag).
+const SPEED_BLUR_EXCLUDE_PLAYER := true
+const PLAYER_GROUP: StringName = &"player_ship"
+
+## The three uniforms the exclusion travels in (`speed_blur.gdshader`).
+const EXCLUDE_UNIFORM: StringName = &"exclude_player"
+const HULL_UV_UNIFORM: StringName = &"player_screen_uv"
+const HULL_RADIUS_UNIFORM: StringName = &"player_screen_radius"
+
 ## The FEEDBACK row the dust streak's art comes from: the same table every other FX
 ## sheet is spawned through (`projectile.gd`), so no second FX helper file exists.
 const DUST_ROW: StringName = &"dust"
@@ -85,6 +104,14 @@ var _blur: ColorRect = null
 var _blur_material: ShaderMaterial = null
 var _vignette: TextureRect = null
 var _dust: GPUParticles2D = null
+## The exclusion's own state: the hull the region belongs to (resolved lazily through the
+## group, so a scene that spawns its ship later still gets a region), its radius in world
+## units, and the last region pushed - which is also what the read-backs answer.
+var _hull: Node2D = null
+var _hull_radius := 0.0
+var _hull_excluded := false
+var _hull_uv := Vector2(0.5, 0.5)
+var _hull_radius_uv := Vector2.ZERO
 
 
 func _ready() -> void:
@@ -197,6 +224,25 @@ func vignette_rect() -> TextureRect:
 
 func dust() -> GPUParticles2D:
 	return _dust
+
+
+## FX_SPEC section 5's amendment, as it was last pushed: the flag, the hull centre in UV, the
+## radius per axis, and the hull's own radius in world units - so a probe can name the number
+## the region came from rather than only the result.
+func blur_excludes_player() -> bool:
+	return _hull_excluded
+
+
+func hull_screen_uv() -> Vector2:
+	return _hull_uv
+
+
+func hull_screen_radius() -> Vector2:
+	return _hull_radius_uv
+
+
+func hull_radius_units() -> float:
+	return _hull_radius
 
 
 func layer() -> CanvasLayer:
@@ -340,11 +386,13 @@ func _dust_material(base: float) -> ParticleProcessMaterial:
 	return dust
 
 
-## One frame of the whole stack, from the single input.
+## One frame of the whole stack, from the single input. The zoom is applied first: the
+## exclusion's region is the hull's own radius at the camera's *applied* zoom, so the camera
+## has to carry this frame's value before the region derived from it is pushed.
 func _apply() -> void:
-	_apply_blur()
-	_apply_dust()
 	_apply_zoom()
+	_apply_dust()
+	_apply_blur()
 
 
 func _apply_blur() -> void:
@@ -354,8 +402,94 @@ func _apply_blur() -> void:
 	_blur_material.set_shader_parameter(&"blur_strength", strength)
 	_blur_material.set_shader_parameter(&"blur_direction", _direction)
 	_blur_material.set_shader_parameter(&"chromatic_aberration", chromatic_aberration())
+	_apply_blur_exclusion()
 	## Zero below the onset: the full-screen pass is not drawn at all.
 	_blur.visible = strength > 0.0
+
+
+## FX_SPEC section 5's amendment: the hull's own screen region, pushed with the rest of the
+## frame's inputs. The region is a disc in UV space, so the shader needs three numbers - the
+## flag, the centre and the radius per axis - and the radius is the hull's own world radius
+## scaled by the camera's zoom (`Camera2D` maps world to screen as
+## `(world - centre) * zoom + viewport / 2`, so a radius scales by the same factor).
+##
+## The radius is divided by the viewport's own visible size, which is the space the canvas
+## transform is anchored to, so the UV figure is invariant across window sizes and the
+## `canvas_items` stretch scale. Resolution is lazy and cached: the group is read once, and
+## again when the hull it answered with leaves the tree or the group.
+func _apply_blur_exclusion() -> void:
+	var viewport := get_viewport()
+	var size := viewport.get_visible_rect().size if viewport != null else Vector2.ZERO
+	var sized := size.x > 0.0 and size.y > 0.0
+	var camera_ok := _camera != null and is_instance_valid(_camera)
+	if not SPEED_BLUR_EXCLUDE_PLAYER or not sized or not camera_ok or not _resolve_hull():
+		_hull_radius_uv = Vector2.ZERO
+		_push_exclusion(false)
+		return
+	var zoom := maxf(_camera.zoom.x, 0.0)
+	var screen := (_hull.global_position - _camera.get_screen_center_position()) * zoom
+	screen += size * 0.5
+	var radius_px := _hull_radius * zoom
+	_hull_uv = screen / size
+	_hull_radius_uv = Vector2(radius_px / size.x, radius_px / size.y)
+	_push_exclusion(true)
+
+
+## One place writes the three uniforms, so the flag, the region and the shader can never
+## disagree: a disabled exclusion pushes a zero radius, which the shader reads as "no
+## region" whatever the flag says.
+func _push_exclusion(enabled: bool) -> void:
+	_hull_excluded = enabled and _hull_radius_uv.x > 0.0
+	_blur_material.set_shader_parameter(EXCLUDE_UNIFORM, _hull_excluded)
+	_blur_material.set_shader_parameter(HULL_UV_UNIFORM, _hull_uv)
+	_blur_material.set_shader_parameter(
+		HULL_RADIUS_UNIFORM, _hull_radius_uv if _hull_excluded else Vector2.ZERO
+	)
+
+
+## The player hull, from the group the amendment names, and its radius from the collider a
+## hull always carries (F16). Both are cached - so the lookup costs one group query per launch
+## rather than one per frame - but the group stays the authority: a hull that leaves it (the
+## wreck `game.gd` un-groups on death) is re-searched for rather than kept.
+func _resolve_hull() -> bool:
+	if (
+		_hull != null
+		and is_instance_valid(_hull)
+		and _hull_radius > 0.0
+		and _hull.is_in_group(PLAYER_GROUP)
+	):
+		return true
+	_hull = null
+	_hull_radius = 0.0
+	var tree := get_tree()
+	if tree == null:
+		return false
+	var ship := tree.get_first_node_in_group(PLAYER_GROUP) as Node2D
+	if ship == null or not is_instance_valid(ship):
+		return false
+	var radius := _collider_radius(ship)
+	if radius <= 0.0:
+		return false
+	_hull = ship
+	_hull_radius = radius
+	return true
+
+
+## A hull's own collider radius, by type rather than by node name: the first
+## `CollisionShape2D` carrying a `CircleShape2D` that sits under a `RigidBody2D` in the
+## ship's subtree (`player_ship.tscn`'s `HullBody` / `Shape`, 30 u).
+func _collider_radius(node: Node) -> float:
+	var body := node as RigidBody2D
+	if body != null:
+		for child: Node in body.get_children():
+			var shape := child as CollisionShape2D
+			if shape != null and shape.shape is CircleShape2D:
+				return (shape.shape as CircleShape2D).radius
+	for child: Node in node.get_children():
+		var radius := _collider_radius(child)
+		if radius > 0.0:
+			return radius
+	return 0.0
 
 
 func _apply_dust() -> void:

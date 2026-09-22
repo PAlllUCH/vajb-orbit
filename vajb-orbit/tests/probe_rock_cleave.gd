@@ -230,16 +230,23 @@ func _counts(size_class: int) -> void:
 
 
 ## --- DIR + SPEED: the full circle, and the 1.2 ------------------------------
+##
+## Since CONTRACTS 14 the deployed velocity is section 5's shape **plus** the field's
+## `FRAGMENT_OUTWARD_KICK` along the fragment's placement radial, so the SPEED row reads the
+## shape back out of it (the raw ratio is printed beside it); the DIR rows stay on the
+## deployed vector, which is what a player sees.
 
 
 func _directions_and_speed() -> void:
 	var deviations: Array[float] = []
 	var speeds: Array[float] = []
+	var shapes: Array[float] = []
 	var widest := 0.0
 	var widest_cleave := -1
 	var first_pair := ""
 	for index in N_CLEAVES:
 		var parent := _member(AsteroidScript.SIZE_LARGE, 4, Vector2(600.0, float(index) * 8.0))
+		var origin: Vector2 = (parent as Node2D).global_position
 		var heading := Vector2(PARENT_SPEED, 0.0).rotated(PARENT_HEADING)
 		(parent as RigidBody2D).linear_velocity = heading
 		var before := _live_ids()
@@ -251,6 +258,7 @@ func _directions_and_speed() -> void:
 			deviations.append(rad_to_deg(heading.angle_to(ejected)))
 			headings.append(rad_to_deg(ejected.angle()))
 			speeds.append(ejected.length() / heading.length())
+			shapes.append(_shape_half(fragment, origin).length() / heading.length())
 		var local := 0.0
 		for a: float in headings:
 			for b: float in headings:
@@ -271,6 +279,8 @@ func _directions_and_speed() -> void:
 		])
 	print("%s SPEED ratio_min=%.4f ratio_max=%.4f fragments=%d"
 		% [TAG, speeds.min(), speeds.max(), speeds.size()])
+	print("%s SPEED shape_ratio_min=%.9f shape_ratio_max=%.9f (the kick taken back out)"
+		% [TAG, shapes.min(), shapes.max()])
 	_check(
 		"direction_full_circle",
 		deviations.max() > 90.0,
@@ -283,9 +293,17 @@ func _directions_and_speed() -> void:
 	)
 	_check(
 		"eject_speed",
-		is_equal_approx(speeds.min(), 1.2) and is_equal_approx(speeds.max(), 1.2),
-		"every fragment ejects at the parent's velocity x 1.2"
+		is_equal_approx(shapes.min(), 1.2) and is_equal_approx(shapes.max(), 1.2),
+		"every fragment still inherits the parent's velocity x 1.2 (the shape; the deployed"
+		+ " ratio above also carries the 150 u/s radial kick)"
 	)
+
+
+## Section 5's shape recovered from a fragment: the field's kick rides the fragment's own
+## placement radial, and taking that vector out leaves the rolled inherit itself.
+func _shape_half(fragment: Node2D, origin: Vector2) -> Vector2:
+	var radial := (fragment.global_position - origin).normalized()
+	return (fragment as RigidBody2D).linear_velocity - radial * FieldScript.FRAGMENT_OUTWARD_KICK
 
 
 func _count_beyond(values: Array[float], limit: float) -> int:

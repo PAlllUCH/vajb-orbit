@@ -23,6 +23,10 @@ extends Node2D
 
 const AsteroidScript := preload("res://game/asteroid.gd")
 const MineralCatalogScript := preload("res://game/mineral_catalog.gd")
+## The chip read's own door (L65): the burst `weapons.gd`'s rock branch spawns through
+## `spawn_chip_sparks`, and the scatter its amendment pins, are `Projectile`'s statics -
+## so the shaft and a gun cannot draw two different chips.
+const ProjectileScript := preload("res://game/projectile.gd")
 
 ## 05 §13's numbers, verbatim: the beam reaches 220 u and each 1.2 s of contact
 ## mines one ore unit.
@@ -63,6 +67,27 @@ const CORE_WIDTH := 1.0
 const HALO_ALPHA := 0.45
 const CORE_ALPHA := 0.9
 
+## FX_SPEC section 1.6's 2026-09-22 amendment, the mining shaft's half of it (S2.6, the
+## owner's sixth and seventh requests: "a beam's hit should spawn its impact FX somewhat
+## randomly across the struck surface"; "a laser beam should connect to more of the middle
+## of the object (its termination point, for the beam itself)"). Both are drawn-line and
+## effect-position only - the extraction, the cycle and the pickup point never move.
+##
+##   `BEAM_SINK` - the drawn shaft ends `BEAM_SINK` of the way from the point the ray
+##   resolved to the rock's own centre. Reversal: `0.0` = the rim hit.
+##
+##   `HIT_FX_JITTER_MULT` - the chip sparks spawn at a uniform random point in a disc of
+##   `clamp(HIT_FX_JITTER_MULT x collision radius, MIN, MAX)` u around that point, with
+##   the rock's own `world_radius()` (24/42/66 u) as the radius. Reversal: `0.0` = the
+##   fixed contact point.
+##
+## The values are `weapons.gd`'s, so the two beams read identically; the radius and the
+## disc sampler themselves are `Projectile`'s statics, the one owner of that geometry.
+const BEAM_SINK := 0.45
+const HIT_FX_JITTER_MULT := 0.35
+const HIT_FX_JITTER_MIN := 8.0
+const HIT_FX_JITTER_MAX := 48.0
+
 @onready var _halo: Line2D = $Beam
 @onready var _core: Line2D = $BeamCore
 
@@ -72,6 +97,10 @@ var _active := false
 var _target: Node2D = null
 var _hit_point := Vector2.ZERO
 var _cycle := 0.0
+
+## The chip's own generator, private like the asteroid field's and the hull's arc
+## sparks', so the mining effects never perturb a gameplay stream.
+var _fx_rng := RandomNumberGenerator.new()
 
 
 func _ready() -> void:
@@ -172,6 +201,11 @@ func _apply_cycle() -> void:
 		_spawn_pickup(_hit_point)
 	if units > 0:
 		_play_chip()
+		## L65: the shaft's own chip read draws FX_SPEC section 1.6's chip-sparks burst,
+		## wired exactly as `weapons.gd`'s rock branch wires it (`:640-641`: the cue and
+		## the burst together, on the one chip event). The pickup stays on the resolved
+		## contact - only the effect scatters.
+		ProjectileScript.spawn_chip_sparks(_hit_fx_parent(), _hit_fx_point())
 
 
 ## The rock's mineral becomes the cargo identity: the bare catalogue id goes
@@ -261,13 +295,45 @@ func _play_cue(cue: StringName, loop := false) -> void:
 
 
 func _draw_beam() -> void:
-	var local_end := to_local(_hit_point)
+	var local_end := to_local(_beam_drawn_end())
 	_halo.points = PackedVector2Array([Vector2.ZERO, local_end])
 	_core.points = PackedVector2Array([Vector2.ZERO, local_end])
 	_halo.visible = true
 	_core.visible = true
 	## The shaft is live on a rock, so the S7 bed plays under the chip transients.
 	_play_beam_loop()
+
+
+## What the shaft is drawn to: the point the ray resolved, pulled `BEAM_SINK` of the way
+## towards the rock's own centre (FX_SPEC section 1.6's amendment), so the beam connects
+## to more of the object's middle instead of stopping at its rim. The cycle, the pickup
+## and the extraction keep the resolved contact.
+func _beam_drawn_end() -> Vector2:
+	if _target == null or not is_instance_valid(_target):
+		return _hit_point
+	return _hit_point.lerp(_target.global_position, BEAM_SINK)
+
+
+## FX_SPEC section 1.6's amendment: the chip sparks spawn at a uniform random point in
+## the pinned `clamp(HIT_FX_JITTER_MULT x collision radius, MIN, MAX)` u disc around the
+## resolved contact. The radius is the rock's own `world_radius()` (24/42/66 u by class);
+## a target that answers no radius lands on the 8 u floor.
+func _hit_fx_point() -> Vector2:
+	var radius := clampf(
+		HIT_FX_JITTER_MULT * ProjectileScript.collision_radius(_target),
+		HIT_FX_JITTER_MIN,
+		HIT_FX_JITTER_MAX
+	)
+	return ProjectileScript.scatter_in_disc(_fx_rng, _hit_point, radius)
+
+
+## Where the burst hangs: the world node the rock lives in, so the sparks stay on the
+## contact instead of riding the ship that fired - `weapons.gd:_hit_fx_parent`'s rule,
+## kept in step with it. A target with no parent falls back to the world node.
+func _hit_fx_parent() -> Node:
+	if _target != null and is_instance_valid(_target) and _target.get_parent() != null:
+		return _target.get_parent()
+	return _world_parent()
 
 
 func _extinguish() -> void:

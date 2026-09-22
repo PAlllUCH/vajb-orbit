@@ -34,6 +34,7 @@ extends Node
 ## Exit code 0 only when every case measured what the ruling claims.
 
 const SHIP_SCENE := preload("res://game/player_ship.tscn")
+const SHIP_SCRIPT := preload("res://game/player_ship.gd")
 const FIT := preload("res://game/ship_fit.gd")
 const STATE_SCRIPT := preload("res://game/player_state.gd")
 
@@ -80,8 +81,14 @@ const BEARING_TOLERANCE := 0.02
 const STOP_OMEGA := 0.01
 const TURN_HOLD_SECONDS := 1.5
 const HOLD_SECONDS := 4.0
+## How long a turn that is already under way gets to close its remaining bearing after the
+## throttle is released: the arrive law's tail is asymptotic, so the heaviest class needs
+## more than HOLD_SECONDS for its last two degrees.
+const RELEASE_ARRIVAL_SECONDS := 8.0
 const MAX_TURN_SECONDS := 24.0
-const MAX_STRAFE_SECONDS := 10.0
+## The strafe's own budget: the slowest class needs 90 % of its `accel_time` (12.6 s with the
+## 2026-09-22 `ACCEL_TIME_MULT`, so 11.34 s) and this is that with slack.
+const MAX_STRAFE_SECONDS := 16.0
 const CRUISE_TOLERANCE := 0.05
 const RATE_SLACK := 1.05
 const HEADING_TOLERANCE := 1e-6
@@ -122,9 +129,9 @@ func _ready() -> void:
 		if not await _case_cursor_turn(hull_id):
 			_failures += 1
 	for hull_id: StringName in [HULL_SHIPPED, HULL_HEAVIEST]:
-		if not await _case_heading_hold(hull_id):
+		if not await _case_neutral_turn_after_release(hull_id):
 			_failures += 1
-	if not await _case_heading_holds_at_rest():
+	if not await _case_neutral_turn_at_rest():
 		_failures += 1
 	for hull_id: StringName in [HULL_SHIPPED, HULL_FASTEST, HULL_HEAVIEST]:
 		if not await _case_strafe(hull_id):
@@ -267,23 +274,34 @@ func _case_cursor_turn(hull_id: StringName) -> bool:
 
 
 ## ---------------------------------------------------------------------------
-## 2. The heading holds when `thrust_forward` is not held
+## 2. The cursor steers with the throttle released too (the 2026-09-22 ruling)
 ## ---------------------------------------------------------------------------
 
 
+## The two cases under this heading were written against the third-round ruling ("the heading
+## holds when `thrust_forward` is not held"), which the 2026-09-22 steering ruling supersedes
+## (CONTRACTS section 14, `STEER_WITHOUT_THROTTLE`): the cursor now steers with the throttle
+## released too, so a released throttle no longer stops a turn. Both are re-derived around
+## that -- and the acceptance the ruling owes is the neutral turn, which
+## `tests/probe_s2_6_flight.tscn` measures over a full 360 degrees and
+## `tests/test_s2_6_flight.gd` pins in the gate.
+
+
 ## Turn for TURN_HOLD_SECONDS, then release the throttle with the cursor still off the bow
-## and watch the nose: the turn rate must spin down over the class's own `turn_spinup`,
-## the heading must then stop changing entirely, and the nose must have stopped *short* of
-## the bearing (a nose that kept steering to the cursor after the release would arrive).
-func _case_heading_hold(hull_id: StringName) -> bool:
+## and watch the nose: under the 2026-09-22 ruling the cursor stays live at zero throttle,
+## so the turn no longer stops dead -- the nose carries on to the bearing. This case measures
+## that (an arrival within the class's own bound), and reports the translation the turn's own
+## coast produced alongside it; the bound on a turn's translation belongs to a turn from rest
+## and is measured there.
+func _case_neutral_turn_after_release(hull_id: StringName) -> bool:
 	var launched := _launch(hull_id)
 	var ship: Variant = launched[0]
 	var stats: Variant = launched[1]
 	if ship == null or stats == null:
-		print("[G1] note case=hold_%s the hull fixture did not build" % hull_id)
+		print("[G1] note case=turn_after_release_%s the hull fixture did not build" % hull_id)
 		return false
-	var case_id := "hold_%s" % hull_id
-	var spinup: float = stats.turn_spinup
+	var case_id := "turn_after_release_%s" % hull_id
+	var rate: float = stats.turn_rate
 	var offset := Vector2(AIM_DISTANCE, 0.0).rotated(PI * 0.5)
 	var target := offset.angle()
 
@@ -293,12 +311,17 @@ func _case_heading_hold(hull_id: StringName) -> bool:
 
 	var release_heading := float(ship.global_rotation)
 	var release_omega := absf(float(ship.impact_body().angular_velocity))
-	var t_zero := -1.0
-	var heading_at_zero := release_heading
+	var release_position: Vector2 = ship.global_position
+	var start_error := absf(wrapf(target - release_heading, -PI, PI))
+	var t_reach := -1.0
 	var heading_last := release_heading
-	var error_at_zero := absf(wrapf(target - release_heading, -PI, PI))
+	var displacement := 0.0
+	var speed_last := 0.0
 	var elapsed := 0.0
-	var budget := int(HOLD_SECONDS * Engine.physics_ticks_per_second)
+	## The arrival's tail is asymptotic (the arrive law scales with the remaining error), so
+	## the heaviest class needs more than HOLD_SECONDS to close its last two degrees; the
+	## budget is doubled rather than the tolerance widened, and it is still a hard bound.
+	var budget := int(RELEASE_ARRIVAL_SECONDS * Engine.physics_ticks_per_second)
 	var start := _ticks
 	for i: int in range(budget + 1):
 		ship.set_aim_point(ship.global_position + offset)
@@ -306,67 +329,104 @@ func _case_heading_hold(hull_id: StringName) -> bool:
 		_ticks += 1
 		elapsed = float(_ticks - start) / Engine.physics_ticks_per_second
 		heading_last = float(ship.global_rotation)
-		var omega := absf(float(ship.impact_body().angular_velocity))
+		speed_last = float(ship.velocity().length())
+		displacement = (ship.global_position - release_position).length()
 		if (i % SAMPLE_TICKS) == 0:
 			print(
-				"[G1] curve case=%s t=%.3f error=%.4f omega=%.3f speed=%.3f"
+				"[G1] curve case=%s t=%.3f error=%.4f omega=%.3f speed=%.3f disp=%.4f"
 				% [
 					case_id,
 					elapsed,
 					absf(wrapf(target - heading_last, -PI, PI)),
 					ship.impact_body().angular_velocity,
-					ship.velocity().length(),
+					speed_last,
+					displacement,
 				]
 			)
-		if t_zero < 0.0 and omega <= STOP_OMEGA:
-			t_zero = elapsed
-			heading_at_zero = heading_last
-			error_at_zero = absf(wrapf(target - heading_at_zero, -PI, PI))
+		if absf(wrapf(target - heading_last, -PI, PI)) <= BEARING_TOLERANCE:
+			t_reach = elapsed
 			break
 	_release_all()
 
-	var held := absf(heading_last - heading_at_zero) <= HEADING_TOLERANCE
-	var spun_down := t_zero >= 0.0 and t_zero <= spinup * (1.0 + 0.5) + 0.1
-	var short_of_bearing := error_at_zero > BEARING_TOLERANCE
+	## The class's own floor on the arrival: no hull can consume a bearing faster than its
+	## `turn_rate` allows, and the release adds no thrust to the turn.
+	var t_class_min := (start_error - BEARING_TOLERANCE) / rate
+	var arrived := t_reach >= 0.0
+	var bound_ok := arrived and t_reach >= t_class_min * (1.0 - 0.05)
 	print(
-		"[G1] result case=%s release_omega=%.3f t_omega_zero=%.3f spinup=%.3f heading_held=%s spun_down=%s error_at_stop=%.4f stopped_short=%s"
+		"[G1] result case=%s release_omega=%.3f release_error=%.4f t_reach=%.3f t_class_min=%.3f displacement=%.4f speed_at_reach=%.4f arrived=%s bound_ok=%s"
 		% [
 			case_id,
 			release_omega,
-			t_zero,
-			spinup,
-			held,
-			spun_down,
-			error_at_zero,
-			short_of_bearing,
+			start_error,
+			t_reach,
+			t_class_min,
+			displacement,
+			speed_last,
+			arrived,
+			bound_ok,
 		]
 	)
-	return held and spun_down and short_of_bearing
+	return bound_ok
 
 
-## The control for the case above: nothing is pressed at all, with the cursor 90 degrees
-## off the bow, and the heading must not move by a single radian's worth of noise.
-func _case_heading_holds_at_rest() -> bool:
+## The neutral turn at rest -- the case this file used to run as a heading-hold control,
+## re-derived to the owner's own complaint ("when ship is pause trying to turn around moves
+## it way too much forward, a ship in space should somewhat be able to do neutral turn"):
+## nothing is pressed at all, the cursor sits 90 degrees off the bow, and the nose must come
+## about to it while the hull stays exactly where it was parked. `TURN_TRANSLATE_LEAK_MAX`
+## (CONTRACTS section 14) is the bound on the displacement.
+func _case_neutral_turn_at_rest() -> bool:
 	var launched := _launch(HULL_SHIPPED)
 	var ship: Variant = launched[0]
 	if ship == null:
-		print("[G1] note case=hold_at_rest the hull fixture did not build")
+		print("[G1] note case=neutral_at_rest the hull fixture did not build")
 		return false
 	var offset := Vector2(AIM_DISTANCE, 0.0).rotated(PI * 0.5)
+	var target := offset.angle()
+	var origin: Vector2 = ship.global_position
 	var start_heading := float(ship.global_rotation)
 	var budget := int(HOLD_SECONDS * Engine.physics_ticks_per_second)
+	var peak_speed := 0.0
+	var displacement := 0.0
+	var error := absf(wrapf(target - start_heading, -PI, PI))
 	for i: int in range(budget + 1):
 		ship.set_aim_point(ship.global_position + offset)
 		await get_tree().physics_frame
 		_ticks += 1
-	var drift := absf(float(ship.global_rotation) - start_heading)
-	var speed := float(ship.velocity().length())
-	var ok := drift <= HEADING_TOLERANCE and speed <= HEADING_TOLERANCE
+		error = absf(wrapf(target - float(ship.global_rotation), -PI, PI))
+		peak_speed = maxf(peak_speed, float(ship.velocity().length()))
+		displacement = (ship.global_position - origin).length()
+		if (i % SAMPLE_TICKS) == 0:
+			print(
+				"[G1] curve case=neutral_at_rest t=%.3f error=%.4f speed=%.3f disp=%.4f"
+				% [
+					float(i) / Engine.physics_ticks_per_second,
+					error,
+					ship.velocity().length(),
+					displacement,
+				]
+			)
+		if error <= BEARING_TOLERANCE:
+			break
+	var swept := absf(wrapf(float(ship.global_rotation) - start_heading, -PI, PI))
+	var arrived := error <= BEARING_TOLERANCE
+	var leak_ok := displacement <= SHIP_SCRIPT.TURN_TRANSLATE_LEAK_MAX
+	var still := peak_speed <= HEADING_TOLERANCE
 	print(
-		"[G1] result case=hold_at_rest thrust_held=false cursor_off_bow=%.1fdeg heading_drift=%.8f speed=%.8f held=%s"
-		% [rad_to_deg(offset.angle()), drift, speed, ok]
+		"[G1] result case=neutral_at_rest thrust_held=false cursor_off_bow=%.1fdeg swept_deg=%.3f displacement=%.8f peak_speed=%.8f leak_max=%.1f arrived=%s leak_ok=%s still=%s"
+		% [
+			rad_to_deg(offset.angle()),
+			rad_to_deg(swept),
+			displacement,
+			peak_speed,
+			SHIP_SCRIPT.TURN_TRANSLATE_LEAK_MAX,
+			arrived,
+			leak_ok,
+			still,
+		]
 	)
-	return ok
+	return arrived and leak_ok and still
 
 
 ## ---------------------------------------------------------------------------
@@ -406,6 +466,17 @@ func _case_strafe(hull_id: StringName) -> bool:
 	var forward_peak := 0.0
 	var start := _ticks
 	for i: int in range(budget + 1):
+		## The aim is pinned dead ahead for the same reason the other cases place it: since the
+		## 2026-09-22 ruling the cursor steers at zero throttle too, so an unpinned aim (a
+		## headless cursor, which sits wherever the viewport says) turns this case into a
+		## turn-and-strafe. Pinning it dead ahead is what a pilot pressing only D has -- the
+		## pointer resting on the hull -- and it is what isolates the strafe law here. It is
+		## placed off the *body's* position (the ship node mirrors it one step late, and a
+		## 367 u/s strafe would otherwise present the pin with a 6 u/frame bearing error).
+		var body: RigidBody2D = ship.impact_body()
+		ship.set_aim_point(
+			body.global_position + Vector2.RIGHT.rotated(heading_0) * AIM_DISTANCE
+		)
 		await get_tree().physics_frame
 		_ticks += 1
 		var t := float(_ticks - start) / Engine.physics_ticks_per_second

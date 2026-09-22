@@ -306,12 +306,18 @@ func _count_distribution() -> void:
 
 
 ## --- DIR + SPEED: the full circle ------------------------------------------------
+##
+## CONTRACTS 14 puts the field's `FRAGMENT_OUTWARD_KICK` on top of section 5's shape, so the
+## SPEED row measures the **shape** (the kick taken back out along the fragment's placement
+## radial) and prints the deployed ratio beside it. The DIR rows keep reading the deployed
+## velocity, which is what a player sees.
 
 
 func _direction_and_speed() -> void:
 	var heading := Vector2(PARENT_SPEED, 0.0).rotated(PARENT_HEADING)
 	var deviations: Array[float] = []
 	var ratios: Array[float] = []
+	var shapes: Array[float] = []
 	var sector_counts: Array[int] = []
 	for index in SECTORS:
 		sector_counts.append(0)
@@ -319,15 +325,15 @@ func _direction_and_speed() -> void:
 	var widest_at := -1
 	var inside_cone := 0
 	for index in DIR_CLEAVES:
-		var fragments := _cleave_once(
-			AsteroidScript.SIZE_LARGE, Vector2(-1600.0, float(index % 40) * 4.0), heading
-		)
+		var where := Vector2(-1600.0, float(index % 40) * 4.0)
+		var fragments := _cleave_once(AsteroidScript.SIZE_LARGE, where, heading)
 		var local: Array[float] = []
 		for fragment: Node2D in fragments:
 			var ejected: Vector2 = (fragment as RigidBody2D).linear_velocity
 			var deviation := rad_to_deg(heading.angle_to(ejected))
 			deviations.append(deviation)
 			ratios.append(ejected.length() / heading.length())
+			shapes.append(_shape_half(fragment, where).length() / heading.length())
 			local.append(rad_to_deg(ejected.angle()))
 			if absf(deviation) < 15.0:
 				inside_cone += 1
@@ -391,11 +397,24 @@ func _direction_and_speed() -> void:
 	)
 	print("%s SPEED n=%d min=%.6f max=%.6f parent_speed=%.3f"
 		% [TAG, ratios.size(), ratios.min(), ratios.max(), heading.length()])
+	print("%s SPEED shape n=%d min=%.9f max=%.9f (the radial kick taken back out)"
+		% [TAG, shapes.size(), shapes.min(), shapes.max()])
 	_check(
 		"speed_is_x1_2",
-		is_equal_approx(ratios.min(), 1.2) and is_equal_approx(ratios.max(), 1.2),
-		"every one of %d fragments ejects at the parent's velocity x 1.2" % ratios.size()
+		is_equal_approx(shapes.min(), 1.2) and is_equal_approx(shapes.max(), 1.2),
+		"every one of %d fragments still inherits the parent's velocity x 1.2 (the shape;"
+			% shapes.size()
+			+ " the deployed ratio above also carries the 150 u/s radial kick)"
 	)
+
+
+## Section 5's shape recovered from a fragment: the field's kick rides the fragment's own
+## placement radial, and taking that vector out leaves the rolled inherit itself. The frame
+## is the field's own (this probe offsets it by `FIELD_OFFSET`, and both the parent's spawn
+## point and its fragments live in it).
+func _shape_half(fragment: Node2D, origin: Vector2) -> Vector2:
+	var radial := (fragment.position - origin).normalized()
+	return (fragment as RigidBody2D).linear_velocity - radial * FieldScript.FRAGMENT_OUTWARD_KICK
 
 
 ## --- FX: the break's explosion ---------------------------------------------------

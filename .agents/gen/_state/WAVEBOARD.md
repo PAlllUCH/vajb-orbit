@@ -82,10 +82,12 @@ owner's §8 tick list is resolved (all six kept); the one follow-up is the 7-W c
   rulings 8–26. **Owner-locked**: no worker may edit it; the six owed spec
   edits are the owner's (MASTER_REPORT §3 item 1).
 - Universal test gate: `res://tests/headless_runner.tscn` → `[SUMMARY]
-  passed=437 failed=0` **on a fresh/sandboxed `user://`; against the owner's live
-  profile it measures 433/4 (designer verification 2026-09-22 — four live-coupled
-  engine2 tests, L90 now worsened to L93). Run it with a scratch `XDG_DATA_HOME`
-  until L93 lands.** (exact command in CONTRACTS.md §9; grew 53 → 78 → 219 → 226
+  passed=457 failed=0` **on any `user://`, including the owner's live one, twice,
+  byte-identical, with the live account present and never written** (S2.6, 2026-09-22:
+  CONTRACTS §14's runner sandbox — the gate had read 437/0 only on a fresh `user://`
+  and 433/4 against the live save, L90/L93; **the scratch-`XDG_DATA_HOME` workaround
+  is retired** — §9 of CONTRACTS carries the measured block). (exact command in
+  CONTRACTS.md §9; grew 53 → 78 → 219 → 226
   with the UI-chrome wave's `test_ui_slot_layout.gd`, 236 with the combat repair wave's
   `test_engine_c3_flight_decay.gd` and `test_combat_repair_c5.gd`, 277 with the weapon FX
   wave's `test_weapon_fx_f{1,2,4}.gd` suites, 294 with the flight/beam wave's
@@ -101,8 +103,12 @@ owner's §8 tick list is resolved (all six kept); the one follow-up is the 7-W c
   `test_p2b_fitting_panel.gd` 18 → 20 with F1's two, `test_p2b_services.gd` 11 → 12 with F1's
   one; F1's profile-fallback tests ride the retirement suite, and F2 cured three pre-existing
   engine2 fixture assumptions to take the **live-profile** gate from 434/3 to 437/0 —
-  that live-profile reading does **not** reproduce: 433/4 measured twice on
-  2026-09-22 (L93; S2.6-R0/F10 confirms 433/4 on a byte-copy of the live profile).
+  that live-profile reading did **not** reproduce: 433/4 measured twice on
+  2026-09-22 (L93; S2.6-R0/F10 confirms 433/4 on a byte-copy of the live profile)), and
+  then **457 with S2.6** (`test_s2_6_gate_hygiene.gd` 3, `test_s2_6_burst.gd` 4,
+  `test_s2_6_beam.gd` 4, `test_s2_6_flight.gd` 5, `test_s2_6_blur.gd` 2 — no existing
+  count moved; the wave's own two yardstick rows live in `test_flight_beam_g2.gd` and
+  `test_weapon_fx_f4.gd`, re-derived by the fixer pass).
 - `staging/verify_wave.py` — mechanical wave gates: `snapshot` before a wave,
   `verify --baseline <tag> [--forbidden ...] [--expect-reports ...] [--tests]`
   after. Baselines live in `.agents/gen/_state/_wave_state/` (`wave1_closed`,
@@ -163,29 +169,30 @@ PowerShell form: `$env:VAJB_WORKER_FILES='...'; crush run "<prompt>" -m opencode
 ## In flight — none.
 
 **Queued:** items 4 **P2-A**,
-5 **Rock cleave**, 6 **P2-B1** and 7 **P2-B proper** — all **DONE** (see §Closed). **The
+5 **Rock cleave**, 6 **P2-B1**, 7 **P2-B proper** and 8 **S2.6 truth-and-feel** — all **DONE**
+(see §Closed). The
 queue of record is `.agents/gen/dispatch_coder.md` (rebuilt 2026-09-22 after the purge);
-items 8–10 are QUEUED, docs-first done for all three** (CONTRACTS §14–§16 + v0.7, 15 §8,
-10 §2.4, 09 §10, FX_SPEC §1.6, STATION_HUB §5.10; briefs + prompts in the slice folders):
-**8 = S2.6 truth-and-feel** (gate hermeticity L90/L93 plus the owner's **seven** feel
-requests and L65 — rock burst, beam scatter + mid-object termination, mining chips,
-`ACCEL_TIME_MULT 2.0`, blur excludes the hull, neutral turn + symmetric inertia;
-builders R2/R3/R4/R5 run **in parallel** inside the wave — `slices/S2.6-truth-and-feel/`), **9 = S3 the item economy** (module instances with
+**items 9–10 are QUEUED, docs-first done for both** (CONTRACTS §15–§16 + v0.7, 15 §8,
+10 §2.4, 09 §10, STATION_HUB §5.10; briefs + prompts in the slice folders):
+**9 = S3 the item economy** (module instances with
 affixes **plus the AUCTION**, the owner: "We need AUCTION. without it we cannot test all
 items" — `slices/S3-module-affixes/`), **10 = S4 weapon batteries** (the owner's grouping
 ruling, N barrels keep N W mounts — `slices/S4-weapon-batteries/`). Run order is forced by
-file collisions (S3 and S4 both hold `outfitting_panel.gd`). **The designer phase
-is deferred to the next day (owner, 2026-09-21):** the graphics queue of record
-was `.agents/gen/dispatch_designer.md` + `designer_generation_backlog.md`
-(purged 2026-09-22 — their content is summarized in `MASTER_REPORT.md` §graphics; re-brief
-from the docs when the lane resumes: component icons, the `_48`/tint re-cuts, the decisions);
-nothing from it is in flight. Owner ticks open: the
+file collisions (S3 and S4 both hold `outfitting_panel.gd`). **The graphics lane resumed
+2026-09-22 in a two-designer split (queue of record `.agents/gen/dispatch_designer.md`):
+designer #1's only job is D2, the icon unification — glyph-type icons remade as
+hand-authored SVG masters (kie.ai has no SVG generator), every other icon kept as ONE
+raster master with all size variants deleted project-side (Godot scales from the master;
+`asset-library/` keeps provenance). It runs parallel to coder item 8 and must close
+before item 9 (its reference sweep touches `ui/station/*`). Designer #2 (chrome re-cut,
+tint rework, 4K backdrops, B2-1 hover) waits for the owner's later dispatch.** Owner ticks open: the
 `18_engine_spec.md` §6/§13/§15 cleaving amendment (owner-locked — the wave shipped,
 the spec text lags; it now also covers `FRAGMENT_OUTWARD_KICK` and the two
   flight multipliers `ACCEL_TIME_MULT`/`COAST_TIME_MULT`), the §13 turn/`coast_time`
 column ticks, slice 2.5's two calls (engine bed, vignette strength), L83's icon-size pick,
 and S3's three ticks (the v5 migration's Common-vs-retro-roll, the F-lot interim, the
-AUCTION rail position). P2-A/P2-B1/P2-B proper tick lists are resolved.
+AUCTION rail position). P2-A/P2-B1/P2-B proper tick lists are resolved; **S2.6 adds four of
+its own (see §Closed — the `STEER_WITHOUT_THROTTLE` supersession is the new one).**
 
 **Owner requests queued 2026-09-22 (recorded, not briefed — the owner's stop
 condition is item 6, and each needs its own docs-first brief before any code):**
@@ -207,6 +214,36 @@ condition is item 6, and each needs its own docs-first brief before any code):**
 
 ## Closed (details in MASTER_REPORT.md)
 
+- **S2.6 truth-and-feel — DONE 2026-09-22** (gate 437 → **457, 0 failed**, on the owner's own
+  live `user://` twice, byte-identical, plus once on a mutated copy under a scratch root; the
+  live account byte- and mtime-identical across all three runs — reports
+  `.agents/gen/slices/S2.6-truth-and-feel/S2.6-R{0..7}_report.md` + `S2.6-R6_review.md`):
+  **the gate is hermetic at last** — `tests/headless_runner.gd` creates `user://_gate_scratch/`,
+  repoints the profile store there, resets the in-memory profile and seeds the deterministic
+  default before the first suite, and re-sandboxes the economy log around every suite; the four
+  live-coupled engine2 fixtures build their own fit (index-guarded) instead of reading the live
+  save. The owner's seven feel rulings landed: fragments burst outward from a still rock
+  (`FRAGMENT_OUTWARD_KICK 150.0` in `asteroid_field.gd:_cleave`; AC2 over 681 fragments, lowest
+  radial 149.520 u/s), a beam line sinks into the middle of what it strikes (`BEAM_SINK 0.45`)
+  and its contact FX scatter in a `clamp(0.35 × radius, 8, 48) u` disc (exactly three readers —
+  chip sparks ×2, shield ripple), the mining beam finally draws its chip sparks (L65), hulls
+  take double the time to 90 % of `max_speed` (`ACCEL_TIME_MULT 2.0`; t_90 ratio 1.99–2.00 per
+  class) and keep their carry (`COAST_TIME_MULT 2.0`, the documented revert onto §13's own
+  column) **without** the sideways skid growing (`LATERAL_DAMP_MULT 1.0`, the forward/lateral
+  split), the cursor steers at zero throttle so a neutral turn no longer thrusts
+  (`STEER_WITHOUT_THROTTLE` supersedes §4's W-gate — 360° at 0.000000 u displacement), and the
+  motion blur skips the player hull shader-side, chromatic split included, leaving the
+  hull-critical vignette over it. Reviewer: **no HIGH, two MED** — MED-1 (two yardstick rows in
+  `test_flight_beam_g2.gd` / `test_weapon_fx_f4.gd` still pinned the FX *exactly* on the hit
+  point the jitter moves) fixed by the fixer pass, and MED-2 the **incident below**; R1 was the
+  wave's own HIGH-cured defect (the first harness run wrote the live account — see
+  `slices/S2.6-truth-and-feel/_incident/README.md`, backlog **L106**). LOW rows **L94–L106**.
+  **Owner ticks owed:** 1) the `18_engine_spec.md` §6/§13/§15 dated amendment (owner-locked,
+  now also covering `FRAGMENT_OUTWARD_KICK`, `ACCEL_TIME_MULT`, `COAST_TIME_MULT` and the
+  `coast_time` revert); 2) flight taste — `ACCEL_TIME_MULT` 2.0, `COAST_TIME_MULT` 2.0,
+  `LATERAL_DAMP_MULT` 1.0, one constant each; 3) **confirm the steering supersession** (the
+  cursor now steers at zero throttle; reversal is the W-gate); 4) slice 2.5's two calls (engine
+  bed, vignette strength under alpha).
 - **P2-B proper fitting panel — DONE 2026-09-22** (gate 389 → 402 → 420 → 431 → 437; reports
   `.agents/gen/p2b_proper_{d0,w1,w2,w3,r1,f1,f2}_report.md`): the station now has a **FITTING**
   pane where it had the pre-module UPGRADES rows — the UPGRADES rail entry becomes FITTING

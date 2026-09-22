@@ -6,7 +6,11 @@ extends McpTestSuite
 ## Pure logic: the state is a throwaway `PlayerState` and the fuel cell spends
 ## through the real `PlayerProfile` singleton with its `save_path` repointed at a
 ## scratch file, so the player's own profile.cfg is never written and the one cell
-## the suite burns is one it added. No physics, no awaits: the gate's runner calls
+## the suite burns is one it added. The path it found is captured in `setup` and
+## handed back in `teardown`: the gate's runner repoints the store at its own sandbox
+## before any suite loads (`headless_runner.gd:_seed_scratch_store`), so restoring the
+## literal `Profile.SAVE_FILE` would hand the store to the owner's live file for every
+## suite that follows. No physics, no awaits: the gate's runner calls
 ## test methods synchronously.
 ##
 ## The timed half of the same rules (a burn applied per frame over a second, the
@@ -15,7 +19,6 @@ extends McpTestSuite
 
 const PlayerStateScript := preload("res://game/player_state.gd")
 const ShipFitScript := preload("res://game/ship_fit.gd")
-const Profile := preload("res://autoload/player_profile.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 const SCRATCH_PROFILE := "user://test_engine2_pools.cfg"
@@ -26,6 +29,7 @@ const FRAMES_PER_SECOND := 60
 var _state: PlayerState = null
 var _profile: Node = null
 var _cells_before := 0
+var _previous_path := ""
 
 
 func suite_name() -> String:
@@ -42,6 +46,7 @@ func setup() -> void:
 	_state.setup()
 	_profile = _service()
 	if _profile != null:
+		_previous_path = String(_profile.get(&"save_path"))
 		_profile.save_path = SCRATCH_PROFILE
 		_cells_before = int(_profile.call(&"cargo_qty", &"fuel_cell"))
 
@@ -54,7 +59,7 @@ func teardown() -> void:
 				_profile.call(&"remove_cargo", &"fuel_cell", held - _cells_before)
 			else:
 				_profile.call(&"add_cargo", &"fuel_cell", _cells_before - held)
-		_profile.save_path = Profile.SAVE_FILE
+		_profile.save_path = _previous_path
 	_profile = null
 	_state = null
 	_delete_file(SCRATCH_PROFILE)

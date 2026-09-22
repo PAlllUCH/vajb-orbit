@@ -22,7 +22,7 @@ workspace).
 
 | # | Wave | Slice folder | Brief / prompts | Status |
 |---|---|---|---|---|
-| 8 | **S2.6 truth-and-feel** (gate hermeticity L90/L93 + the owner's seven feel requests + L65: rock burst, beam scatter/middle, mining chips, slower accel, blur excludes the hull, neutral turn + symmetric inertia) | `slices/S2.6-truth-and-feel/` | `S2.6_BRIEF.md` / `S2.6_prompts.md` | QUEUED — run first |
+| 8 | **S2.6 truth-and-feel** (gate hermeticity L90/L93 + the owner's seven feel requests + L65: rock burst, beam scatter/middle, mining chips, slower accel, blur excludes the hull, neutral turn + symmetric inertia) | `slices/S2.6-truth-and-feel/` | `S2.6_BRIEF.md` / `S2.6_prompts.md` | **DONE 2026-09-22** — gate 437 → 457/0 hermetic on the live path (see WAVEBOARD §Closed; the wave's own harness first destroyed the owner's live profile — `slices/S2.6-truth-and-feel/_incident/README.md`, L106) |
 | 9 | **S3 the item economy** (module instances with affixes + the AUCTION; the owner: "We need AUCTION. without it we cannot test all items") | `slices/S3-module-affixes/` | `S3_BRIEF.md` / `S3_prompts.md` | QUEUED — after 8 |
 | 10 | **S4 weapon batteries** (group weapon systems in OUTFITTING; owner ruling: N barrels keep N W mounts) | `slices/S4-weapon-batteries/` | `S4_BRIEF.md` / `S4_prompts.md` | QUEUED — after 9 |
 

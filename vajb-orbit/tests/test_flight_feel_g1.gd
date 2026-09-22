@@ -1,9 +1,11 @@
 @tool
 extends McpTestSuite
 ## Suite flight_feel_g1: the construction half of the owner's third-round flight rulings
-## (2026-09-21, brief `.agents/gen/flight_beam_wave_task.md`). The timed behaviour --
-## how long the nose takes to reach the cursor's bearing, that the heading stops dead
-## when the throttle is released, that a strafe moves the hull sideways and not forward --
+## (2026-09-21, brief `.agents/gen/flight_beam_wave_task.md`), carried forward through the
+## 2026-09-22 steering ruling (CONTRACTS section 14: `STEER_WITHOUT_THROTTLE` and the
+## multiplier pattern, which `tests/test_s2_6_flight.gd` pins in full). The timed behaviour
+## -- how long the nose takes to reach the cursor's bearing, how long a strafe takes to
+## reach the class ceiling, and the neutral turn the throttle gate used to make impossible --
 ## is measured by `tests/probe_g1_flight_feel.tscn`, which is the probe a reviewer re-runs.
 ## This suite pins what builds those numbers, one seam per ruling:
 ##
@@ -13,11 +15,13 @@ extends McpTestSuite
 ## 2. the cursor steering: `_turn_toward` is the autopilot's own arrive steering
 ##    (proportional under one radian of error, saturated at the class `turn_rate`, never
 ##    above it), and `_aim_turn` adds only the hull-radius deadzone;
-## 3. the heading hold: `_manual_desired_turn` commands a bound turn action, else the
-##    cursor while `thrust_forward` is held, else **zero**;
+## 3. the steering: `_manual_desired_turn` commands a bound turn action, else the
+##    cursor, with or without the throttle (`STEER_WITHOUT_THROTTLE`) -- the heading a pilot
+##    is not steering is held by the aim deadzone, not by a throttle gate;
 ## 4. the strafe: its command is lateral, its ceiling is the class's own `max_speed`, its
-##    rate is the class's own `max_speed / accel_time`, it invents no fraction, and W+D is
-##    clamped to the class ceiling instead of a sqrt(2) overspeed;
+##    rate is the class's own `max_speed / accel_time` (which the 2026-09-22 ruling doubles
+##    through `ACCEL_TIME_MULT`, so its arrival times double with it), it invents no
+##    fraction, and W+D is clamped to the class ceiling instead of a sqrt(2) overspeed;
 ## 5. the two actions are rebindable (the Controls tab lists them) and every action the
 ##    owner already had still answers.
 ##
@@ -42,6 +46,10 @@ const STRAFE_LEFT: StringName = &"strafe_left"
 const STRAFE_RIGHT: StringName = &"strafe_right"
 const TURN_LEFT: StringName = &"turn_left"
 const TURN_RIGHT: StringName = &"turn_right"
+
+## Where the Controls-tab round-trip writes instead of the player's `user://inputs.cfg`;
+## the suite removes it in `suite_teardown`, so a gate run leaves nothing behind (F10).
+const SCRATCH_INPUTS := "user://test_flight_feel_g1_inputs.cfg"
 
 ## The handling column as this wave found it (`ShipFit.HANDLING`, which the 2026-09-21
 ## coast retune had already halved): the turn retune must move `turn_rate` and nothing
@@ -370,14 +378,20 @@ func test_the_aim_deadzone_is_the_hull_radius_and_no_new_number() -> void:
 
 
 ## ---------------------------------------------------------------------------
-## 3. The heading holds when the throttle is not held
+## 3. The cursor steers with or without the throttle (the 2026-09-22 ruling)
 ## ---------------------------------------------------------------------------
 
 
-## The gate itself: a bound turn action answers first, then the cursor while
-## `thrust_forward` is held, else exactly zero. The zero is the owner's "the heading holds
-## when it is not [held]", and it is what the probe watches land on a bearing.
-func test_the_manual_turn_is_the_cursor_only_while_thrust_is_held() -> void:
+## The gate as the owner's 2026-09-22 ruling leaves it (CONTRACTS section 14,
+## `STEER_WITHOUT_THROTTLE`): a bound turn action answers first, then the cursor -- **with or
+## without** `thrust_forward`. The throttle gate this test used to assert is the ruling's own
+## reversal, and it was the reason a parked hull could not turn: with the throttle held the
+## cursor was live but the hull was also being pushed forward. What holds a heading now is
+## `_aim_turn`'s hull-radius deadzone (a cursor resting on the hull), which is the last
+## assertion here; the neutral turn's own displacement is measured by
+## `tests/test_s2_6_flight.gd` (AC6), and the probe's `hold_at_rest` case re-derives the
+## hold it used to watch into that turn.
+func test_the_manual_turn_is_the_cursor_with_or_without_the_throttle() -> void:
 	var pair := _launch(HULL_SHIPPED)
 	var ship: Variant = pair[0]
 	var stats: Variant = pair[1]
@@ -398,8 +412,11 @@ func test_the_manual_turn_is_the_cursor_only_while_thrust_is_held() -> void:
 		"holding thrust_forward turns the nose towards the cursor"
 	)
 	assert_true(
-		is_zero_approx(float(ship.call(&"_manual_desired_turn", 0.0, 0.0))),
-		"with the throttle released nothing commands a turn: the heading holds"
+		_near(float(ship.call(&"_manual_desired_turn", 0.0, 0.0)), aim, TOLERANCE),
+		(
+			"and with the throttle released the same cursor commands the same turn: a turn is "
+			+ "torque, so a parked hull comes about where it stands"
+		)
 	)
 	assert_true(
 		_near(float(ship.call(&"_manual_desired_turn", 0.0, FULL_DEFLECTION)), rate, 1e-5),
@@ -409,11 +426,16 @@ func test_the_manual_turn_is_the_cursor_only_while_thrust_is_held() -> void:
 		_near(float(ship.call(&"_manual_desired_turn", 1.0, -FULL_DEFLECTION)), -rate, 1e-5),
 		"and a bound turn action takes priority over the cursor"
 	)
-	## The same gate on a hull with no cursor at all: aim overridden onto the hull itself.
+	## The deadzone is what holds a heading the pilot is not steering -- a cursor resting on
+	## the hull, which is where the camera's centre puts it -- with the throttle either way.
 	ship.call(&"set_aim_point", ship.global_position)
 	assert_true(
 		is_zero_approx(float(ship.call(&"_manual_desired_turn", 1.0, 0.0))),
 		"a cursor on the hull commands nothing, held or not"
+	)
+	assert_true(
+		is_zero_approx(float(ship.call(&"_manual_desired_turn", 0.0, 0.0))),
+		"and releasing the throttle does not change that"
 	)
 
 
@@ -608,7 +630,7 @@ func test_the_strafe_binding_round_trips_through_the_settings_manager() -> void:
 	## test never rewrites the player's `user://inputs.cfg`, and put the live InputMap entry
 	## back exactly as it was found (the same event object, not a copy).
 	var scratch: String = manager.get(&"inputs_file")
-	manager.set(&"inputs_file", "user://test_flight_feel_g1_inputs.cfg")
+	manager.set(&"inputs_file", SCRATCH_INPUTS)
 	var events := InputMap.action_get_events(STRAFE_RIGHT)
 	if events.is_empty():
 		assert_true(false, "strafe_right ships with a binding to display")
@@ -674,6 +696,16 @@ func _tree() -> SceneTree:
 
 func _settings_manager() -> Node:
 	return _tree().root.get_node_or_null(NodePath(&"SettingsManager"))
+
+
+func suite_teardown() -> void:
+	_delete_file(SCRATCH_INPUTS)
+
+
+func _delete_file(path: String) -> void:
+	var directory := DirAccess.open(path.get_base_dir())
+	if directory != null:
+		directory.remove(path.get_file())
 
 
 func _press(action: StringName) -> void:

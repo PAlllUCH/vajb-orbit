@@ -41,6 +41,20 @@ const GAME_SCENE := "res://game/game.tscn"
 const SCRATCH_PROFILE := "user://test_engine2_fixes.cfg"
 const SCRATCH_LOG := "user://test_engine2_fixes_log.txt"
 
+## The dock filing test's own fit (CONTRACTS section 14): the laser it fires and the cannon
+## it leaves alone must both be mounted whatever the account holds - the live Vanguard fit is
+## `["w_mining", "w_cannon", ""]`, which mounts no laser at all (F11) - so the store's fit
+## for the active hull is replaced before `game.tscn` is instantiated and put back in
+## `suite_teardown`, both flushes landing on the harness's own scratch `save_path`
+## (`headless_runner.gd:_seed_scratch_store`).
+const FIXTURE_FIT: Dictionary = {
+	&"engines": [&"e_std"],
+	&"power": &"p_std",
+	&"weapons": [&"w_laser", &"w_cannon"],
+	&"shields": [&"s_light"],
+	&"armour": [&"h_plate_light"],
+}
+
 ## The reviewers' own alpha extremes for section 3.3's flicker: a sine at 6 Hz reaches
 ## 0.7 a quarter period in and 0.3 three quarters in, so these are the two instants the
 ## curve must hit, not invented numbers.
@@ -59,6 +73,7 @@ var _state: Variant = null
 var _staged: Array[Node] = []
 var _profiles: Array[Node] = []
 var _signals: Array[StringName] = []
+var _previous_fits: Dictionary = {}
 
 
 func suite_name() -> String:
@@ -66,6 +81,7 @@ func suite_name() -> String:
 
 
 func suite_setup(_ctx: Dictionary) -> void:
+	_stage_fixture_fit()
 	var host := _fixture_host()
 	var pair := _build_ship(host, Vector2(-400.0, 0.0))
 	_shooter = pair[0]
@@ -125,6 +141,28 @@ func suite_teardown() -> void:
 	_delete_file(SCRATCH_PROFILE)
 	_delete_file(SCRATCH_LOG)
 	Log.log_path = Log.DEFAULT_PATH
+	_restore_fits()
+
+
+## The fixture's own fit, written before the scene is instantiated (`set_fit` is the store's
+## plain per-hull setter) and reversed in `suite_teardown`, so the account ends this suite
+## exactly as it started.
+func _stage_fixture_fit() -> void:
+	var profile: Node = _tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
+	if profile == null:
+		return
+	_previous_fits = profile.call(&"fits")
+	profile.call(&"set_fit", StringName(profile.call(&"active_ship")), FIXTURE_FIT)
+	profile.call(&"flush")
+
+
+func _restore_fits() -> void:
+	var profile: Node = _tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
+	if profile == null:
+		return
+	profile.call(&"set_fits", _previous_fits)
+	profile.call(&"flush")
+	_previous_fits = {}
 
 
 ## Each test opens on a full victim and a charged shooter, so the deltas below are the
@@ -494,6 +532,14 @@ func test_the_dock_report_settles_a_fired_pack() -> void:
 	assert_true(profile != null, "the profile autoload is the dock's store")
 	if profile == null:
 		return
+	var slot: int = int((_state.get(&"weapons") as Array).find(&"laser"))
+	assert_true(
+		slot >= 0,
+		"the fixture's own fit mounts the laser this report fires (%s)"
+		% [_state.get(&"weapons")]
+	)
+	if slot < 0:
+		return
 	var previous_path: String = profile.get(&"save_path")
 	var stored_before: int = int(profile.call(&"ammo_of", &"laser"))
 	var other_before: int = int(profile.call(&"ammo_of", &"cannon"))
@@ -503,7 +549,6 @@ func test_the_dock_report_settles_a_fired_pack() -> void:
 	_delete_file(SCRATCH_PROFILE)
 	_delete_file(SCRATCH_LOG)
 	_scene.call(&"_seed_ammo")
-	var slot: int = int((_state.get(&"weapons") as Array).find(&"laser"))
 	var live: int = int((_state.get(&"ammo") as Array)[slot])
 	var ceiling: int = int((_state.get(&"ammo_max") as Array)[slot])
 	_state.set_ammo(slot, live - 3)

@@ -297,16 +297,24 @@ func test_the_coast_column_is_the_retuned_half_of_the_section_13_rows() -> void:
 	)
 	assert_true(_near(float(vanguard[&"turn_spinup"]), 0.5), "turn_spinup is still 0.5")
 	assert_true(_near(float(vanguard[&"hull_mass"]), 110.0), "hull_mass is still 110")
-	## The plating multiplier still rides on the retuned row (C3: the launch fit's
-	## `h_plate_light` is what made 2.0 s resolve to 2.1 s; it is what makes 1.0 s resolve
-	## to 1.05 s now).
+	## The plating multiplier still rides on the retuned row, and the row is now read through
+	## the 2026-09-22 flight-feel ruling's `COAST_TIME_MULT` (x 2.0, the documented revert of
+	## this suite's x 0.50 -- CONTRACTS section 14): the fight wave's x 0.50 made 2.0 s
+	## resolve to 1.05 s, and the revert lands that same launch back on 2.1 s.
 	var penalty := absf(float(ShipFitScript.MODULES[&"h_plate_light"][&"effects"][&"speed_penalty"]))
 	var stats: Variant = ShipFitScript.resolve(&"ship_vanguard", ShipFitScript.STANDARD_FIT)
 	assert_true(stats != null, "the shipped hull resolves")
 	if stats != null:
 		assert_true(
-			_near(float(stats.coast_time), 1.0 * (1.0 + penalty)),
-			"the launched Vanguard's coast time is 1.05 s, measured %.3f" % float(stats.coast_time)
+			_near(
+				float(stats.coast_time),
+				1.0 * ShipFitScript.COAST_TIME_MULT * (1.0 + penalty),
+				1e-6
+			),
+			(
+				"the launched Vanguard's coast time is 2.1 s (the revert of the x 0.50), measured %.3f"
+				% float(stats.coast_time)
+			)
 		)
 
 

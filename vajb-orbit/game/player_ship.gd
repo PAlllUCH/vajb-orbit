@@ -108,6 +108,27 @@ const BRAKE_MULT := 1.8
 const SLOW_DOWN_RADIUS := 240.0
 const ARRIVE_RADIUS := 40.0
 
+## CONTRACTS section 14 (owner ruling 2026-09-22) -- the steering half. `_manual_desired_turn`
+## answers a deflected turn action first, then the cursor, and the throttle no longer gates
+## the cursor ("when ship is pause trying to turn around moves it way too much forward, a ship
+## in space should somewhat be able to do neutral turn"). A turn input therefore commands
+## torque and nothing else, so the hull turns where it stands even while it is parked.
+## `false` restores the old gate -- the nose follows the cursor only while
+## `thrust_forward` is held and the heading holds otherwise -- and that is this ruling's
+## reversal, one condition. The cursor resting on the hull, which is where the camera's
+## centre puts it, still holds the heading: that is `_aim_turn`'s own hull-radius deadzone,
+## not the throttle.
+const STEER_WITHOUT_THROTTLE := true
+## The neutral turn's own bound, read by `tests/test_s2_6_flight.gd`: a full 360 degree cursor
+## turn at zero throttle may translate the hull no further than this many units. A bound on
+## the law, not a number the law reads.
+const TURN_TRANSLATE_LEAK_MAX := 5.0
+
+## The handling table's ruling multipliers (CONTRACTS section 14) are read from the file that
+## owns them, so the lateral split derives from one copy of the numbers. Reached by path and
+## not by global class name, for the reason the IMPACT preload's comment gives.
+const SHIP_FIT := preload("res://game/ship_fit.gd")
+
 ## ENGINE_SPEC section 13 "Energy & fuel (rulings 10-14)": the afterburner burns
 ## BOOST_FUEL 3.0 per second while it runs and a fold/dash burst spends DASH_FUEL 25.
 ## Both are global calibration rows -- no class column and no module effect carries
@@ -214,6 +235,17 @@ var _vitals_seeded := false
 ## events arrive after the solver has already spent the approach speed, so this is the
 ## pre-impact velocity `_on_hull_body_entered` charges damage from (section 4.2 item 6).
 var _last_velocity := Vector2.ZERO
+
+## The net central force and torque the flight law handed the body in the step being
+## processed -- the same shape of observability seam as `boost_activations` and
+## `arc_count`, and the only window a *suite* has on a step: the headless runner calls a
+## test method synchronously and never awaits a frame, so the physics server never
+## integrates a hull a suite builds. `applied_force()` / `applied_torque()` are read by
+## `tests/test_s2_6_flight.gd` (AC6's neutral-turn displacement and the axis-damp split)
+## and by `tests/probe_s2_6_flight.tscn`'s own integration check. Zeroed at the top of
+## every step, so "no thrust was applied" is a reading and not an absence.
+var _applied_force := Vector2.ZERO
+var _applied_torque := 0.0
 
 
 func _ready() -> void:
@@ -460,7 +492,42 @@ func _heading() -> float:
 	return global_rotation
 
 
+## The net central force the flight law applied in the step being processed, in newtons,
+## accumulated across that step's axes ("forward" and "sideways" are two forces on one
+## body). Observability only: nothing in the flight law reads it back.
+func applied_force() -> Vector2:
+	return _applied_force
+
+
+## The net torque the flight law applied in the step being processed, the angular twin of
+## `applied_force`.
+func applied_torque() -> float:
+	return _applied_torque
+
+
+## The one place a central force reaches the body, so "how hard did the law push" is
+## readable (see the recorder's own comment). Nothing about the force changes here: it is
+## handed to the body exactly as before.
+func _apply_force(force: Vector2) -> void:
+	if _body == null:
+		return
+	_applied_force += force
+	_body.apply_central_force(force)
+
+
+## The torque twin of `_apply_force` (`_step_turn` is its only caller).
+func _apply_torque(torque: float) -> void:
+	if _body == null:
+		return
+	_applied_torque += torque
+	_body.apply_torque(torque)
+
+
 func _physics_process(delta: float) -> void:
+	## The observability recorder's own frame boundary: everything below is this step's
+	## force and torque, and a step that commands neither reaches the suite as exactly zero.
+	_applied_force = Vector2.ZERO
+	_applied_torque = 0.0
 	_sync_hull_transform()
 	_update_boosters(delta)
 	_update_mining_laser()
@@ -515,6 +582,11 @@ func _physics_process(delta: float) -> void:
 	_step_turn(desired_turn, delta)
 	_step_speed(desired_speed, rate, delta)
 	_step_strafe(desired_lateral, delta)
+	## The sideways damp's explicit half, on the axis no one commanded (CONTRACTS section
+	## 14's `LATERAL_DAMP_MULT`): a commanded strafe already compensated the whole of the
+	## sideways damp on its own axis, so this drag is what holds an uncommanded skid at
+	## today's rate while the forward carry follows `COAST_TIME_MULT`.
+	_step_lateral_drag(delta)
 	## The owner's 2026-09-21 request ("ship while traveling has to make sounds ... and
 	## thrusters should create flame fx"), the hull's half: one trail per engine cell and
 	## one held bed, both reading the ratio `game.gd` already pushed and the thrust input
@@ -566,15 +638,16 @@ func _manual_turn() -> float:
 	return Input.get_action_strength(TURN_RIGHT) - Input.get_action_strength(TURN_LEFT)
 
 
-## The manual branch's commanded turn, and the whole of the owner's ruling (2026-09-21,
-## third round): a deflected turn action answers first, then the cursor while
-## `thrust_forward` is held, and **nothing at all otherwise** -- which is what holds the
-## heading when the throttle is released. `stick` is the raw throttle, not the locked one,
-## so a dry tank holding W still turns (ruling 14 keeps the reaction wheels live).
+## The manual branch's commanded turn, and the whole of the steering ruling (CONTRACTS
+## section 14, owner 2026-09-22): a deflected turn action answers first, then the cursor --
+## **with or without the throttle** (`STEER_WITHOUT_THROTTLE`), which is what lets a parked
+## hull come about where it stands: a turn command applies torque only, so a full revolution
+## at zero throttle leaves the hull where it was. `stick` is the raw throttle, not the locked
+## one, so a dry tank holding W still turns (ruling 14 keeps the reaction wheels live).
 func _manual_desired_turn(stick: float, turn: float) -> float:
 	if not is_zero_approx(turn):
 		return turn * _stats.turn_rate
-	if stick > 0.0:
+	if STEER_WITHOUT_THROTTLE or stick > 0.0:
 		return _aim_turn()
 	return 0.0
 
@@ -587,10 +660,10 @@ func _thrust_locked() -> bool:
 	return _state != null and _state.emergency_mode
 
 
-## The point the nose chases while `thrust_forward` is held (see `_aim_turn`): the cursor's
-## own world point, the same point an LMB order aims at. Falls back to the hull's position
-## outside the tree, where there is no viewport to read a cursor from (the weapon
-## component's own `_aim_point` makes the same fallback).
+## The point the nose chases (see `_aim_turn`): the cursor's own world point, the same point
+## an LMB order aims at. Falls back to the hull's position outside the tree, where there is no
+## viewport to read a cursor from (the weapon component's own `_aim_point` makes the same
+## fallback).
 func _aim_point() -> Vector2:
 	if _has_aim_override:
 		return _aim_override
@@ -615,11 +688,12 @@ func _order_turn() -> float:
 	return _turn_toward(_move_target)
 
 
-## The cursor turn (owner ruling 2026-09-21, third round): while `thrust_forward` is held
-## the nose chases the cursor through the autopilot's own arrive steering, so the class's
-## `turn_rate` and `turn_spinup` still govern how fast the nose may move. A cursor closer
-## than the hull's own radius has no bearing worth chasing -- the camera centres the hull,
-## so that is exactly where the pointer rests at launch -- and the deadzone is the
+## The cursor turn (owner ruling 2026-09-21, third round; made throttle-independent by the
+## 2026-09-22 ruling): the nose chases the cursor through the autopilot's own arrive
+## steering, so the class's `turn_rate` and `turn_spinup` still govern how fast the nose may
+## move, and a cursor closer than the hull's own radius has no bearing worth chasing -- the
+## camera centres the hull, so that is exactly where the pointer rests at launch, and it is
+## what still holds the heading when the pilot is not aiming. The deadzone is the
 ## art-derived hull radius rather than an invented constant.
 func _aim_turn() -> float:
 	var point := _aim_point()
@@ -658,7 +732,7 @@ func _step_turn(desired_turn: float, delta: float) -> void:
 	var torque := _angular_inertia() * (alpha + _angular_damp() * omega)
 	if is_zero_approx(torque):
 		return
-	_body.apply_torque(torque)
+	_apply_torque(torque)
 
 
 ## The manual command as one body-frame velocity (x = the nose, y = the hull's right side),
@@ -689,29 +763,55 @@ func _strafe_axis() -> Vector2:
 ## strafe to the side"): the same chase law `_step_speed` runs on the nose, turned 90
 ## degrees, at the class's own acceleration (`max_speed / accel_time`, `_accel_rate`) --
 ## the strafe's strength is those two section 13 rows and nothing else, so a light hull
-## snaps sideways and a Hauler labours across. The damp is compensated for on this axis
-## only while a strafe is commanded; released, the axis belongs to the body again and the
-## sideways velocity settles over the class's coast time, exactly as a hit's push does.
+## snaps sideways and a Hauler labours across. The sideways damp (`_lateral_damp`: the
+## body's own plus the explicit lateral drag) is compensated for on this axis while a
+## strafe is commanded, so the chase is the class rate rather than the class rate minus
+## drag; released, the axis belongs to that same damp again and the sideways velocity
+## settles at today's time constant, exactly as a hit's push does.
 func _step_strafe(desired_lateral: float, delta: float) -> void:
 	if _body == null or delta <= 0.0 or is_zero_approx(desired_lateral):
 		return
-	_thrust_axis(_strafe_axis(), desired_lateral, _accel_rate(), delta)
+	_thrust_axis(_strafe_axis(), desired_lateral, _accel_rate(), delta, _lateral_damp())
 
 
 ## One axis of thrust: the velocity along `axis` chases `desired_speed` at `rate`, and the
-## body's linear damp is compensated for along that same axis so the chase is the class
-## rate rather than the class rate minus drag. `_step_speed` is this law on the nose and
-## `_step_strafe` is it on the hull's side; the damp still owns every *other* axis (a hit's
-## push, a released strafe's tail), which is the degree of freedom real physics adds.
-func _thrust_axis(axis: Vector2, desired_speed: float, rate: float, delta: float) -> void:
+## damp that axis carries -- `_linear_damp()` along the nose, `_lateral_damp()` across it --
+## is compensated for so the chase is the class rate rather than the class rate minus drag.
+## `_step_speed` is this law on the nose and `_step_strafe` is it on the hull's side; the
+## damp still owns every *other* axis (a hit's push, a released strafe's tail), which is the
+## degree of freedom real physics adds.
+func _thrust_axis(
+	axis: Vector2, desired_speed: float, rate: float, delta: float, damp: float
+) -> void:
 	if _body == null or delta <= 0.0:
 		return
 	var along := _body.linear_velocity.dot(axis)
 	var accel := clampf((desired_speed - along) / delta, -rate, rate)
-	var force := _hull_mass() * (accel + _linear_damp() * along)
+	var force := _hull_mass() * (accel + damp * along)
 	if is_zero_approx(force):
 		return
-	_body.apply_central_force(axis * force)
+	_apply_force(axis * force)
+
+
+## The sideways drag the owner's "like ship slides in one side" is about (CONTRACTS section
+## 14's `LATERAL_DAMP_MULT`): the body damps every axis at `1 / coast_time` -- the forward
+## carry the same ruling doubles -- so the velocity *across* the nose is given this much
+## extra drag to hold its total decay at today's rate. It is a real drag (mass x rate x the
+## sideways velocity) applied on a real axis, not a counter-force that hides the velocity from
+## the flight law, and it is exactly what a commanded strafe compensates along its own axis
+## (see `_step_strafe`).
+func _step_lateral_drag(delta: float) -> void:
+	if _body == null or delta <= 0.0:
+		return
+	var extra := _lateral_extra_damp()
+	if extra <= 0.0:
+		return
+	var velocity := _body.linear_velocity
+	var nose := Vector2.RIGHT.rotated(_heading())
+	var sideways := velocity - nose * velocity.dot(nose)
+	if is_zero_approx(sideways.length_squared()):
+		return
+	_apply_force(-sideways * (_hull_mass() * extra))
 
 
 ## Linear motion, on the body's velocity (ruling 8: thrust is `mass x acceleration`,
@@ -721,7 +821,9 @@ func _thrust_axis(axis: Vector2, desired_speed: float, rate: float, delta: float
 ## over accel_time, S brakes at BRAKE_MULT times that, and the autopilot's arrive
 ## ramp obeys the same law.
 func _step_speed(desired_speed: float, rate: float, delta: float) -> void:
-	_thrust_axis(Vector2.RIGHT.rotated(_heading()), desired_speed, rate, delta)
+	_thrust_axis(
+		Vector2.RIGHT.rotated(_heading()), desired_speed, rate, delta, _linear_damp()
+	)
 
 
 ## The body owns the hull's live transform and this node mirrors it: the sprite, the
@@ -866,10 +968,32 @@ func _spin_rate() -> float:
 ## The commanded coast (throttle released, autopilot ramping down) still reaches
 ## zero at coast_time, because that deceleration is the class's own coast rate and the
 ## damp is compensated for along the thrust axis (`_step_speed`).
+##
+## This is the **forward** decay: `coast_time` is the resolved row the ruling's
+## `COAST_TIME_MULT` doubles, which is what gives the ship its carry back.
 func _linear_damp() -> float:
 	if _stats == null or _stats.coast_time <= 0.0:
 		return 0.0
 	return 1.0 / _stats.coast_time
+
+
+## The sideways decay (CONTRACTS section 14's `LATERAL_DAMP_MULT`): today's damp, held where
+## the combat wave's x 0.50 retune left it, whatever the forward column did. The resolved
+## `coast_time` already carries `COAST_TIME_MULT`, so dividing it back out is what makes this
+## "the amount of today's damp the ruling keeps" rather than a second handling table; the
+## sideways axis is the one the body does *not* damp twice, so the difference between this
+## and `_linear_damp()` is `_step_lateral_drag`'s explicit drag.
+func _lateral_damp() -> float:
+	if _stats == null or _stats.coast_time <= 0.0:
+		return 0.0
+	return SHIP_FIT.COAST_TIME_MULT * SHIP_FIT.LATERAL_DAMP_MULT / _stats.coast_time
+
+
+## The extra sideways drag alone: the section the explicit lateral drag adds on top of the
+## body's own damp. `LATERAL_DAMP_MULT` 0.0 leaves nothing, so the sideways decay rides the
+## forward revert instead (the constant's own reversal).
+func _lateral_extra_damp() -> float:
+	return maxf(_lateral_damp() - _linear_damp(), 0.0)
 
 
 ## The same sizing for the angular axis, from turn_spinup: a spinning hull with

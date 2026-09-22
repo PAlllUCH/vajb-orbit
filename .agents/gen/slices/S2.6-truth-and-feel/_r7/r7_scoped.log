@@ -1,0 +1,26 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[RUN] suites=test_flight_beam_g2,test_weapon_fx_f4
+[PASS] test_flight_beam_g2.gd.test_a_held_beams_feedback_repeats_for_as_long_as_the_trigger_is_held
+[PASS] test_flight_beam_g2.gd.test_a_held_beams_rock_chip_reads_on_hulls_own_contact_guard
+[PASS] test_flight_beam_g2.gd.test_a_laser_chipping_a_rock_plays_the_chip_cue_and_the_burst
+[PASS] test_flight_beam_g2.gd.test_a_shot_that_hits_nothing_still_draws_the_weapons_own_reach
+[PASS] test_flight_beam_g2.gd.test_the_shaft_stops_on_the_point_its_ray_resolved
+[PASS] test_weapon_fx_f4.gd.test_a_beam_that_lands_on_a_hull_plays_the_impact_cue_and_the_ring
+[PASS] test_weapon_fx_f4.gd.test_a_held_beam_plays_a_bed_and_puts_it_out_with_the_beam
+SCRIPT ERROR: Cannot call method 'call' on a previously freed instance.
+          at: test_a_held_beam_reads_one_hit_per_contact_interval (res://tests/test_weapon_fx_f4.gd:178)
+          GDScript backtrace (most recent call first):
+              [0] test_a_held_beam_reads_one_hit_per_contact_interval (res://tests/test_weapon_fx_f4.gd:178)
+              [1] _run_file (res://tests/headless_runner.gd:163)
+              [2] _ready (res://tests/headless_runner.gd:39)
+[PASS] test_weapon_fx_f4.gd.test_a_held_beam_reads_one_hit_per_contact_interval
+[PASS] test_weapon_fx_f4.gd.test_a_repeated_take_re_uses_its_own_voice
+[PASS] test_weapon_fx_f4.gd.test_a_rocket_shot_down_by_a_beam_takes_the_blast
+[PASS] test_weapon_fx_f4.gd.test_the_two_world_beds_sound_at_once
+[SUMMARY] passed=11 failed=0
+WARNING: 12 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 6 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

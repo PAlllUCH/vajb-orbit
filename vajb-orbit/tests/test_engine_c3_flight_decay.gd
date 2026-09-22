@@ -54,8 +54,13 @@ func teardown() -> void:
 
 
 func test_the_coast_column_reaches_every_hulls_body_as_the_damp() -> void:
+	## The resolved coast time is the row times the fit's plating multiplier times the
+	## 2026-09-22 flight-feel ruling's `COAST_TIME_MULT` (x 2.0, the documented revert of
+	## the combat wave's x 0.50 -- CONTRACTS section 14). The row itself is the retuned
+	## half-of-section-13 literal this suite's other test pins, so the two halves of the
+	## release are asserted against their own sources.
 	var plate_penalty := absf(float(ShipFitScript.MODULES[PLATE][&"effects"][&"speed_penalty"]))
-	var multiplier := 1.0 + plate_penalty
+	var multiplier := (1.0 + plate_penalty) * ShipFitScript.COAST_TIME_MULT
 	var checked := 0
 	for raw_key: Variant in ShipFitScript.HANDLING.keys():
 		var hull_id := StringName(raw_key)
@@ -69,7 +74,7 @@ func test_the_coast_column_reaches_every_hulls_body_as_the_damp() -> void:
 		assert_true(
 			_near(stats.coast_time, float(row[&"coast_time"]) * multiplier, TOLERANCE),
 			(
-				"%s: the resolved coast time is the section 13 row x the plating multiplier (got %.6f)"
+				"%s: the resolved coast time is the row x the plating multiplier x COAST_TIME_MULT (got %.6f)"
 				% [hull_id, stats.coast_time]
 			)
 		)

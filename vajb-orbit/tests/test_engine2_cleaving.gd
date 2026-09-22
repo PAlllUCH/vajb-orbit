@@ -9,7 +9,10 @@ extends McpTestSuite
 ##     `Asteroid.FRAGMENT_SPLIT`), replacing the fixed (2,3)/(2,2) rows;
 ##   * the ejection direction is **uniform over the full circle** -- the retired +-15
 ##     deg cone is `FRAGMENT_EJECT_CONE_DEG`'s own 360.0 -- and the speed is still the
-##     parent's velocity x 1.2;
+##     parent's velocity x 1.2, which is now the **shape's half** only: CONTRACTS 14's
+##     `FRAGMENT_OUTWARD_KICK` (150 u/s along the placement radial) rides on top of it,
+##     so the rows below read the shape back out of the deployed velocity and assert the
+##     deployed magnitude inside the additive bounds (S2.6-R2 / F3);
 ##   * **every depletion draws the break**: FX_SPEC 1.4's five-frame explosion at the
 ##     rock's own centre, scaled to the rock (1.2 x its collision diameter, clamped
 ##     96-224 u), S4's rock cue through the four-take pool row, and section 4.2 item 8's
@@ -45,6 +48,9 @@ const FIELD_SEED := 7331
 const ROCK_COUNT := 6
 const EJECT_SPEED := 120.0
 const EJECT_HEADING := 0.7
+## The additive bounds below are measured on `float32`-backed velocities; this slack is far
+## smaller than either term (measured overshoot at most 0.0001 u/s).
+const ADDITIVE_SLACK := 0.01
 const EXPLOSION_NAME := "explosion"
 const EXPLOSION_FRAMES := 5
 const PICKUP_SCRIPT := "res://game/pickup.gd"
@@ -213,6 +219,15 @@ func _fragment_headings(fragments: Array[Node2D], heading: Vector2) -> Array[flo
 	return out
 
 
+## §5's shape recovered from a fragment's deployed velocity: CONTRACTS 14's
+## `FRAGMENT_OUTWARD_KICK` rides the fragment's own placement radial (rock centre to spawn
+## point, the direction the field places it on), so taking that vector back out leaves
+## exactly the rolled inherit `FRAGMENT_EJECT_CONE_DEG` owns.
+func _shape_half(fragment: Node2D, origin: Vector2) -> Vector2:
+	var radial := (fragment.global_position - origin).normalized()
+	return (fragment as RigidBody2D).linear_velocity - radial * FieldScript.FRAGMENT_OUTWARD_KICK
+
+
 func _widest_pair(headings: Array[float]) -> float:
 	var widest := 0.0
 	for a: float in headings:
@@ -332,6 +347,7 @@ func test_large_cleaves_into_two_to_five_mediums() -> void:
 	var counts: Array[int] = []
 	for index in 6:
 		var parent := _member(AsteroidScript.SIZE_LARGE, 4, "Large%d" % index)
+		var origin: Vector2 = (parent as Node2D).global_position
 		var mineral := StringName(parent.get(&"mineral_id"))
 		var velocity := Vector2(EJECT_SPEED, 0.0).rotated(EJECT_HEADING)
 		(parent as RigidBody2D).linear_velocity = velocity
@@ -350,10 +366,24 @@ func test_large_cleaves_into_two_to_five_mediums() -> void:
 				"the fragment's yield is re-rolled (02 5), got %d"
 				% int(fragment.get(&"yield_units")))
 			var ejected := (fragment as RigidBody2D).linear_velocity
-			assert_true(is_equal_approx(ejected.length(),
+			var shape := _shape_half(fragment, origin)
+			## The inherit, measured as §5's shape: the deployed velocity with the field's
+			## radial kick taken back out is still `parent velocity x 1.2` exactly, so the
+			## kick is additive and does not scale with the parent (F3's "stays measurable").
+			assert_true(is_equal_approx(shape.length(),
 				velocity.length() * AsteroidScript.FRAGMENT_EJECT_MULT),
-				"the fragment ejects at x%s, got %s" % [AsteroidScript.FRAGMENT_EJECT_MULT,
-				ejected.length()])
+				"the fragment still inherits x%s of the parent's speed, got %s"
+				% [AsteroidScript.FRAGMENT_EJECT_MULT, shape.length()])
+			## And the deployed magnitude sits inside the additive bounds: the two vectors
+			## can only be as short as their difference and as long as their sum.
+			var lowest := absf(velocity.length() * AsteroidScript.FRAGMENT_EJECT_MULT
+				- FieldScript.FRAGMENT_OUTWARD_KICK)
+			var highest := velocity.length() * AsteroidScript.FRAGMENT_EJECT_MULT \
+				+ FieldScript.FRAGMENT_OUTWARD_KICK
+			assert_true(ejected.length() >= lowest - ADDITIVE_SLACK
+					and ejected.length() <= highest + ADDITIVE_SLACK,
+				"the burst is the shape plus the kick, so its magnitude is %.3f..%.3f, got %.3f"
+				% [lowest, highest, ejected.length()])
 	assert_eq(counts.size(), 6, "six Large rocks were cracked")
 
 
@@ -400,21 +430,36 @@ func test_the_fragment_count_varies_inside_the_amended_bounds() -> void:
 
 ## The owner's "moving in random directions" as a measurement: with the cone retired a
 ## fragment can land more than 90 deg off its parent's heading (a +-15 deg cone cannot
-## produce that), and two fragments of one cleave can land more than 90 deg apart.
+## produce that), and two fragments of one cleave can land more than 90 deg apart. Both are
+## read twice -- on the deployed velocity, which since §14 is the rolled shape **plus** the
+## field's radial kick, and on the shape alone (the residual), which is the roll the cone
+## constant owns -- so the kick cannot hide a narrowed cone.
 func test_ejection_directions_are_uniform_over_the_full_circle() -> void:
 	_field_with()
 	var deviations: Array[float] = []
+	var shapes: Array[float] = []
 	var widest := 0.0
+	var shape_widest := 0.0
 	for index in DIRECTION_CLEAVES:
 		var parent := _member(AsteroidScript.SIZE_LARGE, 4, "Spinner%d" % index)
+		var origin: Vector2 = (parent as Node2D).global_position
 		var heading := Vector2(EJECT_SPEED, 0.0).rotated(EJECT_HEADING)
 		(parent as RigidBody2D).linear_velocity = heading
 		var before := _live_ids()
 		_deplete(parent)
-		var deviations_here := _fragment_headings(_new_since(before), heading)
+		var fragments := _new_since(before)
+		var deviations_here := _fragment_headings(fragments, heading)
+		var shapes_here: Array[float] = []
+		for fragment: Node2D in fragments:
+			shapes_here.append(
+				rad_to_deg(heading.angle_to(_shape_half(fragment, origin)))
+			)
 		for deviation: float in deviations_here:
 			deviations.append(deviation)
+		for deviation: float in shapes_here:
+			shapes.append(deviation)
 		widest = maxf(widest, _widest_pair(deviations_here))
+		shape_widest = maxf(shape_widest, _widest_pair(shapes_here))
 	var beyond: int = 0
 	for deviation: float in deviations:
 		if absf(deviation) > 90.0:
@@ -424,6 +469,17 @@ func test_ejection_directions_are_uniform_over_the_full_circle() -> void:
 		% [beyond, deviations.size(), widest])
 	assert_true(widest > 90.0,
 		"two fragments of one cleave landed %.1f deg apart" % widest)
+	var shape_beyond: int = 0
+	for deviation: float in shapes:
+		if absf(deviation) > 90.0:
+			shape_beyond += 1
+	assert_true(shape_beyond > 0,
+		"and the roll alone does too (%d of %d, widest pair %.1f deg): the kick rotates the"
+		% [shape_beyond, shapes.size(), shape_widest]
+		+ " 360 deg spread without narrowing it")
+	assert_true(shape_widest > 90.0,
+		"the rolled shape spreads a cleave %.1f deg, so the cone constant is still 360"
+		% shape_widest)
 
 
 func test_fragments_join_the_same_field() -> void:

@@ -106,12 +106,17 @@ apply_impulse(impulse: Vector2) -> void
 apply_recoil(projectile_velocity: Vector2, projectile_mass: float) -> void
 # the flight-feel & beam wave (2026-09-21, v1.3), additive beyond the pin:
 set_aim_point(point: Vector2) -> void / clear_aim_point() -> void   # the probe seam
+# S2.6 (2026-09-22), additive observability beyond the pin — the same shape as
+# `boost_activations()`/`arc_count()`; `_physics_process` zeroes the recorder at the
+# top of every step, so "no force was applied" is a reading and not an absence:
+applied_force() -> Vector2    # the net central force this step's flight law applied
+applied_torque() -> float     # the net torque this step's flight law applied
 ```
 
 `fit_ids` is the launched fit's module ids (`ShipFit.fitted_ids`), the W-slot gate
 for the mining laser; it is defaulted, so `setup(stats, state)` still resolves.
-The four seams are how slice 2's weapons, detonations and the §3.4 speed fantasy
-reach the body without touching the node tree.
+The seams above are how slice 2's weapons, detonations, the §3.4 speed fantasy and the
+S2.6 review instruments reach the body without touching the node tree.
 
 **Body (slice 0, ruling 8).** `HullBody` is a `RigidBody2D` (layer 2, mask 1 = the
 rock layer, `gravity_scale = 0.0`, `contact_monitor = true`,
@@ -129,13 +134,20 @@ pre-retune column) **and `turn_rate` is retuned ×0.50** (the same nine rows; it
 before/after table and measurements are two paragraphs below, and it is the only
 column the flight-feel & beam wave moved). Measured by the C3 flight-decay probe on
 the shipped launch, whose resolved row is `§13 × 1.05` (the launched `h_plate_light`
-penalty), so `coast_time` is
-1.050 s: time to 10 % of the release speed `1.890 → 0.945 s`, carried distance
-`430.32 → 216.85 u`, and both accelerate legs unchanged (`t_accel_total` 2.533 / 2.100
-/ 4.050 / 4.050). The same column also halves every NPC hull's coast and doubles its
-damp (it reaches them through `ShipStats`), which is ruling 3's own "all nine rows",
-not drift. Reversal: multiply the nine rows by 2.0 and re-run the probe. Nothing else
-from §13 moved.
+penalty), so `coast_time` was 1.050 s: time to 10 % of the release speed
+`1.890 → 0.945 s`, carried distance `430.32 → 216.85 u`, both accelerate legs
+unchanged (`t_accel_total` 2.533 / 2.100 / 4.050 / 4.050). **Re-measured 2026-09-22
+(S2.6 review, the `COAST_TIME_MULT 2.0` revert):** the resolved `coast_time` is back
+at **2.100 s** on the same launch, time to 10 % of the release speed **1.890 s**
+(`dist_10` **426.12 u**), and both accelerate legs ride `ACCEL_TIME_MULT 2.0`
+(the `t_accel_total` rows × 2; per-class `t_90` 3.783 / 4.550 / 7.567 / 5.683 /
+4.167 / 11.350 / 8.317 / 7.567 / 12.100 s). `ShipFit.HANDLING`'s literals are
+**untouched** by the revert — the resolved times are the literals times the two
+multipliers, so the revert is one constant, not a nine-row edit. The same column
+also halves every NPC hull's coast and doubles its damp (it reaches them through
+`ShipStats`), which is ruling 3's own "all nine rows", not drift. Reversal:
+`ShipFit.COAST_TIME_MULT := 1.0` — §14's constant supersedes the older "multiply the
+nine rows by 2.0" wording. Nothing else from §13 moved.
 Body-body contacts past `COLLISION_MIN_DV` charge `Impact.collision_damage(ship
 mass, peer mass, closing speed)` to the player through `PlayerState.damage`, and
 offer the peer's half to `apply_collision_damage(amount)` when the peer has it.
@@ -161,13 +173,19 @@ a const:
 | ship_patrol | Frigate | 2.100 | 1.050 | 60.2 | 0.5000 | 0.90 |
 | ship_destroyer | Destroyer | 1.600 | 0.800 | 45.8 | 0.5000 | 1.20 |
 
-`turn_curve classes=9 mismatched=0 retune=x0.50`; `max_speed`, `accel_time`,
-`coast_time`, `turn_spinup`, `hull_mass` and the key set are byte-identical to
-HEAD. The column reaches **every NPC hull** too (it arrives through `ShipStats`),
+`turn_curve classes=9 mismatched=0 retune=x0.50`; the **row literals** — `max_speed`,
+`accel_time`, `coast_time`, `turn_spinup`, `hull_mass` and the key set — are
+byte-identical to HEAD (re-measured 2026-09-22, S2.6), while the **resolved** snapshot
+is not: `accel_time` and `coast_time` carry `ACCEL_TIME_MULT`/`COAST_TIME_MULT` (§14)
+and `max_speed` is the one column no multiplier touches. The column reaches **every
+NPC hull** too (it arrives through `ShipStats`),
 the same shape the retuned `coast_time` already has. The one pre-existing assertion
 the ruling moved is `tests/test_combat_repair_c5.gd:288` (`turn_rate` 3.0 → 1.5,
 with the ruling named inline); every other column of that test is still pinned.
-Reversal: multiply the nine rows by 2.0 and re-run `probe_g1_flight_feel`.
+Reversal: multiply the nine **`turn_rate`** rows by 2.0 and re-run
+`probe_g1_flight_feel` — `turn_rate` carries **no** multiplier constant, so unlike
+`coast_time` (whose §14 revert is `ShipFit.COAST_TIME_MULT`) this one is still a
+literal edit; the two reversals must not be read as one.
 
 Flight (ENGINE_SPEC §3; **the control scheme was amended 2026-09-21, third round —
 this and the next three paragraphs are the shipped truth, and §3.1's "A/D turn" is
@@ -179,21 +197,31 @@ map; `turn_left`/`turn_right` keep their actions and their slots with
 angular spin-up/damping, linear coasting — constants arrive via `ShipStats`, no
 literals in movement code.
 
-**The nose follows the cursor while `thrust_forward` is held, and the heading holds
-when it is not.** `_manual_desired_turn(stick, turn)` answers a deflected turn
-action first, then `_aim_turn()` while the throttle is up, then **0.0** — which is
-what holds the heading. `_aim_turn` is the autopilot's own `_turn_toward` arrive
-steering, so one law serves both the fly-to order and the cursor and there is no
-second steering model to keep in step; `turn_rate` and `turn_spinup` still bound how
-fast the nose may move. Its deadzone is the art-derived hull radius (the camera
-centres the hull, so that is where the pointer rests at launch), not an invented
-constant. Measured (G4's re-run of `probe_g1_flight_feel`): the peak turn rate is
-the class rate to three decimals on all three launched cases — Vanguard
-`omega_peak=1.500 rate=1.500 ratio=1.000`, Fighter `1.700/1.700 ratio=1.000`, Hauler
-`0.750/0.750 ratio=1.000` — and a released stick leaves the heading held with drift
-`0.00000000` and speed `0.00000000` (`hold_at_rest`), spinning down to zero in
-`t_omega_zero` 0.150 s (Vanguard) / 1.467 s (Hauler) against the class
-`turn_spinup` 0.50 / 1.40.
+**The nose follows the cursor with or without the throttle, and the heading holds
+where the pilot is not aiming.** (Superseded 2026-09-22 by §14's
+`STEER_WITHOUT_THROTTLE := true`; the older sentence — "the nose follows the cursor
+while `thrust_forward` is held, and the heading holds when it is not" — **is** the
+W-gate, and its reversal is that one condition.) `_manual_desired_turn(stick, turn)`
+answers a deflected turn action first, then `_aim_turn()` **whether or not
+`stick > 0.0`**. `_aim_turn` is the autopilot's own `_turn_toward` arrive steering, so
+one law serves both the fly-to order and the cursor and there is no second steering
+model to keep in step; `turn_rate` and `turn_spinup` still bound how fast the nose may
+move. Its deadzone is the art-derived hull radius (the camera centres the hull, so
+that is where the pointer rests at launch), not an invented constant — and **that
+deadzone, not the throttle, is what holds a heading the pilot is not steering**. A
+turn command is torque only (`_step_turn` applies `_apply_torque` and nothing else),
+so a full 360° cursor turn at zero throttle is bounded by
+`TURN_TRANSLATE_LEAK_MAX 5.0 u` (measured 2026-09-22 by `tests/probe_s2_6_flight.tscn`,
+`--fixed-fps 60`: Vanguard `sweep_deg=360.600`, `displacement=0.000000`,
+`peak_speed=0.000000`; Fighter `360.223`; Hauler `360.534` — each at its own class
+`turn_rate`), and a mirrored pair mirrors exactly (`sweep_right=+321.925326°` against
+`sweep_left=−321.925326°`, error `0.000000`). Measured (G4's re-run of
+`probe_g1_flight_feel`): the peak turn rate is the class rate to three decimals on all
+three launched cases — Vanguard `omega_peak=1.500 rate=1.500 ratio=1.000`, Fighter
+`1.700/1.700 ratio=1.000`, Hauler `0.750/0.750 ratio=1.000` — and the re-derived
+at-rest case sweeps `88.866°` to the cursor with `displacement=0.00000000`,
+`peak_speed=0.00000000` and `leak_ok=true`. Reversal of the whole item:
+`STEER_WITHOUT_THROTTLE := false`.
 
 **The strafe is §13's own two rows and nothing else.** `_command_velocity(throttle,
 lateral)` caps the stick at unit magnitude and scales it by the class `max_speed`,
@@ -207,7 +235,12 @@ one named constant G1 proposed was **not** added and its reversal path stays in
 against a derived 2.268 s, lateral peak 368.414 of a 406.600 ceiling, 417.536 u of
 travel that is 100 % lateral (forward travel −0.000 u) and heading drift
 `0.00000000`; Fighter 1.900 s / 386.786 / 427.500; Hauler 5.683 s / 251.104 /
-278.350; `right_is_right=true` on all three. `W+D` reaches the class ceiling
+278.350; `right_is_right=true` on all three. **Re-measured 2026-09-22 (S2.6, the
+`ACCEL_TIME_MULT` doubling):** a strafe's `t_90` is now `accel_time` × 0.9 × the
+plating multiplier — Vanguard **4.550 s** (was 2.283), Fighter **3.783 s** (was
+1.900), Hauler **11.350 s** (was 5.683) — with the lateral peaks and ceilings unmoved
+(367.068 / 406.600, 385.088 / 427.500, 250.733 / 278.350) and `heading_delta=0.00000000`
+on all three. `W+D` reaches the class ceiling
 406.600, not √2 × it (575.019), so §3.4's `|v| / v_max` onset never leaves 1.0
 (`track_deg=45.03`). **The strafe is thrust, so ruling 14's Emergency lock covers
 it** — a dry tank strafes nowhere — while the cursor turn stays live.
@@ -246,7 +279,10 @@ setup(mineral_id: StringName, tier: int, yield_units: int, size_class := SIZE_AN
 apply_work(work: float) -> int   # units mined this call; WORK_PER_UNIT := 1.0
 size_class() -> int              # SIZE_SMALL | SIZE_MEDIUM | SIZE_LARGE (slice 0)
 cleaves() -> bool                # false when the rock rolled no ore (slice 0)
-eject_velocity() -> Vector2      # linear_velocity × 1.2, read before the free (slice 0)
+eject_velocity() -> Vector2      # the *shape's* half only: linear_velocity × 1.2, read
+                                 #   before the free (slice 0). The radial half is the
+                                 #   field's (FRAGMENT_OUTWARD_KICK, §14) — the rock does
+                                 #   not know its fragments' spawn points.
 world_radius() -> float          # the collision circle's radius
 signal cracked                   # bare, unchanged: the field binds the rock itself
 ```
@@ -269,7 +305,18 @@ the reversals are those two constants themselves: restore the fixed `(2,3)`/`(2,
 rows, or set the cone to `15.0`), fragment mineral **and tier** inherited from the
 parent with the yield re-rolled through the 02 §5 path (the §13 row and §12 item 12
 are law; §6's "re-rolled tier" parenthetical is not representable, since a mineral
-fixes its tier). Every depletion — a cleave, a Small's burst or a yield-0 crack —
+fixes its tier). **Measured 2026-09-22 (S2.6's fragment burst):** the deployment is
+**additive** — `AsteroidField._cleave` adds `FRAGMENT_OUTWARD_KICK 150.0` u/s (the
+field's own constant, §14) along the placement radial, on top of the rolled shape, so
+a stopped rock's fragments read radial `0.000 → 150.000` u/s (the owner's complaint)
+while the `× 1.2` inherit is unchanged and still measurable as the residual
+`deployed − radial × 150.0` (probe `tests/probe_s2_6_burst.gd`: `shape_ratio
+1.199999669 .. 1.200000178` over 23 drifting fragments, and exactly `0.0` for a
+stopped rock; over 200 seeded breaks: 681 fragments, lowest radial `149.520` u/s
+against the 75.0 floor, all four quadrants populated, narrowest spread `122.165°`).
+The RNG stream is untouched — the kick consumes no roll — so every seeded sequence
+reads what it always read. Reversal of the kick: `FRAGMENT_OUTWARD_KICK := 0.0`.
+Every depletion — a cleave, a Small's burst or a yield-0 crack —
 also reads as the rock's **death**, not an ore event: FX_SPEC §1.4's explosion at the
 rock's own centre scaled `clamp(1.2 × diameter, 96, 224) u` through
 `Projectile.spawn_rock_break` (§7.3's one-shot wiring), S4's rock cue through the
@@ -747,9 +794,18 @@ actually fired.
 
 ```text
 "C:/Godot_4_7_2/Godot_v4.7.2-stable_win64_console.exe" --headless --path "G:/Mój dysk/Projekty/Vajb Orbit/vajb-orbit" res://tests/headless_runner.tscn --quit-after 1200
+# host-resolved form (Linux; $GODOT_CONSOLE / $VAJB_PROJ resolve in no tool shell —
+# run it as: `source ~/.profile && godot --headless --path vajb-orbit \
+#   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
-Expected: `[SUMMARY] passed=437 failed=0` (measured on this host 2026-09-22 by the P2-B proper
+Expected: **`[SUMMARY] passed=455 failed=2`** (measured at the S2.6 review, 2026-09-22:
+**457 tests over 40 suites**), where the two failures are the two assertions the wave's
+hit-FX jitter moved and the brief's tests-that-move list did not carry —
+`tests/test_flight_beam_g2.gd:256-258` and `tests/test_weapon_fx_f4.gd:138-140`, both
+pinning the contact FX exactly on the resolved hit point; with those two re-derived the
+reading is **`passed=457 failed=0`**. The last green reading was
+`[SUMMARY] passed=437 failed=0` (measured on this host 2026-09-22 by the P2-B proper
 fitting wave's fixer pass — the wave closed 389 → 402 → 420 → 431 → 437, with P2-B1's
 weapon-fit wave (378 → 389), P2-A's slot-grid wave (311 → 372) and the rock-cleave wave
 (372 → 378) before it),
@@ -763,9 +819,12 @@ pass added `tests/test_engine2_fixes.gd` (**17**) and the slice-2 close added
 `tests/test_engine2_dock.gd` (**2**), the UI-chrome wave added
 `tests/test_ui_slot_layout.gd` (**7**), and the combat/collision repair wave added
 `tests/test_engine_c3_flight_decay.gd` (**3**) and `tests/test_combat_repair_c5.gd`
-(**7**), so the total is **236** (the 226 measured before the repair wave, plus its
-10) and the count
-to read is the measured one with zero failures, never a stale total. Discovery is
+(**7**). **That paragraph is the history of how the total grew to the 236 the
+combat/collision repair wave measured**; the count kept growing after it
+(277 weapon-FX → 294 flight-feel/beam → 311 slice 2.5 → 372 P2-A → 378 rock cleave →
+389 P2-B1 → 437 P2-B proper → **457 with S2.6**, measured 2026-09-22), so the number to
+read is always the measured one with zero failures, never a stale total — and never the
+236. Discovery is
 automatic (`tests/headless_runner.gd` finds `test_*.gd`); no
 registration file exists to edit. **Measured 2026-09-21 (W6 review, slice 2):
 `passed=200 failed=0`, exit 0, no `SCRIPT ERROR`, no RID-leak line**, per suite
@@ -842,6 +901,37 @@ renames at `tests/test_flight_beam_g2.gd:51`, `tests/probe_g3_shadow.gd:134` and
 `:139`), leaving **15 rows in five files no worker owned** — `game/npc_ship.gd` 4,
 `game/npc_brain.gd` 4, `game/npc_registry.gd` 3, `game/asteroid.gd` 3 and
 `ui/hud/minimap.gd` 1 (the positive control).
+
+**Measured 2026-09-22 (S2.6 truth-and-feel — R6's review pass, the wave's own gate).**
+Two direct runs **on the real `user://` path with the owner's live account present** read
+`passed=455 failed=2` exit 1 **byte-identically**, a third run through
+`staging/verify_wave.py verify --tests` fails the gate by its own `failed=0` criterion like
+them, and a fourth run against a **mutated copy** on a scratch `XDG_DATA_HOME` reads the
+identical `passed=455 failed=2` — so the counts no longer depend on the account (L90/L93
+closed by CONTRACTS §14's runner sandbox). The live
+`profile.cfg` (2089 B, md5 `df4dd91530a92398b3cff40573ed39af`) and the live
+`economy_log.txt` (61429 B) were **byte-identical before and after every run**, with
+`mtime` unmoved (`2026-09-22 20:58:52`) — the gate writes only its own
+`user://_gate_scratch/` (`profile.cfg` 369 B, `economy_log.txt`) and never the account.
+Per suite (40 suites, 457 tests): `combat_repair_c5 7 · engine2_cleaving 15 ·
+engine2_damage 20 · engine2_dock 2 · engine2_fixes 17 · engine2_hud 19 ·
+engine2_loot 13 · engine2_npc 28 · engine2_pools 16 · engine2_weapons 29 ·
+engine2_wiring 13 · engine_c3_flight_decay 3 · flight_beam_g2 5 · flight_feel_g1 12 ·
+p1_catalogues 11 · p1_clock_log 4 · p1_market 13 · p1_pricing 5 · p1_profile 11 ·
+p1_refinery 6 · p1_repairs 5 · p2a_launch_fit 12 · p2a_lint_shadow 2 ·
+p2a_profile_fits 11 · p2a_ship_roster 4 · p2b1_outfitting_panel 9 ·
+p2b_fitting_panel 20 · p2b_retirement 16 · p2b_services 12 · s2_6_beam 4 ·
+s2_6_blur 2 · s2_6_burst 4 · s2_6_flight 7 · s2_6_gate_hygiene 3 · ship_grids 27 ·
+slice2_5_feel 17 · ui_slot_layout 12 · weapon_fx_f1 22 · weapon_fx_f2 13 ·
+weapon_fx_f4 6`. The only `SCRIPT ERROR` in the run is L61's pre-existing
+`test_weapon_fx_f4.gd:176` line, and the only other `ERROR` is the pre-existing
+`Parameter "data.tree" is null.` from `weapons.gd:_world_parent` on a detached hull
+(backtrace `_beam_plasma` at `test_combat_repair_c5.gd:357`, from
+`test_plasma_bonus_stays_off_a_live_npc_shield` at `:202`; proven pre-existing with the
+wave's three files reverted at HEAD). **`--suite=<name>` matches the file basename**, so
+`--suite=s2_6_burst` selects
+nothing and prints `passed=0 failed=0` exit 0 — the working form is
+`--suite=test_s2_6_burst`, which reads `passed=4 failed=0` (L95).
 
 ## §11 P2 ship frames (2026-09-21)
 
@@ -1497,7 +1587,10 @@ battery(base_id: StringName) -> Array   # this battery's W indices
   3. `docs/gameplay/18_engine_spec.md` §13's handling table — the `turn_rate` column
      still carries the pre-retune values (the before/after table is §4 above). The
      same tick is still owed for `coast_time` from the combat/collision repair wave,
-     so one §13 pass can close both.
+     and **S2.6's two multipliers ride the same pass**: §13's `accel_time` and
+     `coast_time` columns are the *literals* the wave's `ACCEL_TIME_MULT`/`COAST_TIME_MULT`
+     multiply (§14), so an owner ticking the resolved values should tick the two
+     constants with them. One §13 pass closes all four.
   4. `docs/design/IMPLEMENTATION_PLAN.md:231` — the frozen input-map row reads
      `turn_left` (A) · `turn_right` (D); the shipped truth is `strafe_left` (A) ·
      `strafe_right` (D), and the two entries sit at positions 5 and 6 of
@@ -1679,3 +1772,25 @@ battery(base_id: StringName) -> Array   # this battery's W indices
   FX_SPEC §5 gains the blur exclusion (the player hull stays sharp). All four ride
   wave S2.6 as builders R4/R5; the owner-locked §13 tick list grows by the two
   multipliers.
+- **v0.7.2 (2026-09-22, S2.6 truth-and-feel review — R6, this wave's only CONTRACTS
+  writer)** — records the measured pass: **§9's expected figure moves 437 → 455/2**
+  (457 tests over 40 suites; the two rows the hit-FX jitter moved are named, with
+  `passed=457 failed=0` as the post-fix reading), the gate's **hermeticity is measured
+  three times on the real `user://` path with the owner's live account byte-identical
+  and `mtime`-unmoved**, the per-suite census is replaced with the log's own, and the
+  `--suite=` basename trap (L95) is written down. §4's stale `coast_time` sentences,
+  its two reversal wordings and the `thrust_forward`-gated steering sentence are
+  re-pointed at §14's constants (**`turn_rate` keeps a literal reversal — it has no
+  multiplier; the two reversals are not one**), the strafe `t_90` rows are re-derived
+  (2.283/1.900/5.683 → 4.550/3.783/11.350 s) and the two observability seams
+  (`applied_force()`/`applied_torque()`) are recorded as additive. §5's
+  `eject_velocity()` comment now says it is the shape's half, with the field's
+  `FRAGMENT_OUTWARD_KICK` as the radial, and the additive measurement is quoted.
+  Every number here was re-measured by R6 — the five builders' probes re-run
+  byte-identically, the GPU blur probe re-run (`HULL_EXCLUDED max=0.000000
+  HULL_CONTROL max=1.000000 background mean=0.029085`), and
+  `staging/verify_wave.py verify --baseline s26_start --forbidden
+  vajb-orbit/project.godot` clean on frozen files (no `project.godot`,
+  `18_engine_spec.md`, `08_ship_slots_modules.md`, `assets/`, `addons/` or theme file
+  moved). Findings: `.agents/gen/slices/S2.6-truth-and-feel/S2.6-R6_review.md`;
+  LOW rows `L94`+ in `.agents/gen/_state/LOW_BACKLOG.md`.

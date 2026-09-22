@@ -42,6 +42,7 @@ const BEAM_FRAME := 0.05
 const AIM_DISTANCE := 300.0
 const ROCKET_DISTANCE := 60.0
 const ROCK_DISTANCE := 120.0
+const JITTER_TOLERANCE := 0.001
 const MIX := CanvasItemMaterial.BLEND_MODE_MIX
 
 ## The two seams `weapons.gd` reaches for on its host (`apply_recoil`, `impact_body`).
@@ -254,8 +255,9 @@ func test_a_laser_chipping_a_rock_plays_the_chip_cue_and_the_burst() -> void:
 			"one-shot per S8 chip event"
 		)
 	assert_true(
-		_near((burst as Node2D).global_position.distance_to(rock.global_position), 0.0),
-		"the burst sits on the point the beam reached"
+		(burst as Node2D).global_position.distance_to(rock.global_position)
+			<= WeaponScript.HIT_FX_JITTER_MIN + JITTER_TOLERANCE,
+		"the burst sits inside the pinned disc of the point the beam reached"
 	)
 
 

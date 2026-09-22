@@ -243,7 +243,16 @@ func test_every_hull_is_anchored_on_a_poi() -> void:
 func test_the_ship_mounts_its_weapons_component() -> void:
 	assert_true(_guns != null, "the standard fit's w_laser mounted a WeaponComponent")
 	assert_eq(int(_guns.call(&"selected_group")), 1, "group 1 is the selected one")
-	assert_true((_guns.call(&"fitted") as Array).has(&"laser"), "and the laser is in the fit")
+	## The mounted groups are read off the launched fit rather than named, so the assertion
+	## holds for whatever the launch mounts (the sandboxed default account flies the hull's
+	## standard fit) and the family-less tools - `w_mining` maps to `&""` - drop out exactly
+	## as `WeaponComponent.set_fitted` drops them, duplicates included.
+	var launched: Array[StringName] = []
+	for weapon_id: StringName in _state.weapons:
+		if weapon_id != &"" and not launched.has(weapon_id):
+			launched.append(weapon_id)
+	assert_true(not launched.is_empty(), "the launched fit mounts at least one firing group")
+	assert_eq(_guns.call(&"fitted"), launched, "and it mounts the launched fit's own groups")
 
 
 func test_the_launch_snapshot_seeds_the_pools_and_the_shield_rate() -> void:

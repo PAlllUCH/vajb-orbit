@@ -40,6 +40,7 @@ const SPARE_BED: StringName = &"sfx_ship_engine_02_loop"
 const AIM_DISTANCE := 300.0
 const BEAM_FRAME := 0.05
 const SHIELD_POOL_DEEP := 10000.0
+const JITTER_TOLERANCE := 0.001
 const MIX := CanvasItemMaterial.BLEND_MODE_MIX
 
 
@@ -136,8 +137,9 @@ func test_a_beam_that_lands_on_a_hull_plays_the_impact_cue_and_the_ring() -> voi
 	var ring := rings[0]
 	_assert_alpha(ring)
 	assert_true(
-		_near((ring as Node2D).global_position.distance_to(guarded.global_position), 0.0),
-		"the ring sits on the point the beam reached"
+		(ring as Node2D).global_position.distance_to(guarded.global_position)
+			<= WeaponScript.HIT_FX_JITTER_MIN + JITTER_TOLERANCE,
+		"the ring sits inside the pinned disc of the point the beam reached"
 	)
 	assert_true(
 		_near((ring as Node2D).scale.x, 0.0),

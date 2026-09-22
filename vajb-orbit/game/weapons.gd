@@ -250,6 +250,27 @@ const CHIP_CUE: StringName = &"sfx_mining_chip_01"
 ## a dedicated `sfx_weapon_beam_loop` is the ideal asset (proposed).
 const BEAM_BED_CUE: StringName = &"sfx_mining_beam"
 
+## FX_SPEC section 1.6's 2026-09-22 amendment (S2.6, the owner's sixth and seventh
+## requests). Both are drawn-line/effect-position only: the damage still resolves at the
+## surface point the ray found, and no damage number moves.
+##
+##   `BEAM_SINK` - the drawn shaft ends `BEAM_SINK` of the way from that point to the
+##   struck body's centre (owner: "a laser beam should connect to more of the middle of
+##   the object"), so the line reads as reaching into the object instead of stopping at
+##   its rim. Reversal: `0.0` = the rim hit, exactly as shipped.
+##
+##   `HIT_FX_JITTER_MULT` - the contact FX spawn at a uniform random point in a disc of
+##   `clamp(HIT_FX_JITTER_MULT x collision radius, MIN, MAX)` u around the resolved hit
+##   (owner: "a beam's hit should spawn its impact FX somewhat randomly across the struck
+##   surface instead of at one fixed point"). The radius is the target's own
+##   (`Projectile.collision_radius`); the 48 u ceiling is inert for every shipped object
+##   and the 8 u floor binds for a radius-less one. Reversal: `0.0` = the fixed contact
+##   point, which `Projectile.scatter_in_disc` hands straight back.
+const BEAM_SINK := 0.45
+const HIT_FX_JITTER_MULT := 0.35
+const HIT_FX_JITTER_MIN := 8.0
+const HIT_FX_JITTER_MAX := 48.0
+
 ## Fire feedback draws over the hull that fired it (the hull's own sprite sits at the
 ## default 0 on the same canvas).
 const FEEDBACK_Z := 2
@@ -282,6 +303,11 @@ var _beam_core: Line2D = null
 ## that contact has been held since it was last read (a fresh contact reads at once).
 var _beam_contact: Object = null
 var _beam_hit_clock := 0.0
+
+## The contact FX's own generator (FX_SPEC section 1.6's scatter). Private, like the
+## asteroid field's and the hull's arc sparks', so the effects never perturb the gameplay
+## streams and a seeded run still measures what it says.
+var _fx_rng := RandomNumberGenerator.new()
 
 ## The held beam's fire-feedback clock: how long it is since the muzzle flash and the
 ## family's cue last played. Cleared when the beam opens and when it goes out, so each
@@ -546,14 +572,17 @@ func _fire_beam(weapon: StringName, row: Dictionary, delta: float) -> void:
 	## (The impact visual stays the hit site's business, not the beam's.)
 	var target := _beam_target(from, to)
 	var endpoint := to
+	var collider: Variant = target.get(&"collider")
 	if not target.is_empty():
 		endpoint = target[&"point"]
-	_draw_beam(endpoint)
+	## Section 1.6's amendment: what is drawn stops `BEAM_SINK` short of the surface, on
+	## its way to the struck body's centre. `endpoint` itself stays the surface point -
+	## the damage, the cue and the rocket's blast all resolve where the ray landed.
+	_draw_beam(_beam_drawn_end(endpoint, collider))
 	_beam_started(weapon)
 	_advance_fire_feedback(weapon, delta)
 	if target.is_empty():
 		return
-	var collider: Variant = target[&"collider"]
 	if bool(target[&"projectile"]):
 		## Section 4.1: a rocket dies to any weapon hit, and the beam stops there. The
 		## kill is a destruction like every other, so it takes the explosion and the blast
@@ -638,7 +667,7 @@ func _apply_beam(
 		## gun, not a beam).
 		if _beam_read_due(collider, delta):
 			_play_chip_cue()
-			ProjectileScript.spawn_chip_sparks(_hit_fx_parent(collider), point)
+			ProjectileScript.spawn_chip_sparks(_hit_fx_parent(collider), _hit_fx_point(collider, point))
 		return
 	## The sink is resolved once and read for both the shield rule and the delivery:
 	## a hull's collider is that hull's own `HullBody`, which cannot answer
@@ -695,8 +724,33 @@ func _beam_hit_feedback(target: Object, shielded: bool, point: Vector2, delta: f
 	ProjectileScript.play_impact(self, kind)
 	if not shielded:
 		return
-	ProjectileScript.spawn_shield_ripple(_hit_fx_parent(target), point)
+	ProjectileScript.spawn_shield_ripple(_hit_fx_parent(target), _hit_fx_point(target, point))
 	ProjectileScript.hold_shield(self)
+
+
+## FX_SPEC section 1.6's amendment, the one seam this file's two contact-FX readers go
+## through (the rock's chip sparks above and the hull's shield ring below): a uniform
+## random point in the pinned `clamp(HIT_FX_JITTER_MULT x collision radius, MIN, MAX)` u
+## disc around the resolved hit. The radius belongs to what was hit, so a rock scatters
+## over its own 24/42/66 u body, a hull over its 30 u collider and a radius-less target
+## over the 8 u floor. Only the effect's position moves.
+func _hit_fx_point(target: Object, at: Vector2) -> Vector2:
+	var radius := clampf(
+		HIT_FX_JITTER_MULT * ProjectileScript.collision_radius(target),
+		HIT_FX_JITTER_MIN,
+		HIT_FX_JITTER_MAX
+	)
+	return ProjectileScript.scatter_in_disc(_fx_rng, at, radius)
+
+
+## What the shaft is drawn to: the point the ray resolved, pulled `BEAM_SINK` of the way
+## towards the struck body's centre (FX_SPEC section 1.6's amendment). A miss has no
+## target and a beam's own reach is what was asked for, so the reach is handed back.
+func _beam_drawn_end(hit_point: Vector2, target: Object) -> Vector2:
+	var body := target as Node2D
+	if body == null or not is_instance_valid(body):
+		return hit_point
+	return hit_point.lerp(body.global_position, BEAM_SINK)
 
 
 ## S8's chip transient, through the one-shot SFX route the mining laser's own

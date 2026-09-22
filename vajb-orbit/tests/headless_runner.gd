@@ -15,12 +15,23 @@ const TEST_PREFIX := "test_"
 const SCRIPT_SUFFIX := ".gd"
 const SUITE_FLAG := "--suite="
 
+## Gate hermeticity, CONTRACTS section 14 (L90/L93): the gate must neither read nor
+## write the owner's live account, so both writable stores are sandboxed before the
+## first suite loads.
+const PROFILE_SERVICE := &"PlayerProfile"
+const GATE_SCRATCH_DIR := "user://_gate_scratch"
+const GATE_SCRATCH_PROFILE := "user://_gate_scratch/profile.cfg"
+const GATE_SCRATCH_LOG := "user://_gate_scratch/economy_log.txt"
+
+const EconomyLogScript := preload("res://game/economy_log.gd")
+
 var _passed := 0
 var _failed := 0
 var _filters := PackedStringArray()
 
 
 func _ready() -> void:
+	_seed_scratch_store()
 	_filters = _suite_filters()
 	if not _filters.is_empty():
 		print("[RUN] suites=%s" % ",".join(_filters))
@@ -28,6 +39,46 @@ func _ready() -> void:
 		_run_file(path)
 	print("[SUMMARY] passed=%d failed=%d" % [_passed, _failed])
 	get_tree().quit(1 if _failed > 0 else 0)
+
+
+## Sandboxes the gate's two writable stores. Three steps in this order, and each one
+## is load-breaking without the one before it:
+##   1. the directory - `ConfigFile.save` into a missing directory fails with `err=7`
+##      (`ERR_FILE_NOT_FOUND`), and `PlayerProfile._write_profile` only warns and *drops*
+##      the write, so a store repointed into no directory silently loses every seeded value;
+##   2. `save_path` - the file the store reads and writes;
+##   3. the **in-memory** reset - the autoload's own `_ready` loaded the live file before
+##      this runner exists, so repointing alone would leave the owner's credits, packs and
+##      fits in memory (and `_fits` is what a launch reads for its weapon slots); the reset
+##      plus a flush then *seeds the deterministic default* inside the sandbox.
+func _seed_scratch_store() -> void:
+	var err := DirAccess.make_dir_recursive_absolute(GATE_SCRATCH_DIR)
+	if err != OK and err != ERR_ALREADY_EXISTS:
+		push_error("headless_runner: cannot create %s (error %d)" % [GATE_SCRATCH_DIR, err])
+	var profile := _profile()
+	if profile == null:
+		push_error("headless_runner: no %s autoload to sandbox" % PROFILE_SERVICE)
+	else:
+		profile.set(&"save_path", GATE_SCRATCH_PROFILE)
+		profile.call(&"reset_to_defaults")
+		profile.call(&"flush")
+	_sandbox_log()
+
+
+func _profile() -> Node:
+	if not is_inside_tree():
+		return null
+	return get_tree().root.get_node_or_null(NodePath(PROFILE_SERVICE))
+
+
+## `EconomyLog.log_path` is a static and several suites hand it back to the live default in
+## their own `suite_teardown` (`test_engine2_dock.gd`), so the sandbox is re-applied around
+## every suite and every method rather than once at boot. A suite's own scratch path is left
+## alone: only the live default is ever replaced, so a suite that redirects the log to read
+## its own lines back keeps reading them.
+func _sandbox_log() -> void:
+	if EconomyLogScript.log_path == EconomyLogScript.DEFAULT_PATH:
+		EconomyLogScript.log_path = GATE_SCRATCH_LOG
 
 
 ## Optional scoping for a single worker's gate: `-- --suite=test_p1_pricing`
@@ -94,6 +145,7 @@ func _run_file(path: String) -> void:
 		print("[SKIP] %s: not a McpTestSuite" % suite_name)
 		return
 	var suite: McpTestSuite = instance
+	_sandbox_log()
 	suite.suite_setup({})
 	if suite.get("_suite_failed"):
 		_failed += 1
@@ -107,6 +159,7 @@ func _run_file(path: String) -> void:
 	for method: String in _test_methods(suite):
 		suite.call("_reset")
 		suite.setup()
+		_sandbox_log()
 		suite.call(method)
 		suite.teardown()
 		if bool(suite.get("_failed")):

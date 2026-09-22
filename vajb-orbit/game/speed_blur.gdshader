@@ -30,6 +30,21 @@ uniform float blur_span_px : hint_range(0.0, 64.0) = 24.0;
 // The shader's own widest channel split at chromatic_aberration 1.0 (reported).
 uniform float aberration_px : hint_range(0.0, 8.0) = 2.0;
 
+// FX_SPEC section 5's 2026-09-22 amendment (S2.6, the owner: "when motion blur happens the
+// ship shouldn't be blurred, everything else can be"). The player hull's own screen region
+// draws through untouched: the smear and the channel split are both skipped inside it, and
+// nowhere else. The region travels in UV, `player_screen_radius` being the hull's radius in
+// each axis' own UV fraction, so the ellipse the disc test sees in UV is a circle on screen
+// at any aspect, viewport size or stretch scale. `speed_fantasy.gd` is the only writer.
+//
+// `exclude_player` off (or a zero radius, which is what a scene with no player hull pushes)
+// restores the plain full-screen blur. A canvas/layer split is forbidden - the hull-critical
+// vignette is a sibling on the same CanvasLayer, so a layer of its own would also lift the
+// hull above that tint.
+uniform bool exclude_player = false;
+uniform vec2 player_screen_uv = vec2(0.5, 0.5);
+uniform vec2 player_screen_radius = vec2(0.0, 0.0);
+
 // Odd tap count, so the tap at t = 0 lands exactly on the pixel being shaded, and dense
 // enough that consecutive taps land closer together than a texel's own bilinear footprint
 // (measured: a one-pixel rule stays a continuous streak rather than a comb of copies).
@@ -58,7 +73,16 @@ void fragment() {
 	// smeared by nothing: the processor has no early return, so the branch is what
 	// keeps a stationary hull's pass at one tap.
 	vec3 tint = texture(screen_texture, uv).rgb;
-	if (blur_strength > 0.0) {
+	// The player hull's own region (the amendment above): the tap already read is exactly
+	// what an unblurred frame shows there, so the whole effect - the smear and the channel
+	// split - is skipped across the disc and applied everywhere else. This is one condition
+	// rather than an early return, which the fragment processor does not accept.
+	vec2 hull_offset = (uv - player_screen_uv) / max(player_screen_radius, vec2(1e-6));
+	bool on_hull = exclude_player
+		&& player_screen_radius.x > 0.0
+		&& blur_strength > 0.0
+		&& dot(hull_offset, hull_offset) <= 1.0;
+	if (blur_strength > 0.0 && !on_hull) {
 		tint = smear(uv, dir, blur_span_px * blur_strength * SCREEN_PIXEL_SIZE.x);
 		// The channel split rides the same strength ramp as the smear.
 		vec2 side = vec2(-dir.y, dir.x) * aberration_px * chromatic_aberration;
