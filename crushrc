@@ -36,6 +36,16 @@ if [ -d "$WORKSPACE/.crush/hooks" ]; then
 
     # ===================== Linux ==========================================
 
+    # ---- host-neutral names every project document uses ------------------
+    # AGENTS.md, the skills and every brief resolve host paths from these.
+    # They mirror the block in the Windows branch below.
+    export VAJB_WORKSPACE="$WORKSPACE"
+    export VAJB_PROJ="$WORKSPACE/vajb-orbit"
+    export GODOT_EDITOR="${GODOT_PATH:-$HOME/.local/bin/godot}"
+    export GODOT_CONSOLE="${GODOT_CONSOLE_PATH:-$GODOT_EDITOR}"
+    export CRUSH_TOOLS
+    export KIE_GENERATE="$HOME/.local/share/crush/skills/image-generator/scripts/kie_generate.py"
+
     # ---- skills ----------------------------------------------------------
     # Two entries for the Godot library: Crush scans one level per path, so
     # godot-master/ (routing index + 96 subskills) is listed on its own.
@@ -100,6 +110,16 @@ else
     #
     # If this machine's Crush predates `crushrc` support, restore those two JSON
     # blocks (drop the leading underscores) and delete this branch.
+
+    # ---- host-neutral names every project document uses ------------------
+    # Forward slashes on purpose: Crush's embedded shell and Godot both accept
+    # them, and they survive `--path`/`--cwd` quoting.
+    export VAJB_WORKSPACE='G:/Mój dysk/Projekty/Vajb Orbit'
+    export VAJB_PROJ="$VAJB_WORKSPACE/vajb-orbit"
+    export GODOT_EDITOR='C:/Godot_4_7_2/Godot_v4.7.2-stable_win64.exe'
+    export GODOT_CONSOLE='C:/Godot_4_7_2/Godot_v4.7.2-stable_win64_console.exe'
+    export CRUSH_TOOLS='C:/Users/Kamil/AppData/Local/crush/tools'
+    export KIE_GENERATE='C:/Users/Kamil/AppData/Local/crush/skills/image-generator/scripts/kie_generate.py'
 
     mcp remove godot-ai
     mcp add godot-ai --type stdio \

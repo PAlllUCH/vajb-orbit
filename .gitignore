@@ -65,7 +65,7 @@
 *.eot
 
 # Wave-state baselines (regenerable)
-.agents/gen/_wave_state/
+.agents/gen/_state/_wave_state/
 
 # Python / misc
 *.pyc

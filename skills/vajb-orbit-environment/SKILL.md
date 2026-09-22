@@ -8,12 +8,17 @@ description: Vajb Orbit workspace runbook for the Godot editor, godot-ai MCP, an
 Project: Dark Orbit clone, Godot 4.7.2 (Forward+, D3D12, Jolt physics).
 Code in `vajb-orbit/`; workspace root has `AGENTS.md` (ops manual) and `crush.json`.
 
+**Host neutrality:** this runbook is host-neutral — the engine binaries and
+workspace root come from `$env:GODOT_EDITOR`, `$env:GODOT_CONSOLE` and
+`$env:VAJB_PROJ`, set per host in `crushrc` (Windows and Linux differ). No
+absolute paths or secrets belong in project documents.
+
 ## What happened (incident log — 2026-09-16)
 
 1. First session: `godot-ai` MCP showed "connected" and `gdscript` LSP timed out — root cause: **no Godot editor process existed at all**. The MCP server had merely started. Launching the editor fixed both instantly.
 2. That first editor was launched as a child of Crush's background shell. When **Crush restarted (~19:17), the editor died with it**, and godot-ai/LSP went dark again until relaunched.
 3. Two relaunch attempts failed silently before the working one was found:
-   - `Start-Process -ArgumentList '--path','G:/Mój dysk/...'` → PowerShell joins args unquoted; the space breaks `--path`; Godot exits immediately with no error surfaced.
+   - `Start-Process -ArgumentList '--path','<workspace>'` → PowerShell joins args unquoted; the space breaks `--path`; Godot exits immediately with no error surfaced.
    - `cmd /c start ...` from this shell → swallowed by clink, nothing launches.
 4. Working method (verified): `Start-Process` with **`-WorkingDirectory`** on the project and only `--editor` as arg (no `--path`), which detaches the process so Crush restarts don't kill it.
 
@@ -21,7 +26,7 @@ Code in `vajb-orbit/`; workspace root has `AGENTS.md` (ops manual) and `crush.js
 
 1. Launch editor detached:
    ```powershell
-   powershell -Command "Start-Process -FilePath 'C:\Godot_4_7_2\Godot_v4.7.2-stable_win64.exe' -WorkingDirectory 'G:\Mój dysk\Projekty\Vajb Orbit\vajb-orbit' -ArgumentList '--editor'"
+   powershell -Command "Start-Process -FilePath $env:GODOT_EDITOR -WorkingDirectory $env:VAJB_PROJ -ArgumentList '--editor'"
    ```
 2. Wait ~30 s (editor boots, then starts its LSP), verify:
    ```powershell
@@ -30,7 +35,7 @@ Code in `vajb-orbit/`; workspace root has `AGENTS.md` (ops manual) and `crush.js
    Expected: `True`.
 3. Confirm godot-ai sees it: `session_manage(op="list")` → `count: 1`, session `vajb-orbit@...`.
 4. Warm the gdscript LSP: it is lazy — create/edit any `.gd` in the project and run LSP diagnostics once, then check status is `ready`. With zero `.gd` files it stays `not_started`.
-5. Optional cross-check: `godot-lsp-bridge doctor` (in `C:\Users\Kamil\AppData\Local\Programs\godot-lsp-bridge\bin\`) must pass both checks when the editor is open.
+5. Optional cross-check: `godot-lsp-bridge doctor` (on `PATH` via `crushrc`) must pass both checks when the editor is open.
 
 ## Diagnosis cheat-sheet
 
@@ -44,7 +49,7 @@ Code in `vajb-orbit/`; workspace root has `AGENTS.md` (ops manual) and `crush.js
 
 ## Other fixed facts
 
-- Engine binaries: editor `C:\Godot_4_7_2\Godot_v4.7.2-stable_win64.exe`; headless `..._console.exe`. Pass `--path` (spaces) or use `-WorkingDirectory` trick above.
+- Engine binaries: `$env:GODOT_EDITOR` (editor) / `$env:GODOT_CONSOLE` (headless) — values host-specific, set in `crushrc`. Pass `--path` (spaces on the Windows host) or use the `-WorkingDirectory` trick above.
 - Headless validation: `..._console.exe --headless --editor --path <proj> --quit` (exit 0 = healthy; plugin disabled headless by design).
 - Legacy global `godot` MCP is intentionally disabled (superseded by godot-ai; its `GODOT_PATH` is broken — verified 2026-09-17, that v4.7.1 folder does not exist). It is a CLI/headless driver: it cannot see the open editor. Leave off.
 - `assetmcp` is enabled in `crush.json` and its library (`asset-library/` at the workspace root) holds the 25 CC0 audio packs downloaded in the 2026-09-17 audio pass, plus `ASSET_MANIFEST.json` and `CREDITS.md`. It is the audio-sourcing + license-validation path; art is AI-generated instead. Its venv pins `mcp<2` — re-enable only with that pin intact.

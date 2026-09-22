@@ -832,7 +832,7 @@ aside, reads `passed=277 failed=0`. **The green run carries exactly one
 previously freed instance.` at `tests/test_weapon_fx_f4.gd:176`, where line 175's
 `_clear()` frees the rig's `guns` node before line 176 calls it; the same block
 appears in the HEAD A/B and the file is unmodified, while the test still passes and
-the exit code is 0. It is `.agents/gen/LOW_BACKLOG.md` L61, owed to that file's next
+the exit code is 0. It is `.agents/gen/_state/LOW_BACKLOG.md` L61, owed to that file's next
 owner (move the `_hide_beam` call above the `_clear()`). So the number to read is
 `passed=294 failed=0` with exit 0, and that one `SCRIPT ERROR` line is not evidence
 of a regression until L61 is fixed. **The warning ledger's count**, from the §9
@@ -1203,6 +1203,96 @@ LAUNCH's service rows (the `STATION_HUB.md` §5.4 amendment — owner request 4)
 - Already-full and no-damage-report states are the service's refusals, rendered, never
   hidden — the button stays pressable and the footer says why.
 
+## §14 S2.6 truth-and-feel (2026-09-22)
+
+- **Gate hermeticity (L90/L93).** `tests/headless_runner.gd` redirects the profile
+  store to `user://_gate_scratch/profile.cfg` at runner boot and seeds a
+  deterministic default profile, so a gate run **never touches the live
+  `user://profile.cfg`** and its result is independent of any live save state. The
+  four live-coupled tests (`test_engine2_dock.gd` ×2, `test_engine2_fixes.gd` ×1,
+  `test_engine2_wiring.gd` ×1) additionally build their own fixtures (their own fit
+  with the weapons they name, or expectations derived from the launched fit).
+  Acceptance: two consecutive gate runs with a mutated live profile present both
+  read `passed=<total> failed=0` with identical counts, and `profile.cfg`'s md5 is
+  unchanged across the runs. §9's command stands; the sandbox is harness-side and
+  host-independent.
+- **Fragment burst** — `Asteroid` (§5) gains `FRAGMENT_OUTWARD_KICK := 150.0` u/s:
+  a fragment's eject velocity is its §5 shape (`linear_velocity × 1.2`, uniform 360°
+  roll) **plus** `FRAGMENT_OUTWARD_KICK` along the outward radial (rock centre →
+  spawn point), so slow and stationary rocks burst visibly (owner: "when breaking
+  asteroids they should move when exploding"). Reversal: `0.0` = §5's current
+  behaviour exactly.
+- **Beam feel** — `BEAM_SINK := 0.45` and `HIT_FX_JITTER_MULT := 0.35` (clamp
+  `8..48 u`), FX_SPEC §1.6's amendment: beam lines end nearer the struck body's
+  middle and contact FX scatter across the struck surface. Both apply to the mining
+  laser's chip read, which closes L65 here (`mining_laser.gd` plays the chip sparks
+  beside `_play_chip`, exactly the wiring `weapons.gd` already has). Reversal:
+  both `0.0`.
+- **Flight feel (owner rulings 2026-09-22 — four items riding this wave as R4/R5).**
+  The §4 HANDLING pattern (the §13 column × one multiplier, as the two ×0.50
+  retunes) gains: `ACCEL_TIME_MULT := 2.0` on the `accel_time` rows — a hull takes
+  roughly double the time to reach 90 % of its `max_speed` (owner: "the
+  acceleration is too fast for ship, it shouldn't reach top speed that quickly");
+  `COAST_TIME_MULT := 2.0` on **today's** `coast_time` rows — the documented revert
+  of the combat wave's ×0.50 drag retune, landing exactly on §13's own column
+  (owner: "ship loses speed way too fast and inertia works weird, like ship slides
+  in one side" — and the slide must be **symmetric**: mirrored maneuvers produce
+  mirrored trajectories within 1 %, root cause diagnosed first, never masked).
+  Turning must not translate: a full 360° neutral turn at zero throttle displaces
+  the hull ≤ `TURN_TRANSLATE_LEAK_MAX := 5.0` u (owner: "when ship is pause trying
+  to turn around moves it way too much forward, a ship in space should somewhat be
+  able to do neutral turn"). Motion blur excludes the player hull (FX_SPEC §5's
+  amendment). Reversals: the two multipliers `1.0`; the leak bound and the
+  symmetry tolerance are acceptance bounds only. The owner-locked §13 tick list
+  grows by these two multipliers.
+
+## §15 S3 item economy — instances and the AUCTION (2026-09-22)
+
+```gdscript
+# PlayerProfile — additive. The §13 transactions keep their signatures and accept
+# instance ids where they accepted module ids.
+add_instance(base_id: StringName, rarity: StringName, prefixes: Array, suffixes: Array) -> StringName
+instance(id: StringName) -> Dictionary      # the 15 §8 record; {} when absent
+instances_of(base_id: StringName) -> Array  # ids, for the grouped rows
+buy_instance(id: StringName) -> bool        # the auction shelf's rolled instance
+sell_instance(id: StringName) -> bool       # base × rarity multiplier × 60 %
+roll_instance(base_id: StringName, source: StringName) -> StringName  # 15 §2's tables
+SAVE_VERSION := 6
+```
+
+- The instance record is `{instance_id, base_id, rarity, prefixes[], suffixes[]}`
+  (15 §8); `instance_id` = `mod_%04d`, one per-profile counter. Rolls happen at
+  creation (15 §8's timing) on the global RNG; outcomes persist and never re-roll.
+- Save v6 migration: each v5 `{base_id, count}` record becomes `count` **Common**
+  instances, idempotently (the P2-B flag-day pattern). A fit cell stores the
+  `instance_id`; `resolved_fit` / `fit_legal` see through `instance()[&"base_id"]`.
+- The AUCTION state (10 §2.1: 6 hulls + 10 modules, 20-minute station-clock restock,
+  one hot slot, hull weights 10 §2.2, tier weights I 50 / II 35 / III 15) persists
+  in the profile's market family; module listings are rolled instances drawn at
+  restock (15 §8's faction-lot interim included).
+- OUTFITTING's seven weapon rows retire (10 §2.4). `PlayerProfile.buy_module` and
+  `ModuleCatalog` (§12) remain as the price source and the migration table's home
+  and gain no new UI callers.
+- Refusals gain none: §13's three pinned wordings plus 09 §2's `<n> NEEDED` cover
+  the auction's buy refusals.
+
+## §16 S4 weapon batteries (2026-09-22)
+
+```gdscript
+# PlayerProfile — bulk wrappers over the §13 composed transactions. Loops over
+# cells; a failed cell rolls the batch back to its starting fit.
+fit_battery(ship_id: StringName, base_id: StringName, indices: Array) -> bool
+clear_battery(ship_id: StringName, base_id: StringName) -> bool
+# WeaponComponent — the volley seam
+fitted() -> Array                 # unchanged, per barrel
+battery(base_id: StringName) -> Array   # this battery's W indices
+```
+
+- Battery = identical instances across W cells grouped by `base_id` (09 §10); the
+  fit shape is unchanged (§13 — one instance per cell). One trigger per battery:
+  one round per barrel, per-barrel damage, `BATTERY_STRUM_MS := 40` per-barrel
+  release offset (reversal 0 = simultaneous).
+
 ## §10 Changelog
 
 - **v0 (2026-09-18)** — seeded from the engine wave-1 pinned interfaces
@@ -1270,7 +1360,7 @@ LAUNCH's service rows (the `STATION_HUB.md` §5.4 amendment — owner request 4)
   the flare's "while something chases it" lifetime) are recorded in §8.2 as unpinned
   and two of them (mine alpha, kinetic cadence) are player-facing balance numbers
   awaiting an owner tick. Full evidence and every other finding:
-  `.agents/gen/slice2_review_report.md`; LOW items: `.agents/gen/LOW_BACKLOG.md`
+  `.agents/gen/slice2_review_report.md`; LOW items: `.agents/gen/_state/LOW_BACKLOG.md`
   L19–L29.
 - **v1.1 (2026-09-21, engine slice 2 re-review — W8, this wave's only CONTRACTS
   writer)** — records the fixer pass's outcome and the state the wave closes in.
@@ -1336,7 +1426,7 @@ LAUNCH's service rows (the `STATION_HUB.md` §5.4 amendment — owner request 4)
   gate said `passed=226` and now reads the measured **236** with the wave's 10 tests
   broken out. Evidence: `.agents/gen/combat_repair_c6_report.md` (the review) and
   `.agents/gen/combat_repair_c{1,2,3,5}_report.md`, with every raw log under
-  `.agents/gen/c6/`; the wave's LOW block is `.agents/gen/LOW_BACKLOG.md` L38–L47.
+  `.agents/gen/c6/`; the wave's LOW block is `.agents/gen/_state/LOW_BACKLOG.md` L38–L47.
 - **v1.3 (2026-09-21, flight-feel & beam wave — its review pass: G4's review plus this
   G5 fixer, the wave's only CONTRACTS writer)** — records the four shipped behaviours
   the wave left undocumented (review finding **MED-1**,
@@ -1374,7 +1464,7 @@ LAUNCH's service rows (the `STATION_HUB.md` §5.4 amendment — owner request 4)
   1.5, with the ruling named inline) and every other column of that test is still
   pinned. Evidence: `.agents/gen/flight_beam_g4_report.md` (the review) and
   `.agents/gen/flight_beam_g5_report.md` (the fixer pass, with every before/after
-  command); the wave's LOW block is `.agents/gen/LOW_BACKLOG.md` L48–L61.
+  command); the wave's LOW block is `.agents/gen/_state/LOW_BACKLOG.md` L48–L61.
 - **Owner tick list this v1.3 entry defers** (every file below is owner-locked, so no
   worker may edit it — these are spec-side leftovers, recorded here only):
   1. `docs/gameplay/18_engine_spec.md:67` reads `**A/D** turn.`; the shipped map is
@@ -1502,7 +1592,7 @@ LAUNCH's service rows (the `STATION_HUB.md` §5.4 amendment — owner request 4)
   that figure. **No pinned signature changed** — R1's own audit tools
   (`vajb-orbit/tools/r1_p2b1_signature_audit.py`, `r1_p2b1_format_law.py`) re-measured after F1:
   25 signatures, drift 0; 21 byte checks, 0 failures. Findings left open and parked:
-  `.agents/gen/LOW_BACKLOG.md` L76–L84 (the pane's stale subtitle/tag, the third refusal
+  `.agents/gen/_state/LOW_BACKLOG.md` L76–L84 (the pane's stale subtitle/tag, the third refusal
   wording, the ACTION precedence tick, the seam's price trust, the base-id hand-back, the
   `set_fit` seed, probe housekeeping and the 48/40 px icon tension; plus D0's two stale
   cross-references).
@@ -1544,10 +1634,28 @@ LAUNCH's service rows (the `STATION_HUB.md` §5.4 amendment — owner request 4)
   and to rule 5's allowed-call list; **MED-2** was one line in the pane (a refusal's footer
   line no longer outlives the successful action that follows it) and needs no pin text.
   §9 above carries the wave's measured **437** (389 → 402 → 420 → 431 → 437). Findings left
-  open and parked: `.agents/gen/LOW_BACKLOG.md` L85–L92 (the module's-slot-type check, the
+  open and parked: `.agents/gen/_state/LOW_BACKLOG.md` L85–L92 (the module's-slot-type check, the
   empty-cell remove refusal, the retired Phase C mockup's own UPGRADES rows, the signature
   audit's two-line blind spot, 09 §3.8's generator-lineage sentence, three data-dependent
   test assumptions against a live profile, the nondeterministic exit-time leak lines and the
   carried-forward harness items), plus F1's measured residual (a bare hull's delivered
   mandatory cell still offers REMOVE and refuses with the pinned wording — W2's disclosed
   reading, ticked at the close-out).
+- **v0.7 (2026-09-22, designer planning pass for S2.6 / S3 / S4 — landed docs-first
+  ahead of the waves)** — added **§14** (gate hermeticity: the runner sandboxes the
+  profile store and the four live-coupled engine2 tests build their own fixtures;
+  `FRAGMENT_OUTWARD_KICK 150.0`; `BEAM_SINK 0.45` / `HIT_FX_JITTER_MULT 0.35`, with
+  L65 closing in the same pass), **§15** (the instance record `mod_%04d`, save v6 and
+  its Common-migration, the roll timing, the AUCTION surface and its faction-lot
+  interim) and **§16** (weapon batteries: N barrels keep N W mounts, one row and one
+  trigger per battery, `BATTERY_STRUM_MS 40`). Every number's reversal is in its
+  section; the owner tick list is the wave briefs' owner-ticks section. §9's measured
+  figure stays **437** (green on a sandboxed `user://` 2026-09-22; the 433/4 against
+  the live save is L93 — the gate is not hermetic until §14 lands).
+- **v0.7.1 (2026-09-22, same planning pass — the owner's four flight rulings)** —
+  §14 gains the flight-feel block (`ACCEL_TIME_MULT 2.0`, `COAST_TIME_MULT 2.0`
+  reverting the combat wave's drag retune onto §13's own column, the neutral-turn
+  leak bound `TURN_TRANSLATE_LEAK_MAX 5.0 u`, the mirror-symmetry acceptance) and
+  FX_SPEC §5 gains the blur exclusion (the player hull stays sharp). All four ride
+  wave S2.6 as builders R4/R5; the owner-locked §13 tick list grows by the two
+  multipliers.

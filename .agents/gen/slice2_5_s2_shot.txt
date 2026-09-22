@@ -1,7 +1,0 @@
-Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
-Vulkan 1.4.335 - Forward+ - Using Device #0: AMD - AMD Radeon RX 6800 XT (RADV NAVI21)
-
-[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
-[S2SHOT] save=/tmp/s2/ship_paused_trail_on.png error=0 size=(1920, 1080)
-[S2SHOT] save=/tmp/s2/ship_paused_trail_off.png error=0 size=(1920, 1080)
-[S2SHOT] on=/tmp/s2/ship_paused_trail_on.png off=/tmp/s2/ship_paused_trail_off.png emitters=1 visible=true emitting=true amount_ratio=0.333333 scale=(0.017131, 0.069767) pos=(-28.50,0.00) world=(-21.09,418.94)

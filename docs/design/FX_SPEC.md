@@ -139,6 +139,17 @@ value's own row.
 | Timing | Beam: continuous, subtle width flicker 0.1 s cycle in engine. Chip sparks: **4-frame mini sheet** at 20 FPS = 0.2 s, one-shot per S8 chip event. |
 | Prompt notes | "4-frame horizontal sprite sheet of mining chip sparks: frame 1 small angular spark burst, burnt ember #C8461B and ember glow #E8703A sparks radiating from a point, frames 2 to 4 the sparks dissipate outward and fade, frame 4 nearly empty, isolated effects only, flat void black #0A0E14 background, 2K, 1:1" + style block. The beam line itself is engine-drawn; no texture needed. |
 
+**Amendment 2026-09-22 (S2.6, owner requests 6 and 7).** The engine-drawn beam this
+section sanctions (weapon beams included) gains two numbers:
+
+| Field | Value |
+|---|---|
+| Termination pull | `BEAM_SINK := 0.45` — the drawn beam ends at `hit_point.lerp(body_centre, 0.45)`, so a beam connects to more of the object's middle instead of stopping at the rim (owner request 7). Reversal: `0.0` = today's rim hit. |
+| Hit FX scatter | `HIT_FX_JITTER_MULT := 0.35`, clamped `8..48 u` — the contact FX (the chip sparks here, the impact sheets for weapon beams) spawn at a uniform random point in a disc of that radius around the resolved hit, so a held beam scatters its reads across the struck surface instead of hammering one point (owner request 6). Reversal: `0.0` = the fixed contact point. |
+
+Both apply to the mining beam and the weapon beams' contact reads (§7.3's wiring);
+the beam line's width, flicker and palette are unchanged.
+
 ### 1.7 Cargo pickup pulse
 
 | Field | Value |
@@ -235,6 +246,13 @@ zero gameplay numbers live here.
 | Directional motion blur | screen-space `ColorRect` with a `canvas_item` shader on its own `CanvasLayer`, above the world and below the HUD | `blur_strength` clamps **0.1** at cruise → **0.8** during a dash; `blur_direction = v / |v|`; `chromatic_aberration` scales with strength; strength is 0 below the 0.70 onset |
 | Camera pull-back | the flight camera's `zoom` | multiplied by `lerp(1.0, 0.82, (speed_ratio − 0.7) / 0.3)` — it **stacks with the wheel zoom**, never replaces it (the wheel owns the target, this owns the applied value) |
 | Dust streaks | `GPUParticles2D` parented to the camera | emits micro streaks opposite the velocity vector while the ratio is high; texture `fx_dust_streak.png`; **proposed:** 30/s at ratio 1.0, 0.5 s lifetime, 12 u, low alpha, never additively blown |
+
+**Amendment 2026-09-22 (S2.6, owner ruling).** "when motion blur happens the ship
+shouldn't be blurred, everything else can be." The player hull renders **outside
+the blur pass** — sharp, on top (`SPEED_BLUR_EXCLUDE_PLAYER := true`; the route is
+implementation's: a canvas/layer split or a shader-side exclusion). Acceptance: at
+full blur strength the hull-region pixels match the unblurred render while the
+background differs measurably. Reversal: the flag.
 
 ## 6. Damage states
 

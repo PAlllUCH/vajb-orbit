@@ -66,6 +66,23 @@ reads as progression:
   130 % premium you paid, 01 §4 invariant 4).
 - Modules bought at auction arrive in the player's **module inventory** (§6).
 
+### 2.4 The surface ships (amendment 2026-09-22, S3)
+
+The AUCTION module of §2 is now designed and built; `STATION_HUB.md` §5.10 is the
+screen spec and CONTRACTS §15 is the pin.
+
+- The rail gains **AUCTION** in the trade cluster, directly after EXCHANGE; no
+  other entry moves (owner tick: rail position).
+- The shelf lists **6 hulls + 10 modules** per §2.1; module rows show the
+  **rolled instance** (15 §7 name, rarity tint) and its rarity-multiplied price
+  (15 §1), the hot slot's −20 % applying after. Hull rows are §2.2's weights;
+  §2.3's buyout rules are unchanged.
+- Faction lots: 15 §8's interim (one tagged F lot per shelf until 12 §5's
+  faction stations exist).
+- Selling back: §2.3's 60 % of list, made rarity-aware per 15 §6/§8.
+- OUTFITTING's seven weapon rows retire into this shelf (§5's flag-day rule and
+  §6's interim note), and OUTFITTING returns to ammunition.
+
 ## 3. The Shipyard build path
 
 A second station module. Building costs **materials + a credit labour fee**.
@@ -172,6 +189,10 @@ surface (`STATION_HUB.md` §5.3), which requests the composed transactions
 `PlayerProfile.fit_module_at` / `PlayerProfile.clear_fit_slot` (CONTRACTS §13)
 and never mutates the profile directly. OUTFITTING's rows buy modules into this
 inventory; FITTING is what installs, swaps and removes them.
+
+**Closed 2026-09-22 (S3):** this interim retires exactly as it promised — the
+rows move to the AUCTION shelf (§2.4) when it ships, and OUTFITTING returns to
+ammunition-only.
 
 ## 7. Acquisition pacing (check against 01 §5.4)
 

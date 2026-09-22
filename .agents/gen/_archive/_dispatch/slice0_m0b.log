@@ -1,7 +1,0 @@
-I'll start by reading the required context in order.Baseline hashes before editing:Now the two edits.Now the universal test gate (bounded, stdout to a log):Both edits landed, verified, and the gate re-run matches M0's external baseline.
-
-- `docs/gameplay/14_station_services.md:20` (7 383 → 7 408 B, `73f655…` → `f8e1c1…`): row is now `| Refuel / recharge | ✔ | ✔ | ✔ (2026-09-20: every station; free and instant, no CR charged; owner ruling 2026-09-21) |` — the `CR rate per 18_engine_spec §13` pointer is struck, label/ticks/column count untouched.
-- `docs/design/IMPLEMENTATION_PLAN.md:438` (47 085 → 47 607 B, `f6b2ff…` → `7be8ae…`): one paragraph appended to §9.9 recording the 2026-09-21 ruling and closing D3. `18_engine_spec.md` md5 unchanged (`ec51bba3…`).
-- Gate twice: `[SUMMARY] passed=52 failed=1`, the one failure being the external `assets/icons/` reorganisation (still mid-write, `00:52:03–00:56:28`).
-
-Report: `.agents/gen/slice0_m0b_report.md`. Two report-only deviations: the same superseded wording still sits inside the owner-locked spec (§2.1 ruling 13, §4.4, §12 item 8), and `slice0_task.md` §P7 still says "CR per fuel point per §13" — neither file is in my set.

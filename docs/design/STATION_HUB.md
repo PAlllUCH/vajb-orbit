@@ -718,6 +718,49 @@ Body: two columns: `DamageReportBox` (min 560, the LAUNCH brief width) | `Repair
 Success -> strip `REPAIRED · 500 CR · ALL SYSTEMS NOMINAL`, credits counter animates. Refusal -> section 5.6.
 Footer: `FEE · 1 CR PER 2 MISSING HULL · 1 CR PER 3 MISSING SHIELD`.
 
+### 5.10 AUCTION (the house broker) — amendment 2026-09-22 (S3 + S4)
+
+Transcribed from `docs/gameplay/10_ship_acquisition.md` §2/§2.4, 15 §7/§8 and 09 §10;
+every number below is one of those documents', none is this pass's.
+
+**The rail.** `Module.EXCHANGE` gains a neighbouring `Module.AUCTION`; label `AUCTION`;
+same icon family and tint as EXCHANGE. No other entry moves (owner tick: position).
+
+**Anatomy** — the section 5.1 host-pane construct, two stacked sections:
+
+- **HULLS (6)** — one row per listed hull: 48 px class icon slot, name, class,
+  `LIST <n> CR` (08 §2 column), the hot-slot line `WAS <n> CR` when discounted, ACTION
+  `BUY` (10 §2.3's buyout; refusal `<n> NEEDED` per §5.6). Fighter and Cutter are
+  always listed.
+- **MODULES (10)** — one row per listed **rolled instance**: 48 px module icon, the
+  15 §7 full rolled name, the meta `SLOT <TYPE> · DRAW <n> · <RARITY>`, price (09 list
+  × 15 §1's rarity multiplier, −20 % after for the hot slot), ACTION `BUY`. Rows are
+  tinted by the rarity table below. The three exclusives (15 §5) carry the tag
+  `F LOT` while 15 §8's interim is on.
+
+**Rotation footer:** `NEXT RESTOCK <m:ss>` (20-minute station clock, 10 §2.1) and the
+hot slot's marker on its row. The shelf persists with the save (10 §2.1).
+
+**Selling:** a `SELL MODULES` sub-list of the player's inventory rows (the §5.3 OWNED
+MODULES anatomy, aggregated by `base_id`) with `SELL` at `base × rarity × 60 %`
+(15 §6). Hull sell-back keeps 10 §2.3's 60 %.
+
+**Batteries in the FITTED WEAPONS strip (S4, 09 §10).** §5.1's strip rows group by
+`base_id`: `3× LASER MKII · W1·W2·W3 · OWNED ×<n>` with `FIT ALL` / `REMOVE ALL` /
+`SWAP ALL` and a per-barrel expander (`▸`) restoring the single-cell actions. The
+bulk actions loop the composed transactions per cell (CONTRACTS §13/§15); a batch
+that fails any cell rolls back to its starting fit and names `REFUSED · FIT ILLEGAL`
+or `13 / 11 PWR — OVER BY 2` as §5.3 does.
+
+**Rarity tints (the one-accent law, STYLE_BIBLE §2):** Common = the theme's default
+label colour; Magic = `#565C63` (Steel Highlight); Rare = `#E8703A` (Ember Glow).
+Only Rare touches the accent — rarity escalates toward the one danger colour. The
+values live in the theme as `rarity_common` / `rarity_magic` / `rarity_rare`
+(fallback to the hexes above when a token is missing). **Reversal:** three constants.
+
+**Focus order:** the two lists in row order (HULLS then MODULES), then the sell
+sub-list, then the footer, then the rail (§10).
+
 ## 6. Type scale
 
 Every text element uses a theme variation. There are no per-node font sizes anywhere in the mockup (verified:

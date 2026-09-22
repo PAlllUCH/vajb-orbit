@@ -1,13 +1,23 @@
 # Master report — what the workers did, and what is still wrong (2026-09-21)
 
+> Folder-law note (2026-09-22): state files live in `.agents/gen/_state/`
+> (`WAVEBOARD.md`, `LOW_BACKLOG.md`, `_wave_state/`), templates in
+> `_templates/`. On 2026-09-22 the archived wave reports, briefs, evidence
+> logs, dispatch scripts and the two dispatcher files were purged to the
+> system trash (recoverable there) — only this report, the newest session
+> report and the folder-law skeleton remain. Citations below and in `docs/`
+> name the pre-purge paths; the files are recoverable from trash, not from
+> git (the last tree that carried them is `3f5688b`).
+
 One file that answers "what happened" without reading the per-wave reports.
 **2026-09-21 cleanup:** per-worker report chains, task briefs, prompt files,
 dispatch scripts and probe/boot/gate logs were deleted from `.agents/gen/`
-(≈270 files, git-tracked so the history survives in git); kept are the
-wave-level + review reports below, `LOW_BACKLOG.md` (the L1–L29 backlog),
-`ui_chrome_regression.md` (the art-lane handover), the two dispatcher files,
-`previews/`, `batch2_evidence/`, `_wave_state/` (verify baselines) and
-`headless_sweep.log`. Deleted-report citations in `docs/` were repointed here.
+(≈270 files, git-tracked so the history survives in git); kept were the
+wave-level + review reports below, the LOW backlog, `ui_chrome_regression.md`
+(the art-lane handover), the two dispatcher files, `previews/`,
+`batch2_evidence/` and the verify baselines. **2026-09-22 purge:** the whole
+keep-set was then removed too (see the folder-law note above) — the summaries
+below are now the only record of what each wave delivered.
 
 **State in one line:** engine wave 1 (fly-and-mine), engine slice 0 (Physics &
 Fuel) and engine slice 2 (Fight) are all **CLOSED and review-verified clean**;
@@ -202,7 +212,7 @@ fix is a tight re-cut + re-pull + re-import.
   git at the next commit; history survives in git). `docs/` citations to the
   deleted chains were repointed to this file.
 - Evidence chain per wave: the surviving wave-level + review reports listed in
-  §1; baselines in `.agents/gen/_wave_state/` (`wave1_closed`, `slice0_start`,
+  §1; baselines in `.agents/gen/_state/_wave_state/` (`wave1_closed`, `slice0_start`,
   `slice2_start`).
 - The test gate grew 53 → 78 (slice 0) → 219 (slice 2). Current contract:
   `res://tests/headless_runner.tscn` → `[SUMMARY] passed=219 failed=0`.

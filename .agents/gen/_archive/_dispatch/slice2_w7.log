@@ -1,6 +1,0 @@
-Now the F1 fix in `weapons.gd`:Now `projectile.gd`:Now the new test suite:W7 done. F1, F2, F4 fixed; report at `.agents/gen/slice2_w7_report.md`.
-
-- **F1 (HIGH)**: `_sink_for` sink walk added to `game/weapons.gd:707` + `game/projectile.gd:529`, applied in both `_deliver`s and before the beam's shield rule. The reviewer's own probe: **ok=124 failed=2 → ok=126 failed=0** (laser 800→770 shield, bolt 1250→1223 hull; mine/rock controls unchanged).
-- **F2 (MED)**: `PlayerProfile.set_ammo` at `autoload/player_profile.gd:161-176`; dock report end-to-end files exactly the 3 fired rounds, writer round trip + save/reload proven.
-- **F4 (MED)**: `ui/hud/minimap.gd` gains `swarmer` (hostile colour) and `ghost` (neutral, alpha 0.3–0.7 sine at 6 Hz, repaint driver on only while a ghost is live).
-- Gates: universal **217/0** (was 200/0; +17 in `tests/test_engine2_fixes.gd`), five boot gates exit 0 and byte-identical to W6's logs. `project.godot`, theme, docs, assets and `tools/` untouched; no probe left behind. Also attributed a profile-write race in `test_engine2_pools.gd:57` (`.agents/gen/slice2_w7_profile_hygiene.md`, not patched — not one of my findings).

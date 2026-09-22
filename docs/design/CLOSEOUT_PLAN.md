@@ -40,7 +40,7 @@ Order chosen so the sealed archive is the last thing touched:
    (recommended — items are the parked playtest lane), or absorb the open
    items into an IMPLEMENTATION_PLAN amendment now.
 4. AGENTS.md single edit: doc map update (new: `docs/CONTRACTS.md`,
-   `.agents/gen/WAVEBOARD.md`, `staging/verify_wave.py`, hook
+   `.agents/gen/_state/WAVEBOARD.md`, `staging/verify_wave.py`, hook
    `enforce_worker_files.py`, test-gate command, enforcement protocol;
    removed: retired docs) — this is also the "agents inherit it" wiring.
 5. Zero-broken-references grep across docs/AGENTS.md after the moves.

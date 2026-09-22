@@ -129,3 +129,37 @@ this document's own.
 **Vigilant Keen Heavy Shield of Embers**. Common modules show their plain
 09 name. The grammar is fixed; the UI panel spec will lay out the two-line
 stat block (base stats + affix lines) when the fitting screen is designed.
+
+---
+
+## 8. Amendment 2026-09-22 (S3 — instances ship with the AUCTION)
+
+Dated numbers for the wave that implements §1–§7; each carries its reversal.
+
+- **Instance identity.** A module instance is `{instance_id, base_id, rarity,
+  prefixes[], suffixes[]}` (§6's own shape) with `instance_id` = `mod_%04d` from
+  one per-profile counter. Fits may hold `instance_id` values;
+  `set_fit_slot`/`fit_module_at` already tolerate them (§6's note).
+  **Reversal:** fits store base ids again; `instance_id` remains the inventory key.
+- **Save v6.** `modules` becomes `instance_id -> record`; a fit cell stores the
+  `instance_id`. The v5→v6 migration turns each `{base_id, count}` record into
+  `count` **Common** instances (no affixes — v5 stock was never rolled),
+  idempotently, in the P2-B flag-day pattern. **Owner tick (proposed):** Common is
+  the honest default; the fun alternative (retro-roll v5 stock through its source
+  table) is one function call at migration. **Reversal:** v6→v5 is lossy —
+  collapses to base ids and drops affixes; restore the v5 saver to roll back.
+- **Roll timing.** A roll happens when an instance is **created**: enemy drops at
+  the drop (§2's 70/25/5), auction modules when the shelf is **drawn at restock**
+  (§2's 65/30/5 — the rolled name and price are visible on the shelf, which is
+  what "hunting the good roll" means; §2's "Auction purchase" row reads as the
+  listing roll), derelict/arena at their own rolls when those systems ship.
+  Shipyard builds stay always-Common (§2). Rolls read the global RNG; outcomes
+  persist in the record and never re-roll (§6); tests seed the RNG first.
+  **Reversal:** roll-at-purchase is one flag for the auction.
+- **Faction lots (interim).** §5's exclusives (`w_proton`, `w_flak`, `u_vault`)
+  need faction stations (12 §5), which do not exist yet. Until they ship, every
+  auction shelf carries **one tagged F LOT** — one of the three exclusives, rolled
+  at its Magic+ floor (§5). Gate: `AUCTION_FACTION_LOTS_INTERIM := true`.
+  **Reversal:** set false and the exclusives wait for faction stations.
+- **Sell value.** §6's `base × rarity multiplier × 60 %` is the auction's sell
+  side too (10 §2.3's garage-sale rule, rarity-aware).

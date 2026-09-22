@@ -441,3 +441,25 @@ auction delivers with those two hulls.
 `STANDARD_FIT` (the Vanguard row) stays as the one alias existing callers and
 tests already use; the Lancer's two-laser fit is the second full fit the auction
 delivers (10 §2.3).
+
+## 10. Weapon batteries (amendment 2026-09-22, S4)
+
+**Owner rulings, verbatim (2026-09-22):** "in outfitting there should be option
+to group weapon systems. Like 3 lasers together, 3 bolters together etc. Its
+pointless to have each weapon on separate slot." — and, asked directly how a
+group sits in the mounts: **N barrels keep N W mounts** (the battery is one row
+and one trigger; this document's W counts stay the barrel cap).
+
+- A **battery** = the identical weapon instances fitted across W cells, grouped
+  by `base_id`. Fit storage is unchanged: one instance per cell (§4.5's layout
+  addressing stands), `fit_legal` and the power budget see every barrel.
+- OUTFITTING's FITTED WEAPONS strip shows **one row per battery** —
+  `3× LASER MKII · W1·W2·W3` with `FIT ALL` / `REMOVE ALL` / `SWAP ALL` (bulk
+  actions loop §4's composed transactions per cell) and a per-barrel expander
+  that keeps the existing single-cell actions. FITTING's cell grid (§8) is
+  unchanged and remains the per-cell surface.
+- One trigger discharges the whole battery: one round per barrel, per-barrel
+  damage, `BATTERY_STRUM_MS := 40` random release offset (0–40 ms per barrel) so
+  a volley reads as a salvo. **Reversal:** strum 0 = perfectly simultaneous.
+- **Reversal of the whole section:** re-expand the strip to one row per cell —
+  view and bulk-action code only; no fit or profile shape changes behind it.

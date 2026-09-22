@@ -3,10 +3,10 @@
 
 Mechanical gates for review workers, so reviews spend their tokens on judgment
 (gameplay, spec conformance) instead of bookkeeping. Stdlib only; run with
-`py -3.14` from anywhere.
+`python3` (Linux) or `py -3.14` (Windows) from anywhere.
 
 Modes:
-  snapshot --name <tag>            hash the current text state -> .agents/gen/_wave_state/<tag>.json
+  snapshot --name <tag>            hash the current text state -> .agents/gen/_state/_wave_state/<tag>.json
   verify   --baseline <tag>        diff current state against <tag>.json:
                                      - modified / added / deleted files
                                      - fails (exit 1) if any modified file is in --forbidden
@@ -26,7 +26,7 @@ import subprocess
 import sys
 
 WORKSPACE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-STATE_DIR = os.path.join(WORKSPACE, ".agents", "gen", "_wave_state")
+STATE_DIR = os.path.join(WORKSPACE, ".agents", "gen", "_state", "_wave_state")
 
 SKIP_DIRS = {
     ".git", ".godot", "assets", "asset-library", "node_modules", "__pycache__",
@@ -37,13 +37,15 @@ MAX_FILE_BYTES = 10 * 1024 * 1024
 def _godot_binary():
     """Resolve the headless Godot binary for this host.
 
-    Order: $VAJB_GODOT, then the Windows console build (so the mirrored Windows
-    workspace keeps working unchanged), then a bare `godot` on PATH - the Linux
-    host symlinks it to the 4.7.2 stable build.
+    Order: $VAJB_GODOT, $GODOT_CONSOLE (the host-neutral name every project
+    document uses; set in crushrc), then the Windows console build (so the
+    mirrored Windows workspace keeps working unchanged), then a bare `godot` on
+    PATH - the Linux host symlinks it to the 4.7.2 stable build.
     """
-    override = os.environ.get("VAJB_GODOT")
-    if override:
-        return override
+    for env in ("VAJB_GODOT", "GODOT_CONSOLE"):
+        override = os.environ.get(env)
+        if override:
+            return override
     windows = "C:/Godot_4_7_2/Godot_v4.7.2-stable_win64_console.exe"
     if os.path.exists(windows):
         return windows
