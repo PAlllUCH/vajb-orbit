@@ -156,6 +156,17 @@ the planner cannot derive from an existing doc is written **proposed** with its
 reversal, never left for a worker to choose; and every wave states which existing
 test numbers move and why.
 
+**Escalation ladder (owner question 2026-09-22, ratified the same day):** findings
+are sorted in three buckets, and only two of them ever pause a wave. (1) Anything
+**inside a pinned acceptance** — code route, refactor shape, test mechanics, helper
+design — the worker decides and proceeds, no pause. (2) Anything that would change
+**a pin** — a pinned number or wording, a `VAJB_WORKER_FILES` set, the
+tests-that-moves list, or any `docs/` text — escalates to the developer/designer
+session: implementers never edit the yardstick they are measured by, or the
+reviewer's diff loses its baseline. (3) **Taste, or anything superseding an
+existing owner ruling** — escalates to the owner through the designer. A pause is
+correct exactly when the finding lands in (2) or (3); the report names the bucket.
+
 ## Slice / folder law (`.agents/gen/`)
 
 Every slice, phase, brief, report and ticket has an ID and a folder; nothing new
