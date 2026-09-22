@@ -43,7 +43,7 @@ every module draws into. There are no tabs and no nested pages.
 
 | Module | Entry | Leaves the station? | Payload |
 |---|---|---|---|
-| OUTFITTING | rail entry 1 | no | 5 ammo packs, `StationCatalog.AMMO_PACKS` |
+| OUTFITTING | rail entry 1 | no | 6 weapon modules + 5 ammo packs, `ModuleCatalog` / `StationCatalog.AMMO_PACKS` (amendment, section 5.1) |
 | REFINERY | rail entry 2 | no | the player's ore stacks, the 3:1 conversion stepper (amendment, section 5.7) |
 | EXCHANGE | rail entry 3 | no | the hold, the market board, sell and SELL ALL RAW (amendment, section 5.8) |
 | SHIPYARD | rail entry 4 | no | 4 hulls, `StationCatalog.SHIPS`, plus the preview and the stat comparison |
@@ -360,9 +360,45 @@ Data source for every row, in the shipping screen: `StationCatalog.AMMO_PACKS`, 
 `StationCatalog.UPGRADES` (ids, names, prices, stats and icon paths are the catalogue's, never literals).
 State source: `PlayerProfile`. The mockup's local copies are listed in section 11.
 
-### 5.1 OUTFITTING (buy ammunition)
+### 5.1 OUTFITTING (buy ammunition and weapon modules)
 
-One row per ammo pack, five rows, in catalogue order (`PlayerState.WEAPONS` order).
+Three groups, in render order: the FITTED WEAPONS strip, the MODULES rows, then the five ammo packs.
+
+**Amendment 2026-09-22 (P2-B1 — the weapon fit surface: the MODULES section and the FITTED WEAPONS
+strip).** Transcribed from `.agents/gen/p2b1_weapon_fit_wave_task.md` §3; every number in it is 09
+§3.1's and none is this pass's.
+
+- The pane gains a `MODULES` caption and seven weapon rows above the ammo packs,
+  one per module in 09 §3.1's table order (`w_laser` 900 first, then `w_cannon`
+  1 200, `w_rocket` 2 400, `w_mine` 1 800, `w_plasma` 4 800, `w_railgun` 5 200,
+  `w_mining` 600 — seven rows since the P2-B1 close-out: `w_mining` is 09 §4
+  item 7's mining laser and the launch-fit gate's mining swap needs its door, so
+  the brief's §1 list is the row set; reversal is one constant, `MODULE_ROWS`),
+  each row: 48 px module icon, name, `W SLOT · DRAW n` meta, the 09 §3.1 effect
+  text (09 §4 item 7's own words for `w_mining`), PRICE, STATUS, ACTION.
+- STATUS: `FITTED (Wk)` when installed on the active hull, `OWNED ×n` in the
+  inventory, `FOR SALE` when affordable, `LOCKED` otherwise.
+- ACTION per state: `BUY` (buy_module) → `INSTALL` (first empty W cell; none
+  empty → the row offers SWAP, the displaced module returns to inventory) →
+  `SWAP` → `REMOVE`.
+- Above the rows, a **FITTED WEAPONS** strip: one line per W cell of the active
+  hull — `W1 LASER MKII` / `W2 — EMPTY` — each fitted line carrying REMOVE; the
+  strip reads `ShipFit.grid_cells` + `PlayerProfile.fit_for` and never mutates
+  directly (panels request, the profile mutates — STATION_HUB §12.4).
+- Refusals render in the footer strip the panel already owns
+  (`status_requested`), never a dialog.
+- Focus order: the fitted strip first, then the module rows, then the ammo rows
+  (Tab order, STATION_HUB §10).
+
+Refusal wordings (owner tick 2 of the wave brief, its own two lines; 09 §2's over-by format is the
+first): the power overload renders `13 / 11 PWR — OVER BY 2` (Σ draws / output — over by) and a swap
+with no empty W cell renders `W SLOTS FULL — SWAP OR REMOVE FIRST`; both land in the footer strip
+(`status_requested`), never a dialog.
+
+Reversal: delete the `MODULES` caption, the six module rows and the fitted strip and restore the
+ammo-only pane; the ammo rows below are untouched by this amendment either way.
+
+**The ammo rows.** One row per ammo pack, five rows, in catalogue order (`PlayerState.WEAPONS` order).
 
 | Column | Source | Render |
 |---|---|---|
@@ -650,6 +686,7 @@ Every path below exists on disk and appears in `ASSET_AUDIT.md` section E.2 or F
 | `res://assets/icons/icon_map_route_48.png` | LAUNCH icon (gap G2 has no dedicated bay glyph) | 40x40 | normal |
 | `res://assets/icons/tint/icon_weapon_cannon_48.png`, `..._mine_48.png`, `..._plasma_48.png` | the three ammo rows whose catalogue icon is a flat Phase B glyph (audit anomaly C16) | 40x40, tinted | normal |
 | `res://assets/icons/icon_ammo_laser_48.png`, `icon_ammo_rocket_48.png` | painted ammo rows, used untinted | 40x40 | normal |
+| `res://assets/icons/module/icon_module_<id>_48.png` for every module id except the five base weapons, which use `res://assets/icons/weapon/icon_weapon_<family>_48.png` (`w_laser`→`laser`, `w_cannon`→`cannon`, `w_rocket`→`rocket`, `w_mine`→`mine`, `w_plasma`→`plasma`) | the MODULES rows' icons (amendment 5.1; the rule is CONTRACTS §11's icon rule) | 48x48 | normal |
 | `res://assets/icons/icon_equip_engine_48.png`, `_shield_gen_48.png`, `_module_48.png`, `_extra_48.png`, `_drone_48.png` | UPGRADES row icons | 40x40 | normal |
 | `res://assets/icons/tint/icon_cargo_ore_48.png`, `icon_cargo_data_core_48.png`, `icon_cargo_salvage_48.png` | cargo plate art and manifest glyphs | 24 px inside a 40 px plate | normal |
 | `res://assets/ships/ship_fighter_side.png`, `ship_vanguard_side.png`, `ship_gunship_side.png`, `ship_destroyer_side.png` | the shipyard preview, per catalogue `preview` | see 7.2 | normal |

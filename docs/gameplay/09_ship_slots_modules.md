@@ -265,10 +265,17 @@ existing upgrade retires into the auction book as a legacy entry (10 §5).
    because its U slots carry `u_refine`/`u_tractor` and its power output
    (10) runs a mining laser plus shields without starving. The mining laser
    is also how the fighter can dabble in mining, exactly as the user specced:
-   1 weapon slot buys the ability, at the price of one gun.
+   1 weapon slot buys the ability, at the price of one gun. **Its door (P2-B1
+   close-out, 2026-09-22):** OUTFITTING's `MODULES` rows sell it — the row set is
+   09 §3.1's six plus `w_mining` (CONTRACTS §12), so the swap is reachable in
+   play; reversal: drop the id from `MODULE_ROWS`.
 8. **Swapping is free at the station; modules are never destroyed by
    removing** — they go to the player's module inventory (10 §6).
-   In-space refitting does not exist in v1.
+   In-space refitting does not exist in v1. **Interim note 2026-09-22 (P2-B1,
+   the weapon fit surface):** until the AUCTION module (10 §2) exists, the
+   surface that buys the weapon modules into the inventory is **OUTFITTING**
+   (`STATION_HUB.md` §5.1's amendment; the same note is in 10 §6), and those
+   rows retire into AUCTION when it ships.
 
 ## 5. Stats resolution order
 

@@ -44,25 +44,75 @@ layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"StationCaption"
 
-[node name="HeaderMargin" type="MarginContainer" parent="."]
-layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 0
-
-[node name="OutfittingHeader" type="HBoxContainer" parent="HeaderMargin"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 12
-
 [node name="OutfittingScroll" type="ScrollContainer" parent="."]
 unique_name_in_owner = true
 horizontal_scroll_mode = 0
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="OutfittingRows" type="VBoxContainer" parent="OutfittingScroll"]
+[node name="OutfittingBody" type="VBoxContainer" parent="OutfittingScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="FittedMargin" type="MarginContainer" parent="OutfittingScroll/OutfittingBody"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_right = 12
+
+[node name="FittedBox" type="VBoxContainer" parent="OutfittingScroll/OutfittingBody/FittedMargin"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="FittedCaption" type="Label" parent="OutfittingScroll/OutfittingBody/FittedMargin/FittedBox"]
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "FITTED WEAPONS"
+
+[node name="FittedStrip" type="VBoxContainer" parent="OutfittingScroll/OutfittingBody/FittedMargin/FittedBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="ModulesMargin" type="MarginContainer" parent="OutfittingScroll/OutfittingBody"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_right = 12
+
+[node name="ModulesBox" type="VBoxContainer" parent="OutfittingScroll/OutfittingBody/ModulesMargin"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="ModulesCaption" type="Label" parent="OutfittingScroll/OutfittingBody/ModulesMargin/ModulesBox"]
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "MODULES"
+
+[node name="ModulesHeader" type="HBoxContainer" parent="OutfittingScroll/OutfittingBody/ModulesMargin/ModulesBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ModuleRows" type="VBoxContainer" parent="OutfittingScroll/OutfittingBody"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="HeaderMargin" type="MarginContainer" parent="OutfittingScroll/OutfittingBody"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+
+[node name="OutfittingHeader" type="HBoxContainer" parent="OutfittingScroll/OutfittingBody/HeaderMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="OutfittingRows" type="VBoxContainer" parent="OutfittingScroll/OutfittingBody"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3

@@ -4,7 +4,8 @@ extends McpTestSuite
 ##
 ## Covers the fresh-instance defaults, the v1 -> v2 migration read, a full
 ## save/reload round trip for every persisted key, copy isolation, the signal
-## contract and the pre-existing API.
+## contract, the pre-existing API and the P2-B1 module purchase
+## (`buy_module`, CONTRACTS section 12).
 ##
 ## Profiles are throwaway instances of the autoload script whose save_path is
 ## repointed at a scratch file before the first mutation; `user://profile.cfg`
@@ -16,6 +17,7 @@ const Profile := preload("res://autoload/player_profile.gd")
 const Log := preload("res://game/economy_log.gd")
 const Clock := preload("res://autoload/world_clock.gd")
 const Exch := preload("res://game/exchange.gd")
+const ModuleData := preload("res://game/module_catalog.gd")
 
 const PROFILE_PATH := "user://test_p1_profile.cfg"
 const LOG_PATH := "user://test_p1_log.txt"
@@ -24,6 +26,7 @@ const NOW := 1000000
 
 var _profiles: Array[Node] = []
 var _signals: Array[StringName] = []
+var _failures: Array[Dictionary] = []
 
 
 func suite_name() -> String:
@@ -34,6 +37,7 @@ func setup() -> void:
 	_delete_file(PROFILE_PATH)
 	_reset_log()
 	_signals.clear()
+	_failures.clear()
 
 
 func teardown() -> void:
@@ -42,6 +46,7 @@ func teardown() -> void:
 			profile.free()
 	_profiles.clear()
 	_signals.clear()
+	_failures.clear()
 
 
 func suite_teardown() -> void:
@@ -343,6 +348,94 @@ func test_spend_over_balance_refuses() -> void:
 
 
 ## ---------------------------------------------------------------------------
+## P2-B1 module purchase (CONTRACTS section 12)
+## ---------------------------------------------------------------------------
+
+
+func test_buy_module_round_trips() -> void:
+	var profile = _fresh()
+	_watch(profile)
+	_watch_purchases(profile)
+	## The price under test is the catalogue's own 09 section 3.1 row; the profile
+	## charges what the caller passes.
+	var cost := int(ModuleData.module(&"w_cannon")[&"cost"])
+	assert_eq(cost, 1200, "09 section 3.1's w_cannon price")
+	assert_eq(profile.module_count(&"w_cannon"), 0, "nothing owned yet")
+
+	assert_true(profile.buy_module(&"w_cannon", cost))
+	assert_eq(profile.credits(), 10000 - cost, "exactly the price is spent")
+	assert_eq(profile.module_count(&"w_cannon"), 1, "one module in the inventory")
+	assert_true(_failures.is_empty(), "a successful buy refuses nothing")
+	assert_eq(_signals.size(), 2, "the charge and the inventory both moved: %s" % str(_signals))
+	assert_eq(_signals[0], &"credits")
+	assert_eq(_signals[1], &"modules")
+
+	var lines := _log_lines()
+	assert_eq(lines.size(), 1, "exactly one economy-log line")
+	var fields := lines[0].split(", ")
+	assert_eq(fields.size(), 6, "the log's six fields")
+	assert_eq(fields[1], Profile.EVENT_BUY_MODULE)
+	assert_eq(fields[2], "w_cannon")
+	assert_eq(fields[3], "1", "one module")
+	assert_eq(fields[4], "-1200")
+	assert_eq(fields[5], "8800", "the balance after the purchase")
+
+	## A second purchase writes exactly one line of its own and stacks the count.
+	assert_true(profile.buy_module(&"w_cannon", cost))
+	assert_eq(profile.module_count(&"w_cannon"), 2, "the count stacks")
+	assert_eq(profile.credits(), 10000 - 2 * cost)
+	assert_eq(_log_lines().size(), 2, "one line per purchase, never two")
+
+	## The purchase survives a reload: inventory and balance both round-trip.
+	profile.reload()
+	assert_eq(profile.credits(), 10000 - 2 * cost, "credits round-trip")
+	assert_eq(profile.module_count(&"w_cannon"), 2, "the inventory round-trips")
+
+
+func test_buy_module_refuses_unknown_and_insufficient() -> void:
+	var profile = _fresh()
+	_watch(profile)
+	_watch_purchases(profile)
+
+	## An id the catalogue does not ship is never sold.
+	assert_false(profile.buy_module(&"w_do_not_exist", 100))
+	assert_eq(_failures.size(), 1, "one refusal")
+	assert_eq(_failures[0][&"reason"], Profile.REASON_UNKNOWN)
+	assert_eq(_failures[0][&"id"], &"w_do_not_exist")
+	assert_eq(profile.module_count(&"w_do_not_exist"), 0, "no inventory write")
+	assert_eq(profile.credits(), 10000, "no charge")
+	assert_true(_signals.is_empty(), "a refused buy emits nothing: %s" % str(_signals))
+	assert_eq(_log_lines().size(), 0, "a refused buy logs nothing")
+
+	## A negative price is not a price, exactly as buy_ship and install_upgrade
+	## refuse one.
+	_failures.clear()
+	assert_false(profile.buy_module(&"w_cannon", -1))
+	assert_eq(_failures.size(), 1, "one refusal")
+	assert_eq(_failures[0][&"reason"], Profile.REASON_UNKNOWN)
+	assert_eq(_failures[0][&"id"], &"w_cannon")
+	assert_eq(profile.credits(), 10000, "no charge")
+	assert_true(_signals.is_empty(), "a refused buy emits nothing: %s" % str(_signals))
+
+	## A real module the balance cannot cover: the railgun is 5 200 CR and the
+	## balance is spent down to 500.
+	var railgun := int(ModuleData.module(&"w_railgun")[&"cost"])
+	assert_eq(railgun, 5200, "09 section 3.1's w_railgun price")
+	_failures.clear()
+	assert_true(profile.spend(9500))
+	_signals.clear()
+	assert_eq(profile.credits(), 500)
+	assert_false(profile.buy_module(&"w_railgun", railgun))
+	assert_eq(_failures.size(), 1, "one refusal")
+	assert_eq(_failures[0][&"reason"], Profile.REASON_INSUFFICIENT)
+	assert_eq(_failures[0][&"id"], &"w_railgun")
+	assert_eq(profile.credits(), 500, "the short balance is untouched")
+	assert_eq(profile.module_count(&"w_railgun"), 0, "nothing is given")
+	assert_true(_signals.is_empty(), "a refused buy emits nothing: %s" % str(_signals))
+	assert_eq(_log_lines().size(), 0, "a refused buy logs nothing")
+
+
+## ---------------------------------------------------------------------------
 ## Helpers
 ## ---------------------------------------------------------------------------
 
@@ -361,6 +454,31 @@ func _watch(profile: Node) -> void:
 
 func _on_profile_changed(key: StringName) -> void:
 	_signals.append(key)
+
+
+## Capture the refusal vocabulary (`purchase_failed`) of the transaction
+## functions, one entry per refusal: `{reason, id}`.
+func _watch_purchases(profile: Node) -> void:
+	_failures.clear()
+	profile.purchase_failed.connect(_on_purchase_failed)
+
+
+func _on_purchase_failed(reason: StringName, id: StringName) -> void:
+	_failures.append({"reason": reason, "id": id})
+
+
+## The lines of the scratch economy log, blank ones dropped.
+func _log_lines() -> PackedStringArray:
+	var lines := PackedStringArray()
+	var file := FileAccess.open(LOG_PATH, FileAccess.READ)
+	if file == null:
+		return lines
+	var text := file.get_as_text()
+	file.close()
+	for line: String in text.split("\n"):
+		if not line.strip_edges().is_empty():
+			lines.append(line)
+	return lines
 
 
 func _delete_file(path: String) -> void:

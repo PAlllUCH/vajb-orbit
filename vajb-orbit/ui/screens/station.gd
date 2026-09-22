@@ -477,12 +477,15 @@ func _entry_cost(id: StringName) -> int:
 
 func _entry(id: StringName) -> Dictionary:
 	## purchase_failed carries only the reason and the id, so the copy resolves the
-	## entry and its price from the catalogue the panel bought from.
+	## entry and its price from the catalogue the panel bought from: the ammo packs,
+	## the ships, the upgrades and the modules (P2-B1's OUTFITTING rows).
 	var entry := Catalog.ammo_pack(id)
 	if entry.is_empty():
 		entry = Catalog.ship(id)
 	if entry.is_empty():
 		entry = Catalog.upgrade(id)
+	if entry.is_empty():
+		entry = ModuleCatalog.module(id)
 	return entry
 
 

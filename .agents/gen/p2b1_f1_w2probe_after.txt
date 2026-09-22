@@ -1,0 +1,61 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[probe] bare set_fit_slot(weapons, 1, w_cannon) on a hull with no fit:
+[probe]   engines=[""] power= weapons=["", "w_cannon", ""]
+[probe]   fit_legal: legal=false missing=[&"engines", &"power"]
+[probe] MODULES rows=7 w_laser=900/draw1 w_cannon=1200/draw1 w_rocket=2400/draw2 w_mine=1800/draw1 w_plasma=4800/draw3 w_railgun=5200/draw3 w_mining=600/draw1
+[probe] catalogue weapon ids=7 (the row set is 09 section 3.1's table)
+[probe] FITTED WEAPONS (start): [W1 LASER MKII | W2 — EMPTY | W3 — EMPTY]
+[probe]   W1 remove visible=true
+[probe]   W2 remove visible=false
+[probe]   W3 remove visible=false
+[probe] -- buy / install / swap / remove round trip --
+[probe] start: credits=10000 inv=[]
+[probe]   strip=[W1 LASER MKII | W2 — EMPTY | W3 — EMPTY]
+[probe] buy_module(w_cannon, 1200) = true
+[probe] press w_cannon row (action=INSTALL)
+[probe] after BUY + INSTALL w_cannon: credits=8800 inv=[]
+[probe]   strip=[W1 LASER MKII | W2 CANNON MKI | W3 — EMPTY]
+[probe] buy_module(w_rocket, 2400) = true
+[probe] press w_rocket row (action=INSTALL)
+[probe] after BUY + INSTALL w_rocket (every W cell full): credits=6400 inv=[]
+[probe]   strip=[W1 LASER MKII | W2 CANNON MKI | W3 ROCKET POD]
+[probe] buy_module(w_mine, 1800) = true
+[probe] press w_mine row (action=SWAP)
+[probe] after BUY + SWAP w_mine into W1: credits=4600 inv=[w_laser:1]
+[probe]   strip=[W1 MINE LAYER | W2 CANNON MKI | W3 ROCKET POD]
+[probe] press strip REMOVE on W1
+[probe] after strip REMOVE of W1: credits=4600 inv=[w_laser:1 w_mine:1]
+[probe]   strip=[W1 — EMPTY | W2 CANNON MKI | W3 ROCKET POD]
+[probe] press strip REMOVE on W2
+[probe] after strip REMOVE of W2: credits=4600 inv=[w_laser:1 w_cannon:1 w_mine:1]
+[probe]   strip=[W1 — EMPTY | W2 — EMPTY | W3 ROCKET POD]
+[probe] -- refusals --
+[probe] buy_module(w_plasma, 4800) = true
+[probe] press w_plasma row (action=INSTALL)
+[probe] after INSTALL w_plasma into W1: credits=4800 inv=[w_laser:1 w_cannon:1 w_mine:1]
+[probe]   strip=[W1 PLASMA COIL | W2 — EMPTY | W3 ROCKET POD]
+[probe] buy_module(w_plasma, 4800) = true
+[probe] press w_plasma row (action=INSTALL)
+[probe] after the refused INSTALL w_plasma: credits=0 inv=[w_laser:1 w_cannon:1 w_mine:1 w_plasma:1]
+[probe]   strip=[W1 PLASMA COIL | W2 — EMPTY | W3 ROCKET POD]
+[probe] overload refusal=10 / 8 PWR — OVER BY 2 danger=true
+[probe] buy_module(w_mine, 1800) = true
+[probe] press w_mine row (action=INSTALL)
+[probe] after INSTALL w_mine (every W cell full): credits=200 inv=[w_laser:1 w_cannon:1 w_mine:1 w_plasma:1]
+[probe]   strip=[W1 PLASMA COIL | W2 MINE LAYER | W3 ROCKET POD]
+[probe] w_mine action with a full grid = REMOVE
+[probe] install_module(w_mine) with no empty cell = false
+[probe] full-cells refusal=W SLOTS FULL — SWAP OR REMOVE FIRST danger=true
+[probe] after the full-cells refusal: credits=200 inv=[w_laser:1 w_cannon:1 w_mine:1 w_plasma:1]
+[probe]   strip=[W1 PLASMA COIL | W2 MINE LAYER | W3 ROCKET POD]
+[probe] press w_mine row (action=REMOVE)
+[probe] after the row REMOVE of w_mine: credits=200 inv=[w_laser:1 w_cannon:1 w_mine:2 w_plasma:1]
+[probe]   strip=[W1 PLASMA COIL | W2 — EMPTY | W3 ROCKET POD]
+[probe] mandatory set: engines=["e_std"] power=p_std
+[probe] fit_legal missing=[]
+WARNING: 34 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 6 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

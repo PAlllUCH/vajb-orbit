@@ -22,6 +22,11 @@ ticks.
 
 ## Current queue (execute top-down)
 
+**Items 4, 5 and 6 are DONE (2026-09-21/22, gate closed at 389) — see `WAVEBOARD.md`
+§Closed. Nothing below dispatches: the next brief is P2-B proper, and only after the
+owner has read P2-B1's report (the owner's stop condition). The owner's seven new
+2026-09-22 requests are recorded in `WAVEBOARD.md` §Queued, unbriefed.**
+
 **Closed since the last revision (evidence in `WAVEBOARD.md` §Closed and
 `.agents/gen/MASTER_REPORT.md`):** slice 0 (Physics & Fuel), slice 2 (Fight),
 the batch-2 playtest lane and the doc lanes. Do not re-dispatch them.

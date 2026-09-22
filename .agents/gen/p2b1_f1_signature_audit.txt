@@ -1,0 +1,30 @@
+--- CONTRACTS §11 ---
+  game/ship_fit.gd::grid_rows -> EXACT
+  game/ship_fit.gd::grid_size -> EXACT
+  game/ship_fit.gd::grid_cells -> EXACT
+  game/ship_fit.gd::grid_counts -> EXACT
+  game/ship_fit.gd::slot_capacity -> EXACT
+  game/ship_fit.gd::fit_legal -> EXACT
+  game/ship_fit.gd::standard_fit -> EXACT
+  game/ship_fit.gd::mount_offset -> EXACT
+  game/module_catalog.gd::module -> EXACT
+  game/module_catalog.gd::icon_path -> EXACT
+  game/module_catalog.gd::slot_of -> EXACT
+  autoload/player_profile.gd::fit_for -> EXACT
+  autoload/player_profile.gd::set_fit -> EXACT
+  autoload/player_profile.gd::set_fit_slot -> EXACT
+  autoload/player_profile.gd::clear_fit -> EXACT
+  autoload/player_profile.gd::base_module_id -> EXACT
+  autoload/player_profile.gd::module_count -> EXACT
+  autoload/player_profile.gd::add_module -> EXACT
+  autoload/player_profile.gd::take_module -> EXACT
+  game/player_state.gd::set_weapons -> EXACT
+  ui/hud/hud.gd::set_hull_slots -> EXACT
+  ui/hud/hud.gd::hull_slots -> EXACT
+--- CONTRACTS §12 ---
+  autoload/player_profile.gd::buy_module -> EXACT
+--- CONTRACTS §8 (the two seams this wave could touch) ---
+  autoload/player_profile.gd::set_ammo -> EXACT
+  game/economy_log.gd::append -> EXACT
+
+signatures checked: 25, drift: 0

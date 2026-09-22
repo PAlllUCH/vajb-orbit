@@ -157,6 +157,17 @@ STATION_HUB/STATION_SPEC — one flag day, no dual economy.
   module_id]]`).
 - Selling modules back to the auction: 60 % of list, same rule as hulls.
 
+**Interim note 2026-09-22 (P2-B1 — the weapon fit surface).** Until the AUCTION
+module of §2 exists, **OUTFITTING sells the seven weapon modules** into this
+inventory (`ModuleCatalog` and `buy_module`, CONTRACTS §12; the rows, states,
+refusal wordings and focus order are `STATION_HUB.md` §5.1's amendment) — 09
+§3.1's six plus `w_mining`, so the mining laser of 09 §4 item 7 has a door. This is
+§5's precedent for the legacy upgrade rows — a documented interim surface, never
+a second economy. When AUCTION ships, those rows retire into it and OUTFITTING
+returns to ammunition. Reversal: none owed while §2 is unbuilt; if AUCTION is
+dropped, the OUTFITTING rows become the permanent home and this note becomes the
+rule.
+
 ## 7. Acquisition pacing (check against 01 §5.4)
 
 The double path keeps the 01 milestone pace intact:

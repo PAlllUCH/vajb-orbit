@@ -749,10 +749,10 @@ actually fired.
 "C:/Godot_4_7_2/Godot_v4.7.2-stable_win64_console.exe" --headless --path "G:/Mój dysk/Projekty/Vajb Orbit/vajb-orbit" res://tests/headless_runner.tscn --quit-after 1200
 ```
 
-Expected: `[SUMMARY] passed=294 failed=0` (measured on this host 2026-09-21 by the
-flight-feel & beam wave's review — the wave's own 17 tests are the whole growth from
-the pre-wave 277; the previously recorded 236 was the combat/collision repair wave's
-total),
+Expected: `[SUMMARY] passed=389 failed=0` (measured on this host 2026-09-22 by the P2-B1
+weapon-fit wave's fixer pass — the wave closed 378 → 387 → 389, with P2-A's slot-grid
+wave (311 → 372) and the rock-cleave wave (372 → 378) before it; the previously recorded
+294 was the flight-feel & beam wave's review),
 exit 0. A wave is
 done = gate green + the worker added tests for their slice. The suite held **53**
 tests through engine wave 1; engine slice 0 added `tests/test_engine2_pools.gd`
@@ -1026,6 +1026,64 @@ Panel contracts (station):
   (labels `ENGINES`, `HARDPOINTS`, `SLOT CELLS`); the cargo plate strip and its
   five plates do not change.
 
+## §12 P2-B1 weapon fit (2026-09-22)
+
+Pinned before the wave's code workers start, so they agree. Additive only: every
+§2/§3/§7/§8/§11 pin above stays valid.
+
+```gdscript
+## autoload/player_profile.gd — additive beyond P2-A's §11 pin.
+func buy_module(module_id: StringName, cost: int) -> bool
+    # 17 §5: refuse when unknown/insufficient (purchase_failed), else spend(cost),
+    # add_module(module_id, 1), profile_changed(&"modules"), one EconomyLog line
+```
+
+Consumer rules (the `STATION_HUB.md` §5.1 amendment — the same six bullets are the
+surface's contract there; every number in them is 09 §3.1's):
+
+- The pane gains a `MODULES` caption and seven weapon rows above the ammo packs,
+  one per module in 09 §3.1's table order (`w_laser` 900 first, then `w_cannon`
+  1 200, `w_rocket` 2 400, `w_mine` 1 800, `w_plasma` 4 800, `w_railgun` 5 200,
+  `w_mining` 600 — seven rows since the P2-B1 close-out: `w_mining` is 09 §4
+  item 7's mining laser and the launch-fit gate's mining swap needs its door, so
+  the brief's §1 list is the row set; reversal is one constant, `MODULE_ROWS`),
+  each row: 48 px module icon, name, `W SLOT · DRAW n` meta, the 09 §3.1 effect
+  text (09 §4 item 7's own words for `w_mining`), PRICE, STATUS, ACTION.
+- STATUS: `FITTED (Wk)` when installed on the active hull, `OWNED ×n` in the
+  inventory, `FOR SALE` when affordable, `LOCKED` otherwise.
+- ACTION per state: `BUY` (buy_module) → `INSTALL` (first empty W cell; none
+  empty → the row offers SWAP, the displaced module returns to inventory) →
+  `SWAP` → `REMOVE`.
+- Above the rows, a **FITTED WEAPONS** strip: one line per W cell of the active
+  hull — `W1 LASER MKII` / `W2 — EMPTY` — each fitted line carrying REMOVE; the
+  strip reads `ShipFit.grid_cells` + `PlayerProfile.fit_for` and never mutates
+  directly (panels request, the profile mutates — STATION_HUB §12.4).
+- Refusals render in the footer strip the panel already owns
+  (`status_requested`), never a dialog.
+- Focus order: the fitted strip first, then the module rows, then the ammo rows
+  (Tab order, STATION_HUB §10).
+
+Rules the pin fixes, so no worker has to choose:
+
+1. **Refusals are the existing vocabulary.** `buy_module` reuses
+   `purchase_failed`'s reasons (`&"unknown_id"`, `&"insufficient_credits"`;
+   STATION_HUB §12.4's mappings) and the log line is `EVENT_BUY_MODULE` or the
+   nearest shipped event id — one line per purchase, 17 §5's transaction law
+   (verify → charge → pay → emit → log, integers only).
+2. **The panel only requests.** Every install, swap and remove goes through
+   `PlayerProfile`'s `set_fit_slot`/`clear_fit` and every buy through
+   `buy_module`; the panel mutates nothing itself (STATION_HUB §12.4).
+3. **Every install and swap passes `ShipFit.fit_legal`** (P2-A's §11 pin) and
+   nothing auto-removes on an illegal fit.
+4. **The mandatory set is untouchable from this surface** — no engine and no
+   reactor row exists on it (09 §4.1, §7).
+5. **The two refusal wordings** are `STATION_HUB.md` §5.1's: the power overload's
+   `13 / 11 PWR — OVER BY 2` (09 §2's over-by format) and
+   `W SLOTS FULL — SWAP OR REMOVE FIRST`.
+6. **No flight-side change.** A swapped weapon mounts as the new one on the next
+   launch, because the launch already resolves the hull's fit; in-space refitting
+   does not exist in v1 (09 §4.8).
+
 ## §10 Changelog
 
 - **v0 (2026-09-18)** — seeded from the engine wave-1 pinned interfaces
@@ -1276,3 +1334,56 @@ Panel contracts (station):
   and the re-runnable guard `.agents/gen/rock_cleave_a3_check.sh` — 12 checks proving
   the retired statements are gone and every value §5 now names equals the constant its
   owner declares.
+- **v0.3 (2026-09-22, P2-B1 weapon-fit wave — D0, the wave's only CONTRACTS writer)** —
+  added **§12** above (the P2-B1 weapon-fit pin), transcribed from
+  `.agents/gen/p2b1_weapon_fit_wave_task.md` §3: `PlayerProfile.buy_module(module_id,
+  cost)` and the six consumer rules (the MODULES rows in 09 §3.1's table order with their
+  frozen costs and `W SLOT · DRAW n` meta, the STATUS and ACTION state machine, the
+  `FITTED WEAPONS` strip, the refusals in the panel's own footer strip, and the focus
+  order), plus six rules the pin fixes and the note that both refusal wordings live in
+  `STATION_HUB.md` §5.1. **The six consumer bullets are byte-for-byte the brief's, in both
+  §12 and `STATION_HUB.md` §5.1** (the brief's own parenthetical says §5.1 is the surface's
+  amendment and this section is the pin, so the same text is the pin's copy of the
+  surface's contract); §5.1 additionally gains the FITTED WEAPONS/MODULES amendment block,
+  the brief's two refusal wordings (`13 / 11 PWR — OVER BY 2` — 09 §2's over-by format —
+  and `W SLOTS FULL — SWAP OR REMOVE FIRST`), its §2 payload line and §7.1's art-map row
+  for the module icons. `docs/gameplay/10_ship_acquisition.md` §6 and
+  `docs/gameplay/09_ship_slots_modules.md` §4.8 gain the dated interim note: OUTFITTING
+  sells the six weapon modules until the AUCTION module of 10 §2 exists, and those rows
+  retire into it then (10 §5's precedent for the legacy upgrade rows). **No pinned
+  signature changed and no frozen method was dropped** — this pass is `docs/**` only, and
+  W1/W2's additive code follows the pin. **No number is this pass's:** every cost (900,
+  1 200, 2 400, 1 800, 4 800, 5 200, 600), every draw, both refusal wordings and the row
+  order are 09 §3.1's (600 being 09 §4 item 7's `w_mining` cost) or the brief's
+  transcription of them. **§9's expected total is the wave's own to move** (W1/W2 add
+  tests, R1 measures it): this pass measured the pre-wave tree on 2026-09-22 as
+  `passed=378 failed=0`, exit 0 — the same figure rock cleave closed at — and records no
+  post-wave count. **Resolved at the P2-B1 close-out (R1's MED-2, closed by F1):**
+  §3's first bullet says "six weapon rows" and then lists **seven** ids (`w_laser` 900,
+  `w_cannon` 1 200, `w_rocket` 2 400, `w_mine` 1 800, `w_plasma` 4 800, `w_railgun` 5 200,
+  `w_mining` 600), while 09 §3.1's table has six rows and `w_mining` is 09 §4 item 7; the
+  brief's §1 names a different six for the shop (`w_cannon`, `w_mining`, `w_rocket`,
+  `w_mine`, `w_plasma`, `w_railgun`). The row set shipped as **seven** — the six of
+  09 §3.1 plus `w_mining` — because the wave's own §1 deliverable names `w_mining` 600
+  purchasable and the launch-fit gate's mining swap (symptom 2) needs the door; W2 had
+  shipped the §3 reading, R1 tiered it MED-2, F1 landed the seventh row (reversal: drop
+  the id from `MODULE_ROWS`). Evidence: `.agents/gen/p2b1_d0_report.md` (the verbatim
+  proof and the line index), `.agents/gen/p2b1_r1_report.md` (MED-2) and
+  `.agents/gen/p2b1_f1_report.md` (the fix, with before/after).
+- **v0.4 (2026-09-22, P2-B1 close-out — the orchestrator's review-wave merge)** — closes the
+  wave's two MED findings and records the contract as shipped. **MED-1** (R1): an unaffordable
+  module purchase rendered `REFUSED · NOT ENOUGH CREDITS · 0 NEEDED` because
+  `ui/screens/station.gd`'s `_entry`/`_entry_cost` chain resolved only the ammo packs, the
+  ships and the upgrades; F1 added `ModuleCatalog.module(id)` as the fourth link, so a module
+  refusal now names its catalogue cost (`5 200 NEEDED` for `w_railgun`) with no new string.
+  **MED-2** (R1): the MODULES row set is **seven** — 09 §3.1's six plus `w_mining` (09 §4
+  item 7's 600) — so the mining laser, the launch-fit gate's symptom 2, has a door; §12's row
+  bullet above and `STATION_HUB.md` §5.1 carry seven, and the reversal is one constant
+  (`MODULE_ROWS`). The wave's measured gate is **389** (378 → 387 → 389) and §9 above carries
+  that figure. **No pinned signature changed** — R1's own audit tools
+  (`vajb-orbit/tools/r1_p2b1_signature_audit.py`, `r1_p2b1_format_law.py`) re-measured after F1:
+  25 signatures, drift 0; 21 byte checks, 0 failures. Findings left open and parked:
+  `.agents/gen/LOW_BACKLOG.md` L76–L84 (the pane's stale subtitle/tag, the third refusal
+  wording, the ACTION precedence tick, the seam's price trust, the base-id hand-back, the
+  `set_fit` seed, probe housekeeping and the 48/40 px icon tension; plus D0's two stale
+  cross-references).

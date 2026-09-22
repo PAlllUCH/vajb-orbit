@@ -1,6 +1,6 @@
 # WAVEBOARD — one-file agent state
 
-**Updated: 2026-09-22 (Rock cleave closed; P2-B1 next).** Full history of what every worker
+**Updated: 2026-09-22 (P2-B1 closed; P2-B proper next).** Full history of what every worker
 did, with known errors and open findings, now lives in
 `.agents/gen/MASTER_REPORT.md` — this board keeps only current state,
 contracts, enforcement and the queue. Executed-wave reports, briefs and
@@ -8,12 +8,15 @@ evidence were moved to `.agents/gen/_archive/` (2026-09-21, reversible) —
 citation paths of the form `.agents/gen/<report>.md` now resolve one level
 deeper.
 
-**Current state: seven coding waves closed (chrome, combat repair, weapon FX wiring, flight
-feel & beam polish, slice 2.5 Feel, P2-A ship slot frames, Rock cleave; gate `passed=378
-failed=0`). The queue of record is `dispatch_coder.md`: P2-B1 (item 6) next. Owner gates: the
+**Current state: eight coding waves closed (chrome, combat repair, weapon FX wiring, flight
+feel & beam polish, slice 2.5 Feel, P2-A ship slot frames, Rock cleave, P2-B1 weapon fit;
+gate `passed=389
+failed=0`). The queue of record is `dispatch_coder.md`: items 4/5/6 are all DONE and
+**P2-B proper** is the next brief (owner's stop condition — no new work starts until this
+wave's report is read). Owner gates: the
 chrome art half, the **`18_engine_spec.md` §6/§13/§15 cleaving amendment** (owner-locked; §15
-is the test checklist and now contradicts the shipped suite), the launch fit (symptom 1
-closed by P2-A; symptom 2, the mining-laser swap, opens with P2-B1), four spec ticks, the §13
+is the test checklist and now contradicts the shipped suite), the launch fit (**both symptoms
+closed** — symptom 1 by P2-A, symptom 2 by P2-B1's `w_mining` row), four spec ticks, the §13
 turn column, and the engine-bed / vignette-strength calls slice 2.5 raised.** Engine waves closed as below
 (slice 0 + slice 2 review-verified clean; gate `passed=311 failed=0`). A full-loop live
 playtest (2026-09-21, godot-ai driven) verified the whole menu → station → launch →
@@ -61,15 +64,17 @@ owner's §8 tick list is resolved (all six kept); the one follow-up is the 7-W c
 ## Living contracts
 
 - `docs/CONTRACTS.md` — pinned interfaces; **§11 (P2 ship frames) landed by P2-A
-  2026-09-21** and **§5's cleaving sentence merged by Rock cleave (v1.4, 2026-09-22)**
-  (status line v1.3; the §10 changelog carries the v0.2 and v1.4 entries). §9's expected
-  gate figure is still the stale 294 — the next review wave owns it. Briefs say "code
+  2026-09-21**, **§5's cleaving sentence merged by Rock cleave (v1.4, 2026-09-22)**, and
+  **§12 (the weapon-fit pin) landed by P2-B1 and resolved at its close-out (v0.4,
+  2026-09-22 — the MODULES row set is seven, `w_mining` included, and MED-1's shell price
+  reads the module catalogue)**; the §10 changelog carries the v0.2, v1.4, v0.3 and v0.4
+  entries, and §9's gate figure is the measured **389**. Briefs say "code
   against CONTRACTS.md §n"; review waves own updating it.
 - `docs/gameplay/18_engine_spec.md` — the engine contract. §2.1 carries owner
   rulings 8–26. **Owner-locked**: no worker may edit it; the six owed spec
   edits are the owner's (MASTER_REPORT §3 item 1).
 - Universal test gate: `res://tests/headless_runner.tscn` → `[SUMMARY]
-  passed=378 failed=0` (exact command in CONTRACTS.md §9; grew 53 → 78 → 219 → 226
+  passed=389 failed=0` (exact command in CONTRACTS.md §9; grew 53 → 78 → 219 → 226
   with the UI-chrome wave's `test_ui_slot_layout.gd`, 236 with the combat repair wave's
   `test_engine_c3_flight_decay.gd` and `test_combat_repair_c5.gd`, 277 with the weapon FX
   wave's `test_weapon_fx_f{1,2,4}.gd` suites, 294 with the flight/beam wave's
@@ -78,7 +83,10 @@ owner's §8 tick list is resolved (all six kept); the one follow-up is the 7-W c
   `test_p2a_launch_fit.gd` (12), `test_p2a_ship_roster.gd` (4), `test_ui_slot_layout.gd`
   rewritten 7 → 12, `test_p2a_lint_shadow.gd` (2)), then 378 with Rock cleave's
   `test_engine2_cleaving.gd` 9 → 15 (the only suite whose count moved; the rock brief's
-  311 was stale — its baseline measured 372 against a stashed tree).
+  311 was stale — its baseline measured 372 against a stashed tree), then **389 with P2-B1**
+  (`test_p2b1_outfitting_panel.gd` 0 → 7, then 7 → 9 with F1's two guards; W1's profile
+  refusals ride `test_p1_profile.gd`'s +47 assertions and the row count's 6 → 7 move rides
+  F1's seventh row).
 - `staging/verify_wave.py` — mechanical wave gates: `snapshot` before a wave,
   `verify --baseline <tag> [--forbidden ...] [--expect-reports ...] [--tests]`
   after. Baselines live in `.agents/gen/_wave_state/` (`wave1_closed`,
@@ -135,20 +143,59 @@ PowerShell form: `$env:VAJB_WORKER_FILES='...'; crush run "<prompt>" -m opencode
 
 ## In flight — none.
 
-**Queued (the queue of record is `dispatch_coder.md` §Current queue):** item 6
-**P2-B1 — runs next** (the weapon fit surface: OUTFITTING sells the six weapon modules
-and installs/swaps them into the hull's W cells through `ShipFit.fit_legal`; brief
-`.agents/gen/p2b1_weapon_fit_wave_task.md` + prompts). Items 4 **P2-A** and 5
-**Rock cleave** — **DONE** (see §Closed). **The designer phase
+**Queued (the queue of record is `dispatch_coder.md` §Current queue):** items 4 **P2-A**,
+5 **Rock cleave** and 6 **P2-B1** — all **DONE** (see §Closed). **Next is P2-B proper**
+(the full fitting panel: per-slot choice, the affix inventory, the AUCTION's design moves;
+briefed only after the owner has read P2-B1's report — the owner's stop condition).
+**The designer phase
 is deferred to the next day (owner, 2026-09-21):** the graphics queue of record
 is `.agents/gen/dispatch_designer.md` + `designer_generation_backlog.md`
 (component icons, the `_48`/tint re-cuts, the decisions), hand-over prompt ready;
 nothing from it is in flight. Owner ticks open: the
 `18_engine_spec.md` §6/§13/§15 cleaving amendment (owner-locked — the wave shipped,
-the spec text lags) and P2-B1's refusal wordings.
+the spec text lags), P2-B1's refusal wordings, the MODULES row set of seven (R1 MED-2,
+resolved seven at the close-out with the brief's §1 list — one-constant reversal), and
+L78's ACTION precedence (a fitted module with grid room offers BUY/INSTALL, not REMOVE).
+
+**Owner requests queued 2026-09-22 (recorded, not briefed — the owner's stop
+condition is item 6, and each needs its own docs-first brief before any code):**
+
+1. Shipyard — hovering a module shows what it is and how many the player owns.
+2. OUTFITTING — an inventory of every item the player owns.
+3. OUTFITTING — the same ship module/slot-grid layout the shipyard shows.
+4. LAUNCH / REPAIRS — a REFUEL button beside the existing service actions.
+5. Rock cleave follow-up — after a rock breaks, its fragments should move a bit
+   outward from the centre (radial motion on top of today's 360° spread).
+6. Weapon FX — a beam's hit should spawn its impact FX somewhat randomly across
+   the struck surface instead of at one fixed point.
+7. Weapon FX — a laser beam should connect to more of the middle of the object
+   (its termination point, for the beam itself, not only the hit FX of #6).
 
 ## Closed (details in MASTER_REPORT.md)
 
+- **P2-B1 weapon fit surface — DONE 2026-09-22** (gate 378 → 387 → 389; reports
+  `.agents/gen/p2b1_{d0,w1,w2,r1,f1}_report.md`): OUTFITTING now sells the weapon modules
+  into the profile inventory and installs/swaps/removes them through `ShipFit.fit_legal` —
+  `PlayerProfile.buy_module` (refusals reuse `purchase_failed`; one `BUY_MODULE` economy-log
+  line), the `MODULES` rows + `FITTED WEAPONS` strip, the two pinned refusal wordings
+  (`11 / 8 PWR — OVER BY 3` on 09 §2's own format, `W SLOTS FULL — SWAP OR REMOVE FIRST`),
+  and the mandatory engine/reactor set untouchable. Measured by R1: round trip + persistence
+  re-read out of the file (credits 20 000 → 14 600, swap hands the laser back, reload
+  identical), W2's probe byte-identical, 25 signatures 0 drift, 21 format-law byte checks 0
+  failures, gate 387 measured twice. Reviewer: **no HIGH, two MED** — MED-1 (a module's
+  unaffordable refusal named a fabricated `0 NEEDED`; `station.gd`'s `_entry` chain gained
+  `ModuleCatalog`) and MED-2 (**`w_mining` had no row** — the mining laser, the launch-fit
+  gate's symptom 2, was unobtainable; the brief's §1/§3 contradicted each other and D0 left
+  it standing) — both fixed by F1, which landed the **seventh row** and two guards
+  (`test_p2b1_outfitting_panel.gd` 7 → 9, gate 389). Eight LOW → `LOW_BACKLOG.md` L76–L83
+  (plus D0's two stale cross-references as L84). **Owner launch-fit gate: both symptoms now
+  closed.** **Owner ticks: the seven-row set (one-constant reversal), the refusal wordings,
+  INSTALL = first empty W cell, and L78's ACTION precedence.** One incident worth the board:
+  R1's first two dispatches appeared stalled for hours — the real cause was one of its own
+  probes running an unbounded `while` loop (an inverted empty-cell search) at 100% CPU; the
+  fixer of that was the orchestrator (bounded loop) and the probe now exits 0 in 20 s. Lesson
+  for the probe-hygiene rule: every probe needs its own hard bound, not just `--quit-after`
+  on the runner.
 - **Rock cleave — DONE 2026-09-22** (gate 372 → 378; reports
   `.agents/gen/rock_cleave_a{1,2,3}_report.md`): every depletion now draws FX_SPEC §1.4's
   explosion at the rock's centre (`clamp(1.2 × diameter, 96, 224) u`, five frames, MIX,

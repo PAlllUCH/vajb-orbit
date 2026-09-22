@@ -25,6 +25,12 @@ const Catalog := preload("res://game/station_catalog.gd")
 ## and their order, each hull's per-type capacity, and the nine player hulls
 ## (09 section 4.5, CONTRACTS section 11).
 const FitData := preload("res://game/ship_fit.gd")
+## The module catalogue (CONTRACTS section 11): `buy_module` verifies an id
+## against it, so an id the game does not ship is never sold. Its `cost` is the
+## row 09 section 3 prices, and the panel passes that number in.
+const ModuleData := preload("res://game/module_catalog.gd")
+## The economy transaction log (01 section 7): one line per purchase.
+const Log := preload("res://game/economy_log.gd")
 
 const SAVE_FILE := "user://profile.cfg"
 const SECTION := "profile"
@@ -67,6 +73,10 @@ const MARKET_KEYS: Array[String] = ["demand", "stock", "queue", "trend"]
 const REASON_INSUFFICIENT: StringName = &"insufficient_credits"
 const REASON_ALREADY_OWNED: StringName = &"already_owned"
 const REASON_UNKNOWN: StringName = &"unknown_id"
+
+## 01 section 7 log vocabulary, plus the P2-B1 module purchase (CONTRACTS
+## section 12): one line per module bought into the inventory.
+const EVENT_BUY_MODULE := "BUY_MODULE"
 
 const DEFAULT_CREDITS := 10000
 const DEFAULT_SHIP: StringName = &"ship_vanguard"
@@ -352,6 +362,26 @@ func take_module(module_id: StringName, count: int = 1) -> bool:
 		record["count"] = held - count
 		_modules[key] = record
 	_touch(KEY_MODULES)
+	return true
+
+
+## Buy one module into the inventory (CONTRACTS section 12, P2-B1). `cost` is the
+## catalogue's own price, passed by the caller exactly as `buy_ammo`, `buy_ship`
+## and `install_upgrade` take theirs (17 section 5 item 4 keeps the price in the
+## catalogue and out of the UI, so the one caller that reads it passes it in).
+## 17 section 5's transaction law, all-or-nothing: verify (an id the catalogue
+## does not ship, or a negative cost, is `unknown_id`), charge
+## (`insufficient_credits` when the balance is short), give (`add_module` once),
+## emit (`&"credits"` when the charge moved credits, then `&"modules"` from the
+## add) and log — exactly one `economy_log` line, and a refused purchase writes
+## no credits, no inventory and no line.
+func buy_module(module_id: StringName, cost: int) -> bool:
+	if ModuleData.module(module_id).is_empty() or cost < 0:
+		return _refuse(REASON_UNKNOWN, module_id)
+	if not _charge(cost):
+		return _refuse(REASON_INSUFFICIENT, module_id)
+	add_module(module_id, 1)
+	Log.append(EVENT_BUY_MODULE, module_id, 1, -cost, _credits)
 	return true
 
 

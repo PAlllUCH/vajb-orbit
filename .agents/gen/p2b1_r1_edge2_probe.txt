@@ -1,0 +1,26 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[r1c] == 1. the focus order (STATION_HUB 5.1: strip, module rows, ammo) ==
+[r1c] with the standard fit (W1 fitted): focus owner=W1/Remove
+[r1c] with every W cell empty: focus owner=ModuleRows/ModuleLaser (row=w_laser)
+[r1c] the strip's first line is still the strip's own, REMOVE hidden=false
+[r1c] == 2. a fitted instance id whose inventory record INSTALL's take_module removed ==
+[r1c] while the record exists: modules={ "mod_0007": { &"base_id": "w_cannon", &"count": 1, &"rarity": "rare" } }
+[r1c]   strip=["W1 CANNON MKI", "W2 — EMPTY", "W3 — EMPTY"] ; w_cannon status='FITTED (W1)' action='BUY' ; fit_index_of=0
+[r1c] take_module(mod_0007, 1) = true ; modules={  }
+[r1c] after the take: strip=["W1 CANNON MKI", "W2 — EMPTY", "W3 — EMPTY"]
+[r1c]   w_cannon status='FOR SALE' action='BUY' ; fit_index_of=-1
+[r1c]   the strip's REMOVE on W1: true
+[r1c]   remove_module(0) = true | footer=["REMOVED · MOD_0007 · BACK IN INVENTORY"] | modules={ "mod_0007": { "base_id": "mod_0007", "count": 1 } }
+[r1c] == 3. 09 section 2: sum(draws) <= hull power_out + power module ==
+[r1c] Vanguard power_out=8 ; p_std effect={ &"power_add": 0.0 } ; p_mk2 effect={ &"power_add": 2.0 }
+[r1c] three plasma + light shield with p_std: power={ &"out": 8, &"draw": 11, &"spare": -3, &"legal": false } legal=false
+[r1c] the same fit with p_mk2 (+2 output): power={ &"out": 10, &"draw": 11, &"spare": -1, &"legal": false } legal=false
+[r1c] install the third plasma with p_mk2: false | footer=["11 / 10 PWR — OVER BY 1"]
+[r1c] cells=["w_plasma", "w_plasma", ""] fit_legal=true
+[r1c] == done ==
+WARNING: 14 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 6 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

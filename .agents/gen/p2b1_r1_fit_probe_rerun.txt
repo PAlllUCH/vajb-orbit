@@ -1,0 +1,90 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[r1] == 1. the row table against 09 section 3.1 ==
+[r1] 09 section 3.1's table rows=6 ids=["w_laser", "w_cannon", "w_rocket", "w_mine", "w_plasma", "w_railgun"]
+[r1] pane rows=6 ids=[&"w_laser", &"w_cannon", &"w_rocket", &"w_mine", &"w_plasma", &"w_railgun"]
+[r1] every doc row's cost/draw/effect/meta matches the pane: true
+[r1] pane rows outside 09 section 3.1's table=[]
+[r1] catalogue weapon-slot ids=7 ["w_laser", "w_cannon", "w_rocket", "w_mine", "w_plasma", "w_railgun", "w_mining"]
+[r1] == 2. can the player obtain each weapon module? ==
+[r1] w_laser: catalogue slot=weapons cost=900 owned=0 row=true pressable=true action=BUY
+[r1] w_cannon: catalogue slot=weapons cost=1200 owned=0 row=true pressable=true action=BUY
+[r1] w_rocket: catalogue slot=weapons cost=2400 owned=0 row=true pressable=true action=BUY
+[r1] w_mine: catalogue slot=weapons cost=1800 owned=0 row=true pressable=true action=BUY
+[r1] w_plasma: catalogue slot=weapons cost=4800 owned=0 row=true pressable=true action=BUY
+[r1] w_railgun: catalogue slot=weapons cost=5200 owned=0 row=true pressable=true action=BUY
+[r1] w_mining: catalogue slot=weapons cost=600 owned=0 row=false pressable=false action=-
+[r1] the panel's own buy seam for w_mining (no row, so unreachable by a press): true
+[r1] after a direct panel.buy_module(w_mining) | credits=19400 cells=["", "", ""] inv=[]
+[r1]   strip=["W1 LASER MKII", "W2 — EMPTY", "W3 — EMPTY"]
+[r1] == 3. buy / install / swap / remove (R1's own sequence) ==
+[r1] start | credits=19400 cells=["", "", ""] inv=[]
+[r1]   strip=["W1 LASER MKII", "W2 — EMPTY", "W3 — EMPTY"]
+[r1] buy_module(w_rocket, 2400) = true | credits 19400 -> 17000 | log lines 1 -> 2 | owned=1
+[r1] after BUY + INSTALL w_rocket (first empty W cell) | credits=17000 cells=["w_laser", "w_rocket", ""] inv=[]
+[r1]   strip=["W1 LASER MKII", "W2 ROCKET POD", "W3 — EMPTY"]
+[r1] buy_module(w_mine, 1800) = true | credits 17000 -> 15200 | log lines 2 -> 3 | owned=1
+[r1] after BUY + INSTALL w_mine (grid full) | credits=15200 cells=["w_laser", "w_rocket", "w_mine"] inv=[]
+[r1]   strip=["W1 LASER MKII", "W2 ROCKET POD", "W3 MINE LAYER"]
+[r1] w_cannon action on a full grid, none owned = BUY
+[r1] buy_module(w_cannon, 1200) = true | credits 15200 -> 14000 | log lines 3 -> 4 | owned=1
+[r1] w_cannon action on a full grid, one owned = SWAP
+[r1] after BUY + SWAP w_cannon into W1 | credits=14000 cells=["w_cannon", "w_rocket", "w_mine"] inv=[w_laser:1]
+[r1]   strip=["W1 CANNON MKI", "W2 ROCKET POD", "W3 MINE LAYER"]
+[r1] after strip REMOVE of W1 | credits=14000 cells=["", "w_rocket", "w_mine"] inv=[w_laser:1 w_cannon:1]
+[r1]   strip=["W1 — EMPTY", "W2 ROCKET POD", "W3 MINE LAYER"]
+[r1] w_mine action with an empty cell and none owned = BUY
+[r1] buy_module(w_cannon, 1200) = true | credits 14000 -> 12800 | log lines 4 -> 5 | owned=2
+[r1] after BUY + INSTALL w_cannon into W1 (grid full again) | credits=12800 cells=["w_cannon", "w_rocket", "w_mine"] inv=[w_laser:1 w_cannon:1]
+[r1]   strip=["W1 CANNON MKI", "W2 ROCKET POD", "W3 MINE LAYER"]
+[r1] w_mine action with a full grid and the module fitted = REMOVE
+[r1] after the row REMOVE of w_mine | credits=12800 cells=["w_cannon", "w_rocket", ""] inv=[w_laser:1 w_cannon:1 w_mine:1]
+[r1]   strip=["W1 CANNON MKI", "W2 ROCKET POD", "W3 — EMPTY"]
+[r1] credits spent so far=7200 (1200+2400+1800+1200 = 6600)
+[r1] == 4. every refusal, with its wording ==
+[r1] panel.buy_module(w_not_a_module) = false | credits 12800 -> 12800 | profile failures=[]
+[r1] w_railgun status/action with 500 CR = LOCKED / BUY
+[r1] press w_railgun (BUY) = false | footer=REMOVED · MINE LAYER · BACK IN INVENTORY | credits=500 | railgun=0 | failures=["insufficient_credits/w_railgun"]
+[r1] emptying W1 to build the overload candidate
+[r1] emptying W2 to build the overload candidate
+[r1] clean grid for the overload | credits=30000 cells=["", "", ""] inv=[w_laser:1 w_cannon:2 w_rocket:1 w_mine:1]
+[r1]   strip=["W1 — EMPTY", "W2 — EMPTY", "W3 — EMPTY"]
+[r1] buy_module(w_plasma, 4800) = true | credits 30000 -> 25200 | log lines 5 -> 6 | owned=1
+[r1] after INSTALL w_plasma into W1 | credits=25200 cells=["w_plasma", "", ""] inv=[w_laser:1 w_cannon:2 w_rocket:1 w_mine:1]
+[r1]   strip=["W1 PLASMA COIL", "W2 — EMPTY", "W3 — EMPTY"]
+[r1] buy_module(w_plasma, 4800) = true | credits 25200 -> 20400 | log lines 6 -> 7 | owned=1
+[r1] after INSTALL w_plasma into W2 | credits=20400 cells=["w_plasma", "w_plasma", ""] inv=[w_laser:1 w_cannon:2 w_rocket:1 w_mine:1]
+[r1]   strip=["W1 PLASMA COIL", "W2 PLASMA COIL", "W3 — EMPTY"]
+[r1] buy_module(w_plasma, 4800) = true | credits 20400 -> 15600 | log lines 7 -> 8 | owned=1
+[r1] overload refusal=11 / 8 PWR — OVER BY 3 danger=true
+[r1] after the refused third plasma (W3 empty, nothing auto-removed) | credits=15600 cells=["w_plasma", "w_plasma", ""] inv=[w_laser:1 w_cannon:2 w_rocket:1 w_mine:1 w_plasma:1]
+[r1]   strip=["W1 PLASMA COIL", "W2 PLASMA COIL", "W3 — EMPTY"]
+[r1] 09 section 2's own example=13 / 11 PWR — OVER BY 2 ; the pane's format applied to it=13 / 11 PWR — OVER BY 2 ; equal=true
+[r1] buy_module(w_mine, 1800) = true | credits 15600 -> 13800 | log lines 8 -> 9 | owned=2
+[r1] w_mine action on a full grid with one owned = INSTALL
+[r1] panel.install_module(w_mine) with no empty cell = false | footer=9 / 8 PWR — OVER BY 1 | danger=true
+[r1] after the full-cells refusal | credits=13800 cells=["w_plasma", "w_plasma", ""] inv=[w_laser:1 w_cannon:2 w_rocket:1 w_mine:2 w_plasma:1]
+[r1]   strip=["W1 PLASMA COIL", "W2 PLASMA COIL", "W3 — EMPTY"]
+[r1] STATION_HUB 5.1's own line=W SLOTS FULL — SWAP OR REMOVE FIRST ; equal=false
+[r1] an externally written partial fit: legal=false missing=[&"engines", &"power"] power={ &"out": 8, &"draw": 1, &"spare": 7, &"legal": true }
+[r1] w_railgun can still be bought; press INSTALL on that fit = false | footer=9 / 8 PWR — OVER BY 1
+[r1] (and the pane cannot repair it: every install is refused while the fit holds a module)
+[r1] == 5. the mandatory engine / reactor set ==
+[r1] rows whose slot is not weapons=[]
+[r1] install_module(e_std) = false | footer emitted=false | engines=["e_std"]
+[r1] swap_module(p_std, 0) = false | power=p_std
+[r1] remove_module over every cell = [true, false, false]
+[r1] after the whole probe: engines=["e_std"] power=p_std weapons=["", "", ""] missing=[] duplicates=[] overflow={  } legal=true
+[r1] == 6. the strip across hulls ==
+[r1] widest W grid of the nine player hulls=7 ; strip lines built=7
+[r1] Vanguard visible lines=3 ["W1 — EMPTY", "W2 — EMPTY", "W3 — EMPTY"]
+[r1] Lancer visible lines=2 fit={ &"engines": [""], &"weapons": ["", ""], &"shields": [""], &"armour": [""], &"computers": [""], &"boosters": [""], &"utility": [], &"power": "" }
+[r1] an empty line's REMOVE: visible=true disabled=false
+[r1] == 7. 17 section 5 (one log line per buy, none on a refusal) ==
+[r1] a paid buy: log 9 -> 10 ; signals=["credits", "modules"] ; credits=8800 ; owned=3
+[r1] a refused buy: log 10 -> 10 ; signals=[] ; credits=10 ; owned=0
+WARNING: 6 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 2 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

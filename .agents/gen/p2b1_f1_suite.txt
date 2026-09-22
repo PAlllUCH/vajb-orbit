@@ -1,0 +1,18 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[RUN] suites=test_p2b1_outfitting_panel
+[PASS] test_p2b1_outfitting_panel.gd.test_buy_install_swap_remove_round_trip
+[PASS] test_p2b1_outfitting_panel.gd.test_every_catalogue_weapon_has_a_pressable_row
+[PASS] test_p2b1_outfitting_panel.gd.test_fitted_strip_reads_the_active_hulls_w_cells
+[PASS] test_p2b1_outfitting_panel.gd.test_full_cells_refusal_line
+[PASS] test_p2b1_outfitting_panel.gd.test_mandatory_set_is_untouchable
+[PASS] test_p2b1_outfitting_panel.gd.test_module_rows_are_09_3_1s_table_in_order
+[PASS] test_p2b1_outfitting_panel.gd.test_power_overload_refusal_shows_the_over_by_line
+[PASS] test_p2b1_outfitting_panel.gd.test_profile_changed_drives_the_refresh
+[PASS] test_p2b1_outfitting_panel.gd.test_shell_refusal_names_a_module_cost
+[SUMMARY] passed=9 failed=0
+WARNING: 4 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 2 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
