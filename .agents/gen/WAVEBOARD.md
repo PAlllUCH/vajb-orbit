@@ -1,6 +1,8 @@
 # WAVEBOARD — one-file agent state
 
-**Updated: 2026-09-22 (P2-B proper closed; the affixes wave is next).** Full history of what every worker
+**Updated: 2026-09-22 (P2-B proper closed; the affixes wave is next).** This session's
+end-to-end record — items 4–7, their numbers, the incidents and the open items — is
+`.agents/gen/session_2026-09-22_items_4_to_7_report.md`. Full history of what every worker
 did, with known errors and open findings, now lives in
 `.agents/gen/MASTER_REPORT.md` — this board keeps only current state,
 contracts, enforcement and the queue. Executed-wave reports, briefs and
