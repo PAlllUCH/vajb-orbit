@@ -104,6 +104,20 @@ the batch-2 playtest lane and the doc lanes. Do not re-dispatch them.
    reads its reports. Its successor **P2-B proper** (per-slot fitting, the power
    meter, affixes, the legacy-UPGRADES flag day) is briefed after this wave's
    review.
+7. **Wave P2-B proper — the fitting panel (QUEUED 2026-09-22, owner order "lets
+   start with p2-b").** Brief `.agents/gen/p2b_proper_wave_task.md`, prompts
+   `.agents/gen/p2b_proper_wave_prompts.md` (order D0 → W1 → W2 → W3 → R1 → F1).
+   The scope the owner ticked on 2026-09-22: the **FITTING** pane takes the
+   UPGRADES rail entry and installs / swaps / removes modules **cell by cell**
+   across all eight slot types through `fit_module_at` / `clear_fit_slot` with
+   the power meter showing the candidate's budget before commit; the six legacy
+   `UPGRADES` rows **retire** (save v5 migrates each installed upgrade to its
+   09-lineage successor module); the owner's four station requests ride along
+   (shipyard hover info, the owned-modules inventory, the shipyard's own
+   slot-grid recipe in FITTING, REFUEL/RECHARGE in LAUNCH). **Affixes (doc 15)
+   are the NEXT wave, not this one** — the owner's tick. Runs after item 6 (it
+   consumes P2-B1's panel and P2-A's `ShipFit`/profile pins) and after the P2-B1
+   close-out is committed.
 
 ## Per-wave execution protocol
 

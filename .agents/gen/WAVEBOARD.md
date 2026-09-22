@@ -144,9 +144,13 @@ PowerShell form: `$env:VAJB_WORKER_FILES='...'; crush run "<prompt>" -m opencode
 ## In flight — none.
 
 **Queued (the queue of record is `dispatch_coder.md` §Current queue):** items 4 **P2-A**,
-5 **Rock cleave** and 6 **P2-B1** — all **DONE** (see §Closed). **Next is P2-B proper**
-(the full fitting panel: per-slot choice, the affix inventory, the AUCTION's design moves;
-briefed only after the owner has read P2-B1's report — the owner's stop condition).
+5 **Rock cleave** and 6 **P2-B1** — all **DONE** (see §Closed). **Item 7, P2-B proper — the
+fitting panel — is IN FLIGHT** (owner order 2026-09-22: "lets start with p2-b"): brief
+`.agents/gen/p2b_proper_wave_task.md`, prompts `.agents/gen/p2b_proper_wave_prompts.md`,
+order D0 → W1 → W2 → W3 → R1 → F1. Owner-ticked scope: FITTING takes the UPGRADES rail
+entry and fits cell by cell across all eight types with the power meter; the six legacy
+UPGRADES rows retire at save v5 (each installed row migrates to its 09-lineage successor
+module); the owner's four station requests ride along; **affixes (15) are the next wave**.
 **The designer phase
 is deferred to the next day (owner, 2026-09-21):** the graphics queue of record
 is `.agents/gen/dispatch_designer.md` + `designer_generation_backlog.md`
@@ -155,7 +159,8 @@ nothing from it is in flight. Owner ticks open: the
 `18_engine_spec.md` §6/§13/§15 cleaving amendment (owner-locked — the wave shipped,
 the spec text lags), P2-B1's refusal wordings, the MODULES row set of seven (R1 MED-2,
 resolved seven at the close-out with the brief's §1 list — one-constant reversal), and
-L78's ACTION precedence (a fitted module with grid room offers BUY/INSTALL, not REMOVE).
+L78's ACTION precedence (now designed away by P2-B proper's FIT/SWAP/SELECT A CELL state
+machine — tick it at that wave's close-out).
 
 **Owner requests queued 2026-09-22 (recorded, not briefed — the owner's stop
 condition is item 6, and each needs its own docs-first brief before any code):**
