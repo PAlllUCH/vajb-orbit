@@ -1,0 +1,95 @@
+extends SceneTree
+## S4-H3 review probe B - isolates the no-stored-fit branch of `_restore_fit_and_bag`.
+##
+##   XDG_DATA_HOME=/tmp/h3_scratch/xdg godot --headless --path vajb-orbit \
+##     --script res://tests/probe_h3_rollback.gd
+
+const FitData := preload("res://game/ship_fit.gd")
+const WEAPON_SLOT: StringName = &"weapons"
+const VANGUARD: StringName = &"ship_vanguard"
+const CORVETTE: StringName = &"ship_corvette"
+
+var _profile: Node = null
+
+
+func _initialize() -> void:
+	_profile = root.get_node_or_null(NodePath(&"PlayerProfile"))
+	if _profile == null:
+		print("[h3b] NO PROFILE")
+		quit(1)
+		return
+	_profile.set(&"save_path", "user://h3b_scratch.cfg")
+	_profile.call(&"reset_to_defaults")
+	EconomyLog.log_path = "user://h3b_scratch_log.txt"
+	_profile.set(&"_credits", 10000)
+	var owned: Array[StringName] = [VANGUARD, CORVETTE]
+	_profile.set(&"_owned_ships", owned)
+	_profile.set(&"_active_ship", CORVETTE)
+	_profile.set(&"_fits", {})
+	_profile.set(&"_modules", {})
+
+	var cells: int = FitData.slot_capacity(CORVETTE, WEAPON_SLOT)
+	var instances: Array[StringName] = []
+	for _i in cells:
+		instances.append(StringName(_profile.call(&"add_instance", &"w_railgun", &"common", [], [])))
+	print("[h3b] corvette W cells=%d fits()=%s" % [cells, str((_profile.call(&"fits") as Dictionary).keys())])
+	print("[h3b] resolved_fit empty=%s standard_fit empty=%s"
+		% [
+			str(not _holds(_profile.call(&"fit_for", CORVETTE))),
+			str(not _holds(FitData.standard_fit(CORVETTE))),
+		])
+	var log_before: int = _fit_lines()
+	var verdict: bool = bool(_profile.call(&"fit_battery", CORVETTE, &"w_railgun", _range(cells)))
+	var wrote: int = _fit_lines() - log_before
+	print("[h3b] fit_battery=%s log-lines-committed=%d" % [str(verdict), wrote])
+	print("[h3b] fits() after=%s" % str((_profile.call(&"fits") as Dictionary).keys()))
+	print("[h3b] fit_for(corvette)=%s" % str(_profile.call(&"fit_for", CORVETTE)))
+	for instance: StringName in instances:
+		print("[h3b]   instance %s count=%d" % [String(instance), int(_profile.call(&"module_count", instance))])
+
+	## The same batch on a hull whose stored fit the account DOES hold.
+	_profile.call(&"set_fit", VANGUARD, FitData.standard_fit(VANGUARD))
+	_profile.set(&"_active_ship", VANGUARD)
+	var v_cells: int = FitData.slot_capacity(VANGUARD, WEAPON_SLOT)
+	var v_instances: Array[StringName] = []
+	for _i in v_cells:
+		v_instances.append(StringName(_profile.call(&"add_instance", &"w_railgun", &"common", [], [])))
+	var fit_before: String = var_to_str(_profile.call(&"fit_for", VANGUARD))
+	var bag_before: String = var_to_str(_profile.call(&"modules"))
+	var log2: int = _fit_lines()
+	var verdict2: bool = bool(_profile.call(&"fit_battery", VANGUARD, &"w_railgun", _range(v_cells)))
+	print("[h3b] vanguard fit_battery=%s log-lines-committed=%d fit-identical=%s bag-identical=%s"
+		% [
+			str(verdict2),
+			_fit_lines() - log2,
+			str(var_to_str(_profile.call(&"fit_for", VANGUARD)) == fit_before),
+			str(var_to_str(_profile.call(&"modules")) == bag_before),
+		])
+	print("[h3b] done")
+	quit(0)
+
+
+static func _holds(fit: Dictionary) -> bool:
+	for key: StringName in FitData.FIT_SLOT_KEYS:
+		var raw: Variant = fit.get(key, fit.get(String(key), null))
+		if raw is Array:
+			for entry: Variant in raw as Array:
+				if String(entry) != "":
+					return true
+		elif raw is String or raw is StringName:
+			if String(raw) != "":
+				return true
+	return false
+
+
+func _range(count: int) -> Array:
+	var list: Array = []
+	for index in count:
+		list.append(index)
+	return list
+
+
+func _fit_lines() -> int:
+	if not FileAccess.file_exists(EconomyLog.log_path):
+		return 0
+	return FileAccess.get_file_as_string(EconomyLog.log_path).count("FIT_MODULE")

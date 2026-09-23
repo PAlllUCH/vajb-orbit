@@ -1,0 +1,193 @@
+extends SceneTree
+## S4-H3 review probe A - the component seam (fitted/battery_ids/battery, the two index
+## spaces) and the two bulk transactions' rollback, measured independently of the builders'
+## suites.
+##
+## Run against a scratch store so not even a crash can reach the owner's account:
+##   XDG_DATA_HOME=/tmp/h3_scratch/xdg godot --headless --path vajb-orbit \
+##     --script res://tests/probe_h3_logic.gd
+
+const WeaponScript := preload("res://game/weapons.gd")
+const PlayerStateScript := preload("res://game/player_state.gd")
+const FitData := preload("res://game/ship_fit.gd")
+
+const WEAPON_SLOT: StringName = &"weapons"
+const VANGUARD: StringName = &"ship_vanguard"
+
+var _profile: Node = null
+var _guns: Node2D = null
+var _state = null
+
+
+func _initialize() -> void:
+	_profile = root.get_node_or_null(NodePath(&"PlayerProfile"))
+	print("[h3a] save_path=%s" % (String(_profile.get(&"save_path")) if _profile != null else "NO PROFILE"))
+	_component_seam()
+	_rollback()
+	print("[h3a] done")
+	quit(0)
+
+
+## --- the component's two index spaces -------------------------------------
+
+
+func _component_seam() -> void:
+	_guns = WeaponScript.new() as Node2D
+	_state = PlayerStateScript.new()
+	_state.setup()
+	_guns.call(&"setup", null, _state)
+
+	var three: Array[StringName] = [&"w_laser", &"w_laser", &"w_laser"]
+	_guns.call(&"set_fitted", three)
+	print("[h3a] fit 3x w_laser -> fitted=%s size=%d batteries=%s"
+		% [str(_guns.call(&"fitted")), (_guns.call(&"fitted") as Array).size(), str(_guns.call(&"battery_ids"))])
+	print("[h3a] group1=%s group2=%s group3=%s dry=%s"
+		% [
+			_group_read(1),
+			_group_read(2),
+			_group_read(3),
+			String(_guns.call(&"dry_reason")),
+		])
+
+	var cases: Array = [
+		[&"w_laser", &"w_mining", &"w_cannon", &"w_laser"],
+		[&"w_cannon", &"w_laser", &"w_cannon"],
+		[&"w_mining", &"w_laser", &"w_nothing", &"w_laser"],
+		[&"w_laser", &"w_cannon", &"w_laser", &"cannon", &"w_rocket"],
+	]
+	for ids: Array in cases:
+		var fit: Array[StringName] = []
+		for value: Variant in ids:
+			fit.append(StringName(value))
+		_guns.call(&"set_fitted", fit)
+		print("[h3a] in=%s -> fitted=%s batteries=%s"
+			% [str(fit), str(_guns.call(&"fitted")), str(_guns.call(&"battery_ids"))])
+
+	var mixed: Array[StringName] = [&"w_laser", &"w_mining", &"w_cannon", &"w_laser"]
+	_guns.call(&"set_fitted", mixed)
+	print("[h3a] battery(w_laser)=%s battery(laser)=%s battery(w_cannon)=%s battery(w_mining)=%s battery(w_nothing)=%s"
+		% [
+			str(_guns.call(&"battery", &"w_laser")),
+			str(_guns.call(&"battery", &"laser")),
+			str(_guns.call(&"battery", &"w_cannon")),
+			str(_guns.call(&"battery", &"w_mining")),
+			str(_guns.call(&"battery", &"w_nothing")),
+		])
+
+	## The pin's own divergence: what `player_ship.gd:_bind_weapons` hands the component for a
+	## fit whose first W cell is family-less (`ShipFit.fitted_ids`).
+	var probe_fit := {&"weapons": ["w_mining", "w_laser", ""], &"engines": [], &"power": ""}
+	print("[h3a] ShipFit.fitted_ids([w_mining, w_laser, empty])=%s" % str(FitData.fitted_ids(probe_fit)))
+	var flat: Array[StringName] = FitData.fitted_ids(probe_fit)
+	_guns.call(&"set_fitted", flat)
+	print("[h3a] component on that flat list: fitted=%s battery(w_laser)=%s  (the laser is W-cell index 1)"
+		% [str(_guns.call(&"fitted")), str(_guns.call(&"battery", &"w_laser"))])
+
+
+func _group_read(group: int) -> String:
+	_guns.call(&"select_group", group)
+	return String(_guns.call(&"selected_weapon"))
+
+
+## --- the bulk transactions' rollback --------------------------------------
+
+
+func _rollback() -> void:
+	if _profile == null:
+		return
+	_profile.set(&"save_path", "user://h3a_scratch.cfg")
+	_profile.call(&"reset_to_defaults")
+	EconomyLog.log_path = "user://h3a_scratch_log.txt"
+	print("[h3a] scratch save_path=%s log=%s" % [String(_profile.get(&"save_path")), EconomyLog.log_path])
+
+	var owned: Array[StringName] = [VANGUARD]
+	_profile.set(&"_credits", 10000)
+	_profile.set(&"_active_ship", VANGUARD)
+	_profile.set(&"_owned_ships", owned)
+	_profile.set(&"_fits", {})
+	_profile.set(&"_modules", {})
+	_profile.call(&"set_fit", VANGUARD, FitData.standard_fit(VANGUARD))
+
+	var cells: int = FitData.slot_capacity(VANGUARD, WEAPON_SLOT)
+	var instances: Array[StringName] = []
+	for _i in cells:
+		instances.append(StringName(_profile.call(&"add_instance", &"w_railgun", &"common", [], [])))
+	print("[h3a] vanguard W cells=%d single-cell legality of w_railgun on the standard fit: %s"
+		% [cells, str(_legality(cells, instances))])
+
+	var fit_before: String = var_to_str(_profile.call(&"fit_for", VANGUARD))
+	var bag_before: String = var_to_str(_profile.call(&"modules"))
+	var log_before: int = _fit_lines()
+	var verdict: bool = bool(_profile.call(&"fit_battery", VANGUARD, &"w_railgun", _range(cells)))
+	var wrote: int = _fit_lines() - log_before
+	print("[h3a] fit_battery(3 railguns)=%s log-lines-committed=%d" % [str(verdict), wrote])
+	print("[h3a] fit byte-identical=%s bag byte-identical=%s"
+		% [
+			str(var_to_str(_profile.call(&"fit_for", VANGUARD)) == fit_before),
+			str(var_to_str(_profile.call(&"modules")) == bag_before),
+		])
+	var stranded := 0
+	for instance: StringName in instances:
+		if int(_profile.call(&"module_count", instance)) != 1:
+			stranded += 1
+	print("[h3a] instances not back at count 1 = %d of %d" % [stranded, instances.size()])
+
+	var fit_pre: String = var_to_str(_profile.call(&"fit_for", VANGUARD))
+	print("[h3a] clear_battery(absent base)=%s fit-identical=%s"
+		% [
+			str(bool(_profile.call(&"clear_battery", VANGUARD, &"w_plasma"))),
+			str(var_to_str(_profile.call(&"fit_for", VANGUARD)) == fit_pre),
+		])
+	_no_stored_fit_rollback()
+
+
+## A hull with **no stored fit** whose batch is refused after at least one write: the restore
+## must leave `fits()` without that hull rather than with an all-empty entry.
+func _no_stored_fit_rollback() -> void:
+	var hull: StringName = &"ship_corvette"
+	var cell_count: int = FitData.slot_capacity(hull, WEAPON_SLOT)
+	var instances: Array[StringName] = []
+	for _i in cell_count:
+		instances.append(StringName(_profile.call(&"add_instance", &"w_railgun", &"common", [], [])))
+	var owned: Array[StringName] = [VANGUARD, hull]
+	_profile.set(&"_owned_ships", owned)
+	_profile.set(&"_active_ship", hull)
+	print("[h3a] corvette W cells=%d legality=%s" % [cell_count, str(_legality(cell_count, instances, hull))])
+	var had := (_profile.call(&"fits") as Dictionary).has(String(hull))
+	var log_before: int = _fit_lines()
+	var verdict: bool = bool(_profile.call(&"fit_battery", hull, &"w_railgun", _range(cell_count)))
+	var wrote: int = _fit_lines() - log_before
+	print("[h3a] corvette fit_battery=%s stored-before=%s stored-after=%s log-lines-committed=%d"
+		% [
+			str(verdict),
+			str(had),
+			str((_profile.call(&"fits") as Dictionary).has(String(hull))),
+			wrote,
+		])
+
+
+## Each cell's own legality, measured on the state restored after the previous probe, so one
+## cell's refusal cannot mask another's.
+func _legality(cells: int, instances: Array[StringName], hull: StringName = VANGUARD) -> Array:
+	var out: Array = []
+	var fit_before: String = var_to_str(_profile.call(&"fit_for", hull))
+	var bag_before: String = var_to_str(_profile.call(&"modules"))
+	for index in cells:
+		var ok: bool = bool(_profile.call(&"fit_module_at", hull, WEAPON_SLOT, index, instances[index]))
+		out.append("%d:%s" % [index, "ok" if ok else "REFUSED"])
+		_profile.call(&"set_fit", hull, str_to_var(fit_before))
+		_profile.call(&"set_modules", str_to_var(bag_before))
+	return out
+
+
+func _range(count: int) -> Array:
+	var list: Array = []
+	for index in count:
+		list.append(index)
+	return list
+
+
+func _fit_lines() -> int:
+	if not FileAccess.file_exists(EconomyLog.log_path):
+		return 0
+	return FileAccess.get_file_as_string(EconomyLog.log_path).count("FIT_MODULE")

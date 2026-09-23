@@ -1,0 +1,94 @@
+extends SceneTree
+## S4-H3 review probe E - the expander on a full three-barrel battery: every single-cell
+## action is reachable, each one bound to its own cell, and the row's pre-built line count
+## stays the widest hull's W count.
+##
+##   XDG_DATA_HOME=/tmp/h3_scratch/xdg godot --headless --path vajb-orbit \
+##     --script res://tests/probe_h3_expander.gd
+
+const FitData := preload("res://game/ship_fit.gd")
+const ThemeRes := preload("res://ui/theme/vajb_theme.tres")
+const WEAPON_SLOT: StringName = &"weapons"
+
+var _profile: Node = null
+var _panel: Control = null
+var _host: Control = null
+var _statuses: Array[String] = []
+var _ran := false
+
+
+func _initialize() -> void:
+	_profile = root.get_node_or_null(NodePath(&"PlayerProfile"))
+	_profile.set(&"save_path", "user://h3e_scratch.cfg")
+	_profile.call(&"reset_to_defaults")
+	EconomyLog.log_path = "user://h3e_scratch_log.txt"
+	process_frame.connect(_on_frame)
+
+
+func _on_frame() -> void:
+	if _ran:
+		return
+	_ran = true
+	var hull: StringName = &"ship_vanguard"
+	var owned: Array[StringName] = []
+	for other: StringName in FitData.HULLS:
+		owned.append(other)
+	_profile.set(&"_owned_ships", owned)
+	_profile.set(&"_active_ship", hull)
+	_profile.set(&"_credits", 100000)
+	_profile.set(&"_fits", {})
+	_profile.set(&"_modules", {})
+	var fit: Dictionary = FitData.standard_fit(hull)
+	var wlist: Array = []
+	for index in FitData.slot_capacity(hull, WEAPON_SLOT):
+		wlist.append("w_laser")
+	fit[WEAPON_SLOT] = wlist
+	_profile.call(&"set_fit", hull, fit)
+	for _i in 3:
+		_profile.call(&"add_instance", &"w_laser", &"common", [], [])
+
+	var scene: PackedScene = load("res://ui/station/outfitting_panel.tscn") as PackedScene
+	_host = Control.new()
+	_host.name = "H3Host"
+	_host.theme = ThemeRes
+	_profile.add_child(_host)
+	_panel = scene.instantiate() as Control
+	_host.add_child(_panel)
+	_profile.connect(&"profile_changed", Callable(_panel, &"refresh_profile"))
+	_panel.connect(&"status_requested", func(message: String, _danger: bool) -> void:
+		_statuses.append(message))
+
+	var strip := _panel.get_node("%FittedStrip") as VBoxContainer
+	var row := strip.get_child(0) as VBoxContainer
+	var cells_box := row.get_node(^"Cells") as VBoxContainer
+	print("[h3e] pre-built single-cell lines on row 0 = %d (widest hull's W cells = %d)"
+		% [cells_box.get_child_count(), _max_weapon_cells()])
+	_panel.call(&"toggle_expander", &"w_laser")
+	for line_index in cells_box.get_child_count():
+		var line := cells_box.get_child(line_index) as HBoxContainer
+		var text := line.get_node_or_null(^"Text") as Label
+		var remove := line.get_node(^"Remove") as Button
+		print("[h3e] line %d text='%s' visible=%s remove visible=%s disabled=%s"
+			% [
+				line_index,
+				text.text if text != null else "-",
+				str(line.visible),
+				str(remove.visible),
+				str(remove.disabled),
+			])
+	## Each line's REMOVE writes its own cell: press the third and read the fit.
+	var third := (cells_box.get_child(2) as HBoxContainer).get_node(^"Remove") as Button
+	third.pressed.emit()
+	print("[h3e] after the third line's REMOVE: fit=%s status='%s' bag=%d"
+		% [
+			str((_profile.call(&"fit_for", hull) as Dictionary)[WEAPON_SLOT]),
+			_statuses[_statuses.size() - 1] if not _statuses.is_empty() else "-",
+			(_profile.call(&"instances_of", &"w_laser") as Array).size(),
+		])
+	print("[h3e] done")
+	quit(0)
+
+
+func _max_weapon_cells() -> int:
+	var panel_script := load("res://ui/station/outfitting_panel.gd") as GDScript
+	return panel_script._max_weapon_cells()

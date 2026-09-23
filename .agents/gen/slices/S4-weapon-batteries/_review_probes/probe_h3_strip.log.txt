@@ -1,0 +1,53 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[h3c] hull | W cells | power_out | non-W draw | illegal (draw/out/over) set
+[h3c] ship_fighter | 2 | 6 | 4 | ["10/6/4", "7/6/1", "8/6/2", "9/6/3"]
+[h3c] ship_vanguard | 3 | 8 | 3 | ["10/8/2", "11/8/3", "12/8/4", "9/8/1"]
+[h3c] ship_miner | 2 | 10 | 0 | []
+[h3c] ship_trader | 1 | 8 | 0 | []
+[h3c] ship_corvette | 4 | 9 | 0 | ["10/9/1", "11/9/2", "12/9/3"]
+[h3c] ship_freighter | 1 | 9 | 0 | []
+[h3c] ship_gunship | 5 | 11 | 0 | ["12/11/1", "13/11/2", "14/11/3", "15/11/4"]
+[h3c] ship_patrol | 4 | 12 | 0 | []
+[h3c] ship_destroyer | 7 | 15 | 0 | ["16/15/1", "17/15/2", "18/15/3", "19/15/4", "20/15/5", "21/15/6"]
+[h3c] hulls where 13/11/2 is reachable: ["ship_gunship"]
+[h3c] 3 cannons pack 30: shots=3 pack=27 releases(ms)=[1, 2, 18] spread=17ms per-shot-damage=27.0
+[h3c] shots in the world=3 damages=["27.0", "27.0", "27.0"]
+[h3c] 3 lasers delta 0.1: energy spent 1.800 (one barrel 0.600) damage=9.000 hits=1
+[h3c] pool 1.200000 (= two draws): spent 1.200000 dry reads=1
+[h3c] pool exactly 1.200: spent 0.600000 (draw is 0.60000000000000009) dry reads=1
+[h3c] ship_gunship W cells=5 power_out=11 plan=3 railgun + 2 rocket (13 draw)
+[h3c] row 0 kind=battery base=w_railgun cells=[0, 1, 2] owned=12 text='3× RAILGUN · W1·W2·W3 · OWNED ×12'
+[h3c] row 1 kind=battery base=w_rocket cells=[3, 4] owned=8 text='2× ROCKET POD · W4·W5 · OWNED ×8'
+[h3c] railgun FIT ALL -> status='13 / 11 PWR — OVER BY 2' danger=true
+[h3c] fit after the refusal=["w_railgun", "w_railgun", "w_railgun", "w_rocket", "w_rocket"]
+[h3c] bag after the refusal: railgun=12 rocket=8
+[h3c] vanguard: 3 laser barrels, bag=2 instances
+[h3c] row 0 kind=battery base=w_laser cells=[0, 1, 2] owned=2 text='3× LASER MKII · W1·W2·W3 · OWNED ×2'
+[h3c] laser SWAP ALL, 2 instances behind 3 barrels -> status='REFUSED · FIT ILLEGAL' danger=true
+[h3c] fit after the refusal=["w_laser", "w_laser", "w_laser"] bag=2
+[h3c] empty bag: FitAll disabled=true SwapAll disabled=true RemoveAll disabled=false text='3× LASER MKII · W1·W2·W3 · OWNED ×0'
+[h3c] vanguard: laser in W1 and W3, W2 empty, bag=4
+[h3c] row 0 kind=battery base=w_laser cells=[0, 2] owned=6 text='2× LASER MKII · W1·W3 · OWNED ×6'
+[h3c] row 1 kind=empty base= cells=[] owned=0 text='W2 — EMPTY'
+[h3c] expander starts open=false
+[h3c] focus order of the battery row: ["Expander", "Text", "FitAll", "RemoveAll", "SwapAll"]
+[h3c] toggled: open=true cells=[0, 2]
+[h3c]   line 0 text='W1 LASER MKII' visible=true remove-visible=true remove-disabled=false
+[h3c]   line 1 text='W3 LASER MKII' visible=true remove-visible=true remove-disabled=false
+[h3c] after the single-cell REMOVE on W1: fit=["", "", "w_laser"] bag=7 expander-open=true
+[h3c] row 0 kind=battery base=w_laser cells=[2] owned=7 text='1× LASER MKII · W3 · OWNED ×7'
+[h3c] row 1 kind=empty base= cells=[] owned=0 text='W1 — EMPTY'
+[h3c] row 2 kind=empty base= cells=[] owned=0 text='W2 — EMPTY'
+[h3c] fixed set: rows=7 nodes=253 max-W-cells=7
+[h3c] empty line 1 text='W1 — EMPTY' cells-box-visible=false Expander(visible=false disabled=true focus_mode=2) FitAll(visible=false disabled=true focus_mode=2) RemoveAll(visible=false disabled=true focus_mode=2) SwapAll(visible=false disabled=true focus_mode=2)
+[h3c] empty line 2 text='W2 — EMPTY' cells-box-visible=false Expander(visible=false disabled=true focus_mode=2) FitAll(visible=false disabled=true focus_mode=2) RemoveAll(visible=false disabled=true focus_mode=2) SwapAll(visible=false disabled=true focus_mode=2)
+[h3c] fresh ship_fighter: fits()=[], one laser instance in the bag
+[h3c] row 0 kind=battery base=w_laser cells=[0, 1] owned=1 text='2× LASER MKII · W1·W2 · OWNED ×1'
+[h3c] SWAP ALL on a hull with no stored fit, 1 instance behind 2 barrels -> status='REFUSED · FIT ILLEGAL' fits()=["ship_fighter"]
+[h3c] done
+WARNING: 12 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 6 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

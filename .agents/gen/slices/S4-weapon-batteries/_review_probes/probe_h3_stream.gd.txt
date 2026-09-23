@@ -1,0 +1,88 @@
+extends SceneTree
+## S4-H3 review probe D - the held trigger's cadence for a travelling family. CONTRACTS
+## section 16 rule 4: "three cannons deliver three shots per burst window instead of one and a
+## sustained pull is a stream of salvos, not one burst".
+##
+##   XDG_DATA_HOME=/tmp/h3_scratch/xdg godot --headless --path vajb-orbit \
+##     --script res://tests/probe_h3_stream.gd
+
+const WeaponScript := preload("res://game/weapons.gd")
+const PlayerStateScript := preload("res://game/player_state.gd")
+
+var _state = null
+var _rig: Node2D = null
+var _guns: Node2D = null
+var _frames := 0
+var _shots: Array[int] = []
+var _marks: Array[int] = []
+var _stage := 0
+var _ran := false
+
+
+func _initialize() -> void:
+	process_frame.connect(_on_frame)
+
+
+func _on_frame() -> void:
+	if _ran:
+		return
+	_ran = true
+	_state = PlayerStateScript.new()
+	_state.setup()
+	_rig = Node2D.new()
+	root.add_child(_rig)
+	_guns = WeaponScript.new() as Node2D
+	_rig.add_child(_guns)
+	_guns.call(&"setup", null, _state)
+	var fit: Array[StringName] = [&"w_cannon", &"w_cannon", &"w_cannon"]
+	_guns.call(&"set_fitted", fit)
+	_guns.call(&"select_group", 1)
+	_guns.call(&"set_aim_point", Vector2(400.0, 0.0))
+	_state.set_ammo(WeaponScript.ammo_slot(&"cannon"), 200)
+	_shots = [0]
+	_guns.connect(&"shot_fired", func(_id: StringName) -> void: _shots[0] += 1)
+
+	print("[h3d] cannon interval_of=%.3f burst_on=%.3f burst_off=%.3f"
+		% [
+			WeaponScript.interval_of(&"cannon"),
+			float(WeaponScript.row_of(&"cannon").get(&"burst_on", 0.0)),
+			float(WeaponScript.row_of(&"cannon").get(&"burst_off", 0.0)),
+		])
+
+	## Stage 1: one pull, held for 3.0 s of 1 ms frames.
+	_guns.call(&"set_firing", true)
+	_drive(3000, 0.001, "held 3.0 s from one pull")
+	## Stage 2: release, one frame, then pull again - the same held trigger, second pull.
+	_guns.call(&"set_firing", false)
+	_guns.call(&"tick", 0.001)
+	_guns.call(&"set_firing", true)
+	_drive(3000, 0.001, "held another 3.0 s after a re-pull")
+	## Stage 3: 5 s of a *pulsing* trigger, 100 ms on / 100 ms off.
+	_guns.call(&"set_firing", false)
+	_guns.call(&"tick", 0.001)
+	var before: int = _shots[0]
+	for cycle in 25:
+		_guns.call(&"set_firing", true)
+		_drive_silent(100, 0.001)
+		_guns.call(&"set_firing", false)
+		_drive_silent(100, 0.001)
+	print("[h3d] 25 pulses of 100 ms on / 100 ms off: shots=%d (pack left %d) shots-per-pulse=%.2f"
+		% [_shots[0] - before, int(_state.ammo[WeaponScript.ammo_slot(&"cannon")]), float(_shots[0] - before) / 25.0])
+	print("[h3d] done")
+	quit(0)
+
+
+func _drive(frames: int, delta: float, label: String) -> void:
+	var before: int = _shots[0]
+	_marks = []
+	_drive_silent(frames, delta)
+	print("[h3d] %s: shots=%d releases-at-frame=%s" % [label, _shots[0] - before, str(_marks)])
+
+
+func _drive_silent(frames: int, delta: float) -> void:
+	for _f in frames:
+		var before: int = _shots[0]
+		_guns.call(&"tick", delta)
+		if _shots[0] > before:
+			_marks.append(_frames + 1)
+		_frames += 1

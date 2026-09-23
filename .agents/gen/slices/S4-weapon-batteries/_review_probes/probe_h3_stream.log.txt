@@ -1,0 +1,12 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[h3d] cannon interval_of=0.600 burst_on=0.350 burst_off=0.250
+[h3d] held 3.0 s from one pull: shots=3 releases-at-frame=[1, 6, 28]
+[h3d] held another 3.0 s after a re-pull: shots=3 releases-at-frame=[3001, 3014, 3019]
+[h3d] 25 pulses of 100 ms on / 100 ms off: shots=22 (pack left 172) shots-per-pulse=0.88
+[h3d] done
+WARNING: 58 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 2 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

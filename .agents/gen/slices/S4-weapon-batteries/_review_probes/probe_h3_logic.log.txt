@@ -1,0 +1,28 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[h3a] save_path=user://profile.cfg
+[h3a] fit 3x w_laser -> fitted=[&"laser", &"laser", &"laser"] size=3 batteries=[&"laser"]
+[h3a] group1=laser group2= group3= dry=none
+[h3a] in=[&"w_laser", &"w_mining", &"w_cannon", &"w_laser"] -> fitted=[&"laser", &"cannon", &"laser"] batteries=[&"laser", &"cannon"]
+[h3a] in=[&"w_cannon", &"w_laser", &"w_cannon"] -> fitted=[&"cannon", &"laser", &"cannon"] batteries=[&"cannon", &"laser"]
+[h3a] in=[&"w_mining", &"w_laser", &"w_nothing", &"w_laser"] -> fitted=[&"laser", &"laser"] batteries=[&"laser"]
+[h3a] in=[&"w_laser", &"w_cannon", &"w_laser", &"cannon", &"w_rocket"] -> fitted=[&"laser", &"cannon", &"laser", &"cannon", &"rocket"] batteries=[&"laser", &"cannon", &"rocket"]
+[h3a] battery(w_laser)=[0, 2] battery(laser)=[0, 2] battery(w_cannon)=[1] battery(w_mining)=[] battery(w_nothing)=[]
+[h3a] ShipFit.fitted_ids([w_mining, w_laser, empty])=[&"w_mining", &"w_laser"]
+[h3a] component on that flat list: fitted=[&"laser"] battery(w_laser)=[0]  (the laser is W-cell index 1)
+[h3a] scratch save_path=user://h3a_scratch.cfg log=user://h3a_scratch_log.txt
+[h3a] vanguard W cells=3 single-cell legality of w_railgun on the standard fit: ["0:ok", "1:ok", "2:ok"]
+[h3a] fit_battery(3 railguns)=false log-lines-committed=2
+[h3a] fit byte-identical=true bag byte-identical=true
+[h3a] instances not back at count 1 = 0 of 3
+[h3a] clear_battery(absent base)=false fit-identical=true
+[h3a] corvette W cells=4 legality=["0:ok", "1:ok", "2:ok", "3:ok"]
+[h3a] corvette fit_battery=false stored-before=true stored-after=true log-lines-committed=3
+[h3a] done
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+WARNING: 1 RID of type "CanvasItem" was leaked.
+   at: _free_rids (servers/rendering/renderer_canvas_cull.cpp:2733)
+WARNING: 8 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 2 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

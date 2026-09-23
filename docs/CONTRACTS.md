@@ -799,7 +799,25 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
-Expected: **`[SUMMARY] passed=493 failed=0`**, exit 0 (measured twice on 2026-09-23 by the
+Expected: **`[SUMMARY] passed=521 failed=0`**, exit 0 (measured **five** times on 2026-09-23 by
+the S4 review — S4-H3 — four times with the canonical command below and once through
+`verify_wave.py verify … --tests`, identical every time; **521 tests over 44 suites**, with the
+live `user://` byte-identical before and after every run: `profile.cfg` md5
+`3e6ee8d7e7145c4e37bbd8dc90f62f9b`, `economy_log.txt` md5
+`eef2929404d1b3b2a4f30565e7b183b2`). **S4's growth is `493 → 508 → 521`**: H1's battery suite
+(`test_s4_batteries.gd`, **15** new) and H2's volley (`test_engine2_weapons.gd` **29 → 42**),
+with `test_p2b1_outfitting_panel.gd` (**11**, its per-cell strip tests re-read as battery rows)
+and `test_engine2_wiring.gd` (**13**, its `fitted()` assertion rewritten per barrel with a bite
+check) unchanged in count. The one S4 evidence line that varies run to run is the strum's own
+(`[s4-weapons] volley: releases at […]; ceiling 40, pack 30 -> 27`) — the per-barrel offsets are
+drawn from `WeaponComponent._strum_rng` per pull (measured spans 5–27 ms inside the 40 ms
+ceiling, the lead barrel on the pull's own frame); every other S4 evidence line re-runs
+byte-identically (`[s4-batteries] mixed fit rows=["battery w_laser [0, 2]", "battery w_cannon
+[1]"]`, `overload line=11 / 8 PWR — OVER BY 3`, `fixed strip: 7 rows, 253 nodes (36 per row)`).
+The S4 review's verdict is **blocked**: a sustained trigger fires one salvo and then nothing for
+every travelling family, contradicting §16 rule 4's own sentence (`.agents/gen/slices/
+S4-weapon-batteries/S4-H3_review.md` F1). Before it, S3's close-out read
+**`passed=493 failed=0`** (measured twice on 2026-09-23 by the
 S3 fixer pass — S3-K5 — with the canonical command below, the live `user://` byte-identical
 before and after; **493 tests over 43 suites**). The S3 review before it read
 **`passed=491 failed=0`** (measured twice the same day by S3-K4), and the difference is the
@@ -2118,3 +2136,44 @@ it unchanged, and widening a shipped return type for no consumer is not the trad
   `test_engine2_wiring.gd`, whose dedupe assertion turns red the moment `fitted()` keeps
   duplicates). **Nothing else moved:** no price, damage, cadence or ammo value, no fit shape,
   and the gate's floor is S3's measured `493/0`.
+- **v0.8.1 (2026-09-23, the S4 mandatory review — S4-H3, the wave's only CONTRACTS writer
+  this pass).** Records what the review measured against §16's own rules, so the rebuilt
+  wave's next reader has the numbers beside the pin. **Verified as built** (every one
+  re-measured, the builders' suites read as claims only; probe sources and logs archived as
+  text in `slices/S4-weapon-batteries/_review_probes/`): rule 1's per-barrel `fitted()`
+  (3 lasers → 3 entries, a mixed fit in fit order, the tool and the typo still dropped);
+  rule 2's `battery_ids()` (first-barrel order, `[laser, cannon, rocket]` for five barrels of
+  three families) and `select_group`'s clamp (3 lasers → group 1 `laser`, 2 and 3 `&""`);
+  rule 3's barrel positions **and its divergence measured end to end**
+  (`ShipFit.fitted_ids(["w_mining", "w_laser", ""]) = [w_mining, w_laser]` → the component
+  reads `fitted() = [laser]`, `battery(&"w_laser") = [0]`, while that laser is W-cell index 1)
+  — the strip's own labels come from `_weapon_cells` and read `W1·W3` for cells `[0, 2]`;
+  rules 7–8's rollback **byte-compared on both branches** (Vanguard: 2 `FIT_MODULE` lines
+  committed before the refusal, `fit_for` and `modules()` byte-identical after, no instance
+  stranded below `count` 1; Corvette with **no stored fit**: 3 lines committed and `fits()`
+  `[] → []`, the `clear_fit` branch); rule 4's volley arithmetic (3 cannons, pack 30 → 27, each
+  shot `shot_damage(cannon)` 27.0, releases inside the 40 ms ceiling, the dry barrel read once
+  per pull); rule 5's one pack per family; rule 6's per-barrel Energy frame (3 lasers at
+  `delta` 0.1 → 1.800 Energy and 9.000 damage in **one** `_deliver`); rule 9's copy (the three
+  literals byte-equal to `fitting_panel.gd:147-149`; **`13 / 11 PWR — OVER BY 2` renders through
+  a battery** — reachable on exactly one hull, `ship_gunship` with 3 railguns + 2 rockets, whose
+  reachable illegal set is `12/11/1 … 15/11/4`; the Vanguard can only reach `9/8/1 … 12/8/4`,
+  which is why H1 measured `11 / 8 PWR — OVER BY 3`; no test asserts the mandatory wording
+  through a battery); rule 10's fixed set (7 rows, **253 nodes, 36 per row**, unchanged across a
+  re-grouping write and a hull switch). **AC3/L78's surviving half:** the expander reveals every
+  cell with its own enabled REMOVE — pressing the third of three empties exactly W3 — and the
+  empty-cell lines carry every control node hidden and disabled, so they are read-only.
+  **Two deviations pinned here, both for S4-H4:** **(HIGH)** a sustained trigger fires **one
+  salvo and then nothing** for every travelling family, which contradicts rule 4's own second
+  half ("a sustained pull is a stream of salvos, not one burst") and removes the pre-S4 stream
+  (`_arm_battery` is reached only on the rising edge, `game/weapons.gd:612`, or a mid-hold group
+  switch, `:627`, and `_armed_weapon` is only cleared on release, `:672`; measured: one pull held
+  3.0 s → 3 shots then 2 976 frames with none); and **(MED)** a refused bulk action leaves a
+  stored fit behind on a hull that had none, because the pane's `_seed_fit`
+  (`outfitting_panel.gd:1089/1112/1134`) runs before `_batch_refusal` (measured: fresh
+  `ship_fighter`, no stored fit → `SWAP ALL` refused with the catch-all and `fits()` gains it).
+  The finding tiers, file:line evidence and the seven LOW rows (`L123`–`L129`) are
+  `slices/S4-weapon-batteries/S4-H3_review.md`. **Nothing else moved:** no price, damage,
+  cadence, ammo or fit-shape value, no frozen file (`verify_wave.py verify --baseline s4_start
+  --forbidden vajb-orbit/project.godot docs/gameplay/18_engine_spec.md --tests` → `problems: []`),
+  and the live `user://` pair byte-identical before and after every probe and every gate run.

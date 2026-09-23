@@ -1,0 +1,496 @@
+extends SceneTree
+## S4-H3 review probe C - the strip's rendered rows, actions, disabled states and refusals,
+## plus the volley's arithmetic (rounds per barrel, per-barrel damage, the strum bound) and
+## the power envelope that decides whether `13 / 11 PWR — OVER BY 2` is reachable.
+##
+##   XDG_DATA_HOME=/tmp/h3_scratch/xdg godot --headless --path vajb-orbit \
+##     --script res://tests/probe_h3_strip.gd
+
+const WeaponScript := preload("res://game/weapons.gd")
+const PlayerStateScript := preload("res://game/player_state.gd")
+const FitData := preload("res://game/ship_fit.gd")
+const ThemeRes := preload("res://ui/theme/vajb_theme.tres")
+
+const WEAPON_SLOT: StringName = &"weapons"
+
+var _profile: Node = null
+var _statuses: Array[String] = []
+var _dangers: Array[bool] = []
+var _panel: Control = null
+var _host: Control = null
+var _state = null
+var _rig: Node2D = null
+var _sink: Node2D = null
+var _panel_script: GDScript = null
+var _ran := false
+
+
+class DamageSink extends Node2D:
+	var total := 0.0
+	var hits := 0
+
+	func take_damage(amount: float, _bypass := false) -> void:
+		total += amount
+		hits += 1
+
+
+class BeamTargetSpy extends "res://game/weapons.gd":
+	var target: Node2D = null
+
+	func _beam_target(from: Vector2, _to: Vector2) -> Dictionary:
+		if target == null or not is_instance_valid(target):
+			return {}
+		return {
+			&"point": target.global_position,
+			&"collider": target,
+			&"distance": from.distance_to(target.global_position),
+			&"projectile": false,
+		}
+
+
+func _initialize() -> void:
+	_profile = root.get_node_or_null(NodePath(&"PlayerProfile"))
+	if _profile == null:
+		print("[h3c] NO PROFILE")
+		quit(1)
+		return
+	_profile.set(&"save_path", "user://h3c_scratch.cfg")
+	_profile.call(&"reset_to_defaults")
+	EconomyLog.log_path = "user://h3c_scratch_log.txt"
+	process_frame.connect(_on_frame)
+
+
+func _on_frame() -> void:
+	if _ran:
+		return
+	_ran = true
+	_power_reachability()
+	_volley()
+	_overload_on_the_gunship()
+	_catch_all_and_states()
+	_expander_and_node_set()
+	_seeding_on_a_refusal()
+	print("[h3c] done")
+	quit(0)
+
+
+## --- the power envelope ----------------------------------------------------
+
+
+func _power_reachability() -> void:
+	print("[h3c] hull | W cells | power_out | non-W draw | illegal (draw/out/over) set")
+	var thirteen: Array[String] = []
+	for hull: StringName in FitData.HULLS:
+		var cells: int = FitData.slot_capacity(hull, WEAPON_SLOT)
+		var power: Dictionary = FitData.power_budget(hull, FitData.standard_fit(hull))
+		var non_w: int = int(power[&"draw"])
+		var out: int = int(power[&"out"])
+		var triples := {}
+		for s in range(0, 3 * cells + 1):
+			var draw := non_w + s
+			if draw > out:
+				triples["%d/%d/%d" % [draw, out, draw - out]] = true
+		var keys: Array = triples.keys()
+		keys.sort()
+		print("[h3c] %s | %d | %d | %d | %s" % [String(hull), cells, out, non_w, str(keys)])
+		if triples.has("13/11/2"):
+			thirteen.append(String(hull))
+	print("[h3c] hulls where 13/11/2 is reachable: %s" % str(thirteen))
+
+
+## --- the volley arithmetic -------------------------------------------------
+
+
+func _volley() -> void:
+	_state = PlayerStateScript.new()
+	_state.setup()
+	_rig = Node2D.new()
+	_rig.name = "H3Rig"
+	root.add_child(_rig)
+
+	var guns: Node2D = WeaponScript.new() as Node2D
+	_rig.add_child(guns)
+	guns.call(&"setup", null, _state)
+	guns.call(&"set_fitted", _typed([&"w_cannon", &"w_cannon", &"w_cannon"]))
+	guns.call(&"select_group", 1)
+	var slot := WeaponScript.ammo_slot(&"cannon")
+	_state.set_ammo(slot, 30)
+	var shots := [0]
+	var released: Array[int] = []
+	guns.connect(&"shot_fired", func(_id: StringName) -> void: shots[0] += 1)
+	guns.call(&"set_aim_point", Vector2(400.0, 0.0))
+	guns.call(&"set_firing", true)
+	for frame in 60:
+		var before: int = shots[0]
+		guns.call(&"tick", 0.001)
+		for _r in shots[0] - before:
+			released.append(frame + 1)
+	print("[h3c] 3 cannons pack 30: shots=%d pack=%d releases(ms)=%s spread=%dms per-shot-damage=%.1f"
+		% [
+			shots[0],
+			int(_state.ammo[slot]),
+			str(released),
+			released[released.size() - 1] - released[0] if not released.is_empty() else -1,
+			WeaponScript.shot_damage(&"cannon"),
+		])
+	var damage: Array[String] = []
+	for node: Node in get_nodes_in_group("projectile"):
+		damage.append("%.1f" % float(node.call(&"damage_amount")))
+	print("[h3c] shots in the world=%d damages=%s" % [damage.size(), str(damage)])
+	guns.call(&"set_firing", false)
+	guns.call(&"tick", 0.1)
+	for node: Node in get_nodes_in_group("projectile"):
+		if is_instance_valid(node):
+			node.free()
+
+	## Instant family: three lasers, the Energy frame and the per-barrel damage.
+	var beam: Node2D = BeamTargetSpy.new() as Node2D
+	var holder := Node2D.new()
+	holder.name = "H3BeamRig"
+	root.add_child(holder)
+	holder.add_child(beam)
+	beam.call(&"setup", null, _state)
+	beam.call(&"set_fitted", _typed([&"w_laser", &"w_laser", &"w_laser"]))
+	beam.call(&"select_group", 1)
+	_sink = DamageSink.new()
+	_sink.position = Vector2(300.0, 0.0)
+	root.add_child(_sink)
+	(beam as Node).set(&"target", _sink)
+	var frame := 0.1
+	var cost := float(WeaponScript.row_of(&"laser")[&"draw"]) * frame
+	var energy_before: float = _state.energy
+	beam.call(&"set_aim_point", Vector2(600.0, 0.0))
+	beam.call(&"set_firing", true)
+	beam.call(&"tick", frame)
+	print("[h3c] 3 lasers delta 0.1: energy spent %.3f (one barrel %.3f) damage=%.3f hits=%d"
+		% [energy_before - _state.energy, cost, _sink.total, _sink.hits])
+	beam.call(&"set_firing", false)
+	beam.call(&"tick", frame)
+	## A pool that pays two barrels: set to the *same float* the draw uses, so the comparison
+	## is not a rounding knife-edge.
+	var dry := [0]
+	beam.connect(&"dry_fired", func(_id: StringName) -> void: dry[0] += 1)
+	_state.set_energy(cost * 2.0)
+	var partial_before: float = _state.energy
+	beam.call(&"set_firing", true)
+	beam.call(&"tick", frame)
+	print("[h3c] pool %.6f (= two draws): spent %.6f dry reads=%d"
+		% [partial_before, partial_before - _state.energy, dry[0]])
+	beam.call(&"set_firing", false)
+	beam.call(&"tick", frame)
+	## The same pool as the pin's own "1.200" literal, for the record.
+	_state.set_energy(1.2)
+	dry[0] = 0
+	var literal_before: float = _state.energy
+	beam.call(&"set_firing", true)
+	beam.call(&"tick", frame)
+	print("[h3c] pool exactly 1.200: spent %.6f (draw is %.17f) dry reads=%d"
+		% [literal_before - _state.energy, cost, dry[0]])
+	beam.call(&"set_firing", false)
+	beam.call(&"tick", frame)
+	if is_instance_valid(_sink):
+		_sink.free()
+	_sink = null
+	if is_instance_valid(_rig):
+		_rig.free()
+	_rig = null
+
+
+## --- the strip: the gunship's 13/11 overload -------------------------------
+
+
+func _overload_on_the_gunship() -> void:
+	var hull: StringName = &"ship_gunship"
+	var cells: int = FitData.slot_capacity(hull, WEAPON_SLOT)
+	_seed_hull(hull, [&"w_railgun", &"w_railgun", &"w_railgun", &"w_rocket", &"w_rocket"], 4)
+	print("[h3c] %s W cells=%d power_out=%d plan=3 railgun + 2 rocket (13 draw)"
+		% [String(hull), cells, int(FitData.HULLS[hull][&"power_out"])])
+	_mount()
+	_dump_rows()
+	var rail := int(_panel.call(&"battery_row_index", &"w_railgun"))
+	_statuses.clear()
+	_dangers.clear()
+	_press(rail, "FitAll")
+	print("[h3c] railgun FIT ALL -> status='%s' danger=%s" % [_last(), str(_last_danger())])
+	print("[h3c] fit after the refusal=%s"
+		% str((_profile.call(&"fit_for", hull) as Dictionary)[WEAPON_SLOT]))
+	print("[h3c] bag after the refusal: railgun=%d rocket=%d"
+		% [
+			(_profile.call(&"instances_of", &"w_railgun") as Array).size(),
+			(_profile.call(&"instances_of", &"w_rocket") as Array).size(),
+		])
+
+
+## --- the strip: a short bag, the catch-all and the disabled states ---------
+
+
+func _catch_all_and_states() -> void:
+	_teardown_panel()
+	var hull: StringName = &"ship_vanguard"
+	_seed_battery(hull, &"w_laser", 3, 2)
+	print("[h3c] vanguard: 3 laser barrels, bag=2 instances")
+	_mount()
+	_dump_rows()
+	var rail := int(_panel.call(&"battery_row_index", &"w_laser"))
+	_statuses.clear()
+	_dangers.clear()
+	_press(rail, "SwapAll")
+	print("[h3c] laser SWAP ALL, 2 instances behind 3 barrels -> status='%s' danger=%s"
+		% [_last(), str(_last_danger())])
+	print("[h3c] fit after the refusal=%s bag=%d"
+		% [
+			str((_profile.call(&"fit_for", hull) as Dictionary)[WEAPON_SLOT]),
+			(_profile.call(&"instances_of", &"w_laser") as Array).size(),
+		])
+
+	## The bag emptied: FIT ALL / SWAP ALL disabled, REMOVE ALL never.
+	_profile.set(&"_modules", {})
+	_panel.call(&"refresh_profile", &"modules")
+	rail = int(_panel.call(&"battery_row_index", &"w_laser"))
+	var main := _row_main(rail)
+	print("[h3c] empty bag: FitAll disabled=%s SwapAll disabled=%s RemoveAll disabled=%s text='%s'"
+		% [
+			str((main.get_node(^"FitAll") as Button).disabled),
+			str((main.get_node(^"SwapAll") as Button).disabled),
+			str((main.get_node(^"RemoveAll") as Button).disabled),
+			_row_text(rail),
+		])
+
+
+## --- the expander, the single-cell actions and the fixed node set ----------
+
+
+func _expander_and_node_set() -> void:
+	_teardown_panel()
+	var hull: StringName = &"ship_vanguard"
+	## Three barrels with the middle cell left empty, so the strip must draw one battery row
+	## and one `W2 — EMPTY` line, and the expander's lines must name W1 and W3.
+	_profile.set(&"_modules", {})
+	_seed_hull(hull, [&"w_laser", "", &"w_laser"], 3)
+	print("[h3c] vanguard: laser in W1 and W3, W2 empty, bag=4")
+	_mount()
+	_dump_rows()
+	var rail := int(_panel.call(&"battery_row_index", &"w_laser"))
+	print("[h3c] expander starts open=%s" % str(_panel.call(&"expanded", &"w_laser")))
+	print("[h3c] focus order of the battery row: %s" % str(_names(_row_main(rail))))
+	_panel.call(&"toggle_expander", &"w_laser")
+	print("[h3c] toggled: open=%s cells=%s"
+		% [
+			str(_panel.call(&"expanded", &"w_laser")),
+			str((_panel.call(&"strip_rows") as Array)[rail][&"cells"]),
+		])
+	var cells_list: Array = (_panel.call(&"strip_rows") as Array)[rail][&"cells"]
+	for line_index in (cells_list as Array).size():
+		var line := _cell_line(rail, line_index)
+		var text_node := line.get_node_or_null(^"Text") as Label
+		var remove := line.get_node(^"Remove") as Button
+		print("[h3c]   line %d text='%s' visible=%s remove-visible=%s remove-disabled=%s"
+			% [
+				line_index,
+				text_node.text if text_node != null else "-",
+				str(line.visible),
+				str(remove.visible),
+				str(remove.disabled),
+			])
+	## L78's reading: REMOVE reachable although W2 is empty.
+	var first_remove := _cell_line(rail, 0).get_node(^"Remove") as Button
+	first_remove.pressed.emit()
+	print("[h3c] after the single-cell REMOVE on W1: fit=%s bag=%d expander-open=%s"
+		% [
+			str((_profile.call(&"fit_for", hull) as Dictionary)[WEAPON_SLOT]),
+			(_profile.call(&"instances_of", &"w_laser") as Array).size(),
+			str(_panel.call(&"expanded", &"w_laser")),
+		])
+	_dump_rows()
+	var strip := _panel.get_node("%FittedStrip") as VBoxContainer
+	print("[h3c] fixed set: rows=%d nodes=%d max-W-cells=%d"
+		% [strip.get_child_count(), _count(strip), _panel_script._max_weapon_cells()])
+	var rows: Array = _panel.call(&"strip_rows")
+	for index in (rows as Array).size():
+		if rows[index][&"kind"] == &"empty":
+			var e_main := _row_main(index)
+			var states: Array[String] = []
+			for name in ["Expander", "FitAll", "RemoveAll", "SwapAll"]:
+				var control := e_main.get_node(name) as Button
+				states.append("%s(visible=%s disabled=%s focus_mode=%d)"
+					% [name, str(control.visible), str(control.disabled), control.focus_mode])
+			var cells_box := ((_panel.get_node("%FittedStrip") as VBoxContainer)
+				.get_child(index) as VBoxContainer).get_node(^"Cells") as Control
+			print("[h3c] empty line %d text='%s' cells-box-visible=%s %s"
+				% [index, _row_text(index), str(cells_box.visible), " ".join(states)])
+	## `focus_primary` on an all-empty strip falls through to the ammo rows.
+	var all_empty := true
+	for index in (rows as Array).size():
+		if rows[index][&"kind"] != &"empty":
+			all_empty = false
+	if all_empty:
+		_panel.call(&"focus_primary")
+		var strip_node := _panel.get_node("%FittedStrip") as VBoxContainer
+		var focused := _panel.get_viewport().gui_get_focus_owner()
+		print("[h3c] focus_primary on an all-empty strip -> focus owner=%s"
+			% (String(focused.name) if focused != null else "null"))
+
+
+## --- a hull with no stored fit: does a refused action write one? -----------
+
+
+func _seeding_on_a_refusal() -> void:
+	_teardown_panel()
+	var hull: StringName = &"ship_fighter"
+	_profile.set(&"_fits", {})
+	_profile.set(&"_modules", {})
+	_profile.set(&"_active_ship", hull)
+	_profile.call(&"add_instance", &"w_laser", &"common", [], [])
+	print("[h3c] fresh %s: fits()=%s, one laser instance in the bag" % [String(hull), str((_profile.call(&"fits") as Dictionary).keys())])
+	_mount()
+	_dump_rows()
+	var rail := int(_panel.call(&"battery_row_index", &"w_laser"))
+	_statuses.clear()
+	_dangers.clear()
+	if rail >= 0:
+		_press(rail, "SwapAll")
+		print("[h3c] SWAP ALL on a hull with no stored fit, 1 instance behind 2 barrels -> status='%s' fits()=%s"
+			% [_last(), str((_profile.call(&"fits") as Dictionary).keys())])
+	else:
+		print("[h3c] no laser battery row")
+
+
+## --- helpers ---------------------------------------------------------------
+
+
+func _seed_hull(hull: StringName, plan: Array, bag: int) -> void:
+	var owned: Array[StringName] = []
+	for other: StringName in FitData.HULLS:
+		owned.append(other)
+	_profile.set(&"_owned_ships", owned)
+	_profile.set(&"_active_ship", hull)
+	_profile.set(&"_credits", 100000)
+	_profile.set(&"_fits", {})
+	_profile.set(&"_modules", {})
+	_write_plan(hull, plan)
+	for base: StringName in plan:
+		for _i in bag:
+			_profile.call(&"add_instance", base, &"common", [], [])
+
+
+## `count` identical barrels of `base_id` plus `bag` instances of it.
+func _seed_battery(hull: StringName, base_id: StringName, count: int, bag: int) -> void:
+	var owned: Array[StringName] = []
+	for other: StringName in FitData.HULLS:
+		owned.append(other)
+	_profile.set(&"_owned_ships", owned)
+	_profile.set(&"_active_ship", hull)
+	_profile.set(&"_credits", 100000)
+	_profile.set(&"_fits", {})
+	_profile.set(&"_modules", {})
+	var plan: Array = []
+	for _i in count:
+		plan.append(base_id)
+	_write_plan(hull, plan)
+	for _i in bag:
+		_profile.call(&"add_instance", base_id, &"common", [], [])
+
+
+func _write_plan(hull: StringName, plan: Array) -> void:
+	var cells: int = FitData.slot_capacity(hull, WEAPON_SLOT)
+	var fit: Dictionary = FitData.standard_fit(hull)
+	var wlist: Array = []
+	for index in cells:
+		wlist.append(String(plan[index]) if index < plan.size() else "")
+	fit[WEAPON_SLOT] = wlist
+	_profile.call(&"set_fit", hull, fit)
+
+
+func _mount() -> void:
+	_panel_script = load("res://ui/station/outfitting_panel.gd") as GDScript
+	var scene: PackedScene = load("res://ui/station/outfitting_panel.tscn") as PackedScene
+	_host = Control.new()
+	_host.name = "H3Host"
+	_host.theme = ThemeRes
+	var width := float(ProjectSettings.get_setting("display/window/size/viewport_width", 1920))
+	var height := float(ProjectSettings.get_setting("display/window/size/viewport_height", 1080))
+	_host.size = Vector2(width, height)
+	_profile.add_child(_host)
+	_panel = scene.instantiate() as Control
+	_host.add_child(_panel)
+	_profile.connect(&"profile_changed", Callable(_panel, &"refresh_profile"))
+	_panel.connect(&"status_requested", _on_status)
+
+
+func _teardown_panel() -> void:
+	if _panel != null and is_instance_valid(_panel):
+		var callable := Callable(_panel, &"refresh_profile")
+		if _profile.is_connected(&"profile_changed", callable):
+			_profile.disconnect(&"profile_changed", callable)
+	if _host != null and is_instance_valid(_host):
+		_host.free()
+	_host = null
+	_panel = null
+
+
+func _dump_rows() -> void:
+	var rows: Array = _panel.call(&"strip_rows")
+	for index in (rows as Array).size():
+		var row: Dictionary = rows[index]
+		print("[h3c] row %d kind=%s base=%s cells=%s owned=%d text='%s'"
+			% [
+				index,
+				String(row[&"kind"]),
+				String(row[&"base"]),
+				str(row[&"cells"]),
+				int(row[&"owned"]),
+				String(row[&"text"]),
+			])
+
+
+func _press(row_index: int, control: String) -> void:
+	(_row_main(row_index).get_node(control) as Button).pressed.emit()
+
+
+func _row_main(row_index: int) -> HBoxContainer:
+	var strip := _panel.get_node("%FittedStrip") as VBoxContainer
+	return (strip.get_child(row_index) as VBoxContainer).get_node(^"Main") as HBoxContainer
+
+
+func _row_text(row_index: int) -> String:
+	return (_row_main(row_index).get_node(^"Text") as Label).text
+
+
+func _cell_line(row_index: int, line_index: int) -> HBoxContainer:
+	var strip := _panel.get_node("%FittedStrip") as VBoxContainer
+	var cells := (strip.get_child(row_index) as VBoxContainer).get_node(^"Cells") as VBoxContainer
+	return cells.get_child(line_index) as HBoxContainer
+
+
+func _names(box: HBoxContainer) -> Array[String]:
+	var out: Array[String] = []
+	for child: Node in box.get_children():
+		out.append(String(child.name))
+	return out
+
+
+func _count(node: Node) -> int:
+	var total := 1
+	for child: Node in node.get_children():
+		total += _count(child)
+	return total
+
+
+func _typed(values: Array) -> Array[StringName]:
+	var out: Array[StringName] = []
+	for value: Variant in values:
+		out.append(StringName(value))
+	return out
+
+
+func _last() -> String:
+	return _statuses[_statuses.size() - 1] if not _statuses.is_empty() else "-"
+
+
+func _last_danger() -> bool:
+	return _dangers[_dangers.size() - 1] if not _dangers.is_empty() else false
+
+
+func _on_status(message: String, danger: bool) -> void:
+	_statuses.append(message)
+	_dangers.append(danger)
