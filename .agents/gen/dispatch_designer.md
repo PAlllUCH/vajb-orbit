@@ -79,6 +79,7 @@ reimports only in quiet windows between coder gate runs. One editor session.
 | D-slice | Item | What | Gate |
 |---|---|---|---|
 | D3 | 1 | **Chrome re-cut** — button/slot plate family (the 1041×1087-cell-stretched defect class: plates, bezel band, bar caps, panel frame) | OWNER-GATED on `staging/phase_f/_preview/review_slots.png` |
+| D3 | 2 | **Painted-only station rail icons** (owner 2026-09-23: "in space station the icons on 'MODULES' left menu should have only painted icons so no svg") — swap the station's left-rail/`MODULES` menu icons to **painted raster masters** (generate if no painted master exists for a symbol); SVGs stay for the in-list glyph work elsewhere. One review sheet of the rail at 48/96 px | READY — may ride the owner's live SVG-review session |
 | D3 | 2 | **Tint rework** (the depictive remainder): replace or repair the tint-stencil system for raster icons (shader tint or scoped stencils) + the 1 080-file import-settings cleanup left over from D2 | READY |
 | D4 | 3 | **4K 2× backdrop cuts** (R8; display target: 4K) | READY |
 | D4 | 4 | **B2-1 hover look** — flicker / directional glow / ember | **OWNER PICK NEEDED** first |

@@ -170,7 +170,11 @@ PowerShell form: `$env:VAJB_WORKER_FILES='...'; crush run "<prompt>" -m opencode
 - Probe hygiene (L17): a probe that repoints `PlayerProfile.save_path` must
   stop/flush the 0.5 s debounce before restoring `save_path`.
 
-## In flight — none. **Coder item 10 (S4 weapon batteries) shipped 2026-09-23** and is in
+## In flight — none. **Queued next: coder item 11 = S5 playtest fixes** (the owner's
+ten findings 2026-09-23 — docs-first done: CONTRACTS §17 + v0.9, STATION_HUB §5.11,
+10 §6.1, 09 §11; brief + prompts in `slices/S5-playtest-fixes/`) plus **designer D3
+item 2 = painted-only station rail icons** (routed to the owner's live SVG-review
+session). **Coder item 10 (S4 weapon batteries) shipped 2026-09-23** and is in
 §Closed; the code queue is empty beyond it (`dispatch_coder.md` §"Next beyond this queue": the
 engine slice 3 / RPG P3 merge, and the affix-application wave 15 §9.3 leaves open). **Graphics
 D2 (designer #1) is DONE 2026-09-22**

@@ -1,0 +1,57 @@
+# S5_prompts — dispatch blocks (worker prompts live here; the owner never pastes them)
+
+Model for every worker: `deepseek/deepseek-v4-flash`. Run from the workspace root.
+Reports: `slices/S5-playtest-fixes/<WorkerID>_report.md`, review `S5-R1_review.md`.
+Gate/probe convention: `source ~/.profile && godot --headless --path vajb-orbit
+res://tests/headless_runner.tscn --quit-after 1200` (F18) — and **every probe/gate
+runs against a scratch store** (`XDG_DATA_HOME` or repointed `save_path`; T-93 class).
+
+**Run order: J0 → (J1 ∥ J2) → J3 → J4 → R1 → (F1 only on HIGH/MED).**
+
+## Before the first dispatch (one line)
+
+```bash
+cd "$VAJB_WORKSPACE" && python3 staging/verify_wave.py snapshot --name s5_start && git add -A && git commit -m "Record the pre-wave state before the playtest fix wave"
+```
+
+## S5-J0 — docs drift check
+
+```bash
+VAJB_WORKER_FILES="docs/,vajb-orbit/tests/,vajb-orbit/tools/" crush run "You are worker S5-J0 on the Vajb Orbit workspace (wave S5, brief .agents/gen/slices/S5-playtest-fixes/S5_BRIEF.md — read it fully, then docs/CONTRACTS.md §17/§13/§16, docs/design/STATION_HUB.md §5.11, docs/gameplay/10_ship_acquisition.md §6.1, docs/gameplay/09_ship_slots_modules.md §11). Task: read the pinned set against the tree as it stands after the D2/S3/S4 waves (icon paths are .svg masters now, OUTFITTING still holds the S4 strip, save is v6) and report every contradiction, stale line or missing file the wave will touch. Invent no numbers and fix nothing: deliver .agents/gen/slices/S5-playtest-fixes/S5-J0_report.md with findings at file:line and their escalation bucket. Hard rules in the brief apply." -m deepseek/deepseek-v4-flash --cwd "$VAJB_WORKSPACE"
+```
+
+## S5-J1 — commerce & hangar (parallel-safe with J2)
+
+```bash
+VAJB_WORKER_FILES="vajb-orbit/ui/station/auction_panel.gd,vajb-orbit/ui/station/auction_panel.tscn,vajb-orbit/ui/station/shipyard_panel.gd,vajb-orbit/ui/station/shipyard_panel.tscn,vajb-orbit/ui/screens/station.gd,vajb-orbit/tests/" crush run "You are worker S5-J1 on the Vajb Orbit workspace (wave S5, brief .agents/gen/slices/S5-playtest-fixes/S5_BRIEF.md — read it fully, then docs/design/STATION_HUB.md §5.11 and docs/CONTRACTS.md §17). Task: (1) the AUCTION shelf groups under family tabs HULLS · WEAPONS · DRIVES · SHIELDS · ARMOUR · POWER · COMPUTERS · BOOSTERS · UTILITY · ALL — display grouping only: the same 6+10 draw, weights, hot slot, restock and prices must measure byte-identical to S3's (AC1). (2) The SHIPYARD becomes the hangar: owned hulls only (48 px class icon, name, class, ACTIVE badge), selection PREVIEWS (side render, stats, fit grid) and writes nothing, the footer SET ACTIVE is the sole commit (AC2). The buy rows retire to the auction (10 §6.1). Add ONLY tests/test_s5_commerce.gd (AC1's byte-identity + AC2's select-writes-nothing probe). Report .agents/gen/slices/S5-playtest-fixes/S5-J1_report.md with measured numbers. Hard rules in the brief apply; scratch stores only." -m deepseek/deepseek-v4-flash --cwd "$VAJB_WORKSPACE"
+```
+
+## S5-J2 — consumables economy (parallel-safe with J1)
+
+```bash
+VAJB_WORKER_FILES="vajb-orbit/game/module_catalog.gd,vajb-orbit/game/game.gd,vajb-orbit/autoload/player_profile.gd,vajb-orbit/ui/station/exchange_panel.gd,vajb-orbit/ui/station/exchange_panel.tscn,vajb-orbit/tests/" crush run "You are worker S5-J2 on the Vajb Orbit workspace (wave S5, brief .agents/gen/slices/S5-playtest-fixes/S5_BRIEF.md — read it fully, then docs/gameplay/10_ship_acquisition.md §6.1 and docs/CONTRACTS.md §17). Task: ammunition becomes cargo exactly as pinned — the six items &ammo_laser &ammo_cannon &ammo_rocket &ammo_mine &ammo_plasma &ammo_railgun counted in units of ROUNDS_PER_CARGO_UNIT := 10; the ammo rows deliver to cargo (units = rounds / 10) instead of packs; at launch each fitted weapon's pack auto-fills from cargo of its family up to ammo_max exactly once (drawn units leave the hold; never in flight); EXCHANGE sells units at 60 % of list beside minerals; fuel cells are delisted from every sale surface (existing stacks still work on R). Countermeasure packs are staged out. Add ONLY tests/test_s5_ammo_cargo.gd (AC4: buy->cargo units, launch auto-load math, the 60 % sell, the fuel-cell delist). Report .agents/gen/slices/S5-playtest-fixes/S5-J2_report.md with measured numbers. Hard rules in the brief apply; scratch stores only." -m deepseek/deepseek-v4-flash --cwd "$VAJB_WORKSPACE"
+```
+
+## S5-J3 — batteries v2 + the rename (after J1 ∥ J2)
+
+```bash
+VAJB_WORKER_FILES="vajb-orbit/ui/station/outfitting_panel.gd,vajb-orbit/ui/station/outfitting_panel.tscn,vajb-orbit/ui/station/armory_panel.gd,vajb-orbit/ui/station/armory_panel.tscn,vajb-orbit/autoload/player_profile.gd,vajb-orbit/game/weapons.gd,vajb-orbit/tests/" crush run "You are worker S5-J3 on the Vajb Orbit workspace (wave S5, brief .agents/gen/slices/S5-playtest-fixes/S5_BRIEF.md — read it fully, then docs/gameplay/09_ship_slots_modules.md §11 and docs/CONTRACTS.md §17/§16). Task: batteries v2 exactly as 09 §11 pins. (1) Rename OUTFITTING to ARMORY (label constant; the pane files become armory_panel.gd/.tscn — the old names may be deleted within your set). (2) The pane becomes drag-and-drop battery composition: a left inventory list and racks B1..B7 as drop zones for weapon_1..7; dragging installs into the rack's next free W cell through the §13/§16 transactions (fit_legal and the mandatory set checked BEFORE any write; refusals write nothing), within/between-rack drags reorder and swap, a ✕ returns a barrel to inventory. Batteries are MIXED groups persisted as batteries: {ship_id: Array[Array[cell_ref]]} at SAVE_VERSION := 7 (v6→v7 groups fitted weapons by base_id, cells ascending; idempotent). GROUPS_MAX 5 → 7. (3) The salvo gate = max(members' cadence): one trigger releases every armed barrel (strum 0..40 ms) and the next salvo waits for the slowest member's cycle; dry/empty rules stay per barrel (§16 rule 4's carve-outs). Ammunition rows leave the pane (J2's cargo). Add ONLY tests/test_s5_batteries_v2.gd (AC3: a mixed laser+cannon battery cycles at the slowest 1.5 s, the v7 migration, the drag refusals writing nothing). Report .agents/gen/slices/S5-playtest-fixes/S5-J3_report.md with measured numbers. Hard rules in the brief apply; scratch stores only." -m deepseek/deepseek-v4-flash --cwd "$VAJB_WORKSPACE"
+```
+
+## S5-J4 — hardpoints & gunnery (after J3)
+
+```bash
+VAJB_WORKER_FILES="vajb-orbit/game/ship_fit.gd,vajb-orbit/game/player_ship.gd,vajb-orbit/game/weapons.gd,vajb-orbit/game/projectile.gd,vajb-orbit/game/mining_laser.gd,vajb-orbit/tests/" crush run "You are worker S5-J4 on the Vajb Orbit workspace (wave S5, brief .agents/gen/slices/S5-playtest-fixes/S5_BRIEF.md — read it fully, then docs/gameplay/09_ship_slots_modules.md §11/§3.1/§8 and docs/CONTRACTS.md §17). Task: (1) ShipFit.HARDPOINTS per hull exactly as pinned — thrusters {rear, front, left, right} and weapon_mounts [{pos, facing}], W cell i binds weapon_mounts[i]. The VALUES are your measurement deliverable: probe each hull's render, derive the anchor positions in hull-local px, record all nine rows in 09 §11's table and cite the render path + method in your report. A hull without a map falls back to §8's derivation (the reversal). (2) Flight FX read the map: thrust draws at rear anchors, brake/retro at front, strafe at the side's anchors (the thruster_anchors() seam resolves to HARDPOINTS). (3) Gunnery: per-barrel tracking at 09 §3.1's new track_dps column (proposed laser 180 / mining 150 / cannon 120 / railgun 100 / plasma 75 / rocket 60 / mine fixed); a released travelling shot spawns at its mount flying along the barrel's CURRENT FACING (base direction + the ship's nose velocity as today); a beam barrel sweeps and connects only within TRACK_TOLERANCE := 5.0 deg. TRACK_MULT := 0 is the instant-aim reversal. Add ONLY tests/test_s5_hardpoints.gd (AC5/AC6: the table's nine rows resolve, the FX anchors read the map, a 60 deg/s barrel measurably lags a 180 deg/s one, the beam tolerance). Report .agents/gen/slices/S5-playtest-fixes/S5-J4_report.md with the measured table and before/after numbers. Hard rules in the brief apply; scratch stores only." -m deepseek/deepseek-v4-flash --cwd "$VAJB_WORKSPACE"
+```
+
+## S5-R1 — mandatory review (after J1–J4 report)
+
+```bash
+VAJB_WORKER_FILES="vajb-orbit/tests/,vajb-orbit/tools/,docs/CONTRACTS.md" crush run "You are worker S5-R1, the mandatory reviewer of wave S5 (brief .agents/gen/slices/S5-playtest-fixes/S5_BRIEF.md; diff findings against docs/CONTRACTS.md §17/§13/§16, STATION_HUB §5.11, 10 §6.1 and 09 §11 — never against the brief). Re-measure everything yourself: the auction's arithmetic byte-identical to S3's; the shipyard's select-writes-nothing and SET ACTIVE commit; the mixed battery's slowest-cycle salvo (independent probe), the v7 migration idempotence and the drag refusals writing nothing; the ammo units math, the one-shot auto-load at launch and the fuel-cell delist; J4's nine hardpoint rows re-derived from the renders byte-identically, the anchor consumers, the tracking lag and the beam tolerance; no frozen file moved and no balance number moved (staging/verify_wave.py verify --baseline s5_start --forbidden vajb-orbit/project.godot docs/gameplay/18_engine_spec.md --tests, the S4-corrected flag form); gate twice on scratch stores. Tier findings HIGH/MED/LOW with file:line and measured evidence. Write .agents/gen/slices/S5-playtest-fixes/S5-R1_review.md, append LOW rows to .agents/gen/_state/LOW_BACKLOG.md (next free ids), update docs/CONTRACTS.md §9/§10 measured notes. Never fix. Bounded probes only." -m deepseek/deepseek-v4-flash --cwd "$VAJB_WORKSPACE"
+```
+
+## S5-F1 — fixer (only if R1 leaves HIGH or MED)
+
+```bash
+VAJB_WORKER_FILES="vajb-orbit/ui/station/auction_panel.gd,vajb-orbit/ui/station/auction_panel.tscn,vajb-orbit/ui/station/shipyard_panel.gd,vajb-orbit/ui/station/shipyard_panel.tscn,vajb-orbit/ui/screens/station.gd,vajb-orbit/game/module_catalog.gd,vajb-orbit/game/game.gd,vajb-orbit/autoload/player_profile.gd,vajb-orbit/ui/station/exchange_panel.gd,vajb-orbit/ui/station/exchange_panel.tscn,vajb-orbit/ui/station/outfitting_panel.gd,vajb-orbit/ui/station/outfitting_panel.tscn,vajb-orbit/ui/station/armory_panel.gd,vajb-orbit/ui/station/armory_panel.tscn,vajb-orbit/game/weapons.gd,vajb-orbit/game/ship_fit.gd,vajb-orbit/game/player_ship.gd,vajb-orbit/game/projectile.gd,vajb-orbit/game/mining_laser.gd,vajb-orbit/tests/,docs/CONTRACTS.md" crush run "You are worker S5-F1, the fixer of wave S5 (brief .agents/gen/slices/S5-playtest-fixes/S5_BRIEF.md; review .agents/gen/slices/S5-playtest-fixes/S5-R1_review.md). Fix ONLY the HIGH and MED findings at their named file:line; adjust tests only where a fix changes what is proven. No LOW items, no refactors, no balance changes. Re-run the gate twice on scratch stores and report .agents/gen/slices/S5-playtest-fixes/S5-F1_report.md with a finding-by-finding disposition and the gate lines." -m deepseek/deepseek-v4-flash --cwd "$VAJB_WORKSPACE"
+```
