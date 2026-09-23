@@ -419,6 +419,10 @@ layout edits cannot desynchronise the geometry. **Consumption in flight is
 staged** (weapons firing from their own mount, engine FX at their own nozzle) and
 belongs to the feel wave — this document pins the data and the API only.
 
+**Superseded 2026-09-23 (S5 — §11):** the no-anchor-table rule yields to
+`ShipFit.HARDPOINTS` (per-hull measured maps; this section's derivation stays the fallback
+for a hull without a map). **Reversal:** drop `HARDPOINTS` and resume this paragraph.
+
 ## 9. Per-hull standard fits (new)
 
 `ShipFit.STANDARD_FITS` is one fit per hull, built from §7: the mandatory set for

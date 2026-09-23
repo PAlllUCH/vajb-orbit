@@ -31,7 +31,7 @@ Wave `S5`, slice `S5-playtest-fixes`. Read in this order before working:
 #      fuel cells delisted everywhere (existing stacks keep working on R)
 # J3 — batteries: {ship_id: Array[Array[cell_ref]]}; SAVE_VERSION := 7
 #      (v6->v7: group fitted weapons by base_id, cells ascending)
-#      ARMORY (label owner-tick) racks B1..B7 = drop zones for weapon_1..7;
+#      ARMORY (owner-ratified 2026-09-23) racks B1..B7 = drop zones for weapon_1..7;
 #      drags install/swap via the §13/§16 transactions (refusals write nothing);
 #      GROUPS_MAX := 7 (was 5)
 #      salvo gate = max(members' cadence) — one trigger releases every armed barrel
@@ -69,6 +69,31 @@ Rules that fix every ambiguity:
   `save_path`) — twice a probe has written the owner's live account (T-93 class).
   Bounded probes only (L82); workspace-relative file paths (L92a).
 
+## J0 dispositions (owner-ratified 2026-09-23 — read before coding)
+
+The J0 pass found ten contradictions (`.agents/gen/slices/S5-playtest-fixes/S5-J0_report.md`);
+the owner ruled on all ten. Where this section differs from a prompt line, this section wins:
+
+- **Label:** `ARMORY` is ratified; the label lives in `ui/screens/station.gd` (not the theme).
+- **Railgun ammo is its own pack:** rounds 150, cost 360, `ammo_max` 150 (2× the cannon
+  pack's cost, ½ its rounds and ½ `AMMO_MAX`); icon
+  `assets/icons/module/icon_module_w_railgun.svg`.
+- **Ammo rows stay in ARMORY** and buy cargo units (rounds / 10) through the hold; EXCHANGE
+  **buys** the units from the hold at 60 % of the per-unit list
+  (`roundi(0.6 * 10 * cost / rounds)`); the `ammo_*` id maps to its family by prefix.
+- **The AUCTION's `DRIVES` tab keys on `engine`**, the catalogue's slot key.
+- **`GROUPS_MAX` 7 grows its consumers** (`game/game.gd`: `WEAPON_ACTIONS` + the W-slot
+  ordinal call; `ui/hud/hud.gd`: the three five-entry tables to seven, railgun/mining icons
+  from `assets/icons/module/`). Sets amended: J2 += `game/exchange.gd`,
+  `game/component_catalog.gd`, `game/station_catalog.gd`; J3 += `ui/screens/station.gd`,
+  `game/game.gd`, `ui/hud/hud.gd`.
+- **The shipyard row carries no icon** (none ship).
+- **Fuel cells:** J0 measured no sale surface carries a `fuel_cell` row — the delist is
+  already the tree's state; assert it, change nothing.
+- **Pointers in the owning docs:** §16→§17 (`battery()` answers cell refs), §5.2→§5.11,
+  09 §8→§11. The rest of J0's record (stale citations, pre-D2 art paths) rides the close-out
+  LOW rows and moves no code.
+
 ## Worker table
 
 | ID | Role | VAJB_WORKER_FILES | Deliverable |
@@ -105,8 +130,8 @@ tracking/muzzle seam). Each builder writes only its own `test_s5_*.gd`.
 
 - Frozen: `project.godot` (the `weapon_6`/`weapon_7` rows are **orchestrator-applied**
   at close-out per §1 — workers never touch the input map), `docs/gameplay/18_engine_spec.md`,
-  `docs/gameplay/08_ship_slots_modules.md`, `assets/`, `addons/`, the theme (the one
-  `ARMORY` label constant excepted, through the theme only).
+  `docs/gameplay/08_ship_slots_modules.md`, `assets/`, `addons/`, the theme (frozen; the
+  `ARMORY` label lives in `ui/screens/station.gd`, not the theme).
 - No balance number moves (damage, cadence, prices, `track_dps` excepted — it is a
   NEW column with proposed values and an owner tick). `max_speed` never moves.
 - Scratch stores for every probe/gate; bounded probes (L82); no shell file edits;
@@ -120,7 +145,8 @@ tracking/muzzle seam). Each builder writes only its own `test_s5_*.gd`.
 
 ## Owner ticks owed after this wave
 
-1. The `ARMORY` label (alternatives `LOADOUT` / `WEAPONRY` / `GUNNERY`).
+1. **CLOSED 2026-09-23** — the label is `ARMORY`; the railgun pack ships its own numbers
+   (rounds 150, cost 360, `ammo_max` 150); the shipyard row carries no icon.
 2. `ROUNDS_PER_CARGO_UNIT := 10` (the ammo granularity; reversal 1).
 3. Fire-along-facing (built) vs hold-fire-until-aligned (the §17 alternative).
 4. The `track_dps` taste table (09 §3.1's new column; one value per family).

@@ -1563,6 +1563,10 @@ it unchanged, and widening a shipped return type for no consumer is not the trad
    `[laser]`, `battery(&"w_laser")` = `[0]`, while that laser is cell index 1). **Reversal:**
    one accessor; a cell-index-carrying `set_fitted` would change a caller shape and is not
    needed by any consumer today.
+   **Superseded in part (2026-09-23, S5 — §17):** composed batteries store and answer
+   **cell refs** (09 §4.5's addressing), and a barrel's mount is `weapon_mounts[cell_ref]`
+   (J4); this rule's positions-in-`fitted()` reading is the S4 same-kind world's.
+   **Reversal:** this rule as written.
 4. **The volley.** On the pull's rising edge the component arms the selected battery: for each
    position in `battery(selected_weapon())` a release offset is drawn uniformly in
    `[0, BATTERY_STRUM_MS]` ms. Each `tick(delta)` releases every armed barrel whose offset has
@@ -1687,16 +1691,19 @@ it unchanged, and widening a shipped return type for no consumer is not the trad
 # --- consumables (J2) ---
 # cargo items: &"ammo_laser" &"ammo_cannon" &"ammo_rocket" &"ammo_mine" &"ammo_plasma"
 #   &"ammo_railgun"; ROUNDS_PER_CARGO_UNIT := 10   (reversal: 1)
+# railgun pack (owner 2026-09-23): rounds 150, cost 360, AMMO_MAX 150 — 2× the cannon
+#   pack's cost, half its rounds and half its ammo_max (cannon: 300 / 180 / 300)
 # the ammo rows deliver to cargo (units = rounds / 10); at launch each fitted weapon's
 #   pack auto-fills from cargo of its family up to ammo_max and the drawn units leave
-#   the hold; EXCHANGE sells units at 60 % of list; fuel cells are delisted everywhere
+#   the hold; EXCHANGE buys units from the hold at 60 % of the per-unit list; fuel cells
+#   are delisted everywhere (measured: no sale surface carries one)
 
 # --- batteries v2 (J3) ---
 batteries: Dictionary   # {ship_id: Array[Array[cell_ref]]}; SAVE_VERSION := 7
                         # v6→v7 migration: group fitted weapons by base_id, cells ascending
 # a battery = player-composed MIXED group of W cells (any weapon kinds); ARMORY racks
 #   B1..B7 = drop zones for weapon_1..7; drags install/swap through the §13/§16
-#   transactions (refusals write nothing); the label OUTFITTING → ARMORY (owner tick)
+#   transactions (refusals write nothing); the label OUTFITTING → ARMORY (owner-ratified 2026-09-23)
 const GROUPS_MAX := 7   # was 5; weapon_6/weapon_7 bound to digits 6/7 (orchestrator-applied)
 # salvo gate: one trigger releases every armed barrel (strum 0..40 ms) and the battery's
 #   next salvo waits for max(members' cadence) — "the rof will be limited by the slowest
@@ -1716,6 +1723,37 @@ ShipFit.HARDPOINTS: Dictionary  # {ship_id: {thrusters: {rear, front, left, righ
 #   its mount; a beam barrel sweeps and connects only within TRACK_TOLERANCE := 5.0 deg.
 #   Reversal: TRACK_MULT := 0 = instant aim (today).
 ```
+
+**J0 dispositions (owner-ratified 2026-09-23, before the J1 despatch).** The J0 docs pass
+(`.agents/gen/slices/S5-playtest-fixes/S5-J0_report.md`) found ten contradictions in this pin
+set; the owner ruled, and the blocks above are read as follows:
+
+- **Railgun ammo is its own pack** (owner ruling 2026-09-23): rounds **150**, cost **360**,
+  profile `ammo_max` **150** — twice the cannon pack's cost, half its rounds and half its
+  `AMMO_MAX` (cannon: 300 / 180 / 300). Its icon is
+  `res://assets/icons/module/icon_module_w_railgun.svg`. **Reversal:** delete the row.
+- **The `ammo_*` cargo id maps to its family by prefix** — `&"ammo_laser"` ⇄ `laser`; the
+  profile's `ammo_of`/`ammo_max`/`set_ammo` stay family-keyed. **Reversal:** one constant.
+- **EXCHANGE buys `ammo_*` cargo units from the hold at 60 % of the per-unit list:**
+  `list_unit = roundi(ROUNDS_PER_CARGO_UNIT * pack.cost / pack.rounds)`;
+  `sale = roundi(0.6 * list_unit)` — laser 2, cannon 4, rocket 24, mine 30, plasma 38,
+  railgun 14 CR/unit. The arithmetic lives in `game/exchange.gd`. **Reversal:**
+  `AMMO_SELL_PERCENT := 1.0`.
+- **The ARMORY keeps its ammunition rows**, buying cargo units (units = rounds / 10) through
+  the hold; §5.11's "leave this pane" is the **pack model** leaving, never the rows (nothing
+  else buys ammo — EXCHANGE only buys). **Reversal:** the pre-S5 pack route.
+- **The AUCTION's `DRIVES` tab keys on `engine`** (the catalogue's slot key; `engines` is a
+  prefix row, not a module). **Reversal:** one constant.
+- **`GROUPS_MAX := 7` grows its three consumers in this wave:** `game/game.gd`'s
+  `WEAPON_ACTIONS` and the HUD's `WEAPON_IDS`/`WEAPON_LABELS`/`WEAPON_ICONS` grow to seven,
+  and the HUD's W-slot buttons address **battery ordinals 1..7** (`weapon_1..7`) instead of
+  W cells (`game/game.gd:1358-1359` today maps a cell index). The railgun/mining icons reuse
+  `assets/icons/module/icon_module_w_railgun.svg` and `_w_mining.svg`. **Reversal:** the
+  five-entry tables and the cell-index call.
+- **The shipyard row carries no icon** (owner ruling 2026-09-23): §5.11's "48 px class icon"
+  is dropped — no class icons ship. **Reversal:** restore the phrase with the art.
+- **§16 rules 2/3 read through this section:** composed batteries answer **cell refs**, a
+  barrel's mount is `weapon_mounts[cell_ref]` (J4). **Reversal:** the rules as written.
 
 ## §10 Changelog
 

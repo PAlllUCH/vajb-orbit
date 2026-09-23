@@ -551,6 +551,12 @@ section 5.3's, and `shipyard_panel.gd` is its owner). The grid stays a display: 
 none carries a focus ring, and none mutates anything (section 12.4). Reversal: drop the hover line from
 `shipyard_panel.gd`; the plates, the caption and `STAT_ROWS` do not move.
 
+**Amendment 2026-09-23 (S5 — the shipyard becomes the hangar).** The buy rows and their
+`FOR SALE`/`LOCKED` states retire: hulls are bought on the AUCTION only, the list holds
+owned hulls, selecting previews and writes nothing, and the footer `SET ACTIVE` is the sole
+commit — section 5.11 is the law and this section's list/status/action rows are read through
+it. **Reversal:** restore the rows verbatim (section 5.11's reversal).
+
 ### 5.3 FITTING (fit, swap and remove modules per cell)
 
 **Amendment 2026-09-22 (P2-B proper — FITTING replaces UPGRADES).** Transcribed from
@@ -896,7 +902,7 @@ row elsewhere; each carries its reversal.
 
 **SHIPYARD (§5.2 rework) — the hangar, not a store.** The buy rows retire: hulls are
 bought on the AUCTION only (10 §2). The pane lists **owned hulls only** — one row per
-owned ship (48 px class icon, name, class, `ACTIVE` badge). Selecting a row **previews**
+owned ship (name, class, `ACTIVE` badge; no icon ships). Selecting a row **previews**
 (side render, class stats, its fit grid) and writes nothing; a footer **`SET ACTIVE`**
 button is the sole commit (the profile's existing active-ship write). The build path
 (10 §3) stays spec'd here for its later wave. **Reversal:** restore the buy rows (they
@@ -904,20 +910,21 @@ rejoin the auction's rows verbatim).
 
 **AUCTION (§5.10) — separated into families.** The shelf's rows group under section
 tabs: `HULLS · WEAPONS · DRIVES · SHIELDS · ARMOUR · POWER · COMPUTERS · BOOSTERS ·
-UTILITY · ALL` (the 09 §3 family names; `DRIVES` labels the `engines` family). Display
+UTILITY · ALL` (the 09 §3 family names; `DRIVES` keys on the catalogue's `engine` slot — the `engines` spelling is a prefix row). Display
 grouping of the same 6-hull + 10-module draw — weights, hot slot, restock and prices
 untouched (10 §2.1–2.3). **Reversal:** the flat list.
 
 **OUTFITTING → `ARMORY` (§5.1 rework + rename).** The label becomes **`ARMORY`**
-(owner tick: `LOADOUT` / `WEAPONRY` / `GUNNERY`; one theme label constant). The pane
+(owner-ratified 2026-09-23; the label lives in `ui/screens/station.gd`, not the theme). The pane
 becomes **battery composition by drag and drop** (09 §11's batteries v2): a left list of
 inventory weapons (the OWNED MODULES rows) and right-side **battery racks** `B1..B7`
 (drop zones mapped to `weapon_1..7`); dragging a weapon row onto a rack installs it into
 the rack's next free W cell through the §13/§16 transactions (refusals write nothing),
 dragging within/between racks re-orders and swaps, a `✕` on a barrel removes it back to
-inventory. Ammunition rows leave this pane (they move to cargo — 10 §6.1) and **fuel
-cells are delisted from every sale surface** (existing stacks still work on `R`; 14 §1's
-free refuel is the reserve). **Reversal:** the §5.1 pre-S5 rows.
+inventory. Ammunition rows stay here, buying cargo units (units = rounds / 10 — 10 §6.1);
+the pack model leaves the pane. **Fuel cells are delisted from every sale surface**
+(existing stacks still work on `R`; 14 §1's free refuel is the reserve). **Reversal:**
+the §5.1 pre-S5 rows.
 
 **EXCHANGE (§5.8) — ammunition is sellable.** The hold list gains the `ammo_*` cargo
 units (10 §6.1) at 60 % of list per unit, same row anatomy as minerals.
