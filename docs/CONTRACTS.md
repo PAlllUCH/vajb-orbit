@@ -799,24 +799,31 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
-Expected: **`[SUMMARY] passed=521 failed=0`**, exit 0 (measured **five** times on 2026-09-23 by
-the S4 review — S4-H3 — four times with the canonical command below and once through
-`verify_wave.py verify … --tests`, identical every time; **521 tests over 44 suites**, with the
-live `user://` byte-identical before and after every run: `profile.cfg` md5
+Expected: **`[SUMMARY] passed=524 failed=0`**, exit 0 (measured **twice** on 2026-09-23 by the S4
+fixer pass — S4-H4 — with the canonical command below, identical both runs; **524 tests over 44
+suites**, with the live `user://` byte-identical before and after both runs: `profile.cfg` md5
 `3e6ee8d7e7145c4e37bbd8dc90f62f9b`, `economy_log.txt` md5
-`eef2929404d1b3b2a4f30565e7b183b2`). **S4's growth is `493 → 508 → 521`**: H1's battery suite
-(`test_s4_batteries.gd`, **15** new) and H2's volley (`test_engine2_weapons.gd` **29 → 42**),
+`eef2929404d1b3b2a4f30565e7b183b2`). The S4 review's own five-run reading was **521** with the live
+pair untouched either (S4-H3; §10's v0.8.1), and H4's fix clears the HIGH that reading was blocked
+on, so the figure above is the wave's. **S4's growth is `493 → 508 → 521 → 524`**: H1's battery
+suite (`test_s4_batteries.gd`, **15** new) and H2's volley (`test_engine2_weapons.gd` **29 → 42**),
 with `test_p2b1_outfitting_panel.gd` (**11**, its per-cell strip tests re-read as battery rows)
 and `test_engine2_wiring.gd` (**13**, its `fitted()` assertion rewritten per barrel with a bite
-check) unchanged in count. The one S4 evidence line that varies run to run is the strum's own
-(`[s4-weapons] volley: releases at […]; ceiling 40, pack 30 -> 27`) — the per-barrel offsets are
-drawn from `WeaponComponent._strum_rng` per pull (measured spans 5–27 ms inside the 40 ms
-ceiling, the lead barrel on the pull's own frame); every other S4 evidence line re-runs
-byte-identically (`[s4-batteries] mixed fit rows=["battery w_laser [0, 2]", "battery w_cannon
-[1]"]`, `overload line=11 / 8 PWR — OVER BY 3`, `fixed strip: 7 rows, 253 nodes (36 per row)`).
-The S4 review's verdict is **blocked**: a sustained trigger fires one salvo and then nothing for
-every travelling family, contradicting §16 rule 4's own sentence (`.agents/gen/slices/
-S4-weapon-batteries/S4-H3_review.md` F1). Before it, S3's close-out read
+check) unchanged in count; H4's fix then added `test_engine2_weapons.gd` **42 → 44** (the held
+pull's stream, and the mine's one release per pull) and `test_s4_batteries.gd` **15 → 16** (a
+refused bulk action leaves no stored fit). The S4 evidence lines that vary run to run are the
+strum's own (`[s4-weapons] volley: releases at […]; ceiling 40, pack 30 -> 27`) — the per-barrel
+offsets are drawn from `WeaponComponent._strum_rng` per pull (measured spans 5–27 ms inside the
+40 ms ceiling, the lead barrel on the pull's own frame) — and, since H4, the held pull's
+(`[s4-weapons] held pull: 15 shots = 5 windows x 3 barrels, releases at […] frames`, stable
+across five runs); every other S4 evidence line re-runs byte-identically (`[s4-batteries] mixed
+fit rows=["battery w_laser [0, 2]", "battery w_cannon [1]"]`, `overload line=11 / 8 PWR — OVER BY
+3`, `fixed strip: 7 rows, 253 nodes (36 per row)`).
+The S4 review's verdict was **blocked** on a sustained trigger firing one salvo and then nothing
+for every travelling family, contradicting §16 rule 4's own sentence (`.agents/gen/slices/
+S4-weapon-batteries/S4-H3_review.md` F1); **H4's fix clears it**, and the fix's own reading is
+§10's v0.8.2 (a 3.0 s pull: **15** shots, five three-barrel salvos, where the review measured
+**3**). Before it, S3's close-out read
 **`passed=493 failed=0`** (measured twice on 2026-09-23 by the
 S3 fixer pass — S3-K5 — with the canonical command below, the live `user://` byte-identical
 before and after; **493 tests over 43 suites**). The S3 review before it read
@@ -1566,8 +1573,8 @@ it unchanged, and widening a shipped return type for no consumer is not the trad
    own recoil and emits `shot_fired`; a released instant (beam) barrel opens its own beam.
    A barrel the family's own rules refuse (empty pack, a pool that cannot pay, the burst
    window closed) is dry (`dry_fired`) and never holds the rest of the battery back.
-   **As built (2026-09-23, measured by H2), five readings this rule left open — each is the
-   shipped behaviour, not a drift:**
+   **As built (2026-09-23, measured by H2, extended by H3's F1 and its H4 cure), six readings this
+   rule left open — each is the shipped behaviour, not a drift:**
    - **The volley's clock is the battery's own *smallest* draw**, so the lead barrel releases on
      the pull's own frame and the barrels behind it release as their own offsets elapse (measured
      spans `[1, 9, 15]`, `[1, 3, 12]`, `[1, 32, 38]` ms). A literal reading of "offset from the
@@ -1575,16 +1582,28 @@ it unchanged, and widening a shipped return type for no consumer is not the trad
      one-frame feedback readings in `test_weapon_fx_f1.gd` (`:242-243`, `:261-262`, `:281-282`,
      `:559-560`) coin flips. **Reversal:** measure every offset from the pull — one line, and
      those four readings become "within 40 ms".
+   - **A held travelling battery re-arms on the frame its whole salvo has released, and never
+     before.** That is what makes rule 4's own "a sustained pull is a stream of salvos" true (H3's
+     F1: the first build armed on the rising edge only and fired **one** salvo — measured 3 shots
+     in 3.0 s; the cure fires **15**, five salvos at the family's cadence). The per-barrel cadence
+     timers are what stagger and gate the stream. **Two carve-outs:** a beam battery is never
+     re-armed (its barrels open once and keep drawing), and a travelling **`edge`** row keeps one
+     release per pull — the mine, 09 §3.1's drop, whose pre-wave guard is `_fire_projectile`'s own
+     `edge` read (`git show f3b0d24:vajb-orbit/game/weapons.gd:601-603`).
+     **Reversal:** arm on the rising edge only — the pre-fix behaviour, which is H3's F1.
    - **A group switched mid-hold arms the battery it switched to** (today's component fires the
      newly selected group at once; without this the trigger would go silent until released).
      **Reversal:** keep the arming to the rising edge and let a mid-hold switch fall silent.
-   - **A travelling barrel its pack refuses is disarmed for that pull** — one `dry_fired` per
-     volley, not one per held frame (measured: a pack of 1 with three cannons gives one shot and
-     one dry read). **Reversal:** leave the barrel armed and retry next frame, as the pre-wave
-     single timer did.
+   - **A travelling barrel its pack refuses is disarmed for its salvo and re-armed by the next
+     arm** — so while the pack stays empty it retries each frame, and `dry_fired` still reads
+     **once per pull** because `_dry_noted` is reset on the rising edge only (measured: a pack of
+     1 with three cannons gives one shot and one dry read). The observation the first wording
+     carried ("one dry read per pull") stands; its *disarm scope* was the salvo, not the pull.
+     **Reversal:** hold the barrel disarmed until the trigger is released.
    - **A closed burst window or an unready cadence timer keeps the barrel armed** rather than
-     reading it dry; today `_burst_phase` resets to 0 on a pull, so the window case is
-     unreachable. **Reversal:** consume the arm and read it dry.
+     reading it dry, and that arm-retry is now load-bearing: it is what keeps a salvo unspent
+     while one of its barrels waits on its cadence. Today `_burst_phase` resets to 0 on a pull,
+     so the window case itself is unreachable. **Reversal:** consume the arm and read it dry.
    - **A beam battery draws one shaft and makes one contact read per frame** (one muzzle, one aim
      point); the frame's damage and chip work are summed over the paid barrels and delivered in
      one call, so the impact cue is not machine-gunned. **Reversal:** one `_apply_beam` per paid
@@ -2177,3 +2196,44 @@ it unchanged, and widening a shipped return type for no consumer is not the trad
   cadence, ammo or fit-shape value, no frozen file (`verify_wave.py verify --baseline s4_start
   --forbidden vajb-orbit/project.godot docs/gameplay/18_engine_spec.md --tests` → `problems: []`),
   and the live `user://` pair byte-identical before and after every probe and every gate run.
+- **v0.8.2 (2026-09-23, the S4 fixer pass — S4-H4).** Records the two findings v0.8.1 left for a
+  fixer, what the fix is, and what it was measured against. **§16 is untouched**: its rules and its
+  as-built bullets are the developer session's, and the one inaccuracy this fix creates in them is
+  reported in `.agents/gen/slices/S4-weapon-batteries/S4-H4_report.md` instead of edited here.
+  **(HIGH, the review's F1 — a held trigger fires one salvo and then nothing.)** Rule 4's "a
+  sustained pull is a stream of salvos, not one burst" was false as built: `_arm_battery` was
+  reached only on the pull's rising edge or on a mid-hold group switch, so once the first salvo had
+  released every `_armed[position]` was `-1.0` and `_release_battery`'s first guard skipped every
+  barrel — the per-barrel cadence timers gated nothing after it, and the pre-S4 stream (the single
+  `_shot_timer`, `f3b0d24:vajb-orbit/game/weapons.gd:527`, `:601-617`) was gone. **The fix:**
+  `tick` arms the battery again on the frame its whole salvo has released (`_salvo_spent`) and for
+  as long as the trigger is held, so each barrel fires again as soon as its **own cadence timer**
+  allows — one timer per barrel is now what gates the stream. Two families keep one release per
+  pull: a travelling `edge` row (the mine, 09 §3.1's drop, which the pre-S4 `_fire_projectile` read
+  from the same flag) and a beam battery, whose open barrels keep drawing while the trigger is held
+  and so have no salvo to repeat. **Measured** (the review's own stream probe re-run; source and
+  log archived in the slice folder): one pull held 3.0 s → **15 shots = 5 salvos x 3 barrels**,
+  ~0.6 s apart, where the review measured **3 shots and then ~2 976 frames with none**; a mine held
+  3.0 s → **1 shot**; 25 x 100 ms pulses → 24 (23 pre-fix). The regression test bites: on the
+  pre-fix component `test_a_held_pull_streams_a_salvo_per_barrel_cadence` reads `3 shots = 5
+  windows x 3 barrels` and fails.
+  **(MED, the review's F2 — a refused bulk action left a stored fit on a hull that had none.)** The
+  pane's `_seed_fit` ran before the refusal preview *and* before the profile call, so a refusal
+  wrote the hull's standard fit into `_fits` and the batch's own rollback — which restores to the
+  state the batch started from — could not undo it. **The fix:** the preview runs first and the
+  seed second, and a seed a refusal made pointless is dropped again (`_unseed_fit`), so a refused
+  action writes nothing at all. **The review's alternative cure ("`_seed_fit` is redundant for all
+  four of its callers") was measured and is wrong, so it was not taken**: the composed **clear**
+  transactions read the module they hand back out of the hull's *stored* fit
+  (`clear_fit_slot`, `autoload/player_profile.gd:911-913`), so a hull that has never been written
+  refuses a REMOVE of the modules the strip is showing it — which is what the seed is for, and what
+  `tests/test_p2b1_outfitting_panel.gd:679` pins (a fresh hull's REMOVE ALL empties its battery and
+  banks the module). Only the refusal path changed. The regression test also bites: on the pre-fix
+  pane `test_a_refused_bulk_action_leaves_no_stored_fit` fails on "the refusal left the hull
+  holding no stored fit".
+  **Nothing else moved:** no pinned number, no price, damage, cadence, ammo or fit-shape value, and
+  no frozen file; the gate is **`passed=524 failed=0`** twice (S4's 521 plus H4's three tests), the
+  live `user://` pair byte-identical before and after both runs and after the probe, and every S4
+  evidence line other than the strum's and the held pull's re-runs byte-identically. The fixer's
+  probe is `vajb-orbit/tests/probe_s4h4_stream.gd` (a `--script` SceneTree probe, so it is run
+  under a scratch `XDG_DATA_HOME` per T-93; its text and log are archived in the slice folder).

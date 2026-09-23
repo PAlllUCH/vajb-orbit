@@ -1061,8 +1061,12 @@ func remove_module(index: int) -> bool:
 	var module_id := _base_id(profile, StringName(cells[index]))
 	if module_id == &"":
 		return false
-	_seed_fit(profile, hull)
+	## The seed is what lets the clear transaction find the module it hands back (see
+	## `_seed_fit`); a refusal drops it again, so a refused REMOVE writes nothing at all
+	## (CONTRACTS section 16 rules 7-8, the F2 fix).
+	var seeded := _seed_fit(profile, hull)
 	if not bool(profile.call(&"clear_fit_slot", hull, WEAPON_SLOT, index)):
+		_unseed_fit(profile, hull, seeded)
 		return false
 	AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
 	status_requested.emit(STATUS_REMOVED % _module_name(module_id), false)
@@ -1086,11 +1090,16 @@ func fit_all_battery(base_id: StringName) -> bool:
 	var indices := _fit_all_indices(profile, _weapon_cells(profile), base_id)
 	if indices.is_empty():
 		return false
-	_seed_fit(profile, hull)
+	## The refusal preview first, the seed second (the F2 fix): a batch that is refused before
+	## any write must not leave the hull holding a stored fit it never had, and the seed is only
+	## there for the transactions that need it (see `_seed_fit`). A refusal *after* the preview
+	## - `fit_battery`'s own guards - drops the seed again.
 	var refusal := _batch_refusal(profile, hull, indices, base_id)
 	if not refusal.is_empty():
 		return _refuse(refusal)
+	var seeded := _seed_fit(profile, hull)
 	if not bool(profile.call(&"fit_battery", hull, base_id, indices)):
+		_unseed_fit(profile, hull, seeded)
 		return _refuse(REFUSAL_FIT_ILLEGAL)
 	AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
 	status_requested.emit(STATUS_FIT_ALL % [indices.size(), _module_name(base_id)], false)
@@ -1109,11 +1118,13 @@ func swap_all_battery(base_id: StringName) -> bool:
 	var indices := _battery_indices(profile, _weapon_cells(profile), base_id)
 	if indices.is_empty():
 		return false
-	_seed_fit(profile, hull)
+	## Preview, then seed, then the transaction - the F2 fix's own order (see `fit_all_battery`).
 	var refusal := _batch_refusal(profile, hull, indices, base_id)
 	if not refusal.is_empty():
 		return _refuse(refusal)
+	var seeded := _seed_fit(profile, hull)
 	if not bool(profile.call(&"fit_battery", hull, base_id, indices)):
+		_unseed_fit(profile, hull, seeded)
 		return _refuse(REFUSAL_FIT_ILLEGAL)
 	AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
 	status_requested.emit(STATUS_SWAP_ALL % [indices.size(), _module_name(base_id)], false)
@@ -1131,11 +1142,14 @@ func remove_all_battery(base_id: StringName) -> bool:
 	var indices := _battery_indices(profile, _weapon_cells(profile), base_id)
 	if indices.is_empty():
 		return false
-	_seed_fit(profile, hull)
+	## Preview, then seed, then the transaction (the F2 fix); the seed is dropped again if the
+	## clear transaction refuses, so a refused REMOVE ALL writes nothing at all.
 	var refusal := _batch_refusal(profile, hull, indices, &"")
 	if not refusal.is_empty():
 		return _refuse(refusal)
+	var seeded := _seed_fit(profile, hull)
 	if not bool(profile.call(&"clear_battery", hull, base_id)):
+		_unseed_fit(profile, hull, seeded)
 		return _refuse(REFUSAL_FIT_ILLEGAL)
 	AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
 	status_requested.emit(STATUS_REMOVED % _module_name(base_id), false)
@@ -1234,19 +1248,33 @@ func _resolved_fit(profile: ProfileScript, hull: StringName) -> Dictionary:
 	return ShipFit.standard_fit(hull)
 
 
-## Materialise the fit the launch already flies. `PlayerProfile.set_fit_slot` writes one
-## cell of the hull's *stored* fit, and a hull the account holds no fit for is normalised
-## from nothing - so the first write would otherwise leave the hull with that one cell and
-## no 09 section 7 mandatory set, which cannot launch. The seed writes the same fit the
-## resolution above reads, so the two agree; nothing else in the panel writes a whole fit.
-func _seed_fit(profile: ProfileScript, hull: StringName) -> void:
+## Materialise the fit the launch already flies, for the transactions that need one written.
+## The composed fit transactions compose their candidate from `resolved_fit` and write it
+## whole, and the **clear** transactions read the module they hand back out of the hull's
+## *stored* fit - so a hull the account holds no fit for would refuse a REMOVE of the very
+## modules the strip is showing it. The seed writes the same fit the resolution above reads, so
+## the two agree; nothing else in the panel writes a whole fit.
+##
+## **Answers whether it wrote**, because a seed a refusal made pointless must be dropped again
+## (`_unseed_fit`): a refused action has to leave the store exactly as it found it, and the
+## batch's own rollback restores to the state the batch started from - which would be the
+## seeded one (CONTRACTS section 16 rules 7-8, the S4-H4 F2 fix).
+func _seed_fit(profile: ProfileScript, hull: StringName) -> bool:
 	var stored: Dictionary = profile.call(&"fit_for", hull)
 	if _holds_a_module(stored):
-		return
+		return false
 	var standard := ShipFit.standard_fit(hull)
 	if standard.is_empty():
-		return
+		return false
 	profile.call(&"set_fit", hull, standard)
+	return true
+
+
+## Undo a seed whose transaction refused, so the hull is back to holding no stored fit and
+## `fits()` reads exactly what it read before the action was pressed (the F2 fix's other half).
+static func _unseed_fit(profile: ProfileScript, hull: StringName, seeded: bool) -> void:
+	if seeded:
+		profile.call(&"clear_fit", hull)
 
 
 ## Whether a fit holds any module at all: the launch's own test, so an all-empty stored fit

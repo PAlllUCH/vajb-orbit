@@ -43,6 +43,9 @@ const FitData := preload("res://game/ship_fit.gd")
 const PROFILE_PATH := "user://test_s4_batteries.cfg"
 
 const VANGUARD: StringName = &"ship_vanguard"
+## The hull the refused-batch regression switches to: the Lancer's two-barrel laser battery is
+## the smallest one a bag of one instance cannot cover.
+const FIT_HULL: StringName = &"ship_fighter"
 const WEAPON_SLOT: StringName = &"weapons"
 const STANDARD_ENGINE: StringName = &"e_std"
 const STANDARD_REACTOR: StringName = &"p_std"
@@ -188,6 +191,11 @@ func _instance(base_id: StringName, rarity: StringName = &"common") -> StringNam
 
 func _cells() -> Array:
 	return _profile.call(&"fit_for", VANGUARD)[WEAPON_SLOT]
+
+
+## The hulls the account holds a **stored** fit for: what a refused bulk action must not add to.
+func _fits() -> Dictionary:
+	return _profile.call(&"fits")
 
 
 func _module_count(record_id: StringName) -> int:
@@ -669,6 +677,43 @@ func test_swap_all_refuses_a_bag_that_cannot_cover_the_battery() -> void:
 	assert_eq(_bag_size(LASER), 2, "and the delivered module the batch would have displaced too")
 	for instance: StringName in instances:
 		assert_eq(_module_count(instance), 0, "and no fitted barrel was disturbed")
+
+
+## The refused-batch regression (S4-H4, the review's F2): a bulk action that refuses must leave
+## the hull holding **no** stored fit if it held none. `fits()` is where the pin's "writing
+## nothing" (`CONTRACTS` section 16 rules 7-8) is measured, and the pane's seed exists only to
+## give the composed transactions a fit to compose against, so a refusal has to drop it again.
+## Measured before the fix: a fresh Lancer with one laser instance behind its two-barrel battery
+## refused with the catch-all **and** gained a stored fit the batch's own rollback could not undo
+## (it restores to the state the batch started from, which was the seeded one).
+func test_a_refused_bulk_action_leaves_no_stored_fit() -> void:
+	var owned: Array[StringName] = [VANGUARD, &"ship_fighter"]
+	_profile.set(&"_owned_ships", owned)
+	assert_true(bool(_profile.call(&"set_active_ship", &"ship_fighter")), "the Lancer is active")
+	assert_false(_fits().has(FIT_HULL), "and the account holds no fit for it")
+	var instance := _instance(LASER)
+	var panel := _mount()
+	assert_eq(_strip_text(0), "2× LASER MKII · W1·W2 · OWNED ×1", "two barrels, one bag instance")
+	assert_false(_strip_control(0, "SwapAll").disabled, "so SWAP ALL is offered")
+	_press_bulk(0, "SwapAll")
+	assert_eq(
+		_last_status(),
+		PanelScript.REFUSAL_FIT_ILLEGAL,
+		"one instance cannot re-seat two barrels: the catch-all, after the preview passed"
+	)
+	assert_true(_last_danger(), "in the danger colour")
+	assert_false(_fits().has(FIT_HULL), "and the refusal left the hull holding no stored fit")
+	assert_eq(_bag_size(LASER), 1, "with the bag untouched")
+	## The seed the fix keeps is not a refusal's, though: `FIT ALL` spends `min(owned, cells)` and
+	## a hull that held no stored fit gains the one its committed batch writes.
+	_press_bulk(0, "FitAll")
+	assert_eq(_last_status(), PanelScript.STATUS_FIT_ALL % [1, "LASER MKII"], "the legal batch lands")
+	assert_true(_fits().has(FIT_HULL), "and it does leave a stored fit behind")
+	assert_eq(
+		String(_profile.call(&"fit_for", FIT_HULL)[WEAPON_SLOT][0]),
+		String(instance),
+		"holding the instance the batch fitted"
+	)
 
 
 ## -------------------------------------------------------------------- the expander (AC3)

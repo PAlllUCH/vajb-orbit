@@ -578,6 +578,89 @@ func test_a_dry_barrel_does_not_hold_the_battery_back() -> void:
 	assert_eq(_shots().size(), 1, "and the dry barrels spawn nothing")
 
 
+## Rule 4's **stream**, the S4-H4 HIGH F1's regression test: a held trigger fires a salvo and
+## then another one every time the barrels' own cadence timers come round, instead of one salvo
+## and silence. The pre-S4 component streamed at the family's cadence through its single
+## `_shot_timer` (`f3b0d24:vajb-orbit/game/weapons.gd:527`, `:601-617`), so one timer per barrel
+## must stream too - three cannons, whose cadence is their 0.6 s burst cycle, deliver three
+## shots per window and never a window with none. The defect measured before the fix: one 3.0 s
+## pull gave 3 shots and then ~2 976 frames with zero.
+func test_a_held_pull_streams_a_salvo_per_barrel_cadence() -> void:
+	var guns := _volley_rig()
+	if guns == null:
+		return
+	_clear_shots()
+	var slot := WeaponScript.ammo_slot(&"cannon")
+	_state.set_ammo(slot, 30)
+	var cadence := WeaponScript.interval_of(&"cannon")
+	var frame := 1.0 / 60.0
+	var windows := 5
+	var shots := [0]
+	guns.connect(&"shot_fired", func(_id: StringName) -> void: shots[0] += 1)
+	guns.call(&"set_firing", true)
+	var releases: Array[int] = []
+	## Exactly the five cadence windows are stepped: the stream is continuous, so a frame past
+	## the last window's end would open the next salvo and count it.
+	for index in int(float(windows) * cadence / frame):
+		var before: int = shots[0]
+		guns.call(&"tick", frame)
+		for _release in int(shots[0]) - before:
+			releases.append(index)
+	print(
+		"[s4-weapons] held pull: %d shots = %d windows x 3 barrels, releases at %s frames"
+		% [int(shots[0]), windows, str(releases)]
+	)
+	assert_eq(
+		int(shots[0]),
+		windows * 3,
+		"a 3.0 s pull streams one three-barrel salvo per 0.6 s cadence window, not one salvo"
+	)
+	assert_eq(30 - int(_state.ammo[slot]), windows * 3, "and one round leaves the pack per barrel")
+	## Every window carries its own whole salvo: a window with fewer than three shots is the
+	## silence F1 measured, however the release offsets fall.
+	var per_window := int(cadence / frame)
+	for window in windows:
+		var first := window * per_window
+		var inside := 0
+		for at: int in releases:
+			if at >= first and at < first + per_window:
+				inside += 1
+		assert_eq(
+			inside,
+			3,
+			"cadence window %d carries the battery's whole salvo (release frames %s)"
+			% [window + 1, str(releases)]
+		)
+	_release_trigger(guns, frame)
+
+
+## The stream's one carve-out among the travelling families (rule 4 as built): the mine is a
+## "drop", not a "held" family - 09 section 3.1's `edge` row, one release per trigger pull,
+## which the pre-S4 `_fire_projectile` read from the same flag. A re-arming battery must not
+## turn a held pull into a minefield.
+func test_a_held_pull_keeps_the_mine_to_one_release() -> void:
+	var guns := _volley_rig([&"w_mine"])
+	if guns == null:
+		return
+	_clear_shots()
+	var slot := WeaponScript.ammo_slot(&"mine")
+	_state.set_ammo(slot, 10)
+	var shots := [0]
+	guns.connect(&"shot_fired", func(_id: StringName) -> void: shots[0] += 1)
+	guns.call(&"set_firing", true)
+	for _frame in 180:
+		guns.call(&"tick", 1.0 / 60.0)
+	assert_eq(shots[0], 1, "a held pull drops one mine, however long it is held")
+	assert_eq(int(_state.ammo[slot]), 9, "and spends one round")
+	## A second pull drops the next one: the arm is the pull, not the frame.
+	_release_trigger(guns, 1.0 / 60.0)
+	guns.call(&"set_firing", true)
+	guns.call(&"tick", 1.0 / 60.0)
+	assert_eq(shots[0], 2, "and the next pull drops its own")
+	assert_eq(_shots().size(), 2, "two pulls, two mines in the world")
+	_release_trigger(guns, 1.0 / 60.0)
+
+
 ## --- Section 4.2 item 5 / 4.6: the lock and the countermeasure seams ------
 
 

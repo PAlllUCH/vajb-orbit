@@ -595,7 +595,8 @@ func _physics_process(delta: float) -> void:
 ## The frame, in order (CONTRACTS section 16 rule 4): the barrels' own cadence timers
 ## run down, a pull's rising edge arms the selected battery, an unheld trigger disarms
 ## it, and then every armed barrel whose offset has elapsed and whose cadence is ready
-## releases - a travelling one fires, an instant one opens.
+## releases - a travelling one fires, an instant one opens - after which a still-held
+## pull whose whole salvo has released arms the battery again, which is the stream.
 func tick(delta: float) -> void:
 	_sample_trigger()
 	if delta > 0.0:
@@ -627,9 +628,36 @@ func tick(delta: float) -> void:
 	if id != _armed_weapon:
 		_arm_battery()
 	var row: Dictionary = FAMILIES[id]
+	var instant := bool(row.get(&"instant", false))
 	_release_battery(id, row, delta)
-	if bool(row.get(&"instant", false)):
+	## A held trigger is a stream of salvos, not one (CONTRACTS section 16 rule 4's own
+	## second half, restored by the S4-H4 pass): once every barrel of the armed battery has
+	## had its release, the still-held pull arms it again, so each barrel fires again as soon
+	## as its **own cadence timer** allows - the pre-S4 stream, one timer per barrel instead
+	## of one for the whole trigger. Two families keep one release per pull: the mine, which
+	## 09 section 3.1 calls a drop rather than a held family and marks `edge` (the pre-S4
+	## `_fire_projectile` read the same flag, at f3b0d24:vajb-orbit/game/weapons.gd:601-603),
+	## and a beam battery, which has no salvo to repeat because its open barrels keep drawing
+	## for as long as the trigger is held.
+	if not instant and not bool(row.get(&"edge", false)) and _salvo_spent(id):
+		_arm_battery()
+	if instant:
 		_fire_beam_battery(id, row, delta)
+
+
+## Whether every barrel of `weapon`'s battery has had its release since the last arm - the
+## trigger point of the held pull's stream above. A barrel still armed is waiting either on
+## its release offset or on its own cadence timer (rule 4's as-built (d): an unready cadence
+## keeps the barrel armed), so the salvo is spent only once no barrel of the battery is left,
+## and the battery then arms again. A base with no barrel at all is never spent.
+func _salvo_spent(weapon: StringName) -> bool:
+	var positions := battery(weapon)
+	if positions.is_empty():
+		return false
+	for position: int in positions:
+		if _armed[position] >= 0.0:
+			return false
+	return true
 
 
 ## One frame of the barrels' own cadence. They run down whether or not the trigger is
@@ -793,10 +821,10 @@ func _fire_beam_battery(weapon: StringName, row: Dictionary, delta: float) -> vo
 ##
 ## Called once per **barrel** of the battery as that barrel releases (CONTRACTS section
 ## 16 rules 4-5), so a three-barrel volley spawns three shots, spends three rounds from
-## the one family pack and pushes the hull three times. The release is the barrel's own
-## edge: a barrel is armed only by a pull and disarmed when it fires, which is where the
-## mine's "one per trigger pull" now lives. A barrel the pack refuses is dry and leaves
-## the rest of the battery to fire.
+## the one family pack and pushes the hull three times. A released barrel is disarmed and
+## re-armed by the next salvo, so a held trigger streams (see `tick`); the mine's "one per
+## trigger pull" is that same loop's `edge` read rather than a flag here. A barrel the pack
+## refuses is dry and leaves the rest of the battery to fire.
 func _fire_projectile(position: int, weapon: StringName, row: Dictionary) -> void:
 	if not _ammo_available(weapon):
 		_dry(weapon)
