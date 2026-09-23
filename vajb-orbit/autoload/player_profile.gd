@@ -31,6 +31,11 @@ extends Node
 ## same save adds the two new top-level keys -- `instance_counter`, the `mod_%04d`
 ## mint, and `auction`, the shelf -- and a fit cell now holds an instance id, so
 ## every fit judgement goes through `base_fit`.
+## S4 adds the two bulk wrappers over those transactions, `fit_battery` and
+## `clear_battery` (CONTRACTS section 16 rules 7-8): a battery's cells filled or
+## emptied in one batch that pairs `instances_of` into ascending cells and is
+## atomic over the fit **and** the bag, so a refused batch leaves the account
+## where it started.
 ## Test and support hooks, present for the P1 suites and migration fixtures
 ## only: save_path (defaults to SAVE_FILE) and reload().
 
@@ -87,6 +92,9 @@ const POWER_SLOT: StringName = &"power"
 ## carries (CONTRACTS section 11 rule 2; `engines` wins when both are present).
 const ENGINE_SLOT: StringName = &"engines"
 const LEGACY_ENGINE_SLOT: StringName = &"engine"
+## The weapon set: the one slot type the S4 bulk wrappers address, because a
+## battery is a group of fitted weapons (09 section 10, CONTRACTS section 16).
+const WEAPON_SLOT: StringName = &"weapons"
 
 ## Market sub-keys, present in every normalised market dictionary.
 const MARKET_KEYS: Array[String] = ["demand", "stock", "queue", "trend"]
@@ -913,6 +921,102 @@ func clear_fit_slot(ship_id: StringName, slot_key: StringName, index: int) -> bo
 	_announce_fit(ship_id, stored)
 	Log.append(EVENT_FIT_MODULE, module_id, 1, 0, _credits)
 	return true
+
+
+## The S4 bulk wrappers (CONTRACTS section 16 rules 7-8): the batch behind the
+## OUTFITTING strip's `FIT ALL` / `SWAP ALL` and its `REMOVE ALL`. Both loop the
+## two composed transactions above, one call per cell, so every per-cell guard,
+## every log line and both `profile_changed` keys are the composed calls' own.
+##
+## **The batch is atomic over the fit *and* the bag.** `fit_for` and `modules()`
+## are snapshotted before the first cell and, on any refusal, both are restored
+## through the public `set_fit` and `set_modules`, so a half-filled battery is
+## never left behind and no instance is ever stranded at `count` 0 (the L80
+## class, CONTRACTS section 15).
+##
+## The guards answer `false` writing nothing: a hull outside the nine or a
+## W-less hull (0 capacity), an index outside `0 .. slot_capacity-1`, a repeated
+## index (a cell is one barrel), an empty index list, and a bag that carries
+## fewer instances than there are cells. A cell whose own `fit_module_at`
+## refuses after earlier cells were fitted rolls the whole batch back.
+##
+## `instances_of(base_id)` is the pairing source (CONTRACTS section 16 rule 7):
+## the base's in-bag instances in creation order, one per cell taken in ascending
+## order. A fitted instance is out of the bag, which is what makes `SWAP ALL` a
+## re-seat rather than a duplicate.
+func fit_battery(ship_id: StringName, base_id: StringName, indices: Array) -> bool:
+	if base_id == &"" or indices.is_empty():
+		return false
+	var capacity := FitData.slot_capacity(ship_id, WEAPON_SLOT)
+	if capacity <= 0:
+		return false
+	var cells: Array[int] = []
+	for raw: Variant in indices:
+		var index := int(raw)
+		if index < 0 or index >= capacity or cells.has(index):
+			return false
+		cells.append(index)
+	cells.sort()
+	var bag := instances_of(base_id)
+	if bag.size() < cells.size():
+		return false
+	var fit_before := fit_for(ship_id)
+	var bag_before := modules()
+	var had_fit := fits().has(String(ship_id))
+	for position in cells.size():
+		if not fit_module_at(ship_id, WEAPON_SLOT, cells[position], bag[position]):
+			_restore_fit_and_bag(ship_id, fit_before, bag_before, had_fit)
+			return false
+	return true
+
+
+## The bulk remove (CONTRACTS section 16 rule 8): empties exactly the cells of
+## this hull whose **stored** entry resolves through `base_module_id` to
+## `base_id`, one `clear_fit_slot` per cell, ascending. A hull that holds no such
+## cell - and any hull outside the nine - answers `false` writing nothing, so the
+## pane renders a refusal rather than a silent success; a refused cell rolls the
+## whole batch back, so a battery is never half-banked.
+##
+## The cells are read from `fit_for`, not from `resolved_fit`: only a module the
+## stored fit holds goes back to the inventory, which is the same read
+## `clear_fit_slot` makes per cell.
+func clear_battery(ship_id: StringName, base_id: StringName) -> bool:
+	if base_id == &"":
+		return false
+	var capacity := FitData.slot_capacity(ship_id, WEAPON_SLOT)
+	if capacity <= 0:
+		return false
+	var fit_before := fit_for(ship_id)
+	var cells: Array[int] = []
+	for index in capacity:
+		var entry := StringName(_cell_id(fit_before, WEAPON_SLOT, index))
+		if entry != &"" and base_module_id(entry) == base_id:
+			cells.append(index)
+	if cells.is_empty():
+		return false
+	var bag_before := modules()
+	var had_fit := fits().has(String(ship_id))
+	for index in cells:
+		if not clear_fit_slot(ship_id, WEAPON_SLOT, index):
+			_restore_fit_and_bag(ship_id, fit_before, bag_before, had_fit)
+			return false
+	return true
+
+
+## The batch rollback both wrappers share: the fit whole through `set_fit` and
+## the bag whole through `set_modules` (CONTRACTS section 16 rules 7-8, the two
+## public writers), so a refused batch leaves the account exactly where it
+## started. A hull that held no stored fit before the batch has that fit dropped
+## again through `clear_fit` instead of being written back empty, so the restore
+## is exact rather than merely equivalent.
+func _restore_fit_and_bag(
+	ship_id: StringName, fit_before: Dictionary, bag_before: Dictionary, had_fit: bool
+) -> void:
+	if had_fit:
+		set_fit(ship_id, fit_before)
+	else:
+		clear_fit(ship_id)
+	set_modules(bag_before)
 
 
 ## The save v5 migration and its one-way door (09 section 4 item 13, CONTRACTS

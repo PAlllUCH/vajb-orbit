@@ -1559,12 +1559,19 @@ Rules the pin fixes, so no worker has to choose:
    instances than cells and refuses the surplus cells.
    `indices` are the hull's W-cell layout indices (`0 .. slot_capacity - 1`, §13's own space).
    The first guard that fails answers `false` writing nothing: a hull outside the nine or a
-   W-less hull, an index outside capacity, or a cell whose `fit_module_at` refuses.
+   W-less hull, an index outside capacity, a **repeated index** (one cell is one barrel — the
+   conservative reading, reversal: dedupe), an **empty index list**, a bag that cannot cover
+   the list (measured over the nine player hulls: every one carries at least one `W` cell, so
+   the W-less branch is defensive), or a cell whose `fit_module_at` refuses.
    **The batch is atomic over the fit *and* the bag**: it snapshots `fit_for(ship_id)` and
    `modules()` before the first cell and, on any refusal, restores both through the public
    `set_fit` / `set_modules` (`:710`, `:341`) — a literal fit-only rollback would leave a
-   restored cell's instance stranded at `count` 0 (the L80 class, §15). It answers true only
-   when every index was fitted, and logs one §13 line per fitted cell because its own calls do.
+   restored cell's instance stranded at `count` 0 (the L80 class, §15). A hull that held **no
+   stored fit** before the batch is returned to that state rather than given an all-empty one
+   (the shipped `_restore_fit_and_bag` calls `clear_fit` for that branch; measured H1 deviation
+   6 — `fit_for` hides the difference but `fits()` and the save file would not). It answers true
+   only when every index was fitted, and logs one §13 line per fitted cell because its own calls
+   do.
 8. **`clear_battery(ship_id, base_id)`** — empties exactly the cells of that hull whose stored
    entry resolves through `base_module_id` to `base_id`, one `clear_fit_slot` per cell, with
    §7's snapshot-and-restore atomicity. A hull that holds no such cell — and any hull outside
@@ -1572,8 +1579,9 @@ Rules the pin fixes, so no worker has to choose:
    silent success. A refused cell rolls the whole batch back, so a battery is never half-banked.
 9. **The refusal copy has one home and the strip duplicates it byte-equivalently.** The three
    §13 wordings live in `ui/station/fitting_panel.gd:147-149`
-   (`REFUSAL_OVERLOAD` = `13 / 11 PWR — OVER BY 2`, `REFUSAL_MANDATORY` =
-   `MANDATORY CELL — SWAP ONLY, NEVER EMPTY`, `REFUSAL_FIT_ILLEGAL` = `REFUSED · FIT ILLEGAL`)
+   (`REFUSAL_OVERLOAD` = the format `"%d / %d PWR — OVER BY %d"` — rendered `13 / 11 PWR — OVER
+   BY 2`, 09 §2's own over-by line — `REFUSAL_MANDATORY` = `MANDATORY CELL — SWAP ONLY, NEVER
+   EMPTY`, `REFUSAL_FIT_ILLEGAL` = `REFUSED · FIT ILLEGAL`)
    — a file in no S4 worker's set — so OUTFITTING declares **its own three constants with those
    exact literals**, the precedent L116 recorded for byte-equivalent twins. The strip's footer
    renders `REFUSAL_OVERLOAD` with `fit_legal`'s own `power` numbers when the candidate is over

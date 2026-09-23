@@ -404,6 +404,10 @@ for batteries).
   (catalogue-uppercased), the cell labels it occupies, and the count of that base the account
   holds **in the bag** — the figure `FIT ALL` and `SWAP ALL` spend from, read through
   `PlayerProfile.instances_of(base_id)`, the same reading §5.3's rows show as `OWNED ×<n>`.
+  For a **stacked** base-keyed record that count is one instance per cell (an instance-keyed
+  bag, which the v6 migration produces, has no stacks): the row's figure is exactly the number
+  of cells one batch can pair, which is why it is not a sum of unit counts (H1 deviation 4;
+  reversal: sum the counts and cap the batch at the pair-able instances).
   A base with no firing family (`w_mining`, 09 §4 item 7) still gets its row: the grouping law is
   the base id, and only the trigger side is family-keyed (CONTRACTS §16 rule 3).
   The cell labels are the pane's own cell indices; they are never taken from the component's
@@ -413,7 +417,10 @@ for batteries).
   `PlayerProfile.fit_battery(hull, base_id, indices)` call over the ordered index list;
   `REMOVE ALL` empties exactly the battery's cells (`clear_battery`); `SWAP ALL` re-seats each of
   the battery's cells with the next bag instance of the same base (`fit_battery` over the
-  battery's own index list), the displaced instances returning to the bag. Disabled states:
+  battery's own index list), the displaced instances returning to the bag. `SWAP ALL` takes the
+  battery's whole index list with no `min`, so a bag that cannot cover every barrel is refused
+  with the catch-all rather than partly re-seated (H1 deviation 2; reversal: cut the list like
+  `FIT ALL`, or disable the plate below the cell count). Disabled states:
   `FIT ALL` when the bag holds none of the base, `SWAP ALL` when it holds none, `REMOVE ALL`
   never (a battery row always holds cells).
 - **The per-barrel expander (`▸`).** One per battery row: it reveals the battery's cells as the

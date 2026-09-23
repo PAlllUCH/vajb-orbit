@@ -8,10 +8,14 @@ extends McpTestSuite
 ##
 ## **The MODULES section is retired**: the AUCTION shelf sells the rolled instances now,
 ## so this suite guards the retirement (no rows, no constants, no scene nodes) and proves
-## the AUCTION is the door instead. The strip's REMOVE survives the retirement -- it is the
-## strip's own control, not a row of the retired table -- so it is still measured here,
-## through the composed `clear_fit_slot` (CONTRACTS section 13, S3-K4 HIGH-1's cure) and
-## with the same `_seed_fit` guard, for a base-id cell and for a rolled instance alike.
+## the AUCTION is the door instead. The strip survives the retirement and becomes a **battery
+## list** (STATION_HUB section 5.1's 2026-09-23 S4 amendment, 09 section 10, CONTRACTS
+## section 16): one row per battery of identical weapons, then one read-only line per empty W
+## cell, so this suite's per-cell row assertions moved to the battery rows and the empty-cell
+## assertions stayed. The single-cell REMOVE is still reachable through the row's `▸` expander
+## and still writes through the composed `clear_fit_slot` (CONTRACTS section 13, S3-K4
+## HIGH-1's cure), with the same `_seed_fit` guard, for a base-id cell and for a rolled
+## instance alike; `tests/test_s4_batteries.gd` owns the expander's own reachability.
 ##
 ## The pane is mounted from the shipped scene with the shipped theme and driven through the
 ## wiring the station shell itself uses -- the row's own `pressed` signal for an action
@@ -229,19 +233,37 @@ func _price_danger(row: Button) -> bool:
 	return value != null and value.has_theme_color_override(&"font_color")
 
 
-func _strip_line(panel: Control, index: int) -> HBoxContainer:
+## The strip's rendered rows, the S4 shape (STATION_HUB section 5.1's 2026-09-23 amendment):
+## one battery row per battery in first-cell order, then one read-only `W<n> — EMPTY` line per
+## empty W cell. A row is a `VBoxContainer` whose `Main` box carries
+## `Expander`/`Text`/`FitAll`/`RemoveAll`/`SwapAll` and whose `Cells` box carries the
+## expander's single-cell lines (each one the P2-B1 strip's own `Text` + `Remove` row).
+func _strip_row(panel: Control, index: int) -> VBoxContainer:
 	var strip := panel.get_node("%FittedStrip") as VBoxContainer
-	return strip.get_child(index) as HBoxContainer
+	return strip.get_child(index) as VBoxContainer
+
+
+func _strip_main(panel: Control, index: int) -> HBoxContainer:
+	return _strip_row(panel, index).get_node(^"Main") as HBoxContainer
 
 
 func _strip_text(panel: Control, index: int) -> String:
-	var line := _strip_line(panel, index)
-	var text := line.get_node_or_null(^"Text") as Label
+	var text := _strip_main(panel, index).get_node_or_null(^"Text") as Label
 	return text.text if text != null else ""
 
 
-func _strip_remove(panel: Control, index: int) -> Button:
-	return _strip_line(panel, index).get_node(^"Remove") as Button
+func _strip_control(panel: Control, index: int, control_name: String) -> Button:
+	return _strip_main(panel, index).get_node(control_name) as Button
+
+
+func _cell_line(panel: Control, index: int, line_index: int) -> HBoxContainer:
+	var cells := _strip_row(panel, index).get_node(^"Cells") as VBoxContainer
+	return cells.get_child(line_index) as HBoxContainer
+
+
+func _cell_line_text(panel: Control, index: int, line_index: int) -> String:
+	var text := _cell_line(panel, index, line_index).get_node_or_null(^"Text") as Label
+	return text.text if text != null else ""
 
 
 func _strip_lines(panel: Control) -> int:
@@ -257,8 +279,9 @@ func _press_ammo(panel: Control, pack_id: StringName) -> void:
 	_ammo_row(panel, pack_id).pressed.emit()
 
 
-func _press_strip_remove(panel: Control, index: int) -> void:
-	_strip_remove(panel, index).pressed.emit()
+## One of a battery row's three bulk plates, pressed.
+func _press_bulk(panel: Control, index: int, control_name: String) -> void:
+	_strip_control(panel, index, control_name).pressed.emit()
 
 
 func _cells(hull: StringName) -> Array:
@@ -588,9 +611,10 @@ func _digits_only(text: String) -> String:
 ## ------------------------------------------------------------- the surviving strip
 
 
-## The strip is one line per W cell of the active hull, read from `ShipFit.grid_cells` +
-## the fit the launch resolves: the Vanguard's own three cells, `W1 LASER MKII` from 09
-## section 9's standard fit, and REMOVE on the fitted line only.
+## The strip is a battery list read from `ShipFit.grid_cells` + the fit the launch resolves:
+## the Vanguard's three W cells carry one standard laser in W1, so the strip draws one battery
+## row (its own three bulk plates and its `▸`) and two read-only empty-cell lines, and a hull
+## switch re-reads the same fixed node set (STATION_HUB section 5.1's S4 amendment).
 func test_fitted_strip_reads_the_active_hulls_w_cells() -> void:
 	assert_eq(
 		FitData.slot_capacity(VANGUARD, WEAPON_SLOT),
@@ -598,40 +622,74 @@ func test_fitted_strip_reads_the_active_hulls_w_cells() -> void:
 		"the Vanguard's matrix carries three W cells"
 	)
 	var panel := _mount()
-	assert_eq(_strip_lines(panel), VANGUARD_W_CELLS, "one line per W cell of the active hull")
-	assert_eq(_strip_text(panel, 0), "W1 LASER MKII", "the pin's own fitted line")
+	assert_eq(_strip_lines(panel), VANGUARD_W_CELLS, "three rows: one battery and two empties")
+	var rows: Array = panel.call(&"strip_rows")
+	assert_eq(rows.size(), 3, "every W cell of the active hull is accounted for")
+	assert_eq(rows[0][&"kind"], &"battery", "the fitted cell's row is a battery")
+	assert_eq(rows[0][&"cells"], [0], "covering the one cell the standard fit fills")
+	assert_eq(
+		_strip_text(panel, 0),
+		PanelScript.BATTERY_TEXT % [
+			1,
+			"LASER MKII",
+			PanelScript.BATTERY_CELLS % 1,
+			PanelScript.BATTERY_OWNED % 0,
+		],
+		"the pin's own battery row reading"
+	)
 	assert_eq(_strip_text(panel, 1), "W2 — EMPTY", "the pin's own empty line")
 	assert_eq(_strip_text(panel, 2), "W3 — EMPTY", "the Cutter's third cell")
-	assert_true(_strip_remove(panel, 0).visible, "a fitted line carries REMOVE")
-	assert_false(_strip_remove(panel, 1).visible, "an empty line does not")
-	assert_false(_strip_remove(panel, 2).visible, "nor does the third")
+	assert_eq(rows[1][&"kind"], &"empty", "an empty cell is its own read-only line")
+	assert_eq(rows[1][&"cells"], [], "and covers no battery cell")
+	assert_true(_strip_control(panel, 0, "RemoveAll").visible, "a battery row carries REMOVE ALL")
+	assert_eq(
+		PanelScript.STRIP_REMOVE_ALL,
+		_strip_control(panel, 0, "RemoveAll").text,
+		"whose plate is the pin's own word"
+	)
+	assert_true(_strip_control(panel, 0, "Expander").visible, "and its own expander")
+	## The bag holds none of the base, so the two spending actions are disabled by state and
+	## REMOVE ALL never is (STATION_HUB section 5.1).
+	assert_true(_strip_control(panel, 0, "FitAll").disabled, "FIT ALL needs a bag instance")
+	assert_true(_strip_control(panel, 0, "SwapAll").disabled, "and so does SWAP ALL")
+	assert_false(_strip_control(panel, 0, "RemoveAll").disabled, "REMOVE ALL is never disabled")
+	## An empty line carries no control at all: the whole row is read-only.
+	assert_false(_strip_control(panel, 1, "RemoveAll").visible, "an empty line has no REMOVE")
+	assert_false(_strip_control(panel, 1, "FitAll").visible, "and no FIT ALL")
+	assert_false(_strip_control(panel, 1, "Expander").visible, "and no expander")
+	assert_eq(_cell_line_text(panel, 1, 0), "", "and no revealed single-cell line")
 	## A hull switch is the profile's own key: the Lancer carries two W cells and 09
-	## section 9's two-laser fit, so the strip follows the active hull without a rebuild of
-	## the pane.
+	## section 9's two-laser fit, so its two barrels are **one** row without a rebuild of
+	## the pane (09 section 10's grouping).
 	assert_true(
 		bool(_profile.call(&"buy_ship", LANCER, int(Catalog.ship(LANCER)[&"cost"]))),
 		"the Lancer can be bought"
 	)
 	assert_true(bool(_profile.call(&"set_active_ship", LANCER)), "and made active")
-	assert_eq(_strip_lines(panel), 2, "the Lancer's own two W cells")
-	assert_eq(_strip_text(panel, 0), "W1 LASER MKII", "its first standard laser")
-	assert_eq(_strip_text(panel, 1), "W2 LASER MKII", "and its second")
-	assert_true(_strip_remove(panel, 1).visible, "both lines carry REMOVE")
+	assert_eq(_strip_lines(panel), 1, "one row for the Lancer's two-barrel battery")
+	rows = panel.call(&"strip_rows")
+	assert_eq(rows[0][&"cells"], [0, 1], "covering both of its W cells")
+	assert_eq(_strip_text(panel, 0), "2× LASER MKII · W1·W2 · OWNED ×0", "one battery, one row")
 
 
-## The strip's REMOVE is the pane's one fit write after the retirement: it empties the cell,
-## hands the module back to the inventory, costs nothing, and never touches the mandatory
-## set (09 section 4 items 9 to 13: only 09 section 9's W cells are reachable from here).
+## The battery strip's `REMOVE ALL` is the ammo pane's one bulk fit write: it empties every
+## cell of the battery, hands the module(s) back to the inventory, costs nothing, and never
+## touches the mandatory set (09 section 4 items 9 to 13: only 09 section 9's W cells are
+## reachable from here).
 func test_strip_remove_is_the_ammo_panes_one_fit_action() -> void:
 	var panel := _mount()
 	assert_eq(_cells(VANGUARD), ["", "", ""], "a fresh account stores no fit for the hull")
-	assert_true(_strip_remove(panel, 0).visible, "the standard fit's laser is fitted in W1")
+	assert_true(
+		_strip_control(panel, 0, "RemoveAll").visible, "the standard fit's laser is a battery"
+	)
 	assert_eq(_module_held(LASER), 0, "and the fixture holds no laser of its own")
-	_press_strip_remove(panel, 0)
-	assert_eq(_cells(VANGUARD)[0], "", "the strip's REMOVE emptied the cell")
+	_press_bulk(panel, 0, "RemoveAll")
+	assert_eq(_cells(VANGUARD)[0], "", "REMOVE ALL emptied the battery's cell")
 	assert_eq(_module_held(LASER), 1, "and the module is back in the inventory")
 	assert_eq(_strip_text(panel, 0), "W1 — EMPTY", "the strip reads the empty cell")
-	assert_false(_strip_remove(panel, 0).visible, "an emptied line carries no REMOVE")
+	assert_false(
+		_strip_control(panel, 0, "RemoveAll").visible, "an emptied line carries no REMOVE ALL"
+	)
 	assert_eq(_credits(), START_CREDITS, "removing costs nothing")
 	assert_eq(
 		_last_status(),
@@ -654,7 +712,7 @@ func test_strip_remove_is_the_ammo_panes_one_fit_action() -> void:
 	)
 
 
-## The strip's REMOVE against a cell that holds an **instance** (S3-K4 HIGH-1). The composed
+## `REMOVE ALL` against a cell that holds an **instance** (S3-K4 HIGH-1). The composed
 ## `clear_fit_slot` banks the entry the cell holds as *itself*, so a weapon rolled and fitted
 ## through FITTING comes back with its own id, rarity and affix rows instead of being stranded
 ## at `count` 0 behind a fresh base-keyed Common (CONTRACTS section 15's `restore_instance`
@@ -674,10 +732,10 @@ func test_strip_remove_hands_back_the_fitted_instance() -> void:
 		"the cell holds the instance id, not its base"
 	)
 	assert_eq(_module_count(instance), 0, "and the instance is out of the bag")
-	assert_eq(_strip_text(panel, 0), "W1 LASER MKII", "the strip names it by its base's name")
-	assert_true(_strip_remove(panel, 0).visible, "and its fitted line carries REMOVE")
-	_press_strip_remove(panel, 0)
-	assert_eq(_cells(VANGUARD)[0], "", "the strip's REMOVE emptied the cell")
+	assert_eq(_strip_text(panel, 0), "1× LASER MKII · W1 · OWNED ×0", "the strip names the base")
+	assert_true(_strip_control(panel, 0, "RemoveAll").visible, "and carries REMOVE ALL")
+	_press_bulk(panel, 0, "RemoveAll")
+	assert_eq(_cells(VANGUARD)[0], "", "REMOVE ALL emptied the cell")
 	assert_eq(_module_count(instance), 1, "and the same instance is back in the bag")
 	var record: Dictionary = _profile.call(&"instance", instance)
 	assert_eq(String(record[&"rarity"]), "magic", "with its own rarity")
@@ -697,9 +755,9 @@ func test_strip_remove_hands_back_the_fitted_instance() -> void:
 
 
 ## The duplication half of S3-K4 HIGH-1: a base-keyed unit of the same base already in the
-## bag is not incremented by the strip's REMOVE. The raw `add_module(base_id, 1)` this pane
-## wrote before the fix banked a fresh unit whichever entry the cell held, so one physical
-## unit became two and `Auction.sell_rows` priced both.
+## bag is not incremented by REMOVE ALL. The raw `add_module(base_id, 1)` this pane wrote
+## before the fix banked a fresh unit whichever entry the cell held, so one physical unit
+## became two and `Auction.sell_rows` priced both.
 func test_strip_remove_does_not_duplicate_a_base_keyed_unit() -> void:
 	var panel := _mount()
 	var instance := StringName(_profile.call(&"add_instance", LASER, &"rare", [], []))
@@ -709,7 +767,7 @@ func test_strip_remove_does_not_duplicate_a_base_keyed_unit() -> void:
 	)
 	_profile.call(&"add_module", LASER, 1)
 	assert_eq(_module_count(LASER), 1, "one plain base-keyed laser sits in the bag")
-	_press_strip_remove(panel, 0)
+	_press_bulk(panel, 0, "RemoveAll")
 	assert_eq(_module_count(instance), 1, "the fitted instance is back as itself")
 	assert_eq(_module_count(LASER), 1, "and the base-keyed unit is still one unit, not two")
 	assert_eq(
@@ -725,8 +783,8 @@ func test_strip_remove_does_not_duplicate_a_base_keyed_unit() -> void:
 
 
 ## The refresh is the profile's signal, not a read-through: the ammo rows move on `credits`
-## and `ammo`, the strip on `fits` and `ships`, and the retired `modules` key -- the
-## AUCTION's now -- changes nothing here at all.
+## and `ammo`, the strip on `fits` and `ships`, and - since the battery row carries the bag
+## figure it spends from (STATION_HUB section 5.1) - on `modules` too.
 func test_profile_changed_drives_the_refresh() -> void:
 	var panel := _mount()
 	var row := _ammo_row(panel, &"plasma")
@@ -755,11 +813,22 @@ func test_profile_changed_drives_the_refresh() -> void:
 		bool(_profile.call(&"set_fit_slot", VANGUARD, WEAPON_SLOT, 0, RAILGUN)),
 		"an external fit write"
 	)
-	assert_eq(_strip_text(panel, 0), "W1 RAILGUN", "fits refreshed the strip")
+	assert_eq(
+		_strip_text(panel, 0),
+		"1× RAILGUN · W1 · OWNED ×0",
+		"fits refreshed the battery row"
+	)
 	assert_eq(_strip_text(panel, 1), "W2 — EMPTY", "and left the empty cells empty")
-	assert_true(_strip_remove(panel, 0).visible, "with REMOVE on the new fitted line")
-	## `modules` belongs to the AUCTION pane now: an inventory write must not move a cell
-	## here, which is the visible half of the retirement.
-	_profile.call(&"add_module", LASER, 1)
-	assert_eq(_strip_text(panel, 0), "W1 RAILGUN", "a modules write left the strip alone")
+	assert_true(_strip_control(panel, 0, "RemoveAll").visible, "with REMOVE ALL on the battery")
+	## `modules` is the strip's own key now: the bag figure the row shows and the two actions
+	## it gates are read through `instances_of`, so a bag write must move them. Before the S4
+	## amendment the strip ignored this key (it read the fit alone).
+	assert_true(_strip_control(panel, 0, "FitAll").disabled, "no railgun in the bag yet")
+	_profile.call(&"add_module", RAILGUN, 1)
+	assert_eq(
+		_strip_text(panel, 0),
+		"1× RAILGUN · W1 · OWNED ×1",
+		"a modules write moved the battery's bag figure"
+	)
+	assert_false(_strip_control(panel, 0, "FitAll").disabled, "and re-enabled FIT ALL")
 	assert_eq(_cells(VANGUARD)[0], RAILGUN, "and wrote no fit cell")
