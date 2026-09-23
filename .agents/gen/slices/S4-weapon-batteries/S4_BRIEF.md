@@ -93,6 +93,11 @@ if H0 finds the fire side needs the seam first).
   (the owner's own ruling). No price, damage, cadence or ammo number moves
   except that a volley now charges one round per barrel (which is the ruling).
 - No shell-based file edits; workspace-relative `VAJB_WORKER_FILES` paths (L92a).
+- **Every probe that boots `PlayerProfile` must run against a scratch store** —
+  `XDG_DATA_HOME` scratch or repoint `save_path` before `_ready`. Twice now a
+  probe has written the owner's live account (S2.6/L106 and the S3 incident,
+  `slices/S3-module-affixes/_incident/README.md`); a third is a process failure.
+  The runner sandbox protects the gate only — **probes are not covered**.
 - Bounded probes only (L82). Never leave a background job.
 - A number not in the pinned docs: **report it, never invent it**.
 
