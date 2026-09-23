@@ -1,0 +1,53 @@
+You are hand-authoring ROUND 2 of flat SVG game icons. Round 1 failed playtest:
+fine details disappeared at small render sizes and icons were not unique enough.
+Round 2 is bolder, higher-contrast and silhouette-distinct. Write EXACTLY the
+files listed below, at the exact paths given, and nothing else. No reports, no
+README, no changes to existing files.
+
+HARD RULES - a validator rejects violations of 1-4:
+1. Root element exactly: <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+2. Fills only. Never use stroke. No gradients, no filters, no text, no embedded
+   images, no opacity below 1. Solid flat colours only.
+3. SIZE FLOORS - the playtest fix. Nothing narrower than 5 units anywhere: no
+   bars, walls, gaps, dots, tips or seams below it. At least ONE signature
+   feature of 24+ units per icon (it must still read at 16 px). At least 5 units
+   of empty space between any two shapes. Use 4 to 8 LARGE shapes per icon -
+   fewer and chunkier than round 1.
+4. CONTRAST LAW. The outer mass of the icon is LIGHT #C9CDD2. Interior detail is
+   cut as LARGE dark #232629 shapes or transparent fill-rule="evenodd" holes,
+   each at least 5 units wide. Never place mid-tone details (#8D939B or #565C63
+   shapes) on a #C9CDD2 body - they smear into mud. Never build an icon whose
+   outer mass is dark (#2B2F35 / #3A3F46 / #232629): it disappears against the
+   dark UI panel. In EMBER OK files one large ember accent (#C8461B or #E8703A,
+   10+ units as a band or tip) replaces the second tone.
+5. UNIQUENESS LAW. The OUTLINE itself must be unique - at 16 px only the outline
+   and the signature feature carry identity. The per-icon SIGNATURE line below is
+   the design brief: build exactly that large feature and the silhouette move it
+   names. Two icons in one batch must never share an outer shape; siblings take
+   different outline moves (stepped top, angled cut, punched corner, split
+   halves, notch crown, overhanging cap...).
+6. Coordinates on integer or .5 steps within the 0..96 canvas. Mirrored
+   coordinates are fine for symmetric subjects, but take one deliberate
+   asymmetry when the SIGNATURE line asks for it.
+7. staging/d2/style_ref_rocket.svg is the SIMPLICITY FLOOR only - round 2 is
+   chunkier and more defined than it. The master PNG listed per file shows the
+   subject: keep the concept, rebuild the drawing under these rules.
+
+FILES - one line per output:
+path | subject | KILL (round-1 failures) | SIGNATURE (what to build)
+
+BATCH NOTE: Alt devices/structures. Light outer mass mandatory.
+
+- staging/d2/svg_v2/icon_alt_chevron_engine_module.svg | subject: icon_alt_chevron_engine_module | KILL: ~5u chevron strokes; 4u top bar; 3u bottom bar; 5u side rails; #2B2F35 octagon merges with bg | SIGNATURE: 2 chevrons at 12u arms; reshape body to engine-bell/nozzle silhouette | master: vajb-orbit/assets/icons/alt/icon_alt_chevron_engine_module.png | steel only
+- staging/d2/svg_v2/icon_alt_chevron_striped_canister.svg | subject: icon_alt_chevron_striped_canister | KILL: 4u side rails; 3u bottom bar; ~4u chevron stroke; dia-4 holes in 8u cap; #2B2F35 body merges with bg | SIGNATURE: cylinder body with elliptical cap; 2 wraparound stripes 12u thick | master: vajb-orbit/assets/icons/alt/icon_alt_chevron_striped_canister.png | steel only
+- staging/d2/svg_v2/icon_alt_dish_antenna_signal.svg | subject: icon_alt_dish_antenna_signal | KILL: 3u foot bar; dia-4 base bolts; r3.5 feed head; ~4u feed strut; 5u arc bands; dark dish + dark strut merge with bg; arcs fade | SIGNATURE: full semicircle dish 12u band; 2 signal arcs 8u thick | master: vajb-orbit/assets/icons/alt/icon_alt_dish_antenna_signal.png | steel only
+- staging/d2/svg_v2/icon_alt_dome_arch_module.svg | subject: icon_alt_dome_arch_module | KILL: 16x4u base strip; dia-4 bolts; 6x6u windows; 7u top ring band; whole arch #2B2F35 on bg - silhouette gone, specks float | SIGNATURE: light-steel arch band 14u; oversized 24u keystone | master: vajb-orbit/assets/icons/alt/icon_alt_dome_arch_module.png | steel only
+- staging/d2/svg_v2/icon_alt_double_window_panels.svg | subject: icon_alt_double_window_panels | KILL: 6u frame bands; 4u plus-glyph arms; dia-4 bolt dots; everything #2B2F35 on bg - icon nearly invisible (2 dots only) | SIGNATURE: light-steel frames 12u; one tall + one short panel; drop plus glyphs | master: vajb-orbit/assets/icons/alt/icon_alt_double_window_panels.png | steel only
+- staging/d2/svg_v2/icon_alt_flared_tower_silhouette.svg | subject: icon_alt_flared_tower_silhouette | KILL: 3u slats x4; 7u top ring; 6u base bar; dia-4 bolts; tower #2B2F35 on bg vanishes, slats float | SIGNATURE: 2 slats 8u thick; bold continuous light-steel flare outline | master: vajb-orbit/assets/icons/alt/icon_alt_flared_tower_silhouette.png | steel only
+- staging/d2/svg_v2/icon_alt_hangar_fighters.svg | subject: icon_alt_hangar_fighters | KILL: fighter micro-holes 2-4u; 3u header/side dashes; 6u fighter spines; all #2B2F35 on bg - invisible except specks | SIGNATURE: one light-steel fighter 40u wide, 8u+ spines; kill micro-holes | master: vajb-orbit/assets/icons/alt/icon_alt_hangar_fighters.png | steel only
+- staging/d2/svg_v2/icon_alt_hopper_funnel.svg | subject: icon_alt_hopper_funnel | KILL: 3u light bars x3; 5u neck step; 6u funnel lip; all #2B2F35 on bg - funnel invisible, stripes float | SIGNATURE: light-steel V funnel 12u walls; bold 10u throat cut | master: vajb-orbit/assets/icons/alt/icon_alt_hopper_funnel.png | steel only
+- staging/d2/svg_v2/icon_alt_launching_pad.svg | subject: icon_alt_launching_pad | KILL: 3u pad stripe; 4u mast ticks; dia-4 bolts; all #2B2F35 on bg - mast and legs invisible | SIGNATURE: bold light rocket triangle 30u on 12u mast; 8u+ launch legs | master: vajb-orbit/assets/icons/alt/icon_alt_launching_pad.png | steel only
+- staging/d2/svg_v2/icon_alt_robotic_arm.svg | subject: icon_alt_robotic_arm | KILL: 4u gripper prongs; 3u light stripes; dia-4/5 joints; whole arm #2B2F35 on bg - invisible except specks | SIGNATURE: light-steel 12u limbs; 10u gripper jaws + r6 joint bosses | master: vajb-orbit/assets/icons/alt/icon_alt_robotic_arm.png | steel only
+- staging/d2/svg_v2/icon_alt_winged_tower_emitter.svg | subject: icon_alt_winged_tower_emitter | KILL: 3u stripes x4; 3u top tick; 5u base; 4u wings; all #2B2F35 on bg - tower invisible, stripes float | SIGNATURE: light-steel tower + big 24u emitter dish; 2 stripes 8u thick | master: vajb-orbit/assets/icons/alt/icon_alt_winged_tower_emitter.png | steel only
+
+Output ONLY the .svg files listed above.

@@ -1,0 +1,49 @@
+You are hand-authoring ROUND 2 of flat SVG game icons. Round 1 failed playtest:
+fine details disappeared at small render sizes and icons were not unique enough.
+Round 2 is bolder, higher-contrast and silhouette-distinct. Write EXACTLY the
+files listed below, at the exact paths given, and nothing else. No reports, no
+README, no changes to existing files.
+
+HARD RULES - a validator rejects violations of 1-4:
+1. Root element exactly: <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+2. Fills only. Never use stroke. No gradients, no filters, no text, no embedded
+   images, no opacity below 1. Solid flat colours only.
+3. SIZE FLOORS - the playtest fix. Nothing narrower than 5 units anywhere: no
+   bars, walls, gaps, dots, tips or seams below it. At least ONE signature
+   feature of 24+ units per icon (it must still read at 16 px). At least 5 units
+   of empty space between any two shapes. Use 4 to 8 LARGE shapes per icon -
+   fewer and chunkier than round 1.
+4. CONTRAST LAW. The outer mass of the icon is LIGHT #C9CDD2. Interior detail is
+   cut as LARGE dark #232629 shapes or transparent fill-rule="evenodd" holes,
+   each at least 5 units wide. Never place mid-tone details (#8D939B or #565C63
+   shapes) on a #C9CDD2 body - they smear into mud. Never build an icon whose
+   outer mass is dark (#2B2F35 / #3A3F46 / #232629): it disappears against the
+   dark UI panel. In EMBER OK files one large ember accent (#C8461B or #E8703A,
+   10+ units as a band or tip) replaces the second tone.
+5. UNIQUENESS LAW. The OUTLINE itself must be unique - at 16 px only the outline
+   and the signature feature carry identity. The per-icon SIGNATURE line below is
+   the design brief: build exactly that large feature and the silhouette move it
+   names. Two icons in one batch must never share an outer shape; siblings take
+   different outline moves (stepped top, angled cut, punched corner, split
+   halves, notch crown, overhanging cap...).
+6. Coordinates on integer or .5 steps within the 0..96 canvas. Mirrored
+   coordinates are fine for symmetric subjects, but take one deliberate
+   asymmetry when the SIGNATURE line asks for it.
+7. staging/d2/style_ref_rocket.svg is the SIMPLICITY FLOOR only - round 2 is
+   chunkier and more defined than it. The master PNG listed per file shows the
+   subject: keep the concept, rebuild the drawing under these rules.
+
+FILES - one line per output:
+path | subject | KILL (round-1 failures) | SIGNATURE (what to build)
+
+BATCH NOTE: HUD glyphs: the plainest set. Big shapes, zero fiddly detail.
+
+- staging/d2/svg_v2/icon_close.svg | subject: icon_close | KILL: 4u diagonal joint slivers; r3 bolts; #565C63 slivers on #C9CDD2 blades smear together | SIGNATURE: blades to 18u thick into a compact X with 10u center diamond; drop joint slivers and bolts | master: vajb-orbit/assets/icons/hud/icon_close.png | steel only
+- staging/d2/svg_v2/icon_gear.svg | subject: icon_gear | KILL: 3u square bore frame; r3 bolts; #565C63 bolts/frame on #C9CDD2 ring muddy | SIGNATURE: four massive 26u lug teeth; bore to 26u with 7u+ walls, drop bolts | master: vajb-orbit/assets/icons/hud/icon_gear.png | steel only
+- staging/d2/svg_v2/icon_hull.svg | subject: icon_hull | KILL: 4u damage bars x4; crack narrows to ~4u near tip; #565C63 bars on #C9CDD2 shield smear at small sizes | SIGNATURE: crack to 12u wide edge-to-edge; merge gouges into two 10u slashes (hull = cracked shield) | master: vajb-orbit/assets/icons/hud/icon_hull.png | steel only
+- staging/d2/svg_v2/icon_logout.svg | subject: icon_logout | KILL: r2 rivets (4u across); #565C63 edge bands on #C9CDD2 bracket muddy; rivets invisible | SIGNATURE: exit arrow head to 36u tall filling the right half; C-spine to 16u, drop rivets | master: vajb-orbit/assets/icons/hud/icon_logout.png | steel only
+- staging/d2/svg_v2/icon_shield.svg | subject: icon_shield | KILL: 4u gouge bars x4; #565C63 bars/stave on #C9CDD2 smear at small sizes | SIGNATURE: one 20u full-height center boss (uncracked = shield); drop the 4u bars | master: vajb-orbit/assets/icons/hud/icon_shield.png | steel only
+- staging/d2/svg_v2/icon_zoom_minus.svg | subject: icon_zoom_minus | KILL: 6u light + 6u mid frame strips merge; r3 corner dots; #565C63 inner strip beside #C9CDD2 outer strip reads as one gray at 24px | SIGNATURE: minus bar to 12u tall x 44u; handle to 24u stub - change handle angle vs plus | master: vajb-orbit/assets/icons/hud/icon_zoom_minus.png | steel only
+- staging/d2/svg_v2/icon_zoom_plus.svg | subject: icon_zoom_plus | KILL: 6u double-frame strips; r3 corner dots; #565C63 inner strip on #C9CDD2 outer strip merges at 24px | SIGNATURE: plus arms to 12u thick x 46u; thicken handle to 24u and silhouette-differentiate from minus | master: vajb-orbit/assets/icons/hud/icon_zoom_plus.png | steel only
+
+Output ONLY the .svg files listed above.

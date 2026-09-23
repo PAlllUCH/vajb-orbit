@@ -1,0 +1,52 @@
+You are hand-authoring ROUND 2 of flat SVG game icons. Round 1 failed playtest:
+fine details disappeared at small render sizes and icons were not unique enough.
+Round 2 is bolder, higher-contrast and silhouette-distinct. Write EXACTLY the
+files listed below, at the exact paths given, and nothing else. No reports, no
+README, no changes to existing files.
+
+HARD RULES - a validator rejects violations of 1-4:
+1. Root element exactly: <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+2. Fills only. Never use stroke. No gradients, no filters, no text, no embedded
+   images, no opacity below 1. Solid flat colours only.
+3. SIZE FLOORS - the playtest fix. Nothing narrower than 5 units anywhere: no
+   bars, walls, gaps, dots, tips or seams below it. At least ONE signature
+   feature of 24+ units per icon (it must still read at 16 px). At least 5 units
+   of empty space between any two shapes. Use 4 to 8 LARGE shapes per icon -
+   fewer and chunkier than round 1.
+4. CONTRAST LAW. The outer mass of the icon is LIGHT #C9CDD2. Interior detail is
+   cut as LARGE dark #232629 shapes or transparent fill-rule="evenodd" holes,
+   each at least 5 units wide. Never place mid-tone details (#8D939B or #565C63
+   shapes) on a #C9CDD2 body - they smear into mud. Never build an icon whose
+   outer mass is dark (#2B2F35 / #3A3F46 / #232629): it disappears against the
+   dark UI panel. In EMBER OK files one large ember accent (#C8461B or #E8703A,
+   10+ units as a band or tip) replaces the second tone.
+5. UNIQUENESS LAW. The OUTLINE itself must be unique - at 16 px only the outline
+   and the signature feature carry identity. The per-icon SIGNATURE line below is
+   the design brief: build exactly that large feature and the silhouette move it
+   names. Two icons in one batch must never share an outer shape; siblings take
+   different outline moves (stepped top, angled cut, punched corner, split
+   halves, notch crown, overhanging cap...).
+6. Coordinates on integer or .5 steps within the 0..96 canvas. Mirrored
+   coordinates are fine for symmetric subjects, but take one deliberate
+   asymmetry when the SIGNATURE line asks for it.
+7. staging/d2/style_ref_rocket.svg is the SIMPLICITY FLOOR only - round 2 is
+   chunkier and more defined than it. The master PNG listed per file shows the
+   subject: keep the concept, rebuild the drawing under these rules.
+
+FILES - one line per output:
+path | subject | KILL (round-1 failures) | SIGNATURE (what to build)
+
+BATCH NOTE: Minerals. Round 1 failed here: twenty similar blobs. Each rock gets a radically different silhouette from its SIGNATURE line.
+
+- staging/d2/svg_v2/icon_mineral_aluminium.svg | subject: icon_mineral_aluminium | KILL: 2.5u diagonal seam; 3u notch chip; 6u gaps blade-to-shards; body + 2 shards share #C9CDD2, gaps antialias shut; #3A3F46 seams go grey | SIGNATURE: reshape as 3 fat parallel cleave bars 12u+ wide with 10u gaps - striping itself becomes the mark | master: vajb-orbit/assets/icons/mineral/icon_mineral_aluminium.png | steel only
+- staging/d2/svg_v2/icon_mineral_cerulite.svg | subject: icon_mineral_cerulite | KILL: 1.5u seam; 6u triangle notch; 4u chip; 8u diamonds; #3A3F46 diagonal band vs corner block merge on #C9CDD2 | SIGNATURE: one huge 14u full-bleed cleave band splitting the rock into two counter-tilted halves | master: vajb-orbit/assets/icons/mineral/icon_mineral_cerulite.png | steel only
+- staging/d2/svg_v2/icon_mineral_chromium.svg | subject: icon_mineral_chromium | KILL: 6u side chips; 6u light diamond; 5u facet strips; 8u diamond; 5u #3A3F46 facet strips merge with centre column; 3-tone mush | SIGNATURE: bold 14u horizontal mirror band edge-to-edge + squat double-terminated crystal (kill the tall taper) | master: vajb-orbit/assets/icons/mineral/icon_mineral_chromium.png | steel only
+- staging/d2/svg_v2/icon_mineral_cobalt.svg | subject: icon_mineral_cobalt | KILL: 4x4u light squares in corner clamps; 3u seam; clamp arms only 2px at 24px; #3A3F46 clamps near-invisible on dark panel | SIGNATURE: merge the 4 corner marks into 2 giant 16u C-clamps biting the rock top and bottom | master: vajb-orbit/assets/icons/mineral/icon_mineral_cobalt.png | steel only
+- staging/d2/svg_v2/icon_mineral_copper.svg | subject: icon_mineral_copper | KILL: 3.5u crack seams; 6u notch; 8u diamonds; #3A3F46 patches and crack seams same tone - cuts smudge together | SIGNATURE: split into 2 chunks by a bold 12u lightning-bolt gap (oxidised fracture) | master: vajb-orbit/assets/icons/mineral/icon_mineral_copper.png | steel only
+- staging/d2/svg_v2/icon_mineral_emberite.svg | subject: icon_mineral_emberite | KILL: 3u seam; 4u centre diamond; 8u chip triangle; 8u diamonds; both lobes share #C9CDD2, split only 3-6u - reads as one blob | SIGNATURE: widen the central split to a bold 12u V-void with offset lobes (clear two-piece shatter) | master: vajb-orbit/assets/icons/mineral/icon_mineral_emberite.png | steel only
+- staging/d2/svg_v2/icon_mineral_gold.svg | subject: icon_mineral_gold | KILL: 3.5u diagonal band; 3.5u vertical seam; 6u notch; 6u triangle; #3A3F46 step block vs facets same tone - lose separation | SIGNATURE: stepped bullion PROFILE in the outline itself: 2 stacked chunky blocks with a 12u step | master: vajb-orbit/assets/icons/mineral/icon_mineral_gold.png | steel only
+- staging/d2/svg_v2/icon_mineral_iridium.svg | subject: icon_mineral_iridium | KILL: 6u diamond; 8u diamond; 5 shards ~14u with 2-4u gaps to the blade; #C9CDD2 shards and blade same fill, gaps antialias shut | SIGNATURE: one dominant 40u+ spearhead crystal with 2 bold edge notches, shards fused into its base | master: vajb-orbit/assets/icons/mineral/icon_mineral_iridium.png | steel only
+- staging/d2/svg_v2/icon_mineral_iron.svg | subject: icon_mineral_iron | KILL: 3u seam; 4u V bands; 6u notch; 8u diamonds; #3A3F46 V bands + seam + facets all one tone - V reads as one smudge | SIGNATURE: carve the V as a bold 14u wedge bite out of the outline top (forked crown silhouette) | master: vajb-orbit/assets/icons/mineral/icon_mineral_iron.png | steel only
+- staging/d2/svg_v2/icon_mineral_krilium.svg | subject: icon_mineral_krilium | KILL: 3x3u light dots; 5u base band; 6u diamonds; side+centre crystals touch; #232629 crystal halves vanish into dark panel | SIGNATURE: 5-spike crown cluster (count 3 to 5) with one giant centre spike and no base slab | master: vajb-orbit/assets/icons/mineral/icon_mineral_krilium.png | steel only
+
+Output ONLY the .svg files listed above.

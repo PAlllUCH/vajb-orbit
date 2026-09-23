@@ -1,0 +1,52 @@
+You are hand-authoring ROUND 2 of flat SVG game icons. Round 1 failed playtest:
+fine details disappeared at small render sizes and icons were not unique enough.
+Round 2 is bolder, higher-contrast and silhouette-distinct. Write EXACTLY the
+files listed below, at the exact paths given, and nothing else. No reports, no
+README, no changes to existing files.
+
+HARD RULES - a validator rejects violations of 1-4:
+1. Root element exactly: <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+2. Fills only. Never use stroke. No gradients, no filters, no text, no embedded
+   images, no opacity below 1. Solid flat colours only.
+3. SIZE FLOORS - the playtest fix. Nothing narrower than 5 units anywhere: no
+   bars, walls, gaps, dots, tips or seams below it. At least ONE signature
+   feature of 24+ units per icon (it must still read at 16 px). At least 5 units
+   of empty space between any two shapes. Use 4 to 8 LARGE shapes per icon -
+   fewer and chunkier than round 1.
+4. CONTRAST LAW. The outer mass of the icon is LIGHT #C9CDD2. Interior detail is
+   cut as LARGE dark #232629 shapes or transparent fill-rule="evenodd" holes,
+   each at least 5 units wide. Never place mid-tone details (#8D939B or #565C63
+   shapes) on a #C9CDD2 body - they smear into mud. Never build an icon whose
+   outer mass is dark (#2B2F35 / #3A3F46 / #232629): it disappears against the
+   dark UI panel. In EMBER OK files one large ember accent (#C8461B or #E8703A,
+   10+ units as a band or tip) replaces the second tone.
+5. UNIQUENESS LAW. The OUTLINE itself must be unique - at 16 px only the outline
+   and the signature feature carry identity. The per-icon SIGNATURE line below is
+   the design brief: build exactly that large feature and the silhouette move it
+   names. Two icons in one batch must never share an outer shape; siblings take
+   different outline moves (stepped top, angled cut, punched corner, split
+   halves, notch crown, overhanging cap...).
+6. Coordinates on integer or .5 steps within the 0..96 canvas. Mirrored
+   coordinates are fine for symmetric subjects, but take one deliberate
+   asymmetry when the SIGNATURE line asks for it.
+7. staging/d2/style_ref_rocket.svg is the SIMPLICITY FLOOR only - round 2 is
+   chunkier and more defined than it. The master PNG listed per file shows the
+   subject: keep the concept, rebuild the drawing under these rules.
+
+FILES - one line per output:
+path | subject | KILL (round-1 failures) | SIGNATURE (what to build)
+
+BATCH NOTE: Ingots. Round 1 failed here: twenty bars with tiny marks. The mark must be a HUGE void or an outline change.
+
+- staging/d2/svg_v2/icon_ingot_aluminium.svg | subject: icon_ingot_aluminium | KILL: 3u single groove + two 3x3u stud dots; 3.2u dot-to-bevel gap; groove/dots fuse into the #C9CDD2 bevel bands | SIGNATURE: one giant 12u full-face-height slot cut through bar centre (single-groove theme at 4x) - lone huge void, still an ingot | master: vajb-orbit/assets/icons/ingot/icon_ingot_aluminium.png | steel only
+- staging/d2/svg_v2/icon_ingot_cerulite.svg | subject: icon_ingot_cerulite | KILL: three 3u grooves + 3x3u stud dot; grooves bridge top+bottom bevel bands; one fused light smear | SIGNATURE: three 8u full-height slots (groove count 3 at scale) leaving two thick posts | master: vajb-orbit/assets/icons/ingot/icon_ingot_cerulite.png | steel only
+- staging/d2/svg_v2/icon_ingot_chromium.svg | subject: icon_ingot_chromium | KILL: three 3u slanted grooves; centre slant tapers 3-7u; grooves overlap both bevel bands and parallel the bevel angle | SIGNATURE: one huge 30-deg diagonal shear slot ~10u wide splitting the bar into two offset halves | master: vajb-orbit/assets/icons/ingot/icon_ingot_chromium.png | steel only
+- staging/d2/svg_v2/icon_ingot_cobalt.svg | subject: icon_ingot_cobalt | KILL: 2.5u dark slot inside 7u centre block + 3u side grooves; block merges with bevel bands; 2.5u slot walls close to solid | SIGNATURE: giant 24u-wide stepped plinth block with a 12u square window punched through the full face | master: vajb-orbit/assets/icons/ingot/icon_ingot_cobalt.png | steel only
+- staging/d2/svg_v2/icon_ingot_copper.svg | subject: icon_ingot_copper | KILL: both 2u stripes (0.5px at 24px); stripes parallel and 0.3u from the top bevel band - read as bevel highlights | SIGNATURE: two full-length 8u dark channels spanning the entire face edge-to-edge (twin-band at 4x) | master: vajb-orbit/assets/icons/ingot/icon_ingot_copper.png | steel only
+- staging/d2/svg_v2/icon_ingot_emberite.svg | subject: icon_ingot_emberite | KILL: hollow frame walls 2.5-3.5u + 3u side grooves; frame 1.3u off top band; gaps close first, result is a blob | SIGNATURE: giant hollow window 2/3 of the face (~34x18u, 6u walls) - one huge aperture | master: vajb-orbit/assets/icons/ingot/icon_ingot_emberite.png | steel only
+- staging/d2/svg_v2/icon_ingot_gold.svg | subject: icon_ingot_gold | KILL: r=1 pupil (2u) inside r=3 ring; 3u side grooves; 2u pupil and 3u ring average to #565C63; dark gap to top band closes | SIGNATURE: one huge 22u circular hole punched clean through the face (bullion stamp at 3x) | master: vajb-orbit/assets/icons/ingot/icon_ingot_gold.png | steel only
+- staging/d2/svg_v2/icon_ingot_iridium.svg | subject: icon_ingot_iridium | KILL: four 3u grooves + 3x3u stud dot; grooves bridge both bevel bands; dot 2u off top band - everything fuses | SIGNATURE: four 6u full-height slots (4-count at scale) making a comb silhouette | master: vajb-orbit/assets/icons/ingot/icon_ingot_iridium.png | steel only
+- staging/d2/svg_v2/icon_ingot_iron.svg | subject: icon_ingot_iron | KILL: 2-2.5u walls of the dark inner quad + 3u side grooves; light quad rim 2.5-3u averages to mid #565C63 | SIGNATURE: giant 30u chamfered window punched through the face (quad mark at 3x) | master: vajb-orbit/assets/icons/ingot/icon_ingot_iron.png | steel only
+- staging/d2/svg_v2/icon_ingot_krilium.svg | subject: icon_ingot_krilium | KILL: three 6u triangles taper to zero-thickness tips; small #C9CDD2 tips between bevel bands = 1.5px blobs | SIGNATURE: three giant 12u triangular bites notched into the bar TOP EDGE (silhouette change, triangle count kept) | master: vajb-orbit/assets/icons/ingot/icon_ingot_krilium.png | steel only
+
+Output ONLY the .svg files listed above.

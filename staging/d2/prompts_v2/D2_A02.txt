@@ -1,0 +1,50 @@
+You are hand-authoring ROUND 2 of flat SVG game icons. Round 1 failed playtest:
+fine details disappeared at small render sizes and icons were not unique enough.
+Round 2 is bolder, higher-contrast and silhouette-distinct. Write EXACTLY the
+files listed below, at the exact paths given, and nothing else. No reports, no
+README, no changes to existing files.
+
+HARD RULES - a validator rejects violations of 1-4:
+1. Root element exactly: <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+2. Fills only. Never use stroke. No gradients, no filters, no text, no embedded
+   images, no opacity below 1. Solid flat colours only.
+3. SIZE FLOORS - the playtest fix. Nothing narrower than 5 units anywhere: no
+   bars, walls, gaps, dots, tips or seams below it. At least ONE signature
+   feature of 24+ units per icon (it must still read at 16 px). At least 5 units
+   of empty space between any two shapes. Use 4 to 8 LARGE shapes per icon -
+   fewer and chunkier than round 1.
+4. CONTRAST LAW. The outer mass of the icon is LIGHT #C9CDD2. Interior detail is
+   cut as LARGE dark #232629 shapes or transparent fill-rule="evenodd" holes,
+   each at least 5 units wide. Never place mid-tone details (#8D939B or #565C63
+   shapes) on a #C9CDD2 body - they smear into mud. Never build an icon whose
+   outer mass is dark (#2B2F35 / #3A3F46 / #232629): it disappears against the
+   dark UI panel. In EMBER OK files one large ember accent (#C8461B or #E8703A,
+   10+ units as a band or tip) replaces the second tone.
+5. UNIQUENESS LAW. The OUTLINE itself must be unique - at 16 px only the outline
+   and the signature feature carry identity. The per-icon SIGNATURE line below is
+   the design brief: build exactly that large feature and the silhouette move it
+   names. Two icons in one batch must never share an outer shape; siblings take
+   different outline moves (stepped top, angled cut, punched corner, split
+   halves, notch crown, overhanging cap...).
+6. Coordinates on integer or .5 steps within the 0..96 canvas. Mirrored
+   coordinates are fine for symmetric subjects, but take one deliberate
+   asymmetry when the SIGNATURE line asks for it.
+7. staging/d2/style_ref_rocket.svg is the SIMPLICITY FLOOR only - round 2 is
+   chunkier and more defined than it. The master PNG listed per file shows the
+   subject: keep the concept, rebuild the drawing under these rules.
+
+FILES - one line per output:
+path | subject | KILL (round-1 failures) | SIGNATURE (what to build)
+
+BATCH NOTE: Contract and service marks; keep each subject instantly distinct.
+
+- staging/d2/svg_v2/icon_contract_escort.svg | subject: icon_contract_escort | KILL: 6x6 rivets borderline (nothing <5u); #8D939B rivets on #C9CDD2 caps go muddy | SIGNATURE: one 44u chevron ~20u thick at center; pillars to 14u bracket frame, drop rivets | master: vajb-orbit/assets/icons/contract/icon_contract_escort.png | steel only
+- staging/d2/svg_v2/icon_contract_expedition.svg | subject: icon_contract_expedition | KILL: 3x3 light inlays; 5u side tabs; diamond tips to points; #8D939B diamonds/rects on #C9CDD2 ring and arrow muddy | SIGNATURE: arrow to 14u-thick spear crossing the ring gap; ring opening to 18u | master: vajb-orbit/assets/icons/contract/icon_contract_expedition.png | steel only
+- staging/d2/svg_v2/icon_contract_gather.svg | subject: icon_contract_gather | KILL: r2.5 dust dots; drop tips taper to ~4u; 6u arm bands on diagonals; #8D939B drops/circles on #C9CDD2 arms muddy | SIGNATURE: tong arms to 12u; one 32u gripped chunk at the jaw, drop dust dots | master: vajb-orbit/assets/icons/contract/icon_contract_gather.png | steel only
+- staging/d2/svg_v2/icon_contract_haul.svg | subject: icon_contract_haul | KILL: 4u lid tabs; r3 hubs with 5u wheel ring close up; #8D939B X-band/strip and hubs in rims go muddy | SIGNATURE: wheels to r12 with 8u dark separation from base bar; one bold 12u diagonal strap replacing the thin X | master: vajb-orbit/assets/icons/contract/icon_contract_haul.png | steel only
+- staging/d2/svg_v2/icon_contract_hunt.svg | subject: icon_contract_hunt | KILL: 6u tick caps; 8u diamonds lose their points; #8D939B caps/diamonds on #C9CDD2 muddy | SIGNATURE: center chevron/target to ~42u; crosshair ticks to 14u and let them break the ring | master: vajb-orbit/assets/icons/contract/icon_contract_hunt.png | steel only
+- staging/d2/svg_v2/icon_service_bounty.svg | subject: icon_service_bounty | KILL: 6u bar nubs; 8u diamonds; #8D939B bar crossing #C9CDD2 octagon bands muddy at overlaps | SIGNATURE: coin bar to 20u tall with 8u+ notch slots; octagon frame to 12u, drop diamonds | master: vajb-orbit/assets/icons/service/icon_service_bounty.png | steel only
+- staging/d2/svg_v2/icon_service_insurance.svg | subject: icon_service_insurance | KILL: 3x3 squares; side slivers taper to <2u tips; #8D939B band/lock/circle on #C9CDD2 body muddy | SIGNATURE: canopy arc 60u+ wide over the triangle; 8u+ straight legs replacing tapered slivers | master: vajb-orbit/assets/icons/service/icon_service_insurance.png | steel only
+- staging/d2/svg_v2/icon_service_vault.svg | subject: icon_service_vault | KILL: 6u corner squares; 7u dial spokes; r3.5 hub; #8D939B hinge tabs/corners on #C9CDD2 plate muddy | SIGNATURE: one 14u-thick lever to a r16 hub; single 18u hinge column replacing the 3 tabs | master: vajb-orbit/assets/icons/service/icon_service_vault.png | steel only
+
+Output ONLY the .svg files listed above.

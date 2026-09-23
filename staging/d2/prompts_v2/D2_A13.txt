@@ -1,0 +1,52 @@
+You are hand-authoring ROUND 2 of flat SVG game icons. Round 1 failed playtest:
+fine details disappeared at small render sizes and icons were not unique enough.
+Round 2 is bolder, higher-contrast and silhouette-distinct. Write EXACTLY the
+files listed below, at the exact paths given, and nothing else. No reports, no
+README, no changes to existing files.
+
+HARD RULES - a validator rejects violations of 1-4:
+1. Root element exactly: <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+2. Fills only. Never use stroke. No gradients, no filters, no text, no embedded
+   images, no opacity below 1. Solid flat colours only.
+3. SIZE FLOORS - the playtest fix. Nothing narrower than 5 units anywhere: no
+   bars, walls, gaps, dots, tips or seams below it. At least ONE signature
+   feature of 24+ units per icon (it must still read at 16 px). At least 5 units
+   of empty space between any two shapes. Use 4 to 8 LARGE shapes per icon -
+   fewer and chunkier than round 1.
+4. CONTRAST LAW. The outer mass of the icon is LIGHT #C9CDD2. Interior detail is
+   cut as LARGE dark #232629 shapes or transparent fill-rule="evenodd" holes,
+   each at least 5 units wide. Never place mid-tone details (#8D939B or #565C63
+   shapes) on a #C9CDD2 body - they smear into mud. Never build an icon whose
+   outer mass is dark (#2B2F35 / #3A3F46 / #232629): it disappears against the
+   dark UI panel. In EMBER OK files one large ember accent (#C8461B or #E8703A,
+   10+ units as a band or tip) replaces the second tone.
+5. UNIQUENESS LAW. The OUTLINE itself must be unique - at 16 px only the outline
+   and the signature feature carry identity. The per-icon SIGNATURE line below is
+   the design brief: build exactly that large feature and the silhouette move it
+   names. Two icons in one batch must never share an outer shape; siblings take
+   different outline moves (stepped top, angled cut, punched corner, split
+   halves, notch crown, overhanging cap...).
+6. Coordinates on integer or .5 steps within the 0..96 canvas. Mirrored
+   coordinates are fine for symmetric subjects, but take one deliberate
+   asymmetry when the SIGNATURE line asks for it.
+7. staging/d2/style_ref_rocket.svg is the SIMPLICITY FLOOR only - round 2 is
+   chunkier and more defined than it. The master PNG listed per file shows the
+   subject: keep the concept, rebuild the drawing under these rules.
+
+FILES - one line per output:
+path | subject | KILL (round-1 failures) | SIGNATURE (what to build)
+
+BATCH NOTE: Alt module-chips. Light outer mass mandatory (round 1 dark bodies vanished into the panel).
+
+- staging/d2/svg_v2/icon_alt_barred_container_silhouette.svg | subject: icon_alt_barred_container_silhouette | KILL: 5u inter-slot gaps; 2u sliver bar under top rail; r1.5 bolt holes; body #232629 = panel bg (silhouette gone, bars float) | SIGNATURE: 10u light-filled grille slots (5 bold cells); merge 2u sliver into single 8u bottom band | master: vajb-orbit/assets/icons/alt/icon_alt_barred_container_silhouette.png | steel only
+- staging/d2/svg_v2/icon_alt_barred_rectangular_module.svg | subject: icon_alt_barred_rectangular_module | KILL: 5u side lugs; dia-4 corner bolts; 8u bar gaps; frame #232629 merges with bg (only 3 bars read) | SIGNATURE: 3 bars at 12u with one taller signature bar; 12u frame band so octagon reads | master: vajb-orbit/assets/icons/alt/icon_alt_barred_rectangular_module.png | steel only
+- staging/d2/svg_v2/icon_alt_battery_cells.svg | subject: icon_alt_battery_cells | KILL: 4u top/bottom cap plates; dia-4 bolt dots; 6u slots dark-in-dark; #232629 blocks vs bg (blocks vanish, caps float) | SIGNATURE: light-filled bold cell slots (8 cells 8u); widen bridge to 20u terminal block | master: vajb-orbit/assets/icons/alt/icon_alt_battery_cells.png | steel only
+- staging/d2/svg_v2/icon_alt_buckled_crate_module.svg | subject: icon_alt_buckled_crate_module | KILL: 4u center buckle slit; dia-4/5 corner bolts; #232629 box merges with bg; slit merges with box | SIGNATURE: 10u buckle strap crossing full box; bigger foot flare (24u) | master: vajb-orbit/assets/icons/alt/icon_alt_buckled_crate_module.png | steel only
+- staging/d2/svg_v2/icon_alt_diamond_box_module.svg | subject: icon_alt_diamond_box_module | KILL: 4u keel strip; ~4u side bands; 6x6u corner chips; inner diamond frame merges with facet at size | SIGNATURE: 10u full-height keel spine; one big 40u+ diamond facet | master: vajb-orbit/assets/icons/alt/icon_alt_diamond_box_module.png | steel only
+- staging/d2/svg_v2/icon_alt_octagonal_ring_module.svg | subject: icon_alt_octagonal_ring_module | KILL: 6u octagon band; ~6u diagonal corner strips; dia-4 bolts; dark ring merges with bg | SIGNATURE: 12u ring band + 2 bold asymmetric lugs; drop corner diagonals | master: vajb-orbit/assets/icons/alt/icon_alt_octagonal_ring_module.png | steel only
+- staging/d2/svg_v2/icon_alt_open_clamp_module.svg | subject: icon_alt_open_clamp_module | KILL: 4-5u center octagon band; 4u edge lugs; r3 center dot; dark octagon body merges with bg | SIGNATURE: two opposing C-jaws 14u thick with 20u mouth; center ring to 10u | master: vajb-orbit/assets/icons/alt/icon_alt_open_clamp_module.png | steel only
+- staging/d2/svg_v2/icon_alt_side_podded_module.svg | subject: icon_alt_side_podded_module | KILL: 4u pod slots; 4u crossbar; 10u pods; dark body merges with bg; pod slots read flat | SIGNATURE: round 20u light-steel pods; 8u crossbar | master: vajb-orbit/assets/icons/alt/icon_alt_side_podded_module.png | steel only
+- staging/d2/svg_v2/icon_alt_stacked_plate_layers.svg | subject: icon_alt_stacked_plate_layers | KILL: 4u light stripes w/ dia-4 holes (holes eat stripe); dark plates vanish on bg; only thin stripes read | SIGNATURE: stripes 10u tall with no holes; heavier 10u skew offset | master: vajb-orbit/assets/icons/alt/icon_alt_stacked_plate_layers.png | steel only
+- staging/d2/svg_v2/icon_alt_trapezoid_cup_module.svg | subject: icon_alt_trapezoid_cup_module | KILL: 6u lid notch; dia-4 bolts; ok (light lid/base strong) | SIGNATURE: bold pour spout breaking silhouette; center slot to 14u gauge window | master: vajb-orbit/assets/icons/alt/icon_alt_trapezoid_cup_module.png | steel only
+
+Output ONLY the .svg files listed above.

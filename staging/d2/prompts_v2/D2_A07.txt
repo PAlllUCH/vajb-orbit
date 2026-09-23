@@ -1,0 +1,51 @@
+You are hand-authoring ROUND 2 of flat SVG game icons. Round 1 failed playtest:
+fine details disappeared at small render sizes and icons were not unique enough.
+Round 2 is bolder, higher-contrast and silhouette-distinct. Write EXACTLY the
+files listed below, at the exact paths given, and nothing else. No reports, no
+README, no changes to existing files.
+
+HARD RULES - a validator rejects violations of 1-4:
+1. Root element exactly: <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+2. Fills only. Never use stroke. No gradients, no filters, no text, no embedded
+   images, no opacity below 1. Solid flat colours only.
+3. SIZE FLOORS - the playtest fix. Nothing narrower than 5 units anywhere: no
+   bars, walls, gaps, dots, tips or seams below it. At least ONE signature
+   feature of 24+ units per icon (it must still read at 16 px). At least 5 units
+   of empty space between any two shapes. Use 4 to 8 LARGE shapes per icon -
+   fewer and chunkier than round 1.
+4. CONTRAST LAW. The outer mass of the icon is LIGHT #C9CDD2. Interior detail is
+   cut as LARGE dark #232629 shapes or transparent fill-rule="evenodd" holes,
+   each at least 5 units wide. Never place mid-tone details (#8D939B or #565C63
+   shapes) on a #C9CDD2 body - they smear into mud. Never build an icon whose
+   outer mass is dark (#2B2F35 / #3A3F46 / #232629): it disappears against the
+   dark UI panel. In EMBER OK files one large ember accent (#C8461B or #E8703A,
+   10+ units as a band or tip) replaces the second tone.
+5. UNIQUENESS LAW. The OUTLINE itself must be unique - at 16 px only the outline
+   and the signature feature carry identity. The per-icon SIGNATURE line below is
+   the design brief: build exactly that large feature and the silhouette move it
+   names. Two icons in one batch must never share an outer shape; siblings take
+   different outline moves (stepped top, angled cut, punched corner, split
+   halves, notch crown, overhanging cap...).
+6. Coordinates on integer or .5 steps within the 0..96 canvas. Mirrored
+   coordinates are fine for symmetric subjects, but take one deliberate
+   asymmetry when the SIGNATURE line asks for it.
+7. staging/d2/style_ref_rocket.svg is the SIMPLICITY FLOOR only - round 2 is
+   chunkier and more defined than it. The master PNG listed per file shows the
+   subject: keep the concept, rebuild the drawing under these rules.
+
+FILES - one line per output:
+path | subject | KILL (round-1 failures) | SIGNATURE (what to build)
+
+BATCH NOTE: Modules h/p/s classes. Same rule: unique outline per icon.
+
+- staging/d2/svg_v2/icon_module_h_composite.svg | subject: icon_module_h_composite | KILL: 5u rim dots; 6u gaps between quadrant diamonds merge at 24px; #565C63 center diamond between #C9CDD2 diamonds goes muddy | SIGNATURE: one giant center diamond reaching the frame; 2 large satellites with 10u gaps | master: vajb-orbit/assets/icons/module/icon_module_h_composite.png | steel only
+- staging/d2/svg_v2/icon_module_h_plate_heavy.svg | subject: icon_module_h_plate_heavy | KILL: 4u gap head-to-base merges; 5u top trim; 4u gaps between hex cutouts; r2.5 dots; #565C63 5u trim band on #C9CDD2 head smears | SIGNATURE: one giant hex cutout at 2x; taller anvil head overhanging the base silhouette | master: vajb-orbit/assets/icons/module/icon_module_h_plate_heavy.png | steel only
+- staging/d2/svg_v2/icon_module_h_plate_light.svg | subject: icon_module_h_plate_light | KILL: 5u side tabs; hazard stripe tips taper to points; #3A3F46 plate body drops out against dark panel | SIGNATURE: 20u hazard stripes running off all four edges; 2 deep corner notches | master: vajb-orbit/assets/icons/module/icon_module_h_plate_light.png | steel only
+- staging/d2/svg_v2/icon_module_p_core.svg | subject: icon_module_p_core | KILL: 4u corner notch squares; 5u top/bottom trim bands; 4u rivets; #3A3F46 side wedges merge into background tone | SIGNATURE: giant 40u core cross/crystal; corner notches become 4 big chamfer bites | master: vajb-orbit/assets/icons/module/icon_module_p_core.png | steel only
+- staging/d2/svg_v2/icon_module_p_mk2.svg | subject: icon_module_p_mk2 | KILL: five 6u slots with 7.5u ribs merge at 24px; 4u trim bands; 5u side strips; #565C63 4u bands on #C9CDD2 body = dirty edge lines | SIGNATURE: 2 huge bays replace 5 slots; giant crown cap overhanging the body | master: vajb-orbit/assets/icons/module/icon_module_p_mk2.png | steel only
+- staging/d2/svg_v2/icon_module_p_std.svg | subject: icon_module_p_std | KILL: 6u gaps between 3 cell bars; 4u top trim band; 5u side dots; #2B2F35 backing vanishes vs dark panel, frame looks broken | SIGNATURE: 2 fat 14u cells; oversized stepped foot silhouette | master: vajb-orbit/assets/icons/module/icon_module_p_std.png | steel only
+- staging/d2/svg_v2/icon_module_s_heavy.svg | subject: icon_module_s_heavy | KILL: 6u inner arc band; 4u gap between arcs merges; 5u dark nubs; 6u top block; #3A3F46 5-6u marks on light arcs smear to haze | SIGNATURE: single 14u dome with 3 heavy ribs breaking the arc; one fat asymmetric foot | master: vajb-orbit/assets/icons/module/icon_module_s_heavy.png | steel only
+- staging/d2/svg_v2/icon_module_s_ion.svg | subject: icon_module_s_ion | KILL: 5u lattice bars with 4u gaps merge into a gray blob; all-#C9CDD2 lattice inside dome = zero tone separation | SIGNATURE: giant ion X or hex aperture with 10u beams; deeper dome cutout | master: vajb-orbit/assets/icons/module/icon_module_s_ion.png | steel only
+- staging/d2/svg_v2/icon_module_s_light.svg | subject: icon_module_s_light | KILL: 5u crossbar between feet; 6u top block; #3A3F46 top block barely separates from dark panel edge | SIGNATURE: giant apex fin/spike breaking the top edge; wide open throat under the dome | master: vajb-orbit/assets/icons/module/icon_module_s_light.png | steel only
+
+Output ONLY the .svg files listed above.

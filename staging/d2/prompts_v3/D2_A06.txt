@@ -1,0 +1,67 @@
+You are hand-authoring ROUND 3 of flat SVG UI icons for a sci-fi VIDEO GAME
+(Vajb Orbit). The icons render at 16, 24 and 48 px in HUD, inventory and
+fitting screens and up to 192 px in inspection panes, always on dark metal
+panels. Every icon must look like it belongs to ONE icon set - the same style,
+drawn by one hand. Round 1 was too fine-grained (details dissolved in play),
+round 2 was too crude and inconsistent; round 3 is the in-between: readable at
+24 px, still recognisable as its subject, one style throughout.
+
+Write EXACTLY the files listed below, at the exact paths given, and nothing
+else. No reports, no README, no changes to other files.
+
+STYLE CONSTITUTION - identical for every icon of the set:
+- 96x96 viewBox, integer or .5 coordinates inside 0..96. Fills only, never
+  stroke, no gradients, filters, text, images or opacity below 1.
+- Outer mass is LIGHT #c9cdd2. Interior detail is DARK #232629 shapes or
+  transparent fill-rule evenodd holes. Mid-tone-on-light details are forbidden.
+  In EMBER OK files one ember feature (#c8461b or #e8703a, at least 10 units)
+  replaces the dark feature.
+- Geometry: straight edges, 45-degree chamfers on outer corners (2-4 units).
+  Circles only for genuinely round parts (lenses, hubs, barrels). No dots, no
+  rivets, no decorative texture.
+- Size ladder: interior features and gaps at least 4 units; distinguishing
+  features 12-28 units; exactly ONE signature feature per icon in that range.
+  6 to 10 shapes per icon. Detail density is similar across the whole set.
+- The drawing must read as its SUBJECT (see the per-file line and the master
+  PNG listed) - do not reduce it to an abstract mark. The SIGNATURE line gives
+  the one large feature that distinguishes it from its siblings; build it at
+  12-28 units, and change the OUTLINE slightly per icon (chamfer here, step
+  there) so silhouettes do not collide.
+
+FILES - one line per output: path | subject | SIGNATURE | master PNG
+
+STYLE EXEMPLARS - three finished icons of this exact set. Match this
+construction vocabulary: hard chamfered geometry, light outer mass, one dark
+cut feature, integer coordinates, medium feature sizes.
+
+EXEMPLAR 1 (vault - object with one round part):
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <path fill="#c9cdd2" fill-rule="evenodd" d="M20 8h56l12 12v68H8V20zM48 36a12 12 0 1 0 0 24 12 12 0 0 0 0-24z"/>
+  <path fill="#232629" d="M62 64h18v18H62z"/>
+</svg>
+
+EXEMPLAR 2 (mineral - chunky faceted rock with one big dark wedge):
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <path fill="#c9cdd2" d="M14 40l14-22h18l10-10h18l12 14 10 8v28l-14 24H30L12 64z"/>
+  <path fill="#232629" d="M38 46l24-14 6 10-24 16z"/>
+</svg>
+
+EXEMPLAR 3 (slot mark - pure glyph, two bold strokes):
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <path fill="#c9cdd2" d="M48 8l30 24-12 14L48 28 30 46 18 32zM48 46l30 24-12 14L48 66 30 84 18 70z"/>
+</svg>
+
+BATCH NOTE: Modules b/c/e classes. One shared plated-module language, but a different outline per icon.
+
+- staging/d2/svg_v3/icon_module_b_afterburner.svg | subject: icon_module_b_afterburner | SIGNATURE: twin exhaust bells protruding past bottom edge; chevrons scaled to touch both frame edges | master: vajb-orbit/assets/icons/module/icon_module_b_afterburner.png | steel only
+- staging/d2/svg_v3/icon_module_b_fold.svg | subject: icon_module_b_fold | SIGNATURE: giant fold arrow breaking left+right plate edges; 12u hinge circle | master: vajb-orbit/assets/icons/module/icon_module_b_fold.png | steel only
+- staging/d2/svg_v3/icon_module_c_ewar.svg | subject: icon_module_c_ewar | SIGNATURE: one giant jam cone at 2x; 24u aperture square with 8u frame | master: vajb-orbit/assets/icons/module/icon_module_c_ewar.png | steel only
+- staging/d2/svg_v3/icon_module_c_nexus.svg | subject: icon_module_c_nexus | SIGNATURE: giant central hub diamond 28u+; struts extended to break the frame corners | master: vajb-orbit/assets/icons/module/icon_module_c_nexus.png | steel only
+- staging/d2/svg_v3/icon_module_c_scanner.svg | subject: icon_module_c_scanner | SIGNATURE: one huge sweep wedge + single 10u arc; kill all thin bars | master: vajb-orbit/assets/icons/module/icon_module_c_scanner.png | steel only
+- staging/d2/svg_v3/icon_module_c_target.svg | subject: icon_module_c_target | SIGNATURE: 12u crosshair breaking all four plate edges; 14u center square | master: vajb-orbit/assets/icons/module/icon_module_c_target.png | steel only
+- staging/d2/svg_v3/icon_module_c_twin.svg | subject: icon_module_c_twin | SIGNATURE: two giant stacked ports running edge to edge; drop the 4u divider | master: vajb-orbit/assets/icons/module/icon_module_c_twin.png | steel only
+- staging/d2/svg_v3/icon_module_e_ion.svg | subject: icon_module_e_ion | SIGNATURE: giant stepped ion bell at 2x; one 12u accelerator ring replacing hairlines | master: vajb-orbit/assets/icons/module/icon_module_e_ion.png | steel only
+- staging/d2/svg_v3/icon_module_e_std.svg | subject: icon_module_e_std | SIGNATURE: oversized flared nozzle lip silhouette; single huge dark throat slot | master: vajb-orbit/assets/icons/module/icon_module_e_std.png | steel only
+- staging/d2/svg_v3/icon_module_e_vector.svg | subject: icon_module_e_vector | SIGNATURE: giant gimbal V at 2x breaking the canvas diagonally; 14u throat opening | master: vajb-orbit/assets/icons/module/icon_module_e_vector.png | steel only
+
+Output ONLY the .svg files listed above. No markdown, no explanations.

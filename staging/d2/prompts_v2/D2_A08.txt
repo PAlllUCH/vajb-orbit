@@ -1,0 +1,50 @@
+You are hand-authoring ROUND 2 of flat SVG game icons. Round 1 failed playtest:
+fine details disappeared at small render sizes and icons were not unique enough.
+Round 2 is bolder, higher-contrast and silhouette-distinct. Write EXACTLY the
+files listed below, at the exact paths given, and nothing else. No reports, no
+README, no changes to existing files.
+
+HARD RULES - a validator rejects violations of 1-4:
+1. Root element exactly: <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+2. Fills only. Never use stroke. No gradients, no filters, no text, no embedded
+   images, no opacity below 1. Solid flat colours only.
+3. SIZE FLOORS - the playtest fix. Nothing narrower than 5 units anywhere: no
+   bars, walls, gaps, dots, tips or seams below it. At least ONE signature
+   feature of 24+ units per icon (it must still read at 16 px). At least 5 units
+   of empty space between any two shapes. Use 4 to 8 LARGE shapes per icon -
+   fewer and chunkier than round 1.
+4. CONTRAST LAW. The outer mass of the icon is LIGHT #C9CDD2. Interior detail is
+   cut as LARGE dark #232629 shapes or transparent fill-rule="evenodd" holes,
+   each at least 5 units wide. Never place mid-tone details (#8D939B or #565C63
+   shapes) on a #C9CDD2 body - they smear into mud. Never build an icon whose
+   outer mass is dark (#2B2F35 / #3A3F46 / #232629): it disappears against the
+   dark UI panel. In EMBER OK files one large ember accent (#C8461B or #E8703A,
+   10+ units as a band or tip) replaces the second tone.
+5. UNIQUENESS LAW. The OUTLINE itself must be unique - at 16 px only the outline
+   and the signature feature carry identity. The per-icon SIGNATURE line below is
+   the design brief: build exactly that large feature and the silhouette move it
+   names. Two icons in one batch must never share an outer shape; siblings take
+   different outline moves (stepped top, angled cut, punched corner, split
+   halves, notch crown, overhanging cap...).
+6. Coordinates on integer or .5 steps within the 0..96 canvas. Mirrored
+   coordinates are fine for symmetric subjects, but take one deliberate
+   asymmetry when the SIGNATURE line asks for it.
+7. staging/d2/style_ref_rocket.svg is the SIMPLICITY FLOOR only - round 2 is
+   chunkier and more defined than it. The master PNG listed per file shows the
+   subject: keep the concept, rebuild the drawing under these rules.
+
+FILES - one line per output:
+path | subject | KILL (round-1 failures) | SIGNATURE (what to build)
+
+BATCH NOTE: Modules u/w classes. Same rule: unique outline per icon.
+
+- staging/d2/svg_v2/icon_module_u_cargo.svg | subject: icon_module_u_cargo | KILL: 4u lid trim line; 4u side straps; r2 rivets; #565C63 4u trim on light lid smears | SIGNATURE: giant corner brackets + one huge latch band; asymmetric overlapping lid | master: vajb-orbit/assets/icons/module/icon_module_u_cargo.png | steel only
+- staging/d2/svg_v2/icon_module_u_drones.svg | subject: icon_module_u_drones | KILL: 2u gap between the drones' lower fins; 4u wing bars; fin tips taper to 0; #565C63 nubs on light frame edge smear | SIGNATURE: one giant delta-wing drone at 2x; drop the second drone | master: vajb-orbit/assets/icons/module/icon_module_u_drones.png | steel only
+- staging/d2/svg_v2/icon_module_u_holds.svg | subject: icon_module_u_holds | KILL: 8u slot cutouts with 8u walls merge; 4u #565C63 bands; 6u side lugs; #565C63 4u bands on light plate = dirty edge line | SIGNATURE: 2 giant trapezoid hold mouths breaking the lower edge; drop the slot grid | master: vajb-orbit/assets/icons/module/icon_module_u_holds.png | steel only
+- staging/d2/svg_v2/icon_module_u_refine.svg | subject: icon_module_u_refine | KILL: 8u funnel throat cutout; 4u tank bands; 12x4 and 8x4 mid-gray ticks; 12x10 neck; #565C63 4u bands on light tank smear shut at 24px | SIGNATURE: giant V funnel at 2x with deep throat; one 10u tank band | master: vajb-orbit/assets/icons/module/icon_module_u_refine.png | steel only
+- staging/d2/svg_v2/icon_module_u_salvage.svg | subject: icon_module_u_salvage | KILL: 3u inner lip step at claw tip; 4u boom stripes; 12x4 and 8x4 ticks; #565C63 4u stripes on light boom = smudge | SIGNATURE: one giant claw with 15u jaws and deep throat gap; oversized pivot hub | master: vajb-orbit/assets/icons/module/icon_module_u_salvage.png | steel only
+- staging/d2/svg_v2/icon_module_u_tractor.svg | subject: icon_module_u_tractor | KILL: 5u coil bands; 2u gap housing-to-beam merges; r2 dots; #565C63 5u coils on light trapezoid fade into body tone | SIGNATURE: giant 3-prong fork at 2x on the right; one fat emitter barrel | master: vajb-orbit/assets/icons/module/icon_module_u_tractor.png | steel only
+- staging/d2/svg_v2/icon_module_w_mining.svg | subject: icon_module_w_mining | KILL: 2u gaps box-to-rail and rail-to-rail; 5u rails; 6x8 cross; r2 dots; #565C63 clamps/cross on light body smear | SIGNATURE: giant auger/drill cone at 2x; single 10u barrel | master: vajb-orbit/assets/icons/module/icon_module_w_mining.png | steel only
+- staging/d2/svg_v2/icon_module_w_railgun.svg | subject: icon_module_w_railgun | KILL: 4u gap between twin rail stacks merges; 4u mid crossbar; 5x6 ticks; #565C63 slots on light box smear; rails fuse into one light slab | SIGNATURE: converging rails forming a clear V channel; giant capacitor drum on the housing | master: vajb-orbit/assets/icons/module/icon_module_w_railgun.png | steel only
+
+Output ONLY the .svg files listed above.

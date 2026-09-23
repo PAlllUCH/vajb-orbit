@@ -1,0 +1,49 @@
+You are hand-authoring ROUND 2 of flat SVG game icons. Round 1 failed playtest:
+fine details disappeared at small render sizes and icons were not unique enough.
+Round 2 is bolder, higher-contrast and silhouette-distinct. Write EXACTLY the
+files listed below, at the exact paths given, and nothing else. No reports, no
+README, no changes to existing files.
+
+HARD RULES - a validator rejects violations of 1-4:
+1. Root element exactly: <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+2. Fills only. Never use stroke. No gradients, no filters, no text, no embedded
+   images, no opacity below 1. Solid flat colours only.
+3. SIZE FLOORS - the playtest fix. Nothing narrower than 5 units anywhere: no
+   bars, walls, gaps, dots, tips or seams below it. At least ONE signature
+   feature of 24+ units per icon (it must still read at 16 px). At least 5 units
+   of empty space between any two shapes. Use 4 to 8 LARGE shapes per icon -
+   fewer and chunkier than round 1.
+4. CONTRAST LAW. The outer mass of the icon is LIGHT #C9CDD2. Interior detail is
+   cut as LARGE dark #232629 shapes or transparent fill-rule="evenodd" holes,
+   each at least 5 units wide. Never place mid-tone details (#8D939B or #565C63
+   shapes) on a #C9CDD2 body - they smear into mud. Never build an icon whose
+   outer mass is dark (#2B2F35 / #3A3F46 / #232629): it disappears against the
+   dark UI panel. In EMBER OK files one large ember accent (#C8461B or #E8703A,
+   10+ units as a band or tip) replaces the second tone.
+5. UNIQUENESS LAW. The OUTLINE itself must be unique - at 16 px only the outline
+   and the signature feature carry identity. The per-icon SIGNATURE line below is
+   the design brief: build exactly that large feature and the silhouette move it
+   names. Two icons in one batch must never share an outer shape; siblings take
+   different outline moves (stepped top, angled cut, punched corner, split
+   halves, notch crown, overhanging cap...).
+6. Coordinates on integer or .5 steps within the 0..96 canvas. Mirrored
+   coordinates are fine for symmetric subjects, but take one deliberate
+   asymmetry when the SIGNATURE line asks for it.
+7. staging/d2/style_ref_rocket.svg is the SIMPLICITY FLOOR only - round 2 is
+   chunkier and more defined than it. The master PNG listed per file shows the
+   subject: keep the concept, rebuild the drawing under these rules.
+
+FILES - one line per output:
+path | subject | KILL (round-1 failures) | SIGNATURE (what to build)
+
+BATCH NOTE: Cargo and currency glyphs: industrial container language.
+
+- staging/d2/svg_v2/icon_cargo_container.svg | subject: icon_cargo_container | KILL: 4u frame; 4u ribs x3; 4x4 corner studs; none - #2B2F35 body vs #C9CDD2 strong | SIGNATURE: frame and ribs to 10u; corrugated end notches cut into the outer silhouette | master: vajb-orbit/assets/icons/cargo/icon_cargo_container.png | steel only
+- staging/d2/svg_v2/icon_cargo_crate.svg | subject: icon_cargo_crate | KILL: 3u top strip; 4u side rails; 4u handle bar; none - light details on #2B2F35 strong | SIGNATURE: two 14u vertical straps plus one 26u central latch plate; strips to 8u | master: vajb-orbit/assets/icons/cargo/icon_cargo_crate.png | steel only
+- staging/d2/svg_v2/icon_cargo_data_core.svg | subject: icon_cargo_data_core | KILL: 6u gap between center square and ring fills solid at 24px; 7u edge tabs; none - #2B2F35 on #C9CDD2 strong | SIGNATURE: center chip to 24u with 8u+ moat; one 12u notched corner key to break symmetry | master: vajb-orbit/assets/icons/cargo/icon_cargo_data_core.png | steel only
+- staging/d2/svg_v2/icon_cargo_fuel_cell.svg | subject: icon_cargo_fuel_cell | KILL: 4u bands x2; 4u cap tab; 4x4 gauge dots with 4u gaps; none - light on #2B2F35 strong | SIGNATURE: bands to one 12u hazard stripe or a 28u fuel-drop sigil; kill gauge dots | master: vajb-orbit/assets/icons/cargo/icon_cargo_fuel_cell.png | steel only
+- staging/d2/svg_v2/icon_cargo_ore.svg | subject: icon_cargo_ore | KILL: 4-5u diagonal veins; 6u stem vein; 4x4 flecks; none - light on #2B2F35 strong | SIGNATURE: one 12u fissure splitting two huge facets; 3-bump boulder outline, drop flecks | master: vajb-orbit/assets/icons/cargo/icon_cargo_ore.png | steel only
+- staging/d2/svg_v2/icon_cargo_salvage.svg | subject: icon_cargo_salvage | KILL: 3u plate slots with 2u gap; 3u hook tab; ~4u edge highlights; none - light on #2B2F35 strong | SIGNATURE: one 10u vent slot in a 30u plate; 8u edge highlights and one 20u torn claw end | master: vajb-orbit/assets/icons/cargo/icon_cargo_salvage.png | steel only
+- staging/d2/svg_v2/icon_credits.svg | subject: icon_credits | KILL: 4u dark inner hex ring; 4u crossbar; 4x4 dots; #2B2F35 stem merges into #2B2F35 inner ring, glyph blobs | SIGNATURE: credit glyph to 30u tall bold stroke kept clear of the ring; single 8u+ hex ring, drop second ring | master: vajb-orbit/assets/icons/cargo/icon_credits.png | steel only
+
+Output ONLY the .svg files listed above.

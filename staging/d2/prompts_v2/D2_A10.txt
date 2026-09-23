@@ -1,0 +1,52 @@
+You are hand-authoring ROUND 2 of flat SVG game icons. Round 1 failed playtest:
+fine details disappeared at small render sizes and icons were not unique enough.
+Round 2 is bolder, higher-contrast and silhouette-distinct. Write EXACTLY the
+files listed below, at the exact paths given, and nothing else. No reports, no
+README, no changes to existing files.
+
+HARD RULES - a validator rejects violations of 1-4:
+1. Root element exactly: <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+2. Fills only. Never use stroke. No gradients, no filters, no text, no embedded
+   images, no opacity below 1. Solid flat colours only.
+3. SIZE FLOORS - the playtest fix. Nothing narrower than 5 units anywhere: no
+   bars, walls, gaps, dots, tips or seams below it. At least ONE signature
+   feature of 24+ units per icon (it must still read at 16 px). At least 5 units
+   of empty space between any two shapes. Use 4 to 8 LARGE shapes per icon -
+   fewer and chunkier than round 1.
+4. CONTRAST LAW. The outer mass of the icon is LIGHT #C9CDD2. Interior detail is
+   cut as LARGE dark #232629 shapes or transparent fill-rule="evenodd" holes,
+   each at least 5 units wide. Never place mid-tone details (#8D939B or #565C63
+   shapes) on a #C9CDD2 body - they smear into mud. Never build an icon whose
+   outer mass is dark (#2B2F35 / #3A3F46 / #232629): it disappears against the
+   dark UI panel. In EMBER OK files one large ember accent (#C8461B or #E8703A,
+   10+ units as a band or tip) replaces the second tone.
+5. UNIQUENESS LAW. The OUTLINE itself must be unique - at 16 px only the outline
+   and the signature feature carry identity. The per-icon SIGNATURE line below is
+   the design brief: build exactly that large feature and the silhouette move it
+   names. Two icons in one batch must never share an outer shape; siblings take
+   different outline moves (stepped top, angled cut, punched corner, split
+   halves, notch crown, overhanging cap...).
+6. Coordinates on integer or .5 steps within the 0..96 canvas. Mirrored
+   coordinates are fine for symmetric subjects, but take one deliberate
+   asymmetry when the SIGNATURE line asks for it.
+7. staging/d2/style_ref_rocket.svg is the SIMPLICITY FLOOR only - round 2 is
+   chunkier and more defined than it. The master PNG listed per file shows the
+   subject: keep the concept, rebuild the drawing under these rules.
+
+FILES - one line per output:
+path | subject | KILL (round-1 failures) | SIGNATURE (what to build)
+
+BATCH NOTE: Minerals. Same rule: radical silhouette variety per mineral.
+
+- staging/d2/svg_v2/icon_mineral_neodymium.svg | subject: icon_mineral_neodymium | KILL: 6u diamonds; 6u ray quads; 8u wedge; 3 #C9CDD2 rays converge and merge into a grey star; #232629 blob vs dark panel | SIGNATURE: reshaped bold horseshoe magnet outline (U-arc, 14u legs) - instantly unique | master: vajb-orbit/assets/icons/mineral/icon_mineral_neodymium.png | steel only
+- staging/d2/svg_v2/icon_mineral_nickel.svg | subject: icon_mineral_nickel | KILL: 6u diamonds; 6u ticks; #232629 body vs dark panel muddy; small #C9CDD2 ticks dissolve at 16px | SIGNATURE: fat coin/disc outline with one bold 12u diagonal band and a rim notch | master: vajb-orbit/assets/icons/mineral/icon_mineral_nickel.png | steel only
+- staging/d2/svg_v2/icon_mineral_osmium.svg | subject: icon_mineral_osmium | KILL: 4-8u gaps between the 3 chunks merge at 24px; 6u streaks; 6u diamonds; #232629 chunks on dark panel = invisible separations | SIGNATURE: collapse to 1 giant hex column + 2 tiny satellite chips with 14u+ gaps (extreme size hierarchy) | master: vajb-orbit/assets/icons/mineral/icon_mineral_osmium.png | steel only
+- staging/d2/svg_v2/icon_mineral_palladium.svg | subject: icon_mineral_palladium | KILL: 4u light top-stripes; 4-6u gaps between the 3 slabs; 6u diamonds; 8u wedge; #232629 slab faces vanish on dark panel - reads as 3 floating stripes | SIGNATURE: stagger slabs into a bold diagonal staircase (14u offsets, 10u gaps) - ziggurat outline | master: vajb-orbit/assets/icons/mineral/icon_mineral_palladium.png | steel only
+- staging/d2/svg_v2/icon_mineral_platinum.svg | subject: icon_mineral_platinum | KILL: 4u top band; 5u bands; 5u tick; 6u diamonds; 4-9u bands with 8-11u dark gaps muddies to grey mush | SIGNATURE: one huge 20u domed cut-gem facet over a single 10u band (two elements only) | master: vajb-orbit/assets/icons/mineral/icon_mineral_platinum.png | steel only
+- staging/d2/svg_v2/icon_mineral_silicon.svg | subject: icon_mineral_silicon | KILL: 3-5u gaps between the 3 vertical stripes; 6u cross band; 5u tick; #232629 crystal vs dark panel; stripes + cross merge into one light smear | SIGNATURE: 3 fat wafer slabs stacked with 8u dark gaps + bold flat wafer notch on one side | master: vajb-orbit/assets/icons/mineral/icon_mineral_silicon.png | steel only
+- staging/d2/svg_v2/icon_mineral_silver.svg | subject: icon_mineral_silver | KILL: 6u mid band; 6u chevron stripes; 6u diamonds; 6u corner quads; #C9CDD2 chevrons + band criss-cross same tone - asterisk smudge at 24px | SIGNATURE: single giant 14u bold chevron '<' across the lower half, all other stripes deleted | master: vajb-orbit/assets/icons/mineral/icon_mineral_silver.png | steel only
+- staging/d2/svg_v2/icon_mineral_titanium.svg | subject: icon_mineral_titanium | KILL: 2-4u gaps where the 6 fan stripes converge; 6u diamonds; 6u quad; #232629 body vs dark panel; fan stripes merge into a white blob at convergence | SIGNATURE: asymmetric chamfered armor plate with one deep 18u corner bite + a single 12u vertical band (drop the fan) | master: vajb-orbit/assets/icons/mineral/icon_mineral_titanium.png | steel only
+- staging/d2/svg_v2/icon_mineral_tungsten.svg | subject: icon_mineral_tungsten | KILL: 5u bottom column; 6u diamonds; 8u wedge; one-sided 8-10u edge notches; #232629 shield vs dark panel; two #C9CDD2 V wedges touch and blob at 24px | SIGNATURE: big anvil silhouette (stepped top horn + wide base, 20u tiers) - drop the wedges | master: vajb-orbit/assets/icons/mineral/icon_mineral_tungsten.png | steel only
+- staging/d2/svg_v2/icon_mineral_voidglass.svg | subject: icon_mineral_voidglass | KILL: 2-3u gaps between the 3 nested crescents; 4-5u crescent stripes; tip tapers to 3u; #C9CDD2 crescents merge at 24px; #232629 blade vanishes on dark panel | SIGNATURE: thicken into one bold 20u crescent blade with a big triangular hole punched through it (the hole is the signature) | master: vajb-orbit/assets/icons/mineral/icon_mineral_voidglass.png | steel only
+
+Output ONLY the .svg files listed above.

@@ -131,6 +131,17 @@ cosmetic warnings: single path numbers a hair outside the 96 canvas). Review she
 (27 symbols per sheet, half-scale `_check_NN.jpg` copies beside them). Awaiting owner
 approval before Phase C ships into `vajb-orbit/assets/`.
 
+## 8. Review round and compile (owner, 2026-09-22, after the wave commit)
+
+Playtest finding: fine details disappear in play. Ran a 5-agent audit of the shipped
+set, authored batches B2 (`svg_v2/`, mimo-v2.6-flash, hardened legibility) and B3
+(`svg_v3/`, deepseek-flash, one shared style constitution + exemplars), and the owner
+compiled the three batches from `D2_COMPARE_01..06.png` via `svg_compile.csv`:
+**B3 × 66, B2 × 55, B1 × 14, 0 pending** — merged by `staging/d2/merge_compile.py`
+(per-icon authority: `svg_compile_result.csv`). Structure unchanged (839 files);
+proofs: validator 135/135, fallout 379 refs / 0 unresolvable, gate 524/0.
+Full narrative: `D2-R0_report.md`.
+
 ## Evidence
 
 Contact sheets of every master: `staging/d2/_masters_catalog.png` (139),

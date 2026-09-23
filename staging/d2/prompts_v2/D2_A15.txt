@@ -1,0 +1,53 @@
+You are hand-authoring ROUND 2 of flat SVG game icons. Round 1 failed playtest:
+fine details disappeared at small render sizes and icons were not unique enough.
+Round 2 is bolder, higher-contrast and silhouette-distinct. Write EXACTLY the
+files listed below, at the exact paths given, and nothing else. No reports, no
+README, no changes to existing files.
+
+HARD RULES - a validator rejects violations of 1-4:
+1. Root element exactly: <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+2. Fills only. Never use stroke. No gradients, no filters, no text, no embedded
+   images, no opacity below 1. Solid flat colours only.
+3. SIZE FLOORS - the playtest fix. Nothing narrower than 5 units anywhere: no
+   bars, walls, gaps, dots, tips or seams below it. At least ONE signature
+   feature of 24+ units per icon (it must still read at 16 px). At least 5 units
+   of empty space between any two shapes. Use 4 to 8 LARGE shapes per icon -
+   fewer and chunkier than round 1.
+4. CONTRAST LAW. The outer mass of the icon is LIGHT #C9CDD2. Interior detail is
+   cut as LARGE dark #232629 shapes or transparent fill-rule="evenodd" holes,
+   each at least 5 units wide. Never place mid-tone details (#8D939B or #565C63
+   shapes) on a #C9CDD2 body - they smear into mud. Never build an icon whose
+   outer mass is dark (#2B2F35 / #3A3F46 / #232629): it disappears against the
+   dark UI panel. In EMBER OK files one large ember accent (#C8461B or #E8703A,
+   10+ units as a band or tip) replaces the second tone.
+5. UNIQUENESS LAW. The OUTLINE itself must be unique - at 16 px only the outline
+   and the signature feature carry identity. The per-icon SIGNATURE line below is
+   the design brief: build exactly that large feature and the silhouette move it
+   names. Two icons in one batch must never share an outer shape; siblings take
+   different outline moves (stepped top, angled cut, punched corner, split
+   halves, notch crown, overhanging cap...).
+6. Coordinates on integer or .5 steps within the 0..96 canvas. Mirrored
+   coordinates are fine for symmetric subjects, but take one deliberate
+   asymmetry when the SIGNATURE line asks for it.
+7. staging/d2/style_ref_rocket.svg is the SIMPLICITY FLOOR only - round 2 is
+   chunkier and more defined than it. The master PNG listed per file shows the
+   subject: keep the concept, rebuild the drawing under these rules.
+
+FILES - one line per output:
+path | subject | KILL (round-1 failures) | SIGNATURE (what to build)
+
+BATCH NOTE: Alt marks and part chips. Light outer mass; the three part_* stay generic chips but must not collide with each other.
+
+- staging/d2/svg_v2/icon_alt_claw_hook.svg | subject: icon_alt_claw_hook | KILL: 3u light slit in claw head; 4u boom dashes; 4u hook notch; 6u claw wedges; polarity inverted: full #C9CDD2 plate vs dark set (blinding square in rows) | SIGNATURE: drop light plate bg; one bold 20u C-claw on 12u boom | master: vajb-orbit/assets/icons/alt/icon_alt_claw_hook.png | steel only
+- staging/d2/svg_v2/icon_alt_crossed_frame.svg | subject: icon_alt_crossed_frame | KILL: ~4u diagonal struts; 6x6u holes in corner blocks; ok (light on dark) | SIGNATURE: one bold 10u X; corner blocks merged into single big square hub | master: vajb-orbit/assets/icons/alt/icon_alt_crossed_frame.png | steel only
+- staging/d2/svg_v2/icon_alt_crosshair_target_reticle.svg | subject: icon_alt_crosshair_target_reticle | KILL: 6u crosshair arms; 6u ring band; 6u bracket legs; entire structure #232629 on dark panel = invisible; only ember dots read | SIGNATURE: light-steel ring (r22, 10u band) + 8u arms; ember only as center pip | master: vajb-orbit/assets/icons/alt/icon_alt_crosshair_target_reticle.png | EMBER OK
+- staging/d2/svg_v2/icon_alt_double_arrow_marker.svg | subject: icon_alt_double_arrow_marker | KILL: 4u dark tick cuts; ~4u inner chevron arms; dia-4 bolts; ok (light mass strong) | SIGNATURE: single bold double-chevron head 30u; drop all interior ticks | master: vajb-orbit/assets/icons/alt/icon_alt_double_arrow_marker.png | steel only
+- staging/d2/svg_v2/icon_alt_flame_emblem.svg | subject: icon_alt_flame_emblem | KILL: 2-4u side tongues w/ 2u dark cores; 4u base bar; 2u dark cores merge into body | SIGNATURE: one flame tongue 30u wide on 12u stem; drop hexagon or make it a shield | master: vajb-orbit/assets/icons/alt/icon_alt_flame_emblem.png | EMBER OK
+- staging/d2/svg_v2/icon_alt_missile_crosshair.svg | subject: icon_alt_missile_crosshair | KILL: 5x5u corner chips; 6u cross arms; dark hex body merges with bg (cross+ring float) | SIGNATURE: round seeker ring 10u band; bold 14u missile body through center (ember tip) | master: vajb-orbit/assets/icons/alt/icon_alt_missile_crosshair.png | EMBER OK
+- staging/d2/svg_v2/icon_alt_three_horizontal_bars.svg | subject: icon_alt_three_horizontal_bars | KILL: 3u notches in center bar; 4u end ticks; ok | SIGNATURE: drop hexagon shell (bars in bracket frame); bars 12u with 12u gaps | master: vajb-orbit/assets/icons/alt/icon_alt_three_horizontal_bars.png | steel only
+- staging/d2/svg_v2/icon_alt_thruster_exhaust.svg | subject: icon_alt_thruster_exhaust | KILL: 6u bell walls; 6u throat; dia-4 ember dots; dark bell invisible on bg - ember streaks read as 3 bars | SIGNATURE: light-steel bell 12u walls; merge streaks into one big tapered plume | master: vajb-orbit/assets/icons/alt/icon_alt_thruster_exhaust.png | EMBER OK
+- staging/d2/svg_v2/icon_alt_part_4.svg | subject: icon_alt_part_4 | KILL: star spikes 2-3u; dia-3~5 scatter dots; 8x8u diamond; ok | SIGNATURE: star sigil to 30u centered; edge nubs to 12u | master: vajb-orbit/assets/icons/alt/icon_alt_part_4.png | steel only
+- staging/d2/svg_v2/icon_alt_part_4_2.svg | subject: icon_alt_part_4_2 | KILL: 2u jagged ridge steps; dia-3~4 dots; 2u star spikes; #8D939B vs part_4 #C9CDD2 indistinguishable at 24px | SIGNATURE: two jagged bands only, 12u thick full-width; drop dots+star | master: vajb-orbit/assets/icons/alt/icon_alt_part_4_2.png | steel only
+- staging/d2/svg_v2/icon_alt_part_6.svg | subject: icon_alt_part_6 | KILL: 4x4u diamond; dia-3~4 dots; 6u side nub; ok | SIGNATURE: single centered bolt sigil 30u; dots in 2 clean rows | master: vajb-orbit/assets/icons/alt/icon_alt_part_6.png | steel only
+
+Output ONLY the .svg files listed above.

@@ -1,0 +1,52 @@
+You are hand-authoring ROUND 2 of flat SVG game icons. Round 1 failed playtest:
+fine details disappeared at small render sizes and icons were not unique enough.
+Round 2 is bolder, higher-contrast and silhouette-distinct. Write EXACTLY the
+files listed below, at the exact paths given, and nothing else. No reports, no
+README, no changes to existing files.
+
+HARD RULES - a validator rejects violations of 1-4:
+1. Root element exactly: <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+2. Fills only. Never use stroke. No gradients, no filters, no text, no embedded
+   images, no opacity below 1. Solid flat colours only.
+3. SIZE FLOORS - the playtest fix. Nothing narrower than 5 units anywhere: no
+   bars, walls, gaps, dots, tips or seams below it. At least ONE signature
+   feature of 24+ units per icon (it must still read at 16 px). At least 5 units
+   of empty space between any two shapes. Use 4 to 8 LARGE shapes per icon -
+   fewer and chunkier than round 1.
+4. CONTRAST LAW. The outer mass of the icon is LIGHT #C9CDD2. Interior detail is
+   cut as LARGE dark #232629 shapes or transparent fill-rule="evenodd" holes,
+   each at least 5 units wide. Never place mid-tone details (#8D939B or #565C63
+   shapes) on a #C9CDD2 body - they smear into mud. Never build an icon whose
+   outer mass is dark (#2B2F35 / #3A3F46 / #232629): it disappears against the
+   dark UI panel. In EMBER OK files one large ember accent (#C8461B or #E8703A,
+   10+ units as a band or tip) replaces the second tone.
+5. UNIQUENESS LAW. The OUTLINE itself must be unique - at 16 px only the outline
+   and the signature feature carry identity. The per-icon SIGNATURE line below is
+   the design brief: build exactly that large feature and the silhouette move it
+   names. Two icons in one batch must never share an outer shape; siblings take
+   different outline moves (stepped top, angled cut, punched corner, split
+   halves, notch crown, overhanging cap...).
+6. Coordinates on integer or .5 steps within the 0..96 canvas. Mirrored
+   coordinates are fine for symmetric subjects, but take one deliberate
+   asymmetry when the SIGNATURE line asks for it.
+7. staging/d2/style_ref_rocket.svg is the SIMPLICITY FLOOR only - round 2 is
+   chunkier and more defined than it. The master PNG listed per file shows the
+   subject: keep the concept, rebuild the drawing under these rules.
+
+FILES - one line per output:
+path | subject | KILL (round-1 failures) | SIGNATURE (what to build)
+
+BATCH NOTE: Modules b/c/e classes. Round 1 failed here: identical plates. Each icon gets a DIFFERENT outer shape.
+
+- staging/d2/svg_v2/icon_module_b_afterburner.svg | subject: icon_module_b_afterburner | KILL: 6u plate rim; 4u rivet dots; 8u chevron arms at 2u interlock gaps; 6u rim blurs away at 16px | SIGNATURE: twin exhaust bells protruding past bottom edge; chevrons scaled to touch both frame edges | master: vajb-orbit/assets/icons/module/icon_module_b_afterburner.png | steel only
+- staging/d2/svg_v2/icon_module_b_fold.svg | subject: icon_module_b_fold | KILL: 3u side tick bars; r4 hinge dot; 4u rivets; 3u light ticks on light frame edge = smudge | SIGNATURE: giant fold arrow breaking left+right plate edges; 12u hinge circle | master: vajb-orbit/assets/icons/module/icon_module_b_fold.png | steel only
+- staging/d2/svg_v2/icon_module_c_ewar.svg | subject: icon_module_c_ewar | KILL: 5u gaps between the 3 broadcast wedges merge; 6u window frame; 4u rivets; thin wedge tips fade into #C9CDD2 plate | SIGNATURE: one giant jam cone at 2x; 24u aperture square with 8u frame | master: vajb-orbit/assets/icons/module/icon_module_c_ewar.png | steel only
+- staging/d2/svg_v2/icon_module_c_nexus.svg | subject: icon_module_c_nexus | KILL: 3u dark border of center node; 6u center light square; 4u rivets; 3-tone stack at 3px = mud | SIGNATURE: giant central hub diamond 28u+; struts extended to break the frame corners | master: vajb-orbit/assets/icons/module/icon_module_c_nexus.png | steel only
+- staging/d2/svg_v2/icon_module_c_scanner.svg | subject: icon_module_c_scanner | KILL: 5u radar arcs; 3u top bar; 4u rivets; sub-5u dark arcs on light field gray out into haze | SIGNATURE: one huge sweep wedge + single 10u arc; kill all thin bars | master: vajb-orbit/assets/icons/module/icon_module_c_scanner.png | steel only
+- staging/d2/svg_v2/icon_module_c_target.svg | subject: icon_module_c_target | KILL: 4u border of dark field; 3u top/bottom ticks; 4u side notches; tone reversal at 2px = mud | SIGNATURE: 12u crosshair breaking all four plate edges; 14u center square | master: vajb-orbit/assets/icons/module/icon_module_c_target.png | steel only
+- staging/d2/svg_v2/icon_module_c_twin.svg | subject: icon_module_c_twin | KILL: 4u divider band; 8u window slots; 4u light dots; 6u nubs; light r2 indicators on #2B2F35 frames swallowed by dark | SIGNATURE: two giant stacked ports running edge to edge; drop the 4u divider | master: vajb-orbit/assets/icons/module/icon_module_c_twin.png | steel only
+- staging/d2/svg_v2/icon_module_e_ion.svg | subject: icon_module_e_ion | KILL: two 4u accelerator fins with 3u gap merge; 5u mouth strip; 4u rivets; thin light fins on dark bg + dark bore in light bell soften to haze | SIGNATURE: giant stepped ion bell at 2x; one 12u accelerator ring replacing hairlines | master: vajb-orbit/assets/icons/module/icon_module_e_ion.png | steel only
+- staging/d2/svg_v2/icon_module_e_std.svg | subject: icon_module_e_std | KILL: 4u dark trim band; 5u exhaust strip; 6x8 inlet neck; 4u #2B2F35 band on light nozzle = dirty streak | SIGNATURE: oversized flared nozzle lip silhouette; single huge dark throat slot | master: vajb-orbit/assets/icons/module/icon_module_e_std.png | steel only
+- staging/d2/svg_v2/icon_module_e_vector.svg | subject: icon_module_e_vector | KILL: 4u vent slits with 3u walls; 5u exhaust band; 6u strut; 4u dark slits in light bars smudge shut at 24px | SIGNATURE: giant gimbal V at 2x breaking the canvas diagonally; 14u throat opening | master: vajb-orbit/assets/icons/module/icon_module_e_vector.png | steel only
+
+Output ONLY the .svg files listed above.

@@ -1,0 +1,50 @@
+You are hand-authoring ROUND 2 of flat SVG game icons. Round 1 failed playtest:
+fine details disappeared at small render sizes and icons were not unique enough.
+Round 2 is bolder, higher-contrast and silhouette-distinct. Write EXACTLY the
+files listed below, at the exact paths given, and nothing else. No reports, no
+README, no changes to existing files.
+
+HARD RULES - a validator rejects violations of 1-4:
+1. Root element exactly: <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+2. Fills only. Never use stroke. No gradients, no filters, no text, no embedded
+   images, no opacity below 1. Solid flat colours only.
+3. SIZE FLOORS - the playtest fix. Nothing narrower than 5 units anywhere: no
+   bars, walls, gaps, dots, tips or seams below it. At least ONE signature
+   feature of 24+ units per icon (it must still read at 16 px). At least 5 units
+   of empty space between any two shapes. Use 4 to 8 LARGE shapes per icon -
+   fewer and chunkier than round 1.
+4. CONTRAST LAW. The outer mass of the icon is LIGHT #C9CDD2. Interior detail is
+   cut as LARGE dark #232629 shapes or transparent fill-rule="evenodd" holes,
+   each at least 5 units wide. Never place mid-tone details (#8D939B or #565C63
+   shapes) on a #C9CDD2 body - they smear into mud. Never build an icon whose
+   outer mass is dark (#2B2F35 / #3A3F46 / #232629): it disappears against the
+   dark UI panel. In EMBER OK files one large ember accent (#C8461B or #E8703A,
+   10+ units as a band or tip) replaces the second tone.
+5. UNIQUENESS LAW. The OUTLINE itself must be unique - at 16 px only the outline
+   and the signature feature carry identity. The per-icon SIGNATURE line below is
+   the design brief: build exactly that large feature and the silhouette move it
+   names. Two icons in one batch must never share an outer shape; siblings take
+   different outline moves (stepped top, angled cut, punched corner, split
+   halves, notch crown, overhanging cap...).
+6. Coordinates on integer or .5 steps within the 0..96 canvas. Mirrored
+   coordinates are fine for symmetric subjects, but take one deliberate
+   asymmetry when the SIGNATURE line asks for it.
+7. staging/d2/style_ref_rocket.svg is the SIMPLICITY FLOOR only - round 2 is
+   chunkier and more defined than it. The master PNG listed per file shows the
+   subject: keep the concept, rebuild the drawing under these rules.
+
+FILES - one line per output:
+path | subject | KILL (round-1 failures) | SIGNATURE (what to build)
+
+BATCH NOTE: Slot glyphs depict slot SOCKETS, not module art; no letterforms.
+
+- staging/d2/svg_v2/icon_slot_b.svg | subject: icon_slot_b | KILL: top tab 4u tall; side bars 4u wide; 16x5 base dash borderline; none - all #C9CDD2 on #232629 | SIGNATURE: one bold full-width chevron ~20u thick stacked 2-deep; replace micro-bars with single 8u base rail | master: vajb-orbit/assets/icons/slot/icon_slot_b.png | steel only
+- staging/d2/svg_v2/icon_slot_c.svg | subject: icon_slot_c | KILL: 5u gap between center 14u square and ring fills solid at 24px; 6u ring walls borderline; none - single light tone on #232629 | SIGNATURE: center square up to 26u with 8u+ clear moat; merge corner brackets into one continuous 10u frame | master: vajb-orbit/assets/icons/slot/icon_slot_c.png | steel only
+- staging/d2/svg_v2/icon_slot_engine.svg | subject: icon_slot_engine | KILL: 2u dark slit in base bar; 4u crossbar; 4u side slivers; 6x4 tabs; none - light on #232629 | SIGNATURE: one huge bell-mouth flare ~30u wide at the base; 8u+ exhaust fins replacing the 4u slivers | master: vajb-orbit/assets/icons/slot/icon_slot_engine.png | steel only
+- staging/d2/svg_v2/icon_slot_h.svg | subject: icon_slot_h | KILL: 3u light stripes x3 vanish; skew bar ends taper thin; #232629 bars on dark panel = no silhouette, only the 3u dashes float | SIGNATURE: three 20u-tall light slash bars joined by one vertical spine; drop micro-stripes | master: vajb-orbit/assets/icons/slot/icon_slot_h.png | steel only
+- staging/d2/svg_v2/icon_slot_power.svg | subject: icon_slot_power | KILL: 3u top/bottom rails; 5x5 side studs; none - light on #232629 | SIGNATURE: bold ~30u bolt sigil in the center cell; battery foot 14u tall full width | master: vajb-orbit/assets/icons/slot/icon_slot_power.png | steel only
+- staging/d2/svg_v2/icon_slot_s.svg | subject: icon_slot_s | KILL: 4u base slots; 4u bolt arms; 4u side tabs; none - light on #232629 | SIGNATURE: dome band to 14u thick across full width; single 22u hex boss, drop micro-slots | master: vajb-orbit/assets/icons/slot/icon_slot_s.png | steel only
+- staging/d2/svg_v2/icon_slot_u.svg | subject: icon_slot_u | KILL: 4u side slivers; 4u top/bottom tabs; full-bleed #232629 crossbar and base slot read as voids on dark panel, plate splits in two | SIGNATURE: U-trough walls to 14u; one bold 12u crossbeam kept inside the plate instead of full-bleed | master: vajb-orbit/assets/icons/slot/icon_slot_u.png | steel only
+- staging/d2/svg_v2/icon_slot_w.svg | subject: icon_slot_w | KILL: 4u dark slivers x2; 5u bottom tabs; wedge cuts taper to points; none - dark cuts on light are strong | SIGNATURE: merge twin wedges into one ~34u central W notch; frame to 12u, drop slivers | master: vajb-orbit/assets/icons/slot/icon_slot_w.png | steel only
+
+Output ONLY the .svg files listed above.
