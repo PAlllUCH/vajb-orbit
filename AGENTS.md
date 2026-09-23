@@ -62,6 +62,17 @@ Values are host-specific and live in `crushrc` (Windows: the 4.7.2 stable pair u
 - Run game headless (once a main scene exists): `$GODOT_CONSOLE --headless --path "$VAJB_PROJ"`
 - Run a script: `$GODOT_CONSOLE --headless --path "$VAJB_PROJ" --script res://<script>.gd`
 
+### Release exports
+
+`vajb-orbit/export_presets.cfg` carries the two desktop presets (`Linux`, `Windows Desktop`: 64-bit, single-file, release templates) and excludes `addons/`, `tests/` and `tools/`, so a build handed to testers never carries the MCP plugin, the gate or the audit scripts. Export both, smoke-test the runnable one, then zip:
+
+```bash
+$GODOT_CONSOLE --headless --path "$VAJB_PROJ" --export-release "Linux" "$VAJB_WORKSPACE/builds/linux/vajb-orbit.x86_64"
+$GODOT_CONSOLE --headless --path "$VAJB_PROJ" --export-release "Windows Desktop" "$VAJB_WORKSPACE/builds/windows/vajb-orbit.exe"
+```
+
+`builds/` is gitignored and stays out of the Drive mirror; shareable zips go to a dated folder beside the mirror. Export templates are the 4.7.2-stable set (`~/.local/share/godot/export_templates/4.7.2.stable/`). A release is not done until the Linux binary boots on Vulkan and exits clean (`--quit-after 400`, only the benign ObjectDB-leak warning) — the Windows binary cannot be run on the Linux host, so it is verified structurally (same embedded pack size) instead.
+
 ### Editor / LSP / godot-ai runbook
 
 The full, verified recovery procedure (detached launch command, LSP warm-up, diagnosis cheat-sheet, godot-ai behaviour notes) lives in the `vajb-orbit-environment` skill — that file is the detailed version; this section must not duplicate it and drift. Summary: launch the editor **detached** so it survives Crush restarts (a child of Crush's background shell is killed when Crush restarts — this killed the editor once); boot takes ~30 s before the editor's LSP listens; the lazy gdscript LSP needs any `.gd` operation to start. `godot-ai` reporting *connected* proves only that the MCP server runs — `session_manage(op='list')` with `count: 0` means the editor is not running.
