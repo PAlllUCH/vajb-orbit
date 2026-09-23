@@ -799,9 +799,10 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
-Expected (S5, 2026-09-24): **`[SUMMARY] passed=577 failed=0`**, exit 0 — measured **three** times
-by the S5 mandatory review (S5-R1) on three scratch stores, identical counts; **577 tests over 49
-suites**, the live `user://profile.cfg` md5 `539de5b7af59c77b6bffc477413161da` unmoved. The four S5
+Expected (S5, 2026-09-24): **`[SUMMARY] passed=578 failed=0`**, exit 0. S5-R1 measured **577**
+three times on three scratch stores before the fixer pass; the close-out measured **578** four
+times on four scratch stores (R1's figure **+1** — the row F1's R1-MED-2 cure added), identical
+counts; **578 tests over 49 suites**, the live `user://profile.cfg` md5 `539de5b7af59c77b6bffc477413161da` unmoved. The four S5
 suites are `test_s5_commerce.gd` **7**, `test_s5_ammo_cargo.gd` **14**, `test_s5_batteries_v2.gd`
 **12** and `test_s5_hardpoints.gd` **11** (44 new), with `test_engine2_weapons.gd` 44 → **48**,
 `test_s4_batteries.gd` 16 → **19**, `test_p2b1_outfitting_panel.gd` 11 → **13** and
