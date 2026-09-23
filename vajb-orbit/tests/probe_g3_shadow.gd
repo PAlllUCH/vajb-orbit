@@ -37,7 +37,9 @@ const LINE_CHECKS: Array[Dictionary] = [
 	{&"path": "res://ui/station/exchange_panel.gd", &"line": 24, &"must": "const MineralCatalogScript := preload("},
 	{&"path": "res://ui/station/exchange_panel.gd", &"line": 25, &"must": "const ComponentCatalogScript := preload("},
 	# SHADOWED_VARIABLE_BASE_CLASS: `size` vs Control.size, in both panels' plate builder.
-	{&"path": "res://ui/station/shipyard_panel.gd", &"line": 321, &"must": "variation: StringName, plate_size: float"},
+	# (S5-J1, 2026-09-23: the shipyard's line moved with the hangar rework - the signature
+	# is unchanged, only its line number is.)
+	{&"path": "res://ui/station/shipyard_panel.gd", &"line": 842, &"must": "variation: StringName, plate_size: float"},
 	{&"path": "res://ui/station/launch_panel.gd", &"line": 246, &"must": "variation: StringName, plate_size: float"},
 	# SHADOWED_VARIABLE_BASE_CLASS: `pressed` vs BaseButton.pressed and `disabled` vs
 	# BaseButton.disabled, in `_apply_plates`.

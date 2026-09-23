@@ -41,14 +41,27 @@ const VARIATION_CARGO: StringName = &"SlotButtonCargo"
 
 ## Slot order mirrors PlayerState.WEAPONS (contract section 3.9); the icons are
 ## the 48 px cuts from the weapon panel (ICONS_SPEC section 5).
-const WEAPON_IDS: Array[StringName] = [&"laser", &"cannon", &"rocket", &"mine", &"plasma"]
-const WEAPON_LABELS: Array[String] = ["Laser MkII", "Cannon MkI", "Rocket Pod", "Mine Layer", "Plasma Coil"]
+##
+## **Seven entries since S5** (09 section 11, CONTRACTS section 17): `GROUPS_MAX` is 7
+## and `PlayerState.WEAPONS`' five v1 families are joined by the two modules that exist
+## with no v1 ammo row of their own - the railgun (its own pack since S5) and the
+## mining laser (a tool, `w_mining`, whose icon is the module cut, not a weapon cut).
+## The tables index a **rack ordinal minus one** for the readout's label and icon.
+const WEAPON_IDS: Array[StringName] = [
+	&"laser", &"cannon", &"rocket", &"mine", &"plasma", &"railgun", &"mining"
+]
+const WEAPON_LABELS: Array[String] = [
+	"Laser MkII", "Cannon MkI", "Rocket Pod", "Mine Layer", "Plasma Coil",
+	"Railgun", "Mining Laser",
+]
 const WEAPON_ICONS: Array[Texture2D] = [
 	preload("res://assets/icons/weapon/icon_weapon_laser.svg"),
 	preload("res://assets/icons/weapon/icon_weapon_cannon.svg"),
 	preload("res://assets/icons/weapon/icon_weapon_rocket.svg"),
 	preload("res://assets/icons/weapon/icon_weapon_mine.svg"),
 	preload("res://assets/icons/weapon/icon_weapon_plasma.svg"),
+	preload("res://assets/icons/module/icon_module_w_railgun.svg"),
+	preload("res://assets/icons/module/icon_module_w_mining.svg"),
 ]
 const CARGO_ICONS: Array[Texture2D] = [
 	preload("res://assets/icons/cargo/icon_cargo_ore.svg"),
@@ -184,7 +197,13 @@ var _hull_current: float = 0.0
 var _hull_max: float = 0.0
 var _shield_current: float = 0.0
 var _shield_max: float = 0.0
+## The selected **rack ordinal minus one** (`WEAPON_IDS`/`WEAPON_LABELS`/the highlight
+## read it), and the **barrel position** that selection reads its ammo at - the cell's own
+## index in `PlayerState.ammo`, carried by the pushed cell (`game.gd:_hull_slot_cells`'
+## `position`). The two are different numbers since S5: one rack may hold several cells of
+## several kinds, so rack 1 is not slot 1 (the S5 review's R1-MED-1).
 var _active_slot: int = 0
+var _active_barrel: int = 0
 var _weapon_id: StringName = &""
 var _ammo: int = 0
 var _ammo_max: int = 0
@@ -497,8 +516,11 @@ func _pull_state() -> void:
 	_on_shield_changed(_state.shield, _state.shield_max)
 	_on_energy_changed(_state.energy, _state.energy_max)
 	_on_fuel_changed(_state.fuel, _state.fuel_max)
-	var weapon_id: StringName = WEAPON_IDS[_active_slot] if _active_slot < WEAPON_IDS.size() else &""
-	_on_weapon_changed(_active_slot, weapon_id, _ammo_of(_active_slot), _ammo_max_of(_active_slot))
+	_set_barrel(_barrel_of_battery(_active_slot + 1))
+	var weapon_id: StringName = _battery_family(_active_slot + 1)
+	if weapon_id.is_empty():
+		weapon_id = WEAPON_IDS[_active_slot] if _active_slot < WEAPON_IDS.size() else &""
+	_on_weapon_changed(_active_slot, weapon_id, _ammo, _ammo_max)
 	_on_cargo_changed(_state.cargo_used, _state.cargo_max)
 
 
@@ -626,15 +648,21 @@ func _build_weapon_slots() -> void:
 
 
 ## CONTRACTS section 11: the launched hull's W cells, one entry per W cell in layout order
-## ({slot, index, module, icon, fitted, selectable}; `game.gd` builds them from
-## `ShipFit.grid_cells` + the fit + `ModuleCatalog`). The grid is rebuilt, never appended
-## to, so a re-push is idempotent and the default five-family grid is what an empty push
-## falls back to. The hull id is recorded with the cells so a probe can pair the read-back
-## with the hull it came from.
+## ({slot, index, module, icon, fitted, selectable, battery, position}; `game.gd` builds
+## them from `ShipFit.grid_cells` + the fit + `ModuleCatalog`). The grid is rebuilt, never
+## appended to, so a re-push is idempotent and the default five-family grid is what an
+## empty push falls back to. The hull id is recorded with the cells so a probe can pair the
+## read-back with the hull it came from.
+##
+## The current selection is re-resolved last: the cells are what a rack ordinal and a
+## barrel position are read against, so the readout must be answered from the grid that is
+## actually drawn - a launch straight into a mixed rack then reads that rack's own barrel
+## instead of the empty-grid fallback it was pulled with (the S5 review's R1-MED-1).
 func set_hull_slots(hull_id: StringName, cells: Array) -> void:
 	_hull_id = hull_id
 	_hull_slots = cells.duplicate()
 	_rebuild_weapon_slots()
+	select_battery(_active_slot + 1)
 
 
 ## Read-back for probes (`TargetReticle.state()`'s precedent): the cells the current grid
@@ -678,10 +706,71 @@ func _weapon_cell_icon(cell: Dictionary) -> Texture2D:
 	return texture if texture != null else SLOT_GLYPH_WEAPON
 
 
-## CONTRACTS section 11: a cell from `GROUPS_MAX` on is not selectable, whatever the
-## producer said (the input map stops at `weapon_5`); below it the cell's own flag governs.
+## CONTRACTS section 11 / 09 section 11: a cell is selectable when it belongs to a rack
+## whose **ordinal** the input map can reach (`GROUPS_MAX`, 7 since S5), whatever the
+## producer said. A cell with no rack - an empty cell - has no battery to select.
 func _weapon_cell_selectable(index: int, cell: Dictionary) -> bool:
-	return index < GROUPS_MAX and bool(cell.get(&"selectable", true))
+	var battery := _cell_battery(index)
+	return battery >= 1 and battery <= GROUPS_MAX and bool(cell.get(&"selectable", true))
+
+
+## The rack ordinal (1-based) one pushed W cell fires from, 0 for a cell the producer
+## gave no battery (an unfitted cell, or a producer that predates S5 and pushed no
+## `battery` field - which falls back to the cell index + 1, the pre-S5 mapping).
+func _cell_battery(index: int) -> int:
+	if index < 0 or index >= _hull_slots.size():
+		return 0
+	var cell: Dictionary = _hull_slots[index]
+	if cell.has(&"battery"):
+		return int(cell[&"battery"])
+	return index + 1
+
+
+## The **barrel position** one pushed W cell reads its ammo at (`game.gd:_hull_slot_cells`'
+## `position`, the cell's own index in `PlayerState.ammo`), `-1` for a cell the fit leaves
+## empty. A producer that predates S5 pushes no `position` field and falls back to the cell
+## index, which is the same number as the pre-S5 one-family-per-index mapping `_cell_battery`
+## falls back to - so an old payload reads exactly as it always did.
+func _cell_position(index: int) -> int:
+	if index < 0 or index >= _hull_slots.size():
+		return index
+	var cell: Dictionary = _hull_slots[index]
+	if cell.has(&"position"):
+		return int(cell[&"position"])
+	return index
+
+
+## The barrel position a **rack ordinal** reads from when only the ordinal is known - the
+## keyboard `weapon_N` path (`game.gd:_select_weapon`), which names no cell: the rack's
+## first cell in layout order. That is the same "first member" rule the component's
+## `selected_weapon()` reads (its first barrel's family - a rack's cells ascend, so the two
+## name one member). A rack no pushed cell claims falls back to `battery - 1`, the pre-S5
+## mapping an empty grid has always had.
+func _barrel_of_battery(battery: int) -> int:
+	for index: int in _hull_slots.size():
+		if _cell_battery(index) == battery:
+			return _cell_position(index)
+	return battery - 1
+
+
+## The firing family a rack ordinal's first cell carries, `&""` when no pushed cell claims
+## the rack (the caller then keeps its own fallback). `_barrel_of_battery` answers that same
+## first cell, so the caption and the pack the readout shows name one weapon.
+func _battery_family(battery: int) -> StringName:
+	for index: int in _hull_slots.size():
+		if _cell_battery(index) != battery:
+			continue
+		var module := StringName(_hull_slots[index].get(&"module", &""))
+		return WeaponComponent.weapon_id(module)
+	return &""
+
+
+## Point the readout's ammo figures at one **barrel position** (`_ammo_of`'s index). The
+## selection's ordinal is not that index since S5, so both selection paths set them apart.
+func _set_barrel(barrel: int) -> void:
+	_active_barrel = barrel
+	_ammo = _ammo_of(barrel)
+	_ammo_max = _ammo_max_of(barrel)
 
 
 ## Section 3.1b: the Energy and Fuel blocks, appended to the scene's TopLeft column
@@ -863,8 +952,11 @@ func _refresh_weapon() -> void:
 		_ammo_label.text = "%s  %d/%d" % [label, _ammo, _ammo_max]
 	_set_text_alert(_ammo_label, low_ammo, TOKEN_DANGER)
 	_push_tint(_ammo_icon, TOKEN_DANGER if low_ammo else TOKEN_TEXT_DIM)
+	## Every cell of the **selected rack** is marked active (09 section 11): the
+	## selection is a battery ordinal, so a rack that holds three cells lights all
+	## three rather than the one whose index happens to equal the ordinal.
 	for index: int in _weapon_slots.size():
-		var active: bool = index == _active_slot
+		var active: bool = _cell_battery(index) == _active_slot + 1
 		_weapon_slots[index].set_active(active)
 		_weapon_slots[index].set_icon_token(TOKEN_TEXT_PRIMARY if active else TOKEN_TEXT_DIM)
 
@@ -1077,13 +1169,51 @@ func _apply_minimap() -> void:
 	_minimap.set_blips(_blips)
 
 
-func _on_weapon_slot_pressed(slot: int) -> void:
-	_active_slot = clampi(slot, 0, WEAPON_IDS.size() - 1)
-	_weapon_id = WEAPON_IDS[_active_slot]
-	_ammo = _ammo_of(_active_slot)
-	_ammo_max = _ammo_max_of(_active_slot)
+## A W-slot press addresses the **battery ordinal** the pressed cell fires from (09
+## section 11, CONTRACTS section 17): one rack may hold several cells and several kinds,
+## so the cell index is not the group. The readout keeps showing the pressed cell's own
+## module and its own pack (that is what the player clicked), while the signal and the
+## highlight carry the rack. A cell with no rack - an unfitted one - selects nothing and
+## emits nothing.
+func _on_weapon_slot_pressed(index: int) -> void:
+	var battery := _cell_battery(index)
+	if battery < 1:
+		return
+	select_battery(battery)
+	## The signal is the flight scene's own selection (`game.gd:_select_weapon` ->
+	## `select_battery`), so it is emitted **before** the cell's own reading is applied:
+	## the round trip re-selects the rack, and this press then narrows the readout to the
+	## very cell the player pressed - its module's label and its own pack - rather than
+	## the rack representative `select_battery` resolves. A mixed rack is exactly where
+	## the two differ.
+	weapon_slot_selected.emit(battery)
+	_set_barrel(_cell_position(index))
+	var module := StringName(_hull_slots[index].get(&"module", &""))
+	var family := WeaponComponent.weapon_id(module)
+	if family != &"":
+		_weapon_id = family
 	_refresh_weapon()
-	weapon_slot_selected.emit(slot)
+
+
+## Select one **rack ordinal** (1-based) for the readout: the highlight, the label and
+## the ammo figures follow the rack, exactly as a press of one of its cells does. The
+## flight scene calls this on a keyboard `weapon_N` press (`game.gd:_select_weapon`),
+## so the two selection paths cannot disagree. An ordinal outside `1..GROUPS_MAX` is
+## ignored, and every cell of the selected rack is marked active (not just one index).
+##
+## The ordinal names a **rack**, never a family index: a mixed rack's caption and pack
+## are read off the rack's own first cell (`_battery_family` / `_barrel_of_battery`), so
+## `weapon_1` on a cannon+rocket rack names the cannon and shows the cannon's rounds
+## rather than whichever family sits at index 0 (the S5 review's R1-MED-1).
+func select_battery(battery: int) -> void:
+	if battery < 1 or battery > GROUPS_MAX:
+		return
+	_active_slot = battery - 1
+	_set_barrel(_barrel_of_battery(battery))
+	_weapon_id = _battery_family(battery)
+	if _weapon_id.is_empty():
+		_weapon_id = WEAPON_IDS[_active_slot] if _active_slot < WEAPON_IDS.size() else &""
+	_refresh_weapon()
 
 
 func _on_cargo_toggle_pressed() -> void:

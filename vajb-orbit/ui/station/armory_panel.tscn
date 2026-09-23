@@ -1,12 +1,12 @@
 [gd_scene load_steps=3 format=3]
 
-[ext_resource type="Script" path="res://ui/station/outfitting_panel.gd" id="1_outfitting"]
+[ext_resource type="Script" path="res://ui/station/armory_panel.gd" id="1_armory"]
 [ext_resource type="Texture2D" path="res://assets/icons/equip/icon_equip_module.png" id="2_pane_icon"]
 
-[node name="Outfitting" type="VBoxContainer"]
+[node name="Armory" type="VBoxContainer"]
 unique_name_in_owner = true
 theme_override_constants/separation = 12
-script = ExtResource("1_outfitting")
+script = ExtResource("1_armory")
 
 [node name="PaneHeader" type="HBoxContainer" parent="."]
 layout_mode = 2
@@ -30,13 +30,13 @@ theme_override_constants/separation = 2
 [node name="PaneTitle" type="Label" parent="PaneHeader/TitleBox"]
 layout_mode = 2
 theme_type_variation = &"StationPanelTitle"
-text = "OUTFITTING"
+text = "ARMORY"
 
 [node name="PaneSubtitle" type="Label" parent="PaneHeader/TitleBox"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"StationCaption"
-text = "AMMUNITION AND CONSUMABLES"
+text = "BATTERY RACKS AND AMMUNITION"
 
 [node name="PanelTag" type="Label" parent="PaneHeader"]
 unique_name_in_owner = true
@@ -44,50 +44,70 @@ layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"StationCaption"
 
-[node name="OutfittingScroll" type="ScrollContainer" parent="."]
+[node name="ArmoryScroll" type="ScrollContainer" parent="."]
 unique_name_in_owner = true
 horizontal_scroll_mode = 0
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="OutfittingBody" type="VBoxContainer" parent="OutfittingScroll"]
+[node name="ArmoryBody" type="VBoxContainer" parent="ArmoryScroll"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 12
 
-[node name="FittedMargin" type="MarginContainer" parent="OutfittingScroll/OutfittingBody"]
+[node name="RacksMargin" type="MarginContainer" parent="ArmoryScroll/ArmoryBody"]
 layout_mode = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_right = 12
 
-[node name="FittedBox" type="VBoxContainer" parent="OutfittingScroll/OutfittingBody/FittedMargin"]
+[node name="RacksBox" type="VBoxContainer" parent="ArmoryScroll/ArmoryBody/RacksMargin"]
 layout_mode = 2
 theme_override_constants/separation = 2
 
-[node name="FittedCaption" type="Label" parent="OutfittingScroll/OutfittingBody/FittedMargin/FittedBox"]
+[node name="RacksCaption" type="Label" parent="ArmoryScroll/ArmoryBody/RacksMargin/RacksBox"]
 layout_mode = 2
 theme_type_variation = &"SectionHeader"
-text = "FITTED WEAPONS"
+text = "BATTERY RACKS"
 
-[node name="FittedStrip" type="VBoxContainer" parent="OutfittingScroll/OutfittingBody/FittedMargin/FittedBox"]
+[node name="RackRows" type="VBoxContainer" parent="ArmoryScroll/ArmoryBody/RacksMargin/RacksBox"]
 unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="InventoryMargin" type="MarginContainer" parent="ArmoryScroll/ArmoryBody"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+
+[node name="InventoryBox" type="VBoxContainer" parent="ArmoryScroll/ArmoryBody/InventoryMargin"]
 layout_mode = 2
 theme_override_constants/separation = 2
 
-[node name="HeaderMargin" type="MarginContainer" parent="OutfittingScroll/OutfittingBody"]
+[node name="InventoryCaption" type="Label" parent="ArmoryScroll/ArmoryBody/InventoryMargin/InventoryBox"]
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "INVENTORY · DRAG A WEAPON ONTO A RACK"
+
+[node name="InventoryRows" type="VBoxContainer" parent="ArmoryScroll/ArmoryBody/InventoryMargin/InventoryBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="HeaderMargin" type="MarginContainer" parent="ArmoryScroll/ArmoryBody"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 12
 
-[node name="OutfittingHeader" type="HBoxContainer" parent="OutfittingScroll/OutfittingBody/HeaderMargin"]
+[node name="ArmoryHeader" type="HBoxContainer" parent="ArmoryScroll/ArmoryBody/HeaderMargin"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="OutfittingRows" type="VBoxContainer" parent="OutfittingScroll/OutfittingBody"]
+[node name="ArmoryRows" type="VBoxContainer" parent="ArmoryScroll/ArmoryBody"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3

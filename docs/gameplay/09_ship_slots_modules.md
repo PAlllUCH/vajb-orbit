@@ -80,14 +80,25 @@ contract style as 02 §3). `Tier` is I–III; acquisition per tier in 10 §3.
 
 ### 3.1 WEAPONS (W slots)
 
-| Module | Tier | Draw | Family | Shield rule | Effect | Cost |
-|--------|------|:----:|--------|-------------|--------|-----:|
-| `w_laser` | I | 1 | energy | shields first; no hull damage while shield > 0 | laser hardpoint, 30 DPS, uses Laser Cells | 900 |
-| `w_cannon` | I | 1 | kinetic | bypasses shields → hull | kinetic hardpoint, 45 DPS burst, Cannon Shells | 1 200 |
-| `w_rocket` | II | 2 | missile | bypasses shields → hull | rocket pod, high alpha, Rocket rounds | 2 400 |
-| `w_mine` | II | 1 | deployable | bypasses shields → hull | mine layer, area denial, Mine Rack | 1 800 |
-| `w_plasma` | III | 3 | energy | shields first | plasma lance, 70 DPS, melts armour, Plasma Cells | 4 800 |
-| `w_railgun` | III | 3 | kinetic | bypasses shields → hull | railgun, 60 DPS | 5 200 |
+| Module | Tier | Draw | Family | Shield rule | Effect | Cost | `track_dps` |
+|--------|------|:----:|--------|-------------|--------|-----:|:----------:|
+| `w_laser` | I | 1 | energy | shields first; no hull damage while shield > 0 | laser hardpoint, 30 DPS, uses Laser Cells | 900 | 180 |
+| `w_cannon` | I | 1 | kinetic | bypasses shields → hull | kinetic hardpoint, 45 DPS burst, Cannon Shells | 1 200 | 120 |
+| `w_rocket` | II | 2 | missile | bypasses shields → hull | rocket pod, high alpha, Rocket rounds | 2 400 | 60 |
+| `w_mine` | II | 1 | deployable | bypasses shields → hull | mine layer, area denial, Mine Rack | 1 800 | fixed |
+| `w_plasma` | III | 3 | energy | shields first | plasma lance, 70 DPS, melts armour, Plasma Cells | 4 800 | 75 |
+| `w_railgun` | III | 3 | kinetic | bypasses shields → hull | railgun, 60 DPS | 5 200 | 100 |
+
+The `track_dps` column carries the mining laser's own 150 for `w_mining` (§4 item 5, not a
+row of this table).
+
+The `track_dps` column is S5's amendment (2026-09-23, §11 below): **degrees per second** a
+barrel of that family swings toward the aim, so a mixed battery's members turn at their
+own speeds and a slow turret measurably lags a fast one. `w_mine` is `fixed` (a drop has no
+barrel to swing, `track_dps` 0.0); the values are the owner-tick taste table §11 carries
+and `TRACK_MULT` in `game/weapons.gd` scales the whole column at once (0 = instant aim, the
+reversal). The `w_mining` row's 150 belongs to the tool module: the mining shaft itself is
+cursor-aimed (`mining_laser.gd`) and is not fired through the weapon component.
 
 The `Family` and `Shield rule` columns are ENGINE_SPEC §4.1's amendment to
 this table (families: energy / kinetic / missile / deployable / tool; the
@@ -537,9 +548,29 @@ well".
   brake/retro at front, strafe at the side's anchors. **Reversal:** delete
   `HARDPOINTS` (the fallback is today's behaviour).
 
+**Filled 2026-09-23 (S5-J4, the measurement deliverable).** All values are **render px
+relative to the sprite's own centre** — the point the hull scene's `Hull` sprite draws at,
+`+x` = bow, `+y` = the hull's starboard — so a consumer scales by the sprite's own scene
+scale (0.0663 in `player_ship.tscn`). `rear` is the lit nozzle mouths, `front` the bow
+band's two ink extremes, `left`/`right` the flank stations at 25 % and 75 % of the hull's
+ink length, and `weapon_mounts` one entry per W cell in the hull's own row-major cell
+order (`W1`…), each `pos` its measured station on the hull's silhouette with `facing` in
+radians. The derivation is `tests/probe_s5_hardpoints.gd`, re-runnable and byte-identical
+to `ShipFit.HARDPOINTS`; the `measured` column names the render and the ink box it read.
+Counts are the art's own — the Mule shows **two** lit nozzles against its three engine
+cells — which is why §8's one-per-cell rule is superseded rather than kept beside it.
+
 | Hull | rear | front | left | right | weapon_mounts | measured |
 |------|------|-------|------|-------|---------------|----------|
-| (nine rows filled by S5-J4 from the renders; values in hull-local px) | | | | | | |
+| `ship_fighter` | **2** `(-391.5, -71.2)` · `(-392.5, 37.3)` | **2** `(414.5, -38.5)` · `(414.5, 14.5)` | **2** `(-207.5, -174.5)` · `(207.5, -108.5)` | **2** `(-207.5, 92.5)` · `(207.5, 73.5)` | `W1` `(-103.5, -116.5)` `0.1`<br>`W2` `(103.5, -116.5)` `0.149` | `ship_fighter_side.png` · canvas 897x415 · ink 831x349 |
+| `ship_vanguard` | **2** `(-371.0, -111.4)` · `(-369.0, 118.3)` | **2** `(443.0, -31.5)` · `(443.0, 22.5)` | **2** `(-222.0, -189.5)` · `(222.0, -95.5)` | **2** `(-222.0, 197.5)` · `(222.0, 137.5)` | `W1` `(-111.0, -168.5)` `-0.124`<br>`W2` `(111.0, -168.5)` `-0.503`<br>`W3` `(-111.0, 55.5)` `-0.173` | `ship_vanguard_side.png` · canvas 960x521 · ink 888x449 |
+| `ship_miner` | **2** `(-439.5, -75.3)` · `(-440.5, 63.7)` | **2** `(453.5, -32.5)` · `(453.5, 102.5)` | **2** `(-227.5, -99.5)` · `(227.5, -64.5)` | **2** `(-227.5, 131.5)` · `(227.5, 127.5)` | `W1` `(-340.5, -106.2)` `-0.1`<br>`W2` `(340.5, -47.5)` `0.149` | `ship_miner_side.png` · canvas 981x355 · ink 909x283 |
+| `ship_trader` | **2** `(-428.0, -72.1)` · `(-428.0, 71.1)` | **2** `(472.0, -57.5)` · `(472.0, 49.5)` | **2** `(-236.0, -147.5)` · `(237.0, -129.5)` | **2** `(-236.0, 148.5)` · `(237.0, 132.5)` | `W1` `(-118.0, -117.5)` `-0.025` | `ship_trader_side.png` · canvas 1022x389 · ink 946x313 |
+| `ship_corvette` | **2** `(-456.0, -27.3)` · `(-457.0, 30.7)` | **2** `(480.0, -18.0)` · `(480.0, 17.0)` | **2** `(-240.0, -85.0)` · `(241.0, -54.0)` | **2** `(-240.0, 83.0)` · `(241.0, 56.0)` | `W1` `(-120.0, -63.9)` `0.359`<br>`W2` `(120.0, -63.9)` `-0.291`<br>`W3` `(-361.0, 20.6)` `0.173`<br>`W4` `(361.0, 43.5)` `0.221` | `ship_corvette_side.png` · canvas 1038x246 · ink 962x170 |
+| `ship_freighter` | **2** `(-434.0, -71.1)` · `(-435.0, 41.3)` | **2** `(454.0, -57.0)` · `(454.0, 44.0)` | **2** `(-227.0, -134.0)` · `(228.0, -120.0)` | **2** `(-227.0, 133.0)` · `(228.0, 117.0)` | `W1` `(-114.0, -108.1)` `0.075` | `ship_freighter_side.png` · canvas 982x342 · ink 910x270 |
+| `ship_gunship` | **3** `(-394.5, -163.8)` · `(-398.5, -125.9)` · `(-371.5, 83.0)` | **2** `(454.5, -53.0)` · `(454.5, 39.0)` | **2** `(-227.5, -267.0)` · `(227.5, -272.0)` | **2** `(-227.5, 265.0)` · `(227.5, 268.0)` | `W1` `(-341.5, -199.0)` `-0.1`<br>`W2` `(-113.5, -228.9)` `0.025`<br>`W3` `(113.5, -228.9)` `0.025`<br>`W4` `(341.5, -81.0)` `0.337`<br>`W5` `(-341.5, 113.7)` `0.1` | `ship_gunship_side.png` · canvas 983x644 · ink 911x572 |
+| `ship_patrol` | **2** `(-398.5, -24.8)` · `(-400.5, 76.0)` | **2** `(465.5, 28.0)` · `(465.5, 46.0)` | **2** `(-233.5, -56.0)` · `(233.5, -12.0)` | **2** `(-233.5, 141.0)` · `(233.5, 94.0)` | `W1` `(-116.5, -124.1)` `0.0`<br>`W2` `(116.5, -27.0)` `0.197`<br>`W3` `(-116.5, -0.5)` `0.0`<br>`W4` `(116.5, -0.5)` `0.197` | `ship_patrol_side.png` · canvas 1007x384 · ink 933x310 |
+| `ship_destroyer` | **4** `(-425.0, -85.8)` · `(-445.0, -52.7)` · `(-416.0, 52.7)` · `(-425.0, 83.3)` | **2** `(474.0, -30.5)` · `(474.0, 19.5)` | **2** `(-237.0, -113.5)` · `(238.0, -74.5)` | **2** `(-237.0, 117.5)` · `(238.0, 54.5)` | `W1` `(-190.0, -113.5)` `-0.075`<br>`W2` `(0.0, -98.5)` `0.268`<br>`W3` `(190.0, -82.5)` `-0.443`<br>`W4` `(-190.0, -23.2)` `-0.075`<br>`W5` `(190.0, -23.2)` `-0.443`<br>`W6` `(-380.0, 67.5)` `0.245`<br>`W7` `(-190.0, 67.5)` `0.0` | `ship_destroyer_side.png` · canvas 1028x349 · ink 950x273 |
 
 - **Weapon tracking.** A barrel tracks the aim at its own speed — a new §3.1 column
   **`track_dps`** (deg/s, owner-tick taste): `w_laser 180`, `w_mining 150`,

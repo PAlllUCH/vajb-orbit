@@ -66,7 +66,9 @@ const BRIEF_ROWS: Array[Dictionary] = [
 	{&"key": &"ammo", &"label": "AMMUNITION"},
 ]
 const LAYOUT_CAPTION := "SLOT LAYOUT · %d CELLS · %d ENGINES"
-const META_FORMAT := "%d HULL · %d SLOTS"
+## STATION_HUB section 5.11's hangar row (CONTRACTS section 17): the class, the hull and the
+## slot count, written out here rather than read off the pane.
+const META_FORMAT := "%s CLASS · %d HULL · %d SLOTS"
 
 ## 09 section 1's slot glyph per slot-type key: the file stem each type draws. The grid's
 ## plates are read against the shipped files, not against the panel's own table.
@@ -169,6 +171,21 @@ func _panel_hull(panel: Control) -> StringName:
 	return _active_hull()
 
 
+## The account's owned hulls in `StationCatalog.SHIPS`' ladder order: the hangar list's own
+## order (STATION_HUB section 5.11), read from the profile rather than from a literal.
+func _owned_roster() -> Array[StringName]:
+	var roster: Array[StringName] = []
+	var host := _fixture_host()
+	if host == null or not host.has_method(&"owned_ships"):
+		return roster
+	var owned: Array = host.call(&"owned_ships")
+	for ship: Dictionary in Catalog.SHIPS:
+		var ship_id: StringName = ship.get(&"id", &"")
+		if owned.has(ship_id):
+			roster.append(ship_id)
+	return roster
+
+
 ## How many non-gap cells `hull` carries, which is 08 section 3's Total: the sum of
 ## `ShipFit.grid_counts` (the grid never counts a gap).
 func _slot_count(hull: StringName) -> int:
@@ -197,22 +214,41 @@ func _stat_value(hull: StringName, key: StringName) -> int:
 
 
 ## The W cells `game.gd` would push for `hull`: one per `ShipFit.grid_cells` W cell, layout
-## order, the first fitted with a laser and the rest empty, selectable per the pin's index
-## rule. Built from `ShipFit` and `ModuleCatalog`, never from a count written here.
-func _pushed_cells(hull: StringName) -> Array:
+## order, the first fitted with a laser and the rest empty. Every pushed cell carries the
+## **rack ordinal** it fires from (the pin's own `battery` field) and `selectable` follows
+## it, because since S5 a HUD slot addresses a battery ordinal and not a cell index. `extra`
+## appends that many synthetic cells past the hull's own - the one way to build a push with
+## more cells than the input map can reach now that the widest hull has seven cells and the
+## map has seven keys. Built from `ShipFit` and `ModuleCatalog`, never from a count written
+## here.
+func _pushed_cells(hull: StringName, extra: int = 0) -> Array:
 	var cells: Array = []
+	var ordinal := 0
 	for cell: Dictionary in FitData.grid_cells(hull):
 		if cell[&"type"] != &"weapons":
 			continue
 		var index: int = int(cell[&"index"])
 		var fitted: bool = index == 0
+		ordinal += 1
 		cells.append({
 			&"slot": &"weapons",
 			&"index": index,
 			&"module": FITTED_MODULE if fitted else &"",
 			&"icon": Modules.icon_path(FITTED_MODULE) if fitted else "",
 			&"fitted": fitted,
-			&"selectable": index < Groups.GROUPS_MAX,
+			&"battery": ordinal,
+			&"selectable": ordinal <= Groups.GROUPS_MAX,
+		})
+	for reach in extra:
+		ordinal += 1
+		cells.append({
+			&"slot": &"weapons",
+			&"index": cells.size(),
+			&"module": &"",
+			&"icon": "",
+			&"fitted": false,
+			&"battery": ordinal,
+			&"selectable": ordinal <= Groups.GROUPS_MAX,
 		})
 	return cells
 
@@ -508,16 +544,28 @@ func test_the_shipyard_caption_and_stat_rows_read_the_selected_hull() -> void:
 		)
 
 	var payloads: Array = panel.get(&"_payloads")
-	assert_eq(payloads.size(), Catalog.SHIPS.size(), "one list row per catalogue hull")
-	for payload: Dictionary in payloads:
+	## SHIPYARD is the hangar now (STATION_HUB section 5.11, CONTRACTS section 17): the list
+	## holds the **owned** hulls only, in the catalogue's ladder order, so the row set is the
+	## account's own roster rather than the nine-hull catalogue the pre-S5 pane listed.
+	var roster := _owned_roster()
+	assert_gt(roster.size(), 0, "the fixture account owns at least one hull")
+	assert_eq(payloads.size(), roster.size(), "one list row per owned hull")
+	for index: int in payloads.size():
+		var payload: Dictionary = payloads[index]
+		var ship_id: StringName = payload[&"id"]
+		assert_eq(ship_id, roster[index], "row %d is the ladder's own owned hull" % index)
 		var row: Button = payload[&"row"]
 		var meta := row.find_child("Meta", true, false) as Label
-		assert_true(meta != null, "the %s list row has its meta line" % payload[&"id"])
-		var ship_id: StringName = payload[&"id"]
+		assert_true(meta != null, "the %s list row has its meta line" % ship_id)
 		assert_eq(
 			meta.text,
-			META_FORMAT % [int(Catalog.ship(ship_id).get(&"hull", 0)), _slot_count(ship_id)],
-			"the %s meta reads hull + slot cells" % ship_id
+			META_FORMAT
+			% [
+				String(FitData.HULLS.get(ship_id, {}).get(&"ship_class", "")).to_upper(),
+				int(Catalog.ship(ship_id).get(&"hull", 0)),
+				_slot_count(ship_id),
+			],
+			"the %s meta reads class + hull + slot cells" % ship_id
 		)
 	print(
 		"[ui_slot_layout] shipyard %s: caption '%s', %d stat rows, %d list metas"
@@ -718,20 +766,27 @@ func test_the_hud_slot_cells_keep_their_cell_sizes() -> void:
 
 func test_the_hud_grid_wraps_and_marks_cells_past_the_group_count() -> void:
 	var hud := _mount(HudScene)
-	# The pin's own wrap case is the capital: its W count is more than the input map can
-	# select, so the row wraps at `GROUPS_MAX` and the tail is drawn not selectable. Both
-	# numbers come from `ShipFit` and `weapons.gd`, never from the test.
+	# The pin's own wrap case is a hull with more W cells than the input map can select.
+	# Since S5 the map holds seven keys and the widest hull carries seven W cells, so the
+	# capital can no longer build that push from its own matrix: one synthetic cell past
+	# `GROUPS_MAX` is appended to keep measuring exactly the property the pin states - the
+	# row wraps at `GROUPS_MAX` and the tail is drawn not selectable. Both numbers come from
+	# `ShipFit` and `weapons.gd`, never from a count written here.
 	var hull := &"ship_destroyer"
 	var count := _weapon_count(hull)
-	var pushed := _pushed_cells(hull)
-	assert_eq(pushed.size(), count, "%s pushes one cell per W cell" % hull)
-	assert_true(count > Groups.GROUPS_MAX, "%s has more W cells than selectable groups" % hull)
+	var pushed := _pushed_cells(hull, 1)
+	assert_eq(pushed.size(), count + 1, "one cell per W cell of %s, plus the one past the map" % hull)
+	assert_true(count + 1 > Groups.GROUPS_MAX, "the push has more cells than selectable groups")
 	hud.call(&"set_hull_slots", hull, pushed)
 
 	var grid: GridContainer = hud.get(&"_weapon_grid")
-	assert_eq(grid.columns, Groups.GROUPS_MAX, "a %d-cell fit wraps at %d columns" % [count, Groups.GROUPS_MAX])
+	assert_eq(
+		grid.columns,
+		Groups.GROUPS_MAX,
+		"a %d-cell fit wraps at %d columns" % [pushed.size(), Groups.GROUPS_MAX]
+	)
 	var weapons: Array = hud.get(&"_weapon_slots")
-	assert_eq(weapons.size(), count, "every W cell is still drawn")
+	assert_eq(weapons.size(), pushed.size(), "every pushed cell is still drawn")
 	for index: int in weapons.size():
 		var slot := weapons[index] as SlotButton
 		var selectable: bool = index < Groups.GROUPS_MAX
@@ -748,5 +803,5 @@ func test_the_hud_grid_wraps_and_marks_cells_past_the_group_count() -> void:
 		assert_eq(icon.texture.resource_path, expected, "cell %d draws %s" % [index, expected])
 	print(
 		"[ui_slot_layout] hud %s: %d cells, columns %d, %d not selectable"
-		% [hull, count, grid.columns, count - Groups.GROUPS_MAX]
+		% [hull, pushed.size(), grid.columns, pushed.size() - Groups.GROUPS_MAX]
 	)

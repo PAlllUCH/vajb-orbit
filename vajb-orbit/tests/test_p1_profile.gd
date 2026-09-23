@@ -88,7 +88,13 @@ func test_fresh_defaults_without_a_file() -> void:
 	assert_eq(ships[0], &"ship_vanguard", "owned ships default to [ship_vanguard]")
 	assert_eq(profile.active_ship(), &"ship_vanguard", "active ship default")
 	assert_true(profile.cargo_items().is_empty(), "cargo defaults to empty")
-	assert_eq(Profile.AMMO_MAX.size(), 5, "the five weapons of section 2.8")
+	## STATION_SPEC section 2.8 lists the five P1 weapon families; **six** is the shipped
+	## count since S5 (CONTRACTS section 17, the owner's 2026-09-23 railgun ruling: it ships
+	## its own pack -- rounds 150, cost 360, `ammo_max` 150 -- instead of sharing the cannon's
+	## family, so `AMMO_MAX` carries a sixth row). Every family's pack default stays
+	## `DEFAULT_AMMO`, the railgun's included: the figure is the magazine a launch loads, and
+	## the family's ceiling is what the load fills to.
+	assert_eq(Profile.AMMO_MAX.size(), 6, "the five weapons of section 2.8 plus the railgun")
 	for weapon: StringName in Profile.AMMO_MAX:
 		assert_eq(profile.ammo_of(weapon), 300, "%s ammo default" % String(weapon))
 	## The P1 keys.
@@ -222,8 +228,8 @@ func test_v2_round_trip_for_every_key() -> void:
 	assert_eq(on_disk.load(PROFILE_PATH), OK)
 	assert_eq(
 		int(on_disk.get_value(SECTION, "save_version", 0)),
-		6,
-		"writes always persist save v6 (S3, CONTRACTS section 15)"
+		Profile.SAVE_VERSION,
+		"writes always persist the tree's own save version (S5: v7, CONTRACTS section 17)"
 	)
 
 

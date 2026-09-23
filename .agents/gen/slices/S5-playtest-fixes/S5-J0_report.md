@@ -1,7 +1,7 @@
 ---
 slice: S5
 worker: S5-J0
-model: "claude-sonnet-4-5 (Crush session)"
+model: "deepseek/deepseek-v4-flash"
 status: actionable
 gate: "not run (docs drift check; baseline is S4's 524/0)"
 ---

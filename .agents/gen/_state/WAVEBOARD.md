@@ -4,7 +4,7 @@
 
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-22 purge:** the executed-wave reports, briefs and evidence were removed from `.agents/gen/` (recoverable from the system trash; the last git tree carrying them is `3f5688b`) — the historical record is `MASTER_REPORT.md` plus the newest session report, and older citations below name the purged paths.
 
-**Updated: 2026-09-23 (S4 weapon batteries closed; the code queue is empty).** This session's
+**Updated: 2026-09-24 (S5 playtest fixes closed; the code queue is empty).** This session's
 end-to-end record — items 4–7, their numbers, the incidents and the open items — is
 `.agents/gen/session_2026-09-22_items_4_to_7_report.md`. Full history of what every worker
 did, with known errors and open findings, now lives in
@@ -16,9 +16,9 @@ citation paths of the form `.agents/gen/<report>.md` name the purged files.
 **Current state: eleven coding waves closed (chrome, combat repair, weapon FX wiring, flight
 feel & beam polish, slice 2.5 Feel, P2-A ship slot frames, Rock cleave, P2-B1 weapon fit,
 P2-B proper fitting panel, **S2.6 truth-and-feel**, **S3 the item economy**,
-**S4 weapon batteries**; gate
-`passed=524 failed=0`, hermetic). The queue of record is `dispatch_coder.md`: items 4–10 are
-all DONE and **item 10, the weapon-batteries wave (09 §10), shipped 2026-09-23**; no coder item
+**S4 weapon batteries**, **S5 playtest fixes**; gate
+`passed=578 failed=0`, hermetic). The queue of record is `dispatch_coder.md`: items 4–11 are
+all DONE and **item 11, the playtest-fix wave (CONTRACTS §17), shipped 2026-09-24**; no coder item
 is queued beyond it — the next coder work is the engine slice 3 / RPG P3 merge or the
 affix-application wave, each needing its own docs-first brief
 (`slices/S4-weapon-batteries/`). Owner gates: the
@@ -170,11 +170,17 @@ PowerShell form: `$env:VAJB_WORKER_FILES='...'; crush run "<prompt>" -m opencode
 - Probe hygiene (L17): a probe that repoints `PlayerProfile.save_path` must
   stop/flush the 0.5 s debounce before restoring `save_path`.
 
-## In flight — none. **Queued next: coder item 11 = S5 playtest fixes** (the owner's
-ten findings 2026-09-23 — docs-first done: CONTRACTS §17 + v0.9, STATION_HUB §5.11,
-10 §6.1, 09 §11; brief + prompts in `slices/S5-playtest-fixes/`) plus **designer D3
-item 2 = painted-only station rail icons** (routed to the owner's live SVG-review
-session). **Coder item 10 (S4 weapon batteries) shipped 2026-09-23** and is in
+## In flight — **designer item 7 = D6 cockpit instruments** (owner's NMS-style ask —
+bottom-left cluster with sprite speed gauge, sprite compass and five 7-seg
+readout rows SPD/HULL/SHLD/FUEL %/ENRG %, plus the `ship_status` ship layout
+screen; docs-first landed: UI_SPEC §3.7/§3.8, UI_CHROME §11, ASSET_NAMING §11,
+CONTRACTS §18 v0.10; brief + prompts in `slices/D6-cockpit-instruments/`; write
+set `ui/hud/**`, `assets/ui/**`, `assets/icons/**` provenance, `staging/**`,
+`asset-library/**`, `tests/test_d6_*.gd` — **disjoint from S5's**; it ran parallel with
+item 11 (S5, closed 2026-09-24); run order M0a → owner sheet approval → M0b → M1 → M2 → R1
+→ F1 only on HIGH/MED). Also queued behind it: **designer D3 item 2 = painted-only
+station rail icons** (routed to the owner's live SVG-review session) and D3's
+tint rework + D4's backdrops. **Coder item 10 (S4 weapon batteries) shipped 2026-09-23** and is in
 §Closed; the code queue is empty beyond it (`dispatch_coder.md` §"Next beyond this queue": the
 engine slice 3 / RPG P3 merge, and the affix-application wave 15 §9.3 leaves open). **Graphics
 D2 (designer #1) is DONE 2026-09-22**
@@ -233,6 +239,34 @@ condition is item 6, and each needs its own docs-first brief before any code):**
 
 ## Closed (details in MASTER_REPORT.md)
 
+- **S5 playtest fixes — DONE 2026-09-24** (gate 524 → **578, 0 failed**, exit 0 in two
+  consecutive hermetic runs plus the close-out verify's own gate pass, identical counts, the
+  live account byte-identical across every run — `profile.cfg`
+  `539de5b7af59c77b6bffc477413161da`; reports
+  `.agents/gen/slices/S5-playtest-fixes/S5-J{0,1,2,3,4}_report.md`, `S5-R1_review.md`,
+  `S5-F1_report.md`): **the owner's ten playtest findings.** The J0 docs pass found ten
+  contradictions and measured that three required edits sat outside every worker set; the
+  owner ruled (railgun own pack **150/360/150**, ammo rows stay in the **ARMORY**, no shipyard
+  class icon, label `ARMORY`), and the docs were amended first (CONTRACTS §17 dispositions +
+  §16's pointer, STATION_HUB §5.2/§5.11, 09 §8) with three dispatch sets grown (J2 +=
+  `exchange.gd`/`component_catalog.gd`/`station_catalog.gd`; J3 += `station.gd`/`game.gd`/
+  `hud.gd`; J4 += 09 §11). The worker file-set hook was repaired en route (L92a's recorded
+  cure: absolute Linux paths now normalise against the workspace — until then every worker
+  `write` was denied). Built: **J1** the AUCTION's ten family tabs as display grouping (the
+  S3 draw's arithmetic byte-identical across the 10-tab tour) + the SHIPYARD as hangar
+  (owned-only, select-writes-nothing, `SET ACTIVE` the sole commit); **J2** ammo as cargo
+  (six `ammo_*` items, units = rounds/10, launch auto-load once per family, EXCHANGE buys at
+  60 % of the per-unit list, fuel-cell delist asserted); **J3** `ARMORY` + drag-and-drop mixed
+  batteries (`GROUPS_MAX` 7 with its three consumers, the v7 `batteries` record and the
+  in-memory v6→v7 migration, the slowest-cycle salvo gate, and an S4 latent dropped-shot bug
+  fixed); **J4** `ShipFit.HARDPOINTS` (nine hulls measured off the renders — 4 thruster rows
+  + 29 mounts), FX anchors, per-barrel `track_dps` tracking and the 5° beam cone. Review:
+  **no HIGH, 2 MED** (the HUD readout indexed a rack ordinal into the per-barrel array; one
+  suite's HUD half silently never ran) — both fixed by F1, gate 578/0. Owner ticks consumed:
+  the `ARMORY` label, the railgun numbers, the shipyard icon dropped. Still owed:
+  `ROUNDS_PER_CARGO_UNIT` 10, fire-along-facing vs hold-until-aligned, the `track_dps` taste
+  table (09 §3.1), the standing debt. LOW rows `L130`–`L140`. The D6 designer lane ran in
+  parallel with a disjoint file set.
 - **S4 weapon batteries — DONE 2026-09-23** (gate 493 → **524, 0 failed**, exit 0 in two
   consecutive hermetic runs at close-out, identical counts, the live account byte-identical
   before and after every run and every probe — `profile.cfg`

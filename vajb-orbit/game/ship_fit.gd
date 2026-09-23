@@ -125,6 +125,151 @@ const ENGINE_MULT_CEILING := 1.40
 ## by it, so no per-hull anchor table exists to drift from the matrices.
 const MOUNT_SPREAD := Vector2(0.34, 0.22)
 
+## Per-hull hardpoints (09 section 11, wave S5, CONTRACTS section 17) -- the measured map
+## that supersedes 09 section 8's no-table rule. Generated, never hand-edited: the values
+## are the output of `tests/probe_s5_hardpoints.gd`, which measures each hull's own side
+## render (`res://assets/ships/ship_<stem>_side.png`, the bow-right view the world draws
+## for a hull) and prints this literal; the probe's header states the method in full and
+## 09 section 11's table records the same rows with their provenance.
+##
+##   XDG_DATA_HOME=/tmp/s5j4_scratch/xdg $GODOT_CONSOLE --headless --path vajb-orbit \
+##     --script res://tests/probe_s5_hardpoints.gd
+##
+## Units: **render px relative to the sprite's own centre** (the point the scene's `Hull`
+## sprite draws at; x right = bow, y down = the hull's starboard, matching Godot's own 2D
+## axes), so a consumer scales by the sprite's own scene scale (`player_ship.tscn` draws
+## it at 0.0663, the figure `asteroid.gd` cites for the same art). A hull the probe cannot
+## measure has no row here, and `hardpoints` answers `{}` for it -- that hull falls back to
+## 09 section 8's derivation (the reversal named in section 11).
+##
+## `thrusters` are the flight-FX anchors: `rear` is the lit nozzle mouths (thrust),
+## `front` the bow band's two ink extremes (brake/retro), `left`/`right` the flank
+## stations at 25 % and 75 % of the hull's length (strafe). `weapon_mounts` is one entry
+## per W cell in the hull's own row-major cell order (09 section 4 item 5), so W cell `i`
+## binds `weapon_mounts[i]`; `pos` is where the shot leaves from and `facing` the barrel's
+## rest direction in radians relative to the hull's axis, which tracking sweeps from.
+const HARDPOINTS: Dictionary = {
+	&"ship_fighter": {
+		&"thrusters": {
+			&"rear": [Vector2(-391.5, -71.2), Vector2(-392.5, 37.3)],
+			&"front": [Vector2(414.5, -38.5), Vector2(414.5, 14.5)],
+			&"left": [Vector2(-207.5, -174.5), Vector2(207.5, -108.5)],
+			&"right": [Vector2(-207.5, 92.5), Vector2(207.5, 73.5)],
+		},
+		&"weapon_mounts": [
+			{&"pos": Vector2(-103.5, -116.5), &"facing": 0.100},
+			{&"pos": Vector2(103.5, -116.5), &"facing": 0.149},
+		],
+	},
+	&"ship_vanguard": {
+		&"thrusters": {
+			&"rear": [Vector2(-371.0, -111.4), Vector2(-369.0, 118.3)],
+			&"front": [Vector2(443.0, -31.5), Vector2(443.0, 22.5)],
+			&"left": [Vector2(-222.0, -189.5), Vector2(222.0, -95.5)],
+			&"right": [Vector2(-222.0, 197.5), Vector2(222.0, 137.5)],
+		},
+		&"weapon_mounts": [
+			{&"pos": Vector2(-111.0, -168.5), &"facing": -0.124},
+			{&"pos": Vector2(111.0, -168.5), &"facing": -0.503},
+			{&"pos": Vector2(-111.0, 55.5), &"facing": -0.173},
+		],
+	},
+	&"ship_miner": {
+		&"thrusters": {
+			&"rear": [Vector2(-439.5, -75.3), Vector2(-440.5, 63.7)],
+			&"front": [Vector2(453.5, -32.5), Vector2(453.5, 102.5)],
+			&"left": [Vector2(-227.5, -99.5), Vector2(227.5, -64.5)],
+			&"right": [Vector2(-227.5, 131.5), Vector2(227.5, 127.5)],
+		},
+		&"weapon_mounts": [
+			{&"pos": Vector2(-340.5, -106.2), &"facing": -0.100},
+			{&"pos": Vector2(340.5, -47.5), &"facing": 0.149},
+		],
+	},
+	&"ship_trader": {
+		&"thrusters": {
+			&"rear": [Vector2(-428.0, -72.1), Vector2(-428.0, 71.1)],
+			&"front": [Vector2(472.0, -57.5), Vector2(472.0, 49.5)],
+			&"left": [Vector2(-236.0, -147.5), Vector2(237.0, -129.5)],
+			&"right": [Vector2(-236.0, 148.5), Vector2(237.0, 132.5)],
+		},
+		&"weapon_mounts": [
+			{&"pos": Vector2(-118.0, -117.5), &"facing": -0.025},
+		],
+	},
+	&"ship_corvette": {
+		&"thrusters": {
+			&"rear": [Vector2(-456.0, -27.3), Vector2(-457.0, 30.7)],
+			&"front": [Vector2(480.0, -18.0), Vector2(480.0, 17.0)],
+			&"left": [Vector2(-240.0, -85.0), Vector2(241.0, -54.0)],
+			&"right": [Vector2(-240.0, 83.0), Vector2(241.0, 56.0)],
+		},
+		&"weapon_mounts": [
+			{&"pos": Vector2(-120.0, -63.9), &"facing": 0.359},
+			{&"pos": Vector2(120.0, -63.9), &"facing": -0.291},
+			{&"pos": Vector2(-361.0, 20.6), &"facing": 0.173},
+			{&"pos": Vector2(361.0, 43.5), &"facing": 0.221},
+		],
+	},
+	&"ship_freighter": {
+		&"thrusters": {
+			&"rear": [Vector2(-434.0, -71.1), Vector2(-435.0, 41.3)],
+			&"front": [Vector2(454.0, -57.0), Vector2(454.0, 44.0)],
+			&"left": [Vector2(-227.0, -134.0), Vector2(228.0, -120.0)],
+			&"right": [Vector2(-227.0, 133.0), Vector2(228.0, 117.0)],
+		},
+		&"weapon_mounts": [
+			{&"pos": Vector2(-114.0, -108.1), &"facing": 0.075},
+		],
+	},
+	&"ship_gunship": {
+		&"thrusters": {
+			&"rear": [Vector2(-394.5, -163.8), Vector2(-398.5, -125.9), Vector2(-371.5, 83.0)],
+			&"front": [Vector2(454.5, -53.0), Vector2(454.5, 39.0)],
+			&"left": [Vector2(-227.5, -267.0), Vector2(227.5, -272.0)],
+			&"right": [Vector2(-227.5, 265.0), Vector2(227.5, 268.0)],
+		},
+		&"weapon_mounts": [
+			{&"pos": Vector2(-341.5, -199.0), &"facing": -0.100},
+			{&"pos": Vector2(-113.5, -228.9), &"facing": 0.025},
+			{&"pos": Vector2(113.5, -228.9), &"facing": 0.025},
+			{&"pos": Vector2(341.5, -81.0), &"facing": 0.337},
+			{&"pos": Vector2(-341.5, 113.7), &"facing": 0.100},
+		],
+	},
+	&"ship_patrol": {
+		&"thrusters": {
+			&"rear": [Vector2(-398.5, -24.8), Vector2(-400.5, 76.0)],
+			&"front": [Vector2(465.5, 28.0), Vector2(465.5, 46.0)],
+			&"left": [Vector2(-233.5, -56.0), Vector2(233.5, -12.0)],
+			&"right": [Vector2(-233.5, 141.0), Vector2(233.5, 94.0)],
+		},
+		&"weapon_mounts": [
+			{&"pos": Vector2(-116.5, -124.1), &"facing": 0.000},
+			{&"pos": Vector2(116.5, -27.0), &"facing": 0.197},
+			{&"pos": Vector2(-116.5, -0.5), &"facing": 0.000},
+			{&"pos": Vector2(116.5, -0.5), &"facing": 0.197},
+		],
+	},
+	&"ship_destroyer": {
+		&"thrusters": {
+			&"rear": [Vector2(-425.0, -85.8), Vector2(-445.0, -52.7), Vector2(-416.0, 52.7), Vector2(-425.0, 83.3)],
+			&"front": [Vector2(474.0, -30.5), Vector2(474.0, 19.5)],
+			&"left": [Vector2(-237.0, -113.5), Vector2(238.0, -74.5)],
+			&"right": [Vector2(-237.0, 117.5), Vector2(238.0, 54.5)],
+		},
+		&"weapon_mounts": [
+			{&"pos": Vector2(-190.0, -113.5), &"facing": -0.075},
+			{&"pos": Vector2(0.0, -98.5), &"facing": 0.268},
+			{&"pos": Vector2(190.0, -82.5), &"facing": -0.443},
+			{&"pos": Vector2(-190.0, -23.2), &"facing": -0.075},
+			{&"pos": Vector2(190.0, -23.2), &"facing": -0.443},
+			{&"pos": Vector2(-380.0, 67.5), &"facing": 0.245},
+			{&"pos": Vector2(-190.0, 67.5), &"facing": 0.000},
+		],
+	},
+}
+
 ## 09 section 4 item 4: a repeated module id is refused for the types whose effects
 ## stack from the same module. `e_std` is the one exception 09 section 3.7 names by
 ## hand (`e_std` + `e_std` is legal: both are the reference engine).
@@ -655,9 +800,11 @@ static func fit_legal(hull_id: StringName, fit: Dictionary) -> Dictionary:
 
 ## The anchor of cell `index` of `slot_key`, in the hull's own frame:
 ## `((col + 0.5) / cols - 0.5, (row + 0.5) / rows - 0.5)` scaled by `MOUNT_SPREAD`
-## (09 section 8). There is no per-hull anchor table: the matrix *is* the mount
-## geometry, so a layout edit moves the mount with it. `Vector2.ZERO` when this hull
-## has no such cell (a gap, an out-of-range index, or a hull with no grid).
+## (09 section 8). **Superseded by `HARDPOINTS` (09 section 11, CONTRACTS section 17):
+## this derivation is the fallback a hull without a measured map keeps.** A hull with a
+## row in `HARDPOINTS` reads its measured anchors instead; an NPC hull (no grid, no row)
+## still answers `Vector2.ZERO`. Reversal of the supersession: drop `HARDPOINTS` and
+## resume this rule for every hull.
 ## Consumption in flight is the feel lane's; this is the data and the API only.
 static func mount_offset(hull_id: StringName, slot_key: StringName, index: int) -> Vector2:
 	if index < 0:
@@ -674,6 +821,63 @@ static func mount_offset(hull_id: StringName, slot_key: StringName, index: int) 
 		var y := (float(int(cell[&"row"])) + 0.5) / float(size.y) - 0.5
 		return Vector2(x, y) * MOUNT_SPREAD
 	return Vector2.ZERO
+
+
+## This hull's measured hardpoint map (09 section 11), or `{}` for a hull with none --
+## an NPC hull, an unknown id, or a player hull the probe could not measure. Read-only:
+## the table is data, the probe is the only writer.
+static func hardpoints(hull_id: StringName) -> Dictionary:
+	var row: Variant = HARDPOINTS.get(hull_id, {})
+	if row is Dictionary:
+		return row
+	return {}
+
+
+## Whether this hull carries a measured map at all: the one test the fallback turns on.
+static func is_mapped(hull_id: StringName) -> bool:
+	return HARDPOINTS.has(hull_id)
+
+
+## The hull-local px anchors of one thruster mode (09 section 11): `&"rear"` (thrust),
+## `&"front"` (brake / retro), `&"left"` / `&"right"` (strafe). `[]` for a hull with no
+## map or no such row -- the caller then falls back to 09 section 8's derivation.
+static func thruster_points(hull_id: StringName, mode: StringName) -> Array[Vector2]:
+	var out: Array[Vector2] = []
+	var thrusters: Variant = hardpoints(hull_id).get(&"thrusters", {})
+	if not thrusters is Dictionary:
+		return out
+	var row: Variant = (thrusters as Dictionary).get(mode, [])
+	if not row is Array:
+		return out
+	for value: Variant in (row as Array):
+		if value is Vector2:
+			out.append(value)
+	return out
+
+
+## The hull's measured weapon mounts (09 section 11) as fresh dictionaries, in W-cell
+## order: `{pos: Vector2, facing: float}` in hull-local px, `facing` in radians relative
+## to the hull's axis. W cell `i` binds entry `i`; `[]` for a hull with no map.
+static func weapon_mounts(hull_id: StringName) -> Array:
+	var out: Array = []
+	var row: Variant = hardpoints(hull_id).get(&"weapon_mounts", [])
+	if not row is Array:
+		return out
+	for value: Variant in (row as Array):
+		if value is Dictionary:
+			out.append((value as Dictionary).duplicate())
+	return out
+
+
+## One hull's measured mount for W cell `index`, `{}` when the hull has no map or the
+## cell has none (the caller then fires from the pre-S5 muzzle, the hull's own origin).
+static func weapon_mount(hull_id: StringName, index: int) -> Dictionary:
+	if index < 0:
+		return {}
+	var mounts := weapon_mounts(hull_id)
+	if index >= mounts.size():
+		return {}
+	return mounts[index]
 
 
 ## How many non-empty entries each type of a fit carries, all eight

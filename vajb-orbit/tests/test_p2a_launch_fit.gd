@@ -358,10 +358,13 @@ func test_a_capitals_last_two_cells_display_without_a_key() -> void:
 		)
 
 
-## FX_SPEC section 1.3's anchor row, now with its first half: one thruster anchor per
-## engine cell, read off `ShipFit.mount_offset`, and the single tail point only for a
-## hull with no grid.
-func test_the_thruster_anchors_are_one_per_engine_cell() -> void:
+## FX_SPEC section 1.3's anchor row, **re-pointed by S5 (09 section 11 supersedes 09
+## section 8's one-per-cell rule)**: a hull with a measured map answers the map's own
+## `rear` row -- the Mule's render shows **two** lit nozzles against its three engine
+## cells, and the map is what the FX draw -- while a hull without one keeps the shipped
+## derivation, one anchor per engine cell, and the single tail point for a hull with no
+## grid. The Mule's row is `ShipFit.HARDPOINTS[&"ship_freighter"].thrusters.rear`.
+func test_the_thruster_anchors_come_from_the_hulls_measured_map() -> void:
 	var fit := {
 		&"engines": ["e_std", "e_ion", "e_vector"],
 		&"power": "p_std",
@@ -371,16 +374,24 @@ func test_the_thruster_anchors_are_one_per_engine_cell() -> void:
 	assert_true(ship != null, "the launch built its hull")
 	if ship == null:
 		return
+	var map: Dictionary = FitData.hardpoints(HAULER)
+	var thrusters: Dictionary = map.get(&"thrusters", {})
+	var measured: Array = thrusters.get(&"rear", [])
+	assert_eq(measured.size(), 2, "the Mule's render carries two lit nozzles")
 	var anchors: Array = ship.call(&"thruster_anchors")
-	assert_eq(anchors.size(), 3, "one anchor per engine cell")
-	assert_eq(
-		anchors.size(),
-		FitData.slot_capacity(HAULER, &"engines"),
-		"and the count is the grid's own E count"
+	assert_eq(anchors.size(), measured.size(), "the anchors are the map's own rear row")
+	assert_true(
+		anchors.size() != FitData.slot_capacity(HAULER, &"engines"),
+		"which is the measured art, not the grid's E count (09 section 11 supersedes section 8)"
 	)
+	var scale: Vector2 = (ship.get_node_or_null(NodePath(&"Hull")) as Sprite2D).scale
 	for index in anchors.size():
 		var anchor: Vector2 = anchors[index]
 		assert_true(anchor.x < 0.0, "anchor %d sits behind the hull's centre" % index)
+		assert_true(
+			anchor.is_equal_approx((measured[index] as Vector2) * scale),
+			"anchor %d is its measured px at the sprite's own scale" % index
+		)
 	## A hull with no grid keeps the shipped single tail point.
 	ship.call(&"set_hull_id", NPC_HULL)
 	var fallback: Array = ship.call(&"thruster_anchors")

@@ -90,7 +90,11 @@ func test_a_v5_stacked_record_becomes_that_many_common_instances() -> void:
 	## The flag day wrote the file itself: v6, three records, no stacked key.
 	var on_disk := ConfigFile.new()
 	assert_eq(on_disk.load(PROFILE_PATH), OK, "the migrated file reads back")
-	assert_eq(int(on_disk.get_value(SECTION, "save_version", 0)), 6, "the flag day writes v6")
+	assert_eq(
+		int(on_disk.get_value(SECTION, "save_version", 0)),
+		Profile.SAVE_VERSION,
+		"the flag day writes the tree's own save version (S5: v7)"
+	)
 	var stored: Dictionary = on_disk.get_value(SECTION, "modules", {})
 	assert_eq(stored.size(), 3, "three records on disk")
 	assert_false(stored.has(String(LASER)), "and no stacked record")

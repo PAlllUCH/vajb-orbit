@@ -76,6 +76,10 @@ const MINING_MODULE: StringName = &"w_mining"
 ## the camera riding this node stay with the hull.
 const HULL_BODY_NODE: StringName = &"HullBody"
 const HULL_SHAPE_NODE: StringName = &"Shape"
+## The artwork node. S5 (09 section 11) reads its own `scale` to turn the measured px
+## anchors into hull-local units, so the map and the sprite cannot drift: re-scaling the
+## art moves every anchor with it.
+const HULL_SPRITE_NODE: StringName = &"Hull"
 
 const THRUST_FORWARD: StringName = &"thrust_forward"
 const THRUST_BACKWARD: StringName = &"thrust_backward"
@@ -88,6 +92,12 @@ const TURN_RIGHT: StringName = &"turn_right"
 ## answers, so nothing the owner already had stopped working.
 const STRAFE_LEFT: StringName = &"strafe_left"
 const STRAFE_RIGHT: StringName = &"strafe_right"
+
+## S5 (09 section 11, CONTRACTS section 17): the four anchor rows `ShipFit.HARDPOINTS`
+## carries, in the order the frame unions them. Thrust reads `rear`, brake/retro `front`,
+## a sideways stick the side it points at -- so the union is one emitter list whose flags
+## follow the stick, and a hull with a map never rebuilds its emitters on a mode change.
+const THRUSTER_MODES: Array[StringName] = [&"rear", &"front", &"left", &"right"]
 
 const BOOST_ACTION: StringName = &"boost"
 const MINE_ACTION: StringName = &"mine"
@@ -377,19 +387,39 @@ func speed_ratio() -> float:
 
 
 ## The hull-local points the thruster flames come from (FX_SPEC section 1.3's anchor
-## row): **one point per engine cell** now that `ShipFit.mount_offset` exists (W1,
-## CONTRACTS section 11), and the shipped single tail point only for a hull with no
-## grid (an NPC) or a scene whose body carries no radius.
+## row). **S5 (09 section 11, CONTRACTS section 17): the seam resolves to
+## `ShipFit.HARDPOINTS`** -- `mode` selects which row, `&"rear"` (thrust) by default,
+## `&"front"` (brake / retro) and `&"left"` / `&"right"` (strafe) beside it. The map is
+## measured in render px, so it is scaled into the hull's own units by the sprite's own
+## scene scale (`_hull_sprite_scale`), the figure the art is drawn at; the anchors are
+## then children of this node, exactly like the single tail point was.
+##
+## A hull **without** a map keeps the whole of the pre-S5 behaviour, unchanged: one
+## anchor per engine cell from `ShipFit.mount_offset` (the 09 section 8 derivation), and
+## the single tail point for a hull with no grid (an NPC) or a scene whose body carries
+## no radius. That is section 11's named reversal.
 ##
 ## The grid's row axis is the hull's longitudinal one - 08 section 3.2 reads the matrix
 ## as the hull from above, "engines and the reactor sit in the tail" - so a cell's row
 ## fraction, recovered from `mount_offset`'s y by dividing `MOUNT_SPREAD.y` back out,
 ## places the nozzle along the tail direction at the same `TAIL_ANCHOR_FRACTION` of the
 ## art-derived radius the single-point anchor used, and the column fraction spreads the
-## cells across the hull's width. Both numbers are shipped constants and the hull's own
-## measured radius; the feel wave's art measurement (owner tick 4) re-tunes
-## `MOUNT_SPREAD` if the nozzles should sit further out.
-func thruster_anchors() -> Array[Vector2]:
+## cells across the hull's width.
+func thruster_anchors(mode: StringName = &"rear") -> Array[Vector2]:
+	var anchors: Array[Vector2] = []
+	var measured := ShipFit.thruster_points(_hull_id, mode)
+	if not measured.is_empty():
+		var scale := _hull_sprite_scale()
+		for point: Vector2 in measured:
+			anchors.append(point * scale)
+		return anchors
+	return _derived_anchors()
+
+
+## The 09 section 8 fallback, one point per engine cell (and the single tail point for a
+## hull with no grid): what every hull answered before section 11 gave the nine player
+## hulls a measured map, kept verbatim so a hull without one does not change behaviour.
+func _derived_anchors() -> Array[Vector2]:
 	var anchors: Array[Vector2] = []
 	var radius := _hull_radius()
 	if radius <= 0.0:
@@ -401,6 +431,17 @@ func thruster_anchors() -> Array[Vector2]:
 	for index in engines:
 		anchors.append(_engine_anchor(index, radius))
 	return anchors
+
+
+## The scale the hull sprite is drawn at: the `Hull` node's own transform, so the
+## measured px anchors land on the pixels the render put them on. No literal - a scene
+## that re-scales its hull moves the anchors with it. `Vector2.ONE` for a scene without
+## the sprite (nothing to scale against; the caller's anchors are then already local).
+func _hull_sprite_scale() -> Vector2:
+	var sprite := get_node_or_null(NodePath(HULL_SPRITE_NODE)) as Sprite2D
+	if sprite == null:
+		return Vector2.ONE
+	return sprite.scale
 
 
 ## One engine cell's nozzle: the cell's own mount anchor, mapped into the hull's local
@@ -418,6 +459,24 @@ func _engine_anchor(index: int, radius: float) -> Vector2:
 ## the hull's centre.
 func _tail_anchor(radius: float) -> Vector2:
 	return Vector2(-radius * TAIL_ANCHOR_FRACTION, 0.0)
+
+
+## One W cell's measured mount in this hull's own units (S5, 09 section 11): `pos` in
+## the hull's local frame and `facing` in radians relative to the hull's axis, or `{}`
+## for a hull with no map or a cell past its measured mounts - the caller then fires from
+## the pre-S5 muzzle, this node's origin.
+##
+## The conversion is this node's because it holds both halves: the map is in render px
+## and the sprite's own scale is what maps those px onto the drawn hull.
+func weapon_mount(index: int) -> Dictionary:
+	var mount := ShipFit.weapon_mount(_hull_id, index)
+	if mount.is_empty():
+		return {}
+	var pos: Variant = mount.get(&"pos", Vector2.ZERO)
+	return {
+		&"pos": (pos as Vector2) * _hull_sprite_scale(),
+		&"facing": float(mount.get(&"facing", 0.0)),
+	}
 
 
 ## The trail emitters in anchor order, one per engine cell (empty before the first frame
@@ -588,10 +647,11 @@ func _physics_process(delta: float) -> void:
 	## today's rate while the forward carry follows `COAST_TIME_MULT`.
 	_step_lateral_drag(delta)
 	## The owner's 2026-09-21 request ("ship while traveling has to make sounds ... and
-	## thrusters should create flame fx"), the hull's half: one trail per engine cell and
-	## one held bed, both reading the ratio `game.gd` already pushed and the thrust input
-	## the flight law above already resolved, plus the low-hull arcs' clock.
-	_update_thrust_feedback(not is_zero_approx(throttle))
+	## thrusters should create flame fx"), the hull's half: one trail per anchor row the
+	## hull's map carries and one held bed, both reading the ratio `game.gd` already
+	## pushed and the stick the flight law above already resolved (S5: the raw throttle
+	## and strafe hand the frame its mode), plus the low-hull arcs' clock.
+	_update_thrust_feedback(not is_zero_approx(throttle), throttle, lateral)
 	_update_damage_arcs(delta)
 	_last_velocity = _body.linear_velocity
 
@@ -1299,12 +1359,64 @@ func _note_damage_state() -> void:
 ## the thrust input is held or the ratio is at or above 0.15 (the flame reads whether the
 ## stick is down), while the bed's held state carries the 0.15/0.10 hysteresis and lives
 ## in the manager, which is why one call asks and the answer is the manager's.
-func _update_thrust_feedback(thrusting: bool) -> void:
+##
+## **S5 (09 section 11, CONTRACTS section 17): which anchor row fires follows the stick.**
+## Thrust lights the rear row, a negative throttle (S = reverse + brake) the front row,
+## a sideways stick the side it points at, and a coasting hull (no stick, ratio at or
+## above the floor) the rear row -- the pre-S5 drift read. A hull with a measured map
+## carries all four rows as one emitter list, so the emitters never move or rebuild when
+## the mode changes; only their flags do. A hull without a map answers its derived rear
+## row for every mode, which is the shipped behaviour unchanged.
+##
+## The two extra arguments default to the pre-S5 shape: `_update_thrust_feedback(true)`
+## (a probe, a fixture) is "the stick is forward", and the derived rows answer it exactly
+## as they always did.
+func _update_thrust_feedback(thrusting: bool, throttle: float = 0.0, strafe: float = 0.0) -> void:
+	var frame := thruster_frame(thrusting, throttle, strafe)
 	var active := thrusting or _speed_ratio >= PROJECTILE.TRAIL_RATIO_MIN
 	_thruster_trails = PROJECTILE.sync_thruster_trails(
-		self, thruster_anchors(), _speed_ratio, active
+		self, frame[&"anchors"], _speed_ratio, active, frame[&"flags"]
 	)
 	PROJECTILE.hold_thruster(self, _speed_ratio, thrusting)
+
+
+## One frame's thruster picture (S5, 09 section 11): the anchors to draw and, in the same
+## order, which of them fire. The union of the hull's own rows - rear, front, left, right
+## for a mapped hull, the one derived rear row otherwise - so the emitter set is stable
+## across a mode change; a hull with no map answers an empty flag list and the sync falls
+## back to its single `active` argument.
+##
+## `throttle` is the raw stick, so its sign picks thrust from brake/retro; a caller that
+## hands only `thrusting` (the probes) is read as a forward stick, which is what the bool
+## has always meant.
+func thruster_frame(thrusting: bool, throttle: float = 0.0, strafe: float = 0.0) -> Dictionary:
+	var anchors: Array[Vector2] = []
+	var flags: Array[bool] = []
+	if not ShipFit.is_mapped(_hull_id):
+		anchors = _derived_anchors()
+		return {&"anchors": anchors, &"flags": flags}
+	var retro := throttle < 0.0
+	var forward := not retro and (throttle > 0.0 or thrusting)
+	## The drift read is the pre-S5 flame: **no stick at all** (no throttle either way, no
+	## strafe) while the hull is still above the ratio's own floor. A hull braking or
+	## strafing has a stick down and lights its own row instead.
+	var stick := forward or retro or not is_zero_approx(strafe)
+	var drift := not stick and _speed_ratio >= PROJECTILE.TRAIL_RATIO_MIN
+	for mode: StringName in THRUSTER_MODES:
+		var firing := false
+		match mode:
+			&"rear":
+				firing = forward or drift
+			&"front":
+				firing = retro
+			&"left":
+				firing = strafe < 0.0
+			&"right":
+				firing = strafe > 0.0
+		for anchor: Vector2 in thruster_anchors(mode):
+			anchors.append(anchor)
+			flags.append(firing)
+	return {&"anchors": anchors, &"flags": flags}
 
 
 ## FX_SPEC section 6 row 3 / section 7.1's "intermittent electrical arcs" while the hull is

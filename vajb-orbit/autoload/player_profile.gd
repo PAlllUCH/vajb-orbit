@@ -36,6 +36,17 @@ extends Node
 ## emptied in one batch that pairs `instances_of` into ascending cells and is
 ## atomic over the fit **and** the bag, so a refused batch leaves the account
 ## where it started.
+## S5 save v7 makes a battery a **player-composed mixed group** (09 section 11,
+## CONTRACTS section 17) and persists it: the `batteries` key holds
+## `{ship_id: Array[Array[cell_ref]]}`, one hull's **racks** in order, each rack the
+## W-cell layout indices of the barrels that fire together. The fit is untouched --
+## one instance per W cell -- and the rack record says which trigger fires which
+## barrel, so a rack may mix kinds and `weapon_1..7` addresses a rack, not a family.
+## A v6 file has no such key: `migrate_batteries` groups each hull's fitted weapons
+## by `base_id`, cells ascending (called from the load path when the file's version
+## is below 7, idempotent). The same save adds the three composed transactions the
+## ARMORY pane's drags call -- `fit_into_rack`, `clear_rack_cell` and
+## `move_rack_cell` -- each one atomic over the fit, the bag and the record.
 ## Test and support hooks, present for the P1 suites and migration fixtures
 ## only: save_path (defaults to SAVE_FILE) and reload().
 
@@ -51,12 +62,18 @@ const FitData := preload("res://game/ship_fit.gd")
 ## against it, so an id the game does not ship is never sold. Its `cost` is the
 ## row 09 section 3 prices, and the panel passes that number in.
 const ModuleData := preload("res://game/module_catalog.gd")
+## The weapon family table and the rack ceiling (save v7, CONTRACTS section 17): the
+## racks a hull may compose are `GROUPS_MAX` (`game/weapons.gd`, the same one the HUD
+## and the input map read) and a rack reference is only followed for a cell whose
+## module is a weapon **family**, so `w_mining` never enters one. One shared source,
+## never a second 7.
+const WeaponData := preload("res://game/weapons.gd")
 ## The economy transaction log (01 section 7): one line per purchase.
 const Log := preload("res://game/economy_log.gd")
 
 const SAVE_FILE := "user://profile.cfg"
 const SECTION := "profile"
-const SAVE_VERSION := 6
+const SAVE_VERSION := 7
 const MIN_READABLE_VERSION := 1
 const SAVE_DEBOUNCE_SECONDS := 0.5
 
@@ -122,6 +139,17 @@ const KEY_COUNT := "count"
 const KEY_AUCTION := "auction"
 const KEY_INSTANCE_COUNTER := "instance_counter"
 
+## The composed batteries' home (save v7, CONTRACTS section 17): `{ship_id:
+## Array[Array[int]]}`, one hull's racks in order, each entry the W-cell layout
+## indices (09 section 4.5) of the barrels that fire together. A top-level key like
+## `auction`, for the same reason. It is also the signal key a rack write emits,
+## which is what redraws the ARMORY pane's drop zones.
+const KEY_BATTERIES: StringName = &"batteries"
+
+## The weapon module id prefix, for the pane's own reading of a rack entry: a rack
+## holds W cells, and `game/weapons.gd`'s GROUPS_MAX is the rack ceiling (7).
+const WEAPON_MODULE_PREFIX := "w_"
+
 ## The shelf state's four members, in the pin's own order: the restock band, the
 ## listed hull ids, the rolled module listings and the one discounted listing id.
 const AUCTION_KEYS: Array[String] = ["last_band", "hulls", "modules", "hot"]
@@ -136,6 +164,11 @@ const REASON_UNKNOWN: StringName = &"unknown_id"
 ## removed cell.
 const EVENT_BUY_MODULE := "BUY_MODULE"
 const EVENT_FIT_MODULE := "FIT_MODULE"
+## Buying ammunition into the hold (10 section 6.1). One line per purchase, the way
+## `BUY_MODULE` carries a module purchase: the event word is this file's own addition to
+## 01 section 7's vocabulary (the log is append-only and debug-only), and the line's item
+## field carries the `ammo_*` cargo id while `qty` is the units bought.
+const EVENT_BUY_AMMO := "BUY_AMMO"
 ## Selling a module instance (15 section 6/8). The word is the exchange's own
 ## `SELL` -- the nearest shipped event id, which CONTRACTS section 12 rule 1
 ## licenses -- and the line's item field carries the instance's **base** id, so a
@@ -156,13 +189,21 @@ const DEFAULT_CREDITS := 10000
 const DEFAULT_SHIP: StringName = &"ship_vanguard"
 const DEFAULT_AMMO := 300
 
-## Weapon id -> advisory hold capacity. Advisory only: buy_ammo never clamps to it.
+## Weapon id -> the family's magazine ceiling, in rounds. Since S5 it is the auto-load's
+## fill ceiling (`load_ammo_from_hold` fills the pack *up to* this figure and never above
+## it) and remains advisory in the hold sense: a purchase is never clamped to it, and a
+## pack already above it is never lowered.
+## **S5 (2026-09-23, CONTRACTS section 17):** the railgun is the sixth family with its own
+## pack (owner ruling: rounds 150, cost 360, `ammo_max` 150 -- twice the cannon pack's cost,
+## half its rounds and half its `AMMO_MAX`). It is also the auto-load's ceiling in
+## `load_ammo_from_hold`: a family's pack is filled *up to* this figure and never above it.
 const AMMO_MAX: Dictionary = {
 	&"laser": 300,
 	&"cannon": 300,
 	&"rocket": 100,
 	&"mine": 100,
 	&"plasma": 100,
+	&"railgun": 150,
 }
 
 ## Test/support hook: the P1 suites and migration fixtures repoint this at a
@@ -192,6 +233,10 @@ var _mercy_used := false
 var _vitals: Dictionary = {}
 var _instance_counter := 0
 var _auction: Dictionary = {"last_band": 0, "hulls": [], "modules": {}, "hot": &""}
+## Save v7's racks: `{ship_id: Array[Array[int]]}` in the order the racks fire,
+## each one a list of W-cell layout indices (CONTRACTS section 17). Empty for a
+## v6 file until `migrate_batteries` has grouped its fitted weapons.
+var _batteries: Dictionary = {}
 
 
 func _ready() -> void:
@@ -247,24 +292,96 @@ func ammo_max(weapon_id: StringName) -> int:
 	return int(AMMO_MAX.get(weapon_id, 0))
 
 
+## The cargo id one ammo family is held under (`&"laser"` -> `&"ammo_laser"`), or `&""`
+## for an id outside the six packs (CONTRACTS section 17's prefix rule, in
+## `Catalog.ammo_item_id`).
+func ammo_item_id(weapon_id: StringName) -> StringName:
+	if not AMMO_MAX.has(weapon_id):
+		return &""
+	return Catalog.ammo_item_id(weapon_id)
+
+
+## How many cargo **units** of one ammo family the hold carries (10 section 6.1:
+## `ROUNDS_PER_CARGO_UNIT` rounds apiece), 0 for a family the catalogue does not ship.
+## This is the reading the ARMORY pane's rows show and the figure the auto-load spends.
+func ammo_units(weapon_id: StringName) -> int:
+	var item_id := ammo_item_id(weapon_id)
+	if item_id == &"":
+		return 0
+	return cargo_qty(item_id)
+
+
+## Buy ammunition **into the hold** (10 section 6.1 / CONTRACTS section 17): `rounds` of
+## the family is delivered as `units = rounds / ROUNDS_PER_CARGO_UNIT` of its `ammo_*`
+## cargo item, and `cost` is the pack's own price -- the caller passes it exactly as
+## `buy_module`/`buy_ship` take theirs (17 section 5 item 4 keeps the price in the
+## catalogue and out of the UI). The pack store is **not** written: the ship's packs are
+## loaded from the hold at launch (`load_ammo_from_hold`), never bought into.
+## 17 section 5's transaction law, all-or-nothing: verify (an id outside `AMMO_MAX`, a
+## non-positive rounds or a negative cost is `unknown_id`), charge
+## (`insufficient_credits` when the balance is short), give (one `add_cargo`), emit
+## (`&"credits"` then `&"cargo"` from the add) and log -- exactly one line, and a refused
+## purchase writes no credits, no cargo and no line.
 func buy_ammo(weapon_id: StringName, rounds: int, cost: int) -> bool:
 	if not AMMO_MAX.has(weapon_id) or rounds <= 0 or cost < 0:
 		return _refuse(REASON_UNKNOWN, weapon_id)
+	var units := _ammo_units_for(rounds)
+	if units <= 0:
+		return _refuse(REASON_UNKNOWN, weapon_id)
 	if not _charge(cost):
 		return _refuse(REASON_INSUFFICIENT, weapon_id)
-	_ammo[weapon_id] = int(_ammo.get(weapon_id, 0)) + rounds
-	_touch(KEY_AMMO)
+	add_cargo(Catalog.ammo_item_id(weapon_id), units)
+	Log.append(EVENT_BUY_AMMO, Catalog.ammo_item_id(weapon_id), units, -cost, _credits)
 	return true
 
 
+## The auto-load (10 section 6.1 / CONTRACTS section 17): top the family's pack up to its
+## `ammo_max` from the hold's cargo units, drawing whole units only, and answer the rounds
+## the pack now holds. Called **once at launch** and never in flight; a pack already at or
+## over its ceiling draws nothing and is never lowered, so a magazine filled last flight
+## keeps its rounds and a pack that emptied in flight stays empty until the next launch.
+##
+## The draw is `min(units_needed, units_held)` where `units_needed` is
+## `ceil((ammo_max - pack) / ROUNDS_PER_CARGO_UNIT)`: a unit is indivisible, so the last
+## unit can overshoot the ceiling by up to `ROUNDS_PER_CARGO_UNIT - 1` rounds and the pack
+## is clamped at `ammo_max` (the overshoot's rounds are gone with the unit -- the measured
+## cost of the pinned granularity). A family the catalogue does not ship, or one with
+## nothing to fill, writes nothing and answers the pack as it stands.
+func load_ammo_from_hold(weapon_id: StringName) -> int:
+	if not AMMO_MAX.has(weapon_id):
+		return 0
+	var pack := ammo_of(weapon_id)
+	var ceiling := ammo_max(weapon_id)
+	var shortfall := ceiling - pack
+	if shortfall <= 0:
+		return pack
+	var needed := _ammo_units_for(shortfall)
+	var held := ammo_units(weapon_id)
+	var drawn := mini(needed, held)
+	if drawn <= 0:
+		return pack
+	if not remove_cargo(Catalog.ammo_item_id(weapon_id), drawn):
+		return pack
+	var loaded := mini(ceiling, pack + drawn * Catalog.ROUNDS_PER_CARGO_UNIT)
+	set_ammo(weapon_id, loaded)
+	return loaded
+
+
+## Rounds -> cargo units (`ROUNDS_PER_CARGO_UNIT` apiece), rounded up because a unit is
+## indivisible. 0 for a non-positive figure.
+func _ammo_units_for(rounds: int) -> int:
+	if rounds <= 0:
+		return 0
+	return ceili(float(rounds) / float(Catalog.ROUNDS_PER_CARGO_UNIT))
+
+
 ## The absolute writer the dock's pack report needs (18_engine_spec section 4.3 /
-## 01 section 6): a launch seeds `PlayerState` from this store and the *fired
-## deltas* come back on dock, and `buy_ammo` can only ever add, so the filing
-## negates its own delta and needs a setter. `rounds` is the pack's new holding,
-## clamped at zero; an id outside `AMMO_MAX` is refused silently, exactly as
-## `buy_ammo` refuses to sell one, so a typo cannot open a sixth pack. A write that
-## changes nothing neither dirties the file nor emits `profile_changed`, which
-## keeps the every-dock report from signalling when nothing was fired.
+## 01 section 6): the launch writes the pack it loaded from the hold (`load_ammo_from_hold`)
+## and the *fired deltas* come back on dock, so the filing negates its own delta and needs
+## a setter. `rounds` is the pack's new holding, clamped at zero; an id outside `AMMO_MAX`
+## is refused silently, so a typo cannot open a pack the catalogue does not ship. A write
+## that changes nothing neither dirties the file nor emits `profile_changed`, which keeps
+## the every-dock report from signalling when nothing was fired.
 func set_ammo(weapon_id: StringName, rounds: int) -> void:
 	if not AMMO_MAX.has(weapon_id):
 		return
@@ -1019,6 +1136,384 @@ func _restore_fit_and_bag(
 	set_modules(bag_before)
 
 
+## ------------------------------------------------------------- batteries (v7)
+##
+## A **battery** is a player-composed rack of W cells (09 section 11, CONTRACTS
+## section 17): `weapon_1..7` addresses a rack, a rack may hold mixed weapon kinds,
+## and the salvo gate is its slowest member's cycle. The record is
+## `{ship_id: Array[Array[cell_ref]]}` -- a hull's racks in order, each one the
+## layout indices (09 section 4.5) of the barrels that fire together -- and the fit
+## stays the authority on what each cell holds, so a rack entry is a *reference* and
+## never a second copy of the fit.
+
+
+## Every hull's racks, a deep copy: `{ship_id: Array[Array[int]]}`, keys as Strings
+## (what a `ConfigFile` gives back). Empty until save v7's migration has run.
+func batteries() -> Dictionary:
+	return _batteries.duplicate(true)
+
+
+## Replace the whole record. Normalised first -- keys as Strings, every index an int
+## inside its hull's W cells, no cell twice, no trailing empty rack -- so a fixture
+## that hands in a stranger (`{&"ship_vanguard": [[0, 1]]}`, a hull the nine do not
+## carry) is read in the canonical shape and a second identical set stays silent, the
+## same contract `set_modules` and `set_fits` keep.
+func set_batteries(value: Dictionary) -> void:
+	var candidate := _normalise_batteries(_to_plain(value))
+	if candidate == _batteries:
+		return
+	_batteries = candidate
+	_touch(KEY_BATTERIES)
+
+
+## One hull's racks as the pane, the launch and the HUD read them: the stored racks
+## in their stored order, each one **restricted to the cells the hull's fit really
+## holds a weapon in**, followed by one trailing rack holding every fitted weapon the
+## record does not mention. The two rules together are what keeps the invariant the
+## trigger needs -- every fitted weapon fires from exactly one rack, so a weapon can
+## never be unfireable -- and they are also why this reads the fit: a cell the
+## FITTING pane filled after the racks were composed joins a rack the moment it is
+## read, without a write (`fit_for`'s own "never rewritten at load" rule). `[]` for a
+## hull outside the nine and for a W-less hull.
+func battery_groups(ship_id: StringName) -> Array:
+	var capacity := FitData.slot_capacity(ship_id, WEAPON_SLOT)
+	if capacity <= 0:
+		return []
+	var fitted: Array = resolved_fit(ship_id).get(WEAPON_SLOT, [])
+	var covered: Dictionary = {}
+	var groups: Array = []
+	for stored: Variant in _stored_groups(ship_id):
+		if not stored is Array:
+			continue
+		var rack: Array = []
+		for raw_index: Variant in (stored as Array):
+			var index := int(raw_index)
+			if index < 0 or index >= capacity or covered.has(index):
+				continue
+			if not _cell_holds_weapon(fitted, index):
+				continue
+			covered[index] = true
+			rack.append(index)
+		groups.append(rack)
+	var unassigned: Array = []
+	for index in capacity:
+		if not covered.has(index) and _cell_holds_weapon(fitted, index):
+			unassigned.append(index)
+	if not unassigned.is_empty():
+		groups.append(unassigned)
+	return groups
+
+
+## Replace one hull's racks. Refused, writing nothing, when the hull is not one of
+## the nine, when the record carries more racks than `GROUPS_MAX` (the input map's
+## own ceiling, `game/weapons.gd`), or when any index is outside the hull's W cells
+## or repeated across racks -- a cell is one barrel and fires from one rack. An empty
+## rack inside the list is kept (it is a drop zone the player emptied), a trailing
+## empty rack is dropped (it carries no identity). The record is `_to_plain`-keyed
+## like every other store here.
+func set_battery_groups(ship_id: StringName, groups: Array) -> bool:
+	if not FitData.HULLS.has(ship_id):
+		return false
+	if groups.size() > WeaponData.GROUPS_MAX:
+		return false
+	var capacity := FitData.slot_capacity(ship_id, WEAPON_SLOT)
+	var racks: Array = []
+	var seen: Dictionary = {}
+	for raw_rack: Variant in groups:
+		if not raw_rack is Array:
+			return false
+		var rack: Array = []
+		for raw_index: Variant in (raw_rack as Array):
+			var index := int(raw_index)
+			if index < 0 or index >= capacity or seen.has(index):
+				return false
+			seen[index] = true
+			rack.append(index)
+		racks.append(rack)
+	while not racks.is_empty() and (racks[racks.size() - 1] as Array).is_empty():
+		racks.remove_at(racks.size() - 1)
+	var candidate := _batteries.duplicate(true)
+	if racks.is_empty():
+		candidate.erase(String(ship_id))
+	else:
+		candidate[String(ship_id)] = racks
+	if candidate == _batteries:
+		return true
+	_batteries = candidate
+	_touch(KEY_BATTERIES)
+	return true
+
+
+## The next free W cell of a hull: the lowest layout index whose cell holds nothing,
+## or -1 when every W cell carries a weapon (or the hull has no W cell). Read off
+## `resolved_fit` -- the fit the launch flies -- so a hull the account holds no
+## stored fit for reserves the cells its delivered fit fills instead of re-issuing
+## them, which is exactly the shape the ARMORY pane draws.
+func free_weapon_cell(ship_id: StringName) -> int:
+	var capacity := FitData.slot_capacity(ship_id, WEAPON_SLOT)
+	if capacity <= 0:
+		return -1
+	var fitted: Array = resolved_fit(ship_id).get(WEAPON_SLOT, [])
+	for index in capacity:
+		if not _cell_holds_weapon(fitted, index):
+			return index
+	return -1
+
+
+## The drag's install (09 section 11, CONTRACTS section 17): one weapon into one free
+## W cell of one hull, recorded in that rack. `module_id` is a base id or a bag
+## instance id (`base_module_id` resolves it) and the instance that lands in the cell
+## is the next in-bag instance of that base, paired by `fit_battery` -- the one route
+## that pairs `instances_of` into cells and is atomic over the fit and the bag
+## (CONTRACTS section 16 rule 7).
+##
+## Refused, writing nothing, when the hull is not one of the nine, the rack is outside
+## `0 .. GROUPS_MAX-1`, the cell is outside the hull's W cells or already holds a
+## weapon (a drag onto a barrel is a **swap**, `move_rack_cell`), the base is not a
+## weapon module, the bag holds none of it, or the candidate fit fails
+## `FitData.fit_legal` -- the mandatory set and the power budget are `fit_battery`'s
+## own guards, checked before its first write. A refusal anywhere after the batch's
+## first cell restores the fit **and** the bag **and** the record, so a refused drag
+## leaves the account exactly where it was.
+func fit_into_rack(
+	ship_id: StringName, rack: int, index: int, module_id: StringName
+) -> bool:
+	if not FitData.HULLS.has(ship_id) or not _fit_cell_exists(ship_id, WEAPON_SLOT, index):
+		return false
+	## The mandatory set is checked before anything else, as 09 section 4.10 requires of
+	## every panel-driven write. It is **unreachable for a W cell** (measured:
+	## `FitData.MANDATORY_SLOT_KEYS` is `[engines, power]`), and it is here so the guard
+	## lives in the transaction rather than in the caller that cannot express it.
+	if FitData.MANDATORY_SLOT_KEYS.has(WEAPON_SLOT):
+		return false
+	if rack < 0 or rack >= WeaponData.GROUPS_MAX:
+		return false
+	var base := base_module_id(module_id)
+	if not _is_weapon_base(base):
+		return false
+	if _cell_holds_weapon(resolved_fit(ship_id).get(WEAPON_SLOT, []), index):
+		return false
+	var fit_before := fit_for(ship_id)
+	var bag_before := modules()
+	var had_fit := fits().has(String(ship_id))
+	var groups_before := batteries()
+	if not fit_battery(ship_id, base, [index]):
+		return false
+	var groups := battery_groups(ship_id)
+	while groups.size() <= rack:
+		groups.append([])
+	for position in groups.size():
+		var rack_cells: Array = groups[position]
+		rack_cells.erase(index)
+		groups[position] = rack_cells
+	var target: Array = groups[rack]
+	target.append(index)
+	groups[rack] = target
+	if set_battery_groups(ship_id, groups):
+		return true
+	_restore_fit_and_bag(ship_id, fit_before, bag_before, had_fit)
+	set_batteries(groups_before)
+	return false
+
+
+## The ✕ (09 section 11): the barrel leaves its rack and its cell returns to the bag.
+## One `clear_fit_slot` -- the composed per-cell remove, so the same guards, the same
+## instance handed back and the same log line -- plus the record update, atomic over
+## both. Refused, writing nothing, when the hull is not one of the nine, the cell is
+## outside the hull's W cells, the cell is empty, or the cell's key were mandatory
+## (unreachable for a W cell, measured: `FitData.MANDATORY_SLOT_KEYS` is
+## `[engines, power]`, and kept because 09 section 4.10 makes the mandatory set
+## inviolable from a panel).
+func clear_rack_cell(ship_id: StringName, index: int) -> bool:
+	if not _fit_cell_exists(ship_id, WEAPON_SLOT, index):
+		return false
+	if FitData.MANDATORY_SLOT_KEYS.has(WEAPON_SLOT):
+		return false
+	if _cell_id(fit_for(ship_id), WEAPON_SLOT, index) == "":
+		return false
+	var fit_before := fit_for(ship_id)
+	var bag_before := modules()
+	var had_fit := fits().has(String(ship_id))
+	var groups_before := batteries()
+	if not clear_fit_slot(ship_id, WEAPON_SLOT, index):
+		return false
+	var groups := battery_groups(ship_id)
+	for position in groups.size():
+		var rack: Array = groups[position]
+		rack.erase(index)
+		groups[position] = rack
+	if set_battery_groups(ship_id, groups):
+		return true
+	_restore_fit_and_bag(ship_id, fit_before, bag_before, had_fit)
+	set_batteries(groups_before)
+	return false
+
+
+## The within/between-rack drag (09 section 11: "re-orders and swaps"). Pure record
+## surgery -- the cell keeps its barrel and gains a different trigger, so no fit and
+## no bag write happens here. A move inside one rack re-orders it; a move between
+## racks inserts the barrel at the target position and, when that position was taken,
+## the displaced barrel takes the dragged one's old place (the swap). A target
+## position past the end of the rack appends.
+##
+## Refused, writing nothing, when the hull is not one of the nine, the source address
+## holds no barrel, the target rack is outside `0 .. GROUPS_MAX-1`, the target
+## position is negative, or the two addresses are the same.
+func move_rack_cell(
+	ship_id: StringName, from_rack: int, from_position: int, to_rack: int, to_position: int
+) -> bool:
+	if not FitData.HULLS.has(ship_id):
+		return false
+	if to_rack < 0 or to_rack >= WeaponData.GROUPS_MAX or to_position < 0:
+		return false
+	if from_rack == to_rack and from_position == to_position:
+		return false
+	var groups := battery_groups(ship_id)
+	if from_rack < 0 or from_rack >= groups.size():
+		return false
+	var source: Array = groups[from_rack]
+	if from_position < 0 or from_position >= source.size():
+		return false
+	var moved: int = source[from_position]
+	source.remove_at(from_position)
+	while groups.size() <= to_rack:
+		groups.append([])
+	var target: Array = groups[to_rack]
+	if from_rack == to_rack:
+		target.insert(clampi(to_position, 0, target.size()), moved)
+	else:
+		if to_position >= target.size():
+			target.append(moved)
+		else:
+			var displaced: int = target[to_position]
+			target[to_position] = moved
+			source.insert(clampi(from_position, 0, source.size()), displaced)
+	groups[from_rack] = source
+	groups[to_rack] = target
+	return set_battery_groups(ship_id, groups)
+
+
+## The save v7 migration (09 section 11, CONTRACTS section 17): every hull the account
+## holds a **stored** fit for gets its fitted weapons grouped by base id, cells
+## ascending -- S4's strip grouping, now persisted as racks, which is the shape a v6
+## file's play already had. Idempotent: a hull whose record already accounts for every
+## fitted weapon is left alone, so a second call changes nothing and neither does one
+## on a file that already carries the key. Answers how many hulls were grouped.
+##
+## **Memory only: the file is not rewritten here** (17 section 3's "never rewritten at
+## load", the rule the v4 fitting arrays keep). The record the migration builds is
+## persisted by the next write - which every rack mutation makes immediately - so a v6
+## file's racks live in memory the moment it loads and on disk the moment anything is
+## banked. The alternative, the v5/v6 flag days' immediate write, would rewrite a file
+## whose fit shape the wave does not change; the grouping is derived data, so the
+## lazier door is the honest one. **Reversal:** `_mark_dirty()` when `migrated > 0`.
+##
+## A hull the account holds no stored fit for is not touched: it has no fitted weapons
+## of its own to group, and `battery_groups` derives its racks from the delivered fit
+## on read. `_load_profile` is the only production caller, for a file below v7, and it
+## runs after the v5 and v6 migrations so a base id already resolves through the
+## canonical instance records.
+func migrate_batteries() -> int:
+	var migrated := 0
+	for key: Variant in _fits.keys():
+		var ship_id := StringName(str(key))
+		var groups := _grouped_by_base(ship_id)
+		if groups == _stored_groups(ship_id):
+			continue
+		_batteries[String(ship_id)] = groups
+		migrated += 1
+	return migrated
+
+
+## One hull's fitted weapons grouped by base id, cells ascending: the migration's own
+## grouping and nothing else's. The base is read through `base_module_id`, so an
+## instance and its base group together, and the walk is the **stored** fit's (the
+## file's own data), not the launch's fallback.
+func _grouped_by_base(ship_id: StringName) -> Array:
+	var capacity := FitData.slot_capacity(ship_id, WEAPON_SLOT)
+	var fit := fit_for(ship_id)
+	var order: Array = []
+	var by_base: Dictionary = {}
+	for index in capacity:
+		var entry := StringName(_cell_id(fit, WEAPON_SLOT, index))
+		if entry == &"":
+			continue
+		var base := base_module_id(entry)
+		if not by_base.has(base):
+			by_base[base] = []
+			order.append(base)
+		var rack: Array = by_base[base]
+		rack.append(index)
+		by_base[base] = rack
+	var groups: Array = []
+	for base: Variant in order:
+		groups.append(by_base[base])
+	return groups
+
+
+## One hull's stored racks, raw: the record's own list, no fit filtering and no
+## normalising, so `set_battery_groups` can compare a candidate against exactly what
+## the file holds. `[]` for a hull the record does not mention.
+func _stored_groups(ship_id: StringName) -> Array:
+	var stored: Variant = _batteries.get(String(ship_id), null)
+	if stored is Array:
+		return stored
+	return []
+
+
+## Whether one cell of a fit holds a module at all: a W cell is a W cell whatever is in
+## it, so a family-less module (`w_mining`, 09 section 4 item 7 - a tool, no firing
+## family) composes into a rack like any other. Only the **component's** spec drops it
+## (its barrel list has no entry for a family-less cell, §16 rule 3), and `game.gd`
+## resolves that on the way in.
+static func _cell_holds_weapon(fitted: Array, index: int) -> bool:
+	if index < 0 or index >= fitted.size():
+		return false
+	return String(fitted[index]) != ""
+
+
+## Whether a base id is a weapon module (the rack record's own domain): the migration
+## and the pane's drag both refuse anything else, so a utility module can never enter
+## a rack by accident. The one spelling is `w_` (09 section 3.1's module ids).
+static func _is_weapon_base(base: StringName) -> bool:
+	return String(base).begins_with(WEAPON_MODULE_PREFIX)
+
+
+## The record in its canonical shape: keys as Strings, values Array[Array[int]] with
+## every index inside that hull's W cells and no cell twice, racks in their stored
+## order, trailing empty racks dropped, hulls outside the nine dropped. A forgiven
+## reader -- a hand-edited file is read defensively the way `_read_qty` and
+## `_read_vitals` read theirs -- while the writer above refuses instead.
+func _normalise_batteries(source: Dictionary) -> Dictionary:
+	var record: Dictionary = {}
+	for key: Variant in source:
+		var ship_id := StringName(str(key))
+		if not FitData.HULLS.has(ship_id):
+			continue
+		var raw_racks: Variant = source[key]
+		if not raw_racks is Array:
+			continue
+		var capacity := FitData.slot_capacity(ship_id, WEAPON_SLOT)
+		var racks: Array = []
+		var seen: Dictionary = {}
+		for raw_rack: Variant in (raw_racks as Array):
+			if not raw_rack is Array:
+				continue
+			var rack: Array = []
+			for raw_index: Variant in (raw_rack as Array):
+				var index := int(raw_index)
+				if index < 0 or index >= capacity or seen.has(index):
+					continue
+				seen[index] = true
+				rack.append(index)
+			racks.append(rack)
+		while not racks.is_empty() and (racks[racks.size() - 1] as Array).is_empty():
+			racks.remove_at(racks.size() - 1)
+		if not racks.is_empty():
+			record[String(ship_id)] = racks
+	return record
+
+
 ## The save v5 migration and its one-way door (09 section 4 item 13, CONTRACTS
 ## section 13 rule 2). Every pre-module upgrade the loaded file still records
 ## becomes one inventory module through `LEGACY_UPGRADE_MODULES`, and the retired
@@ -1268,6 +1763,12 @@ func _load_profile() -> void:
 	# there.
 	if version < 6:
 		migrate_module_instances()
+	# Save v7's flag day (CONTRACTS section 17): a v6 file's racks do not exist, so
+	# every hull it holds a stored fit for has its fitted weapons grouped by base id,
+	# cells ascending -- S4's grouping, now persisted. It runs last of the three
+	# migrations so a base id already resolves through the canonical v6 records.
+	if version < 7:
+		migrate_batteries()
 	# Memory only: a record the file spelled short reads in the canonical shape,
 	# and the file is not rewritten for it (17 section 3's "never rewritten at
 	# load", the same rule the fitting arrays keep).
@@ -1295,6 +1796,7 @@ func _apply_defaults() -> void:
 	_vitals.clear()
 	_instance_counter = 0
 	_auction = _auction_default()
+	_batteries.clear()
 
 
 func _read_values() -> void:
@@ -1323,6 +1825,7 @@ func _read_values() -> void:
 	_vitals = _read_vitals()
 	_instance_counter = maxi(0, _read_int(KEY_INSTANCE_COUNTER, 0))
 	_auction = _normalise_auction(_read_plain_dict(KEY_AUCTION))
+	_batteries = _normalise_batteries(_read_plain_dict(KEY_BATTERIES))
 
 
 func _read_int(key: String, fallback: int) -> int:
@@ -1884,6 +2387,7 @@ func _write_profile() -> void:
 	_config.set_value(SECTION, "modules", _modules)
 	_config.set_value(SECTION, "instance_counter", _instance_counter)
 	_config.set_value(SECTION, "auction", _auction)
+	_config.set_value(SECTION, "batteries", _batteries)
 	_config.set_value(SECTION, "fits", _fits)
 	_config.set_value(SECTION, "market", _market)
 	_config.set_value(SECTION, "heat", _heat)

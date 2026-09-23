@@ -1465,8 +1465,14 @@ static func trail_read(ratio: float, source: Vector2) -> Dictionary:
 ## them, a shorter anchor list drops the extras, and a missing sheet leaves the hull
 ## without a trail rather than crashing a run. Returns the emitters in anchor order, so a
 ## caller - or a probe - can read what it got.
+##
+## `flags` is S5's addition (09 section 11, CONTRACTS section 17): when it is a
+## per-anchor array the same length as `anchors`, each emitter's own flag decides whether
+## it fires - so a hull whose measured map holds rear, front and both side rows lights
+## only the row the stick asked for, and a coasting hull lights the rear row on the
+## ratio's own floor. An empty `flags` is the pre-S5 shape: every anchor takes `active`.
 static func sync_thruster_trails(
-	hull: Node2D, anchors: Array, ratio: float, active: bool
+	hull: Node2D, anchors: Array, ratio: float, active: bool, flags: Array = []
 ) -> Array[GPUParticles2D]:
 	var emitters: Array[GPUParticles2D] = []
 	if hull == null or not is_instance_valid(hull):
@@ -1474,13 +1480,15 @@ static func sync_thruster_trails(
 	var row := feedback_row(&"trail")
 	var texture := _row_texture(row)
 	var read := trail_read(ratio, row.get(&"source", Vector2.ZERO) as Vector2)
+	var per_anchor := flags.size() == anchors.size()
 	for index in anchors.size():
 		var emitter := _trail_emitter(hull, index)
 		if emitter == null and texture != null:
 			emitter = _make_trail(hull, index, texture)
 		if emitter == null:
 			continue
-		_shape_trail(emitter, anchors[index] as Vector2, read, active)
+		var firing := bool(flags[index]) if per_anchor else active
+		_shape_trail(emitter, anchors[index] as Vector2, read, firing)
 		emitters.append(emitter)
 	_drop_extra_trails(hull, anchors.size())
 	return emitters

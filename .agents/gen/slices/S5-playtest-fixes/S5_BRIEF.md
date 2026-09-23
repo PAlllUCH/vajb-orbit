@@ -117,7 +117,8 @@ tracking/muzzle seam). Each builder writes only its own `test_s5_*.gd`.
 - `test_engine2_weapons.gd` — volley-gating rows re-derive to the slowest-cycle rule;
   tracking/muzzle rows are additions.
 - `test_p2b1_outfitting_panel.gd` — the pane renames to `ARMORY` and its rows become
-  racks (counts move with the surface).
+  racks (counts move with the surface); its `:437` pack-delivery assertion is red after J2
+  (a buy now delivers hold units) — J3 re-points it (both routes in `S5-J2_report.md`).
 - `test_p2a_ship_roster.gd` / `test_p2a_launch_fit.gd` — shipyard = owned-only
   (roster assertions move to the auction's) and launch gains the auto-load seam.
 - `test_s3_auction.gd` — the family tabs are display-only (its arithmetic rows hold).

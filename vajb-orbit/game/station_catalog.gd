@@ -11,6 +11,22 @@ extends RefCounted
 ## effects are modules in `ModuleCatalog`, an installed upgrade converts to one
 ## inventory module per `PlayerProfile.LEGACY_UPGRADE_MODULES`, and nothing reads
 ## a row from here any more.
+##
+## S5 (2026-09-23, 10 section 6.1 / CONTRACTS section 17): ammunition is a **cargo
+## item** now, counted in units of `ROUNDS_PER_CARGO_UNIT` rounds, and a pack row is
+## what one unit's purchase and one unit's sale price are derived from. The cargo id
+## is the family with `AMMO_PREFIX` in front (`laser` -> `ammo_laser`); `ammo_item_id`
+## and `ammo_family` are the one mapping, and reversing it is this constant plus the
+## two helpers. The railgun joined as the sixth pack at its own J0-ratified numbers
+## (owner 2026-09-23) rather than borrowing the cannon's family.
+
+## 10 section 6.1 / CONTRACTS section 17: how many rounds one cargo unit carries.
+## Reversal: 1 (the pre-S5 one-unit-per-round reading).
+const ROUNDS_PER_CARGO_UNIT := 10
+
+## The cargo namespace of the ammo families (CONTRACTS section 17: "the `ammo_*`
+## cargo id maps to its family by prefix"). Reversal: one constant.
+const AMMO_PREFIX := "ammo_"
 
 const AMMO_PACKS: Array[Dictionary] = [
 	{
@@ -52,6 +68,14 @@ const AMMO_PACKS: Array[Dictionary] = [
 		&"cost": 320,
 		&"icon": "res://assets/icons/weapon/icon_weapon_plasma.svg",
 		&"description": "Superheated cells. Hard on the barrel, harder on the hull.",
+	},
+	{
+		&"id": &"railgun",
+		&"name": "Railgun Slugs",
+		&"rounds": 150,
+		&"cost": 360,
+		&"icon": "res://assets/icons/module/icon_module_w_railgun.svg",
+		&"description": "Sabot slugs cut for the rail's own bore; the cannon's shells will not seat.",
 	},
 ]
 
@@ -207,6 +231,57 @@ static func ship(id: StringName) -> Dictionary:
 
 static func ammo_ids() -> Array[StringName]:
 	return _ids(AMMO_PACKS)
+
+
+## The cargo id of one ammo family (`&"laser"` -> `&"ammo_laser"`). An unknown family
+## still derives its own id, exactly as the prefix rule reads, and `ammo_family` is the
+## guard that resolves one back to a pack.
+static func ammo_item_id(family: StringName) -> StringName:
+	if family == &"":
+		return &""
+	return StringName(AMMO_PREFIX + String(family))
+
+
+## The family behind one cargo id (`&"ammo_laser"` -> `&"laser"`), or `&""` for an id
+## outside the six packs. The pack lookup is the guard, so a typo cannot become a
+## seventh family.
+static func ammo_family(item_id: StringName) -> StringName:
+	var text := String(item_id)
+	if not text.begins_with(AMMO_PREFIX):
+		return &""
+	var family := StringName(text.substr(AMMO_PREFIX.length()))
+	if ammo_pack(family).is_empty():
+		return &""
+	return family
+
+
+## The six cargo ids, in pack order.
+static func ammo_item_ids() -> Array[StringName]:
+	var ids: Array[StringName] = []
+	for family: StringName in ammo_ids():
+		ids.append(ammo_item_id(family))
+	return ids
+
+
+## How many cargo units one whole pack of `family` fills (rounds / ROUNDS_PER_CARGO_UNIT),
+## rounded up because a unit is indivisible. 0 for an unknown family.
+static func ammo_pack_units(family: StringName) -> int:
+	var pack := ammo_pack(family)
+	if pack.is_empty():
+		return 0
+	return ceili(float(pack.get(&"rounds", 0)) / float(ROUNDS_PER_CARGO_UNIT))
+
+
+## The list price of one cargo unit of `item_id`, in credits, rounded: the unit's own
+## share of the pack's price (`roundi(ROUNDS_PER_CARGO_UNIT * cost / rounds)`). 0 for an
+## id outside the six packs. EXCHANGE sells a unit at its own share of this
+## (`Exchange.ammo_unit_price`, AMMO_SELL_PERCENT of it).
+static func ammo_unit_cost(item_id: StringName) -> int:
+	var pack := ammo_pack(ammo_family(item_id))
+	var rounds := int(pack.get(&"rounds", 0))
+	if rounds <= 0:
+		return 0
+	return roundi(float(ROUNDS_PER_CARGO_UNIT) * float(pack.get(&"cost", 0)) / float(rounds))
 
 
 static func ship_ids() -> Array[StringName]:

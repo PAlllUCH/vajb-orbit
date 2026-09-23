@@ -1,10 +1,13 @@
 extends VBoxContainer
-## SHIPYARD module panel: the hull list, the large side-view preview, the comparison table
-## against the active hull, the price and the BUY / SET ACTIVE action. Every value is a
-## StationCatalog, PlayerProfile, ShipFit or ModuleCatalog read. Contract:
-## docs/design/STATION_HUB.md sections 5.2 (incl. the 2026-09-21 P2-A and 2026-09-22
-## amendments), 5.6, 7.2 and 12, docs/design/STATION_SPEC.md sections 2.4 and 6,
-## CONTRACTS section 11.
+## SHIPYARD module panel: the hangar. The list holds **owned hulls only** -- one row per
+## owned ship, its name, its class and the `ACTIVE` badge -- and selecting a row **previews**
+## it (side render, comparison stats, its own fit grid) without writing anything; the
+## footer `SET ACTIVE` button is the sole commit. Buying a hull happens on the AUCTION's
+## shelf only (10 section 2.1). Every value is a StationCatalog, PlayerProfile, ShipFit or
+## ModuleCatalog read. Contract: docs/design/STATION_HUB.md sections 5.2 (incl. the
+## 2026-09-21 P2-A, 2026-09-22 P2-B and 2026-09-23 S5 amendments), 5.6, 5.11, 7.2 and 12,
+## docs/design/STATION_SPEC.md sections 2.4 and 6, docs/gameplay/10_ship_acquisition.md
+## sections 2.4 and 6.1, CONTRACTS sections 11 and 17.
 ##
 ## The slot layout grid (`%HardpointSlots`) is rebuilt per selection from the selected
 ## hull's own 08 section 3.2 matrix: one cell per matrix cell, `columns` = the matrix
@@ -17,8 +20,9 @@ extends VBoxContainer
 ## plate's size, glyph, separation and caption do not move for it (section 5.2's amendment).
 ##
 ## The station shell loads this scene into its host, so the panel never routes, never
-## writes the profile and never draws the credits readout: it emits status_requested up
-## and reads StationCatalog / PlayerProfile down (STATION_HUB section 12.4).
+## writes the profile except through the one `set_active_ship` the footer commits, and never
+## draws the credits readout: it emits status_requested up and reads StationCatalog /
+## PlayerProfile down (STATION_HUB section 12.4).
 ##
 ## Panel contract with the shell:
 ##   signal status_requested(message: String, danger: bool)   write the footer strip
@@ -43,7 +47,6 @@ const COL_STAT := 110.0
 const ROW_INNER_MARGIN := Vector2i(12, 8)
 const COLUMN_SEPARATION := 12
 const CELL_SEPARATION := 2
-const ROW_ICON_IDLE_ALPHA := 0.72
 const PULSE_MIN_ALPHA := 0.35
 const PULSE_DOWN_SECONDS := 0.12
 const PULSE_UP_SECONDS := 0.16
@@ -88,9 +91,12 @@ const COMPARISON_CAPTION := "COMPARISON"
 const COMPARISON_SELECTED := "SELECTED"
 const COMPARISON_ACTIVE := "ACTIVE"
 
-const SUBTITLE := "BUY AND SWITCH HULLS · %d IN THE CRADLE · SIDE VIEWS ONLY"
+const SUBTITLE := "YOUR HULLS · %d IN THE HANGAR · SIDE VIEWS ONLY"
 const TAG_ACTIVE_HULL := "ACTIVE HULL %s"
-const META_FORMAT := "%d HULL · %d SLOTS"
+## Section 5.11's row: the name, the class and the `ACTIVE` badge, no icon (none ships).
+## The class is `ShipFit.HULLS`' own `ship_class` column, the value the AUCTION's hull rows
+## render as `%s CLASS` too.
+const META_FORMAT := "%s CLASS · %d HULL · %d SLOTS"
 ## CONTRACTS section 11's caption: the hull's slot count (08 section 3's Total, gaps
 ## excluded) and its ENGINE count. The node is still `%HardpointCaption`.
 const HARDPOINT_CAPTION := "SLOT LAYOUT · %d CELLS · %d ENGINES"
@@ -115,18 +121,15 @@ const POWER_SLOT: StringName = &"power"
 const PRICE_ZERO := "0"
 
 const STATE_ACTIVE := "ACTIVE"
-const STATE_OWNED := "OWNED"
-const STATE_FOR_SALE := "FOR SALE"
-const STATE_LOCKED := "LOCKED"
-const STOCK_UNAVAILABLE := "STOCK UNAVAILABLE"
 
 const ACTION_IN_SERVICE := "IN SERVICE"
+## The footer's one commit and the pane's only write (section 5.11: "the footer SET ACTIVE
+## is the sole commit"; CONTRACTS section 17).
 const ACTION_SET_ACTIVE := "SET ACTIVE"
-const ACTION_BUY := "BUY"
 
 const PREVIEW_EMPTY := "NO HULL IN THE CRADLE"
-const STATUS_HINT := "ENTER SELECT · %s · %s CREDITS"
-const STATUS_BOUGHT := "PURCHASED · %s · NOT ACTIVE UNTIL YOU SET IT"
+const EMPTY_HULLS := "NO HULLS OWNED"
+const STATUS_HINT := "ENTER PREVIEWS · %s · %s CLASS"
 const STATUS_ACTIVE := "ACTIVE HULL IS NOW %s"
 
 @onready var _subtitle: Label = %PaneSubtitle
@@ -140,7 +143,6 @@ const STATUS_ACTIVE := "ACTIVE HULL IS NOW %s"
 @onready var _stats: VBoxContainer = %ShipStats
 @onready var _hardpoint_caption: Label = %HardpointCaption
 @onready var _hardpoints: GridContainer = %HardpointSlots
-@onready var _price: Label = %ShipPrice
 @onready var _action: Button = %ShipAction
 
 var _payloads: Array[Dictionary] = []
@@ -177,10 +179,35 @@ func _exit_tree() -> void:
 
 
 func refresh_profile(key: StringName) -> void:
-	## STATION_HUB section 12.4: &"credits" moves every price, tag and the action label,
-	## &"ships" moves the owned list, the active hull and the comparison column.
+	## STATION_HUB section 12.4: &"credits" moves the tags and the action label, &"ships"
+	## moves the owned list, the active hull and the comparison column. The list is the
+	## **owned** roster now (section 5.11), so a hull bought on the AUCTION makes this pane
+	## rebuild its rows - and the profile emits from inside `buy_ship`/`set_active_ship`, so
+	## the rebuild is a fresh row set rather than an edit of the rows a press may still have
+	## on the stack (the AUCTION pane's own rule).
 	if key == &"credits" or key == &"ships":
-		_refresh_all()
+		if not _sync_rows():
+			_refresh_all()
+
+
+## Rebuilds the rows when the account's owned roster moved since they were built, and
+## answers whether it did. The roster is compared in the catalogue's ladder order, so a
+## purchase order (or a re-set of the same account) never reads as a change.
+func _sync_rows() -> bool:
+	var roster := _owned_roster(_profile())
+	if roster == _built_ids():
+		return false
+	_build_rows()
+	_refresh_all()
+	return true
+
+
+## The ids of the rows the pane currently carries, in render order.
+func _built_ids() -> Array[StringName]:
+	var ids: Array[StringName] = []
+	for payload: Dictionary in _payloads:
+		ids.append(payload[&"id"])
+	return ids
 
 
 func focus_primary() -> void:
@@ -193,15 +220,28 @@ func focus_primary() -> void:
 		_action.grab_focus()
 
 
-func _apply_tokens() -> void:
-	var ink: Color = _token(&"text_primary")
-	_pane_icon.modulate = ink
+## The row that carries one owned hull, or null for a hull the account does not own (the
+## hangar lists no row for it). Read back for probes and tests, the way the AUCTION pane's
+## `row_of` is.
+func row_of(ship_id: StringName) -> Button:
 	for payload: Dictionary in _payloads:
-		var icon: TextureRect = payload[&"icon"]
-		if icon != null:
-			var tint := ink
-			tint.a = ROW_ICON_IDLE_ALPHA
-			icon.modulate = tint
+		if payload[&"id"] == ship_id:
+			return payload[&"row"]
+	return null
+
+
+## The ids of the hangar's rows, in render order.
+func listed_ids() -> Array[StringName]:
+	return _built_ids()
+
+
+## The hull the preview is showing.
+func selected_id() -> StringName:
+	return _selected_id
+
+
+func _apply_tokens() -> void:
+	_pane_icon.modulate = _token(&"text_primary")
 
 
 func _token(token: StringName) -> Color:
@@ -210,54 +250,89 @@ func _token(token: StringName) -> Color:
 	return Color.WHITE
 
 
+## Section 5.11's hangar list: one row per **owned** hull, in the catalogue's ladder order
+## so the list reads the same ladder the AUCTION's shelf does. No row ships for a hull the
+## account does not own -- the buy door is the AUCTION's (10 sections 2.1, 6.1).
 func _build_rows() -> void:
-	_subtitle.text = SUBTITLE % Catalog.SHIPS.size()
+	_clear(_list)
 	_payloads.clear()
+	var profile := _profile()
+	var roster := _owned_roster(profile)
+	_subtitle.text = SUBTITLE % roster.size()
 	for ship: Dictionary in Catalog.SHIPS:
-		_payloads.append(_build_row(ship))
+		var ship_id: StringName = ship.get(&"id", &"")
+		if roster.has(ship_id):
+			_payloads.append(_build_row(ship))
+	if _payloads.is_empty():
+		_list.add_child(_empty_row())
 	_add_slack()
+
+
+## The account's owned hulls in the catalogue's own ladder order.
+func _owned_roster(profile: ProfileScript) -> Array[StringName]:
+	var roster: Array[StringName] = []
+	var owned := _owned_ids(profile)
+	for ship: Dictionary in Catalog.SHIPS:
+		var ship_id: StringName = ship.get(&"id", &"")
+		if owned.has(ship_id):
+			roster.append(ship_id)
+	return roster
+
+
+func _clear(rows: VBoxContainer) -> void:
+	for child: Node in rows.get_children():
+		rows.remove_child(child)
+		child.queue_free()
+
+
+func _empty_row() -> Label:
+	var label := _make_label(&"StationCaption", EMPTY_HULLS)
+	label.name = "EmptyRow"
+	label.custom_minimum_size = Vector2(0.0, ROW_HEIGHT)
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	return label
 
 
 func _build_row(ship: Dictionary) -> Dictionary:
 	var ship_id: StringName = ship.get(&"id", &"")
 	var name_text := String(ship.get(&"name", ""))
-	var complete := ship_id != &"" and not name_text.is_empty()
-	var meta := META_FORMAT % [int(ship.get(&"hull", 0)), _slot_cell_count(ship_id)]
+	var hull: Dictionary = ShipFit.HULLS.get(ship_id, {})
+	var meta := META_FORMAT % [
+		String(hull.get(&"ship_class", "")).to_upper(),
+		int(ship.get(&"hull", 0)),
+		_slot_cell_count(ship_id),
+	]
 	var row := Button.new()
 	row.name = "Ship%s" % String(ship_id).trim_prefix("ship_").to_pascal_case()
 	row.toggle_mode = true
 	row.focus_mode = Control.FOCUS_ALL
 	row.custom_minimum_size = Vector2(0.0, ROW_HEIGHT)
 	row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	row.disabled = not complete
 	row.set_meta(&"id", ship_id)
 	var box := _make_inner(row)
-	box.add_child(_make_title_box(name_text, meta, complete))
+	box.add_child(_make_title_box(name_text, meta))
 	var tag := _make_cell(box, COL_TAG, "", "", "Status")
 	var payload := {
 		&"id": ship_id,
 		&"name": name_text,
-		&"cost": int(ship.get(&"cost", 0)),
-		&"complete": complete,
 		&"row": row,
 		&"icon": null,
 		&"tag": tag[0],
 	}
-	if complete:
-		row.pressed.connect(_on_row_pressed.bind(payload))
-		row.focus_entered.connect(_on_row_focused.bind(row, payload))
+	row.pressed.connect(_on_row_pressed.bind(payload))
+	row.focus_entered.connect(_on_row_focused.bind(row, payload))
 	_list.add_child(row)
 	return payload
 
 
-func _make_title_box(name_text: String, meta: String, complete: bool) -> VBoxContainer:
+func _make_title_box(name_text: String, meta: String) -> VBoxContainer:
 	var box := VBoxContainer.new()
 	box.name = "TitleBox"
 	box.add_theme_constant_override(&"separation", CELL_SEPARATION)
 	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var title := _make_label(&"StationValue", name_text if complete else STOCK_UNAVAILABLE)
+	var title := _make_label(&"StationValue", name_text)
 	title.name = "Title"
 	box.add_child(title)
 	var meta_label := _make_label(&"StationCaption", meta)
@@ -808,28 +883,22 @@ func _refresh_plate_textures() -> void:
 
 func _refresh_all() -> void:
 	var profile := _profile()
-	if _selected_id == &"" or Catalog.ship(_selected_id).is_empty():
+	if _selected_id == &"" or not _owned_ids(profile).has(_selected_id):
 		_selected_id = _default_selection(profile)
 	_refresh_rows(profile)
 	_refresh_preview(profile)
 	_refresh_action(profile)
 
 
+## Section 5.11's row: the `ACTIVE` badge on the hull the account flies, nothing on any
+## other row (every row is an owned hull, so `FOR SALE` and `LOCKED` retired with the buy
+## rows).
 func _refresh_rows(profile: ProfileScript) -> void:
 	var active_id := _active_id(profile)
-	var owned := _owned_ids(profile)
 	_tag.text = TAG_ACTIVE_HULL % _ship_name(active_id)
 	for payload: Dictionary in _payloads:
 		var tag: Label = payload[&"tag"]
-		var affordable := _affordable(profile, int(payload[&"cost"]))
-		if payload[&"id"] == active_id:
-			tag.text = STATE_ACTIVE
-		elif owned.has(payload[&"id"]):
-			tag.text = STATE_OWNED
-		elif affordable:
-			tag.text = STATE_FOR_SALE
-		else:
-			tag.text = STATE_LOCKED
+		tag.text = STATE_ACTIVE if payload[&"id"] == active_id else ""
 
 
 func _refresh_preview(profile: ProfileScript) -> void:
@@ -840,8 +909,6 @@ func _refresh_preview(profile: ProfileScript) -> void:
 		_preview_image.custom_minimum_size = Vector2.ZERO
 		_preview_name.text = PREVIEW_EMPTY
 		_preview_caption.text = ""
-		_price.text = PRICE_ZERO
-		_price.remove_theme_color_override(&"font_color")
 		_refresh_comparison({}, profile)
 		_set_layout_grid(&"")
 		return
@@ -851,12 +918,6 @@ func _refresh_preview(profile: ProfileScript) -> void:
 	_preview_name.text = String(ship.get(&"name", String(_selected_id)))
 	_preview_caption.text = String(ship.get(&"description", ""))
 	_update_preview_size()
-	var cost := int(ship.get(&"cost", 0))
-	_price.text = _format_int(cost)
-	if _affordable(profile, cost):
-		_price.remove_theme_color_override(&"font_color")
-	else:
-		_price.add_theme_color_override(&"font_color", _token(&"accent_danger"))
 	_refresh_comparison(ship, profile)
 	_set_layout_grid(_selected_id)
 
@@ -894,21 +955,17 @@ func _refresh_comparison(ship: Dictionary, profile: ProfileScript) -> void:
 			selected_label.remove_theme_color_override(&"font_color")
 
 
+## The footer's one action: `SET ACTIVE` for an owned hull that is not the active one,
+## `IN SERVICE` (disabled) for the active one, and disabled with `SET ACTIVE` when no hull
+## is owned at all. It is the pane's sole commit (section 5.11); selecting never reaches it.
 func _refresh_action(profile: ProfileScript) -> void:
-	var ship := Catalog.ship(_selected_id)
-	if ship.is_empty():
-		_action.text = ACTION_BUY
+	_action.text = ACTION_SET_ACTIVE
+	if _selected_id == &"" or not _owned_ids(profile).has(_selected_id):
 		_action.disabled = true
 		return
-	if _selected_id == _active_id(profile):
+	_action.disabled = _selected_id == _active_id(profile)
+	if _action.disabled:
 		_action.text = ACTION_IN_SERVICE
-		_action.disabled = true
-	elif _owned_ids(profile).has(_selected_id):
-		_action.text = ACTION_SET_ACTIVE
-		_action.disabled = false
-	else:
-		_action.text = ACTION_BUY
-		_action.disabled = false
 
 
 func _on_row_focused(row: Button, payload: Dictionary) -> void:
@@ -917,20 +974,18 @@ func _on_row_focused(row: Button, payload: Dictionary) -> void:
 		_selected_row.set_pressed_no_signal(false)
 	_selected_row = row
 	row.set_pressed_no_signal(true)
-	var profile := _profile()
-	_selected_id = payload[&"id"]
-	_refresh_preview(profile)
-	_refresh_action(profile)
-	status_requested.emit(_row_hint(payload), false)
+	_preview_row(payload)
 
 
+## Selecting a row previews it and writes nothing (section 5.11: "selecting a row previews
+## ... and writes nothing; the footer SET ACTIVE is the sole commit"). The press is the
+## row's `pressed`, the focus is the ring - both go through `_preview_row`.
 func _on_row_pressed(payload: Dictionary) -> void:
 	AudioManager.play_ui(AudioManager.UiCue.CLICK)
 	var row: Button = payload[&"row"]
 	row.set_pressed_no_signal(true)
 	_selected_row = row
-	_selected_id = payload[&"id"]
-	_act(payload[&"id"])
+	_preview_row(payload)
 
 
 func _on_action_pressed() -> void:
@@ -938,48 +993,51 @@ func _on_action_pressed() -> void:
 	_act(_selected_id)
 
 
+## The selection itself: the previewed hull moves, the three preview readers move with it,
+## and the hint names the hull now previewed. Nothing here touches the profile.
+func _preview_row(payload: Dictionary) -> void:
+	var profile := _profile()
+	_selected_id = payload[&"id"]
+	_refresh_preview(profile)
+	_refresh_action(profile)
+	status_requested.emit(_row_hint(payload), false)
+
+
+## The pane's one write: `set_active_ship` for the previewed hull, which the profile
+## refuses for a hull the account does not own or already flies (it announces that itself,
+## section 5.6). A refusal writes nothing and leaves the selection where it was; the refusals
+## the pane can see are the ones its own footer state already prevents.
 func _act(ship_id: StringName) -> void:
-	## The hint and the price colour never decide a purchase: buy_ship and set_active_ship
-	## do, and a refusal is announced by the shell from purchase_failed (section 5.6).
 	var profile := _profile()
 	if profile == null:
 		return
 	var ship := Catalog.ship(ship_id)
 	if ship.is_empty():
 		return
-	var name_text := String(ship.get(&"name", String(ship_id))).to_upper()
-	var bought := false
-	if _owned_ids(profile).has(ship_id):
-		if bool(profile.call(&"set_active_ship", ship_id)):
-			AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
-			status_requested.emit(STATUS_ACTIVE % name_text, false)
-			return
-	else:
-		bought = bool(profile.call(&"buy_ship", ship_id, int(ship.get(&"cost", 0))))
-		if bought:
-			AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
-			status_requested.emit(STATUS_BOUGHT % name_text, false)
-			return
-	_pulse(_price)
+	if not bool(profile.call(&"set_active_ship", ship_id)):
+		_pulse(_action)
+		_refresh_all()
+		return
+	AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
+	status_requested.emit(STATUS_ACTIVE % _ship_name(ship_id), false)
 	_refresh_all()
 
 
 func _row_hint(payload: Dictionary) -> String:
 	return STATUS_HINT % [
 		String(payload[&"name"]).to_upper(),
-		_format_int(int(payload[&"cost"])),
+		String(ShipFit.HULLS.get(payload[&"id"], {}).get(&"ship_class", "")).to_upper(),
 	]
 
 
+## The hull the preview opens on: the active hull when the account owns it, else the first
+## owned hull of the ladder, else nothing (an account that owns no hull at all).
 func _default_selection(profile: ProfileScript) -> StringName:
 	var active_id := _active_id(profile)
-	if not Catalog.ship(active_id).is_empty():
+	if _owned_ids(profile).has(active_id):
 		return active_id
-	for ship: Dictionary in Catalog.SHIPS:
-		var ship_id: StringName = ship.get(&"id", &"")
-		if ship_id != &"":
-			return ship_id
-	return &""
+	var roster := _owned_roster(profile)
+	return roster[0] if not roster.is_empty() else &""
 
 
 func _ship_name(ship_id: StringName) -> String:
@@ -999,10 +1057,6 @@ func _owned_ids(profile: ProfileScript) -> Array:
 	if profile == null:
 		return []
 	return profile.call(&"owned_ships")
-
-
-func _affordable(profile: ProfileScript, cost: int) -> bool:
-	return profile == null or bool(profile.call(&"can_afford", cost))
 
 
 func _profile() -> ProfileScript:
@@ -1033,15 +1087,3 @@ func _make_tween() -> Tween:
 	var tween := create_tween()
 	_tweens.append(tween)
 	return tween
-
-
-func _format_int(value: int) -> String:
-	var digits := str(absi(value))
-	var grouped := ""
-	var count := 0
-	for index in range(digits.length() - 1, -1, -1):
-		grouped = digits[index] + grouped
-		count += 1
-		if count % 3 == 0 and index > 0:
-			grouped = " " + grouped
-	return ("-" if value < 0 else "") + grouped

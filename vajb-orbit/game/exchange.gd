@@ -44,6 +44,7 @@ extends RefCounted
 ## on the global class table, so a headless caller and the editor agree.
 const MineralCatalogScript := preload("res://game/mineral_catalog.gd")
 const ComponentCatalogScript := preload("res://game/component_catalog.gd")
+const StationCatalogScript := preload("res://game/station_catalog.gd")
 const Clock := preload("res://autoload/world_clock.gd")
 const Log := preload("res://game/economy_log.gd")
 
@@ -61,6 +62,14 @@ const DEMAND_DEFAULT := 1.0
 
 const KIND_MINERAL: StringName = &"mineral"
 const KIND_COMPONENT: StringName = &"component"
+## The third book (S5, 10 section 6.1 / CONTRACTS section 17): ammunition cargo units are
+## bought from the hold at a fixed share of the per-unit list, so they carry no demand
+## index, no stock and no queue -- the station always takes them.
+const KIND_AMMO: StringName = &"ammo"
+
+## 10 section 6.1 / CONTRACTS section 17: the share of the per-unit list the station pays
+## for one ammunition cargo unit. Reversal: 1.0 (the exchange buys at list).
+const AMMO_SELL_PERCENT := 0.6
 
 const REASON_INVALID_QTY: StringName = &"invalid_qty"
 const REASON_UNKNOWN_ITEM: StringName = &"unknown_item"
@@ -115,7 +124,8 @@ static func component_unit_price(value: int) -> int:
 
 
 ## The sell baseline behind an item id: ore -> ore_value, ingot -> ingot_value,
-## component -> value. A bare mineral id (or anything unknown) has none: 0.
+## component -> value, `ammo_*` -> its per-unit list share. A bare mineral id (or anything
+## unknown) has none: 0.
 static func baseline_of(item_id: StringName) -> int:
 	if MineralCatalogScript.is_ore(item_id):
 		return int(MineralCatalogScript.entry_for_item(item_id).get(&"ore_value", 0))
@@ -123,29 +133,57 @@ static func baseline_of(item_id: StringName) -> int:
 		return int(MineralCatalogScript.entry_for_item(item_id).get(&"ingot_value", 0))
 	if is_component(item_id):
 		return int(ComponentCatalogScript.component(item_id).get(&"value", 0))
+	if is_ammo(item_id):
+		return ammo_list_unit(item_id)
 	return 0
 
 
 ## The single public price read for UI code (05 section 8): the current unit
-## price of one item. Components ignore `demand` (flat surplus book).
+## price of one item. Components ignore `demand` (flat surplus book), and so do
+## ammunition cargo units, which are a fixed share of the pack's per-unit list
+## (`StationCatalog.ammo_unit_cost`).
 static func exchange_price(item_id: StringName, demand: float) -> int:
 	if is_component(item_id):
 		return component_unit_price(baseline_of(item_id))
+	if is_ammo(item_id):
+		return ammo_unit_price(item_id)
 	if MineralCatalogScript.is_ore(item_id) or MineralCatalogScript.is_ingot(item_id):
 		return unit_net(baseline_of(item_id), demand)
 	return 0
+
+
+## One ammunition cargo unit's own list price: the unit's share of its pack's price
+## (`roundi(ROUNDS_PER_CARGO_UNIT * pack.cost / pack.rounds)` in
+## `StationCatalog.ammo_unit_cost`). 0 for an id outside the six packs.
+static func ammo_list_unit(item_id: StringName) -> int:
+	return StationCatalogScript.ammo_unit_cost(item_id)
+
+
+## What the station pays for one ammunition cargo unit: `AMMO_SELL_PERCENT` of the unit's
+## list price, rounded (CONTRACTS section 17's `sale = roundi(0.6 * list_unit)`). The
+## shipped per-unit figures: laser 2, cannon 4, rocket 24, mine 30, plasma 38, railgun 14.
+static func ammo_unit_price(item_id: StringName) -> int:
+	return roundi(AMMO_SELL_PERCENT * float(ammo_list_unit(item_id)))
+
+
+## True for an `ammo_*` cargo id of one of the six families (CONTRACTS section 17's prefix
+## rule; the cargo ids themselves are `StationCatalog.ammo_item_ids`).
+static func is_ammo(item_id: StringName) -> bool:
+	return StationCatalogScript.ammo_family(item_id) != &""
 
 
 static func is_component(item_id: StringName) -> bool:
 	return not ComponentCatalogScript.component(item_id).is_empty()
 
 
-## Everything the exchange buys: ore, ingots and components (05 section 1).
+## Everything the exchange buys: ore, ingots, components and ammunition cargo units
+## (05 section 1, 10 section 6.1).
 static func is_sellable(item_id: StringName) -> bool:
 	return (
 		MineralCatalogScript.is_ore(item_id)
 		or MineralCatalogScript.is_ingot(item_id)
 		or is_component(item_id)
+		or is_ammo(item_id)
 	)
 
 
@@ -330,6 +368,24 @@ static func _quote_from(state: Dictionary, held: int, item_id: StringName, qty: 
 		result[&"kind"] = KIND_MINERAL
 	if held < qty:
 		return _refuse(result, REASON_INSUFFICIENT_CARGO)
+	## Ammunition cargo units (S5): a fixed unit price, the station always takes them, and
+	## nothing is queued -- there is no demand index and no surplus quota for the third
+	## book. The commission is the exchange's own and applies as it does to every sale
+	## (05 section 5), so `gross`/`fee`/`paid` read exactly as the pane's confirm strip
+	## expects them to.
+	if is_ammo(item_id):
+		var ammo_unit := ammo_unit_price(item_id)
+		var ammo_gross := ammo_unit * qty
+		var ammo_fee := commission_for(ammo_gross)
+		result[&"kind"] = KIND_AMMO
+		result[&"sellable"] = qty
+		result[&"unit"] = ammo_unit
+		result[&"gross"] = ammo_gross
+		result[&"fee"] = ammo_fee
+		result[&"paid"] = maxi(0, ammo_gross - ammo_fee)
+		result[&"demand"] = DEMAND_DEFAULT
+		result[&"ok"] = true
+		return result
 	if is_component(item_id):
 		var stock := _integer(_bucket(state, &"stock"), item_id, 0)
 		var sold := mini(qty, stock)
@@ -360,8 +416,11 @@ static func _quote_from(state: Dictionary, held: int, item_id: StringName, qty: 
 
 ## The market-side half of a sale: demand cools on the minerals book (05
 ## section 2), stock drops and the overflow queues on the surplus book
-## (05 section 4).
+## (05 section 4). An ammunition sale moves neither: the third book is a fixed price
+## with no demand index and no quota (10 section 6.1).
 static func _apply_trade(state: Dictionary, item_id: StringName, qty: int, result: Dictionary) -> void:
+	if is_ammo(item_id):
+		return
 	if is_component(item_id):
 		_set_stock(state, item_id, int(result[&"stock"]) - int(result[&"sellable"]))
 		var waiting := _integer(_bucket(state, &"queue"), item_id, 0) + int(result[&"queued"])

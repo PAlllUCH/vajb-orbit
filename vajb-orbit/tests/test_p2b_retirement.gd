@@ -107,7 +107,11 @@ func test_a_v4_file_with_all_six_upgrades_loads_as_six_modules() -> void:
 	## The flag day wrote the file itself: v6 (S3), no record, the six modules on disk.
 	var on_disk := ConfigFile.new()
 	assert_eq(on_disk.load(PROFILE_PATH), OK, "the migrated file reads back")
-	assert_eq(int(on_disk.get_value(SECTION, "save_version", 0)), 6, "writes always persist v6")
+	assert_eq(
+		int(on_disk.get_value(SECTION, "save_version", 0)),
+		Profile.SAVE_VERSION,
+		"writes always persist the tree's own save version (S5: v7)"
+	)
 	assert_false(on_disk.has_section_key(SECTION, "upgrades"), "the retired key is gone")
 	var stored: Dictionary = on_disk.get_value(SECTION, "modules", {})
 	assert_eq(stored.size(), 6, "the six records are on disk")

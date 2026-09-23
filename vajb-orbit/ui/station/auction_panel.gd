@@ -1,10 +1,20 @@
 extends VBoxContainer
 ## AUCTION module panel: the rotating shelf -- six hulls, ten rolled module instances
-## and the `SELL MODULES` sub-list -- plus the pane's own rotation footer.
-## Contract: docs/design/STATION_HUB.md section 5.10 (the 2026-09-22 S3 amendment),
-## sections 5.1, 5.3, 5.6, 10, 11, 12.3 and 12.4; docs/gameplay/10_ship_acquisition.md
-## sections 2/2.2/2.3/2.4; docs/gameplay/15_module_affixes.md sections 1, 5, 6, 7, 8 and 9;
-## docs/CONTRACTS.md section 15.
+## and the `SELL MODULES` sub-list -- grouped under the family tabs, plus the pane's own
+## rotation footer.
+## Contract: docs/design/STATION_HUB.md section 5.10 (the 2026-09-22 S3 amendment and the
+## 2026-09-23 S5 amendment), sections 5.1, 5.3, 5.6, 5.11, 10, 11, 12.3 and 12.4;
+## docs/gameplay/10_ship_acquisition.md sections 2/2.2/2.3/2.4/6.1;
+## docs/gameplay/15_module_affixes.md sections 1, 5, 6, 7, 8 and 9;
+## docs/CONTRACTS.md sections 15 and 17.
+##
+## **The family tabs are display grouping only** (STATION_HUB section 5.11, CONTRACTS
+## section 17): the shelf is still 10 section 2.1's six hulls + ten rolled listings, drawn,
+## weighted, discounted, restocked and priced by `game/auction.gd` exactly as S3 shipped
+## it, and a tab only chooses which of those built rows is shown. No tab writes the profile,
+## draws a shelf, re-prices a row or drops a row -- every row stays built and its payload
+## stays the shelf's own, which is what makes the tab pass byte-identical to S3's arithmetic
+## and reversible to the flat list.
 ##
 ## The pane never prices anything itself and never mutates the profile directly: every
 ## number it renders is an `Auction` read (the one pricing family, 05 section 8) and every
@@ -58,6 +68,38 @@ const HEADER_FIT_RETRIES := 8
 const ROW_ICON_IDLE_ALPHA := 0.72
 const HOVER_SECONDS := 0.09
 
+## STATION_HUB section 5.11's family tabs (CONTRACTS section 17): the shelf's rows group
+## under `HULLS · WEAPONS · DRIVES · SHIELDS · ARMOUR · POWER · COMPUTERS · BOOSTERS ·
+## UTILITY · ALL`. `section` names which of the pane's built blocks a tab shows
+## (`hulls`, `listings`, both for `all`) and `slot` is 09 section 1's slot key the listings
+## are filtered on -- `DRIVES` keys on **`engine`**, the catalogue row's own slot word for
+## the type (`ModuleCatalog.SLOT_ALIASES` maps it to `engines` for `ShipFit`), and the J0
+## disposition of 2026-09-23 ratifies that key (`engines` is a prefix row, not a module).
+## The order is the pin's own, and `ALL` is the pane's entry tab so the pane opens on S3's
+## flat list (the reversal the pin names).
+const TAB_ALL: StringName = &"all"
+const FAMILY_TABS: Array[Dictionary] = [
+	{&"id": &"hulls", &"label": "HULLS", &"section": &"hulls", &"slot": &""},
+	{&"id": &"weapons", &"label": "WEAPONS", &"section": &"listings", &"slot": &"weapons"},
+	{&"id": &"drives", &"label": "DRIVES", &"section": &"listings", &"slot": &"engine"},
+	{&"id": &"shields", &"label": "SHIELDS", &"section": &"listings", &"slot": &"shields"},
+	{&"id": &"armour", &"label": "ARMOUR", &"section": &"listings", &"slot": &"armour"},
+	{&"id": &"power", &"label": "POWER", &"section": &"listings", &"slot": &"power"},
+	{&"id": &"computers", &"label": "COMPUTERS", &"section": &"listings", &"slot": &"computers"},
+	{&"id": &"boosters", &"label": "BOOSTERS", &"section": &"listings", &"slot": &"boosters"},
+	{&"id": &"utility", &"label": "UTILITY", &"section": &"listings", &"slot": &"utility"},
+	{&"id": &"all", &"label": "ALL", &"section": &"all", &"slot": &""},
+]
+## A tab's own plate: the base `Button` theme the rows carry (`toggle_mode`, the flat
+## plates) with an inner margin holding a `StationValue` label, because the theme's
+## `TabBar` item ships a font size and the three font colours but no tab stylebox, and a
+## bare Button's own text would sit one pixel from its border. The active tab's label takes
+## `text_primary`, the rest `text_dim` -- the theme's own `TabBar` colour language
+## (`font_color` / `font_unselected_color`, `tools/build_theme.gd`).
+const TAB_INNER_MARGIN := Vector2i(12, 6)
+const TAB_MIN_HEIGHT := 32.0
+const TAB_LABEL_VARIATION: StringName = &"StationValue"
+
 ## Section 5.10's own captions, column words and row words. Nothing below is this pass's
 ## invention: `HULLS`, `MODULES` and `SELL MODULES` are the amendment's own section names,
 ## `BUY` and `SELL` its own ACTION words, `F LOT` its own tag.
@@ -104,7 +146,10 @@ const TITLE_PATH := ^"RowInner/RowBox/ThemeBox/Title"
 
 @onready var _subtitle: Label = %PaneSubtitle
 @onready var _tag: Label = %PanelTag
+@onready var _tabs: HBoxContainer = %FamilyTabs
 @onready var _scroll: ScrollContainer = %AuctionScroll
+@onready var _hull_margin: MarginContainer = %HullsMargin
+@onready var _module_margin: MarginContainer = %ModulesMargin
 @onready var _hull_caption: Label = %HullsCaption
 @onready var _hull_header: HBoxContainer = %HullsHeader
 @onready var _hull_rows: VBoxContainer = %HullRows
@@ -131,6 +176,11 @@ var _pending_rebuild := false
 var _selected_row: Button = null
 var _tweens: Array[Tween] = []
 
+## The family tab the pane is showing, `&"all"` at entry; `_tab_entries` is one
+## `{id, label, button}` per pin tab, in the pin's order.
+var _family: StringName = TAB_ALL
+var _tab_entries: Array[Dictionary] = []
+
 
 func _ready() -> void:
 	_hull_caption.text = CAPTION_HULLS
@@ -140,6 +190,7 @@ func _ready() -> void:
 	_build_header(_hull_header, _hulls_layout())
 	_build_header(_module_header, _listings_layout())
 	_build_header(_sell_header, _sales_layout())
+	_build_family_tabs()
 	_apply_tokens()
 	_connect_scroll()
 	enter_pane()
@@ -174,13 +225,166 @@ func focus_primary() -> void:
 	## STATION_HUB section 5.10's focus order: the two lists in row order (HULLS then
 	## MODULES), then the sell sub-list, then the footer, then the rail. Entering the pane
 	## is also when the rotation is advanced and the restock line is read (section 5.10's
-	## S3 amendment: "a reading taken at pane entry").
+	## S3 amendment: "a reading taken at pane entry"). Section 5.11's family tabs are
+	## display grouping, so a tab-hidden row is not a stop: the ring lands on a row the
+	## tab shows, and past every hidden row on the footer the pane always keeps.
 	enter_pane()
 	for payload: Dictionary in _hulls + _listings + _sales:
 		var row: Button = payload[&"row"]
-		if row != null and is_instance_valid(row) and not row.disabled:
+		if row != null and is_instance_valid(row) and row.visible and not row.disabled:
 			row.grab_focus()
 			return
+
+
+## --------------------------------------------------------------- the family tabs
+
+
+## The pane's tab ids and labels, in the pin's order, read back for probes and tests.
+func family_tabs() -> Array[Dictionary]:
+	var entries: Array[Dictionary] = []
+	for entry: Dictionary in FAMILY_TABS:
+		entries.append({&"id": entry[&"id"], &"label": entry[&"label"], &"slot": entry[&"slot"]})
+	return entries
+
+
+## The tab the pane is showing.
+func family_tab() -> StringName:
+	return _family
+
+
+## The shelf's tab strip's buttons, in the pin's order (one per tab), so a probe can press
+## the tab the player presses instead of reaching into the pane's fields.
+func tab_button(tab_id: StringName) -> Button:
+	for entry: Dictionary in _tab_entries:
+		if entry[&"id"] == tab_id:
+			return entry[&"button"]
+	return null
+
+
+## Show one family tab. `ALL` shows the whole shelf and `HULLS` the six hull rows;
+## a module family shows the listing rows whose own `slot` is that tab's key. Display
+## grouping only: nothing here reads or writes the profile, re-prices a row or rebuilds
+## one, so the shelf, its hot slot, its restock reading and every price are S3's own.
+func select_family(tab_id: StringName) -> void:
+	if _family_entry(tab_id).is_empty():
+		return
+	_family = tab_id
+	_apply_family()
+
+
+## The hull ids the current tab shows, in render order.
+func shown_hull_ids() -> Array[StringName]:
+	var ids: Array[StringName] = []
+	for payload: Dictionary in _hulls:
+		if _row_shown(payload):
+			ids.append(payload[&"id"])
+	return ids
+
+
+## The listing ids the current tab shows, in the shelf's drawn order.
+func shown_listing_ids() -> Array[StringName]:
+	var ids: Array[StringName] = []
+	for payload: Dictionary in _listings:
+		if _row_shown(payload):
+			ids.append(payload[&"id"])
+	return ids
+
+
+## The family tab's own entry, `{}` for an id no tab carries.
+func _family_entry(tab_id: StringName) -> Dictionary:
+	for entry: Dictionary in FAMILY_TABS:
+		if entry[&"id"] == tab_id:
+			return entry
+	return {}
+
+
+## One tab's plate: the base `Button` theme with an inner margin and a label, the rail
+## entry's own construct. A Control's minimum size never accounts for a child, so each tab
+## measures its own label at the theme's own font and carries that as its minimum width.
+func _build_family_tabs() -> void:
+	_tab_entries.clear()
+	for entry: Dictionary in FAMILY_TABS:
+		var tab_id: StringName = entry[&"id"]
+		var button := Button.new()
+		button.name = "Family%sTab" % String(tab_id).to_pascal_case()
+		button.toggle_mode = true
+		button.focus_mode = Control.FOCUS_ALL
+		button.custom_minimum_size = Vector2(0.0, TAB_MIN_HEIGHT)
+		button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		button.set_meta(&"id", tab_id)
+		var inner := MarginContainer.new()
+		inner.name = "TabInner"
+		inner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		inner.add_theme_constant_override(&"margin_left", TAB_INNER_MARGIN.x)
+		inner.add_theme_constant_override(&"margin_top", TAB_INNER_MARGIN.y)
+		inner.add_theme_constant_override(&"margin_right", TAB_INNER_MARGIN.x)
+		inner.add_theme_constant_override(&"margin_bottom", TAB_INNER_MARGIN.y)
+		button.add_child(inner)
+		inner.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		var label := _make_label(TAB_LABEL_VARIATION, String(entry[&"label"]))
+		label.name = "TabLabel"
+		label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		inner.add_child(label)
+		button.pressed.connect(_on_tab_pressed.bind(tab_id))
+		_tabs.add_child(button)
+		var tab := {&"id": tab_id, &"label": label, &"button": button}
+		_tab_entries.append(tab)
+		_fit_tab(tab)
+	_apply_family()
+
+
+func _on_tab_pressed(tab_id: StringName) -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	select_family(tab_id)
+
+
+## One tab's minimum width: its label's own text width at the theme's font plus the tab's
+## inner margins (a Control's minimum size does not account for its children).
+func _fit_tab(tab: Dictionary) -> void:
+	var label: Label = tab[&"label"]
+	var button: Button = tab[&"button"]
+	var width := 0.0
+	var font := label.get_theme_font(&"font")
+	if font != null:
+		width = font.get_string_size(
+			label.text, HORIZONTAL_ALIGNMENT_LEFT, -1, label.get_theme_font_size(&"font_size")
+		).x
+	button.custom_minimum_size.x = width + float(TAB_INNER_MARGIN.x) * 2.0
+
+
+## The one write pass a tab change makes: which built rows and which block of the shelf are
+## shown. The rows themselves are never rebuilt, re-priced, reordered or dropped -- only
+## their visibility moves -- so a family the shelf does not list simply shows the section
+## empty.
+func _apply_family() -> void:
+	var entry := _family_entry(_family)
+	var section := StringName(entry.get(&"section", &"all"))
+	var slot := StringName(entry.get(&"slot", &""))
+	## The HULLS block is a caption/header margin plus its rows, and the MODULES block a
+	## margin plus the listing rows, so both move as one: the block's captions hide with its
+	## rows and every row carries its own `visible` flag (what `shown_*_ids` reads back).
+	_hull_margin.visible = section != &"listings"
+	_module_margin.visible = section != &"hulls"
+	for payload: Dictionary in _hulls:
+		payload[&"row"].visible = section != &"listings"
+	for payload: Dictionary in _listings:
+		payload[&"row"].visible = (
+			section != &"hulls" and (slot == &"" or StringName(payload.get(&"slot", &"")) == slot)
+		)
+	for tab: Dictionary in _tab_entries:
+		var button: Button = tab[&"button"]
+		button.set_pressed_no_signal(tab[&"id"] == _family)
+		var label: Label = tab[&"label"]
+		label.add_theme_color_override(
+			&"font_color",
+			_token(&"text_primary") if tab[&"id"] == _family else _token(&"text_dim")
+		)
+
+
+## Whether the current tab shows one payload's row.
+func _row_shown(payload: Dictionary) -> bool:
+	var row: Control = payload.get(&"row", null)
+	return row != null and is_instance_valid(row) and row.visible
 
 
 func refresh_profile(key: StringName) -> void:
@@ -371,6 +575,9 @@ func _rebuild() -> void:
 	_subtitle.text = SUBTITLE % [_hulls.size(), _listings.size()]
 	_tag.text = TAG_INTERIM if AuctionScript.AUCTION_FACTION_LOTS_INTERIM else ""
 	_refresh_rows()
+	## The rebuild restores every row's visibility, so the tab's own write pass runs again
+	## after it -- a rebuilt shelf shows the family the player was already looking at.
+	_apply_family()
 
 
 func _clear(rows: VBoxContainer) -> void:
@@ -461,6 +668,7 @@ func _build_module_row(entry: Dictionary) -> Dictionary:
 		&"base_id": entry[&"base_id"],
 		&"name": String(entry.get(&"name", "")),
 		&"meta": String(entry.get(&"meta", "")),
+		&"slot": StringName(entry.get(&"slot", &"")),
 		&"cost": int(entry.get(&"price", 0)),
 		&"was": int(entry.get(&"was", 0)),
 		&"hot": bool(entry.get(&"hot", false)),
@@ -990,6 +1198,11 @@ func _apply_tokens() -> void:
 			title.add_theme_color_override(
 				&"font_color", _rarity_color(StringName(payload.get(&"tint", &"rarity_common")))
 			)
+	## A tab's plate and its label both take their look from the theme, so a theme change
+	## re-measures the strip and re-reads the two label tokens.
+	for tab: Dictionary in _tab_entries:
+		_fit_tab(tab)
+	_apply_family()
 
 
 ## One rarity's tint: the theme's `rarity_*` token first (STATION_HUB section 5.10's

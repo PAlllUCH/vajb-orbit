@@ -35,6 +35,19 @@ extends Node2D
 ## the selected battery, its barrels draw a release offset in `[0, BATTERY_STRUM_MS]` ms
 ## and each released barrel spends its own round, applies its own recoil and emits
 ## `shot_fired`; a barrel the family refuses is dry and never holds the rest back.
+##
+## **S5 (09 section 11, CONTRACTS section 17) supersedes the identical-only half.**
+## A battery is now a **player-composed mixed group**: the ARMORY pane's racks, any
+## weapon kinds together, persisted in the profile as `batteries: {ship_id:
+## Array[Array[cell_ref]]}` and handed here by the launch through `set_batteries`
+## (cell refs resolved to this component's own barrel positions by `game.gd`, because
+## §16 rule 3's index divergence leaves the two spaces distinct). `weapon_1..7`
+## addresses rack N, `selected_rack()` is its barrels, and the **salvo gate is the
+## slowest member's cycle**: one trigger releases every armed barrel (strum 0..40 ms,
+## unchanged) and the next salvo arms only once `battery_cycle()` - `max(members'
+## cadence)` - has elapsed. Dry/empty rules stay **per barrel** (§16 rule 4's own
+## carve-outs): a barrel with no ammo never holds the rest of its rack back, the mine
+## keeps one release per pull, and a beam barrel opens once and keeps drawing.
 
 ## Raised when a shot actually leaves: one per released projectile (cannon,
 ## railgun, rocket, mine) and once per beam hold for the instant families, which
@@ -64,11 +77,20 @@ const FxScript := preload("res://game/fx.gd")
 ## (0.35 + 0.25), and the railgun borrows it (reported: section 4.1 gives the
 ## railgun no cycle and no rate of fire).
 ##
+## `track_dps` is S5's column (09 section 3.1's new one, CONTRACTS section 17): the
+## degrees per second a barrel of that family swings toward the aim, the owner's "i want
+## weapons to not turn as fast ... weapons can have different turn speeds". The order is
+## the doc's own -- laser 180, cannon 120, railgun 100, plasma 75, rocket 60 -- and the
+## mine is 0 (fixed: a drop has no barrel to swing). `w_mining`'s 150 is the module-side
+## row below, because the mining laser is not fired through this component. `TRACK_MULT`
+## scales the whole column, so 0 is instant aim (the reversal).
+##
 ## `edge` marks the mine, which section 4.1 calls "drop" rather than "held":
 ## one per trigger pull.
 const FAMILIES: Dictionary = {
 	&"laser": {
 		&"module": &"w_laser",
+		&"track_dps": 180.0,
 		&"family": &"energy",
 		&"range": 500.0,
 		&"dps": 30.0,
@@ -78,6 +100,7 @@ const FAMILIES: Dictionary = {
 	},
 	&"plasma": {
 		&"module": &"w_plasma",
+		&"track_dps": 75.0,
 		&"family": &"energy",
 		&"range": 450.0,
 		&"dps": 70.0,
@@ -88,6 +111,7 @@ const FAMILIES: Dictionary = {
 	},
 	&"cannon": {
 		&"module": &"w_cannon",
+		&"track_dps": 120.0,
 		&"family": &"kinetic",
 		&"kind": &"bolt",
 		&"range": 600.0,
@@ -99,6 +123,7 @@ const FAMILIES: Dictionary = {
 	},
 	&"railgun": {
 		&"module": &"w_railgun",
+		&"track_dps": 100.0,
 		&"family": &"kinetic",
 		&"kind": &"slug",
 		&"range": 800.0,
@@ -108,6 +133,7 @@ const FAMILIES: Dictionary = {
 	},
 	&"rocket": {
 		&"module": &"w_rocket",
+		&"track_dps": 60.0,
 		&"family": &"missile",
 		&"kind": &"rocket",
 		&"range": 900.0,
@@ -120,6 +146,7 @@ const FAMILIES: Dictionary = {
 	},
 	&"mine": {
 		&"module": &"w_mine",
+		&"track_dps": 0.0,
 		&"family": &"deployable",
 		&"kind": &"mine",
 		&"range": 0.0,
@@ -132,15 +159,39 @@ const FAMILIES: Dictionary = {
 	},
 }
 
+## The module-side halves of the tracking column (S5, 09 section 3.1): the `w_mining`
+## row exists because the mining laser is a W-slot **tool** with no family row here (the
+## mining shaft is `mining_laser.gd`'s, aimed by cursor), yet the doc's table carries its
+## 150 deg/s beside the gun rows. `track_dps_of` reads either spelling, so the module id
+## the fit and the HANGAR use answers the same number as the family id the trigger uses.
+const MODULE_TRACK_DPS: Dictionary = {&"w_mining": 150.0}
+
+## S5 (09 section 11, CONTRACTS section 17): how far a barrel swings toward the aim each
+## second, as a multiplier on its family's `track_dps`. `1.0` is the shipped taste table;
+## **`0.0` is the pin's named reversal -- instant aim, exactly the pre-S5 behaviour** (a
+## barrel that never lags). Every value between scales the whole column at once.
+const TRACK_MULT := 1.0
+
+## The angular window a **beam** barrel needs before it connects (section 11): "a beam
+## barrel sweeps and connects only within `TRACK_TOLERANCE := 5.0 deg`". A beam whose
+## barrel is still swinging draws its shaft where the barrel points and deals nothing --
+## the travelling families carry the equivalent in their shot's own direction, which is
+## the barrel's facing at the release. Under `TRACK_MULT := 0` the error is always zero,
+## so this gate can never bite the reversed behaviour.
+const TRACK_TOLERANCE := 5.0
+
 ## 09 section 3.1's note, pinned in CONTRACTS section 3: "the railgun shares the
 ## cannon pack in v1". `PlayerState.WEAPONS` carries the five v1 ids, so a railgun
 ## round spends the cannon's slot (reported: the railgun is the sixth family and
 ## has no slot of its own).
 const SHARED_PACK: Dictionary = {&"railgun": &"cannon"}
 
-## Section 4.3 / section 11: `weapon_1..5` selects a group and **Space**
-## (`fire_primary`) fires it. Five groups is the input map's count.
-const GROUPS_MAX := 5
+## Section 4.3 / section 11: `weapon_1..7` selects a **rack** and **Space**
+## (`fire_primary`) fires it. **S5 (09 section 11, CONTRACTS section 17): the map is
+## seven keys** -- `weapon_6`/`weapon_7` are orchestrator-applied to
+## `project.godot` -- so the ceiling grew from five; a group past the end of the
+## composed racks selects nothing.
+const GROUPS_MAX := 7
 const FIRE_ACTION: StringName = &"fire_primary"
 const MODULE_PREFIX := "w_"
 
@@ -305,6 +356,29 @@ var _group := 1
 ## (CONTRACTS section 16 rule 2). `weapon_1..5` and every HUD slot address one entry.
 var _batteries: Array[StringName] = []
 
+## The composed racks (S5, 09 section 11, CONTRACTS section 17): one Array[int] per
+## rack, in `weapon_1..7` order, each entry a **barrel position in `_fitted`**. The
+## launch hands the spec in through `set_batteries` (cell refs resolved to these
+## positions by `game.gd`); with no spec - every pre-S5 fixture, and a fit whose
+## record is empty - one rack per distinct family in first-barrel order, which is
+## exactly S4's grouping and keeps `weapon_1` on the first family.
+var _racks: Array = []
+
+## The spec `set_batteries` was handed, kept so a later `set_fitted` composes the same
+## racks against the new barrel list instead of losing them.
+var _battery_spec: Array = []
+
+## One release flag per barrel for the **pull**: the mine's carve-out (09 section 3.1's
+## `edge`, one release per pull) is per barrel now that a rack may mix it with a held
+## family. Cleared on the rising edge.
+var _released: Array[bool] = []
+
+## The selected rack's salvo gate (S5, CONTRACTS section 17): seconds left before the
+## battery may arm again, set at the arm to `battery_cycle()` - `max(members'
+## cadence)`, the "rof limited by the slowest weapon" rule. A rack of one family reads
+## its own cadence, which is S4's per-barrel behaviour exactly.
+var _battery_timer := 0.0
+
 var _firing := false
 var _was_firing := false
 var _external_trigger := false
@@ -325,8 +399,25 @@ var _armed: Array[float] = []
 ## (CONTRACTS section 16 rule 6).
 var _beam_open: Array[bool] = []
 
+## One **hull-local facing** per barrel, radians (S5, 09 section 11): the barrel's
+## current direction relative to the hull's axis. It starts at the mount's own rest
+## facing (`_base_facing`) and `_track_barrels` sweeps it toward the aim every frame at
+## the barrel's family `track_dps`, which is what makes a slow turret lag a fast one.
+var _facing: Array[float] = []
+
+## The map's rest facing per barrel, kept beside `_facing` so a fixed barrel (the mine,
+## `track_dps` 0) can hold it and a hull swap re-seeds rather than inherits.
+var _base_facing: Array[float] = []
+
+## One muzzle per barrel, in the hull's own units: the measured mount when the hull's
+## map carries one (`PlayerShip.weapon_mount`), else `Vector2.ZERO` -- the component's
+## own origin, the muzzle every pre-S5 hull and every fixture fires from.
+var _mounts: Array[Vector2] = []
+
 ## The battery the last arm was for, so a group switched mid-hold arms the new one.
-var _armed_weapon: StringName = &""
+## A **rack index** (-1 = nothing armed) rather than an id, because a composed rack may
+## hold several families and two racks may hold the same one.
+var _armed_rack := -1
 var _burst_phase := 0.0
 var _beam_live := false
 
@@ -414,8 +505,29 @@ func set_fitted(ids: Array[StringName]) -> void:
 	_sync_barrels()
 
 
-## Rebuilds everything a fit change invalidates: the battery list `weapon_1..5` selects
-## from, and the three per-barrel arrays the volley runs on.
+## The composed racks (S5, 09 section 11, CONTRACTS section 17): one Array[int] per
+## rack in `weapon_1..7` order, each entry a **barrel position in `fitted()`**. The
+## launch resolves the profile's persisted cell refs to those positions and hands them
+## here (`game.gd:_launch_batteries`), because §16 rule 3's divergence (`fitted()`
+## drops the family-less `w_mining` cells) leaves the component's barrel positions and
+## the hull's W-cell indices two different spaces. Callable before or after
+## `set_fitted`: the spec is kept and composed against whatever barrels exist.
+##
+## A spec entry that names a position outside `fitted()`, or a position another rack
+## already holds, is dropped, and every barrel no rack claims is appended as its own
+## rack - a fitted weapon is never left unfireable. An empty spec means S4's grouping:
+## one rack per distinct family in first-barrel order.
+func set_batteries(groups: Array) -> void:
+	_battery_spec = groups.duplicate(true)
+	_sync_barrels()
+
+
+## Rebuilds everything a fit change invalidates: the battery list `weapon_1..7` selects
+## from, the rack list the volley walks, and the four per-barrel arrays it runs on.
+## **S5 (09 section 11) adds the two muzzle arrays beside them:** each barrel's mount
+## (`_mount_for`) and its rest facing, with `_facing` re-seeded from that rest - so a
+## hull swap or a fit change starts the turrets where the artwork put them rather than
+## inheriting the last target's bearing.
 func _sync_barrels() -> void:
 	var batteries: Array[StringName] = []
 	for id: StringName in _fitted:
@@ -425,19 +537,87 @@ func _sync_barrels() -> void:
 	var timers: Array[float] = []
 	var armed: Array[float] = []
 	var open: Array[bool] = []
-	for _position in _fitted.size():
+	var released: Array[bool] = []
+	var mounts: Array[Vector2] = []
+	var base: Array[float] = []
+	for position in _fitted.size():
 		timers.append(0.0)
 		armed.append(-1.0)
 		open.append(false)
+		released.append(false)
+		var mount := _mount_for(position)
+		mounts.append(mount[&"pos"])
+		base.append(float(mount[&"facing"]))
 	_barrel_timers = timers
 	_armed = armed
 	_beam_open = open
-	_armed_weapon = &""
+	_released = released
+	_mounts = mounts
+	_base_facing = base
+	_facing = base.duplicate()
+	_armed_rack = -1
+	_battery_timer = 0.0
+	_racks = _compose_racks()
 
 
-## `weapon_1..5` (section 4.3): the input map's five keys are the group range, so a
-## group outside it clamps. A group with no fitted battery selects nothing, and the
-## trigger then falls silent rather than firing the previous group.
+## One barrel's measured mount, asked of the hull the component is mounted on (S5, 09
+## section 11): `PlayerShip.weapon_mount` answers `pos` in the hull's own units and
+## `facing` in radians, and a host that cannot (an NPC, a probe's stub hull, a fit
+## mounted on a bare Node2D) answers `Vector2.ZERO` / `0.0` -- the component's own origin,
+## which is the muzzle every pre-S5 fixture fires from.
+##
+## The **barrel position in `fitted()`** is the index, which is also what `game.gd`
+## resolves the profile's W-cell refs into (section 16 rule 3's divergence), so a cell's
+## mount and its rack entry name the same barrel.
+func _mount_for(position: int) -> Dictionary:
+	var host := _host()
+	if host != null and host.has_method(&"weapon_mount"):
+		var mount: Variant = host.call(&"weapon_mount", position)
+		if mount is Dictionary and not (mount as Dictionary).is_empty():
+			var pos: Variant = (mount as Dictionary).get(&"pos", Vector2.ZERO)
+			return {
+				&"pos": pos if pos is Vector2 else Vector2.ZERO,
+				&"facing": float((mount as Dictionary).get(&"facing", 0.0)),
+			}
+	return {&"pos": Vector2.ZERO, &"facing": 0.0}
+
+
+## The racks this fit fires, from the spec `set_batteries` holds: the spec's own racks
+## (each one cleaned of positions `fitted()` does not carry and of repeats), then one
+## trailing rack per barrel no rack claimed. An empty spec - no `set_batteries` call,
+## as every pre-S5 fixture and every probe has - gives S4's grouping: the distinct
+## families of `fitted()` in first-barrel order, one rack each.
+func _compose_racks() -> Array:
+	var racks: Array = []
+	if _battery_spec.is_empty():
+		for id: StringName in _batteries:
+			var family_rack: Array = []
+			for position in _fitted.size():
+				if _fitted[position] == id:
+					family_rack.append(position)
+			racks.append(family_rack)
+		return racks
+	var claimed: Dictionary = {}
+	for raw_rack: Variant in _battery_spec:
+		if not raw_rack is Array:
+			continue
+		var rack: Array = []
+		for raw_position: Variant in (raw_rack as Array):
+			var position := int(raw_position)
+			if position < 0 or position >= _fitted.size() or claimed.has(position):
+				continue
+			claimed[position] = true
+			rack.append(position)
+		racks.append(rack)
+	for position in _fitted.size():
+		if not claimed.has(position):
+			racks.append([position])
+	return racks
+
+
+## `weapon_1..7` (section 4.3): the input map's seven keys are the group range, so a
+## group outside it clamps. A group with no rack selects nothing, and the trigger then
+## falls silent rather than firing the previous group.
 func select_group(group: int) -> void:
 	_group = clampi(group, 1, GROUPS_MAX)
 
@@ -446,29 +626,90 @@ func selected_group() -> int:
 	return _group
 
 
-## The selected battery's weapon id, `&""` past the end of `battery_ids()`.
+## The selected rack's **representative** weapon id: its first barrel's family, `&""`
+## for a rack that is empty or past the end of the racks. A composed rack may mix
+## kinds, so this is the id a single-weapon readout (the reticle's reach, the HUD's
+## label) names - the trigger itself fires every member of `selected_rack()`.
 func selected_weapon() -> StringName:
-	if _group < 1 or _group > _batteries.size():
+	var rack := selected_rack()
+	if rack.is_empty():
 		return &""
-	return _batteries[_group - 1]
+	return _fitted[int(rack[0])]
+
+
+## The selected rack's barrels: barrel positions in `fitted()`, ascending as the spec
+## ordered them, `[]` past the end of the racks or for an empty rack.
+func selected_rack() -> Array:
+	if _group < 1 or _group > _racks.size():
+		return []
+	var rack: Array = []
+	for position: int in _racks[_group - 1]:
+		rack.append(position)
+	return rack
+
+
+## Every rack of this fit (S5, CONTRACTS section 17): one Array[int] per rack in
+## `weapon_1..7` order, each entry a barrel position in `fitted()`, duplicated so a
+## caller cannot write through. The profile's record is the **cell-ref** authority
+## (`batteries: {ship_id: Array[Array[cell_ref]]}`); this is the same grouping in the
+## component's own index space.
+func racks() -> Array:
+	var out: Array = []
+	for rack: Variant in _racks:
+		var positions: Array = []
+		for position: int in (rack as Array):
+			positions.append(position)
+		out.append(positions)
+	return out
+
+
+## How many racks this fit fires, i.e. how many `weapon_1..7` keys select something.
+func rack_count() -> int:
+	return _racks.size()
+
+
+## The selected rack's salvo gate (S5, 09 section 11, CONTRACTS section 17): the
+## **slowest member's cycle**, `max(interval_of(member))` over the rack's barrels - "the
+## rof will be limited by the slowest weapon". 0.0 for an empty rack and for a rack
+## whose members state no cadence at all.
+func battery_cycle() -> float:
+	if _group < 1 or _group > _racks.size():
+		return 0.0
+	return _rack_cycle(_group - 1)
+
+
+## One rack's salvo gate by index, the reading behind `battery_cycle`.
+func rack_cycle(rack: int) -> float:
+	if rack < 0 or rack >= _racks.size():
+		return 0.0
+	return _rack_cycle(rack)
+
+
+func _rack_cycle(rack: int) -> float:
+	var cycle := 0.0
+	for position: int in _racks[rack]:
+		cycle = maxf(cycle, interval_of(_fitted[position]))
+	return cycle
 
 
 ## The batteries this fit carries, in first-barrel order (CONTRACTS section 16 rule 2):
 ## the distinct weapon ids of `fitted()`, duplicated so a caller cannot write through.
-## A battery - not a barrel - is what a `weapon_1..5` key and every HUD slot addresses,
-## so on a fit of distinct families this list is element-for-element the `fitted()` this
-## component shipped before S4 and every existing group, cadence and dry test reads the
-## same.
+## Since S5 the **racks** are what a `weapon_1..7` key and every HUD slot address (a
+## rack may hold several of these ids), so this list is the fit's firing families, kept
+## for the callers and tests that want them; on a fit of distinct families it is
+## element-for-element the list S4 shipped.
 func battery_ids() -> Array[StringName]:
 	return _batteries.duplicate()
 
 
-## This battery's **barrel positions in `fitted()`**, ascending - not W-cell indices
+## This base id's **barrel positions in `fitted()`**, ascending - not W-cell indices
 ## (CONTRACTS section 16 rule 3): the component is handed a flat id list that has
 ## already dropped family-less modules, so the two index spaces diverge on the first
 ## `w_mining` cell. Normalised through `weapon_id`, so `&"w_laser"` and `&"laser"`
 ## answer the same list; a base with no firing family answers `[]` (its strip row
-## exists, but there is no trigger behind it).
+## exists, but there is no trigger behind it). Superseded in part by `racks()` for the
+## composed world (§17): a rack is addressed by `weapon_N`, while this reads the
+## fit's families, which is what a family-keyed caller (the ammo readout) wants.
 func battery(base_id: StringName) -> Array:
 	var positions: Array = []
 	var id := weapon_id(base_id)
@@ -508,6 +749,11 @@ func is_firing() -> bool:
 ## Why the selected group cannot shoot right now, in the closed vocabulary
 ## `&"none"` (nothing selected), `&"energy"` (the pool is empty, section 4.4) and
 ## `&"ammo"` (the pack is empty, section 4.3); `&""` means it can.
+##
+## Since S5 a rack may mix families, so this answers for the selected rack's
+## **first barrel** - the same barrel `selected_weapon()` names. The trigger itself
+## stays per barrel (09 section 11: a dry or empty member never blocks the rest), so
+## this is a readout, not a gate.
 func dry_reason() -> StringName:
 	var id := selected_weapon()
 	if id == &"":
@@ -592,14 +838,19 @@ func _physics_process(delta: float) -> void:
 ## One frame of the trigger. `_physics_process` is exactly this call, so a probe or
 ## a test can step the weapons deterministically without a physics frame.
 ##
-## The frame, in order (CONTRACTS section 16 rule 4): the barrels' own cadence timers
-## run down, a pull's rising edge arms the selected battery, an unheld trigger disarms
-## it, and then every armed barrel whose offset has elapsed and whose cadence is ready
-## releases - a travelling one fires, an instant one opens - after which a still-held
-## pull whose whole salvo has released arms the battery again, which is the stream.
+## The frame, in order (CONTRACTS section 16 rule 4, gated by section 17): every
+## barrel's own **tracking** runs first (S5: a turret swings whether or not the trigger
+## is held, which is the whole of the owner's "weapons to not turn as fast"), then the
+## barrels' own cadence timers and the selected rack's salvo timer run down, a pull's
+## rising edge arms the selected rack, an unheld trigger disarms it, and then every
+## armed barrel whose offset has elapsed and whose cadence is ready releases - a
+## travelling one fires along its barrel's current facing, an instant one opens - after
+## which a still-held pull whose whole salvo has released arms the rack again **once the
+## battery's own cycle has elapsed**, which is the stream at the slowest member's rate.
 func tick(delta: float) -> void:
 	_sample_trigger()
 	if delta > 0.0:
+		_track_barrels(delta)
 		_advance_barrel_timers(delta)
 		if _firing:
 			_burst_phase = fmod(_burst_phase + delta, KINETIC_INTERVAL)
@@ -610,6 +861,8 @@ func tick(delta: float) -> void:
 		_dry_noted = false
 		_beam_live = false
 		_burst_phase = 0.0
+		for position in _released.size():
+			_released[position] = false
 		_arm_battery()
 	if not _firing:
 		_was_firing = false
@@ -619,39 +872,38 @@ func tick(delta: float) -> void:
 		_hide_beam()
 		return
 	_was_firing = true
-	var id := selected_weapon()
-	if id == &"":
+	var rack := _selected_rack_index()
+	if rack < 0:
 		return
-	## A group switched while the trigger is held arms the battery it switched to: the
-	## pin's rising edge is where a pull arms, and a battery that was never armed would
+	## A group switched while the trigger is held arms the rack it switched to: the
+	## pin's rising edge is where a pull arms, and a rack that was never armed would
 	## otherwise fire nothing until the trigger was let go and pulled again.
-	if id != _armed_weapon:
+	if _armed_rack != rack:
 		_arm_battery()
-	var row: Dictionary = FAMILIES[id]
-	var instant := bool(row.get(&"instant", false))
-	_release_battery(id, row, delta)
+	_release_battery(rack, delta)
 	## A held trigger is a stream of salvos, not one (CONTRACTS section 16 rule 4's own
-	## second half, restored by the S4-H4 pass): once every barrel of the armed battery has
-	## had its release, the still-held pull arms it again, so each barrel fires again as soon
-	## as its **own cadence timer** allows - the pre-S4 stream, one timer per barrel instead
-	## of one for the whole trigger. Two families keep one release per pull: the mine, which
-	## 09 section 3.1 calls a drop rather than a held family and marks `edge` (the pre-S4
-	## `_fire_projectile` read the same flag, at f3b0d24:vajb-orbit/game/weapons.gd:601-603),
-	## and a beam battery, which has no salvo to repeat because its open barrels keep drawing
-	## for as long as the trigger is held.
-	if not instant and not bool(row.get(&"edge", false)) and _salvo_spent(id):
+	## second half, restored by the S4-H4 pass and re-gated by section 17): once every
+	## barrel of the armed rack has had its release, the still-held pull arms it again as
+	## soon as the **battery's cycle** - `max(members' cadence)`, the slowest member's rate
+	## - has elapsed. Two carve-outs: a rack whose members are all beams has no salvo to
+	## repeat (its open barrels keep drawing for as long as the trigger is held), and a
+	## barrel of an `edge` row (the mine, 09 section 3.1's drop) declares itself released
+	## for the pull on its first release, so the re-arm cannot fire it twice.
+	if not _rack_is_all_beam(rack) and _salvo_spent(rack) and _battery_timer <= 0.0:
 		_arm_battery()
-	if instant:
-		_fire_beam_battery(id, row, delta)
+	if _rack_holds_beam(rack):
+		_fire_beam_battery(rack, delta)
 
 
-## Whether every barrel of `weapon`'s battery has had its release since the last arm - the
+## Whether every barrel of one rack has had its release since the last arm - the
 ## trigger point of the held pull's stream above. A barrel still armed is waiting either on
 ## its release offset or on its own cadence timer (rule 4's as-built (d): an unready cadence
-## keeps the barrel armed), so the salvo is spent only once no barrel of the battery is left,
-## and the battery then arms again. A base with no barrel at all is never spent.
-func _salvo_spent(weapon: StringName) -> bool:
-	var positions := battery(weapon)
+## keeps the barrel armed), so the salvo is spent only once no barrel of the rack is left,
+## and the rack then arms again. An empty rack is never spent.
+func _salvo_spent(rack: int) -> bool:
+	if rack < 0 or rack >= _racks.size():
+		return false
+	var positions: Array = _racks[rack]
 	if positions.is_empty():
 		return false
 	for position: int in positions:
@@ -660,28 +912,60 @@ func _salvo_spent(weapon: StringName) -> bool:
 	return true
 
 
-## One frame of the barrels' own cadence. They run down whether or not the trigger is
-## held, exactly as the single `_shot_timer` did, so a barrel's rate is its family's
-## and not the pull's.
+## The selected rack's index, -1 when the group addresses no rack (a fit with fewer
+## racks than the pressed `weapon_N`).
+func _selected_rack_index() -> int:
+	if _group < 1 or _group > _racks.size():
+		return -1
+	return _group - 1
+
+
+## Whether one rack holds an instant (beam) barrel - the racks whose frame draws a
+## shaft and pays per-barrel Energy.
+func _rack_holds_beam(rack: int) -> bool:
+	for position: int in _racks[rack]:
+		if bool(row_of(_fitted[position]).get(&"instant", false)):
+			return true
+	return false
+
+
+## Whether **every** barrel of one rack is instant: the one carve-out from the stream
+## above (a beam rack opens once and keeps drawing; there is no salvo to repeat).
+func _rack_is_all_beam(rack: int) -> bool:
+	for position: int in _racks[rack]:
+		if not bool(row_of(_fitted[position]).get(&"instant", false)):
+			return false
+	return true
+
+
+## One frame of the barrels' own cadence and of the battery's salvo gate. They run
+## down whether or not the trigger is held, exactly as the single `_shot_timer` did,
+## so a barrel's rate is its family's and the rack's is its slowest member's.
 func _advance_barrel_timers(delta: float) -> void:
 	for position in _barrel_timers.size():
 		_barrel_timers[position] = maxf(_barrel_timers[position] - delta, 0.0)
+	_battery_timer = maxf(_battery_timer - delta, 0.0)
 
 
 ## The pull's rising edge (CONTRACTS section 16 rule 4): every barrel of the selected
-## battery draws a release offset uniformly in `[0, BATTERY_STRUM_MS]` ms, and the
-## volley's clock is the battery's own earliest draw - so the lead barrel releases on
+## rack draws a release offset uniformly in `[0, BATTERY_STRUM_MS]` ms, and the
+## volley's clock is the rack's own earliest draw - so the lead barrel releases on
 ## the pull's own frame, which is the frame the pinned fire feedback (FX_SPEC section
 ## 1.2's flash, section 1.6's opening shaft) has always opened on, and a one-barrel
-## battery is never held up by the draw. Every barrel behind the lead releases when its
+## rack is never held up by the draw. Every barrel behind the lead releases when its
 ## own offset has elapsed.
+##
+## The arming also **starts the salvo gate** (section 17): `_battery_timer` is set to
+## the rack's cycle, `max(members' cadence)`, so the stream above cannot arm the rack
+## again before the slowest member could fire.
 func _arm_battery() -> void:
 	_disarm_battery()
-	var weapon := selected_weapon()
-	_armed_weapon = weapon
-	if weapon == &"":
+	var rack := _selected_rack_index()
+	if rack < 0:
 		return
-	var positions := battery(weapon)
+	_armed_rack = rack
+	var positions: Array = _racks[rack]
+	_battery_timer = _rack_cycle(rack)
 	var ceiling := float(BATTERY_STRUM_MS) / 1000.0
 	var lead := INF
 	for position: int in positions:
@@ -697,7 +981,7 @@ func _arm_battery() -> void:
 func _disarm_battery() -> void:
 	for position in _armed.size():
 		_armed[position] = -1.0
-	_armed_weapon = &""
+	_armed_rack = -1
 
 
 func _close_beams() -> void:
@@ -705,26 +989,41 @@ func _close_beams() -> void:
 		_beam_open[position] = false
 
 
-## One frame of the pull: every armed barrel whose release offset has elapsed **and**
+## One frame of the pull: every armed barrel whose release offset has elapsed **and
 ## whose own cadence timer is ready releases (CONTRACTS section 16 rule 4). A barrel
 ## whose cadence or burst window is not ready stays armed and retries next frame - the
 ## trigger is still held - so one barrel's cadence never silences the rest of the
-## battery. An instant barrel opens; a travelling one fires through
-## `_fire_projectile`, which is where a family's own refusal (an empty pack) makes
-## that barrel dry.
-func _release_battery(weapon: StringName, row: Dictionary, delta: float) -> void:
-	var instant := bool(row.get(&"instant", false))
+## rack. An instant barrel opens; a travelling one fires through `_fire_projectile`,
+## which is where a family's own refusal (an empty pack) makes that barrel dry.
+##
+## **Each barrel reads its own row** (section 17: a rack may mix kinds), and the
+## mine's carve-out is per barrel too: an `edge` row releases once per pull, so a rack
+## may hold a mine beside a held family without dropping a mine per salvo.
+func _release_battery(rack: int, delta: float) -> void:
 	var step := maxf(delta, 0.0)
-	for position: int in battery(weapon):
+	for position: int in _racks[rack]:
 		if _armed[position] < 0.0:
 			continue
-		_armed[position] -= step
+		## The countdown stops at 0, never below: `-1.0` is the unarmed sentinel and a
+		## barrel whose release is waiting on its cadence must stay visibly armed, or the
+		## guard above would read it as unarmed and drop its shot (the S4 latent bug this
+		## wave's own battery timer exposes - measured: a salvo armed one frame before a
+		## barrel's cadence read zero silently lost that barrel's shot).
+		_armed[position] = maxf(_armed[position] - step, 0.0)
 		if _armed[position] > 0.0:
+			continue
+		var weapon: StringName = _fitted[position]
+		var row := row_of(weapon)
+		var instant := bool(row.get(&"instant", false))
+		if bool(row.get(&"edge", false)) and _released[position]:
+			_armed[position] = -1.0
 			continue
 		if _barrel_timers[position] > 0.0:
 			continue
 		if not instant and not _burst_open(row):
 			continue
+		if bool(row.get(&"edge", false)):
+			_released[position] = true
 		_armed[position] = -1.0
 		if instant:
 			_beam_open[position] = true
@@ -758,39 +1057,66 @@ func _burst_open(row: Dictionary) -> bool:
 ## damage, paid for out of the Energy pool first (section 4.4): a pool that cannot
 ## pay the frame means no shot and dry-fire feedback.
 ##
-## One frame of a **battery** (CONTRACTS section 16 rule 6): every open barrel pays its
-## own `draw x delta`, a pool that cannot pay one makes only that barrel dry for the
-## frame, and the ones before it keep drawing. The shaft itself is one drawing - one
-## muzzle, one aim point, whatever the barrel count - and the frame's damage is the sum
-## of the barrels that paid, so a three-laser battery burns three draws and deals three
-## lasers' worth without drawing three shafts over each other.
-func _fire_beam_battery(weapon: StringName, row: Dictionary, delta: float) -> void:
-	var draw := float(row.get(&"draw", 0.0)) * maxf(delta, 0.0)
-	var paid := 0
-	for position: int in battery(weapon):
+## One frame of a **rack** (CONTRACTS section 16 rule 6, section 17's mixed racks):
+## every open barrel pays its **own** family's `draw x delta`, a pool that cannot pay
+## one makes only that barrel dry for the frame, and the ones before it keep drawing.
+## The shaft itself is one drawing - one muzzle, one aim point, whatever the barrel
+## count and whatever the mix - and the frame's damage is the sum of the paid barrels,
+## delivered one `_apply_beam` call per distinct family so each family's own DPS,
+## shield rule and hull bonus are the row's own. A same-family rack therefore takes
+## exactly one delivery, as it did before S5, so the impact cue is not machine-gunned.
+func _fire_beam_battery(rack: int, delta: float) -> void:
+	var step := maxf(delta, 0.0)
+	## Family id -> how many of its open barrels this frame paid, in first-barrel order
+	## (GDScript dictionaries keep insertion order), plus the shaft's reach: the longest
+	## of the paid families' ranges, because the shaft is one drawing.
+	var paid: Dictionary = {}
+	var reach := 0.0
+	var lead: StringName = &""
+	## The lead barrel's own place on the hull (S5, 09 section 11): the shaft is still one
+	## drawing, so it leaves the first barrel that paid this frame.
+	var lead_position := -1
+	for position: int in _racks[rack]:
 		if not _beam_open[position]:
 			continue
-		if not _spend_energy(draw):
+		var weapon: StringName = _fitted[position]
+		var row := row_of(weapon)
+		if not _spend_energy(float(row.get(&"draw", 0.0)) * step):
 			_dry(weapon)
 			continue
-		paid += 1
-	if paid == 0:
+		paid[weapon] = int(paid.get(weapon, 0)) + 1
+		reach = maxf(reach, float(row.get(&"range", 0.0)))
+		if lead == &"":
+			lead = weapon
+			lead_position = position
+	if paid.is_empty():
 		_beam_live = false
 		_hide_beam()
 		return
-	var from := global_position
+	## S5: the shaft leaves the lead **barrel's mount** and runs along that barrel's
+	## current facing. Its length is still the distance to the aim point capped at the
+	## weapon's range, so a beam that is still swinging is drawn short of its target
+	## rather than through it.
+	var from := muzzle_position(lead_position)
+	var facing := muzzle_direction(lead_position)
 	var offset := _aim_point() - from
-	var reach := minf(offset.length(), float(row.get(&"range", 0.0)))
-	if reach <= 0.0:
+	var span := minf(offset.length(), reach)
+	if span <= 0.0:
 		_hide_beam()
 		return
-	var to := from + offset.normalized() * reach
+	var to := from + facing * span
 	## FX_SPEC section 1.6's engine-drawn beam. The target is resolved **before** the
 	## shaft is drawn, so the shaft stops on the point the ray actually reached
 	## (`target[&"point"]`) instead of running through it to the aim point; a miss still
 	## draws the weapon's own reach, so an empty shot shows exactly as it did.
+	## Section 11's tolerance cone gates the contact itself (S5): a barrel further than
+	## `TRACK_TOLERANCE` off the aim draws its shaft and connects with nothing, which is
+	## the beam's half of "weapons to not turn as fast". The shaft is one drawing, so the
+	## cone the contact answers to is the **lead barrel's** -- the same barrel the muzzle
+	## and the facing come from, and the only reading that can be right for a mixed rack
+	## whose members swing at different speeds.
 	## (The impact visual stays the hit site's business, not the beam's.)
-	var target := _beam_target(from, to)
+	var target := _beam_target(from, to) if _beam_aligned(lead_position) else {}
 	var endpoint := to
 	var collider: Variant = target.get(&"collider")
 	if not target.is_empty():
@@ -799,8 +1125,8 @@ func _fire_beam_battery(weapon: StringName, row: Dictionary, delta: float) -> vo
 	## its way to the struck body's centre. `endpoint` itself stays the surface point -
 	## the damage, the cue and the rocket's blast all resolve where the ray landed.
 	_draw_beam(_beam_drawn_end(endpoint, collider))
-	_beam_started(weapon)
-	_advance_fire_feedback(weapon, delta)
+	_beam_started(lead)
+	_advance_fire_feedback(lead, delta)
 	if target.is_empty():
 		return
 	if bool(target[&"projectile"]):
@@ -812,26 +1138,34 @@ func _fire_beam_battery(weapon: StringName, row: Dictionary, delta: float) -> vo
 		ProjectileScript.play_blast(self)
 		ProjectileScript.spawn_explosion(_hit_fx_parent(collider), endpoint)
 		return
-	_apply_beam(weapon, row, collider, endpoint, delta, float(paid))
+	for weapon: StringName in paid:
+		_apply_beam(weapon, row_of(weapon), collider, endpoint, delta, float(paid[weapon]))
 
 
-## A travelling family (section 4.1): a shot leaves at its own speed toward the
-## cursor, spends one round from its pack, and pushes the hull back with section
-## 4.2 item 7's term through the hull's own `apply_recoil` seam.
+## A travelling family (section 4.1): a shot leaves at its own speed, spends one round
+## from its pack, and pushes the hull back with section 4.2 item 7's term through the
+## hull's own `apply_recoil` seam.
+##
+## **S5 (09 section 11, CONTRACTS section 17): the shot leaves its barrel's mount and
+## flies along that barrel's current facing** -- not the cursor. The owner's tick chose
+## "fire along the current facing" over the pin's hold-fire-until-aligned alternative, so
+## a turret that is still swinging genuinely misses; the ship's nose velocity adds
+## exactly as much as it did before (nothing but the direction key ever moved a shot).
 ##
 ## Called once per **barrel** of the battery as that barrel releases (CONTRACTS section
 ## 16 rules 4-5), so a three-barrel volley spawns three shots, spends three rounds from
 ## the one family pack and pushes the hull three times. A released barrel is disarmed and
 ## re-armed by the next salvo, so a held trigger streams (see `tick`); the mine's "one per
 ## trigger pull" is that same loop's `edge` read rather than a flag here. A barrel the pack
-## refuses is dry and leaves the rest of the battery to fire.
+## refuses is dry and leaves the rest of the battery to fire. The mine is `speed 0.0`, so
+## it takes the empty direction and keeps its drop behaviour at its own mount.
 func _fire_projectile(position: int, weapon: StringName, row: Dictionary) -> void:
 	if not _ammo_available(weapon):
 		_dry(weapon)
 		return
 	var speed := float(row.get(&"speed", 0.0))
-	var direction := _aim_direction() if speed > 0.0 else Vector2.ZERO
-	var shot := _spawn_shot(weapon, row, direction)
+	var direction := muzzle_direction(position) if speed > 0.0 else Vector2.ZERO
+	var shot := _spawn_shot(weapon, row, direction, position)
 	if shot == null:
 		return
 	_consume_ammo(weapon)
@@ -840,7 +1174,9 @@ func _fire_projectile(position: int, weapon: StringName, row: Dictionary) -> voi
 	shot_fired.emit(weapon)
 
 
-func _spawn_shot(weapon: StringName, row: Dictionary, direction: Vector2) -> Node2D:
+func _spawn_shot(
+	weapon: StringName, row: Dictionary, direction: Vector2, position: int = 0
+) -> Node2D:
 	var parent := _world_parent()
 	if parent == null:
 		return null
@@ -865,7 +1201,7 @@ func _spawn_shot(weapon: StringName, row: Dictionary, direction: Vector2) -> Nod
 		&"chip": GUN_CHIP_RATE,
 	})
 	parent.add_child(shot)
-	shot.global_position = global_position
+	shot.global_position = muzzle_position(position)
 	return shot
 
 
@@ -1205,6 +1541,102 @@ func _aim_direction() -> Vector2:
 	if offset.is_zero_approx():
 		return Vector2.RIGHT.rotated(_host_rotation())
 	return offset.normalized()
+
+
+## --- S5 (09 section 11, CONTRACTS section 17): the barrels' own tracking ---
+
+
+## One frame of every barrel's swing toward the aim. Each barrel carries its **own**
+## facing (relative to the hull's axis) and turns at its own family's `track_dps`, so a
+## rack may mix a fast laser with a slow rocket and each keeps its own speed -- the
+## owner's "in one weapon battery they can have different turn speeds as well".
+##
+## Three cases, in order: a `track_dps` of 0 is a family with no barrel to swing (the
+## mine's drop) and holds its mount facing; `TRACK_MULT := 0` is the pin's reversal and
+## snaps every barrel onto the aim at once, which is exactly the pre-S5 behaviour; every
+## other case turns by `track_dps * TRACK_MULT` degrees this frame, no further than the
+## error, along the shorter arc (so a barrel crossing the +/-PI seam does not spin the
+## long way round).
+##
+## Tracking runs whether or not the trigger is held: a turret is a turret, and a pulled
+## trigger then fires along wherever the barrel has got to.
+func _track_barrels(delta: float) -> void:
+	var step := maxf(delta, 0.0)
+	for position in _facing.size():
+		var dps := track_dps_of(_fitted[position])
+		if dps <= 0.0:
+			_facing[position] = _base_facing[position]
+			continue
+		var target := _barrel_aim_angle(position)
+		if TRACK_MULT <= 0.0:
+			_facing[position] = target
+			continue
+		var error := wrapf(target - _facing[position], -PI, PI)
+		var reach := deg_to_rad(dps) * TRACK_MULT * step
+		_facing[position] += error if absf(error) <= reach else signf(error) * reach
+
+
+## The aim's angle in the barrel's own hull-local frame: the direction from **this
+## barrel's muzzle** to the aim point, minus the hull's rotation -- so two barrels in
+## different places off the same hull have slightly different targets, which is the
+## positional half of the owner's "it will fire from different angles/positions". A
+## target sitting exactly on the muzzle reads the hull's axis, the same fallback
+## `_aim_direction` uses.
+func _barrel_aim_angle(position: int) -> float:
+	var offset := _aim_point() - muzzle_position(position)
+	if offset.is_zero_approx():
+		return 0.0
+	return wrapf((offset.normalized().angle() - _host_rotation()), -PI, PI)
+
+
+## A barrel's current world direction: the hull's rotation plus the barrel's own facing
+## (S5, 09 section 11). A travelling shot leaves along this; the beam's shaft is drawn
+## along it, which is what lets a still-swinging turret actually miss.
+func muzzle_direction(position: int) -> Vector2:
+	var facing := 0.0
+	if position >= 0 and position < _facing.size():
+		facing = _facing[position]
+	return Vector2.RIGHT.rotated(_host_rotation() + facing)
+
+
+## A barrel's muzzle in world space: this component's own origin for a barrel the hull's
+## map does not place (every pre-S5 hull, every fixture), and the measured mount for one
+## it does.
+func muzzle_position(position: int) -> Vector2:
+	if position < 0 or position >= _mounts.size():
+		return global_position
+	return to_global(_mounts[position])
+
+
+## One barrel's current facing, in radians relative to the hull's axis (S5, 09 section
+## 11). This is the number a turret's lag is measured in: the shipped probe and suite read
+## it before and after an aim change to see a 60 deg/s barrel fall behind a 180 deg/s one.
+## A position outside `fitted()` reads 0 (the hull's axis), like an unmapped mount.
+func barrel_facing(position: int) -> float:
+	if position < 0 or position >= _facing.size():
+		return 0.0
+	return _facing[position]
+
+
+## Every barrel's facing in `fitted()` order, a copy: the read-back a probe logs as one
+## line per frame.
+func barrel_facings() -> Array[float]:
+	return _facing.duplicate()
+
+
+## Whether a beam barrel is inside the pin's tolerance cone (09 section 11): "a beam
+## barrel sweeps and connects only within `TRACK_TOLERANCE := 5.0 deg`". Measured between
+## the barrel's own facing and the direction to the aim, both in world space; under
+## `TRACK_MULT := 0` the two are the same vector, so the gate is open exactly as it was
+## before S5.
+func _beam_aligned(position: int) -> bool:
+	var aim := _aim_point() - muzzle_position(position)
+	if aim.is_zero_approx():
+		return true
+	var error := wrapf(
+		muzzle_direction(position).angle() - aim.normalized().angle(), -PI, PI
+	)
+	return absf(error) <= deg_to_rad(TRACK_TOLERANCE)
 
 
 func _aim_point() -> Vector2:
@@ -1708,6 +2140,22 @@ static func range_of(id: StringName) -> float:
 
 static func dps_of(id: StringName) -> float:
 	return float(row_of(id).get(&"dps", 0.0))
+
+
+## How fast a barrel of this family swings toward the aim, in degrees per second (S5,
+## 09 section 3.1's new `track_dps` column). Either spelling answers: a weapon id reads
+## its family row (`&"laser"` 180, `&"cannon"` 120, `&"railgun"` 100, `&"plasma"` 75,
+## `&"rocket"` 60, `&"mine"` 0 -- fixed), and a module id the family row does not carry
+## reads `MODULE_TRACK_DPS` (`&"w_mining"` 150, the mining tool, whose beam is
+## `mining_laser.gd`'s and aims by cursor). Anything else is 0: no barrel, no swing.
+##
+## The doc's own note travels with the value: `TRACK_MULT` scales it, and 0 there is the
+## pin's named reversal -- instant aim.
+static func track_dps_of(id: StringName) -> float:
+	var row := row_of(weapon_id(id))
+	if not row.is_empty():
+		return float(row.get(&"track_dps", 0.0))
+	return float(MODULE_TRACK_DPS.get(id, 0.0))
 
 
 ## The seconds between one released shot and the next: the spec's own where it

@@ -23,6 +23,7 @@ const TOKENS_TYPE: StringName = &"Tokens"
 const ExchangeScript := preload("res://game/exchange.gd")
 const MineralCatalogScript := preload("res://game/mineral_catalog.gd")
 const ComponentCatalogScript := preload("res://game/component_catalog.gd")
+const StationCatalogScript := preload("res://game/station_catalog.gd")
 const Clock := preload("res://autoload/world_clock.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
 
@@ -84,6 +85,8 @@ const GRADE_NUMERALS: Array[String] = ["", "I", "II", "III"]
 const META_ORE := "ORE"
 const META_INGOT := "INGOT"
 const META_SURPLUS := "SURPLUS"
+## S5 (10 section 6.1): the row's meta line for an ammunition cargo unit.
+const META_AMMO := "AMMO"
 
 const CAPTION_UNITS := "UNITS"
 const CAPTION_CR_EACH := "CR EACH"
@@ -406,7 +409,10 @@ func _rebuild_hold() -> void:
 func _sellable_ids(profile: ProfileScript) -> Array[StringName]:
 	## 05 section 8 ordering: the profile's hold filtered by Exchange.is_sellable, minerals in
 	## catalogue order (ore then ingot per mineral), then components in catalogue order. An id
-	## the exchange cannot price is not drawn at all.
+	## the exchange cannot price is not drawn at all. **S5 (10 section 6.1 / CONTRACTS
+	## section 17):** the ammunition cargo units follow, in pack order, so the units are sold
+	## on this same hold surface right beside the mineral stacks; the position is a display
+	## choice, nothing keys off it.
 	var ids: Array[StringName] = []
 	if profile == null:
 		return ids
@@ -425,6 +431,9 @@ func _sellable_ids(profile: ProfileScript) -> Array[StringName]:
 			and ExchangeScript.is_sellable(component_id)
 		):
 			ids.append(component_id)
+	for ammo_id: StringName in StationCatalogScript.ammo_item_ids():
+		if _qty(cargo, ammo_id) > 0 and ExchangeScript.is_sellable(ammo_id):
+			ids.append(ammo_id)
 	return ids
 
 
@@ -837,7 +846,17 @@ func _icon_path(item_id: StringName) -> String:
 		return String(MineralCatalogScript.entry_for_item(item_id).get(&"icon_ore", ""))
 	if MineralCatalogScript.is_ingot(item_id):
 		return String(MineralCatalogScript.entry_for_item(item_id).get(&"icon_ingot", ""))
+	if ExchangeScript.is_ammo(item_id):
+		## S5: an ammunition unit draws its family's pack glyph (`StationCatalog.AMMO_PACKS`),
+		## the same art the ARMORY rows buy it with.
+		return _ammo_pack(item_id).get(&"icon", "")
 	return String(ComponentCatalogScript.component(item_id).get(&"icon", ""))
+
+
+## The `StationCatalog.AMMO_PACKS` row behind one `ammo_*` cargo id, or `{}` for an id
+## outside the six families.
+func _ammo_pack(item_id: StringName) -> Dictionary:
+	return StationCatalogScript.ammo_pack(StationCatalogScript.ammo_family(item_id))
 
 
 func _tint_path(icon_path: String) -> String:
@@ -879,6 +898,10 @@ func _icon_tint(icon_path: String, tint: Color) -> Color:
 func _tint_of(item_id: StringName) -> Color:
 	if ExchangeScript.is_component(item_id):
 		return _grade_tint(int(ComponentCatalogScript.component(item_id).get(&"grade", 0)))
+	if ExchangeScript.is_ammo(item_id):
+		## S5: the ammo masters are full-colour glyphs without a derived stencil, so the
+		## neutral ink is what `_icon_tint` falls through to for them (no tier / grade).
+		return Color.WHITE
 	return _tier_tint(int(MineralCatalogScript.entry_for_item(item_id).get(&"tier", 0)))
 
 
@@ -905,6 +928,10 @@ func _item_name(item_id: StringName) -> String:
 		return "%s INGOT" % String(
 			MineralCatalogScript.entry_for_item(item_id).get(&"name", String(item_id))
 		).to_upper()
+	if ExchangeScript.is_ammo(item_id):
+		## S5: the family's pack name, upper-cased like every other row title. The unit is a
+		## cargo unit of rounds, so the title carries the pack's own noun.
+		return String(_ammo_pack(item_id).get(&"name", String(item_id))).to_upper()
 	return String(ComponentCatalogScript.component(item_id).get(&"name", String(item_id))).to_upper()
 
 
@@ -913,6 +940,8 @@ func _meta_of(item_id: StringName) -> String:
 		return META_ORE
 	if MineralCatalogScript.is_ingot(item_id):
 		return META_INGOT
+	if ExchangeScript.is_ammo(item_id):
+		return META_AMMO
 	return _family_label(ComponentCatalogScript.component(item_id).get(&"family", &""))
 
 

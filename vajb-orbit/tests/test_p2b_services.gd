@@ -395,12 +395,19 @@ func test_the_hover_line_reads_an_empty_cell() -> void:
 	assert_eq(_hover(empty), WORDING_HOVER % ["W", 2, WORDING_EMPTY, 0])
 
 
-func test_the_hover_line_reads_a_hull_the_account_does_not_own() -> void:
+## STATION_HUB section 5.11 (CONTRACTS section 17): the hangar lists **owned hulls only**, so
+## a hull the account does not own has no row to focus at all. The pane's `fit_for` read -
+## the shape R1 MED-1 pinned for a hull outside the roster - is still reachable through the
+## selection itself, and answers the all-empty shape for every cell.
+func test_a_hull_the_account_does_not_own_has_no_row_and_reads_empty() -> void:
 	assert_false(_owned().has(UNOWNED_HULL), "the fixture owns the Vanguard alone")
-	var row := _row(UNOWNED_HULL)
-	assert_true(row != null, "the hull list has a row for it")
-	row.grab_focus()
-	assert_eq(_selected_hull(), UNOWNED_HULL, "the preview follows the row")
+	assert_true(
+		_row(UNOWNED_HULL) == null, "the hangar lists no row for a hull it does not own"
+	)
+	## The selection is the pane's own; the UI cannot reach an unowned hull any more, so the
+	## read is driven directly (no write: `_selected_id` is the pane's preview state).
+	_shipyard.set(&"_selected_id", UNOWNED_HULL)
+	assert_eq(_selected_hull(), UNOWNED_HULL, "the preview follows the selection")
 	assert_gt(ShipFit.grid_cells(UNOWNED_HULL).size(), 0, "the hull has a layout to read")
 	for cell: Dictionary in ShipFit.grid_cells(UNOWNED_HULL):
 		if bool(cell[&"gap"]):
@@ -416,15 +423,18 @@ func test_the_hover_line_reads_a_hull_the_account_does_not_own() -> void:
 ## R1 MED-1's shipyard half: a hull the account owns but holds no fit for reads the fit the
 ## launch would fly (the profile's own `resolved_fit`), so a delivered cell names its module
 ## instead of the `EMPTY` the FITTING pane would contradict. A hull the account does not own
-## keeps the all-empty read the wave shipped.
+## keeps the all-empty read the wave shipped. The roster is re-seeded mid-test, so the pane
+## is asked to pick up the new owned set the way a purchase on the AUCTION asks it to
+## (section 5.11: the hangar lists what the account owns).
 func test_the_hover_line_reads_the_launchs_fit_for_an_owned_hull() -> void:
 	var owned: Array[StringName] = [HULL, UNOWNED_HULL]
 	_profile.set(&"_owned_ships", owned)
 	assert_false(
 		(_profile.get(&"_fits") as Dictionary).has(String(UNOWNED_HULL)), "nothing is stored for it"
 	)
+	_shipyard.call(&"refresh_profile", &"ships")
 	var row := _row(UNOWNED_HULL)
-	assert_true(row != null, "the hull list has a row for it")
+	assert_true(row != null, "the hull the account owns is in the hangar list")
 	row.grab_focus()
 	assert_eq(_selected_hull(), UNOWNED_HULL, "the preview follows the row")
 	assert_true(_owned().has(UNOWNED_HULL), "and the account owns it")

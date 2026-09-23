@@ -53,10 +53,18 @@ const EXIT_AMBIENCE_FADE := 1.0
 ## is FITTING (section 5.3's amendment of the same date), which took the retired UPGRADES
 ## entry's rail position, icon and tint when that pane's two files were deleted.
 ## Reversal: drop AUCTION from the five arrays and restore the UPGRADES label and pane files.
+##
+## **S5 (2026-09-23, STATION_HUB section 5.11): the first entry is renamed ARMORY.**
+## The label, its pane files and the rail entry's own tile all move together - the
+## label lives here (the theme carries no label-text constants, measured by J0's F3)
+## and the load path reads `MODULE_FILES`, so a rename in one without the other would
+## turn the rail entry into a placeholder. `Module.OUTFITTING` is the enum member's own
+## name and stays: it is referenced by every `_select_module` caller, and an enum is
+## not a label. **Reversal:** the `outfitting` file name and the `OUTFITTING` label.
 enum Module { OUTFITTING, REFINERY, EXCHANGE, AUCTION, SHIPYARD, FITTING, REPAIRS, LAUNCH }
 
 const MODULE_FILES: Array[String] = [
-	"outfitting",
+	"armory",
 	"refinery",
 	"exchange",
 	"auction",
@@ -66,7 +74,7 @@ const MODULE_FILES: Array[String] = [
 	"launch",
 ]
 const MODULE_LABELS: Array[String] = [
-	"OUTFITTING",
+	"ARMORY",
 	"REFINERY",
 	"EXCHANGE",
 	"AUCTION",

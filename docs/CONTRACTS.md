@@ -799,7 +799,16 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
-Expected: **`[SUMMARY] passed=524 failed=0`**, exit 0 (measured **twice** on 2026-09-23 by the S4
+Expected (S5, 2026-09-24): **`[SUMMARY] passed=577 failed=0`**, exit 0 — measured **three** times
+by the S5 mandatory review (S5-R1) on three scratch stores, identical counts; **577 tests over 49
+suites**, the live `user://profile.cfg` md5 `539de5b7af59c77b6bffc477413161da` unmoved. The four S5
+suites are `test_s5_commerce.gd` **7**, `test_s5_ammo_cargo.gd` **14**, `test_s5_batteries_v2.gd`
+**12** and `test_s5_hardpoints.gd` **11** (44 new), with `test_engine2_weapons.gd` 44 → **48**,
+`test_s4_batteries.gd` 16 → **19**, `test_p2b1_outfitting_panel.gd` 11 → **13** and
+`test_p2b_services.gd` 12 → **14**. The green run's error lines are the pre-existing ones
+(L61's `test_weapon_fx_f4.gd:178`, the detached-hull `data.tree` line below, and
+`test_p1_clock_log.gd`'s own unwritable-path backtrace).
+Previous expected (S4): **`[SUMMARY] passed=524 failed=0`**, exit 0 (measured **twice** on 2026-09-23 by the S4
 fixer pass — S4-H4 — with the canonical command below, identical both runs; **524 tests over 44
 suites**, with the live `user://` byte-identical before and after both runs: `profile.cfg` md5
 `3e6ee8d7e7145c4e37bbd8dc90f62f9b`, `economy_log.txt` md5
@@ -1754,6 +1763,46 @@ set; the owner ruled, and the blocks above are read as follows:
   is dropped — no class icons ship. **Reversal:** restore the phrase with the art.
 - **§16 rules 2/3 read through this section:** composed batteries answer **cell refs**, a
   barrel's mount is `weapon_mounts[cell_ref]` (J4). **Reversal:** the rules as written.
+- **The HUD's `set_hull_slots` payload carries each cell's `position`** — the barrel slot
+  `PlayerState.ammo` indexes (`-1` for an empty cell) — beside `battery` (the rack ordinal);
+  F1's R1-MED-1 cure, with the pre-S5 fallback kept. **Reversal:** drop the field.
+
+## §18 D6 cockpit instruments (2026-09-23) — cluster + ship status screen
+
+Landed docs-first (UI_SPEC §3.7/§3.8, UI_CHROME_ASSETS_SPEC §11, ASSET_NAMING_SPEC
+§11 carry the numbers). Additive to §7: **every frozen method survives as-is, and
+no new feed is introduced** — the cluster derives everything HUD already receives.
+
+```gdscript
+# ui/hud/cockpit_cluster.gd — class_name CockpitCluster extends Control (new file,
+# built in code by hud.gd in the §7 inner-widget idiom; hud.tscn stays untouched).
+# Read-backs (the probe precedent):
+#   cockpit() / compass() -> Control
+#   compass_heading() -> float        # 0..359 as drawn
+#   readouts() -> Dictionary          # {spd, hull, shield, fuel_pct, energy_pct},
+#                                     # each the clamped int the digits show
+# §3.6's Speedometer contract survives BYTE-IDENTICAL
+# (test_engine2_hud.gd:188-237 unmodified): SEGMENTS 10, SWEEP 1.5*pi, OVERDRIVE
+# 0.9, 120x120, filled_segments(), overdrive_segment(), needle_colour(). Only its
+# _draw surface changes: painted ui_gauge_face/ui_gauge_needle sprites under the
+# marks; the segment fill, prograde needle and heading tick stay code-drawn in
+# their theme tokens (textures stay palette-neutral, §3.2's precedent).
+#
+# ui/hud/ship_status_screen.gd — class_name ShipStatusScreen extends Control (new).
+# Toggled by &"ship_status" behind InputMap.has_action (the project.godot row is
+# orchestrator-applied at close-out — workers never touch project.godot).
+# Reads only: resolved_fit + set_hull_slots cells, ModuleCatalog names, the fitting
+# panel's own power arithmetic (cited, never re-invented), the repairs-panel
+# damaged-side suffix rule, and ShipFit.HARDPOINTS markers behind
+# ShipFit.HARDPOINTS.has(hull_id). Writes nothing.
+```
+
+Digit semantics (UI_SPEC §3.7 is the law): SPD = `int(round(prograde.length()))`
+u/s 3 cells clamp 999; HULL/SHLD = `int(round(current))` points 4 cells clamp
+9999; FUEL/ENRG = `int(round(100 × value / maximum))` clamp 0..100, 3 cells + the
+`%` cell; HDG 0..359. Leading blanks (`ui_seg_blank`), never zeros; `maximum == 0`
+reads 0. Danger rows reuse §3.1/§3.1b as row treatments (label + 1 px script-drawn
+frame — digits never recolour); overdrive is `ratio > 0.9` strict.
 
 ## §10 Changelog
 
@@ -2332,3 +2381,32 @@ set; the owner ruled, and the blocks above are read as follows:
   in passing: 09 §10's identical-only battery rule and S4's per-barrel independent
   cadence. Owner ticks ride the S5 brief (the `ARMORY` label, `ROUNDS_PER_CARGO_UNIT`,
   fire-along-facing vs hold-until-aligned, the `track_dps` taste table).
+- **v0.10 (2026-09-23, the cockpit instruments wave D6 — landed docs-first from the
+  owner's NMS-style request)** — added **§18**: the bottom-left instrument cluster
+  (sprite speed gauge + sprite compass + five seven-segment readout rows
+  SPD/HULL/SHLD/FUEL %/ENRG %) and the `ship_status`-toggled ship layout screen.
+  The wave is display-only: zero new sim feeds (speed/heading ride `set_speedometer`,
+  the four pools ride the existing handlers), the §3.6 gauge contract survives
+  byte-identical, and per-module damage stays staged (no sim model exists). Owner
+  ticks ride the D6 brief (the NMS palette reading, placement/size, hull/shield
+  points vs %, the `ship_status` key, scheduling a module-damage model).
+- **v0.11 (2026-09-24, the S5 playtest-fix review — S5-R1, the wave's only CONTRACTS
+  writer)** — records the wave's measured gate (**`passed=577 failed=0`**, three runs on
+  three scratch stores, 49 suites, the live profile byte-identical) and the review's two
+  **MED** findings against the pinned behaviour (both display/test-side; nothing in the
+  sim moved): (1) the HUD's ammo/label readout resolves a selected **rack ordinal** into
+  `PlayerState.ammo`, which is indexed by **barrel position** (`hud.gd:1122,1128`,
+  `player_state.gd:99`), so a mixed or reordered rack shows another family's pack
+  (measured: a rack of cannon+rocket reads the laser pack `111`), and keyboard `weapon_N`
+  names `WEAPON_IDS[N-1]` rather than the rack's own family; (2) `test_s5_batteries_v2.gd`
+  looks its HUD up as `HUD` while the scene node is `Hud` (`:45`, `:844`), so its four
+  pushed-cell assertions (`:847-851`) never run — the same lookup everywhere else in the
+  tree is `Hud`. The review's independent probe re-measured the pinned rules green: the
+  mixed cannon+rocket rack streams at `max(cadence)` (gaps 73/72 frames at 1/60), tracking
+  is per-barrel (laser 90°, rocket 30° after a 90° swing + 0.5 s), the beam cone is 5°,
+  the six ammo list/sale pairs are `4/2 6/4 40/24 50/30 64/38 24/14`, the auto-load is once
+  per family (30 units → 300 rounds, hold 0, a second call draws nothing), and the v7
+  migration is idempotent, memory-only at load and persisted by the next write. J0's F0
+  harness finding is cured (`.crush/hooks/enforce_worker_files.py` now strips the Linux
+  workspace root); J0's F9 (`DRIVES` on the catalogue's `engine` key) is implemented and
+  measures 3 stocked module rows. LOW rows run **L130–L140**.

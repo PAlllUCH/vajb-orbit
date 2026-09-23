@@ -1,21 +1,23 @@
 @tool
 extends McpTestSuite
-## Suite p2b1_outfitting_panel: the OUTFITTING pane as the S3 amendment leaves it --
-## the FITTED WEAPONS strip above one row per `StationCatalog.AMMO_PACKS` entry
-## (STATION_HUB section 5.1's 2026-09-22 S3 amendment, 10 section 2.4, CONTRACTS
-## sections 12 and 15) -- plus the shell's own refusal copy for the catalogue ids those
-## rows and the catalogue's remaining price source answer to.
+## Suite p2b1_outfitting_panel: the ARMORY pane (the OUTFITTING pane renamed, STATION_HUB
+## section 5.11's 2026-09-23 S5 amendment) as the S3 retirement and the S5 rework leave it
+## -- the battery racks over the inventory list over one row per
+## `StationCatalog.AMMO_PACKS` entry (STATION_HUB section 5.1's S3/S4 amendments and
+## section 5.11; 09 section 11; 10 section 6.1; CONTRACTS sections 12, 15, 16 and 17) --
+## plus the shell's own refusal copy for the catalogue ids those rows and the catalogue's
+## remaining price source answer to.
 ##
 ## **The MODULES section is retired**: the AUCTION shelf sells the rolled instances now,
 ## so this suite guards the retirement (no rows, no constants, no scene nodes) and proves
-## the AUCTION is the door instead. The strip survives the retirement and becomes a **battery
-## list** (STATION_HUB section 5.1's 2026-09-23 S4 amendment, 09 section 10, CONTRACTS
-## section 16): one row per battery of identical weapons, then one read-only line per empty W
-## cell, so this suite's per-cell row assertions moved to the battery rows and the empty-cell
-## assertions stayed. The single-cell REMOVE is still reachable through the row's `▸` expander
-## and still writes through the composed `clear_fit_slot` (CONTRACTS section 13, S3-K4
-## HIGH-1's cure), with the same `_seed_fit` guard, for a base-id cell and for a rolled
-## instance alike; `tests/test_s4_batteries.gd` owns the expander's own reachability.
+## the AUCTION is the door instead. **The S4 strip became the S5 racks** (section 5.11, 09
+## section 11, CONTRACTS section 17): `B1..B7` drop zones over a list of inventory weapons,
+## so the suite's row assertions moved to the racks' read-back (`rack_rows()`) and its
+## single-cell REMOVE moved to a barrel chip's `✕`, which still writes through the composed
+## remove (CONTRACTS section 13, S3-K4 HIGH-1's cure) with the same `_seed_fit` guard, for
+## a base-id cell and for a rolled instance alike. The drag interface itself - install,
+## move, swap, the refusals that write nothing - and the profile's own rack record are
+## `tests/test_s5_batteries_v2.gd`'s.
 ##
 ## The pane is mounted from the shipped scene with the shipped theme and driven through the
 ## wiring the station shell itself uses -- the row's own `pressed` signal for an action
@@ -30,8 +32,8 @@ extends McpTestSuite
 ## `suite_teardown`, and the store is flushed while the scratch path is still in place, so
 ## the owner's `user://profile.cfg` is never written (probe hygiene L17, T-93).
 
-const PanelScene := preload("res://ui/station/outfitting_panel.tscn")
-const PanelScript := preload("res://ui/station/outfitting_panel.gd")
+const PanelScene := preload("res://ui/station/armory_panel.tscn")
+const PanelScript := preload("res://ui/station/armory_panel.gd")
 const StationScript := preload("res://ui/screens/station.gd")
 const ThemeRes := preload("res://ui/theme/vajb_theme.tres")
 const Catalog := preload("res://game/station_catalog.gd")
@@ -53,16 +55,17 @@ const RAILGUN: StringName = &"w_railgun"
 const START_CREDITS := 10000
 ## The W cells the Vanguard's 08 section 3.2 matrix carries, asserted rather than assumed.
 const VANGUARD_W_CELLS := 3
-## The ammo account every test starts from: a full laser (`AT CAP`), a half-full cannon
-## (`IN STOCK`), an over-cap rocket (the default 300 against a 100 advisory cap), and
-## empty mine and plasma. Written through the private field the dock's own report writes
-## through.
+## The **hold** account every test starts from, in cargo units since S5 (10 section 6.1: a
+## purchase delivers units, so the HELD cell is the hold's count): a laser at its advisory
+## cap (30 units of a 300-round ceiling), a half-full cannon, an over-cap rocket (40 units
+## against a 10-unit ceiling - a stack bought before the delist, which the pane still has to
+## render), and empty mine and plasma.
 const AMMO_FIXTURE: Dictionary = {
-	&"laser": 300,
-	&"cannon": 150,
-	&"rocket": 300,
-	&"mine": 0,
-	&"plasma": 0,
+	&"ammo_laser": 30,
+	&"ammo_cannon": 15,
+	&"ammo_rocket": 40,
+	&"ammo_mine": 0,
+	&"ammo_plasma": 0,
 }
 
 var _profile: Node = null
@@ -77,6 +80,8 @@ var _previous_fits: Dictionary = {}
 var _previous_owned: Array = []
 var _previous_modules: Dictionary = {}
 var _previous_ammo: Dictionary = {}
+var _previous_cargo: Dictionary = {}
+var _previous_batteries: Dictionary = {}
 
 
 func suite_name() -> String:
@@ -99,6 +104,8 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_owned = _profile.call(&"owned_ships")
 	_previous_modules = _profile.call(&"modules")
 	_previous_ammo = _profile.get(&"_ammo")
+	_previous_cargo = _profile.get(&"_cargo")
+	_previous_batteries = _profile.get(&"_batteries")
 	_profile.set(&"save_path", PROFILE_PATH)
 	_delete_file(PROFILE_PATH)
 
@@ -114,6 +121,8 @@ func suite_teardown() -> void:
 	_profile.set(&"_owned_ships", _previous_owned)
 	_profile.set(&"_modules", _previous_modules)
 	_profile.set(&"_ammo", _previous_ammo)
+	_profile.set(&"_cargo", _previous_cargo)
+	_profile.set(&"_batteries", _previous_batteries)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
 	_delete_file(PROFILE_PATH)
@@ -125,7 +134,7 @@ func setup() -> void:
 	_danger.clear()
 	_seed_account()
 	_host = Control.new()
-	_host.name = "OutfittingHost"
+	_host.name = "ArmoryHost"
 	_host.theme = ThemeRes
 	_host.size = _viewport_size()
 	_fixture_host().add_child(_host)
@@ -139,9 +148,9 @@ func teardown() -> void:
 
 
 ## The fixture account every test starts from: the Vanguard active and owned, no fit, no
-## modules, 10 000 CR and `AMMO_FIXTURE`'s holds. Written through the same private fields
-## `test_p2a_launch_fit.gd` hands back, so no purchase is charged and no signal fires before
-## the pane is mounted.
+## modules, no racks, 10 000 CR and `AMMO_FIXTURE`'s cargo units. Written through the same
+## private fields `test_p2a_launch_fit.gd` hands back, so no purchase is charged and no signal
+## fires before the pane is mounted.
 func _seed_account() -> void:
 	var owned: Array[StringName] = [VANGUARD]
 	_profile.set(&"_credits", START_CREDITS)
@@ -149,7 +158,9 @@ func _seed_account() -> void:
 	_profile.set(&"_owned_ships", owned)
 	_profile.set(&"_fits", {})
 	_profile.set(&"_modules", {})
-	_profile.set(&"_ammo", AMMO_FIXTURE.duplicate())
+	_profile.set(&"_ammo", {})
+	_profile.set(&"_cargo", AMMO_FIXTURE.duplicate())
+	_profile.set(&"_batteries", {})
 
 
 ## The runner calls every test from inside its own `_ready`, so the root viewport is still
@@ -188,7 +199,7 @@ func _on_status(message: String, danger: bool) -> void:
 
 
 func _ammo_rows(panel: Control) -> VBoxContainer:
-	return panel.get_node("%OutfittingRows") as VBoxContainer
+	return panel.get_node("%ArmoryRows") as VBoxContainer
 
 
 func _ammo_row(panel: Control, pack_id: StringName) -> Button:
@@ -238,61 +249,74 @@ func _price_danger(row: Button) -> bool:
 ## empty W cell. A row is a `VBoxContainer` whose `Main` box carries
 ## `Expander`/`Text`/`FitAll`/`RemoveAll`/`SwapAll` and whose `Cells` box carries the
 ## expander's single-cell lines (each one the P2-B1 strip's own `Text` + `Remove` row).
-func _strip_row(panel: Control, index: int) -> VBoxContainer:
-	var strip := panel.get_node("%FittedStrip") as VBoxContainer
-	return strip.get_child(index) as VBoxContainer
+## The racks the pane drew, as `rack_rows()` hands them out, plus the node read-backs a
+## probe would use: each rack's `B<n>` label, its `SALVO`/`READY` state line and its barrel
+## chips (`W<cell> <NAME>` plates, each with its own `✕`).
+func _rack_rows(panel: Control) -> Array:
+	return panel.call(&"rack_rows")
 
 
-func _strip_main(panel: Control, index: int) -> HBoxContainer:
-	return _strip_row(panel, index).get_node(^"Main") as HBoxContainer
+func _rack_row(panel: Control, index: int) -> PanelContainer:
+	var racks := panel.get_node("%RackRows") as VBoxContainer
+	return racks.get_child(index) as PanelContainer
 
 
-func _strip_text(panel: Control, index: int) -> String:
-	var text := _strip_main(panel, index).get_node_or_null(^"Text") as Label
-	return text.text if text != null else ""
+func _rack_label(panel: Control, index: int) -> String:
+	return (_rack_row(panel, index).get_node(^"Box/Head/Label") as Label).text
 
 
-func _strip_control(panel: Control, index: int, control_name: String) -> Button:
-	return _strip_main(panel, index).get_node(control_name) as Button
+func _rack_text(panel: Control, index: int) -> String:
+	return (_rack_row(panel, index).get_node(^"Box/Head/State") as Label).text
 
 
-func _cell_line(panel: Control, index: int, line_index: int) -> HBoxContainer:
-	var cells := _strip_row(panel, index).get_node(^"Cells") as VBoxContainer
-	return cells.get_child(line_index) as HBoxContainer
+func _barrel_chip(panel: Control, rack: int, position: int) -> HBoxContainer:
+	var row := _rack_row(panel, rack)
+	var barrels := row.get_node(^"Box/Barrels") as HBoxContainer
+	return barrels.get_child(position) as HBoxContainer
 
 
-func _cell_line_text(panel: Control, index: int, line_index: int) -> String:
-	var text := _cell_line(panel, index, line_index).get_node_or_null(^"Text") as Label
-	return text.text if text != null else ""
+func _close_barrel(panel: Control, rack: int, position: int) -> void:
+	(_barrel_chip(panel, rack, position).get_node(^"Close") as Button).pressed.emit()
 
 
-func _strip_lines(panel: Control) -> int:
-	var strip := panel.get_node("%FittedStrip") as VBoxContainer
-	var shown := 0
-	for child: Node in strip.get_children():
-		if (child as Control).visible:
-			shown += 1
-	return shown
+func _inventory_rows(panel: Control) -> VBoxContainer:
+	return panel.get_node("%InventoryRows") as VBoxContainer
 
 
-func _press_ammo(panel: Control, pack_id: StringName) -> void:
-	_ammo_row(panel, pack_id).pressed.emit()
-
-
-## One of a battery row's three bulk plates, pressed.
-func _press_bulk(panel: Control, index: int, control_name: String) -> void:
-	_strip_control(panel, index, control_name).pressed.emit()
+## One inventory row's drag payload, exactly as its own `_get_drag_data` builds it: the
+## suite drives the same call the engine's drag does.
+func _drag_inventory(panel: Control, base_id: StringName) -> Dictionary:
+	var payload: Variant = panel.call(&"drag_inventory", base_id)
+	return payload if payload is Dictionary else {}
 
 
 func _cells(hull: StringName) -> Array:
 	return _profile.call(&"fit_for", hull)[WEAPON_SLOT]
 
 
+## The hold's own **cargo units** of one ammo family: since S5 that is the figure the pane's
+## HELD cell shows (10 section 6.1), not the magazine `ammo_of` reads.
 func _held(pack_id: StringName) -> int:
-	return int(_profile.call(&"ammo_of", pack_id))
+	return int(_profile.call(&"ammo_units", pack_id))
 
 
-## A **module** id's held count, which is not `ammo_of`: the strip's REMOVE hands a module
+## The unit equivalent of one family's advisory `ammo_max`: the pane's own MAX figure.
+func _unit_cap(pack_id: StringName) -> int:
+	return int(
+		ceili(
+			float(_profile.call(&"ammo_max", pack_id))
+			/ float(Catalog.ROUNDS_PER_CARGO_UNIT)
+		)
+	)
+
+
+func _press_ammo(panel: Control, pack_id: StringName) -> void:
+	_ammo_row(panel, pack_id).pressed.emit()
+
+
+
+
+## A **module** id's held count, which is not `ammo_of`: a rack's remove hands a module
 ## back through `add_module`, and 15 section 8's aggregation reads `instances_of` (K1's own
 ## note on `module_count`, which does not aggregate instances).
 func _module_held(module_id: StringName) -> int:
@@ -390,9 +414,10 @@ func test_ammo_rows_are_the_catalogue_in_order() -> void:
 	)
 
 
-## The four state lines of section 5.1, over a fixture account that carries all four:
-## `AT CAP` for a full laser, `IN STOCK` for a half-full cannon, `OVER CAP` for the
-## default 300 against the rocket's advisory 100, `EMPTY` for the unheld mine.
+## The four state lines of section 5.1, over a fixture account that carries all four, now
+## read off the **hold's units** (10 section 6.1): `AT CAP` for a laser at its 30-unit
+## equivalent, `IN STOCK` for a half-full cannon, `OVER CAP` for a 40-unit rocket stack
+## against its 10-unit ceiling, `EMPTY` for the unheld mine.
 func test_ammo_state_lines_and_tags() -> void:
 	var panel := _mount()
 	var cases: Array = [
@@ -410,8 +435,8 @@ func test_ammo_state_lines_and_tags() -> void:
 			continue
 		assert_eq(
 			_cell_text(row, "Held"),
-			PanelScript.HELD_FORMAT % [_held(pack_id), int(_profile.call(&"ammo_max", pack_id))],
-			"%s's HELD / MAX is the profile's own reading" % pack_id
+			PanelScript.HELD_FORMAT % [_held(pack_id), _unit_cap(pack_id)],
+			"%s's HELD / MAX is the hold's units against the family's unit ceiling" % pack_id
 		)
 		assert_eq(_cell_text(row, "Status"), String(entry[&"tag"]), "%s's tag" % pack_id)
 		assert_eq(_cell_caption(row, "Held"), String(entry[&"meta"]), "%s's state line" % pack_id)
@@ -424,17 +449,22 @@ func test_ammo_state_lines_and_tags() -> void:
 	)
 
 
-## BUY charges the catalogue's own price and moves the held count and the tag; an
+## BUY charges the catalogue's own price and delivers the pack's **cargo units** (10
+## section 6.1 / CONTRACTS section 17: `units = rounds / ROUNDS_PER_CARGO_UNIT`); an
 ## unaffordable pack greys its price and the profile refuses the purchase without charging.
+## The pack itself - the magazine a launch loads - is not what a purchase grows any more,
+## which is the move J2's report left to this pane's surface.
 func test_ammo_purchase_charges_the_catalogue_price_and_greys_when_short() -> void:
 	var panel := _mount()
 	var pack := Catalog.ammo_pack(&"rocket")
 	var rounds := int(pack[&"rounds"])
 	var cost := int(pack[&"cost"])
-	assert_eq(_held(&"rocket"), 300, "the fixture holds the default 300")
+	var units := int(ceili(float(rounds) / float(Catalog.ROUNDS_PER_CARGO_UNIT)))
+	assert_eq(_held(&"rocket"), 40, "the fixture holds a 40-unit rocket stack")
 	_press_ammo(panel, &"rocket")
 	assert_eq(_credits(), START_CREDITS - cost, "the buy charged the catalogue's cost")
-	assert_eq(_held(&"rocket"), 300 + rounds, "and added the pack's own rounds")
+	assert_eq(_held(&"rocket"), 40 + units, "and added the pack's own units to the hold")
+	assert_eq(_profile.call(&"cargo_qty", &"ammo_rocket"), 40 + units, "under the ammo id")
 	assert_eq(
 		_last_status(),
 		PanelScript.STATUS_BOUGHT % ["ROCKET POD", rounds],
@@ -458,18 +488,21 @@ func test_ammo_purchase_charges_the_catalogue_price_and_greys_when_short() -> vo
 
 
 ## The MODULES section is gone from the pane, its scene and its script: no caption, no
-## header, no rows box, no row set, no constants and none of the four fit actions. The
-## FITTED WEAPONS strip is **not** part of the retirement (STATION_HUB section 5.1's S3
-## amendment keeps it), so it is asserted present here and measured in its own test.
+## header, no rows box, no row set, no constants and none of the four fit actions. The S5
+## racks and inventory are **not** part of the retirement (STATION_HUB section 5.11 reworks
+## this pane), so they are asserted present here and measured in their own tests.
 func test_the_module_rows_are_retired_from_the_pane_its_scene_and_its_script() -> void:
 	var panel := _mount()
 	assert_true(
-		panel.get_node_or_null("%FittedStrip") != null, "the FITTED WEAPONS strip survives"
+		panel.get_node_or_null("%RackRows") != null, "the battery racks are drawn"
 	)
 	assert_eq(
-		String((panel.get_node("%OutfittingScroll/OutfittingBody/FittedMargin/FittedBox/FittedCaption") as Label).text),
-		"FITTED WEAPONS",
-		"and keeps its own caption"
+		String((panel.get_node("ArmoryScroll/ArmoryBody/RacksMargin/RacksBox/RacksCaption") as Label).text),
+		"BATTERY RACKS",
+		"and keep their own caption"
+	)
+	assert_true(
+		panel.get_node_or_null("%InventoryRows") != null, "and so is the inventory list"
 	)
 	for gone: String in ["%ModuleRows", "%ModulesHeader", "%ModulesCaption", "%ModulesMargin"]:
 		assert_true(panel.get_node_or_null(gone) == null, "no node %s exists" % gone)
@@ -490,7 +523,7 @@ func test_the_module_rows_are_retired_from_the_pane_its_scene_and_its_script() -
 		assert_false(_has_member(PanelScript, method), "the script carries no %s()" % method)
 	## The scene file itself carries no MODULES caption and no rows box: the retirement is
 	## in the shipped scene, not only in the script.
-	var scene := FileAccess.get_file_as_string("res://ui/station/outfitting_panel.tscn")
+	var scene := FileAccess.get_file_as_string("res://ui/station/armory_panel.tscn")
 	assert_false(scene.contains("MODULES"), "the pane scene names no MODULES section")
 	assert_false(scene.contains("ModuleRows"), "and carries no rows box for one")
 
@@ -608,134 +641,168 @@ func _digits_only(text: String) -> String:
 	return digits
 
 
-## ------------------------------------------------------------- the surviving strip
+## ------------------------------------------------------------- the racks (S5)
 
 
-## The strip is a battery list read from `ShipFit.grid_cells` + the fit the launch resolves:
-## the Vanguard's three W cells carry one standard laser in W1, so the strip draws one battery
-## row (its own three bulk plates and its `▸`) and two read-only empty-cell lines, and a hull
-## switch re-reads the same fixed node set (STATION_HUB section 5.1's S4 amendment).
-func test_fitted_strip_reads_the_active_hulls_w_cells() -> void:
+## The B1..B7 racks over the inventory (STATION_HUB section 5.11, 09 section 11): seven drop
+## zones, each one labelled `B<n>`, and the pane's read-back accounts for the active hull's
+## W cells - the Vanguard's delivered laser sits in B1 on cell W1, and the other six racks
+## are empty drop zones.
+func test_the_racks_draw_seven_drop_zones_over_the_inventory() -> void:
+	assert_eq(
+		PanelScript.RACK_COUNT, 7, "the pin's own rack count (GROUPS_MAX 5 -> 7)"
+	)
 	assert_eq(
 		FitData.slot_capacity(VANGUARD, WEAPON_SLOT),
 		VANGUARD_W_CELLS,
 		"the Vanguard's matrix carries three W cells"
 	)
 	var panel := _mount()
-	assert_eq(_strip_lines(panel), VANGUARD_W_CELLS, "three rows: one battery and two empties")
-	var rows: Array = panel.call(&"strip_rows")
-	assert_eq(rows.size(), 3, "every W cell of the active hull is accounted for")
-	assert_eq(rows[0][&"kind"], &"battery", "the fitted cell's row is a battery")
-	assert_eq(rows[0][&"cells"], [0], "covering the one cell the standard fit fills")
+	var rows := _rack_rows(panel)
+	assert_eq(rows.size(), PanelScript.RACK_COUNT, "one rack per weapon key")
+	for index in rows.size():
+		assert_eq(_rack_label(panel, index), "B%d" % (index + 1), "rack %d carries its own label" % index)
+	assert_eq(rows[0][&"cells"], [0], "B1 holds the standard fit's cell, derived on read")
 	assert_eq(
-		_strip_text(panel, 0),
-		PanelScript.BATTERY_TEXT % [
-			1,
-			"LASER MKII",
-			PanelScript.BATTERY_CELLS % 1,
-			PanelScript.BATTERY_OWNED % 0,
-		],
-		"the pin's own battery row reading"
+		rows[0][&"barrels"][0][&"text"], "W1 LASER MKII", "as a chip naming its own W cell"
 	)
-	assert_eq(_strip_text(panel, 1), "W2 — EMPTY", "the pin's own empty line")
-	assert_eq(_strip_text(panel, 2), "W3 — EMPTY", "the Cutter's third cell")
-	assert_eq(rows[1][&"kind"], &"empty", "an empty cell is its own read-only line")
-	assert_eq(rows[1][&"cells"], [], "and covers no battery cell")
-	assert_true(_strip_control(panel, 0, "RemoveAll").visible, "a battery row carries REMOVE ALL")
+	assert_eq(rows[1][&"cells"], [], "an empty rack holds nothing")
+	assert_eq(rows[3][&"cells"], [], "and so does a rack past the hull's cells")
+	## The empty-state cue and the salvo line are the pane's own two labels, one visible at a
+	## time: an empty rack offers the drop, a loaded one states its rate.
+	var loaded := _rack_row(panel, 0)
+	assert_true((loaded.get_node(^"Box/Head/Hint") as Label).visible == false, "a loaded rack hides the drop cue")
+	assert_true((loaded.get_node(^"Box/Head/State") as Label).visible, "and shows its state line")
+	assert_eq(_rack_text(panel, 0), PanelScript.RACK_READY, "a laser rack states no travelling cadence")
+	var empty := _rack_row(panel, 1)
+	assert_true((empty.get_node(^"Box/Head/Hint") as Label).visible, "an empty rack shows the drop cue")
 	assert_eq(
-		PanelScript.STRIP_REMOVE_ALL,
-		_strip_control(panel, 0, "RemoveAll").text,
-		"whose plate is the pin's own word"
+		(empty.get_node(^"Box/Head/Hint") as Label).text,
+		PanelScript.RACK_INSTALL_CUE,
+		"the pane's own words"
 	)
-	assert_true(_strip_control(panel, 0, "Expander").visible, "and its own expander")
-	## The bag holds none of the base, so the two spending actions are disabled by state and
-	## REMOVE ALL never is (STATION_HUB section 5.1).
-	assert_true(_strip_control(panel, 0, "FitAll").disabled, "FIT ALL needs a bag instance")
-	assert_true(_strip_control(panel, 0, "SwapAll").disabled, "and so does SWAP ALL")
-	assert_false(_strip_control(panel, 0, "RemoveAll").disabled, "REMOVE ALL is never disabled")
-	## An empty line carries no control at all: the whole row is read-only.
-	assert_false(_strip_control(panel, 1, "RemoveAll").visible, "an empty line has no REMOVE")
-	assert_false(_strip_control(panel, 1, "FitAll").visible, "and no FIT ALL")
-	assert_false(_strip_control(panel, 1, "Expander").visible, "and no expander")
-	assert_eq(_cell_line_text(panel, 1, 0), "", "and no revealed single-cell line")
-	## A hull switch is the profile's own key: the Lancer carries two W cells and 09
-	## section 9's two-laser fit, so its two barrels are **one** row without a rebuild of
-	## the pane (09 section 10's grouping).
+
+
+## The salvo line is the pin's rule made visible (09 section 11: "the rof will be limited by
+## the slowest weapon"): a rack holding a cannon states the cannon's 0.6 s cycle, and a rack
+## mixing it with a rocket states the rocket's 1.2 s. The arithmetic is the component's own
+## (`WeaponComponent.interval_of`), never a number written here.
+func test_a_rack_states_its_slowest_members_cycle() -> void:
+	var panel := _mount()
+	_profile.call(&"add_module", &"w_cannon", 1)
+	## The composed install composes its candidate from the fit the launch flies (09
+	## section 9's delivered laser in W1), so the cannon lands beside it rather than in a
+	## one-module fit.
 	assert_true(
-		bool(_profile.call(&"buy_ship", LANCER, int(Catalog.ship(LANCER)[&"cost"]))),
-		"the Lancer can be bought"
+		bool(_profile.call(&"fit_module_at", VANGUARD, WEAPON_SLOT, 1, &"w_cannon")),
+		"a cannon fits W2"
 	)
-	assert_true(bool(_profile.call(&"set_active_ship", LANCER)), "and made active")
-	assert_eq(_strip_lines(panel), 1, "one row for the Lancer's two-barrel battery")
-	rows = panel.call(&"strip_rows")
-	assert_eq(rows[0][&"cells"], [0, 1], "covering both of its W cells")
-	assert_eq(_strip_text(panel, 0), "2× LASER MKII · W1·W2 · OWNED ×0", "one battery, one row")
+	_profile.call(&"set_battery_groups", VANGUARD, [[0], [1]])
+	assert_eq(
+		_rack_text(panel, 1),
+		PanelScript.RACK_SALVO % WeaponComponent.interval_of(&"cannon"),
+		"the cannon rack states its own 0.6 s cycle"
+	)
+	_profile.call(&"add_module", &"w_rocket", 1)
+	assert_true(
+		bool(_profile.call(&"fit_module_at", VANGUARD, WEAPON_SLOT, 2, &"w_rocket")),
+		"a rocket fits W3"
+	)
+	_profile.call(&"set_battery_groups", VANGUARD, [[0], [1, 2]])
+	assert_eq(
+		_rack_text(panel, 1),
+		PanelScript.RACK_SALVO % WeaponComponent.interval_of(&"rocket"),
+		"and the mixed rack states the rocket's 1.2 s, its slowest member"
+	)
+	assert_eq(
+		WeaponComponent.interval_of(&"cannon"), 0.6, "the cannon's cycle is the burst window"
+	)
 
 
-## The battery strip's `REMOVE ALL` is the ammo pane's one bulk fit write: it empties every
-## cell of the battery, hands the module(s) back to the inventory, costs nothing, and never
-## touches the mandatory set (09 section 4 items 9 to 13: only 09 section 9's W cells are
-## reachable from here).
-func test_strip_remove_is_the_ammo_panes_one_fit_action() -> void:
+## The inventory list (section 5.11: "a left list of inventory weapons"): one row per owned
+## weapon id, aggregated, with the bag's own instance count - and nothing for a base the bag
+## does not carry. An account owning none shows the pane's own empty state instead.
+func test_the_inventory_lists_the_owned_weapon_ids() -> void:
+	var panel := _mount()
+	assert_eq(_inventory_rows(panel).get_child_count(), 1, "no weapons owned: one empty-state line")
+	assert_eq(
+		String((_inventory_rows(panel).get_child(0) as Label).text),
+		PanelScript.INVENTORY_EMPTY,
+		"which is the pane's own words"
+	)
+	_profile.call(&"add_module", &"w_laser", 1)
+	_profile.call(&"add_module", &"w_railgun", 1)
+	## The figure is `instances_of`, one entry per record (S4's own reading): a record the
+	## bag stacks (`count` 2 from two `add_module` calls) is one instance and one cell, so a
+	## second **instance** is the honest way to make the count two.
+	_profile.call(&"add_instance", &"w_railgun", ModuleData.RARITY_COMMON, [], [])
+	## A non-weapon module never appears: the list is the rack record's own domain.
+	_profile.call(&"add_module", &"p_std", 1)
+	var rows := panel.call(&"inventory_rows") as Array
+	assert_eq(rows.size(), 2, "two owned weapon ids")
+	assert_eq(StringName(rows[0][&"base"]), &"w_laser", "in catalogue order")
+	assert_eq(StringName(rows[1][&"base"]), &"w_railgun", "the later row of the two")
+	var views := panel.call(&"inventory_view_rows") as Array
+	assert_eq(
+		String(views[0][&"text"]),
+		PanelScript.INVENTORY_TEXT % ["OWNED", 1],
+		"the row carries the bag's own count"
+	)
+	assert_eq(String(views[1][&"text"]), PanelScript.INVENTORY_TEXT % ["OWNED", 2], "and so does the stack")
+	## Every row is a drag source: its payload names the base id and nothing else.
+	var payload := _drag_inventory(panel, &"w_laser")
+	assert_eq(StringName(payload[&"kind"]), PanelScript.DRAG_INVENTORY, "the row drags an inventory weapon")
+	assert_eq(StringName(payload[&"base"]), &"w_laser", "its own base id")
+	assert_true(_drag_inventory(panel, &"w_cannon").is_empty(), "an unowned base drags nothing")
+
+
+## The `✕` on a barrel is the pane's one remove (section 5.11): the cell empties, the barrel
+## returns to the inventory, nothing is charged, and the racks re-read without a rebuild of
+## the pane. It writes through the composed `clear_rack_cell`, so the mandatory set and
+## `fit_legal` are checked before the first write.
+func test_the_close_removes_a_barrel_back_to_the_inventory() -> void:
 	var panel := _mount()
 	assert_eq(_cells(VANGUARD), ["", "", ""], "a fresh account stores no fit for the hull")
-	assert_true(
-		_strip_control(panel, 0, "RemoveAll").visible, "the standard fit's laser is a battery"
-	)
-	assert_eq(_module_held(LASER), 0, "and the fixture holds no laser of its own")
-	_press_bulk(panel, 0, "RemoveAll")
-	assert_eq(_cells(VANGUARD)[0], "", "REMOVE ALL emptied the battery's cell")
-	assert_eq(_module_held(LASER), 1, "and the module is back in the inventory")
-	assert_eq(_strip_text(panel, 0), "W1 — EMPTY", "the strip reads the empty cell")
-	assert_false(
-		_strip_control(panel, 0, "RemoveAll").visible, "an emptied line carries no REMOVE ALL"
-	)
+	assert_eq(_module_held(&"w_laser"), 0, "and holds no laser")
+	_close_barrel(panel, 0, 0)
+	assert_eq(_cells(VANGUARD)[0], "", "the rack's barrel left its cell")
+	assert_eq(_module_held(&"w_laser"), 1, "and is back in the inventory")
+	assert_eq(_rack_rows(panel)[0][&"cells"], [], "the rack holds nothing again")
 	assert_eq(_credits(), START_CREDITS, "removing costs nothing")
 	assert_eq(
 		_last_status(),
 		PanelScript.STATUS_REMOVED % "LASER MKII",
-		"and the pane reports it in its own pinned wording"
+		"and the pane reports it in its own wording"
 	)
 	assert_false(_last_danger(), "success is never the danger colour")
-	## 09 section 7's mandatory set survives the whole round trip: the fit still has its
-	## engine and its reactor and `fit_legal` reports nothing missing. Nothing this pane can
-	## address is in `FitData.MANDATORY_SLOT_KEYS`, which is the guard rather than a second
-	## rule (an index past the W cells is refused by `remove_module` itself).
+	## 09 section 7's mandatory set survives: the pane can only address W cells, and the
+	## mandatory keys are engines and power (the guard rather than a second rule).
 	var fit: Dictionary = _profile.call(&"fit_for", VANGUARD)
 	assert_eq(fit[ENGINE_SLOT], ["e_std"], "the engine set is untouched")
 	assert_eq(fit[POWER_SLOT], "p_std", "the reactor is untouched")
-	var legal: Dictionary = FitData.fit_legal(VANGUARD, fit)
-	assert_eq(legal[&"missing"], [], "and the fit still has its mandatory set")
-	assert_false(
-		bool(panel.call(&"remove_module", VANGUARD_W_CELLS + 4)),
-		"an index past the W cells refuses"
-	)
+	assert_eq(FitData.fit_legal(VANGUARD, fit)[&"missing"], [], "and the fit still has its mandatory set")
 
 
-## `REMOVE ALL` against a cell that holds an **instance** (S3-K4 HIGH-1). The composed
-## `clear_fit_slot` banks the entry the cell holds as *itself*, so a weapon rolled and fitted
-## through FITTING comes back with its own id, rarity and affix rows instead of being stranded
-## at `count` 0 behind a fresh base-keyed Common (CONTRACTS section 15's `restore_instance`
-## clause: REMOVE hands the same instance back, never destroyed, never duplicated).
-func test_strip_remove_hands_back_the_fitted_instance() -> void:
+## The `✕` against a cell that holds an **instance** (S3-K4 HIGH-1). The composed remove
+## banks the entry the cell holds as *itself*, so a weapon rolled and fitted through FITTING
+## comes back with its own id, rarity and affix rows instead of being stranded at `count` 0
+## behind a fresh base-keyed Common (CONTRACTS section 15's `restore_instance` clause).
+func test_the_close_hands_back_the_fitted_instance() -> void:
 	var panel := _mount()
 	var instance := StringName(
-		_profile.call(&"add_instance", LASER, &"magic", [{"id": "keen", "value": 0.16}], ["whale"])
+		_profile.call(&"add_instance", &"w_laser", &"magic", [{"id": "keen", "value": 0.16}], ["whale"])
 	)
 	assert_true(
 		bool(_profile.call(&"fit_module_at", VANGUARD, WEAPON_SLOT, 0, instance)),
 		"the rolled instance fits the first W cell"
 	)
 	assert_eq(
-		String(_cells(VANGUARD)[0]),
-		String(instance),
-		"the cell holds the instance id, not its base"
+		String(_cells(VANGUARD)[0]), String(instance), "the cell holds the instance id, not its base"
 	)
 	assert_eq(_module_count(instance), 0, "and the instance is out of the bag")
-	assert_eq(_strip_text(panel, 0), "1× LASER MKII · W1 · OWNED ×0", "the strip names the base")
-	assert_true(_strip_control(panel, 0, "RemoveAll").visible, "and carries REMOVE ALL")
-	_press_bulk(panel, 0, "RemoveAll")
-	assert_eq(_cells(VANGUARD)[0], "", "REMOVE ALL emptied the cell")
+	assert_eq(_rack_rows(panel)[0][&"barrels"][0][&"text"], "W1 LASER MKII", "the rack names the base")
+	_close_barrel(panel, 0, 0)
+	assert_eq(_cells(VANGUARD)[0], "", "the remove emptied the cell")
 	assert_eq(_module_count(instance), 1, "and the same instance is back in the bag")
 	var record: Dictionary = _profile.call(&"instance", instance)
 	assert_eq(String(record[&"rarity"]), "magic", "with its own rarity")
@@ -746,35 +813,33 @@ func test_strip_remove_hands_back_the_fitted_instance() -> void:
 	assert_eq(
 		(_profile.call(&"modules") as Dictionary).size(), 1, "one record throughout: nothing minted"
 	)
-	assert_eq(_credits(), START_CREDITS, "removing costs nothing")
 	assert_eq(
 		_last_status(),
 		PanelScript.STATUS_REMOVED % "LASER MKII",
-		"and the pane reports it in its own pinned wording"
+		"and the pane reports it in its own wording"
 	)
 
 
 ## The duplication half of S3-K4 HIGH-1: a base-keyed unit of the same base already in the
-## bag is not incremented by REMOVE ALL. The raw `add_module(base_id, 1)` this pane wrote
+## bag is not incremented by the remove. The raw `add_module(base_id, 1)` this pane wrote
 ## before the fix banked a fresh unit whichever entry the cell held, so one physical unit
 ## became two and `Auction.sell_rows` priced both.
-func test_strip_remove_does_not_duplicate_a_base_keyed_unit() -> void:
+func test_the_close_does_not_duplicate_a_base_keyed_unit() -> void:
 	var panel := _mount()
-	var instance := StringName(_profile.call(&"add_instance", LASER, &"rare", [], []))
+	var instance := StringName(_profile.call(&"add_instance", &"w_laser", &"rare", [], []))
 	assert_true(
-		bool(_profile.call(&"fit_module_at", VANGUARD, WEAPON_SLOT, 0, instance)),
-		"the instance fits"
+		bool(_profile.call(&"fit_module_at", VANGUARD, WEAPON_SLOT, 0, instance)), "the instance fits"
 	)
-	_profile.call(&"add_module", LASER, 1)
-	assert_eq(_module_count(LASER), 1, "one plain base-keyed laser sits in the bag")
-	_press_bulk(panel, 0, "RemoveAll")
+	_profile.call(&"add_module", &"w_laser", 1)
+	assert_eq(_module_count(&"w_laser"), 1, "one plain base-keyed laser sits in the bag")
+	_close_barrel(panel, 0, 0)
 	assert_eq(_module_count(instance), 1, "the fitted instance is back as itself")
-	assert_eq(_module_count(LASER), 1, "and the base-keyed unit is still one unit, not two")
+	assert_eq(_module_count(&"w_laser"), 1, "and the base-keyed unit is still one unit, not two")
 	assert_eq(
 		(_profile.call(&"modules") as Dictionary).size(), 2, "two records: no third was minted"
 	)
 	assert_true(
-		(_profile.call(&"instances_of", LASER) as Array).has(instance),
+		(_profile.call(&"instances_of", &"w_laser") as Array).has(instance),
 		"and the bag offers the restored instance"
 	)
 
@@ -782,53 +847,48 @@ func test_strip_remove_does_not_duplicate_a_base_keyed_unit() -> void:
 ## ------------------------------------------------------------------- the refresh
 
 
-## The refresh is the profile's signal, not a read-through: the ammo rows move on `credits`
-## and `ammo`, the strip on `fits` and `ships`, and - since the battery row carries the bag
-## figure it spends from (STATION_HUB section 5.1) - on `modules` too.
+## The refresh is the profile's signal, not a read-through: the ammo rows move on `credits`,
+## `ammo` and `cargo` (a purchase writes both of the last two), and the racks and the
+## inventory on `fits`, `ships`, `modules` and `batteries` - a rack's record being the newest
+## of those keys.
 func test_profile_changed_drives_the_refresh() -> void:
 	var panel := _mount()
 	var row := _ammo_row(panel, &"plasma")
 	assert_eq(_cell_text(row, "Status"), PanelScript.TAG_EMPTY, "the plasma pack starts empty")
 	## Without the shell's wiring the pane is not told, and its cells do not move.
 	_profile.disconnect(&"profile_changed", Callable(panel, &"refresh_profile"))
-	_profile.call(&"set_ammo", &"plasma", 40)
-	assert_eq(_held(&"plasma"), 40, "the hold moved")
+	_profile.call(&"add_cargo", &"ammo_plasma", 5)
+	assert_eq(_held(&"plasma"), 5, "the hold moved")
 	assert_eq(
-		_cell_text(row, "Status"),
-		PanelScript.TAG_EMPTY,
-		"an unwired pane is stale: nothing refreshed it"
+		_cell_text(row, "Status"), PanelScript.TAG_EMPTY, "an unwired pane is stale: nothing refreshed it"
 	)
 	## Wired, the same key refreshes it, and so does a credits change.
 	_profile.connect(&"profile_changed", Callable(panel, &"refresh_profile"))
-	_profile.call(&"set_ammo", &"plasma", 41)
-	assert_eq(_cell_text(row, "Status"), PanelScript.TAG_IN_STOCK, "ammo refreshed the tag")
+	_profile.call(&"add_cargo", &"ammo_plasma", 1)
+	assert_eq(_cell_text(row, "Status"), PanelScript.TAG_IN_STOCK, "cargo refreshed the tag")
 	assert_eq(
 		_cell_text(row, "Held"),
-		PanelScript.HELD_FORMAT % [41, int(_profile.call(&"ammo_max", &"plasma"))],
+		PanelScript.HELD_FORMAT % [6, _unit_cap(&"plasma")],
 		"and the held count"
 	)
 	assert_true(bool(_profile.call(&"spend", _credits())), "drain the balance")
 	assert_true(_price_danger(row), "credits recomputed the price's colour")
+	## The racks follow the fit and the rack record.
+	_profile.call(&"add_module", &"w_railgun", 1)
 	assert_true(
-		bool(_profile.call(&"set_fit_slot", VANGUARD, WEAPON_SLOT, 0, RAILGUN)),
+		bool(_profile.call(&"fit_module_at", VANGUARD, WEAPON_SLOT, 1, &"w_railgun")),
 		"an external fit write"
 	)
-	assert_eq(
-		_strip_text(panel, 0),
-		"1× RAILGUN · W1 · OWNED ×0",
-		"fits refreshed the battery row"
-	)
-	assert_eq(_strip_text(panel, 1), "W2 — EMPTY", "and left the empty cells empty")
-	assert_true(_strip_control(panel, 0, "RemoveAll").visible, "with REMOVE ALL on the battery")
-	## `modules` is the strip's own key now: the bag figure the row shows and the two actions
-	## it gates are read through `instances_of`, so a bag write must move them. Before the S4
-	## amendment the strip ignored this key (it read the fit alone).
-	assert_true(_strip_control(panel, 0, "FitAll").disabled, "no railgun in the bag yet")
-	_profile.call(&"add_module", RAILGUN, 1)
-	assert_eq(
-		_strip_text(panel, 0),
-		"1× RAILGUN · W1 · OWNED ×1",
-		"a modules write moved the battery's bag figure"
-	)
-	assert_false(_strip_control(panel, 0, "FitAll").disabled, "and re-enabled FIT ALL")
-	assert_eq(_cells(VANGUARD)[0], RAILGUN, "and wrote no fit cell")
+	var racks := _rack_rows(panel)
+	assert_eq(racks[0][&"cells"], [0, 1], "fits refreshed the racks: one derived group holds both cells")
+	assert_eq(racks[0][&"barrels"][1][&"text"], "W2 RAILGUN", "and the new barrel is drawn")
+	_profile.call(&"set_battery_groups", VANGUARD, [[0], [1]])
+	racks = _rack_rows(panel)
+	assert_eq(racks[0][&"cells"], [0], "a batteries write re-read the racks")
+	assert_eq(racks[1][&"cells"], [1], "splitting the two cells into B1 and B2")
+	assert_eq(racks[1][&"barrels"][0][&"text"], "W2 RAILGUN", "with the barrel's chip following its cell")
+	## `modules` moves the inventory list, which is the bag's own read.
+	assert_eq((panel.call(&"inventory_rows") as Array).size(), 0, "no railgun in the bag yet")
+	_profile.call(&"add_module", &"w_railgun", 1)
+	assert_eq((panel.call(&"inventory_rows") as Array).size(), 1, "a modules write moved the list")
+	assert_eq(_cells(VANGUARD)[1], &"w_railgun", "and wrote no fit cell")

@@ -68,12 +68,19 @@ const PROFILE_CARGO_KEY: StringName = &"cargo"
 const HULL_ID_DEFAULT: StringName = &"ship_vanguard"
 const SECTOR_ID_DEFAULT: StringName = &"sector_1"
 
+## Section 4.3's group keys, **seven** since S5 (09 section 11, CONTRACTS section 17):
+## `weapon_1..7` and `GROUPS_MAX` grow together, because a composed battery rack is
+## addressed by the same ordinal the ARMORY pane's racks `B1..B7` render. The
+## `weapon_6`/`weapon_7` rows of `project.godot` are orchestrator-applied, so the
+## readers stay behind `InputMap.has_action` guards.
 const WEAPON_ACTIONS: Array[StringName] = [
 	&"weapon_1",
 	&"weapon_2",
 	&"weapon_3",
 	&"weapon_4",
 	&"weapon_5",
+	&"weapon_6",
+	&"weapon_7",
 ]
 
 const HUD_REFRESH_INTERVAL := 0.1
@@ -474,7 +481,73 @@ func _spawn_ship() -> void:
 	_guns = _ship.get_node_or_null(NodePath(PlayerShipScript.WEAPONS_NODE))
 	if _guns != null:
 		_guns.connect(&"locks_broken", _on_locks_broken)
+		## S5 (09 section 11, CONTRACTS section 17): the launch hands the component the
+		## composed racks its `weapon_1..7` keys address, resolved from the profile's
+		## persisted cell refs into the component's own barrel positions.
+		if _guns.has_method(&"set_batteries"):
+			_guns.call(&"set_batteries", _launch_batteries())
 	_seat_ship(_pending_spawn)
+
+
+## The launched fit's batteries in the mounted component's own index space: the
+## profile's rack record for the launched hull (`PlayerProfile.battery_groups`, cell
+## refs into the hull's W cells) with every cell translated to the **barrel position**
+## `ShipFit.fitted_ids` gives that cell, plus one trailing rack for a barrel the record
+## does not mention - so a rack the ARMORY pane composed fires the barrels it holds and
+## nothing is left unfireable. `[]` for a hull with no racks, which leaves the
+## component on its own per-family grouping (S4's).
+##
+## The translation is `game.gd`'s because it is the only place that holds both spaces:
+## §16 rule 3's divergence means a W-cell index and a barrel position differ as soon as
+## a cell holds a family-less module (`w_mining`), so the positions are derived from
+## `fitted_ids`' own walk of the fit rather than guessed from the cell index.
+func _launch_batteries() -> Array:
+	var profile := _profile()
+	if profile == null or not profile.has_method(&"battery_groups"):
+		return []
+	var groups: Array = profile.call(&"battery_groups", _launch_hull)
+	if groups.is_empty():
+		return []
+	var positions: Array = _weapon_barrel_positions()
+	var racks: Array = []
+	for stored: Variant in groups:
+		if not stored is Array:
+			continue
+		var rack: Array = []
+		for raw_cell: Variant in (stored as Array):
+			var cell := int(raw_cell)
+			if cell < 0 or cell >= positions.size():
+				continue
+			var position := int(positions[cell])
+			if position < 0 or rack.has(position):
+				continue
+			rack.append(position)
+		racks.append(rack)
+	return racks
+
+
+## The barrel position `ShipFit.fitted_ids` gives each W cell of the launched fit:
+## one entry per **layout index** of the hull's W cells, `-1` for a cell that holds
+## nothing or holds a family-less module (the component drops `w_mining` from its
+## barrel list, which is the divergence §16 rule 3 records). The walk is
+## `fitted_ids`' own - weapons first, in cell order - so the two can never drift.
+func _weapon_barrel_positions() -> Array:
+	var fitted: Array = _launch_fit.get(&"weapons", [])
+	var positions: Array = []
+	var position := 0
+	for cell: Dictionary in ShipFit.grid_cells(_launch_hull):
+		if StringName(cell[&"type"]) != &"weapons":
+			continue
+		var index := int(cell[&"index"])
+		var module := &""
+		if index >= 0 and index < fitted.size():
+			module = StringName(str(fitted[index]))
+		while positions.size() <= index:
+			positions.append(-1)
+		if module != &"" and WeaponsScript.weapon_id(module) != &"":
+			positions[index] = position
+			position += 1
+	return positions
 
 
 ## Places the ship on the sector's spawn point and starts the follow camera there,
@@ -690,8 +763,14 @@ func _reticle_state_for(world_point: Vector2) -> int:
 ## spent a round per key press is retired (it would double-spend against the real shot).
 func _update_weapon_input() -> void:
 	for slot in WEAPON_ACTIONS.size():
+		## `weapon_6`/`weapon_7` join `project.godot` at the wave's close-out (CONTRACTS
+		## section 1), so the two new keys are read behind the same `InputMap.has_action`
+		## guard the countermeasures and the dock prompt use: an action the map does not
+		## carry yet must not push an engine error every frame of flight.
+		if not InputMap.has_action(WEAPON_ACTIONS[slot]):
+			continue
 		if Input.is_action_just_pressed(WEAPON_ACTIONS[slot]):
-			_select_weapon(slot)
+			_select_weapon(slot + 1)
 
 
 ## Section 4.6's two one-shot items. Section 11 binds no key for either, so both triggers
@@ -1206,11 +1285,11 @@ func _file_damage_report() -> void:
 ## store the launch's own ceiling could not load whole is never overwritten by a clamped
 ## live figure - the filing only ever spends what was actually fired.
 ##
-## `PlayerProfile` publishes no writer for a pack today (it owns `ammo_of`/`ammo_max`/
-## `buy_ammo`, and `buy_ammo` only ever adds, while a fired delta is always a subtraction),
-## so the write rides a guarded `set_ammo` and the missing method is reported as the one
-## line this closes with; until then the seam is inert and the packs keep the behaviour
-## they ship with today (reseeded to `AMMO_DEFAULT` at every launch).
+## The write rides `PlayerProfile.set_ammo` (the dock report's absolute writer; `buy_ammo`
+## could only ever add). Since S5 (10 section 6.1) that store is the **magazine the launch
+## loaded from the hold**, not a purchase target: `buy_ammo` delivers cargo units, the
+## launch draws them through `load_ammo_from_hold`, and this filing takes the fired rounds
+## off what the load left, so the next launch tops up from whatever the hold still carries.
 func _file_ammo_report() -> void:
 	var profile := _profile()
 	if profile == null or _state == null:
@@ -1234,20 +1313,40 @@ func _file_ammo_report() -> void:
 		)
 
 
-## The other half of the same pattern: the launch loads each slot from the profile's own
-## store (which owns the packs, section 4.3), clamped by `PlayerState`'s per-slot ceiling,
-## and records what it loaded so the dock can tell a fired round from a ceiling. The slots
-## are the launched fit's own (`weapons`), so a hull that mounts two lasers seeds both
-## from the one `laser` pack and a hull that mounts none seeds nothing.
+## The other half of the same pattern, and since S5 it is a **cargo** load (10 section 6.1,
+## CONTRACTS section 17): each fitted weapon's pack auto-fills from the hold's `ammo_*` units
+## of its family up to `ammo_max`, once per launch, and the drawn units leave the hold. The
+## slots are the launched fit's own (`weapons`), so a hull that mounts two lasers loads the
+## one `laser` pack **once** and seeds both slots from it, and a hull that mounts none loads
+## nothing. The load is a profile write (`load_ammo_from_hold` tops the pack up and returns
+## what it holds), so each slot is seeded from the pack's own post-load figure and
+## `_ammo_seed` still records what the flight started with. Nothing here runs in flight: a
+## pack that empties during a sortie stays empty until the next launch.
 func _seed_ammo() -> void:
 	var profile := _profile()
 	if profile == null or _state == null:
 		return
 	_ammo_seed.clear()
+	var loaded: Dictionary = {}
 	for slot in _state.weapons.size():
 		var weapon_id: StringName = _state.weapons[slot]
-		_state.set_ammo(slot, int(profile.call(&"ammo_of", weapon_id)))
+		_state.set_ammo(slot, _auto_load_ammo(profile, weapon_id, loaded))
 		_ammo_seed.append(_state.ammo[slot])
+
+
+## One family's auto-load, answered from `loaded` after the first cell that asks for it so a
+## twin-weapon fit draws the hold exactly once. A profile without the cargo auto-load (a
+## stub, or an older store) keeps the pre-S5 read of its own pack.
+func _auto_load_ammo(profile: Node, weapon_id: StringName, loaded: Dictionary) -> int:
+	if loaded.has(weapon_id):
+		return int(loaded[weapon_id])
+	var rounds := 0
+	if profile.has_method(&"load_ammo_from_hold"):
+		rounds = int(profile.call(&"load_ammo_from_hold", weapon_id))
+	else:
+		rounds = int(profile.call(&"ammo_of", weapon_id))
+	loaded[weapon_id] = rounds
+	return rounds
 
 
 func _refresh_hud() -> void:
@@ -1347,16 +1446,20 @@ func _push_pools() -> void:
 		_hud.call(&"set_emergency", _state.emergency_mode)
 
 
-## Section 4.3: the HUD's slot (0-based, `weapon_1` first) addresses the same group on the
-## mounted component (1-based, `GROUPS_MAX` 5). A fit with no guns carries no node and the
-## selection stays a `PlayerState` reading, exactly as it was in slice 1.
-func _select_weapon(slot: int) -> void:
-	if slot < 0 or slot >= _state.ammo.size():
+## Section 4.3 / 09 section 11: a **rack ordinal** (1-based, `weapon_1..7`) selects
+## the battery the mounted component fires. Both callers hand one in - the input map's
+## `weapon_N` key as `N` and the HUD's W-slot button as the ordinal of the rack its
+## cell belongs to (`ui/hud/hud.gd`) - because a composed rack may hold several kinds
+## and one rack need not sit at its own cell's index. A fit with no guns carries no
+## node and the selection stays a `PlayerState` reading, exactly as it was in slice 1.
+func _select_weapon(battery: int) -> void:
+	if battery < 1 or battery > WeaponsScript.GROUPS_MAX:
 		return
-	_weapon_index = slot
-	_state.set_ammo(slot, _state.ammo[slot])
+	_weapon_index = battery - 1
 	if _guns != null and _guns.has_method(&"select_group"):
-		_guns.call(&"select_group", slot + 1)
+		_guns.call(&"select_group", battery)
+	if _hud != null and _hud.has_method(&"select_battery"):
+		_hud.call(&"select_battery", battery)
 
 
 func _bind_hud() -> void:
@@ -1383,13 +1486,30 @@ func _push_hull_slots() -> void:
 ## One entry per W cell of the launched hull, in the matrix's own layout order (09
 ## section 4 item 5's index): `module` is the fitted base id (`&""` for an unfitted
 ## cell), `icon` is the catalogue's own path for it - the HUD draws the `w` slot glyph
-## for an empty cell - and `selectable` is false past the input map's five weapon
-## groups, so a 7-W capital's last two cells display without a key (CONTRACTS section
-## 11). The cells come from `ShipFit.grid_cells`, so the HUD's grid is the hull's own
-## matrix and no second layout table exists.
+## for an empty cell - and `battery` is the **1-based rack ordinal** the cell fires
+## from, `0` for a cell that belongs to no rack (09 section 11 / CONTRACTS section 17:
+## the HUD's W-slot buttons address battery ordinals, not cell indices, because a
+## composed rack may hold several cells and several kinds). `selectable` follows from
+## the battery: a cell with no rack, or one whose ordinal the input map cannot reach
+## (`GROUPS_MAX`), displays without a key. The cells come from `ShipFit.grid_cells`,
+## so the HUD's grid is the hull's own matrix and no second layout table exists.
+##
+## `position` is the **barrel slot** the cell's own ammo lives at - its index in
+## `PlayerState.weapons`/`ammo`, which is the array the HUD's readout reads
+## (`_hull_slot_cells` and `_launch_weapons` count the same cells in the same order, so
+## the two can never drift). It is what makes a **mixed** rack's readout follow the
+## barrel it names rather than the family that happens to sit at the ordinal's index
+## (`ui/hud/hud.gd`, the S5 review's R1-MED-1). It equals `_weapon_barrel_positions()`'
+## entry for the cell whenever every fitted cell carries a firing family - which is
+## every standard fit and every auction fit - and differs only where 09 section 11 /
+## CONTRACTS section 16 rule 3's divergence bites (a family-less `w_mining` cell, which
+## `WeaponsComponent.set_fitted` drops from its own barrel list but `_launch_weapons`
+## keeps as a slot with no pack). `-1` for a cell the fit leaves empty.
 func _hull_slot_cells() -> Array:
 	var cells: Array = []
 	var fitted: Array = _launch_fit.get(&"weapons", [])
+	var batteries: Array = _launch_batteries()
+	var position := 0
 	for cell: Dictionary in ShipFit.grid_cells(_launch_hull):
 		if StringName(cell[&"type"]) != &"weapons":
 			continue
@@ -1397,15 +1517,30 @@ func _hull_slot_cells() -> Array:
 		var module := &""
 		if index >= 0 and index < fitted.size():
 			module = StringName(str(fitted[index]))
+		var battery := _rack_ordinal(batteries, index)
 		cells.append({
 			&"slot": &"weapons",
 			&"index": index,
 			&"module": module,
 			&"icon": ModuleCatalogScript.icon_path(module) if module != &"" else "",
 			&"fitted": module != &"",
-			&"selectable": index < WeaponsScript.GROUPS_MAX,
+			&"battery": battery,
+			&"position": position if module != &"" else -1,
+			&"selectable": battery >= 1 and battery <= WeaponsScript.GROUPS_MAX,
 		})
+		if module != &"":
+			position += 1
 	return cells
+
+
+## The 1-based ordinal of the rack holding one W cell, 0 for a cell no rack claims:
+## the `battery` field of `_hull_slot_cells`, read by the HUD's slot buttons.
+static func _rack_ordinal(batteries: Array, cell: int) -> int:
+	for position in batteries.size():
+		var rack: Array = batteries[position]
+		if rack.has(cell):
+			return position + 1
+	return 0
 
 
 func _instantiate_hud() -> Control:

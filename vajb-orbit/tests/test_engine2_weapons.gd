@@ -4,6 +4,10 @@ extends McpTestSuite
 ## configuration of engine slice 2's W1 (ENGINE_SPEC sections 4.1, 4.3, 4.4, 4.6 and
 ## 13; docs/CONTRACTS.md sections 2/4/5/8.1).
 ##
+## S5 (09 section 11, CONTRACTS section 17) adds the composed-rack seam: the racks are
+## the player's mixed groups (`set_batteries`), the salvo gate is the slowest member's
+## cycle, and the group key count is seven.
+##
 ## Pure logic only, with one exception: the S4 volley's travelling half needs a world
 ## to spawn a shot into (`_spawn_shot` reads `get_tree()`), so those tests build the
 ## small tree-backed rig `_volley_rig` and nothing else leaves the tree. Every number
@@ -239,7 +243,10 @@ func test_module_ids_normalize_to_weapon_ids() -> void:
 	assert_eq(WeaponScript.weapon_id(&"w_nothing"), &"", "an unknown module is refused")
 
 
-func test_groups_follow_the_fitted_order_and_clamp_to_weapon_1_5() -> void:
+## **S5 (09 section 11, CONTRACTS section 17): the map holds seven keys**, so the clamp
+## moved from five to `GROUPS_MAX` and a fit's **racks** - not its families - are what
+## `weapon_1..7` addresses.
+func test_groups_follow_the_fitted_order_and_clamp_to_weapon_1_7() -> void:
 	var fit: Array[StringName] = [&"w_laser", &"cannon", &"rocket", &"mine", &"plasma"]
 	_guns.call(&"set_fitted", fit)
 	var fitted: Array = _guns.call(&"fitted")
@@ -249,20 +256,27 @@ func test_groups_follow_the_fitted_order_and_clamp_to_weapon_1_5() -> void:
 	_guns.call(&"select_group", 3)
 	assert_eq(StringName(_guns.call(&"selected_weapon")), &"rocket", "weapon_3 is the third")
 	_guns.call(&"select_group", 9)
-	assert_eq(int(_guns.call(&"selected_group")), 5, "a group past the map clamps to 5")
+	assert_eq(
+		int(_guns.call(&"selected_group")),
+		WeaponScript.GROUPS_MAX,
+		"a group past the map clamps to GROUPS_MAX"
+	)
+	assert_eq(WeaponScript.GROUPS_MAX, 7, "and the map is seven keys wide since S5")
 	_guns.call(&"select_group", 0)
 	assert_eq(int(_guns.call(&"selected_group")), 1, "a group below the map clamps to 1")
 
 
-## Six families exist and the input map offers five groups, so a fit can carry more
-## weapons than it can select. The list is kept whole rather than silently
-## truncated, so the wiring layer can see the mismatch.
+## Six families exist and the map now offers seven groups, so a six-weapon fit is
+## selectable end to end. The list is kept whole rather than silently truncated, so the
+## wiring layer can see any mismatch.
 func test_a_six_weapon_fit_is_kept_whole() -> void:
 	var fit: Array[StringName] = [&"laser", &"plasma", &"cannon", &"railgun", &"rocket", &"mine"]
 	_guns.call(&"set_fitted", fit)
 	assert_eq((_guns.call(&"fitted") as Array).size(), 6, "six weapons are fitted")
 	_guns.call(&"select_group", 5)
 	assert_eq(StringName(_guns.call(&"selected_weapon")), &"rocket", "group 5 is the fifth")
+	_guns.call(&"select_group", 6)
+	assert_eq(StringName(_guns.call(&"selected_weapon")), &"mine", "and group 6 the sixth")
 
 func test_a_group_with_no_weapon_selects_nothing() -> void:
 	var fit: Array[StringName] = [&"laser"]
@@ -399,6 +413,137 @@ func test_battery_answers_positions_normalised_through_weapon_id() -> void:
 
 func test_the_strum_ceiling_is_the_pinned_number() -> void:
 	assert_eq(WeaponScript.BATTERY_STRUM_MS, 40, "09 section 10's per-barrel ceiling, ms")
+
+
+## --- S5: composed racks and the slowest-member salvo gate (CONTRACTS section 17) ---
+##
+## `set_batteries` hands the component the player-composed racks (the component's own
+## index space: barrel positions into `fitted()`), a rack may mix kinds, and the salvo
+## gate is `max(members' cadence)`. An empty spec keeps S4's grouping, so every pre-S5
+## caller and fixture reads exactly what it always read.
+
+
+## A composed spec is the rack list: the racks it names, in its order, then one trailing
+## rack per barrel it does not mention - a fitted weapon is never left unfireable.
+func test_composed_racks_follow_the_spec_and_claim_every_barrel() -> void:
+	var fit: Array[StringName] = [&"cannon", &"laser", &"cannon", &"rocket"]
+	_guns.call(&"set_fitted", fit)
+	assert_eq(
+		_guns.call(&"racks"),
+		[[0, 2], [1], [3]],
+		"with no spec, S4's grouping: the two cannons, the laser, the rocket"
+	)
+	_guns.call(&"set_batteries", [[0, 1], [2]])
+	assert_eq(_guns.call(&"racks"), [[0, 1], [2], [3]], "the spec's racks, then the unclaimed barrel")
+	assert_eq(int(_guns.call(&"rack_count")), 3, "three racks, three selectable keys")
+	_guns.call(&"select_group", 1)
+	assert_eq(_guns.call(&"selected_rack"), [0, 1], "rack 1 is the mixed pair")
+	assert_eq(
+		StringName(_guns.call(&"selected_weapon")), &"cannon", "whose representative is its first barrel"
+	)
+	_guns.call(&"select_group", 2)
+	assert_eq(_guns.call(&"selected_rack"), [2], "rack 2 is the lone cannon")
+	_guns.call(&"select_group", 3)
+	assert_eq(_guns.call(&"selected_rack"), [3], "rack 3 the trailing rocket")
+	_guns.call(&"select_group", 4)
+	assert_eq(_guns.call(&"selected_rack"), [], "and rack 4 has no barrel")
+	assert_eq(StringName(_guns.call(&"dry_reason")), &"none", "so the trigger is silent")
+
+
+## A spec entry the fit cannot honour is dropped rather than trusted: a position past
+## `fitted()` and one another rack already holds - and no barrel may be lost to it.
+func test_a_spec_entry_the_fit_cannot_honour_is_dropped() -> void:
+	var fit: Array[StringName] = [&"cannon", &"laser", &"cannon"]
+	_guns.call(&"set_fitted", fit)
+	_guns.call(&"set_batteries", [[0, 5], [0]])
+	assert_eq(
+		_guns.call(&"racks"),
+		[[0], [], [1], [2]],
+		"the duplicate and the out-of-range drop, the spec's empty rack kept for its ordinal, "
+		+ "and the unclaimed barrels in their own racks"
+	)
+	_guns.call(&"set_batteries", [])
+	assert_eq(
+		_guns.call(&"racks"), [[0, 2], [1]], "an empty spec returns to S4's family grouping"
+	)
+
+
+## The salvo gate (09 section 11: "the rof will be limited by the slowest weapon"):
+## `battery_cycle` is the selected rack's `max(members' cadence)`, so a mixed rack reads
+## its slowest member and a rack of one family reads its own cadence.
+func test_the_salvo_gate_is_the_slowest_members_cycle() -> void:
+	var fit: Array[StringName] = [&"cannon", &"rocket", &"laser"]
+	_guns.call(&"set_fitted", fit)
+	_guns.call(&"set_batteries", [[0, 1, 2]])
+	var slowest := maxf(
+		WeaponScript.interval_of(&"cannon"),
+		maxf(WeaponScript.interval_of(&"rocket"), WeaponScript.interval_of(&"laser"))
+	)
+	assert_eq(_guns.call(&"battery_cycle"), slowest, "the rack's own max(members' cadence)")
+	assert_eq(_guns.call(&"battery_cycle"), 1.2, "cannon 0.6 + rocket 1.2 + laser 0 -> 1.2")
+	_guns.call(&"set_batteries", [[0], [1, 2]])
+	_guns.call(&"select_group", 1)
+	assert_eq(_guns.call(&"battery_cycle"), 0.6, "a cannon rack reads 0.6")
+	_guns.call(&"select_group", 2)
+	assert_eq(_guns.call(&"battery_cycle"), 1.2, "and the rocket's rack 1.2")
+	assert_eq(int(_guns.call(&"rack_cycle", 9)), 0, "an index outside the racks reads 0")
+
+
+## The gate in flight: a held mixed rack fires one salvo per slowest-member cycle, and
+## the member that fires travelling shots keeps that period. Measured over a 3.0 s hold at
+## 1/60, the pair below is the shipped arithmetic - the laser states no cadence at all
+## (`interval_of(&"laser") == 0.0`, an instant family) - so the pair's slowest member is
+## the cannon's 0.6 s and the cannon's own salvo period must be that window, not a
+## per-barrel one.
+func test_a_held_mixed_rack_streams_at_its_slowest_members_cycle() -> void:
+	var guns := _volley_rig()
+	if guns == null:
+		return
+	_clear_shots()
+	var fit: Array[StringName] = [&"cannon", &"laser"]
+	guns.call(&"set_fitted", fit)
+	guns.call(&"set_batteries", [[0, 1]])
+	guns.call(&"set_aim_point", Vector2(400.0, 0.0))
+	var slot := WeaponScript.ammo_slot(&"cannon")
+	_state.set_ammo(slot, 30)
+	guns.call(&"select_group", 1)
+	var cycle: float = float(guns.call(&"battery_cycle"))
+	var frame := 1.0 / 60.0
+	var marks: Array[int] = []
+	var beams := [0]
+	var counter := [0]
+	guns.connect(
+		&"shot_fired",
+		func(id: StringName) -> void:
+			if id == &"cannon":
+				marks.append(counter[0])
+			else:
+				beams[0] += 1
+	)
+	guns.call(&"set_firing", true)
+	for index in int(3.0 / frame):
+		counter[0] = index
+		guns.call(&"tick", frame)
+	print(
+		"[s5-racks] mixed cannon+laser rack: cycle %.3f s, cannon salvos at %s, beam opens %d"
+		% [cycle, str(marks), int(beams[0])]
+	)
+	assert_eq(cycle, 0.6, "the pair's slowest member is the cannon")
+	assert_true(marks.size() >= 4, "a held rack streams, one salvo per slowest-member cycle")
+	assert_eq(beams[0], 1, "and the beam member opened once for the whole hold")
+	## The period is the rack's cycle with two sources of slack the pin states: the strum's
+	## own 40 ms draw (2.4 frames) and the cannon's burst window, which can hold a barrel back
+	## until the next on-window. Six frames (100 ms) covers both and still separates 0.6 s
+	## from any per-barrel alternative a rack of this mix could have.
+	var window := int(round(cycle / frame))
+	for index in range(1, marks.size()):
+		var gap: int = marks[index] - marks[index - 1]
+		assert_true(
+			absi(gap - window) <= 6,
+			"salvo %d follows salvo %d by ~%d frames (measured %d)"
+			% [index + 1, index, window, gap]
+		)
+	_release_trigger(guns, frame)
 
 
 ## Rule 6's per-barrel frame: every open barrel pays its family's `draw x delta`, so a
