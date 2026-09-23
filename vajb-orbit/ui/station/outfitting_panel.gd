@@ -15,9 +15,9 @@ extends VBoxContainer
 ## FITTED WEAPONS strip, and `PlayerProfile.buy_module` / `ModuleCatalog` stay the price
 ## source the migration table reads with no new UI caller here. The strip's REMOVE is
 ## untouched by that retirement: it is the strip's own control, not a row of the retired
-## table, and its write goes through the profile's public fit API
-## (`set_fit_slot` + `add_module`), preceded by `_seed_fit` so a hull the account holds no
-## fit for cannot be materialised without 09 section 7's mandatory set.
+## table, and its write goes through the profile's composed fitting transaction
+## (`clear_fit_slot`, CONTRACTS section 13), preceded by `_seed_fit` so a hull the account
+## holds no fit for cannot be materialised without 09 section 7's mandatory set.
 ##
 ## Panel contract with the shell:
 ##   signal status_requested(message: String, danger: bool)   write the footer strip
@@ -655,9 +655,12 @@ func _on_strip_remove(index: int) -> void:
 
 
 ## REMOVE: the cell is emptied and the module goes back to the inventory (09 section 4 item
-## 8, 10 section 6). The write comes first, so a cell that could not be written hands
-## nothing back. The strip's own control, not a retired MODULES row (section 5.1's S3
-## amendment).
+## 8, 10 section 6) through the composed `clear_fit_slot` (CONTRACTS section 13), so the
+## entry the cell holds is banked as **itself**: an instance fitted through FITTING comes
+## back as the same instance -- same id, same rarity, same affixes -- and never as a fresh
+## base-keyed Common (CONTRACTS section 15's `restore_instance` clause, S3-K4 HIGH-1). The
+## transaction refuses before it writes, so a cell that could not be written hands nothing
+## back. The strip's own control, not a retired MODULES row (section 5.1's S3 amendment).
 func remove_module(index: int) -> bool:
 	var profile := _profile()
 	if profile == null:
@@ -670,9 +673,8 @@ func remove_module(index: int) -> bool:
 	if module_id == &"":
 		return false
 	_seed_fit(profile, hull)
-	if not bool(profile.call(&"set_fit_slot", hull, WEAPON_SLOT, index, &"")):
+	if not bool(profile.call(&"clear_fit_slot", hull, WEAPON_SLOT, index)):
 		return false
-	profile.call(&"add_module", module_id, 1)
 	AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
 	status_requested.emit(STATUS_REMOVED % _module_name(module_id), false)
 	return true

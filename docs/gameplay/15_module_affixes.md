@@ -141,6 +141,16 @@ stat block (base stats + affix lines) when the fitting screen is designed.
 
 Dated numbers for the wave that implements §1–§7; each carries its reversal.
 
+**Ticked 2026-09-23 — built and review-verified.** S3 closed with the gate at **493/0**
+(from 457), commit history `ff2375c`…the wave boundary; the reviewer re-measured every
+number in this section and in §9 (`.agents/gen/slices/S3-module-affixes/S3-K4_review.md`):
+the six-key record, the `count` 1/0 round trip, the migration's idempotence, the roll
+tables row by row, the three exclusive rows and the F lot's 85/15 all hold, and **no
+affix reaches a flight stat** (§9.3). One HIGH was found and fixed before close: the
+legacy OUTFITTING strip's REMOVE banked a base-keyed unit instead of the fitted instance
+(`outfitting_panel.gd:664` now calls the composed `clear_fit_slot`). The owner ticks
+owed are the brief's seven plus 10 §2.2's six-vs-chance word.
+
 - **Instance identity.** A module instance is `{instance_id, base_id, rarity,
   prefixes[], suffixes[]}` (§6's own shape) with `instance_id` = `mod_%04d` from
   one per-profile counter. Fits may hold `instance_id` values;

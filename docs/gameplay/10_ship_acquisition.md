@@ -123,6 +123,16 @@ The restock footer's `m:ss` is a **reading taken at pane entry**, not a countdow
 shared clock has no remaining-time accessor and forbids per-consumer Timers
 (STATION_HUB §5.10, 05 §8).
 
+**Ticked 2026-09-23 — built and review-verified.** The shelf shipped in wave S3
+(`game/auction.gd` + `ui/station/auction_panel.tscn`, rail index 3; gate 457 → **493/0**);
+the reviewer re-measured 2 000 seeded shelves — exactly 6 hulls and 10 listings every
+draw, the hot slot over 400 shelves, the F lot first on 400/400 with no Common, prices
+with 0 mismatches over 35 rows × 3 rarities — and confirmed the rotation survives a
+reload in the profile's top-level `auction` key. The measured deviation the reviewer
+upheld: the `SELL MODULES` rows are per instance (STATION_HUB §5.10's own 2026-09-23
+amendment), because a sell price is a property of an instance. §2.2's six-vs-chance block
+above is the wave's one open owner word.
+
 ## 3. The Shipyard build path
 
 A second station module. Building costs **materials + a credit labour fee**.

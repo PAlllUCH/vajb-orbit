@@ -799,12 +799,16 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
-Expected: **`[SUMMARY] passed=491 failed=0`**, exit 0 (measured twice on 2026-09-23, the
-S3 review — S3-K4 — on a scratch store; **491 tests over 43 suites**). The wave before it
+Expected: **`[SUMMARY] passed=493 failed=0`**, exit 0 (measured twice on 2026-09-23 by the
+S3 fixer pass — S3-K5 — with the canonical command below, the live `user://` byte-identical
+before and after; **493 tests over 43 suites**). The S3 review before it read
+**`passed=491 failed=0`** (measured twice the same day by S3-K4), and the difference is the
+two regression tests that fix added for its one HIGH (`test_p2b1_outfitting_panel.gd:662`
+and `:703`, the OUTFITTING strip's REMOVE against an instance-keyed cell). The wave before it
 read **`passed=457 failed=0`** (measured twice on 2026-09-22, the S3 docs pass; 457 tests
-over 40 suites), so the item-economy wave's own growth is `457 → 471 → 482 → 491`
+over 40 suites), so the item-economy wave's own growth is `457 → 471 → 482 → 491 → 493`
 (S3-K1's instance core and its two suites, S3-K2's AUCTION and its one, S3-K3's
-seven-plus-two on FITTING and the shipyard). The reading between the
+seven-plus-two on FITTING and the shipyard, S3-K5's two on the strip). The reading between the
 S2.6 wave's builder pass and its fixer pass was `passed=455 failed=2` — the two
 assertions its hit-FX jitter moved, `tests/test_flight_beam_g2.gd:256-258` and
 `tests/test_weapon_fx_f4.gd:138-140`, both pinning the contact FX exactly on the
@@ -833,7 +837,7 @@ pass added `tests/test_engine2_fixes.gd` (**17**) and the slice-2 close added
 combat/collision repair wave measured**; the count kept growing after it
 (277 weapon-FX → 294 flight-feel/beam → 311 slice 2.5 → 372 P2-A → 378 rock cleave →
 389 P2-B1 → 437 P2-B proper → 457 with S2.6, measured 2026-09-22 → **491 with S3**,
-measured 2026-09-23), so the number to
+measured 2026-09-23 → **493 with S3's fixer pass**, measured 2026-09-23), so the number to
 read is always the measured one with zero failures, never a stale total — and never the
 236. Discovery is
 automatic (`tests/headless_runner.gd` finds `test_*.gd`); no
@@ -1925,3 +1929,21 @@ battery(base_id: StringName) -> Array   # this battery's W indices
   `clear_fit_slot`) and its per-criterion verdicts are
   `.agents/gen/slices/S3-module-affixes/S3-K4_review.md`; the new LOW rows are `L107`+
   in `.agents/gen/_state/LOW_BACKLOG.md`.
+- **v0.7.5 (2026-09-23, the S3 fixer pass — S3-K5, the wave's second CONTRACTS writer)** —
+  **§9's expected figure moves 491/0 → 493/0** (measured twice this pass with §9's own
+  canonical command, `passed=493 failed=0` exit 0, the live `profile.cfg` md5
+  `9182b34f…` byte-identical before and after both runs). The pass fixed the review's one
+  HIGH at its named site and nothing else: `ui/station/outfitting_panel.gd:664`
+  `remove_module` now calls the composed `PlayerProfile.clear_fit_slot(hull, WEAPON_SLOT,
+  index)` in place of its raw `set_fit_slot(…, &"")` + `add_module(base_id, 1)`, so the
+  FITTED WEAPONS strip's REMOVE banks the entry the cell holds as itself — `_bank_entry` →
+  `restore_instance` for a fitted instance (CONTRACTS §15's "never destroyed, never
+  duplicated"), `add_module` for a base-keyed cell, exactly as before. **No §15 member, no
+  §13 signature, no price, no roll weight and no 09 §3.1 stat moved**, no affix reaches a
+  flight stat, and the review's "no MED" stands: its LOW rows are untouched by this pass.
+  Two regression tests were added at the defect's own surface
+  (`tests/test_p2b1_outfitting_panel.gd:662` the fitted instance comes back as itself with
+  its rarity and affix rows; `:703` a base-keyed unit of the same base is not incremented),
+  both **red on the pre-fix panel** and green after it (measured: `passed=9 failed=2` on
+  the pre-fix file, `passed=11 failed=0` on the fixed one). Report:
+  `.agents/gen/slices/S3-module-affixes/S3-K5_report.md`.

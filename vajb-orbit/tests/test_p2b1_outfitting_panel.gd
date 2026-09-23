@@ -10,7 +10,8 @@ extends McpTestSuite
 ## so this suite guards the retirement (no rows, no constants, no scene nodes) and proves
 ## the AUCTION is the door instead. The strip's REMOVE survives the retirement -- it is the
 ## strip's own control, not a row of the retired table -- so it is still measured here,
-## with the same `set_fit_slot` + `add_module` write and the same `_seed_fit` guard.
+## through the composed `clear_fit_slot` (CONTRACTS section 13, S3-K4 HIGH-1's cure) and
+## with the same `_seed_fit` guard, for a base-id cell and for a rolled instance alike.
 ##
 ## The pane is mounted from the shipped scene with the shipped theme and driven through the
 ## wiring the station shell itself uses -- the row's own `pressed` signal for an action
@@ -273,6 +274,13 @@ func _held(pack_id: StringName) -> int:
 ## note on `module_count`, which does not aggregate instances).
 func _module_held(module_id: StringName) -> int:
 	return (_profile.call(&"instances_of", module_id) as Array).size()
+
+
+## One **record's** own `count`, instance key and base key alike: 1 in the bag, 0 fitted. Not
+## `_module_held`, which aggregates the bag's ids per base and cannot tell a stranded record
+## from a restored one (S3-K4's HIGH-1 read `instances_of`; the fix's acceptance reads this).
+func _module_count(record_id: StringName) -> int:
+	return int(_profile.call(&"module_count", record_id))
 
 
 func _credits() -> int:
@@ -643,6 +651,73 @@ func test_strip_remove_is_the_ammo_panes_one_fit_action() -> void:
 	assert_false(
 		bool(panel.call(&"remove_module", VANGUARD_W_CELLS + 4)),
 		"an index past the W cells refuses"
+	)
+
+
+## The strip's REMOVE against a cell that holds an **instance** (S3-K4 HIGH-1). The composed
+## `clear_fit_slot` banks the entry the cell holds as *itself*, so a weapon rolled and fitted
+## through FITTING comes back with its own id, rarity and affix rows instead of being stranded
+## at `count` 0 behind a fresh base-keyed Common (CONTRACTS section 15's `restore_instance`
+## clause: REMOVE hands the same instance back, never destroyed, never duplicated).
+func test_strip_remove_hands_back_the_fitted_instance() -> void:
+	var panel := _mount()
+	var instance := StringName(
+		_profile.call(&"add_instance", LASER, &"magic", [{"id": "keen", "value": 0.16}], ["whale"])
+	)
+	assert_true(
+		bool(_profile.call(&"fit_module_at", VANGUARD, WEAPON_SLOT, 0, instance)),
+		"the rolled instance fits the first W cell"
+	)
+	assert_eq(
+		String(_cells(VANGUARD)[0]),
+		String(instance),
+		"the cell holds the instance id, not its base"
+	)
+	assert_eq(_module_count(instance), 0, "and the instance is out of the bag")
+	assert_eq(_strip_text(panel, 0), "W1 LASER MKII", "the strip names it by its base's name")
+	assert_true(_strip_remove(panel, 0).visible, "and its fitted line carries REMOVE")
+	_press_strip_remove(panel, 0)
+	assert_eq(_cells(VANGUARD)[0], "", "the strip's REMOVE emptied the cell")
+	assert_eq(_module_count(instance), 1, "and the same instance is back in the bag")
+	var record: Dictionary = _profile.call(&"instance", instance)
+	assert_eq(String(record[&"rarity"]), "magic", "with its own rarity")
+	var row: Dictionary = (record[&"prefixes"] as Array)[0]
+	assert_eq(String(row[&"id"]), "keen", "and its own prefix row")
+	assert_true(is_equal_approx(float(row[&"value"]), 0.16), "at its own band value")
+	assert_true((record[&"suffixes"] as Array) == ["whale"], "and its own suffix")
+	assert_eq(
+		(_profile.call(&"modules") as Dictionary).size(), 1, "one record throughout: nothing minted"
+	)
+	assert_eq(_credits(), START_CREDITS, "removing costs nothing")
+	assert_eq(
+		_last_status(),
+		PanelScript.STATUS_REMOVED % "LASER MKII",
+		"and the pane reports it in its own pinned wording"
+	)
+
+
+## The duplication half of S3-K4 HIGH-1: a base-keyed unit of the same base already in the
+## bag is not incremented by the strip's REMOVE. The raw `add_module(base_id, 1)` this pane
+## wrote before the fix banked a fresh unit whichever entry the cell held, so one physical
+## unit became two and `Auction.sell_rows` priced both.
+func test_strip_remove_does_not_duplicate_a_base_keyed_unit() -> void:
+	var panel := _mount()
+	var instance := StringName(_profile.call(&"add_instance", LASER, &"rare", [], []))
+	assert_true(
+		bool(_profile.call(&"fit_module_at", VANGUARD, WEAPON_SLOT, 0, instance)),
+		"the instance fits"
+	)
+	_profile.call(&"add_module", LASER, 1)
+	assert_eq(_module_count(LASER), 1, "one plain base-keyed laser sits in the bag")
+	_press_strip_remove(panel, 0)
+	assert_eq(_module_count(instance), 1, "the fitted instance is back as itself")
+	assert_eq(_module_count(LASER), 1, "and the base-keyed unit is still one unit, not two")
+	assert_eq(
+		(_profile.call(&"modules") as Dictionary).size(), 2, "two records: no third was minted"
+	)
+	assert_true(
+		(_profile.call(&"instances_of", LASER) as Array).has(instance),
+		"and the bag offers the restored instance"
 	)
 
 

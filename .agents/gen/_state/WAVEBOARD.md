@@ -13,12 +13,12 @@ contracts, enforcement and the queue. Executed-wave reports, briefs and
 evidence were purged to the system trash (2026-09-22) —
 citation paths of the form `.agents/gen/<report>.md` name the purged files.
 
-**Current state: nine coding waves closed (chrome, combat repair, weapon FX wiring, flight
+**Current state: ten coding waves closed (chrome, combat repair, weapon FX wiring, flight
 feel & beam polish, slice 2.5 Feel, P2-A ship slot frames, Rock cleave, P2-B1 weapon fit,
-P2-B proper fitting panel; gate `passed=437
-failed=0`). The queue of record is `dispatch_coder.md`: items 4/5/6/7 are all DONE and
-**the module-affixes wave (doc 15) is the next brief** (the owner's own tick: affixes were
-deferred out of P2-B proper), with the AUCTION (10 §2) behind it. Owner gates: the
+P2-B proper fitting panel, **S2.6 truth-and-feel**, **S3 the item economy**; gate
+`passed=493 failed=0`, hermetic). The queue of record is `dispatch_coder.md`: items 4–9 are
+all DONE and **item 10, the weapon-batteries wave (09 §10), is next**
+(`slices/S4-weapon-batteries/`). Owner gates: the
 chrome art half, the **`18_engine_spec.md` §6/§13/§15 cleaving amendment** (owner-locked; §15
 is the test checklist and now contradicts the shipped suite), the launch fit (**both symptoms
 closed** — symptom 1 by P2-A, symptom 2 by P2-B1's `w_mining` row), four spec ticks, the §13
@@ -166,41 +166,44 @@ PowerShell form: `$env:VAJB_WORKER_FILES='...'; crush run "<prompt>" -m opencode
 - Probe hygiene (L17): a probe that repoints `PlayerProfile.save_path` must
   stop/flush the 0.5 s debounce before restoring `save_path`.
 
-## In flight — none. **Graphics D2 (designer #1) is DONE 2026-09-22** (commit `7c1ae06`,
+## In flight — none. **Coder item 9 (S3, the item economy) shipped 2026-09-23** and is in
+§Closed; **item 10 (S4 weapon batteries) is next** with its docs already done
+(CONTRACTS §16 + v0.7, 09 §10, STATION_HUB §5.10's strip rows) and its brief/prompts in
+`slices/S4-weapon-batteries/` — its verify command and ticket line were repaired by this
+wave (`S4_BRIEF.md`, `S4_prompts.md`). **Graphics D2 (designer #1) is DONE 2026-09-22**
+(commit `7c1ae06`,
 verified by the designer-session re-measure: **135 SVG + 164 raster masters + 540 tint
 stencils = 839 files** (2 478 → 839, 1 774 deleted), zero non-tint `_16/_48/_96/_192/@2x`
 left, `asset_path_fallout` **0 unresolvable** (367 refs), gate **457/0** held through the
 catalog/test/tool re-points. Owner amendments of the run recorded in `D2_SPLIT.md` §6 (96
 grid supersedes 48, batches ≤ ~10 icons, the sanctioned palette ramp). `validate_names
 --library` is environment-deferred on the Linux host (`asset-library/cut/` + `_archive`
-are Windows-side only; `archive.py --restore` reports "no archive"). **Coder item 9 (S3)
-is unblocked and starts next.**
+are Windows-side only; `archive.py --restore` reports "no archive").
 
 **Queued:** items 4 **P2-A**,
-5 **Rock cleave**, 6 **P2-B1**, 7 **P2-B proper** and 8 **S2.6 truth-and-feel** — all **DONE**
+5 **Rock cleave**, 6 **P2-B1**, 7 **P2-B proper**, 8 **S2.6 truth-and-feel** and
+**9 S3 the item economy** — all **DONE**
 (see §Closed). The
-queue of record is `.agents/gen/dispatch_coder.md` (rebuilt 2026-09-22 after the purge);
-**items 9–10 are QUEUED, docs-first done for both** (CONTRACTS §15–§16 + v0.7, 15 §8,
-10 §2.4, 09 §10, STATION_HUB §5.10; briefs + prompts in the slice folders):
-**9 = S3 the item economy** (module instances with
-affixes **plus the AUCTION**, the owner: "We need AUCTION. without it we cannot test all
-items" — `slices/S3-module-affixes/`), **10 = S4 weapon batteries** (the owner's grouping
-ruling, N barrels keep N W mounts — `slices/S4-weapon-batteries/`). Run order is forced by
-file collisions (S3 and S4 both hold `outfitting_panel.gd`). **The graphics lane resumed
+queue of record is `.agents/gen/dispatch_coder.md`;
+**item 10 = S4 weapon batteries is QUEUED, docs-first done** (CONTRACTS §16, 09 §10,
+STATION_HUB §5.10's battery rows; briefs + prompts in `slices/S4-weapon-batteries/`).
+The owner's grouping
+ruling (N barrels keep N W mounts) rides it, and **S3 and S4 both touch
+`outfitting_panel.gd`**, so S4 is strictly after S3 — which is now true.
+**The graphics lane resumed
 2026-09-22 in a two-designer split (queue of record `.agents/gen/dispatch_designer.md`):
 designer #1's only job is D2, the icon unification — glyph-type icons remade as
 hand-authored SVG masters (kie.ai has no SVG generator), every other icon kept as ONE
 raster master with all size variants deleted project-side (Godot scales from the master;
 `asset-library/` keeps provenance; Phase C's write set is **owner-extended** to the four
-`game/*_catalog.gd`, five test files and two tools — re-point only). Coder item 8 is
-closed, so D2 runs now and must close before item 9 (the extended set overlaps S3's).
-Designer #2 (chrome re-cut, tint rework, 4K backdrops, B2-1 hover) waits for the owner's later dispatch.** Owner ticks open: the
+`game/*_catalog.gd`, five test files and two tools — re-point only), and D2 closed before
+item 9. Designer #2 (chrome re-cut, tint rework, 4K backdrops, B2-1 hover) waits for the
+owner's later dispatch.** Owner ticks open: the
 `18_engine_spec.md` §6/§13/§15 cleaving amendment (owner-locked — the wave shipped,
 the spec text lags; it now also covers `FRAGMENT_OUTWARD_KICK` and the two
   flight multipliers `ACCEL_TIME_MULT`/`COAST_TIME_MULT`), the §13 turn/`coast_time`
 column ticks, slice 2.5's two calls (engine bed, vignette strength), L83's icon-size pick,
-and S3's three ticks (the v5 migration's Common-vs-retro-roll, the F-lot interim, the
-AUCTION rail position). P2-A/P2-B1/P2-B proper tick lists are resolved; **S2.6 adds four of
+and **S3's nine (see §Closed)**. P2-A/P2-B1/P2-B proper tick lists are resolved; **S2.6 adds four of
 its own (see §Closed — the `STEER_WITHOUT_THROTTLE` supersession is the new one).**
 
 **Owner requests queued 2026-09-22 (recorded, not briefed — the owner's stop
@@ -222,6 +225,55 @@ condition is item 6, and each needs its own docs-first brief before any code):**
    (its termination point, for the beam itself, not only the hit FX of #6).
 
 ## Closed (details in MASTER_REPORT.md)
+
+- **S3 the item economy — DONE 2026-09-23** (gate 457 → **493, 0 failed**, exit 0 in two
+  consecutive hermetic runs at close-out plus one under a scratch root, identical counts;
+  the live account byte-identical across every check — reports
+  `.agents/gen/slices/S3-module-affixes/S3-K{0,1,2,3,4,5}_report.md` + `S3-K4_review.md`):
+  **module instances with affixes and the AUCTION.** The wave opened with a docs drift
+  check that found the wave **could not be built as pinned** (7 HIGH: no `count` on the
+  record, no store for a shelf, a buy call that could not be told the price shown, a fitted
+  instance that could not come back intact, no affix→stat owner, 15 §4's Ledger contradicting
+  the sell formula, and the three faction exclusives with **no price, tier, draw, effect or
+  art anywhere in the tree**), so the developer session landed a docs pass first
+  (CONTRACTS **§15 v0.7.3**, `15 §9`'s three exclusive rows + the F-lot split + the
+  "stored, named, priced, displayed — **not applied**" rule, `10 §2.2`'s six-vs-chance
+  reconciliation, `10 §2.4`, `17 §3`, STATION_HUB §5.1/§5.3/§5.8/§5.10) and rebuilt the
+  wave's own verify command (its comma-joined flags had made the frozen-file guard inert).
+  Built: **K1** the instance core — `{instance_id, base_id, rarity, prefixes[], suffixes[],
+  count}` with `count` 1 in the bag / 0 fitted and never erased, the `mod_%04d` counter, the
+  two new top-level keys, the seven 15 §2 source tables and all 12 prefixes + 10 suffixes,
+  `roll_instance`/`buy_instance(id, cost)`/`sell_instance`/`take_instance`/`restore_instance`/
+  `auction`/`set_auction`, `SAVE_VERSION 6` with the idempotent v5→v6 Common migration, and
+  `base_fit` — the id→base translation that stops `fit_legal` scoring an instance as draw 0
+  (`tests/test_s3_instances.gd` 9, `test_s3_migration.gd` 5); **K2** the AUCTION —
+  `game/auction.gd` (lazy 20-minute band rotation off the shared clock, 6 hulls + 10 rolled
+  listings, the F lot first at 85/15, one hot slot), `auction_panel.gd/.tscn` and rail index 3
+  with the three `rarity_*` tokens, and OUTFITTING's seven module rows retired
+  (`test_s3_auction.gd` 11); **K3** rolled identity everywhere a fit is read — `OWNED ×<n>`
+  aggregated by base id with a `▸` expander of instances, 15 §7's rolled name in its rarity
+  tint plus the two-line stat block in FITTING's hover and the shipyard's, instance-true
+  install/remove round trips (27 + 14 tests). Reviewer: **one HIGH, no MED** — the legacy
+  OUTFITTING strip's REMOVE banked a base-keyed Common instead of the fitted instance (and
+  could duplicate a unit in the bag); fixed by the fixer pass (`outfitting_panel.gd:664` now
+  calls the composed `clear_fit_slot`) with two regression tests that are red on the pre-fix
+  panel. Measured by the reviewer, not taken on trust: the roll tables row by row (six seeded
+  outcomes reproduced exactly), the migration's idempotence, L80's identity, 2 000 seeded
+  shelves (exactly 6 + 10 every draw, F lot first 400/400, tier weights 0.5072/0.3403/0.1525),
+  prices 0 mismatches over 35 rows × 3 rarities, `verify_wave` `problems: []`, and no affix
+  touching a flight stat. LOW rows **L107–L122**. **Incident (owner data, T-93/L107's
+  neighbour):** K1's first dispatch ran an instrument against the live `user://` — it refined
+  and sold the owner's mined ore and rewrote the account as save v6; the pre-probe state was
+  exactly recoverable from the economy log, restored and re-verified through the engine's own
+  loader, and every remaining builder prompt now forbids touching the live store
+  (`slices/S3-module-affixes/_incident/README.md`). **Owner ticks owed:** 1) the three
+  exclusive rows' numbers (`15 §9.1`: tier III, draw 3/3/0, cost 5 200/5 200/4 500, the two
+  icon fallbacks); 2) the F lot's 85/15 split (`15 §9.2`); 3) the v5 stock migration's
+  Common default vs a retro-roll (one call); 4) the F-lot interim flag; 5) the AUCTION's rail
+  position; 6) **whether to schedule the affix-application wave** (`15 §9.3` — the wave
+  stores, prices, names and displays affixes but applies none); 7) the rarity tints'
+  one-accent exception into STYLE_BIBLE; 8) `10 §2.2`'s exactly-six-vs-the-chance-column word;
+  9) the Windows-host copy of the account (unchanged since S2.6's incident).
 
 - **S2.6 truth-and-feel — DONE 2026-09-22** (gate 437 → **457, 0 failed**, on the owner's own
   live `user://` twice, byte-identical, plus once on a mutated copy under a scratch root; the

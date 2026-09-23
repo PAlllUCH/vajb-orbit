@@ -747,6 +747,13 @@ Footer: `FEE · 1 CR PER 2 MISSING HULL · 1 CR PER 3 MISSING SHIELD`.
 
 ### 5.10 AUCTION (the house broker) — amendment 2026-09-22 (S3 + S4)
 
+**Ticked 2026-09-23 — S3 built and review-verified** (gate 457 → **493/0**; the reviewer's
+re-measure: the pane mounts behind `Module.AUCTION` at rail index 3, the shelf draws and
+renders, the three `rarity_*` tokens are the pinned hexes, the `NEXT RESTOCK` line is read
+at entry with no Timer, the AUCTION owns its footer, and OUTFITTING's module rows are gone).
+The battery rows below (**S4**) are **not** built — they are item 10's, and the shell's
+`▸` expander in §5.3 is this wave's while these are not.
+
 Transcribed from `docs/gameplay/10_ship_acquisition.md` §2/§2.4, 15 §7/§8 and 09 §10;
 every number below is one of those documents', none is this pass's.
 
