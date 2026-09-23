@@ -26,6 +26,15 @@ extends Node2D
 ## (FX_SPEC section 1.2) and the family's cue (AUDIO_SPEC section 8 through the
 ## handoff's pools), and the instant families draw FX_SPEC section 1.6's
 ## engine-drawn shaft. Nothing here reads or writes a balance number.
+##
+## S4 (CONTRACTS section 16, 09 section 10): a **battery** is the identical weapons
+## fitted across W cells, and one trigger pull discharges the whole battery. `fitted()`
+## is one entry per barrel with duplicates kept, `battery_ids()` is the distinct id of
+## each battery in first-barrel order - what `weapon_1..5` and the HUD's slots address -
+## and `battery(base_id)` is one battery's barrel positions in `fitted()`. A pull arms
+## the selected battery, its barrels draw a release offset in `[0, BATTERY_STRUM_MS]` ms
+## and each released barrel spends its own round, applies its own recoil and emits
+## `shot_fired`; a barrel the family refuses is dry and never holds the rest back.
 
 ## Raised when a shot actually leaves: one per released projectile (cannon,
 ## railgun, rocket, mine) and once per beam hold for the instant families, which
@@ -134,6 +143,12 @@ const SHARED_PACK: Dictionary = {&"railgun": &"cannon"}
 const GROUPS_MAX := 5
 const FIRE_ACTION: StringName = &"fire_primary"
 const MODULE_PREFIX := "w_"
+
+## S4 (09 section 10, CONTRACTS section 16 rule 4): a battery's barrels each draw a
+## release offset uniformly in `[0, BATTERY_STRUM_MS]` ms so a volley reads as a salvo
+## rather than one louder shot. This ceiling is the whole number; its reversal is 0
+## (a perfectly simultaneous volley).
+const BATTERY_STRUM_MS := 40
 
 ## Section 4.2 item 7's shooter term and section 6's chip rate. The chip rate is
 ## the spec's own (10 %, ruling 17); `SHOT_MASS` is section 13's missing row
@@ -286,13 +301,38 @@ var _state: PlayerState = null
 var _fitted: Array[StringName] = []
 var _group := 1
 
+## The batteries of `_fitted`, rebuilt with it: the distinct ids in first-barrel order
+## (CONTRACTS section 16 rule 2). `weapon_1..5` and every HUD slot address one entry.
+var _batteries: Array[StringName] = []
+
 var _firing := false
 var _was_firing := false
 var _external_trigger := false
 var _dry_noted := false
-var _shot_timer := 0.0
+
+## One cadence timer per barrel of `fitted()` (CONTRACTS section 16 rule 4: "the single
+## `_shot_timer` becomes one timer per barrel"), so three cannons deliver three shots
+## per burst window and a held trigger is a stream of salvos rather than one burst.
+var _barrel_timers: Array[float] = []
+
+## One release countdown per barrel: `>= 0.0` is the seconds left before that barrel
+## releases this pull, `-1.0` is unarmed (nothing pending). Armed by `_arm_battery` on
+## the pull's rising edge, spent by `_release_battery` a frame at a time.
+var _armed: Array[float] = []
+
+## One open flag per instant (beam) barrel: the barrel has released and, while the
+## trigger is held, keeps paying its family's `draw x delta` and drawing every frame
+## (CONTRACTS section 16 rule 6).
+var _beam_open: Array[bool] = []
+
+## The battery the last arm was for, so a group switched mid-hold arms the new one.
+var _armed_weapon: StringName = &""
 var _burst_phase := 0.0
 var _beam_live := false
+
+## The strum's own generator. Private, like `_fx_rng`, so the release offsets never
+## perturb another generator's stream and a seeded run still measures what it says.
+var _strum_rng := RandomNumberGenerator.new()
 
 ## The instant families' two engine-drawn lines (FX_SPEC section 1.6), built in code
 ## because the component itself is mounted in code.
@@ -355,24 +395,48 @@ func _connect_feedback() -> void:
 		shot_fired.connect(_on_shot_fired)
 
 
-## The fitted weapon ids, in group order (`weapon_1` is index 0). Module ids are
-## accepted as well as weapon ids - `w_laser` normalizes to `laser` - because the
-## fit is a module list and the family table is keyed by weapon (09 section 3.1's
-## two names for the same thing). Unknown ids are dropped rather than kept as dead
-## groups; the whole list is otherwise kept, because six families exist while the
-## input map offers five `weapon_1..5` keys, so a fit can carry more weapons than
-## there are selectable groups (reported).
+## The fitted weapon ids, **one entry per barrel in fit order** (`weapon_1` is index 0).
+## Module ids are accepted as well as weapon ids - `w_laser` normalizes to `laser` -
+## because the fit is a module list and the family table is keyed by weapon (09
+## section 3.1's two names for the same thing). Unknown or family-less ids are dropped
+## rather than kept as dead barrels; **duplicates are kept**, because N barrels keep N W
+## mounts (09 section 10's 2026-09-22 ruling) and the battery is what groups them
+## (CONTRACTS section 16 rules 1-2). The whole list is otherwise kept, because six
+## families exist while the input map offers five `weapon_1..5` keys, so a fit can carry
+## more weapons than there are selectable batteries (reported).
 func set_fitted(ids: Array[StringName]) -> void:
 	_fitted.clear()
 	for value: StringName in ids:
 		var id := weapon_id(value)
-		if id == &"" or _fitted.has(id):
+		if id == &"":
 			continue
 		_fitted.append(id)
+	_sync_barrels()
+
+
+## Rebuilds everything a fit change invalidates: the battery list `weapon_1..5` selects
+## from, and the three per-barrel arrays the volley runs on.
+func _sync_barrels() -> void:
+	var batteries: Array[StringName] = []
+	for id: StringName in _fitted:
+		if not batteries.has(id):
+			batteries.append(id)
+	_batteries = batteries
+	var timers: Array[float] = []
+	var armed: Array[float] = []
+	var open: Array[bool] = []
+	for _position in _fitted.size():
+		timers.append(0.0)
+		armed.append(-1.0)
+		open.append(false)
+	_barrel_timers = timers
+	_armed = armed
+	_beam_open = open
+	_armed_weapon = &""
 
 
 ## `weapon_1..5` (section 4.3): the input map's five keys are the group range, so a
-## group outside it clamps. A group with no fitted weapon selects nothing, and the
+## group outside it clamps. A group with no fitted battery selects nothing, and the
 ## trigger then falls silent rather than firing the previous group.
 func select_group(group: int) -> void:
 	_group = clampi(group, 1, GROUPS_MAX)
@@ -382,12 +446,41 @@ func selected_group() -> int:
 	return _group
 
 
+## The selected battery's weapon id, `&""` past the end of `battery_ids()`.
 func selected_weapon() -> StringName:
-	if _group < 1 or _group > _fitted.size():
+	if _group < 1 or _group > _batteries.size():
 		return &""
-	return _fitted[_group - 1]
+	return _batteries[_group - 1]
 
 
+## The batteries this fit carries, in first-barrel order (CONTRACTS section 16 rule 2):
+## the distinct weapon ids of `fitted()`, duplicated so a caller cannot write through.
+## A battery - not a barrel - is what a `weapon_1..5` key and every HUD slot addresses,
+## so on a fit of distinct families this list is element-for-element the `fitted()` this
+## component shipped before S4 and every existing group, cadence and dry test reads the
+## same.
+func battery_ids() -> Array[StringName]:
+	return _batteries.duplicate()
+
+
+## This battery's **barrel positions in `fitted()`**, ascending - not W-cell indices
+## (CONTRACTS section 16 rule 3): the component is handed a flat id list that has
+## already dropped family-less modules, so the two index spaces diverge on the first
+## `w_mining` cell. Normalised through `weapon_id`, so `&"w_laser"` and `&"laser"`
+## answer the same list; a base with no firing family answers `[]` (its strip row
+## exists, but there is no trigger behind it).
+func battery(base_id: StringName) -> Array:
+	var positions: Array = []
+	var id := weapon_id(base_id)
+	if id == &"":
+		return positions
+	for position in _fitted.size():
+		if _fitted[position] == id:
+			positions.append(position)
+	return positions
+
+
+## One entry per barrel, fit order, duplicates kept - what the volley walks.
 func fitted() -> Array[StringName]:
 	return _fitted.duplicate()
 
@@ -498,10 +591,15 @@ func _physics_process(delta: float) -> void:
 
 ## One frame of the trigger. `_physics_process` is exactly this call, so a probe or
 ## a test can step the weapons deterministically without a physics frame.
+##
+## The frame, in order (CONTRACTS section 16 rule 4): the barrels' own cadence timers
+## run down, a pull's rising edge arms the selected battery, an unheld trigger disarms
+## it, and then every armed barrel whose offset has elapsed and whose cadence is ready
+## releases - a travelling one fires, an instant one opens.
 func tick(delta: float) -> void:
 	_sample_trigger()
 	if delta > 0.0:
-		_shot_timer = maxf(_shot_timer - delta, 0.0)
+		_advance_barrel_timers(delta)
 		if _firing:
 			_burst_phase = fmod(_burst_phase + delta, KINETIC_INTERVAL)
 		_advance_countermeasures(delta)
@@ -511,20 +609,99 @@ func tick(delta: float) -> void:
 		_dry_noted = false
 		_beam_live = false
 		_burst_phase = 0.0
+		_arm_battery()
 	if not _firing:
 		_was_firing = false
 		_beam_live = false
+		_disarm_battery()
+		_close_beams()
 		_hide_beam()
 		return
 	_was_firing = true
 	var id := selected_weapon()
 	if id == &"":
 		return
+	## A group switched while the trigger is held arms the battery it switched to: the
+	## pin's rising edge is where a pull arms, and a battery that was never armed would
+	## otherwise fire nothing until the trigger was let go and pulled again.
+	if id != _armed_weapon:
+		_arm_battery()
 	var row: Dictionary = FAMILIES[id]
+	_release_battery(id, row, delta)
 	if bool(row.get(&"instant", false)):
-		_fire_beam(id, row, delta)
+		_fire_beam_battery(id, row, delta)
+
+
+## One frame of the barrels' own cadence. They run down whether or not the trigger is
+## held, exactly as the single `_shot_timer` did, so a barrel's rate is its family's
+## and not the pull's.
+func _advance_barrel_timers(delta: float) -> void:
+	for position in _barrel_timers.size():
+		_barrel_timers[position] = maxf(_barrel_timers[position] - delta, 0.0)
+
+
+## The pull's rising edge (CONTRACTS section 16 rule 4): every barrel of the selected
+## battery draws a release offset uniformly in `[0, BATTERY_STRUM_MS]` ms, and the
+## volley's clock is the battery's own earliest draw - so the lead barrel releases on
+## the pull's own frame, which is the frame the pinned fire feedback (FX_SPEC section
+## 1.2's flash, section 1.6's opening shaft) has always opened on, and a one-barrel
+## battery is never held up by the draw. Every barrel behind the lead releases when its
+## own offset has elapsed.
+func _arm_battery() -> void:
+	_disarm_battery()
+	var weapon := selected_weapon()
+	_armed_weapon = weapon
+	if weapon == &"":
 		return
-	_fire_projectile(id, row, edge)
+	var positions := battery(weapon)
+	var ceiling := float(BATTERY_STRUM_MS) / 1000.0
+	var lead := INF
+	for position: int in positions:
+		var offset := _strum_rng.randf_range(0.0, ceiling)
+		_armed[position] = offset
+		lead = minf(lead, offset)
+	if lead <= 0.0 or lead == INF:
+		return
+	for position: int in positions:
+		_armed[position] -= lead
+
+
+func _disarm_battery() -> void:
+	for position in _armed.size():
+		_armed[position] = -1.0
+	_armed_weapon = &""
+
+
+func _close_beams() -> void:
+	for position in _beam_open.size():
+		_beam_open[position] = false
+
+
+## One frame of the pull: every armed barrel whose release offset has elapsed **and**
+## whose own cadence timer is ready releases (CONTRACTS section 16 rule 4). A barrel
+## whose cadence or burst window is not ready stays armed and retries next frame - the
+## trigger is still held - so one barrel's cadence never silences the rest of the
+## battery. An instant barrel opens; a travelling one fires through
+## `_fire_projectile`, which is where a family's own refusal (an empty pack) makes
+## that barrel dry.
+func _release_battery(weapon: StringName, row: Dictionary, delta: float) -> void:
+	var instant := bool(row.get(&"instant", false))
+	var step := maxf(delta, 0.0)
+	for position: int in battery(weapon):
+		if _armed[position] < 0.0:
+			continue
+		_armed[position] -= step
+		if _armed[position] > 0.0:
+			continue
+		if _barrel_timers[position] > 0.0:
+			continue
+		if not instant and not _burst_open(row):
+			continue
+		_armed[position] = -1.0
+		if instant:
+			_beam_open[position] = true
+		else:
+			_fire_projectile(position, weapon, row)
 
 
 func _sample_trigger() -> void:
@@ -552,11 +729,26 @@ func _burst_open(row: Dictionary) -> bool:
 ## ray point (circle hit test), capped at the weapon's range", for `dps x delta` of
 ## damage, paid for out of the Energy pool first (section 4.4): a pool that cannot
 ## pay the frame means no shot and dry-fire feedback.
-func _fire_beam(weapon: StringName, row: Dictionary, delta: float) -> void:
-	if not _spend_energy(float(row.get(&"draw", 0.0)) * maxf(delta, 0.0)):
+##
+## One frame of a **battery** (CONTRACTS section 16 rule 6): every open barrel pays its
+## own `draw x delta`, a pool that cannot pay one makes only that barrel dry for the
+## frame, and the ones before it keep drawing. The shaft itself is one drawing - one
+## muzzle, one aim point, whatever the barrel count - and the frame's damage is the sum
+## of the barrels that paid, so a three-laser battery burns three draws and deals three
+## lasers' worth without drawing three shafts over each other.
+func _fire_beam_battery(weapon: StringName, row: Dictionary, delta: float) -> void:
+	var draw := float(row.get(&"draw", 0.0)) * maxf(delta, 0.0)
+	var paid := 0
+	for position: int in battery(weapon):
+		if not _beam_open[position]:
+			continue
+		if not _spend_energy(draw):
+			_dry(weapon)
+			continue
+		paid += 1
+	if paid == 0:
 		_beam_live = false
 		_hide_beam()
-		_dry(weapon)
 		return
 	var from := global_position
 	var offset := _aim_point() - from
@@ -592,17 +784,20 @@ func _fire_beam(weapon: StringName, row: Dictionary, delta: float) -> void:
 		ProjectileScript.play_blast(self)
 		ProjectileScript.spawn_explosion(_hit_fx_parent(collider), endpoint)
 		return
-	_apply_beam(weapon, row, collider, endpoint, delta)
+	_apply_beam(weapon, row, collider, endpoint, delta, float(paid))
 
 
 ## A travelling family (section 4.1): a shot leaves at its own speed toward the
 ## cursor, spends one round from its pack, and pushes the hull back with section
 ## 4.2 item 7's term through the hull's own `apply_recoil` seam.
-func _fire_projectile(weapon: StringName, row: Dictionary, edge: bool) -> void:
-	if bool(row.get(&"edge", false)) and not edge:
-		return
-	if _shot_timer > 0.0 or not _burst_open(row):
-		return
+##
+## Called once per **barrel** of the battery as that barrel releases (CONTRACTS section
+## 16 rules 4-5), so a three-barrel volley spawns three shots, spends three rounds from
+## the one family pack and pushes the hull three times. The release is the barrel's own
+## edge: a barrel is armed only by a pull and disarmed when it fires, which is where the
+## mine's "one per trigger pull" now lives. A barrel the pack refuses is dry and leaves
+## the rest of the battery to fire.
+func _fire_projectile(position: int, weapon: StringName, row: Dictionary) -> void:
 	if not _ammo_available(weapon):
 		_dry(weapon)
 		return
@@ -612,7 +807,7 @@ func _fire_projectile(weapon: StringName, row: Dictionary, edge: bool) -> void:
 	if shot == null:
 		return
 	_consume_ammo(weapon)
-	_shot_timer = interval_of(weapon)
+	_barrel_timers[position] = interval_of(weapon)
 	_apply_recoil(direction * speed)
 	shot_fired.emit(weapon)
 
@@ -651,10 +846,21 @@ func _spawn_shot(weapon: StringName, row: Dictionary, direction: Vector2) -> Nod
 ## laser's extraction and are discarded here, ruling 17) plus section 1.6's own
 ## contact read, and a hull takes `dps x delta` of damage under its family's shield
 ## rule.
+##
+## `barrels` is how many of the battery's barrels paid for this frame (CONTRACTS
+## section 16 rule 6's per-barrel frame): the damage and the chip work are that many
+## barrels' own `dps x delta`. The shaft and the contact feedback stay one read per
+## frame - one muzzle, one aim point, one contact - so a battery of three lasers deals
+## three lasers' worth without reading its target three times a frame.
 func _apply_beam(
-	weapon: StringName, row: Dictionary, collider: Variant, point: Vector2, delta: float
+	weapon: StringName,
+	row: Dictionary,
+	collider: Variant,
+	point: Vector2,
+	delta: float,
+	barrels: float = 1.0
 ) -> void:
-	var amount := dps_of(weapon) * maxf(delta, 0.0)
+	var amount := dps_of(weapon) * maxf(delta, 0.0) * maxf(barrels, 0.0)
 	if amount <= 0.0:
 		return
 	var hull_body := collider as Node

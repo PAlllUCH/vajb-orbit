@@ -4,9 +4,11 @@ extends McpTestSuite
 ## configuration of engine slice 2's W1 (ENGINE_SPEC sections 4.1, 4.3, 4.4, 4.6 and
 ## 13; docs/CONTRACTS.md sections 2/4/5/8.1).
 ##
-## Pure logic only: no physics, no awaits, no scene tree. Every number here is
-## checked against a hand transcription of section 13 (or section 4.1's prose), the
-## same way the slice-0 probes do, so a drift in `weapons.gd` fails here. The timed
+## Pure logic only, with one exception: the S4 volley's travelling half needs a world
+## to spawn a shot into (`_spawn_shot` reads `get_tree()`), so those tests build the
+## small tree-backed rig `_volley_rig` and nothing else leaves the tree. Every number
+## here is checked against a hand transcription of section 13 (or section 4.1's prose),
+## the same way the slice-0 probes do, so a drift in `weapons.gd` fails here. The timed
 ## half - firing each family, the range cap, the homing law, the mine's arm and
 ## trigger, the chaff window and the flare lure - needs stepped physics frames and
 ## is measured in `tools/_probe_s2w1_weapons.gd` (archived next to its log in
@@ -17,9 +19,53 @@ const ProjectileScript := preload("res://game/projectile.gd")
 const PlayerStateScript := preload("res://game/player_state.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
+const AUDIO_SERVICE: StringName = &"AudioManager"
+
+## A sink that records what a beam's frame delivered, so the per-barrel damage read is
+## a number and not a reading of the pipeline. `take_damage(amount, bypass)` is the
+## pinned two-argument shape `_deliver` calls.
+class DamageSink extends Node2D:
+	var total := 0.0
+	var hits := 0
+
+
+	func take_damage(amount: float, _bypass_shield := false) -> void:
+		total += amount
+		hits += 1
+
+
+## A battery whose beam resolves on a target without a physics world. The shipped
+## `_beam_target` resolves through a ray query and a destructible shot on the segment
+## takes the fizzle branch instead of the damage one, so a beam's frame cannot carry
+## damage in a pure fixture; this double replaces the **targeting seam only** - the
+## arming, the release, the per-barrel spend, the damage sum and the delivery are the
+## shipped code's. The fixture's own target is a `DamageSink` in a tree.
+class BeamTargetSpy extends "res://game/weapons.gd":
+	var target: Node2D = null
+
+
+	func _beam_target(from: Vector2, _to: Vector2) -> Dictionary:
+		if target == null or not is_instance_valid(target):
+			return {}
+		return {
+			&"point": target.global_position,
+			&"collider": target,
+			&"distance": from.distance_to(target.global_position),
+			&"projectile": false,
+		}
+
 
 var _guns: Node2D = null
 var _state: PlayerState = null
+var _staged: Array[Node] = []
+
+## The audio pools' round-robin cursors, saved and restored around every test. The
+## volley's tree-backed rigs play the families' cues for real, and the laser pool's
+## take order is asserted by `test_weapon_fx_f1` a few suites later - a cue this suite
+## leaves spent would move that suite's first take (measured: it did, and this is the
+## hygiene g2's own `_pool_state` exists for).
+var _pool_state: Dictionary = {}
+var _had_pool_state := false
 
 
 func suite_name() -> String:
@@ -27,6 +73,7 @@ func suite_name() -> String:
 
 
 func setup() -> void:
+	_save_pools()
 	_guns = WeaponScript.new() as Node2D
 	_state = PlayerStateScript.new()
 	_state.setup()
@@ -37,7 +84,50 @@ func teardown() -> void:
 	if _guns != null and is_instance_valid(_guns):
 		_guns.free()
 	_guns = null
+	for node: Node in _staged:
+		if is_instance_valid(node):
+			node.free()
+	_staged.clear()
+	_clear_shots()
 	_state = null
+	_restore_pools()
+
+
+func _audio() -> Node:
+	var tree := _tree()
+	if tree == null:
+		return null
+	return tree.root.get_node_or_null(NodePath(AUDIO_SERVICE))
+
+
+func _save_pools() -> void:
+	_pool_state = {}
+	_had_pool_state = false
+	var audio := _audio()
+	if audio == null:
+		return
+	var cursors: Variant = audio.get(&"_pool_next")
+	if not cursors is Dictionary:
+		return
+	_had_pool_state = true
+	_pool_state = (cursors as Dictionary).duplicate()
+
+
+## `Object.get` hands the live dictionary, so the cursors are restored in place.
+func _restore_pools() -> void:
+	if not _had_pool_state:
+		return
+	var audio := _audio()
+	if audio == null:
+		return
+	var cursors: Variant = audio.get(&"_pool_next")
+	if not cursors is Dictionary:
+		return
+	var live := cursors as Dictionary
+	live.clear()
+	live.merge(_pool_state, true)
+	_pool_state = {}
+	_had_pool_state = false
 
 
 ## --- Section 4.1 + section 13: the family table ---------------------------
@@ -227,6 +317,267 @@ func test_section_4_4_draw_rides_the_energy_gate() -> void:
 	assert_false(_state.try_spend_energy(_state.energy + 1.0), "a short pool refuses")
 
 
+## --- S4: batteries and the volley (CONTRACTS section 16, 09 section 10) ---
+##
+## A battery is the identical weapons fitted across W cells; one trigger pull
+## discharges all of it. The shapes below are the pin's rules 1-3 and the volley is
+## rule 4; the two that need a world to spawn a shot into (a travelling barrel) build
+## one, because `_spawn_shot` has nowhere to put a shot outside a tree.
+
+
+## CONTRACTS section 16 rule 1: one entry per barrel, fit order, duplicates kept - a
+## Lancer's `[w_laser, w_laser]` reaches the component as two barrels, not one.
+func test_fitted_keeps_one_entry_per_barrel() -> void:
+	var fit: Array[StringName] = [&"w_laser", &"w_laser", &"w_laser"]
+	_guns.call(&"set_fitted", fit)
+	var fitted: Array = _guns.call(&"fitted")
+	assert_eq(fitted.size(), 3, "N barrels keep N entries")
+	assert_eq(StringName(fitted[0]), &"laser", "the module id normalizes")
+	assert_eq(StringName(fitted[2]), &"laser", "and the order is the fit's own")
+	var mixed: Array[StringName] = [&"cannon", &"w_laser", &"cannon"]
+	_guns.call(&"set_fitted", mixed)
+	var kept: Array = _guns.call(&"fitted")
+	assert_eq(kept.size(), 3, "a mixed fit keeps its duplicates too")
+	assert_eq(StringName(kept[1]), &"laser", "in place")
+	assert_eq(StringName(kept[2]), &"cannon", "and in order")
+
+
+## Rule 1's other half: the unknown and the family-less still drop, so a `w_mining`
+## cell is never a dead barrel.
+func test_fitted_still_drops_an_unknown_or_family_less_id() -> void:
+	var fit: Array[StringName] = [&"w_mining", &"w_laser", &"w_nothing", &"w_laser"]
+	_guns.call(&"set_fitted", fit)
+	var fitted: Array = _guns.call(&"fitted")
+	assert_eq(fitted.size(), 2, "the tool and the typo drop; both lasers stay")
+
+
+## CONTRACTS section 16 rule 2: `battery_ids()` is the distinct ids of `fitted()` in
+## first-barrel order.
+func test_battery_ids_is_the_distinct_read_in_first_barrel_order() -> void:
+	var fit: Array[StringName] = [&"w_laser", &"w_cannon", &"w_laser", &"cannon", &"w_rocket"]
+	_guns.call(&"set_fitted", fit)
+	var ids: Array = _guns.call(&"battery_ids")
+	assert_eq(ids.size(), 3, "three distinct families, four barrels")
+	assert_eq(StringName(ids[0]), &"laser", "in first-barrel order")
+	assert_eq(StringName(ids[1]), &"cannon", "not catalogue order")
+	assert_eq(StringName(ids[2]), &"rocket", "and never a duplicate")
+
+
+## Rule 2: `weapon_1..5` addresses a **battery**, so a three-laser fit is one group
+## and group 2 selects nothing (the pin's own consequence).
+func test_groups_address_batteries_not_barrels() -> void:
+	var fit: Array[StringName] = [&"w_laser", &"w_laser", &"w_laser"]
+	_guns.call(&"set_fitted", fit)
+	_guns.call(&"select_group", 1)
+	assert_eq(StringName(_guns.call(&"selected_weapon")), &"laser", "group 1 is the battery")
+	_guns.call(&"select_group", 2)
+	assert_eq(StringName(_guns.call(&"selected_weapon")), &"", "group 2 has no battery")
+	assert_eq(StringName(_guns.call(&"dry_reason")), &"none", "and reports none")
+	var two: Array[StringName] = [&"w_cannon", &"w_laser", &"w_cannon"]
+	_guns.call(&"set_fitted", two)
+	_guns.call(&"select_group", 2)
+	assert_eq(
+		StringName(_guns.call(&"selected_weapon")), &"laser", "the second battery is group 2"
+	)
+
+
+## CONTRACTS section 16 rule 3: barrel **positions in `fitted()`**, ascending,
+## normalised through `weapon_id`, `[]` for a base with no firing family.
+func test_battery_answers_positions_normalised_through_weapon_id() -> void:
+	var fit: Array[StringName] = [&"w_laser", &"w_mining", &"w_cannon", &"w_laser"]
+	_guns.call(&"set_fitted", fit)
+	assert_eq(_guns.call(&"battery", &"w_laser"), [0, 2], "the module id answers")
+	assert_eq(_guns.call(&"battery", &"laser"), [0, 2], "and so does the family id")
+	assert_eq(_guns.call(&"battery", &"w_cannon"), [1], "the second battery's own positions")
+	assert_eq(
+		_guns.call(&"battery", &"w_mining"),
+		[],
+		"a family-less base answers nothing: its strip row exists, its trigger does not"
+	)
+	assert_eq(_guns.call(&"battery", &"w_nothing"), [], "and an unknown base answers nothing")
+
+
+func test_the_strum_ceiling_is_the_pinned_number() -> void:
+	assert_eq(WeaponScript.BATTERY_STRUM_MS, 40, "09 section 10's per-barrel ceiling, ms")
+
+
+## Rule 6's per-barrel frame: every open barrel pays its family's `draw x delta`, so a
+## three-laser battery burns three draws a frame. Measured against the one-barrel cost
+## in the same pool.
+func test_a_laser_battery_pays_a_draw_per_barrel_every_frame() -> void:
+	var guns := _volley_rig([&"w_laser", &"w_laser", &"w_laser"])
+	if guns == null:
+		return
+	var frame := 0.1
+	var cost := float(WeaponScript.row_of(&"laser")[&"draw"]) * frame
+	var before := _state.energy
+	guns.call(&"set_aim_point", Vector2(400.0, 0.0))
+	guns.call(&"set_firing", true)
+	guns.call(&"tick", frame)
+	assert_true(
+		_near(_state.energy, before - cost * 3.0),
+		"three barrels, three draws: %.3f Energy for one frame (expected %.3f)"
+		% [before - _state.energy, cost * 3.0]
+	)
+	## And the shaft is up: the battery opened on the pull's own frame.
+	var halo := guns.get_node_or_null(NodePath(WeaponScript.BEAM_NAMES[0])) as Line2D
+	assert_true(halo != null and halo.visible, "the battery's one shaft is drawn")
+	_release_trigger(guns, frame)
+
+
+## Rule 6: "a pool that cannot pay a barrel's frame makes that barrel dry for that
+## frame while the barrels before it keep drawing" - the earlier barrels pay, the
+## later one is dry, and nothing aborts.
+func test_a_pool_that_cannot_pay_one_barrel_leaves_the_others_drawing() -> void:
+	var guns := _volley_rig([&"w_laser", &"w_laser", &"w_laser"])
+	if guns == null:
+		return
+	var frame := 0.1
+	var cost := float(WeaponScript.row_of(&"laser")[&"draw"]) * frame
+	_state.set_energy(cost * 2.0)
+	var dry := [0]
+	var dry_id := [&""]
+	guns.connect(&"dry_fired", func(id: StringName) -> void:
+		dry[0] += 1
+		dry_id[0] = id
+	)
+	guns.call(&"set_aim_point", Vector2(400.0, 0.0))
+	guns.call(&"set_firing", true)
+	guns.call(&"tick", frame)
+	assert_eq(_state.energy, 0.0, "the two barrels the pool could pay, paid")
+	assert_eq(dry[0], 1, "the third is dry once")
+	assert_eq(StringName(dry_id[0]), &"laser", "and names the family it could not pay")
+	var halo := guns.get_node_or_null(NodePath(WeaponScript.BEAM_NAMES[0])) as Line2D
+	assert_true(halo != null and halo.visible, "and the barrels before it keep drawing")
+	_release_trigger(guns, frame)
+
+
+## Rule 6's per-barrel damage: the frame's delivery is the sum of the barrels that
+## paid, so three open lasers deal three lasers' worth in one read.
+func test_the_beam_frame_damage_is_the_open_barrels_sum() -> void:
+	var sink := DamageSink.new()
+	var row: Dictionary = WeaponScript.row_of(&"laser")
+	var delta := 0.1
+	_guns.call(&"_apply_beam", &"laser", row, sink, Vector2.ZERO, delta, 1.0)
+	var one := sink.total
+	assert_true(_near(one, WeaponScript.dps_of(&"laser") * delta), "one barrel: dps x delta")
+	_guns.call(&"_apply_beam", &"laser", row, sink, Vector2.ZERO, delta, 3.0)
+	assert_true(
+		_near(sink.total - one, one * 3.0),
+		"three barrels: three times the one-barrel frame (%.3f, expected %.3f)"
+		% [sink.total - one, one * 3.0]
+	)
+	assert_eq(sink.hits, 2, "and the frame is still one delivery, not one per barrel")
+	sink.free()
+
+
+## The same reading end to end: a laser battery whose beam resolves on a target deals
+## the sum of its barrels' frames, not one barrel's. The target comes from
+## `BeamTargetSpy` because a movable target needs a physics world this suite does not
+## build, so only the targeting seam is the double's.
+func test_a_laser_battery_deals_one_frame_of_damage_per_barrel() -> void:
+	var guns := _volley_rig([&"w_laser", &"w_laser", &"w_laser"], true)
+	if guns == null:
+		return
+	var delta := 0.1
+	var sink := DamageSink.new()
+	guns.get_parent().add_child(sink)
+	_staged.append(sink)
+	guns.set(&"target", sink)
+	guns.call(&"set_aim_point", Vector2(400.0, 0.0))
+	guns.call(&"set_firing", true)
+	guns.call(&"tick", delta)
+	var expected := WeaponScript.dps_of(&"laser") * delta * 3.0
+	assert_true(
+		_near(sink.total, expected),
+		"three barrels deliver three frames (%.3f damage, expected %.3f)"
+		% [sink.total, expected]
+	)
+	assert_eq(sink.hits, 1, "as one delivery for the frame, not three")
+	_release_trigger(guns, delta)
+
+
+## Rule 4, the volley itself: one pull, one round per barrel out of the family's one
+## pack (rule 5), and every barrel's own shot on its own release offset - all inside
+## `BATTERY_STRUM_MS`.
+func test_a_volley_charges_one_round_per_barrel_from_the_one_pack() -> void:
+	var guns := _volley_rig()
+	if guns == null:
+		return
+	_clear_shots()
+	var slot := WeaponScript.ammo_slot(&"cannon")
+	_state.set_ammo(slot, 30)
+	var shots := [0]
+	guns.connect(&"shot_fired", func(_id: StringName) -> void: shots[0] += 1)
+	guns.call(&"set_firing", true)
+	var fired_at: Array[int] = []
+	for frame in 60:
+		var before: int = shots[0]
+		guns.call(&"tick", 0.001)
+		for _released in shots[0] - before:
+			fired_at.append(frame + 1)
+	assert_eq(shots[0], 3, "one trigger pull discharges all three barrels")
+	assert_eq(30 - int(_state.ammo[slot]), 3, "three rounds leave the one cannon pack")
+	assert_eq(3, _shots().size(), "and three shots are in the world")
+	assert_eq(fired_at.size(), 3, "one release per barrel")
+	assert_eq(fired_at[0], 1, "the lead barrel releases on the pull's own frame")
+	assert_true(
+		fired_at[2] <= WeaponScript.BATTERY_STRUM_MS,
+		"and the last barrel is inside the %d ms ceiling (measured %d ms)"
+		% [WeaponScript.BATTERY_STRUM_MS, fired_at[2]]
+	)
+	print(
+		"[s4-weapons] volley: releases at %s ms, ceiling %d, pack 30 -> %d"
+		% [str(fired_at), WeaponScript.BATTERY_STRUM_MS, int(_state.ammo[slot])]
+	)
+
+
+## Rule 4's per-barrel damage for a travelling family: each released barrel spawns its
+## own shot carrying its own `shot_damage`, so a three-cannon battery delivers three
+## cannon rounds rather than one.
+func test_each_released_barrel_spawns_its_own_shot_with_its_own_damage() -> void:
+	var guns := _volley_rig()
+	if guns == null:
+		return
+	_clear_shots()
+	_state.set_ammo(WeaponScript.ammo_slot(&"cannon"), 30)
+	guns.call(&"set_firing", true)
+	for _frame in 60:
+		guns.call(&"tick", 0.001)
+	var shots := _shots()
+	assert_eq(shots.size(), 3, "three barrels, three shots")
+	var per_shot := WeaponScript.shot_damage(&"cannon")
+	for shot: Node in shots:
+		assert_eq(
+			float(shot.call(&"damage_amount")),
+			per_shot,
+			"each shot carries the cannon's own shot damage"
+		)
+
+
+## Rule 4: a barrel the family refuses is dry and never holds the battery back. The
+## pack holds one round, so exactly one barrel leaves and the rest read dry once per
+## pull.
+func test_a_dry_barrel_does_not_hold_the_battery_back() -> void:
+	var guns := _volley_rig()
+	if guns == null:
+		return
+	_clear_shots()
+	var slot := WeaponScript.ammo_slot(&"cannon")
+	_state.set_ammo(slot, 1)
+	var shots := [0]
+	var dry := [0]
+	guns.connect(&"shot_fired", func(_id: StringName) -> void: shots[0] += 1)
+	guns.connect(&"dry_fired", func(_id: StringName) -> void: dry[0] += 1)
+	guns.call(&"set_firing", true)
+	for _frame in 60:
+		guns.call(&"tick", 0.001)
+	assert_eq(shots[0], 1, "the one round the pack held left")
+	assert_eq(int(_state.ammo[slot]), 0, "and the pack is empty")
+	assert_eq(dry[0], 1, "the refused barrels read dry once per pull, not once per barrel")
+	assert_eq(_shots().size(), 1, "and the dry barrels spawn nothing")
+
+
 ## --- Section 4.2 item 5 / 4.6: the lock and the countermeasure seams ------
 
 
@@ -262,6 +613,62 @@ func _service() -> Node:
 	if not loop is SceneTree:
 		return null
 	return (loop as SceneTree).root.get_node_or_null(NodePath(PROFILE_SERVICE))
+
+
+## A battery on a component that lives in a tree. Two things need one: a travelling
+## barrel's shot is spawned into the world (`_spawn_shot` reads `get_tree()`), and an
+## instant barrel's muzzle flash is an `AnimatedSprite2D` that has to play somewhere
+## (an untreed sprite logs `data.tree is null`). The host is the profile autoload
+## because the runner calls every test from inside its own `_ready`, where `/root`
+## refuses children (measured; the wiring suite's note). Returns null - and the caller
+## skips - when the runner has no profile to hang the rig on.
+func _volley_rig(ids: Array = [], spy := false) -> Node2D:
+	var host := _service()
+	if host == null:
+		skip("no PlayerProfile autoload in this runner, so the rig has no host")
+		return null
+	var holder := Node2D.new()
+	holder.name = &"S4VolleyRig"
+	host.add_child(holder)
+	var guns: Node2D = (BeamTargetSpy.new() if spy else WeaponScript.new()) as Node2D
+	holder.add_child(guns)
+	guns.call(&"setup", null, _state)
+	var fit: Array[StringName] = []
+	for id: Variant in (ids if not ids.is_empty() else [&"w_cannon", &"w_cannon", &"w_cannon"]):
+		fit.append(StringName(id))
+	guns.call(&"set_fitted", fit)
+	_staged.append(holder)
+	return guns
+
+
+## Release the trigger and step one frame: the beam goes out and the bed with it, so a
+## fixture that opened a shaft does not leave one sounding into the next suite.
+func _release_trigger(guns: Node2D, delta := 0.1) -> void:
+	guns.call(&"set_firing", false)
+	guns.call(&"tick", delta)
+
+
+func _tree() -> SceneTree:
+	return Engine.get_main_loop() as SceneTree
+
+
+## The live shots in the world. The rig's own shots are what the volley's counts read,
+## so the suite clears the group before and after every travelling test.
+func _shots() -> Array[Node]:
+	var tree := _tree()
+	if tree == null:
+		return []
+	return tree.get_nodes_in_group(ProjectileScript.PROJECTILE_GROUP)
+
+
+func _clear_shots() -> void:
+	for shot: Node in _shots():
+		if is_instance_valid(shot):
+			shot.free()
+
+
+func _near(measured: float, expected: float, tolerance := 0.0001) -> bool:
+	return absf(measured - expected) <= tolerance
 
 
 ## --- The projectile's pinned configuration -------------------------------

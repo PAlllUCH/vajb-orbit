@@ -23,6 +23,7 @@ const NpcShipScript := preload("res://game/npc_ship.gd")
 const ShipFitScript := preload("res://game/ship_fit.gd")
 const DamageScript := preload("res://game/damage.gd")
 const PlayerShipScript := preload("res://game/player_ship.gd")
+const WeaponScript := preload("res://game/weapons.gd")
 
 const GAME_SCENE := "res://game/game.tscn"
 const SEED := 20260921
@@ -243,16 +244,39 @@ func test_every_hull_is_anchored_on_a_poi() -> void:
 func test_the_ship_mounts_its_weapons_component() -> void:
 	assert_true(_guns != null, "the standard fit's w_laser mounted a WeaponComponent")
 	assert_eq(int(_guns.call(&"selected_group")), 1, "group 1 is the selected one")
-	## The mounted groups are read off the launched fit rather than named, so the assertion
-	## holds for whatever the launch mounts (the sandboxed default account flies the hull's
-	## standard fit) and the family-less tools - `w_mining` maps to `&""` - drop out exactly
-	## as `WeaponComponent.set_fitted` drops them, duplicates included.
+	## The mounted barrels are read off the launched fit rather than named, so the
+	## assertion holds for whatever the launch mounts (the sandboxed default account flies
+	## the hull's standard fit) and the family-less tools - `w_mining` maps to `&""` - drop
+	## out exactly as `WeaponComponent.set_fitted` drops them.
+	##
+	## **Per barrel, duplicates kept** (CONTRACTS section 16 rule 1): `_state.weapons` is
+	## one slot per fitted W cell, and the component keeps one entry per barrel of the fit,
+	## so a Lancer's `[w_laser, w_laser]` mounts two barrels here and not one. The old
+	## reading de-duplicated both sides and would have stayed green through the change.
 	var launched: Array[StringName] = []
 	for weapon_id: StringName in _state.weapons:
-		if weapon_id != &"" and not launched.has(weapon_id):
-			launched.append(weapon_id)
-	assert_true(not launched.is_empty(), "the launched fit mounts at least one firing group")
-	assert_eq(_guns.call(&"fitted"), launched, "and it mounts the launched fit's own groups")
+		var family := WeaponScript.weapon_id(weapon_id)
+		if family != &"":
+			launched.append(family)
+	assert_true(not launched.is_empty(), "the launched fit mounts at least one firing barrel")
+	assert_eq(_guns.call(&"fitted"), launched, "and it mounts the launched fit's own barrels")
+	## ... and one battery per distinct family, in first-barrel order (rule 2). On this
+	## one-family fit the two readings coincide, which is what keeps every group test green.
+	var batteries: Array[StringName] = []
+	for family: StringName in launched:
+		if not batteries.has(family):
+			batteries.append(family)
+	assert_eq(_guns.call(&"battery_ids"), batteries, "addressed as one battery per family")
+	## The per-barrel reading has to **bite**: on the default one-laser hull both readings
+	## agree, so the mounted component is asked for a doubled barrel directly and the
+	## launched fit put back before the suite's other tests read it.
+	var doubled: Array[StringName] = [launched[0], launched[0]]
+	_guns.call(&"set_fitted", doubled)
+	assert_eq(_guns.call(&"fitted"), doubled, "two barrels of one family mount as two")
+	assert_eq((_guns.call(&"battery_ids") as Array).size(), 1, "and read as one battery")
+	assert_eq(_guns.call(&"battery", launched[0]), [0, 1], "the battery holds both positions")
+	_guns.call(&"set_fitted", launched)
+	assert_eq(_guns.call(&"fitted"), launched, "then the launched fit is put back")
 
 
 func test_the_launch_snapshot_seeds_the_pools_and_the_shield_rate() -> void:

@@ -1506,6 +1506,11 @@ battery(base_id: StringName) -> Array   # that battery's barrel positions in fit
 
 Rules the pin fixes, so no worker has to choose:
 
+`fitted()` and `battery_ids()` keep the shipped typed return `Array[StringName]` (as `fitted()`
+already was): a typed Array is an Array, so every caller named in §8.2 and `_state.weapons` read
+it unchanged, and widening a shipped return type for no consumer is not the trade (H2 deviation
+8; reversal: strip the annotation).
+
 1. **`fitted()` is per barrel and keeps duplicates.** The `_fitted.has(id)` guard at
    `game/weapons.gd:369` is removed; `weapon_id` still drops an unknown or foreign id and
    `ShipFit.fitted_ids`' order (`game/ship_fit.gd:481-489`, one entry per non-empty cell,
@@ -1517,6 +1522,12 @@ Rules the pin fixes, so no worker has to choose:
    (clamped `1 .. GROUPS_MAX` as today), and `selected_weapon()` returns that id, `&""` past
    the end. On a fit of distinct families this list is element-for-element today's `fitted()`,
    so every existing group, cadence and dry-state test reads the same.
+   **Measured interaction, recorded not changed (H2 follow-up):** the HUD's W-slot buttons map a
+   **cell** index to a group (`game/game.gd:1358-1359` calls `select_group(slot + 1)`), and the
+   two index spaces now differ — on a hull whose W row holds fewer batteries than cells (a
+   duplicated fit collapses barrels into one battery) the trailing slots select nothing, and a
+   battery need not sit at its own cell's slot. That was already true of duplicated fits before
+   S4 (they collapsed to one group); the wave does not move the HUD.
 3. **`battery(base_id)` returns barrel positions in `fitted()` — not cell indices** —
    ascending, normalised through `weapon_id` (so `&"w_laser"` and `&"laser"` answer the same
    list), and `[]` for a base with no firing family (`w_mining`: the strip still groups by base
@@ -1537,6 +1548,29 @@ Rules the pin fixes, so no worker has to choose:
    own recoil and emits `shot_fired`; a released instant (beam) barrel opens its own beam.
    A barrel the family's own rules refuse (empty pack, a pool that cannot pay, the burst
    window closed) is dry (`dry_fired`) and never holds the rest of the battery back.
+   **As built (2026-09-23, measured by H2), five readings this rule left open — each is the
+   shipped behaviour, not a drift:**
+   - **The volley's clock is the battery's own *smallest* draw**, so the lead barrel releases on
+     the pull's own frame and the barrels behind it release as their own offsets elapse (measured
+     spans `[1, 9, 15]`, `[1, 3, 12]`, `[1, 32, 38]` ms). A literal reading of "offset from the
+     pull" would delay even a **one-barrel** battery up to 40 ms, which makes four pinned
+     one-frame feedback readings in `test_weapon_fx_f1.gd` (`:242-243`, `:261-262`, `:281-282`,
+     `:559-560`) coin flips. **Reversal:** measure every offset from the pull — one line, and
+     those four readings become "within 40 ms".
+   - **A group switched mid-hold arms the battery it switched to** (today's component fires the
+     newly selected group at once; without this the trigger would go silent until released).
+     **Reversal:** keep the arming to the rising edge and let a mid-hold switch fall silent.
+   - **A travelling barrel its pack refuses is disarmed for that pull** — one `dry_fired` per
+     volley, not one per held frame (measured: a pack of 1 with three cannons gives one shot and
+     one dry read). **Reversal:** leave the barrel armed and retry next frame, as the pre-wave
+     single timer did.
+   - **A closed burst window or an unready cadence timer keeps the barrel armed** rather than
+     reading it dry; today `_burst_phase` resets to 0 on a pull, so the window case is
+     unreachable. **Reversal:** consume the arm and read it dry.
+   - **A beam battery draws one shaft and makes one contact read per frame** (one muzzle, one aim
+     point); the frame's damage and chip work are summed over the paid barrels and delivered in
+     one call, so the impact cue is not machine-gunned. **Reversal:** one `_apply_beam` per paid
+     barrel.
 5. **Ammo is per family, one pack per family, and the volley charges it per barrel.** Measured:
    `WeaponScript.ammo_slot` resolves the family's index in `PlayerState.WEAPONS`
    (`game/weapons.gd:1519-1526`) and the tree says so in words
@@ -1548,7 +1582,9 @@ Rules the pin fixes, so no worker has to choose:
    it delays the barrel's **opening frame**; once open, every barrel keeps drawing its
    family's `draw x delta` per frame while the trigger is held, and a pool that cannot pay a
    barrel's frame makes that barrel dry for that frame while the barrels before it keep
-   drawing. No partial-volley abort state exists.
+   drawing (measured: 3 lasers cost 1.800 Energy and deal 9.000 in a 0.1 s frame; a 1.200 pool
+   pays two barrels and reads the third dry **once**, and that barrel stays open, so a pool
+   that refills keeps drawing). No partial-volley abort state exists.
 7. **`fit_battery(ship_id, base_id, indices)`** — the batch install over §13's
    `fit_module_at`, and **which instance lands in which cell is pinned**: for each index in
    ascending order the batch takes the **next unused instance** of `base_id` from
