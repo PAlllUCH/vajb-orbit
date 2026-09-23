@@ -244,6 +244,23 @@ inventory; FITTING is what installs, swaps and removes them.
 rows move to the AUCTION shelf (§2.4) when it ships, and OUTFITTING returns to
 ammunition-only.
 
+## 6.1 Amendment 2026-09-23 (playtest: hulls are auction-only, consumables live in cargo)
+
+- **Hulls are bought on the AUCTION only.** SHIPYARD's buy rows retire (STATION_HUB
+  §5.11); the shipyard becomes the hangar (owned hulls, preview, `SET ACTIVE`) and keeps
+  the §3 build path for its later wave. §2.2/§2.3 are the one hull-buying door.
+  **Reversal:** the rows rejoin the shipyard from the auction verbatim.
+- **Ammunition is a cargo item.** One entry per family — `ammo_laser`, `ammo_cannon`
+  (shells), `ammo_rocket` (pods), `ammo_mine`, `ammo_plasma`, `ammo_railgun` — counted
+  in units of `ROUNDS_PER_CARGO_UNIT := 10` rounds (owner tick: the granularity;
+  reversal 1). OUTFITTING/ARMORY's ammo rows deliver to **cargo** (units = rounds / 10),
+  not to packs; at launch each fitted weapon's pack **auto-fills from cargo** of its
+  family up to the pack's `ammo_max`, and the drawn units leave the hold. EXCHANGE sells
+  ammo units at 60 % of list (§2.3's shape). Countermeasure packs are staged out
+  ("etc." resolved later). **Reversal:** packs refill from the store as before.
+- **Fuel cells are delisted from every sale surface** (14 §1's free refuel is the
+  reserve; existing stacks keep working on `R`). **Reversal:** the row returns.
+
 ## 7. Acquisition pacing (check against 01 §5.4)
 
 The double path keeps the 01 milestone pace intact:

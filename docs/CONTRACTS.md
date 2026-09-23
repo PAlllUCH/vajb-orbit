@@ -1675,6 +1675,48 @@ it unchanged, and widening a shipped return type for no consumer is not the trad
     than `_max_weapon_cells()`, and rows are rewritten by text/visibility/`disabled`, never
     rebuilt. **Reversal:** one rebuild path (and the freed-plate bug it causes).
 
+## §17 S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2, hardpoints
+
+```gdscript
+# --- commerce & hangar (J1) ---
+# auction_panel.gd — family tabs HULLS · WEAPONS · DRIVES · SHIELDS · ARMOUR · POWER ·
+#   COMPUTERS · BOOSTERS · UTILITY · ALL over the same 6+10 draw (display grouping only)
+# shipyard_panel.gd — owned hulls only; selection PREVIEWS and writes nothing;
+#   the footer SET ACTIVE is the sole commit (the existing active-ship write)
+
+# --- consumables (J2) ---
+# cargo items: &"ammo_laser" &"ammo_cannon" &"ammo_rocket" &"ammo_mine" &"ammo_plasma"
+#   &"ammo_railgun"; ROUNDS_PER_CARGO_UNIT := 10   (reversal: 1)
+# the ammo rows deliver to cargo (units = rounds / 10); at launch each fitted weapon's
+#   pack auto-fills from cargo of its family up to ammo_max and the drawn units leave
+#   the hold; EXCHANGE sells units at 60 % of list; fuel cells are delisted everywhere
+
+# --- batteries v2 (J3) ---
+batteries: Dictionary   # {ship_id: Array[Array[cell_ref]]}; SAVE_VERSION := 7
+                        # v6→v7 migration: group fitted weapons by base_id, cells ascending
+# a battery = player-composed MIXED group of W cells (any weapon kinds); ARMORY racks
+#   B1..B7 = drop zones for weapon_1..7; drags install/swap through the §13/§16
+#   transactions (refusals write nothing); the label OUTFITTING → ARMORY (owner tick)
+const GROUPS_MAX := 7   # was 5; weapon_6/weapon_7 bound to digits 6/7 (orchestrator-applied)
+# salvo gate: one trigger releases every armed barrel (strum 0..40 ms) and the battery's
+#   next salvo waits for max(members' cadence) — "the rof will be limited by the slowest
+#   weapon". Dry/empty rules stay per barrel (§16 rule 4's carve-outs stand).
+
+# --- hardpoints & gunnery (J4) — 09 §8's no-table rule SUPERSEDED, 09 §11 is the law ---
+ShipFit.HARDPOINTS: Dictionary  # {ship_id: {thrusters: {rear, front, left, right: Array[Vector2]},
+                                #            weapon_mounts: [{pos: Vector2, facing: float}…]}}
+                                # W cell i binds weapon_mounts[i]; values measured off the
+                                # renders into 09 §11's table by J4 (its deliverable)
+                                # a hull without a map falls back to the §8 derivation
+# flight FX: thrust at rear anchors, brake/retro at front, strafe at the side's anchors
+#   (the thruster_anchors() seam resolves to HARDPOINTS)
+# tracking: each barrel rotates toward the aim at its own 09 §3.1 track_dps
+#   (proposed: laser 180, mining 150, cannon 120, railgun 100, plasma 75, rocket 60,
+#   mine fixed); a released travelling shot flies along the barrel's CURRENT FACING from
+#   its mount; a beam barrel sweeps and connects only within TRACK_TOLERANCE := 5.0 deg.
+#   Reversal: TRACK_MULT := 0 = instant aim (today).
+```
+
 ## §10 Changelog
 
 - **v0 (2026-09-18)** — seeded from the engine wave-1 pinned interfaces
@@ -2240,3 +2282,15 @@ it unchanged, and widening a shipped return type for no consumer is not the trad
   evidence line other than the strum's and the held pull's re-runs byte-identically. The fixer's
   probe is `vajb-orbit/tests/probe_s4h4_stream.gd` (a `--script` SceneTree probe, so it is run
   under a scratch `XDG_DATA_HOME` per T-93; its text and log are archived in the slice folder).
+- **v0.9 (2026-09-23, the playtest fix wave S5 — landed docs-first from the owner's ten
+  findings)** — added **§17**: the auction's family tabs and the shipyard's hangar rework
+  (hulls bought on the auction only, select = preview, `SET ACTIVE` commits), ammunition
+  as cargo (`ammo_*`, `ROUNDS_PER_CARGO_UNIT 10`, auto-load at launch, EXCHANGE sells at
+  60 %, fuel cells delisted), **batteries v2** (player-composed mixed groups on the
+  renamed `ARMORY` racks `B1..B7`, `GROUPS_MAX 7`, the salvo gate = the slowest member's
+  cycle, save v7) and **hardpoints + gunnery** (`ShipFit.HARDPOINTS` per hull measured
+  off the renders — 09 §8's no-table rule superseded by 09 §11 — and per-barrel
+  `track_dps` tracking with shots flying along the barrel's current facing). Superseded
+  in passing: 09 §10's identical-only battery rule and S4's per-barrel independent
+  cadence. Owner ticks ride the S5 brief (the `ARMORY` label, `ROUNDS_PER_CARGO_UNIT`,
+  fire-along-facing vs hold-until-aligned, the `track_dps` taste table).

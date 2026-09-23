@@ -502,3 +502,45 @@ tree, none is a new balance number, and CONTRACTS §16 is the pin that enforces 
 and independently reproduced as 15 shots in a 3.0 s hold). The strip, the two bulk transactions,
 the per-barrel volley and `BATTERY_STRUM_MS := 40` are shipped; see
 `.agents/gen/_state/WAVEBOARD.md` §Closed and `docs/CONTRACTS.md` §16/§9.
+
+## 11. Playtest amendments 2026-09-23 (wave S5 — batteries v2, hardpoints, tracking)
+
+Owner rulings verbatim: "outfitting screen should be for weapons battery grouping, i
+want to be able to drag and drop there different kinds of weapons, the rof will be
+limited by the slowest weapon, so we can do mix n match of different weapons"; "i want
+each ship to have mapped where he has back thrusters, front (for reverse) and side.
+same for weapon slots. i want it all mapped on a ship so that it will fire from
+different angles/positions etc"; "i want weapons to not turn as fast. weapons can have
+different turn speeds and in one weapon battery they can have different turn speeds as
+well".
+
+- **Batteries v2 (supersedes §10's identical-only rule).** A battery is a
+  **player-composed mixed group** of W cells — any weapon kinds together — persisted as
+  `batteries: {ship_id: Array[Array[cell_ref]]}` (save v7; migration v6→v7 groups each
+  hull's fitted weapons by `base_id`, cells ascending). Composed on `ARMORY`'s racks by
+  drag and drop (STATION_HUB §5.11). **The salvo gate is the slowest member's cycle** —
+  one trigger releases every armed barrel (strum `0..40` ms as §10) and the battery's
+  next salvo waits for `max(members' cadence)`; dry/empty rules stay per barrel and
+  never block the rest (§16 rule 4's carve-outs stand). `GROUPS_MAX` 5 → **7**, with
+  `weapon_6`/`weapon_7` bound (digits 6/7, orchestrator-applied). **Reversal:** §10's
+  identical-only grouping and the S4 per-barrel independent cadence.
+- **Hardpoints per hull (supersedes §8's `MOUNT_SPREAD` no-table rule).** Each hull
+  carries a map: `ShipFit.HARDPOINTS[ship_id] = {thrusters: {rear, front, left, right
+  (each an array of local `Vector2`)}, weapon_mounts: [{pos, facing}…]}` with W cell `i`
+  bound to `weapon_mounts[i]`. **Values are measured off the hull renders and recorded
+  in the table below by the wave** (that measurement is its deliverable; a hull without
+  a map falls back to §8's derivation). Flight FX read the map: thrust at rear anchors,
+  brake/retro at front, strafe at the side's anchors. **Reversal:** delete
+  `HARDPOINTS` (the fallback is today's behaviour).
+
+| Hull | rear | front | left | right | weapon_mounts | measured |
+|------|------|-------|------|-------|---------------|----------|
+| (nine rows filled by S5-J4 from the renders; values in hull-local px) | | | | | | |
+
+- **Weapon tracking.** A barrel tracks the aim at its own speed — a new §3.1 column
+  **`track_dps`** (deg/s, owner-tick taste): `w_laser 180`, `w_mining 150`,
+  `w_cannon 120`, `w_railgun 100`, `w_plasma 75`, `w_rocket 60`, `w_mine fixed` (no
+  tracking). A released travelling shot flies along the barrel's **current facing** from
+  its mount (tracking lag can miss — owner tick: hold-fire-until-aligned instead); a
+  beam barrel sweeps onto the target and connects only within `TRACK_TOLERANCE := 5`°.
+  **Reversal:** `TRACK_MULT := 0` = instant aim (today's behaviour).
