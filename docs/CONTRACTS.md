@@ -799,8 +799,12 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
-Expected: **`[SUMMARY] passed=457 failed=0`**, exit 0 (measured twice on 2026-09-22, the
-S3 docs pass, on a scratch store; **457 tests over 40 suites**). The reading between the
+Expected: **`[SUMMARY] passed=491 failed=0`**, exit 0 (measured twice on 2026-09-23, the
+S3 review — S3-K4 — on a scratch store; **491 tests over 43 suites**). The wave before it
+read **`passed=457 failed=0`** (measured twice on 2026-09-22, the S3 docs pass; 457 tests
+over 40 suites), so the item-economy wave's own growth is `457 → 471 → 482 → 491`
+(S3-K1's instance core and its two suites, S3-K2's AUCTION and its one, S3-K3's
+seven-plus-two on FITTING and the shipyard). The reading between the
 S2.6 wave's builder pass and its fixer pass was `passed=455 failed=2` — the two
 assertions its hit-FX jitter moved, `tests/test_flight_beam_g2.gd:256-258` and
 `tests/test_weapon_fx_f4.gd:138-140`, both pinning the contact FX exactly on the
@@ -828,7 +832,8 @@ pass added `tests/test_engine2_fixes.gd` (**17**) and the slice-2 close added
 (**7**). **That paragraph is the history of how the total grew to the 236 the
 combat/collision repair wave measured**; the count kept growing after it
 (277 weapon-FX → 294 flight-feel/beam → 311 slice 2.5 → 372 P2-A → 378 rock cleave →
-389 P2-B1 → 437 P2-B proper → **457 with S2.6**, measured 2026-09-22), so the number to
+389 P2-B1 → 437 P2-B proper → 457 with S2.6, measured 2026-09-22 → **491 with S3**,
+measured 2026-09-23), so the number to
 read is always the measured one with zero failures, never a stale total — and never the
 236. Discovery is
 automatic (`tests/headless_runner.gd` finds `test_*.gd`); no
@@ -1390,6 +1395,7 @@ add_instance(base_id: StringName, rarity: StringName, prefixes: Array, suffixes:
 instance(id: StringName) -> Dictionary      # the record below; {} when absent
 instances_of(base_id: StringName) -> Array  # ids held in the bag (count 1), creation order
 roll_instance(base_id: StringName, source: StringName) -> StringName  # 15 §2/§9's tables, rolls + adds
+roll_listing(base_id: StringName, source: StringName) -> Dictionary  # the shelf's mint: rolls + mints an id, does NOT enter the bag
 buy_instance(id: StringName, cost: int) -> bool   # the shelf's listing, at the price it shows
 sell_instance(id: StringName) -> bool             # base × rarity multiplier × 60 %
 take_instance(id: StringName) -> bool             # 1 -> 0: fitting; the record survives
@@ -1456,6 +1462,17 @@ SAVE_VERSION := 6
   32-row catalogue assertions grow with 15 §9's three rows. `PlayerProfile.buy_module`
   and `ModuleCatalog` (§12) remain the price source and the migration table's home
   and gain no new UI callers.
+- **The rotation's home is `game/auction.gd`** (`class_name Auction`), added by the wave
+  and recorded here after K4's review (it was missing from this block — the same bucket-2
+  gap as `roll_listing`, LOW-14/`L120`): `evaluate_shelf` (lazy, `WorldClock.bands_between`),
+  `draw_shelf`/`draw_tier`/`tier_pool`/`exclusive_ids`, `hull_rows`/`listing_rows`/`sell_rows`,
+  `buy_hull`/`buy_listing`/`sell_row`, `hot_price`/`sell_price`/`meta_of`/`rolled_name`/
+  `rarity_token`/`rarity_fallback` and `next_restock_seconds`/`restock_text`. It mirrors
+  `game/exchange.gd`'s split (statics over a profile's state, prices only from
+  `ModuleCatalog`) and **owns no state of its own** — the shelf lives in the profile's
+  `auction` key. `Auction.rolled_name` is the single 15 §7 name builder; FITTING and the
+  shipyard call it rather than carrying a second grammar. Reversal: inline the statics into
+  the panel.
 
 ## §16 S4 weapon batteries (2026-09-22)
 
@@ -1881,3 +1898,30 @@ battery(base_id: StringName) -> Array   # this battery's W indices
   roll weight or §3.1 stat moved; `project.godot`, `18_engine_spec.md`, `assets/`
   and `addons/` are untouched by this pass. Findings: `.agents/gen/slices/S3-
   module-affixes/S3-K0_report.md`.
+- **v0.7.4 (2026-09-23, the S3 item-economy review — S3-K4, this wave's only
+  CONTRACTS writer)** — **§9's expected figure moves 457/0 → 491/0** (measured twice
+  this pass on the hermetic runner, `passed=491 failed=0` exit 0, 43 suites; the wave's
+  growth is `457 → 471 → 482 → 491`, and the single `SCRIPT ERROR` in the log is still
+  L61's line at `tests/test_weapon_fx_f4.gd:178`). **Measured notes for §15's
+  implementers, none of them a pin change:** (1) the shipped profile surface is §15's
+  block **plus `roll_listing(base_id, source) -> Dictionary`**, the shelf's mint — a
+  listing is rolled and priced on the shelf without entering the bag, and the counter
+  moves for it (CONTRACTS §15's own "every roll … takes the next number"); §15's block
+  lists no such member and `game/auction.gd` has no pinned surface, so **adding either
+  to §15 is bucket 2 — the developer session's**, recorded here instead of edited
+  there. (2) `instances_of`'s "creation order" is the **store's key order**, which a
+  `user://` ConfigFile round trip sorts ascending (measured: a nested Dictionary written
+  `[w_laser, u_refine, s_light, mod_0001]` reads back `[mod_0001, s_light, u_refine,
+  w_laser]`, while Arrays keep their order) — the two orders coincide below
+  `mod_10000`, so the mint-order reading holds for every account this wave can make.
+  (3) The AUCTION's three `rarity_*` theme tokens (`rarity_common` = the default label
+  colour, `rarity_magic` `#565C63`, `rarity_rare` `#E8703A`) are the wave's only theme
+  change and `STATION_HUB.md` §8 carries them. (4) No base price, roll weight,
+  multiplier or 09 §3.1 stat moved: `module_catalog.gd` gained 444 lines and lost three
+  comment lines since `ff2375c`, and `project.godot`, `18_engine_spec.md`,
+  `09/12/14`, `assets/`, `addons/` and `game/ship_fit.gd` are byte-identical to that
+  commit. (5) The wave's one HIGH (OUTFITTING's FITTED WEAPONS strip REMOVE destroys a
+  fitted instance and duplicates its base unit — measured; the fix is the composed
+  `clear_fit_slot`) and its per-criterion verdicts are
+  `.agents/gen/slices/S3-module-affixes/S3-K4_review.md`; the new LOW rows are `L107`+
+  in `.agents/gen/_state/LOW_BACKLOG.md`.

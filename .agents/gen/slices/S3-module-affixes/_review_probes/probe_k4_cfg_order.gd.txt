@@ -1,0 +1,36 @@
+extends SceneTree
+## K4 review measurement: does a `user://` ConfigFile round trip preserve a nested
+## Dictionary's insertion order?
+##
+##   XDG_DATA_HOME=/tmp/vajb_k4_xdg godot --headless --path vajb-orbit \
+##     --script res://tools/probe_k4_cfg_order.gd
+##
+## Run as `--script` on purpose: this replaces the main loop, so no autoload (and in
+## particular no `PlayerProfile`) is instantiated at all. Bounded and self-quitting.
+
+const PATH := "user://k4_cfg_order.cfg"
+
+
+func _initialize() -> void:
+	var written := {"w_laser": 3, "u_refine": 2, "s_light": 1, "mod_0001": 0}
+	var cfg := ConfigFile.new()
+	cfg.set_value("profile", "save_version", 5)
+	cfg.set_value("profile", "modules", written)
+	cfg.save(PATH)
+	print("[k4cfg] written order   = %s" % [written.keys()])
+	var read := ConfigFile.new()
+	read.load(PATH)
+	var back: Dictionary = read.get_value("profile", "modules", {})
+	print("[k4cfg] read order      = %s" % [back.keys()])
+	print("[k4cfg] order preserved = %s" % [back.keys() == written.keys()])
+	## The same question for an Array of ids (the shelf's `hulls`), which the suite asserts
+	## round trips in order.
+	var hulls := ["ship_vanguard", "ship_fighter", "ship_destroyer", "ship_miner"]
+	cfg.set_value("profile", "hulls", hulls)
+	cfg.save(PATH)
+	var read2 := ConfigFile.new()
+	read2.load(PATH)
+	var hulls_back: Array = read2.get_value("profile", "hulls", [])
+	print("[k4cfg] array preserved = %s (%s)" % [hulls_back == hulls, hulls_back])
+	DirAccess.open("user://").remove(PATH.get_file())
+	quit(0)

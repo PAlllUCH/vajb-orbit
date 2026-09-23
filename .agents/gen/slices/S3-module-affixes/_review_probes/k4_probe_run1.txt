@@ -1,0 +1,148 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[k4] SOURCE_ROLLS rows=7
+[k4]   auction common=65 magic=30 rare=5
+[k4]   shipyard common=100 magic=0 rare=0
+[k4]   drop common=70 magic=25 rare=5
+[k4]   arena common=20 magic=40 rare=40
+[k4]   derelict common=0 magic=75 rare=25
+[k4]   crafting common=40 magic=45 rare=15
+[k4]   faction_lot common=0 magic=85 rare=15
+[k4] RARITY_MULT_PERMILLE={ "common": 1000, "magic": 1600, "rare": 2600 } SELL_PERCENT=60 HOT=20
+[k4] EXCLUSIVES={ &"w_proton": &"choir", &"w_flak": &"concord", &"u_vault": &"meridian" } floor=magic
+[k4] PREFIXES rows=12
+[k4]   prefix sturdy name=Sturdy slot=shields stat=shield_add unit=percent band=[0.1, 0.15, 0.2]
+[k4]   prefix vigilant name=Vigilant slot=shields stat=regen_add unit=percent band=[0.15, 0.25, 0.35]
+[k4]   prefix keen name=Keen slot=weapons stat=damage_add unit=percent band=[0.08, 0.12, 0.16]
+[k4]   prefix rapid name=Rapid slot=weapons stat=fire_rate_mult unit=percent band=[0.08, 0.12, 0.16]
+[k4]   prefix frugal name=Frugal slot=weapons stat=ammo_mult unit=percent band=[-0.15, -0.2, -0.25]
+[k4]   prefix lightened name=Lightened slot=armour stat=speed_penalty unit=points band=[-0.04, -0.06, -0.08]
+[k4]   prefix tempered name=Tempered slot=engines stat=speed_mult unit=percent band=[0.05, 0.08, 0.12]
+[k4]   prefix overflowing name=Overflowing slot=power stat=power_add unit=units band=[1.0, 1.0, 2.0]
+[k4]   prefix wideband name=Wideband slot=computers stat=scanner_add unit=percent band=[0.15, 0.2, 0.25]
+[k4]   prefix surefire name=Surefire slot=computers stat=damage_add unit=percent band=[0.05, 0.08, 0.1]
+[k4]   prefix spry name=Spry slot=boosters stat=cooldown_mult unit=percent band=[-0.15, -0.2, -0.25]
+[k4]   prefix deep_hold name=Deep-hold slot=utility stat=cargo_add unit=units band=[5.0, 8.0, 12.0]
+[k4] SUFFIXES rows=10
+[k4]   suffix whale name=of the Whale perk=+50 max hull structure faction=
+[k4]   suffix embers name=of Embers perk=10 % of damage dealt returns as shield faction=
+[k4]   suffix ledger name=of the Ledger perk=sell value +25 % faction=
+[k4]   suffix silence name=of Silence perk=hunters take 2x time to detect you (13 section 3) faction=
+[k4]   suffix cartograph name=of the Cartograph perk=reveals sector POIs without scanning (11 section 3.3) faction=
+[k4]   suffix leeches name=of Leeches perk=kills restore 5 % hull faction=
+[k4]   suffix vault name=of the Vault perk=cargo spill on death -50 % (insurance-adjacent) faction=
+[k4]   suffix choir name=of the Choir perk=+1 power output faction=choir
+[k4]   suffix concord name=of the Concord perk=+5 % armour effect faction=concord
+[k4]   suffix ports name=of the Ports perk=+10 % booster duration faction=meridian
+[k4] MODULES rows=35
+[k4] catalogue tier counts={ 1: 12, 2: 11, 3: 12 } (exclusives included)
+[k4] tier_pool sizes I=12 II=11 III=9
+[k4] exclusive rows:
+[k4]   w_proton name=Proton Missile Launcher slot=weapons tier=3 draw=3 cost=5200 effects={  } icon=res://assets/icons/module/icon_module_w_railgun.svg
+[k4]   w_flak name=Flak Battery slot=weapons tier=3 draw=3 cost=5200 effects={  } icon=res://assets/icons/module/icon_module_w_railgun.svg
+[k4]   u_vault name=Station Vault Access slot=utility tier=3 draw=0 cost=4500 effects={ &"vault_add": 20 } icon=res://assets/icons/service/icon_service_vault.svg
+[k4] railgun row: draw=3 tier=3 cost=5200
+[k4] holds row: draw=0 tier=3 cost=4500 effects={ &"cargo_add": 40 }
+[k4] prefix_pool(w_laser)=["keen", "rapid", "frugal"] suffix_pool(faction=)=["whale", "embers", "ledger", "silence", "cartograph", "leeches", "vault"]
+[k4] prefix_pool(s_light)=["sturdy", "vigilant"] suffix_pool(faction=)=["whale", "embers", "ledger", "silence", "cartograph", "leeches", "vault"]
+[k4] prefix_pool(h_composite)=["lightened"] suffix_pool(faction=)=["whale", "embers", "ledger", "silence", "cartograph", "leeches", "vault"]
+[k4] prefix_pool(e_ion)=["tempered"] suffix_pool(faction=)=["whale", "embers", "ledger", "silence", "cartograph", "leeches", "vault"]
+[k4] prefix_pool(p_std)=["overflowing"] suffix_pool(faction=)=["whale", "embers", "ledger", "silence", "cartograph", "leeches", "vault"]
+[k4] prefix_pool(b_fold)=["spry"] suffix_pool(faction=)=["whale", "embers", "ledger", "silence", "cartograph", "leeches", "vault"]
+[k4] prefix_pool(c_target)=["wideband", "surefire"] suffix_pool(faction=)=["whale", "embers", "ledger", "silence", "cartograph", "leeches", "vault"]
+[k4] prefix_pool(u_holds)=["deep_hold"] suffix_pool(faction=)=["whale", "embers", "ledger", "silence", "cartograph", "leeches", "vault"]
+[k4] hull chance table: { &"ship_fighter": 1.0, &"ship_vanguard": 1.0, &"ship_miner": 0.6, &"ship_trader": 0.6, &"ship_freighter": 0.6, &"ship_corvette": 0.45, &"ship_gunship": 0.45, &"ship_patrol": 0.3, &"ship_destroyer": 0.2 }
+[k4] measured rarity shares over 20000 global-RNG draws per source:
+[k4]   auction common=0.6506 magic=0.2984 rare=0.0510
+[k4]   shipyard common=1.0000 magic=0.0000 rare=0.0000
+[k4]   drop common=0.6992 magic=0.2498 rare=0.0510
+[k4]   arena common=0.2074 magic=0.3952 rare=0.3974
+[k4]   derelict common=0.0000 magic=0.7468 rare=0.2532
+[k4]   crafting common=0.4051 magic=0.4425 rare=0.1525
+[k4]   faction_lot common=0.0000 magic=0.8476 rare=0.1525
+[k4] floor shipyard/w_proton common=0 magic=1.0000 rare=0.0000
+[k4] floor shipyard/w_flak common=0 magic=1.0000 rare=0.0000
+[k4] floor shipyard/u_vault common=0 magic=1.0000 rare=0.0000
+[k4] faction_lot split over 20000 draws common=0 magic=0.8476 rare=0.1525
+[k4] roll_sources=[&"auction", &"shipyard", &"drop", &"arena", &"derelict", &"crafting", &"faction_lot"]
+[k4] affix_count common=0 magic=1 rare=2
+[k4] cap check: composite rare prefixes=[{ "id": "lightened", "value": -0.08 }], proton rare suffixes=["embers", "silence"]
+[k4] probe roll wrote 0 records (the rolls above are pure except this)
+[k4] seeded w_laser/auction -> mod_0001 rarity=common prefixes=[] suffixes=[]
+[k4] seeded c_target/derelict -> mod_0001 rarity=magic prefixes=[{ "id": "surefire", "value": 0.05 }] suffixes=["leeches"]
+[k4] seeded u_vault/faction_lot -> mod_0001 rarity=magic prefixes=[{ "id": "deep_hold", "value": 12.0 }] suffixes=["leeches"]
+[k4] seeded w_proton/shipyard -> mod_0001 rarity=magic prefixes=[{ "id": "rapid", "value": 0.16 }] suffixes=["choir"]
+[k4] seeded b_fold/arena -> mod_0001 rarity=magic prefixes=[{ "id": "spry", "value": -0.25 }] suffixes=["silence"]
+[k4] reroll: mod_0001 vs mod_0002, same affixes=true
+[k4] prices: 35 rows x 3 rarities, list mismatches=0, hot mismatches=0
+[k4]   w_laser common list=900 sell=540 hot=720
+[k4]   w_laser magic list=1440 sell=864 hot=1152
+[k4]   w_laser rare list=2340 sell=1404 hot=1872
+[k4]   u_vault common list=4500
+[k4]   u_vault magic list=7200
+[k4]   u_vault rare list=11700
+[k4] cost multiples of 100: true
+[k4] draw_tier shares over 20000: I=0.5072 II=0.3403 III=0.1525
+[k4] hull rates over 2000 shelves (chance / measured / size-bad=0):
+[k4]   ship_fighter chance=1.00 measured=1.0000
+[k4]   ship_vanguard chance=1.00 measured=1.0000
+[k4]   ship_miner chance=0.60 measured=0.9100
+[k4]   ship_trader chance=0.60 measured=0.8740
+[k4]   ship_corvette chance=0.45 measured=0.6265
+[k4]   ship_freighter chance=0.60 measured=0.8220
+[k4]   ship_gunship chance=0.45 measured=0.4100
+[k4]   ship_patrol chance=0.30 measured=0.2275
+[k4]   ship_destroyer chance=0.20 measured=0.1300
+[k4] shelves=400 shape-bad=0 F-lot-first=400 F-lot-common=0
+[k4] exclusive picks={ "w_proton": 133, "u_vault": 141, "w_flak": 126 }
+[k4] hot slot: hull=158 listing=242 over 400 shelves
+[k4] seeded shelf hulls=[&"ship_fighter", &"ship_vanguard", &"ship_miner", &"ship_trader", &"ship_freighter", &"ship_destroyer"] hot=ship_fighter
+[k4]   listing mod_20001 base=w_proton rarity=magic name=Rapid Proton Missile Launcher of the Choir price=8320 was=0 hot=false f_lot=true
+[k4]   listing mod_20002 base=s_light rarity=common name=Light Shield price=1400 was=0 hot=false f_lot=false
+[k4]   listing mod_20003 base=p_core rarity=magic name=Overflowing Reactor Core of the Cartograph price=11200 was=0 hot=false f_lot=false
+[k4]   listing mod_20004 base=u_cargo rarity=magic name=Deep-hold Cargo Expansion of the Cartograph price=1920 was=0 hot=false f_lot=false
+[k4]   listing mod_20005 base=w_laser rarity=common name=Laser MkII price=900 was=0 hot=false f_lot=false
+[k4]   listing mod_20006 base=c_ewar rarity=common name=EWAR Suite price=3800 was=0 hot=false f_lot=false
+[k4]   listing mod_20007 base=w_mining rarity=common name=Mining Laser price=600 was=0 hot=false f_lot=false
+[k4]   listing mod_20008 base=w_mine rarity=common name=Mine Layer price=1800 was=0 hot=false f_lot=false
+[k4]   listing mod_20009 base=u_salvage rarity=magic name=Deep-hold Salvage Tractor of Leeches price=1600 was=0 hot=false f_lot=false
+[k4]   listing mod_20010 base=u_tractor rarity=magic name=Deep-hold Tractor Array of Leeches price=3520 was=0 hot=false f_lot=false
+[k4]   hull ship_fighter class=Fighter list=9000 price=7200 was=9000 hot=true
+[k4]   hull ship_vanguard class=Cutter list=18000 price=18000 was=0 hot=false
+[k4]   hull ship_miner class=Miner list=16000 price=16000 was=0 hot=false
+[k4]   hull ship_trader class=Trader list=21000 price=21000 was=0 hot=false
+[k4]   hull ship_freighter class=Hauler list=24000 price=24000 was=0 hot=false
+[k4]   hull ship_destroyer class=Destroyer list=72000 price=72000 was=0 hot=false
+[k4] BAND_SECONDS=1200 restock_text(1200)=NEXT RESTOCK 20:00 restock_text(65)=NEXT RESTOCK 1:05
+[k4] next_restock_seconds(fresh 1000)=1200 bands_between(1000, 2200)=1
+SCRIPT ERROR: Invalid call. Nonexistent function 'set_credits' in base 'Node (player_profile.gd)'.
+          at: _section_auction (res://tests/probe_s3_k4_review.gd:373)
+          GDScript backtrace (most recent call first):
+              [0] _section_auction (res://tests/probe_s3_k4_review.gd:373)
+              [1] _ready (res://tests/probe_s3_k4_review.gd:45)
+[k4] v5 file written err=0 path=/tmp/vajb_k4/v5_8.cfg
+[k4] migrated bag={ "mod_0001": { "instance_id": "mod_0001", "base_id": "u_refine", "rarity": "common", "prefixes": [], "suffixes": [], "count": 1 }, "mod_0002": { "instance_id": "mod_0002", "base_id": "u_refine", "rarity": "common", "prefixes": [], "suffixes": [], "count": 1 }, "mod_0003": { "instance_id": "mod_0003", "base_id": "w_laser", "rarity": "common", "prefixes": [], "suffixes": [], "count": 1 }, "mod_0004": { "instance_id": "mod_0004", "base_id": "w_laser", "rarity": "common", "prefixes": [], "suffixes": [], "count": 1 }, "mod_0005": { "instance_id": "mod_0005", "base_id": "w_laser", "rarity": "common", "prefixes": [], "suffixes": [], "count": 1 } } counter=5
+[k4] second migrate_module_instances()=0 (idempotent => 0)
+[k4] reload bag={ "mod_0001": { "instance_id": "mod_0001", "base_id": "u_refine", "rarity": "common", "prefixes": [], "suffixes": [], "count": 1 }, "mod_0002": { "instance_id": "mod_0002", "base_id": "u_refine", "rarity": "common", "prefixes": [], "suffixes": [], "count": 1 }, "mod_0003": { "instance_id": "mod_0003", "base_id": "w_laser", "rarity": "common", "prefixes": [], "suffixes": [], "count": 1 }, "mod_0004": { "instance_id": "mod_0004", "base_id": "w_laser", "rarity": "common", "prefixes": [], "suffixes": [], "count": 1 }, "mod_0005": { "instance_id": "mod_0005", "base_id": "w_laser", "rarity": "common", "prefixes": [], "suffixes": [], "count": 1 } } (must not double)
+[k4] on-disk save_version=6 instance_counter=5
+[k4] v6 migrate=0
+[k4] w_laser instances=[&"mod_0003", &"mod_0004", &"mod_0005"] rarities={ "common": 3 }
+[k4] u_refine instances=[&"mod_0001", &"mod_0002"]
+[k4] minted mod_0001 count=1 instances_of=[&"mod_0001"]
+[k4] take_instance=true count=0 instances_of=[] sell=false credits-delta=0
+[k4] fitted record survives rarity=magic prefixes=[{ "id": "sturdy", "value": 0.15 }] suffixes=["whale"]
+[k4] restore_instance=true count=1 same-id=true affixes=[{ "id": "sturdy", "value": 0.15 }]
+[k4] fit mining=true
+[k4] swap laser=true cell=mod_0003 displaced-back=1
+[k4] remove=true cell='' removed-back=1 instances=[&"mod_0003"] records=3
+[k4] displaced instance identity: rarity=magic prefixes=[{ "id": "keen", "value": 0.08 }] suffixes=["ledger"]
+[k4] flight: rolled-instance fit budget={ &"out": 6, &"draw": 3, &"spare": 3, &"legal": true } base-id fit budget={ &"out": 6, &"draw": 3, &"spare": 3, &"legal": true } equal=true
+[k4] flight: drawn base draw=3 (the affixes carry none)
+[k4] flight: base_module_id(mod_0002)=w_plasma, base_module_id(mod_0001)=w_plasma, base_module_id(w_plasma)=w_plasma
+[k4] done
+WARNING: 26 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 1 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
+EXIT=0

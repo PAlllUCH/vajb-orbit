@@ -1,0 +1,587 @@
+extends Node
+## K4 review probe for wave S3. Re-measures, from the shipped code, every number the
+## wave's builder reports quote, plus the pins themselves:
+##
+##   XDG_DATA_HOME=/tmp/vajb_k4_xdg godot --headless --path vajb-orbit \
+##     res://tests/probe_s3_k4_review.tscn
+##
+## T-93: the autoload's own store is redirected by the wrapper's `XDG_DATA_HOME`, and
+## every profile this probe mints has `save_path` repointed at a scratch file under
+## `/tmp`, so the owner's live `user://` is never read or written.
+##
+## Bounded and self-quitting: every loop has a fixed closed bound and `quit()` runs at
+## the end of `_ready`. Nothing here is a production path.
+
+const Profile := preload("res://autoload/player_profile.gd")
+const ModuleData := preload("res://game/module_catalog.gd")
+const AuctionScript := preload("res://game/auction.gd")
+const FitData := preload("res://game/ship_fit.gd")
+const Clock := preload("res://autoload/world_clock.gd")
+
+const TAG := "[k4]"
+const SEED := 20260922
+const SCRATCH_DIR := "/tmp/vajb_k4"
+
+## The roll tables' empirical bounds.
+const ROW_DRAWS := 20000
+const HULL_SHELVES := 2000
+const SHELVES := 400
+const F_LOT_DRAWS := 20000
+
+const FAMILIES: Array[StringName] = [
+	&"w_laser", &"s_light", &"h_composite", &"e_ion", &"p_std", &"b_fold", &"c_target", &"u_holds"
+]
+
+var _profiles: Array[Node] = []
+var _scratch_index := 0
+
+
+func _ready() -> void:
+	DirAccess.make_dir_recursive_absolute(SCRATCH_DIR)
+	_section_tables()
+	_section_rolls()
+	_section_seeded_outcomes()
+	_section_prices()
+	_section_auction()
+	_section_migration()
+	_section_count_round_trip()
+	_section_flight_path()
+	print("%s done" % TAG)
+	get_tree().quit(0)
+
+
+## ---------------------------------------------------------------------------
+## 1. The tables themselves, row by row
+## ---------------------------------------------------------------------------
+
+
+func _section_tables() -> void:
+	print("%s SOURCE_ROLLS rows=%d" % [TAG, ModuleData.SOURCE_ROLLS.size()])
+	for source: Variant in ModuleData.SOURCE_ROLLS:
+		var row: Dictionary = ModuleData.SOURCE_ROLLS[source]
+		print("%s   %s common=%d magic=%d rare=%d" % [
+			TAG, source, int(row[&"common"]), int(row[&"magic"]), int(row[&"rare"])
+		])
+	print("%s RARITY_MULT_PERMILLE=%s SELL_PERCENT=%d HOT=%d" % [
+		TAG, ModuleData.RARITY_MULT_PERMILLE, ModuleData.SELL_PERCENT, ModuleData.HOT_DISCOUNT_PERCENT
+	])
+	print("%s EXCLUSIVES=%s floor=%s" % [
+		TAG, ModuleData.EXCLUSIVES, ModuleData.EXCLUSIVE_FLOOR
+	])
+	print("%s PREFIXES rows=%d" % [TAG, ModuleData.PREFIXES.size()])
+	for id: Variant in ModuleData.PREFIXES:
+		var row: Dictionary = ModuleData.PREFIXES[id]
+		print("%s   prefix %s name=%s slot=%s stat=%s unit=%s band=%s" % [
+			TAG, id, row[&"name"], row[&"slot"], row[&"stat"], row[&"unit"], row[&"band"]
+		])
+	print("%s SUFFIXES rows=%d" % [TAG, ModuleData.SUFFIXES.size()])
+	for id: Variant in ModuleData.SUFFIXES:
+		var row: Dictionary = ModuleData.SUFFIXES[id]
+		print("%s   suffix %s name=%s perk=%s faction=%s" % [
+			TAG, id, row[&"name"], row[&"perk"], row[&"faction"]
+		])
+	print("%s MODULES rows=%d" % [TAG, ModuleData.MODULES.size()])
+	var tier_counts := {1: 0, 2: 0, 3: 0}
+	for id: Variant in ModuleData.MODULES:
+		var row: Dictionary = ModuleData.MODULES[id]
+		var tier := int(row.get(&"tier", 0))
+		tier_counts[tier] = int(tier_counts.get(tier, 0)) + 1
+	print("%s catalogue tier counts=%s (exclusives included)" % [TAG, tier_counts])
+	print("%s tier_pool sizes I=%d II=%d III=%d" % [
+		TAG,
+		AuctionScript.tier_pool(1).size(),
+		AuctionScript.tier_pool(2).size(),
+		AuctionScript.tier_pool(3).size()
+	])
+	print("%s exclusive rows:" % TAG)
+	for id: StringName in AuctionScript.exclusive_ids():
+		var row := ModuleData.module(id)
+		print("%s   %s name=%s slot=%s tier=%d draw=%d cost=%d effects=%s icon=%s" % [
+			TAG, id, row[&"name"], row[&"slot"], int(row[&"tier"]), int(row[&"draw"]),
+			int(row[&"cost"]), row[&"effects"], ModuleData.icon_path(id)
+		])
+	print("%s railgun row: draw=%d tier=%d cost=%d" % [
+		TAG,
+		int(ModuleData.module(&"w_railgun")[&"draw"]),
+		int(ModuleData.module(&"w_railgun")[&"tier"]),
+		int(ModuleData.module(&"w_railgun")[&"cost"])
+	])
+	print("%s holds row: draw=%d tier=%d cost=%d effects=%s" % [
+		TAG,
+		int(ModuleData.module(&"u_holds")[&"draw"]),
+		int(ModuleData.module(&"u_holds")[&"tier"]),
+		int(ModuleData.module(&"u_holds")[&"cost"]),
+		ModuleData.module(&"u_holds")[&"effects"]
+	])
+	for base: StringName in FAMILIES:
+		print("%s prefix_pool(%s)=%s suffix_pool(faction=%s)=%s" % [
+			TAG, base, ModuleData.prefix_pool(base),
+			ModuleData.exclusive_faction(base),
+			ModuleData.suffix_pool(ModuleData.exclusive_faction(base))
+		])
+	for base: StringName in ModuleData.EXCLUSIVES:
+		var faction := ModuleData.exclusive_faction(base)
+		print("%s exclusive %s faction=%s suffix_pool=%s" % [
+			TAG, base, faction, ModuleData.suffix_pool(faction)
+		])
+	print("%s hull chance table: %s" % [TAG, AuctionScript.HULL_CHANCE])
+
+
+## ---------------------------------------------------------------------------
+## 2. The rows, measured through the shipped roll
+## ---------------------------------------------------------------------------
+
+
+func _section_rolls() -> void:
+	var profile := _fresh("rolls")
+	print("%s measured rarity shares over %d global-RNG draws per source:" % [TAG, ROW_DRAWS])
+	for source: Variant in ModuleData.SOURCE_ROLLS:
+		var counts := {"common": 0, "magic": 0, "rare": 0}
+		seed(SEED)
+		for _index: int in ROW_DRAWS:
+			var rarity := ModuleData.roll_rarity(StringName(str(source)), &"w_laser")
+			counts[rarity] = int(counts[rarity]) + 1
+		print("%s   %s common=%.4f magic=%.4f rare=%.4f" % [
+			TAG, source,
+			float(counts["common"]) / ROW_DRAWS,
+			float(counts["magic"]) / ROW_DRAWS,
+			float(counts["rare"]) / ROW_DRAWS
+		])
+	## 15 section 5's floor, per exclusive, through the 100 %-Common shipyard row.
+	for base: StringName in ModuleData.EXCLUSIVES:
+		var counts := {"common": 0, "magic": 0, "rare": 0}
+		seed(SEED)
+		for _index: int in ROW_DRAWS:
+			var rarity := ModuleData.roll_rarity(ModuleData.SOURCE_SHIPYARD, base)
+			counts[rarity] = int(counts[rarity]) + 1
+		print("%s floor shipyard/%s common=%d magic=%.4f rare=%.4f" % [
+			TAG, base, int(counts["common"]),
+			float(counts["magic"]) / ROW_DRAWS, float(counts["rare"]) / ROW_DRAWS
+		])
+	## The F lot's own row, and the exclusive pick.
+	var f_counts := {"common": 0, "magic": 0, "rare": 0}
+	seed(SEED)
+	for _index: int in F_LOT_DRAWS:
+		var base: StringName = AuctionScript.exclusive_ids()[_index % 3]
+		var rarity := ModuleData.roll_rarity(ModuleData.SOURCE_FACTION_LOT, base)
+		f_counts[rarity] = int(f_counts[rarity]) + 1
+	print("%s faction_lot split over %d draws common=%d magic=%.4f rare=%.4f" % [
+		TAG, F_LOT_DRAWS, int(f_counts["common"]),
+		float(f_counts["magic"]) / F_LOT_DRAWS, float(f_counts["rare"]) / F_LOT_DRAWS
+	])
+	## The roll source list's own order and length.
+	print("%s roll_sources=%s" % [TAG, ModuleData.roll_sources()])
+	## Affix counts per rarity, and the pools a Rare can draw two from.
+	print("%s affix_count common=%d magic=%d rare=%d" % [
+		TAG,
+		ModuleData.affix_count(&"common"),
+		ModuleData.affix_count(&"magic"),
+		ModuleData.affix_count(&"rare")
+	])
+	var prefixes := ModuleData.roll_prefixes(&"h_composite", &"rare")
+	var suffixes := ModuleData.roll_suffixes(&"w_proton", &"rare")
+	print("%s cap check: composite rare prefixes=%s, proton rare suffixes=%s" % [
+		TAG, prefixes, suffixes
+	])
+	print("%s probe roll wrote %d records (the rolls above are pure except this)" % [
+		TAG, profile.modules().size()
+	])
+
+
+## ---------------------------------------------------------------------------
+## 3. The seeded outcomes K1 pinned, re-measured independently
+## ---------------------------------------------------------------------------
+
+
+func _section_seeded_outcomes() -> void:
+	var cases: Array[Dictionary] = [
+		{&"base": &"w_laser", &"source": &"auction"},
+		{&"base": &"c_target", &"source": &"derelict"},
+		{&"base": &"u_vault", &"source": &"faction_lot"},
+		{&"base": &"w_proton", &"source": &"shipyard"},
+		{&"base": &"b_fold", &"source": &"arena"},
+	]
+	for entry: Dictionary in cases:
+		var profile := _fresh("seeded")
+		seed(SEED)
+		var id: StringName = profile.roll_instance(entry[&"base"], entry[&"source"])
+		var record: Dictionary = profile.instance(id)
+		print("%s seeded %s/%s -> %s rarity=%s prefixes=%s suffixes=%s" % [
+			TAG, entry[&"base"], entry[&"source"], id,
+			record.get("rarity", ""), record.get("prefixes", []), record.get("suffixes", [])
+		])
+	## Never re-rolled: two mints at the same seed agree on affixes, ids differ.
+	var again := _fresh("reroll")
+	seed(SEED)
+	var a: StringName = again.roll_instance(&"c_target", &"derelict")
+	seed(SEED)
+	var b: StringName = again.roll_instance(&"c_target", &"derelict")
+	print("%s reroll: %s vs %s, same affixes=%s" % [
+		TAG, a, b,
+		_deep_eq(again.instance(a).get("prefixes"), again.instance(b).get("prefixes"))
+		and _deep_eq(again.instance(a).get("suffixes"), again.instance(b).get("suffixes"))
+	])
+
+
+## ---------------------------------------------------------------------------
+## 4. Prices: the rarity multiplier, then the hot slot, then the 60 % sell
+## ---------------------------------------------------------------------------
+
+
+func _section_prices() -> void:
+	var mismatches := 0
+	var hot_mismatches := 0
+	for id: Variant in ModuleData.MODULES:
+		var row: Dictionary = ModuleData.module(StringName(str(id)))
+		var cost := int(row[&"cost"])
+		for rarity: Variant in ModuleData.RARITY_ORDER:
+			var permille := int(ModuleData.RARITY_MULT_PERMILLE[rarity])
+			var expected := cost * permille / 1000
+			var listed := ModuleData.list_price(StringName(str(id)), StringName(str(rarity)))
+			if listed != expected:
+				mismatches += 1
+				print("%s PRICE MISMATCH %s %s %d != %d" % [TAG, id, rarity, listed, expected])
+			var hot := ModuleData.hot_price(listed)
+			if hot != listed * (100 - ModuleData.HOT_DISCOUNT_PERCENT) / 100:
+				hot_mismatches += 1
+			if ModuleData.sell_price(StringName(str(id)), StringName(str(rarity))) != listed * 60 / 100:
+				mismatches += 1
+				print("%s SELL MISMATCH %s %s" % [TAG, id, rarity])
+	print("%s prices: %d rows x 3 rarities, list mismatches=%d, hot mismatches=%d" % [
+		TAG, ModuleData.MODULES.size(), mismatches, hot_mismatches
+	])
+	for rarity: Variant in ModuleData.RARITY_ORDER:
+		print("%s   w_laser %s list=%d sell=%d hot=%d" % [
+			TAG, rarity,
+			ModuleData.list_price(&"w_laser", StringName(str(rarity))),
+			ModuleData.sell_price(&"w_laser", StringName(str(rarity))),
+			ModuleData.hot_price(ModuleData.list_price(&"w_laser", StringName(str(rarity))))
+		])
+	for rarity: Variant in ModuleData.RARITY_ORDER:
+		print("%s   u_vault %s list=%d" % [
+			TAG, rarity, ModuleData.list_price(&"u_vault", StringName(str(rarity)))
+		])
+	print("%s cost multiples of 100: %s" % [TAG, _all_costs_are_round()])
+
+
+## ---------------------------------------------------------------------------
+## 5. The auction: tiers, hulls, the F lot, the hot slot, one seeded shelf
+## ---------------------------------------------------------------------------
+
+
+func _section_auction() -> void:
+	var tier_counts := {1: 0, 2: 0, 3: 0}
+	var rng := RandomNumberGenerator.new()
+	rng.seed = SEED
+	for _index: int in ROW_DRAWS:
+		var tier := AuctionScript.draw_tier(rng)
+		tier_counts[tier] = int(tier_counts.get(tier, 0)) + 1
+	print("%s draw_tier shares over %d: I=%.4f II=%.4f III=%.4f" % [
+		TAG, ROW_DRAWS,
+		float(tier_counts[1]) / ROW_DRAWS,
+		float(tier_counts[2]) / ROW_DRAWS,
+		float(tier_counts[3]) / ROW_DRAWS
+	])
+	var hull_hits := {}
+	for ship_id: StringName in AuctionScript.HULL_ORDER:
+		hull_hits[ship_id] = 0
+	var size_bad := 0
+	var rng_hulls := RandomNumberGenerator.new()
+	rng_hulls.seed = SEED
+	for _index: int in HULL_SHELVES:
+		var hulls := AuctionScript._draw_hulls(rng_hulls)
+		if hulls.size() != AuctionScript.HULL_SLOTS:
+			size_bad += 1
+		for ship_id: String in hulls:
+			hull_hits[StringName(ship_id)] = int(hull_hits[StringName(ship_id)]) + 1
+	## The builder's own probe shape: the same measurement through `draw_shelf`, whose
+	## listings and hot slot consume the same stream after the hulls (K2's report quotes
+	## these rates, so this is the byte-identical replay).
+	var shelf_hits := {}
+	for ship_id: StringName in AuctionScript.HULL_ORDER:
+		shelf_hits[ship_id] = 0
+	var replay := _fresh("replay")
+	var rng_shelf_probe := RandomNumberGenerator.new()
+	rng_shelf_probe.seed = SEED
+	for _index: int in HULL_SHELVES:
+		seed(SEED)
+		var shelf_probe := AuctionScript.draw_shelf(replay, rng_shelf_probe)
+		for ship_id: String in shelf_probe[&"hulls"]:
+			shelf_hits[StringName(ship_id)] = int(shelf_hits[StringName(ship_id)]) + 1
+	print("%s builder replay through draw_shelf over %d shelves:" % [TAG, HULL_SHELVES])
+	for ship_id: StringName in AuctionScript.HULL_ORDER:
+		print("%s   %s measured=%.4f" % [
+			TAG, ship_id, float(shelf_hits[ship_id]) / HULL_SHELVES
+		])
+	print("%s hull rates over %d shelves (chance / measured / size-bad=%d):" % [
+		TAG, HULL_SHELVES, size_bad
+	])
+	for ship_id: StringName in AuctionScript.HULL_ORDER:
+		print("%s   %s chance=%.2f measured=%.4f" % [
+			TAG, ship_id, AuctionScript.hull_chance(ship_id),
+			float(hull_hits[ship_id]) / HULL_SHELVES
+		])
+	## The shelf itself, over a bounded number of full draws.
+	var profile := _fresh("shelf")
+	profile._instance_counter = 20000
+	var rng_shelf := RandomNumberGenerator.new()
+	rng_shelf.seed = SEED
+	var hot_hull := 0
+	var hot_listing := 0
+	var rows_bad := 0
+	var f_lot_first := 0
+	var f_lot_common := 0
+	var exclusive_picks := {}
+	var first_shelf := {}
+	for index: int in SHELVES:
+		seed(SEED + index)
+		var shelf := AuctionScript.draw_shelf(profile, rng_shelf)
+		profile.set_auction(shelf)
+		if index == 0:
+			first_shelf = shelf
+		var hulls: Array = shelf[&"hulls"]
+		var listings: Dictionary = shelf[&"modules"]
+		if hulls.size() != 6 or listings.size() != 10:
+			rows_bad += 1
+		var keys := listings.keys()
+		if not keys.is_empty():
+			var first: Dictionary = listings[keys[0]]
+			if ModuleData.EXCLUSIVES.has(StringName(str(first[&"base_id"]))):
+				f_lot_first += 1
+				if String(first[&"rarity"]) == ModuleData.RARITY_COMMON:
+					f_lot_common += 1
+				var pick := String(first[&"base_id"])
+				exclusive_picks[pick] = int(exclusive_picks.get(pick, 0)) + 1
+		var hot := StringName(str(shelf[&"hot"]))
+		if hulls.has(String(hot)):
+			hot_hull += 1
+		elif listings.has(String(hot)):
+			hot_listing += 1
+	profile.set_auction(first_shelf)
+	print("%s shelves=%d shape-bad=%d F-lot-first=%d F-lot-common=%d" % [
+		TAG, SHELVES, rows_bad, f_lot_first, f_lot_common
+	])
+	print("%s exclusive picks=%s" % [TAG, exclusive_picks])
+	print("%s hot slot: hull=%d listing=%d over %d shelves" % [
+		TAG, hot_hull, hot_listing, SHELVES
+	])
+	print("%s seeded shelf hulls=%s hot=%s" % [
+		TAG, AuctionScript.hull_ids(profile), AuctionScript.hot_id(profile)
+	])
+	for row: Dictionary in AuctionScript.listing_rows(profile):
+		print("%s   listing %s base=%s rarity=%s name=%s price=%d was=%d hot=%s f_lot=%s" % [
+			TAG, row[&"id"], row[&"base_id"], row[&"rarity"], row[&"name"],
+			int(row[&"price"]), int(row[&"was"]), row[&"hot"], row[&"faction_lot"]
+		])
+	for row: Dictionary in AuctionScript.hull_rows(profile):
+		print("%s   hull %s class=%s list=%d price=%d was=%d hot=%s" % [
+			TAG, row[&"id"], row[&"ship_class"], int(row[&"list"]),
+			int(row[&"price"]), int(row[&"was"]), row[&"hot"]
+		])
+	## The restock reading and the two clock statics it reads.
+	print("%s BAND_SECONDS=%d restock_text(1200)=%s restock_text(65)=%s" % [
+		TAG, Clock.BAND_SECONDS, AuctionScript.restock_text(1200), AuctionScript.restock_text(65)
+	])
+	print("%s next_restock_seconds(fresh 1000)=%d bands_between(1000, 2200)=%d" % [
+		TAG,
+		AuctionScript.next_restock_seconds(profile, 1000),
+		Clock.bands_between(1000, 2200)
+	])
+	## A buy moves the listing into the bag, at the price the row shows.
+	var buy_id: StringName = AuctionScript.listing_ids(profile)[1]
+	var row_before := AuctionScript.listing(profile, buy_id)
+	var shown := 0
+	for row: Dictionary in AuctionScript.listing_rows(profile):
+		if row[&"id"] == buy_id:
+			shown = int(row[&"price"])
+	profile.set(&"_credits", 1000000)
+	var result := AuctionScript.buy_listing(profile, buy_id)
+	print("%s buy %s ok=%s charged=%d row-shown=%d rarity=%s in-bag=%d" % [
+		TAG, buy_id, result[&"ok"], int(result[&"cost"]), shown,
+		row_before.get("rarity", ""), profile.module_count(buy_id)
+	])
+	var sell := AuctionScript.sell_row(profile, buy_id)
+	print("%s sell %s ok=%s paid=%d expected=%d" % [
+		TAG, buy_id, sell[&"ok"], int(sell[&"price"]),
+		ModuleData.sell_price(StringName(str(row_before.get("base_id", ""))),
+			StringName(str(row_before.get("rarity", ""))))
+	])
+
+
+## ---------------------------------------------------------------------------
+## 6. The v5 -> v6 migration, through a real file
+## ---------------------------------------------------------------------------
+
+
+func _section_migration() -> void:
+	var path := "%s/v5_%d.cfg" % [SCRATCH_DIR, _scratch_index]
+	_scratch_index += 1
+	var cfg := ConfigFile.new()
+	cfg.set_value("profile", "save_version", 5)
+	cfg.set_value("profile", "credits", 5000)
+	cfg.set_value("profile", "modules", {
+		"w_laser": {"base_id": "w_laser", "count": 3},
+		"u_refine": {"count": 2},
+	})
+	cfg.set_value("profile", "fits", {})
+	var err := cfg.save(path)
+	print("%s v5 file written err=%d path=%s" % [TAG, err, path])
+	var profile := Profile.new()
+	profile.save_path = path
+	_profiles.append(profile)
+	profile.reload()
+	print("%s migrated bag=%s counter=%d" % [TAG, profile.modules(), profile._instance_counter])
+	var second: int = profile.migrate_module_instances()
+	print("%s second migrate_module_instances()=%d (idempotent => 0)" % [TAG, second])
+	var reloaded := Profile.new()
+	reloaded.save_path = path
+	_profiles.append(reloaded)
+	reloaded.reload()
+	print("%s reload bag=%s (must not double)" % [TAG, reloaded.modules()])
+	print("%s on-disk save_version=%s instance_counter=%s" % [
+		TAG,
+		reloaded._config.get_value("profile", "save_version", -1),
+		reloaded._config.get_value("profile", "instance_counter", -1)
+	])
+	## A v6 file has nothing to migrate.
+	var third: int = reloaded.migrate_module_instances()
+	print("%s v6 migrate=%d" % [TAG, third])
+	var rarities := {}
+	for id: StringName in reloaded.instances_of(&"w_laser"):
+		var record: Dictionary = reloaded.instance(id)
+		rarities[String(record[&"rarity"])] = int(rarities.get(String(record[&"rarity"]), 0)) + 1
+	print("%s w_laser instances=%s rarities=%s" % [
+		TAG, reloaded.instances_of(&"w_laser"), rarities
+	])
+	print("%s u_refine instances=%s" % [TAG, reloaded.instances_of(&"u_refine")])
+
+
+## ---------------------------------------------------------------------------
+## 7. count 1 / 0, L80's identity, and the sell side
+## ---------------------------------------------------------------------------
+
+
+func _section_count_round_trip() -> void:
+	var profile := _fresh("count")
+	var id: StringName = profile.add_instance(
+		&"s_light", &"magic", [{"id": "sturdy", "value": 0.15}], ["whale"]
+	)
+	var start: int = profile.credits()
+	print("%s minted %s count=%d instances_of=%s" % [
+		TAG, id, profile.module_count(id), profile.instances_of(&"s_light")
+	])
+	print("%s take_instance=%s count=%d instances_of=%s sell=%s credits-delta=%d" % [
+		TAG, profile.take_instance(id), profile.module_count(id),
+		profile.instances_of(&"s_light"), profile.sell_instance(id),
+		profile.credits() - start
+	])
+	var fitted: Dictionary = profile.instance(id)
+	print("%s fitted record survives rarity=%s prefixes=%s suffixes=%s" % [
+		TAG, fitted.get("rarity", ""), fitted.get("prefixes", []), fitted.get("suffixes", [])
+	])
+	print("%s restore_instance=%s count=%d same-id=%s affixes=%s" % [
+		TAG, profile.restore_instance(id), profile.module_count(id),
+		profile.instances_of(&"s_light") == [id],
+		profile.instance(id).get("prefixes", [])
+	])
+	## L80 through the two composed transactions.
+	var fighter: StringName = &"ship_fighter"
+	var mining: StringName = profile.add_instance(
+		&"w_mining", &"magic", [{"id": "keen", "value": 0.08}], ["ledger"]
+	)
+	var laser: StringName = profile.add_instance(&"w_laser", &"common", [], [])
+	print("%s fit mining=%s" % [TAG, profile.fit_module_at(fighter, &"weapons", 0, mining)])
+	print("%s swap laser=%s cell=%s displaced-back=%s" % [
+		TAG, profile.fit_module_at(fighter, &"weapons", 0, laser),
+		profile.fit_for(fighter)[&"weapons"][0], profile.module_count(mining)
+	])
+	print("%s remove=%s cell='%s' removed-back=%s instances=%s records=%d" % [
+		TAG, profile.clear_fit_slot(fighter, &"weapons", 0),
+		profile.fit_for(fighter)[&"weapons"][0], profile.module_count(laser),
+		profile.instances_of(&"w_laser"), profile.modules().size()
+	])
+	var back: Dictionary = profile.instance(mining)
+	print("%s displaced instance identity: rarity=%s prefixes=%s suffixes=%s" % [
+		TAG, back.get("rarity", ""), back.get("prefixes", []), back.get("suffixes", [])
+	])
+
+
+## ---------------------------------------------------------------------------
+## 8. No affix reaches a flight stat
+## ---------------------------------------------------------------------------
+
+
+func _section_flight_path() -> void:
+	var profile := _fresh("flight")
+	var plain: StringName = profile.add_instance(&"w_plasma", &"common", [], [])
+	var rolled: StringName = profile.add_instance(
+		&"w_plasma", &"rare",
+		[{"id": "keen", "value": 0.16}, {"id": "rapid", "value": 0.16}],
+		["whale", "ledger"]
+	)
+	var base_fit := {
+		&"engines": [&"e_std"],
+		&"power": &"p_std",
+		&"weapons": [rolled],
+	}
+	var translated: Dictionary = profile.base_fit(base_fit)
+	var budget_rolled := FitData.power_budget(&"ship_fighter", translated)
+	var budget_base := FitData.power_budget(&"ship_fighter", {
+		&"engines": [&"e_std"], &"power": &"p_std", &"weapons": [&"w_plasma"]
+	})
+	print("%s flight: rolled-instance fit budget=%s base-id fit budget=%s equal=%s" % [
+		TAG, budget_rolled, budget_base, budget_rolled == budget_base
+	])
+	print("%s flight: drawn base draw=%d (the affixes carry none)" % [
+		TAG, int(ModuleData.module(&"w_plasma")[&"draw"])
+	])
+	print("%s flight: base_module_id(%s)=%s, base_module_id(%s)=%s, base_module_id(w_plasma)=%s" % [
+		TAG, rolled, profile.base_module_id(rolled), plain, profile.base_module_id(plain),
+		profile.base_module_id(&"w_plasma")
+	])
+
+
+## ---------------------------------------------------------------------------
+## Helpers
+## ---------------------------------------------------------------------------
+
+
+func _fresh(tag: String) -> Node:
+	var profile := Profile.new()
+	_scratch_index += 1
+	profile.save_path = "%s/%s_%d.cfg" % [SCRATCH_DIR, tag, _scratch_index]
+	_profiles.append(profile)
+	return profile
+
+
+func _all_costs_are_round() -> bool:
+	for id: Variant in ModuleData.MODULES:
+		if int(ModuleData.module(StringName(str(id)))[&"cost"]) % 100 != 0:
+			return false
+	return true
+
+
+func _deep_eq(a: Variant, b: Variant) -> bool:
+	if a is Dictionary and b is Dictionary:
+		var left: Dictionary = a
+		var right: Dictionary = b
+		if left.size() != right.size():
+			return false
+		for key: Variant in left.keys():
+			if not right.has(key):
+				return false
+			if not _deep_eq(left[key], right[key]):
+				return false
+		return true
+	if a is Array and b is Array:
+		var left_array: Array = a
+		var right_array: Array = b
+		if left_array.size() != right_array.size():
+			return false
+		for index: int in range(left_array.size()):
+			if not _deep_eq(left_array[index], right_array[index]):
+				return false
+		return true
+	if (a is float) or (b is float):
+		return is_equal_approx(float(a), float(b))
+	return a == b

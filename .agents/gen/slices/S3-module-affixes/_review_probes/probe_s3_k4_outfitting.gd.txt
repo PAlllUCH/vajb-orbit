@@ -1,0 +1,167 @@
+extends Node
+## K4 review probe #2: the OUTFITTING FITTED WEAPONS strip's REMOVE against an
+## **instance**-keyed cell (CONTRACTS section 15: "REMOVE/SWAP hand the same instance
+## back ... never destroyed, never duplicated").
+##
+##   XDG_DATA_HOME=/tmp/vajb_k4_xdg godot --headless --path vajb-orbit \
+##     res://tests/probe_s3_k4_outfitting.tscn
+##
+## T-93: the wrapper moves `user://`, and the shipped autoload's `save_path` is
+## repointed at a scratch file before the first mutation and handed back at the end.
+## Bounded, self-quitting, and it presses the shipped scene's own button.
+
+const PanelScene := preload("res://ui/station/outfitting_panel.tscn")
+const ThemeRes := preload("res://ui/theme/vajb_theme.tres")
+
+const TAG := "[k4out]"
+const PROFILE_SERVICE: StringName = &"PlayerProfile"
+const SCRATCH := "/tmp/vajb_k4/outfitting.cfg"
+## The account's own default hull (`PlayerProfile.DEFAULT_SHIP`) and the only one a fresh
+## profile owns, so `set_active_ship` cannot refuse it (a Lancer would).
+const HULL: StringName = &"ship_vanguard"
+
+var _profile: Node = null
+var _host: Control = null
+var _credits := 0
+var _modules: Dictionary = {}
+var _fits: Dictionary = {}
+var _auction: Dictionary = {}
+var _counter := 0
+var _ships: Array = []
+var _active: StringName = &""
+var _previous_path := ""
+
+
+func _ready() -> void:
+	var tree := Engine.get_main_loop() as SceneTree
+	_profile = tree.root.get_node_or_null(NodePath(PROFILE_SERVICE))
+	if _profile == null:
+		print("%s NO AUTOLOAD" % TAG)
+		get_tree().quit(0)
+		return
+	_borrow()
+	_run()
+	_restore()
+	print("%s done" % TAG)
+	get_tree().quit(0)
+
+
+func _borrow() -> void:
+	_previous_path = String(_profile.get(&"save_path"))
+	_credits = int(_profile.call(&"credits"))
+	_modules = _profile.call(&"modules")
+	_fits = _profile.call(&"fits")
+	_auction = _profile.call(&"auction")
+	_counter = int(_profile.get(&"_instance_counter"))
+	_ships = _profile.call(&"owned_ships")
+	_active = StringName(_profile.call(&"active_ship"))
+	_profile.set(&"save_path", SCRATCH)
+
+
+func _restore() -> void:
+	if _host != null and is_instance_valid(_host):
+		_host.free()
+	_host = null
+	_profile.set(&"_credits", _credits)
+	_profile.set(&"_modules", _modules)
+	_profile.set(&"_fits", _fits)
+	_profile.set(&"_auction", _auction)
+	_profile.set(&"_instance_counter", _counter)
+	_profile.set(&"_owned_ships", _ships)
+	_profile.set(&"_active_ship", _active)
+	_profile.call(&"flush")
+	_profile.set(&"save_path", _previous_path)
+
+
+func _run() -> void:
+	_profile.set(&"_credits", 100000)
+	_profile.set(&"_modules", {})
+	_profile.set(&"_fits", {})
+	_profile.set(&"_auction", {"last_band": 0, "hulls": [], "modules": {}, "hot": &""})
+	_profile.set(&"_instance_counter", 0)
+	_profile.call(&"set_active_ship", HULL)
+
+	## Real play: a rolled weapon instance is minted, the hull's launch fit is materialised,
+	## then the instance is fitted through the composed transaction (CONTRACTS section 13).
+	var id: StringName = _profile.call(
+		&"add_instance", &"w_laser", &"magic", [{"id": "keen", "value": 0.16}], ["whale"]
+	)
+	_profile.call(&"set_fit", HULL, {&"engines": [&"e_std"], &"power": &"p_std"})
+	var fitted_ok: bool = _profile.call(&"fit_module_at", HULL, &"weapons", 0, id)
+	print("%s instance=%s fit_module_at=%s" % [TAG, id, fitted_ok])
+	print("%s BEFORE cell=%s record=%s instances_of=%s bag_count=%d" % [
+		TAG, _cell(0), _profile.call(&"instance", id),
+		_profile.call(&"instances_of", &"w_laser"),
+		int(_profile.call(&"module_count", &"w_laser"))
+	])
+	print("%s BEFORE cells of the bag: %s" % [TAG, _bag_counts()])
+
+	## The shipped pane, mounted the way the station shell mounts it, then its own button.
+	_host = Control.new()
+	_host.name = "K4OutHost"
+	_host.theme = ThemeRes
+	_host.size = Vector2(1920.0, 1080.0)
+	_profile.add_child(_host)
+	var panel := PanelScene.instantiate() as Control
+	_host.add_child(panel)
+	var strip := panel.get_node("%FittedStrip") as VBoxContainer
+	var line := strip.get_child(0) as HBoxContainer
+	var remove := line.get_node(^"Remove") as Button
+	print("%s strip line 0 text=%s remove-visible=%s" % [
+		TAG, (line.get_node(^"Text") as Label).text, remove.visible
+	])
+	remove.pressed.emit()
+
+	print("%s AFTER  cell=%s record=%s instances_of=%s" % [
+		TAG, _cell(0), _profile.call(&"instance", id),
+		_profile.call(&"instances_of", &"w_laser")
+	])
+	print("%s AFTER  bag counts: %s" % [TAG, _bag_counts()])
+	print("%s after: module_count(%s)=%d restore_instance=%s" % [
+		TAG, id, int(_profile.call(&"module_count", id)),
+		_profile.call(&"restore_instance", id)
+	])
+
+	## Scenario B -- duplication: the same press with a plain base-keyed unit of the same
+	## base already in the bag. One physical unit goes in, and the bag's count for the base
+	## is what the pane's own aggregate reads.
+	_profile.set(&"_modules", {})
+	_profile.set(&"_fits", {})
+	_profile.call(&"set_fit", HULL, {&"engines": [&"e_std"], &"power": &"p_std"})
+	var id2: StringName = _profile.call(
+		&"add_instance", &"w_laser", &"rare", [{"id": "keen", "value": 0.16}], ["ledger"]
+	)
+	_profile.call(&"add_module", &"w_laser", 1)
+	var fitted2: bool = _profile.call(&"fit_module_at", HULL, &"weapons", 0, id2)
+	print("%s B: instance=%s fit_module_at=%s" % [TAG, id2, fitted2])
+	print("%s B BEFORE bag counts: %s" % [TAG, _bag_counts()])
+	print("%s B BEFORE instances_of(w_laser)=%s module_count(w_laser)=%d" % [
+		TAG, _profile.call(&"instances_of", &"w_laser"),
+		int(_profile.call(&"module_count", &"w_laser"))
+	])
+	remove.pressed.emit()
+	print("%s B AFTER  cell='%s' bag counts: %s" % [TAG, _cell(0), _bag_counts()])
+	print("%s B AFTER  instances_of(w_laser)=%s module_count(w_laser)=%d" % [
+		TAG, _profile.call(&"instances_of", &"w_laser"),
+		int(_profile.call(&"module_count", &"w_laser"))
+	])
+
+
+## Each bag key with its `count`, in the store's own order.
+func _bag_counts() -> Dictionary:
+	var counts := {}
+	var bag: Dictionary = _profile.call(&"modules")
+	for key: Variant in bag:
+		var record: Dictionary = bag[key]
+		counts[String(key)] = {
+			"count": int(record.get("count", 0)),
+			"base": String(record.get("base_id", "")),
+			"rarity": String(record.get("rarity", "")),
+		}
+	return counts
+
+
+func _cell(index: int) -> String:
+	var fit: Dictionary = _profile.call(&"fit_for", HULL)
+	var cells: Array = fit.get(&"weapons", [])
+	return String(cells[index]) if index < cells.size() else "<none>"
