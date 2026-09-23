@@ -29,6 +29,9 @@ const TOKENS_TYPE: StringName = &"Tokens"
 
 const Catalog := preload("res://game/station_catalog.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
+## 15 section 7's naming grammar has one builder (`Auction.rolled_name`); the hover line and
+## the stat block below the grid call it rather than growing a second copy (K2's deviation 7).
+const AuctionScript := preload("res://game/auction.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
@@ -98,6 +101,15 @@ const HARDPOINT_CAPTION := "SLOT LAYOUT · %d CELLS · %d ENGINES"
 ## and the plate's size, its glyph, its separation and the caption above do not move.
 const HOVER_FORMAT := "%s%d · %s · OWNED ×%d"
 const HOVER_EMPTY := "EMPTY"
+## The stat block the S3 amendment adds under the grid while a filled cell is hovered: 15
+## section 7's two-line block (the base module's catalogue stats plus one line per rolled
+## affix), built in script so the frozen scene file needs no new node.
+const HOVER_BLOCK_SEPARATOR := "\n"
+const HOVER_STAT_JOIN := " · "
+const HOVER_BASE_FORMAT := "BASE DRAW %d"
+const HOVER_ADD_SUFFIX := " ADD"
+const HOVER_MULT_SUFFIX := " MULT"
+const HOVER_MULTIPLIER := "×"
 ## `power` is one id, not a set of cells (CONTRACTS section 11 rule 1).
 const POWER_SLOT: StringName = &"power"
 const PRICE_ZERO := "0"
@@ -137,12 +149,15 @@ var _selected_id: StringName = &""
 var _selected_row: Button = null
 var _native_preview := Vector2.ZERO
 var _tweens: Array[Tween] = []
+## The hovered cell's stat block label, built in script under the grid.
+var _hover_block: Label = null
 
 
 func _ready() -> void:
 	_build_comparison()
 	_build_layout_grid()
 	_build_rows()
+	_mount_hover_block()
 	_apply_tokens()
 	_preview_center.resized.connect(_update_preview_size)
 	_action.pressed.connect(_on_action_pressed)
@@ -367,6 +382,7 @@ func _build_layout_grid() -> void:
 ## `Control` with no plate; a slot cell is a disabled plate carrying its type's slot
 ## glyph. The caption reads the same hull, so it can never describe a previous one.
 func _set_layout_grid(hull_id: StringName) -> void:
+	_clear_hover_block()
 	for child: Node in _hardpoints.get_children():
 		_hardpoints.remove_child(child)
 		child.queue_free()
@@ -446,25 +462,82 @@ func _slot_glyph(slot_key: StringName) -> Texture2D:
 ## keeps reading `fit_for`, whose all-empty shape answers `EMPTY` for every cell. An instance
 ## id resolves through the profile's own `base_module_id` bridge, the way the fitting pane
 ## names its modules; `&""` for a gap, which carries no plate to hover.
+##
+## STATION_HUB section 5.3's S3 amendment: where the cell holds an instance, the name is 15
+## section 7's **full rolled name** (the shared builder) and the `OWNED ×<n>` tail counts the
+## base id's held instances, summed over the bag's own keys.
 func hover_line(cell: Dictionary) -> String:
 	if bool(cell.get(&"gap", false)):
 		return ""
 	var slot_key: StringName = cell.get(&"type", &"")
 	var index := int(cell.get(&"index", -1))
-	var profile := _profile()
-	var module_id := &""
-	if profile != null:
-		var read := &"fit_for"
-		if _owned_ids(profile).has(_selected_id):
-			read = &"resolved_fit"
-		module_id = _fit_cell_module(profile.call(read, _selected_id), slot_key, index)
-	if module_id == &"":
+	var entry := _hover_entry(cell)
+	if entry == &"":
 		return HOVER_FORMAT % [String(cell.get(&"token", "")), index + 1, HOVER_EMPTY, 0]
-	var base := _base_id(profile, module_id)
-	var owned := 0
-	if profile != null:
-		owned = int(profile.call(&"module_count", base))
-	return HOVER_FORMAT % [String(cell.get(&"token", "")), index + 1, _module_name(base), owned]
+	var profile := _profile()
+	var base := _base_id(profile, entry)
+	return HOVER_FORMAT % [
+		String(cell.get(&"token", "")),
+		index + 1,
+		_hover_name(profile, base, entry),
+		_owned_total(profile, base),
+	]
+
+
+## The entry the hovered cell holds, `&""` for an empty cell and a gap: the same read the line
+## and the block share, so the two can never describe two different cells.
+func _hover_entry(cell: Dictionary) -> StringName:
+	if bool(cell.get(&"gap", false)):
+		return &""
+	var profile := _profile()
+	if profile == null:
+		return &""
+	var slot_key: StringName = cell.get(&"type", &"")
+	var index := int(cell.get(&"index", -1))
+	var read := &"fit_for"
+	if _owned_ids(profile).has(_selected_id):
+		read = &"resolved_fit"
+	return _fit_cell_module(profile.call(read, _selected_id), slot_key, index)
+
+
+## One module entry's display name: 15 section 7's rolled name through the shared builder when
+## the bag carries the record, the catalogue's own name otherwise.
+func _hover_name(profile: ProfileScript, base_id: StringName, entry: StringName) -> String:
+	var record := _instance_record(profile, entry)
+	if not record.is_empty():
+		var rolled := String(AuctionScript.rolled_name(record))
+		if not rolled.is_empty():
+			return rolled
+	var name_text := String(ModuleCatalog.module(base_id).get(&"name", ""))
+	return name_text if not name_text.is_empty() else String(base_id)
+
+
+## The record behind one inventory id, `{}` for an id the bag does not carry (a delivered
+## module in 09 section 9's standard fit, for one).
+func _instance_record(profile: ProfileScript, entry: StringName) -> Dictionary:
+	if profile == null or entry == &"":
+		return {}
+	var record: Variant = profile.call(&"instance", entry)
+	if record is Dictionary:
+		return record
+	return {}
+
+
+## The base id's held instances, summed over the bag's own keys through `base_module_id`:
+## `module_count(base_id)` answers one record's count and reads 0 for an instance-keyed bag
+## (K1's measured note), so the aggregate is the sum here, exactly as the FITTING pane sums it.
+func _owned_total(profile: ProfileScript, base_id: StringName) -> int:
+	var total := 0
+	if profile == null or base_id == &"":
+		return total
+	for key: Variant in profile.call(&"modules"):
+		var entry := StringName(str(key))
+		var held := int(profile.call(&"module_count", entry))
+		if held <= 0:
+			continue
+		if StringName(profile.call(&"base_module_id", entry)) == base_id:
+			total += held
+	return total
 
 
 ## The module id one fit cell holds, `&""` for an empty cell and for an index the hull does not
@@ -494,19 +567,172 @@ func _base_id(profile: ProfileScript, entry: StringName) -> StringName:
 
 ## The catalogue's own name for a module, in this pane's upper case; an id the catalogue cannot
 ## name reads as the id itself rather than as a blank line.
-func _module_name(module_id: StringName) -> String:
-	var name_text := String(ModuleCatalog.module(module_id).get(&"name", ""))
-	return name_text.to_upper() if not name_text.is_empty() else String(module_id).to_upper()
+## ------------------------------------------------------- the hover stat block (15 section 7)
+##
+## STATION_HUB section 5.3's S3 amendment: a plate that holds an instance shows the rolled name
+## in the hover line and the pane adds the instance's stat block - the base module's catalogue
+## stats plus one line per rolled affix - under the grid. The block is a reading (nothing here
+## reaches a flight stat: 15 section 9.3) and it is built in script, so the frozen scene file
+## carries no new node. The formatter is `fitting_panel.gd`'s, byte-equivalently: both panes
+## print the same block, and a shared `ui/station/` helper is a file outside this worker's set
+## (K2's deviation 6 records the same shape for the header-fit machinery).
+func _mount_hover_block() -> void:
+	if _hover_block != null and is_instance_valid(_hover_block):
+		return
+	var label := Label.new()
+	label.name = "HoverStatBlock"
+	label.theme_type_variation = &"StationCaption"
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.visible = false
+	_hover_block = label
+	_stats.add_child(label)
+	_stats.move_child(label, _hardpoints.get_index() + 1)
+
+
+## The block for one grid cell: empty and hidden for a gap, an empty cell and an entry the
+## catalogue cannot name; otherwise the base line plus one line per affix.
+func _refresh_hover_block(cell: Dictionary) -> void:
+	if _hover_block == null or not is_instance_valid(_hover_block):
+		return
+	var text := ""
+	var entry := _hover_entry(cell)
+	if entry != &"":
+		text = _stat_block_of(_profile(), entry)
+	_hover_block.text = text
+	_hover_block.visible = not text.is_empty()
+
+
+func _clear_hover_block() -> void:
+	if _hover_block != null and is_instance_valid(_hover_block):
+		_hover_block.text = ""
+		_hover_block.visible = false
+
+
+## The block's own text, read back for probes and tests.
+func hover_block_text() -> String:
+	return "" if _hover_block == null else _hover_block.text
+
+
+func _stat_block_of(profile: ProfileScript, entry: StringName) -> String:
+	if entry == &"":
+		return ""
+	var base := _base_id(profile, entry)
+	var module_row := ModuleCatalog.module(base)
+	if module_row.is_empty():
+		return ""
+	var lines := PackedStringArray([_base_stats_line(module_row)])
+	for line: String in _affix_lines(_instance_record(profile, entry)):
+		lines.append(line)
+	return HOVER_BLOCK_SEPARATOR.join(lines)
+
+
+## 15 section 7's first line: the catalogue's own draw and every `effects` entry.
+func _base_stats_line(module_row: Dictionary) -> String:
+	var parts := PackedStringArray([HOVER_BASE_FORMAT % int(module_row.get(&"draw", 0))])
+	var effects: Dictionary = module_row.get(&"effects", {})
+	for key: Variant in effects:
+		parts.append(stat_line(StringName(str(key)), float(effects[key])))
+	return HOVER_STAT_JOIN.join(parts)
+
+
+## 15 section 7's second line onward: one line per rolled affix, in the record's own order.
+func _affix_lines(record: Dictionary) -> Array[String]:
+	var lines: Array[String] = []
+	if record.is_empty():
+		return lines
+	for raw: Variant in _rows_of(record.get("prefixes")):
+		var id := StringName(str(_row_id_of(raw)))
+		var prefix: Variant = ModuleCatalog.PREFIXES.get(id, null)
+		if not prefix is Dictionary:
+			continue
+		var row: Dictionary = prefix
+		var value := 0.0
+		if raw is Dictionary:
+			value = float((raw as Dictionary).get("value", 0.0))
+		lines.append(
+			String(row.get(&"name", String(id))).to_upper()
+			+ HOVER_STAT_JOIN
+			+ stat_line(
+				StringName(str(row.get(&"stat", &""))), value, StringName(str(row.get(&"unit", &"")))
+			)
+		)
+	for raw: Variant in _rows_of(record.get("suffixes")):
+		var id := StringName(str(_row_id_of(raw)))
+		var suffix: Variant = ModuleCatalog.SUFFIXES.get(id, null)
+		if not suffix is Dictionary:
+			continue
+		var row: Dictionary = suffix
+		lines.append(
+			String(row.get(&"name", "of " + String(id))).to_upper()
+			+ HOVER_STAT_JOIN
+			+ String(row.get(&"perk", ""))
+		)
+	return lines
+
+
+## One stat as its display line, `fitting_panel.stat_line`'s own rule: the catalogue's key as
+## the label and the value in 15 section 3's unit column, or the unit the magnitude implies.
+static func stat_line(
+	stat_key: StringName, value: float, unit: StringName = &""
+) -> String:
+	var key := String(stat_key)
+	if key.ends_with("_mult") or key.ends_with("_multiplier"):
+		return "%s %s%s" % [stat_label(stat_key), HOVER_MULTIPLIER, String.num(value, 2)]
+	var text := ""
+	match String(unit):
+		"percent":
+			text = signed_percent(value)
+		"points":
+			text = "%+d pp" % int(roundf(value * 100.0))
+		"units":
+			text = signed_number(value)
+		_:
+			text = signed_percent(value) if absf(value) < 1.0 else signed_number(value)
+	return "%s %s" % [stat_label(stat_key), text]
+
+
+static func stat_label(stat_key: StringName) -> String:
+	var words := String(stat_key).to_upper().replace("_", " ")
+	for suffix: String in [HOVER_ADD_SUFFIX, HOVER_MULT_SUFFIX, " MULTIPLIER"]:
+		if words.ends_with(suffix):
+			return words.substr(0, words.length() - suffix.length())
+	return words
+
+
+static func signed_percent(value: float) -> String:
+	return "%+d %%" % int(roundf(value * 100.0))
+
+
+static func signed_number(value: float) -> String:
+	if is_equal_approx(value, roundf(value)):
+		return "%+d" % int(roundf(value))
+	return "%+.2f" % value
+
+
+func _rows_of(raw: Variant) -> Array:
+	return raw as Array if raw is Array else []
+
+
+func _row_id_of(raw: Variant) -> String:
+	if raw is Dictionary:
+		return str((raw as Dictionary).get("id", ""))
+	if raw is String or raw is StringName:
+		return String(raw)
+	return ""
 
 
 ## Hovering a plate publishes its line on the channel every hint in this pane uses
-## (`status_requested`); leaving it puts the selected hull's own hint back, so the shell's strip
-## never keeps a line for a cell the pointer has left.
+## (`status_requested`), and fills the pane's own stat block under the grid; leaving it puts the
+## selected hull's own hint back and clears the block, so neither keeps a line for a cell the
+## pointer has left.
 func _on_plate_hovered(cell: Dictionary) -> void:
 	status_requested.emit(hover_line(cell), false)
+	_refresh_hover_block(cell)
 
 
 func _on_plate_unhovered() -> void:
+	_clear_hover_block()
 	var payload := _payload(_selected_id)
 	if not payload.is_empty():
 		status_requested.emit(_row_hint(payload), false)

@@ -31,6 +31,11 @@ extends VBoxContainer
 const TOKENS_TYPE: StringName = &"Tokens"
 
 const ProfileScript := preload("res://autoload/player_profile.gd")
+## 15 section 7's naming grammar has exactly one builder (`Auction.rolled_name`), the
+## one the AUCTION's own rows read; this pane calls it rather than growing a second
+## copy of the grammar (K2's deviation 7). The same file carries the three rarity
+## tokens' names and their hex fallbacks (STATION_HUB section 5.10).
+const AuctionScript := preload("res://game/auction.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
@@ -111,6 +116,30 @@ const ACTION_SELECT: StringName = &"SELECT A CELL"
 const SELECTION_FORMAT := "%s%d · %s · OWNED ×%d"
 const CELL_EMPTY := "EMPTY"
 
+## ------------------------------------------------- the S3 instance surface (15 section 7)
+## STATION_HUB section 5.3's 2026-09-22 S3 amendment: a base id owning more than one
+## instance carries a `▸` expander whose sub-rows are the instances themselves - the
+## rolled name in its rarity tint and the instance's own ACTION. The expander's two
+## words are the pin's own glyph, and the sub-row is indented inside the row's own
+## inner margin, so the two surfaces read as one list.
+const EXPANDER_CLOSED := "▸"
+const EXPANDER_OPEN := "▾"
+const EXPANDER_WIDTH := 28.0
+const SUBROW_INDENT := 24
+const SUBROW_PREFIX := "Instance"
+
+## 15 section 7's two-line stat block: the base module's catalogue stats on one line
+## and one line per rolled affix below it. Measured values only - the catalogue's own
+## `effects` dict and 15 section 3/4's own rows - because nothing here is applied to a
+## flight stat (15 section 9.3: stored, named, priced and displayed).
+const BASE_LINE_FORMAT := "BASE DRAW %d"
+const STAT_JOIN := " · "
+const AFFIX_JOIN := " · "
+const BLOCK_SEPARATOR := "\n"
+const STAT_ADD_SUFFIX := " ADD"
+const STAT_MULT_SUFFIX := " MULT"
+const MULTIPLIER_PREFIX := "×"
+
 const METER_IDLE := "PWR %d / %d"
 const METER_CANDIDATE := "PWR %d / %d · CANDIDATE %d / %d"
 const METER_OVER := " — OVER BY %d"
@@ -131,9 +160,11 @@ const POWER_SLOT: StringName = &"power"
 @onready var _rows: VBoxContainer = %ModuleRows
 @onready var _meter: Label = %MeterLabel
 @onready var _line: Label = %SelectionLine
+@onready var _footer: VBoxContainer = %PaneFooter
 @onready var _remove: Button = %RemoveButton
 
-## The OWNED MODULES rows: {id, name, slot, draw, empty, owned, action, row, icon, tinted}.
+## The OWNED MODULES rows: {id, name, slot, draw, empty, owned, action, row, icon, tinted,
+## instances, subrows, expander}.
 var _payloads: Array[Dictionary] = []
 ## The grid's cells: {type, token, index, node} for every non-gap cell, row-major, which is also
 ## the pane's focus order for those cells.
@@ -153,6 +184,20 @@ var _line_danger := false
 ## never rebuilds what is already on screen.
 var _row_ids: Array[StringName] = []
 var _rows_built := false
+## The instance ids behind each row of the built set, in render order: one base id's instances
+## moving (an install taking one out of the bag, a roll adding one) has to rebuild the rows even
+## when the base id set itself does not move, which `_row_ids` alone cannot see.
+var _row_signature: Array[String] = []
+## The instance ids the built sub-rows carry, so a refresh can tell whether the module the
+## meter is previewing is still on screen.
+var _instance_ids: Array[StringName] = []
+## The base ids whose `▸` expander is open. Kept across a rebuild, so the sub-row list a player
+## opened survives the very transaction it just made.
+var _expanded: Dictionary = {}
+## The instance stat block (15 section 7's second line and its affix lines), built in script
+## under the footer's selection line: no scene file carries it, the way the rows carry their own
+## nodes. Empty and hidden while the selected cell holds nothing.
+var _stat_block: Label = null
 var _selected_row: Button = null
 var _tweens: Array[Tween] = []
 
@@ -164,6 +209,7 @@ func _ready() -> void:
 	_remove.text = REMOVE_ACTION
 	_connect_scroll()
 	_remove.pressed.connect(_on_remove_pressed)
+	_mount_stat_block()
 	_apply_tokens()
 	_refresh_all()
 
@@ -171,6 +217,7 @@ func _ready() -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_THEME_CHANGED and is_node_ready():
 		_apply_tokens()
+		_refresh_footer()
 
 
 func _exit_tree() -> void:
@@ -230,6 +277,9 @@ func module_row_ids() -> Array[StringName]:
 ## own type is selected and that cell is empty, `SWAP` when it already holds a module (the same
 ## composed call - the displaced one returns to the inventory), and `SELECT A CELL` when no
 ## cell is selected or the selected cell is of another type.
+##
+## The id may be an **instance** id (a sub-row's own ACTION) or a base id; the slot a fit cell
+## is judged against is the catalogue's, so the id is translated first (CONTRACTS section 15).
 func module_action(module_id: StringName) -> StringName:
 	var profile := _profile()
 	if profile == null or module_id == &"":
@@ -275,6 +325,49 @@ func footer_text() -> String:
 	return _line.text
 
 
+## The stat block's own text, read back for probes and tests: the selected cell's base line
+## plus one line per rolled affix (15 section 7's two-line block), "" while the cell is empty.
+func stat_block_text() -> String:
+	return "" if _stat_block == null else _stat_block.text
+
+
+## The base id's held instances, summed the way STATION_HUB section 5.3's `OWNED ×<n>` counts
+## them: every key of the bag whose `base_module_id` is that base, its count added.
+func owned_total(base_id: StringName) -> int:
+	return _owned_total(_profile(), base_id)
+
+
+## The instance ids a base id's sub-rows list, in creation order: `[]` for a base the pane has
+## no row for, and the bag's own held ids (a fitted instance is out of the bag).
+func subrow_ids(base_id: StringName) -> Array[StringName]:
+	for payload: Dictionary in _payloads:
+		if payload[&"id"] == base_id:
+			var ids: Array[StringName] = []
+			for entry: Dictionary in payload.get(&"subrows", []):
+				ids.append(entry[&"id"])
+			return ids
+	return [] as Array[StringName]
+
+
+## Whether one base id's `▸` expander is open.
+func expanded(base_id: StringName) -> bool:
+	return bool(_expanded.get(base_id, false))
+
+
+## Open or close one base id's expander, the sub-row list's own door for a probe or a test.
+## Answers whether the base id has an expander at all (STATION_HUB section 5.3: one appears
+## only when the base id owns more than one instance).
+func toggle_expander(base_id: StringName) -> bool:
+	for payload: Dictionary in _payloads:
+		if payload[&"id"] != base_id:
+			continue
+		if payload.get(&"expander", null) == null:
+			return false
+		_on_expander_pressed(base_id)
+		return true
+	return false
+
+
 ## -------------------------------------------------------------------------- the two actions
 
 
@@ -292,6 +385,11 @@ func can_remove() -> bool:
 ## section 5.3, CONTRACTS section 13). The candidate fit is judged with `ShipFit.fit_legal`
 ## first, so an illegal one is refused before anything is written and renders the pin's own
 ## wording; a module the inventory does not hold is refused by the profile.
+##
+## `module_id` is the entry the cell will hold - an instance id from a sub-row, or a base id -
+## and the judgement reads the candidate's **base ids** (CONTRACTS section 15): a fit cell
+## stores the instance id while `ShipFit` reads base ids, so an untranslated candidate would
+## score as draw 0 and would miss two instances of one duplicate-guarded module.
 func install_module(module_id: StringName) -> bool:
 	var profile := _profile()
 	var cell := _row_target_cell(module_id)
@@ -300,7 +398,8 @@ func install_module(module_id: StringName) -> bool:
 	var hull := _active_hull(profile)
 	var slot_key: StringName = cell[&"type"]
 	var index := int(cell[&"index"])
-	var legal := ShipFit.fit_legal(hull, _candidate_fit(profile, hull, slot_key, index, module_id))
+	var candidate := _candidate_fit(profile, hull, slot_key, index, module_id)
+	var legal := ShipFit.fit_legal(hull, _base_fit(profile, candidate))
 	if not bool(legal[&"legal"]):
 		return _refuse(_fit_refusal(legal))
 	if not bool(profile.call(&"fit_module_at", hull, slot_key, index, module_id)):
@@ -522,6 +621,10 @@ func _on_cell_focused(payload: Dictionary) -> void:
 ## The owned module ids and their totals, one entry per base id: the inventory's own keys
 ## aggregated through `base_module_id`, and an id the catalogue cannot name (no name, no slot,
 ## no draw) never becomes a row.
+##
+## The sum is over the bag's own keys and not `module_count(base_id)`, which answers one
+## record's count: since save v6 an instance is its own key at `count` 1, so three `w_laser`
+## instances are three keys with `module_count(&"w_laser") == 0` (K1's measured note).
 func _owned_counts(profile: ProfileScript) -> Dictionary:
 	var counts: Dictionary = {}
 	if profile == null:
@@ -538,6 +641,37 @@ func _owned_counts(profile: ProfileScript) -> Dictionary:
 	return counts
 
 
+## One base id's held instances, in creation order, through the profile's own pinned accessor
+## (CONTRACTS section 15's `instances_of`, which answers the bag's keys at `count` 1 and never
+## a fitted one). `[]` for a base the profile does not carry or a null profile.
+func _instances_of(profile: ProfileScript, base_id: StringName) -> Array[StringName]:
+	if profile == null or base_id == &"":
+		return [] as Array[StringName]
+	var ids: Array[StringName] = []
+	var raw: Variant = profile.call(&"instances_of", base_id)
+	if raw is Array:
+		for entry: Variant in raw as Array:
+			ids.append(StringName(str(entry)))
+	return ids
+
+
+## The base id's held total, summed the way `_owned_counts` sums it: every bag key whose
+## `base_module_id` is that base, its count added. `module_count(base_id)` cannot answer this
+## for an instance-keyed bag (see `_owned_counts`).
+func _owned_total(profile: ProfileScript, base_id: StringName) -> int:
+	var total := 0
+	if profile == null or base_id == &"":
+		return total
+	for key: Variant in profile.call(&"modules"):
+		var entry := StringName(str(key))
+		var held := int(profile.call(&"module_count", entry))
+		if held <= 0:
+			continue
+		if StringName(profile.call(&"base_module_id", entry)) == base_id:
+			total += held
+	return total
+
+
 ## The row ids in render order: `ShipFit.FIT_SLOT_KEYS` first, catalogue order inside a group.
 func _owned_ids(counts: Dictionary) -> Array[StringName]:
 	var ids: Array[StringName] = []
@@ -550,18 +684,33 @@ func _owned_ids(counts: Dictionary) -> Array[StringName]:
 	return ids
 
 
+## The built row set's own signature: one entry per row for its base id and one per instance
+## behind it, so a base id whose instances moved (an install took one out of the bag, a roll
+## added one) rebuilds the rows even though the base id set did not move. `_row_ids` alone
+## cannot see that, and the sub-rows are exactly what the rebuild owes.
+func _row_signature_of(profile: ProfileScript, ids: Array[StringName]) -> Array[String]:
+	var signature: Array[String] = []
+	for base_id: StringName in ids:
+		signature.append(String(base_id))
+		for instance_id: StringName in _instances_of(profile, base_id):
+			signature.append(String(instance_id))
+	return signature
+
+
 func _refresh_rows(profile: ProfileScript) -> void:
 	var ids := _owned_ids(_owned_counts(profile))
-	if not _rows_built or ids != _row_ids:
+	var signature := _row_signature_of(profile, ids)
+	if not _rows_built or signature != _row_signature:
 		_rows_built = true
+		_row_signature = signature
 		if ids.is_empty():
 			_build_empty_row()
 		else:
-			_build_rows(ids)
+			_build_rows(ids, profile)
 		_row_ids = ids
 	for payload: Dictionary in _payloads:
 		_refresh_row(payload, profile)
-	if _candidate != &"" and not ids.has(_candidate):
+	if _candidate != &"" and not _row_ids.has(_candidate) and not _instance_ids.has(_candidate):
 		_candidate = &""
 
 
@@ -569,10 +718,10 @@ func _refresh_rows(profile: ProfileScript) -> void:
 ## emits profile_changed from inside a transaction) detaches the old nodes first and frees them
 ## deferred, which is the one safe way to remove the very Button whose press is still on the
 ## stack.
-func _build_rows(ids: Array[StringName]) -> void:
+func _build_rows(ids: Array[StringName], profile: ProfileScript) -> void:
 	_clear_rows()
-	for module_id: StringName in ids:
-		_payloads.append(_build_row(module_id))
+	for base_id: StringName in ids:
+		_payloads.append(_build_row(base_id, profile))
 	_add_slack()
 
 
@@ -596,32 +745,51 @@ func _build_empty_row() -> void:
 func _clear_rows() -> void:
 	_payloads.clear()
 	_row_ids.clear()
+	_instance_ids.clear()
 	_selected_row = null
 	for child: Node in _rows.get_children():
 		_rows.remove_child(child)
 		child.queue_free()
 
 
-func _build_row(module_id: StringName) -> Dictionary:
-	var module_row := ModuleCatalog.module(module_id)
-	var name_text := String(module_row.get(&"name", ""))
+## One base id's aggregate row (STATION_HUB section 5.3). Its name is the catalogue's - unless
+## the base id owns exactly one instance, in which case the row is that instance's own row and
+## carries its 15 section 7 rolled name in its rarity tint (for a Common, which is what the v5
+## migration mints, the rolled name *is* the plain 09 name, so the pre-instance surface is
+## unchanged). A base id owning more than one instance carries the `▸` expander and keeps the
+## catalogue name: no single rolled name would be true for it, and the sub-rows carry them all.
+func _build_row(base_id: StringName, profile: ProfileScript) -> Dictionary:
+	var module_row := ModuleCatalog.module(base_id)
 	var icon_path := String(module_row.get(&"icon", ""))
+	var instances := _instances_of(profile, base_id)
+	var single := instances.size() == 1
+	var record := _instance_record(profile, instances[0]) if single else {}
+	var name_text := _instance_name(base_id, record)
 	var row := Button.new()
-	row.name = "Module%s" % String(module_id).to_pascal_case()
+	row.name = "Module%s" % String(base_id).to_pascal_case()
 	row.toggle_mode = true
 	row.focus_mode = Control.FOCUS_ALL
 	row.custom_minimum_size = Vector2(0.0, ROW_HEIGHT)
 	row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	row.set_meta(&"id", module_id)
+	row.set_meta(&"id", base_id)
 	var box := _make_inner(row)
+	var expander: Button = null
+	if instances.size() > 1:
+		expander = _make_expander(base_id, box)
 	var icon := _make_icon(icon_path)
 	if icon != null:
 		box.add_child(icon)
-	box.add_child(_make_title_box(name_text, _meta_of(module_row)))
+	var title_box := _make_title_box(name_text, _meta_of(module_row))
+	box.add_child(title_box)
+	var title := title_box.get_node_or_null(^"Title") as Label
+	var tint := _rarity_token(record) if single else &""
+	if title != null and tint != &"":
+		title.add_theme_color_override(&"font_color", _rarity_color(tint))
 	var owned := _make_cell(box, COL_OWNED, "Owned")
 	var action := _make_cell(box, COL_ACTION, "Action")
 	var payload := {
-		&"id": module_id,
+		&"id": base_id,
+		&"base": base_id,
 		&"name": name_text,
 		&"slot": StringName(module_row.get(&"slot", &"")),
 		&"draw": int(module_row.get(&"draw", 0)),
@@ -629,15 +797,167 @@ func _build_row(module_id: StringName) -> Dictionary:
 		&"row": row,
 		&"icon": icon,
 		&"tinted": _is_flat_glyph(icon_path),
+		&"title": title,
+		&"tint": tint,
 		&"owned": owned,
 		&"action": action,
+		&"subrows": [],
+		&"expander": expander,
 	}
 	row.pressed.connect(_on_module_pressed.bind(payload))
 	row.focus_entered.connect(_on_module_focused.bind(row, payload))
 	row.mouse_entered.connect(_on_module_hovered.bind(payload, true))
 	row.mouse_exited.connect(_on_module_hovered.bind(payload, false))
 	_rows.add_child(row)
+	if bool(_expanded.get(base_id, false)):
+		_build_subrows(payload, profile)
 	return payload
+
+
+## The `▸` expander one multi-instance row carries (STATION_HUB section 5.3's S3 amendment):
+## the pin's own glyph, its own control, so the aggregate row's own ACTION keeps working. It
+## sits first in the row's inner box, ahead of the icon, and takes the pointer itself. Its chrome
+## is the row's own (a plain `Button`, no theme variation), so the two read as one control.
+func _make_expander(base_id: StringName, box: HBoxContainer) -> Button:
+	var button := Button.new()
+	button.name = "Expander%s" % String(base_id).to_pascal_case()
+	button.text = EXPANDER_OPEN if bool(_expanded.get(base_id, false)) else EXPANDER_CLOSED
+	button.custom_minimum_size = Vector2(EXPANDER_WIDTH, 0.0)
+	button.focus_mode = Control.FOCUS_ALL
+	button.mouse_filter = Control.MOUSE_FILTER_STOP
+	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	button.pressed.connect(_on_expander_pressed.bind(base_id))
+	box.add_child(button)
+	return button
+
+
+## One indented sub-row per instance of an expanded base id: the 15 section 7 full rolled name
+## in its rarity tint, the row's own meta and the **instance's** own ACTION (STATION_HUB
+## section 5.3). The press installs *that* instance, so the fit cell stores its id and
+## REMOVE/SWAP hand the same one back (CONTRACTS section 15, L80).
+func _build_subrows(payload: Dictionary, profile: ProfileScript) -> void:
+	var base_id: StringName = payload[&"base"]
+	var module_row := ModuleCatalog.module(base_id)
+	var icon_path := String(module_row.get(&"icon", ""))
+	for instance_id: StringName in _instances_of(profile, base_id):
+		var record := _instance_record(profile, instance_id)
+		var row := Button.new()
+		row.name = SUBROW_PREFIX + String(instance_id).to_pascal_case()
+		row.toggle_mode = true
+		row.focus_mode = Control.FOCUS_ALL
+		row.custom_minimum_size = Vector2(0.0, ROW_HEIGHT)
+		row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		row.set_meta(&"id", instance_id)
+		var box := _make_inner(row, SUBROW_INDENT)
+		var icon := _make_icon(icon_path)
+		if icon != null:
+			box.add_child(icon)
+		var title_box := _make_title_box(_instance_name(base_id, record), _meta_of(module_row))
+		box.add_child(title_box)
+		var title := title_box.get_node_or_null(^"Title") as Label
+		var tint := _rarity_token(record)
+		if title != null and tint != &"":
+			title.add_theme_color_override(&"font_color", _rarity_color(tint))
+		## The aggregate row's `OWNED ×<n>` cell is one column wide and the ACTION cell is the
+		## next; the spacer keeps the sub-row's ACTION under the row's own, so the list reads as
+		## one column of actions.
+		box.add_child(_make_spacer(COL_OWNED))
+		var action := _make_cell(box, COL_ACTION, "Action")
+		var sub := {
+			&"id": instance_id,
+			&"base": base_id,
+			&"entry": instance_id,
+			&"empty": false,
+			&"row": row,
+			&"icon": icon,
+			&"tinted": _is_flat_glyph(icon_path),
+			&"title": title,
+			&"tint": tint,
+			&"action": action,
+		}
+		row.pressed.connect(_on_subrow_pressed.bind(sub))
+		row.focus_entered.connect(_on_subrow_focused.bind(row, sub))
+		row.mouse_entered.connect(_on_subrow_hovered.bind(sub, true))
+		row.mouse_exited.connect(_on_subrow_hovered.bind(sub, false))
+		_rows.add_child(row)
+		payload[&"subrows"].append(sub)
+		_instance_ids.append(instance_id)
+
+
+func _make_spacer(width: float) -> Control:
+	var spacer := Control.new()
+	spacer.name = "Spacer"
+	spacer.custom_minimum_size = Vector2(width, 0.0)
+	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return spacer
+
+
+## The record behind one inventory id, `{}` for an id the bag does not carry (a delivered
+## module in a standard fit, for one) - the catalogue name is then the honest display name.
+func _instance_record(profile: ProfileScript, entry: StringName) -> Dictionary:
+	if profile == null or entry == &"":
+		return {}
+	var record: Variant = profile.call(&"instance", entry)
+	if record is Dictionary:
+		return record
+	return {}
+
+
+## One module's display name: 15 section 7's full rolled name through the shared builder when
+## the bag carries the record, the catalogue's own name otherwise. The catalogue spells its
+## names in title case (`Laser MkII`), so nothing here upper-cases them - the rolled name is
+## the document's own string.
+func _instance_name(base_id: StringName, record: Dictionary) -> String:
+	if not record.is_empty():
+		var rolled := String(AuctionScript.rolled_name(record))
+		if not rolled.is_empty():
+			return rolled
+	var name_text := String(ModuleCatalog.module(base_id).get(&"name", ""))
+	return name_text if not name_text.is_empty() else String(base_id)
+
+
+## The rarity-token name a record's name cell is tinted with, `&""` for a record with no
+## rarity (a delivered module) - STATION_HUB section 5.10's three tokens.
+func _rarity_token(record: Dictionary) -> StringName:
+	var rarity := StringName(str(record.get("rarity", "")))
+	if rarity == &"":
+		return &""
+	return AuctionScript.rarity_token(rarity)
+
+
+## One rarity's tint: the theme's `rarity_*` token first (STATION_HUB section 5.10's own three,
+## with the fallback hexes for a theme that predates them).
+func _rarity_color(token: StringName) -> Color:
+	if token == &"":
+		return _token(&"text_primary")
+	if has_theme_color(token, TOKENS_TYPE):
+		return get_theme_color(token, TOKENS_TYPE)
+	return AuctionScript.rarity_fallback(_rarity_of(token))
+
+
+func _rarity_of(token: StringName) -> StringName:
+	for rarity: Variant in AuctionScript.RARITY_TOKENS:
+		if AuctionScript.RARITY_TOKENS[rarity] == token:
+			return StringName(str(rarity))
+	return &"common"
+
+
+## The entry one aggregate row's own ACTION acts on: the base id's first held instance, in the
+## bag's own order. For a base-keyed record (`add_module`'s own shape, every pre-v6 fixture)
+## that is the base id itself, which is what keeps the pre-instance surface byte-identical.
+func _row_entry(profile: ProfileScript, base_id: StringName) -> StringName:
+	var ids := _instances_of(profile, base_id)
+	return ids[0] if not ids.is_empty() else base_id
+
+
+## The entry a payload acts on: its own instance id for a sub-row, the base's first held
+## instance for an aggregate row.
+func _payload_entry(payload: Dictionary) -> StringName:
+	if payload.has(&"entry"):
+		return payload[&"entry"]
+	var base_id: StringName = payload.get(&"base", payload.get(&"id", &""))
+	return _row_entry(_profile(), base_id)
 
 
 ## The row's meta, `SLOT <TYPE> · DRAW <n>`: the module's own slot type and its 09 section 3
@@ -650,14 +970,19 @@ func _meta_of(module_row: Dictionary) -> String:
 func _refresh_row(payload: Dictionary, profile: ProfileScript) -> void:
 	if bool(payload.get(&"empty", false)):
 		return
-	var module_id: StringName = payload[&"id"]
+	var base_id: StringName = payload.get(&"base", payload[&"id"])
 	var owned: Label = payload[&"owned"]
 	var action: Label = payload[&"action"]
-	var held := 0
-	if profile != null:
-		held = int(profile.call(&"module_count", module_id))
-	owned.text = OWNED_FORMAT % held
-	action.text = String(module_action(module_id))
+	owned.text = OWNED_FORMAT % _owned_total(profile, base_id)
+	action.text = String(module_action(_payload_entry(payload)))
+	var expander: Variant = payload.get(&"expander", null)
+	if expander is Button:
+		var marker: Button = expander
+		if is_instance_valid(marker):
+			marker.text = EXPANDER_OPEN if bool(_expanded.get(base_id, false)) else EXPANDER_CLOSED
+	for sub: Dictionary in payload.get(&"subrows", []):
+		var sub_action: Label = sub[&"action"]
+		sub_action.text = String(module_action(sub[&"id"]))
 
 
 func _make_title_box(name_text: String, meta_text: String) -> VBoxContainer:
@@ -698,11 +1023,11 @@ func _make_label(variation: StringName, text: String) -> Label:
 	return label
 
 
-func _make_inner(button: Button) -> HBoxContainer:
+func _make_inner(button: Button, indent := 0) -> HBoxContainer:
 	var inner := MarginContainer.new()
 	inner.name = "RowInner"
 	inner.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	inner.add_theme_constant_override(&"margin_left", ROW_INNER_MARGIN.x)
+	inner.add_theme_constant_override(&"margin_left", ROW_INNER_MARGIN.x + indent)
 	inner.add_theme_constant_override(&"margin_top", ROW_INNER_MARGIN.y)
 	inner.add_theme_constant_override(&"margin_right", ROW_INNER_MARGIN.x)
 	inner.add_theme_constant_override(&"margin_bottom", ROW_INNER_MARGIN.y)
@@ -763,6 +1088,10 @@ func _on_scroll_started() -> void:
 
 ## One row, pressed: the ACTION's own word decides. `SELECT A CELL` is the pin's disabled state,
 ## so the press writes nothing and says so; FIT and SWAP are the one composed call.
+##
+## The row's own ACTION acts on the base id's first held instance (`_row_entry`), so an account
+## whose base id owns exactly one instance presses the instance, and a base-keyed record - every
+## pre-v6 fixture - presses its own id, exactly as before.
 func _on_module_pressed(payload: Dictionary) -> void:
 	AudioManager.play_ui(AudioManager.UiCue.CLICK)
 	var row: Button = payload[&"row"]
@@ -770,11 +1099,42 @@ func _on_module_pressed(payload: Dictionary) -> void:
 	_selected_row = row
 	## Reading a row is also previewing it: the meter's candidate line is about the module the
 	## player is acting on, so a refused press leaves the arithmetic that refused it on screen.
-	_candidate = payload[&"id"]
-	if module_action(payload[&"id"]) == ACTION_SELECT:
+	var entry: StringName = _payload_entry(payload)
+	_candidate = entry
+	if module_action(entry) == ACTION_SELECT:
 		_notice(ACTION_SELECT, false)
 		return
-	install_module(payload[&"id"])
+	install_module(entry)
+
+
+## One sub-row, pressed: the same composed install, on **that instance's** id, so the fit cell
+## holds the instance and its own affixes and rarity travel with it (CONTRACTS section 15).
+func _on_subrow_pressed(payload: Dictionary) -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	var row: Button = payload[&"row"]
+	row.set_pressed_no_signal(true)
+	_selected_row = row
+	_candidate = payload[&"entry"]
+	if module_action(payload[&"entry"]) == ACTION_SELECT:
+		_notice(ACTION_SELECT, false)
+		return
+	install_module(payload[&"entry"])
+
+
+## The `▸` expander's own press: the base id's flag flips and the rows are rebuilt so the
+## sub-rows appear (or go) at once. The flag survives the rebuild, which is what makes the
+## sub-row list a player opened survive the transaction they then made in it.
+func _on_expander_pressed(base_id: StringName) -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	_expanded[base_id] = not bool(_expanded.get(base_id, false))
+	var profile := _profile()
+	var ids := _owned_ids(_owned_counts(profile))
+	_row_signature = _row_signature_of(profile, ids)
+	_build_rows(ids, profile)
+	_row_ids = ids
+	for payload: Dictionary in _payloads:
+		_refresh_row(payload, profile)
+	_refresh_footer()
 
 
 func _on_module_focused(row: Button, payload: Dictionary) -> void:
@@ -783,8 +1143,12 @@ func _on_module_focused(row: Button, payload: Dictionary) -> void:
 		_selected_row.set_pressed_no_signal(false)
 	_selected_row = row
 	row.set_pressed_no_signal(true)
-	_candidate = payload[&"id"]
+	_candidate = _payload_entry(payload)
 	_refresh_footer()
+
+
+func _on_subrow_focused(row: Button, payload: Dictionary) -> void:
+	_on_module_focused(row, payload)
 
 
 func _on_module_hovered(payload: Dictionary, hovered: bool) -> void:
@@ -796,8 +1160,12 @@ func _on_module_hovered(payload: Dictionary, hovered: bool) -> void:
 		tween.tween_property(
 			icon, "modulate:a", 1.0 if hovered else ROW_ICON_IDLE_ALPHA, HOVER_SECONDS
 		)
-	_candidate = payload[&"id"] if hovered else &""
+	_candidate = _payload_entry(payload) if hovered else &""
 	_refresh_footer()
+
+
+func _on_subrow_hovered(payload: Dictionary, hovered: bool) -> void:
+	_on_module_hovered(payload, hovered)
 
 
 func _on_remove_pressed() -> void:
@@ -819,15 +1187,18 @@ func _refresh_footer() -> void:
 		_apply_colour(_line, _line_danger)
 	else:
 		_line.text = _selection_line(profile, fit)
-		_apply_colour(_line, false)
+		_apply_rarity_colour(_line, _selection_tint(profile, fit))
+	_refresh_stat_block(profile, fit)
 	_remove.disabled = not can_remove()
 
 
 ## STATION_HUB section 5.3's meter, as text: the fit the launch flies (`PWR <Σ> / <out>`) and,
 ## with a cell selected, the candidate's own line. The numbers are `fit_legal`'s `power`
-## dictionary, never a second arithmetic.
+## dictionary, never a second arithmetic - and the fit they are read from is the **base-id**
+## translation of the fit the pane shows, because a cell holds an instance id (CONTRACTS
+## section 15; without the translation every fitted instance would score as draw 0 - K0 H6).
 func _meter_line(profile: ProfileScript, hull: StringName, fit: Dictionary) -> String:
-	var power := _power_of(hull, fit)
+	var power := _power_of(profile, hull, fit)
 	var draws := int(power[&"draw"])
 	var out := int(power[&"out"])
 	if _selected.is_empty():
@@ -840,17 +1211,18 @@ func _meter_line(profile: ProfileScript, hull: StringName, fit: Dictionary) -> S
 
 
 ## The candidate's own arithmetic: the resolved fit with the selected cell set to the module the
-## player is reading (the focused or hovered OWNED MODULES row), and the resolved fit itself
-## when no such module is being read or its type is not the selected cell's - a preview that
-## never invents a fit.
+## player is reading (the focused or hovered OWNED MODULES row or sub-row), and the resolved fit
+## itself when no such module is being read or the module's catalogue slot is not the selected
+## cell's - a preview that never invents a fit. The candidate is judged on base ids, like every
+## other legality read here.
 func _candidate_power(profile: ProfileScript, hull: StringName, fit: Dictionary) -> Dictionary:
 	if _selected.is_empty() or _candidate == &"":
-		return _power_of(hull, fit)
+		return _power_of(profile, hull, fit)
 	var slot_key: StringName = _selected[&"type"]
-	if _slot_key_of(_candidate) != slot_key:
-		return _power_of(hull, fit)
+	if _candidate_slot(profile, _candidate) != slot_key:
+		return _power_of(profile, hull, fit)
 	return _power_of(
-		hull, _candidate_fit(profile, hull, slot_key, int(_selected[&"index"]), _candidate)
+		profile, hull, _candidate_fit(profile, hull, slot_key, int(_selected[&"index"]), _candidate)
 	)
 
 
@@ -862,25 +1234,49 @@ func _meter_danger(profile: ProfileScript, hull: StringName, fit: Dictionary) ->
 	return not bool(_candidate_power(profile, hull, fit)[&"legal"])
 
 
-func _power_of(hull: StringName, fit: Dictionary) -> Dictionary:
-	return ShipFit.fit_legal(hull, fit)[&"power"]
+## `ShipFit.fit_legal`'s own power dictionary, read through the base-id translation: a fit cell
+## holds an instance id, so the untranslated fit would be scored with draw 0 per instance cell.
+func _power_of(profile: ProfileScript, hull: StringName, fit: Dictionary) -> Dictionary:
+	return ShipFit.fit_legal(hull, _base_fit(profile, fit))[&"power"]
 
 
 ## The selected cell's line, `<TYPE><n> · <MODULE NAME or EMPTY> · OWNED ×<n>`, or the pin's own
-## word for the no-selection state.
+## word for the no-selection state. STATION_HUB section 5.3's S3 amendment: where the cell holds
+## an instance, the name is 15 section 7's **full rolled name** (the same shared builder the
+## AUCTION's rows use) and the `OWNED ×<n>` tail keeps counting the base id's held instances -
+## the base's aggregate, not the one record's count.
 func _selection_line(profile: ProfileScript, fit: Dictionary) -> String:
 	if _selected.is_empty():
 		return ACTION_SELECT
 	var slot_key: StringName = _selected[&"type"]
 	var index := int(_selected[&"index"])
-	var module_id := _base_id(profile, _cell_module(fit, slot_key, index))
+	var entry := _cell_module(fit, slot_key, index)
+	var base := _base_id(profile, entry)
 	var owned := 0
 	var name_text := CELL_EMPTY
-	if module_id != &"":
-		name_text = _module_name(module_id)
-		if profile != null:
-			owned = int(profile.call(&"module_count", module_id))
+	if base != &"":
+		var record := _instance_record(profile, entry)
+		name_text = _instance_name(base, record)
+		owned = _owned_total(profile, base)
 	return SELECTION_FORMAT % [String(_selected[&"token"]), index + 1, name_text, owned]
+
+
+## The rarity token the selected cell's name is tinted with, `&""` when the cell is empty or
+## holds a module the bag does not carry.
+func _selection_tint(profile: ProfileScript, fit: Dictionary) -> StringName:
+	if _selected.is_empty():
+		return &""
+	var entry := _cell_module(fit, StringName(_selected[&"type"]), int(_selected[&"index"]))
+	return _rarity_token(_instance_record(profile, entry))
+
+
+## A name cell's colour: the theme's rarity token, or no override at all when the entry carries
+## no rarity (the default label colour is `rarity_common`).
+func _apply_rarity_colour(label: Label, token: StringName) -> void:
+	if token == &"":
+		label.remove_theme_color_override(&"font_color")
+		return
+	label.add_theme_color_override(&"font_color", _rarity_color(token))
 
 
 func _apply_colour(label: Label, danger: bool) -> void:
@@ -906,13 +1302,33 @@ func _resolved_fit(profile: ProfileScript, hull: StringName) -> Dictionary:
 
 
 ## The candidate fit one install or swap is judged on: the resolved fit with the one cell set to
-## `module_id`. The profile composes the same candidate from its own `resolved_fit` before it
-## writes (CONTRACTS section 13), so the pane's preview and the profile's re-check judge one fit.
+## `module_id` (the entry - an instance id or a base id). The profile composes the same candidate
+## from its own `resolved_fit` before it writes (CONTRACTS section 13), so the pane's preview and
+## the profile's re-check judge one fit.
 func _candidate_fit(
 	profile: ProfileScript, hull: StringName, slot_key: StringName, index: int,
 	module_id: StringName
 ) -> Dictionary:
 	return _with_cell(_resolved_fit(profile, hull), slot_key, index, module_id)
+
+
+## The same fit with every cell exchanged for the base catalogue id behind it, through the
+## profile's own `base_fit` (CONTRACTS section 15): the shape `ShipFit` reads. Every legality
+## judgement in this pane goes through it, because a cell holds an instance id.
+func _base_fit(profile: ProfileScript, fit: Dictionary) -> Dictionary:
+	if profile == null:
+		return fit
+	var translated: Variant = profile.call(&"base_fit", fit)
+	if translated is Dictionary:
+		return translated
+	return fit
+
+
+## A module entry's catalogue slot key in the fit's own spelling (`engine` -> `engines`),
+## `&""` for an entry the catalogue cannot name. An instance id is translated to its base id
+## first: `ModuleCatalog.slot_of` reads base ids only.
+func _candidate_slot(profile: ProfileScript, entry: StringName) -> StringName:
+	return _slot_key_of(_base_id(profile, entry))
 
 
 static func _with_cell(
@@ -957,12 +1373,13 @@ func _slot_key_of(module_id: StringName) -> StringName:
 	return SLOT_KEY_ALIASES.get(slot, slot)
 
 
-## The cell one module's row acts on: the selected cell when it is of the module's own type,
-## `{}` otherwise - the pin's `SELECT A CELL` state.
+## The cell one module's row acts on: the selected cell when it is of the module's own catalogue
+## type, `{}` otherwise - the pin's `SELECT A CELL` state. The id may be an instance id, so the
+## type is read through the base-id translation.
 func _row_target_cell(module_id: StringName) -> Dictionary:
 	if _selected.is_empty() or module_id == &"":
 		return {}
-	if _slot_key_of(module_id) != StringName(_selected[&"type"]):
+	if _candidate_slot(_profile(), module_id) != StringName(_selected[&"type"]):
 		return {}
 	return _selected
 
@@ -975,9 +1392,162 @@ func _base_id(profile: ProfileScript, entry: StringName) -> StringName:
 	return StringName(profile.call(&"base_module_id", entry))
 
 
-func _module_name(module_id: StringName) -> String:
-	var name_text := String(ModuleCatalog.module(module_id).get(&"name", ""))
-	return name_text.to_upper() if not name_text.is_empty() else String(module_id).to_upper()
+## ------------------------------------------------------- the stat block (15 section 7)
+##
+## STATION_HUB section 5.3's S3 amendment: where the selected cell holds an instance, the pane
+## adds the instance's stat block below the selection line - "the base module's catalogue stats
+## plus one line per rolled affix (15 section 7's two-line block)". Nothing here is applied to
+## a flight stat (15 section 9.3): every number is read off the catalogue's own `effects` dict
+## or off 15 section 3/4's own rows, so the block cannot promise a stat the game does not roll.
+
+
+## The block's own node, built in script under the footer's selection line: no scene file
+## carries it (the pane's rows carry their own nodes the same way), so the frozen
+## `fitting_panel.tscn` needs no edit for this surface.
+func _mount_stat_block() -> void:
+	if _stat_block != null and is_instance_valid(_stat_block):
+		return
+	_stat_block = _make_label(&"StationCaption", "")
+	_stat_block.name = "StatBlock"
+	_stat_block.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_stat_block.visible = false
+	_footer.add_child(_stat_block)
+	_footer.move_child(_stat_block, _line.get_index() + 1)
+
+
+## The block for the selected cell: the base module's catalogue stats, then one line per rolled
+## affix. Empty and hidden while the cell holds nothing (or holds a module the bag does not
+## carry and the catalogue cannot name).
+func _refresh_stat_block(profile: ProfileScript, fit: Dictionary) -> void:
+	if _stat_block == null or not is_instance_valid(_stat_block):
+		return
+	var text := ""
+	if not _selected.is_empty():
+		var entry := _cell_module(fit, StringName(_selected[&"type"]), int(_selected[&"index"]))
+		text = _stat_block_of(profile, entry)
+	_stat_block.text = text
+	_stat_block.visible = not text.is_empty()
+
+
+## One entry's block: the base line plus one line per affix, joined by `BLOCK_SEPARATOR`.
+## `""` for an empty cell or an id the catalogue does not ship.
+func _stat_block_of(profile: ProfileScript, entry: StringName) -> String:
+	if entry == &"":
+		return ""
+	var base := _base_id(profile, entry)
+	var module_row := ModuleCatalog.module(base)
+	if module_row.is_empty():
+		return ""
+	var lines := PackedStringArray()
+	lines.append(_base_stats_line(module_row))
+	for line: String in _affix_lines(_instance_record(profile, entry)):
+		lines.append(line)
+	return BLOCK_SEPARATOR.join(lines)
+
+
+## 15 section 7's first line: the base module's catalogue stats, as the catalogue carries them
+## - its draw and every `effects` entry (`shield_add` 200 -> `SHIELD +200`, `damage_add` 0.15
+## -> `DAMAGE +15 %`, `speed_mult` 1.15 -> `SPEED ×1.15`). A row with no effects (every weapon
+## row) shows its draw alone.
+func _base_stats_line(module_row: Dictionary) -> String:
+	var parts := PackedStringArray([BASE_LINE_FORMAT % int(module_row.get(&"draw", 0))])
+	var effects: Dictionary = module_row.get(&"effects", {})
+	for key: Variant in effects:
+		parts.append(stat_line(StringName(str(key)), float(effects[key])))
+	return STAT_JOIN.join(parts)
+
+
+## 15 section 7's second line onward: one line per rolled affix, in the record's own order.
+## A prefix reads `<NAME> · <STAT> <value>` from 15 section 3's row and the value the record
+## carries; a suffix reads `<NAME> · <perk>` with 15 section 4's own perk prose verbatim.
+func _affix_lines(record: Dictionary) -> Array[String]:
+	var lines: Array[String] = []
+	if record.is_empty():
+		return lines
+	for raw: Variant in _rows_of(record.get("prefixes")):
+		var id := StringName(str(_row_id_of(raw)))
+		var prefix: Variant = ModuleCatalog.PREFIXES.get(id, null)
+		if not prefix is Dictionary:
+			continue
+		var row: Dictionary = prefix
+		var value := 0.0
+		if raw is Dictionary:
+			value = float((raw as Dictionary).get("value", 0.0))
+		var label := String(row.get(&"name", String(id))).to_upper()
+		var stat := stat_line(
+			StringName(str(row.get(&"stat", &""))), value, StringName(str(row.get(&"unit", &"")))
+		)
+		lines.append(label + AFFIX_JOIN + stat)
+	for raw: Variant in _rows_of(record.get("suffixes")):
+		var id := StringName(str(_row_id_of(raw)))
+		var suffix: Variant = ModuleCatalog.SUFFIXES.get(id, null)
+		if not suffix is Dictionary:
+			continue
+		var row: Dictionary = suffix
+		lines.append(
+			String(row.get(&"name", "of " + String(id))).to_upper()
+			+ AFFIX_JOIN
+			+ String(row.get(&"perk", ""))
+		)
+	return lines
+
+
+## One stat as its display line: the catalogue's own key as the label (`shield_add` ->
+## `SHIELD`, `fire_rate_mult` -> `FIRE RATE`) and the value in the unit 15 section 3's `unit`
+## column names, or - for the base line, whose `effects` dict has no unit column - the unit the
+## magnitude implies (a fraction is a percentage, anything else a plain number).
+static func stat_line(
+	stat_key: StringName, value: float, unit: StringName = &""
+) -> String:
+	var key := String(stat_key)
+	if key.ends_with("_mult") or key.ends_with("_multiplier"):
+		return "%s %s%s" % [stat_label(stat_key), MULTIPLIER_PREFIX, String.num(value, 2)]
+	var text := ""
+	match String(unit):
+		"percent":
+			text = signed_percent(value)
+		"points":
+			text = "%+d pp" % int(roundf(value * 100.0))
+		"units":
+			text = signed_number(value)
+		_:
+			text = signed_percent(value) if absf(value) < 1.0 else signed_number(value)
+	return "%s %s" % [stat_label(stat_key), text]
+
+
+## A catalogue stat key as a label: upper case, `_` as a space, and the arithmetic the value
+## already carries (`+`, `−`, `×`) dropped from the word (`shield_add` -> `SHIELD`).
+static func stat_label(stat_key: StringName) -> String:
+	var words := String(stat_key).to_upper().replace("_", " ")
+	for suffix: String in [STAT_ADD_SUFFIX, STAT_MULT_SUFFIX, " MULTIPLIER"]:
+		if words.ends_with(suffix):
+			return words.substr(0, words.length() - suffix.length())
+	return words
+
+
+static func signed_percent(value: float) -> String:
+	return "%+d %%" % int(roundf(value * 100.0))
+
+
+static func signed_number(value: float) -> String:
+	if is_equal_approx(value, roundf(value)):
+		return "%+d" % int(roundf(value))
+	return "%+.2f" % value
+
+
+## The `{id, value}` prefix rows and the plain suffix ids one record carries, through the same
+## two shapes `PlayerProfile._affix_rows`/`_affix_names` normalise to (a hand-built fixture may
+## hand in either).
+func _rows_of(raw: Variant) -> Array:
+	return raw as Array if raw is Array else []
+
+
+func _row_id_of(raw: Variant) -> String:
+	if raw is Dictionary:
+		return str((raw as Dictionary).get("id", ""))
+	if raw is String or raw is StringName:
+		return String(raw)
+	return ""
 
 
 func _active_hull(profile: ProfileScript) -> StringName:
@@ -1017,6 +1587,18 @@ func _apply_tokens() -> void:
 			var tint: Color = _token(&"text_primary")
 			tint.a = ROW_ICON_IDLE_ALPHA
 			icon.modulate = tint
+		_apply_name_tint(payload)
+		for sub: Dictionary in payload.get(&"subrows", []):
+			_apply_name_tint(sub)
+
+
+## Re-apply one row's or sub-row's rarity tint from the theme (STATION_HUB section 5.10's three
+## tokens): the tint is an override, so a theme change has to put it back.
+func _apply_name_tint(payload: Dictionary) -> void:
+	var title: Variant = payload.get(&"title", null)
+	var tint: StringName = payload.get(&"tint", &"")
+	if title is Label and is_instance_valid(title) and tint != &"":
+		(title as Label).add_theme_color_override(&"font_color", _rarity_color(tint))
 
 
 func _token(token: StringName) -> Color:

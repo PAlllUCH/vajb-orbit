@@ -23,6 +23,8 @@ const LaunchScene := preload("res://ui/station/launch_panel.tscn")
 const ThemeRes := preload("res://ui/theme/vajb_theme.tres")
 const Catalog := preload("res://game/station_catalog.gd")
 const RepairsService := preload("res://game/repairs.gd")
+## 15 section 7's one name builder, the same one the shipyard's hover line calls.
+const AuctionScript := preload("res://game/auction.gd")
 
 const PROFILE_PATH := "user://test_p2b_services.cfg"
 
@@ -33,6 +35,11 @@ const UNOWNED_HULL: StringName = &"ship_fighter"
 const LASER: StringName = &"w_laser"
 const STANDARD_REACTOR: StringName = &"p_std"
 const OWNED_LASERS := 3
+## The instance the S3 half of this suite mints: a Magic laser with 15 section 3's `keen` and
+## section 4's `of the Whale`, so its rolled name and its two stat-block lines are both fixed.
+const LASER_PREFIX := &"keen"
+const LASER_PREFIX_VALUE := 0.12
+const LASER_SUFFIX := &"whale"
 
 const PLATE_SIZE := 48.0
 const PLATE_SEPARATION := 4
@@ -48,6 +55,9 @@ const WORDING_HOVER := "%s%d · %s · OWNED ×%d"
 const WORDING_EMPTY := "EMPTY"
 const WORDING_REPORT := "%s %d"
 const WORDING_CAPTION := "SLOT LAYOUT · %d CELLS · %d ENGINES"
+## 15 section 7's two-line stat block, written out in full for the one instance this suite mints
+## (`w_laser`: draw 1, no `effects` dict) so a drift in the grammar or a unit is red here.
+const BLOCK_MAGIC_LASER := "BASE DRAW 1\nKEEN · DAMAGE +12 %\nOF THE WHALE · +50 max hull structure"
 
 var _profile: Node = null
 var _host: Control = null
@@ -62,6 +72,10 @@ var _previous_fits: Dictionary = {}
 var _previous_owned: Array = []
 var _previous_modules: Dictionary = {}
 var _previous_vitals: Dictionary = {}
+## The instance mint counter is a field of the borrowed autoload too: this suite mints instances
+## (the S3 half of it), so it hands the counter back the way `test_s3_auction.gd` does, and no
+## later suite sees a number this one spent.
+var _previous_counter := 0
 
 
 func suite_name() -> String:
@@ -84,6 +98,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_owned = _profile.call(&"owned_ships")
 	_previous_modules = _profile.call(&"modules")
 	_previous_vitals = _profile.get(&"_vitals")
+	_previous_counter = int(_profile.get(&"_instance_counter"))
 	_profile.set(&"save_path", PROFILE_PATH)
 	_delete_file(PROFILE_PATH)
 
@@ -99,6 +114,7 @@ func suite_teardown() -> void:
 	_profile.set(&"_owned_ships", _previous_owned)
 	_profile.set(&"_modules", _previous_modules)
 	_profile.set(&"_vitals", _previous_vitals)
+	_profile.set(&"_instance_counter", _previous_counter)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
 	_delete_file(PROFILE_PATH)
@@ -269,7 +285,52 @@ func _owned() -> Array:
 
 
 func _module_name(module_id: StringName) -> String:
-	return String(ModuleCatalog.module(module_id).get(&"name", "")).to_upper()
+	return String(ModuleCatalog.module(module_id).get(&"name", ""))
+
+
+## One entry's display name the way the shipyard builds it (STATION_HUB section 5.3's S3
+## amendment): 15 section 7's full rolled name through the shared builder when the bag carries
+## the record, the catalogue's own name otherwise (a delivered module the bag has never held).
+func _display_name(entry: StringName) -> String:
+	var record := _record(entry)
+	if not record.is_empty():
+		var rolled := String(AuctionScript.rolled_name(record))
+		if not rolled.is_empty():
+			return rolled
+	return _module_name(entry)
+
+
+## One inventory record, `{}` for an id the bag does not carry.
+func _record(entry: StringName) -> Dictionary:
+	var record: Variant = _profile.call(&"instance", entry)
+	return record if record is Dictionary else {}
+
+
+## One rolled instance minted through the profile's own pinned entry point (CONTRACTS section 15).
+func _mint(
+	base_id: StringName, rarity: StringName, prefixes: Array, suffixes: Array
+) -> StringName:
+	return StringName(str(_profile.call(&"add_instance", base_id, rarity, prefixes, suffixes)))
+
+
+## The base id's held aggregate, summed over the bag's own keys through `base_module_id` exactly
+## the way the shipyard's `OWNED ×<n>` sums it (`module_count(base_id)` answers one record's
+## count and reads 0 for an instance-keyed bag - K1's measurement).
+func _owned_total(base_id: StringName) -> int:
+	var total := 0
+	for key: Variant in _profile.call(&"modules"):
+		var entry := StringName(str(key))
+		var held := int(_profile.call(&"module_count", entry))
+		if held <= 0:
+			continue
+		if StringName(_profile.call(&"base_module_id", entry)) == base_id:
+			total += held
+	return total
+
+
+## The shipyard's own hover stat block, read back for probes and tests.
+func _block() -> String:
+	return String(_shipyard.call(&"hover_block_text"))
 
 
 func _catalogue_name(service_id: StringName) -> String:
@@ -308,16 +369,24 @@ func test_the_hover_line_reads_a_fitted_cell() -> void:
 	assert_eq(int(_profile.call(&"module_count", LASER)), OWNED_LASERS, "the fixture's stock")
 	var fitted := _cell(&"weapons", 0)
 	assert_false(fitted.is_empty(), "the Vanguard's W1 is a real cell")
-	assert_eq(_hover(fitted), WORDING_HOVER % ["W", 1, _module_name(LASER), OWNED_LASERS])
+	assert_eq(_hover(fitted), WORDING_HOVER % ["W", 1, _display_name(LASER), OWNED_LASERS])
 	## The delivered fit is the standard one (09 section 7), so W1 holds the laser the account
 	## also owns three of - the fitted module and the owned count are two different reads.
 	var reactor := _cell(&"power", 0)
 	assert_false(reactor.is_empty(), "the Vanguard's P1 is a real cell")
 	assert_eq(
 		_hover(reactor),
-		WORDING_HOVER % ["P", 1, _module_name(STANDARD_REACTOR), int(_profile.call(&"module_count", STANDARD_REACTOR))],
+		WORDING_HOVER % ["P", 1, _display_name(STANDARD_REACTOR), _owned_total(STANDARD_REACTOR)],
 		"POWER is one id, not a cell array, and the standard fit's reactor is not in the inventory"
 	)
+	## A cell holding a Common record (the fixture's base-keyed laser stock) shows the base line
+	## alone - the block's first line, with no affix line under it.
+	var plate := _plate("W", 0)
+	assert_true(plate != null, "the plate that carries the line is the grid's own")
+	plate.mouse_entered.emit()
+	assert_eq(_block(), "BASE DRAW 1", "a Common record's block is its base line alone")
+	plate.mouse_exited.emit()
+	assert_eq(_block(), "", "and leaving the plate clears it")
 
 
 func test_the_hover_line_reads_an_empty_cell() -> void:
@@ -369,8 +438,8 @@ func test_the_hover_line_reads_the_launchs_fit_for_an_owned_hull() -> void:
 		var name_text := WORDING_EMPTY
 		var count := 0
 		if module_id != &"":
-			name_text = _module_name(module_id)
-			count = int(_profile.call(&"module_count", module_id))
+			name_text = _display_name(module_id)
+			count = _owned_total(module_id)
 		assert_eq(
 			_hover(cell),
 			WORDING_HOVER % [String(cell[&"token"]), int(cell[&"index"]) + 1, name_text, count],
@@ -380,7 +449,7 @@ func test_the_hover_line_reads_the_launchs_fit_for_an_owned_hull() -> void:
 	## answer `EMPTY` for.
 	assert_eq(
 		_hover(_cell(&"weapons", 0)),
-		WORDING_HOVER % ["W", 1, _module_name(LASER), int(_profile.call(&"module_count", LASER))],
+		WORDING_HOVER % ["W", 1, _display_name(LASER), _owned_total(LASER)],
 		"the delivered laser, not the EMPTY a bare stored fit answers"
 	)
 
@@ -422,6 +491,81 @@ func test_hovering_a_plate_publishes_its_line_and_costs_the_plate_nothing() -> v
 	plate.mouse_exited.emit()
 	assert_ne(_last_status(), _hover(_cell(&"weapons", 0)), "leaving the plate drops its line")
 	assert_contains(_last_status(), String(Catalog.ship(HULL).get(&"name", "")).to_upper())
+	assert_eq(_block(), "", "and the stat block goes with it")
+
+
+## STATION_HUB section 5.3's S3 amendment, the shipyard's half: where a cell holds an **instance**,
+## the hover line carries 15 section 7's full rolled name, the `OWNED ×<n>` tail counts the base
+## id's held instances, and the pane fills the stat block under the grid - the base module's
+## catalogue stats plus one line per rolled affix. Nothing here touches a flight stat (15
+## section 9.3): the fit's own numbers are the base module's, and the shipyard only reads.
+func test_the_hover_line_and_block_read_a_rolled_instance() -> void:
+	var instance := _mint(
+		LASER, &"magic", [{"id": String(LASER_PREFIX), "value": LASER_PREFIX_VALUE}],
+		[LASER_SUFFIX]
+	)
+	## W1 is the delivered laser's cell: the fixture writes the instance into the fit the way the
+	## fitting pane would (`fit_module_at` stores the instance id), so the shipyard has an
+	## instance cell to read.
+	assert_true(
+		_profile.call(&"set_fit_slot", HULL, &"weapons", 0, instance), "the cell takes the instance"
+	)
+	_shipyard.call(&"refresh_profile", &"fits")
+	var fitted := _cell(&"weapons", 0)
+	assert_eq(
+		_hover(fitted),
+		WORDING_HOVER % ["W", 1, "Keen Laser MkII of the Whale", OWNED_LASERS + 1],
+		"15 section 7's rolled name, not the catalogue's, and the base id's held total"
+	)
+	## The block is the hover's own reading, so it fills from the plate's own signal.
+	var plate := _plate("W", 0)
+	plate.mouse_entered.emit()
+	assert_eq(_block(), BLOCK_MAGIC_LASER, "and the instance's own stat block")
+	assert_eq(_last_status(), _hover(fitted), "on the same hover the line went up for")
+	## The read is a reading: the cell still holds the instance, `module_count(base_id)` still
+	## cannot see it, and the aggregate the line carries is the bag's own sum.
+	assert_eq(
+		_fit_cell(_profile.call(&"fit_for", HULL), &"weapons", 0), instance,
+		"the cell keeps the instance id"
+	)
+	assert_eq(int(_profile.call(&"module_count", LASER)), OWNED_LASERS, "the base-keyed stock stands")
+	assert_eq(_owned_total(LASER), OWNED_LASERS + 1, "and the aggregate counts the instance too")
+	## An empty cell reads EMPTY and leaves the block blank.
+	var empty := _cell(&"weapons", 1)
+	assert_eq(_hover(empty), WORDING_HOVER % ["W", 2, WORDING_EMPTY, 0], "W2 is still empty")
+	_plate("W", 1).mouse_entered.emit()
+	assert_eq(_block(), "", "and a cell with no instance has no block")
+
+
+## The hover block is the shipyard's own node under the grid: hovering a filled plate fills it,
+## leaving the plate clears it, and the plate itself never moves for it (section 5.2's own rule).
+func test_the_hover_block_is_the_panes_own_and_follows_the_plate() -> void:
+	var instance := _mint(
+		LASER, &"magic", [{"id": String(LASER_PREFIX), "value": LASER_PREFIX_VALUE}],
+		[LASER_SUFFIX]
+	)
+	_profile.call(&"set_fit_slot", HULL, &"weapons", 0, instance)
+	_shipyard.call(&"refresh_profile", &"fits")
+	var stats := _shipyard.get_node("%ShipStats") as VBoxContainer
+	var block := stats.get_node_or_null(^"HoverStatBlock") as Label
+	assert_true(block != null, "the block is a node of the pane's own stats column")
+	if block == null:
+		return
+	assert_false(block.visible, "and it starts hidden")
+	var grid := _shipyard.get_node("%HardpointSlots") as GridContainer
+	var plate := _plate("W", 0)
+	var before := [plate.custom_minimum_size, plate.disabled, grid.columns]
+	plate.mouse_entered.emit()
+	assert_true(block.visible, "hovering a filled plate shows it")
+	assert_eq(block.text, BLOCK_MAGIC_LASER, "with the instance's own block")
+	assert_eq(
+		[plate.custom_minimum_size, plate.disabled, grid.columns],
+		before,
+		"and the plate, its state and the grid are untouched"
+	)
+	plate.mouse_exited.emit()
+	assert_false(block.visible, "leaving the plate hides it again")
+	assert_eq(_block(), "", "with no text left behind")
 
 
 func test_the_shipyard_reads_the_fit_without_ever_writing_it() -> void:

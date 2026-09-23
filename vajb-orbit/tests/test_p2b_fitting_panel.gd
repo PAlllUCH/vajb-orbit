@@ -31,6 +31,8 @@ const StationScene := preload("res://ui/screens/station.tscn")
 const StationScript := preload("res://ui/screens/station.gd")
 const ThemeRes := preload("res://ui/theme/vajb_theme.tres")
 const ModuleData := preload("res://game/module_catalog.gd")
+## 15 section 7's one name builder, the same one the pane and the AUCTION call.
+const AuctionScript := preload("res://game/auction.gd")
 
 const PROFILE_PATH := "user://test_p2b_fitting_panel.cfg"
 
@@ -93,6 +95,23 @@ const WORDING_META := "SLOT %s · DRAW %d"
 const WORDING_OWNED := "OWNED ×%d"
 const WORDING_CAPTION := "SLOT LAYOUT · %d CELLS · %d ENGINES"
 
+## STATION_HUB section 5.3's S3 amendment: the expander's two glyphs and the expander's own node
+## name, transcribed here so a drift in either the word or the node name is a red assertion.
+const EXPANDER_CLOSED := "▸"
+const EXPANDER_OPEN := "▾"
+const SUBROW_PREFIX := "Instance"
+
+## 15 section 7's two-line stat block, as this suite measures it: the base line, then one line
+## per affix. The expected blocks are written out in full (not re-derived through the pane's own
+## formatter) so a drift in the grammar, the join or a unit is red here.
+const SHIELD_PREFIX := &"sturdy"
+const SHIELD_SUFFIX := &"whale"
+const BLOCK_MAGIC_SHIELD := "BASE DRAW 2 · SHIELD +200 · REGEN +4\nSTURDY · SHIELD +15 %\nOF THE WHALE · +50 max hull structure"
+const BLOCK_MAGIC_PLASMA := "BASE DRAW 3\nKEEN · DAMAGE +12 %\nOF THE WHALE · +50 max hull structure"
+## The same shield with no affix: the base line alone (a Common instance, and every base-keyed
+## record the v5 fixtures write).
+const BASE_LINE_SHIELD := "BASE DRAW 2 · SHIELD +200 · REGEN +4"
+
 var _profile: Node = null
 var _host: Control = null
 var _panel: Control = null
@@ -104,6 +123,10 @@ var _previous_credits := 0
 var _previous_fits: Dictionary = {}
 var _previous_owned: Array = []
 var _previous_modules: Dictionary = {}
+## The instance mint counter is a field of the borrowed autoload too: this suite mints instances
+## (the S3 half of it), so it hands the counter back the way `test_s3_auction.gd` does, and no
+## later suite sees a number this one spent.
+var _previous_counter := 0
 
 
 func suite_name() -> String:
@@ -125,6 +148,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_fits = _profile.call(&"fits")
 	_previous_owned = _profile.call(&"owned_ships")
 	_previous_modules = _profile.call(&"modules")
+	_previous_counter = int(_profile.get(&"_instance_counter"))
 	_profile.set(&"save_path", PROFILE_PATH)
 	_delete_file(PROFILE_PATH)
 
@@ -139,6 +163,7 @@ func suite_teardown() -> void:
 	_profile.set(&"_fits", _previous_fits)
 	_profile.set(&"_owned_ships", _previous_owned)
 	_profile.set(&"_modules", _previous_modules)
+	_profile.set(&"_instance_counter", _previous_counter)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
 	_delete_file(PROFILE_PATH)
@@ -186,6 +211,25 @@ func _records(modules: Dictionary) -> Dictionary:
 			"base_id": String(module_id), "count": int(modules[module_id])
 		}
 	return records
+
+
+## One rolled instance in the fixture's bag, minted through the profile's own pinned entry point
+## (CONTRACTS section 15's `add_instance`), which answers the id a fit cell then holds.
+func _mint(
+	base_id: StringName, rarity: StringName, prefixes: Array, suffixes: Array
+) -> StringName:
+	return StringName(str(_profile.call(&"add_instance", base_id, rarity, prefixes, suffixes)))
+
+
+## One instance's record, as the profile carries it (the pinned six keys).
+func _record(instance_id: StringName) -> Dictionary:
+	var record: Variant = _profile.call(&"instance", instance_id)
+	return record if record is Dictionary else {}
+
+
+## One instance's 15 section 7 name, through the shared builder the pane calls.
+func _rolled(instance_id: StringName) -> String:
+	return String(AuctionScript.rolled_name(_record(instance_id)))
 
 
 ## The runner calls every test from inside its own `_ready`, so the root viewport is still busy
@@ -238,6 +282,35 @@ func _row(panel: Control, module_id: StringName) -> Button:
 func _row_children(panel: Control) -> Array[Node]:
 	var rows := panel.get_node("%ModuleRows") as VBoxContainer
 	return rows.get_children()
+
+
+## The sub-rows the pane currently shows, in tree order: the rows named `Instance<...>` (the
+## aggregate rows are named `Module<...>`), which is the S3 amendment's own anatomy.
+func _instance_rows(panel: Control) -> Array[Button]:
+	var rows: Array[Button] = []
+	for child: Node in _row_children(panel):
+		var row := child as Button
+		if row != null and String(row.name).begins_with(SUBROW_PREFIX):
+			rows.append(row)
+	return rows
+
+
+## One base id row's `▸` expander, null when the row carries none (a base id owning exactly one
+## instance, STATION_HUB section 5.3).
+func _expander(panel: Control, base_id: StringName) -> Button:
+	var row := _row(panel, base_id)
+	if row == null:
+		return null
+	return row.find_child("Expander%s" % String(base_id).to_pascal_case(), true, false) as Button
+
+
+func _row_title(row: Button) -> Label:
+	return row.find_child("Title", true, false) as Label
+
+
+func _row_name(row: Button) -> String:
+	var title := _row_title(row)
+	return title.text if title != null else ""
 
 
 func _plate(panel: Control, token: String, index: int) -> Button:
@@ -706,7 +779,7 @@ func test_a_per_cell_install_lands_on_the_cell_it_was_given() -> void:
 	)
 	assert_eq(
 		_footer(panel),
-		WORDING_SELECTION % ["W", 2, String(ModuleData.module(CANNON)[&"name"]).to_upper(), 0],
+		WORDING_SELECTION % ["W", 2, String(ModuleData.module(CANNON)[&"name"]), 0],
 		"and the footer names the module now in it"
 	)
 
@@ -723,9 +796,11 @@ func test_an_unfit_hulls_first_install_through_the_pane_succeeds() -> void:
 	)
 	assert_true(panel.call(&"select_cell", WEAPON_SLOT, 0), "W1 is selected")
 	## The pane previews the launch's fit, not the empty stored one: W1 holds the delivered laser.
+	## Its name is the catalogue's own (`Laser MkII`), 15 section 7's rolled-name form - the
+	## delivered module is a base id the bag does not carry, so no affix row exists for it.
 	assert_eq(
 		_footer(panel),
-		WORDING_SELECTION % ["W", 1, String(ModuleData.module(LASER)[&"name"]).to_upper(), 0],
+		WORDING_SELECTION % ["W", 1, String(ModuleData.module(LASER)[&"name"]), 0],
 		"the selection line reads the delivered laser, never EMPTY"
 	)
 	assert_eq(
@@ -812,7 +887,7 @@ func test_a_successful_swap_does_not_leave_the_refusals_line() -> void:
 	assert_eq(
 		_footer(panel),
 		WORDING_SELECTION % [
-			"E", 1, String(ModuleData.module(ION)[&"name"]).to_upper(), _owned(ION)
+			"E", 1, String(ModuleData.module(ION)[&"name"]), _owned(ION)
 		],
 		"the footer is back on the selected cell's own line"
 	)
@@ -913,7 +988,9 @@ func test_an_over_budget_candidate_is_the_danger_form() -> void:
 
 
 ## The footer's own line: the selected cell's `<TYPE><n> · <MODULE NAME or EMPTY> · OWNED ×<n>`,
-## the pin's word while nothing is selected, and the third pinned refusal as the catch-all.
+## the pin's word while nothing is selected, and the third pinned refusal as the catch-all. The
+## name is 15 section 7's rolled name - the catalogue's own for a base-keyed record, a rolled
+## instance's for an instance cell - and the count is the base id's held total.
 func test_the_footer_line_reads_the_selected_cell() -> void:
 	_seed_account(HULL, {LASER: 2}, true)
 	var panel := _mount()
@@ -921,7 +998,7 @@ func test_the_footer_line_reads_the_selected_cell() -> void:
 	panel.call(&"select_cell", WEAPON_SLOT, 0)
 	assert_eq(
 		_footer(panel),
-		WORDING_SELECTION % ["W", 1, String(ModuleData.module(LASER)[&"name"]).to_upper(), 2],
+		WORDING_SELECTION % ["W", 1, String(ModuleData.module(LASER)[&"name"]), 2],
 		"a fitted cell names its module and the inventory's count"
 	)
 	panel.call(&"select_cell", WEAPON_SLOT, 1)
@@ -934,7 +1011,7 @@ func test_the_footer_line_reads_the_selected_cell() -> void:
 	assert_eq(
 		_footer(panel),
 		WORDING_SELECTION % [
-			"P", 1, String(ModuleData.module(&"p_std")[&"name"]).to_upper(), 0
+			"P", 1, String(ModuleData.module(&"p_std")[&"name"]), 0
 		],
 		"the power cell is one cell, addressed like the rest"
 	)
@@ -1075,3 +1152,301 @@ func test_the_pane_writes_only_through_the_two_composed_calls() -> void:
 		methods.append(str(entry.get("name", "")))
 	assert_true(methods.has("fit_module_at"), "the composed install exists")
 	assert_true(methods.has("clear_fit_slot"), "and the composed remove")
+
+
+## ------------------------------------------------------- the instance surface (S3, 15 section 6)
+
+
+## STATION_HUB section 5.3's S3 amendment: one aggregate row per base id, `OWNED ×<n>` summed
+## over the bag's own keys, and a `▸` expander when the base id owns more than one instance.
+## Opening it lists one sub-row per instance - its 15 section 7 rolled name in its rarity tint
+## and its own ACTION - which is what makes two instances of one base id distinguishable.
+func test_the_owned_rows_expand_into_one_subrow_per_instance() -> void:
+	_seed_account(HULL, {}, true)
+	var magic := _mint(PLASMA, &"magic", [{"id": "keen", "value": 0.12}], [&"whale"])
+	var rare := _mint(
+		PLASMA, &"rare", [{"id": "keen", "value": 0.16}, {"id": "rapid", "value": 0.16}],
+		[&"choir", &"leeches"]
+	)
+	var panel := _mount()
+	assert_eq(panel.call(&"module_row_ids"), [PLASMA] as Array[StringName], "one row per base id")
+	assert_eq(panel.call(&"owned_total", PLASMA), 2, "the bag's two keys sum to the base's total")
+	assert_eq(
+		int(_profile.call(&"module_count", PLASMA)),
+		0,
+		"`module_count(base_id)` cannot see either instance (K1's measurement)"
+	)
+	var row := _row(panel, PLASMA)
+	assert_true(row != null, "the base id has its aggregate row")
+	assert_eq(_cell_text(row, "Owned"), WORDING_OWNED % 2, "OWNED ×2, as today's aggregate")
+	assert_eq(
+		_row_name(row),
+		String(ModuleData.module(PLASMA)[&"name"]),
+		"a multi-instance row keeps the catalogue's name: no one rolled name is true of it"
+	)
+	var expander := _expander(panel, PLASMA)
+	assert_true(expander != null, "and it carries the expander")
+	if expander != null:
+		assert_eq(expander.text, EXPANDER_CLOSED, "closed, carrying the pin's own glyph")
+	assert_eq(_instance_rows(panel).size(), 0, "so no sub-row is listed yet")
+	assert_true(panel.call(&"toggle_expander", PLASMA), "the base id's expander opens")
+	assert_true(panel.call(&"expanded", PLASMA), "and reads open")
+	var reopened := _expander(panel, PLASMA)
+	assert_true(reopened != null, "the rebuilt row carries its expander again")
+	if reopened != null:
+		assert_eq(reopened.text, EXPANDER_OPEN, "the glyph flips")
+	var subs := _instance_rows(panel)
+	assert_eq(subs.size(), 2, "one sub-row per instance")
+	assert_eq(
+		panel.call(&"subrow_ids", PLASMA), [magic, rare] as Array[StringName],
+		"the sub-rows are the bag's own ids, in creation order"
+	)
+	assert_eq(_row_name(subs[0]), _rolled(magic), "the first sub-row's rolled name")
+	assert_eq(_rolled(magic), "Keen Plasma Coil of the Whale", "15 section 7's grammar, in full")
+	assert_eq(_row_name(subs[1]), _rolled(rare), "the second sub-row's rolled name")
+	assert_ne(_row_name(subs[0]), _row_name(subs[1]), "and the two names differ")
+	assert_eq(
+		_row_title(subs[0]).get_theme_color(&"font_color"),
+		_token(panel, &"rarity_magic"),
+		"the first is tinted with Magic's own token"
+	)
+	assert_eq(
+		_row_title(subs[1]).get_theme_color(&"font_color"),
+		_token(panel, &"rarity_rare"),
+		"and the second with Rare's"
+	)
+	assert_eq(_cell_text(subs[0], "Action"), WORDING_SELECT, "each sub-row carries its own ACTION")
+	assert_eq(_cell_text(subs[1], "Action"), WORDING_SELECT, "waiting for a cell of its type")
+	assert_true(panel.call(&"select_cell", WEAPON_SLOT, 1), "W2 is selected")
+	assert_eq(_cell_text(subs[0], "Action"), "FIT", "and both sub-rows offer the fit it allows")
+	assert_eq(_cell_text(subs[1], "Action"), "FIT", "each on its own instance")
+
+
+## A base id owning exactly one instance carries no expander (the pin's own rule), and its row is
+## then that instance's own row: the rolled name in its rarity tint, so a single rolled drop is
+## readable without opening anything.
+func test_a_single_instance_row_carries_its_rolled_name_and_no_expander() -> void:
+	_seed_account(HULL, {}, true)
+	var lone := _mint(LIGHT_PLATE, &"magic", [{"id": "lightened", "value": -0.06}], [])
+	var panel := _mount()
+	assert_eq(panel.call(&"module_row_ids"), [LIGHT_PLATE] as Array[StringName], "one row")
+	assert_eq(panel.call(&"owned_total", LIGHT_PLATE), 1, "one instance")
+	assert_eq(_expander(panel, LIGHT_PLATE), null, "and no expander")
+	assert_eq(_instance_rows(panel).size(), 0, "so no sub-row is listed")
+	var row := _row(panel, LIGHT_PLATE)
+	assert_eq(_row_name(row), _rolled(lone), "the row carries that instance's rolled name")
+	assert_eq(
+		_row_title(row).get_theme_color(&"font_color"),
+		_token(panel, &"rarity_magic"),
+		"in its rarity tint"
+	)
+	assert_eq(_cell_text(row, "Owned"), WORDING_OWNED % 1, "with the base id's own total")
+	assert_false(panel.call(&"toggle_expander", LIGHT_PLATE), "and it does not open")
+
+
+## The sub-row's own press is the instance-true install: the fit cell holds **that instance's
+## id**, the sibling stays in the bag, and the aggregate follows the bag rather than the fit.
+func test_pressing_a_subrow_fits_that_instance_and_keeps_the_other() -> void:
+	_seed_account(HULL, {}, true)
+	var magic := _mint(PLASMA, &"magic", [{"id": "keen", "value": 0.12}], [&"whale"])
+	var rare := _mint(PLASMA, &"rare", [{"id": "keen", "value": 0.16}], [&"choir"])
+	var panel := _mount()
+	assert_true(panel.call(&"toggle_expander", PLASMA), "the base id's expander opens")
+	assert_true(panel.call(&"select_cell", WEAPON_SLOT, 1), "W2 is selected")
+	assert_eq(
+		_footer(panel), WORDING_SELECTION % ["W", 2, "EMPTY", 0], "and it is still empty"
+	)
+	_press(panel, magic)
+	assert_eq(_cells(HULL, WEAPON_SLOT)[1], String(magic), "the cell holds the instance's own id")
+	assert_eq(int(_record(magic)[&"count"]), 0, "fitted: the record survives at count 0")
+	assert_eq(
+		_profile.call(&"instances_of", PLASMA), [rare] as Array[StringName],
+		"its sibling stays in the bag"
+	)
+	assert_eq(panel.call(&"owned_total", PLASMA), 1, "the aggregate followed the bag")
+	assert_eq(_owned(PLASMA), 0, "while `module_count(base_id)` still cannot see an instance")
+	assert_eq(int(_profile.call(&"module_count", rare)), 1, "the sibling's own id reads its count")
+	assert_eq(int(_profile.call(&"module_count", magic)), 0, "and the fitted instance's is 0")
+	assert_eq(
+		_footer(panel),
+		WORDING_SELECTION % ["W", 2, _rolled(magic), 1],
+		"and the footer names the rolled instance, not the base"
+	)
+	assert_eq(
+		panel.call(&"stat_block_text"),
+		BLOCK_MAGIC_PLASMA,
+		"with the instance's own stat block below it"
+	)
+
+
+## L80 through the pane: REMOVE and SWAP hand the *same* instance back - same id, same rarity,
+## same affixes, `count` 0 -> 1 - which is what CONTRACTS section 15's record-survives rule buys
+## and what the sub-rows make observable.
+func test_remove_and_swap_hand_back_the_same_instance() -> void:
+	_seed_account(HULL, {}, true)
+	var first := _mint(PLASMA, &"magic", [{"id": "keen", "value": 0.12}], [&"whale"])
+	var second := _mint(PLASMA, &"rare", [{"id": "rapid", "value": 0.16}], [&"choir"])
+	var panel := _mount()
+	assert_true(panel.call(&"select_cell", WEAPON_SLOT, 1), "W2 is selected")
+	## The aggregate row's own ACTION takes the base id's first held instance, so a base id
+	## holding one instance presses that instance (an instance-keyed bag has no other door).
+	_press(panel, PLASMA)
+	assert_eq(_cells(HULL, WEAPON_SLOT)[1], String(first), "the first instance is fitted")
+	var fitted := _record(first)
+	assert_eq(int(fitted[&"count"]), 0, "at count 0")
+	## SWAP: the remaining instance displaces it over the same composed call.
+	_press(panel, PLASMA)
+	assert_eq(_cells(HULL, WEAPON_SLOT)[1], String(second), "the second instance took the cell")
+	var banked := _record(first)
+	assert_eq(int(banked[&"count"]), 1, "the displaced instance is back in the bag")
+	assert_eq(banked[&"rarity"], fitted[&"rarity"], "with the same rarity")
+	assert_eq(banked[&"prefixes"], fitted[&"prefixes"], "the same prefix rows")
+	assert_eq(banked[&"suffixes"], fitted[&"suffixes"], "and the same suffix ids")
+	assert_eq(String(banked[&"instance_id"]), String(first), "and its own id - never a fresh mint")
+	assert_eq(
+		_profile.call(&"instances_of", PLASMA), [first] as Array[StringName],
+		"so the bag holds exactly the displaced instance"
+	)
+	## REMOVE: the fitted one comes back the same way, and the cell empties.
+	assert_true(panel.call(&"remove_selected"), "the cell's REMOVE takes the fitted instance out")
+	assert_eq(_cells(HULL, WEAPON_SLOT)[1], "", "the cell is empty")
+	var restored := _record(second)
+	assert_eq(int(restored[&"count"]), 1, "and the second instance is back in the bag")
+	assert_eq(restored[&"rarity"], "rare", "with its rarity")
+	assert_eq(restored[&"prefixes"], [{"id": "rapid", "value": 0.16}], "and its affix row")
+	assert_eq(restored[&"suffixes"], ["choir"], "and its suffix id")
+	assert_eq(
+		_profile.call(&"instances_of", PLASMA), [first, second] as Array[StringName],
+		"both instances are in the bag, neither destroyed and neither duplicated"
+	)
+
+
+## STATION_HUB section 5.3's S3 amendment: a cell holding an instance reads its 15 section 7
+## rolled name in its rarity tint, and the pane adds the instance's stat block below the line -
+## the base module's catalogue stats plus one line per affix. Nothing is applied anywhere: 15
+## section 9.3's own rule, so the block is a reading of the catalogue and the record alone.
+func test_the_selection_line_and_block_read_the_fitted_instance() -> void:
+	_seed_account(HULL, {}, true)
+	var instance := _mint(
+		&"s_light", &"magic", [{"id": String(SHIELD_PREFIX), "value": 0.15}], [SHIELD_SUFFIX]
+	)
+	var panel := _mount()
+	assert_true(panel.call(&"select_cell", SHIELD_SLOT, 0), "the S cell is selected")
+	assert_eq(
+		_footer(panel),
+		WORDING_SELECTION % ["S", 1, String(ModuleData.module(&"s_light")[&"name"]), 1],
+		"the delivered module is named while only it is in the bag"
+	)
+	assert_eq(panel.call(&"stat_block_text"), BASE_LINE_SHIELD, "and its base stats stand alone")
+	_press(panel, &"s_light")
+	assert_eq(_cells(HULL, SHIELD_SLOT)[0], String(instance), "the cell now holds the instance")
+	assert_eq(
+		_footer(panel),
+		WORDING_SELECTION % ["S", 1, "Sturdy Light Shield of the Whale", 1],
+		"the line carries 15 section 7's full rolled name"
+	)
+	var line := panel.get_node("%SelectionLine") as Label
+	assert_true(line.has_theme_color_override(&"font_color"), "in its rarity tint")
+	assert_eq(
+		line.get_theme_color(&"font_color"),
+		_token(panel, &"rarity_magic"),
+		"Magic's own token (STATION_HUB section 5.10)"
+	)
+	assert_eq(
+		panel.call(&"stat_block_text"),
+		BLOCK_MAGIC_SHIELD,
+		"the block is the base line plus one line per affix"
+	)
+	## The block is a reading, not a fit (15 section 9.3): the cell keeps the instance id, the
+	## judgement reads the base id behind it, and the fit draws exactly what the delivered one did.
+	var fit := _fit(HULL)
+	assert_eq(_cells(HULL, SHIELD_SLOT)[0], String(instance), "the cell keeps the instance id")
+	var judged: Dictionary = _profile.call(&"base_fit", fit)
+	assert_eq(
+		String(judged[SHIELD_SLOT][0]), String(&"s_light"),
+		"and is judged through its base id"
+	)
+	assert_true(bool(ShipFit.fit_legal(HULL, judged)[&"legal"]), "the fit stays legal")
+	assert_eq(
+		ShipFit.power_budget(HULL, judged),
+		ShipFit.power_budget(HULL, ShipFit.standard_fit(HULL)),
+		"and no affix moved a power draw (15 section 6)"
+	)
+
+
+## The base-id translation every legality read in this pane goes through (CONTRACTS section 15,
+## K0's H6): a fit cell holds an instance id and the untranslated judgement would score it as
+## draw 0. The Lancer's two W cells are the over-budget case, so a draw-0 misread would *accept*
+## the second instance; the pin's own over-by refusal is the proof that it did not.
+func test_the_meter_reads_an_instance_fit_through_its_base_ids() -> void:
+	_seed_account(FIGHTER, {}, true)
+	var first := _mint(PLASMA, &"rare", [], [])
+	var second := _mint(PLASMA, &"rare", [], [])
+	var panel := _mount()
+	assert_true(panel.call(&"select_cell", WEAPON_SLOT, 0), "W1 of the Lancer is selected")
+	_press(panel, PLASMA)
+	assert_eq(_cells(FIGHTER, WEAPON_SLOT)[0], String(first), "the first instance is fitted")
+	## The idle meter (no cell selected) reads the fit the launch would fly, judged through its
+	## base ids: the instance id in W1 resolves to `w_plasma` before `fit_legal` sees it.
+	panel.call(&"clear_selection")
+	var power: Dictionary = ShipFit.fit_legal(
+		FIGHTER, _profile.call(&"base_fit", _fit(FIGHTER))
+	)[&"power"]
+	assert_eq(
+		panel.call(&"meter_text"),
+		WORDING_METER_IDLE % [int(power[&"draw"]), int(power[&"out"])],
+		"the idle meter reads the fit through its base ids"
+	)
+	assert_ne(int(power[&"draw"]), 0, "and the fitted instance draws its own power, not none")
+	assert_true(panel.call(&"select_cell", WEAPON_SLOT, 1), "W2 is selected")
+	var before := _fit(FIGHTER)
+	var candidate := before.duplicate(true)
+	var cells: Array = candidate[WEAPON_SLOT]
+	cells[1] = String(second)
+	candidate[WEAPON_SLOT] = cells
+	var over: Dictionary = ShipFit.fit_legal(
+		FIGHTER, _profile.call(&"base_fit", candidate)
+	)[&"power"]
+	assert_false(bool(over[&"legal"]), "the candidate is over budget once its base ids resolve")
+	_press(panel, PLASMA)
+	assert_eq(_fit(FIGHTER), before, "the over-budget install wrote nothing")
+	var over_by := int(over[&"draw"]) - int(over[&"out"])
+	assert_eq(
+		_footer(panel),
+		WORDING_METER_OVERLOAD % [int(over[&"draw"]), int(over[&"out"]), over_by],
+		"and the pin's own over-by refusal answered"
+	)
+	assert_true(_last_danger(), "rendered as a danger")
+	assert_eq(
+		_profile.call(&"instances_of", PLASMA), [second] as Array[StringName],
+		"the refused instance stayed in the bag"
+	)
+
+
+## The focus walk with an expanded row: the SLOT LAYOUT cells first, then the aggregate row with
+## its own expander and its sub-rows in tree order, then the pane's own REMOVE - the pin's own
+## order with the expander's two new stops in the rows' slice of it.
+func test_the_focus_order_carries_the_expander_and_its_subrows() -> void:
+	_seed_account(HULL, {}, true)
+	var first := _mint(PLASMA, &"magic", [], [])
+	var second := _mint(PLASMA, &"rare", [], [])
+	var panel := _mount()
+	assert_true(panel.call(&"select_cell", WEAPON_SLOT, 0), "a filled cell so the footer offers REMOVE")
+	assert_true(panel.call(&"toggle_expander", PLASMA), "and the row is open")
+	var order: Array[String] = []
+	_collect_focusable(panel, order)
+	var expected: Array[String] = []
+	for cell: Dictionary in ShipFit.grid_cells(HULL):
+		if not bool(cell[&"gap"]):
+			expected.append("Slot%s%02d" % [String(cell[&"token"]), int(cell[&"index"])])
+	expected.append("Module%s" % String(PLASMA).to_pascal_case())
+	expected.append("Expander%s" % String(PLASMA).to_pascal_case())
+	for instance_id: StringName in [first, second]:
+		expected.append(SUBROW_PREFIX + String(instance_id).to_pascal_case())
+	expected.append("RemoveButton")
+	assert_eq(order, expected, "the walk is cells, then rows with their expander and sub-rows")
+	panel.call(&"focus_primary")
+	var owner := panel.get_viewport().gui_get_focus_owner()
+	assert_true(owner != null, "the ring still enters at the first cell")
+	if owner != null:
+		assert_eq(owner.name, "SlotW00", "the top-left cell")
