@@ -24,21 +24,21 @@ workspace).
 |---|---|---|---|---|
 | 8 | **S2.6 truth-and-feel** (gate hermeticity L90/L93 + the owner's seven feel requests + L65: rock burst, beam scatter/middle, mining chips, slower accel, blur excludes the hull, neutral turn + symmetric inertia) | `slices/S2.6-truth-and-feel/` | `S2.6_BRIEF.md` / `S2.6_prompts.md` | **DONE 2026-09-22** — gate 437 → 457/0 hermetic on the live path (see WAVEBOARD §Closed; the wave's own harness first destroyed the owner's live profile — `slices/S2.6-truth-and-feel/_incident/README.md`, L106) |
 | 9 | **S3 the item economy** (module instances with affixes + the AUCTION; the owner: "We need AUCTION. without it we cannot test all items") | `slices/S3-module-affixes/` | `S3_BRIEF.md` / `S3_prompts.md` | **DONE 2026-09-23** — gate 457 → 493/0 hermetic (K0's 7 HIGH answered by the docs pass first; one HIGH found by the review and fixed by K5). See WAVEBOARD §Closed; the wave's own first dispatch wrote the owner's live account (`slices/S3-module-affixes/_incident/README.md`, **T-93**) |
-| 10 | **S4 weapon batteries** (group weapon systems in OUTFITTING; owner ruling: N barrels keep N W mounts) | `slices/S4-weapon-batteries/` | `S4_BRIEF.md` / `S4_prompts.md` | QUEUED — **next**, after 9 (the file collision is resolved; its verify command and ticket line were repaired during S3) |
+| 10 | **S4 weapon batteries** (group weapon systems in OUTFITTING; owner ruling: N barrels keep N W mounts) | `slices/S4-weapon-batteries/` | `S4_BRIEF.md` / `S4_prompts.md` | **DONE 2026-09-23** — gate 493 → 524/0 hermetic (H0's 4 HIGH/5 MED answered by the docs pass first: CONTRACTS §16 rewritten as v0.8.0; one HIGH found by the review, a held trigger firing one salvo instead of a stream, and one MED, both fixed by H4). See WAVEBOARD §Closed. **No item is queued next** |
 
 Every wave runs **R0/K0/H0 (docs drift) → builders → review → fixer only on
 HIGH/MED**, with a `verify_wave.py snapshot` + commit before the first dispatch
 and the brief's close-out (gate ×2 hermetic, `verify_wave.py verify`, CONTRACTS
 §9/§10 measured notes, WAVEBOARD, wave-boundary commit) at its end.
 
-## Done (items 1–9)
+## Done (items 1–10)
 
 1–3 (chrome, combat repair, weapon FX) — closed 2026-09-21, see `MASTER_REPORT.md`.
 4 P2-A ship slot frames (`8d189bf`), 5 Rock cleave (`0e419f7`), 6 P2-B1 weapon fit
 (`1f794cc`), 7 P2-B proper fitting panel (`3e79e61`) — closed 2026-09-22, gate 437
 tests, see `session_2026-09-22_items_4_to_7_report.md`. 8 S2.6 truth-and-feel
-(`8d0691d`, gate 457) and 9 S3 the item economy (gate 493) — closed 2026-09-22/23,
-see `WAVEBOARD.md` §Closed.
+(`8d0691d`, gate 457), 9 S3 the item economy (gate 493) and 10 S4 weapon batteries
+(gate 524) — closed 2026-09-22/23, see `WAVEBOARD.md` §Closed.
 
 ## Next beyond this queue (not briefed)
 

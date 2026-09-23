@@ -4,7 +4,7 @@
 
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-22 purge:** the executed-wave reports, briefs and evidence were removed from `.agents/gen/` (recoverable from the system trash; the last git tree carrying them is `3f5688b`) — the historical record is `MASTER_REPORT.md` plus the newest session report, and older citations below name the purged paths.
 
-**Updated: 2026-09-22 (P2-B proper closed; the affixes wave is next).** This session's
+**Updated: 2026-09-23 (S4 weapon batteries closed; the code queue is empty).** This session's
 end-to-end record — items 4–7, their numbers, the incidents and the open items — is
 `.agents/gen/session_2026-09-22_items_4_to_7_report.md`. Full history of what every worker
 did, with known errors and open findings, now lives in
@@ -13,11 +13,14 @@ contracts, enforcement and the queue. Executed-wave reports, briefs and
 evidence were purged to the system trash (2026-09-22) —
 citation paths of the form `.agents/gen/<report>.md` name the purged files.
 
-**Current state: ten coding waves closed (chrome, combat repair, weapon FX wiring, flight
+**Current state: eleven coding waves closed (chrome, combat repair, weapon FX wiring, flight
 feel & beam polish, slice 2.5 Feel, P2-A ship slot frames, Rock cleave, P2-B1 weapon fit,
-P2-B proper fitting panel, **S2.6 truth-and-feel**, **S3 the item economy**; gate
-`passed=493 failed=0`, hermetic). The queue of record is `dispatch_coder.md`: items 4–9 are
-all DONE and **item 10, the weapon-batteries wave (09 §10), is next**
+P2-B proper fitting panel, **S2.6 truth-and-feel**, **S3 the item economy**,
+**S4 weapon batteries**; gate
+`passed=524 failed=0`, hermetic). The queue of record is `dispatch_coder.md`: items 4–10 are
+all DONE and **item 10, the weapon-batteries wave (09 §10), shipped 2026-09-23**; no coder item
+is queued beyond it — the next coder work is the engine slice 3 / RPG P3 merge or the
+affix-application wave, each needing its own docs-first brief
 (`slices/S4-weapon-batteries/`). Owner gates: the
 chrome art half, the **`18_engine_spec.md` §6/§13/§15 cleaving amendment** (owner-locked; §15
 is the test checklist and now contradicts the shipped suite), the launch fit (**both symptoms
@@ -167,11 +170,10 @@ PowerShell form: `$env:VAJB_WORKER_FILES='...'; crush run "<prompt>" -m opencode
 - Probe hygiene (L17): a probe that repoints `PlayerProfile.save_path` must
   stop/flush the 0.5 s debounce before restoring `save_path`.
 
-## In flight — none. **Coder item 9 (S3, the item economy) shipped 2026-09-23** and is in
-§Closed; **item 10 (S4 weapon batteries) is next** with its docs already done
-(CONTRACTS §16 + v0.7, 09 §10, STATION_HUB §5.10's strip rows) and its brief/prompts in
-`slices/S4-weapon-batteries/` — its verify command and ticket line were repaired by this
-wave (`S4_BRIEF.md`, `S4_prompts.md`). **Graphics D2 (designer #1) is DONE 2026-09-22**
+## In flight — none. **Coder item 10 (S4 weapon batteries) shipped 2026-09-23** and is in
+§Closed; the code queue is empty beyond it (`dispatch_coder.md` §"Next beyond this queue": the
+engine slice 3 / RPG P3 merge, and the affix-application wave 15 §9.3 leaves open). **Graphics
+D2 (designer #1) is DONE 2026-09-22**
 (commit `7c1ae06`,
 verified by the designer-session re-measure: **135 SVG + 164 raster masters + 540 tint
 stencils = 839 files** (2 478 → 839, 1 774 deleted), zero non-tint `_16/_48/_96/_192/@2x`
@@ -182,15 +184,14 @@ grid supersedes 48, batches ≤ ~10 icons, the sanctioned palette ramp). `valida
 are Windows-side only; `archive.py --restore` reports "no archive").
 
 **Queued:** items 4 **P2-A**,
-5 **Rock cleave**, 6 **P2-B1**, 7 **P2-B proper**, 8 **S2.6 truth-and-feel** and
-**9 S3 the item economy** — all **DONE**
+5 **Rock cleave**, 6 **P2-B1**, 7 **P2-B proper**, 8 **S2.6 truth-and-feel**,
+**9 S3 the item economy** and **10 S4 weapon batteries** — all **DONE**
 (see §Closed). The
-queue of record is `.agents/gen/dispatch_coder.md`;
-**item 10 = S4 weapon batteries is QUEUED, docs-first done** (CONTRACTS §16, 09 §10,
-STATION_HUB §5.10's battery rows; briefs + prompts in `slices/S4-weapon-batteries/`).
-The owner's grouping
-ruling (N barrels keep N W mounts) rides it, and **S3 and S4 both touch
-`outfitting_panel.gd`**, so S4 is strictly after S3 — which is now true.
+queue of record is `.agents/gen/dispatch_coder.md` and it now carries **no queued item**; the
+next coder work named there (engine slice 3 + RPG P3, the affix-application wave) needs its own
+docs-first brief before a dispatch. The owner's grouping
+ruling (N barrels keep N W mounts) is built, and the S3→S4
+`outfitting_panel.gd` collision is resolved (S4 is closed).
 **The graphics lane resumed
 2026-09-22 in a two-designer split (queue of record `.agents/gen/dispatch_designer.md`):
 designer #1's only job is D2, the icon unification — glyph-type icons remade as
@@ -204,7 +205,8 @@ owner's later dispatch.** Owner ticks open: the
 the spec text lags; it now also covers `FRAGMENT_OUTWARD_KICK` and the two
   flight multipliers `ACCEL_TIME_MULT`/`COAST_TIME_MULT`), the §13 turn/`coast_time`
 column ticks, slice 2.5's two calls (engine bed, vignette strength), L83's icon-size pick,
-and **S3's nine (see §Closed)**. P2-A/P2-B1/P2-B proper tick lists are resolved; **S2.6 adds four of
+and **S3's nine (see §Closed — S4 adds none new: its only two owner-facing readings are the
+empty-cell lines and `SWAP ALL`'s short-bag refusal, both in its §Closed entry)**. P2-A/P2-B1/P2-B proper tick lists are resolved; **S2.6 adds four of
 its own (see §Closed — the `STEER_WITHOUT_THROTTLE` supersession is the new one).**
 
 **Owner requests queued 2026-09-22 (recorded, not briefed — the owner's stop
@@ -226,6 +228,53 @@ condition is item 6, and each needs its own docs-first brief before any code):**
    (its termination point, for the beam itself, not only the hit FX of #6).
 
 ## Closed (details in MASTER_REPORT.md)
+
+- **S4 weapon batteries — DONE 2026-09-23** (gate 493 → **524, 0 failed**, exit 0 in two
+  consecutive hermetic runs at close-out, identical counts, the live account byte-identical
+  before and after every run and every probe — `profile.cfg`
+  `3e6ee8d7e7145c4e37bbd8dc90f62f9b`, `economy_log.txt`
+  `eef2929404d1b3b2a4f30565e7b183b2`; reports
+  `.agents/gen/slices/S4-weapon-batteries/S4-H{0,1,2,4}_report.md` + `S4-H3_review.md`):
+  **grouped weapon systems in OUTFITTING, fired as batteries.** The wave opened with a docs
+  drift check that found the pin **could not be built as written** (4 HIGH — `fitted()` called
+  "unchanged, per barrel" while `set_fitted` drops duplicates and `tick` fires one weapon;
+  `battery()` asked for W-cell indices from a seam handed a flat id list with no cell indices;
+  "the ammo slot each barrel already owns" when ammo is one pack per **family**; and
+  STATION_HUB §5.1 — the strip's actual owner — never amended for batteries; 5 MED on the
+  batch's instance pairing, its rollback scope, the refusal copy's home, the unreachable
+  mandatory refusal and a dedupe assertion the brief's test list omitted), so the developer
+  session amended the docs first (**CONTRACTS §16 rewritten as v0.8.0**, 09 §10's dated
+  amendment, STATION_HUB §5.1's battery anatomy + §5.10's summary, brief/prompts **v2**,
+  `game/projectile.gd` dropped from H2's set). Built: **H1** the battery strip —
+  `PlayerProfile.fit_battery`/`clear_battery` (instances paired from `instances_of` in creation
+  order into ascending cells, one composed transaction per cell, atomic over the fit **and** the
+  bag) and OUTFITTING's one-row-per-battery strip (`3× LASER MKII · W1·W2·W3 · OWNED ×<n>`,
+  read-only `W<n> — EMPTY` lines for the empty cells, `FIT ALL`/`REMOVE ALL`/`SWAP ALL`, the `▸`
+  expander restoring every single-cell action, the fixed 7-row/253-node set never rebuilt,
+  `tests/test_s4_batteries.gd` 15); **H2** the volley — per-barrel `fitted()`, `battery_ids()`,
+  `battery()`, one trigger arming the whole battery with per-barrel release offsets inside
+  `BATTERY_STRUM_MS := 40`, one round per barrel out of the family's one pack, per-barrel damage
+  and recoil, one timer per barrel (`test_engine2_weapons.gd` 29 → 42). Reviewer: **one HIGH, one
+  MED** — HIGH-1 a held trigger fired **one** salvo then went silent for every travelling family
+  (measured 3 shots in a 3.0 s hold) and MED-1 a refused bulk action still stored a fit on a hull
+  that had none; both cured by the fixer pass (re-arm on the frame the salvo is spent, `edge` and
+  beam carve-outs; preview-then-seed with `_unseed_fit`), each with a regression test that is red
+  pre-fix, gate 521 → 524. **Independently reproduced at close-out:** the review's own archived
+  probe re-run under a scratch `XDG_DATA_HOME` gave **15 shots in a 3.0 s hold** (five salvos
+  ~0.6 s apart) against the review's 3. Measured by the reviewer, not taken on trust: rules 1–3
+  (`[w_mining, w_laser]` → `fitted()` `[laser]` / `battery()` `[0]` while that laser is cell 1),
+  rules 7–8's rollback **byte-compared on both branches** (2 and 3 `FIT_MODULE` lines committed
+  before the refusals, `fit_for`+`modules()` and `fits()` `[] → []`), the refusal copy (the three
+  literals byte-equal to `fitting_panel.gd`, `13 / 11 PWR — OVER BY 2` reachable and rendered
+  through a battery on the Gunship), the fixed node set, the expander's per-cell REMOVE, and
+  `verify_wave` `problems: []` twice. Wave convention note: this wave's evidence is **one shipped
+  probe inside `vajb-orbit/tests/` (`probe_s4h4_stream.gd`, header-guarded, not in the gate) plus
+  ten probes archived as text** in `_review_probes/` — the "is a probe evidence or a deliverable"
+  question stays open as **L121**. LOW rows **L123–L129**. **Owner ticks owed: none new** (the
+  mount semantics were ruled 2026-09-22); two readings the owner may overrule — the strip's
+  read-only `W<n> — EMPTY` lines (reversal: drop them) and `SWAP ALL`'s whole-list refusal when
+  the bag cannot cover every barrel (reversal: cut the list or disable the plate below the cell
+  count) — plus the standing `BATTERY_STRUM_MS := 40` with reversal 0.
 
 - **S3 the item economy — DONE 2026-09-23** (gate 457 → **493, 0 failed**, exit 0 in two
   consecutive hermetic runs at close-out plus one under a scratch root, identical counts;

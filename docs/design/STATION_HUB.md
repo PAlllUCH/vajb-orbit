@@ -808,8 +808,13 @@ Footer: `FEE · 1 CR PER 2 MISSING HULL · 1 CR PER 3 MISSING SHIELD`.
 re-measure: the pane mounts behind `Module.AUCTION` at rail index 3, the shelf draws and
 renders, the three `rarity_*` tokens are the pinned hexes, the `NEXT RESTOCK` line is read
 at entry with no Timer, the AUCTION owns its footer, and OUTFITTING's module rows are gone).
-The battery rows below (**S4**) are **not** built — they are item 10's, and the shell's
-`▸` expander in §5.3 is this wave's while these are not.
+**Ticked 2026-09-23 — the battery rows are built** (S4 closed, gate 493 → **524/0**; measured by
+the wave's review and its fixer: one row per battery reading `3× RAILGUN · W1·W2·W3 · OWNED ×12`
+beside `W2 — EMPTY` for a gapped hull, the three bulk actions with their disabled states, the `▸`
+expander revealing each cell's own REMOVE, focus order `▸ / FIT ALL / REMOVE ALL / SWAP ALL`, the
+fixed 7-row / 253-node strip never rebuilt, `REFUSED · FIT ILLEGAL` and `13 / 11 PWR — OVER BY 2`
+both rendering through a battery, and a held trigger streaming a salvo every 0.6 s). The strip's
+own law is §5.1's 2026-09-23 amendment; §5.10 keeps the summary above it and must not diverge.
 
 Transcribed from `docs/gameplay/10_ship_acquisition.md` §2/§2.4, 15 §7/§8 and 09 §10;
 every number below is one of those documents', none is this pass's.

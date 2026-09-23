@@ -496,3 +496,9 @@ tree, none is a new balance number, and CONTRACTS §16 is the pin that enforces 
   rebuilt, because the profile emits `profile_changed` from inside the handler that
   started the write. At most one battery row per W cell plus the empty lines stays
   inside that count.
+
+**Ticked 2026-09-23 (S4 close-out):** built and review-verified — gate `493 → 508 → 521 → 524/0`
+(the review's HIGH, a held trigger firing one salvo instead of a stream, cured by the fixer pass
+and independently reproduced as 15 shots in a 3.0 s hold). The strip, the two bulk transactions,
+the per-barrel volley and `BATTERY_STRUM_MS := 40` are shipped; see
+`.agents/gen/_state/WAVEBOARD.md` §Closed and `docs/CONTRACTS.md` §16/§9.

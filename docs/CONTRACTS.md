@@ -1619,9 +1619,12 @@ it unchanged, and widening a shipped return type for no consumer is not the trad
    it delays the barrel's **opening frame**; once open, every barrel keeps drawing its
    family's `draw x delta` per frame while the trigger is held, and a pool that cannot pay a
    barrel's frame makes that barrel dry for that frame while the barrels before it keep
-   drawing (measured: 3 lasers cost 1.800 Energy and deal 9.000 in a 0.1 s frame; a 1.200 pool
-   pays two barrels and reads the third dry **once**, and that barrel stays open, so a pool
-   that refills keeps drawing). No partial-volley abort state exists.
+   drawing (measured: 3 lasers cost 1.800 Energy and deal 9.000 in a 0.1 s frame; a pool that
+   **covers** two draws — `cost * 2.0`, the float the comparison itself uses, which is what
+   `test_engine2_weapons.gd` sets — pays two barrels and reads the third dry **once**, while a
+   pool set to exactly `1.200` pays one, because `6.0 * 0.1` is `0.60000000000000009`; that barrel
+   stays open, so a pool that refills keeps drawing. L123 records the float nuance). No
+   partial-volley abort state exists.
 7. **`fit_battery(ship_id, base_id, indices)`** — the batch install over §13's
    `fit_module_at`, and **which instance lands in which cell is pinned**: for each index in
    ascending order the batch takes the **next unused instance** of `base_id` from
