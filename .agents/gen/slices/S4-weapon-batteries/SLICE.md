@@ -3,7 +3,7 @@ slice: S4
 phase: P2
 lane: code
 status: draft
-gate_baseline: "S3's close-out figure"
+gate_baseline: "493/0 (S3's close-out figure, measured 2026-09-23)"
 ---
 
 # S4 — Weapon batteries
@@ -28,6 +28,7 @@ read as salvos.
 ## Acceptance criteria
 - [ ] AC1 — the strip groups by `base_id` with correct W-cell ranges and counts;
       bulk actions round-trip and a failed batch rolls back to its starting fit
+      **and its starting bag** (CONTRACTS §16 rules 7–8)
 - [ ] AC2 — one trigger discharges every barrel of the battery (one round per
       barrel, per-barrel damage) with per-barrel release offsets within 0–40 ms
 - [ ] AC3 — the per-barrel expander reaches every single-cell action
@@ -38,14 +39,15 @@ read as salvos.
 |---|---|---|
 | S4-H0 | `docs/,vajb-orbit/tests/,vajb-orbit/tools/` | `S4_BRIEF.md` |
 | S4-H1 | `vajb-orbit/ui/station/outfitting_panel.{gd,tscn},vajb-orbit/autoload/player_profile.gd,vajb-orbit/tests/` | `S4_BRIEF.md` |
-| S4-H2 | `vajb-orbit/game/weapons.gd,vajb-orbit/game/projectile.gd,vajb-orbit/tests/` | `S4_BRIEF.md` |
+| S4-H2 | `vajb-orbit/game/weapons.gd,vajb-orbit/tests/` (`game/projectile.gd` dropped 2026-09-23 — H0 F13: the strum is weapon-side and nothing pinned lands there) | `S4_BRIEF.md` |
 | S4-H3 | `vajb-orbit/tests/,vajb-orbit/tools/,docs/CONTRACTS.md` | reviewer |
 | S4-H4 | the union of H1+H2 sets + `docs/CONTRACTS.md` | fixer, only on HIGH/MED |
 
 ## References
-- `docs/gameplay/09_ship_slots_modules.md` §10 (the battery law; owner rulings verbatim)
-- `docs/design/STATION_HUB.md` §5.10 (the strip rows) and §5.1
-- `docs/CONTRACTS.md` §16 (this wave's pin), §13 (the transactions it wraps), §8.2 (the volley seam's home)
+- `docs/gameplay/09_ship_slots_modules.md` §10 (the battery law; owner rulings verbatim + the 2026-09-23 amendment)
+- `docs/design/STATION_HUB.md` §5.1 (the strip's law since 2026-09-23) and §5.10 (its summary)
+- `docs/CONTRACTS.md` §16 **v0.8.0** (this wave's pin, rewritten 2026-09-23 after H0), §13 (the transactions it wraps), §8.2 (the volley seam's home)
+- `.agents/gen/slices/S4-weapon-batteries/S4-H0_report.md` (the drift check that forced the rewrite)
 
 ## Carries forward
 - The owner's ruling is settled (N barrels keep N W mounts) — no ticks owed here

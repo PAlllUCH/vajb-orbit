@@ -463,3 +463,36 @@ and one trigger; this document's W counts stay the barrel cap).
   a volley reads as a salvo. **Reversal:** strum 0 = perfectly simultaneous.
 - **Reversal of the whole section:** re-expand the strip to one row per cell —
   view and bulk-action code only; no fit or profile shape changes behind it.
+
+**Amendment 2026-09-23 (the S4 docs pass — what H0 measured the section owed).**
+Five readings this section needed and did not carry; every one is a reading of the
+tree, none is a new balance number, and CONTRACTS §16 is the pin that enforces them.
+
+- **Ammo is per family, not per barrel** (`game/weapons.gd:1519-1526` resolves the
+  family's index in `PlayerState.WEAPONS`; `game/player_state.gd:84-89` and
+  `game/game.gd:1247-1249` say so in words). "One round per barrel" therefore means
+  a 3-barrel laser volley spends **three** rounds from the one `laser` pack per
+  release; nothing about the packs, their sizes or their prices moves.
+- **`BATTERY_STRUM_MS`'s home is `WeaponComponent`** (`game/weapons.gd`), beside
+  the family table that owns every other firing number, and the offset is drawn per
+  barrel per volley. An instant (beam) family has no single release, so its strum
+  delays the barrel's **opening frame** and the beam then draws continuously while
+  the trigger is held; a pool that cannot pay a barrel's frame makes that barrel dry
+  for the frame while the ones before it keep drawing. No partial-volley abort state.
+- **Barrel positions are not cell indices.** The component is handed
+  `ShipFit.fitted_ids`' flat id list (`game/player_ship.gd:1205-1206`), which drops
+  family-less modules (`w_mining` → `&""`), so a battery's component positions and
+  the hull's W-cell indices diverge on the first `w_mining` cell. The strip's
+  `W1·W2·W3` labels are cell indices read from the pane's own cell list
+  (`OutfittingPanel._weapon_cells`); the component's `battery()` answers positions in
+  `fitted()` (CONTRACTS §16 rule 3).
+- **The strip shows the empty cells too.** A battery by definition holds instances,
+  so a grouped strip alone would hide every unfilled W cell; the strip therefore
+  draws one battery row per battery **and** one read-only `W<n> — EMPTY` line per
+  empty W cell (no REMOVE, no bulk actions). Reversal: drop the empty lines and the
+  cell-surgery view in FITTING (§8) is the only place an empty cell is addressed.
+- **The strip's node set is fixed** (`ui/station/outfitting_panel.gd:591-596`
+  pre-builds `_max_weapon_cells()` rows): rows are rewritten by text/visibility, never
+  rebuilt, because the profile emits `profile_changed` from inside the handler that
+  started the write. At most one battery row per W cell plus the empty lines stays
+  inside that count.

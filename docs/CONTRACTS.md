@@ -1208,6 +1208,9 @@ Pinned before the wave's code workers start, so they agree. Additive only: every
 ```gdscript
 ## autoload/player_profile.gd — additive beyond §12's pin.
 const SAVE_VERSION := 5              # was 4; a v4 file still reads (MIN_READABLE_VERSION 1)
+                                     # §15 raised it to 6 (autoload/player_profile.gd:54 — the
+                                     # tree's live value, measured 2026-09-23); this block keeps
+                                     # the digit §13 shipped and is not the number to build against.
 const LEGACY_UPGRADE_MODULES: Dictionary = {          # the six-row retirement table, 09's own
     &"upgrade_generator": &"p_mk2",   &"upgrade_shield": &"s_heavy",
     &"upgrade_engine":    &"e_ion",   &"upgrade_module": &"c_scanner",
@@ -1478,22 +1481,115 @@ SAVE_VERSION := 6
   shipyard call it rather than carrying a second grammar. Reversal: inline the statics into
   the panel.
 
-## §16 S4 weapon batteries (2026-09-22)
+## §16 S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0)
+
+**Amended 2026-09-23 by the developer session before the wave's builders started.** H0's
+drift check (`slices/S4-weapon-batteries/S4-H0_report.md` F1–F9) measured that the v0.7.4
+seal could not be built as written: it called `fitted()` "unchanged, **per barrel**" while
+`set_fitted` drops duplicates (`game/weapons.gd:369`) and `tick` fires one weapon (`:520`);
+it asked `battery()` for "W indices" from a component that is handed a flat id list with no
+cell indices; it assumed a per-barrel ammo slot where the tree has **one pack per family**
+(`game/player_state.gd:84-89`); and it left the batch's pairing rule, rollback scope and
+refusal copy unnamed. The rules below answer all four; each carries its reversal. No new
+gameplay number is introduced — `BATTERY_STRUM_MS := 40` and the barrel-count law are 09 §10's.
 
 ```gdscript
-# PlayerProfile — bulk wrappers over the §13 composed transactions. Loops over
-# cells; a failed cell rolls the batch back to its starting fit.
+# PlayerProfile — bulk wrappers over the §13 composed transactions (autoload/player_profile.gd)
 fit_battery(ship_id: StringName, base_id: StringName, indices: Array) -> bool
 clear_battery(ship_id: StringName, base_id: StringName) -> bool
-# WeaponComponent — the volley seam
-fitted() -> Array                 # unchanged, per barrel
-battery(base_id: StringName) -> Array   # this battery's W indices
+# WeaponComponent — the volley seam (game/weapons.gd)
+const BATTERY_STRUM_MS := 40            # per-barrel release offset ceiling, ms; reversal: 0
+fitted() -> Array                       # one entry per barrel, fit order, duplicates kept
+battery_ids() -> Array                  # the distinct weapon ids in fitted(), first-barrel order
+battery(base_id: StringName) -> Array   # that battery's barrel positions in fitted()
 ```
 
-- Battery = identical instances across W cells grouped by `base_id` (09 §10); the
-  fit shape is unchanged (§13 — one instance per cell). One trigger per battery:
-  one round per barrel, per-barrel damage, `BATTERY_STRUM_MS := 40` per-barrel
-  release offset (reversal 0 = simultaneous).
+Rules the pin fixes, so no worker has to choose:
+
+1. **`fitted()` is per barrel and keeps duplicates.** The `_fitted.has(id)` guard at
+   `game/weapons.gd:369` is removed; `weapon_id` still drops an unknown or foreign id and
+   `ShipFit.fitted_ids`' order (`game/ship_fit.gd:481-489`, one entry per non-empty cell,
+   weapons first) is preserved, so three fitted lasers read `[laser, laser, laser]`.
+   **Reversal:** restore the guard — the strip and the volley then read one group per family
+   again, and `battery()` answers at most one position per base.
+2. **Groups address batteries, not barrels.** `battery_ids()` is the distinct ids in
+   `fitted()` in first-barrel order; `select_group(g)` selects `battery_ids()[g - 1]`
+   (clamped `1 .. GROUPS_MAX` as today), and `selected_weapon()` returns that id, `&""` past
+   the end. On a fit of distinct families this list is element-for-element today's `fitted()`,
+   so every existing group, cadence and dry-state test reads the same.
+3. **`battery(base_id)` returns barrel positions in `fitted()` — not cell indices** —
+   ascending, normalised through `weapon_id` (so `&"w_laser"` and `&"laser"` answer the same
+   list), and `[]` for a base with no firing family (`w_mining`: the strip still groups by base
+   id, so its row exists with no trigger behind it). The pane's `W1·W2·W3` labels are the
+   hull's own W-cell indices and must be read from the pane's cell list, never from
+   `battery()`: the two coincide while every W cell holds a firing module, and a family-less
+   cell shifts the component's positions (measured: `[w_mining, w_laser]` → `fitted()` =
+   `[laser]`, `battery(&"w_laser")` = `[0]`, while that laser is cell index 1). **Reversal:**
+   one accessor; a cell-index-carrying `set_fitted` would change a caller shape and is not
+   needed by any consumer today.
+4. **The volley.** On the pull's rising edge the component arms the selected battery: for each
+   position in `battery(selected_weapon())` a release offset is drawn uniformly in
+   `[0, BATTERY_STRUM_MS]` ms. Each `tick(delta)` releases every armed barrel whose offset has
+   elapsed **and whose own cadence timer is ready** — the single `_shot_timer` becomes one
+   timer per barrel, so three cannons deliver three shots per burst window instead of one and
+   a sustained pull is a stream of salvos, not one burst. A released travelling barrel spawns
+   its own shot, charges **one round** from its family's pack through `ammo_slot`, applies its
+   own recoil and emits `shot_fired`; a released instant (beam) barrel opens its own beam.
+   A barrel the family's own rules refuse (empty pack, a pool that cannot pay, the burst
+   window closed) is dry (`dry_fired`) and never holds the rest of the battery back.
+5. **Ammo is per family, one pack per family, and the volley charges it per barrel.** Measured:
+   `WeaponScript.ammo_slot` resolves the family's index in `PlayerState.WEAPONS`
+   (`game/weapons.gd:1519-1526`) and the tree says so in words
+   (`game/player_state.gd:84-89`, `game/game.gd:1247-1249`), so a 3-barrel laser volley spends
+   **three** rounds from the `laser` pack per release. Nothing about the ammo shape changes;
+   the per-trigger delta is simply multiplied by the barrel count (see §10's v0.8.0 note for
+   the knock-on to `_file_ammo_report`).
+6. **Energy families.** The strum is a *release* offset and a beam has no single release, so
+   it delays the barrel's **opening frame**; once open, every barrel keeps drawing its
+   family's `draw x delta` per frame while the trigger is held, and a pool that cannot pay a
+   barrel's frame makes that barrel dry for that frame while the barrels before it keep
+   drawing. No partial-volley abort state exists.
+7. **`fit_battery(ship_id, base_id, indices)`** — the batch install over §13's
+   `fit_module_at`, and **which instance lands in which cell is pinned**: for each index in
+   ascending order the batch takes the **next unused instance** of `base_id` from
+   `PlayerProfile.instances_of(base_id)` (`autoload/player_profile.gd:487-500`, creation
+   order) and calls
+   `fit_module_at(ship_id, &"weapons", index, instance_id)`. A base the bag does not carry at
+   `count` 1 — a fitted instance is out of the bag — answers `[]`, so the batch has fewer
+   instances than cells and refuses the surplus cells.
+   `indices` are the hull's W-cell layout indices (`0 .. slot_capacity - 1`, §13's own space).
+   The first guard that fails answers `false` writing nothing: a hull outside the nine or a
+   W-less hull, an index outside capacity, or a cell whose `fit_module_at` refuses.
+   **The batch is atomic over the fit *and* the bag**: it snapshots `fit_for(ship_id)` and
+   `modules()` before the first cell and, on any refusal, restores both through the public
+   `set_fit` / `set_modules` (`:710`, `:341`) — a literal fit-only rollback would leave a
+   restored cell's instance stranded at `count` 0 (the L80 class, §15). It answers true only
+   when every index was fitted, and logs one §13 line per fitted cell because its own calls do.
+8. **`clear_battery(ship_id, base_id)`** — empties exactly the cells of that hull whose stored
+   entry resolves through `base_module_id` to `base_id`, one `clear_fit_slot` per cell, with
+   §7's snapshot-and-restore atomicity. A hull that holds no such cell — and any hull outside
+   the nine — answers `false` writing nothing, so the pane renders a refusal rather than a
+   silent success. A refused cell rolls the whole batch back, so a battery is never half-banked.
+9. **The refusal copy has one home and the strip duplicates it byte-equivalently.** The three
+   §13 wordings live in `ui/station/fitting_panel.gd:147-149`
+   (`REFUSAL_OVERLOAD` = `13 / 11 PWR — OVER BY 2`, `REFUSAL_MANDATORY` =
+   `MANDATORY CELL — SWAP ONLY, NEVER EMPTY`, `REFUSAL_FIT_ILLEGAL` = `REFUSED · FIT ILLEGAL`)
+   — a file in no S4 worker's set — so OUTFITTING declares **its own three constants with those
+   exact literals**, the precedent L116 recorded for byte-equivalent twins. The strip's footer
+   renders `REFUSAL_OVERLOAD` with `fit_legal`'s own `power` numbers when the candidate is over
+   budget (`13 / 11 PWR — OVER BY 2`) and `REFUSAL_FIT_ILLEGAL` otherwise. The mandatory
+   wording is **unreachable for a W battery** (measured: `FitData.MANDATORY_SLOT_KEYS` is
+   `[&"engines", &"power"]`, `game/ship_fit.gd:117`), so the pane keeps the constant for the
+   set's completeness and no test may assert it through a battery.
+   **Reversal:** lift the three literals into one shared `ui/station/` constant file when a
+   later wave owns all three panes.
+10. **The strip keeps its fixed node set.** `_build_strip` pre-builds `_max_weapon_cells()` rows
+    and shows/hides by index **because the profile emits `profile_changed` from inside the
+    handler that started it** (`ui/station/outfitting_panel.gd:147-148`), so a rebuild would
+    free a plate whose press is still on the stack. The grouped strip keeps that invariant: at
+    most one battery row per W cell plus one read-only line per **empty** W cell is never more
+    than `_max_weapon_cells()`, and rows are rewritten by text/visibility/`disabled`, never
+    rebuilt. **Reversal:** one rebuild path (and the freed-plate bug it causes).
 
 ## §10 Changelog
 
@@ -1947,3 +2043,34 @@ battery(base_id: StringName) -> Array   # this battery's W indices
   both **red on the pre-fix panel** and green after it (measured: `passed=9 failed=2` on
   the pre-fix file, `passed=11 failed=0` on the fixed one). Report:
   `.agents/gen/slices/S3-module-affixes/S3-K5_report.md`.
+- **v0.8.0 (2026-09-23, the S4 weapon-batteries docs pass — the developer session, answering
+  H0's four HIGH and five MED findings before a builder started).** §16 is **rewritten**: the
+  "v0.7.4 round" it shipped carried four unbuildable or self-contradictory statements, all
+  measured at `file:line` in `slices/S4-weapon-batteries/S4-H0_report.md`. (1) *HIGH F1 —
+  `fitted() # unchanged, per barrel`.* Today's `set_fitted` drops duplicates
+  (`game/weapons.gd:369`) and `tick` fires one weapon (`:520`), so "unchanged" and "per
+  barrel" cannot both hold; §16 rule 1 removes the guard (per barrel, duplicates kept) and
+  rule 2 makes groups address **batteries** (`battery_ids()`, new) so every existing group
+  test reads the same list. (2) *HIGH F2 — "this battery's W indices".* `WeaponComponent` is
+  handed `ShipFit.fitted_ids`' flat id list (`game/player_ship.gd:1205-1206`), which carries
+  no cell indices and drops family-less modules, so §16 rule 3 pins `battery()` to **barrel
+  positions in `fitted()`** and states that the pane's `W1·W2·W3` labels are its own cell
+  indices (measured divergence: `[w_mining, w_laser]`). (3) *HIGH F3 — "the ammo slot each
+  barrel already owns".* Ammo is keyed by **family** (`game/weapons.gd:1519-1526`,
+  `game/player_state.gd:84-89`), so §16 rule 5 pins one round per barrel out of the family's
+  one pack (a 3-barrel laser volley spends three). (4) *HIGH F4 — STATION_HUB §5.1 vs §5.10.*
+  The strip's anatomy is §5.1's and §5.1 was never amended for batteries; the designer
+  session's §5.1 block is rewritten in the same pass (battery rows + the empty cells' own
+  read-only lines, the row order and the ±actions' focus order). **MEDs pinned in the same
+  rewrite:** rule 7 names the instance pairing (`instances_of` order, ascending cells) and
+  makes the rollback atomic over **the fit and the bag** (F5/F6); rule 9 gives the refusal
+  copy one home and sanctions the byte-equivalent duplicate (F7) and records the mandatory
+  wording as unreachable for a W battery (F8); rule 10 keeps the strip's fixed node set
+  (F15b); rule 6 pins the energy families' volley (F14); rules 3 and 5 reconcile `w_mining`
+  (F15c). **Also fixed in this pass:** §13's stale `const SAVE_VERSION := 5` line now reads 6
+  with the date it moved (F12), and `S4_BRIEF.md` v2 carries the corrected measure-first
+  answer, the corrected `module_action` citation (F11), the corrected "the strip aggregates by
+  `base_id`" claim (F10) and the repaired tests-that-move list (F9 adds
+  `test_engine2_wiring.gd`, whose dedupe assertion turns red the moment `fitted()` keeps
+  duplicates). **Nothing else moved:** no price, damage, cadence or ammo value, no fit shape,
+  and the gate's floor is S3's measured `493/0`.

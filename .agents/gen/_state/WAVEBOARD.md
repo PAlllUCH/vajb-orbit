@@ -76,7 +76,8 @@ owner's §8 tick list is resolved (all six kept); the one follow-up is the 7-W c
   corrected at its close-out (v0.5/v0.6, 2026-09-22 — the composed `fit_module_at` /
   `clear_fit_slot` transactions, the six-row retirement table, save v5 and `resolved_fit`,
   the fit the launch would fly)**; the §10 changelog carries the v0.2, v1.4, v0.3, v0.4,
-  v0.5 and v0.6 entries, and §9's gate figure is the measured **437**. Briefs say "code
+  v0.5 and v0.6 entries (plus v0.7.x for the item economy and v0.8.0 for the weapon
+  batteries), and §9's gate figure is the measured **493**. Briefs say "code
   against CONTRACTS.md §n"; review waves own updating it.
 - `docs/gameplay/18_engine_spec.md` — the engine contract. §2.1 carries owner
   rulings 8–26. **Owner-locked**: no worker may edit it; the six owed spec

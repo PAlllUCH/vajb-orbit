@@ -388,6 +388,56 @@ refusal wordings (§5.6, 09 §2's `<n> NEEDED`) and the audio hooks are untouche
 **Reversal:** restore the P2-B1 amendment above and its row set — the rows and their
 tests are in git history at the S3 wave boundary.
 
+**Amendment 2026-09-23 (S4 — batteries in the FITTED WEAPONS strip).** This is the strip's law
+from here on; it supersedes the P2-B1 amendment's per-cell strip paragraph (one line per W cell,
+`W1 LASER MKII` / `W2 — EMPTY`, each fitted line carrying REMOVE), its focus order and the two
+refusal triggers below it. Transcribed from 09 §10 and CONTRACTS §16; every number is those
+documents' and none is this pass's. A S4 builder owns this pane, so the block is written here in
+the designer session's place (H0's F4: the strip's owner was §5.1 and §5.1 had never been amended
+for batteries).
+
+- **Rows.** One row per **battery** — the identical weapon instances fitted across the active
+  hull's W cells, grouped by `base_id` — in the order of the battery's first cell (09 §4.5's
+  layout order), followed by one read-only line per **empty** W cell (`W<n> — EMPTY`, no
+  controls), so the strip still accounts for every W cell of the hull. A battery row reads
+  `3× LASER MKII · W1·W2·W3 · OWNED ×<n>`: the barrel count, the base module's name
+  (catalogue-uppercased), the cell labels it occupies, and the count of that base the account
+  holds **in the bag** — the figure `FIT ALL` and `SWAP ALL` spend from, read through
+  `PlayerProfile.instances_of(base_id)`, the same reading §5.3's rows show as `OWNED ×<n>`.
+  A base with no firing family (`w_mining`, 09 §4 item 7) still gets its row: the grouping law is
+  the base id, and only the trigger side is family-keyed (CONTRACTS §16 rule 3).
+  The cell labels are the pane's own cell indices; they are never taken from the component's
+  barrel positions (CONTRACTS §16 rule 3).
+- **Actions.** `FIT ALL` fills the battery's own cells and then the hull's empty W cells, in
+  layout order, with as many of the base's bag instances as `min(owned, cells)` gives — one
+  `PlayerProfile.fit_battery(hull, base_id, indices)` call over the ordered index list;
+  `REMOVE ALL` empties exactly the battery's cells (`clear_battery`); `SWAP ALL` re-seats each of
+  the battery's cells with the next bag instance of the same base (`fit_battery` over the
+  battery's own index list), the displaced instances returning to the bag. Disabled states:
+  `FIT ALL` when the bag holds none of the base, `SWAP ALL` when it holds none, `REMOVE ALL`
+  never (a battery row always holds cells).
+- **The per-barrel expander (`▸`).** One per battery row: it reveals the battery's cells as the
+  P2-B1 strip's single-cell lines (`W1 LASER MKII`, each with its own REMOVE) and every
+  single-cell action still reachable, with L78's ACTION precedence unchanged. It is the S4 twin
+  of §5.3's own expander, node-shape and all (L117).
+- **Refusals** (the pane's footer, `status_requested`, never a dialog): a refused batch renders
+  `REFUSED · FIT ILLEGAL`, or `13 / 11 PWR — OVER BY 2` when `fit_legal`'s own `power` block says
+  the candidate is over budget. `MANDATORY CELL — SWAP ONLY, NEVER EMPTY` is **unreachable for a
+  W battery** (measured: `FitData.MANDATORY_SLOT_KEYS` is `[&"engines", &"power"]`,
+  `game/ship_fit.gd:117`) and is carried only for the set's completeness (CONTRACTS §16 rule 9).
+  A batch is atomic: a refusal restores the fit **and** the bag, so no half-filled battery is ever
+  rendered.
+- **Focus order:** the battery rows first in layout order (each row: `▸`, then `FIT ALL`,
+  `REMOVE ALL`, `SWAP ALL`), then the empty-cell lines are not focusable, then the ammo rows, then
+  the pane's footer, then the rail (§10).
+- **No rebuild.** The strip keeps its fixed node set (one pre-built row per W cell of the widest
+  hull, shown/hidden by index) because the profile emits `profile_changed` from inside the handler
+  that started the write; rows are rewritten by text/visibility/`disabled` (CONTRACTS §16 rule 10).
+- **Nothing else moves:** the fit shape (one instance per W cell), `FIT ALL`'s price-less nature,
+  the ammo rows, the pane's refusal wordings and the audio hooks are untouched.
+  **Reversal:** restore the P2-B1 strip paragraph above — view and bulk-action code only, since
+  no fit or profile shape sits behind it (09 §10's own reversal).
+
 **Amendment 2026-09-22 (P2-B1 — the weapon fit surface: the MODULES section and the FITTED WEAPONS
 strip).** Transcribed from `.agents/gen/p2b1_weapon_fit_wave_task.md` §3; every number in it is 09
 §3.1's and none is this pass's.
@@ -803,6 +853,12 @@ rarities of one base id onto one row, which is why it is not the build.
 bulk actions loop the composed transactions per cell (CONTRACTS §13/§15); a batch
 that fails any cell rolls back to its starting fit and names `REFUSED · FIT ILLEGAL`
 or `13 / 11 PWR — OVER BY 2` as §5.3 does.
+**Amendment 2026-09-23 (the S4 docs pass):** the strip's full anatomy — the empty W
+cells' read-only lines, the row order, `OWNED ×<n>`'s reading, the expander, the
+per-row focus order and the atomic fit-**and-bag** rollback — is §5.1's
+2026-09-23 amendment, which is the strip's law; this paragraph is the summary and
+must not diverge from it (H0's F4 measured the two sections contradicting each
+other before that amendment landed).
 
 **Rarity tints (the one-accent law, STYLE_BIBLE §2):** Common = the theme's default
 label colour; Magic = `#565C63` (Steel Highlight); Rare = `#E8703A` (Ember Glow).
