@@ -71,3 +71,6 @@
 *.pyc
 __pycache__/
 *.db
+
+# Exported game builds (regenerable from the project; never text)
+/builds/
