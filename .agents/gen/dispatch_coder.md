@@ -3,9 +3,10 @@
 Rebuilt 2026-09-22, reorganised 2026-09-24 (open items only — closed work lives
 in the Done pointer below, `MASTER_REPORT.md` and `_state/WAVEBOARD.md` §Closed).
 Execute **one item per order**, close out per the brief's close-out section.
-Model for every worker: `opencode-go/deepseek-v4.1-flash` (owner order
-2026-09-24; fallback `deepseek/deepseek-v4-flash`). The owner pastes only the
-handoff block at the bottom.
+Model for every worker: `deepseek/deepseek-flash` (DeepSeek API direct, owner
+ruling 2026-09-24; supersedes the same-day go order; fallback
+`opencode-go/deepseek-v4.1-flash`) on `--reasoning-effort high`. The owner pastes
+only the handoff block at the bottom.
 
 **File-collision law:** two waves never hold one file (nor the same `test_*`
 prefix, nor one `staging/` driver). Across lanes only with provably disjoint
