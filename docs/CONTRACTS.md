@@ -844,7 +844,25 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
-Expected (S8, 2026-09-24): **`[SUMMARY] passed=770 failed=0`**, exit 0. The S8 review
+Expected (S10, 2026-09-24): **`[SUMMARY] passed=775 failed=0`**, exit 0. The S10 review
+(S10-R1) measured **775** twice on two fresh scratch stores (identical row sets, byte-identical
+error lines) while re-running the wave's real-input acceptance: B1's suite `5/5` green and
+independently **`0/5` red** in a detached worktree at `c8a6b5d` (the shipped tree never
+reverted), plus the review's own station-mount probe (`tests/probe_s10_r1_armory_hits.gd`),
+which drives the chip's drag handles, the `x`, a bay click, `weapon_1..7` and the instance-keyed
+drum through `Input.parse_input_event` -> `Viewport`. The live store's pair `profile.cfg` md5
+`acf3161108605c9cc30f710099a11e24` / `economy_log.txt` md5 `77f4f61a55e4bbe116fd4631b20c2056`
+was byte-identical before and after every run, and the suite's own scratch `profile.cfg` md5 and
+`_dirty` flag were unchanged across the selection steps (no profile write). **Growth `770 → 775`**:
+S10's one new suite adds **5** rows (`test_s10_armory_input.gd`); no pre-existing suite's count
+moved (`test_d7_armory.gd` holds at **11**, unmoved and green, sha256 identical at `c8a6b5d` and
+HEAD; the pre-B1 worktree gate reads **770** rows). The diff is `armory_panel.gd` **+64/−5** plus
+the new suite — no `.tscn`, `docs/`, `assets/` or `fitting_panel.gd` — and every pinned constant's
+text is unchanged (`W SLOTS FULL — SWAP OR REMOVE FIRST`, `RACK_KEY`, `SALVO_MAX`/`SALVO_DIGITS`,
+`RACK_SALVO`/`RACK_READY`). The green run's error lines are the pre-existing ones (the
+detached-hull `data.tree` line, the `EconomyLog` missing-dir warning, L61's
+`test_weapon_fx_f4.gd:178` freed instance, and the resources-at-exit warning).
+Previous expected (S8, 2026-09-24): **`[SUMMARY] passed=770 failed=0`**, exit 0. The S8 review
 (S8-R1) measured **770** twice on two fresh scratch stores (identical counts) plus once
 inside `staging/verify_wave.py verify --baseline s8_start … --tests`, which reads
 `problems: []` with no forbidden hit and both expected reports present; the live store's
@@ -3435,3 +3453,24 @@ linearly with the resolved coast (S2.6's measured pairs: 430.32 u @ 2.0 s,
   same-family battery's per-cell seed; the ledger test asserting parse not warnings; the
   remaining `_compose_racks` `racks` shadow), and **L163 closes** in S8 (Q3's `position`
   sweep). The owner ticks S8 owes (§21) stand unchanged.
+- **v0.21 (2026-09-24, wave S10 review — S10-R1, the wave's only CONTRACTS writer;
+  sequenced after §22's v0.19 and §9's v0.20, and no parallel lane had landed a row
+  first)** — §9 gains the S10 expected **`passed=775 failed=0`** (twice on fresh scratch
+  stores plus the red-state worktree) with the `770 → 775` attribution and the live-store
+  pair. **The review leaves no HIGH and no MED.** The wave's four ARMORY fixes were
+  re-measured through real input on the shipped station mount: the fitted chip's plate, its
+  lower block and the `x` all commit/remove (`[[0,1,2]] → [[2,0,1]]` + `MOVED · LASER MKII ·
+  B1`; a real `x` click empties the cell + `REMOVED · LASER MKII · BACK IN INVENTORY`); an
+  instance-keyed (`mod_*`) cell reads the cannon's `060` where it read `---`; a bay click and
+  `weapon_1..7` move the section 3.2 ember frame with the fit/bag/rack records and the
+  scratch profile's md5 and `_dirty` flag unchanged (presentation only). Every pinned
+  constant's text, the `RACK_SALVO`/`SALVO_*` drum numbers, the ember frame's `BayMarks`
+  drawing and `test_d7_armory.gd`'s **11 rows** are unmoved; `REFUSAL_W_SLOTS_FULL` is still
+  the one wording, reachable only as the pre-existing silent-refusal gap (§5.11's staged
+  refusal-feedback tick, unchanged). Diff scope confirmed: `ui/station/armory_panel.gd`
+  (+64/−5) + the new suite only, with no shell-edit residue. Six LOW rows are **L172–L177**
+  (the `x`'s 28×28 box over the chip's centre; the plate's build-order-dependent rect; the
+  chip consuming a motion-less press; A0's probe's stale barrel points; the between-rack
+  success line's post-write name; the two new test files' missing `.uid`). The owner ticks
+  the wave leaves: the `x` box vs the block, what a chip press and a rack selection should
+  mean, the per-battery ammo/stats readout (nothing pins either), and S8's still-open list.

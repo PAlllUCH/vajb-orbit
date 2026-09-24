@@ -20,8 +20,8 @@ with any parallel lane, WAVEBOARD, wave-boundary commit).
 
 | # | Wave | Slice folder | Brief / prompts | Status |
 |---|---|---|---|---|
-| 16 | **S10 ARMORY interactivity** — the owner's live report (2026-09-24: cannot select a battery, cannot drag weapons onto racks, no per-battery ammo preview or stats); measured through real UI input, not direct handler calls; pins **STATION_HUB §5.11 + CONTRACTS §17/§16** | `.agents/gen/slices/S10-armory-racks/` | `S10_BRIEF.md` / `S10_prompts.md` | **A0 DISPATCHED 2026-09-24** (independent reproduction audit, measure only). Run: A0 → B1 fix (its brief written from A0's report) → R1 → F1 only on HIGH/MED. |
 | 15 | **Flight-feel retune** (owner O4/O5: torque/slow-down, strafe/inertia) — pin **CONTRACTS §22** | not opened | — | **NUMBERS PROPOSED — waiting on your ticks.** §22 holds four tick-gated levers with worked rows + reversals: T1 `COAST_TIME_MULT` 2.0→2.5, T2 new `ANGULAR_DAMP_MULT` 0.5, T3 new `STRAFE_RATE_MULT` 0.75, T4 `LATERAL_DAMP_MULT` 1.0→0.6. Tick any subset in §22 → I write **S9**'s five-piece from the ticked table. Nothing dispatches until then. |
+| 17 | **Jump gates to sector edges** (owner ask 2026-09-24: same gates, spawn placement only) | not opened | — | **QUEUED — brief at dispatch-prep.** Runs after item 15; if the gate spawn seam is `game/sector.gd`, it runs after D11's close-out (D11 holds that file through C1). Editor-only change otherwise. |
 
 Beyond the queue: **slice 4's remainder** (quadrants/directional armour — 18
 §4.5 + ruling 23; bosses/arena — 14 §5, blocked on P4 contracts + boss art).
@@ -30,18 +30,19 @@ Owner-locked homework stays the owner's (`18_engine_spec.md` §6/§13/§15, the
 
 ## Done
 
-Items 1–14 closed: chrome, combat repair, weapon FX (→ `MASTER_REPORT.md`);
+Items 1–16 closed: chrome, combat repair, weapon FX (→ `MASTER_REPORT.md`);
 P2-A `8d189bf`, Rock cleave `0e419f7`, P2-B1 `1f794cc`, P2-B `3e79e61` (→
 `session_2026-09-22_items_4_to_7_report.md`, gate 437); S2.6 (457), S3 (493),
-S4 (524), S5 (578), S6 (674), S7 (753), S8 (770) — detail, reviews, incidents
-and LOW rows in `MASTER_REPORT.md` §6 +
+S4 (524), S5 (578), S6 (674), S7 (753), S8 (770), S10 (775) — detail, reviews,
+incidents and LOW rows in `MASTER_REPORT.md` §6 +
 `session_2026-09-24_items_8_to_13_report.md`; evidence archived in each
-slice's `_archive/` (S8's still in its slice folder).
+slice's `_archive/` (S8's and S10's still in their slice folders).
 
 ## Handoff (live)
 
-Item 16 (**S10 ARMORY interactivity**) is dispatched: A0's reproduction audit is
-running — brief and prompts in `slices/S10-armory-racks/`. Its report scopes the
-fix wave (B1 → R1 → F1 only on HIGH/MED). Item 15 (flight-feel) still waits on
-your ticks to CONTRACTS §22's T1–T4; slice 4's remainder needs its own
-five-piece first.
+Items 15 and 17 are the queue; nothing dispatches yet. **Item 15** (S9
+flight-feel) waits on your ticks to CONTRACTS §22's T1–T4 — tick any subset and
+the five-piece is written from the ticked table. **Item 17** (jump gates to
+sector edges) needs its own five-piece at dispatch-prep, and if the gate spawn
+seam is `game/sector.gd` it goes after D11's close-out (D11 holds that file
+through C1). Slice 4's remainder still needs its own five-piece.

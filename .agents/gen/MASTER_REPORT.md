@@ -397,6 +397,40 @@ proper tick lists are resolved.
   torque/slow-down + strafe/inertia (→ **coder item 15, owner-gated flight-feel pass**),
   and the station scene rework (→ **designer item 13**, mockup-gated).
 
+- **S10 ARMORY interactivity (coder item 16) — DONE 2026-09-24** (gate 770 → **775, 0 failed**,
+  exit 0; the orchestrator measured it twice on fresh scratch stores at close-out, R1 twice
+  plus once inside `verify_wave.py` — `problems: []`, no forbidden hit; the live pair
+  `profile.cfg` `acf3161108605c9cc30f710099a11e24` / `economy_log.txt`
+  `77f4f61a55e4bbe116fd4631b20c2056` unchanged throughout; reports
+  `slices/S10-armory-racks/S10-A0_report.md`, `S10-B1_report.md`, `S10-R1_review.md`,
+  close-out logs in that folder's `_closeout/`; model `deepseek/deepseek-flash` at high, A0 on
+  the interactive profile because its first method is the live editor bridge): **the owner's
+  live ARMORY report is answered.** He could not select a battery, drag an equipped weapon or
+  see battery ammo/stats, while S8's AC10 had passed the same area on a direct-handler probe —
+  filed as **L170**, and the reason this wave exists. **A0's real-input audit**
+  (canary-proved `Input.parse_input_event` pipeline + a pre-restyle worktree A/B) split the
+  report into five measured facts: **the barrel drag and the `✕` were a D7 regression**
+  (`faa24ad` collapsed the `Name` plate and the `✕` to zero width; pre-D7 the same real drag
+  committed `MOVED · CANNON MKI · B3`); **selection was wired to no input path**
+  (`set_selected_rack`'s only caller was a 0 px chip's focus handler, and the drawn `(1)..(7)`
+  keys were listened for by nothing); **the SALVO drum read blanks for `mod_*` cells**
+  (`weapon_id("mod_0002")` empty on the raw fit entry — the owner's own fit shape); **a refused
+  hover is silent** (`can_drop = false` means `_drop_data` never runs, so the pinned
+  `W SLOTS FULL` never renders); and **no per-battery ammo/stats readout is pinned anywhere**.
+  **B1 fixed three** — chip-owned drag source with real plate/`✕` rects after the layout pass,
+  `_rack_cycle` resolving the instance's base id, bay-click and `weapon_1..7` selection
+  (presentation only) — added `tests/test_s10_armory_input.gd` (**5 rows**) and reused no new
+  number. **Review: 0 HIGH, 0 MED, 6 LOW** (L172–L177: the 28 px `✕` box covers the chip's
+  geometric centre so a centre press removes rather than drags; the plate's rect is
+  build-order dependent; a motion-less press on a fitted block is consumed by the chip; A0's
+  probe's stale barrel points; the between-rack success line naming the barrel after the
+  write; the new test files' missing `.uid`) — no fixer pass owed, and the red state was
+  independently proven in a worktree (0/5 on the pre-B1 tree, never by reverting the shipped
+  tree). A0 disclosed stopping and relaunching the owner's running game after an eval error
+  parked it in a break (no profile write). Owner ticks: F1/F3's press semantics, what a
+  selection should *mean* beyond the frame, the per-battery ammo/stats readout (unpinned),
+  the refused-hover wording, the between-rack wording, plus S8's still-open list.
+
 - **S8 QA playtest fixes (coder item 14) — DONE 2026-09-24** (gate 753 → **770, 0 failed**,
   exit 0; the orchestrator measured it twice on two fresh scratch stores at close-out, R1
   twice plus once inside `verify_wave.py` — identical counts, `problems: []`; the live pair
