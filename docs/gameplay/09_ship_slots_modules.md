@@ -351,6 +351,13 @@ set's deltas applied once** (§3.7) instead of a per-engine multiplication. For 
 single-engine hull the resolved number is identical; for a multi-engine hull the
 sum is what stops three vector drives from tripling a hull's speed.
 
+**Amendment 2026-09-24 (S7 docs-first):** module affixes (15 §3/§4) join the steps
+above **inside `ShipFit.resolve`** — a percent affix modifies its own instance's
+contribution to its stat, instances then combine by this section's own rule, and
+every affix lands **before step 4's clamps** (CONTRACTS §20 carries the per-prefix
+table). The order itself does not move. **Reversal:** pass `{}` and this section
+resolves exactly as before.
+
 \* `cargo_max` in the frozen stats (25–80) is re-expressed as the class's
 **base hold** (structural space), and `u_cargo`/`u_holds` add on top. The
 frozen numbers remain reachable: Cutter base 40 with no U module equals the

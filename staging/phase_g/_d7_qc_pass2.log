@@ -1,0 +1,21 @@
+ui_cockpit_panel         928x512 box_match=True ink=73.77% wells=8 worst_recess_ratio=1.403 FAIL
+    gauge_well       well=[75, 95, 380, 401] pinned=[70, 52, 310, 292] centre_inside=True recess_ratio=0.947 coverage=0.692 holds_pinned=0.804 well_inside=0.496 centres [227.5, 248.0] vs [190.0, 172.0]
+    compass_well     well=[660, 83, 858, 424] pinned=[326, 64, 542, 280] centre_inside=False recess_ratio=1.403 coverage=0.361 holds_pinned=0.000 well_inside=0.000 centres [759.0, 253.5] vs [434.0, 172.0]
+    readout_well     well=[432, 168, 603, 341] pinned=[558, 62, 858, 442] centre_inside=False recess_ratio=1.001 coverage=0.556 holds_pinned=0.068 well_inside=0.263 centres [517.5, 254.5] vs [708.0, 252.0]
+ui_gauge_face            240x240 box_match=True ink=66.27% wells=1 worst_recess_ratio=0.900 PASS
+    recessed_centre  well=[35, 26, 207, 182] pinned=[100, 100, 140, 140] centre_inside=True recess_ratio=0.900 coverage=0.000 holds_pinned=1.000 well_inside=0.060 centres [121.0, 104.0] vs [120.0, 120.0]
+ui_armory_console        1744x1816 box_match=True ink=32.91% wells=11 worst_recess_ratio=1.041 FAIL
+    racks_well       well=[473, 1042, 1263, 1580] pinned=[60, 244, 1684, 1024] centre_inside=False recess_ratio=0.999 coverage=0.116 holds_pinned=0.000 well_inside=0.000 centres [868.0, 1311.0] vs [872.0, 634.0]
+    inventory_well   well=[480, 462, 1265, 957] pinned=[60, 1140, 1684, 1480] centre_inside=False recess_ratio=0.812 coverage=0.473 holds_pinned=0.000 well_inside=0.000 centres [872.5, 709.5] vs [872.0, 1310.0]
+    ammo_well        well=[472, 182, 1265, 378] pinned=[60, 1592, 1684, 1768] centre_inside=False recess_ratio=1.041 coverage=0.045 holds_pinned=0.000 well_inside=0.000 centres [868.5, 280.0] vs [872.0, 1680.0]
+ui_armory_rack_plate     194x182 box_match=True ink=40.04% wells=1 worst_recess_ratio=1.093 FAIL
+    slot_1           well=[8, 112, 186, 130] pinned=[10, 38, 50, 82] centre_inside=False recess_ratio=0.934 coverage=0.000 holds_pinned=0.000 well_inside=0.000 centres [97.0, 121.0] vs [30.0, 60.0]
+    slot_2           well=[8, 112, 186, 130] pinned=[54, 38, 94, 82] centre_inside=False recess_ratio=1.061 coverage=0.000 holds_pinned=0.000 well_inside=0.000 centres [97.0, 121.0] vs [74.0, 60.0]
+    slot_3           well=[8, 112, 186, 130] pinned=[98, 38, 138, 82] centre_inside=False recess_ratio=1.093 coverage=0.000 holds_pinned=0.000 well_inside=0.000 centres [97.0, 121.0] vs [118.0, 60.0]
+    slot_4           well=[8, 112, 186, 130] pinned=[142, 38, 182, 82] centre_inside=False recess_ratio=0.984 coverage=0.000 holds_pinned=0.000 well_inside=0.000 centres [97.0, 121.0] vs [162.0, 60.0]
+ui_armory_row_plate      192x64 box_match=True ink=43.13% wells=0
+ui_status_panel          1440x1040 box_match=True ink=40.4% wells=20 worst_recess_ratio=1.096 FAIL
+    left_well        well=[118, 209, 653, 719] pinned=[48, 120, 600, 856] centre_inside=True recess_ratio=1.096 coverage=0.069 holds_pinned=0.605 well_inside=0.901 centres [385.5, 464.0] vs [324.0, 488.0]
+    right_well       well=[53, 142, 1387, 550] pinned=[632, 120, 1392, 696] centre_inside=True recess_ratio=1.064 coverage=0.160 holds_pinned=0.704 well_inside=0.566 centres [720.0, 346.0] vs [1012.0, 408.0]
+    footer_strip     well=[54, 563, 1387, 898] pinned=[48, 888, 1392, 988] centre_inside=False recess_ratio=0.428 coverage=0.091 holds_pinned=0.099 well_inside=0.030 centres [720.5, 730.5] vs [720.0, 938.0]
+wrote staging/phase_g/ui/qc_d7_pass2.json

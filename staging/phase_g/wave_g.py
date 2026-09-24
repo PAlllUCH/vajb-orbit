@@ -743,6 +743,187 @@ RUNS["panel_sevenseg_b"] = dict(
     dup_check=False, review_only=False,
 )
 
+## ------------------------------------- D7 cockpit panel family (UI_CHROME_ASSETS_SPEC section 12)
+## Wave D7, `docs/design/UI_CHROME_ASSETS_SPEC.md` section 12. Five renders on the chrome law's
+## plain solid pure white background; the framing sentence is D7's own U_FRAME constant (the same
+## wording section 11 used), the per-run subjects are section 12's verbatim prompts, the negative
+## list is section 8's, and the style block is the prompt preamble (section 12's explicit route,
+## "the section 11 route: prompt preamble, not --style-file"). `flare` returns opaque on white
+## here, so every object is cut on its own box and keyed on its own (`refit_panels.py`); a panel
+## is never keyed whole (Phase G lane law).
+##
+## The armory boxes are the measured ones, not invented ones. `staging/d7/measure_armory.gd`
+## instantiates `res://ui/station/armory_panel.tscn` headlessly and reads the pane's own rects:
+## the pane's content frame is 872x908 (mockup A's frame, `staging/mockup/mockup_rest.py`), the
+## racks well min 420x255, the racks caption band 122x23, the ammo rows 870x76 on ROW_HEIGHT 76.
+## `ui_armory_console` rides the pane's own content rect (872x908 -> 1744x1816 at 2x);
+## `ui_armory_rack_plate` rides section 3.10's approved bay 97x91 -> 194x182 at 2x;
+## `ui_armory_row_plate` rides section 3.10's approved ammunition row height 32 -> 64 at 2x.
+UI_D7_FRAME = ("painted UI instrument part, straight-on flat view, centred, "
+               "plain solid pure white background")
+
+
+def ui_d7_prompt(subject: str) -> str:
+    return f"{UI_D7_FRAME}: {subject}. {UI_NEG}"
+
+
+UI_D7_COCKPIT = ui_d7_prompt(
+    "a wide rectangular painted metal instrument panel face for a spaceship cockpit: brushed "
+    "steel plates with visible brush grain, bolt heads at the corners and along the seams, one "
+    "large recessed circular instrument well on the left, one smaller circular well in the "
+    "middle, and a tall recessed rectangular well on the right with five shallow machined "
+    "ledges across it; dark painted void interior in each recess; no glass, no screens, no "
+    "glowing")
+UI_D7_GAUGE = ui_d7_prompt(
+    "a round aircraft-style speed dial face on a painted metal bezel, recessed dark centre, an "
+    "arc of eight graduated metal speed ticks growing longer toward the top of the arc, no "
+    "numbers, no needle, no compass marks")
+UI_D7_ARMORY_CONSOLE = ui_d7_prompt(
+    "a tall rectangular painted metal console face: brushed steel plate with bolt heads, three "
+    "stacked recessed wells with bevelled rims, the top well long and shallow with seven short "
+    "machined slot recesses along it, the lower two wells plain and deep; dark void interior in "
+    "the recesses; no glass, no screens")
+UI_D7_ARMORY_PLATES = ui_d7_prompt(
+    "two painted metal plates on white with wide gaps: a small bolted bay plate with four "
+    "shallow machined slot recesses in a row and a thin engraved ledge along its bottom edge; a "
+    "plain brushed metal row strip with softly bevelled long edges and two bolt heads at the "
+    "left end")
+UI_D7_STATUS = ui_d7_prompt(
+    "a rectangular painted metal console face for a ship-status readout: brushed steel plate "
+    "with bolt heads, one large recessed display well on the left with a bevelled rim, fifteen "
+    "shallow machined slot recesses on the right in three rows of five, and a thin recessed "
+    "strip along the bottom; dark void interior in the recesses; no glass, no screens")
+
+## Section 12's own numbers: the master box is what ships. Section 3.7's D7 amendment pins
+## 928x512 for the 464x256 cluster box; section 3.8's pins 1440x1040 for the 720x520 modal;
+## section 3.10's pins the armory bay 194x182 and the row-plate band (ammunition rows 32 tall).
+UI_D7_LOGICAL = {
+    "ui_cockpit_panel": (464, 256),
+    "ui_gauge_face": (120, 120),
+    "ui_armory_console": (872, 908),
+    "ui_armory_rack_plate": (97, 91),
+    "ui_armory_row_plate": (96, 32),
+    "ui_status_panel": (720, 520),
+}
+UI_D7_MASTER = {
+    "ui_cockpit_panel": (928, 512),
+    "ui_gauge_face": (240, 240),
+    "ui_armory_console": (1744, 1816),
+    "ui_armory_rack_plate": (194, 182),
+    "ui_armory_row_plate": (192, 64),
+    "ui_status_panel": (1440, 1040),
+}
+
+RUNS["panel_cockpit"] = dict(
+    family="ui", source="human", mode="panel", alpha=False, out="panel_cockpit",
+    subject=UI_D7_COCKPIT, cells=[[0, "ui_cockpit_panel", 0]],
+    grid=[1, 1], boxes=UI_D7_MASTER, logical=UI_D7_LOGICAL, panel_name="panel_cockpit",
+    dup_check=False, review_only=False,
+)
+RUNS["panel_gauge"] = dict(
+    family="ui", source="human", mode="panel", alpha=False, out="panel_gauge",
+    subject=UI_D7_GAUGE, cells=[[0, "ui_gauge_face", 0]],
+    grid=[1, 1], boxes=UI_D7_MASTER, logical=UI_D7_LOGICAL, panel_name="panel_gauge",
+    dup_check=False, review_only=False,
+)
+RUNS["panel_armory_console"] = dict(
+    family="ui", source="human", mode="panel", alpha=False, out="panel_armory_console",
+    subject=UI_D7_ARMORY_CONSOLE, cells=[[0, "ui_armory_console", 0]],
+    grid=[1, 1], boxes=UI_D7_MASTER, logical=UI_D7_LOGICAL, panel_name="panel_armory_console",
+    dup_check=False, review_only=False,
+)
+RUNS["panel_armory_plates"] = dict(
+    family="ui", source="human", mode="panel", alpha=False, out="panel_armory_plates",
+    subject=UI_D7_ARMORY_PLATES,
+    cells=[[0, "ui_armory_rack_plate", 0], [1, "ui_armory_row_plate", 0]],
+    ## The arrangement is read off the render (Phase G lane): `panels.py --detect` finds the bay
+    ## plate above the row strip, so the grid is 1x2, not the side-by-side 2x1 a two-plate prompt
+    ## suggests. `cells` below stays the authority on the count and the names.
+    grid=[1, 2], boxes=UI_D7_MASTER, logical=UI_D7_LOGICAL, panel_name="panel_armory_plates",
+    dup_check=False, review_only=False,
+)
+RUNS["panel_status"] = dict(
+    family="ui", source="human", mode="panel", alpha=False, out="panel_status",
+    subject=UI_D7_STATUS, cells=[[0, "ui_status_panel", 0]],
+    grid=[1, 1], boxes=UI_D7_MASTER, logical=UI_D7_LOGICAL, panel_name="panel_status",
+    dup_check=False, review_only=False,
+)
+
+## ---------------------- D7-A1 flat-plate re-render (UI_CHROME_ASSETS_SPEC section 12 Amendment 2)
+## Amendment 2 (2026-09-24): the three console panels are **flat painted plates** - "their per-run
+## prompts above drop every `recessed well` phrase". Cause, measured: A0's baked wells landed wrong
+## on 4 of 6 masters (`D7-A0_report.md`, worst `recess_ratio` 1.403) and the Mockup v7 layout moved
+## the bays after the renders. Wells are code-drawn recesses at the pinned rects (UI_SPEC section
+## 3.7's mockup blocks), so layout/styling changes never invalidate art; bolt heads, plate seams and
+## brush grain stay in the art. The well-registration QC rows retire for these three
+## (`qc_d7.py`); containment/box checks stay.
+##
+## The subjects below are section 12's own per-run prompts with every well/recess/slot clause
+## dropped and the flatness stated outright, so a model cannot read a recess back in. The master
+## boxes are section 12's pinned ones (the armory box is A0's measured 2x content rect 1744x1816,
+## `staging/d7/measure_armory.gd`). `ui_gauge_face`, `ui_armory_rack_plate` and
+## `ui_armory_row_plate` are A0's bytes and are not re-rendered here.
+## The outline proportion in each subject is the pinned master box's own aspect (cockpit 928/512 =
+## 1.81, console 1744/1816 = 0.96, status 1440/1040 = 1.38): with the well clauses dropped the
+## prompt no longer fixes the plate's internal layout, so without the proportion the model composes
+## its own outline and `contain` letterboxes it (measured on pass 1: the console came back 0.51
+## aspect and could only fill 49 percent of its pinned box's width - the code-drawn wells at the
+## pinned rects would have landed off the plate). Reversal: drop the clause and accept the
+## letterbox, or move the fit from `contain` to `fill`/`cover` (both change a pinned number).
+UI_D7_COCKPIT_FLAT = ui_d7_prompt(
+    "a wide rectangular painted metal instrument panel face for a spaceship cockpit, plain flat, "
+    "its outline about 1.8 times as wide as it is tall with a clear white margin all around: "
+    "brushed steel plates with visible brush grain and flat plate seams between the plates, bolt "
+    "heads at the corners and along the seams, a continuous flat steel surface carrying no "
+    "openings, no wells, no recesses and no machined slots; no glass, no screens, no glowing")
+UI_D7_ARMORY_CONSOLE_FLAT = ui_d7_prompt(
+    "a rectangular painted metal console face, plain flat, the plate filling the frame up to a "
+    "narrow plain white border all around, its outline nearly square, about as wide as it is "
+    "tall: brushed steel plate with visible brush grain and flat plate seams between the steel "
+    "plates, bolt heads at the four corners and along the seams, a continuous flat steel surface "
+    "carrying no openings, no wells, no recesses and no machined slots; no glass, no screens")
+UI_D7_STATUS_FLAT = ui_d7_prompt(
+    "a rectangular painted metal console face, plain flat, the plate filling the frame up to a "
+    "narrow plain white border all around, its outline matching the frame's own proportions of "
+    "about 4 to 3, wider than it is tall: brushed steel plate with visible brush grain and flat "
+    "plate seams between the plates, bolt heads at the four corners and along the seams, a "
+    "continuous flat steel surface carrying no openings, no wells, no recesses and no machined "
+    "slots; no glass, no screens")
+
+RUNS["panel_cockpit_flat"] = dict(
+    family="ui", source="human", mode="panel", alpha=False, out="panel_cockpit_flat",
+    subject=UI_D7_COCKPIT_FLAT, cells=[[0, "ui_cockpit_panel", 0]],
+    grid=[1, 1], boxes=UI_D7_MASTER, logical=UI_D7_LOGICAL, panel_name="panel_cockpit_flat",
+    dup_check=False, review_only=False,
+    ## A flat plate carries no wells, so the plate itself is the surface the pinned box mounts: the
+    ## lane's 4 % trim pad would eat 8 % of the box's own size and push the code-drawn wells off the
+    ## art (measured: the cockpit's well union sits from 10 % to 86 % of the box's height). 0.0 is
+    ## floored at 8 px by `trim_centre`. Reversal: drop the key and accept the letterbox.
+    pad_share=0.0,
+)
+RUNS["panel_armory_console_flat"] = dict(
+    family="ui", source="human", mode="panel", alpha=False, out="panel_armory_console_flat",
+    subject=UI_D7_ARMORY_CONSOLE_FLAT, cells=[[0, "ui_armory_console", 0]],
+    grid=[1, 1], boxes=UI_D7_MASTER, logical=UI_D7_LOGICAL,
+    panel_name="panel_armory_console_flat", dup_check=False, review_only=False,
+    ## The canvas aspect is the pinned master box's own (0.96 -> the nearest supported 1:1). The
+    ## model's plate outline follows the canvas more than the wording (measured: at 1:1 the console
+    ## came back 0.81 with the proportion clause alone, against 0.51 without it), and the shipped
+    ## fit is pinned to `contain`, so a canvas at the box's aspect is the only lever that fills the
+    ## box without a pinned number moving. Reversal: drop the key and accept the letterbox.
+    aspect="1:1",
+    pad_share=0.0,
+)
+RUNS["panel_status_flat"] = dict(
+    family="ui", source="human", mode="panel", alpha=False, out="panel_status_flat",
+    subject=UI_D7_STATUS_FLAT, cells=[[0, "ui_status_panel", 0]],
+    grid=[1, 1], boxes=UI_D7_MASTER, logical=UI_D7_LOGICAL, panel_name="panel_status_flat",
+    dup_check=False, review_only=False,
+    ## Box aspect 1.385 -> the nearest supported canvas is 4:3 (1.333). See the console's note.
+    aspect="4:3",
+    pad_share=0.0,
+)
+
 ## `cells` is the authority on what a sheet produces: a repaired sheet cuts three cells, not four.
 ## Deriving `cuts` from it stops a stale four-name list from planning one file twice (the sibelon
 ## and miner sheets each still declared `back` after their cell plan stopped cutting one).
@@ -856,8 +1037,8 @@ def run_one(run_id: str, dry: bool = False, post_only: bool = False) -> bool:
     mode = spec["mode"]
     style = STYLE_ALIEN if spec["source"] == "alien" else STYLE_HUMAN
 
-    cmd = [PY, str(SKILL), "--model", "flare", "--aspect", "1:1", "--resolution", "2K",
-           "--out", str(family_dir)]
+    cmd = [PY, str(SKILL), "--model", "flare", "--aspect", spec.get("aspect", "1:1"),
+           "--resolution", "2K", "--out", str(family_dir)]
     ## STYLE_BIBLE section 8: the block goes FIRST, so it goes in as the prompt preamble;
     ## --style-file would append it after the subject.
     prompt = style.read_text(encoding="utf-8").strip() + "\n\n" + spec["subject"]

@@ -1,0 +1,21 @@
+[panel_cockpit_flat] grimdark-painted-sci-fi-semi-realistic-1.png: 1 cell(s) found on a 1x1 grid
+  ui_cockpit_panel: ink box [65, 517, 1987, 1510] -> ui_cockpit_panel.png (2038, 1109)
+  keying 1 crop(s): ui_cockpit_panel.png
+     ui_cockpit_panel: keyed (ui_cockpit_panel-9fbaafdf-recraft.png)
+  key_new done: 1 billed call(s), 1 keyed, 0 failure(s)
+  PASS ui_cockpit_panel: ink 1922x993 -> alpha 1928x996
+    wrote ui_cockpit_panel.png (1944, 1012)
+[panel_armory_console_flat] grimdark-painted-sci-fi-semi-realistic-1.png: 1 cell(s) found on a 1x1 grid
+  ui_armory_console: ink box [42, 39, 2007, 2007] -> ui_armory_console.png (2048, 2048)
+  keying 1 crop(s): ui_armory_console.png
+     ui_armory_console: keyed (ui_armory_console-206087c5-recraft.png)
+  key_new done: 1 billed call(s), 1 keyed, 0 failure(s)
+  PASS ui_armory_console: ink 1965x1968 -> alpha 1971x1975
+    wrote ui_armory_console.png (1987, 1991)
+[panel_status_flat] grimdark-painted-sci-fi-semi-realistic-1.png: 1 cell(s) found on a 1x1 grid
+  ui_status_panel: ink box [14, 109, 2034, 1427] -> ui_status_panel.png (2048, 1440)
+  keying 1 crop(s): ui_status_panel.png
+     ui_status_panel: keyed (ui_status_panel-ab4a2cb3-recraft.png)
+  key_new done: 1 billed call(s), 1 keyed, 0 failure(s)
+  PASS ui_status_panel: ink 2020x1318 -> alpha 2026x1324
+    wrote ui_status_panel.png (2042, 1340)

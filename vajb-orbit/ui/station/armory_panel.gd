@@ -1,27 +1,35 @@
-extends VBoxContainer
+extends Control
 ## ARMORY (the OUTFITTING pane renamed, STATION_HUB section 5.11's 2026-09-23 S5
 ## amendment): **battery composition by drag and drop** (09 section 11, CONTRACTS
-## section 17) above the ammunition rows.
+## section 17) above the ammunition rows - now on the cockpit instrument language
+## (UI_SPEC section 3.9 / section 3.10, wave D7).
 ##
-## Three groups, in render order:
+## Three groups, in render order, each one in a recessed well of the painted console:
 ##
-##   - **BATTERY RACKS** - racks `B1..B7`, one drop zone per `weapon_1..7` key. A rack
-##     holds the W cells that fire together; dragging an inventory weapon onto a rack
-##     installs it into the rack's **next free W cell** through the profile's composed
-##     `fit_into_rack` (the §13/§16 transactions: `fit_legal` and the mandatory set are
-##     checked before the first write, and a refusal writes nothing at all). A rack may
-##     hold mixed kinds, which is the wave's own ask: the salvo's rate is the slowest
-##     member's cycle (the rack's `SALVO` line shows it). Dragging a barrel within a
-##     rack re-orders it; dragging it onto another rack (or onto another barrel) moves
-##     or swaps it; the `✕` returns a barrel to the inventory.
-##   - **INVENTORY** - one row per owned weapon **id** (aggregated, catalogue order),
-##     each one a drag source. Its `OWNED ×n` figure is `PlayerProfile.instances_of`,
-##     the number of cells one install can pair (S4's own reading).
-##   - **AMMUNITION** - one row per `StationCatalog.AMMO_PACKS` entry: the pack model
-##     left this pane in S5 (10 section 6.1), so a row buys **cargo units**
-##     (`units = rounds / ROUNDS_PER_CARGO_UNIT`) through `PlayerProfile.buy_ammo` and
-##     its `HELD / MAX` figures are the hold's units against the unit equivalent of the
-##     family's `ammo_max`.
+##   - **BATTERY RACKS** - racks `B1..B7`, one drop zone per `weapon_1..7` key, drawn as
+##     Mockup A's **4+3 grid** of bolted bay plates (`ui_armory_rack_plate`), each bay
+##     carrying its four **W cells as machined slot recesses** and a **SALVO strip** of
+##     three `ui_seg_*` cells (seconds x 100, `073` = 0.73 s - the approved Mockup A
+##     figure; the brief's own "seconds x10" cannot hold the approved example, see the
+##     report). A rack holds the W cells that fire together; dragging an inventory weapon
+##     onto a rack installs it into the rack's **next free W cell** through the profile's
+##     composed `fit_into_rack` (the section 13/16 transactions: `fit_legal` and the
+##     mandatory set are checked before the first write, and a refusal writes nothing at
+##     all). A rack may hold mixed kinds: the salvo's rate is the slowest member's cycle.
+##     Dragging a barrel within a rack re-orders it; onto another rack (or another barrel)
+##     it moves or swaps; the `x` returns a barrel to the inventory.
+##   - **INVENTORY** - one row per owned weapon **id** (aggregated, catalogue order), each
+##     one a drag source on a brushed row plate.
+##   - **AMMUNITION** - one card per `StationCatalog.AMMO_PACKS` entry (three across, the
+##     six packs in two rows), buying **cargo units** (`units = rounds /
+##     ROUNDS_PER_CARGO_UNIT`) through `PlayerProfile.buy_ammo`.
+##
+## **Surface only** (section 3.10): the pane's signals, transactions, drag-drop behaviour
+## and the refusal-writes-nothing rule are untouched - every seam and number of STATION_HUB
+## section 5.11, 09 section 11 and CONTRACTS section 17 survives. Every colour, layout
+## metric and asset path comes from `ArmoryStyle` (`ui/station/armory_style.gd`), which
+## extends `CockpitStyle` (section 3.9 rule 5): one palette, one asset idiom, and a user
+## `.tres` restyles and relayouts the pane with no code edit.
 ##
 ## The panel never writes the store directly (STATION_HUB section 12.4): it calls the
 ## profile's composed APIs, `fit_for`/`resolved_fit`/`instances_of`/`battery_groups`/
@@ -31,6 +39,8 @@ extends VBoxContainer
 ##   signal status_requested(message: String, danger: bool)   write the footer strip
 ##   func refresh_profile(key: StringName) -> void             react to profile_changed
 ##   func focus_primary() -> void                              focus entry after a switch
+
+const StyleScript := preload("res://ui/station/armory_style.gd")
 
 const TOKENS_TYPE: StringName = &"Tokens"
 
@@ -42,16 +52,30 @@ const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
 signal status_requested(message: String, danger: bool)
 
-const ROW_HEIGHT := 76.0
+## The header strip's own columns (the S5 row anatomy, kept for the fit pass and the
+## header's own declaration; the ammunition cards carry their figures inline now).
 const COL_ICON := 40.0
 const COL_HELD := 130.0
 const COL_PRICE := 110.0
 const COL_TAG := 160.0
 const COL_ACTION := 160.0
-const ROW_INNER_MARGIN := Vector2i(12, 8)
-const COLUMN_SEPARATION := 12
-const CELL_SEPARATION := 2
-## The ammunition rows' five declared columns, in order. `_header_cells()` and a row's
+
+## The ammunition card's own grid (three across, Mockup A's own three boxes): the well is
+## 406 logical wide, so three cards fill it with `ROW_GAP` between them.
+const AMMO_COLUMNS := 3
+## A row's inner padding, in drawn pixels (the plates carry the chrome, not the margins).
+const ROW_INNER_MARGIN := Vector2i(6, 4)
+const COLUMN_SEPARATION := 6
+const CELL_SEPARATION := 1
+## The rows' own type sizes (the instrument language's compact bands; section 3.10 cuts the
+## ammunition row to 32 and the inventory row to 22).
+const AMMO_TITLE_FONT_SIZE := 12
+const AMMO_META_FONT_SIZE := 11
+const INVENTORY_NAME_FONT_SIZE := 13
+const INVENTORY_TAG_FONT_SIZE := 11
+## The ammunition card's right column, in drawn pixels.
+const AMMO_VALUE_COLUMN := 96.0
+## The two ammunition rows' five declared columns, in order. `_header_cells()` and a row's
 ## own grid declare the same list, so the header can be re-fitted from a live row
 ## instead of repeating the declared widths (see `_fit_section`).
 const GRID_CELLS: Array[StringName] = [&"Icon", &"TitleBox", &"Held", &"Price", &"Status"]
@@ -102,12 +126,18 @@ const WEAPON_SLOT: StringName = &"weapons"
 const POWER_SLOT: StringName = &"power"
 const RACK_COUNT: int = WeaponComponent.GROUPS_MAX
 const RACK_LABEL := "B%d"
-## The rack label's own column and the `✕` plate's, one width each so the barrels of
-## different racks line up and a chip's close button never jumps with its name.
-const RACK_LABEL_WIDTH := 28.0
-const BARREL_CLOSE_WIDTH := 28.0
+## The bay's own `B<n>` plate width and its key hint (`(1)` .. `(7)`, Mockup A's own
+## keyboard legend at the bay's top-right).
+const RACK_LABEL_WIDTH := 40.0
+const RACK_KEY := "(%d)"
 const RACK_INSTALL_CUE := "DROP A WEAPON FROM THE INVENTORY HERE"
 const RACK_SALVO := "SALVO %.1f s"
+## The SALVO drum's approved figure (Mockup A, owner "Looks good" 2026-09-24): the cycle
+## in **hundredths of a second**, three cells, zero-padded (`073` = 0.73 s). A cycle of
+## 0 s has no figure and reads blanks; the pane's own state line (RACK_SALVO / RACK_READY)
+## still answers through `rack_rows()`.
+const SALVO_MAX := 999
+const SALVO_DIGITS := 3
 ## A rack with no travelling member states `READY` instead of a cadence: an instant family
 ## (the laser) has no cycle of its own to gate a salvo on.
 const RACK_READY := "READY"
@@ -157,10 +187,23 @@ const FLAT_GLYPH_ICONS: Array[String] = [
 ]
 const TINT_DIR := "res://assets/icons/tint/"
 
+## The style roles this surface asks for, in section 1's own vocabulary (the style is the
+## only colour store: section 3.9 rule 5).
+const ROLE_TEXT_PRIMARY: StringName = &"text_primary"
+const ROLE_TEXT_DIM: StringName = &"text_dim"
+const ROLE_DANGER: StringName = &"accent_danger"
+const ROLE_DANGER_BRIGHT: StringName = &"accent_danger_bright"
+const ROLE_METAL_LIGHT: StringName = &"metal_light"
+const ROLE_METAL_DARK: StringName = &"metal_dark"
+const ROLE_VOID: StringName = &"void_base"
+const ROLE_PANEL_STEEL: StringName = &"panel_steel"
+
 
 ## One barrel chip's name plate: the drag source of a barrel (S5, 09 section 11). The
 ## payload is its address in the racks, so a drop knows what is being moved without
-## reading the tree it may be about to rebuild.
+## reading the tree it may be about to rebuild. Its ink is transparent - Mockup A draws a
+## fitted cell as a machined block inside its slot, and the name lives on in `text` (the
+## existing suites read it) and in the tooltip.
 class BarrelName extends Button:
 	var armory: Control = null
 	var rack := 0
@@ -173,9 +216,13 @@ class BarrelName extends Button:
 			return null
 		return armory.call(&"drag_barrel", rack, slot)
 
+	func _ready() -> void:
+		clip_text = true
 
-## One barrel chip: the name plate over its `✕`, and a drop zone of its own - dropping a
-## barrel **on** another barrel is the swap (09 section 11's between-rack swap).
+
+## One barrel chip: the name plate over its `x`, and a drop zone of its own - dropping a
+## barrel **on** another barrel is the swap (09 section 11's between-rack swap). Mockup A
+## keeps the chip inside its machined W-cell recess.
 class BarrelCell extends HBoxContainer:
 	var armory: Control = null
 	var rack := 0
@@ -191,8 +238,10 @@ class BarrelCell extends HBoxContainer:
 			armory.call(&"drop", rack, slot, data)
 
 
-## One rack: the `B<n>` label, its barrels, and the drop zone that installs a dragged
-## inventory weapon into the rack's next free W cell.
+## One rack: the `B<n>` label, its key hint, its state line, its barrels and the drop zone
+## that installs a dragged inventory weapon into the rack's next free W cell. Laid out as
+## Mockup A's bay: the plate strip over the well, the four W-cell recesses, the engraved
+## ledge and the SALVO strip beneath it.
 class RackRow extends PanelContainer:
 	var armory: Control = null
 	var rack := 0
@@ -220,13 +269,292 @@ class InventoryRow extends Button:
 		return armory.call(&"drag_inventory", base_id)
 
 
+## The console's own wells (section 3.9 rule 4: state and chrome are code-drawn over the
+## painted plate): the three recesses and one bay card per rack, in the style's tokens.
+class ConsoleWells extends Control:
+	var style: Resource = null
+	var regions: Array[Rect2] = []
+	var bays: Array[Rect2] = []
+
+
+	func configure(new_style: Resource, new_regions: Array[Rect2], new_bays: Array[Rect2]) -> void:
+		style = new_style
+		regions = new_regions
+		bays = new_bays
+		queue_redraw()
+
+
+	func well_rects() -> Array[Rect2]:
+		return regions
+
+
+	func bay_rects() -> Array[Rect2]:
+		return bays
+
+
+	func _draw() -> void:
+		if style == null:
+			return
+		for rect: Rect2 in regions:
+			_recess(rect)
+		for rect: Rect2 in bays:
+			_recess(rect)
+
+
+	func _recess(rect: Rect2) -> void:
+		var box := StyleBoxFlat.new()
+		box.bg_color = style.colour(ROLE_VOID)
+		box.corner_radius_top_left = int(style.drawn(4.0))
+		box.corner_radius_top_right = int(style.drawn(4.0))
+		box.corner_radius_bottom_left = int(style.drawn(4.0))
+		box.corner_radius_bottom_right = int(style.drawn(4.0))
+		draw_style_box(box, rect)
+		var width: float = style.drawn(style.frame_width)
+		var dark: Color = style.colour(ROLE_METAL_DARK)
+		var light: Color = style.colour(ROLE_METAL_LIGHT)
+		draw_line(rect.position, Vector2(rect.end.x, rect.position.y), dark, width, true)
+		draw_line(rect.position, Vector2(rect.position.x, rect.end.y), dark, width, true)
+		draw_line(Vector2(rect.position.x, rect.end.y), rect.end, light, width, true)
+		draw_line(Vector2(rect.end.x, rect.position.y), rect.end, light, width, true)
+
+
+## One rack bay's code-drawn marks: the machined block of every fitted W cell (Mockup A
+## draws a block inside each occupied slot recess, 20 x 24 inside the 40 x 44 recess) and
+## the section 3.2 ember frame when this bay is the selected rack.
+class BayMarks extends Control:
+	var style: Resource = null
+	var filled: Array[int] = []
+	var selected: bool = false
+
+
+	func configure(new_style: Resource, new_filled: Array[int], is_selected: bool) -> void:
+		style = new_style
+		filled = new_filled
+		selected = is_selected
+		queue_redraw()
+
+
+	func marked_cells() -> Array[int]:
+		return filled
+
+
+	func is_selected() -> bool:
+		return selected
+
+
+	func _draw() -> void:
+		if style == null:
+			return
+		for index: int in filled:
+			var slot: Rect2 = style.drawn_rect(style.slot_rect(index))
+			var inset := Rect2(
+				slot.position + style.drawn_vector(Vector2(10.0, 10.0)),
+				style.drawn_vector(Vector2(20.0, 24.0))
+			)
+			draw_rect(inset, style.colour(ROLE_METAL_LIGHT), true)
+		if selected:
+			draw_rect(
+				Rect2(Vector2.ZERO, size),
+				style.colour(ROLE_DANGER_BRIGHT),
+				false,
+				style.drawn(style.selected_frame_width)
+			)
+
+
+## One rack bay's SALVO strip: the engraved ledge, the three `ui_seg_*` drum cells and the
+## pinned 12 px `SALVO s` caption (section 3.9 rule 3: no baked text, engine Labels and
+## drum cells only).
+class SalvoStrip extends Control:
+	var style: Resource = null
+	var _caption: Label = null
+	var _cells: Array[TextureRect] = []
+	var _seg: Array[Texture2D] = []
+	var _blank: Texture2D = null
+	var _shown: Array = []
+	var _figure: int = -1
+
+
+	func configure(new_style: Resource, segments: Array[Texture2D], blank: Texture2D) -> void:
+		style = new_style
+		_seg = segments
+		_blank = blank
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+		if _caption == null:
+			_caption = Label.new()
+			_caption.name = "Caption"
+			_caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			add_child(_caption)
+		_caption.text = style.salvo_caption
+		_caption.add_theme_font_size_override(&"font_size", style.salvo_caption_font_size)
+		_caption.add_theme_color_override(&"font_color", style.colour(ROLE_TEXT_DIM))
+		_caption.position = style.drawn_vector(style.salvo_caption_origin)
+		var cells: int = style.salvo_cells
+		while _cells.size() > cells:
+			var removed: TextureRect = _cells.pop_back()
+			remove_child(removed)
+			removed.queue_free()
+		while _cells.size() < cells:
+			var cell := TextureRect.new()
+			cell.name = "Salvo%d" % _cells.size()
+			cell.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			cell.stretch_mode = TextureRect.STRETCH_SCALE
+			cell.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			add_child(cell)
+			_cells.append(cell)
+		for index: int in _cells.size():
+			var rect: Rect2 = style.drawn_rect(style.salvo_cell_rect(index))
+			_cells[index].position = rect.position
+			_cells[index].size = rect.size
+		set_figure(_figure)
+		queue_redraw()
+
+
+	## The cycle figure in hundredths of a second, -1 for a rack with no travelling member
+	## (blanks, never a zero figure that would read as 0.00 s).
+	func set_figure(figure: int) -> void:
+		_figure = figure
+		_shown = _format(figure)
+		for index: int in _cells.size():
+			var digit: int = _shown[index]
+			var cut: Texture2D = _blank
+			if digit >= 0 and digit < _seg.size():
+				cut = _seg[digit]
+			_cells[index].texture = cut
+
+
+	## The digits as drawn: 0..9 per cell, -1 for a blank.
+	func cells() -> Array:
+		return _shown.duplicate()
+
+
+	func figure() -> int:
+		return _figure
+
+
+	## The three cells' own text, `"073"` style, for a probe that wants the readout.
+	func figure_text() -> String:
+		var text := ""
+		for digit: int in _shown:
+			text += "-" if digit < 0 else str(digit)
+		return text
+
+
+	func cell_nodes() -> Array[TextureRect]:
+		return _cells
+
+
+	func caption_node() -> Label:
+		return _caption
+
+
+	func _format(figure: int) -> Array:
+		var out: Array = []
+		for index: int in maxi(style.salvo_cells, 0):
+			out.append(-1)
+		if figure < 0:
+			return out
+		var text := str(clampi(figure, 0, SALVO_MAX))
+		var count: int = mini(text.length(), out.size())
+		var offset: int = out.size() - count
+		## Mockup A's approved figure is zero-padded (`073` = 0.73 s), not blank-padded:
+		## a cadence reads as a three-digit drum figure.
+		for index: int in offset:
+			out[index] = 0
+		for index: int in count:
+			out[offset + index] = text.substr(text.length() - count + index, 1).to_int()
+		return out
+
+
+	func _draw() -> void:
+		if style == null:
+			return
+		var ledge := Rect2(
+			style.drawn_vector(Vector2(4.0, style.ledge_offset)),
+			style.drawn_vector(Vector2(size.x / style.art_scale - 8.0, 4.0))
+		)
+		draw_rect(ledge, style.colour(ROLE_METAL_DARK), true)
+		draw_line(
+			Vector2(ledge.position.x, ledge.end.y), ledge.end,
+			style.colour(ROLE_METAL_LIGHT), style.drawn(style.frame_width), true
+		)
+		for index: int in _cells.size():
+			var rect := Rect2(_cells[index].position, _cells[index].size)
+			draw_rect(rect, style.colour(ROLE_VOID), true)
+
+
+## One row's plate: a nine-slice of the brushed strip (flat bands only, section 3.10), with
+## the section 3.1/3.1b danger frame code-drawn over it when the row is in a danger state.
+class RowPlate extends Control:
+	var style: Resource = null
+	var _plate: NinePatchRect = null
+	var _danger: bool = false
+
+
+	func configure(new_style: Resource) -> void:
+		style = new_style
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+		if _plate == null:
+			_plate = NinePatchRect.new()
+			_plate.name = "Plate"
+			_plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			add_child(_plate)
+		_plate.texture = style.texture(style.row_plate_path)
+		var sides: Array[float] = style.row_plate_sides()
+		_plate.patch_margin_left = int(sides[0])
+		_plate.patch_margin_top = int(sides[1])
+		_plate.patch_margin_right = int(sides[2])
+		_plate.patch_margin_bottom = int(sides[3])
+		_plate.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		queue_redraw()
+
+
+	## The danger treatment: a 1 px (logical) code-drawn frame in `accent_danger` - the
+	## digits themselves never recolour (section 3.7's own rule, reused here verbatim).
+	func set_danger(danger: bool) -> void:
+		if _danger == danger:
+			return
+		_danger = danger
+		queue_redraw()
+
+
+	func danger() -> bool:
+		return _danger
+
+
+	func plate_node() -> NinePatchRect:
+		return _plate
+
+
+	func _draw() -> void:
+		if style == null or not _danger:
+			return
+		draw_rect(
+			Rect2(Vector2.ZERO, size), style.colour(ROLE_DANGER), false,
+			style.drawn(style.frame_width)
+		)
+
+
 @onready var _subtitle: Label = %PaneSubtitle
 @onready var _tag: Label = %PanelTag
 @onready var _header: HBoxContainer = %ArmoryHeader
 @onready var _scroll: ScrollContainer = %ArmoryScroll
+@onready var _body: Control = %ArmoryBody
+@onready var _plate: TextureRect = %ConsolePlate
 @onready var _rows: VBoxContainer = %ArmoryRows
 @onready var _rack_rows: VBoxContainer = %RackRows
 @onready var _inventory_rows: VBoxContainer = %InventoryRows
+@onready var _racks_margin: Control = %RacksMargin
+@onready var _inventory_margin: Control = %InventoryMargin
+@onready var _ammo_margin: Control = %AmmoMargin
+
+## The style in force (`ArmoryStyle`, a `CockpitStyle`): every colour, metric and asset
+## path on this surface comes from here (section 3.9 rule 5).
+var _style: Resource = null
+## The console's code-drawn wells and bay cards.
+var _wells: ConsoleWells = null
+## The twelve `ui_seg_*` cuts, shared by every bay's SALVO strip.
+var _seg: Array[Texture2D] = []
+var _seg_blank: Texture2D = null
 
 var _payloads: Array[Dictionary] = []
 ## The rack chips and inventory rows the current frame drew, for the read-backs
@@ -242,11 +570,15 @@ var _ammo_section: Dictionary = {}
 var _sections: Array[Dictionary] = []
 var _selected_row: Button = null
 var _tweens: Array[Tween] = []
+## The selected rack (0-based), the bay that wears the section 3.2 ember frame - the same
+## rack ordinal the cluster's lamp lights. It follows focus and never writes anything.
+var _selected_rack: int = 0
 
 
 func _ready() -> void:
 	_connect_layout()
 	_build_header()
+	_build_console()
 	_build_rows()
 	_build_racks()
 	_build_inventory()
@@ -303,6 +635,251 @@ func focus_primary() -> void:
 			return
 
 
+## The style in force (section 3.9 rule 5's read-back).
+func style() -> Resource:
+	return _style
+
+
+## Swap the whole style at runtime, from an `ArmoryStyle` resource: restyle and relayout
+## with no code edit.
+func set_style(new_style: Resource) -> void:
+	if new_style == null:
+		return
+	_style = new_style
+	_apply_style()
+
+
+## Swap the style from a `.tres` path (`ArmoryStyle.ARMORY_USER_PATH` by default).
+func set_style_file(path: String) -> void:
+	set_style(StyleScript.load_style(path))
+
+
+## The selected rack (0-based) whose bay wears the ember frame.
+func selected_rack() -> int:
+	return _selected_rack
+
+
+## Mark one rack as the selected bay (nothing is written - the frame is presentation).
+func set_selected_rack(rack: int) -> void:
+	var wanted: int = rack if rack >= 0 and rack < _rack_views.size() else -1
+	if wanted == _selected_rack:
+		return
+	_selected_rack = wanted
+	for view: Dictionary in _rack_views:
+		_style_bay(view)
+
+
+## ------------------------------------------------------------------ the console
+
+
+## Mount the painted plate and the console's own geometry: the block is the style's
+## `canvas * art_scale` (Mockup A's own canvas, exactly half the shipped master), the three
+## wells and the bay grid are the style's pinned rects, and the group boxes fill them.
+func _build_console() -> void:
+	if _style == null:
+		_style = StyleScript.load_style()
+	_seg.clear()
+	for digit: int in 10:
+		_seg.append(_style.texture(_style.seg_path(str(digit))))
+	_seg_blank = _style.texture(_style.seg_path(_style.seg_blank_cell))
+	_wells = ConsoleWells.new()
+	_wells.name = "ConsoleWells"
+	_wells.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_body.add_child(_wells)
+	_body.move_child(_wells, 1)
+	_rack_rows.sort_children.connect(_lay_bays)
+	_rows.sort_children.connect(_lay_ammo)
+	_ammo_margin.resized.connect(_lay_groups)
+	_racks_margin.resized.connect(_lay_groups)
+	_inventory_margin.resized.connect(_lay_groups)
+	for box: Control in [_racks_margin, _inventory_margin, _ammo_margin]:
+		for holder: Node in box.get_children():
+			var stack := holder as Container
+			if stack != null and stack.has_signal(&"sort_children"):
+				stack.sort_children.connect(_position_group.bind(box))
+	_apply_style()
+
+
+## Re-read the style into every part of the console: the block, the plate, the wells, the
+## group boxes and the bay grid. Called once at build and again on a restyle.
+func _apply_style() -> void:
+	if _style == null:
+		return
+	if _plate != null:
+		_plate.texture = _style.texture(_style.console_path)
+		_plate.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		_plate.stretch_mode = TextureRect.STRETCH_SCALE
+	_apply_tokens()
+	_lay_groups()
+	_lay_bays()
+	_lay_ammo()
+
+
+## The three group boxes, in the style's well order (racks, inventory, ammunition): each
+## one carries its caption band above its well, and a group that outgrows its pinned well
+## pushes the ones below it down (`group_rect`'s own arithmetic).
+func _lay_groups() -> void:
+	if _style == null or _racks_margin == null:
+		return
+	var heights := _group_content_heights()
+	var offset := 0.0
+	var boxes: Array[Control] = [_racks_margin, _inventory_margin, _ammo_margin]
+	var regions: Array[Rect2] = []
+	for index: int in boxes.size():
+		var rect: Rect2 = _dr(_style.group_rect(index, heights[index], offset))
+		boxes[index].position = rect.position
+		boxes[index].size = rect.size
+		_size_captions(boxes[index], rect.size.x)
+		_position_group(boxes[index])
+		regions.append(_dr(_style.drawn_well(index, heights[index], offset)))
+		offset += _d(_style.growth(index, heights[index]))
+	var bottom: float = boxes[boxes.size() - 1].position.y + boxes[boxes.size() - 1].size.y
+	var block := Vector2(_style.block_size().x, bottom + _d(_style.block_foot))
+	_body.custom_minimum_size = block
+	_body.size = block
+	if _wells != null:
+		_wells.size = block
+		_wells.configure(_style, regions, _bay_rects())
+
+
+## Every group's caption occupies exactly the style's caption band, so the container that
+## stacks caption-over-rows puts the rows at the well's own top edge (and the bay grid's
+## offsets, which are measured from the well, land where the code-drawn recesses are).
+func _size_captions(box: Control, width: float) -> void:
+	var band: float = _d(_style.caption_band)
+	for child: Node in box.get_children():
+		var caption := child as Label
+		if caption != null and not caption.name.begins_with("Armory"):
+			caption.custom_minimum_size = Vector2(width, band)
+
+
+## The rows container of one group, at the well's own inner origin: each group's box stacks
+## its caption over its rows (`VBoxContainer`), so that stacking is corrected here on every
+## sort - the rows start at the well's inset and the caption band, which is where the
+## code-drawn wells and the bay grid measure from.
+func _position_group(box: Control) -> void:
+	if _style == null or box == null:
+		return
+	var inset: float = _d(_style.bay_origin.x)
+	var band: float = _d(_style.caption_band)
+	for holder: Node in box.get_children():
+		var stack := holder as Control
+		if stack == null:
+			continue
+		for child: Node in stack.get_children():
+			var rows := child as Control
+			if rows == null or rows is Label:
+				continue
+			rows.position = Vector2(inset, band)
+
+
+## Each group's own content height, in logical units: the racks' bay grid, the inventory
+## rows and the ammunition cards.
+func _group_content_heights() -> Array[float]:
+	var bays: float = _style.bay_grid_height(_rack_rows.get_child_count())
+	var inventory: float = _style.rows_height(_inventory_views.size(), _style.inventory_row_height)
+	var packs: int = _payloads.size()
+	var columns: int = maxi(AMMO_COLUMNS, 1)
+	var pack_rows: int = int(ceil(float(packs) / float(columns))) if packs > 0 else 0
+	var ammo: float = _style.rows_height(pack_rows, _style.ammo_row_height)
+	return [bays, inventory, ammo]
+
+
+## The seven bays' rects, in the style's 4+3 grid (drawn pixels).
+func _bay_rects() -> Array[Rect2]:
+	var out: Array[Rect2] = []
+	for index in _rack_views.size():
+		out.append(_dr(_style.bay_rect(index)))
+	return out
+
+
+## Lay the rack bays out as Mockup A's 4+3 grid. The container is a `VBoxContainer` by the
+## existing suites' own contract (`%RackRows` is cast to one and read by child index), so
+## its own stacking is corrected here on every sort - the positions are exact before any
+## layout pass, which is what lets a headless suite read them.
+func _lay_bays() -> void:
+	if _style == null or _rack_rows == null:
+		return
+	var cell: Vector2 = _style.drawn_vector(_style.bay_size)
+	var columns: int = maxi(_style.bay_columns, 1)
+	var gap: float = _d(_style.bay_gap)
+	var index := 0
+	for child: Node in _rack_rows.get_children():
+		var control := child as Control
+		if control == null:
+			continue
+		var column: int = index % columns
+		var row: int = floori(float(index) / float(columns))
+		control.position = Vector2(column * (cell.x + gap), row * (cell.y + gap))
+		## The container's own minimum is the sum of its children's, so the bays declare
+		## none of their own: their drawn rect is set outright (a VBox cannot stack a 4+3
+		## grid, and a stacked minimum would grow the whole console).
+		control.custom_minimum_size = Vector2.ONE
+		control.size = cell
+		index += 1
+	var rows: int = _style.bay_row_count(index)
+	_rack_rows.custom_minimum_size = Vector2(
+		float(columns) * cell.x + float(maxi(columns - 1, 0)) * gap,
+		float(rows) * cell.y + float(maxi(rows - 1, 0)) * gap
+	)
+	_rack_rows.size = _rack_rows.custom_minimum_size
+	for child: Node in _rack_rows.get_children():
+		var bay := child as Control
+		if bay == null:
+			continue
+		_position_head(bay.get_node_or_null(^"Box/Head") as Container)
+		_position_slots(bay.get_node_or_null(^"Box/Barrels") as Container)
+		var salvo := bay.get_node_or_null(^"Box/Salvo") as Control
+		if salvo != null:
+			salvo.position = Vector2.ZERO
+			salvo.size = cell
+	if _wells != null:
+		_wells.configure(_style, _wells.well_rects(), _bay_rects())
+
+
+## Lay the ammunition cards out three across (Mockup A's own three boxes), correcting the
+## container's own stacking the same way the rack grid does.
+func _lay_ammo() -> void:
+	if _style == null or _rows == null:
+		return
+	var cell := Vector2(
+		(_d(_style.ammo_well.size.x) - float(maxi(AMMO_COLUMNS - 1, 0)) * _d(_style.row_gap))
+			/ float(maxi(AMMO_COLUMNS, 1)),
+		_d(_style.ammo_row_height)
+	)
+	var gap: float = _d(_style.row_gap)
+	var index := 0
+	for child: Node in _rows.get_children():
+		var control := child as Control
+		if control == null:
+			continue
+		var column: int = index % AMMO_COLUMNS
+		var row: int = floori(float(index) / float(AMMO_COLUMNS))
+		control.position = Vector2(column * (cell.x + gap), row * (cell.y + gap))
+		control.custom_minimum_size = Vector2.ONE
+		control.size = cell
+		index += 1
+	var rows: int = int(ceil(float(index) / float(maxi(AMMO_COLUMNS, 1))))
+	_rows.custom_minimum_size = Vector2(
+		float(AMMO_COLUMNS) * cell.x + float(maxi(AMMO_COLUMNS - 1, 0)) * gap,
+		float(rows) * cell.y + float(maxi(rows - 1, 0)) * gap
+	)
+	_rows.size = _rows.custom_minimum_size
+
+
+## A logical length in drawn pixels.
+func _d(value: float) -> float:
+	return _style.drawn(value) if _style != null else value
+
+
+## A logical rect in drawn pixels.
+func _dr(rect: Rect2) -> Rect2:
+	return _style.drawn_rect(rect) if _style != null else rect
+
+
+## ------------------------------------------------------------------ the token lookup
+
+
 func _apply_tokens() -> void:
 	for payload: Dictionary in _payloads:
 		_apply_icon_token(payload)
@@ -313,12 +890,17 @@ func _apply_tokens() -> void:
 func _apply_icon_token(payload: Dictionary) -> void:
 	var icon: TextureRect = payload[&"icon"]
 	if icon != null and bool(payload[&"tinted"]):
-		var tint: Color = _token(&"text_primary")
+		var tint: Color = _token(ROLE_TEXT_PRIMARY)
 		tint.a = ROW_ICON_IDLE_ALPHA
 		icon.modulate = tint
 
 
+## One colour, from the style's palette (section 3.9 rule 5: this pane keeps no colour of
+## its own). The theme is the fallback for the frame between the scene loading and the
+## style being installed, the same silent fallback the D6 surfaces had.
 func _token(token: StringName) -> Color:
+	if _style != null:
+		return _style.colour(token)
 	if has_theme_color(token, TOKENS_TYPE):
 		return get_theme_color(token, TOKENS_TYPE)
 	return Color.WHITE
@@ -332,6 +914,9 @@ func _build_header() -> void:
 	_tag.text = TAG_LIST_PREFIX + TAG_LIST_SEPARATOR.join(_id_list())
 	for cell: Dictionary in _header_cells():
 		_header.add_child(_make_header_cell(cell))
+	## Mockup A carries no column header: the ammunition cards state their own figures, so
+	## the S5 column strip is kept for its contract and reads nothing.
+	_header.visible = false
 
 
 func _id_list() -> PackedStringArray:
@@ -373,8 +958,13 @@ func _build_rows() -> void:
 	for pack: Dictionary in Catalog.AMMO_PACKS:
 		_payloads.append(_build_row(pack))
 	_add_slack()
+	_lay_ammo()
 
 
+## One ammunition **card** (section 3.10's 32 px row, three across in the well): the pack's
+## name, its rounds, its price, the hold's units and the state tag, on a brushed row plate.
+## Every cell the S5 suites read is still built here - the Held cell's `Caption` carries the
+## state line, the Price cell's the `CREDITS` caption, and the Status cell's tag.
 func _build_row(pack: Dictionary) -> Dictionary:
 	var pack_id: StringName = pack.get(&"id", &"")
 	var name_text := String(pack.get(&"name", ""))
@@ -385,17 +975,34 @@ func _build_row(pack: Dictionary) -> Dictionary:
 	row.name = "Ammo%s" % String(pack_id).to_pascal_case()
 	row.toggle_mode = true
 	row.focus_mode = Control.FOCUS_ALL
-	row.custom_minimum_size = Vector2(0.0, ROW_HEIGHT)
 	row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	row.disabled = not complete
+	row.clip_contents = true
+	var frame := RowPlate.new()
+	frame.name = "RowPlate"
+	row.add_child(frame)
 	var box := _make_inner(row)
-	var icon := _make_icon(String(pack.get(&"icon", "")))
+	var icon := _make_icon(String(pack.get(&"icon", "")), _d(32.0))
 	if icon != null:
 		box.add_child(icon)
-	box.add_child(_make_title_box(name_text, ROUNDS_CAPTION % rounds, complete))
-	var held := _make_cell(box, COL_HELD, "", "", "Held")
-	var price := _make_cell(box, COL_PRICE, "", PRICE_CAPTION, "Price")
-	var tag := _make_cell(box, COL_TAG, "", "", "Status")
+	var left := VBoxContainer.new()
+	left.name = "CardText"
+	left.add_theme_constant_override(&"separation", CELL_SEPARATION)
+	left.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	left.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	left.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(left)
+	left.add_child(_make_title_box(
+		name_text, ROUNDS_CAPTION % rounds, complete, AMMO_TITLE_FONT_SIZE,
+		AMMO_META_FONT_SIZE
+	))
+	var tag := _make_cell(left, 0.0, "", "", "Status")
+	(tag[1] as Label).visible = false
+	var price := _make_cell(box, _d(AMMO_VALUE_COLUMN), "", PRICE_CAPTION, "Price")
+	var held := _make_cell(box, 0.0, "", "", "Held")
+	for cell: Array in [price, held]:
+		cell[0].add_theme_font_size_override(&"font_size", AMMO_TITLE_FONT_SIZE)
+		cell[1].add_theme_font_size_override(&"font_size", AMMO_META_FONT_SIZE)
 	_connect_cells(box, _ammo_section)
 	var payload := {
 		&"id": pack_id,
@@ -404,11 +1011,13 @@ func _build_row(pack: Dictionary) -> Dictionary:
 		&"cost": cost,
 		&"complete": complete,
 		&"row": row,
+		&"plate": frame,
 		&"icon": icon,
 		&"tinted": _is_flat_glyph(String(pack.get(&"icon", ""))),
 		&"held": held[0],
 		&"held_caption": held[1],
 		&"price": price[0],
+		&"price_caption": price[1],
 		&"tag": tag[0],
 	}
 	if complete:
@@ -417,10 +1026,15 @@ func _build_row(pack: Dictionary) -> Dictionary:
 		row.mouse_entered.connect(_on_row_hovered.bind(payload, true))
 		row.mouse_exited.connect(_on_row_hovered.bind(payload, false))
 	_rows.add_child(row)
+	frame.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	frame.configure(_style)
 	return payload
 
 
-func _make_title_box(name_text: String, meta_text: String, complete: bool) -> VBoxContainer:
+func _make_title_box(
+	name_text: String, meta_text: String, complete: bool, title_size: float = 0.0,
+	meta_size: float = 0.0
+) -> VBoxContainer:
 	var box := VBoxContainer.new()
 	box.name = "TitleBox"
 	box.add_theme_constant_override(&"separation", CELL_SEPARATION)
@@ -429,15 +1043,19 @@ func _make_title_box(name_text: String, meta_text: String, complete: bool) -> VB
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var title := _make_label(&"StationValue", name_text if complete else TAG_UNAVAILABLE)
 	title.name = "Title"
+	if title_size > 0.0:
+		title.add_theme_font_size_override(&"font_size", int(title_size))
 	box.add_child(title)
 	var meta := _make_label(&"StationCaption", meta_text if complete else META_INCOMPLETE)
 	meta.name = "Meta"
+	if meta_size > 0.0:
+		meta.add_theme_font_size_override(&"font_size", int(meta_size))
 	box.add_child(meta)
 	return box
 
 
 func _make_cell(
-	parent: HBoxContainer, width: float, value_text: String, caption_text: String, cell_name: String
+	parent: Container, width: float, value_text: String, caption_text: String, cell_name: String
 ) -> Array[Label]:
 	var box := VBoxContainer.new()
 	box.name = cell_name
@@ -492,7 +1110,7 @@ func _make_icon(icon_path: String, cell: float = COL_ICON) -> TextureRect:
 	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	icon.texture = load(_icon_source(icon_path))
-	var base := _token(&"text_primary") if tinted else Color.WHITE
+	var base := _token(ROLE_TEXT_PRIMARY) if tinted else Color.WHITE
 	base.a = ROW_ICON_IDLE_ALPHA
 	icon.modulate = base
 	return icon
@@ -648,8 +1266,10 @@ func _on_row_pressed(payload: Dictionary) -> void:
 	)
 	if not bought:
 		## The refusal text and the denied cue belong to the shell, which hears
-		## purchase_failed; the row only marks its own price cell (section 5.6).
+		## purchase_failed; the row only marks its own price cell (section 5.6) and
+		## wears the section 3.1b danger frame.
 		_pulse(payload[&"price"] as Label)
+		_style_danger(payload, true)
 		return
 	AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
 	status_requested.emit(
@@ -667,8 +1287,8 @@ func _refresh_rows() -> void:
 ## units**, so `HELD` is the hold's own unit count for the family and `MAX` the unit
 ## equivalent of its advisory `ammo_max`. The four state lines follow the same two
 ## figures, so a row that has bought nothing yet reads EMPTY even while the magazine a
-## previous launch loaded still holds rounds - which is exactly what the player is about
-## to buy.
+## previous launch loaded still holds rounds - which is exactly what the player is
+## about to buy.
 func _refresh_row(payload: Dictionary) -> void:
 	var price: Label = payload[&"price"]
 	var tag: Label = payload[&"tag"]
@@ -680,13 +1300,14 @@ func _refresh_row(payload: Dictionary) -> void:
 		tag.text = TAG_UNAVAILABLE
 		price.text = ""
 		price.remove_theme_color_override(&"font_color")
+		_style_danger(payload, true)
 		return
 	var profile := _profile()
 	var affordable := profile == null or bool(profile.call(&"can_afford", int(payload[&"cost"])))
 	if affordable:
 		price.remove_theme_color_override(&"font_color")
 	else:
-		price.add_theme_color_override(&"font_color", _token(&"accent_danger"))
+		price.add_theme_color_override(&"font_color", _token(ROLE_DANGER))
 	price.text = _format_int(int(payload[&"cost"]))
 	var pack_id: StringName = payload[&"id"]
 	var held_units := 0
@@ -695,18 +1316,38 @@ func _refresh_row(payload: Dictionary) -> void:
 		held_units = int(profile.call(&"ammo_units", pack_id))
 		capacity = _unit_cap(profile, pack_id)
 	held.text = HELD_FORMAT % [held_units, capacity]
+	var over_cap := false
 	if held_units <= 0:
 		tag.text = TAG_EMPTY
 		caption.text = META_NO_ROUNDS
 	elif held_units > capacity:
 		tag.text = TAG_OVER_CAP
 		caption.text = META_ADVISORY
+		over_cap = true
 	elif held_units == capacity:
 		tag.text = TAG_AT_CAP
 		caption.text = META_NO_CAP
 	else:
 		tag.text = TAG_IN_STOCK
 		caption.text = META_BELOW_CAPACITY
+	## Section 3.10: danger/refusal states reuse section 3.1/3.1b verbatim as row
+	## treatments - the label plus a 1 px code-drawn frame; digits never recolour.
+	_style_danger(payload, over_cap or not affordable)
+
+
+## The section 3.1/3.1b row treatment on one ammunition card: the code-drawn frame, and the
+## state label in the danger role (its own text never recoloured by the load).
+func _style_danger(payload: Dictionary, danger: bool) -> void:
+	var plate: RowPlate = payload.get(&"plate", null)
+	if plate != null:
+		plate.set_danger(danger)
+	var tag: Label = payload.get(&"tag", null)
+	if tag == null:
+		return
+	if danger:
+		tag.add_theme_color_override(&"font_color", _token(ROLE_DANGER))
+	else:
+		tag.remove_theme_color_override(&"font_color")
 
 
 ## The `MAX` figure of one ammunition row: the family's advisory `ammo_max` expressed in
@@ -750,14 +1391,16 @@ static func _clear(node: Node) -> void:
 
 
 ## Redraw every rack from the profile: the active hull's composed racks as
-## `battery_groups` derives them (`B1..B7`, in `weapon_1..7` order), each rack's barrels
-## as `W<cell> <NAME>` chips with their `✕`, and its `SALVO` line - the slowest member's
-## cycle, which is the rate the rack will fire at (09 section 11).
+## `battery_groups` derives them (`B1..B7`, in `weapon_1..7` order), each rack as a bay
+## plate - `B<n>` and its key hint at the top, the four W-cell recesses, the engraved ledge
+## and the SALVO strip with the rack's own cycle figure (seconds x 100, the slowest
+## member's cycle: 09 section 11).
 func _refresh_racks() -> void:
 	_clear(_rack_rows)
 	_rack_views.clear()
 	var profile := _profile()
 	if profile == null:
+		_lay_bays()
 		return
 	var hull := _active_hull(profile)
 	var groups: Array = profile.call(&"battery_groups", hull) if hull != &"" else []
@@ -765,6 +1408,8 @@ func _refresh_racks() -> void:
 	for rack in RACK_COUNT:
 		var refs: Array = groups[rack] if rack < groups.size() else []
 		_rack_views.append(_build_rack(rack, refs, cells))
+	_lay_bays()
+	_lay_groups()
 
 
 func _build_rack(rack: int, refs: Array, cells: Array) -> Dictionary:
@@ -773,20 +1418,38 @@ func _build_rack(rack: int, refs: Array, cells: Array) -> Dictionary:
 	row.armory = self
 	row.rack = rack
 	row.mouse_filter = Control.MOUSE_FILTER_STOP
-	var box := VBoxContainer.new()
+	row.clip_contents = false
+	var box := PanelContainer.new()
 	box.name = "Box"
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	box.add_theme_constant_override(&"separation", CELL_SEPARATION)
 	row.add_child(box)
+	var plate := TextureRect.new()
+	plate.name = "BayPlate"
+	plate.texture = _style.texture(_style.rack_plate_path) if _style != null else null
+	plate.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	plate.stretch_mode = TextureRect.STRETCH_SCALE
+	plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(plate)
+	var marks := BayMarks.new()
+	marks.name = "BayMarks"
+	marks.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(marks)
 	var head := HBoxContainer.new()
 	head.name = "Head"
 	head.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	head.add_theme_constant_override(&"separation", COLUMN_SEPARATION)
+	head.add_theme_constant_override(&"separation", CELL_SEPARATION)
 	box.add_child(head)
 	var label := _make_label(&"SectionHeader", RACK_LABEL % (rack + 1))
 	label.name = "Label"
 	label.custom_minimum_size = Vector2(RACK_LABEL_WIDTH, 0.0)
+	label.add_theme_font_size_override(&"font_size", 14)
 	head.add_child(label)
+	var key := _make_label(&"StationCaption", RACK_KEY % (rack + 1))
+	key.name = "Key"
+	key.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	key.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	key.add_theme_font_size_override(&"font_size", 11)
+	head.add_child(key)
 	var state := _make_label(&"StationCaption", "")
 	state.name = "State"
 	state.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -794,23 +1457,42 @@ func _build_rack(rack: int, refs: Array, cells: Array) -> Dictionary:
 	head.add_child(state)
 	var hint := _make_label(&"StationCaption", RACK_INSTALL_CUE)
 	hint.name = "Hint"
+	## The cue lives over the empty slot row: one clipped 9 px line inside a 194 px bay, so
+	## it never grows the bay's own minimum height (an autowrap label's minimum size is its
+	## height at one character per line - measured at 669 px here, which pushed the bay to
+	## 673 and the whole strip with it).
+	hint.clip_text = true
+	hint.add_theme_font_size_override(&"font_size", 9)
 	hint.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hint.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	head.add_child(hint)
 	var barrels := HBoxContainer.new()
 	barrels.name = "Barrels"
 	barrels.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	barrels.add_theme_constant_override(&"separation", COLUMN_SEPARATION)
+	barrels.add_theme_constant_override(&"separation", CELL_SEPARATION)
 	box.add_child(barrels)
+	var strip := SalvoStrip.new()
+	strip.name = "Salvo"
+	box.add_child(strip)
 	var views: Array[Dictionary] = []
 	for index in refs.size():
 		views.append(_build_barrel(rack, index, int(refs[index]), cells, barrels))
 	var cycle := _rack_cycle(refs, cells)
 	state.text = RACK_SALVO % cycle if cycle > 0.0 else RACK_READY
 	state.visible = not refs.is_empty()
+	## The head's own state line is the S5 contract (the suites read its text and its
+	## visibility) while Mockup A's SALVO strip is the visible readout: its ink is
+	## transparent, so the bay shows one cadence, not two.
+	state.modulate.a = 0.0
 	hint.visible = refs.is_empty()
 	_rack_rows.add_child(row)
-	return {
+	if not head.sort_children.is_connected(_position_head.bind(head)):
+		head.sort_children.connect(_position_head.bind(head))
+	if not barrels.sort_children.is_connected(_position_slots.bind(barrels)):
+		barrels.sort_children.connect(_position_slots.bind(barrels))
+	_position_head(head)
+	_position_slots(barrels)
+	var view := {
 		&"rack": rack,
 		&"row": row,
 		&"label": label.text,
@@ -818,12 +1500,19 @@ func _build_rack(rack: int, refs: Array, cells: Array) -> Dictionary:
 		&"hint": hint,
 		&"barrels": views,
 		&"cells": _rack_cell_list(refs),
+		&"marks": marks,
+		&"strip": strip,
+		&"figure": _salvo_figure(cycle),
 	}
+	_style_bay(view)
+	return view
 
 
-## One barrel chip: the drag source (the name plate) and the `✕` that returns the barrel
+## One barrel chip: the drag source (the name plate) and the `x` that returns the barrel
 ## to the inventory. Both bind the barrel's **address** (rack, slot) as the rack stands
-## now, because the whole rack is redrawn by the next profile change.
+## now, because the whole rack is redrawn by the next profile change. Mockup A draws a
+## fitted cell as the machined block in its slot, so the chips ride the slot recesses and
+## their names stay readable through the read-back and the drag data.
 func _build_barrel(
 	rack: int, slot: int, cell: int, cells: Array, parent: HBoxContainer
 ) -> Dictionary:
@@ -843,20 +1532,85 @@ func _build_barrel(
 	name_button.theme_type_variation = &"StationButton"
 	name_button.focus_mode = Control.FOCUS_ALL
 	name_button.text = BARREL_TEXT % [cell + 1, _module_name(_base_id(_profile(), entry))]
-	name_button.custom_minimum_size = Vector2(COL_ACTION, 0.0)
+	name_button.custom_minimum_size = Vector2.ZERO
 	name_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	name_button.tooltip_text = name_button.text
+	name_button.add_theme_color_override(&"font_color", Color(0, 0, 0, 0))
+	name_button.add_theme_font_size_override(&"font_size", 11)
 	chip.add_child(name_button)
 	var close := Button.new()
 	close.name = "Close"
 	close.theme_type_variation = &"StationButton"
 	close.focus_mode = Control.FOCUS_ALL
 	close.text = BARREL_CLOSE
-	close.custom_minimum_size = Vector2(BARREL_CLOSE_WIDTH, 0.0)
+	close.clip_text = true
+	close.custom_minimum_size = Vector2.ZERO
 	close.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	close.add_theme_font_size_override(&"font_size", 11)
 	close.pressed.connect(_on_remove_barrel.bind(rack, slot))
 	chip.add_child(close)
+	chip.clip_contents = true
 	parent.add_child(chip)
+	name_button.focus_entered.connect(_on_barrel_focused.bind(rack))
 	return {&"cell": cell, &"name": name_button, &"close": close}
+
+
+## Focus on a barrel makes its rack the selected bay (the section 3.2 ember frame).
+func _on_barrel_focused(rack: int) -> void:
+	set_selected_rack(rack)
+
+
+## One bay's own children, at the mockup's own offsets: `B<n>` and its key hint along the
+## top, the drop cue over the empty slot row, and the `x` in its slot's corner. The bay's
+## containers are `HBoxContainer`s by the existing suites' contract (they read `Head`'s
+## labels and `Barrels`' chips by name), so their own row layout is corrected here on every
+## sort - the positions are exact before any layout pass, which is what lets a headless
+## suite read them.
+func _position_head(head: Container) -> void:
+	if _style == null or head == null:
+		return
+	var cell: Vector2 = _style.drawn_vector(_style.bay_size)
+	var label := head.get_node_or_null(^"Label") as Control
+	if label != null:
+		label.position = Vector2(_d(10.0), _d(4.0))
+		label.size = Vector2(_d(40.0), _d(24.0))
+	var key := head.get_node_or_null(^"Key") as Control
+	if key != null:
+		key.position = Vector2(cell.x - _d(44.0), _d(4.0))
+		key.size = Vector2(_d(36.0), _d(24.0))
+	var hint := head.get_node_or_null(^"Hint") as Control
+	if hint != null:
+		hint.position = Vector2(_d(10.0), _d(20.0))
+		hint.size = Vector2(cell.x - _d(20.0), _d(44.0))
+	var state := head.get_node_or_null(^"State") as Control
+	if state != null:
+		state.position = Vector2(_d(10.0), _d(20.0))
+		state.size = Vector2(cell.x - _d(20.0), _d(16.0))
+
+
+## One bay's barrel chips, each inside its own machined W-cell recess, with the `x` in the
+## slot's corner (the name's own ink is transparent: the block inside the recess is what
+## Mockup A draws for a fitted cell).
+func _position_slots(barrels: Container) -> void:
+	if _style == null or barrels == null:
+		return
+	var index := 0
+	for child: Node in barrels.get_children():
+		var chip := child as Control
+		if chip == null:
+			continue
+		var slot: Rect2 = _dr(_style.slot_rect(index))
+		chip.position = slot.position
+		chip.size = slot.size
+		var name_button := chip.get_node_or_null(^"Name") as Control
+		if name_button != null:
+			name_button.position = Vector2.ZERO
+			name_button.size = Vector2(slot.size.x, slot.size.y - _d(14.0))
+		var close := chip.get_node_or_null(^"Close") as Control
+		if close != null:
+			close.position = Vector2(slot.size.x - _d(14.0), 0.0)
+			close.size = Vector2(_d(14.0), _d(14.0))
+		index += 1
 
 
 ## One rack's cells, as the pane's own read-back hands them out: the W-cell layout
@@ -884,6 +1638,29 @@ func _rack_cycle(refs: Array, cells: Array) -> float:
 	return cycle
 
 
+## The approved figure (Mockup A: `073` = 0.73 s): the cycle in **hundredths** of a second,
+## three cells, zero-padded. 0 s has no figure and reads blanks.
+func _salvo_figure(cycle: float) -> int:
+	if cycle <= 0.0:
+		return -1
+	return clampi(int(round(cycle * 100.0)), 0, SALVO_MAX)
+
+
+## One bay's own marks and its SALVO strip: the fitted cells' blocks, the ember frame when
+## the bay is selected, and the cycle figure.
+func _style_bay(view: Dictionary) -> void:
+	var marks: BayMarks = view.get(&"marks", null)
+	if marks != null:
+		var filled: Array[int] = []
+		for ref: Variant in view[&"cells"]:
+			filled.append(int(ref))
+		marks.configure(_style, filled, int(view[&"rack"]) == _selected_rack)
+	var strip: SalvoStrip = view.get(&"strip", null)
+	if strip != null:
+		strip.configure(_style, _seg, _seg_blank)
+		strip.set_figure(int(view[&"figure"]))
+
+
 ## The inventory: one row per owned weapon id, in catalogue order, each one a drag
 ## source. `OWNED ×n` is `PlayerProfile.instances_of(base_id)` - the number of cells one
 ## install can pair - which is the same figure S4's strip showed.
@@ -894,10 +1671,13 @@ func _refresh_inventory() -> void:
 	if rows.is_empty():
 		var empty := _make_label(&"StationCaption", INVENTORY_EMPTY)
 		empty.name = "Empty"
+		empty.add_theme_font_size_override(&"font_size", 12)
 		_inventory_rows.add_child(empty)
+		_lay_groups()
 		return
 	for entry: Dictionary in rows:
 		_build_inventory_row(entry)
+	_lay_groups()
 
 
 func _build_inventory_row(entry: Dictionary) -> Dictionary:
@@ -907,28 +1687,41 @@ func _build_inventory_row(entry: Dictionary) -> Dictionary:
 	row.armory = self
 	row.base_id = base_id
 	row.focus_mode = Control.FOCUS_ALL
-	row.custom_minimum_size = Vector2(0.0, ROW_HEIGHT)
+	row.custom_minimum_size = Vector2(0.0, _d(_style.inventory_row_height))
+	row.size = Vector2(_d(_style.inventory_well.size.x), _d(_style.inventory_row_height))
 	row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	var frame := RowPlate.new()
+	frame.name = "RowPlate"
+	row.add_child(frame)
 	var box := _make_inner(row)
 	var icon_path := ModuleData.icon_path(base_id)
-	var icon := _make_icon(icon_path)
+	var icon := _make_icon(icon_path, _d(_style.inventory_icon.x))
 	if icon != null:
+		icon.custom_minimum_size = _style.drawn_vector(_style.inventory_icon)
 		box.add_child(icon)
-	box.add_child(_make_title_box(
-		String(entry[&"name"]), INVENTORY_META % int(entry[&"draw"]), true
-	))
-	var cell := _make_cell(box, COL_TAG, INVENTORY_TEXT % ["OWNED", int(entry[&"owned"])], "", "Status")
+	var name_label := _make_label(&"StationValue", String(entry[&"name"]))
+	name_label.name = "Name"
+	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	name_label.add_theme_font_size_override(&"font_size", INVENTORY_NAME_FONT_SIZE)
+	box.add_child(name_label)
+	var cell := _make_cell(box, 0.0, INVENTORY_TEXT % ["OWNED", int(entry[&"owned"])], "", "Status")
+	cell[0].add_theme_font_size_override(&"font_size", INVENTORY_TAG_FONT_SIZE)
+	cell[1].visible = false
+	cell[0].size_flags_horizontal = Control.SIZE_SHRINK_END
 	var view := {
 		&"base": base_id,
 		&"name": String(entry[&"name"]),
 		&"owned": int(entry[&"owned"]),
 		&"draw": int(entry[&"draw"]),
 		&"row": row,
+		&"plate": frame,
 		&"icon": icon,
 		&"tinted": _is_flat_glyph(icon_path),
 		&"status": cell[0],
 	}
 	_inventory_rows.add_child(row)
+	frame.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	frame.configure(_style)
 	_inventory_views.append(view)
 	return view
 
@@ -957,9 +1750,9 @@ func inventory_rows() -> Array[Dictionary]:
 	return rows
 
 
-## Every drawn rack as `{rack, label, state, hint, barrels, cells}` - `barrels` is one
-## `{cell, name, close}` per barrel chip and `cells` the rack's W-cell indices in its own
-## order. Probes and suites read the racks through this rather than walking the tree.
+## Every drawn rack as `{rack, label, state, hint, barrels, cells, figure}` - `barrels` is
+## one `{cell, name, close}` per barrel chip and `cells` the rack's W-cell indices in its
+## own order. Probes and suites read the racks through this rather than walking the tree.
 func rack_rows() -> Array[Dictionary]:
 	var rows: Array[Dictionary] = []
 	for view: Dictionary in _rack_views:
@@ -975,8 +1768,44 @@ func rack_rows() -> Array[Dictionary]:
 			&"state": (view[&"state"] as Label).text,
 			&"cells": view[&"cells"],
 			&"barrels": barrels,
+			&"figure": int(view[&"figure"]),
 		})
 	return rows
+
+
+## One bay's SALVO readout as the pane drew it: the strip's three cells (`-1` = blank) and
+## the figure it was handed (-1 for a rack with no travelling member).
+func salvo_readout(rack: int) -> Dictionary:
+	if rack < 0 or rack >= _rack_views.size():
+		return {&"figure": -1, &"cells": []}
+	var strip: SalvoStrip = _rack_views[rack][&"strip"]
+	return {
+		&"figure": int(_rack_views[rack][&"figure"]),
+		&"cells": strip.cells() if strip != null else [],
+		&"text": strip.figure_text() if strip != null else "",
+	}
+
+
+## One bay's code-drawn marks (the fitted cells' blocks and the selected frame).
+func bay_marks(rack: int) -> BayMarks:
+	if rack < 0 or rack >= _rack_views.size():
+		return null
+	return _rack_views[rack][&"marks"]
+
+
+## Every bay's rect as drawn (the section 3.10 4+3 grid, in the console's own space).
+func bay_rects() -> Array[Rect2]:
+	return _bay_rects()
+
+
+## The three wells as drawn (the section 3.10 Mockup A rects).
+func well_rects() -> Array[Rect2]:
+	return _wells.well_rects() if _wells != null else []
+
+
+## The console block's own size as drawn.
+func block_size() -> Vector2:
+	return _body.custom_minimum_size
 
 
 ## The inventory rows as drawn, in order, `{base, name, owned, draw, text}`.
@@ -1144,7 +1973,7 @@ func move_barrel(
 	return true
 
 
-## The `✕`: the barrel returns to the inventory and its cell is emptied
+## The `x`: the barrel returns to the inventory and its cell is emptied
 ## (`clear_rack_cell`, the composed remove plus the record update). Refused, writing
 ## nothing, for an address that holds no barrel or a cell the mandatory set protects
 ## (unreachable for a W cell, measured: `FitData.MANDATORY_SLOT_KEYS` is

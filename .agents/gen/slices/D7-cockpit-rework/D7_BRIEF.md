@@ -195,6 +195,30 @@ wave). Still open: the D6 carry-overs (NMS teal, HULL/SHLD %, key U, per-module
 damage) and the armory's `OWNED ×n` / HELD-MAX copy rows if the owner wants
 wording changes.
 
+## Mockup v6/v7 amendments (2026-09-24, owner-approved — these win over the pins above)
+
+- **The compass is ditched entirely** (owner: "we ditch the compass entirely. and
+  put instead of it two smaller clocks for FUEL and ENERGY"): the middle bay holds
+  two value dials `FUEL`/`ENRG` (36 px radius, 23 px clear — v7: "space out the
+  dials a bit"), the compass/HDG/cardinals and the heading tick are gone
+  (`compass()`/`compass_heading()` survive as stubs; `readouts()` = {spd, hull,
+  shield, ammo}), and the right stack becomes **SPD / HULL / SHLD / AMMO** (AMMO
+  moves up; FUEL/ENRG rows retire; the left foot keeps only the lamps band).
+- **The readout well spans the full interior height** (v7: "from bottom edge of
+  top frame to current bottom position"), rows spread evenly (pitch 50.7), the
+  bottom row in the foot band.
+- **CockpitStyle (owner: "make sure that it is easily modified by the user in the
+  future, like different styles, layout etc"):** every palette value, layout
+  metric and asset path comes from one `CockpitStyle` Resource
+  (`ui/hud/cockpit_style.gd`) with a `cockpit_style_user.tres` override —
+  UI_SPEC §3.9 rule 5 is the contract, and `test_d7_cockpit.gd` proves a user
+  .tres restyles + relayouts with no code edit.
+- **The three console panels are FLAT plates with code-drawn wells** (UI_CHROME
+  §12 Amendment 2 — A0's baked wells misregistered on 4 of 6 masters and v7 moved
+  the bays): **D7-A1** re-renders `ui_cockpit_panel`/`ui_armory_console`/
+  `ui_status_panel` in parallel with C1; A0's `ui_gauge_face` + the two armory
+  plates stand. Run order becomes **A1 ∥ C1 → C2 → C3 → R1 → (F1)**.
+
 ## Close-out (the orchestrator runs these, in order)
 
 1. Gate twice (scratch store, `XDG_DATA_HOME`; identical counts) + the

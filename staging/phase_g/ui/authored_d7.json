@@ -1,0 +1,90 @@
+[
+ {
+  "name": "ui_cockpit_panel",
+  "route": "render",
+  "note": "render's own wells pass the lines-up QC"
+ },
+ {
+  "name": "ui_status_panel",
+  "route": "authored",
+  "box": [
+   1440,
+   1040
+  ],
+  "palette": {
+   "rim_light": [
+    84,
+    84,
+    84
+   ],
+   "rim_dark": [
+    44,
+    44,
+    44
+   ],
+   "void": [
+    14,
+    13,
+    14
+   ],
+   "shadow": [
+    6,
+    5,
+    6
+   ]
+  },
+  "fill": "reflect",
+  "erase": "off-grid",
+  "erased_px": 517094,
+  "erased_regions": 6,
+  "authored_wells": [
+   "footer_strip"
+  ],
+  "sub_recesses": 0
+ },
+ {
+  "name": "ui_armory_console",
+  "route": "authored",
+  "box": [
+   1744,
+   1816
+  ],
+  "palette": {
+   "rim_light": [
+    89,
+    86,
+    84
+   ],
+   "rim_dark": [
+    26,
+    26,
+    25
+   ],
+   "void": [
+    7,
+    7,
+    7
+   ],
+   "shadow": [
+    3,
+    3,
+    3
+   ]
+  },
+  "fill": "mirror",
+  "erase": "all",
+  "erased_px": 952366,
+  "erased_regions": 14,
+  "authored_wells": [
+   "racks_well",
+   "inventory_well",
+   "ammo_well"
+  ],
+  "sub_recesses": 7
+ },
+ {
+  "name": "ui_armory_rack_plate",
+  "route": "render",
+  "note": "render's own wells pass the lines-up QC"
+ }
+]

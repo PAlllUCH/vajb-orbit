@@ -318,6 +318,29 @@ Row containment is a hard check (the mockup's measured lit-glyph boxes at 2×,
 all inside their wells): AMMO x 213–307, HDG x 481–531, ENRG x 669–806; every
 foot drum group spans y 375–437 identically.
 
+**Mockup v7 approved by the owner 2026-09-24** ("Okay looks golde"; v6: "we ditch
+the compass entirely. and put instead of it two smaller clocks for FUEL and
+ENERGY"; v7: "make the 7 segment screens segment go from bottom edge of top frame
+to current bottom position … and space out the dials a bit"). **This block
+supersedes the v5 block's bay content where they differ:**
+
+- **The compass is gone entirely** — rose, lubber, cardinal Labels, the HDG row
+  and the heading tick all retire from the cluster. `compass()` /
+  `compass_heading()` survive callable as stubs (CONTRACTS §18 keeps its
+  signatures; heading has no readout until a future wave wants one).
+- **Middle bay = two value dials** `FUEL` and `ENRG` in the §3.6 dial language
+  (270° arc of 10 thin wedges + needle + hub; name as a 12 px `Label` over the
+  lower face). **36 px radius** each (72×72), centres (214, 78) and (214, 181)
+  in panel coords — **23 px clear between rims**. Values:
+  `round(100 × value / maximum)` 0..100 over the sweep (`maximum == 0` reads 0).
+  Danger (fuel ≤ 15 %, and == 0): needle `accent_danger_bright`, lit arc
+  `accent_danger` — state marks stay code-drawn.
+- **Right well = full interior height** (the 7-seg screens segment runs from the
+  top frame's bottom edge to the same bottom): four rows **SPD / HULL / SHLD /
+  AMMO** spread evenly through it (pitch 50.7 px, row 36), bottom row in the
+  foot band. The FUEL/ENRG digit rows retire (the dials carry them); **AMMO
+  moves up** into the stack; the left foot keeps **only** the battery lamps band.
+
 ### 3.8 Ship status screen (amendment 2026-09-23, wave D6)
 
 A HUD-internal overlay ("computer screen with current ship layout"), hidden by
@@ -381,6 +404,17 @@ cockpit-family surface obeys this language (the cluster §3.7, the battery windo
 4. **State is code-drawn.** Fills, needles, ticks and danger frames stay
    code-drawn in theme tokens over the painted faces (§3.2's palette-neutral
    textures precedent). Digits themselves never recolour.
+5. **Everything is user-modifiable** (owner 2026-09-24: "make sure that it is
+   easily modified by the user in the future, like different styles, layout
+   etc"): every colour, layout metric and asset path these surfaces use lives in
+   one **`CockpitStyle`** Resource (`vajb-orbit/ui/hud/cockpit_style.gd`,
+   `class_name CockpitStyle`) with `@export` groups **palette** (panel/metal/
+   bone/dim/ember tokens), **layout** (box, band, bay widths + gutters, row
+   pitch, label zone, drum cell size, dial radii, lamp size) and **assets**
+   (panel/face/plate texture paths). Defaults = this spec's numbers, shipped as
+   the built-in default; dropping in `res://ui/hud/cockpit_style_user.tres`
+   overrides everything with **no code edit** (surfaces load it if present).
+   Reversal: hardcoded tokens (the D6 status quo).
 
 Reversal: the D6 `ui_readout_glass` glass look (recorded in §3.7's amendment).
 
@@ -401,8 +435,10 @@ STATION_HUB §12.4) are untouched; 09 §11 and CONTRACTS §17 stay the seams.
   rack bay's measured rect): bolted corners, the W cells as machined slot
   recesses, and a thin mechanical readout ledge carrying the rack's SALVO cycle
   figure as `ui_seg_*` **3 cells** — **approved 2026-09-24 (Mockup A, owner:
-  "Looks good")** seconds ×10 (0.73 s reads `073`) with a 12 px `Label`
-  "SALVO s". Reversal: the plain `Label` the pane shows today.
+  "Looks good")** **seconds ×100** (0.73 s reads `073`; corrected from the
+  proposed ×10 by D7-C2's measurements — 0.6 s ⇒ `060`, 1.2 s ⇒ `120`, no cadence
+  ⇒ blanks) with a 12 px `Label` "SALVO s". Reversal: the plain `Label` the pane
+  shows today.
   **Mockup A geometry (`staging/mockup/out/armory_mockup.jpg`):** rack bays in a
   **4+3 grid**, bay **97×91** logical (194×182 at 2×), **4 slot recesses 20×22**
   per bay on a 22 pitch, `B#` + key-hint Labels at the top, engraved ledge,

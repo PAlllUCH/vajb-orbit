@@ -1,0 +1,32 @@
+[panel_cockpit] grimdark-painted-sci-fi-semi-realistic-1.png: 1 cell(s) found on a 1x1 grid
+  ui_cockpit_panel: ink box [35, 505, 2013, 1446] -> ui_cockpit_panel.png (2048, 1059)
+  keying 1 crop(s): ui_cockpit_panel.png
+     ui_cockpit_panel: keyed (ui_cockpit_panel-cf70c4d5-recraft.png)
+  key_new done: 1 billed call(s), 1 keyed, 0 failure(s)
+  PASS ui_cockpit_panel: ink 1978x941 -> alpha 1986x944
+    wrote ui_cockpit_panel.png (2144, 1102)
+[panel_armory_console] grimdark-painted-sci-fi-semi-realistic-1.png: 1 cell(s) found on a 1x1 grid
+  ui_armory_console: ink box [481, 46, 1568, 1979] -> ui_armory_console.png (1203, 2037)
+  keying 1 crop(s): ui_armory_console.png
+     ui_armory_console: keyed (ui_armory_console-a3632e55-recraft.png)
+  key_new done: 1 billed call(s), 1 keyed, 0 failure(s)
+  PASS ui_armory_console: ink 1087x1933 -> alpha 1091x1939
+    wrote ui_armory_console.png (1247, 2095)
+[panel_armory_plates] grimdark-painted-sci-fi-semi-realistic-1.png: 2 cell(s) found on a 1x2 grid
+  ui_armory_rack_plate: ink box [369, 481, 1680, 1056] -> ui_armory_rack_plate.png (1389, 653)
+  ui_armory_row_plate: ink box [103, 1263, 1946, 1568] -> ui_armory_row_plate.png (1953, 415)
+  keying 2 crop(s): ui_armory_rack_plate.png ui_armory_row_plate.png
+     ui_armory_row_plate: keyed (ui_armory_row_plate-4c903b3a-recraft.png)
+     ui_armory_rack_plate: keyed (ui_armory_rack_plate-a1abbaa1-recraft.png)
+  key_new done: 2 billed call(s), 2 keyed, 0 failure(s)
+  PASS ui_armory_rack_plate: ink 1311x575 -> alpha 1315x577
+    wrote ui_armory_rack_plate.png (1421, 683)
+  PASS ui_armory_row_plate: ink 1843x305 -> alpha 1849x307
+    wrote ui_armory_row_plate.png (1997, 455)
+[panel_status] grimdark-painted-sci-fi-semi-realistic-1.png: 1 cell(s) found on a 1x1 grid
+  ui_status_panel: ink box [32, 419, 2016, 1541] -> ui_status_panel.png (2048, 1242)
+  keying 1 crop(s): ui_status_panel.png
+     ui_status_panel: keyed (ui_status_panel-7f75b7e0-recraft.png)
+  key_new done: 1 billed call(s), 1 keyed, 0 failure(s)
+  PASS ui_status_panel: ink 1984x1122 -> alpha 1987x1126
+    wrote ui_status_panel.png (2145, 1284)

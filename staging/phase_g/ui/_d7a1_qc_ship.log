@@ -1,0 +1,40 @@
+ui_cockpit_panel         928x512 box_match=True ink=91.93% wells=4
+    dark region [4, 18, 924, 493] area=359638
+    dark region [889, 459, 914, 483] area=425
+    dark region [14, 27, 36, 53] area=372
+    dark region [891, 32, 914, 52] area=335
+ui_gauge_face            240x240 box_match=True ink=66.27% wells=1 worst_recess_ratio=0.900 PASS
+    recessed_centre  well=[35, 26, 207, 182] pinned=[100, 100, 140, 140] centre_inside=True recess_ratio=0.900 coverage=0.000 holds_pinned=1.000 well_inside=0.060 centres [121.0, 104.0] vs [120.0, 120.0]
+ui_armory_console        1744x1816 box_match=True ink=94.46% wells=15
+    dark region [7, 41, 1737, 1774] area=1350100
+    dark region [1154, 990, 1318, 1206] area=15343
+    dark region [1189, 1200, 1335, 1358] area=12438
+    dark region [1487, 669, 1586, 879] area=6762
+    dark region [1392, 1000, 1487, 1122] area=4190
+    dark region [1324, 1146, 1418, 1275] area=3691
+    dark region [1559, 747, 1603, 785] area=777
+    dark region [1193, 947, 1226, 987] area=510
+    dark region [848, 851, 1010, 945] area=497
+    dark region [1253, 1163, 1284, 1198] area=456
+    dark region [1490, 1004, 1528, 1047] area=369
+    dark region [1569, 1256, 1602, 1281] area=310
+ui_armory_rack_plate     194x182 box_match=True ink=42.36% wells=2 worst_recess_ratio=1.112 FAIL
+    slot_1           well=[146, 112, 183, 133] pinned=[10, 38, 50, 82] centre_inside=False recess_ratio=0.934 coverage=0.000 holds_pinned=0.000 well_inside=0.000 centres [164.5, 122.5] vs [30.0, 60.0]
+    slot_2           well=[30, 125, 142, 133] pinned=[54, 38, 94, 82] centre_inside=False recess_ratio=1.112 coverage=0.000 holds_pinned=0.000 well_inside=0.000 centres [86.0, 129.0] vs [74.0, 60.0]
+    slot_3           well=[146, 112, 183, 133] pinned=[98, 38, 138, 82] centre_inside=False recess_ratio=1.107 coverage=0.000 holds_pinned=0.000 well_inside=0.000 centres [164.5, 122.5] vs [118.0, 60.0]
+    slot_4           well=[146, 112, 183, 133] pinned=[142, 38, 182, 82] centre_inside=False recess_ratio=0.990 coverage=0.000 holds_pinned=0.000 well_inside=0.000 centres [164.5, 122.5] vs [162.0, 60.0]
+ui_armory_row_plate      192x64 box_match=True ink=40.22% wells=0
+ui_status_panel          1440x1040 box_match=True ink=88.74% wells=37
+    dark region [7, 183, 1434, 986] area=14515
+    dark region [347, 814, 416, 878] area=1831
+    dark region [13, 66, 70, 121] area=1811
+    dark region [56, 333, 120, 392] area=1122
+    dark region [346, 935, 454, 983] area=1101
+    dark region [281, 691, 340, 770] area=1076
+    dark region [528, 979, 805, 986] area=955
+    dark region [1358, 479, 1401, 532] area=944
+    dark region [62, 399, 124, 476] area=902
+    dark region [1275, 611, 1343, 658] area=857
+    dark region [1422, 414, 1434, 597] area=761
+    dark region [1369, 799, 1419, 854] area=648
+wrote staging/phase_g/ui/qc_d7_a1_ship.json

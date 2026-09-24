@@ -41,8 +41,7 @@ ROWS = [
     ("SPD", ["blank", "blank", "4", "2"], False),
     ("HULL", ["1", "2", "5", "0"], False),
     ("SHLD", ["blank", "8", "0", "0"], False),
-    ("FUEL", ["blank", "1", "5", "pct"], True),
-    ("ENRG", ["1", "0", "0", "pct"], False),
+    ("AMMO", ["blank", "1", "7", "6"], False),
 ]
 
 
@@ -178,6 +177,32 @@ def draw_row(img: Image.Image, x, y, label_text, cells, danger=False, label_zone
         cx += PITCH
 
 
+def value_dial(img, cx, cy, r, frac, label_text, danger=False):
+    """Small analog dial (fuel/energy): 270-deg arc of 10 thin wedges + needle + Label."""
+    disc_well(img, cx, cy, r + 4)
+    d = ImageDraw.Draw(img)
+    d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=(24, 27, 33))
+    a0, sweep = 135.0, 270.0
+    r_out, r_in = r - 8, r - 18
+    for i in range(10):
+        f0 = a0 + sweep * (i / 10.0) + 1.5
+        f1 = a0 + sweep * ((i + 1) / 10.0) - 1.5
+        lit = i < round(frac * 10)
+        col = (116, 123, 132) if lit else (44, 48, 55)
+        if danger and lit:
+            col = EMBER
+        d.pieslice((cx - r_out, cy - r_out, cx + r_out, cy + r_out), f0, f1, fill=col)
+    d.ellipse((cx - r_in + 2, cy - r_in + 2, cx + r_in - 2, cy + r_in - 2), fill=(24, 27, 33))
+    ang = math.radians(a0 + sweep * frac)
+    nx, ny = cx + (r - 26) * math.cos(ang), cy + (r - 26) * math.sin(ang)
+    ncol = EMBER_BRIGHT if danger else BONE
+    d.line([(cx, cy), (nx, ny)], fill=ncol, width=3)
+    d.ellipse((cx - 5, cy - 5, cx + 5, cy + 5), fill=METAL_MID)
+    bb = d.textbbox((0, 0), label_text, font=F_SMALL)
+    d.text((cx - (bb[2] - bb[0]) / 2 - bb[0], cy + r - 36), label_text, font=F_SMALL,
+           fill=EMBER_BRIGHT if danger else DIM)
+
+
 def battery_squares(img, x0, y0, selected=1):
     d = ImageDraw.Draw(img)
     for i in range(5):
@@ -220,34 +245,26 @@ def main():
 
     img = base.convert("RGBA")
 
-    # left bay (2x: x 64..316): gauge + battery lamps + AMMO row (72 tall, foot-aligned)
+    # left bay (2x: x 64..316): gauge + battery lamps in the foot band
     disc_well(img, 190, 172, 112)
     gauge(img, 190, 172, 106)
-    battery_squares(img, 70, 302, selected=1)
     recess(img, (64, 370, 316, 442))
-    draw_row(img, 66, 370, "AMMO", ["blank", "1", "7", "6"])
+    battery_squares(img, 70, 384, selected=1)
 
-    # middle bay (2x: x 330..538): compass + HDG row (72 tall, foot-aligned)
-    disc_well(img, 434, 172, 100)
-    rose = Image.open(f"{ASSETS}/ui_compass_rose.png").convert("RGBA")
-    rose = rose.rotate(13, resample=Image.BICUBIC)
-    img.alpha_composite(rose, (434 - 96, 172 - 96))
-    cardinals(img, 434, 172, 84, heading=13.0)
-    lubber = Image.open(f"{ASSETS}/ui_compass_lubber.png").convert("RGBA")
-    img.alpha_composite(lubber, (434 - 16, 70))
-    recess(img, (330, 370, 538, 442))
-    draw_row(img, 334, 370, "HDG", ["blank", "1", "3"])
+    # middle bay (2x: x 330..538): FUEL + ENERGY dials (compass ditched — owner v6;
+    # v7: spaced out per owner)
+    value_dial(img, 434, 156, 72, 0.15, "FUEL", danger=True)
+    value_dial(img, 434, 362, 72, 0.86, "ENRG")
 
-    # right bay (2x: x 552..864): five readout rows
+    # right bay (2x: x 552..864): four readout rows, v7 = full interior height per
+    # owner (top frame's bottom edge -> current bottom), rows spread through it
     recess(img, (558, 62, 858, 442))
-    y = 66
-    for name, cells, danger in ROWS:
-        draw_row(img, 566, y, name, cells, danger)
-        y += CELL_H + 4
+    for i, (name, cells, danger) in enumerate(ROWS):
+        draw_row(img, 566, 66 + round(i * 101.33), name, cells, danger)
 
-    img.convert("RGB").save(f"{OUT}/cockpit_mockup_v2.png")
-    img.convert("RGB").save(f"{OUT}/cockpit_mockup_v2.jpg", quality=86)
-    print(f"wrote {OUT}/cockpit_mockup_v2.png + .jpg ({W}x{H})")
+    img.convert("RGB").save(f"{OUT}/cockpit_mockup_v7.png")
+    img.convert("RGB").save(f"{OUT}/cockpit_mockup_v7.jpg", quality=86)
+    print(f"wrote {OUT}/cockpit_mockup_v7.png + .jpg ({W}x{H})")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,9 @@
+[panel_cockpit_flat] submitting
+[panel_cockpit_flat] ok task=8ad99c2810106e9f8786faa2cabbc19f 38.6s master=/home/kamil-paluszkiewicz/VajbOrbit/staging/phase_g/ui/20260924-110505/grimdark-painted-sci-fi-semi-realistic-1.png
+[panel_cockpit_flat] final panel_cockpit_flat.png (2048, 2048) RGB
+[panel_armory_console_flat] submitting
+[panel_armory_console_flat] ok task=cd611f277dc5ecf7330068c93d3a3445 42.7s master=/home/kamil-paluszkiewicz/VajbOrbit/staging/phase_g/ui/20260924-110550/grimdark-painted-sci-fi-semi-realistic-1.png
+[panel_armory_console_flat] final panel_armory_console_flat.png (2048, 2048) RGB
+[panel_status_flat] submitting
+[panel_status_flat] ok task=45e645c02b0716e308562d5b084646fb 37.4s master=/home/kamil-paluszkiewicz/VajbOrbit/staging/phase_g/ui/20260924-110629/grimdark-painted-sci-fi-semi-realistic-1.png
+[panel_status_flat] final panel_status_flat.png (2048, 2048) RGB

@@ -1,0 +1,104 @@
+[
+ {
+  "panel": "ui_cockpit_panel",
+  "box": [
+   928,
+   512
+  ],
+  "box_match": true,
+  "cut_box": [
+   1944,
+   1012
+  ],
+  "fit_scale": 0.4774,
+  "ink_containment": 1.0,
+  "ink_pct": 91.93,
+  "transparent_pct": 8.07,
+  "md5": "e238e6f521416d0057d47539c81c5626"
+ },
+ {
+  "panel": "ui_gauge_face",
+  "box": [
+   240,
+   240
+  ],
+  "box_match": true,
+  "cut_box": [
+   1938,
+   1975
+  ],
+  "fit_scale": 0.1215,
+  "ink_containment": 1.0,
+  "ink_pct": 66.27,
+  "transparent_pct": 33.73,
+  "md5": "860c1ce571ca6a2c2ef4def346c72b21"
+ },
+ {
+  "panel": "ui_armory_console",
+  "box": [
+   1744,
+   1816
+  ],
+  "box_match": true,
+  "cut_box": [
+   1987,
+   1991
+  ],
+  "fit_scale": 0.8777,
+  "ink_containment": 1.0,
+  "ink_pct": 94.46,
+  "transparent_pct": 5.54,
+  "md5": "a8382b40fb2bdd48490ae36b9666e507"
+ },
+ {
+  "panel": "ui_armory_rack_plate",
+  "box": [
+   194,
+   182
+  ],
+  "box_match": true,
+  "cut_box": [
+   1621,
+   817
+  ],
+  "fit_scale": 0.1197,
+  "ink_containment": 1.0,
+  "ink_pct": 42.36,
+  "transparent_pct": 57.64,
+  "md5": "acf82595ca4e98106359b26f161225ae"
+ },
+ {
+  "panel": "ui_armory_row_plate",
+  "box": [
+   192,
+   64
+  ],
+  "box_match": true,
+  "cut_box": [
+   1923,
+   417
+  ],
+  "fit_scale": 0.0998,
+  "ink_containment": 1.0,
+  "ink_pct": 40.22,
+  "transparent_pct": 59.78,
+  "md5": "b1568ade700b9768ecb1a7353d547d9c"
+ },
+ {
+  "panel": "ui_status_panel",
+  "box": [
+   1440,
+   1040
+  ],
+  "box_match": true,
+  "cut_box": [
+   2042,
+   1340
+  ],
+  "fit_scale": 0.7052,
+  "ink_containment": 1.0,
+  "ink_pct": 88.74,
+  "transparent_pct": 11.26,
+  "md5": "c8c0df57a61d68ea9b9751e3a9ab945f"
+ }
+]

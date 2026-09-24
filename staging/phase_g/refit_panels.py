@@ -202,7 +202,12 @@ def refit(run_id: str, dry: bool, verify_only: bool) -> bool:
         ok = ok and passed
         if rotate:
             image = image.rotate(rotate, expand=True)
-        image = wave_g.trim_centre(image)
+        ## The pad is the lane's sprite hygiene (`trim_centre`'s own 4 % default). A panel plate
+        ## whose pinned master box is what the code mounts to has no room for it: the pad is inside
+        ## the fit, so it costs the plate that share of its box on both axes and the code-drawn
+        ## wells land off the art. A run that pins its own box sets `pad_share` (the D7-A1 flat
+        ## plates use 0.0, which `trim_centre` floors at 8 px).
+        image = wave_g.trim_centre(image, spec.get("pad_share", 0.04))
         dest = STAGE / spec["family"] / f"{name}.png"
         image.save(dest)
         print(f"    wrote {dest.name} {image.size}")

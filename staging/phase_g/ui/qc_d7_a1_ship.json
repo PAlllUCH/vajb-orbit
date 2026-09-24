@@ -1,0 +1,598 @@
+{
+ "ui_cockpit_panel": {
+  "box": [
+   928,
+   512
+  ],
+  "pixels": [
+   928,
+   512
+  ],
+  "box_match": true,
+  "ink_pct": 91.93,
+  "transparent_pct": 8.06,
+  "md5": "e238e6f521416d0057d47539c81c5626",
+  "cut_box": [
+   1944,
+   1012
+  ],
+  "fit_scale": 0.4773,
+  "ink_containment": 1.0,
+  "ink_containment_note": "cut ink 1917001 px -> master ink 436787 px, scale 0.4773 (contain fit, no crop)",
+  "well_count": 4,
+  "plate_median": 70.0,
+  "extra_wells": [
+   [
+    [
+     4,
+     18,
+     924,
+     493
+    ],
+    359638
+   ],
+   [
+    [
+     889,
+     459,
+     914,
+     483
+    ],
+    425
+   ],
+   [
+    [
+     14,
+     27,
+     36,
+     53
+    ],
+    372
+   ],
+   [
+    [
+     891,
+     32,
+     914,
+     52
+    ],
+    335
+   ]
+  ]
+ },
+ "ui_gauge_face": {
+  "box": [
+   240,
+   240
+  ],
+  "pixels": [
+   240,
+   240
+  ],
+  "box_match": true,
+  "ink_pct": 66.27,
+  "transparent_pct": 33.72,
+  "md5": "860c1ce571ca6a2c2ef4def346c72b21",
+  "cut_box": [
+   1938,
+   1975
+  ],
+  "fit_scale": 0.122,
+  "ink_containment": 1.0,
+  "ink_containment_note": "cut ink 2565417 px -> master ink 38172 px, scale 0.1220 (contain fit, no crop)",
+  "well_count": 1,
+  "plate_median": 28.0,
+  "wells": [
+   {
+    "expected_box": [
+     100,
+     100,
+     140,
+     140
+    ],
+    "measured_inside_expected": 0.0596,
+    "expected_inside_measured": 1.0,
+    "well_containment": 1.0,
+    "centre": [
+     121.0,
+     104.0
+    ],
+    "expected_centre": [
+     120.0,
+     120.0
+    ],
+    "centre_inside": true,
+    "overlaps": true,
+    "coverage": 0.0,
+    "label": "recessed_centre",
+    "found": true,
+    "well_box": [
+     35,
+     26,
+     207,
+     182
+    ],
+    "well_area": 1525,
+    "recess_ratio": 0.9
+   }
+  ],
+  "well_containment_min": 1.0,
+  "wells_pass": true,
+  "extra_wells": [
+   [
+    [
+     35,
+     26,
+     207,
+     182
+    ],
+    1525
+   ]
+  ]
+ },
+ "ui_armory_console": {
+  "box": [
+   1744,
+   1816
+  ],
+  "pixels": [
+   1744,
+   1816
+  ],
+  "box_match": true,
+  "ink_pct": 94.46,
+  "transparent_pct": 5.53,
+  "md5": "a8382b40fb2bdd48490ae36b9666e507",
+  "cut_box": [
+   1987,
+   1991
+  ],
+  "fit_scale": 0.8778,
+  "ink_containment": 1.0,
+  "ink_containment_note": "cut ink 3882886 px -> master ink 2991620 px, scale 0.8778 (contain fit, no crop)",
+  "well_count": 15,
+  "plate_median": 53.0,
+  "extra_wells": [
+   [
+    [
+     7,
+     41,
+     1737,
+     1774
+    ],
+    1350100
+   ],
+   [
+    [
+     1154,
+     990,
+     1318,
+     1206
+    ],
+    15343
+   ],
+   [
+    [
+     1189,
+     1200,
+     1335,
+     1358
+    ],
+    12438
+   ],
+   [
+    [
+     1487,
+     669,
+     1586,
+     879
+    ],
+    6762
+   ],
+   [
+    [
+     1392,
+     1000,
+     1487,
+     1122
+    ],
+    4190
+   ],
+   [
+    [
+     1324,
+     1146,
+     1418,
+     1275
+    ],
+    3691
+   ],
+   [
+    [
+     1559,
+     747,
+     1603,
+     785
+    ],
+    777
+   ],
+   [
+    [
+     1193,
+     947,
+     1226,
+     987
+    ],
+    510
+   ],
+   [
+    [
+     848,
+     851,
+     1010,
+     945
+    ],
+    497
+   ],
+   [
+    [
+     1253,
+     1163,
+     1284,
+     1198
+    ],
+    456
+   ],
+   [
+    [
+     1490,
+     1004,
+     1528,
+     1047
+    ],
+    369
+   ],
+   [
+    [
+     1569,
+     1256,
+     1602,
+     1281
+    ],
+    310
+   ]
+  ]
+ },
+ "ui_armory_rack_plate": {
+  "box": [
+   194,
+   182
+  ],
+  "pixels": [
+   194,
+   182
+  ],
+  "box_match": true,
+  "ink_pct": 42.36,
+  "transparent_pct": 57.64,
+  "md5": "acf82595ca4e98106359b26f161225ae",
+  "cut_box": [
+   1621,
+   817
+  ],
+  "fit_scale": 0.1204,
+  "ink_containment": 1.0,
+  "ink_containment_note": "cut ink 1031908 px -> master ink 14958 px, scale 0.1204 (contain fit, no crop)",
+  "well_count": 2,
+  "plate_median": 65.0,
+  "wells": [
+   {
+    "expected_box": [
+     10,
+     38,
+     50,
+     82
+    ],
+    "measured_inside_expected": 0.0,
+    "expected_inside_measured": 0.0,
+    "well_containment": 0.0,
+    "centre": [
+     164.5,
+     122.5
+    ],
+    "expected_centre": [
+     30.0,
+     60.0
+    ],
+    "centre_inside": false,
+    "overlaps": false,
+    "coverage": 0.0,
+    "label": "slot_1",
+    "found": true,
+    "well_box": [
+     146,
+     112,
+     183,
+     133
+    ],
+    "well_area": 261,
+    "recess_ratio": 0.934
+   },
+   {
+    "expected_box": [
+     54,
+     38,
+     94,
+     82
+    ],
+    "measured_inside_expected": 0.0,
+    "expected_inside_measured": 0.0,
+    "well_containment": 0.0,
+    "centre": [
+     86.0,
+     129.0
+    ],
+    "expected_centre": [
+     74.0,
+     60.0
+    ],
+    "centre_inside": false,
+    "overlaps": false,
+    "coverage": 0.0,
+    "label": "slot_2",
+    "found": true,
+    "well_box": [
+     30,
+     125,
+     142,
+     133
+    ],
+    "well_area": 241,
+    "recess_ratio": 1.112
+   },
+   {
+    "expected_box": [
+     98,
+     38,
+     138,
+     82
+    ],
+    "measured_inside_expected": 0.0,
+    "expected_inside_measured": 0.0,
+    "well_containment": 0.0,
+    "centre": [
+     164.5,
+     122.5
+    ],
+    "expected_centre": [
+     118.0,
+     60.0
+    ],
+    "centre_inside": false,
+    "overlaps": false,
+    "coverage": 0.0,
+    "label": "slot_3",
+    "found": true,
+    "well_box": [
+     146,
+     112,
+     183,
+     133
+    ],
+    "well_area": 261,
+    "recess_ratio": 1.107
+   },
+   {
+    "expected_box": [
+     142,
+     38,
+     182,
+     82
+    ],
+    "measured_inside_expected": 0.0,
+    "expected_inside_measured": 0.0,
+    "well_containment": 0.0,
+    "centre": [
+     164.5,
+     122.5
+    ],
+    "expected_centre": [
+     162.0,
+     60.0
+    ],
+    "centre_inside": false,
+    "overlaps": false,
+    "coverage": 0.0,
+    "label": "slot_4",
+    "found": true,
+    "well_box": [
+     146,
+     112,
+     183,
+     133
+    ],
+    "well_area": 261,
+    "recess_ratio": 0.99
+   }
+  ],
+  "well_containment_min": 0.0,
+  "wells_pass": false,
+  "extra_wells": [
+   [
+    [
+     146,
+     112,
+     183,
+     133
+    ],
+    261
+   ],
+   [
+    [
+     30,
+     125,
+     142,
+     133
+    ],
+    241
+   ]
+  ]
+ },
+ "ui_armory_row_plate": {
+  "box": [
+   192,
+   64
+  ],
+  "pixels": [
+   192,
+   64
+  ],
+  "box_match": true,
+  "ink_pct": 40.22,
+  "transparent_pct": 59.78,
+  "md5": "b1568ade700b9768ecb1a7353d547d9c",
+  "cut_box": [
+   1923,
+   417
+  ],
+  "fit_scale": 0.101,
+  "ink_containment": 1.0,
+  "ink_containment_note": "cut ink 484316 px -> master ink 4942 px, scale 0.1010 (contain fit, no crop)",
+  "well_count": 0,
+  "plate_median": 66.5,
+  "extra_wells": []
+ },
+ "ui_status_panel": {
+  "box": [
+   1440,
+   1040
+  ],
+  "pixels": [
+   1440,
+   1040
+  ],
+  "box_match": true,
+  "ink_pct": 88.74,
+  "transparent_pct": 11.26,
+  "md5": "c8c0df57a61d68ea9b9751e3a9ab945f",
+  "cut_box": [
+   2042,
+   1340
+  ],
+  "fit_scale": 0.7051,
+  "ink_containment": 1.0,
+  "ink_containment_note": "cut ink 2672785 px -> master ink 1328950 px, scale 0.7051 (contain fit, no crop)",
+  "well_count": 37,
+  "plate_median": 61.0,
+  "extra_wells": [
+   [
+    [
+     7,
+     183,
+     1434,
+     986
+    ],
+    14515
+   ],
+   [
+    [
+     347,
+     814,
+     416,
+     878
+    ],
+    1831
+   ],
+   [
+    [
+     13,
+     66,
+     70,
+     121
+    ],
+    1811
+   ],
+   [
+    [
+     56,
+     333,
+     120,
+     392
+    ],
+    1122
+   ],
+   [
+    [
+     346,
+     935,
+     454,
+     983
+    ],
+    1101
+   ],
+   [
+    [
+     281,
+     691,
+     340,
+     770
+    ],
+    1076
+   ],
+   [
+    [
+     528,
+     979,
+     805,
+     986
+    ],
+    955
+   ],
+   [
+    [
+     1358,
+     479,
+     1401,
+     532
+    ],
+    944
+   ],
+   [
+    [
+     62,
+     399,
+     124,
+     476
+    ],
+    902
+   ],
+   [
+    [
+     1275,
+     611,
+     1343,
+     658
+    ],
+    857
+   ],
+   [
+    [
+     1422,
+     414,
+     1434,
+     597
+    ],
+    761
+   ],
+   [
+    [
+     1369,
+     799,
+     1419,
+     854
+    ],
+    648
+   ]
+  ]
+ }
+}

@@ -28,9 +28,13 @@ CONTRACTS §9/§10 measured notes, WAVEBOARD update, wave-boundary commit).
 
 | # | Wave | Slice folder | Brief / prompts | Status |
 |---|---|---|---|---|
-| 13 | **Affix-application wave** (15 §9.3 — apply the stored affixes to stats; S3 stores/prices/names/displays but applies none) | not opened | — | NOT BRIEFED — S3 tick 6 ("whether to schedule") gates it |
+| 13 | **S7 affix-application wave** (15 §9.3 — apply the stored affixes to stats; slice 4's affix half; CONTRACTS §20) | `.agents/gen/slices/S7-affix-application/` | `S7_BRIEF.md` / `S7_prompts.md` | **READY 2026-09-24** — docs-first landed (CONTRACTS §20 + v0.15, 15 §10, 09 §5 note); S3 tick 6 ("schedule or park") answered by the owner's dispatch instruction (reversal: park). Parallel-legal with designer item 8 (D7): disjoint write sets, gate attribution rule in the brief. Run order K0 → K1 → K2 → K3 → R1 → F1 only on HIGH/MED. |
 
-Next beyond the queue: owner-locked homework stays the owner's —
+Next beyond the queue: **slice 4's remainder** becomes future items — quadrants /
+directional armour (18 §4.5 + ruling 23; owner-ratified deferral from S6) and
+bosses/arena hooks (14 §5 — needs the P4 contract type and boss-hull art, which the
+graphics lane's item 5 blocks on the naming overhaul). Owner-locked homework stays
+the owner's —
 `18_engine_spec.md` §6/§13/§15 (the cleaving amendment + `FRAGMENT_OUTWARD_KICK`
 + the two flight multipliers; §15's test checklist now contradicts the shipped
 suite), the §13 turn/`coast_time` column ticks, slice 2.5's two calls.

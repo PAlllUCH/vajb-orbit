@@ -1,0 +1,162 @@
+[
+ {
+  "name": "ui_cockpit_panel",
+  "route": "authored",
+  "box": [
+   928,
+   512
+  ],
+  "palette": {
+   "rim_light": [
+    89,
+    90,
+    91
+   ],
+   "rim_dark": [
+    28,
+    28,
+    29
+   ],
+   "void": [
+    9,
+    9,
+    9
+   ],
+   "shadow": [
+    4,
+    4,
+    4
+   ]
+  },
+  "fill": "reflect",
+  "erase": "all",
+  "erased_px": 347509,
+  "erased_regions": 15,
+  "authored_wells": [
+   "gauge_well",
+   "compass_well",
+   "readout_well",
+   "ammo_recess",
+   "hdg_recess"
+  ],
+  "sub_recesses": 0
+ },
+ {
+  "name": "ui_status_panel",
+  "route": "authored",
+  "box": [
+   1440,
+   1040
+  ],
+  "palette": {
+   "rim_light": [
+    94,
+    93,
+    92
+   ],
+   "rim_dark": [
+    45,
+    45,
+    44
+   ],
+   "void": [
+    17,
+    16,
+    16
+   ],
+   "shadow": [
+    7,
+    7,
+    7
+   ]
+  },
+  "fill": "reflect",
+  "erase": "off-grid",
+  "erased_px": 578168,
+  "erased_regions": 4,
+  "authored_wells": [],
+  "sub_recesses": 0
+ },
+ {
+  "name": "ui_armory_console",
+  "route": "authored",
+  "box": [
+   1744,
+   1816
+  ],
+  "palette": {
+   "rim_light": [
+    100,
+    98,
+    95
+   ],
+   "rim_dark": [
+    35,
+    34,
+    33
+   ],
+   "void": [
+    10,
+    10,
+    9
+   ],
+   "shadow": [
+    4,
+    4,
+    4
+   ]
+  },
+  "fill": "mirror",
+  "erase": "all",
+  "erased_px": 1043225,
+  "erased_regions": 20,
+  "authored_wells": [
+   "racks_well",
+   "inventory_well",
+   "ammo_well"
+  ],
+  "sub_recesses": 7
+ },
+ {
+  "name": "ui_armory_rack_plate",
+  "route": "authored",
+  "box": [
+   194,
+   182
+  ],
+  "palette": {
+   "rim_light": [
+    83,
+    81,
+    81
+   ],
+   "rim_dark": [
+    56,
+    55,
+    55
+   ],
+   "void": [
+    30,
+    29,
+    29
+   ],
+   "shadow": [
+    13,
+    13,
+    13
+   ]
+  },
+  "fill": "reflect",
+  "erase": "all",
+  "erased_px": 14958,
+  "erased_regions": 2,
+  "authored_wells": [
+   "slot_1",
+   "slot_2",
+   "slot_3",
+   "slot_4",
+   "engraved_ledge"
+  ],
+  "sub_recesses": 0
+ }
+]

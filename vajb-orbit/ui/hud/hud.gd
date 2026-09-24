@@ -3,14 +3,13 @@ extends Control
 ## In-game HUD: hull/shield/energy/fuel bars, weapon and cargo slots, minimap, the
 ## cursor and lock reticle, the target stats window, the interaction prompt strip,
 ## the safe-warp channel bar, the Emergency Flight Mode banner and (slice 2) the
-## lock-channel ring, the hit marker and the radial speedometer inside its (wave D6)
-## cockpit instrument cluster. Contract:
+## lock-channel ring, the hit marker and the radial speedometer inside its (wave D6,
+## reworked by wave D7) cockpit instrument cluster. Contract:
 ## docs/design/IMPLEMENTATION_PLAN.md sections 3.10, 4.7, the 9.8 flight-placeholder
 ## amendments and the 9.9 engine-wave amendments (prompt strip, warp bar, friendly
 ## blips, reticle states), plus UI_SPEC section 3.1b for the two pool bars and the
-## banner, 3.5 for the lock ring, 3.6 for the dial, 3.7 for the cluster and
-## CONTRACTS section 18 for its read-backs, and ENGINE_SPEC section 10
-## (ENGINE_SPEC section 10).
+## banner, 3.5 for the lock ring, 3.6 for the dial, 3.7 for the cluster (Mockup v5/v7,
+## 2026-09-24) and CONTRACTS section 18 for its read-backs.
 ## Reads PlayerState and its signals only; never mutates gameplay state. The
 ## gameplay side pushes everything else down through the section 3.10 API.
 ##
@@ -20,7 +19,16 @@ extends Control
 ## is a bare `_draw` Control, and neither file is this worker's. Wave D6's cluster is
 ## `ui/hud/cockpit_cluster.gd` (`_build_cockpit`), and this file hands it the dial.
 ## Styling stays on the theme's tokens through `_token()`, with the one sanctioned
-## exception UI_SPEC section 1 records (`accent_nav`, the prograde needle).
+## exception UI_SPEC section 1 records (`accent_nav`, the prograde needle); the D7
+## cluster reads its own `CockpitStyle` instead (UI_SPEC section 3.9 rule 5).
+##
+## **Wave D7 (2026-09-24)** retires the section 3.6 heading tick (`set_speedometer`'s
+## `heading` is still accepted and no longer drawn), hides the old HUD column
+## (`_retire_old_column`: the section 3.1 crest bars, the section 3.2 `AmmoPanel` and
+## the section 3.4 cargo block) and pushes the ammo feed and the selected rack into the
+## cluster, which now draws them as its AMMO row and its `B1..B5` lamps. Every frozen
+## section 7 method keeps its signature and stays callable; the retired widgets stay in
+## the scene, hidden and no-op, so nothing that drove them breaks.
 
 signal weapon_slot_selected(slot: int)
 signal cargo_toggled(open: bool)
@@ -164,6 +172,10 @@ const RANGE_FORMAT := "%s  %s"
 ## Section 3.1b: the column the HULL and SHIELD blocks live in. The two pool blocks
 ## are appended to it (below ShieldBlock) by `_build_pool_blocks`.
 @onready var _blocks: VBoxContainer = $CanvasLayer/TopLeft/Blocks
+## The two section 3.1 crest blocks, retired (hidden) by `_retire_old_column` per UI_SPEC
+## section 3.7's 2026-09-24 amendment - HULL and SHLD read in the cluster's rows now.
+@onready var _hull_block: VBoxContainer = $CanvasLayer/TopLeft/Blocks/HullBlock
+@onready var _shield_block: VBoxContainer = $CanvasLayer/TopLeft/Blocks/ShieldBlock
 @onready var _top_right: MarginContainer = $CanvasLayer/TopRight
 @onready var _bottom_left: MarginContainer = $CanvasLayer/BottomLeft
 @onready var _bottom_right: MarginContainer = $CanvasLayer/BottomRight
@@ -289,7 +301,7 @@ func _ready() -> void:
 	_build_hud_widgets()
 	_build_weapon_slots()
 	_place_cargo_panel()
-	_cargo_panel.visible = false
+	_retire_old_column()
 	_cargo_toggle.pressed.connect(_on_cargo_toggle_pressed)
 	_cargo_close.pressed.connect(_on_cargo_close_pressed)
 	_zoom_minus.pressed.connect(_on_zoom_pressed.bind(ZOOM_DELTA_OUT))
@@ -508,8 +520,11 @@ func speedometer() -> Control:
 
 
 ## CONTRACTS section 18's read-backs (the same probe precedent as `speedometer()`): the
-## cluster, its compass bay, the heading it draws and the clamped ints its digits show. Each
-## answers from the widget that owns the state, and a HUD with no cluster answers empty.
+## cluster, the retired compass bay, the retired heading readout and the clamped ints the rows
+## show. Each answers from the widget that owns the state, and a HUD with no cluster answers
+## empty. Mockup v7 (2026-09-24) ditched the compass entirely: `compass()` answers null and
+## `compass_heading()` answers 0.0 through the cluster's stubs, and `readouts()` carries
+## {spd, hull, shield, ammo} - the pools read from the cluster's FUEL/ENRG dials.
 func cockpit() -> Control:
 	return _cockpit
 
@@ -524,7 +539,7 @@ func compass_heading() -> float:
 
 func readouts() -> Dictionary:
 	if _cockpit == null:
-		return {"spd": 0, "hull": 0, "shield": 0, "fuel_pct": 0, "energy_pct": 0}
+		return {"spd": 0, "hull": 0, "shield": 0, "ammo": 0}
 	return _cockpit.readouts()
 
 
@@ -662,13 +677,14 @@ func _build_hit_marker() -> void:
 	_hit_marker.apply_theme()
 
 
-## UI_SPEC section 3.7 (amendment 2026-09-23, wave D6): the cockpit instrument cluster. The
-## spec originally placed the dial "bottom-centre inside BottomLeft's parent column (below the
-## ammo panel)"; the column below the ammo panel is `CanvasLayer/BottomLeft/Blocks` (that
-## container's MarginContainer is anchored bottom-left, not bottom-centre) and section 3.7
-## resolves the discrepancy **bottom-left**, so the cluster joins that column and centres
-## itself in it. `hud.tscn` is untouched: the cluster is `ui/hud/cockpit_cluster.gd`'s own
-## class, built here in the section 7 inner-widget idiom.
+## UI_SPEC section 3.7 (amendment 2026-09-23, wave D6; reworked 2026-09-24, wave D7): the
+## cockpit instrument cluster. The spec originally placed the dial "bottom-centre inside
+## BottomLeft's parent column (below the ammo panel)"; the column below the ammo panel is
+## `CanvasLayer/BottomLeft/Blocks` (that container's MarginContainer is anchored bottom-left,
+## not bottom-centre) and section 3.7 resolves the discrepancy **bottom-left**, so the cluster
+## joins that column and centres itself in it. `hud.tscn` is untouched: the cluster is
+## `ui/hud/cockpit_cluster.gd`'s own class, built here in the section 7 inner-widget idiom.
+## The old ammo panel it used to sit under is retired (hidden) by `_retire_old_column`.
 func _build_cockpit() -> void:
 	if _bottom_left == null or _cockpit != null:
 		return
@@ -677,7 +693,8 @@ func _build_cockpit() -> void:
 		return
 	_cockpit = CockpitCluster.new()
 	_cockpit.name = COCKPIT_CLUSTER
-	_cockpit.custom_minimum_size = CockpitCluster.CLUSTER_SIZE
+	## The box is the cluster's own `CockpitStyle.box_size` (section 3.9 rule 5: a user
+	## `.tres` relayouts it), so this file pins no size of its own.
 	_cockpit.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_cockpit.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(_cockpit)
@@ -687,7 +704,10 @@ func _build_cockpit() -> void:
 
 ## UI_SPEC section 3.6's 120 x 120 dial, now the cluster's left bay. The dial's own contract
 ## is byte-identical (its geometry, segments, sweep, overdrive line and read-backs); only its
-## `_draw` surface gains the painted face and needle sprites under the code-drawn marks.
+## `_draw` surface gains the painted face and needle sprites under the code-drawn marks. The
+## two surface paths come from the cluster's `CockpitStyle` (section 3.9 rule 5), so a user
+## `.tres` restyles the dial with everything else; a path that does not resolve keeps the D6
+## preloads. The heading marker is retired (section 3.6's 2026-09-24 amendment).
 func _build_speedometer() -> void:
 	if _speedometer != null:
 		return
@@ -700,6 +720,9 @@ func _build_speedometer() -> void:
 	_speedometer.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_speedometer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bay.add_child(_speedometer)
+	var style: Resource = _cockpit.style() if _cockpit != null else null
+	if style != null:
+		_speedometer.set_surface_paths(style.gauge_face_path, style.gauge_needle_path)
 	_speedometer.apply_theme()
 
 
@@ -1026,6 +1049,32 @@ func _place_cargo_panel() -> void:
 	_cargo_panel.offset_bottom = minimap.position.y - overlay.position.y - overlay.size.y - CARGO_PANEL_GAP
 
 
+## UI_SPEC section 3.7 (2026-09-24, owner: "all of old HUD should be gone i think"): the old
+## HUD column dies - the section 3.1 crest bars (the TopLeft HULL/SHIELD blocks), the
+## section 3.2 `AmmoPanel` (with its weapon grid) and the section 3.4 cargo block (panel plus
+## toggle) leave the flight HUD. HULL/SHLD read in the cluster's rows, ammo in its AMMO row.
+##
+## The widgets stay **in the scene**, hidden and no-op, rather than being deleted: section 3.7
+## keeps "the section 7 frozen API ... callable - every frozen method keeps its signature; the
+## widgets they drove are gone (hidden/no-op widgets where nothing remains to drive)". The
+## pool blocks (section 3.1b) are **not** retired - section 3.7's list names section 3.1's
+## crest bars only, and section 3.1b's own rows stay green.
+## Reversal: unhide the five nodes (restore the column behind a debug flag).
+func _retire_old_column() -> void:
+	for widget: Control in retired_widgets():
+		widget.visible = false
+
+
+## The retired old-HUD widgets, in the order section 3.7 lists the families, so a probe can
+## assert the absence without reaching into scene paths.
+func retired_widgets() -> Array[Control]:
+	var out: Array[Control] = []
+	for widget: Control in [_hull_block, _shield_block, _ammo_panel, _cargo_toggle, _cargo_panel]:
+		if widget != null:
+			out.append(widget)
+	return out
+
+
 func _on_hull_changed(current: float, maximum: float) -> void:
 	_hull_current = maxf(current, 0.0)
 	_hull_max = maxf(maximum, 0.0)
@@ -1113,6 +1162,12 @@ func _refresh_weapon() -> void:
 		var active: bool = _cell_battery(index) == _active_slot + 1
 		_weapon_slots[index].set_active(active)
 		_weapon_slots[index].set_icon_token(TOKEN_TEXT_PRIMARY if active else TOKEN_TEXT_DIM)
+	## The same selection powers the cluster's own instruments (UI_SPEC section 3.7 Mockup v5
+	## delta 2): the battery lamps' lit lamp is the rack ordinal, and the AMMO row carries the
+	## same `_ammo` figure the retired panel's readout showed.
+	if _cockpit != null:
+		_cockpit.set_active_rack(_active_slot + 1)
+		_cockpit.set_ammo(_ammo)
 
 
 func _refresh_cargo() -> void:
@@ -1378,14 +1433,16 @@ func _on_cargo_close_pressed() -> void:
 	_set_cargo_open(false)
 
 
+## The section 3.4 cargo block retired with section 3.7's 2026-09-24 amendment, so the panel
+## stays hidden whatever the toggle asks for (cargo reads on the section 3.8 status screen).
+## The frozen setter still latches the flag and still emits `cargo_toggled`, so `game.gd`'s
+## own `_cargo_open` mirror stays in step and the key keeps working.
 func _set_cargo_open(open: bool) -> void:
 	if _cargo_open == open:
 		return
 	_cargo_open = open
 	if _cargo_panel != null:
-		if open:
-			_place_cargo_panel()
-		_cargo_panel.visible = open
+		_cargo_panel.visible = false
 	cargo_toggled.emit(open)
 
 
@@ -1547,17 +1604,18 @@ class HitMarker extends Control:
 
 ## UI_SPEC section 3.6's radial dial: 10 segments across 270 degrees with the gap at the
 ## bottom, a `metal_mid` fill per segment, the topmost filled segment in `accent_danger`
-## above 0.9 (the overdrive read), a prograde needle in `accent_nav` at the velocity's own
-## bearing and a heading marker at the nose. Both legs are world-space vectors, so the dial
-## draws their own angles - a world bearing and a screen bearing agree because both axes
-## point the same way on screen.
+## above 0.9 (the overdrive read) and a prograde needle in `accent_nav` at the velocity's own
+## bearing. The velocity is a world-space vector and the dial draws its own angle - a world
+## bearing and a screen bearing agree because both axes point the same way on screen.
+## **The heading marker is retired** (section 3.6's 2026-09-24 amendment, wave D7: the dial
+## must never read as a second compass); `set_reading` still takes the heading because the
+## section 7 feed carries it, and nothing draws it.
 class Speedometer extends Control:
 	const TOKENS_TYPE: StringName = &"Tokens"
 	const SEGMENTS := 10
 	const SWEEP := PI * 1.5
 	const OVERDRIVE := 0.9
 	const NEEDLE_LENGTH := 10.0
-	const HEADING_LENGTH := 6.0
 	const WIDTH := 1.0
 	## The fill's stroke thickness: the one render detail UI_SPEC section 3.6 does not state
 	## (it is a line weight, not a gameplay value), onetenth of the dial's own short side.
@@ -1567,13 +1625,11 @@ class Speedometer extends Control:
 	## of this worker's file set) does not carry the token yet. The theme wins when it lands.
 	const TOKEN_NAV: StringName = &"accent_nav"
 	const NAV_FALLBACK := Color("#6fb8c4")
-	## The heading marker's `bone_text` has no such carve-out, so it falls back to the
-	## nearest existing near-white and is reported.
-	const TOKEN_HEADING: StringName = &"bone_text"
-	const HEADING_FALLBACK: StringName = &"text_primary"
 	## UI_SPEC section 3.7 / UI_CHROME section 11: the painted dial face and needle sit under
 	## the code-drawn marks. Both masters are 2x their logical box (face 240 -> 120, needle
 	## 16 x 192 -> 8 x 96) and Godot scales from the one master, so the draw rect is logical.
+	## The two paths are the D6 defaults; `set_surface_paths` lets the D7 `CockpitStyle`
+	## supply its own (section 3.9 rule 5) and falls back to these when it cannot.
 	const FACE_TEXTURE: Texture2D = preload("res://assets/ui/ui_gauge_face.png")
 	const NEEDLE_TEXTURE: Texture2D = preload("res://assets/ui/ui_gauge_needle.png")
 	const NEEDLE_SIZE := Vector2(8.0, 96.0)
@@ -1583,36 +1639,48 @@ class Speedometer extends Control:
 
 	var ratio: float = 0.0
 	var prograde: Vector2 = Vector2.ZERO
-	var heading: Vector2 = Vector2.ZERO
 
+	var _face: Texture2D = FACE_TEXTURE
+	var _needle_texture: Texture2D = NEEDLE_TEXTURE
 	var _fill: Color = Color.WHITE
 	var _overdrive: Color = Color.WHITE
 	var _needle: Color = Color.WHITE
-	var _heading: Color = Color.WHITE
 	var _needle_overdrive: Color = Color.WHITE
+
+	## UI_SPEC section 3.9 rule 5: the painted surface paths come from the cockpit style, so a
+	## user `.tres` can re-skin the dial. A path that does not resolve keeps the D6 preload.
+	func set_surface_paths(face_path: String, needle_path: String) -> void:
+		var face: Texture2D = _texture_at(face_path)
+		var needle_cut: Texture2D = _texture_at(needle_path)
+		_face = face if face != null else FACE_TEXTURE
+		_needle_texture = needle_cut if needle_cut != null else NEEDLE_TEXTURE
+		queue_redraw()
+
+	func _texture_at(path: String) -> Texture2D:
+		if path.is_empty() or not ResourceLoader.exists(path):
+			return null
+		return load(path) as Texture2D
 
 	func apply_theme() -> void:
 		_fill = _token(&"metal_mid")
 		_overdrive = _token(&"accent_danger")
 		_needle = _token_or(TOKEN_NAV, NAV_FALLBACK)
-		_heading = _token(&"text_primary") if not has_theme_color(TOKEN_HEADING, TOKENS_TYPE) else _token(TOKEN_HEADING)
 		_needle_overdrive = _token(TOKEN_NEEDLE_OVERDRIVE)
 		queue_redraw()
 
-	## The dial's readings, one call per frame in flight.
-	func set_reading(speed_ratio: float, prograde_vector: Vector2, heading_vector: Vector2) -> void:
+	## The dial's readings, one call per frame in flight. The heading leg is accepted and
+	## ignored: the marker retired with section 3.6's 2026-09-24 amendment.
+	func set_reading(speed_ratio: float, prograde_vector: Vector2, _heading_vector: Vector2) -> void:
 		var wanted := clampf(speed_ratio, 0.0, 1.0)
 		## The needle moves every frame in flight; the guard is for a docked or idling hull,
-		## where the dial is redrawn only when one of the three readings actually moved.
+		## where the dial is redrawn only when one of the two live readings actually moved.
 		if (
 			is_equal_approx(wanted, ratio)
 			and is_equal_approx(prograde_vector.angle(), prograde.angle())
-			and is_equal_approx(heading_vector.angle(), heading.angle())
 		):
 			return
 		ratio = wanted
 		prograde = prograde_vector
-		heading = heading_vector
 		queue_redraw()
 
 	## The segments the dial fills at its current ratio, UI_SPEC section 3.6's own rule
@@ -1666,26 +1734,20 @@ class Speedometer extends Control:
 				_needle,
 				WIDTH
 			)
-		if not heading.is_zero_approx():
-			draw_line(
-				centre,
-				centre + Vector2.RIGHT.rotated(heading.angle()) * HEADING_LENGTH,
-				_heading,
-				WIDTH
-			)
 
 	## UI_SPEC section 3.7: the painted surface under the marks. The face fills the 120 x 120
 	## box; the needle hangs from its own base at the centre, rotated to the prograde bearing
-	## and tinted `accent_danger_bright` only in overdrive. The code-drawn segment fill,
-	## prograde needle and heading tick are painted after this, so they stay on top.
+	## and tinted `accent_danger_bright` only in overdrive. The code-drawn segment fill and
+	## prograde needle are painted after this, so they stay on top; the heading tick retired
+	## with section 3.6's 2026-09-24 amendment.
 	func _draw_surfaces(centre: Vector2) -> void:
-		draw_texture_rect(FACE_TEXTURE, Rect2(Vector2.ZERO, size), false)
+		draw_texture_rect(_face, Rect2(Vector2.ZERO, size), false)
 		if prograde.is_zero_approx():
 			return
 		var tint: Color = _needle_overdrive if ratio > OVERDRIVE else Color.WHITE
 		draw_set_transform(centre, prograde.angle() + PI * 0.5, Vector2.ONE)
 		draw_texture_rect(
-			NEEDLE_TEXTURE,
+			_needle_texture,
 			Rect2(Vector2(-NEEDLE_SIZE.x * 0.5, -NEEDLE_SIZE.y), NEEDLE_SIZE),
 			false,
 			tint

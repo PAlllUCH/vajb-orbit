@@ -317,6 +317,17 @@ once, then falls back to the D6-authored route (`ui_authored.py` shapes over a
 painted plate). Report the route either way. Digit QC (AC5) is unchanged and does
 not re-run (the `ui_seg_*` family is not re-cut).
 
+**Amendment 2 (2026-09-24 — flat plates; wells become code-drawn):** the three
+console panels (`ui_cockpit_panel`, `ui_armory_console`, `ui_status_panel`) are
+**flat painted plates** — their per-run prompts above drop every "recessed well"
+phrase. Cause, measured: A0's baked wells landed wrong on 4 of 6 masters
+(`D7-A0_report.md`, worst `recess_ratio` 1.403) and the Mockup v7 layout moved
+the bays after the renders. **Wells are code-drawn recesses at the pinned rects**
+(UI_SPEC §3.7's mockup blocks), so layout/styling changes never invalidate art.
+Bolt heads, plate seams and brush grain stay in the art. The well-registration QC
+rows retire for these three; containment/box checks stay. `ui_gauge_face`,
+`ui_armory_rack_plate`, `ui_armory_row_plate` are unchanged (A0's bytes stand).
+
 **Amendment after the mockup approval (2026-09-24, UI_SPEC §3.7 mockup deltas):**
 the approved look mounts **bare** seven-segment drums on metal — the D6
 `ui_seg_*` cells carry painted plate backgrounds and are **re-authored as

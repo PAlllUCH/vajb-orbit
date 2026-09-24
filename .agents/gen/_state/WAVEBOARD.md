@@ -5,7 +5,9 @@
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-22 purge:** the executed-wave reports, briefs and evidence were removed from `.agents/gen/` (recoverable from the system trash; the last git tree carrying them is `3f5688b`) — the historical record is `MASTER_REPORT.md` plus the newest session report, and older citations below name the purged paths.
 
 **Updated: 2026-09-24 (S6 travel closed — gate 608 → **674/0**; designer item 8 = D7 cockpit
-rework in flight).** This session's
+rework in flight; **coder item 13 = S7 affix application prepared docs-first and READY** —
+CONTRACTS §20 + v0.15, 15 §10, 09 §5 note, slice at `slices/S7-affix-application/`,
+queued in `dispatch_coder.md`).** This session's
 end-to-end record — items 4–7, their numbers, the incidents and the open items — is
 `.agents/gen/session_2026-09-22_items_4_to_7_report.md`. Full history of what every worker
 did, with known errors and open findings, now lives in
@@ -21,8 +23,10 @@ P2-B proper fitting panel, **S2.6 truth-and-feel**, **S3 the item economy**,
 `passed=578 failed=0` at S5, **`passed=608 failed=0`** after the D6 design wave,
 **`passed=674 failed=0`** after S6, hermetic). The queue of record is `dispatch_coder.md`: items 4–12 are
 all DONE and **item 12, the travel wave (CONTRACTS §19), shipped 2026-09-24**; the next coder item
-is **item 13, the affix-application wave** (15 §9.3, gated on S3 tick 6), which needs its own
-docs-first brief. Owner gates: the
+is **item 13 = S7, the affix-application wave** (15 §9.3, CONTRACTS **§20**) —
+**prepared and READY 2026-09-24** (docs-first landed; brief/prompts in
+`slices/S7-affix-application/`; S3 tick 6 answered by the owner's dispatch instruction;
+parallel-legal with D7), awaiting its handoff. Owner gates: the
 chrome art half, the **`18_engine_spec.md` §6/§13/§15 cleaving amendment** (owner-locked; §15
 is the test checklist and now contradicts the shipped suite), the launch fit (**both symptoms
 closed** — symptom 1 by P2-A, symptom 2 by P2-B1's `w_mining` row), four spec ticks, the §13
@@ -171,7 +175,6 @@ PowerShell form: `$env:VAJB_WORKER_FILES='...'; crush run "<prompt>" -m opencode
 - Probe hygiene (L17): a probe that repoints `PlayerProfile.save_path` must
   stop/flush the 0.5 s debounce before restoring `save_path`.
 
-## In flight — **coder item 12 = S6 Travel** (K0 reported 2026-09-24; its builders hold
 ## In flight — **designer item 8 = D7 cockpit rework + battery window** (2026-09-24,
 owner feedback on D6): docs-first landed (UI_SPEC §3.6 heading-tick retirement
 + §3.7 rework + §3.9 instrument language + §3.10 battery window, UI_CHROME §12,
@@ -179,15 +182,28 @@ ASSET_NAMING §12, STATION_HUB §5.11); brief + prompts in
 `slices/D7-cockpit-rework/`; write set `ui/hud/**`, `ui/station/**`,
 `assets/ui/**`, `assets/icons/**` provenance, `staging/**`, `asset-library/**`,
 `tests/test_d7_*.gd` + the §3.6 heading-tick rows + `test_d6_cluster.gd`'s
-compass rows — **disjoint from S6's** (which is closed); run order A0 → owner
+compass rows — **disjoint from S7's** (prepared below); run order A0 → owner
 sheet approval → A0b → C1 → C2 → R1 → F1 only on HIGH/MED. Handoff block in
-`dispatch_designer.md`.
+`dispatch_designer.md`. **Cross-lane gate reading (developer session, 2026-09-24
+mid-C-wave):** a gate run on the live tree reads `668/6` — total 674 as at S6's
+close, and **all six failures are D7's held files** (one compile break,
+`ui/hud/hud.gd:694 _build_cockpit`, failing 5 `test_d6_cluster.gd` rows + 1
+`test_engine2_hud.gd` §3.6 row). Attribute, never fix; S7's brief carries the rule.
+
+## Prepared — **coder item 13 = S7 affix application** (READY 2026-09-24): the
+five-piece is landed — CONTRACTS **§20** + changelog **v0.15**, 15 §10, 09 §5's
+dated note; slice at `slices/S7-affix-application/` (SLICE, BRIEF, prompts with
+K0 → K1 → K2 → K3 → R1 → F1); queued in `dispatch_coder.md` item 13. S3 tick 6
+("schedule or park") is answered by the owner's 2026-09-24 dispatch instruction
+(reversal: park). Write set (`game/**`, `autoload/player_profile.gd`,
+`tests/test_s7_*`) is disjoint from D7's — parallel-legal (the S5∥D6 precedent);
+close-outs sequence on the shared CONTRACTS §9/§10.
 
 **Coder item 12 = S6 Travel (engine slice 3 + RPG P3): DONE 2026-09-24 — gate
 608 → 674/0, detail §Closed.** **Designer item 7 = D6 cockpit instruments: DONE
 2026-09-24 — gate 578 → 608/0, detail §Closed.** **Coder item 11 (S5) closed
-2026-09-24** (§Closed). The next coder item is **item 13 the affix-application
-wave** (15 §9.3, gated on S3 tick 6), which needs its own docs-first brief. The
+2026-09-24** (§Closed). The next coder item is **item 13 = S7, prepared and READY**
+(CONTRACTS §20; brief/prompts in `slices/S7-affix-application/`). The
 graphics lane's open
 items live in the table of `dispatch_designer.md` (D3-1 chrome re-cut —
 owner-gated, D3-2a painted rail icons, D3-2b tint rework, D4-3 backdrops, D4-4
@@ -205,7 +221,9 @@ corridor rules, derelict scan range, rift drain, bounty surface, hunter hull map
 placement, POI reward content, heat/hunter copy + the 600 u spawn radius, the
 quadrant/sibelon deferrals — see §Closed), **S5's three** still owed
 (`ROUNDS_PER_CARGO_UNIT` 10, fire-along-facing vs hold-until-aligned, the
-`track_dps` taste table), and **D6's five + its MED-2 geometry call** (D6 reported
+`track_dps` taste table), **S7's nine** (the brief's list: S3 tick 6 as answered,
+Overflowing, Silence, Vault, the faction trio, `damage_mult`'s live reading, Keen
+per barrel, Lightened's sign-flip, Ledger ×1.25), and **D6's five + its MED-2 geometry call** (D6 reported
 2026-09-24 — see §Closed; the MED-2 call is the 396×190-content vs 340×152-interior pin).
 P2-A/P2-B1/P2-B
 proper tick lists are resolved.

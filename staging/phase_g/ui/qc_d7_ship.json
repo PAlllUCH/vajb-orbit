@@ -1,0 +1,970 @@
+{
+ "ui_cockpit_panel": {
+  "box": [
+   928,
+   512
+  ],
+  "pixels": [
+   928,
+   512
+  ],
+  "box_match": true,
+  "ink_pct": 79.5,
+  "transparent_pct": 20.48,
+  "md5": "184674c3134e21bd325f6ac5ded896ed",
+  "cut_box": [
+   2141,
+   1192
+  ],
+  "fit_scale": 0.4297,
+  "ink_containment": 1.0,
+  "ink_containment_note": "cut ink 2045863 px -> master ink 377750 px, scale 0.4297 (contain fit, no crop)",
+  "well_count": 15,
+  "plate_median": 50.0,
+  "wells": [
+   {
+    "expected_box": [
+     70,
+     52,
+     310,
+     292
+    ],
+    "measured_inside_expected": 0.5744,
+    "expected_inside_measured": 0.7843,
+    "well_containment": 0.7843,
+    "centre": [
+     226.0,
+     230.5
+    ],
+    "expected_centre": [
+     190.0,
+     172.0
+    ],
+    "centre_inside": true,
+    "overlaps": true,
+    "coverage": 0.6832,
+    "label": "gauge_well",
+    "found": true,
+    "well_box": [
+     83,
+     93,
+     369,
+     368
+    ],
+    "well_area": 58503,
+    "recess_ratio": 0.852
+   },
+   {
+    "expected_box": [
+     326,
+     64,
+     542,
+     280
+    ],
+    "measured_inside_expected": 0.0,
+    "expected_inside_measured": 0.0,
+    "well_containment": 0.0,
+    "centre": [
+     749.5,
+     253.5
+    ],
+    "expected_centre": [
+     434.0,
+     172.0
+    ],
+    "centre_inside": false,
+    "overlaps": false,
+    "coverage": 0.3977,
+    "label": "compass_well",
+    "found": true,
+    "well_box": [
+     660,
+     61,
+     839,
+     446
+    ],
+    "well_area": 68099,
+    "recess_ratio": 1.128
+   },
+   {
+    "expected_box": [
+     558,
+     62,
+     858,
+     442
+    ],
+    "measured_inside_expected": 0.25,
+    "expected_inside_measured": 0.0683,
+    "well_containment": 0.25,
+    "centre": [
+     513.0,
+     239.5
+    ],
+    "expected_centre": [
+     708.0,
+     252.0
+    ],
+    "centre_inside": false,
+    "overlaps": true,
+    "coverage": 0.6462,
+    "label": "readout_well",
+    "found": true,
+    "well_box": [
+     423,
+     153,
+     603,
+     326
+    ],
+    "well_area": 23639,
+    "recess_ratio": 0.903
+   }
+  ],
+  "well_containment_min": 0.0,
+  "wells_pass": false,
+  "extra_wells": [
+   [
+    [
+     660,
+     61,
+     839,
+     446
+    ],
+    68099
+   ],
+   [
+    [
+     83,
+     93,
+     369,
+     368
+    ],
+    58503
+   ],
+   [
+    [
+     423,
+     153,
+     603,
+     326
+    ],
+    23639
+   ],
+   [
+    [
+     852,
+     50,
+     890,
+     478
+    ],
+    1219
+   ],
+   [
+    [
+     363,
+     300,
+     476,
+     477
+    ],
+    1197
+   ],
+   [
+    [
+     617,
+     68,
+     671,
+     477
+    ],
+    1188
+   ],
+   [
+    [
+     159,
+     75,
+     387,
+     276
+    ],
+    1147
+   ],
+   [
+    [
+     405,
+     68,
+     557,
+     348
+    ],
+    1031
+   ],
+   [
+    [
+     38,
+     442,
+     87,
+     478
+    ],
+    617
+   ],
+   [
+    [
+     65,
+     107,
+     138,
+     266
+    ],
+    523
+   ],
+   [
+    [
+     215,
+     467,
+     319,
+     477
+    ],
+    379
+   ],
+   [
+    [
+     116,
+     472,
+     214,
+     477
+    ],
+    355
+   ]
+  ]
+ },
+ "ui_gauge_face": {
+  "box": [
+   240,
+   240
+  ],
+  "pixels": [
+   240,
+   240
+  ],
+  "box_match": true,
+  "ink_pct": 66.27,
+  "transparent_pct": 33.72,
+  "md5": "860c1ce571ca6a2c2ef4def346c72b21",
+  "cut_box": [
+   1938,
+   1975
+  ],
+  "fit_scale": 0.122,
+  "ink_containment": 1.0,
+  "ink_containment_note": "cut ink 2565417 px -> master ink 38172 px, scale 0.1220 (contain fit, no crop)",
+  "well_count": 1,
+  "plate_median": 28.0,
+  "wells": [
+   {
+    "expected_box": [
+     100,
+     100,
+     140,
+     140
+    ],
+    "measured_inside_expected": 0.0596,
+    "expected_inside_measured": 1.0,
+    "well_containment": 1.0,
+    "centre": [
+     121.0,
+     104.0
+    ],
+    "expected_centre": [
+     120.0,
+     120.0
+    ],
+    "centre_inside": true,
+    "overlaps": true,
+    "coverage": 0.0,
+    "label": "recessed_centre",
+    "found": true,
+    "well_box": [
+     35,
+     26,
+     207,
+     182
+    ],
+    "well_area": 1525,
+    "recess_ratio": 0.9
+   }
+  ],
+  "well_containment_min": 1.0,
+  "wells_pass": true,
+  "extra_wells": [
+   [
+    [
+     35,
+     26,
+     207,
+     182
+    ],
+    1525
+   ]
+  ]
+ },
+ "ui_armory_console": {
+  "box": [
+   1744,
+   1816
+  ],
+  "pixels": [
+   1744,
+   1816
+  ],
+  "box_match": true,
+  "ink_pct": 34.8,
+  "transparent_pct": 65.19,
+  "md5": "f2b3db4621e924002abf72914780c415",
+  "cut_box": [
+   1334,
+   2100
+  ],
+  "fit_scale": 0.8649,
+  "ink_containment": 1.0,
+  "ink_containment_note": "cut ink 1473454 px -> master ink 1102287 px, scale 0.8649 (contain fit, no crop)",
+  "well_count": 20,
+  "plate_median": 58.0,
+  "wells": [
+   {
+    "expected_box": [
+     60,
+     244,
+     1684,
+     1024
+    ],
+    "measured_inside_expected": 0.0,
+    "expected_inside_measured": 0.0,
+    "well_containment": 0.0,
+    "centre": [
+     872.0,
+     1316.5
+    ],
+    "expected_centre": [
+     872.0,
+     634.0
+    ],
+    "centre_inside": false,
+    "overlaps": false,
+    "coverage": 0.0922,
+    "label": "racks_well",
+    "found": true,
+    "well_box": [
+     452,
+     1054,
+     1292,
+     1579
+    ],
+    "well_area": 395618,
+    "recess_ratio": 1.063
+   },
+   {
+    "expected_box": [
+     60,
+     1140,
+     1684,
+     1480
+    ],
+    "measured_inside_expected": 0.0,
+    "expected_inside_measured": 0.0,
+    "well_containment": 0.0,
+    "centre": [
+     869.5,
+     276.5
+    ],
+    "expected_centre": [
+     872.0,
+     1310.0
+    ],
+    "centre_inside": false,
+    "overlaps": false,
+    "coverage": 0.4845,
+    "label": "inventory_well",
+    "found": true,
+    "well_box": [
+     447,
+     164,
+     1292,
+     389
+    ],
+    "well_area": 107864,
+    "recess_ratio": 0.856
+   },
+   {
+    "expected_box": [
+     60,
+     1592,
+     1684,
+     1768
+    ],
+    "measured_inside_expected": 0.0,
+    "expected_inside_measured": 0.0,
+    "well_containment": 0.0,
+    "centre": [
+     872.0,
+     712.5
+    ],
+    "expected_centre": [
+     872.0,
+     1680.0
+    ],
+    "centre_inside": false,
+    "overlaps": false,
+    "coverage": 0.0389,
+    "label": "ammo_well",
+    "found": true,
+    "well_box": [
+     452,
+     496,
+     1292,
+     929
+    ],
+    "well_area": 59414,
+    "recess_ratio": 1.012
+   }
+  ],
+  "well_containment_min": 0.0,
+  "wells_pass": false,
+  "extra_wells": [
+   [
+    [
+     452,
+     1054,
+     1292,
+     1579
+    ],
+    395618
+   ],
+   [
+    [
+     447,
+     164,
+     1292,
+     389
+    ],
+    107864
+   ],
+   [
+    [
+     452,
+     496,
+     1292,
+     929
+    ],
+    59414
+   ],
+   [
+    [
+     363,
+     68,
+     1381,
+     1749
+    ],
+    9591
+   ],
+   [
+    [
+     1280,
+     1641,
+     1358,
+     1727
+    ],
+    1858
+   ],
+   [
+    [
+     388,
+     1643,
+     462,
+     1725
+    ],
+    1539
+   ],
+   [
+    [
+     1286,
+     985,
+     1358,
+     1059
+    ],
+    1339
+   ],
+   [
+    [
+     387,
+     994,
+     458,
+     1059
+    ],
+    1111
+   ],
+   [
+    [
+     363,
+     69,
+     462,
+     968
+    ],
+    1110
+   ],
+   [
+    [
+     1285,
+     448,
+     1357,
+     504
+    ],
+    1110
+   ],
+   [
+    [
+     388,
+     449,
+     459,
+     501
+    ],
+    1018
+   ],
+   [
+    [
+     1286,
+     117,
+     1355,
+     163
+    ],
+    970
+   ]
+  ]
+ },
+ "ui_armory_rack_plate": {
+  "box": [
+   194,
+   182
+  ],
+  "pixels": [
+   194,
+   182
+  ],
+  "box_match": true,
+  "ink_pct": 42.36,
+  "transparent_pct": 57.64,
+  "md5": "acf82595ca4e98106359b26f161225ae",
+  "cut_box": [
+   1621,
+   817
+  ],
+  "fit_scale": 0.1204,
+  "ink_containment": 1.0,
+  "ink_containment_note": "cut ink 1031908 px -> master ink 14958 px, scale 0.1204 (contain fit, no crop)",
+  "well_count": 2,
+  "plate_median": 65.0,
+  "wells": [
+   {
+    "expected_box": [
+     10,
+     38,
+     50,
+     82
+    ],
+    "measured_inside_expected": 0.0,
+    "expected_inside_measured": 0.0,
+    "well_containment": 0.0,
+    "centre": [
+     164.5,
+     122.5
+    ],
+    "expected_centre": [
+     30.0,
+     60.0
+    ],
+    "centre_inside": false,
+    "overlaps": false,
+    "coverage": 0.0,
+    "label": "slot_1",
+    "found": true,
+    "well_box": [
+     146,
+     112,
+     183,
+     133
+    ],
+    "well_area": 261,
+    "recess_ratio": 0.934
+   },
+   {
+    "expected_box": [
+     54,
+     38,
+     94,
+     82
+    ],
+    "measured_inside_expected": 0.0,
+    "expected_inside_measured": 0.0,
+    "well_containment": 0.0,
+    "centre": [
+     86.0,
+     129.0
+    ],
+    "expected_centre": [
+     74.0,
+     60.0
+    ],
+    "centre_inside": false,
+    "overlaps": false,
+    "coverage": 0.0,
+    "label": "slot_2",
+    "found": true,
+    "well_box": [
+     30,
+     125,
+     142,
+     133
+    ],
+    "well_area": 241,
+    "recess_ratio": 1.112
+   },
+   {
+    "expected_box": [
+     98,
+     38,
+     138,
+     82
+    ],
+    "measured_inside_expected": 0.0,
+    "expected_inside_measured": 0.0,
+    "well_containment": 0.0,
+    "centre": [
+     164.5,
+     122.5
+    ],
+    "expected_centre": [
+     118.0,
+     60.0
+    ],
+    "centre_inside": false,
+    "overlaps": false,
+    "coverage": 0.0,
+    "label": "slot_3",
+    "found": true,
+    "well_box": [
+     146,
+     112,
+     183,
+     133
+    ],
+    "well_area": 261,
+    "recess_ratio": 1.107
+   },
+   {
+    "expected_box": [
+     142,
+     38,
+     182,
+     82
+    ],
+    "measured_inside_expected": 0.0,
+    "expected_inside_measured": 0.0,
+    "well_containment": 0.0,
+    "centre": [
+     164.5,
+     122.5
+    ],
+    "expected_centre": [
+     162.0,
+     60.0
+    ],
+    "centre_inside": false,
+    "overlaps": false,
+    "coverage": 0.0,
+    "label": "slot_4",
+    "found": true,
+    "well_box": [
+     146,
+     112,
+     183,
+     133
+    ],
+    "well_area": 261,
+    "recess_ratio": 0.99
+   }
+  ],
+  "well_containment_min": 0.0,
+  "wells_pass": false,
+  "extra_wells": [
+   [
+    [
+     146,
+     112,
+     183,
+     133
+    ],
+    261
+   ],
+   [
+    [
+     30,
+     125,
+     142,
+     133
+    ],
+    241
+   ]
+  ]
+ },
+ "ui_armory_row_plate": {
+  "box": [
+   192,
+   64
+  ],
+  "pixels": [
+   192,
+   64
+  ],
+  "box_match": true,
+  "ink_pct": 40.22,
+  "transparent_pct": 59.78,
+  "md5": "b1568ade700b9768ecb1a7353d547d9c",
+  "cut_box": [
+   1923,
+   417
+  ],
+  "fit_scale": 0.101,
+  "ink_containment": 1.0,
+  "ink_containment_note": "cut ink 484316 px -> master ink 4942 px, scale 0.1010 (contain fit, no crop)",
+  "well_count": 0,
+  "plate_median": 66.5,
+  "extra_wells": []
+ },
+ "ui_status_panel": {
+  "box": [
+   1440,
+   1040
+  ],
+  "pixels": [
+   1440,
+   1040
+  ],
+  "box_match": true,
+  "ink_pct": 42.02,
+  "transparent_pct": 57.95,
+  "md5": "2f8e315d8d505791e4e744c4eb30f99e",
+  "cut_box": [
+   2112,
+   1318
+  ],
+  "fit_scale": 0.6821,
+  "ink_containment": 1.0,
+  "ink_containment_note": "cut ink 1352492 px -> master ink 629263 px, scale 0.6821 (contain fit, no crop)",
+  "well_count": 29,
+  "plate_median": 62.0,
+  "wells": [
+   {
+    "expected_box": [
+     48,
+     120,
+     600,
+     856
+    ],
+    "measured_inside_expected": 0.75,
+    "expected_inside_measured": 0.6272,
+    "well_containment": 0.75,
+    "centre": [
+     443.0,
+     460.5
+    ],
+    "expected_centre": [
+     324.0,
+     488.0
+    ],
+    "centre_inside": true,
+    "overlaps": true,
+    "coverage": 0.6451,
+    "label": "left_well",
+    "found": true,
+    "well_box": [
+     129,
+     190,
+     757,
+     731
+    ],
+    "well_area": 300925,
+    "recess_ratio": 1.028
+   },
+   {
+    "expected_box": [
+     632,
+     120,
+     1392,
+     696
+    ],
+    "measured_inside_expected": 0.0,
+    "expected_inside_measured": 0.0,
+    "well_containment": 0.0,
+    "centre": [
+     719.0,
+     832.5
+    ],
+    "expected_centre": [
+     1012.0,
+     408.0
+    ],
+    "centre_inside": false,
+    "overlaps": false,
+    "coverage": 0.2922,
+    "label": "right_well",
+    "found": true,
+    "well_box": [
+     128,
+     792,
+     1310,
+     873
+    ],
+    "well_area": 61970,
+    "recess_ratio": 1.101
+   },
+   {
+    "expected_box": [
+     48,
+     888,
+     1392,
+     988
+    ],
+    "measured_inside_expected": 0.0681,
+    "expected_inside_measured": 0.0965,
+    "well_containment": 0.0965,
+    "centre": [
+     1154.5,
+     710.5
+    ],
+    "expected_centre": [
+     720.0,
+     938.0
+    ],
+    "centre_inside": false,
+    "overlaps": true,
+    "coverage": 0.08,
+    "label": "footer_strip",
+    "found": true,
+    "well_box": [
+     923,
+     505,
+     1386,
+     916
+    ],
+    "well_area": 8686,
+    "recess_ratio": 0.827
+   }
+  ],
+  "well_containment_min": 0.0,
+  "wells_pass": false,
+  "extra_wells": [
+   [
+    [
+     129,
+     190,
+     757,
+     731
+    ],
+    300925
+   ],
+   [
+    [
+     128,
+     792,
+     1310,
+     873
+    ],
+    61970
+   ],
+   [
+    [
+     808,
+     557,
+     897,
+     690
+    ],
+    10746
+   ],
+   [
+    [
+     1246,
+     237,
+     1332,
+     372
+    ],
+    10646
+   ],
+   [
+    [
+     920,
+     237,
+     1006,
+     370
+    ],
+    10575
+   ],
+   [
+    [
+     1137,
+     237,
+     1223,
+     370
+    ],
+    10526
+   ],
+   [
+    [
+     1246,
+     555,
+     1332,
+     696
+    ],
+    10517
+   ],
+   [
+    [
+     1028,
+     237,
+     1114,
+     370
+    ],
+    10437
+   ],
+   [
+    [
+     923,
+     505,
+     1386,
+     916
+    ],
+    8686
+   ],
+   [
+    [
+     53,
+     758,
+     498,
+     916
+    ],
+    7066
+   ],
+   [
+    [
+     53,
+     124,
+     123,
+     427
+    ],
+    2766
+   ],
+   [
+    [
+     1316,
+     125,
+     1387,
+     323
+    ],
+    2487
+   ]
+  ]
+ }
+}

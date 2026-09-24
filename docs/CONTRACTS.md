@@ -2048,6 +2048,130 @@ landed).** Measured by K3 (`.agents/gen/slices/S6-travel/S6-K3_report.md`,
 - **Staged:** the station turret (13 §7 tick 7) — re-measured: the station has no
   damage sink, the turret archetype is `SPAWN_STATION` with no consumer.
 
+## §20 S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slice 4's affix half
+
+**Docs-first (developer session, 2026-09-24). A worker implements this text; only the
+developer session changes it.** Wave S7 (coder item 13) applies the instances S3
+stores to flight. Everything derives from 15 §1/§3/§4 and 09 §5 unless marked
+*proposed* (reversal named). Whole-block reversal: consumers read no affixes and the
+tree is byte-identical to pre-S7 — S3's record/naming/pricing/display (§15) is
+untouched. Owner ticks for this wave: `S7_BRIEF.md` §Owner ticks.
+
+### The aggregation law
+
+- **Prefix values are the stored rows** — `prefixes: [{id, value}]` with values as S3
+  rolled them (measured: fractions; `frugal`/`lightened`/`spry` store their band
+  **negative**, `game/module_catalog.gd:156-204`). Never re-rolled, never re-derived;
+  `ModuleCatalog.prefix_value(prefix_id, tier)` (`module_catalog.gd:725`) is the band
+  reader S3 already owns.
+- **A percent/points affix modifies its own instance's contribution to its `stat`** —
+  15 §1's "the baseline every affix modifies" is the module's own catalogue stat.
+  Instances then combine by that stat's own 09 §5 rule (flat sum / best value /
+  summed delta). `units`-unit affixes (`deep_hold`) add their value.
+- **A suffix is a per-instance flag** (`suffixes: [id]`,
+  `game/module_catalog.gd:219-250`): one instance carrying it applies the perk once;
+  two instances do not double it (*proposed*; reversal: per instance). An instance
+  answers while fitted (`count` 0, §15).
+- **Every application lands before `_clamp`** (`game/ship_fit.gd:1014-1027`): 09 §5's
+  step-4 clamps (speed ≥ 40 % hull base, pools ≤ 3× hull base) hold with every affix
+  at its band maximum.
+
+### The seams
+
+```gdscript
+# game/affixes.gd — NEW file (the wave's one new owner, 17 §2), class_name Affixes:
+#   summary(profile, ship_id) -> Dictionary
+#       # {prefix_id: summed_magnitude, &"suffixes": Array[StringName]} over every
+#       # fitted instance of resolved_fit(ship_id) (all FIT_SLOT_KEYS); magnitudes
+#       # carry 15 §3's own signs (frugal -0.15 stays negative); {} when no fit.
+#   has_suffix(summary: Dictionary, id: StringName) -> bool
+
+# autoload/player_profile.gd — additive:
+#   affix_summary(ship_id: StringName) -> Dictionary   # Affixes.summary(self, ship_id)
+
+# game/ship_fit.gd — ONE optional parameter; every existing caller unchanged and
+# byte-identical with {} or no third argument:
+static func resolve(hull_id: StringName, fit: Dictionary, affixes: Dictionary = {}) -> ShipStats
+
+# game/ship_stats.gd — §2 amended by one additive field (the slice-0 pattern):
+booster_cooldown_mult: float = 1.0     # Spry's aggregate; 1.0 when no booster affix
+
+# game/player_state.gd — additive (the set_weapons handshake's sibling):
+weapon_affixes: Array[Dictionary]      # one {keen, rapid, frugal} magnitude dict per
+    # entry of `weapons`, same order and same empty-cell skipping (file doc :84-96)
+set_weapon_affixes(per_cell: Array[Dictionary]) -> void   # sized with _resize_ammo
+affix_flags: Array[StringName]         # the fitted instances' suffix flags, launch-time
+set_affix_flags(flags: Array[StringName]) -> void   # the game.gd handshake sets both
+ammo_frac: Array[float]                # Frugal's per-cell fractional round bank
+
+# game/auction.gd — the sell price gains ONE optional parameter:
+static func sell_price(base_id: StringName, rarity: StringName, suffixes: Array = []) -> int
+#   x1.25 when suffixes contains "ledger"; sell_row passes the record's own row.
+```
+
+### Prefixes — where each one lands (15 §3's rows; measured `module_catalog.gd:127-211`)
+
+| prefix | slot/stat | application (inside `resolve` unless named) |
+|---|---|---|
+| Sturdy | shields/`shield_add` | flat step: `shield_max += Σ(own shield_add × value)` |
+| Vigilant | shields/`regen_add` | per instance `own × (1 + Σown)`; `_apply_shields` keeps the **best** instance (09 §5's best value), then `BASE_SHIELD_REGEN +` it |
+| Keen | weapons/`damage_add` | **per barrel**: that cell's shot damage `× (1 + Σown)` at shot composition — NOT in `resolve` |
+| Rapid | weapons/`fire_rate_mult` | per barrel: release interval `÷ (1 + Σown)` (rate ×1.08…1.16) |
+| Frugal | weapons/`ammo_mult` | per barrel: per-shot round cost `× (1 + Σown)` (negative → cheaper) through `ammo_frac`'s fractional bank; an integer round leaves only when the bank crosses 1; the bank is flight-state — seeded empty at launch, ≤1 round/cell unfiled at dock (reported, not persisted) |
+| Lightened | armour/`speed_penalty` | the instance's own penalty `+= abs(Σown)`, clamped so the effective penalty never crosses 0 into a bonus (band −4/6/8 pp; *proposed* sign-flip reading of 15 §3's "(multiplicative) −4/6/8 pp"; reversal: `penalty × (1 + Σown)`); the armour loop's speed **and** mass terms follow the adjusted penalty |
+| Tempered | engines/`speed_mult` | the instance's own delta `(own − 1) × (1 + Σown)` joins `_apply_speed`'s summed engine delta — inside `ENGINE_MULT_CEILING` 1.40 as part of the sum |
+| Overflowing | power/`power_add` | **STAGED** (owner tick; the budget is frozen — Rules below) |
+| Wideband | computers/`scanner_add` | per instance `own × (1 + Σown)`; `_apply_computers` keeps the **best**; `lock_range` follows `scan_range` untouched (`ship_fit.gd:614`) |
+| Surefire | computers/`damage_add` | per instance `own × (1 + Σown)`; computers still **sum** (09 §3.4) → `damage_mult = 1 + Σ` |
+| Spry | boosters/`cooldown_mult` | ship-level: `booster_cooldown_mult = 1 + Σown over fitted booster instances`; `player_ship.gd:1124` becomes `cooldown × _stats.booster_cooldown_mult` |
+| Deep-hold | utility/`cargo_add` | flat step: `cargo_max += Σ(value)` units, added to the instance's own `cargo_add` |
+
+### Suffixes — five land, five stage
+
+| suffix | this wave | seam |
+|---|---|---|
+| Whale (+50 hull) | **apply** | `resolve` flat step, before `_clamp` |
+| Embers (10 % of damage dealt → shield) | **apply** | `weapons.gd:_deliver` (`:1774`): after the `damage_mult` product, if the sink `_sink_for` resolved is an **NPC hull** (K0 names the exact predicate; rocks excluded), heal `PlayerState.shield = min(shield + 0.10 × dealt, shield_max)`. The `embers` flag rides `PlayerState.affix_flags` (set in the launch handshake); `weapons.gd` reads only `_state`, never the profile |
+| Leeches (kills restore 5 % hull) | **apply** | `game.gd:_on_npc_died` (`:2032`): heal `0.05 × hull_max` on the deaths the handler already credits (K0 reports whether killer identity is knowable and gates if it is not) |
+| Cartograph (POIs revealed) | **apply** | sector entry in `game.gd`: if the summary carries it, call the shipped `Sector.reveal_pois()` (`sector.gd:335`, the beacon's own call) once after populate |
+| Ledger (sell +25 %) | **apply** | `sell_price`'s new `suffixes` parameter — **supersedes §15's "no suffix term" line** (dated here; reversal: drop the term). Exact integer: `base × rarity × 60 % × 1.25` stays integral for every 09/15 cost (per 100 CR the three products are 60 / 96 / 156, all ÷4) |
+| Silence (2× detect time) | **STAGED** | 13 §3 pins **no** detection-time mechanic (measured: aggro is distance, `game/npc_brain.gd:421-427`) — an owner call whether one exists at all |
+| Vault (spill −50 %) | **STAGED** | no cargo-spill-on-death system exists in the tree (measured) |
+| of the Choir / of the Concord / of the Ports | **STAGED** | no faction station or arena can roll them (15 §4/§5; 12 §5 unshipped) — caller-less like 15 §9.3's own rows |
+
+### Rules that fix every ambiguity
+
+- **`damage_mult` becomes real (measured defect):** `ShipStats.damage_mult` has no
+  consumer today — the computers' `damage_add` (09 §3.4/§5) resolves and is then
+  inert. S7 wires the one delivery multiplier: every player-origin damage amount
+  passes `× _stats.damage_mult` **exactly once** before the sink call, at `_deliver`
+  and at any parallel player-damage path K0 measures (beam frame damage included).
+  *Owner tick:* it applies to every sink the player damages, rocks/mining included
+  (reversal: ship sinks only).
+- **Keen stays per barrel (owner tick):** each released barrel reads **its own cell's**
+  `weapon_affixes[i]`; a battery whose cell 2 is Keen gains it on barrel 2 only.
+  Reversal: fold Keen into `damage_mult` (one function, ship-wide).
+- **The per-cell arrays align by construction:** `set_weapons` and
+  `set_weapon_affixes` walk the same fitted list with the same empty-cell skipping; a
+  worker who cannot align barrel index ↔ cell reports instead of guessing (bucket 1).
+- **Empty defaults are byte-identical:** no summary, `{}` into `resolve`, `[]` into
+  `set_weapon_affixes` — every pre-S7 number, fixture and standard fit resolves
+  exactly as before (`STANDARD_FIT` carries no instances).
+- **Overflowing is staged because §6 freezes the budget:** "power draw never changes
+  with rarity — affixes bend the good stats, never the budget"; `+output` *is* the
+  budget, `fit_legal`/`power_budget` take no profile (frozen §12/§13 signatures), and
+  the panels that would render it belong to the parallel D7 lane. *Owner tick:*
+  staged, or re-emit as `energy_max` (reversal: one row in `resolve`'s flat step).
+- **No `ui/**`, `assets/**`, `staging/**` or `docs/` writes by builders** — D7 holds
+  those until it closes; a display that "needs" a widget is a report, not a write.
+- **Test law:** the wave's suites are `tests/test_s7_affixes.gd` (K1),
+  `tests/test_s7_weapon_affixes.gd` (K2), `tests/test_s7_suffixes.gd` (K3) — new
+  prefixes only. No existing suite count is expected to move; K0 names any existing
+  assertion the `damage_mult` wiring would flip **before the builders run**, and any
+  needed existing-test edit is dispositioned there and ratified here (S6's
+  `test_engine2_wiring` precedent). A builder who believes an existing row must
+  change reports it; it does not edit it.
+
 ## §10 Changelog
 
 - **v0 (2026-09-18)** — seeded from the engine wave-1 pinned interfaces
@@ -2703,3 +2827,19 @@ landed).** Measured by K3 (`.agents/gen/slices/S6-travel/S6-K3_report.md`,
   readout, a stale `_transit_destination` after an interrupted crossing, the gate's
   inert layer-1 `Area2D`, two doc/citation drifts (12 §4.1's superseded gate-refusal
   cell, 13 §7's `npc_registry.gd:208` → `:220`) and the `s6_start` baseline note.
+- **v0.15 (2026-09-24, wave S7 docs-first — the affix-application pin, this wave's
+  only pre-dispatch CONTRACTS writer)** — §20 added: the `affix_summary` bridge,
+  `ShipFit.resolve`'s one optional `affixes` parameter, `ShipStats.booster_cooldown_mult`,
+  `PlayerState.weapon_affixes`/`set_weapon_affixes`/`affix_flags`/`set_affix_flags`/
+  `ammo_frac`, `Auction.sell_price`'s
+  optional `suffixes`, the twelve-row prefix application table, and five of §4's ten
+  suffixes applied (Whale, Embers, Leeches, Cartograph, Ledger) with five staged
+  (Overflowing — §6 freezes the budget; Silence — 13 §3 pins no detection-time
+  mechanic; Vault — no spill system; the three faction rows — no faction station can
+  roll them). §20 also wires the measured-inert `ShipStats.damage_mult` into the one
+  player-damage delivery (09 §3.4/§5 pinned it live) and supersedes §15's "no suffix
+  term" line for `of the Ledger`. S3's owner tick 6 ("schedule or park") is answered
+  by the owner's 2026-09-24 dispatch instruction ("prepare for new batch and wave of
+  workers"); reversal: park the wave. §9's expected figure grows at close-out (writer
+  S7-R1, **sequenced after D7's §9/§10 pass**); LOW ids continue at **L158+** (next
+  free ticket **T-94**).

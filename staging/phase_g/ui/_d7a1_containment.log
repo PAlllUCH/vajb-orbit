@@ -1,0 +1,7 @@
+ui_cockpit_panel       928x512 box_match=True cut 1944x1012 scale 0.4774 containment 100.00% ink 91.93% md5 e238e6f5
+ui_gauge_face          240x240 box_match=True cut 1938x1975 scale 0.1215 containment 100.00% ink 66.27% md5 860c1ce5
+ui_armory_console      1744x1816 box_match=True cut 1987x1991 scale 0.8777 containment 100.00% ink 94.46% md5 a8382b40
+ui_armory_rack_plate   194x182 box_match=True cut 1621x817 scale 0.1197 containment 100.00% ink 42.36% md5 acf82595
+ui_armory_row_plate    192x64 box_match=True cut 1923x417 scale 0.0998 containment 100.00% ink 40.22% md5 b1568ade
+ui_status_panel        1440x1040 box_match=True cut 2042x1340 scale 0.7052 containment 100.00% ink 88.74% md5 c8c0df57
+wrote staging/phase_g/ui/qc_d7_a1_containment.json

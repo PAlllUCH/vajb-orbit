@@ -1,0 +1,122 @@
+[
+ {
+  "panel": "ui_cockpit_panel",
+  "render": "staging/phase_g/ui/20260924-110505/grimdark-painted-sci-fi-semi-realistic-1.png",
+  "ink_box": [
+   1922,
+   993
+  ],
+  "ink_aspect": 1.936,
+  "box": [
+   928,
+   512
+  ],
+  "box_aspect": 1.812,
+  "cut_box": [
+   1938,
+   1009
+  ],
+  "scale": 0.4788,
+  "drawn_plate": [
+   928,
+   483
+  ],
+  "plate_ink_rect": [
+   4,
+   18,
+   924,
+   493
+  ],
+  "fill_w": 99.14,
+  "fill_h": 92.77,
+  "fill_area": 91.97,
+  "well_union": [
+   64,
+   52,
+   858,
+   442
+  ],
+  "well_union_inside_pct": 100.0,
+  "well_union_covered": true
+ },
+ {
+  "panel": "ui_armory_console",
+  "render": "staging/phase_g/ui/20260924-110922/grimdark-painted-sci-fi-semi-realistic-1.png",
+  "ink_box": [
+   1965,
+   1968
+  ],
+  "ink_aspect": 0.998,
+  "box": [
+   1744,
+   1816
+  ],
+  "box_aspect": 0.96,
+  "cut_box": [
+   1981,
+   1984
+  ],
+  "scale": 0.8804,
+  "drawn_plate": [
+   1744,
+   1747
+  ],
+  "plate_ink_rect": [
+   7,
+   41,
+   1737,
+   1774
+  ],
+  "fill_w": 99.2,
+  "fill_h": 95.43,
+  "fill_area": 94.66,
+  "well_union": [
+   60,
+   244,
+   1684,
+   1768
+  ],
+  "well_union_inside_pct": 100.0,
+  "well_union_covered": true
+ },
+ {
+  "panel": "ui_status_panel",
+  "render": "staging/phase_g/ui/20260924-111036/grimdark-painted-sci-fi-semi-realistic-1.png",
+  "ink_box": [
+   2020,
+   1318
+  ],
+  "ink_aspect": 1.533,
+  "box": [
+   1440,
+   1040
+  ],
+  "box_aspect": 1.385,
+  "cut_box": [
+   2036,
+   1334
+  ],
+  "scale": 0.7073,
+  "drawn_plate": [
+   1440,
+   943
+  ],
+  "plate_ink_rect": [
+   6,
+   54,
+   1435,
+   986
+  ],
+  "fill_w": 99.24,
+  "fill_h": 89.62,
+  "fill_area": 88.93,
+  "well_union": [
+   48,
+   120,
+   1392,
+   988
+  ],
+  "well_union_inside_pct": 99.73,
+  "well_union_covered": false
+ }
+]

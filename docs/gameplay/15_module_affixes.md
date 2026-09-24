@@ -251,3 +251,34 @@ roll sources: content that ships with no caller until its system does.
 
 **Reversal:** each applied perk is one hook in the affix-application wave; nothing here
 has to be undone to add them.
+
+---
+
+## 10. Amendment 2026-09-24 (S7 docs-first — the affix-application wave)
+
+CONTRACTS §20 is the pin; this section records what moves here. §9.3's staged
+sentence is now **scheduled** (owner's 2026-09-24 dispatch instruction answers this
+document's §8/§9-era tick "schedule the follow-up wave, or park it" — reversal: park
+it, nothing here has to be undone). Every value below was written by the developer
+session; each carries its reversal.
+
+- **Applied:** all twelve §3 prefixes (per §20's table — Keen/Rapid/Frugal per
+  barrel, the rest inside `ShipFit.resolve` before the clamp) and §4's **Whale,
+  Embers, Ledger, Cartograph and Leeches**. **Ledger supersedes the "no suffix
+  term" rule** §6 and CONTRACTS §15 state: sell becomes
+  `base × rarity × 60 % × 1.25` when the sold instance carries `of the Ledger`.
+  **Reversal:** drop the term (one line in `Auction.sell_price`).
+- **Staged (each an owner tick):** `Overflowing` (§6's "never the budget" freezes
+  it — options: stay staged, or re-read `+output` as `energy_max`),
+  `Silence` (13 §3 pins no detection-time mechanic — measured: aggro is distance,
+  `game/npc_brain.gd:421-427`), `Vault` (no cargo-spill system exists in the tree),
+  and `of the Choir` / `of the Concord` / `of the Ports` (no faction station or
+  arena can roll them until 12 §5 / 14 §5 ship). **Reversal:** each is one hook at
+  the seam CONTRACTS §20 names.
+- **§9.3's five "no system at all" shrink to two:** S6 shipped the systems
+  Embers/Leeches/Cartograph need (the player's damage delivery, the kill handler,
+  `Sector.reveal_pois`).
+- **Aggregation** is §20's law: values as stored (`[{id, value}]`, fractions; the
+  three negative bands stay negative), a percent affix modifies its own instance's
+  contribution, suffixes are once-per-perk flags, everything lands before 09 §5's
+  clamp. **Reversal:** one helper change in `Affixes.summary`.
