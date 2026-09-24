@@ -41,10 +41,11 @@ P2-B proper fitting panel, **S2.6 truth-and-feel**, **S3 the item economy**,
 `s7_start` snapshot = S6's 674 + D7's in-flight 37), **`passed=770 failed=0`** after S8
 (753 + its two new suites' 17 rows; 0 HIGH / 0 MED / 4 LOW), hermetic). The queue of record is
 `dispatch_coder.md`: items 4–14 are all DONE and **item 16 = S10 ARMORY
-interactivity is in flight** (A0's reproduction audit, dispatched 2026-09-24 after
-the owner's live report: battery selection, drag-to-rack and the per-battery
-ammo/stats readout all failed in his hands while S8's direct-handler probe passed
-them — the L170 class); **item 15 = the
+interactivity is in flight** (A0's real-input audit reproduced the owner's report as
+a **D7 regression** — the barrel `Name` plate and the `✕` collapsed to 0 px, so no
+barrel drag or remove can start — plus selection wired to nothing and a SALVO drum
+blank for rolled instances; B1 is fixing those three, while the refused-hover
+wording and a per-battery ammo/stats readout are owner ticks); **item 15 = the
 flight-feel retune — NUMBERS PROPOSED in §22 (v0.19), waiting on the owner's ticks**
 (O4/O5: T1 `COAST_TIME_MULT` 2.0→2.5, T2 new `ANGULAR_DAMP_MULT` 0.5, T3 new
 `STRAFE_RATE_MULT` 0.75, T4 `LATERAL_DAMP` 1.0→0.6; any subset ticks → **S9**'s

@@ -85,10 +85,10 @@ Answer these five questions with measurements and `file:line`, and deliver
    the ARMORY (`ui/screens/station.gd`); confirm the pane's rails/scroll/plates
    do not swallow clicks, and name any Control that does.
 5. **A/B: was it ever wired, or did D7 break it?** Run the same probe against the
-   pre-restyle tree (`git worktree add` at `12278d2^`, i.e. before D7's close —
-   the S7-R1 worktree precedent) and report whether the drag/selection path
-   differs. This decides whether the fix is a UI-plumbing repair or a restyle
-   regression.
+   pre-restyle tree (`git worktree add` at `db4dbcd` — the parent of `faa24ad`,
+   which introduced `armory_style.gd`; **A0 corrected this brief**: `12278d2^` is
+   not pre-restyle) and report whether the drag/selection path differs. This
+   decides whether the fix is a UI-plumbing repair or a restyle regression.
 
 ### Methods (in order of preference)
 
