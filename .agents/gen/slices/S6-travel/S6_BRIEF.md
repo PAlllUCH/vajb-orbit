@@ -242,6 +242,12 @@ editor reimports only in quiet windows; one editor session).
   `ctx` routing turns on with quadrants in **slice 4**, not here — owner-ratified
   deferral, CONTRACTS §19's dispositions). `test_engine2_loot.gd`'s shape rows
   (`:249-272`, `:368-389`) hold too: the band roll is additive (K0 F2/F3).
+- **One existing row moved (K1, ratified by the orchestrator 2026-09-24):**
+  `tests/test_engine2_wiring.gd`'s minimap-feed assertion pinned "the station is
+  the one friendly blip"; §19 adds gate blips (11 §5 maps gates to `friendly`),
+  so the expectation now derives from the sector's own `gates()` count. K2's
+  beacon/derelict/anomaly blips will move the same row again — derive, never
+  hard-code. K1 measured `626/0` with this correction in place.
 - New: `test_s6_travel.gd` (fee worked rows + composition, refusal-write-nothing,
   corridor presence/reset rules, transition persistence) ≈ 14 groups;
   `test_s6_poi_loot.gd` (derelict roll over 10 000 seeded rolls, anomaly kinds +
@@ -296,9 +302,13 @@ editor reimports only in quiet windows; one editor session).
 10. **Scope rulings ratified this pass:** quadrants deferred to slice 4;
     `sibelon` superseded by the three anomaly kinds; the 06 §8 "one pickup per
     unit" wording corrected to the shipped stack shape.
-11. Standing debt unchanged: `18_engine_spec.md` §6/§13/§15, the §13
-   turn/`coast_time` ticks, slice 2.5's two calls, S3's nine, S2.6's four,
-   S5's three, D6's five.
+11. **Gate placement (K1, reported not invented):** `GATE_RING_RADIUS` 900 u,
+    `RING_SCALE` 0.25, `TRIGGER_RADIUS` 200 u — 11 §2.1 gives no numbers for
+    these ("near its primary station"/"visible from across the sector" only);
+    reversal: one edit each.
+12. Standing debt unchanged: `18_engine_spec.md` §6/§13/§15, the §13
+    turn/`coast_time` ticks, slice 2.5's two calls, S3's nine, S2.6's four,
+    S5's three, D6's five.
 
 ## Close-out (the orchestrator runs these, in order)
 

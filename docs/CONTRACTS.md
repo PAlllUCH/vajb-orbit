@@ -1953,6 +1953,27 @@ each cure is binding on this wave:
   `game.gd:_on_npc_died`, `game.gd:on_route` + `route_requested(&"loading", …)`
   and `sector.gd:populate`.
 
+**K1 dispositions (orchestrator-ratified 2026-09-24, after the travel core
+landed).** Measured by K1 (`.agents/gen/slices/S6-travel/S6-K1_report.md`,
+`626/0`, re-measured by the orchestrator on a scratch store):
+
+- **One existing row moved, ratified:** `tests/test_engine2_wiring.gd`'s
+  minimap-feed assertion now derives the friendly count from the sector's own
+  `gates()` (the station plus one per gate link), because 11 §5 maps gates to
+  `friendly`. K2's beacon/derelict/anomaly blips move the same row again —
+  derive, never hard-code. This is the only existing row the wave touches.
+- **Three placement values reported, not invented:** `sector.gd:GATE_RING_RADIUS`
+  `900.0` u, `gate.gd:RING_SCALE` `0.25` and `gate.gd:TRIGGER_RADIUS` `200.0` u
+  (11 §2.1 quantifies none of them; reversal: one edit each). Owner ticks.
+- **Route notes (bucket 1, no pin moves):** the three POI constants
+  (`DERELICT_SCAN_RANGE` / `RIFT_DRAIN` / `ANOMALY_WEIGHTS_RIFT_DOUBLED`) live in
+  `sector_registry.gd` so K2 reads them rather than minting a second home; a
+  sector crossing arms `game.gd`'s `_transit_destination` static so the reload
+  seeds the ammo packs from the filed store instead of re-drawing the hold
+  (AC4's hold byte-equal); sector 7's ring is placed by the same formula as every
+  other sector and the player seats on the destination's own spawn point (no
+  arrival-point rule exists in the docs).
+
 ## §10 Changelog
 
 - **v0 (2026-09-18)** — seeded from the engine wave-1 pinned interfaces
