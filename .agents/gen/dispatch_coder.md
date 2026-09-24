@@ -20,7 +20,6 @@ with any parallel lane, WAVEBOARD, wave-boundary commit).
 
 | # | Wave | Slice folder | Brief / prompts | Status |
 |---|---|---|---|---|
-| 14 | **S8 QA playtest fixes** — the independent review's 2 HIGH / 6 MED + copy/naming/warning bundle + the owner's O1–O3 (FITTING drag, weapon groups, ram strength); pin **CONTRACTS §21** | `.agents/gen/slices/S8-qa-fixes/` | `S8_BRIEF.md` / `S8_prompts.md` | **READY.** Docs-first landed (§21 + O-table, v0.18, 05 §9). Run: Q0 → dispositions → Q1 → Q2 → R1 → F1 only on HIGH/MED. Parallel-legal with designer item 13 (D11) — disjoint sets; both briefs carry the cross-lane attribution rules. |
 | 15 | **Flight-feel retune** (owner O4/O5: torque/slow-down, strafe/inertia) — pin **CONTRACTS §22** | not opened | — | **NUMBERS PROPOSED — waiting on your ticks.** §22 holds four tick-gated levers with worked rows + reversals: T1 `COAST_TIME_MULT` 2.0→2.5, T2 new `ANGULAR_DAMP_MULT` 0.5, T3 new `STRAFE_RATE_MULT` 0.75, T4 `LATERAL_DAMP_MULT` 1.0→0.6. Tick any subset in §22 → I write **S9**'s five-piece from the ticked table. Nothing dispatches until then. |
 
 Beyond the queue: **slice 4's remainder** (quadrants/directional armour — 18
@@ -30,16 +29,18 @@ Owner-locked homework stays the owner's (`18_engine_spec.md` §6/§13/§15, the
 
 ## Done
 
-Items 1–13 closed: chrome, combat repair, weapon FX (→ `MASTER_REPORT.md`);
+Items 1–14 closed: chrome, combat repair, weapon FX (→ `MASTER_REPORT.md`);
 P2-A `8d189bf`, Rock cleave `0e419f7`, P2-B1 `1f794cc`, P2-B `3e79e61` (→
 `session_2026-09-22_items_4_to_7_report.md`, gate 437); S2.6 (457), S3 (493),
-S4 (524), S5 (578), S6 (674), S7 (753) — detail, reviews, incidents and LOW
-rows in `WAVEBOARD.md` §Closed +
+S4 (524), S5 (578), S6 (674), S7 (753), S8 (770) — detail, reviews, incidents
+and LOW rows in `MASTER_REPORT.md` §6 +
 `session_2026-09-24_items_8_to_13_report.md`; evidence archived in each
-slice's `_archive/`.
+slice's `_archive/` (S8's still in its slice folder).
 
-## Handoff (live — paste as one block)
+## Handoff (live)
 
-```text
-Read .agents/gen/dispatch_coder.md and execute queue item 14 only — S8, the QA playtest fixes (CONTRACTS §21, incl. the owner O1–O3 table). Brief: .agents/gen/slices/S8-qa-fixes/S8_BRIEF.md. Prompts: .agents/gen/slices/S8-qa-fixes/S8_prompts.md. Snapshot + commit (s8_start) before the first dispatch, apply Q0's dispositions to §21 in one commit before Q1, run Q0 → Q1 → Q2 → R1, and the fixer only if the review leaves HIGH or MED. This may run parallel with designer item 13 (D11 station scene): you hold the S8 write sets — never touch game/sector.gd, game/station_scene.gd, assets/env/**, staging/**, tests/test_d11_*, project.godot, or docs/ beyond Q0's disposition pass and R1's §9/§10; take CONTRACTS §9/§10 as the next free rows read at close-out, sequenced after D11's (rebase, never revert), and attribute any D11 rows in the gate. Close out per the brief's close-out section (gate ×2 scratch stores, verify --baseline s8_start, WAVEBOARD update, wave-boundary commit), then report back: the measured gate count, Q0's dispositions, the builders' per-AC numbers, the reviewer's findings by tier, and S8's owner ticks (incl. O3's ram factor and the O1/O2 UX call).
-```
+**Nothing is dispatchable right now.** Item 14 (S8) is closed — its record is in
+`MASTER_REPORT.md` §6 and the slice folder's reports. The next dispatchable
+event is item 15: tick any subset of CONTRACTS §22's T1–T4 and the S9
+flight-feel five-piece is written from the ticked table. Beyond the queue, slice
+4's remainder needs its own five-piece first.

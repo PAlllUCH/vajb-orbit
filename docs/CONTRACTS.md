@@ -844,7 +844,19 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
-Expected (S7, 2026-09-24): **`[SUMMARY] passed=753 failed=0`**, exit 0. The S7 review
+Expected (S8, 2026-09-24): **`[SUMMARY] passed=770 failed=0`**, exit 0. The S8 review
+(S8-R1) measured **770** twice on two fresh scratch stores (identical counts) plus once
+inside `staging/verify_wave.py verify --baseline s8_start … --tests`, which reads
+`problems: []` with no forbidden hit and both expected reports present; the live store's
+pair `profile.cfg` md5 `540117dc67743d8663c8752c2899e549` / `economy_log.txt` md5
+`77f4f61a55e4bbe116fd4631b20c2056` was byte-identical before and after every run (the
+review's own probes included). **Growth `753 → 770`**: S8's two new suites add **17**
+(`test_s8_launch_ammo.gd` **8** + `test_s8_qa_fixes.gd` **9**), with
+`test_engine2_hud.gd`'s three range-copy rows the one existing-test edit (§21's Q0
+disposition). The green run's error lines are the pre-existing ones (the detached-hull
+`data.tree` line, L61's `test_weapon_fx_f4.gd:178` freed `guns`, and the benign
+resources-at-exit warning; CONTRACTS §21's H1/M4 fixes are the wave's).
+Previous expected (S7, 2026-09-24): **`[SUMMARY] passed=753 failed=0`**, exit 0. The S7 review
 (S7-R1) measured **753** twice on two fresh scratch stores (identical counts) plus once
 inside `staging/verify_wave.py verify --baseline s7_start … --tests`, which reads
 `problems: []` with **no forbidden hit at all**; the live store's pair
@@ -3399,3 +3411,27 @@ linearly with the resolved coast (S2.6's measured pairs: 430.32 u @ 2.0 s,
   the owner ticks (the wave becomes slice **S9**, brief-written from this
   table). Item 15's gate flips from "owner numbers session" to **"owner ticks
   §22"**. Next close-out row: **v0.20**.
+- **v0.20 (2026-09-24, wave S8 review — S8-R1, the wave's only CONTRACTS writer,
+  sequenced after §22's v0.19; no parallel row had landed first)** — §9 gains the S8
+  expected **`passed=770 failed=0`** (twice on fresh scratch stores plus once inside the
+  verifier; `problems: []`), the `753 → 770` attribution (the two new suites' 17 rows) and
+  the live-store pair. **The review leaves no HIGH and no MED.** Everything §21 pins was
+  re-measured against the tree: a real launch on the QA's own fit shape (strip
+  `600 ROUNDS ACROSS 3 WEAPONS` = the flight slots `[300, 300, 0]` = the store's two
+  stocked packs; a stocked cannon fires its own slot and a dry cannon never spends another
+  family's); the status/FITTING cell-for-cell diff on the QA fit and two hole-y ones with
+  the ordinals in the barrel-position space; both panes printing `ShipFit.resolve`'s
+  `1250 / 800` with a plated hull and no current over its max; a real ram logging **0**
+  engine refusals (was 32) with all three fragments' `Shape` live and undisabled on the
+  next step at the placed radius (`probe_s8_r1_fragment_shape`); the confirm strip and
+  `SOLD` line naming `CHROMIUM ORE` with no raw id anywhere in the sale copy; the
+  preview's `YOU GET 15` credited exactly under a forced demand re-roll (6001 → 6016)
+  while the default `-1` path stays the live-price path; `Cannon MkI` as the one
+  spelling, `860 u` in the target window and `1 CONVERSION` at one, with `NEXT RESTOCK`'s
+  `auction.gd` and `REFINERY ALL`'s `.tscn` byte-identical and `CONFIRM_FORMAT`'s shape
+  unchanged; and the three ledgers `34 → 1` / `3 → 0` / `3 → 0` with renames only. Every
+  QA finding and O1–O6 is accounted for (fixed / dispositioned / staged — none dropped).
+  Four LOW rows are **L168–L171** (the repair transaction's base-row maxima; the
+  same-family battery's per-cell seed; the ledger test asserting parse not warnings; the
+  remaining `_compose_racks` `racks` shadow), and **L163 closes** in S8 (Q3's `position`
+  sweep). The owner ticks S8 owes (§21) stand unchanged.

@@ -8,14 +8,16 @@
 
 **Updated: 2026-09-24 (**batch prepared end-to-end: the independent QA review triaged;
 `.agents/gen/` cleanup executed; **both dispatch files rewritten clean with live handoff
-blocks**; item 14 = **S8 READY** (§21 + v0.18 + 05 §9, incl. the owner's O1–O3);
+blocks**; item 14 = **S8 CLOSED** (gate 753 → **770/0**, 0 HIGH / 0 MED / 4 LOW
+L168–L171; §21 + v0.18 + 05 §9, incl. the owner's O1–O3);
 item 15 = flight-feel with **numbers PROPOSED in §22 (v0.19) — waiting on ticks**;
 designer item 13 = **D11 station scene READY** (ENVIRONMENT_SPEC §11, five-piece written,
-A0 mockup-gate handoff live); designer items 9–12 await owner picks).** Waves of record: item 13 = S7 CLOSED gate 711 → **753/0** (0 HIGH / 0 MED /
-5 LOW L163–L167); designer item 8 = D7 CLOSED gate 727/0. Both lanes idle until their next
-dispatch. CONTRACTS §20 (S7), §21 (S8), §22 (item 15's proposals), §18 (D7) are the pins;
-changelog **v0.19** (§22) is the newest row — close-outs take the next free rows
-read at close-out (v0.20+; L167's lesson for LOW ids too). The QA input stays loose at
+A0 mockup-gate handoff live); designer items 1/4/10/11/12 picked, item 9 awaits its gate).** Waves of record: item 14 = S8 CLOSED gate 753 → **770/0** (0 HIGH / 0 MED /
+4 LOW L168–L171); item 13 = S7 CLOSED gate 711 → **753/0** (0 HIGH / 0 MED /
+5 LOW L163–L167); designer item 8 = D7 CLOSED gate 727/0. CONTRACTS §20 (S7), §21 (S8),
+§22 (item 15's proposals), §18 (D7) are the pins;
+changelog **v0.20** (S8) is the newest row — close-outs take the next free rows
+read at close-out (v0.21+; L167's lesson for LOW ids too). The QA input stays loose at
 `slices/S7-affix-application/S7_QA_playtest_review_2026-09-24.md` (it is S8's brief input);
 every other closed slice now holds only `SLICE.md` + `_archive/` (cleanup 2026-09-24).
 This session's
@@ -29,29 +31,29 @@ evidence were purged to the system trash (2026-09-22) and archived to the slices
 `_archive/` folders (2026-09-24) —
 citation paths of the form `.agents/gen/<report>.md` name the purged files.
 
-**Current state: thirteen coding waves closed (chrome, combat repair, weapon FX wiring, flight
+**Current state: fourteen coding waves closed (chrome, combat repair, weapon FX wiring, flight
 feel & beam polish, slice 2.5 Feel, P2-A ship slot frames, Rock cleave, P2-B1 weapon fit,
 P2-B proper fitting panel, **S2.6 truth-and-feel**, **S3 the item economy**,
-**S4 weapon batteries**, **S5 playtest fixes**, **S6 travel**, **S7 affix application**; gate
+**S4 weapon batteries**, **S5 playtest fixes**, **S6 travel**, **S7 affix application**,
+**S8 QA playtest fixes**; gate
 `passed=578 failed=0` at S5, **`passed=608 failed=0`** after the D6 design wave,
 **`passed=674 failed=0`** after S6, **`passed=753 failed=0`** after S7 (the 711 at S7's
-`s7_start` snapshot = S6's 674 + D7's in-flight 37), hermetic). The queue of record is
-`dispatch_coder.md`: items 4–13 are all DONE and **item 14 = S8 QA playtest fixes
-(CONTRACTS §21) is READY 2026-09-24** — the independent reviewer's 2 HIGH / 6 MED +
-copy/naming/warning bundle **plus the owner's same-day O1–O3** (FITTING drag, weapon
-groups, ram strength — §21's O-table), input at
-`slices/S7-affix-application/S7_QA_playtest_review_2026-09-24.md`, run order Q0 →
-dispositions into §21 → Q1 → Q2 → R1 → F1 only on HIGH/MED. **Item 15 = the
+`s7_start` snapshot = S6's 674 + D7's in-flight 37), **`passed=770 failed=0`** after S8
+(753 + its two new suites' 17 rows; 0 HIGH / 0 MED / 4 LOW), hermetic). The queue of record is
+`dispatch_coder.md`: items 4–14 are all DONE; **item 15 = the
 flight-feel retune — NUMBERS PROPOSED in §22 (v0.19), waiting on the owner's ticks**
 (O4/O5: T1 `COAST_TIME_MULT` 2.0→2.5, T2 new `ANGULAR_DAMP_MULT` 0.5, T3 new
 `STRAFE_RATE_MULT` 0.75, T4 `LATERAL_DAMP` 1.0→0.6; any subset ticks → **S9**'s
 five-piece is written from the ticked table). Beyond it: **slice 4's
 remainder** — quadrants/directional armour (18 §4.5 + ruling 23, deferred from S6) and
 bosses/arena hooks (14 §5, blocked on the P4 contract type and boss-hull art) — **not yet
-briefed**. Designer queue: **item 13 = D11 station scene READY** (five-piece written,
+briefed**. **S8's owner gates:** O1/O2's FITTING-drag UX call (port / point at ARMORY /
+unify), O3's site + symptom + mask (the shipped masks never resolve player→NPC contact, so
+no factor was written), L168 (`game/repairs.gd`'s transaction still caps at the base row),
+L169 (a same-family battery's per-cell seed — 2× magazine). Designer queue: **item 13 = D11 station scene READY** (five-piece written,
 ENVIRONMENT_SPEC §11 landed, A0 mockup-gate handoff live in `dispatch_designer.md`,
-incl. the owner's `game/sector.gd` + `game/station_scene.gd` grant); items 9–12 await
-their owner picks (briefs at dispatch-prep).
+incl. the owner's `game/sector.gd` + `game/station_scene.gd` grant); items 1/4/10/11/12
+picked 2026-09-24 (briefs at dispatch-prep), item 9 still awaits its mockup gate).
 Owner gates:
 the chrome art half, the **`18_engine_spec.md` §6/§13/§15 cleaving amendment** (owner-locked; §15
 is the test checklist and now contradicts the shipped suite), the launch fit (**both symptoms

@@ -285,8 +285,9 @@ parallel-legal (the S5∥D6 precedent); the two close-outs sequenced on the shar
 **Coder item 12 = S6 Travel (engine slice 3 + RPG P3): DONE 2026-09-24 — gate
 608 → 674/0, detail §Closed.** **Designer item 7 = D6 cockpit instruments: DONE
 2026-09-24 — gate 578 → 608/0, detail §Closed.** **Coder item 11 (S5) closed
-2026-09-24** (§Closed). The next coder item is **slice 4's remainder** (quadrants/directional
-armour and bosses/arena hooks), **not yet briefed**. The
+2026-09-24** (§Closed). The next coder item is **item 15 = the flight-feel retune**
+(CONTRACTS §22's proposed numbers, tick-gated); beyond it **slice 4's remainder**
+(quadrants/directional armour and bosses/arena hooks), **not yet briefed**. The
 graphics lane's open
 items live in the table of `dispatch_designer.md` (D3-1 chrome re-cut —
 owner-gated, D3-2a painted rail icons, D3-2b tint rework, D4-3 backdrops, D4-4
@@ -298,7 +299,11 @@ the spec text lags; it now also covers `FRAGMENT_OUTWARD_KICK` and the two
   flight multipliers `ACCEL_TIME_MULT`/`COAST_TIME_MULT`), the §13 turn/`coast_time`
 column ticks, slice 2.5's two calls (engine bed, vignette strength), L83's icon-size pick,
 **S3's nine** and **S2.6's four** (both in §Closed; S2.6's new one is the
-`STEER_WITHOUT_THROTTLE` supersession), **S6's fourteen** (fee composition,
+`STEER_WITHOUT_THROTTLE` supersession), **S8's** (O1/O2's UX call, O3's site +
+symptom + mask, the `game/repairs.gd` staging call **L168**, the twin battery's 2×
+magazine **L169**, the trailing-rack duplicate read, and the QA's four: `REFINE ALL`
+vs the pinned literal, `1 CONVERSION`, the refinery hide, the live-profile restore),
+**S6's fourteen** (fee composition,
 corridor rules, derelict scan range, rift drain, bounty surface, hunter hull map
 + the 900 u aggro, station turret, hunter extra table, data-core credits, gate
 placement, POI reward content, heat/hunter copy + the 600 u spawn radius, the
@@ -391,6 +396,35 @@ proper tick lists are resolved.
   with the UX call routed to the owner), ram strength (→ S8, measured factor + tick),
   torque/slow-down + strafe/inertia (→ **coder item 15, owner-gated flight-feel pass**),
   and the station scene rework (→ **designer item 13**, mockup-gated).
+
+- **S8 QA playtest fixes (coder item 14) — DONE 2026-09-24** (gate 753 → **770, 0 failed**,
+  exit 0; the orchestrator measured it twice on two fresh scratch stores at close-out, R1
+  twice plus once inside `verify_wave.py` — identical counts, `problems: []`; the live pair
+  `profile.cfg` `540117dc67743d8663c8752c2899e549` / `economy_log.txt`
+  `77f4f61a55e4bbe116fd4631b20c2056` byte-identical throughout; reports
+  `.agents/gen/slices/S8-qa-fixes/S8-Q{0,1,2,3}_report.md`, `S8-R1_review.md`, close-out logs
+  in that folder's `_closeout/`; model `deepseek/deepseek-flash` — the owner's same-day route
+  ruling — at high reasoning): **the QA wave's 2 HIGH / 6 MED, the copy bundle and O1–O3 are
+  answered.** Q0 re-measured every finding before a builder ran: the launch break was the
+  ammo family→slot mapping (not the seed), the status pane's real defect the rack ordinal,
+  Repairs' the station-row maxima, the ARMORY drag commits (FITTING carries none), and O3's
+  ram seam is unreachable under the shipped collision masks (no factor written); the pin's
+  placeholders and the file sets were corrected in §21 pre-Q1 (`launch_panel.gd` joined Q1).
+  **Builders:** Q1 ammo/briefing/rack ordinal/denominators/units + **8 tests** (**761/0**),
+  Q2 fragment deferral (0 refusals, was 32), the honored quote, names, singular, ledgers +
+  **9 tests** (**770/0**), Q3 the blocked `weapons.gd` sweep (37 → 1 warnings, **770/0**; the
+  file-set gap the hook caught); each builder's calls were dispositioned in §21's Q1/Q2/Q3
+  blocks. **Review: 0 HIGH, 0 MED, 4 LOW** (L168–L171: the repair transaction's base-row
+  maxima; the same-family battery's per-cell seed; the ledger row asserting parse not
+  warnings; the remaining `_compose_racks` `racks` shadow) and **L163 closes** — no fixer
+  pass owed. Measured highlights R1 re-derived: strip 600 = slots `[300,300,0]` = the store's
+  two packs; cannon-only stock fires its own slot; 0 refusals with the fragment's shape live
+  next step; `1250/1250` + `800/800` both panes; quote 6001 → 6016 = the shown 15; ledgers
+  34 → 1 / 3 → 0 / 3 → 0. Owner ticks: O1/O2's UX call, O3's site + symptom + mask, L168,
+  L169, the trailing-rack duplicate read, plus the QA's (`REFINE ALL`, `1 CONVERSION`, the
+  refinery hide, the live-profile restore). Orchestrator incident, recorded: a line-number
+  slip launched F1 once after Q2; it was killed within a minute with no write and no report,
+  and Q3 was dispatched by prompt match.
 
 - **S6 travel (engine slice 3 + RPG P3) — DONE 2026-09-24** (gate 608 → **674, 0 failed**,
   exit 0; the orchestrator measured it twice on two scratch stores at close-out and R1 four
