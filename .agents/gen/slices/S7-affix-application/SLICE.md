@@ -69,7 +69,7 @@ seam — with five suffixes honestly staged where no system exists.
 |---|---|---|
 | S7-K0 | `vajb-orbit/tests/,vajb-orbit/tools/` (report only; the orchestrator applies its dispositions to §20 before K1) | `S7_BRIEF.md` |
 | S7-K1 | `vajb-orbit/game/affixes.gd,vajb-orbit/game/ship_fit.gd,vajb-orbit/game/ship_stats.gd,vajb-orbit/autoload/player_profile.gd,vajb-orbit/tests/` | `S7_BRIEF.md` |
-| S7-K2 | `vajb-orbit/game/weapons.gd,vajb-orbit/game/projectile.gd,vajb-orbit/game/game.gd,vajb-orbit/game/player_ship.gd,vajb-orbit/game/player_state.gd,vajb-orbit/tests/` | `S7_BRIEF.md` |
+| S7-K2 | `vajb-orbit/game/weapons.gd,vajb-orbit/game/projectile.gd,vajb-orbit/game/game.gd,vajb-orbit/game/player_ship.gd,vajb-orbit/game/player_state.gd,vajb-orbit/game/affixes.gd,vajb-orbit/tests/` | `S7_BRIEF.md` |
 | S7-K3 | `vajb-orbit/game/game.gd,vajb-orbit/game/sector.gd,vajb-orbit/game/auction.gd,vajb-orbit/autoload/player_profile.gd,vajb-orbit/tests/` | `S7_BRIEF.md` |
 | S7-R1 | `vajb-orbit/tests/,vajb-orbit/tools/,docs/CONTRACTS.md` | `S7_BRIEF.md` |
 | S7-F1 | union of K1–K3 sets + `docs/CONTRACTS.md` | `S7_BRIEF.md` |

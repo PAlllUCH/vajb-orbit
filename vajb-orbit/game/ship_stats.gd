@@ -43,3 +43,9 @@ var energy_regen: float = 0.0
 var fuel_max: float = 0.0
 
 var boosters: Array[StringName] = []
+
+## Spry's aggregate (CONTRACTS section 20): `1 + sum(spry)` over the fitted booster
+## instances, 1.0 when no fitted booster carries the prefix. Spry's stored band is
+## negative, so a fitted one reads below 1.0 (0.85 for the -0.15 band), and
+## `player_ship.gd` multiplies the catalogue cooldown by it.
+var booster_cooldown_mult: float = 1.0

@@ -120,6 +120,22 @@ const MANDATORY_SLOT_KEYS: Array[StringName] = [&"engines", &"power"]
 ## three-cell hull (`e_std` + `e_ion` + `e_vector`) is exactly 1.40.
 const ENGINE_MULT_CEILING := 1.40
 
+## S7 (CONTRACTS section 20): `of the Whale`'s flat hull addition, applied in the
+## flat step and therefore before `_clamp`'s 3x pool ceiling (15 section 4's
+## "+50 max hull structure").
+const WHALE_HULL_ADD := 50.0
+
+## CONTRACTS section 20's summary keys, as the resolver reads them.
+## `game/affixes.gd` publishes the same names as its own constants; these are
+## literals so the two global classes stay a one-way dependency (`Affixes` reads
+## this file's `FIT_SLOT_KEYS`, this file reads only the summary dictionary).
+const AFFIX_INSTANCES: StringName = &"instances"
+const AFFIX_SUFFIXES: StringName = &"suffixes"
+const AFFIX_PREFIXES: StringName = &"prefixes"
+const AFFIX_BASE_ID: StringName = &"base_id"
+const AFFIX_ID: StringName = &"id"
+const AFFIX_VALUE: StringName = &"value"
+
 ## 09 section 8: the fraction of the hull's half-extents the layout grid covers.
 ## One pair for all nine hulls; `mount_offset` scales a cell's normalised position
 ## by it, so no per-hull anchor table exists to drift from the matrices.
@@ -570,7 +586,16 @@ const STANDARD_FIT: Dictionary = STANDARD_FITS[&"ship_vanguard"]
 ## Unknown hulls push an error and return null; an unknown module id pushes a
 ## warning and is ignored, so a fit referencing a not-yet-implemented module
 ## still resolves the rest.
-static func resolve(hull_id: StringName, fit: Dictionary) -> ShipStats:
+##
+## `affixes` is the S7 optional summary (CONTRACTS section 20) that
+## `Affixes.summary(profile, ship_id)` builds -- per-prefix magnitudes plus one row
+## per fitted instance. It is **optional and empty by default**: an empty summary,
+## or no third argument at all, resolves exactly the pre-S7 figures, because every
+## affix application below is a no-op when the summary carries nothing. `fit` holds
+## **base** catalogue ids (the launch maps its raw fit through `base_module_id`
+## first); the summary's rows name the base id they were fitted as, which is how
+## the two are aligned.
+static func resolve(hull_id: StringName, fit: Dictionary, affixes: Dictionary = {}) -> ShipStats:
 	var hull: Dictionary = HULLS.get(hull_id, {})
 	var handling: Dictionary = HANDLING.get(hull_id, {})
 	if hull.is_empty() or handling.is_empty():
@@ -604,12 +629,13 @@ static func resolve(hull_id: StringName, fit: Dictionary) -> ShipStats:
 
 	var ids := fitted_ids(fit)
 	_warn_unknown(ids)
-	_apply_flat(stats, ids)
-	_apply_speed(stats, ids)
-	_apply_computers(stats, ids)
-	_apply_shields(stats, ids)
+	var rows := _align_affixes(ids, affixes)
+	_apply_flat(stats, ids, affixes, rows)
+	_apply_speed(stats, ids, affixes, rows)
+	_apply_computers(stats, ids, affixes, rows)
+	_apply_shields(stats, ids, affixes, rows)
 	_apply_utility(stats, ids)
-	_apply_boosters(stats, ids)
+	_apply_boosters(stats, ids, affixes)
 	_clamp(stats, hull, handling)
 	stats.lock_range = stats.scan_range
 	return stats
@@ -914,7 +940,9 @@ static func _has_duplicate(fit: Dictionary, key: StringName) -> bool:
 	return false
 
 
-static func _apply_flat(stats: ShipStats, ids: Array[StringName]) -> void:
+static func _apply_flat(
+	stats: ShipStats, ids: Array[StringName], affixes: Dictionary, rows: Array[Dictionary]
+) -> void:
 	# 09 section 5 step 2: flat module effects (plates, shield pools, cargo units).
 	for id: StringName in ids:
 		var row := _row(id)
@@ -923,17 +951,35 @@ static func _apply_flat(stats: ShipStats, ids: Array[StringName]) -> void:
 		stats.hull_max += _effect(row, &"hull_add", 0.0)
 		stats.shield_max += _effect(row, &"shield_add", 0.0)
 		stats.cargo_max += int(_effect(row, &"cargo_add", 0.0))
+	# S7 (CONTRACTS section 20), still the flat step and still before `_clamp`:
+	# Sturdy scales its own instance's `shield_add` (a summed magnitude cannot say
+	# which instance carries it), Deep-hold adds its own units, and the Whale
+	# suffix adds its flat hull.
+	stats.shield_max += _sturdy_pool(rows)
+	stats.cargo_max += int(_affix_magnitude(affixes, &"deep_hold"))
+	if _has_suffix(affixes, &"whale"):
+		stats.hull_max += WHALE_HULL_ADD
 
 
-static func _apply_speed(stats: ShipStats, ids: Array[StringName]) -> void:
+static func _apply_speed(
+	stats: ShipStats, ids: Array[StringName], affixes: Dictionary, rows: Array[Dictionary]
+) -> void:
 	# 09 section 5 step 3 order: armour, then engine. Plating pays twice — its
 	# 09 section 3.3 speed cost and the handling-time multiplier of ENGINE_SPEC
 	# section 3.2 ("slow *and* ponderous").
-	for id: StringName in ids:
+	var lightened := absf(_affix_magnitude(affixes, &"lightened"))
+	for index: int in range(ids.size()):
+		var id: StringName = ids[index]
 		var row := _row(id)
 		if row.is_empty() or row[&"slot"] != &"armour":
 			continue
 		var penalty := _effect(row, &"speed_penalty", 0.0)
+		# S7 Lightened (CONTRACTS section 20): the instance's own penalty gains
+		# `abs(sum(lightened))`, clamped so the effective penalty never crosses 0
+		# into a bonus. Both the speed and the mass term below follow the adjusted
+		# penalty (15 section 3's "-4/-6/-8 pp" read as a sign-flip).
+		if _row_has_prefix(rows[index], &"lightened"):
+			penalty = minf(penalty + lightened, 0.0)
 		stats.max_speed *= 1.0 + penalty
 		var mass := 1.0 + absf(penalty)
 		stats.accel_time *= mass
@@ -954,40 +1000,74 @@ static func _apply_speed(stats: ShipStats, ids: Array[StringName]) -> void:
 	# 1.0 exactly as the old empty loop did.
 	var speed_mult := 1.0
 	var turn_mult := 1.0
-	for id: StringName in ids:
+	var tempered := _affix_magnitude(affixes, &"tempered")
+	for index: int in range(ids.size()):
+		var id: StringName = ids[index]
 		var row := _row(id)
 		if row.is_empty() or row[&"slot"] != &"engine":
 			continue
-		speed_mult += _effect(row, &"speed_mult", 1.0) - 1.0
+		var delta := _effect(row, &"speed_mult", 1.0) - 1.0
+		# S7 Tempered (CONTRACTS section 20): a carrying instance's own delta
+		# becomes `(own - 1) x (1 + sum(tempered))` and joins the summed delta, so
+		# it is inside `ENGINE_MULT_CEILING` as part of the sum.
+		if _row_has_prefix(rows[index], &"tempered"):
+			delta *= 1.0 + tempered
+		speed_mult += delta
 		turn_mult += _effect(row, &"turn_mult", 1.0) - 1.0
 	stats.max_speed *= minf(speed_mult, ENGINE_MULT_CEILING)
 	stats.turn_rate *= turn_mult
 
 
-static func _apply_computers(stats: ShipStats, ids: Array[StringName]) -> void:
+static func _apply_computers(
+	stats: ShipStats, ids: Array[StringName], affixes: Dictionary, rows: Array[Dictionary]
+) -> void:
 	# 09 section 3.4: damage computers stack additively, scanner range takes the
 	# best single value.
 	var damage_add := 0.0
 	var scanner_add := 0.0
-	for id: StringName in ids:
+	var wideband := _affix_magnitude(affixes, &"wideband")
+	var surefire := _affix_magnitude(affixes, &"surefire")
+	for index: int in range(ids.size()):
+		var id: StringName = ids[index]
 		var row := _row(id)
 		if row.is_empty() or row[&"slot"] != &"computers":
 			continue
-		damage_add += _effect(row, &"damage_add", 0.0)
-		scanner_add = maxf(scanner_add, _effect(row, &"scanner_add", 0.0))
+		var damage := _effect(row, &"damage_add", 0.0)
+		# S7 Surefire (CONTRACTS section 20): a carrying instance's own `damage_add`
+		# becomes `own x (1 + sum(surefire))`; computers still sum.
+		if _row_has_prefix(rows[index], &"surefire"):
+			damage *= 1.0 + surefire
+		damage_add += damage
+		var scanner := _effect(row, &"scanner_add", 0.0)
+		# S7 Wideband (CONTRACTS section 20): the same per-instance reading for
+		# `scanner_add`, and the best instance still wins. `lock_range` follows
+		# `scan_range` untouched (the caller sets it after `_clamp`).
+		if _row_has_prefix(rows[index], &"wideband"):
+			scanner *= 1.0 + wideband
+		scanner_add = maxf(scanner_add, scanner)
 	stats.damage_mult = 1.0 + damage_add
 	stats.scan_range *= 1.0 + scanner_add
 
 
-static func _apply_shields(stats: ShipStats, ids: Array[StringName]) -> void:
+static func _apply_shields(
+	stats: ShipStats, ids: Array[StringName], affixes: Dictionary, rows: Array[Dictionary]
+) -> void:
 	# 09 section 3.2 + ENGINE_SPEC section 4.2: the 2/s base plus the best single
 	# module value.
 	var regen_add := 0.0
-	for id: StringName in ids:
+	var vigilant := _affix_magnitude(affixes, &"vigilant")
+	for index: int in range(ids.size()):
+		var id: StringName = ids[index]
 		var row := _row(id)
 		if row.is_empty() or row[&"slot"] != &"shields":
 			continue
-		regen_add = maxf(regen_add, _effect(row, &"regen_add", 0.0))
+		var own := _effect(row, &"regen_add", 0.0)
+		# S7 Vigilant (CONTRACTS section 20): a carrying instance's own `regen_add`
+		# becomes `own x (1 + sum(vigilant))`, and the best instance still wins
+		# (09 section 5's "best value").
+		if _row_has_prefix(rows[index], &"vigilant"):
+			own *= 1.0 + vigilant
+		regen_add = maxf(regen_add, own)
 	stats.shield_regen = BASE_SHIELD_REGEN + regen_add
 
 
@@ -1002,13 +1082,150 @@ static func _apply_utility(stats: ShipStats, ids: Array[StringName]) -> void:
 		stats.tractor_streams += int(_effect(row, &"tractor_streams_add", 0.0))
 
 
-static func _apply_boosters(stats: ShipStats, ids: Array[StringName]) -> void:
+static func _apply_boosters(
+	stats: ShipStats, ids: Array[StringName], affixes: Dictionary
+) -> void:
 	# Ids only: the activation multiplier is not a static stat (see the file doc).
 	for id: StringName in ids:
 		var row := _row(id)
 		if row.is_empty() or row[&"slot"] != &"boosters":
 			continue
 		stats.boosters.append(id)
+	# S7 Spry (CONTRACTS section 20): the ship-level cooldown multiplier. Spry
+	# rolls only on booster-slot modules, so the summary's aggregate is already
+	# `sum(spry)` over the fitted booster instances; the stored band is negative,
+	# so a fitted one reads below 1.0 (0.85 for the -0.15 band).
+	stats.booster_cooldown_mult = 1.0 + _affix_magnitude(affixes, &"spry")
+
+
+## ---------------------------------------------------------------- S7 affixes
+##
+## The summary is a plain dictionary (CONTRACTS section 20): per-prefix magnitudes
+## plus one row per fitted instance. The rules that collapse to one scalar over the
+## fit read the aggregate keys; the rules written `own x (1 + sum(own))` or
+## `own += ...` read `instances` and compute each instance's own figure from its
+## row's `base_id`, because the aggregate cannot say *which* instance carries the
+## prefix (K0 F1). The two readings agree by construction, and an empty summary
+## makes every helper below a no-op.
+
+
+## The summary's `instances` rows lined up with `ids`, one entry per id (`{}` for a
+## cell the summary does not carry -- a delivered base module, or an empty
+## summary). The rows are keyed by their `base_id`: a fit cell holds a base id, a
+## module belongs to exactly one slot, and within one slot the summary's cell order
+## and `fitted_ids`' order agree -- so the alignment is exact. An empty `affixes`
+## yields all-`{}` rows, which is what keeps a pre-S7 call byte-identical.
+static func _align_affixes(ids: Array[StringName], affixes: Dictionary) -> Array[Dictionary]:
+	var aligned: Array[Dictionary] = []
+	var queues: Dictionary = {}
+	for raw: Variant in _instance_rows(affixes):
+		if not raw is Dictionary:
+			continue
+		var row: Dictionary = raw
+		var base := StringName(str(row.get(AFFIX_BASE_ID, row.get(String(AFFIX_BASE_ID), ""))))
+		if base == &"":
+			continue
+		var queue: Array = queues.get(base, [])
+		queue.append(row)
+		queues[base] = queue
+	for id: StringName in ids:
+		var queue: Array = queues.get(id, [])
+		if queue.is_empty():
+			aligned.append({})
+		else:
+			var row: Dictionary = queue.pop_front()
+			aligned.append(row)
+	return aligned
+
+
+static func _instance_rows(affixes: Dictionary) -> Array:
+	var raw: Variant = affixes.get(AFFIX_INSTANCES, affixes.get(String(AFFIX_INSTANCES), []))
+	if raw is Array:
+		return raw
+	return []
+
+
+## One prefix's summed magnitude from the summary, `0.0` when it is absent. This is
+## the summary's own aggregate, never re-derived: `ModuleCatalog.prefix_value` is
+## the roll's reader, not a consumer's, and a stored `0.0` stays inert.
+static func _affix_magnitude(affixes: Dictionary, id: StringName) -> float:
+	if affixes.has(id):
+		return float(affixes[id])
+	return float(affixes.get(String(id), 0.0))
+
+
+## Whether the summary carries `id` as a suffix flag. `Affixes.has_suffix` is the
+## public spelling of the same read; this file keeps its own so the resolver
+## depends on nothing but the summary dictionary.
+static func _has_suffix(affixes: Dictionary, id: StringName) -> bool:
+	var flags: Variant = affixes.get(AFFIX_SUFFIXES, affixes.get(String(AFFIX_SUFFIXES), []))
+	if not flags is Array:
+		return false
+	for raw: Variant in flags as Array:
+		if StringName(str(raw)) == id:
+			return true
+	return false
+
+
+## Whether one instance row carries `prefix_id` at all, whatever its stored value.
+static func _row_has_prefix(row: Dictionary, prefix_id: StringName) -> bool:
+	for raw: Variant in _row_prefixes(row):
+		if _prefix_id(raw) == prefix_id:
+			return true
+	return false
+
+
+## The stored magnitude of `prefix_id` on one instance row, `0.0` when the row does
+## not carry it: the value the record keeps, never the band's.
+static func _row_prefix_value(row: Dictionary, prefix_id: StringName) -> float:
+	for raw: Variant in _row_prefixes(row):
+		if _prefix_id(raw) == prefix_id:
+			return _prefix_value(raw)
+	return 0.0
+
+
+## Sturdy's flat step (CONTRACTS section 20): each carrying instance adds
+## `its own shield_add x its own stored value`. The measured counter-example (K0
+## F1): an `s_light` (200 pool) Sturdy 0.10 beside an `s_heavy` (400 pool) Sturdy
+## 0.15 adds +80, not 0.25 x 600 = +150.
+static func _sturdy_pool(rows: Array[Dictionary]) -> float:
+	var total := 0.0
+	for row: Dictionary in rows:
+		if not _row_has_prefix(row, &"sturdy"):
+			continue
+		total += _effect(_affix_module(row), &"shield_add", 0.0) * _row_prefix_value(row, &"sturdy")
+	return total
+
+
+## The module row an instance row was fitted as (`{}` for a row with no base id).
+static func _affix_module(row: Dictionary) -> Dictionary:
+	if row.is_empty():
+		return {}
+	var base := StringName(str(row.get(AFFIX_BASE_ID, row.get(String(AFFIX_BASE_ID), ""))))
+	return _row(base)
+
+
+static func _row_prefixes(row: Dictionary) -> Array:
+	if row.is_empty():
+		return []
+	var raw: Variant = row.get(AFFIX_PREFIXES, row.get(String(AFFIX_PREFIXES), []))
+	if raw is Array:
+		return raw
+	return []
+
+
+static func _prefix_id(raw: Variant) -> StringName:
+	if raw is Dictionary:
+		var row: Dictionary = raw
+		return StringName(str(row.get(AFFIX_ID, row.get(String(AFFIX_ID), ""))))
+	return StringName(str(raw))
+
+
+static func _prefix_value(raw: Variant) -> float:
+	if raw is Dictionary:
+		var row: Dictionary = raw
+		return float(row.get(AFFIX_VALUE, row.get(String(AFFIX_VALUE), 0.0)))
+	return 0.0
 
 
 static func _clamp(stats: ShipStats, hull: Dictionary, handling: Dictionary) -> void:

@@ -2074,15 +2074,16 @@ untouched. Owner ticks for this wave: `S7_BRIEF.md` §Owner ticks.
   15 §1's "the baseline every affix modifies" is the module's own catalogue stat.
   Instances then combine by that stat's own 09 §5 rule (flat sum / best value /
   summed delta). `units`-unit affixes (`deep_hold`) add their value.
-- **Which shape carries which rule (K0 F1):** a rule whose arithmetic collapses to one
-  scalar over the fit (Sturdy's flat sum, Deep-hold's units, Whale) may read the
-  aggregate keys; a rule written `own × (1 + Σown)` or `own += …` — Vigilant, Wideband,
-  Surefire, Tempered, Lightened — reads `affixes[&"instances"]` and computes each
-  instance's own figure from its row's `base_id` + `prefixes`, because the aggregate
-  cannot say which instance carries the prefix. The two readings must agree by
-  construction; K1's suite asserts one instance and two instances of the same prefix
-  (the counter-example: `s_light`'s 200-pool Sturdy 0.10 beside `s_heavy`'s 400-pool
-  Sturdy 0.15 adds +80, not 0.25 × 600 = +150).
+- **Which shape carries which rule (K0 F1; corrected by K1's D1):** only a rule that
+  never multiplies an instance's **own** stat reads the aggregate keys — Deep-hold
+  (its units are added, not scaled) and Spry (`1 + Σ` over fitted boosters, and `spry`
+  only rolls on boosters). Every rule written `own × (1 + Σown)` or `own += …` —
+  Sturdy, Vigilant, Wideband, Surefire, Tempered, Lightened — reads
+  `affixes[&"instances"]` and computes each instance's own figure from its row's
+  `base_id` + `prefixes`, because the aggregate cannot say which instance carries the
+  prefix. Sturdy's own counter-example is the proof: `s_light`'s 200-pool Sturdy 0.10
+  beside `s_heavy`'s 400-pool Sturdy 0.15 adds **+80**, not `0.25 × 600 = +150`; K1's
+  suite asserts both numbers.
 - **A suffix is a per-instance flag** (`suffixes: [id]`,
   `game/module_catalog.gd:219-250`): one instance carrying it applies the perk once;
   two instances do not double it (*proposed*; reversal: per instance). An instance
@@ -2107,7 +2108,10 @@ untouched. Owner ticks for this wave: `S7_BRIEF.md` §Owner ticks.
 #       # no fit. `instances` is what makes the per-instance law expressible at all
 #       # (K0 F1): a summed magnitude alone cannot say *which* instance carries the
 #       # prefix, and Σ(vᵢ × ownᵢ) ≠ Σvᵢ × Σownᵢ.
-#   has_suffix(summary: Dictionary, id: StringName) -> bool
+#   has_suffix(data: Dictionary, id: StringName) -> bool
+#       # K1's D5: the parameter is named `data`, not `summary` — a parameter named
+#       # after the class's own `summary` function raises SHADOWED_VARIABLE. GDScript
+#       # has no named arguments, so the rename touches no caller.
 
 # autoload/player_profile.gd — additive:
 #   affix_summary(ship_id: StringName) -> Dictionary   # Affixes.summary(self, ship_id)
@@ -2274,6 +2278,23 @@ the one owner-facing addition rides the tick list.
 | F12b — is a ram "player-origin damage"? | **applied:** site 5 above — it is, on the pin's own "any parallel player-damage path" text; reversal is dropping that product, and the reading is named on the owner tick list (tick 6). |
 | F3, F6, F7, F8, F9, F10, F11, F12, F16 | **bucket 1, recorded above as the law's own detail:** null-tolerant multiplier, Leeches' credit gate, Embers' `npc_ship` predicate, the barrel↔slot map, the raw-fit walk, Frugal's bank over L90, the beam's weighted `paid` weight, the two chip sites, and the stored-value convention (a stored `0.0` stays inert; ids convert explicitly). |
 | F17 — a live game session wrote the live store during K0's pass | **harness note:** the close-out's "live store unchanged" claim is scoped to the S7 runs; the editor's own running game (D7's lane) writes it, so the figure is recorded with that attribution (L149's class). |
+
+### K1 dispositions (orchestrator, 2026-09-24, after K1 landed 726/0)
+
+K1 measured **726/0** twice (the tree carried **711** rows before its suite — S6's 674
+plus D7's in-flight 37, `test_d7_cockpit.gd` 18 / `test_d7_armory.gd` 11 /
+`test_d7_status.gd` 8 — so D7's growth is attributed, never absorbed). Its seven
+judgment calls are dispositioned here; nothing was reverted.
+
+| call | disposition |
+|---|---|
+| D1 — the aggregation-law bullet listed Sturdy as aggregate-readable while its own counter-example pins the per-instance sum | **this section's own error, corrected above:** only Deep-hold and Spry read the aggregate keys; K1's per-instance reading is the law and its suite asserts both numbers. |
+| D5 — the pinned `has_suffix(summary, …)` parameter name costs one `SHADOWED_VARIABLE` warning | **applied:** the pin names the parameter `data`; K2 renames it in `game/affixes.gd` (a parameter rename, no caller changes — GDScript has no named arguments) and that file is in K2's set for that one edit. |
+| D3 — `instances` rows align to `fitted_ids` by `base_id` | **accepted as a handoff:** K2 passes the base-id fit (`_launch_fit`) as `resolve`'s `fit`, which production already does; named in K2's prompt. |
+| D2 — Deep-hold and Spry read the aggregate, the other five read rows | **accepted** (the corrected split above). |
+| D4 — a cell whose id `instance()` answers is a fitted instance whatever its `count` | **accepted:** a real fit is `count` 0 and a base-keyed record with no affixes contributes nothing either way; R1 may tier it. |
+| D6 — `Affixes` depends on `ShipFit` one way only (no mutual global-class reference) | **accepted** (a cyclic reference risk, and the duplicated key literals are named in both files). |
+| D7 — the two pool-clamp rows ride a hand-built over-capacity summary | **accepted:** no legal fit reaches 09 §5's 3× ceilings, so the fixture is the only way to prove the clamp lands after the affixes; the suite says so. |
 
 ## §10 Changelog
 

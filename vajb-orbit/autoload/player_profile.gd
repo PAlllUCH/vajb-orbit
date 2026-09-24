@@ -897,6 +897,15 @@ func resolved_fit(ship_id: StringName) -> Dictionary:
 	return FitData.standard_fit(ship_id)
 
 
+## The affixes this hull's fitted instances carry, summed per prefix, with one row
+## per fitted instance (CONTRACTS section 20): the bridge `game.gd`'s launch hands
+## to `ShipFit.resolve`'s optional `affixes` parameter. `game/affixes.gd` owns the
+## walk -- this is the autoload's own spelling of it, so the launch reads the
+## summary off the profile the way it reads the fit.
+func affix_summary(ship_id: StringName) -> Dictionary:
+	return Affixes.summary(self, ship_id)
+
+
 ## Replace one hull's whole fit. Every type is normalised to the hull's own
 ## shape - a type the caller omits comes back empty, a longer tail is cut at
 ## capacity - and the write persists the array shape of save v4. An unknown hull

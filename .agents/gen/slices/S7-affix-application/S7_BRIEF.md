@@ -95,7 +95,10 @@ wrong **reports it and leaves it** (escalation ladder bucket 2).
 #       #  &"instances": Array[Dictionary]}   # one row per fitted instance, in
 #       #   FIT_SLOT_KEYS then cell order: {&"slot", &"index", &"base_id",
 #       #   &"prefixes": Array[{id, value}], &"suffixes": Array[StringName]}
-#   static func has_suffix(summary: Dictionary, id: StringName) -> bool
+#   static func has_suffix(data: Dictionary, id: StringName) -> bool
+#       # K1's D5: the parameter is `data`, not `summary` (a parameter named after the
+#       # class's own function raises SHADOWED_VARIABLE; no caller changes — GDScript
+#       # has no named arguments). K2 applies the rename.
 
 # autoload/player_profile.gd — additive:
 affix_summary(ship_id: StringName) -> Dictionary
@@ -133,10 +136,11 @@ six):
 - **Aggregation:** percent/points affix → its own instance's contribution; combine by
   09 §5's own rule; suffixes once-per-perk; **everything before `_clamp`**.
   Frugal/Lightened/Spry keep their stored negative signs; consumers read
-  `(1 + Σ)` so negative means cheaper/shorter. A rule that does not collapse to one
-  scalar (Vigilant, Wideband, Surefire, Tempered, Lightened) reads
-  `affixes[&"instances"]` — the aggregate cannot say *which* instance carries the
-  prefix (K0 F1; the counter-example is two Sturdy instances at 200/400 pools).
+  `(1 + Σ)` so negative means cheaper/shorter. **Only Deep-hold and Spry read the
+  aggregate keys**; every rule that scales an instance's own stat (Sturdy, Vigilant,
+  Wideband, Surefire, Tempered, Lightened) reads `affixes[&"instances"]`, because the
+  aggregate cannot say *which* instance carries the prefix (K0 F1, corrected by K1's
+  D1 — the counter-example is two Sturdy instances at 200/400 pools: +80, not +150).
 - **The three per-barrel prefixes ride `PlayerState.weapon_affixes[i]`** aligned
   with `weapons[i]` by the same walk as `_launch_weapons` — barrel index ↔ cell
   alignment is bucket 1: report mismatch, never guess.
@@ -158,7 +162,7 @@ six):
 |---|---|---|
 | S7-K0 | docs-drift check | report only: §20's every seam re-measured against the tree, the damage-metric flip-list, both sell-formula call sites, beam/mining delivery paths, `_on_npc_died` killer identity, barrel↔cell alignment — findings at file:line + bucket |
 | S7-K1 | summary + resolve side | `affixes.gd`, `affix_summary`, `resolve`'s parameter, ship-stat prefixes + Whale + Spry's field, `tests/test_s7_affixes.gd` |
-| S7-K2 | launch + barrel side | the `game.gd` bridge call, `set_weapon_affixes` + `set_affix_flags`, Keen/Rapid/Frugal + `ammo_frac`, the `damage_mult` delivery at all five measured sites (**incl. `projectile.gd`**), **Embers** at both `_deliver`s, Spry's `player_ship` line, `tests/test_s7_weapon_affixes.gd` |
+| S7-K2 | launch + barrel side | the `game.gd` bridge call, `set_weapon_affixes` + `set_affix_flags`, Keen/Rapid/Frugal + `ammo_frac`, the `damage_mult` delivery at all five measured sites (**incl. `projectile.gd`**), **Embers** at both `_deliver`s, Spry's `player_ship` line, the one-word `has_suffix` parameter rename in `affixes.gd`, `tests/test_s7_weapon_affixes.gd` |
 | S7-K3 | suffix side | Leeches (`_on_npc_died`), Cartograph (`Sector.reveal_pois` at entry), Ledger (`sell_price` ×1.25 through all three production sites + the `test_s3_instances.gd` fixture edit), the staged-marker assertions, `tests/test_s7_suffixes.gd` |
 | S7-R1 | mandatory review | re-measure everything (W8 method), tier findings, LOW rows, §9/§10 notes sequenced after D7 |
 | S7-F1 | fixer (HIGH/MED only) | named fixes + the gate |
@@ -223,9 +227,14 @@ slice 4's remaining queue items.
 
 1. Gate **twice** on scratch stores: `source ~/.profile && XDG_DATA_HOME=$(mktemp -d)
    godot --headless --path vajb-orbit res://tests/headless_runner.tscn --quit-after 1200`
-   → identical counts, expect `674 + the three suites`, 0 failed once D7's held
-   files compile (if D7 is still mid-wave, attribute its rows and re-run the clean
-   gate before declaring green). Live `profile.cfg`/`economy_log.txt` md5s unchanged.
+   → identical counts, expect `711 + the three suites`, 0 failed. **The pre-K1 baseline
+   was measured at `711/0`**, not S6's 674: D7's lane had already added 37 rows
+   (`test_d7_cockpit.gd` 18, `test_d7_armory.gd` 11, `test_d7_status.gd` 8) by the
+   `s7_start` snapshot, and its earlier 668/6 reading is gone (its held files compile
+   again). Attribute D7's rows rather than absorbing them into S7's figure; if D7 is
+   mid-edit again at close-out, re-run the clean gate before declaring green. Live
+   `profile.cfg`/`economy_log.txt` md5s are written by the editor's own running game
+   (D7's lane) — record them with that attribution, not as an S7 claim.
 2. Verify (the S4-corrected flag form):
 
    ```bash
