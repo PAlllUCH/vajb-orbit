@@ -70,3 +70,19 @@ cd /home/kamil-paluszkiewicz/VajbOrbit && source ~/.profile \
      -m deepseek/deepseek-flash --reasoning-effort high --cwd "$VAJB_WORKSPACE" \
   > /tmp/s11_b6.log 2>&1
 ```
+
+## Wave 3 — the review
+
+R1 runs **without `VAJB_SLIM`**: its strongest evidence route for the inspector is the live
+editor bridge (the editor is open with the project, `play_state: stopped`), and the wave's
+lesson from S8/S10 is that a handler-level probe is not evidence for a UI acceptance. It
+must not stop a game it did not start, must stop its own, and must press no purchase,
+repair, fit or launch control.
+
+```bash
+cd /home/kamil-paluszkiewicz/VajbOrbit && source ~/.profile \
+  && VAJB_WORKER_FILES='vajb-orbit/tests/,docs/CONTRACTS.md,.agents/gen/_state/LOW_BACKLOG.md,.agents/gen/slices/S11-legibility-gunnery-feel/' \
+     crush run "You are worker S11-R1, the mandatory reviewer of wave S11 on the Vajb Orbit workspace. Read .agents/gen/slices/S11-legibility-gunnery-feel/S11_R1_BRIEF.md end to end first - including its addendum - then docs/CONTRACTS.md section 23 in full - it is the yardstick, not a summary - and the four builder reports plus B5 and B6. Re-measure every acceptance criterion yourself on the shipped tree; a builder number is a claim, not evidence. The expected gate is passed=807 failed=0: verify it twice on fresh scratch stores and confirm the live store pair. Drive the inspector through real input - the live editor bridge is available - with a canary proving the path, and prove the status strip and the inspector are independent writers. Confirm the widened describe sources, the title and status split, the 35 descriptions against section 23.2, the credits block never writing the profile, the four family ranges through Weapons.range_of with rocket and mine unmoved, the one-vector decay numbers, and that nothing implements the held T3. Confirm probe_c3_flight_decay fails at the pre-dispatch tree too and keep it out of your verdict. Then write .agents/gen/slices/S11-legibility-gunnery-feel/S11-R1_review.md at 150 lines maximum with findings tiered HIGH, MED and LOW - each with file:line, the measured value, the section 23 row it violates and its evidence route - a verdict line, the docs/CONTRACTS.md section 9 expected gate row with the 775 to 807 attribution, the next free section 10 changelog row read from the file and sequenced after any D11 row, and LOW rows appended to .agents/gen/_state/LOW_BACKLOG.md at the next free ids read from that file. Never fix: your only writes are that review, section 9 and 10 of docs/CONTRACTS.md and the LOW backlog." \
+     -m deepseek/deepseek-flash --reasoning-effort high --cwd "$VAJB_WORKSPACE" \
+  > /tmp/s11_r1.log 2>&1
+```

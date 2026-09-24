@@ -431,6 +431,49 @@ proper tick lists are resolved.
   selection should *mean* beyond the frame, the per-battery ammo/stats readout (unpinned),
   the refused-hover wording, the between-rack wording, plus S8's still-open list.
 
+- **S11 station legibility, space gunnery, one-vector inertia (coder item 18) — DONE
+  2026-09-24** (gate 775 → **807, 0 failed**, exit 0; the orchestrator measured it twice on
+  fresh scratch stores at close-out and R1 twice plus once inside `verify_wave.py` —
+  `problems: []`, no forbidden hit, 28 modified / 0 deleted; the live pair's `economy_log.txt`
+  `8b9414b7e9545abfc865c337ce5199af` byte-identical throughout, and `profile.cfg`
+  `eb750728e6dbd9cbe944e32c96307c87` → `f92040ca1a036fe021e5324c31270020` **moved by R1's
+  live-bridge runs** — the autoload's exit `flush()` rewrites it, no transaction row appeared
+  — attributed, not drift; reports `slices/S11-legibility-gunnery-feel/S11-B{1,2,3,4,5,6}_report.md`,
+  `S11-R1_review.md`, close-out logs in that folder's `_closeout/`; model
+  `deepseek/deepseek-flash`, B4 at `max` and R1 without the slim profile because its first
+  route is the live editor bridge): **the owner's four asks are answered.** (1) **The station
+  inspector** — every pane declares `inspect_requested`, the six item panes emit it on hover
+  and on selection, and the shell renders a raised block above the status strip (identity at
+  `StationPanelTitle`, prose at `SectionHeader` size in `text_primary`, two wrapped lines) so
+  the hovered item's full description is always on screen instead of arriving on a press;
+  `StationCatalog.describe` resolves base ids, joins a rolled instance's affix perks, reads
+  the mineral and component catalogues too, and invents nothing. (2) **35 module descriptions**
+  transcribed verbatim from §23.2 (+35/−0, no other key moved) and a **HUD credits block**
+  that follows `profile_changed(&"credits")` and never writes the profile. (3) **The four
+  non-missile weapon families reach 30 000 u** — derived from the sector's own 10 000²
+  diagonal, the fizzle kept finite so travelling shots still despawn, rocket `900.0` and mine
+  `0.0` unmoved, the beam's hit-shortening and the range readout byte-identical. (4)
+  **One-vector inertia** — one damp owns both axes, `LATERAL_DAMP_MULT` retired in place, T1
+  `COAST_TIME_MULT` 2.5 and T2 `ANGULAR_DAMP_MULT` 0.5 ticked, **T3 held** (its wording and
+  its worked effect are each other's inverse) and T4 superseded by the unification; the
+  acceptance measures a released forward+strafe holding its bearing at **0.000000 deg** drift
+  to a tenth of release on all three hulls while the commanded strafe still reaches its class
+  rate. **Three rows the wave owned went red mid-flight** — the weapons range row inside a
+  dispatch set I had narrowed by mistake, three `coast_time` rows in the affix suite the
+  tests-that-move list omitted, and the ship-grids key count now that a row carries an eighth
+  key; all three were re-derived to the pin (never weakened), §23.6 names them, and the
+  ship-grids row was applied by the developer session. `probe_c3_flight_decay` fails at the
+  pre-dispatch tree as well (proven in two worktrees by B5 and again by R1) — **L178, not this
+  wave's**, and excluded from the verdict. **Review: 0 HIGH, 0 MED, 6 LOW (L178–L183), no
+  fixer owed**; the inspector was driven through real input with a hovered-control canary and
+  the status strip proved a separate writer. The **readability half is the design lane's**:
+  **D12-A0** (`slices/D12-ui-readability/`, 5 HIGH / 4 MED / 3 LOW, ARMORY first) measured the
+  pane's ink at 9–13 px with per-node overrides that escape `ui_scale`, `text_dim` captions on
+  painted metal at **1.9–2.8:1**, the ember state tag at **1.8:1**, and the ammunition half
+  below the fold at 1920x1080 with 37 % of its host empty. Owner ticks: the inspector's
+  placement and size, the 35 descriptions' wording, the 30 000 u ceiling, the one-vector feel
+  with T1/T2, the credits block's position — plus S10's and S8's still-open lists.
+
 - **S8 QA playtest fixes (coder item 14) — DONE 2026-09-24** (gate 753 → **770, 0 failed**,
   exit 0; the orchestrator measured it twice on two fresh scratch stores at close-out, R1
   twice plus once inside `verify_wave.py` — identical counts, `problems: []`; the live pair

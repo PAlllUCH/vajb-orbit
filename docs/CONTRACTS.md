@@ -844,7 +844,47 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
-Expected (S10, 2026-09-24): **`[SUMMARY] passed=775 failed=0`**, exit 0. The S10 review
+Expected (S11, 2026-09-24): **`[SUMMARY] passed=807 failed=0`**, exit 0. The S11 review
+(S11-R1) measured **807** twice on two fresh scratch stores (identical `[S11FS]`/`[S26F]`
+rows and identical fail lists, which are empty) while re-running the wave's real-input
+acceptance on the shipped station mount **through the live editor bridge**
+(`vajb-orbit@6069225ff44d8b75`): real `InputEventMouseMotion` hovers on the ARMORY's
+`OwnedWLaser` and `AmmoLaser` rows fill the new `Inspector` block (`LASER MKII`, and
+`LASER CELLS · 120 CREDITS` with the §23.2 body) and a leave clears both, with
+`gui_get_hovered_control()` naming the exact row each time as the path's canary, while a
+canary refusal line planted through the shell's own status writer
+(`REFUSED · NOT ENOUGH CREDITS · 999 CANARY`) survives every hover byte-identically — the
+inspector and the strip are independent writers (`ui/screens/station.gd:454-466` against
+`:558`); a TAB focus on the same ammo row reads title `LASER CELLS · 120 CREDITS` against
+status `ENTER BUY · LASER CELLS · 120 CREDITS`; the flight HUD's `CreditsValue` reads
+`2 125` == `StationCatalog.group_int(profile.credits())`, follows a sent
+`profile_changed(&"credits")` and ignores `&"hull"`; `describe(mod_0737)` reads the base
+prose plus `· Spry -15 % · kills restore 5 % hull`; `Weapons.range_of` reads
+`30000/30000/30000/30000/900/0`; and the review's own `probe_s2_6_flight` run reads
+`damp_forward == damp_lateral` with identical axial/lateral decay rows on all nine hulls and
+`mirror … sweep_error=0.000000 mirrored=true`.
+`staging/verify_wave.py verify --baseline s11_start` exits **0** with `"problems": []`
+(modified 27 / added 130 / deleted 0; the adds are D11's live `staging/phase_g/**`, the
+`assets/env/poi/*.import` sidecars and this wave's three suites). The live store's
+`economy_log.txt` md5 `8b9414b7…` is byte-identical before and after both gate runs and
+every headless probe; its `profile.cfg` md5 moved `eb750728…` → `f92040ca…` (5961 → 6093 B)
+**only** across the reviewer's own bridge sessions, where `PlayerProfile._notification →
+flush()` writes the account on game exit (`autoload/player_profile.gd:277-280`) — a
+pre-existing measurement hazard filed as L180, with no transaction recorded.
+**Growth `775 → 807`**: per-suite `func test_` counts read from the two trees, baseline
+`396b8f3` **775** → HEAD **807**, the whole delta the three new suites
+(`test_s11_inspector.gd` **18** = B1's 13 + B2's credits 5, `test_s11_describe.gd` **11**,
+`test_s11_flight_stop.gd` **3**), with `test_engine2_weapons.gd` **48**, `test_s7_affixes.gd`,
+`test_ship_grids.gd` **27** (its key-count row re-derived by the developer session to `8`
+plus a non-empty `description` assertion, §23.6's amendment), `test_s2_6_flight.gd` **7**,
+`test_engine_c3_flight_decay.gd` **3** and every other suite unmoved. `probe_c3_flight_decay`
+reads `cases=4 failures=4` on the shipped tree **and** in the review's own pre-dispatch
+worktree at `4c19812` (all four in the accelerate leg), so it pre-dates the wave and is
+excluded from the verdict (L178). The wave leaves **no HIGH and no MED** (so no fixer), six
+LOW rows **L178–L183**, no `hud.tscn`/`assets/**`/`docs/**` edit outside §23, and two lines
+of whitespace-only movement in `game/player_ship.gd` (`git diff -w` 2119/161 against
+2121/163).
+Previous expected (S10, 2026-09-24): **`[SUMMARY] passed=775 failed=0`**, exit 0. The S10 review
 (S10-R1) measured **775** twice on two fresh scratch stores (identical row sets, byte-identical
 error lines) while re-running the wave's real-input acceptance: B1's suite `5/5` green and
 independently **`0/5` red** in a detached worktree at `c8a6b5d` (the shipped tree never
@@ -3673,3 +3713,37 @@ hull stops twice and the second stop slides.
   are S11-R1's. **Two notices raised to the owner** (both pre-dispatch, neither blocking):
   T3's inverse wording, and the station caption colour's 4.1:1 contrast, which is a
   graphics-lane finding (D12-A0's audit measures it independently).
+- **v0.23 (2026-09-24, wave S11 review — S11-R1, the wave's only CONTRACTS writer;
+  sequenced after §9's v0.20 and §10's v0.22, and no parallel lane had landed a row
+  first — D11 is still mid-flight and holds no §10 row)** — §9 gains the S11 expected
+  **`passed=807 failed=0`** (twice on fresh scratch stores plus the live-bridge
+  re-measurement) with the `775 → 807` attribution read from per-suite `func test_` counts.
+  **The review leaves no HIGH and no MED** (so no fixer). Re-measured on `af933be`: a real
+  `InputEventMouseMotion` hover fills the inspector on the ARMORY's `OwnedWLaser` /
+  `AmmoLaser` rows and a leave clears it, with `gui_get_hovered_control()` naming the row as
+  the path's canary and a planted canary refusal line byte-identical in the status strip
+  across all three hovers (the two writers are independent); a TAB focus reads title
+  `LASER CELLS · 120 CREDITS` against status `ENTER BUY · LASER CELLS · 120 CREDITS`;
+  `describe(mod_0737)` = the base prose + `· Spry -15 % · kills restore 5 % hull`, with
+  `""` for an id no catalogue holds; `group_int` reads `1 200` / `30 000`; the HUD's
+  `CreditsValue` reads `2 125`, follows `profile_changed(&"credits")` and ignores `&"hull"`,
+  and the HUD's only profile call is the read at `hud.gd:1100`; `range_of` reads
+  `30000/30000/30000/30000/900/0` with `weapons.gd`'s whole diff the const plus those four
+  literals and the beam's `minf(offset.length(), reach)` hit-shortening byte-identical; the
+  35 §23.2 descriptions are verbatim with the file's diff `+35/−0`; the release acceptance
+  reads `drift=0.000000 deg` on three hulls with the commanded strafe at `367.717/406.600`
+  in 90 % of `accel_time`, and the review's own `probe_s2_6_flight` run reads
+  `damp_forward == damp_lateral` with identical axial/lateral rows on all nine hulls and
+  `mirror … sweep_error=0.000000`; `LATERAL_DAMP_MULT` is unread outside comments and T3
+  (`STRAFE_RATE_MULT`) appears only as the sentence recording it as held.
+  `staging/verify_wave.py verify --baseline s11_start` exits 0 with `"problems": []`;
+  `test_ship_grids.gd` is the one changed file outside a worker set (the developer session's
+  §23.6 re-derivation: `8` keys plus a non-empty `description`). `probe_c3_flight_decay`
+  fails `4/4` in its accelerate leg on the shipped tree **and** in the review's own
+  `4c19812` worktree, so it pre-dates the wave and is excluded. Six LOW rows are
+  **L178–L183** (the stale probe's two printed readings; the three new suites' uncommitted
+  `.uid`; the bridge route rewriting `profile.cfg` on game exit via
+  `player_profile.gd:277-280`; AUCTION's `[name, cost, action]` status line; the released
+  pure-lateral decay reading the class ramp rather than the damp the §22/§23.5 parenthetical
+  names; the empty `describe` answer having no live specimen). The owner ticks the wave
+  leaves: the AUCTION status-line wording and the inspector's empty-state panel.

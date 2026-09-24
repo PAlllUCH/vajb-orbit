@@ -17,7 +17,7 @@ A0 mockup-gate handoff live); designer items 1/4/10/11/12 picked, item 9 awaits 
 4 LOW L168–L171); item 13 = S7 CLOSED gate 711 → **753/0** (0 HIGH / 0 MED /
 5 LOW L163–L167); designer item 8 = D7 CLOSED gate 727/0. CONTRACTS §20 (S7), §21 (S8),
 §22 (item 15's proposals), §18 (D7) are the pins;
-changelog **v0.21** (S10) is the newest row — close-outs take the next free rows
+changelog **v0.23** (S11) is the newest row — close-outs take the next free rows
 read at close-out (v0.22+; L167's lesson for LOW ids too). The QA input stays loose at
 `slices/S7-affix-application/S7_QA_playtest_review_2026-09-24.md` (it is S8's brief input);
 every other closed slice now holds only `SLICE.md` + `_archive/` (cleanup 2026-09-24).
@@ -32,27 +32,29 @@ evidence were purged to the system trash (2026-09-22) and archived to the slices
 `_archive/` folders (2026-09-24) —
 citation paths of the form `.agents/gen/<report>.md` name the purged files.
 
-**Current state: fifteen coding waves closed (chrome, combat repair, weapon FX wiring, flight
+**Current state: sixteen coding waves closed (chrome, combat repair, weapon FX wiring, flight
 feel & beam polish, slice 2.5 Feel, P2-A ship slot frames, Rock cleave, P2-B1 weapon fit,
 P2-B proper fitting panel, **S2.6 truth-and-feel**, **S3 the item economy**,
 **S4 weapon batteries**, **S5 playtest fixes**, **S6 travel**, **S7 affix application**,
-**S8 QA playtest fixes**, **S10 ARMORY interactivity**; gate
+**S8 QA playtest fixes**, **S10 ARMORY interactivity**,
+**S11 station legibility, space gunnery, one-vector inertia**; gate
 `passed=578 failed=0` at S5, **`passed=608 failed=0`** after the D6 design wave,
 **`passed=674 failed=0`** after S6, **`passed=753 failed=0`** after S7 (the 711 at S7's
 `s7_start` snapshot = S6's 674 + D7's in-flight 37), **`passed=770 failed=0`** after S8
 (753 + its two new suites' 17 rows; 0 HIGH / 0 MED / 4 LOW), **`passed=775 failed=0`** after S10
-(770 + its real-input suite's 5 rows; 0 HIGH / 0 MED / 6 LOW), hermetic). The queue of record is
-`dispatch_coder.md`: items 4–16 are all DONE — **item 16 = S10 ARMORY CLOSED**
+(770 + its real-input suite's 5 rows; 0 HIGH / 0 MED / 6 LOW), **`passed=807 failed=0`** after S11
+(775 + its three new suites' 32 rows; 0 HIGH / 0 MED / 6 LOW), hermetic). The queue of record is
+`dispatch_coder.md`: items 4–16 and 18 are all DONE — **item 16 = S10 ARMORY CLOSED**
 (gate 770 → **775/0**, 0 HIGH / 0 MED / 6 LOW L172–L177; A0's real-input audit
 reproduced the owner's report as a **D7 regression** — the barrel `Name` plate and
 the `✕` collapsed to 0 px — plus selection wired to nothing and a SALVO drum blank
 for rolled instances; B1 fixed all three, R1 re-measured every AC through real
-input and proved the red state in a worktree); **item 18 = station legibility, space
-gunnery, one-vector inertia — IN FLIGHT** (owner ask 2026-09-24: a hovered-item description
-panel in the station, current credits in the space scene, near-infinite kinetic and beam
-range, and the two-stop inertia. **CONTRACTS §23 + v0.22 landed docs-first**; five-piece at
-`slices/S11-legibility-gunnery-feel/`; run order **B1 ∥ B3 ∥ B4 → B2 → R1**; T3 of item 15 is
-**held** on a self-contradicting worked row, T1/T2 ticked, T4 superseded). **Item 15 is
+input and proved the red state in a worktree); **item 18 = S11 station legibility, space
+gunnery, one-vector inertia — CLOSED 2026-09-24** (gate 775 → **807, 0 failed**, 0 HIGH /
+0 MED / 6 LOW L178–L183; six builders + the review, all on `deepseek/deepseek-flash`; the
+station inspector reads the hovered item's description above the status strip, the HUD
+carries credits, the four non-missile weapon families reach 30 000 u, and a released hull
+decays as one velocity vector; §23 + v0.22 docs-first, §9/§10 by R1 as v0.23). **Item 15 is
 closed by absorption into §23.5.** **Owner ask 2026-09-24 — jump
 gates to sector edges (same gates, spawn placement only) — is the coder lane's next
 free item (17)**: brief at its dispatch-prep; if gate spawn
