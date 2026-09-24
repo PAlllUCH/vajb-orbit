@@ -84,6 +84,13 @@ const AUCTION_FACTION_LOTS_INTERIM := true
 ## rarity step and never stacked with anything.
 const HOT_DISCOUNT_PERCENT := 20
 
+## 15 section 4 / CONTRACTS section 20: 15 section 4's `of the Ledger` sells for 25 %
+## more. The suffix id is the catalogue's own row key and the multiplier is a whole
+## percent so the arithmetic stays integer-exact (every 09/15 cost is a multiple of
+## 100 and the three rarity products are 60 / 96 / 156, all divisible by 4).
+const SUFFIX_LEDGER: StringName = &"ledger"
+const LEDGER_PERCENT := 125
+
 ## The two hulls 10 section 2.2 marks "always listed (the two starter hulls never leave
 ## the shelf)": the reconciliation's absolute floor.
 const STARTER_HULLS: Array[StringName] = [&"ship_fighter", &"ship_vanguard"]
@@ -582,7 +589,7 @@ static func _sell_row(id: StringName, record: Dictionary, owned: int) -> Diction
 		&"meta": meta_of(base, rarity),
 		&"icon": ModuleData.icon_path(base),
 		&"tint": rarity_token(rarity),
-		&"price": ModuleData.sell_price(base, rarity),
+		&"price": sell_price(base, rarity, _rows(record.get("suffixes"))),
 		&"owned": owned,
 		&"owned_text": OWNED_FORMAT % owned,
 	}
@@ -615,10 +622,32 @@ static func hot_price(price: int) -> int:
 	return price * (100 - HOT_DISCOUNT_PERCENT) / 100
 
 
-## 15 section 6 / 10 sections 2.3 and 2.4: the sell side, rarity-aware, with no
-## suffix term ("of the Ledger" is displayed, never applied -- 15 section 9.3).
-static func sell_price(base_id: StringName, rarity: StringName) -> int:
-	return ModuleData.sell_price(base_id, rarity)
+## 15 section 6 / 10 sections 2.3 and 2.4: the sell side, rarity-aware. CONTRACTS
+## section 20 adds 15 section 4's Ledger term (`of the Ledger`, sell value +25 %): a
+## record whose own suffix list carries `ledger` sells for `base x rarity x 60 % x
+## 1.25`, so a 900-cost Common is 540 -> 675. The term is one function, and every
+## production site passes the record's **own** suffix list, so the pane's displayed
+## price (`_sell_row`), the transaction's quote (`sell_row`) and the payout
+## (`PlayerProfile.sell_instance`) can never disagree. `[]` (the shipped two-argument
+## call) is byte-identical to pre-S7. (15 section 9.3's "no suffix term" line is
+## superseded by CONTRACTS section 20.)
+static func sell_price(base_id: StringName, rarity: StringName, suffixes: Array = []) -> int:
+	var price := ModuleData.sell_price(base_id, rarity)
+	if price <= 0 or not _carries_ledger(suffixes):
+		return price
+	return price * LEDGER_PERCENT / 100
+
+
+## Whether a record's own suffix list carries 15 section 4's `ledger` row. The list is
+## the record's (`["ledger"]` from the store, or `[{id, value}]` in a hand-built
+## fixture), so both spellings are read the way `rolled_name` reads them.
+static func _carries_ledger(suffixes: Variant) -> bool:
+	if not suffixes is Array:
+		return false
+	for raw: Variant in suffixes as Array:
+		if StringName(str(_row_id(raw))) == SUFFIX_LEDGER:
+			return true
+	return false
 
 
 ## The row's meta, `SLOT <TYPE> · DRAW <n> · <RARITY>`: section 5.3's own line with
@@ -720,8 +749,10 @@ static func buy_hull(profile: Node, id: StringName) -> Dictionary:
 	return result
 
 
-## Sell one instance out of the bag, at 15 section 6's `base x rarity x 60 %`. The
-## price comes from `sell_rows`, so the row and the transaction agree.
+## Sell one instance out of the bag, at 15 section 6's `base x rarity x 60 %` (plus
+## 15 section 4's Ledger term, CONTRACTS section 20). The price comes from the same
+## function `sell_rows` prices the row with, so the row and the transaction agree, and
+## the record's own suffix list is what both read.
 static func sell_row(profile: Node, id: StringName) -> Dictionary:
 	var result := _blank(&"instance", id)
 	var record: Dictionary = profile.call(&"instance", id)
@@ -729,7 +760,7 @@ static func sell_row(profile: Node, id: StringName) -> Dictionary:
 		return _refuse(result, REASON_UNKNOWN)
 	var base := StringName(str(record.get("base_id", "")))
 	var rarity := StringName(str(record.get("rarity", "")))
-	var price := ModuleData.sell_price(base, rarity)
+	var price := sell_price(base, rarity, _rows(record.get("suffixes")))
 	if price <= 0:
 		return _refuse(result, REASON_UNKNOWN)
 	result[&"base_id"] = base

@@ -67,6 +67,16 @@ const AffixesScript := preload("res://game/affixes.gd")
 ## only these out of a cell's row (a weapon instance carries no other prefix a barrel
 ## could apply).
 const BARREL_PREFIXES: Array[StringName] = [&"keen", &"rapid", &"frugal"]
+## The two suffix flags this scene's own seams read (CONTRACTS section 20): `leeches`
+## (15 section 4's kill heal, paid in `_on_npc_died`) and `cartograph` (15 section 4 /
+## 11 section 3.3's sector reveal, paid at entry in `_spawn_sector`). Embers rides
+## `PlayerState.affix_flags` into K2's two delivery seams; `whale` and `ledger` are
+## resolved and priced elsewhere; the remaining five stage (the pin's own list).
+const FLAG_LEECHES: StringName = &"leeches"
+const FLAG_CARTOGRAPH: StringName = &"cartograph"
+## 15 section 4's Leeches band, verbatim: "kills restore 5 % hull". Read against the
+## hull's own `hull_max`, so a bigger hull restores more.
+const LEECHES_FRACTION := 0.05
 ## The screen-space speed fantasy and the hull-critical vignette (FX_SPEC section 5,
 ## section 6 row 1): one node owns the blur, the camera's applied zoom, the dust and the
 ## vignette, and this scene pushes it the single input it reads.
@@ -695,9 +705,23 @@ func _spawn_sector(row: Dictionary) -> void:
 	if _ship != null:
 		_seat_ship(_sector.populate(row))
 		_bind_travel_seams()
+	else:
+		_pending_spawn = _sector.populate(row)
+		_bind_travel_seams()
+	_reveal_pois_for_cartograph()
+
+
+## 15 section 4's Cartograph (CONTRACTS section 20): a launch whose fitted instances
+## carry `of the Cartograph` enters a sector with every POI already revealed, through
+## the shipped beacon seam (`Sector.reveal_pois`, 11 section 3.3's own call) rather
+## than a second fog rule. One call per entry, after `populate` has spawned the POIs
+## (a beacon and a wreck site start revealed by their own kind; a derelict and an
+## anomaly do not, which is the fog this lifts). A launch with no flag - every pre-S7
+## launch - leaves the fog exactly as it was.
+func _reveal_pois_for_cartograph() -> void:
+	if _sector == null or not AffixesScript.has_suffix(_launch_summary, FLAG_CARTOGRAPH):
 		return
-	_pending_spawn = _sector.populate(row)
-	_bind_travel_seams()
+	_sector.reveal_pois()
 
 
 func _spawn_ship() -> void:
@@ -2179,6 +2203,24 @@ func _on_npc_died(_position: Vector2, archetype: StringName, ship: Node2D) -> vo
 		_apply_standing(profile, standing)
 	EconomyLogScript.append(EVENT_KILL, archetype, 1, 0, int(profile.call(&"credits")))
 	_spawn_kill_loot(_position, archetype, ship)
+	## 15 section 4's Leeches (CONTRACTS section 20): the kill pays 5 % of the hull's
+	## maximum back. It sits inside this handler's credited path - a death that reaches
+	## here has already filed heat, standing and loot - because K0's F6 measured that
+	## killer identity is not knowable (`NpcShip._die` emits position and archetype
+	## only, `take_damage` records no source, and a rock or a peer can kill a hull), so
+	## the pin's fallback applies: the handler itself is the gate.
+	if AffixesScript.has_suffix(_launch_summary, FLAG_LEECHES):
+		_heal_leeches()
+
+
+## 15 section 4's Leeches payout (CONTRACTS section 20): 5 % of the hull's own maximum
+## back into the hull pool, clamped there. `set_hull` is the pool's own writer, so the
+## `hull_changed` signal (and the HUD bar reading it) follows the perk. A scene with no
+## state yet (a bare instance, a probe) is a no-op.
+func _heal_leeches() -> void:
+	if _state == null or _state.hull_max <= 0.0:
+		return
+	_state.set_hull(minf(_state.hull + LEECHES_FRACTION * _state.hull_max, _state.hull_max))
 
 
 ## 06 §8's kill roll and wreck site: the victim's 06 band table plus, for a hunter,

@@ -2163,13 +2163,15 @@ ammo_frac: Array[float]                # Frugal's per-cell fractional round bank
 # game/auction.gd — the sell price gains ONE optional parameter:
 static func sell_price(base_id: StringName, rarity: StringName, suffixes: Array = []) -> int
 #   x1.25 when suffixes contains "ledger". K0 measured THREE production sites of the
-#   `base x rarity x 60 %` figure (F5), and the term lands on all three, each passing
-#   the record's own suffix list:
-#     - Auction.sell_price:620 (this delegate; no production caller, a test surface)
-#     - Auction.sell_row:732 (the transaction's quoted price)
-#     - PlayerProfile.sell_instance:723 (the payout -- credits move at :733)
-#   plus the pane's displayed sell price at Auction._sell_row:585, which must show the
-#   same figure the payout pays.
+#   `base x rarity x 60 %` figure (F5) and K3 landed the term in this one function
+#   (K3's D1), with each site passing the record's own suffix list:
+#     - Auction.sell_price:625 (this function -- the term's ONE home; K0's "no
+#       production caller" reading was pre-S7 and is superseded by K3's D3)
+#     - Auction.sell_row:763 (the transaction's quoted price)
+#     - PlayerProfile.sell_instance:730 (the payout -- credits move there)
+#   plus the pane's displayed sell price at Auction._sell_row:592, which shows the
+#   same figure the payout pays. `ModuleCatalog.sell_price` keeps its two-argument
+#   signature (it is in no S7 file set).
 ```
 
 ### Prefixes — where each one lands (15 §3's rows; measured `module_catalog.gd:127-211`)
@@ -2341,6 +2343,22 @@ D7 closed at 13:06 the same day, so its §9/§10 pass (changelog **v0.16**, expe
 | D6 — `EMBERS_FRACTION` is spelled in both `weapons.gd` and `player_ship.gd` | **accepted and reported:** the pin routes the two deliveries differently on purpose; both constants are documented in both files. |
 | D7 — the launch summary lives in one var, `_launch_summary`, resolved once in `_resolve_stats` | **accepted as the handoff K3 reads** (or K3 re-calls `profile.affix_summary`, one line). |
 | D8 — `_slot_of_barrel` walks `PlayerState.weapons` counting firing-family entries | **accepted:** it is K0 F8's map, derived from shipped data, and the family-less `w_mining` drop keeps the two counts aligned by construction. |
+
+### K3 dispositions (orchestrator, 2026-09-24, after K3 landed 753/0)
+
+K3 measured **753/0** twice (746 + its own 7), and the one existing-test edit is the
+one this section's test-law block ratifies (`test_s3_instances.gd`'s fixture suffix
+list → `[]`; its assertions untouched and green).
+
+| call | disposition |
+|---|---|
+| D1 — the Ledger term lives in `Auction.sell_price`, the delegate the pin names, with the three production sites calling it | **accepted and written into the block above:** one function, three callers, one literal; `ModuleCatalog.sell_price` keeps its two-argument signature (it is in no S7 file set). |
+| D2 — `PlayerProfile.sell_instance` gained one one-way preload edge on `game/auction.gd` | **accepted:** the payout must read the figure the pane shows, and the edge is one-way (`auction.gd` preloads nothing of the profile). |
+| D3 — §20's "`Auction.sell_price` … no production caller" is stale | **applied:** the block above is corrected; K0's reading was pre-S7 and is now superseded by the shipped callers. |
+| D4 — Leeches sits after `_spawn_kill_loot`, inside the handler's credited path | **accepted:** with no profile service the handler credits nothing, so the perk pays nothing; the suite proves the gate by asserting the credit and the heal in the same call. |
+| D5 — `_spawn_sector`'s trailing `return` became an `else` | **accepted:** one call site after both entry branches, and the `return` was the function's last statement. |
+| D6 — the staged set is asserted as the five staged suffix ids | **accepted:** the brief's "staged four" counted the four staged *items* (Overflowing plus the three suffix groups), and a superset assertion cannot be wrong about which were meant. |
+| D7 — the Leeches/Cartograph fixtures fit a real instance through `fit_module_at` | **accepted:** the flag reaches `_launch_summary` by the shipped path, so the suite proves the integration, not just the arithmetic. |
 
 ## §10 Changelog
 

@@ -68,6 +68,11 @@ const ModuleData := preload("res://game/module_catalog.gd")
 ## module is a weapon **family**, so `w_mining` never enters one. One shared source,
 ## never a second 7.
 const WeaponData := preload("res://game/weapons.gd")
+## The sell price's one owner (CONTRACTS section 20): `sell_instance` pays through
+## `Auction.sell_price`, the same function the pane's row and the transaction's quote
+## read, so the payout and the displayed price can never drift -- in particular the
+## 15 section 4 Ledger term. Preloaded by path, like every other dependency here.
+const AuctionData := preload("res://game/auction.gd")
 ## The economy transaction log (01 section 7): one line per purchase.
 const Log := preload("res://game/economy_log.gd")
 
@@ -706,7 +711,9 @@ func buy_instance(id: StringName, cost: int) -> bool:
 
 
 ## Sell one instance out of the bag for 15 section 6's `base x rarity multiplier x
-## 60 %` (`ModuleCatalog.sell_price`), paid immediately, the record erased -- the
+## 60 %` (`Auction.sell_price`, CONTRACTS section 20: the same function the sell row
+## and the transaction quote read, so the payout carries 15 section 4's Ledger term
+## exactly when the displayed price does), paid immediately, the record erased -- the
 ## counter never rewinds, so the next mint still moves forward. Refuses, writing
 ## nothing and paying nothing, for an id the bag does not carry, for a **fitted**
 ## instance (`count` 0 is invisible to a sale, CONTRACTS section 15; the reason is
@@ -720,7 +727,11 @@ func sell_instance(id: StringName) -> bool:
 	if record.is_empty() or held <= 0:
 		return _refuse(REASON_UNKNOWN, id)
 	var base := StringName(str(record.get(KEY_BASE_ID, "")))
-	var price := ModuleData.sell_price(base, StringName(str(record.get(KEY_RARITY, ""))))
+	var price := AuctionData.sell_price(
+		base,
+		StringName(str(record.get(KEY_RARITY, ""))),
+		_affix_names(record.get(KEY_SUFFIXES, []))
+	)
 	if price <= 0:
 		return _refuse(REASON_UNKNOWN, id)
 	var key := String(id)

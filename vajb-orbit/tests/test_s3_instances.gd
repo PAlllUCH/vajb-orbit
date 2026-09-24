@@ -523,8 +523,11 @@ func test_a_fit_is_judged_on_base_ids_not_instance_ids() -> void:
 func test_sell_instance_pays_the_base_times_the_rarity_share() -> void:
 	var profile = _fresh()
 	var common: StringName = profile.add_instance(LASER, &"common", [], [])
+	## The suffixes are empty on purpose (CONTRACTS section 20's test-law block): this
+	## row proves the **un-suffixed** payout, and the Ledger sale (the same instance at
+	## x1.25) is `test_s7_suffixes.gd`'s own row.
 	var rare: StringName = profile.add_instance(
-		LASER, &"rare", [{"id": "keen", "value": 0.16}], ["ledger"]
+		LASER, &"rare", [{"id": "keen", "value": 0.16}], []
 	)
 	var start: int = profile.credits()
 	assert_true(profile.sell_instance(rare), "a Rare instance sells")
