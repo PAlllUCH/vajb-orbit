@@ -1733,7 +1733,10 @@ it unchanged, and widening a shipped return type for no consumer is not the trad
    (`game/player_state.gd:84-89`, `game/game.gd:1247-1249`), so a 3-barrel laser volley spends
    **three** rounds from the `laser` pack per release. Nothing about the ammo shape changes;
    the per-trigger delta is simply multiplied by the barrel count (see §10's v0.8.0 note for
-   the knock-on to `_file_ammo_report`).
+   the knock-on to `_file_ammo_report`). **S8's H1 amendment (2026-09-24):** the live
+   spend resolves the family against the launched fit's cells (`_launch_ammo_slot`, §21);
+   this const index remains the fallback. A same-family twin carries a slot per cell —
+   §21's Q1 dispositions carry the measured reading.
 6. **Energy families.** The strum is a *release* offset and a beam has no single release, so
    it delays the barrel's **opening frame**; once open, every barrel keeps drawing its
    family's `draw x delta` per frame while the trigger is held, and a pool that cannot pay a
@@ -2554,6 +2557,26 @@ O3's site + symptom + mask decision; the by-design trailing rack reading as a
 duplicate; plus the QA's existing ticks (`REFINE ALL`, `1 CONVERSION`, the
 Refinery hide, the live-profile restore — the live fit is three cannons,
 `batteries = {}`).
+
+### Q1 dispositions (orchestrator, 2026-09-24, after Q1 landed 761/0)
+
+Q1 measured **761/0** five times on scratch stores (753 + its own 8; the
+orchestrator re-ran it once — identical), live store md5s unchanged. Its judgment
+calls and the two bucket-2 notes are dispositioned here; nothing was reverted.
+
+| call | disposition |
+|---|---|
+| H1's resolution rule — `_launch_ammo_slot(weapon, position)` prefers the barrel's own cell, then the family's own, then the shipped const as fallback | **accepted as bucket 1:** it is the only rule that keeps S7's pinned per-cell spend (`test_s7_weapon_affixes.gd:414-425`) green, and `ammo_slot`'s value is unchanged |
+| The H1 consequence — a launched same-family twin spends both seed slots (measured `[250, 250]` after 30 s of twin-cannon fire) | **accepted, R1 verifies:** re-measure the twin battery's totals and the store draw against P2-A's `Vanguard [laser] 300 rounds` pin; flag it if the seeding double-draws one family's stock (§20's L90 reasoning was about not changing this class *by accident* — this wave changes it by pin) |
+| H2 — `_hull_slot_cells` hands `_rack_ordinal` the barrel position; a family-less cell claims no rack and is not selectable | **accepted** |
+| M4 — `_pool_maxima` on `ShipFit.resolve` with the catalogue row as the unknown-hull fallback; both currents read at the resolved ceiling | **accepted** |
+| the `m`→`u` copy + the three `test_engine2_hud.gd` rows | **accepted as dispositioned** |
+| note 1 — `game/repairs.gd` still resolves the repair transaction's maxima off the station row (a plated hull caps at `1000/600`, `fee=0 CR` while the pane shows `missing=250 HULL`) | **staged, bucket 2:** outside §21's M4 pin (panes) and fixing it moves repair economy values; the owner decides whether it rides a follow-up wave. No S8 set touches the file |
+| note 3 — `game/player_state.gd:33-35`'s stale comment | **applied:** the file joins Q2's set for that one-line update |
+| note 4 — §16's rule 5 sentence describing `ammo_slot` as the live resolution | **applied above:** §16 carries S8's one-line amendment pointing here |
+
+**Owner ticks added by Q1:** the `game/repairs.gd` staging call; the twin
+battery's doubled total (R1's verification rides AC1).
 
 ## §22 Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated)
 

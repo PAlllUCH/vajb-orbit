@@ -2076,6 +2076,7 @@ func _hull_slot_cells() -> Array:
 	var cells: Array = []
 	var fitted: Array = _launch_fit.get(&"weapons", [])
 	var batteries: Array = _launch_batteries()
+	var barrels: Array = _weapon_barrel_positions()
 	var position := 0
 	for cell: Dictionary in ShipFit.grid_cells(_launch_hull):
 		if StringName(cell[&"type"]) != &"weapons":
@@ -2084,7 +2085,14 @@ func _hull_slot_cells() -> Array:
 		var module := &""
 		if index >= 0 and index < fitted.size():
 			module = StringName(str(fitted[index]))
-		var battery := _rack_ordinal(batteries, index)
+		## CONTRACTS section 21 (H2): the ordinal is read in the **barrel-position** space
+		## `_launch_batteries` composes, never the layout index - the two part company as
+		## soon as a W cell holds a family-less module (`w_mining` is `-1`, no barrel to
+		## fire), which was `W1 B1 Mining Laser` beside a rack-less `W2 B0 Laser MkII`.
+		var barrel := -1
+		if index >= 0 and index < barrels.size():
+			barrel = int(barrels[index])
+		var battery := _rack_ordinal(batteries, barrel)
 		cells.append({
 			&"slot": &"weapons",
 			&"index": index,
@@ -2100,12 +2108,13 @@ func _hull_slot_cells() -> Array:
 	return cells
 
 
-## The 1-based ordinal of the rack holding one W cell, 0 for a cell no rack claims:
+## The 1-based ordinal of the rack holding one W cell's **barrel position**, 0 for a cell
+## no rack claims (an empty or family-less cell answers `-1`, which no rack holds):
 ## the `battery` field of `_hull_slot_cells`, read by the HUD's slot buttons.
-static func _rack_ordinal(batteries: Array, cell: int) -> int:
+static func _rack_ordinal(batteries: Array, barrel: int) -> int:
 	for position in batteries.size():
 		var rack: Array = batteries[position]
-		if rack.has(cell):
+		if rack.has(barrel):
 			return position + 1
 	return 0
 

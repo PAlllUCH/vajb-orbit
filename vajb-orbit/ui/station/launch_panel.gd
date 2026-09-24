@@ -26,6 +26,10 @@ const Paths := preload("res://ui/paths.gd")
 const Catalog := preload("res://game/station_catalog.gd")
 const RepairsService := preload("res://game/repairs.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
+## The `weapon_id` bridge every weapon list in the tree uses (`w_cannon` -> `cannon`,
+## family-less `w_mining` -> `""`), so the AMMUNITION strip names the same families the
+## launch's `PlayerState.weapons` carries.
+const WeaponScript := preload("res://game/weapons.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
@@ -515,7 +519,12 @@ func _refresh_brief() -> void:
 	_set_brief(&"hardpoints", str(int(ship.get(&"hardpoints", 0))))
 	_set_brief(&"slots", str(_slot_cell_count(active_id)))
 	_set_brief(&"cargo", CARGO_FORMAT % [_cargo_used(profile), int(ship.get(&"cargo", 0))])
-	_set_brief(&"ammo", AMMO_FORMAT % [_format_int(_ammo_total(profile)), _weapon_count()])
+	_set_brief(
+		&"ammo",
+		AMMO_FORMAT % [
+			_format_int(_ammo_total(profile, active_id)), _weapon_count(profile, active_id)
+		]
+	)
 
 
 func _set_brief(key: StringName, text: String) -> void:
@@ -606,17 +615,48 @@ func _cargo_used(profile: ProfileScript) -> int:
 	return used
 
 
-func _ammo_total(profile: ProfileScript) -> int:
+## The launched fit's weapon families, one entry per **fitted** W cell in cell order, in
+## `game.gd:_launch_weapons`' own currency: the cell's base catalogue id through
+## `Weapons.weapon_id`, so a family-less module (`w_mining`) contributes the `""` slot the
+## launch's `PlayerState.weapons` carries. `[]` for a profile without the fit bridge - the
+## strip then reads the zero the empty-hull case deserves.
+func _fit_weapons(profile: ProfileScript, ship_id: StringName) -> Array[StringName]:
+	var families: Array[StringName] = []
+	if profile == null or ship_id == &"" or not profile.has_method(&"resolved_fit"):
+		return families
+	var stored: Variant = profile.call(&"resolved_fit", ship_id)
+	if not stored is Dictionary:
+		return families
+	var fit: Dictionary = stored
+	var fitted: Variant = fit.get(&"weapons", [])
+	if not fitted is Array:
+		return families
+	for entry: Variant in fitted as Array:
+		var module := StringName(str(entry))
+		if module == &"":
+			continue
+		var base := StringName(str(profile.call(&"base_module_id", module)))
+		families.append(WeaponScript.weapon_id(base))
+	return families
+
+
+## CONTRACTS section 21 (H1): the strip's total is the **launched fit's** own packs summed,
+## one term per fitted W cell - the same slots `game.gd:_seed_ammo` fills from - so it agrees
+## with the flight slots and the store's `ammo_*` packs. The six `Catalog.AMMO_PACKS` summed
+## was the defect: a fit carrying three of them read the other three's rounds too.
+func _ammo_total(profile: ProfileScript, ship_id: StringName) -> int:
 	if profile == null:
 		return 0
 	var total := 0
-	for pack: Dictionary in Catalog.AMMO_PACKS:
-		total += int(profile.call(&"ammo_of", pack.get(&"id", &"")))
+	for family: StringName in _fit_weapons(profile, ship_id):
+		total += int(profile.call(&"ammo_of", family))
 	return total
 
 
-func _weapon_count() -> int:
-	return Catalog.AMMO_PACKS.size()
+## The count the total is spread across: the launched fit's own W cells, which is the length
+## of the `PlayerState.weapons` list the launch writes.
+func _weapon_count(profile: ProfileScript, ship_id: StringName) -> int:
+	return _fit_weapons(profile, ship_id).size()
 
 
 ## The active hull's side render, resolved the way shipyard_panel.gd resolves its preview

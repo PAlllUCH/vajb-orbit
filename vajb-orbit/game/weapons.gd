@@ -181,9 +181,10 @@ const TRACK_MULT := 1.0
 const TRACK_TOLERANCE := 5.0
 
 ## 09 section 3.1's note, pinned in CONTRACTS section 3: "the railgun shares the
-## cannon pack in v1". `PlayerState.WEAPONS` carries the five v1 ids, so a railgun
-## round spends the cannon's slot (reported: the railgun is the sixth family and
-## has no slot of its own).
+## cannon pack in v1". Since section 21's H1 the live spend resolves a family against the
+## **launched** fit's own cell list, which carries the railgun's sixth cell and its own
+## pack, so this map is the fallback for a state that carries no such cell (a component
+## `set_fitted` without `set_weapons`) and the static `ammo_slot`'s own answer.
 const SHARED_PACK: Dictionary = {&"railgun": &"cannon"}
 
 ## Section 4.3 / section 11: `weapon_1..7` selects a **rack** and **Space**
@@ -1997,10 +1998,37 @@ func _spend_energy(amount: float) -> bool:
 	return _state.try_spend_energy(amount)
 
 
-func _ammo_available(weapon: StringName) -> bool:
+## The launch slot a family's rounds live in (CONTRACTS section 21, H1): the index of the
+## **launched fit's own cell list** (`_state.weapons`, the array `_seed_ammo` filled) whose
+## cell carries this family, rather than the const `PlayerState.WEAPONS` order the shipped
+## `ammo_slot` indexes. The two spaces coincide only while the fit is a prefix in that order
+## (P2-A's one-laser Vanguard), which is why a cannon-only fit read dry beside its own
+## 300-round pack and the QA fit's cannon spent the railgun's.
+##
+## `position` is the calling **barrel's** position where there is one: a launched twin
+## battery's two barrels each keep their own cell's slot (section 20's per-cell bank,
+## `test_frugal_banks_are_per_slot`), where the family alone would answer the first cell.
+## A family the launched list does not carry at all (a barrel on a state `set_fitted` without
+## `set_weapons`, the shared railgun/cannon pack) keeps the shipped `ammo_slot` resolution.
+func _launch_ammo_slot(weapon: StringName, position: int = -1) -> int:
+	if _state != null:
+		var cell := _slot_of_barrel(position)
+		if (
+			cell >= 0
+			and cell < _state.weapons.size()
+			and weapon_id(_state.weapons[cell]) == weapon
+		):
+			return cell
+		for slot in _state.weapons.size():
+			if weapon_id(_state.weapons[slot]) == weapon:
+				return slot
+	return ammo_slot(weapon)
+
+
+func _ammo_available(weapon: StringName, position: int = -1) -> bool:
 	if _state == null:
 		return false
-	var slot := ammo_slot(weapon)
+	var slot := _launch_ammo_slot(weapon, position)
 	if slot < 0 or slot >= _state.ammo.size():
 		return false
 	return _state.ammo[slot] > 0
@@ -2008,26 +2036,27 @@ func _ammo_available(weapon: StringName) -> bool:
 
 ## One barrel's ammo gate, addressable by **barrel position** so Frugal's bank can read
 ## the same slot it spends (CONTRACTS section 20). A barrel with no Frugal magnitude
-## gates through the shipped `_ammo_available` unchanged; a Frugal one gates on its own
-## live slot, which is L90's cure - the shipped `ammo_slot` indexes the const
-## `PlayerState.WEAPONS` and cannot address the second of two same-family barrels.
+## gates through `_ammo_available`, which since section 21's H1 resolves the family against
+## the launched fit's own cell list; a Frugal one gates on its own live slot.
 func _ammo_available_at(position: int, weapon: StringName) -> bool:
 	if _state == null:
 		return false
 	if _prefix_magnitude(_barrel_affixes(position), PREFIX_FRUGAL) == 0.0:
-		return _ammo_available(weapon)
+		return _ammo_available(weapon, position)
 	var slot := _slot_of_barrel(position)
 	if slot < 0 or slot >= _state.ammo.size():
-		return _ammo_available(weapon)
+		return _ammo_available(weapon, position)
 	return _state.ammo[slot] > 0
 
 
 ## Section 4.3: the round leaves the pack through `PlayerState.set_ammo`, which is
-## the HUD's own channel (`weapon_changed`).
-func _consume_ammo(weapon: StringName) -> void:
+## the HUD's own channel (`weapon_changed`). `position` is the releasing barrel's own
+## position where the caller knows it (section 21's H1), so a twin battery's second barrel
+## spends its own cell rather than the family's first.
+func _consume_ammo(weapon: StringName, position: int = -1) -> void:
 	if _state == null:
 		return
-	var slot := ammo_slot(weapon)
+	var slot := _launch_ammo_slot(weapon, position)
 	if slot < 0 or slot >= _state.ammo.size():
 		return
 	_state.set_ammo(slot, _state.ammo[slot] - 1)
@@ -2038,18 +2067,17 @@ func _consume_ammo(weapon: StringName) -> void:
 ## and the cost per shot is `1 x (1 + sum(frugal))` (negative -> cheaper): the bank
 ## accumulates the cost and an integer round leaves only when it crosses 1, so 20 shots
 ## at -0.15 spend exactly `floor(20 x 0.85) = 17` rounds. A barrel with no Frugal
-## magnitude keeps the shipped `_consume_ammo` path byte for byte, so the live-slot map
-## (L90's cure) runs only where a per-cell bank actually needs it.
+## magnitude spends the launched fit's own slot for its family (section 21's H1).
 func _consume_ammo_at(position: int, weapon: StringName) -> void:
 	if _state == null:
 		return
 	var sum := _prefix_magnitude(_barrel_affixes(position), PREFIX_FRUGAL)
 	if sum == 0.0:
-		_consume_ammo(weapon)
+		_consume_ammo(weapon, position)
 		return
 	var slot := _slot_of_barrel(position)
 	if slot < 0 or slot >= _state.ammo.size() or slot >= _state.ammo_frac.size():
-		_consume_ammo(weapon)
+		_consume_ammo(weapon, position)
 		return
 	_state.ammo_frac[slot] += _prefix_factor(sum)
 	var whole := int(floor(_state.ammo_frac[slot]))

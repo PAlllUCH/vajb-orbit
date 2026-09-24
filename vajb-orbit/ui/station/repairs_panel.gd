@@ -174,11 +174,15 @@ func _refresh_all() -> void:
 		_refresh_preview(active_id, 0)
 		_refresh_missing_report(hull_name)
 		return
-	var hull_max := int(ship.get(&"hull", 0))
-	var shield_max := int(ship.get(&"shield", 0))
-	var hull := int(vitals.get(&"hull", 0))
+	var maxima := _pool_maxima(profile, active_id)
+	var hull_max := int(maxima.get(&"hull", int(ship.get(&"hull", 0))))
+	var shield_max := int(maxima.get(&"shield", int(ship.get(&"shield", 0))))
+	## CONTRACTS section 21 (M4): no pane may print a current above its own max, so a vitals
+	## reading filed by a heavier fit than the one now resolved (the QA's stale `1250`) is read
+	## at the resolved ceiling instead of over it.
+	var hull := clampi(int(vitals.get(&"hull", 0)), 0, hull_max)
 	_refresh_preview(active_id, maxi(0, hull_max - hull))
-	var shield := int(vitals.get(&"shield", 0))
+	var shield := clampi(int(vitals.get(&"shield", 0)), 0, shield_max)
 	var fee := RepairsService.fee(profile, active_id)
 	var repairable := RepairsService.is_repairable(profile, active_id)
 	_set_report(&"hull_name", hull_name)
@@ -336,6 +340,34 @@ func _vitals(profile: ProfileScript, ship_id: StringName) -> Dictionary:
 		return {}
 	var raw: Variant = profile.call(&"vitals_of", ship_id)
 	return raw if raw is Dictionary else {}
+
+
+## The two denominators the HULL and SHIELD rows print (CONTRACTS section 21, M4): the
+## active hull's `ShipFit.resolve` figures for the fit the launch would fly, plates and
+## affixes included - the same pair `game.gd:_apply_ship_maxima` seeds the pools with and
+## the status footer prints, so a plated hull reads `1250 / 1250` instead of `1250 / 1000`.
+## The catalogue row (built by the station shell, not by this pane) is the fallback for a
+## hull the resolver does not know, which also keeps `resolve` from pushing its unknown-hull
+## error for a stray vitals record.
+func _pool_maxima(profile: ProfileScript, ship_id: StringName) -> Dictionary:
+	var ship := Catalog.ship(ship_id)
+	var fallback := {
+		&"hull": int(ship.get(&"hull", 0)),
+		&"shield": int(ship.get(&"shield", 0)),
+	}
+	if profile == null or ship.is_empty() or not profile.has_method(&"resolved_fit"):
+		return fallback
+	var stored: Variant = profile.call(&"resolved_fit", ship_id)
+	if not stored is Dictionary:
+		return fallback
+	var fit: Dictionary = profile.call(&"base_fit", stored as Dictionary)
+	var summary: Variant = {}
+	if profile.has_method(&"affix_summary"):
+		summary = profile.call(&"affix_summary", ship_id)
+	var stats: ShipStats = ShipFit.resolve(ship_id, fit, summary if summary is Dictionary else {})
+	if stats == null:
+		return fallback
+	return {&"hull": int(round(stats.hull_max)), &"shield": int(round(stats.shield_max))}
 
 
 func _profile() -> ProfileScript:

@@ -79,7 +79,7 @@ fix measured, none regressing the 753-row gate.
 |---|---|---|
 | S8-Q0 | `vajb-orbit/tests/` (reproduce + attribute; report only — orchestrator applies dispositions to §21) | `S8_BRIEF.md` |
 | S8-Q1 | `vajb-orbit/game/game.gd,vajb-orbit/autoload/player_profile.gd,vajb-orbit/ui/hud/ship_status_screen.gd,vajb-orbit/ui/hud/hud.gd,vajb-orbit/ui/station/repairs_panel.gd,vajb-orbit/ui/station/launch_panel.gd,vajb-orbit/game/weapons.gd,vajb-orbit/game/player_ship.gd,vajb-orbit/game/impact.gd,vajb-orbit/tests/` | `S8_BRIEF.md` |
-| S8-Q2 | `vajb-orbit/game/asteroid.gd,vajb-orbit/game/asteroid_field.gd,vajb-orbit/ui/station/exchange_panel.gd,vajb-orbit/game/exchange.gd,vajb-orbit/ui/station/refinery_panel.gd,vajb-orbit/ui/station/fitting_panel.gd,vajb-orbit/ui/station/armory_panel.gd,vajb-orbit/game/module_catalog.gd,vajb-orbit/game/projectile.gd,vajb-orbit/tests/` | `S8_BRIEF.md` |
+| S8-Q2 | `vajb-orbit/game/asteroid.gd,vajb-orbit/game/asteroid_field.gd,vajb-orbit/ui/station/exchange_panel.gd,vajb-orbit/game/exchange.gd,vajb-orbit/ui/station/refinery_panel.gd,vajb-orbit/ui/station/fitting_panel.gd,vajb-orbit/ui/station/armory_panel.gd,vajb-orbit/game/module_catalog.gd,vajb-orbit/game/player_state.gd,vajb-orbit/game/projectile.gd,vajb-orbit/tests/` | `S8_BRIEF.md` |
 | S8-R1 | `vajb-orbit/tests/,vajb-orbit/tools/,docs/CONTRACTS.md` | `S8_BRIEF.md` |
 | S8-F1 | union of Q1–Q2 sets + `docs/CONTRACTS.md` | `S8_BRIEF.md` |
 

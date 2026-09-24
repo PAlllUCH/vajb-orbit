@@ -124,8 +124,10 @@ const ZOOM_DELTA_OUT: int = 1
 const CARGO_PANEL_GAP: float = 8.0
 
 ## Section 3.10 amendment 9.8: the target window's captions carry a grouped
-## number, so a 4-digit range reads `1 240 m` rather than `1240 m`.
-const DISTANCE_FORMAT := "%s m"
+## number, so a 4-digit range reads `1 240 u` rather than `1240 u`, in the **unit**
+## the engine's distances are stated in (docs and mining read `u`; CONTRACTS
+## section 21's copy law - the shipped `m` was the QA's `860 m OUT OF RANGE`).
+const DISTANCE_FORMAT := "%s u"
 
 const PERCENT_FORMAT := "%d%%"
 

@@ -139,15 +139,15 @@ func test_the_range_state_prints_with_the_distance_it_qualifies() -> void:
 		"threat": &"hostile",
 	})
 	var label: Label = _hud.get(&"_target_distance_label")
-	assert_eq(label.text, "1 240 m  IN RANGE", "the grouped distance plus the state")
+	assert_eq(label.text, "1 240 u  IN RANGE", "the grouped distance plus the state")
 	_hud.call(&"set_target_info", {"name": "Lancer", "distance_m": 1240.0, "in_range": false})
-	assert_eq(label.text, "1 240 m  OUT OF RANGE")
+	assert_eq(label.text, "1 240 u  OUT OF RANGE")
 
 
 func test_a_caller_without_the_range_key_keeps_the_old_text() -> void:
 	_hud.call(&"set_target_info", {"name": "Lancer", "distance_m": 900.0})
 	var label: Label = _hud.get(&"_target_distance_label")
-	assert_eq(label.text, "900 m", "no range reading, no extra text")
+	assert_eq(label.text, "900 u", "no range reading, no extra text")
 
 
 func test_the_threat_tint_still_follows_a_hostile_reading() -> void:
