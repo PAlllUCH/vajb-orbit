@@ -1,11 +1,12 @@
 # dispatch_designer.md — the graphics lane's queue of record
 
-Rebuilt 2026-09-22 after the purge; re-cut 2026-09-22 (owner ruling) for a
-two-designer split; reorganised 2026-09-24 (this file carries **open items only** —
-the finished D2 job spec + handoff are archived at
-`slices/D2-icon-unification/_archive/D2_dispatch_block.md`, detail in
-`_state/WAVEBOARD.md` §Closed). Execute one item per order; briefs and prompts
-live in the slice folders; the owner pastes only the short handoff paragraph.
+Rebuilt 2026-09-22 (owner ruling: two-designer split), reorganised 2026-09-24
+(open items only — closed work lives in the Done pointer below and
+`_state/WAVEBOARD.md` §Closed). Execute one item per order; briefs/prompts live
+in the slice folders (**items without a slice folder get their five-piece at
+dispatch-prep — say the item and it lands**); the owner pastes only the handoff
+block at the bottom. Model: `opencode-go/deepseek-v4.1-flash` (owner order
+2026-09-24; fallback `deepseek/deepseek-v4-flash`).
 
 ## The standing ruling (owner, 2026-09-22) — lane law, applies to every item
 
@@ -18,65 +19,62 @@ live in the slice folders; the owner pastes only the short handoff paragraph.
 - **Delete all non-master rasters** — **project-side only**: `vajb-orbit/assets/`
   loses every variant and duplicate; `asset-library/` keeps every cut untouched
   (provenance law + the rollback).
-- SVG source rule (this lane's standing style): flat shapes, `viewBox="0 0 48 48"`,
-  designed on the 48 grid so the smallest target is pixel-clean; fills only (no
-  strokes below 2 units), at most two tones (Steel `#565C63` family + the ember
-  accent `#C8461B`/`#E8703A` where the icon carries danger/warn meaning).
-  kie.ai cannot generate SVG (image-generator skill: "No native SVG") — the SVG
-  set is **hand-authored** here; a pictogram that resists authoring may be
-  generated once as a clean-flat raster ("no gradients, no grain") and traced
-  (Inkscape), then simplified. **Amended 2026-09-22 (D2_SPLIT §6):** the 96 grid
-  (`viewBox="0 0 96 96"`, 8–14 flat shapes) supersedes 48 for icon work.
-- **Tint boundary:** a remade glyph's tint variants die with it (fills replace
-  tint stencils); depictive icons' tint stencils stay until the tint-rework item
-  below. Nothing else touches the tint pipeline.
+- SVG source rule: flat shapes, `viewBox="0 0 96 96"` (the 96 grid,
+  `D2_SPLIT.md` §6), 8–14 flat shapes, fills only (no strokes below 2 units),
+  at most two tones (Steel `#565C63` family + ember `#C8461B`/`#E8703A` where
+  the icon carries danger/warn meaning). kie.ai cannot generate SVG — the SVG
+  set is hand-authored; a resistant pictogram may be rendered once clean-flat
+  and traced (Inkscape), then simplified.
+- **Tint boundary:** a remade glyph's tint variants die with it; depictive
+  icons' tint stencils stay until item 2b. Nothing else touches the tint
+  pipeline.
 
-## Open queue (designer #2's lane)
+## Open queue
 
 | D-slice | Item | What | Gate |
 |---|---|---|---|
-| D7 | 8 | **Cockpit rework + battery window** (owner 2026-09-24 on D6's output: "make sure that everything looks analog … placed on a metal panel", "there is overlap", "all of old HUD should be gone", "rework the gun battery selection window to new cockpit like one"). Docs-first landed: UI_SPEC §3.6 heading-tick retirement + §3.7 rework + §3.9 instrument language + §3.10 battery window, UI_CHROME §12, ASSET_NAMING §12, STATION_HUB §5.11 | **READY — dispatch now** — brief `slices/D7-cockpit-rework/D7_BRIEF.md`, prompts `D7_prompts.md`; write set disjoint from S6's (S6 in flight); run order A0 → owner sheet approval → A0b → C1 → C2 → R1 → F1 only on HIGH/MED; art ≈ $0.20 (4 × 2K) |
-| D3 | 1 | **Chrome re-cut** — button/slot plate family (the 1041×1087-cell-stretched defect class: plates, bezel band, bar caps, panel frame) | OWNER-GATED on `staging/phase_f/_preview/review_slots.png` |
-| D3 | 2a | **Painted-only station rail icons** (owner 2026-09-23: "in space station the icons on 'MODULES' left menu should have only painted icons so no svg") — swap the station's left-rail/`MODULES` menu icons to **painted raster masters** (generate if no painted master exists for a symbol); SVGs stay for the in-list glyph work elsewhere. One review sheet of the rail at 48/96 px | READY |
-| D3 | 2b | **Tint rework** (the depictive remainder): replace or repair the tint-stencil system for raster icons (shader tint or scoped stencils) + the **540**-file import-settings cleanup left over from D2 (the 1 080 figure predates D2's split — `D2_SPLIT.md` §4's formula) | READY |
-| D4 | 3 | **4K 2× backdrop cuts** (R8; display target: 4K) | READY |
-| D4 | 4 | **B2-1 hover look** — flicker / directional glow / ember | **OWNER PICK NEEDED** first |
-| — | 5 | MMO/faction liveries, six boss hulls, `ship_vanguard_damaged` | BLOCKED on the owner's naming overhaul |
-| — | 6 | Component icons ×18 (`comp_*`) — if not already covered by D2's split as depictive masters | verify against `D2_SPLIT.md` |
+| **D11** | **13** | **Space-station scene rework** (owner verbatim, CONTRACTS §21 O6): "make space station bigger with more details (not a single sprite, more static and moving elements, but the main sprite should be much bigger as well)" — composed hero ≥2.2× + ≥6 static + ≥3 moving element kinds, ENVIRONMENT §11 pinned (dated amendment landed) | **READY — brief written:** `slices/D11-station-scene/D11_BRIEF.md` + `D11_prompts.md`; run A0 → **owner sheet approval** → A1 → C1 → R1 → F1 only on HIGH/MED; art ≈ $1–2; the handoff below carries the `game/sector.gd` + `game/station_scene.gd` grant (one file each, `_spawn_station` only) |
+| D8 | 9 | **Station composition pass** (QA): the right-third dead zones — Armory's ~520 px void + clipped third row, Fitting's grid-left void, Repairs/Launch 440 px spacers | OWNER MOCKUP GATE first; brief at dispatch-prep |
+| D8 | 10 | **In-flight HUD visibility** (QA): empty top-left while all state sits bottom-left; minimap legend + unreadable 1080p glyphs | OWNER PICK; brief at dispatch-prep |
+| D9 | 11 | **Player-hull visibility** (QA): dark hull ~40 px at flight zoom — rim light / brighter tint / scale bump | OWNER PICK; brief at dispatch-prep |
+| D10 | 12 | **Polish batch** (QA): the status close-X, the launch arm countdown (M6), auction hull thumbnails, mining-beam visibility | OWNER PICKS within; brief at dispatch-prep |
+| D3 | 1 | **Chrome re-cut** — button/slot plate family (the 1041×1087-cell-stretched defect class) | OWNER-GATED on `staging/phase_f/_preview/review_slots.png` |
+| D3 | 2a | **Painted-only station rail icons** (owner 2026-09-23) — swap the left-rail/`MODULES` icons to painted raster masters; SVGs stay for in-list glyphs; one review sheet at 48/96 px | READY; brief at dispatch-prep |
+| D3 | 2b | **Tint rework** + the **540**-file import-settings cleanup left from D2 | READY; brief at dispatch-prep |
+| D4 | 3 | **4K 2× backdrop cuts** (R8) | READY; brief at dispatch-prep |
+| D4 | 4 | **B2-1 hover look** — flicker / directional glow / ember | OWNER PICK NEEDED first |
+| — | 5 | MMO/faction liveries, six boss hulls, `ship_vanguard_damaged` | BLOCKED on the naming overhaul |
+| — | 6 | Component icons ×18 (`comp_*`) | verify against `D2_SPLIT.md` |
 
-**File-collision law (both lanes):** two waves may never hold one file at once
-(nor the same `test_*` prefix, nor one `staging/` driver). Across lanes, run in
-parallel only with provably disjoint write sets (the S5∥D6 precedent); editor
-reimports only in quiet windows between the other lane's gate runs; one editor
-session.
+**File-collision law:** two waves never hold one file (nor the same `test_*`
+prefix, nor one `staging/` driver). Across lanes only with provably disjoint
+write sets (the S5∥D6 precedent); editor reimports in quiet windows between the
+other lane's gate runs; one live session. **Live parallel pair:** coder item 14
+(S8) ↔ designer item 13 (D11) — disjoint by both briefs; attribute the other
+lane's gate rows, never fix them.
 
-**Done:** **D6 cockpit instruments (item 7)** — DONE 2026-09-24 (gate 578 →
-**608/0** measured twice on scratch stores; 18 approved art masters + the 404×216
-cluster + the 720×520 `ship_status` modal; review 0 HIGH / 2 MED (one cured, one
-routed to the owner as a pin call) / 9 LOW; detail `_state/WAVEBOARD.md` §Closed).
-**D2 icon unification (designer #1's only job)** — DONE 2026-09-22
-(commit `7c1ae06`; 135 SVG + 164 raster masters + 540 tint stencils = 839 files,
-2 478 → 839, `asset_path_fallout` 0 unresolvable / 367 refs, gate 457/0 through
-the re-points; owner amendments `D2_SPLIT.md` §6). Job spec + handoff archived at
-`slices/D2-icon-unification/_archive/D2_dispatch_block.md`.
+## Done
+
+**D7 cockpit rework + battery window (item 8)** — DONE 2026-09-24 (gate
+674 → **727/0**; 1 HIGH + 1 MED cured by F1/A2; mockup loop v5/v6/v7 +
+Mockup A/C; `CockpitStyle`; brief/reports at `slices/D7-cockpit-rework/_archive/`).
+**D6 cockpit instruments (item 7)** — DONE 2026-09-24 (578 → **608/0**; 18
+masters, cluster + status modal; `slices/D6-cockpit-instruments/_archive/`).
+**D2 icon unification** — DONE 2026-09-22 (135 SVG + 164 raster masters, gate
+457 through the re-points; job spec archived under its `_archive/`).
 
 ## Pipeline law (read before any run — AGENTS.md "Asset Generation" + "Phase G lane")
 
-Panel order: render → find objects (`panels.py --detect`) → cut each → key each →
-trim. A 2×2 sheet's fourth cell is often a second front (IoU > 0.80 = refuse).
+Panel order: render → find objects (`panels.py --detect`) → cut each → key each
+→ trim. A 2×2 sheet's fourth cell is often a second front (IoU > 0.80 = refuse).
 `flare` never returns native alpha — `--post-only`. FX stay RGB except the four
 §0.1 names. 2K run = 10 credits = $0.05. Delivery order: generate → stage →
 **review sheet → owner approval** → ship → reimport → `validate_names.py
---library`. Generation logs beside every shipped family.
+--library` (host-deferred where noted). Generation logs beside every shipped
+family.
 
-## Handoff template (one per dispatched item)
-
-```text
-Read .agents/gen/dispatch_designer.md and execute queue item <N> only — <wave name>. Brief: <brief path>. Prompts: <prompts path>. Snapshot + commit before the first dispatch, run <builder> → <reviewer>, and the fixer only if the review leaves HIGH or MED. Stop before item <N+1>. Close out per the brief's close-out section (gate re-run, verify_wave.py verify --baseline <tag>, WAVEBOARD update, wave-boundary commit), then report back: the measured gate count, the builder's per-deliverable numbers, the reviewer's findings by tier, and the owner ticks.
-```
-
-The live D7 handoff block is the one below (item 8, to dispatch now).
+## Handoff (live — paste as one block)
 
 ```text
-Read .agents/gen/dispatch_designer.md and execute queue item 8 only — D7, the cockpit rework and the battery window. Brief: .agents/gen/slices/D7-cockpit-rework/D7_BRIEF.md. Prompts: .agents/gen/slices/D7-cockpit-rework/D7_prompts.md. Snapshot + commit before the first dispatch, run A0 and STOP at the review sheet for my approval, then A0b, C1, C2, R1, and the fixer only if the review leaves HIGH or MED. This runs parallel with coder item 12 (S6 travel): stay inside the D7 write set (ui/hud, ui/station, assets/ui, assets/icons provenance, staging, asset-library, tests/test_d7_* plus only the §3.6 heading-tick rows of test_engine2_hud.gd and test_d6_cluster.gd's compass rows), never touch project.godot, game/, autoload/, the theme or docs/, and take editor reimports only in quiet windows. Close out per the brief's close-out section (gate re-run on scratch stores, verify_wave.py verify --baseline d7_start, CONTRACTS §9/§10 notes + the §18 mirror catch-up, WAVEBOARD update, wave-boundary commit), then report back: the measured gate count, the builder's per-deliverable numbers, the well/QC measurements, the reviewer's findings by tier, and the owner ticks (the five design calls in the brief plus the D6 carry-overs).
+Read .agents/gen/dispatch_designer.md and execute queue item 13 only — D11, the space-station scene rework (ENVIRONMENT_SPEC §11's dated amendment is the pin; the owner's verbatim ask and every invariant are in the brief). Brief: .agents/gen/slices/D11-station-scene/D11_BRIEF.md. Prompts: .agents/gen/slices/D11-station-scene/D11_prompts.md. Snapshot + commit (d11_start) before the first dispatch, run A0 and STOP at the mockup review sheet for my approval, then A1 → C1 → R1, and the fixer only if the review leaves HIGH or MED. This runs parallel with coder item 14 (S8 QA fixes): you hold assets/env/**, staging/**, asset-library/**, tests/test_d11_* and — by my grant, ratified by this paste — game/sector.gd (_spawn_station only) and the new game/station_scene.gd; never touch S8's sets, ui/**, project.godot, or docs/ beyond this wave's own; CONTRACTS §9/§10 take the next free rows read at close-out, sequenced after S8's (rebase, never revert). Art ≈ $1–2. Close out per the brief's close-out section (gate ×2 scratch stores, verify --baseline d11_start, WAVEBOARD update, wave-boundary commit), then report back: the measured gate count, the approved mockup sheet, the per-AC measurements (hero footprint ratio, element counts, invariants, motion), the reviewer's findings by tier, and D11's owner ticks.
 ```

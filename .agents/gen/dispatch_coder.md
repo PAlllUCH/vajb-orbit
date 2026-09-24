@@ -1,69 +1,44 @@
 # dispatch_coder.md — the code-lane queue of record
 
-Rebuilt 2026-09-22 after the purge; reorganised 2026-09-24 (this file now carries
-**open items only** in the queue — everything done lives in the Done list, with
-detail in `MASTER_REPORT.md` and `_state/WAVEBOARD.md` §Closed). Execute **one
-item per order**, close out per the brief's close-out section before starting the
-next. Model for every worker: `opencode-go/deepseek-v4.1-flash` (owner instruction
-2026-09-24; it streams agent work again — wave S6 ran K0 through R1 on it without a
-single provider error). Fallback if it regresses: `deepseek/deepseek-v4-flash` (the
-2026-09-22 route, used while the opencode-go slug failed). Briefs and prompts live
-in the slice folders; the owner pastes only the short handoff paragraph.
+Rebuilt 2026-09-22, reorganised 2026-09-24 (open items only — closed work lives
+in the Done pointer below, `MASTER_REPORT.md` and `_state/WAVEBOARD.md` §Closed).
+Execute **one item per order**, close out per the brief's close-out section.
+Model for every worker: `opencode-go/deepseek-v4.1-flash` (owner order
+2026-09-24; fallback `deepseek/deepseek-v4-flash`). The owner pastes only the
+handoff block at the bottom.
 
-**File-collision law:** two waves may never hold one file at once (nor the same
-`test_*` prefix, nor one `staging/` driver). **Parallelism:** builders *inside*
-one wave may run concurrent when pairwise file-disjoint; *across* waves only with
-provably disjoint write sets and test prefixes (the S5∥D6 precedent) — everything
-else is sequential, because waves share the gate close-out and git state (L82:
-one live session per workspace).
-
-**Wave anatomy (every wave):** the docs-first five-piece (docs amendments →
-`<WaveID>_BRIEF.md` → `<WaveID>_prompts.md` → queued here **and** in
-`_state/WAVEBOARD.md` → the short handoff paragraph), then `verify_wave.py
-snapshot` + commit → docs-drift worker → builders → review → fixer only on
-HIGH/MED → the brief's close-out (gate ×2 hermetic, `verify_wave.py verify`,
-CONTRACTS §9/§10 measured notes, WAVEBOARD update, wave-boundary commit).
+**File-collision law:** two waves never hold one file (nor the same `test_*`
+prefix, nor one `staging/` driver). Across lanes only with provably disjoint
+write sets (the S5∥D6 precedent); one live session per workspace (L82).
+**Wave anatomy:** docs-first five-piece → `verify_wave.py snapshot` + commit →
+Q0/K0 dispositions into CONTRACTS → builders → review → fixer only on
+HIGH/MED → close-out (gate ×2 hermetic, `verify --baseline`, §9/§10 sequenced
+with any parallel lane, WAVEBOARD, wave-boundary commit).
 
 ## Open queue
 
-**Empty as of 2026-09-24** — item 13 (S7) shipped and is in the Done list below. The
-next coder item is **slice 4's remainder** (quadrants/directional armour, 18 §4.5 +
-ruling 23; bosses/arena hooks, 14 §5) — **not yet briefed**; it needs its own
-docs-first five-piece and a fresh owner order before it enters this queue.
+| # | Wave | Slice folder | Brief / prompts | Status |
+|---|---|---|---|---|
+| 14 | **S8 QA playtest fixes** — the independent review's 2 HIGH / 6 MED + copy/naming/warning bundle + the owner's O1–O3 (FITTING drag, weapon groups, ram strength); pin **CONTRACTS §21** | `.agents/gen/slices/S8-qa-fixes/` | `S8_BRIEF.md` / `S8_prompts.md` | **READY.** Docs-first landed (§21 + O-table, v0.18, 05 §9). Run: Q0 → dispositions → Q1 → Q2 → R1 → F1 only on HIGH/MED. Parallel-legal with designer item 13 (D11) — disjoint sets; both briefs carry the cross-lane attribution rules. |
+| 15 | **Flight-feel retune** (owner O4/O5: torque/slow-down, strafe/inertia) — pin **CONTRACTS §22** | not opened | — | **NUMBERS PROPOSED — waiting on your ticks.** §22 holds four tick-gated levers with worked rows + reversals: T1 `COAST_TIME_MULT` 2.0→2.5, T2 new `ANGULAR_DAMP_MULT` 0.5, T3 new `STRAFE_RATE_MULT` 0.75, T4 `LATERAL_DAMP_MULT` 1.0→0.6. Tick any subset in §22 → I write **S9**'s five-piece from the ticked table. Nothing dispatches until then. |
 
-Next beyond the queue: **slice 4's remainder** becomes future items — quadrants /
-directional armour (18 §4.5 + ruling 23; owner-ratified deferral from S6) and
-bosses/arena hooks (14 §5 — needs the P4 contract type and boss-hull art, which the
-graphics lane's item 5 blocks on the naming overhaul). Owner-locked homework stays
-the owner's —
-`18_engine_spec.md` §6/§13/§15 (the cleaving amendment + `FRAGMENT_OUTWARD_KICK`
-+ the two flight multipliers; §15's test checklist now contradicts the shipped
-suite), the §13 turn/`coast_time` column ticks, slice 2.5's two calls.
+Beyond the queue: **slice 4's remainder** (quadrants/directional armour — 18
+§4.5 + ruling 23; bosses/arena — 14 §5, blocked on P4 contracts + boss art).
+Owner-locked homework stays the owner's (`18_engine_spec.md` §6/§13/§15, the
+§13 turn/coast column ticks, slice 2.5's two calls).
 
-## Done (items 1–13)
+## Done
 
-1–3 (chrome, combat repair, weapon FX) — closed 2026-09-21, see
-`MASTER_REPORT.md`. 4 P2-A ship slot frames (`8d189bf`), 5 Rock cleave
-(`0e419f7`), 6 P2-B1 weapon fit (`1f794cc`), 7 P2-B proper fitting panel
-(`3e79e61`) — closed 2026-09-22, gate 437, see
-`session_2026-09-22_items_4_to_7_report.md`. 8 S2.6 truth-and-feel (`8d0691d`,
-gate 457; owner requests #5–#7 landed here: fragment outward kick, beam-hit
-scatter, beam sink), 9 S3 the item economy (gate 493), 10 S4 weapon batteries
-(gate 524) — closed 2026-09-22/23. **11 S5 playtest fixes** (auction family tabs,
-shipyard hangar, ARMORY drag-and-drop mixed batteries, ammo-as-cargo, hardpoints
-+ `track_dps`) — closed 2026-09-24, gate 524 → **578/0** hermetic (orchestrator
-re-verified twice on scratch stores 2026-09-24); reports
-`slices/S5-playtest-fixes/`, see `WAVEBOARD.md` §Closed. **12 S6 travel**
-(engine slice 3 + RPG P3: gates, corridors, POIs, scanner, sector transitions,
-heat, hunters, loot; the K0 drift pass's 21 findings dispositioned before the
-builders ran, three scope calls owner-ratified) — closed 2026-09-24, gate
-608 → **674/0** hermetic (orchestrator ×2 + R1 ×4 on scratch stores, live
-account byte-stable); **0 HIGH / 0 MED / 8 LOW** (L150–L157), no fixer pass;
-reports `slices/S6-travel/`, see `WAVEBOARD.md` §Closed. **13 S7 affix application**
-(engine slice 4's affix half, 15 §9.3 — the stored affixes finally bend the resolved
-stats, each barrel, the damage delivery and five suffix seams; the K0 drift pass's 17
-findings dispositioned before the builders ran, incl. `game/projectile.gd` joining
-K2's set) — closed 2026-09-24, gate **711 → 753/0** hermetic (orchestrator ×2 + verify,
-R1 ×2 + verify, live account byte-stable across a gate run); **0 HIGH / 0 MED / 5 LOW**
-(L163–L167), no fixer pass; reports `slices/S7-affix-application/`, see
-`WAVEBOARD.md` §Closed.
+Items 1–13 closed: chrome, combat repair, weapon FX (→ `MASTER_REPORT.md`);
+P2-A `8d189bf`, Rock cleave `0e419f7`, P2-B1 `1f794cc`, P2-B `3e79e61` (→
+`session_2026-09-22_items_4_to_7_report.md`, gate 437); S2.6 (457), S3 (493),
+S4 (524), S5 (578), S6 (674), S7 (753) — detail, reviews, incidents and LOW
+rows in `WAVEBOARD.md` §Closed +
+`session_2026-09-24_items_8_to_13_report.md`; evidence archived in each
+slice's `_archive/`.
+
+## Handoff (live — paste as one block)
+
+```text
+Read .agents/gen/dispatch_coder.md and execute queue item 14 only — S8, the QA playtest fixes (CONTRACTS §21, incl. the owner O1–O3 table). Brief: .agents/gen/slices/S8-qa-fixes/S8_BRIEF.md. Prompts: .agents/gen/slices/S8-qa-fixes/S8_prompts.md. Snapshot + commit (s8_start) before the first dispatch, apply Q0's dispositions to §21 in one commit before Q1, run Q0 → Q1 → Q2 → R1, and the fixer only if the review leaves HIGH or MED. This may run parallel with designer item 13 (D11 station scene): you hold the S8 write sets — never touch game/sector.gd, game/station_scene.gd, assets/env/**, staging/**, tests/test_d11_*, project.godot, or docs/ beyond Q0's disposition pass and R1's §9/§10; take CONTRACTS §9/§10 as the next free rows read at close-out, sequenced after D11's (rebase, never revert), and attribute any D11 rows in the gate. Close out per the brief's close-out section (gate ×2 scratch stores, verify --baseline s8_start, WAVEBOARD update, wave-boundary commit), then report back: the measured gate count, Q0's dispositions, the builders' per-AC numbers, the reviewer's findings by tier, and S8's owner ticks (incl. O3's ram factor and the O1/O2 UX call).
+```

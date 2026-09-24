@@ -216,3 +216,38 @@ fix is a tight re-cut + re-pull + re-import.
   `slice2_start`).
 - The test gate grew 53 → 78 (slice 0) → 219 (slice 2). Current contract:
   `res://tests/headless_runner.tscn` → `[SUMMARY] passed=219 failed=0`.
+
+---
+
+## 5. Update 2026-09-24 — items 8–13, designer 7–8, the independent QA pass (supersedes the "State in one line" and §3/§4 above)
+
+**State in one line:** thirteen coder waves + the designer cockpit waves are
+CLOSED and review-verified; the universal gate reads **`passed=753 failed=0`**
+(measured twice on scratch stores by the developer session, `problems: []` on
+`verify --baseline s7_start`); nothing is in flight; coder **item 14 = S8 QA
+fixes is READY** (CONTRACTS §21); the designer queue carries the QA's items
+9–12. The detailed record for this period is
+`.agents/gen/session_2026-09-24_items_8_to_13_report.md` plus `WAVEBOARD.md`
+§Closed (per-wave numbers, reviews, incidents, ticks).
+
+Compact record: **8 S2.6** 437→457 (owner requests #5–#7: outward kick 150.0,
+scatter disc, `BEAM_SINK` 0.45); **9 S3** 457→493 (instances + AUCTION, §15;
+one live-`user://` probe incident, T-93 class, restored); **10 S4** 493→524
+(batteries, §16 v0.8.0; 1 HIGH + 1 MED cured, the HIGH re-reproduced at
+close-out); **11 S5** 524→578 (the owner's ten playtest findings, §17; 2 MED
+cured); **12 S6** 608→674 (travel, §19; K0's 21 pre-build contradictions; 0/0/8);
+**13 S7** 711→753 (affix application, §20; K0's 17 pre-build contradictions;
+0/0/5 L163–L167); **D6** 578→608 (cockpit instruments, §18; 18 masters) and
+**D7** 674→727 (cockpit rework + battery window; 1 HIGH + 1 MED cured;
+`CockpitStyle`, Mockup v7/A/C). Lows of the period: L107–L167.
+
+**The independent QA playtest** (2026-09-24,
+`.agents/gen/slices/S7-affix-application/S7_QA_playtest_review_2026-09-24.md`)
+drove the next batch: 2 HIGH / 6 MED + copy/composition findings, triaged into
+coder item 14 (S8, CONTRACTS §21 + 05 §9) and designer queue items 9–12; two
+owner ticks (refinery hide-behaviour, `REFINE ALL` — the latter is docs-pinned)
+plus its live-`user://` write disclosure. **Cleanup 2026-09-24:** every closed
+slice holds `SLICE.md` + `_archive/` (briefs/prompts/reports/reviews/logs
+moved, git-tracked; the 2026-09-22 purge record in this file's header still
+applies to the older chains); next free LOW **L168**, ticket **T-94**,
+changelog **v0.19** at S8's close-out.

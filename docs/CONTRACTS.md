@@ -1885,7 +1885,14 @@ value dials carry them). The cluster = gauge + `B1..B5` battery lamps (the
 retired (`set_pool`/`set_emergency` signatures unchanged). `ship_status_screen`
 keeps its seams (toggle behind `InputMap.has_action`, read-only fits) on the
 Mockup C surface; the armory keeps every 09 §11/§17 transaction on the Mockup A
-surface (SALVO cells render centiseconds: 0.73 s reads `073`).
+surface (SALVO cells render centiseconds: 0.73 s reads `073`). **L162
+ratification (developer session, 2026-09-24):** `test_d6_cluster.gd`'s ten moved
+rows stand as built — D7-R1 read the whole 212-line diff (the four unchanged rows
+are the dial contract, hull danger, overdrive and digits-never-recolour; no
+assertion was weakened) and the owner-approved Mockup v6/v7 blocks make the
+pre-v6 rows unassertable; the D7 brief's "compass rows only" list is superseded
+by the v6/v7 surface. Reversal: none owed — these rows are the yardstick the
+shipped surface needs.
 
 ## §19 S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, heat, loot
 
@@ -2375,6 +2382,134 @@ list → `[]`; its assertions untouched and green).
 | D5 — `_spawn_sector`'s trailing `return` became an `else` | **accepted:** one call site after both entry branches, and the `return` was the function's last statement. |
 | D6 — the staged set is asserted as the five staged suffix ids | **accepted:** the brief's "staged four" counted the four staged *items* (Overflowing plus the three suffix groups), and a superset assertion cannot be wrong about which were meant. |
 | D7 — the Leeches/Cartograph fixtures fit a real instance through `fit_module_at` | **accepted:** the flag reaches `_launch_summary` by the shipped path, so the suite proves the integration, not just the arithmetic. |
+
+## §21 S8 QA playtest fixes (2026-09-24) — the independent QA wave
+
+**Docs-first (developer session, 2026-09-24)** from the independent playtest
+`.agents/gen/slices/S7-affix-application/S7_QA_playtest_review_2026-09-24.md`
+(measured on a HEAD-equivalent tree — the QA's `bdfaace`+WIP equals `1a1f57a`,
+and the ship commit added no game code; gate 753/0). A worker implements this
+text; only the developer session changes it. **Q0 re-measures every finding on
+HEAD and its dispositions append below (orchestrator-applied) before Q1 runs** —
+a finding Q0 proves fixed or mis-attributed closes there, not in code.
+
+- **H1 — the launch seeds every pack slot, as P2-A pinned it.** After one
+  launch the briefing total, the flight `PlayerState.ammo` per slot, the HUD rack
+  and the store's `ammo_*` packs agree; a fitted family with a stocked pack
+  fires. **K0 names the break** (seed path / family mapping / store draw) — no
+  mechanism is assumed here. Measured defect: briefing `1 941 … ACROSS 6
+  WEAPONS` vs flight `0/300` and no projectile. Reversal: none owed — this
+  restores measured P2-A behaviour (`Vanguard [laser] 300 rounds`).
+- **H2 — one cell, one family, one display.** The ship-status W-cell payload is
+  built per fitted cell from `resolved_fit` — never a battery group's first
+  member, never an armour cell (L148's own warning class) — so the status pane
+  and FITTING agree cell-for-cell on any fit. K0 names the payload's break
+  (`game.gd:_hull_slot_cells` / `ship_status_screen.set_hull_slots` /
+  the v7 battery rows).
+- **M4 — no pane may show current > max, and `max` is the RESOLVED figure.**
+  `ShipFit.resolve`'s `hull_max`/`shield_max` (plates included) is the
+  denominator both the status footer and Repairs print. Today Repairs reads the
+  station hull row's base (`repairs_panel.gd:177-179`) and the status footer
+  resolves hull but not shield — QA measured `1250/1000` and `800/600`.
+  Reversal: none — clamping current to base instead was rejected (a plated hull
+  would read 1250/1000).
+- **M1 — a cracked rock's fragments take their shape state outside the physics
+  flush.** `_new_rock`/`setup` defers `body_set_shape_disabled` /
+  `body_set_shape_as_one_way_collision` (`set_deferred`), so a ram logs **zero**
+  engine errors and each fragment collides from its first eligible frame.
+  Measured today: 16–24 refused calls per ram.
+- **M2 — confirm strips and log lines resolve display names** (05 §9): the
+  Exchange's confirm strip and `SOLD` line use the hold rows' display-name
+  resolver; no raw id in player-facing copy.
+- **M3 — the confirm quote is honored** (05 §9): the strip captures
+  gross/fee/paid at preview and the sale commits those numbers;
+  `Exchange.sell` gains **one optional quoted-total parameter**, existing
+  callers byte-identical (05 §8's single pricing function still owns the
+  arithmetic). Reversal: live price + an `INDICATIVE` label.
+- **Spelling and unit law:** a catalogue's `name` is the single player-facing
+  spelling (`module_catalog.gd:263` = `Cannon MkI`) — panels may case it, never
+  respell it (`Cannon Mk1` / `CANNON MK1` are defects). Range copy uses `u`
+  (the target panel's `860 m` is wrong; docs and mining say units). The
+  stepper's `1 CONVERSIONS` gains a singular at n=1 (*proposed*; reversal:
+  keep). §15/STATION_HUB's `NEXT RESTOCK <m:ss>` literal **stands**
+  (self-evident clock; reversal: `... IN <m:ss>`, one string), and
+  `REFINERY ALL` **stands as docs-pinned** (04 §5 + STATION_HUB §12.3 — QA's
+  `REFINE ALL` preference is an owner tick that would amend both docs).
+- **Warning ledger fold-ins:** L163's five `weapons.gd` shadowing renames
+  (`position` → `barrel`), `module_catalog.gd`'s three `INTEGER_DIVISION` rows
+  (`intdiv`), `projectile.gd`'s three shadow rows (QA: 1485/1489/1759) — same
+  class, this wave owns the files. L166's `hot_price` idiom stays
+  (integer-exact by §15's own requirement).
+- **Staged / owner calls (not this wave's build):** the Refinery hiding
+  sub-convertible stacks (`test_p1_refinery.gd:192` pins it; reads as data loss
+  — keep or show exhausted rows) is an owner tick; M5 (the status close-X), M6
+  (the arming countdown), the station dead zones, the HUD top-left/minimap
+  visibility and the player-hull visibility pass are **designer-queue items 9–12**
+  (`dispatch_designer.md`); the QA's tooling appendix item 5 (its playtest wrote
+  the live `user://` profile) is an owner note, not a defect.
+- **Test law:** new suites only (`tests/test_s8_*.gd`). Q0 greps every assertion
+  pinning the old copy (`Mk1`, `860 m`, `CONVERSIONS`, `MINERAL_…`, the confirm
+  format) and any row that must move is dispositioned here before Q1 (S6's
+  `test_engine2_wiring` precedent).
+
+### Owner follow-up, same day (2026-09-24 — six verbatim findings)
+
+The owner's own pass, added to the QA list verbatim; Q0 measures each before a
+builder runs, same disposition flow as the QA's:
+
+| id | owner, verbatim | measured seam / disposition path |
+|---|---|---|
+| O1 | "drag and dropping in FITTING doesnt do anything" | **Measured:** FITTING carries no drag code at all (no `_get_drag_data`/`_can_drop_data`/`_drop_data` anywhere in `fitting_panel.gd`) — the capability lives only in the ARMORY's battery racks (09 §11, CONTRACTS §17). Bucket 3: port the drag to FITTING / point the owner at ARMORY / unify the two fitting surfaces — Q0 reproduces the ARMORY drag headlessly (call the three handlers directly, assert the committed groups) and reports both readings; the orchestrator routes the UX call to the owner. A genuine ARMORY break stays bucket 1. |
+| O2 | "cant set weapon groups" | Racks are `B1..B7` drop zones wired to `weapon_1..7`, and `PlayerProfile.set_battery_groups` exists (`player_profile.gd:1252`, ceiling `GROUPS_MAX` 7). Q0 measures whether the ARMORY drag actually commits a group and whether any other surface assigns one; disposition rides O1 (same UX family) — if the drag commits, the finding is discoverability (bucket 3), not a defect. |
+| O3 | "Hitting enemy ships punches them way too hard" | `player_ship.gd:922 _on_hull_body_entered` → `impact.gd:44 collision_damage(mass_a, mass_b, relative_velocity)`. Q0 measures a representative player→NPC ram (both inputs and the delivered damage against the NPC's pool); the orchestrator writes a proposed reduction factor into this table (reversal: factor 1.0 = shipped) and **no number ships without a measured before/after plus the owner's tick**. |
+| O4 | "The torque in flying is way too big (you slow down too fast)" | **Item 15**, not S8 — flight numbers live in owner-locked 18 §13 + §14's ruling-23 multipliers, and the §13 turn/`coast_time` column ticks are already open owner homework (they interact with S2.6's own `coast_time ×0.50` retune). Q0 does not touch them. |
+| O5 | "The A/D strifing should be a bit stronger or we need to think about how the inertia works once again" | **Item 15** — the seams are `player_ship.gd`'s `_step_strafe` / the owner's 2026-09-21 strafe ruling and `ship_fit.gd:500 LATERAL_DAMP_MULT := 1.0`; magnitude and the inertia question are taste, owner-gated with O4 in one flight-feel pass. |
+| O6 | "make space station bigger with more details (not a single sprite, more static and moving elements, but the main sprite should be much bigger as well)" | **Designer queue item 13** — scene composition + hero art, owner-mockup gate (the D7 loop precedent). |
+
+S8 builds only **O1/O2/O3** (through Q0's dispositions); **O4/O5** are coder
+item 15; **O6** is the designer lane.
+
+## §22 Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated)
+
+**Docs-first (developer session) answering the owner's "suggest number". Every
+number below is PROPOSED and ships only on the owner's tick; each carries its
+reversal and the measured seam it moves.** Sources: O4/O5 (§21) — "The torque
+in flying is way too big (you slow down too fast)" / "The A/D strifing should
+be a bit stronger or we need to think about how the inertia works once again".
+Mechanics measured in `game/player_ship.gd`: forward/side decay = body
+`linear_damp` `1/ coast_time` + the commanded `_coast_rate = max_speed/
+coast_time` (`:1046-1083`); angular decay = `angular_damp = 1/ turn_spinup`
+fed through the torque law `I × (alpha + damp × omega)` (`:797-799, :1095`) —
+the damping half is the "torque" that brakes a released turn; strafe = stick ×
+`max_speed` chased at `_accel_rate = max_speed/ accel_time` (`:813-818, :838`),
+so S2.6's `ACCEL_TIME_MULT` 2.0 set the lateral pace too; carry scales
+linearly with the resolved coast (S2.6's measured pairs: 430.32 u @ 2.0 s,
+216.85 u @ 1.0 s).
+
+| # | lever (one constant, §14's multiplier pattern) | today | **proposed** | measured effect, Vanguard worked row | reversal |
+|---|---|---|---|---|---|
+| T1 | `COAST_TIME_MULT` (`ship_fit.gd:499`) | 2.0 | **2.5** | stop time 2.0 → **2.5 s**; carry 430 → **≈538 u** (measured pair ×1.25); forward damp 0.5 → **0.4 s⁻¹**; every hull and NPC scales together | 2.0 |
+| T2 | `ANGULAR_DAMP_MULT` — **new**, multiplying `_angular_damp()` | none (damp = 1/turn_spinup) | **0.5** | Vanguard spin-down damp 2.0 → **1.0 s⁻¹**: a released turn keeps rotating ~**2×** longer and the torque law's damping half halves | 1.0 (constant stays; 1.0 = today byte-for-byte) |
+| T3 | `STRAFE_RATE_MULT` — **new**, multiplying the strafe chase rate in `_step_strafe` | none (chases at `_accel_rate`) | **0.75** | lateral time-to-top 4.8 → **3.6 s** at the same ceiling (top sideways speed stays `max_speed`; this is the "a bit stronger" reading) | 1.0 |
+| T4 | `LATERAL_DAMP_MULT` (`ship_fit.gd:500`) | 1.0 | **0.6** | the explicit sideways drag's extra falls 0.5 → **0.1 s⁻¹** — an uncommanded skid rides nearly pure body damp (the "inertia/slide" reading) | 1.0 |
+
+- **T1+T2** answer O4's two readings (linear slow-down / angular torque);
+  **T3** answers O5's first half, **T4** its "rethink inertia" half. Any subset
+  may tick — each lever is independent.
+- **Combination note:** the sideways axis is pinned to today's damp by design
+  (`_lateral_damp` divides `COAST_TIME_MULT` back out), so T1 alone *raises*
+  the sideways extra 0.5 → 0.6 s⁻¹; T1+T4 lands it at 0.2; T4 alone at 0.1.
+- None touches `max_speed`, `accel_time`, `turn_rate` or `turn_spinup` and none
+  touches owner-locked 18 — its §13 column homework stays the owner's; these
+  are constants beside `ACCEL_TIME_MULT`/`COAST_TIME_MULT`, one flip each.
+- **Tests that move when ticked** (S9's K0 re-lists before building):
+  `test_s2_6_flight.gd` pins the decay split off these two standing constants
+  and the flight probes (`probe_s2_6_flight`, `probe_g1_flight_feel`) read the
+  same values — numeric rows are re-derived to the ticked values, never
+  weakened.
+- **Item 15 dispatches nothing until these rows are ticked**; the coder wave
+  (next slice id **S9**) is brief-written after the ticks land, docs-first from
+  this table.
 
 ## §10 Changelog
 
@@ -3097,3 +3232,28 @@ list → `[]`; its assertions untouched and green).
   line's integer-division warning; and the brief's `L158+`/`v0.16` ids that D7 had
   already consumed, rebased here to `L163+`/`v0.17`). The five owner ticks S7 owes
   (§20) stand unchanged, with the readings this pass measured beside them.
+- **v0.18 (2026-09-24, wave S8 docs-first — the QA-playtest pin, this wave's only
+  pre-dispatch CONTRACTS writer)** — §21 added: the independent QA review's
+  acceptance rules (H1 launch-ammo seeding as P2-A pinned it, H2's per-cell status
+  payload against L148's own warning class, M4's resolved-figure denominators,
+  M1's deferred fragment shape state, M2's display-name path, M3's honored
+  confirm quote via `Exchange.sell`'s one optional parameter, the catalogue
+  spelling law and the `u` range copy), the warning-ledger fold-ins (L163 +
+  `module_catalog`'s three `INTEGER_DIVISION` rows), and the staged/owner calls
+  (the refinery's hide-behaviour, M5/M6/composition → designer-queue items 9–12)
+  plus the owner's same-day six verbatim findings (**O1–O6**: FITTING drag,
+  weapon groups, ram strength → S8 via Q0; torque/slow-down and strafe/inertia →
+  coder item 15's owner-gated flight-feel pass; the station scene → designer
+  item 13).
+  `docs/gameplay/05_exchange.md` §9 carries the M2/M3 rules with reversals. LOW
+  ids continue at **L168+** (next free ticket **T-94**).
+- **v0.19 (2026-09-24, docs-first for coder item 15 — the flight-feel proposals,
+  this lane's only pre-dispatch CONTRACTS writer)** — §22 added: four PROPOSED
+  tick-gated levers with worked rows and reversals (T1 `COAST_TIME_MULT`
+  2.0 → 2.5; T2 new `ANGULAR_DAMP_MULT` 0.5 on the torque law's damping half;
+  T3 new `STRAFE_RATE_MULT` 0.75 on the lateral chase; T4 `LATERAL_DAMP_MULT`
+  1.0 → 0.6), the combination note for the sideways axis, the
+  tests-that-will-move list, and the rule that item 15 dispatches nothing until
+  the owner ticks (the wave becomes slice **S9**, brief-written from this
+  table). Item 15's gate flips from "owner numbers session" to **"owner ticks
+  §22"**. Next close-out row: **v0.20**.

@@ -4,16 +4,27 @@
 
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-22 purge:** the executed-wave reports, briefs and evidence were removed from `.agents/gen/` (recoverable from the system trash; the last git tree carrying them is `3f5688b`) — the historical record is `MASTER_REPORT.md` plus the newest session report, and older citations below name the purged paths.
 
-**Updated: 2026-09-24 (**coder item 13 = S7 affix application CLOSED — gate 711 → **753/0**,
-0 HIGH / 0 MED / 5 LOW L163–L167; designer item 8 = D7 cockpit rework also closed the same
-day, gate 727/0).** Both lanes are now idle; CONTRACTS §20 (S7) and §18 (D7) are the pins
-of record, changelog **v0.17** is the newest row.** This session's
+**Updated: 2026-09-24 (**batch prepared end-to-end: the independent QA review triaged;
+`.agents/gen/` cleanup executed; **both dispatch files rewritten clean with live handoff
+blocks**; item 14 = **S8 READY** (§21 + v0.18 + 05 §9, incl. the owner's O1–O3);
+item 15 = flight-feel with **numbers PROPOSED in §22 (v0.19) — waiting on ticks**;
+designer item 13 = **D11 station scene READY** (ENVIRONMENT_SPEC §11, five-piece written,
+A0 mockup-gate handoff live); designer items 9–12 await owner picks).** Waves of record: item 13 = S7 CLOSED gate 711 → **753/0** (0 HIGH / 0 MED /
+5 LOW L163–L167); designer item 8 = D7 CLOSED gate 727/0. Both lanes idle until their next
+dispatch. CONTRACTS §20 (S7), §21 (S8), §22 (item 15's proposals), §18 (D7) are the pins;
+changelog **v0.19** (§22) is the newest row — close-outs take the next free rows
+read at close-out (v0.20+; L167's lesson for LOW ids too). The QA input stays loose at
+`slices/S7-affix-application/S7_QA_playtest_review_2026-09-24.md` (it is S8's brief input);
+every other closed slice now holds only `SLICE.md` + `_archive/` (cleanup 2026-09-24).
+This session's
 end-to-end record — items 4–7, their numbers, the incidents and the open items — is
-`.agents/gen/session_2026-09-22_items_4_to_7_report.md`. Full history of what every worker
+`.agents/gen/session_2026-09-22_items_4_to_7_report.md`; items 8–13 + D6/D7 + the QA pass
+are `.agents/gen/session_2026-09-24_items_8_to_13_report.md`. Full history of what every worker
 did, with known errors and open findings, now lives in
 `.agents/gen/MASTER_REPORT.md` — this board keeps only current state,
 contracts, enforcement and the queue. Executed-wave reports, briefs and
-evidence were purged to the system trash (2026-09-22) —
+evidence were purged to the system trash (2026-09-22) and archived to the slices'
+`_archive/` folders (2026-09-24) —
 citation paths of the form `.agents/gen/<report>.md` name the purged files.
 
 **Current state: thirteen coding waves closed (chrome, combat repair, weapon FX wiring, flight
@@ -23,10 +34,23 @@ P2-B proper fitting panel, **S2.6 truth-and-feel**, **S3 the item economy**,
 `passed=578 failed=0` at S5, **`passed=608 failed=0`** after the D6 design wave,
 **`passed=674 failed=0`** after S6, **`passed=753 failed=0`** after S7 (the 711 at S7's
 `s7_start` snapshot = S6's 674 + D7's in-flight 37), hermetic). The queue of record is
-`dispatch_coder.md`: items 4–13 are all DONE and **item 13, the affix-application wave
-(CONTRACTS §20), shipped 2026-09-24**; the next coder item is **slice 4's remainder** —
-quadrants/directional armour (18 §4.5 + ruling 23, deferred from S6) and bosses/arena hooks
-(14 §5, blocked on the P4 contract type and boss-hull art) — **not yet briefed**. Owner gates:
+`dispatch_coder.md`: items 4–13 are all DONE and **item 14 = S8 QA playtest fixes
+(CONTRACTS §21) is READY 2026-09-24** — the independent reviewer's 2 HIGH / 6 MED +
+copy/naming/warning bundle **plus the owner's same-day O1–O3** (FITTING drag, weapon
+groups, ram strength — §21's O-table), input at
+`slices/S7-affix-application/S7_QA_playtest_review_2026-09-24.md`, run order Q0 →
+dispositions into §21 → Q1 → Q2 → R1 → F1 only on HIGH/MED. **Item 15 = the
+flight-feel retune — NUMBERS PROPOSED in §22 (v0.19), waiting on the owner's ticks**
+(O4/O5: T1 `COAST_TIME_MULT` 2.0→2.5, T2 new `ANGULAR_DAMP_MULT` 0.5, T3 new
+`STRAFE_RATE_MULT` 0.75, T4 `LATERAL_DAMP` 1.0→0.6; any subset ticks → **S9**'s
+five-piece is written from the ticked table). Beyond it: **slice 4's
+remainder** — quadrants/directional armour (18 §4.5 + ruling 23, deferred from S6) and
+bosses/arena hooks (14 §5, blocked on the P4 contract type and boss-hull art) — **not yet
+briefed**. Designer queue: **item 13 = D11 station scene READY** (five-piece written,
+ENVIRONMENT_SPEC §11 landed, A0 mockup-gate handoff live in `dispatch_designer.md`,
+incl. the owner's `game/sector.gd` + `game/station_scene.gd` grant); items 9–12 await
+their owner picks (briefs at dispatch-prep).
+Owner gates:
 the chrome art half, the **`18_engine_spec.md` §6/§13/§15 cleaving amendment** (owner-locked; §15
 is the test checklist and now contradicts the shipped suite), the launch fit (**both symptoms
 closed** — symptom 1 by P2-A, symptom 2 by P2-B1's `w_mining` row), four spec ticks, the §13
@@ -224,8 +248,13 @@ quadrant/sibelon deferrals — see §Closed), **S5's three** still owed
 `track_dps` taste table), **S7's nine** (all measured at close-out — the brief's list:
 S3 tick 6 as answered, Overflowing, Silence, Vault, the faction trio, `damage_mult`'s
 live reading incl. rocks **and the ram**, Keen per barrel, Lightened's sign-flip, Ledger
-×1.25; see §Closed, LOW rows L163–L167), and **D6's five + its MED-2 geometry call** (D6 reported
-2026-09-24 — see §Closed; the MED-2 call is the 396×190-content vs 340×152-interior pin).
+×1.25; see §Closed, LOW rows L163–L167), **D6's five + its MED-2 geometry call** (D6 reported
+2026-09-24 — see §Closed; the MED-2 call is the 396×190-content vs 340×152-interior pin), and
+**D7's three escalations** (D7-R1, added by the developer session 2026-09-24 at review: the
+battery lamp band is **5** while the armory rack map reaches **7** — racks 6/7 light no lamp,
+per §3.7's five-lamp pin, owner call; the status plate covers its well union at **99.73 %**,
+2 logical px short at the box's bottom — A1's reported note; and the armory's
+`OWNED ×n` / `HELD-MAX` copy rows if the owner wants wording changes).
 P2-A/P2-B1/P2-B
 proper tick lists are resolved.
 
@@ -285,6 +314,24 @@ proper tick lists are resolved.
   ticks: the brief's nine (S3 tick 6 as answered, Overflowing, Silence, Vault, the faction
   trio, `damage_mult`'s live reading incl. rocks and the ram, Keen per barrel, Lightened's
   sign-flip, Ledger ×1.25).
+  **Post-close, the independent QA playtest (2026-09-24, godot-ai driven, recorded at
+  `slices/S7-affix-application/S7_QA_playtest_review_2026-09-24.md`):** ran the whole
+  route on a HEAD-equivalent tree at 753/0 and found **2 HIGH** (launch ammo seeds 0 —
+  briefing vs flight vs HUD disagree; ship-status cells disagree with FITTING — duplicated
+  weapon, armour in a W row), **6 MED** (rock-ram physics-flush refusals 16–24/ram; raw
+  `MINERAL_CHROMIUM` ids in sale copy; an un-honored confirm quote 8 → 5; current > max in
+  two panes; the off-brand close-X; the 3 s arm window), a copy/naming/hygiene LOW list and
+  a composition/vision section — plus its tooling appendix disclosing that **its playtest
+  wrote the live `user://` profile** (owner note: restore wanted?). Triage: H1/H2/M4/M1/M2
+  measured HEAD-equivalent (the QA's tree ≡ `1a1f57a`, ship commit added no code) → coder
+  **item 14 = S8** (CONTRACTS §21); composition/visibility items → designer queue **9–12**;
+  refinery-hide and `REFINE ALL` → owner ticks (the latter is docs-pinned in 04 §5 +
+  STATION_HUB §12.3). **The owner's same-day follow-up added six verbatim findings
+  (§21's O1–O6 table):** FITTING drag + weapon groups (measured: FITTING has zero drag
+  code; the ARMORY racks + `set_battery_groups` are the only route → O1/O2 into S8-Q0
+  with the UX call routed to the owner), ram strength (→ S8, measured factor + tick),
+  torque/slow-down + strafe/inertia (→ **coder item 15, owner-gated flight-feel pass**),
+  and the station scene rework (→ **designer item 13**, mockup-gated).
 
 - **S6 travel (engine slice 3 + RPG P3) — DONE 2026-09-24** (gate 608 → **674, 0 failed**,
   exit 0; the orchestrator measured it twice on two scratch stores at close-out and R1 four

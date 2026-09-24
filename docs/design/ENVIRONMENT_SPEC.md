@@ -125,3 +125,51 @@ No emissive, no accent, no bright nebula in any layer.
 - [ ] All three starfield layers tile seamlessly in X and Y.
 - [ ] Environment everywhere reads one value step darker than ships; no emissive except station lamps + menu wreck glow.
 - [ ] Negative list clean on every delivered file.
+
+## 11. Amendment 2026-09-24 (D11 docs-first — the dockable station scene)
+
+The owner, verbatim (CONTRACTS §21's O6): **"make space station bigger with
+more details (not a single sprite, more static and moving elements, but the
+main sprite should be much bigger as well)."** Every value below is proposed by
+the developer session and carries its reversal; the **approved mockup fixes
+the geometry** (the D7 loop: A0 → owner sheet → ship).
+
+- **The dockable station becomes a composed scene, never a single sprite
+  again.** Today it is one `Sprite2D` — `game/sector.gd:54-57` preloads
+  `assets/env/poi/env_station.png`, draws it at `STATION_SCALE` (~67.9 u
+  half-extent; the `ASSET_WIRING_HANDOFF` §2 "roughly 2× hull scale" note
+  describes the shipped size). The rework ships: a **hero** render at
+  **≥ 2.2× today's on-screen footprint** (exact scale pinned from the approved
+  mockup; **reversal:** today's `STATION_SCALE`), **≥ 6 static element kinds**
+  and **≥ 3 moving element kinds** (proposed inventories: static — docking-arm
+  trusses, antenna/mast clusters, gantry cranes, lit-window bands, hull-plate
+  spines, §6's ember warning-lamp runs; moving — approach beacon strobes,
+  service-shuttle loops between station and gate bearing, one slow crane/turret
+  slew; **reversal:** drop any element to zero — the scene still reads).
+- **Vocabulary unchanged:** §1.1/§6's welded platework, gunmetal mid/dark,
+  grime + rust streaks, environment one value step darker than ships, and the
+  §6 emissive rule stands — **ember warning lamps are still the only
+  station emissive**; moving elements are lit by the same palette (no new
+  glow).
+- **Invariants (no tick needed, violation is a defect):** the `&"station"`
+  group membership, the DockZone as a **sibling** with its world-unit radius
+  (the `sector.gd:62-71` rule — a collision child under the scaled sprite
+  shrinks to ~8 u), the placement centre, and every reader that keys off the
+  group (`blips()`, dock checks).
+- **Motion law:** moving elements ride the sector's own `_process` with named
+  constants at the top of the new file (proposed at C1: strobe period **1.2 s**,
+  shuttle drift **30 u/s**, slew **4°/s** — each **reversal:** the element
+  stands still). No new `Timer` nodes; the one-timer law (17 §4) governs
+  respawn bookkeeping, not motion.
+- **Lane:** the wiring lives in `game/sector.gd:_spawn_station` plus a new
+  `game/station_scene.gd` — a **one-file-each crossing of the coder lane,
+  proposed here and ratified by the owner in the D11 dispatch handoff** (the
+  S6-K3 set-growth precedent). Everything else stays in the designer set.
+- **Naming (proposed, ASSET_NAMING rows at ship):** `env_station_hero.png`
+  (replaces the drawn `env_station.png` role), `env_station_arm_*`,
+  `env_station_mast_*`, `env_station_gantry_*`, `env_station_windows_*`,
+  `env_station_plate_*`, `env_station_lamp_*`; shuttles `env_station_shuttle_*.png`.
+  The library/`validate_names --library` pass stays host-deferred (L147 class).
+- **Supersession:** `ASSET_WIRING_HANDOFF` §2's "roughly 2× hull scale" note
+  is superseded by the approved mockup's hero scale (dated here; reversal:
+  restore the note and the old footprint).

@@ -134,3 +134,25 @@ is the whole discount, which keeps 01 §3 S2 honest without a second rule.
   (`exchange_price(id, is_ingot, is_component) → int`); no UI code may
   recompute prices from baselines.
 - Transaction log lines: `SELL, ingot_gold, 10, +1117, balance`.
+
+---
+
+## 9. Amendment 2026-09-24 (S8 docs-first — the confirm quote and the name path)
+
+Two rules the independent QA playtest
+(`.agents/gen/slices/S7-affix-application/S7_QA_playtest_review_2026-09-24.md`,
+findings M2/M3) measured broken against §5's intent. CONTRACTS §21 carries the
+pin; both rules are the developer session's and carry their reversals.
+
+- **The confirm quote is honored.** The strip captures gross / fee / paid at
+  preview and the transaction commits exactly those numbers — a market that
+  re-rolls between preview and press may not change what the player was shown
+  (QA measured 8 promised → 5 credited). §8's single pricing function still owns
+  the arithmetic; the capture is a quoted total passed into the sale, not a
+  second pricer. **Reversal:** sell at the live price and label the strip
+  `INDICATIVE (MARKET MOVES)` instead.
+- **Display names, never raw ids, in player-facing sale copy.** The confirm
+  strip and the `SOLD` status line resolve the same display name the hold rows
+  use (`MINERAL_CHROMIUM` → `CHROMIUM ORE`); §5's `INGOT_GOLD` example is the
+  **format**, not a licence to print ids. **Reversal:** ids everywhere (rejected
+  — the hold row already renders names).
