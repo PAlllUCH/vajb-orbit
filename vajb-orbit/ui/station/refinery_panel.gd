@@ -84,6 +84,10 @@ const FOOTER_EMPTY := "BRING RAW ORE FROM THE BELT"
 ## fee text always comes from Refinery.fee_for, never from the module's `fee` field, which
 ## is 0 on a refusal because nothing was charged.
 const STATUS_READY := "READY · %s · %s · %s FEE"
+## CONTRACTS section 23.1: the inspector's own identity line - the same name, conversions
+## and fee phrases as `STATUS_READY`, joined by the pane's own separator, with the leading
+## state verb dropped so the always-visible title is the ore row, not the action.
+const INSPECT_TITLE_FORMAT := "%s · %s · %s FEE"
 const STATUS_REFINED := "REFINED · %s · %d INGOTS · %s CR FEE"
 const STATUS_REFINED_ALL := "REFINED · ALL ORE · %d INGOTS · %s CR FEE"
 const STATUS_REFUSED_CREDITS := "REFUSED · NOT ENOUGH CREDITS · %s NEEDED"
@@ -578,15 +582,15 @@ func _on_row_hovered(payload: Dictionary, hovered: bool) -> void:
 
 
 ## CONTRACTS section 23.1: the ore row's additive inspector line. The row's own
-## `STATUS_READY` line (name plus its fee) is the title, never a second format string; the
-## body is whatever `StationCatalog.describe` answers for the row's own id, which is `""`
-## for a row the station catalogue does not carry.
+## identity line (name, conversions and fee) is the title; the body is whatever
+## `StationCatalog.describe` answers for the row's own id, which is `""` for a row the
+## station catalogue does not carry.
 func _inspect_row(payload: Dictionary, shown: bool) -> void:
 	if not shown:
 		inspect_requested.emit("", "", false)
 		return
 	inspect_requested.emit(
-		STATUS_READY % [
+		INSPECT_TITLE_FORMAT % [
 			String(payload[&"name"]).to_upper(),
 			_conversions_text(int(payload[&"conversions"])),
 			_format_int(int(payload[&"fee"])),

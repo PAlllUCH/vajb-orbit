@@ -316,10 +316,11 @@ const AFFIX_JOIN := " · "
 
 ## The body text for one catalogue id (CONTRACTS section 23.1): the id base-resolved (a
 ## `mod_*` instance through `PlayerProfile.base_module_id`), read from `ModuleCatalog` /
-## `SHIPS` / the ammo pack and service rows' own `&"description"`, `""` when the row
-## carries none (never invented text). A base id's own `ammo_*` cargo form resolves to its
-## pack, so EXCHANGE's ammo hold row reads the same prose. A `mod_*` instance appends its
-## rolled affix perks, joined by `AFFIX_JOIN`.
+## `SHIPS` / the ammo pack and service rows' own `&"description"` **and**
+## `MineralCatalog` / `ComponentCatalog`, `""` when the row carries none (never invented
+## text). A base id's own `ammo_*` cargo form resolves to its pack, so EXCHANGE's ammo
+## hold row reads the same prose. A `mod_*` instance appends its rolled affix perks,
+## joined by `AFFIX_JOIN`.
 static func describe(id: StringName) -> String:
 	if id == &"":
 		return ""
@@ -360,7 +361,10 @@ static func _base_of(id: StringName) -> StringName:
 
 ## The `&"description"` of whichever catalogue row carries the id, `""` when none does.
 ## Sources, in the pin's own order: the module table, the hulls, the ammo packs (both a
-## family and its `ammo_*` cargo form) and the service rows.
+## family and its `ammo_*` cargo form), the service rows, the minerals (`entry_for_item`
+## resolves a bare mineral id, a `mineral_*` ore id and an `ingot_*` id alike) and the
+## components, so a REFINERY ore row and an EXCHANGE mineral/component hold row read the
+## prose their own catalogue already carries (widened 2026-09-24).
 static func _description_of(id: StringName) -> String:
 	var rows: Array[Dictionary] = [
 		ModuleCatalog.module(id),
@@ -368,6 +372,8 @@ static func _description_of(id: StringName) -> String:
 		ammo_pack(id),
 		service(id),
 		ammo_pack(ammo_family(id)),
+		MineralCatalog.entry_for_item(id),
+		ComponentCatalog.component(id),
 	]
 	for row: Dictionary in rows:
 		if row.has(&"description"):

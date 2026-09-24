@@ -258,6 +258,7 @@ const MODULES: Dictionary = {
 		&"cost": 900,
 		&"icon": "res://assets/icons/weapon/icon_weapon_laser.svg",
 		&"effects": {},
+		&"description": "Beam weapon. It never misses and never stops asking the reactor for more.",
 	},
 	&"w_cannon": {
 		&"name": "Cannon MkI",
@@ -267,6 +268,7 @@ const MODULES: Dictionary = {
 		&"cost": 1200,
 		&"icon": "res://assets/icons/weapon/icon_weapon_cannon.svg",
 		&"effects": {},
+		&"description": "Kinetic burst. Ignores the shield and puts its damage straight into the plate.",
 	},
 	&"w_rocket": {
 		&"name": "Rocket Pod",
@@ -276,6 +278,7 @@ const MODULES: Dictionary = {
 		&"cost": 2400,
 		&"icon": "res://assets/icons/weapon/icon_weapon_rocket.svg",
 		&"effects": {},
+		&"description": "Homing warheads. Lock a target or they fly straight and dumb.",
 	},
 	&"w_mine": {
 		&"name": "Mine Layer",
@@ -285,6 +288,7 @@ const MODULES: Dictionary = {
 		&"cost": 1800,
 		&"icon": "res://assets/icons/weapon/icon_weapon_mine.svg",
 		&"effects": {},
+		&"description": "Drop one behind you and let the pursuit solve itself.",
 	},
 	&"w_plasma": {
 		&"name": "Plasma Coil",
@@ -294,6 +298,7 @@ const MODULES: Dictionary = {
 		&"cost": 4800,
 		&"icon": "res://assets/icons/weapon/icon_weapon_plasma.svg",
 		&"effects": {},
+		&"description": "Superheated beam. The heaviest hit a bare hull will ever take.",
 	},
 	&"w_railgun": {
 		&"name": "Railgun",
@@ -303,6 +308,7 @@ const MODULES: Dictionary = {
 		&"cost": 5200,
 		&"icon": "res://assets/icons/module/icon_module_w_railgun.svg",
 		&"effects": {},
+		&"description": "Sabot slug at speed. Kinetic reach with nothing in its way.",
 	},
 	&"w_mining": {
 		&"name": "Mining Laser",
@@ -312,6 +318,7 @@ const MODULES: Dictionary = {
 		&"cost": 600,
 		&"icon": "res://assets/icons/module/icon_module_w_mining.svg",
 		&"effects": {},
+		&"description": "Mining tool, not a gun. Cuts rock and leaves the hulls alone.",
 	},
 	## 15 section 9.1's two exclusive weapons: their family's tier-III top line
 	## (`w_railgun`'s draw 3 / 5 200), no `effects` dict (no weapon row carries one),
@@ -326,6 +333,7 @@ const MODULES: Dictionary = {
 		&"cost": 5200,
 		&"icon": "res://assets/icons/module/icon_module_w_railgun.svg",
 		&"effects": {},
+		&"description": "Exclusive launcher on the tier three line. No family row fires it yet.",
 	},
 	&"w_flak": {
 		&"name": "Flak Battery",
@@ -335,6 +343,7 @@ const MODULES: Dictionary = {
 		&"cost": 5200,
 		&"icon": "res://assets/icons/module/icon_module_w_railgun.svg",
 		&"effects": {},
+		&"description": "Exclusive battery on the tier three line. No family row fires it yet.",
 	},
 	&"s_light": {
 		&"name": "Light Shield",
@@ -344,6 +353,7 @@ const MODULES: Dictionary = {
 		&"cost": 1400,
 		&"icon": "res://assets/icons/module/icon_module_s_light.svg",
 		&"effects": {&"shield_add": 200.0, &"regen_add": 4.0},
+		&"description": "200 shield for the least money. The cheapest way to stop bleeding.",
 	},
 	&"s_heavy": {
 		&"name": "Heavy Shield",
@@ -353,6 +363,7 @@ const MODULES: Dictionary = {
 		&"cost": 3200,
 		&"icon": "res://assets/icons/module/icon_module_s_heavy.svg",
 		&"effects": {&"shield_add": 400.0, &"regen_add": 5.0},
+		&"description": "400 shield and a little more regen. A buffer you can hold a lane with.",
 	},
 	&"s_ion": {
 		&"name": "Ion Shield",
@@ -362,6 +373,7 @@ const MODULES: Dictionary = {
 		&"cost": 5600,
 		&"icon": "res://assets/icons/module/icon_module_s_ion.svg",
 		&"effects": {&"shield_add": 350.0, &"regen_add": 9.0},
+		&"description": "It comes back faster than they can take it away.",
 	},
 	&"h_plate_light": {
 		&"name": "Light Plate",
@@ -371,6 +383,7 @@ const MODULES: Dictionary = {
 		&"cost": 1100,
 		&"icon": "res://assets/icons/module/icon_module_h_plate_light.svg",
 		&"effects": {&"hull_add": 250.0, &"speed_penalty": -0.05},
+		&"description": "250 hull structure for five percent of your speed. Plate always costs speed.",
 	},
 	&"h_plate_heavy": {
 		&"name": "Heavy Plate",
@@ -380,6 +393,7 @@ const MODULES: Dictionary = {
 		&"cost": 2900,
 		&"icon": "res://assets/icons/module/icon_module_h_plate_heavy.svg",
 		&"effects": {&"hull_add": 600.0, &"speed_penalty": -0.12},
+		&"description": "600 hull structure. Twelve percent slower, built to be shot at.",
 	},
 	&"h_composite": {
 		&"name": "Composite Plate",
@@ -389,6 +403,7 @@ const MODULES: Dictionary = {
 		&"cost": 5800,
 		&"icon": "res://assets/icons/module/icon_module_h_composite.svg",
 		&"effects": {&"hull_add": 1000.0, &"speed_penalty": -0.10, &"mass_add": 0.10},
+		&"description": "1 000 hull structure for ten percent of your speed and a little mass.",
 	},
 	&"c_target": {
 		&"name": "Targeting Computer",
@@ -398,6 +413,7 @@ const MODULES: Dictionary = {
 		&"cost": 1600,
 		&"icon": "res://assets/icons/module/icon_module_c_target.svg",
 		&"effects": {&"damage_add": 0.15},
+		&"description": "Fifteen percent more damage out of every gun on the hull.",
 	},
 	&"c_scanner": {
 		&"name": "Deep Scanner",
@@ -407,6 +423,7 @@ const MODULES: Dictionary = {
 		&"cost": 1500,
 		&"icon": "res://assets/icons/module/icon_module_c_scanner.svg",
 		&"effects": {&"scanner_add": 0.25},
+		&"description": "A quarter more scanner reach, so the sector reads to its edges.",
 	},
 	&"c_twin": {
 		&"name": "Twin Targeting",
@@ -416,6 +433,7 @@ const MODULES: Dictionary = {
 		&"cost": 3400,
 		&"icon": "res://assets/icons/module/icon_module_c_twin.svg",
 		&"effects": {&"damage_add": 0.15},
+		&"description": "The second generation of the targeting line, and more damage for it.",
 	},
 	&"c_ewar": {
 		&"name": "EWAR Suite",
@@ -425,6 +443,7 @@ const MODULES: Dictionary = {
 		&"cost": 3800,
 		&"icon": "res://assets/icons/module/icon_module_c_ewar.svg",
 		&"effects": {},
+		&"description": "Electronic warfare suite. Fitted and recognised, with no effect row yet.",
 	},
 	&"c_nexus": {
 		&"name": "Nexus Computer",
@@ -434,6 +453,7 @@ const MODULES: Dictionary = {
 		&"cost": 6400,
 		&"icon": "res://assets/icons/module/icon_module_c_nexus.svg",
 		&"effects": {&"damage_add": 0.15, &"scanner_add": 0.25},
+		&"description": "Both halves at once: more damage and more scanner reach.",
 	},
 	&"b_afterburner": {
 		&"name": "Afterburner",
@@ -443,6 +463,7 @@ const MODULES: Dictionary = {
 		&"cost": 1900,
 		&"icon": "res://assets/icons/module/icon_module_b_afterburner.svg",
 		&"effects": {&"boost_speed_mult": 1.6, &"duration": 3.0, &"cooldown": 8.0},
+		&"description": "Three seconds of hard burn, eight seconds between them.",
 	},
 	&"b_fold": {
 		&"name": "Fold Drive",
@@ -452,6 +473,7 @@ const MODULES: Dictionary = {
 		&"cost": 6800,
 		&"icon": "res://assets/icons/module/icon_module_b_fold.svg",
 		&"effects": {&"blink_distance": 400.0, &"cooldown": 20.0},
+		&"description": "Blinks the hull four hundred units. Fitted now, firing on a later slice.",
 	},
 	&"u_cargo": {
 		&"name": "Cargo Expansion",
@@ -461,6 +483,7 @@ const MODULES: Dictionary = {
 		&"cost": 1200,
 		&"icon": "res://assets/icons/module/icon_module_u_cargo.svg",
 		&"effects": {&"cargo_add": 15},
+		&"description": "Fifteen more cargo units in the hold.",
 	},
 	&"u_salvage": {
 		&"name": "Salvage Tractor",
@@ -470,6 +493,7 @@ const MODULES: Dictionary = {
 		&"cost": 1000,
 		&"icon": "res://assets/icons/module/icon_module_u_salvage.svg",
 		&"effects": {&"tractor_range_mult": 2.0, &"tractor_speed_mult": 2.0},
+		&"description": "Doubles tractor reach and pull, so loose rock comes to you.",
 	},
 	&"u_refine": {
 		&"name": "Refinery Module",
@@ -479,6 +503,7 @@ const MODULES: Dictionary = {
 		&"cost": 2600,
 		&"icon": "res://assets/icons/module/icon_module_u_refine.svg",
 		&"effects": {},
+		&"description": "A refinery on the hull. Fitted and recognised, with no effect row yet.",
 	},
 	&"u_drones": {
 		&"name": "Repair Drone Bay",
@@ -488,6 +513,7 @@ const MODULES: Dictionary = {
 		&"cost": 3000,
 		&"icon": "res://assets/icons/module/icon_module_u_drones.svg",
 		&"effects": {},
+		&"description": "Repair drones on call. Fitted and recognised, with no effect row yet.",
 	},
 	&"u_tractor": {
 		&"name": "Tractor Array",
@@ -497,6 +523,7 @@ const MODULES: Dictionary = {
 		&"cost": 2200,
 		&"icon": "res://assets/icons/module/icon_module_u_tractor.svg",
 		&"effects": {&"tractor_streams_add": 1},
+		&"description": "One more tractor stream, so a second rock can be pulled.",
 	},
 	&"u_holds": {
 		&"name": "Cargo Holds",
@@ -506,6 +533,7 @@ const MODULES: Dictionary = {
 		&"cost": 4500,
 		&"icon": "res://assets/icons/module/icon_module_u_holds.svg",
 		&"effects": {&"cargo_add": 40},
+		&"description": "Forty more cargo units. The volume answer to the cargo line.",
 	},
 	## 15 section 9.1's exclusive utility: `u_holds`'s tier-III top line (draw 0 /
 	## 4 500) with 14 section 4's own `vault_add` effect, and the service vault glyph.
@@ -517,6 +545,7 @@ const MODULES: Dictionary = {
 		&"cost": 4500,
 		&"icon": "res://assets/icons/service/icon_service_vault.svg",
 		&"effects": {&"vault_add": 20},
+		&"description": "Station-secured storage that survives a lost hull.",
 	},
 	&"e_std": {
 		&"name": "Standard Drive",
@@ -526,6 +555,7 @@ const MODULES: Dictionary = {
 		&"cost": 800,
 		&"icon": "res://assets/icons/module/icon_module_e_std.svg",
 		&"effects": {&"speed_mult": 1.0},
+		&"description": "The stock drive. No bonus, no penalty, and every yard knows it.",
 	},
 	&"e_ion": {
 		&"name": "Ion Drive",
@@ -535,6 +565,7 @@ const MODULES: Dictionary = {
 		&"cost": 3200,
 		&"icon": "res://assets/icons/module/icon_module_e_ion.svg",
 		&"effects": {&"speed_mult": 1.15},
+		&"description": "Fifteen percent more speed at the same mass.",
 	},
 	&"e_vector": {
 		&"name": "Vector Drive",
@@ -544,6 +575,7 @@ const MODULES: Dictionary = {
 		&"cost": 6200,
 		&"icon": "res://assets/icons/module/icon_module_e_vector.svg",
 		&"effects": {&"speed_mult": 1.25, &"turn_mult": 1.20},
+		&"description": "More speed and a faster turn. The quick hull's engine.",
 	},
 	&"p_std": {
 		&"name": "Standard Reactor",
@@ -553,6 +585,7 @@ const MODULES: Dictionary = {
 		&"cost": 900,
 		&"icon": "res://assets/icons/module/icon_module_p_std.svg",
 		&"effects": {&"power_add": 0.0},
+		&"description": "The stock reactor. It powers the hull you bought and nothing more.",
 	},
 	&"p_mk2": {
 		&"name": "Reactor Mk2",
@@ -562,6 +595,7 @@ const MODULES: Dictionary = {
 		&"cost": 3600,
 		&"icon": "res://assets/icons/module/icon_module_p_mk2.svg",
 		&"effects": {&"power_add": 2.0},
+		&"description": "Two more power output for the modules that ask for it.",
 	},
 	&"p_core": {
 		&"name": "Reactor Core",
@@ -571,6 +605,7 @@ const MODULES: Dictionary = {
 		&"cost": 7000,
 		&"icon": "res://assets/icons/module/icon_module_p_core.svg",
 		&"effects": {&"power_add": 4.0},
+		&"description": "Four more power output. The reactor a full fit is built around.",
 	},
 }
 

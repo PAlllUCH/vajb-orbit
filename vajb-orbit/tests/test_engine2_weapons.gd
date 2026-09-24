@@ -138,10 +138,13 @@ func _restore_pools() -> void:
 
 
 func test_ranges_are_the_section_13_row() -> void:
-	assert_eq(WeaponScript.range_of(&"laser"), 500.0, "laser 500")
-	assert_eq(WeaponScript.range_of(&"plasma"), 450.0, "plasma 450")
-	assert_eq(WeaponScript.range_of(&"cannon"), 600.0, "cannon 600")
-	assert_eq(WeaponScript.range_of(&"railgun"), 800.0, "railgun 800")
+	## Section 23.4: the four beam/kinetic families reach the pin's ceiling (the one
+	## literal lives in `weapons.gd`); `rocket` and `mine` are untouched by it.
+	assert_eq(WeaponScript.NEAR_INFINITE_RANGE, 30000.0, "the 23.4 ceiling")
+	assert_eq(WeaponScript.range_of(&"laser"), WeaponScript.NEAR_INFINITE_RANGE, "laser near-infinite")
+	assert_eq(WeaponScript.range_of(&"plasma"), WeaponScript.NEAR_INFINITE_RANGE, "plasma near-infinite")
+	assert_eq(WeaponScript.range_of(&"cannon"), WeaponScript.NEAR_INFINITE_RANGE, "cannon near-infinite")
+	assert_eq(WeaponScript.range_of(&"railgun"), WeaponScript.NEAR_INFINITE_RANGE, "railgun near-infinite")
 	assert_eq(WeaponScript.range_of(&"rocket"), 900.0, "rocket 900")
 
 

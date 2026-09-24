@@ -804,8 +804,12 @@ func test_module_catalog_carries_the_pinned_rows() -> void:
 		assert_eq(int(published.get(&"cost", -1)), int(row["cost"]), "%s cost" % id)
 		assert_eq(
 			published.size(),
-			7,
-			"%s carries exactly name/slot/draw/tier/cost/icon/effects" % id
+			8,
+			"%s carries exactly name/slot/draw/tier/cost/icon/effects/description" % id
+		)
+		assert_true(
+			String(published.get(&"description", "")).length() > 0,
+			"%s carries its section 23.2 description" % id
 		)
 		assert_true(published.get(&"effects") is Dictionary, "%s effects is a dictionary" % id)
 		var expected_effects: Dictionary = MODULE_EFFECTS.get(id, {})

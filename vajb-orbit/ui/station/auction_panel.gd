@@ -138,6 +138,11 @@ const EMPTY_SELL := "NO MODULES IN THE BAG"
 ## the sale line the exchange's, and the three refusals CONTRACTS section 12's and
 ## 09 section 2's own.
 const STATUS_HINT := "ENTER %s · %s · %s CREDITS"
+## CONTRACTS section 23.1: the inspector's own identity line - the same name and price
+## phrase as `STATUS_HINT`, joined by the pane's own separator, with the leading key-hint
+## verb (the row's own action word) dropped so the always-visible title is the row's
+## identity and the action stays in the status strip.
+const INSPECT_TITLE_FORMAT := "%s · %s CREDITS"
 const STATUS_BOUGHT := "PURCHASED · %s · %s CREDITS"
 const STATUS_SOLD := "SOLD · %s · +%s CR"
 const STATUS_REFUSED_UNKNOWN := "REFUSED · NOT FOR SALE"
@@ -1004,7 +1009,7 @@ func _on_row_hovered(payload: Dictionary, hovered: bool) -> void:
 
 
 ## CONTRACTS section 23.1: the shelf row's additive inspector line. The row's own
-## `_row_hint` line is the title (never a second format string); the body resolves the
+## identity line is the title (never a second format string); the body resolves the
 ## row's id - a `mod_*` listing through its base plus its rolled affixes, a hull through
 ## the ship row - and a leave clears both.
 func _inspect_row(payload: Dictionary, shown: bool) -> void:
@@ -1012,7 +1017,7 @@ func _inspect_row(payload: Dictionary, shown: bool) -> void:
 		inspect_requested.emit("", "", false)
 		return
 	inspect_requested.emit(
-		_row_hint(payload), Catalog.describe(StringName(payload[&"id"])), false
+		_row_title(payload), Catalog.describe(StringName(payload[&"id"])), false
 	)
 
 
@@ -1022,6 +1027,15 @@ func _row_hint(payload: Dictionary) -> String:
 		String(payload.get(&"name", "")).to_upper(),
 		_format_int(int(payload.get(&"cost", 0))),
 		String(payload.get(&"action_word", ACTION_BUY)),
+	]
+
+
+## The row's identity for the inspector's title: its name and price phrase, the same
+## values `_row_hint` prints minus its leading action verb.
+func _row_title(payload: Dictionary) -> String:
+	return INSPECT_TITLE_FORMAT % [
+		String(payload.get(&"name", "")).to_upper(),
+		_format_int(int(payload.get(&"cost", 0))),
 	]
 
 

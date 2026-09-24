@@ -10,16 +10,27 @@ extends McpTestSuite
 ##     instance's rolled affix perks, and answers `""` for a row with no description;
 ##  4. the shell block exists above the status strip with the pinned variations, the
 ##     `Tokens/text_primary` body override, the two-line cap and `group_int` as the one
-##     digit-grouping copy (`ui/screens/station.gd:_format_int` delegates to it).
-##
-## The credits half of this suite (the HUD's `CreditsBlock`) is S11-B2's.
+##     digit-grouping copy (`ui/screens/station.gd:_format_int` delegates to it);
+##  5. the HUD's `CreditsBlock` (section 23.3): it reads the profile's credits, follows a
+##     `&"credits"` change, ignores every other profile key, and builds absent-safe when
+##     the service is missing.
 ##
 ## The station is mounted once per suite, exactly as `ui/screens/station.tscn` ships it, so
-## the panes sit in their real ancestor chain and the block is read from the real scene.
+## the panes sit in their real ancestor chain and the block is read from the real scene. The
+## credits half mounts a fresh `ui/hud/hud.tscn` per test under the profile autoload, the
+## `test_d6_status.gd` fixture-host idiom.
 
 const StationScene := preload("res://ui/screens/station.tscn")
 const Catalog := preload("res://game/station_catalog.gd")
 const ThemeRes := preload("res://ui/theme/vajb_theme.tres")
+const HudScene := preload("res://ui/hud/hud.tscn")
+const HudTheme := preload("res://ui/theme/vajb_theme.tres")
+
+## The credits block's node path, from the HUD's own top-left column (CONTRACTS section
+## 23.3: `CreditsBlock` appended below the fuel block, its `CreditsValue` the HudReadout).
+const CREDITS_VALUE_PATH := ^"CanvasLayer/TopLeft/Blocks/CreditsBlock/CreditsValue"
+## The autoload's own name, renamed for one test to prove the guarded lookup is absent-safe.
+const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
 const PROFILE_PATH := "user://test_s11_inspector.cfg"
 
@@ -297,6 +308,93 @@ func test_the_shell_writes_and_clears_the_block() -> void:
 	assert_eq(body.text, "", "an empty title clears the body too")
 
 
+## -------------------------------------------------------- 5. the HUD credits block
+
+
+func test_the_hud_credits_block_reads_the_profile() -> void:
+	_profile.set(&"_credits", 4321)
+	var hud := _mount_hud()
+	var value := _credits_value(hud)
+	assert_true(value != null, "the CreditsValue label ships in the top-left column")
+	if value != null:
+		assert_eq(value.text, Catalog.group_int(4321), "the block reads the profile's credits")
+		assert_eq(value.theme_type_variation, &"HudReadout", "the value is a HudReadout")
+	_unmount_hud(hud)
+
+
+func test_the_hud_credits_block_carries_the_pinned_nodes() -> void:
+	var hud := _mount_hud()
+	var block := hud.get_node_or_null(^"CanvasLayer/TopLeft/Blocks/CreditsBlock")
+	assert_true(block != null, "CreditsBlock ships in the top-left column")
+	if block == null:
+		_unmount_hud(hud)
+		return
+	var header := block.get_node_or_null(^"CreditsHeader") as HBoxContainer
+	var icon := block.get_node_or_null(^"CreditsHeader/CreditsIcon") as TextureRect
+	var title := block.get_node_or_null(^"CreditsHeader/CreditsTitle") as Label
+	var spacer := block.get_node_or_null(^"CreditsHeader/CreditsSpacer") as Control
+	assert_true(header != null, "CreditsHeader is an HBoxContainer")
+	assert_true(icon != null and icon.texture != null, "the credits icon ships")
+	if title != null:
+		assert_eq(title.text, "CREDITS", "the title is the pinned string")
+	else:
+		assert_true(false, "CreditsTitle ships")
+	assert_true(spacer != null, "the spacer ships")
+	var fuel := hud.get_node_or_null(^"CanvasLayer/TopLeft/Blocks/FuelBlock") as Control
+	assert_true(
+		fuel != null and block.get_index() > fuel.get_index(),
+		"the block sits below the fuel block"
+	)
+	_unmount_hud(hud)
+
+
+func test_the_hud_credits_block_follows_a_credits_change() -> void:
+	_profile.set(&"_credits", 1000)
+	var hud := _mount_hud()
+	var value := _credits_value(hud)
+	assert_true(value != null, "the CreditsValue label ships")
+	if value == null:
+		_unmount_hud(hud)
+		return
+	assert_eq(value.text, Catalog.group_int(1000), "the block opens on the seeded credits")
+	## The profile's own mutation emits `profile_changed(&"credits")`; the block follows it.
+	_profile.call(&"add_credits", 2500)
+	assert_eq(value.text, Catalog.group_int(3500), "the block follows a credits change")
+	_unmount_hud(hud)
+
+
+func test_the_hud_credits_block_ignores_other_profile_keys() -> void:
+	_profile.set(&"_credits", 777)
+	var hud := _mount_hud()
+	var value := _credits_value(hud)
+	assert_true(value != null, "the CreditsValue label ships")
+	if value == null:
+		_unmount_hud(hud)
+		return
+	var before := value.text
+	_profile.emit_signal(&"profile_changed", &"cargo")
+	assert_eq(value.text, before, "a non-credits key leaves the readout alone")
+	_unmount_hud(hud)
+
+
+func test_the_hud_credits_block_is_absent_safe_without_the_service() -> void:
+	## The guarded lookup is proven by renaming the autoload for one mount: the block must
+	## still build and leave the readout at zero rather than fail `_ready`.
+	var original := String(_profile.name)
+	_profile.name = "PlayerProfileAbsentS11"
+	var hud := HudScene.instantiate() as Control
+	hud.theme = HudTheme
+	_profile.add_child(hud)
+	var value := _credits_value(hud)
+	assert_true(value != null, "the block still builds with no service to read")
+	if value != null:
+		assert_eq(value.text, Catalog.group_int(0), "no service leaves the readout at zero")
+	_profile.name = original
+	assert_eq(String(_profile.name), original, "the service name is restored")
+	if is_instance_valid(hud):
+		hud.free()
+
+
 ## ------------------------------------------------------------------- helpers
 
 
@@ -306,6 +404,25 @@ func _ammo_payload(pane: CanvasItem, pack_id: StringName) -> Dictionary:
 		if (payload as Dictionary).get(&"id", &"") == pack_id:
 			return payload
 	return {}
+
+
+## The HUD mounts under the profile autoload rather than the busy root viewport (the
+## `test_d6_status.gd` fixture-host idiom); `_ready` resolves the service by name at the
+## tree root either way.
+func _mount_hud() -> Control:
+	var hud := HudScene.instantiate() as Control
+	hud.theme = HudTheme
+	_profile.add_child(hud)
+	return hud
+
+
+func _unmount_hud(hud: Control) -> void:
+	if hud != null and is_instance_valid(hud):
+		hud.free()
+
+
+func _credits_value(hud: Control) -> Label:
+	return hud.get_node_or_null(CREDITS_VALUE_PATH) as Label
 
 
 ## A fresh recorder per test: a bound `Callable` compares equal across binds (two empty

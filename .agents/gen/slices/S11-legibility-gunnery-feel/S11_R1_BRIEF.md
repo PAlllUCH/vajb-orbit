@@ -85,3 +85,25 @@ evidence. For each acceptance criterion in `SLICE.md`:
   every gate and probe.
 - Never touch `slices/D11-station-scene/**`, `dispatch_designer.md`, `staging/**`,
   `assets/**` or `docs/archive/**`.
+
+## Addendum (orchestrator, after wave 2 landed — read this too)
+
+- **The expected gate is `passed=807 failed=0`.** 775 (S10) + B1's 13 + B4's 3 + B2's 5 +
+  B6's 11 = 807. The orchestrator re-ran it twice on fresh scratch stores and read `807/0`
+  both times with the live store unmoved (`profile.cfg`
+  `eb750728e6dbd9cbe944e32c96307c87`, `economy_log.txt` `8b9414b7e9545abfc865c337ce5199af`).
+  The mid-wave journey (775 → 788/3 → 791/0 → 806/1 → 807/0) and its causes are in the
+  builders' reports; the three red rows were the wave's own (see §23.6).
+- **`tests/test_ship_grids.gd`'s key-count row was re-derived by the developer session**, not
+  a worker (B2 reported it; §23.6 now names it). Verify it yourself: the row must read `8` and
+  pin a non-empty `description`, and nothing else in that suite may have moved.
+- **`probe_c3_flight_decay.gd` fails at the pre-dispatch baseline too** (B5 proved it in two
+  worktrees: `4c19812` and `f5f1fcf`, `cases=4 failures=4` on both, all four dying in the
+  *accelerate* leg). It is **not a wave finding** — do not treat it as one, and do not let it
+  change your verdict. B5 also flagged that the accelerate leg's printed top speed differs
+  between the two trees while the failure mode does not; if you can explain it, say so, and if
+  you cannot, file it as a LOW row with both readings.
+- **Two pin questions are open and are the planner's, not yours**: AUCTION's shipped status
+  line renders `[name, cost, action]` against a format that reads as verb-led
+  (`ui/station/auction_panel.gd:140,1025`), and B6's title rule was applied to the title only.
+  Measure what the surfaces actually read; do not "fix" either.

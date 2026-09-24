@@ -290,9 +290,11 @@ func _case_cursor_turn(hull_id: StringName) -> bool:
 ## Turn for TURN_HOLD_SECONDS, then release the throttle with the cursor still off the bow
 ## and watch the nose: under the 2026-09-22 ruling the cursor stays live at zero throttle,
 ## so the turn no longer stops dead -- the nose carries on to the bearing. This case measures
-## that (an arrival within the class's own bound), and reports the translation the turn's own
-## coast produced alongside it; the bound on a turn's translation belongs to a turn from rest
-## and is measured there.
+## that (an arrival within the class's own bound), and reports the translation the release
+## left alongside it: since CONTRACTS section 23.5 a released velocity chases zero along its
+## own line, so `displacement` and `speed_at_reach` follow that chase, while the angular damp
+## T2 added (`ANGULAR_DAMP_MULT`) is the rate the nose spins down at. The bound on a turn's
+## translation belongs to a turn from rest and is measured there.
 func _case_neutral_turn_after_release(hull_id: StringName) -> bool:
 	var launched := _launch(hull_id)
 	var ship: Variant = launched[0]

@@ -123,6 +123,17 @@ const ZOOM_DELTA_IN: int = -1
 const ZOOM_DELTA_OUT: int = 1
 const CARGO_PANEL_GAP: float = 8.0
 
+## CONTRACTS section 23.3: the flight HUD's credits readout, a `CreditsBlock` appended to
+## the same top-left column the pool blocks live in (below the fuel block). The block is
+## built in code (the `_build_pool_blocks` idiom), reads the `PlayerProfile` singleton by
+## name through the same guarded service pattern the station uses, and never writes it.
+const CREDITS_BLOCK := "CreditsBlock"
+const CREDITS_TITLE := "CREDITS"
+const CREDITS_ICON: Texture2D = preload("res://assets/icons/cargo/icon_credits.svg")
+const CREDITS_ICON_SIZE := Vector2(28.0, 28.0)
+const PROFILE_SERVICE: StringName = &"PlayerProfile"
+const PROFILE_KEY_CREDITS: StringName = &"credits"
+
 ## Section 3.10 amendment 9.8: the target window's captions carry a grouped
 ## number, so a 4-digit range reads `1 240 u` rather than `1240 u`, in the **unit**
 ## the engine's distances are stated in (docs and mining read `u`; CONTRACTS
@@ -294,6 +305,13 @@ var _pool_bars: Dictionary = {}
 var _pool_values: Dictionary = {}
 var _pool_current: Dictionary = {}
 var _pool_maximum: Dictionary = {}
+## CONTRACTS section 23.3: the credits block's nodes and the service it reads. The block is
+## appended after `_build_pool_blocks`, so it sits below the fuel block in the column, and
+## `_connect_profile` wires the singleton's `profile_changed` signal.
+var _credits_block: VBoxContainer = null
+var _credits_value: Label = null
+var _credits_icon: TextureRect = null
+var _profile_service: Node = null
 var _emergency: bool = false
 var _emergency_banner: Label = null
 var _pool_background_box: StyleBoxFlat = null
@@ -304,6 +322,8 @@ func _ready() -> void:
 	_apply_zone_theme()
 	_apply_ammo_panel_style()
 	_build_pool_blocks()
+	_build_credits_block()
+	_connect_profile()
 	_build_hud_widgets()
 	_build_weapon_slots()
 	_place_cargo_panel()
@@ -986,6 +1006,100 @@ func _build_pool_blocks() -> void:
 	_refresh_pools()
 
 
+## CONTRACTS section 23.3: the credits block, the top-left column's last entry. The pin
+## names the header row (`CreditsIcon`, `CreditsTitle` = "CREDITS", `CreditsSpacer`) plus a
+## `HudReadout` value written through the station's one digit-grouping copy
+## (`StationCatalog.group_int`). The value reads the profile through `_profile` and
+## refreshes on `profile_changed` for the `&"credits"` key only; this file never writes the
+## profile. Built in code because `hud.tscn` carries no credits node.
+func _build_credits_block() -> void:
+	if _blocks == null:
+		return
+	var block := VBoxContainer.new()
+	block.name = CREDITS_BLOCK
+	block.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	block.add_theme_constant_override(&"separation", POOL_BLOCK_SEPARATION)
+	var header := HBoxContainer.new()
+	header.name = "CreditsHeader"
+	header.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	header.add_theme_constant_override(&"separation", POOL_HEADER_SEPARATION)
+	var icon := TextureRect.new()
+	icon.name = "CreditsIcon"
+	icon.texture = CREDITS_ICON
+	icon.custom_minimum_size = CREDITS_ICON_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var title := Label.new()
+	title.name = "CreditsTitle"
+	title.theme_type_variation = &"SectionHeader"
+	title.text = CREDITS_TITLE
+	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var spacer := Control.new()
+	spacer.name = "CreditsSpacer"
+	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	header.add_child(icon)
+	header.add_child(title)
+	header.add_child(spacer)
+	var value := Label.new()
+	value.name = "CreditsValue"
+	value.theme_type_variation = &"HudReadout"
+	value.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	value.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	block.add_child(header)
+	block.add_child(value)
+	_blocks.add_child(block)
+	_credits_block = block
+	_credits_icon = icon
+	_credits_value = value
+	_push_tint(icon, TOKEN_TEXT_PRIMARY)
+	_refresh_credits()
+
+
+## The `PlayerProfile` autoload, read by name at the tree root (station.gd's own guarded
+## pattern). The `has_method` guard keeps a project whose autoload is missing from failing
+## the HUD's `_ready`; the readout then keeps its default.
+func _profile() -> Node:
+	if not is_inside_tree():
+		return null
+	var service := get_tree().root.get_node_or_null(NodePath(PROFILE_SERVICE))
+	if service == null or not service.has_method(&"credits"):
+		return null
+	return service
+
+
+func _connect_profile() -> void:
+	var profile := _profile()
+	if profile == null:
+		return
+	_profile_service = profile
+	if profile.has_signal(&"profile_changed") \
+			and not profile.is_connected(&"profile_changed", _on_profile_changed):
+		profile.connect(&"profile_changed", _on_profile_changed)
+	_refresh_credits()
+
+
+## Only the `credits` key moves this block; every other profile change belongs to another
+## surface (CONTRACTS section 23.3).
+func _on_profile_changed(key: StringName) -> void:
+	if key == PROFILE_KEY_CREDITS:
+		_refresh_credits()
+
+
+func _refresh_credits() -> void:
+	if _credits_value == null:
+		return
+	_credits_value.text = StationCatalog.group_int(_credits())
+
+
+func _credits() -> int:
+	var profile := _profile()
+	if profile == null:
+		return 0
+	return int(profile.call(&"credits"))
+
+
 ## UI_SPEC section 3.1b's 2026-09-24 amendment: the Energy and Fuel `ProgressBar` blocks and
 ## their labels leave the flight HUD - the cluster's FUEL/ENRG value dials are the pool
 ## readouts now, fed by `set_pool`. The `EMERGENCY FLIGHT` banner stays in the TopLeft column
@@ -1302,6 +1416,7 @@ func _refresh_static_tints() -> void:
 	_push_zoom_tint(_zoom_minus)
 	_push_zoom_tint(_zoom_plus)
 	_push_tint(_cargo_close, TOKEN_TEXT_DIM)
+	_push_tint(_credits_icon, TOKEN_TEXT_PRIMARY)
 
 
 func _hull_is_critical() -> bool:

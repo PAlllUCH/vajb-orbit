@@ -135,6 +135,10 @@ const ACTION_SET_ACTIVE := "SET ACTIVE"
 const PREVIEW_EMPTY := "NO HULL IN THE CRADLE"
 const EMPTY_HULLS := "NO HULLS OWNED"
 const STATUS_HINT := "ENTER PREVIEWS · %s · %s CLASS"
+## CONTRACTS section 23.1: the inspector's own identity line - the same name and class
+## phrase as `STATUS_HINT`, joined by the pane's own separator, with the leading key-hint
+## verb dropped so the always-visible title is the hull, not the action.
+const INSPECT_TITLE_FORMAT := "%s · %s CLASS"
 const STATUS_ACTIVE := "ACTIVE HULL IS NOW %s"
 
 @onready var _subtitle: Label = %PaneSubtitle
@@ -985,7 +989,7 @@ func _on_row_focused(row: Button, payload: Dictionary) -> void:
 
 
 ## CONTRACTS section 23.1: the shipyard's additive hover surface. A hover publishes the
-## hull's own `_row_hint` line as the title and its catalogue description as the body; a
+## hull's own identity line as the title and its catalogue description as the body; a
 ## leave clears both (`title == ""`).
 func _on_row_hovered(payload: Dictionary, hovered: bool) -> void:
 	_inspect_row(payload, hovered)
@@ -996,7 +1000,7 @@ func _inspect_row(payload: Dictionary, shown: bool) -> void:
 		inspect_requested.emit("", "", false)
 		return
 	inspect_requested.emit(
-		_row_hint(payload), Catalog.describe(StringName(payload[&"id"])), false
+		_row_title(payload), Catalog.describe(StringName(payload[&"id"])), false
 	)
 
 
@@ -1049,6 +1053,15 @@ func _act(ship_id: StringName) -> void:
 
 func _row_hint(payload: Dictionary) -> String:
 	return STATUS_HINT % [
+		String(payload[&"name"]).to_upper(),
+		String(ShipFit.HULLS.get(payload[&"id"], {}).get(&"ship_class", "")).to_upper(),
+	]
+
+
+## The hull's identity for the inspector's title: its name and class phrase, the same
+## values `_row_hint` prints, with the key-hint verb kept for the status strip alone.
+func _row_title(payload: Dictionary) -> String:
+	return INSPECT_TITLE_FORMAT % [
 		String(payload[&"name"]).to_upper(),
 		String(ShipFit.HULLS.get(payload[&"id"], {}).get(&"ship_class", "")).to_upper(),
 	]

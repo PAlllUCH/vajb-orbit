@@ -2850,7 +2850,9 @@ hull stops twice and the second stop slides.
 - **Re-derived by the builders who landed the change, and the list is the law (amended
   2026-09-24 after B3/B4's reports — both omissions were real and left the gate red):**
   `tests/test_engine2_weapons.gd:141-145` (the four families' `range` + the const),
-  `tests/test_s7_affixes.gd` (its three `coast_time` rows follow T1), the range rows in any
+  `tests/test_s7_affixes.gd` (its three `coast_time` rows follow T1), **`tests/test_ship_grids.gd`
+  (its "carries exactly N keys" row follows the new eighth key — landed by the developer session
+  after B2 reported it, with a non-empty `description` assertion added)**, the range rows in any
   other suite, and the three flight suites' numeric rows; the probes `probe_s2_6_flight`,
   `probe_g1_flight_feel`, `probe_c3_flight_decay` follow the same rules. **Every suite a
   pinned constant reaches belongs to the worker that moves the constant**, and its

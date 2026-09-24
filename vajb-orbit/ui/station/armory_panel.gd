@@ -117,6 +117,10 @@ const META_INCOMPLETE := "CATALOGUE ENTRY INCOMPLETE"
 const HELD_FORMAT := "%d / %d"
 const UNAVAILABLE_VALUE := "0 / 0"
 const STATUS_HINT := "ENTER BUY · %s · %s CREDITS"
+## CONTRACTS section 23.1: the inspector's own identity line - the same name and price
+## phrase as `STATUS_HINT`, joined by the pane's own separator, with the leading key-hint
+## verb dropped so the always-visible title is the row, not the action.
+const INSPECT_TITLE_FORMAT := "%s · %s CREDITS"
 ## The purchase line stays the pinned P2-B1 wording, including its rounds: the pack's
 ## own `rounds` is what the player bought, and the units it arrived as are visible in
 ## the row's HELD cell on the same frame.
@@ -1440,16 +1444,25 @@ func _row_hint(payload: Dictionary) -> String:
 	]
 
 
+## The row's identity for the inspector's title: its name and price phrase, the same
+## values `_row_hint` prints, with the key-hint verb kept for the status strip alone.
+func _row_title(payload: Dictionary) -> String:
+	return INSPECT_TITLE_FORMAT % [
+		String(payload[&"name"]).to_upper(),
+		_format_int(int(payload[&"cost"])),
+	]
+
+
 ## CONTRACTS section 23.1: the inspector's additive hover surface. The row's own
-## `_row_hint` line is reused as the title (never a second format string), the catalogue
-## description is the body, and a row that is not buyable wears the danger colour. A leave
-## clears both by handing the shell `title == ""`.
+## identity line is the title, the catalogue description is the body, and a row that is
+## not buyable wears the danger colour. A leave clears both by handing the shell
+## `title == ""`.
 func _inspect_row(payload: Dictionary, shown: bool) -> void:
 	if not shown:
 		inspect_requested.emit("", "", false)
 		return
 	inspect_requested.emit(
-		_row_hint(payload),
+		_row_title(payload),
 		Catalog.describe(StringName(payload[&"id"])),
 		not bool(payload.get(&"complete", true))
 	)

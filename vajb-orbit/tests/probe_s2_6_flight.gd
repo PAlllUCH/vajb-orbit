@@ -1,9 +1,11 @@
 extends Node
 ## S2.6 flight-feel probe — R4's measurement half of the owner's 2026-09-22 rulings
 ## (`CONTRACTS.md` section 14's flight block). The four flight numbers under test are
-## `ACCEL_TIME_MULT`, `COAST_TIME_MULT`, `LATERAL_DAMP_MULT` and `STEER_WITHOUT_THROTTLE`;
-## this probe flies the *shipped* hull and flight code and logs what they do, so the
-## wave's before/after table is a measurement and not a re-derivation.
+## `ACCEL_TIME_MULT`, `COAST_TIME_MULT`, `ANGULAR_DAMP_MULT` (23.5's T2) and
+## `STEER_WITHOUT_THROTTLE`; `LATERAL_DAMP_MULT` is retired in place by 23.5, which is why
+## the axial and the lateral release rows below now read alike. This probe flies the
+## *shipped* hull and flight code and logs what they do, so the wave's before/after table
+## is a measurement and not a re-derivation.
 ##
 ## Run (bounded, headless, no editor):
 ##   godot --headless --path vajb-orbit res://tests/probe_s2_6_flight.tscn \
@@ -42,7 +44,7 @@ const THRUST: StringName = &"thrust_forward"
 const RULING_CONSTANTS: Array[StringName] = [
 	&"ACCEL_TIME_MULT",
 	&"COAST_TIME_MULT",
-	&"LATERAL_DAMP_MULT",
+	&"ANGULAR_DAMP_MULT",
 	&"STEER_WITHOUT_THROTTLE",
 	&"TURN_TRANSLATE_LEAK_MAX",
 ]
@@ -292,15 +294,16 @@ func _case_ramp_and_coast(hull_id: StringName) -> bool:
 
 
 ## ---------------------------------------------------------------------------
-## 2. The two axial decays: forward carry against sideways skid
+## 2. The release decay: one rate on the nose and on the side (23.5)
 ## ---------------------------------------------------------------------------
 
 
 ## Nothing is pressed at all. The hull is given `RELEASE_SPEED` along one body axis and
-## left alone, so its decay is the shipped law's own: along the nose it is the commanded
-## coast (`_step_speed(0, _coast_rate())`, the class's `max_speed / coast_time`), across the
-## nose it is the body's damp plus the explicit lateral drag. The two time constants are
-## what `COAST_TIME_MULT` / `LATERAL_DAMP_MULT` decide.
+## left alone, so its decay is the shipped law's own: since CONTRACTS section 23.5 a
+## released velocity chases zero along its own line at the class coast rate
+## (`_step_speed(0, _coast_rate())`, the class's `max_speed / coast_time`), so the axial row
+## and the lateral row below equal each other, `_lateral_damp()` returns `_linear_damp()` and
+## `LATERAL_DAMP_MULT` is retired in place (unread).
 func _case_axial_decay(hull_id: StringName, lateral: bool) -> bool:
 	var launched := _launch(hull_id)
 	var ship: Variant = launched[0]

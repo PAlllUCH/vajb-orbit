@@ -117,6 +117,10 @@ const DEMAND_FORMAT := "%sx"
 const BOARD_META_FORMAT := "INGOT · %s CR BASE"
 const STOCK_FORMAT := "%d / %d"
 const STATUS_HINT := "ENTER SELECT · %s · %s CR EACH"
+## CONTRACTS section 23.1: the inspector's own identity line - the same name and unit
+## price phrase as `STATUS_HINT`, joined by the pane's own separator, with the leading
+## key-hint verb dropped so the always-visible title is the item, not the action.
+const INSPECT_TITLE_FORMAT := "%s · %s CR EACH"
 const STATUS_SOLD := "SOLD · %d %s · +%s CR"
 const STATUS_QUEUED := "STOCK FULL · %d UNITS QUEUED"
 const STATUS_ALL := "SOLD ALL RAW · %d STACKS · +%s CR"
@@ -513,6 +517,15 @@ func _row_hint(payload: Dictionary) -> String:
 	]
 
 
+## The row's identity for the inspector's title: its name and unit price phrase, the same
+## values `_row_hint` prints, with the key-hint verb kept for the status strip alone.
+func _row_title(payload: Dictionary) -> String:
+	return INSPECT_TITLE_FORMAT % [
+		String(payload[&"name"]),
+		_format_int(int(_quote(_profile(), payload[&"id"], 1).get(&"unit", 0))),
+	]
+
+
 ## ---------------------------------------------------------------------------
 ## Sale column
 ## ---------------------------------------------------------------------------
@@ -734,14 +747,14 @@ func _on_row_hovered(payload: Dictionary, hovered: bool) -> void:
 
 
 ## CONTRACTS section 23.1: the hold row's additive inspector line. The row's own
-## `_row_hint` line is the title (never a second format string) and the item's catalogue
-## description the body; a leave clears both.
+## identity line is the title and the item's catalogue description the body; a leave
+## clears both.
 func _inspect_row(payload: Dictionary, shown: bool) -> void:
 	if not shown:
 		inspect_requested.emit("", "", false)
 		return
 	inspect_requested.emit(
-		_row_hint(payload), StationCatalogScript.describe(StringName(payload[&"id"])), false
+		_row_title(payload), StationCatalogScript.describe(StringName(payload[&"id"])), false
 	)
 
 
