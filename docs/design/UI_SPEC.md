@@ -185,6 +185,18 @@ same pattern:
 - HUD API: `set_speedometer(ratio: float, prograde: Vector2, heading: Vector2)`
   (angles in radians, world space); hidden while docked.
 
+**Amendment 2026-09-24 (wave D7 — owner: "I dont get why there are two compasses
+that seem to work the same?"):** the **Heading marker** bullet is **retired**.
+The dial draws no heading tick; heading lives once, in §3.7's compass bay
+(`ui_compass_rose` + the HDG row, same `heading` feed — the §7 API survives
+unchanged). `ui_gauge_face` is re-cut with an **8-tick graduated speed scale**
+(longer ticks toward the top of the 270° arc, no numbers — UI_CHROME §1.7)
+instead of the uniform tick ring, so the dial reads as a speed instrument and
+never as a second compass. `test_engine2_hud.gd`'s §3.6 rows move exactly where
+they assert the heading tick — the yardstick moves with this amendment; the
+segment/needle/overdrive rows stay byte-green. Reversal: restore the 6 px
+`bone_text` tick and the old face.
+
 ### 3.7 Cockpit instrument cluster (amendment 2026-09-23, wave D6 — owner's NMS-style ask)
 
 Replaces the bare §3.6 dial with a framed instrument cluster and adds sprite
@@ -231,11 +243,80 @@ Reversal: move the cluster to the column foot as a bare dial (§3.6 verbatim).
   (`-heading.angle()`), a fixed `ui_compass_lubber` triangle at top; `HDG` shows
   `int(round(rad_to_deg(heading.angle())))` mapped to 0..359. No cardinal letters
   baked (UI_CHROME §1.7 no-text law); engine `Label` cardinals are staged out.
+  **Amended 2026-09-24 (owner: "The compass needs values … compass has NSWE
+directions"):** N/E/S/W ship as engine `Label`s at the rose rim — r **42** from
+  the rose centre, positions rotating with the rose, text upright, `N` in
+  `text_primary` and E/S/W in `text_dim` (the staged-out call is reversed; the
+  no-baked-text law holds — they are Labels, never art).
 - New HUD read-backs (the probe precedent): `cockpit()`, `compass()`,
   `compass_heading()`, `readouts() -> Dictionary {spd, hull, shield, fuel_pct,
   energy_pct}` as drawn (post-clamp ints). **No new setters** — the cluster derives
   everything from feeds §7 already carries (speed u/s from `prograde.length()`,
   heading from `heading`, pools from `set_pool()` and the hull/shield handlers).
+
+**Amendment 2026-09-24 (wave D7 — owner review of D6: "I dont like the cockpit
+background, it looks like a computer screen while we have analog clocks etc, make
+sure that everything looks analog, so they are placed on a metal panel of
+something like that"; "there is overlap and generaly doesnt look too pleasing to
+the eye"; "all of old HUD should be gone i think"):**
+
+- **Instrument language (see §3.9):** every cluster surface becomes a painted
+  metal instrument face. `ui_readout_glass` and `ui_cockpit_frame` retire from
+  the cluster (`ui_cockpit_frame` stays in service on §3.8); the backing is the
+  new full painted panel **`ui_cockpit_panel`** — one master **928×512** (2× the
+  box), **no nine-slice** (the D3 1041×1087-stretched-plate defect class is
+  avoided by sizing the master to the pinned box). Gauge, compass and readout
+  rows mount into the panel's recessed wells. Reversal: the glass readout plate
+  + nine-slice frame.
+- **Box (this resolves the D6 review's R1-MED-2 as one call):** outer **464×256**
+  logical, painted interior **400×192**, band **32** (the §10 `@2x` recipe's
+  logical half of the 64 px master band). Reversal: 404×216 (the measured 396×190
+  content overflowed its 340×152 interior — that is the defect being cured); the
+  340×184 compact reversal is **dead by measurement** (cannot hold the bays).
+- **Bays:** left **126** (gauge 120×120 + the battery readout beneath it), middle
+  **104** (compass 96×96 + the HDG row), right **156** (the five rows at 122),
+  **7 px** gutters. Reversal per bay: none needed — these are the D6 numbers plus
+  the battery readout in the gauge bay's measured spare height.
+- **Battery readout (left bay foot; absorbs the old §3.2 ammo panel):** one
+  engine `Label` line `B1 · CANNON` (12 px `text_dim`, the §3.7 row-label style;
+  rack ordinal + family resolved by the same tables the ammo panel used) + one
+  **`AMMO` row**: 34 px label + **4 cells** (clamp 0..9999, leading blanks,
+  `ui_seg_*`) carrying the active rack's loaded rounds on the existing ammo feed
+  (§7 unchanged). Reversal: no battery readout (ammo on §3.8 only).
+- **Digit fit law (the overlap cure):** every `ui_seg_*` sprite is drawn
+  **fill-fitted to its 20×36 logical cell** — never at master size — on a 22 px
+  cell pitch (20 + 2). `test_d7_cockpit.gd` asserts the drawn glyph rects are
+  pairwise disjoint and inside their row; the blind-spot class that let the
+  overlap ship dies here. Reversal: none — this is a defect cure.
+- **The old HUD column dies:** §3.1's crest bars, §3.2's `AmmoPanel` and §3.4's
+  cargo block are **removed from the flight HUD** (HULL/SHLD live in the cluster
+  rows, ammo in the battery readout, cargo + fitted modules read on §3.8). The
+  §3.3 minimap and §3.5 target reticle stay. **The §7 frozen API survives
+  callable** — every frozen method keeps its signature; the widgets they drove
+  are gone (S5-R1's ammo rack-ordinal MED dies with the panel). Reversal: restore
+  the column widgets behind a debug flag.
+
+**Mockup v5 approved by the owner 2026-09-24**
+(`staging/mockup/out/cockpit_mockup_v5.png`, script
+`staging/mockup/cockpit_mockup.py`) — three owner deltas apply on top of the
+bullets above:
+
+1. **Foot band unified:** the AMMO strip, the HDG strip and the readout stack
+   share one **36 px** band at the interior foot (mockup y 370–442 at 2×): every
+   readout row is 36 tall and all three elements' bottoms line up.
+2. **The battery group is five lamp squares** `B1`..`B5` (**22×22**, **3 px**
+   gaps, 122 wide) above the AMMO row, replacing the `B1 · CANNON` Label line.
+   Lit lamp (the selected rack — the `weapon_1..5` state): dark-ember fill +
+   `accent_danger_bright` border + bright label (the §3.2 active-weapon
+   precedent). Unselected: `void_panel_raised` fill, `metal_dark` border,
+   `text_dim` label. The lamps are the in-flight battery selector; the family
+   name reads on §3.8, not here. Code-drawn — no masters.
+3. **Label zone 36** (was 34) and row-label type 11 px so 4-letter labels fit;
+   drums stay 20×36 on a 22 pitch.
+
+Row containment is a hard check (the mockup's measured lit-glyph boxes at 2×,
+all inside their wells): AMMO x 213–307, HDG x 481–531, ENRG x 669–806; every
+foot drum group spans y 375–437 identically.
 
 ### 3.8 Ship status screen (amendment 2026-09-23, wave D6)
 
@@ -262,6 +343,79 @@ reversal: any free key). Never routes (MENU_FLOW §3.8: signals up).
   field exists anywhere in `game/`). v1 shows the module list + powered state;
   a module-condition model is **staged** (owner tick — it needs an
   `18_engine_spec.md` amendment, which is owner-locked).
+
+**Amendment 2026-09-24 (wave D7 — Mockup C approved by the owner,
+`staging/mockup/out/status_mockup.jpg`):** the screen restyles onto the §3.9
+instrument language and **joins the D7 wave** (the D7 brief staged it — that
+staging is reversed). One painted console panel **`ui_status_panel`** (master
+2× the 720×520 box, no nine-slice) replaces `ui_cockpit_frame` here. Layout
+(logical px — the mockup is 1:1): left well (24,60)–(300,214+...)
+(276×368) carries the hull side render **aspect-fit into the well** (the old
+320 px render pin is superseded by the mockup's well-fit) with the damaged-cut
+swap rule unchanged; the hardpoint markers are code-drawn bone-ringed ember dots
+(§3.9's state rule) over the render; right well (316,60)–(696,348) carries the
+slot grid on the shipyard plate recipe — 5×3 cells 60×74 on a 72×88 pitch, the
+`W1..W5` refs as 10 px Labels, fitted modules as glyph plates; a footer strip
+(24,444)–(696,494) carries `HULL  cur / max`, `SHLD  cur / max`, `PWR  draw /
+capacity` Labels (the fitting panel's own arithmetic, unchanged). Title
+`Label` + close box top-right. Reversal: the D6 `ui_cockpit_frame` modal look.
+
+### 3.9 Cockpit instrument language (amendment 2026-09-24, wave D7)
+
+The owner's ruling, verbatim: "I dont like the cockpit background, it looks like
+a computer screen while we have analog clocks etc, make sure that everything
+looks analog, so they are placed on a metal panel of something like that." Every
+cockpit-family surface obeys this language (the cluster §3.7, the battery window
+§3.10, and any later instrument):
+
+1. **Analog first.** Readouts are painted metal instrument faces: dials with
+   needles, engraved compass roses, mechanical seven-segment drums (the drum
+   cells are analog machinery, not screens). No glass, no screen glow, no
+   holographic or CRT/LCD framing anywhere.
+2. **Everything mounts on metal.** Every widget sits in a recessed well of a
+   painted panel (`ui_cockpit_panel`, the §3.10 armory plates) in STYLE_BIBLE's
+   painted-metal treatment: Bone/Panel-Steel palette, ember `#C8461B`/`#E8703A`
+   only for danger. Bolt/rivet heads echo `ui_cockpit_frame`'s corners.
+3. **No baked text.** Engraved scales are tick marks only (UI_CHROME §1.7);
+   words and numbers are engine `Label`s or `ui_seg_*` cells.
+4. **State is code-drawn.** Fills, needles, ticks and danger frames stay
+   code-drawn in theme tokens over the painted faces (§3.2's palette-neutral
+   textures precedent). Digits themselves never recolour.
+
+Reversal: the D6 `ui_readout_glass` glass look (recorded in §3.7's amendment).
+
+### 3.10 Battery selection window (ARMORY) cockpit restyle (amendment 2026-09-24, wave D7)
+
+Owner, verbatim: "While we are designing, lets go out of the developer loop and
+rework the gun battery selection window to new cockpit like one." The window is
+the ARMORY pane's BATTERY RACKS group (STATION_HUB §5.11, 09 §11,
+`armory_panel.gd`: `B1..B7` drop zones + INVENTORY + AMMUNITION). **Surface
+only** — the transactions, drag-drop behaviour, the refusal-writes-nothing rule
+and the panel contract (`status_requested`/`refresh_profile`/`focus_primary`,
+STATION_HUB §12.4) are untouched; 09 §11 and CONTRACTS §17 stay the seams.
+
+- The pane mounts as a painted metal console **`ui_armory_console`** (2× the
+  pane's own measured content rect; the rect is measured in code and reported —
+  nothing is invented), its three groups as recessed wells (§3.9).
+- Each rack `B1..B7` is a **rack bay plate `ui_armory_rack_plate`** (2× the
+  rack bay's measured rect): bolted corners, the W cells as machined slot
+  recesses, and a thin mechanical readout ledge carrying the rack's SALVO cycle
+  figure as `ui_seg_*` **3 cells** — **approved 2026-09-24 (Mockup A, owner:
+  "Looks good")** seconds ×10 (0.73 s reads `073`) with a 12 px `Label`
+  "SALVO s". Reversal: the plain `Label` the pane shows today.
+  **Mockup A geometry (`staging/mockup/out/armory_mockup.jpg`):** rack bays in a
+  **4+3 grid**, bay **97×91** logical (194×182 at 2×), **4 slot recesses 20×22**
+  per bay on a 22 pitch, `B#` + key-hint Labels at the top, engraved ledge,
+  SALVO strip beneath; the selected rack's bay carries the §3.2 ember frame
+  (matching the cluster's lamp). Inventory rows 22 tall (20×18 icon slot + name
+  + `OWNED ×n`); ammunition rows 32 tall, danger rows per §3.1/§3.1b (label +
+  1 px frame).
+- INVENTORY and AMMUNITION rows ride a brushed-metal row plate
+  **`ui_armory_row_plate`** — nine-slice allowed here (flat fill bands only, no
+  painted detail in the stretch zone; the D3 defect class is about painted
+  plates).
+- Danger/insufficient/refusal states reuse §3.1/§3.1b verbatim as row
+  treatments (label + 1 px code-drawn frame; digits never recolour).
 
 ## 4. Settings
 

@@ -194,6 +194,16 @@ items live in the table of `dispatch_designer.md` (D3-1 chrome re-cut —
 owner-gated, D3-2a painted rail icons, D3-2b tint rework, D4-3 backdrops, D4-4
 hover — owner pick); **D2 is DONE 2026-09-22** (detail §Closed; its job block is
 archived at `slices/D2-icon-unification/_archive/D2_dispatch_block.md`).
+**Queued — designer item 8 = D7 cockpit rework + battery window (2026-09-24,
+owner feedback on D6):** docs-first landed (UI_SPEC §3.6 heading-tick retirement
++ §3.7 rework + §3.9 instrument language + §3.10 battery window, UI_CHROME §12,
+ASSET_NAMING §12, STATION_HUB §5.11); brief + prompts in
+`slices/D7-cockpit-rework/`; write set `ui/hud/**`, `ui/station/**`,
+`assets/ui/**`, `assets/icons/**` provenance, `staging/**`, `asset-library/**`,
+`tests/test_d7_*.gd` + the §3.6 heading-tick rows + `test_d6_cluster.gd`'s
+compass rows — **disjoint from S6's**; run order A0 → owner sheet approval →
+A0b → C1 → C2 → R1 → F1 only on HIGH/MED. Handoff block in
+`dispatch_designer.md`.
 Owner ticks open: the
 `18_engine_spec.md` §6/§13/§15 cleaving amendment (owner-locked — the wave shipped,
 the spec text lags; it now also covers `FRAGMENT_OUTWARD_KICK` and the two

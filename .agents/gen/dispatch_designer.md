@@ -35,7 +35,7 @@ live in the slice folders; the owner pastes only the short handoff paragraph.
 
 | D-slice | Item | What | Gate |
 |---|---|---|---|
-| D6 | 7 | **Cockpit instruments** — bottom-left cluster (sprite speed gauge + sprite compass + five 7-seg readout rows SPD/HULL/SHLD/FUEL %/ENRG %) + the `ship_status` ship layout screen (owner 2026-09-23, the NMS-style ask). Docs-first landed: UI_SPEC §3.7/§3.8, UI_CHROME §11, ASSET_NAMING §11, CONTRACTS §18 | **IN FLIGHT 2026-09-24** — brief `slices/D6-cockpit-instruments/D6_BRIEF.md`, prompts `D6_prompts.md`; write set disjoint from S5's (S5 closed 2026-09-24); run order M0a → owner sheet approval → M0b → M1 → M2 → R1 → F1 only on HIGH/MED |
+| D7 | 8 | **Cockpit rework + battery window** (owner 2026-09-24 on D6's output: "make sure that everything looks analog … placed on a metal panel", "there is overlap", "all of old HUD should be gone", "rework the gun battery selection window to new cockpit like one"). Docs-first landed: UI_SPEC §3.6 heading-tick retirement + §3.7 rework + §3.9 instrument language + §3.10 battery window, UI_CHROME §12, ASSET_NAMING §12, STATION_HUB §5.11 | **READY — dispatch now** — brief `slices/D7-cockpit-rework/D7_BRIEF.md`, prompts `D7_prompts.md`; write set disjoint from S6's (S6 in flight); run order A0 → owner sheet approval → A0b → C1 → C2 → R1 → F1 only on HIGH/MED; art ≈ $0.20 (4 × 2K) |
 | D3 | 1 | **Chrome re-cut** — button/slot plate family (the 1041×1087-cell-stretched defect class: plates, bezel band, bar caps, panel frame) | OWNER-GATED on `staging/phase_f/_preview/review_slots.png` |
 | D3 | 2a | **Painted-only station rail icons** (owner 2026-09-23: "in space station the icons on 'MODULES' left menu should have only painted icons so no svg") — swap the station's left-rail/`MODULES` menu icons to **painted raster masters** (generate if no painted master exists for a symbol); SVGs stay for the in-list glyph work elsewhere. One review sheet of the rail at 48/96 px | READY |
 | D3 | 2b | **Tint rework** (the depictive remainder): replace or repair the tint-stencil system for raster icons (shader tint or scoped stencils) + the **540**-file import-settings cleanup left over from D2 (the 1 080 figure predates D2's split — `D2_SPLIT.md` §4's formula) | READY |
@@ -50,7 +50,11 @@ parallel only with provably disjoint write sets (the S5∥D6 precedent); editor
 reimports only in quiet windows between the other lane's gate runs; one editor
 session.
 
-**Done:** **D2 icon unification (designer #1's only job)** — DONE 2026-09-22
+**Done:** **D6 cockpit instruments (item 7)** — DONE 2026-09-24 (gate 578 →
+**608/0** measured twice on scratch stores; 18 approved art masters + the 404×216
+cluster + the 720×520 `ship_status` modal; review 0 HIGH / 2 MED (one cured, one
+routed to the owner as a pin call) / 9 LOW; detail `_state/WAVEBOARD.md` §Closed).
+**D2 icon unification (designer #1's only job)** — DONE 2026-09-22
 (commit `7c1ae06`; 135 SVG + 164 raster masters + 540 tint stencils = 839 files,
 2 478 → 839, `asset_path_fallout` 0 unresolvable / 367 refs, gate 457/0 through
 the re-points; owner amendments `D2_SPLIT.md` §6). Job spec + handoff archived at
@@ -71,8 +75,8 @@ trim. A 2×2 sheet's fourth cell is often a second front (IoU > 0.80 = refuse).
 Read .agents/gen/dispatch_designer.md and execute queue item <N> only — <wave name>. Brief: <brief path>. Prompts: <prompts path>. Snapshot + commit before the first dispatch, run <builder> → <reviewer>, and the fixer only if the review leaves HIGH or MED. Stop before item <N+1>. Close out per the brief's close-out section (gate re-run, verify_wave.py verify --baseline <tag>, WAVEBOARD update, wave-boundary commit), then report back: the measured gate count, the builder's per-deliverable numbers, the reviewer's findings by tier, and the owner ticks.
 ```
 
-The live D6 handoff block is the one below (item 7, already dispatched 2026-09-24).
+The live D7 handoff block is the one below (item 8, to dispatch now).
 
 ```text
-Read .agents/gen/dispatch_designer.md and execute queue item 7 only — D6, the cockpit instruments cluster and ship status screen. Brief: .agents/gen/slices/D6-cockpit-instruments/D6_BRIEF.md. Prompts: .agents/gen/slices/D6-cockpit-instruments/D6_prompts.md. Snapshot + commit before the first dispatch, run M0a and STOP at the review sheet for my approval, then M0b, M1, M2, R1, and the fixer only if the review leaves HIGH or MED. This runs parallel with coder item 11: stay inside the D6 write set (ui/hud, assets/ui, assets/icons provenance, staging, asset-library, tests/test_d6_*), never touch project.godot, game/, autoload/ or the theme, and take editor reimports only in quiet windows. Close out per the brief's close-out section (gate re-run, verify_wave.py verify --baseline d6_start, CONTRACTS §9/§10 notes + the ship_status input row after S5-R1's pass, WAVEBOARD update, wave-boundary commit), then report back: the measured gate count, the builder's per-deliverable numbers, the digit QC table, the reviewer's findings by tier, and the owner ticks.
+Read .agents/gen/dispatch_designer.md and execute queue item 8 only — D7, the cockpit rework and the battery window. Brief: .agents/gen/slices/D7-cockpit-rework/D7_BRIEF.md. Prompts: .agents/gen/slices/D7-cockpit-rework/D7_prompts.md. Snapshot + commit before the first dispatch, run A0 and STOP at the review sheet for my approval, then A0b, C1, C2, R1, and the fixer only if the review leaves HIGH or MED. This runs parallel with coder item 12 (S6 travel): stay inside the D7 write set (ui/hud, ui/station, assets/ui, assets/icons provenance, staging, asset-library, tests/test_d7_* plus only the §3.6 heading-tick rows of test_engine2_hud.gd and test_d6_cluster.gd's compass rows), never touch project.godot, game/, autoload/, the theme or docs/, and take editor reimports only in quiet windows. Close out per the brief's close-out section (gate re-run on scratch stores, verify_wave.py verify --baseline d7_start, CONTRACTS §9/§10 notes + the §18 mirror catch-up, WAVEBOARD update, wave-boundary commit), then report back: the measured gate count, the builder's per-deliverable numbers, the well/QC measurements, the reviewer's findings by tier, and the owner ticks (the five design calls in the brief plus the D6 carry-overs).
 ```

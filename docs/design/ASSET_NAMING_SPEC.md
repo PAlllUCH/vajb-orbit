@@ -224,3 +224,17 @@ shapes under §1 as written: `ui_cockpit_frame`, `ui_gauge_face`, `ui_gauge_need
 (two-word subjects), `ui_compass_rose`, `ui_compass_lubber`, `ui_readout_glass`.
 All of them live in `assets/ui/`; their provenance panels file as
 `panel_sevenseg_a` / `panel_sevenseg_b` under `assets/icons/` per §2.
+
+## 12. Amendment 2026-09-24 (D7 — cockpit panel family + armory console)
+
+New masters in `assets/ui/`: `ui_cockpit_panel`, `ui_armory_console`,
+`ui_armory_rack_plate`, `ui_armory_row_plate` (the `armory_*` sub-family under
+§2's `ui_`, subjects `cockpit_panel`, `armory_console`, `rack_plate`,
+`row_plate` — legal shapes under §1, checked), `ui_status_panel` (added with
+Mockup C's approval, subject `status_panel`) and the re-cut `ui_gauge_face`
+(name kept, bytes replaced). Provenance panels file under `assets/icons/`:
+`panel_cockpit`, `panel_armory`, `panel_status`. `ui_readout_glass` and — with
+the §3.8 restyle — `ui_cockpit_frame` become **unreferenced** (a
+`validate_names` reachability row in the D1 audit's sense — **not deleted**,
+§10's ruling keeps every cut). Reversal: the §3.7/§3.8 reversal flags keep both
+referenced.

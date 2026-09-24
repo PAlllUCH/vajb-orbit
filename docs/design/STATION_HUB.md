@@ -900,6 +900,13 @@ shell once the shell can price an instance.
 Dated blocks for the four station surfaces; every number is a named constant or a doc
 row elsewhere; each carries its reversal.
 
+**Visual restyle 2026-09-24 (wave D7 — owner: "rework the gun battery selection
+window to new cockpit like one"):** the ARMORY's BATTERY RACKS window gets the
+UI_SPEC **§3.10** cockpit instrument restyle (painted metal console + rack bay
+plates; UI_SPEC §3.9 the language). **Surface only** — every seam, number and
+transaction in this section, 09 §11 and CONTRACTS §17 survives untouched.
+Reversal: the pane's theme-stylebox chrome.
+
 **SHIPYARD (§5.2 rework) — the hangar, not a store.** The buy rows retire: hulls are
 bought on the AUCTION only (10 §2). The pane lists **owned hulls only** — one row per
 owned ship (name, class, `ACTIVE` badge; no icon ships). Selecting a row **previews**

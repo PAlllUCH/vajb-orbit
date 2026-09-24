@@ -261,3 +261,67 @@ segments (the D2 SVG route) rasterised into the same file names — report the
 route taken either way. Key the panel cells `--post-only` route only if native
 alpha fails (the Phase G lane law; `flare` note applies to the generator, not
 these).
+
+## 12. Cockpit panel family + armory console (amendment 2026-09-24, wave D7)
+
+The UI_SPEC §3.9 instrument language's art. Style-block preamble verbatim (the
+§11 route: prompt preamble, not `--style-file`), framing sentence "painted UI
+instrument part, straight-on flat view, centred, plain solid pure white
+background" + per-run subject + the §8 negative list. `flare` returns no native
+alpha here — `--post-only` keying; never key a panel holding more than one object
+(Phase G lane law: `panels.py --detect`, `cells` in the driver is the authority,
+the arrangement read off the render).
+
+**Per-run prompts:**
+
+1. *Cockpit panel (one object):* "a wide rectangular painted metal instrument
+   panel face for a spaceship cockpit: brushed steel plates with visible brush
+   grain, bolt heads at the corners and along the seams, one large recessed
+   circular instrument well on the left, one smaller circular well in the middle,
+   and a tall recessed rectangular well on the right with five shallow machined
+   ledges across it; dark painted void interior in each recess; no glass, no
+   screens, no glowing" (`ui_cockpit_panel`; cut whole with `contain`, master
+   **928×512** for the §3.7 box 464×256 — never stretch).
+2. *Gauge face re-cut (one object):* "a round aircraft-style speed dial face on a
+   painted metal bezel, recessed dark centre, an arc of eight graduated metal
+   speed ticks growing longer toward the top of the arc, no numbers, no needle,
+   no compass marks" (`ui_gauge_face`, master **240×240** — replaces the D6 face
+   under the §3.6 amendment).
+3. *Armory console (one object):* "a tall rectangular painted metal console face:
+   brushed steel plate with bolt heads, three stacked recessed wells with
+   bevelled rims, the top well long and shallow with seven short machined slot
+   recesses along it, the lower two wells plain and deep; dark void interior in
+   the recesses; no glass, no screens" (`ui_armory_console`; `contain`, master
+   2× the pane's measured content rect — the rect is measured in code and
+   reported, never invented).
+4. *Armory plates (2 cells):* "two painted metal plates on white with wide gaps:
+   a small bolted bay plate with four shallow machined slot recesses in a row and
+   a thin engraved ledge along its bottom edge; a plain brushed metal row strip
+   with softly bevelled long edges and two bolt heads at the left end" (cells:
+   `ui_armory_rack_plate` (`contain`, 2× the rack bay's measured rect),
+   `ui_armory_row_plate` (nine-slice — flat fill bands only)).
+
+5. *Status console (one object):* "a rectangular painted metal console face for
+   a ship-status readout: brushed steel plate with bolt heads, one large
+   recessed display well on the left with a bevelled rim, fifteen shallow
+   machined slot recesses on the right in three rows of five, and a thin recessed
+   strip along the bottom; dark void interior in the recesses; no glass, no
+   screens" (`ui_status_panel`; `contain`, master **1440×1040** for the §3.8 box
+   720×520 — added 2026-09-24 with Mockup C's approval).
+
+**QC (hard):** ink-box containment ≥ 95 % on every cut; `ui_cockpit_panel`
+verifies at 928×512 and `ui_gauge_face` at 240×240; for every well-bearing panel
+the wells are measured against the UI_SPEC §3.7/§3.10 bay rects at 2× and the
+measurement goes in the report — a render whose wells do not line up re-renders
+once, then falls back to the D6-authored route (`ui_authored.py` shapes over a
+painted plate). Report the route either way. Digit QC (AC5) is unchanged and does
+not re-run (the `ui_seg_*` family is not re-cut).
+
+**Amendment after the mockup approval (2026-09-24, UI_SPEC §3.7 mockup deltas):**
+the approved look mounts **bare** seven-segment drums on metal — the D6
+`ui_seg_*` cells carry painted plate backgrounds and are **re-authored as
+glyph-only, transparent-background cells under the same 12 names**: rasterise
+the existing `staging/phase_g/_svg/ui_seg_*.svg` segment lattice alone (drop the
+plate-face layer) at 48×88 — no paid generation. AC5's digit QC **does re-run**
+on the re-authored family. The battery lamps `B1..B5` are code-drawn (UI_SPEC
+§3.7 mockup delta 2) — no masters, no prompt.
