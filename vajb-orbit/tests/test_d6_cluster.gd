@@ -147,7 +147,7 @@ func test_the_readouts_are_the_clamped_ints_the_digits_show() -> void:
 
 func test_the_digit_cells_pad_with_blanks_never_leading_zeros() -> void:
 	_hud.call(&"set_speedometer", 0.1, Vector2(5.0, 0.0), Vector2.RIGHT)
-	assert_eq(_cells(SPD), [BLANK, BLANK, 5], "SPD pads to its 3 cells with blanks")
+	assert_eq(_cells(SPD), [BLANK, BLANK, BLANK, 5], "SPD pads to its 4 cells with blanks")
 	_hud.call(&"_on_hull_changed", 0.0, 1000.0)
 	assert_eq(_cells(HULL), [BLANK, BLANK, BLANK, 0], "a zero hull still shows its zero")
 	_hud.call(&"_on_hull_changed", 1234.0, 2000.0)
@@ -158,8 +158,11 @@ func test_the_digit_cells_pad_with_blanks_never_leading_zeros() -> void:
 
 func test_the_readouts_clamp_at_their_cell_maxima() -> void:
 	_hud.call(&"set_speedometer", 1.0, Vector2(5000.0, 0.0), Vector2.RIGHT)
-	assert_eq(int(_hud.call(&"readouts")["spd"]), 999, "SPD clamps at 3 cells")
-	assert_eq(_cells(SPD), [9, 9, 9], "and its cells read 999")
+	assert_eq(int(_hud.call(&"readouts")["spd"]), 5000, "a 4-digit speed no longer clips at 999")
+	assert_eq(_cells(SPD), [5, 0, 0, 0], "and its 4 cells read 5000")
+	_hud.call(&"set_speedometer", 1.0, Vector2(20000.0, 0.0), Vector2.RIGHT)
+	assert_eq(int(_hud.call(&"readouts")["spd"]), 9999, "SPD clamps at 4 cells")
+	assert_eq(_cells(SPD), [9, 9, 9, 9], "and its cells read 9999")
 	_hud.call(&"_on_hull_changed", 20000.0, 20000.0)
 	assert_eq(int(_hud.call(&"readouts")["hull"]), 9999, "HULL clamps at 4 cells")
 	_hud.call(&"_on_shield_changed", 12345.0, 12345.0)

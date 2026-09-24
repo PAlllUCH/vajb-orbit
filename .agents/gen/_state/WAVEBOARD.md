@@ -4,7 +4,8 @@
 
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-22 purge:** the executed-wave reports, briefs and evidence were removed from `.agents/gen/` (recoverable from the system trash; the last git tree carrying them is `3f5688b`) — the historical record is `MASTER_REPORT.md` plus the newest session report, and older citations below name the purged paths.
 
-**Updated: 2026-09-24 (S5 playtest fixes closed; the code queue is empty).** This session's
+**Updated: 2026-09-24 (D6 cockpit instruments closed — gate 578 → **608/0**; S6 travel in
+flight).** This session's
 end-to-end record — items 4–7, their numbers, the incidents and the open items — is
 `.agents/gen/session_2026-09-22_items_4_to_7_report.md`. Full history of what every worker
 did, with known errors and open findings, now lives in
@@ -17,7 +18,7 @@ citation paths of the form `.agents/gen/<report>.md` name the purged files.
 feel & beam polish, slice 2.5 Feel, P2-A ship slot frames, Rock cleave, P2-B1 weapon fit,
 P2-B proper fitting panel, **S2.6 truth-and-feel**, **S3 the item economy**,
 **S4 weapon batteries**, **S5 playtest fixes**; gate
-`passed=578 failed=0`, hermetic). The queue of record is `dispatch_coder.md`: items 4–11 are
+`passed=578 failed=0` at S5, **`passed=608 failed=0`** after the D6 design wave, hermetic). The queue of record is `dispatch_coder.md`: items 4–11 are
 all DONE and **item 11, the playtest-fix wave (CONTRACTS §17), shipped 2026-09-24**; no coder item
 is queued beyond it — the next coder work is the engine slice 3 / RPG P3 merge or the
 affix-application wave, each needing its own docs-first brief
@@ -170,7 +171,9 @@ PowerShell form: `$env:VAJB_WORKER_FILES='...'; crush run "<prompt>" -m opencode
 - Probe hygiene (L17): a probe that repoints `PlayerProfile.save_path` must
   stop/flush the 0.5 s debounce before restoring `save_path`.
 
-## In flight — **designer item 7 = D6 cockpit instruments** (owner's NMS-style ask —
+## In flight — **coder item 12 = S6 Travel** (K0 reported 2026-09-24; its builders hold
+`game/**`). **Designer item 7 = D6 cockpit instruments: DONE 2026-09-24 — gate 578 →
+608/0, detail §Closed** (owner's NMS-style ask —
 bottom-left cluster with sprite speed gauge, sprite compass and five 7-seg
 readout rows SPD/HULL/SHLD/FUEL %/ENRG %, plus the `ship_status` ship layout
 screen; docs-first landed: UI_SPEC §3.7/§3.8, UI_CHROME §11, ASSET_NAMING §11,
@@ -179,8 +182,9 @@ set `ui/hud/**`, `assets/ui/**`, `assets/icons/**` provenance, `staging/**`,
 `asset-library/**`, `tests/test_d6_*.gd` — **disjoint from S5's**; it ran parallel with
 item 11 (S5, closed 2026-09-24); run order M0a → owner sheet approval → M0b → M1 → M2 → R1
 → F1 only on HIGH/MED). **Coder item 11 (S5) closed 2026-09-24** (§Closed) —
-**coder item 12 = S6 Travel (engine slice 3 + RPG P3) is BRIEFED and ready
-2026-09-24** (docs-first landed: CONTRACTS §19 + v0.11, 11 §5, 13 §7, 06 §8,
+**coder item 12 = S6 Travel (engine slice 3 + RPG P3) is IN FLIGHT**
+(K0 reported 2026-09-24; briefed and ready
+2026-09-24) (docs-first landed: CONTRACTS §19 + v0.11, 11 §5, 13 §7, 06 §8,
 01 §5.2 travel 0–500; brief + prompts in `slices/S6-travel/`; write set
 `game/**`, `autoload/player_profile.gd`, `tests/test_s6_*.gd` — **disjoint from
 D6's**, so it runs parallel with designer item 7; run order K0 → (K1 ∥ K2 ∥ K3)
@@ -198,7 +202,9 @@ column ticks, slice 2.5's two calls (engine bed, vignette strength), L83's icon-
 **S3's nine** and **S2.6's four** (both in §Closed; S2.6's new one is the
 `STEER_WITHOUT_THROTTLE` supersession), **S5's three** still owed
 (`ROUNDS_PER_CARGO_UNIT` 10, fire-along-facing vs hold-until-aligned, the
-`track_dps` taste table), and **D6's five** when it reports. P2-A/P2-B1/P2-B
+`track_dps` taste table), and **D6's five + its MED-2 geometry call** (D6 reported
+2026-09-24 — see §Closed; the MED-2 call is the 396×190-content vs 340×152-interior pin).
+P2-A/P2-B1/P2-B
 proper tick lists are resolved.
 
 **Owner requests queued 2026-09-22 — all seven landed** (record kept verbatim;
@@ -223,6 +229,32 @@ proper tick lists are resolved.
    in S2.6 (`BEAM_SINK` 0.45).
 
 ## Closed (details in MASTER_REPORT.md)
+
+- **D6 cockpit instruments — DONE 2026-09-24** (gate 578 → **608, 0 failed**, exit 0,
+  measured twice on two scratch stores at close-out, live `profile.cfg` md5s unmoved;
+  reports `.agents/gen/slices/D6-cockpit-instruments/D6-M0_report.md` (phases a+b),
+  `D6-M1_report.md`, `D6-M1b_report.md`, `D6-M2_report.md`, `D6-R1_review.md`,
+  `D6-F1_report.md`): the owner's NMS-style cockpit ask. **18 art masters** shipped
+  (10 render cuts + 8 authored-SVG fallbacks — needle, glass, all 12 digit cells; 9 × 2K +
+  16 keys ≈ $0.53 against the $0.20 budget; review sheet `staging/phase_g/_review/d6_masters.png`
+  owner-approved), the bottom-left **404×216** cluster (§3.6 dial byte-identical with the
+  face/needle sprites under the code-drawn marks, rotating compass, five 4-cell readout rows)
+  and the **720×520** `ship_status` modal (toggle behind `InputMap.has_action`; the key **U**
+  row applied to `project.godot` at close-out, the `weapon_6`/`weapon_7` precedent). The
+  owner's mid-wave 4-digit SPD ruling is landed (SPD 4 cells clamp 9999 — UI_SPEC §3.7 and
+  the CONTRACTS §18 mirror amended with dated reversal notes). Review: **0 HIGH, 2 MED,
+  9 LOW** (L141–L149; L142 retired by F1's cure). R1-MED-1 (the 11 hardpoint markers drew
+  133.67/64.57 px off the hull — render-box vs marker-space mismatch) cured by F1 with the
+  drawn-rect test guard; **R1-MED-2 is bucket 2 — pinned 396×190 content vs pinned 340×152
+  frame interior (the 340×184 compact reversal cannot hold the bays at all) — owner's call.**
+  Digit QC (AC5): containment 1.0000 on all 12 cells, `blank` 0.0000 < `1` 0.1329 < `8`
+  0.3671, no by-segment inversions; the literal 1…8 monotone is geometrically impossible
+  (L145's §11 wording candidate). Cross-lane note for S6's review: later gate runs on the
+  tree while S6's builders hold uncommitted `game/` edits read 607/1 / one hard fail at the
+  pre-existing L61 leak lines (`test_weapon_fx_f4.gd:178`, `test_slice2_5_feel.gd:203` —
+  `player_ship.gd:1378` also fails to parse mid-edit), none of it in D6's write set.
+  Owner ticks owed: the brief's five (NMS palette/teal, placement + size, HULL/SHLD points
+  vs %, key U, the per-module damage model) plus the MED-2 geometry call.
 
 - **S5 playtest fixes — DONE 2026-09-24** (gate 524 → **578, 0 failed**, exit 0 in two
   consecutive hermetic runs plus the close-out verify's own gate pass, identical counts, the

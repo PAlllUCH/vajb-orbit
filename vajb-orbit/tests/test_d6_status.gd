@@ -530,26 +530,68 @@ func test_the_hardpoint_markers_follow_the_hulls_own_map() -> void:
 	assert_eq(thrusters, 8, "ShipFit.HARDPOINTS' four thruster modes, two anchors each")
 	assert_eq(mounts, 3, "the vanguard's three W cells, one measured mount each")
 	assert_eq(markers.size(), 11, "every anchor is drawn")
-	var render: TextureRect = _screen().call(&"hull_render")
-	var native: Vector2 = render.texture.get_size()
-	var scale: float = RENDER_WIDTH / native.x
-	var centre: Vector2 = Vector2(RENDER_WIDTH, native.y * scale) * 0.5
-	var expected := ShipFit.thruster_points(VANGUARD, &"rear")[0]
-	assert_true(
-		(markers[0][&"pos"] as Vector2).is_equal_approx(centre + expected * scale),
-		"a rear anchor is the sprite's centre plus its render px, scaled to the 320 px render"
-	)
+	_assert_markers_on_the_drawn_sprite(markers, "intact")
 	var mount: Dictionary = ShipFit.weapon_mounts(VANGUARD)[0]
 	assert_true(
-		(markers[8][&"pos"] as Vector2).is_equal_approx(
-			centre + Vector2(mount[&"pos"]) * scale
-		),
-		"the first mount lands on its measured anchor too"
-	)
-	assert_true(
 		is_equal_approx(float(markers[8][&"facing"]), float(mount[&"facing"])),
-		"its facing is the table's own rest direction"
+		"the first mount's facing is the table's own rest direction"
 	)
+
+
+## The same guarantee on the damaged branch, where the swap changes the sprite's aspect (the
+## vanguard's damaged cut is 1.8x taller than its intact one), which is where a stale marker space
+## would drift.
+func test_the_markers_stay_on_the_sprite_when_the_damaged_cut_is_drawn() -> void:
+	_hud.call(&"set_hull_slots", VANGUARD, [])
+	_hud.call(&"_on_hull_changed", 500.0, 1000.0)
+	_open_screen()
+	assert_eq(
+		String(_screen().call(&"hull_render_path")),
+		DAMAGED_PATH % "vanguard",
+		"the vanguard's damaged cut is the drawn sprite for this read"
+	)
+	var markers: Array = _screen().call(&"hardpoint_markers")
+	assert_eq(markers.size(), 11, "every HARDPOINTS anchor is drawn over the damaged cut too")
+	_assert_markers_on_the_drawn_sprite(markers, "damaged")
+
+
+## The sprite's drawn space, re-derived the way `STRETCH_KEEP_ASPECT_CENTERED` draws it inside the
+## render box, never from the screen's own render size. The box must take the sprite's aspect and
+## never the row's height: an expanding box centred an aspect-fit sprite and left every marker off
+## by the difference (R1-MED-1), so that flag is the property this helper guards.
+func _assert_markers_on_the_drawn_sprite(markers: Array, state: String) -> void:
+	var render: TextureRect = _screen().call(&"hull_render")
+	assert_true(render.texture != null, "%s: a side cut is drawn" % state)
+	var box := _screen().find_child("HullRenderBox", true, false) as Control
+	assert_true(box != null, "%s: the left column keeps its render box" % state)
+	if render.texture == null or box == null:
+		return
+	assert_false(
+		bool(box.size_flags_vertical & Control.SIZE_EXPAND),
+		"%s: the render box takes the sprite's aspect, never the row's height" % state
+	)
+	var native: Vector2 = render.texture.get_size()
+	var box_size: Vector2 = box.custom_minimum_size
+	var fit: float = minf(box_size.x / native.x, box_size.y / native.y)
+	var drawn: Vector2 = native * fit
+	var drawn_centre: Vector2 = (box_size - drawn) * 0.5 + drawn * 0.5
+	assert_true(
+		drawn.is_equal_approx(box_size),
+		"%s: the aspect-fit sprite fills the box, so box-local is on-hull space" % state
+	)
+	var expected: Array[Vector2] = []
+	for mode: StringName in [&"rear", &"front", &"left", &"right"]:
+		for point: Vector2 in ShipFit.thruster_points(VANGUARD, mode):
+			expected.append(drawn_centre + point * fit)
+	for mount: Dictionary in ShipFit.weapon_mounts(VANGUARD):
+		expected.append(drawn_centre + Vector2(mount[&"pos"]) * fit)
+	assert_eq(markers.size(), expected.size(), "%s: one marker per HARDPOINTS anchor" % state)
+	for i in range(mini(markers.size(), expected.size())):
+		var pos: Vector2 = (markers[i] as Dictionary)[&"pos"]
+		assert_true(
+			pos.is_equal_approx(expected[i]),
+			"%s: marker %d lands on the sprite's drawn centre plus its render px" % [state, i]
+		)
 
 
 ## ---------------------------------------------------------------------------

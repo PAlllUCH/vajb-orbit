@@ -1,0 +1,898 @@
+extends Node
+## D6-R1 reviewer probe: independent re-measurement of wave D6's cockpit cluster (UI_SPEC
+## section 3.7) and ship status screen (section 3.8) against the docs as amended 2026-09-24,
+## plus the layout geometry behind D6-M1's frame-interior finding.
+##
+##   XDG_DATA_HOME=/tmp/d6r1_probe $GODOT_CONSOLE --headless --path "$VAJB_PROJ" \
+##     res://tests/probe_d6_r1.tscn --quit-after 600
+##
+## Prints `[D6R1] PASS/FAIL <name> <measured detail>` lines and a final count. It repoints the
+## profile's save_path at its own scratch file and restores it, so the owner's account is not
+## touched (probe hygiene).
+
+const HudScene := preload("res://ui/hud/hud.tscn")
+const HudTheme := preload("res://ui/theme/vajb_theme.tres")
+const RepairsPanelScript := preload("res://ui/station/repairs_panel.gd")
+const FittingPanelScript := preload("res://ui/station/fitting_panel.gd")
+const ModuleData := preload("res://game/module_catalog.gd")
+
+const PROFILE_SERVICE: StringName = &"PlayerProfile"
+const PROFILE_PATH := "user://_d6r1_probe.cfg"
+const ACTION: StringName = &"ship_status"
+
+const VANGUARD: StringName = &"ship_vanguard"
+const FIGHTER: StringName = &"ship_fighter"
+const NPC_HULL: StringName = &"ship_swarmer"
+
+const SPD: StringName = &"spd"
+const HULL: StringName = &"hull"
+const SHLD: StringName = &"shld"
+const ROW_FUEL: StringName = &"fuel"
+const ROW_ENRG: StringName = &"enrg"
+const HDG: StringName = &"hdg"
+const BLANK := -1
+
+var _hud: Control = null
+var _profile: Node = null
+var _previous_path := ""
+var _pass := 0
+var _fail := 0
+
+
+func _ready() -> void:
+	_profile = get_tree().root.get_node_or_null(NodePath(PROFILE_SERVICE))
+	if _profile == null:
+		print("[D6R1] ABORT no PlayerProfile autoload")
+		get_tree().quit(1)
+		return
+	_previous_path = String(_profile.get(&"save_path"))
+	_profile.set(&"save_path", PROFILE_PATH)
+	_remove(PROFILE_PATH)
+
+	_hud = HudScene.instantiate() as Control
+	_hud.theme = HudTheme
+	add_child(_hud)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	await get_tree().process_frame
+
+	_seed_account(VANGUARD, {})
+	_readout_states()
+	_danger_rules()
+	_compass()
+	await _geometry()
+	_status_screen()
+	_no_write()
+	_teardown()
+	print("[D6R1] SUMMARY pass=%d fail=%d" % [_pass, _fail])
+	get_tree().quit(1 if _fail > 0 else 0)
+
+
+## ------------------------------------------------------------------ helpers
+
+
+func _seed_account(hull: StringName, fit: Dictionary) -> void:
+	var owned: Array[StringName] = [hull]
+	_profile.set(&"_credits", 10000)
+	_profile.set(&"_active_ship", hull)
+	_profile.set(&"_owned_ships", owned)
+	_profile.set(&"_fits", {})
+	_profile.set(&"_modules", {})
+	if not fit.is_empty():
+		_profile.call(&"set_fit", hull, fit)
+
+
+func _check(name: String, ok: bool, detail: String) -> void:
+	if ok:
+		_pass += 1
+		print("[D6R1] PASS %s | %s" % [name, detail])
+	else:
+		_fail += 1
+		print("[D6R1] FAIL %s | %s" % [name, detail])
+
+
+func _row(key: StringName) -> Node:
+	var cockpit: Control = _hud.call(&"cockpit")
+	if cockpit == null:
+		return null
+	return cockpit.call(&"row", key)
+
+
+func _cells(key: StringName) -> Array:
+	var row: Node = _row(key)
+	if row == null:
+		return []
+	return row.call(&"cells")
+
+
+func _reading(key: String) -> int:
+	return int((_hud.call(&"readouts") as Dictionary)[key])
+
+
+func _heading(angle: float) -> void:
+	_hud.call(&"set_speedometer", 0.2, Vector2.ZERO, Vector2.RIGHT.rotated(angle))
+
+
+func _token(name: StringName) -> Color:
+	return HudTheme.get_color(name, &"Tokens")
+
+
+func _remove(path: String) -> void:
+	if not FileAccess.file_exists(path):
+		return
+	var directory := DirAccess.open(path.get_base_dir())
+	if directory != null:
+		directory.remove(path.get_file())
+
+
+## ------------------------------------------------------------------ readouts
+
+
+func _readout_states() -> void:
+	_hud.call(&"set_speedometer", 0.5, Vector2(30.0, 40.0), Vector2.RIGHT)
+	_hud.call(&"_on_hull_changed", 812.0, 1000.0)
+	_hud.call(&"_on_shield_changed", 240.0, 300.0)
+	_hud.call(&"set_pool", &"fuel", 12.0, 200.0)
+	_hud.call(&"set_pool", &"energy", 40.0, 100.0)
+	var r: Dictionary = _hud.call(&"readouts")
+	_check(
+		"readouts/map",
+		int(r["spd"]) == 50 and int(r["hull"]) == 812 and int(r["shield"]) == 240
+		and int(r["fuel_pct"]) == 6 and int(r["energy_pct"]) == 40,
+		"spd=50 hull=812 shield=240 fuel=%d energy=%d (3-4-5 prograde, 12/200, 40/100)"
+		% [int(r["fuel_pct"]), int(r["energy_pct"])]
+	)
+	_hud.call(&"_on_hull_changed", 812.6, 1000.0)
+	var r_high := _reading("hull")
+	_hud.call(&"_on_hull_changed", 812.4, 1000.0)
+	var r_low := _reading("hull")
+	_check(
+		"readouts/hull_rounds_half_up",
+		r_high == 813 and r_low == 812,
+		"812.6 -> %d, 812.4 -> %d (int(round(current)))" % [r_high, r_low]
+	)
+
+	## SPD: 4 cells, clamp 0..9999 (owner amendment 2026-09-24).
+	var spd_cases := {
+		Vector2(0.0, 0.0): [0, [BLANK, BLANK, BLANK, 0]],
+		Vector2(5.0, 0.0): [5, [BLANK, BLANK, BLANK, 5]],
+		Vector2(999.0, 0.0): [999, [BLANK, 9, 9, 9]],
+		Vector2(1000.0, 0.0): [1000, [1, 0, 0, 0]],
+		Vector2(5000.0, 0.0): [5000, [5, 0, 0, 0]],
+		Vector2(9999.0, 0.0): [9999, [9, 9, 9, 9]],
+		Vector2(12345.0, 0.0): [9999, [9, 9, 9, 9]],
+		Vector2(20000.0, 0.0): [9999, [9, 9, 9, 9]],
+	}
+	var spd_ok := true
+	var spd_detail := ""
+	for prograde: Vector2 in spd_cases:
+		_hud.call(&"set_speedometer", 0.2, prograde, Vector2.RIGHT)
+		var want: Array = spd_cases[prograde]
+		var got_value := _reading("spd")
+		var got_cells: Array = _cells(SPD)
+		if got_value != int(want[0]) or got_cells != (want[1] as Array):
+			spd_ok = false
+			spd_detail += " len=%s -> %d %s (want %d %s)" % [
+				prograde.length(), got_value, got_cells, int(want[0]), want[1]
+			]
+	_check(
+		"readouts/spd_4_cells_clamp_9999",
+		spd_ok,
+		"7 seeded speeds incl. 999/1000/12345/20000" + (" ALL OK" if spd_ok else spd_detail)
+	)
+
+	## HULL/SHLD: points, 4 cells, clamp 9999; the count of digit cells is 4.
+	var hull_cells: Array = _row(HULL).call(&"digit_cells")
+	var shld_cells: Array = _row(SHLD).call(&"digit_cells")
+	_check(
+		"readouts/cell_counts",
+		hull_cells.size() == 4 and shld_cells.size() == 4
+		and _row(SPD).call(&"digit_cells").size() == 4
+		and _row(ROW_FUEL).call(&"digit_cells").size() == 3
+		and _row(ROW_ENRG).call(&"digit_cells").size() == 3
+		and _row(HDG).call(&"digit_cells").size() == 3,
+		"SPD 4, HULL 4, SHLD 4, FUEL 3, ENRG 3, HDG 3"
+	)
+	_hud.call(&"_on_hull_changed", 20000.0, 20000.0)
+	var hull_clamped := _reading("hull")
+	_hud.call(&"_on_shield_changed", 12345.0, 12345.0)
+	var shld_clamped := _reading("shield")
+	_check(
+		"readouts/points_clamp_9999",
+		hull_clamped == 9999 and shld_clamped == 9999,
+		"hull 20000 -> %d, shield 12345 -> %d" % [hull_clamped, shld_clamped]
+	)
+
+	## FUEL/ENRG: int(round(100*value/max)), clamp 0..100, maximum 0 reads 0.
+	var pct_cases := [
+		[7.0, 100.0, 7, [BLANK, BLANK, 7]],
+		[1.0, 200.0, 1, [BLANK, BLANK, 1]],
+		[1.0, 300.0, 0, [BLANK, BLANK, 0]],
+		[250.0, 100.0, 100, [1, 0, 0]],
+		[0.0, 0.0, 0, [BLANK, BLANK, 0]],
+		[50.0, 0.0, 0, [BLANK, BLANK, 0]],
+	]
+	var pct_ok := true
+	var pct_detail := ""
+	for case: Array in pct_cases:
+		_hud.call(&"set_pool", &"fuel", float(case[0]), float(case[1]))
+		var value := _reading("fuel_pct")
+		var cells: Array = _cells(ROW_FUEL)
+		if value != int(case[2]) or cells != (case[3] as Array):
+			pct_ok = false
+			pct_detail += " %s/%s -> %d %s (want %d %s)" % [
+				case[0], case[1], value, cells, int(case[2]), case[3]
+			]
+	_check("readouts/percent_and_zero_maximum", pct_ok, "6 seeded tanks" + pct_detail)
+
+	## An unknown pool kind is ignored (the HUD's own reading).
+	_hud.call(&"set_pool", &"fuel", 30.0, 100.0)
+	_hud.call(&"set_pool", &"bogus", 5.0, 100.0)
+	_check(
+		"readouts/unknown_pool_kind_ignored",
+		_reading("fuel_pct") == 30 and _reading("energy_pct") == 40,
+		"fuel 30/100 stays 30, energy stays 40 after a &bogus push"
+	)
+
+	## The percent cell lights only on FUEL/ENRG.
+	_check(
+		"readouts/percent_cell_rows",
+		bool(_row(ROW_FUEL).call(&"percent_lit")) and bool(_row(ROW_ENRG).call(&"percent_lit"))
+		and not bool(_row(SPD).call(&"percent_lit"))
+		and not bool(_row(HULL).call(&"percent_lit"))
+		and not bool(_row(HDG).call(&"percent_lit")),
+		"lit on FUEL/ENRG only"
+	)
+
+
+## ------------------------------------------------------------------ danger rows
+
+
+func _danger_rules() -> void:
+	_hud.call(&"set_speedometer", 0.5, Vector2.ZERO, Vector2.RIGHT)
+	_hud.call(&"set_pool", &"fuel", 50.0, 100.0)
+
+	_hud.call(&"_on_hull_changed", 25.0, 100.0)
+	var at_quarter := [bool(_row(HULL).call(&"framed")), String(_row(HULL).call(&"label_token"))]
+	_hud.call(&"_on_hull_changed", 24.9, 100.0)
+	var below_quarter := [
+		bool(_row(HULL).call(&"framed")),
+		String(_row(HULL).call(&"frame_token")),
+		String(_row(HULL).call(&"label_token")),
+		_row(HULL).call(&"frame_colour") == _token(&"accent_danger"),
+		_row(HULL).call(&"label_colour") == _token(&"accent_danger_bright"),
+	]
+	_hud.call(&"_on_hull_changed", 0.0, 0.0)
+	var no_max := bool(_row(HULL).call(&"framed"))
+	_check(
+		"danger/hull_quarter",
+		at_quarter == [false, "text_dim"] and below_quarter == [true, "accent_danger",
+		"accent_danger_bright", true, true] and no_max == false,
+		"25%%: framed=%s label=%s | 24.9%%: %s | 0/0: framed=%s" % [
+			at_quarter[0], at_quarter[1], str(below_quarter), no_max
+		]
+	)
+
+	_hud.call(&"set_pool", &"fuel", 16.0, 100.0)
+	var fuel16 := [bool(_row(ROW_FUEL).call(&"framed")), String(_row(ROW_FUEL).call(&"label_token"))]
+	_hud.call(&"set_pool", &"fuel", 15.0, 100.0)
+	var fuel15 := [
+		String(_row(ROW_FUEL).call(&"frame_token")),
+		String(_row(ROW_FUEL).call(&"label_token")),
+		_row(ROW_FUEL).call(&"frame_colour") == _token(&"accent_danger"),
+	]
+	_hud.call(&"set_pool", &"fuel", 0.0, 100.0)
+	var fuel0 := [
+		String(_row(ROW_FUEL).call(&"frame_token")),
+		_row(ROW_FUEL).call(&"frame_colour") == _token(&"accent_danger_bright"),
+		String(_row(ROW_FUEL).call(&"label_token")),
+	]
+	_hud.call(&"set_pool", &"fuel", 0.0, 0.0)
+	var fuel_no_max := bool(_row(ROW_FUEL).call(&"framed"))
+	_check(
+		"danger/fuel_15_and_empty",
+		fuel16 == [false, "text_dim"] and fuel15 == ["accent_danger", "accent_danger", true]
+		and fuel0 == ["accent_danger_bright", true, "accent_danger"] and fuel_no_max == false,
+		"16%%: %s | 15%%: %s | 0/100: %s | 0/0 framed=%s" % [
+			str(fuel16), str(fuel15), str(fuel0), fuel_no_max
+		]
+	)
+
+	_hud.call(&"set_speedometer", 0.9, Vector2.ZERO, Vector2.RIGHT)
+	var at_09 := bool(_row(SPD).call(&"framed"))
+	_hud.call(&"set_speedometer", 0.90001, Vector2.ZERO, Vector2.RIGHT)
+	var above_09 := [
+		String(_row(SPD).call(&"frame_token")),
+		String(_row(SPD).call(&"label_token")),
+		_row(SPD).call(&"frame_colour") == _token(&"accent_danger"),
+	]
+	## The needle's own overdrive token (the painted needle's modulate tint).
+	var dial: Node = _hud.call(&"speedometer")
+	dial.call(&"apply_theme")
+	var needle_overdrive: Color = dial.get(&"_needle_overdrive")
+	_check(
+		"danger/overdrive_strict",
+		at_09 == false and above_09 == ["accent_danger", "text_dim", true]
+		and needle_overdrive == _token(&"accent_danger_bright"),
+		"0.9 framed=%s | 0.90001: %s | needle overdrive tint=%s (accent_danger_bright=%s)" % [
+			at_09, str(above_09), needle_overdrive, _token(&"accent_danger_bright")
+		]
+	)
+	_hud.call(&"set_speedometer", 0.1, Vector2.RIGHT, Vector2.RIGHT)
+	_check(
+		"danger/cruise_clears_frame", not bool(_row(SPD).call(&"framed")),
+		"0.1 framed=false"
+	)
+
+	## Digits stay palette-neutral under every danger read.
+	_hud.call(&"_on_hull_changed", 10.0, 100.0)
+	_hud.call(&"set_pool", &"fuel", 0.0, 100.0)
+	_hud.call(&"set_speedometer", 0.95, Vector2(500.0, 0.0), Vector2.RIGHT)
+	var neutral := true
+	var neutral_detail := ""
+	for key: StringName in [SPD, HULL, ROW_FUEL]:
+		for cell: TextureRect in _row(key).call(&"digit_cells"):
+			if cell.modulate != Color.WHITE or cell.texture == null:
+				neutral = false
+				neutral_detail += " %s=%s/%s" % [key, cell.modulate, cell.texture]
+	_check("danger/digits_neutral", neutral, "SPD/HULL/FUEL cells WHITE" + neutral_detail)
+	_hud.call(&"_on_hull_changed", 1000.0, 1000.0)
+	_hud.call(&"set_pool", &"fuel", 100.0, 100.0)
+	_hud.call(&"set_speedometer", 0.1, Vector2.ZERO, Vector2.RIGHT)
+
+
+## ------------------------------------------------------------------ compass
+
+
+func _compass() -> void:
+	var compass: Control = _hud.call(&"compass")
+	_heading(PI * 0.5)
+	var rose_pos: float = compass.call(&"rose_angle")
+	_heading(-PI * 0.5)
+	var rose_neg: float = compass.call(&"rose_angle")
+	_check(
+		"compass/rose_counter_rotates",
+		is_equal_approx(rose_pos, -PI * 0.5) and is_equal_approx(rose_neg, PI * 0.5),
+		"heading +90 -> rose %s, heading -90 -> rose %s" % [rose_pos, rose_neg]
+	)
+	var cases := [
+		[0.0, 0.0, [BLANK, BLANK, 0]],
+		[PI * 0.25, 45.0, [BLANK, 4, 5]],
+		[PI * 0.5, 90.0, [BLANK, 9, 0]],
+		[PI, 180.0, [1, 8, 0]],
+		[-PI * 0.5, 270.0, [2, 7, 0]],
+		[deg_to_rad(359.6), 0.0, [BLANK, BLANK, 0]],
+	]
+	var ok := true
+	var detail := ""
+	for case: Array in cases:
+		_heading(float(case[0]))
+		var got := float(_hud.call(&"compass_heading"))
+		var cells: Array = _cells(HDG)
+		if not is_equal_approx(got, float(case[1])) or cells != (case[2] as Array):
+			ok = false
+			detail += " %s deg -> %s %s (want %s %s)" % [
+				rad_to_deg(float(case[0])), got, cells, case[1], case[2]
+			]
+	_check(
+		"compass/heading_0_to_359",
+		ok,
+		"0/45/90/180/270/359.6 all mapped, HDG drawn (blank-padded)" + detail
+	)
+	_heading(0.0)
+
+
+## ------------------------------------------------------------------ geometry
+
+
+func _geometry() -> void:
+	var cockpit: Control = _hud.call(&"cockpit")
+	var cluster_size: Vector2 = cockpit.custom_minimum_size
+	var frame: NinePatchRect = cockpit.get_node_or_null("CockpitFrame")
+	var bays: Node = cockpit.get_node_or_null("Bays")
+	_check(
+		"geometry/cluster_box",
+		cluster_size == Vector2(404.0, 216.0) and frame != null and bays != null,
+		"custom_minimum_size=%s, frame=%s, bays=%s" % [cluster_size, frame != null, bays != null]
+	)
+	if frame == null or bays == null:
+		return
+	var frame_rect: Rect2 = frame.get_global_rect()
+	var patch: int = frame.patch_margin_left
+	var band := patch * frame.scale.x
+	var gauge: Control = bays.get_node_or_null("GaugeBay")
+	var mid: Control = bays.get_node_or_null("MidBay")
+	var right: Control = bays.get_node_or_null("ReadoutBay")
+	var gauge_rect: Rect2 = gauge.get_global_rect()
+	var mid_rect: Rect2 = mid.get_global_rect()
+	var right_rect: Rect2 = right.get_global_rect()
+	var interior := Rect2(
+		frame_rect.position + Vector2(band, band), frame_rect.size - Vector2(band, band) * 2.0
+	)
+	print("[D6R1] MEASURE cluster=%s frame_global=%s band=%.1f interior=%s" % [
+		cockpit.get_global_rect(), frame_rect, band, interior
+	])
+	print("[D6R1] MEASURE gauge=%s mid=%s readout=%s rows_content_width=%.0f" % [
+		gauge_rect, mid_rect, right_rect,
+		gauge_rect.size.x + mid_rect.size.x + right_rect.size.x + 40.0
+	])
+	var overhangs := {
+		"gauge_left": interior.position.x - gauge_rect.position.x,
+		"gauge_right": gauge_rect.end.x - interior.end.x,
+		"readout_left": interior.position.x - right_rect.position.x,
+		"readout_right": right_rect.end.x - interior.end.x,
+		"top": interior.position.y - maxf(gauge_rect.position.y, right_rect.position.y),
+		"bottom": maxf(gauge_rect.end.y, right_rect.end.y) - interior.end.y,
+	}
+	## The five readout rows and the HDG row: the amended SPD row must be as wide as its siblings.
+	var row_sizes: Array = []
+	for key: StringName in [SPD, HULL, SHLD, ROW_FUEL, ROW_ENRG, HDG]:
+		var row: Control = _row(key)
+		if row != null:
+			row_sizes.append("%s=%s" % [key, row.size])
+	print("[D6R1] MEASURE rows %s" % str(row_sizes))
+	## The row's own inner geometry: the 34 px label column at 12 px, the 20x36 cells, 2 px gaps.
+	var spd_row: Control = _row(SPD)
+	if spd_row != null and spd_row.get_child_count() > 1:
+		var label: Label = spd_row.get_child(0) as Label
+		var hdg_label: Label = _row(HDG).get_child(0) as Label
+		var cell: Control = spd_row.get_child(1) as Control
+		print(
+			"[D6R1] MEASURE row_inner label_min=%s font=%d hdg_font=%d separation=%d cell_min=%s cell_size=%s" % [
+				label.custom_minimum_size, label.get_theme_font_size(&"font_size"),
+				hdg_label.get_theme_font_size(&"font_size"),
+				spd_row.get_theme_constant(&"separation"), cell.custom_minimum_size, cell.size,
+			]
+		)
+		_check(
+			"geometry/row_inner_pins",
+			label.custom_minimum_size.x == 34.0
+			and label.get_theme_font_size(&"font_size") == 12
+			and hdg_label.get_theme_font_size(&"font_size") == 12
+			and spd_row.get_theme_constant(&"separation") == 2
+			and cell.custom_minimum_size == Vector2(20.0, 36.0),
+			"label_min=%s font=%d separation=%d cell_min=%s" % [
+				label.custom_minimum_size, label.get_theme_font_size(&"font_size"),
+				spd_row.get_theme_constant(&"separation"), cell.custom_minimum_size
+			]
+		)
+	_check(
+		"geometry/frame_interior_report_only",
+		true,
+		"overhang beyond the 32 px band interior (px): %s" % str(overhangs)
+	)
+	## The status modal's own inset versus the same 32 px band (report only). The modal must be
+	## shown for its containers to lay out, so this opens and closes it.
+	var screen: Control = _hud.call(&"status_screen")
+	if screen != null:
+		screen.call(&"set_open", true)
+		await get_tree().process_frame
+		await get_tree().process_frame
+		var margin: Control = screen.find_child("Column", true, false) as Control
+		var body: Control = screen.call(&"body")
+		var modal_frame: NinePatchRect = screen.call(&"frame")
+		if margin != null and body != null and modal_frame != null:
+			var body_rect: Rect2 = body.get_global_rect()
+			var frame_rect2: Rect2 = modal_frame.get_global_rect()
+			var band2 := float(modal_frame.patch_margin_left) * modal_frame.scale.x
+			var interior2 := Rect2(
+				frame_rect2.position + Vector2(band2, band2),
+				frame_rect2.size - Vector2(band2, band2) * 2.0
+			)
+			print("[D6R1] MEASURE status body=%s frame=%s band=%.1f column=%s interior=%s" % [
+				body_rect, frame_rect2, band2, margin.get_global_rect(), interior2
+			])
+			_check(
+				"geometry/status_content_inset_report_only",
+				true,
+				"content starts %.1f px in from the body vs a %.1f px band -> overlap %.1f px" % [
+					margin.get_global_rect().position.x - body_rect.position.x, band2,
+					maxf(0.0, interior2.position.x - margin.get_global_rect().position.x),
+				]
+			)
+		screen.call(&"set_open", false)
+	## The marker/render space: is the box the size the markers assume?
+	_hud.call(&"set_hull_slots", VANGUARD, [])
+	_hud.call(&"_on_hull_changed", 640.0, 1000.0)
+	screen.call(&"set_open", true)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var render_box: Control = screen.find_child("HullRenderBox", true, false) as Control
+	var markers_node: Control = screen.find_child("HardpointMarkers", true, false) as Control
+	var assumed: Vector2 = screen.get(&"_render_size")
+	if render_box != null and markers_node != null:
+		var box_rect: Rect2 = render_box.get_global_rect()
+		var markers_rect: Rect2 = markers_node.get_global_rect()
+		print("[D6R1] MEASURE render_box=%s markers=%s render_size=%s box_local_top=%.1f" % [
+			box_rect, markers_rect, assumed, box_rect.position.y - markers_rect.position.y
+		])
+		_check(
+			"geometry/marker_space_matches_box",
+			box_rect.size.is_equal_approx(assumed) and markers_rect.size.is_equal_approx(assumed),
+			"render box size %s vs the marker space the anchors are computed in %s (delta %s)" % [
+				box_rect.size, assumed, box_rect.size - assumed
+			]
+		)
+		## What the sprite is actually drawn as inside that box (STRETCH_KEEP_ASPECT_CENTERED),
+		## versus the space the marker anchors are computed in.
+		for damage: Array in [[1000.0, "intact"], [640.0, "damaged"]]:
+			_hud.call(&"_on_hull_changed", float(damage[0]), 1000.0)
+			screen.call(&"set_open", false)
+			screen.call(&"set_open", true)
+			await get_tree().process_frame
+			var size_assumed: Vector2 = screen.get(&"_render_size")
+			var texture: Texture2D = (screen.call(&"hull_render") as TextureRect).texture
+			var native: Vector2 = texture.get_size()
+			var fit_scale: float = minf(
+				box_rect.size.x / native.x, box_rect.size.y / native.y
+			)
+			var drawn := native * fit_scale
+			var drawn_centre := (box_rect.size - drawn) * 0.5 + drawn * 0.5
+			var markers_list: Array = screen.call(&"hardpoint_markers")
+			var positions: Array = []
+			for marker: Dictionary in markers_list:
+				positions.append([
+					StringName(marker[&"kind"]) == &"mount", marker[&"pos"], marker[&"facing"]
+				])
+			print("[D6R1] MEASURE %s markers(kind_mount, pos, facing)=%s" % [
+				damage[1], str(positions)
+			])
+			print(
+				"[D6R1] MEASURE %s: box=%s assumed_space=%s native=%s drawn=%s drawn_centre=%s assumed_centre=%s marker_offset=(0, %.2f) first_marker=%s" % [
+					damage[1], box_rect.size, size_assumed, native, drawn, drawn_centre,
+					size_assumed * 0.5, drawn_centre.y - size_assumed.y * 0.5,
+					markers_list[0][&"pos"] if not markers_list.is_empty() else null,
+				]
+			)
+	screen.call(&"set_open", false)
+
+
+## ------------------------------------------------------------------ status screen
+
+
+func _status_screen() -> void:
+	var screen: Control = _hud.call(&"status_screen")
+	if screen == null:
+		_check("status/screen_exists", false, "the HUD built no section 3.8 screen")
+		return
+	_check(
+		"status/hidden_default_and_box",
+		not bool(screen.call(&"is_open")) and screen.call(&"modal_size") == Vector2(720.0, 520.0)
+		and screen.call(&"body").custom_minimum_size == Vector2(720.0, 520.0)
+		and (screen.call(&"frame") as NinePatchRect).patch_margin_left == 64
+		and is_equal_approx((screen.call(&"frame") as NinePatchRect).scale.x, 0.5),
+		"hidden=%s modal=%s body_min=%s patch=%d scale=%.2f" % [
+			screen.call(&"is_open"), screen.call(&"modal_size"),
+			screen.call(&"body").custom_minimum_size,
+			(screen.call(&"frame") as NinePatchRect).patch_margin_left,
+			(screen.call(&"frame") as NinePatchRect).scale.x,
+		]
+	)
+
+	## The toggle guard with no input row present.
+	var had := InputMap.has_action(ACTION)
+	if had:
+		InputMap.erase_action(ACTION)
+	var absent_event := InputEventAction.new()
+	absent_event.action = ACTION
+	absent_event.pressed = true
+	_hud.call(&"_unhandled_input", absent_event)
+	_check(
+		"status/absent_row_guard",
+		InputMap.has_action(ACTION) == false and not bool(screen.call(&"is_open")),
+		"row absent=%s, screen after a press=%s" % [
+			not InputMap.has_action(ACTION), screen.call(&"is_open")
+		]
+	)
+	InputMap.add_action(ACTION)
+	_hud.call(&"_unhandled_input", absent_event)
+	var opened := bool(screen.call(&"is_open"))
+	_hud.call(&"_unhandled_input", absent_event)
+	var closed := not bool(screen.call(&"is_open"))
+	_check(
+		"status/toggle_opens_and_closes",
+		opened and closed,
+		"seeded row: press -> open=%s, press -> open=%s" % [opened, not closed]
+	)
+	_check("status/toggle_second_press_closed", closed, "the second press leaves it closed")
+	screen.call(&"set_open", true)
+	(screen.call(&"close_button") as TextureButton).pressed.emit()
+	_check(
+		"status/close_button", not bool(screen.call(&"is_open")),
+		"icon_close closed the modal"
+	)
+	if not had:
+		InputMap.erase_action(ACTION)
+
+	## Docked guard.
+	_hud.call(&"set_docked", true)
+	screen.call(&"set_open", true)
+	var docked_closed := not bool(screen.call(&"is_open"))
+	_hud.call(&"set_docked", false)
+	screen.call(&"set_open", true)
+	var undocked_open := bool(screen.call(&"is_open"))
+	_check(
+		"status/docked_guard",
+		docked_closed and undocked_open and bool(_hud.call(&"docked")) == false,
+		"docked: open=%s | undocked: open=%s" % [not docked_closed, undocked_open]
+	)
+
+	## Both damaged-side branches, against the repairs pane's own rule.
+	_hud.call(&"set_hull_slots", VANGUARD, [])
+	_hud.call(&"_on_hull_changed", 500.0, 1000.0)
+	screen.call(&"set_open", false)
+	screen.call(&"set_open", true)
+	var damaged := String(screen.call(&"hull_render_path"))
+	var damaged_texture := String((screen.call(&"hull_render") as TextureRect).texture.resource_path)
+	_hud.call(&"_on_hull_changed", 1000.0, 1000.0)
+	screen.call(&"set_open", false)
+	screen.call(&"set_open", true)
+	var intact := String(screen.call(&"hull_render_path"))
+	_hud.call(&"set_hull_slots", FIGHTER, [])
+	_hud.call(&"_on_hull_changed", 500.0, 1000.0)
+	screen.call(&"set_open", false)
+	screen.call(&"set_open", true)
+	var no_cut := String(screen.call(&"hull_render_path"))
+	_check(
+		"status/damaged_swap_both_branches",
+		damaged == RepairsPanelScript.hull_render(VANGUARD, 500)
+		and damaged.ends_with("_damaged_side.png") and damaged == damaged_texture
+		and intact == RepairsPanelScript.hull_render(VANGUARD, 0)
+		and intact.ends_with("ship_vanguard_side.png")
+		and no_cut.ends_with("ship_fighter_side.png")
+		and not ResourceLoader.exists("res://assets/ships/ship_fighter_damaged_side.png"),
+		"vanguard 500/1000 -> %s | intact -> %s | fighter 500/1000 (no cut on disk) -> %s" % [
+			damaged.get_file(), intact.get_file(), no_cut.get_file()
+		]
+	)
+
+	## The grid and rows against a seeded resolved_fit.
+	var fit := {
+		&"engines": [&"e_std"],
+		&"power": &"p_std",
+		&"weapons": [&"w_laser", &"w_cannon", &"w_mining"],
+		&"shields": [&"s_light"],
+		&"armour": [&"h_plate_light"],
+	}
+	_profile.call(&"set_fit", VANGUARD, fit)
+	var resolved: Dictionary = _profile.call(&"resolved_fit", VANGUARD)
+	_hud.call(&"set_hull_slots", VANGUARD, [])
+	_hud.call(&"_on_hull_changed", 1000.0, 1000.0)
+	screen.call(&"set_open", false)
+	screen.call(&"set_open", true)
+	var rows: Array = screen.call(&"module_rows")
+	var grid_cells: Array = screen.call(&"grid_cells")
+	var refs: Array = []
+	for row: Dictionary in rows:
+		refs.append(String(row[&"ref"]))
+	var expect_refs: Array = []
+	var expected_names: Array = []
+	for cell: Dictionary in ShipFit.grid_cells(VANGUARD):
+		if bool(cell[&"gap"]):
+			continue
+		var key: StringName = cell[&"type"]
+		var index := int(cell[&"index"])
+		var entry := _cell_entry(key, index, resolved)
+		if entry == &"":
+			continue
+		expect_refs.append("%s%d" % [String(cell[&"token"]), index + 1])
+		expected_names.append(String(ModuleData.module(entry).get(&"name", String(entry))))
+	var grid: GridContainer = screen.call(&"slot_grid")
+	_check(
+		"status/grid_cells_and_rows",
+		grid.columns == ShipFit.grid_size(VANGUARD).x and refs == expect_refs
+		and grid.get_child_count() == ShipFit.grid_cells(VANGUARD).size()
+		and grid_cells.size() == 11,
+		"columns=%d children=%d cells=%d refs=%s (expected %s, names %s)" % [
+			grid.columns, grid.get_child_count(), grid_cells.size(), str(refs), str(expect_refs),
+			str(expected_names)
+		]
+	)
+	## Names and glyphs off the catalogue, plate/row pairing by token+index.
+	var names_ok := true
+	var glyphs_ok := true
+	var filled := 0
+	var empty := 0
+	var names_detail := ""
+	for cell: Dictionary in grid_cells:
+		if bool(cell[&"fitted"]):
+			filled += 1
+			if String(cell[&"icon"]) != ModuleData.icon_path(StringName(cell[&"module"])):
+				glyphs_ok = false
+				names_detail += " icon %s" % cell[&"module"]
+		else:
+			empty += 1
+	for row: Dictionary in rows:
+		var base := StringName(row[&"base"])
+		var expected := String(ModuleData.module(base).get(&"name", String(base)))
+		if String(row[&"name"]) != expected:
+			names_ok = false
+			names_detail += " %s!=%s" % [row[&"name"], expected]
+		var cell_name := "%s%02d" % [String(row[&"token"]), int(row[&"index"])]
+		if screen.find_child("Slot" + cell_name, true, false) == null:
+			glyphs_ok = false
+			names_detail += " no plate %s" % cell_name
+	_check(
+		"status/module_names_and_glyphs",
+		names_ok and glyphs_ok and rows.size() == 7 and filled == 7 and empty == 4,
+		"rows=%d fitted_cells=%d empty_cells=%d names_ok=%s glyphs_ok=%s%s" % [
+			rows.size(), filled, empty, names_ok, glyphs_ok, names_detail
+		]
+	)
+
+	## The pushed W cell's rack ordinal.
+	var pushed: Array = [{
+		&"slot": &"weapons",
+		&"index": 1,
+		&"module": &"w_cannon",
+		&"icon": ModuleData.icon_path(&"w_cannon"),
+		&"fitted": true,
+		&"battery": 3,
+		&"position": 1,
+		&"selectable": true,
+	}]
+	_hud.call(&"set_hull_slots", VANGUARD, pushed)
+	screen.call(&"set_open", false)
+	screen.call(&"set_open", true)
+	var pushed_rows: Array = screen.call(&"module_rows")
+	_check(
+		"status/pushed_rack_ordinal",
+		pushed_rows.size() > 1 and String(pushed_rows[1][&"ref"]) == "W2"
+		and int(pushed_rows[1][&"rack"]) == 3
+		and String(pushed_rows[1][&"text"]).begins_with("W2 · B3 · "),
+		"row[1]=%s" % String(pushed_rows[1][&"text"])
+	)
+
+	## The footer's power line against the fitting panel's own `_power_of`.
+	var pane := FittingPanelScript.new()
+	var pane_power: Dictionary = pane.call(&"_power_of", _profile, VANGUARD, resolved)
+	pane.free()
+	screen.call(&"set_open", false)
+	screen.call(&"set_open", true)
+	var footer: Dictionary = screen.call(&"footer_lines")
+	_check(
+		"status/power_matches_fitting_panel",
+		int(footer[&"draw"]) == int(pane_power[&"draw"])
+		and int(footer[&"out"]) == int(pane_power[&"out"])
+		and String(footer[&"power"]) == "PWR %d / %d" % [
+			int(pane_power[&"draw"]), int(pane_power[&"out"])
+		],
+		"screen %s | fitting_panel._power_of draw=%d out=%d | fit_legal draw=%d out=%d" % [
+			String(footer[&"power"]), int(pane_power[&"draw"]), int(pane_power[&"out"]),
+			int((ShipFit.fit_legal(VANGUARD, _profile.call(&"base_fit", resolved))[&"power"])[&"draw"]),
+			int((ShipFit.fit_legal(VANGUARD, _profile.call(&"base_fit", resolved))[&"power"])[&"out"]),
+		]
+	)
+	_hud.call(&"_on_hull_changed", 1000.0, 1000.0)
+	_hud.call(&"_on_shield_changed", 0.0, 0.0)
+	screen.call(&"set_open", false)
+	screen.call(&"set_open", true)
+	var pool_lines: Dictionary = screen.call(&"footer_lines")
+	var hull_line := String(pool_lines[&"hull"])
+	var shield_line := String(pool_lines[&"shield"])
+	_check(
+		"status/footer_pools",
+		hull_line == "HULL 1000 / 1000" and shield_line == "SHLD 0 / 0",
+		"hull='%s', shield='%s' after a 1000/1000 and 0/0 push" % [hull_line, shield_line]
+	)
+	_hud.call(&"_on_hull_changed", 640.0, 1000.0)
+	_hud.call(&"_on_shield_changed", 120.0, 300.0)
+	screen.call(&"set_open", false)
+	screen.call(&"set_open", true)
+	var footer2: Dictionary = screen.call(&"footer_lines")
+	_check(
+		"status/footer_pools_pushed",
+		String(footer2[&"hull"]) == "HULL 640 / 1000" and String(footer2[&"shield"]) == "SHLD 120 / 300",
+		"hull='%s', shield='%s'" % [String(footer2[&"hull"]), String(footer2[&"shield"])]
+	)
+
+	## The hardpoint markers.
+	var markers: Array = screen.call(&"hardpoint_markers")
+	var thrusters := 0
+	var mounts := 0
+	for marker: Dictionary in markers:
+		if StringName(marker[&"kind"]) == &"thruster":
+			thrusters += 1
+		elif StringName(marker[&"kind"]) == &"mount":
+			mounts += 1
+	var render: TextureRect = screen.call(&"hull_render")
+	var native: Vector2 = render.texture.get_size()
+	var scale: float = 320.0 / native.x
+	var centre: Vector2 = Vector2(320.0, native.y * scale) * 0.5
+	var rear: Vector2 = ShipFit.thruster_points(VANGUARD, &"rear")[0]
+	var mount: Dictionary = ShipFit.weapon_mounts(VANGUARD)[0]
+	_check(
+		"status/markers",
+		thrusters == 8 and mounts == 3
+		and (markers[0][&"pos"] as Vector2).is_equal_approx(centre + rear * scale)
+		and (markers[8][&"pos"] as Vector2).is_equal_approx(
+			centre + Vector2(mount[&"pos"]) * scale
+		),
+		"thrusters=%d mounts=%d first_anchor=%s expected=%s scale=%.6f" % [
+			thrusters, mounts, markers[0][&"pos"], centre + rear * scale, scale
+		]
+	)
+
+	## A hull outside the nine: nothing drawn.
+	_hud.call(&"set_hull_slots", NPC_HULL, [])
+	screen.call(&"set_open", false)
+	screen.call(&"set_open", true)
+	_check(
+		"status/npc_hull_empty",
+		(screen.call(&"slot_grid") as GridContainer).get_child_count() == 0
+		and (screen.call(&"module_rows") as Array).is_empty()
+		and (screen.call(&"hardpoint_markers") as Array).is_empty()
+		and String(screen.call(&"hull_render_path")) == "",
+		"grid=0 rows=0 markers=0 render='' for %s" % NPC_HULL
+	)
+
+
+func _cell_entry(slot_key: StringName, index: int, fit: Dictionary) -> StringName:
+	if slot_key == &"power":
+		var single: Variant = fit.get(slot_key, fit.get(String(slot_key), ""))
+		if single is Array:
+			for value: Variant in single as Array:
+				if String(value) != "":
+					return StringName(String(value))
+			return &""
+		return StringName(String(single)) if single != null else &""
+	var raw: Variant = fit.get(slot_key, fit.get(String(slot_key), []))
+	if not raw is Array:
+		return &""
+	var cells: Array = raw as Array
+	if index < 0 or index >= cells.size():
+		return &""
+	return StringName(String(cells[index]))
+
+
+## ------------------------------------------------------------------ no-write proof
+
+
+func _no_write() -> void:
+	_seed_account(VANGUARD, {
+		&"engines": [&"e_std"],
+		&"power": &"p_std",
+		&"weapons": [&"w_laser", &"w_cannon", &"w_mining"],
+		&"shields": [&"s_light"],
+		&"armour": [&"h_plate_light"],
+	})
+	_hud.call(&"set_hull_slots", VANGUARD, [])
+	_hud.call(&"_on_hull_changed", 640.0, 1000.0)
+	_hud.call(&"_on_shield_changed", 120.0, 300.0)
+	_profile.call(&"flush")
+	var path := String(_profile.get(&"save_path"))
+	var before := FileAccess.get_file_as_bytes(path)
+	var before_fit: Dictionary = _profile.call(&"fit_for", VANGUARD)
+	var before_modules: Dictionary = _profile.call(&"modules")
+	var before_credits := int(_profile.call(&"credits"))
+	var screen: Control = _hud.call(&"status_screen")
+	screen.call(&"set_open", true)
+	screen.call(&"module_rows")
+	screen.call(&"grid_cells")
+	screen.call(&"footer_lines")
+	screen.call(&"hull_render_path")
+	screen.call(&"hardpoint_markers")
+	screen.call(&"toggle")
+	screen.call(&"toggle")
+	screen.call(&"close")
+	screen.call(&"set_hull", VANGUARD)
+	screen.call(&"set_hull_slots", [])
+	screen.call(&"set_pools", 100.0, 100.0, 50.0, 50.0)
+	var dirty := bool(_profile.get(&"_dirty"))
+	var after := FileAccess.get_file_as_bytes(path)
+	_check(
+		"status/no_write",
+		not dirty and after == before and after.size() == before.size()
+		and _profile.call(&"fit_for", VANGUARD) == before_fit
+		and _profile.call(&"modules") == before_modules
+		and int(_profile.call(&"credits")) == before_credits,
+		"dirty=%s bytes %d == %d (%s) after the whole lifecycle" % [
+			dirty, before.size(), after.size(), after == before
+		]
+	)
+
+
+func _teardown() -> void:
+	_profile.call(&"flush")
+	_profile.set(&"save_path", _previous_path)
+	_remove(PROFILE_PATH)

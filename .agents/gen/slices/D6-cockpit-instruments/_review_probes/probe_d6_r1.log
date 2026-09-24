@@ -1,0 +1,50 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)
+[D6R1] PASS readouts/map | spd=50 hull=812 shield=240 fuel=6 energy=40 (3-4-5 prograde, 12/200, 40/100)
+[D6R1] PASS readouts/hull_rounds_half_up | 812.6 -> 813, 812.4 -> 812 (int(round(current)))
+[D6R1] PASS readouts/spd_4_cells_clamp_9999 | 7 seeded speeds incl. 999/1000/12345/20000 ALL OK
+[D6R1] PASS readouts/cell_counts | SPD 4, HULL 4, SHLD 4, FUEL 3, ENRG 3, HDG 3
+[D6R1] PASS readouts/points_clamp_9999 | hull 20000 -> 9999, shield 12345 -> 9999
+[D6R1] PASS readouts/percent_and_zero_maximum | 6 seeded tanks
+[D6R1] PASS readouts/unknown_pool_kind_ignored | fuel 30/100 stays 30, energy stays 40 after a &bogus push
+[D6R1] PASS readouts/percent_cell_rows | lit on FUEL/ENRG only
+[D6R1] PASS danger/hull_quarter | 25%: framed=false label=text_dim | 24.9%: [true, "accent_danger", "accent_danger_bright", true, true] | 0/0: framed=false
+[D6R1] PASS danger/fuel_15_and_empty | 16%: [false, "text_dim"] | 15%: ["accent_danger", "accent_danger", true] | 0/100: ["accent_danger_bright", true, "accent_danger"] | 0/0 framed=false
+[D6R1] PASS danger/overdrive_strict | 0.9 framed=false | 0.90001: ["accent_danger", "text_dim", true] | needle overdrive tint=(0.9098, 0.3843, 0.1647, 1.0) (accent_danger_bright=(0.9098, 0.3843, 0.1647, 1.0))
+[D6R1] PASS danger/cruise_clears_frame | 0.1 framed=false
+[D6R1] PASS danger/digits_neutral | SPD/HULL/FUEL cells WHITE
+[D6R1] PASS compass/rose_counter_rotates | heading +90 -> rose -1.57079637050629, heading -90 -> rose 1.57079637050629
+[D6R1] PASS compass/heading_0_to_359 | 0/45/90/180/270/359.6 all mapped, HDG drawn (blank-padded)
+[D6R1] PASS geometry/cluster_box | custom_minimum_size=(404.0, 216.0), frame=true, bays=true
+[D6R1] MEASURE cluster=[P: (12.0, 852.0), S: (404.0, 216.0)] frame_global=[P: (12.0, 852.0), S: (404.0, 216.0)] band=32.0 interior=[P: (44.0, 884.0), S: (340.0, 152.0)]
+[D6R1] MEASURE gauge=[P: (16.0, 900.0), S: (120.0, 120.0)] mid=[P: (156.0, 893.0), S: (100.0, 134.0)] readout=[P: (276.0, 865.0), S: (136.0, 190.0)] rows_content_width=396
+[D6R1] MEASURE rows ["spd=(122.0, 36.0)", "hull=(122.0, 36.0)", "shld=(122.0, 36.0)", "fuel=(122.0, 36.0)", "enrg=(122.0, 36.0)", "hdg=(100.0, 36.0)"]
+[D6R1] MEASURE row_inner label_min=(34.0, 0.0) font=12 hdg_font=12 separation=2 cell_min=(20.0, 36.0) cell_size=(20.0, 36.0)
+[D6R1] PASS geometry/row_inner_pins | label_min=(34.0, 0.0) font=12 separation=2 cell_min=(20.0, 36.0)
+[D6R1] PASS geometry/frame_interior_report_only | overhang beyond the 32 px band interior (px): { "gauge_left": 28.0, "gauge_right": -248.0, "readout_left": -232.0, "readout_right": 28.0, "top": -16.0, "bottom": 19.0 }
+[D6R1] MEASURE status body=[P: (600.0, 280.0), S: (720.0, 520.0)] frame=[P: (600.0, 280.0), S: (720.0, 520.0)] band=32.0 column=[P: (624.0, 304.0), S: (672.0, 472.0)] interior=[P: (632.0, 312.0), S: (656.0, 456.0)]
+[D6R1] PASS geometry/status_content_inset_report_only | content starts 24.0 px in from the body vs a 32.0 px band -> overlap 8.0 px
+[D6R1] MEASURE render_box=[P: (624.0, 304.0), S: (320.0, 441.0)] markers=[P: (624.0, 304.0), S: (320.0, 441.0)] render_size=(320.0, 311.8671) box_local_top=0.0
+[D6R1] FAIL geometry/marker_space_matches_box | render box size (320.0, 441.0) vs the marker space the anchors are computed in (320.0, 311.8671) (delta (0.0, 129.1329))
+[D6R1] MEASURE intact markers(kind_mount, pos, facing)=[[false, (36.33333, 49.7), 0.0], [false, (37.0, 126.2667), 0.0], [false, (307.6667, 76.33334), 0.0], [false, (307.6667, 94.33334), 0.0], [false, (86.0, 23.66667), 0.0], [false, (234.0, 55.0), 0.0], [false, (86.0, 152.6667), 0.0], [false, (234.0, 132.6667), 0.0], [true, (123.0, 30.66667), -0.124], [true, (197.0, 30.66667), -0.503], [true, (123.0, 105.3333), -0.173]]
+[D6R1] MEASURE intact: box=(320.0, 441.0) assumed_space=(320.0, 173.6667) native=(960.0, 521.0) drawn=(320.0, 173.6667) drawn_centre=(160.0, 220.5) assumed_centre=(160.0, 86.83334) marker_offset=(0, 133.67) first_marker=(36.33333, 49.7)
+[D6R1] MEASURE damaged markers(kind_mount, pos, facing)=[[false, (43.94917, 121.087), 0.0], [false, (44.57478, 192.9384), 0.0], [false, (298.5728, 146.0802), 0.0], [false, (298.5728, 162.9716), 0.0], [false, (90.55718, 96.65689), 0.0], [false, (229.4428, 126.0606), 0.0], [false, (90.55718, 217.7126), 0.0], [false, (229.4428, 198.9443), 0.0], [true, (125.2786, 103.2258), -0.124], [true, (194.7214, 103.2258), -0.503], [true, (125.2786, 173.2942), -0.173]]
+[D6R1] MEASURE damaged: box=(320.0, 441.0) assumed_space=(320.0, 311.8671) native=(1023.0, 997.0) drawn=(320.0, 311.8671) drawn_centre=(160.0, 220.5) assumed_centre=(160.0, 155.9335) marker_offset=(0, 64.57) first_marker=(43.94917, 121.087)
+[D6R1] PASS status/hidden_default_and_box | hidden=false modal=(720.0, 520.0) body_min=(720.0, 520.0) patch=64 scale=0.50
+[D6R1] PASS status/absent_row_guard | row absent=true, screen after a press=false
+[D6R1] PASS status/toggle_opens_and_closes | seeded row: press -> open=true, press -> open=false
+[D6R1] PASS status/toggle_second_press_closed | the second press leaves it closed
+[D6R1] PASS status/close_button | icon_close closed the modal
+[D6R1] PASS status/docked_guard | docked: open=false | undocked: open=true
+[D6R1] PASS status/damaged_swap_both_branches | vanguard 500/1000 -> ship_vanguard_damaged_side.png | intact -> ship_vanguard_side.png | fighter 500/1000 (no cut on disk) -> ship_fighter_side.png
+[D6R1] PASS status/grid_cells_and_rows | columns=4 children=16 cells=11 refs=["W1", "W2", "H1", "S1", "W3", "E1", "P1"] (expected ["W1", "W2", "H1", "S1", "W3", "E1", "P1"], names ["Laser MkII", "Cannon MkI", "Light Plate", "Light Shield", "Mining Laser", "Standard Drive", "Standard Reactor"])
+[D6R1] PASS status/module_names_and_glyphs | rows=7 fitted_cells=7 empty_cells=4 names_ok=true glyphs_ok=true
+[D6R1] PASS status/pushed_rack_ordinal | row[1]=W2 · B3 · Cannon MkI
+[D6R1] PASS status/power_matches_fitting_panel | screen PWR 5 / 8 | fitting_panel._power_of draw=5 out=8 | fit_legal draw=5 out=8
+[D6R1] PASS status/footer_pools | hull='HULL 1000 / 1000', shield='SHLD 0 / 0' after a 1000/1000 and 0/0 push
+[D6R1] PASS status/footer_pools_pushed | hull='HULL 640 / 1000', shield='SHLD 120 / 300'
+[D6R1] PASS status/markers | thrusters=8 mounts=3 first_anchor=(43.94917, 121.087) expected=(43.94917, 121.087) scale=0.312805
+[D6R1] PASS status/npc_hull_empty | grid=0 rows=0 markers=0 render='' for ship_swarmer
+[D6R1] PASS status/no_write | dirty=false bytes 704 == 704 (true) after the whole lifecycle
+[D6R1] SUMMARY pass=35 fail=1

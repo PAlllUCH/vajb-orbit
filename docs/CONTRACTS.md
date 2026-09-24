@@ -799,7 +799,21 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
-Expected (S5, 2026-09-24): **`[SUMMARY] passed=578 failed=0`**, exit 0. S5-R1 measured **577**
+Expected (D6, 2026-09-24): **`[SUMMARY] passed=608 failed=0`**, exit 0. The D6
+close-out measured **608** twice on two scratch stores, identical counts, with the
+live `user://profile.cfg` md5 `03203d60ff2f4a66479121b1708faf8a` and the
+`_gate_scratch` copy `c674ff4694186b981035294482c6bf99` unmoved. **608 tests over
+51 suites** (578 + 30): `test_d6_cluster.gd` **14** and `test_d6_status.gd` **16**
+(M2's 15 + F1's damaged-branch marker test). Measured history: M1 **592** (578 +
+14), M2 **607** four runs, M1b **607** twice (the owner's 4-digit SPD amendment
+swapped test rows, no count change), R1 **607** three runs before the fixer, F1
+**608** twice (R1-MED-1's cure adds the 16th status test). Cross-lane caveat (not
+D6's write set): later runs against the tree while the S6 builders' uncommitted
+`game/` edits advanced read **607/1** and one hard fail at the pre-existing L61
+leak lines (`test_weapon_fx_f4.gd:178`'s freed `guns`,
+`test_slice2_5_feel.gd:203`'s freed tween) — S6's close-out re-measures on its
+settled tree.
+Previous expected (S5, 2026-09-24): **`[SUMMARY] passed=578 failed=0`**, exit 0. S5-R1 measured **577**
 three times on three scratch stores before the fixer pass; the close-out measured **578** four
 times on four scratch stores (R1's figure **+1** — the row F1's R1-MED-2 cure added), identical
 counts; **578 tests over 49 suites**, the live `user://profile.cfg` md5 `539de5b7af59c77b6bffc477413161da` unmoved. The four S5
@@ -1799,7 +1813,9 @@ no new feed is introduced** — the cluster derives everything HUD already recei
 ```
 
 Digit semantics (UI_SPEC §3.7 is the law): SPD = `int(round(prograde.length()))`
-u/s 3 cells clamp 999; HULL/SHLD = `int(round(current))` points 4 cells clamp
+u/s 4 cells clamp 9999 (owner amendment 2026-09-24 — "in the cockpit if all clocks
+are 4 digits make the speed 4 digits as well"; was 3 cells clamp 999, reversal to
+that); HULL/SHLD = `int(round(current))` points 4 cells clamp
 9999; FUEL/ENRG = `int(round(100 × value / maximum))` clamp 0..100, 3 cells + the
 `%` cell; HDG 0..359. Leading blanks (`ui_seg_blank`), never zeros; `maximum == 0`
 reads 0. Danger rows reuse §3.1/§3.1b as row treatments (label + 1 px script-drawn
@@ -2562,3 +2578,15 @@ each cure is binding on this wave:
   harness finding is cured (`.crush/hooks/enforce_worker_files.py` now strips the Linux
   workspace root); J0's F9 (`DRIVES` on the catalogue's `engine` key) is implemented and
   measures 3 stocked module rows. LOW rows run **L130–L140**.
+- **v0.13 (2026-09-24, wave D6 close-out — the cockpit instruments wave, this
+  wave's only CONTRACTS writer)** — §9 gains the D6 expected **`passed=608 failed=0`**
+  (608 tests over 51 suites) with its measured history and the S6 cross-lane
+  caveat. §18's digit-semantics mirror is amended by the owner's mid-wave ruling
+  (SPD **4 cells clamp 9999** — "in the cockpit if all clocks are 4 digits make the
+  speed 4 digits as well"; UI_SPEC §3.7 carries the law and its amendment text).
+  The `ship_status` input row is applied to `project.godot` by the orchestrator at
+  close-out (key **U**, the `weapon_6`/`weapon_7` precedent). D6-R1 leaves no HIGH;
+  R1-MED-1 (hardpoint-marker render-space mismatch, 11 markers 133.67/64.57 px off
+  the hull) is cured by F1 with a blind-test fix; R1-MED-2 (pinned 396×190 content
+  vs the pinned 340×152 frame interior) is a bucket-2 pin decision routed to the
+  owner. LOW rows run **L141–L149** (L142 retired by F1's cure).

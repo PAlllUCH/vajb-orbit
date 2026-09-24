@@ -1,0 +1,176 @@
+{
+ "reference": {
+  "boxes": [
+   [
+    13,
+    4,
+    34,
+    19
+   ],
+   [
+    30,
+    19,
+    46,
+    44
+   ],
+   [
+    30,
+    43,
+    46,
+    69
+   ],
+   [
+    13,
+    68,
+    34,
+    84
+   ],
+   [
+    2,
+    43,
+    14,
+    69
+   ],
+   [
+    2,
+    19,
+    14,
+    44
+   ],
+   [
+    13,
+    36,
+    34,
+    52
+   ]
+  ],
+  "source": "ghost ink",
+  "face": 25.102999999999998,
+  "unlit": 45.602000000000004,
+  "threshold": 35.3525,
+  "field": [
+   4,
+   6,
+   44,
+   82
+  ]
+ },
+ "rows": [
+  {
+   "name": "ui_seg_0",
+   "plate_px": 3792,
+   "lit_px": 1200,
+   "ink_share": 0.31645569620253167,
+   "containment": 1.0,
+   "containment_ok": true,
+   "segments": 6
+  },
+  {
+   "name": "ui_seg_1",
+   "plate_px": 3792,
+   "lit_px": 504,
+   "ink_share": 0.13291139240506328,
+   "containment": 1.0,
+   "containment_ok": true,
+   "segments": 2
+  },
+  {
+   "name": "ui_seg_2",
+   "plate_px": 3792,
+   "lit_px": 972,
+   "ink_share": 0.2563291139240506,
+   "containment": 1.0,
+   "containment_ok": true,
+   "segments": 5
+  },
+  {
+   "name": "ui_seg_3",
+   "plate_px": 3792,
+   "lit_px": 1056,
+   "ink_share": 0.27848101265822783,
+   "containment": 1.0,
+   "containment_ok": true,
+   "segments": 5
+  },
+  {
+   "name": "ui_seg_4",
+   "plate_px": 3792,
+   "lit_px": 864,
+   "ink_share": 0.22784810126582278,
+   "containment": 1.0,
+   "containment_ok": true,
+   "segments": 4
+  },
+  {
+   "name": "ui_seg_5",
+   "plate_px": 3792,
+   "lit_px": 972,
+   "ink_share": 0.2563291139240506,
+   "containment": 1.0,
+   "containment_ok": true,
+   "segments": 5
+  },
+  {
+   "name": "ui_seg_6",
+   "plate_px": 3792,
+   "lit_px": 1140,
+   "ink_share": 0.30063291139240506,
+   "containment": 1.0,
+   "containment_ok": true,
+   "segments": 6
+  },
+  {
+   "name": "ui_seg_7",
+   "plate_px": 3792,
+   "lit_px": 688,
+   "ink_share": 0.18143459915611815,
+   "containment": 1.0,
+   "containment_ok": true,
+   "segments": 3
+  },
+  {
+   "name": "ui_seg_8",
+   "plate_px": 3792,
+   "lit_px": 1392,
+   "ink_share": 0.3670886075949367,
+   "containment": 1.0,
+   "containment_ok": true,
+   "segments": 7
+  },
+  {
+   "name": "ui_seg_9",
+   "plate_px": 3792,
+   "lit_px": 1224,
+   "ink_share": 0.3227848101265823,
+   "containment": 1.0,
+   "containment_ok": true,
+   "segments": 6
+  },
+  {
+   "name": "ui_seg_pct",
+   "plate_px": 3792,
+   "lit_px": 612,
+   "ink_share": 0.16139240506329114,
+   "containment": 1.0,
+   "containment_ok": true,
+   "segments": 5
+  },
+  {
+   "name": "ui_seg_blank",
+   "plate_px": 3792,
+   "lit_px": 0,
+   "ink_share": 0.0,
+   "containment": 1.0,
+   "containment_ok": true,
+   "segments": null
+  }
+ ],
+ "containment_ok": true,
+ "blank_min": true,
+ "one_min": true,
+ "eight_max": true,
+ "by_segment": true,
+ "inversions": [],
+ "literal_monotone": false,
+ "verdict": "PASS"
+}

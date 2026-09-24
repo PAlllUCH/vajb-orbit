@@ -227,7 +227,7 @@ func _build_row(parent: Node) -> void:
 	_render_box = Control.new()
 	_render_box.name = NODE_RENDER_BOX
 	_render_box.custom_minimum_size = RENDER_MISSING_SIZE
-	_render_box.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_render_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	_render_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.add_child(_render_box)
 	_render = TextureRect.new()

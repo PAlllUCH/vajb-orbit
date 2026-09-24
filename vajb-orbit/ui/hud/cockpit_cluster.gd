@@ -41,7 +41,8 @@ const FRAME_PATCH: int = 64
 const FRAME_SCALE := 0.5
 
 ## UI_SPEC section 3.7's digit semantics (CONTRACTS section 18 repeats them verbatim).
-const SPD_MAX: int = 999
+## SPD is 4 cells like every other row (owner amendment 2026-09-24), so it clamps 0..9999.
+const SPD_MAX: int = 9999
 const POINTS_MAX: int = 9999
 const PCT_MAX: int = 100
 const HULL_DANGER_FRACTION: float = 0.25
@@ -182,7 +183,7 @@ func _build_readout_bay(parent: Node) -> void:
 	rows.set_anchors_preset(Control.PRESET_FULL_RECT)
 	rows.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	right.add_child(rows)
-	_add_row(rows, ROW_SPD, "SPD", 3, false)
+	_add_row(rows, ROW_SPD, "SPD", 4, false)
 	_add_row(rows, ROW_HULL, "HULL", 4, false)
 	_add_row(rows, ROW_SHLD, "SHLD", 4, false)
 	_add_row(rows, ROW_FUEL, "FUEL", 3, true)
