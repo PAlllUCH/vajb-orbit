@@ -130,6 +130,9 @@ const RACK_LABEL := "B%d"
 ## keyboard legend at the bay's top-right).
 const RACK_LABEL_WIDTH := 40.0
 const RACK_KEY := "(%d)"
+## The drawn key hints are real: `(1)`..`(7)` are 09 section 11's own rack keys
+## (`weapon_1..7`, `GROUPS_MAX` of them), and the pane's selection seam maps them.
+const RACK_ACTION := "weapon_%d"
 const RACK_INSTALL_CUE := "DROP A WEAPON FROM THE INVENTORY HERE"
 const RACK_SALVO := "SALVO %.1f s"
 ## The SALVO drum's approved figure (Mockup A, owner "Looks good" 2026-09-24): the cycle
@@ -220,13 +223,24 @@ class BarrelName extends Button:
 		clip_text = true
 
 
-## One barrel chip: the name plate over its `x`, and a drop zone of its own - dropping a
-## barrel **on** another barrel is the swap (09 section 11's between-rack swap). Mockup A
-## keeps the chip inside its machined W-cell recess.
+## One barrel chip: the drag handle of a fitted cell, the name plate beside its `x`, and a
+## drop zone of its own - dropping a barrel **on** another barrel is the swap (09 section
+## 11's between-rack swap). Mockup A draws a fitted cell as the machined block inside its
+## slot recess and the name's ink is transparent, so a press anywhere on the chip that is
+## not the `x` starts the move/swap drag: the chip answers `_get_drag_data` itself, because a
+## box container cannot place the plate **over** the corner `x` and reflows both children to
+## their minimum size (both clip their text - measured at zero width after a layout pass,
+## which is what left a real press on a fitted cell dead).
 class BarrelCell extends HBoxContainer:
 	var armory: Control = null
 	var rack := 0
 	var slot := 0
+
+
+	func _get_drag_data(_at: Vector2) -> Variant:
+		if armory == null:
+			return null
+		return armory.call(&"drag_barrel", rack, slot)
 
 
 	func _can_drop_data(_at: Vector2, data: Variant) -> bool:
@@ -241,10 +255,23 @@ class BarrelCell extends HBoxContainer:
 ## One rack: the `B<n>` label, its key hint, its state line, its barrels and the drop zone
 ## that installs a dragged inventory weapon into the rack's next free W cell. Laid out as
 ## Mockup A's bay: the plate strip over the well, the four W-cell recesses, the engraved
-## ledge and the SALVO strip beneath it.
+## ledge and the SALVO strip beneath it. A press on the bay is the mouse half of the
+## selection seam (STATION_HUB section 5.11's seven selectable bays): it moves the section
+## 3.2 ember frame and writes nothing.
 class RackRow extends PanelContainer:
 	var armory: Control = null
 	var rack := 0
+
+
+	func _gui_input(event: InputEvent) -> void:
+		if not event.is_pressed():
+			return
+		if not (event is InputEventMouseButton):
+			return
+		if (event as InputEventMouseButton).button_index != MOUSE_BUTTON_LEFT:
+			return
+		if armory != null:
+			armory.call(&"set_selected_rack", rack)
 
 
 	func _can_drop_data(_at: Vector2, data: Variant) -> bool:
@@ -667,6 +694,20 @@ func set_selected_rack(rack: int) -> void:
 	_selected_rack = wanted
 	for view: Dictionary in _rack_views:
 		_style_bay(view)
+
+
+## The keyboard half of the selection seam: the drawn `(1)`..`(7)` hints (`RACK_KEY`) are
+## 09 section 11's own rack keys, so a digit moves the section 3.2 ember frame to that bay.
+## Presentation only - `set_selected_rack` writes nothing, and what a selection should
+## *mean* beyond the frame is not this pane's call.
+func _unhandled_input(event: InputEvent) -> void:
+	if not event.is_pressed() or event.is_echo():
+		return
+	for rack in RACK_COUNT:
+		if event.is_action_pressed(RACK_ACTION % (rack + 1)):
+			set_selected_rack(rack)
+			get_viewport().set_input_as_handled()
+			return
 
 
 ## ------------------------------------------------------------------ the console
@@ -1614,6 +1655,12 @@ func _position_head(head: Container) -> void:
 ## One bay's barrel chips, each inside its own machined W-cell recess, with the `x` in the
 ## slot's corner (the name's own ink is transparent: the block inside the recess is what
 ## Mockup A draws for a fitted cell).
+##
+## Both children clip their text, so a plain row gives each of them a **zero** width: the
+## plate's own `_d(14.0)` box is the `x`, and the plate takes the rest of the row
+## (`SIZE_EXPAND_FILL`), which keeps both hit targets hittable through every layout pass -
+## D7's restyle left the plate and the `x` at zero width, so a real press on a fitted cell
+## started neither a drag nor a remove (measured through real input).
 func _position_slots(barrels: Container) -> void:
 	if _style == null or barrels == null:
 		return
@@ -1629,10 +1676,13 @@ func _position_slots(barrels: Container) -> void:
 		if name_button != null:
 			name_button.position = Vector2.ZERO
 			name_button.size = Vector2(slot.size.x, slot.size.y - _d(14.0))
+			name_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		var close := chip.get_node_or_null(^"Close") as Control
 		if close != null:
 			close.position = Vector2(slot.size.x - _d(14.0), 0.0)
 			close.size = Vector2(_d(14.0), _d(14.0))
+			close.custom_minimum_size = Vector2(_d(14.0), _d(14.0))
+			close.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 		index += 1
 
 
@@ -1648,13 +1698,22 @@ static func _rack_cell_list(refs: Array) -> Array:
 ## One rack's salvo gate, the same arithmetic the component fires on (`max` of its
 ## members' cadences, `WeaponComponent.interval_of`): the rack's slowest member. 0.0 for
 ## a rack with no travelling member, which reads READY.
+##
+## A cell holds whatever the fit stores - a base id for a delivered fit, a **rolled
+## instance** (`mod_0002`) for a bought or dropped one, which is the owner's own fit shape -
+## so the cell resolves to its catalogue base id first. `weapon_id` only strips a `w_`
+## prefix and answers `""` for an instance (measured: `weapon_id("mod_0002")` is `""`), which
+## left every instance-keyed rack's SALVO drum blank. A base-keyed cell resolves to itself,
+## so its figure is exactly what it was.
 func _rack_cycle(refs: Array, cells: Array) -> float:
 	var cycle := 0.0
+	var profile := _profile()
 	for ref: Variant in refs:
 		var cell := int(ref)
 		if cell < 0 or cell >= cells.size():
 			continue
-		var family := WeaponComponent.weapon_id(StringName(String(cells[cell])))
+		var base := _base_id(profile, StringName(String(cells[cell])))
+		var family := WeaponComponent.weapon_id(base)
 		if family == &"":
 			continue
 		cycle = maxf(cycle, WeaponComponent.interval_of(family))

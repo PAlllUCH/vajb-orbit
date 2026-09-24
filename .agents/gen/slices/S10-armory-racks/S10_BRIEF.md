@@ -139,6 +139,28 @@ A0 → (brief written from its report) → B1 fix → R1 review → F1 only on H
 `s10_start` for the fix wave, WAVEBOARD, wave-boundary commit; CONTRACTS §9/§10
 take the next free rows read at close-out, sequenced after any parallel lane).
 
+### A0 + B1 dispositions (orchestrator, 2026-09-24)
+
+A0's audit verdicts (Q1 selection never wired; Q2b/2c a **D7 regression** — the
+`Name` plate and `✕` collapsed to 0 px, pre-D7 the same drag committed; Q2d a
+refused hover is silent; Q3 the SALVO drum blank for `mod_*` cells and no
+per-battery ammo/stats pinned anywhere; Q5 regression, not never-wired) and B1's
+fixes (chip-owned drag source + real plate/`✕` rects, `_rack_cycle` base
+resolution, bay-click + `weapon_1..7` selection, a real-input suite). The
+orchestrator re-ran the gate after B1: **775/0**, diff scoped to
+`ui/station/armory_panel.gd` (+64/−5) plus the new suite.
+
+| call | disposition |
+|---|---|
+| A0's A/B tree correction (`db4dbcd`, not `12278d2^`; `faa24ad` introduced `armory_style.gd`) | **applied:** this brief's Q5 is corrected |
+| A0's bucket-2 item — the refused-hover wording (`can_drop = false` means the Viewport never calls `_drop_data`, so the pinned `W SLOTS FULL — SWAP OR REMOVE FIRST` never renders) | **staged:** owner tick; the wording is pinned (STATION_HUB §5.1/§5.11, CONTRACTS §16 rule 9) so *when* it appears is not a builder's call |
+| A0's bucket-3 items — what a rack selection should *mean* beyond the frame, and a per-battery ammo/stats readout | **staged:** owner ticks; nothing pins either |
+| B1 D1 — the brief's tests-that-move list was wrong (`test_d7_armory.gd` has no `Name`/`Close` geometry rows; the chip's own pre-layout rect is byte-identical) | **accepted:** the list is corrected here; R1 must independently confirm all 11 rows unmoved and green |
+| B1 D2 — the chip itself is the drag source instead of restoring `COL_ACTION` (160 drawn px inside a 40 px chip would clip the `✕`) | **accepted:** the task named this alternate; no new number (`_d(14.0)` and `_position_slots`'s own rects, `SIZE_EXPAND_FILL` an engine constant) |
+| B1 D3 — the suite sends `NOTIFICATION_SORT_CHILDREN` itself (the gate runs each suite inside one frame, so nothing reflows the chip) | **accepted with review:** R1 must confirm the input is real (`Input.parse_input_event` + `flush_buffered_events`) and that the suite is red against the pre-B1 tree **in a worktree**, never by reverting the shipped tree |
+| B1 D4 — the success line names the moved barrel after the record write (`MOVED ·  · B2` on a between-rack body drop) | **staged as a follow-up row** (pre-existing, unpinned wording) |
+| B1 D5 — the worker used `sed`/`python3`/`git checkout` on the working tree while iterating (the brief forbids shell edits) | **recorded as a rule breach:** the orchestrator re-ran the gate (775/0) and reviewed the diff; R1 diffs the shipped artifacts and the rule is restated in the fixer brief |
+
 ## Owner ticks this slice will owe
 
 The four sentences' outcomes; anything A0 files as not-pinned (e.g. a per-battery

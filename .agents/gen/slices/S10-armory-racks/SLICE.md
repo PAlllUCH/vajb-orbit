@@ -55,7 +55,7 @@ pane shows what a battery will fire and what it costs in ammo.
 |---|---|---|
 | S10-A0 | `vajb-orbit/tests/`, `vajb-orbit/tools/` (measure only) | `S10_BRIEF.md` |
 | S10-B1 | `vajb-orbit/ui/station/armory_panel.gd`, `vajb-orbit/tests/` | `S10-B1_BRIEF.md` (written from A0's report) |
-| S10-R1 | `vajb-orbit/tests/`, `vajb-orbit/tools/`, `docs/CONTRACTS.md` | `S10_BRIEF.md` |
+| S10-R1 | `vajb-orbit/tests/`, `vajb-orbit/tools/`, `docs/CONTRACTS.md` | `S10-R1_BRIEF.md` |
 
 ## References
 
