@@ -1554,6 +1554,14 @@ LAUNCH's service rows (the `STATION_HUB.md` §5.4 amendment — owner request 4)
   `ShipStats` — NPCs accelerate slower and carry further; no NPC file is edited and
   `test_engine2_npc.gd` is where it may show. Reversals: the multipliers `1.0`;
   the bounds are bounds only.
+- **Amended by §23.5 (2026-09-24, owner "go ahead with all").** The clause above is
+  superseded in one place: the sideways axis no longer carries its own time constant.
+  `player_ship._lateral_damp()` returns `_linear_damp()`, so **one damp owns both axes** and
+  a released forward+strafe decays as a single velocity vector (the owner's *"like each
+  vector of inertia is independent which doesnt feel good"*); `LATERAL_DAMP_MULT` is retired
+  in place, `_step_lateral_drag` is inert, and `COAST_TIME_MULT` ticks `2.0 → 2.5`. The rest
+  of this bullet — `ACCEL_TIME_MULT 2.0`, `STEER_WITHOUT_THROTTLE`, the neutral-turn leak
+  bound — stands unchanged. Reversal: restore the pre-amendment `_lateral_damp()` body.
 
 ## §15 S3 item economy — instances and the AUCTION (2026-09-22)
 
@@ -2682,6 +2690,169 @@ linearly with the resolved coast (S2.6's measured pairs: 430.32 u @ 2.0 s,
 - **Item 15 dispatches nothing until these rows are ticked**; the coder wave
   (next slice id **S9**) is brief-written after the ticks land, docs-first from
   this table.
+- **Amended by §23.5 (2026-09-24, owner "go ahead with all"):** the owner's
+  inertia ruling supersedes **T4** (the sideways extra is gone — that axis rides
+  the single body damp) and the row's own clause that the lateral damp "is the
+  outward skid". **T1/T2 are ticked** (2.5 and 0.5). **T3 is HELD**: its wording
+  (chase rate × 0.75) and its worked effect (time-to-top 4.8 → 3.6 s) are each
+  other's inverse, so it cannot be implemented as written — a notice is raised
+  and S11 implements nothing for it.
+
+## §23 Item 18 — station legibility, space gunnery, one-vector inertia (2026-09-24, owner-ruled)
+
+**Owner ask, verbatim (2026-09-24):** *"i want a panel in the space station where i buy
+ships etc to always show full item description that is hovered on maybe on the bottom left
+where there are currect infos but they only update on press. we might need to make them
+bigger. or move it to the top next to credits. i also want the current credits in the space
+scene. ... cannon and railgun, every kinetic weapon should have near infinite range, i dont
+see a reason why they should dissapear in space, same for lasers. also take a look at the
+flight and inertia. when flying forward and to the side when i stop first ship stops then
+glides to the side, like each vector of inertia is independent which doesnt feel good."* —
+answered **"go ahead with all"** the same day, which ticks every row below and takes the
+planner's recommendations (inspector bottom-left, prose written this wave, 30 000 u ceiling,
+readout unmoved, unify + T1/T2, T3 held).
+
+**Where the pins live:** the four range rows below supersede **18 §13's** range column for
+the four named families and are the owner's to fold into that owner-locked file at the next
+18 pass; nothing else in §13 moves. Wave **S11**,
+`slices/S11-legibility-gunnery-feel/`.
+
+### §23.1 Station inspector — the hovered item's full description (`S11-B1`)
+
+Today the shell's footer is **one** `StationCaption` line (13 px, `Tokens/text_dim`,
+`ui/screens/station.tscn:226-241`) that both hover and press overwrite; no pane has a
+description surface, and `&"description"` exists only on ships, components and minerals and
+is read in exactly one place (`ui/station/shipyard_panel.gd:919`).
+
+The shell gains an **inspector block immediately above the existing status strip**; the
+strip's own words, tokens and danger colour are unmoved.
+
+| pin | value | reversal |
+|---|---|---|
+| signal | `inspect_requested(title: String, body: String, danger: bool)` — **declared on all eight panes**, emitted by the six item panes (`armory`, `shipyard`, `exchange`, `auction`, `refinery`, `fitting`) on hover-in **and** on selection; `title == ""` clears the block | delete the signal and the shell's handler |
+| shell nodes | `Inspector` (`PanelContainer`, `PanelRaised`) → `InspectorMargin` (`MarginContainer`) → `InspectorBox` (`VBoxContainer`) → `InspectorTitle` (`Label`, `StationPanelTitle`, one line) + `InspectorBody` (`Label`, `SectionHeader` size with a `font_color` override to the theme's `Tokens/text_primary`, `autowrap_mode AUTOWRAP_WORD_SMART`, `max_lines_visible 2`) | the block, one node at a time; the override restores `text_dim` |
+| body lines | `INSPECTOR_BODY_MAX_LINES := 2` | 1 |
+| body text | `StationCatalog.describe(id: StringName) -> String`, **static**: base-id resolved (`mod_*` instances resolve through their base), reads `MODULES` / `SHIPS` / the ammo+service rows' own `&"description"`, returns `""` when the row carries none (**no invented text**), and for a `mod_*` instance appends that instance's affix perks joined by `" · "` | `""` always (title only) |
+| grouping | `StationCatalog.group_int(value: int) -> String` — one copy of the station's existing rule; `ui/screens/station.gd:_format_int` delegates to it so the two readouts cannot drift | restore the private copy |
+| item-less panes (`repairs`, `launch`) | declare the signal, emit nothing | — |
+
+The block keeps the strip's position (bottom-left, above `StatusLabel`); the page pays
+≈3 caption lines of pane height. Reversal: drop the block, restore the footer.
+
+### §23.2 Module descriptions (`S11-B2`)
+
+`MODULES` gains one `&"description"` key per row, **verbatim** from this table (35 rows).
+`name`, `slot`, `draw`, `tier`, `cost`, `icon` and `effects` stay byte-identical; nothing
+reads the new key except §23.1's `describe`. Reversal: delete the 35 keys.
+
+| id | description |
+|---|---|
+| `w_laser` | Beam weapon. It never misses and never stops asking the reactor for more. |
+| `w_cannon` | Kinetic burst. Ignores the shield and puts its damage straight into the plate. |
+| `w_rocket` | Homing warheads. Lock a target or they fly straight and dumb. |
+| `w_mine` | Drop one behind you and let the pursuit solve itself. |
+| `w_plasma` | Superheated beam. The heaviest hit a bare hull will ever take. |
+| `w_railgun` | Sabot slug at speed. Kinetic reach with nothing in its way. |
+| `w_mining` | Mining tool, not a gun. Cuts rock and leaves the hulls alone. |
+| `w_proton` | Exclusive launcher on the tier three line. No family row fires it yet. |
+| `w_flak` | Exclusive battery on the tier three line. No family row fires it yet. |
+| `s_light` | 200 shield for the least money. The cheapest way to stop bleeding. |
+| `s_heavy` | 400 shield and a little more regen. A buffer you can hold a lane with. |
+| `s_ion` | It comes back faster than they can take it away. |
+| `h_plate_light` | 250 hull structure for five percent of your speed. Plate always costs speed. |
+| `h_plate_heavy` | 600 hull structure. Twelve percent slower, built to be shot at. |
+| `h_composite` | 1 000 hull structure for ten percent of your speed and a little mass. |
+| `c_target` | Fifteen percent more damage out of every gun on the hull. |
+| `c_scanner` | A quarter more scanner reach, so the sector reads to its edges. |
+| `c_twin` | The second generation of the targeting line, and more damage for it. |
+| `c_ewar` | Electronic warfare suite. Fitted and recognised, with no effect row yet. |
+| `c_nexus` | Both halves at once: more damage and more scanner reach. |
+| `b_afterburner` | Three seconds of hard burn, eight seconds between them. |
+| `b_fold` | Blinks the hull four hundred units. Fitted now, firing on a later slice. |
+| `u_cargo` | Fifteen more cargo units in the hold. |
+| `u_salvage` | Doubles tractor reach and pull, so loose rock comes to you. |
+| `u_refine` | A refinery on the hull. Fitted and recognised, with no effect row yet. |
+| `u_drones` | Repair drones on call. Fitted and recognised, with no effect row yet. |
+| `u_tractor` | One more tractor stream, so a second rock can be pulled. |
+| `u_holds` | Forty more cargo units. The volume answer to the cargo line. |
+| `u_vault` | Station-secured storage that survives a lost hull. |
+| `e_std` | The stock drive. No bonus, no penalty, and every yard knows it. |
+| `e_ion` | Fifteen percent more speed at the same mass. |
+| `e_vector` | More speed and a faster turn. The quick hull's engine. |
+| `p_std` | The stock reactor. It powers the hull you bought and nothing more. |
+| `p_mk2` | Two more power output for the modules that ask for it. |
+| `p_core` | Four more power output. The reactor a full fit is built around. |
+
+### §23.3 Credits in flight (`S11-B2`)
+
+`hud.gd` appends a `CreditsBlock` to the top-left column's existing block list (the column
+`_build_pool_blocks` already owns), below the fuel block: `CreditsHeader` (`HBoxContainer`:
+`CreditsIcon` = `res://assets/icons/cargo/icon_credits.svg`, `CreditsTitle` = `"CREDITS"`,
+`CreditsSpacer`) + `CreditsValue` (`Label`, `theme_type_variation HudReadout`), written
+through `StationCatalog.group_int`. The block reads the `PlayerProfile` singleton by name
+(guarded, the panes' own service pattern), connects its `profile_changed` signal and updates
+**only** on `&"credits"`. **The HUD never writes the profile.** Reversal: delete the block
+and the connection.
+
+### §23.4 Near-infinite kinematic and beam range (`S11-B3`)
+
+`NEAR_INFINITE_RANGE := 30000.0` in `game/weapons.gd` beside `FAMILIES`, applied as the
+`&"range"` of **`laser`, `plasma`, `cannon`, `railgun`**; `rocket` stays `900.0` and `mine`
+stays `0.0`. Reversal: `500.0` / `450.0` / `600.0` / `800.0`.
+
+- The ceiling is derived, not guessed: the sector is `10 000 × 10 000`
+  (`game/sector_registry.gd:32`), so its diagonal is ≈14 142 u; 30 000 u is past anything a
+  sector holds, and the fizzle stays **finite** — `projectile.gd:441/503/635` keeps its
+  "`0` = no limit" contract untouched, so a travelling shot still despawns and no node
+  accumulates. A true `0.0` was rejected for exactly that leak.
+- `game.gd:1431`'s IN/OUT OF RANGE readout is **unchanged**: with one of these four
+  selected it reads IN RANGE at any in-sector distance, which is now the truth of the
+  number. No readout edit, no new wording.
+- NPCs share the table, so their fire reaches as far as the player's. That is the same
+  number, not a second one.
+- Tests: any row pinning one of the four families' `range` (or reading it through
+  `range_of`) moves to `30000.0`; `range_of` is the single reader.
+
+### §23.5 One-vector inertia (`S11-B4`)
+
+The measured cause of the owner's complaint: the released hull decays on **two independent
+time constants** (`player_ship.gd:1068-1090`) plus an explicit cross-axis drag
+(`_step_lateral_drag:864-880`), and the thrust law compensates damp only along its own
+commanded axis (`_thrust_axis:851`). Release a combined forward+strafe and the nose
+component dies on the forward constant while the sideways component rides the other, so the
+hull stops twice and the second stop slides.
+
+| pin | value | reversal |
+|---|---|---|
+| one decay | `player_ship._lateral_damp()` **returns `_linear_damp()`** — one rate owns both axes. `_lateral_extra_damp()` then returns `0.0` and `_step_lateral_drag` is inert (both kept) | restore `SHIP_FIT.COAST_TIME_MULT * SHIP_FIT.LATERAL_DAMP_MULT / _stats.coast_time` |
+| `LATERAL_DAMP_MULT` | **retired in place** (unread; its doc says so). §14's "the lateral damp *is* the skid" clause is superseded here | restore the reader |
+| commanded strafe | unchanged in effect: `_step_strafe` compensates the one damp on its own axis, so a commanded strafe still chases at the class rate | — |
+| T1 | `ship_fit.COAST_TIME_MULT` `2.0 → 2.5` | `2.0` |
+| T2 | new `ship_fit.ANGULAR_DAMP_MULT := 0.5`, read by `player_ship._angular_damp()` as `SHIP_FIT.ANGULAR_DAMP_MULT / _stats.turn_spinup` | `1.0` (byte-for-byte today) |
+| T3 | **held — not ticked.** §22's row multiplies the strafe chase *rate* by `0.75` while its own worked effect (lateral time-to-top 4.8 → 3.6 s) is that multiplier's inverse, so the row contradicts itself and cannot be implemented as written. A notice is raised; **S11 implements nothing for T3** | — |
+| T4 | **superseded by the one-decay row** (there is no sideways extra left to scale) | the one-decay reversal restores it |
+
+- **Acceptance of the owner's own complaint:** released from a commanded forward+strafe at
+  cruise, the hull's velocity **direction holds within 5°** of its release bearing while the
+  speed falls to 0.1× of release — the two components decay together, one stop, one line.
+  The existing mirrored-manoeuvre parity (within 1 %) stands.
+- **Tests that move:** `test_s2_6_flight.gd`, `test_flight_feel_g1.gd`,
+  `test_engine_c3_flight_decay.gd` — numeric rows re-derived to the ticked constants, never
+  weakened; the probes `probe_s2_6_flight`, `probe_g1_flight_feel`, `probe_c3_flight_decay`
+  follow. **New:** `tests/test_s11_flight_stop.gd` (the 5° acceptance above).
+
+### §23.6 Tests and close-out
+
+- New suites: `test_s11_inspector.gd` (§23.1 + §23.3's credits half),
+  `test_s11_flight_stop.gd` (§23.5). §23.2 is data — no new suite; R1 spot-checks the 35
+  rows against this table.
+- Every other suite's pinned literals stay as they are: this wave moves the range rows
+  (§23.4) and the three flight suites (§23.5) and nothing else.
+- The §9 gate row and the §10 row are **S11-R1's** at close-out; this section is the wave's
+  only pre-dispatch CONTRACTS write.
+- **Cross-lane:** D11 holds `vajb-orbit/tests/` (directory-wide) and `docs/CONTRACTS.md` at
+  its own close; S11's test files are named per worker so the two lanes never claim one
+  file, and S11-R1 sequences its §9/§10 row after D11's if D11 lands first.
 
 ## §10 Changelog
 
@@ -3474,3 +3645,19 @@ linearly with the resolved coast (S2.6's measured pairs: 430.32 u @ 2.0 s,
   success line's post-write name; the two new test files' missing `.uid`). The owner ticks
   the wave leaves: the `x` box vs the block, what a chip press and a rack selection should
   mean, the per-battery ammo/stats readout (nothing pins either), and S8's still-open list.
+- **v0.22 (2026-09-24, docs-first for coder item 18 — this lane's only pre-dispatch
+  CONTRACTS writer, sequenced after §9's v0.20 and §10's v0.21; no parallel lane had landed
+  a row first)** — §23 added: the station inspector pin (a new `inspect_requested` signal on
+  all eight panes, emitted by the six item panes; the shell's `Inspector` block above the
+  status strip at `StationPanelTitle` + `SectionHeader`-with-`text_primary`, two wrapped
+  lines; `StationCatalog.describe`/`group_int`), the **35-row module description table**
+  (§23.2, verbatim, no invented text), the flight HUD's `CreditsBlock` (§23.3), the four
+  families' **`NEAR_INFINITE_RANGE := 30000.0`** with its derivation from the sector's own
+  10 000² (`sector_registry.gd:32`) and the fizzle kept finite so no node leaks (§23.4), and
+  the **one-vector inertia** pin (§23.5: `_lateral_damp()` → `_linear_damp()`,
+  `LATERAL_DAMP_MULT` retired in place, T1 2.5 + T2 0.5 ticked, **T3 held** on its own
+  self-contradicting worked row, T4 superseded) with the 5°-direction acceptance. §22
+  carries the amendment pointer. The wave is **S11**; the §9 row and the review's own §10 row
+  are S11-R1's. **Two notices raised to the owner** (both pre-dispatch, neither blocking):
+  T3's inverse wording, and the station caption colour's 4.1:1 contrast, which is a
+  graphics-lane finding (D12-A0's audit measures it independently).

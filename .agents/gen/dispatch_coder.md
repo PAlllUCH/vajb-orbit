@@ -20,8 +20,9 @@ with any parallel lane, WAVEBOARD, wave-boundary commit).
 
 | # | Wave | Slice folder | Brief / prompts | Status |
 |---|---|---|---|---|
-| 15 | **Flight-feel retune** (owner O4/O5: torque/slow-down, strafe/inertia) — pin **CONTRACTS §22** | not opened | — | **NUMBERS PROPOSED — waiting on your ticks.** §22 holds four tick-gated levers with worked rows + reversals: T1 `COAST_TIME_MULT` 2.0→2.5, T2 new `ANGULAR_DAMP_MULT` 0.5, T3 new `STRAFE_RATE_MULT` 0.75, T4 `LATERAL_DAMP_MULT` 1.0→0.6. Tick any subset in §22 → I write **S9**'s five-piece from the ticked table. Nothing dispatches until then. |
-| 17 | **Jump gates to sector edges** (owner ask 2026-09-24: same gates, spawn placement only) | not opened | — | **QUEUED — brief at dispatch-prep.** Runs after item 15; if the gate spawn seam is `game/sector.gd`, it runs after D11's close-out (D11 holds that file through C1). Editor-only change otherwise. |
+| 15 | **Flight-feel retune** (owner O4/O5) — **folded into item 18** | — | — | **TICKED 2026-09-24.** The owner answered "go ahead with all": T1 `COAST_TIME_MULT` 2.5 and T2 new `ANGULAR_DAMP_MULT` 0.5 are implemented by item 18's **S11-B4**; **T4 is superseded** by the one-vector decay; **T3 is HELD** (§22's row contradicts itself — notice with the owner). |
+| 17 | **Jump gates to sector edges** (owner ask 2026-09-24: same gates, spawn placement only) | not opened | — | **QUEUED — brief at dispatch-prep.** Runs after item 18; if the gate spawn seam is `game/sector.gd`, it runs after D11's close-out (D11 holds that file through C1). Editor-only change otherwise. |
+| 18 | **Station legibility, space gunnery, one-vector inertia** (owner ask 2026-09-24: hovered-item description panel, credits in the space scene, near-infinite kinetic/beam range, the two-stop inertia) — pin **CONTRACTS §23** | `slices/S11-legibility-gunnery-feel/` | `S11_BRIEF.md` / `S11_prompts.md` | **IN FLIGHT.** Five-piece written and §23 landed docs-first (v0.22): witness/credits/readout/prose pins, the 35-row description table, `NEAR_INFINITE_RANGE := 30000.0`, and the one-vector decay. Run order **B1 ∥ B3 ∥ B4 → B2 → R1**. The readability half is a separate design-lane audit (**D12-A0**, `slices/D12-ui-readability/`). |
 
 Beyond the queue: **slice 4's remainder** (quadrants/directional armour — 18
 §4.5 + ruling 23; bosses/arena — 14 §5, blocked on P4 contracts + boss art).
@@ -40,9 +41,35 @@ slice's `_archive/` (S8's and S10's still in their slice folders).
 
 ## Handoff (live)
 
-Items 15 and 17 are the queue; nothing dispatches yet. **Item 15** (S9
-flight-feel) waits on your ticks to CONTRACTS §22's T1–T4 — tick any subset and
-the five-piece is written from the ticked table. **Item 17** (jump gates to
-sector edges) needs its own five-piece at dispatch-prep, and if the gate spawn
-seam is `game/sector.gd` it goes after D11's close-out (D11 holds that file
-through C1). Slice 4's remainder still needs its own five-piece.
+Item 18 is the queue and it is **in flight**; item 17 is next and needs its own five-piece
+at dispatch-prep (after D11 if the gate spawn seam is `game/sector.gd`). Item 15 is closed
+by absorption — its levers live in §23.5, with **T3 held** on a notice.
+
+**Item 18 handoff block** (the owner pastes this and nothing else):
+
+```text
+Read .agents/gen/dispatch_coder.md and execute queue item 18 only — station legibility,
+space gunnery, one-vector inertia. Brief: .agents/gen/slices/S11-legibility-gunnery-feel/S11_BRIEF.md.
+Prompts: .agents/gen/slices/S11-legibility-gunnery-feel/S11_prompts.md. Snapshot + commit
+before the first dispatch, run B1 ∥ B3 ∥ B4, then B2, then R1, and the fixer only if the
+review leaves HIGH or MED. Stop before item 17. Close out per the brief's close-out section
+(gate ×2, verify_wave.py verify --baseline s11_start, R1's §9/§10 row sequenced after any
+D11 row, WAVEBOARD update, wave-boundary commit), then report back: the measured gate count,
+each builder's per-deliverable numbers, the reviewer's findings by tier, and the owner ticks.
+```
+
+Beyond the queue: **slice 4's remainder** (quadrants/directional armour — 18
+§4.5 + ruling 23; bosses/arena — 14 §5, blocked on P4 contracts + boss art).
+Owner-locked homework stays the owner's (`18_engine_spec.md` §6/§13/§15, the
+§13 turn/coast column ticks, slice 2.5's two calls).
+
+## Design lane (not mine to dispatch)
+
+**D12-A0's readability audit is on disk** (`slices/D12-ui-readability/D12-A0_report.md`, 5
+HIGH / 4 MED / 3 LOW, every finding lane-tagged). Its four graphics findings are the ARMORY
+pane's type scale (9-13 px with per-node overrides that escape `ui_scale`), `text_dim`
+captions on painted metal at 1.9-2.8:1, the ember tag at 1.8:1, and the pane's ammunition
+half sitting below the fold at 1920x1080 with 37 % of its host empty. **They are the design
+lane's — the owner's D11/D12 designer session owns the fix**, and any fix that edits
+`ui/station/armory_panel.gd` must land **after** S11-B1 (which holds that file for the hover
+wiring). Raised to the owner as a notice; not briefed here.

@@ -47,13 +47,15 @@ P2-B proper fitting panel, **S2.6 truth-and-feel**, **S3 the item economy**,
 reproduced the owner's report as a **D7 regression** — the barrel `Name` plate and
 the `✕` collapsed to 0 px — plus selection wired to nothing and a SALVO drum blank
 for rolled instances; B1 fixed all three, R1 re-measured every AC through real
-input and proved the red state in a worktree); **item 15 = the
-flight-feel retune — NUMBERS PROPOSED in §22 (v0.19), waiting on the owner's ticks**
-(O4/O5: T1 `COAST_TIME_MULT` 2.0→2.5, T2 new `ANGULAR_DAMP_MULT` 0.5, T3 new
-`STRAFE_RATE_MULT` 0.75, T4 `LATERAL_DAMP` 1.0→0.6; any subset ticks → **S9**'s
-five-piece is written from the ticked table). **Owner ask 2026-09-24 — jump
-gates to sector edges (same gates, spawn placement only) — becomes the coder
-lane's next free item after S8/S9**: brief at its dispatch-prep; if gate spawn
+input and proved the red state in a worktree); **item 18 = station legibility, space
+gunnery, one-vector inertia — IN FLIGHT** (owner ask 2026-09-24: a hovered-item description
+panel in the station, current credits in the space scene, near-infinite kinetic and beam
+range, and the two-stop inertia. **CONTRACTS §23 + v0.22 landed docs-first**; five-piece at
+`slices/S11-legibility-gunnery-feel/`; run order **B1 ∥ B3 ∥ B4 → B2 → R1**; T3 of item 15 is
+**held** on a self-contradicting worked row, T1/T2 ticked, T4 superseded). **Item 15 is
+closed by absorption into §23.5.** **Owner ask 2026-09-24 — jump
+gates to sector edges (same gates, spawn placement only) — is the coder lane's next
+free item (17)**: brief at its dispatch-prep; if gate spawn
 lives in `sector.gd` it runs after D11's close-out (D11 holds that file through
 C1). Beyond it: **slice 4's
 remainder** — quadrants/directional armour (18 §4.5 + ruling 23, deferred from S6) and
@@ -65,6 +67,14 @@ L169 (a same-family battery's per-cell seed — 2× magazine). Designer queue: *
 ENVIRONMENT_SPEC §11 landed, A0 mockup-gate handoff live in `dispatch_designer.md`,
 incl. the owner's `game/sector.gd` + `game/station_scene.gd` grant); items 1/4/10/11/12
 picked 2026-09-24 (briefs at dispatch-prep), item 9 still awaits its mockup gate).
+**D12 readability audit LANDED** (`slices/D12-ui-readability/D12-A0_report.md`, owner ask
+2026-09-24: 5 HIGH / 4 MED / 3 LOW, ARMORY first, every finding lane-tagged). The four
+graphics findings are this lane's work — ARMORY ink 9-13 px with per-node overrides that
+escape `ui_scale`, `text_dim` captions on painted metal at **1.9-2.8:1**, the ember state tag
+at **1.8:1**, and the pane's ammunition half sitting **below the fold at 1920x1080** with
+37 % of its host empty — and any fix that edits `ui/station/armory_panel.gd` lands **after**
+S11-B1 (which holds that file for the hover wiring). Raised to the owner as a notice; its
+own fix wave is not briefed.
 Owner gates:
 the chrome art half, the **`18_engine_spec.md` §6/§13/§15 cleaving amendment** (owner-locked; §15
 is the test checklist and now contradicts the shipped suite), the launch fit (**both symptoms
