@@ -18,7 +18,7 @@ extends VBoxContainer
 ##   func refresh_profile(key: StringName) -> void             react to profile_changed
 ##   func focus_primary() -> void                              focus entry after a switch
 ##   func disarm() -> bool                                     ui_cancel step 2
-##   func refuel_button() / recharge_button() -> Button         the two service actions
+##   func refuel_button() / recharge_button() / bounty_button() -> Button   the service actions
 
 const TOKENS_TYPE: StringName = &"Tokens"
 
@@ -81,6 +81,22 @@ const FIGURE_FUEL_MAX: StringName = &"fuel_max"
 const FIGURE_ENERGY_MAX: StringName = &"energy_max"
 const SERVICE_REPORT := "%s %d"
 
+## 13 section 7 / 14 section 7's bounty row, wired by wave S6 (CONTRACTS section 19): the
+## row is shown for the **docked station's faction** whenever its heat is above zero, its
+## label carries the fine the profile itself computes (`bounty_fine` = heat x 25 CR), and a
+## press is the single confirm 14 section 7 asks for. The wording is the catalogue row's own
+## `name` plus the figure, so no service name is a literal here. A refusal writes nothing
+## (17 section 5) and is rendered in the pane's own status line.
+const SERVICE_BOUNTY: StringName = &"bounty"
+const BOUNTY_LABEL_FORMAT := "%s (%d CR)"
+const BOUNTY_PAID_FORMAT := "BOUNTY PAID · %d CR"
+## The one refusal the row can reach: it is only visible while heat > 0, so a `false` from
+## `pay_bounty` with a fine still owed is a short balance (17 section 5's refusal reason,
+## in the shell's own wording). The zero-heat refusal is unreachable from here and still
+## named, because a caller can reach `pay_bounty` directly.
+const BOUNTY_REFUSED := "REFUSED · NOT ENOUGH CREDITS"
+const BOUNTY_NOTHING_OWED := "NO BOUNTY DUE"
+
 const COL_BRIEF := 220.0
 const BRIEF_SEPARATION := 12
 
@@ -138,10 +154,12 @@ const STATUS_FIRED := "LAUNCH CONFIRMED · UNDOCKING"
 var _brief_values: Dictionary = {}
 var _plates: Array[TextureButton] = []
 var _plate_icons: Array[TextureRect] = []
-## The two service actions, built into DECK CONTROL's own box (the section 5.4 amendment); the
-## labels are the catalogue's, so nothing here is a literal to drift.
+## The service actions, built into DECK CONTROL's own box (the section 5.4 amendment); the
+## labels are the catalogue's, so nothing here is a literal to drift. The bounty row (13
+## section 7 / 14 section 7, wave S6) is the third and lives in the same row.
 var _refuel_button: Button = null
 var _recharge_button: Button = null
+var _bounty_button: Button = null
 var _arm_timer: Timer
 var _armed := false
 var _arm_tween: Tween = null
@@ -179,10 +197,13 @@ func _exit_tree() -> void:
 func refresh_profile(key: StringName) -> void:
 	## STATION_HUB section 12.4: &"cargo" rebuilds the manifest and the plate strip,
 	## &"ships" moves the active hull and the limits, &"ammo" moves the ammunition line.
+	## A paid bounty moves the credits key, so the row re-reads itself there (13 section 7).
 	if key == &"cargo" or key == &"ships":
 		_refresh_cargo()
 	if key == &"cargo" or key == &"ships" or key == &"ammo":
 		_refresh_brief()
+	if key == &"credits":
+		_refresh_bounty_row()
 
 
 func focus_primary() -> void:
@@ -311,10 +332,15 @@ func _refresh_plate_textures() -> void:
 		_apply_plate_textures(plate)
 
 
-## DECK CONTROL's two service actions (STATION_HUB section 5.4's 2026-09-22 amendment), built
+## DECK CONTROL's service actions (STATION_HUB section 5.4's 2026-09-22 amendment), built
 ## above the LAUNCH button so the primary action stays the last and lowest control in the box.
 ## The row is built here rather than in the scene file because this pass owns the panel's
-## script only; the two buttons are named after the catalogue's own services.
+## script only; the buttons are named after the catalogue's own services.
+##
+## The bounty row (13 section 7 / 14 section 7) joins the same row: it is the third service
+## and it is **shown only for the docked station's faction while its heat is above zero**,
+## which is `_refresh_bounty_row`'s reading of the profile. A hidden Control takes no space
+## in a container, so the row collapses back to REFUEL/RECHARGE at a clean station.
 func _build_service_rows() -> void:
 	var box := _launch_button.get_parent()
 	if box == null:
@@ -324,8 +350,10 @@ func _build_service_rows() -> void:
 	row.add_theme_constant_override(&"separation", SERVICE_ROW_SEPARATION)
 	_refuel_button = _make_service_button(row, SERVICE_REFUEL)
 	_recharge_button = _make_service_button(row, SERVICE_RECHARGE)
+	_bounty_button = _make_service_button(row, SERVICE_BOUNTY)
 	box.add_child(row)
 	box.move_child(row, _launch_button.get_index())
+	_refresh_bounty_row()
 
 
 ## One service action: the catalogue's own `name` on a `StationButton` of the secondary height,
@@ -353,12 +381,70 @@ func recharge_button() -> Button:
 	return _recharge_button
 
 
+func bounty_button() -> Button:
+	return _bounty_button
+
+
+## 13 section 7 / 14 section 7's condition, re-read whenever the pane hears about credits:
+## the row is visible only when the **docked station's faction** owes a fine. The faction is
+## `PlayerProfile.docked_faction` (the docking route files it), and the fine is the
+## profile's own `bounty_fine` - the row prints the profile's number, it never multiplies.
+func _refresh_bounty_row() -> void:
+	if _bounty_button == null:
+		return
+	var profile := _profile()
+	var faction := _bounty_faction(profile)
+	var fine := 0 if profile == null or faction == &"" else int(
+		profile.call(&"bounty_fine", faction)
+	)
+	_bounty_button.visible = fine > 0
+	if fine <= 0:
+		return
+	var label := String(Catalog.service(SERVICE_BOUNTY).get(&"name", String(SERVICE_BOUNTY)))
+	_bounty_button.text = BOUNTY_LABEL_FORMAT % [label, fine]
+
+
+## The faction whose fine this pane may settle: the docked one, and only when the profile
+## names a real owner. `&""` hides the row (nobody's space, or a profile that never filed a
+## docking).
+func _bounty_faction(profile: Node) -> StringName:
+	if profile == null or not profile.has_method(&"docked_faction"):
+		return &""
+	var faction := StringName(profile.call(&"docked_faction"))
+	if faction == &"" or faction == &"unaligned":
+		return &""
+	return faction
+
+
+## 14 section 7's single confirm: the panel requests and `PlayerProfile.pay_bounty` owns the
+## write and both refusals (17 section 5's law), exactly as the two power services route
+## through `Repairs`. A refusal writes nothing anywhere; the pane only renders what came back.
+func _run_bounty() -> void:
+	var profile := _profile()
+	var faction := _bounty_faction(profile)
+	if profile == null or faction == &"":
+		return
+	var fine := int(profile.call(&"bounty_fine", faction))
+	var paid := bool(profile.call(&"pay_bounty", faction))
+	_refresh_bounty_row()
+	var text := BOUNTY_PAID_FORMAT % fine
+	if not paid:
+		text = BOUNTY_REFUSED if fine > 0 else BOUNTY_NOTHING_OWED
+	_set_confirm(text, not paid)
+	status_requested.emit(text, not paid)
+
+
 func _on_service_focused() -> void:
 	AudioManager.play_ui(AudioManager.UiCue.HOVER)
 
 
 func _on_service_pressed(service_id: StringName) -> void:
 	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	## 13 section 7's bounty row is not a hull service: it settles the docked faction's fine
+	## through the profile, so it takes its own path (`_run_bounty`).
+	if service_id == SERVICE_BOUNTY:
+		_run_bounty()
+		return
 	_run_service(service_id)
 
 

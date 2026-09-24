@@ -4,8 +4,10 @@ Rebuilt 2026-09-22 after the purge; reorganised 2026-09-24 (this file now carrie
 **open items only** in the queue — everything done lives in the Done list, with
 detail in `MASTER_REPORT.md` and `_state/WAVEBOARD.md` §Closed). Execute **one
 item per order**, close out per the brief's close-out section before starting the
-next. Model for every worker: `deepseek/deepseek-v4-flash` (owner instruction
-2026-09-22; `opencode-go/deepseek-v4.1-flash` is broken). Briefs and prompts live
+next. Model for every worker: `opencode-go/deepseek-v4.1-flash` (owner instruction
+2026-09-24; it streams agent work again — wave S6 ran K0 through R1 on it without a
+single provider error). Fallback if it regresses: `deepseek/deepseek-v4-flash` (the
+2026-09-22 route, used while the opencode-go slug failed). Briefs and prompts live
 in the slice folders; the owner pastes only the short handoff paragraph.
 
 **File-collision law:** two waves may never hold one file at once (nor the same
@@ -26,7 +28,6 @@ CONTRACTS §9/§10 measured notes, WAVEBOARD update, wave-boundary commit).
 
 | # | Wave | Slice folder | Brief / prompts | Status |
 |---|---|---|---|---|
-| 12 | **Engine slice 3 (Travel) merged with RPG P3** — gates, corridors, POIs, scanner, sector transitions + heat/hunters; sector registry, anomalies, derelicts, loot tables (17 §1 P3) | `slices/S6-travel/` | `S6_BRIEF.md` / `S6_prompts.md` | **BRIEFED 2026-09-24** (docs-first landed: CONTRACTS §19 + v0.11, 11 §5, 13 §7, 06 §8, 01 §5.2) — ready to dispatch; parallel-safe with D6 (disjoint sets) |
 | 13 | **Affix-application wave** (15 §9.3 — apply the stored affixes to stats; S3 stores/prices/names/displays but applies none) | not opened | — | NOT BRIEFED — S3 tick 6 ("whether to schedule") gates it |
 
 Next beyond the queue: owner-locked homework stays the owner's —
@@ -34,7 +35,7 @@ Next beyond the queue: owner-locked homework stays the owner's —
 + the two flight multipliers; §15's test checklist now contradicts the shipped
 suite), the §13 turn/`coast_time` column ticks, slice 2.5's two calls.
 
-## Done (items 1–11)
+## Done (items 1–12)
 
 1–3 (chrome, combat repair, weapon FX) — closed 2026-09-21, see
 `MASTER_REPORT.md`. 4 P2-A ship slot frames (`8d189bf`), 5 Rock cleave
@@ -47,4 +48,10 @@ scatter, beam sink), 9 S3 the item economy (gate 493), 10 S4 weapon batteries
 shipyard hangar, ARMORY drag-and-drop mixed batteries, ammo-as-cargo, hardpoints
 + `track_dps`) — closed 2026-09-24, gate 524 → **578/0** hermetic (orchestrator
 re-verified twice on scratch stores 2026-09-24); reports
-`slices/S5-playtest-fixes/`, see `WAVEBOARD.md` §Closed.
+`slices/S5-playtest-fixes/`, see `WAVEBOARD.md` §Closed. **12 S6 travel**
+(engine slice 3 + RPG P3: gates, corridors, POIs, scanner, sector transitions,
+heat, hunters, loot; the K0 drift pass's 21 findings dispositioned before the
+builders ran, three scope calls owner-ratified) — closed 2026-09-24, gate
+608 → **674/0** hermetic (orchestrator ×2 + R1 ×4 on scratch stores, live
+account byte-stable); **0 HIGH / 0 MED / 8 LOW** (L150–L157), no fixer pass;
+reports `slices/S6-travel/`, see `WAVEBOARD.md` §Closed.

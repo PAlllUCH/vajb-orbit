@@ -132,7 +132,7 @@ plumbing already exists (`PlayerProfile.heat()`, `NpcRegistry.heat_tier()`,
   ×2–3 (§3's literal reading). Owner tick 6. The archetype row flips off
   `SEAM_SLICE_4`; `KEY_TIER` stays 1 (test-pinned) and the hull map lives in
   `KEY_MEMBERS`; aggro/scan radius `900.0` (**proposed** — the pirate fighter
-  band's own radius, `game/npc_registry.gd:208`; reversal 1200.0).
+  band's own radius, `game/npc_registry.gd:220`; reversal 1200.0).
 - **Enforcement points:** **dock refusal reads standing** (`PlayerProfile.standing()
   <= -51`, 12 §4.1's Outlaw band), **gate refusal reads the heat tier**
   (`NpcRegistry.heat_tier() == &"outlaw"`, 13 §3 / 11 §2.3) — two axes, each from

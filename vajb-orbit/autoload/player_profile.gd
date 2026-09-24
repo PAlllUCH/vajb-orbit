@@ -174,6 +174,18 @@ const EVENT_BUY_AMMO := "BUY_AMMO"
 ## licenses -- and the line's item field carries the instance's **base** id, so a
 ## replay aggregates by item while the price delta carries the rarity.
 const EVENT_SELL_MODULE := "SELL"
+## Doc 13 section 2's redemption path, wired by wave S6 (CONTRACTS section 19): one line
+## per bounty paid, the cleared heat in the quantity field and the fine as the credits
+## delta, so a replay reads what was owed and what it cost.
+const EVENT_BOUNTY := "BOUNTY"
+## Doc 13 section 2's fine rate, verbatim: `fine = heat x 25 CR` (so 40 heat costs
+## 1 000 CR). One home; the LAUNCH row prints `bounty_fine`'s answer, never its own.
+const BOUNTY_CR_PER_HEAT := 25
+## Doc 13 section 2's per-faction heat bound and the floor the reduction and the decay
+## both stop at. The **gain** clamp lives in `game.gd`'s `_apply_heat`, the one writer of
+## a positive delta; `heat_of` bounds every read the same way.
+const HEAT_MIN := 0
+const HEAT_MAX := 100
 
 ## The save v5 retirement table (CONTRACTS section 13), 09 section 4 item 13's
 ## one-way door: each of the six retired `StationCatalog.UPGRADES` rows names the
@@ -226,6 +238,12 @@ var _fits: Dictionary = {}
 var _market: Dictionary = {"demand": {}, "stock": {}, "queue": {}, "trend": {}, "last_band": 0}
 var _heat: Dictionary = {}
 var _standing: Dictionary = {}
+## The faction whose station the account is docked at (doc 13 section 7's bounty row and
+## doc 14 section 7's "any faction station with heat > 0"). `game.gd` writes it as it
+## routes to the station and `ui/station/launch_panel.gd` reads it. **Transient**: a
+## station is only ever reached from flight, so it is not a save key and `_apply_defaults`
+## clears it rather than persisting it (CONTRACTS section 19's report).
+var _docked_faction: StringName = &""
 var _contracts: Array = []
 var _vaults: Dictionary = {}
 var _insured := false
@@ -1572,6 +1590,60 @@ func set_heat(value: Dictionary) -> void:
 	_mark_dirty()
 
 
+## One faction's heat, bounded by doc 13 section 2's 0-100 on the way out as well as on the
+## way in, so a file written by an older build cannot hand a caller a value outside the
+## band. A faction the record does not mention reads 0.
+func heat_of(faction_id: StringName) -> int:
+	return clampi(int(_heat.get(String(faction_id), 0)), HEAT_MIN, HEAT_MAX)
+
+
+## One faction's standing (doc 12 section 4's -100..+100, per faction). Read by the dock
+## refusal, which asks only whether it is at or below doc 12 section 4.1's Outlaw floor.
+func standing_of(faction_id: StringName) -> int:
+	return int(_standing.get(String(faction_id), 0))
+
+
+## Doc 13 section 2's fine for one faction's heat: `heat x 25 CR`, 0 when there is nothing
+## owed. The one home of the rate; the LAUNCH row prints this answer.
+func bounty_fine(faction_id: StringName) -> int:
+	return heat_of(faction_id) * BOUNTY_CR_PER_HEAT
+
+
+## Doc 13 section 2's redemption path: pay the fine and zero that faction's heat.
+##
+## 17 section 5's transaction law, all-or-nothing, with the refund of every refusal: a
+## zero heat (nothing to clear) or a balance short of the fine returns `false` having
+## written **nothing** -- no credits, no heat, no log line. On success exactly one
+## `BOUNTY` line goes to the economy log, that faction's heat reads 0 (the key stays, the
+## same shape `game.gd:_apply_heat` and `_decay_heat` leave a floored faction in, so a
+## record has one spelling of "clean" and every reader -- `heat_of`,
+## `NpcShip._read_heat_tier` -- answers 0 for it) and the fine leaves the balance. Outlaws
+## never reach this: they cannot dock to pay (12 section 4.1).
+func pay_bounty(faction_id: StringName) -> bool:
+	var fine := bounty_fine(faction_id)
+	if fine <= 0:
+		return false
+	if not _charge(fine):
+		return _refuse(REASON_INSUFFICIENT, faction_id)
+	var cleared := heat_of(faction_id)
+	var paid_off := _heat.duplicate(true)
+	paid_off[String(faction_id)] = 0
+	set_heat(paid_off)
+	Log.append(EVENT_BOUNTY, faction_id, cleared, -fine, _credits)
+	return true
+
+
+## The faction whose station the account is docked at, or `&""` when it is not docked.
+func docked_faction() -> StringName:
+	return _docked_faction
+
+
+## Set by the docking route (`game.gd:_request_dock`) so the station's LAUNCH pane can show
+## the docked faction's own bounty row (doc 13 section 7). Not persisted.
+func set_docked_faction(faction_id: StringName) -> void:
+	_docked_faction = faction_id
+
+
 func contracts() -> Array:
 	return _contracts.duplicate(true)
 
@@ -1789,6 +1861,7 @@ func _apply_defaults() -> void:
 	_market = _market_default()
 	_heat.clear()
 	_standing.clear()
+	_docked_faction = &""
 	_contracts.clear()
 	_vaults.clear()
 	_insured = false

@@ -88,6 +88,14 @@ const HOSTILE_BAND: Array[Vector2i] = [
 ## band's count is at least 1, slot 1 whenever it is at least 2, and so on.
 const HOSTILE_FILL: Array[StringName] = [&"pirate", &"swarmer"]
 
+## Doc 13 section 3's bounty-hunter row id, the one archetype a heat tier spawns
+## (`game.gd:HUNTER_ARCHETYPE` spells the same id for the kill's loot). `hunter_spawn`,
+## `hunter_hull_for` and `hunter_wing_size` are this row's helpers.
+const ARCHETYPE_HUNTER: StringName = &"hunter"
+## Doc 13 section 7's hull map fallback: the hull a wing flies when the player's hull is in
+## no band of the row's `KEY_MEMBERS` (a hull the roster does not know).
+const HUNTER_HULL_DEFAULT: StringName = &"ship_fighter"
+
 ## Doc 11 section 3's "Patrols: Concord/Meridian/Choir space only" states presence in
 ## owned space and no count, and section 13 repeats only the qualifier. This is the
 ## **proposed default** (one patrol per owned sector) that keeps owned space patrolled;
@@ -133,6 +141,10 @@ const KEY_DENSITY: StringName = &"density"
 const KEY_GROUP_KIND: StringName = &"group_kind"
 const KEY_ROLE: StringName = &"role"
 const KEY_MEMBERS: StringName = &"members"
+## The player hulls one `KEY_MEMBERS` entry answers for, in the hunter row (doc 13 section
+## 7's hull map: "the hull map lives in `KEY_MEMBERS`"). A member without the key answers
+## for every hull - the trader row's convoy members carry none and need none.
+const KEY_PLAYER_HULLS: StringName = &"player_hulls"
 
 ## The resolved spawn row's own keys (`spawns_for`): the row's seed plus the sector's
 ## answer - the archetype id, the rolled band's bounds, the faction the hull flies for in
@@ -355,10 +367,12 @@ static func _ensure() -> void:
 			KEY_TIER: 1,
 			## Doc 13 section 3: "Hunters drop loot like pirates of their band".
 			KEY_LOOT_KIND: &"fighter",
-			## Doc 13 section 3 gives hunters no radius of their own ("perma-tail you"),
-			## so the seam carries none and slice 4 sets one with the wing's tuning.
-			KEY_AGGRO_RADIUS: 0.0,
-			KEY_SCAN_RADIUS: 0.0,
+			## Doc 13 section 7 (wave S6, CONTRACTS section 19): the row flips off its
+			## slice-4 seam and carries the aggro/scan radius the pirate fighter band
+			## flies at. **Proposed**: the radius is the pirate row's own 900.0
+			## (`game/npc_registry.gd`, the pirate row); reversal 1200.0.
+			KEY_AGGRO_RADIUS: 900.0,
+			KEY_SCAN_RADIUS: 900.0,
 			KEY_FLEE_HULL: 0.0,
 			KEY_FLEE_TIER: &"",
 			KEY_SCAN_TIER: &"",
@@ -368,14 +382,38 @@ static func _ensure() -> void:
 			KEY_BLIP_KIND: BLIP_HOSTILE,
 			KEY_HEAT_ON_KILL: NO_HEAT,
 			KEY_STANDING_ON_KILL: NO_STANDING,
-			KEY_SPAWN: SPAWN_SEAM,
-			KEY_SEAM: SEAM_SLICE_4,
+			## `SPAWN_SECTOR` so the row is a real sector archetype (13 section 3 spawns the
+			## wing into the player's sector, not a station or a seam), and a **zero**
+			## density so `spawns_for` never rolls it with the ordinary population: the wing
+			## is the heat tier's business (`game.gd:_spawn_hunter_wave`), not the band's.
+			KEY_SPAWN: SPAWN_SECTOR,
+			KEY_SEAM: SEAM_NONE,
 			KEY_DENSITY: _zero_column(),
 			KEY_GROUP_KIND: GROUP_NONE,
-			## Doc 13 section 3 / section 5: "2-3 hunter hulls, fighter band", carried so
-			## slice 4 does not re-research the wing's shape. Nothing spawns it yet.
+			## Doc 13 section 3 / section 5: "2-3 hunter hulls, fighter band", and doc 13
+			## section 7's **hull map** - one member per player class band, each naming the
+			## hull the wing flies and the player hulls it answers for. `hunter_hull_for` is
+			## the only reader; a member with no `KEY_PLAYER_HULLS` answers for every hull.
 			KEY_MEMBERS: [
-				{KEY_HULL_ID: &"ship_fighter", KEY_MIN: 2, KEY_MAX: 3, KEY_ROLE: &"wing"},
+				{
+					KEY_HULL_ID: &"ship_fighter",
+					KEY_MIN: 2,
+					KEY_MAX: 3,
+					KEY_ROLE: &"wing",
+					KEY_PLAYER_HULLS: [
+						&"ship_fighter", &"ship_interceptor", &"ship_patrol", &"ship_miner",
+						&"ship_vanguard", &"ship_trader", &"ship_corvette",
+					],
+				},
+				{
+					KEY_HULL_ID: &"ship_gunship",
+					KEY_MIN: 2,
+					KEY_MAX: 3,
+					KEY_ROLE: &"wing",
+					KEY_PLAYER_HULLS: [
+						&"ship_gunship", &"ship_destroyer", &"ship_freighter",
+					],
+				},
 			],
 		},
 		{
@@ -738,3 +776,56 @@ static func space_owner(sector_id: StringName) -> StringName:
 static func sector_index(sector_id: StringName) -> int:
 	var ids := SectorRegistryScript.sector_ids()
 	return ids.find(sector_id)
+
+
+## --- Doc 13 section 3's hunters (wave S6) ------------------------------------------
+
+
+## The hunter row's `KEY_MEMBERS` entries, typed. A row that carries none answers `[]`,
+## which makes `hunter_wing_size` 0 and `hunter_spawn` empty rather than guessing a wing.
+static func hunter_members() -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	var raw: Variant = archetype(ARCHETYPE_HUNTER).get(KEY_MEMBERS, [])
+	if raw is Array:
+		for entry: Variant in (raw as Array):
+			if entry is Dictionary:
+				out.append(entry)
+	return out
+
+
+## Doc 13 section 7's wing size (`randi_range(2, 3)`), read off the hunter row's own
+## `KEY_MEMBERS` so the number has one home: the first member's band, which every band
+## member shares. `(0, 0)` for a row without members.
+static func hunter_wing_size() -> Vector2i:
+	for member: Dictionary in hunter_members():
+		return Vector2i(int(member.get(KEY_MIN, 0)), int(member.get(KEY_MAX, 0)))
+	return Vector2i.ZERO
+
+
+## Doc 13 section 7's hull map: the hunter hull one player class draws ("one band below the
+## player's active hull"). A player hull in no band falls back to `HUNTER_HULL_DEFAULT`,
+## which is also the first band's own hull, so an unknown hull still draws a wing.
+static func hunter_hull_for(player_hull_id: StringName) -> StringName:
+	for member: Dictionary in hunter_members():
+		var band: Variant = member.get(KEY_PLAYER_HULLS, [])
+		if band is Array and (band as Array).has(player_hull_id):
+			return StringName(member.get(KEY_HULL_ID, HUNTER_HULL_DEFAULT))
+	return HUNTER_HULL_DEFAULT
+
+
+## One hunter wing's spawn row for `sector_id`'s space and a player flying
+## `player_hull_id`: the archetype's own row with the hull doc 13 section 7's map gives
+## that player class, the wing's own 2-3 band and the space's owner as the faction, in the
+## same shape `spawns_for` hands the sector population - so the caller rolls
+## `[KEY_MIN, KEY_MAX]` and spawns that many. The row's density stays zero, so a wing
+## exists only where a heat tier asks for one (13 section 3's per-faction rule: Concord
+## hunts Concord's outlaws, and nobody hunts in nobody's space).
+static func hunter_spawn(sector_id: StringName, player_hull_id: StringName) -> Dictionary:
+	_ensure()
+	var row := archetype(ARCHETYPE_HUNTER)
+	if row.is_empty():
+		return {}
+	var owner := space_owner(sector_id)
+	return _spawn_row(
+		row, hunter_hull_for(player_hull_id), hunter_wing_size(), owner, ROLE_HULL
+	)

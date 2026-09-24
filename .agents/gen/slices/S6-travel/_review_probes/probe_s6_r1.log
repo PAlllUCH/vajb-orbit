@@ -1,0 +1,64 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+=== S6-R1 probe: independent re-measurement ===
+
+[registry] spine rows
+  sector 1 neighbours=[2] gate_links=[2] corridors=1 OK
+  sector 2 neighbours=[1, 3] gate_links=[1, 3] corridors=2 OK
+  sector 3 neighbours=[2, 4] gate_links=[2, 4] corridors=2 OK
+  sector 4 neighbours=[3, 5] gate_links=[3, 5] corridors=2 OK
+  sector 5 neighbours=[4, 6] gate_links=[4, 6] corridors=2 OK
+  sector 6 neighbours=[5, 7] gate_links=[5, 7] corridors=2 OK
+  sector 7 neighbours=[6] gate_links=[6] corridors=1 OK
+  constants: base=150 per=100 depth=600.0 scan=300.0 drain=12.0 lawless=7 rift_doubled=[&"sector_6"]
+
+[fee] floor((150 + 100·d) × want × lawless)
+  1->2 clean    expect=250 got=250 OK
+  1->3 clean    expect=350 got=350 OK
+  6->7 wanted   expect=750 got=750 OK
+  1->3 wanted   expect=525 got=525 OK
+  5->7 clean    expect=700 got=700 OK
+  5->7 wanted   expect=1050 got=1050 OK
+  6->7 suspect  expect=500 got=500 OK
+  6->7 clean    expect=500 got=500 OK
+  1->2 outlaw   expect=250 got=250 OK
+  562 produced anywhere: false
+
+[corridor] 15 s presence, exit resets, one-shot signal
+  7.5 s inside -> 0.500 (expect 0.5)
+  exit -> 0.000 (expect 0.0), holding=false
+  14.9 s -> fired=0 (expect 0)
+  +0.2 then +5 -> fired=[2] (expect [2]) progress=1.00
+
+[derelict roll] 10000 seeded rolls (11 §3.1: 0.40/0.35/0.25)
+  cache=0.3991 data_core=0.3488 module=0.2521
+
+[anomaly kinds] 10000 seeded rolls each (11 §3.2/§5)
+  sector_1 ore=0.3321 grave=0.3305 rift=0.3374
+  sector_6 ore=0.2486 grave=0.2519 rift=0.4995
+  sector_7 ore=0.3321 grave=0.3305 rift=0.3374
+
+[rift] exotic module rate + drain (11 §3.2/§5)
+  module rate=0.0998 (expect 0.10); RIFT_DRAIN=12.0 (expect 12.0)
+
+[loot hauls] 10000 seeded kills each (06 §6 check 1, ±5%)
+  fighter   units exp=2.1500 meas=2.1428 (-0.33%)  cr exp=28.3750 meas=28.3464 (-0.10%)  empty=0.1210
+  freighter units exp=2.3000 meas=2.3014 (+0.06%)  cr exp=44.5500 meas=44.7427 (+0.43%)  empty=0.1560
+  corvette  units exp=1.5000 meas=1.4860 (-0.93%)  cr exp=78.7500 meas=77.9180 (-1.06%)  empty=0.1943
+  maw       units exp=6.3750 meas=6.3414 (-0.53%)  cr exp=1584.7500 meas=1581.2110 (-0.22%)  empty=0.0000
+  hunter extra band 3: elec_1=0.4978 elec_2=0.2501 elec_3=0.0984 (doc 0.50/0.25/0.10)
+  shipped shape (cache last, at most one): OK
+
+[grade caps] 06 §1.4/§6 check 2
+  cap_violations=[]
+  hunter_extra_violations(1)=["comp_elec_2 is grade 2 above band 1", "comp_elec_3 is grade 3 above band 1"]
+  hunter_extra_violations(3)=[]
+
+[hunters] 13 §3/§7
+  seam= spawn=sector tier=1 aggro=900.0 scan=900.0
+  hull map={ &"ship_fighter": &"ship_fighter", &"ship_interceptor": &"ship_fighter", &"ship_patrol": &"ship_fighter", &"ship_miner": &"ship_fighter", &"ship_vanguard": &"ship_fighter", &"ship_trader": &"ship_fighter", &"ship_corvette": &"ship_fighter", &"ship_gunship": &"ship_gunship", &"ship_destroyer": &"ship_gunship", &"ship_freighter": &"ship_gunship" }
+  wing size=(2, 3)
+  hunter density sector_1=(0, 0)
+  hunter density sector_7=(0, 0)
+  WITNESS_RANGE owner: ShipFit.BASE_SCAN_RANGE=900.0
+[godot_ai game_helper] registered mcp capture (debugger active=false, logger=true)

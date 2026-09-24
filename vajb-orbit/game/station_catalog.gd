@@ -196,6 +196,12 @@ const SHIPS: Array[Dictionary] = [
 ## `Repairs.recharge` (the service owner) rather than by a panel.
 const SERVICE_REFUEL: StringName = &"refuel"
 const SERVICE_RECHARGE: StringName = &"recharge"
+## 14 section 7's bounty payment window and 13 section 2's fine math, wired by wave S6
+## (CONTRACTS section 19). 14 section 1's amended table gives it to all three capitals
+## (and 14 section 8 to every outpost), so its availability is `all`; what is conditional
+## is the **row**, not the station - 14 section 7 shows it at "any faction station with
+## heat > 0", which is `ui/station/launch_panel.gd`'s reading of the docked faction's heat.
+const SERVICE_BOUNTY: StringName = &"bounty"
 
 const SERVICES: Array[Dictionary] = [
 	{
@@ -213,6 +219,14 @@ const SERVICES: Array[Dictionary] = [
 		&"free": true,
 		&"instant": true,
 		&"description": "Capacitor refill. Energy recomputes at launch either way, so the station does it for free.",
+	},
+	{
+		&"id": SERVICE_BOUNTY,
+		&"name": "PAY BOUNTY",
+		&"availability": &"all",
+		&"free": false,
+		&"instant": true,
+		&"description": "Settle the station faction's fine: heat x 25 CR clears the record. One confirm, no haggling.",
 	},
 ]
 

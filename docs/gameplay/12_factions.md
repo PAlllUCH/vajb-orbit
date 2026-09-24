@@ -67,7 +67,7 @@ One standing value per faction per profile: **−100 (outlaw) … +100
 
 | Band | Name | Effect |
 |------|------|--------|
-| −100…−51 | Outlaw | denied docking in faction space (13 §5), gate refusal, hunters |
+| −100…−51 | Outlaw | denied docking in faction space (13 §5), hunters — see the 2026-09-24 note below on the gate |
 | −50…−11 | Shunned | station prices +10 %, no contracts offered |
 | −10…+10 | Neutral | baseline |
 | +11…+40 | Known | contracts pay +5 %, auction hot slot chance ×1.5 |
@@ -77,6 +77,14 @@ One standing value per faction per profile: **−100 (outlaw) … +100
 Standing is per-faction: you can be a Champion of the Choir and an Outlaw
 of the Concord. The map (11 §1) becomes a political chessboard: your
 hunting grounds decide which stations love you.
+
+**Amendment 2026-09-24 (wave S6):** the Outlaw band's **gate refusal** cell above
+is superseded by the two-axis rule CONTRACTS §19/13 §7 pin: the **gate** reads
+the **heat** tier (`NpcRegistry.heat_tier() == &"outlaw"`, 13 §3 / 11 §2.3) while
+the **dock** reads this table's **standing** band (`standing() <= -51`). A
+standing-Outlaw player with clean heat is therefore sold a gate ticket; the
+docking refusal still follows this row. Reversal: make the gate read standing too
+(one predicate).
 
 ## 5. Technology identity and 15's exclusives
 

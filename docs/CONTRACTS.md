@@ -799,7 +799,22 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
-Expected (D6, 2026-09-24): **`[SUMMARY] passed=608 failed=0`**, exit 0. The D6
+Expected (S6, 2026-09-24): **`[SUMMARY] passed=674 failed=0`**, exit 0. The S6 review
+(S6-R1) measured **674** four times on four scratch stores, identical counts, with the
+live `user://profile.cfg` md5 `06f5660a4f884c5d799311287721f78f` and
+`economy_log.txt` md5 `ca40fe2c0ab3bd0f2047723a2d737d9a` unmoved. **674 tests over
+53 suites** (608 + 66): `test_s6_travel.gd` **18**, `test_s6_poi_loot.gd` **25**,
+`test_s6_heat.gd` **23**; the three S6-related pre-existing suites hold at
+`test_engine2_loot.gd` **13**, `test_engine2_npc.gd` **28**, `test_p1_profile.gd`
+**11**. Measured history: K1 **626** (608 + 18, with `test_engine2_wiring.gd`'s one
+derived minimap-feed row corrected), K2 **651** (+25), K3 **674** (+23). The green
+run's error lines are the pre-existing ones (the detached-hull `data.tree` line below,
+L61's `test_weapon_fx_f4.gd:178` freed `guns`, and the benign 12-resources-at-exit
+warning). **Cross-lane caveat:** `staging/verify_wave.py verify --baseline s6_start
+--forbidden vajb-orbit/project.godot …` exits 1 on that one hit, which is **D6's**
+`ef0e06f` `ship_status` write landed after the `s6_start` snapshot, not an S6 edit
+(LOW row `L157`).
+Previous expected (D6, 2026-09-24): **`[SUMMARY] passed=608 failed=0`**, exit 0. The D6
 close-out measured **608** twice on two scratch stores, identical counts, with the
 live `user://profile.cfg` md5 `03203d60ff2f4a66479121b1708faf8a` and the
 `_gate_scratch` copy `c674ff4694186b981035294482c6bf99` unmoved. **608 tests over
@@ -2670,3 +2685,21 @@ landed).** Measured by K3 (`.agents/gen/slices/S6-travel/S6-K3_report.md`,
   the hull) is cured by F1 with a blind-test fix; R1-MED-2 (pinned 396×190 content
   vs the pinned 340×152 frame interior) is a bucket-2 pin decision routed to the
   owner. LOW rows run **L141–L149** (L142 retired by F1's cure).
+- **v0.14 (2026-09-24, wave S6 review — S6-R1, the wave's only CONTRACTS writer,
+  sequenced after D6's v0.13)** — §9 gains the S6 expected **`passed=674 failed=0`**
+  (674 tests over 53 suites, four runs on four scratch stores, the live store pair
+  byte-stable) with the K1/K2/K3 growth history and the `s6_start` cross-lane
+  forbidden-hit attribution. The review leaves **no HIGH and no MED**: the three
+  builders' suites (18/25/23) are green and non-tautological, the K1↔K2↔K3 seam joins
+  re-measure under an independent scene probe (the transition re-populates travel +
+  POIs and keeps hold/hull/heat; a real hull killed through `_on_npc_died` leaves a
+  wreck site and files heat only with a witness; the destination's rings fee their own
+  links), and the shipped `roll(kind, tier, seed)` is byte-identical (the wave's only
+  existing test edit is `test_engine2_wiring.gd`'s derived minimap-feed row). LOW rows
+  run **L150–L157**: the scene-scoped decay clock (13 §2's "anywhere" loses the minute
+  in progress per crossing, <1 point, the pin's own shape), the rift's module exotic
+  granted to the bag rather than spawned at the heart (11 §3.2), the uninterruptible
+  paid gate jump (`Gate.cancel_jump` is dead code), the missing short-funds gate
+  readout, a stale `_transit_destination` after an interrupted crossing, the gate's
+  inert layer-1 `Area2D`, two doc/citation drifts (12 §4.1's superseded gate-refusal
+  cell, 13 §7's `npc_registry.gd:208` → `:220`) and the `s6_start` baseline note.

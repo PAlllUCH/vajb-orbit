@@ -37,6 +37,12 @@ const ComponentCatalogScript := preload("res://game/component_catalog.gd")
 ## is the key 01 §7's log line reads, so a cache line carries the credit key itself.
 const CREDIT_ITEM: StringName = &"credits"
 
+## 06 §4 / CONTRACTS §19: "A destroyed hull leaves a wreck site ... holding its
+## uncollected pickups for 90 s (`WRECK_PICKUP_LIFETIME`), after which pickups
+## despawn." The wreck site's own clock, owned here because 06 §4 names the constant
+## in the same table family as the rolls (the site reads it through `LootTables`).
+const WRECK_PICKUP_LIFETIME := 90.0
+
 ## A roll result's keys: exactly the pinned `Pickup.setup(item_id, amount,
 ## is_credit_cache)` arguments, in that order. One dictionary is one pickup (06
 ## §2.3's implementer's choice: a line's units ship as a single stack, which
@@ -101,6 +107,19 @@ const TABLES: Dictionary = {
 	&"maw": {&"band": 3, &"lines": MAW_LINES},
 }
 
+## 06 §8's amendment (13 §3's "`comp_elec`-weighted table", owner tick 8): the
+## electronics a hunter drops **in addition to** its band table. The rows are the
+## doc's, in its order, and the same independent-per-line procedure as §2 applies.
+## The grade cap of §1.4 is applied at roll time by `roll_hunter_extra` (`_grade_of`
+## reads each row's grade off the 03 catalogue rather than restating it), so a
+## fighter-band hunter rolls `comp_elec_1` only and a corvette-band one adds
+## `comp_elec_2`. Reversal: delete this table and the `roll_hunter_extra` call.
+const HUNTER_EXTRA: Array[Dictionary] = [
+	{&"item": &"comp_elec_1", &"chance": 0.50, &"min": 1, &"max": 2},
+	{&"item": &"comp_elec_2", &"chance": 0.25, &"min": 1, &"max": 1},
+	{&"item": &"comp_elec_3", &"chance": 0.10, &"min": 1, &"max": 1},
+]
+
 
 ## Whether this file carries a table for `kind`. The wiring should gate on this
 ## instead of guessing a kind: `roll` refuses an unknown one rather than dropping
@@ -146,6 +165,64 @@ static func roll(kind: StringName, tier: int, random_seed: int = 0) -> Array[Dic
 			KEY_CACHE: item == CREDIT_ITEM,
 		})
 	return payload
+
+
+## 06 §8 / CONTRACTS §19's kill roll: the band table the victim's kind names, rolled
+## through the shipped `roll` with the table's own band as `tier` (06 §3's headings).
+## A thin delegate on purpose - the shipped shape (one entry per line, `amount =
+## randi_range`, caches last and distinct) stays byte-identical, and the `swarmer`
+## kind keeps reusing the fighter weights (18 §5 ruling 24). An unknown kind is
+## refused loudly, exactly as `roll` refuses it.
+static func roll_band(kind: StringName, random_seed: int = 0) -> Array[Dictionary]:
+	if not has(kind):
+		push_error(
+			"LootTables.roll_band: no table for kind %s (have: %s)"
+			% [kind, ", ".join(_kind_names())]
+		)
+		return []
+	return roll(kind, int((TABLES[kind] as Dictionary)[&"band"]), random_seed)
+
+
+## 06 §8's hunter extra roll, in addition to the victim's band table: `HUNTER_EXTRA`'s
+## rows, one chance roll per line in table order, and a row whose 03 grade exceeds
+## `band` is skipped (06 §1.4's cap, applied here rather than at load because the one
+## table serves all three bands). `random_seed` follows `roll`'s contract: 0 randomizes,
+## a non-zero seed makes the roll reproducible. A band below 1 is not a band and is
+## warned about, but it caps every row out rather than paying a grade above it.
+static func roll_hunter_extra(band: int, random_seed: int = 0) -> Array[Dictionary]:
+	if band < 1:
+		push_warning("LootTables.roll_hunter_extra: band %d is not a band; nothing rolls" % band)
+	var rng := RandomNumberGenerator.new()
+	if random_seed == 0:
+		rng.randomize()
+	else:
+		rng.seed = random_seed
+	var payload: Array[Dictionary] = []
+	for line: Dictionary in HUNTER_EXTRA:
+		var item: StringName = line[&"item"]
+		if _grade_of(item) > band:
+			continue
+		if rng.randf() >= float(line[&"chance"]):
+			continue
+		payload.append({
+			KEY_ITEM: item,
+			KEY_AMOUNT: rng.randi_range(int(line[&"min"]), int(line[&"max"])),
+			KEY_CACHE: item == CREDIT_ITEM,
+		})
+	return payload
+
+
+## The `HUNTER_EXTRA` rows a band may not pay, one line per offending (item, band)
+## pair, so an empty array is the cap holding for that band. `band` 3 is the whole
+## table (06 §8's rows are grades 1-3), `band` 1 leaves `comp_elec_2`/`_3` out.
+static func hunter_extra_violations(band: int) -> Array[String]:
+	var violations: Array[String] = []
+	for line: Dictionary in HUNTER_EXTRA:
+		var item: StringName = line[&"item"]
+		var grade := _grade_of(item)
+		if grade > band:
+			violations.append("%s is grade %d above band %d" % [item, grade, band])
+	return violations
 
 
 ## 06 §6 check 2: "no table references a component grade above its hull band; this is

@@ -9,10 +9,14 @@ extends Node2D
 ## (SECTOR_SIZE, the 300 u spawn offset), 11 §1-§3, 02 §8, 17 §4.
 ##
 ## Scope note (brief §W4 item 2): this file spawns the asteroid fields, the
-## primary station and its DockZone, and the slice-2 NPC hulls (`_spawn_npcs`, from
-## `NpcRegistry.spawns_for`). Wreck fields, hulks, derelicts, anomalies and beacons
-## are slice 3; their counts stay rollable through `spawn_plan()` and nothing is
-## instantiated for them.
+## primary station and its DockZone, the slice-2 NPC hulls (`_spawn_npcs`, from
+## `NpcRegistry.spawns_for`) and, since S6, the travel geometry of the sector's own
+## registry row: one jump-gate ring per `gate_links` link (11 §2.1), one border
+## corridor per `corridors` entry (11 §2.2) and the POIs 11 §3 calls for (derelicts,
+## anomalies and nav beacons, `_spawn_pois`, plus the wreck sites a kill leaves).
+## Wreck fields and their non-interactive hulks are still counts in `spawn_plan()`
+## only - nothing is instantiated for them (no doc places them and no consumer reads
+## them yet).
 ##
 ## `game/asteroid_field.gd` is W3's file, written in parallel: this file places
 ## the field nodes and hands each one its generation config, while the field owns
@@ -32,6 +36,15 @@ const Clock := preload("res://autoload/world_clock.gd")
 const NpcRegistryScript := preload("res://game/npc_registry.gd")
 const NpcShipScript := preload("res://game/npc_ship.gd")
 const ShipFitScript := preload("res://game/ship_fit.gd")
+
+## S6's travel geometry (CONTRACTS §19): the gate ring and the border corridor, reached
+## by path like every other cross-file reach here.
+const GateScript := preload("res://game/gate.gd")
+const CorridorScript := preload("res://game/corridor.gd")
+
+## S6's POIs (CONTRACTS §19, 11 §3/§5): the derelicts, anomalies, beacons and wreck
+## sites, reached by path like the travel geometry.
+const PoiScript := preload("res://game/poi.gd")
 
 ## W3's field script, loaded by path (project convention: never depend on the
 ## global class table, so a headless caller and the editor agree). Absent until
@@ -77,10 +90,24 @@ const FIELD_SLOT_JITTER := 0.25
 ## owns no Timer. This gate only throttles the read; it is not a second clock.
 const CLOCK_POLL_SECONDS := 1.0
 
+## 11 §2.1's "gate structure near its primary station": the ring is placed on the
+## bearing of the destination's own map edge, this far from the arena centre. No doc
+## gives the radius, so 900 u is this file's placement value (one edit reverses it).
+const GATE_RING_RADIUS := 900.0
+
+## No doc places a nav beacon beyond "1 per corridor + 1 per gate" (11 §3), so a gate's
+## beacon stands this far outside the ring (clear of the 200 u trigger) and a corridor's
+## sits on its band's centre. One edit reverses it.
+const BEACON_GATE_OFFSET := 300.0
+
 ## Raised for every NPC hull this sector spawns, so the wiring (`game.gd`) can bind a
 ## hull's `died` before the first shot without polling the tree. A re-population raises
 ## it again for the fresh set.
 signal npc_spawned(ship: Node2D)
+
+## Raised for every POI this sector spawns or is handed (S6, 11 §3), so the wiring can
+## bind a derelict's `scanned` reward. A re-population raises it again for the fresh set.
+signal poi_spawned(poi: Node2D)
 
 var _row: Dictionary = {}
 var _plan: Dictionary = {}
@@ -88,6 +115,9 @@ var _fields: Array[Node2D] = []
 var _field_script: GDScript = null
 var _station: Sprite2D = null
 var _dock_zone: Area2D = null
+var _gates: Array[Node2D] = []
+var _corridors: Array[Node2D] = []
+var _pois: Array[Node2D] = []
 var _npcs: Array[Node2D] = []
 var _npc_anchor_index := 0
 var _spawn_point := Vector2.ZERO
@@ -124,6 +154,9 @@ func populate(row: Dictionary, random_seed: int = 0) -> Vector2:
 		_spawn_station(centre)
 	var rolled_fields := _roll_range(densities, &"fields_min", &"fields_max")
 	_spawn_fields(centre, rolled_fields, _row.get(&"tier_weights", {}), densities)
+	## S6: the travel geometry comes off the same row, before the plan is built so the
+	## beacon count (11 §3: one per corridor plus one per gate) is the live one.
+	_spawn_travel(centre)
 	var wreck_fields := _roll_range(densities, &"wrecks_min", &"wrecks_max")
 	var hulks := 0
 	for _field_index in wreck_fields:
@@ -136,9 +169,8 @@ func populate(row: Dictionary, random_seed: int = 0) -> Vector2:
 		&"hulks": hulks,
 		&"derelicts": wreck_fields * int(densities.get(&"derelicts_per_wreck_field", 0)),
 		&"anomalies": _roll_range(densities, &"anomalies_min", &"anomalies_max"),
-		# 11 §3: one per corridor plus one per gate. Corridors and gates are
-		# gate-slice data, so the plan carries 0 until slice 3.
-		&"beacons": 0,
+		# 11 §3: one per corridor plus one per gate, now that S6 spawns both.
+		&"beacons": _corridors.size() + _gates.size(),
 		# The rolled §8 counts for a probe to read; the live hulls are `npcs()` and come
 		# from the registry's own per-sector band (the same §13 numbers, split between
 		# pirates and swarmers), so this entry is the plan's pirate share, not the set.
@@ -148,6 +180,11 @@ func populate(row: Dictionary, random_seed: int = 0) -> Vector2:
 		&"patrols": owner_id != UNALIGNED,
 		&"convoys": int(densities.get(&"convoys", 0)),
 	}
+	## S6's POIs come off the same plan (11 §3's densities: one derelict per wreck
+	## field, 1-2 anomalies, one beacon per corridor plus one per gate), placed after
+	## the plan so their counts are the live ones and before the hulls so a hull's
+	## anchor walk sees a complete sector.
+	_spawn_pois(centre)
 	_spawn_point = centre + SPAWN_BEARING * (DOCK_RING_RADIUS + PLAYER_SPAWN_OFFSET)
 	## §8's on-entry set: the fields above are placed by count, the NPC hulls by the
 	## registry's own per-sector band (the `_plan` entries are the rolled counts for a
@@ -208,22 +245,110 @@ func fields() -> Array[Node2D]:
 	return out
 
 
+## The jump-gate rings this sector spawned, one per `gate_links` link (11 §2.1). The
+## wiring reads them to raise the prompt and to bind each ring's `jumped`.
+func gates() -> Array[Node2D]:
+	var out: Array[Node2D] = []
+	for gate: Node2D in _gates:
+		if is_instance_valid(gate):
+			out.append(gate)
+	return out
+
+
+## The border corridors this sector spawned, one per `corridors` entry (11 §2.2). The
+## wiring drives each one's presence hold from the ship's position.
+func corridors() -> Array[Node2D]:
+	var out: Array[Node2D] = []
+	for corridor: Node2D in _corridors:
+		if is_instance_valid(corridor):
+			out.append(corridor)
+	return out
+
+
 ## Minimap feed for game.gd (brief item 7): one blip per field, not per rock, plus
-## the station and the live NPC hulls. Key names are the string keys the shipped HUD
-## minimap reads (`"pos"` / `"kind"`); kinds are the 11 §3 / ENGINE_SPEC §8 classes.
-## A hull's own class comes off its registry row (`NpcShip.blip_kind()`: hostile for
-## pirates, swarmers and patrols, neutral for a convoy).
+## the station, the gate rings, the live NPC hulls and S6's POIs. Key names are the
+## string keys the shipped HUD minimap reads (`"pos"` / `"kind"`); kinds are the
+## 11 §3/§5 mapping (gates, stations and beacons `friendly`). A hull's own class comes
+## off its registry row (`NpcShip.blip_kind()`: hostile for pirates, swarmers and
+## patrols, neutral for a convoy). 11 §5's soft fog is applied here: a derelict's or
+## anomaly's blip appears only once scanned or beacon-revealed (`Poi.is_revealed`),
+## while gates, stations, beacons and wreck sites always appear.
 func blips() -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	if _station != null:
 		out.append({"pos": _station.global_position, "kind": &"friendly"})
+	for gate: Node2D in _gates:
+		if is_instance_valid(gate):
+			out.append({"pos": gate.global_position, "kind": &"friendly"})
 	for field: Node2D in _fields:
 		out.append({"pos": field.global_position, "kind": &"neutral"})
+	for poi: Node2D in _pois:
+		if not is_instance_valid(poi):
+			continue
+		if not bool(poi.call(&"is_revealed")):
+			continue
+		out.append({"pos": poi.global_position, "kind": StringName(poi.call(&"blip_kind"))})
 	for ship: Node2D in _npcs:
 		if not is_instance_valid(ship):
 			continue
 		out.append({"pos": ship.global_position, "kind": _npc_blip_kind(ship)})
 	return out
+
+
+## S6's POIs, one entry per live node (11 §3/§5): derelicts, anomalies, beacons and
+## the wreck sites a kill left. The wiring reads them to drive the scan channel, the
+## 200 u anomaly triggers and the rift drain.
+func pois() -> Array[Node2D]:
+	var out: Array[Node2D] = []
+	for poi: Node2D in _pois:
+		if is_instance_valid(poi):
+			out.append(poi)
+	return out
+
+
+func pois_of_kind(poi_kind: StringName) -> Array[Node2D]:
+	var out: Array[Node2D] = []
+	for poi: Node2D in pois():
+		if StringName(poi.get(&"kind")) == poi_kind:
+			out.append(poi)
+	return out
+
+
+func derelicts() -> Array[Node2D]:
+	return pois_of_kind(PoiScript.KIND_DERELICT)
+
+
+func anomalies() -> Array[Node2D]:
+	return pois_of_kind(PoiScript.KIND_ANOMALY)
+
+
+func beacons() -> Array[Node2D]:
+	return pois_of_kind(PoiScript.KIND_BEACON)
+
+
+func wrecks() -> Array[Node2D]:
+	return pois_of_kind(PoiScript.KIND_WRECK)
+
+
+## 11 §3.3's beacon reveal: every POI in the sector becomes visible. A beacon calls
+## this through its parent; a probe calls it directly.
+func reveal_pois() -> void:
+	for poi: Node2D in pois():
+		if poi.has_method(&"reveal"):
+			poi.call(&"reveal")
+
+
+## Adds a wreck site a kill just left (06 §4) to this sector, so it is in the blip
+## feed and dies with the sector's own repopulation. The site is placed by the caller
+## before `setup`, so its payload lands at the kill point.
+func add_wreck_site(site: Node2D) -> void:
+	if site == null:
+		return
+	if site.get_parent() != self:
+		add_child(site)
+	if not _pois.has(site):
+		_pois.append(site)
+		poi_spawned.emit(site)
 
 
 ## The live NPC hulls this sector spawned (the wiring binds their `died`; a probe counts
@@ -266,8 +391,9 @@ func _process(delta: float) -> void:
 
 ## One band's respawn work. ENGINE_SPEC §8: fields re-roll on the 20-minute
 ## WorldClock - the field owns that roll and the 02 §8 ×0.7 diminishing window,
-## so the sector only asks a depleted field to respawn. Slice 3 adds the POI
-## re-rolls (derelicts and anomalies are one-shot per cycle).
+## so the sector only asks a depleted field to respawn. S6's POIs re-arm on the same
+## clock (11 §3.1's "one-shot per respawn cycle", §3.2's "respawns on the sector
+## clock"): the sector owns the clock and the POI owns no timer (17 §4).
 func _respawn_cycle() -> void:
 	for field: Node2D in _fields:
 		if not is_instance_valid(field):
@@ -276,6 +402,11 @@ func _respawn_cycle() -> void:
 			continue
 		if field.has_method(&"respawn"):
 			field.call(&"respawn")
+	for poi: Node2D in _pois:
+		if not is_instance_valid(poi):
+			continue
+		if poi.has_method(&"respawn"):
+			poi.call(&"respawn", _rng.randi())
 	## §8: the sector re-rolls on the same clock, so the hulls go with the fields. A
 	## despawn is not a kill (no `died`, no loot, no heat - W3's contract), and the fresh
 	## set is re-spawned from the registry's band, so a band that drifted low is refilled.
@@ -424,12 +555,118 @@ func _spawn_station(centre: Vector2) -> void:
 	add_child(_dock_zone)
 
 
+## S6's travel geometry, off the sector's own registry row: one corridor per
+## `corridors` entry and one ring per `gate_links` link (11 §2.1/§2.2, §2.3's spine).
+func _spawn_travel(centre: Vector2) -> void:
+	for entry: Variant in _row.get(&"corridors", []):
+		if entry is Dictionary:
+			_add_corridor(entry)
+	for dest: Variant in _row.get(&"gate_links", []):
+		_add_gate(centre, int(dest))
+
+
+func _add_corridor(entry: Dictionary) -> void:
+	var dest := int(entry.get(&"dest", 0))
+	var band: Rect2 = entry.get(&"edge_rect", Rect2())
+	var corridor: Node2D = CorridorScript.new() as Node2D
+	corridor.name = "Corridor%d" % dest
+	add_child(corridor)
+	corridor.call(&"setup", dest, band)
+	_corridors.append(corridor)
+
+
+func _add_gate(centre: Vector2, dest: int) -> void:
+	var gate: Node2D = GateScript.new() as Node2D
+	gate.name = "Gate%d" % dest
+	gate.position = centre + _gate_bearing(dest) * GATE_RING_RADIUS
+	add_child(gate)
+	gate.call(&"setup", dest)
+	gate.call(&"set_origin_sector", Registry.sector_number(sector_id()))
+	_gates.append(gate)
+
+
+## S6's POIs, off the plan the same `populate` just built: one derelict per wreck
+## field, the rolled 1-2 anomalies, and one beacon per corridor plus one per gate
+## (11 §3's density table). Derelicts and anomalies share an even-slot ring at a half
+## step from the fields' own slots, so the two sets interleave instead of stacking;
+## beacons sit on the travel geometry they mark.
+func _spawn_pois(centre: Vector2) -> void:
+	var derelict_count := int(_plan.get(&"derelicts", 0))
+	var anomaly_count := int(_plan.get(&"anomalies", 0))
+	var total := derelict_count + anomaly_count
+	var index := 0
+	for _slot in derelict_count:
+		_add_poi(PoiScript.KIND_DERELICT, _poi_position(centre, index, total))
+		index += 1
+	for _slot in anomaly_count:
+		_add_poi(PoiScript.KIND_ANOMALY, _poi_position(centre, index, total))
+		index += 1
+	for gate: Node2D in _gates:
+		if not is_instance_valid(gate):
+			continue
+		var bearing := gate.position.normalized()
+		_add_poi(PoiScript.KIND_BEACON, gate.position + bearing * BEACON_GATE_OFFSET)
+	for corridor: Node2D in _corridors:
+		if not is_instance_valid(corridor):
+			continue
+		var band: Rect2 = corridor.get(&"edge")
+		_add_poi(PoiScript.KIND_BEACON, band.get_center())
+
+
+## One POI node, positioned, given the sector it stands in and a fresh roll seed.
+func _add_poi(poi_kind: StringName, poi_position: Vector2) -> Node2D:
+	var poi: Node2D = PoiScript.new() as Node2D
+	poi.name = "Poi%s%d" % [String(poi_kind).capitalize(), _pois.size() + 1]
+	poi.position = poi_position
+	add_child(poi)
+	poi.call(&"setup", poi_kind, {&"sector_id": sector_id(), &"seed": _rng.randi()})
+	_pois.append(poi)
+	poi_spawned.emit(poi)
+	return poi
+
+
+## An even angular slot at a jittered radius, a half step off the fields' own slots
+## (the field placement's rule, `_spawn_fields`), inside the same clearance ring so a
+## POI never crowds the station or the spawn point.
+func _poi_position(centre: Vector2, index: int, total: int) -> Vector2:
+	var half := minf(Registry.SECTOR_SIZE.x, Registry.SECTOR_SIZE.y) * 0.5
+	var inner := FIELD_STATION_CLEARANCE
+	var outer := half - FIELD_EDGE_MARGIN
+	if outer <= inner:
+		outer = inner + 1.0
+	var step := TAU / float(maxi(total, 1))
+	var angle := step * (float(index) + 0.5)
+	angle += _rng.randf_range(-FIELD_SLOT_JITTER, FIELD_SLOT_JITTER)
+	var radius := _rng.randf_range(inner, outer)
+	return centre + Vector2.RIGHT.rotated(angle) * radius
+
+
+## The bearing a gate to `dest` stands on: the direction of the destination's own map
+## edge (the corridor band's centre, read off the row), so the ring reads as "toward the
+## link". Falls back to the east edge for a destination the row does not name.
+func _gate_bearing(dest: int) -> Vector2:
+	for entry: Variant in _row.get(&"corridors", []):
+		if not entry is Dictionary:
+			continue
+		var record: Dictionary = entry
+		if int(record.get(&"dest", 0)) != dest:
+			continue
+		var band: Rect2 = record.get(&"edge_rect", Rect2())
+		var edge_centre := band.get_center()
+		if edge_centre.length() > 0.0:
+			return edge_centre.normalized()
+	return Vector2.RIGHT
+
+
 ## Re-populating a sector (a transition) drops the previous contents immediately:
 ## `free()` rather than `queue_free()`, so a probe or a transition can measure the
 ## fresh set in the same frame.
 func _clear() -> void:
 	_fields.clear()
 	_npcs.clear()
+	_gates.clear()
+	_corridors.clear()
+	_pois.clear()
 	_npc_anchor_index = 0
 	_station = null
 	_dock_zone = null

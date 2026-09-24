@@ -4,8 +4,8 @@
 
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-22 purge:** the executed-wave reports, briefs and evidence were removed from `.agents/gen/` (recoverable from the system trash; the last git tree carrying them is `3f5688b`) — the historical record is `MASTER_REPORT.md` plus the newest session report, and older citations below name the purged paths.
 
-**Updated: 2026-09-24 (D6 cockpit instruments closed — gate 578 → **608/0**; S6 travel in
-flight).** This session's
+**Updated: 2026-09-24 (S6 travel closed — gate 608 → **674/0**; designer item 8 = D7 cockpit
+rework in flight).** This session's
 end-to-end record — items 4–7, their numbers, the incidents and the open items — is
 `.agents/gen/session_2026-09-22_items_4_to_7_report.md`. Full history of what every worker
 did, with known errors and open findings, now lives in
@@ -14,15 +14,15 @@ contracts, enforcement and the queue. Executed-wave reports, briefs and
 evidence were purged to the system trash (2026-09-22) —
 citation paths of the form `.agents/gen/<report>.md` name the purged files.
 
-**Current state: eleven coding waves closed (chrome, combat repair, weapon FX wiring, flight
+**Current state: twelve coding waves closed (chrome, combat repair, weapon FX wiring, flight
 feel & beam polish, slice 2.5 Feel, P2-A ship slot frames, Rock cleave, P2-B1 weapon fit,
 P2-B proper fitting panel, **S2.6 truth-and-feel**, **S3 the item economy**,
-**S4 weapon batteries**, **S5 playtest fixes**; gate
-`passed=578 failed=0` at S5, **`passed=608 failed=0`** after the D6 design wave, hermetic). The queue of record is `dispatch_coder.md`: items 4–11 are
-all DONE and **item 11, the playtest-fix wave (CONTRACTS §17), shipped 2026-09-24**; no coder item
-is queued beyond it — the next coder work is the engine slice 3 / RPG P3 merge or the
-affix-application wave, each needing its own docs-first brief
-(`slices/S4-weapon-batteries/`). Owner gates: the
+**S4 weapon batteries**, **S5 playtest fixes**, **S6 travel**; gate
+`passed=578 failed=0` at S5, **`passed=608 failed=0`** after the D6 design wave,
+**`passed=674 failed=0`** after S6, hermetic). The queue of record is `dispatch_coder.md`: items 4–12 are
+all DONE and **item 12, the travel wave (CONTRACTS §19), shipped 2026-09-24**; the next coder item
+is **item 13, the affix-application wave** (15 §9.3, gated on S3 tick 6), which needs its own
+docs-first brief. Owner gates: the
 chrome art half, the **`18_engine_spec.md` §6/§13/§15 cleaving amendment** (owner-locked; §15
 is the test checklist and now contradicts the shipped suite), the launch fit (**both symptoms
 closed** — symptom 1 by P2-A, symptom 2 by P2-B1's `w_mining` row), four spec ticks, the §13
@@ -172,45 +172,38 @@ PowerShell form: `$env:VAJB_WORKER_FILES='...'; crush run "<prompt>" -m opencode
   stop/flush the 0.5 s debounce before restoring `save_path`.
 
 ## In flight — **coder item 12 = S6 Travel** (K0 reported 2026-09-24; its builders hold
-`game/**`). **Designer item 7 = D6 cockpit instruments: DONE 2026-09-24 — gate 578 →
-608/0, detail §Closed** (owner's NMS-style ask —
-bottom-left cluster with sprite speed gauge, sprite compass and five 7-seg
-readout rows SPD/HULL/SHLD/FUEL %/ENRG %, plus the `ship_status` ship layout
-screen; docs-first landed: UI_SPEC §3.7/§3.8, UI_CHROME §11, ASSET_NAMING §11,
-CONTRACTS §18 v0.10; brief + prompts in `slices/D6-cockpit-instruments/`; write
-set `ui/hud/**`, `assets/ui/**`, `assets/icons/**` provenance, `staging/**`,
-`asset-library/**`, `tests/test_d6_*.gd` — **disjoint from S5's**; it ran parallel with
-item 11 (S5, closed 2026-09-24); run order M0a → owner sheet approval → M0b → M1 → M2 → R1
-→ F1 only on HIGH/MED). **Coder item 11 (S5) closed 2026-09-24** (§Closed) —
-**coder item 12 = S6 Travel (engine slice 3 + RPG P3) is IN FLIGHT**
-(K0 reported 2026-09-24; briefed and ready
-2026-09-24) (docs-first landed: CONTRACTS §19 + v0.11, 11 §5, 13 §7, 06 §8,
-01 §5.2 travel 0–500; brief + prompts in `slices/S6-travel/`; write set
-`game/**`, `autoload/player_profile.gd`, `tests/test_s6_*.gd` — **disjoint from
-D6's**, so it runs parallel with designer item 7; run order K0 → (K1 ∥ K2 ∥ K3)
-→ R1 → F1 only on HIGH/MED). Then **item 13 the affix-application wave**
-(15 §9.3, gated on S3 tick 6). The graphics lane's open
-items live in the table of `dispatch_designer.md` (D3-1 chrome re-cut —
-owner-gated, D3-2a painted rail icons, D3-2b tint rework, D4-3 backdrops, D4-4
-hover — owner pick); **D2 is DONE 2026-09-22** (detail §Closed; its job block is
-archived at `slices/D2-icon-unification/_archive/D2_dispatch_block.md`).
-**Queued — designer item 8 = D7 cockpit rework + battery window (2026-09-24,
-owner feedback on D6):** docs-first landed (UI_SPEC §3.6 heading-tick retirement
+## In flight — **designer item 8 = D7 cockpit rework + battery window** (2026-09-24,
+owner feedback on D6): docs-first landed (UI_SPEC §3.6 heading-tick retirement
 + §3.7 rework + §3.9 instrument language + §3.10 battery window, UI_CHROME §12,
 ASSET_NAMING §12, STATION_HUB §5.11); brief + prompts in
 `slices/D7-cockpit-rework/`; write set `ui/hud/**`, `ui/station/**`,
 `assets/ui/**`, `assets/icons/**` provenance, `staging/**`, `asset-library/**`,
 `tests/test_d7_*.gd` + the §3.6 heading-tick rows + `test_d6_cluster.gd`'s
-compass rows — **disjoint from S6's**; run order A0 → owner sheet approval →
-A0b → C1 → C2 → R1 → F1 only on HIGH/MED. Handoff block in
+compass rows — **disjoint from S6's** (which is closed); run order A0 → owner
+sheet approval → A0b → C1 → C2 → R1 → F1 only on HIGH/MED. Handoff block in
 `dispatch_designer.md`.
+
+**Coder item 12 = S6 Travel (engine slice 3 + RPG P3): DONE 2026-09-24 — gate
+608 → 674/0, detail §Closed.** **Designer item 7 = D6 cockpit instruments: DONE
+2026-09-24 — gate 578 → 608/0, detail §Closed.** **Coder item 11 (S5) closed
+2026-09-24** (§Closed). The next coder item is **item 13 the affix-application
+wave** (15 §9.3, gated on S3 tick 6), which needs its own docs-first brief. The
+graphics lane's open
+items live in the table of `dispatch_designer.md` (D3-1 chrome re-cut —
+owner-gated, D3-2a painted rail icons, D3-2b tint rework, D4-3 backdrops, D4-4
+hover — owner pick); **D2 is DONE 2026-09-22** (detail §Closed; its job block is
+archived at `slices/D2-icon-unification/_archive/D2_dispatch_block.md`).
 Owner ticks open: the
 `18_engine_spec.md` §6/§13/§15 cleaving amendment (owner-locked — the wave shipped,
 the spec text lags; it now also covers `FRAGMENT_OUTWARD_KICK` and the two
   flight multipliers `ACCEL_TIME_MULT`/`COAST_TIME_MULT`), the §13 turn/`coast_time`
 column ticks, slice 2.5's two calls (engine bed, vignette strength), L83's icon-size pick,
 **S3's nine** and **S2.6's four** (both in §Closed; S2.6's new one is the
-`STEER_WITHOUT_THROTTLE` supersession), **S5's three** still owed
+`STEER_WITHOUT_THROTTLE` supersession), **S6's fourteen** (fee composition,
+corridor rules, derelict scan range, rift drain, bounty surface, hunter hull map
++ the 900 u aggro, station turret, hunter extra table, data-core credits, gate
+placement, POI reward content, heat/hunter copy + the 600 u spawn radius, the
+quadrant/sibelon deferrals — see §Closed), **S5's three** still owed
 (`ROUNDS_PER_CARGO_UNIT` 10, fire-along-facing vs hold-until-aligned, the
 `track_dps` taste table), and **D6's five + its MED-2 geometry call** (D6 reported
 2026-09-24 — see §Closed; the MED-2 call is the 396×190-content vs 340×152-interior pin).
@@ -239,6 +232,33 @@ proper tick lists are resolved.
    in S2.6 (`BEAM_SINK` 0.45).
 
 ## Closed (details in MASTER_REPORT.md)
+
+- **S6 travel (engine slice 3 + RPG P3) — DONE 2026-09-24** (gate 608 → **674, 0 failed**,
+  exit 0; the orchestrator measured it twice on two scratch stores at close-out and R1 four
+  times on four, identical counts; the live account byte-stable across every run —
+  `profile.cfg` `06f5660a4f884c5d799311287721f78f`, `economy_log.txt`
+  `ca40fe2c0ab3bd0f2047723a2d737d9a`; reports
+  `.agents/gen/slices/S6-travel/S6-K{0,1,2,3}_report.md`, `S6-R1_review.md`; model
+  `opencode-go/deepseek-v4.1-flash` per the owner's order): **gates, corridors, POIs,
+  scanner, sector transitions, heat, hunters and loot, playable end to end.** K0's drift
+  pass found 21 contradictions before a builder ran; the owner ratified three scope calls
+  (quadrants deferred to slice 4, the `sibelon` superseded by 11 §3.2's three anomaly kinds,
+  K3's set grown to ship the LAUNCH bounty row) and the rest landed as dated dispositions in
+  CONTRACTS §19 (the fee's worked row is **750**, not the additive reversal's 562; the band
+  roll is additive `roll_band`/`roll_hunter_extra` so the shipped test-pinned `roll()` keeps
+  its shape; the kill/transition seams are named as they exist; decay gets a real play-time
+  accumulator; heat clamps 0–100; the two refusal axes split by doc; `heat.gd` dropped).
+  **Builders:** K1 travel core + 18 tests (`626/0`), K2 POIs + loot + 25 (`651/0`), K3 heat +
+  hunters + bounty + 23 (`674/0`); the wave's only existing test edit is
+  `test_engine2_wiring.gd`'s minimap-feed row (derived from `gates()`/`beacons()`), ratified
+  in the pin. **Review: 0 HIGH, 0 MED, 8 LOW** (L150–L157: scene-scoped decay, the rift's
+  module granted to the bag, the uninterruptible paid jump, no short-funds readout, a stale
+  `_transit_destination`, the gate's inert layer-1 `Area2D`, two doc/citation drifts fixed at
+  close-out, the `s6_start` cross-lane note) — no fixer pass was owed. Owner ticks: the
+  brief's fourteen (fee composition, corridor rules, derelict scan range, rift drain, bounty
+  surface, hunter hull map + 900 u aggro, station turret, hunter extra table, data-core
+  credits, gate placement, POI reward content, heat/hunter copy + 600 u spawn radius, the two
+  deferrals).
 
 - **D6 cockpit instruments — DONE 2026-09-24** (gate 578 → **608, 0 failed**, exit 0,
   measured twice on two scratch stores at close-out, live `profile.cfg` md5s unmoved;

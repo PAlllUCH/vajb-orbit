@@ -1,0 +1,107 @@
+{
+ "baseline": "s6_start",
+ "modified": [
+  ".agents/gen/_state/LOW_BACKLOG.md",
+  ".agents/gen/_state/WAVEBOARD.md",
+  ".agents/gen/dispatch_designer.md",
+  ".agents/gen/slices/S6-travel/S6_BRIEF.md",
+  ".agents/gen/slices/S6-travel/S6_prompts.md",
+  ".agents/gen/slices/S6-travel/SLICE.md",
+  "docs/CONTRACTS.md",
+  "docs/design/ASSET_NAMING_SPEC.md",
+  "docs/design/STATION_HUB.md",
+  "docs/design/UI_CHROME_ASSETS_SPEC.md",
+  "docs/design/UI_SPEC.md",
+  "docs/gameplay/06_loot_drops.md",
+  "docs/gameplay/13_heat_bounty.md",
+  "docs/gameplay/17_coder_handoff.md",
+  "vajb-orbit/autoload/player_profile.gd",
+  "vajb-orbit/game/game.gd",
+  "vajb-orbit/game/loot_tables.gd",
+  "vajb-orbit/game/npc_registry.gd",
+  "vajb-orbit/game/npc_ship.gd",
+  "vajb-orbit/game/sector.gd",
+  "vajb-orbit/game/sector_registry.gd",
+  "vajb-orbit/game/station_catalog.gd",
+  "vajb-orbit/project.godot",
+  "vajb-orbit/tests/test_d6_cluster.gd",
+  "vajb-orbit/tests/test_d6_status.gd",
+  "vajb-orbit/tests/test_engine2_wiring.gd",
+  "vajb-orbit/ui/hud/cockpit_cluster.gd",
+  "vajb-orbit/ui/hud/ship_status_screen.gd",
+  "vajb-orbit/ui/station/launch_panel.gd"
+ ],
+ "added": [
+  ".agents/gen/slices/D6-cockpit-instruments/D6-F1_report.md",
+  ".agents/gen/slices/D6-cockpit-instruments/D6-M1b_report.md",
+  ".agents/gen/slices/D6-cockpit-instruments/D6-R1_review.md",
+  ".agents/gen/slices/D6-cockpit-instruments/_review_probes/cluster_composite.png",
+  ".agents/gen/slices/D6-cockpit-instruments/_review_probes/gate_debug_ledger.log",
+  ".agents/gen/slices/D6-cockpit-instruments/_review_probes/gate_scratch1.log",
+  ".agents/gen/slices/D6-cockpit-instruments/_review_probes/gate_scratch2.log",
+  ".agents/gen/slices/D6-cockpit-instruments/_review_probes/probe_d6_r1.gd.txt",
+  ".agents/gen/slices/D6-cockpit-instruments/_review_probes/probe_d6_r1.log",
+  ".agents/gen/slices/D6-cockpit-instruments/_review_probes/probe_d6_r1.tscn.txt",
+  ".agents/gen/slices/D6-cockpit-instruments/_review_probes/qc_seg_digits_rerun.json",
+  ".agents/gen/slices/D6-cockpit-instruments/_review_probes/status_markers_composite.png",
+  ".agents/gen/slices/D6-cockpit-instruments/_review_probes/verify_wave_tests.log",
+  ".agents/gen/slices/D7-cockpit-rework/D7_BRIEF.md",
+  ".agents/gen/slices/D7-cockpit-rework/D7_DESIGN_REPORT.md",
+  ".agents/gen/slices/D7-cockpit-rework/D7_prompts.md",
+  ".agents/gen/slices/D7-cockpit-rework/SLICE.md",
+  ".agents/gen/slices/S6-travel/S6-K0_report.md",
+  ".agents/gen/slices/S6-travel/S6-K1_report.md",
+  ".agents/gen/slices/S6-travel/S6-K2_report.md",
+  ".agents/gen/slices/S6-travel/S6-K3_report.md",
+  "staging/mockup/cockpit_mockup.py",
+  "staging/mockup/mockup_rest.py",
+  "staging/mockup/out/armory_mockup.jpg",
+  "staging/mockup/out/armory_mockup.png",
+  "staging/mockup/out/cockpit_mockup_v1.jpg",
+  "staging/mockup/out/cockpit_mockup_v1.png",
+  "staging/mockup/out/cockpit_mockup_v3.jpg",
+  "staging/mockup/out/cockpit_mockup_v3.png",
+  "staging/mockup/out/cockpit_mockup_v4.jpg",
+  "staging/mockup/out/cockpit_mockup_v4.png",
+  "staging/mockup/out/cockpit_mockup_v5.jpg",
+  "staging/mockup/out/cockpit_mockup_v5.png",
+  "staging/mockup/out/context_mockup.jpg",
+  "staging/mockup/out/context_mockup.png",
+  "staging/mockup/out/status_mockup.jpg",
+  "staging/mockup/out/status_mockup.png",
+  "staging/mockup/out/view_A_racks.jpg",
+  "staging/mockup/out/view_B_context.jpg",
+  "staging/mockup/out/view_C_status.jpg",
+  "vajb-orbit/game/corridor.gd",
+  "vajb-orbit/game/corridor.gd.uid",
+  "vajb-orbit/game/gate.gd",
+  "vajb-orbit/game/gate.gd.uid",
+  "vajb-orbit/game/poi.gd",
+  "vajb-orbit/game/poi.gd.uid",
+  "vajb-orbit/tests/test_s6_heat.gd",
+  "vajb-orbit/tests/test_s6_poi_loot.gd",
+  "vajb-orbit/tests/test_s6_poi_loot.gd.uid",
+  "vajb-orbit/tests/test_s6_travel.gd",
+  "vajb-orbit/tests/test_s6_travel.gd.uid"
+ ],
+ "deleted": [],
+ "problems": [
+  "forbidden files touched: vajb-orbit/project.godot"
+ ]
+}
+--- running headless test gate ---
+     GDScript backtrace (most recent call first):
+         [0] append (res://game/economy_log.gd:28)
+         [1] test_unwritable_log_path_is_survivable (res://tests/test_p1_clock_log.gd:94)
+         [2] _run_file (res://tests/headless_runner.gd:163)
+         [3] _ready (res://tests/headless_runner.gd:39)
+SCRIPT ERROR: Cannot call method 'call' on a previously freed instance.
+          at: test_a_held_beam_reads_one_hit_per_contact_interval (res://tests/test_weapon_fx_f4.gd:178)
+          GDScript backtrace (most recent call first):
+              [0] test_a_held_beam_reads_one_hit_per_contact_interval (res://tests/test_weapon_fx_f4.gd:178)
+              [1] _run_file (res://tests/headless_runner.gd:163)
+              [2] _ready (res://tests/headless_runner.gd:39)
+WARNING: 32 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 12 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

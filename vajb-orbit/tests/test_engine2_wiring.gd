@@ -208,15 +208,26 @@ func test_the_minimap_feed_carries_every_hull_plus_the_pois() -> void:
 	for ship: Node2D in hulls:
 		if StringName(ship.call(&"blip_kind")) == NpcRegistryScript.BLIP_HOSTILE:
 			hostiles += 1
+	## S6 (CONTRACTS section 19, 11 section 5): the sector's gate rings and nav beacons
+	## blip `friendly` and always appear, so the feed is one per hull, one per field, one
+	## per gate, one per beacon and one for the station. The expectation is derived from
+	## the sector's own counts, so a sector with one link and one with two both hold, and
+	## K2's fogged derelict/anomaly blips (they need a scan) do not enter it.
+	var gates: int = (_sector.call(&"gates") as Array).size()
+	var beacons: int = (_sector.call(&"beacons") as Array).size()
 	assert_eq(
 		blips.size(),
-		hulls.size() + (_sector.call(&"fields") as Array).size() + 1,
-		"one blip per hull, one per field and one for the station"
+		hulls.size() + (_sector.call(&"fields") as Array).size() + gates + beacons + 1,
+		"one blip per hull, one per field, one per gate, one per beacon and the station"
 	)
 	assert_eq(
 		int(kinds.get(&"hostile", 0)), hostiles, "every hostile hull shows hostile"
 	)
-	assert_eq(int(kinds.get(&"friendly", 0)), 1, "the station is the one friendly blip")
+	assert_eq(
+		int(kinds.get(&"friendly", 0)),
+		gates + beacons + 1,
+		"the station, every gate ring and every nav beacon are the friendly blips"
+	)
 	assert_true(hostiles >= 1, "and the sector has hostiles to show")
 
 

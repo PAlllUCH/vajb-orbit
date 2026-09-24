@@ -51,6 +51,14 @@ const ImpactScript := preload("res://game/impact.gd")
 const PickupScript := preload("res://game/pickup.gd")
 const WeaponsScript := preload("res://game/weapons.gd")
 const EconomyLogScript := preload("res://game/economy_log.gd")
+## S6's POI and loot tables (CONTRACTS §19): the kill roll and the wreck site the
+## kill leaves, reached by path like every other cross-file table here.
+const PoiScript := preload("res://game/poi.gd")
+const LootTablesScript := preload("res://game/loot_tables.gd")
+## 13 §7's witness range is **derived** from the tree's only scan range, so the two can
+## never drift: `WITNESS_RANGE` below is `ShipFit.BASE_SCAN_RANGE` and this preload is the
+## only reason it is reachable from here.
+const ShipFitScript := preload("res://game/ship_fit.gd")
 ## The screen-space speed fantasy and the hull-critical vignette (FX_SPEC section 5,
 ## section 6 row 1): one node owns the blur, the camera's applied zoom, the dust and the
 ## vignette, and this scene pushes it the single input it reads.
@@ -61,6 +69,7 @@ const ROUTE_LOADING: StringName = &"loading"
 const PARAM_DESTINATION: StringName = &"destination"
 const PARAM_SECTOR: StringName = &"sector"
 const DESTINATION_STATION: StringName = &"station"
+const DESTINATION_GAME: StringName = &"game"
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 ## 01 section 7 / 02 section 7.5: the profile signal key that says the manifest moved.
 const PROFILE_CARGO_KEY: StringName = &"cargo"
@@ -84,9 +93,6 @@ const WEAPON_ACTIONS: Array[StringName] = [
 ]
 
 const HUD_REFRESH_INTERVAL := 0.1
-## IMPLEMENTATION_PLAN section 9.8 item 5: the interim sector label stays until
-## the 11 section 1 roster is wired through the map screen (P2).
-const SECTOR_NAME := "Helios Drift"
 const MINIMAP_RADIUS_DEFAULT := 3200.0
 const MINIMAP_RADIUS_STEP := 800.0
 const MINIMAP_RADIUS_MIN := 800.0
@@ -103,10 +109,58 @@ const CAMERA_ZOOM_SECONDS := 0.18
 ## adds. The actions are orchestrator-applied after this wave, so both are read
 ## behind `InputMap.has_action` guards.
 const DOCK_PROMPT := "F · DOCK"
+## 11 §5's gate prompt lines, verbatim (CONTRACTS §19). The em dash is the pin's own
+## copy; it is written as a `\u2014` escape so the source file stays plain ASCII.
+const GATE_PROMPT_FORMAT := "JUMP TO %s \u2014 %d CR"
+const GATE_REFUSED_PROMPT := "GATE REFUSED \u2014 OUTLAW"
 const INTERACT_ACTION: StringName = &"interact"
 const WARP_ACTION: StringName = &"warp"
 ## ENGINE_SPEC section 13 `WARP_CHANNEL`.
 const WARP_CHANNEL := 3.0
+
+## 11 §5's scanner readout (`SCANNING nn %`, 4 Hz) and 06 §5's cache feed
+## (`+120 CR SALVAGE`), both riding the frozen `set_prompt` seam (CONTRACTS §19: no
+## `ui/hud/**` writes). The feed lingers `SALVAGE_FEED_SECONDS`; the scan readout is
+## repainted at `SCAN_PROMPT_HZ` so a 5 s channel is ~20 distinct lines.
+const SCAN_PROMPT_FORMAT := "SCANNING %d %%"
+const SCAN_PROMPT_PREFIX := "SCANNING"
+const SCAN_PROMPT_HZ := 4.0
+const SALVAGE_FEED_FORMAT := "+%d CR SALVAGE"
+const SALVAGE_FEED_SECONDS := 2.0
+
+## 13 §3's hunter archetype: the one row that drops `LootTables.HUNTER_EXTRA` in
+## addition to its band table (06 §8). The id has one home - `NpcRegistry.ARCHETYPE_HUNTER`,
+## the row the heat tier's wing spawns - so this scene and the registry cannot drift.
+const HUNTER_ARCHETYPE: StringName = NpcRegistryScript.ARCHETYPE_HUNTER
+
+## 13 §5/§7's witness rule. `WITNESS_RANGE` is **derived**, not proposed: it is the tree's
+## only scan range (`ShipFit.BASE_SCAN_RANGE`, `game/ship_fit.gd`), and the +5 is 13 §2's
+## own "witness survives (any crime) +5 extra" row. Heat is clamped to 13 §2's 0-100 on
+## every gain.
+const WITNESS_RANGE := ShipFitScript.BASE_SCAN_RANGE
+const WITNESS_EXTRA := 5
+const HEAT_MAX := 100
+
+## 13 §7's decay: "-1 per minute of play", accrued by this scene's own float play-time
+## accumulator (no Timer node, 17 §4's one-timer rule; `WorldClock` stays the station-band
+## clock). The accumulator is scene-scoped, so a transition restarts it (reported).
+const HEAT_DECAY_SECONDS := 60.0
+
+## 13 §3's Outlaw perma-tail: a wing respawns this long after the previous one dies.
+const HUNTER_RESPAWN_SECONDS := 60.0
+## Where a wing is placed when it spawns: a ring around the player, inside the wing's own
+## 900 u aggro radius so the tail is immediate. **Proposed** - no doc gives the placement
+## (13 §3 says only that the wing spawns on entry); reversal: the sector's own field anchor
+## (`sector.gd:_add_npc`'s default), which is one line less.
+const HUNTER_SPAWN_RADIUS := 600.0
+
+## 12 §4.1's Outlaw standing band: at or below this floor a faction denies docking. The
+## **dock** refusal reads this axis; the **gate** refusal reads the heat tier (13 §3).
+const STANDING_OUTLAW := -51
+## The dock refusal's readout, mirroring 11 §5's pinned gate line's own words. 11 §5 pins
+## no dock copy, so this is the panel-facing reading of 12 §4.1's "denied docking"
+## (reported, not invented: reversal is deleting this constant and its rung).
+const DOCK_REFUSED_PROMPT := "DOCK REFUSED \u2014 OUTLAW"
 
 ## ENGINE_SPEC section 13, "Lock & countermeasures (rulings 21/22)": the lock channel's
 ## 1.2 s of uninterrupted line of sight, the passive radius the radar tags within, and
@@ -151,6 +205,15 @@ const EVENT_AMMO := "AMMO"
 const EVENT_DROP := "DROP"
 const EVENT_KILL := "KILL"
 
+## 11 §2.3 / CONTRACTS §19: a sector transition routes through `loading`, which reloads
+## this scene, so `_ready` runs a second time - and the launch's ammo auto-load
+## (`_seed_ammo`, which draws cargo units out of the hold) must not run on that second
+## boot, or the magazine would refill from the hold mid-flight and the hold would shrink
+## across the crossing. The outgoing scene names the destination here before it routes;
+## `_ready` reads it and seeds the packs from the filed store instead. A static because
+## the instance that wrote it is gone by the time the new one boots.
+static var _transit_destination: StringName = &""
+
 const HUD_METHODS: Array[StringName] = [
 	&"bind",
 	&"set_sector_name",
@@ -185,7 +248,9 @@ var _launch_fit: Dictionary = {}
 var _sector: SectorScript = null
 var _pending_spawn := Vector2.ZERO
 var _sector_row_id: StringName = &""
-var _sector_name := SECTOR_NAME
+## 11 §1 / K0 F15: the sector label is the registry row's own name, set on spawn and on
+## transition (`_spawn_sector`); the stale "Helios Drift" interim is gone.
+var _sector_name := ""
 var _hud: Control = null
 var _laser: Node = null
 var _guns: Node2D = null
@@ -205,6 +270,14 @@ var _prompt := ""
 var _warp_active := false
 var _warp_elapsed := 0.0
 var _warp_progress := -1.0
+
+## S6's scan channel and cache feed (11 §3.1/§5, 06 §5): the derelict the channel is
+## running on (null when none), the readout's own 4 Hz accumulator, and the salvage
+## feed's text and remaining seconds. One prompt line, one owner (`_update_dock_prompt`).
+var _scan_poi: Node = null
+var _scan_prompt_accumulator := 0.0
+var _feed_text := ""
+var _feed_remaining := 0.0
 
 ## The marked signature (ENGINE_SPEC section 4.1): the hull a click is channelling at, or
 ## the one the lock landed on, or the one Q tagged from the passive radar. `_lock_elapsed`
@@ -231,6 +304,17 @@ var _ammo_seed: Array[int] = []
 
 var _dead := false
 
+## 13 §7's heat clock: seconds of play since the last decay tick. A float on this scene's
+## own tick, not a Timer (17 §4); `WorldClock` is untouched and keeps its five consumers.
+var _heat_play_time := 0.0
+## 13 §3's hunter bookkeeping, all of it per sector entry (`_spawn_sector` re-arms it):
+## whether a Wanted/Outlaw wing has already been spawned for this entry, and the countdown
+## to the perma-tail respawn after the wing dies. The faction is never stored - it is the
+## space owner, read fresh each frame, which is what keeps a wing in that faction's space
+## only.
+var _hunter_wave_spawned := false
+var _hunter_respawn := 0.0
+
 
 func _ready() -> void:
 	_state = PlayerStateScript.new()
@@ -242,7 +326,13 @@ func _ready() -> void:
 	_state.set_weapons(_launch_weapons())
 	_state.setup()
 	_seed_vitals()
-	_seed_ammo()
+	if _transit_destination.is_empty():
+		_seed_ammo()
+	else:
+		## A sector crossing, not a launch: the packs come back from the store the
+		## outgoing scene just filed, with no hold draw (`_seed_ammo_from_store`).
+		_seed_ammo_from_store()
+		_transit_destination = &""
 	_hud = _instantiate_hud()
 	_bind_hud()
 	_connect_profile()
@@ -270,6 +360,11 @@ func _physics_process(delta: float) -> void:
 	_update_lock(delta)
 	_update_cargo_input()
 	_update_cancel_input()
+	_update_travel(delta)
+	_update_pois(delta)
+	_decay_heat(delta)
+	_update_hunters(delta)
+	_tick_prompt_timers(delta)
 	_update_dock_prompt()
 	_update_warp(delta)
 	_push_reticle_state()
@@ -293,6 +388,9 @@ func on_route(params: Dictionary) -> void:
 		_spawn_sector(row)
 	_sector_name = String(row.get(&"name", sector_key))
 	_push_sector_name()
+	## The transition flag has done its work in `_ready`; a same-scene `on_route` (a probe
+	## or a test) must not leave it armed for the next real launch.
+	_transit_destination = &""
 
 
 ## Section 9.8 item 4: the wheel zooms the flight camera, and section 3.1's LMB
@@ -449,13 +547,25 @@ func _spawn_sector(row: Dictionary) -> void:
 		## Section 8's hulls are spawned *inside* `populate`, so the handler is bound
 		## before the first population and stays bound across a transition.
 		_sector.connect(&"npc_spawned", _on_npc_spawned)
+		## S6: the POIs the sector spawns are bound the same way, so a derelict's own
+		## `scanned` reward can raise the cache feed without the sector knowing the HUD.
+		_sector.connect(&"poi_spawned", _on_poi_spawned)
 		add_child(_sector)
 	_sector_row_id = StringName(row.get(&"id", SECTOR_ID_DEFAULT))
+	## 11 §1 / K0 F15: the label is the row's own name, so a launch and a transition
+	## both read the sector the player is actually in.
+	_sector_name = String(row.get(&"name", _sector_name))
 	_cancel_lock()
+	## 13 §3's wing is per sector entry: a Wanted wing has not spawned yet in this space
+	## and no tail is counting down, whatever the last sector left behind.
+	_hunter_wave_spawned = false
+	_hunter_respawn = 0.0
 	if _ship != null:
 		_seat_ship(_sector.populate(row))
+		_bind_travel_seams()
 		return
 	_pending_spawn = _sector.populate(row)
+	_bind_travel_seams()
 
 
 func _spawn_ship() -> void:
@@ -585,13 +695,278 @@ func _update_cancel_input() -> void:
 
 
 ## Section 7: fly into the station's dock zone, read the prompt, press `interact`.
+##
+## The prompt line's one owner (K0 1.4 constraint 2 / CONTRACTS §19): `_update_dock_prompt`
+## writes the line every frame, so every later claimant joins this ladder here rather
+## than calling `set_prompt` itself. The order is the pin's: the gate outranks the
+## scanner's channel, which outranks the salvage feed, which outranks the dock.
 func _update_dock_prompt() -> void:
+	var gate := _gate_under_ship()
+	if gate != null:
+		_push_gate_prompt(gate)
+		return
+	var scan := _scan_prompt_text()
+	if not scan.is_empty():
+		_push_prompt(scan)
+		return
+	if not _feed_text.is_empty():
+		_push_prompt(_feed_text)
+		return
 	var inside := _inside_dock_zone()
+	## 12 §4.1's Outlaw band denies docking in faction space (13 §5). The refusal is the
+	## prompt's, not the route's: the line says why and `interact` never reaches
+	## `_request_dock`, so nothing is filed and nothing is written.
+	if inside and _dock_refused():
+		_push_prompt(DOCK_REFUSED_PROMPT)
+		return
 	_push_prompt(DOCK_PROMPT if inside else "")
 	if not inside:
 		return
 	if InputMap.has_action(INTERACT_ACTION) and Input.is_action_just_pressed(INTERACT_ACTION):
 		_request_dock()
+
+
+## 12 §4.1's second refusal axis, read from its own doc: the docked station's faction
+## denies docking at or below its Outlaw standing floor (-51). The **gate** refusal reads
+## the heat tier instead (13 §3) - two axes, each from its own doc, and neither writes
+## anything.
+func _dock_refused() -> bool:
+	var profile := _profile()
+	if profile == null or not profile.has_method(&"standing_of"):
+		return false
+	var faction := _sector_owner()
+	if faction == NpcRegistryScript.UNALIGNED or faction == &"":
+		return false
+	return int(profile.call(&"standing_of", faction)) <= STANDING_OUTLAW
+
+
+## 11 §5's gate readout: `GATE_REFUSED_PROMPT` at the Outlaw heat tier (13 §3), otherwise
+## the jump line (`GATE_PROMPT_FORMAT`, the destination's name and fee). `interact`
+## confirms through `Gate.jump` (17 §5's law; a refusal writes nothing), and the ring's
+## own charge-up raises `jumped` when it completes.
+func _push_gate_prompt(gate: Node) -> void:
+	var tier := _player_heat_tier()
+	if tier == NpcRegistryScript.HEAT_OUTLAW:
+		_push_prompt(GATE_REFUSED_PROMPT)
+	else:
+		_push_prompt(
+			GATE_PROMPT_FORMAT % [
+				String(gate.call(&"destination_name")), int(gate.call(&"fee_for", tier))
+			]
+		)
+	if bool(gate.call(&"is_charging")):
+		return
+	if InputMap.has_action(INTERACT_ACTION) and Input.is_action_just_pressed(INTERACT_ACTION):
+		_request_gate_jump(gate)
+
+
+## The ring under the ship, or null. The gate is the sector's geometry (its own
+## `contains`); this scene owns only the prompt and the jump.
+func _gate_under_ship() -> Node:
+	if _ship == null or _sector == null:
+		return null
+	if not _sector.has_method(&"gates"):
+		return null
+	for gate: Node in _sector.call(&"gates"):
+		if gate != null and bool(gate.call(&"contains", _ship.global_position)):
+			return gate
+	return null
+
+
+func _request_gate_jump(gate: Node) -> void:
+	var profile := _profile()
+	if profile == null:
+		return
+	gate.call(&"jump", profile, _player_heat_tier())
+
+
+## The player's heat tier in the current space, read through the profile (13 §1's only
+## heat owner) under the space owner's key - the same key `_apply_heat` writes.
+func _player_heat_tier() -> StringName:
+	var profile := _profile()
+	if profile == null:
+		return NpcRegistryScript.HEAT_CLEAN
+	var heat: Dictionary = profile.call(&"heat")
+	return NpcRegistryScript.heat_tier(int(heat.get(String(_sector_owner()), 0)))
+
+
+## 11 §2.2/§5: the corridors accrue their 15 s presence hold off the ship's own position
+## every physics frame. The corridor owns the rule; this scene owns the ship reference.
+func _update_travel(delta: float) -> void:
+	if _ship == null or _sector == null:
+		return
+	if not _sector.has_method(&"corridors"):
+		return
+	for corridor: Node in _sector.call(&"corridors"):
+		if corridor != null:
+			corridor.call(&"update_presence", delta, _ship.global_position)
+
+
+## Binds the sector's travel geometry to this scene's two transition triggers: a gate's
+## completed charge-up and a corridor's completed hold both mean "cross into the
+## destination sector".
+func _bind_travel_seams() -> void:
+	if _sector == null:
+		return
+	for gate: Node in _sector.call(&"gates"):
+		if gate != null and not gate.is_connected(&"jumped", _on_gate_jumped):
+			gate.connect(&"jumped", _on_gate_jumped)
+	for corridor: Node in _sector.call(&"corridors"):
+		if corridor != null and not corridor.is_connected(&"crossed", _on_corridor_crossed):
+			corridor.connect(&"crossed", _on_corridor_crossed)
+
+
+## 11 §2.3 / CONTRACTS §19: the transition goes through the `loading` route and files the
+## vitals **first**, because `Router.route` reloads this scene and the new one seeds
+## hull/shield/fuel from the filed record only - an unfiled crossing would silently reset
+## the pools to the last docked state. Fields and pickups reset because the scene is
+## rebuilt; the hold and heat live on `PlayerProfile` and are untouched.
+func _transition_to_sector(dest_number: int) -> void:
+	var row := Registry.sector(Registry.sector_id_for(dest_number))
+	if row.is_empty():
+		push_warning("game: no registry row for sector %d; the crossing is inert" % dest_number)
+		return
+	_request_sector_route(row)
+
+
+func _request_sector_route(row: Dictionary) -> void:
+	if route_requested.get_connections().is_empty():
+		return
+	_transit_destination = StringName(row.get(&"id", &""))
+	_file_damage_report()
+	route_requested.emit(
+		ROUTE_LOADING,
+		{PARAM_DESTINATION: DESTINATION_GAME, PARAM_SECTOR: StringName(row[&"id"])}
+	)
+
+
+func _on_gate_jumped(dest_sector: int) -> void:
+	_transition_to_sector(dest_sector)
+
+
+func _on_corridor_crossed(dest_sector: int) -> void:
+	_transition_to_sector(dest_sector)
+
+
+## S6's POIs, driven every physics frame (11 §3.2/§5): an anomaly inside its 200 u
+## radius fires its one-roll event, an active rift drains shields at `RIFT_DRAIN`/s
+## through the ship's own damage sink, and the nearest unspent derelict gets the scan
+## channel. The sector owns the POIs; this scene owns the ship reference and the
+## prompt line.
+func _update_pois(delta: float) -> void:
+	if _ship == null or _sector == null or not _sector.has_method(&"pois"):
+		return
+	for poi: Node in _sector.call(&"pois"):
+		if poi == null or not is_instance_valid(poi):
+			continue
+		var poi_kind := StringName(poi.get(&"kind"))
+		if poi_kind == PoiScript.KIND_ANOMALY:
+			if not bool(poi.call(&"is_consumed")) and bool(poi.call(&"in_trigger_radius", _ship)):
+				poi.call(&"trigger", _ship)
+			var drain := float(poi.call(&"update_presence", delta, _ship))
+			if drain > 0.0:
+				_ship.call(&"take_damage", drain)
+	_update_scan(delta)
+
+
+## 11 §3.1's 5 s interruptible channel on the nearest derelict in scan range, and
+## 11 §3.3's beacon reveal on the nearest beacon (a beacon answers at once, so it has
+## no channel and never holds `_scan_poi`). The channel resets when the ship leaves
+## range (the POI's own `scan` reports it), and `_on_ship_damage_taken` forwards a
+## hull hit to the same `interrupt`.
+func _update_scan(delta: float) -> void:
+	var nearest := _nearest_scannable()
+	if nearest != null and bool(nearest.call(&"in_scan_range", _ship)):
+		var code := int(nearest.call(&"scan", _ship))
+		if code == PoiScript.SCAN_OK and bool(nearest.call(&"is_channelling")):
+			nearest.call(&"advance_scan", delta)
+			_scan_poi = nearest
+			return
+		if _scan_poi != null and _scan_poi != nearest:
+			_scan_poi = null
+		return
+	if _scan_poi != null:
+		if is_instance_valid(_scan_poi):
+			## Out of range: the POI's own call cancels the channel and reports it.
+			_scan_poi.call(&"scan", _ship)
+		_scan_poi = null
+
+
+## The closest POI the scanner reaches: an unspent derelict or a beacon (11 §3.1/
+## §3.3), or null.
+func _nearest_scannable() -> Node:
+	if _sector == null or _ship == null or not _sector.has_method(&"pois"):
+		return null
+	var nearest: Node = null
+	var nearest_distance := INF
+	for poi: Node in _sector.call(&"pois"):
+		if poi == null or not is_instance_valid(poi):
+			continue
+		var poi_kind := StringName(poi.get(&"kind"))
+		if poi_kind == PoiScript.KIND_DERELICT and bool(poi.call(&"is_consumed")):
+			continue
+		if poi_kind != PoiScript.KIND_DERELICT and poi_kind != PoiScript.KIND_BEACON:
+			continue
+		var distance := _ship.global_position.distance_to((poi as Node2D).global_position)
+		if distance < nearest_distance:
+			nearest_distance = distance
+			nearest = poi
+	return nearest
+
+
+## Binds a POI's own reward signals (S6, 11 §3.1/06 §5): the derelict's data core pays
+## credits through the profile, and a wreck site's credit cache reports its collection,
+## so both feed lines ride the one prompt seam.
+func _on_poi_spawned(poi: Node2D) -> void:
+	if poi == null:
+		return
+	if poi.has_signal(&"scanned") and not poi.is_connected(&"scanned", _on_poi_scanned):
+		poi.connect(&"scanned", _on_poi_scanned)
+	if poi.has_signal(&"cache_collected") and not poi.is_connected(
+		&"cache_collected", _on_poi_cache_collected
+	):
+		poi.connect(&"cache_collected", _on_poi_cache_collected)
+
+
+func _on_poi_scanned(_reward: StringName, credits: int) -> void:
+	if credits > 0:
+		_push_cache_feed(credits)
+
+
+func _on_poi_cache_collected(amount: int) -> void:
+	if amount > 0:
+		_push_cache_feed(amount)
+
+
+## 06 §5's one-line feed (`+120 CR SALVAGE`), on the frozen prompt seam. A new feed
+## replaces the previous one and restarts its own window.
+func _push_cache_feed(amount: int) -> void:
+	_feed_text = SALVAGE_FEED_FORMAT % amount
+	_feed_remaining = SALVAGE_FEED_SECONDS
+
+
+## The feed's window, and the scan readout's 4 Hz repaint (11 §5). Both are the
+## prompt ladder's own state; nothing here writes a HUD widget.
+func _tick_prompt_timers(delta: float) -> void:
+	if _feed_remaining > 0.0:
+		_feed_remaining = maxf(_feed_remaining - delta, 0.0)
+		if _feed_remaining <= 0.0:
+			_feed_text = ""
+	_scan_prompt_accumulator += delta
+
+
+## The scan readout for the current channel, or "" when no channel is running. The
+## 4 Hz gate is the accumulator `_tick_prompt_timers` advances.
+func _scan_prompt_text() -> String:
+	if _scan_poi == null or not is_instance_valid(_scan_poi):
+		return ""
+	if not bool(_scan_poi.call(&"is_channelling")):
+		return ""
+	if _scan_prompt_accumulator < 1.0 / SCAN_PROMPT_HZ:
+		return _prompt if _prompt.begins_with(SCAN_PROMPT_PREFIX) else ""
+	_scan_prompt_accumulator = 0.0
+	var percent := int(round(float(_scan_poi.call(&"channel_progress")) * 100.0))
+	return SCAN_PROMPT_FORMAT % percent
 
 
 ## The dock zone is the sector's geometry (W4's `dock_zone_contains`); game.gd
@@ -607,11 +982,29 @@ func _inside_dock_zone() -> bool:
 ## Section 7: docking files the damage report and routes through `loading` to the
 ## station. The connection guard keeps a standalone run (F6, a probe) inert
 ## instead of routing into nothing.
+##
+## 12 §4.1 / 13 §5: a faction whose standing is Outlaw denies docking. The refusal is
+## checked **before** `_file_damage_report`, so it writes nothing at all - no vitals, no
+## route, no `docked_faction` - and the profile is byte-identical after it. On a real dock
+## the docked faction is filed for the station's LAUNCH pane (13 §7's bounty row).
 func _request_dock() -> void:
+	if _dock_refused():
+		return
 	if route_requested.get_connections().is_empty():
 		return
 	_file_damage_report()
+	_file_docked_faction()
 	route_requested.emit(ROUTE_LOADING, {PARAM_DESTINATION: DESTINATION_STATION})
+
+
+## 13 §7's bounty row is the docked station's faction's, so the docking route names that
+## faction on the profile before it leaves. Transient (not a save key); a profile without
+## the setter leaves the row hidden rather than guessing a faction.
+func _file_docked_faction() -> void:
+	var profile := _profile()
+	if profile == null or not profile.has_method(&"set_docked_faction"):
+		return
+	profile.call(&"set_docked_faction", _sector_owner())
 
 
 ## Section 7: `warp` channels for WARP_CHANNEL seconds and lands docked. The gate
@@ -687,9 +1080,12 @@ func _finish_warp() -> void:
 
 
 ## Section 7: the channel breaks on damage. The ship raises this from the hull and
-## shield signals, so a hit fully absorbed by the shield breaks it too.
+## shield signals, so a hit fully absorbed by the shield breaks it too. S6 extends the
+## same break to the derelict scan channel (11 §3.1: "interruptible").
 func _on_ship_damage_taken(_amount: float) -> void:
 	_cancel_warp()
+	if _scan_poi != null and is_instance_valid(_scan_poi):
+		_scan_poi.call(&"interrupt")
 
 
 ## The two section 9.9 HUD additions land with W5, so the calls are method-guarded
@@ -1334,6 +1730,21 @@ func _seed_ammo() -> void:
 		_ammo_seed.append(_state.ammo[slot])
 
 
+## The sector crossing's pack seed (11 §2.3 / CONTRACTS §19): the packs the outgoing
+## scene just filed, with **no** hold draw. The launch's auto-load is once per launch and
+## a crossing is not a launch, so the hold is not spent a second time; the seeded packs
+## then become this leg's dock-filing baseline, exactly as `_seed_ammo`'s do.
+func _seed_ammo_from_store() -> void:
+	var profile := _profile()
+	if profile == null or _state == null:
+		return
+	_ammo_seed.clear()
+	for slot in _state.weapons.size():
+		var weapon_id: StringName = _state.weapons[slot]
+		_state.set_ammo(slot, int(profile.call(&"ammo_of", weapon_id)))
+		_ammo_seed.append(_state.ammo[slot])
+
+
 ## One family's auto-load, answered from `loaded` after the first cell that asks for it so a
 ## twin-weapon fit draws the hold exactly once. A profile without the cargo auto-load (a
 ## stub, or an older store) keeps the pre-S5 read of its own pack.
@@ -1611,10 +2022,13 @@ func _on_npc_spawned(ship: Node2D) -> void:
 ## heat and the standing the kill is worth, read off the victim's own row and filed where
 ## doc 13 keeps them (the profile, the only heat owner), plus one `economy_log` line.
 ##
-## What does not ship in this slice, and is reported rather than guessed: the loot roll's
-## payouts (W4's tables roll, but the wreck's pickups are §7's and slice 4's), the witness
-## rule (13 §2/§5 - a kill only counts when someone saw it) and the bounty payout window
-## (14 §7).
+## S6 (06 §8 / CONTRACTS §19) adds the kill's loot here, the one real seam: the victim's
+## own row names its 06 table (`KEY_LOOT_KIND`), `LootTables.roll_band` rolls it and a
+## hunter adds `roll_hunter_extra`, and the payload becomes the wreck site 06 §4 leaves
+## at the kill point (`WRECK_PICKUP_LIFETIME` 90 s). K3 adds 13 §5's witness gate: a
+## **crime** (a positive `heat_on_kill`) scores only with a witness in range, and scores
+## `WITNESS_EXTRA` more for it; the pirate reduction (13 §2's -3) is not a crime, needs no
+## witness and is never surcharged.
 func _on_npc_died(_position: Vector2, archetype: StringName, ship: Node2D) -> void:
 	if _lock_target == ship:
 		_cancel_lock()
@@ -1624,20 +2038,59 @@ func _on_npc_died(_position: Vector2, archetype: StringName, ship: Node2D) -> vo
 		return
 	var heat := int(ship.call(&"heat_on_kill"))
 	var standing := int(ship.call(&"standing_on_kill"))
-	if heat != 0:
+	if heat > 0:
+		if _witnessed(_position, ship):
+			_apply_heat(profile, heat + WITNESS_EXTRA)
+	elif heat < 0:
 		_apply_heat(profile, heat)
 	if standing != 0:
 		_apply_standing(profile, standing)
 	EconomyLogScript.append(EVENT_KILL, archetype, 1, 0, int(profile.call(&"credits")))
+	_spawn_kill_loot(_position, archetype, ship)
+
+
+## 06 §8's kill roll and wreck site: the victim's 06 band table plus, for a hunter,
+## 06 §8's `comp_elec` extra, held by a wreck site at the kill point for
+## `LootTables.WRECK_PICKUP_LIFETIME`. A hull whose row names no table (the boss, the
+## parked `sibelon`) leaves no site - 06 §3 has no table for it, and a site with
+## nothing in it is not 06 §4's wreck.
+func _spawn_kill_loot(kill_position: Vector2, archetype: StringName, ship: Node2D) -> void:
+	if _sector == null or ship == null:
+		return
+	if not ship.has_method(&"row"):
+		return
+	var row: Dictionary = ship.call(&"row")
+	var kind := StringName(row.get(NpcRegistryScript.KEY_LOOT_KIND, &""))
+	if kind == &"" or not LootTablesScript.has(kind):
+		return
+	var band := int((LootTablesScript.TABLES[kind] as Dictionary)[&"band"])
+	var payload: Array[Dictionary] = LootTablesScript.roll_band(kind)
+	if archetype == HUNTER_ARCHETYPE:
+		payload.append_array(LootTablesScript.roll_hunter_extra(band))
+	var site: Node2D = PoiScript.new() as Node2D
+	site.name = &"WreckSite"
+	_sector.call(&"add_wreck_site", site)
+	site.global_position = kill_position
+	site.call(&"setup", PoiScript.KIND_WRECK, {&"payload": payload})
 
 
 ## 13 §4's per-kill heat, filed through the profile (the only heat owner, 13 §1) under the
 ## space owner's key - the key `NpcShip._read_heat_tier` reads it back with, so a patrol's
 ## scan of the player and the player's own crime score can never disagree.
+##
+## 13 §2's bound is applied here, on the way in: every gain and every reduction lands
+## clamped to 0-100 per faction, so no kill can push a heat past the band 13 §3's tiers
+## are written against.
 func _apply_heat(profile: Node, delta: int) -> void:
 	var heat: Dictionary = profile.call(&"heat")
 	var key := String(_sector_owner())
-	heat[key] = int(heat.get(key, 0)) + delta
+	var current := int(heat.get(key, 0))
+	var updated := clampi(current + delta, 0, HEAT_MAX)
+	## A no-op writes nothing: a pirate killed at a zero heat (or at the floor) leaves no
+	## zero-heat key behind, so a reduction cannot make the record grow.
+	if updated == current:
+		return
+	heat[key] = updated
 	profile.call(&"set_heat", heat)
 
 
@@ -1646,6 +2099,224 @@ func _apply_standing(profile: Node, delta: int) -> void:
 	var key := String(_sector_owner())
 	standing[key] = int(standing.get(key, 0)) + delta
 	profile.call(&"set_standing", standing)
+
+
+## --- Doc 13's heat, witnesses, hunters and the bounty (wave S6, CONTRACTS §19) ------
+
+
+## 13 §7's decay: -1 per minute of **play time**, for every faction at once ("anywhere"),
+## floored at 0. The clock is this scene's own float accumulator in seconds, advanced from
+## `_physics_process` - no Timer node anywhere (17 §4's one-timer rule), and `WorldClock`
+## stays the station-band clock with its five consumers. A whole minute is banked at a
+## time, so a long frame cannot lose a minute and a 59.9 s frame cannot grant one.
+func _decay_heat(delta: float) -> void:
+	_heat_play_time += delta
+	if _heat_play_time < HEAT_DECAY_SECONDS:
+		return
+	var minutes := int(floor(_heat_play_time / HEAT_DECAY_SECONDS))
+	_heat_play_time -= float(minutes) * HEAT_DECAY_SECONDS
+	var profile := _profile()
+	if profile == null:
+		return
+	var heat: Dictionary = profile.call(&"heat")
+	if heat.is_empty():
+		return
+	var cooled := heat.duplicate(true)
+	for faction: Variant in heat:
+		cooled[faction] = maxi(0, int(heat[faction]) - minutes)
+	if cooled == heat:
+		return
+	profile.call(&"set_heat", cooled)
+
+
+## 13 §5/§7's witness rule: a crime's heat lands only when a neutral hull, a patrol or the
+## sector's station sits inside `WITNESS_RANGE` (900 u, derived from `ShipFit.BASE_SCAN_RANGE`)
+## of the kill with an unblocked line to it. "Solo kills in dead space are free."
+##
+## The hulls are read from the `npc_ship` group - the same source `_enemy_engaged` uses, and
+## the one a hull joins in its own `_ready`, so a hull spawned by the sector population, by
+## a hunter wing or by a probe is seen alike.
+##
+## `victim` is excluded: `NpcShip._die` raises `died` **before** it leaves the tree (so every
+## listener runs on a live node), which means a dead neutral hull is still in the group, still
+## at the kill point, and would otherwise witness its own murder - a trader or a patrol would
+## always be a crime however empty the space around it. The station is not excluded: it never
+## dies.
+func _witnessed(at: Vector2, victim: Node = null) -> bool:
+	if _station_witnesses(at):
+		return true
+	if not is_inside_tree():
+		return false
+	for node: Node in get_tree().get_nodes_in_group(NpcRegistryScript.GROUP):
+		if node == victim:
+			continue
+		var hull := node as Node2D
+		if hull == null or not is_instance_valid(hull):
+			continue
+		if not _is_witness_hull(hull):
+			continue
+		if hull.global_position.distance_to(at) > WITNESS_RANGE:
+			continue
+		if _witness_visible(hull, at):
+			return true
+	return false
+
+
+## 13 §5's "a neutral/patrol ship": a convoy hull (the row's own neutral blip class) or a
+## patrol (the row whose hostility is the law's `faction_rules`). A pirate, a swarmer and a
+## hunter witness nothing - the first two are the crime, the third is already chasing you.
+func _is_witness_hull(hull: Node2D) -> bool:
+	if hull.has_method(&"blip_kind"):
+		if StringName(hull.call(&"blip_kind")) == NpcRegistryScript.BLIP_NEUTRAL:
+			return true
+	if hull.has_method(&"hostility"):
+		return StringName(hull.call(&"hostility")) \
+			== NpcRegistryScript.HOSTILITY_FACTION_RULES
+	if not hull.has_method(&"row"):
+		return false
+	var row: Dictionary = hull.call(&"row")
+	return StringName(row.get(NpcRegistryScript.KEY_HOSTILITY, &"")) \
+		== NpcRegistryScript.HOSTILITY_FACTION_RULES
+
+
+## The line from the kill to one witness: the hull's own `NpcShip._line_of_sight` when it
+## has one (13 §7: "LOS is the NPC brain's own rock-blocking check"), otherwise this
+## scene's own rock-layer ray - the same mask, so the two answers cannot disagree.
+func _witness_visible(hull: Node2D, at: Vector2) -> bool:
+	if hull.has_method(&"_line_of_sight"):
+		return bool(hull.call(&"_line_of_sight", at, hull.global_position))
+	return _rock_line_clear(at, hull.global_position)
+
+
+## 13 §5's station half ("a neutral/patrol ship **or station turret**"): the station's own
+## position stands in for the turret bolted to it, and the line is the same rock ray. A
+## sector without a station, or a kill past the range, is unwitnessed by this half.
+func _station_witnesses(at: Vector2) -> bool:
+	if _sector == null or not _sector.has_method(&"has_station"):
+		return false
+	if not bool(_sector.call(&"has_station")):
+		return false
+	var station: Vector2 = _sector.call(&"station_position")
+	if at.distance_to(station) > WITNESS_RANGE:
+		return false
+	return _rock_line_clear(at, station)
+
+
+## The brain's rock-blocking ray, cast from the one node that is in the tree whatever
+## spawned the hull or the station: `NpcShip._line_of_sight`'s mask
+## (`Asteroid.COLLISION_LAYER`), read off its owner rather than restated.
+func _rock_line_clear(from: Vector2, to: Vector2) -> bool:
+	if not is_inside_tree():
+		return true
+	var world := get_world_2d()
+	if world == null:
+		return true
+	var query := PhysicsRayQueryParameters2D.create(from, to, AsteroidScript.COLLISION_LAYER)
+	return world.direct_space_state.intersect_ray(query).is_empty()
+
+
+## 13 §3's hunter wing, per faction and per sector entry: a **Wanted** heat tier spawns one
+## wing of 2-3 hunters on entry, and an **Outlaw** one keeps a tail alive - a fresh wing
+## `HUNTER_RESPAWN_SECONDS` (60 s) after the previous one dies. Both are the space owner's
+## business only, so a Concord outlaw is hunted in Concord space and Meridian still sells
+## missiles (13 §3's political chessboard): the faction is read off the sector each frame,
+## never stored.
+##
+## The 60 s countdown is this scene's own accumulator (no Timer, 17 §4) and only runs while
+## the wing is dead, so a live tail is never doubled.
+func _update_hunters(delta: float) -> void:
+	if _sector == null or _ship == null or not is_inside_tree():
+		return
+	var faction := _sector_owner()
+	if faction == NpcRegistryScript.UNALIGNED or faction == &"":
+		return
+	var tier := _player_heat_tier()
+	if tier != NpcRegistryScript.HEAT_WANTED and tier != NpcRegistryScript.HEAT_OUTLAW:
+		_hunter_respawn = 0.0
+		return
+	if _live_hunters() > 0:
+		_hunter_respawn = 0.0
+		return
+	if not _hunter_wave_spawned:
+		_hunter_wave_spawned = true
+		_spawn_hunter_wave()
+		return
+	if tier != NpcRegistryScript.HEAT_OUTLAW:
+		return
+	_hunter_respawn += delta
+	if _hunter_respawn < HUNTER_RESPAWN_SECONDS:
+		return
+	_hunter_respawn = 0.0
+	_spawn_hunter_wave()
+
+
+## One wing: `NpcRegistry.hunter_spawn` resolves the archetype's own row for this space and
+## the player's active hull (13 §7's hull map), and the sector's own `_add_npc` spawns each
+## hull, so the wing is a real sector NPC - in `npcs()`, in the blip feed, wired to the kill
+## seam (and so to 06 §8's band table plus `HUNTER_EXTRA`) and counted by `_live_hunters`.
+##
+## The wing is then homed on the player (`HUNTER_SPAWN_RADIUS` out, one bearing each), which
+## is what makes it a **tail** rather than a patrol of some asteroid field: the brain's
+## 2 500 u leash is measured from its home, so a tail that is meant to follow must be homed
+## where it appeared.
+func _spawn_hunter_wave() -> void:
+	var spawn := NpcRegistryScript.hunter_spawn(_sector_row_id, _launch_hull)
+	if spawn.is_empty():
+		push_warning("game: no hunter spawn row for %s; the wing is inert" % _sector_row_id)
+		return
+	if not _sector.has_method(&"_add_npc"):
+		return
+	var count := 0
+	var band := Vector2i(
+		int(spawn.get(NpcRegistryScript.KEY_MIN, 0)),
+		int(spawn.get(NpcRegistryScript.KEY_MAX, 0))
+	)
+	if band.y > band.x:
+		count = randi_range(band.x, band.y)
+	else:
+		count = band.x
+	for index in count:
+		_sector.call(&"_add_npc", spawn)
+		_home_last_hunter(index, count)
+
+
+## Where one wing member is placed: a ring `HUNTER_SPAWN_RADIUS` around the player, spread
+## evenly so the wing arrives as a wing. The hull's **body** is the mover (`NpcShip` takes
+## its transform from the body each frame, `_sync_hull_transform`), so both are set and the
+## node reads right immediately for a caller that never advances a frame.
+func _home_last_hunter(index: int, count: int) -> void:
+	var npcs: Array = _sector.call(&"npcs")
+	if npcs.is_empty():
+		return
+	var hull := npcs[npcs.size() - 1] as Node2D
+	if hull == null or not is_instance_valid(hull):
+		return
+	var bearing := TAU * float(index) / float(maxi(count, 1))
+	var place: Vector2 = _ship.global_position + Vector2(HUNTER_SPAWN_RADIUS, 0.0).rotated(bearing)
+	hull.global_position = place
+	if hull.has_method(&"impact_body"):
+		var body := hull.call(&"impact_body") as RigidBody2D
+		if body != null:
+			body.global_position = place
+	if hull.has_method(&"set_home"):
+		hull.call(&"set_home", place)
+
+
+## The live wing: every hull in this sector whose archetype is 13 §3's hunter row. Counted
+## off the sector's own `npcs()` so a hull that died (or despawned) stops counting and the
+## 60 s respawn can start.
+func _live_hunters() -> int:
+	if _sector == null or not _sector.has_method(&"npcs"):
+		return 0
+	var count := 0
+	for hull: Node2D in _sector.call(&"npcs"):
+		if hull == null or not is_instance_valid(hull):
+			continue
+		if not hull.has_method(&"archetype"):
+			continue
+		if StringName(hull.call(&"archetype")) == HUNTER_ARCHETYPE:
+			count += 1
+	return count
 
 
 func _sector_owner() -> StringName:

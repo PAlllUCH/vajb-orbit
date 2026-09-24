@@ -6,10 +6,11 @@ extends RefCounted
 ## Contract: docs/gameplay/11_galactic_map.md §1/§1.1/§3, ENGINE_SPEC.md §2
 ## decision 4, §8 and §13. Contract: docs/CONTRACTS.md §6.
 ##
-## Row keys are exactly the six pinned by the brief: `id`, `name`, `owner`,
-## `tier_weights`, `backdrop_id`, `densities`. 11 §4 also names `neighbours`
-## and `gate links`; both are gate-slice data (slice 3) and are deliberately
-## absent until a consumer needs them.
+## Row keys are the six pinned by the brief - `id`, `name`, `owner`,
+## `tier_weights`, `backdrop_id`, `densities` - plus the three S6 travel keys the
+## CONTRACTS §19 pin adds: `neighbours`, `gate_links` and `corridors`. 11 §4's
+## "neighbours, gate links" are the 1-2-3-4-5-6-7 spine of 11 §2.3, filled below
+## by `_spine_neighbours`/`_corridors_for` so the seven rows cannot drift apart.
 ##
 ## Owner ids (`concord`, `meridian`, `choir`, `unaligned`) are the short forms
 ## 12 §3 uses for the factions' economy rows. No spelling existed in code before
@@ -47,6 +48,30 @@ const HULKS_MAX := 6
 const DERELICTS_PER_WRECK_FIELD := 1
 const ANOMALIES_MIN := 1
 const ANOMALIES_MAX := 2
+
+## 11 §2.1's gate fee (CONTRACTS §19): 150 CR base + 100 CR per sector of distance
+## along the §2.3 spine. Adjacent = 250, two away = 350. Both are the doc's own
+## numbers; the fee is composed in `game/gate.gd` (11 §5's multipliers).
+const GATE_FEE_BASE := 150
+const GATE_FEE_PER_SECTOR := 100
+
+## 11 §2.2/§5's map-edge corridor band: 600 u inward from an arena edge (proposed,
+## reversal 400.0). The spine runs west→east, so a lower-numbered neighbour sits on
+## the west band and a higher-numbered one on the east band.
+const CORRIDOR_DEPTH := 600.0
+
+## 11 §5's POI numbers, owned here because this table is the only home the pin gives
+## them and `game/poi.gd` reads them (300.0 proposed, reversal the fit's `scan_range`;
+## 12.0 proposed, reversal 6.0). The Hollows (sector 6) roll `void_rift` at 2× weight
+## (11 §3.2).
+const DERELICT_SCAN_RANGE := 300.0
+const RIFT_DRAIN := 12.0
+const ANOMALY_WEIGHTS_RIFT_DOUBLED: Array[StringName] = [&"sector_6"]
+
+## The spine's last sector: 11 §1/§2.1's only lawless one, where a gate charges ×2.
+const LAWLESS_SECTOR := 7
+const SPINE_FIRST := 1
+const SPINE_LAST := 7
 
 static var SECTORS: Array[Dictionary] = []
 
@@ -113,6 +138,67 @@ static func _static_init() -> void:
 			&"densities": _densities(6, 8, 0, 0, 0),
 		},
 	]
+	## The §2.3 spine, appended after the row literals so each row stays a readable
+	## data block: neighbours and gate_links are the same adjacent set (one ring per
+	## link), and every corridor carries the map edge its destination sits on.
+	for index in SECTORS.size():
+		var number := index + 1
+		SECTORS[index][&"neighbours"] = _spine_neighbours(number)
+		SECTORS[index][&"gate_links"] = _spine_neighbours(number)
+		SECTORS[index][&"corridors"] = _corridors_for(number)
+
+
+## 11 §2.3's spine neighbours of one sector number: 1↔2↔3↔4↔5↔6↔7, one spine and no
+## shortcuts, so sector 1 and 7 each have one and every middle sector two.
+static func _spine_neighbours(number: int) -> Array[int]:
+	var out: Array[int] = []
+	if number > SPINE_FIRST:
+		out.append(number - 1)
+	if number < SPINE_LAST:
+		out.append(number + 1)
+	return out
+
+
+## One corridor per spine neighbour: `{dest, edge_rect}`, the `edge_rect` being the
+## CORRIDOR_DEPTH-deep band inward from the map edge the destination sits beyond.
+static func _corridors_for(number: int) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for dest: int in _spine_neighbours(number):
+		var west := dest < number
+		out.append({&"dest": dest, &"edge_rect": edge_band(-1 if west else 1)})
+	return out
+
+
+## The map-edge band a corridor occupies, in the sector node's own centred arena
+## coordinates (the arena centre is the origin): `direction` negative is the west
+## edge, positive the east. 10 000 u arena, so the band spans
+## `[-5000, -5000 + CORRIDOR_DEPTH]` (west) or `[5000 - CORRIDOR_DEPTH, 5000]` (east).
+static func edge_band(direction: int) -> Rect2:
+	var half := SECTOR_SIZE * 0.5
+	if direction < 0:
+		return Rect2(
+			Vector2(-half.x, -half.y), Vector2(CORRIDOR_DEPTH, SECTOR_SIZE.y)
+		)
+	return Rect2(
+		Vector2(half.x - CORRIDOR_DEPTH, -half.y), Vector2(CORRIDOR_DEPTH, SECTOR_SIZE.y)
+	)
+
+
+## One sector number from its id (`&"sector_3"` → 3), or 0 for anything else.
+static func sector_number(sector_id: StringName) -> int:
+	var digits := String(sector_id).trim_prefix("sector_")
+	return int(digits) if digits.is_valid_int() else 0
+
+
+## The id one sector number names (`3` → `&"sector_3"`).
+static func sector_id_for(number: int) -> StringName:
+	return StringName("sector_%d" % number)
+
+
+## 11 §2.1's "distance" along the §2.3 spine: the number of links between two
+## sectors, so adjacent = 1 and two away = 2.
+static func distance(from_number: int, to_number: int) -> int:
+	return absi(to_number - from_number)
 
 
 ## One sector row by id, or an empty dictionary for an unknown id.

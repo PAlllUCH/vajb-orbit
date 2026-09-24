@@ -648,6 +648,17 @@ func _call_name(node: Node, method: StringName, fallback: StringName) -> StringN
 ## Doc 13 section 3's tier for the player's heat in this space: the local faction's heat
 ## where the sector is owned, and the worst of the player's heats where it is not. Read
 ## only - `PlayerProfile` stays the only mutator (17 section 5).
+##
+## **A factionless hull reads the worst heat** (wave S6). `_space_owner` is the spawn row's
+## `KEY_FACTION_ID`, which `NpcRegistry.resolve_faction` answers with the row's own faction
+## for a row that names one - so a convoy hull carries the literal `none` and a hull in
+## nobody's space carries `unaligned`, neither of which is a heat key. Reading either as a
+## faction made the local heat 0 for every factionless hull, which is what 13 section 5's
+## trader panic needs and never got: "neutral traders in the sector gain `flee` behaviour
+## while your Suspect+ tier is active". The worst-of-the-heats reading is 13 section 5's own
+## (the panic is sector-wide, whichever faction's heat caused it), and it changes no other
+## row's behaviour: a pirate's and a swarmer's flee floor is hull-based and their hostility
+## is `everything`, so neither consults the tier.
 func _read_heat_tier() -> StringName:
 	var profile := _profile()
 	if profile == null or not profile.has_method(&"heat"):
@@ -656,12 +667,23 @@ func _read_heat_tier() -> StringName:
 	if table.is_empty():
 		return NpcRegistryScript.HEAT_CLEAN
 	var heat := 0
-	if _space_owner != &"":
+	if _has_local_faction():
 		heat = int(table.get(String(_space_owner), 0))
 	else:
 		for faction: Variant in table:
 			heat = maxi(heat, int(table[faction]))
 	return NpcRegistryScript.heat_tier(heat)
+
+
+## Whether this hull's space owner is a faction whose heat is a key of its own: the three
+## powers. `none` (a neutral hull), `unaligned` (nobody's space) and the empty string are
+## not, and each of them reads the worst heat instead.
+func _has_local_faction() -> bool:
+	return (
+		_space_owner != &""
+		and _space_owner != NpcRegistryScript.UNALIGNED
+		and _space_owner != NpcRegistryScript.FACTION_NONE
+	)
 
 
 func _profile() -> Node:
@@ -786,6 +808,16 @@ func space_owner() -> StringName:
 
 func home() -> Vector2:
 	return _home
+
+
+## Re-home this hull after its spawn (doc 13 section 3's hunter tail, wave S6): the brain's
+## leash is measured from its spawn POI (section 13's 2 500 u), so a wing that is meant to
+## follow the player is homed where it was placed. `setup`'s `OPT_HOME` is the only other
+## writer; the brain keeps the one copy it reads.
+func set_home(pos: Vector2) -> void:
+	_home = pos
+	if _brain != null:
+		_brain.call(&"set_home", pos)
 
 
 func hull() -> float:
