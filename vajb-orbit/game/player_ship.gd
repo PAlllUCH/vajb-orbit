@@ -64,6 +64,13 @@ const WEAPONS: GDScript = preload("res://game/weapons.gd")
 ## carries no laser and no trigger.
 const MINING_MODULE: StringName = &"w_mining"
 
+## S7 (CONTRACTS section 20): Embers' share of a delivered amount, healed into the
+## shield by `heal_from_damage` when a player shot lands on an NPC hull. Spelled here
+## as well as in `weapons.gd` because the pin routes the two deliveries differently -
+## the beam heals off `PlayerState` directly, the projectile calls this hull's own
+## method - so neither file reaches into the other's constant.
+const EMBERS_FRACTION := 0.10
+
 ## ENGINE_SPEC section 6, "Rocks are solid: ships collide with them" + ruling 8.
 ## The scene's `HullBody` (a RigidBody2D at local zero) carries the ship's own physics
 ## layer and masks only the rock layer (Asteroid.COLLISION_LAYER), so rocks stop the
@@ -927,7 +934,10 @@ func _on_hull_body_entered(other: Node) -> void:
 	if damage <= 0.0:
 		return
 	if other.has_method(&"apply_collision_damage"):
-		other.call(&"apply_collision_damage", damage)
+		## S7 (CONTRACTS section 20, site 5): the peer's half is a player-origin damage
+		## amount, so it takes the launch's `damage_mult` exactly once here. The player's
+		## own half already landed on `PlayerState.damage` inside `DAMAGE.ram`.
+		other.call(&"apply_collision_damage", damage * _damage_scale())
 
 
 ## The closing speed of a contact: the relative velocity project on the line between
@@ -968,6 +978,30 @@ func _peer_mass(other: Node) -> float:
 	if rigid == null:
 		return INF
 	return rigid.mass
+
+
+## The launch's damage multiplier (CONTRACTS section 20), read null-tolerantly: a hull
+## before `setup` (a scene smoke test, a probe) has no snapshot and reads 1.0, and a
+## snapshot without the field reads 1.0 too, so the ram path is byte-identical to
+## pre-S7 when no computer is fitted.
+func _damage_scale() -> float:
+	if _stats == null:
+		return 1.0
+	var value: Variant = _stats.get(&"damage_mult")
+	if value is float or value is int:
+		return float(value)
+	return 1.0
+
+
+## Embers' projectile-side seam (CONTRACTS section 20): a shot the player fired that
+## landed on an NPC hull heals this hull's shield by `PlayerState`'s own read of the
+## delivered amount. The fraction is the weapons component's (its Embers flag names
+## it), so this stays a dumb additive: the caller decides the amount, this clamps it
+## at `shield_max`. A hull with no state (a probe's bare ship) is a no-op.
+func heal_from_damage(dealt: float) -> void:
+	if _state == null or dealt <= 0.0:
+		return
+	_state.set_shield(minf(_state.shield + EMBERS_FRACTION * dealt, _state.shield_max))
 
 
 func _peer_velocity(other: Node) -> Vector2:
@@ -1121,7 +1155,11 @@ func _update_boosters(delta: float) -> void:
 		return
 	var effect := _booster_effect(BOOSTER_AFTERBURNER)
 	_boost_remaining = float(effect.get(&"duration", 0.0))
-	_boost_cooldown = float(effect.get(&"cooldown", 0.0))
+	## S7 (CONTRACTS section 20): Spry shortens the afterburner's cooldown, the one
+	## ship-stat affix this file applies - `ShipStats.booster_cooldown_mult` is the
+	## fitted boosters' `1 + sum(spry)` (0.85 for the -0.15 band, so 8.0 s -> 6.8 s).
+	## Null-tolerant like every other snapshot read, so a hull before `setup` keeps 1.0.
+	_boost_cooldown = float(effect.get(&"cooldown", 0.0)) * _booster_cooldown_scale()
 	## The activation, not the burn: FX_SPEC section 7.1's dash charge and AUDIO_SPEC
 	## section 4.5's S12 cue both hang off this one event, and this is the only line that
 	## lights a burner, so neither can fire twice in a burn.
@@ -1152,6 +1190,18 @@ func _booster_effect(id: StringName) -> Dictionary:
 		return effects
 	var empty: Dictionary = {}
 	return empty
+
+
+## Spry's ship-level multiplier (CONTRACTS section 20), `ShipStats
+## .booster_cooldown_mult`: the fitted booster instances' `1 + sum(spry)`, read
+## null-tolerantly so a hull before `setup` (a smoke test, a probe) keeps 1.0.
+func _booster_cooldown_scale() -> float:
+	if _stats == null:
+		return 1.0
+	var value: Variant = _stats.get(&"booster_cooldown_mult")
+	if value is float or value is int:
+		return float(value)
+	return 1.0
 
 
 ## 09 section 4.5 / ENGINE_SPEC section 4.3: the W slot buys the tool, so the mount

@@ -85,10 +85,13 @@ static func summary(profile, ship_id: StringName) -> Dictionary:
 
 ## Whether the summary carries `id` as one of its suffix flags (CONTRACTS
 ## section 20's once-per-perk rule: two instances of the same suffix are one flag).
-static func has_suffix(summary: Dictionary, id: StringName) -> bool:
-	var flags: Variant = summary.get(KEY_SUFFIXES, null)
+## The parameter is `data`, not `summary` (K1's D5): a parameter named after this
+## class's own `summary` function raises `SHADOWED_VARIABLE`. GDScript has no named
+## arguments, so the name touches no caller.
+static func has_suffix(data: Dictionary, id: StringName) -> bool:
+	var flags: Variant = data.get(KEY_SUFFIXES, null)
 	if flags == null:
-		flags = summary.get(String(KEY_SUFFIXES), null)
+		flags = data.get(String(KEY_SUFFIXES), null)
 	if not flags is Array:
 		return false
 	for raw: Variant in flags as Array:

@@ -59,6 +59,14 @@ const LootTablesScript := preload("res://game/loot_tables.gd")
 ## never drift: `WITNESS_RANGE` below is `ShipFit.BASE_SCAN_RANGE` and this preload is the
 ## only reason it is reachable from here.
 const ShipFitScript := preload("res://game/ship_fit.gd")
+## The affix summary's own key spellings (CONTRACTS section 20): the launch reads the
+## fitted instances' rows out of the summary here, so the per-cell weapon-affix walk
+## and `ShipFit.resolve` read one shape.
+const AffixesScript := preload("res://game/affixes.gd")
+## The three prefixes 09 section 3.1 lets a weapon cell roll: the per-barrel walk keeps
+## only these out of a cell's row (a weapon instance carries no other prefix a barrel
+## could apply).
+const BARREL_PREFIXES: Array[StringName] = [&"keen", &"rapid", &"frugal"]
 ## The screen-space speed fantasy and the hull-critical vignette (FX_SPEC section 5,
 ## section 6 row 1): one node owns the blur, the camera's applied zoom, the dust and the
 ## vignette, and this scene pushes it the single input it reads.
@@ -245,6 +253,12 @@ var _ship: PlayerShipScript = null
 ## launch can never mix one hull's frame with another's fit.
 var _launch_hull: StringName = HULL_ID_DEFAULT
 var _launch_fit: Dictionary = {}
+## The launch's affix summary (CONTRACTS section 20): the profile's fitted instances
+## summed per prefix, resolved once beside `_launch_fit` and handed to
+## `ShipFit.resolve` as its optional `affixes` argument. Kept on the scene because
+## the wave's later suffix seams (K3's Leeches and Cartograph) read the same summary
+## the snapshot resolved from, so they can never disagree about what is fitted.
+var _launch_summary: Dictionary = {}
 var _sector: SectorScript = null
 var _pending_spawn := Vector2.ZERO
 var _sector_row_id: StringName = &""
@@ -325,6 +339,14 @@ func _ready() -> void:
 	## fixed families a fitless `PlayerState` still defaults to.
 	_state.set_weapons(_launch_weapons())
 	_state.setup()
+	## The launch's affix handshake (CONTRACTS section 20), after `setup` has sized the
+	## slot arrays: one `{keen, rapid, frugal}` magnitude dict per weapon slot - the
+	## same walk `set_weapons` just took - and the fitted instances' suffix flags. The
+	## per-barrel prefixes ride the slot array; the flags ride the state so the
+	## delivery seams (Embers) and the wave's own suffix seams (K3's Leeches) read one
+	## list.
+	_state.set_weapon_affixes(_launch_weapon_affixes())
+	_state.set_affix_flags(_launch_affix_flags())
 	_seed_vitals()
 	if _transit_destination.is_empty():
 		_seed_ammo()
@@ -431,7 +453,23 @@ func _resolve_stats() -> ShipStats:
 		hull_id = HULL_ID_DEFAULT
 	_launch_hull = hull_id
 	_launch_fit = _launch_fit_for(hull_id, profile)
-	return ShipFit.resolve(hull_id, _launch_fit)
+	_launch_summary = _affix_summary_for(hull_id, profile)
+	return ShipFit.resolve(hull_id, _launch_fit, _launch_summary)
+
+
+## The launch's affix summary (CONTRACTS section 20): the profile's fitted instances
+## for this hull, summed per prefix, handed to `ShipFit.resolve` beside the base-id
+## fit. The fit `_launch_fit_for` returns holds **base** ids and the summary's
+## `instances` rows name the base id they were fitted as, which is how the resolver's
+## own alignment works (K1's D3). `{}` when the profile has no affix bridge (a stub, a
+## probe) or holds no fit for the hull - the same two cases the standard fit covers.
+func _affix_summary_for(hull_id: StringName, profile: Node) -> Dictionary:
+	if profile == null or not profile.has_method(&"affix_summary"):
+		return {}
+	var summary: Variant = profile.call(&"affix_summary", hull_id)
+	if summary is Dictionary:
+		return summary as Dictionary
+	return {}
 
 
 ## The fit this launch flies: the profile's own when it holds one, 09 section 9's
@@ -508,6 +546,100 @@ func _launch_weapons() -> Array[StringName]:
 			continue
 		ids.append(WeaponsScript.weapon_id(module))
 	return ids
+
+
+## The launch's per-slot weapon affixes (CONTRACTS section 20): one
+## `{keen, rapid, frugal}` magnitude dict per entry of `_launch_weapons()`, in the same
+## order and with the same empty-cell skipping, so `PlayerState.weapon_affixes[i]`
+## lines up with `PlayerState.weapons[i]`. A cell whose summary row carries none of the
+## three prefixes answers `{}`, which a consumer reads as no affix; the values are the
+## magnitudes the roll stored, never re-derived from the band.
+func _launch_weapon_affixes() -> Array[Dictionary]:
+	var per_cell: Array[Dictionary] = []
+	var fitted: Array = _launch_fit.get(&"weapons", [])
+	for index in fitted.size():
+		var module := StringName(str(fitted[index]))
+		if module == &"":
+			continue
+		per_cell.append(_cell_affixes(index))
+	return per_cell
+
+
+## One W cell's three per-barrel prefixes, summed from the launch summary's instance
+## rows (`_launch_summary`, built from the profile's raw fit, so a row knows both the
+## cell that fitted it and the prefix it carries). Only `BARREL_PREFIXES` are kept -
+## every other prefix a weapon instance can carry is not a barrel rule - and `{}` comes
+## back for a cell the summary does not carry.
+func _cell_affixes(index: int) -> Dictionary:
+	var out: Dictionary = {}
+	for row: Variant in _summary_rows():
+		if not row is Dictionary:
+			continue
+		var entry: Dictionary = row
+		if not _cell_matches(entry, &"weapons", index):
+			continue
+		for raw: Variant in _prefix_rows(entry):
+			if not raw is Dictionary:
+				continue
+			var prefix: Dictionary = raw
+			var id := StringName(str(_keyed(prefix, AffixesScript.KEY_ID, "")))
+			if not BARREL_PREFIXES.has(id):
+				continue
+			var value := float(_keyed(prefix, AffixesScript.KEY_VALUE, 0.0))
+			out[id] = float(out.get(id, 0.0)) + value
+	return out
+
+
+## The launch's fitted suffix flags (CONTRACTS section 20): one entry per perk, once.
+## `[]` for a summary the profile does not carry (the standard fit, a stub profile).
+func _launch_affix_flags() -> Array[StringName]:
+	var flags: Array[StringName] = []
+	var raw: Variant = _launch_summary.get(
+		AffixesScript.KEY_SUFFIXES,
+		_launch_summary.get(String(AffixesScript.KEY_SUFFIXES), null)
+	)
+	if not raw is Array:
+		return flags
+	for entry: Variant in (raw as Array):
+		var id := StringName(str(entry))
+		if id != &"" and not flags.has(id):
+			flags.append(id)
+	return flags
+
+
+## The launch summary's `instances` rows, `[]` for a summary with none.
+func _summary_rows() -> Array:
+	var raw: Variant = _launch_summary.get(
+		AffixesScript.KEY_INSTANCES,
+		_launch_summary.get(String(AffixesScript.KEY_INSTANCES), null)
+	)
+	if raw is Array:
+		return raw
+	return []
+
+
+## One summary row's `prefixes` list, `[]` for a row with none.
+static func _prefix_rows(row: Dictionary) -> Array:
+	var raw: Variant = _keyed(row, AffixesScript.KEY_PREFIXES, null)
+	if raw is Array:
+		return raw
+	return []
+
+
+## Whether one summary row names the given slot's cell at `index`. The rows carry both
+## spellings' keys robustly through `_keyed`, because a hand-built fixture may use
+## plain String keys while the shipped summary uses StringName.
+static func _cell_matches(row: Dictionary, slot: StringName, index: int) -> bool:
+	if StringName(str(_keyed(row, AffixesScript.KEY_SLOT, ""))) != slot:
+		return false
+	return int(_keyed(row, AffixesScript.KEY_INDEX, -1)) == index
+
+
+## One value out of a dictionary that may key it by StringName or String.
+static func _keyed(data: Dictionary, key: StringName, fallback: Variant) -> Variant:
+	if data.has(key):
+		return data[key]
+	return data.get(String(key), fallback)
 
 
 ## STATION_SPEC section 6 rule 5: the active hull owns the pool maxima. An unknown

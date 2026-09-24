@@ -347,6 +347,21 @@ const FEEDBACK_Z := 2
 ## lock pick, so the two resolvers cannot drift apart.
 const SHIP_GROUPS: Array[StringName] = [&"player_ship", &"npc_ship"]
 
+## The three per-barrel prefixes (CONTRACTS section 20, 15 section 3): each barrel
+## reads **its own cell's** magnitude out of `PlayerState.weapon_affixes` and scales
+## that shot by it, so a battery whose second cell is Keen gains it on barrel 2 only.
+## Keen multiplies the shot's damage, Rapid divides that barrel's release interval and
+## Frugal scales its per-shot round cost, all by `(1 + sum)`.
+const PREFIX_KEEN: StringName = &"keen"
+const PREFIX_RAPID: StringName = &"rapid"
+const PREFIX_FRUGAL: StringName = &"frugal"
+
+## Embers (CONTRACTS section 20): the suffix flag and the share of a delivered amount
+## the player's shield regains when the sink is an NPC hull. `0.10` is the spec's
+## "10 % of damage dealt -> shield"; the heal is clamped at `shield_max`.
+const FLAG_EMBERS: StringName = &"embers"
+const EMBERS_FRACTION := 0.10
+
 var _stats: ShipStats = null
 var _state: PlayerState = null
 var _fitted: Array[StringName] = []
@@ -688,7 +703,7 @@ func rack_cycle(rack: int) -> float:
 func _rack_cycle(rack: int) -> float:
 	var cycle := 0.0
 	for position: int in _racks[rack]:
-		cycle = maxf(cycle, interval_of(_fitted[position]))
+		cycle = maxf(cycle, _barrel_interval(position))
 	return cycle
 
 
@@ -1067,9 +1082,12 @@ func _burst_open(row: Dictionary) -> bool:
 ## exactly one delivery, as it did before S5, so the impact cue is not machine-gunned.
 func _fire_beam_battery(rack: int, delta: float) -> void:
 	var step := maxf(delta, 0.0)
-	## Family id -> how many of its open barrels this frame paid, in first-barrel order
-	## (GDScript dictionaries keep insertion order), plus the shaft's reach: the longest
-	## of the paid families' ranges, because the shaft is one drawing.
+	## Family id -> the **summed weight** of its open barrels that paid this frame, in
+	## first-barrel order (GDScript dictionaries keep insertion order). Each barrel
+	## contributes `1 + sum(keen)` for its own cell (CONTRACTS section 20), which is 1.0
+	## per barrel when no cell is affixed - so an unfitted battery still reads as its
+	## barrel count. Plus the shaft's reach: the longest of the paid families' ranges,
+	## because the shaft is one drawing.
 	var paid: Dictionary = {}
 	var reach := 0.0
 	var lead: StringName = &""
@@ -1084,7 +1102,8 @@ func _fire_beam_battery(rack: int, delta: float) -> void:
 		if not _spend_energy(float(row.get(&"draw", 0.0)) * step):
 			_dry(weapon)
 			continue
-		paid[weapon] = int(paid.get(weapon, 0)) + 1
+		var keen := _prefix_factor(_prefix_magnitude(_barrel_affixes(position), PREFIX_KEEN))
+		paid[weapon] = float(paid.get(weapon, 0.0)) + keen
 		reach = maxf(reach, float(row.get(&"range", 0.0)))
 		if lead == &"":
 			lead = weapon
@@ -1160,7 +1179,7 @@ func _fire_beam_battery(rack: int, delta: float) -> void:
 ## refuses is dry and leaves the rest of the battery to fire. The mine is `speed 0.0`, so
 ## it takes the empty direction and keeps its drop behaviour at its own mount.
 func _fire_projectile(position: int, weapon: StringName, row: Dictionary) -> void:
-	if not _ammo_available(weapon):
+	if not _ammo_available_at(position, weapon):
 		_dry(weapon)
 		return
 	var speed := float(row.get(&"speed", 0.0))
@@ -1168,8 +1187,8 @@ func _fire_projectile(position: int, weapon: StringName, row: Dictionary) -> voi
 	var shot := _spawn_shot(weapon, row, direction, position)
 	if shot == null:
 		return
-	_consume_ammo(weapon)
-	_barrel_timers[position] = interval_of(weapon)
+	_consume_ammo_at(position, weapon)
+	_barrel_timers[position] = _barrel_interval(position)
 	_apply_recoil(direction * speed)
 	shot_fired.emit(weapon)
 
@@ -1187,7 +1206,12 @@ func _spawn_shot(
 	shot.call(&"configure", {
 		&"kind": StringName(row.get(&"kind", &"bolt")),
 		&"speed": float(row.get(&"speed", 0.0)),
-		&"damage": shot_damage(weapon),
+		## S7 (CONTRACTS section 20): Keen rides the shot **at composition** - this
+		## barrel's own cell scales its damage by `1 + sum(keen)` before the shot exists,
+		## so barrel 1 of a battery with Keen only in cell 2 is byte-identical to today.
+		&"damage": shot_damage(weapon) * _prefix_factor(
+			_prefix_magnitude(_barrel_affixes(position), PREFIX_KEEN)
+		),
 		&"bypass_shield": bool(row.get(&"bypass_shield", false)),
 		&"homing": bool(row.get(&"homing", false)),
 		&"target": _seeker_target(weapon),
@@ -1199,6 +1223,12 @@ func _spawn_shot(
 		&"trigger": float(row.get(&"trigger", 0.0)),
 		&"mass": SHOT_MASS,
 		&"chip": GUN_CHIP_RATE,
+		## S7 (CONTRACTS section 20): the projectile reads no stats and holds no state,
+		## so the launch's delivery multiplier and Embers' flag ride in with the shot.
+		## The product then lands once per delivered amount on the projectile side
+		## (`projectile.gd:_deliver`) with no new accessor.
+		&"damage_mult": _damage_scale(),
+		&"embers": _state_has_flag(FLAG_EMBERS),
 	})
 	parent.add_child(shot)
 	shot.global_position = muzzle_position(position)
@@ -1211,11 +1241,13 @@ func _spawn_shot(
 ## contact read, and a hull takes `dps x delta` of damage under its family's shield
 ## rule.
 ##
-## `barrels` is how many of the battery's barrels paid for this frame (CONTRACTS
-## section 16 rule 6's per-barrel frame): the damage and the chip work are that many
-## barrels' own `dps x delta`. The shaft and the contact feedback stay one read per
-## frame - one muzzle, one aim point, one contact - so a battery of three lasers deals
-## three lasers' worth without reading its target three times a frame.
+## `barrels` is the paid barrels' **summed weight** (CONTRACTS section 16 rule 6's
+## per-barrel frame; S7's Keen per barrel, section 20): each paid barrel of this family
+## contributes `1 + sum(keen)` for its own cell, so with no Keen it is exactly the
+## barrel count and the damage and the chip work are that many barrels' own
+## `dps x delta`. The shaft and the contact feedback stay one read per frame - one
+## muzzle, one aim point, one contact - so a battery of three lasers deals three
+## lasers' worth without reading its target three times a frame.
 func _apply_beam(
 	weapon: StringName,
 	row: Dictionary,
@@ -1230,7 +1262,10 @@ func _apply_beam(
 	var hull_body := collider as Node
 	if hull_body != null and hull_body.is_in_group(ProjectileScript.ROCK_GROUP):
 		if hull_body.has_method(&"apply_work"):
-			hull_body.call(&"apply_work", amount * GUN_CHIP_RATE)
+			## The chip is a player-origin delivered amount (K0's path 3), so it takes
+			## the launch's `damage_mult` once, after the 10 % work rate (CONTRACTS
+			## section 20's "rocks/mining included" tick).
+			hull_body.call(&"apply_work", amount * GUN_CHIP_RATE * _damage_scale())
 		## A gun chipping a rock reads the way the mining shaft does: S8's chip transient
 		## and FX_SPEC section 1.6's chip-sparks burst at the contact, on the same
 		## per-contact rate guard the hull read below uses (a chip per frame is a machine
@@ -1771,6 +1806,12 @@ func _shield_up(target: Object) -> bool:
 ## targets): `take_damage(amount, bypass_shield, ctx)`, a two-argument
 ## `take_damage`, or `PlayerState.damage` as the resource-level fallback. `ctx` is
 ## section 4.2 item 5's combat context, populated on every hit.
+##
+## S7 (CONTRACTS section 20): the launch's `damage_mult` is applied **exactly once**,
+## here, to the amount that reaches the sink - the beam's only delivery path, so a
+## beam frame is never multiplied twice. Embers heals the player's shield by
+## `EMBERS_FRACTION` of what an NPC hull just took, after the product, and reads the
+## flag off `_state` directly (the beam path's own reading of the launch fact).
 func _deliver(
 	target: Object,
 	amount: float,
@@ -1784,6 +1825,8 @@ func _deliver(
 	target = _sink_for(target)
 	if target == null:
 		return
+	amount *= _damage_scale()
+	_heal_embers(target, amount)
 	if target.has_method(&"take_damage"):
 		if _takes_ctx(target, &"take_damage"):
 			target.call(&"take_damage", amount, bypass, _ctx(target, point, family, impulse))
@@ -1815,6 +1858,97 @@ func _sink_for(target: Object) -> Object:
 				return cursor
 		cursor = cursor.get_parent()
 	return target
+
+
+## --- Affix application (S7, CONTRACTS section 20) -------------------------
+
+
+## The launch's damage multiplier, read null-tolerantly: eight gate suites hand
+## `setup` a null stats argument (the shipped convention is the lock-range guard), and
+## a stats object without the field resolves to 1.0 rather than crashing. A fit with no
+## computer resolves 1.0, which is what keeps every pre-S7 number byte-identical.
+func _damage_scale() -> float:
+	if _stats == null:
+		return 1.0
+	var value: Variant = _stats.get(&"damage_mult")
+	if value is float or value is int:
+		return float(value)
+	return 1.0
+
+
+## One barrel's affix dict: `PlayerState.weapon_affixes[slot]`, the slot being this
+## barrel's own cell in the launch's fit order. `{}` when there is no state, no
+## summary, or no slot for this barrel - every consumer reads `{}` as no affix.
+## The barrel->slot map is derived from `_state.weapons` (the same `_launch_weapons`
+## walk `set_weapons` sized), so it stays aligned even where §16 rule 3's divergence
+## drops a family-less `w_mining` cell from `_fitted`.
+func _barrel_affixes(position: int) -> Dictionary:
+	if _state == null or position < 0 or position >= _fitted.size():
+		return {}
+	var slot := _slot_of_barrel(position)
+	if slot < 0 or slot >= _state.weapon_affixes.size():
+		return {}
+	var entry: Variant = _state.weapon_affixes[slot]
+	if entry is Dictionary:
+		return entry as Dictionary
+	return {}
+
+
+## The `PlayerState.weapons` slot one barrel position reads: barrel positions are
+## `fitted_ids` order with family-less/foreign ids dropped, while the slot list keeps
+## every fitted W cell (a `w_mining` cell is a slot with no pack). Walking the slot
+## list and counting the entries that map to a firing family reproduces that drop.
+func _slot_of_barrel(position: int) -> int:
+	if _state == null:
+		return -1
+	var barrel := 0
+	var slots: Array[StringName] = _state.weapons
+	for slot in slots.size():
+		if weapon_id(slots[slot]) == &"":
+			continue
+		if barrel == position:
+			return slot
+		barrel += 1
+	return -1
+
+
+## One prefix's summed magnitude out of a barrel's dict, `0.0` when it is absent.
+## These are the magnitudes the roll **stored** (15 section 3), never re-derived from
+## the band, and a stored `0.0` stays inert.
+static func _prefix_magnitude(affixes: Dictionary, id: StringName) -> float:
+	var raw: Variant = affixes.get(id, affixes.get(String(id), 0.0))
+	if raw is float or raw is int:
+		return float(raw)
+	return 0.0
+
+
+## `1 + sum`, floored at a positive factor so a hand-built negative magnitude cannot
+## divide by zero or invert a rate. A zero sum answers exactly 1.0, which is what keeps
+## an unfitted barrel byte-identical to today.
+static func _prefix_factor(sum: float) -> float:
+	var factor := 1.0 + sum
+	return factor if factor > 0.0 else 1.0
+
+
+## Whether `_state` carries one launch suffix flag (Embers, on the beam path).
+func _state_has_flag(flag: StringName) -> bool:
+	if _state == null:
+		return false
+	return _state.affix_flags.has(flag)
+
+
+## Embers (CONTRACTS section 20): heal the player's shield by `EMBERS_FRACTION` of the
+## amount an **NPC hull** just took, clamped at `shield_max`. The predicate runs on the
+## sink `_sink_for` resolved, so a rock and the player's own hull are excluded, and the
+## beam path reads `_state` directly (the projectile path heals through
+## `PlayerShip.heal_from_damage` on its source).
+func _heal_embers(sink: Object, dealt: float) -> void:
+	if _state == null or not _state_has_flag(FLAG_EMBERS):
+		return
+	var node := sink as Node
+	if node == null or not node.is_in_group(&"npc_ship"):
+		return
+	_state.set_shield(minf(_state.shield + EMBERS_FRACTION * dealt, _state.shield_max))
 
 
 func _ctx(target: Object, point: Vector2, family: StringName, impulse: Vector2) -> Dictionary:
@@ -1872,6 +2006,22 @@ func _ammo_available(weapon: StringName) -> bool:
 	return _state.ammo[slot] > 0
 
 
+## One barrel's ammo gate, addressable by **barrel position** so Frugal's bank can read
+## the same slot it spends (CONTRACTS section 20). A barrel with no Frugal magnitude
+## gates through the shipped `_ammo_available` unchanged; a Frugal one gates on its own
+## live slot, which is L90's cure - the shipped `ammo_slot` indexes the const
+## `PlayerState.WEAPONS` and cannot address the second of two same-family barrels.
+func _ammo_available_at(position: int, weapon: StringName) -> bool:
+	if _state == null:
+		return false
+	if _prefix_magnitude(_barrel_affixes(position), PREFIX_FRUGAL) == 0.0:
+		return _ammo_available(weapon)
+	var slot := _slot_of_barrel(position)
+	if slot < 0 or slot >= _state.ammo.size():
+		return _ammo_available(weapon)
+	return _state.ammo[slot] > 0
+
+
 ## Section 4.3: the round leaves the pack through `PlayerState.set_ammo`, which is
 ## the HUD's own channel (`weapon_changed`).
 func _consume_ammo(weapon: StringName) -> void:
@@ -1881,6 +2031,46 @@ func _consume_ammo(weapon: StringName) -> void:
 	if slot < 0 or slot >= _state.ammo.size():
 		return
 	_state.set_ammo(slot, _state.ammo[slot] - 1)
+
+
+## One barrel's round leaving the pack, with Frugal's fractional bank (CONTRACTS
+## section 20). The bank is per barrel slot, the pack is that slot's own array entry,
+## and the cost per shot is `1 x (1 + sum(frugal))` (negative -> cheaper): the bank
+## accumulates the cost and an integer round leaves only when it crosses 1, so 20 shots
+## at -0.15 spend exactly `floor(20 x 0.85) = 17` rounds. A barrel with no Frugal
+## magnitude keeps the shipped `_consume_ammo` path byte for byte, so the live-slot map
+## (L90's cure) runs only where a per-cell bank actually needs it.
+func _consume_ammo_at(position: int, weapon: StringName) -> void:
+	if _state == null:
+		return
+	var sum := _prefix_magnitude(_barrel_affixes(position), PREFIX_FRUGAL)
+	if sum == 0.0:
+		_consume_ammo(weapon)
+		return
+	var slot := _slot_of_barrel(position)
+	if slot < 0 or slot >= _state.ammo.size() or slot >= _state.ammo_frac.size():
+		_consume_ammo(weapon)
+		return
+	_state.ammo_frac[slot] += _prefix_factor(sum)
+	var whole := int(floor(_state.ammo_frac[slot]))
+	if whole <= 0:
+		return
+	_state.ammo_frac[slot] -= float(whole)
+	_state.set_ammo(slot, _state.ammo[slot] - whole)
+
+
+## One barrel's release interval with Rapid applied (CONTRACTS section 20): the
+## family's cadence divided by `(1 + sum(rapid))` for **that** barrel's cell, so a
+## two-cannon battery with Rapid in cell 2 cycles its second barrel faster and leaves
+## the first alone. No Rapid magnitude answers `interval_of` unchanged.
+func _barrel_interval(position: int) -> float:
+	var base := interval_of(_fitted[position])
+	if base <= 0.0:
+		return base
+	var sum := _prefix_magnitude(_barrel_affixes(position), PREFIX_RAPID)
+	if sum == 0.0:
+		return base
+	return base / _prefix_factor(sum)
 
 
 ## Section 4.2 item 7: firing pushes the hull back with `projectile_mass x

@@ -447,6 +447,14 @@ var trigger_radius := 0.0
 ## becomes depletion work. The rate itself is `weapons.gd`'s (the family table's
 ## owner) and arrives in `configure`.
 var chip := 0.0
+## S7 (CONTRACTS section 20): the launch's delivery multiplier and Embers' flag. The
+## projectile reads no stats and holds no state, so `weapons.gd:_spawn_shot` stores
+## both in the shot's `configure` dict; `_deliver` applies the product once per
+## delivered amount and heals the shooter's shield through `PlayerShip.heal_from_damage`
+## on an NPC sink. 1.0 / false when a caller does not pass them (every fixture with no
+## player launch), which is byte-identical to pre-S7.
+var damage_mult := 1.0
+var embers := false
 
 var _velocity := Vector2.ZERO
 var _lock_target: Node2D = null
@@ -469,12 +477,13 @@ var _ctx_arity: Dictionary = {}
 
 ## The pinned configuration entry point. Every pinned key is read here - `kind`,
 ## `speed`, `damage`, `bypass_shield`, `homing`, `target`, `turn_rate`, `source` -
-## plus five additive keys the projectile cannot derive on its own: `direction`
+## plus seven additive keys the projectile cannot derive on its own: `direction`
 ## (the muzzle's aim, which a cursor-only design would put in the weapon and a
 ## second caller such as an NPC could not reproduce), `range` (the fizzle
-## distance), `arm`/`trigger` (the mine rows), `mass` (section 4.2 item 7's term)
-## and `chip` (section 6's 10 %). Keys are normalized to `StringName`, so a caller
-## passing plain strings still lands.
+## distance), `arm`/`trigger` (the mine rows), `mass` (section 4.2 item 7's term),
+## `chip` (section 6's 10 %), and S7's `damage_mult`/`embers` (CONTRACTS section
+## 20's delivery product and Embers flag, which the weapons component owns). Keys
+## are normalized to `StringName`, so a caller passing plain strings still lands.
 ##
 ## Call order: `configure` first, then `add_child`, then the spawner's
 ## `global_position`. Both orders work (`_ready` only needs the shape, and the
@@ -495,6 +504,10 @@ func configure(config: Dictionary) -> void:
 	arm_time = maxf(_number(cfg.get(&"arm")), 0.0)
 	trigger_radius = maxf(_number(cfg.get(&"trigger")), 0.0)
 	chip = clampf(_number(cfg.get(&"chip")), 0.0, 1.0)
+	## S7 (CONTRACTS section 20): the launch's delivery multiplier and Embers' flag,
+	## additive `configure` keys the projectile cannot derive on its own.
+	damage_mult = maxf(_number(cfg.get(&"damage_mult"), 1.0), 0.0)
+	embers = bool(cfg.get(&"embers", false))
 	var aim: Variant = cfg.get(&"direction")
 	_velocity = Vector2.ZERO
 	if aim is Vector2 and not (aim as Vector2).is_zero_approx():
@@ -755,7 +768,9 @@ func _shot_down(collider: Variant, point: Vector2) -> void:
 ## mining laser owns; a chip never extracts, so the return is discarded.
 func _hit_rock(rock: Node, point: Vector2) -> void:
 	if chip > 0.0 and rock.has_method(&"apply_work"):
-		rock.call(&"apply_work", damage * chip)
+		## S7 (CONTRACTS section 20): the chip is a player-origin delivered amount, so it
+		## takes the shot's `damage_mult` once, after the 10 % work rate.
+		rock.call(&"apply_work", damage * chip * damage_mult)
 	## FX_SPEC section 1.4 / AUDIO_SPEC S4: the hit's other half. A rock is its own
 	## sound (the mining shaft keeps its chip cue; this is the weapon's own hit).
 	play_impact(self, IMPACT_KIND_ROCK)
@@ -882,6 +897,11 @@ func _shockwave_radius() -> float:
 ## `take_damage` also lands (the context is dropped, arity-detected), and
 ## `PlayerState.damage` is the resource-level fallback. `ctx` is section 4.2 item
 ## 5's combat context, populated on every hit this file deals.
+##
+## S7 (CONTRACTS section 20): the shot's `damage_mult` is applied **exactly once**,
+## here, to the amount that reaches the sink - this file's only delivery path - and
+## Embers heals the shooter's shield through `PlayerShip.heal_from_damage` on the
+## `_source` when the sink is an NPC hull.
 func _deliver(
 	target: Object, amount: float, bypass: bool, point: Vector2, impulse: Vector2
 ) -> void:
@@ -890,17 +910,37 @@ func _deliver(
 	target = _sink_for(target)
 	if target == null:
 		return
+	var dealt := amount * damage_mult
+	_heal_embers(target, dealt)
 	if target.has_method(&"take_damage"):
 		if _takes_ctx(target, &"take_damage"):
-			target.call(&"take_damage", amount, bypass, _ctx(target, point, impulse))
+			target.call(&"take_damage", dealt, bypass, _ctx(target, point, impulse))
 		else:
-			target.call(&"take_damage", amount, bypass)
+			target.call(&"take_damage", dealt, bypass)
 		return
 	if target.has_method(&"damage"):
 		if _takes_ctx(target, &"damage"):
-			target.call(&"damage", amount, bypass, _ctx(target, point, impulse))
+			target.call(&"damage", dealt, bypass, _ctx(target, point, impulse))
 		else:
-			target.call(&"damage", amount, bypass)
+			target.call(&"damage", dealt, bypass)
+
+
+## Embers (CONTRACTS section 20): when the shot carries the flag and the sink
+## `_sink_for` resolved is an **NPC hull**, heal the shooter's shield by 10 % of the
+## delivered amount through the additive `PlayerShip.heal_from_damage` seam on
+## `_source` (a no-op when the source has no state, or no such method - every
+## projectile fixture). Rocks and the player's own hull are excluded by the group test.
+func _heal_embers(sink: Object, dealt: float) -> void:
+	if not embers:
+		return
+	var node := sink as Node
+	if node == null or not node.is_in_group(NPC_GROUP):
+		return
+	if _source == null or not is_instance_valid(_source):
+		return
+	if not _source.has_method(&"heal_from_damage"):
+		return
+	_source.call(&"heal_from_damage", dealt)
 
 
 ## The ship behind a physics collider, so a shot that strikes a hull's own body is

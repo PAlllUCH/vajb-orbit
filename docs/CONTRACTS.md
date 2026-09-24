@@ -2325,6 +2325,23 @@ judgment calls are dispositioned here; nothing was reverted.
 | D6 — `Affixes` depends on `ShipFit` one way only (no mutual global-class reference) | **accepted** (a cyclic reference risk, and the duplicated key literals are named in both files). |
 | D7 — the two pool-clamp rows ride a hand-built over-capacity summary | **accepted:** no legal fit reaches 09 §5's 3× ceilings, so the fixture is the only way to prove the clamp lands after the affixes; the suite says so. |
 
+### K2 dispositions (orchestrator, 2026-09-24, after K2 landed 746/0)
+
+K2 measured **746/0** three times (727 rows before its suite — K1's 726 plus one row
+D7's lane added and closed in its wave-boundary commit `12278d2` — plus its own 19).
+D7 closed at 13:06 the same day, so its §9/§10 pass (changelog **v0.16**, expected
+`passed=727`) precedes this wave's; S7's close-out writes **v0.17** on top of it.
+
+| call | disposition |
+|---|---|
+| D1 — L90 is **routed around, not fixed**: Frugal's spend/gate resolves the barrel's live slot only for a barrel whose Frugal magnitude is non-zero | **accepted** (bucket 1): a global `ammo_slot` fix would change a launched same-family battery's total rounds — a gameplay change outside this pin. L90 stays open as a LOW row with this route-around recorded against it. |
+| D2/D3 — the bank is `ammo_frac[slot]` (per cell, flight state, re-seeded at both seed points); the pack is `ammo[slot]`; ≤1 round/cell unfiled at dock | **accepted as stated**, exactly §20's own reading. |
+| D4 — Keen applies at shot composition on **both** paths (beam weight `Σ(1+keen)`, travelling barrel's own shot damage) | **accepted:** §20's Keen row says "at shot composition", which covers every released barrel. |
+| D5 — the chip order is `amount × GUN_CHIP_RATE × damage_mult` | **accepted** (the product commutes; the order keeps the rock's work a fixed fraction of the delivered damage). |
+| D6 — `EMBERS_FRACTION` is spelled in both `weapons.gd` and `player_ship.gd` | **accepted and reported:** the pin routes the two deliveries differently on purpose; both constants are documented in both files. |
+| D7 — the launch summary lives in one var, `_launch_summary`, resolved once in `_resolve_stats` | **accepted as the handoff K3 reads** (or K3 re-calls `profile.affix_summary`, one line). |
+| D8 — `_slot_of_barrel` walks `PlayerState.weapons` counting firing-family entries | **accepted:** it is K0 F8's map, derived from shipped data, and the family-less `w_mining` drop keeps the two counts aligned by construction. |
+
 ## §10 Changelog
 
 - **v0 (2026-09-18)** — seeded from the engine wave-1 pinned interfaces

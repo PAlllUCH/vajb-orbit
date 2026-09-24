@@ -96,6 +96,27 @@ var shield_regen: float = SHIELD_REGEN_DEFAULT
 ## address, and the pinned interface here is not what would change.
 var weapons: Array[StringName] = WEAPONS.duplicate()
 
+## The per-slot weapon affixes (CONTRACTS section 20, 15 section 3): one
+## `{keen, rapid, frugal}` magnitude dict per entry of `weapons`, same order and same
+## empty-cell skipping, written once by the launch handshake
+## (`game.gd:_launch_weapon_affixes`). A barrel reads **its own cell's** dict, so a
+## battery whose second cell is Keen gains it on barrel 2 only. `[]` for a state built
+## without a fit, which every consumer reads as "no affix".
+var weapon_affixes: Array[Dictionary] = []
+
+## The launched fit's suffix flags (CONTRACTS section 20): one entry per perk, once,
+## written by the launch handshake. The delivery seams (Embers) and the wave's own
+## suffix seams read this one list, so a perk's presence is a launch fact, not a
+## per-shot one.
+var affix_flags: Array[StringName] = []
+
+## Frugal's per-slot fractional round bank (CONTRACTS section 20): `ammo_frac[slot]` is
+## the part of a round a cell has accumulated but not yet spent, so a cell whose Frugal
+## cost is below 1 spends an integer round only when the bank crosses 1. Flight state:
+## seeded empty at every launch/seed point and never persisted, so at most one round per
+## cell is unfiled at dock.
+var ammo_frac: Array[float] = []
+
 var ammo: Array[int]
 var ammo_max: Array[int]
 var cargo_used: int
@@ -130,15 +151,38 @@ func set_weapons(ids: Array[StringName]) -> void:
 		weapon_changed.emit(slot, weapons[slot], ammo[slot], ammo_max[slot])
 
 
+## The affix half of the fit handshake (CONTRACTS section 20): one `{keen, rapid,
+## frugal}` magnitude dict per slot, in `weapons` order. Sized with `_resize_ammo`'s own
+## discipline - one entry per slot, padded with `{}` when the caller hands fewer - so
+## the array can never drift from `weapons`. Called after `setup` on the launch
+## handshake, because `setup` is what re-sizes the slot arrays.
+func set_weapon_affixes(per_cell: Array[Dictionary]) -> void:
+	weapon_affixes = []
+	for slot in weapons.size():
+		if slot < per_cell.size():
+			weapon_affixes.append(per_cell[slot])
+		else:
+			weapon_affixes.append({})
+
+
+## The launched fit's suffix flags (CONTRACTS section 20), one entry per perk. The
+## launch handshake's other half; duplicated so a caller cannot write through.
+func set_affix_flags(flags: Array[StringName]) -> void:
+	affix_flags = flags.duplicate()
+
+
 ## Ammo and its ceiling follow the launched weapon list: one entry per fitted W cell,
 ## seeded to `AMMO_DEFAULT`. Shared by `set_weapons` and `setup` so the two can never
-## disagree about the array's length.
+## disagree about the array's length. Frugal's fractional bank is seeded empty here too,
+## so every launch/seed point starts it at zero (section 20).
 func _resize_ammo() -> void:
 	ammo = []
 	ammo_max = []
+	ammo_frac = []
 	for slot in weapons.size():
 		ammo.append(AMMO_DEFAULT)
 		ammo_max.append(AMMO_DEFAULT)
+		ammo_frac.append(0.0)
 
 
 func setup() -> void:
