@@ -196,6 +196,7 @@ var work: float = 0.0
 var _look := 0
 var _sprite: Sprite2D = null
 var _shape: CollisionShape2D = null
+var _radius := 0.0
 var _cracked := false
 ## Whether the rock was rolled *with* ore. Ruling 17's "a yield-0 rock still cracks
 ## and despawns bare" is exactly this flag: a rock that never carried ore has
@@ -213,11 +214,20 @@ var _bore_ore := false
 ## call resolves exactly as before) pins the look row: a cleaving fragment must be
 ## a Medium or a Small, never whatever the uniform roll produced. `SIZE_ANY` keeps
 ## the uniform roll over all nine silhouettes.
+##
+## `defer_shape` (S8, CONTRACTS §21 M1) hands the collision shape's install to the
+## deferred queue instead of adding it here: a fragment is born inside a physics
+## query flush (a hull contact cracks the parent), where Godot refuses
+## `body_set_shape_disabled` and `body_set_shape_as_one_way_collision`. The radius
+## is known before the node is (`world_radius` reads it), and the deferred install
+## lands before the next step, so the fragment collides from its first eligible
+## frame. A physics-frame call defers even without the flag.
 func setup(
 	mineral: StringName,
 	mineral_tier: int,
 	units: int,
-	size_class: int = SIZE_ANY
+	size_class: int = SIZE_ANY,
+	defer_shape: bool = false
 ) -> void:
 	mineral_id = mineral
 	tier = mineral_tier
@@ -229,7 +239,7 @@ func setup(
 	collision_layer = COLLISION_LAYER
 	collision_mask = COLLISION_MASK
 	_configure_body()
-	_build_look(size_class)
+	_build_look(size_class, defer_shape)
 
 
 ## Fractional work in, whole ore units out. Work accumulates across calls, so a
@@ -298,7 +308,7 @@ func eject_velocity() -> Vector2:
 ## The collision radius the sprite's shorter side implies, in world units.
 func world_radius() -> float:
 	if _shape == null or _shape.shape == null:
-		return 0.0
+		return _radius
 	return (_shape.shape as CircleShape2D).radius
 
 
@@ -329,7 +339,7 @@ func _reference_hull_mass() -> float:
 	return float(row.get(&"hull_mass", 0.0))
 
 
-func _build_look(size_class: int) -> void:
+func _build_look(size_class: int, defer_shape: bool = false) -> void:
 	_look = _roll_look(size_class)
 	var texture := LOOK_TEXTURES[_look]
 	var scale_factor := LOOK_WIDTHS[_look] / maxf(float(texture.get_width()), 1.0)
@@ -339,8 +349,16 @@ func _build_look(size_class: int) -> void:
 	_sprite.scale = Vector2(scale_factor, scale_factor)
 	add_child(_sprite)
 	var shorter_side := float(mini(texture.get_width(), texture.get_height()))
+	_radius = 0.5 * shorter_side * scale_factor
+	if defer_shape or Engine.is_in_physics_frame():
+		_install_shape.call_deferred()
+		return
+	_install_shape()
+
+
+func _install_shape() -> void:
 	var circle := CircleShape2D.new()
-	circle.radius = 0.5 * shorter_side * scale_factor
+	circle.radius = _radius
 	_shape = CollisionShape2D.new()
 	_shape.name = SHAPE_NODE
 	_shape.shape = circle

@@ -633,6 +633,7 @@ static func list_price(base_id: StringName, rarity: StringName) -> int:
 	var cost := int(row.get(&"cost", 0))
 	if cost <= 0:
 		return 0
+	@warning_ignore("integer_division")
 	return cost * int(RARITY_MULT_PERMILLE.get(String(rarity), 1000)) / 1000
 
 
@@ -640,6 +641,7 @@ static func list_price(base_id: StringName, rarity: StringName) -> int:
 ## term (`of the Ledger` is displayed, never applied -- 15 section 9.3). `0` for an
 ## id the catalogue does not ship, so the profile refuses a sale it cannot price.
 static func sell_price(base_id: StringName, rarity: StringName) -> int:
+	@warning_ignore("integer_division")
 	return list_price(base_id, rarity) * SELL_PERCENT / 100
 
 
@@ -648,6 +650,7 @@ static func sell_price(base_id: StringName, rarity: StringName) -> int:
 static func hot_price(price: int) -> int:
 	if price <= 0:
 		return 0
+	@warning_ignore("integer_division")
 	return price * (100 - HOT_DISCOUNT_PERCENT) / 100
 
 

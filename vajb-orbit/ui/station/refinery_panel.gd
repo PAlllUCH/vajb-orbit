@@ -64,6 +64,7 @@ const TAG_FORMAT := "%d STACKS · %d CONVERSIONS READY"
 const TAG_EMPTY := "NO CONVERTIBLE STACKS"
 const SELECTED_NONE := "NO STACK SELECTED"
 const STEPPER_FORMAT := "%d CONVERSIONS"
+const STEPPER_ONE := "1 CONVERSION"
 const STEPPER_IDLE := "0 CONVERSIONS"
 const ORE_HELD_FORMAT := "%d ORE HELD"
 const FEE_FORMAT := "%s CR"
@@ -76,7 +77,7 @@ const FOOTER_EMPTY := "BRING RAW ORE FROM THE BELT"
 ## Status strip copy (STATION_HUB section 5.7 wording, section 5.6 the refusal shape). The
 ## fee text always comes from Refinery.fee_for, never from the module's `fee` field, which
 ## is 0 on a refusal because nothing was charged.
-const STATUS_READY := "READY · %s · %d CONVERSIONS · %s FEE"
+const STATUS_READY := "READY · %s · %s · %s FEE"
 const STATUS_REFINED := "REFINED · %s · %d INGOTS · %s CR FEE"
 const STATUS_REFINED_ALL := "REFINED · ALL ORE · %d INGOTS · %s CR FEE"
 const STATUS_REFUSED_CREDITS := "REFUSED · NOT ENOUGH CREDITS · %s NEEDED"
@@ -472,11 +473,21 @@ func _clear_selection() -> void:
 	_refresh_affordability()
 
 
+## S8 copy law (CONTRACTS section 21): one conversion reads `1 CONVERSION`, the
+## stepper's singular; every other count keeps the plural form.
+func _conversions_text(count: int) -> String:
+	if count == 1:
+		return STEPPER_ONE
+	if count == 0:
+		return STEPPER_IDLE
+	return STEPPER_FORMAT % count
+
+
 func _refresh_box() -> void:
 	var armed := _selected_id != &""
 	if armed:
 		_selected_name.text = _selected_name_text().to_upper()
-		_stepper_value.text = STEPPER_FORMAT % _stepper
+		_stepper_value.text = _conversions_text(_stepper)
 	else:
 		_selected_name.text = SELECTED_NONE
 		_stepper_value.text = STEPPER_IDLE
@@ -535,7 +546,7 @@ func _on_row_focused(_row: Button, payload: Dictionary) -> void:
 	status_requested.emit(
 		STATUS_READY % [
 			String(payload[&"name"]).to_upper(),
-			int(payload[&"conversions"]),
+			_conversions_text(int(payload[&"conversions"])),
 			_format_int(int(payload[&"fee"])),
 		],
 		false,

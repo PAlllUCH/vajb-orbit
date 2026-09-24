@@ -1482,11 +1482,11 @@ static func trail_alpha(ratio: float) -> float:
 ## `Fx.set_quad_scale` - the emitter's node `scale` never reaches what a
 ## `GPUParticles2D` draws (S2's report section 2.2), and the process material's own
 ## `scale_min/max` is uniform, so it could not give 6 u of width at any length.
-static func trail_read(ratio: float, source: Vector2) -> Dictionary:
+static func trail_read(ratio: float, origin: Vector2) -> Dictionary:
 	var length := trail_length(ratio)
 	var rate := trail_rate(ratio)
 	var capacity := roundi(TRAIL_RATE_MAX * TRAIL_LIFETIME)
-	var scale := FxScript.quad_scale_for(source, length, TRAIL_WIDTH)
+	var quad_scale := FxScript.quad_scale_for(origin, length, TRAIL_WIDTH)
 	return {
 		&"ramp": trail_ramp(ratio),
 		&"rate": rate,
@@ -1496,7 +1496,7 @@ static func trail_read(ratio: float, source: Vector2) -> Dictionary:
 		&"amount": capacity,
 		&"amount_ratio": rate / TRAIL_RATE_MAX,
 		&"count": float(capacity) * (rate / TRAIL_RATE_MAX),
-		&"scale": scale,
+		&"scale": quad_scale,
 	}
 
 
@@ -1756,9 +1756,9 @@ static func _shape_trail(
 	emitter.scale = Vector2.ONE
 	FxScript.set_quad_scale(emitter.material, read.get(&"scale", Vector2.ONE) as Vector2)
 	emitter.amount_ratio = float(read.get(&"amount_ratio", 0.0))
-	var material := emitter.process_material as ParticleProcessMaterial
-	if material != null:
-		material.color = Color(1.0, 1.0, 1.0, float(read.get(&"alpha", 1.0)))
+	var particle_material := emitter.process_material as ParticleProcessMaterial
+	if particle_material != null:
+		particle_material.color = Color(1.0, 1.0, 1.0, float(read.get(&"alpha", 1.0)))
 	emitter.emitting = active
 	emitter.visible = active
 

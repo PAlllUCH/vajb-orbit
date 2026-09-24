@@ -247,12 +247,13 @@ func _new_rock(
 	mineral_id: StringName,
 	tier: int,
 	units: int,
-	size_class: int
+	size_class: int,
+	defer_shape: bool = false
 ) -> RigidBody2D:
 	var rock := AsteroidScript.new() as RigidBody2D
 	rock.name = node_name
 	add_child(rock)
-	rock.call(&"setup", mineral_id, tier, units, size_class)
+	rock.call(&"setup", mineral_id, tier, units, size_class, defer_shape)
 	rock.connect(&"cracked", _on_rock_cracked.bind(rock))
 	_rocks.append(rock)
 	_spawned += 1
@@ -367,7 +368,8 @@ func _cleave(rock: Node2D) -> void:
 			mineral_id,
 			tier,
 			_rolled_yield(tier),
-			_fragment_size(size_class)
+			_fragment_size(size_class),
+			true
 		)
 		var angle := TAU * float(index) / float(count)
 		angle += rng.randf_range(-FRAGMENT_ANGLE_JITTER, FRAGMENT_ANGLE_JITTER)

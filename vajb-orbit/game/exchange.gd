@@ -273,14 +273,31 @@ static func quote(
 ## A component the station cannot take this cycle still hands over its goods and
 ## reports `queued = qty` with `paid = 0` (05 section 4: "STOCK FULL - 12 units
 ## queued"); the queue pays out at the next band evaluation.
+##
+## `quoted_total` (S8, CONTRACTS section 21 M3 / 05 section 9): the **gross total
+## the confirm strip showed at preview**. `-1` (the default) is today's live-price
+## path, byte-identical. A value `>= 0` overrides the live quote's `gross`, and
+## `fee`/`paid` are re-derived from it through `commission_for` (the one pricing
+## function still owns the arithmetic), so a market that re-rolls between preview
+## and press still credits exactly the shown `YOU GET`.
 static func sell(
-	profile: Node, item_id: StringName, qty: int, now: int, rng: RandomNumberGenerator = null
+	profile: Node,
+	item_id: StringName,
+	qty: int,
+	now: int,
+	rng: RandomNumberGenerator = null,
+	quoted_total: int = -1
 ) -> Dictionary:
 	evaluate_market(profile, now, rng)
 	var state: Dictionary = profile.market()
 	var result := _quote_from(state, profile.cargo_qty(item_id), item_id, qty)
 	if not bool(result[&"ok"]):
 		return result
+	if quoted_total >= 0:
+		var quoted_fee := commission_for(quoted_total)
+		result[&"gross"] = quoted_total
+		result[&"fee"] = quoted_fee
+		result[&"paid"] = maxi(0, quoted_total - quoted_fee)
 	if not profile.remove_cargo(item_id, qty):
 		return _refuse(result, REASON_INSUFFICIENT_CARGO)
 	profile.add_credits(int(result[&"paid"]))

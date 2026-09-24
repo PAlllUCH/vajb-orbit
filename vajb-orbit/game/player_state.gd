@@ -31,7 +31,9 @@ signal died
 
 ## The five-family default a `PlayerState` built without a fit still runs on: the
 ## launch hands `set_weapons` the launched fit's own list, and this const stays the
-## fallback shape (and the ammo-slot order `game/weapons.gd` reads).
+## fallback shape. The spend no longer reads this order: `weapons.gd:_launch_ammo_slot`
+## resolves each barrel's family against the launched fit's own cells (CONTRACTS
+## section 21's H1), and only a rig that never set a fit falls back to `ammo_slot` here.
 const WEAPONS: Array[StringName] = [&"laser", &"cannon", &"rocket", &"mine", &"plasma"]
 const AMMO_DEFAULT := 300
 

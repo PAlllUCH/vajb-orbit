@@ -148,6 +148,7 @@ var _board_payloads: Array[Dictionary] = []
 var _selected_id: StringName = &""
 var _selected_row: Button = null
 var _step := 0
+var _quoted: Dictionary = {}
 var _tweens: Array[Tween] = []
 
 
@@ -543,18 +544,18 @@ func _refresh_trade() -> void:
 	_sell.disabled = not armed
 	_sell_all.disabled = not has_hold
 	_cancel.disabled = not armed
-	_confirm_strip.text = _confirm_text(profile) if armed else CONFIRM_IDLE
+	_quoted = _quote(profile, _selected_id, _step) if armed else {}
+	_confirm_strip.text = _confirm_text() if armed else CONFIRM_IDLE
 	_refresh_hold()
 
 
-func _confirm_text(profile: ProfileScript) -> String:
-	var quote: Dictionary = _quote(profile, _selected_id, _step)
+func _confirm_text() -> String:
 	return CONFIRM_FORMAT % [
 		_step,
-		String(_selected_id).to_upper(),
-		_format_int(int(quote.get(&"gross", 0))),
-		_format_int(int(quote.get(&"fee", 0))),
-		_format_int(int(quote.get(&"paid", 0))),
+		_item_name(_selected_id),
+		_format_int(int(_quoted.get(&"gross", 0))),
+		_format_int(int(_quoted.get(&"fee", 0))),
+		_format_int(int(_quoted.get(&"paid", 0))),
 	]
 
 
@@ -610,7 +611,9 @@ func _on_sell_pressed() -> void:
 		return
 	var item_id := _selected_id
 	var quantity := _step
-	var result: Dictionary = ExchangeScript.sell(profile, item_id, quantity, Clock.now())
+	var result: Dictionary = ExchangeScript.sell(
+		profile, item_id, quantity, Clock.now(), null, int(_quoted.get(&"gross", -1))
+	)
 	if not bool(result[&"ok"]):
 		_deny(_reason_text(result[&"reason"]))
 		return
@@ -653,7 +656,7 @@ func _announce_sale(item_id: StringName, result: Dictionary) -> void:
 	else:
 		line = STATUS_SOLD % [
 			int(result[&"sellable"]),
-			String(item_id).to_upper(),
+			_item_name(item_id),
 			_format_int(int(result[&"paid"])),
 		]
 	_report(line)

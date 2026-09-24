@@ -2578,6 +2578,24 @@ calls and the two bucket-2 notes are dispositioned here; nothing was reverted.
 **Owner ticks added by Q1:** the `game/repairs.gd` staging call; the twin
 battery's doubled total (R1's verification rides AC1).
 
+### Q2 dispositions (orchestrator, 2026-09-24, after Q2 landed 770/0)
+
+Q2 measured **770/0** twice (761 + its own 9; the orchestrator re-ran it once —
+identical), live store md5s unchanged. Its calls are dispositioned here; the
+blocked weapons.gd ledger half is dispatched as **S8-Q3** (a continuation), not
+reverted.
+
+| call | disposition |
+|---|---|
+| M1's mechanism — `setup(..., defer_shape)` + `Engine.is_in_physics_frame()`, deferring the *install method* (the `add_child.call_deferred` alternative leaked 7282 `GodotShape2D` RIDs) | **accepted:** measured 0 refusals (was 32), fragments spawn; the runner is synchronous, so the suite pins the deferral + known radius + the installer, and the ram probe carries the refusal count |
+| M3's shape — `sell(..., quoted_total := -1)`, committing the preview's gross and re-deriving fee and paid through `commission_for` | **accepted:** it is the pin's own "one pricing function owns the arithmetic" clause; measured credits 6001 → 6016 with the promised 15 |
+| `intdiv` in the brief → `@warning_ignore("integer_division")` in the code (4.7.2 has no `intdiv`; the project's own idiom at `refinery.gd:55`, `auction.gd:406`, `world_clock.gd:38`) | **accepted as the mechanism:** zero behaviour change is the pin's requirement and `intdiv` was the brief's spelling; measured 3 → 0 warnings |
+| M2, the `1 CONVERSION` singular, the spelling guard, O1/O2 (nothing built) | **accepted as dispositioned** |
+| the blocked half — `game/weapons.gd`'s five `position`→`barrel` renames (hook-refused: the file is Q1's, not Q2's) | **applied as a set growth:** S8-Q3 (continuation, `weapons.gd` + `tests/`) runs before R1 and sweeps every shadowing `position` (Q1's additions included); AC8 is read across all four files |
+| the gate leak delta (+6 ObjectDB / +2 resources) | **recorded as benign:** deferred installs queued in synchronous tests, no shape RID leak |
+
+**Owner ticks added by Q2:** none beyond Q1's (O1/O2 and O3 unchanged).
+
 ## §22 Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated)
 
 **Docs-first (developer session) answering the owner's "suggest number". Every
