@@ -19,8 +19,8 @@ extends McpTestSuite
 ##    at n=1 and keeps the plural elsewhere.
 ##  - **O1/O2** (`armory_panel.gd`) -- the ARMORY's drag commits a rack through the panel's
 ##    own three handlers; FITTING carries no drag code (Q0's reading, the owner's UX call).
-##  - **Warning ledger** -- `weapons.gd`, `module_catalog.gd` and `projectile.gd` parse clean
-##    under `--check-only`.
+##  - **Warning ledger** -- `weapons.gd`, `module_catalog.gd`, `projectile.gd` and
+##    `player_state.gd` parse clean under `--check-only`.
 ##
 ## Profile hygiene (L17, T-93): the shipped autoload is borrowed, `save_path` is repointed at
 ## a scratch file before the first mutation, every field this suite writes is handed back in
@@ -51,6 +51,7 @@ const LEDGER_FILES: Array[String] = [
 	"res://game/weapons.gd",
 	"res://game/module_catalog.gd",
 	"res://game/projectile.gd",
+	"res://game/player_state.gd",
 ]
 
 var _profile: Node = null
@@ -308,9 +309,9 @@ func _fitting_handlers() -> String:
 # --------------------------------------------------------------------------------- ledger
 
 
-## CONTRACTS section 21's warning ledger: the three files the wave owns parse clean under
+## CONTRACTS section 21's warning ledger: the four files the wave owns parse clean under
 ## `--check-only`, asserted by running the engine against each one.
-func test_the_three_warning_ledger_files_parse_clean() -> void:
+func test_the_four_warning_ledger_files_parse_clean() -> void:
 	for path: String in LEDGER_FILES:
 		var output: Array = []
 		var code := OS.execute(

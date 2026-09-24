@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://tests/probe_s8_q3_lint.gd" id="1_probe_s8_q3_lint"]
+
+[node name="ProbeS8Q3Lint" type="Node"]
+script = ExtResource("1_probe_s8_q3_lint")

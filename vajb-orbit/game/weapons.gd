@@ -556,12 +556,12 @@ func _sync_barrels() -> void:
 	var released: Array[bool] = []
 	var mounts: Array[Vector2] = []
 	var base: Array[float] = []
-	for position in _fitted.size():
+	for barrel in _fitted.size():
 		timers.append(0.0)
 		armed.append(-1.0)
 		open.append(false)
 		released.append(false)
-		var mount := _mount_for(position)
+		var mount := _mount_for(barrel)
 		mounts.append(mount[&"pos"])
 		base.append(float(mount[&"facing"]))
 	_barrel_timers = timers
@@ -585,10 +585,10 @@ func _sync_barrels() -> void:
 ## The **barrel position in `fitted()`** is the index, which is also what `game.gd`
 ## resolves the profile's W-cell refs into (section 16 rule 3's divergence), so a cell's
 ## mount and its rack entry name the same barrel.
-func _mount_for(position: int) -> Dictionary:
+func _mount_for(barrel: int) -> Dictionary:
 	var host := _host()
 	if host != null and host.has_method(&"weapon_mount"):
-		var mount: Variant = host.call(&"weapon_mount", position)
+		var mount: Variant = host.call(&"weapon_mount", barrel)
 		if mount is Dictionary and not (mount as Dictionary).is_empty():
 			var pos: Variant = (mount as Dictionary).get(&"pos", Vector2.ZERO)
 			return {
@@ -608,9 +608,9 @@ func _compose_racks() -> Array:
 	if _battery_spec.is_empty():
 		for id: StringName in _batteries:
 			var family_rack: Array = []
-			for position in _fitted.size():
-				if _fitted[position] == id:
-					family_rack.append(position)
+			for barrel in _fitted.size():
+				if _fitted[barrel] == id:
+					family_rack.append(barrel)
 			racks.append(family_rack)
 		return racks
 	var claimed: Dictionary = {}
@@ -619,15 +619,15 @@ func _compose_racks() -> Array:
 			continue
 		var rack: Array = []
 		for raw_position: Variant in (raw_rack as Array):
-			var position := int(raw_position)
-			if position < 0 or position >= _fitted.size() or claimed.has(position):
+			var barrel := int(raw_position)
+			if barrel < 0 or barrel >= _fitted.size() or claimed.has(barrel):
 				continue
-			claimed[position] = true
-			rack.append(position)
+			claimed[barrel] = true
+			rack.append(barrel)
 		racks.append(rack)
-	for position in _fitted.size():
-		if not claimed.has(position):
-			racks.append([position])
+	for barrel in _fitted.size():
+		if not claimed.has(barrel):
+			racks.append([barrel])
 	return racks
 
 
@@ -659,8 +659,8 @@ func selected_rack() -> Array:
 	if _group < 1 or _group > _racks.size():
 		return []
 	var rack: Array = []
-	for position: int in _racks[_group - 1]:
-		rack.append(position)
+	for barrel: int in _racks[_group - 1]:
+		rack.append(barrel)
 	return rack
 
 
@@ -673,8 +673,8 @@ func racks() -> Array:
 	var out: Array = []
 	for rack: Variant in _racks:
 		var positions: Array = []
-		for position: int in (rack as Array):
-			positions.append(position)
+		for barrel: int in (rack as Array):
+			positions.append(barrel)
 		out.append(positions)
 	return out
 
@@ -703,8 +703,8 @@ func rack_cycle(rack: int) -> float:
 
 func _rack_cycle(rack: int) -> float:
 	var cycle := 0.0
-	for position: int in _racks[rack]:
-		cycle = maxf(cycle, _barrel_interval(position))
+	for barrel: int in _racks[rack]:
+		cycle = maxf(cycle, _barrel_interval(barrel))
 	return cycle
 
 
@@ -731,9 +731,9 @@ func battery(base_id: StringName) -> Array:
 	var id := weapon_id(base_id)
 	if id == &"":
 		return positions
-	for position in _fitted.size():
-		if _fitted[position] == id:
-			positions.append(position)
+	for barrel in _fitted.size():
+		if _fitted[barrel] == id:
+			positions.append(barrel)
 	return positions
 
 
@@ -877,8 +877,8 @@ func tick(delta: float) -> void:
 		_dry_noted = false
 		_beam_live = false
 		_burst_phase = 0.0
-		for position in _released.size():
-			_released[position] = false
+		for barrel in _released.size():
+			_released[barrel] = false
 		_arm_battery()
 	if not _firing:
 		_was_firing = false
@@ -922,8 +922,8 @@ func _salvo_spent(rack: int) -> bool:
 	var positions: Array = _racks[rack]
 	if positions.is_empty():
 		return false
-	for position: int in positions:
-		if _armed[position] >= 0.0:
+	for barrel: int in positions:
+		if _armed[barrel] >= 0.0:
 			return false
 	return true
 
@@ -939,8 +939,8 @@ func _selected_rack_index() -> int:
 ## Whether one rack holds an instant (beam) barrel - the racks whose frame draws a
 ## shaft and pays per-barrel Energy.
 func _rack_holds_beam(rack: int) -> bool:
-	for position: int in _racks[rack]:
-		if bool(row_of(_fitted[position]).get(&"instant", false)):
+	for barrel: int in _racks[rack]:
+		if bool(row_of(_fitted[barrel]).get(&"instant", false)):
 			return true
 	return false
 
@@ -948,8 +948,8 @@ func _rack_holds_beam(rack: int) -> bool:
 ## Whether **every** barrel of one rack is instant: the one carve-out from the stream
 ## above (a beam rack opens once and keeps drawing; there is no salvo to repeat).
 func _rack_is_all_beam(rack: int) -> bool:
-	for position: int in _racks[rack]:
-		if not bool(row_of(_fitted[position]).get(&"instant", false)):
+	for barrel: int in _racks[rack]:
+		if not bool(row_of(_fitted[barrel]).get(&"instant", false)):
 			return false
 	return true
 
@@ -958,8 +958,8 @@ func _rack_is_all_beam(rack: int) -> bool:
 ## down whether or not the trigger is held, exactly as the single `_shot_timer` did,
 ## so a barrel's rate is its family's and the rack's is its slowest member's.
 func _advance_barrel_timers(delta: float) -> void:
-	for position in _barrel_timers.size():
-		_barrel_timers[position] = maxf(_barrel_timers[position] - delta, 0.0)
+	for barrel in _barrel_timers.size():
+		_barrel_timers[barrel] = maxf(_barrel_timers[barrel] - delta, 0.0)
 	_battery_timer = maxf(_battery_timer - delta, 0.0)
 
 
@@ -984,25 +984,25 @@ func _arm_battery() -> void:
 	_battery_timer = _rack_cycle(rack)
 	var ceiling := float(BATTERY_STRUM_MS) / 1000.0
 	var lead := INF
-	for position: int in positions:
+	for barrel: int in positions:
 		var offset := _strum_rng.randf_range(0.0, ceiling)
-		_armed[position] = offset
+		_armed[barrel] = offset
 		lead = minf(lead, offset)
 	if lead <= 0.0 or lead == INF:
 		return
-	for position: int in positions:
-		_armed[position] -= lead
+	for barrel: int in positions:
+		_armed[barrel] -= lead
 
 
 func _disarm_battery() -> void:
-	for position in _armed.size():
-		_armed[position] = -1.0
+	for barrel in _armed.size():
+		_armed[barrel] = -1.0
 	_armed_rack = -1
 
 
 func _close_beams() -> void:
-	for position in _beam_open.size():
-		_beam_open[position] = false
+	for barrel in _beam_open.size():
+		_beam_open[barrel] = false
 
 
 ## One frame of the pull: every armed barrel whose release offset has elapsed **and
@@ -1017,34 +1017,34 @@ func _close_beams() -> void:
 ## may hold a mine beside a held family without dropping a mine per salvo.
 func _release_battery(rack: int, delta: float) -> void:
 	var step := maxf(delta, 0.0)
-	for position: int in _racks[rack]:
-		if _armed[position] < 0.0:
+	for barrel: int in _racks[rack]:
+		if _armed[barrel] < 0.0:
 			continue
 		## The countdown stops at 0, never below: `-1.0` is the unarmed sentinel and a
 		## barrel whose release is waiting on its cadence must stay visibly armed, or the
 		## guard above would read it as unarmed and drop its shot (the S4 latent bug this
 		## wave's own battery timer exposes - measured: a salvo armed one frame before a
 		## barrel's cadence read zero silently lost that barrel's shot).
-		_armed[position] = maxf(_armed[position] - step, 0.0)
-		if _armed[position] > 0.0:
+		_armed[barrel] = maxf(_armed[barrel] - step, 0.0)
+		if _armed[barrel] > 0.0:
 			continue
-		var weapon: StringName = _fitted[position]
+		var weapon: StringName = _fitted[barrel]
 		var row := row_of(weapon)
 		var instant := bool(row.get(&"instant", false))
-		if bool(row.get(&"edge", false)) and _released[position]:
-			_armed[position] = -1.0
+		if bool(row.get(&"edge", false)) and _released[barrel]:
+			_armed[barrel] = -1.0
 			continue
-		if _barrel_timers[position] > 0.0:
+		if _barrel_timers[barrel] > 0.0:
 			continue
 		if not instant and not _burst_open(row):
 			continue
 		if bool(row.get(&"edge", false)):
-			_released[position] = true
-		_armed[position] = -1.0
+			_released[barrel] = true
+		_armed[barrel] = -1.0
 		if instant:
-			_beam_open[position] = true
+			_beam_open[barrel] = true
 		else:
-			_fire_projectile(position, weapon, row)
+			_fire_projectile(barrel, weapon, row)
 
 
 func _sample_trigger() -> void:
@@ -1095,20 +1095,20 @@ func _fire_beam_battery(rack: int, delta: float) -> void:
 	## The lead barrel's own place on the hull (S5, 09 section 11): the shaft is still one
 	## drawing, so it leaves the first barrel that paid this frame.
 	var lead_position := -1
-	for position: int in _racks[rack]:
-		if not _beam_open[position]:
+	for barrel: int in _racks[rack]:
+		if not _beam_open[barrel]:
 			continue
-		var weapon: StringName = _fitted[position]
+		var weapon: StringName = _fitted[barrel]
 		var row := row_of(weapon)
 		if not _spend_energy(float(row.get(&"draw", 0.0)) * step):
 			_dry(weapon)
 			continue
-		var keen := _prefix_factor(_prefix_magnitude(_barrel_affixes(position), PREFIX_KEEN))
+		var keen := _prefix_factor(_prefix_magnitude(_barrel_affixes(barrel), PREFIX_KEEN))
 		paid[weapon] = float(paid.get(weapon, 0.0)) + keen
 		reach = maxf(reach, float(row.get(&"range", 0.0)))
 		if lead == &"":
 			lead = weapon
-			lead_position = position
+			lead_position = barrel
 	if paid.is_empty():
 		_beam_live = false
 		_hide_beam()
@@ -1179,23 +1179,23 @@ func _fire_beam_battery(rack: int, delta: float) -> void:
 ## trigger pull" is that same loop's `edge` read rather than a flag here. A barrel the pack
 ## refuses is dry and leaves the rest of the battery to fire. The mine is `speed 0.0`, so
 ## it takes the empty direction and keeps its drop behaviour at its own mount.
-func _fire_projectile(position: int, weapon: StringName, row: Dictionary) -> void:
-	if not _ammo_available_at(position, weapon):
+func _fire_projectile(barrel: int, weapon: StringName, row: Dictionary) -> void:
+	if not _ammo_available_at(barrel, weapon):
 		_dry(weapon)
 		return
 	var speed := float(row.get(&"speed", 0.0))
-	var direction := muzzle_direction(position) if speed > 0.0 else Vector2.ZERO
-	var shot := _spawn_shot(weapon, row, direction, position)
+	var direction := muzzle_direction(barrel) if speed > 0.0 else Vector2.ZERO
+	var shot := _spawn_shot(weapon, row, direction, barrel)
 	if shot == null:
 		return
-	_consume_ammo_at(position, weapon)
-	_barrel_timers[position] = _barrel_interval(position)
+	_consume_ammo_at(barrel, weapon)
+	_barrel_timers[barrel] = _barrel_interval(barrel)
 	_apply_recoil(direction * speed)
 	shot_fired.emit(weapon)
 
 
 func _spawn_shot(
-	weapon: StringName, row: Dictionary, direction: Vector2, position: int = 0
+	weapon: StringName, row: Dictionary, direction: Vector2, barrel: int = 0
 ) -> Node2D:
 	var parent := _world_parent()
 	if parent == null:
@@ -1211,7 +1211,7 @@ func _spawn_shot(
 		## barrel's own cell scales its damage by `1 + sum(keen)` before the shot exists,
 		## so barrel 1 of a battery with Keen only in cell 2 is byte-identical to today.
 		&"damage": shot_damage(weapon) * _prefix_factor(
-			_prefix_magnitude(_barrel_affixes(position), PREFIX_KEEN)
+			_prefix_magnitude(_barrel_affixes(barrel), PREFIX_KEEN)
 		),
 		&"bypass_shield": bool(row.get(&"bypass_shield", false)),
 		&"homing": bool(row.get(&"homing", false)),
@@ -1232,7 +1232,7 @@ func _spawn_shot(
 		&"embers": _state_has_flag(FLAG_EMBERS),
 	})
 	parent.add_child(shot)
-	shot.global_position = muzzle_position(position)
+	shot.global_position = muzzle_position(barrel)
 	return shot
 
 
@@ -1598,18 +1598,18 @@ func _aim_direction() -> Vector2:
 ## trigger then fires along wherever the barrel has got to.
 func _track_barrels(delta: float) -> void:
 	var step := maxf(delta, 0.0)
-	for position in _facing.size():
-		var dps := track_dps_of(_fitted[position])
+	for barrel in _facing.size():
+		var dps := track_dps_of(_fitted[barrel])
 		if dps <= 0.0:
-			_facing[position] = _base_facing[position]
+			_facing[barrel] = _base_facing[barrel]
 			continue
-		var target := _barrel_aim_angle(position)
+		var target := _barrel_aim_angle(barrel)
 		if TRACK_MULT <= 0.0:
-			_facing[position] = target
+			_facing[barrel] = target
 			continue
-		var error := wrapf(target - _facing[position], -PI, PI)
+		var error := wrapf(target - _facing[barrel], -PI, PI)
 		var reach := deg_to_rad(dps) * TRACK_MULT * step
-		_facing[position] += error if absf(error) <= reach else signf(error) * reach
+		_facing[barrel] += error if absf(error) <= reach else signf(error) * reach
 
 
 ## The aim's angle in the barrel's own hull-local frame: the direction from **this
@@ -1618,8 +1618,8 @@ func _track_barrels(delta: float) -> void:
 ## positional half of the owner's "it will fire from different angles/positions". A
 ## target sitting exactly on the muzzle reads the hull's axis, the same fallback
 ## `_aim_direction` uses.
-func _barrel_aim_angle(position: int) -> float:
-	var offset := _aim_point() - muzzle_position(position)
+func _barrel_aim_angle(barrel: int) -> float:
+	var offset := _aim_point() - muzzle_position(barrel)
 	if offset.is_zero_approx():
 		return 0.0
 	return wrapf((offset.normalized().angle() - _host_rotation()), -PI, PI)
@@ -1628,30 +1628,30 @@ func _barrel_aim_angle(position: int) -> float:
 ## A barrel's current world direction: the hull's rotation plus the barrel's own facing
 ## (S5, 09 section 11). A travelling shot leaves along this; the beam's shaft is drawn
 ## along it, which is what lets a still-swinging turret actually miss.
-func muzzle_direction(position: int) -> Vector2:
+func muzzle_direction(barrel: int) -> Vector2:
 	var facing := 0.0
-	if position >= 0 and position < _facing.size():
-		facing = _facing[position]
+	if barrel >= 0 and barrel < _facing.size():
+		facing = _facing[barrel]
 	return Vector2.RIGHT.rotated(_host_rotation() + facing)
 
 
 ## A barrel's muzzle in world space: this component's own origin for a barrel the hull's
 ## map does not place (every pre-S5 hull, every fixture), and the measured mount for one
 ## it does.
-func muzzle_position(position: int) -> Vector2:
-	if position < 0 or position >= _mounts.size():
+func muzzle_position(barrel: int) -> Vector2:
+	if barrel < 0 or barrel >= _mounts.size():
 		return global_position
-	return to_global(_mounts[position])
+	return to_global(_mounts[barrel])
 
 
 ## One barrel's current facing, in radians relative to the hull's axis (S5, 09 section
 ## 11). This is the number a turret's lag is measured in: the shipped probe and suite read
 ## it before and after an aim change to see a 60 deg/s barrel fall behind a 180 deg/s one.
 ## A position outside `fitted()` reads 0 (the hull's axis), like an unmapped mount.
-func barrel_facing(position: int) -> float:
-	if position < 0 or position >= _facing.size():
+func barrel_facing(barrel: int) -> float:
+	if barrel < 0 or barrel >= _facing.size():
 		return 0.0
-	return _facing[position]
+	return _facing[barrel]
 
 
 ## Every barrel's facing in `fitted()` order, a copy: the read-back a probe logs as one
@@ -1665,12 +1665,12 @@ func barrel_facings() -> Array[float]:
 ## the barrel's own facing and the direction to the aim, both in world space; under
 ## `TRACK_MULT := 0` the two are the same vector, so the gate is open exactly as it was
 ## before S5.
-func _beam_aligned(position: int) -> bool:
-	var aim := _aim_point() - muzzle_position(position)
+func _beam_aligned(barrel: int) -> bool:
+	var aim := _aim_point() - muzzle_position(barrel)
 	if aim.is_zero_approx():
 		return true
 	var error := wrapf(
-		muzzle_direction(position).angle() - aim.normalized().angle(), -PI, PI
+		muzzle_direction(barrel).angle() - aim.normalized().angle(), -PI, PI
 	)
 	return absf(error) <= deg_to_rad(TRACK_TOLERANCE)
 
@@ -1883,10 +1883,10 @@ func _damage_scale() -> float:
 ## The barrel->slot map is derived from `_state.weapons` (the same `_launch_weapons`
 ## walk `set_weapons` sized), so it stays aligned even where §16 rule 3's divergence
 ## drops a family-less `w_mining` cell from `_fitted`.
-func _barrel_affixes(position: int) -> Dictionary:
-	if _state == null or position < 0 or position >= _fitted.size():
+func _barrel_affixes(barrel: int) -> Dictionary:
+	if _state == null or barrel < 0 or barrel >= _fitted.size():
 		return {}
-	var slot := _slot_of_barrel(position)
+	var slot := _slot_of_barrel(barrel)
 	if slot < 0 or slot >= _state.weapon_affixes.size():
 		return {}
 	var entry: Variant = _state.weapon_affixes[slot]
@@ -1899,17 +1899,17 @@ func _barrel_affixes(position: int) -> Dictionary:
 ## `fitted_ids` order with family-less/foreign ids dropped, while the slot list keeps
 ## every fitted W cell (a `w_mining` cell is a slot with no pack). Walking the slot
 ## list and counting the entries that map to a firing family reproduces that drop.
-func _slot_of_barrel(position: int) -> int:
+func _slot_of_barrel(barrel: int) -> int:
 	if _state == null:
 		return -1
-	var barrel := 0
+	var ordinal := 0
 	var slots: Array[StringName] = _state.weapons
 	for slot in slots.size():
 		if weapon_id(slots[slot]) == &"":
 			continue
-		if barrel == position:
+		if ordinal == barrel:
 			return slot
-		barrel += 1
+		ordinal += 1
 	return -1
 
 
@@ -2005,14 +2005,14 @@ func _spend_energy(amount: float) -> bool:
 ## (P2-A's one-laser Vanguard), which is why a cannon-only fit read dry beside its own
 ## 300-round pack and the QA fit's cannon spent the railgun's.
 ##
-## `position` is the calling **barrel's** position where there is one: a launched twin
+## `barrel` is the calling **barrel's** index where there is one: a launched twin
 ## battery's two barrels each keep their own cell's slot (section 20's per-cell bank,
 ## `test_frugal_banks_are_per_slot`), where the family alone would answer the first cell.
 ## A family the launched list does not carry at all (a barrel on a state `set_fitted` without
 ## `set_weapons`, the shared railgun/cannon pack) keeps the shipped `ammo_slot` resolution.
-func _launch_ammo_slot(weapon: StringName, position: int = -1) -> int:
+func _launch_ammo_slot(weapon: StringName, barrel: int = -1) -> int:
 	if _state != null:
-		var cell := _slot_of_barrel(position)
+		var cell := _slot_of_barrel(barrel)
 		if (
 			cell >= 0
 			and cell < _state.weapons.size()
@@ -2025,10 +2025,10 @@ func _launch_ammo_slot(weapon: StringName, position: int = -1) -> int:
 	return ammo_slot(weapon)
 
 
-func _ammo_available(weapon: StringName, position: int = -1) -> bool:
+func _ammo_available(weapon: StringName, barrel: int = -1) -> bool:
 	if _state == null:
 		return false
-	var slot := _launch_ammo_slot(weapon, position)
+	var slot := _launch_ammo_slot(weapon, barrel)
 	if slot < 0 or slot >= _state.ammo.size():
 		return false
 	return _state.ammo[slot] > 0
@@ -2038,25 +2038,25 @@ func _ammo_available(weapon: StringName, position: int = -1) -> bool:
 ## the same slot it spends (CONTRACTS section 20). A barrel with no Frugal magnitude
 ## gates through `_ammo_available`, which since section 21's H1 resolves the family against
 ## the launched fit's own cell list; a Frugal one gates on its own live slot.
-func _ammo_available_at(position: int, weapon: StringName) -> bool:
+func _ammo_available_at(barrel: int, weapon: StringName) -> bool:
 	if _state == null:
 		return false
-	if _prefix_magnitude(_barrel_affixes(position), PREFIX_FRUGAL) == 0.0:
-		return _ammo_available(weapon, position)
-	var slot := _slot_of_barrel(position)
+	if _prefix_magnitude(_barrel_affixes(barrel), PREFIX_FRUGAL) == 0.0:
+		return _ammo_available(weapon, barrel)
+	var slot := _slot_of_barrel(barrel)
 	if slot < 0 or slot >= _state.ammo.size():
-		return _ammo_available(weapon, position)
+		return _ammo_available(weapon, barrel)
 	return _state.ammo[slot] > 0
 
 
 ## Section 4.3: the round leaves the pack through `PlayerState.set_ammo`, which is
-## the HUD's own channel (`weapon_changed`). `position` is the releasing barrel's own
+## the HUD's own channel (`weapon_changed`). `barrel` is the releasing barrel's own
 ## position where the caller knows it (section 21's H1), so a twin battery's second barrel
 ## spends its own cell rather than the family's first.
-func _consume_ammo(weapon: StringName, position: int = -1) -> void:
+func _consume_ammo(weapon: StringName, barrel: int = -1) -> void:
 	if _state == null:
 		return
-	var slot := _launch_ammo_slot(weapon, position)
+	var slot := _launch_ammo_slot(weapon, barrel)
 	if slot < 0 or slot >= _state.ammo.size():
 		return
 	_state.set_ammo(slot, _state.ammo[slot] - 1)
@@ -2068,16 +2068,16 @@ func _consume_ammo(weapon: StringName, position: int = -1) -> void:
 ## accumulates the cost and an integer round leaves only when it crosses 1, so 20 shots
 ## at -0.15 spend exactly `floor(20 x 0.85) = 17` rounds. A barrel with no Frugal
 ## magnitude spends the launched fit's own slot for its family (section 21's H1).
-func _consume_ammo_at(position: int, weapon: StringName) -> void:
+func _consume_ammo_at(barrel: int, weapon: StringName) -> void:
 	if _state == null:
 		return
-	var sum := _prefix_magnitude(_barrel_affixes(position), PREFIX_FRUGAL)
+	var sum := _prefix_magnitude(_barrel_affixes(barrel), PREFIX_FRUGAL)
 	if sum == 0.0:
-		_consume_ammo(weapon, position)
+		_consume_ammo(weapon, barrel)
 		return
-	var slot := _slot_of_barrel(position)
+	var slot := _slot_of_barrel(barrel)
 	if slot < 0 or slot >= _state.ammo.size() or slot >= _state.ammo_frac.size():
-		_consume_ammo(weapon, position)
+		_consume_ammo(weapon, barrel)
 		return
 	_state.ammo_frac[slot] += _prefix_factor(sum)
 	var whole := int(floor(_state.ammo_frac[slot]))
@@ -2091,11 +2091,11 @@ func _consume_ammo_at(position: int, weapon: StringName) -> void:
 ## family's cadence divided by `(1 + sum(rapid))` for **that** barrel's cell, so a
 ## two-cannon battery with Rapid in cell 2 cycles its second barrel faster and leaves
 ## the first alone. No Rapid magnitude answers `interval_of` unchanged.
-func _barrel_interval(position: int) -> float:
-	var base := interval_of(_fitted[position])
+func _barrel_interval(barrel: int) -> float:
+	var base := interval_of(_fitted[barrel])
 	if base <= 0.0:
 		return base
-	var sum := _prefix_magnitude(_barrel_affixes(position), PREFIX_RAPID)
+	var sum := _prefix_magnitude(_barrel_affixes(barrel), PREFIX_RAPID)
 	if sum == 0.0:
 		return base
 	return base / _prefix_factor(sum)

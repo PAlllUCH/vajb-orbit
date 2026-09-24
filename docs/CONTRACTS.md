@@ -2596,6 +2596,21 @@ reverted.
 
 **Owner ticks added by Q2:** none beyond Q1's (O1/O2 and O3 unchanged).
 
+### Q3 dispositions (orchestrator, 2026-09-24, after Q3 landed 770/0)
+
+Q3 swept the blocked ledger half: `game/weapons.gd` 37 → 1 warnings (36
+shadowing `position` declarations renamed — the five S7 rows and Q1's two H1
+params among them; one local collision became `ordinal`), the suite's ledger row
+now names four files, and the gate stayed **770/0** six times (live md5s
+unchanged). The one remaining row (`_compose_racks:607`'s `racks` local against
+the `racks()` function) is a different shadow class, left under the
+no-unrelated-rename rule — R1 reads AC8 as a floor.
+
+| call | disposition |
+|---|---|
+| the 36-row sweep (29 rows predate the wave) | **accepted:** the task text ("every shadowing `position`") and Q2's note 3 asked for it; renames cannot reach a caller in GDScript |
+| `test_the_three_warning_ledger_files_parse_clean` renamed to `..._four_...` | **accepted:** discovery is by `test_` prefix and the old name has no other reference (grepped) |
+
 ## §22 Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated)
 
 **Docs-first (developer session) answering the owner's "suggest number". Every
