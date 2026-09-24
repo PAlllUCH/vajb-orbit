@@ -103,16 +103,23 @@ plumbing already exists (`PlayerProfile.heat()`, `NpcRegistry.heat_tier()`,
 `NpcShip.heat_on_kill()`); this wave adds enforcement + hunters. CONTRACTS §19.
 
 - **Witness rule (§5):** the witness scan range is `WITNESS_RANGE := 900.0` =
-  `ShipStats.BASE_SCAN_RANGE` (the only scan range in the tree — **derived**,
-  not proposed). LOS is the NPC brain's own rock-blocking check. A crime with
+  `ShipFit.BASE_SCAN_RANGE` (the only scan range in the tree — **derived**,
+  not proposed; the constant lives on `ShipFit`, `game/ship_fit.gd:40`, and
+  `ShipStats` carries only the per-instance `scan_range`). LOS is the NPC brain's
+  own rock-blocking check. A crime with
   no witness inside range adds nothing.
-- **Decay (§2):** −1/minute of **play time**, accrued on the existing play
-  clock (no new Timer — 17 §4's one-timer rule), floored at 0.
+- **Gain bound:** heat is clamped to **0–100** per faction on every gain (§2's
+  bound, unimplemented before this wave).
+- **Decay (§2):** −1/minute of **play time**, accrued by a float play-time
+  accumulator on the game scene's own tick (`game.gd`, seconds in play; no Timer
+  node — 17 §4's one-timer rule; `WorldClock` stays the station-band clock and
+  keeps its five consumers), floored at 0.
 - **Pay the bounty (§2):** `PlayerProfile.pay_bounty(faction_id) -> bool`
   (17 §5 transaction law; one `BOUNTY` economy-log line). Surface: a
-  `PAY BOUNTY (n CR)` row in LAUNCH beside the REFUEL/RECHARGE rows
-  (**proposed** home — it is the only existing service-row surface; reversal:
-  REPAIRS' action column). Owner tick 5. Shown for the docked station's faction
+  `PAY BOUNTY (n CR)` row in LAUNCH beside the REFUEL/RECHARGE rows (owner-ratified
+  set growth 2026-09-24: `ui/station/launch_panel.gd` + a
+  `StationCatalog.SERVICES` row join this wave's write set; reversal: REPAIRS'
+  action column). Owner tick 5. Shown for the docked station's faction
   whenever heat > 0 for it; Outlaws never see it (they cannot dock).
 - **Hunter wing (§3/§6):** spawns on the next sector entry while Wanted, and
   perma-tails while Outlaw (60 s respawn after a wave dies, that faction's
@@ -122,11 +129,17 @@ plumbing already exists (`PlayerProfile.heat()`, `NpcRegistry.heat_tier()`,
   `ship_corvette` → `ship_fighter` (elite fit); `ship_gunship`/
   `ship_destroyer`/`ship_freighter` → `ship_gunship`. Fit = the 09 §6
   reference fit of the player's class tier (§6). Reversal: always `ship_fighter`
-  ×2–3 (§3's literal reading). Owner tick 6.
-- **Enforcement points:** dock refusal (Outlaw, 12 §4.1's rule), gate refusal
-  (11 §5's rule), trader `flee` (Suspect+, the brain's existing Flee state),
-  patrol scan-on-sight (Suspect+, slow breakable LOS check = the brain's Scan
-  state), station turret: the +25 heat and aggro stand, but the turret entity
-  does not exist in the tree — T0 confirms and, if absent, the +25 lands on
-  attacking a station and turret aggro is **staged** (reversal: ship the turret
+  ×2–3 (§3's literal reading). Owner tick 6. The archetype row flips off
+  `SEAM_SLICE_4`; `KEY_TIER` stays 1 (test-pinned) and the hull map lives in
+  `KEY_MEMBERS`; aggro/scan radius `900.0` (**proposed** — the pirate fighter
+  band's own radius, `game/npc_registry.gd:208`; reversal 1200.0).
+- **Enforcement points:** **dock refusal reads standing** (`PlayerProfile.standing()
+  <= -51`, 12 §4.1's Outlaw band), **gate refusal reads the heat tier**
+  (`NpcRegistry.heat_tier() == &"outlaw"`, 13 §3 / 11 §2.3) — two axes, each from
+  its own doc, both writing nothing; trader `flee` (Suspect+, the brain's existing
+  Flee state), patrol scan-on-sight (Suspect+, slow breakable LOS check = the
+  brain's Scan state), station turret: the +25 heat and aggro stand, but no turret
+  entity is spawned in the tree (the archetype row is `SPAWN_STATION` and has no
+  consumer) and a station has no damage sink — the +25 lands on attacking a station
+  and turret aggro is **staged** (reversal: ship the turret
   as a station-attached NPC). Owner tick 7.

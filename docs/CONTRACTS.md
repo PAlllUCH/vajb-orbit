@@ -1837,19 +1837,26 @@ Every seam below is additive; nothing frozen moves.
 
 # game/poi.gd — new file, class_name Poi extends Node2D (derelict/anomaly/beacon):
 #   setup(kind: StringName, row: Dictionary) -> void
-#   scan(player) -> int                     # derelicts: 5 s interruptible channel
-#       (11 §3.1); roll 0.40 cache / 0.35 data core (03 comp_elec + credits) /
+#   scan(player) -> int                     # 0 ok / -1 refused (out of range or
+#       no scanner) / -2 interrupted (left range or hull hit); derelicts: 5 s
+#       interruptible channel (11 §3.1); roll 0.40 cache / 0.35 data core
+#       (03 comp_elec + DATA_CORE_CREDITS 120 CR, proposed, reversal 60) /
 #       0.25 magic module (15 §5); one-shot per respawn cycle
 #   trigger(player) -> void                 # anomalies at 200 u (11 §3.2): ore_bloom
 #       (T+1 cluster, 10 rocks, 2× yield) / grave_cache (3–5 pickups, one grade up)
 #       / void_rift (RIFT_DRAIN shield/s inside; 1 exotic: T4 ore, or magic+ module
 #       at 0.10); despawns, respawns on the sector clock (17 §4)
 
-# game/loot_tables.gd — new file (17 §2's name), class_name LootTables extends RefCounted:
-#   static TABLES: Dictionary   # 06 §3.1–§3.4 verbatim (fighter/freighter/corvette/Maw)
-#   static HUNTER_EXTRA: Array  # 06 §8's proposed comp_elec table (owner tick 8)
-#   roll(band: StringName) -> Array[Dictionary]   # §2's procedure; one pickup per
-#       unit (06 §8's made choice); caches last, one distinct pickup (06 §5)
+# game/loot_tables.gd — the slice-2 file, extended additively (17 §2's name):
+#   static TABLES: Dictionary   # shipped (five kinds incl. swarmer) — restate nothing
+#   static HUNTER_EXTRA: Array[Dictionary]   # 06 §8's comp_elec table (owner tick 8)
+#   static WRECK_PICKUP_LIFETIME := 90.0     # 06 §4; the wreck site's own despawn
+#   roll_band(kind: StringName, random_seed := 0) -> Array[Dictionary]   # NEW:
+#       the kill's band roll — delegates to the shipped roll(kind, tier, seed),
+#       whose shape stays byte-identical (one entry per line, amount = randi_range,
+#       caches last and distinct: 06 §2.3 as shipped and test-pinned)
+#   roll_hunter_extra(band: int, random_seed := 0) -> Array[Dictionary]  # NEW:
+#       06 §8's HUNTER_EXTRA rows, grade-capped by band, rolled in addition
 
 # game/sector.gd — additive beyond §6's pin (scanner reveal lives here, engine §14):
 #   blips() gains gate/beacon/ders/anomalies entries per 11 §5's mapping; soft fog:
@@ -1860,11 +1867,16 @@ Every seam below is additive; nothing frozen moves.
 #   pay_bounty(faction_id: StringName) -> bool   # fine = heat × 25 CR (13 §2);
 #       all-or-nothing per 17 §5; one BOUNTY economy-log line; zeroes that heat
 
-# game/game.gd — the wiring owner (one owner, 17 §2): the kill path calls
-#   LootTables.roll + spawns the wreck site (WRECK_PICKUP_LIFETIME 90 s, 06 §4);
-#   heat only with a witness in WITNESS_RANGE 900.0 (= ShipStats.BASE_SCAN_RANGE,
-#   13 §7); sector transitions go through the `loading` screen route (11 §2.3:
-#   fields/pickups reset, hold/hull/heat persist).
+# game/game.gd — the wiring owner (one owner, 17 §2): the kill path is the real
+#   seam `_on_npc_died` (NpcShip.died; projectile.gd:_shot_down is the rocket
+#   intercept, not a hull kill) — it calls LootTables.roll_band + roll_hunter_extra
+#   and spawns the wreck site (WRECK_PICKUP_LIFETIME 90 s, 06 §4); heat only with a
+#   witness in WITNESS_RANGE 900.0 (= ShipFit.BASE_SCAN_RANGE, 13 §7); sector
+#   transitions go through the `loading` route (game.gd:on_route reads PARAM_SECTOR)
+#   and file the vitals first (`_file_damage_report`), so hull/shield/fuel/ammo
+#   persist across the scene reload (11 §2.3: fields/pickups reset, hold/hull/heat
+#   persist). One prompt-line priority owner: `_update_dock_prompt` currently writes
+#   the line every frame, so gate/scan/cache readouts need a priority arbiter.
 ```
 
 Rules that fix every ambiguity: **no `ui/hud/**` writes in this wave** — the
@@ -1874,6 +1886,56 @@ outlaws only); `heat_on_kill()`'s existing −3/+15/+25 values are the gains
 table and are not re-derived; Outlaw dock/gate refusals charge nothing and
 write nothing; every refusal path leaves the profile byte-identical (S4's
 rules 7/8 precedent).
+
+**K0 dispositions (owner-ratified 2026-09-24, applied before the builders).** The
+drift pass (`.agents/gen/slices/S6-travel/S6-K0_report.md`) found the following;
+each cure is binding on this wave:
+
+- **Fee worked row corrected:** the multiplicative composition gives
+  `floor(250 × 1.5 × 2) = 750` for an adjacent jump into sector 7 at Wanted.
+  The `562` the brief and K1/R1's prompts carried is `floor(250 × 2.25)`, the
+  **additive reversal's** figure, and is not this build's number.
+- **`roll(band)` was a phantom:** `game/loot_tables.gd` shipped in slice 2 with
+  `roll(kind, tier, seed)` pinned by `tests/test_engine2_loot.gd`. The band roll
+  is **additive** (`roll_band` / `roll_hunter_extra`), the shipped shape stays
+  byte-identical, and **no existing test count moves** (06 §8's "one pickup per
+  unit" wording is corrected to the shipped stack shape: one entry per line,
+  `amount = randi_range`; reversal: per-unit, which would move two
+  `test_engine2_loot.gd` rows and is out of scope).
+- **`ShipFit.BASE_SCAN_RANGE`** is the constant's owner (`game/ship_fit.gd:40`);
+  `ShipStats` carries only the per-instance `scan_range`.
+- **Decay rides a game-side play-time accumulator** (`game.gd`'s own tick, a float
+  in seconds; −1 per 60 s of play, floored at 0). No Timer node, and `WorldClock`
+  stays the station-band clock with its five consumers (17 §2/§4 unchanged).
+- **Heat is clamped 0–100** per faction on gain (13 §2's bound, unimplemented
+  today).
+- **Two refusal axes, each from its own doc:** the **gate** refusal reads the heat
+  tier (`NpcRegistry.heat_tier() == &"outlaw"`, 13 §3 / 11 §2.3); the **dock**
+  refusal reads standing (`PlayerProfile.standing() <= -51`, 12 §4.1). Both write
+  nothing.
+- **Hunter row flips:** `game/npc_registry.gd`'s hunter row moves off
+  `SEAM_SLICE_4`; `KEY_TIER` stays 1 (test-pinned) and the tick-6 hull map lives
+  in `KEY_MEMBERS`; `KEY_AGGRO_RADIUS := 900.0` (proposed — the pirate fighter
+  band's own radius; reversal 1200.0) with `KEY_SCAN_RADIUS` the same.
+- **`game/heat.gd` is dropped from the worker set** — heat logic lives on the
+  existing files (`player_profile.gd`, `npc_registry.gd`, `game.gd`); the file has
+  no pin and no interface.
+- **The bounty surface ships:** `ui/station/launch_panel.gd` +
+  `game/station_catalog.gd` join K3's set (owner-ratified set growth), the row
+  appearing for the docked station's faction when its heat > 0.
+- **Quadrants deferred:** 18_engine_spec §4.5/§15's "slice 3 turns quadrants on"
+  is superseded for this wave (owner call) — directional armour moves to slice 4;
+  `test_engine2_pools.gd`'s `ctx` row holds unmodified.
+- **The `sibelon` is superseded** (owner call): ruling 24's slice-3 anomaly entity
+  gives way to 11 §3.2's three kinds; the registry row stays parked and unspawned.
+- **Wreck-site blip** rides the existing `&"neutral"` kind (no new blip kind; the
+  HUD is frozen).
+- **The stale `SECTOR_NAME := "Helios Drift"` label** (`game/game.gd:89`) is
+  replaced by the registry row's name on spawn and on transition.
+- **The three seam hooks the brief named (`_on_kill`, `_transition`, `_poi_table`)
+  do not exist** and were never in this section; the real seams are
+  `game.gd:_on_npc_died`, `game.gd:on_route` + `route_requested(&"loading", …)`
+  and `sector.gd:populate`.
 
 ## §10 Changelog
 
@@ -2461,15 +2523,25 @@ rules 7/8 precedent).
   byte-identical, and per-module damage stays staged (no sim model exists). Owner
   ticks ride the D6 brief (the NMS palette reading, placement/size, hull/shield
   points vs %, the `ship_status` key, scheduling a module-damage model).
-- **v0.11 (2026-09-24, the travel wave S6 — landed docs-first)** — added **§19**:
+- **v0.12 (2026-09-24, the travel wave S6 — landed docs-first, amended by the
+  K0 dispositions before the first builder ran)** — added **§19**:
   jump gates + fee composition, border corridors, POIs (derelicts/anomalies/
   beacons) with the scanner's soft fog, sector transitions via `loading`, heat
   enforcement + bounty payment + hunter wings, and the loot roll + wreck sites.
   Superseded in passing: §14's "hunters in slice 4" note (the owner's item-12
-  grouping wins), 01 §5.2's travel ceiling (0–250 → 0–500 CR). Owner ticks ride
+  grouping wins), 01 §5.2's travel ceiling (0–250 → 0–500 CR), 18_engine_spec
+  §4.5/§15's quadrant turn-on (deferred to slice 4 by owner call) and ruling 24's
+  `sibelon` (11 §3.2's three kinds win). Owner ticks ride
   the S6 brief (fee multiplier composition, corridor depth/interrupt rules,
   derelict scan range, rift drain, the bounty surface, the hunter hull map,
   the station turret, the hunter extra table).
+  **Renumbered from v0.11** — S5-R1's entry had already claimed v0.11 in
+  `db4dbcd`; this entry was the later write (`0070215`) and takes v0.12. Its
+  §19 carries the K0 dispositions block (fee row 750, the additive
+  `roll_band`/`roll_hunter_extra`, `ShipFit.BASE_SCAN_RANGE`, the decay
+  accumulator, the 0–100 clamp, the two refusal axes, the hunter row flip,
+  `heat.gd` dropped, the bounty surface's set growth, quadrants deferred, the
+  `sibelon` superseded, the wreck blip kind and the real seam names).
 - **v0.11 (2026-09-24, the S5 playtest-fix review — S5-R1, the wave's only CONTRACTS
   writer)** — records the wave's measured gate (**`passed=577 failed=0`**, three runs on
   three scratch stores, 49 suites, the live profile byte-identical) and the review's two

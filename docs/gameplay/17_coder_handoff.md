@@ -29,10 +29,11 @@ run, per AGENTS.md tooling).
 | `game/component_catalog.gd` | 18 components, static helpers | 03 |
 | `game/module_catalog.gd` | **built (P2-A, 2026-09-21):** 09 §3's module rows as data — the 32 catalogue modules of 09 §3.1–§3.8 (`name`, `slot`, `draw`, `tier`, `cost`, `icon`, `effects`) plus the `module` / `icon_path` / `slot_of` lookups of CONTRACTS §11. Affixes (15 §6) are per-instance rolls in the `modules` inventory key, not catalogue rows | 09, 15 |
 | `game/sector_registry.gd` | 7 sectors: owner, tiers, neighbours, gates, densities | 11 |
-| `game/faction_registry.gd` | 3 factions: demand biases, discounts, exclusives | 12 |
-| `game/contract_registry.gd` | 5 contract types, parameterised | 14 |
-| `game/loot_tables.gd` | drop tables per hull band | 06 |
-| `game/refinery.gd`, `game/exchange.gd`, `game/shipyard.gd` | pure transaction functions over `PlayerProfile` | 04, 05, 10 |
+| `game/gate.gd`, `game/corridor.gd`, `game/poi.gd` | **built (S6, 2026-09-24):** jump gates + fee, border corridors, derelicts/anomalies/beacons; engine §14 slice 3's names | 11 |
+| `game/faction_registry.gd` | 3 factions: demand biases, discounts, exclusives — **not built yet** (12's rows live on `sector_registry`'s `owner` ids and `npc_registry` today) | 12 |
+| `game/contract_registry.gd` | 5 contract types, parameterised — **not built yet** | 14 |
+| `game/loot_tables.gd` | **built (slice 2, extended by S6 2026-09-24):** drop tables per hull band, `roll(kind, tier, seed)` as shipped + `roll_band`/`roll_hunter_extra`/`WRECK_PICKUP_LIFETIME` | 06 |
+| `game/refinery.gd`, `game/exchange.gd` | pure transaction functions over `PlayerProfile`; **`game/shipyard.gd` is not built** (the hangar lives in `ui/station/shipyard_panel.gd` over `PlayerProfile`) | 04, 05, 10 |
 | `autoload/world_clock.gd` | the 20-minute accumulator (5 consumers: 05 bands, 10 rotation, 14 contracts/arena, 11 respawn) | all |
 | `game/ship_fit.gd` | stats resolution order (09 §5), power-budget validation | 09 |
 
