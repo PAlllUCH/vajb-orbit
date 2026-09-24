@@ -2437,21 +2437,23 @@ a finding Q0 proves fixed or mis-attributed closes there, not in code.
 - **H1 — the launch seeds every pack slot, as P2-A pinned it.** After one
   launch the briefing total, the flight `PlayerState.ammo` per slot, the HUD rack
   and the store's `ammo_*` packs agree; a fitted family with a stocked pack
-  fires. **K0 names the break** (seed path / family mapping / store draw) — no
-  mechanism is assumed here. Measured defect: briefing `1 941 … ACROSS 6
+  fires. **Q0 named the break** — the family→slot mapping (`ammo_slot` and the
+  spend index the const `PlayerState.WEAPONS`, not the launched fit); the seed
+  path is correct (dispositions block below). Measured defect: briefing `1 941 … ACROSS 6
   WEAPONS` vs flight `0/300` and no projectile. Reversal: none owed — this
   restores measured P2-A behaviour (`Vanguard [laser] 300 rounds`).
 - **H2 — one cell, one family, one display.** The ship-status W-cell payload is
   built per fitted cell from `resolved_fit` — never a battery group's first
   member, never an armour cell (L148's own warning class) — so the status pane
-  and FITTING agree cell-for-cell on any fit. K0 names the payload's break
-  (`game.gd:_hull_slot_cells` / `ship_status_screen.set_hull_slots` /
-  the v7 battery rows).
+  and FITTING agree cell-for-cell on any fit. **Q0 measured the payload correct**
+  (the QA fit agrees cell-for-cell); the break is `game.gd:_rack_ordinal` against
+  the barrel-position space (dispositions block below).
 - **M4 — no pane may show current > max, and `max` is the RESOLVED figure.**
   `ShipFit.resolve`'s `hull_max`/`shield_max` (plates included) is the
   denominator both the status footer and Repairs print. Today Repairs reads the
-  station hull row's base (`repairs_panel.gd:177-179`) and the status footer
-  resolves hull but not shield — QA measured `1250/1000` and `800/600`.
+  station hull row's base (`repairs_panel.gd:177-179`) — QA measured
+  `1250/1000` and `800/600`. Q0 measured the footer correct (`1250/1250`,
+  `800/800`; the QA's shield reading was Repairs').
   Reversal: none — clamping current to base instead was rejected (a plated hull
   would read 1250/1000).
 - **M1 — a cracked rock's fragments take their shape state outside the physics
@@ -2491,7 +2493,9 @@ a finding Q0 proves fixed or mis-attributed closes there, not in code.
 - **Test law:** new suites only (`tests/test_s8_*.gd`). Q0 greps every assertion
   pinning the old copy (`Mk1`, `860 m`, `CONVERSIONS`, `MINERAL_…`, the confirm
   format) and any row that must move is dispositioned here before Q1 (S6's
-  `test_engine2_wiring` precedent).
+  `test_engine2_wiring` precedent). **Q0's measured exception:**
+  `tests/test_engine2_hud.gd:142/144/150` move for the `m`→`u` copy
+  (dispositions block below).
 
 ### Owner follow-up, same day (2026-09-24 — six verbatim findings)
 
@@ -2502,13 +2506,54 @@ builder runs, same disposition flow as the QA's:
 |---|---|---|
 | O1 | "drag and dropping in FITTING doesnt do anything" | **Measured:** FITTING carries no drag code at all (no `_get_drag_data`/`_can_drop_data`/`_drop_data` anywhere in `fitting_panel.gd`) — the capability lives only in the ARMORY's battery racks (09 §11, CONTRACTS §17). Bucket 3: port the drag to FITTING / point the owner at ARMORY / unify the two fitting surfaces — Q0 reproduces the ARMORY drag headlessly (call the three handlers directly, assert the committed groups) and reports both readings; the orchestrator routes the UX call to the owner. A genuine ARMORY break stays bucket 1. |
 | O2 | "cant set weapon groups" | Racks are `B1..B7` drop zones wired to `weapon_1..7`, and `PlayerProfile.set_battery_groups` exists (`player_profile.gd:1252`, ceiling `GROUPS_MAX` 7). Q0 measures whether the ARMORY drag actually commits a group and whether any other surface assigns one; disposition rides O1 (same UX family) — if the drag commits, the finding is discoverability (bucket 3), not a defect. |
-| O3 | "Hitting enemy ships punches them way too hard" | `player_ship.gd:922 _on_hull_body_entered` → `impact.gd:44 collision_damage(mass_a, mass_b, relative_velocity)`. Q0 measures a representative player→NPC ram (both inputs and the delivered damage against the NPC's pool); the orchestrator writes a proposed reduction factor into this table (reversal: factor 1.0 = shipped) and **no number ships without a measured before/after plus the owner's tick**. |
+| O3 | "Hitting enemy ships punches them way too hard" | `player_ship.gd:922 _on_hull_body_entered` → `impact.gd:44 collision_damage(mass_a, mass_b, relative_velocity)`. Q0 measures a representative player→NPC ram (both inputs and the delivered damage against the NPC's pool); the orchestrator writes a proposed reduction factor into this table (reversal: factor 1.0 = shipped) and **no number ships without a measured before/after plus the owner's tick**. **Q0: premise broken** — the shipped masks never resolve the contact, so no factor is written; the owner decides site + symptom + mask (dispositions block below). |
 | O4 | "The torque in flying is way too big (you slow down too fast)" | **Item 15**, not S8 — flight numbers live in owner-locked 18 §13 + §14's ruling-23 multipliers, and the §13 turn/`coast_time` column ticks are already open owner homework (they interact with S2.6's own `coast_time ×0.50` retune). Q0 does not touch them. |
 | O5 | "The A/D strifing should be a bit stronger or we need to think about how the inertia works once again" | **Item 15** — the seams are `player_ship.gd`'s `_step_strafe` / the owner's 2026-09-21 strafe ruling and `ship_fit.gd:500 LATERAL_DAMP_MULT := 1.0`; magnitude and the inertia question are taste, owner-gated with O4 in one flight-feel pass. |
 | O6 | "make space station bigger with more details (not a single sprite, more static and moving elements, but the main sprite should be much bigger as well)" | **Designer queue item 13** — scene composition + hero art, owner-mockup gate (the D7 loop precedent). |
 
 S8 builds only **O1/O2/O3** (through Q0's dispositions); **O4/O5** are coder
 item 15; **O6** is the designer lane.
+
+### Q0 dispositions (orchestrator, 2026-09-24, pre-Q1)
+
+`S8-Q0_report.md` re-measured every finding on HEAD `8c91716` (gate 753/0 on a
+scratch store; four new probes `tests/probe_s8_q0_*`). Binding on Q1/Q2;
+supersedes the placeholders above where they disagree.
+
+| finding | verdict | measured seam | disposition |
+|---|---|---|---|
+| H1 spend/gate | **confirmed, real** | `weapons.gd:2391 ammo_slot` + `:2001-2006` / `:2029-2033` index the const `PlayerState.WEAPONS` (`player_state.gd:35`), not the launched fit's `weapons`/`ammo` (`:178-185`) — the spaces coincide only while the fit is a prefix in that order | **Q1:** resolve family→slot against the launched cell list; each barrel gates and spends its own family's pack. Measured: a cannon-only fit is dry with 300 in its pack; the QA fit's cannon spends the railgun's |
+| H1 seed path | not the break | `_seed_ammo` (`game.gd:1877-1886`) draws per fitted cell — `[300, 300, 0]` on the QA fit | unchanged |
+| H1 briefing | **confirmed, real** | `launch_panel.gd:609-615 _ammo_total` sums all six `AMMO_PACKS`; `:618-619 _weapon_count` is the constant 6 | **file-set growth (2):** `ui/station/launch_panel.gd` joins Q1's set; the strip reads the launched fit |
+| H2 payload | not reproduced | the QA fit's pane agrees cell-for-cell (`W1 B1 Cannon MkI / W2 B1 Railgun / H1 Light Plate / S1 Light Shield / W3 Mining Laser / E1 / P1`) | none |
+| H2 rack ordinal | **confirmed, real** | `game.gd:2087 _rack_ordinal` passes a layout index while `_launch_batteries:770-792` holds barrel positions (`_weapon_barrel_positions:813`, family-less = -1) — `[w_mining, w_laser]` renders `W1 B1 Mining Laser, W2 B0 Laser MkII`, the firing cell unreachable | **Q1:** align the ordinal with the barrel-position space |
+| H2 trailing rack | by design, reads as a duplicate | with `_batteries` empty, `player_profile.gd:1236-1241` puts every fitted weapon in one trailing rack → every W cell prints `B1` | owner tick; no build |
+| H2 `W3 · Light Plate` | not reproducible | only a fit whose `weapons` array already held `h_plate_light` prints it; no HEAD writer can (guards at `fitting_panel.gd:1861`, `player_profile.gd:1330`, `armory_panel.gd:2227`) | closed |
+| M4 Repairs | **confirmed, real** | `repairs_panel.gd:177-178` read the station row (`1000/600`) beside the raw vitals → `1250/1000`, `800/600`; `ShipFit.resolve` gives `1250/800` | **Q1:** read resolve's pair in both panes |
+| M4 footer | not reproduced | footer prints `1250/1250`, `800/800` (`_apply_ship_maxima` + clamps) | none |
+| M1 | **confirmed, real** | 8 refusals per fragment, 16-40 per ram; trace `asteroid.gd:347 _build_look` ← `:232 setup` ← `asteroid_field.gd:255 _new_rock` ← `:365 _cleave` | **Q2:** defer the shape setup |
+| M2 | **confirmed, real** | `exchange_panel.gd:554 _confirm_text` and `:656 _announce_sale` print `String(_selected_id).to_upper()`; hold rows use `_item_name:920` | **Q2:** resolve through `_item_name` |
+| M3 | **confirmed, real** | `exchange.gd:276-296 sell()` re-quotes at the live price; `exchange_panel.gd:613` passes no quote — preview 15 → credited +5 | **Q2:** the one optional quoted-total parameter |
+| O1/O2 | drag commits; FITTING has none | `armory_panel.gd:1950 install_weapon` → `player_profile.gd:1316 fit_into_rack` → `set_battery_groups:1252`; probe `[[0]]` → `[[0,1]]`; FITTING declares zero handlers | **owner UX call** (the report's readings A/B/C); no FITTING drag code in S8 |
+| O3 | measured, premise broken | shipped masks (player `layer 2 / mask 1`, NPC `layer 2 / mask 1`) → contact never resolves; with the player's mask widened, `collision_damage(110, 80, 450) = 93.7895` per side (NPC shield 600 → 506.2, player 800 → 706.2) | **no factor written** — a factor would ship an unreachable path; the owner decides the site, the symptom and whether hull contact exists at all. S8 ships no O3 change and Q1 skips its O3 clause |
+
+**Tests that move (the one exception to "new suites only"):** the `m` → `u` range
+copy moves `tests/test_engine2_hud.gd:142/144/150` — Q1 edits those three rows.
+Expected to stay green through the H1 fix (watch list): `test_s5_batteries_v2.gd:605,673`,
+`test_s7_weapon_affixes.gd:386/404/422-423`, `test_s5_ammo_cargo.gd:317`,
+`probe_s4h4_stream.gd:45,76,91,96`. No test pins the copy, confirm or sale strings;
+`test_p1_refinery.gd:192` must not move.
+
+**Warning ledger measured at HEAD:** `module_catalog.gd:636/643/651`;
+`projectile.gd:1489` (`scale`) and `:1759` (`material`); `weapons.gd`'s `position`
+params at `:1885/1901/2014/2043/2066` (up to 12 such functions — Q2 renames the
+measured set and reports the count; renames only, zero behaviour change).
+
+**Owner ticks added by Q0:** O1/O2's reading (port / point at ARMORY / unify);
+O3's site + symptom + mask decision; the by-design trailing rack reading as a
+duplicate; plus the QA's existing ticks (`REFINE ALL`, `1 CONVERSION`, the
+Refinery hide, the live-profile restore — the live fit is three cannons,
+`batteries = {}`).
 
 ## §22 Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated)
 
