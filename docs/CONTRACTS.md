@@ -2003,6 +2003,36 @@ re-measured by the orchestrator on a scratch store; the derelict roll
   `ceil(n / 2)` clamped 1..4; the ore-bloom radius 320 u with 0.25 jitter. Each
   reversal is one edit (K2 report §3.6).
 
+**K3 dispositions (orchestrator-ratified 2026-09-24, after heat + hunters
+landed).** Measured by K3 (`.agents/gen/slices/S6-travel/S6-K3_report.md`,
+`674/0`, re-measured by the orchestrator on a scratch store):
+
+- **Only crimes need a witness (route):** positive heat is gated on a witness and
+  carries `WITNESS_EXTRA`; a negative `heat_on_kill` (the pirate −3) lands
+  unconditionally. Reversal: one `if` in `_on_npc_died`.
+- **The victim is excluded from its own witness scan (route, a measured defect
+  cure):** `NpcShip._die` raises `died` before `despawn()`, so without the
+  identity skip every neutral/patrol kill would witness itself. Reversal: drop
+  the skip.
+- **`NpcShip._read_heat_tier` reads the worst heat for a factionless hull
+  (route, a pre-existing defect cure):** a convoy's space owner resolved to the
+  literal `none`/`unaligned`, so 13 §5's trader panic could never fire. No
+  existing test moved. Reversal: restore the `!= &""` predicate.
+- **Route notes (bucket 1):** the bounty row toggles `visible` on one `ServiceRow`
+  (node count unchanged, `test_p2b_services.gd` holds); `PlayerProfile.docked_faction`
+  is a transient, non-persisted carrier for the pane (no save key, no version
+  move); a hunter wing is re-homed on the player at `HUNTER_SPAWN_RADIUS` **600.0**
+  u (proposed, no doc source; reversal: the sector's own field anchor) so it
+  hunts; the witness LOS is measured through the hull's own injected verdict
+  because the headless runner's suites run before the first physics step (no body
+  is in the broadphase; `space_flush_queries` does not exist in 4.7.2).
+- **Copy choices reported (owner ticks):** `DOCK REFUSED — OUTLAW` (mirrors the
+  gate's line; reversal: delete the rung), `PAY BOUNTY (n CR)` /
+  `BOUNTY PAID · n CR` / `REFUSED · NOT ENOUGH CREDITS` / `NO BOUNTY DUE` (one
+  format string each).
+- **Staged:** the station turret (13 §7 tick 7) — re-measured: the station has no
+  damage sink, the turret archetype is `SPAWN_STATION` with no consumer.
+
 ## §10 Changelog
 
 - **v0 (2026-09-18)** — seeded from the engine wave-1 pinned interfaces

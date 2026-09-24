@@ -55,7 +55,7 @@ wreck sites, credit caches) — the whole P3 loop, playable end to end.
 | S6-K0 | `docs/,vajb-orbit/tests/,vajb-orbit/tools/` | `S6_BRIEF.md` |
 | S6-K1 | `game/sector_registry.gd,game/gate.gd,game/corridor.gd,game/game.gd,game/sector.gd,tests/` | `S6_BRIEF.md` |
 | S6-K2 | `game/poi.gd,game/loot_tables.gd,game/sector.gd,game/game.gd,tests/` | `S6_BRIEF.md` |
-| S6-K3 | `game/heat.gd,game/npc_registry.gd,game/npc_brain.gd,game/npc_ship.gd,autoload/player_profile.gd,game/game.gd,tests/` | `S6_BRIEF.md` |
+| S6-K3 | `game/npc_registry.gd,game/npc_brain.gd,game/npc_ship.gd,autoload/player_profile.gd,game/game.gd,game/station_catalog.gd,ui/station/launch_panel.gd,tests/` | `S6_BRIEF.md` |
 | S6-R1 | `vajb-orbit/tests/,vajb-orbit/tools/,docs/CONTRACTS.md` | `S6_BRIEF.md` |
 | S6-F1 | union of K1–K3 sets + `docs/CONTRACTS.md` | `S6_BRIEF.md` |
 

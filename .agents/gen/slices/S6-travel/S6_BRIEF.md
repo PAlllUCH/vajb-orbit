@@ -312,7 +312,12 @@ editor reimports only in quiet windows; one editor session).
     `ModuleCatalog.MODULES` minus the three exclusives; sector band
     `ceil(n / 2)` clamped 1..4; ore-bloom radius 320 u / 0.25 jitter; beacons
     always visible (the fog reading) — reversals in the K2 report §3.
-13. Standing debt unchanged: `18_engine_spec.md` §6/§13/§15, the §13
+13. **Heat/hunter layer (K3, reported not invented):** the wing's spawn radius
+    `HUNTER_SPAWN_RADIUS` 600.0 u (reversal: the sector's own field anchor); the
+    dock refusal's readout `DOCK REFUSED — OUTLAW` and the four bounty copy
+    strings (reversals in the K3 report §3.6/§3.8); the victim-exclusion and
+    `_read_heat_tier` cures (route, no pin moves).
+14. Standing debt unchanged: `18_engine_spec.md` §6/§13/§15, the §13
     turn/`coast_time` ticks, slice 2.5's two calls, S3's nine, S2.6's four,
     S5's three, D6's five.
 
