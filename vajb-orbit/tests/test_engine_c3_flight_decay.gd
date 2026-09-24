@@ -8,7 +8,8 @@ extends McpTestSuite
 ##
 ## 1. every hull of the section 13 handling column reaches its body as
 ##    `linear_damp = 1 / coast_time` (DAMP_MODE_REPLACE) and `angular_damp =
-##    1 / turn_spinup` — the two damp sizes the body integrates;
+##    ANGULAR_DAMP_MULT / turn_spinup` — the two damp sizes the body integrates, the
+##    angular one on CONTRACTS section 23.5's T2 tick;
 ## 2. the release brake is `max_speed / coast_time` and the accelerate leg is
 ##    `max_speed / accel_time`, read straight off the `ShipStats` snapshot
 ##    (CONTRACTS section 4: "constants arrive via `ShipStats`, no literals in movement
@@ -55,10 +56,10 @@ func teardown() -> void:
 
 func test_the_coast_column_reaches_every_hulls_body_as_the_damp() -> void:
 	## The resolved coast time is the row times the fit's plating multiplier times the
-	## 2026-09-22 flight-feel ruling's `COAST_TIME_MULT` (x 2.0, the documented revert of
-	## the combat wave's x 0.50 -- CONTRACTS section 14). The row itself is the retuned
-	## half-of-section-13 literal this suite's other test pins, so the two halves of the
-	## release are asserted against their own sources.
+	## 2026-09-22 flight-feel ruling's `COAST_TIME_MULT`, ticked 2.0 -> 2.5 by CONTRACTS
+	## section 23.5's T1 (owner "go ahead with all", 2026-09-24). The row itself is the
+	## retuned half-of-section-13 literal this suite's other test pins, so the two halves
+	## of the release are asserted against their own sources.
 	var plate_penalty := absf(float(ShipFitScript.MODULES[PLATE][&"effects"][&"speed_penalty"]))
 	var multiplier := (1.0 + plate_penalty) * ShipFitScript.COAST_TIME_MULT
 	var checked := 0
@@ -95,8 +96,15 @@ func test_the_coast_column_reaches_every_hulls_body_as_the_damp() -> void:
 			"%s: the class damp replaces the project default, it does not add to it" % hull_id
 		)
 		assert_true(
-			_near(body.angular_damp, 1.0 / stats.turn_spinup, TOLERANCE),
-			"%s: the angular damp is 1 / turn_spinup, the same construction" % hull_id
+			_near(
+				body.angular_damp,
+				ShipFitScript.ANGULAR_DAMP_MULT / stats.turn_spinup,
+				TOLERANCE
+			),
+			(
+				"%s: the angular damp is ANGULAR_DAMP_MULT / turn_spinup (got %.6f, spinup %.3f)"
+				% [hull_id, body.angular_damp, stats.turn_spinup]
+			)
 		)
 		checked += 1
 	assert_eq(

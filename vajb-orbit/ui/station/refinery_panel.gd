@@ -34,6 +34,12 @@ const ProfileScript := preload("res://autoload/player_profile.gd")
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
 signal status_requested(message: String, danger: bool)
+## CONTRACTS section 23.1: emitted when the pointer lands on or leaves an ore stack row.
+## `title` is the row's identity line, `body` its catalogue description (empty when the
+## row carries none), `danger` colours the title. `title == ""` clears the shell's block.
+signal inspect_requested(title: String, body: String, danger: bool)
+## The inspector's body reader lives in the station catalogue (CONTRACTS section 23.1).
+const StationCatalogScript := preload("res://game/station_catalog.gd")
 
 const ROW_HEIGHT := 76.0
 const COL_ICON := 40.0
@@ -551,21 +557,43 @@ func _on_row_focused(_row: Button, payload: Dictionary) -> void:
 		],
 		false,
 	)
+	_inspect_row(payload, true)
 
 
 func _on_row_pressed(payload: Dictionary) -> void:
 	## Focus selects first on a mouse or keyboard entry, so the press only cues and arms
 	## when it actually moves the selection.
 	_arm(payload, true)
+	_inspect_row(payload, true)
 
 
 func _on_row_hovered(payload: Dictionary, hovered: bool) -> void:
+	_inspect_row(payload, hovered)
 	var icon: TextureRect = payload[&"icon"]
 	if icon == null:
 		return
 	var target := 1.0 if hovered else ROW_ICON_IDLE_ALPHA
 	var tween := _make_tween()
 	tween.tween_property(icon, "modulate:a", target, HOVER_SECONDS)
+
+
+## CONTRACTS section 23.1: the ore row's additive inspector line. The row's own
+## `STATUS_READY` line (name plus its fee) is the title, never a second format string; the
+## body is whatever `StationCatalog.describe` answers for the row's own id, which is `""`
+## for a row the station catalogue does not carry.
+func _inspect_row(payload: Dictionary, shown: bool) -> void:
+	if not shown:
+		inspect_requested.emit("", "", false)
+		return
+	inspect_requested.emit(
+		STATUS_READY % [
+			String(payload[&"name"]).to_upper(),
+			_conversions_text(int(payload[&"conversions"])),
+			_format_int(int(payload[&"fee"])),
+		],
+		StationCatalogScript.describe(StringName(payload[&"id"])),
+		false,
+	)
 
 
 func _on_scroll_started() -> void:

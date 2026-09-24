@@ -23,6 +23,10 @@ const ProfileScript := preload("res://autoload/player_profile.gd")
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
 signal status_requested(message: String, danger: bool)
+## CONTRACTS section 23.1: declared on all eight panes, emitted by the six item panes.
+## The REPAIRS rows are services, not catalogue items, so this pane declares it and emits
+## nothing.
+signal inspect_requested(title: String, body: String, danger: bool)
 
 const COL_VALUE := 220.0
 const ROW_SEPARATION := 6

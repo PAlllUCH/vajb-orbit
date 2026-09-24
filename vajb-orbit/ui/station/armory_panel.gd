@@ -51,6 +51,11 @@ const ModuleData := preload("res://game/module_catalog.gd")
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
 signal status_requested(message: String, danger: bool)
+## CONTRACTS section 23.1: emitted when the pointer lands on or leaves a catalogue row
+## (an ammunition card, an owned-weapon row or a fitted barrel). `title` is the row's
+## identity line, `body` its catalogue description (empty when the row carries none),
+## `danger` colours the title. `title == ""` clears the shell's inspector block.
+signal inspect_requested(title: String, body: String, danger: bool)
 
 ## The header strip's own columns (the S5 row anatomy, kept for the fit pass and the
 ## header's own declaration; the ammunition cards carry their figures inline now).
@@ -1304,9 +1309,11 @@ func _on_row_focused(row: Button, payload: Dictionary) -> void:
 	_selected_row = row
 	row.set_pressed_no_signal(true)
 	status_requested.emit(_row_hint(payload), false)
+	_inspect_row(payload, true)
 
 
 func _on_row_hovered(payload: Dictionary, hovered: bool) -> void:
+	_inspect_row(payload, hovered)
 	var icon: TextureRect = payload[&"icon"]
 	if icon == null:
 		return
@@ -1320,6 +1327,7 @@ func _on_row_pressed(payload: Dictionary) -> void:
 	var row: Button = payload[&"row"]
 	row.set_pressed_no_signal(true)
 	_selected_row = row
+	_inspect_row(payload, true)
 	var profile := _profile()
 	if profile == null:
 		return
@@ -1430,6 +1438,21 @@ func _row_hint(payload: Dictionary) -> String:
 		String(payload[&"name"]).to_upper(),
 		_format_int(int(payload[&"cost"])),
 	]
+
+
+## CONTRACTS section 23.1: the inspector's additive hover surface. The row's own
+## `_row_hint` line is reused as the title (never a second format string), the catalogue
+## description is the body, and a row that is not buyable wears the danger colour. A leave
+## clears both by handing the shell `title == ""`.
+func _inspect_row(payload: Dictionary, shown: bool) -> void:
+	if not shown:
+		inspect_requested.emit("", "", false)
+		return
+	inspect_requested.emit(
+		_row_hint(payload),
+		Catalog.describe(StringName(payload[&"id"])),
+		not bool(payload.get(&"complete", true))
+	)
 
 
 ## --------------------------------------------------------------------- the racks
@@ -1615,13 +1638,35 @@ func _build_barrel(
 	chip.add_child(close)
 	chip.clip_contents = true
 	parent.add_child(chip)
-	name_button.focus_entered.connect(_on_barrel_focused.bind(rack))
+	name_button.focus_entered.connect(_on_barrel_focused.bind(rack, cell, entry))
+	chip.mouse_entered.connect(_on_barrel_inspected.bind(cell, entry, true))
+	chip.mouse_exited.connect(_on_barrel_inspected.bind(cell, entry, false))
 	return {&"cell": cell, &"name": name_button, &"close": close}
 
 
-## Focus on a barrel makes its rack the selected bay (the section 3.2 ember frame).
-func _on_barrel_focused(rack: int) -> void:
+## Focus on a barrel makes its rack the selected bay (the section 3.2 ember frame) and
+## publishes the barrel's own line to the inspector.
+func _on_barrel_focused(rack: int, cell: int, entry: StringName) -> void:
 	set_selected_rack(rack)
+	_inspect_barrel(cell, entry, true)
+
+
+func _on_barrel_inspected(cell: int, entry: StringName, hovered: bool) -> void:
+	_inspect_barrel(cell, entry, hovered)
+
+
+## CONTRACTS section 23.1: a fitted barrel's inspector line. The title reuses the chip's
+## own `BARREL_TEXT` line (never a second format string) and the body is the cell module's
+## catalogue description, resolved through the instance's base.
+func _inspect_barrel(cell: int, entry: StringName, shown: bool) -> void:
+	if not shown or entry == &"":
+		inspect_requested.emit("", "", false)
+		return
+	inspect_requested.emit(
+		BARREL_TEXT % [cell + 1, _module_name(_base_id(_profile(), entry))],
+		Catalog.describe(entry),
+		false
+	)
 
 
 ## One bay's own children, at the mockup's own offsets: `B<n>` and its key hint along the
@@ -1801,11 +1846,32 @@ func _build_inventory_row(entry: Dictionary) -> Dictionary:
 		&"tinted": _is_flat_glyph(icon_path),
 		&"status": cell[0],
 	}
+	row.focus_entered.connect(_on_inventory_focused.bind(base_id, String(entry[&"name"])))
+	row.mouse_entered.connect(_on_inventory_inspected.bind(base_id, String(entry[&"name"]), true))
+	row.mouse_exited.connect(_on_inventory_inspected.bind(base_id, String(entry[&"name"]), false))
 	_inventory_rows.add_child(row)
 	frame.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	frame.configure(_style)
 	_inventory_views.append(view)
 	return view
+
+
+## CONTRACTS section 23.1: an owned-weapon row's inspector line. The row's own catalogue
+## name is the title and its description the body; a leave clears both. The row is a drag
+## handle, so this adds no action of its own.
+func _on_inventory_focused(base_id: StringName, name_text: String) -> void:
+	_inspect_module(base_id, name_text, true)
+
+
+func _on_inventory_inspected(base_id: StringName, name_text: String, hovered: bool) -> void:
+	_inspect_module(base_id, name_text, hovered)
+
+
+func _inspect_module(base_id: StringName, name_text: String, shown: bool) -> void:
+	if not shown:
+		inspect_requested.emit("", "", false)
+		return
+	inspect_requested.emit(name_text, Catalog.describe(base_id), false)
 
 
 ## The owned weapon rows, in catalogue order: every `weapons` module of the catalogue

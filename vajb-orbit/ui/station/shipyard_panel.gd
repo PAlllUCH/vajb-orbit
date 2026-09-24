@@ -40,6 +40,11 @@ const AuctionScript := preload("res://game/auction.gd")
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
 signal status_requested(message: String, danger: bool)
+## CONTRACTS section 23.1: emitted when the pointer lands on or leaves a hull row (the
+## pane's catalogue item). `title` is the row's identity line, `body` its catalogue
+## description (empty when the row carries none), `danger` colours the title.
+## `title == ""` clears the shell's inspector block.
+signal inspect_requested(title: String, body: String, danger: bool)
 
 const ROW_HEIGHT := 76.0
 const COL_TAG := 130.0
@@ -321,6 +326,8 @@ func _build_row(ship: Dictionary) -> Dictionary:
 	}
 	row.pressed.connect(_on_row_pressed.bind(payload))
 	row.focus_entered.connect(_on_row_focused.bind(row, payload))
+	row.mouse_entered.connect(_on_row_hovered.bind(payload, true))
+	row.mouse_exited.connect(_on_row_hovered.bind(payload, false))
 	_list.add_child(row)
 	return payload
 
@@ -977,6 +984,22 @@ func _on_row_focused(row: Button, payload: Dictionary) -> void:
 	_preview_row(payload)
 
 
+## CONTRACTS section 23.1: the shipyard's additive hover surface. A hover publishes the
+## hull's own `_row_hint` line as the title and its catalogue description as the body; a
+## leave clears both (`title == ""`).
+func _on_row_hovered(payload: Dictionary, hovered: bool) -> void:
+	_inspect_row(payload, hovered)
+
+
+func _inspect_row(payload: Dictionary, shown: bool) -> void:
+	if not shown:
+		inspect_requested.emit("", "", false)
+		return
+	inspect_requested.emit(
+		_row_hint(payload), Catalog.describe(StringName(payload[&"id"])), false
+	)
+
+
 ## Selecting a row previews it and writes nothing (section 5.11: "selecting a row previews
 ## ... and writes nothing; the footer SET ACTIVE is the sole commit"). The press is the
 ## row's `pressed`, the focus is the ring - both go through `_preview_row`.
@@ -1001,6 +1024,7 @@ func _preview_row(payload: Dictionary) -> void:
 	_refresh_preview(profile)
 	_refresh_action(profile)
 	status_requested.emit(_row_hint(payload), false)
+	_inspect_row(payload, true)
 
 
 ## The pane's one write: `set_active_ship` for the previewed hull, which the profile

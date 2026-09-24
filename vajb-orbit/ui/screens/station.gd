@@ -11,6 +11,7 @@ extends Screen
 ##
 ## Panel contract, duck typed, the pattern every module panel copies:
 ##   signal status_requested(message: String, danger: bool)   write the footer strip
+##   signal inspect_requested(title: String, body: String, danger: bool)  the inspector
 ##   signal launch_requested()                                LAUNCH panel: undock
 ##   func refresh_profile(key: StringName) -> void             react to profile_changed
 ##   func focus_primary() -> void                              focus entry after a switch
@@ -123,6 +124,10 @@ const PULSE_UP_SECONDS := 0.16
 
 const STATUS_DOCKED := "DOCKED · ALL SYSTEMS NOMINAL"
 
+## CONTRACTS section 23.1: the inspector body's own line budget. The scene carries the same
+## two, and `_apply_tokens` re-applies this const so the two cannot drift.
+const INSPECTOR_BODY_MAX_LINES := 2
+
 @onready var _backdrop_dim: ColorRect = %BackdropDim
 @onready var _grain: TextureRect = %Grain
 @onready var _fade: ColorRect = %Fade
@@ -138,6 +143,8 @@ const STATUS_DOCKED := "DOCKED · ALL SYSTEMS NOMINAL"
 @onready var _host_margin: MarginContainer = %HostMargin
 @onready var _status_label: Label = %StatusLabel
 @onready var _beacon: ColorRect = %StatusBeacon
+@onready var _inspector_title: Label = %InspectorTitle
+@onready var _inspector_body: Label = %InspectorBody
 @onready var _leave_confirm: Control = %LeaveConfirm
 @onready var _leave_dimmer: ColorRect = %LeaveDimmer
 @onready var _leave_cancel: Button = %LeaveCancel
@@ -148,6 +155,7 @@ var _panels: Array[CanvasItem] = []
 var _module_entries: Array[Button] = []
 var _displayed_credits := 0
 var _status_danger := false
+var _inspector_danger := false
 var _tweens: Array[Tween] = []
 
 
@@ -239,6 +247,9 @@ func _apply_tokens() -> void:
 	_beacon.color = _token(&"accent_danger")
 	_grain.modulate = Color(1.0, 1.0, 1.0, GRAIN_IDLE_ALPHA)
 	_apply_status_colour()
+	_inspector_body.max_lines_visible = INSPECTOR_BODY_MAX_LINES
+	_inspector_body.add_theme_color_override(&"font_color", _token(&"text_primary"))
+	_apply_inspector_colour()
 
 
 func _token(token: StringName) -> Color:
@@ -309,6 +320,8 @@ func _connect_panel(pane: Node) -> void:
 		pane.connect(&"status_requested", _on_panel_status)
 	if pane.has_signal(&"launch_requested"):
 		pane.connect(&"launch_requested", _on_launch_requested)
+	if pane.has_signal(&"inspect_requested"):
+		pane.connect(&"inspect_requested", _on_panel_inspect)
 
 
 func _make_placeholder(index: int, path: String) -> CanvasItem:
@@ -433,6 +446,21 @@ func _focus_current_rail_entry() -> void:
 
 func _on_panel_status(message: String, danger: bool) -> void:
 	_set_status(message, danger)
+
+
+## CONTRACTS section 23.1: the additive hover surface. `status_requested` keeps its meaning
+## and its wording; the inspector is hover-driven and `title == ""` clears the block. The
+## strip's own words, tokens and danger colour are unmoved.
+func _on_panel_inspect(title: String, body: String, danger: bool) -> void:
+	_inspector_title.text = title
+	_inspector_body.text = body
+	_inspector_danger = danger
+	_apply_inspector_colour()
+
+
+func _apply_inspector_colour() -> void:
+	var token: StringName = &"accent_danger" if _inspector_danger else &"text_primary"
+	_inspector_title.add_theme_color_override(&"font_color", _token(token))
 
 
 func _on_launch_requested() -> void:
@@ -628,12 +656,6 @@ func _make_tween() -> Tween:
 
 
 func _format_int(value: int) -> String:
-	var digits := str(absi(value))
-	var grouped := ""
-	var count := 0
-	for index in range(digits.length() - 1, -1, -1):
-		grouped = digits[index] + grouped
-		count += 1
-		if count % 3 == 0 and index > 0:
-			grouped = " " + grouped
-	return ("-" if value < 0 else "") + grouped
+	## CONTRACTS section 23.1: one home for the rule (`StationCatalog.group_int`), so the
+	## shell's credits readout and the inspector cannot drift.
+	return Catalog.group_int(value)

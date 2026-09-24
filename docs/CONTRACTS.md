@@ -2732,7 +2732,8 @@ strip's own words, tokens and danger colour are unmoved.
 | signal | `inspect_requested(title: String, body: String, danger: bool)` — **declared on all eight panes**, emitted by the six item panes (`armory`, `shipyard`, `exchange`, `auction`, `refinery`, `fitting`) on hover-in **and** on selection; `title == ""` clears the block | delete the signal and the shell's handler |
 | shell nodes | `Inspector` (`PanelContainer`, `PanelRaised`) → `InspectorMargin` (`MarginContainer`) → `InspectorBox` (`VBoxContainer`) → `InspectorTitle` (`Label`, `StationPanelTitle`, one line) + `InspectorBody` (`Label`, `SectionHeader` size with a `font_color` override to the theme's `Tokens/text_primary`, `autowrap_mode AUTOWRAP_WORD_SMART`, `max_lines_visible 2`) | the block, one node at a time; the override restores `text_dim` |
 | body lines | `INSPECTOR_BODY_MAX_LINES := 2` | 1 |
-| body text | `StationCatalog.describe(id: StringName) -> String`, **static**: base-id resolved (`mod_*` instances resolve through their base), reads `MODULES` / `SHIPS` / the ammo+service rows' own `&"description"`, returns `""` when the row carries none (**no invented text**), and for a `mod_*` instance appends that instance's affix perks joined by `" · "` | `""` always (title only) |
+| body text | `StationCatalog.describe(id: StringName) -> String`, **static**: base-id resolved (`mod_*` instances resolve through their base, an `ammo_*` cargo id through its pack), reads `MODULES` / `SHIPS` / the ammo+service rows' own `&"description"` **and `MineralCatalog` / `ComponentCatalog`** (widened 2026-09-24 after B1's report: a REFINERY ore row and an EXCHANGE mineral/component hold row must show the prose those catalogues already carry), returns `""` when the row carries none (**no invented text**), and for a `mod_*` instance appends that instance's affix perks joined by `" · "` | `""` always (title only); narrow the source list back to the four |
+| title text | the row's **identity**: its name, then its price phrase where the row has one, joined by the pane's own `" · "` — **the key-hint verb is not part of it** ("ENTER BUY" / "ENTER PREVIEWS" / "ENTER SELECT" stay in the status strip's own hover line, which is unchanged) | reuse the pane's `_row_hint` string verbatim (the B1 shape) |
 | grouping | `StationCatalog.group_int(value: int) -> String` — one copy of the station's existing rule; `ui/screens/station.gd:_format_int` delegates to it so the two readouts cannot drift | restore the private copy |
 | item-less panes (`repairs`, `launch`) | declare the signal, emit nothing | — |
 
@@ -2844,10 +2845,19 @@ hull stops twice and the second stop slides.
 ### §23.6 Tests and close-out
 
 - New suites: `test_s11_inspector.gd` (§23.1 + §23.3's credits half),
-  `test_s11_flight_stop.gd` (§23.5). §23.2 is data — no new suite; R1 spot-checks the 35
-  rows against this table.
+  `test_s11_flight_stop.gd` (§23.5), `test_s11_describe.gd` (the widened source list and the
+  title rule). §23.2 is data — no new suite; R1 spot-checks the 35 rows against this table.
+- **Re-derived by the builders who landed the change, and the list is the law (amended
+  2026-09-24 after B3/B4's reports — both omissions were real and left the gate red):**
+  `tests/test_engine2_weapons.gd:141-145` (the four families' `range` + the const),
+  `tests/test_s7_affixes.gd` (its three `coast_time` rows follow T1), the range rows in any
+  other suite, and the three flight suites' numeric rows; the probes `probe_s2_6_flight`,
+  `probe_g1_flight_feel`, `probe_c3_flight_decay` follow the same rules. **Every suite a
+  pinned constant reaches belongs to the worker that moves the constant**, and its
+  `VAJB_WORKER_FILES` must carry `vajb-orbit/tests/` — the B3 dispatch narrowed that set and
+  turned a one-row edit into a red gate; that is the wave's dispatch lesson.
 - Every other suite's pinned literals stay as they are: this wave moves the range rows
-  (§23.4) and the three flight suites (§23.5) and nothing else.
+  (§23.4) and the flight rows (§23.5) and nothing else.
 - The §9 gate row and the §10 row are **S11-R1's** at close-out; this section is the wave's
   only pre-dispatch CONTRACTS write.
 - **Cross-lane:** D11 holds `vajb-orbit/tests/` (directory-wide) and `docs/CONTRACTS.md` at

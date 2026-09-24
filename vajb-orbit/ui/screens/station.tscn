@@ -211,6 +211,36 @@ theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
+[node name="Inspector" type="PanelContainer" parent="Layout/Page"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"PanelRaised"
+
+[node name="InspectorMargin" type="MarginContainer" parent="Layout/Page/Inspector"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 10
+
+[node name="InspectorBox" type="VBoxContainer" parent="Layout/Page/Inspector/InspectorMargin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="InspectorTitle" type="Label" parent="Layout/Page/Inspector/InspectorMargin/InspectorBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationPanelTitle"
+clip_text = true
+
+[node name="InspectorBody" type="Label" parent="Layout/Page/Inspector/InspectorMargin/InspectorBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+theme_override_colors/font_color = Color(0.7882353, 0.81960785, 0.8627451, 1)
+autowrap_mode = 3
+max_lines_visible = 2
+
 [node name="Footer" type="HBoxContainer" parent="Layout/Page"]
 unique_name_in_owner = true
 layout_mode = 2

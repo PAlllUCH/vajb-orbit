@@ -40,6 +40,11 @@ const AuctionScript := preload("res://game/auction.gd")
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
 signal status_requested(message: String, danger: bool)
+## CONTRACTS section 23.1: emitted when the pointer lands on or leaves an OWNED MODULES
+## row or sub-row. `title` is the row's identity line, `body` its catalogue description
+## (empty when the row carries none), `danger` colours the title. `title == ""` clears the
+## shell's inspector block.
+signal inspect_requested(title: String, body: String, danger: bool)
 
 ## ------------------------------------------------ the section 5.1 host-pane construct
 const ROW_HEIGHT := 76.0
@@ -1101,6 +1106,7 @@ func _on_module_pressed(payload: Dictionary) -> void:
 	## player is acting on, so a refused press leaves the arithmetic that refused it on screen.
 	var entry: StringName = _payload_entry(payload)
 	_candidate = entry
+	_inspect_row(payload, true)
 	if module_action(entry) == ACTION_SELECT:
 		_notice(ACTION_SELECT, false)
 		return
@@ -1115,6 +1121,7 @@ func _on_subrow_pressed(payload: Dictionary) -> void:
 	row.set_pressed_no_signal(true)
 	_selected_row = row
 	_candidate = payload[&"entry"]
+	_inspect_row(payload, true)
 	if module_action(payload[&"entry"]) == ACTION_SELECT:
 		_notice(ACTION_SELECT, false)
 		return
@@ -1145,6 +1152,7 @@ func _on_module_focused(row: Button, payload: Dictionary) -> void:
 	row.set_pressed_no_signal(true)
 	_candidate = _payload_entry(payload)
 	_refresh_footer()
+	_inspect_row(payload, true)
 
 
 func _on_subrow_focused(row: Button, payload: Dictionary) -> void:
@@ -1162,10 +1170,26 @@ func _on_module_hovered(payload: Dictionary, hovered: bool) -> void:
 		)
 	_candidate = _payload_entry(payload) if hovered else &""
 	_refresh_footer()
+	_inspect_row(payload, hovered)
 
 
 func _on_subrow_hovered(payload: Dictionary, hovered: bool) -> void:
 	_on_module_hovered(payload, hovered)
+
+
+## CONTRACTS section 23.1: the OWNED MODULES row's additive inspector line. The row's own
+## display name is the title (the rolled name where the row or sub-row stands for one
+## instance); the body resolves the row's entry - a `mod_*` instance through its base plus
+## its rolled affixes - and a leave clears both.
+func _inspect_row(payload: Dictionary, shown: bool) -> void:
+	if not shown:
+		inspect_requested.emit("", "", false)
+		return
+	inspect_requested.emit(
+		String(payload.get(&"name", "")),
+		StationCatalog.describe(_payload_entry(payload)),
+		false
+	)
 
 
 func _on_remove_pressed() -> void:

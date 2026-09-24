@@ -47,3 +47,26 @@ cd /home/kamil-paluszkiewicz/VajbOrbit && source ~/.profile \
 `crush run` prints only narration, so a silent log is normal. Poll with
 `pgrep -af 'worker S11-B'` and read each report when its process exits; never end the
 session while a worker is in flight.
+
+## Wave 2 — continuations (after B1 ∥ B3 ∥ B4 landed)
+
+B1, B3 and B4 all exited. The gate read **788/3**: the three red rows are the wave's own —
+two suites and one probe outside the builders' sets — and §23.6's list was amended to name
+them. B2 (the block above) had not run yet and now runs beside these two. **B2 ∥ B5 ∥ B6**
+are disjoint.
+
+```bash
+cd /home/kamil-paluszkiewicz/VajbOrbit && source ~/.profile \
+  && VAJB_SLIM=1 VAJB_WORKER_FILES='vajb-orbit/tests/test_engine2_weapons.gd,vajb-orbit/tests/test_s7_affixes.gd,vajb-orbit/tests/probe_s2_6_flight.gd,vajb-orbit/tests/probe_g1_flight_feel.gd,vajb-orbit/tests/probe_c3_flight_decay.gd,.agents/gen/slices/S11-legibility-gunnery-feel/S11-B5_report.md' \
+     crush run "You are worker S11-B5 on the Vajb Orbit workspace, wave S11 continuation. Read .agents/gen/slices/S11-legibility-gunnery-feel/S11_B5_BRIEF.md end to end first, then docs/CONTRACTS.md sections 23.4, 23.5 and the amended 23.6, plus the S11-B3_report.md and S11-B4_report.md rows you are closing. Task: re-derive only the test and probe rows the wave's ticked constants reach, weakening no bound. One: tests/test_engine2_weapons.gd lines 141 to 145 read the four families range as 30000.0 through WeaponScript.NEAR_INFINITE_RANGE, with rocket still 900.0. Two: tests/test_s7_affixes.gd rows that resolve a coast time against the old multiplier follow ShipFit.COAST_TIME_MULT instead of a second literal. Three: tests/probe_s2_6_flight.gd and tests/probe_g1_flight_feel.gd get their moved printed rows and their prose corrected - the lateral split prose and the LATERAL_DAMP_MULT key list now describe a retired drag. Four: tests/probe_c3_flight_decay.gd reports four failures in its accelerate leg; prove ownership before touching it by adding a git worktree at the pre-dispatch commit 4c19812 under /tmp/s11_base and running the probe there on a scratch store - if it fails at the baseline too, leave the file untouched and report both runs. Report .agents/gen/slices/S11-legibility-gunnery-feel/S11-B5_report.md with two gate lines from fresh scratch stores, every row moved with before and after, and the probe ownership verdict." \
+     -m deepseek/deepseek-flash --reasoning-effort high --cwd "$VAJB_WORKSPACE" \
+  > /tmp/s11_b5.log 2>&1
+```
+
+```bash
+cd /home/kamil-paluszkiewicz/VajbOrbit && source ~/.profile \
+  && VAJB_SLIM=1 VAJB_WORKER_FILES='vajb-orbit/game/station_catalog.gd,vajb-orbit/ui/station/armory_panel.gd,vajb-orbit/ui/station/shipyard_panel.gd,vajb-orbit/ui/station/exchange_panel.gd,vajb-orbit/ui/station/auction_panel.gd,vajb-orbit/ui/station/refinery_panel.gd,vajb-orbit/ui/station/fitting_panel.gd,vajb-orbit/tests/test_s11_describe.gd,.agents/gen/slices/S11-legibility-gunnery-feel/S11-B6_report.md' \
+     crush run "You are worker S11-B6 on the Vajb Orbit workspace, wave S11 continuation. Read .agents/gen/slices/S11-legibility-gunnery-feel/S11_B6_BRIEF.md end to end first, then docs/CONTRACTS.md section 23.1 both amended rows, and S11-B1_report.md deviations 1 2 3. Task one: widen StationCatalog.describe to also read MineralCatalog and ComponentCatalog, so a REFINERY ore row and an EXCHANGE mineral or component hold row show the prose those catalogues already carry - keep the base-id and ammo pack handling, keep an empty answer for a row that carries none, and invent no text. Task two: give the six item panes a real inspector title - the row name plus the pane's own price phrase joined by the pane's existing separator, with the leading key-hint verb dropped - while the status strip hover line keeps its verb and its wording byte-identically, and no other string, font size or colour moves. Task three: add tests/test_s11_describe.gd proving the widened resolution, the affix perk join, the ammo pack mapping, the empty answer, and that each of the six panes title carries the name with no ENTER verb while its status line still carries it. Run the gate twice on fresh scratch stores and report .agents/gen/slices/S11-legibility-gunnery-feel/S11-B6_report.md with both gate lines, one before and after title per pane, and a reversal per change." \
+     -m deepseek/deepseek-flash --reasoning-effort high --cwd "$VAJB_WORKSPACE" \
+  > /tmp/s11_b6.log 2>&1
+```

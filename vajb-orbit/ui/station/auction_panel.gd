@@ -50,6 +50,11 @@ const ProfileScript := preload("res://autoload/player_profile.gd")
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
 signal status_requested(message: String, danger: bool)
+## CONTRACTS section 23.1: emitted when the pointer lands on or leaves a shelf row (a
+## hull, a rolled listing or a sell row). `title` is the row's identity line, `body` its
+## catalogue description (empty when the row carries none), `danger` colours the title.
+## `title == ""` clears the shell's inspector block.
+signal inspect_requested(title: String, body: String, danger: bool)
 
 ## ------------------------------------------------------------------ 12.3 constants
 const ROW_HEIGHT := 76.0
@@ -968,6 +973,7 @@ func _on_action_pressed(payload: Dictionary, kind: StringName) -> void:
 	var row: Button = payload[&"row"]
 	row.set_pressed_no_signal(true)
 	_selected_row = row
+	_inspect_row(payload, true)
 	match kind:
 		&"hull":
 			buy_hull(payload[&"id"])
@@ -984,15 +990,30 @@ func _on_row_focused(row: Button, payload: Dictionary) -> void:
 	_selected_row = row
 	row.set_pressed_no_signal(true)
 	_set_status(_row_hint(payload), false)
+	_inspect_row(payload, true)
 
 
 func _on_row_hovered(payload: Dictionary, hovered: bool) -> void:
+	_inspect_row(payload, hovered)
 	var icon: TextureRect = payload[&"icon"]
 	if icon == null:
 		return
 	var target := 1.0 if hovered else ROW_ICON_IDLE_ALPHA
 	var tween := _make_tween()
 	tween.tween_property(icon, "modulate:a", target, HOVER_SECONDS)
+
+
+## CONTRACTS section 23.1: the shelf row's additive inspector line. The row's own
+## `_row_hint` line is the title (never a second format string); the body resolves the
+## row's id - a `mod_*` listing through its base plus its rolled affixes, a hull through
+## the ship row - and a leave clears both.
+func _inspect_row(payload: Dictionary, shown: bool) -> void:
+	if not shown:
+		inspect_requested.emit("", "", false)
+		return
+	inspect_requested.emit(
+		_row_hint(payload), Catalog.describe(StringName(payload[&"id"])), false
+	)
 
 
 ## The footer hint a focused row writes, in the OUTFITTING pane's own shape.

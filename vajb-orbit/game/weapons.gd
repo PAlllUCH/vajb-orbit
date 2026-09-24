@@ -66,6 +66,12 @@ const ProjectileScript := preload("res://game/projectile.gd")
 const ImpactScript := preload("res://game/impact.gd")
 const FxScript := preload("res://game/fx.gd")
 
+## CONTRACTS section 23.4, owner-ruled 2026-09-24: a kinetic slug and a beam do not stop
+## in the dark. 30 000 u is past a sector's own 14 142 u diagonal (`sector_registry.gd:32`)
+## and the fizzle stays finite, so a shot still despawns. Reversal: 500.0 / 450.0 /
+## 600.0 / 800.0.
+const NEAR_INFINITE_RANGE := 30000.0
+
 ## ENGINE_SPEC section 4.1's family table with section 13's calibration rows. One
 ## row per family, keyed by the weapon id the fit and `PlayerState.WEAPONS` use.
 ##
@@ -92,7 +98,7 @@ const FAMILIES: Dictionary = {
 		&"module": &"w_laser",
 		&"track_dps": 180.0,
 		&"family": &"energy",
-		&"range": 500.0,
+		&"range": NEAR_INFINITE_RANGE,
 		&"dps": 30.0,
 		&"draw": 6.0,
 		&"instant": true,
@@ -102,7 +108,7 @@ const FAMILIES: Dictionary = {
 		&"module": &"w_plasma",
 		&"track_dps": 75.0,
 		&"family": &"energy",
-		&"range": 450.0,
+		&"range": NEAR_INFINITE_RANGE,
 		&"dps": 70.0,
 		&"draw": 10.0,
 		&"instant": true,
@@ -114,7 +120,7 @@ const FAMILIES: Dictionary = {
 		&"track_dps": 120.0,
 		&"family": &"kinetic",
 		&"kind": &"bolt",
-		&"range": 600.0,
+		&"range": NEAR_INFINITE_RANGE,
 		&"dps": 45.0,
 		&"speed": 1000.0,
 		&"bypass_shield": true,
@@ -126,7 +132,7 @@ const FAMILIES: Dictionary = {
 		&"track_dps": 100.0,
 		&"family": &"kinetic",
 		&"kind": &"slug",
-		&"range": 800.0,
+		&"range": NEAR_INFINITE_RANGE,
 		&"dps": 60.0,
 		&"speed": 1400.0,
 		&"bypass_shield": true,

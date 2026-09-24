@@ -35,6 +35,10 @@ const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
 signal status_requested(message: String, danger: bool)
 signal launch_requested()
+## CONTRACTS section 23.1: declared on all eight panes, emitted by the six item panes.
+## The LAUNCH rows are routes and services, not catalogue items, so this pane declares it
+## and emits nothing.
+signal inspect_requested(title: String, body: String, danger: bool)
 
 const ROUTE_LOADING: StringName = &"loading"
 const DESTINATION_ROUTE: StringName = &"game"

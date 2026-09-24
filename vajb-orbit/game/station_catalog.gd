@@ -306,6 +306,159 @@ static func service_ids() -> Array[StringName]:
 	return _ids(SERVICES)
 
 
+## CONTRACTS section 23.1: the inspector's body text. The profile singleton is read by
+## name the way the HUD's own blocks read their services, because this static has no
+## node to anchor `get_tree()` at.
+const PROFILE_SERVICE: StringName = &"PlayerProfile"
+## The separator the inspector joins a body's rolled affixes with (section 23.1).
+const AFFIX_JOIN := " · "
+
+
+## The body text for one catalogue id (CONTRACTS section 23.1): the id base-resolved (a
+## `mod_*` instance through `PlayerProfile.base_module_id`), read from `ModuleCatalog` /
+## `SHIPS` / the ammo pack and service rows' own `&"description"`, `""` when the row
+## carries none (never invented text). A base id's own `ammo_*` cargo form resolves to its
+## pack, so EXCHANGE's ammo hold row reads the same prose. A `mod_*` instance appends its
+## rolled affix perks, joined by `AFFIX_JOIN`.
+static func describe(id: StringName) -> String:
+	if id == &"":
+		return ""
+	var base := _base_of(id)
+	var body := _description_of(base)
+	var perks := _affix_perks(id)
+	if perks.is_empty():
+		return body
+	var tail := AFFIX_JOIN.join(perks)
+	if body.is_empty():
+		return tail
+	return body + AFFIX_JOIN + tail
+
+
+## The station's own digit grouping, one copy: `1200` -> `1 200`. The shell's
+## `_format_int` delegates here so its credits readout and the inspector cannot drift
+## (CONTRACTS section 23.1).
+static func group_int(value: int) -> String:
+	var digits := str(absi(value))
+	var grouped := ""
+	var count := 0
+	for index in range(digits.length() - 1, -1, -1):
+		grouped = digits[index] + grouped
+		count += 1
+		if count % 3 == 0 and index > 0:
+			grouped = " " + grouped
+	return ("-" if value < 0 else "") + grouped
+
+
+## One id's catalogue base: a `mod_*` instance resolves through the profile's own bridge,
+## a base id answers itself, and an id the bag does not carry is returned unchanged.
+static func _base_of(id: StringName) -> StringName:
+	var profile := _profile()
+	if profile == null:
+		return id
+	return StringName(profile.call(&"base_module_id", id))
+
+
+## The `&"description"` of whichever catalogue row carries the id, `""` when none does.
+## Sources, in the pin's own order: the module table, the hulls, the ammo packs (both a
+## family and its `ammo_*` cargo form) and the service rows.
+static func _description_of(id: StringName) -> String:
+	var rows: Array[Dictionary] = [
+		ModuleCatalog.module(id),
+		ship(id),
+		ammo_pack(id),
+		service(id),
+		ammo_pack(ammo_family(id)),
+	]
+	for row: Dictionary in rows:
+		if row.has(&"description"):
+			return String(row[&"description"])
+	return ""
+
+
+## One `mod_*` instance's rolled affix perks, in the record's own order (`[]` for a base
+## id, an id the bag does not carry, or a record with no affix rows). A prefix reads its
+## 15 section 3 row's own name plus the recorded magnitude; a suffix reads its 15
+## section 4 `perk` prose verbatim.
+static func _affix_perks(id: StringName) -> Array[String]:
+	var perks: Array[String] = []
+	var profile := _profile()
+	if profile == null:
+		return perks
+	var raw: Variant = profile.call(&"instance", id)
+	if not raw is Dictionary:
+		return perks
+	var record: Dictionary = raw
+	if record.is_empty():
+		return perks
+	for entry: Variant in _rows(_record_key(record, &"prefixes")):
+		var perk := _prefix_perk(entry)
+		if not perk.is_empty():
+			perks.append(perk)
+	for entry: Variant in _rows(_record_key(record, &"suffixes")):
+		var perk := _suffix_perk(entry)
+		if not perk.is_empty():
+			perks.append(perk)
+	return perks
+
+
+static func _prefix_perk(entry: Variant) -> String:
+	var prefix_id := _row_id(entry)
+	var row: Dictionary = ModuleCatalog.PREFIXES.get(prefix_id, {})
+	if row.is_empty():
+		return ""
+	var value := 0.0
+	if entry is Dictionary:
+		value = float((entry as Dictionary).get("value", 0.0))
+	var amount := _affix_amount(value, StringName(str(row.get(&"unit", &""))))
+	return "%s %s" % [String(row.get(&"name", String(prefix_id))), amount]
+
+
+static func _suffix_perk(entry: Variant) -> String:
+	var row: Dictionary = ModuleCatalog.SUFFIXES.get(_row_id(entry), {})
+	return String(row.get(&"perk", ""))
+
+
+## The value a prefix row is written in (15 section 3's `unit` column), the same
+## spellings FITTING's own stat block prints: a percent as `+N %`, a point as `+N pp`, and
+## a plain count as a number.
+static func _affix_amount(value: float, unit: StringName) -> String:
+	match String(unit):
+		"percent":
+			return "%+d %%" % int(roundf(value * 100.0))
+		"points":
+			return "%+d pp" % int(roundf(value * 100.0))
+		_:
+			return "%+d" % int(roundf(value))
+
+
+## A record's own key read by either spelling: `instance()` hands back the ConfigFile's
+## String keys, while a hand-built fixture may key a StringName.
+static func _record_key(record: Dictionary, key: StringName) -> Variant:
+	return record.get(key, record.get(String(key), []))
+
+
+static func _rows(raw: Variant) -> Array:
+	return raw as Array if raw is Array else []
+
+
+static func _row_id(entry: Variant) -> StringName:
+	if entry is Dictionary:
+		return StringName(str((entry as Dictionary).get("id", "")))
+	if entry is String or entry is StringName:
+		return StringName(str(entry))
+	return &""
+
+
+static func _profile() -> Node:
+	var loop := Engine.get_main_loop()
+	if not loop is SceneTree:
+		return null
+	var root := (loop as SceneTree).root
+	if root == null:
+		return null
+	return root.get_node_or_null(NodePath(PROFILE_SERVICE))
+
+
 static func _find(entries: Array[Dictionary], id: StringName) -> Dictionary:
 	for entry: Dictionary in entries:
 		if entry.get(&"id", &"") == id:

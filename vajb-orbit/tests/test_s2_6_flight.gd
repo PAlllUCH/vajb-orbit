@@ -1,20 +1,22 @@
 @tool
 extends McpTestSuite
 ## Suite s2_6_flight: the construction half of the flight rulings (CONTRACTS section 14,
-## owner 2026-09-22). The *timed* halves -- the accelerate leg, the release envelope, the
-## revolution of a neutral turn, the sideways skid -- are measured by
-## `tests/probe_s2_6_flight.tscn`, which a reviewer re-runs; this suite pins the laws those
-## numbers are built from, one seam per ruling:
+## owner 2026-09-22, amended by section 23.5, owner 2026-09-24). The *timed* halves -- the
+## accelerate leg, the release envelope, the revolution of a neutral turn, the sideways
+## skid -- are measured by `tests/probe_s2_6_flight.tscn`, which a reviewer re-runs; this
+## suite pins the laws those numbers are built from, one seam per ruling:
 ##
 ## 1. the multiplier pattern: `ACCEL_TIME_MULT` 2.0 on `accel_time` (and `max_speed` never
-##    moves -- the ceiling is the loaded ceiling), `COAST_TIME_MULT` 2.0 on today's
-##    `coast_time` rows (the documented revert of the combat wave's x 0.50, landing on
-##    section 13's own column), `LATERAL_DAMP_MULT` 1.0 read as an explicit lateral drag;
+##    moves -- the ceiling is the loaded ceiling), `COAST_TIME_MULT` 2.5 on today's
+##    `coast_time` rows (section 23.5's T1 tick), `LATERAL_DAMP_MULT` retired in place by
+##    section 23.5 (still 1.0, read by nothing) and `ANGULAR_DAMP_MULT` 0.5 as the angular
+##    damp's multiplier (23.5's T2);
 ## 2. the ramp: per class, the derived `t_90 = 0.9 x accel_time` doubles (>= 1.8 x the
 ##    wave-start row's own), which is AC5;
-## 3. the decay split: forward is `1 / coast_time`, sideways is today's damp
-##    (`COAST_TIME_MULT / coast_time` at `LATERAL_DAMP_MULT` 1.0), and the strafe axis
-##    compensates the *sideways* one so a commanded strafe is not eaten by the new drag;
+## 3. the one decay: both axes ride `1 / coast_time` (23.5's one-decay row), the explicit
+##    lateral drag is exactly 0.0 and inert, and a *released* hull's whole velocity chases
+##    zero along its own line at the class's own coast rate -- one stop, one line; the
+##    strafe axis compensates that same one damp, so a commanded strafe is not eaten by it;
 ## 4. the steering: the cursor answers at zero throttle (`STEER_WITHOUT_THROTTLE`), a
 ##    deflected turn action still answers first, and a cursor resting on the hull still
 ##    holds the heading;
@@ -113,12 +115,19 @@ func test_the_ruling_multipliers_are_the_pinned_constants() -> void:
 		"the accelerate leg's multiplier is 2.0"
 	)
 	assert_true(
-		is_equal_approx(ShipFitScript.COAST_TIME_MULT, 2.0),
-		"the release's multiplier is 2.0 (today's rows x 2.0 = section 13's column)"
+		is_equal_approx(ShipFitScript.COAST_TIME_MULT, 2.5),
+		"the release's multiplier is the 23.5 T1 tick (today's rows x 2.5)"
 	)
 	assert_true(
 		is_equal_approx(ShipFitScript.LATERAL_DAMP_MULT, 1.0),
-		"the sideways decay keeps today's damp exactly (the split's own multiplier)"
+		(
+			"the sideways multiplier keeps its 1.0 and is retired in place -- no axis reads it "
+			+ "after 23.5's one-decay row (the extra drag it sizes is pinned at 0.0 below)"
+		)
+	)
+	assert_true(
+		is_equal_approx(ShipFitScript.ANGULAR_DAMP_MULT, 0.5),
+		"the angular damp's multiplier is the 23.5 T2 tick (0.5 of 1 / turn_spinup)"
 	)
 	assert_true(
 		PlayerShipScript.STEER_WITHOUT_THROTTLE,
@@ -189,16 +198,20 @@ func test_the_accelerate_leg_doubles_per_class_and_the_ceiling_never_moves() -> 
 	assert_eq(checked, TODAY_HANDLING.size(), "every class of the handling column was measured")
 
 
-## The forward/lateral split (CONTRACTS section 14's `LATERAL_DAMP_MULT`), per class:
-## - the resolved `coast_time` is today's row back on section 13's column
-##   (`COAST_TIME_MULT`), and the body damps at `1 / coast_time` -- the *forward* decay;
-## - the sideways decay is today's damp, unchanged: `COAST_TIME_MULT x LATERAL_DAMP_MULT`
-##   over the resolved time, which is exactly the wave-start `1 / today's coast_time`;
-## - the explicit lateral drag is the difference between the two, and it is a drag, not a
-##   counter-force: the sideways velocity is what it multiplies.
-## Measured by the probe: the lateral release's t_10 is identical before and after
-## (Vanguard 2.383 s both runs) while the axial release's doubles (0.917 vs 0.450 s).
-func test_the_forward_carry_reverts_and_the_sideways_decay_does_not() -> void:
+## The one decay (CONTRACTS section 23.5's row), per class: the released hull's linear
+## path is no longer axis-dependent --
+## - the resolved `coast_time` is today's row on the T1 tick (`COAST_TIME_MULT` 2.5) times
+##   the fit's plating multiplier, and the body damps at `1 / coast_time`;
+## - `_lateral_damp()` returns that *same* `1 / coast_time`: one rate owns both axes, the
+##   pre-23.5 sideways time constant is gone;
+## - the explicit lateral drag is therefore exactly 0.0 and `_step_lateral_drag` applies
+##   nothing;
+## - the angular damp is `ANGULAR_DAMP_MULT / turn_spinup` (23.5's T2) and the body
+##   carries it, which is the released turn's own decay.
+## Measured by the probe: the axial release's t_10 is 0.9 x the resolved coast time; the
+## stopped combined release (one bearing, speed to 0.1x) is
+## `tests/test_s11_flight_stop.gd`'s acceptance.
+func test_one_decay_owns_both_axes_and_the_carry_reverts() -> void:
 	var penalty := absf(float(ShipFitScript.MODULES[PLATE][&"effects"][&"speed_penalty"]))
 	var plating := 1.0 + penalty
 	for hull_id: StringName in TODAY_HANDLING:
@@ -225,37 +238,42 @@ func test_the_forward_carry_reverts_and_the_sideways_decay_does_not() -> void:
 		var extra := float(ship.call(&"_lateral_extra_damp"))
 		assert_true(
 			_near(forward, 1.0 / float(stats.coast_time), TOLERANCE),
-			"%s: the body's own damp is 1 / coast_time, the forward carry" % hull_id
+			"%s: the body's own damp is 1 / coast_time, the release's carry" % hull_id
 		)
-		var today_damp := 1.0 / (float(row[&"coast_time"]) * plating)
 		assert_true(
-			_near(sideways, today_damp * ShipFitScript.LATERAL_DAMP_MULT, TOLERANCE),
+			_near(sideways, forward, TOLERANCE),
 			(
-				"%s: the sideways decay is today's damp (%.6f), whatever the forward revert did (got %.6f)"
-				% [hull_id, today_damp, sideways]
+				"%s: the sideways damp is the forward one (%.6f both), one rate on both axes"
+				% [hull_id, forward]
 			)
 		)
 		assert_true(
-			sideways > forward,
-			("%s: the sideways axis decays faster than the forward one, which is the split" % hull_id)
+			is_zero_approx(extra),
+			"%s: the explicit lateral drag is exactly 0.0, so the drag step is inert (got %.9f)"
+			% [hull_id, extra]
 		)
 		assert_true(
-			_near(sideways / forward, ShipFitScript.COAST_TIME_MULT / ShipFitScript.LATERAL_DAMP_MULT, 1e-9),
-			"%s: the two decays differ by the ruling's own ratio, not by a second constant" % hull_id
+			ShipFitScript.LATERAL_DAMP_MULT == 1.0 and is_zero_approx(extra),
+			"%s: and it is retired in place -- the constant moves nothing" % hull_id
 		)
-		assert_true(
-			_near(extra, sideways - forward, TOLERANCE) and extra > 0.0,
-			(
-				"%s: the explicit lateral drag is the difference between the two (%.6f)"
-				% [hull_id, extra]
-			)
-		)
-		## The body carries the forward damp (the engine's own axis-agnostic drag), so the
-		## drag the ruling adds is the only sideways term left over.
+		## The body carries the one damp (the engine's own axis-agnostic drag), which is what
+		## the released velocity rides besides the release chase.
 		var body: RigidBody2D = ship.impact_body()
 		assert_true(
 			_near(body.linear_damp, forward, TOLERANCE),
-			"%s: the body damps at the forward rate" % hull_id
+			"%s: the body damps at the one rate" % hull_id
+		)
+		var angular := float(ship.call(&"_angular_damp"))
+		assert_true(
+			_near(angular, ShipFitScript.ANGULAR_DAMP_MULT / float(stats.turn_spinup), TOLERANCE),
+			(
+				"%s: the angular damp is ANGULAR_DAMP_MULT / turn_spinup (got %.6f)"
+				% [hull_id, angular]
+			)
+		)
+		assert_true(
+			_near(body.angular_damp, angular, TOLERANCE),
+			"%s: and the body carries that too" % hull_id
 		)
 		assert_eq(
 			body.linear_damp_mode,
@@ -438,12 +456,13 @@ func test_mirrored_maneuvers_mirror_within_one_percent() -> void:
 ## ---------------------------------------------------------------------------
 
 
-## What each axis' chase law hands the body, read off `applied_force()` -- the split's
-## construction, and the proof that the new lateral drag is compensated rather than masked:
-## - a commanded strafe compensates the *sideways* damp, so a hull still reaches its class
+## What each axis' chase law hands the body, read off `applied_force()` -- the one decay's
+## construction, and the proof that the one damp is compensated rather than masked:
+## - a commanded strafe compensates the same damp, so a hull still reaches its class
 ##   ceiling sideways in 90 % of `accel_time` (the probe's G1 sibling measures the arrival);
-## - the released sideways velocity is dragged down by the explicit lateral drag alone, at
-##   today's rate, with no counter-force opposing the velocity's own direction.
+## - a released velocity of *any* direction chases zero along its own line at the class's
+##   own coast rate (CONTRACTS section 23.5's one-vector release), so the force on it is
+##   always antiparallel to the velocity and no axis-dependent term is left to hide in.
 func test_each_axis_compensates_its_own_damp() -> void:
 	var pair := _launch(HULL_SHIPPED)
 	var ship: Variant = pair[0]
@@ -460,12 +479,13 @@ func test_each_axis_compensates_its_own_damp() -> void:
 	var sideways_damp := float(ship.call(&"_lateral_damp"))
 	var extra := float(ship.call(&"_lateral_extra_damp"))
 	var rate := float(ship.call(&"_accel_rate"))
+	var coast_rate := float(stats.max_speed) / float(stats.coast_time)
 
 	## 1. A commanded strafe, at a nonzero sideways velocity: the force is the sideways
-	##    chase with *that* axis' total damp compensated, plus the explicit drag (the two
-	##    are applied in the same step and the seam records their sum). What has to hold is
-	##    the engine's own arithmetic: the drag the law adds and the body damp the engine
-	##    applies cancel, leaving the chase at the class rate.
+	##    chase with *that* axis' total damp compensated (the one damp, which is the same
+	##    number on both axes since 23.5). What has to hold is the engine's own arithmetic:
+	##    the compensation the law adds and the body damp the engine applies cancel,
+	##    leaving the chase at the class rate.
 	_press(STRAFE_RIGHT)
 	var sideways_velocity := 40.0
 	body.linear_velocity = side * sideways_velocity
@@ -483,13 +503,15 @@ func test_each_axis_compensates_its_own_damp() -> void:
 	assert_true(
 		_near(strafe_force.dot(side), expected_sum, FORCE_TOLERANCE),
 		(
-			"and the step's whole sideways force is the chase plus the drag (%.3f against a derived %.3f N)"
+			"and the step's whole sideways force is the chase plus the compensated damp (%.3f against a derived %.3f N)"
 			% [strafe_force.dot(side), expected_sum]
 		)
 	)
 	## The reading that matters: net of the body's own damp -- which the engine applies to the
 	## velocity too -- the strafe accelerates at the class's own rate, so a commanded strafe
-	## still reaches the class ceiling in 90 % of `accel_time`.
+	## still reaches the class ceiling in 90 % of `accel_time`. The released branch must not
+	## touch this: the strafe is commanded, so `_is_released` is false and the per-axis law
+	## runs (section 23.5's own row).
 	assert_true(
 		_near(
 			strafe_force.dot(side) / mass - forward_damp * sideways_velocity,
@@ -506,38 +528,56 @@ func test_each_axis_compensates_its_own_damp() -> void:
 		)
 	)
 
-	## 2. Released, the same sideways velocity is dragged down by the explicit lateral drag,
-	##    which is the difference between the two decays and nothing else.
+	## 2. Released, the *whole velocity* chases zero along its own line at the class's own
+	##    coast rate -- the one-vector release -- and the one damp is what the chase
+	##    compensates, so no explicit drag is left over (extra is 0.0, asserted in section 1
+	##    of the one-decay test above and again here).
 	body.linear_velocity = side * sideways_velocity
 	_drive(ship, dt)
 	var drag: Vector2 = ship.call(&"applied_force")
+	var release_accel := clampf(-sideways_velocity / dt, -coast_rate, coast_rate)
+	var release_sum := mass * (release_accel + forward_damp * sideways_velocity)
 	assert_true(
-		_near(drag.dot(side), -mass * extra * sideways_velocity, FORCE_TOLERANCE),
+		_near(drag.dot(side), release_sum, FORCE_TOLERANCE),
 		(
-			"a released skid is dragged at the ruling's own rate (%.3f against a derived %.3f N)"
-			% [drag.dot(side), -mass * extra * sideways_velocity]
+			"a released velocity chases zero on its own line at the class rate (%.3f against a derived %.3f N)"
+			% [drag.dot(side), release_sum]
 		)
 	)
 	assert_true(
+		_near(drag.dot(side) / mass - forward_damp * sideways_velocity, release_accel, FORCE_TOLERANCE),
+		"net of the one damp the release is the class's own coast rate (%.3f u/s^2)" % release_accel
+	)
+	assert_true(
 		drag.dot(side) < 0.0,
-		"and the drag opposes the sideways velocity itself, so it is not a counter-force"
+		"and the force opposes the velocity itself, so it is not a counter-force"
+	)
+	assert_true(
+		absf(drag.dot(nose)) <= AXIS_SHARE * drag.length(),
+		(
+			"nothing is applied across the velocity's own line (%.6f N of %.1f)"
+			% [drag.dot(nose), drag.length()]
+		)
+	)
+	assert_true(
+		is_zero_approx(extra),
+		"and the explicit lateral drag contributes nothing to it (extra %.9f)" % extra
 	)
 
-	## 3. The nose axis is unchanged by the split: the released forward carry brakes at the
-	##    class coast rate, and the forward damp (not the sideways one) is what is
-	##    compensated inside the chase.
+	## 3. The same law on the nose: a released forward carry is the same chase, so its
+	##    force is identical to the sideways one's shape (the pre-23.5 code was the same
+	##    here), and the one damp is what is compensated inside it.
 	var forward_velocity := 100.0
 	body.linear_velocity = nose * forward_velocity
 	_drive(ship, dt)
 	var forward_force: Vector2 = ship.call(&"applied_force")
-	var coast_rate := float(stats.max_speed) / float(stats.coast_time)
 	assert_true(
 		_near(
 			forward_force.dot(nose),
 			mass * clampf(-forward_velocity / dt, -coast_rate, coast_rate) + mass * forward_damp * forward_velocity,
 			FORCE_TOLERANCE
 		),
-		"the nose axis rides the forward damp and the coast rate (%.3f N)" % forward_force.dot(nose)
+		"the nose axis rides the one damp and the coast rate (%.3f N)" % forward_force.dot(nose)
 	)
 	assert_true(
 		absf(forward_force.dot(side)) <= AXIS_SHARE * forward_force.length(),

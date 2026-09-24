@@ -646,12 +646,19 @@ func _physics_process(delta: float) -> void:
 		if not is_zero_approx(throttle):
 			rate = _accel_rate() * (BRAKE_MULT if throttle < 0.0 else 1.0)
 	_step_turn(desired_turn, delta)
-	_step_speed(desired_speed, rate, delta)
-	_step_strafe(desired_lateral, delta)
+	if _is_released(throttle, lateral):
+		## CONTRACTS section 14's 23.5 amendment: "a released forward+strafe decays as a
+		## single velocity vector". Nothing is commanded, so the whole velocity is what
+		## decays -- chasing zero along its own line at the class's own coast rate -- and
+		## the direction of travel never moves (section 23.5's acceptance).
+		_step_release(delta)
+	else:
+		_step_speed(desired_speed, rate, delta)
+		_step_strafe(desired_lateral, delta)
 	## The sideways damp's explicit half, on the axis no one commanded (CONTRACTS section
 	## 14's `LATERAL_DAMP_MULT`): a commanded strafe already compensated the whole of the
-	## sideways damp on its own axis, so this drag is what holds an uncommanded skid at
-	## today's rate while the forward carry follows `COAST_TIME_MULT`.
+	## sideways damp on its own axis, so this drag was what held an uncommanded skid at
+	## today's rate. Since 23.5's one-decay row the extra is 0.0 and this call is inert.
 	_step_lateral_drag(delta)
 	## The owner's 2026-09-21 request ("ship while traveling has to make sounds ... and
 	## thrusters should create flame fx"), the hull's half: one trail per anchor row the
@@ -830,23 +837,55 @@ func _strafe_axis() -> Vector2:
 ## strafe to the side"): the same chase law `_step_speed` runs on the nose, turned 90
 ## degrees, at the class's own acceleration (`max_speed / accel_time`, `_accel_rate`) --
 ## the strafe's strength is those two section 13 rows and nothing else, so a light hull
-## snaps sideways and a Hauler labours across. The sideways damp (`_lateral_damp`: the
-## body's own plus the explicit lateral drag) is compensated for on this axis while a
-## strafe is commanded, so the chase is the class rate rather than the class rate minus
-## drag; released, the axis belongs to that same damp again and the sideways velocity
-## settles at today's time constant, exactly as a hit's push does.
+## snaps sideways and a Hauler labours across. The sideways damp (`_lateral_damp`, the one
+## body damp since CONTRACTS section 23.5) is compensated for on this axis while a strafe
+## is commanded, so the chase is the class rate rather than the class rate minus drag; a
+## released hull's sideways velocity is `_step_release`'s business instead -- the same
+## class rate, along the velocity's own line.
 func _step_strafe(desired_lateral: float, delta: float) -> void:
 	if _body == null or delta <= 0.0 or is_zero_approx(desired_lateral):
 		return
 	_thrust_axis(_strafe_axis(), desired_lateral, _accel_rate(), delta, _lateral_damp())
 
 
+## Nothing is commanded at all: the stick is centred (or the tank is dry, which zeroes it,
+## ruling 14) and the autopilot holds no order. This is the state the owner's inertia
+## complaint describes ("when flying forward and to the side when i stop first ship stops
+## then glides to the side"), so it is the state `_step_release` owns instead of the two
+## per-axis laws. A live order is *not* a release: its arrive ramp is a commanded speed and
+## keeps the per-axis law.
+func _is_released(throttle: float, lateral: float) -> bool:
+	return (
+		is_zero_approx(throttle) and is_zero_approx(lateral) and not _has_move_target
+	)
+
+
+## The release (CONTRACTS section 14's 23.5 amendment -- "a released forward+strafe decays
+## as a single velocity vector" -- and section 23.5's acceptance: "the hull's velocity
+## direction holds within 5 degrees of its release bearing while the speed falls to 0.1x of
+## release ... the two components decay together, one stop, one line"). With nothing
+## commanded, the hull's **whole velocity** chases zero along its own direction at the
+## class's own coast rate, damp compensated by the same `_thrust_axis` the commanded axes
+## use: the force is always antiparallel to the velocity, so the direction of travel is
+## held exactly and the speed ramps to zero on one line, whatever the two components'
+## sizes. The per-axis law still owns every commanded frame, which is what keeps a
+## commanded strafe chasing at the class rate (23.5's own row).
+func _step_release(delta: float) -> void:
+	if _body == null or delta <= 0.0:
+		return
+	var velocity := _body.linear_velocity
+	if is_zero_approx(velocity.length_squared()):
+		return
+	_thrust_axis(velocity.normalized(), 0.0, _coast_rate(), delta, _linear_damp())
+
+
 ## One axis of thrust: the velocity along `axis` chases `desired_speed` at `rate`, and the
-## damp that axis carries -- `_linear_damp()` along the nose, `_lateral_damp()` across it --
-## is compensated for so the chase is the class rate rather than the class rate minus drag.
-## `_step_speed` is this law on the nose and `_step_strafe` is it on the hull's side; the
-## damp still owns every *other* axis (a hit's push, a released strafe's tail), which is the
-## degree of freedom real physics adds.
+## damp that axis carries -- `_linear_damp()` along the nose, the same `_lateral_damp()`
+## across it since CONTRACTS section 23.5 -- is compensated for so the chase is the class
+## rate rather than the class rate minus drag. `_step_speed` is this law on the nose,
+## `_step_strafe` is it on the hull's side and `_step_release` is it on the velocity's own
+## line; the damp still owns every axis neither law commanded, which is the degree of
+## freedom real physics adds.
 func _thrust_axis(
 	axis: Vector2, desired_speed: float, rate: float, delta: float, damp: float
 ) -> void:
@@ -862,11 +901,17 @@ func _thrust_axis(
 
 ## The sideways drag the owner's "like ship slides in one side" is about (CONTRACTS section
 ## 14's `LATERAL_DAMP_MULT`): the body damps every axis at `1 / coast_time` -- the forward
-## carry the same ruling doubles -- so the velocity *across* the nose is given this much
+## carry the same ruling doubles -- so the velocity *across* the nose was given this much
 ## extra drag to hold its total decay at today's rate. It is a real drag (mass x rate x the
 ## sideways velocity) applied on a real axis, not a counter-force that hides the velocity from
 ## the flight law, and it is exactly what a commanded strafe compensates along its own axis
 ## (see `_step_strafe`).
+##
+## **Inert since CONTRACTS section 23.5**: the one-decay row makes `_lateral_extra_damp`
+## exactly 0.0, so the guard below returns on every frame and no force is applied. The body
+## stays as the reversal's seat -- restoring the pre-23.5 `_lateral_damp` body brings the
+## drag back with it, and `_step_release` (the released hull's single-vector decay) is what
+## owns the sideways decay instead.
 func _step_lateral_drag(delta: float) -> void:
 	if _body == null or delta <= 0.0:
 		return
@@ -1063,39 +1108,49 @@ func _spin_rate() -> float:
 ## zero at coast_time, because that deceleration is the class's own coast rate and the
 ## damp is compensated for along the thrust axis (`_step_speed`).
 ##
-## This is the **forward** decay: `coast_time` is the resolved row the ruling's
-## `COAST_TIME_MULT` doubles, which is what gives the ship its carry back.
+## This is the **forward** decay -- and, since CONTRACTS section 23.5, the *only* linear
+## damp: `_lateral_damp` returns this too, so one rate owns both axes. `coast_time` is the
+## resolved row the ruling's `COAST_TIME_MULT` scales (2.5 since 23.5's T1 tick), which is
+## what gives the ship its carry back.
 func _linear_damp() -> float:
 	if _stats == null or _stats.coast_time <= 0.0:
 		return 0.0
 	return 1.0 / _stats.coast_time
 
 
-## The sideways decay (CONTRACTS section 14's `LATERAL_DAMP_MULT`): today's damp, held where
-## the combat wave's x 0.50 retune left it, whatever the forward column did. The resolved
-## `coast_time` already carries `COAST_TIME_MULT`, so dividing it back out is what makes this
-## "the amount of today's damp the ruling keeps" rather than a second handling table; the
-## sideways axis is the one the body does *not* damp twice, so the difference between this
-## and `_linear_damp()` is `_step_lateral_drag`'s explicit drag.
+## The sideways decay, and since CONTRACTS section 23.5 (owner ruling 2026-09-24, item 18)
+## it is the *same* decay as the forward one: the released hull's two directions ride
+## **one** rate (`_linear_damp`, `1 / coast_time`) because both axes are one velocity
+## vector -- the owner's "when flying forward and to the side when i stop first ship stops
+## then glides to the side, like each vector of inertia is independent which doesnt feel
+## good". The pre-23.5 body returned the sideways axis's own time constant
+## (`SHIP_FIT.COAST_TIME_MULT * SHIP_FIT.LATERAL_DAMP_MULT / _stats.coast_time`), which is
+## the one-line reversal; `SHIP_FIT.LATERAL_DAMP_MULT` is retired in place and read by
+## nothing, so the restore is this body alone.
 func _lateral_damp() -> float:
-	if _stats == null or _stats.coast_time <= 0.0:
-		return 0.0
-	return SHIP_FIT.COAST_TIME_MULT * SHIP_FIT.LATERAL_DAMP_MULT / _stats.coast_time
+	return _linear_damp()
 
 
-## The extra sideways drag alone: the section the explicit lateral drag adds on top of the
-## body's own damp. `LATERAL_DAMP_MULT` 0.0 leaves nothing, so the sideways decay rides the
-## forward revert instead (the constant's own reversal).
+## The extra sideways drag alone: the section the explicit lateral drag used to add on top
+## of the body's own damp. Since 23.5's one-decay row the two damps above are the same
+## number, so this is exactly 0.0 and the drag it sizes is inert -- the subtraction stays
+## as the derivation rather than a literal, because restoring the pre-23.5 `_lateral_damp`
+## body restores the old sideways time constant through this line and nothing else.
 func _lateral_extra_damp() -> float:
 	return maxf(_lateral_damp() - _linear_damp(), 0.0)
 
 
 ## The same sizing for the angular axis, from turn_spinup: a spinning hull with
-## nothing commanded loses its turn rate over its class's spin-up time.
+## nothing commanded loses its turn rate over its class's spin-up time -- times
+## `SHIP_FIT.ANGULAR_DAMP_MULT`, CONTRACTS section 23.5's T2 (owner ruling 2026-09-24,
+## item 18): 0.5 holds a released turn about twice as long and halves the damping half of
+## the torque law (`_step_turn`). The spin-up *rate* the law chases (`turn_rate /
+## turn_spinup`) is untouched. **Reversal: a 1.0 constant**, which is this body
+## byte-for-byte before the ruling.
 func _angular_damp() -> float:
 	if _stats == null or _stats.turn_spinup <= 0.0:
 		return 0.0
-	return 1.0 / _stats.turn_spinup
+	return SHIP_FIT.ANGULAR_DAMP_MULT / _stats.turn_spinup
 
 
 ## Hand the launch snapshot's mass and the class's damp to the body. The scene carries
