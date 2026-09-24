@@ -1,0 +1,304 @@
+{
+ "wanted": {
+  "mipmaps/generate": "true",
+  "compress/mode": "0",
+  "detect_3d/compress_to": "0"
+ },
+ "targets": {
+  "ui_cockpit_panel": {
+   "sidecar_md5_before": "a72e79c951cd16034200337c3265e26d",
+   "sidecar_md5_after": "f535d4038b38aa4990ade661e05ea552",
+   "before": {
+    "compress/mode": "0",
+    "mipmaps/generate": "false",
+    "detect_3d/compress_to": "1"
+   },
+   "after": {
+    "mipmaps/generate": "true",
+    "compress/mode": "0",
+    "detect_3d/compress_to": "0"
+   },
+   "changed": true,
+   "png_md5": "e238e6f521416d0057d47539c81c5626"
+  },
+  "ui_gauge_face": {
+   "sidecar_md5_before": "2558e7d7113579c45681517c5aa3db96",
+   "sidecar_md5_after": "2558e7d7113579c45681517c5aa3db96",
+   "before": {
+    "compress/mode": "0",
+    "mipmaps/generate": "true",
+    "detect_3d/compress_to": "0"
+   },
+   "after": {
+    "mipmaps/generate": "true",
+    "compress/mode": "0",
+    "detect_3d/compress_to": "0"
+   },
+   "changed": false,
+   "png_md5": "860c1ce571ca6a2c2ef4def346c72b21"
+  },
+  "ui_armory_console": {
+   "sidecar_md5_before": "3aa9efe2818c241ca50d6f2bca5e7516",
+   "sidecar_md5_after": "7e5e6b66c391c69cfc6ac21fd619a782",
+   "before": {
+    "compress/mode": "0",
+    "mipmaps/generate": "false",
+    "detect_3d/compress_to": "1"
+   },
+   "after": {
+    "mipmaps/generate": "true",
+    "compress/mode": "0",
+    "detect_3d/compress_to": "0"
+   },
+   "changed": true,
+   "png_md5": "a8382b40fb2bdd48490ae36b9666e507"
+  },
+  "ui_armory_rack_plate": {
+   "sidecar_md5_before": "550573a248a7b212a37c246cb0dd602a",
+   "sidecar_md5_after": "cdf07b5465387966b965650436c9744e",
+   "before": {
+    "compress/mode": "0",
+    "mipmaps/generate": "false",
+    "detect_3d/compress_to": "1"
+   },
+   "after": {
+    "mipmaps/generate": "true",
+    "compress/mode": "0",
+    "detect_3d/compress_to": "0"
+   },
+   "changed": true,
+   "png_md5": "acf82595ca4e98106359b26f161225ae"
+  },
+  "ui_armory_row_plate": {
+   "sidecar_md5_before": "eb70c1eaa8d5872148a6e890715f6c99",
+   "sidecar_md5_after": "c72a92515fa593928b76b69966f705d8",
+   "before": {
+    "compress/mode": "0",
+    "mipmaps/generate": "false",
+    "detect_3d/compress_to": "1"
+   },
+   "after": {
+    "mipmaps/generate": "true",
+    "compress/mode": "0",
+    "detect_3d/compress_to": "0"
+   },
+   "changed": true,
+   "png_md5": "b1568ade700b9768ecb1a7353d547d9c"
+  },
+  "ui_status_panel": {
+   "sidecar_md5_before": "b5f1cbec04d0bb8bbce7a2fd9de3ffc4",
+   "sidecar_md5_after": "30cf4a51178646495e7fdc7d84e37d2f",
+   "before": {
+    "compress/mode": "0",
+    "mipmaps/generate": "false",
+    "detect_3d/compress_to": "1"
+   },
+   "after": {
+    "mipmaps/generate": "true",
+    "compress/mode": "0",
+    "detect_3d/compress_to": "0"
+   },
+   "changed": true,
+   "png_md5": "c8c0df57a61d68ea9b9751e3a9ab945f"
+  },
+  "ui_seg_0": {
+   "sidecar_md5_before": "b7355e521c922354dc9d199f51c62d77",
+   "sidecar_md5_after": "b7355e521c922354dc9d199f51c62d77",
+   "before": {
+    "compress/mode": "0",
+    "mipmaps/generate": "true",
+    "detect_3d/compress_to": "0"
+   },
+   "after": {
+    "mipmaps/generate": "true",
+    "compress/mode": "0",
+    "detect_3d/compress_to": "0"
+   },
+   "changed": false,
+   "png_md5": "bb05f1892625b8d7fd4570d5950e15d5"
+  },
+  "ui_seg_1": {
+   "sidecar_md5_before": "dd509ba7fd3dae2afa85127b2091590a",
+   "sidecar_md5_after": "dd509ba7fd3dae2afa85127b2091590a",
+   "before": {
+    "compress/mode": "0",
+    "mipmaps/generate": "true",
+    "detect_3d/compress_to": "0"
+   },
+   "after": {
+    "mipmaps/generate": "true",
+    "compress/mode": "0",
+    "detect_3d/compress_to": "0"
+   },
+   "changed": false,
+   "png_md5": "b1875f424abe54661ed37e4bd90fc29d"
+  },
+  "ui_seg_2": {
+   "sidecar_md5_before": "0665979e0af79032d1eb57f6624618aa",
+   "sidecar_md5_after": "0665979e0af79032d1eb57f6624618aa",
+   "before": {
+    "compress/mode": "0",
+    "mipmaps/generate": "true",
+    "detect_3d/compress_to": "0"
+   },
+   "after": {
+    "mipmaps/generate": "true",
+    "compress/mode": "0",
+    "detect_3d/compress_to": "0"
+   },
+   "changed": false,
+   "png_md5": "7b878e72954bbb63d64d553642fb4546"
+  },
+  "ui_seg_3": {
+   "sidecar_md5_before": "d0affb8d6ea01a9460e6b69f2e32c424",
+   "sidecar_md5_after": "d0affb8d6ea01a9460e6b69f2e32c424",
+   "before": {
+    "compress/mode": "0",
+    "mipmaps/generate": "true",
+    "detect_3d/compress_to": "0"
+   },
+   "after": {
+    "mipmaps/generate": "true",
+    "compress/mode": "0",
+    "detect_3d/compress_to": "0"
+   },
+   "changed": false,
+   "png_md5": "2d0ec8d8022669f8450fadaa124fb83c"
+  },
+  "ui_seg_4": {
+   "sidecar_md5_before": "cb21f7ea0207613922ad10fd77ede2f4",
+   "sidecar_md5_after": "cb21f7ea0207613922ad10fd77ede2f4",
+   "before": {
+    "compress/mode": "0",
+    "mipmaps/generate": "true",
+    "detect_3d/compress_to": "0"
+   },
+   "after": {
+    "mipmaps/generate": "true",
+    "compress/mode": "0",
+    "detect_3d/compress_to": "0"
+   },
+   "changed": false,
+   "png_md5": "fd9aeb81282fc014ff38477a4b2caf43"
+  },
+  "ui_seg_5": {
+   "sidecar_md5_before": "c4d9fc5f32a8d7b6bf015f82ac7b4fee",
+   "sidecar_md5_after": "c4d9fc5f32a8d7b6bf015f82ac7b4fee",
+   "before": {
+    "compress/mode": "0",
+    "mipmaps/generate": "true",
+    "detect_3d/compress_to": "0"
+   },
+   "after": {
+    "mipmaps/generate": "true",
+    "compress/mode": "0",
+    "detect_3d/compress_to": "0"
+   },
+   "changed": false,
+   "png_md5": "71f89a1a9e5389fa61f8a6ebb5466d1c"
+  },
+  "ui_seg_6": {
+   "sidecar_md5_before": "2db5b9bf3510206fc54d02e7746d47b9",
+   "sidecar_md5_after": "2db5b9bf3510206fc54d02e7746d47b9",
+   "before": {
+    "compress/mode": "0",
+    "mipmaps/generate": "true",
+    "detect_3d/compress_to": "0"
+   },
+   "after": {
+    "mipmaps/generate": "true",
+    "compress/mode": "0",
+    "detect_3d/compress_to": "0"
+   },
+   "changed": false,
+   "png_md5": "f4d6e6a0ff3a20849bbdaa7896c97e00"
+  },
+  "ui_seg_7": {
+   "sidecar_md5_before": "4e71bd3e4e49c4045812382979e1d74b",
+   "sidecar_md5_after": "4e71bd3e4e49c4045812382979e1d74b",
+   "before": {
+    "compress/mode": "0",
+    "mipmaps/generate": "true",
+    "detect_3d/compress_to": "0"
+   },
+   "after": {
+    "mipmaps/generate": "true",
+    "compress/mode": "0",
+    "detect_3d/compress_to": "0"
+   },
+   "changed": false,
+   "png_md5": "6dee7c6ea4de70988c71f2b3f9389752"
+  },
+  "ui_seg_8": {
+   "sidecar_md5_before": "a882254401e35b6ce26c4eeb725ca989",
+   "sidecar_md5_after": "a882254401e35b6ce26c4eeb725ca989",
+   "before": {
+    "compress/mode": "0",
+    "mipmaps/generate": "true",
+    "detect_3d/compress_to": "0"
+   },
+   "after": {
+    "mipmaps/generate": "true",
+    "compress/mode": "0",
+    "detect_3d/compress_to": "0"
+   },
+   "changed": false,
+   "png_md5": "c32b1b03fbd2839e43df03d191adf621"
+  },
+  "ui_seg_9": {
+   "sidecar_md5_before": "a85e84a914897c2b700f6ab0fb33bf58",
+   "sidecar_md5_after": "a85e84a914897c2b700f6ab0fb33bf58",
+   "before": {
+    "compress/mode": "0",
+    "mipmaps/generate": "true",
+    "detect_3d/compress_to": "0"
+   },
+   "after": {
+    "mipmaps/generate": "true",
+    "compress/mode": "0",
+    "detect_3d/compress_to": "0"
+   },
+   "changed": false,
+   "png_md5": "31bb2de11f65d78916d7843fb9e15850"
+  },
+  "ui_seg_pct": {
+   "sidecar_md5_before": "38bdb3ad387f0614f9cf6f17d3142560",
+   "sidecar_md5_after": "38bdb3ad387f0614f9cf6f17d3142560",
+   "before": {
+    "compress/mode": "0",
+    "mipmaps/generate": "true",
+    "detect_3d/compress_to": "0"
+   },
+   "after": {
+    "mipmaps/generate": "true",
+    "compress/mode": "0",
+    "detect_3d/compress_to": "0"
+   },
+   "changed": false,
+   "png_md5": "ebf471a6e3388d537f3f30b5db2c62fb"
+  },
+  "ui_seg_blank": {
+   "sidecar_md5_before": "de9b34793ff44211651dc1d9546c3692",
+   "sidecar_md5_after": "de9b34793ff44211651dc1d9546c3692",
+   "before": {
+    "compress/mode": "0",
+    "mipmaps/generate": "true",
+    "detect_3d/compress_to": "0"
+   },
+   "after": {
+    "mipmaps/generate": "true",
+    "compress/mode": "0",
+    "detect_3d/compress_to": "0"
+   },
+   "changed": false,
+   "png_md5": "a90eab91f6e1f3a477a3f3c0424427e6"
+  }
+ },
+ "files_needing_rewrite": [
+  "ui_cockpit_panel",
+  "ui_armory_console",
+  "ui_armory_rack_plate",
+  "ui_armory_row_plate",
+  "ui_status_panel"
+ ]
+}

@@ -283,7 +283,11 @@ var _hull_fill_danger: StyleBoxFlat
 ## Section 3.1b state: one entry per pool kind, keyed by POOL_KIND_*, plus the
 ## banner, its flag and the token-composed stylebox caches. A theme change clears
 ## the caches, because a cached box holds the colours of the theme it was built
-## from; `_pool_fills` is keyed by the token name it was built for.
+## from; `_pool_fills` is keyed by the token name it was built for. `_pool_bars`
+## survives the 2026-09-24 amendment as the kind guard and the block registry: the
+## two blocks are retired (hidden) by `_retire_pool_blocks`, and the pool feed
+## drives the cluster's FUEL/ENRG dials alone.
+var _pool_blocks: Dictionary = {}
 var _pool_bars: Dictionary = {}
 var _pool_values: Dictionary = {}
 var _pool_current: Dictionary = {}
@@ -425,32 +429,36 @@ func set_warp_channel(progress: float) -> void:
 	_apply_warp_channel()
 
 
-## Section 3.1b / ENGINE_SPEC section 10: one of the two pool bars, `kind` being
+## Section 3.1b / ENGINE_SPEC section 10: one of the two pool feeds, `kind` being
 ## &"energy" or &"fuel" (`POOL_KIND_*`). An unknown kind is ignored rather than
 ## fatal: the seam is called behind a method guard from a scene that may be older
-## than this HUD, and a bar that does not exist must not break the caller.
+## than this HUD, and a feed that does not exist must not break the caller.
+##
+## UI_SPEC section 3.1b's 2026-09-24 amendment: the two `ProgressBar` blocks are off
+## the flight HUD, so this feed's only consumer is the cluster's FUEL/ENRG value
+## dials - the retired bars are not refreshed. `_pool_current`/`_pool_maximum` stay
+## the HUD's own bookkeeping (the frozen API's held reading), which is also what the
+## dials are handed.
 func set_pool(kind: StringName, value: float, maximum: float) -> void:
 	if not _pool_bars.has(kind):
 		return
 	_pool_current[kind] = maxf(value, 0.0)
 	_pool_maximum[kind] = maxf(maximum, 0.0)
-	_refresh_pool(kind)
-	## UI_SPEC section 3.7: the cluster's FUEL/ENRG rows read the same pool feed, so the
-	## digits and the danger rows cannot disagree with the bars above them.
 	if _cockpit != null:
 		_cockpit.set_pool(kind, _pool_current[kind], _pool_maximum[kind])
 
 
 ## Section 3.1b / ENGINE_SPEC section 10: Emergency Flight Mode (fuel 0). The banner
-## appears above the blocks in `accent_danger_bright`, and the Energy fill turns
-## `accent_danger` for as long as the mode lasts — the buffer is not a danger state,
-## but running dry is. Only the Fuel readout follows a danger reading (section 3.1b).
+## appears in the TopLeft column where the retired blocks were in
+## `accent_danger_bright`. UI_SPEC section 3.1b's 2026-09-24 amendment retires the
+## Energy/Fuel blocks, so the banner is the only widget this flag drives; the FUEL
+## dial's own danger reading (fuel <= 15 %, which an empty tank satisfies) rides the
+## pool feed instead of this flag.
 func set_emergency(active: bool) -> void:
 	if active == _emergency:
 		return
 	_emergency = active
 	_apply_emergency()
-	_refresh_pool(POOL_KIND_ENERGY)
 
 
 ## Section 9.9 / ENGINE_SPEC section 10: the reticle's state, `TargetReticle.State`
@@ -968,13 +976,42 @@ func _build_pool_blocks() -> void:
 	_blocks.move_child(_emergency_banner, 0)
 	_register_pool(POOL_KIND_ENERGY, POOL_TITLE_ENERGY, POOL_BLOCK_ENERGY)
 	_register_pool(POOL_KIND_FUEL, POOL_TITLE_FUEL, POOL_BLOCK_FUEL)
+	## UI_SPEC section 3.1b's 2026-09-24 amendment: the two blocks are built (the frozen
+	## API keeps a widget behind it and the reversal is an unhide) and then retired from
+	## the flight HUD; the banner above them stays.
+	_retire_pool_blocks()
 	_apply_emergency()
 	_refresh_pools()
 
 
-## One pool block: a header row (title, spacer, current/max readout) over a bar row.
-## Every node ignores the mouse, as the scene's HUD nodes do, so the flight view
-## keeps the clicks that set a move target.
+## UI_SPEC section 3.1b's 2026-09-24 amendment: the Energy and Fuel `ProgressBar` blocks and
+## their labels leave the flight HUD - the cluster's FUEL/ENRG value dials are the pool
+## readouts now, fed by `set_pool`. The `EMERGENCY FLIGHT` banner stays in the TopLeft column
+## where the blocks were. The blocks stay in the scene, hidden and unrefreshed by the pool
+## feed, so the section 7 API keeps a widget behind it and the amendment's own reversal is an
+## unhide. Reversal: unhide the two blocks and reintroduce the bar refresh in `set_pool`.
+func _retire_pool_blocks() -> void:
+	for block: Control in retired_pool_blocks():
+		block.visible = false
+
+
+## The two retired pool blocks, in `POOL_KIND_*` order, so a probe can assert their absence
+## without reaching into scene paths. Deliberately kept out of `retired_widgets()`: that list
+## is section 3.7's 2026-09-24 old-column retirement, a separate amendment, and the two
+## retirements answer separately.
+func retired_pool_blocks() -> Array[Control]:
+	var out: Array[Control] = []
+	for kind: StringName in [POOL_KIND_ENERGY, POOL_KIND_FUEL]:
+		var block: Control = _pool_blocks.get(kind, null)
+		if block != null:
+			out.append(block)
+	return out
+
+
+## One pool block: a header row (title, spacer, current/max readout) over a bar row. It is
+## registered for the kind guard and handed to `_retire_pool_blocks` (UI_SPEC section 3.1b's
+## 2026-09-24 amendment), which hides it right after the build. Every node ignores the mouse,
+## as the scene's HUD nodes do, so the flight view keeps the clicks that set a move target.
 func _register_pool(kind: StringName, title: String, block_name: String) -> void:
 	var block := VBoxContainer.new()
 	block.name = block_name
@@ -1016,6 +1053,7 @@ func _register_pool(kind: StringName, title: String, block_name: String) -> void
 	block.add_child(header)
 	block.add_child(row)
 	_blocks.add_child(block)
+	_pool_blocks[kind] = block
 	_pool_bars[kind] = bar
 	_pool_values[kind] = value
 	_pool_current[kind] = 0.0
@@ -1246,7 +1284,8 @@ func _pool_fill(token: StringName) -> StyleBoxFlat:
 
 ## Section 3.1b: the banner's own colour is fixed at `accent_danger_bright` rather
 ## than toggled, so it is re-applied on a theme change instead of only when the mode
-## flips; the readout beside a full bar is never tinged by it.
+## flips. The two pool blocks it used to sit above are retired (section 3.1b's
+## 2026-09-24 amendment), so the banner is the only widget this flag drives.
 func _apply_emergency() -> void:
 	if _emergency_banner == null:
 		return

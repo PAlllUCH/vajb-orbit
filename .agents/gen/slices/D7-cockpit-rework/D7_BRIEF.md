@@ -218,6 +218,10 @@ wording changes.
   the bays): **D7-A1** re-renders `ui_cockpit_panel`/`ui_armory_console`/
   `ui_status_panel` in parallel with C1; A0's `ui_gauge_face` + the two armory
   plates stand. Run order becomes **A1 ∥ C1 → C2 → C3 → R1 → (F1)**.
+- **The §3.1b pool bars retire** (owner word "looks good"; C1's duplicate-readout
+  finding): the FUEL/ENRG dials are the pool readouts, the `EMERGENCY FLIGHT`
+  banner stays, the §7 API is unchanged — **D7-C4** applies it (parallel with
+  A1b's ship step: the `ui_seg_*` glyph-only re-cut + reconcile + reimport).
 
 ## Close-out (the orchestrator runs these, in order)
 

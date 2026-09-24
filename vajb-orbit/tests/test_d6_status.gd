@@ -24,6 +24,9 @@ const HudScene := preload("res://ui/hud/hud.tscn")
 const HudTheme := preload("res://ui/theme/vajb_theme.tres")
 const RepairsPanelScript := preload("res://ui/station/repairs_panel.gd")
 const ModuleData := preload("res://game/module_catalog.gd")
+## The screen, reached by path (not its `class_name`) so the suite still parses in a headless gate
+## whose global class table predates it - the family's own lesson.
+const StatusScreenScript := preload("res://ui/hud/ship_status_screen.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 const PROFILE_PATH := "user://test_d6_status.cfg"
@@ -53,7 +56,10 @@ const START_CREDITS := 10000
 const MODAL_SIZE := Vector2(720.0, 520.0)
 const FRAME_PATH := "res://assets/ui/ui_cockpit_frame.png"
 const CLOSE_PATH := "res://assets/icons/hud/icon_close.svg"
-const RENDER_WIDTH := 320.0
+## UI_SPEC section 3.8's Mockup C left well, in the modal body's own space. The D6 `320` width pin
+## that used to sit here is superseded by the mockup's well-fit: it is the rect the drawn sprite
+## box must stay inside (R1 HIGH-1 measured the stale pin pushing the sprite 60 px past it).
+const RENDER_WELL := Rect2(24.0, 60.0, 276.0, 368.0)
 const SIDE_PATH := "res://assets/ships/ship_%s_side.png"
 const DAMAGED_PATH := "res://assets/ships/ship_%s_damaged_side.png"
 ## 09 section 1's slot glyph the shipyard and the fitting pane draw in an empty cell, held here
@@ -518,6 +524,9 @@ func test_the_hardpoint_markers_follow_the_hulls_own_map() -> void:
 	var fit := _resolved_fit(VANGUARD)
 	assert_true(fit.size() > 0, "the vanguard resolves a fit")
 	_hud.call(&"set_hull_slots", VANGUARD, [])
+	## R1 HIGH-1's guard, read before the modal opens (see the helper): the box the push left is
+	## already the sprite's own aspect-fit rect, inside the well.
+	_assert_render_box_takes_the_well(_screen(), "intact")
 	_open_screen()
 	var markers: Array = _screen().call(&"hardpoint_markers")
 	var thrusters := 0
@@ -540,25 +549,79 @@ func test_the_hardpoint_markers_follow_the_hulls_own_map() -> void:
 
 ## The same guarantee on the damaged branch, where the swap changes the sprite's aspect (the
 ## vanguard's damaged cut is 1.8x taller than its intact one), which is where a stale marker space
-## would drift.
+## would drift. The damage is reported **before** the push, so the read below measures the damaged
+## branch's own box at the first refresh - the moment R1 HIGH-1's stale clamp is visible.
 func test_the_markers_stay_on_the_sprite_when_the_damaged_cut_is_drawn() -> void:
-	_hud.call(&"set_hull_slots", VANGUARD, [])
 	_hud.call(&"_on_hull_changed", 500.0, 1000.0)
-	_open_screen()
+	_hud.call(&"set_hull_slots", VANGUARD, [])
 	assert_eq(
 		String(_screen().call(&"hull_render_path")),
 		DAMAGED_PATH % "vanguard",
 		"the vanguard's damaged cut is the drawn sprite for this read"
 	)
+	_assert_render_box_takes_the_well(_screen(), "damaged")
+	_open_screen()
 	var markers: Array = _screen().call(&"hardpoint_markers")
 	assert_eq(markers.size(), 11, "every HARDPOINTS anchor is drawn over the damaged cut too")
 	_assert_markers_on_the_drawn_sprite(markers, "damaged")
 
 
+## R1 HIGH-1's guard, staged where the class is actually visible: a screen whose **first** render
+## refresh lands on a hull it did not have at build. `Control.size` clamps up to
+## `custom_minimum_size`, so while the D6 320 x 320 minimum was lowered only *after* the size write
+## it held the box at 320 x 320 - the sprite drew 60 px past the left well (box right edge 360
+## against the well's 300). The fixture HUD refreshes once at its own build, which heals the box,
+## so no read taken off it can see the class; this row mounts a bare screen the way `hud.gd` mounts
+## it and pushes exactly one hull into it.
+func test_a_screen_whose_first_hull_arrives_after_build_keeps_the_box_in_the_well() -> void:
+	var screen := StatusScreenScript.new() as Control
+	assert_true(screen != null, "the ship status screen builds")
+	if screen == null:
+		return
+	screen.name = "FreshStatusScreen"
+	_fixture_host().add_child(screen)
+	screen.theme = HudTheme
+	screen.call(&"apply_theme")
+	screen.call(&"set_hull", VANGUARD)
+	_assert_render_box_takes_the_well(screen, "first push")
+	screen.queue_free()
+
+
+## R1 HIGH-1's guard: the box the **last refresh** left, read before the modal is opened, is the
+## sprite's own aspect-fit rect inside the left well. `Control.size` clamps up to
+## `custom_minimum_size`, so the D6 320 x 320 minimum held the box oversized whenever the size was
+## written before the minimum was lowered (R1 HIGH-1). The box is read from the laid-out
+## `Control.size`, never `custom_minimum_size` - the two differ exactly in that stale state.
+func _assert_render_box_takes_the_well(screen: Control, state: String) -> void:
+	var render: TextureRect = screen.call(&"hull_render")
+	assert_true(render.texture != null, "%s: a side cut is drawn before the modal opens" % state)
+	var box := screen.find_child("HullRenderBox", true, false) as Control
+	assert_true(box != null, "%s: the left column keeps its render box" % state)
+	if render.texture == null or box == null:
+		return
+	var style: Resource = screen.call(&"style")
+	var area: Rect2 = style.status_render_area()
+	var native: Vector2 = render.texture.get_size()
+	var fit: float = minf(area.size.x / native.x, area.size.y / native.y)
+	var expected: Vector2 = native * fit
+	var drawn_box := Rect2(box.position, box.size)
+	assert_true(
+		box.size.is_equal_approx(expected),
+		"%s: the drawn box %s is the sprite's own aspect fit %s" % [state, box.size, expected]
+	)
+	assert_true(
+		RENDER_WELL.encloses(drawn_box),
+		"%s: the drawn sprite box %s sits inside the left well %s" % [state, drawn_box, RENDER_WELL]
+	)
+
+
 ## The sprite's drawn space, re-derived the way `STRETCH_KEEP_ASPECT_CENTERED` draws it inside the
 ## render box, never from the screen's own render size. The box must take the sprite's aspect and
 ## never the row's height: an expanding box centred an aspect-fit sprite and left every marker off
-## by the difference (R1-MED-1), so that flag is the property this helper guards.
+## by the difference (R1-MED-1), so that flag is the property this helper guards. The drawn box is
+## read from `Control.size`, **never** `custom_minimum_size`: `size` clamps up to the minimum, so
+## the two differ exactly when a stale minimum held the box oversized - the class R1 HIGH-1 found
+## (the D6 320 px pin), where the sprite drew past the well and every marker landed off-hull.
 func _assert_markers_on_the_drawn_sprite(markers: Array, state: String) -> void:
 	var render: TextureRect = _screen().call(&"hull_render")
 	assert_true(render.texture != null, "%s: a side cut is drawn" % state)
@@ -570,8 +633,13 @@ func _assert_markers_on_the_drawn_sprite(markers: Array, state: String) -> void:
 		bool(box.size_flags_vertical & Control.SIZE_EXPAND),
 		"%s: the render box takes the sprite's aspect, never the row's height" % state
 	)
+	var drawn_box := Rect2(box.position, box.size)
+	assert_true(
+		RENDER_WELL.encloses(drawn_box),
+		"%s: the drawn sprite box %s sits inside the left well %s" % [state, drawn_box, RENDER_WELL]
+	)
 	var native: Vector2 = render.texture.get_size()
-	var box_size: Vector2 = box.custom_minimum_size
+	var box_size: Vector2 = box.size
 	var fit: float = minf(box_size.x / native.x, box_size.y / native.y)
 	var drawn: Vector2 = native * fit
 	var drawn_centre: Vector2 = (box_size - drawn) * 0.5 + drawn * 0.5

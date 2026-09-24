@@ -756,7 +756,10 @@ RUNS["panel_sevenseg_b"] = dict(
 ## instantiates `res://ui/station/armory_panel.tscn` headlessly and reads the pane's own rects:
 ## the pane's content frame is 872x908 (mockup A's frame, `staging/mockup/mockup_rest.py`), the
 ## racks well min 420x255, the racks caption band 122x23, the ammo rows 870x76 on ROW_HEIGHT 76.
-## `ui_armory_console` rides the pane's own content rect (872x908 -> 1744x1816 at 2x);
+## `ui_armory_console` rides the pane's own ruled canvas (872x956 -> 1744x1912 at 2x; UI_SPEC
+## section 3.10 Amendment 2, the D7-R1 MED-1 ruling: the pane ships six ammunition packs, so the
+## ammo well grows to 136 logical and the 872x908 canvas that forced the 1.0529 fill-stretch
+## retires);
 ## `ui_armory_rack_plate` rides section 3.10's approved bay 97x91 -> 194x182 at 2x;
 ## `ui_armory_row_plate` rides section 3.10's approved ammunition row height 32 -> 64 at 2x.
 UI_D7_FRAME = ("painted UI instrument part, straight-on flat view, centred, "
@@ -797,10 +800,12 @@ UI_D7_STATUS = ui_d7_prompt(
 ## Section 12's own numbers: the master box is what ships. Section 3.7's D7 amendment pins
 ## 928x512 for the 464x256 cluster box; section 3.8's pins 1440x1040 for the 720x520 modal;
 ## section 3.10's pins the armory bay 194x182 and the row-plate band (ammunition rows 32 tall).
+## Section 3.10's Amendment 2 (2026-09-24) rules the armory console's canvas 872x956 -> 1744x1912
+## at 2x (the ammo well grown to 136 logical); the earlier 872x908 canvas retires.
 UI_D7_LOGICAL = {
     "ui_cockpit_panel": (464, 256),
     "ui_gauge_face": (120, 120),
-    "ui_armory_console": (872, 908),
+    "ui_armory_console": (872, 956),
     "ui_armory_rack_plate": (97, 91),
     "ui_armory_row_plate": (96, 32),
     "ui_status_panel": (720, 520),
@@ -808,7 +813,7 @@ UI_D7_LOGICAL = {
 UI_D7_MASTER = {
     "ui_cockpit_panel": (928, 512),
     "ui_gauge_face": (240, 240),
-    "ui_armory_console": (1744, 1816),
+    "ui_armory_console": (1744, 1912),
     "ui_armory_rack_plate": (194, 182),
     "ui_armory_row_plate": (192, 64),
     "ui_status_panel": (1440, 1040),
@@ -849,7 +854,7 @@ RUNS["panel_status"] = dict(
     dup_check=False, review_only=False,
 )
 
-## ---------------------- D7-A1 flat-plate re-render (UI_CHROME_ASSETS_SPEC section 12 Amendment 2)
+## -------- D7-A1/D7-A2 flat-plate re-render (UI_CHROME_ASSETS_SPEC section 12 Amendment 2)
 ## Amendment 2 (2026-09-24): the three console panels are **flat painted plates** - "their per-run
 ## prompts above drop every `recessed well` phrase". Cause, measured: A0's baked wells landed wrong
 ## on 4 of 6 masters (`D7-A0_report.md`, worst `recess_ratio` 1.403) and the Mockup v7 layout moved
@@ -860,11 +865,12 @@ RUNS["panel_status"] = dict(
 ##
 ## The subjects below are section 12's own per-run prompts with every well/recess/slot clause
 ## dropped and the flatness stated outright, so a model cannot read a recess back in. The master
-## boxes are section 12's pinned ones (the armory box is A0's measured 2x content rect 1744x1816,
-## `staging/d7/measure_armory.gd`). `ui_gauge_face`, `ui_armory_rack_plate` and
-## `ui_armory_row_plate` are A0's bytes and are not re-rendered here.
+## boxes are section 12's pinned ones (the armory box is 2x the canvas UI_SPEC section 3.10's
+## Amendment 2 rules: 872x956 -> 1744x1912, the D7-R1 MED-1 ruling; the retired 872x908 ->
+## 1744x1816 canvas is A0's, `staging/d7/measure_armory.gd`). `ui_gauge_face`,
+## `ui_armory_rack_plate` and `ui_armory_row_plate` are A0's bytes and are not re-rendered here.
 ## The outline proportion in each subject is the pinned master box's own aspect (cockpit 928/512 =
-## 1.81, console 1744/1816 = 0.96, status 1440/1040 = 1.38): with the well clauses dropped the
+## 1.81, console 1744/1912 = 0.912, status 1440/1040 = 1.38): with the well clauses dropped the
 ## prompt no longer fixes the plate's internal layout, so without the proportion the model composes
 ## its own outline and `contain` letterboxes it (measured on pass 1: the console came back 0.51
 ## aspect and could only fill 49 percent of its pinned box's width - the code-drawn wells at the
@@ -882,6 +888,40 @@ UI_D7_ARMORY_CONSOLE_FLAT = ui_d7_prompt(
     "tall: brushed steel plate with visible brush grain and flat plate seams between the steel "
     "plates, bolt heads at the four corners and along the seams, a continuous flat steel surface "
     "carrying no openings, no wells, no recesses and no machined slots; no glass, no screens")
+## D7-A2 (UI_SPEC section 3.10 Amendment 2, the D7-R1 MED-1 ruling): the console's ruled canvas is
+## 872x956 -> 1744x1912 (aspect 0.912), so the plate's own outline proportion moves with it -
+## A1's "nearly square" wording was written for the retired 872x908 canvas (aspect 0.960). The rest
+## of the wording is A1's verbatim, so the owner-approved look is unchanged.
+## Measured passes on this box (all `pad_share` 0.0), ink box -> cut aspect -> covered share of
+## the pinned well union: p1 20260924-123123 "slightly taller than wide, about 0.9 times as wide as
+## tall" 1667x2025 -> 0.823 -> 96.18 %; p2 20260924-123236 "nearly square ... about 0.95 times as
+## wide" 1946x1940 -> 1.003 -> 96.62 %; p3 20260924-123344 "about a tenth taller than it is wide"
+## 1385x1976 -> 0.701 -> 81.83 %; p4 20260924-123458 "slightly taller than wide, about 0.95 times
+## as wide as tall" 1663x2000 -> 0.832 -> 97.11 %. The lane needs the plate's drawn rect
+## >= 1624x1816 in box space, i.e. a cut aspect in [0.855, 0.960] - and a square plate cannot
+## reach it (a 2048 px canvas caps the contained height at 1744 px < 1816), so the plate must be
+## a little taller than it is wide, but only by 4-15 %.
+##
+## Pass 5 (20260924-123645, "width-to-height ratio of about nine to ten") 1493x2030 -> 0.735 ->
+## 85.90 %: the ratio word made the plate narrower again. Five 1:1-canvas passes, five draws in
+## {0.70, 0.82, 0.83, 0.83, 1.00} - the model never lands between 0.855 and 0.960 on a square
+## canvas, where "as wide as the frame" and "slightly taller than wide" are mutually exclusive
+## (a 2048 px plate cannot exceed 2048 px in height). Pass 6 (20260924-123758) moved the canvas to
+## 3:4, where both clauses fit; the model read the height clause instead and narrowed the plate
+## (1182x1930 -> 0.612 -> 71.49 %). Pass 7 (20260924-123919, "a margin of about one fifteenth of
+## the frame's width along its left and right edges, and a much narrower margin above and below")
+## 1473x2035 -> 0.724 -> 84.54 %. Seven passes; the model has exactly two modes on a 1:1 canvas -
+## "fills the frame" (p2, 1.003) and "a portrait plate" (0.70-0.83) - and never lands between 0.855
+## and 0.960. Pass 8 ("the plate reaching the frame's top edge and bottom edge, with two plain
+## white vertical strips of about one sixteenth of the frame's width running down the frame's left
+## and right sides") came back 1905x2048 -> 0.930 -> **100.00 %, covered** - the shipped pass.
+UI_D7_ARMORY_CONSOLE_FLAT_A2 = ui_d7_prompt(
+    "a rectangular painted metal console face, plain flat: the plate reaching the frame's top "
+    "edge and bottom edge, with two plain white vertical strips of about one sixteenth of the "
+    "frame's width running down the frame's left and right sides; brushed steel plate with "
+    "visible brush grain and flat plate seams between the steel plates, bolt heads at the four "
+    "corners and along the seams, a continuous flat steel surface carrying no openings, no wells, "
+    "no recesses and no machined slots; no glass, no screens")
 UI_D7_STATUS_FLAT = ui_d7_prompt(
     "a rectangular painted metal console face, plain flat, the plate filling the frame up to a "
     "narrow plain white border all around, its outline matching the frame's own proportions of "
@@ -911,6 +951,20 @@ RUNS["panel_armory_console_flat"] = dict(
     ## came back 0.81 with the proportion clause alone, against 0.51 without it), and the shipped
     ## fit is pinned to `contain`, so a canvas at the box's aspect is the only lever that fills the
     ## box without a pinned number moving. Reversal: drop the key and accept the letterbox.
+    aspect="1:1",
+    pad_share=0.0,
+)
+## D7-A2: the same flat plate re-rendered on the ruled 872x956 canvas (UI_SPEC section 3.10
+## Amendment 2). A1's 0.96-aspect plate `contain`-fits a 0.912 box only 91.4 % tall, which leaves
+## the code-drawn ammo well (bottom edge y 1864 of 1912) off the art, so the plate is re-rendered
+## rather than re-fitted. Canvas 0.912 -> the nearest supported 1:1 (see the A1 note above).
+RUNS["panel_armory_console_flat_a2"] = dict(
+    family="ui", source="human", mode="panel", alpha=False, out="panel_armory_console_flat_a2",
+    subject=UI_D7_ARMORY_CONSOLE_FLAT_A2, cells=[[0, "ui_armory_console", 0]],
+    grid=[1, 1], boxes=UI_D7_MASTER, logical=UI_D7_LOGICAL,
+    panel_name="panel_armory_console_flat_a2", dup_check=False, review_only=False,
+    ## Box aspect 0.912 is nearer to a 1:1 canvas than to 3:4; 1:1 is used again after the 3:4 pass
+    ## narrowed the plate (see the pass table above). Reversal: `aspect="3:4"`.
     aspect="1:1",
     pad_share=0.0,
 )

@@ -1,4 +1,23 @@
 {
+ "ui_armory_console": {
+  "box": [
+   1744,
+   1912
+  ],
+  "cut_box": [
+   1929,
+   2064
+  ],
+  "route": "recraft-keyed flat plate cut, contain fit, pad 0.00, canvas 1:1 (Amendment 2)",
+  "pixels": [
+   1744,
+   1912
+  ],
+  "bytes": 6549430,
+  "md5": "4f97aa9459a4b478dbeff11186c97341",
+  "transparent_pct": 4.03,
+  "ink_pct": 95.97
+ },
  "ui_cockpit_panel": {
   "box": [
    928,
@@ -17,25 +36,6 @@
   "md5": "e238e6f521416d0057d47539c81c5626",
   "transparent_pct": 8.06,
   "ink_pct": 91.93
- },
- "ui_armory_console": {
-  "box": [
-   1744,
-   1816
-  ],
-  "cut_box": [
-   1987,
-   1991
-  ],
-  "route": "recraft-keyed flat plate cut, contain fit, pad 0.00, canvas 1:1 (Amendment 2)",
-  "pixels": [
-   1744,
-   1816
-  ],
-  "bytes": 6333409,
-  "md5": "a8382b40fb2bdd48490ae36b9666e507",
-  "transparent_pct": 5.53,
-  "ink_pct": 94.46
  },
  "ui_status_panel": {
   "box": [

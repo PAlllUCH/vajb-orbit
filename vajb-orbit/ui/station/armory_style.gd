@@ -11,8 +11,10 @@ extends "res://ui/hud/cockpit_style.gd"
 ## (`staging/mockup/mockup_rest.py`, 872 x 908) is a 2x render, so its pixels are halved
 ## here (bay 194x182 -> 97x91, slot 40x44 -> 20x22, a 42 px SALVO step -> 21, a 64 px ammo
 ## box -> 32). `art_scale` is section 10's own `@2x` recipe (a master is twice the logical
-## box), so the console block is drawn at `canvas * art_scale` = **872x908** - the mockup's
-## own canvas and exactly half the shipped `ui_armory_console` master (1744x1816).
+## box), so the console block is drawn at `canvas * art_scale` = **872x956** - the canvas
+## section 3.10 **Amendment 2** rules once the ammunition well holds the pane's six packs, and
+## exactly half the re-rendered `ui_armory_console` master (1744x1912), so the plate mounts
+## unstretched.
 ##
 ## **The wells are the mockup's rects** (`racks_well` / `inventory_well` / `ammo_well`);
 ## a well may grow below its pinned height when its group holds more rows than the mockup
@@ -31,15 +33,19 @@ const ARMORY_USER_PATH: String = "res://ui/station/armory_style_user.tres"
 const ARMORY_SCRIPT_PATH: String = "res://ui/station/armory_style.gd"
 
 @export_group("armory layout")
-## Section 10's `@2x` recipe: a master is this many times its logical box. The console block
-## is drawn at `canvas * art_scale`, which is exactly half the shipped console master.
+## Section 10's `@2x` recipe: a master is this many times its logical box. The console plate is
+## drawn at `canvas * art_scale`, which is exactly half the shipped console master.
 @export var art_scale: float = 2.0
-## Mockup A's own canvas at the logical scale (the mockup is a 2x render).
-@export var canvas: Vector2 = Vector2(436.0, 454.0)
+## Section 3.10 Amendment 2's ruled canvas, at the logical scale: Mockup A's rack/inventory layout
+## plus the 68-tall ammunition well the pane's six packs need (872 x 956 drawn, the D7-R1 MED-1
+## ruling; reversal: the 436 x 454 one-row-ammo canvas the 1.0529 fill-stretch was measured on).
+@export var canvas: Vector2 = Vector2(436.0, 478.0)
 ## The band each group's caption occupies above its well (Mockup A: 30 px at 2x).
 @export var caption_band: float = 15.0
 ## The three recessed wells, in Mockup A's own coordinates (`mockup_rest.py`'s rects, halved):
-## BATTERY RACKS (30,122)-(842,512), INVENTORY (30,570)-(842,740), AMMUNITION (30,796)-(842,884).
+## BATTERY RACKS (30,122)-(842,512), INVENTORY (30,570)-(842,740), AMMUNITION (30,796)-(842,932).
+## The ammunition well's Mockup A "44" note was illustrative and retires: Amendment 2 rules its
+## 136 drawn (68 logical) height from the pane's own content.
 @export var racks_well: Rect2 = Rect2(15.0, 61.0, 406.0, 195.0)
 @export var inventory_well: Rect2 = Rect2(15.0, 285.0, 406.0, 85.0)
 @export var ammo_well: Rect2 = Rect2(15.0, 398.0, 406.0, 68.0)
@@ -86,7 +92,7 @@ const ARMORY_SCRIPT_PATH: String = "res://ui/station/armory_style.gd"
 
 @export_group("armory assets")
 ## The painted console plate: a FLAT plate since UI_CHROME section 12 Amendment 2 (the wells
-## are code-drawn), master 1744 x 1816 for the 872 x 908 block.
+## are code-drawn), master 1744 x 1912 for the ruled 872 x 956 block.
 @export var console_path: String = "res://assets/ui/ui_armory_console.png"
 ## One rack bay's bolted plate: four machined slot recesses and a ledge, master 194 x 182.
 @export var rack_plate_path: String = "res://assets/ui/ui_armory_rack_plate.png"
@@ -109,7 +115,7 @@ static func defaults() -> Resource:
 	return (load(ARMORY_SCRIPT_PATH) as GDScript).new()
 
 
-## The console block's drawn size: the logical canvas at section 10's `@2x` scale (872 x 908).
+## The console block's drawn size: the ruled canvas at section 10's `@2x` scale (872 x 956).
 func block_size() -> Vector2:
 	return canvas * art_scale
 

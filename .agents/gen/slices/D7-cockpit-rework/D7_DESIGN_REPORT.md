@@ -102,7 +102,27 @@ carry-overs (NMS teal, HULL/SHLD %, key U, per-module damage).
 cost is 5 × 2K ≈ $0.25. All four mockups' textures are procedural stand-ins for
 the §12 painted renders; proportions and states are exact.
 
-## Notes for the wave runner
+## As built (wave closed 2026-09-24)
+
+The cluster shipped on the **Mockup v7** spec (superseding the v5 sections above:
+compass gone → two FUEL/ENRG dials r36 at 23 px clear, right stack SPD/HULL/
+SHLD/AMMO on the full-height well at the 50.7 pitch, left foot = the lamps band;
+UI_SPEC §3.7's "Mockup v7" block is the law). Everything is **user-modifiable**
+per §3.9 rule 5: `ui/hud/cockpit_style.gd` (palette + layout + asset paths) with
+the `res://ui/hud/cockpit_style_user.tres` override — a user `.tres` restyles
+and relayouts with no code edit (tested). Armory on Mockup A (SALVO =
+centiseconds, `073` = 0.73 s — §3.10 Amendment 2 rules the 872×956 canvas, the
+master mounts unstretched); status on Mockup C; pool bars retired (§3.1b
+amendment); `ui_seg_*` are glyph-only (AC5 PASS 1.0000 ×12).
+
+Wave result: gate **727/0** twice (scratch stores; the 740/5 cross-lane reading
+with S7's mid-edit `game/` state is attributed in CONTRACTS §9), review **1 HIGH
++ 1 MED both cured** (D7-F1/D7-A2), 5 LOW (L158–L162). Builder reports:
+`D7-A0_report.md` (A0+A1+A1b+A2), `D7-C1_report.md`, `D7-C2_report.md`,
+`D7-C3_report.md`, `D7-C4_report.md`; review `D7-R1_review.md`; fixes
+`D7-F1_report.md`. Open: the D6 carry-over ticks + §12's aspect-rule wording
+(A2's Deviation 6 — state the cut-aspect rule so 1:1 renders stop needing 8
+passes).
 
 - The wave is `dispatch_designer.md` item 8; run order A0 → owner sheet → A0b →
   C1 → C2 → R1 → (F1 on HIGH/MED). The D7_BRIEF pins predate this report's three

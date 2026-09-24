@@ -286,7 +286,9 @@ func test_the_markers_are_bone_ringed_ember_dots_on_the_render() -> void:
 ## The sprite's drawn space, re-derived the way `STRETCH_KEEP_ASPECT_CENTERED` draws it inside
 ## the render box, never from the screen's own render size: the box takes the sprite's aspect
 ## (section 3.8's R1-MED-1 rule), so box-local space is on-hull space. The D6 suite's own
-## helper, kept because the marker anchors are the same derivation.
+## helper, kept because the marker anchors are the same derivation. The drawn box is read from
+## `Control.size`, **never** `custom_minimum_size`: the difference between the two is exactly the
+## stale-clamp class R1 HIGH-1 found, and the drawn box must stay inside `WELL_LEFT`.
 func _assert_markers_on_the_drawn_sprite(markers: Array) -> void:
 	var render: TextureRect = _screen().call(&"hull_render")
 	assert_true(render.texture != null, "a side cut is drawn")
@@ -298,8 +300,13 @@ func _assert_markers_on_the_drawn_sprite(markers: Array) -> void:
 		bool(box.size_flags_vertical & Control.SIZE_EXPAND),
 		"the render box takes the sprite's aspect, never the well's height"
 	)
+	var drawn_box := Rect2(box.position, box.size)
+	assert_true(
+		WELL_LEFT.encloses(drawn_box),
+		"the drawn sprite box %s sits inside the left well %s" % [drawn_box, WELL_LEFT]
+	)
 	var native: Vector2 = render.texture.get_size()
-	var box_size: Vector2 = box.custom_minimum_size
+	var box_size: Vector2 = box.size
 	var fit: float = minf(box_size.x / native.x, box_size.y / native.y)
 	var drawn: Vector2 = native * fit
 	assert_true(drawn.is_equal_approx(box_size), "the aspect-fit sprite fills the box")

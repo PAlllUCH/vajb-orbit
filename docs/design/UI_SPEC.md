@@ -128,6 +128,16 @@ same pattern:
   `kind` ∈ `&"energy" | &"fuel"`; `set_emergency(active: bool)`.
 - No new tokens: every colour above is an existing token role.
 
+**Amendment 2026-09-24 (wave D7 — owner word "looks good" on the A1 sheet +
+C1's finding that the bars duplicate the new dials):** the two `ProgressBar`
+blocks (Energy + Fuel) and their labels **retire from the flight HUD** — the
+cluster's FUEL/ENRG value dials (§3.7 Mockup v7) are the pool readouts now. The
+**`EMERGENCY FLIGHT` banner stays** (fuel == 0, `accent_danger_bright`, in the
+TopLeft column where the blocks were). The HUD API is unchanged:
+`set_pool(kind, value, maximum)` and `set_emergency(active)` keep their frozen
+§7 signatures and feed the dials. Reversal: restore the two blocks (the text
+above).
+
 ### 3.2 Ammo & weapon slots
 
 - `AmmoPanel` is a `PanelContainer` with the `panel_raised` stylebox; inner `VBoxContainer` separation 4.
@@ -446,6 +456,16 @@ STATION_HUB §12.4) are untouched; 09 §11 and CONTRACTS §17 stay the seams.
   (matching the cluster's lamp). Inventory rows 22 tall (20×18 icon slot + name
   + `OWNED ×n`); ammunition rows 32 tall, danger rows per §3.1/§3.1b (label +
   1 px frame).
+
+**Amendment 2 (2026-09-24 — the D7-R1 MED-1 ruling):** the console's canvas is
+**872×956** (2× 436×478 logical) — Mockup A's rack/inventory layout plus an
+ammunition well grown to **136** (2× 68) because the pane ships **six packs**
+(two rows of the approved 32-tall row spec); the Mockup A "44" note was
+illustrative and retires (well heights derive from content). The master mounts
+**unstretched** (the D3 stretched-plate defect class): `ui_armory_console` is
+re-rendered at **1744×1912** (2× the ruled canvas) and the wells sit at Mockup
+A's coords plus the 136-tall ammo well. Reversal: the 872×908 one-row-ammo
+canvas (which forced the 1.0529 fill-stretch R1 measured).
 - INVENTORY and AMMUNITION rows ride a brushed-metal row plate
   **`ui_armory_row_plate`** — nine-slice allowed here (flat fill bands only, no
   painted detail in the stretch zone; the D3 defect class is about painted

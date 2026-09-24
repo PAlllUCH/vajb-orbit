@@ -1,0 +1,254 @@
+{
+ "ui_cockpit_panel": {
+  "png_box": [
+   928,
+   512
+  ],
+  "png_md5": "e238e6f521416d0057d47539c81c5626",
+  "ctex_bytes": 779570,
+  "ctex_before": 581486,
+  "source_md5_cached": "e238e6f521416d0057d47539c81c5626",
+  "cache_current": true,
+  "mipmaps": "true",
+  "compress_mode": "0",
+  "detect_3d": "0"
+ },
+ "ui_gauge_face": {
+  "png_box": [
+   240,
+   240
+  ],
+  "png_md5": "860c1ce571ca6a2c2ef4def346c72b21",
+  "ctex_bytes": 73344,
+  "ctex_before": 73344,
+  "source_md5_cached": "860c1ce571ca6a2c2ef4def346c72b21",
+  "cache_current": true,
+  "mipmaps": "true",
+  "compress_mode": "0",
+  "detect_3d": "0"
+ },
+ "ui_armory_console": {
+  "png_box": [
+   1744,
+   1816
+  ],
+  "png_md5": "a8382b40fb2bdd48490ae36b9666e507",
+  "ctex_bytes": 5446836,
+  "ctex_before": 4121006,
+  "source_md5_cached": "a8382b40fb2bdd48490ae36b9666e507",
+  "cache_current": true,
+  "mipmaps": "true",
+  "compress_mode": "0",
+  "detect_3d": "0"
+ },
+ "ui_armory_rack_plate": {
+  "png_box": [
+   194,
+   182
+  ],
+  "png_md5": "acf82595ca4e98106359b26f161225ae",
+  "ctex_bytes": 32808,
+  "ctex_before": 22994,
+  "source_md5_cached": "acf82595ca4e98106359b26f161225ae",
+  "cache_current": true,
+  "mipmaps": "true",
+  "compress_mode": "0",
+  "detect_3d": "0"
+ },
+ "ui_armory_row_plate": {
+  "png_box": [
+   192,
+   64
+  ],
+  "png_md5": "b1568ade700b9768ecb1a7353d547d9c",
+  "ctex_bytes": 12354,
+  "ctex_before": 8300,
+  "source_md5_cached": "b1568ade700b9768ecb1a7353d547d9c",
+  "cache_current": true,
+  "mipmaps": "true",
+  "compress_mode": "0",
+  "detect_3d": "0"
+ },
+ "ui_status_panel": {
+  "png_box": [
+   1440,
+   1040
+  ],
+  "png_md5": "c8c0df57a61d68ea9b9751e3a9ab945f",
+  "ctex_bytes": 2423720,
+  "ctex_before": 1834966,
+  "source_md5_cached": "c8c0df57a61d68ea9b9751e3a9ab945f",
+  "cache_current": true,
+  "mipmaps": "true",
+  "compress_mode": "0",
+  "detect_3d": "0"
+ },
+ "ui_seg_0": {
+  "png_box": [
+   48,
+   88
+  ],
+  "png_md5": "bb05f1892625b8d7fd4570d5950e15d5",
+  "ctex_bytes": 1362,
+  "ctex_before": 7866,
+  "source_md5_cached": "bb05f1892625b8d7fd4570d5950e15d5",
+  "cache_current": true,
+  "mipmaps": "true",
+  "compress_mode": "0",
+  "detect_3d": "0"
+ },
+ "ui_seg_1": {
+  "png_box": [
+   48,
+   88
+  ],
+  "png_md5": "b1875f424abe54661ed37e4bd90fc29d",
+  "ctex_bytes": 1456,
+  "ctex_before": 7810,
+  "source_md5_cached": "b1875f424abe54661ed37e4bd90fc29d",
+  "cache_current": true,
+  "mipmaps": "true",
+  "compress_mode": "0",
+  "detect_3d": "0"
+ },
+ "ui_seg_2": {
+  "png_box": [
+   48,
+   88
+  ],
+  "png_md5": "7b878e72954bbb63d64d553642fb4546",
+  "ctex_bytes": 1494,
+  "ctex_before": 7906,
+  "source_md5_cached": "7b878e72954bbb63d64d553642fb4546",
+  "cache_current": true,
+  "mipmaps": "true",
+  "compress_mode": "0",
+  "detect_3d": "0"
+ },
+ "ui_seg_3": {
+  "png_box": [
+   48,
+   88
+  ],
+  "png_md5": "2d0ec8d8022669f8450fadaa124fb83c",
+  "ctex_bytes": 1356,
+  "ctex_before": 7902,
+  "source_md5_cached": "2d0ec8d8022669f8450fadaa124fb83c",
+  "cache_current": true,
+  "mipmaps": "true",
+  "compress_mode": "0",
+  "detect_3d": "0"
+ },
+ "ui_seg_4": {
+  "png_box": [
+   48,
+   88
+  ],
+  "png_md5": "fd9aeb81282fc014ff38477a4b2caf43",
+  "ctex_bytes": 1456,
+  "ctex_before": 7902,
+  "source_md5_cached": "fd9aeb81282fc014ff38477a4b2caf43",
+  "cache_current": true,
+  "mipmaps": "true",
+  "compress_mode": "0",
+  "detect_3d": "0"
+ },
+ "ui_seg_5": {
+  "png_box": [
+   48,
+   88
+  ],
+  "png_md5": "71f89a1a9e5389fa61f8a6ebb5466d1c",
+  "ctex_bytes": 1504,
+  "ctex_before": 7922,
+  "source_md5_cached": "71f89a1a9e5389fa61f8a6ebb5466d1c",
+  "cache_current": true,
+  "mipmaps": "true",
+  "compress_mode": "0",
+  "detect_3d": "0"
+ },
+ "ui_seg_6": {
+  "png_box": [
+   48,
+   88
+  ],
+  "png_md5": "f4d6e6a0ff3a20849bbdaa7896c97e00",
+  "ctex_bytes": 1460,
+  "ctex_before": 7918,
+  "source_md5_cached": "f4d6e6a0ff3a20849bbdaa7896c97e00",
+  "cache_current": true,
+  "mipmaps": "true",
+  "compress_mode": "0",
+  "detect_3d": "0"
+ },
+ "ui_seg_7": {
+  "png_box": [
+   48,
+   88
+  ],
+  "png_md5": "6dee7c6ea4de70988c71f2b3f9389752",
+  "ctex_bytes": 1530,
+  "ctex_before": 7884,
+  "source_md5_cached": "6dee7c6ea4de70988c71f2b3f9389752",
+  "cache_current": true,
+  "mipmaps": "true",
+  "compress_mode": "0",
+  "detect_3d": "0"
+ },
+ "ui_seg_8": {
+  "png_box": [
+   48,
+   88
+  ],
+  "png_md5": "c32b1b03fbd2839e43df03d191adf621",
+  "ctex_bytes": 1198,
+  "ctex_before": 7890,
+  "source_md5_cached": "c32b1b03fbd2839e43df03d191adf621",
+  "cache_current": true,
+  "mipmaps": "true",
+  "compress_mode": "0",
+  "detect_3d": "0"
+ },
+ "ui_seg_9": {
+  "png_box": [
+   48,
+   88
+  ],
+  "png_md5": "31bb2de11f65d78916d7843fb9e15850",
+  "ctex_bytes": 1362,
+  "ctex_before": 7898,
+  "source_md5_cached": "31bb2de11f65d78916d7843fb9e15850",
+  "cache_current": true,
+  "mipmaps": "true",
+  "compress_mode": "0",
+  "detect_3d": "0"
+ },
+ "ui_seg_pct": {
+  "png_box": [
+   48,
+   88
+  ],
+  "png_md5": "ebf471a6e3388d537f3f30b5db2c62fb",
+  "ctex_bytes": 1566,
+  "ctex_before": 7900,
+  "source_md5_cached": "ebf471a6e3388d537f3f30b5db2c62fb",
+  "cache_current": true,
+  "mipmaps": "true",
+  "compress_mode": "0",
+  "detect_3d": "0"
+ },
+ "ui_seg_blank": {
+  "png_box": [
+   48,
+   88
+  ],
+  "png_md5": "a90eab91f6e1f3a477a3f3c0424427e6",
+  "ctex_bytes": 1224,
+  "ctex_before": 7830,
+  "source_md5_cached": "a90eab91f6e1f3a477a3f3c0424427e6",
+  "cache_current": true,
+  "mipmaps": "true",
+  "compress_mode": "0",
+  "detect_3d": "0"
+ }
+}

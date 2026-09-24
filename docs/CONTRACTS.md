@@ -803,7 +803,20 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
-Expected (S6, 2026-09-24): **`[SUMMARY] passed=674 failed=0`**, exit 0. The S6 review
+Expected (D7, 2026-09-24): **`[SUMMARY] passed=727 failed=0`**, exit 0. The D7
+fixer measured **727** twice on two fresh scratch stores (identical row sets).
+Growth **608 → 674** (S6) **→ 727** = +18 `test_d7_cockpit.gd` + 8
+`test_d7_status.gd` + 11 `test_d7_armory.gd` + the §3.1b bars row renamed and
+extended + S7's `test_s7_affixes.gd` rows landing in parallel (+15 at F1's
+measure). The live `profile.cfg` md5 `b32fdb7b9c68e132e76d0771660f916b` is stable
+across every close-out run (its 11:49 rewrite is D7-C2's recorded station-shell
+screenshot flush, `economy_log.txt` byte-identical). Cross-lane caveat: the
+close-out runs with S7's **uncommitted** `game/` mid-edit state in the tree read
+`passed=740 failed=5` twice, identical — all five are S7's (four
+`test_s7_weapon_affixes.gd` rows + `test_weapon_fx_f1.gd`'s round-robin row
+through their `weapons.gd`/`projectile.gd` edits), zero in D7's write set; S7's
+close-out re-measures on its settled tree.
+Previous expected (S6, 2026-09-24): **`[SUMMARY] passed=674 failed=0`**, exit 0. The S6 review
 (S6-R1) measured **674** four times on four scratch stores, identical counts, with the
 live `user://profile.cfg` md5 `06f5660a4f884c5d799311287721f78f` and
 `economy_log.txt` md5 `ca40fe2c0ab3bd0f2047723a2d737d9a` unmoved. **674 tests over
@@ -1841,6 +1854,22 @@ that); HULL/SHLD = `int(round(current))` points 4 cells clamp
 `%` cell; HDG 0..359. Leading blanks (`ui_seg_blank`), never zeros; `maximum == 0`
 reads 0. Danger rows reuse §3.1/§3.1b as row treatments (label + 1 px script-drawn
 frame — digits never recolour); overdrive is `ratio > 0.9` strict.
+
+**§18 interface catch-up (2026-09-24, wave D7 as built — UI_SPEC §3.7's Mockup v7
+block is the law where this section lags):** the compass bay and the HDG row are
+gone (owner: "we ditch the compass entirely"); `compass()` returns null and
+`compass_heading()` 0.0 (stubs — signatures frozen), and `readouts()` returns
+`{spd, hull, shield, ammo}` (spd 4 cells clamp 0..9999 per the earlier
+amendment; hull/shield points 4 cells; ammo = the active rack's loaded rounds,
+4 cells clamp 0..9999; the `fuel_pct`/`energy_pct` keys retire — the FUEL/ENRG
+value dials carry them). The cluster = gauge + `B1..B5` battery lamps (the
+`weapon_1..5` selection) + two value dials + four drum rows, all on
+`CockpitStyle` (UI_SPEC §3.9 rule 5: `ui/hud/cockpit_style.gd` + the
+`cockpit_style_user.tres` override). The old column and the §3.1b pool bars are
+retired (`set_pool`/`set_emergency` signatures unchanged). `ship_status_screen`
+keeps its seams (toggle behind `InputMap.has_action`, read-only fits) on the
+Mockup C surface; the armory keeps every 09 §11/§17 transaction on the Mockup A
+surface (SALVO cells render centiseconds: 0.73 s reads `073`).
 
 ## §19 S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, heat, loot
 
@@ -2971,3 +3000,20 @@ judgment calls are dispositioned here; nothing was reverted.
   multiplier's five delivery sites and `game/projectile.gd` join the pin and K2's file
   set, the Ledger term names all three production sell sites, the ram takes the
   multiplier, and the one existing assertion the term flips is ratified as an edit.
+- **v0.16 (2026-09-24, wave D7 close-out — the cockpit rework + battery window,
+  this wave's only CONTRACTS writer)** — §9 gains the D7 expected
+  **`passed=727 failed=0`** (two scratch-store runs; the S7 cross-lane caveat
+  names all five transient failures). §18 gains the as-built interface catch-up
+  (compass/HDG gone, `readouts()` = {spd, hull, shield, ammo}, CockpitStyle,
+  pool bars retired). The wave ships the owner-approved mockup set (cluster v7,
+  battery window, game context, ship status) as built: 23 art masters (the
+  glyph-only `ui_seg_*` family, three flat console plates at their ruled
+  aspects, gauge face, armory plates), `CockpitStyle` (palette/layout/assets + a
+  user `.tres` override), the v7 cluster, the Mockup A armory surface and the
+  Mockup C status surface. Review: 1 HIGH (the status render-box clamp + its
+  blind test) and 1 MED (the armory console aspect — ruled in UI_SPEC §3.10
+  Amendment 2 and closed as measured) both cured by D7-F1/D7-A2; 5 LOW rows
+  **L158–L162**. UI_SPEC carries the day's owner rulings with reversals: the
+  compass ditch (two FUEL/ENRG dials), the full-height readout well, the
+  battery lamps, the §3.1b bars retirement, the SALVO centisecond format and
+  the §3.9 rule-5 modifiability contract.

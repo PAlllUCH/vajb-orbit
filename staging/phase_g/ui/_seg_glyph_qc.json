@@ -1,0 +1,176 @@
+{
+ "reference": {
+  "boxes": [
+   [
+    13,
+    4,
+    34,
+    19
+   ],
+   [
+    30,
+    19,
+    46,
+    44
+   ],
+   [
+    30,
+    43,
+    46,
+    69
+   ],
+   [
+    13,
+    68,
+    34,
+    84
+   ],
+   [
+    2,
+    43,
+    14,
+    69
+   ],
+   [
+    2,
+    19,
+    14,
+    44
+   ],
+   [
+    13,
+    36,
+    34,
+    52
+   ]
+  ],
+  "source": "ghost ink",
+  "face": 45.602000000000004,
+  "unlit": 45.602000000000004,
+  "threshold": 45.602000000000004,
+  "field": [
+   4,
+   6,
+   44,
+   82
+  ]
+ },
+ "rows": [
+  {
+   "name": "ui_seg_0",
+   "plate_px": 1518,
+   "lit_px": 1310,
+   "ink_share": 0.8629776021080369,
+   "containment": 1.0,
+   "containment_ok": true,
+   "segments": 6
+  },
+  {
+   "name": "ui_seg_1",
+   "plate_px": 1518,
+   "lit_px": 526,
+   "ink_share": 0.3465085638998682,
+   "containment": 1.0,
+   "containment_ok": true,
+   "segments": 2
+  },
+  {
+   "name": "ui_seg_2",
+   "plate_px": 1518,
+   "lit_px": 1082,
+   "ink_share": 0.7127799736495388,
+   "containment": 1.0,
+   "containment_ok": true,
+   "segments": 5
+  },
+  {
+   "name": "ui_seg_3",
+   "plate_px": 1518,
+   "lit_px": 1166,
+   "ink_share": 0.7681159420289855,
+   "containment": 1.0,
+   "containment_ok": true,
+   "segments": 5
+  },
+  {
+   "name": "ui_seg_4",
+   "plate_px": 1518,
+   "lit_px": 910,
+   "ink_share": 0.5994729907773386,
+   "containment": 1.0,
+   "containment_ok": true,
+   "segments": 4
+  },
+  {
+   "name": "ui_seg_5",
+   "plate_px": 1518,
+   "lit_px": 1082,
+   "ink_share": 0.7127799736495388,
+   "containment": 1.0,
+   "containment_ok": true,
+   "segments": 5
+  },
+  {
+   "name": "ui_seg_6",
+   "plate_px": 1518,
+   "lit_px": 1258,
+   "ink_share": 0.8287220026350461,
+   "containment": 1.0,
+   "containment_ok": true,
+   "segments": 6
+  },
+  {
+   "name": "ui_seg_7",
+   "plate_px": 1518,
+   "lit_px": 742,
+   "ink_share": 0.4888010540184453,
+   "containment": 1.0,
+   "containment_ok": true,
+   "segments": 3
+  },
+  {
+   "name": "ui_seg_8",
+   "plate_px": 1518,
+   "lit_px": 1518,
+   "ink_share": 1.0,
+   "containment": 1.0,
+   "containment_ok": true,
+   "segments": 7
+  },
+  {
+   "name": "ui_seg_9",
+   "plate_px": 1518,
+   "lit_px": 1342,
+   "ink_share": 0.8840579710144928,
+   "containment": 1.0,
+   "containment_ok": true,
+   "segments": 6
+  },
+  {
+   "name": "ui_seg_pct",
+   "plate_px": 1518,
+   "lit_px": 650,
+   "ink_share": 0.4281949934123847,
+   "containment": 1.0,
+   "containment_ok": true,
+   "segments": 5
+  },
+  {
+   "name": "ui_seg_blank",
+   "plate_px": 1518,
+   "lit_px": 0,
+   "ink_share": 0.0,
+   "containment": 1.0,
+   "containment_ok": true,
+   "segments": null
+  }
+ ],
+ "containment_ok": true,
+ "blank_min": true,
+ "one_min": true,
+ "eight_max": true,
+ "by_segment": true,
+ "inversions": [],
+ "literal_monotone": false,
+ "verdict": "PASS"
+}

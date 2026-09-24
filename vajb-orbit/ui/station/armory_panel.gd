@@ -672,9 +672,10 @@ func set_selected_rack(rack: int) -> void:
 ## ------------------------------------------------------------------ the console
 
 
-## Mount the painted plate and the console's own geometry: the block is the style's
-## `canvas * art_scale` (Mockup A's own canvas, exactly half the shipped master), the three
-## wells and the bay grid are the style's pinned rects, and the group boxes fill them.
+## Mount the painted plate and the console's own geometry: the block is the style's **ruled
+## canvas** (section 3.10 Amendment 2, 872 x 956), the plate mounts at its own `master / art_scale`
+## box so it is never stretched (`_mount_plate`), and the wells and the bay grid are the style's
+## pinned rects with the group boxes filling them.
 func _build_console() -> void:
 	if _style == null:
 		_style = StyleScript.load_style()
@@ -709,10 +710,26 @@ func _apply_style() -> void:
 		_plate.texture = _style.texture(_style.console_path)
 		_plate.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		_plate.stretch_mode = TextureRect.STRETCH_SCALE
+		_mount_plate()
 	_apply_tokens()
 	_lay_groups()
 	_lay_bays()
 	_lay_ammo()
+
+
+## The console plate mounts **unstretched**: it is drawn at its own `master / art_scale` box
+## (section 10's `@2x` recipe), never fill-stretched onto whatever the block happens to measure -
+## the D3 painted-plate defect class R1 MED-1 measured as a 1.0529 vertical fill. Section 3.10
+## Amendment 2 re-renders `ui_armory_console` at exactly 2x the ruled 872 x 956 canvas, so the
+## mount and the block coincide and the plate covers every well.
+func _mount_plate() -> void:
+	_plate.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	_plate.position = Vector2.ZERO
+	var texture: Texture2D = _plate.texture
+	if texture == null:
+		_plate.size = _style.block_size()
+		return
+	_plate.size = texture.get_size() / _style.art_scale
 
 
 ## The three group boxes, in the style's well order (racks, inventory, ammunition): each
@@ -734,7 +751,13 @@ func _lay_groups() -> void:
 		regions.append(_dr(_style.drawn_well(index, heights[index], offset)))
 		offset += _d(_style.growth(index, heights[index]))
 	var bottom: float = boxes[boxes.size() - 1].position.y + boxes[boxes.size() - 1].size.y
-	var block := Vector2(_style.block_size().x, bottom + _d(_style.block_foot))
+	## The block is the style's **ruled canvas** (section 3.10 Amendment 2): the plate mounts at its
+	## own 2x box (`_mount_plate`, never a fill-stretch - R1 MED-1 measured the 1.0529 vertical fill
+	## a content-only block forced), and the ruled canvas is the box the re-rendered master matches.
+	## A group that outgrows its pinned well still pushes the block taller, so its rows land on the
+	## plate instead of off it.
+	var ruled: Vector2 = _style.block_size()
+	var block := Vector2(ruled.x, maxf(ruled.y, bottom + _d(_style.block_foot)))
 	_body.custom_minimum_size = block
 	_body.size = block
 	if _wells != null:

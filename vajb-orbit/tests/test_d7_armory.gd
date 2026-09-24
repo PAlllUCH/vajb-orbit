@@ -57,11 +57,13 @@ const AMMO_FIXTURE: Dictionary = {
 
 ## The pinned numbers (UI_SPEC section 3.10 / UI_CHROME section 12's boxes / Mockup A's own
 ## canvas). The suite reads them from the style *and* asserts them against these literals,
-## so a default that drifts fails here.
+## so a default that drifts fails here. The canvas is section 3.10 **Amendment 2**'s ruled
+## 872 x 956 (436 x 478 logical), whose master is re-rendered at exactly 2x - the mount is
+## unstretched precisely because `CONSOLE_MASTER == BLOCK * ART_SCALE` (R1 MED-1).
 const ART_SCALE := 2.0
-const CANVAS := Vector2(436.0, 454.0)
+const CANVAS := Vector2(436.0, 478.0)
 const BLOCK := Vector2(872.0, 956.0)
-const CONSOLE_MASTER := Vector2(1744.0, 1816.0)
+const CONSOLE_MASTER := Vector2(1744.0, 1912.0)
 const RACK_MASTER := Vector2(194.0, 182.0)
 const ROW_MASTER := Vector2(192.0, 64.0)
 const RACKS_WELL := Rect2(30.0, 122.0, 812.0, 390.0)
@@ -295,14 +297,17 @@ func _delete_file(path: String) -> void:
 
 
 ## The pane mounts on the painted console plate: a plain `TextureRect` (never a nine-slice -
-## section 3.7's D3 defect class rule, reused by section 3.10), fill-fit to the console
-## block, with Mockup A's own canvas as its box.
+## section 3.7's D3 defect class rule, reused by section 3.10) drawn at its own `master / art_scale`
+## box over the **ruled canvas** block, so the painted plate is never fill-stretched (R1 MED-1's
+## measured 1.0529 vertical fill). Section 3.10 Amendment 2 re-renders the master at exactly 2x the
+## ruled canvas, so the mount and the block coincide.
 func test_the_pane_mounts_on_the_painted_console_plate() -> void:
 	var panel := _mount()
 	var style := _style()
 	assert_eq(style.art_scale, ART_SCALE, "section 10's @2x recipe scale")
-	assert_eq(style.canvas, CANVAS, "Mockup A's own canvas, at the logical scale")
+	assert_eq(style.canvas, CANVAS, "section 3.10 Amendment 2's ruled canvas, at the logical scale")
 	assert_eq(panel.call(&"block_size"), BLOCK, "drawn at canvas * art_scale")
+	assert_eq(CONSOLE_MASTER, BLOCK * ART_SCALE, "the ruled master is exactly 2x the ruled canvas")
 	var plate := panel.get_node("%ConsolePlate") as TextureRect
 	assert_true(plate != null, "the console plate is a TextureRect")
 	assert_eq(plate.get_class(), "TextureRect", "and not a nine-slice: the master is sized to the block")
@@ -314,8 +319,16 @@ func test_the_pane_mounts_on_the_painted_console_plate() -> void:
 		String(plate.texture.resource_path), "res://assets/ui/ui_armory_console.png",
 		"the shipped master"
 	)
-	assert_eq(plate.texture.get_size(), CONSOLE_MASTER, "at 2x the block: the shipped master box")
-	assert_eq(plate.size, BLOCK, "and drawn over the whole block")
+	assert_eq(
+		plate.size * style.art_scale, plate.texture.get_size(),
+		"the master mounts at its own 2x box, unstretched (actual %s)" % str(plate.size)
+	)
+	assert_eq(
+		plate.size, BLOCK,
+		"and the mount is the ruled canvas, so the plate covers every well (actual %s)"
+			% str(plate.size)
+	)
+	assert_eq(plate.position, Vector2.ZERO, "at the block's origin")
 	assert_eq(plate.stretch_mode, TextureRect.STRETCH_SCALE, "fill-fit")
 	assert_eq(plate.expand_mode, TextureRect.EXPAND_IGNORE_SIZE, "with no size negotiation")
 

@@ -1,0 +1,116 @@
+{
+ "ui_cockpit_panel": {
+  "box": [
+   928,
+   512
+  ],
+  "cut_box": [
+   1944,
+   1012
+  ],
+  "route": "recraft-keyed flat plate cut, contain fit, pad 0.00, canvas 1:1 (Amendment 2)",
+  "pixels": [
+   928,
+   512
+  ],
+  "bytes": 913510,
+  "md5": "e238e6f521416d0057d47539c81c5626",
+  "transparent_pct": 8.06,
+  "ink_pct": 91.93
+ },
+ "ui_armory_console": {
+  "box": [
+   1744,
+   1816
+  ],
+  "cut_box": [
+   1987,
+   1991
+  ],
+  "route": "recraft-keyed flat plate cut, contain fit, pad 0.00, canvas 1:1 (Amendment 2)",
+  "pixels": [
+   1744,
+   1816
+  ],
+  "bytes": 6333409,
+  "md5": "a8382b40fb2bdd48490ae36b9666e507",
+  "transparent_pct": 5.53,
+  "ink_pct": 94.46
+ },
+ "ui_status_panel": {
+  "box": [
+   1440,
+   1040
+  ],
+  "cut_box": [
+   2042,
+   1340
+  ],
+  "route": "recraft-keyed flat plate cut, contain fit, pad 0.00, canvas 4:3 (Amendment 2)",
+  "pixels": [
+   1440,
+   1040
+  ],
+  "bytes": 2806173,
+  "md5": "c8c0df57a61d68ea9b9751e3a9ab945f",
+  "transparent_pct": 11.26,
+  "ink_pct": 88.74
+ },
+ "ui_gauge_face": {
+  "box": [
+   240,
+   240
+  ],
+  "cut_box": [
+   1938,
+   1975
+  ],
+  "route": "recraft-keyed render cut, contain fit",
+  "pixels": [
+   240,
+   240
+  ],
+  "bytes": 75775,
+  "md5": "860c1ce571ca6a2c2ef4def346c72b21",
+  "transparent_pct": 33.72,
+  "ink_pct": 66.27
+ },
+ "ui_armory_rack_plate": {
+  "box": [
+   194,
+   182
+  ],
+  "cut_box": [
+   1621,
+   817
+  ],
+  "route": "recraft-keyed render cut, contain fit",
+  "pixels": [
+   194,
+   182
+  ],
+  "bytes": 32372,
+  "md5": "acf82595ca4e98106359b26f161225ae",
+  "transparent_pct": 57.64,
+  "ink_pct": 42.36
+ },
+ "ui_armory_row_plate": {
+  "box": [
+   192,
+   64
+  ],
+  "cut_box": [
+   1923,
+   417
+  ],
+  "route": "recraft-keyed render cut, contain fit",
+  "pixels": [
+   192,
+   64
+  ],
+  "bytes": 10911,
+  "md5": "b1568ade700b9768ecb1a7353d547d9c",
+  "transparent_pct": 59.78,
+  "ink_pct": 40.22
+ }
+}

@@ -272,11 +272,13 @@ func _build_title() -> void:
 
 
 ## The left well: the render box (aspect-fit, the section 3.8 R1-MED-1 rule: the box takes the
-## sprite's own aspect and never the row's height) with the hardpoint markers riding it.
+## sprite's own aspect and never the row's height) with the hardpoint markers riding it. The box
+## carries no minimum of its own: `_place_render_box` owns both its minimum and its size, so a
+## stale clamp can never outlive the aspect-fit write (R1 HIGH-1; the D6 320 px width pin is
+## superseded by the mockup's well-fit).
 func _build_left_well() -> void:
 	_render_box = Control.new()
 	_render_box.name = NODE_RENDER_BOX
-	_render_box.custom_minimum_size = RENDER_MISSING_SIZE
 	_render_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_body.add_child(_render_box)
 	_render = TextureRect.new()
@@ -375,14 +377,16 @@ func _apply_legacy_frame() -> void:
 
 
 ## The render box centred in the well's own fit area (the mockup's well-fit, which supersedes
-## the D6 320 px width pin).
+## the D6 320 px width pin). The **minimum is lowered before the size is written**: `Control.size`
+## clamps up to `custom_minimum_size`, so writing the aspect-fit size while the box still carried
+## a bigger minimum left the stale box in place and the sprite drew past the well (R1 HIGH-1).
 func _place_render_box() -> void:
 	if _style == null or _render_box == null:
 		return
 	var area: Rect2 = _style.status_render_area()
+	_render_box.custom_minimum_size = _render_size
 	_render_box.size = _render_size
 	_render_box.position = area.position + (area.size - _render_size) * 0.5
-	_render_box.custom_minimum_size = _render_size
 
 
 ## The style in force (a probe read-back; section 3.9 rule 5).

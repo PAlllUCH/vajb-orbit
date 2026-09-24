@@ -401,13 +401,18 @@ func test_the_old_hud_column_is_gone_from_the_flight_hud() -> void:
 	assert_eq(_cells(HULL), [BLANK, 6, 4, 0], "HULL reads in the cluster")
 	assert_eq(_cells(SHLD), [BLANK, 1, 2, 0], "SHLD reads in the cluster")
 	assert_eq(_cells(AMMO), [BLANK, BLANK, 4, 2], "AMMO reads in the cluster")
-	## Section 3.1b's pool blocks are NOT retired - section 3.7's list names section 3.1's
-	## crest bars only, and its own rows stay green in `test_engine2_hud.gd`.
-	var pool_bars: Dictionary = _hud.get(&"_pool_bars")
-	assert_true(
-		pool_bars.has(POOL_FUEL) and pool_bars.has(POOL_ENERGY),
-		"the energy and fuel bars survive"
-	)
+	## Section 3.1b's pool blocks retire in D7-C4 (the 2026-09-24 amendment): the cluster's
+	## FUEL/ENRG dials are the pool readouts now, and the two blocks stay in the scene,
+	## hidden, so the frozen section 7 API keeps a widget behind it.
+	var pool_blocks: Array = _hud.call(&"retired_pool_blocks")
+	assert_eq(pool_blocks.size(), 2, "the energy and fuel blocks are retired")
+	for block: Control in pool_blocks:
+		assert_false(block.is_visible_in_tree(), "%s is off the flight HUD" % block.name)
+	_hud.call(&"set_pool", POOL_FUEL, 12.0, 200.0)
+	_hud.call(&"set_pool", POOL_ENERGY, 40.0, 100.0)
+	var pools: Dictionary = _cockpit().call(&"pool_readings")
+	assert_eq(int(pools["fuel"]["percent"]), 6, "the FUEL dial carries the pool feed")
+	assert_eq(int(pools["enrg"]["percent"]), 40, "the ENRG dial carries the pool feed")
 
 
 func _on_cargo_toggled(open: bool) -> void:

@@ -1,0 +1,7 @@
+[panel_armory_console_flat_a2] grimdark-painted-sci-fi-semi-realistic-1.png: 1 cell(s) found on a 1x1 grid
+  ui_armory_console: ink box [71, 0, 1976, 2048] -> ui_armory_console.png (2027, 2048)
+  keying 1 crop(s): ui_armory_console.png
+     ui_armory_console: keyed (ui_armory_console-8ffd661b-recraft.png)
+  key_new done: 1 billed call(s), 1 keyed, 0 failure(s)
+  PASS ui_armory_console: ink 1905x2048 -> alpha 1913x2048
+    wrote ui_armory_console.png (1929, 2064)

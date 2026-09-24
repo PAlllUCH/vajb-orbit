@@ -1,0 +1,692 @@
+{
+ "masters": [
+  {
+   "name": "ui_armory_console",
+   "present": true,
+   "box": [
+    1744,
+    1912
+   ],
+   "pinned_box": [
+    1744,
+    1912
+   ],
+   "logical": [
+    872,
+    956
+   ],
+   "box_ok": true,
+   "import": {
+    "sidecar": true,
+    "params": {
+     "mipmaps/generate": "true",
+     "compress/mode": "0",
+     "detect_3d/compress_to": "0"
+    },
+    "unified": true
+   },
+   "md5": "4f97aa9459a4b478dbeff11186c97341",
+   "spec": "section 12 run 3 + section 3.10 Amendment 2 (2x the ruled canvas)"
+  },
+  {
+   "name": "ui_armory_rack_plate",
+   "present": true,
+   "box": [
+    194,
+    182
+   ],
+   "pinned_box": [
+    194,
+    182
+   ],
+   "logical": [
+    97,
+    91
+   ],
+   "box_ok": true,
+   "import": {
+    "sidecar": true,
+    "params": {
+     "mipmaps/generate": "true",
+     "compress/mode": "0",
+     "detect_3d/compress_to": "0"
+    },
+    "unified": true
+   },
+   "md5": "acf82595ca4e98106359b26f161225ae",
+   "spec": "section 12 run 4 / section 3.10 bay (2x)"
+  },
+  {
+   "name": "ui_armory_row_plate",
+   "present": true,
+   "box": [
+    192,
+    64
+   ],
+   "pinned_box": [
+    192,
+    64
+   ],
+   "logical": null,
+   "box_ok": true,
+   "import": {
+    "sidecar": true,
+    "params": {
+     "mipmaps/generate": "true",
+     "compress/mode": "0",
+     "detect_3d/compress_to": "0"
+    },
+    "unified": true
+   },
+   "md5": "b1568ade700b9768ecb1a7353d547d9c",
+   "spec": "section 12 run 4 (nine-slice)"
+  },
+  {
+   "name": "ui_cockpit_frame",
+   "present": true,
+   "box": [
+    192,
+    192
+   ],
+   "pinned_box": [
+    192,
+    192
+   ],
+   "logical": null,
+   "box_ok": true,
+   "import": {
+    "sidecar": true,
+    "params": {
+     "mipmaps/generate": "true",
+     "compress/mode": "0",
+     "detect_3d/compress_to": "0"
+    },
+    "unified": true
+   },
+   "md5": "cfc4e2341bbcbca2ba2d5d79189c78ec",
+   "spec": "section 11 (nine-slice, 64 px band)"
+  },
+  {
+   "name": "ui_cockpit_panel",
+   "present": true,
+   "box": [
+    928,
+    512
+   ],
+   "pinned_box": [
+    928,
+    512
+   ],
+   "logical": [
+    464,
+    256
+   ],
+   "box_ok": true,
+   "import": {
+    "sidecar": true,
+    "params": {
+     "mipmaps/generate": "true",
+     "compress/mode": "0",
+     "detect_3d/compress_to": "0"
+    },
+    "unified": true
+   },
+   "md5": "e238e6f521416d0057d47539c81c5626",
+   "spec": "section 12 run 1"
+  },
+  {
+   "name": "ui_compass_lubber",
+   "present": true,
+   "box": [
+    32,
+    24
+   ],
+   "pinned_box": [
+    32,
+    24
+   ],
+   "logical": [
+    16,
+    12
+   ],
+   "box_ok": true,
+   "import": {
+    "sidecar": true,
+    "params": {
+     "mipmaps/generate": "true",
+     "compress/mode": "0",
+     "detect_3d/compress_to": "0"
+    },
+    "unified": true
+   },
+   "md5": "84a0babcd602bcbf7b08469a9351b1c3",
+   "spec": "section 11"
+  },
+  {
+   "name": "ui_compass_rose",
+   "present": true,
+   "box": [
+    192,
+    192
+   ],
+   "pinned_box": [
+    192,
+    192
+   ],
+   "logical": [
+    96,
+    96
+   ],
+   "box_ok": true,
+   "import": {
+    "sidecar": true,
+    "params": {
+     "mipmaps/generate": "true",
+     "compress/mode": "0",
+     "detect_3d/compress_to": "0"
+    },
+    "unified": true
+   },
+   "md5": "56f2f9ff4cfea0a7df03e52271bc4b64",
+   "spec": "section 11"
+  },
+  {
+   "name": "ui_gauge_face",
+   "present": true,
+   "box": [
+    240,
+    240
+   ],
+   "pinned_box": [
+    240,
+    240
+   ],
+   "logical": [
+    120,
+    120
+   ],
+   "box_ok": true,
+   "import": {
+    "sidecar": true,
+    "params": {
+     "mipmaps/generate": "true",
+     "compress/mode": "0",
+     "detect_3d/compress_to": "0"
+    },
+    "unified": true
+   },
+   "md5": "860c1ce571ca6a2c2ef4def346c72b21",
+   "spec": "section 12 run 2 / section 11"
+  },
+  {
+   "name": "ui_gauge_needle",
+   "present": true,
+   "box": [
+    16,
+    192
+   ],
+   "pinned_box": [
+    16,
+    192
+   ],
+   "logical": [
+    8,
+    96
+   ],
+   "box_ok": true,
+   "import": {
+    "sidecar": true,
+    "params": {
+     "mipmaps/generate": "true",
+     "compress/mode": "0",
+     "detect_3d/compress_to": "0"
+    },
+    "unified": true
+   },
+   "md5": "87e66a2c9ab289ae9dab8225405cf71f",
+   "spec": "section 11"
+  },
+  {
+   "name": "ui_readout_glass",
+   "present": true,
+   "box": [
+    272,
+    380
+   ],
+   "pinned_box": [
+    272,
+    380
+   ],
+   "logical": [
+    136,
+    190
+   ],
+   "box_ok": true,
+   "import": {
+    "sidecar": true,
+    "params": {
+     "mipmaps/generate": "true",
+     "compress/mode": "0",
+     "detect_3d/compress_to": "0"
+    },
+    "unified": true
+   },
+   "md5": "17f258340c46e96a8b000c2de7b8daf3",
+   "spec": "section 11"
+  },
+  {
+   "name": "ui_seg_0",
+   "present": true,
+   "box": [
+    48,
+    88
+   ],
+   "pinned_box": [
+    48,
+    88
+   ],
+   "logical": [
+    20,
+    36
+   ],
+   "box_ok": true,
+   "import": {
+    "sidecar": true,
+    "params": {
+     "mipmaps/generate": "true",
+     "compress/mode": "0",
+     "detect_3d/compress_to": "0"
+    },
+    "unified": true
+   },
+   "md5": "bb05f1892625b8d7fd4570d5950e15d5",
+   "spec": "section 11 digit cells"
+  },
+  {
+   "name": "ui_seg_1",
+   "present": true,
+   "box": [
+    48,
+    88
+   ],
+   "pinned_box": [
+    48,
+    88
+   ],
+   "logical": [
+    20,
+    36
+   ],
+   "box_ok": true,
+   "import": {
+    "sidecar": true,
+    "params": {
+     "mipmaps/generate": "true",
+     "compress/mode": "0",
+     "detect_3d/compress_to": "0"
+    },
+    "unified": true
+   },
+   "md5": "b1875f424abe54661ed37e4bd90fc29d",
+   "spec": "section 11 digit cells"
+  },
+  {
+   "name": "ui_seg_2",
+   "present": true,
+   "box": [
+    48,
+    88
+   ],
+   "pinned_box": [
+    48,
+    88
+   ],
+   "logical": [
+    20,
+    36
+   ],
+   "box_ok": true,
+   "import": {
+    "sidecar": true,
+    "params": {
+     "mipmaps/generate": "true",
+     "compress/mode": "0",
+     "detect_3d/compress_to": "0"
+    },
+    "unified": true
+   },
+   "md5": "7b878e72954bbb63d64d553642fb4546",
+   "spec": "section 11 digit cells"
+  },
+  {
+   "name": "ui_seg_3",
+   "present": true,
+   "box": [
+    48,
+    88
+   ],
+   "pinned_box": [
+    48,
+    88
+   ],
+   "logical": [
+    20,
+    36
+   ],
+   "box_ok": true,
+   "import": {
+    "sidecar": true,
+    "params": {
+     "mipmaps/generate": "true",
+     "compress/mode": "0",
+     "detect_3d/compress_to": "0"
+    },
+    "unified": true
+   },
+   "md5": "2d0ec8d8022669f8450fadaa124fb83c",
+   "spec": "section 11 digit cells"
+  },
+  {
+   "name": "ui_seg_4",
+   "present": true,
+   "box": [
+    48,
+    88
+   ],
+   "pinned_box": [
+    48,
+    88
+   ],
+   "logical": [
+    20,
+    36
+   ],
+   "box_ok": true,
+   "import": {
+    "sidecar": true,
+    "params": {
+     "mipmaps/generate": "true",
+     "compress/mode": "0",
+     "detect_3d/compress_to": "0"
+    },
+    "unified": true
+   },
+   "md5": "fd9aeb81282fc014ff38477a4b2caf43",
+   "spec": "section 11 digit cells"
+  },
+  {
+   "name": "ui_seg_5",
+   "present": true,
+   "box": [
+    48,
+    88
+   ],
+   "pinned_box": [
+    48,
+    88
+   ],
+   "logical": [
+    20,
+    36
+   ],
+   "box_ok": true,
+   "import": {
+    "sidecar": true,
+    "params": {
+     "mipmaps/generate": "true",
+     "compress/mode": "0",
+     "detect_3d/compress_to": "0"
+    },
+    "unified": true
+   },
+   "md5": "71f89a1a9e5389fa61f8a6ebb5466d1c",
+   "spec": "section 11 digit cells"
+  },
+  {
+   "name": "ui_seg_6",
+   "present": true,
+   "box": [
+    48,
+    88
+   ],
+   "pinned_box": [
+    48,
+    88
+   ],
+   "logical": [
+    20,
+    36
+   ],
+   "box_ok": true,
+   "import": {
+    "sidecar": true,
+    "params": {
+     "mipmaps/generate": "true",
+     "compress/mode": "0",
+     "detect_3d/compress_to": "0"
+    },
+    "unified": true
+   },
+   "md5": "f4d6e6a0ff3a20849bbdaa7896c97e00",
+   "spec": "section 11 digit cells"
+  },
+  {
+   "name": "ui_seg_7",
+   "present": true,
+   "box": [
+    48,
+    88
+   ],
+   "pinned_box": [
+    48,
+    88
+   ],
+   "logical": [
+    20,
+    36
+   ],
+   "box_ok": true,
+   "import": {
+    "sidecar": true,
+    "params": {
+     "mipmaps/generate": "true",
+     "compress/mode": "0",
+     "detect_3d/compress_to": "0"
+    },
+    "unified": true
+   },
+   "md5": "6dee7c6ea4de70988c71f2b3f9389752",
+   "spec": "section 11 digit cells"
+  },
+  {
+   "name": "ui_seg_8",
+   "present": true,
+   "box": [
+    48,
+    88
+   ],
+   "pinned_box": [
+    48,
+    88
+   ],
+   "logical": [
+    20,
+    36
+   ],
+   "box_ok": true,
+   "import": {
+    "sidecar": true,
+    "params": {
+     "mipmaps/generate": "true",
+     "compress/mode": "0",
+     "detect_3d/compress_to": "0"
+    },
+    "unified": true
+   },
+   "md5": "c32b1b03fbd2839e43df03d191adf621",
+   "spec": "section 11 digit cells"
+  },
+  {
+   "name": "ui_seg_9",
+   "present": true,
+   "box": [
+    48,
+    88
+   ],
+   "pinned_box": [
+    48,
+    88
+   ],
+   "logical": [
+    20,
+    36
+   ],
+   "box_ok": true,
+   "import": {
+    "sidecar": true,
+    "params": {
+     "mipmaps/generate": "true",
+     "compress/mode": "0",
+     "detect_3d/compress_to": "0"
+    },
+    "unified": true
+   },
+   "md5": "31bb2de11f65d78916d7843fb9e15850",
+   "spec": "section 11 digit cells"
+  },
+  {
+   "name": "ui_seg_blank",
+   "present": true,
+   "box": [
+    48,
+    88
+   ],
+   "pinned_box": [
+    48,
+    88
+   ],
+   "logical": [
+    20,
+    36
+   ],
+   "box_ok": true,
+   "import": {
+    "sidecar": true,
+    "params": {
+     "mipmaps/generate": "true",
+     "compress/mode": "0",
+     "detect_3d/compress_to": "0"
+    },
+    "unified": true
+   },
+   "md5": "a90eab91f6e1f3a477a3f3c0424427e6",
+   "spec": "section 11 digit cells"
+  },
+  {
+   "name": "ui_seg_pct",
+   "present": true,
+   "box": [
+    48,
+    88
+   ],
+   "pinned_box": [
+    48,
+    88
+   ],
+   "logical": [
+    20,
+    36
+   ],
+   "box_ok": true,
+   "import": {
+    "sidecar": true,
+    "params": {
+     "mipmaps/generate": "true",
+     "compress/mode": "0",
+     "detect_3d/compress_to": "0"
+    },
+    "unified": true
+   },
+   "md5": "ebf471a6e3388d537f3f30b5db2c62fb",
+   "spec": "section 11 digit cells"
+  },
+  {
+   "name": "ui_status_panel",
+   "present": true,
+   "box": [
+    1440,
+    1040
+   ],
+   "pinned_box": [
+    1440,
+    1040
+   ],
+   "logical": [
+    720,
+    520
+   ],
+   "box_ok": true,
+   "import": {
+    "sidecar": true,
+    "params": {
+     "mipmaps/generate": "true",
+     "compress/mode": "0",
+     "detect_3d/compress_to": "0"
+    },
+    "unified": true
+   },
+   "md5": "c8c0df57a61d68ea9b9751e3a9ab945f",
+   "spec": "section 12 run 5"
+  }
+ ],
+ "panels": [
+  {
+   "name": "panel_cockpit",
+   "present": true,
+   "box": [
+    2048,
+    2048
+   ],
+   "md5": "b823504ad9284afdb466b290c4d64f15"
+  },
+  {
+   "name": "panel_gauge",
+   "present": true,
+   "box": [
+    2048,
+    2048
+   ],
+   "md5": "f04f455a0099d679faa23679eff5100a"
+  },
+  {
+   "name": "panel_armory",
+   "present": true,
+   "box": [
+    2048,
+    2048
+   ],
+   "md5": "34dc944b2243b6f200e558a0cf9d09ca"
+  },
+  {
+   "name": "panel_armory_plates",
+   "present": true,
+   "box": [
+    2048,
+    2048
+   ],
+   "md5": "4bb8233f493fd0b5e8c5ab4a4a9647d2"
+  },
+  {
+   "name": "panel_status",
+   "present": true,
+   "box": [
+    2048,
+    1536
+   ],
+   "md5": "682f814ed4175508a3bea0ac2dc1af9c"
+  }
+ ],
+ "missing": [],
+ "box_mismatch": [],
+ "import_not_unified": []
+}

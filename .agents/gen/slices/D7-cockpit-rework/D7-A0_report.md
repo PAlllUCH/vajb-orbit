@@ -458,3 +458,428 @@ Ship the three flat plates as measured (all three cover their pinned boxes, §12
 retired well rows passes), or ask for a fifth status pass / a wording change to §12's flat prompts
 (Deviation 6). On approval, **A0b** reconciles and reimports the six changed assets (Deviation 8),
 then D7-C1/C2/C3 mount the plates and draw the wells at the pinned rects.
+
+---
+
+# D7-A1b — the glyph-only digit family, the D7 reconcile and the unified import
+
+**Written by D7-A1b, appended to A0's report.** Task: (1) re-author the twelve `ui_seg_*` masters as
+**glyph-only, transparent-background** cells per §12's post-mockup amendment and re-run AC5;
+(2) reconcile every shipped D7 master against the §12 table; (3) unify the import settings and
+trigger the reimport in a quiet window; (4) append the results here. **No code.** The owner approved
+the plates, which lifts A0's Deviation 7 (the brief's "`ui_seg_*` stay byte-identical" rule) — the
+§12 amendment is the newer doc text and it is what the approved cockpit look requires.
+
+## Result
+
+| item | outcome |
+|---|---|
+| the twelve `ui_seg_*` | re-authored **glyph-only** (segment lattice alone, transparent plate) at 48×88, same names, shipped (`staging/phase_g/ui/_seg_glyph/`) |
+| AC5 digit QC | **PASS** on the re-authored family — containment **1.0000 on all 12 cells**, blank smallest, `1` smallest digit, `8` largest, no by-segment inversion |
+| §12 reconcile | **23/23** masters present, **no box mismatch**, all names as the table pins |
+| import settings | all 18 wave masters now read **mipmaps on / lossless / 3D auto-detect off** (5 needed the rewrite) |
+| reimport | 18 files reimported through the open editor; the cache's `source_md5` matches every shipped source |
+| code touched | none — `game/`, `autoload/`, `ui/hud/**`, `ui/station/**`, `ui/theme/`, `project.godot`, `docs/`, `addons/`, `tests/**` untouched |
+
+## 1. The twelve glyph-only cells
+
+§12's post-mockup amendment: "the D6 `ui_seg_*` cells carry painted plate backgrounds and are
+**re-authored as glyph-only, transparent-background cells under the same 12 names**: rasterise the
+existing `staging/phase_g/_svg/ui_seg_*.svg` segment lattice alone (drop the plate-face layer) at
+48×88 — no paid generation." The lattices live at `staging/phase_g/ui/_svg/` (the path in the
+amendment omits the `ui/` level); they are the ones `seg_svg_digits.py` authored from
+`seg_geometry.lattice`, so the glyph geometry is exactly the geometry AC5 measures against. New step
+`staging/phase_g/seg_glyph_only.py` rasterises each lattice **directly at 48×88** on a transparent
+canvas and ships the twelve PNGs; the D6 plate-composited bytes it replaces are snapshotted to
+`staging/phase_g/ui/_a1b_backup/` (+ `MANIFEST.md5`, `README.md`).
+
+| file | box | transparent | ink | opaque palette | md5 (new) | md5 (D6, replaced) |
+|---|---|---|---|---|---|---|
+| `ui_seg_0` | 48×88 | 64.06 % | 35.94 % | `#C9CDD2` 0.878 / `#2A2E35` 0.122 | `bb05f189` | `7a884ea0` |
+| `ui_seg_1` | 48×88 | 64.06 % | 35.94 % | `#2A2E35` 0.647 / `#C9CDD2` 0.353 | `b1875f42` | `357ef3fa` |
+| `ui_seg_2` | 48×88 | 64.06 % | 35.94 % | `#C9CDD2` 0.695 / `#2A2E35` 0.305 | `7b878e72` | `be0ef507` |
+| `ui_seg_3` | 48×88 | 64.06 % | 35.94 % | `#C9CDD2` 0.744 / `#2A2E35` 0.256 | `2d0ec8d8` | `f570fd9b` |
+| `ui_seg_4` | 48×88 | 64.06 % | 35.94 % | `#C9CDD2` 0.603 / `#2A2E35` 0.397 | `fd9aeb81` | `2956fba0` |
+| `ui_seg_5` | 48×88 | 64.06 % | 35.94 % | `#C9CDD2` 0.695 / `#2A2E35` 0.305 | `71f89a1a` | `ea95b9f6` |
+| `ui_seg_6` | 48×88 | 64.06 % | 35.94 % | `#C9CDD2` 0.824 / `#2A2E35` 0.176 | `f4d6e6a0` | `381d4785` |
+| `ui_seg_7` | 48×88 | 64.06 % | 35.94 % | `#2A2E35` 0.513 / `#C9CDD2` 0.487 | `6dee7c6e` | `bb6f91ba` |
+| `ui_seg_8` | 48×88 | 64.06 % | 35.94 % | `#C9CDD2` 1.000 | `c32b1b03` | `60ea0ba5` |
+| `ui_seg_9` | 48×88 | 64.06 % | 35.94 % | `#C9CDD2` 0.872 / `#2A2E35` 0.128 | `31bb2de1` | `3a200a94` |
+| `ui_seg_pct` | 48×88 | 64.06 % | 35.94 % | `#2A2E35` 0.573 / `#C9CDD2` 0.427 | `ebf471a6` | `b0e17a4f` |
+| `ui_seg_blank` | 48×88 | 64.06 % | 35.94 % | `#2A2E35` 1.000 | `a90eab91` | `f9c2f26f` |
+
+Every cell now carries **only** the two segment fills (`#C9CDD2` lit, `#2A2E35` unlit) on
+transparency — 64.06 % of each cell is transparent, against **6.34 %** for the D6 plate-composited
+bytes; the plate face is gone. The **ghost survives by construction**: §11's "ghost outline present
+in every cell" is the *unlit* lattice, which stays drawn as opaque panel steel, so a bare drum still
+reads its full figure-8 with the lit bars bone. The ink share is constant across the family (35.94 %)
+because all seven bars are always drawn; only the lit/unlit split moves.
+
+**Direct rasterisation, not supersample+downscale (measured route choice).** The D6 route rendered at
+4× and LANCZOS-resized to 48×88 before compositing. Applied to a *transparent* cell that produces a
+soft sprite — 1272 partial-alpha pixels of 4224, and 2 dominant opaque colours that are not the
+lattice's own (`#CCD0D6` 0.122, `#D6DADF` 0.047 beside the correct `#C9CDD2` 0.400 / `#2A2E35`
+0.074) because PIL resizes the RGBA plane without premultiplying. Rasterising directly at 48×88 gives
+2 opaque colours and 208 fringe pixels, so the lattice's fills are the only opaque colours in the
+file. The amendment names the master box, so direct is also the literal reading. **Reversal:** re-add
+the `SS` supersample + LANCZOS downscale in `seg_glyph_only.rasterise` and re-ship.
+
+## 2. AC5 digit QC re-run on the re-authored family
+
+`python3 staging/phase_g/qc_seg_digits.py --dir staging/phase_g/ui/_seg_glyph --json
+staging/phase_g/ui/qc_seg_glyph.json` — the **unmodified** tool, so the yardstick is the one D6 was
+measured with. Reference: 7 ghost segment boxes read off `ui_seg_blank`'s own unlit bars (`ghost ink`),
+`[[13,4,34,19],[30,19,46,44],[30,43,46,69],[13,68,34,84],[2,43,14,69],[2,19,14,44],[13,36,34,52]]`.
+
+| cell | plate px | lit px | ink share | containment | segs | verdict |
+|---|---|---|---|---|---|---|
+| `ui_seg_0` | 1518 | 1310 | 0.8630 | **1.0000** | 6 | PASS |
+| `ui_seg_1` | 1518 | 526 | 0.3465 | **1.0000** | 2 | PASS |
+| `ui_seg_2` | 1518 | 1082 | 0.7128 | **1.0000** | 5 | PASS |
+| `ui_seg_3` | 1518 | 1166 | 0.7681 | **1.0000** | 5 | PASS |
+| `ui_seg_4` | 1518 | 910 | 0.5995 | **1.0000** | 4 | PASS |
+| `ui_seg_5` | 1518 | 1082 | 0.7128 | **1.0000** | 5 | PASS |
+| `ui_seg_6` | 1518 | 1258 | 0.8287 | **1.0000** | 6 | PASS |
+| `ui_seg_7` | 1518 | 742 | 0.4888 | **1.0000** | 3 | PASS |
+| `ui_seg_8` | 1518 | 1518 | 1.0000 | **1.0000** | 7 | PASS |
+| `ui_seg_9` | 1518 | 1342 | 0.8841 | **1.0000** | 6 | PASS |
+| `ui_seg_pct` | 1518 | 650 | 0.4282 | **1.0000** | 5\* | PASS |
+| `ui_seg_blank` | 1518 | 0 | 0.0000 | **1.0000** | – | PASS |
+
+- containment ≥ 95 % on every cell: **PASS** (1.0000 on all twelve)
+- blank smallest of all: **PASS** (blank 0.0000, next 0.3465)
+- `1` smallest of the digits: **PASS** (1 0.3465); `8` largest: **PASS** (8 1.0000)
+- by-segment order (more lit segments ⇒ more ink): **PASS**, no inversions
+- literal `1 ≤ 2 ≤ … ≤ 8`: **does not hold** — impossible for a seven-segment font (segment counts
+  `1→2, 2→5, 3→5, 4→4, 5→5, 6→6, 7→3, 8→7`). Reported, not enforced; the same finding D6-M0 recorded
+  (`_state/LOW_BACKLOG.md` L145).
+- **AC5 verdict: PASS.**
+
+\* the `segs` column reads 5 for `ui_seg_pct`, which is the first-pass *generated* percent sign
+(`a,f,g,c,d`). The authored lattice is `seg_geometry.PCT_SEGMENTS = "f,g,c"` — **3 segments**, per the
+D6 cure that replaced the slash with seven-segment dots-and-stroke. The stale constant is a reporting
+column only: `qc_seg_digits.SEGMENTS` is read by no verdict (by-segment ordering iterates the ten
+digits), so the tool was left byte-identical. Finding below.
+
+## 3. Reconcile — every shipped D7 master against §12
+
+`python3 staging/phase_g/reconcile_d7.py --json staging/phase_g/ui/reconcile_d7.json` reads the
+shipped bytes, not the logs. §11/§12 names 23 masters in the family (6 panel/frame masters + 12 digit
+cells + the 5 instruments the cockpit still reuses).
+
+| file | present | box | pinned | logical | verdict |
+|---|---|---|---|---|---|
+| `ui_cockpit_panel` | yes | 928×512 | 928×512 | 464×256 | OK |
+| `ui_gauge_face` | yes | 240×240 | 240×240 | 120×120 | OK |
+| `ui_armory_console` | yes | 1744×1816 | 1744×1816 | 872×908 | OK |
+| `ui_armory_rack_plate` | yes | 194×182 | 194×182 | 97×91 | OK |
+| `ui_armory_row_plate` | yes | 192×64 | 192×64 | – | OK |
+| `ui_status_panel` | yes | 1440×1040 | 1440×1040 | 720×520 | OK |
+| `ui_cockpit_frame` | yes | 192×192 | 192×192 | – | OK |
+| `ui_gauge_needle` | yes | 16×192 | 16×192 | 8×96 | OK |
+| `ui_compass_rose` | yes | 192×192 | 192×192 | 96×96 | OK |
+| `ui_compass_lubber` | yes | 32×24 | 32×24 | 16×12 | OK |
+| `ui_readout_glass` | yes | 272×380 | 272×380 | 136×190 | OK |
+| `ui_seg_0` … `ui_seg_9` | yes | 48×88 | 48×88 | 20×36 | OK (×10) |
+| `ui_seg_pct`, `ui_seg_blank` | yes | 48×88 | 48×88 | 20×36 | OK |
+
+**23/23 present, no box mismatch.** Provenance panels under `assets/icons/`: `panel_cockpit` 2048×2048,
+`panel_gauge` 2048×2048, `panel_armory` 2048×2048, `panel_armory_plates` 2048×2048, `panel_status`
+2048×1536 (its render canvas is 4:3) — all five present.
+
+## 4. Import settings unified, and the reimport
+
+`staging/phase_g/import_settings_d7.py` rewrites only the three `[params]` lines of a sidecar
+(`[remap]`/`[deps]` and every other param stay byte-identical, so the editor keeps the uid and imported
+path it already derived); the pre-rewrite sidecars are snapshotted to
+`staging/phase_g/ui/_a1b_backup/import/`. Applied to the five panels that still carried the editor
+defaults — the twelve digit cells and `ui_gauge_face` already read the unified set.
+
+| file | before | after | sidecar lines changed |
+|---|---|---|---|
+| `ui_cockpit_panel` | `mipmaps=false, mode=0, detect_3d=1` | `true / 0 / 0` | 2 (`mipmaps/generate`, `detect_3d/compress_to`) |
+| `ui_armory_console` | `false / 0 / 1` | `true / 0 / 0` | 2 |
+| `ui_armory_rack_plate` | `false / 0 / 1` | `true / 0 / 0` | 2 |
+| `ui_armory_row_plate` | `false / 0 / 1` | `true / 0 / 0` | 2 |
+| `ui_status_panel` | `false / 0 / 1` | `true / 0 / 0` | 2 |
+| the 12 `ui_seg_*` + `ui_gauge_face` | `true / 0 / 0` | unchanged | 0 |
+
+A second run of the tool reports **0 needing the set** (`staging/phase_g/ui/import_settings_d7.json`),
+so the state is idempotent.
+
+**Reimport in the quiet window.** The editor session `vajb-orbit@86fd6072c72f957c` was live and idle
+(`readiness ready`, `play_state stopped`, no game running), so the reimport ran **through the open
+editor**, never a second engine instance. `filesystem_manage reimport` on the 17 changed paths
+answered `reimported_count: 17`, but **nothing was written to `.godot/imported/`** — the call registers
+the files, the import itself drains in the editor's scan pass. `filesystem_manage scan` (settled,
+`global_classes_registered_delta: 0`) ran the import; `.godot/imported/` was rewritten at that point.
+Recorded as a workflow finding: **`reimport` alone is not enough on this editor build; follow it with
+`scan`.**
+
+Final import state (`staging/phase_g/ui/import_state_d7.json`; every `.ctex`'s cached `source_md5`
+equals its shipped source):
+
+| file | box | ctex before | ctex after | Δ | cache |
+|---|---|---|---|---|---|
+| `ui_cockpit_panel` | 928×512 | 581 486 | 779 570 | +198 084 | current |
+| `ui_gauge_face` | 240×240 | 73 344 | 73 344 | 0 | current |
+| `ui_armory_console` | 1744×1816 | 4 121 006 | 5 446 836 | +1 325 830 | current |
+| `ui_armory_rack_plate` | 194×182 | 22 994 | 32 808 | +9 814 | current |
+| `ui_armory_row_plate` | 192×64 | 8 300 | 12 354 | +4 054 | current |
+| `ui_status_panel` | 1440×1040 | 1 834 966 | 2 423 720 | +588 754 | current |
+| `ui_seg_0` | 48×88 | 7 866 | 1 362 | −6 504 | current |
+| `ui_seg_1` | 48×88 | 7 810 | 1 456 | −6 354 | current |
+| `ui_seg_2` | 48×88 | 7 906 | 1 494 | −6 412 | current |
+| `ui_seg_3` | 48×88 | 7 902 | 1 356 | −6 546 | current |
+| `ui_seg_4` | 48×88 | 7 902 | 1 456 | −6 446 | current |
+| `ui_seg_5` | 48×88 | 7 922 | 1 504 | −6 418 | current |
+| `ui_seg_6` | 48×88 | 7 918 | 1 460 | −6 458 | current |
+| `ui_seg_7` | 48×88 | 7 884 | 1 530 | −6 354 | current |
+| `ui_seg_8` | 48×88 | 7 890 | 1 198 | −6 692 | current |
+| `ui_seg_9` | 48×88 | 7 898 | 1 362 | −6 536 | current |
+| `ui_seg_pct` | 48×88 | 7 900 | 1 566 | −6 334 | current |
+| `ui_seg_blank` | 48×88 | 7 830 | 1 224 | −6 606 | current |
+
+The five panels' `+34 %` growth is the mip chain the flag change adds (the `mipmaps/generate=true`
+proof); `ui_gauge_face` is unchanged because its sidecar already read the unified set. The digit cells
+shrink ~80 % because the glyph-only PNGs compress far better losslessly than the plate-composited ones.
+A1's Deviation 8 (a six-file stale cache) no longer applies: every one of the six now matches.
+
+## Deviations and findings
+
+Buckets per the `AGENTS.md` escalation ladder.
+
+1. **`qc_seg_digits.SEGMENTS["ui_seg_pct"] = 5` is stale against the authored lattice (bucket 1,
+   reporting column only).** `seg_geometry.PCT_SEGMENTS = "f,g,c"` is the set `seg_svg_digits.py`
+   rasterised, and the D6 report records the cure (the slash could not pass containment, and the
+   first pass's `a,f,g,c,d` was literally the digit 5). The dict's value is read by no verdict, so the
+   tool was left **byte-identical** for this re-run and the correction is reported instead: read the
+   column as `3` for `ui_seg_pct`, or set `SEGMENTS["ui_seg_pct"] = 3` in a tool pass outside a QC
+   re-run.
+2. **The brief's "`ui_seg_*` stay byte-identical" hard rule is superseded (bucket 3 — already ruled).**
+   A0 recorded the contradiction (Deviation 7); the owner's approval of the plates, with §12's
+   post-mockup amendment as the newer doc text, is the ruling this step executes. `ui_compass_*`,
+   `ui_gauge_needle`, `ui_cockpit_frame`, `ui_readout_glass`, `ui_gauge_face` and the two armory
+   plates remain byte-identical. **Reversal:** copy `_a1b_backup/ui_seg_*.png` back and reimport.
+3. **Direct-at-48×88 rasterisation replaces the D6 supersample+LANCZOS (bucket 1, measured).** See
+   §1. **Reversal:** restore the `SS` supersample in `seg_glyph_only.rasterise`.
+4. **The glyph-only prepared masters live in `ui/_seg_glyph/`, not `ui/_masters/` (bucket 1).** The
+   plate-composited D6 masters stay in `_masters/` as the D6 record, and `ship_d6.py`'s `PREPARED`
+   route string for the digit cells still names `seg_svg_digits.py` — **a future `ship_d6` run would
+   re-ship the plate masters over the glyph-only ones.** Flagged for whoever next runs that tool: point
+   `ship_d6.PREPARED` at `seg_glyph_only.py` / `_seg_glyph/` before re-shipping the family.
+5. **`filesystem_manage reimport` does not by itself reimport on this editor build (bucket 1,
+   workflow).** `reimport` answers success for 17 paths while `.godot/imported/` is not rewritten; the
+   following `filesystem_manage scan` performs the import. Recorded in §4; worth a line in the
+   environment skill if it repeats.
+6. **No D7 rendering artifact for the glyph family was commissioned (bucket 1, deliberate).** The
+   amendment says "no paid generation", and the lattice is hand-authored, so the 12 cells have no
+   render, no job id and no provenance panel; `staging/phase_g/ui/_seg_glyph/` plus this report are
+   their provenance. Review image: `staging/phase_g/_review/d7a1b_seg_glyph.png` (the twelve cells at
+   4× on a dark backdrop).
+
+## Evidence
+
+```
+python3 staging/phase_g/seg_glyph_only.py [--ship] [--preview <png>]      # re-author + ship the 12
+python3 staging/phase_g/qc_seg_digits.py --dir staging/phase_g/ui/_seg_glyph \
+        --json staging/phase_g/ui/qc_seg_glyph.json                       # AC5 re-run (tool unmodified)
+python3 staging/phase_g/reconcile_d7.py --json staging/phase_g/ui/reconcile_d7.json
+python3 staging/phase_g/import_settings_d7.py                             # check
+python3 staging/phase_g/import_settings_d7.py --apply --json staging/phase_g/ui/import_settings_d7.json
+# then, editor live and idle: filesystem_manage op=reimport (17 paths) -> filesystem_manage op=scan
+```
+
+Logs/artifacts: `staging/phase_g/ui/qc_seg_glyph.json`, `reconcile_d7.json`,
+`import_settings_d7.json`, `import_state_d7.json`, `_a1b_backup/{MANIFEST.md5,README.md,import/}`,
+`staging/phase_g/_review/d7a1b_seg_glyph.png`.
+
+## Files touched
+
+- `vajb-orbit/assets/ui/` — the **12 `ui_seg_*` masters replaced** (glyph-only bytes; table above) and
+  **5 `.import` sidecars** (`ui_cockpit_panel`, `ui_armory_console`, `ui_armory_rack_plate`,
+  `ui_armory_row_plate`, `ui_status_panel`) unified to `mipmaps=true / mode=0 / detect_3d=0`
+- `vajb-orbit/.godot/imported/` — 18 reimported `.ctex`/`.md5` pairs (editor-written, gitignored)
+- `staging/phase_g/seg_glyph_only.py` — **new**: the glyph-only re-authoring + ship step
+- `staging/phase_g/reconcile_d7.py` — **new**: name/box/import reconciliation against §11/§12
+- `staging/phase_g/import_settings_d7.py` — **new**: the unified import settings for the wave
+- `staging/phase_g/ui/_seg_glyph/`, `_a1b_backup/`, the four JSONs, `_review/d7a1b_seg_glyph.png`
+
+No `game/`, `autoload/`, `project.godot`, `ui/theme/`, `ui/hud/**`, `ui/station/**`, `docs/`,
+`addons/` or test file was touched; no paid generation ran (spend **$0.00**). Binary PNGs are
+gitignored by design, so the digit-family bytes are verified by the md5 table above rather than by
+`git status`.
+---
+
+# D7-A2 — the armory console re-rendered on the ruled canvas (UI_SPEC §3.10 Amendment 2)
+
+**Written by D7-A2, appended to A0's report.** Task: re-render **only** `ui_armory_console` as a
+flat painted plate at **1744×1912** (2× the ruled 872×956 canvas, `UI_SPEC` §3.10 Amendment 2, the
+D7-R1 MED-1 ruling) — plate texture only (brushed steel, bolt heads, plate seams), **no wells and
+no recesses**; Phase G lane order (render → `panels.py --detect` → cut each → key each → trim); §12
+QC minus the retired well rows; back up the current master + its provenance panel first; ship under
+the same names. **This run ships directly** — the look is owner-approved already (A1's flat-plate
+subject kept verbatim apart from the outline clause, and only the canvas aspect is corrected), so
+there is no approval stop between the render and the ship. **No code.**
+
+## Result
+
+| shipped file | box | cut box | fit scale | ink containment | ink share | md5 |
+|---|---|---|---|---|---|---|
+| `assets/ui/ui_armory_console.png` | **1744×1912** | 1929×2064 | 0.9041 | **100.00 %** | 95.97 % | `4f97aa94` |
+| `assets/icons/panel_armory.png` | 2048×2048 (provenance render) | — | — | — | — | `34dc944b` |
+
+(The coverage probe's `scale 0.9079` is its ink-box model of the same fit — it measures the render
+before the cut exists; the shipped cut's real fit scale is 0.9041, both reported by `qc_d7_a1.py`.)
+
+§12's QC minus the well rows: `box_match=True` for all six masters and ink containment **100.00 %**
+on every cut (`staging/phase_g/ui/qc_d7_a2_shipped.json`, ≥ 95 % required); `reconcile_d7.py` reads
+**23/23 masters present, no box mismatch, import unified** now that its table carries the
+Amendment-2 box (`staging/phase_g/ui/reconcile_d7.json`). `ui_cockpit_panel`, `ui_status_panel`,
+`ui_gauge_face`, `ui_armory_rack_plate` and `ui_armory_row_plate` were re-staged and verified
+**byte-identical** to what already ships (`e238e6f5` / `c8c0df57` / `860c1ce5` / `acf82595` /
+`b1568ade`) and were not re-copied into the project.
+
+**The MED-1 defect is closed as measured:** the plate now covers **100.00 %** of the pinned well
+union (y 244–1864 of the 1912 box) with a render ink aspect of **0.930 against the box's 0.912**,
+filling **99.14 % × 97.23 %** of the box (A1's plate filled 99.20 % × 95.43 % of the *retired* 1816
+box, and against the pane's drawn `ConsolePlate` size — measured by D7-R1 at **872×956**, exactly
+the ruled canvas — the 1816 master was a 5.29 % vertical fill-stretch). The master is now exactly
+**2× the drawn block on both axes** (1744/872 = 1912/956 = 2.0), so nothing stretches: Amendment 2's
+whole point. Measured by `qc_d7_a1.py`'s own geometry
+(`staging/phase_g/ui/qc_d7_a2_coverage.json`).
+
+## Why the plate had to be re-rendered rather than re-fitted, and the eight passes it took
+
+`contain` puts a plate at `W = 1744` and `H = 1744 / aspect` when the plate is wider than the box
+and at `H = 1912` and `W = 1912 × aspect` when it is taller. Covering the union (x 60–1684,
+y 244–1864) with a **centred** plate therefore needs the plate's drawn rect to be at least
+**1624 × 1816** — the width is the union's own 1624, and the height is the union's 1864 bottom edge
+doubled about the box centre (2 × (1864 − 956)) — so the cut aspect must be in **[0.855, 0.960]**.
+A square plate cannot reach it at all: a 2048 px canvas caps its contained height below 1744 px
+(≈1730 for a 1946 px square), some 85 px short of 1816. A1's shipped render is 1965×1968
+(aspect 0.998) and `contain`-fits the new box at 91.4 % of its height, which is why re-fitting was
+not an option: the plate has to be a little taller than it is wide, but only by 4–15 %.
+
+Eight passes, each measured the same way (ink box → cut aspect → well-union coverage). All renders
+`flare` 2K, `style-block.txt` verbatim preamble, §12's framing sentence, §8's negatives, `pad_share`
+0.0:
+
+| pass | run folder | canvas | job id | ink box | cut aspect | union | verdict |
+|---|---|---|---|---|---|---|---|
+| p1 | `20260924-123123` | 1:1 | `c3a7245583f68d7e79920dc7adff533f` | 1667×2025 | 0.823 | 96.18 % | rejected |
+| p2 | `20260924-123236` | 1:1 | `e3ed8d5bdf9607335f12eefad9918570` | 1946×1940 | 1.003 | 96.62 % | rejected |
+| p3 | `20260924-123344` | 1:1 | `3c405addb1d663b0da4c3f58ecea679d` | 1385×1976 | 0.701 | 81.83 % | rejected |
+| p4 | `20260924-123458` | 1:1 | `3409d72fa46666d8e3e5e19a7a6d4742` | 1663×2000 | 0.832 | 97.11 % | rejected |
+| p5 | `20260924-123645` | 1:1 | `eb62e4d3d3bd6675e91933a18416b1b7` | 1493×2030 | 0.735 | 85.90 % | rejected |
+| p6 | `20260924-123758` | 3:4 | `007f2af928e7a0d8971c4a1da6b833ef` | 1182×1930 | 0.612 | 71.49 % | rejected |
+| p7 | `20260924-123919` | 1:1 | `0f60165b9f309065f9151d5d9b76b4d6` | 1473×2035 | 0.724 | 84.54 % | rejected |
+| **p8** | **`20260924-124037`** | **1:1** | **`a637f6eb2dcaa337a2228b49800c40c1`** | **1905×2048** | **0.930** | **100.00 %** | **SHIPS** |
+
+The measured lesson: on a 1:1 canvas the model has exactly **two modes** — it either fills the frame
+(aspect ≈ 1.00, p2) or draws a portrait plate (0.70–0.83, p1/p3/p4/p5/p7) — and no wording landed
+between them (the ratio words 0.90/0.95/nine-to-ten all came back at or below their ask; "a tenth
+taller than it is wide" came back 0.70; the 3:4 canvas made it narrower still). Pass 8 is the only
+self-consistent instruction: it keeps the frame-filling mode on the **vertical** axis ("the plate
+reaching the frame's top edge and bottom edge") and puts the missing ~6 % of width in two named
+white strips at the sides, so the plate is ~1792×2048 rather than a compromise between two
+contradictory clauses. The full wording is `wave_g.UI_D7_ARMORY_CONSOLE_FLAT_A2`; every earlier
+pass stays in its own run folder as provenance.
+
+Cut/key order (`refit_panels.py`, one object on a 1×1 grid): ink 1905×2048 → alpha 1913×2048
+**PASS** (one billed `recraft/remove-background` call) → `trim_centre` → `1929×2064`.
+
+## Deviations from §12 / the brief
+
+Buckets per the `AGENTS.md` escalation ladder.
+
+1. **Eight renders, not one (bucket 1 — cost, reported).** §12's two-step remedy is "one re-render,
+   then the fallback"; that rule is for a render whose **wells** do not line up, and Amendment 2
+   retired the well rows for this panel. What failed here is the **plate's own aspect against the
+   new box**, which §12 does not address at all (A1's Deviation 6 proposed exactly that wording:
+   "*the three flat plates' render outline matches the pinned master box's aspect (±5 %)*"). The
+   first seven passes are the measured search for an aspect in [0.855, 0.960]; the spend is
+   **8 × 2K = 80 credits ≈ $0.40** real (10 credits = $0.05 per 2K, the `AGENTS.md` basis; the
+   script's printed estimate over-reports 3×) plus **1 recraft key ≈ $0.005**, and it is recorded
+   here rather than hidden. **Reversal:** no further spend — the shipped pass is the covering one.
+2. **The render canvas moved to 1:1 with a width-strip clause (bucket 1 — route).** Amendment 2
+   drops the `recessed well` phrases but says nothing about the plate's outline; A1 added an
+   outline-proportion clause and a canvas pinned to the box's nearest supported aspect. Both are
+   kept, but the 0.912 box has no matching canvas (1:1 is 0.088 away, 3:4 is 0.162), so the outline
+   is steered in words and the canvas stays at the nearest supported 1:1. **Reversal:** restore the
+   A1 wording and accept a plate that covers the union only ~96 %.
+3. **The staging constants carry the Amendment-2 box now (bucket 1).** `wave_g.UI_D7_LOGICAL`
+   (`872×956`) / `UI_D7_MASTER` (`1744×1912`), `qc_d7.BOXES`, `qc_d7_a1.WELL_UNIONS` (the ammo well
+   grown to the Amendment-2 136 → `(60,1592)-(1684,1864)`), `reconcile_d7.TABLE` and
+   `ship_d7.py`'s plan/log all move together, so the QC measures the shipped bytes against the
+   ruled box. The retired 872×908 / 1744×1816 pair stays in the pass tables and in A1's section as
+   the record. **Reversal:** the `_a2_backup/` restore block below.
+4. **A2's provenance panel is the new flat render (bucket 1).** `panel_armory.png` now carries the
+   pass-8 render (2048×2048) that `4f97aa94` was cut from; A1's render is the one in
+   `_a2_backup/renders/`. `ship_d7.py`'s `PANEL_NAMES_A1` and `PLAN_RUNS` lead with the A2 run so
+   the console's plate and provenance both come from it.
+5. **The reimport needs a `scan` before a `reimport` (bucket 1 — process finding).** The first
+   `filesystem_manage reimport` reported both paths reimported but left the cache stamp on the old
+   source (`a8382b40`); a `filesystem_manage scan` followed by the same reimport rewrote both
+   `.ctex` pairs at 12:42:46 with `source_md5` = the shipped bytes (`4f97aa94` / `34dc944b`). This
+   sharpens A1b's own import note: after an out-of-band byte write, scan first, then reimport, then
+   check the stamp — the `reimported` list alone is not evidence the cache moved.
+6. **The armory rack plate's well row still FAILs (A0's standing finding, unchanged).** `qc_d7.py`
+   reports `worst_recess_ratio 1.112`, `centre_inside=False` on all four slots; `ui_armory_rack_plate`
+   is A0's bytes and is not one of the plates Amendment 2 re-renders (A1's Deviation 9 already
+   records it). Not fixed here.
+
+## Evidence
+
+Commands (host-neutral, from `$VAJB_WORKSPACE`; the interpreter is Linux `python3` under
+`uv run --with numpy --with pillow --with scipy`):
+
+```
+python3 staging/phase_g/wave_g.py panel_armory_console_flat_a2           # 8 × 2K, 1 paid call each
+python3 staging/phase_g/panels.py --detect <render> --grid 1x1 --page ... --json ...
+python3 staging/phase_g/qc_d7_a1.py <render> --panel ui_armory_console --pad-share 0.0
+python3 staging/phase_g/refit_panels.py panel_armory_console_flat_a2    # cut -> key -> trim
+python3 staging/phase_g/ship_d7.py --replace --only ui_armory_console   # stage, copy, log
+python3 staging/phase_g/qc_d7_a1.py --shipped --json .../qc_d7_a2_shipped.json
+python3 staging/phase_g/qc_d7.py --json staging/phase_g/ui/qc_d7_a2.json
+python3 staging/phase_g/qc_d7_a1.py --json .../qc_d7_a2_coverage.json
+python3 staging/phase_g/reconcile_d7.py --json staging/phase_g/ui/reconcile_d7.json
+python3 staging/phase_g/build_review_d7_a2.py
+# then, editor live and idle: filesystem_manage op=scan -> op=reimport (both changed paths)
+```
+
+Logs/records: `staging/phase_g/ui/_a2_render.log`, `_a2_refit.log`,
+`_a2_detect_panel_armory_console_flat_a2.{json,jpg}` (pass 1) and `..._p2` … `..._p8` for the rest,
+`_a2_backup/{MANIFEST.md5,README.md}`, `qc_d7_a2_shipped.json`, `qc_d7_a2.json`,
+`qc_d7_a2_coverage.json`, `reconcile_d7.json`, `_review/d7a2_console.png` (760×1984) / `.jpg`
+(176 KB) — the plate at its logical box and 2×, the well-union coverage overlay, and the eight-pass
+table with the chosen render and cut.
+
+## Files touched
+
+- `vajb-orbit/assets/ui/ui_armory_console.png` — **replaced** (1744×1816 → **1744×1912**,
+  `a8382b40` → `4f97aa94`); its `.import` sidecar is unchanged (A1b's unified set already applies)
+- `vajb-orbit/assets/icons/panel_armory.png` — **replaced** (the A2 flat render, `aa2fc8df` →
+  `34dc944b`)
+- `vajb-orbit/.godot/imported/` — the two reimported `.ctex`/`.md5` pairs (editor-written, gitignored)
+- `vajb-orbit/assets/ui/generation_log_d7.md` — regenerated by `ship_d7.py` (A1's copy kept at
+  `_a2_backup/generation_log_d7.md.a1`)
+- `staging/phase_g/wave_g.py` — the Amendment-2 box, the A2 run + its flat subject, the pass table
+- `staging/phase_g/ship_d7.py`, `qc_d7.py`, `qc_d7_a1.py`, `reconcile_d7.py` — the ruled box
+- `staging/phase_g/build_review_d7_a2.py` — **new**: the A2 review sheet
+- `staging/phase_g/ui/**` — the eight renders, `_cells/20260924-124037/`, `_masters/`, `_a2_backup/`,
+  the QC JSONs and logs, `_review/d7a2_console.{png,jpg}`
+
+No `game/`, `autoload/`, `project.godot`, `ui/theme/`, `ui/hud/**`, `ui/station/**`, `docs/`,
+`addons/` or test file was touched, and the gate is unchanged (no `.gd`, `.tscn` or `.tres` moved —
+art-only run, the same basis A0/A1/A1b report on). Binary PNGs are gitignored by design, so the
+shipped bytes are verified by the md5 tables above rather than by `git status`.
+
+## Follow-ups
+
+| Item | Kind | Where |
+|---|---|---|
+| §12 should state the aspect rule this run had to discover: the three flat plates' render outline matches the pinned master box's aspect (±5 %), so the plate covers the box it ships in | docs finding (bucket 2 — pinned wording; A1's Deviation 6, now with two measured runs behind it) | `docs/design/UI_CHROME_ASSETS_SPEC.md` §12 |
+| The 872×956 canvas has no supported `flare` render aspect (1:1 is 0.088 away, 3:4 is 0.162), so the plate's outline has to be steered in words; a future re-render of this panel should reuse pass 8's width-strip clause | route note (bucket 1) | `staging/phase_g/wave_g.py` (`UI_D7_ARMORY_CONSOLE_FLAT_A2`) |
+| The armory rack plate's slot row still fails its registration QC (A0's standing finding) | art finding | `D7-A0_report.md` §"Well measurements", `qc_d7.py` |
+| After an out-of-band asset write, `filesystem_manage reimport` alone left the cache stale — `scan` first, then `reimport`, then verify the `source_md5` stamp | process note (bucket 1) | `staging/phase_g/import_settings_d7.py`'s note |

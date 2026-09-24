@@ -57,7 +57,7 @@ func _fixture_host() -> Node:
 
 
 ## ---------------------------------------------------------------------------
-## Section 3.1b: the two pool bars and the emergency banner
+## Section 3.1b: the pool feed (the cluster's FUEL/ENRG dials) and the emergency banner
 ## ---------------------------------------------------------------------------
 
 
@@ -72,12 +72,23 @@ func test_pool_bars_hold_the_values_they_were_pushed() -> void:
 	assert_eq(float(maxima[FUEL]), 200.0, "fuel maximum")
 
 
-func test_the_bars_are_the_two_blocks_section_three_asks_for() -> void:
-	var bars: Dictionary = _hud.get(&"_pool_bars")
-	assert_true(bars.has(ENERGY) and bars.has(FUEL), "both pool bars exist")
-	var energy: ProgressBar = bars[ENERGY]
-	assert_false(energy.show_percentage, "show_percentage stays false")
-	assert_eq(energy.custom_minimum_size, Vector2(260.0, 14.0), "the 260 x 14 readout")
+func test_the_pool_blocks_retire_to_the_cluster_dials() -> void:
+	## UI_SPEC section 3.1b's 2026-09-24 amendment: the two ProgressBar blocks and their
+	## labels leave the flight HUD; the cluster's FUEL/ENRG value dials are the pool
+	## readouts now, fed by the same `set_pool` seam.
+	var retired: Array = _hud.call(&"retired_pool_blocks")
+	assert_eq(retired.size(), 2, "the energy and the fuel block")
+	for block: Control in retired:
+		assert_false(block.is_visible_in_tree(), "%s is off the flight HUD" % block.name)
+	## The feed lands on the dials instead: 40/100 reads 40 %, 12/200 reads 6 %.
+	_hud.call(&"set_pool", ENERGY, 40.0, 100.0)
+	_hud.call(&"set_pool", FUEL, 12.0, 200.0)
+	var cockpit: Control = _hud.call(&"cockpit")
+	assert_true(cockpit != null, "the cluster is built")
+	var pools: Dictionary = cockpit.call(&"pool_readings")
+	assert_eq(int(pools["enrg"]["percent"]), 40, "the ENRG dial reads the energy percent")
+	assert_eq(int(pools["fuel"]["percent"]), 6, "the FUEL dial reads the fuel percent")
+	assert_true(bool(pools["fuel"]["danger"]), "and 6 % is the fuel dial's danger read")
 
 
 func test_the_emergency_flag_flips_the_banner_and_the_energy_fill() -> void:

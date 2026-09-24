@@ -42,12 +42,15 @@ MASTERS = STAGE / "ui" / "_masters"
 
 D7_RUNS = ("panel_cockpit", "panel_gauge", "panel_armory_console", "panel_armory_plates",
            "panel_status")
-## Wave D7-A1, UI_CHROME_ASSETS_SPEC section 12 Amendment 2: the three console panels are re-rendered
-## as flat painted plates (their wells are code-drawn at the pinned rects), and those plates
-## supersede A0's well-bearing masters for the same three names. They head the plan so each name
-## ships once, from the newest cut.
-A1_RUNS = ("panel_cockpit_flat", "panel_armory_console_flat", "panel_status_flat")
-PLAN_RUNS = A1_RUNS + D7_RUNS
+## Wave D7-A1/A2, UI_CHROME_ASSETS_SPEC section 12 Amendment 2: the three console panels are
+## re-rendered as flat painted plates (their wells are code-drawn at the pinned rects), and those
+## plates supersede A0's well-bearing masters for the same three names. They head the plan so each
+## name ships once, from the newest cut. D7-A2 re-renders the armory console on the canvas UI_SPEC
+## section 3.10's Amendment 2 rules (872x956 -> 1744x1912) and heads the console name.
+FLAT_RUNS = ("panel_armory_console_flat_a2", "panel_cockpit_flat", "panel_armory_console_flat",
+             "panel_status_flat")
+A1_RUNS = FLAT_RUNS
+PLAN_RUNS = FLAT_RUNS + D7_RUNS
 ## The five renders' provenance panels under `assets/icons/`. ASSET_NAMING_SPEC section 12 names
 ## three of them (`panel_cockpit`, `panel_armory`, `panel_status`); the gauge re-cut and the
 ## two-cell plates render take derived `panel_` names under section 1's grammar (the D6
@@ -59,9 +62,11 @@ PANEL_NAMES = {
     "panel_armory_plates": "panel_armory_plates",
     "panel_status": "panel_status",
 }
-## The A1 re-render provides the provenance for the three names it supersedes: the shipped art is
-## the flat plate, so the whole render it was cut from is the provenance panel.
+## The flat re-renders provide the provenance for the three names they supersede: the shipped art is
+## the flat plate, so the whole render it was cut from is the provenance panel. The console's
+## provenance comes from the D7-A2 re-render (it heads `PLAN_RUNS`).
 PANEL_NAMES_A1 = {
+    "panel_armory_console_flat_a2": "panel_armory",
     "panel_cockpit_flat": "panel_cockpit",
     "panel_armory_console_flat": "panel_armory",
     "panel_status_flat": "panel_status",
@@ -79,12 +84,14 @@ LOG_HEAD = (
     "Alpha: each panel object is cut out of the render on its own box, keyed on its own through "
     "`recraft/remove-background` (`staging/phase_g/key_new.py`), then trimmed and centred "
     "(`staging/phase_g/refit_panels.py`); a panel is never keyed whole.\n"
-    "UI_CHROME_ASSETS_SPEC section 12 Amendment 2 (wave D7-A1): `ui_cockpit_panel`, "
-    "`ui_armory_console` and `ui_status_panel` are **flat painted plates** - their per-run prompts "
-    "drop every `recessed well` phrase and the wells are code-drawn recesses at the pinned rects, "
-    "so the plate is the whole surface the pinned box mounts. Their cuts ship with the lane's trim "
-    "pad at 0 (floored at 8 px) and, for the armory console and the status panel, a render canvas "
-    "at the pinned box's own aspect. `ui_gauge_face`, `ui_armory_rack_plate` and "
+    "UI_CHROME_ASSETS_SPEC section 12 Amendment 2 (wave D7-A1, console re-rendered by D7-A2): "
+    "`ui_cockpit_panel`, `ui_armory_console` and `ui_status_panel` are **flat painted plates** - "
+    "their per-run prompts drop every `recessed well` phrase and the wells are code-drawn recesses "
+    "at the pinned rects, so the plate is the whole surface the pinned box mounts. Their cuts ship "
+    "with the lane's trim pad at 0 (floored at 8 px) and, for the armory console and the status "
+    "panel, a render canvas at the pinned box's own aspect. `ui_armory_console` rides the canvas "
+    "UI_SPEC section 3.10's Amendment 2 rules (872x956 at 1x -> 1744x1912; the D7-R1 MED-1 ruling). "
+    "`ui_gauge_face`, `ui_armory_rack_plate` and "
     "`ui_armory_row_plate` are A0's bytes.\n"
     "AI-generated art is not CC0 (AGENTS.md).\n\n"
     "| File | Panel | Panel cell | Job | Box | Route | Prompt |\n|---|---|---|---|---|---|---|\n")

@@ -467,3 +467,139 @@ Full prompt:
 
 ---
 
+## panel_armory_console_flat_a2
+
+- Date/time: 2026-09-24 12:31 local
+- Model: `gpt-image-2-5-flare-text-to-image` (`flare`), 2K, 1:1
+- Job id: `c3a7245583f68d7e79920dc7adff533f` (elapsed 37.3s)
+- Style: `style-block.txt` verbatim as the prompt preamble (STYLE_BIBLE section 8)
+- Alpha: opaque panel on white; objects cut and keyed one at a time by refit_panels.py; run folder `20260924-123123` keeps `job.json`
+- Review-only: False
+- Final files: panel_armory_console_flat_a2.png
+- Status: success
+
+Full prompt:
+
+> painted UI instrument part, straight-on flat view, centred, plain solid pure white background: a rectangular painted metal console face, plain flat, the plate filling the frame up to a narrow plain white border all around, its outline slightly taller than it is wide, about 0.9 times as wide as it is tall: brushed steel plate with visible brush grain and flat plate seams between the steel plates, bolt heads at the four corners and along the seams, a continuous flat steel surface carrying no openings, no wells, no recesses and no machined slots; no glass, no screens. no stars, no ships, no wrecks, no ember glow, no logos, no text
+
+---
+
+## panel_armory_console_flat_a2
+
+- Date/time: 2026-09-24 12:32 local
+- Model: `gpt-image-2-5-flare-text-to-image` (`flare`), 2K, 1:1
+- Job id: `e3ed8d5bdf9607335f12eefad9918570` (elapsed 37.7s)
+- Style: `style-block.txt` verbatim as the prompt preamble (STYLE_BIBLE section 8)
+- Alpha: opaque panel on white; objects cut and keyed one at a time by refit_panels.py; run folder `20260924-123236` keeps `job.json`
+- Review-only: False
+- Final files: panel_armory_console_flat_a2.png
+- Status: success
+
+Full prompt:
+
+> painted UI instrument part, straight-on flat view, centred, plain solid pure white background: a rectangular painted metal console face, plain flat, the plate filling the frame up to a narrow plain white border all around, its outline nearly square, just a little taller than it is wide - about 0.95 times as wide as it is tall: brushed steel plate with visible brush grain and flat plate seams between the steel plates, bolt heads at the four corners and along the seams, a continuous flat steel surface carrying no openings, no wells, no recesses and no machined slots; no glass, no screens. no stars, no ships, no wrecks, no ember glow, no logos, no text
+
+---
+
+## panel_armory_console_flat_a2
+
+- Date/time: 2026-09-24 12:33 local
+- Model: `gpt-image-2-5-flare-text-to-image` (`flare`), 2K, 1:1
+- Job id: `3c405addb1d663b0da4c3f58ecea679d` (elapsed 37.7s)
+- Style: `style-block.txt` verbatim as the prompt preamble (STYLE_BIBLE section 8)
+- Alpha: opaque panel on white; objects cut and keyed one at a time by refit_panels.py; run folder `20260924-123344` keeps `job.json`
+- Review-only: False
+- Final files: panel_armory_console_flat_a2.png
+- Status: success
+
+Full prompt:
+
+> painted UI instrument part, straight-on flat view, centred, plain solid pure white background: a rectangular painted metal console face, plain flat, the plate filling the frame up to a narrow plain white border all around, its outline just a little taller than it is wide - about a tenth taller than it is wide: brushed steel plate with visible brush grain and flat plate seams between the steel plates, bolt heads at the four corners and along the seams, a continuous flat steel surface carrying no openings, no wells, no recesses and no machined slots; no glass, no screens. no stars, no ships, no wrecks, no ember glow, no logos, no text
+
+---
+
+## panel_armory_console_flat_a2
+
+- Date/time: 2026-09-24 12:34 local
+- Model: `gpt-image-2-5-flare-text-to-image` (`flare`), 2K, 1:1
+- Job id: `3409d72fa46666d8e3e5e19a7a6d4742` (elapsed 37.5s)
+- Style: `style-block.txt` verbatim as the prompt preamble (STYLE_BIBLE section 8)
+- Alpha: opaque panel on white; objects cut and keyed one at a time by refit_panels.py; run folder `20260924-123458` keeps `job.json`
+- Review-only: False
+- Final files: panel_armory_console_flat_a2.png
+- Status: success
+
+Full prompt:
+
+> painted UI instrument part, straight-on flat view, centred, plain solid pure white background: a rectangular painted metal console face, plain flat, the plate filling the frame up to a narrow plain white border all around, its outline slightly taller than it is wide, about 0.95 times as wide as it is tall: brushed steel plate with visible brush grain and flat plate seams between the steel plates, bolt heads at the four corners and along the seams, a continuous flat steel surface carrying no openings, no wells, no recesses and no machined slots; no glass, no screens. no stars, no ships, no wrecks, no ember glow, no logos, no text
+
+---
+
+## panel_armory_console_flat_a2
+
+- Date/time: 2026-09-24 12:36 local
+- Model: `gpt-image-2-5-flare-text-to-image` (`flare`), 2K, 1:1
+- Job id: `eb62e4d3d3bd6675e91933a18416b1b7` (elapsed 37.4s)
+- Style: `style-block.txt` verbatim as the prompt preamble (STYLE_BIBLE section 8)
+- Alpha: opaque panel on white; objects cut and keyed one at a time by refit_panels.py; run folder `20260924-123645` keeps `job.json`
+- Review-only: False
+- Final files: panel_armory_console_flat_a2.png
+- Status: success
+
+Full prompt:
+
+> painted UI instrument part, straight-on flat view, centred, plain solid pure white background: a rectangular painted metal console face, plain flat, the plate filling the frame up to a narrow plain white border on all four sides, its outline slightly taller than it is wide, with a width-to-height ratio of about nine to ten: brushed steel plate with visible brush grain and flat plate seams between the steel plates, bolt heads at the four corners and along the seams, a continuous flat steel surface carrying no openings, no wells, no recesses and no machined slots; no glass, no screens. no stars, no ships, no wrecks, no ember glow, no logos, no text
+
+---
+
+## panel_armory_console_flat_a2
+
+- Date/time: 2026-09-24 12:37 local
+- Model: `gpt-image-2-5-flare-text-to-image` (`flare`), 2K, 1:1
+- Job id: `007f2af928e7a0d8971c4a1da6b833ef` (elapsed 16.7s)
+- Style: `style-block.txt` verbatim as the prompt preamble (STYLE_BIBLE section 8)
+- Alpha: opaque panel on white; objects cut and keyed one at a time by refit_panels.py; run folder `20260924-123758` keeps `job.json`
+- Review-only: False
+- Final files: panel_armory_console_flat_a2.png
+- Status: success
+
+Full prompt:
+
+> painted UI instrument part, straight-on flat view, centred, plain solid pure white background: a rectangular painted metal console face, plain flat, standing upright in the frame: the plate spanning the frame's full width with a plain white margin above and below it, its height about four fifths of the frame's height, so that its outline is a little taller than it is wide; brushed steel plate with visible brush grain and flat plate seams between the steel plates, bolt heads at the four corners and along the seams, a continuous flat steel surface carrying no openings, no wells, no recesses and no machined slots; no glass, no screens. no stars, no ships, no wrecks, no ember glow, no logos, no text
+
+---
+
+## panel_armory_console_flat_a2
+
+- Date/time: 2026-09-24 12:39 local
+- Model: `gpt-image-2-5-flare-text-to-image` (`flare`), 2K, 1:1
+- Job id: `0f60165b9f309065f9151d5d9b76b4d6` (elapsed 42.5s)
+- Style: `style-block.txt` verbatim as the prompt preamble (STYLE_BIBLE section 8)
+- Alpha: opaque panel on white; objects cut and keyed one at a time by refit_panels.py; run folder `20260924-123919` keeps `job.json`
+- Review-only: False
+- Final files: panel_armory_console_flat_a2.png
+- Status: success
+
+Full prompt:
+
+> painted UI instrument part, straight-on flat view, centred, plain solid pure white background: a rectangular painted metal console face, plain flat, the plate very nearly filling the frame: a plain white margin of about one fifteenth of the frame's width along its left and right edges, and a much narrower plain white margin above and below it, so that its outline is a little taller than it is wide; brushed steel plate with visible brush grain and flat plate seams between the steel plates, bolt heads at the four corners and along the seams, a continuous flat steel surface carrying no openings, no wells, no recesses and no machined slots; no glass, no screens. no stars, no ships, no wrecks, no ember glow, no logos, no text
+
+---
+
+## panel_armory_console_flat_a2
+
+- Date/time: 2026-09-24 12:40 local
+- Model: `gpt-image-2-5-flare-text-to-image` (`flare`), 2K, 1:1
+- Job id: `a637f6eb2dcaa337a2228b49800c40c1` (elapsed 37.2s)
+- Style: `style-block.txt` verbatim as the prompt preamble (STYLE_BIBLE section 8)
+- Alpha: opaque panel on white; objects cut and keyed one at a time by refit_panels.py; run folder `20260924-124037` keeps `job.json`
+- Review-only: False
+- Final files: panel_armory_console_flat_a2.png
+- Status: success
+
+Full prompt:
+
+> painted UI instrument part, straight-on flat view, centred, plain solid pure white background: a rectangular painted metal console face, plain flat: the plate reaching the frame's top edge and bottom edge, with two plain white vertical strips of about one sixteenth of the frame's width running down the frame's left and right sides; brushed steel plate with visible brush grain and flat plate seams between the steel plates, bolt heads at the four corners and along the seams, a continuous flat steel surface carrying no openings, no wells, no recesses and no machined slots; no glass, no screens. no stars, no ships, no wrecks, no ember glow, no logos, no text
+
+---
+

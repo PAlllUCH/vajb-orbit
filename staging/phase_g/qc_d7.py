@@ -21,8 +21,10 @@ The expected rects are pinned numbers, not guesses:
   diameter 108, HDG recess (330,370)-(538,442), readout stack well (558,62)-(858,442).
 * `ui_status_panel` - UI_SPEC section 3.8's Mockup C block at 2x: left well (48,120)-(600,856),
   right well (632,120)-(1392,696), footer strip (48,888)-(1392,988).
-* `ui_armory_console` - the approved Mockup A well stack (`staging/mockup/mockup_rest.py`, 872x908
-  at 1x) at 2x: (60,244)-(1684,1024), (60,1140)-(1684,1480), (60,1592)-(1684,1768).
+* `ui_armory_console` - the approved Mockup A well stack (`staging/mockup/mockup_rest.py`) on the
+  canvas UI_SPEC section 3.10's Amendment 2 rules (872x956 at 1x; the Mockup A "44" note was
+  illustrative and the ammo well grows to 136 logical because the pane ships six packs) at 2x:
+  (60,244)-(1684,1024), (60,1140)-(1684,1480), (60,1592)-(1684,1864).
 * `ui_armory_rack_plate` - UI_SPEC section 3.10 / Mockup A: the four slot recesses 20x22 logical
   on a 22 pitch inside the 97x91 bay, at 2x; the mockup places them at x + 10 + s*44, y + 38 to
   y + 82, so at 2x the slots are (20+44s, 76)-(60+44s, 164).
@@ -50,7 +52,7 @@ MASTERS = Path(os.environ.get("D7_MASTERS_DIR", STAGE / "ui" / "_masters"))
 BOXES = {
     "ui_cockpit_panel": (928, 512),
     "ui_gauge_face": (240, 240),
-    "ui_armory_console": (1744, 1816),
+    "ui_armory_console": (1744, 1912),
     "ui_armory_rack_plate": (194, 182),
     "ui_armory_row_plate": (192, 64),
     "ui_status_panel": (1440, 1040),
@@ -68,7 +70,8 @@ BOXES = {
 ## readout well (558,62)-(858,442), foot recesses (64,370)-(316,442) / (330,370)-(538,442);
 ## `ui_status_panel` - left well (48,120)-(600,856), right well (632,120)-(1392,696), footer strip
 ## (48,888)-(1392,988); `ui_armory_console` - (60,244)-(1684,1024), (60,1140)-(1684,1480),
-## (60,1592)-(1684,1768). `staging/phase_g/qc_d7_a1.py` measures the plate's coverage of them.
+## (60,1592)-(1684,1864) (the ammo well at the Amendment 2 136 logical;
+## `staging/phase_g/qc_d7_a1.py` measures the plate's coverage of them).
 EXPECTED = {
     ## UI_SPEC section 3.10 / Mockup A: the four slot recesses are 20x22 logical on a 22 pitch,
     ## mockup-placed at x + 10 + s*44 and y + 38 to y + 82 (the mockup is already 2x).

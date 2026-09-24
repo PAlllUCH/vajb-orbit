@@ -175,8 +175,8 @@ PowerShell form: `$env:VAJB_WORKER_FILES='...'; crush run "<prompt>" -m opencode
 - Probe hygiene (L17): a probe that repoints `PlayerProfile.save_path` must
   stop/flush the 0.5 s debounce before restoring `save_path`.
 
-## In flight — **designer item 8 = D7 cockpit rework + battery window** (2026-09-24,
-owner feedback on D6): docs-first landed (UI_SPEC §3.6 heading-tick retirement
+## D7 (designer item 8) — **DONE 2026-09-24 — gate 727/0, detail §Closed** (the
+notes below are the dispatch record; owner feedback on D6): docs-first landed (UI_SPEC §3.6 heading-tick retirement
 + §3.7 rework + §3.9 instrument language + §3.10 battery window, UI_CHROME §12,
 ASSET_NAMING §12, STATION_HUB §5.11); brief + prompts in
 `slices/D7-cockpit-rework/`; write set `ui/hud/**`, `ui/station/**`,
@@ -303,6 +303,24 @@ proper tick lists are resolved.
   `player_ship.gd:1378` also fails to parse mid-edit), none of it in D6's write set.
   Owner ticks owed: the brief's five (NMS palette/teal, placement + size, HULL/SHLD points
   vs %, key U, the per-module damage model) plus the MED-2 geometry call.
+- **D7 cockpit rework + battery window — DONE 2026-09-24** (gate 674 → **727,
+  0 failed** on the D7 write set, twice on scratch stores; reports
+  `slices/D7-cockpit-rework/D7-A0_report.md` (A0+A1+A1b+A2 sections),
+  `D7-C1_report.md`, `D7-C2_report.md`, `D7-C3_report.md`, `D7-C4_report.md`,
+  `D7-R1_review.md`, `D7-F1_report.md`, plus the owner-approved
+  `D7_DESIGN_REPORT.md` and the mockups under `staging/mockup/out/`): the
+  owner-mockup-loop product — cluster v7 (compass ditched for two FUEL/ENRG
+  dials, full-height readout well, `B1..B5` lamps, SPD/HULL/SHLD/AMMO rows),
+  the Mockup A armory console (SALVO centiseconds), the Mockup C status modal,
+  the old HUD column + the §3.1b pool bars retired, and **CockpitStyle**
+  (palette/layout/assets + `cockpit_style_user.tres` override — user-modifiable
+  per the owner's rule). 23 art masters incl. the glyph-only `ui_seg_*` family
+  (AC5 containment 1.0000 ×12). Review: 1 HIGH (the status render-box clamp +
+  its blind test) and 1 MED (the armory console aspect — UI_SPEC §3.10
+  Amendment 2 ruled it, closed as measured), both cured; 5 LOW **L158–L162**.
+  Art spend ≈ $1.85 real (A0 $0.50 + A1 $0.47 + A2 $0.45 + keys). Open owner
+  ticks: the D6 carry-overs (NMS teal, HULL/SHLD %, key U, per-module damage)
+  + the §12 aspect-rule wording (A2's Deviation 6, measured twice).
 
 - **S5 playtest fixes — DONE 2026-09-24** (gate 524 → **578, 0 failed**, exit 0 in two
   consecutive hermetic runs plus the close-out verify's own gate pass, identical counts, the

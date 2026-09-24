@@ -42,7 +42,8 @@ STAGE = ROOT / "staging" / "phase_g"
 ## `ui_status_panel` - UI_SPEC section 3.8's Mockup C block at 2x: left well (48,120)-(600,856),
 ##   right well (632,120)-(1392,696), footer strip (48,888)-(1392,988).
 ## `ui_armory_console` - the approved Mockup A well stack at 2x (the same three rects `qc_d7.py`
-##   pins): (60,244)-(1684,1024), (60,1140)-(1684,1480), (60,1592)-(1684,1768).
+##   pins), on the canvas UI_SPEC section 3.10's Amendment 2 rules (872x956 at 1x): (60,244)-(1684,
+##   1024), (60,1140)-(1684,1480), (60,1592)-(1684,1864) - the ammo well at 136 logical.
 WELL_UNIONS = {
     "ui_cockpit_panel": [
         ("gauge_well", (70, 52, 310, 292)),
@@ -58,15 +59,16 @@ WELL_UNIONS = {
     "ui_armory_console": [
         ("racks_well", (60, 244, 1684, 1024)),
         ("inventory_well", (60, 1140, 1684, 1480)),
-        ("ammo_well", (60, 1592, 1684, 1768)),
+        ("ammo_well", (60, 1592, 1684, 1864)),
     ],
 }
 ## The three panels Amendment 2 re-renders as flat plates. The other three masters are A0's bytes.
 FLAT_PANELS = ("ui_cockpit_panel", "ui_armory_console", "ui_status_panel")
-## The three Amendment 2 runs, and the panel each one's plate ships as.
+## The Amendment 2 runs, and the panel each one's plate ships as. The armory console points at the
+## D7-A2 re-render (the ruled 872x956 canvas), which supersedes A1's retired-canvas pass.
 FLAT_RUNS = {
     "panel_cockpit_flat": "ui_cockpit_panel",
-    "panel_armory_console_flat": "ui_armory_console",
+    "panel_armory_console_flat_a2": "ui_armory_console",
     "panel_status_flat": "ui_status_panel",
 }
 PAD_SHARE = 0.04       # `wave_g.trim_centre`'s pad
