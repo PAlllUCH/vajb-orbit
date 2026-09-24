@@ -1,0 +1,280 @@
+{
+ "ui_gauge_face": {
+  "box": [
+   240,
+   240
+  ],
+  "route": "needle wiped, `gauge_clean.py`",
+  "pixels": [
+   240,
+   240
+  ],
+  "bytes": 96023,
+  "md5": "b4645a610aa3ad9a6fab88dd8335df27",
+  "transparent_pct": 20.96,
+  "ink_pct": 79.03
+ },
+ "ui_compass_rose": {
+  "box": [
+   192,
+   192
+  ],
+  "cut_box": [
+   999,
+   1006
+  ],
+  "route": "recraft-keyed render cut, contain fit",
+  "pixels": [
+   192,
+   192
+  ],
+  "bytes": 60749,
+  "md5": "56f2f9ff4cfea0a7df03e52271bc4b64",
+  "transparent_pct": 32.35,
+  "ink_pct": 67.64
+ },
+ "ui_compass_lubber": {
+  "box": [
+   32,
+   24
+  ],
+  "cut_box": [
+   345,
+   379
+  ],
+  "route": "recraft-keyed render cut, contain fit",
+  "pixels": [
+   32,
+   24
+  ],
+  "bytes": 1290,
+  "md5": "84a0babcd602bcbf7b08469a9351b1c3",
+  "transparent_pct": 63.41,
+  "ink_pct": 36.59
+ },
+ "ui_cockpit_frame": {
+  "box": [
+   192,
+   192
+  ],
+  "route": "nine-slice rebuild, `ui_authored.py`",
+  "pixels": [
+   192,
+   192
+  ],
+  "bytes": 69716,
+  "md5": "cfc4e2341bbcbca2ba2d5d79189c78ec",
+  "transparent_pct": 3.56,
+  "ink_pct": 95.94
+ },
+ "ui_seg_0": {
+  "box": [
+   48,
+   88
+  ],
+  "route": "authored SVG segments, `seg_svg_digits.py`",
+  "pixels": [
+   48,
+   88
+  ],
+  "bytes": 6929,
+  "md5": "7a884ea085278aeeeebcfb6903403db2",
+  "transparent_pct": 6.34,
+  "ink_pct": 89.77
+ },
+ "ui_seg_1": {
+  "box": [
+   48,
+   88
+  ],
+  "route": "authored SVG segments, `seg_svg_digits.py`",
+  "pixels": [
+   48,
+   88
+  ],
+  "bytes": 6784,
+  "md5": "357ef3faf6d7974d4af54f2818c6f5c5",
+  "transparent_pct": 6.34,
+  "ink_pct": 89.77
+ },
+ "ui_seg_2": {
+  "box": [
+   48,
+   88
+  ],
+  "route": "authored SVG segments, `seg_svg_digits.py`",
+  "pixels": [
+   48,
+   88
+  ],
+  "bytes": 6942,
+  "md5": "be0ef507739ad89b498d446bd3b8be9e",
+  "transparent_pct": 6.34,
+  "ink_pct": 89.77
+ },
+ "ui_seg_3": {
+  "box": [
+   48,
+   88
+  ],
+  "route": "authored SVG segments, `seg_svg_digits.py`",
+  "pixels": [
+   48,
+   88
+  ],
+  "bytes": 6925,
+  "md5": "f570fd9b0e0b5a7d8e6efccc9b0272ca",
+  "transparent_pct": 6.34,
+  "ink_pct": 89.77
+ },
+ "ui_seg_4": {
+  "box": [
+   48,
+   88
+  ],
+  "route": "authored SVG segments, `seg_svg_digits.py`",
+  "pixels": [
+   48,
+   88
+  ],
+  "bytes": 6889,
+  "md5": "2956fba01d561edd418f83efbd228dc5",
+  "transparent_pct": 6.34,
+  "ink_pct": 89.77
+ },
+ "ui_seg_5": {
+  "box": [
+   48,
+   88
+  ],
+  "route": "authored SVG segments, `seg_svg_digits.py`",
+  "pixels": [
+   48,
+   88
+  ],
+  "bytes": 6919,
+  "md5": "ea95b9f6633d72d1fc6ead5756a7178b",
+  "transparent_pct": 6.34,
+  "ink_pct": 89.77
+ },
+ "ui_seg_6": {
+  "box": [
+   48,
+   88
+  ],
+  "route": "authored SVG segments, `seg_svg_digits.py`",
+  "pixels": [
+   48,
+   88
+  ],
+  "bytes": 6955,
+  "md5": "381d478585d6346b7a0cac213b9265b8",
+  "transparent_pct": 6.34,
+  "ink_pct": 89.77
+ },
+ "ui_seg_7": {
+  "box": [
+   48,
+   88
+  ],
+  "route": "authored SVG segments, `seg_svg_digits.py`",
+  "pixels": [
+   48,
+   88
+  ],
+  "bytes": 6813,
+  "md5": "bb6f91bab952bff2befbfcde4073ae1a",
+  "transparent_pct": 6.34,
+  "ink_pct": 89.77
+ },
+ "ui_seg_8": {
+  "box": [
+   48,
+   88
+  ],
+  "route": "authored SVG segments, `seg_svg_digits.py`",
+  "pixels": [
+   48,
+   88
+  ],
+  "bytes": 6979,
+  "md5": "60ea0ba5d5d65200db3e3c3eff8b3e1f",
+  "transparent_pct": 6.34,
+  "ink_pct": 89.77
+ },
+ "ui_seg_9": {
+  "box": [
+   48,
+   88
+  ],
+  "route": "authored SVG segments, `seg_svg_digits.py`",
+  "pixels": [
+   48,
+   88
+  ],
+  "bytes": 6946,
+  "md5": "3a200a948cc64687559a05a15a41687b",
+  "transparent_pct": 6.34,
+  "ink_pct": 89.77
+ },
+ "ui_seg_pct": {
+  "box": [
+   48,
+   88
+  ],
+  "route": "authored SVG segments, `seg_svg_digits.py`",
+  "pixels": [
+   48,
+   88
+  ],
+  "bytes": 6846,
+  "md5": "b0e17a4f00631cbd7c621dc77f9dd963",
+  "transparent_pct": 6.34,
+  "ink_pct": 89.77
+ },
+ "ui_seg_blank": {
+  "box": [
+   48,
+   88
+  ],
+  "route": "authored SVG segments, `seg_svg_digits.py`",
+  "pixels": [
+   48,
+   88
+  ],
+  "bytes": 6666,
+  "md5": "f9c2f26f9eb55f2132430cb33689ba9b",
+  "transparent_pct": 6.34,
+  "ink_pct": 89.77
+ },
+ "ui_gauge_needle": {
+  "box": [
+   16,
+   192
+  ],
+  "route": "authored SVG, `ui_authored.py`",
+  "pixels": [
+   16,
+   192
+  ],
+  "bytes": 3060,
+  "md5": "87e66a2c9ab289ae9dab8225405cf71f",
+  "transparent_pct": 37.7,
+  "ink_pct": 49.58
+ },
+ "ui_readout_glass": {
+  "box": [
+   272,
+   380
+  ],
+  "route": "authored SVG, `ui_authored.py`",
+  "pixels": [
+   272,
+   380
+  ],
+  "bytes": 2403,
+  "md5": "17f258340c46e96a8b000c2de7b8daf3",
+  "transparent_pct": 0.1,
+  "ink_pct": 99.87
+ }
+}

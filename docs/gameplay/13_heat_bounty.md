@@ -95,3 +95,38 @@ are two dials on the same relationship: standing is your *reputation*
   profit. Crime should feel *expensive but survivable*; if playtests show
   outlaw runs out-earning miners, heat gains +50 % before touching the fine
   rate.
+
+## 7. Amendment 2026-09-24 (wave S6 — the enforcement pin)
+
+Wiring rules for §2/§3/§5 where they needed a seam or a number. The heat
+plumbing already exists (`PlayerProfile.heat()`, `NpcRegistry.heat_tier()`,
+`NpcShip.heat_on_kill()`); this wave adds enforcement + hunters. CONTRACTS §19.
+
+- **Witness rule (§5):** the witness scan range is `WITNESS_RANGE := 900.0` =
+  `ShipStats.BASE_SCAN_RANGE` (the only scan range in the tree — **derived**,
+  not proposed). LOS is the NPC brain's own rock-blocking check. A crime with
+  no witness inside range adds nothing.
+- **Decay (§2):** −1/minute of **play time**, accrued on the existing play
+  clock (no new Timer — 17 §4's one-timer rule), floored at 0.
+- **Pay the bounty (§2):** `PlayerProfile.pay_bounty(faction_id) -> bool`
+  (17 §5 transaction law; one `BOUNTY` economy-log line). Surface: a
+  `PAY BOUNTY (n CR)` row in LAUNCH beside the REFUEL/RECHARGE rows
+  (**proposed** home — it is the only existing service-row surface; reversal:
+  REPAIRS' action column). Owner tick 5. Shown for the docked station's faction
+  whenever heat > 0 for it; Outlaws never see it (they cannot dock).
+- **Hunter wing (§3/§6):** spawns on the next sector entry while Wanted, and
+  perma-tails while Outlaw (60 s respawn after a wave dies, that faction's
+  space only). Size `randi_range(2, 3)`. Hull = one band below the player's
+  active hull: **proposed map** — player `ship_fighter`/`ship_interceptor`/
+  `ship_patrol`/`ship_miner` → `ship_fighter`; `ship_vanguard`/`ship_trader`/
+  `ship_corvette` → `ship_fighter` (elite fit); `ship_gunship`/
+  `ship_destroyer`/`ship_freighter` → `ship_gunship`. Fit = the 09 §6
+  reference fit of the player's class tier (§6). Reversal: always `ship_fighter`
+  ×2–3 (§3's literal reading). Owner tick 6.
+- **Enforcement points:** dock refusal (Outlaw, 12 §4.1's rule), gate refusal
+  (11 §5's rule), trader `flee` (Suspect+, the brain's existing Flee state),
+  patrol scan-on-sight (Suspect+, slow breakable LOS check = the brain's Scan
+  state), station turret: the +25 heat and aggro stand, but the turret entity
+  does not exist in the tree — T0 confirms and, if absent, the +25 lands on
+  attacking a station and turret aggro is **staged** (reversal: ship the turret
+  as a station-attached NPC). Owner tick 7.

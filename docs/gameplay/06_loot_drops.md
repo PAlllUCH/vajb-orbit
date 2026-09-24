@@ -152,3 +152,18 @@ because the Maw is rare.
   ×1.5 T3, ×2 T4) rather than touching component odds.
 - **Rare "signature" drops** (named unique components) are a 07 amendment
   when crafting ships, not a loot change.
+
+## 8. Amendment 2026-09-24 (wave S6 — the drop seam)
+
+- **The roll lands on the kill:** `game.gd`'s shot-down path calls
+  `LootTables.roll(band)` and spawns the wreck site (§4) at the kill point;
+  the 90 s `WRECK_PICKUP_LIFETIME` is the site's own despawn (06 §4).
+- **§2 step 3's implementer's choice is made: one pickup per unit** (the ore
+  precedent, 02 §7 — mining spawns one pickup per cycle), never a merged
+  stack. Credit caches stay one distinct pickup (§5).
+- **Hunter extra table (13 §3's "`comp_elec`-weighted table"): proposed** —
+  `comp_elec_1` 0.50 ×1–2, `comp_elec_2` 0.25 ×1, `comp_elec_3` 0.10 ×1,
+  grade-capped by band (§1.4), rolled in addition to the band table.
+  Reversal: no extra table (hunters drop the band table only). Owner tick 8.
+- **Cache feed line** (§5) rides the HUD prompt line (`+120 CR SALVAGE`), the
+  same seam as the scan readout (11 §5) — no `ui/hud/` writes in this wave.

@@ -1,11 +1,13 @@
 # dispatch_designer.md — the graphics lane's queue of record
 
-Rebuilt 2026-09-22 after the purge; **re-cut again 2026-09-22 (owner ruling)** for a
-two-designer split. **Designer #1 has exactly one job: the icon unification (D2) —
-SVG masters for every glyph-type icon + one-master-only for the rest.** Everything
-else waits as **designer #2's** queue and the owner dispatches it later.
+Rebuilt 2026-09-22 after the purge; re-cut 2026-09-22 (owner ruling) for a
+two-designer split; reorganised 2026-09-24 (this file carries **open items only** —
+the finished D2 job spec + handoff are archived at
+`slices/D2-icon-unification/_archive/D2_dispatch_block.md`, detail in
+`_state/WAVEBOARD.md` §Closed). Execute one item per order; briefs and prompts
+live in the slice folders; the owner pastes only the short handoff paragraph.
 
-## The ruling (owner, 2026-09-22)
+## The standing ruling (owner, 2026-09-22) — lane law, applies to every item
 
 - Glyph-type icons are **remade as SVG masters** (slot glyphs, equipment-slot
   symbols, `icon_contract_*`, service glyphs, chevrons/pips — the flat symbol
@@ -23,87 +25,36 @@ else waits as **designer #2's** queue and the owner dispatches it later.
   kie.ai cannot generate SVG (image-generator skill: "No native SVG") — the SVG
   set is **hand-authored** here; a pictogram that resists authoring may be
   generated once as a clean-flat raster ("no gradients, no grain") and traced
-  (Inkscape), then simplified.
+  (Inkscape), then simplified. **Amended 2026-09-22 (D2_SPLIT §6):** the 96 grid
+  (`viewBox="0 0 96 96"`, 8–14 flat shapes) supersedes 48 for icon work.
 - **Tint boundary:** a remade glyph's tint variants die with it (fills replace
-  tint stencils); depictive icons' tint stencils stay in place until designer
-  #2's tint rework. Nothing else touches the tint pipeline in this job.
+  tint stencils); depictive icons' tint stencils stay until the tint-rework item
+  below. Nothing else touches the tint pipeline.
 
-## D2 — designer #1's only job (icon unification)
-
-**Phase C scope extension (owner-granted 2026-09-22, recorded here):** the write
-set grows by `game/*_catalog.gd` (mineral ×42, module ×35, component ×18,
-station ×5 refs), the five named test files (`test_p1_catalogues`,
-`test_ship_grids`, `test_ui_slot_layout`, `test_p2b_services`,
-`test_p2b_fitting_panel`) and `tools/derive_icon_tints.gd` + `tools/build_theme.gd`
-— **re-point only, no semantic change** (D2_SPLIT §3's bold rows). Without these
-Phase C cannot reach 0 asset-path fallout or hold the gate. `@2x` (19 chrome
-files) dies with the size variants per this dispatch's ruling — the
-"highest-fidelity" swap is rejected (pointless before D3 re-cuts chrome).
-Phase A is closed on the owner's ID marks (`staging/d2/svg_ids.txt`): **X = 135
-SVG / 139 raster-kept** (D2_SPLIT §1), plan 2 478 PNGs → 839 files.
-
-Run order inside the job (folder law: open `slices/D2-icon-unification/SLICE.md`
-first):
-
-1. **Phase A — inventory + split (no writes).** Enumerate every icon symbol from
-   `asset-library/INDEX.md`/`_library.json`, `docs/design/ASSET_CATALOG.md`,
-   `vajb-orbit/assets/icons/` and `assets/ui/`; classify each **SVG (glyph) vs
-   raster-kept (depictive)** with its current file family. Deliver
-   `slices/D2-icon-unification/D2_SPLIT.md`. **STOP — owner approves the split
-   table** (this is where `icon_equip_drone`-vs-`icon_contract_escort` calls get
-   confirmed).
-2. **Phase B — SVG authoring** for every SVG-side symbol, one file per symbol
-   (`icon_contract_escort.svg`, …; names per `docs/design/ASSET_NAMING_SPEC.md`,
-   extension changes, names stay). Review sheet renders every SVG at
-   16/24/48/96/192 side by side (the scaling proof). **STOP — owner approves.**
-3. **Phase C — masters only + deletion + re-point.** Keep the highest-fidelity
-   raster per depictive symbol (one master), delete every size variant and
-   duplicate **in `vajb-orbit/assets/`**, re-point every reference (theme
-   `vajb_theme.tres`, scenes, `ui/**` code paths) to the one master per symbol
-   and let control size scale it. Unify import settings (mipmaps on, lossless,
-   3D-detection off). Regenerate `ASSET_CATALOG.md` (`build_catalog.py`), then
-   prove: `asset_path_fallout` reads **0 unresolvable** and
-   `validate_names.py --library` is green. **STOP — owner approves the before/
-   after file-count table.**
-4. **Close:** commit; report the collapse count (files before/after per family).
-
-**Parallel guardrails (the coder lane is running item 8):** add/replace/delete is
-confined to `vajb-orbit/assets/`, `asset-library/`, `staging/`, `docs/design/`
-asset specs, plus the reference files named in Phase C (`vajb_theme.tres`,
-`ui/**`, scenes) — the coder's S2.6 file set holds none of them. **Designer #1
-must close before coder item 9 starts** (S3 holds `ui/station/*`). Editor
-reimports only in quiet windows between coder gate runs. One editor session.
-
-## Designer #2's queue (dispatched later by the owner)
+## Open queue (designer #2's lane)
 
 | D-slice | Item | What | Gate |
 |---|---|---|---|
+| D6 | 7 | **Cockpit instruments** — bottom-left cluster (sprite speed gauge + sprite compass + five 7-seg readout rows SPD/HULL/SHLD/FUEL %/ENRG %) + the `ship_status` ship layout screen (owner 2026-09-23, the NMS-style ask). Docs-first landed: UI_SPEC §3.7/§3.8, UI_CHROME §11, ASSET_NAMING §11, CONTRACTS §18 | **IN FLIGHT 2026-09-24** — brief `slices/D6-cockpit-instruments/D6_BRIEF.md`, prompts `D6_prompts.md`; write set disjoint from S5's (S5 closed 2026-09-24); run order M0a → owner sheet approval → M0b → M1 → M2 → R1 → F1 only on HIGH/MED |
 | D3 | 1 | **Chrome re-cut** — button/slot plate family (the 1041×1087-cell-stretched defect class: plates, bezel band, bar caps, panel frame) | OWNER-GATED on `staging/phase_f/_preview/review_slots.png` |
-| D3 | 2 | **Painted-only station rail icons** (owner 2026-09-23: "in space station the icons on 'MODULES' left menu should have only painted icons so no svg") — swap the station's left-rail/`MODULES` menu icons to **painted raster masters** (generate if no painted master exists for a symbol); SVGs stay for the in-list glyph work elsewhere. One review sheet of the rail at 48/96 px | READY — may ride the owner's live SVG-review session |
-| D3 | 2 | **Tint rework** (the depictive remainder): replace or repair the tint-stencil system for raster icons (shader tint or scoped stencils) + the 1 080-file import-settings cleanup left over from D2 | READY |
+| D3 | 2a | **Painted-only station rail icons** (owner 2026-09-23: "in space station the icons on 'MODULES' left menu should have only painted icons so no svg") — swap the station's left-rail/`MODULES` menu icons to **painted raster masters** (generate if no painted master exists for a symbol); SVGs stay for the in-list glyph work elsewhere. One review sheet of the rail at 48/96 px | READY |
+| D3 | 2b | **Tint rework** (the depictive remainder): replace or repair the tint-stencil system for raster icons (shader tint or scoped stencils) + the **540**-file import-settings cleanup left over from D2 (the 1 080 figure predates D2's split — `D2_SPLIT.md` §4's formula) | READY |
 | D4 | 3 | **4K 2× backdrop cuts** (R8; display target: 4K) | READY |
 | D4 | 4 | **B2-1 hover look** — flicker / directional glow / ember | **OWNER PICK NEEDED** first |
 | — | 5 | MMO/faction liveries, six boss hulls, `ship_vanguard_damaged` | BLOCKED on the owner's naming overhaul |
 | — | 6 | Component icons ×18 (`comp_*`) — if not already covered by D2's split as depictive masters | verify against `D2_SPLIT.md` |
-| D6 | 7 | **Cockpit instruments** — bottom-left cluster (sprite speed gauge + sprite compass + five 7-seg readout rows: SPD/HULL/SHLD/FUEL %/ENRG %) + the `ship_status` ship layout screen (owner 2026-09-23, the NMS-style ask). Docs-first landed: UI_SPEC §3.7/§3.8, UI_CHROME §11, ASSET_NAMING §11, CONTRACTS §18 | READY — write set disjoint from S5's, runs parallel with coder item 11; brief `slices/D6-cockpit-instruments/D6_BRIEF.md`, prompts `D6_prompts.md` |
 
-## D6 (item 7) — handoff (the owner pastes this now)
+**File-collision law (both lanes):** two waves may never hold one file at once
+(nor the same `test_*` prefix, nor one `staging/` driver). Across lanes, run in
+parallel only with provably disjoint write sets (the S5∥D6 precedent); editor
+reimports only in quiet windows between the other lane's gate runs; one editor
+session.
 
-D6 is prepped and queued: docs-first is landed (UI_SPEC §3.7/§3.8, UI_CHROME §11,
-ASSET_NAMING §11, CONTRACTS §18), the brief and the dispatch blocks are in
-`slices/D6-cockpit-instruments/`. It writes `ui/hud/**`, `assets/ui/**`,
-`assets/icons/**` provenance, `staging/**`, `asset-library/**` and
-`tests/test_d6_*.gd` only — **disjoint from S5's sets**, so it runs parallel with
-coder item 11. Run order M0a → owner approves the review sheet → M0b → M1 → M2 →
-R1 → F1 only on HIGH/MED. Art cost ≈ $0.20 (4 × 2K runs).
-
-```text
-Read .agents/gen/dispatch_designer.md and execute queue item 7 only — D6, the cockpit instruments cluster and ship status screen. Brief: .agents/gen/slices/D6-cockpit-instruments/D6_BRIEF.md. Prompts: .agents/gen/slices/D6-cockpit-instruments/D6_prompts.md. Snapshot + commit before the first dispatch, run M0a and STOP at the review sheet for my approval, then M0b, M1, M2, R1, and the fixer only if the review leaves HIGH or MED. This runs parallel with coder item 11: stay inside the D6 write set (ui/hud, assets/ui, assets/icons provenance, staging, asset-library, tests/test_d6_*), never touch project.godot, game/, autoload/ or the theme, and take editor reimports only in quiet windows. Close out per the brief's close-out section (gate re-run, verify_wave.py verify --baseline d6_start, CONTRACTS §9/§10 notes + the ship_status input row after S5-R1's pass, WAVEBOARD update, wave-boundary commit), then report back: the measured gate count, the builder's per-deliverable numbers, the digit QC table, the reviewer's findings by tier, and the owner ticks.
-```
-
-The five owner ticks are in the brief (NMS palette reading, placement/size,
-hull/shield points vs %, the `ship_status` key U, scheduling a module-damage
-model).
+**Done:** **D2 icon unification (designer #1's only job)** — DONE 2026-09-22
+(commit `7c1ae06`; 135 SVG + 164 raster masters + 540 tint stencils = 839 files,
+2 478 → 839, `asset_path_fallout` 0 unresolvable / 367 refs, gate 457/0 through
+the re-points; owner amendments `D2_SPLIT.md` §6). Job spec + handoff archived at
+`slices/D2-icon-unification/_archive/D2_dispatch_block.md`.
 
 ## Pipeline law (read before any run — AGENTS.md "Asset Generation" + "Phase G lane")
 
@@ -114,11 +65,14 @@ trim. A 2×2 sheet's fourth cell is often a second front (IoU > 0.80 = refuse).
 **review sheet → owner approval** → ship → reimport → `validate_names.py
 --library`. Generation logs beside every shipped family.
 
-## Handoff — designer #1 (the owner pastes this now)
+## Handoff template (one per dispatched item)
 
 ```text
-Read .agents/gen/dispatch_designer.md and execute D2 only — the icon unification, your only job this dispatch. Follow the ruling and the three phases exactly: Phase A inventory + split table (STOP for my approval), Phase B hand-authored SVG masters per the SVG source rule with the 16/24/48/96/192 review sheet (STOP for my approval), Phase C masters-only + project-side deletion + reference re-point with the before/after file-count table and asset_path_fallout at 0 unresolvable (STOP for my approval), then close with a commit. kie.ai cannot generate SVG — author the paths; one clean-flat generation + Inkscape trace is allowed for a single stubborn pictogram. The coder lane is running: obey the parallel guardrails, and close before coder item 9. Report after each phase: counts, file families, and the review sheet paths.
+Read .agents/gen/dispatch_designer.md and execute queue item <N> only — <wave name>. Brief: <brief path>. Prompts: <prompts path>. Snapshot + commit before the first dispatch, run <builder> → <reviewer>, and the fixer only if the review leaves HIGH or MED. Stop before item <N+1>. Close out per the brief's close-out section (gate re-run, verify_wave.py verify --baseline <tag>, WAVEBOARD update, wave-boundary commit), then report back: the measured gate count, the builder's per-deliverable numbers, the reviewer's findings by tier, and the owner ticks.
 ```
 
-Designer #2's handoff gets written when the owner dispatches it (same template,
-swapping the item block).
+The live D6 handoff block is the one below (item 7, already dispatched 2026-09-24).
+
+```text
+Read .agents/gen/dispatch_designer.md and execute queue item 7 only — D6, the cockpit instruments cluster and ship status screen. Brief: .agents/gen/slices/D6-cockpit-instruments/D6_BRIEF.md. Prompts: .agents/gen/slices/D6-cockpit-instruments/D6_prompts.md. Snapshot + commit before the first dispatch, run M0a and STOP at the review sheet for my approval, then M0b, M1, M2, R1, and the fixer only if the review leaves HIGH or MED. This runs parallel with coder item 11: stay inside the D6 write set (ui/hud, assets/ui, assets/icons provenance, staging, asset-library, tests/test_d6_*), never touch project.godot, game/, autoload/ or the theme, and take editor reimports only in quiet windows. Close out per the brief's close-out section (gate re-run, verify_wave.py verify --baseline d6_start, CONTRACTS §9/§10 notes + the ship_status input row after S5-R1's pass, WAVEBOARD update, wave-boundary commit), then report back: the measured gate count, the builder's per-deliverable numbers, the digit QC table, the reviewer's findings by tier, and the owner ticks.
+```

@@ -142,18 +142,19 @@ def refit(run_id: str, dry: bool, verify_only: bool) -> bool:
         print(f"[{run_id}] NO MASTER FOUND")
         return False
     sheet = Image.open(master)
-    groups = panels.cells(sheet)
+    cols, rows = spec.get("grid", [2, 2])
+    groups = panels.cells(sheet, cols, rows)
     by_quadrant = {(g["quadrant"][0], g["quadrant"][1]): g for g in groups}
-    print(f"[{run_id}] {master.name}: {len(groups)} cell(s) found on the render")
+    print(f"[{run_id}] {master.name}: {len(groups)} cell(s) found on a {cols}x{rows} grid")
 
     cells_dir = STAGE / spec["family"] / "_cells" / master.parent.name
     cells_dir.mkdir(parents=True, exist_ok=True)
     todo: list[Path] = []
     plan = cell_plan(spec)
     for index, name, _rotate in plan:
-        group = by_quadrant.get((index // 2, index % 2))
+        group = by_quadrant.get((index // cols, index % cols))
         if group is None:
-            print(f"  cell{index} ({name}): no object found in that quadrant, skipped")
+            print(f"  cell{index} ({name}): no object found in that grid cell, skipped")
             continue
         crop = cells_dir / f"{name}.png"
         if not crop.exists():
@@ -181,7 +182,7 @@ def refit(run_id: str, dry: bool, verify_only: bool) -> bool:
 
     ok = True
     for index, name, rotate in plan:
-        group = by_quadrant.get((index // 2, index % 2))
+        group = by_quadrant.get((index // cols, index % cols))
         keyed = cells_dir / f"{name}-keyed.png"
         if group is None or not keyed.exists():
             continue
@@ -207,11 +208,16 @@ def refit(run_id: str, dry: bool, verify_only: bool) -> bool:
         print(f"    wrote {dest.name} {image.size}")
 
     written = {name: STAGE / spec["family"] / f"{name}.png" for _i, name, _r in plan}
-    flagged = duplicate_views(written)
-    if flagged:
-        ok = False
-        print(f"  FAIL duplicate view(s) among the cuts: {', '.join(flagged)}")
-        print("       a 2x2 sheet that repeats a view needs its own *_back_single run")
+    ## The duplicate-view check is for a hull sheet that repeats a view. It is off for panels
+    ## whose cells are deliberately identical in silhouette (the D6 seven-segment cells are all the
+    ## same plate rectangle, so every pair would read as a duplicate), and it is only meaningful
+    ## when the spec asks for it.
+    if spec.get("dup_check", True):
+        flagged = duplicate_views(written)
+        if flagged:
+            ok = False
+            print(f"  FAIL duplicate view(s) among the cuts: {', '.join(flagged)}")
+            print("       a 2x2 sheet that repeats a view needs its own *_back_single run")
     return ok
 
 

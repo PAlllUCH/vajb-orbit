@@ -52,6 +52,26 @@ VAJB_WORKER_FILES="vajb-orbit/ui/hud/,vajb-orbit/tests/" crush run "You are work
 VAJB_WORKER_FILES="vajb-orbit/tests/,vajb-orbit/tools/" crush run "You are worker D6-R1, the mandatory reviewer of wave D6 (brief .agents/gen/slices/D6-cockpit-instruments/D6_BRIEF.md; diff findings against docs/design/UI_SPEC.md §3.7/§3.8 and docs/CONTRACTS.md §18 — never against the brief). Re-measure everything yourself: test_engine2_hud.gd:188-237 byte-green UNMODIFIED (git diff must show zero edits to that file's expectations); the readouts map probed against seeded pool states including clamps, blank padding and maximum 0; every danger-row rule and the overdrive strict boundary; compass rotation direction and the 0..359 mapping; the status screen's toggle guard with the input row absent, both damaged-side branches, the slot-grid cell refs against a seeded resolved_fit, the power arithmetic agreeing with the fitting panel's own numbers, and the no-write proof. Digit QC independently re-run (AC5's containment and ink-share ordering) on the shipped masters. No frozen file moved and no balance number moved (staging/verify_wave.py verify --baseline d6_start --forbidden vajb-orbit/project.godot docs/gameplay/18_engine_spec.md docs/gameplay/08_ship_slots_modules.md docs/CONTRACTS.md --tests); gate twice on scratch stores. Tier findings HIGH/MED/LOW with file:line and measured evidence. Write .agents/gen/slices/D6-cockpit-instruments/D6-R1_review.md, append LOW rows to .agents/gen/_state/LOW_BACKLOG.md (next free ids). Never fix. Bounded probes only." -m deepseek/deepseek-v4-flash --cwd "$VAJB_WORKSPACE"
 ```
 
+## Amendment 2026-09-24 (owner, mid-wave) — SPD row goes 4 digits
+
+Owner verbatim: "in the cockpit if all clocks are 4 digits make the speed 4 digits
+as well, looks weird now". Docs-first landed: UI_SPEC §3.7's Digit semantics +
+Readout rows amended (SPD 4 cells, clamp 0..9999; every readout row now 4 cells
+wide), the brief's Digit semantics rule amended and its staged 4th-digit item
+pulled forward. **The CONTRACTS §18 mirror (`SPD … 3 cells clamp 999`) is updated
+in the orchestrator's close-out CONTRACTS pass** (S5 holds that file; one writer
+at a time). R1 diffs against **UI_SPEC §3.7 as amended 2026-09-24** and does not
+flag the CONTRACTS §18 mirror lag itself.
+
+Run order becomes: M0a → (approved) → M0b → M1 → M2 → **M1b** → R1 → (F1 only on
+HIGH/MED). M1b runs after M2 (shared `ui/hud/`).
+
+## D6-M1b — owner amendment: SPD row 4 cells (after M2)
+
+```bash
+VAJB_WORKER_FILES="vajb-orbit/ui/hud/,vajb-orbit/tests/" crush run "You are worker D6-M1b on the Vajb Orbit workspace (wave D6, brief .agents/gen/slices/D6-cockpit-instruments/D6_BRIEF.md — read it fully including its 2026-09-24 Digit semantics amendment, then docs/design/UI_SPEC.md §3.7 as amended 2026-09-24). Task: apply the owner's mid-wave ruling to the D6-M1 cluster — the SPD readout row becomes 4 digit cells (leading blanks, ui_seg_blank), SPD = int(round(prograde.length())) clamped 0..9999, so every readout row is 4 cells wide. Update ui/hud/cockpit_cluster.gd and ui/hud/hud.gd as needed and adjust ONLY tests/test_d6_cluster.gd (its SPD clamp/padding rows and the readouts() map expectations; every other test row stays green). Keep the pinned 404x216 cluster box — if the 4th cell cannot fit inside the pinned geometry, report the measured overflow numbers and leave the box alone, never invent a size. Do not touch tests/test_d6_status.gd or any other test. Re-run the full gate twice on scratch stores and report the measured counts plus the changed rows to .agents/gen/slices/D6-cockpit-instruments/D6-M1b_report.md. Hard rules in the brief apply." -m deepseek/deepseek-v4-flash --cwd "$VAJB_WORKSPACE"
+```
+
 ## D6-F1 — fixer (only if R1 leaves HIGH or MED)
 
 ```bash

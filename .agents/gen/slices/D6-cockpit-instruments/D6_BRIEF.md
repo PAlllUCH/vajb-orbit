@@ -83,7 +83,10 @@ its one-accent law win every conflict — see owner tick 1.
 Rules that fix every ambiguity:
 
 - **Digit semantics** (UI_SPEC §3.7): SPD = `int(round(prograde.length()))` u/s,
-  3 cells, clamp 0..999. HULL / SHLD = `int(round(current))` points, 4 cells,
+  4 cells, clamp 0..9999 (**owner amendment 2026-09-24:** "in the cockpit if all
+  clocks are 4 digits make the speed 4 digits as well" — every readout row is now
+  4 cells wide; was 3 cells / clamp 0..999, reversal to that). HULL / SHLD =
+  `int(round(current))` points, 4 cells,
   clamp 0..9999 (owner tick 3 flips these to %). FUEL / ENRG =
   `int(round(100 × value / maximum))`, clamp 0..100, 3 cells + the `%` cell lit.
   HDG = `int(round(rad_to_deg(heading.angle())))` mapped into 0..359, 3 cells.
@@ -181,8 +184,9 @@ editor reimports only in quiet windows between S5 gate runs; one editor session)
 - Per-module damage model (needs an `18_engine_spec.md` amendment — owner-locked).
 - Compass cardinal letters as engine `Label`s (no baked text law keeps them out
   of the art).
-- 4th SPD digit (current clamp is 999; boost × 1.6 tops out under it — revisit if
-  a class ever exceeds).
+- 4th SPD digit — **pulled forward by the owner 2026-09-24** (ship as 4 cells /
+  clamp 0..9999 per the Digit semantics amendment; the old staging note: current
+  clamp is 999; boost × 1.6 tops out under it).
 - Moving the cluster widgets into `hud.tscn` (the standing §7 follow-up).
 
 ## Owner ticks owed after this wave

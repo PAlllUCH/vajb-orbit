@@ -3,11 +3,13 @@ extends Control
 ## In-game HUD: hull/shield/energy/fuel bars, weapon and cargo slots, minimap, the
 ## cursor and lock reticle, the target stats window, the interaction prompt strip,
 ## the safe-warp channel bar, the Emergency Flight Mode banner and (slice 2) the
-## lock-channel ring, the hit marker and the radial speedometer. Contract:
+## lock-channel ring, the hit marker and the radial speedometer inside its (wave D6)
+## cockpit instrument cluster. Contract:
 ## docs/design/IMPLEMENTATION_PLAN.md sections 3.10, 4.7, the 9.8 flight-placeholder
 ## amendments and the 9.9 engine-wave amendments (prompt strip, warp bar, friendly
 ## blips, reticle states), plus UI_SPEC section 3.1b for the two pool bars and the
-## banner, 3.5 for the lock ring, 3.6 for the dial and ENGINE_SPEC section 10
+## banner, 3.5 for the lock ring, 3.6 for the dial, 3.7 for the cluster and
+## CONTRACTS section 18 for its read-backs, and ENGINE_SPEC section 10
 ## (ENGINE_SPEC section 10).
 ## Reads PlayerState and its signals only; never mutates gameplay state. The
 ## gameplay side pushes everything else down through the section 3.10 API.
@@ -15,9 +17,10 @@ extends Control
 ## The slice-2 widgets are built in code by this file (`_build_lock_ring`,
 ## `_build_hit_marker`, `_build_speedometer`), the same way slice 0 built the pool
 ## blocks: the ring belongs to the reticle's `ui/hud/target_reticle.gd` and the dial
-## is a bare `_draw` Control, and neither file is this worker's. Styling stays on the
-## theme's tokens through `_token()`, with the one sanctioned exception UI_SPEC
-## section 1 records (`accent_nav`, the prograde needle).
+## is a bare `_draw` Control, and neither file is this worker's. Wave D6's cluster is
+## `ui/hud/cockpit_cluster.gd` (`_build_cockpit`), and this file hands it the dial.
+## Styling stays on the theme's tokens through `_token()`, with the one sanctioned
+## exception UI_SPEC section 1 records (`accent_nav`, the prograde needle).
 
 signal weapon_slot_selected(slot: int)
 signal cargo_toggled(open: bool)
@@ -122,6 +125,20 @@ const PERCENT_FORMAT := "%d%%"
 ## size; its segments, sweep, needle lengths and overdrive line live on the widget below).
 const RADIAL_DIAL := "RadialDial"
 const DIAL_SIZE := Vector2(120.0, 120.0)
+
+## UI_SPEC section 3.7 / CONTRACTS section 18: the cockpit instrument cluster the dial now
+## sits inside (built in code by `_build_cockpit`), and the widget node names.
+const COCKPIT_CLUSTER := "CockpitCluster"
+
+## UI_SPEC section 3.8 / CONTRACTS section 18: the ship status screen, its node name and the
+## input action that toggles it. The action is read behind `InputMap.has_action`, so a project
+## whose input map predates the close-out pass keeps a dead key rather than failing (the
+## section 3.8 pin: the `project.godot` row is orchestrator-applied). The script is preloaded by
+## path rather than reached through its global class name, so the HUD parses in a headless gate
+## that has not re-scanned the project since the file landed (the class name still ships).
+const ShipStatusScreenScript := preload("res://ui/hud/ship_status_screen.gd")
+const SHIP_STATUS_SCREEN := "ShipStatusScreen"
+const SHIP_STATUS_ACTION: StringName = &"ship_status"
 
 ## UI_SPEC section 3.5's lock ring and section 4.2 item 4's hit marker: the widget node
 ## names, and nothing else - each widget owns its own geometry (see the classes at the end
@@ -240,6 +257,14 @@ var _speedometer_ratio: float = 0.0
 var _lock_ring: LockRing = null
 var _hit_marker: HitMarker = null
 var _speedometer: Speedometer = null
+## UI_SPEC section 3.7: the cluster the dial lives in. It carries the compass and the five
+## readout rows, and derives them from the feeds this HUD already receives.
+var _cockpit: CockpitCluster = null
+## UI_SPEC section 3.8 / CONTRACTS section 18: the ship status screen, its docked latch and the
+## inputs it reads. The screen reads the profile for the hull, the fit and the power line; the
+## HUD only pushes the launched hull's W cells and the two pool pairs it already holds.
+var _status: Control = null
+var _docked: bool = false
 
 var _hull_fill_danger: StyleBoxFlat
 
@@ -398,6 +423,10 @@ func set_pool(kind: StringName, value: float, maximum: float) -> void:
 	_pool_current[kind] = maxf(value, 0.0)
 	_pool_maximum[kind] = maxf(maximum, 0.0)
 	_refresh_pool(kind)
+	## UI_SPEC section 3.7: the cluster's FUEL/ENRG rows read the same pool feed, so the
+	## digits and the danger rows cannot disagree with the bars above them.
+	if _cockpit != null:
+		_cockpit.set_pool(kind, _pool_current[kind], _pool_maximum[kind])
 
 
 ## Section 3.1b / ENGINE_SPEC section 10: Emergency Flight Mode (fuel 0). The banner
@@ -441,6 +470,10 @@ func set_lock_progress(progress: float) -> void:
 ## zero still draws the dial; the caller hides it by pushing zero when docked.
 func set_speedometer(ratio: float, prograde: Vector2, heading: Vector2) -> void:
 	_speedometer_ratio = clampf(ratio, 0.0, 1.0)
+	## UI_SPEC section 3.7: the cluster derives SPD (u/s from the prograde length), the
+	## compass rotation and the HDG row from this same reading, so no second feed exists.
+	if _cockpit != null:
+		_cockpit.set_speedometer(_speedometer_ratio, prograde, heading)
 	if _speedometer == null:
 		return
 	_speedometer.set_reading(_speedometer_ratio, prograde, heading)
@@ -472,6 +505,27 @@ func lock_ring() -> Control:
 
 func speedometer() -> Control:
 	return _speedometer
+
+
+## CONTRACTS section 18's read-backs (the same probe precedent as `speedometer()`): the
+## cluster, its compass bay, the heading it draws and the clamped ints its digits show. Each
+## answers from the widget that owns the state, and a HUD with no cluster answers empty.
+func cockpit() -> Control:
+	return _cockpit
+
+
+func compass() -> Control:
+	return _cockpit.compass() if _cockpit != null else null
+
+
+func compass_heading() -> float:
+	return _cockpit.compass_heading() if _cockpit != null else 0.0
+
+
+func readouts() -> Dictionary:
+	if _cockpit == null:
+		return {"spd": 0, "hull": 0, "shield": 0, "fuel_pct": 0, "energy_pct": 0}
+	return _cockpit.readouts()
 
 
 func hit_marker_node() -> Control:
@@ -576,7 +630,8 @@ func _apply_ammo_panel_style() -> void:
 func _build_hud_widgets() -> void:
 	_build_lock_ring()
 	_build_hit_marker()
-	_build_speedometer()
+	_build_cockpit()
+	_build_status_screen()
 
 
 ## UI_SPEC section 3.5's lock ring: a full-rect child of the reticle, so it rides the
@@ -607,24 +662,109 @@ func _build_hit_marker() -> void:
 	_hit_marker.apply_theme()
 
 
-## UI_SPEC section 3.6: the 120 x 120 dial. The spec places it "bottom-centre inside
-## BottomLeft's parent column (below the ammo panel)"; the column below the ammo panel is
-## `CanvasLayer/BottomLeft/Blocks` (that container's MarginContainer is anchored
-## bottom-left, not bottom-centre), so the dial joins that column and centres itself in it.
-## Reported for the owner's reading.
-func _build_speedometer() -> void:
-	if _bottom_left == null or _speedometer != null:
+## UI_SPEC section 3.7 (amendment 2026-09-23, wave D6): the cockpit instrument cluster. The
+## spec originally placed the dial "bottom-centre inside BottomLeft's parent column (below the
+## ammo panel)"; the column below the ammo panel is `CanvasLayer/BottomLeft/Blocks` (that
+## container's MarginContainer is anchored bottom-left, not bottom-centre) and section 3.7
+## resolves the discrepancy **bottom-left**, so the cluster joins that column and centres
+## itself in it. `hud.tscn` is untouched: the cluster is `ui/hud/cockpit_cluster.gd`'s own
+## class, built here in the section 7 inner-widget idiom.
+func _build_cockpit() -> void:
+	if _bottom_left == null or _cockpit != null:
 		return
 	var column := _bottom_left.get_node_or_null(NodePath(BOTTOM_LEFT_COLUMN)) as VBoxContainer
 	if column == null:
+		return
+	_cockpit = CockpitCluster.new()
+	_cockpit.name = COCKPIT_CLUSTER
+	_cockpit.custom_minimum_size = CockpitCluster.CLUSTER_SIZE
+	_cockpit.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_cockpit.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(_cockpit)
+	_cockpit.apply_theme()
+	_build_speedometer()
+
+
+## UI_SPEC section 3.6's 120 x 120 dial, now the cluster's left bay. The dial's own contract
+## is byte-identical (its geometry, segments, sweep, overdrive line and read-backs); only its
+## `_draw` surface gains the painted face and needle sprites under the code-drawn marks.
+func _build_speedometer() -> void:
+	if _speedometer != null:
+		return
+	var bay: Control = _cockpit.gauge_bay() if _cockpit != null else null
+	if bay == null:
 		return
 	_speedometer = Speedometer.new()
 	_speedometer.name = RADIAL_DIAL
 	_speedometer.custom_minimum_size = DIAL_SIZE
 	_speedometer.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_speedometer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	column.add_child(_speedometer)
+	bay.add_child(_speedometer)
 	_speedometer.apply_theme()
+
+
+## UI_SPEC section 3.8 (amendment 2026-09-23, wave D6): the ship status screen, a
+## HUD-internal modal hidden by default and in flight only. `hud.tscn` is untouched - the
+## screen is `ui/hud/ship_status_screen.gd`'s own class, built here in the section 7
+## inner-widget idiom and parented to the full-rect `CenterOverlay`, which centres the
+## 720 x 520 body. It reads the profile itself; this file only pushes the launched hull's W
+## cells and the two pool pairs, and reads the `ship_status` action behind
+## `InputMap.has_action`.
+func _build_status_screen() -> void:
+	if _center_overlay == null or _status != null:
+		return
+	_status = ShipStatusScreenScript.new()
+	_status.name = SHIP_STATUS_SCREEN
+	_status.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_status.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_center_overlay.add_child(_status)
+	_status.apply_theme()
+	_push_status()
+
+
+## Section 3.8's two pushes: the launched hull with its W cells (`set_hull_slots`) and the live
+## HULL/SHLD pairs the HUD already mirrors from `PlayerState`. The screen writes nothing, so
+## every refresh is a re-read behind these two calls.
+func _push_status() -> void:
+	if _status == null:
+		return
+	if not _hull_id.is_empty():
+		_status.set_hull(_hull_id)
+	_status.set_pools(_hull_current, _hull_max, _shield_current, _shield_max)
+
+
+## Section 3.8 / MENU_FLOW section 3.9: the toggle. Esc stays Pause-only, so this reads the
+## `ship_status` action alone, and only when the input map carries it (the `project.godot` row
+## is orchestrator-applied at close-out - a project without it leaves the key inert, never
+## broken). The event is marked handled so no later `_unhandled_input` also acts on it.
+func _unhandled_input(event: InputEvent) -> void:
+	if _status == null:
+		return
+	if not InputMap.has_action(SHIP_STATUS_ACTION):
+		return
+	if not event.is_action_pressed(SHIP_STATUS_ACTION):
+		return
+	_status.set_open(not _status.is_open())
+	get_viewport().set_input_as_handled()
+
+
+## Section 3.8's "hidden while docked": the dock route replaces this scene, so nothing in
+## production calls this today; it is the seam that keeps the rule expressible (and testable)
+## on the HUD that owns the screen. Reversal: delete the latch and its two guards.
+func set_docked(active: bool) -> void:
+	_docked = active
+	if _status != null:
+		_status.set_docked(active)
+
+
+func docked() -> bool:
+	return _docked
+
+
+## The section 3.8 read-back (the `speedometer()`/`cockpit()` precedent), so a probe can assert
+## the screen's own state without reaching into the scene tree.
+func status_screen() -> Control:
+	return _status
 
 
 ## The three widgets re-read their tokens on a theme change (see `_notification`).
@@ -635,6 +775,10 @@ func _refresh_widget_theme() -> void:
 		_hit_marker.apply_theme()
 	if _speedometer != null:
 		_speedometer.apply_theme()
+	if _cockpit != null:
+		_cockpit.apply_theme()
+	if _status != null:
+		_status.apply_theme()
 
 
 func _build_weapon_slots() -> void:
@@ -663,6 +807,10 @@ func set_hull_slots(hull_id: StringName, cells: Array) -> void:
 	_hull_slots = cells.duplicate()
 	_rebuild_weapon_slots()
 	select_battery(_active_slot + 1)
+	## Section 3.8's status screen reads the launched hull and its own cell set.
+	if _status != null:
+		_status.set_hull_slots(_hull_slots)
+	_push_status()
 
 
 ## Read-back for probes (`TargetReticle.state()`'s precedent): the cells the current grid
@@ -881,12 +1029,18 @@ func _place_cargo_panel() -> void:
 func _on_hull_changed(current: float, maximum: float) -> void:
 	_hull_current = maxf(current, 0.0)
 	_hull_max = maxf(maximum, 0.0)
+	if _cockpit != null:
+		_cockpit.set_hull(_hull_current, _hull_max)
+	_push_status()
 	_refresh_hull()
 
 
 func _on_shield_changed(current: float, maximum: float) -> void:
 	_shield_current = maxf(current, 0.0)
 	_shield_max = maxf(maximum, 0.0)
+	if _cockpit != null:
+		_cockpit.set_shield(_shield_current, _shield_max)
+	_push_status()
 	_refresh_shield()
 
 
@@ -1417,6 +1571,15 @@ class Speedometer extends Control:
 	## nearest existing near-white and is reported.
 	const TOKEN_HEADING: StringName = &"bone_text"
 	const HEADING_FALLBACK: StringName = &"text_primary"
+	## UI_SPEC section 3.7 / UI_CHROME section 11: the painted dial face and needle sit under
+	## the code-drawn marks. Both masters are 2x their logical box (face 240 -> 120, needle
+	## 16 x 192 -> 8 x 96) and Godot scales from the one master, so the draw rect is logical.
+	const FACE_TEXTURE: Texture2D = preload("res://assets/ui/ui_gauge_face.png")
+	const NEEDLE_TEXTURE: Texture2D = preload("res://assets/ui/ui_gauge_needle.png")
+	const NEEDLE_SIZE := Vector2(8.0, 96.0)
+	## UI_SPEC section 3.7: in overdrive the painted needle is tinted `accent_danger_bright`
+	## by modulate (the code-drawn prograde needle keeps its `accent_nav` token).
+	const TOKEN_NEEDLE_OVERDRIVE: StringName = &"accent_danger_bright"
 
 	var ratio: float = 0.0
 	var prograde: Vector2 = Vector2.ZERO
@@ -1426,12 +1589,14 @@ class Speedometer extends Control:
 	var _overdrive: Color = Color.WHITE
 	var _needle: Color = Color.WHITE
 	var _heading: Color = Color.WHITE
+	var _needle_overdrive: Color = Color.WHITE
 
 	func apply_theme() -> void:
 		_fill = _token(&"metal_mid")
 		_overdrive = _token(&"accent_danger")
 		_needle = _token_or(TOKEN_NAV, NAV_FALLBACK)
 		_heading = _token(&"text_primary") if not has_theme_color(TOKEN_HEADING, TOKENS_TYPE) else _token(TOKEN_HEADING)
+		_needle_overdrive = _token(TOKEN_NEEDLE_OVERDRIVE)
 		queue_redraw()
 
 	## The dial's readings, one call per frame in flight.
@@ -1470,6 +1635,7 @@ class Speedometer extends Control:
 
 	func _draw() -> void:
 		var centre: Vector2 = size * 0.5
+		_draw_surfaces(centre)
 		var thickness: float = minf(size.x, size.y) * THICKNESS_RATIO
 		var radius: float = minf(size.x, size.y) * 0.5 - thickness
 		if radius <= 0.0:
@@ -1507,6 +1673,24 @@ class Speedometer extends Control:
 				_heading,
 				WIDTH
 			)
+
+	## UI_SPEC section 3.7: the painted surface under the marks. The face fills the 120 x 120
+	## box; the needle hangs from its own base at the centre, rotated to the prograde bearing
+	## and tinted `accent_danger_bright` only in overdrive. The code-drawn segment fill,
+	## prograde needle and heading tick are painted after this, so they stay on top.
+	func _draw_surfaces(centre: Vector2) -> void:
+		draw_texture_rect(FACE_TEXTURE, Rect2(Vector2.ZERO, size), false)
+		if prograde.is_zero_approx():
+			return
+		var tint: Color = _needle_overdrive if ratio > OVERDRIVE else Color.WHITE
+		draw_set_transform(centre, prograde.angle() + PI * 0.5, Vector2.ONE)
+		draw_texture_rect(
+			NEEDLE_TEXTURE,
+			Rect2(Vector2(-NEEDLE_SIZE.x * 0.5, -NEEDLE_SIZE.y), NEEDLE_SIZE),
+			false,
+			tint
+		)
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 	func _token(token: StringName) -> Color:
 		if has_theme_color(token, TOKENS_TYPE):

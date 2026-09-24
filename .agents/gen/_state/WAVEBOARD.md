@@ -178,49 +178,31 @@ CONTRACTS §18 v0.10; brief + prompts in `slices/D6-cockpit-instruments/`; write
 set `ui/hud/**`, `assets/ui/**`, `assets/icons/**` provenance, `staging/**`,
 `asset-library/**`, `tests/test_d6_*.gd` — **disjoint from S5's**; it ran parallel with
 item 11 (S5, closed 2026-09-24); run order M0a → owner sheet approval → M0b → M1 → M2 → R1
-→ F1 only on HIGH/MED). Also queued behind it: **designer D3 item 2 = painted-only
-station rail icons** (routed to the owner's live SVG-review session) and D3's
-tint rework + D4's backdrops. **Coder item 10 (S4 weapon batteries) shipped 2026-09-23** and is in
-§Closed; the code queue is empty beyond it (`dispatch_coder.md` §"Next beyond this queue": the
-engine slice 3 / RPG P3 merge, and the affix-application wave 15 §9.3 leaves open). **Graphics
-D2 (designer #1) is DONE 2026-09-22**
-(commit `7c1ae06`,
-verified by the designer-session re-measure: **135 SVG + 164 raster masters + 540 tint
-stencils = 839 files** (2 478 → 839, 1 774 deleted), zero non-tint `_16/_48/_96/_192/@2x`
-left, `asset_path_fallout` **0 unresolvable** (367 refs), gate **457/0** held through the
-catalog/test/tool re-points. Owner amendments of the run recorded in `D2_SPLIT.md` §6 (96
-grid supersedes 48, batches ≤ ~10 icons, the sanctioned palette ramp). `validate_names
---library` is environment-deferred on the Linux host (`asset-library/cut/` + `_archive`
-are Windows-side only; `archive.py --restore` reports "no archive").
-
-**Queued:** items 4 **P2-A**,
-5 **Rock cleave**, 6 **P2-B1**, 7 **P2-B proper**, 8 **S2.6 truth-and-feel**,
-**9 S3 the item economy** and **10 S4 weapon batteries** — all **DONE**
-(see §Closed). The
-queue of record is `.agents/gen/dispatch_coder.md` and it now carries **no queued item**; the
-next coder work named there (engine slice 3 + RPG P3, the affix-application wave) needs its own
-docs-first brief before a dispatch. The owner's grouping
-ruling (N barrels keep N W mounts) is built, and the S3→S4
-`outfitting_panel.gd` collision is resolved (S4 is closed).
-**The graphics lane resumed
-2026-09-22 in a two-designer split (queue of record `.agents/gen/dispatch_designer.md`):
-designer #1's only job is D2, the icon unification — glyph-type icons remade as
-hand-authored SVG masters (kie.ai has no SVG generator), every other icon kept as ONE
-raster master with all size variants deleted project-side (Godot scales from the master;
-`asset-library/` keeps provenance; Phase C's write set is **owner-extended** to the four
-`game/*_catalog.gd`, five test files and two tools — re-point only), and D2 closed before
-item 9. Designer #2 (chrome re-cut, tint rework, 4K backdrops, B2-1 hover) waits for the
-owner's later dispatch.** Owner ticks open: the
+→ F1 only on HIGH/MED). **Coder item 11 (S5) closed 2026-09-24** (§Closed) —
+**coder item 12 = S6 Travel (engine slice 3 + RPG P3) is BRIEFED and ready
+2026-09-24** (docs-first landed: CONTRACTS §19 + v0.11, 11 §5, 13 §7, 06 §8,
+01 §5.2 travel 0–500; brief + prompts in `slices/S6-travel/`; write set
+`game/**`, `autoload/player_profile.gd`, `tests/test_s6_*.gd` — **disjoint from
+D6's**, so it runs parallel with designer item 7; run order K0 → (K1 ∥ K2 ∥ K3)
+→ R1 → F1 only on HIGH/MED). Then **item 13 the affix-application wave**
+(15 §9.3, gated on S3 tick 6). The graphics lane's open
+items live in the table of `dispatch_designer.md` (D3-1 chrome re-cut —
+owner-gated, D3-2a painted rail icons, D3-2b tint rework, D4-3 backdrops, D4-4
+hover — owner pick); **D2 is DONE 2026-09-22** (detail §Closed; its job block is
+archived at `slices/D2-icon-unification/_archive/D2_dispatch_block.md`).
+Owner ticks open: the
 `18_engine_spec.md` §6/§13/§15 cleaving amendment (owner-locked — the wave shipped,
 the spec text lags; it now also covers `FRAGMENT_OUTWARD_KICK` and the two
   flight multipliers `ACCEL_TIME_MULT`/`COAST_TIME_MULT`), the §13 turn/`coast_time`
 column ticks, slice 2.5's two calls (engine bed, vignette strength), L83's icon-size pick,
-and **S3's nine (see §Closed — S4 adds none new: its only two owner-facing readings are the
-empty-cell lines and `SWAP ALL`'s short-bag refusal, both in its §Closed entry)**. P2-A/P2-B1/P2-B proper tick lists are resolved; **S2.6 adds four of
-its own (see §Closed — the `STEER_WITHOUT_THROTTLE` supersession is the new one).**
+**S3's nine** and **S2.6's four** (both in §Closed; S2.6's new one is the
+`STEER_WITHOUT_THROTTLE` supersession), **S5's three** still owed
+(`ROUNDS_PER_CARGO_UNIT` 10, fire-along-facing vs hold-until-aligned, the
+`track_dps` taste table), and **D6's five** when it reports. P2-A/P2-B1/P2-B
+proper tick lists are resolved.
 
-**Owner requests queued 2026-09-22 (recorded, not briefed — the owner's stop
-condition is item 6, and each needs its own docs-first brief before any code):**
+**Owner requests queued 2026-09-22 — all seven landed** (record kept verbatim;
+1–4 in P2-B proper, 5–7 in S2.6):
 
 1. ~~Shipyard — hovering a module shows what it is and how many the player owns.~~ **DONE** in
    P2-B proper (the hover line, `shipyard_panel.gd`).
@@ -230,12 +212,15 @@ condition is item 6, and each needs its own docs-first brief before any code):**
    P2-B proper (FITTING's SLOT LAYOUT reuses the shipyard's own plate recipe, cell for cell).
 4. ~~LAUNCH / REPAIRS — a REFUEL button beside the existing service actions.~~ **DONE** in
    P2-B proper (REFUEL and RECHARGE rows in LAUNCH, `Repairs.refuel`/`recharge`).
-5. Rock cleave follow-up — after a rock breaks, its fragments should move a bit
-   outward from the centre (radial motion on top of today's 360° spread).
-6. Weapon FX — a beam's hit should spawn its impact FX somewhat randomly across
-   the struck surface instead of at one fixed point.
-7. Weapon FX — a laser beam should connect to more of the middle of the object
-   (its termination point, for the beam itself, not only the hit FX of #6).
+5. ~~Rock cleave follow-up — after a rock breaks, its fragments should move a bit
+   outward from the centre (radial motion on top of today's 360° spread).~~ **DONE**
+   in S2.6 (`FRAGMENT_OUTWARD_KICK` 150.0).
+6. ~~Weapon FX — a beam's hit should spawn its impact FX somewhat randomly across
+   the struck surface instead of at one fixed point.~~ **DONE** in S2.6 (the
+   `clamp(0.35 × radius, 8, 48)` u scatter disc).
+7. ~~Weapon FX — a laser beam should connect to more of the middle of the object
+   (its termination point, for the beam itself, not only the hit FX of #6).~~ **DONE**
+   in S2.6 (`BEAM_SINK` 0.45).
 
 ## Closed (details in MASTER_REPORT.md)
 

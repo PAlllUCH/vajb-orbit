@@ -1,0 +1,10 @@
+{
+ "source_md5": "0418edaaadce4decce636ec7c87eccdb",
+ "job_id": "4b34b0a3746785c6bbc3d2a553258d5e",
+ "payload_field": "image",
+ "upload_url": "https://tempfile.redpandaai.co/kieai/11467482/ui_seg_9.png/1790226103477-wqbxnxrkhsl.png",
+ "result_url": "https://tempfile.aiquickdraw.com/js/g4/a90e69d38d49.png",
+ "result": "_keying/recraft/ui_seg_9-0418edaa-recraft.png",
+ "source": "staging/phase_g/ui/_cells/20260924-070115/ui_seg_9.png",
+ "at": "2026-09-24 07:01:57"
+}

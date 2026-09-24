@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="272" height="380"
+ viewBox="0 0 272 380">
+  <defs>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2B2F35"/>
+      <stop offset="0.16" stop-color="#15181D"/>
+      <stop offset="0.78" stop-color="#15181D"/>
+      <stop offset="1" stop-color="#232629"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3A3F46" stop-opacity="0.85"/>
+      <stop offset="0.35" stop-color="#2B2F35" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#15181D" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <polygon points="10,0 262,0 272,10 272,370 262,380 10,380 0,370 0,10"
+           fill="url(#body)" stroke="#2A2E35" stroke-width="1"/>
+  <polygon points="4,3 268,3 268,16 4,16" fill="url(#glow)"/>
+  <line x1="6" y1="2.5" x2="266" y2="2.5" stroke="#565C63" stroke-width="1"
+        stroke-opacity="0.75"/>
+  <line x1="4" y1="20" x2="268" y2="20" stroke="#2A2E35" stroke-width="1"
+        stroke-opacity="0.45"/>
+</svg>

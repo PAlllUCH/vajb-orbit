@@ -1,0 +1,42 @@
+{
+ "ui_cockpit_frame": {
+  "route": "nine-slice rebuild (reband_frame.py)",
+  "box": [
+   192,
+   192
+  ],
+  "frame": {
+   "measured_band_px": 262.25,
+   "measured_band_pct": 20.219737856592136,
+   "rebuilt_band_px": 64,
+   "drawn": {
+    "vertical": 64,
+    "horizontal": 57,
+    "interior_ref": 23.673,
+    "margin": 64
+   },
+   "edges": {
+    "top": 351,
+    "bottom": 229,
+    "left": 237,
+    "right": 232
+   },
+   "spread": 0.4652049571020019,
+   "centre": "flat panel black #15181D (section 2 recipe)"
+  }
+ },
+ "ui_gauge_needle": {
+  "route": "authored SVG (D2 route)",
+  "box": [
+   16,
+   192
+  ]
+ },
+ "ui_readout_glass": {
+  "route": "authored SVG (D2 route)",
+  "box": [
+   272,
+   380
+  ]
+ }
+}

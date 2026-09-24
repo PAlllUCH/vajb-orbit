@@ -207,12 +207,17 @@ Reversal: move the cluster to the column foot as a bare dial (§3.6 verbatim).
 - **Layout:** left bay = gauge 120×120 (box unchanged); middle bay = compass
   96×96 rose + a 3-cell `HDG` readout beneath it; right bay = five readout rows.
 - **Readout rows** (right bay), label column 34 px + digits:
-  `SPD` 3 cells (u/s), `HULL` 4 cells (current points), `SHLD` 4 cells (current
+  `SPD` 4 cells (u/s) — **amended 2026-09-24 (owner: "in the cockpit if all
+  clocks are 4 digits make the speed 4 digits as well"); was 3 cells**,
+  `HULL` 4 cells (current points), `SHLD` 4 cells (current
   points), `FUEL` 3 cells + `%` cell, `ENRG` 3 cells + `%` cell. Digit cell
   20×36 logical (7-seg aspect ≈ 1:1.8), 2 px gaps, leading blanks
   (`ui_seg_blank`) not leading zeros. Row labels 12 px `text_dim` (new §6 row
   "Instrument row label"; reversal: 14 px). Reversal on hull/shield: show %.
-- **Digit semantics:** SPD = `int(round(prograde.length()))` clamped 0..999;
+- **Digit semantics:** SPD = `int(round(prograde.length()))` clamped 0..9999
+  (**2026-09-24 owner ruling** — SPD is 4 cells like every other row, so every
+  readout row is 4 cells wide; the staged 4th-digit item is pulled forward.
+  Reversal: 3 cells, clamp 0..999);
   HULL/SHLD = `int(round(current))`; FUEL/ENRG = `int(round(100 × value/max))`,
   clamped 0..100. The `%` cell lights only on the FUEL/ENRG rows.
 - **State colours (digits never recolour):** danger reads exactly as §3.1/§3.1b

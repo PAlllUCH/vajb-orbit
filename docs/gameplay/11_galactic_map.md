@@ -146,3 +146,44 @@ Per-sector population targets (spawn densities, not hard counts):
   now carries travel and insurance lines); a typical 250–500 CR of
   gate fees plus the flat insurance premium lowers net income ≈10–15 %,
   which is intentional (the original ledger was tuned rich).
+
+## 5. Amendment 2026-09-24 (wave S6 — the travel pin)
+
+Wiring rules and the numbers §2/§3 left open. Engine §14 slice 3 is the
+deliverable line this wave implements (gates, corridors, POIs, scanner, sector
+transitions via `loading`); CONTRACTS §19 is the interface pin.
+
+- **Gate rings:** one ring per destination link (a sector has 1–2: the spine
+  neighbours of §2.3). Flying into a ring raises `JUMP TO <SECTOR> — <fee> CR`
+  through the HUD prompt line; `interact` confirms, then the 2 s charge-up,
+  then the transition (§2.1). A ring the player's heat tier refuses (13 §3)
+  raises `GATE REFUSED — OUTLAW` and charges nothing.
+- **Fee composition (proposed; §2.1 + 13 §3 compose here):**
+  `fee = floor((150 + 100 × distance) × want_mult × lawless_mult)` where
+  `want_mult = 1.5` at the Wanted tier only (Outlaw is refused, never priced)
+  and `lawless_mult = 2.0` when the destination is sector 7 (the expedition
+  gate). The two multipliers compose **multiplicatively on the base**.
+  Reversal: additive stacking (base × 2.25 max). Owner tick 1.
+- **Corridors:** map-edge bands, one per §2.2 neighbour (1–2 per sector), marked
+  by nav buoys at each end. `CORRIDOR_DEPTH := 600.0` u inward from the map edge
+  (**proposed**; §2.2 says "map-edge zones" without a depth. Reversal: 400.0).
+  The 15 s hold counter accrues while the player is inside the band and resets
+  to 0 on exit; **hull damage does not interrupt it** (proposed — "holding
+  course" reads as presence, not calm; reversal: any hull hit resets it).
+  Owner tick 2. Transition at 15 s to the corridor's destination sector.
+- **Derelicts:** scan range `DERELICT_SCAN_RANGE := 300.0` u (**proposed**;
+  §3.1's "at close range" is unquantified. Reversal: the fit's `scan_range`).
+  Owner tick 3. The 5 s channel is interruptible by leaving range or by any
+  hull hit; the readout rides the HUD prompt line (`SCANNING nn %`, 4 Hz).
+- **Anomaly table (§3.2 formalised):** equal roll over the three kinds, except
+  the Hollows (sector 6) rolls `void_rift` at 2× weight. `void_rift` drains
+  shields at `RIFT_DRAIN := 12.0`/s inside its radius (**proposed**; §3.2's
+  "slowly" is unquantified. Reversal: 6.0/s). Owner tick 4. Its exotic pickup:
+  T4 ore always, or a magic-or-better module at 0.10 (15 §5).
+- **Blip mapping (11 §3.3 → the §7 kind set, no HUD writes):** gates and
+  beacons `&"friendly"`, derelicts and scanned anomalies `&"neutral"`, convoys
+  `&"neutral"`, pirates/hunters `&"hostile"` (existing). Soft fog is
+  game-side: a POI's blip appears once scanned or revealed by a beacon; gates
+  and stations always appear.
+- **Ledger:** 01 §5.2's travel row is amended there (0–250 → **0–500 CR**, this
+  section's §2.2/§4 range wins the contradiction).

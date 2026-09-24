@@ -80,15 +80,19 @@ def objects(image: Image.Image) -> list[dict]:
     return found
 
 
-def cells(image: Image.Image) -> list[dict]:
-    """Group the render's ink into the panel's four cells, in reading order.
+def cells(image: Image.Image, cols: int = 2, rows: int = 2) -> list[dict]:
+    """Group the render's ink into the panel's cells, in reading order.
 
-    Grouping is by **pixel mass in a quadrant**, not by centroid and not by the component list:
+    Grouping is by **pixel mass in a grid cell**, not by centroid and not by the component list:
     a hull is usually several components (tendrils, detached fins, a separated antenna) and it
-    routinely runs past a quadrant midline, so each component is assigned to the quadrant that
-    holds most of its pixels and each cell's box is the union of the boxes that ended up there.
-    The box therefore covers the whole object even when the object crosses the midline, which is
-    exactly what a grid cut got wrong.
+    routinely runs past a midline, so each component is assigned to the grid cell that holds most
+    of its pixels and each cell's box is the union of the boxes that ended up there. The box
+    therefore covers the whole object even when the object crosses a midline, which is exactly
+    what a grid cut got wrong.
+
+    `cols`/`rows` come from the panel's own plan (the driver's `cells` is the authority): the
+    Phase G hull sheets are 2x2, the D6 instrument panel is 2x2, its frame+glass panel is 1x2 and
+    the two seven-segment panels are 3x2 (`UI_CHROME_ASSETS_SPEC` section 11).
     """
     gray = np.asarray(image.convert("L")).astype(np.float32)
     height, width = gray.shape
@@ -99,43 +103,59 @@ def cells(image: Image.Image) -> list[dict]:
         return []
     sizes = ndimage.sum(mask, labels, range(1, count + 1))
     floor = max(float(sizes.max()) * MIN_SHARE, 64.0)
-    grid = [[np.zeros((height, width), bool) for _ in range(2)] for _ in range(2)]
+    row_edges = [r * height // rows for r in range(rows + 1)]
+    col_edges = [c * width // cols for c in range(cols + 1)]
+    grid = [[np.zeros((height, width), bool) for _ in range(cols)] for _ in range(rows)]
     for index in range(1, count + 1):
         if sizes[index - 1] < floor:
             continue
         own = (labels == index) & mask
-        rows, cols = np.where(own)
-        areas = [
-            int(((rows < height // 2) & (cols < width // 2)).sum()),
-            int(((rows < height // 2) & (cols >= width // 2)).sum()),
-            int(((rows >= height // 2) & (cols < width // 2)).sum()),
-            int(((rows >= height // 2) & (cols >= width // 2)).sum()),
-        ]
-        best = int(np.argmax(areas))
-        grid[best // 2][best % 2] |= own
+        rows_at, cols_at = np.where(own)
+        areas = np.array([
+            [int(((rows_at >= row_edges[r]) & (rows_at < row_edges[r + 1])
+                  & (cols_at >= col_edges[c]) & (cols_at < col_edges[c + 1])).sum())
+             for c in range(cols)]
+            for r in range(rows)
+        ])
+        row, col = np.unravel_index(int(np.argmax(areas)), areas.shape)
+        grid[row][col] |= own
     groups: list[dict] = []
-    for row in range(2):
-        for col in range(2):
+    for row in range(rows):
+        for col in range(cols):
             own = grid[row][col]
-            rows, cols = np.where(own)
-            if not len(rows):
+            rows_at, cols_at = np.where(own)
+            if not len(rows_at):
                 continue
             groups.append({
-                "box": [int(cols.min()), int(rows.min()), int(cols.max()) + 1, int(rows.max()) + 1],
+                "box": [int(cols_at.min()), int(rows_at.min()),
+                        int(cols_at.max()) + 1, int(rows_at.max()) + 1],
                 "px": int(own.sum()),
                 "mask": own,
-                "centre": [float(cols.mean()), float(rows.mean())],
+                "centre": [float(cols_at.mean()), float(rows_at.mean())],
                 "quadrant": [row, col],
             })
     return groups
 
 
-def clusters(image: Image.Image, expected: int = 4) -> list[dict]:
-    return cells(image)
+def clusters(image: Image.Image, expected: int = 4, cols: int = 2, rows: int = 2) -> list[dict]:
+    return cells(image, cols, rows)
+
+
+def has_native_alpha(image: Image.Image, share: float = 0.01) -> bool:
+    """True when the render came back with real transparency (the native-alpha route)."""
+    if image.mode not in ("RGBA", "LA"):
+        return False
+    alpha = np.asarray(image.convert("RGBA").getchannel("A"))
+    return float((alpha == 0).mean()) > share
 
 
 def cut_object(image: Image.Image, group: dict, pad_share: float = 0.03) -> Image.Image:
-    """Crop one cell to its own box, blacking out everything that is not part of that object."""
+    """Crop one cell to its own box, clearing everything that is not part of that object.
+
+    An opaque render (white backdrop, the D6 route) is cleared to opaque black so the paid matte
+    has one object on a flat field; a render that already carries alpha keeps it, so the cut never
+    paints a black frame around art that was transparent to begin with.
+    """
     rgba = image.convert("RGBA")
     left, top, right, bottom = group["box"]
     pad = max(6, int(round(pad_share * max(right - left, bottom - top))))
@@ -144,7 +164,11 @@ def cut_object(image: Image.Image, group: dict, pad_share: float = 0.03) -> Imag
     pixels = np.asarray(rgba).copy()
     keep = np.zeros(pixels.shape[:2], bool)
     keep[top:bottom, left:right] = True
-    pixels[~(group["mask"] & keep)] = (0, 0, 0, 255)
+    outside = ~(group["mask"] & keep)
+    if has_native_alpha(image):
+        pixels[outside, 3] = 0
+    else:
+        pixels[outside] = (0, 0, 0, 255)
     return Image.fromarray(pixels[top:bottom, left:right], "RGBA")
 
 
@@ -156,10 +180,10 @@ def _union(group: list[dict]) -> tuple[int, int, int, int]:
     return left, top, right, bottom
 
 
-def build_page(render: Path, page: Path) -> None:
+def build_page(render: Path, page: Path, cols: int = 2, rows: int = 2) -> None:
     image = Image.open(render).convert("RGB")
     found = objects(image)
-    ordered = clusters(image)
+    ordered = clusters(image, cols=cols, rows=rows)
     draw = ImageDraw.Draw(image)
     for order, group in enumerate(ordered, 1):
         left, top, right, bottom = group["box"]
@@ -182,11 +206,14 @@ def main() -> int:
     parser.add_argument("--names", default="")
     parser.add_argument("--page", default="")
     parser.add_argument("--json", default="")
+    parser.add_argument("--grid", default="2x2",
+                        help="panel grid as CxR, the driver's `cells` plan (default 2x2)")
     args = parser.parse_args()
+    grid_cols, grid_rows = (int(v) for v in args.grid.lower().split("x"))
 
     if args.detect:
         render = Path(args.detect)
-        ordered = clusters(Image.open(render))
+        ordered = clusters(Image.open(render), cols=grid_cols, rows=grid_rows)
         if args.json:
             Path(args.json).write_text(json.dumps(
                 [{"box": g["box"], "px": g["px"], "centre": g["centre"]} for g in ordered], indent=1),
@@ -194,7 +221,7 @@ def main() -> int:
         for order, group in enumerate(ordered, 1):
             print(f"  {order}: box={group['box']} px={group['px']} centre={[round(v) for v in group['centre']]}")
         if args.page:
-            build_page(render, Path(args.page))
+            build_page(render, Path(args.page), cols=grid_cols, rows=grid_rows)
         return 0
 
     if args.cut:
@@ -202,7 +229,7 @@ def main() -> int:
         names = [n for n in args.names.split(",") if n]
         out = Path(args.out)
         out.mkdir(parents=True, exist_ok=True)
-        ordered = clusters(Image.open(render))
+        ordered = clusters(Image.open(render), cols=grid_cols, rows=grid_rows)
         if not names:
             names = [f"cell{i + 1}" for i in range(len(ordered))]
         if len(ordered) != len(names):

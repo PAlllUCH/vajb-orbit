@@ -1805,6 +1805,76 @@ u/s 3 cells clamp 999; HULL/SHLD = `int(round(current))` points 4 cells clamp
 reads 0. Danger rows reuse §3.1/§3.1b as row treatments (label + 1 px script-drawn
 frame — digits never recolour); overdrive is `ratio > 0.9` strict.
 
+## §19 S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, heat, loot
+
+Pinned additions carry the docs' own numbers (11 §5, 13 §7, 06 §8 amendments,
+2026-09-24). Engine §14 slice 3's deliverable line is the wave; the §14
+"hunters in slice 4" note is **superseded** for the hunter part by the owner's
+item-12 grouping (P3 = heat + hunters) — bosses/arena hooks stay slice 4.
+Every seam below is additive; nothing frozen moves.
+
+```gdscript
+# game/sector_registry.gd — additive beyond §6's pin:
+#   SECTORS row gains: neighbours: Array[int], gate_links: Array[int] (1-2-3-4-5-6-7
+#   spine, 11 §2.3), corridors: Array[Dictionary]  # [{dest, edge_rect}]
+#   static GATE_FEE_BASE := 150, GATE_FEE_PER_SECTOR := 100 (11 §2.1)
+#   static CORRIDOR_DEPTH := 600.0        # proposed, reversal 400.0 (11 §5)
+#   static DERELICT_SCAN_RANGE := 300.0   # proposed, reversal scan_range (11 §5)
+#   static RIFT_DRAIN := 12.0             # proposed, reversal 6.0 (11 §5)
+#   static ANOMALY_WEIGHTS_RIFT_DOUBLED := [&"sector_6"]   # the Hollows (11 §3.2)
+
+# game/gate.gd — new file (engine §14's name), class_name Gate extends Area2D:
+#   setup(dest_sector: int) -> void
+#   fee_for(heat_tier: StringName) -> int   # floor((150 + 100·d) × want × lawless);
+#       want 1.5 at Wanted only, lawless 2.0 into sector 7, else 1.0 (11 §5)
+#   jump(profile, heat_tier) -> int         # 0 ok / -1 refused (Outlaw) / -2 funds;
+#       charges via PlayerProfile, 2 s charge-up, then the loading transition
+
+# game/corridor.gd — new file, class_name Corridor extends Area2D:
+#   setup(dest_sector: int, edge: Rect2) -> void
+#   hold_progress() -> float                # 0..1 over 15 s presence (11 §2.2);
+#       resets on zone exit, NOT on hull damage (11 §5 tick 2)
+
+# game/poi.gd — new file, class_name Poi extends Node2D (derelict/anomaly/beacon):
+#   setup(kind: StringName, row: Dictionary) -> void
+#   scan(player) -> int                     # derelicts: 5 s interruptible channel
+#       (11 §3.1); roll 0.40 cache / 0.35 data core (03 comp_elec + credits) /
+#       0.25 magic module (15 §5); one-shot per respawn cycle
+#   trigger(player) -> void                 # anomalies at 200 u (11 §3.2): ore_bloom
+#       (T+1 cluster, 10 rocks, 2× yield) / grave_cache (3–5 pickups, one grade up)
+#       / void_rift (RIFT_DRAIN shield/s inside; 1 exotic: T4 ore, or magic+ module
+#       at 0.10); despawns, respawns on the sector clock (17 §4)
+
+# game/loot_tables.gd — new file (17 §2's name), class_name LootTables extends RefCounted:
+#   static TABLES: Dictionary   # 06 §3.1–§3.4 verbatim (fighter/freighter/corvette/Maw)
+#   static HUNTER_EXTRA: Array  # 06 §8's proposed comp_elec table (owner tick 8)
+#   roll(band: StringName) -> Array[Dictionary]   # §2's procedure; one pickup per
+#       unit (06 §8's made choice); caches last, one distinct pickup (06 §5)
+
+# game/sector.gd — additive beyond §6's pin (scanner reveal lives here, engine §14):
+#   blips() gains gate/beacon/ders/anomalies entries per 11 §5's mapping; soft fog:
+#   a POI blip appears once scanned or beacon-revealed; gates and stations always
+#   appear. WorldClock remains the only respawn clock (17 §4).
+
+# autoload/player_profile.gd — additive:
+#   pay_bounty(faction_id: StringName) -> bool   # fine = heat × 25 CR (13 §2);
+#       all-or-nothing per 17 §5; one BOUNTY economy-log line; zeroes that heat
+
+# game/game.gd — the wiring owner (one owner, 17 §2): the kill path calls
+#   LootTables.roll + spawns the wreck site (WRECK_PICKUP_LIFETIME 90 s, 06 §4);
+#   heat only with a witness in WITNESS_RANGE 900.0 (= ShipStats.BASE_SCAN_RANGE,
+#   13 §7); sector transitions go through the `loading` screen route (11 §2.3:
+#   fields/pickups reset, hold/hull/heat persist).
+```
+
+Rules that fix every ambiguity: **no `ui/hud/**` writes in this wave** — the
+gate prompt, scan readout and cache feed line all ride the frozen `set_prompt`
+seam (§7); hunter waves spawn per-faction per 13 §3 (Concord hunts Concord's
+outlaws only); `heat_on_kill()`'s existing −3/+15/+25 values are the gains
+table and are not re-derived; Outlaw dock/gate refusals charge nothing and
+write nothing; every refusal path leaves the profile byte-identical (S4's
+rules 7/8 precedent).
+
 ## §10 Changelog
 
 - **v0 (2026-09-18)** — seeded from the engine wave-1 pinned interfaces
@@ -2391,6 +2461,15 @@ frame — digits never recolour); overdrive is `ratio > 0.9` strict.
   byte-identical, and per-module damage stays staged (no sim model exists). Owner
   ticks ride the D6 brief (the NMS palette reading, placement/size, hull/shield
   points vs %, the `ship_status` key, scheduling a module-damage model).
+- **v0.11 (2026-09-24, the travel wave S6 — landed docs-first)** — added **§19**:
+  jump gates + fee composition, border corridors, POIs (derelicts/anomalies/
+  beacons) with the scanner's soft fog, sector transitions via `loading`, heat
+  enforcement + bounty payment + hunter wings, and the loot roll + wreck sites.
+  Superseded in passing: §14's "hunters in slice 4" note (the owner's item-12
+  grouping wins), 01 §5.2's travel ceiling (0–250 → 0–500 CR). Owner ticks ride
+  the S6 brief (fee multiplier composition, corridor depth/interrupt rules,
+  derelict scan range, rift drain, the bounty surface, the hunter hull map,
+  the station turret, the hunter extra table).
 - **v0.11 (2026-09-24, the S5 playtest-fix review — S5-R1, the wave's only CONTRACTS
   writer)** — records the wave's measured gate (**`passed=577 failed=0`**, three runs on
   three scratch stores, 49 suites, the live profile byte-identical) and the review's two

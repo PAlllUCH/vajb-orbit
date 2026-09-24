@@ -105,7 +105,7 @@ All targets assume the baseline loop with the starting Vanguard (cargo 40).
 | Repairs (K2) | 100–350 CR | assume taking moderate damage |
 | Refining fee (K3) | ≈ 195 CR | 13 conversions × 15 CR (04 §3) |
 | Commission (K4) | 40–60 CR | 2 % of S1+S3 |
-| Travel (11 §2) | 0–250 CR | gate fees; hand-flown corridors are free |
+| Travel (11 §2) | 0–500 CR | gate fees (150 + 100/sector, ×2 into lawless, +50 % at Wanted); hand-flown corridors are free. **Amendment 2026-09-24 (S6):** 0–250 → 0–500 per 11 §5 (round trips and the Wanted multiplier price above 250); reversal 0–250 |
 | Insurance (14 §3) | 200–300 CR | flat per-class premium, optional but recommended |
 | Session net cost | **≈ 1 100–1 400 CR** | |
 

@@ -641,6 +641,108 @@ for _id, _needs_key, _subject, _phases in FX_CYCLES:
 ## keeps `ship_batch_g.py` from copying it.
 RUNS["fx_shield_shatter"]["ships"] = False
 
+## ---------------------------------------------- D6 cockpit instruments (UI_CHROME section 11)
+## Wave D6, `docs/design/UI_CHROME_ASSETS_SPEC.md` section 11. Four panel renders, one family per
+## panel, on the plain solid pure white background the chrome law requires (section 1.2). The
+## framing sentence is section 11's own constant, verbatim; the per-run subjects are section 11's
+## verbatim prompts; the negative list is section 8's. The style block is passed verbatim as the
+## prompt preamble by `run_one`, exactly as every other Phase G run does.
+##
+## The masters are one render per panel and the cuts ship at 2x their logical box (section 11's
+## table, the D2 ruling: no `@2x` files, no size-variant families). `cells` is the authority on the
+## cell count and the names; the grid is read off the render with `panels.py --detect` before the
+## cut (a 3x2 panel is not caught by the old quadrant grouping).
+UI_FRAME = ("painted UI instrument part, straight-on flat view, centred, "
+            "plain solid pure white background")
+UI_NEG = "no stars, no ships, no wrecks, no ember glow, no logos, no text"
+
+
+def ui_prompt(subject: str) -> str:
+    return f"{UI_FRAME}: {subject}. {UI_NEG}"
+
+
+UI_INSTRUMENTS = ui_prompt(
+    "cockpit instrument parts on white, arranged with wide gaps: a round aircraft-style speed "
+    "dial face with a recessed dark centre and a 270-degree arc of ten metal tick marks; a slim "
+    "metal needle; a round compass rose disc with engraved tick rings and four small diamond "
+    "cardinal marks; a small metal pointer triangle")
+UI_FRAME_GLASS = ui_prompt(
+    "a rectangular instrument bezel frame with a thick bevelled metal border, empty dark interior, "
+    "nine-patch proportions; a soft dark rectangular glass readout plate with faint inner glow "
+    "along its top edge")
+UI_SEVENSEG_A = ui_prompt(
+    "six rectangular digital seven-segment display cells on white, wide gaps, showing digits "
+    "0 1 2 3 4 5 in glowing bone-white segments with the unlit segments dark grey, each digit in "
+    "its own cell, flat straight-on")
+UI_SEVENSEG_B = ui_prompt(
+    "six rectangular digital seven-segment display cells on white, wide gaps: digits 6 7 8 9, then "
+    "a percent sign made of seven-segment style strokes, then an empty cell showing only the dim "
+    "unlit segment outline")
+
+## Section 11's table, logical box -> master box (the master is the shipped file).
+UI_LOGICAL = {
+    "ui_cockpit_frame": (96, 96),
+    "ui_gauge_face": (120, 120),
+    "ui_gauge_needle": (8, 96),
+    "ui_compass_rose": (96, 96),
+    "ui_compass_lubber": (16, 12),
+    "ui_readout_glass": (136, 190),
+}
+UI_MASTER = {
+    "ui_cockpit_frame": (192, 192),
+    "ui_gauge_face": (240, 240),
+    "ui_gauge_needle": (16, 192),
+    "ui_compass_rose": (192, 192),
+    "ui_compass_lubber": (32, 24),
+    "ui_readout_glass": (272, 380),
+}
+for _i in range(10):
+    UI_LOGICAL[f"ui_seg_{_i}"] = (20, 36)
+    UI_MASTER[f"ui_seg_{_i}"] = (48, 88)
+for _cell in ("ui_seg_pct", "ui_seg_blank"):
+    UI_LOGICAL[_cell] = (20, 36)
+    UI_MASTER[_cell] = (48, 88)
+
+RUNS["panel_instruments"] = dict(
+    family="ui", source="human", mode="panel", alpha=False, out="panel_instruments",
+    subject=UI_INSTRUMENTS, cells=[[0, "ui_gauge_face", 0], [1, "ui_compass_rose", 0],
+                                   [3, "ui_compass_lubber", 0]],
+    grid=[2, 2], boxes=UI_MASTER, logical=UI_LOGICAL, panel_name="panel_instruments",
+    dup_check=True, review_only=False,
+)
+## Three renders of the instrument panel (2026-09-24, tasks fcadff98, f72d6e47, 001cb6bb) each
+## came back with the same three objects and the needle painted ONTO the dial face instead of beside
+## it: `panels.py --detect` finds the face (which carries a needle, against section 11's "no
+## needle"), the rose and the lubber triangle, and never a fourth object. The face, rose and lubber
+## are cut from the render; `ui_gauge_needle` is recovered from the painted needle by
+## `gauge_split.py` (extract it, then inpaint it out of the face), and `ui_cockpit_frame`'s missing
+## glass half is authored by `frame_glass_ui.py`. Both repairs are reported in the D6-M0 report.
+RUNS["panel_frame_glass"] = dict(
+    family="ui", source="human", mode="panel", alpha=False, out="panel_frame_glass",
+    subject=UI_FRAME_GLASS, cells=[[0, "ui_cockpit_frame", 0]],
+    grid=[2, 1], boxes=UI_MASTER, logical=UI_LOGICAL, panel_name="panel_frame_glass",
+    dup_check=False, review_only=False,
+)
+## The two digit panels came back as one row of six, not the 3x2 the panel paragraph describes
+## (2026-09-24, `panels.py --detect`: six objects on a single horizontal band). The arrangement is
+## read off the render (AGENTS.md Phase G lane) while the cell count and the names come from
+## section 11, so the grid is 6x1 here and the 3x2 wording is reported as a doc/render mismatch.
+RUNS["panel_sevenseg_a"] = dict(
+    family="ui", source="human", mode="panel", alpha=False, out="panel_sevenseg_a",
+    subject=UI_SEVENSEG_A,
+    cells=[[i, f"ui_seg_{i}", 0] for i in range(6)],
+    grid=[6, 1], boxes=UI_MASTER, logical=UI_LOGICAL, panel_name="panel_sevenseg_a",
+    dup_check=False, review_only=False,
+)
+RUNS["panel_sevenseg_b"] = dict(
+    family="ui", source="human", mode="panel", alpha=False, out="panel_sevenseg_b",
+    subject=UI_SEVENSEG_B,
+    cells=[[0, "ui_seg_6", 0], [1, "ui_seg_7", 0], [2, "ui_seg_8", 0], [3, "ui_seg_9", 0],
+           [4, "ui_seg_pct", 0], [5, "ui_seg_blank", 0]],
+    grid=[6, 1], boxes=UI_MASTER, logical=UI_LOGICAL, panel_name="panel_sevenseg_b",
+    dup_check=False, review_only=False,
+)
+
 ## `cells` is the authority on what a sheet produces: a repaired sheet cuts three cells, not four.
 ## Deriving `cuts` from it stops a stale four-name list from planning one file twice (the sibelon
 ## and miner sheets each still declared `back` after their cell plan stopped cutting one).
@@ -837,6 +939,15 @@ def run_one(run_id: str, dry: bool = False, post_only: bool = False) -> bool:
         notes.append("native alpha" if source == master else f"recraft matte ({source.name})")
         dest = family_dir / f"{spec['out']}.png"
         trim_centre(Image.open(source).convert("RGBA")).save(dest)
+        finals.append(dest)
+    elif mode == "panel":
+        ## A multi-object panel is never keyed and never cut on a blind grid: the render is stored
+        ## whole (opaque, the white backdrop the chrome law asks for) and `refit_panels.py` runs the
+        ## order that is law - `panels.py` finds each object, cuts its own box, keys that cut on its
+        ## own, trims and centres it. `final` here is the provenance panel.
+        dest = family_dir / f"{spec['out']}.png"
+        Image.open(master).convert("RGB").save(dest)
+        notes.append("opaque panel on white; objects cut and keyed one at a time by refit_panels.py")
         finals.append(dest)
     else:
         raise SystemExit(f"unknown mode {mode}")
