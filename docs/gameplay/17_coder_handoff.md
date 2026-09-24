@@ -35,7 +35,8 @@ run, per AGENTS.md tooling).
 | `game/loot_tables.gd` | **built (slice 2, extended by S6 2026-09-24):** drop tables per hull band, `roll(kind, tier, seed)` as shipped + `roll_band`/`roll_hunter_extra`/`WRECK_PICKUP_LIFETIME` | 06 |
 | `game/refinery.gd`, `game/exchange.gd` | pure transaction functions over `PlayerProfile`; **`game/shipyard.gd` is not built** (the hangar lives in `ui/station/shipyard_panel.gd` over `PlayerProfile`) | 04, 05, 10 |
 | `autoload/world_clock.gd` | the 20-minute accumulator (5 consumers: 05 bands, 10 rotation, 14 contracts/arena, 11 respawn) | all |
-| `game/ship_fit.gd` | stats resolution order (09 §5), power-budget validation | 09 |
+| `game/ship_fit.gd` | stats resolution order (09 §5), power-budget validation |
+| `game/affixes.gd` | **new (S7, 2026-09-24):** the affix bridge — `Affixes.summary(profile, ship_id)` (per-prefix aggregates plus one row per fitted instance) and `has_suffix`; the one reader of `resolved_fit`'s instance records for stat resolution (CONTRACTS §20) | 15 | 09 |
 
 No file touches `addons/godot_ai/` (AGENTS.md). Station panel scenes land
 under `ui/station/` next to the planned station modules; their pixel specs

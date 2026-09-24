@@ -66,6 +66,7 @@ tractor_streams: int
 cargo_max: int
 energy_max, energy_regen, fuel_max: float   # slice 0: base 100 / 5 / 200
 boosters: Array[StringName]
+booster_cooldown_mult: float = 1.0          # §20 (S7): Spry's aggregate, 1.0 unfitted
 ```
 
 `hull_mass` and the three pool fields are the engine slice 0 additions (§8.1).
@@ -77,6 +78,9 @@ by review probe A against the §13 table row by row.
 
 ```gdscript
 static func resolve(hull_id: StringName, fit: Dictionary) -> ShipStats
+    # §20 (S7) adds ONE optional third parameter: affixes: Dictionary = {}.
+    # Every existing caller stays valid and byte-identical with {} or no third
+    # argument; §11 rule 2's two-argument reading below is the pre-S7 form.
 static STANDARD_FIT   # the 09 §7 standard fit (Vanguard): e_std, p_std, w_laser, s_light, h_plate_light
 ```
 
@@ -1058,7 +1062,9 @@ Rules the pin fixes, so no worker has to choose:
    one module id. Index = 09 §4.5's layout index (row-major within the type).
 2. **Legacy compatibility.** `resolve(hull_id, fit)` accepts the old singular
    `engine` key (a `StringName` **or** an `Array`) and `STANDARD_FIT` resolves
-   unchanged; when both `engines` and `engine` are present, `engines` wins.
+   unchanged; when both `engines` and `engine` are present, `engines` wins. §20 (S7)
+   adds the optional third `affixes` parameter — the two-argument form above is
+   unchanged, and no caller of either arity breaks.
 3. **Resolution order** (`fitted_ids`) stays: `weapons, shields, armour,
    computers, boosters, utility` — then `engines`, then `power`. Weapon-group
    order must not move.
@@ -2068,6 +2074,15 @@ untouched. Owner ticks for this wave: `S7_BRIEF.md` §Owner ticks.
   15 §1's "the baseline every affix modifies" is the module's own catalogue stat.
   Instances then combine by that stat's own 09 §5 rule (flat sum / best value /
   summed delta). `units`-unit affixes (`deep_hold`) add their value.
+- **Which shape carries which rule (K0 F1):** a rule whose arithmetic collapses to one
+  scalar over the fit (Sturdy's flat sum, Deep-hold's units, Whale) may read the
+  aggregate keys; a rule written `own × (1 + Σown)` or `own += …` — Vigilant, Wideband,
+  Surefire, Tempered, Lightened — reads `affixes[&"instances"]` and computes each
+  instance's own figure from its row's `base_id` + `prefixes`, because the aggregate
+  cannot say which instance carries the prefix. The two readings must agree by
+  construction; K1's suite asserts one instance and two instances of the same prefix
+  (the counter-example: `s_light`'s 200-pool Sturdy 0.10 beside `s_heavy`'s 400-pool
+  Sturdy 0.15 adds +80, not 0.25 × 600 = +150).
 - **A suffix is a per-instance flag** (`suffixes: [id]`,
   `game/module_catalog.gd:219-250`): one instance carrying it applies the perk once;
   two instances do not double it (*proposed*; reversal: per instance). An instance
@@ -2081,9 +2096,17 @@ untouched. Owner ticks for this wave: `S7_BRIEF.md` §Owner ticks.
 ```gdscript
 # game/affixes.gd — NEW file (the wave's one new owner, 17 §2), class_name Affixes:
 #   summary(profile, ship_id) -> Dictionary
-#       # {prefix_id: summed_magnitude, &"suffixes": Array[StringName]} over every
-#       # fitted instance of resolved_fit(ship_id) (all FIT_SLOT_KEYS); magnitudes
-#       # carry 15 §3's own signs (frugal -0.15 stays negative); {} when no fit.
+#       # over every fitted instance of resolved_fit(ship_id) (all FIT_SLOT_KEYS):
+#       #   {prefix_id: summed_magnitude,       # ship-level aggregate, stored signs
+#       #    &"suffixes": Array[StringName],    # one entry per perk, once
+#       #    &"instances": Array[Dictionary]}   # one row per fitted instance, in
+#       #        # FIT_SLOT_KEYS order then cell order:
+#       #        # {&"slot": StringName, &"index": int, &"base_id": StringName,
+#       #        #  &"prefixes": Array[{id, value}], &"suffixes": Array[StringName]}
+#       # magnitudes carry 15 §3's own signs (frugal -0.15 stays negative); {} when
+#       # no fit. `instances` is what makes the per-instance law expressible at all
+#       # (K0 F1): a summed magnitude alone cannot say *which* instance carries the
+#       # prefix, and Σ(vᵢ × ownᵢ) ≠ Σvᵢ × Σownᵢ.
 #   has_suffix(summary: Dictionary, id: StringName) -> bool
 
 # autoload/player_profile.gd — additive:
@@ -2106,7 +2129,14 @@ ammo_frac: Array[float]                # Frugal's per-cell fractional round bank
 
 # game/auction.gd — the sell price gains ONE optional parameter:
 static func sell_price(base_id: StringName, rarity: StringName, suffixes: Array = []) -> int
-#   x1.25 when suffixes contains "ledger"; sell_row passes the record's own row.
+#   x1.25 when suffixes contains "ledger". K0 measured THREE production sites of the
+#   `base x rarity x 60 %` figure (F5), and the term lands on all three, each passing
+#   the record's own suffix list:
+#     - Auction.sell_price:620 (this delegate; no production caller, a test surface)
+#     - Auction.sell_row:732 (the transaction's quoted price)
+#     - PlayerProfile.sell_instance:723 (the payout -- credits move at :733)
+#   plus the pane's displayed sell price at Auction._sell_row:585, which must show the
+#   same figure the payout pays.
 ```
 
 ### Prefixes — where each one lands (15 §3's rows; measured `module_catalog.gd:127-211`)
@@ -2131,10 +2161,10 @@ static func sell_price(base_id: StringName, rarity: StringName, suffixes: Array 
 | suffix | this wave | seam |
 |---|---|---|
 | Whale (+50 hull) | **apply** | `resolve` flat step, before `_clamp` |
-| Embers (10 % of damage dealt → shield) | **apply** | `weapons.gd:_deliver` (`:1774`): after the `damage_mult` product, if the sink `_sink_for` resolved is an **NPC hull** (K0 names the exact predicate; rocks excluded), heal `PlayerState.shield = min(shield + 0.10 × dealt, shield_max)`. The `embers` flag rides `PlayerState.affix_flags` (set in the launch handshake); `weapons.gd` reads only `_state`, never the profile |
+| Embers (10 % of damage dealt → shield) | **apply** | both deliveries, after the `damage_mult` product: `weapons.gd:_deliver` (`:1774`) and `projectile.gd:_deliver` (`:885`). The predicate is measured (K0 F7): the sink `_sink_for` resolved is an **NPC hull** — `sink.is_in_group(&"npc_ship")` (`weapons.gd:_sink_for:1806-1817` walks `SHIP_GROUPS` `:348` = `[player_ship, npc_ship]`; `projectile.gd:_sink_for:912-922` walks the same two) — so a rock (`Asteroid`, group `&"asteroid"`, answers no damage method) and the player's own hull are excluded. Heal `PlayerState.shield = min(shield + 0.10 × dealt, shield_max)`. The `embers` flag rides `PlayerState.affix_flags` (set in the launch handshake) and the shot's `configure` dict; the beam path reads `_state` directly, the projectile path heals through an additive `PlayerShip.heal_from_damage(dealt) -> void` on its `_source` (no-op with no state) |
 | Leeches (kills restore 5 % hull) | **apply** | `game.gd:_on_npc_died` (`:2032`): heal `0.05 × hull_max` on the deaths the handler already credits (K0 reports whether killer identity is knowable and gates if it is not) |
 | Cartograph (POIs revealed) | **apply** | sector entry in `game.gd`: if the summary carries it, call the shipped `Sector.reveal_pois()` (`sector.gd:335`, the beacon's own call) once after populate |
-| Ledger (sell +25 %) | **apply** | `sell_price`'s new `suffixes` parameter — **supersedes §15's "no suffix term" line** (dated here; reversal: drop the term). Exact integer: `base × rarity × 60 % × 1.25` stays integral for every 09/15 cost (per 100 CR the three products are 60 / 96 / 156, all ÷4) |
+| Ledger (sell +25 %) | **apply** | the `suffixes` parameter above, at all three production sites (F5) — **supersedes §15's "no suffix term" line** (dated here; reversal: drop the term). Exact integer: `base × rarity × 60 % × 1.25` stays integral for every 09/15 cost (per 100 CR the three products are 60 / 96 / 156, all ÷4; 900-cost Common 540 → 675) |
 | Silence (2× detect time) | **STAGED** | 13 §3 pins **no** detection-time mechanic (measured: aggro is distance, `game/npc_brain.gd:421-427`) — an owner call whether one exists at all |
 | Vault (spill −50 %) | **STAGED** | no cargo-spill-on-death system exists in the tree (measured) |
 | of the Choir / of the Concord / of the Ports | **STAGED** | no faction station or arena can roll them (15 §4/§5; 12 §5 unshipped) — caller-less like 15 §9.3's own rows |
@@ -2144,16 +2174,63 @@ static func sell_price(base_id: StringName, rarity: StringName, suffixes: Array 
 - **`damage_mult` becomes real (measured defect):** `ShipStats.damage_mult` has no
   consumer today — the computers' `damage_add` (09 §3.4/§5) resolves and is then
   inert. S7 wires the one delivery multiplier: every player-origin damage amount
-  passes `× _stats.damage_mult` **exactly once** before the sink call, at `_deliver`
-  and at any parallel player-damage path K0 measures (beam frame damage included).
-  *Owner tick:* it applies to every sink the player damages, rocks/mining included
-  (reversal: ship sinks only).
+  passes `× damage_mult` **exactly once** before the sink call. K0 measured the five
+  sites (F2, F12, F12b), and they are the law:
+  1. `weapons.gd:_deliver` (`:1774`) — the beam's frame damage (`_apply_beam` `:1258`
+     is its only caller) and every hull sink it reaches;
+  2. `weapons.gd:1233` — the beam's rock chip (`apply_work(amount * GUN_CHIP_RATE)`);
+  3. `projectile.gd:_deliver` (`:885`) — every bolt/slug/rocket/mine hull sink
+     (`_hit_body:785`, `_detonate:843`). This is a **second, independent delivery** in
+     a file no S7 set owned before K0 measured it: `game/projectile.gd` is K2's.
+     The projectile reads no stats — `weapons.gd:_spawn_shot` (`:1177`) stores the
+     launch's multiplier (and the `embers` flag) in the shot's `configure` dict, so
+     the product lands once per delivered amount with no new accessor;
+  4. `projectile.gd:758` — the projectile's rock chip (`apply_work(damage * chip)`);
+  5. `player_ship.gd:929` — the **ram** (`_on_hull_body_entered` → the peer's
+     `apply_collision_damage`). It is a player-origin damage amount on a path K0
+     measured, so the pin's own "any parallel player-damage path" covers it; reversal
+     is dropping that one product, and it is named on the owner tick list.
+  The multiplier is read **null-tolerantly** (K0 F3: eight gate suites hand
+  `Weapons.setup` a null stats argument or never call it; the shipped convention is
+  `weapons.gd:1665,1677`) — a null stats resolves to 1.0, never a crash.
+  `mining_laser.gd` carries **no damage amount at all** (`:199` calls `apply_work`
+  with `WORK_PER_UNIT` 1.0), so the tick's "mining TTK moves" can only mean the two
+  gun-chip sites above; that is the reading, and it is not a defect.
+  *Owner tick:* it applies to every sink the player damages, rocks/mining included,
+  **and the ram** (reversal: ship sinks only, or drop site 5).
 - **Keen stays per barrel (owner tick):** each released barrel reads **its own cell's**
   `weapon_affixes[i]`; a battery whose cell 2 is Keen gains it on barrel 2 only.
   Reversal: fold Keen into `damage_mult` (one function, ship-wide).
+- **Frugal's bank, and L90 underneath it (K0 F10):** the bank (`ammo_frac`) is per
+  `PlayerState.weapons` slot — flight state, seeded empty at every launch/seed point,
+  never persisted; the **pack** is the family's, spent through the shipped
+  `_consume_ammo`. K2 states both in its report. The shipped `ammo_slot`
+  (`weapons.gd:2201-2208`) resolves a family's index in the **const**
+  `PlayerState.WEAPONS:35`, not in the live fit-order `weapons` array, so a live pack
+  can be addressed past its own length (LOW **L90**); K2 routes around it or fixes it
+  (bucket 1, L90 is not this wave's pin) and reports which.
+- **Leeches' gate (K0 F6):** killer identity is **not knowable** — `NpcShip._die`
+  emits `died(position, archetype)` only, `take_damage` records no source, and
+  `NpcShip._on_body_entered` lets an NPC die to a rock or a peer. So the perk fires on
+  the deaths the handler already credits (every `died` that reaches `_on_npc_died`),
+  exactly as this pin's fallback says; a player-only reading would need attacker
+  plumbing in `npc_ship.gd`, a file in no S7 set.
 - **The per-cell arrays align by construction:** `set_weapons` and
-  `set_weapon_affixes` walk the same fitted list with the same empty-cell skipping; a
-  worker who cannot align barrel index ↔ cell reports instead of guessing (bucket 1).
+  `set_weapon_affixes` walk the same fitted list with the same empty-cell skipping.
+  K0 measured the three facts that make this buildable (F8/F9/F11):
+  - the walk's source must be the profile's **raw** fit (`fit_for`/`resolved_fit`,
+    instance ids), not `_launch_fit` — `game.gd:_profile_fit:456-480` maps every cell
+    through `base_module_id`, so `_launch_fit` holds no instance identity;
+  - `weapon_affixes[i]` is indexed like `PlayerState.weapons[i]` (a slot per fitted
+    non-empty W cell, `game.gd:_hull_slot_cells:1919-1944`), while `WeaponsComponent`
+    barrels are `fitted_ids(fit)` order with family-less/foreign ids dropped
+    (`weapons.gd:498-518`, §16 rule 3's recorded divergence) — so the barrel→slot map
+    is K2's to build from `_weapon_barrel_positions:644-660` and `_hull_slot_cells`;
+  - the beam's per-family aggregation (`_fire_beam_battery:1073-1142`, `paid[weapon]`
+    is a **count**) loses the barrel identity Keen needs: the weight becomes
+    `Σᵢ(1 + keenᵢ)` instead of `count`, which is byte-identical when no cell is affixed
+    (`test_engine2_weapons.gd:600-615` pins `dps × delta × 3`).
+  A worker who cannot align barrel index ↔ cell reports instead of guessing (bucket 1).
 - **Empty defaults are byte-identical:** no summary, `{}` into `resolve`, `[]` into
   `set_weapon_affixes` — every pre-S7 number, fixture and standard fit resolves
   exactly as before (`STANDARD_FIT` carries no instances).
@@ -2166,11 +2243,37 @@ static func sell_price(base_id: StringName, rarity: StringName, suffixes: Array 
   those until it closes; a display that "needs" a widget is a report, not a write.
 - **Test law:** the wave's suites are `tests/test_s7_affixes.gd` (K1),
   `tests/test_s7_weapon_affixes.gd` (K2), `tests/test_s7_suffixes.gd` (K3) — new
-  prefixes only. No existing suite count is expected to move; K0 names any existing
-  assertion the `damage_mult` wiring would flip **before the builders run**, and any
-  needed existing-test edit is dispositioned there and ratified here (S6's
-  `test_engine2_wiring` precedent). A builder who believes an existing row must
-  change reports it; it does not edit it.
+  prefixes only. No existing suite **count** moves. K0 measured the tests-that-move
+  list (F3/F4) and it is dispositioned here:
+  - **One assertion flips, for Ledger:** `tests/test_s3_instances.gd:520-546`
+    (`test_sell_instance_pays_the_base_times_the_rarity_share`) mints a Rare laser
+    carrying `["ledger"]` and asserts the un-suffixed payout. The fixture's suffix
+    list becomes `[]` (the row keeps proving the plain payout) and the Ledger row —
+    the same sale at ×1.25 — is K3's own suite. K3 owns that edit.
+  - **Everything else holds** under the two guards K0 measured: the multiplier is
+    null-tolerant (F3), and no gate suite fits a computer (`STANDARD_FIT` carries none,
+    `ship_fit.gd:516-559` → `damage_mult == 1.0`), so every exact-amount assertion
+    listed in `S7-K0_report.md` §3 stays green.
+  A builder who believes a further existing row must change reports it; it does not
+  edit it.
+
+### K0 dispositions (orchestrator, 2026-09-24, pre-K1)
+
+`S7-K0_report.md`'s 17 findings, triaged on the escalation ladder. Bucket 2 items were
+applied to this section, the brief, the prompts and `17_coder_handoff.md` §2 in one
+commit before any builder ran; bucket 1 items are the workers' to decide and report;
+the one owner-facing addition rides the tick list.
+
+| finding | disposition |
+|---|---|
+| F1 — the summary shape cannot express the per-instance law | **applied above:** `summary` gains `&"instances"`, and the aggregation law names which shape carries which rule. |
+| F2 — `projectile.gd:_deliver` is a second delivery in no set | **applied:** `game/projectile.gd` joins K2's `VAJB_WORKER_FILES`; the multiplier rides the shot's `configure` dict. |
+| F4 — one existing assertion flips (Ledger) | **applied:** the tests-that-move list above; K3 edits `test_s3_instances.gd`'s fixture. |
+| F5 — the Ledger term as pinned pays nobody | **applied:** all three production sites named, plus the pane's displayed row. |
+| F13/F14/F15 — stale counts, the false `_profile()` sentence, §2/§3/§11 rule 2 text, the missing 17 §2 row | **applied:** §2's field list and §3's/§11 rule 2's `resolve` signature carry §20's cross-reference; `17_coder_handoff.md` §2 gains the `game/affixes.gd` row; the brief's counts are corrected to K0's measured 3 production / 36 test call sites. |
+| F12b — is a ram "player-origin damage"? | **applied:** site 5 above — it is, on the pin's own "any parallel player-damage path" text; reversal is dropping that product, and the reading is named on the owner tick list (tick 6). |
+| F3, F6, F7, F8, F9, F10, F11, F12, F16 | **bucket 1, recorded above as the law's own detail:** null-tolerant multiplier, Leeches' credit gate, Embers' `npc_ship` predicate, the barrel↔slot map, the raw-fit walk, Frugal's bank over L90, the beam's weighted `paid` weight, the two chip sites, and the stored-value convention (a stored `0.0` stays inert; ids convert explicitly). |
+| F17 — a live game session wrote the live store during K0's pass | **harness note:** the close-out's "live store unchanged" claim is scoped to the S7 runs; the editor's own running game (D7's lane) writes it, so the figure is recorded with that attribution (L149's class). |
 
 ## §10 Changelog
 
@@ -2842,4 +2945,8 @@ static func sell_price(base_id: StringName, rarity: StringName, suffixes: Array 
   by the owner's 2026-09-24 dispatch instruction ("prepare for new batch and wave of
   workers"); reversal: park the wave. §9's expected figure grows at close-out (writer
   S7-R1, **sequenced after D7's §9/§10 pass**); LOW ids continue at **L158+** (next
-  free ticket **T-94**).
+  free ticket **T-94**). **Amended the same day, pre-K1,** by §20's "K0 dispositions"
+  block (K0's 17 findings): the summary carries one row per fitted instance, the
+  multiplier's five delivery sites and `game/projectile.gd` join the pin and K2's file
+  set, the Ledger term names all three production sell sites, the ram takes the
+  multiplier, and the one existing assertion the term flips is ratified as an edit.

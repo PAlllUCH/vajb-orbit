@@ -37,9 +37,10 @@ seam — with five suffixes honestly staged where no system exists.
 - Faction stations/arenas (12 §5/14 §5, P4) and crafting rolls (07)
 
 ## Acceptance criteria
-- [ ] AC1 — summary: a fit of mixed instances yields §20's dict (magnitudes with the
-      stored signs, suffix flags collected once); `{}`/standard-fit resolve is
-      byte-identical to pre-S7 (re-assert a pre-S7 fixture's full stats)
+- [ ] AC1 — summary: a fit of mixed instances yields §20's dict (per-prefix magnitudes
+      with the stored signs, suffix flags collected once, **one `instances` row per
+      fitted instance**); `{}`/standard-fit resolve is byte-identical to pre-S7
+      (re-assert a pre-S7 fixture's full stats)
 - [ ] AC2 — ship-stat prefixes: worked rows off §20's table (e.g. Sturdy 0.15 on a
       `shield_add: 200` shield = +30 pool before the 3× clamp; Vigilant/Wideband pick
       the best instance's own ×(1+Σ); Tempered joins the summed engine delta under
@@ -49,12 +50,14 @@ seam — with five suffixes honestly staged where no system exists.
       barrel 1 byte-identical; Rapid divides that barrel's interval; Frugal's bank
       spends exactly `floor(shots × (1+Σ))` integer rounds (20 shots at −0.15 → 17)
 - [ ] AC4 — `damage_mult`: a `damage_add: 0.15` computer fitted → delivered damage
-      ×1.15 measured at the sink, exactly once; no computer → byte-identical; mining
-      behaves per §20's owner tick reading
+      ×1.15 measured at the sink, exactly once, at each of K0's five sites (beam,
+      projectile, the two chips, the ram); no computer → byte-identical; a null stats
+      argument is a no-op, never a crash
 - [ ] AC5 — Spry: afterburner cooldown 8.0 → 6.8 with −0.15 fitted
 - [ ] AC6 — suffixes: Whale +50 pre-clamp; Embers heals 10 % of dealt to an NPC sink
-      only; Leeches +5 % hull through `_on_npc_died`; Cartograph entry-reveals the
-      sector; Ledger sells a 900-cost Common at 675 (540 ×1.25)
+      only (both deliveries); Leeches +5 % hull through `_on_npc_died`; Cartograph
+      entry-reveals the sector; Ledger sells a 900-cost Common at 675 (540 ×1.25)
+      through all three production sites
 - [ ] AC7 — staged: Overflowing/Silence/Vault/faction-three rows resolve and price
       byte-identically with them fitted (a test proves the no-op)
 - [ ] AC8 — gate `674 + the three new suites, 0 failed`, twice on scratch stores;
@@ -66,7 +69,7 @@ seam — with five suffixes honestly staged where no system exists.
 |---|---|---|
 | S7-K0 | `vajb-orbit/tests/,vajb-orbit/tools/` (report only; the orchestrator applies its dispositions to §20 before K1) | `S7_BRIEF.md` |
 | S7-K1 | `vajb-orbit/game/affixes.gd,vajb-orbit/game/ship_fit.gd,vajb-orbit/game/ship_stats.gd,vajb-orbit/autoload/player_profile.gd,vajb-orbit/tests/` | `S7_BRIEF.md` |
-| S7-K2 | `vajb-orbit/game/weapons.gd,vajb-orbit/game/game.gd,vajb-orbit/game/player_ship.gd,vajb-orbit/game/player_state.gd,vajb-orbit/tests/` | `S7_BRIEF.md` |
+| S7-K2 | `vajb-orbit/game/weapons.gd,vajb-orbit/game/projectile.gd,vajb-orbit/game/game.gd,vajb-orbit/game/player_ship.gd,vajb-orbit/game/player_state.gd,vajb-orbit/tests/` | `S7_BRIEF.md` |
 | S7-K3 | `vajb-orbit/game/game.gd,vajb-orbit/game/sector.gd,vajb-orbit/game/auction.gd,vajb-orbit/autoload/player_profile.gd,vajb-orbit/tests/` | `S7_BRIEF.md` |
 | S7-R1 | `vajb-orbit/tests/,vajb-orbit/tools/,docs/CONTRACTS.md` | `S7_BRIEF.md` |
 | S7-F1 | union of K1–K3 sets + `docs/CONTRACTS.md` | `S7_BRIEF.md` |
