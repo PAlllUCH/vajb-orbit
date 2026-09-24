@@ -40,6 +40,13 @@ escalate silently.
 
 ## Paste block
 ```bash
-VAJB_WORKER_FILES="game/x.gd,ui/y.tscn" crush run "<full prompt — paste the Task,
+VAJB_SLIM=1 VAJB_WORKER_FILES="game/x.gd,ui/y.tscn" crush run "<full prompt — paste the Task,
 constraints and output contract here as prose>" -m <provider>/<model> --cwd "$VAJB_WORKSPACE"
 ```
+
+`VAJB_SLIM=1` is not optional. It drops both MCP servers and the 75 unused skill
+descriptions from the worker's context, which is ~48k tokens of the ~69k a
+fresh session otherwise costs before it reads anything (measured 2026-09-24; the
+guards and the re-measure recipe are in `crushrc`'s header). A worker edits files
+and runs the headless gate, so it needs neither the editor bridge nor the asset
+library.

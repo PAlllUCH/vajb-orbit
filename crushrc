@@ -32,6 +32,73 @@ CRUSH_TOOLS="$HOME/.local/share/crush/tools"
 SKILLS="$HOME/.local/share/crush/additional-skills/godot"
 SHIM="$CRUSH_TOOLS/mcp-legacy-shim.py"
 
+# ---------------------------------------------------------------------------
+# Token budget -- measured 2026-09-24 (crush v0.96.0, godot-ai 4.2.2).
+#
+# The first request of a fresh session costs ~69k tokens before any work:
+#
+#   Crush floor (system prompt + built-in tools + env)   ~11.5k
+#   godot-ai MCP (47 tools + instructions)               ~28.4k  <- biggest lever
+#   godot skills (109 injected descriptions)             ~17.3k
+#   AGENTS.md (project context)                          ~12.5k
+#   assetmcp MCP (36 tools)                               ~7.2k
+#
+# Every orchestrator worker is a fresh `crush run` session, so a six-worker
+# wave pays that tax six times over before any file is read. Two guards keep
+# it down, and both are one-line reversals:
+#
+#   VAJB_SLIM=1   worker profile. A worker edits files and runs the headless
+#                 gate, so the editor bridge and the asset library are dead
+#                 weight: no MCP server is registered and only this project's
+#                 own skills load. ~69k -> ~17k. Set it on every dispatch:
+#                     VAJB_SLIM=1 crush run "..." -m <model> --cwd "$VAJB_WORKSPACE"
+#   --disabled-tools  the interactive profile drops the godot-ai tools this
+#                 project provably cannot use (2D game: no TileSet,
+#                 MeshLibrary, CSG geometry, navigation region or third-party
+#                 addon; see the list below). ~4.6k.
+#
+# Re-measure before changing either: swap one guard off, run
+# `crush run -q "Reply with exactly: ok"`, and read `prompt_tokens` for that
+# session in .crush/crush.db. Do not grow the godot-ai tool list back without
+# measuring -- every tool's schema rides on every request of every session.
+# ---------------------------------------------------------------------------
+
+# Worker profile switch; anything other than 1 keeps the interactive profile.
+VAJB_SLIM="${VAJB_SLIM:-0}"
+
+# Skills kept in context. The rest of the 96-skill Godot library stays on disk
+# and is still reachable by path through godot-master's routing index (see
+# AGENTS.md > Skills), so removing a name here costs a lookup, not a
+# capability. Adding one back is the same one-word edit.
+VAJB_KEEP_SKILLS="
+    godot-master godot-best-practices godot-development godot-ui
+    godot-gdscript-mastery godot-signal-architecture godot-autoload-architecture
+    godot-resource-data-patterns godot-rpg-stats godot-economy-system
+    godot-inventory-system godot-ability-system godot-save-load-systems
+    godot-scene-management godot-ui-containers godot-ui-theming godot-ui-rich-text
+    godot-tweening godot-2d-animation godot-audio-systems godot-input-handling
+    godot-combat-system godot-camera-systems godot-particles godot-shaders-basics
+    godot-testing-patterns godot-debugging-profiling godot-performance-optimization
+    godot-project-foundations godot-composition-apps godot-export-builds
+    godot-dialogue-system godot-builder
+"
+
+# godot-ai tools the interactive profile hides, with their measured schema
+# sizes in tokens. The game is 2D: no TileSet, no MeshLibrary, no CSG
+# geometry, no navigation region, and no third-party addon registers
+# anything, so these eleven tools cannot be called correctly here.
+#   tileset_manage:708  tilemap_manage:527  gridmap_manage:495
+#   navigation_manage:694  csg_manage:402  custom_manage:254
+#   client_manage:274  api_manage:399  test_manage:203
+#   editor_reload_plugin:274  audio_manage:362        total ~4.6k
+# test_manage only re-reads the last test_run payload (test_run stays);
+# editor_reload_plugin kills the session by design, so reload via the dock;
+# audio_manage previews streams, while audio is wired in scripts.
+#
+# The flags are written out rather than looped on purpose: this file runs in
+# Crush's embedded shell, whose printf mangles a format string that starts
+# with `--args` (verified 2026-09-24). Add or remove a pair here only.
+
 if [ -d "$WORKSPACE/.crush/hooks" ]; then
 
     # ===================== Linux ==========================================
@@ -47,15 +114,44 @@ if [ -d "$WORKSPACE/.crush/hooks" ]; then
     export KIE_GENERATE="$HOME/.local/share/crush/skills/image-generator/scripts/kie_generate.py"
 
     # ---- skills ----------------------------------------------------------
-    # Two entries for the Godot library: Crush scans one level per path, so
-    # godot-master/ (routing index + 96 subskills) is listed on its own.
+    # Only the skills in VAJB_KEEP_SKILLS reach the prompt; the rest of the
+    # 96-skill Godot library stays on disk and is reached through
+    # godot-master's routing index, so dropping one costs a lookup, not a
+    # capability. The worker profile loads only this project's own skills.
     option reset skill-path
-    option skill-path "$SKILLS"
-    option skill-path "$SKILLS/godot-master"
-    option skill-path "$WORKSPACE/skills"
+    if [ "$VAJB_SLIM" = "1" ]; then
+        option skill-path "$WORKSPACE/skills"
+    else
+        option skill-path "$SKILLS"
+        option skill-path "$SKILLS/godot-master"
+        option skill-path "$WORKSPACE/skills"
+        for _skill_dir in "$SKILLS"/godot-master/*/; do
+            _skill_name="${_skill_dir%/}"
+            _skill_name="${_skill_name##*/}"
+            case " $VAJB_KEEP_SKILLS " in
+                *" $_skill_name "*) ;;
+                *) option disable-skill "$_skill_name" ;;
+            esac
+        done
+        unset _skill_dir _skill_name
+    fi
+
+    # ---- MCP servers -----------------------------------------------------
+    # Worker profile registers neither server (see the token budget above).
+    # Both removes run first so no entry inherited from another config file
+    # can survive into a worker session.
+    mcp remove godot-ai
+    mcp remove assetmcp
+    if [ "$VAJB_SLIM" != "1" ]; then
 
     # ---- godot-ai: drives the live editor (HTTP 8000, WS 9500) -----------
-    mcp remove godot-ai
+    # Pinned to the plugin's release: the addon in vajb-orbit/addons/godot_ai/
+    # is 4.2.2, and a mismatched attach client fails its capability check.
+    # The shim is still required on 4.2.2: it answers SEP-2575
+    # `server/discover` with -32601, which kills the handshake (measured
+    # 2026-09-24), so the shim's legacy version list is what lets the client
+    # fall back. Drop it only after a probe shows the server answering that
+    # method itself.
     mcp add godot-ai --type stdio --command /usr/bin/python3 \
         --args "$SHIM" --args "$HOME/.local/bin/uvx" \
         --args --isolated --args --no-config --args --no-env-file \
@@ -66,13 +162,23 @@ if [ -d "$WORKSPACE/.crush/hooks" ]; then
         --args --default-index --args https://pypi.org/simple \
         --args --find-links --args https://pypi.org/simple/godot-ai/ \
         --args --link-mode --args copy \
-        --args --from --args godot-ai==4.1.0 \
+        --args --from --args godot-ai==4.2.2 \
         --args godot-ai --args attach --args --port --args 8000 \
         --args --ws-port --args 9500 \
+        --disabled-tools tileset_manage \
+        --disabled-tools tilemap_manage \
+        --disabled-tools gridmap_manage \
+        --disabled-tools navigation_manage \
+        --disabled-tools csg_manage \
+        --disabled-tools custom_manage \
+        --disabled-tools client_manage \
+        --disabled-tools api_manage \
+        --disabled-tools test_manage \
+        --disabled-tools editor_reload_plugin \
+        --disabled-tools audio_manage \
         --env UV_LINK_MODE copy
 
     # ---- assetmcp: CC0 asset search, licence check, download -------------
-    mcp remove assetmcp
     mcp add assetmcp --type stdio --command /usr/bin/python3 \
         --args "$SHIM" \
         --args "$CRUSH_TOOLS/assetmcp/.venv/bin/python" \
@@ -80,6 +186,8 @@ if [ -d "$WORKSPACE/.crush/hooks" ]; then
         --env ASSETMCP_LIBRARY_DIR "$WORKSPACE/asset-library" \
         --env ASSETMCP_PREVIEW_DIR "$WORKSPACE/asset-library/.previews" \
         --env ASSETMCP_MAX_DOWNLOAD_MB 512
+
+    fi
 
     # ---- gdscript LSP (host build of godot-lsp-bridge) -------------------
     lsp remove gdscript
@@ -121,7 +229,32 @@ else
     export CRUSH_TOOLS='C:/Users/Kamil/AppData/Local/crush/tools'
     export KIE_GENERATE='C:/Users/Kamil/AppData/Local/crush/skills/image-generator/scripts/kie_generate.py'
 
+    # ---- skills / MCP, mirroring the Linux branch's token guards ----------
+    # Same worker profile and same pruned tool list. The Windows host has not
+    # been re-measured since 2026-09-24 -- re-run the `crush run` probe in the
+    # Linux branch's token-budget note before trusting these numbers here.
+    option reset skill-path
+    if [ "${VAJB_SLIM:-0}" = "1" ]; then
+        option skill-path "$VAJB_WORKSPACE/skills"
+    else
+        option skill-path "$SKILLS"
+        option skill-path "$SKILLS/godot-master"
+        option skill-path "$VAJB_WORKSPACE/skills"
+        for _skill_dir in "$SKILLS"/godot-master/*/; do
+            _skill_name="${_skill_dir%/}"
+            _skill_name="${_skill_name##*/}"
+            case " $VAJB_KEEP_SKILLS " in
+                *" $_skill_name "*) ;;
+                *) option disable-skill "$_skill_name" ;;
+            esac
+        done
+        unset _skill_dir _skill_name
+    fi
+
     mcp remove godot-ai
+    mcp remove assetmcp
+    if [ "${VAJB_SLIM:-0}" != "1" ]; then
+
     mcp add godot-ai --type stdio \
         --command 'C:\Users\Kamil\.local\bin\uvx.exe' \
         --args --isolated --args --no-config --args --no-env-file \
@@ -132,18 +265,30 @@ else
         --args --default-index --args https://pypi.org/simple \
         --args --find-links --args https://pypi.org/simple/godot-ai/ \
         --args --link-mode --args copy \
-        --args --from --args godot-ai==4.1.0 \
+        --args --from --args godot-ai==4.2.2 \
         --args godot-ai --args attach --args --port --args 8000 \
         --args --ws-port --args 9500 \
+        --disabled-tools tileset_manage \
+        --disabled-tools tilemap_manage \
+        --disabled-tools gridmap_manage \
+        --disabled-tools navigation_manage \
+        --disabled-tools csg_manage \
+        --disabled-tools custom_manage \
+        --disabled-tools client_manage \
+        --disabled-tools api_manage \
+        --disabled-tools test_manage \
+        --disabled-tools editor_reload_plugin \
+        --disabled-tools audio_manage \
         --env UV_LINK_MODE copy
 
-    mcp remove assetmcp
     mcp add assetmcp --type stdio \
         --command 'C:\Users\Kamil\AppData\Local\crush\tools\assetmcp\.venv\Scripts\python.exe' \
         --args -m --args assetmcp.server \
         --env ASSETMCP_LIBRARY_DIR 'G:\Mój dysk\Projekty\Vajb Orbit\asset-library' \
         --env ASSETMCP_PREVIEW_DIR 'G:\Mój dysk\Projekty\Vajb Orbit\asset-library\.previews' \
         --env ASSETMCP_MAX_DOWNLOAD_MB 512
+
+    fi
 
     hook remove PreToolUse
     hook add PreToolUse --name protect-archive \
