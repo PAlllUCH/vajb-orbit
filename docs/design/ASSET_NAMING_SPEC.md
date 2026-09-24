@@ -211,3 +211,16 @@ every name the specs and the code require is present.**
 - **The three painted sheets** (`ui_insignia`, `env_pickup`, `env_prop`) deliberately keep
   content-based names rather than the `panel_*` names some docs use for their atlas regions,
   because their cells are painted sprites whose stems must stay aligned with the sheet.
+
+## 11. Amendment 2026-09-23 (D6 — cockpit instruments)
+
+One numbered family is sanctioned inside `ui_`: the seven-segment cells
+`ui_seg_0` … `ui_seg_9` plus the two named cells `ui_seg_pct` and `ui_seg_blank`.
+The trailing digit here is a genuine family index (like the asteroid bands), and
+`pct`/`blank` are named cells of the same family, not variants — the §4 variant
+vocabulary is untouched. Reversal: rename to `ui_seg_digit_0…9` and drop the two
+named cells to `ui_seg_sign`/`ui_seg_off`. The remaining D6 names are legal
+shapes under §1 as written: `ui_cockpit_frame`, `ui_gauge_face`, `ui_gauge_needle`
+(two-word subjects), `ui_compass_rose`, `ui_compass_lubber`, `ui_readout_glass`.
+All of them live in `assets/ui/`; their provenance panels file as
+`panel_sevenseg_a` / `panel_sevenseg_b` under `assets/icons/` per §2.

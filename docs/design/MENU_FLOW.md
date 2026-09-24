@@ -242,6 +242,7 @@ Rules:
 **Handoff contract (menu-side responsibilities):**
 - The game scene receives, at load: sector id, pilot loadout snapshot, `RunStats` (fresh or restored), and a callback route to open the Pause menu.
 - Pause is triggered by Esc/Start **only**; the HUD never opens other menu screens directly — it asks the screen router (signals up), and the router decides (e.g. session-expiry forces Login regardless of HUD state).
+- **Ship status overlay (2026-09-23, UI_SPEC §3.8):** a HUD-internal modal, not a router screen — opened/closed by the `ship_status` action inside the HUD's own layer. It routes nothing and is hidden while docked.
 - Death is routed by the game scene to the Game Over screen flow (3.9); the HUD stays mounted underneath if respawn is chosen (no scene reload on respawn — only on sector re-entry).
 - Session expiry or server disconnect during play: force-route to Login with "session expired" banner, discarding unsaved run state per server reconciliation.
 

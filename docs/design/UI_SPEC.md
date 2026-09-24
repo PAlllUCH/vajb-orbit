@@ -185,6 +185,79 @@ same pattern:
 - HUD API: `set_speedometer(ratio: float, prograde: Vector2, heading: Vector2)`
   (angles in radians, world space); hidden while docked.
 
+### 3.7 Cockpit instrument cluster (amendment 2026-09-23, wave D6 — owner's NMS-style ask)
+
+Replaces the bare §3.6 dial with a framed instrument cluster and adds sprite
+surfaces. **§3.6's contract survives byte-identical** — `set_speedometer(ratio,
+prograde, heading)`, `SEGMENTS` 10, `SWEEP` 1.5π, `OVERDRIVE` 0.9, the 120×120
+gauge box and every read-back (`speedometer_ratio()`, `filled_segments()`,
+`overdrive_segment()`, `needle_colour()`) — only the gauge's **surface** changes:
+the painted `ui_gauge_face`/`ui_gauge_needle` sprites sit under the marks, while
+the segment fill, the prograde needle and the heading tick stay code-drawn in
+their tokens (`metal_mid`, `accent_nav`, `text_primary`): state-driven marks are
+never baked (§3.2's "keeps textures palette-neutral" precedent). The
+gauge now lives inside the cluster; the dial's old bottom-centre/bottom-left
+discrepancy (`hud.gd`'s own report note) is resolved **bottom-left** (the owner's
+word 2026-09-23: "all in one nice looking cockpit menu at bottom left maybe").
+Reversal: move the cluster to the column foot as a bare dial (§3.6 verbatim).
+
+- **Cluster box:** 404×216 logical, framed by `ui_cockpit_frame` (nine-slice,
+  64 px band on a 192×192 master — the §10 `@2x` recipe made primary, one master,
+  per the D2 ruling: no size-variant families). Reversal: 340×184 compact.
+- **Layout:** left bay = gauge 120×120 (box unchanged); middle bay = compass
+  96×96 rose + a 3-cell `HDG` readout beneath it; right bay = five readout rows.
+- **Readout rows** (right bay), label column 34 px + digits:
+  `SPD` 3 cells (u/s), `HULL` 4 cells (current points), `SHLD` 4 cells (current
+  points), `FUEL` 3 cells + `%` cell, `ENRG` 3 cells + `%` cell. Digit cell
+  20×36 logical (7-seg aspect ≈ 1:1.8), 2 px gaps, leading blanks
+  (`ui_seg_blank`) not leading zeros. Row labels 12 px `text_dim` (new §6 row
+  "Instrument row label"; reversal: 14 px). Reversal on hull/shield: show %.
+- **Digit semantics:** SPD = `int(round(prograde.length()))` clamped 0..999;
+  HULL/SHLD = `int(round(current))`; FUEL/ENRG = `int(round(100 × value/max))`,
+  clamped 0..100. The `%` cell lights only on the FUEL/ENRG rows.
+- **State colours (digits never recolour):** danger reads exactly as §3.1/§3.1b
+  but as (a) the row label turning `accent_danger` (hull < 25 %:
+  `accent_danger_bright`; fuel ≤ 15 %: `accent_danger`) and (b) a script-drawn
+  1 px `accent_danger` frame on the row (§3.2's on-top-frame precedent). SPD overdrive
+  (`ratio > 0.9`): the needle modulates `accent_danger_bright` and the SPD row
+  gets the frame. Fuel == 0: the `EMERGENCY FLIGHT` banner (§3.1b) plus the FUEL
+  row frame in `accent_danger_bright`.
+- **Compass:** `ui_compass_rose` rotates opposite the ship's facing
+  (`-heading.angle()`), a fixed `ui_compass_lubber` triangle at top; `HDG` shows
+  `int(round(rad_to_deg(heading.angle())))` mapped to 0..359. No cardinal letters
+  baked (UI_CHROME §1.7 no-text law); engine `Label` cardinals are staged out.
+- New HUD read-backs (the probe precedent): `cockpit()`, `compass()`,
+  `compass_heading()`, `readouts() -> Dictionary {spd, hull, shield, fuel_pct,
+  energy_pct}` as drawn (post-clamp ints). **No new setters** — the cluster derives
+  everything from feeds §7 already carries (speed u/s from `prograde.length()`,
+  heading from `heading`, pools from `set_pool()` and the hull/shield handlers).
+
+### 3.8 Ship status screen (amendment 2026-09-23, wave D6)
+
+A HUD-internal overlay ("computer screen with current ship layout"), hidden by
+default, in flight only (hidden while docked like §3.7). Toggled by the
+`ship_status` input action — **guarded by `InputMap.has_action`**; the
+`project.godot` row is orchestrator-applied at close-out (proposed key **U**;
+reversal: any free key). Never routes (MENU_FLOW §3.8: signals up).
+
+- **Box:** 720×520 logical centred modal, `ui_cockpit_frame` nine-slice body;
+  close via the toggle action or a `icon_close` button (Esc stays Pause-only,
+  MENU_FLOW §3.9). Reversal: 640×448.
+- **Left:** the active hull's side render, 320 px wide, swapping to the
+  `_damaged_side.png` cut by exactly `repairs_panel.gd`'s suffix rule when damage
+  is reported (hull < max). Overlaid hardpoint markers (code-drawn, 1 px
+  `metal_light`/`text_dim`) when `ShipFit.HARDPOINTS` carries the hull: thruster
+  anchors as small triangles, weapon mounts as 3 px circles with a facing tick.
+- **Right:** the hull's slot grid (the shipyard plate recipe, cell for cell —
+  the FITTING precedent) with each fitted module's glyph and cell ref from
+  `resolved_fit`/`set_hull_slots`; rows read `ModuleCatalog` names.
+- **Footer:** HULL/SHLD `cur / max` (18 px HUD readout) + POWER draw / capacity.
+- **Per-module damage is NOT in the sim** (measured 2026-09-23: damage is
+  hull/shield only, `repairs.gd` reads hull/shield pairs; no module condition
+  field exists anywhere in `game/`). v1 shows the module list + powered state;
+  a module-condition model is **staged** (owner tick — it needs an
+  `18_engine_spec.md` amendment, which is owner-locked).
+
 ## 4. Settings
 
 Scene: `vajb-orbit/ui/screens/settings.tscn`. Root `Control` full-rect, bg `void_base` drawn by a full-rect `PanelContainer` with the `panel` stylebox (or `ColorRect` with `void_base` as first child — spec choice: `PanelContainer` for consistency).

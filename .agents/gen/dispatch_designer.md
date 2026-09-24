@@ -85,6 +85,25 @@ reimports only in quiet windows between coder gate runs. One editor session.
 | D4 | 4 | **B2-1 hover look** — flicker / directional glow / ember | **OWNER PICK NEEDED** first |
 | — | 5 | MMO/faction liveries, six boss hulls, `ship_vanguard_damaged` | BLOCKED on the owner's naming overhaul |
 | — | 6 | Component icons ×18 (`comp_*`) — if not already covered by D2's split as depictive masters | verify against `D2_SPLIT.md` |
+| D6 | 7 | **Cockpit instruments** — bottom-left cluster (sprite speed gauge + sprite compass + five 7-seg readout rows: SPD/HULL/SHLD/FUEL %/ENRG %) + the `ship_status` ship layout screen (owner 2026-09-23, the NMS-style ask). Docs-first landed: UI_SPEC §3.7/§3.8, UI_CHROME §11, ASSET_NAMING §11, CONTRACTS §18 | READY — write set disjoint from S5's, runs parallel with coder item 11; brief `slices/D6-cockpit-instruments/D6_BRIEF.md`, prompts `D6_prompts.md` |
+
+## D6 (item 7) — handoff (the owner pastes this now)
+
+D6 is prepped and queued: docs-first is landed (UI_SPEC §3.7/§3.8, UI_CHROME §11,
+ASSET_NAMING §11, CONTRACTS §18), the brief and the dispatch blocks are in
+`slices/D6-cockpit-instruments/`. It writes `ui/hud/**`, `assets/ui/**`,
+`assets/icons/**` provenance, `staging/**`, `asset-library/**` and
+`tests/test_d6_*.gd` only — **disjoint from S5's sets**, so it runs parallel with
+coder item 11. Run order M0a → owner approves the review sheet → M0b → M1 → M2 →
+R1 → F1 only on HIGH/MED. Art cost ≈ $0.20 (4 × 2K runs).
+
+```text
+Read .agents/gen/dispatch_designer.md and execute queue item 7 only — D6, the cockpit instruments cluster and ship status screen. Brief: .agents/gen/slices/D6-cockpit-instruments/D6_BRIEF.md. Prompts: .agents/gen/slices/D6-cockpit-instruments/D6_prompts.md. Snapshot + commit before the first dispatch, run M0a and STOP at the review sheet for my approval, then M0b, M1, M2, R1, and the fixer only if the review leaves HIGH or MED. This runs parallel with coder item 11: stay inside the D6 write set (ui/hud, assets/ui, assets/icons provenance, staging, asset-library, tests/test_d6_*), never touch project.godot, game/, autoload/ or the theme, and take editor reimports only in quiet windows. Close out per the brief's close-out section (gate re-run, verify_wave.py verify --baseline d6_start, CONTRACTS §9/§10 notes + the ship_status input row after S5-R1's pass, WAVEBOARD update, wave-boundary commit), then report back: the measured gate count, the builder's per-deliverable numbers, the digit QC table, the reviewer's findings by tier, and the owner ticks.
+```
+
+The five owner ticks are in the brief (NMS palette reading, placement/size,
+hull/shield points vs %, the `ship_status` key U, scheduling a module-damage
+model).
 
 ## Pipeline law (read before any run — AGENTS.md "Asset Generation" + "Phase G lane")
 

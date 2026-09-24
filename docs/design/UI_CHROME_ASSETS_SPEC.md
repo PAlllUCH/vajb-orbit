@@ -200,3 +200,64 @@ art's own near-black inner catch line inside the band. `tools/build_theme.gd`'s
 `PANEL_FRAME_MARGIN` and `vajb_theme.tres` keep **32** for the 1× texture; the `@2x` variant
 takes **64** when the coder wires it (`ICONS_SPEC.md` §9.8, C1). No scene consumes
 `PanelRaised` yet, so the wiring can land with the station hub.
+
+---
+
+## 11. Cockpit instruments (amendment 2026-09-23, wave D6)
+
+The UI_SPEC §3.7/§3.8 cluster and status screen. Same §1 universal rules
+(style-block preamble verbatim, chrome palette §1.3, panel look §1.4 verbatim,
+**no baked text** §1.7 — row labels are engine `Label`s, and no cardinal letters
+on the compass rose), one master per sprite at **2× its logical box** (the D2
+ruling: no `@2x` files, no size-variant families — Godot scales from the one
+master; §10's `@2x` law is dead for this family and every other). State colours
+are never baked: needles, ticks and danger frames stay code-drawn in theme
+tokens, so lit digits are the only tone-bearing ink.
+
+| File | Logical box | Master | Notes |
+|---|---|---|---|
+| `ui_cockpit_frame` | nine-slice | 192×192, 64 px band | §2 recipe at the `@2x` geometry made primary; one sprite frames both the cluster and the status modal |
+| `ui_gauge_face` | 120×120 | 240×240 | painted dial: recessed centre, 270° arc, 10 baked tick marks (the `SEGMENTS` 10 face geometry), no numbers, no needle |
+| `ui_gauge_needle` | 8×96 | 16×192 | one needle, pivot at its base; drawn neutral steel, tinted `accent_danger_bright` by modulate only in overdrive |
+| `ui_compass_rose` | 96×96 | 192×192 | rotating disc: major/minor ticks + four painted diamond cardinal marks (shapes, **no letters**) |
+| `ui_compass_lubber` | 16×12 | 32×24 | fixed top triangle |
+| `ui_readout_glass` | 136×190 | 272×380 | one soft glass plate behind the digit rows (scales tolerantly; no tiling) |
+| `ui_seg_0` … `ui_seg_9`, `ui_seg_pct`, `ui_seg_blank` | 20×36 each | 48×88 each | seven-segment cells: lit segments Bone `#C9CDD2`, unlit segments Panel Steel `#2A2E35`, ghost outline present in every cell |
+
+**Panels (the §1.1 grid law, one family per panel):** one 2×2 instrument panel
+(`ui_gauge_face`, `ui_gauge_needle`, `ui_compass_rose`, `ui_compass_lubber`), one
+2-cell panel (`ui_cockpit_frame`, `ui_readout_glass`, wide gap), and the digit
+cells as two 3×2 panels of six — `panel_sevenseg_a` (0–5) and `panel_sevenseg_b`
+(6, 7, 8, 9, `%`, blank), 2048×2048 each with generous gaps and no grid lines
+(the Phase F mineral 5×4 precedent sanctions non-2×2 cell counts; `cells` in the
+driver is the authority). Panel masters file as `panel_sevenseg_*` provenance
+under `assets/icons/` (naming law §2) while the cuts ship under `assets/ui/`
+(ASSET_NAMING_SPEC amendment, same date).
+
+**Per-run prompts** (style-block preamble + verbatim framing "painted UI
+instrument part, straight-on flat view, centred, plain solid pure white
+background" + per-run subject + the §8 negative list):
+
+1. *Instrument panel:* "cockpit instrument parts on white, arranged with wide
+   gaps: a round aircraft-style speed dial face with a recessed dark centre and a
+   270-degree arc of ten metal tick marks; a slim metal needle; a round compass
+   rose disc with engraved tick rings and four small diamond cardinal marks; a
+   small metal pointer triangle" (cells: face, needle, rose, lubber).
+2. *Frame pair:* "a rectangular instrument bezel frame with a thick bevelled
+   metal border, empty dark interior, nine-patch proportions; a soft dark
+   rectangular glass readout plate with faint inner glow along its top edge".
+3. *Seven-seg a:* "six rectangular digital seven-segment display cells on white,
+   wide gaps, showing digits 0 1 2 3 4 5 in glowing bone-white segments with the
+   unlit segments dark grey, each digit in its own cell, flat straight-on".
+4. *Seven-seg b:* "six rectangular digital seven-segment display cells on white,
+   wide gaps: digits 6 7 8 9, then a percent sign made of seven-segment style
+   strokes, then an empty cell showing only the dim unlit segment outline".
+
+**Digit QC (hard):** for every cut, the lit ink must sit inside `ui_seg_blank`'s
+ghost segment boxes (containment ≥ 95 %, Pillow mask check) and the ink-share
+ordering must read `1` smallest … `8` largest with `blank` smallest of all. A
+digit that mangles twice on regeneration falls back to hand-authored SVG
+segments (the D2 SVG route) rasterised into the same file names — report the
+route taken either way. Key the panel cells `--post-only` route only if native
+alpha fails (the Phase G lane law; `flare` note applies to the generator, not
+these).
