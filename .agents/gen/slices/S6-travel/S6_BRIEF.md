@@ -242,12 +242,13 @@ editor reimports only in quiet windows; one editor session).
   `ctx` routing turns on with quadrants in **slice 4**, not here — owner-ratified
   deferral, CONTRACTS §19's dispositions). `test_engine2_loot.gd`'s shape rows
   (`:249-272`, `:368-389`) hold too: the band roll is additive (K0 F2/F3).
-- **One existing row moved (K1, ratified by the orchestrator 2026-09-24):**
+- **One existing row moved (K1 + K2, ratified by the orchestrator 2026-09-24):**
   `tests/test_engine2_wiring.gd`'s minimap-feed assertion pinned "the station is
-  the one friendly blip"; §19 adds gate blips (11 §5 maps gates to `friendly`),
-  so the expectation now derives from the sector's own `gates()` count. K2's
-  beacon/derelict/anomaly blips will move the same row again — derive, never
-  hard-code. K1 measured `626/0` with this correction in place.
+  the one friendly blip"; §19 adds gate and beacon blips (11 §5 maps both to
+  `friendly`), so the expectation now derives from the sector's own
+  `gates()`/`beacons()` counts (`hulls + fields + gates + beacons + 1`). The
+  derelict/anomaly blips are fogged at populate and do not enter it. K1 measured
+  `626/0`, K2 `651/0` — both verified by the orchestrator on scratch stores.
 - New: `test_s6_travel.gd` (fee worked rows + composition, refusal-write-nothing,
   corridor presence/reset rules, transition persistence) ≈ 14 groups;
   `test_s6_poi_loot.gd` (derelict roll over 10 000 seeded rolls, anomaly kinds +
@@ -306,7 +307,12 @@ editor reimports only in quiet windows; one editor session).
     `RING_SCALE` 0.25, `TRIGGER_RADIUS` 200 u — 11 §2.1 gives no numbers for
     these ("near its primary station"/"visible from across the sector" only);
     reversal: one edit each.
-12. Standing debt unchanged: `18_engine_spec.md` §6/§13/§15, the §13
+12. **POI reward content (K2, reported not invented):** data-core item
+    `comp_elec_1`; cache `comp_scrap_1` ×1–3; module base id uniform over
+    `ModuleCatalog.MODULES` minus the three exclusives; sector band
+    `ceil(n / 2)` clamped 1..4; ore-bloom radius 320 u / 0.25 jitter; beacons
+    always visible (the fog reading) — reversals in the K2 report §3.
+13. Standing debt unchanged: `18_engine_spec.md` §6/§13/§15, the §13
     turn/`coast_time` ticks, slice 2.5's two calls, S3's nine, S2.6's four,
     S5's three, D6's five.
 

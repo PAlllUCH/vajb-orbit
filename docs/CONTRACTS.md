@@ -1974,6 +1974,35 @@ landed).** Measured by K1 (`.agents/gen/slices/S6-travel/S6-K1_report.md`,
   other sector and the player seats on the destination's own spawn point (no
   arrival-point rule exists in the docs).
 
+**K2 dispositions (orchestrator-ratified 2026-09-24, after POIs + loot landed).**
+Measured by K2 (`.agents/gen/slices/S6-travel/S6-K2_report.md`, `651/0`,
+re-measured by the orchestrator on a scratch store; the derelict roll
+`0.3991/0.3488/0.2521`, Hollows rift `0.4995` vs `0.3374` normal, hunter extra
+`0.4978/0.2501/0.0984`, every haul inside 06 §6's ±5 %, the wreck site whole to
+89.9 s and freed at 90):
+
+- **The wiring row moved again, ratified:** the minimap feed's friendly count now
+  derives `gates + beacons + 1` (beacons are nav aids, 11 §3/§2.2). Same
+  assertion count, derived expectation.
+- **Soft-fog reading (route):** a beacon always shows (it is the thing that
+  reveals); derelicts and anomalies stay fogged until scanned or revealed.
+  Reversal: start beacons fogged too (one line in `Poi.setup`).
+- **Route notes (bucket 1, no pin moves):** the derelict channel starts on
+  proximity (no press-to-scan prompt exists in the pin); the scanner is read off
+  `PlayerProfile.resolved_fit` (any computers module with `scanner_add > 0`),
+  because `PlayerShip` publishes no fit accessor — reversal: a `PlayerShip`
+  accessor; a beacon needs no scanner; a hull hit breaks the channel through
+  `_on_ship_damage_taken`; the wreck site is `Poi.KIND_WRECK` inside the one new
+  POI file (reversal: its own file); the site holds its pickups' `_age` at zero
+  while it lives so the 90 s window outlives `Pickup.LIFETIME`'s 60 s (reversal: a
+  `lifetime` argument on `Pickup.setup`); the rift drain goes through
+  `PlayerShip.take_damage` (shield-first, the only shipped sink).
+- **Reward content the docs left open (reported; owner ticks):** the data core's
+  item `comp_elec_1`; the cache `comp_scrap_1` ×1–3; the module base id uniform
+  over `ModuleCatalog.MODULES` minus the three faction exclusives; the sector band
+  `ceil(n / 2)` clamped 1..4; the ore-bloom radius 320 u with 0.25 jitter. Each
+  reversal is one edit (K2 report §3.6).
+
 ## §10 Changelog
 
 - **v0 (2026-09-18)** — seeded from the engine wave-1 pinned interfaces
