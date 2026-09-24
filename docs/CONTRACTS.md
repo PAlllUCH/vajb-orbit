@@ -803,7 +803,23 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
-Expected (D7, 2026-09-24): **`[SUMMARY] passed=727 failed=0`**, exit 0. The D7
+Expected (S7, 2026-09-24): **`[SUMMARY] passed=753 failed=0`**, exit 0. The S7 review
+(S7-R1) measured **753** twice on two fresh scratch stores (identical counts) plus once
+inside `staging/verify_wave.py verify --baseline s7_start … --tests`, which reads
+`problems: []` with **no forbidden hit at all**; the live store's pair
+`profile.cfg` md5 `b10c3f568b4e9767394291e97c154e36` / `economy_log.txt` md5
+`13a2517626897c7e7babafcc7e39a923` was byte-identical before and after a full run (its
+13:37 rewrite predates the review and is not this wave's — no S7 run touches the live
+path). **Growth `711 → 753`**: the `s7_start` snapshot (`faa24ad`) carried **711** rows
+(S6's 674 + D7's in-flight 37, measured by counting `test_*` methods in a worktree at
+that commit), D7's wave-boundary close-out added **1** more (`test_d6_status.gd` 16 → 17,
+measured by a per-suite count diff — D7's row, attributed, never absorbed), and the
+wave's three suites add **41** (`test_s7_affixes.gd` **15** K1 → 727,
+`test_s7_weapon_affixes.gd` **19** K2 → 746, `test_s7_suffixes.gd` **7** K3 → 753). No
+pre-existing suite's count moved; the one existing-test edit is the ratified
+`test_s3_instances.gd` Ledger fixture (§20's test-law block). The green run's one
+`SCRIPT ERROR` is L61's pre-existing `test_weapon_fx_f4.gd:178`.
+Previous expected (D7, 2026-09-24): **`[SUMMARY] passed=727 failed=0`**, exit 0. The D7
 fixer measured **727** twice on two fresh scratch stores (identical row sets).
 Growth **608 → 674** (S6) **→ 727** = +18 `test_d7_cockpit.gd` + 8
 `test_d7_status.gd` + 11 `test_d7_armory.gd` + the §3.1b bars row renamed and
@@ -3052,3 +3068,32 @@ list → `[]`; its assertions untouched and green).
   compass ditch (two FUEL/ENRG dials), the full-height readout well, the
   battery lamps, the §3.1b bars retirement, the SALVO centisecond format and
   the §3.9 rule-5 modifiability contract.
+- **v0.17 (2026-09-24, wave S7 review — S7-R1, the wave's only CONTRACTS writer,
+  sequenced after D7's v0.16)** — §9 gains the S7 expected **`passed=753 failed=0`**
+  (twice on fresh scratch stores plus once inside the verifier; `problems: []`, no
+  forbidden hit) with the measured `711 → 753` attribution (D7's `faa24ad` baseline of
+  711 = S6's 674 + D7's in-flight 37, D7's close-out `+1`, S7's three suites `+41`) and
+  the live-store pair recorded with the note that its 13:37 rewrite is not this wave's.
+  **The review leaves no HIGH and no MED.** Everything §20 pins was re-measured against
+  the tree with the reviewer's own probes (130 checks, 0 failures) and a pre-wave
+  worktree A/B: the summary's stored signs, one row per instance and once-per-perk
+  flags; all twelve prefix rows worked, including the K0 F1 counter-example (+80, never
+  +150) and the same-base duplicate alignment; 09 §5's three clamps with the affixes in
+  place (speed floor 180.0, pool 3000 → 2700, hull 7250 → 6600, engine sum 1.418 →
+  1.40); `{}`/no-third-argument **byte-identical** to the `faa24ad` tree across the nine
+  standard fits and five hand-built ones; per-barrel Keen/Rapid isolation and Frugal's
+  `floor(20 × 0.85) = 17`; `damage_mult` exactly once at all five sites with a value
+  that would be wrong if it landed twice (35.7075, not 41.063625) and 1.0 with no
+  computer or with a null snapshot; Spry's 8.0 → 6.8; Embers NPC-only on both
+  deliveries (the delivered amount, 23.0), Leeches' credited kill (1050 → 1112.5),
+  Cartograph's one `reveal_pois` (0 fogged), Ledger's 540 → 675 at the displayed row,
+  the quote and the payout (and integral over every catalogue row); the staged five
+  byte-identical in resolve and price; the launch's barrel→slot alignment through a
+  real `game.tscn` (a family-less `w_mining` cell in front of a Keen laser still reads
+  slot 1); and no pin drift (§15/§16 byte-identical to `faa24ad`; §11's only change is
+  §20's additive cross-reference). Five LOW rows are **L163–L167** (the five new
+  `position` shadowing warnings in `game/weapons.gd`, 29 → 34; `EMBERS_FRACTION` spelled
+  in two files; the pane's idle 60 % copy beside a Ledger row at 75 %; the Ledger
+  line's integer-division warning; and the brief's `L158+`/`v0.16` ids that D7 had
+  already consumed, rebased here to `L163+`/`v0.17`). The five owner ticks S7 owes
+  (§20) stand unchanged, with the readings this pass measured beside them.

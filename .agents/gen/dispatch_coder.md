@@ -26,9 +26,10 @@ CONTRACTS §9/§10 measured notes, WAVEBOARD update, wave-boundary commit).
 
 ## Open queue
 
-| # | Wave | Slice folder | Brief / prompts | Status |
-|---|---|---|---|---|
-| 13 | **S7 affix-application wave** (15 §9.3 — apply the stored affixes to stats; slice 4's affix half; CONTRACTS §20) | `.agents/gen/slices/S7-affix-application/` | `S7_BRIEF.md` / `S7_prompts.md` | **READY 2026-09-24** — docs-first landed (CONTRACTS §20 + v0.15, 15 §10, 09 §5 note); S3 tick 6 ("schedule or park") answered by the owner's dispatch instruction (reversal: park). Parallel-legal with designer item 8 (D7): disjoint write sets, gate attribution rule in the brief. Run order K0 → K1 → K2 → K3 → R1 → F1 only on HIGH/MED. |
+**Empty as of 2026-09-24** — item 13 (S7) shipped and is in the Done list below. The
+next coder item is **slice 4's remainder** (quadrants/directional armour, 18 §4.5 +
+ruling 23; bosses/arena hooks, 14 §5) — **not yet briefed**; it needs its own
+docs-first five-piece and a fresh owner order before it enters this queue.
 
 Next beyond the queue: **slice 4's remainder** becomes future items — quadrants /
 directional armour (18 §4.5 + ruling 23; owner-ratified deferral from S6) and
@@ -39,7 +40,7 @@ the owner's —
 + the two flight multipliers; §15's test checklist now contradicts the shipped
 suite), the §13 turn/`coast_time` column ticks, slice 2.5's two calls.
 
-## Done (items 1–12)
+## Done (items 1–13)
 
 1–3 (chrome, combat repair, weapon FX) — closed 2026-09-21, see
 `MASTER_REPORT.md`. 4 P2-A ship slot frames (`8d189bf`), 5 Rock cleave
@@ -58,4 +59,11 @@ heat, hunters, loot; the K0 drift pass's 21 findings dispositioned before the
 builders ran, three scope calls owner-ratified) — closed 2026-09-24, gate
 608 → **674/0** hermetic (orchestrator ×2 + R1 ×4 on scratch stores, live
 account byte-stable); **0 HIGH / 0 MED / 8 LOW** (L150–L157), no fixer pass;
-reports `slices/S6-travel/`, see `WAVEBOARD.md` §Closed.
+reports `slices/S6-travel/`, see `WAVEBOARD.md` §Closed. **13 S7 affix application**
+(engine slice 4's affix half, 15 §9.3 — the stored affixes finally bend the resolved
+stats, each barrel, the damage delivery and five suffix seams; the K0 drift pass's 17
+findings dispositioned before the builders ran, incl. `game/projectile.gd` joining
+K2's set) — closed 2026-09-24, gate **711 → 753/0** hermetic (orchestrator ×2 + verify,
+R1 ×2 + verify, live account byte-stable across a gate run); **0 HIGH / 0 MED / 5 LOW**
+(L163–L167), no fixer pass; reports `slices/S7-affix-application/`, see
+`WAVEBOARD.md` §Closed.
