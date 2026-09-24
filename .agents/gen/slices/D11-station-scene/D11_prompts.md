@@ -8,6 +8,12 @@ XDG_DATA_HOME=$(mktemp -d) godot --headless --path vajb-orbit
 res://tests/headless_runner.tscn --quit-after 1200` — **every probe/gate on a
 scratch store**; live store md5s checked unchanged after; bounded probes only.
 
+**Context discipline.** Read `docs/CONTRACTS.md` by section, never whole: its
+top carries a generated index of every § and its line range (~2-3k tokens per
+section against ~80k for the file, which is then re-sent on every later
+request). Same for any long doc — locate the section, read its range. Report
+≤120 lines, review ≤150, no pasted source or transcripts.
+
 **Run order: A0 → OWNER APPROVAL → A1 → C1 → R1 → (F1 only on HIGH/MED).**
 
 **Parallel with coder item 14 (S8):** you hold `assets/env/**`, `staging/**`,

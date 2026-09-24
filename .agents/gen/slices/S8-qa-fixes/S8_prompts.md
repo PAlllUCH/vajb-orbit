@@ -8,6 +8,12 @@ Gate/probe convention: `source ~/.profile && XDG_DATA_HOME=$(mktemp -d) godot
 — **every probe/gate on a scratch store** (T-93 class), live store md5s checked
 unchanged after. Bounded probes only, never a background process.
 
+**Context discipline.** Read `docs/CONTRACTS.md` by section, never whole: its
+top carries a generated index of every § and its line range (~2-3k tokens per
+section against ~80k for the file, which is then re-sent on every later
+request). Same for any long doc — locate the section, read its range. Report
+≤120 lines, review ≤150, no pasted source or transcripts.
+
 **Run order: Q0 → (orchestrator applies Q0's dispositions to §21, one commit) →
 Q1 → Q2 → R1 → (F1 only on HIGH/MED).** Q1 owns `game.gd`/`hud.gd` before Q2
 appends (shared files, ordered).

@@ -9,6 +9,11 @@ gate: ""              # before → after
 > `<ReviewerID>_review.md`. Diff findings against `docs/CONTRACTS.md`, never
 > against the brief. Tiering per WAVEBOARD: HIGH blocks, MED gets one fixer
 > pass, LOW moves to LOW_BACKLOG as `T-###`.
+>
+> **Hard cap: 150 lines.** One row per finding, one line of evidence each (the
+> probe output or the `file:line`), no pasted source and no pasted logs. Read
+> `docs/CONTRACTS.md` by section — its index gives the line range; never in
+> full.
 
 # S2.5-R0 review
 

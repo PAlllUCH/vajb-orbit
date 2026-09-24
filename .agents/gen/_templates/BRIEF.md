@@ -15,8 +15,12 @@ tier: free             # pinned by the owner in review; coder picks models withi
 
 ## Context (worker reads in this order)
 1. `slices/S2.5-feel/SLICE.md` — §In scope + your row in Worker file sets
-2. `docs/CONTRACTS.md` §n — pinned interfaces (paste the section if it is short)
-3. Anything else, by exact path
+2. `docs/CONTRACTS.md` — **only your sections, by range.** Its top carries a
+   generated index with each §'s line numbers; locate the heading with
+   `rg -n '^## §' docs/CONTRACTS.md` and read that range (`view --offset … --limit …`),
+   or paste the section here if it is short. Never read the file whole: it is
+   ~3,200 lines and ~80k tokens against ~2-3k for one section.
+3. Anything else, by exact path — again by range if the file is long
 
 ## Task
 What this worker builds, in prose. Include the interfaces this code must

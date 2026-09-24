@@ -39,7 +39,7 @@ are in `docs/AGENT_PIPELINE_NOTES.md`. New detail belongs in the owning spec.
 
 | Need | Read |
 |---|---|
-| Live state, queued work, next dispatch, closure history | `.agents/gen/_state/WAVEBOARD.md` — **read first when resuming** |
+| Live state, queued work, next dispatch, closure history | `.agents/gen/_state/WAVEBOARD.md` — **read first when resuming**; live state only, recaps live in `MASTER_REPORT.md` §6 |
 | Open LOW findings and tickets (`T-###`) | `.agents/gen/_state/LOW_BACKLOG.md` |
 | Engine contract (§2/§2.1 owner decisions, §13 calibration, §14 build slices) | `docs/gameplay/18_engine_spec.md` — owner-locked |
 | Pinned interfaces every worker brief references | `docs/CONTRACTS.md` — review waves own updating it |
@@ -67,6 +67,32 @@ $GODOT_CONSOLE --headless --path "$VAJB_PROJ" res://tests/headless_runner.tscn -
 
 The repo (`github.com/PAlllUCH/vajb-orbit`) is text-only — binary assets are
 gitignored; commit at every wave boundary.
+
+## Context hygiene
+
+Context is re-sent on every request, so what a session reads once it pays for on
+every later turn. These four rules are the difference between a 60k session and
+a 300k one:
+
+- **Read long docs by range, never whole.** `docs/CONTRACTS.md` is ~3,200 lines
+  and ~80k tokens in full, ~2-3k for the one § your task needs; its top carries
+  a generated index of every section and its line range. Locate with
+  `rg -n '^## §' docs/CONTRACTS.md`, then `view --offset … --limit …`. Same for
+  `docs/gameplay/18_engine_spec.md` and any spec over ~500 lines.
+- **Cap what you write.** Worker reports ≤120 lines, reviews ≤150, one evidence
+  line per finding. Cite `file:line`; never paste source, transcripts or full
+  gate logs — the reader re-derives from the code, and every pasted line is
+  re-sent to them on every request.
+- **One session per wave phase.** A long-lived session pays for its whole
+  history on each turn, so a wave in three sessions (builder → reviewer → fixer)
+  costs less than the same work in one, even paying the startup three times.
+- **Screenshots and probes are the biggest single results.** Iterate at
+  `max_resolution` 640 and raise it only to verify a hairline or flag; check a
+  state flag with `game_eval` rather than a pixel; never re-request a view you
+  already have.
+
+`staging/verify_wave.py`, the gate and the reviewer's re-measurement are the
+exceptions that justify reading a whole file: they read what they measure.
 
 ## Engine binaries
 
@@ -325,7 +351,11 @@ is written loose in `.agents/gen/`. Full law and migration rules:
   the coder picks the per-task models within the pinned tier.
 - **Archival, not deletion:** at slice close, briefs and superseded reports move
   to the slice folder's `_archive/`; executed-wave evidence is dropped once the
-  wave's numbers are recorded in the WAVEBOARD and `MASTER_REPORT.md`.
+  wave's numbers are recorded in the WAVEBOARD and `MASTER_REPORT.md`. The
+  wave's recap (gate history, deliverables, the gates it raised) is appended to
+  `MASTER_REPORT.md` §6 and only its one-line outcome stays in the WAVEBOARD —
+  that file is read at the start of every orchestrator session and must stay
+  live-only.
 
 ## Rules
 
