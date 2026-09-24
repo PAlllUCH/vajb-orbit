@@ -40,7 +40,11 @@ P2-B proper fitting panel, **S2.6 truth-and-feel**, **S3 the item economy**,
 **`passed=674 failed=0`** after S6, **`passed=753 failed=0`** after S7 (the 711 at S7's
 `s7_start` snapshot = S6's 674 + D7's in-flight 37), **`passed=770 failed=0`** after S8
 (753 + its two new suites' 17 rows; 0 HIGH / 0 MED / 4 LOW), hermetic). The queue of record is
-`dispatch_coder.md`: items 4–14 are all DONE; **item 15 = the
+`dispatch_coder.md`: items 4–14 are all DONE and **item 16 = S10 ARMORY
+interactivity is in flight** (A0's reproduction audit, dispatched 2026-09-24 after
+the owner's live report: battery selection, drag-to-rack and the per-battery
+ammo/stats readout all failed in his hands while S8's direct-handler probe passed
+them — the L170 class); **item 15 = the
 flight-feel retune — NUMBERS PROPOSED in §22 (v0.19), waiting on the owner's ticks**
 (O4/O5: T1 `COAST_TIME_MULT` 2.0→2.5, T2 new `ANGULAR_DAMP_MULT` 0.5, T3 new
 `STRAFE_RATE_MULT` 0.75, T4 `LATERAL_DAMP` 1.0→0.6; any subset ticks → **S9**'s

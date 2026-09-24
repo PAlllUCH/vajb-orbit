@@ -20,6 +20,7 @@ with any parallel lane, WAVEBOARD, wave-boundary commit).
 
 | # | Wave | Slice folder | Brief / prompts | Status |
 |---|---|---|---|---|
+| 16 | **S10 ARMORY interactivity** — the owner's live report (2026-09-24: cannot select a battery, cannot drag weapons onto racks, no per-battery ammo preview or stats); measured through real UI input, not direct handler calls; pins **STATION_HUB §5.11 + CONTRACTS §17/§16** | `.agents/gen/slices/S10-armory-racks/` | `S10_BRIEF.md` / `S10_prompts.md` | **A0 DISPATCHED 2026-09-24** (independent reproduction audit, measure only). Run: A0 → B1 fix (its brief written from A0's report) → R1 → F1 only on HIGH/MED. |
 | 15 | **Flight-feel retune** (owner O4/O5: torque/slow-down, strafe/inertia) — pin **CONTRACTS §22** | not opened | — | **NUMBERS PROPOSED — waiting on your ticks.** §22 holds four tick-gated levers with worked rows + reversals: T1 `COAST_TIME_MULT` 2.0→2.5, T2 new `ANGULAR_DAMP_MULT` 0.5, T3 new `STRAFE_RATE_MULT` 0.75, T4 `LATERAL_DAMP_MULT` 1.0→0.6. Tick any subset in §22 → I write **S9**'s five-piece from the ticked table. Nothing dispatches until then. |
 
 Beyond the queue: **slice 4's remainder** (quadrants/directional armour — 18
@@ -39,8 +40,8 @@ slice's `_archive/` (S8's still in its slice folder).
 
 ## Handoff (live)
 
-**Nothing is dispatchable right now.** Item 14 (S8) is closed — its record is in
-`MASTER_REPORT.md` §6 and the slice folder's reports. The next dispatchable
-event is item 15: tick any subset of CONTRACTS §22's T1–T4 and the S9
-flight-feel five-piece is written from the ticked table. Beyond the queue, slice
-4's remainder needs its own five-piece first.
+Item 16 (**S10 ARMORY interactivity**) is dispatched: A0's reproduction audit is
+running — brief and prompts in `slices/S10-armory-racks/`. Its report scopes the
+fix wave (B1 → R1 → F1 only on HIGH/MED). Item 15 (flight-feel) still waits on
+your ticks to CONTRACTS §22's T1–T4; slice 4's remainder needs its own
+five-piece first.
