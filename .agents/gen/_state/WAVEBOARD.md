@@ -4,7 +4,7 @@
 
 **Keep this file live-only.** It is read at the start of every orchestrator session, so its size is a recurring cost. It holds the current state, the queue, the living contracts and the enforcement rules — and nothing else. At a wave's close-out, the wave's recap (gate history, deliverables, the gates it raised) is appended to `.agents/gen/MASTER_REPORT.md` §6 and only its one-line outcome stays here. Closed-wave detail moved there on 2026-09-24; do not let it accumulate here again.
 
-**Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-22 purge:** the executed-wave reports, briefs and evidence were removed from `.agents/gen/` (recoverable from the system trash; the last git tree carrying them is `3f5688b`) — the historical record is `MASTER_REPORT.md` plus the newest session report, and older citations below name the purged paths.
+**Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-22 purge:** the executed-wave reports, briefs and evidence were removed from `.agents/gen/` (recoverable from the system trash; the last git tree carrying them is `3f5688b`) — the historical record is `MASTER_REPORT.md` plus the newest session report, and older citations below name the purged paths. **2026-09-25 clear-out (owner ask):** every closed slice folder (all 19) moved to the system trash — the last git tree carrying them is the purge commit `72ac8da`'s parent (`7a081ef`) — and old session reports live in `_state/_archive/`; the wrapup stays the newest at root. Citation paths into `slices/` below are historical.
 
 **Updated: 2026-09-25 (**designer item 13 = **D11 station scene CLOSED** — gate 807 →
 **812/0** (`test_d11_station`'s 5 rows), 0 HIGH / 2 MED both cured (MED-1 value grade by
@@ -35,7 +35,15 @@ shatters with the budget conserved (bore 32 → 32), spawn mix
 37.6/34.5/20.7/7.2 (owner tick), the battery hardcap refuses 6th/5th silently
 and a 7-cell hull composes 4+3 with no rackless weapon, the armory draws 5
 bays 4+1 aligned to the cockpit's five lamps with the plate-fit ink defect
-gone.**
+gone.** **2026-09-25 (bis): owner ask — asteroid fragments must re-split; briefed as
+coder item 23 (S16, `slices/S16-fragment-resplit/`), queued ahead of item 17;
+docs pin `02 §5.2 ter` (parentage, not ore, gates a fragment's cleave; money
+untouched). Per the owner's clear-out all closed slice folders moved to the
+trash (see the Paths note); the workspace holds only the live state, the
+templates and this batch. Pending owner ticks: the S14 spawn mix (keep
+measured 37.6/34.5/20.7/7.2 or move to proposed 40/32/20/8) and the
+`18_engine_spec` §6/§13 rewording (the five sentences are preserved verbatim
+in the Owner gates block below).**
 Waves of record: item 16 = S10 ARMORY CLOSED gate 770 → **775/0** (0 HIGH / 0 MED /
 6 LOW L172–L177); item 14 = S8 CLOSED gate 753 → **770/0** (0 HIGH / 0 MED /
 4 LOW L168–L171); item 13 = S7 CLOSED gate 711 → **753/0** (0 HIGH / 0 MED /
@@ -81,8 +89,9 @@ station inspector reads the hovered item's description above the status strip, t
 carries credits, the four non-missile weapon families reach 30 000 u, and a released hull
 decays as one velocity vector; §23 + v0.22 docs-first, §9/§10 by R1 as v0.23). **Item 15 is
 closed by absorption into §23.5.** **Owner ask 2026-09-24 — jump
-gates to sector edges (same gates, spawn placement only) — is the coder lane's next
-free item (17)**: brief at its dispatch-prep; its `game/sector.gd` seam is **free** as of
+gates to sector edges (same gates, spawn placement only) — is the coder lane's item
+17 — queued behind item 23 (S16, the owner's 2026-09-25 fragment re-split
+ask)**: brief at its dispatch-prep; its `game/sector.gd` seam is **free** as of
 D11's close-out 2026-09-25. **Owner ruling 2026-09-25 — "it should be able to shoot asteroids but mining should
 always be more profitable", plus bigger/clustered/fielded asteroids — landed as
 `01 §5.6` + `02 §5.1` (numbers PROPOSED, owner-tick-gated) and is the coder lane's
@@ -115,6 +124,20 @@ closed** — symptom 1 by P2-A, symptom 2 by P2-B1's `w_mining` row), four spec 
 turn column, the engine-bed / vignette-strength calls slice 2.5 raised, **D11's two ticks RESOLVED 2026-09-25** (`class_name StationScene` drop
 ratified — the four suite consts stay; dock ring radius **175**, implemented by
 S13), **S12's §10 tick list was answered 2026-09-25 and is in flight as item 20** (S13).**
+**The pending `18_engine_spec` §6/§13 rewording (proposed by S13-R1; preserved
+here 2026-09-25 — the spec is owner-locked, the paste is the owner's):**
+§6 ruling-17 gun sentence → "…apply work at 10 % toward depletion, but a
+gun-attributed shatter realises at most `GUN_BURST_SHARE` (10 %, owner tick
+2026-09-25) of the rock's own original yield through the Small-end burst —
+the reserve beyond the cap burns, and the gun's fragments carry no ore".
+§6 fragment-yield sentence → "a mining shatter hands the children the
+parent's reserve (`FRAGMENT_CORE_SHARE` of its own yield), whole units split
+across `FRAGMENT_SPLIT`, no fresh roll; a Small pays the reserve as pickups"
+(drop the "re-rolled tier" clause). §13 gun chip row → "gun chip rate 10 %; a
+gun-attributed shatter pays at most `GUN_BURST_SHARE` 0.10 of the rock's own
+yield (S13, owner tick 2026-09-25)". §13 fragment mineral row → "parent's
+mineral; yield is the parent's reserve, redistributed, never re-rolled".
+§13 Small row → "S → the reserve as pickups (float credit, whole units)".
 
 Closed-wave recaps (gate histories, per-wave deliverables and the older owner
 gates they raised) live in `.agents/gen/MASTER_REPORT.md` §6 — moved there

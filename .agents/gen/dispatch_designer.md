@@ -53,6 +53,40 @@ write sets (the S5∥D6 precedent); editor reimports in quiet windows between th
 other lane's gate runs; one live session. **No live parallel pair** as of D11's
 close-out (2026-09-25).
 
+## D12-A0 recap (the audit report was cleared with the slices, 2026-09-25 — these numbers brief the fix wave)
+
+Owner ask 2026-09-24, station readability, ARMORY first; **5 HIGH / 4 MED /
+3 LOW**, every finding lane-tagged; measured at 1920x1080 with the station
+theme in effect (`armory_panel.tscn` carries no theme of its own).
+
+**Graphics lane:** HIGH-1 the pane's ink is 9-13 px, under every spec floor,
+with 12 per-node size overrides that escape `ui_scale`
+(`armory_panel.gd:72-75,1509-1787`; fix: the §6 scale, floor 13, sizes
+registered in `Router.FONT_SIZE_ITEMS`). HIGH-2 every `text_dim` caption sits
+on painted metal at **1.9-2.8:1** (floor 4.5:1; `ROLE_TEXT_DIM` on the
+console/rack/row plates). HIGH-3 the `OVER CAP` ember state tag is **1.8:1**
+on the row plate while the pack name is 12 px — the hierarchy is inverted.
+HIGH-4 at 1920x1080 the pane's whole AMMUNITION half sits **below the fold**
+(0 of 6 pack cards visible; 520 px / 37 % of the host empty) — the §3.10
+Amendment 2 canvas is pinned, so the fix is a designer/owner question
+(bucket 2/3). HIGH-5 a fitted barrel's name draws at `font_color` alpha 0
+plus an 11 px `✕` chip — the rack reads as unlabelled machined blocks. MED-4
+`SALVO s` sits ~59 px from its drum digits and the state line that says
+`SALVO 0.6 s` is at alpha 0. LOW-1 the empty-rack drop cue is clipped 8 px
+at 9 px.
+
+**Code lane:** MED-1 the ammo rows draw outside their well (AmmoBox at local
+y -32; a 7th spacer row grows the group 64 px the block's arithmetic never
+sees). MED-2 one card mixes rounds and units (`300 ROUNDS PER PACK` beside
+`HELD 60 / 30`, no unit word). MED-3 the shell strip cannot carry an item
+description (one 13 px line, min 405 px for 65 chars; a description needs a
+3-line ~57 px strip — or belongs in the pane). LOW-2 is a recorded check —
+the pane's key hints are honest; do not "fix" them. LOW-3 the pane footer
+and the shell's StatusLabel do the same caption job 950 px apart.
+
+S15's close cured the plate-fit ink defect (route = ink layout); the rest is
+unbriefed. HIGH-4's canvas question goes to the owner before any fix wave.
+
 ## Done
 
 **D11 space-station scene rework (item 13)** — DONE 2026-09-25 (gate 807 →

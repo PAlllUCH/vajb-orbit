@@ -259,6 +259,33 @@ stay **deferred** — this amendment changes structure and looks, not income.
 Implementation wave: **S14**; the split table and the spawn mix are read from
 `OreTuning` beside S13's fields (the dev overlay keeps working).
 
+### 5.2 Amendment 2026-09-25 (ter) — debris re-splits (owner, S16)
+
+The owner's verbatim ask (2026-09-25): "right now they split correctly, but
+the once split asteroid doesnt split further. this need to change."
+
+- **The defect:** ruling 17's yield-0 law reads "only a rock that rolled ore
+  cleaves" (`asteroid.gd` `cleaves()` = `_bore_ore > 0.0`), and a **gun**
+  shatter's children are born at bore 0 (`asteroid_field.gd:_cleave` builds
+  them with `units = 0`, `bore = 0.0`), so shot debris never splits further.
+  A **mining** shatter's children inherit bore > 0 and already split (S14's
+  AC3 chain proves it).
+- **The rule (S16):** parentage, not ore, gates a *fragment's* cleave. Every
+  rock born of a cleave splits again **per its own size class** whatever its
+  bore — the §5.2 table unchanged. An **original** keeps ruling 17's law: a
+  spawned rock that rolled no ore breaks bare and cleaves into nothing.
+- **Money is untouched:** a 0-bore fragment pays nothing at any shatter
+  (`_pay_burst` returns on `owed <= 0.0`), so a fully shot family realises
+  exactly the root's capped burst — `GUN_BURST_SHARE × _bore_ore`, never
+  more (01 §5.6: shooting never out-earns mining). The debris chain is
+  physical only; mining chains are unchanged (S13's shares, no fresh rolls).
+- **Termination:** children stay strictly smaller, so every chain ends at
+  the Small burst; a fully shot XL leaves no live rock behind it.
+- Reversal: `cleaves()` back to `_bore_ore > 0.0` for every rock; delete the
+  cleave-child marker (one field, one method, one call site).
+
+Implementation wave: **S16** (coder item 23, `slices/S16-fragment-resplit/`).
+
 ## 6. Icons
 
 The shipped icon set covers generic cargo glyphs (`icon_cargo_ore_48.png`

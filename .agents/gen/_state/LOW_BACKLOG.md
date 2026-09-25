@@ -11,6 +11,13 @@ slice-0 close-out; every item is either a doc-form/placement note, a
 deferred-by-ruling environment item, or an accepted deviation worth re-recording
 in the next owner-gated doc pass. Source report: `.agents/gen/slice0_m4_report.md`.
 
+**2026-09-25 note (owner clear-out):** the slice folders under
+`.agents/gen/slices/` were moved to the system trash (last git tree carrying
+them: `7a081ef`, the purge commit `72ac8da`'s parent). Repro paths in rows
+below that point into `slices/…` (probe `.txt` evidence, incident logs) are
+historical — recoverable from the trash or that tree; the finding text is
+self-contained.
+
 Legend: **[DOC]** = a docs pass, **[SPEC]** = needs the owner's spec lock,
 **[CODE]** = a code change when someone owns the file, **[HARNESS]** = agent
 tooling, **[TOOL]** = a shipped repo tool/script.
