@@ -40,10 +40,14 @@ coder item 23 (S16, `slices/S16-fragment-resplit/`), queued ahead of item 17;
 docs pin `02 §5.2 ter` (parentage, not ore, gates a fragment's cleave; money
 untouched). Per the owner's clear-out all closed slice folders moved to the
 trash (see the Paths note); the workspace holds only the live state, the
-templates and this batch. Pending owner ticks: the S14 spawn mix (keep
-measured 37.6/34.5/20.7/7.2 or move to proposed 40/32/20/8) and the
-`18_engine_spec` §6/§13 rewording (the five sentences are preserved verbatim
-in the Owner gates block below).**
+templates and this batch. Pending owner ticks answered 2026-09-25:
+the S14 spawn mix **kept** (the shipped 40/32/20/8 weights stand; 02 §5.2
+ticked); the `18_engine_spec` §6/§13/§15 cleaving rewording **applied by
+the developer session on the owner's delegation** ("fix it how you think is
+best" — the spec now restates the rules and points at 01 §5.6 /
+02 §5.1-§5.2 ter as the owning tables); the D12 ARMORY fix wave and D8 item 9
+**ditched by the owner** — the armory takes a later rework and the D12-A0
+recap stays in `dispatch_designer.md` as that rework's input.**
 Waves of record: item 16 = S10 ARMORY CLOSED gate 770 → **775/0** (0 HIGH / 0 MED /
 6 LOW L172–L177); item 14 = S8 CLOSED gate 753 → **770/0** (0 HIGH / 0 MED /
 4 LOW L168–L171); item 13 = S7 CLOSED gate 711 → **753/0** (0 HIGH / 0 MED /
@@ -118,8 +122,7 @@ at **1.8:1**, and the pane's ammunition half sitting **below the fold at 1920x10
 S11-B1 (which holds that file for the hover wiring). Raised to the owner as a notice; its
 own fix wave is not briefed.
 Owner gates:
-the chrome art half, the **`18_engine_spec.md` §6/§13/§15 cleaving amendment** (owner-locked; §15
-is the test checklist and now contradicts the shipped suite), the launch fit (**both symptoms
+the chrome art half, the **`18_engine_spec.md` §6/§13/§15 cleaving amendment** (owner-locked — **RESOLVED 2026-09-25**, applied on the owner's delegation; the checklist rows now name the shipped suites), the launch fit (**both symptoms
 closed** — symptom 1 by P2-A, symptom 2 by P2-B1's `w_mining` row), four spec ticks, the §13
 turn column, the engine-bed / vignette-strength calls slice 2.5 raised, **D11's two ticks RESOLVED 2026-09-25** (`class_name StationScene` drop
 ratified — the four suite consts stay; dock ring radius **175**, implemented by
@@ -138,6 +141,8 @@ gun-attributed shatter pays at most `GUN_BURST_SHARE` 0.10 of the rock's own
 yield (S13, owner tick 2026-09-25)". §13 fragment mineral row → "parent's
 mineral; yield is the parent's reserve, redistributed, never re-rolled".
 §13 Small row → "S → the reserve as pickups (float credit, whole units)".
+— **APPLIED 2026-09-25** (owner-delegated; §6/§13/§15 cleaving rows now read
+per 02 §5.1/§5.2 + the S13 caps and the S14 mixes).
 
 Closed-wave recaps (gate histories, per-wave deliverables and the older owner
 gates they raised) live in `.agents/gen/MASTER_REPORT.md` §6 — moved there

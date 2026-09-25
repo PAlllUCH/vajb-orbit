@@ -31,8 +31,9 @@ with any parallel lane, WAVEBOARD, wave-boundary commit).
 
 Beyond the queue: **slice 4's remainder** (quadrants/directional armour — 18
 §4.5 + ruling 23; bosses/arena — 14 §5, blocked on P4 contracts + boss art).
-Owner-locked homework stays the owner's (`18_engine_spec.md` §6/§13/§15, the
-§13 turn/coast column ticks, slice 2.5's two calls).
+Owner-locked homework: the `18_engine_spec.md` §6/§13/§15 cleaving rewording
+is done (applied 2026-09-25 on the owner's delegation); the §13 turn/coast
+column ticks and slice 2.5's two calls stay the owner's.
 
 ## Done
 
@@ -60,23 +61,20 @@ debris must split again): brief `slices/S16-fragment-resplit/S16_BRIEF.md`,
 prompts `S16_prompts.md`; B1 → R1 → F1 only on HIGH/MED. **Item 17** (jump
 gates to sector edges) follows; it needs its own five-piece at dispatch-prep.
 Slice 4's remainder (quadrants and directional armour, bosses/arena) still
-needs its own five-piece. Pending with the owner: the S14 spawn-mix tick
-(keep measured 37.6/34.5/20.7/7.2 or move to proposed 40/32/20/8) and the
-`18_engine_spec` §6/§13 rewording (the five sentences are preserved in
-WAVEBOARD's Owner gates block).
+needs its own five-piece. Owner answers 2026-09-25: the spawn mix is **kept**
+(the shipped 40/32/20/8 weights stand) and the `18_engine_spec` §6/§13/§15
+rewording is **applied on delegation** — neither is pending any more.
 
 Beyond the queue: **slice 4's remainder** (quadrants/directional armour — 18
 §4.5 + ruling 23; bosses/arena — 14 §5, blocked on P4 contracts + boss art).
-Owner-locked homework stays the owner's (`18_engine_spec.md` §6/§13/§15, the
-§13 turn/coast column ticks, slice 2.5's two calls).
+Owner-locked homework: the `18_engine_spec.md` §6/§13/§15 cleaving rewording
+is done (applied 2026-09-25 on the owner's delegation); the §13 turn/coast
+column ticks and slice 2.5's two calls stay the owner's.
 
 ## Design lane (not mine to dispatch)
 
-**D12-A0's readability audit is on disk** (`slices/D12-ui-readability/D12-A0_report.md`, 5
-HIGH / 4 MED / 3 LOW, every finding lane-tagged). Its four graphics findings are the ARMORY
-pane's type scale (9-13 px with per-node overrides that escape `ui_scale`), `text_dim`
-captions on painted metal at 1.9-2.8:1, the ember tag at 1.8:1, and the pane's ammunition
-half sitting below the fold at 1920x1080 with 37 % of its host empty. **They are the design
-lane's — the owner's D11/D12 designer session owns the fix**, and any fix that edits
-`ui/station/armory_panel.gd` must land **after** S11-B1 (which holds that file for the hover
-wiring). Raised to the owner as a notice; not briefed here.
+**D12's readability audit (owner ruling 2026-09-25: the fix wave is DITCHED —
+the ARMORY takes a later rework).** The findings recap lives in
+`dispatch_designer.md` §"D12-A0 recap" (the slice folder was cleared with the
+2026-09-25 purge); any future rework brief reads it from there. D8 item 9
+(station composition pass) is ditched the same day.

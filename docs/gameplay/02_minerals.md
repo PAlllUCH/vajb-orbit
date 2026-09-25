@@ -253,8 +253,9 @@ stay **deferred** — this amendment changes structure and looks, not income.
   ≤ the root's `_bore_ore`: an XL is the same ore spread over a longer debris
   chain, never more ore. If XL should pay more, that is Rule B's
   `SIZE_YIELD_MULT` — still deferred, owner tick.
-- **Spawn mix (proposed):** S 40 / M 32 / L 20 / XL 8 percent per rolled rock
-  (today uniform over the nine silhouettes). Reversal: uniform.
+- **Spawn mix (owner tick 2026-09-25: keep):** S 40 / M 32 / L 20 / XL 8
+  percent per rolled rock — measured 37.6/34.5/20.7/7.2 over 1000 seeded
+  rolls at S14's close; the shipped weights stand. Reversal: uniform.
 
 Implementation wave: **S14**; the split table and the spawn mix are read from
 `OreTuning` beside S13's fields (the dev overlay keeps working).

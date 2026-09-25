@@ -270,24 +270,33 @@ the radius for `AGGRO_COOLDOWN` (which enables the safe warp).
 
 ## 6. Mining
 
+> Amended 2026-09-25 (S13/S14/S16 measured; applied by the developer session
+> on the owner's delegation — "fix it how you think is best"). The owning
+> tables live in `01_economy_core.md` §5.6 and `02_minerals.md`
+> §5.1/§5.2/§5.2 ter; this section restates the rules, not the numbers.
+
 - **Mining laser** (`w_mining`, W slot, 09 §4.5): cursor-aimed beam, range
   220 u. Each `MINE_CYCLE` (1.2 s) on a rock converts 1 ore unit → spawns a
   **floating pickup** of that rock's mineral (02 §7).
-- **Guns on rocks (ruling 17):** weapons apply work at **10 %** of their
-  DPS-equivalent rate toward rock *depletion* only — they chip, crack and can
-  cleave a depleted rock, but **never extract an ore unit**; the mining
-  laser's MINE_CYCLE keeps the extraction monopoly. No heat, no standing
-  effects (rocks are not ships).
+- **Guns on rocks (ruling 17):** weapons apply work at **10 %** toward rock
+  *depletion*; a gun-attributed shatter realises at most `GUN_BURST_SHARE`
+  (10 %, owner tick 2026-09-25) of the rock's own original yield through
+  the Small-end burst — the reserve beyond the cap burns, and the gun's
+  fragments carry no ore. The mining laser's MINE_CYCLE keeps the extraction
+  monopoly. No heat, no standing effects (rocks are not ships).
 - **Rocks are solid:** ships collide with them, they block shots and beams
   (cover, §5) and take chip work from any hit.
-- **Asteroids — tiered cleaving (ruling 17):** on depletion, a Large rock
-  spawns 2–3 Medium fragments, a Medium 2 Small, and a Small bursts into
-  1–2 resource pickups of its mineral (02 §5 mineral per fragment — the
-  children inherit a re-rolled tier); fragments eject at
-  `current_velocity × 1.2` plus a random ±15° cone. A yield-0 rock still
-  cracks and despawns without fragments. Field respawn 20 min + the ×0.7
-  diminishing window (02 §8) is unchanged; fragments belong to the same
-  field count.
+- **Asteroids — debris splits (rulings 17 + 2026-09-25, 02 §5.2):** four
+  size classes `XL > L > M > S`; at a shatter the child set is a random mix
+  of strictly smaller kinds rolled per size class (`OreTuning.split_mix`;
+  a Small's cleave is its pickup burst). A mining shatter hands the children
+  the parent's reserve (`FRAGMENT_CORE_SHARE` of its own yield), whole units
+  split across the whole mixed child set, no fresh roll; a rock born of a
+  cleave splits again per its own size class (02 §5.2 ter). Fragments eject
+  at `current_velocity × 1.2` in a uniform random direction. A yield-0
+  original still cracks and despawns without fragments. Field respawn
+  20 min + the ×0.7 diminishing window (02 §8) is unchanged; fragments
+  belong to the same field count.
 - **Pickups:** tractor range/speed base values in §13; `u_salvage` doubles
   range and speed, `u_tractor` adds +1 pickup stream; uncollected pickups
   despawn after 60 s (02 §7).
@@ -438,7 +447,7 @@ can land before or in parallel.
 | Minimap radius | 800–6 400, step 800 (shipped) |
 | Autopilot | slow-down radius 240 u, arrive radius 40 u |
 | Pickup lifetime | 60 s; tractor 120 u range, 90 u/s pull |
-| `MINE_CYCLE` | 1.2 s per ore unit; mining laser range 220 u; gun chip rate 10 % (depletion only, ruling 17) |
+| `MINE_CYCLE` | 1.2 s per ore unit; mining laser range 220 u; gun chip rate 10 %; a gun-attributed shatter pays at most `GUN_BURST_SHARE` 0.10 of the rock's own yield (S13, owner tick 2026-09-25) |
 | `FX_BLUR_ONSET` | 0.70 of v_max; blur 0.1 → 0.8; camera pull to ×0.82 (§3.4) |
 
 **Speed table v2 (ruling 26 — owner tick pending, §16 item 1)**
@@ -488,13 +497,14 @@ Corvette 90 · Hauler 260 · Gunship 190 · Frigate 220 · Destroyer 300 (t).
 | `EXPLOSION_P0` | 4 000 impulse-units at the epicenter (ship death) |
 | `EXPLOSION_WINDOW` | 0.2 s outward impulse |
 
-**Cleaving (ruling 17)**
+**Cleaving (rulings 17 + 2026-09-25)**
 
 | Value | Initial |
 |-------|---------|
-| Fragment split | L → 2–3 M · M → 2 S · S → 1–2 pickups |
-| Ejection | `current_velocity × 1.2` + random ±15° cone |
-| Fragment mineral | parent's mineral, re-rolled yield (02 §5 path) |
+| Size classes / fragment split | `XL > L > M > S`, RNG child mixes per 02 §5.2 (`OreTuning.split_mix`); S → the reserve as pickups (float credit, whole units) |
+| Ejection | `current_velocity × 1.2`, uniform random direction (the ±15° cone was retired 2026-09-21) |
+| Fragment mineral | parent's mineral; yield is the parent's reserve, redistributed, never re-rolled |
+| Gun shatter | pays at most `GUN_BURST_SHARE` 0.10 of the rock's own yield; the excess burns, the gun's fragments carry no ore |
 
 **Lock & countermeasures (rulings 21/22)**
 
@@ -616,15 +626,18 @@ AGENTS.md stay in force (editor writes refused while the game plays).
   reduced-mass formula; below it, nothing.
 - **Impulse/explosion:** knockback transfers 40 % of remaining KE; the
   shockwave impulse follows `I(d)` within the 0.2 s window.
-- **Cleaving:** a depleted Large spawns 2–3 Medium fragments ejecting at
-  ×1.2 velocity ±15°; a depleted Small bursts 1–2 pickups; yield-0 rocks
-  still despawn bare.
+- **Cleaving:** a depleted rock's child set is the 02 §5.2 mix (strictly
+  smaller kinds, seeded ranges — `test_s14_splits`); a mining family
+  realises the root's bore ±1 and a shot family stays under the
+  `GUN_BURST_SHARE` cap (`test_s13_caps`); fragments eject at ×1.2 velocity
+  in a uniform random direction; yield-0 originals still despawn bare.
 - **Lock:** the channel completes at 1.2 s of clean LOS, breaks on a rock or
   hull crossing, and chaff ghosts block re-acquisition for 3 s; flares
   retarget a live seeker within 450 u.
 - **Mining:** N cycles on a rock spawn N ore pickups; gun chip accumulates at
-  10 % toward depletion and zero toward ore; cracks at yield 0; hold-full
-  leaves pickups drifting.
+  10 % toward depletion and a gun shatter pays at most the `GUN_BURST_SHARE`
+  cap of the rock's own yield; cracks at yield 0; hold-full leaves pickups
+  drifting.
 - **NPC brain:** aggro → engage → flee transitions at the §13 thresholds;
   leash/despawn; LOS blocked by a rock fixture.
 - **Warp:** blocked while engaged, breaks on damage mid-channel, lands docked;

@@ -35,8 +35,8 @@ measured that day, `medium` stalls on long worker loops while `low` is fast).
 
 | D-slice | Item | What | Gate |
 |---|---|---|---|
-| D8 | 9 | **Station composition pass** (QA): the right-third dead zones — Armory's ~520 px void + clipped third row, Fitting's grid-left void, Repairs/Launch 440 px spacers | OWNER MOCKUP GATE first; brief at dispatch-prep |
-| D8 | 10 | **In-flight HUD visibility** (QA): empty top-left while all state sits bottom-left; minimap legend + unreadable 1080p glyphs | PICKS 2026-09-24: top-left content + minimap legend + 1080p glyphs | **IN FLIGHT 2026-09-25** — brief at `slices/D8-hud-visibility/`; B1 → R1 → F1 on HIGH/MED; runs parallel with coder items 21/22 on disjoint sets (`ui/hud/` only) |
+| D8 | 9 | **Station composition pass** (QA): the right-third dead zones — Armory's ~520 px void + clipped third row, Fitting's grid-left void, Repairs/Launch 440 px spacers | **DITCHED (owner 2026-09-25).** |
+| D8 | 10 | **In-flight HUD visibility** (QA): empty top-left while all state sits bottom-left; minimap legend + unreadable 1080p glyphs | PICKS 2026-09-24: top-left content + minimap legend + 1080p glyphs | **CLOSED 2026-09-25** — minimap legend + legible zoom glyphs + the ≥12 px glyph floor at 1080p; the top-left hull/shield block stays hidden per the owner (the cockpit carries it); its suite's rows ride the 859/0 gate |
 | D9 | 11 | **Player-hull visibility** (QA): dark hull ~40 px at flight zoom — rim light / brighter tint / scale bump | PICK 2026-09-24: scale bump only (target ~56 px proposed); brief at dispatch-prep |
 | D10 | 12 | **Polish batch** (QA): the status close-X, the launch arm countdown (M6), auction hull thumbnails, mining-beam visibility | PICKS 2026-09-24: all four in; brief at dispatch-prep |
 | D3 | 1 | **Chrome re-cut** — button/slot plate family (the 1041×1087-cell-stretched defect class) | VERDICT 2026-09-24 GO on `staging/phase_f/_preview/review_slots.png`; brief at dispatch-prep |
@@ -84,8 +84,9 @@ description (one 13 px line, min 405 px for 65 chars; a description needs a
 the pane's key hints are honest; do not "fix" them. LOW-3 the pane footer
 and the shell's StatusLabel do the same caption job 950 px apart.
 
-S15's close cured the plate-fit ink defect (route = ink layout); the rest is
-unbriefed. HIGH-4's canvas question goes to the owner before any fix wave.
+S15's close cured the plate-fit ink defect (route = ink layout). **Owner
+ruling 2026-09-25: the fix wave is ditched — the ARMORY takes a later
+rework; this recap is that rework's input, kept until then.**
 
 ## Done
 
@@ -115,10 +116,12 @@ family.
 
 ## Handoff (live — paste as one block)
 
-**D8 item 10 (in-flight HUD visibility) is live 2026-09-25** (`slices/D8-hud-visibility/`),
-running beside coder items 21/22 on disjoint sets. Candidates still
-open: D8 item 9 (blocked on its
-mockup gate), D9 item 11 / D10 item 12 (both wait on the coder waves' `game/`
-and `ui/station/` sets), the **D12 graphics fix wave** (waits on S15's armory
-set), D3 item 1 (GO on `review_slots.png`), D3 2a/2b, D4 3/4. Say the item and
-its five-piece lands at dispatch-prep.
+**D8 item 10 (in-flight HUD visibility) CLOSED 2026-09-25** — minimap legend,
+legible zoom glyphs, the ≥12 px glyph floor at 1080p, and the top-left
+hull/shield block re-hidden per the owner (the cockpit carries it).
+**D8 item 9 (station composition) and the D12 ARMORY fix wave are DITCHED
+(owner 2026-09-25)** — the armory takes a later rework; the D12-A0 recap
+above is that rework's input. Candidates still open: D9 item 11 / D10 item 12
+(both wait on the coder waves' `game/` and `ui/station/` sets), D3 item 1 (GO
+on `review_slots.png`), D3 2a/2b, D4 3/4. Say the item and its five-piece
+lands at dispatch-prep.
