@@ -1050,3 +1050,33 @@ the close-out's editor scan), L219 (the suite hard-pins the two forbidden files'
 MD5s), L220 (`--suite=` needs the `--` user-args separator; extends L95). The
 close-out ran the gate twice on fresh scratch stores: **877/0** both,
 byte-identical.
+
+**D13 (2026-09-25): armory rework — the design (designer item 14) — DONE**
+(gate **877/0 unmoved**, the brief's 866 predating S17's 11 rows; 0 HIGH /
+0 MED / 2 LOW L221–L222, no fixer). The owner's ask: "rework armory with vision
+skill and reasoning on how it should like with brainstorming to used and
+mockups", on the 2026-09-25 ruling "armory will take a rework". A0 ran
+**interactively in the owner's session** (not a dispatched worker): a fresh
+godot-ai capture (station scene, scratch-profile `reset_to_defaults`, W1 chip
+focused → inspector "W1 LASER MKII"; `_evidence/armory_live_2_*`) re-confirmed
+every D12-A0 audit finding and pinned the root cause — the console canvas is
+ruled portrait 872×956 for a landscape 1392×610 host (the fold + the 520 px
+dead zone). The brainstorm (mandated skill, architectural path) presented A
+(workbench + supply drawer), B (full-width dashboard) and C (slim console +
+plain wells) with fold/ink/hierarchy/pin trade-offs; the owner picked from
+rendered mockups and chose **B** with the ticks T1 y **"all resolutions must
+work"**, T3–T8 y (2026-09-25). The design of record: landscape console
+**1360×516** at the pinned host (P1), 5 bays × **2×2 cells** so full barrel
+names fit at 13 px (P3, RAILGUN = 58 px measured), wells band (pack-card grid
+P2, unit wording P5), inspector 2–3 lines (P4), light-ramp captions ≥4.5:1 and
+head chips `READY`/`▲ OVER CAP` (T7), and the **P6 resolution law** (every rect
+derived from the host rect; proofs at 1920×1080 / 2580×1080 / 1920×1536 —
+`staging/mockup/armory_mockup_v2.py`, byte-deterministic, the owner-approved
+look). R1 re-derived in-session (byte-identical re-render, findings table,
+yardstick; an independent R1 dispatch stays available in `D13_prompts.md`) and
+filed L221 (name fit measured on DejaVu, re-measure with the theme face) and
+L222 (the all-resolutions proof must run standalone — godot-ai cannot change
+resolution). Every proposed value carries its reversal; zero writes outside
+the file set (`git status` clean on `vajb-orbit/` + `docs/`; `verify_wave.py
+verify` green). The owner deferred adopting the layout language across the
+game. Implementation = **coder item 24 = S18** (queued, briefed on the ticks).

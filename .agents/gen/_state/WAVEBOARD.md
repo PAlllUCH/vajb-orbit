@@ -6,6 +6,22 @@
 
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-25 clear-outs (owner asks):** every closed slice folder moved to the system trash (last git tree carrying them: `7a081ef`), old session reports live in `_state/_archive/`, and the two dispatch files were purged to live-items-only (2026-09-25 ter). Citation paths into purged trees name historical files.
 
+**Updated 2026-09-25 (quater): D13 armory rework DESIGN closed and verified.**
+Gate **877/0 unmoved** (the D13 brief's 866 predates S17's 11 rows), 0 HIGH /
+0 MED / 2 LOW **L221–L222**, no fixer; `verify_wave.py verify` green
+(`"problems": []`, forbidden `vajb-orbit/ docs/` untouched — `git status`
+clean). A0 ran **interactively in the owner's session** (live godot-ai capture
+→ analysis against the D12-A0 audit → brainstorm → PIL mockups → owner ticks);
+R1 was an in-session re-derivation (byte-identical re-render, findings table,
+yardstick; an independent R1 dispatch stays available in `D13_prompts.md`).
+**Owner ticks 2026-09-25:** T1 y with the condition **"all resolutions must
+work"** (PROPOSED P6 + three canvas proofs 1920×1080 / 2580×1080 / 1920×1536),
+**T2 = approach B (full-width dashboard)**, T3–T8 y; adopting the layout
+language across the game is **deferred** (owner). Deliverables:
+`slices/D13-armory-rework/D13-A0_report.md` (P1–P6 with reversals),
+`D13-R1_review.md`, `staging/mockup/armory_mockup_v2.py` + `out/` mockups and
+the owner sheet. Recap `MASTER_REPORT.md` §6.
+
 **Updated 2026-09-25 (ter):** dispatch files purged and regenerated per the
 owner's ask — the two queues carry exactly two live items: **coder item 17 =
 S17 jump gates to sector edges** (`slices/S17-gate-edges/`; docs pin
@@ -25,9 +41,9 @@ delegation; the D12 fix wave and D8 item 9 ditched for the armory rework).
 
 **Current state: the universal gate reads `[SUMMARY] passed=877 failed=0`**
 (CONTRACTS §9 carries the authority block; hermetic on scratch stores).
-Queued: **no live coder item** (S17 closed); **D13** in the
-design lane (A0 → R1 → F1 only on HIGH/MED,
-`slices/D13-armory-rework/D13_prompts.md`). **Parked (owner-gated, not
+Queued: **coder item 24 = S18 armory rework (implementation on D13's ticks,
+brief `slices/S18-armory-rework/S18_BRIEF.md`)**; **no live designer item**
+(D13 closed). **Parked (owner-gated, not
 queued):** the S12 ore caps/scale rows (the owner's §10 ticks — do not
 implement before that wave is briefed), slice 4's remainder
 (quadrants/directional armour — 18 §4.5 + ruling 23; bosses/arena — 14 §5,
@@ -35,7 +51,8 @@ blocked on P4 contracts + boss art), the §13 turn/coast column ticks and
 slice 2.5's engine-bed/vignette calls, S8's owner gates (O1/O2 FITTING-drag
 UX, O3, L168, L169), the chrome art half, the designer candidates (D9-11,
 D10-12, D3-1, D3-2a/2b, D4-3/4, blocked 5/6 — parked in
-`dispatch_designer.md`), and D13's implementation (on its ticks).
+`dispatch_designer.md`), and adopting the D13 layout language across the game
+(owner-deferred).
 Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 
 ## Living contracts

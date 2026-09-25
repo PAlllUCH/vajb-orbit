@@ -17,22 +17,12 @@ lane, WAVEBOARD, wave-boundary commit).
 
 ## Queue
 
-*(Empty — item 17 closed 2026-09-25; the parked work below awaits owner go. The next wave lands here as a new row when the developer session queues it.)*
+| # | Wave | Item | What | Status |
+|---|---|---|---|---|
+| 24 | S18 | **Armory rework — the implementation** (D13's owner-ticked design: approach B, landscape console, P1–P6) | `slices/S18-armory-rework/` | **QUEUED — next.** Law: `S18_BRIEF.md` + `slices/D13-armory-rework/D13-A0_report.md`; prompts `S18_prompts.md`. Run B1 → R1 → (F1 on HIGH/MED). |
 
 ## Parked (owner-gated — not queued; say the word and the five-piece lands)
 
-- The **S12 ore caps/scale rows** — the tables + §10 ticks are with the
-  owner; **do not implement ticked numbers before that wave is briefed**.
-- **Slice 4's remainder** — quadrants/directional armour (18 §4.5 + ruling
-  23); bosses/arena (14 §5, blocked on P4 contracts + boss art).
-- **§13 turn/coast column ticks** and slice 2.5's engine-bed/vignette calls —
-  the owner's.
-- **S8's owner gates** — O1/O2 (FITTING-drag UX call), O3
-  (site/symptom/mask), L168 (repairs transaction caps at the base row), L169
-  (same-family battery per-cell seed).
-- The **chrome art half** owner gate.
-- The D13 armory rework's **implementation wave** — briefs only on the
-  owner's ticks on D13's tick list.
 
 ## Done
 
@@ -44,9 +34,12 @@ no fixer).
 
 ## Handoff (live)
 
-**No coder-lane item is queued** — item 17 (S17 — jump gates to sector edges)
-closed and verified 2026-09-25 (gate 866 → 877/0, 0 HIGH / 0 MED / 5 LOW
-L216–L220, no fixer). The next coder wave needs its docs-first five-piece from
-the developer/designer session. The design lane's live item is designer
-item 14 = **D13 armory rework** (`dispatch_designer.md`); everything else is
-parked above pending owner ticks.
+**Coder item 24 = S18 armory rework (implementation) is QUEUED and ready** —
+the ARMORY pane rebuild on D13's owner-ticked design (approach B, landscape
+console 1360×516, 2×2 rack cells, the T1 all-resolutions condition). Brief
+`slices/S18-armory-rework/S18_BRIEF.md` (design law rides
+`slices/D13-armory-rework/D13-A0_report.md`), prompts
+`slices/S18-armory-rework/S18_prompts.md`. Run `S18-B1` → `S18-R1`, and `S18-F1`
+only if the review leaves HIGH or MED. Gate starts **877/0** (add rows, never
+lose one). The design lane has no live item (D13 closed); everything else is
+parked above.
