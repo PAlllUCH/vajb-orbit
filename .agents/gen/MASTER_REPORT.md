@@ -1002,3 +1002,27 @@ the refused-ordinal lamp clear was fixed at its root (`hud.gd:1575`) with
 `test_d7_cockpit`'s rows restored byte-identical. `weapon_6`/`weapon_7` are
 inert; removing the bindings from `project.godot` remains the owner's optional
 pass.
+**S16 (2026-09-25): fragment re-splits (coder item 23) — DONE** (gate 859 →
+**866/0**, `test_s16_resplits.gd`'s 7 rows; 0 HIGH / 0 MED / 4 LOW L212–L215;
+B1 → R1, no fixer). The owner's ask: shot debris must split again. The defect:
+`cleaves()` = `_bore_ore > 0.0` and gun children are born at bore 0, so shot
+debris never cascaded. Fix: `AsteroidField._cleave` marks every fragment it
+builds (`fragment.call(&"mark_cleave_child")`, one call site) and `cleaves()` is
+`_bore_ore > 0.0 or _cleave_child` — parentage, not ore, gates a fragment's
+cleave (02 §5.2 ter); originals (field spawns, POI rolls, `setup` fixtures)
+stay unmarked and keep ruling 17's yield-0 law. No arithmetic moved: `split_mix`,
+`_unit_shares`, the gun cap, the ejection and the burst are untouched, and a
+0-bore fragment's owed is 0 on every path (`_pay_burst` returns at
+`asteroid_field.gd:506`), so money is unchanged. Measured by B1 and re-measured
+by R1's W8 replay: a shot XL chain shatters 18 times, its mixed L/M/S children
+split strictly smaller and stop at S (`live_after=0`); the fully shot family
+realises 1 of the 4.2 bound (root bore 32); the fully mined family stays at
+32±1 (S14's row green byte-identical, its printed path grows 42/17 → 48/23 —
+L213 records the drift); `probe_rock_cleave*` and `probe_s12_*` show no new
+red. R1 owned CONTRACTS §5's `cleaves` sentence + §9/§10 v0.28, re-ran the
+mandated `verify --baseline s16_start … --tests` green (`"problems": []`), and
+filed L212 (02 §5.2 ter's "exactly" wants §5.1's "at most" — bucket 2, docs
+text), L213 (the S14 print drift), L214 (the suite's `.uid`, landed by the
+close-out's editor scan), L215 (`setup` does not reset `_cleave_child`; no
+shipped path re-`setup`s a marked instance). The close-out ran the gate twice on
+fresh scratch stores: **866/0** both, byte-identical.

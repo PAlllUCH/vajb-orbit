@@ -401,8 +401,10 @@ func _blast_targets() -> Array:
 ## `XL -> L 1-3, M 2-4, S 2-5`; `L -> M 1-3, S 2-4`; `M -> S 1-3`; `S -> none` --
 ## from `OreTuning.split_mix`, so an XL reads as debris rather than one ring of one
 ## kind. Every child is strictly smaller than its parent, so the cascade terminates
-## at the Small end, whose cleave *is* the pickup burst. A yield-0 rock carries
-## nothing to break and cleaves into nothing (§6/§15, ruling 17).
+## at the Small end, whose cleave *is* the pickup burst. A yield-0 **original**
+## carries nothing to break and cleaves into nothing (§6/§15, ruling 17); S16
+## (02 §5.2 ter) marks every fragment this cleave builds, so debris re-splits per
+## its own size class whatever its bore.
 ##
 ## S13 attributes the shatter (S13_BRIEF §2 rule 3). A **mining** shatter pays the
 ## full reserve: a Small as pickups, an M/L/XL by handing its children the reserve as
@@ -452,6 +454,10 @@ func _cleave(rock: Node2D) -> void:
 			true,
 			float(units)
 		)
+		## S16 (02 §5.2 ter): every rock this cleave builds is debris, so it
+		## re-splits per its own size class whatever its bore. Only `_cleave`
+		## marks: an original stays unmarked and keeps ruling 17's yield-0 law.
+		fragment.call(&"mark_cleave_child")
 		var angle := TAU * float(index) / float(count)
 		angle += rng.randf_range(-FRAGMENT_ANGLE_JITTER, FRAGMENT_ANGLE_JITTER)
 		var distance := ring + float(fragment.call(&"world_radius"))

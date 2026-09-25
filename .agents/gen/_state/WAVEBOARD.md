@@ -143,6 +143,16 @@ mineral; yield is the parent's reserve, redistributed, never re-rolled".
 §13 Small row → "S → the reserve as pickups (float credit, whole units)".
 — **APPLIED 2026-09-25** (owner-delegated; §6/§13/§15 cleaving rows now read
 per 02 §5.1/§5.2 + the S13 caps and the S14 mixes).
+Coder item 23 = **S16 fragment re-splits CLOSED 2026-09-25** (gate 859 →
+**866/0** = `test_s16_resplits.gd`'s 7 rows; 0 HIGH / 0 MED / 4 LOW L212–L215;
+B1 → R1, no fixer). Shot debris re-splits: `AsteroidField._cleave` marks every
+fragment it builds and `Asteroid.cleaves()` is `_bore_ore > 0.0 or
+_cleave_child` — parentage, not ore, gates a fragment's cleave (02 §5.2 ter),
+originals keep ruling 17's yield-0 law, and a 0-bore fragment's owed is 0 so no
+money path moved; every chain terminates at S. R1 re-measured every AC, landed
+CONTRACTS §5/§9/§10 v0.28 and filed L212–L215; recap in `MASTER_REPORT.md` §6.
+**Item 17 (jump gates to sector edges) is next** in the coder queue (five-piece
+at dispatch-prep).
 
 Closed-wave recaps (gate histories, per-wave deliverables and the older owner
 gates they raised) live in `.agents/gen/MASTER_REPORT.md` §6 — moved there

@@ -323,7 +323,8 @@ base class from `StaticBody2D`), `game/asteroid.gd`:
 setup(mineral_id: StringName, tier: int, yield_units: int, size_class := SIZE_ANY) -> void
 apply_work(work: float) -> int   # units mined this call; WORK_PER_UNIT := 1.0
 size_class() -> int              # SIZE_SMALL | SIZE_MEDIUM | SIZE_LARGE (slice 0)
-cleaves() -> bool                # false when the rock rolled no ore (slice 0)
+cleaves() -> bool                # an unmarked yield-0 ORIGINAL is false; a rock born of
+                                 #   a cleave splits per its own size class (S16, 02 §5.2 ter)
 eject_velocity() -> Vector2      # the *shape's* half only: linear_velocity × 1.2, read
                                  #   before the free (slice 0). The radial half is the
                                  #   field's (FRAGMENT_OUTWARD_KICK, §14) — the rock does
@@ -855,7 +856,36 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
-Expected (S15, 2026-09-25): **`[SUMMARY] passed=852 failed=0`**, exit 0. The S15
+Expected (S16, 2026-09-25): **`[SUMMARY] passed=866 failed=0`**, exit 0. The S16
+review (S16-R1) measured **866** twice on two fresh scratch stores
+(`XDG_DATA_HOME=$(mktemp -d)`, exit 0, identical counts, zero `failed`) and re-ran
+the mandated `verify --baseline s16_start --forbidden … --tests --expect-reports
+S16-B1_report.md S16-R1_review.md` (`"problems": []` — the `--forbidden` matcher is
+exact-string, so its directory entries are inert: L206; the hand-check found no
+`project.godot`, `ui/`, `addons/`, `autoload/` or `ore_tuning.gd` path in the
+diff). **Growth `859 → 866`** = S16's `test_s16_resplits.gd` **7** rows (AC1-AC6);
+no other suite's `func test_` count moved, so the only moved row is **L213**
+(`test_s14_splits` AC3's printed `steps`/`rocks_spawned`, its asserted
+`family_realised=32` unchanged). The wave's pin is **02 §5.2 ter** (parentage, not
+ore, gates a fragment's cleave) with §5.1 Rule A as the conservation target.
+Shipped and re-measured by the review on the shipped tree:
+`Asteroid.cleaves()` = `_bore_ore > 0.0 or _cleave_child`, and
+`AsteroidField._cleave` marks every fragment it builds
+(`asteroid_field.gd:460`, the only call site; `setup` cannot mark, so a field
+spawn, a POI roll and every fixture stay originals); a 0-bore fragment owes
+`min(reserve 0.0, 0.10 × 0.0) = 0.0` at every shatter and `_pay_burst` returns
+before touching `_ore_credit` (`:505-507`), its only two call sites being
+`_cleave`'s `:427`/`:431`; `_rolled_yield`'s only caller is still the setup roll
+(`:237`), so no shatter-side re-roll survives; the seeded shot XL chain reads
+`shatters=18 passes=3 children_of_root=7` with every child strictly smaller and the
+chain stopping at S; a fully shot family realises **1** of the **3.2** cap
+(bound 4.2), a fully mined family realises **32** against bore **32**, a yield-0
+original cleaves into nothing, and a fully shot XL leaves **0** live rocks. The
+frozen `probe_rock_cleave*` and `probe_s12_*` replays stay green except L202's two
+known-stale rows. It leaves **0 HIGH / 0 MED / 4 LOW (L212-L215)**: F1 the pin's
+"exactly the root's capped burst" overstates the measured "at most" (bucket 2),
+F2 the listed S14 AC3 printed drift, F3 the new suite's missing `.uid`, F4
+`setup` not resetting `_cleave_child`. Previous expected (S15, 2026-09-25): **`[SUMMARY] passed=852 failed=0`**, exit 0. The S15
 review (S15-R1) measured **852** three times — twice on fresh scratch stores
 (`/tmp/s15r1_gateA`, `_gateC`) and once on a store seeded with a v7 seven-group
 `profile.cfg` (`/tmp/s15r1_gateB`, identical count, the store file byte-identical
@@ -3946,3 +3976,29 @@ hull stops twice and the second stop slides.
   STATION_HUB §5.11's "tail bay full-width" (bucket 1). Owner decisions owed: none
   blocking beyond F1's ratification; the plate-fit route (ink layout, not a re-render)
   is the owner's to accept.
+- **v0.28 (2026-09-25, wave S16 review — S16-R1, this wave's only CONTRACTS writer;
+  gate re-measured `866/0` twice on fresh scratch stores, `verify --baseline
+  s16_start` `problems: []`)** — records the debris re-split's review outcome.
+  `docs/gameplay/02_minerals.md` §5.2 ter (the owner's 2026-09-25 ask) with §5.1
+  Rule A are the diff targets. **§5**'s `cleaves()` row now reads the S16 rule: an
+  unmarked yield-0 original is false, and a rock born of a cleave splits per its own
+  size class whatever its bore. **§9** gains the S16 expected-count paragraph above.
+  Shipped and re-measured on the shipped tree: `Asteroid.cleaves()` =
+  `_bore_ore > 0.0 or _cleave_child`; `AsteroidField._cleave` marks every fragment it
+  builds at `:460`, the only call site (`setup` has no marker parameter, so a field
+  spawn, a POI roll and every fixture stay originals); a 0-bore fragment's owed is
+  `min(reserve 0.0, 0.10 × 0.0) = 0.0` and `_pay_burst` returns before touching
+  `_ore_credit` (`:505-507`), its only call sites being `_cleave`'s `:427`/`:431`;
+  `_rolled_yield`'s only caller is the setup roll (`:237`), so no shatter-side
+  re-roll survives; the seeded shot XL reads `children_of_root=7` over `passes=3`
+  and stops at S with every child strictly smaller; a fully shot family realises
+  **1 ≤ 4.2** (cap 3.2) and a fully mined family **32** == bore **32**, and a fully
+  shot XL leaves **0** live rocks (`test_s16_resplits.gd`, 7 rows). The frozen
+  `probe_rock_cleave*` and `probe_s12_*` replays stay green except L202's two stale
+  rows. **0 HIGH / 0 MED / 4 LOW (L212-L215)** — F1 the pin's "exactly the root's
+  capped burst" overstates the measured "at most" (the `pickup_burst` roll strands
+  the remainder in `_ore_credit`, bucket 2: docs text), F2 S14 AC3's printed path
+  counts drift under S16 while `family_realised=32` is unchanged (brief §3's listed
+  row, not HIGH), F3 the new suite's missing `.uid`, F4 `setup` does not reset
+  `_cleave_child`. Owner decisions owed: none blocking; the "exactly" wording is the
+  only thing the owner may want to tighten.

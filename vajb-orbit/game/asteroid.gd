@@ -240,6 +240,12 @@ var _reserve := 0.0
 ## caller (every committed probe and suite depleting a rock) reads as mining.
 var _shatter_mining := true
 
+## S16 (02 §5.2 ter): true when this rock was built by `AsteroidField._cleave`, so
+## it is debris and splits again per its own size class whatever its bore. An
+## original (a field spawn, a POI roll or a test fixture built through `setup`) is
+## never marked. Runtime-only: one field, one method, one call site, never persisted.
+var _cleave_child := false
+
 
 ## 02 §5's roll lands here: which mineral the rock holds, its tier and how many ore
 ## units it carries. The look is rolled here too, uniformly over the shipped rows
@@ -396,10 +402,21 @@ func size_class() -> int:
 	return floori(float(_look) / float(LOOKS_PER_SIZE))
 
 
+## S16 (02 §5.2 ter): the field marks every fragment it builds in `_cleave` with
+## this, so parentage -- not ore -- gates a *fragment's* cleave. Only the cleave
+## itself may mark: a field spawn, a POI roll and any `setup` fixture stays an
+## original and keeps ruling 17's yield-0 law below.
+func mark_cleave_child() -> void:
+	_cleave_child = true
+
+
 ## Ruling 17's "a yield-0 rock still cracks and despawns without fragments": only a
-## rock that rolled ore cleaves. The field asks this before spawning anything.
+## rock that rolled ore cleaves. The field asks this before spawning anything. S16
+## (02 §5.2 ter) amends it for debris: a rock born of a cleave (`_cleave_child`)
+## splits per its own size class whatever its bore, so shot debris re-splits; an
+## original that rolled no ore still breaks bare and cleaves into nothing.
 func cleaves() -> bool:
-	return _bore_ore > 0.0
+	return _bore_ore > 0.0 or _cleave_child
 
 
 ## The velocity the fragments inherit: `current_velocity × 1.2` of the §13 cleaving

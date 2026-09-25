@@ -20,9 +20,9 @@ with any parallel lane, WAVEBOARD, wave-boundary commit).
 
 | # | Wave | Slice folder | Brief / prompts | Status |
 |---|---|---|---|---|
-| 23 | **Fragment re-splits** (owner ask 2026-09-25, verbatim: "right now they split correctly, but the once split asteroid doesnt split further. this need to change") | `slices/S16-fragment-resplit/` | `S16_BRIEF.md` / `S16_prompts.md` | **QUEUED — next, ahead of item 17.** Gun-route children are born at bore 0 and `cleaves()` is `_bore_ore > 0.0`, so shot debris never re-splits (mining children already do, S14 AC3). Docs pin `02 §5.2 ter`: parentage, not ore, gates a fragment's cleave; originals keep ruling 17's yield-0 law; money untouched. |
+| 23 | **Fragment re-splits** (owner ask 2026-09-25, verbatim: "right now they split correctly, but the once split asteroid doesnt split further. this need to change") | `slices/S16-fragment-resplit/` | `S16_BRIEF.md` / `S16_prompts.md` | **DONE 2026-09-25** — gate 859 → **866/0** (+7: `test_s16_resplits.gd`); 0 HIGH / 0 MED / 4 LOW L212–L215; no fixer. Shot debris re-splits via the runtime-only `_cleave_child` marker (`cleaves()` = `_bore_ore > 0.0 or _cleave_child`) — parentage, not ore, gates a fragment's cleave (02 §5.2 ter); originals keep ruling 17's yield-0 law; money untouched (a 0-bore fragment's owed is 0, `_pay_burst` returns). R1 landed CONTRACTS §5/§9/§10 v0.28. |
 | 15 | **Flight-feel retune** (owner O4/O5) — **folded into item 18** | — | — | **TICKED 2026-09-24.** The owner answered "go ahead with all": T1 `COAST_TIME_MULT` 2.5 and T2 new `ANGULAR_DAMP_MULT` 0.5 are implemented by item 18's **S11-B4**; **T4 is superseded** by the one-vector decay; **T3 is HELD** (§22's row contradicts itself — notice with the owner). |
-| 17 | **Jump gates to sector edges** (owner ask 2026-09-24: same gates, spawn placement only) | not opened | — | **QUEUED — after item 23.** The `game/sector.gd` seam is **free** since D11's close-out (2026-09-25); editor-only change otherwise; five-piece at dispatch-prep. |
+| 17 | **Jump gates to sector edges** (owner ask 2026-09-24: same gates, spawn placement only) | not opened | — | **QUEUED — next.** The `game/sector.gd` seam is **free** since D11's close-out (2026-09-25); editor-only change otherwise; five-piece at dispatch-prep. |
 | 18 | **Station legibility, space gunnery, one-vector inertia** (owner ask 2026-09-24: hovered-item description panel, credits in the space scene, near-infinite kinetic/beam range, the two-stop inertia) — pin **CONTRACTS §23** | `slices/S11-legibility-gunnery-feel/` | `S11_BRIEF.md` / `S11_prompts.md` | **DONE 2026-09-24** — gate 775 → **807/0**, 0 HIGH / 0 MED / 6 LOW (L178–L183). Six builders (B1 inspector, B2 prose + HUD credits, B3 ranges, B4 one-vector inertia, B5 test rows, B6 describe + titles) + R1; the readability half is the design lane's **D12-A0** audit. |
 | 20 | **Ore caps, mining batteries, dev tuning** (owner ticks 2026-09-25: `GUN_BURST_SHARE` 0.10, `FRAGMENT_CORE_SHARE` 0.25, multiple `w_mining` must work, an F1 slider overlay for these values, `DOCK_RING_RADIUS` 175) | `slices/S13-ore-caps-devmenu/` | `S13_BRIEF.md` / `S13_prompts.md` | **DONE 2026-09-25** — gate 812 → **834/0**; 0 HIGH / 3 MED (F1 fixed the credit-reset and the live-config test; the developer session mounted the overlay in `game/game.gd`) / 4 LOW L198–L201. Gun realisation ≤ 0.10, cascade 4.0× → 1.000×, mining 1/2/3×, ring 175, F1 slider overlay live. Rule B stayed deferred. The `18_engine_spec` §6/§13 rewording awaits the owner. |
 | 21 | **Four asteroid sizes, debris splits** (owner ask 2026-09-25: `XL>L>M>S`, each shatters into a random mix of smaller sizes — XL → few L/M/S "so that it looks more like debris"; yields untouched, Rule B stays deferred) | `slices/S14-debris-splits/` | `S14_BRIEF.md` / `S14_prompts.md` | **DONE 2026-09-25** — gate 834 → **852/0** (S14's +9 rows); 2 HIGH closed by the §3 ratification (forced row moves), 1 MED fixed by the developer session (the latent `SIZE_LARGE` bound), 6 LOW L202–L207. XL → L 1-3 / M 2-4 / S 2-5 debris mixes, conservation held (bore 32 → 32 over 4 seeds), spawn mix measured 37.6/34.5/20.7/7.2 vs the proposed 40/32/20/8 (**owner tick**). |
@@ -56,10 +56,11 @@ sentences) is the owner's edit.
 **Items 21 (S14 debris splits) and 22 (S15 battery cap + armory) are DONE
 2026-09-25** (gate 852/0; the S14 spawn mix is the owner's tick, the S15
 plate-fit route was ink layout).
-**Item 23 (S16 — fragment re-splits) is next** (owner ask 2026-09-25: shot
-debris must split again): brief `slices/S16-fragment-resplit/S16_BRIEF.md`,
-prompts `S16_prompts.md`; B1 → R1 → F1 only on HIGH/MED. **Item 17** (jump
-gates to sector edges) follows; it needs its own five-piece at dispatch-prep.
+**Item 23 (S16 — fragment re-splits) is DONE 2026-09-25** (gate 859 →
+**866/0**; 0 HIGH / 0 MED / 4 LOW L212–L215; brief
+`slices/S16-fragment-resplit/S16_BRIEF.md`, recap `MASTER_REPORT.md` §6).
+**Item 17** (jump gates to sector edges) is now next; it needs its own
+five-piece at dispatch-prep.
 Slice 4's remainder (quadrants and directional armour, bosses/arena) still
 needs its own five-piece. Owner answers 2026-09-25: the spawn mix is **kept**
 (the shipped 40/32/20/8 weights stand) and the `18_engine_spec` §6/§13/§15
