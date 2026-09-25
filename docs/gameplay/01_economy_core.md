@@ -184,7 +184,8 @@ income route. The invariant, in the form a test can assert:
 **Amendment 2026-09-25 (rock income):** shooting rocks is **in scope** (it
 breaks them; `GUN_CHIP_RATE` 0.10 is untouched). What changes is what it
 *realises*: at most `GUN_BURST_SHARE` = **0.10** of the rock's own original
-yield, delivered through the Small-end burst only (proposed). Reversal:
+yield, delivered through the Small-end burst only (owner-ticked 2026-09-25;
+implementation wave S13). Reversal:
 `GUN_BURST_SHARE` → 1.0, i.e. the pre-2026-09-25 behaviour, under which a fully
 worked T1 Large realises ≈100 ore units instead of its own 6.
 
@@ -198,10 +199,15 @@ is shooting — 1.69 units/s delivered for a 3-cannon rack, 3.94 for a 7-cell
 rack, against the laser's 0.83 (S12-K1 measured 2026-09-25; the ≈2.5 this line
 first carried was an estimate) — and a 40-unit hold fills in seconds.
 
-Owner ticks: the `GUN_BURST_SHARE` value; 02 §5.1's fragment-share rule and its
-scale rows; `18_engine_spec.md` §6/§13/§17's wording (owner-locked — this doc
-cannot change it); `CONTRACTS.md` §5's "yield re-rolled through the 02 §5
-path" (line 350), and its "Gun work = 10 % efficiency" (line 374).
+**Owner ticks 2026-09-25:** `GUN_BURST_SHARE` **0.10 TICKED**; 02 §5.1's
+fragment-share rule **TICKED at `FRAGMENT_CORE_SHARE` 0.25** (the reserve
+variant — 0.25 of the parent's own yield is set aside at setup and pays to the
+fragments at the break); Rule B's scale rows and the ⅓-of-hold / T4 re-derivation
+are **DEFERRED** (owner: mining yield is fine as-is — they return only with a
+bigger-rock ask); `18_engine_spec.md` §6/§13/§17's wording stays the owner's
+(proposed text lands at S13's close-out); `CONTRACTS.md` §5's two sentences
+(lines 350, 374) move at S13's review. Both ticked values become runtime-tunable
+dev-overlay fields in S13, with these numbers as the defaults.
 
 ## 6. Repairs — the new sink (K2)
 

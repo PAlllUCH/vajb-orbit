@@ -23,6 +23,7 @@ with any parallel lane, WAVEBOARD, wave-boundary commit).
 | 15 | **Flight-feel retune** (owner O4/O5) — **folded into item 18** | — | — | **TICKED 2026-09-24.** The owner answered "go ahead with all": T1 `COAST_TIME_MULT` 2.5 and T2 new `ANGULAR_DAMP_MULT` 0.5 are implemented by item 18's **S11-B4**; **T4 is superseded** by the one-vector decay; **T3 is HELD** (§22's row contradicts itself — notice with the owner). |
 | 17 | **Jump gates to sector edges** (owner ask 2026-09-24: same gates, spawn placement only) | not opened | — | **QUEUED — brief at dispatch-prep.** Runs after item 19; the `game/sector.gd` seam is **free** since D11's close-out (2026-09-25). Editor-only change otherwise. |
 | 18 | **Station legibility, space gunnery, one-vector inertia** (owner ask 2026-09-24: hovered-item description panel, credits in the space scene, near-infinite kinetic/beam range, the two-stop inertia) — pin **CONTRACTS §23** | `slices/S11-legibility-gunnery-feel/` | `S11_BRIEF.md` / `S11_prompts.md` | **DONE 2026-09-24** — gate 775 → **807/0**, 0 HIGH / 0 MED / 6 LOW (L178–L183). Six builders (B1 inspector, B2 prose + HUD credits, B3 ranges, B4 one-vector inertia, B5 test rows, B6 describe + titles) + R1; the readability half is the design lane's **D12-A0** audit. |
+| 20 | **Ore caps, mining batteries, dev tuning** (owner ticks 2026-09-25: `GUN_BURST_SHARE` 0.10, `FRAGMENT_CORE_SHARE` 0.25, multiple `w_mining` must work, an F1 slider overlay for these values, `DOCK_RING_RADIUS` 175) | `slices/S13-ore-caps-devmenu/` | `S13_BRIEF.md` / `S13_prompts.md` | **IN FLIGHT 2026-09-25** — B1 → B2 → R1 → F1 only on HIGH/MED. Rule B (scale rows, ⅓-of-hold, T4 curve) is **DEFERRED and forbidden** on this wave. |
 | 19 | **Ore budget — the two K0 probes** (owner ruling 2026-09-25: shooting rocks stays possible but mining must always be more profitable; asteroids could be bigger, in clusters and fields) — docs already amended, these are the numbers | `slices/S12-ore-budget/` | `S12_BRIEF.md` / `S12_prompts.md` | **DONE 2026-09-25** — K0/K1 measured byte-identical ×2, R1 replayed both on a detached worktree with zero byte differences; 0 HIGH / 2 MED (both bucket-2 docs, cured at close-out) / 7 LOW L191–L197. Tables + §10 ticks handed to the owner; **no cap implemented** (the caps and scale rows are a later wave on the owner's ticks). Gate rows unmoved (812/0 = 807 + D11's `test_d11_station`). |
 
 Beyond the queue: **slice 4's remainder** (quadrants/directional armour — 18
@@ -45,8 +46,13 @@ slice's `_archive/` (S8's, S10's and S11's still in their slice folders).
 **Item 19 is DONE** (2026-09-25): the tables and the §10 ticks are with the
 owner; the caps and scale rows become their own wave once the owner ticks —
 **do not implement ticked numbers before that wave is briefed**.
-**Item 17** (jump gates to sector edges) is next in the queue and **unblocked**
-(D11 closed 2026-09-25); it needs its own five-piece at dispatch-prep. Slice 4's
+**Item 20 (S13) is the live wave** — it implements the owner's 2026-09-25
+ticks (`GUN_BURST_SHARE` 0.10, `FRAGMENT_CORE_SHARE` 0.25, multi-mining
+batteries, the F1 slider overlay, ring 175); Rule B stays deferred and is
+forbidden on it.
+**Item 17** (jump gates to sector edges) runs after item 20 and is
+**unblocked** (D11 closed 2026-09-25); it needs its own five-piece at
+dispatch-prep. Slice 4's
 remainder (quadrants and directional armour, bosses/arena) still needs its own
 five-piece.
 

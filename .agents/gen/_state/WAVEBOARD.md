@@ -12,7 +12,10 @@ F1, all 15 files to mean 0.160; MED-2's naming rows landed as `ASSET_NAMING_SPEC
 this session) / 7 LOW L184–L190; owner ticks recorded below; recap in
 `MASTER_REPORT.md` §6). Coder item 19 = **S12 ore budget CLOSED 2026-09-25** (no gate row moved; 0 HIGH
 / 2 MED bucket-2 docs cured at close-out / 7 LOW L191–L197; the tables + §10
-ticks are with the owner — no cap implemented).** Waves of record: item 16 = S10 ARMORY CLOSED gate 770 → **775/0** (0 HIGH / 0 MED /
+ticks are with the owner — no cap implemented).** Coder item 20 = **S13 ore
+caps + mining batteries + dev tuning IN FLIGHT** (implements the owner's ticks:
+`GUN_BURST_SHARE` 0.10, `FRAGMENT_CORE_SHARE` 0.25, multi-mining stacking, the
+F1 slider overlay, `DOCK_RING_RADIUS` 175; Rule B deferred and forbidden).** Waves of record: item 16 = S10 ARMORY CLOSED gate 770 → **775/0** (0 HIGH / 0 MED /
 6 LOW L172–L177); item 14 = S8 CLOSED gate 753 → **770/0** (0 HIGH / 0 MED /
 4 LOW L168–L171); item 13 = S7 CLOSED gate 711 → **753/0** (0 HIGH / 0 MED /
 5 LOW L163–L167); designer item 8 = D7 CLOSED gate 727/0. CONTRACTS §20 (S7), §21 (S8),
@@ -88,10 +91,9 @@ Owner gates:
 the chrome art half, the **`18_engine_spec.md` §6/§13/§15 cleaving amendment** (owner-locked; §15
 is the test checklist and now contradicts the shipped suite), the launch fit (**both symptoms
 closed** — symptom 1 by P2-A, symptom 2 by P2-B1's `w_mining` row), four spec ticks, the §13
-turn column, the engine-bed / vignette-strength calls slice 2.5 raised, **D11's two ticks
-(`class_name StationScene` dropped by C1 — four suites shadow the name; dock ring radius
-120 u approved vs 175 u proposed, R1 measured 21.4 u clearance inside the hull)**, and
-**S12's §10 tick list at its close-out**.**
+turn column, the engine-bed / vignette-strength calls slice 2.5 raised, **D11's two ticks RESOLVED 2026-09-25** (`class_name StationScene` drop
+ratified — the four suite consts stay; dock ring radius **175**, implemented by
+S13), **S12's §10 tick list was answered 2026-09-25 and is in flight as item 20** (S13).**
 
 Closed-wave recaps (gate histories, per-wave deliverables and the older owner
 gates they raised) live in `.agents/gen/MASTER_REPORT.md` §6 — moved there

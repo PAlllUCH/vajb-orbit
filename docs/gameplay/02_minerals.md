@@ -152,7 +152,7 @@ even some asteroid fields?"**
 **Rule A — no method mints ore.** A rock's ore is realised by extraction and by
 nothing else. Guns still break rocks (`GUN_CHIP_RATE` 0.10, 18_engine_spec
 §6/§17, untouched) but a gun-cracked rock *realises* at most
-`GUN_BURST_SHARE` = **0.10** (proposed) of its **own original** yield, and only
+`GUN_BURST_SHARE` = **0.10** (owner-ticked 2026-09-25) of its **own original** yield, and only
 through the Small-end burst. Cleaving **redistributes** and never re-rolls: a
 fragment's ore comes from the parent's own budget, not from a fresh
 `TIER_BASE_YIELD` roll, so `Σ` ore in a field is conserved.
@@ -161,11 +161,12 @@ The fragment's half of that budget is a real choice, because a rock that cracks
 has already given up its extractable ore (mined out, or chipped out by guns) —
 so a naive "fragments inherit what is left" hands them nothing:
 
-- **`FRAGMENT_CORE_SHARE` 0.0 (proposed default):** fragments are physical
+- **`FRAGMENT_CORE_SHARE` 0.0 (not ticked):** fragments are physical
   debris — they collide, block shots, and can be shot — and carry no ore.
   Simplest rule; the owner's 2026-09-21 "they should explode, 2-5 fragments"
   is untouched, because that ruling is about the break, not about a payout.
-- **`FRAGMENT_CORE_SHARE` 0.25 (proposed alternative):** a quarter of the
+- **`FRAGMENT_CORE_SHARE` 0.25 (OWNER-TICKED 2026-09-25 — the shipped rule):**
+  a quarter of the
   parent's own yield is set aside at setup and never directly extractable, so
   the crack hands it to the fragments and the field's budget simply splits
   between "mine before the break" and "mine the pieces". Mining still realises
@@ -178,7 +179,10 @@ remaining yield, i.e. 0", and the fragment re-roll restored (`CONTRACTS.md` §5'
 is the deployment half and is not in question) — the state a fully worked T1
 Large rock turns into ≈100 ore units from its own 6.
 
-**Rule B — scale.** Direction, every number **proposed** and reversible:
+**Rule B — scale. DEFERRED 2026-09-25** (owner: mining yield is fine as-is; the
+scale rows, the ⅓-of-hold guard and the T4 re-derivation return only with a
+bigger-rock ask — nothing below is ticked or implemented). Direction, every
+number **proposed** and reversible:
 
 | Lever | Shipped | Proposed | Why |
 |---|---|---|---|
