@@ -78,6 +78,14 @@ Rules:
   `test_p2a_ship_roster.gd`/`test_ship_grids.gd`'s W-cell rows (hulls
   unchanged), `test_s13_*`. Pre-grep and report every row you touch; an
   unlisted row changed is HIGH at review.
+- **Ratified at review 2026-09-25** (S15-R1's F2 — the rows moved with the
+  pin): `tests/test_engine2_weapons.gd:283-286`,
+  `tests/test_s5_batteries_v2.gd:363-371`,
+  `tests/test_s10_armory_input.gd:372-374` are on this list retroactively.
+- **F1's lamp rows return to their original form** once `ui/hud/hud.gd`'s
+  refused-ordinal path clears the active lamp instead of leaving the last one
+  lit: the developer session grants `vajb-orbit/ui/hud/` to S15-F1's file set
+  for that root fix (bucket-2 amendment, recorded here).
 
 ## 4. Hard rules
 

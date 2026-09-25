@@ -49,7 +49,8 @@ extends RigidBody2D
 ## field count and the pickups' world parent. `AsteroidField._on_rock_cracked`
 ## reads `size_class()`, `mineral_id`, `tier`, `cleaves()` and `eject_velocity()`
 ## off the rock during the `cracked` emission (the node is freed right after), and
-## spawns the fragments per `FRAGMENT_SPLIT` / `PICKUP_BURST`.
+## spawns the fragments per `OreTuning.split_mix` / `PICKUP_BURST` (S14 replaced the
+## retired `FRAGMENT_SPLIT` row below).
 ##
 ## The 02 §5 mineral and yield rolls happen in `AsteroidField`; this file only
 ## carries the result (mineral, tier, yield). The sprite's size class is a look and
@@ -95,23 +96,31 @@ const ShipFitScript := preload("res://game/ship_fit.gd")
 ## declared owner is the weapon file - this file no longer preloads it for the value.
 const OreTuningScript := preload("res://game/ore_tuning.gd")
 
-## The look rows of `LOOK_TEXTURES`: three size tiers (S, M, L) times three
-## silhouettes. Row order is S1-S3, M1-M3, L1-L3, so the size class of a look is
-## `_look / LOOKS_PER_SIZE`.
+## The look rows of `LOOK_TEXTURES`: four size classes (S, M, L, XL) times three
+## silhouettes. Row order is S1-S3, M1-M3, L1-L3, XL1-XL3, so the size class of a
+## look is `_look / LOOKS_PER_SIZE`.
+##
+## S14 (02 §5.2): `SIZE_XL` is the fourth class (the owner's "i want 4 ... XL>L>M>S"),
+## and its three looks are the L silhouettes scaled to `LOOK_WIDTHS`' 180 u until
+## dedicated XL art is commissioned (staged). Reversal: drop the class and its row.
 const LOOKS_PER_SIZE := 3
 const SIZE_SMALL := 0
 const SIZE_MEDIUM := 1
 const SIZE_LARGE := 2
+const SIZE_XL := 3
 const SIZE_ANY := -1
 
-## §13 "Cleaving (ruling 17)" as amended by the owner's 2026-09-21 asteroid ruling:
-## a cleaving rock splits into a **uniform random 2-5** fragments -- `L -> 2-5 M`,
-## `M -> 2-5 S`, replacing the shipped fixed (2,3)/(2,2) rows. One pair per tier:
-## the row's own two numbers, rolled by the field (`AsteroidField._cleave`), which
-## owns the RNG. A small's row reads (0, 0) fragments because its cleave *is* the
-## pickup burst in `PICKUP_BURST`; a large's fragments are Medium, a medium's are
-## Small (the row below it), which is what `fragment_size()` returns.
-## Reversal: restore the two retired rows.
+## **RETIRED (S14, 02 §5.2): the split rule moved to `OreTuning.split_mix`.** A
+## cleaving rock now rolls a *mixed* child set per kind (`XL -> L 1-3, M 2-4,
+## S 2-5`; `L -> M 1-3, S 2-4`; `M -> S 1-3`; `S -> none`), so a single
+## "one kind, one pair" row per tier can no longer express the rule, and no live
+## arithmetic reads this const. It is **kept, not deleted**, because the frozen
+## `rock_cleave` evidence probes still read it as their own wave's record
+## (`tests/probe_rock_cleave.gd`'s SPLIT rows, `tests/probe_rock_cleave_a2.gd`'s
+## CONST rows, `tests/probe_s12_*.gd`'s CONST line); deleting it would force edits
+## to rows no wave has on its moved list. The shipped 2026-09-21 shape (`L -> 2-5`,
+## `M -> 2-5`, `S -> none`) is the reversal of S14, restored by putting it back
+## into `OreTuning.split_mix`.
 const FRAGMENT_SPLIT: Dictionary = {
 	SIZE_SMALL: Vector2i(0, 0),
 	SIZE_MEDIUM: Vector2i(2, 5),
@@ -158,9 +167,10 @@ const LINEAR_DAMP := 3.71
 ## can read the ceiling instead of repeating it.
 const DRIFT_SPEED_CEILING := 10.0
 
-## The nine shipped Phase B rock sprites: ENVIRONMENT_SPEC §4's three size tiers
-## times three silhouettes, all pre-cut `rgba` (ASSET_CATALOG). Row order is
-## S1-S3, M1-M3, L1-L3.
+## The twelve rock sprites: ENVIRONMENT_SPEC §4's three size tiers times three
+## silhouettes plus S14's XL row, all pre-cut `rgba` (ASSET_CATALOG). Row order is
+## S1-S3, M1-M3, L1-L3, XL1-XL3 -- the XL row reuses the three L textures (staged
+## until dedicated XL art exists, 02 §5.2), so the fourth row is scale only.
 ##
 ## The `env/prop/` container is ASSET_NAMING_SPEC §3's (`env/` splits into
 ## `backdrop/ body/ poi/ prop/ pickup/ tile/`) and is the folder `pull.py` copies
@@ -179,18 +189,24 @@ const LOOK_TEXTURES: Array[Texture2D] = [
 	preload("res://assets/env/prop/env_asteroid_L1.png"),
 	preload("res://assets/env/prop/env_asteroid_L2.png"),
 	preload("res://assets/env/prop/env_asteroid_L3.png"),
+	preload("res://assets/env/prop/env_asteroid_L1.png"),
+	preload("res://assets/env/prop/env_asteroid_L2.png"),
+	preload("res://assets/env/prop/env_asteroid_L3.png"),
 ]
 
 ## Target world width per look row, in units, one entry per LOOK_TEXTURES row.
 ## No spec number exists for a rock's size and none is invented as a gameplay
 ## value: this is the phase's only visual constant, read off the shipped hull
 ## scale (the 905 px `ship_vanguard_side.png` at game.tscn's 0.0663 is 60.0 u
-## long), so the three tiers read at 0.8 / 1.4 / 2.2 hull lengths. Reversal is one
-## edit; see the W3 report's open points.
+## long), so the three shipped tiers read at 0.8 / 1.4 / 2.2 hull lengths. S14 adds
+## the XL row's 180 u (02 §5.2's own number: "XL renders the L silhouettes scaled to
+## a 180 u target width", L being 132 u), three entries because the row reuses the
+## three L silhouettes. Reversal is one edit; see the W3 report's open points.
 const LOOK_WIDTHS: Array[float] = [
 	48.0, 48.0, 48.0,
 	84.0, 84.0, 84.0,
 	132.0, 132.0, 132.0,
+	180.0, 180.0, 180.0,
 ]
 
 const LOOK_NODE: StringName = &"Look"
@@ -226,15 +242,15 @@ var _shatter_mining := true
 
 
 ## 02 §5's roll lands here: which mineral the rock holds, its tier and how many ore
-## units it carries. The look is rolled here too, uniformly over the nine shipped
-## silhouettes on the global RNG (a caller that needs a reproducible look calls
-## `seed()` first; the generation rolls that carry gameplay numbers are seeded in
-## `AsteroidField`, not here).
+## units it carries. The look is rolled here too, uniformly over the shipped rows
+## (the twelve silhouettes, nine before S14's XL row) on the global RNG (a caller
+## that needs a reproducible look calls `seed()` first; the generation rolls that
+## carry gameplay numbers are seeded in `AsteroidField`, not here).
 ##
 ## `size_class` (slice 0's addition, defaulted so every pre-existing three-argument
 ## call resolves exactly as before) pins the look row: a cleaving fragment must be
-## a Medium or a Small, never whatever the uniform roll produced. `SIZE_ANY` keeps
-## the uniform roll over all nine silhouettes.
+## the kind the split rolled, never whatever the uniform roll produced. `SIZE_ANY`
+## keeps the uniform roll over all twelve silhouettes (nine before S14's XL row).
 ##
 ## `defer_shape` (S8, CONTRACTS §21 M1) hands the collision shape's install to the
 ## deferred queue instead of adding it here: a fragment is born inside a physics
@@ -368,14 +384,14 @@ func is_depleted() -> bool:
 	return yield_units <= 0
 
 
-## Which of the nine looks this rock rolled (0-8), for probes and review sheets.
+## Which look row this rock rolled, for probes and review sheets.
 func look_index() -> int:
 	return _look
 
 
-## The look row this rock rolled: `SIZE_SMALL`, `SIZE_MEDIUM` or `SIZE_LARGE`
-## (ruling 17's cleaving class). Read off the look, so it is the sprite the player
-## sees that decides what the rock breaks into.
+## The look row this rock rolled: `SIZE_SMALL`, `SIZE_MEDIUM`, `SIZE_LARGE` or
+## `SIZE_XL` (ruling 17's cleaving class). Read off the look, so it is the sprite the
+## player sees that decides what the rock breaks into.
 func size_class() -> int:
 	return floori(float(_look) / float(LOOKS_PER_SIZE))
 
@@ -457,11 +473,15 @@ func _install_shape() -> void:
 	add_child(_shape)
 
 
-## A pinned row rolls one of its three silhouettes; `SIZE_ANY` (or an out-of-range
-## request) keeps the original uniform roll over all nine, so a pre-slice-0 caller's
-## distribution is unchanged.
+## A pinned row rolls one of its three silhouettes -- `SIZE_XL` is a row like any
+## other, so an XL request lands in the row it asked for and never in the uniform
+## fallback; `SIZE_ANY` (or an out-of-range request) keeps the original uniform roll
+## over every shipped look (twelve since S14's XL row), so a pre-slice-0 caller's
+## shape is unchanged. S14 makes the *spawn* size-first instead:
+## `AsteroidField._spawn_rock` rolls the size class from
+## `OreTuning.spawn_size_weights` and asks this function for the row's look.
 func _roll_look(size_class: int) -> int:
-	if size_class < SIZE_SMALL or size_class > SIZE_LARGE:
+	if size_class < SIZE_SMALL or size_class > SIZE_XL:
 		return randi_range(0, LOOK_TEXTURES.size() - 1)
 	var first := size_class * LOOKS_PER_SIZE
 	return randi_range(first, first + LOOKS_PER_SIZE - 1)

@@ -52,6 +52,33 @@ static var yield_variance_max: float = 1.5
 ## (rule 6) and so `test_s13_caps.gd` can assert its default equals the const.
 static var pickup_burst: Vector2i = Vector2i(1, 2)
 
+## S14 / 02 §5.2's debris split table, the pinned interface of S14_BRIEF §2 rule 1.
+## Keys are the **integer size classes** (`asteroid.gd`'s `SIZE_*`: XL 3, L 2, M 1,
+## S 0 - `test_s14_splits.gd` asserts the two agree) and each value maps a child
+## kind to the inclusive `Vector2i` range its count is rolled from on the field's
+## own seeded RNG at a shatter: `XL -> L 1-3, M 2-4, S 2-5`; `L -> M 1-3, S 2-4`;
+## `M -> S 1-3`; `S -> none`. Every child key is strictly below its parent, so a
+## family can never grow a class and the cascade terminates at S.
+##
+## The pinned table is the default; `AsteroidField._cleave` reads it live, and the
+## F1 overlay carries it through Save/Load (rule 5). Reversal: the retired
+## single-kind rule, `{2: {1: Vector2i(2, 5)}, 1: {0: Vector2i(2, 5)}}` (02 §5.2's
+## reversal line), which restores `FRAGMENT_SPLIT`'s shipped 2026-09-21 shape.
+static var split_mix: Dictionary = {
+	3: {2: Vector2i(1, 3), 1: Vector2i(2, 4), 0: Vector2i(2, 5)},
+	2: {1: Vector2i(1, 3), 0: Vector2i(2, 4)},
+	1: {0: Vector2i(1, 3)},
+	0: {},
+}
+
+## S14 / 02 §5.2's spawn mix (proposed, owner-tickable): the weight each size class
+## carries when the **field** rolls a rock's size (S14_BRIEF §2 rule 4). Weights are
+## whole-number shares, not percentages: `AsteroidField._roll_size` accumulates them
+## and rolls 1..sum, so the table stays a weight table the overlay can retune.
+## `test_s14_splits.gd` measures 1000 seeded rolls against 40/32/20/8 within 3
+## percentage points. Reversal: `{0: 1, 1: 1, 2: 1, 3: 1}`, the retired uniform roll.
+static var spawn_size_weights: Dictionary = {0: 40, 1: 32, 2: 20, 3: 8}
+
 
 ## Every field back to its owner-file default. The dev overlay's Reset button is
 ## this call plus the removal of `user://dev_tuning.cfg`.
@@ -65,6 +92,16 @@ static func reset_to_defaults() -> void:
 	yield_variance_min = 0.5
 	yield_variance_max = 1.5
 	pickup_burst = Vector2i(1, 2)
+	## The two S14 tables, written out exactly as their declarations above (the S13
+	## pattern: the declared default is the yardstick, and the anti-drift test reads
+	## it back through `to_dict`).
+	split_mix = {
+		3: {2: Vector2i(1, 3), 1: Vector2i(2, 4), 0: Vector2i(2, 5)},
+		2: {1: Vector2i(1, 3), 0: Vector2i(2, 4)},
+		1: {0: Vector2i(1, 3)},
+		0: {},
+	}
+	spawn_size_weights = {0: 40, 1: 32, 2: 20, 3: 8}
 
 
 ## A serialisable snapshot of every field, for `user://dev_tuning.cfg` (the
@@ -81,6 +118,8 @@ static func to_dict() -> Dictionary:
 		&"yield_variance_min": yield_variance_min,
 		&"yield_variance_max": yield_variance_max,
 		&"pickup_burst": pickup_burst,
+		&"split_mix": split_mix.duplicate(true),
+		&"spawn_size_weights": spawn_size_weights.duplicate(),
 	}
 
 
@@ -120,6 +159,43 @@ static func from_dict(d: Dictionary) -> void:
 			pickup_burst = Vector2i(int(v.x), int(v.y))
 		elif burst is Array and (burst as Array).size() >= 2:
 			pickup_burst = Vector2i(int((burst as Array)[0]), int((burst as Array)[1]))
+	if d.has(&"split_mix"):
+		var mix: Variant = d[&"split_mix"]
+		if mix is Dictionary and not (mix as Dictionary).is_empty():
+			var out: Dictionary = {}
+			for parent: Variant in (mix as Dictionary).keys():
+				var row: Variant = (mix as Dictionary)[parent]
+				if not row is Dictionary:
+					continue
+				var kinds: Dictionary = {}
+				for child: Variant in (row as Dictionary).keys():
+					var pair := _span((row as Dictionary)[child])
+					if pair.x >= 0 and pair.y >= pair.x:
+						kinds[int(child)] = pair
+				out[int(parent)] = kinds
+			split_mix = out
+	if d.has(&"spawn_size_weights"):
+		var weights: Variant = d[&"spawn_size_weights"]
+		if weights is Dictionary and not (weights as Dictionary).is_empty():
+			var counts: Dictionary = {}
+			for key: Variant in (weights as Dictionary).keys():
+				counts[int(key)] = maxi(int(_number((weights as Dictionary)[key], 0.0)), 0)
+			spawn_size_weights = counts
+
+
+## A count range from whatever shape a config carried it in: a `Vector2i`, a
+## `Vector2`, or a two-element array (`[x, y]`). A `Vector2i.ZERO` is the answer for
+## anything else, which `from_dict` then rejects for an inverted range, so an
+## unusable row is dropped rather than allowed to make a shatter roll nothing.
+static func _span(value: Variant) -> Vector2i:
+	if value is Vector2i:
+		return value
+	if value is Vector2:
+		var v: Vector2 = value
+		return Vector2i(int(v.x), int(v.y))
+	if value is Array and (value as Array).size() >= 2:
+		return Vector2i(int((value as Array)[0]), int((value as Array)[1]))
+	return Vector2i.ZERO
 
 
 ## A missing/ill-typed value leaves the current one, which is what makes

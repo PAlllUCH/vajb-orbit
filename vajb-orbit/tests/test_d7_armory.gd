@@ -11,9 +11,9 @@ extends McpTestSuite
 ##     TextureRect, no nine-slice) and the three groups sit in Mockup A's recessed wells
 ##     at the pinned rects (UI_SPEC section 3.10 / UI_CHROME section 12 Amendment 2: the
 ##     plate is FLAT and the wells are code-drawn);
-##  2. each rack `B1..B7` is a bay plate (`ui_armory_rack_plate`) in Mockup A's 4+3 grid,
-##     with the W cells as the machined slot recesses and the fitted cells marked inside
-##     them;
+##  2. each rack `B1..B5` is a bay plate (`ui_armory_rack_plate`) in the 4+1 grid, with the
+##     W cells as the machined slot recesses **laid on the plate's own ink** (S15, finding
+##     F1) and the fitted cells marked inside them;
 ##  3. the SALVO strip's three `ui_seg_*` cells render the rack's cycle figure (Mockup A's
 ##     approved `073` = 0.73 s readout) and read blanks for a rack with no cadence;
 ##  4. INVENTORY and AMMUNITION rows ride the brushed row plate (`ui_armory_row_plate`,
@@ -74,15 +74,27 @@ const BAY := Vector2(194.0, 182.0)
 const BAY_GAP := 8.0
 const BAY_ORIGIN := Vector2(44.0, 136.0)
 const BAY_COLUMNS := 4
-const SLOT := Vector2(40.0, 44.0)
-const SLOT_PITCH := 44.0
-const SLOT_ORIGIN := Vector2(10.0, 38.0)
-const SALVO_CELL := Vector2(40.0, 72.0)
-const SALVO_PITCH := 42.0
-const SALVO_ORIGIN := Vector2(64.0, 104.0)
+## STATION_HUB section 5.11's amendment: the tail bay spans the whole row (every column
+## plus the gaps between them) rather than one cell.
+const TAIL_BAY := Vector2(4.0 * BAY.x + 3.0 * BAY_GAP, BAY.y)
+## **S15's plate-fit correction (finding F1)**: the bay's marks sit on the rack plate's
+## own ink. The master is 194x182 with its plate bar at rows 49..132 (cols 7..186) and
+## its four drawn recesses centred at x 45 / 79 / 114 / 148 (~34.5 px pitch), so the
+## slot block is 34x40 drawn on a 34.5 px pitch from drawn x 28 / y 62, and the SALVO
+## drums are 34x20 drawn with their bottom edge flush with the bar's bottom (y 132).
+const SLOT := Vector2(34.0, 40.0)
+const SLOT_PITCH := 34.5
+const SLOT_ORIGIN := Vector2(28.0, 62.0)
+const SALVO_CELL := Vector2(34.0, 20.0)
+const SALVO_PITCH := 34.5
+const SALVO_ORIGIN := Vector2(28.0, 113.0)
+const SALVO_CAPTION_ORIGIN := Vector2(133.0, 113.0)
+## The plate's own ink box, measured off `ui_armory_rack_plate.png` (see
+## `test_s15_armory_layout.gd` for the scripted re-measurement).
+const PLATE_INK := Rect2(7.0, 49.0, 180.0, 84.0)
 const AMMO_ROW := 64.0
 const INVENTORY_ROW := 44.0
-const RACK_COUNT := 7
+const RACK_COUNT := 5
 const SALVO_MAX := 999
 
 var _profile: Node = null
@@ -395,14 +407,16 @@ func test_the_racks_draw_the_4_3_bay_grid_on_the_rack_plate() -> void:
 	)
 	assert_eq(bays[3], Rect2(BAY_ORIGIN + Vector2(3.0 * (BAY.x + BAY_GAP), 0.0), BAY), "B4 ends the first row")
 	assert_eq(
-		bays[4], Rect2(BAY_ORIGIN + Vector2(0.0, BAY.y + BAY_GAP), BAY), "B5 opens the second"
+		bays[4], Rect2(BAY_ORIGIN + Vector2(0.0, BAY.y + BAY_GAP), TAIL_BAY),
+		"B5 opens the second, full-width (STATION_HUB section 5.11)"
 	)
-	assert_eq(bays[6], Rect2(BAY_ORIGIN + Vector2(2.0 * (BAY.x + BAY_GAP), BAY.y + BAY_GAP), BAY), "B7 closes it")
+	assert_eq(bays.size(), RACK_COUNT, "and B5 closes the 4+1 grid (no B6/B7 any more)")
 	for index in bays.size():
 		var row := _rack_row(panel, index)
+		var want: Vector2 = TAIL_BAY if index == RACK_COUNT - 1 else BAY
 		assert_eq(
-			row.size, BAY,
-			"bay %d is the pinned 194 x 182 plate (actual %s)" % [index, str(row.size)]
+			row.size, want,
+			"bay %d is the pinned plate, the tail full-width (actual %s)" % [index, str(row.size)]
 		)
 		assert_eq(
 			row.position,
@@ -424,21 +438,21 @@ func test_the_racks_draw_the_4_3_bay_grid_on_the_rack_plate() -> void:
 	assert_eq(grid, Vector2(4.0 * BAY.x + 3.0 * BAY_GAP, 2.0 * BAY.y + BAY_GAP), "the grid's own box")
 
 
-## The W cells are Mockup A's four machined slot recesses (20 x 22 logical on a 22 px pitch
-## at `x + 10 + s * 44`, `y + 38`), and a fitted cell shows the mockup's own block inside
-## its recess.
+## The W cells are the plate's own four machined slot recesses (S15, finding F1): the
+## block is 34 x 40 drawn on the art's ~34.5 px drawn pitch, its first recess centred at
+## drawn x 45, and a fitted cell shows a block **half the recess, centred** inside it.
 func test_the_w_cells_are_the_machined_slot_recesses() -> void:
 	var panel := _mount()
 	var style := _style()
-	assert_eq(style.slot_size, Vector2(20.0, 22.0), "the pinned 20 x 22 logical W cell")
+	assert_eq(style.slot_size, Vector2(17.0, 20.0), "the 17 x 20 logical W cell (34 x 40 drawn)")
 	assert_eq(
-		style.drawn_vector(style.slot_size), SLOT, "drawn as the mockup's own 40 x 44 recess"
+		style.drawn_vector(style.slot_size), SLOT, "drawn onto the plate's own recesses"
 	)
-	assert_eq(style.slot_pitch, 22.0, "on the pinned 22 px logical pitch")
-	assert_eq(style.drawn(style.slot_pitch), SLOT_PITCH, "drawn on the mockup's own 44 px step")
+	assert_eq(style.slot_pitch, 17.25, "on the art's 17.25 logical / 34.5 drawn px pitch")
+	assert_eq(style.drawn(style.slot_pitch), SLOT_PITCH, "drawn on the plate's own 34.5 px step")
 	assert_eq(
 		style.drawn_vector(style.slot_origin), SLOT_ORIGIN,
-		"at the mockup's own offset inside the bay"
+		"at the ink's own offset inside the bay (first recess centred at drawn x 45)"
 	)
 	var row := _rack_row(panel, 0)
 	var barrels := row.get_node_or_null(^"Box/Barrels") as HBoxContainer
@@ -472,8 +486,8 @@ func test_the_salvo_strip_renders_the_cycle_figure() -> void:
 	var caption := strip.call(&"caption_node") as Label
 	assert_eq(caption.text, "SALVO s", "the pinned 12 px caption, an engine Label")
 	assert_eq(
-		caption.position, Vector2(10.0, 112.0),
-		"at the mockup's own ledge offset inside the bay (actual %s)" % str(caption.position)
+		caption.position, SALVO_CAPTION_ORIGIN,
+		"right of the drum block, on the ink bar's last rows (actual %s)" % str(caption.position)
 	)
 	assert_eq(strip.call(&"cell_nodes").size(), 3, "three ui_seg_* cells")
 	for index in 3:
@@ -791,12 +805,12 @@ func test_the_style_extends_cockpit_style_with_the_pinned_metrics() -> void:
 	assert_eq(style.row_plate_path, "res://assets/ui/ui_armory_row_plate.png", "the row plate")
 	assert_eq(style.bay_size, Vector2(97.0, 91.0), "the pinned 97 x 91 bay, at the logical scale")
 	assert_eq(style.bay_size * ART_SCALE, BAY, "drawn at the master's own 194 x 182 box")
-	assert_eq(style.slot_size, Vector2(20.0, 22.0), "the pinned 20 x 22 W cell")
-	assert_eq(style.slot_pitch, 22.0, "on the pinned 22 px pitch")
-	assert_eq(style.salvo_cell, Vector2(20.0, 36.0), "the family's own 20 x 36 drum cell")
+	assert_eq(style.slot_size, Vector2(17.0, 20.0), "the ink-fitted 17 x 20 W cell")
+	assert_eq(style.slot_pitch, 17.25, "on the plate's own 34.5 drawn px pitch")
+	assert_eq(style.salvo_cell, Vector2(17.0, 10.0), "the ink-fitted 17 x 10 drum cell")
 	assert_eq(style.salvo_cells, 3, "three SALVO cells")
-	assert_eq(style.bay_columns, 4, "Mockup A's 4+3 grid")
-	assert_eq(style.bay_row_count(RACK_COUNT), 2, "seven bays fill two rows")
+	assert_eq(style.bay_columns, 4, "the 4+1 grid's four columns")
+	assert_eq(style.bay_row_count(RACK_COUNT), 2, "five bays fill two rows (4 + 1)")
 	assert_eq(style.ammo_well.size.y, 68.0, "the ammunition well holds two 32-logical rows")
 	assert_eq(
 		style.rows_height(2, style.ammo_row_height), style.ammo_well.size.y,

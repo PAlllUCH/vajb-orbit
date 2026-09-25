@@ -27,7 +27,15 @@ hardcap 5×4 + armory B1-B5, `09 §12` + `STATION_HUB §5.11`) are **IN FLIGHT
 2026-09-25** in parallel on disjoint sets (owner asks that day), and designer
 item 10 (D8 in-flight HUD visibility: top-left content + minimap legend + 1080p
 glyphs, `slices/D8-hud-visibility/`) is **IN FLIGHT** beside them on
-`ui/hud/` only.**
+`ui/hud/` only.** Items 21 and 22 are **CLOSED 2026-09-25** (S14: 2 HIGH closed
+by the §3 ratification + 1 MED fixed by the developer session / 6 LOW
+L202–L207; S15: 3 HIGH + 1 MED all cured by F1 / 4 LOW L208–L211; gate **852/0**
+throughout, hermetic). Measured: XL debris cascades 1708 children over 200
+shatters with the budget conserved (bore 32 → 32), spawn mix
+37.6/34.5/20.7/7.2 (owner tick), the battery hardcap refuses 6th/5th silently
+and a 7-cell hull composes 4+3 with no rackless weapon, the armory draws 5
+bays 4+1 aligned to the cockpit's five lamps with the plate-fit ink defect
+gone.**
 Waves of record: item 16 = S10 ARMORY CLOSED gate 770 → **775/0** (0 HIGH / 0 MED /
 6 LOW L172–L177); item 14 = S8 CLOSED gate 753 → **770/0** (0 HIGH / 0 MED /
 4 LOW L168–L171); item 13 = S7 CLOSED gate 711 → **753/0** (0 HIGH / 0 MED /

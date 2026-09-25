@@ -975,3 +975,30 @@ owner-locked). Rule B stayed deferred and forbidden. One incident: the first R1
 dispatch wedged (`crush run` idle in `futex_do_wait`, zero sockets, 0 bytes of
 output in 31 min — the 2026-09-18 wedging class); killed and re-dispatched, the
 retry completed clean.
+**S14 (2026-09-25): four asteroid sizes, debris splits — DONE** (gate 834 →
+**852/0**, its +9 rows; 2 HIGH / 1 MED / 6 LOW L202–L207). `XL > L > M > S`
+ships with the RNG debris cascade (XL → L 1-3, M 2-4, S 2-5; L → M 1-3, S 2-4;
+M → S 1-3) read from `OreTuning.split_mix`; XL draws the L silhouettes at 180 u
+(staged art). Measured by B1 and re-measured by R1's own probe: 200 XL shatters
+→ 1708 children, no child ≥ its parent, spawn mix 37.6/34.5/20.7/7.2 vs the
+proposed 40/32/20/8 (**owner tick**), and S13's conservation intact across the
+mixed chains (bore 32 → realised 32 over 4 seeds; `_rolled_yield` has no
+shatter-side caller). R1's two HIGH were forced row moves (the old rows asserted
+the retired 2-5 rule) — closed by the developer session's §3 ratification; the
+one MED (a size-bound row green only by seed luck) was a two-token fix taken by
+the developer session. Rule B stayed deferred.
+**S15 (2026-09-25): battery hardcap 5×4 + armory B1–B5 — DONE** (gate **852/0**;
+3 HIGH / 1 MED / 4 LOW L208–L211, all four cured by F1). `GROUPS_MAX` 5 +
+`BATTERY_CELLS_MAX` 4: a 6th battery, a 5th cell or a growing move refuses
+silently (record+fit+bag byte-identical), 6-7-group saves clamp to 5×4 with
+cell order preserved and the gate byte-identical on such a store, the 7-cell
+hull composes 4+3 with **no weapon left rackless** (R1's HIGH, the tail folds
+into the first rack with room), and the armory draws 5 bays flowing 4+1 with
+`B1..B5` labels mapped 1:1 to the cockpit's five lamps. The rack-plate defect
+(playthrough F1) is gone via the **ink-layout route** (slots at the art's
+34.5 px pitch inside ink rows 49..132, drums bottom-aligned to the ink edge).
+One bucket-2 crossing: the developer session granted `ui/hud/` to the fixer so
+the refused-ordinal lamp clear was fixed at its root (`hud.gd:1575`) with
+`test_d7_cockpit`'s rows restored byte-identical. `weapon_6`/`weapon_7` are
+inert; removing the bindings from `project.godot` remains the owner's optional
+pass.

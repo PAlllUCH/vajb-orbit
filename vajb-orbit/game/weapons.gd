@@ -41,7 +41,7 @@ extends Node2D
 ## weapon kinds together, persisted in the profile as `batteries: {ship_id:
 ## Array[Array[cell_ref]]}` and handed here by the launch through `set_batteries`
 ## (cell refs resolved to this component's own barrel positions by `game.gd`, because
-## §16 rule 3's index divergence leaves the two spaces distinct). `weapon_1..7`
+## §16 rule 3's index divergence leaves the two spaces distinct). `weapon_1..5`
 ## addresses rack N, `selected_rack()` is its barrels, and the **salvo gate is the
 ## slowest member's cycle**: one trigger releases every armed barrel (strum 0..40 ms,
 ## unchanged) and the next salvo arms only once `battery_cycle()` - `max(members'
@@ -196,12 +196,18 @@ const TRACK_TOLERANCE := 5.0
 ## `set_fitted` without `set_weapons`) and the static `ammo_slot`'s own answer.
 const SHARED_PACK: Dictionary = {&"railgun": &"cannon"}
 
-## Section 4.3 / section 11: `weapon_1..7` selects a **rack** and **Space**
-## (`fire_primary`) fires it. **S5 (09 section 11, CONTRACTS section 17): the map is
-## seven keys** -- `weapon_6`/`weapon_7` are orchestrator-applied to
-## `project.godot` -- so the ceiling grew from five; a group past the end of the
-## composed racks selects nothing.
-const GROUPS_MAX := 7
+## Section 4.3 / section 11: `weapon_1..5` selects a **rack** and **Space**
+## (`fire_primary`) fires it. **S15 (09 section 12): the hardcap is five batteries of at
+## most four cells each** -- `GROUPS_MAX` is the battery ceiling, `BATTERY_CELLS_MAX` the
+## per-battery one -- so a group past the end of the composed racks selects nothing, and
+## a 6th battery has no ordinal to address. `weapon_6`/`weapon_7` stay in the input map
+## (the owner's optional pass) but select nothing: the flight scene reads five actions.
+const GROUPS_MAX := 5
+## 09 section 12's per-battery ceiling: a battery fires at most four W cells, guns and
+## mining lasers alike (the armory bay draws exactly four recesses). The record and every
+## composed transaction enforce it; a rack past it is refused or clamped on load.
+## **Reversal:** the cap deleted (the pre-S15 seven-rack composition).
+const BATTERY_CELLS_MAX := 4
 const FIRE_ACTION: StringName = &"fire_primary"
 const MODULE_PREFIX := "w_"
 
@@ -382,7 +388,7 @@ var _group := 1
 var _batteries: Array[StringName] = []
 
 ## The composed racks (S5, 09 section 11, CONTRACTS section 17): one Array[int] per
-## rack, in `weapon_1..7` order, each entry a **barrel position in `_fitted`**. The
+## rack, in `weapon_1..5` order, each entry a **barrel position in `_fitted`**. The
 ## launch hands the spec in through `set_batteries` (cell refs resolved to these
 ## positions by `game.gd`); with no spec - every pre-S5 fixture, and a fit whose
 ## record is empty - one rack per distinct family in first-barrel order, which is
@@ -531,7 +537,7 @@ func set_fitted(ids: Array[StringName]) -> void:
 
 
 ## The composed racks (S5, 09 section 11, CONTRACTS section 17): one Array[int] per
-## rack in `weapon_1..7` order, each entry a **barrel position in `fitted()`**. The
+## rack in `weapon_1..5` order, each entry a **barrel position in `fitted()`**. The
 ## launch resolves the profile's persisted cell refs to those positions and hands them
 ## here (`game.gd:_launch_batteries`), because §16 rule 3's divergence (`fitted()`
 ## drops the family-less `w_mining` cells) leaves the component's barrel positions and
@@ -547,7 +553,7 @@ func set_batteries(groups: Array) -> void:
 	_sync_barrels()
 
 
-## Rebuilds everything a fit change invalidates: the battery list `weapon_1..7` selects
+## Rebuilds everything a fit change invalidates: the battery list `weapon_1..5` selects
 ## from, the rack list the volley walks, and the four per-barrel arrays it runs on.
 ## **S5 (09 section 11) adds the two muzzle arrays beside them:** each barrel's mount
 ## (`_mount_for`) and its rest facing, with `_facing` re-seeded from that rest - so a
@@ -640,7 +646,7 @@ func _compose_racks() -> Array:
 	return racks
 
 
-## `weapon_1..7` (section 4.3): the input map's seven keys are the group range, so a
+## `weapon_1..5` (section 4.3): the hardcap's five batteries are the group range, so a
 ## group outside it clamps. A group with no rack selects nothing, and the trigger then
 ## falls silent rather than firing the previous group.
 func select_group(group: int) -> void:
@@ -674,7 +680,7 @@ func selected_rack() -> Array:
 
 
 ## Every rack of this fit (S5, CONTRACTS section 17): one Array[int] per rack in
-## `weapon_1..7` order, each entry a barrel position in `fitted()`, duplicated so a
+## `weapon_1..5` order, each entry a barrel position in `fitted()`, duplicated so a
 ## caller cannot write through. The profile's record is the **cell-ref** authority
 ## (`batteries: {ship_id: Array[Array[cell_ref]]}`); this is the same grouping in the
 ## component's own index space.
@@ -688,7 +694,7 @@ func racks() -> Array:
 	return out
 
 
-## How many racks this fit fires, i.e. how many `weapon_1..7` keys select something.
+## How many racks this fit fires, i.e. how many `weapon_1..5` keys select something.
 func rack_count() -> int:
 	return _racks.size()
 
@@ -719,7 +725,7 @@ func _rack_cycle(rack: int) -> float:
 
 ## The batteries this fit carries, in first-barrel order (CONTRACTS section 16 rule 2):
 ## the distinct weapon ids of `fitted()`, duplicated so a caller cannot write through.
-## Since S5 the **racks** are what a `weapon_1..7` key and every HUD slot address (a
+## Since S5 the **racks** are what a `weapon_1..5` key and every HUD slot address (a
 ## rack may hold several of these ids), so this list is the fit's firing families, kept
 ## for the callers and tests that want them; on a fit of distinct families it is
 ## element-for-element the list S4 shipped.

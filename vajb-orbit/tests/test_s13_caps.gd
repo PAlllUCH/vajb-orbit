@@ -162,6 +162,10 @@ func test_a_gun_shatter_pays_at_most_the_capped_share() -> void:
 	assert_true(owed < reserve, "the fixture exercises the cap, not the reserve")
 
 
+## S14 (02 §5.2) moves only this row's count: a Medium's child set is now the rolled
+## `S 1-3`, so "still leaves fragments" is `>= 1` rather than the retired fixed 2-5
+## pair. The conservation rows are untouched: the reserve is split across whatever
+## child set was rolled, and a gun's children still carry no ore.
 func test_a_gun_shatter_never_hands_its_fragments_ore() -> void:
 	var field := _field()
 	var rock := _member(field, AsteroidScript.SIZE_MEDIUM, 12, "DebrisRock")
@@ -171,7 +175,7 @@ func test_a_gun_shatter_never_hands_its_fragments_ore() -> void:
 	for node: Node2D in field.call(&"rocks"):
 		if not before.has(node.get_instance_id()):
 			children.append(node)
-	assert_true(children.size() >= 2, "a gun-cracked Medium still leaves fragments")
+	assert_true(children.size() >= 1, "a gun-cracked Medium still leaves fragments")
 	for child: Node2D in children:
 		assert_true(float(child.call(&"bore_ore")) == 0.0,
 			"but the excess reserve burned: a gun's fragments carry no ore")

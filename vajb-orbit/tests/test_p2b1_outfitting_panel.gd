@@ -11,7 +11,7 @@ extends McpTestSuite
 ## **The MODULES section is retired**: the AUCTION shelf sells the rolled instances now,
 ## so this suite guards the retirement (no rows, no constants, no scene nodes) and proves
 ## the AUCTION is the door instead. **The S4 strip became the S5 racks** (section 5.11, 09
-## section 11, CONTRACTS section 17): `B1..B7` drop zones over a list of inventory weapons,
+## section 11, CONTRACTS section 17; `B1..B5` since S15, 09 section 12): drop zones over a list of inventory weapons,
 ## so the suite's row assertions moved to the racks' read-back (`rack_rows()`) and its
 ## single-cell REMOVE moved to a barrel chip's `✕`, which still writes through the composed
 ## remove (CONTRACTS section 13, S3-K4 HIGH-1's cure) with the same `_seed_fit` guard, for
@@ -644,13 +644,13 @@ func _digits_only(text: String) -> String:
 ## ------------------------------------------------------------- the racks (S5)
 
 
-## The B1..B7 racks over the inventory (STATION_HUB section 5.11, 09 section 11): seven drop
+## The B1..B5 racks over the inventory (STATION_HUB section 5.11, 09 section 12): five drop
 ## zones, each one labelled `B<n>`, and the pane's read-back accounts for the active hull's
-## W cells - the Vanguard's delivered laser sits in B1 on cell W1, and the other six racks
+## W cells - the Vanguard's delivered laser sits in B1 on cell W1, and the other four racks
 ## are empty drop zones.
 func test_the_racks_draw_seven_drop_zones_over_the_inventory() -> void:
 	assert_eq(
-		PanelScript.RACK_COUNT, 7, "the pin's own rack count (GROUPS_MAX 5 -> 7)"
+		PanelScript.RACK_COUNT, 5, "the hardcap's own rack count (GROUPS_MAX 7 -> 5)"
 	)
 	assert_eq(
 		FitData.slot_capacity(VANGUARD, WEAPON_SLOT),

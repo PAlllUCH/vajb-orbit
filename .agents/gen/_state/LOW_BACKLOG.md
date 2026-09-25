@@ -550,3 +550,53 @@ still **T-94**.
 | L200 | **01 §5.6's measured prose is stale against the new caps.** Re-measured on the shipped tree: laser **0.657 u/s** (doc 0.83), GUN3 **0.645 u/s** (doc 1.689), GUNMAX **1.505 u/s** (doc 3.941), so "Shooting is the fast, lossy route" (line 181) now holds only for a full rack; the ticked rule (§5.6 amendment) and 01 §5.5's ×0.7 window are unaffected. | [DOC] | `docs/gameplay/01_economy_core.md:181,192-200` | Next 01 owner/planner: retext the pre-amendment evidence to the shipped band, or mark the block superseded by the amendment. |
 | L201 | **AC4's strongest hermeticity claim is proven on a store the run empties.** "The gate is byte-identical with `user://dev_tuning.cfg` present" holds trivially because nothing at boot reads the file, but the devmenu suite deletes the file it finds (same class as S13-B2/F2), so the file's survival is unasserted. | [HARNESS] | `vajb-orbit/tests/test_s13_devmenu.gd:190-206` | F1 points the suite's `config_path` at `user://_gate_scratch/`; once it does, add a row asserting a pre-existing file is untouched. |
 
+
+### S14 debris-splits review block (2026-09-25)
+
+Source: `.agents/gen/slices/S14-debris-splits/S14-R1_review.md`. The wave leaves
+**2 HIGH and 1 MED** — both HIGHs are **brief §3's moved-row list being
+incomplete** (S14-B1/F1 the `test_engine2_cleaving.gd` count-bounds row,
+S14-B1/F2 `probe_rock_cleave_a2.gd`'s COUNT block, both forced by §5.2's pins and
+disclosed by B1) and the MED is its mirror image (S14-B1/F3 a live gate row left
+asserting `klass <= SIZE_LARGE`). All three are bucket 2: the remedy is a §3
+amendment in the developer/designer session, **not** an F1 code pass — reverting
+F1's row re-reds the gate. Gate **`834/0 → 852/0`** twice on fresh scratch stores
+plus the mandated `verify --baseline s14_start … --tests --expect-reports …`
+green (`"problems": []`); every AC re-measured by the review's own probe
+(`tools/r1_s14_ac_replay.gd`, 0 failures) and the four rock probes replayed.
+Rows run **L202–L207** (ids read from this file at write time); the next free
+ticket is still **T-94**.
+
+| # | Item | Kind | Where | Disposition |
+|---|------|------|-------|-------------|
+| L202 | **The frozen A1 probe is red against 02 §5.2.** Replayed: `[RC] done failures=2` — `count_Large_size` ("a Large's fragments are one tier down") and `count_Medium_bounds` ("every Medium cleave rolled inside 2-5") both assert the retired single-kind rule; its CONST rows (`:174-185`) still pass on the retained `FRAGMENT_SPLIT`. §3 does not list the two failing rows, so B1 left them untouched (correct per the wave law); the probe is not in the gate. | [HARNESS] | `vajb-orbit/tests/probe_rock_cleave.gd:215-230` | Next A1 owner: move the two rows to the S14 mix, or mark the probe explicitly frozen/expected-red, in the same pass that amends brief §3. |
+| L203 | **`_span`'s comment claims a rejection that does not happen.** An unusable value returns `Vector2i.ZERO`, which `from_dict`'s `pair.x >= 0 and pair.y >= pair.x` accepts as a `0-0` range, so a garbage row lands as a present zero-count kind instead of being dropped. Harmless (it rolls nothing), comment-only. | [CODE] | `vajb-orbit/game/ore_tuning.gd:186-189,203-206` | Next `ore_tuning.gd` touch: say "lands as a zero-count kind", or reject `Vector2i.ZERO` explicitly. |
+| L204 | **The two S12 probes print the retired const under a new name and the live table beside it, and `_size_name` gained an XL case.** Evidence and helper, not asserted rows, but both sit inside §3's two listed files, so the §3 amendment that resolves F2 should name them too. | [HARNESS] | `vajb-orbit/tests/probe_s12_field_budget.gd:96-101`; `vajb-orbit/tests/probe_s12_rock_rate.gd:116-120,384` | Fold into the §3 amendment (F2); no code change needed. |
+| L205 | **`tests/test_s14_splits.gd.uid` does not exist.** Godot writes it on the next editor scan, so the wave-boundary commit should carry it; the gate runs headless and never creates it. | [HARNESS] | `vajb-orbit/tests/test_s14_splits.gd` | Wave close-out: let the editor scan land the `.uid` and include it in the boundary commit. |
+| L206 | **`verify_wave.py --forbidden` cannot match a directory.** The matcher is exact-string membership (`staging/verify_wave.py:144`), so the mandated entries `docs/design/`, `ui/` and `addons/` never match any changed path; the wave's guard on those trees is unenforced by the tool. Checked by hand for S14: no `docs/design/`, `addons/` or `project.godot` path in the diff. | [HARNESS] | `staging/verify_wave.py:139-146` | Next tooling pass: treat a trailing `/` as a prefix match, or resolve the entries to paths. |
+| L207 | **AC4 passes with 0.5 pp of headroom.** M reads 0.3450 against the 0.32 pin at 1000 seeded rolls (+2.50 pp of the AC's 3 pp bound; S -2.40, XL -0.80, L +0.70). The bound is met and the roll is deterministic, but any later shift of the field's RNG stream can cross it without a behaviour changing. | [HARNESS] | `vajb-orbit/tests/test_s14_splits.gd:41-44,257-270` | Next split owner: raise the sample to 10 000 rolls, or widen the AC's bound with an owner tick. |
+
+
+### S15 battery-cap review block (2026-09-25)
+
+Source: `.agents/gen/slices/S15-battery-cap/S15-R1_review.md`. The wave leaves
+**3 HIGH and 1 MED** — F1 the explicitly "Not moved" `test_d7_cockpit.gd` lamp
+rows (a bucket-2 escalation: `ui/hud/` is outside both worker file sets), F2 three
+more rows changed off §3's list (the same class as the S14 block: amend the list,
+do not revert), F3 a fitted weapon left rackless when a record already holds five
+batteries (`player_profile.gd:1255-1258`, bucket 1, S15-F1), and F4 the tail bay
+drawn at the normal size against STATION_HUB §5.11's "tail bay full-width". Gate
+**`834/0 → 852/0`** twice on fresh scratch stores plus a store seeded with a v7
+seven-group `profile.cfg` (identical count, byte-identical store), and
+`verify --baseline s15_start … --tests --expect-reports …` green (`"problems": []`).
+Every AC re-measured by the review's own probe (`tools/r1_s15_ac_replay.gd`) and the
+plate re-measured off the PNG (ink cols 7..186, rows 49..132, drawn recess centres
+45/79.5/114/148.5 against the art's 45/79/114.5/148). Rows run **L208–L211** (ids
+read from this file at write time); the next free ticket is still **T-94**.
+
+| # | Item | Kind | Where | Disposition |
+|---|------|------|-------|-------------|
+| L208 | **The bay's `B<n>`/`(i)` head and empty-bay cue print above the plate's ink.** `_position_head` puts the label at drawn y 8..56 while `ui_armory_rack_plate`'s bar starts at row 49, so the top of the head floats over empty canvas — F1's cue half, left unfixed when the slots/ledge/drums moved onto the ink. | [DESIGN] | `vajb-orbit/ui/station/armory_panel.gd:_position_head` | Next armory owner: drop the head to the bar's top rows (drawn y 49+), or accept the float as a design call. |
+| L209 | **Five stale test function names lie about what they measure.** `test_d7_armory.gd`'s `..._4_3_bay_grid...`, `test_p2b1_outfitting_panel.gd`'s `..._seven_drop_zones...`, `test_engine2_weapons.gd`'s `..._weapon_1_7`, `test_s5_batteries_v2.gd`'s `..._is_seven_across_its_consumers` and `test_p2a_launch_fit.gd`'s `..._without_a_key` all measure five racks now; B1 corrected their doc comments only (unlisted churn otherwise). | [HARNESS] | `vajb-orbit/tests/test_d7_armory.gd:406`; `test_p2b1_outfitting_panel.gd:647`; `test_engine2_weapons.gd:254`; `test_s5_batteries_v2.gd:345`; `test_p2a_launch_fit.gd:340` | Next owner of those files: rename in the same pass as any other edit. |
+| L210 | **The HUD's three seven-entry tables now carry an unreachable tail.** `WEAPON_IDS`/`WEAPON_LABELS`/`WEAPON_ICONS` stay at seven and `_active_slot` clamps to `WEAPON_IDS.size() - 1`, but `select_battery` refuses ordinals past `GROUPS_MAX` (5) and `_select_weapon` refuses too, so indices 5-6 are dead. `test_s5_batteries_v2.gd` still asserts the seven-entry size. | [CODE] | `vajb-orbit/ui/hud/hud.gd:61-70,1251` | Next HUD owner: trim the three tables to `GROUPS_MAX` and drop the size row's 7, or leave the inert tail documented. |
+| L211 | **The wave's new `.gd` files ship with no `.uid`.** `tests/test_s15_battery_cap.gd`, `tests/test_s15_armory_layout.gd`, `tools/r1_s15_ac_replay.gd` and `tools/r1_s15_seed_store.gd` have none (same class as L205); the headless gate never writes one. | [HARNESS] | `vajb-orbit/tests/test_s15_*.gd`; `vajb-orbit/tools/r1_s15_*.gd` | Wave close-out: let the editor scan land the `.uid` files and include them in the boundary commit. |

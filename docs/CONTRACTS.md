@@ -855,7 +855,50 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
-Expected (S13, 2026-09-25): **`[SUMMARY] passed=834 failed=0`**, exit 0. The S13
+Expected (S15, 2026-09-25): **`[SUMMARY] passed=852 failed=0`**, exit 0. The S15
+review (S15-R1) measured **852** three times — twice on fresh scratch stores
+(`/tmp/s15r1_gateA`, `_gateC`) and once on a store seeded with a v7 seven-group
+`profile.cfg` (`/tmp/s15r1_gateB`, identical count, the store file byte-identical
+after the load, mtime unmoved) — and re-ran the mandated `verify --baseline
+s15_start … --tests --expect-reports …` green (`"problems": []`). **Growth
+`834 → 852`** = S15's `test_s15_battery_cap.gd` **5** + `test_s15_armory_layout.gd`
+**4**, plus the parallel S14 lane's `test_s14_splits.gd` **9**, attributed and
+never reverted; no moved row added a row. The wave's pin is 09 §12 / STATION_HUB
+§5.11's 2026-09-25 amendment: `GROUPS_MAX` 5 (was 7), a new
+`BATTERY_CELLS_MAX := 4`, the load-path clamp (≤ 5 groups × ≤ 4 cells, order
+preserved) and the ARMORY's five bays `B1..B5`. The review re-measured every AC
+with its own probe (`tools/r1_s15_ac_replay.gd`) and the plate off the PNG: ink
+cols **7..186** / rows **49..132**, drawn recess centres **45 / 79.5 / 114 / 148.5**
+against the art's **45 / 79 / 114.5 / 148**, the drums' last pixel row **132** the
+bar's own last row, the bay grid `4+1`. It leaves **3 HIGH / 1 MED / 4 LOW
+(L208–L211)**: F1 the explicitly "Not moved" `test_d7_cockpit.gd` lamp rows changed
+(a bucket-2 escalation — `ui/hud/` is outside both worker file sets), F2 three more
+rows changed off brief §3's list (bucket 2), F3 a fitted weapon left **rackless**
+when a record already holds five batteries (`autoload/player_profile.gd:1255-1258`,
+bucket 1), and F4 the tail bay drawn at the normal size against STATION_HUB §5.11's
+"tail bay full-width". Previous expected (S14, 2026-09-25):
+**`[SUMMARY] passed=852 failed=0`**, exit 0. The S14
+review (S14-R1) measured **852** twice on fresh scratch stores (`/tmp/s14_r1_gate1`,
+`_gate2`, identical counts, zero `[FAIL]` lines) and re-ran the mandated
+`verify --baseline s14_start … --tests --expect-reports …` green
+(`"problems": []` — note its `--forbidden` matcher is exact-string, so a directory
+entry such as `ui/` can never match: L206). **Growth `834 → 852`** = S14's
+`test_s14_splits.gd` **9** rows plus the **parallel S15 lane's** 9
+(`test_s15_battery_cap` 5 + `test_s15_armory_layout` 4), attributed and never
+reverted; `test_engine2_cleaving` (15) and `test_s13_caps` (10) hold their
+`func test_` counts at HEAD, so their moved rows are renames only. The wave leaves
+**2 HIGH / 1 MED / 6 LOW (L202–L207)** — both HIGHs are brief §3's row list being
+incomplete (rows changed/left stale that §3's anchors do not name; bucket 2, no
+code revert). Re-measured by the review on the shipped tree: 200 seeded XL
+shatters **1708** children, mean **8.540**, L 1-3 / M 2-4 / S 2-5 with **0**
+children at or above their parent and worst per-kind chi-square **2.47**; a fully
+mined family of bore **32.0** realises **32** for XL, L and M parents over 4 seeds;
+`_rolled_yield`'s only caller is `asteroid_field.gd:237` (setup), so `_cleave`
+re-rolls nothing; the 1000-roll spawn mix reads S **0.3760** / M **0.3450** /
+L **0.2070** / XL **0.0720** (worst 0.0250 ≤ the 0.03 bound); the XL row is 3 looks
+at **180.0 u** reusing the L silhouettes. `SIZE_YIELD_MULT` stays absent (Rule B
+deferred).
+Previous expected (S13, 2026-09-25): **`[SUMMARY] passed=834 failed=0`**, exit 0. The S13
 review (S13-R1) measured **834** twice on fresh scratch stores plus a store carrying
 a divergent `user://dev_tuning.cfg` at boot (identical counts and an identical sorted
 PASS set), and re-ran the mandated `verify --baseline s13_start … --tests
@@ -3841,3 +3884,65 @@ hull stops twice and the second stop slides.
   `user://dev_tuning.cfg` (F1). Owner ticks owed: mount the F1 overlay, and the
   `18_engine_spec.md` §6/§13 wording R1 proposed (the file is owner-locked; it has no
   §17).
+- **v0.26 (2026-09-25, wave S14 review — S14-R1, this wave's only CONTRACTS writer;
+  the next free row read from §10 at close-out — sequenced after S13's v0.25 and every
+  later row, rebase never revert)** — §9 gains the S14 expected **`passed=852
+  failed=0`** (twice on fresh scratch stores, identical counts; the mandated verify run
+  green, `"problems": []`), growth `834 → 852` = S14's `test_s14_splits.gd` **9** +
+  the parallel **S15 lane's** 9, attributed and never reverted; `test_engine2_cleaving`
+  and `test_s13_caps` hold their row counts, so their moved rows are renames only.
+  **2 HIGH / 1 MED / 6 LOW (L202–L207)** — both HIGHs are **brief §3's moved-row list
+  being incomplete**, not shipped behaviour: `test_engine2_cleaving.gd`'s count-bounds
+  row and `probe_rock_cleave_a2.gd`'s COUNT block assert the retired one-kind `2-5`
+  rule, so the S14 pins make them false and B1 changed them, disclosed, off the list
+  (§3 anchors only the const pins and the A2 INHERIT rows). The remedy is a bucket-2
+  §3 amendment; **no F1 code pass** — reverting re-reds the gate. The MED is the same
+  class in the other direction: `test_size_class_follows_the_look_row` still asserts
+  `klass <= SIZE_LARGE` and passes only because its fixture seed rolls no XL (8 % per
+  rock). `docs/gameplay/02_minerals.md` §5.2 is the diff target: four size classes
+  (`SIZE_XL` 3, XL = the L silhouettes at 180 u, 12 looks), the rolled child mix
+  (`XL → L 1-3, M 2-4, S 2-5`; `L → M 1-3, S 2-4`; `M → S 1-3`; `S → none`, read from
+  `OreTuning.split_mix`) and the spawn mix S 40 / M 32 / L 20 / XL 8
+  (`OreTuning.spawn_size_weights`, `AsteroidField._roll_size`). Re-measured by the
+  review with its own probe (`tools/r1_s14_ac_replay.gd`, 0 failures): 200 seeded XL
+  shatters → 1708 children, mean 8.540, L 1-3 / M 2-4 / S 2-5, 0 children at or above
+  the parent, worst per-kind chi-square 2.47; **§5.1 Rule A holds** — a fully mined
+  family of bore 32.0 realises 32 for XL, L and M parents over 4 seeds, `_rolled_yield`
+  has one caller (`asteroid_field.gd:237`, setup) and `_cleave` re-rolls nothing; the
+  1000-roll mix reads 0.3760 / 0.3450 / 0.2070 / 0.0720 (worst 0.0250 ≤ 0.03);
+  Rule B stays deferred (`SIZE_YIELD_MULT` absent). `FRAGMENT_SPLIT` is kept as the
+  frozen probes' record and still read by `probe_rock_cleave.gd:174-185`;
+  `_fragment_size` is deleted with 0 references. Owner ticks owed: nothing blocking —
+  L202/L205/L207 are the frozen A1 probe's 2 stale rows, the missing
+  `test_s14_splits.gd.uid` and AC4's 0.5 pp headroom.
+- **v0.27 (2026-09-25, wave S15 review — S15-R1, this wave's only CONTRACTS writer;
+  gate re-measured `852/0` twice plus a seeded pre-S15 store, `verify --baseline
+  s15_start` `problems: []`)** — records the battery hardcap's review outcome.
+  `docs/gameplay/09_ship_slots_modules.md` §12 (the owner's 2026-09-25 ask) and
+  STATION_HUB §5.11's same-day amendment are the diff targets. **§9** gains the S15
+  expected-count paragraph above. Shipped and re-measured: `game/weapons.gd`
+  `GROUPS_MAX` 7 → **5** plus the new `BATTERY_CELLS_MAX := 4`; a 6th battery, a 5th
+  cell, the drag install into a full rack and the append-move that would grow one all
+  refuse through the shipped transactions and leave the `user://` bytes identical
+  (`tools/r1_s15_ac_replay.gd`); `set_battery_groups` / the load path clamp to ≤ 5 × ≤ 4
+  with cell order preserved (a real v7 seven-group file loads `[[0]..[4]]`, credits and
+  the fit untouched, a second reload inert); the empty-record 7-cell Obliterator composes
+  `[[0,1,2,3],[4,5,6]]` with its seven W cells unchanged; the ARMORY draws five bays
+  `4+1`, labels `B1..B5`, and its slots/ledge/drums sit on `ui_armory_rack_plate`'s own
+  ink (measured off the PNG: cols 7..186, rows 49..132, drawn recess centres
+  45/79.5/114/148.5 against the art's 45/79/114.5/148, drums' last pixel row 132 the
+  bar's own last row); `weapon_6`/`weapon_7` are inert with `project.godot` untouched.
+  **3 HIGH / 1 MED / 4 LOW (L208–L211)**, all in the wave's review:
+  S15-B1/F1 the "Not moved" `test_d7_cockpit.gd` lamp rows changed (bucket 2 —
+  `ui/hud/` is outside both worker file sets, so `select_battery(7)` is now swallowed
+  and the last lamp stands instead of clearing), S15-B1/F2 three rows changed off
+  brief §3's list (`test_engine2_weapons.gd:283`, `test_s5_batteries_v2.gd:363-368`,
+  `test_s10_armory_input.gd:372`, bucket 2 — amend the list, do not revert),
+  S15-B1/F3 **a fitted weapon is left rackless** when a record already holds five
+  batteries (`autoload/player_profile.gd:1255-1258` only appends a derived tail while
+  `groups.size() < GROUPS_MAX`, so the surplus cells claim no rack and never fire while
+  the read's own contract says a fitted weapon is never unfireable; bucket 1, fixable
+  from F1's file set), and S15-B1/F4 the tail bay is drawn at the normal size against
+  STATION_HUB §5.11's "tail bay full-width" (bucket 1). Owner decisions owed: none
+  blocking beyond F1's ratification; the plate-fit route (ink layout, not a re-render)
+  is the owner's to accept.

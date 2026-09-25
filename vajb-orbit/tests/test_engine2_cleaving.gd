@@ -5,8 +5,10 @@ extends McpTestSuite
 ## "asteroids breaking effects (they should somehow explode, random fragments from 2 to
 ## 5 moving in random directions)":
 ##
-##   * the split is a uniform random **2-5** on both cleaving tiers (one pair per tier,
-##     `Asteroid.FRAGMENT_SPLIT`), replacing the fixed (2,3)/(2,2) rows;
+##   * the split is the **S14 mixed child set** (02 §5.2) rolled per kind from
+##     `OreTuning.split_mix` -- `XL -> L 1-3, M 2-4, S 2-5`, `L -> M 1-3, S 2-4`,
+##     `M -> S 1-3`, `S -> none` -- replacing the 2026-09-21 uniform 2-5 pair that
+##     replaced the fixed (2,3)/(2,2) rows;
 ##   * the ejection direction is **uniform over the full circle** -- the retired +-15
 ##     deg cone is `FRAGMENT_EJECT_CONE_DEG`'s own 360.0 -- and the speed is still the
 ##     parent's velocity x 1.2, which is now the **shape's half** only: CONTRACTS 14's
@@ -30,7 +32,8 @@ extends McpTestSuite
 ## The field is a detached `AsteroidField` (its rocks are real `RigidBody2D`s, so the
 ## body properties are measurable without a physics world) and the cleaving cases are
 ## field members spawned through `_new_rock` -- the only door to a rock with a chosen
-## size class or a 0-unit roll, since a field's own roll is uniform over the nine looks.
+## size class or a 0-unit roll, since S14 the field's own spawn rolls the class from
+## `OreTuning.spawn_size_weights`.
 ## Every roll is seeded, so each number below is reproducible; the FX and the cue hang
 ## off the tree, so one test builds the field inside it. Nothing awaits a frame: the
 ## gate's runner calls test methods synchronously, so the timed measurements (a blast
@@ -46,6 +49,7 @@ const FieldScript := preload("res://game/asteroid_field.gd")
 const ShipFitScript := preload("res://game/ship_fit.gd")
 const ProjectileScript := preload("res://game/projectile.gd")
 const MineralCatalogScript := preload("res://game/mineral_catalog.gd")
+const OreTuningScript := preload("res://game/ore_tuning.gd")
 const AudioScript := preload("res://autoload/audio_manager.gd")
 const FxScript := preload("res://game/fx.gd")
 
@@ -284,8 +288,8 @@ func test_size_class_follows_the_look_row() -> void:
 		var klass := int(rock.call(&"size_class"))
 		assert_eq(klass, int(float(look) / float(AsteroidScript.LOOKS_PER_SIZE)),
 			"look %d is row %d" % [look, klass])
-		assert_true(klass >= AsteroidScript.SIZE_SMALL and klass <= AsteroidScript.SIZE_LARGE,
-			"a rolled class stays inside the three rows")
+		assert_true(klass >= AsteroidScript.SIZE_SMALL and klass <= AsteroidScript.SIZE_XL,
+			"a rolled class stays inside the four rows")
 	for size_class in [AsteroidScript.SIZE_SMALL, AsteroidScript.SIZE_MEDIUM,
 			AsteroidScript.SIZE_LARGE]:
 		var pinned := _member(size_class, 3, "Pinned%d" % size_class)
@@ -330,17 +334,28 @@ func test_depletion_emits_cracked_once() -> void:
 ## ---------------------------------------------------------------------------
 
 
-## The amended split row as a constant, plus the two rows the ruling leaves alone: a
-## Small still fragments into nothing (its cleave is the pickup burst) and the ejection
-## speed is still the shipped 1.2 with a direction of the whole circle.
-func test_the_split_table_is_the_amended_row() -> void:
+## The S14 split table (02 §5.2, S14_BRIEF §2 rule 1) as `OreTuning` ships it -- the
+## const pins of the retired single-kind `FRAGMENT_SPLIT` row -- plus the two rows the
+## earlier rulings leave alone: a Small still fragments into nothing (its cleave is the
+## pickup burst) and the ejection speed is still the shipped 1.2 with a direction of the
+## whole circle.
+func test_the_split_table_is_the_s14_mix() -> void:
 	_field_with()
-	assert_eq(AsteroidScript.FRAGMENT_SPLIT[AsteroidScript.SIZE_LARGE], Vector2i(2, 5),
-		"L -> 2-5 M")
-	assert_eq(AsteroidScript.FRAGMENT_SPLIT[AsteroidScript.SIZE_MEDIUM], Vector2i(2, 5),
-		"M -> 2-5 S")
-	assert_eq(AsteroidScript.FRAGMENT_SPLIT[AsteroidScript.SIZE_SMALL], Vector2i(0, 0),
-		"S -> no rock fragments")
+	var mix: Dictionary = OreTuningScript.split_mix
+	assert_eq(mix.get(AsteroidScript.SIZE_XL, {}),
+		{2: Vector2i(1, 3), 1: Vector2i(2, 4), 0: Vector2i(2, 5)},
+		"XL -> L 1-3, M 2-4, S 2-5")
+	assert_eq(mix.get(AsteroidScript.SIZE_LARGE, {}), {1: Vector2i(1, 3), 0: Vector2i(2, 4)},
+		"L -> M 1-3, S 2-4")
+	assert_eq(mix.get(AsteroidScript.SIZE_MEDIUM, {}), {0: Vector2i(1, 3)}, "M -> S 1-3")
+	assert_eq(mix.get(AsteroidScript.SIZE_SMALL, {}), {}, "S -> no rock fragments")
+	## The row below is what makes the cascade terminate: every child kind is strictly
+	## smaller than the parent it is rolled from.
+	for parent: Variant in mix.keys():
+		var row: Dictionary = mix[parent]
+		for child: Variant in row.keys():
+			assert_true(int(child) < int(parent),
+				"child kind %d is strictly below its parent %d" % [int(child), int(parent)])
 	assert_eq(AsteroidScript.PICKUP_BURST, Vector2i(1, 2), "S -> 1-2 pickups")
 	assert_true(is_equal_approx(AsteroidScript.FRAGMENT_EJECT_MULT, 1.2),
 		"ejection speed is the shipped x1.2")
@@ -348,7 +363,11 @@ func test_the_split_table_is_the_amended_row() -> void:
 		"ejection direction is the full circle (the +-15 deg cone is retired)")
 
 
-func test_large_cleaves_into_two_to_five_mediums() -> void:
+## S14 (02 §5.2): a Large's child set is the rolled mix -- `M 1-3` and `S 2-4` -- so
+## every child is strictly smaller than its parent and both kinds appear. The rows the
+## earlier rulings own are kept: the mineral is inherited, the ejection shape is still
+## `x1.2` of the parent's speed, and S13's reserve sum holds across the whole mixed set.
+func test_a_large_cleaves_into_a_mixed_m_and_s_set() -> void:
 	_field_with()
 	var counts: Array[int] = []
 	for index in 6:
@@ -361,13 +380,16 @@ func test_large_cleaves_into_two_to_five_mediums() -> void:
 		var before := _live_ids()
 		_deplete(parent)
 		var fragments := _new_since(before)
-		assert_true(fragments.size() >= 2 and fragments.size() <= 5,
-			"a Large spawns 2-5 fragments, got %d" % fragments.size())
+		assert_true(fragments.size() >= 3 and fragments.size() <= 7,
+			"a Large spawns the mix's 3-7 children, got %d" % fragments.size())
 		counts.append(fragments.size())
+		var kinds: Dictionary = {}
 		var child_bore := 0.0
 		for fragment: Node2D in fragments:
-			assert_eq(int(fragment.call(&"size_class")), AsteroidScript.SIZE_MEDIUM,
-				"a Large's fragments are Medium")
+			var kind := int(fragment.call(&"size_class"))
+			kinds[kind] = int(kinds.get(kind, 0)) + 1
+			assert_true(kind == AsteroidScript.SIZE_MEDIUM or kind == AsteroidScript.SIZE_SMALL,
+				"a Large's child is an M or an S, got %d" % kind)
 			assert_eq(StringName(fragment.get(&"mineral_id")), mineral,
 				"the fragment inherits the parent's mineral")
 			child_bore += float(fragment.call(&"bore_ore"))
@@ -390,6 +412,10 @@ func test_large_cleaves_into_two_to_five_mediums() -> void:
 					and ejected.length() <= highest + ADDITIVE_SLACK,
 				"the burst is the shape plus the kick, so its magnitude is %.3f..%.3f, got %.3f"
 				% [lowest, highest, ejected.length()])
+		## The rolled mix is per kind, so both kinds are present in one Large's children
+		## (`M 1-3` and `S 2-4` both have a floor of 1).
+		assert_true(kinds.has(AsteroidScript.SIZE_MEDIUM) and kinds.has(AsteroidScript.SIZE_SMALL),
+			"a Large's child set carries both kinds: %s" % str(kinds))
 		## S13 (01 §5.6 invariant 3, 02 §5.1 Rule A): a cleave **redistributes**,
 		## it never re-rolls. The children's summed own yield is the parent's
 		## reserve (`FRAGMENT_CORE_SHARE x _bore_ore`, whole units), so a fully
@@ -400,7 +426,9 @@ func test_large_cleaves_into_two_to_five_mediums() -> void:
 	assert_eq(counts.size(), 6, "six Large rocks were cracked")
 
 
-func test_medium_cleaves_into_two_to_five_smalls() -> void:
+## S14 (02 §5.2): a Medium's row is `S 1-3`, so its children are all Small and there
+## are never none of them.
+func test_a_medium_cleaves_into_one_to_three_smalls() -> void:
 	_field_with()
 	var counts: Array[int] = []
 	for index in 6:
@@ -409,8 +437,8 @@ func test_medium_cleaves_into_two_to_five_smalls() -> void:
 		var before := _live_ids()
 		_deplete(parent)
 		var fragments := _new_since(before)
-		assert_true(fragments.size() >= 2 and fragments.size() <= 5,
-			"a Medium spawns 2-5 fragments, got %d" % fragments.size())
+		assert_true(fragments.size() >= 1 and fragments.size() <= 3,
+			"a Medium spawns 1-3 fragments, got %d" % fragments.size())
 		counts.append(fragments.size())
 		for fragment: Node2D in fragments:
 			assert_eq(int(fragment.call(&"size_class")), AsteroidScript.SIZE_SMALL,
@@ -418,27 +446,37 @@ func test_medium_cleaves_into_two_to_five_smalls() -> void:
 	assert_eq(counts.size(), 6, "six Medium rocks were cracked")
 
 
-## The count is a *roll*, not a fixed row: over `VARIETY_CLEAVES` seeded cleaves the
-## observed values must include at least two distinct counts, and all of them inside
-## the amended 2-5 pair. A fixed row (the retired (2,3)/(2,2) shape) cannot do that.
+## The count is a *roll*, not a fixed row: over `VARIETY_CLEAVES` seeded cleaves each
+## size's observed counts must include at least two distinct values, and all of them
+## inside its own S14 row -- `L` sums `M 1-3` and `S 2-4`, so 3-7; `M` is `S 1-3`, so
+## 1-3. A fixed row cannot produce two distinct counts.
 func test_the_fragment_count_varies_inside_the_amended_bounds() -> void:
 	_field_with()
-	var seen: Dictionary = {}
+	var seen: Dictionary = {
+		AsteroidScript.SIZE_LARGE: {},
+		AsteroidScript.SIZE_MEDIUM: {},
+	}
+	var bounds := {
+		AsteroidScript.SIZE_LARGE: Vector2i(3, 7),
+		AsteroidScript.SIZE_MEDIUM: Vector2i(1, 3),
+	}
 	for index in VARIETY_CLEAVES:
 		var size_class := AsteroidScript.SIZE_LARGE if index % 2 == 0 else AsteroidScript.SIZE_MEDIUM
 		var parent := _member(size_class, 3, "Variety%d" % index)
 		var before := _live_ids()
 		_deplete(parent)
-		seen[_new_since(before).size()] = true
-	var counts: Array = seen.keys()
-	counts.sort()
-	var lowest: int = counts.min()
-	var highest: int = counts.max()
-	assert_true(lowest >= 2 and highest <= 5,
-		"every roll sits inside 2-5, got %s" % [counts])
-	assert_true(counts.size() >= 2,
-		"the count is random, not a fixed row: %d distinct values over %d cleaves (%s)"
-		% [counts.size(), VARIETY_CLEAVES, counts])
+		var counts: Dictionary = seen[size_class]
+		counts[_new_since(before).size()] = true
+	for size_class: int in bounds.keys():
+		var span: Vector2i = bounds[size_class]
+		var counts: Array = seen[size_class].keys()
+		counts.sort()
+		assert_true(counts.min() >= span.x and counts.max() <= span.y,
+			"every %d-class roll sits inside %d-%d, got %s"
+			% [size_class, span.x, span.y, counts])
+		assert_true(counts.size() >= 2,
+			"the count is random, not a fixed row: %d distinct values over class %d (%s)"
+			% [counts.size(), size_class, counts])
 
 
 ## The owner's "moving in random directions" as a measurement: with the cone retired a

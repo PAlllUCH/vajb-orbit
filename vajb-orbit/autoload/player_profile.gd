@@ -62,11 +62,12 @@ const FitData := preload("res://game/ship_fit.gd")
 ## against it, so an id the game does not ship is never sold. Its `cost` is the
 ## row 09 section 3 prices, and the panel passes that number in.
 const ModuleData := preload("res://game/module_catalog.gd")
-## The weapon family table and the rack ceiling (save v7, CONTRACTS section 17): the
-## racks a hull may compose are `GROUPS_MAX` (`game/weapons.gd`, the same one the HUD
-## and the input map read) and a rack reference is only followed for a cell whose
-## module is a weapon **family**, so `w_mining` never enters one. One shared source,
-## never a second 7.
+## The weapon family table and the two ceilings (save v7, CONTRACTS section 17; 09
+## section 12's hardcap): a hull composes at most `GROUPS_MAX` racks of at most
+## `BATTERY_CELLS_MAX` cells (`game/weapons.gd`, the same numbers the HUD and the
+## input map read), and a rack reference is only followed for a cell whose module is a
+## weapon **family**, so `w_mining` never enters one. One shared source, never a
+## second 5 or a second 4.
 const WeaponData := preload("res://game/weapons.gd")
 ## The sell price's one owner (CONTRACTS section 20): `sell_instance` pays through
 ## `Auction.sell_price`, the same function the pane's row and the transaction's quote
@@ -152,7 +153,8 @@ const KEY_INSTANCE_COUNTER := "instance_counter"
 const KEY_BATTERIES: StringName = &"batteries"
 
 ## The weapon module id prefix, for the pane's own reading of a rack entry: a rack
-## holds W cells, and `game/weapons.gd`'s GROUPS_MAX is the rack ceiling (7).
+## holds W cells, and `game/weapons.gd`'s `GROUPS_MAX` / `BATTERY_CELLS_MAX` are the
+## ceilings (5 x 4 since S15, 09 section 12).
 const WEAPON_MODULE_PREFIX := "w_"
 
 ## The shelf state's four members, in the pin's own order: the restock band, the
@@ -1206,13 +1208,17 @@ func set_batteries(value: Dictionary) -> void:
 
 ## One hull's racks as the pane, the launch and the HUD read them: the stored racks
 ## in their stored order, each one **restricted to the cells the hull's fit really
-## holds a weapon in**, followed by one trailing rack holding every fitted weapon the
-## record does not mention. The two rules together are what keeps the invariant the
+## holds a weapon in**, followed by trailing racks holding every fitted weapon the
+## record does not mention, **chunked at `BATTERY_CELLS_MAX`** (a 7-W-cell Obliterator
+## composes 4 + 3), and any surplus the `GROUPS_MAX` cap leaves no new rack for **folds
+## into the first rack with a free cell**. Together those rules keep the invariant the
 ## trigger needs -- every fitted weapon fires from exactly one rack, so a weapon can
 ## never be unfireable -- and they are also why this reads the fit: a cell the
 ## FITTING pane filled after the racks were composed joins a rack the moment it is
-## read, without a write (`fit_for`'s own "never rewritten at load" rule). `[]` for a
-## hull outside the nine and for a W-less hull.
+## read, without a write (`fit_for`'s own "never rewritten at load" rule). The read
+## also **clamps** a record over the S15 hardcap (09 section 12) rather than refusing
+## it, so a store written before the cap reads as 5 x 4 with cell order preserved.
+## `[]` for a hull outside the nine and for a W-less hull.
 func battery_groups(ship_id: StringName) -> Array:
 	var capacity := FitData.slot_capacity(ship_id, WEAPON_SLOT)
 	if capacity <= 0:
@@ -1221,10 +1227,18 @@ func battery_groups(ship_id: StringName) -> Array:
 	var covered: Dictionary = {}
 	var groups: Array = []
 	for stored: Variant in _stored_groups(ship_id):
+		## 09 section 12's hardcap, applied on the **read** as well as the write: a record
+		## carrying more racks (or more cells in one rack) than the cap is read clamped
+		## instead of refused, and the cells the clamp drops are re-added below, so every
+		## fitted weapon still fires from exactly one rack. Cell order is preserved.
+		if groups.size() >= WeaponData.GROUPS_MAX:
+			break
 		if not stored is Array:
 			continue
 		var rack: Array = []
 		for raw_index: Variant in (stored as Array):
+			if rack.size() >= WeaponData.BATTERY_CELLS_MAX:
+				break
 			var index := int(raw_index)
 			if index < 0 or index >= capacity or covered.has(index):
 				continue
@@ -1237,18 +1251,31 @@ func battery_groups(ship_id: StringName) -> Array:
 	for index in capacity:
 		if not covered.has(index) and _cell_holds_weapon(fitted, index):
 			unassigned.append(index)
-	if not unassigned.is_empty():
-		groups.append(unassigned)
+	## The derived tail is chunked at the cap too, so a 7-W-cell hull composes 4 + 3 --
+	## exactly the armory's four bays and one trailing bay (AC2).
+	var pending: Array = unassigned
+	while not pending.is_empty() and groups.size() < WeaponData.GROUPS_MAX:
+		groups.append(pending.slice(0, WeaponData.BATTERY_CELLS_MAX))
+		pending = pending.slice(WeaponData.BATTERY_CELLS_MAX)
+	## No fitted weapon may be rackless (this read's own contract): a record already
+	## holding `GROUPS_MAX` racks has no room for a trailing one, so the surplus folds
+	## into the first rack with a free cell instead of being dropped -- what a clamped
+	## 7-group save reads as five racks that still cover every fitted cell.
+	for index: Variant in pending:
+		for rack: Variant in groups:
+			if (rack as Array).size() < WeaponData.BATTERY_CELLS_MAX:
+				(rack as Array).append(index)
+				break
 	return groups
 
 
 ## Replace one hull's racks. Refused, writing nothing, when the hull is not one of
-## the nine, when the record carries more racks than `GROUPS_MAX` (the input map's
-## own ceiling, `game/weapons.gd`), or when any index is outside the hull's W cells
-## or repeated across racks -- a cell is one barrel and fires from one rack. An empty
-## rack inside the list is kept (it is a drop zone the player emptied), a trailing
-## empty rack is dropped (it carries no identity). The record is `_to_plain`-keyed
-## like every other store here.
+## the nine, when the record carries more racks than `GROUPS_MAX` or a rack longer than
+## `BATTERY_CELLS_MAX` (09 section 12's hardcap: five batteries of four cells, the
+## S15 pin), or when any index is outside the hull's W cells or repeated across racks
+## -- a cell is one barrel and fires from one rack. An empty rack inside the list is
+## kept (it is a drop zone the player emptied), a trailing empty rack is dropped (it
+## carries no identity). The record is `_to_plain`-keyed like every other store here.
 func set_battery_groups(ship_id: StringName, groups: Array) -> bool:
 	if not FitData.HULLS.has(ship_id):
 		return false
@@ -1259,6 +1286,8 @@ func set_battery_groups(ship_id: StringName, groups: Array) -> bool:
 	var seen: Dictionary = {}
 	for raw_rack: Variant in groups:
 		if not raw_rack is Array:
+			return false
+		if (raw_rack as Array).size() > WeaponData.BATTERY_CELLS_MAX:
 			return false
 		var rack: Array = []
 		for raw_index: Variant in (raw_rack as Array):
@@ -1306,7 +1335,8 @@ func free_weapon_cell(ship_id: StringName) -> int:
 ## (CONTRACTS section 16 rule 7).
 ##
 ## Refused, writing nothing, when the hull is not one of the nine, the rack is outside
-## `0 .. GROUPS_MAX-1`, the cell is outside the hull's W cells or already holds a
+## `0 .. GROUPS_MAX-1`, the target rack already holds `BATTERY_CELLS_MAX` cells (09
+## section 12's hardcap), the cell is outside the hull's W cells or already holds a
 ## weapon (a drag onto a barrel is a **swap**, `move_rack_cell`), the base is not a
 ## weapon module, the bag holds none of it, or the candidate fit fails
 ## `FitData.fit_legal` -- the mandatory set and the power budget are `fit_battery`'s
@@ -1325,6 +1355,12 @@ func fit_into_rack(
 	if FitData.MANDATORY_SLOT_KEYS.has(WEAPON_SLOT):
 		return false
 	if rack < 0 or rack >= WeaponData.GROUPS_MAX:
+		return false
+	## 09 section 12's per-battery cap: a fifth cell in one rack is refused here, inside
+	## the transaction, so the armory's drop zone and every other caller obey it without
+	## carrying a copy of the number.
+	var groups_now := battery_groups(ship_id)
+	if rack < groups_now.size() and (groups_now[rack] as Array).size() >= WeaponData.BATTERY_CELLS_MAX:
 		return false
 	var base := base_module_id(module_id)
 	if not _is_weapon_base(base):
@@ -1395,8 +1431,11 @@ func clear_rack_cell(ship_id: StringName, index: int) -> bool:
 ## position past the end of the rack appends.
 ##
 ## Refused, writing nothing, when the hull is not one of the nine, the source address
-## holds no barrel, the target rack is outside `0 .. GROUPS_MAX-1`, the target
-## position is negative, or the two addresses are the same.
+## holds no barrel, the target rack is outside `0 .. GROUPS_MAX-1` or **would grow past
+## `BATTERY_CELLS_MAX` cells** (09 section 12's hardcap), the target position is negative,
+## or the two addresses are the same. Only an **append** grows the target: a move onto an
+## occupied position is the swap, which leaves the target's length untouched, so a swap
+## into a four-cell battery is legal.
 func move_rack_cell(
 	ship_id: StringName, from_rack: int, from_position: int, to_rack: int, to_position: int
 ) -> bool:
@@ -1412,6 +1451,10 @@ func move_rack_cell(
 	var source: Array = groups[from_rack]
 	if from_position < 0 or from_position >= source.size():
 		return false
+	if from_rack != to_rack and to_rack < groups.size():
+		var grower: Array = groups[to_rack]
+		if to_position >= grower.size() and grower.size() >= WeaponData.BATTERY_CELLS_MAX:
+			return false
 	var moved: int = source[from_position]
 	source.remove_at(from_position)
 	while groups.size() <= to_rack:
@@ -1463,10 +1506,12 @@ func migrate_batteries() -> int:
 	return migrated
 
 
-## One hull's fitted weapons grouped by base id, cells ascending: the migration's own
-## grouping and nothing else's. The base is read through `base_module_id`, so an
-## instance and its base group together, and the walk is the **stored** fit's (the
-## file's own data), not the launch's fallback.
+## One hull's fitted weapons grouped by base id, cells ascending, **chunked at
+## `BATTERY_CELLS_MAX`** so a base with more than four fitted cells migrates as legal
+## racks (09 section 12, the S15 pin) -- the migration is never the source of an
+## over-long rack. The base is read through `base_module_id`, so an instance and its
+## base group together, and the walk is the **stored** fit's (the file's own data), not
+## the launch's fallback.
 func _grouped_by_base(ship_id: StringName) -> Array:
 	var capacity := FitData.slot_capacity(ship_id, WEAPON_SLOT)
 	var fit := fit_for(ship_id)
@@ -1485,7 +1530,11 @@ func _grouped_by_base(ship_id: StringName) -> Array:
 		by_base[base] = rack
 	var groups: Array = []
 	for base: Variant in order:
-		groups.append(by_base[base])
+		var cells: Array = by_base[base]
+		for offset in range(0, cells.size(), WeaponData.BATTERY_CELLS_MAX):
+			if groups.size() >= WeaponData.GROUPS_MAX:
+				break
+			groups.append(cells.slice(offset, offset + WeaponData.BATTERY_CELLS_MAX))
 	return groups
 
 
@@ -1519,9 +1568,13 @@ static func _is_weapon_base(base: StringName) -> bool:
 
 ## The record in its canonical shape: keys as Strings, values Array[Array[int]] with
 ## every index inside that hull's W cells and no cell twice, racks in their stored
-## order, trailing empty racks dropped, hulls outside the nine dropped. A forgiven
-## reader -- a hand-edited file is read defensively the way `_read_qty` and
-## `_read_vitals` read theirs -- while the writer above refuses instead.
+## order, trailing empty racks dropped, hulls outside the nine dropped. **09 section
+## 12's hardcap is a clamp here, not a refusal** (the load path's forgiving read): at
+## most `GROUPS_MAX` racks and at most `BATTERY_CELLS_MAX` cells in each, cell order
+## preserved, so a pre-S15 store carrying 6-7 racks loads as 5 x 4 and the overflow
+## cells are re-derived from the fit by `battery_groups`. A forgiven reader -- a
+## hand-edited file is read defensively the way `_read_qty` and `_read_vitals` read
+## theirs -- while the writer above refuses instead.
 func _normalise_batteries(source: Dictionary) -> Dictionary:
 	var record: Dictionary = {}
 	for key: Variant in source:
@@ -1535,10 +1588,14 @@ func _normalise_batteries(source: Dictionary) -> Dictionary:
 		var racks: Array = []
 		var seen: Dictionary = {}
 		for raw_rack: Variant in (raw_racks as Array):
+			if racks.size() >= WeaponData.GROUPS_MAX:
+				break
 			if not raw_rack is Array:
 				continue
 			var rack: Array = []
 			for raw_index: Variant in (raw_rack as Array):
+				if rack.size() >= WeaponData.BATTERY_CELLS_MAX:
+					break
 				var index := int(raw_index)
 				if index < 0 or index >= capacity or seen.has(index):
 					continue

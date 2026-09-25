@@ -335,8 +335,10 @@ func test_the_hud_receives_the_hulls_own_weapon_cells() -> void:
 		assert_eq(hud.call(&"hull_slots").size(), 3, "the HUD kept the three cells it was handed")
 
 
-## A 7-W capital: all seven cells display, and the last two are `selectable: false`
-## because the input map stops at `weapon_5` (CONTRACTS section 11, owner tick 5).
+## A 7-W capital under S15's hardcap (09 section 12, AC2): all seven cells still display,
+## and the per-battery cap composes them **4 + 3** -- B1's four cells and B2's three -- so
+## both cells the pre-S15 map could not reach now belong to a rack the five lamps can.
+## The hull's own W-cell count is untouched: the cap is per battery, never per hull.
 func test_a_capitals_last_two_cells_display_without_a_key() -> void:
 	var weapons: Array = []
 	for index in FitData.slot_capacity(CAPITAL, &"weapons"):
@@ -346,16 +348,27 @@ func test_a_capitals_last_two_cells_display_without_a_key() -> void:
 		&"power": "p_std",
 		&"weapons": weapons,
 	}
+	## A clean record, so the derived 4 + 3 is the thing measured (the suite borrows the
+	## profile and does not own its rack record).
+	var stored_batteries: Dictionary = _profile.call(&"batteries")
+	_profile.set(&"_batteries", {})
 	var scene := _launch(CAPITAL, fit)
 	var cells: Array = _hud_cells(scene)
-	assert_eq(cells.size(), 7, "the Obliterator's seven W cells")
+	assert_eq(cells.size(), 7, "the Obliterator's seven W cells are all still drawn")
+	var ordinals: Array[int] = []
+	for cell: Dictionary in cells:
+		ordinals.append(int(cell[&"battery"]))
+	assert_eq(ordinals, [1, 1, 1, 1, 2, 2, 2] as Array[int], "the hardcap composes 4 + 3")
+	assert_eq(
+		FitData.slot_capacity(CAPITAL, &"weapons"), 7,
+		"and the hull's own W-cell count never moved"
+	)
 	for index in cells.size():
-		var selectable := bool(cells[index][&"selectable"])
-		assert_eq(
-			selectable,
-			index < WeaponsScript.GROUPS_MAX,
-			"cell %d's selectability follows the input map's five groups" % index
+		assert_true(
+			bool(cells[index][&"selectable"]),
+			"cell %d is selectable: its battery is one of the five" % index
 		)
+	_profile.set(&"_batteries", stored_batteries)
 
 
 ## FX_SPEC section 1.3's anchor row, **re-pointed by S5 (09 section 11 supersedes 09

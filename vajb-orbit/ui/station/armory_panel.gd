@@ -6,8 +6,8 @@ extends Control
 ##
 ## Three groups, in render order, each one in a recessed well of the painted console:
 ##
-##   - **BATTERY RACKS** - racks `B1..B7`, one drop zone per `weapon_1..7` key, drawn as
-##     Mockup A's **4+3 grid** of bolted bay plates (`ui_armory_rack_plate`), each bay
+##   - **BATTERY RACKS** - racks `B1..B5`, one drop zone per `weapon_1..5` key, drawn as
+##     a **4+1 grid** of bolted bay plates (`ui_armory_rack_plate`), each bay
 ##     carrying its four **W cells as machined slot recesses** and a **SALVO strip** of
 ##     three `ui_seg_*` cells (seconds x 100, `073` = 0.73 s - the approved Mockup A
 ##     figure; the brief's own "seconds x10" cannot hold the approved example, see the
@@ -126,21 +126,22 @@ const INSPECT_TITLE_FORMAT := "%s · %s CREDITS"
 ## the row's HELD cell on the same frame.
 const STATUS_BOUGHT := "PURCHASED · %s · +%d ROUNDS"
 
-## The rack column (09 section 11, CONTRACTS section 17): `B1..B7`, one drop zone per
-## `weapon_1..7` key, drawn in the input map's own order. `WeaponComponent.GROUPS_MAX`
-## is the whole number, so a grown group count grows the rack strip with it.
+## The rack column (09 section 11, CONTRACTS section 17; 09 section 12's S15 hardcap):
+## `B1..B5`, one drop zone per `weapon_1..5` key, drawn in the input map's own order.
+## `WeaponComponent.GROUPS_MAX` is the whole number (five since S15), so the strip is
+## exactly the batteries the input map addresses.
 const WEAPON_SLOT: StringName = &"weapons"
 ## The one scalar slot type (09 section 4.5 rule 1): `_with_cell` keeps the shape for
 ## it although a W rack never touches it.
 const POWER_SLOT: StringName = &"power"
 const RACK_COUNT: int = WeaponComponent.GROUPS_MAX
 const RACK_LABEL := "B%d"
-## The bay's own `B<n>` plate width and its key hint (`(1)` .. `(7)`, Mockup A's own
-## keyboard legend at the bay's top-right).
+## The bay's own `B<n>` plate width and its key hint (`(1)` .. `(5)` since S15, Mockup
+## A's own keyboard legend at the bay's top-right).
 const RACK_LABEL_WIDTH := 40.0
 const RACK_KEY := "(%d)"
-## The drawn key hints are real: `(1)`..`(7)` are 09 section 11's own rack keys
-## (`weapon_1..7`, `GROUPS_MAX` of them), and the pane's selection seam maps them.
+## The drawn key hints are real: `(1)`..`(5)` are 09 section 11's own rack keys
+## (`weapon_1..5`, `GROUPS_MAX` of them), and the pane's selection seam maps them.
 const RACK_ACTION := "weapon_%d"
 const RACK_INSTALL_CUE := "DROP A WEAPON FROM THE INVENTORY HERE"
 const RACK_SALVO := "SALVO %.1f s"
@@ -176,7 +177,8 @@ const DROP_RACK_BODY := -1
 ## a W cell** (`FitData.MANDATORY_SLOT_KEYS` is `[engines, power]`, game/ship_fit.gd:117)
 ## and is carried for the set's completeness only, so no test may assert it through a
 ## rack. The fourth line is the P2-B1 strip's own `W SLOTS FULL — SWAP OR REMOVE FIRST`,
-## kept for the state it names: every W cell of the hull already holds a barrel.
+## kept for the states it names: every W cell of the hull already holds a barrel, and --
+## since S15's hardcap -- one battery's four cells are all taken (09 section 12).
 const REFUSAL_OVERLOAD := "%d / %d PWR — OVER BY %d"
 const REFUSAL_MANDATORY := "MANDATORY CELL — SWAP ONLY, NEVER EMPTY"
 const REFUSAL_FIT_ILLEGAL := "REFUSED · FIT ILLEGAL"
@@ -265,7 +267,7 @@ class BarrelCell extends HBoxContainer:
 ## that installs a dragged inventory weapon into the rack's next free W cell. Laid out as
 ## Mockup A's bay: the plate strip over the well, the four W-cell recesses, the engraved
 ## ledge and the SALVO strip beneath it. A press on the bay is the mouse half of the
-## selection seam (STATION_HUB section 5.11's seven selectable bays): it moves the section
+## selection seam (STATION_HUB section 5.11's five selectable bays): it moves the section
 ## 3.2 ember frame and writes nothing.
 class RackRow extends PanelContainer:
 	var armory: Control = null
@@ -383,10 +385,11 @@ class BayMarks extends Control:
 			return
 		for index: int in filled:
 			var slot: Rect2 = style.drawn_rect(style.slot_rect(index))
-			var inset := Rect2(
-				slot.position + style.drawn_vector(Vector2(10.0, 10.0)),
-				style.drawn_vector(Vector2(20.0, 24.0))
-			)
+			## The block is **half the slot, centred** (Mockup A's 20x24 block in its
+			## 40x44 recess), so it lands on the rack plate's own drawn recess whatever
+			## the style's slot metrics are -- S15 narrowed the slot onto the art's
+			## 34.5 px pitch and a fixed 20x24 offset would spill out of it.
+			var inset := Rect2(slot.position + slot.size * 0.25, slot.size * 0.5)
 			draw_rect(inset, style.colour(ROLE_METAL_LIGHT), true)
 		if selected:
 			draw_rect(
@@ -705,7 +708,7 @@ func set_selected_rack(rack: int) -> void:
 		_style_bay(view)
 
 
-## The keyboard half of the selection seam: the drawn `(1)`..`(7)` hints (`RACK_KEY`) are
+## The keyboard half of the selection seam: the drawn `(1)`..`(5)` hints (`RACK_KEY`) are
 ## 09 section 11's own rack keys, so a digit moves the section 3.2 ember frame to that bay.
 ## Presentation only - `set_selected_rack` writes nothing, and what a selection should
 ## *mean* beyond the frame is not this pane's call.
@@ -858,15 +861,16 @@ func _group_content_heights() -> Array[float]:
 	return [bays, inventory, ammo]
 
 
-## The seven bays' rects, in the style's 4+3 grid (drawn pixels).
+## The five bays' rects, in the style's 4+1 grid (drawn pixels), the tail bay full-width.
 func _bay_rects() -> Array[Rect2]:
 	var out: Array[Rect2] = []
-	for index in _rack_views.size():
-		out.append(_dr(_style.bay_rect(index)))
+	var count: int = _rack_views.size()
+	for index in count:
+		out.append(_dr(_style.bay_rect(index, count)))
 	return out
 
 
-## Lay the rack bays out as Mockup A's 4+3 grid. The container is a `VBoxContainer` by the
+## Lay the rack bays out in the 4+1 grid. The container is a `VBoxContainer` by the
 ## existing suites' own contract (`%RackRows` is cast to one and read by child index), so
 ## its own stacking is corrected here on every sort - the positions are exact before any
 ## layout pass, which is what lets a headless suite read them.
@@ -876,6 +880,7 @@ func _lay_bays() -> void:
 	var cell: Vector2 = _style.drawn_vector(_style.bay_size)
 	var columns: int = maxi(_style.bay_columns, 1)
 	var gap: float = _d(_style.bay_gap)
+	var total: int = _rack_rows.get_child_count()
 	var index := 0
 	for child: Node in _rack_rows.get_children():
 		var control := child as Control
@@ -885,10 +890,12 @@ func _lay_bays() -> void:
 		var row: int = floori(float(index) / float(columns))
 		control.position = Vector2(column * (cell.x + gap), row * (cell.y + gap))
 		## The container's own minimum is the sum of its children's, so the bays declare
-		## none of their own: their drawn rect is set outright (a VBox cannot stack a 4+3
-		## grid, and a stacked minimum would grow the whole console).
+		## none of their own: their drawn rect is set outright (a VBox cannot stack a grid,
+		## and a stacked minimum would grow the whole console). The size is the style's own
+		## bay rect, so the tail bay's full width reaches the drawn row, its recess and its
+		## drop zone rather than only the `bay_rects()` read-back.
 		control.custom_minimum_size = Vector2.ONE
-		control.size = cell
+		control.size = _dr(_style.bay_rect(index, total)).size
 		index += 1
 	var rows: int = _style.bay_row_count(index)
 	_rack_rows.custom_minimum_size = Vector2(
@@ -900,12 +907,12 @@ func _lay_bays() -> void:
 		var bay := child as Control
 		if bay == null:
 			continue
-		_position_head(bay.get_node_or_null(^"Box/Head") as Container)
+		_position_head(bay.get_node_or_null(^"Box/Head") as Container, bay.size.x)
 		_position_slots(bay.get_node_or_null(^"Box/Barrels") as Container)
 		var salvo := bay.get_node_or_null(^"Box/Salvo") as Control
 		if salvo != null:
 			salvo.position = Vector2.ZERO
-			salvo.size = cell
+			salvo.size = bay.size
 	if _wells != null:
 		_wells.configure(_style, _wells.well_rects(), _bay_rects())
 
@@ -1491,7 +1498,7 @@ static func _clear(node: Node) -> void:
 
 
 ## Redraw every rack from the profile: the active hull's composed racks as
-## `battery_groups` derives them (`B1..B7`, in `weapon_1..7` order), each rack as a bay
+## `battery_groups` derives them (`B1..B5`, in `weapon_1..5` order), each rack as a bay
 ## plate - `B<n>` and its key hint at the top, the four W-cell recesses, the engraved ledge
 ## and the SALVO strip with the rack's own cycle figure (seconds x 100, the slowest
 ## member's cycle: 09 section 11).
@@ -1683,31 +1690,34 @@ func _inspect_barrel(cell: int, entry: StringName, shown: bool) -> void:
 
 
 ## One bay's own children, at the mockup's own offsets: `B<n>` and its key hint along the
-## top, the drop cue over the empty slot row, and the `x` in its slot's corner. The bay's
+## top, the drop cue over the empty slot row, and the `x` in its slot's corner. `width` is
+## the bay's own drawn width (the tail bay is full-width, so its key hint tracks the wider
+## edge); 0 falls back to a single cell until the row has been measured. The bay's
 ## containers are `HBoxContainer`s by the existing suites' contract (they read `Head`'s
 ## labels and `Barrels`' chips by name), so their own row layout is corrected here on every
 ## sort - the positions are exact before any layout pass, which is what lets a headless
 ## suite read them.
-func _position_head(head: Container) -> void:
+func _position_head(head: Container, width: float = 0.0) -> void:
 	if _style == null or head == null:
 		return
 	var cell: Vector2 = _style.drawn_vector(_style.bay_size)
+	var span: float = width if width > 0.0 else cell.x
 	var label := head.get_node_or_null(^"Label") as Control
 	if label != null:
 		label.position = Vector2(_d(10.0), _d(4.0))
 		label.size = Vector2(_d(40.0), _d(24.0))
 	var key := head.get_node_or_null(^"Key") as Control
 	if key != null:
-		key.position = Vector2(cell.x - _d(44.0), _d(4.0))
+		key.position = Vector2(span - _d(44.0), _d(4.0))
 		key.size = Vector2(_d(36.0), _d(24.0))
 	var hint := head.get_node_or_null(^"Hint") as Control
 	if hint != null:
 		hint.position = Vector2(_d(10.0), _d(20.0))
-		hint.size = Vector2(cell.x - _d(20.0), _d(44.0))
+		hint.size = Vector2(span - _d(20.0), _d(44.0))
 	var state := head.get_node_or_null(^"State") as Control
 	if state != null:
 		state.position = Vector2(_d(10.0), _d(20.0))
-		state.size = Vector2(cell.x - _d(20.0), _d(16.0))
+		state.size = Vector2(span - _d(20.0), _d(16.0))
 
 
 ## One bay's barrel chips, each inside its own machined W-cell recess, with the `x` in the
@@ -1954,7 +1964,7 @@ func bay_marks(rack: int) -> BayMarks:
 	return _rack_views[rack][&"marks"]
 
 
-## Every bay's rect as drawn (the section 3.10 4+3 grid, in the console's own space).
+## Every bay's rect as drawn (the 4+1 grid, in the console's own space).
 func bay_rects() -> Array[Rect2]:
 	return _bay_rects()
 
@@ -2075,13 +2085,25 @@ func _rack_end(rack: int) -> int:
 	return (_rack_views[rack][&"cells"] as Array).size()
 
 
+## One rack's own cell count, read from the profile's derived racks (the same list the
+## pane draws), so the pane's preview and the profile's transaction measure the same
+## thing. 0 for a rack the hull's record does not reach.
+func _rack_cells_of(profile: ProfileScript, hull: StringName, rack: int) -> int:
+	if profile == null or hull == &"" or rack < 0:
+		return 0
+	var groups: Array = profile.call(&"battery_groups", hull)
+	if rack >= groups.size():
+		return 0
+	return (groups[rack] as Array).size()
+
+
 ## ------------------------------------------------------------------ the rack actions
 
 
 ## Install one inventory weapon into one rack's next free W cell (09 section 11): the
 ## profile's composed `fit_into_rack`, which pairs the next in-bag instance of the base
 ## into the cell and records the cell in the rack, atomically over the fit, the bag and
-## the record. Refused, writing nothing, when the rack is outside `B1..B7`, the bag holds
+## the record. Refused, writing nothing, when the rack is outside `B1..B5`, the bag holds
 ## none of the base, every W cell is taken, or the candidate fit is illegal - the
 ## mandatory set and `fit_legal` are checked **before** the first write, here by the
 ## preview and again inside the transaction (CONTRACTS section 13 rule 6).
@@ -2110,7 +2132,7 @@ func install_weapon(rack: int, base_id: StringName) -> bool:
 ## Move one barrel within or between racks (09 section 11: "re-orders and swaps"). Pure
 ## record surgery in the profile (`move_rack_cell`): the cell keeps its barrel and gains a
 ## different trigger, so no fit and no bag write happens. Refused, writing nothing, for an
-## address that holds no barrel, a target rack outside `B1..B7`, or the same address.
+## address that holds no barrel, a target rack outside `B1..B5`, or the same address.
 func move_barrel(
 	from_rack: int, from_position: int, to_rack: int, to_position: int
 ) -> bool:
@@ -2191,6 +2213,11 @@ func _install_refusal(
 		return REFUSAL_FIT_ILLEGAL
 	if not _is_weapon_base(base_id):
 		return REFUSAL_FIT_ILLEGAL
+	## 09 section 12's hardcap: a battery holds `BATTERY_CELLS_MAX` cells, so a drop
+	## onto a full rack is refused before the hull's own free cell is read (the profile's
+	## `fit_into_rack` refuses it again inside the transaction).
+	if _rack_cells_of(profile, hull, rack) >= WeaponComponent.BATTERY_CELLS_MAX:
+		return REFUSAL_W_SLOTS_FULL
 	if (profile.call(&"instances_of", base_id) as Array).is_empty():
 		return REFUSAL_NO_WEAPONS
 	var index := int(profile.call(&"free_weapon_cell", hull))
@@ -2208,8 +2235,12 @@ func _can_install(
 
 
 ## Whether one barrel move would be accepted: the source must hold a barrel, the target
-## rack must be inside `B1..B7`, the target slot must not be negative and the two addresses
-## must differ. Pure reads - a move writes no fit, so there is nothing else to judge.
+## rack must be inside `B1..B5`, the target slot must not be negative and the two
+## addresses must differ. 09 section 12's four-cell cap refuses the move that would
+## **grow** the target past it -- an append past its last barrel; a move onto an occupied
+## position is the swap and leaves the target's length alone, so a swap into a four-cell
+## battery stays legal. Pure reads - a move writes no fit, so there is nothing else to
+## judge.
 func _can_move(
 	hull: StringName, from_rack: int, from_position: int, to_rack: int, to_position: int
 ) -> bool:
@@ -2217,7 +2248,13 @@ func _can_move(
 		return false
 	if from_rack == to_rack and from_position == to_position:
 		return false
-	return _rack_cell_at(from_rack, from_position) >= 0
+	if _rack_cell_at(from_rack, from_position) < 0:
+		return false
+	if from_rack != to_rack:
+		var target_cells := _rack_cells_of(_profile(), hull, to_rack)
+		if to_position >= target_cells:
+			return target_cells < WeaponComponent.BATTERY_CELLS_MAX
+	return true
 
 
 ## The candidate's own legality, judged with the same `ShipFit.fit_legal` the profile

@@ -15,13 +15,19 @@ extends Node2D
 ##
 ## **The owner's asteroid ruling (2026-09-21) amends the two cleaving rows quoted
 ## above** -- "asteroids breaking effects (they should somehow explode, random
-## fragments from 2 to 5 moving in random directions)": the split is a uniform random
-## 2-5 per tier, the ejection direction is uniform over the full circle, and every
+## fragments from 2 to 5 moving in random directions)": the split is a random mix of
+## fragments, the ejection direction is uniform over the full circle, and every
 ## depletion reads as a break (FX_SPEC §1.4's explosion at the rock's own centre,
 ## scaled to it, + S4's rock cue + §4.2 item 8's blast on the neighbours it can
 ## reach) -- including a yield-0 rock, which still cleaves into nothing. The tick for
 ## §6/§13/§15 is the owner's; the counts, the scale and the cue are the wave brief's
 ## table, never this file's own numbers.
+##
+## **S14 (2026-09-25, 02 §5.2) supersedes that split's shape:** four size classes
+## (`XL > L > M > S`) and a child set rolled per kind from `OreTuning.split_mix`
+## (rule 1), plus the spawn mix S 40 / M 32 / L 20 / XL 8 (rule 4). The 2026-09-21
+## ruling's two other halves are untouched: the direction is still the full circle
+## and a break is still the rock's death.
 ##
 ## Consumer contract — W4's `game/sector.gd` binds this script duck-typed, so the
 ## three names below are the frozen handoff:
@@ -247,11 +253,42 @@ func _spawn_rock(index: int, mineral_id: StringName, tier: int, bore: int) -> vo
 	## splits. The extractable half is what extraction realises; the reserve is the
 	## rest, read back at the shatter. `bore` is passed so `_bore_ore` is the exact
 	## roll rather than a value reconstructed from a rounded extractable.
+	##
+	## S14 (02 §5.2, S14_BRIEF §2 rule 4): the size class is now a roll of its own,
+	## taken here from `OreTuning.spawn_size_weights` (S 40 / M 32 / L 20 / XL 8)
+	## instead of leaving `SIZE_ANY` to draw uniformly over every look row. The look
+	## inside that class stays `Asteroid._roll_look`'s uniform three-silhouette pick,
+	## so the sprite can no longer decide the class.
 	var rock := _new_rock(
 		"Rock%d" % (index + 1), mineral_id, tier,
-		AsteroidScript.extractable_units(bore), AsteroidScript.SIZE_ANY, false, float(bore)
+		AsteroidScript.extractable_units(bore), _roll_size(), false, float(bore)
 	)
 	rock.position = _rock_position(index)
+
+
+## S14 (02 §5.2, S14_BRIEF §2 rule 4): the size class a spawned rock rolls, read
+## live from `OreTuning.spawn_size_weights` on the field's own seeded `rng`. Keys are
+## the `Asteroid.SIZE_*` classes; the weights are accumulated in ascending class
+## order (S, M, L, XL), so the table reads as its own 40/32/20/8 row no matter what
+## order a config wrote its keys in. `_roll_tier`'s arithmetic, one table over.
+func _roll_size() -> int:
+	var weights := _integer_keys(OreTuningScript.spawn_size_weights)
+	var total := 0
+	for weight: Variant in weights.values():
+		total += int(weight)
+	if total <= 0:
+		## Defensive only (the S14 twin of `_roll_tier`'s empty-table guard): the
+		## smallest class is the answer that cannot make a rock unbreakable.
+		return AsteroidScript.SIZE_SMALL
+	var roll := rng.randi_range(1, total)
+	var accumulated := 0
+	var classes: Array = weights.keys()
+	classes.sort()
+	for size_class: Variant in classes:
+		accumulated += int(weights[size_class])
+		if roll <= accumulated:
+			return int(size_class)
+	return AsteroidScript.SIZE_SMALL
 
 
 ## The one construction path for every rock in the field, originals and fragments
@@ -359,18 +396,22 @@ func _blast_targets() -> Array:
 	return out
 
 
-## §13's "Fragment split", as amended by the owner's 2026-09-21 ruling: `L -> 2-5 M`,
-## `M -> 2-5 S` (both tiers' row is `FRAGMENT_SPLIT`), and `S -> 1-2 pickups`. A
-## yield-0 rock carries nothing to break and cleaves into nothing (§6/§15, ruling 17);
-## a small never spawns rock fragments, because its cleave *is* the pickup burst.
+## §13's "Fragment split", as amended by the owner's **S14 debris ruling**
+## (2026-09-25, 02 §5.2): the child set is rolled per size kind and independently --
+## `XL -> L 1-3, M 2-4, S 2-5`; `L -> M 1-3, S 2-4`; `M -> S 1-3`; `S -> none` --
+## from `OreTuning.split_mix`, so an XL reads as debris rather than one ring of one
+## kind. Every child is strictly smaller than its parent, so the cascade terminates
+## at the Small end, whose cleave *is* the pickup burst. A yield-0 rock carries
+## nothing to break and cleaves into nothing (§6/§15, ruling 17).
 ##
 ## S13 attributes the shatter (S13_BRIEF §2 rule 3). A **mining** shatter pays the
-## full reserve: a Small as pickups, an M/L by handing its children the reserve as
-## their own extractable, split across the `FRAGMENT_SPLIT` count and with **no
+## full reserve: a Small as pickups, an M/L/XL by handing its children the reserve as
+## their own extractable, split across the **whole mixed child set** and with **no
 ## fresh roll** - each child's `_bore_ore` is its whole-unit share, so the family
-## realises the root's `_bore_ore` and a field mints nothing. A **gun** shatter pays
-## at most `gun_burst_share x _bore_ore` as pickups and the excess reserve burns; an
-## M/L still leaves physical fragments, but they carry no ore (the reserve is spent).
+## realises the root's `_bore_ore` and a field mints nothing, however the dice fall.
+## A **gun** shatter pays at most `gun_burst_share x _bore_ore` as pickups and the
+## excess reserve burns; an M/L/XL still leaves physical fragments, but they carry no
+## ore (the reserve is spent).
 func _cleave(rock: Node2D) -> void:
 	if not bool(rock.call(&"cleaves")):
 		return
@@ -386,20 +427,20 @@ func _cleave(rock: Node2D) -> void:
 	if not from_mining:
 		## The gun's capped payout lands here; its fragments below are debris.
 		_pay_burst(rock, owed)
-	var split := Vector2i(
-		AsteroidScript.FRAGMENT_SPLIT.get(size_class, Vector2i.ZERO) as Vector2i
-	)
-	var count := rng.randi_range(split.x, split.y)
-	if count <= 0:
+	var children := _roll_children(size_class)
+	if children.is_empty():
 		return
+	var count := children.size()
+	## S13 (02 §5.1 Rule A) as S14 re-pins it: the reserve is split across the whole
+	## rolled child set, and a child's size never weights its share.
+	var shares: Array = []
+	if from_mining:
+		shares = _unit_shares(roundi(reserve), count)
 	var velocity: Vector2 = rock.call(&"eject_velocity")
 	var origin: Vector2 = rock.global_position
 	var ring := maxf(float(rock.call(&"world_radius")), 0.0)
 	var mineral_id := StringName(rock.get(&"mineral_id"))
 	var tier := int(rock.get(&"tier"))
-	var shares: Array = []
-	if from_mining:
-		shares = _unit_shares(roundi(reserve), count)
 	for index in count:
 		var units: int = int(shares[index]) if from_mining else 0
 		var fragment := _new_rock(
@@ -407,7 +448,7 @@ func _cleave(rock: Node2D) -> void:
 			mineral_id,
 			tier,
 			units,
-			_fragment_size(size_class),
+			int(children[index]),
 			true,
 			float(units)
 		)
@@ -428,9 +469,26 @@ func _cleave(rock: Node2D) -> void:
 		) + outward * FRAGMENT_OUTWARD_KICK
 
 
-## The row below: a Large's fragments are Medium, a Medium's are Small (§13).
-func _fragment_size(size_class: int) -> int:
-	return size_class - 1
+## S14's child roll (02 §5.2, S14_BRIEF §2 rule 1): for each `(child_kind, range)`
+## of `OreTuning.split_mix[parent_kind]`, in the table's own order, roll `count` on
+## the **field's seeded `rng`** and append that many of the kind. The flat list is
+## the whole child set - the ring placement and the reserve split both work across
+## it, so a mixed set is one debris spread and not one ring per kind. An empty list
+## means the table gives this parent no children (a Small), and a row whose value is
+## not a count range is skipped rather than allowed to roll nothing.
+func _roll_children(parent_kind: int) -> Array[int]:
+	var out: Array[int] = []
+	var mix: Dictionary = OreTuningScript.split_mix.get(parent_kind, {})
+	for child_kind: Variant in mix.keys():
+		var span: Variant = mix[child_kind]
+		if not span is Vector2i:
+			continue
+		var pair: Vector2i = span
+		if pair.x < 0 or pair.y < pair.x:
+			continue
+		for _roll in rng.randi_range(pair.x, pair.y):
+			out.append(int(child_kind))
+	return out
 
 
 ## S13's shatter payout (S13_BRIEF §2 rule 3): a shatter's owed ore accumulates in

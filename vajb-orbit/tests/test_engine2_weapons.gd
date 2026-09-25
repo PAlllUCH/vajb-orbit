@@ -246,9 +246,10 @@ func test_module_ids_normalize_to_weapon_ids() -> void:
 	assert_eq(WeaponScript.weapon_id(&"w_nothing"), &"", "an unknown module is refused")
 
 
-## **S5 (09 section 11, CONTRACTS section 17): the map holds seven keys**, so the clamp
-## moved from five to `GROUPS_MAX` and a fit's **racks** - not its families - are what
-## `weapon_1..7` addresses.
+## **S15 (09 section 12): the map holds five keys** (`GROUPS_MAX`, the hardcap's five
+## batteries), so the clamp is to `GROUPS_MAX` and a fit's **racks** - not its families -
+## are what `weapon_1..5` addresses. (The function keeps its S5 name; only the number
+## moved.)
 func test_groups_follow_the_fitted_order_and_clamp_to_weapon_1_7() -> void:
 	var fit: Array[StringName] = [&"w_laser", &"cannon", &"rocket", &"mine", &"plasma"]
 	_guns.call(&"set_fitted", fit)
@@ -264,14 +265,15 @@ func test_groups_follow_the_fitted_order_and_clamp_to_weapon_1_7() -> void:
 		WeaponScript.GROUPS_MAX,
 		"a group past the map clamps to GROUPS_MAX"
 	)
-	assert_eq(WeaponScript.GROUPS_MAX, 7, "and the map is seven keys wide since S5")
+	assert_eq(WeaponScript.GROUPS_MAX, 5, "and the map is five keys wide since S15")
 	_guns.call(&"select_group", 0)
 	assert_eq(int(_guns.call(&"selected_group")), 1, "a group below the map clamps to 1")
 
 
-## Six families exist and the map now offers seven groups, so a six-weapon fit is
-## selectable end to end. The list is kept whole rather than silently truncated, so the
-## wiring layer can see any mismatch.
+## Six families exist while the map offers `GROUPS_MAX` groups (five since S15's hardcap),
+## so a six-weapon fit is kept whole -- the list is not silently truncated, so the wiring
+## layer can see a mismatch -- and the sixth family is simply past the last key: the clamp
+## holds the fifth group.
 func test_a_six_weapon_fit_is_kept_whole() -> void:
 	var fit: Array[StringName] = [&"laser", &"plasma", &"cannon", &"railgun", &"rocket", &"mine"]
 	_guns.call(&"set_fitted", fit)
@@ -279,7 +281,10 @@ func test_a_six_weapon_fit_is_kept_whole() -> void:
 	_guns.call(&"select_group", 5)
 	assert_eq(StringName(_guns.call(&"selected_weapon")), &"rocket", "group 5 is the fifth")
 	_guns.call(&"select_group", 6)
-	assert_eq(StringName(_guns.call(&"selected_weapon")), &"mine", "and group 6 the sixth")
+	assert_eq(
+		StringName(_guns.call(&"selected_weapon")), &"rocket",
+		"and a sixth group clamps to the hardcap's fifth (09 section 12)"
+	)
 
 func test_a_group_with_no_weapon_selects_nothing() -> void:
 	var fit: Array[StringName] = [&"laser"]

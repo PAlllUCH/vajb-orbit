@@ -9,8 +9,9 @@ extends "res://ui/hud/cockpit_style.gd"
 ##
 ## Every number is section 3.10's own, at the mockup's **logical** scale: Mockup A's canvas
 ## (`staging/mockup/mockup_rest.py`, 872 x 908) is a 2x render, so its pixels are halved
-## here (bay 194x182 -> 97x91, slot 40x44 -> 20x22, a 42 px SALVO step -> 21, a 64 px ammo
-## box -> 32). `art_scale` is section 10's own `@2x` recipe (a master is twice the logical
+## here (bay 194x182 -> 97x91, a 64 px ammo box -> 32). The bay's own marks are the
+## exception since S15 and are stated as **drawn** numbers in the layout group below,
+## because they are read off the rack plate's ink rather than halved from the mockup. `art_scale` is section 10's own `@2x` recipe (a master is twice the logical
 ## box), so the console block is drawn at `canvas * art_scale` = **872x956** - the canvas
 ## section 3.10 **Amendment 2** rules once the ammunition well holds the pane's six packs, and
 ## exactly half the re-rendered `ui_armory_console` master (1744x1912), so the plate mounts
@@ -52,28 +53,48 @@ const ARMORY_SCRIPT_PATH: String = "res://ui/station/armory_style.gd"
 ## The block's foot margin below the last well (Mockup A: 908 - 884 = 24 at 2x).
 @export var block_foot: float = 12.0
 ## The rack bay plate: 97x91 logical (194x182 at 2x - the shipped master's own box), in a
-## 4+3 grid at Mockup A's own offsets (`bay_origin` is relative to the racks well).
+## 4+1 grid at Mockup A's own offsets (`bay_origin` is relative to the racks well): five
+## bays since S15, four in the first row and the fifth opening the second.
 @export var bay_size: Vector2 = Vector2(97.0, 91.0)
 @export var bay_gap: float = 4.0
 @export var bay_origin: Vector2 = Vector2(7.0, 7.0)
 @export var bay_columns: int = 4
-## The W cells as machined slot recesses: four 20x22 on a 22 px pitch, Mockup A's own
-## `x + 10 + s * 44`, `y + 38 .. y + 82` at 2x (`slot_origin` is relative to the bay).
+## **The bay's marks are laid against the rack plate's own ink since S15** (playthrough
+## finding F1): the shipped `ui_armory_rack_plate` master is 194x182 with its plate bar at
+## rows 49..132 and its four drawn recesses centred at x 45 / 79 / 114 / 148 (measured
+## 2026-09-25: dark-run centres, a ~34.5 px pitch on a 180x84 bar). Every mark below is a
+## **drawn** position (2x the logical export) inside that bar, so the four machined slot
+## recesses land on the art's own recesses, the ledge spans the bar's width and the SALVO
+## drums' bottom edge is flush with the bar's bottom (drawn y 132). The pre-S15 numbers
+## (slots 40x44 at drawn x 10/54/98/142, y 38..82, drums 40x72 at y 104..176) floated off
+## the bar and are the defect F1 measured.
+##
+## The four W cells as machined slot recesses: 34x40 drawn (17x20 logical) on the art's
+## own **34.5 px** drawn pitch, first recess centred at drawn x 45, block at drawn
+## y 62..102 (`slot_origin` is relative to the bay). 34 drawn is the narrowest slot that
+## still leaves a **hittable** barrel name plate: the chip's `x` carries the 28 px
+## `StationButton` theme minimum plus the 1 px separation, so a 29 px slot (the first
+## S15 metric) gave the name plate zero width and a real press started neither a drag nor
+## a remove -- the very defect the D7/S10 suites measure.
 @export var slot_count: int = 4
-@export var slot_size: Vector2 = Vector2(20.0, 22.0)
-@export var slot_pitch: float = 22.0
-@export var slot_origin: Vector2 = Vector2(5.0, 19.0)
-## The bay's engraved ledge and its SALVO strip: the mockup's `bevel(y + 96 .. y + 100)`,
-## the `SALVO s` caption at `y + 112` and the three drums at `x + 64`, `y + 104`, step 42
-## (all at 2x, `salvo_origin` relative to the bay's own top-left).
-@export var ledge_offset: float = 48.0
+@export var slot_size: Vector2 = Vector2(17.0, 20.0)
+@export var slot_pitch: float = 17.25
+@export var slot_origin: Vector2 = Vector2(14.0, 31.0)
+## The bay's engraved ledge and its SALVO strip, both inside the ink bar: the ledge is a
+## drawn 8 px band spanning the bar's width at drawn y 104..112, the three drums are
+## 34x20 drawn cells on the same 34.5 px pitch (the same columns as the W cells above) with
+## their **bottom edge flush with the bar's bottom edge** (drawn y 113..133, so the drums'
+## last pixel row is the bar's own last row, 132), and the `SALVO s` caption stands to
+## their right (`salvo_origin` is relative to the bay's own top-left).
+@export var ledge_offset: float = 52.0
 @export var salvo_caption: String = "SALVO s"
 @export var salvo_cells: int = 3
-@export var salvo_cell: Vector2 = Vector2(20.0, 36.0)
-@export var salvo_pitch: float = 21.0
-@export var salvo_origin: Vector2 = Vector2(32.0, 52.0)
-## The `SALVO s` caption's own origin inside the bay (the mockup: `x + 10`, `y + 112` at 2x).
-@export var salvo_caption_origin: Vector2 = Vector2(5.0, 56.0)
+@export var salvo_cell: Vector2 = Vector2(17.0, 10.0)
+@export var salvo_pitch: float = 17.25
+@export var salvo_origin: Vector2 = Vector2(14.0, 56.5)
+## The `SALVO s` caption's own origin inside the bay (drawn 133, 113: right of the drum
+## block, on the ink bar's last rows).
+@export var salvo_caption_origin: Vector2 = Vector2(66.5, 56.5)
 @export var salvo_caption_font_size: int = 12
 ## The pane's own two row families (section 3.10): inventory rows 22 tall with a 20 x 18
 ## icon slot, ammunition rows 32 tall.
@@ -160,19 +181,31 @@ func growth(index: int, content_height: float = 0.0) -> float:
 	return maxf(content_height - pinned_wells()[index].size.y, 0.0)
 
 
-## One rack bay's rect inside the racks well (the mockup's 4+3 grid, `columns` per row):
-## `index` is the rack's own ordinal, so B1..B7 place by the same rule.
-func bay_rect(index: int) -> Rect2:
+## One rack bay's rect inside the racks well (the 4+1 grid, `columns` per row):
+## `index` is the rack's own ordinal, so B1..B5 place by the same rule. The last bay,
+## when it opens a row of its own, is **full-width**: it spans every column (STATION_HUB
+## section 5.11's amendment -- five bays flowing 4+1 with the tail bay full-width).
+## `count` is the rack count the grid draws (0 leaves every bay at the single cell).
+func bay_rect(index: int, count: int = 0) -> Rect2:
 	var well: Rect2 = racks_well
 	var columns: int = maxi(bay_columns, 1)
 	var column: int = index % columns
 	var row: int = floori(float(index) / float(columns))
+	var width: float = bay_size.x
+	if count > 0 and index == count - 1 and column != columns - 1:
+		width = bay_row_width()
 	return Rect2(
 		well.position.x + bay_origin.x + column * (bay_size.x + bay_gap),
 		well.position.y + bay_origin.y + row * (bay_size.y + bay_gap),
-		bay_size.x,
+		width,
 		bay_size.y
 	)
+
+
+## The width a full bay row spans: every column plus the gaps between them.
+func bay_row_width() -> float:
+	var columns: int = maxi(bay_columns, 1)
+	return float(columns) * bay_size.x + float(maxi(columns - 1, 0)) * bay_gap
 
 
 ## How many bay rows a rack count needs.

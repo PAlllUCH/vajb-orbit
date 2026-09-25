@@ -99,19 +99,18 @@ const PROFILE_CARGO_KEY: StringName = &"cargo"
 const HULL_ID_DEFAULT: StringName = &"ship_vanguard"
 const SECTOR_ID_DEFAULT: StringName = &"sector_1"
 
-## Section 4.3's group keys, **seven** since S5 (09 section 11, CONTRACTS section 17):
-## `weapon_1..7` and `GROUPS_MAX` grow together, because a composed battery rack is
-## addressed by the same ordinal the ARMORY pane's racks `B1..B7` render. The
-## `weapon_6`/`weapon_7` rows of `project.godot` are orchestrator-applied, so the
-## readers stay behind `InputMap.has_action` guards.
+## Section 4.3's group keys, **five** since S15 (09 section 12's hardcap): `weapon_1..5`
+## and `GROUPS_MAX` are one number, because a composed battery is addressed by the same
+## ordinal the ARMORY pane's racks `B1..B5` render and the cockpit's five lamps name.
+## `weapon_6`/`weapon_7` stay in `project.godot` (that edit is the owner's optional
+## pass) but are read by nothing: they have no rack to select, so the pair is inert.
+## The readers stay behind `InputMap.has_action` guards anyway.
 const WEAPON_ACTIONS: Array[StringName] = [
 	&"weapon_1",
 	&"weapon_2",
 	&"weapon_3",
 	&"weapon_4",
 	&"weapon_5",
-	&"weapon_6",
-	&"weapon_7",
 ]
 
 const HUD_REFRESH_INTERVAL := 0.1
@@ -1320,10 +1319,10 @@ func _reticle_state_for(world_point: Vector2) -> int:
 ## spent a round per key press is retired (it would double-spend against the real shot).
 func _update_weapon_input() -> void:
 	for slot in WEAPON_ACTIONS.size():
-		## `weapon_6`/`weapon_7` join `project.godot` at the wave's close-out (CONTRACTS
-		## section 1), so the two new keys are read behind the same `InputMap.has_action`
-		## guard the countermeasures and the dock prompt use: an action the map does not
-		## carry yet must not push an engine error every frame of flight.
+		## The five actions are read behind the same `InputMap.has_action` guard the
+		## countermeasures and the dock prompt use: an action the map does not carry must
+		## not push an engine error every frame of flight. `weapon_6`/`weapon_7` are not
+		## in this table any more (S15): they have no rack to select.
 		if not InputMap.has_action(WEAPON_ACTIONS[slot]):
 			continue
 		if Input.is_action_just_pressed(WEAPON_ACTIONS[slot]):
@@ -2018,7 +2017,7 @@ func _push_pools() -> void:
 		_hud.call(&"set_emergency", _state.emergency_mode)
 
 
-## Section 4.3 / 09 section 11: a **rack ordinal** (1-based, `weapon_1..7`) selects
+## Section 4.3 / 09 section 11: a **rack ordinal** (1-based, `weapon_1..5`) selects
 ## the battery the mounted component fires. Both callers hand one in - the input map's
 ## `weapon_N` key as `N` and the HUD's W-slot button as the ordinal of the rack its
 ## cell belongs to (`ui/hud/hud.gd`) - because a composed rack may hold several kinds

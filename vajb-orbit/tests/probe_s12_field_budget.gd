@@ -93,8 +93,12 @@ func _constants() -> void:
 	print("%s const TIER_BASE_YIELD=%s YIELD_VARIANCE_MIN=%.6f YIELD_VARIANCE_MAX=%.6f"
 		% [TAG, str(MineralCatalogScript.TIER_BASE_YIELD),
 		MineralCatalogScript.YIELD_VARIANCE_MIN, MineralCatalogScript.YIELD_VARIANCE_MAX])
-	print("%s const FRAGMENT_SPLIT=%s PICKUP_BURST=%s"
+	print("%s const retired_FRAGMENT_SPLIT=%s PICKUP_BURST=%s"
 		% [TAG, str(AsteroidScript.FRAGMENT_SPLIT), str(AsteroidScript.PICKUP_BURST)])
+	## S14 (02 §5.2): the split rule and the spawn mix the field reads today, so the
+	## cascade rows below are read against the table that produced them.
+	print("%s const split_mix=%s spawn_size_weights=%s src=game/ore_tuning.gd"
+		% [TAG, str(OreTuningScript.split_mix), str(OreTuningScript.spawn_size_weights)])
 	var probe_mineral := _first_tier1_mineral()
 	print("%s const ore_id(%s)=%s (MineralCatalogScript.ore_id)"
 		% [TAG, str(probe_mineral), str(MineralCatalogScript.ore_id(probe_mineral))])
@@ -107,9 +111,14 @@ func _constants() -> void:
 		int(ShipFitScript.HULLS[max_cargo_hull][&"cargo"]), str(max_cargo_hull)])
 	var max_weapons_hull := _hull_with_max(&"weapons")
 	var max_weapons := int(ShipFitScript.HULLS[max_weapons_hull][&"weapons"])
-	print("%s const w_cells max=%d (%s) GROUPS_MAX=%d agree=%s"
+	## S15 restates the agreement row for the hardcap (09 section 12): the ceiling is
+	## `GROUPS_MAX * BATTERY_CELLS_MAX` (5 x 4 = 20), so the widest hull's 7 W cells fit
+	## inside it instead of equalling it.
+	print("%s const w_cells max=%d (%s) GROUPS_MAX=%d BATTERY_CELLS_MAX=%d ceiling=%d fits=%s"
 		% [TAG, max_weapons, str(max_weapons_hull), WeaponsScript.GROUPS_MAX,
-		str(max_weapons == WeaponsScript.GROUPS_MAX)])
+		WeaponsScript.BATTERY_CELLS_MAX,
+		WeaponsScript.GROUPS_MAX * WeaponsScript.BATTERY_CELLS_MAX,
+		str(max_weapons <= WeaponsScript.GROUPS_MAX * WeaponsScript.BATTERY_CELLS_MAX)])
 	print("%s const untouched rocket interval_of(raw w_rocket)=%.6f interval_of(rocket)=%.6f"
 		% [TAG, WeaponsScript.interval_of(&"w_rocket"),
 		WeaponsScript.interval_of(WeaponsScript.weapon_id(&"w_rocket"))]

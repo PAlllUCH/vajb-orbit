@@ -13,11 +13,13 @@ extends SceneTree
 ## cannot drift from it.
 ##
 ## Determinism, one measured fact beyond §4: `Asteroid._roll_look` rolls a rock's
-## size class on the **global** RNG (`game/asteroid.gd:371-375`, and its own comment
-## at `:207-211` says "a caller that needs a reproducible look calls `seed()` first").
-## The field's own `rng` seeds the gameplay rolls; the look does not. So every field
-## build is preceded by the global `seed(FIELD_SEED)` — without it two runs would roll
-## different size classes and the cleave cascade would differ run to run.
+## **look** on the global RNG (`game/asteroid.gd`, and its own comment says "a caller
+## that needs a reproducible look calls `seed()` first"). The field's own `rng` seeds
+## the gameplay rolls -- and since S14 (02 §5.2) that includes the rock's **size
+## class**, which `AsteroidField._roll_size` draws from `OreTuning.spawn_size_weights`
+## on the field's stream. So the seeded field's classes are reproducible without the
+## global seed; the global `seed(FIELD_SEED)` below is kept because the look still
+## draws from that stream and the size classes are what the cascade turns on.
 ##
 ## Legs (§4, verbatim):
 ##   LASER  - one `WORK_PER_UNIT` per `MINE_CYCLE`; delivers the `apply_work` returns,
@@ -35,6 +37,9 @@ const MineralCatalogScript := preload("res://game/mineral_catalog.gd")
 const MiningLaserScript := preload("res://game/mining_laser.gd")
 const WeaponsScript := preload("res://game/weapons.gd")
 const ShipFitScript := preload("res://game/ship_fit.gd")
+## S13's live balance surface, and since S14 the split rule and spawn mix this probe
+## measures the cascade of (02 §5.2).
+const OreTuningScript := preload("res://game/ore_tuning.gd")
 
 const TAG := "[S12K1]"
 
@@ -108,8 +113,11 @@ func _constants() -> void:
 	print("%s CONST TIER_BASE_YIELD=%s YIELD_VARIANCE=%.1f..%.1f src=game/mineral_catalog.gd"
 		% [TAG, str(MineralCatalogScript.TIER_BASE_YIELD),
 		MineralCatalogScript.YIELD_VARIANCE_MIN, MineralCatalogScript.YIELD_VARIANCE_MAX])
-	print("%s CONST FRAGMENT_SPLIT=%s PICKUP_BURST=%s src=game/asteroid.gd"
+	print("%s CONST retired_FRAGMENT_SPLIT=%s PICKUP_BURST=%s src=game/asteroid.gd"
 		% [TAG, str(AsteroidScript.FRAGMENT_SPLIT), str(AsteroidScript.PICKUP_BURST)])
+	## S14 (02 §5.2): the split rule and the spawn mix the field reads today.
+	print("%s CONST split_mix=%s spawn_size_weights=%s src=game/ore_tuning.gd"
+		% [TAG, str(OreTuningScript.split_mix), str(OreTuningScript.spawn_size_weights)])
 	print("%s CONST ore_id(%s)=%s src=MineralCatalog.ore_id"
 		% [TAG, String(&"iron"), String(MineralCatalogScript.ore_id(&"iron"))])
 	print("%s CONST pickup_group=%s item_prop=item_id amount_prop=amount src=FieldScript.PICKUP_GROUP+Pickup"
@@ -117,9 +125,14 @@ func _constants() -> void:
 	var cargo: Dictionary = _max_hull_cargo()
 	print("%s CONST vanguard_cargo=%d max_cargo_over_HULLS=%d (%s) src=ShipFit.HULLS"
 		% [TAG, int(ShipFitScript.HULLS[VANGUARD][&"cargo"]), cargo[&"cargo"], cargo[&"hull"]])
-	print("%s CONST hull_max_weapons=%d (%s) WeaponsScript.GROUPS_MAX=%d agree=%s"
+	## S15 restates the agreement row for the hardcap (09 section 12): the ceiling is
+	## `GROUPS_MAX * BATTERY_CELLS_MAX` (5 x 4 = 20), so the widest hull's 7 W cells fit
+	## inside it instead of equalling it.
+	print("%s CONST hull_max_weapons=%d (%s) GROUPS_MAX=%d BATTERY_CELLS_MAX=%d ceiling=%d fits=%s"
 		% [TAG, hull_ceiling[&"weapons"], hull_ceiling[&"hull"], WeaponsScript.GROUPS_MAX,
-		str(hull_ceiling[&"weapons"] == WeaponsScript.GROUPS_MAX)])
+		WeaponsScript.BATTERY_CELLS_MAX,
+		WeaponsScript.GROUPS_MAX * WeaponsScript.BATTERY_CELLS_MAX,
+		str(hull_ceiling[&"weapons"] <= WeaponsScript.GROUPS_MAX * WeaponsScript.BATTERY_CELLS_MAX)])
 	print("%s CONST interval_of rocket=%.3f mine=%.3f (printed, never modelled)"
 		% [TAG, WeaponsScript.interval_of(&"rocket"), WeaponsScript.interval_of(&"mine")])
 
@@ -368,6 +381,8 @@ func _size_name(size_class: int) -> String:
 			return "MEDIUM"
 		AsteroidScript.SIZE_LARGE:
 			return "LARGE"
+		AsteroidScript.SIZE_XL:
+			return "XL"
 	return "ANY"
 
 

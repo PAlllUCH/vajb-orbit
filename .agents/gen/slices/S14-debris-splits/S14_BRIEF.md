@@ -74,6 +74,11 @@ Rules that fix every ambiguity:
   `test_combat_repair_c5.gd`, `test_engine2_cleaving.gd:302` (chip arithmetic),
   any S13 gate row not listed above. Pre-grep every row you touch and report
   it; an unlisted row changed is a HIGH finding at review.
+- **Ratified at review 2026-09-25** (S14-R1's F1/F2 — the old rows asserted the
+  retired `FRAGMENT_SPLIT` 2-5 rule, so the pin itself forced them red):
+  `tests/test_engine2_cleaving.gd:453-486`'s count-bounds row and
+  `tests/probe_rock_cleave_a2.gd:280-372`'s COUNT rows + `_total_span` are on
+  this list retroactively.
 
 ## 4. Hard rules
 

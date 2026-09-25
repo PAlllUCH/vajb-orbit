@@ -1564,7 +1564,9 @@ func _on_weapon_slot_pressed(index: int) -> void:
 ## the ammo figures follow the rack, exactly as a press of one of its cells does. The
 ## flight scene calls this on a keyboard `weapon_N` press (`game.gd:_select_weapon`),
 ## so the two selection paths cannot disagree. An ordinal outside `1..GROUPS_MAX` is
-## ignored, and every cell of the selected rack is marked active (not just one index).
+## refused **and cleared**: the band keeps its own contract (an ordinal outside its lamps
+## lights nothing), so a 6/7 or a 0 reaches it and the last lit lamp goes out instead of
+## standing. Every cell of the selected rack is marked active (not just one index).
 ##
 ## The ordinal names a **rack**, never a family index: a mixed rack's caption and pack
 ## are read off the rack's own first cell (`_battery_family` / `_barrel_of_battery`), so
@@ -1572,6 +1574,11 @@ func _on_weapon_slot_pressed(index: int) -> void:
 ## rather than whichever family sits at index 0 (the S5 review's R1-MED-1).
 func select_battery(battery: int) -> void:
 	if battery < 1 or battery > GROUPS_MAX:
+		## 09 section 12's hardcap: an ordinal the map cannot address still reaches the
+		## band, whose own rule clears the lamp for it, so a refused 6/7 (or a 0) does
+		## not leave the last rack lit.
+		if _cockpit != null:
+			_cockpit.set_active_rack(battery)
 		return
 	_active_slot = battery - 1
 	_set_barrel(_barrel_of_battery(battery))

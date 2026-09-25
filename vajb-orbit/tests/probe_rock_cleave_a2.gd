@@ -7,9 +7,13 @@ extends Node2D
 ## 120 at 0.7), so a match is a match of the shipped code rather than of one seeded
 ## sequence.
 ##
-##   CONST  - the two cleaving rows, the pickup row, the ejection pair, as shipped;
-##   COUNT  - 300 cleaves per cleaving tier: bounds, the four values' histogram and a
-##            chi-square against uniform (a constant row or a narrowed one cannot pass);
+##   CONST  - the retired single-kind cleaving rows, the pickup row, the ejection
+##            pair, and S14's live `OreTuning.split_mix` / `spawn_size_weights`, as
+##            shipped;
+##   COUNT  - 300 cleaves per cleaving tier of the S14 **mixed** set: the total band
+##            derived from the table, each kind's own roll against uniform over its
+##            own range (a per-kind chi-square; the total is a convolution now), and
+##            the landed kinds against the row;
 ##   DIR    - 150 cleaves: deviation from the parent heading, the mean resultant length
 ##            and an 8-sector histogram (uniform over the circle), the widest within-
 ##            cleave pair, and the share of fragments the retired +-15 deg cone could
@@ -21,8 +25,9 @@ extends Node2D
 ##   CUE    - the pool row, every take's file, the round-robin and the played cue;
 ##   BARE   - a yield-0 rock: no fragments, but the FX and the cue still fire;
 ##   BURST  - a Small: 1-2 pickups carrying the rock's own ore id, and the FX/cue;
-##   INHERIT- a cleave's fragments: parent mineral, parent tier, one tier down, and a
-##            re-rolled yield inside 02 section 5's band;
+##   INHERIT- a Large cleave's mixed fragments: parent mineral, parent tier, kinds
+##            strictly below the parent, and the children's summed own yield equal to
+##            the parent reserve (S13's redistribution, no fresh roll);
 ##   INVARIANT - the mining rates, the mass/damping/layer terms and section 13's
 ##            collision/recoil/explosion rows, read off their owners;
 ##   RESPAWN - 02 section 8's bookkeeping: the stamp, the depletion guard, the five-
@@ -40,6 +45,7 @@ const AudioScript := preload("res://autoload/audio_manager.gd")
 const MineralScript := preload("res://game/mineral_catalog.gd")
 const LaserScript := preload("res://game/mining_laser.gd")
 const WeaponsScript := preload("res://game/weapons.gd")
+const OreTuningScript := preload("res://game/ore_tuning.gd")
 const Clock := preload("res://autoload/world_clock.gd")
 
 const TAG := "[A2]"
@@ -214,11 +220,15 @@ func _check(label: String, ok: bool, note: String) -> void:
 
 
 ## --- CONST: the rows as shipped ------------------------------------------------
+##
+## The three `FRAGMENT_SPLIT` rows are the **retired** 2026-09-21 rule (S14 replaced
+## the split with `OreTuning.split_mix`, printed at the end of this section); they
+## are still checked because the const still ships for the frozen probes.
 
 
 func _constants() -> void:
 	var split: Dictionary = AsteroidScript.FRAGMENT_SPLIT
-	print("%s CONST split=%s pickup=%s mult=%.4f cone=%.4f"
+	print("%s CONST retired_split=%s pickup=%s mult=%.4f cone=%.4f"
 		% [
 			TAG,
 			split,
@@ -252,57 +262,115 @@ func _constants() -> void:
 		is_equal_approx(AsteroidScript.FRAGMENT_EJECT_CONE_DEG, 360.0),
 		"the +-15 deg cone is retired (360.0 = the whole circle)"
 	)
+	## S14 (02 §5.2): the live split rule and spawn mix, printed from their owner so
+	## the retired rows above are never mistaken for what the field rolls today.
+	print("%s CONST s14 split_mix=%s spawn_size_weights=%s src=game/ore_tuning.gd"
+		% [TAG, str(OreTuningScript.split_mix), str(OreTuningScript.spawn_size_weights)])
 
 
-## --- COUNT: 300 cleaves per tier ------------------------------------------------
+## --- COUNT: 300 cleaves per cleaving tier ----------------------------------------
+##
+## S14 (02 §5.2) replaces the single 2-5 pair with a per-kind mix, so this section
+## measures the **mixed** set: each kind's per-shatter count against its own row
+## (`L -> M 1-3, S 2-4`, `M -> S 1-3`) and each kind's own roll against uniform over
+## its range -- a per-kind chi-square, because the *total* is now a convolution and
+## is not uniform. The landed-class check follows the same table.
 
 
 func _count_distribution() -> void:
+	var mix: Dictionary = OreTuningScript.split_mix
 	for size_class: int in [AsteroidScript.SIZE_LARGE, AsteroidScript.SIZE_MEDIUM]:
 		var label := "Large" if size_class == AsteroidScript.SIZE_LARGE else "Medium"
+		var row: Dictionary = mix.get(size_class, {})
 		var histogram: Dictionary = {}
 		var landed: Dictionary = {}
+		var per_kind: Dictionary = {}
 		var lowest := 99
 		var highest := -1
+		for child_kind: Variant in row.keys():
+			per_kind[int(child_kind)] = {}
 		for index in COUNT_CLEAVES:
 			var fragments := _cleave_once(size_class, Vector2(900.0, float(index % 40) * 4.0))
 			var count := fragments.size()
 			histogram[count] = int(histogram.get(count, 0)) + 1
 			lowest = mini(lowest, count)
 			highest = maxi(highest, count)
+			var here: Dictionary = {}
 			for fragment: Node2D in fragments:
-				landed[int(fragment.call(&"size_class"))] = true
+				var kind := int(fragment.call(&"size_class"))
+				landed[kind] = true
+				here[kind] = int(here.get(kind, 0)) + 1
+			for child_kind: Variant in row.keys():
+				var kind := int(child_kind)
+				var seen: Dictionary = per_kind[kind]
+				seen[int(here.get(kind, 0))] = int(seen.get(int(here.get(kind, 0)), 0)) + 1
 			_free_rocks(fragments)
 			_free_fx()
-		var expected := float(COUNT_CLEAVES) / 4.0
-		var chi2 := 0.0
-		var shares: Array[String] = []
-		for value: int in [2, 3, 4, 5]:
-			var observed := float(histogram.get(value, 0))
-			chi2 += pow(observed - expected, 2.0) / expected
-			shares.append("%d:%d" % [value, int(observed)])
-		print("%s COUNT %s n=%d min=%d max=%d hist={%s} chi2=%.2f landed=%s"
-			% [TAG, label, COUNT_CLEAVES, lowest, highest, ", ".join(shares), chi2, landed.keys()])
+		var span := _total_span(row)
+		var worst := 0.0
+		var worst_kind := -1
+		var chi2_rows: Array[String] = []
+		for child_kind: Variant in row.keys():
+			var kind := int(child_kind)
+			var pair: Vector2i = row[child_kind]
+			var expected := float(COUNT_CLEAVES) / float(pair.y - pair.x + 1)
+			var kind_chi2 := 0.0
+			var counts: Array[String] = []
+			for value: int in range(pair.x, pair.y + 1):
+				var observed := float((per_kind[kind] as Dictionary).get(value, 0))
+				kind_chi2 += pow(observed - expected, 2.0) / expected
+				counts.append("%d x%d" % [value, int(observed)])
+			if kind_chi2 > worst:
+				worst = kind_chi2
+				worst_kind = kind
+			chi2_rows.append("kind %d rolls %d-%d {%s} chi2=%.2f"
+				% [kind, pair.x, pair.y, ", ".join(counts), kind_chi2])
+		var total_rows: Array[String] = []
+		var totals: Array = histogram.keys()
+		totals.sort()
+		for total: int in totals:
+			total_rows.append("%d x%d" % [total, int(histogram[total])])
+		print("%s COUNT %s n=%d total=%d-%d {%s} | %s | landed=%s"
+			% [TAG, label, COUNT_CLEAVES, span.x, span.y, ", ".join(total_rows),
+			" | ".join(chi2_rows), landed.keys()])
 		_check(
 			"count_%s_bounds" % label,
-			lowest >= 2 and highest <= 5,
-			"every one of %d %s cleaves rolled inside 2-5" % [COUNT_CLEAVES, label]
+			lowest >= span.x and highest <= span.y,
+			"every one of %d %s cleaves summed to %d-%d" % [COUNT_CLEAVES, label, span.x, span.y]
 		)
 		_check(
 			"count_%s_all_values" % label,
-			histogram.has(2) and histogram.has(3) and histogram.has(4) and histogram.has(5),
-			"all four counts 2,3,4,5 came up"
+			histogram.size() == span.y - span.x + 1,
+			"all %d totals of the mixed set came up" % (span.y - span.x + 1)
 		)
 		_check(
 			"count_%s_uniform" % label,
-			chi2 <= 16.27,
-			"chi-square %.2f against uniform over 4 counts (95%% critical 7.81, 99.9%% 16.27)" % chi2
+			worst <= 16.27,
+			"each kind's own roll is uniform over its range (worst chi2 %.2f on kind %d, 99.9%% critical 16.27)"
+				% [worst, worst_kind]
 		)
+		var covered := landed.size() == row.size()
+		for child_kind: Variant in row.keys():
+			if not landed.has(int(child_kind)):
+				covered = false
 		_check(
 			"count_%s_size" % label,
-			landed.size() == 1 and landed.has(size_class - 1),
-			"a %s's fragments are one tier down (%s)" % [label, landed.keys()]
+			covered,
+			"a %s's fragments are exactly the mixed row's kinds (%s against %s)"
+				% [label, landed.keys(), row.keys()]
 		)
+
+
+## The total child count a mixed row can sum to: the sum of its kinds' own minima and
+## maxima, derived from the table rather than typed.
+func _total_span(row: Dictionary) -> Vector2i:
+	var lowest := 0
+	var highest := 0
+	for child_kind: Variant in row.keys():
+		var pair: Vector2i = row[child_kind]
+		lowest += pair.x
+		highest += pair.y
+	return Vector2i(lowest, highest)
 
 
 ## --- DIR + SPEED: the full circle ------------------------------------------------
@@ -643,6 +711,10 @@ func _small_burst() -> void:
 
 
 ## --- INHERITANCE: what a fragment carries ---------------------------------------
+##
+## S14 (02 §5.2): the parent here is a **Large**, so the row measures the mixed child
+## set - every child's kind strictly below the parent and both kinds present - beside
+## S13's unchanged rule that the children's summed own yield is the parent's reserve.
 
 
 func _inheritance() -> void:
@@ -651,11 +723,12 @@ func _inheritance() -> void:
 	var minerals: Dictionary = {}
 	var tiers: Dictionary = {}
 	var classes: Dictionary = {}
+	var too_large := 0
 	var made := 0
 	var conserved := 0
 	var splits: Array[float] = []
 	for index in INHERIT_CLEAVES:
-		var parent := _member(AsteroidScript.SIZE_MEDIUM, 4, Vector2(1200.0, -300.0 + float(index) * 8.0))
+		var parent := _member(AsteroidScript.SIZE_LARGE, 4, Vector2(1200.0, -300.0 + float(index) * 8.0))
 		parent_mineral = StringName(parent.get(&"mineral_id"))
 		parent_tier = int(parent.get(&"tier"))
 		var reserve := float(parent.call(&"reserve_units"))
@@ -667,13 +740,16 @@ func _inheritance() -> void:
 		for fragment: Node2D in fragments:
 			minerals[StringName(fragment.get(&"mineral_id"))] = true
 			tiers[int(fragment.get(&"tier"))] = true
-			classes[int(fragment.call(&"size_class"))] = true
+			var kind := int(fragment.call(&"size_class"))
+			classes[kind] = true
+			if kind >= AsteroidScript.SIZE_LARGE:
+				too_large += 1
 			child_bore += float(fragment.call(&"bore_ore"))
 		splits.append(child_bore)
 		if absf(child_bore - roundf(reserve)) <= 0.001:
 			conserved += 1
 		_free_rocks(fragments)
-	print("%s INHERIT cleaves=%d n=%d parent=(%s,%d) minerals=%s tiers=%s classes=%s child_bore=%s"
+	print("%s INHERIT cleaves=%d n=%d parent=(%s,%d) Large minerals=%s tiers=%s classes=%s child_bore=%s"
 		% [
 			TAG,
 			INHERIT_CLEAVES,
@@ -692,8 +768,10 @@ func _inheritance() -> void:
 	)
 	_check(
 		"inherit_size_class",
-		classes.size() == 1 and classes.has(AsteroidScript.SIZE_SMALL),
-		"a Medium's fragments are Small"
+		too_large == 0 and classes.has(AsteroidScript.SIZE_MEDIUM)
+			and classes.has(AsteroidScript.SIZE_SMALL),
+		"a Large's mixed set is M and S (%s), and %d child(ren) sat at or above the parent"
+			% [classes.keys(), too_large]
 	)
 	_check(
 		"inherit_reserve_split_no_reroll",

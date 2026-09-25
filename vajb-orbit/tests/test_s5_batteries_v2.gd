@@ -339,11 +339,12 @@ func test_the_rail_says_armory_and_loads_the_renamed_pane() -> void:
 	)
 
 
-## The map grew with the racks (CONTRACTS section 17): `GROUPS_MAX` is 7, `weapon_6` and
-## `weapon_7` are read by the flight scene, the HUD's three tables carry seven entries, and
-## the pane draws seven racks. One number, three consumers.
+## The hardcap is one number across its consumers (09 section 12): `GROUPS_MAX` is 5, the
+## flight scene reads `weapon_1..5`, and the pane draws five racks. The HUD's three tables
+## stay the S5 seven-entry lookups (a label/icon table indexed by rack ordinal minus one,
+## whose tail is now unreachable) -- see the report's unlisted-row note.
 func test_groups_max_is_seven_across_its_consumers() -> void:
-	assert_eq(WeaponScript.GROUPS_MAX, 7, "GROUPS_MAX 5 -> 7")
+	assert_eq(WeaponScript.GROUPS_MAX, 5, "GROUPS_MAX 7 -> 5 (S15's hardcap)")
 	assert_eq(PanelScript.RACK_COUNT, WeaponScript.GROUPS_MAX, "the pane draws one rack per key")
 	var hud := load("res://ui/hud/hud.gd") as GDScript
 	assert_eq(
@@ -362,13 +363,15 @@ func test_groups_max_is_seven_across_its_consumers() -> void:
 		"and its icons"
 	)
 	var game := load("res://game/game.gd") as GDScript
+	## `weapon_6`/`weapon_7` retire from the table (09 section 12): they have no rack to
+	## select, so the flight scene reads five actions and the pair is inert.
 	assert_eq(
 		(game.get_script_constant_map()[&"WEAPON_ACTIONS"] as Array).size(),
-		7,
-		"the flight scene reads weapon_1..7"
+		5,
+		"the flight scene reads weapon_1..5"
 	)
 	assert_eq(
-		String(game.get_script_constant_map()[&"WEAPON_ACTIONS"][6]), "weapon_7", "through the seventh key"
+		String(game.get_script_constant_map()[&"WEAPON_ACTIONS"][4]), "weapon_5", "through the fifth key"
 	)
 	## The two new icons are the module cuts the owner named (railgun and mining), not a
 	## seventh weapon cut: the table's last two entries answer those files.

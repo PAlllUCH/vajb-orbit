@@ -13,7 +13,7 @@ extends McpTestSuite
 ##  2. a rolled/bought **instance** in a cell still yields the SALVO drum's cycle figure
 ##     (`weapon_id` answers `""` for `mod_0002`, so the drum was blank for the owner's own
 ##     fit shape);
-##  3. a bay click and the drawn `(1)`..`(7)` keys move the selected rack, and the selection
+##  3. a bay click and the drawn `(1)`..`(5)` keys move the selected rack, and the selection
 ##     writes nothing to the profile.
 ##
 ## **The gate runs one frame**: `headless_runner.gd` calls each `test_*` synchronously, so
@@ -369,7 +369,9 @@ func _delete_file(path: String) -> void:
 func test_a_real_named_plate_drag_commits_the_swap() -> void:
 	_three_barrel_rack()
 	_settle_layout()
-	assert_eq(_chip(0, 0).size, Vector2(40.0, 44.0), "the chip keeps its slot recess")
+	## Unlisted in 09 section 12's moved rows but forced by S15's plate-fit correction:
+	## the chip is the drawn slot, and the slot moved onto the plate's own ink (34 x 40).
+	assert_eq(_chip(0, 0).size, Vector2(34.0, 40.0), "the chip keeps its slot recess")
 	_hover(_name_centre(0, 2))
 	assert_eq(
 		_hovered_name(), "Name",
@@ -450,7 +452,7 @@ func test_an_instance_keyed_rack_reads_the_cycle_figure() -> void:
 
 
 ## A1: a real click on a bay selects it - the section 3.2 ember frame follows - and the drawn
-## `(1)`..`(7)` keys do the same through `_unhandled_input`. Presentation only: no write.
+## `(1)`..`(5)` keys do the same through `_unhandled_input`. Presentation only: no write.
 func test_a_bay_click_and_the_keys_move_the_selection() -> void:
 	_settle_layout()
 	var before := _snapshot()

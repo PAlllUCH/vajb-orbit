@@ -609,11 +609,12 @@ func test_move_rack_cell_moves_and_swaps_between_racks() -> void:
 	assert_eq(_groups(), [[1], [0]], "and the derived racks read the same")
 
 
-## The rack ceiling is the input map's own count (`GROUPS_MAX`, 7 since S5), one source for
-## the pane, the record and the component.
+## The rack ceiling is the input map's own count (`GROUPS_MAX`, 5 since S15's hardcap),
+## one source for the pane, the record and the component, and the per-battery cell cap
+## sits beside it (09 section 12).
 func test_the_rack_ceiling_is_the_groups_max() -> void:
 	assert_eq(PanelScript.RACK_COUNT, WeaponComponent.GROUPS_MAX, "the pane draws what the map addresses")
-	assert_eq(WeaponComponent.GROUPS_MAX, 7, "and the map is seven keys wide since S5")
+	assert_eq(WeaponComponent.GROUPS_MAX, 5, "and the map is five keys wide since S15")
 
 
 ## The bag figure every rack read-out shows and every install spends from is the base's in-bag
