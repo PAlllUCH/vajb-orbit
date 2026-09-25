@@ -951,6 +951,24 @@ the pane's surface, its canvas pin (UI_SPEC §3.10 Amendment 2) and any
 ink/layout change are the owner's calls on that wave's tick list. No code
 moves before the tick.
 
+**ARMORY amendment 2026-09-26 (S18 — the D13 rework LANDED; owner ticks
+2026-09-25, T1–T8).** The ARMORY pane renders **approach B**: the landscape
+console **1360×516** at the pinned **(452,214)+1392×610** host, five **2×2-cell**
+racks `B1`..`B5` with the full barrel name at 13 px and `DROP HERE` on empty
+cells, a per-bay salvo ledge, and one wells band — barrel inventory left,
+ammunition pack cards right — with the worded pack line
+**`HELD 60 ROUNDS - HOLD 30 UNITS`** (P5). Every rect derives from the host
+rect at runtime (**P6**; proofs at 1280×720, 2560×1080 and 1280×1024), ink is
+**13 px everywhere** with no `font_size` override, captions sit on the light
+ramp at ≥ 4.5:1, and the bay head carries the `READY`/`▲ OVER CAP` chip.
+The rack and row plates retire; the console master is re-rendered scripted at
+2720×1032 (2× the 1360×516 console). **Surface only** — every seam, number and transaction in this
+section, 09 §11/§12 and CONTRACTS §17 survives: five batteries × ≤ 4 cells,
+the §13/§16 refusals write nothing, the pack cards, the salvo readouts. The
+owning doc with every number and its reversal is **UI_SPEC §3.10 Amendment 3**.
+**Reversal:** UI_SPEC §3.10 Amendment 2's canvas and plates, the S15 4+1 bay
+row and the stacked wells.
+
 **EXCHANGE (§5.8) — ammunition is sellable.** The hold list gains the `ammo_*` cargo
 units (10 §6.1) at 60 % of list per unit, same row anatomy as minerals.
 

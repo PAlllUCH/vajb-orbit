@@ -856,6 +856,43 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
+Expected (S18, 2026-09-26): **`[SUMMARY] passed=886 failed=0`**, exit 0. S18's
+close-out measured **886** twice on two fresh scratch stores
+(`XDG_DATA_HOME=$(mktemp -d)`, exit 0, identical counts, zero `failed`) and ran
+the mandated `verify --baseline s18_start --tests --expect-reports
+S18-B1_report.md S18-R1_review.md` green (`"problems": []`; modified = the wave's
+10 files (3 armory, 5 suites, 2 docs) + 6 state/close-out files, deleted = []). **Growth `877 → 886`** = S18's
+`test_s18_armory_rework.gd` **8** rows + `test_s10_armory_input.gd` **+1**
+(right-click-to-pull); six rows were renamed 1:1 with their retired subjects
+(`test_d7_armory.gd`, `test_s15_armory_layout.gd`; mapping in
+`S18-R1_review.md`), none lost. The close-out also ran one fixer pass
+(**S18-F1**) curing two wave-introduced silent test aborts the review missed
+(L230–L231: a stale `PaneHeader/TitleBox/PaneTitle` path and a stale
+`HBoxContainer` cast that left three assertions dead under a printed `[PASS]`,
+both re-pinned with their execution proven by temporary value flips; no row
+moved). The wave's pin is **UI_SPEC §3.10 Amendment 3**
+(D13's owner ticks T1–T8 of 2026-09-25; STATION_HUB §5.11 carries its own
+amendment): the ARMORY pane is the landscape approach-B console **1360×516** at
+the pinned **1392×610** host, five **2×2-cell** bays `B1..B5`, one wells band
+(barrel inventory left, ammunition pack cards right), every pane rect derived
+from the host rect at runtime (P6), 13 px ink with no `font_size` override,
+captions ≥ 4.5:1, the `READY`/`▲ OVER CAP` head chip. Shipped and re-measured:
+console 1360×516 (`ArmoryStyle.console_rect`), the scripted master **2720×1032**
+(md5 `b1241913488d4d566e4f670d33d9ca53`, byte-identical re-render; the mockup's
+536-tall canvas would read 1072 — the 516 tick supersedes it), cells **117×52**
+at (10,34) on a 6 gap, ledge 240×34 at bay-y 150, wells 648×220 each with 320×68
+items, and the wordings `DROP HERE` / `HELD n ROUNDS - HOLD n UNITS` / `n CR`;
+the rack and row plates retire with code-drawn treatments. R1 re-derived the gate
+(twice, 886/0), the master md5, the live ink and states in a running game, the
+P6 derivation at 1280×720 / 2560×1080 / 1280×1024 and the data law (5×4
+batteries, §17 seams, pack/salvo readouts). **1 MED / 5 LOW (L223–L228)** — the
+MED is UI_SPEC §3.10 A3's Layout bullet pinning cells "117×50" where the
+shipped/tested cell is 117×52 (bucket 2, docs text: the developer/designer
+session owes the one-number fix; no fixer pass was run) — plus L229, the
+T-93-class probe note (station-mounting probes boot the owner's live profile;
+one persisted an auction/exchange band roll at 01:19:16 on 2026-09-26; no
+player-owned state changed).
+
 Expected (S17, 2026-09-25): **`[SUMMARY] passed=877 failed=0`**, exit 0. The S17
 review (S17-R1) measured **877** twice on two fresh scratch stores
 (`XDG_DATA_HOME=$(mktemp -d)`, exit 0, identical counts, zero `failed`) and re-ran
@@ -4066,3 +4103,29 @@ hull stops twice and the second stop slides.
   `--suite=` flag needs the `--` user-args separator (B1's "did not filter" reading
   corrected; extends L95). Owner decisions owed: none; F1/F2 are wording/stale-label
   clean-ups and F4's reversal is deleting two asserts.
+- **v0.30 (2026-09-26, wave S18 close-out — the coder lane's orchestrator session,
+  per the queue's wave anatomy; gate re-measured `886/0` twice on fresh scratch
+  stores, `verify --baseline s18_start` `problems: []`)** — records the armory
+  rework's outcome. **§9** gains the S18 expected-count paragraph above;
+  **UI_SPEC §3.10 Amendment 3** and **STATION_HUB §5.11** are the wave-owned
+  design blocks (D13's ticks T1–T8, every value with its reversal). The pane
+  ships **surface-only**: no §17 seam, §13/§16 transaction or 09 §11/§12 number
+  moved. Shipped and re-measured: the approach-B console at the pinned host
+  (1360×516 derived from 1392×610, P6), five 2×2-cell bays, the wells band, the
+  scripted 2720×1032 master (md5 `b1241913488d4d566e4f670d33d9ca53`,
+  byte-identical re-render), zero `font_size` overrides, live-captured caption
+  ratios 4.97–8.56:1, `DROP HERE` / `HELD n ROUNDS - HOLD n UNITS` / `n CR`
+  wordings, the `READY`/`▲ OVER CAP` chip; the rack/row plates retire; the moved
+  suites re-derived their numbers (`test_s15_armory_layout.gd`,
+  `test_d7_armory.gd`, `test_p2b1_outfitting_panel.gd`, `test_s10_armory_input.gd`)
+  with six rows renamed 1:1 and none lost. **0 HIGH / 1 MED / 5 LOW (L223–L228)
+  plus two close-out-found dead guards cured by one fixer pass (S18-F1,
+  L230–L231; no row moved)** — the MED is the UI_SPEC A3 Layout bullet's cell
+  "117×50" against the shipped **117×52** (bucket 2: the developer/designer
+  session's one-number docs fix; L224 the "2720×1072" comments, L225 the S10
+  probe's retired `hint` key, L226 the dead `drawn*` helpers, L227 the 4.04:1
+  OVER CAP label, L228 the 606/610 host read). **L229** records the T-93-class probe write (an
+  auction/exchange band roll persisted by a probe-driven station mount at
+  01:19:16; no player-owned state changed; run station-mounting probes under
+  `XDG_DATA_HOME=$(mktemp -d)`). Owner decisions owed: the MED's one-number docs
+  fix (developer session) and nothing else.

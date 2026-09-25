@@ -3,25 +3,22 @@ extends "res://ui/hud/cockpit_style.gd"
 ## UI_SPEC section 3.9 rule 5 for the ARMORY: the battery window's one style surface. It
 ## **extends `CockpitStyle`** (`ui/hud/cockpit_style.gd`), so the pane reads the palette,
 ## the `ui_seg_*` asset parts and the texture/colour lookups through the very same
-## Resource the cluster uses - one palette, one asset idiom, no second colour store - and
-## adds the armory's own **layout** (section 3.10's Mockup A rects) and **assets** (the
-## console and the two plates) here.
+## Resource the cluster uses - one palette, one asset idiom, no second colour store.
 ##
-## Every number is section 3.10's own, at the mockup's **logical** scale: Mockup A's canvas
-## (`staging/mockup/mockup_rest.py`, 872 x 908) is a 2x render, so its pixels are halved
-## here (bay 194x182 -> 97x91, a 64 px ammo box -> 32). The bay's own marks are the
-## exception since S15 and are stated as **drawn** numbers in the layout group below,
-## because they are read off the rack plate's ink rather than halved from the mockup. `art_scale` is section 10's own `@2x` recipe (a master is twice the logical
-## box), so the console block is drawn at `canvas * art_scale` = **872x956** - the canvas
-## section 3.10 **Amendment 2** rules once the ammunition well holds the pane's six packs, and
-## exactly half the re-rendered `ui_armory_console` master (1744x1912), so the plate mounts
-## unstretched.
+## **UI_SPEC section 3.10 Amendment 3 (the D13 rework, wave S18)** rules this surface:
+## the landscape console **1360x516** at the pinned **1392x610** host, five 2x2-cell bays
+## across the top, and one wells band (barrel inventory left, ammunition pack cards
+## right). The console's rect is **derived from the host rect at runtime (P6)** - there is
+## no pinned pane rect: `console_rect(host)` scales the base insets by the host's own
+## width/height, the bands inside it scale their offsets by the console's height, and the
+## gaps between elements are fixed. The base numbers live here, once, so the pane and its
+## tests cannot disagree about where anything lands.
 ##
-## **The wells are the mockup's rects** (`racks_well` / `inventory_well` / `ammo_well`);
-## a well may grow below its pinned height when its group holds more rows than the mockup
-## drew (the pane is content-driven: up to five owned weapon ids, six ammo packs), and its
-## pinned height is then the floor. `group_rect` is the one place that arithmetic lives, so
-## the pane and its tests cannot disagree about where a group lands.
+## The master `ui_armory_console` is re-rendered **scripted** at exactly 2x the base
+## console (`staging/mockup/render_console_master.py`, deterministic) and mounts as a
+## nine-slice over the runtime rect, so its bevel and corner bolts stay exact while the
+## flat brushed grain stretches. The pre-rework rack and row plates retire: bays, cells,
+## ledges, rows and cards are code-drawn treatments (their colours below).
 ##
 ## A user drops `res://ui/station/armory_style_user.tres` in and the pane restyles and
 ## relayouts with no code edit. Reversal: the pane's D6/S5 theme-stylebox chrome.
@@ -33,92 +30,99 @@ const ARMORY_USER_PATH: String = "res://ui/station/armory_style_user.tres"
 ## class table predates it (the family's own lesson).
 const ARMORY_SCRIPT_PATH: String = "res://ui/station/armory_style.gd"
 
+@export_group("armory palette")
+## The mockup's CAP: dim ink on painted metal, the caption tone of every mark drawn over
+## the console plate. Measured >= 4.5:1 against the plate (HIGH-2's cure).
+@export var caption: Color = Color("#acb2ba")
+## The mockup's CAP_VOID: dim ink on the host/void outside the plate.
+@export var caption_void: Color = Color("#969da5")
+## A bay card's fill (the mockup's 30,34,41).
+@export var bay_bg: Color = Color("#1e2229")
+## A cell's recess fill (the mockup's 18,21,26).
+@export var cell_bg: Color = Color("#12151a")
+## The salvo ledge's band (the mockup's 22,26,31).
+@export var ledge_bg: Color = Color("#161a1f")
+## An inventory row's / pack card's fill (the mockup's 38,43,50).
+@export var item_bg: Color = Color("#262b32")
+## A resting chip's fill (READY, BUY) - the mockup's 46,51,58.
+@export var chip_bg: Color = Color("#2e333a")
+## The OVER CAP chip's fill (the mockup's 78,32,18), paired with the ember border.
+@export var chip_danger_bg: Color = Color("#4e2012")
+## The fitted cell's decorative ember line (the mockup's cell underline).
+@export var fit_line: Color = Color("#c8461b")
+
 @export_group("armory layout")
-## Section 10's `@2x` recipe: a master is this many times its logical box. The console plate is
-## drawn at `canvas * art_scale`, which is exactly half the shipped console master.
+## Section 10's `@2x` recipe: a master is this many times its logical box. The console
+## plate is drawn at `canvas * art_scale`, once the base console's own 1360x516.
 @export var art_scale: float = 2.0
-## Section 3.10 Amendment 2's ruled canvas, at the logical scale: Mockup A's rack/inventory layout
-## plus the 68-tall ammunition well the pane's six packs need (872 x 956 drawn, the D7-R1 MED-1
-## ruling; reversal: the 436 x 454 one-row-ammo canvas the 1.0529 fill-stretch was measured on).
-@export var canvas: Vector2 = Vector2(436.0, 478.0)
-## The band each group's caption occupies above its well (Mockup A: 30 px at 2x).
-@export var caption_band: float = 15.0
-## The three recessed wells, in Mockup A's own coordinates (`mockup_rest.py`'s rects, halved):
-## BATTERY RACKS (30,122)-(842,512), INVENTORY (30,570)-(842,740), AMMUNITION (30,796)-(842,932).
-## The ammunition well's Mockup A "44" note was illustrative and retires: Amendment 2 rules its
-## 136 drawn (68 logical) height from the pane's own content.
-@export var racks_well: Rect2 = Rect2(15.0, 61.0, 406.0, 195.0)
-@export var inventory_well: Rect2 = Rect2(15.0, 285.0, 406.0, 85.0)
-@export var ammo_well: Rect2 = Rect2(15.0, 398.0, 406.0, 68.0)
-## The block's foot margin below the last well (Mockup A: 908 - 884 = 24 at 2x).
-@export var block_foot: float = 12.0
-## The rack bay plate: 97x91 logical (194x182 at 2x - the shipped master's own box), in a
-## 4+1 grid at Mockup A's own offsets (`bay_origin` is relative to the racks well): five
-## bays since S15, four in the first row and the fifth opening the second.
-@export var bay_size: Vector2 = Vector2(97.0, 91.0)
-@export var bay_gap: float = 4.0
-@export var bay_origin: Vector2 = Vector2(7.0, 7.0)
-@export var bay_columns: int = 4
-## **The bay's marks are laid against the rack plate's own ink since S15** (playthrough
-## finding F1): the shipped `ui_armory_rack_plate` master is 194x182 with its plate bar at
-## rows 49..132 and its four drawn recesses centred at x 45 / 79 / 114 / 148 (measured
-## 2026-09-25: dark-run centres, a ~34.5 px pitch on a 180x84 bar). Every mark below is a
-## **drawn** position (2x the logical export) inside that bar, so the four machined slot
-## recesses land on the art's own recesses, the ledge spans the bar's width and the SALVO
-## drums' bottom edge is flush with the bar's bottom (drawn y 132). The pre-S15 numbers
-## (slots 40x44 at drawn x 10/54/98/142, y 38..82, drums 40x72 at y 104..176) floated off
-## the bar and are the defect F1 measured.
-##
-## The four W cells as machined slot recesses: 34x40 drawn (17x20 logical) on the art's
-## own **34.5 px** drawn pitch, first recess centred at drawn x 45, block at drawn
-## y 62..102 (`slot_origin` is relative to the bay). 34 drawn is the narrowest slot that
-## still leaves a **hittable** barrel name plate: the chip's `x` carries the 28 px
-## `StationButton` theme minimum plus the 1 px separation, so a 29 px slot (the first
-## S15 metric) gave the name plate zero width and a real press started neither a drag nor
-## a remove -- the very defect the D7/S10 suites measure.
-@export var slot_count: int = 4
-@export var slot_size: Vector2 = Vector2(17.0, 20.0)
-@export var slot_pitch: float = 17.25
-@export var slot_origin: Vector2 = Vector2(14.0, 31.0)
-## The bay's engraved ledge and its SALVO strip, both inside the ink bar: the ledge is a
-## drawn 8 px band spanning the bar's width at drawn y 104..112, the three drums are
-## 34x20 drawn cells on the same 34.5 px pitch (the same columns as the W cells above) with
-## their **bottom edge flush with the bar's bottom edge** (drawn y 113..133, so the drums'
-## last pixel row is the bar's own last row, 132), and the `SALVO s` caption stands to
-## their right (`salvo_origin` is relative to the bay's own top-left).
-@export var ledge_offset: float = 52.0
-@export var salvo_caption: String = "SALVO s"
+## The measured host rect the base numbers were fitted at (the station's module host at
+## 1920x1080). Every rect derives from the *actual* host rect by scaling against this.
+@export var host_base: Vector2 = Vector2(1392.0, 610.0)
+## The console's inset inside the host at the base size, in drawn pixels: left, top,
+## right, bottom. The 68 px top band carries the pane's own title and captions; the
+## 26 px foot clears the shell's status strip.
+@export var console_inset: Vector4 = Vector4(16.0, 68.0, 16.0, 26.0)
+## The base console (drawn 1360x516; 2x = the master's 2720x1072); `canvas * art_scale`
+## must equal `host_base` less `console_inset`.
+@export var canvas: Vector2 = Vector2(680.0, 258.0)
+## The bays band: its top offset and height inside the console (both scale with the
+## console's height), and its side margin (fixed).
+@export var band_top: float = 38.0
+@export var band_height: float = 192.0
+@export var band_side: float = 16.0
+@export var bay_columns: int = 5
+@export var bay_gap: float = 7.0
+## A bay's head (the label + key + state chip band) and its ledge height, and the ledge's
+## own bottom inset; all fixed drawn pixels.
+@export var bay_head: float = 34.0
+@export var bay_ledge: float = 34.0
+@export var bay_foot: float = 8.0
+## The bay's 2x2 cells (P3): the margin from the bay's edges and the gap between the
+## cells (both fixed).
+@export var cell_columns: int = 2
+@export var cell_rows: int = 2
+@export var cell_margin: float = 10.0
+@export var cell_gap: float = 6.0
+## A cell's own text inset (the name block's left/right padding).
+@export var cell_text_inset: float = 6.0
+## The salvo ledge's parts: the three `ui_seg_*` drum cells and the carved 13 px caption's
+## gap from them.
 @export var salvo_cells: int = 3
-@export var salvo_cell: Vector2 = Vector2(17.0, 10.0)
-@export var salvo_pitch: float = 17.25
-@export var salvo_origin: Vector2 = Vector2(14.0, 56.5)
-## The `SALVO s` caption's own origin inside the bay (drawn 133, 113: right of the drum
-## block, on the ink bar's last rows).
-@export var salvo_caption_origin: Vector2 = Vector2(66.5, 56.5)
-@export var salvo_caption_font_size: int = 12
-## The pane's own two row families (section 3.10): inventory rows 22 tall with a 20 x 18
-## icon slot, ammunition rows 32 tall.
-@export var inventory_row_height: float = 22.0
-@export var inventory_icon: Vector2 = Vector2(20.0, 18.0)
-@export var ammo_row_height: float = 32.0
-## The vertical gap between two rows of one group and between two bay rows.
-@export var row_gap: float = 4.0
-## A row plate's nine-slice margins, in **master** pixels (A0's own note for the 192 x 64
-## master: 32/8/32/8 px leave a flat stretch zone and keep the left bolts whole).
-@export var row_plate_margins: Vector4 = Vector4(32.0, 8.0, 32.0, 8.0)
-## The 1 px danger frame on a row (section 3.1/3.1b's row treatment) and the 2 px ember
-## frame on the selected bay (section 3.2's active-weapon precedent).
-@export var danger_frame_width: float = 2.0
+@export var salvo_cell: Vector2 = Vector2(18.0, 32.0)
+@export var salvo_pitch: float = 20.0
+@export var salvo_caption: String = "SALVO s"
+@export var salvo_caption_left: float = 74.0
+## The wells band: its top offset inside the console (scales with the height), its foot
+## inset, and the fixed gutter between the two halves.
+@export var wells_top: float = 286.0
+@export var wells_foot: float = 10.0
+@export var wells_gutter: float = 32.0
+## The band's item grid, per half: two columns of three (barrel inventory rows left,
+## ammunition pack cards right) on a fixed gap.
+@export var item_columns: int = 2
+@export var item_rows: int = 3
+@export var item_gap: float = 8.0
+## A pack card's / inventory row's own icon box.
+@export var item_icon: float = 24.0
+## A wells half's caption band above its item grid (the `BARREL INVENTORY` /
+## `AMMUNITION` lines).
+@export var caption_band: float = 20.0
+## The bay head's state chip, right-aligned in the head (room for `OVER CAP`, the
+## chevron and the padding at 13 px).
+@export var head_chip: Vector2 = Vector2(104.0, 22.0)
+
+## The 3 px ember frame on the selected bay (the 1 px chip/danger frame is
+## `CockpitStyle.frame_width`).
 @export var selected_frame_width: float = 3.0
 
 @export_group("armory assets")
-## The painted console plate: a FLAT plate since UI_CHROME section 12 Amendment 2 (the wells
-## are code-drawn), master 1744 x 1912 for the ruled 872 x 956 block.
+## The painted console plate: a scripted flat metal field since UI_SPEC section 3.10
+## Amendment 3, master 2720x1072 (2x) for the ruled 1360x516 console; it mounts as a
+## nine-slice (the bevel and bolts sit inside a `console_patch` margin, grain stretches).
 @export var console_path: String = "res://assets/ui/ui_armory_console.png"
-## One rack bay's bolted plate: four machined slot recesses and a ledge, master 194 x 182.
-@export var rack_plate_path: String = "res://assets/ui/ui_armory_rack_plate.png"
-## The invented/ammunition rows' brushed strip (a nine-slice, flat bands only), master 192 x 64.
-@export var row_plate_path: String = "res://assets/ui/ui_armory_row_plate.png"
+## The nine-slice's patch margins, in master pixels - the bevel (6) and the corner bolts
+## (inset 32, radius 16) all sit inside 64.
+@export var console_patch: int = 64
 
 
 ## The armory's style: the user's `.tres` when it exists (and is this script), the shipped
@@ -136,9 +140,12 @@ static func defaults() -> Resource:
 	return (load(ARMORY_SCRIPT_PATH) as GDScript).new()
 
 
-## The console block's drawn size: the ruled canvas at section 10's `@2x` scale (872 x 956).
-func block_size() -> Vector2:
-	return canvas * art_scale
+## The console's own size at the base host (1360x516): the host less the console insets.
+func console_size_at_base() -> Vector2:
+	return Vector2(
+		host_base.x - console_inset.x - console_inset.z,
+		host_base.y - console_inset.y - console_inset.w
+	)
 
 
 ## A logical length in drawn pixels.
@@ -154,112 +161,167 @@ func drawn_rect(rect: Rect2) -> Rect2:
 	return Rect2(rect.position * art_scale, rect.size * art_scale)
 
 
-## The three wells in Mockup A's order: BATTERY RACKS, INVENTORY, AMMUNITION.
-func pinned_wells() -> Array[Rect2]:
-	var out: Array[Rect2] = [racks_well, inventory_well, ammo_well]
-	return out
+## The base console's drawn box: `canvas * art_scale`, asserted equal to
+## `console_size_at_base()` (the two cannot drift).
+func block_size() -> Vector2:
+	return canvas * art_scale
 
 
-## One group's own box: its caption band above its well, with the well grown to
-## `content_height` when the group holds more rows than the mockup drew (the pinned height
-## is the floor). `offset` is the accumulated growth of every group above this one, so a
-## grown group pushes the ones below it down instead of overlapping them.
-func group_rect(index: int, content_height: float = 0.0, offset: float = 0.0) -> Rect2:
-	var well: Rect2 = pinned_wells()[index]
-	var height: float = maxf(well.size.y, content_height)
-	return Rect2(well.position.x, well.position.y - caption_band + offset, well.size.x, caption_band + height)
+## P6's law, one function: the console's rect inside `host`. Each inset scales with the
+## host's own axis against the base host, so a wider window widens the console beside its
+## fixed side margins and a taller one grows the top band proportionally.
+func console_rect(host: Rect2) -> Rect2:
+	var sx := _axis(host.size.x, host_base.x)
+	var sy := _axis(host.size.y, host_base.y)
+	var base := console_size_at_base()
+	return Rect2(
+		host.position + Vector2(_scale(console_inset.x, sx), _scale(console_inset.y, sy)),
+		Vector2(_scale(base.x, sx), _scale(base.y, sy))
+	)
 
 
-## The well a group actually draws (the same rect `group_rect` opens up, without the caption).
-func drawn_well(index: int, content_height: float = 0.0, offset: float = 0.0) -> Rect2:
-	var group := group_rect(index, content_height, offset)
-	return Rect2(group.position.x, group.position.y + caption_band, group.size.x, group.size.y - caption_band)
+## The bays band inside `console`: the top offset and height scale with the console's own
+## height, the side margin is fixed. The five bays fill it on fixed gaps.
+func bays_band(console: Rect2) -> Rect2:
+	var sy := _axis(console.size.y, console_size_at_base().y)
+	return Rect2(
+		console.position + Vector2(band_side, _scale(band_top, sy)),
+		Vector2(maxf(console.size.x - band_side * 2.0, 0.0), _scale(band_height, sy))
+	)
 
 
-## How much a group grew past its pinned well height, 0 when it fits.
-func growth(index: int, content_height: float = 0.0) -> float:
-	return maxf(content_height - pinned_wells()[index].size.y, 0.0)
+## One bay's rect inside the band (drawn pixels), `index` 0-based, `B1` at the left.
+func bay_rect(index: int, console: Rect2) -> Rect2:
+	var band := bays_band(console)
+	var count: int = maxi(bay_columns, 1)
+	var width: float = (band.size.x - float(count - 1) * bay_gap) / float(count)
+	return Rect2(
+		band.position + Vector2(float(index) * (width + bay_gap), 0.0),
+		Vector2(width, band.size.y)
+	)
 
 
-## One rack bay's rect inside the racks well (the 4+1 grid, `columns` per row):
-## `index` is the rack's own ordinal, so B1..B5 place by the same rule. The last bay,
-## when it opens a row of its own, is **full-width**: it spans every column (STATION_HUB
-## section 5.11's amendment -- five bays flowing 4+1 with the tail bay full-width).
-## `count` is the rack count the grid draws (0 leaves every bay at the single cell).
-func bay_rect(index: int, count: int = 0) -> Rect2:
-	var well: Rect2 = racks_well
-	var columns: int = maxi(bay_columns, 1)
+## A bay's head band: the strip the label, key hint and state chip sit on.
+func bay_head_rect(bay: Rect2) -> Rect2:
+	return Rect2(bay.position, Vector2(bay.size.x, bay_head))
+
+
+## One cell's rect inside its bay (0..3, row-major: the 2x2 rack, P3). The cells area is
+## the bay less its head, its ledge zone and its foot; the cell size derives from it with
+## the fixed margin and gap.
+func bay_cell_rect(index: int, bay: Rect2) -> Rect2:
+	var area := cells_area(bay)
+	var count: int = maxi(cell_columns, 1)
+	var rows: int = maxi(cell_rows, 1)
+	var width: float = (area.size.x - float(count - 1) * cell_gap) / float(count)
+	var height: float = (area.size.y - float(rows - 1) * cell_gap) / float(rows)
+	var column: int = index % count
+	var row: int = floori(float(index) / float(count))
+	return Rect2(
+		area.position + Vector2(float(column) * (width + cell_gap), float(row) * (height + cell_gap)),
+		Vector2(width, height)
+	)
+
+
+## The cells area of one bay: below the head, above the ledge zone.
+func cells_area(bay: Rect2) -> Rect2:
+	var top: float = bay.position.y + bay_head
+	var bottom: float = bay.position.y + bay.size.y - bay_foot - bay_ledge - cell_gap
+	return Rect2(
+		Vector2(bay.position.x + cell_margin, top),
+		Vector2(maxf(bay.size.x - cell_margin * 2.0, 0.0), maxf(bottom - top, 0.0))
+	)
+
+
+## A bay's salvo ledge: the band its `ui_seg_*` cells and the `SALVO s` caption sit in.
+func ledge_rect(bay: Rect2) -> Rect2:
+	return Rect2(
+		Vector2(bay.position.x + cell_margin, bay.position.y + bay.size.y - bay_foot - bay_ledge),
+		Vector2(maxf(bay.size.x - cell_margin * 2.0, 0.0), bay_ledge)
+	)
+
+
+## One salvo drum cell's rect inside its ledge.
+func salvo_cell_rect(index: int, ledge: Rect2) -> Rect2:
+	return Rect2(
+		ledge.position + Vector2(float(index) * salvo_pitch, (ledge.size.y - salvo_cell.y) * 0.5),
+		salvo_cell
+	)
+
+
+## The `SALVO s` caption's own origin inside the ledge (left edge, vertically centred):
+## to the right of the drum block.
+func salvo_caption_pos(ledge: Rect2) -> Vector2:
+	var block: float = 0.0
+	if salvo_cells > 0:
+		block = float(salvo_cells - 1) * salvo_pitch + salvo_cell.x
+	return ledge.position + Vector2(maxf(block, salvo_caption_left), ledge.size.y * 0.5)
+
+
+## The wells band inside `console`: its top offset scales with the console's height, its
+## foot inset is fixed. The two halves split it on the fixed gutter.
+func wells_rect(console: Rect2) -> Rect2:
+	var sy := _axis(console.size.y, console_size_at_base().y)
+	var top: float = console.position.y + _scale(wells_top, sy)
+	var bottom: float = console.position.y + console.size.y - wells_foot
+	return Rect2(
+		Vector2(console.position.x + band_side, top),
+		Vector2(maxf(console.size.x - band_side * 2.0, 0.0), maxf(bottom - top, 0.0))
+	)
+
+
+## One half of the wells band (0 = barrel inventory, 1 = ammunition).
+func well_half_rect(half: int, console: Rect2) -> Rect2:
+	var wells := wells_rect(console)
+	var width: float = (wells.size.x - wells_gutter) * 0.5
+	return Rect2(
+		wells.position + Vector2(float(half) * (width + wells_gutter), 0.0),
+		Vector2(maxf(width, 0.0), wells.size.y)
+	)
+
+
+## One item's rect inside a half's grid: `item_columns` x `item_rows`, row-major, on the
+## fixed gap; the cells split the given rect's own width and height (the panel passes the
+## half less its caption band).
+func item_rect(index: int, grid: Rect2) -> Rect2:
+	var columns: int = maxi(item_columns, 1)
+	var rows: int = maxi(item_rows, 1)
+	var width: float = (grid.size.x - float(columns - 1) * item_gap) / float(columns)
+	var height: float = (grid.size.y - float(rows - 1) * item_gap) / float(rows)
 	var column: int = index % columns
 	var row: int = floori(float(index) / float(columns))
-	var width: float = bay_size.x
-	if count > 0 and index == count - 1 and column != columns - 1:
-		width = bay_row_width()
 	return Rect2(
-		well.position.x + bay_origin.x + column * (bay_size.x + bay_gap),
-		well.position.y + bay_origin.y + row * (bay_size.y + bay_gap),
-		width,
-		bay_size.y
+		grid.position + Vector2(float(column) * (width + item_gap), float(row) * (height + item_gap)),
+		Vector2(width, height)
 	)
 
 
-## The width a full bay row spans: every column plus the gaps between them.
-func bay_row_width() -> float:
-	var columns: int = maxi(bay_columns, 1)
-	return float(columns) * bay_size.x + float(maxi(columns - 1, 0)) * bay_gap
-
-
-## How many bay rows a rack count needs.
-func bay_row_count(count: int) -> int:
-	if count <= 0:
-		return 0
-	return int(ceil(float(count) / float(maxi(bay_columns, 1))))
-
-
-## The bay grid's own height for `count` racks (what the racks well must hold).
-func bay_grid_height(count: int) -> float:
-	var rows: int = bay_row_count(count)
-	if rows <= 0:
-		return 0.0
-	return float(rows) * bay_size.y + float(rows - 1) * bay_gap
-
-
-## One W cell's rect inside its bay (`slot_origin` + `slot_pitch` per cell).
-func slot_rect(index: int) -> Rect2:
+## A bay head's state chip, right-aligned in the head band.
+func head_chip_rect(bay: Rect2) -> Rect2:
+	var head := bay_head_rect(bay)
 	return Rect2(
-		slot_origin.x + index * slot_pitch, slot_origin.y, slot_size.x, slot_size.y
+		Vector2(head.position.x + head.size.x - head_chip.x - cell_margin, head.position.y + (head.size.y - head_chip.y) * 0.5),
+		head_chip
 	)
 
 
-## One SALVO drum cell's rect inside its bay (three cells on Mockup A's own step).
-func salvo_cell_rect(index: int) -> Rect2:
+## The whole band an item's icon occupies, vertically centred in the item (left side).
+func item_icon_rect(item: Rect2) -> Rect2:
 	return Rect2(
-		salvo_origin.x + index * salvo_pitch, salvo_origin.y, salvo_cell.x, salvo_cell.y
+		item.position + Vector2(8.0, (item.size.y - item_icon) * 0.5),
+		Vector2(item_icon, item_icon)
 	)
 
 
-## The three SALVO cells' own width, so the strip can be centred or bounded.
-func salvo_width() -> float:
-	if salvo_cells <= 0:
-		return 0.0
-	return float(salvo_cells - 1) * salvo_pitch + salvo_cell.x
+func _axis(value: float, base: float) -> float:
+	return value / maxf(base, 1.0)
 
 
-## One group's content height: `rows` rows of `row_height` with `row_gap` between them.
-func rows_height(rows: int, row_height: float) -> float:
-	if rows <= 0:
-		return 0.0
-	return float(rows) * row_height + float(rows - 1) * row_gap
-
-
-## The row plate's nine-slice margins as `(left, top, right, bottom)` - the Vector4 is kept
-## in the export so a user `.tres` can move them, this is the one reader.
-func row_plate_sides() -> Array[float]:
-	return [
-		row_plate_margins.x, row_plate_margins.y, row_plate_margins.z, row_plate_margins.w
-	]
+func _scale(value: float, factor: float) -> float:
+	return value * factor
 
 
 func _to_string() -> String:
-	return "ArmoryStyle(canvas=%s art_scale=%s wells=%s bays=%s)" % [
-		canvas, art_scale, pinned_wells(), bay_size
+	return "ArmoryStyle(host=%s console=%s art_scale=%s bays=%s)" % [
+		host_base, console_size_at_base(), art_scale, bay_columns
 	]

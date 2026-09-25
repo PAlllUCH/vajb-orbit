@@ -473,6 +473,73 @@ canvas (which forced the 1.0529 fill-stretch R1 measured).
 - Danger/insufficient/refusal states reuse §3.1/§3.1b verbatim as row
   treatments (label + 1 px code-drawn frame; digits never recolour).
 
+**Amendment 3 (2026-09-26 — the D13 rework, wave S18; design of record
+`slices/D13-armory-rework/D13-A0_report.md`, owner ticks T1–T8 of 2026-09-25).**
+The pane becomes the **landscape dashboard (approach B)**: five rack bays across
+the top, the barrel inventory and the ammunition packs in the wells band below.
+Amendment 2's canvas and Mockup A's rects are superseded; every value below is
+the wave's own and carries its reversal.
+
+- **Console (P1).** The pane's base host rect is the measured
+  **(452,214)+1392×610** at 1920×1080. The console insets it by
+  **(16, 68, 16, 26)** (left, top, right, bottom) → **1360×516**, the ruled
+  canvas **680×258 at `art_scale` 2**. `ui_armory_console` is re-rendered
+  **scripted** (`staging/mockup/render_console_master.py`, deterministic,
+  byte-identical on re-run) at **2720×1032** — exactly 2× the 1360×516 console;
+  the mockup's own 536-tall render would read 1072, and the 516 tick supersedes
+  it — in the mockup's brushed metal + bevel + corner-bolt language. It mounts
+  as a nine-slice (patch margins 64 master px) over the runtime console rect, so
+  the border and bolts stay exact while the flat grain stretches. The rack plate `ui_armory_rack_plate` and the
+  row plate `ui_armory_row_plate` retire from this pane: bays, cells, ledges,
+  rows and cards are **code-drawn treatments**. Reversal: Amendment 2's
+  872×956 canvas, the unstretched 1744×1912 master and the two plates.
+- **Resolution law (P6, T1's condition).** No pane rect is a constant: every
+  rect derives from the host rect at runtime. `console_rect(host)` scales the
+  base insets by `host.w / 1392` and `host.h / 610`; the bands inside the
+  console scale their offsets/heights by `console.h / 516`, their widths from
+  `console.w / 1360`, with the fixed gaps below unscaled. Proofs at the three
+  canvases: 1920×1080 (base), 2560×1080 (bays widen), 1920×1536 (bands grow) —
+  the mockup's `_b`/`_b_wide`/`_b_tall`. Reversal: pinned rects.
+- **Layout.** Bays band: top **38**, height **192**, side margin **16**, five
+  bays on a **7** gap → **260×192** each, `B1`..`B5`. Bay: head **34**; cells
+  **2×2,** **117×50** on a 6 gap, margin **10**; ledge **240×34** at bay-y
+  **150** carrying three `ui_seg_*` cells **18×32** on a 20 pitch and the
+  13 px `SALVO s` caption beside them. Wells band: top **286**, foot **10**
+  (height **220**), gutter **32** → two halves **648** wide, each a
+  **2-column × 3-row** grid (**320×68** items, gap 8). Reversal: the 4+1 bay
+  row, the 4-in-a-row cells and the three stacked wells.
+- **Ink (T3/T6).** Floor **13 px everywhere**: all ink sizes come from the
+  theme variations (`StationCaption` 13, `Label`/`Button` 14, `SectionHeader`
+  16, `StationValue` 18, `StationPanelTitle` 20), every one registered in
+  `Router.FONT_SIZE_ITEMS`; the pane sets **no `font_size` override**. Names
+  print **BONE** (the style's `bone`); captions use the light ramp —
+  **CAP (172,178,186)** on painted metal and **CAP_VOID (150,157,165)** on the
+  host — measured ≥ 4.5:1. A bay cell prints `W<n> <name>` / `<variant>` on
+  two 13 px lines (full name, split before its last word) and `DROP HERE` on
+  empty cells (T4). Reversal: the 9–13 px override block (HIGH-1), `text_dim`
+  captions (HIGH-2).
+- **States (T7).** The bay head carries a **chip**: `READY`, or
+  `▲ OVER CAP` (chevron + label, never colour alone) when the battery holds the
+  §12 hardcap's four cells (`proposed` trigger; reversal: the chip retires).
+  The boxed `✕` chip retires; the remove stays as the cell's 13 px `✕` and the
+  advertised right-click-to-pull, both through `remove_barrel`. Reversal: the
+  boxed chip alone.
+- **Ammunition card (P2/P5).** One card per pack, catalogue order: a 24 px
+  icon; name + `PRICE CR`; `<rounds> ROUNDS PER PACK` + the state chip
+  (`EMPTY`/`IN STOCK`/`AT CAP`/`OVER CAP`, §5.1's four states); the P5 line
+  **`HELD %d ROUNDS - HOLD %d UNITS`** (hold units × 10 and the family's unit
+  ceiling); the state line (§5.1's four wordings) and the `BUY` chip. All at
+  13 px. Reversal: the 32 px row, `HELD %d / %d` and the hidden spacer row.
+- **Inspector / footer (P4/T5).** The pane's footer caption retires (LOW-3,
+  T5); a hovered barrel's inspector body carries **two lines** — the catalogue
+  description then a stats line (`SALVO`, `DPS`, the cell address) — through
+  the existing `inspect_requested(title, body, danger)` seam, whose shell side
+  (`INSPECTOR_BODY_MAX_LINES := 2`) is untouched. Reversal: one description
+  line and the footer caption.
+- **Data law unchanged:** five batteries × ≤ 4 cells, the pack cards, the
+  salvo readouts, the §13/§16 transactions (refusals write nothing) and
+  CONTRACTS §17's seams. A dropped datum is HIGH.
+
 ## 4. Settings
 
 Scene: `vajb-orbit/ui/screens/settings.tscn`. Root `Control` full-rect, bg `void_base` drawn by a full-rect `PanelContainer` with the `panel` stylebox (or `ColorRect` with `void_base` as first child — spec choice: `PanelContainer` for consistency).

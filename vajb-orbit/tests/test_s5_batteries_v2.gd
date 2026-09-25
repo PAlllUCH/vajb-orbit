@@ -333,7 +333,7 @@ func test_the_rail_says_armory_and_loads_the_renamed_pane() -> void:
 	## entry it was loaded from would read as two surfaces.
 	var panel := _mount()
 	assert_eq(
-		String((panel.get_node("PaneHeader/TitleBox/PaneTitle") as Label).text),
+		String((panel.get_node(^"PaneTitle") as Label).text),
 		"ARMORY",
 		"the pane's title reads the same word as the rail"
 	)

@@ -39,7 +39,21 @@ cd "$VAJB_WORKSPACE" && source ~/.profile \
   > /tmp/s18_r1.log 2>&1
 ```
 
-## S18-F1 — fixer (only if R1 leaves HIGH or MED)
+## S18-F1 — fixer (dispatched 2026-09-26 for the close-out-found dead guards)
 
-Dispatched from R1's findings with the same file set R1 names per finding; the
-fixer's report is `S18-F1_report.md` and the gate line must re-stand.
+R1's own MED is UI_SPEC §3.10 A3's cell number — docs text, bucket 2, the
+developer session's fix, **not** the fixer's. The close-out found two
+wave-introduced silent test aborts the review missed (the harness keeps printing
+`[PASS]` while the guard aborts): `tests/test_s5_batteries_v2.gd:335-336` reads
+the pre-S18 `PaneHeader/TitleBox/PaneTitle` path, and
+`tests/test_d7_armory.gd:719-721` casts `Box/Barrels` to the pre-S18
+`HBoxContainer` (the new node is a plain `Control`). Both are re-pinned here;
+production code and `docs/` are out of scope.
+
+```bash
+cd "$VAJB_WORKSPACE" && source ~/.profile \
+  && VAJB_SLIM=1 VAJB_WORKER_FILES='vajb-orbit/tests/, .agents/gen/slices/S18-armory-rework/' \
+     crush run "You are worker S18-F1, the fixer of wave S18 (the ARMORY rework). Read .agents/gen/slices/S18-armory-rework/S18-R1_review.md first. Two wave-introduced silent test aborts were found at close-out (the harness keeps printing PASS while the guard aborts): (1) vajb-orbit/tests/test_s5_batteries_v2.gd:335-336 - the assert reads String((panel.get_node(\"PaneHeader/TitleBox/PaneTitle\") as Label).text); the S18 scene rewrite moved PaneTitle to the panel root with unique_name_in_owner, so the lookup returns null, .text errors and the title assertion never runs. Re-pin it to the shipped path (the unique name %PaneTitle or get_node(^\"PaneTitle\")), keeping the assertion's meaning unchanged. (2) vajb-orbit/tests/test_d7_armory.gd:719-721 - the chip lookup casts Box/Barrels to HBoxContainer; the S18 panel builds that node as a plain Control (armory_panel.gd:1721), so the cast yields null and the 'x returns a barrel' block aborts; the sibling lookup at :425 was updated to as Control in the wave and this one was missed. Cast to Control in the same statement without changing any assertion. Both are re-pins, never weakenings: after the fix the run logs must show no 'Invalid access to property or key text' and no 'Cannot call method get_child on a null value', every gated assertion must execute, and both suites must stay green. Verify (all runs bounded by --quit-after, each prefixed with XDG_DATA_HOME set to a fresh mktemp -d): godot --headless --path vajb-orbit res://tests/headless_runner.tscn --quit-after 600 -- --suite=test_s5_batteries_v2 and the same with --suite=test_d7_armory, then the full gate twice. Report: the two suite summaries, both gate SUMMARY lines (must stay 886/0), and git diff -- vajb-orbit/tests/test_s5_batteries_v2.gd vajb-orbit/tests/test_d7_armory.gd. Do NOT touch docs/ or any production file (the review's MED is the developer session's). Write .agents/gen/slices/S18-armory-rework/S18-F1_report.md (REPORT template, 120 lines max). Leave no command in the background." \
+     -m deepseek/deepseek-flash --reasoning-effort max --cwd "$VAJB_WORKSPACE" \
+  > /tmp/s18_f1.log 2>&1
+```

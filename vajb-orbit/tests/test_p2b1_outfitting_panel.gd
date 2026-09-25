@@ -198,8 +198,8 @@ func _on_status(message: String, danger: bool) -> void:
 ## --------------------------------------------------------------- panel read-backs
 
 
-func _ammo_rows(panel: Control) -> VBoxContainer:
-	return panel.get_node("%ArmoryRows") as VBoxContainer
+func _ammo_rows(panel: Control) -> Control:
+	return panel.get_node("%ArmoryRows") as Control
 
 
 func _ammo_row(panel: Control, pack_id: StringName) -> Button:
@@ -271,7 +271,7 @@ func _rack_text(panel: Control, index: int) -> String:
 
 func _barrel_chip(panel: Control, rack: int, position: int) -> HBoxContainer:
 	var row := _rack_row(panel, rack)
-	var barrels := row.get_node(^"Box/Barrels") as HBoxContainer
+	var barrels := row.get_node(^"Box/Barrels") as Control
 	return barrels.get_child(position) as HBoxContainer
 
 
@@ -279,8 +279,8 @@ func _close_barrel(panel: Control, rack: int, position: int) -> void:
 	(_barrel_chip(panel, rack, position).get_node(^"Close") as Button).pressed.emit()
 
 
-func _inventory_rows(panel: Control) -> VBoxContainer:
-	return panel.get_node("%InventoryRows") as VBoxContainer
+func _inventory_rows(panel: Control) -> Control:
+	return panel.get_node("%InventoryRows") as Control
 
 
 ## One inventory row's drag payload, exactly as its own `_get_drag_data` builds it: the
@@ -386,9 +386,9 @@ func test_ammo_rows_are_the_catalogue_in_order() -> void:
 			"%s's meta is its rounds" % pack_id
 		)
 		assert_eq(
-			_cell_text(row, "Price").replace(" ", ""),
-			str(int(pack[&"cost"])),
-			"%s's PRICE is the catalogue's cost" % pack_id
+			_cell_text(row, "Price"),
+			PanelScript.PRICE_FORMAT % Catalog.group_int(int(pack[&"cost"])),
+			"%s's PRICE is the catalogue's cost with its unit word (P5)" % pack_id
 		)
 		var icon := row.find_child("Icon", true, false) as TextureRect
 		assert_true(icon != null, "%s carries an icon" % pack_id)
@@ -435,17 +435,22 @@ func test_ammo_state_lines_and_tags() -> void:
 			continue
 		assert_eq(
 			_cell_text(row, "Held"),
-			PanelScript.HELD_FORMAT % [_held(pack_id), _unit_cap(pack_id)],
-			"%s's HELD / MAX is the hold's units against the family's unit ceiling" % pack_id
+			PanelScript.HELD_FORMAT % [
+				_held(pack_id) * Catalog.ROUNDS_PER_CARGO_UNIT, _unit_cap(pack_id)
+			],
+			"%s's held line is the P5 worded rounds-against-units figure" % pack_id
 		)
 		assert_eq(_cell_text(row, "Status"), String(entry[&"tag"]), "%s's tag" % pack_id)
 		assert_eq(_cell_caption(row, "Held"), String(entry[&"meta"]), "%s's state line" % pack_id)
-	## The advisory footer is the scene's own copy, unchanged by this pass: the hold cap is
-	## advisory and a purchase is never clamped (`STATION_SPEC.md` section 2.3).
+	## T5 retires the pane's own footer caption (LOW-3: the shell's StatusLabel does the same
+	## job); the advisory rule stays visible as the card's own state line.
+	assert_true(
+		panel.get_node_or_null("%PaneFooter") == null,
+		"the pane footer caption retires (T5)"
+	)
 	assert_eq(
-		String((panel.get_node("%PaneFooter") as Label).text),
-		"HOLD CAPACITY IS ADVISORY · A PURCHASE IS NEVER CLAMPED",
-		"the pane footer still states the advisory rule"
+		_cell_caption(_ammo_row(panel, &"rocket"), "Held"), PanelScript.META_ADVISORY,
+		"and the advisory wording lives on the over-cap card"
 	)
 
 
@@ -497,9 +502,9 @@ func test_the_module_rows_are_retired_from_the_pane_its_scene_and_its_script() -
 		panel.get_node_or_null("%RackRows") != null, "the battery racks are drawn"
 	)
 	assert_eq(
-		String((panel.get_node("ArmoryScroll/ArmoryBody/RacksMargin/RacksBox/RacksCaption") as Label).text),
-		"BATTERY RACKS",
-		"and keep their own caption"
+		String((panel.get_node("%InventoryCaption") as Label).text),
+		"BARREL INVENTORY - 0 OWNED",
+		"and the wells band carries their own caption"
 	)
 	assert_true(
 		panel.get_node_or_null("%InventoryRows") != null, "and so is the inventory list"
@@ -668,19 +673,25 @@ func test_the_racks_draw_seven_drop_zones_over_the_inventory() -> void:
 	)
 	assert_eq(rows[1][&"cells"], [], "an empty rack holds nothing")
 	assert_eq(rows[3][&"cells"], [], "and so does a rack past the hull's cells")
-	## The empty-state cue and the salvo line are the pane's own two labels, one visible at a
-	## time: an empty rack offers the drop, a loaded one states its rate.
+	## T4/T7 (Amendment 3): the empty cells' own `DROP HERE` cues offer the drop (the head's
+	## single hint label retired), and the head's state chip stays visible on every rack.
 	var loaded := _rack_row(panel, 0)
-	assert_true((loaded.get_node(^"Box/Head/Hint") as Label).visible == false, "a loaded rack hides the drop cue")
-	assert_true((loaded.get_node(^"Box/Head/State") as Label).visible, "and shows its state line")
-	assert_eq(_rack_text(panel, 0), PanelScript.RACK_READY, "a laser rack states no travelling cadence")
-	var empty := _rack_row(panel, 1)
-	assert_true((empty.get_node(^"Box/Head/Hint") as Label).visible, "an empty rack shows the drop cue")
+	assert_true((loaded.get_node(^"Box/Head/State") as Label).visible, "a loaded rack shows its state chip")
+	assert_eq(_rack_text(panel, 0), PanelScript.RACK_READY, "a laser rack reads READY")
 	assert_eq(
-		(empty.get_node(^"Box/Head/Hint") as Label).text,
-		PanelScript.RACK_INSTALL_CUE,
-		"the pane's own words"
+		(loaded.get_node(^"Box/Cells") as Control).get_child_count(), 3,
+		"and its three empty cells carry the drop cue"
 	)
+	var empty := _rack_row(panel, 1)
+	assert_eq(
+		(empty.get_node(^"Box/Cells") as Control).get_child_count(), 4,
+		"an empty rack offers all four cells"
+	)
+	for child: Node in (empty.get_node(^"Box/Cells") as Control).get_children():
+		assert_eq(
+			String((child.get_node(^"Cue") as Label).text), PanelScript.RACK_INSTALL_CUE,
+			"each one the pane's own DROP HERE words"
+		)
 
 
 ## The salvo line is the pin's rule made visible (09 section 11: "the rof will be limited by
@@ -699,9 +710,14 @@ func test_a_rack_states_its_slowest_members_cycle() -> void:
 	)
 	_profile.call(&"set_battery_groups", VANGUARD, [[0], [1]])
 	assert_eq(
-		_rack_text(panel, 1),
+		String(_rack_rows(panel)[1][&"salvo"]),
 		PanelScript.RACK_SALVO % WeaponComponent.interval_of(&"cannon"),
-		"the cannon rack states its own 0.6 s cycle"
+		"the cannon rack states its own 0.6 s cycle (T8: on its ledge, the line on the head's tooltip)"
+	)
+	assert_eq(
+		String(_rack_row(panel, 1).get_node(^"Box/Head/State").tooltip_text),
+		PanelScript.RACK_SALVO % WeaponComponent.interval_of(&"cannon"),
+		"and the chip's tooltip carries the same line"
 	)
 	_profile.call(&"add_module", &"w_rocket", 1)
 	assert_true(
@@ -710,7 +726,7 @@ func test_a_rack_states_its_slowest_members_cycle() -> void:
 	)
 	_profile.call(&"set_battery_groups", VANGUARD, [[0], [1, 2]])
 	assert_eq(
-		_rack_text(panel, 1),
+		String(_rack_rows(panel)[1][&"salvo"]),
 		PanelScript.RACK_SALVO % WeaponComponent.interval_of(&"rocket"),
 		"and the mixed rack states the rocket's 1.2 s, its slowest member"
 	)
@@ -868,8 +884,8 @@ func test_profile_changed_drives_the_refresh() -> void:
 	assert_eq(_cell_text(row, "Status"), PanelScript.TAG_IN_STOCK, "cargo refreshed the tag")
 	assert_eq(
 		_cell_text(row, "Held"),
-		PanelScript.HELD_FORMAT % [6, _unit_cap(&"plasma")],
-		"and the held count"
+		PanelScript.HELD_FORMAT % [6 * Catalog.ROUNDS_PER_CARGO_UNIT, _unit_cap(&"plasma")],
+		"and the worded held figure"
 	)
 	assert_true(bool(_profile.call(&"spend", _credits())), "drain the balance")
 	assert_true(_price_danger(row), "credits recomputed the price's colour")

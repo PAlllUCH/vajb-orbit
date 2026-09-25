@@ -1080,3 +1080,44 @@ resolution). Every proposed value carries its reversal; zero writes outside
 the file set (`git status` clean on `vajb-orbit/` + `docs/`; `verify_wave.py
 verify` green). The owner deferred adopting the layout language across the
 game. Implementation = **coder item 24 = S18** (queued, briefed on the ticks).
+
+**S18 (2026-09-26): armory rework — the implementation (coder item 24) — DONE**
+(gate 877 → **886/0**, S18's `test_s18_armory_rework.gd` 8 rows + `test_s10`'s
+right-click row; six rows renamed 1:1 with retired subjects, none lost; 0 HIGH /
+1 MED / 5 LOW L223–L229; B1 → R1 → **F1** — the review's MED is docs text, so
+the fixer pass cured instead the **two close-out-found silent test aborts the
+review missed** (L230–L231: a pre-S18 node path and a pre-S18 cast that left the
+guards dead under a printed `[PASS]`; both re-pinned, execution proven by
+temporary value flips). The pane
+renders D13's approach B: landscape console 1360×516 derived from the pinned
+host (P6 — `ArmoryStyle.console_rect` / `bay_cell_rect` / `well_half_rect` …),
+five 2×2-cell bays `B1..B5` on a 7 gap, one wells band (inventory rows left, 3×2
+pack cards right), `DROP HERE` per empty cell, per-bay salvo ledges (18×32
+`ui_seg_*` drums on a 20 pitch beside the 13 px `SALVO s`), the `READY` /
+`▲ OVER CAP` head chip (hardcap trigger, proposed) and the retired footer
+caption (T5) with a two-line barrel inspector (P4). Ink: 13 px floor, **zero
+`font_size` overrides**, captions on the light ramp (measured 4.97–8.56:1); pack
+cards carry `HELD n ROUNDS - HOLD n UNITS` + `n CR`. The console master is
+scripted (`staging/mockup/render_console_master.py`, deterministic,
+byte-identical: 2720×1032, md5 `b1241913488d4d566e4f670d33d9ca53`); the rack/row
+plates retire. T1's condition proven standalone at 1280×720 / 2560×1080 /
+1280×1024 (bays 260 → 385 wide / 328 tall, every rect inside), re-run
+independently by R1; two gate-invisible bugs (chips on the W-cell index, chrome
+over the band) were caught by the rendered capture and regression-tested. R1
+re-derived the gate twice (886/0), the master md5, the live ink/states in a
+running game, the P6 geometry and the data law (5×4, §17 seams, pack/salvo
+readouts), owned no CONTRACTS section (surface-only wave), and left **MED L223**
+(UI_SPEC A3 pins cells 117×50; shipped/tested is 117×52 — bucket 2, the
+**developer session owes the docs fix**) plus LOWs L224–L228 (the "2720×1072"
+comments, the S10 probe's retired `hint` key, dead `drawn*` helpers, the 4.04:1
+OVER CAP label, the 606/610 host read). **L229**: the wave's probes booted the
+owner's live profile and persisted an auction/exchange band roll at 01:19:16
+(the T-93 class again; credits/cargo/ammo/modules/fits/batteries intact — no
+player-owned state changed; run station-mounting probes under
+`XDG_DATA_HOME=$(mktemp -d)`). Docs: UI_SPEC §3.10 **Amendment 3** + STATION_HUB
+§5.11, every value with its reversal. Close-out: gate **886/0** twice hermetic
+(re-run after F1's two re-pins; the F1 suites also re-measured clean by the
+close-out: s5 13/0, d7 11/0, zero abort markers), `verify --baseline s18_start`
+green (`"problems": []`), the four `.uid` sidecars landed by the editor scan, the
+wave-boundary commit carrying the reworked pane + suites + docs amendments + the
+close-out state. The coder queue is empty.

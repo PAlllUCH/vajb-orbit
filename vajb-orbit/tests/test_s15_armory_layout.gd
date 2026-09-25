@@ -1,14 +1,14 @@
 extends McpTestSuite
 ## Suite s15_armory_layout: wave S15's ARMORY rework (09 section 12, STATION_HUB section
-## 5.11's 2026-09-25 amendment) -- **five bays flowing 4+1, one per cockpit lamp**, and the
-## rack plate's fit corrected onto the plate's own ink (playthrough finding F1).
+## 5.11) as wave S18's D13 rework re-derives it (UI_SPEC section 3.10 Amendment 3,
+## owner-ticked 2026-09-25).
 ##
-##  - **AC4** -- the pane draws five bays (4 + 1), labelled `B1..B5`, and every bay's four
-##    slots, its ledge and its three SALVO drums sit **inside the plate's ink**
-##    (`ui_armory_rack_plate.png`, the bar at rows 49..132) at the art's own ~34.5 px slot
-##    pitch, with the drums' bottom edge flush with the ink's bottom. The pre-S15 block
-##    (40 x 44 at drawn (10, 38) on a 44 px pitch) is measured against the same ink and
-##    shown to fall outside it: that is F1, and the fix is the difference.
+##  - **AC4** -- the pane draws five bays in ONE band, labelled `B1..B5`, each the band's
+##    own 260 x 192 cell on the style's derivation from the host rect (P6), and every bay
+##    carries the P3 2x2 rack - four 117 x 52 cell recesses inside the bay, the salvo ledge
+##    at the foot with its three `ui_seg_*` drums, all at Amendment 3's own numbers. The
+##    retired S15 4-in-a-row slot block (F1's ink-fit cure, superseded by P3) is measured
+##    against the new rack as the "before".
 ##  - **AC5** -- armory rack i and cockpit lamp i are the same ordinal 1:1, the `(i)` key
 ##    selection lights lamp i, and the five lamps are the five bays.
 ##  - **AC1's pane half** -- a battery already holding four cells refuses the drop of a
@@ -16,40 +16,47 @@ extends McpTestSuite
 ##    nothing. (The record-level half is `tests/test_s15_battery_cap.gd`'s; the pane is
 ##    mounted here, so its refusal rides along.)
 ##
-## The ink is read off the **shipped texture**, pixel by pixel, so the measurement is the
-## frame's own and not a copy of a constant. The pane is mounted the way
-## `tests/test_d7_armory.gd` mounts it (the shipped scene, the shipped theme, the
-## profile borrowed and handed back), and the cockpit's band the way
-## `tests/test_d7_cockpit.gd` does. Neither suite is touched.
+## The pane is mounted the way `tests/test_d7_armory.gd` mounts it (the shipped scene,
+## the shipped theme, the profile borrowed and handed back), at the pinned 1392 x 610
+## host so the derived geometry is the design's own base numbers; the cockpit's band the
+## way `tests/test_d7_cockpit.gd` does.
 
 const PanelScene := preload("res://ui/station/armory_panel.tscn")
 const PanelScript := preload("res://ui/station/armory_panel.gd")
-const StyleScript := preload("res://ui/station/armory_style.gd")
 const CockpitStyleScript := preload("res://ui/hud/cockpit_style.gd")
 const ThemeRes := preload("res://ui/theme/vajb_theme.tres")
 const HudScene := preload("res://ui/hud/hud.tscn")
 const FitData := preload("res://game/ship_fit.gd")
 const WeaponData := preload("res://game/weapons.gd")
 
-const PLATE_PATH := "res://assets/ui/ui_armory_rack_plate.png"
+const CONSOLE_PATH := "res://assets/ui/ui_armory_console.png"
 const PROFILE_PATH := "user://test_s15_armory_layout.cfg"
 
-## The plate's own ink box, measured 2026-09-25 and re-measured below on every run:
-## `ui_armory_rack_plate.png` is 194 x 182 with its plate bar at rows 49..132, cols 7..186.
-const INK := Rect2(7.0, 49.0, 180.0, 84.0)
-## The same box as the art's **rows**: 49..132 inclusive, so the drums' bottom-most pixel
-## row can be compared against the bar's own last row rather than an exclusive edge.
-const INK_ROWS := Vector2i(49, 132)
-## The art's drawn recesses: centres x 45 / 79 / 114 / 148 -> a ~34.5 px pitch.
-const SLOT_PITCH := 34.5
-const PITCH_TOLERANCE := 2.0
-const FIRST_SLOT_CENTRE := 45.0
+## UI_SPEC section 3.10 Amendment 3's own numbers (the D13 rework, wave S18): the pinned
+## host, the landscape console it derives, the scripted 2x master and the 2x2 rack.
+const HOST := Vector2(1392.0, 610.0)
+const CONSOLE_ORIGIN := Vector2(16.0, 68.0)
+const CONSOLE := Vector2(1360.0, 516.0)
+const CONSOLE_MASTER := Vector2(2720.0, 1032.0)
+const ART_SCALE := 2.0
+const BAND_ORIGIN := Vector2(16.0, 38.0)
+const BAND := Vector2(1328.0, 192.0)
+const BAY := Vector2(260.0, 192.0)
+const BAY_GAP := 7.0
+const CELL := Vector2(117.0, 52.0)
+const CELL_ORIGIN := Vector2(10.0, 34.0)
+const CELL_GAP := 6.0
+const LEDGE_ORIGIN := Vector2(10.0, 150.0)
+const LEDGE := Vector2(240.0, 34.0)
+const SALVO_CELL := Vector2(18.0, 32.0)
+const SALVO_PITCH := 20.0
+## The retired S15 plate-fit block (finding F1's cure, superseded by P3): the 4-in-a-row
+## W cells at the rack plate's own 34.5 drawn px pitch, 17 x 20 logical apiece. It is
+## measured against the new 2x2 rack as the "before" the wave replaces.
+const BEFORE_SLOT := Vector2(17.0, 20.0)
+const BEFORE_SLOT_PITCH := 34.5
 const RACK_COUNT := 5
 const LAMP_COUNT := 5
-## The pre-S15 bay block (the F1 defect): slots 40 x 44 drawn at (10, 38), pitch 44 -
-## `ui/station/armory_style.gd`'s retired defaults, kept here as the measured "before".
-const BEFORE_SLOT := Rect2(10.0, 38.0, 40.0, 44.0)
-const BEFORE_SLOT_PITCH := 44.0
 
 const VANGUARD: StringName = &"ship_vanguard"
 const START_CREDITS := 10000
@@ -124,7 +131,8 @@ func setup() -> void:
 	_host = Control.new()
 	_host.name = "ArmoryLayoutHost"
 	_host.theme = ThemeRes
-	_host.size = Vector2(1920.0, 1080.0)
+	## The pinned host rect the pane derives every rect from (P6 / Amendment 3).
+	_host.size = HOST
 	_fixture_host().add_child(_host)
 
 
@@ -185,136 +193,91 @@ func _rack_row(index: int) -> PanelContainer:
 	return (_panel.get_node("%RackRows") as VBoxContainer).get_child(index) as PanelContainer
 
 
-func _drawn_slot_rects(style: Resource) -> Array[Rect2]:
-	var out: Array[Rect2] = []
-	for index in style.slot_count:
-		out.append(style.drawn_rect(style.slot_rect(index)))
-	return out
+## ----------------------------------------------- AC4: the Amendment 3 console fit
 
-
-## The plate's ink box, measured off the shipped texture pixel by pixel: every pixel with
-## alpha > 0 is ink, so the box is the art's bar. The import is lossless
-## (`compress/mode=0`) and the panel draws this very texture, so the measurement is the
-## frame's own.
-func _measured_ink() -> Rect2:
-	var image: Image = null
-	var texture: Texture2D = ResourceLoader.load(PLATE_PATH) as Texture2D
-	if texture != null:
-		image = texture.get_image()
-	if image == null and FileAccess.file_exists(PLATE_PATH):
-		image = Image.load_from_file(PLATE_PATH)
-	if image == null:
-		return Rect2()
-	var min_x := image.get_width()
-	var min_y := image.get_height()
-	var max_x := -1
-	var max_y := -1
-	for y in image.get_height():
-		for x in image.get_width():
-			if image.get_pixel(x, y).a > 0.0:
-				min_x = mini(min_x, x)
-				min_y = mini(min_y, y)
-				max_x = maxi(max_x, x)
-				max_y = maxi(max_y, y)
-	if max_x < 0:
-		return Rect2()
-	return Rect2(
-		float(min_x), float(min_y), float(max_x - min_x + 1), float(max_y - min_y + 1)
-	)
-
-
-## ------------------------------------------------- AC4: the plate fit (finding F1)
-
-## AC4's ink row: the shipped plate is the 194 x 182 master with its bar at rows 49..132,
-## and **every drawn mark the bay lays sits inside that bar** -- the four slot recesses on
-## the art's own ~34.5 px pitch (first centre at drawn x 45), the ledge spanning the bar,
-## and the three SALVO drums with their bottom edge flush with the bar's bottom. The
-## pre-S15 block is measured against the same bar and does **not** fit it: that is F1.
-func test_the_bay_marks_sit_on_the_plates_own_ink() -> void:
+## AC4's first half: the console is the host less its insets and the scripted master is
+## exactly 2x it, so the nine-slice plate covers the whole rect at the base host - and
+## every bay is the band's own cell on the style's own derivation (P6).
+func test_the_console_and_the_bays_are_the_derived_geometry() -> void:
 	var panel := _mount()
 	var style := _style()
-	var master: Vector2 = ResourceLoader.load(PLATE_PATH).get_size()
-	assert_eq(master, Vector2(194.0, 182.0), "the plate master is the bay's own 194 x 182 box")
-	var ink := _measured_ink()
+	assert_eq(style.art_scale, ART_SCALE, "section 10's @2x recipe")
+	assert_eq(style.host_base, HOST, "the pinned host rect")
+	assert_eq(style.canvas * ART_SCALE, CONSOLE, "the ruled console, at the base host")
+	assert_eq(style.console_size_at_base(), CONSOLE, "the two cannot drift")
 	assert_eq(
-		ink, INK,
-		"the measured ink box is the plate bar at rows 49..132, cols 7..186 (actual %s)" % str(ink)
+		style.console_rect(Rect2(Vector2.ZERO, HOST)), Rect2(CONSOLE_ORIGIN, CONSOLE),
+		"and it derives from the host rect (P6)"
 	)
-	## --- after: the shipped marks -------------------------------
-	var slots := _drawn_slot_rects(style)
-	assert_eq(slots.size(), 4, "four W-cell recesses per bay")
-	for index: int in slots.size():
-		assert_true(
-			INK.encloses(slots[index]),
-			"slot %d sits inside the ink bar (actual %s)" % [index, str(slots[index])]
+	assert_eq(panel.call(&"block_size"), CONSOLE, "the pane draws that very console")
+	var master: Vector2 = ResourceLoader.load(CONSOLE_PATH).get_size()
+	assert_eq(master, CONSOLE_MASTER, "the scripted master is 2x the console")
+	var plate := panel.get_node("%ConsolePlate") as NinePatchRect
+	assert_true(plate != null, "the plate is a nine-slice")
+	assert_eq(plate.size, CONSOLE, "drawn at the console rect (actual %s)" % str(plate.size))
+	assert_eq(plate.patch_margin_left, 64, "with the bevel and bolts inside a 64 master px patch")
+	var bays: Array = panel.call(&"bay_rects")
+	assert_eq(bays.size(), RACK_COUNT, "five bays across the band")
+	for index in bays.size():
+		var want := Rect2(
+			CONSOLE_ORIGIN + BAND_ORIGIN + Vector2(float(index) * (BAY.x + BAY_GAP), 0.0), BAY
 		)
-		var centre: float = slots[index].position.x + slots[index].size.x * 0.5
-		assert_true(
-			absf(centre - (FIRST_SLOT_CENTRE + float(index) * SLOT_PITCH)) <= PITCH_TOLERANCE,
-			"slot %d is centred on the art's recess (centre %.1f)" % [index, centre]
-		)
-	var pitch: float = (
-		(slots[3].position.x + slots[3].size.x * 0.5)
-		- (slots[0].position.x + slots[0].size.x * 0.5)
-	) / 3.0
-	assert_true(
-		absf(pitch - SLOT_PITCH) <= PITCH_TOLERANCE,
-		"the drawn slot pitch is the art's ~34.5 px (actual %.2f)" % pitch
-	)
-	var ledge := Rect2(
-		style.drawn_vector(Vector2(4.0, style.ledge_offset)),
-		style.drawn_vector(Vector2(style.bay_size.x - 8.0, 4.0))
-	)
-	assert_true(INK.encloses(ledge), "the ledge band lies on the ink bar (actual %s)" % str(ledge))
-	for index in style.salvo_cells:
-		var drum: Rect2 = style.drawn_rect(style.salvo_cell_rect(index))
-		assert_true(INK.encloses(drum), "SALVO drum %d sits on the ink bar" % index)
-		assert_eq(
-			int(drum.end.y) - 1, INK_ROWS.y,
-			"drum %d's bottom-most pixel row is the bar's own last row (bottom-aligned)" % index
-		)
-	## --- before: the retired S15-predecessor block ---------------
+		assert_eq(bays[index], want, "bay %d is the band's own cell (actual %s)" % [index, str(bays[index])])
+	## The P3 rack: four cells inside the bay, the ledge at the foot, the drums on it.
+	var bay := Rect2(Vector2.ZERO, BAY)
 	for index in 4:
-		var before := Rect2(
-			BEFORE_SLOT.position + Vector2(float(index) * BEFORE_SLOT_PITCH, 0.0), BEFORE_SLOT.size
+		var cell: Rect2 = style.bay_cell_rect(index, bay)
+		assert_true(bay.encloses(cell), "cell %d sits inside its bay (actual %s)" % [index, str(cell)])
+		assert_eq(
+			cell,
+			Rect2(
+				CELL_ORIGIN + Vector2(
+					float(index % 2) * (CELL.x + CELL_GAP), float(index / 2) * (CELL.y + CELL_GAP)
+				),
+				CELL
+			),
+			"cell %d is the 2x2 rack's own recess" % index
 		)
-		assert_false(
-			INK.encloses(before),
-			"the pre-S15 slot %d fell outside the ink (F1: actual %s)" % [index, str(before)]
+	var ledge: Rect2 = style.ledge_rect(bay)
+	assert_eq(ledge, Rect2(LEDGE_ORIGIN, LEDGE), "the ledge is the bay's own foot band")
+	for index in style.salvo_cells:
+		var drum: Rect2 = style.salvo_cell_rect(index, ledge)
+		assert_true(ledge.encloses(drum), "SALVO drum %d sits on the ledge" % index)
+		assert_eq(
+			drum, Rect2(LEDGE_ORIGIN + Vector2(float(index) * SALVO_PITCH, 1.0), SALVO_CELL),
+			"drum %d on the ledge's own pitch" % index
 		)
+	## --- superseded: the retired S15 4-in-a-row block ---------
+	## F1's cure was a 4-in-a-row slot row on the rack plate at the art's own 34.5 drawn
+	## pitch; the P3 rack replaces it, so no drawn mark is the S15 block any more.
+	assert_ne(BEFORE_SLOT, CELL, "the retired S15 slot is not the new cell")
+	assert_ne(BEFORE_SLOT_PITCH, CELL.x + CELL_GAP, "nor is its pitch the new cell pitch")
 
 
-## ---------------------------------------- AC4: the five bays, 4 + 1, B1..B5
-
-## AC4's other half: the pane draws exactly five bays flowing 4 + 1, each a bolted plate
-## at the pinned 194 x 182 box with the tail bay full-width, labelled `B1..B5` with the
-## matching `(1)..(5)` key hints -- and no sixth or seventh bay remains.
-func test_the_pane_draws_five_bays_flowing_four_plus_one() -> void:
+## AC4's second half: the pane draws exactly five bays in ONE band (P3 supersedes S15's
+## 4+1 flow), each the band's own cell, labelled `B1..B5` with the matching `(1)..(5)`
+## key hints - and no sixth or seventh bay remains.
+func test_the_pane_draws_five_bays_across_one_band() -> void:
 	var panel := _mount()
 	assert_eq(PanelScript.RACK_COUNT, RACK_COUNT, "the pane's rack count is the hardcap's five")
 	assert_eq(RACK_COUNT, WeaponData.GROUPS_MAX, "and it is the input map's own number")
 	var bays: Array = panel.call(&"bay_rects")
 	assert_eq(bays.size(), RACK_COUNT, "five bays, no more")
-	var columns: int = int(_style().bay_columns)
-	assert_eq(columns, 4, "the grid's four columns")
-	var cell: Vector2 = _style().drawn_vector(_style().bay_size)
-	var gap: float = _style().drawn(_style().bay_gap)
-	var well: Rect2 = _style().drawn_rect(_style().racks_well)
-	var origin: Vector2 = _style().drawn_vector(_style().bay_origin)
-	var row_width: float = float(columns) * cell.x + float(maxi(columns - 1, 0)) * gap
+	var style := _style()
+	assert_eq(style.bay_columns, 5, "the band's five columns")
 	for index in bays.size():
-		var bay: Rect2 = bays[index]
-		var column := index % columns
-		var row := index / columns
-		var size: Vector2 = Vector2(row_width, cell.y) if index == RACK_COUNT - 1 else cell
-		var want := Rect2(
-			well.position + origin + Vector2(float(column) * (cell.x + gap), float(row) * (cell.y + gap)),
-			size
+		assert_eq(
+			(bays[index] as Rect2).position.y, (bays[0] as Rect2).position.y,
+			"bay %d rides the same band row as the first (actual %s)" % [index, str(bays[index])]
 		)
-		assert_true(
-			bay.is_equal_approx(want),
-			"bay %d is the grid's own %s cell (actual %s)" % [index, str(want), str(bay)]
+		assert_eq(
+			(bays[index] as Rect2).size, BAY,
+			"bay %d is the band's own box (actual %s)" % [index, str(bays[index])]
 		)
+	var band: Rect2 = style.bays_band(Rect2(CONSOLE_ORIGIN, CONSOLE))
+	assert_eq(band.size, BAND, "the band is the console less its side margins")
+	var rack_rows := _panel.get_node("%RackRows") as VBoxContainer
+	assert_eq(rack_rows.custom_minimum_size, BAND, "and the container fills it")
 	for index in RACK_COUNT:
 		var row := _rack_row(index)
 		assert_eq(
@@ -325,7 +288,6 @@ func test_the_pane_draws_five_bays_flowing_four_plus_one() -> void:
 			(row.get_node(^"Box/Head/Key") as Label).text, "(%d)" % (index + 1),
 			"and its own key hint"
 		)
-	assert_eq(int(_style().bay_row_count(RACK_COUNT)), 2, "five bays flow 4 + 1 into two rows")
 
 
 ## ----------------------------------------- AC5: rack i <-> cockpit lamp i

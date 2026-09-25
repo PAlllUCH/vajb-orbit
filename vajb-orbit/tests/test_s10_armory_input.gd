@@ -119,7 +119,10 @@ func setup() -> void:
 	_host = Control.new()
 	_host.name = "ArmoryInputHost"
 	_host.theme = ThemeRes
-	_host.size = Vector2(1920.0, 1080.0)
+	## The pinned host rect (UI_SPEC section 3.10 Amendment 3): the pane derives every
+	## rect from its own size (P6), so mounting it in the station's own base host makes
+	## the drawn geometry the design's own numbers.
+	_host.size = Vector2(1392.0, 610.0)
 	_profile.add_child(_host)
 	_panel = PanelScene.instantiate() as Control
 	_host.add_child(_panel)
@@ -266,6 +269,7 @@ func _bay_centre(rack: int) -> Vector2:
 ## The pane's own layout pass, as the frame after the build makes it: a box container's sort
 ## reflows the chip's children to their minimum size, which is the reading A0 measured dead.
 func _settle_layout() -> void:
+	_panel.call(&"_lay")
 	for view: Dictionary in _panel.get("_rack_views"):
 		for barrel: Dictionary in view[&"barrels"]:
 			var chip := (barrel[&"name"] as Control).get_parent() as Control
@@ -288,14 +292,20 @@ func _three_barrel_rack() -> void:
 ## ------------------------------------------------------------------ the input harness
 
 
-func _mouse_button(pos: Vector2, pressed: bool) -> void:
+func _mouse_button(pos: Vector2, pressed: bool, index: int = MOUSE_BUTTON_LEFT) -> void:
 	var event := InputEventMouseButton.new()
-	event.button_index = MOUSE_BUTTON_LEFT
+	event.button_index = index
 	event.pressed = pressed
 	event.position = pos
 	event.global_position = pos
 	Input.parse_input_event(event)
 	Input.flush_buffered_events()
+
+
+func _right_click(pos: Vector2) -> void:
+	_hover(pos)
+	_mouse_button(pos, true, MOUSE_BUTTON_RIGHT)
+	_mouse_button(pos, false, MOUSE_BUTTON_RIGHT)
 
 
 func _motion(pos: Vector2, previous: Vector2, pressed: bool) -> void:
@@ -371,7 +381,11 @@ func test_a_real_named_plate_drag_commits_the_swap() -> void:
 	_settle_layout()
 	## Unlisted in 09 section 12's moved rows but forced by S15's plate-fit correction:
 	## the chip is the drawn slot, and the slot moved onto the plate's own ink (34 x 40).
-	assert_eq(_chip(0, 0).size, Vector2(34.0, 40.0), "the chip keeps its slot recess")
+	assert_eq(
+		_chip(0, 0).size, Vector2(117.0, 52.0),
+		"the chip keeps its slot recess (the P3 2x2 cell at the pinned host; actual %s)"
+			% str(_chip(0, 0).size)
+	)
 	_hover(_name_centre(0, 2))
 	assert_eq(
 		_hovered_name(), "Name",
@@ -417,6 +431,24 @@ func test_a_real_close_click_removes_the_barrel() -> void:
 	assert_eq(_stored(), [], "and the rack record drops the reference")
 	assert_eq(
 		_last_status(), PanelScript.STATUS_REMOVED % "LASER MKII", "the pane reports the remove"
+	)
+
+
+## The chrome's own remove gesture (its hint line: RIGHT-CLICK TO PULL): a real
+## right-press on a fitted cell returns its barrel to the inventory, exactly the write the
+## `x` makes - both route `remove_barrel`.
+func test_a_real_right_click_pulls_the_barrel() -> void:
+	_settle_layout()
+	assert_eq(_rack_cells(0), [0], "B1 holds the delivered laser")
+	var at := _name_centre(0, 0)
+	_hover(at)
+	assert_eq(_hovered_name(), "Name", "the name plate is under the press (hovered %s)" % _hovered_name())
+	_right_click(at)
+	assert_eq(_rack_cells(0), [], "the right-click pulled the barrel out of the rack")
+	assert_eq(_cells()[0], "", "emptying the cell")
+	assert_eq(
+		_last_status(), PanelScript.STATUS_REMOVED % "LASER MKII",
+		"and the pane reports the remove"
 	)
 
 

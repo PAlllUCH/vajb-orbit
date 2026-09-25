@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" path="res://ui/station/armory_panel.gd" id="1_armory"]
 [ext_resource type="Texture2D" path="res://assets/ui/ui_armory_console.png" id="2_console"]
-[ext_resource type="Texture2D" path="res://assets/icons/equip/icon_equip_module.png" id="3_pane_icon"]
 
 [node name="Armory" type="Control"]
 layout_mode = 3
@@ -13,168 +12,101 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_armory")
 
-[node name="PaneHeader" type="HBoxContainer" parent="."]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 41.0
-grow_horizontal = 2
-theme_override_constants/separation = 12
-
-[node name="PaneIcon" type="TextureRect" parent="PaneHeader"]
-custom_minimum_size = Vector2(40, 40)
-layout_mode = 2
-size_flags_vertical = 4
+[node name="Console" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
 mouse_filter = 2
-texture = ExtResource("3_pane_icon")
-expand_mode = 1
-stretch_mode = 5
 
-[node name="TitleBox" type="VBoxContainer" parent="PaneHeader"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-theme_override_constants/separation = 2
+[node name="ConsolePlate" type="NinePatchRect" parent="Console"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_console")
 
-[node name="PaneTitle" type="Label" parent="PaneHeader/TitleBox"]
-layout_mode = 2
+[node name="PaneTitle" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+mouse_filter = 2
 theme_type_variation = &"StationPanelTitle"
 text = "ARMORY"
 
-[node name="PaneSubtitle" type="Label" parent="PaneHeader/TitleBox"]
+[node name="PaneSubtitle" type="Label" parent="."]
 unique_name_in_owner = true
-layout_mode = 2
+layout_mode = 0
+mouse_filter = 2
 theme_type_variation = &"StationCaption"
 text = "BATTERY RACKS AND AMMUNITION"
 
-[node name="PanelTag" type="Label" parent="PaneHeader"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_vertical = 4
-theme_type_variation = &"StationCaption"
-
-[node name="ArmoryScroll" type="ScrollContainer" parent="."]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = 47.0
-offset_bottom = -29.0
-grow_horizontal = 2
-grow_vertical = 2
-horizontal_scroll_mode = 0
-
-[node name="ArmoryBody" type="Control" parent="ArmoryScroll"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 0
-size_flags_vertical = 0
-custom_minimum_size = Vector2(872, 956)
-
-[node name="ConsolePlate" type="TextureRect" parent="ArmoryScroll/ArmoryBody"]
-unique_name_in_owner = true
-texture = ExtResource("2_console")
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-expand_mode = 1
-stretch_mode = 0
-
-[node name="RacksMargin" type="Control" parent="ArmoryScroll/ArmoryBody"]
+[node name="PaneHint" type="Label" parent="."]
 unique_name_in_owner = true
 layout_mode = 0
 mouse_filter = 2
+theme_type_variation = &"StationCaption"
+text = "DRAG TO FIT - RIGHT-CLICK TO PULL - 1-5 SELECT RACK"
+horizontal_alignment = 2
 
-[node name="RacksBox" type="VBoxContainer" parent="ArmoryScroll/ArmoryBody/RacksMargin"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/separation = 2
-
-[node name="RacksCaption" type="Label" parent="ArmoryScroll/ArmoryBody/RacksMargin/RacksBox"]
-layout_mode = 2
-theme_type_variation = &"SectionHeader"
-text = "BATTERY RACKS"
-
-[node name="RackRows" type="VBoxContainer" parent="ArmoryScroll/ArmoryBody/RacksMargin/RacksBox"]
+[node name="PanelTag" type="Label" parent="."]
 unique_name_in_owner = true
-layout_mode = 2
-size_flags_vertical = 0
+layout_mode = 0
+mouse_filter = 2
+theme_type_variation = &"StationCaption"
+horizontal_alignment = 2
+
+[node name="RackRows" type="VBoxContainer" parent="Console"]
+unique_name_in_owner = true
+layout_mode = 0
+mouse_filter = 2
 theme_override_constants/separation = 0
 
-[node name="InventoryMargin" type="Control" parent="ArmoryScroll/ArmoryBody"]
+[node name="InventoryMargin" type="Control" parent="Console"]
 unique_name_in_owner = true
 layout_mode = 0
 mouse_filter = 2
 
-[node name="InventoryBox" type="VBoxContainer" parent="ArmoryScroll/ArmoryBody/InventoryMargin"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/separation = 2
+[node name="InventoryCaption" type="Label" parent="Console/InventoryMargin"]
+unique_name_in_owner = true
+layout_mode = 0
+mouse_filter = 2
+theme_type_variation = &"StationCaption"
+text = "BARREL INVENTORY"
 
-[node name="InventoryCaption" type="Label" parent="ArmoryScroll/ArmoryBody/InventoryMargin/InventoryBox"]
-layout_mode = 2
-theme_type_variation = &"SectionHeader"
-text = "INVENTORY · DRAG A WEAPON ONTO A RACK"
+[node name="InventoryScroll" type="ScrollContainer" parent="Console/InventoryMargin"]
+unique_name_in_owner = true
+layout_mode = 0
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 2
 
-[node name="InventoryRows" type="VBoxContainer" parent="ArmoryScroll/ArmoryBody/InventoryMargin/InventoryBox"]
+[node name="InventoryRows" type="Control" parent="Console/InventoryMargin/InventoryScroll"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_vertical = 0
-theme_override_constants/separation = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
 
-[node name="AmmoMargin" type="Control" parent="ArmoryScroll/ArmoryBody"]
+[node name="AmmoMargin" type="Control" parent="Console"]
 unique_name_in_owner = true
 layout_mode = 0
 mouse_filter = 2
 
-[node name="AmmoBox" type="VBoxContainer" parent="ArmoryScroll/ArmoryBody/AmmoMargin"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/separation = 2
-
-[node name="AmmoCaption" type="Label" parent="ArmoryScroll/ArmoryBody/AmmoMargin/AmmoBox"]
-layout_mode = 2
-theme_type_variation = &"SectionHeader"
+[node name="AmmoCaption" type="Label" parent="Console/AmmoMargin"]
+unique_name_in_owner = true
+layout_mode = 0
+mouse_filter = 2
+theme_type_variation = &"StationCaption"
 text = "AMMUNITION"
 
-[node name="ArmoryHeader" type="HBoxContainer" parent="ArmoryScroll/ArmoryBody/AmmoMargin/AmmoBox"]
+[node name="AmmoScroll" type="ScrollContainer" parent="Console/AmmoMargin"]
 unique_name_in_owner = true
-layout_mode = 2
-size_flags_vertical = 0
-theme_override_constants/separation = 12
+layout_mode = 0
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 2
 
-[node name="ArmoryRows" type="VBoxContainer" parent="ArmoryScroll/ArmoryBody/AmmoMargin/AmmoBox"]
+[node name="ArmoryRows" type="Control" parent="Console/AmmoMargin/AmmoScroll"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_vertical = 0
+size_flags_horizontal = 3
 theme_override_constants/separation = 0
-
-[node name="PaneFooter" type="Label" parent="."]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -23.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_type_variation = &"StationCaption"
-text = "HOLD CAPACITY IS ADVISORY · A PURCHASE IS NEVER CLAMPED"
