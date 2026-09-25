@@ -844,7 +844,29 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
-Expected (S11, 2026-09-24): **`[SUMMARY] passed=807 failed=0`**, exit 0. The S11 review
+Expected (D11, 2026-09-25): **`[SUMMARY] passed=812 failed=0`**, exit 0. The D11 review
+(D11-R1) measured **812** twice on two fresh scratch stores (`XDG_DATA_HOME=$(mktemp -d)`,
+exit 0, identical counts, zero failed) plus the mandated
+`verify --baseline d11_start … --tests` run green a third time, and a targeted
+`--suite=test_d11_station,test_s6_poi_loot,test_s6_heat` run reads **53/0**, re-proving
+S6's dock/blip rows untouched. **Growth `807 → 812`** = `test_d11_station.gd`'s **5**
+rows (per-suite `func test_` counts total 812 on the worktree; every other suite
+unmoved). S8's 17 rows sit inside the 807 baseline (S8 closed before this close-out) and
+no parallel-lane row failed: A1's mid-wave `790/5` belonged to the then-live coder lane
+(exchange_panel parse, s11 inspector, s7 affixes ×2, engine2 weapons, ship_grids) and
+every one is green now — attributed, never fixed by D11. The live store's `profile.cfg`
+md5 `f8a95c7c8985f5ce09b823df3f82b8d2` is byte-identical before and after all three runs
+(every run on a scratch store);
+`staging/verify_wave.py verify --baseline d11_start --forbidden … --tests --expect-reports
+D11-A0_report.md D11-R1_review.md` exits **0** with `"problems": []` — the modified rows
+it lists are S10/S11's and the owner rulings' commits that landed after the `d11_start`
+snapshot, plus this wave's own `sector.gd`, none of them a forbidden file. The wave
+leaves **0 HIGH / 2 MED / 7 LOW (L184–L190)**: MED-1 §1.1's value step inverted by the
+shipped art (hero mean 0.237, elements 0.215–0.277, against `ship_vanguard_side` 0.175
+where the old station read 0.166), MED-2 §11's "ASSET_NAMING rows at ship" never landed
+(zero `env_station_*` rows in ASSET_NAMING_SPEC — bucket 2: the brief barred `docs/`
+writes, so the developer session lands them or the owner defers the clause).
+Previous expected (S11, 2026-09-24): **`[SUMMARY] passed=807 failed=0`**, exit 0. The S11 review
 (S11-R1) measured **807** twice on two fresh scratch stores (identical `[S11FS]`/`[S26F]`
 rows and identical fail lists, which are empty) while re-running the wave's real-input
 acceptance on the shipped station mount **through the live editor bridge**
@@ -3747,3 +3769,29 @@ hull stops twice and the second stop slides.
   pure-lateral decay reading the class ramp rather than the damp the §22/§23.5 parenthetical
   names; the empty `describe` answer having no live specimen). The owner ticks the wave
   leaves: the AUCTION status-line wording and the inspector's empty-state panel.
+- **v0.24 (2026-09-25, wave D11 review — D11-R1, this wave's only CONTRACTS writer;
+  the next free row read from §10 at close-out — sequenced after S8's v0.20 and every
+  later row (v0.21/0.22/0.23), rebase never revert, and no parallel lane had landed a
+  row first)** — §9 gains the D11 expected **`passed=812 failed=0`** (twice on fresh
+  scratch stores plus the mandated verify run green a third time; a targeted 53/0
+  S6+d11 run re-proves the dock/blip rows), growth `807 → 812` = `test_d11_station.gd`'s
+  five rows. **0 HIGH / 2 MED / 7 LOW (L184–L190).** Re-measured by the review: hero
+  footprint **149.40 u half = 2.2003 ×** the 67.9 pin (visible hull 2.36×; the ratio
+  against the old file's true 2060 px is 2.188× — L185); inventory **6 static kinds**
+  (11 at rest + `gantry_b` on the slew pivot = the plan's 12) and **3 moving kinds**
+  (5 strobes at 55 u spacing, 2 shuttles on the 1865.5 u loop, 1 slew pivot) = 19
+  elements; invariants green (`&"station"` group, DockZone sibling radius **120** world
+  units at `global_scale (1,1)`, centre unchanged, 119/121 dock answers, one friendly
+  blip); two-frame motion and both reversal rows green with no `Timer` nodes; QC re-ran
+  **15/15 green** and the review's own pixel probe reproduced every column (hot share
+  hero 0.00197 / lamps 0.01060/0.00190, all other rows ≤ 0.00013 < the 0.0005 line;
+  accent ≤ 0.00065; §9's negative list visually clean); the generation log carries all
+  15 rows; spend 17 runs = 170 cr = **$0.85**. `class_name StationScene` stays dropped —
+  §11/O6 pin no class name (that pin was the brief's interface block), and the collision
+  is real (8 pre-existing `const StationScene :=` sites + `test_p2a_lint_shadow`'s rule).
+  **MED-1** routes to F1 (value grade or re-render, layout pins untouched); **MED-2**
+  routes to the developer session (ASSET_NAMING amendment, or an §11 amendment deferring
+  the rows with the host-deferred `validate_names --library` pass). Owner ticks owed:
+  a durable v2-approval line (L189), ring A vs B (shipped A=120 with the ring **21.4 u
+  inside** the hero's 141.45 u content half; B=175 needs its own ratification), and the
+  `class_name` ratify/reverse call.

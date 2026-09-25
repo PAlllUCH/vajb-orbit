@@ -34,27 +34,31 @@ block at the bottom. Model: `opencode-go/deepseek-v4.1-flash` (owner order
 
 | D-slice | Item | What | Gate |
 |---|---|---|---|
-| **D11** | **13** | **Space-station scene rework** (owner verbatim, CONTRACTS §21 O6): "make space station bigger with more details (not a single sprite, more static and moving elements, but the main sprite should be much bigger as well)" — composed hero ≥2.2× + ≥6 static + ≥3 moving element kinds, ENVIRONMENT §11 pinned (dated amendment landed) | **READY — brief written:** `slices/D11-station-scene/D11_BRIEF.md` + `D11_prompts.md`; run A0 → **owner sheet approval** → A1 → C1 → R1 → F1 only on HIGH/MED; art ≈ $1–2; the handoff below carries the `game/sector.gd` + `game/station_scene.gd` grant (one file each, `_spawn_station` only) |
 | D8 | 9 | **Station composition pass** (QA): the right-third dead zones — Armory's ~520 px void + clipped third row, Fitting's grid-left void, Repairs/Launch 440 px spacers | OWNER MOCKUP GATE first; brief at dispatch-prep |
-| D8 | 10 | **In-flight HUD visibility** (QA): empty top-left while all state sits bottom-left; minimap legend + unreadable 1080p glyphs | OWNER PICK; brief at dispatch-prep |
-| D9 | 11 | **Player-hull visibility** (QA): dark hull ~40 px at flight zoom — rim light / brighter tint / scale bump | OWNER PICK; brief at dispatch-prep |
-| D10 | 12 | **Polish batch** (QA): the status close-X, the launch arm countdown (M6), auction hull thumbnails, mining-beam visibility | OWNER PICKS within; brief at dispatch-prep |
-| D3 | 1 | **Chrome re-cut** — button/slot plate family (the 1041×1087-cell-stretched defect class) | OWNER-GATED on `staging/phase_f/_preview/review_slots.png` |
+| D8 | 10 | **In-flight HUD visibility** (QA): empty top-left while all state sits bottom-left; minimap legend + unreadable 1080p glyphs | PICKS 2026-09-24: top-left content + minimap legend + 1080p glyphs; brief at dispatch-prep |
+| D9 | 11 | **Player-hull visibility** (QA): dark hull ~40 px at flight zoom — rim light / brighter tint / scale bump | PICK 2026-09-24: scale bump only (target ~56 px proposed); brief at dispatch-prep |
+| D10 | 12 | **Polish batch** (QA): the status close-X, the launch arm countdown (M6), auction hull thumbnails, mining-beam visibility | PICKS 2026-09-24: all four in; brief at dispatch-prep |
+| D3 | 1 | **Chrome re-cut** — button/slot plate family (the 1041×1087-cell-stretched defect class) | VERDICT 2026-09-24 GO on `staging/phase_f/_preview/review_slots.png`; brief at dispatch-prep |
 | D3 | 2a | **Painted-only station rail icons** (owner 2026-09-23) — swap the left-rail/`MODULES` icons to painted raster masters; SVGs stay for in-list glyphs; one review sheet at 48/96 px | READY; brief at dispatch-prep |
 | D3 | 2b | **Tint rework** + the **540**-file import-settings cleanup left from D2 | READY; brief at dispatch-prep |
 | D4 | 3 | **4K 2× backdrop cuts** (R8) | READY; brief at dispatch-prep |
-| D4 | 4 | **B2-1 hover look** — flicker / directional glow / ember | OWNER PICK NEEDED first |
+| D4 | 4 | **B2-1 hover look** — flicker / directional glow / ember | PICKS 2026-09-24: all three combined; brief at dispatch-prep |
 | — | 5 | MMO/faction liveries, six boss hulls, `ship_vanguard_damaged` | BLOCKED on the naming overhaul |
 | — | 6 | Component icons ×18 (`comp_*`) | verify against `D2_SPLIT.md` |
 
 **File-collision law:** two waves never hold one file (nor the same `test_*`
 prefix, nor one `staging/` driver). Across lanes only with provably disjoint
 write sets (the S5∥D6 precedent); editor reimports in quiet windows between the
-other lane's gate runs; one live session. **Live parallel pair:** coder item 14
-(S8) ↔ designer item 13 (D11) — disjoint by both briefs; attribute the other
-lane's gate rows, never fix them.
+other lane's gate runs; one live session. **No live parallel pair** as of D11's
+close-out (2026-09-25).
 
 ## Done
+
+**D11 space-station scene rework (item 13)** — DONE 2026-09-25 (gate 807 →
+**812/0**; 0 HIGH / 2 MED cured (F1's value grade + the designer session's
+`ASSET_NAMING_SPEC` §13 rows) / 7 LOW L184–L190; hero 2.2003×, 6 static + 3
+moving kinds, 19 elements, $0.85 spent; two owner ticks recorded in the
+WAVEBOARD; brief/reports at `slices/D11-station-scene/`).
 
 **D7 cockpit rework + battery window (item 8)** — DONE 2026-09-24 (gate
 674 → **727/0**; 1 HIGH + 1 MED cured by F1/A2; mockup loop v5/v6/v7 +
@@ -76,6 +80,9 @@ family.
 
 ## Handoff (live — paste as one block)
 
-```text
-Read .agents/gen/dispatch_designer.md and execute queue item 13 only — D11, the space-station scene rework (ENVIRONMENT_SPEC §11's dated amendment is the pin; the owner's verbatim ask and every invariant are in the brief). Brief: .agents/gen/slices/D11-station-scene/D11_BRIEF.md. Prompts: .agents/gen/slices/D11-station-scene/D11_prompts.md. Snapshot + commit (d11_start) before the first dispatch, run A0 and STOP at the mockup review sheet for my approval, then A1 → C1 → R1, and the fixer only if the review leaves HIGH or MED. This runs parallel with coder item 14 (S8 QA fixes): you hold assets/env/**, staging/**, asset-library/**, tests/test_d11_* and — by my grant, ratified by this paste — game/sector.gd (_spawn_station only) and the new game/station_scene.gd; never touch S8's sets, ui/**, project.godot, or docs/ beyond this wave's own; CONTRACTS §9/§10 take the next free rows read at close-out, sequenced after S8's (rebase, never revert). Art ≈ $1–2. Close out per the brief's close-out section (gate ×2 scratch stores, verify --baseline d11_start, WAVEBOARD update, wave-boundary commit), then report back: the measured gate count, the approved mockup sheet, the per-AC measurements (hero footprint ratio, element counts, invariants, motion), the reviewer's findings by tier, and D11's owner ticks.
-```
+**No live handoff — the owner picks the next designer item, and its five-piece
+lands at dispatch-prep.** Candidates in the queue: D8 item 9 (blocked on its
+mockup gate), D8 item 10 / D9 item 11 / D10 item 12 (all picked 2026-09-24), the
+**D12 graphics fix wave** (the four readability findings — unbriefed;
+`ui/station/armory_panel.gd` has been free since S11 closed), D3 item 1 (GO on
+`review_slots.png`), D3 2a/2b, D4 3/4.

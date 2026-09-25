@@ -113,7 +113,7 @@ var _row: Dictionary = {}
 var _plan: Dictionary = {}
 var _fields: Array[Node2D] = []
 var _field_script: GDScript = null
-var _station: Sprite2D = null
+var _station: Node2D = null
 var _dock_zone: Area2D = null
 var _gates: Array[Node2D] = []
 var _corridors: Array[Node2D] = []
@@ -533,12 +533,18 @@ func _npc_blip_kind(ship: Node2D) -> StringName:
 
 
 func _spawn_station(centre: Vector2) -> void:
-	_station = Sprite2D.new()
-	_station.name = "Station"
-	_station.texture = StationTexture
-	_station.scale = Vector2(STATION_SCALE, STATION_SCALE)
+	# D11 (ENVIRONMENT_SPEC §11): the composed scene replaces the single
+	# Sprite2D. Every invariant kept: the node joins `&"station"`, sits at the
+	# placement centre, the DockZone stays a SIBLING with its world-unit radius
+	# (the rule below). Preloads stay function-local so probe_g3_shadow's
+	# pinned line map above never shifts.
+	var scene_script := preload("res://game/station_scene.gd")
+	var scene: Node2D = scene_script.new() as Node2D
+	scene.name = "Station"
+	_station = scene
 	_station.position = centre
-	_station.add_to_group(&"station")
+	_station.call(&"setup", preload("res://assets/env/poi/env_station_hero.png"),
+		_station.call(&"approved_elements"))
 	add_child(_station)
 	# The DockZone is a sibling of the sprite, not its child: the sprite carries
 	# the 0.0663 art scale, which would scale a child's collision circle down to

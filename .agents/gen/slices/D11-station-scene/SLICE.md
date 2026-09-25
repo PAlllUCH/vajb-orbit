@@ -59,8 +59,8 @@ vocabulary, wired without disturbing the group/DockZone invariants.
 ## Worker file sets
 | Worker | Files (becomes `VAJB_WORKER_FILES`) | Brief |
 |---|---|---|
-| D11-A0 | `vajb-orbit/assets/env/**,staging/**,asset-library/**` (mockup + plan + review sheet; STOP) | `D11_BRIEF.md` |
-| D11-A1 | `vajb-orbit/assets/env/**,staging/**,asset-library/**` (renders → QC → ship) | `D11_BRIEF.md` |
+| D11-A0 | `vajb-orbit/assets/env/,staging/,asset-library/` (mockup + plan + review sheet; STOP) | `D11_BRIEF.md` |
+| D11-A1 | `vajb-orbit/assets/env/,staging/,asset-library/` (renders → QC → ship) | `D11_BRIEF.md` |
 | D11-C1 | `vajb-orbit/game/sector.gd,vajb-orbit/game/station_scene.gd,vajb-orbit/tests/` (**the owner's grant, one file each in `game/`** — ratified by the dispatch handoff) | `D11_BRIEF.md` |
 | D11-R1 | `vajb-orbit/tests/,vajb-orbit/tools/,docs/CONTRACTS.md` | `D11_BRIEF.md` |
 | D11-F1 | union of A0–C1 sets + `docs/CONTRACTS.md` | `D11_BRIEF.md` |

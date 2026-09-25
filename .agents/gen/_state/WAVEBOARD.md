@@ -6,13 +6,12 @@
 
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-22 purge:** the executed-wave reports, briefs and evidence were removed from `.agents/gen/` (recoverable from the system trash; the last git tree carrying them is `3f5688b`) — the historical record is `MASTER_REPORT.md` plus the newest session report, and older citations below name the purged paths.
 
-**Updated: 2026-09-24 (**batch prepared end-to-end: the independent QA review triaged;
-`.agents/gen/` cleanup executed; **both dispatch files rewritten clean with live handoff
-blocks**; item 14 = **S8 CLOSED** (gate 753 → **770/0**, 0 HIGH / 0 MED / 4 LOW
-L168–L171; §21 + v0.18 + 05 §9, incl. the owner's O1–O3);
-item 15 = flight-feel with **numbers PROPOSED in §22 (v0.19) — waiting on ticks**;
-designer item 13 = **D11 station scene READY** (ENVIRONMENT_SPEC §11, five-piece written,
-A0 mockup-gate handoff live); designer items 1/4/10/11/12 picked, item 9 awaits its gate).** Waves of record: item 16 = S10 ARMORY CLOSED gate 770 → **775/0** (0 HIGH / 0 MED /
+**Updated: 2026-09-25 (**designer item 13 = **D11 station scene CLOSED** — gate 807 →
+**812/0** (`test_d11_station`'s 5 rows), 0 HIGH / 2 MED both cured (MED-1 value grade by
+F1, all 15 files to mean 0.160; MED-2's naming rows landed as `ASSET_NAMING_SPEC` §13 by
+this session) / 7 LOW L184–L190; owner ticks recorded below; recap in
+`MASTER_REPORT.md` §6). Coder item 19 = **S12 ore budget in flight** — K0/K1 measured
+byte-identical ×2 on 2026-09-25 (tables in their reports), R1 replay next.** Waves of record: item 16 = S10 ARMORY CLOSED gate 770 → **775/0** (0 HIGH / 0 MED /
 6 LOW L172–L177); item 14 = S8 CLOSED gate 753 → **770/0** (0 HIGH / 0 MED /
 4 LOW L168–L171); item 13 = S7 CLOSED gate 711 → **753/0** (0 HIGH / 0 MED /
 5 LOW L163–L167); designer item 8 = D7 CLOSED gate 727/0. CONTRACTS §20 (S7), §21 (S8),
@@ -43,7 +42,8 @@ P2-B proper fitting panel, **S2.6 truth-and-feel**, **S3 the item economy**,
 `s7_start` snapshot = S6's 674 + D7's in-flight 37), **`passed=770 failed=0`** after S8
 (753 + its two new suites' 17 rows; 0 HIGH / 0 MED / 4 LOW), **`passed=775 failed=0`** after S10
 (770 + its real-input suite's 5 rows; 0 HIGH / 0 MED / 6 LOW), **`passed=807 failed=0`** after S11
-(775 + its three new suites' 32 rows; 0 HIGH / 0 MED / 6 LOW), hermetic). The queue of record is
+(775 + its three new suites' 32 rows; 0 HIGH / 0 MED / 6 LOW), **`passed=812 failed=0`** after D11
+(807 + `test_d11_station`'s 5 rows), hermetic). The queue of record is
 `dispatch_coder.md`: items 4–16 and 18 are all DONE — **item 16 = S10 ARMORY CLOSED**
 (gate 770 → **775/0**, 0 HIGH / 0 MED / 6 LOW L172–L177; A0's real-input audit
 reproduced the owner's report as a **D7 regression** — the barrel `Name` plate and
@@ -57,23 +57,23 @@ carries credits, the four non-missile weapon families reach 30 000 u, and a rele
 decays as one velocity vector; §23 + v0.22 docs-first, §9/§10 by R1 as v0.23). **Item 15 is
 closed by absorption into §23.5.** **Owner ask 2026-09-24 — jump
 gates to sector edges (same gates, spawn placement only) — is the coder lane's next
-free item (17)**: brief at its dispatch-prep; if gate spawn
-lives in `sector.gd` it runs after D11's close-out (D11 holds that file through
-C1). **Owner ruling 2026-09-25 — "it should be able to shoot asteroids but mining should
+free item (17)**: brief at its dispatch-prep; its `game/sector.gd` seam is **free** as of
+D11's close-out 2026-09-25. **Owner ruling 2026-09-25 — "it should be able to shoot asteroids but mining should
 always be more profitable", plus bigger/clustered/fielded asteroids — landed as
 `01 §5.6` + `02 §5.1` (numbers PROPOSED, owner-tick-gated) and is the coder lane's
-item 19 (`slices/S12-ore-budget/`, brief + prompts written)**: read-only K0 probes that
-measure the field's ore budget and the mining-vs-gunning rate before any cap is coded; it
-touches `vajb-orbit/tests/probe_s12_*.gd` only, so it is disjoint from D11 and can run
-beside it. Beyond it: **slice 4's
+item 19 (`slices/S12-ore-budget/`)**: the two read-only probes are **measured
+2026-09-25** — laser out/in **4.07×** (T1) / **3.83×** (T3) the field's spawn budget on the
+re-rolling cascade; gun racks deliver the **same 25 units at 3 and 7 barrels** and 0.714
+of a rock's own yield (7× the proposed `GUN_BURST_SHARE` 0.10); R1 replay next, the caps
+wait on the owner ticks the tables feed. Beyond it: **slice 4's
 remainder** — quadrants/directional armour (18 §4.5 + ruling 23, deferred from S6) and
 bosses/arena hooks (14 §5, blocked on the P4 contract type and boss-hull art) — **not yet
 briefed**. **S8's owner gates:** O1/O2's FITTING-drag UX call (port / point at ARMORY /
 unify), O3's site + symptom + mask (the shipped masks never resolve player→NPC contact, so
 no factor was written), L168 (`game/repairs.gd`'s transaction still caps at the base row),
-L169 (a same-family battery's per-cell seed — 2× magazine). Designer queue: **item 13 = D11 station scene READY** (five-piece written,
-ENVIRONMENT_SPEC §11 landed, A0 mockup-gate handoff live in `dispatch_designer.md`,
-incl. the owner's `game/sector.gd` + `game/station_scene.gd` grant); items 1/4/10/11/12
+L169 (a same-family battery's per-cell seed — 2× magazine). Designer queue:
+item 13 = **D11 CLOSED** (numbers in the Updated line, its two owner ticks below);
+items 1/4/10/11/12
 picked 2026-09-24 (briefs at dispatch-prep), item 9 still awaits its mockup gate).
 **D12 readability audit LANDED** (`slices/D12-ui-readability/D12-A0_report.md`, owner ask
 2026-09-24: 5 HIGH / 4 MED / 3 LOW, ARMORY first, every finding lane-tagged). The four
@@ -87,7 +87,10 @@ Owner gates:
 the chrome art half, the **`18_engine_spec.md` §6/§13/§15 cleaving amendment** (owner-locked; §15
 is the test checklist and now contradicts the shipped suite), the launch fit (**both symptoms
 closed** — symptom 1 by P2-A, symptom 2 by P2-B1's `w_mining` row), four spec ticks, the §13
-turn column, and the engine-bed / vignette-strength calls slice 2.5 raised.**
+turn column, the engine-bed / vignette-strength calls slice 2.5 raised, **D11's two ticks
+(`class_name StationScene` dropped by C1 — four suites shadow the name; dock ring radius
+120 u approved vs 175 u proposed, R1 measured 21.4 u clearance inside the hull)**, and
+**S12's §10 tick list at its close-out**.**
 
 Closed-wave recaps (gate histories, per-wave deliverables and the older owner
 gates they raised) live in `.agents/gen/MASTER_REPORT.md` §6 — moved there

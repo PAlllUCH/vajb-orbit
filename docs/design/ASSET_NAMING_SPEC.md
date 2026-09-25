@@ -238,3 +238,20 @@ the §3.8 restyle — `ui_cockpit_frame` become **unreferenced** (a
 `validate_names` reachability row in the D1 audit's sense — **not deleted**,
 §10's ruling keeps every cut). Reversal: the §3.7/§3.8 reversal flags keep both
 referenced.
+
+## 13. Amendment 2026-09-25 (D11 — station scene family)
+
+ENVIRONMENT_SPEC §11's "ASSET_NAMING rows at ship" obligation, landed at the
+wave's close-out (the brief barred the workers the docs write; this is
+`D11-R1_review.md`'s MED-2). New masters in `assets/env/poi/`:
+`env_station_hero` (subject `station_hero`, the composed hero that takes over
+`env_station.png`'s role; the old master becomes **unreferenced**, not deleted —
+§10's ruling keeps every cut), plus the element family `env_station_arm_a`/`_b`,
+`env_station_mast_a`/`_b`, `env_station_gantry_a`/`_b`,
+`env_station_windows_a`/`_b`, `env_station_plate_a`/`_b`,
+`env_station_lamp_a`/`_b`, and the shuttles `env_station_shuttle_a`/`_b`
+(subjects `station_arm` … `station_shuttle` — the `station_*` sub-family under
+§2's `env_`). The trailing `_a`/`_b` is a family-index sibling letter in the
+§11 D6 sense, not a §4 variant. The `validate_names --library` pass stays
+host-deferred (L147 class, per ENVIRONMENT_SPEC §11). Reversal: drop this row
+set and re-point `game/station_scene.gd` to the single `env_station.png`.
