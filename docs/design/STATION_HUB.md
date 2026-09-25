@@ -933,6 +933,15 @@ the pack model leaves the pane. **Fuel cells are delisted from every sale surfac
 (existing stacks still work on `R`; 14 §1's free refuel is the reserve). **Reversal:**
 the §5.1 pre-S5 rows.
 
+**ARMORY amendment 2026-09-25 (S15 — the battery hardcap, 09 §12).** The rack
+list is **`B1..B5`** (5 batteries × 4 gun cells), flowing **4+1** with the tail
+bay full-width, labels aligned with the cockpit's five-lamp band; the
+`weapon_6`/`weapon_7` drop zones retire. The bay's rack-plate fit is corrected
+against the plate's own ink (`ui_armory_rack_plate` is 194x182 with ink at rows
+49..132 — the slots, ledge and SALVO drums move onto the drawn recesses at the
+art's ~34.5 px pitch; playthrough finding F1). **Reversal:** the `B1..B7` rows
+above plus the pre-fit plate layout.
+
 **EXCHANGE (§5.8) — ammunition is sellable.** The hold list gains the `ammo_*` cargo
 units (10 §6.1) at 60 % of list per unit, same row anatomy as minerals.
 

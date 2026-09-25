@@ -231,6 +231,34 @@ natural owner); `18_engine_spec.md` §6/§13/§17's wording and `CONTRACTS.md`
 §5's fragment-yield and gun-work sentences (lines 350 and 374), which this doc
 cannot change.
 
+### 5.2 Amendment 2026-09-25 (bis) — four size classes and debris splits (owner, S14)
+
+The owner's verbatim ask: "i want 4, each should split to random ones ...
+XL>L>M>S sizes, XL split to few L, few M, few S so that it looks more like
+debris, then each L from split does split to M and S etc". Rule B's yield rows
+stay **deferred** — this amendment changes structure and looks, not income.
+
+- **Four size classes** `XL > L > M > S` (`SIZE_*` gains XL). XL renders the L
+  silhouettes scaled to a **180 u** target width (L is 132 u) until dedicated
+  XL art is commissioned (staged; reversal: back to three classes).
+- **Debris splits (RNG):** at a shatter the child set is rolled per size kind,
+  independently and uniformly — `XL → L 1-3, M 2-4, S 2-5`;
+  `L → M 1-3, S 2-4`; `M → S 1-3`; `S → none`. A child is always strictly
+  smaller than its parent. Today's `FRAGMENT_SPLIT` (one next-size kind, 2-5 of
+  it) is replaced. Reversal: restore that single-kind rule.
+- **S13's rules hold unchanged:** a mining shatter's children share the
+  parent's reserve (Σ = `FRAGMENT_CORE_SHARE` × `_bore_ore`, split across
+  whatever child set was rolled — sizes do not weight the split), a gun
+  shatter's children carry no ore, and nothing re-rolls. The family total stays
+  ≤ the root's `_bore_ore`: an XL is the same ore spread over a longer debris
+  chain, never more ore. If XL should pay more, that is Rule B's
+  `SIZE_YIELD_MULT` — still deferred, owner tick.
+- **Spawn mix (proposed):** S 40 / M 32 / L 20 / XL 8 percent per rolled rock
+  (today uniform over the nine silhouettes). Reversal: uniform.
+
+Implementation wave: **S14**; the split table and the spawn mix are read from
+`OreTuning` beside S13's fields (the dev overlay keeps working).
+
 ## 6. Icons
 
 The shipped icon set covers generic cargo glyphs (`icon_cargo_ore_48.png`

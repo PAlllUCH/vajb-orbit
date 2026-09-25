@@ -586,3 +586,28 @@ cells — which is why §8's one-per-cell rule is superseded rather than kept be
   its mount (tracking lag can miss — owner tick: hold-fire-until-aligned instead); a
   beam barrel sweeps onto the target and connects only within `TRACK_TOLERANCE := 5`°.
   **Reversal:** `TRACK_MULT := 0` = instant aim (today's behaviour).
+
+## 12. Battery hardcap (amendment 2026-09-25, S15)
+
+The owner's ask (verbatim): "a hardcap of 5 gun batteries with 4 guns each ...
+we have to rework the armory to reflect that as the cockpit has B1 to B5 as
+selected slot".
+
+- **Hardcap: 5 batteries (`B1`–`B5`), each ≤ 4 gun cells.** `GROUPS_MAX` 7 → 5
+  and a new composition rule caps a battery at 4 W cells (the armory bay already
+  draws exactly 4 recesses). A hull's W cells are unchanged — the 7-cell
+  Obliterator composes as `B1(4) + B2(3)`; the cap is per battery, not per hull.
+- The cockpit's five-lamp band (`cockpit_style.gd` `lamp_count: 5`) becomes the
+  truth; the B6/B7 racks, which lit no lamp, are gone. `weapon_6`/`weapon_7`
+  become inert (no rack to select); removing the bindings from `project.godot`
+  stays the owner's optional pass and closes the P2-A follow-up with it.
+- Profile: `set_battery_groups` clamps to ≤ 5 groups × ≤ 4 cells; an existing
+  save carrying 6-7 groups clamps on load, cell order preserved (**proposed** —
+  overflow guns are re-readable from inventory on the next armory read;
+  reversal: the old 7-group load path).
+- ARMORY follows where it reads `RACK_COUNT := GROUPS_MAX`: five bays flowing
+  4+1, labels `B1`–`B5` aligned with the cockpit band (STATION_HUB §5.11's
+  amendment).
+
+**Reversal:** `GROUPS_MAX` → 7, the per-battery cap deleted, the 7-rack
+composition path restored. Implementation wave: **S15**.

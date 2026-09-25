@@ -24,6 +24,8 @@ with any parallel lane, WAVEBOARD, wave-boundary commit).
 | 17 | **Jump gates to sector edges** (owner ask 2026-09-24: same gates, spawn placement only) | not opened | — | **QUEUED — brief at dispatch-prep.** Runs after item 19; the `game/sector.gd` seam is **free** since D11's close-out (2026-09-25). Editor-only change otherwise. |
 | 18 | **Station legibility, space gunnery, one-vector inertia** (owner ask 2026-09-24: hovered-item description panel, credits in the space scene, near-infinite kinetic/beam range, the two-stop inertia) — pin **CONTRACTS §23** | `slices/S11-legibility-gunnery-feel/` | `S11_BRIEF.md` / `S11_prompts.md` | **DONE 2026-09-24** — gate 775 → **807/0**, 0 HIGH / 0 MED / 6 LOW (L178–L183). Six builders (B1 inspector, B2 prose + HUD credits, B3 ranges, B4 one-vector inertia, B5 test rows, B6 describe + titles) + R1; the readability half is the design lane's **D12-A0** audit. |
 | 20 | **Ore caps, mining batteries, dev tuning** (owner ticks 2026-09-25: `GUN_BURST_SHARE` 0.10, `FRAGMENT_CORE_SHARE` 0.25, multiple `w_mining` must work, an F1 slider overlay for these values, `DOCK_RING_RADIUS` 175) | `slices/S13-ore-caps-devmenu/` | `S13_BRIEF.md` / `S13_prompts.md` | **DONE 2026-09-25** — gate 812 → **834/0**; 0 HIGH / 3 MED (F1 fixed the credit-reset and the live-config test; the developer session mounted the overlay in `game/game.gd`) / 4 LOW L198–L201. Gun realisation ≤ 0.10, cascade 4.0× → 1.000×, mining 1/2/3×, ring 175, F1 slider overlay live. Rule B stayed deferred. The `18_engine_spec` §6/§13 rewording awaits the owner. |
+| 21 | **Four asteroid sizes, debris splits** (owner ask 2026-09-25: `XL>L>M>S`, each shatters into a random mix of smaller sizes — XL → few L/M/S "so that it looks more like debris"; yields untouched, Rule B stays deferred) | `slices/S14-debris-splits/` | `S14_BRIEF.md` / `S14_prompts.md` | **IN FLIGHT 2026-09-25** — B1 → R1 → F1 only on HIGH/MED; pin `02 §5.2`; the spawn mix 40/32/20/8 is proposed, owner tick at close-out. Runs parallel with item 22 (disjoint sets). |
+| 22 | **Battery hardcap 5x4 + armory B1-B5** (owner ask 2026-09-25: "hardcap of 5 gun batteries with 4 guns each ... rework the armory to reflect that as the cockpit has B1 to B5") | `slices/S15-battery-cap/` | `S15_BRIEF.md` / `S15_prompts.md` | **IN FLIGHT 2026-09-25** — B1 → R1 → F1 only on HIGH/MED; pin `09 §12` + `STATION_HUB §5.11` amendment; folds in playthrough F1's plate-fit defect. Runs parallel with item 21 (disjoint sets). |
 | 19 | **Ore budget — the two K0 probes** (owner ruling 2026-09-25: shooting rocks stays possible but mining must always be more profitable; asteroids could be bigger, in clusters and fields) — docs already amended, these are the numbers | `slices/S12-ore-budget/` | `S12_BRIEF.md` / `S12_prompts.md` | **DONE 2026-09-25** — K0/K1 measured byte-identical ×2, R1 replayed both on a detached worktree with zero byte differences; 0 HIGH / 2 MED (both bucket-2 docs, cured at close-out) / 7 LOW L191–L197. Tables + §10 ticks handed to the owner; **no cap implemented** (the caps and scale rows are a later wave on the owner's ticks). Gate rows unmoved (812/0 = 807 + D11's `test_d11_station`). |
 
 Beyond the queue: **slice 4's remainder** (quadrants/directional armour — 18
@@ -49,9 +51,11 @@ owner; the caps and scale rows become their own wave once the owner ticks —
 **Item 20 (S13) is DONE 2026-09-25** — the owner's ticks are shipped; the
 `18_engine_spec` §6/§13 rewording (R1's review carries the exact proposed
 sentences) is the owner's edit.
-**Item 17** (jump gates to sector edges) is next in the queue and
-**unblocked** (D11 closed 2026-09-25); it needs its own five-piece at
-dispatch-prep. Slice 4's
+**Items 21 (S14 debris splits) and 22 (S15 battery cap + armory) are the live
+waves**, running in parallel on disjoint sets (2026-09-25 owner asks; docs
+amended first as `02 §5.2` + `09 §12` + `STATION_HUB §5.11`).
+**Item 17** (jump gates to sector edges) runs after both and is
+**unblocked**; it needs its own five-piece at dispatch-prep. Slice 4's
 remainder (quadrants and directional armour, bosses/arena) still needs its own
 five-piece.
 
