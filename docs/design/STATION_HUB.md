@@ -942,6 +942,15 @@ against the plate's own ink (`ui_armory_rack_plate` is 194x182 with ink at rows
 art's ~34.5 px pitch; playthrough finding F1). **Reversal:** the `B1..B7` rows
 above plus the pre-fit plate layout.
 
+**ARMORY rework — opened 2026-09-25 (owner; design in flight as D13).** The
+pane takes a full design rework (owner ask: vision + reasoning + brainstorming
++ mockups). Input: the D12-A0 readability audit (5 HIGH / 4 MED / 3 LOW,
+pinned verbatim in the D13 brief), the §5.11 S15 law above and LOW L208.
+Everything in this section stands until the owner ticks D13's proposed design —
+the pane's surface, its canvas pin (UI_SPEC §3.10 Amendment 2) and any
+ink/layout change are the owner's calls on that wave's tick list. No code
+moves before the tick.
+
 **EXCHANGE (§5.8) — ammunition is sellable.** The hold list gains the `ammo_*` cargo
 units (10 §6.1) at 60 % of list per unit, same row anatomy as minerals.
 

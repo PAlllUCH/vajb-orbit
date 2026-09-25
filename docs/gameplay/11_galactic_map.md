@@ -58,8 +58,10 @@ mixes (weights follow 02 §5's shape):
 
 ### 2.1 Jump gates (the fast way)
 
-- Every inhabited sector has a **gate structure** near its primary station —
-  a large ring, visible from across the sector, marked on the minimap.
+- Every inhabited sector has a **gate structure** — a large ring, visible
+  from across the sector, marked on the minimap — standing at the sector's
+  border on the bearing of its link (the mouth of that link's corridor);
+  §6's amendment (owner go 2026-09-25 — formerly near the primary station).
 - Flying into the ring opens a confirm prompt: **JUMP TO <SECTOR> —
   <fee> CR**. Pay, 2 s charge-up FX, arrive at the destination sector's gate.
 - **Fee: 150 CR base + 100 CR per sector of distance** (adjacent = 250,
@@ -187,3 +189,36 @@ transitions via `loading`); CONTRACTS §19 is the interface pin.
   and stations always appear.
 - **Ledger:** 01 §5.2's travel row is amended there (0–250 → **0–500 CR**, this
   section's §2.2/§4 range wins the contradiction).
+
+## 6. Amendment 2026-09-25 (owner go — S17, gates at the sector edges)
+
+Owner go 2026-09-25 (after S16's close), on the 2026-09-24 ask "same gates,
+spawn placement only": the gate structure moves from the station's ring
+(§2.1's former wording; `sector.gd`'s now-retired `GATE_RING_RADIUS` 900 u)
+to the sector's border. Placement law:
+
+- **The bearing stands** (`_gate_bearing`, unchanged): the direction of the
+  link's own corridor band centre, east fallback for an unlisted destination.
+- **The reach is the border at the fields' own clearance**: the gate stands
+  on the bearing ray from the arena centre, `FIELD_EDGE_MARGIN` (800 u,
+  `sector.gd:88`) inward from the map edge — the same border clearance the
+  fields and POIs keep (`_poi_position`'s outer bound). Today's spine
+  bearings are cardinal, so every gate stands at ±4200 u on its link's axis
+  (10 000 u arena, §13 `SECTOR_SIZE`). No new tunable; `GATE_RING_RADIUS`
+  retires.
+- **The mouth, not the band**: a corridor band runs `CORRIDOR_DEPTH` 600 u
+  inward from its edge (§5's pin), so a gate at 800 u inset keeps its 200 u
+  `TRIGGER_RADIUS` circle exactly tangent to the band's inner edge
+  (600 + 200 = 800) — the gate never reaches into a hold-course zone, and
+  the corridor's own transition is untouched.
+- **The beacon follows, formula unchanged**: one beacon per gate at
+  `BEACON_GATE_OFFSET` 300 u outward along the gate's own position vector
+  (§3's density row stands) — for an edge gate that lands inside its link's
+  corridor band, marking the mouth. The formula is byte-identical; only the
+  gate's position moves.
+- **Same gates**: count, names, destinations, the §2.1 fee law and the
+  faction refusal are untouched; `gate.gd` is untouched.
+
+Reversal: restore `sector.gd`'s `_add_gate` to
+`centre + _gate_bearing(dest) * GATE_RING_RADIUS` (900 u) and revert this
+section.

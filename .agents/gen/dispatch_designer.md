@@ -1,127 +1,70 @@
 # dispatch_designer.md — the graphics lane's queue of record
 
-Rebuilt 2026-09-22 (owner ruling: two-designer split), reorganised 2026-09-24
-(open items only — closed work lives in the Done pointer below and
-`_state/WAVEBOARD.md` §Closed). Execute one item per order; briefs/prompts live
-in the slice folders (**items without a slice folder get their five-piece at
-dispatch-prep — say the item and it lands**); the owner pastes only the handoff
-block at the bottom. **Model: `opencode-go/mimo-v2.6-pro` for every design
-worker** on `--reasoning-effort low` (owner standing rule 2026-09-25: design
-runs on 2.6 Pro only — supersedes the 2026-09-24 deepseek/mimo-flash lines;
+Purged and regenerated 2026-09-25 (owner ask: "too much shit to keep track of
+it" — the queue carries only live items; closed work lives in
+`MASTER_REPORT.md` §6 and git). Execute one item per order; briefs/prompts
+live in the slice folders. **Model: `opencode-go/mimo-v2.6-pro` for every
+design worker** on `--reasoning-effort low` (owner standing rule 2026-09-25;
 measured that day, `medium` stalls on long worker loops while `low` is fast).
+The owner pastes only the handoff block at the bottom.
+
+**File-collision law:** two waves never hold one file (nor the same `test_*`
+prefix, nor one `staging/` driver). One live session per workspace.
 
 ## The standing ruling (owner, 2026-09-22) — lane law, applies to every item
 
-- Glyph-type icons are **remade as SVG masters** (slot glyphs, equipment-slot
-  symbols, `icon_contract_*`, service glyphs, chevrons/pips — the flat symbol
-  side; example: `icon_contract_escort` → SVG).
-- Depictive icons **keep one raster master only** (example: `icon_equip_drone`
-  stays raster). The five-size families (`_48`/`_96`/`_192`/`@2x`) die — Godot
-  scales from the one master ("we will scale it").
-- **Delete all non-master rasters** — **project-side only**: `vajb-orbit/assets/`
-  loses every variant and duplicate; `asset-library/` keeps every cut untouched
-  (provenance law + the rollback).
-- SVG source rule: flat shapes, `viewBox="0 0 96 96"` (the 96 grid,
-  `D2_SPLIT.md` §6), 8–14 flat shapes, fills only (no strokes below 2 units),
-  at most two tones (Steel `#565C63` family + ember `#C8461B`/`#E8703A` where
-  the icon carries danger/warn meaning). kie.ai cannot generate SVG — the SVG
-  set is hand-authored; a resistant pictogram may be rendered once clean-flat
-  and traced (Inkscape), then simplified.
-- **Tint boundary:** a remade glyph's tint variants die with it; depictive
-  icons' tint stencils stay until item 2b. Nothing else touches the tint
-  pipeline.
+- Glyph-type icons are **remade as SVG masters** (flat symbol side); depictive
+  icons keep **one raster master only** ("we will scale it"); delete all
+  non-master rasters **project-side only** (`asset-library/` keeps every
+  cut). SVG: flat shapes, `viewBox="0 0 96 96"`, 8-14 flat shapes, fills
+  only, at most two tones (Steel `#565C63` + ember `#C8461B`/`#E8703A` where
+  danger/warn). A remade glyph's tint variants die with it.
 
-## Open queue
+## Queue
 
-| D-slice | Item | What | Gate |
-|---|---|---|---|
-| D8 | 9 | **Station composition pass** (QA): the right-third dead zones — Armory's ~520 px void + clipped third row, Fitting's grid-left void, Repairs/Launch 440 px spacers | **DITCHED (owner 2026-09-25).** |
-| D8 | 10 | **In-flight HUD visibility** (QA): empty top-left while all state sits bottom-left; minimap legend + unreadable 1080p glyphs | PICKS 2026-09-24: top-left content + minimap legend + 1080p glyphs | **CLOSED 2026-09-25** — minimap legend + legible zoom glyphs + the ≥12 px glyph floor at 1080p; the top-left hull/shield block stays hidden per the owner (the cockpit carries it); its suite's rows ride the 859/0 gate |
-| D9 | 11 | **Player-hull visibility** (QA): dark hull ~40 px at flight zoom — rim light / brighter tint / scale bump | PICK 2026-09-24: scale bump only (target ~56 px proposed); brief at dispatch-prep |
-| D10 | 12 | **Polish batch** (QA): the status close-X, the launch arm countdown (M6), auction hull thumbnails, mining-beam visibility | PICKS 2026-09-24: all four in; brief at dispatch-prep |
-| D3 | 1 | **Chrome re-cut** — button/slot plate family (the 1041×1087-cell-stretched defect class) | VERDICT 2026-09-24 GO on `staging/phase_f/_preview/review_slots.png`; brief at dispatch-prep |
-| D3 | 2a | **Painted-only station rail icons** (owner 2026-09-23) — swap the left-rail/`MODULES` icons to painted raster masters; SVGs stay for in-list glyphs; one review sheet at 48/96 px | READY; brief at dispatch-prep |
-| D3 | 2b | **Tint rework** + the **540**-file import-settings cleanup left from D2 | READY; brief at dispatch-prep |
-| D4 | 3 | **4K 2× backdrop cuts** (R8) | READY; brief at dispatch-prep |
-| D4 | 4 | **B2-1 hover look** — flicker / directional glow / ember | PICKS 2026-09-24: all three combined; brief at dispatch-prep |
-| — | 5 | MMO/faction liveries, six boss hulls, `ship_vanguard_damaged` | BLOCKED on the naming overhaul |
-| — | 6 | Component icons ×18 (`comp_*`) | verify against `D2_SPLIT.md` |
+| # | Wave | Item | What | Status |
+|---|---|---|---|---|
+| 14 | D13 | **Armory rework — the design** (owner ask 2026-09-25, verbatim: "rework armory with vision skill and reasoning on how it should like with brainstorming to used and mockups") | `slices/D13-armory-rework/` | **QUEUED — next.** Input: the D12-A0 audit recap (pinned in `D13_BRIEF.md` §3), the live capture in the slice's `_evidence/`, L208. Design only — no code, no docs; the implementation wave follows the owner's ticks. |
 
-**File-collision law:** two waves never hold one file (nor the same `test_*`
-prefix, nor one `staging/` driver). Across lanes only with provably disjoint
-write sets (the S5∥D6 precedent); editor reimports in quiet windows between the
-other lane's gate runs; one live session. **No live parallel pair** as of D11's
-close-out (2026-09-25).
+## Parked (owner-gated — not queued; say the item and its five-piece lands)
 
-## D12-A0 recap (the audit report was cleared with the slices, 2026-09-25 — these numbers brief the fix wave)
-
-Owner ask 2026-09-24, station readability, ARMORY first; **5 HIGH / 4 MED /
-3 LOW**, every finding lane-tagged; measured at 1920x1080 with the station
-theme in effect (`armory_panel.tscn` carries no theme of its own).
-
-**Graphics lane:** HIGH-1 the pane's ink is 9-13 px, under every spec floor,
-with 12 per-node size overrides that escape `ui_scale`
-(`armory_panel.gd:72-75,1509-1787`; fix: the §6 scale, floor 13, sizes
-registered in `Router.FONT_SIZE_ITEMS`). HIGH-2 every `text_dim` caption sits
-on painted metal at **1.9-2.8:1** (floor 4.5:1; `ROLE_TEXT_DIM` on the
-console/rack/row plates). HIGH-3 the `OVER CAP` ember state tag is **1.8:1**
-on the row plate while the pack name is 12 px — the hierarchy is inverted.
-HIGH-4 at 1920x1080 the pane's whole AMMUNITION half sits **below the fold**
-(0 of 6 pack cards visible; 520 px / 37 % of the host empty) — the §3.10
-Amendment 2 canvas is pinned, so the fix is a designer/owner question
-(bucket 2/3). HIGH-5 a fitted barrel's name draws at `font_color` alpha 0
-plus an 11 px `✕` chip — the rack reads as unlabelled machined blocks. MED-4
-`SALVO s` sits ~59 px from its drum digits and the state line that says
-`SALVO 0.6 s` is at alpha 0. LOW-1 the empty-rack drop cue is clipped 8 px
-at 9 px.
-
-**Code lane:** MED-1 the ammo rows draw outside their well (AmmoBox at local
-y -32; a 7th spacer row grows the group 64 px the block's arithmetic never
-sees). MED-2 one card mixes rounds and units (`300 ROUNDS PER PACK` beside
-`HELD 60 / 30`, no unit word). MED-3 the shell strip cannot carry an item
-description (one 13 px line, min 405 px for 65 chars; a description needs a
-3-line ~57 px strip — or belongs in the pane). LOW-2 is a recorded check —
-the pane's key hints are honest; do not "fix" them. LOW-3 the pane footer
-and the shell's StatusLabel do the same caption job 950 px apart.
-
-S15's close cured the plate-fit ink defect (route = ink layout). **Owner
-ruling 2026-09-25: the fix wave is ditched — the ARMORY takes a later
-rework; this recap is that rework's input, kept until then.**
+- **D9 item 11** — player-hull visibility (PICK 2026-09-24: scale bump only,
+  target ~56 px proposed); waits on the coder waves' `game/` set.
+- **D10 item 12** — polish batch (PICKS 2026-09-24: status close-X, launch
+  arm countdown, auction hull thumbnails, mining-beam visibility); waits on
+  `ui/station/`.
+- **D3 item 1** — chrome re-cut (GO 2026-09-24 on
+  `staging/phase_f/_preview/review_slots.png`).
+- **D3 2a/2b** — painted station rail icons; tint rework + the 540-file
+  import-settings cleanup.
+- **D4 3/4** — 4K 2× backdrop cuts; B2-1 hover look (flicker/directional
+  glow/ember).
+- **Items 5/6** — MMO/faction liveries, boss hulls (blocked on the naming
+  overhaul); component icons ×18 (verify against `D2_SPLIT.md`).
+- **The armory rework's implementation** — after D13's ticks.
 
 ## Done
 
-**D11 space-station scene rework (item 13)** — DONE 2026-09-25 (gate 807 →
-**812/0**; 0 HIGH / 2 MED cured (F1's value grade + the designer session's
-`ASSET_NAMING_SPEC` §13 rows) / 7 LOW L184–L190; hero 2.2003×, 6 static + 3
-moving kinds, 19 elements, $0.85 spent; two owner ticks recorded in the
-WAVEBOARD; brief/reports at `slices/D11-station-scene/`).
+Items 1-13 closed (D2 icon unification, D6 instruments, D7 cockpit rework,
+D11 station scene, the D8/D12 fix waves ditched or absorbed); detail in
+`.agents/gen/MASTER_REPORT.md` §6. The last closed wave: item 13 = **D11
+station scene** (2026-09-25, gate 807 → 812/0, 0 HIGH / 2 MED cured / 7 LOW
+L184-L190). The D12 ARMORY fix wave and D8 item 9 were **ditched by the owner
+2026-09-25** — the armory takes the D13 rework instead; the audit recap is
+preserved in the D13 brief.
 
-**D7 cockpit rework + battery window (item 8)** — DONE 2026-09-24 (gate
-674 → **727/0**; 1 HIGH + 1 MED cured by F1/A2; mockup loop v5/v6/v7 +
-Mockup A/C; `CockpitStyle`; brief/reports at `slices/D7-cockpit-rework/_archive/`).
-**D6 cockpit instruments (item 7)** — DONE 2026-09-24 (578 → **608/0**; 18
-masters, cluster + status modal; `slices/D6-cockpit-instruments/_archive/`).
-**D2 icon unification** — DONE 2026-09-22 (135 SVG + 164 raster masters, gate
-457 through the re-points; job spec archived under its `_archive/`).
+## Pipeline law (read before any generation run — AGENTS.md "Asset Generation")
 
-## Pipeline law (read before any run — AGENTS.md "Asset Generation" + "Phase G lane")
+Panel order: render → find objects (`panels.py --detect`) → cut each → key
+each → trim. `flare` never returns native alpha — `--post-only`. FX stay RGB
+except the four §0.1 names. 2K run = 10 credits = $0.05. Delivery order:
+generate → stage → **review sheet → owner approval** → ship → reimport →
+`validate_names.py --library`. Generation logs beside every shipped family.
 
-Panel order: render → find objects (`panels.py --detect`) → cut each → key each
-→ trim. A 2×2 sheet's fourth cell is often a second front (IoU > 0.80 = refuse).
-`flare` never returns native alpha — `--post-only`. FX stay RGB except the four
-§0.1 names. 2K run = 10 credits = $0.05. Delivery order: generate → stage →
-**review sheet → owner approval** → ship → reimport → `validate_names.py
---library` (host-deferred where noted). Generation logs beside every shipped
-family.
+## Handoff (live)
 
-## Handoff (live — paste as one block)
-
-**D8 item 10 (in-flight HUD visibility) CLOSED 2026-09-25** — minimap legend,
-legible zoom glyphs, the ≥12 px glyph floor at 1080p, and the top-left
-hull/shield block re-hidden per the owner (the cockpit carries it).
-**D8 item 9 (station composition) and the D12 ARMORY fix wave are DITCHED
-(owner 2026-09-25)** — the armory takes a later rework; the D12-A0 recap
-above is that rework's input. Candidates still open: D9 item 11 / D10 item 12
-(both wait on the coder waves' `game/` and `ui/station/` sets), D3 item 1 (GO
-on `review_slots.png`), D3 2a/2b, D4 3/4. Say the item and its five-piece
-lands at dispatch-prep.
+**Designer item 14 = D13 armory rework is QUEUED and ready** (brief
+`slices/D13-armory-rework/D13_BRIEF.md`, prompts `D13_prompts.md`; the D12-A0
+audit recap and the live capture travel inside the slice). The coder lane's
+single live item is item 17 = **S17 jump gates to sector edges**
+(`dispatch_coder.md`). Everything else is parked above.
