@@ -137,6 +137,9 @@ func _measure(leg: String, barrels: int, whole_field: bool, root_only: bool) -> 
 	var root_id: int = initial[0].get_instance_id()
 	result[&"fingerprint"] = _fingerprint(initial)
 	result[&"root_yield"] = int(initial[0].get(&"yield_units"))
+	## S13 (02 §5.1 Rule A): the rock's own original yield, the budget the family
+	## must not exceed. Read from the rock, never re-derived here.
+	result[&"root_bore"] = float(initial[0].call(&"bore_ore"))
 	result[&"root_size"] = int(initial[0].call(&"size_class"))
 	result[&"root_mineral"] = StringName(initial[0].get(&"mineral_id"))
 	result[&"root_tier"] = int(initial[0].get(&"tier"))
@@ -172,15 +175,18 @@ func _measure(leg: String, barrels: int, whole_field: bool, root_only: bool) -> 
 		if leg == LASER:
 			delivered += int(target.call(&"apply_work", AsteroidScript.WORK_PER_UNIT))
 		else:
-			target.call(&"apply_work", _chip_work())
+			## S13 (01 §5.6): the chip is attributed to the gun route, so a shatter it
+			## delivers is capped at `GUN_BURST_SHARE x _bore_ore`.
+			target.call(&"apply_gun_work", _chip_work())
 		steps += 1
 		if not whole_field:
 			for rock: Node2D in field.call(&"rocks") as Array[Node2D]:
 				if not before.has(rock.get_instance_id()):
 					family[rock.get_instance_id()] = true
 		elapsed += _step_seconds(leg, barrels)
-	if leg != LASER:
-		delivered = _pickup_units(field)
+	## S13: the field's pickup children are the shatter delivery for every leg, on
+	## top of the laser's extraction returns (a gun's chips never extract).
+	delivered += _pickup_units(field)
 	result[&"delivered"] = delivered
 	result[&"seconds"] = elapsed
 	result[&"steps"] = steps
@@ -236,29 +242,42 @@ func _hold_rows(laser: Dictionary, gun3: Dictionary, gunmax: Dictionary) -> void
 			cargo[&"cargo"], cargo[&"hull"], _fill_seconds(cargo[&"cargo"], rate)])
 
 
-## The single-rock half of 01 §5.6's invariant 1: one seeded rock's own yield in,
-## and what each leg realises out of it. `LASER_OWN` is the rock body alone (the
-## "mining realises 100 % of yield_units" reading); the other rows resolve the whole
-## cascade the rock becomes, because a gun delivers only at the Small end.
+## The single-rock half of 01 §5.6's invariant 1: one seeded rock's own budget in
+## (`_bore_ore`), its extractable half, and what each leg realises out of it.
+## `LASER_OWN` is the rock body alone (its extractable, "mining realises 100 % of
+## its extractable units"); the other rows resolve the whole cascade the rock
+## becomes, because a gun delivers only through the capped Small-end burst.
 func _rock_rows(max_barrels: int) -> void:
 	var own := _measure(LASER, 1, false, true)
 	var family_laser := _measure(LASER, 1, false, false)
 	var family_gun3 := _measure(GUN3, GUN3_BARRELS, false, false)
 	var family_gunmax := _measure(GUNMAX, max_barrels, false, false)
 	var yield_in: int = own[&"root_yield"]
-	print("%s ROCK seed=%d index=1 mineral=%s tier=%d size=%s yield_in=%d"
+	var bore: float = own[&"root_bore"]
+	print("%s ROCK seed=%d index=1 mineral=%s tier=%d size=%s extractable=%d bore=%.4f"
 		% [TAG, FIELD_SEED, String(own[&"root_mineral"]), own[&"root_tier"],
-		_size_name(own[&"root_size"]), yield_in])
+		_size_name(own[&"root_size"]), yield_in, bore])
 	for entry: Array in [
 		["LASER_OWN", own], ["LASER_FAMILY", family_laser],
 		["GUN3_FAMILY", family_gun3], ["GUNMAX_FAMILY", family_gunmax],
 	]:
 		var leg: Dictionary = entry[1]
-		print("%s ROCK LEG %s units=%d seconds=%.3f shots=%d field_rocks_spawned=%d pickups=%d units_over_yield_in=%.3fx"
+		print("%s ROCK LEG %s units=%d seconds=%.3f shots=%d field_rocks_spawned=%d pickups=%d units_over_bore=%.3fx"
 			% [TAG, entry[0], leg[&"delivered"], leg[&"seconds"], leg[&"steps"],
-			leg[&"rocks"], leg[&"pickups"], _ratio(leg[&"delivered"], yield_in)])
-	_check("rock_laser_realises_own_yield", bool(own[&"complete"]) and own[&"delivered"] == yield_in,
-		"the laser realises the rock's own %d units in %.3f s" % [yield_in, own[&"seconds"]])
+			leg[&"rocks"], leg[&"pickups"], _ratio(leg[&"delivered"], bore)])
+	_check("rock_laser_realises_own_extractable",
+		bool(own[&"complete"]) and own[&"delivered"] == yield_in,
+		"the laser realises the rock's own extractable %d units in %.3f s"
+			% [yield_in, own[&"seconds"]])
+	_check("rock_family_conserved",
+		float(family_laser[&"delivered"]) <= bore + 1.0,
+		"a fully mined family realises %d <= its own bore %.4f + 1 (was 4.0x)"
+			% [family_laser[&"delivered"], bore])
+	_check("rock_gun_capped",
+		float(family_gun3[&"delivered"]) <= 0.10 * bore + 1.0
+			and float(family_gunmax[&"delivered"]) <= 0.10 * bore + 1.0,
+		"a gun family realises %d/%d <= 0.10 x its %.4f bore + 1"
+			% [family_gun3[&"delivered"], family_gunmax[&"delivered"], bore])
 
 
 ## ---------------------------------------------------------------------------
@@ -373,7 +392,7 @@ func _blank_result(leg: String, barrels: int) -> Dictionary:
 	return {
 		&"leg": leg, &"barrels": barrels, &"delivered": 0, &"seconds": 0.0,
 		&"steps": 0, &"rocks": 0, &"pickups": 0, &"bound": "", &"complete": false,
-		&"fingerprint": "", &"root_yield": 0, &"root_size": -1,
+		&"fingerprint": "", &"root_yield": 0, &"root_bore": 0.0, &"root_size": -1,
 		&"root_mineral": &"", &"root_tier": 0,
 	}
 

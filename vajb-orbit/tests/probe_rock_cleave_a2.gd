@@ -651,25 +651,29 @@ func _inheritance() -> void:
 	var minerals: Dictionary = {}
 	var tiers: Dictionary = {}
 	var classes: Dictionary = {}
-	var yields: Array[int] = []
 	var made := 0
+	var conserved := 0
+	var splits: Array[float] = []
 	for index in INHERIT_CLEAVES:
 		var parent := _member(AsteroidScript.SIZE_MEDIUM, 4, Vector2(1200.0, -300.0 + float(index) * 8.0))
 		parent_mineral = StringName(parent.get(&"mineral_id"))
 		parent_tier = int(parent.get(&"tier"))
+		var reserve := float(parent.call(&"reserve_units"))
 		var before := _live_ids()
 		_deplete(parent)
 		var fragments := _fragments_since(before)
 		made += fragments.size()
+		var child_bore := 0.0
 		for fragment: Node2D in fragments:
 			minerals[StringName(fragment.get(&"mineral_id"))] = true
 			tiers[int(fragment.get(&"tier"))] = true
 			classes[int(fragment.call(&"size_class"))] = true
-			yields.append(int(fragment.get(&"yield_units")))
+			child_bore += float(fragment.call(&"bore_ore"))
+		splits.append(child_bore)
+		if absf(child_bore - roundf(reserve)) <= 0.001:
+			conserved += 1
 		_free_rocks(fragments)
-	var lo: int = maxi(1, roundi(float(MineralScript.TIER_BASE_YIELD[parent_tier]) * MineralScript.YIELD_VARIANCE_MIN))
-	var hi: int = maxi(1, roundi(float(MineralScript.TIER_BASE_YIELD[parent_tier]) * MineralScript.YIELD_VARIANCE_MAX))
-	print("%s INHERIT cleaves=%d n=%d parent=(%s,%d) minerals=%s tiers=%s classes=%s yields=%s band=%d-%d"
+	print("%s INHERIT cleaves=%d n=%d parent=(%s,%d) minerals=%s tiers=%s classes=%s child_bore=%s"
 		% [
 			TAG,
 			INHERIT_CLEAVES,
@@ -679,9 +683,7 @@ func _inheritance() -> void:
 			minerals.keys(),
 			tiers.keys(),
 			classes.keys(),
-			yields,
-			lo,
-			hi,
+			splits,
 		])
 	_check(
 		"inherit_mineral_and_tier",
@@ -694,9 +696,10 @@ func _inheritance() -> void:
 		"a Medium's fragments are Small"
 	)
 	_check(
-		"inherit_yield_rerolled",
-		yields.size() == made and made > 0 and yields.min() >= lo and yields.max() <= hi,
-		"the yield is re-rolled inside the tier's band %d-%d (%s)" % [lo, hi, yields]
+		"inherit_reserve_split_no_reroll",
+		made > 0 and conserved == INHERIT_CLEAVES,
+		"every cleave's children carry the parent reserve (%d/%d cleaves), no fresh roll"
+			% [conserved, INHERIT_CLEAVES]
 	)
 	_free_fx()
 

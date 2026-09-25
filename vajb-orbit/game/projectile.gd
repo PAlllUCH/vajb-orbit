@@ -764,13 +764,21 @@ func _shot_down(collider: Variant, point: Vector2) -> void:
 
 
 ## Section 6, ruling 17: a gun's work on a rock is `10 %` of its DPS-equivalent
-## rate, depletion only. The units `apply_work` returns are delivered pickups the
+## rate, depletion only. The units `apply_work` reports are delivered pickups the
 ## mining laser owns; a chip never extracts, so the return is discarded.
+##
+## S13_BRIEF §2 rule 3: a bolt's chip comes through `apply_gun_work`, so a shatter
+## it delivers is attributed to the gun route (its payout is capped). A stub rock
+## with only the mining door still answers `apply_work`.
 func _hit_rock(rock: Node, point: Vector2) -> void:
-	if chip > 0.0 and rock.has_method(&"apply_work"):
+	if chip > 0.0:
 		## S7 (CONTRACTS section 20): the chip is a player-origin delivered amount, so it
 		## takes the shot's `damage_mult` once, after the 10 % work rate.
-		rock.call(&"apply_work", damage * chip * damage_mult)
+		var work := damage * chip * damage_mult
+		if rock.has_method(&"apply_gun_work"):
+			rock.call(&"apply_gun_work", work)
+		elif rock.has_method(&"apply_work"):
+			rock.call(&"apply_work", work)
 	## FX_SPEC section 1.4 / AUDIO_SPEC S4: the hit's other half. A rock is its own
 	## sound (the mining shaft keeps its chip cue; this is the weapon's own hit).
 	play_impact(self, IMPACT_KIND_ROCK)

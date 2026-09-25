@@ -197,7 +197,10 @@ against `MINE_CYCLE`'s 0.83 units/s; `Asteroid.cleaves()` keys off `_bore_ore`
 pickups; and each fragment re-rolls a full 02 §5 yield. So the fastest ore route
 is shooting — 1.69 units/s delivered for a 3-cannon rack, 3.94 for a 7-cell
 rack, against the laser's 0.83 (S12-K1 measured 2026-09-25; the ≈2.5 this line
-first carried was an estimate) — and a 40-unit hold fills in seconds.
+first carried was an estimate) — and a 40-unit hold fills in seconds. With S13's
+ticked caps shipped, the same legs read 0.657 (laser) / 0.645 (GUN3) / 1.505
+(GUNMAX) u/s (R1 re-measured): shooting leads only on a full rack and realises
+≤ 10 % of the field's budget wherever the laser works.
 
 **Owner ticks 2026-09-25:** `GUN_BURST_SHARE` **0.10 TICKED**; 02 §5.1's
 fragment-share rule **TICKED at `FRAGMENT_CORE_SHARE` 0.25** (the reserve

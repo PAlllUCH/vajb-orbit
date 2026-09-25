@@ -18,6 +18,10 @@ extends RefCounted
 const ORE_ID_PREFIX := "mineral_"
 const INGOT_ID_PREFIX := "ingot_"
 
+## S13's live balance surface (S13_BRIEF §2 rule 1): the ticked tables stay declared
+## above, and `roll_yield` reads the live values so the F1 overlay can retune the
+## tier curve without a reload. `ore_tuning.gd` preloads nothing, so no cycle.
+const OreTuningScript := preload("res://game/ore_tuning.gd")
 const MINERALS: Array[Dictionary] = [
 	{
 		&"id": &"iron",
@@ -376,8 +380,11 @@ static func roll_mineral(tier: int, rng: RandomNumberGenerator) -> Dictionary:
 
 
 static func roll_yield(tier: int, rng: RandomNumberGenerator) -> int:
-	var base: int = int(TIER_BASE_YIELD.get(tier, 0))
-	return maxi(1, roundi(base * rng.randf_range(YIELD_VARIANCE_MIN, YIELD_VARIANCE_MAX)))
+	var table: Dictionary = OreTuningScript.tier_base_yield
+	var base: int = int(table.get(tier, 0))
+	return maxi(1, roundi(base * rng.randf_range(
+		OreTuningScript.yield_variance_min, OreTuningScript.yield_variance_max
+	)))
 
 
 static func _is_item_form(item_id: StringName, prefix: String) -> bool:

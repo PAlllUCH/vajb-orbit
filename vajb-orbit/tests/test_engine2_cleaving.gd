@@ -19,7 +19,13 @@ extends McpTestSuite
 ##     blast on the neighbours the rock can reach;
 ##   * a Small still bursts 1-2 pickups (there is no tier below Small) and a yield-0
 ##     rock still cracks bare -- but it draws the break too, because the break is the
-##     rock's death, not an ore event.
+##     rock's death, not an ore event;
+##   * **S13 (01 §5.6 invariant 3, 02 §5.1 Rule A): a cleave redistributes, it does
+##     not re-roll.** A rock's `_bore_ore` splits at setup into the extractable
+##     `yield_units` and a reserve (`FRAGMENT_CORE_SHARE`); the shatter hands the
+##     reserve to the children as their own whole-unit yield, so the children's sum
+##     equals the reserve and the family realises the root's own budget. The moved
+##     row at the Large-cleaves case asserts exactly that sum.
 ##
 ## The field is a detached `AsteroidField` (its rocks are real `RigidBody2D`s, so the
 ## body properties are measurable without a physics world) and the cleaving cases are
@@ -349,6 +355,7 @@ func test_large_cleaves_into_two_to_five_mediums() -> void:
 		var parent := _member(AsteroidScript.SIZE_LARGE, 4, "Large%d" % index)
 		var origin: Vector2 = (parent as Node2D).global_position
 		var mineral := StringName(parent.get(&"mineral_id"))
+		var reserve := float(parent.call(&"reserve_units"))
 		var velocity := Vector2(EJECT_SPEED, 0.0).rotated(EJECT_HEADING)
 		(parent as RigidBody2D).linear_velocity = velocity
 		var before := _live_ids()
@@ -357,14 +364,13 @@ func test_large_cleaves_into_two_to_five_mediums() -> void:
 		assert_true(fragments.size() >= 2 and fragments.size() <= 5,
 			"a Large spawns 2-5 fragments, got %d" % fragments.size())
 		counts.append(fragments.size())
+		var child_bore := 0.0
 		for fragment: Node2D in fragments:
 			assert_eq(int(fragment.call(&"size_class")), AsteroidScript.SIZE_MEDIUM,
 				"a Large's fragments are Medium")
 			assert_eq(StringName(fragment.get(&"mineral_id")), mineral,
 				"the fragment inherits the parent's mineral")
-			assert_true(int(fragment.get(&"yield_units")) >= 1,
-				"the fragment's yield is re-rolled (02 5), got %d"
-				% int(fragment.get(&"yield_units")))
+			child_bore += float(fragment.call(&"bore_ore"))
 			var ejected := (fragment as RigidBody2D).linear_velocity
 			var shape := _shape_half(fragment, origin)
 			## The inherit, measured as §5's shape: the deployed velocity with the field's
@@ -384,6 +390,13 @@ func test_large_cleaves_into_two_to_five_mediums() -> void:
 					and ejected.length() <= highest + ADDITIVE_SLACK,
 				"the burst is the shape plus the kick, so its magnitude is %.3f..%.3f, got %.3f"
 				% [lowest, highest, ejected.length()])
+		## S13 (01 §5.6 invariant 3, 02 §5.1 Rule A): a cleave **redistributes**,
+		## it never re-rolls. The children's summed own yield is the parent's
+		## reserve (`FRAGMENT_CORE_SHARE x _bore_ore`, whole units), so a fully
+		## mined family realises the parent's own `_bore_ore` and mints nothing.
+		assert_true(absf(child_bore - reserve) <= 0.500001,
+			"the children's summed own yield is the parent reserve (%.4f vs %.4f), no fresh roll"
+			% [child_bore, reserve])
 	assert_eq(counts.size(), 6, "six Large rocks were cracked")
 
 

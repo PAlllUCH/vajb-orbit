@@ -15,7 +15,13 @@ this session) / 7 LOW L184–L190; owner ticks recorded below; recap in
 ticks are with the owner — no cap implemented).** Coder item 20 = **S13 ore
 caps + mining batteries + dev tuning IN FLIGHT** (implements the owner's ticks:
 `GUN_BURST_SHARE` 0.10, `FRAGMENT_CORE_SHARE` 0.25, multi-mining stacking, the
-F1 slider overlay, `DOCK_RING_RADIUS` 175; Rule B deferred and forbidden).** Waves of record: item 16 = S10 ARMORY CLOSED gate 770 → **775/0** (0 HIGH / 0 MED /
+F1 slider overlay, `DOCK_RING_RADIUS` 175; Rule B deferred and forbidden)** —
+**CLOSED 2026-09-25**: gate 812 → **834/0**, 0 HIGH / 3 MED (two fixed by F1,
+the overlay mount by the developer session) / 4 LOW L198–L201. Measured: gun
+realisation 0.095–0.100 of Σ `_bore_ore` (was 0.714 per rock), cascade family
+realisation **1.000×** root (was 4.0×), mining batteries exactly 1/2/3×, ring
+175, the F1 overlay live in the flight scene with sliders over every ore
+constant. The `18_engine_spec` §6/§13 rewording is with the owner.** Waves of record: item 16 = S10 ARMORY CLOSED gate 770 → **775/0** (0 HIGH / 0 MED /
 6 LOW L172–L177); item 14 = S8 CLOSED gate 753 → **770/0** (0 HIGH / 0 MED /
 4 LOW L168–L171); item 13 = S7 CLOSED gate 711 → **753/0** (0 HIGH / 0 MED /
 5 LOW L163–L167); designer item 8 = D7 CLOSED gate 727/0. CONTRACTS §20 (S7), §21 (S8),

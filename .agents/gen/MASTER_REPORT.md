@@ -952,3 +952,26 @@ Review: 0 HIGH / 2 MED (both bucket-2 docs, cured at close-out: the brief's
 stale 807 pin and §4's non-callable `w_cannon` spelling) / 7 LOW L191–L197; R1
 verdict: no fixer warranted. Deliverable = the tables; the §10 ticks went to the
 owner and **no cap is implemented on this wave**.
+**S13 (2026-09-25): ore caps, mining batteries, dev tuning — DONE** (gate 812 →
+**834/0**, hermetic ×2; 0 HIGH / 3 MED / 4 LOW L198–L201). The owner's ticked
+rules ship and are runtime-tunable: `GUN_BURST_SHARE` 0.10 (gun-attributed
+shatters realise ≤ 10 % of a rock's own yield — measured 0.095/0.100 of Σ
+`_bore_ore`, was 0.714 per rock), `FRAGMENT_CORE_SHARE` 0.25 (the reserve
+variant — cleaving redistributes the reserve, never re-rolls; the family
+realises **1.000×** root `_bore_ore`, was 4.0×; S12's LASER_FAMILY minting is
+gone), multiple `w_mining` batteries stack (1/2/3 modules = exactly 1/2/3× work
+per cycle; the single-instance seam at `player_ship.gd:208` is cured),
+`DOCK_RING_RADIUS` 175, and the F1 developer overlay
+(`ui/dev/dev_tuning_menu.*`, 13 sliders over every ore constant, Save/Reset on
+`user://dev_tuning.cfg`, read only on open so the gate stays byte-identical on
+any store) mounted by the developer session in `game/game.gd` — that mount was
+R1's one bucket-2 MED; F1 cured the other two (`_ore_credit` reset at both
+cycle starts; the devmenu suite no longer deletes the live config — it had been
+reaching the owner's account through `verify --tests`). R1 re-measured every AC
+(W8 replay, moved-row diff against SLICE §3), owned CONTRACTS §5's two changed
+sentences + §9/§10 v0.25, and left the **proposed `18_engine_spec.md` §6/§13**
+rewording in its review (five sentences; that file has no §17 and is
+owner-locked). Rule B stayed deferred and forbidden. One incident: the first R1
+dispatch wedged (`crush run` idle in `futex_do_wait`, zero sockets, 0 bytes of
+output in 31 min — the 2026-09-18 wedging class); killed and re-dispatched, the
+retry completed clean.

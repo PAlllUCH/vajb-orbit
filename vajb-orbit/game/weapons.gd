@@ -65,6 +65,9 @@ const PlayerStateScript := preload("res://game/player_state.gd")
 const ProjectileScript := preload("res://game/projectile.gd")
 const ImpactScript := preload("res://game/impact.gd")
 const FxScript := preload("res://game/fx.gd")
+## S13's live balance surface (S13_BRIEF §2 rule 1): the chip rate below stays
+## declared as the default, and the live arithmetic reads `OreTuning.gun_chip_rate`.
+const OreTuningScript := preload("res://game/ore_tuning.gd")
 
 ## CONTRACTS section 23.4, owner-ruled 2026-09-24: a kinetic slug and a beam do not stop
 ## in the dark. 30 000 u is past a sector's own 14 142 u diagonal (`sector_registry.gd:32`)
@@ -1229,7 +1232,7 @@ func _spawn_shot(
 		&"arm": float(row.get(&"arm", 0.0)),
 		&"trigger": float(row.get(&"trigger", 0.0)),
 		&"mass": SHOT_MASS,
-		&"chip": GUN_CHIP_RATE,
+		&"chip": OreTuningScript.gun_chip_rate,
 		## S7 (CONTRACTS section 20): the projectile reads no stats and holds no state,
 		## so the launch's delivery multiplier and Embers' flag ride in with the shot.
 		## The product then lands once per delivered amount on the projectile side
@@ -1268,11 +1271,19 @@ func _apply_beam(
 		return
 	var hull_body := collider as Node
 	if hull_body != null and hull_body.is_in_group(ProjectileScript.ROCK_GROUP):
-		if hull_body.has_method(&"apply_work"):
+		if hull_body.has_method(&"apply_gun_work"):
 			## The chip is a player-origin delivered amount (K0's path 3), so it takes
 			## the launch's `damage_mult` once, after the 10 % work rate (CONTRACTS
-			## section 20's "rocks/mining included" tick).
-			hull_body.call(&"apply_work", amount * GUN_CHIP_RATE * _damage_scale())
+			## section 20's "rocks/mining included" tick). S13: a gun chip comes through
+			## `apply_gun_work`, so a shatter it delivers is attributed to the gun route.
+			hull_body.call(
+				&"apply_gun_work", amount * OreTuningScript.gun_chip_rate * _damage_scale()
+			)
+		elif hull_body.has_method(&"apply_work"):
+			## A minimal/synthetic rock with only the mining door (test stubs).
+			hull_body.call(
+				&"apply_work", amount * OreTuningScript.gun_chip_rate * _damage_scale()
+			)
 		## A gun chipping a rock reads the way the mining shaft does: S8's chip transient
 		## and FX_SPEC section 1.6's chip-sparks burst at the contact, on the same
 		## per-contact rate guard the hull read below uses (a chip per frame is a machine

@@ -348,9 +348,16 @@ cleaving tiers** (`(2,5)` L → M and M → S), `PICKUP_BURST` `(1,2)` for an S,
 ejection `× 1.2` in a **uniform 360°** direction (`FRAGMENT_EJECT_CONE_DEG` 360.0 —
 the reversals are those two constants themselves: restore the fixed `(2,3)`/`(2,2)`
 rows, or set the cone to `15.0`), fragment mineral **and tier** inherited from the
-parent with the yield re-rolled through the 02 §5 path (the §13 row and §12 item 12
-are law; §6's "re-rolled tier" parenthetical is not representable, since a mineral
-fixes its tier). **Measured 2026-09-22 (S2.6's fragment burst):** the deployment is
+parent; S13 (02 §5.1 Rule A, owner-ticked 2026-09-25) sets the payout aside **before**
+the cleave instead of re-rolling it: `setup` splits a rock's own original yield
+`_bore_ore` into the extractable `yield_units` and a reserve
+`_bore_ore × FRAGMENT_CORE_SHARE` (0.25), and a **mining-attributed** shatter hands
+the children `Σ` yield == that reserve, whole units split across `FRAGMENT_SPLIT`
+with each child's own `_bore_ore` == its share and **no fresh roll** (a
+gun-attributed shatter's fragments carry no ore). Reversal: `FRAGMENT_CORE_SHARE`
+→ 0.0 and the 02 §5 re-roll restored (the §13 row and §12 item 12 are law; §6's
+"re-rolled tier" parenthetical is not representable, since a mineral fixes its
+tier). **Measured 2026-09-22 (S2.6's fragment burst):** the deployment is
 **additive** — `AsteroidField._cleave` adds `FRAGMENT_OUTWARD_KICK 150.0` u/s (the
 field's own constant, §14) along the placement radial, on top of the rolled shape, so
 a stopped rock's fragments read radial `0.000 → 150.000` u/s (the owner's complaint)
@@ -372,7 +379,11 @@ spawning on `cracked`, so fragments are field members from birth and count towar
 `rocks()`/`is_depleted()`.
 
 Rocks are solid to ships, block shots/beams, crack at yield 0. Gun work = 10 %
-efficiency (slice-2 seam: expose `apply_work`, ship nothing else).
+efficiency through `apply_gun_work` (S13's gun door; `apply_work` is the mining
+door). A **gun-attributed** shatter realises at most `GUN_BURST_SHARE` (0.10,
+01 §5.6's owner tick) of the rock's own `_bore_ore` through the Small-end burst —
+the reserve beyond the cap burns and the gun's fragments carry no ore. Reversal:
+`GUN_BURST_SHARE` → 1.0.
 
 **MiningLaser** — `game/mining_laser.tscn`, child of PlayerShip:
 
@@ -844,7 +855,19 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
-Expected (D11, 2026-09-25): **`[SUMMARY] passed=812 failed=0`**, exit 0. The D11 review
+Expected (S13, 2026-09-25): **`[SUMMARY] passed=834 failed=0`**, exit 0. The S13
+review (S13-R1) measured **834** twice on fresh scratch stores plus a store carrying
+a divergent `user://dev_tuning.cfg` at boot (identical counts and an identical sorted
+PASS set), and re-ran the mandated `verify --baseline s13_start … --tests
+--expect-reports …` green (`"problems": []`). **Growth `812 → 834`** =
+`test_s13_caps.gd`'s **10** + `test_s13_mining_batteries.gd`'s **4** +
+`test_s13_devmenu.gd`'s **8** rows; no moved row added a row. The wave leaves **0
+HIGH / 3 MED / 4 LOW (L198–L201)**. Its probes re-measured the two caps on the
+shipped tree: `probe_s12_field_budget` GUN3/GUNMAX deliver **0.0952 (T1) / 0.1000
+(T3)** of the field's `_bore_ore` and the LASER legs **0.976 / 1.000**; the
+single-rock cascade now realises **1.000×** its own `_bore_ore` (S12 measured
+**4.000×**) and the gun family **0.000×** (S12's 0.714), all `failures=0`.
+Previous expected (D11, 2026-09-25): **`[SUMMARY] passed=812 failed=0`**, exit 0. The D11 review
 (D11-R1) measured **812** twice on two fresh scratch stores (`XDG_DATA_HOME=$(mktemp -d)`,
 exit 0, identical counts, zero failed) plus the mandated
 `verify --baseline d11_start … --tests` run green a third time, and a targeted
@@ -3795,3 +3818,26 @@ hull stops twice and the second stop slides.
   a durable v2-approval line (L189), ring A vs B (shipped A=120 with the ring **21.4 u
   inside** the hero's 141.45 u content half; B=175 needs its own ratification), and the
   `class_name` ratify/reverse call.
+- **v0.25 (2026-09-25, wave S13 review — S13-R1, this wave's only CONTRACTS writer;
+  the next free row read from §10 at close-out — sequenced after S12's v0.24 and every
+  later row, rebase never revert)** — §5's two sentences move to the owner-ticked caps
+  (01 §5.6, 02 §5.1 Rule A, 2026-09-25): the fragment-yield sentence (line 350) becomes
+  the **reserve split** (`_bore_ore × FRAGMENT_CORE_SHARE` 0.25, redistributed with no
+  re-roll, each child's `_bore_ore` == its share), and the gun-work sentence (line 374)
+  names **`GUN_BURST_SHARE` 0.10** as the gun-attributed shatter's cap, reached through
+  the new gun door `apply_gun_work` (the ram, the beam and the bolt all use it;
+  `apply_work` is the mining door). §9 gains the S13 expected **`passed=834 failed=0`**
+  (twice on fresh scratch stores plus a divergent-`dev_tuning.cfg` store with an
+  identical sorted PASS set; the mandated verify run green), growth `812 → 834` =
+  `test_s13_caps.gd` 10 + `test_s13_mining_batteries.gd` 4 + `test_s13_devmenu.gd` 8.
+  **0 HIGH / 3 MED / 4 LOW (L198–L201).** Re-measured by the review: the T1 gun legs
+  deliver **4 of 42 = 0.0952**, T3 **3 of 30 = 0.1000**, the single-rock gun family
+  **0 / bore 7.0 = 0.000×** (S12's 0.714), the mined family **7 / bore 7.0 = 1.000×**
+  (S12's 4.000×), and `extract_cycle` reads **1.000 / 2.000 / 3.000** units per cycle
+  for N = 1/2/3; `_rolled_yield`'s only remaining caller is `_spawn_rock` (setup-side),
+  so `_cleave` re-rolls nothing; `git diff project.godot` empty. The three MEDs are
+  the field credit surviving `setup()/respawn()` (F1), the overlay mounted by nothing
+  (bucket 2 — developer/next wave) and the devmenu suite deleting the live
+  `user://dev_tuning.cfg` (F1). Owner ticks owed: mount the F1 overlay, and the
+  `18_engine_spec.md` §6/§13 wording R1 proposed (the file is owner-locked; it has no
+  §17).

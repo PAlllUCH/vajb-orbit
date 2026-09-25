@@ -532,3 +532,21 @@ file at write time); the next free ticket is still **T-94**.
 | L196 | **SLICE.md and the brief disagree on R1's file name.** SLICE.md names `probe_s12_r1_replay.gd`; the brief §5 (line 148) and the dispatch name `probe_s12_r1_constants.gd` (which the review did not create). | [DOC] | `.agents/gen/slices/S12-ore-budget/SLICE.md:61` | Next slice-doc pass: align the worker-file table with the brief. |
 | L197 | **A probe asserts on a private field.** The spawned-count check reads `AsteroidField`'s private `_spawned` duck-typed; it passes today and would drift silently on a rename. | [HARNESS] | `vajb-orbit/tests/probe_s12_field_budget.gd:175` | Next probe owner: count spawns from `rocks()` plus an accumulated total, or expose an accessor. |
 
+### S13 ore-caps / mining-batteries / dev-menu review block (2026-09-25)
+
+Source: `.agents/gen/slices/S13-ore-caps-devmenu/S13-R1_review.md`. The wave leaves
+**no HIGH and 3 MED** (S13-B1/F1 the field credit surviving `setup()`/`respawn()`,
+S13-B2/F1 the overlay mounted by nothing — bucket 2, developer/next wave, S13-B2/F2
+the devmenu suite deleting the live `user://dev_tuning.cfg`), gate **`812/0 →
+834/0`** twice on fresh scratch stores plus a divergent-config store (identical
+sorted PASS set), `verify --baseline s13_start` `problems: []`. Rows run
+**L198–L201** (ids read from this file at write time); the next free ticket is
+still **T-94**.
+
+| # | Item | Kind | Where | Disposition |
+|---|------|------|-------|-------------|
+| L198 | **The rock-rate probe hardcodes the gun cap it checks.** `rock_gun_capped` uses a literal `0.10` while the sibling `probe_s12_field_budget.gd:218-220` reads `OreTuningScript.gun_burst_share`; hard rule 4's "no re-declared numbers". The bound stays valid (a looser upper bound cannot hide a regression) but mirrors a live tunable. | [HARNESS] | `vajb-orbit/tests/probe_s12_rock_rate.gd:277-279` | Next probe owner: preload `ore_tuning.gd` and read `gun_burst_share`, as the budget probe does. |
+| L199 | **`player_ship.gd`'s battery comment overstates the retune path.** "The count is re-read on every sync, so a fit change retunes the battery with no new node" — but `_fit_ids` is assigned only in `setup()` (`:298`) and never mutated, so the count changes only on a re-setup (a hull swap reloads the ship). Comment accuracy only. | [CODE] | `vajb-orbit/game/player_ship.gd:1317-1320` | Next `player_ship.gd` touch: say "re-read on every `_sync_mining_laser`", or re-bind on a fit mutation if one is ever added. |
+| L200 | **01 §5.6's measured prose is stale against the new caps.** Re-measured on the shipped tree: laser **0.657 u/s** (doc 0.83), GUN3 **0.645 u/s** (doc 1.689), GUNMAX **1.505 u/s** (doc 3.941), so "Shooting is the fast, lossy route" (line 181) now holds only for a full rack; the ticked rule (§5.6 amendment) and 01 §5.5's ×0.7 window are unaffected. | [DOC] | `docs/gameplay/01_economy_core.md:181,192-200` | Next 01 owner/planner: retext the pre-amendment evidence to the shipped band, or mark the block superseded by the amendment. |
+| L201 | **AC4's strongest hermeticity claim is proven on a store the run empties.** "The gate is byte-identical with `user://dev_tuning.cfg` present" holds trivially because nothing at boot reads the file, but the devmenu suite deletes the file it finds (same class as S13-B2/F2), so the file's survival is unasserted. | [HARNESS] | `vajb-orbit/tests/test_s13_devmenu.gd:190-206` | F1 points the suite's `config_path` at `user://_gate_scratch/`; once it does, add a row asserting a pre-existing file is untouched. |
+

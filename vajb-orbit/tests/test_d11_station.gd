@@ -60,7 +60,8 @@ func test_station_draws_composed_not_one_sprite() -> void:
 
 ## AC3: the swap's invariants in sector — placement centre unchanged, the group
 ## survives on the composed node, and the DockZone is a SIBLING whose circle
-## radius still reads in world units (120, sector.gd's DOCK_RING_RADIUS).
+## radius still reads in world units (175, sector.gd's DOCK_RING_RADIUS as of
+## S13's owner tick; it was 120 before).
 func test_spawn_swap_keeps_centre_group_and_dock_radius() -> void:
 	var sector := _spawned_station()
 	assert_true(sector.call(&"has_station"), "the sector has a station")
@@ -78,8 +79,8 @@ func test_spawn_swap_keeps_centre_group_and_dock_radius() -> void:
 		for child: Node in dock.get_children():
 			var shape := child as CollisionShape2D
 			if shape != null and shape.shape is CircleShape2D:
-				assert_eq((shape.shape as CircleShape2D).radius, 120.0,
-					"radius reads 120 in world units as before")
+				assert_eq((shape.shape as CircleShape2D).radius, 175.0,
+					"radius reads 175 in world units (S13's tick)")
 
 
 ## The S6 seams still answer byte-identically: dock_zone_contains is the same
@@ -87,9 +88,9 @@ func test_spawn_swap_keeps_centre_group_and_dock_radius() -> void:
 ## station as one friendly row.
 func test_s6_dock_and_blip_seams_still_answer() -> void:
 	var sector := _spawned_station()
-	assert_true(sector.call(&"dock_zone_contains", CENTRE + Vector2(0.0, 119.0)),
+	assert_true(sector.call(&"dock_zone_contains", CENTRE + Vector2(0.0, 174.0)),
 		"inside the ring docks")
-	assert_false(sector.call(&"dock_zone_contains", CENTRE + Vector2(0.0, 121.0)),
+	assert_false(sector.call(&"dock_zone_contains", CENTRE + Vector2(0.0, 176.0)),
 		"outside the ring does not")
 	var blips: Array = sector.call(&"blips")
 	assert_eq(blips.size(), 1, "one blip for one station")

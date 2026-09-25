@@ -1286,6 +1286,12 @@ func _release_mining_laser() -> void:
 
 ## The laser scene is W3's; it is mounted by guarded path, the same convention
 ## game.gd uses for the HUD, so this scene loads before W3's file lands.
+##
+## S13_BRIEF §2 rule 5: the early return is the shipped route, not a defect. N
+## fitted `w_mining` modules are N **work channels on this one node** (the laser's
+## `set_battery(N)`), which beats N beam nodes: the reticle push (`game.gd`), the
+## trigger and `_update_mining_laser` all read the single `_laser` unchanged, and
+## there is no second beam to point or to double-pay through.
 func _mount_mining_laser() -> void:
 	if _laser != null:
 		return
@@ -1304,10 +1310,25 @@ func _mount_mining_laser() -> void:
 
 
 func _bind_laser() -> void:
-	if _laser == null or _stats == null:
+	if _laser == null:
 		return
-	if _laser.has_method(&"bind"):
+	if _stats != null and _laser.has_method(&"bind"):
 		_laser.call(&"bind", _stats)
+	## S13_BRIEF §2 rule 5: N fitted `w_mining` modules are N work channels on the
+	## one node, so one cycle mines N x. The count is re-read on every sync, so a fit
+	## change retunes the battery with no new node.
+	if _laser.has_method(&"set_battery"):
+		_laser.call(&"set_battery", _mining_module_count())
+
+
+## How many `w_mining` modules the fit carries. `_has_mining_module` only needs the
+## boolean; the battery needs the count.
+func _mining_module_count() -> int:
+	var count := 0
+	for id: StringName in _fit_ids:
+		if id == MINING_MODULE:
+			count += 1
+	return count
 
 
 ## Section 4.3: the fitted weapons ride the same W-slot rule as the mining laser. A fit

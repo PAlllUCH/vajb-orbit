@@ -21,8 +21,10 @@ extends Node2D
 ## neutral steel token and never additive. See the W3 report for the FX_SPEC §1.6
 ## deviation this brief overrides.
 
-const AsteroidScript := preload("res://game/asteroid.gd")
 const MineralCatalogScript := preload("res://game/mineral_catalog.gd")
+## S13's live balance surface (S13_BRIEF §2 rule 1): `MINE_CYCLE` and
+## `WORK_PER_UNIT` stay declared as the defaults; the live cycle and work read here.
+const OreTuningScript := preload("res://game/ore_tuning.gd")
 ## The chip read's own door (L65): the burst `weapons.gd`'s rock branch spawns through
 ## `spawn_chip_sparks`, and the scatter its amendment pins, are `Projectile`'s statics -
 ## so the shaft and a gun cannot draw two different chips.
@@ -94,6 +96,12 @@ const HIT_FX_JITTER_MAX := 48.0
 var _stats: ShipStats = null
 var _active := false
 
+## S13_BRIEF §2 rule 5: the number of fitted `w_mining` modules this one node
+## serves. N modules are N work channels on this node (`PlayerShip` hands the count
+## in), so one cycle delivers `bank x work_per_unit` of extraction work and spawns
+## that many pickups - one per realised unit, never the same unit twice.
+var _bank := 1
+
 var _target: Node2D = null
 var _hit_point := Vector2.ZERO
 var _cycle := 0.0
@@ -124,6 +132,17 @@ func set_active(active: bool) -> void:
 		_extinguish()
 
 
+## S13_BRIEF §2 rule 5: how many `w_mining` modules are fitted. The fit's own count
+## is `PlayerShip`'s to read (it holds the module ids); the node clamps to at least
+## one channel so a scene-authored laser with no fit still mines once.
+func set_battery(count: int) -> void:
+	_bank = maxi(count, 1)
+
+
+func battery() -> int:
+	return _bank
+
+
 func is_active() -> bool:
 	return _active
 
@@ -151,8 +170,8 @@ func _physics_process(delta: float) -> void:
 		_extinguish()
 		return
 	_cycle += delta
-	if _cycle >= MINE_CYCLE:
-		_cycle = fmod(_cycle, MINE_CYCLE)
+	if _cycle >= OreTuningScript.mine_cycle:
+		_cycle = fmod(_cycle, OreTuningScript.mine_cycle)
 		_apply_cycle()
 	_draw_beam()
 
@@ -190,15 +209,13 @@ func _acquire() -> Node2D:
 	return rock
 
 
-## One completed cycle: `WORK_PER_UNIT` of work into the rock, one pickup per unit
-## the rock yields (02 §7.1), and the S8 chip transient on the sound bus.
+## One completed cycle: `bank x work_per_unit` of work into the rock, one pickup
+## per unit the rock realises (02 §7.1), and the S8 chip transient on the sound bus.
 func _apply_cycle() -> void:
 	if _target == null or not is_instance_valid(_target):
 		_target = null
 		return
-	var units := int(_target.call(&"apply_work", AsteroidScript.WORK_PER_UNIT))
-	for _unit: int in units:
-		_spawn_pickup(_hit_point)
+	var units := extract_cycle(_target, _hit_point)
 	if units > 0:
 		_play_chip()
 		## L65: the shaft's own chip read draws FX_SPEC section 1.6's chip-sparks burst,
@@ -208,11 +225,27 @@ func _apply_cycle() -> void:
 		ProjectileScript.spawn_chip_sparks(_hit_fx_parent(), _hit_fx_point())
 
 
+## S13_BRIEF §2 rule 5 / AC3: one cycle's extraction against an explicit target, the
+## same arithmetic `_apply_cycle` uses. N fitted `w_mining` modules are N work
+## channels on this one node, so the work is `bank x work_per_unit` and the pickups
+## are the units that work realises - once each, so one unit of work never realises
+## twice. Public so a suite can measure the 1x/2x/3x scaling without a physics world
+## (the beam itself needs a ray and the cursor).
+func extract_cycle(target: Node2D, at: Vector2) -> int:
+	if target == null or not is_instance_valid(target):
+		return 0
+	var work := OreTuningScript.work_per_unit * float(_bank)
+	var units := int(target.call(&"apply_work", work))
+	for _unit: int in units:
+		_spawn_pickup(at, target)
+	return units
+
+
 ## The rock's mineral becomes the cargo identity: the bare catalogue id goes
 ## through `MineralCatalog.ore_id`, which is the ore item id the profile's
 ## manifest and the exchange's sale path both read (02 §7.5, 05 §6).
-func _spawn_pickup(at: Vector2) -> void:
-	if _target == null:
+func _spawn_pickup(at: Vector2, target: Node2D) -> void:
+	if target == null:
 		return
 	if not ResourceLoader.exists(PICKUP_SCRIPT):
 		return
@@ -226,7 +259,7 @@ func _spawn_pickup(at: Vector2) -> void:
 	var parent := _world_parent()
 	parent.add_child(pickup)
 	pickup.global_position = at
-	var item := MineralCatalogScript.ore_id(StringName(_target.get(&"mineral_id")))
+	var item := MineralCatalogScript.ore_id(StringName(target.get(&"mineral_id")))
 	pickup.call(&"setup", item, 1, false)
 
 
@@ -235,6 +268,11 @@ func _spawn_pickup(at: Vector2) -> void:
 ## than to this node's parent chain. `current_scene` is null only in a probe that
 ## never changed scene, where the tree root is the world instead.
 func _world_parent() -> Node:
+	## A node outside the tree (a probe, or a suite measuring the cycle seam) has no
+	## `get_tree()` at all; asking for it logs an engine error, so check first and
+	## parent to self, the same fallback `asteroid_field.gd` uses.
+	if not is_inside_tree():
+		return self
 	var tree := get_tree()
 	if tree == null:
 		return self

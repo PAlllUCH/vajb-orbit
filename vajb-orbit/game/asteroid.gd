@@ -23,11 +23,19 @@ extends RigidBody2D
 ## lands.
 ##
 ## Work, not damage: `apply_work` accumulates fractional work and converts it to
-## whole ore units at `WORK_PER_UNIT`, so 02 §7.1's "one completed extraction cycle
-## pops one ore unit" and ENGINE_SPEC §6's 10 % gun rate are the same arithmetic
-## with different callers. Slice 2's weapons call `apply_work(dps * 0.1 * delta)`;
-## no weapon code lives here. That arithmetic is untouched by slice 0: guns still
-## only deplete (the caller that spawns pickups is the mining laser's MINE_CYCLE).
+## whole ore units at `OreTuning.work_per_unit`, so 02 §7.1's "one completed
+## extraction cycle pops one ore unit" and ENGINE_SPEC §6's 10 % gun rate are the
+## same arithmetic with different callers. A gun's chip work comes through
+## `apply_gun_work` (S13), which carries the gun attribution a shatter's payout
+## reads; the arithmetic is otherwise untouched, and no weapon code lives here.
+##
+## **S13 — the reserve split and the shatter attribution (01 §5.6, 02 §5.1 Rule
+## A).** `setup` receives the extractable whole units and the rock's own original
+## yield (`_bore_ore`, additive `bore` argument), and holds aside
+## `_reserve = _bore_ore x fragment_core_share`. Extraction realises only
+## `yield_units` (the extractable). At the crack, `shatter_from_mining()` tells the
+## field which route delivered the last work unit: a mining shatter pays the full
+## reserve, a gun shatter at most `gun_burst_share x _bore_ore`.
 ##
 ## **Slice 0 (ruling 8): the rock is a real body.** A `RigidBody2D` with a heavy
 ## mass and linear damping, so a rammed rock is a near-wall and a knocked rock
@@ -80,12 +88,12 @@ const ROCK_GROUP: StringName = &"asteroid"
 ## `hull_mass` in that table and nowhere else).
 const ShipFitScript := preload("res://game/ship_fit.gd")
 
-## The ram sink's conversion is the shipped 10 % gun chip (ENGINE_SPEC §6, ruling 17),
-## read from its single owner `WeaponComponent.GUN_CHIP_RATE` rather than re-declared:
+## The ram sink's conversion is the shipped 10 % gun chip (ENGINE_SPEC §6, ruling 17):
 ## the owner's 2026-09-21 re-scope rejected a second damage-to-work constant, so a ram
-## and a shot chip a rock through the same arithmetic. Reached by path and not by the
-## global class name, which only resolves once the editor has scanned the project.
-const WeaponsScript := preload("res://game/weapons.gd")
+## and a shot chip a rock through the same arithmetic. S13: that rate is read live from
+## `OreTuning.gun_chip_rate` (its default is `weapons.gd`'s `GUN_CHIP_RATE`), whose
+## declared owner is the weapon file - this file no longer preloads it for the value.
+const OreTuningScript := preload("res://game/ore_tuning.gd")
 
 ## The look rows of `LOOK_TEXTURES`: three size tiers (S, M, L) times three
 ## silhouettes. Row order is S1-S3, M1-M3, L1-L3, so the size class of a look is
@@ -198,10 +206,23 @@ var _sprite: Sprite2D = null
 var _shape: CollisionShape2D = null
 var _radius := 0.0
 var _cracked := false
-## Whether the rock was rolled *with* ore. Ruling 17's "a yield-0 rock still cracks
-## and despawns bare" is exactly this flag: a rock that never carried ore has
-## nothing to cleave, so it cracks, emits and frees without fragments.
-var _bore_ore := false
+## The rock's own original yield (02 §5.1 Rule A's `_bore_ore`), in units. Ruling
+## 17's "a yield-0 rock still cracks and despawns bare" is `_bore_ore <= 0`: a rock
+## that never carried ore has nothing to cleave, so it cracks, emits and frees
+## without fragments. S13: at setup this splits into the extractable `yield_units`
+## (what extraction realises) and `_reserve` (what the shatter pays).
+var _bore_ore := 0.0
+
+## 02 §5.1 Rule A's reserve: the part of `_bore_ore` set aside at setup and never
+## directly extractable, paid at the shatter. `_bore_ore - float(yield_units)`.
+var _reserve := 0.0
+
+## Which route delivered the work that cracked this rock (S13_BRIEF §2 rule 3):
+## true = mining work (the laser's apply path, and a direct `apply_work` caller),
+## false = gun chip work (`apply_gun_work`). The field reads it during `cracked` to
+## attribute the shatter's payout. Defaults to mining so a direct `apply_work`
+## caller (every committed probe and suite depleting a rock) reads as mining.
+var _shatter_mining := true
 
 
 ## 02 §5's roll lands here: which mineral the rock holds, its tier and how many ore
@@ -222,19 +243,28 @@ var _bore_ore := false
 ## is known before the node is (`world_radius` reads it), and the deferred install
 ## lands before the next step, so the fragment collides from its first eligible
 ## frame. A physics-frame call defers even without the flag.
+## `bore` is S13's additive seam: the rock's **own original yield** (02 §5.1's
+## `_bore_ore`) when the caller already holds it, which is every roll the field or a
+## POI makes. The default `-1.0` derives it from `units` (the extractable) through
+## `fragment_core_share`, which keeps every pre-S13 five-argument caller (and
+## `test_combat_repair_c5.gd`'s `setup(..., 100, ...)`) exact: its `yield_units` is
+## the number it passed and its reserve is the derived remainder.
 func setup(
 	mineral: StringName,
 	mineral_tier: int,
 	units: int,
 	size_class: int = SIZE_ANY,
-	defer_shape: bool = false
+	defer_shape: bool = false,
+	bore: float = -1.0
 ) -> void:
 	mineral_id = mineral
 	tier = mineral_tier
 	yield_units = maxi(units, 0)
 	work = 0.0
 	_cracked = false
-	_bore_ore = yield_units > 0
+	_bore_ore = maxf(bore, float(yield_units)) if bore >= 0.0 else derive_bore(yield_units)
+	_reserve = maxf(_bore_ore - float(yield_units), 0.0)
+	_shatter_mining = true
 	add_to_group(ROCK_GROUP)
 	collision_layer = COLLISION_LAYER
 	collision_mask = COLLISION_MASK
@@ -245,18 +275,80 @@ func setup(
 ## Fractional work in, whole ore units out. Work accumulates across calls, so a
 ## 0.1-per-hit caller mines one unit every ten hits. Returns the units this call
 ## mined; the rock emits `cracked` and despawns when the last unit leaves.
+##
+## This is the **mining** door (S13_BRIEF §2 rule 3): the mining laser's apply
+## path, and every direct caller. A gun's chip work must come through
+## `apply_gun_work`, which attributes a shatter to the gun route instead.
 func apply_work(amount: float) -> int:
+	return _accumulate(amount, true)
+
+
+## The **gun** door (projectile.gd's rock branch, weapons.gd's beam branch, and
+## `apply_collision_damage`'s ram). Same arithmetic as `apply_work`, but a shatter
+## it delivers is attributed to the gun route: its payout is capped at
+## `OreTuning.gun_burst_share x _bore_ore` and the excess reserve burns.
+func apply_gun_work(amount: float) -> int:
+	return _accumulate(amount, false)
+
+
+## The one work arithmetic both doors share. `from_mining` is stamped on the rock
+## only when the last unit leaves, so a non-cracking chip cannot re-attribute an
+## earlier shatter (a rock cracks once and is freed).
+func _accumulate(amount: float, from_mining: bool) -> int:
 	if amount <= 0.0 or _cracked:
 		return 0
 	work += amount
+	var per_unit := maxf(OreTuningScript.work_per_unit, WORK_EPSILON)
 	var units := 0
-	while yield_units > 0 and work >= WORK_PER_UNIT - WORK_EPSILON:
-		work = maxf(work - WORK_PER_UNIT, 0.0)
+	while yield_units > 0 and work >= per_unit - WORK_EPSILON:
+		work = maxf(work - per_unit, 0.0)
 		yield_units -= 1
 		units += 1
 	if yield_units <= 0:
+		_shatter_mining = from_mining
 		_crack()
 	return units
+
+
+## The rock's own original yield (02 §5.1's `_bore_ore`), read by the field at the
+## shatter for the gun cap and the reserve.
+func bore_ore() -> float:
+	return _bore_ore
+
+
+## 02 §5.1 Rule A's reserve: the part of `_bore_ore` a mining-attributed shatter
+## pays in full and a gun-attributed one caps.
+func reserve_units() -> float:
+	return _reserve
+
+
+## Which route delivered the work that cracked this rock (S13_BRIEF §2 rule 3).
+func shatter_from_mining() -> bool:
+	return _shatter_mining
+
+
+## The extractable whole units a bore of `bore_total` leaves after the reserve is
+## set aside. The field's roll path and its fragment handoff both use it, so the
+## split cannot drift between a field's own rocks and a cleave's children.
+static func extractable_units(bore_total: int) -> int:
+	return maxi(bore_total - reserve_units_of(bore_total), 0)
+
+
+## The whole units 02 §5.1 Rule A sets aside from a bore of `bore_total`.
+static func reserve_units_of(bore_total: int) -> int:
+	var share := clampf(OreTuningScript.fragment_core_share, 0.0, 1.0)
+	return clampi(roundi(float(bore_total) * share), 0, maxi(bore_total, 0))
+
+
+## The `_bore_ore` a five-argument `setup` implies: the extractable units carry the
+## `1 - fragment_core_share` share, so the bore is `units / (1 - share)`. A share of
+## 1.0 (or more) leaves nothing extractable, so the bore is then the units
+## themselves and the whole rock is reserve.
+static func derive_bore(extractable_units_count: int) -> float:
+	var keep := clampf(1.0 - OreTuningScript.fragment_core_share, 0.0, 1.0)
+	if keep <= 0.0:
+		return float(extractable_units_count)
+	return float(extractable_units_count) / keep
 
 
 ## The other half of a body-body impact (ENGINE_SPEC §4.2 item 6, CONTRACTS §4): the
@@ -269,7 +361,7 @@ func apply_work(amount: float) -> int:
 ## rock): the offer is 186.179, so the rock gains 18.618 work, 18 ore units leave it and
 ## the rock moves 73.351 u/s / 21.056 u.
 func apply_collision_damage(amount: float) -> void:
-	apply_work(amount * WeaponsScript.GUN_CHIP_RATE)
+	apply_gun_work(amount * OreTuningScript.gun_chip_rate)
 
 
 func is_depleted() -> bool:
@@ -291,7 +383,7 @@ func size_class() -> int:
 ## Ruling 17's "a yield-0 rock still cracks and despawns without fragments": only a
 ## rock that rolled ore cleaves. The field asks this before spawning anything.
 func cleaves() -> bool:
-	return _bore_ore
+	return _bore_ore > 0.0
 
 
 ## The velocity the fragments inherit: `current_velocity × 1.2` of the §13 cleaving

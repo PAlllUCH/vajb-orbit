@@ -56,6 +56,10 @@ const Clock := preload("res://autoload/world_clock.gd")
 const ProjectileScript := preload("res://game/projectile.gd")
 const ImpactScript := preload("res://game/impact.gd")
 
+## S13's one live balance surface (01 §5.6, 02 §5.1 Rule A). The shatter payout and
+## the cleave handoff read their numbers here, so the F1 overlay can tune them live.
+const OreTuningScript := preload("res://game/ore_tuning.gd")
+
 ## `Pickup` is loaded lazily, exactly as the mining laser loads it: this field must
 ## be able to build, roll and cleave a rock field whether or not the pickup leaf
 ## script compiles, and a `preload` would make one bad leaf path kill the whole
@@ -115,6 +119,13 @@ var last_respawn_time: int = 0
 ## `setup(config)`'s `&"seed"`; a probe may also read it back.
 var rng := RandomNumberGenerator.new()
 
+## S13_BRIEF §2 rule 3's float credit, per field and per cycle: a shatter's owed ore
+## accumulates here and pays whole pickup units when it crosses 1.0, so a sub-unit
+## reserve is neither lost nor ever paid as a fractional pickup. `setup()` and
+## `respawn()` clear it with the rocks they clear (S13-R1's F1), so one cycle's
+## leftover credit can never pay against the next cycle's rocks.
+var _ore_credit := 0.0
+
 var _tier_weights: Dictionary = {}
 var _rocks: Array[Node2D] = []
 var _rocks_per_cycle := FIELD_ROCKS_MIN
@@ -144,6 +155,7 @@ func setup(config: Dictionary = {}) -> void:
 		count = rng.randi_range(FIELD_ROCKS_MIN, FIELD_ROCKS_MAX)
 	_rocks_per_cycle = clampi(count, FIELD_ROCKS_MIN, FIELD_ROCKS_MAX)
 	_clear_rocks()
+	_ore_credit = 0.0
 	_roll_rocks(_rocks_per_cycle)
 	_built = true
 
@@ -167,6 +179,7 @@ func respawn(now: int = -1) -> bool:
 		return false
 	last_respawn_time = now if now >= 0 else Clock.now()
 	_clear_rocks()
+	_ore_credit = 0.0
 	_roll_rocks(_rocks_per_cycle)
 	return true
 
@@ -229,9 +242,14 @@ func _rolled_yield(tier: int) -> int:
 	return units
 
 
-func _spawn_rock(index: int, mineral_id: StringName, tier: int, units: int) -> void:
+func _spawn_rock(index: int, mineral_id: StringName, tier: int, bore: int) -> void:
+	## S13: `_rolled_yield` returns the rock's own original yield, which `setup`
+	## splits. The extractable half is what extraction realises; the reserve is the
+	## rest, read back at the shatter. `bore` is passed so `_bore_ore` is the exact
+	## roll rather than a value reconstructed from a rounded extractable.
 	var rock := _new_rock(
-		"Rock%d" % (index + 1), mineral_id, tier, units, AsteroidScript.SIZE_ANY
+		"Rock%d" % (index + 1), mineral_id, tier,
+		AsteroidScript.extractable_units(bore), AsteroidScript.SIZE_ANY, false, float(bore)
 	)
 	rock.position = _rock_position(index)
 
@@ -248,12 +266,13 @@ func _new_rock(
 	tier: int,
 	units: int,
 	size_class: int,
-	defer_shape: bool = false
+	defer_shape: bool = false,
+	bore: float = -1.0
 ) -> RigidBody2D:
 	var rock := AsteroidScript.new() as RigidBody2D
 	rock.name = node_name
 	add_child(rock)
-	rock.call(&"setup", mineral_id, tier, units, size_class, defer_shape)
+	rock.call(&"setup", mineral_id, tier, units, size_class, defer_shape, bore)
 	rock.connect(&"cracked", _on_rock_cracked.bind(rock))
 	_rocks.append(rock)
 	_spawned += 1
@@ -344,13 +363,29 @@ func _blast_targets() -> Array:
 ## `M -> 2-5 S` (both tiers' row is `FRAGMENT_SPLIT`), and `S -> 1-2 pickups`. A
 ## yield-0 rock carries nothing to break and cleaves into nothing (§6/§15, ruling 17);
 ## a small never spawns rock fragments, because its cleave *is* the pickup burst.
+##
+## S13 attributes the shatter (S13_BRIEF §2 rule 3). A **mining** shatter pays the
+## full reserve: a Small as pickups, an M/L by handing its children the reserve as
+## their own extractable, split across the `FRAGMENT_SPLIT` count and with **no
+## fresh roll** - each child's `_bore_ore` is its whole-unit share, so the family
+## realises the root's `_bore_ore` and a field mints nothing. A **gun** shatter pays
+## at most `gun_burst_share x _bore_ore` as pickups and the excess reserve burns; an
+## M/L still leaves physical fragments, but they carry no ore (the reserve is spent).
 func _cleave(rock: Node2D) -> void:
 	if not bool(rock.call(&"cleaves")):
 		return
 	var size_class: int = int(rock.call(&"size_class"))
+	var from_mining := bool(rock.call(&"shatter_from_mining"))
+	var reserve := float(rock.call(&"reserve_units"))
+	var owed := reserve
+	if not from_mining:
+		owed = minf(reserve, OreTuningScript.gun_burst_share * float(rock.call(&"bore_ore")))
 	if size_class == AsteroidScript.SIZE_SMALL:
-		_spawn_pickup_burst(rock)
+		_pay_burst(rock, owed)
 		return
+	if not from_mining:
+		## The gun's capped payout lands here; its fragments below are debris.
+		_pay_burst(rock, owed)
 	var split := Vector2i(
 		AsteroidScript.FRAGMENT_SPLIT.get(size_class, Vector2i.ZERO) as Vector2i
 	)
@@ -362,14 +397,19 @@ func _cleave(rock: Node2D) -> void:
 	var ring := maxf(float(rock.call(&"world_radius")), 0.0)
 	var mineral_id := StringName(rock.get(&"mineral_id"))
 	var tier := int(rock.get(&"tier"))
+	var shares: Array = []
+	if from_mining:
+		shares = _unit_shares(roundi(reserve), count)
 	for index in count:
+		var units: int = int(shares[index]) if from_mining else 0
 		var fragment := _new_rock(
 			"Fragment%d" % (_spawned + 1),
 			mineral_id,
 			tier,
-			_rolled_yield(tier),
+			units,
 			_fragment_size(size_class),
-			true
+			true,
+			float(units)
 		)
 		var angle := TAU * float(index) / float(count)
 		angle += rng.randf_range(-FRAGMENT_ANGLE_JITTER, FRAGMENT_ANGLE_JITTER)
@@ -393,20 +433,29 @@ func _fragment_size(size_class: int) -> int:
 	return size_class - 1
 
 
-## Ruling 17's small end: "a Small bursts into 1-2 resource pickups of its mineral".
-## The pickups are the same floating cargo a mining cycle spawns (02 §7), so they
-## carry the ore item id the profile's manifest reads, and they are parented to the
-## world rather than to the field so a respawn cannot free the player's ore.
-func _spawn_pickup_burst(rock: Node2D) -> void:
+## S13's shatter payout (S13_BRIEF §2 rule 3): a shatter's owed ore accumulates in
+## the field's float credit and pays whole pickups - never a fractional pickup -
+## bounded per burst by `OreTuning.pickup_burst`. The pickups are the same floating
+## cargo a mining cycle spawns (02 §7), parented to the world rather than the field
+## so a respawn cannot free the player's ore.
+func _pay_burst(rock: Node2D, owed: float) -> void:
+	if owed <= 0.0:
+		return
+	_ore_credit += owed
 	var script := _pickup_script()
 	if script == null:
 		return
 	var item := MineralCatalogScript.ore_id(StringName(rock.get(&"mineral_id")))
 	if item == &"":
 		return
-	var count := rng.randi_range(
-		AsteroidScript.PICKUP_BURST.x, AsteroidScript.PICKUP_BURST.y
-	)
+	## Whole units only: floor the credit (a hair of slack so an exact 1.0 crosses),
+	## then cap this burst by the tuned `pickup_burst` roll.
+	var credit := floori(_ore_credit + 0.000001)
+	var burst := rng.randi_range(OreTuningScript.pickup_burst.x, OreTuningScript.pickup_burst.y)
+	var count := mini(maxi(credit, 0), maxi(burst, 0))
+	if count <= 0:
+		return
+	_ore_credit -= float(count)
 	var origin: Vector2 = rock.global_position
 	var ring := maxf(float(rock.call(&"world_radius")), 0.0)
 	var parent := _world_parent()
@@ -418,6 +467,22 @@ func _spawn_pickup_burst(rock: Node2D) -> void:
 		angle += rng.randf_range(-FRAGMENT_ANGLE_JITTER, FRAGMENT_ANGLE_JITTER)
 		pickup.global_position = origin + Vector2.RIGHT.rotated(angle) * ring
 		pickup.call(&"setup", item, 1, false)
+
+
+## Splits a whole-unit reserve across `count` children as evenly as an integer
+## allows; the remainder lands on the first children, so the sum is exact and no
+## child is handed more than its own share by more than the rounding the reserve
+## itself already carries.
+func _unit_shares(total: int, count: int) -> Array[int]:
+	var out: Array[int] = []
+	if count <= 0:
+		return out
+	var whole := maxi(total, 0)
+	var base := whole / count
+	var remainder := whole % count
+	for index in count:
+		out.append(base + (1 if index < remainder else 0))
+	return out
 
 
 ## The pickup leaf, loaded once and remembered. A script that fails to compile

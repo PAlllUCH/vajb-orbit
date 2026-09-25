@@ -31,6 +31,9 @@ const MineralCatalogScript := preload("res://game/mineral_catalog.gd")
 const MiningLaserScript := preload("res://game/mining_laser.gd")
 const WeaponsScript := preload("res://game/weapons.gd")
 const ShipFitScript := preload("res://game/ship_fit.gd")
+## S13's live balance surface: the gun cap this probe checks reads here, never a
+## re-declared 0.10.
+const OreTuningScript := preload("res://game/ore_tuning.gd")
 
 const TAG := "[S12K0]"
 const GUN_ID := &"w_cannon"
@@ -144,9 +147,13 @@ func _run_leg(tier_label: String, leg: String, barrels: int, config: Dictionary)
 	seed(FIELD_SEED)
 	var field: Node2D = FieldScript.new() as Node2D
 	field.call(&"setup", config)
-	var spawn_yield := 0
+	## S13 (02 §5.1 Rule A): the field's budget is the sum of its rocks' own
+	## original yields (`_bore_ore`), not the extractable `yield_units` it hands
+	## extraction. `out_in` below is measured against that budget.
+	var spawn_bore := 0
 	for rock: Node2D in field.call(&"rocks"):
-		spawn_yield += int(rock.get(&"yield_units"))
+		spawn_bore += int(roundi(float(rock.call(&"bore_ore"))))
+	var extracted := 0
 	var delivered := 0
 	var steps := 0
 	var elapsed := 0.0
@@ -162,41 +169,55 @@ func _run_leg(tier_label: String, leg: String, barrels: int, config: Dictionary)
 		var rock: Node2D = live[0]
 		seen[rock.get_instance_id()] = true
 		if leg == "LASER":
-			delivered += int(rock.call(&"apply_work", AsteroidScript.WORK_PER_UNIT))
+			var mined := int(rock.call(&"apply_work", AsteroidScript.WORK_PER_UNIT))
+			extracted += mined
+			delivered += mined
 			elapsed += MiningLaserScript.MINE_CYCLE
 		else:
-			rock.call(&"apply_work",
+			## S13 (01 §5.6): a gun's chip is attributed to the gun route, which caps
+			## the shatter's payout at `GUN_BURST_SHARE x _bore_ore`.
+			rock.call(&"apply_gun_work",
 				WeaponsScript.shot_damage(_gun_id()) * WeaponsScript.GUN_CHIP_RATE)
 			elapsed += WeaponsScript.interval_of(_gun_id()) / float(barrels)
 		steps += 1
-	if leg != "LASER":
-		delivered = _burst_units(field)
+	## S13 (02 §5.1 Rule A): a gun's chips are discarded (they never extract); a
+	## Small's shatter pays pickups. The field's pickup children are the delivery
+	## either way, so they are summed for every leg, on top of the laser's returns.
+	delivered += _burst_units(field)
 	var spawned_seen := seen.size()
 	var spawned_counter := int(field.get(&"_spawned"))
 	var out_in := 0.0
-	if spawn_yield > 0:
-		out_in = float(delivered) / float(spawn_yield)
+	if spawn_bore > 0:
+		out_in = float(delivered) / float(spawn_bore)
 	var shots_per_second := 0.0
 	if leg != "LASER":
 		shots_per_second = float(barrels) / WeaponsScript.interval_of(_gun_id())
-	print(("%s LEG tier=%s leg=%s barrels=%d spawn_yield=%d delivered=%d out_in=%.6f"
+	print(("%s LEG tier=%s leg=%s barrels=%d spawn_bore=%d delivered=%d out_in=%.6f"
 		+ " rocks_spawned=%d rocks_seen=%d steps=%d seconds=%.6f shots_per_second=%.6f")
-		% [TAG, tier_label, leg, barrels, spawn_yield, delivered, out_in,
+		% [TAG, tier_label, leg, barrels, spawn_bore, delivered, out_in,
 		spawned_counter, spawned_seen, steps, elapsed, shots_per_second])
 	if bounded:
 		print("%s FAIL leg=%s tier=%s bounded_at steps=%d seconds=%.6f"
 			% [TAG, leg, tier_label, steps, elapsed])
 		_failures.append("bounded_%s_%s" % [tier_label, leg])
-	_check("%s_%s_spawn_nonzero" % [tier_label, leg], spawn_yield > 0,
-		"spawn_yield=%d" % spawn_yield)
+	_check("%s_%s_spawn_nonzero" % [tier_label, leg], spawn_bore > 0,
+		"spawn_bore=%d" % spawn_bore)
 	_check("%s_%s_spawned_count" % [tier_label, leg], spawned_seen == spawned_counter,
 		"children_seen=%d field._spawned=%d" % [spawned_seen, spawned_counter])
 	if leg == "LASER":
-		_check("%s_%s_one_unit_per_cycle" % [tier_label, leg], delivered == steps,
-			"delivered=%d steps=%d" % [delivered, steps])
+		_check("%s_%s_one_unit_per_cycle" % [tier_label, leg], extracted <= steps,
+			"extracted=%d across %d cycles (one unit of work never realises twice)"
+			% [extracted, steps])
+		_check("%s_%s_budget_conserved" % [tier_label, leg],
+			delivered <= spawn_bore + 1,
+			"delivered=%d <= its own spawn_bore=%d + 1" % [delivered, spawn_bore])
 	else:
 		_check("%s_%s_burst_paid" % [tier_label, leg], delivered > 0,
 			"burst units=%d" % delivered)
+		_check("%s_%s_gun_capped" % [tier_label, leg],
+			delivered <= int(floor(OreTuningScript.gun_burst_share * float(spawn_bore))) + 1,
+			"delivered=%d <= GUN_BURST_SHARE %.2f x spawn_bore=%d + 1"
+			% [delivered, OreTuningScript.gun_burst_share, spawn_bore])
 	field.free()
 
 

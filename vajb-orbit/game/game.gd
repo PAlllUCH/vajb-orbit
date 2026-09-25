@@ -33,6 +33,10 @@ const PlayerShipScene := preload("res://game/player_ship.tscn")
 const PlayerShipScript := preload("res://game/player_ship.gd")
 const SectorScript := preload("res://game/sector.gd")
 const Registry := preload("res://game/sector_registry.gd")
+## The developer tuning overlay (S13, owner ask 2026-09-25): mounted by this
+## scene so F1 reaches OreTuning in flight. It reads user://dev_tuning.cfg only
+## when opened, so the gate stays byte-identical on any store.
+const DevTuningMenuScene := preload("res://ui/dev/dev_tuning_menu.tscn")
 ## The one module catalogue (W1, CONTRACTS section 11): reached by path like every
 ## other cross-file table here, because the HUD's slot cells carry a module's own icon
 ## path and the catalogue is the single owner of that rule.
@@ -341,6 +345,7 @@ var _hunter_respawn := 0.0
 
 
 func _ready() -> void:
+	add_child(DevTuningMenuScene.instantiate())
 	_state = PlayerStateScript.new()
 	_stats = _resolve_stats()
 	_apply_ship_maxima()

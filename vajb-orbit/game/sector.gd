@@ -68,9 +68,11 @@ const STATION_SCALE := 0.0663
 const PLAYER_SPAWN_OFFSET := 300.0
 
 ## Dock zone radius. §13 fixes the spawn offset from the ring but no ring radius,
-## so 120 u is this file's one placement value: the station's ~67.9 u half-extent
-## plus clearance, so the zone is just outside the hull. Reversal is one edit.
-const DOCK_RING_RADIUS := 120.0
+## so this is the file's one placement value. S13's owner tick (2026-09-25): 175 u,
+## a wider zone than the station's own ~67.9 u half-extent so a hull docks without
+## touching the hull. The dock trigger (`:234`), the spawn placement (`:188`) and
+## the ring draw (`:554`) all read this one constant. Reversal is one edit (120.0).
+const DOCK_RING_RADIUS := 175.0
 
 ## Spawn bearing. §13 fixes the distance, not the direction; +Y (screen down) is
 ## an arbitrary deterministic pick so the spawn point is reproducible.
