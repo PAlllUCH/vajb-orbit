@@ -510,3 +510,25 @@ write time); the next free ticket is still **T-94**.
 | L189 | **No verbatim owner-approval line for the v2 mockup sheet exists in the wave record.** A0's report carries the v1 feedback verbatim ("… Everythin else looks good."), A1 was dispatched only after the v2 gate, and the owner's 2026-09-25 playthrough records the scene rendering — but the approval itself lives only in the orchestrator's session, not in any file. | [HARNESS] | `.agents/gen/slices/D11-station-scene/D11-A0_report.md` §Owner feedback; `staging/phase_g/_review/d11_mockup.png` | Orchestrator: quote the approval line in the WAVEBOARD/MASTER_REPORT recap so the mockup gate has a durable record (D7's "Looks good. lets do this" precedent). |
 | L190 | **The wave's new text sidecars are untracked before the boundary commit.** The 15 `vajb-orbit/assets/env/poi/env_station_*.png.import` files (tracked-text class — `env_base_*.png.import` are committed), `game/station_scene.gd.uid`, `tests/test_d11_station.gd.uid` and `assets/env/generation_log_d11.md` all sit in `git status` untracked. Same class as L177/L179; the PNGs themselves are gitignored by design. | [HARNESS] | `vajb-orbit/assets/env/poi/env_station_*.png.import`; `vajb-orbit/game/station_scene.gd.uid`; `vajb-orbit/tests/test_d11_station.gd.uid` | Include in D11's wave-boundary commit (close-out step 5). |
 
+### S12 ore-budget review block (2026-09-25)
+
+Source: `.agents/gen/slices/S12-ore-budget/S12-R1_review.md`. The wave leaves
+**no HIGH and 2 MED** (S12-K0/F1 the baseline-gate pin, S12-K1/F1 the §4
+module-id spelling — both bucket-2 docs text, routed to the developer/designer,
+not fixed). Every AC was re-measured: both probes replayed byte-identically ×2
+on a detached worktree at the baseline commit (`d3d7…` / `acec…`), every §4
+constant re-read from its owner file, the mirrors diffed against production,
+gate **`807/0`** at the commit / **`812/0`** on the snapshotted tree, `verify
+--baseline s12_start` `problems: []`. Rows run **L191–L197** (ids read from this
+file at write time); the next free ticket is still **T-94**.
+
+| # | Item | Kind | Where | Disposition |
+|---|------|------|-------|-------------|
+| L191 | **Both probes re-state the field's minimum rock count.** `FIELD_ROCKS := 6` duplicates `AsteroidField.FIELD_ROCKS_MIN` (`asteroid_field.gd:67`); §4 pins the literal, but nothing asserts they agree, so the pinned "field's own minimum" drifts silently if the owner moves. | [HARNESS] | `vajb-orbit/tests/probe_s12_field_budget.gd:41`; `vajb-orbit/tests/probe_s12_rock_rate.gd:44` | Next probe owner: assert `FIELD_ROCKS == AsteroidField.FIELD_ROCKS_MIN` in the constants row, or read the constant itself. |
+| L192 | **`units_per_rock` counts fragments as rocks.** `_per_rock` divides delivered by the instances ever seen (26, fragments included), not the field's 6 originals (28.5 u/rock), and prints it beside `rocks_spawned=26` under the label "units/rock". | [HARNESS] | `vajb-orbit/tests/probe_s12_rock_rate.gd:197,388-392` | Next probe owner: label it `units_per_spawned_rock` or emit both denominators. |
+| L193 | **The RATIO row's label is inverted against its value.** `_ratio(_rate(laser), _rate(gun))` prints `RATIO GUN3_vs_LASER rate=0.493x` while GUN3 delivers 2.03× the laser's units/s; the report's table documents it as "mining:gunning". | [HARNESS] | `vajb-orbit/tests/probe_s12_rock_rate.gd:219-224,381-385` | Next probe owner: name it `MINING_vs_<leg>`, or print `gun/laser`. |
+| L194 | **No probe isolates a fully worked T1 Large.** The single-rock row works `rocks()[0]`, a MEDIUM (28/7 = 4.0×), so 01 §5.6's 16.75×/≈100-unit headline is confirmed by derivation from `FRAGMENT_SPLIT` (mean 3.5) × `TIER_BASE_YIELD[1]` (6), not by a measured row. | [HARNESS] | `vajb-orbit/tests/probe_s12_rock_rate.gd:243-261` | A later probe can pin a T1 Large seed and work its whole cascade end to end. |
+| L195 | **01 §5.6's "≈2.5 units/s delivered" is not the shipped rack's rate.** The two measured legs read 1.689 u/s (GUN3) and 3.941 u/s (GUNMAX); the ordering claim (shooting is the fastest per-second route) holds. | [DOC] | `docs/gameplay/01_economy_core.md:197` | Next 01 owner/planner: retext the number to the measured band, or name the fit it assumes. |
+| L196 | **SLICE.md and the brief disagree on R1's file name.** SLICE.md names `probe_s12_r1_replay.gd`; the brief §5 (line 148) and the dispatch name `probe_s12_r1_constants.gd` (which the review did not create). | [DOC] | `.agents/gen/slices/S12-ore-budget/SLICE.md:61` | Next slice-doc pass: align the worker-file table with the brief. |
+| L197 | **A probe asserts on a private field.** The spawned-count check reads `AsteroidField`'s private `_spawned` duck-typed; it passes today and would drift silently on a rename. | [HARNESS] | `vajb-orbit/tests/probe_s12_field_budget.gd:175` | Next probe owner: count spawns from `rocks()` plus an accumulated total, or expose an accessor. |
+

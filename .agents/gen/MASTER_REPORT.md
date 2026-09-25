@@ -918,3 +918,37 @@ station/HUD layout displays. Reviewer: no HIGH; one MED fixed; six LOW (L66–L7
 owner's §8 tick list is resolved (all six kept); the one follow-up is the 7-W capital's
 `weapon_6`/`weapon_7` input-map extension (an owner `project.godot` pass). Full entry under
 §Closed.
+**D11 (2026-09-25): the space-station scene rework — DONE** (gate 807 → **812/0**,
+`test_d11_station`'s 5 rows; 0 HIGH / 2 MED both cured / 7 LOW L184–L190). A0's
+owner-approved mockup set the pins: hero **2.2003×** the old ~67.9 u half-extent (149.40 u),
+**6 static element kinds** (arms, masts, gantry, window bands, plate spines, lamp runs) and
+**3 moving kinds** (approach strobes 1.2 s, shuttle 30 u/s, crane slew 4°/s) — 19 composed
+elements through the new `game/station_scene.gd`, wired at `game/sector.gd:_spawn_station`
+with the DockZone kept a world-unit sibling. A1 shipped 15 cuts ($0.85 spent, QC 15/15,
+`generation_log_d11.md` beside the family). R1 re-measured every AC itself (invariants,
+two-frame motion + reversals, S6 dock/blip seams 53/0, `verify --baseline d11_start` clean
+×2, live `profile.cfg` md5 unchanged) and left 2 MED / 7 LOW; F1 cured MED-1 (a local value
+grade, `staging/phase_g/grade_d11_values.py`, all 15 files to mean 0.160 — below the ships'
+0.1786 — with alpha, bboxes and every QC number byte-identical) and this session cured
+MED-2 (`ASSET_NAMING_SPEC` §13's naming rows — the brief had barred the workers the docs
+write). **Owner gates from this wave:** C1's `class_name StationScene` deviation (four
+suites preload `res://ui/screens/station.tscn` under that name; ratify the dropped global
+class or rename upstream) and the dock ring radius (120 u as approved vs 175 u proposed;
+R1 measured 21.4 u of clearance inside the hull).
+**S12 (2026-09-25): the ore-budget measurement wave — DONE** (no gate row moved;
+the tree reads 812/0 with D11's `test_d11_station` attributed). Two read-only
+probes, byte-identical across runs and re-played byte-identically by R1 on a
+detached worktree at `1d6b739`: `probe_s12_field_budget.gd` (six legs
+LASER/GUN3/GUNMAX × T1/T3) and `probe_s12_rock_rate.gd`. **Budget (K0):** spawn
+yield Σ 42 (T1) / 30 (T3); the laser delivers 171/115 — out/in **4.07/3.83**,
+because the cleaving cascade re-rolls a full yield per fragment — and gun racks
+deliver **25 units flat at 3 and 7 barrels** (out/in 0.60/0.83: rack size buys
+time, not ore). **Rate (K1):** laser 0.833 u/s and 6.58 u/rock; GUN3 1.689 u/s,
+GUNMAX 3.941 u/s, but both realise 0.96 u/rock and the same 25 units from 74
+shots; mining:gunning rate ratio 0.49/0.21 (LASER/GUN), per-rock ratio 6.84.
+**Single rock** (T1 MEDIUM, own yield 7): laser body 7 (1.0×), its whole cascade
+28 (**4.0×**), guns 5 (**0.71×** — 7× the proposed `GUN_BURST_SHARE` 0.10).
+Review: 0 HIGH / 2 MED (both bucket-2 docs, cured at close-out: the brief's
+stale 807 pin and §4's non-callable `w_cannon` spelling) / 7 LOW L191–L197; R1
+verdict: no fixer warranted. Deliverable = the tables; the §10 ticks went to the
+owner and **no cap is implemented on this wave**.

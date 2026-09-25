@@ -5,6 +5,14 @@
 **Baseline:** gate **807/0**; `python3 staging/verify_wave.py snapshot --name s12_start` before the first dispatch.
 **Deliverable:** two measured number tables — not a behaviour change.
 
+**Errata 2026-09-25 (close-out; R1's S12-K0/F1 + S12-K1/F1, both bucket 2):**
+the 807/0 baseline pin above predates D11's `test_d11_station.gd` — the measured
+close-out gate is **812/0** (the +5 attributed to the parallel D11 lane; this
+wave moved no row), and §4's `shot_damage(&"w_cannon")`/`interval_of(&"w_cannon")`
+spelling is not callable as written (`row_of` keys `FAMILIES` by family id,
+`weapons.gd:2325`); the callable route is `WeaponsScript.weapon_id(&"w_cannon")`
+→ `&"cannon"`, which is what both probes print.
+
 ## 1. The law to read in order
 
 1. `slices/S12-ore-budget/SLICE.md` — goal, scope, AC1–AC5, worker file sets.

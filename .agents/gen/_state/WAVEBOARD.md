@@ -10,8 +10,9 @@
 **812/0** (`test_d11_station`'s 5 rows), 0 HIGH / 2 MED both cured (MED-1 value grade by
 F1, all 15 files to mean 0.160; MED-2's naming rows landed as `ASSET_NAMING_SPEC` §13 by
 this session) / 7 LOW L184–L190; owner ticks recorded below; recap in
-`MASTER_REPORT.md` §6). Coder item 19 = **S12 ore budget in flight** — K0/K1 measured
-byte-identical ×2 on 2026-09-25 (tables in their reports), R1 replay next.** Waves of record: item 16 = S10 ARMORY CLOSED gate 770 → **775/0** (0 HIGH / 0 MED /
+`MASTER_REPORT.md` §6). Coder item 19 = **S12 ore budget CLOSED 2026-09-25** (no gate row moved; 0 HIGH
+/ 2 MED bucket-2 docs cured at close-out / 7 LOW L191–L197; the tables + §10
+ticks are with the owner — no cap implemented).** Waves of record: item 16 = S10 ARMORY CLOSED gate 770 → **775/0** (0 HIGH / 0 MED /
 6 LOW L172–L177); item 14 = S8 CLOSED gate 753 → **770/0** (0 HIGH / 0 MED /
 4 LOW L168–L171); item 13 = S7 CLOSED gate 711 → **753/0** (0 HIGH / 0 MED /
 5 LOW L163–L167); designer item 8 = D7 CLOSED gate 727/0. CONTRACTS §20 (S7), §21 (S8),
@@ -61,11 +62,11 @@ free item (17)**: brief at its dispatch-prep; its `game/sector.gd` seam is **fre
 D11's close-out 2026-09-25. **Owner ruling 2026-09-25 — "it should be able to shoot asteroids but mining should
 always be more profitable", plus bigger/clustered/fielded asteroids — landed as
 `01 §5.6` + `02 §5.1` (numbers PROPOSED, owner-tick-gated) and is the coder lane's
-item 19 (`slices/S12-ore-budget/`)**: the two read-only probes are **measured
-2026-09-25** — laser out/in **4.07×** (T1) / **3.83×** (T3) the field's spawn budget on the
+item 19 (`slices/S12-ore-budget/`) — **CLOSED 2026-09-25**: the two read-only
+probes measured laser out/in **4.07×** (T1) / **3.83×** (T3) the field's spawn budget on the
 re-rolling cascade; gun racks deliver the **same 25 units at 3 and 7 barrels** and 0.714
-of a rock's own yield (7× the proposed `GUN_BURST_SHARE` 0.10); R1 replay next, the caps
-wait on the owner ticks the tables feed. Beyond it: **slice 4's
+of a rock's own yield (7× the proposed `GUN_BURST_SHARE` 0.10); R1 replayed byte-identical;
+the caps wait on the owner ticks the tables feed. Beyond it: **slice 4's
 remainder** — quadrants/directional armour (18 §4.5 + ruling 23, deferred from S6) and
 bosses/arena hooks (14 §5, blocked on the P4 contract type and boss-hull art) — **not yet
 briefed**. **S8's owner gates:** O1/O2's FITTING-drag UX call (port / point at ARMORY /

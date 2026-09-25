@@ -194,7 +194,9 @@ worked T1 Large realises ≈100 ore units instead of its own 6.
 against `MINE_CYCLE`'s 0.83 units/s; `Asteroid.cleaves()` keys off `_bore_ore`
 (the roll at setup, not the ore left); every Small crack bursts a flat 1-2
 pickups; and each fragment re-rolls a full 02 §5 yield. So the fastest ore route
-is shooting, at ≈2.5 units/s delivered, and a 40-unit hold fills in seconds.
+is shooting — 1.69 units/s delivered for a 3-cannon rack, 3.94 for a 7-cell
+rack, against the laser's 0.83 (S12-K1 measured 2026-09-25; the ≈2.5 this line
+first carried was an estimate) — and a 40-unit hold fills in seconds.
 
 Owner ticks: the `GUN_BURST_SHARE` value; 02 §5.1's fragment-share rule and its
 scale rows; `18_engine_spec.md` §6/§13/§17's wording (owner-locked — this doc
