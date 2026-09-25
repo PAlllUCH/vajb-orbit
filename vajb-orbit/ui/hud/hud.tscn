@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://ui/hud/hud.gd" id="1_hud"]
 [ext_resource type="Theme" path="res://ui/theme/vajb_theme.tres" id="2_theme"]
@@ -10,8 +10,6 @@
 [ext_resource type="Texture2D" path="res://assets/icons/hud/icon_shield.svg" id="8_shield"]
 [ext_resource type="Texture2D" path="res://assets/icons/weapon/icon_ammo.svg" id="9_ammo"]
 [ext_resource type="Texture2D" path="res://assets/icons/cargo/icon_cargo_container.svg" id="10_cargo"]
-[ext_resource type="Texture2D" path="res://assets/icons/hud/icon_zoom_minus.svg" id="11_zoom_minus"]
-[ext_resource type="Texture2D" path="res://assets/icons/hud/icon_zoom_plus.svg" id="12_zoom_plus"]
 [ext_resource type="Texture2D" path="res://assets/icons/hud/icon_close.svg" id="13_close"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_bar_cap_left"]
@@ -71,7 +69,7 @@ texture = ExtResource("7_hull")
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-theme_type_variation = &"SectionHeader"
+theme_type_variation = &"HudReadout"
 text = "HULL"
 
 [node name="HullSpacer" type="Control" parent="CanvasLayer/TopLeft/Blocks/HullBlock/HullHeader"]
@@ -85,7 +83,7 @@ layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
 theme_type_variation = &"HudReadout"
-text = "812/1000"
+text = "0/0"
 
 [node name="HullBarRow" type="HBoxContainer" parent="CanvasLayer/TopLeft/Blocks/HullBlock"]
 layout_mode = 2
@@ -106,8 +104,8 @@ layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
 theme_type_variation = &"HudHullBar"
-max_value = 100.0
-value = 81.2
+max_value = 1.0
+value = 0.0
 show_percentage = false
 
 [node name="HullCapRight" type="TextureRect" parent="CanvasLayer/TopLeft/Blocks/HullBlock/HullBarRow"]
@@ -138,7 +136,7 @@ texture = ExtResource("8_shield")
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-theme_type_variation = &"SectionHeader"
+theme_type_variation = &"HudReadout"
 text = "SHIELD"
 
 [node name="ShieldSpacer" type="Control" parent="CanvasLayer/TopLeft/Blocks/ShieldBlock/ShieldHeader"]
@@ -152,7 +150,7 @@ layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
 theme_type_variation = &"HudReadout"
-text = "600/600"
+text = "0/0"
 
 [node name="ShieldBarRow" type="HBoxContainer" parent="CanvasLayer/TopLeft/Blocks/ShieldBlock"]
 layout_mode = 2
@@ -173,8 +171,8 @@ layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
 theme_type_variation = &"HudShieldBar"
-max_value = 100.0
-value = 100.0
+max_value = 1.0
+value = 0.0
 show_percentage = false
 
 [node name="ShieldCapRight" type="TextureRect" parent="CanvasLayer/TopLeft/Blocks/ShieldBlock/ShieldBarRow"]
@@ -211,14 +209,14 @@ theme_override_constants/separation = 4
 [node name="TargetCaption" type="Label" parent="CanvasLayer/TopRight/TargetPanel/TargetBox"]
 layout_mode = 2
 mouse_filter = 2
-theme_type_variation = &"SectionHeader"
+theme_type_variation = &"HudReadout"
 text = "TARGET"
 
 [node name="TargetName" type="Label" parent="CanvasLayer/TopRight/TargetPanel/TargetBox"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
-theme_type_variation = &"StationValue"
+theme_type_variation = &"StationPanelTitle"
 
 [node name="TargetHullRow" type="HBoxContainer" parent="CanvasLayer/TopRight/TargetPanel/TargetBox"]
 layout_mode = 2
@@ -230,7 +228,7 @@ custom_minimum_size = Vector2(52, 0)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-theme_type_variation = &"StationCaption"
+theme_type_variation = &"HudReadout"
 text = "HULL"
 
 [node name="TargetHullBar" type="ProgressBar" parent="CanvasLayer/TopRight/TargetPanel/TargetBox/TargetHullRow"]
@@ -254,7 +252,7 @@ custom_minimum_size = Vector2(52, 0)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-theme_type_variation = &"StationCaption"
+theme_type_variation = &"HudReadout"
 text = "SHIELD"
 
 [node name="TargetShieldBar" type="ProgressBar" parent="CanvasLayer/TopRight/TargetPanel/TargetBox/TargetShieldRow"]
@@ -272,13 +270,13 @@ show_percentage = false
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
-theme_type_variation = &"StationCaption"
+theme_type_variation = &"HudReadout"
 
 [node name="TargetThreat" type="Label" parent="CanvasLayer/TopRight/TargetPanel/TargetBox"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
-theme_type_variation = &"StationCaption"
+theme_type_variation = &"HudReadout"
 
 [node name="BottomLeft" type="MarginContainer" parent="CanvasLayer"]
 layout_mode = 3
@@ -406,27 +404,25 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 mouse_filter = 2
-theme_type_variation = &"FlavourText"
+theme_type_variation = &"HudReadout"
 
 [node name="ZoomMinus" type="TextureButton" parent="CanvasLayer/BottomRight/MinimapPanel/MinimapBox/MinimapFooter"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(28, 28)
+custom_minimum_size = Vector2(36, 36)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 focus_mode = 0
-texture_normal = ExtResource("11_zoom_minus")
 ignore_texture_size = true
 stretch_mode = 5
 
 [node name="ZoomPlus" type="TextureButton" parent="CanvasLayer/BottomRight/MinimapPanel/MinimapBox/MinimapFooter"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(28, 28)
+custom_minimum_size = Vector2(36, 36)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 focus_mode = 0
-texture_normal = ExtResource("12_zoom_plus")
 ignore_texture_size = true
 stretch_mode = 5
 
@@ -467,7 +463,7 @@ theme_override_constants/separation = 6
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-theme_type_variation = &"StationCaption"
+theme_type_variation = &"HudReadout"
 text = "WARP"
 
 [node name="WarpSpacer" type="Control" parent="CanvasLayer/BottomCenter/PromptBlock/WarpBlock/WarpHeader"]
@@ -497,7 +493,7 @@ show_percentage = false
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
-theme_type_variation = &"StationCaption"
+theme_type_variation = &"HudReadout"
 horizontal_alignment = 1
 
 [node name="CenterOverlay" type="Control" parent="CanvasLayer"]
@@ -576,6 +572,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
+theme_type_variation = &"HudReadout"
 text = "CARGO 12/40"
 
 [node name="CargoSpacer" type="Control" parent="CanvasLayer/CenterOverlay/CargoPanel/CargoBox/CargoFooter"]

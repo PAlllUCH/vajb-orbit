@@ -13,8 +13,8 @@ The flight HUD reads at a glance: the top-left carries live state, the minimap
 explains itself, and every glyph is legible at 1920x1080.
 
 ## In scope
-- Top-left content block (the owner's pick) built from the **existing** HUD
-  state set — nothing invented
+- ~~Top-left content block~~ **RETIRED 2026-09-25** (owner: hull/shield already
+  live in the cockpit cluster — no duplication; the quadrant may stay empty)
 - Minimap legend naming the blip kinds it draws
 - 1080p glyph legibility (the owner's pick; the QA rows name the offenders)
 
@@ -23,9 +23,9 @@ explains itself, and every glyph is legible at 1920x1080.
   (S15 holds `ui/station/`), new readouts not already in the HUD state, audio
 
 ## Acceptance criteria
-- [ ] AC1 — the top-left quadrant carries a named block of ≥ 2 live readouts
-      drawn from the HUD's existing state (which ones is the designer's call,
-      justified in the report); no state item disappears from the HUD
+- [ ] AC1 — **RETIRED 2026-09-25** (owner ruling): no HUD element duplicates
+      the cockpit cluster's readouts (SPD/HULL/SHLD/AMMO, FUEL/ENRG); the
+      top-left quadrant may stay empty
 - [ ] AC2 — a minimap legend is visible in flight and names every blip kind
       the minimap draws (checked against `minimap.gd`'s draw kinds)
 - [ ] AC3 — every HUD text/glyph at 1920x1080 measures ≥ 12 px cap height

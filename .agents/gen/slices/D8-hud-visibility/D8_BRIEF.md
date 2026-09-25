@@ -4,6 +4,10 @@
 **Slice folder:** `.agents/gen/slices/D8-hud-visibility/`
 **Baseline:** gate **852/0**; `python3 staging/verify_wave.py snapshot --name d8hud_start` before the first dispatch.
 **Owner picks (2026-09-24):** top-left content + minimap legend + 1080p glyphs.
+**Amended 2026-09-25 (owner):** the top-left pick is **retired** — hull/shield
+state is already live in the cockpit cluster (the QA row predates D6/D7), and
+nothing may duplicate it. The wave is the **minimap legend** and the **1080p
+glyph floor**.
 **QA input:** `.agents/gen/slices/S7-affix-application/S7_QA_playtest_review_2026-09-24.md`
 — read the in-flight HUD rows first; they name the offenders (the empty
 top-left, the legend-less minimap, the 1080p glyph rows) and bind this brief
@@ -11,10 +15,9 @@ where it is silent.
 
 ## 1. Pinned rules
 
-1. **Nothing new is invented.** The top-left block is composed from readouts the
-   HUD already holds (speed/heading/target/threat/boost and their labels); you
-   choose which and justify it in the report. No state item may disappear or
-   lose its update path — the QA's complaint is *where* state sits, not *what*.
+1. **No duplication (owner 2026-09-25).** The cockpit cluster owns
+   SPD/HULL/SHLD/AMMO and FUEL/ENRG; the HUD may not repeat those readouts.
+   The top-left quadrant may stay empty. Nothing new is invented anywhere.
 2. **The minimap legend** names exactly the blip kinds `minimap.gd` draws (read
    its draw code; the legend must not promise a kind that does not exist). It
    sits inside the HUD chrome, not over the play field's centre.
@@ -31,10 +34,10 @@ where it is silent.
 
 ## 2. Tests that move
 
-- New: `tests/test_d8_hud_visibility.gd` — AC1 (the top-left block carries the
-  named readouts and every old state item still resolves), AC2 (the legend
+- New: `tests/test_d8_hud_visibility.gd` — AC2 (the legend
   names each `minimap.gd` draw kind), AC3 (the glyph measurements),
-  AC4 (the untouched-cockpit guard).
+  AC4 (the untouched-cockpit guard). AC1's retirement is proven by the
+  no-duplication row (the top-left stays empty).
 - **Not moved:** `test_d7_cockpit.gd`, `test_d7_armory.gd`, `test_s10_*`,
   `test_s11_*`, `test_s13_*`, `test_s14_*`, `test_s15_*`, `test_ui_slot_layout.gd`
   unless the QA row names it. Pre-grep and report every row you touch; an

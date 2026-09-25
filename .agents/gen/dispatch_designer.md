@@ -5,9 +5,10 @@ Rebuilt 2026-09-22 (owner ruling: two-designer split), reorganised 2026-09-24
 `_state/WAVEBOARD.md` §Closed). Execute one item per order; briefs/prompts live
 in the slice folders (**items without a slice folder get their five-piece at
 dispatch-prep — say the item and it lands**); the owner pastes only the handoff
-block at the bottom. Model: `opencode-go/deepseek-v4.1-flash` (owner order
-2026-09-24; fallback `deepseek/deepseek-v4-flash`) — **D11's workers run
-`opencode-go/mimo-v2.6-flash`** (owner pick 2026-09-24 at dispatch-prep).
+block at the bottom. **Model: `opencode-go/mimo-v2.6-pro` for every design
+worker** on `--reasoning-effort low` (owner standing rule 2026-09-25: design
+runs on 2.6 Pro only — supersedes the 2026-09-24 deepseek/mimo-flash lines;
+measured that day, `medium` stalls on long worker loops while `low` is fast).
 
 ## The standing ruling (owner, 2026-09-22) — lane law, applies to every item
 

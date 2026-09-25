@@ -38,7 +38,8 @@ extends Control
 ##     3.9 rule 4: state stays code-drawn over the painted face);
 ##   * right well (316,60)-(696,348): the hull's slot grid, cells 60 x 74 on a 72 x 88 pitch for
 ##     a 5 x 3 matrix (a larger matrix is scaled to fit rather than clipped - `status_grid_scale`),
-##     the `W1..W5` refs as 10 px `SlotNumber` Labels, fitted modules as glyph plates;
+##     the `W1..W5` refs as `SlotNumber` Labels at the style's own point size (20 px since
+##     D8-H3's floor), fitted modules as glyph plates;
 ##   * footer strip (24,444)-(696,494): `HULL` / `SHLD` / `PWR` `cur / max` `HudReadout` Labels
 ##     (the fitting panel's own power arithmetic, unchanged).
 ##
@@ -94,7 +95,8 @@ const TITLE_TEXT := "SHIP STATUS"
 const TITLE_VARIATION: StringName = &"StationPanelTitle"
 const CAPTION_TEXT := "SLOT LAYOUT"
 const CAPTION_VARIATION: StringName = &"StationCaption"
-## The cell ref Labels: the weapon-slot number variation is exactly the pinned 10 px label.
+## The cell ref Labels: the weapon-slot number variation, sized from the style's own point
+## size (`status_ref_font_size`, the 12 px cap floor since D8-H3, 2026-09-25).
 const REF_VARIATION: StringName = &"SlotNumber"
 ## The footer readouts: the 18 px HUD readout (UI_SPEC section 3.8's own wording).
 const FOOTER_VARIATION: StringName = &"HudReadout"
@@ -334,6 +336,50 @@ func _make_value(node_name: String) -> Label:
 	return label
 
 
+## ------------------------------------------------------- the 1080p floor (D8-H3)
+
+## Every font-size override on this screen goes through `_set_font_size` (D8-H3,
+## 2026-09-25): the style's point size is the base and the applied size is base x
+## `ui_scale`, so a per-node override cannot escape the accessibility scale (D12-A0's
+## lesson from the armory). The base is recorded on the label, so `apply_font_floor()`
+## re-applies every recorded size when `ui_scale` moves; `hud.gd` calls it from the
+## SettingsManager `setting_changed` watch it owns.
+const FONT_SIZE_BASE_META: StringName = &"font_size_base"
+
+
+func _set_font_size(label: Label, base: int) -> void:
+	label.set_meta(FONT_SIZE_BASE_META, base)
+	label.add_theme_font_size_override(&"font_size", _scaled_font_size(base))
+
+
+func _scaled_font_size(base: int) -> int:
+	return roundi(float(base) * _ui_scale())
+
+
+func _ui_scale() -> float:
+	if not is_inside_tree():
+		return 1.0
+	var settings := get_tree().root.get_node_or_null(NodePath("SettingsManager"))
+	if settings != null and settings.has_method(&"ui_scale"):
+		return float(settings.call(&"ui_scale"))
+	return 1.0
+
+
+## The floor re-application, in place: every label that carries a recorded base.
+func apply_font_floor() -> void:
+	_reapply_font_sizes(self)
+
+
+func _reapply_font_sizes(node: Node) -> void:
+	var label := node as Label
+	if label != null and label.has_meta(FONT_SIZE_BASE_META):
+		label.add_theme_font_size_override(
+			&"font_size", _scaled_font_size(int(label.get_meta(FONT_SIZE_BASE_META)))
+		)
+	for child: Node in node.get_children():
+		_reapply_font_sizes(child)
+
+
 ## ---------------------------------------------------------------- the style (UI_SPEC 3.9 rule 5)
 
 ## Re-read the style into every child, in place: a user `.tres` restyles **and** relayouts the
@@ -346,14 +392,14 @@ func _apply_style() -> void:
 	_plate.texture = _style.texture(_style.status_panel_path)
 	_wells.configure(_style, _plate.texture == null)
 	_title.position = _style.status_title_pos
-	_title.add_theme_font_size_override(&"font_size", _style.status_title_font_size)
+	_set_font_size(_title, _style.status_title_font_size)
 	_close.texture_normal = _style.texture(_style.close_icon_path)
 	_close.position = _style.status_close_rect().position
 	_close.size = _style.status_close_size
 	_place_render_box()
 	_grid.position = _style.status_grid_origin()
 	_caption.position = _style.status_caption_rect().position
-	_caption.add_theme_font_size_override(&"font_size", _style.status_row_font_size)
+	_set_font_size(_caption, _style.status_row_font_size)
 	var rows: Rect2 = _style.status_rows_rect()
 	_rows_band.position = rows.position
 	_rows_band.size = rows.size
@@ -646,7 +692,7 @@ func _make_slot_cell(cell: Dictionary, fit: Dictionary) -> TextureButton:
 	ref.name = "Ref" + cell_name
 	ref.text = "%s%d" % [String(cell[&"token"]), index + 1]
 	ref.theme_type_variation = REF_VARIATION
-	ref.add_theme_font_size_override(&"font_size", _style.status_ref_font_size)
+	_set_font_size(ref, _style.status_ref_font_size)
 	ref.add_theme_color_override(&"font_color", _style.colour(&"text_dim"))
 	ref.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	plate.add_child(ref)
@@ -732,7 +778,7 @@ func _refresh_module_rows() -> void:
 		label.name = "Row%s%02d" % [String(row[&"token"]), int(row[&"index"])]
 		label.text = String(row[&"text"])
 		label.theme_type_variation = CAPTION_VARIATION
-		label.add_theme_font_size_override(&"font_size", _style.status_row_font_size)
+		_set_font_size(label, _style.status_row_font_size)
 		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_module_rows.add_child(label)
 

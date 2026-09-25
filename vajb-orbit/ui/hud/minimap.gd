@@ -133,6 +133,14 @@ func _draw() -> void:
 	_draw_blips()
 
 
+## The blip kinds the draw code actually handles - the five `KIND_*` constants
+## `_draw_blip`/`_color_for` branch on, and nothing else. The HUD's minimap legend
+## is built from this list (D8 item 10), so it can never promise a kind the map
+## does not draw, and a new kind joins the legend by joining this list.
+static func draw_kinds() -> Array[StringName]:
+	return [KIND_SELF, KIND_HOSTILE, KIND_FRIENDLY, KIND_SWARMER, KIND_GHOST]
+
+
 func _draw_rose() -> void:
 	var centre: Vector2 = size * 0.5
 	var radius: float = minf(size.x, size.y) * 0.5 * ROSE_RADIUS_RATIO

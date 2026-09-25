@@ -160,8 +160,11 @@ const ROLE_BONE: StringName = &"bone"
 @export var status_footer_x: Array[float] = [40.0, 250.0, 470.0]
 @export var status_footer_label_y: float = 14.0
 @export var status_title_font_size: int = 20
-@export var status_ref_font_size: int = 10
-@export var status_row_font_size: int = 13
+## D8-H3 (2026-09-25), the wave's 12 px cap-height floor at 1920x1080: the refs and rows
+## were Mockup C's 10 / 13 px, a 6.43 / 8.36 px Rajdhani cap (sCapHeight 643/1000). 20 px
+## measures 12.86 px cap (13 px rendered ink). Reversal: 10 / 13.
+@export var status_ref_font_size: int = 20
+@export var status_row_font_size: int = 20
 ## Section 3.8's markers: 5 px radius, 1 px ring (the mockup's own dot).
 @export var status_marker_radius: float = 5.0
 

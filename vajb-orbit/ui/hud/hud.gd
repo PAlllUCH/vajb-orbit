@@ -24,11 +24,18 @@ extends Control
 ##
 ## **Wave D7 (2026-09-24)** retires the section 3.6 heading tick (`set_speedometer`'s
 ## `heading` is still accepted and no longer drawn), hides the old HUD column
-## (`_retire_old_column`: the section 3.1 crest bars, the section 3.2 `AmmoPanel` and
-## the section 3.4 cargo block) and pushes the ammo feed and the selected rack into the
+## (`_retire_old_column`) and pushes the ammo feed and the selected rack into the
 ## cluster, which now draws them as its AMMO row and its `B1..B5` lamps. Every frozen
 ## section 7 method keeps its signature and stays callable; the retired widgets stay in
 ## the scene, hidden and no-op, so nothing that drove them breaks.
+##
+## **Wave D8 item 10 (2026-09-25)** answers the QA's empty top-left quadrant by
+## keeping it empty: the owner retired the un-hide because hull/shield already read
+## live in the cockpit cluster and the HUD may not duplicate it. The section 3.1
+## crest blocks stay hidden (`_retire_old_column`), so the section 3.2/3.4
+## retirement, section 3.1b's pool-block retirement and D8-H4's crest re-retirement
+## all stand; the minimap legend and the 1080p glyph floor are the wave's remaining
+## deliverables.
 
 signal weapon_slot_selected(slot: int)
 signal cargo_toggled(open: bool)
@@ -123,6 +130,41 @@ const ZOOM_DELTA_IN: int = -1
 const ZOOM_DELTA_OUT: int = 1
 const CARGO_PANEL_GAP: float = 8.0
 
+## D8-H3's 1080p floor (2026-09-25): the weapon cells' slot ordinals' point size, and the
+## recorded-base meta key every scaled size override carries (the same key the status
+## screen records its style sizes under).
+const SLOT_NUMBER_FONT_SIZE: int = 20
+const FONT_SIZE_BASE_META: StringName = &"font_size_base"
+
+## D8 item 10 (2026-09-25; owner picks: minimap legend + 1080p glyphs, the top-left
+## content pick retired by the owner the next day), answered per the QA row and the
+## owner's no-duplication ruling: the section 3.1 crest blocks (`HullBlock`/
+## `ShieldBlock`) stay hidden in the top-left column because the cluster's HULL/SHLD
+## rows already carry that state - the HUD may not repeat the cluster's
+## SPD/HULL/SHLD/AMMO or FUEL/ENRG readouts anywhere. The minimap legend and the
+## zoom glyphs' redrawn marks ride the wave. Every text row here resolves through a
+## theme variation `Router.FONT_SIZE_ITEMS` scales, so no per-node font-size override
+## can escape `ui_scale` (D12-A0's lesson).
+## The legend names exactly `Minimap.draw_kinds()`' five kinds, uppercase as the HUD
+## reads, and sits inside the minimap bezel's chrome - the row between the map frame
+## and the footer - clear of the map's and the play field's centre. (Measured: five
+## >= 12 px-cap rows need >= 95 x 119 px, which no corner of the 200 px frame's
+## 84 px quadrant holds, so an in-frame overlay would cover the self blip.)
+const MINIMAP_LEGEND := "MinimapLegend"
+const LEGEND_MARK_SIZE := 18.0
+## The zoom glyphs' drawn marks (the floor is a glyph's drawn ink height: the
+## marks live on the ZoomMark widget below at 12 px bar thickness and a 30 px
+## cross, so both clear 12 px at 1080p).
+const ZOOM_MARK := "ZoomMark"
+## The scene's caption rows that take the `text_dim` seat after their D8 size fix
+## (labels named `*Caption`, plus the legend's own names, pick the seat up by
+## pattern in `_is_caption`).
+const CAPTION_TINTS: Array[String] = [
+	"HullTitle", "ShieldTitle", "EnergyBlockTitle", "FuelBlockTitle",
+	"CreditsTitle", "TargetCaption", "TargetHullCaption",
+	"TargetShieldCaption", "TargetDistance", "SectorLabel", "WarpCaption",
+]
+
 ## CONTRACTS section 23.3: the flight HUD's credits readout, a `CreditsBlock` appended to
 ## the same top-left column the pool blocks live in (below the fuel block). The block is
 ## built in code (the `_build_pool_blocks` idiom), reads the `PlayerProfile` singleton by
@@ -185,8 +227,10 @@ const RANGE_FORMAT := "%s  %s"
 ## Section 3.1b: the column the HULL and SHIELD blocks live in. The two pool blocks
 ## are appended to it (below ShieldBlock) by `_build_pool_blocks`.
 @onready var _blocks: VBoxContainer = $CanvasLayer/TopLeft/Blocks
-## The two section 3.1 crest blocks, retired (hidden) by `_retire_old_column` per UI_SPEC
-## section 3.7's 2026-09-24 amendment - HULL and SHLD read in the cluster's rows now.
+## The two section 3.1 crest blocks: hidden by `_retire_old_column` in D7 (section
+## 3.7's 2026-09-24 amendment), briefly un-hidden by D8 item 10's first QA ruling
+## and re-hidden by D8-H4 (owner 2026-09-25: hide hull/shield top-left, the cluster
+## already carries them). They stay in the scene, fed but invisible.
 @onready var _hull_block: VBoxContainer = $CanvasLayer/TopLeft/Blocks/HullBlock
 @onready var _shield_block: VBoxContainer = $CanvasLayer/TopLeft/Blocks/ShieldBlock
 @onready var _top_right: MarginContainer = $CanvasLayer/TopRight
@@ -314,6 +358,11 @@ var _credits_icon: TextureRect = null
 var _profile_service: Node = null
 var _emergency: bool = false
 var _emergency_banner: Label = null
+## D8 item 10's two additions: the minimap legend and the zoom glyphs' drawn marks
+## (the top-left quadrant is answered by un-hiding the scene's own blocks, so it
+## needs no builder of its own).
+var _minimap_legend: VBoxContainer = null
+var _zoom_marks: Array[Control] = []
 var _pool_background_box: StyleBoxFlat = null
 var _pool_fill_boxes: Dictionary = {}
 
@@ -324,7 +373,10 @@ func _ready() -> void:
 	_build_pool_blocks()
 	_build_credits_block()
 	_connect_profile()
+	_connect_ui_scale_watch()
 	_build_hud_widgets()
+	_build_minimap_legend()
+	_build_zoom_marks()
 	_build_weapon_slots()
 	_place_cargo_panel()
 	_retire_old_column()
@@ -334,6 +386,7 @@ func _ready() -> void:
 	_zoom_plus.pressed.connect(_on_zoom_pressed.bind(ZOOM_DELTA_IN))
 	_bind_zoom_feedback(_zoom_minus)
 	_bind_zoom_feedback(_zoom_plus)
+	_apply_caption_tints()
 	_refresh_static_tints()
 	_refresh_hull()
 	_refresh_shield()
@@ -354,6 +407,7 @@ func _notification(what: int) -> void:
 		_pool_fill_boxes.clear()
 		_apply_zone_theme()
 		_apply_ammo_panel_style()
+		_apply_caption_tints()
 		_refresh_static_tints()
 		_refresh_hull()
 		_refresh_weapon()
@@ -842,6 +896,7 @@ func _build_weapon_slots() -> void:
 		slot.pressed.connect(_on_weapon_slot_pressed.bind(index))
 		_weapon_grid.add_child(slot)
 		_weapon_slots.append(slot)
+	_apply_slot_font_floor()
 
 
 ## CONTRACTS section 11: the launched hull's W cells, one entry per W cell in layout order
@@ -893,6 +948,7 @@ func _rebuild_weapon_slots() -> void:
 		_weapon_grid.add_child(slot)
 		_weapon_slots.append(slot)
 	_refresh_weapon()
+	_apply_slot_font_floor()
 
 
 ## A fitted cell draws the module icon it was handed; an empty cell (or a cell whose icon
@@ -905,6 +961,52 @@ func _weapon_cell_icon(cell: Dictionary) -> Texture2D:
 		return SLOT_GLYPH_WEAPON
 	var texture := load(path) as Texture2D
 	return texture if texture != null else SLOT_GLYPH_WEAPON
+
+
+## D8-H3's floor (2026-09-25): the grid's slot ordinals were the theme's 10 px `SlotNumber`
+## (6.43 px Rajdhani cap, sCapHeight 643/1000), under the wave's 12 px cap floor at
+## 1920x1080. The theme item stays what the station's own ordinals resolve (S15's lane);
+## the HUD's cells take the floor's 20 px (12.86 px cap, 13 px rendered ink) as a per-node
+## override whose base is recorded and applied as base x `ui_scale`, so it cannot escape
+## the accessibility scale (D12-A0's lesson from the armory). Reversal: drop the override
+## and the theme's 10 px returns.
+func _apply_slot_font_floor() -> void:
+	for slot: SlotButton in _weapon_slots:
+		var label := slot.get_node_or_null(NodePath("Number")) as Label
+		if label == null:
+			continue
+		label.set_meta(FONT_SIZE_BASE_META, SLOT_NUMBER_FONT_SIZE)
+		label.add_theme_font_size_override(&"font_size", _scaled_font_size(SLOT_NUMBER_FONT_SIZE))
+
+
+func _scaled_font_size(base: int) -> int:
+	return roundi(float(base) * _hud_ui_scale())
+
+
+func _hud_ui_scale() -> float:
+	if not is_inside_tree():
+		return 1.0
+	var settings := get_tree().root.get_node_or_null(NodePath("SettingsManager"))
+	if settings != null and settings.has_method(&"ui_scale"):
+		return float(settings.call(&"ui_scale"))
+	return 1.0
+
+
+## The two per-node size families (this grid's ordinals, the status screen's style sizes)
+## follow `ui_scale` through this watch: the Router scales every `FONT_SIZE_ITEMS` theme
+## item on the same signal, and a per-node override that never re-applied would escape the
+## accessibility scale exactly the way the armory's literals did (D12-A0's lesson).
+func _connect_ui_scale_watch() -> void:
+	if not SettingsManager.setting_changed.is_connected(_on_ui_scale_setting_changed):
+		SettingsManager.setting_changed.connect(_on_ui_scale_setting_changed)
+
+
+func _on_ui_scale_setting_changed(section: StringName, key: StringName, _value: Variant) -> void:
+	if section != &"interface" or key != &"ui_scale":
+		return
+	_apply_slot_font_floor()
+	if _status != null:
+		_status.apply_font_floor()
 
 
 ## CONTRACTS section 11 / 09 section 11: a cell is selectable when it belongs to a rack
@@ -988,7 +1090,9 @@ func _build_pool_blocks() -> void:
 		return
 	_emergency_banner = Label.new()
 	_emergency_banner.name = EMERGENCY_BANNER
-	_emergency_banner.theme_type_variation = &"SectionHeader"
+	## D8 item 10's floor: 20 px display (14 px cap) - the one banner a pilot must
+	## read at a glance.
+	_emergency_banner.theme_type_variation = &"StationPanelTitle"
 	_emergency_banner.text = EMERGENCY_BANNER_TEXT
 	_emergency_banner.visible = false
 	_emergency_banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -1032,7 +1136,7 @@ func _build_credits_block() -> void:
 	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var title := Label.new()
 	title.name = "CreditsTitle"
-	title.theme_type_variation = &"SectionHeader"
+	title.theme_type_variation = &"HudReadout"
 	title.text = CREDITS_TITLE
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var spacer := Control.new()
@@ -1055,6 +1159,132 @@ func _build_credits_block() -> void:
 	_credits_value = value
 	_push_tint(icon, TOKEN_TEXT_PRIMARY)
 	_refresh_credits()
+
+
+## D8 item 10's minimap legend: one row per kind `Minimap.draw_kinds()` names, each
+## carrying the marker that kind draws on the map (the shape `minimap.gd::_draw_blip`
+## draws, in the token `_color_for` resolves). It sits inside the minimap bezel's own
+## chrome, on the row between the map frame and the footer - never over the play
+## field's or the map's centre - and because the rows are built from the draw kinds'
+## list it cannot promise a kind the map does not draw.
+func _build_minimap_legend() -> void:
+	if _minimap_panel == null or _minimap_legend != null:
+		return
+	var box := _minimap_panel.get_node_or_null(NodePath("MinimapBox")) as VBoxContainer
+	if box == null:
+		return
+	_minimap_legend = VBoxContainer.new()
+	_minimap_legend.name = MINIMAP_LEGEND
+	_minimap_legend.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_minimap_legend.add_theme_constant_override(&"separation", POOL_BLOCK_SEPARATION)
+	for kind: StringName in Minimap.draw_kinds():
+		var row := HBoxContainer.new()
+		row.name = "LegendRow_%s" % String(kind)
+		row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		row.add_theme_constant_override(&"separation", POOL_HEADER_SEPARATION)
+		var mark := LegendMark.new()
+		mark.name = "LegendMark_%s" % String(kind)
+		mark.custom_minimum_size = Vector2(LEGEND_MARK_SIZE, LEGEND_MARK_SIZE)
+		mark.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		mark.configure(kind, _legend_colour(kind), _legend_alpha(kind))
+		var label := Label.new()
+		label.name = "LegendLabel_%s" % String(kind)
+		label.theme_type_variation = &"HudReadout"
+		label.text = String(kind).to_upper()
+		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		row.add_child(mark)
+		row.add_child(label)
+		_minimap_legend.add_child(row)
+	box.add_child(_minimap_legend)
+	## Map frame, then legend, then the footer: the map stays fully visible and the
+	## zoom glyphs keep their bottom-right.
+	box.move_child(_minimap_legend, 1)
+
+
+## The legend marker's token, resolved exactly as `minimap.gd::_color_for` resolves
+## the same kind on the map.
+func _legend_colour(kind: StringName) -> Color:
+	if kind == Minimap.KIND_SELF or kind == Minimap.KIND_FRIENDLY:
+		return _token(TOKEN_TEXT_PRIMARY)
+	if kind == Minimap.KIND_HOSTILE or kind == Minimap.KIND_SWARMER:
+		return _token(TOKEN_DANGER)
+	return _token(TOKEN_TEXT_DIM)
+
+
+## The ghost is drawn mid-flicker (UI_SPEC section 3.3's 0.3-0.7 window, mean 0.5):
+## a static legend cannot flicker, so it shows the reading the flicker averages to.
+func _legend_alpha(kind: StringName) -> float:
+	if kind == Minimap.KIND_GHOST:
+		return (Minimap.GHOST_ALPHA_MIN + Minimap.GHOST_ALPHA_MAX) * 0.5
+	return 1.0
+
+
+## D8 item 10's 1080p glyph fix, at the source of the drawn size: the two zoom
+## glyphs the QA found unreadable (their knocked-out marks measured 3.4 px and
+## 13.3 px on the QA build's 28 px buttons) draw as code marks whose ink clears
+## the 12 px floor, on the same two buttons and the same press/hover seams. The
+## magnifier cuts retire from these two rows - their minus bar is 12 px of a 96 px
+## canvas, so no sane button size brings the mark itself to 12 px - and the marks
+## are white so the button's own modulate (the hover tint `_push_zoom_tint`
+## drives) still colours them exactly as it coloured the cut.
+func _build_zoom_marks() -> void:
+	if not _zoom_marks.is_empty():
+		return
+	for button: TextureButton in [_zoom_minus, _zoom_plus]:
+		if button == null:
+			continue
+		var mark := ZoomMark.new()
+		mark.name = ZOOM_MARK
+		mark.plus = button == _zoom_plus
+		mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		mark.set_anchors_preset(Control.PRESET_FULL_RECT)
+		button.add_child(mark)
+		_zoom_marks.append(mark)
+
+
+## The caption rows keep the theme's `text_dim` seat after the D8 floor moved them
+## onto `HudReadout`/`StationPanelTitle` sizes: this is a colour override, never a
+## font-size one, so every size still resolves through the theme item
+## `Router.FONT_SIZE_ITEMS` scales (D12-A0's lesson, the other direction). The
+## threat label is deliberately absent - W6-4 owns its colour and the suite pins
+## that it carries no override unless the reading is hostile.
+func _apply_caption_tints() -> void:
+	for label: Label in _caption_labels(self):
+		label.add_theme_color_override(&"font_color", _token(TOKEN_TEXT_DIM))
+
+
+func _caption_labels(node: Node) -> Array[Label]:
+	var out: Array[Label] = []
+	for child: Node in node.get_children():
+		## The rule-5 cockpit (display-only) and the D6/D7 status screen are not
+		## this wave's to restyle: the walk stops at their roots.
+		if child.name == COCKPIT_CLUSTER or child.name == SHIP_STATUS_SCREEN:
+			continue
+		if child is Label and _is_caption(child as Label):
+			out.append(child as Label)
+		out.append_array(_caption_labels(child))
+	return out
+
+
+func _is_caption(label: Label) -> bool:
+	return (
+		CAPTION_TINTS.has(label.name)
+		or String(label.name).begins_with("LegendLabel_")
+		or String(label.name).ends_with("Caption")
+	)
+
+
+## D8 read-back (the `speedometer()`/`status_screen()` precedent): the legend as a
+## whole control, so a suite or probe asserts it without reaching into scene paths.
+func minimap_legend() -> Control:
+	return _minimap_legend
+
+
+## D8 read-back: the two zoom glyphs' drawn marks, so a suite measures their ink
+## (`ZoomMark.zoom_mark_rects()`) without walking the buttons' children.
+func zoom_marks() -> Array[Control]:
+	return _zoom_marks.duplicate()
 
 
 ## The `PlayerProfile` autoload, read by name at the tree root (station.gd's own guarded
@@ -1139,7 +1369,10 @@ func _register_pool(kind: StringName, title: String, block_name: String) -> void
 	header.add_theme_constant_override(&"separation", POOL_HEADER_SEPARATION)
 	var caption := Label.new()
 	caption.name = "%sTitle" % block_name
-	caption.theme_type_variation = &"SectionHeader"
+	## D8 item 10's floor: `HudReadout` (18 px display, 13 px cap) replaces the
+	## 10 px-cap `SectionHeader`; the `text_dim` seat comes from
+	## `_apply_caption_tints`, not a font-size override.
+	caption.theme_type_variation = &"HudReadout"
 	caption.text = title
 	caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var spacer := Control.new()
@@ -1204,15 +1437,18 @@ func _place_cargo_panel() -> void:
 
 
 ## UI_SPEC section 3.7 (2026-09-24, owner: "all of old HUD should be gone i think"): the old
-## HUD column dies - the section 3.1 crest bars (the TopLeft HULL/SHIELD blocks), the
-## section 3.2 `AmmoPanel` (with its weapon grid) and the section 3.4 cargo block (panel plus
-## toggle) leave the flight HUD. HULL/SHLD read in the cluster's rows, ammo in its AMMO row.
+## HUD column dies - the section 3.2 `AmmoPanel` (with its weapon grid) and the section 3.4
+## cargo block (panel plus toggle) leave the flight HUD; ammo reads in the cluster's AMMO row.
+##
+## D8-H4 (owner 2026-09-25: "hide shield and hull in top left corner") restores section 3.7's
+## crest-bar half: the cockpit cluster's HULL/SHLD rows are the one hull/shield presentation,
+## so the section 3.1 `HullBlock`/`ShieldBlock` are put back on this hide list and off the
+## top-left quadrant - the HUD may not duplicate a cluster readout. The two pool blocks answer
+## their own amendment (`_retire_pool_blocks`, section 3.1b) untouched.
 ##
 ## The widgets stay **in the scene**, hidden and no-op, rather than being deleted: section 3.7
 ## keeps "the section 7 frozen API ... callable - every frozen method keeps its signature; the
-## widgets they drove are gone (hidden/no-op widgets where nothing remains to drive)". The
-## pool blocks (section 3.1b) are **not** retired - section 3.7's list names section 3.1's
-## crest bars only, and section 3.1b's own rows stay green.
+## widgets they drove are gone (hidden/no-op widgets where nothing remains to drive)".
 ## Reversal: unhide the five nodes (restore the column behind a debug flag).
 func _retire_old_column() -> void:
 	for widget: Control in retired_widgets():
@@ -1220,7 +1456,9 @@ func _retire_old_column() -> void:
 
 
 ## The retired old-HUD widgets, in the order section 3.7 lists the families, so a probe can
-## assert the absence without reaching into scene paths.
+## assert the absence without reaching into scene paths. The two crest blocks are back on the
+## list (see `_retire_old_column`): D8-H4 hid them again so the top-left cannot duplicate the
+## cluster's HULL/SHLD rows.
 func retired_widgets() -> Array[Control]:
 	var out: Array[Control] = []
 	for widget: Control in [_hull_block, _shield_block, _ammo_panel, _cargo_toggle, _cargo_panel]:
@@ -1926,3 +2164,99 @@ class Speedometer extends Control:
 		if has_theme_color(token, TOKENS_TYPE):
 			return get_theme_color(token, TOKENS_TYPE)
 		return fallback
+
+
+## D8 item 10's legend marker: the shape a blip of that kind draws on the map
+## (`minimap.gd::_draw_blip` - friendly is the one diamond, the rest are dots),
+## scaled into the legend's own slot so its ink clears the 12 px glyph floor.
+## `mark_rect()` reads the drawn ink back out for the tests and the audit.
+class LegendMark extends Control:
+	const SELF_RADIUS := 8.0
+	const BLIP_RADIUS := 6.0
+	const FRIENDLY_RADIUS := 8.0
+
+	var kind: StringName = &""
+	var colour: Color = Color.WHITE
+	var alpha: float = 1.0
+
+
+	func configure(marker_kind: StringName, marker_colour: Color, marker_alpha: float) -> void:
+		kind = marker_kind
+		colour = marker_colour
+		alpha = marker_alpha
+		queue_redraw()
+
+
+	## The drawn ink box: the marker's circle/diamond bounding rect, which is what
+	## the 12 px floor is measured against.
+	func mark_rect() -> Rect2:
+		var radius: float = _radius()
+		return Rect2(size * 0.5 - Vector2(radius, radius), Vector2(radius, radius) * 2.0)
+
+
+	func _radius() -> float:
+		if kind == Minimap.KIND_FRIENDLY:
+			return FRIENDLY_RADIUS
+		if kind == Minimap.KIND_SELF:
+			return SELF_RADIUS
+		return BLIP_RADIUS
+
+
+	func _draw() -> void:
+		var centre: Vector2 = size * 0.5
+		var fill := colour
+		fill.a = colour.a * alpha
+		if kind == Minimap.KIND_FRIENDLY:
+			var radius: float = _radius()
+			draw_colored_polygon(
+				PackedVector2Array([
+					centre + Vector2(0.0, -radius),
+					centre + Vector2(radius, 0.0),
+					centre + Vector2(0.0, radius),
+					centre + Vector2(-radius, 0.0),
+				]),
+				fill
+			)
+			return
+		draw_circle(centre, _radius(), fill)
+
+
+## D8 item 10's zoom glyph: the mark a zoom button carries, drawn at the 12 px
+## glyph floor (a bar's ink height is its thickness) instead of the magnifier cut
+## whose knocked-out mark measured 3.4 px at the button's own 28 px sizing. The
+## geometry lives here (the widget owns its numbers, the Speedometer's rule) and
+## `zoom_mark_rects()` reads it back out. The marks draw white so the button's own
+## modulate - the hover tint `_push_zoom_tint` drives - colours them exactly as it
+## coloured the cut.
+class ZoomMark extends Control:
+	const BAR_LENGTH := 30.0
+	const BAR_THICKNESS := 12.0
+
+	var plus: bool = false
+
+
+	func zoom_mark_rects() -> Array[Rect2]:
+		var rects: Array[Rect2] = []
+		for rect: Rect2 in _bar_rects():
+			rects.append(rect)
+		return rects
+
+
+	func _bar_rects() -> Array[Rect2]:
+		var centre: Vector2 = size * 0.5
+		var horizontal := Rect2(
+			centre - Vector2(BAR_LENGTH, BAR_THICKNESS) * 0.5,
+			Vector2(BAR_LENGTH, BAR_THICKNESS)
+		)
+		if not plus:
+			return [horizontal]
+		var vertical := Rect2(
+			centre - Vector2(BAR_THICKNESS, BAR_LENGTH) * 0.5,
+			Vector2(BAR_THICKNESS, BAR_LENGTH)
+		)
+		return [horizontal, vertical]
+
+
+	func _draw() -> void:
+		for rect: Rect2 in _bar_rects():
+			draw_rect(rect, Color.WHITE)
