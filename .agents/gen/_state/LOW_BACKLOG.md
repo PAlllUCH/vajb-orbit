@@ -625,3 +625,24 @@ still **T-94**.
 | L213 | **S14's AC3 row prints different path counts under S16 while its asserted value is unchanged.** `[S14] AC3 … family_realised=32 steps=48 rocks_spawned=23` (pre-S16: `42`/`17`) — mining shatters now also split their 0-bore descendants. The row sits on brief §3's candidate list and stays green, so it is not a HIGH; recorded so the next W8 byte-identical replay does not read the drift as a regression. | [HARNESS] | `vajb-orbit/tests/test_s14_splits.gd:240` | Next S14 owner: accept the drift in the row's own doc comment, or assert the printed path is out of scope. |
 | L214 | **The S16 suite ships with no `.uid`.** `tests/test_s16_resplits.gd` has none (same class as L205/L211); the headless gate never writes one. | [HARNESS] | `vajb-orbit/tests/test_s16_resplits.gd` | Wave close-out: let the editor scan land the `.uid` and include it in the boundary commit. |
 | L215 | **`setup` re-initialises `_shatter_mining` but not `_cleave_child`.** `Asteroid.setup` resets the route flag yet leaves the S16 marker, so a future reuse of an already-marked instance (a re-`setup`) would keep splitting at bore 0. No shipped path reuses an instance (`AsteroidScript.new` appears only in `_new_rock` and `poi.gd:588`, both fresh), so it is latent. | [CODE] | `vajb-orbit/game/asteroid.gd:247,289` | Next `asteroid.gd` owner: clear `_cleave_child = false` with the other resets in `setup`. |
+
+### S17 gate-edges review block (2026-09-25)
+
+Source: `.agents/gen/slices/S17-gate-edges/S17-R1_review.md`. The wave leaves
+**0 HIGH and 0 MED** (no fixer pass). Gate **`866/0 → 877/0`** twice on fresh
+scratch stores plus the mandated
+`verify --baseline s17_start --forbidden … --tests --expect-reports …` green
+(`"problems": []`); every AC re-measured by the review's own probe
+(`tools/r1_s17_ac_replay.gd`, 50 rows, `failures=0`) with the expected gate
+positions re-derived from 11 §2.3's spine order and the arena geometry (12 gates
+at ±4200.0 u, tangency 200.00 u, beacons (±4500, 0), both forbidden files
+byte-identical to HEAD). Rows run **L216–L220** (ids read from this file at write
+time); the next free ticket is still **T-94**.
+
+| # | Item | Kind | Where | Disposition |
+|---|------|------|-------|-------------|
+| L216 | **`BEACON_GATE_OFFSET`'s comment still says "outside the ring".** The ring placement retired in S17 (11 §6), so the phrase no longer describes what the offset is clear of; the formula and value are unchanged and correct. | [DOC] | `vajb-orbit/game/sector.gd:96-97` | Next `sector.gd` owner: reword to "outward along its own position vector (11 §6), clear of the 200 u trigger". |
+| L217 | **The station mockup's gate label states the retired value and dead line numbers.** `"GATE 900 u (_gate_bearing(dest), sector.gd:96,581)"` was already stale before S17 (`:96` is the beacon const, the call moved to `:584-585`) and the 900 u radius is now retired; no test and no game code reads the label. | [DOC] | `staging/mockup/station_mockup.py:284,369` | Next mockup owner: relabel "GATE 4200 u (border inset, sector.gd:584-585)" or drop the arrows. |
+| L218 | **The wave's new suite ships with no `.uid`.** `tests/test_s17_gate_edges.gd` has none (same class as L205/L211/L214); the headless gate never writes one. | [HARNESS] | `vajb-orbit/tests/test_s17_gate_edges.gd` | Wave close-out: let the editor scan land the `.uid` and include it in the boundary commit. |
+| L219 | **The S17 suite hard-pins the two forbidden files' pre-wave MD5s.** `GATE_MD5`/`REGISTRY_MD5` (`test_s17_gate_edges.gd:48-49`, asserted at `:270-273`) are the pre-S17 hashes, so the next legitimate edit of `gate.gd` or `sector_registry.gd` fails `ac6` with a hash mismatch rather than a contract violation. B1 reported this as its own AC6 deviation. | [HARNESS] | `vajb-orbit/tests/test_s17_gate_edges.gd:48-49,270-273` | Next owner of either file: drop the two asserts (the reversal B1 recorded) or re-pin them in the same pass. |
+| L220 | **`--suite=` only sees args after the `--` user-args separator.** The runner reads `OS.get_cmdline_user_args()` (`tests/headless_runner.gd:87-94`), so `--suite=test_s17_gate_edges` placed before `--` is silently ignored and the whole 877-row gate runs (`-- --suite=test_s17_gate_edges` reads `passed=11 failed=0`). S17-B1's report read this as "did not filter on this host"; it is a mis-invocation. Extends L95 (which pins the basename form without the separator). | [HARNESS] | `vajb-orbit/tests/headless_runner.gd:87-94` | Next runner owner: also accept the flag from `OS.get_cmdline_args()`, or state the `--` requirement in §9's `--suite=` note. |

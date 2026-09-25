@@ -856,7 +856,35 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
-Expected (S16, 2026-09-25): **`[SUMMARY] passed=866 failed=0`**, exit 0. The S16
+Expected (S17, 2026-09-25): **`[SUMMARY] passed=877 failed=0`**, exit 0. The S17
+review (S17-R1) measured **877** twice on two fresh scratch stores
+(`XDG_DATA_HOME=$(mktemp -d)`, exit 0, identical counts, zero `failed`) and re-ran
+the mandated `verify --baseline s17_start --forbidden … --tests --expect-reports
+S17-B1_report.md S17-R1_review.md` (`"problems": []` on the final run; the review
+file's own absence was the only problem on the first. The `--forbidden` matcher is
+exact-string, so its `docs/` and directory entries are inert: L206 — hand-checked,
+no `project.godot`, `ui/`, `addons/` or `autoload/` path in the diff).
+**Growth `866 → 877`** = S17's `test_s17_gate_edges.gd` **11** rows (AC1-AC6); no
+other suite's count moved — all 75 suites' `[PASS]` counts equal their own files'
+`func test_` counts and no test file differs from HEAD, so `game/sector.gd` is the
+wave's only touched project file. The wave's pin is **11 §6** (owner go
+2026-09-25: gates move to the sector border, same gates, spawn placement only);
+`GATE_RING_RADIUS` 900 u retires. Re-measured by the review on the shipped tree
+with its own probe (`tools/r1_s17_ac_replay.gd`): 12 gates across the seven rows,
+each on its link's bearing ray at **4200.0 u** (5000 − `FIELD_EDGE_MARGIN` 800),
+re-derived from the spine order and the arena geometry, never from `_edge_reach`;
+the 200 u `TRIGGER_RADIUS` circle exactly **tangent** to its own corridor band's
+inner edge (600 + 200 = 800), nearest gate-to-any-band distance **200.00 u**
+(interiors disjoint), every gate inside the arena; one beacon per gate at the
+byte-identical `position + position.normalized() * BEACON_GATE_OFFSET` 300 →
+(±4500, 0), inside its link's corridor band; `_edge_reach` = 4200 on the four
+cardinals, 5939.6971 at 45° (the inset corner), an exact 4200-axis hit for a
+shallow bearing, 0.0 for a zero bearing; `gate.gd` and `sector_registry.gd`
+byte-identical to HEAD (md5 `c13574f6…` / `584d206c…`). It leaves **0 HIGH /
+0 MED / 5 LOW (L216-L220)**. `--suite=` was re-measured working as
+`-- --suite=test_s17_gate_edges` → `passed=11 failed=0`: the flag must follow the
+`--` user-args separator (`headless_runner.gd:87-94`), so B1's report's "did not
+filter" was a mis-invocation, not a runner defect. Previous expected (S16, 2026-09-25): **`[SUMMARY] passed=866 failed=0`**, exit 0. The S16
 review (S16-R1) measured **866** twice on two fresh scratch stores
 (`XDG_DATA_HOME=$(mktemp -d)`, exit 0, identical counts, zero `failed`) and re-ran
 the mandated `verify --baseline s16_start --forbidden … --tests --expect-reports
@@ -2275,9 +2303,17 @@ landed).** Measured by K1 (`.agents/gen/slices/S6-travel/S6-K1_report.md`,
   `gates()` (the station plus one per gate link), because 11 §5 maps gates to
   `friendly`. K2's beacon/derelict/anomaly blips move the same row again —
   derive, never hard-code. This is the only existing row the wave touches.
-- **Three placement values reported, not invented:** `sector.gd:GATE_RING_RADIUS`
-  `900.0` u, `gate.gd:RING_SCALE` `0.25` and `gate.gd:TRIGGER_RADIUS` `200.0` u
-  (11 §2.1 quantifies none of them; reversal: one edit each). Owner ticks.
+- **Three placement values reported, not invented** (the first **retired 2026-09-25**
+  by 11 §6 / wave S17 — gates move to the sector border on their link's bearing, the
+  same gates, spawn placement only): `sector.gd:GATE_RING_RADIUS` `900.0` u is gone
+  (11 §6's reversal restores `_add_gate` to `centre + _gate_bearing(dest) *
+  GATE_RING_RADIUS`). Live placement: `_add_gate` places at
+  `centre + bearing * _edge_reach(bearing)`, the per-axis `(5000 - 800)/|component|`
+  minimum, so today's cardinal spine puts every ring at **±4200 u** on its link's
+  axis (the `FIELD_EDGE_MARGIN` 800 u inset of a 10 000 u arena; `_edge_reach` is
+  the retired const's replacement and mints no tunable). `gate.gd:RING_SCALE`
+  `0.25` and `gate.gd:TRIGGER_RADIUS` `200.0` u stand (11 §2.1/§6 quantify neither;
+  reversal: one edit each). Owner ticks.
 - **Route notes (bucket 1, no pin moves):** the three POI constants
   (`DERELICT_SCAN_RANGE` / `RIFT_DRAIN` / `ANOMALY_WEIGHTS_RIFT_DOUBLED`) live in
   `sector_registry.gd` so K2 reads them rather than minting a second home; a
@@ -4002,3 +4038,31 @@ hull stops twice and the second stop slides.
   row, not HIGH), F3 the new suite's missing `.uid`, F4 `setup` does not reset
   `_cleave_child`. Owner decisions owed: none blocking; the "exactly" wording is the
   only thing the owner may want to tighten.
+- **v0.29 (2026-09-25, wave S17 review — S17-R1, this wave's only CONTRACTS writer;
+  gate re-measured `877/0` twice on fresh scratch stores, `verify --baseline
+  s17_start` `problems: []`)** — records the gate-edge placement review's outcome.
+  `docs/gameplay/11_galactic_map.md` §6 (the owner's 2026-09-25 go) with §2.1/§2.2
+  are the diff targets. **§19**'s K1 placement disposition now reads the live values:
+  `GATE_RING_RADIUS` 900 u is retired (11 §6's reversal restores it) and the gate
+  stands on its link's bearing ray, `FIELD_EDGE_MARGIN` 800 u in from the map edge —
+  ±4200 u on the link axis for today's cardinal spine, `gate.gd`'s `RING_SCALE` 0.25
+  and `TRIGGER_RADIUS` 200.0 u standing. **§9** gains the S17 expected-count
+  paragraph above. Shipped and re-measured on the shipped tree:
+  `_add_gate` reads `var bearing := _gate_bearing(dest)` then places at
+  `centre + bearing * _edge_reach(bearing)`, with `_edge_reach` the per-axis
+  `(half - FIELD_EDGE_MARGIN)/|component|` minimum
+  (zero-component guarded); 12 gates over the seven rows at ±4200.0 u; the
+  `TRIGGER_RADIUS` circle exactly tangent to its own band (600 + 200 = 800), the
+  nearest gate-to-any-band distance 200.00 u; one beacon per gate at the
+  byte-identical formula, (±4500, 0), inside its link's band;
+  `_spawn_pois`/`_gate_bearing`/`gates()`/`blips()`/`populate` and both forbidden files
+  (`gate.gd`, `sector_registry.gd`) byte-identical to HEAD; the wiring row
+  `test_engine2_wiring.gd:211-221` derives its friendly count from the sector's own
+  `gates()` + `beacons()` and holds unmodified. **0 HIGH / 0 MED / 5 LOW
+  (L216-L220)** — F1 `BEACON_GATE_OFFSET`'s comment still says "outside the ring",
+  F2 the station mockup's "GATE 900 u (… sector.gd:96,581)" label is stale in value
+  and line, F3 the new suite ships with no `.uid`, F4 the suite hard-pins the two
+  forbidden files' pre-wave MD5s (a future legitimate edit trips `ac6`), F5 the
+  `--suite=` flag needs the `--` user-args separator (B1's "did not filter" reading
+  corrected; extends L95). Owner decisions owed: none; F1/F2 are wording/stale-label
+  clean-ups and F4's reversal is deleting two asserts.

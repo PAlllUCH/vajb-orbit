@@ -1026,3 +1026,27 @@ text), L213 (the S14 print drift), L214 (the suite's `.uid`, landed by the
 close-out's editor scan), L215 (`setup` does not reset `_cleave_child`; no
 shipped path re-`setup`s a marked instance). The close-out ran the gate twice on
 fresh scratch stores: **866/0** both, byte-identical.
+
+**S17 (2026-09-25): jump gates to sector edges (coder item 17) — DONE** (gate 866 →
+**877/0**, `test_s17_gate_edges.gd`'s 11 rows; 0 HIGH / 0 MED / 5 LOW L216–L220;
+B1 → R1, no fixer). The owner's ask (2026-09-24, go 2026-09-25): "same gates,
+spawn placement only" — the gate structure moves off the station's 900 u ring to
+the sector border on its link's bearing, pinned by 11 §6. The fix: `_add_gate`
+places at `centre + bearing * _edge_reach(bearing)`, `_edge_reach` the per-axis
+`(5000 − FIELD_EDGE_MARGIN 800)/|component|` minimum (zero-component guarded);
+`GATE_RING_RADIUS` retires with its comment (11 §6's reversal restores it).
+Today's cardinal spine puts all 12 gates at ±4200 u; the 200 u `TRIGGER_RADIUS`
+circle is exactly tangent to its corridor band's inner edge (600 + 200 = 800);
+one beacon per gate at the byte-identical formula, (±4500, 0), inside its link's
+band; `_gate_bearing`, `_spawn_pois`, `gates()`/`blips()`, the minimap mapping
+and `populate` byte-identical; `gate.gd` and `sector_registry.gd` byte-identical
+(md5-pinned). R1 re-measured every AC with its own probe
+(`tools/r1_s17_ac_replay.gd`, 50 rows, `failures=0`), owned CONTRACTS §19's
+placement disposition + §9's expected-count paragraph + §10 v0.29, re-ran the
+mandated `verify --baseline s17_start … --tests` green (`"problems": []`), and
+filed L216 (`BEACON_GATE_OFFSET`'s comment still says "outside the ring"), L217
+(the station mockup's "GATE 900 u" label), L218 (the suite's `.uid`, landed by
+the close-out's editor scan), L219 (the suite hard-pins the two forbidden files'
+MD5s), L220 (`--suite=` needs the `--` user-args separator; extends L95). The
+close-out ran the gate twice on fresh scratch stores: **877/0** both,
+byte-identical.

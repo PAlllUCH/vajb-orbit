@@ -16,14 +16,16 @@ owner ask: vision + reasoning + brainstorming + mockups; the D12-A0 audit
 recap and a live 1920×1080 capture travel inside the slice; design only, the
 implementation follows the owner's ticks). **S16 (fragment re-splits) closed
 and verified 2026-09-25:** gate 859 → **866/0**, 0 HIGH / 0 MED / 4 LOW
-L212–L215, no fixer; recap `MASTER_REPORT.md` §6. The owner's earlier
+L212–L215, no fixer; recap `MASTER_REPORT.md` §6. **S17 (jump gates to
+sector edges, coder item 17) closed and verified 2026-09-25:** gate 866 →
+**877/0**, 0 HIGH / 0 MED / 5 LOW L216–L220, no fixer; recap
+`MASTER_REPORT.md` §6 — the coder lane's queue is now empty. The owner's earlier
 2026-09-25 answers stand (spawn mix kept; the §6/§13/§15 rewording applied on
 delegation; the D12 fix wave and D8 item 9 ditched for the armory rework).
 
-**Current state: the universal gate reads `[SUMMARY] passed=866 failed=0`**
+**Current state: the universal gate reads `[SUMMARY] passed=877 failed=0`**
 (CONTRACTS §9 carries the authority block; hermetic on scratch stores).
-Queued: the two items above — **S17** first in the coder lane (B1 → R1 → F1
-only on HIGH/MED, `slices/S17-gate-edges/S17_prompts.md`), **D13** in the
+Queued: **no live coder item** (S17 closed); **D13** in the
 design lane (A0 → R1 → F1 only on HIGH/MED,
 `slices/D13-armory-rework/D13_prompts.md`). **Parked (owner-gated, not
 queued):** the S12 ore caps/scale rows (the owner's §10 ticks — do not
@@ -41,7 +43,7 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 - `docs/CONTRACTS.md` — pinned interfaces; the merged section pins (§5
   cleaving, §11 ship frames, §12 weapon fit, §13 fitting, §14 runner
   sandbox, §17 armory panel, §18–§23 by wave) are the seams briefs code
-  against; **§9 carries the live gate figure (866/0 at S16's close)** and
+  against; **§9 carries the live gate figure (877/0 at S17's close)** and
   §10 the changelog. Briefs say "code against CONTRACTS.md §n"; review
   waves own updating it.
 - `docs/gameplay/18_engine_spec.md` — the engine contract. §2.1 carries
@@ -51,7 +53,7 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
   passed=<live count> failed=0`, run **twice on fresh scratch stores**
   (`XDG_DATA_HOME=$(mktemp -d)`), byte-identical; CONTRACTS §14's runner
   sandbox law and §9's measured block are the authority. Growth history
-  (437 → 866 across the waves) is `MASTER_REPORT.md` §6.
+  (437 → 877 across the waves) is `MASTER_REPORT.md` §6.
 - `staging/verify_wave.py` — mechanical wave gates: `snapshot` before a
   wave, `verify --baseline <tag> [--forbidden ...] [--expect-reports ...]
   [--tests]` after. Baselines live in `.agents/gen/_state/_wave_state/`

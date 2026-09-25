@@ -92,11 +92,6 @@ const FIELD_SLOT_JITTER := 0.25
 ## owns no Timer. This gate only throttles the read; it is not a second clock.
 const CLOCK_POLL_SECONDS := 1.0
 
-## 11 §2.1's "gate structure near its primary station": the ring is placed on the
-## bearing of the destination's own map edge, this far from the arena centre. No doc
-## gives the radius, so 900 u is this file's placement value (one edit reverses it).
-const GATE_RING_RADIUS := 900.0
-
 ## No doc places a nav beacon beyond "1 per corridor + 1 per gate" (11 §3), so a gate's
 ## beacon stands this far outside the ring (clear of the 200 u trigger) and a corridor's
 ## sits on its band's centre. One edit reverses it.
@@ -586,7 +581,8 @@ func _add_corridor(entry: Dictionary) -> void:
 func _add_gate(centre: Vector2, dest: int) -> void:
 	var gate: Node2D = GateScript.new() as Node2D
 	gate.name = "Gate%d" % dest
-	gate.position = centre + _gate_bearing(dest) * GATE_RING_RADIUS
+	var bearing := _gate_bearing(dest)
+	gate.position = centre + bearing * _edge_reach(bearing)
 	add_child(gate)
 	gate.call(&"setup", dest)
 	gate.call(&"set_origin_sector", Registry.sector_number(sector_id()))
@@ -664,6 +660,22 @@ func _gate_bearing(dest: int) -> Vector2:
 		if edge_centre.length() > 0.0:
 			return edge_centre.normalized()
 	return Vector2.RIGHT
+
+
+## 11 §6's placement law: the distance from the arena centre to the map edge along
+## `bearing`, inset the fields' own `FIELD_EDGE_MARGIN`. Per axis the inset half-extent
+## over the component's magnitude, and the shorter of the two reaches the border first,
+## so a gate lands on the edge, not past a corner. A zero component is guarded (the
+## cardinal east fallback never zeros one, but a future bearing must not divide by zero).
+func _edge_reach(bearing: Vector2) -> float:
+	var half := Registry.SECTOR_SIZE * 0.5
+	var limit := half - Vector2(FIELD_EDGE_MARGIN, FIELD_EDGE_MARGIN)
+	var reach := INF
+	if absf(bearing.x) > 0.0:
+		reach = minf(reach, limit.x / absf(bearing.x))
+	if absf(bearing.y) > 0.0:
+		reach = minf(reach, limit.y / absf(bearing.y))
+	return reach if reach < INF else 0.0
 
 
 ## Re-populating a sector (a transition) drops the previous contents immediately:
