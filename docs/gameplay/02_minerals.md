@@ -135,10 +135,97 @@ per asteroid:
    standard richness (v1: 6 ore units for T1 rocks, 5 for T2, 4 for T3,
    3 for T4) and `variance` is uniform 0.5–1.5. An average T1 asteroid
    thus carries 6 ore; a rich one 7–9. A full Cutter hold (40 units)
-   takes ≈ 7 asteroids in a T1 field.
+   takes ≈ 7 asteroids in a T1 field. **Superseded by §5.1 (2026-09-25)** —
+   true only while every size class rolls the tier base; reversal is that
+   amendment's.
 
 Sector assignments are data (a per-sector dictionary), so a later map system
 can re-balance without touching the roll code.
+
+### 5.1 Amendment 2026-09-25 — ore is a budget, and the rocks get bigger
+
+Two owner asks from the same ruling: shooting rocks must stay possible but
+never out-earn mining (`01 §5.6` carries the invariant and the measured why),
+and **"asteroids could be bigger with more yield, in bigger clusters, maybe
+even some asteroid fields?"**
+
+**Rule A — no method mints ore.** A rock's ore is realised by extraction and by
+nothing else. Guns still break rocks (`GUN_CHIP_RATE` 0.10, 18_engine_spec
+§6/§17, untouched) but a gun-cracked rock *realises* at most
+`GUN_BURST_SHARE` = **0.10** (proposed) of its **own original** yield, and only
+through the Small-end burst. Cleaving **redistributes** and never re-rolls: a
+fragment's ore comes from the parent's own budget, not from a fresh
+`TIER_BASE_YIELD` roll, so `Σ` ore in a field is conserved.
+
+The fragment's half of that budget is a real choice, because a rock that cracks
+has already given up its extractable ore (mined out, or chipped out by guns) —
+so a naive "fragments inherit what is left" hands them nothing:
+
+- **`FRAGMENT_CORE_SHARE` 0.0 (proposed default):** fragments are physical
+  debris — they collide, block shots, and can be shot — and carry no ore.
+  Simplest rule; the owner's 2026-09-21 "they should explode, 2-5 fragments"
+  is untouched, because that ruling is about the break, not about a payout.
+- **`FRAGMENT_CORE_SHARE` 0.25 (proposed alternative):** a quarter of the
+  parent's own yield is set aside at setup and never directly extractable, so
+  the crack hands it to the fragments and the field's budget simply splits
+  between "mine before the break" and "mine the pieces". Mining still realises
+  100 % of a rock's `extractable` units (01 §5.6 holds); the reserve is what
+  pays for the shatter, whichever route broke it.
+
+Reversal: `GUN_BURST_SHARE` → 1.0, `FRAGMENT_CORE_SHARE` → "inherit the parent's
+remaining yield, i.e. 0", and the fragment re-roll restored (`CONTRACTS.md` §5's
+"yield re-rolled through the 02 §5 path", line 350; §14's fragment-burst bullet
+is the deployment half and is not in question) — the state a fully worked T1
+Large rock turns into ≈100 ore units from its own 6.
+
+**Rule B — scale.** Direction, every number **proposed** and reversible:
+
+| Lever | Shipped | Proposed | Why |
+|---|---|---|---|
+| yield by size class | one flat tier base for every size (`TIER_BASE_YIELD` 6/5/4/3) | `SIZE_YIELD_MULT` S 1, M 2, L 4 **on top of** the tier base (T1: ≈6 / ≈12 / ≈24 units) | a Large becomes a prize worth flying to instead of a same-stat target |
+| clustering | rocks scattered uniformly over the field | 2-4 **veins** of 3-9 rocks sharing one mineral and tier, placed as one formation | a field reads as geography; a vein is one sitting's work and lets a miner plan a run |
+| field size | `FIELD_ROCKS_MAX` 12 rocks, uniform scatter | per-vein 3-9 × 2-4 veins = 6-36 rocks, a field budget of ≈40-860 units in T1 (average ≈200) | a field stops being a 70-unit puddle; 02 §8's respawn timer then guards something worth guarding. Careful: at 3-8 rocks per hold that is 1-12 holds per field (≈5 typical), so the field count, the hold ladder and §8's respawn/diminishing rules move together |
+| where | one look row per rock | unchanged size roll and look; `asteroid.gd`'s "the size class is a look and never a stat" becomes **"a look and the yield class, never a throughput stat"** | §5's own rule is kept in the half that matters: a Small and a Large both mine one unit per `MINE_CYCLE` (1.2 s). Size gates *total* ore, never the rate |
+
+**Guard rail, and the open question it leaves.** Size is the *spread*, the
+field's nominal rock is the *scale*. Two rules, both derivable:
+
+1. **A hold is 3-8 rocks** of the field's own tier and hull (01 §5.1's own
+   "≈7 asteroids" is the small end of that). With `SIZE_YIELD_MULT` S 1 / M 2 /
+   L 4 on T1's base 6, a Vanguard hold of 40 is 24 + 12 + 6 = 42 — three rocks
+   if the player takes what it meets, ~7 if it works Smalls. Deep tiers carry
+   the bigger holds (Delver 55, Mule 120) against bigger rocks.
+2. **No single rock exceeds ~⅓ of the hold that carries it**, so a rock is
+   never the whole trip.
+
+The real open question is the tier curve, not the size spread: T4 ore pays
+300-600 CR per unit, so even the small end (base 3) is 900-1 800 CR for a
+*Small*. `TIER_BASE_YIELD` (6/5/4/3) was written when every rock was the same
+size and only the ore's value per unit carried progression; once size spreads
+the count, the base yields and 02 §2's ore values have to be re-derived
+**together**, or the deep fields pay a session's income per rock. The cheap
+variant, if the owner prefers it, is to gate the big sizes to the deeper tiers
+instead of scaling every tier — T1/T2 keep today's yields (a fresh player still
+works 6-9-unit rocks and a 40-unit hold is still ~7 rocks, which is exactly
+01 §5.1's session), and the big rocks arrive with the hulls that can carry them.
+
+**Co-design, not optional:** the numbers above are a *pack* — the size spread,
+the field count, §8's respawn/diminishing rules and the hold ladder (08 §2) move
+or fail together. A size spread shipped without the guard rail fills a hold from
+one rock (today's cargo symptom, made worse); a field growth shipped without §8
+turns one field into a multi-session farm.
+
+Reversal: `SIZE_YIELD_MULT` all 1, one rock per vein (i.e. shipped scatter),
+`FIELD_ROCKS_MAX` 12, 08 §2's holds unchanged, and this subsection's Rule A
+reverted by its own reversal line.
+
+Owner ticks: Rule A's `GUN_BURST_SHARE` and the fragment-core choice
+(0.0 vs 0.25); the four Rule B rows, or the gating-the-deep-tiers variant
+instead; the ⅓-of-hold rule; whether veins
+are placed by the sector generator or authored per sector (11's map is the
+natural owner); `18_engine_spec.md` §6/§13/§17's wording and `CONTRACTS.md`
+§5's fragment-yield and gun-work sentences (lines 350 and 374), which this doc
+cannot change.
 
 ## 6. Icons
 
@@ -187,8 +274,19 @@ Asteroid fields respawn on a timer per field:
 ## 9. Explicitly out of scope
 
 - Prospecting/scan mini-game for hidden veins (later phase, new document).
+  **Not** §5.1's veins: those are generated formations a player can see and fly
+  to, with no scan mechanic and no hidden information.
 - Asteroid combat (shooting rocks to break them faster) — the mining laser
-  is the only extraction tool in v1.
+  is the only extraction tool in v1. **Amended 2026-09-25 (§5.1 Rule A):**
+  the "out of scope" half is retired — shooting rocks is **in scope** (it breaks
+  them, and it stays useful: clearing a lane, breaking cover, stripping a rock
+  under fire) — but it realises at most `GUN_BURST_SHARE` of a rock's own yield,
+  so the mining laser remains the only *extraction* tool and mining is always
+  the more profitable route. This bullet and 18_engine_spec §6/§17 ("regular
+  weapons can also break rocks, at 10 % efficiency") disagreed; the owner's
+  2026-09-25 ruling resolves it this way. Reversal: delete the "Amended"
+  clause above (the bullet then reads as shipped again) and apply §5.1 Rule A's
+  own reversal.
 - Player-owned refineries or storage silos — the station refinery (04) is
   the only processing node.
 - Buying minerals from the exchange in v1 — the exchange buys; crafting

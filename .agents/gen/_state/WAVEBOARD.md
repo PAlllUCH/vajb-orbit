@@ -59,7 +59,13 @@ closed by absorption into §23.5.** **Owner ask 2026-09-24 — jump
 gates to sector edges (same gates, spawn placement only) — is the coder lane's next
 free item (17)**: brief at its dispatch-prep; if gate spawn
 lives in `sector.gd` it runs after D11's close-out (D11 holds that file through
-C1). Beyond it: **slice 4's
+C1). **Owner ruling 2026-09-25 — "it should be able to shoot asteroids but mining should
+always be more profitable", plus bigger/clustered/fielded asteroids — landed as
+`01 §5.6` + `02 §5.1` (numbers PROPOSED, owner-tick-gated) and is the coder lane's
+item 19 (`slices/S12-ore-budget/`, brief + prompts written)**: read-only K0 probes that
+measure the field's ore budget and the mining-vs-gunning rate before any cap is coded; it
+touches `vajb-orbit/tests/probe_s12_*.gd` only, so it is disjoint from D11 and can run
+beside it. Beyond it: **slice 4's
 remainder** — quadrants/directional armour (18 §4.5 + ruling 23, deferred from S6) and
 bosses/arena hooks (14 §5, blocked on the P4 contract type and boss-hull art) — **not yet
 briefed**. **S8's owner gates:** O1/O2's FITTING-drag UX call (port / point at ARMORY /

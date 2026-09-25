@@ -158,6 +158,49 @@ from saturation. The two rules that keep grinding honest:
 2. **The commission floor (K4).** Every sale costs something, so raw income
    always overstates real income.
 
+### 5.6 Rock income invariant (owner ruling 2026-09-25)
+
+Owner, verbatim: **"I want it to be able to shoot asteroids but mining should
+always be more profitable."** Shooting rocks stays allowed; it may never be the
+income route. The invariant, in the form a test can assert:
+
+1. **Per rock.** Mining realises 100 % of a rock's `yield_units`; shooting
+   realises at most `GUN_BURST_SHARE` of that rock's **own original** yield, so
+   mining a rock is worth at least 10x shooting it.
+2. **Per shot, not per second.** More firepower buys *time*, never income: a
+   3-cannon rack and a full 28-barrel fit realise the same ore from the same
+   rock. This is what keeps 18_engine_spec §6's 10 % chip rate safe; the caps
+   themselves are 02 §5.1's 2026-09-25 amendment.
+3. **Per field.** A field is a **budget, not a faucet**: cleaving redistributes a
+   rock's own ore and never re-rolls it, so `Σ` ore in a field is conserved (02
+   §5.1 Rule A carries the fragment-side choice, `FRAGMENT_CORE_SHARE`). §5.5
+   rule 1 above (the ×0.7 window) only holds if this is true — a re-rolled
+   fragment yield multiplies a field's ore by ≈16.75x per fully worked T1 Large
+   rock (1 + 3.5 + 12.25 rocks), which no respawn timer can answer.
+4. **Per session.** Given 1-3, session income is set by how much the player
+   *mines*. Shooting is the fast, lossy route: clear a lane, break cover, strip
+   a rock under fire, take a small dross and leave.
+
+**Amendment 2026-09-25 (rock income):** shooting rocks is **in scope** (it
+breaks them; `GUN_CHIP_RATE` 0.10 is untouched). What changes is what it
+*realises*: at most `GUN_BURST_SHARE` = **0.10** of the rock's own original
+yield, delivered through the Small-end burst only (proposed). Reversal:
+`GUN_BURST_SHARE` → 1.0, i.e. the pre-2026-09-25 behaviour, under which a fully
+worked T1 Large realises ≈100 ore units instead of its own 6.
+
+**Why, measured** (2026-09-25 playthrough; evidence in
+`.agents/gen/session_2026-09-25_findings.md` §3 and the arithmetic it cites):
+`GUN_CHIP_RATE` 0.10 puts a 3-cannon rack at ≈13.5 ore-units/s of depletion
+against `MINE_CYCLE`'s 0.83 units/s; `Asteroid.cleaves()` keys off `_bore_ore`
+(the roll at setup, not the ore left); every Small crack bursts a flat 1-2
+pickups; and each fragment re-rolls a full 02 §5 yield. So the fastest ore route
+is shooting, at ≈2.5 units/s delivered, and a 40-unit hold fills in seconds.
+
+Owner ticks: the `GUN_BURST_SHARE` value; 02 §5.1's fragment-share rule and its
+scale rows; `18_engine_spec.md` §6/§13/§17's wording (owner-locked — this doc
+cannot change it); `CONTRACTS.md` §5's "yield re-rolled through the 02 §5
+path" (line 350), and its "Gun work = 10 % efficiency" (line 374).
+
 ## 6. Repairs — the new sink (K2)
 
 The station gains a REPAIRS panel (new module rail entry in STATION_HUB

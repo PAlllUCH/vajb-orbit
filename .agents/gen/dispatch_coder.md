@@ -23,6 +23,7 @@ with any parallel lane, WAVEBOARD, wave-boundary commit).
 | 15 | **Flight-feel retune** (owner O4/O5) — **folded into item 18** | — | — | **TICKED 2026-09-24.** The owner answered "go ahead with all": T1 `COAST_TIME_MULT` 2.5 and T2 new `ANGULAR_DAMP_MULT` 0.5 are implemented by item 18's **S11-B4**; **T4 is superseded** by the one-vector decay; **T3 is HELD** (§22's row contradicts itself — notice with the owner). |
 | 17 | **Jump gates to sector edges** (owner ask 2026-09-24: same gates, spawn placement only) | not opened | — | **QUEUED — brief at dispatch-prep.** Runs after item 18; if the gate spawn seam is `game/sector.gd`, it runs after D11's close-out (D11 holds that file through C1). Editor-only change otherwise. |
 | 18 | **Station legibility, space gunnery, one-vector inertia** (owner ask 2026-09-24: hovered-item description panel, credits in the space scene, near-infinite kinetic/beam range, the two-stop inertia) — pin **CONTRACTS §23** | `slices/S11-legibility-gunnery-feel/` | `S11_BRIEF.md` / `S11_prompts.md` | **DONE 2026-09-24** — gate 775 → **807/0**, 0 HIGH / 0 MED / 6 LOW (L178–L183). Six builders (B1 inspector, B2 prose + HUD credits, B3 ranges, B4 one-vector inertia, B5 test rows, B6 describe + titles) + R1; the readability half is the design lane's **D12-A0** audit. |
+| 19 | **Ore budget — the two K0 probes** (owner ruling 2026-09-25: shooting rocks stays possible but mining must always be more profitable; asteroids could be bigger, in clusters and fields) — docs already amended, these are the numbers | `slices/S12-ore-budget/` | `S12_BRIEF.md` / `S12_prompts.md` | **QUEUED — ready to dispatch.** Read-only: two probes measuring the field's ore budget and the mining-vs-gunning rate, plus R1's byte-identical replay. Touches `vajb-orbit/tests/probe_s12_*.gd` only, so it is disjoint from D11's `game/sector.gd` and may run beside it. **No production file and no gate row moves** (gate stays 807/0); the caps and the scale rows wait on the owner ticks the numbers feed. |
 
 Beyond the queue: **slice 4's remainder** (quadrants/directional armour — 18
 §4.5 + ruling 23; bosses/arena — 14 §5, blocked on P4 contracts + boss art).
@@ -41,12 +42,12 @@ slice's `_archive/` (S8's, S10's and S11's still in their slice folders).
 
 ## Handoff (live)
 
-**Item 17** is the queue: jump gates to sector edges (same gates, spawn placement only).
-It needs its own five-piece at dispatch-prep, and if the gate spawn seam is
-`game/sector.gd` it goes after **D11's** close-out (D11 holds that file through C1 and is
-mid-flight — its assets and reports are landing now). Slice 4's remainder (quadrants and
-directional armour, bosses/arena) still needs its own five-piece. The coder lane has nothing
-else open.
+**Item 19** is the queue: **S12 ore budget**, the two K0 probes (brief and prompts are
+written; docs amended 2026-09-25 as `01 §5.6` + `02 §5.1`). It matches no file any other
+lane holds, so it can run now, in parallel with D11 if the orchestrator wants.
+**Item 17** (jump gates to sector edges) still waits on D11's close-out if its seam is
+`game/sector.gd`; it needs its own five-piece at dispatch-prep. Slice 4's remainder
+(quadrants and directional armour, bosses/arena) still needs its own five-piece.
 
 Beyond the queue: **slice 4's remainder** (quadrants/directional armour — 18
 §4.5 + ruling 23; bosses/arena — 14 §5, blocked on P4 contracts + boss art).
