@@ -35,7 +35,7 @@ block at the bottom. Model: `opencode-go/deepseek-v4.1-flash` (owner order
 | D-slice | Item | What | Gate |
 |---|---|---|---|
 | D8 | 9 | **Station composition pass** (QA): the right-third dead zones — Armory's ~520 px void + clipped third row, Fitting's grid-left void, Repairs/Launch 440 px spacers | OWNER MOCKUP GATE first; brief at dispatch-prep |
-| D8 | 10 | **In-flight HUD visibility** (QA): empty top-left while all state sits bottom-left; minimap legend + unreadable 1080p glyphs | PICKS 2026-09-24: top-left content + minimap legend + 1080p glyphs; brief at dispatch-prep |
+| D8 | 10 | **In-flight HUD visibility** (QA): empty top-left while all state sits bottom-left; minimap legend + unreadable 1080p glyphs | PICKS 2026-09-24: top-left content + minimap legend + 1080p glyphs | **IN FLIGHT 2026-09-25** — brief at `slices/D8-hud-visibility/`; B1 → R1 → F1 on HIGH/MED; runs parallel with coder items 21/22 on disjoint sets (`ui/hud/` only) |
 | D9 | 11 | **Player-hull visibility** (QA): dark hull ~40 px at flight zoom — rim light / brighter tint / scale bump | PICK 2026-09-24: scale bump only (target ~56 px proposed); brief at dispatch-prep |
 | D10 | 12 | **Polish batch** (QA): the status close-X, the launch arm countdown (M6), auction hull thumbnails, mining-beam visibility | PICKS 2026-09-24: all four in; brief at dispatch-prep |
 | D3 | 1 | **Chrome re-cut** — button/slot plate family (the 1041×1087-cell-stretched defect class) | VERDICT 2026-09-24 GO on `staging/phase_f/_preview/review_slots.png`; brief at dispatch-prep |
@@ -80,9 +80,10 @@ family.
 
 ## Handoff (live — paste as one block)
 
-**No live handoff — the owner picks the next designer item, and its five-piece
-lands at dispatch-prep.** Candidates in the queue: D8 item 9 (blocked on its
-mockup gate), D8 item 10 / D9 item 11 / D10 item 12 (all picked 2026-09-24), the
-**D12 graphics fix wave** (the four readability findings — unbriefed;
-`ui/station/armory_panel.gd` has been free since S11 closed), D3 item 1 (GO on
-`review_slots.png`), D3 2a/2b, D4 3/4.
+**D8 item 10 (in-flight HUD visibility) is live 2026-09-25** (`slices/D8-hud-visibility/`),
+running beside coder items 21/22 on disjoint sets. Candidates still
+open: D8 item 9 (blocked on its
+mockup gate), D9 item 11 / D10 item 12 (both wait on the coder waves' `game/`
+and `ui/station/` sets), the **D12 graphics fix wave** (waits on S15's armory
+set), D3 item 1 (GO on `review_slots.png`), D3 2a/2b, D4 3/4. Say the item and
+its five-piece lands at dispatch-prep.
