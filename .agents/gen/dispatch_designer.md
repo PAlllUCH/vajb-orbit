@@ -22,8 +22,9 @@ prefix, nor one `staging/` driver). One live session per workspace.
 
 ## Queue
 
-No live designer item — **item 14 (D13) closed 2026-09-25** (design done and
-owner-ticked; its implementation is coder item 24, `dispatch_coder.md`).
+| # | Wave | Item | What | Status |
+|---|---|---|---|---|
+| 15 | D14 | ARMORY chrome composition — brainstorm + Amendment 5 (owner 2026-09-26) | The pane must read as clean as AUCTION/SHIPYARD: per-surface chrome pinned from the art's own cut size, and the owner's "anchors + relative positioning" rule written as mechanism so two workers cannot diverge. Owner's words, the sibling idiom (`file:line`) and the measured defect table: `slices/D14-armory-chrome-composition/D14_BRIEF.md`; captures in its `_evidence/`. Design only (docs + mockup); shares no file with the coder lane's S19 wave. | **live** |
 
 ## Parked (owner-gated — not queued; say the item and its five-piece lands)
 
@@ -51,6 +52,12 @@ generate → stage → **review sheet → owner approval** → ship → reimport
 
 ## Handoff (live)
 
-**No live designer item** — D13 (item 14) is closed and owner-ticked. The
-coder lane's live item is **item 24 = S18 armory rework (implementation)**
-(`dispatch_coder.md`, briefed on D13's ticks). Everything else is parked above.
+**Item 15 = D14 ARMORY chrome composition — brainstorm first, then Amendment 5.**
+The owner's ask (verbatim) and the measured defects are in
+`.agents/gen/slices/D14-armory-chrome-composition/D14_BRIEF.md`; work Q1–Q6 with
+him, then draft `UI_SPEC.md` §3.10 Amendment 5 (per-surface chrome + the
+containers/anchors law) and the revised mockup band, and bring back a tick list.
+Design only — no code wave until he ticks. The coder lane's live item is
+**item 26 = S19 directional armour** (`dispatch_coder.md`); it holds
+`vajb-orbit/tests/` + `vajb-orbit/tools/`, so the armory composition's
+implementation wave is queued behind it.
