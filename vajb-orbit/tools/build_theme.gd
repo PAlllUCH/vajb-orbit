@@ -71,6 +71,25 @@ const TOKENS: Dictionary = {
 	&"accent_danger_bright": "#e8622a",
 	&"menu_glow": "#e8703a",
 	&"void_fade": "#07090d",
+	## STATION_HUB section 5.10's rarity ramp (added with S3): the AUCTION, FITTING and the
+	## shipyard read them. They shipped inside `vajb_theme.tres` without ever entering this
+	## builder, so a plain regeneration dropped them (found and fixed by S20, reported).
+	&"rarity_common": "#c9d1dc",
+	&"rarity_magic": "#565c63",
+	&"rarity_rare": "#e8703a",
+	## The ARMORY's own palette (UI_SPEC section 3.10 Amendment 4, A4.3): the D13
+	## mockup's tones, resolved by `ArmoryStyle` so no hex literal lives outside this
+	## file. `armory_chip_danger_bg` is the mockup's 78,32,18 darkened to clear 4.5:1
+	## for the `OVER CAP` label in accent_danger_bright (measured 4.86:1; L227 closes).
+	&"armory_caption": "#acb2ba",
+	&"armory_caption_void": "#969da5",
+	&"armory_bay_bg": "#1e2229",
+	&"armory_cell_bg": "#12151a",
+	&"armory_ledge_bg": "#161a1f",
+	&"armory_item_bg": "#262b32",
+	&"armory_chip_bg": "#2e333a",
+	&"armory_chip_danger_bg": "#381509",
+	&"armory_fit_line": "#c8461b",
 }
 
 const TOKEN_ALPHA: Dictionary = {

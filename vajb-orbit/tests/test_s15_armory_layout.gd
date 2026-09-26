@@ -30,6 +30,8 @@ const FitData := preload("res://game/ship_fit.gd")
 const WeaponData := preload("res://game/weapons.gd")
 
 const CONSOLE_PATH := "res://assets/ui/ui_armory_console.png"
+## The theme's own frame texture the pane's A4.1 chrome resolves to (S20).
+const CONSOLE_PATH_THEME_FRAME := "res://assets/ui/ui_panel_frame.png"
 const PROFILE_PATH := "user://test_s15_armory_layout.cfg"
 
 ## UI_SPEC section 3.10 Amendment 3's own numbers (the D13 rework, wave S18): the pinned
@@ -210,12 +212,23 @@ func test_the_console_and_the_bays_are_the_derived_geometry() -> void:
 		"and it derives from the host rect (P6)"
 	)
 	assert_eq(panel.call(&"block_size"), CONSOLE, "the pane draws that very console")
+	## S20's A4.1 retires the scripted master from the pane: it still ships on disk (at the
+	## pinned 2x size), but the plate's texture is cleared at build and the chrome is the
+	## theme's own ui_panel_frame nine-patch.
 	var master: Vector2 = ResourceLoader.load(CONSOLE_PATH).get_size()
-	assert_eq(master, CONSOLE_MASTER, "the scripted master is 2x the console")
+	assert_eq(master, CONSOLE_MASTER, "the scripted master still ships at 2x the console")
 	var plate := panel.get_node("%ConsolePlate") as NinePatchRect
-	assert_true(plate != null, "the plate is a nine-slice")
+	assert_true(plate != null, "the console floor node stays in the scene")
+	assert_true(plate.texture == null, "but the master is unwired from it (A4.1)")
 	assert_eq(plate.size, CONSOLE, "drawn at the console rect (actual %s)" % str(plate.size))
-	assert_eq(plate.patch_margin_left, 64, "with the bevel and bolts inside a 64 master px patch")
+	var frame := panel.get_theme_stylebox(&"panel", &"PanelRaised") as StyleBoxTexture
+	assert_true(frame != null, "the pane's chrome is the theme's panel frame")
+	if frame != null:
+		assert_eq(
+			String(frame.texture.resource_path), CONSOLE_PATH_THEME_FRAME,
+			"the ui_panel_frame nine-patch"
+		)
+		assert_eq(frame.texture_margin_left, 32.0, "at the pinned 32 px patch margin")
 	var bays: Array = panel.call(&"bay_rects")
 	assert_eq(bays.size(), RACK_COUNT, "five bays across the band")
 	for index in bays.size():

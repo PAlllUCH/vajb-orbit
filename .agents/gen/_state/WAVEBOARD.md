@@ -6,17 +6,20 @@
 
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-25 clear-outs (owner asks):** every closed slice folder moved to the system trash (last git tree carrying them: `7a081ef`), old session reports live in `_state/_archive/`, and the two dispatch files were purged to live-items-only (2026-09-25 ter). Citation paths into purged trees name historical files.
 
-**Updated 2026-09-26 (S20 queue): the owner's S18 playtest feedback becomes
-coder item 25 — ARMORY chrome unification + the hover reflow fix.** The owner
-likes the D13 layout and rules it **frozen**; the pane's §3.9 cockpit plates
-retire for the **§5.3 chrome family** (`ui_panel_frame`, `ui_slot_weapon_*`,
-`ui_button_plate_*`, theme Tokens; `ui_armory_console` unwired, **L227**
-closes) and the station shell's Inspector reserves constant height (the "bottom
-description panel gets bigger / all shifts up" bug). Pin:
-`UI_SPEC.md` §3.10 **Amendment 4** (A4.1–A4.5; owner tick list T1–T6 at
-handoff, T6 = the `▲ OVER CAP` vs `▲ AT CAP` wording fork). Five-piece:
-`slices/S20-armory-chrome-unify/`. **S19 moves to coder item 26** (the two
-collide on `vajb-orbit/tests/` + `vajb-orbit/tools/`, so they serialize).
+**Updated 2026-09-26 (S20, closed): the owner's S18 playtest feedback became
+coder item 25 — ARMORY chrome unification + the hover reflow fix — and it is
+done.** The D13 layout stayed frozen; the pane's §3.9 cockpit plates retired for
+the **§5.3 chrome family** (`ui_panel_frame` bays/wells/rows, `ui_slot_weapon_*`
+cells, `StationButton` plates, `Tokens/armory_*` palette — hex only in
+`tools/build_theme.gd`), `ui_armory_console` is unwired on disk and gone from the
+pane scene (**L227 closed**, `OVER CAP` 4.855:1), and the station shell's
+Inspector reserves a constant height (A4.4 — the "description panel gets bigger /
+all shifts up" bug). Pin: `UI_SPEC.md` §3.10 **Amendment 4** (A4.1–A4.5) with the
+ticks recorded there (**T1–T4 as briefed, T5 keep, T6 open** = the bay chip's
+`▲ OVER CAP` vs `▲ AT CAP` wording — the owner's word owed). Five-piece:
+`slices/S20-armory-chrome-unify/`; recap `MASTER_REPORT.md` §6.
+**S19 stays coder item 26** (the two collide on `vajb-orbit/tests/` +
+`vajb-orbit/tools/`, so they serialize).
 
 **Updated 2026-09-26 (ter): S19 (directional armour & breach malfunctions)
 queued as coder item 26** — the owner's direction is gameplay implementation
@@ -25,7 +28,8 @@ routes hits into four armour pools, stern ×1.6, breach malfunctions (RCS
 drift / engine flicker / clipped turn), repairs + readouts. Pin:
 `09_ship_slots_modules.md` §3.3's 2026-09-26 amendment (P1–P8 PROPOSED with
 reversals, tick list T1–T7 — balance deferred, calibrate later). Five-piece:
-`slices/S19-directional-armour/`. Gate re-measured this session: **887/0**.
+`slices/S19-directional-armour/`. Gate re-measured this session: **895/0**
+(S20 closed 2026-09-26; the S19 wave starts on 895).
 The developer session closed its two docs debts: the S18 MED (UI_SPEC §3.10
 A3 cell **117×52**) and **L212** (02 §5.2 ter "exactly" → "at most"; rows
 stand as history). Roadmap after S19: nebula clouds (ruling 25) → wreck hulks
@@ -88,14 +92,19 @@ sector edges, coder item 17) closed and verified 2026-09-25:** gate 866 →
 2026-09-25 answers stand (spawn mix kept; the §6/§13/§15 rewording applied on
 delegation; the D12 fix wave and D8 item 9 ditched for the armory rework).
 
-**Current state: the universal gate reads `[SUMMARY] passed=887 failed=0`**
+**Current state: the universal gate reads `[SUMMARY] passed=895 failed=0`**
 (CONTRACTS §9 carries the authority block; hermetic on scratch stores).
-Queued: **coder item 25 = S20 ARMORY chrome unification + the hover reflow
-fix** (`slices/S20-armory-chrome-unify/`; B1 → R1 → F1 on HIGH/MED) and
-**coder item 26 = S19 directional armour & breach malfunctions**
-(`slices/S19-directional-armour/`; same run order) — the two serialize on
-`vajb-orbit/tests/` + `vajb-orbit/tools/`, so S20 (the owner's live feedback)
-runs first.
+**S20 (coder item 25) closed 2026-09-26:** the ARMORY wears the §5.3 chrome
+family, the shell inspector holds a constant height, `OVER CAP` measures
+**4.855:1** (**L227 closed**); gate **887 → 895/0** twice hermetic
+(`test_s20_chrome_unify.gd` 7 rows + `test_s11_inspector.gd` +1); 2 HIGH /
+1 MED / 4 LOW (**L234–L237**, the last a pre-existing dead guard) — **the MED was fixed by S20-F1** (the pane scene dropped the
+retired master's ext_resource) and the **two HIGHs are bucket-2 pin-list items,
+L238–L239** (brief §3's tests-that-move list missing two `test_d7_armory.gd`
+rows; forced by A4.3, so a list amendment, never a revert — no fixer may take
+them); recap `MASTER_REPORT.md` §6.
+Queued: **coder item 26 = S19 directional armour & breach malfunctions**
+(`slices/S19-directional-armour/`; B1 → R1 → F1 on HIGH/MED).
 **no live designer item** (D13 closed; the owner's armory polish rides his own
 designer session). **Parked (owner-gated, not
 queued):** the S12 ore caps/scale rows (the owner's §10 ticks — do not
@@ -114,8 +123,7 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 - `docs/CONTRACTS.md` — pinned interfaces; the merged section pins (§5
   cleaving, §11 ship frames, §12 weapon fit, §13 fitting, §14 runner
   sandbox, §17 armory panel, §18–§23 by wave) are the seams briefs code
-  against; **§9 carries the live gate figure (887/0 after S18's close + owner
-  fix)** and
+  against; **§9 carries the live gate figure (895/0 after S20's close)** and
   §10 the changelog. Briefs say "code against CONTRACTS.md §n"; review
   waves own updating it.
 - `docs/gameplay/18_engine_spec.md` — the engine contract. §2.1 carries
@@ -125,7 +133,7 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
   passed=<live count> failed=0`, run **twice on fresh scratch stores**
   (`XDG_DATA_HOME=$(mktemp -d)`), byte-identical; CONTRACTS §14's runner
   sandbox law and §9's measured block are the authority. Growth history
-  (437 → 887 across the waves) is `MASTER_REPORT.md` §6.
+  (437 → 895 across the waves) is `MASTER_REPORT.md` §6.
 - `staging/verify_wave.py` — mechanical wave gates: `snapshot` before a
   wave, `verify --baseline <tag> [--forbidden ...] [--expect-reports ...]
   [--tests]` after. Baselines live in `.agents/gen/_state/_wave_state/`

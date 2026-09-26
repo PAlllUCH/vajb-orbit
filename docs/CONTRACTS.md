@@ -27,30 +27,31 @@ later request; one section costs ~2-3k.
 
 | Section | Topic | Lines |
 |---|---|---|
-| §1 | Input map (project settings) | L58–L96 |
-| §2 | ShipStats | L97–L117 |
-| §3 | ShipFit | L118–L135 |
-| §4 | PlayerShip | L136–L316 |
-| §5 | Combat/mining entities (slice 1 scope) | L317–L401 |
-| §6 | Sector / SectorRegistry | L402–L427 |
-| §7 | HUD — frozen API + wave-1 additions | L428–L493 |
-| §8 | Economy / state seams | L494–L537 |
-| §8.1 | Slice 0 — physics & fuel (pinned additions, 2026-09-21) | L538–L620 |
-| §8.2 | Slice 2 — fight (pinned additions, 2026-09-21) | L621–L837 |
-| §9 | Universal test gate | L838–L1088 |
-| §11 | P2 ship frames (2026-09-21) | L1089–L1284 |
-| §12 | P2-B1 weapon fit (2026-09-22) | L1285–L1342 |
-| §13 | P2-B proper fitting (2026-09-22) | L1343–L1464 |
-| §14 | S2.6 truth-and-feel (2026-09-22) | L1465–L1527 |
-| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1528–L1623 |
-| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L1624–L1796 |
-| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L1797–L1875 |
-| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L1876–L1937 |
-| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L1938–L2149 |
-| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2150–L2426 |
-| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2427–L2512 |
-| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L2513–L2554 |
-| §10 | Changelog | L2555–L3301 |
+| §1 | Input map (project settings) | L59–L97 |
+| §2 | ShipStats | L98–L118 |
+| §3 | ShipFit | L119–L136 |
+| §4 | PlayerShip | L137–L317 |
+| §5 | Combat/mining entities (slice 1 scope) | L318–L414 |
+| §6 | Sector / SectorRegistry | L415–L440 |
+| §7 | HUD — frozen API + wave-1 additions | L441–L506 |
+| §8 | Economy / state seams | L507–L550 |
+| §8.1 | Slice 0 — physics & fuel (pinned additions, 2026-09-21) | L551–L633 |
+| §8.2 | Slice 2 — fight (pinned additions, 2026-09-21) | L634–L850 |
+| §9 | Universal test gate | L851–L1386 |
+| §11 | P2 ship frames (2026-09-21) | L1387–L1582 |
+| §12 | P2-B1 weapon fit (2026-09-22) | L1583–L1640 |
+| §13 | P2-B proper fitting (2026-09-22) | L1641–L1762 |
+| §14 | S2.6 truth-and-feel (2026-09-22) | L1763–L1833 |
+| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1834–L1929 |
+| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L1930–L2105 |
+| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L2106–L2184 |
+| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L2185–L2246 |
+| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L2247–L2466 |
+| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2467–L2743 |
+| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2744–L2927 |
+| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L2928–L2976 |
+| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L2977–L3145 |
+| §10 | Changelog | L3146–L4239 |
 
 <!-- section-index:end -->
 
@@ -855,6 +856,35 @@ actually fired.
 # run it as: `source ~/.profile && godot --headless --path vajb-orbit \
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
+
+Expected (S20, 2026-09-26): **`[SUMMARY] passed=895 failed=0`**, exit 0. S20-R1 measured
+**895** twice on two fresh scratch stores (`XDG_DATA_HOME=$(mktemp -d)`, exit 0, identical
+counts, zero `failed`) and re-derived the baseline **887** (76 suites) by counting
+`func test_` in the `s20_start` tree; **no suite lost a row** (only
+`test_s11_inspector.gd` moved, 18 → 19). **Growth `887 → 895`** = S20's
+`test_s20_chrome_unify.gd` **7** rows (AC1–AC5) + `test_s11_inspector.gd` **+1** (A4.4).
+The wave's pin is **UI_SPEC §3.10 Amendment 4** (A4.1–A4.5, owner ticks T1–T6): the ARMORY
+pane's surfaces wear the §5.3 `ui_panel_frame` / `ui_slot_weapon_*` / `StationButton`
+chrome, `ArmoryStyle`'s palette resolves from `Tokens/armory_*` (hex only in
+`tools/build_theme.gd`; L227 closes at **4.855:1** for `OVER CAP`), and the shell's
+`Inspector` reserves the constant §23.1 height. Amendment 3's geometry pins re-measured
+exact at the 1392×610 host (console 1360×516 at (16,68), bays 260×192 on 7, cells 117×52 on
+6, ledge 240×34 at bay-y 150, wells 648×220, items 320×68 on 8, zero ink offenders).
+Moved rows as built: `test_d7_armory.gd` plate/master rows (texture null + theme frame at
+32 px, master on disk), `test_s15_armory_layout.gd`'s plate rows (same), two **unlisted**
+d7 rows (danger tag `accent_danger` → `accent_danger_bright`; caption tones hex → Tokens),
+both forced by A4.3's 4.5:1 and zero-hex rules and reported by R1 as HIGH pin-list
+deviations (bucket 2, no code revert). One review finding (MED): the pane scene still
+carried the retired `ui_armory_console` ext_resource and its `%ConsolePlate` texture
+assignment — **S20-F1 dropped both** (`ui/station/armory_panel.tscn`, header `load_steps`
+4 → 2), so A4.1's retirement is complete on disk and only the master file stays (the gate
+re-read `895/0` twice after the fix).
+
+**Pre-existing, unrelated, found by S20-R1's gate:** `test_weapon_fx_f4.gd`'s
+`test_a_held_beam_reads_one_hit_per_contact_interval` prints `[PASS]` while
+`guns.call(&"_hide_beam")` errors on a freed instance (`test_weapon_fx_f4.gd:178`, after the
+test's own `_clear()` frees the rig), so its last assertion is dead — the S18-F1/L230 class,
+deterministic on both runs, not caused by S20's files (none of them in that suite's path).
 
 Expected (S18, 2026-09-26): **`[SUMMARY] passed=887 failed=0`**, exit 0. S18's
 close-out measured **886** twice on two fresh scratch stores
@@ -2978,6 +3008,7 @@ strip's own words, tokens and danger colour are unmoved.
 | signal | `inspect_requested(title: String, body: String, danger: bool)` — **declared on all eight panes**, emitted by the six item panes (`armory`, `shipyard`, `exchange`, `auction`, `refinery`, `fitting`) on hover-in **and** on selection; `title == ""` clears the block | delete the signal and the shell's handler |
 | shell nodes | `Inspector` (`PanelContainer`, `PanelRaised`) → `InspectorMargin` (`MarginContainer`) → `InspectorBox` (`VBoxContainer`) → `InspectorTitle` (`Label`, `StationPanelTitle`, one line) + `InspectorBody` (`Label`, `SectionHeader` size with a `font_color` override to the theme's `Tokens/text_primary`, `autowrap_mode AUTOWRAP_WORD_SMART`, `max_lines_visible 2`) | the block, one node at a time; the override restores `text_dim` |
 | body lines | `INSPECTOR_BODY_MAX_LINES := 2` | 1 |
+| reserved height | **constant**, `title line + INSPECTOR_BODY_MAX_LINES body lines + the margins`, font-derived `custom_minimum_size` on `InspectorTitle`/`InspectorBody` (`ui/screens/station.gd:_pin_inspector_height`) so an empty hover reserves the same box and the module host never reflows — **UI_SPEC §3.10 Amendment 4 (A4.4), wave S20**; measured by S20-R1 at `""`, 1, 2 and 3+ body lines (height 154 and `ModuleHost` rect `(400,152)+1496×710` at 1920×1080, all six states) | the collapse-when-empty behaviour (the owner's shift-up bug) |
 | body text | `StationCatalog.describe(id: StringName) -> String`, **static**: base-id resolved (`mod_*` instances resolve through their base, an `ammo_*` cargo id through its pack), reads `MODULES` / `SHIPS` / the ammo+service rows' own `&"description"` **and `MineralCatalog` / `ComponentCatalog`** (widened 2026-09-24 after B1's report: a REFINERY ore row and an EXCHANGE mineral/component hold row must show the prose those catalogues already carry), returns `""` when the row carries none (**no invented text**), and for a `mod_*` instance appends that instance's affix perks joined by `" · "` | `""` always (title only); narrow the source list back to the four |
 | title text | the row's **identity**: its name, then its price phrase where the row has one, joined by the pane's own `" · "` — **the key-hint verb is not part of it** ("ENTER BUY" / "ENTER PREVIEWS" / "ENTER SELECT" stay in the status strip's own hover line, which is unchanged) | reuse the pane's `_row_hint` string verbatim (the B1 shape) |
 | grouping | `StationCatalog.group_int(value: int) -> String` — one copy of the station's existing rule; `ui/screens/station.gd:_format_int` delegates to it so the two readouts cannot drift | restore the private copy |
@@ -4160,3 +4191,48 @@ hull stops twice and the second stop slides.
   chip/drop row gains per-slot position assertions. Evidence: a fresh windowed
   `probe_s18_capture` render shows the pane's text in front of every background
   with the cues in slots 1..3; rows **L232–L233** (closed this pass).
+- **v0.32 (2026-09-26, wave S20 review — the coder lane's reviewer session; gate
+  `895/0` twice on fresh scratch stores, baseline `887` re-derived by counting
+  `func test_` in the `s20_start` tree)** — records the ARMORY chrome unification
+  and the shell inspector pin. **§23.1** gains the A4.4 reserved-height row (the
+  block's constant title + 2 body lines, font-derived) and **§9** the S20
+  expected-count paragraph above; the pin itself is **UI_SPEC §3.10 Amendment 4**
+  (A4.1–A4.5, owner ticks T1–T6) with `tools/build_theme.gd` as the only hex
+  store. The pane ships **surface-only**: no §17 seam, §13/§16 transaction, 09
+  §11/§12 number or Amendment 3 geometry number moved; re-measured exact at the
+  1392×610 host (console **1360×516** at (16,68), bays **260×192** on 7, cells
+  **117×52** on 6, ledge **240×34** at bay-y 150, wells **648×220**, items
+  **320×68** on 8, zero `font_size` overrides), and the live shell's `ModuleHost`
+  rect is constant across six hover states. Measured: `PanelRaised/panel`
+  (`ui_panel_frame`, 32 px patch) on the bays and wells, `SlotButtonWeapon/normal`
+  on the 20 cells, `StationButton`/`ui_button_plate_*` on the fitted plate, `BUY`
+  (one real click buys exactly one pack) and the `X`, and **4.855:1** for the
+  `OVER CAP` label (**L227** closes) whose old pair was 4.04:1. **Rows: `887 →
+  895`** = `test_s20_chrome_unify.gd` **7** (AC1–AC5) + `test_s11_inspector.gd`
+  **+1** (A4.4); the moved rows are the d7/s15 plate-and-master rows (texture null
+  + the theme frame at 32 px, master on disk), and **two unlisted d7 rows** moved
+  off brief §3's list (the danger tag to `accent_danger_bright`; the caption tones
+  to `Tokens/armory_*`) — both forced by A4.3, reported as **2 HIGH** (bucket 2:
+  the list, not the code) with **1 MED** (the pane scene still carries the retired
+  `ui_armory_console` ext_resource; a later pass drops the two lines) and **3 LOW
+  (L234–L236**: the resting card chip's 2.700:1 ink, A4.4's live-host consequence
+  folding into **L228**, and the `X` laying out 24×29). Also recorded: the
+  pre-existing dead guard in `test_weapon_fx_f4.gd:178` (a `[PASS]` over a freed
+  instance, not S20's). Owner decisions owed: the HIGHs' list amendment
+  (developer session) and nothing else.
+- **v0.33 (2026-09-26, wave S20 close-out — the orchestrator's pass; gate `895/0`
+  twice on fresh scratch stores)** — closes the wave. **S20-F1** (dispatched for
+  the review's one MED, scoped to it by an orchestrator note on the dispatch
+  because the two HIGHs are bucket-2 pin-list items and a fixer that "fixed"
+  them would weaken A4.3) dropped the retired master's ext_resource and its
+  `%ConsolePlate` texture assignment from `ui/station/armory_panel.tscn`, so
+  A4.1's retirement is complete on disk; the fixer re-ran the gate `895/0`
+  twice. `verify_wave.py verify --baseline s20_start` green
+  (`"problems": []`, `--tests` re-run included; `vajb-orbit/project.godot`,
+  `game/`, `autoload/`, `addons/` and 18 §13's spec untouched). Owner ticks
+  recorded in **UI_SPEC §3.10 A4**: **T1–T4 as briefed, T5 = keep, T6 open**
+  (the bay chip's `▲ OVER CAP` vs `▲ AT CAP` wording — the owner's word; the
+  shipped string is `▲ OVER CAP`). Rows **L234–L237** filed; the two HIGHs are
+  the brief's tests-that-move list (`S20_BRIEF.md` §3) missing
+  `test_d7_armory.gd:601-608` and `:817-818` — a developer-session list edit,
+  no code revert, recorded as **L238–L239**.

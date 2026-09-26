@@ -308,6 +308,38 @@ func test_the_shell_writes_and_clears_the_block() -> void:
 	assert_eq(body.text, "", "an empty title clears the body too")
 
 
+## **A4.4 (UI_SPEC section 3.10 Amendment 4, wave S20): the block reserves a constant
+## height.** Both labels carry a font-derived `custom_minimum_size` - one title line, two
+## body lines - so the empty hover state reserves the same box as a full one. Measured
+## against the labels' own shaped minima, not a re-derived formula (the full four-state
+## measurement lives in `tests/test_s20_chrome_unify.gd`).
+func test_the_block_reserves_the_a4_4_height() -> void:
+	var title := _station.get_node_or_null(NodePath("%InspectorTitle")) as Label
+	var body := _station.get_node_or_null(NodePath("%InspectorBody")) as Label
+	assert_true(title != null and body != null, "the block's two labels ship")
+	if title == null or body == null:
+		return
+	assert_true(title.custom_minimum_size.y > 0.0, "the title's line is reserved")
+	assert_true(body.custom_minimum_size.y > 0.0, "and the body's two lines")
+	assert_eq(
+		title.custom_minimum_size.y, _shaped_min(title, "T"),
+		"the title's pin is its own one-line minimum (font-derived)"
+	)
+	assert_eq(
+		body.custom_minimum_size.y, _shaped_min(body, "one\ntwo"),
+		"the body's pin is its own two-line minimum (INSPECTOR_BODY_MAX_LINES)"
+	)
+
+
+## A label's shaped minimum height for a text, read off the label itself.
+func _shaped_min(label: Label, text: String) -> float:
+	var saved := label.text
+	label.text = text
+	var height := label.get_minimum_size().y
+	label.text = saved
+	return height
+
+
 ## -------------------------------------------------------- 5. the HUD credits block
 
 

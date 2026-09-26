@@ -125,7 +125,9 @@ const PULSE_UP_SECONDS := 0.16
 const STATUS_DOCKED := "DOCKED · ALL SYSTEMS NOMINAL"
 
 ## CONTRACTS section 23.1: the inspector body's own line budget. The scene carries the same
-## two, and `_apply_tokens` re-applies this const so the two cannot drift.
+## two, and `_apply_tokens` re-applies this const so the two cannot drift. A4.4 (UI_SPEC
+## section 3.10) turns it into the reserved block height too: the title line plus this many
+## body lines, font-derived, so an empty hover reserves the same box as a full one.
 const INSPECTOR_BODY_MAX_LINES := 2
 
 @onready var _backdrop_dim: ColorRect = %BackdropDim
@@ -249,7 +251,32 @@ func _apply_tokens() -> void:
 	_apply_status_colour()
 	_inspector_body.max_lines_visible = INSPECTOR_BODY_MAX_LINES
 	_inspector_body.add_theme_color_override(&"font_color", _token(&"text_primary"))
+	_pin_inspector_height()
 	_apply_inspector_colour()
+
+
+## **A4.4 (UI_SPEC section 3.10): the inspector reserves a constant height.** The title
+## line plus `INSPECTOR_BODY_MAX_LINES` body lines, measured off the fonts the block's own
+## theme variations resolve to - so the empty hover state reserves the same box and the
+## module host never reflows when `inspect_requested` fires (the owner's shift-up bug).
+## Shell-wide: every pane's hover descriptions sit in this block.
+func _pin_inspector_height() -> void:
+	_inspector_title.custom_minimum_size.y = _lines_height(_inspector_title, 1)
+	_inspector_body.custom_minimum_size.y = _lines_height(
+		_inspector_body, INSPECTOR_BODY_MAX_LINES
+	)
+
+
+## A wrapped label's own height for `lines` lines: the font's line height per line plus the
+## label's own `line_spacing` constant between them (the quantity `Label` shapes to). 0.0
+## when no font resolves, which leaves the label's own minimum in charge.
+static func _lines_height(label: Label, lines: int) -> float:
+	var font: Font = label.get_theme_font(&"font")
+	if font == null:
+		return 0.0
+	var size: int = label.get_theme_font_size(&"font_size")
+	var spacing: float = float(label.get_theme_constant(&"line_spacing"))
+	return float(lines) * font.get_height(size) + float(maxi(lines - 1, 0)) * spacing
 
 
 func _token(token: StringName) -> Color:

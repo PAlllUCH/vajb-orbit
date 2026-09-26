@@ -5,23 +5,27 @@ extends "res://ui/hud/cockpit_style.gd"
 ## the `ui_seg_*` asset parts and the texture/colour lookups through the very same
 ## Resource the cluster uses - one palette, one asset idiom, no second colour store.
 ##
-## **UI_SPEC section 3.10 Amendment 3 (the D13 rework, wave S18)** rules this surface:
-## the landscape console **1360x516** at the pinned **1392x610** host, five 2x2-cell bays
-## across the top, and one wells band (barrel inventory left, ammunition pack cards
-## right). The console's rect is **derived from the host rect at runtime (P6)** - there is
-## no pinned pane rect: `console_rect(host)` scales the base insets by the host's own
-## width/height, the bands inside it scale their offsets by the console's height, and the
-## gaps between elements are fixed. The base numbers live here, once, so the pane and its
-## tests cannot disagree about where anything lands.
+## **UI_SPEC section 3.10 Amendment 3 (the D13 rework, wave S18)** rules this surface's
+## layout: the landscape console **1360x516** at the pinned **1392x610** host, five
+## 2x2-cell bays across the top, and one wells band (barrel inventory left, ammunition
+## pack cards right). The console's rect is **derived from the host rect at runtime
+## (P6)** - there is no pinned pane rect: `console_rect(host)` scales the base insets by
+## the host's own width/height, the bands inside it scale their offsets by the console's
+## height, and the gaps between elements are fixed. The base numbers live here, once, so
+## the pane and its tests cannot disagree about where anything lands.
 ##
-## The master `ui_armory_console` is re-rendered **scripted** at exactly 2x the base
-## console (`staging/mockup/render_console_master.py`, deterministic) and mounts as a
-## nine-slice over the runtime rect, so its bevel and corner bolts stay exact while the
-## flat brushed grain stretches. The pre-rework rack and row plates retire: bays, cells,
-## ledges, rows and cards are code-drawn treatments (their colours below).
+## **Amendment 4 (2026-09-26, wave S20) rules the surface.** The scripted console master
+## retires from the pane (its file stays on disk, unwired): the bay
+## cards, the wells halves and the pack/row plates wear the theme's **`ui_panel_frame`**
+## nine-patch (`PanelRaised`), the bays' cells the `ui_slot_weapon_*` slot chrome, and
+## `BUY`/`X`/pressable chips the `StationButton` plates. The palette fields below carry
+## **no hex literal**: `resolve_theme` reads them from the generated theme's
+## `Tokens/armory_*` entries (the only hex store is `tools/build_theme.gd`), so a theme
+## re-band moves this pane with every sibling panel.
 ##
 ## A user drops `res://ui/station/armory_style_user.tres` in and the pane restyles and
-## relayouts with no code edit. Reversal: the pane's D6/S5 theme-stylebox chrome.
+## relayouts with no code edit (its own stored values win over the theme's). Reversal:
+## the pane's D6/S5 theme-stylebox chrome and the mockup palette fields.
 
 ## The override path (section 3.9 rule 5 for this surface; the cluster's own is
 ## `CockpitStyle.USER_PATH`).
@@ -32,28 +36,29 @@ const ARMORY_SCRIPT_PATH: String = "res://ui/station/armory_style.gd"
 
 @export_group("armory palette")
 ## The mockup's CAP: dim ink on painted metal, the caption tone of every mark drawn over
-## the console plate. Measured >= 4.5:1 against the plate (HIGH-2's cure).
-@export var caption: Color = Color("#acb2ba")
+## the frame chrome. Measured >= 4.5:1 against the plate (HIGH-2's cure).
+@export var caption: Color
 ## The mockup's CAP_VOID: dim ink on the host/void outside the plate.
-@export var caption_void: Color = Color("#969da5")
-## A bay card's fill (the mockup's 30,34,41).
-@export var bay_bg: Color = Color("#1e2229")
-## A cell's recess fill (the mockup's 18,21,26).
-@export var cell_bg: Color = Color("#12151a")
+@export var caption_void: Color
+## A bay card's own recess tone (the mockup's 30,34,41); the panel frame carries it now.
+@export var bay_bg: Color
+## A cell's recess fill (the mockup's 18,21,26); the salvo drums sit on it.
+@export var cell_bg: Color
 ## The salvo ledge's band (the mockup's 22,26,31).
-@export var ledge_bg: Color = Color("#161a1f")
-## An inventory row's / pack card's fill (the mockup's 38,43,50).
-@export var item_bg: Color = Color("#262b32")
-## A resting chip's fill (READY, BUY) - the mockup's 46,51,58.
-@export var chip_bg: Color = Color("#2e333a")
-## The OVER CAP chip's fill (the mockup's 78,32,18), paired with the ember border.
-@export var chip_danger_bg: Color = Color("#4e2012")
+@export var ledge_bg: Color
+## An inventory row's / pack card's fill (the mockup's 38,43,50); under the frame.
+@export var item_bg: Color
+## A resting chip's fill (READY) - the mockup's 46,51,58.
+@export var chip_bg: Color
+## The OVER CAP chip's fill, paired with the ember border. The mockup's 78,32,18 was
+## darkened in `tools/build_theme.gd` so the OVER CAP label clears 4.5:1 (L227).
+@export var chip_danger_bg: Color
 ## The fitted cell's decorative ember line (the mockup's cell underline).
-@export var fit_line: Color = Color("#c8461b")
+@export var fit_line: Color
 
 @export_group("armory layout")
-## Section 10's `@2x` recipe: a master is this many times its logical box. The console
-## plate is drawn at `canvas * art_scale`, once the base console's own 1360x516.
+## Section 10's `@2x` recipe: a master is this many times its logical box. The console box
+## is drawn at `canvas * art_scale`, once the base console's own 1360x516.
 @export var art_scale: float = 2.0
 ## The measured host rect the base numbers were fitted at (the station's module host at
 ## 1920x1080). Every rect derives from the *actual* host rect by scaling against this.
@@ -115,14 +120,35 @@ const ARMORY_SCRIPT_PATH: String = "res://ui/station/armory_style.gd"
 ## `CockpitStyle.frame_width`).
 @export var selected_frame_width: float = 3.0
 
-@export_group("armory assets")
-## The painted console plate: a scripted flat metal field since UI_SPEC section 3.10
-## Amendment 3, master 2720x1072 (2x) for the ruled 1360x516 console; it mounts as a
-## nine-slice (the bevel and bolts sit inside a `console_patch` margin, grain stretches).
-@export var console_path: String = "res://assets/ui/ui_armory_console.png"
-## The nine-slice's patch margins, in master pixels - the bevel (6) and the corner bolts
-## (inset 32, radius 16) all sit inside 64.
-@export var console_patch: int = 64
+## The generated theme carrying this palette (`Tokens/armory_*`) and the chrome family's
+## panels, slots and plates - the same read `game/weapons.gd` makes for its beam tones, so
+## no hex literal has to live in this file (Amendment 4, A4.3).
+const THEME_PATH: String = "res://ui/theme/vajb_theme.tres"
+const TOKENS_TYPE: StringName = &"Tokens"
+## One palette role's theme token: `armory_` + the field's own name.
+const TOKEN_PREFIX: String = "armory_"
+## Every palette field `resolve_theme` fills, in the role vocabulary `colour()` reads.
+const PALETTE_ROLES: Array[StringName] = [
+	&"caption", &"caption_void", &"bay_bg", &"cell_bg", &"ledge_bg",
+	&"item_bg", &"chip_bg", &"chip_danger_bg", &"fit_line",
+]
+
+
+func _init() -> void:
+	resolve_theme()
+
+
+## Read every palette field from the generated theme's `Tokens/armory_*` entries (A4.3:
+## the hex values live only in `tools/build_theme.gd`). Runs at construction, so a user
+## `.tres`'s own stored values still win - the loader applies them after `_init`.
+func resolve_theme(theme: Theme = null) -> void:
+	var source: Theme = theme if theme != null else load(THEME_PATH) as Theme
+	if source == null:
+		return
+	for role: StringName in PALETTE_ROLES:
+		var token := StringName(TOKEN_PREFIX + String(role))
+		if source.has_color(token, TOKENS_TYPE):
+			set(role, source.get_color(token, TOKENS_TYPE))
 
 
 ## The armory's style: the user's `.tres` when it exists (and is this script), the shipped

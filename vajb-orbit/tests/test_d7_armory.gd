@@ -302,10 +302,10 @@ func _delete_file(path: String) -> void:
 ## ------------------------------------------------------- 1. the console and the wells
 
 
-## The pane mounts on the scripted console plate everywhere the host goes (P6): the
-## console is the host less its insets, the master is exactly 2x it, and the plate is a
-## nine-slice whose bevel and corner bolts sit inside a 64 master px patch (the flat grain
-## stretches, the drawing does not).
+## The pane's geometry rides the host everywhere it goes (P6): the console is the host
+## less its insets, the master is exactly 2x it and still on disk - but **S20's A4.1
+## retires it from the pane** (the plate's texture is cleared at build) and the chrome is
+## the theme's own `ui_panel_frame` nine-patch now.
 func test_the_pane_mounts_on_the_painted_console_plate() -> void:
 	var panel := _mount()
 	var style := _style()
@@ -321,24 +321,27 @@ func test_the_pane_mounts_on_the_painted_console_plate() -> void:
 	assert_eq(panel.call(&"block_size"), CONSOLE, "the pane draws the console it derived")
 	assert_eq(CONSOLE_MASTER, CONSOLE * ART_SCALE, "the scripted master is exactly 2x the console")
 	var plate := panel.get_node("%ConsolePlate") as NinePatchRect
-	assert_true(plate != null, "the console plate is a nine-slice")
-	assert_eq(plate.texture.resource_path, style.console_path, "its texture is the style's own console path")
-	assert_eq(
-		String(plate.texture.resource_path), "res://assets/ui/ui_armory_console.png",
-		"the shipped master"
+	assert_true(plate != null, "the console floor node stays in the scene")
+	assert_true(plate.texture == null, "the scripted master retires from the pane (A4.1)")
+	assert_true(
+		ResourceLoader.exists("res://assets/ui/ui_armory_console.png"),
+		"the master itself stays on disk (unwired; ASSET_CATALOG notes it)"
 	)
-	assert_eq(plate.texture.get_size(), CONSOLE_MASTER, "at the scripted 2x master size")
-	assert_eq(plate.size, CONSOLE, "drawn at the derived console rect (actual %s)" % str(plate.size))
-	assert_eq(plate.position, Vector2.ZERO, "the plate fills its console control")
+	assert_eq(plate.size, CONSOLE, "the floor is drawn at the derived console rect (actual %s)" % str(plate.size))
+	assert_eq(plate.position, Vector2.ZERO, "the floor fills its console control")
 	assert_eq(plate.global_position, CONSOLE_ORIGIN, "which the host's own inset places")
-	assert_eq(
-		plate.size * style.art_scale, plate.texture.get_size(),
-		"the master covers the rect at 1:1 after the 2x scale (actual %s)" % str(plate.size)
-	)
-	assert_eq(plate.patch_margin_left, 64, "the bevel and bolts sit inside a 64 master px patch")
-	assert_eq(plate.patch_margin_top, 64, "on every side")
-	assert_eq(plate.patch_margin_right, 64, "")
-	assert_eq(plate.patch_margin_bottom, 64, "")
+	## A4.1: the pane's chrome is the theme's own panel frame - the sibling panels' box.
+	var frame := panel.get_theme_stylebox(&"panel", &"PanelRaised") as StyleBoxTexture
+	assert_true(frame != null, "the theme's panel frame resolves")
+	if frame != null:
+		assert_eq(
+			String(frame.texture.resource_path), "res://assets/ui/ui_panel_frame.png",
+			"the ui_panel_frame nine-patch"
+		)
+		assert_eq(frame.texture_margin_left, 32.0, "at the pinned 32 px patch margin")
+		assert_eq(frame.texture_margin_top, 32.0, "on every side")
+		assert_eq(frame.texture_margin_right, 32.0, "")
+		assert_eq(frame.texture_margin_bottom, 32.0, "")
 
 
 ## The wells band's two halves (Amendment 3): BARREL INVENTORY left, AMMUNITION right,
@@ -603,8 +606,9 @@ func test_danger_rows_follow_section_3_1_and_3_1b() -> void:
 		tag.has_theme_color_override(&"font_color"), "and its state label turns the danger role"
 	)
 	assert_eq(
-		tag.get_theme_color(&"font_color"), _style().colour(&"accent_danger"),
-		"which is the style's own accent_danger"
+		tag.get_theme_color(&"font_color"),
+		_style().colour(&"accent_danger_bright"),
+		"which is the bright ember (A4.3/L227: accent_danger cannot clear 4.5:1)"
 	)
 	## A half-full pack is no danger state at all.
 	var cannon := _ammo_card(panel, &"cannon")
@@ -738,7 +742,6 @@ func test_a_user_tres_restyles_and_relayouts_with_no_code_edit() -> void:
 	probe.cell_gap = 4.0
 	probe.item_gap = 4.0
 	probe.text_dim = Color(0.1, 0.9, 0.2)
-	probe.console_path = "res://assets/ui/ui_armory_console.png"
 	var saved := ResourceSaver.save(probe, STYLE_PROBE_PATH)
 	assert_eq(saved, OK, "the user's style writes")
 	panel.call(&"set_style_file", STYLE_PROBE_PATH)
@@ -795,9 +798,13 @@ func test_the_style_extends_cockpit_style_with_the_pinned_metrics() -> void:
 		style.seg_path("7"), "res://assets/ui/ui_seg_7.png",
 		"the drum cells keep the family's asset idiom"
 	)
-	assert_true(ResourceLoader.exists(style.console_path), "the console master ships")
 	assert_eq(
-		style.console_path, "res://assets/ui/ui_armory_console.png", "the scripted master"
+		style.get(&"console_path"), null,
+		"the console master retires from the style (A4.1)"
+	)
+	assert_true(
+		ResourceLoader.exists("res://assets/ui/ui_armory_console.png"),
+		"and the master itself stays on disk (unwired)"
 	)
 	assert_eq(
 		style.get(&"rack_plate_path"), null,
@@ -814,5 +821,11 @@ func test_the_style_extends_cockpit_style_with_the_pinned_metrics() -> void:
 	assert_eq(style.salvo_pitch, SALVO_PITCH, "on the 20 px pitch")
 	assert_eq(style.item_gap, 8.0, "the well grid's own gap")
 	assert_eq(style.head_chip, Vector2(104.0, 22.0), "the bay head's state chip")
-	assert_eq(style.caption, Color("#acb2ba"), "the HIGH-2 light-ramp caption (metal)")
-	assert_eq(style.caption_void, Color("#969da5"), "and the host's own caption tone")
+	assert_eq(
+		style.caption, ThemeRes.get_color(&"armory_caption", &"Tokens"),
+		"the HIGH-2 light-ramp caption, resolved from the theme (A4.3)"
+	)
+	assert_eq(
+		style.caption_void, ThemeRes.get_color(&"armory_caption_void", &"Tokens"),
+		"and the host's own caption tone"
+	)

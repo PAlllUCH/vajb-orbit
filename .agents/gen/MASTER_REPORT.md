@@ -1133,3 +1133,44 @@ the fitted chip and left its last slot bare. Both fixed (`_console.move_child(_c
 layer-order row + per-slot position assertions), re-measured **886 → 887/0** and
 visually re-verified with a fresh windowed capture; rows **L232–L233** closed, §9/§10
 amended (v0.31).
+
+**S20 (2026-09-26): the ARMORY wears the game's chrome, and the shell inspector
+stops moving (coder item 25) — DONE** (gate 887 → **895/0** twice hermetic;
+`test_s20_chrome_unify.gd` 7 rows AC1–AC5 + `test_s11_inspector.gd` +1; **2 HIGH /
+1 MED / 4 LOW (L234–L237)**, the MED fixed by S20-F1, the HIGHs are the two costliest facts).
+Owner ask after playing S18: *"i very much like the layout but i need to unify it to
+the rest of game (chromes) and on hover the bottom description panel sometis gets
+'bigger' and all shifts up."* Surfaces only — the pin is **UI_SPEC §3.10 Amendment
+4** (A4.1–A4.5) and every Amendment 3 geometry number re-measured exact at the
+1392×610 host (console 1360×516 at (16,68), bays 260×192 on 7, cells **117×52** on
+6, ledge 240×34 at bay-y 150, wells 648×220, items 320×68 on 8, zero `font_size`
+overrides, captions 5.96–7.47:1). B1 retired the scripted console master from the
+pane (bays/wells/rows on `PanelRaised`/`ui_panel_frame` at 32 px, the 20 cells on
+`SlotButtonWeapon/normal`, `BUY`/`X` on `StationButton`, the 9 palette fields read
+from the new `Tokens/armory_*` so no hex lives outside `tools/build_theme.gd`) and
+pinned the shell inspector to a font-derived constant height (title 21 + 2 body
+lines 45 = **154** at `""`, 1, 2 and 4-line hovers, `ModuleHost` rect identical);
+`OVER CAP` measures **4.855:1**, closing **L227** (was 4.04:1). R1 re-measured all
+six ACs in its own windowed scratch-store probe (a real click on `BUY` buys exactly
+one pack; the pins' removal reproduces the S18 collapse, so the fix is real, not a
+no-op) and filed the wave's two HIGHs: brief §3's tests-that-move list left two
+`test_d7_armory.gd` rows off it (`:601-608`'s danger tone → `accent_danger_bright`
+because `accent_danger` cannot clear 4.5:1 — best case 4.377:1; `:817-818`'s caption
+tones → Tokens, byte-identical) — bucket-2 pin-list items, **L238–L239**, no code
+revert, the developer session's list edit. Its MED (the pane scene still carried the
+retired master's ext_resource and plate texture assignment) was the fixer's only
+in-scope item: S20-F1, dispatched with an orchestrator scope note because a fixer
+"fixing" the HIGHs would weaken A4.3, dropped both lines and re-read 895/0. LOWs:
+**L234** (the resting pack-card chip's 2.700:1 ink — L227's "only sub-floor ink"
+premise falsified), **L235** (A4.4 moves the shell's *resting* host to (452,204)+
+1392×606, so A3's "measured" figure describes no live state — folds into L228),
+**L236** (the `X` lays out 24×29, the plate's minimum), **L237** (pre-existing:
+`test_weapon_fx_f4.gd:178` prints `[PASS]` over a dead assertion on a freed rig —
+the L230 class, not S20's). Ticks recorded in UI_SPEC §3.10 A4: **T1–T4 as briefed,
+T5 = keep** (the seven-seg salvo ledge untouched, re-measured byte-identical),
+**T6 open** — the bay chip's `▲ OVER CAP` vs `▲ AT CAP` wording, the owner's word
+(§5.1's own pack vocabulary uses `AT CAP` for the same full state, so `AT CAP` is
+the consistent read; the change is one chip string plus its rows). Close-out: gate
+895/0 twice hermetic, `verify --baseline s20_start` green (`"problems": []`,
+`--tests` re-run included, project.godot/game/autoload/addons untouched), CONTRACTS
+§9/§10 (v0.33) + §23.1's reserved-height row, WAVEBOARD, wave-boundary commit.

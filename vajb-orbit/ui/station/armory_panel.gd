@@ -1,15 +1,22 @@
 extends Control
 ## ARMORY (the OUTFITTING pane renamed, STATION_HUB section 5.11's 2026-09-23 S5
-## amendment) as **UI_SPEC section 3.10 Amendment 3 (the D13 rework, wave S18)** rules it:
-## the **landscape console 1360x516** at the pinned (452,214)+1392x610 host, five **2x2-cell**
-## bays across the top, and one wells band below - the barrel inventory left, the
-## ammunition pack cards right. The console's rect is **derived from the host rect at
+## amendment) as **UI_SPEC section 3.10 Amendment 3 (the D13 rework, wave S18)** rules its
+## layout: the **landscape console 1360x516** at the pinned (452,214)+1392x610 host, five
+## **2x2-cell** bays across the top, and one wells band below - the barrel inventory left,
+## the ammunition pack cards right. The console's rect is **derived from the host rect at
 ## runtime (P6)**: no pane rect is a constant, so the pane reflows at every window size
 ## (`ArmoryStyle.console_rect`).
 ##
+## **Amendment 4 (2026-09-26, wave S20) rules the surface.** The scripted console master
+## retires from the pane (the file stays on disk; the **module host's own panel frame is
+## the pane's outer edge**), the bay cards, wells halves and pack/row plates wear the
+## theme's **`ui_panel_frame`** nine-patch (A4.1), the bay cells the **`ui_slot_weapon_*`**
+## slot chrome (A4.2), `BUY`/`X` the **`StationButton`** plates, and every palette field
+## resolves from the theme's `Tokens/armory_*` (`ArmoryStyle.resolve_theme`, A4.3).
+##
 ##   - **BAYS** - racks `B1..B5`, one drop zone per `weapon_1..5` key (09 section 11,
 ##     CONTRACTS section 17; 09 section 12's 5x4 hardcap). A rack holds the W cells that
-##     fire together; each bay draws four machined cell recesses, prints the full barrel
+##     fire together; each bay draws four slot-chrome cells (A4.2), prints the full barrel
 ##     name at 13 px on a fitted cell and `DROP HERE` on an empty one, and carries its
 ##     salvo readout on the ledge (`ui_seg_*` hundredths of a second beside `SALVO s`)
 ##     and its `READY` / `OVER CAP` state chip on the head. Dragging an inventory weapon
@@ -514,9 +521,9 @@ class SalvoStrip extends Control:
 			draw_rect(rect, style.colour(ROLE_CELL_BG), true)
 
 
-## One row's plate: the code-drawn item plate (the brushed row-plate master retired with
-## section 3.10 Amendment 3), with the section 3.1/3.1b danger frame over it when the row
-## is in a danger state.
+## One row's plate: the theme's `ui_panel_frame` nine-patch (A4.1, `PanelRaised`) with the
+## section 3.1/3.1b danger frame over it when the row is in a danger state. Without the
+## theme box the row's recorded recess tone returns (the palette's own reversal path).
 class RowPlate extends Control:
 	var style: Resource = null
 	var _danger: bool = false
@@ -540,13 +547,17 @@ class RowPlate extends Control:
 	func _draw() -> void:
 		if style == null:
 			return
-		var box := StyleBoxFlat.new()
-		box.bg_color = style.colour(ROLE_ITEM_BG)
-		box.corner_radius_top_left = 6
-		box.corner_radius_top_right = 6
-		box.corner_radius_bottom_left = 6
-		box.corner_radius_bottom_right = 6
-		draw_style_box(box, Rect2(Vector2.ZERO, size))
+		var frame: StyleBox = get_theme_stylebox(&"panel", &"PanelRaised")
+		if frame != null:
+			draw_style_box(frame, Rect2(Vector2.ZERO, size))
+		else:
+			var box := StyleBoxFlat.new()
+			box.bg_color = style.colour(ROLE_ITEM_BG)
+			box.corner_radius_top_left = 6
+			box.corner_radius_top_right = 6
+			box.corner_radius_bottom_left = 6
+			box.corner_radius_bottom_right = 6
+			draw_style_box(box, Rect2(Vector2.ZERO, size))
 		draw_rect(
 			Rect2(Vector2.ZERO, size),
 			style.colour(ROLE_DANGER if _danger else ROLE_METAL_MID),
@@ -554,42 +565,69 @@ class RowPlate extends Control:
 		)
 
 
-## The console's own code-drawn chrome: the bay cards, the four cell recesses per bay,
-## the salvo ledges and the wells band's item plates. One node, one `_draw` pass, over
-## the painted plate and under every interactive one.
+## The console's own chrome, one node and one `_draw` pass, over the host's panel and
+## under every interactive one. **Amendment 4:** the bay cards and the wells halves wear
+## the theme's `ui_panel_frame` nine-patch (A4.1, `PanelRaised`), every bay cell the game's
+## `ui_slot_weapon_*` slot chrome (A4.2, the `SlotButtonWeapon` family), and the salvo
+## ledges keep their code-drawn band (A4.5: the seven-seg strip stands untouched).
 class ConsolePanels extends Control:
 	var style: Resource = null
 	var bays: Array[Rect2] = []
 	var cells: Array[Rect2] = []
 	var ledges: Array[Rect2] = []
-	var items: Array[Rect2] = []
+	var wells: Array[Rect2] = []
+	## The theme's own chrome boxes, read fresh on every configure so a theme re-band moves
+	## this pane with every sibling panel: the panel frame and the weapon slot plate.
+	var frame_box: StyleBox = null
+	var slot_box: StyleBox = null
 
 	func configure(
 		new_style: Resource,
 		new_bays: Array[Rect2],
 		new_cells: Array[Rect2],
 		new_ledges: Array[Rect2],
-		new_items: Array[Rect2]
+		new_wells: Array[Rect2]
 	) -> void:
 		style = new_style
 		bays = new_bays
 		cells = new_cells
 		ledges = new_ledges
-		items = new_items
+		wells = new_wells
+		frame_box = get_theme_stylebox(&"panel", &"PanelRaised")
+		slot_box = get_theme_stylebox(&"normal", &"SlotButtonWeapon")
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
 		queue_redraw()
 
 	func _draw() -> void:
 		if style == null:
 			return
-		for rect: Rect2 in items:
-			_plate(rect, ROLE_ITEM_BG, 6)
+		for rect: Rect2 in wells:
+			_frame(rect)
 		for rect: Rect2 in bays:
-			_plate(rect, ROLE_BAY_BG, 8)
+			_frame(rect, ROLE_BAY_BG, 8)
 		for rect: Rect2 in cells:
-			_recess(rect)
+			_slot(rect)
 		for rect: Rect2 in ledges:
 			_plate(rect, ROLE_LEDGE_BG, 6)
+
+	## Section 5.3's panel frame (A4.1): the `ui_panel_frame` nine-patch - 32 px patch
+	## margin, the theme's 1 px border convention - so a bay card or a wells half reads as
+	## every sibling panel. Without a theme box a bay's recorded recess tone returns (the
+	## palette's own reversal path); a wells half simply draws nothing.
+	func _frame(rect: Rect2, role: StringName = &"", radius: int = 0) -> void:
+		if frame_box != null:
+			draw_style_box(frame_box, rect)
+		elif not role.is_empty():
+			_plate(rect, role, radius)
+
+	## A4.2: the cell wears the game's weapon-slot chrome - the `SlotButtonWeapon` family's
+	## own plate, the one FITTING's slots draw (a `SlotButton` at the cell's box). Without
+	## the theme's slot plate the pre-S20 machined recess returns.
+	func _slot(rect: Rect2) -> void:
+		if slot_box != null:
+			draw_style_box(slot_box, rect)
+			return
+		_recess(rect)
 
 	## A raised band: the fill plus a 1 px border.
 	func _plate(rect: Rect2, role: StringName, radius: int) -> void:
@@ -622,6 +660,8 @@ class ConsolePanels extends Control:
 
 
 @onready var _console: Control = %Console
+## The scene's own nine-slice slot for the console master; **its texture is cleared at
+## build** (A4.1: the master retires from the pane).
 @onready var _plate: NinePatchRect = %ConsolePlate
 @onready var _title: Label = %PaneTitle
 @onready var _subtitle: Label = %PaneSubtitle
@@ -640,7 +680,8 @@ class ConsolePanels extends Control:
 ## The style in force (`ArmoryStyle`, a `CockpitStyle`): every colour, metric and asset
 ## path on this surface comes from here (section 3.9 rule 5).
 var _style: Resource = null
-## The console's code-drawn chrome (bays, cells, ledges, item plates).
+## The console's chrome layer (the bays' and wells' frames, the cells' slot chrome and
+## the salvo ledges); the code-drawn recess below is the fallback for a theme-less frame.
 var _chrome: Control = null
 ## The twelve `ui_seg_*` cuts, shared by every bay's SALVO strip.
 var _seg: Array[Texture2D] = []
@@ -791,9 +832,8 @@ func _input(event: InputEvent) -> void:
 ## ------------------------------------------------------------------ the console
 
 
-## Mount the painted plate and the console's own geometry: the console is the style's
-## **derivation from the host rect** (P6), the plate is a nine-slice of the scripted
-## master over it, and the bay grid, the wells band and the item grids fill it.
+## Mount the console's own geometry: the console is the style's **derivation from the
+## host rect** (P6), and the bay grid, the wells band and the item grids fill it.
 func _build_console() -> void:
 	if _style == null:
 		_style = StyleScript.load_style()
@@ -814,22 +854,20 @@ func _build_console() -> void:
 
 
 ## Fill a child control to its parent's rect (the pane's own children are positioned by
-## the layout pass, but the plate and the chrome panel are pure fills).
+## the layout pass, but the chrome panel is a pure fill).
 static func _stretch(control: Control) -> void:
 	control.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 
-## Re-read the style into every part of the console: the plate, the chrome, the group
-## boxes and the bay grid. Called once at build and again on a restyle.
+## Re-read the style into every part of the console: the chrome, the group boxes and the
+## bay grid. Called once at build and again on a restyle.
 func _apply_style() -> void:
 	if _style == null or not is_node_ready():
 		return
-	_plate.texture = _style.texture(_style.console_path)
-	var patch: int = int(_style.console_patch)
-	_plate.patch_margin_left = patch
-	_plate.patch_margin_top = patch
-	_plate.patch_margin_right = patch
-	_plate.patch_margin_bottom = patch
+	## A4.1: the scripted console master retires from the pane - clearing the nine-slice's
+	## texture is what unwires it (the master itself stays on disk; the module host's own
+	## panel frame is the pane's outer edge now).
+	_plate.texture = null
 	_title.text = "ARMORY"
 	_subtitle.text = SUBTITLE % [RACK_COUNT, Catalog.AMMO_PACKS.size()]
 	_hint.text = PANE_HINT
@@ -1017,7 +1055,7 @@ func _bay_size_of(control: Control) -> Vector2:
 	return Vector2.ZERO
 
 
-## One bay's fitted chips, each inside its own machined cell recess, with the `x` in the
+## One bay's fitted chips, each inside its own slot-chrome cell, with the `x` in the
 ## cell's top-right corner.
 ##
 ## Both children clip their text, so a plain row gives each of them a **zero** width: the
@@ -1233,7 +1271,9 @@ func _card_line(index: int) -> float:
 	return CARD_LINE_FIRST + CARD_LINE_PITCH * float(index)
 
 
-## Hand the console's chrome node the rects the style derives (all console-local).
+## Hand the console's chrome node the rects the style derives (all console-local): the
+## bays (A4.1 frames), the wells halves (A4.1 frames), the four slot-chrome cells of every
+## bay (A4.2) and the salvo ledges.
 func _update_chrome() -> void:
 	if _chrome == null or _style == null:
 		return
@@ -1247,16 +1287,10 @@ func _update_chrome() -> void:
 		for cell in 4:
 			cells.append(_style.bay_cell_rect(cell, bay))
 		ledges.append(_style.ledge_rect(bay))
-	var items: Array[Rect2] = []
-	for child: Node in _rows.get_children():
-		var card := child as Control
-		if card != null:
-			items.append(Rect2(card.position + _ammo_scroll.position + _ammo_margin.position, card.size))
-	for child: Node in _inventory_rows.get_children():
-		var row := child as Control
-		if row != null:
-			items.append(Rect2(row.position + _inventory_scroll.position + _inventory_margin.position, row.size))
-	_chrome.configure(_style, bays, cells, ledges, items)
+	var wells: Array[Rect2] = [
+		_style.well_half_rect(0, console), _style.well_half_rect(1, console)
+	]
+	_chrome.configure(_style, bays, cells, ledges, wells)
 
 
 ## ------------------------------------------------------------------ the token lookup
@@ -1318,9 +1352,9 @@ func _build_rows() -> void:
 
 ## One ammunition **card** (T4/P2/P5): the pack's name and price, its rounds-per-pack,
 ## the worded held line, the section 5.1 state tag and state line, and the `BUY` chip, on
-## a code-drawn plate. Every cell the S5 suites read is still built here (`Title`, `Meta`,
-## `Held`/`Value` + `Held`/`Caption`, `Price`/`Value` + `Price`/`Caption`, `Status`), so
-## the state lines and figures keep one home.
+## the theme's panel-frame plate (A4.1). Every cell the S5 suites read is still built here
+## (`Title`, `Meta`, `Held`/`Value` + `Held`/`Caption`, `Price`/`Value` + `Price`/`Caption`,
+## `Status`), so the state lines and figures keep one home.
 func _build_card(pack: Dictionary) -> Dictionary:
 	var pack_id: StringName = pack.get(&"id", &"")
 	var name_text := String(pack.get(&"name", ""))
@@ -1378,8 +1412,15 @@ func _build_card(pack: Dictionary) -> Dictionary:
 	var tag_caption := _make_caption("")
 	tag_caption.name = "Caption"
 	status.add_child(tag_caption)
-	var buy := ChipPlate.new()
+	var buy := Button.new()
 	buy.name = "Buy"
+	## A4.2: `BUY` is a pressable chip, so it wears the `StationButton` plate
+	## (`ui_button_plate_*`) instead of the code-drawn chip. Mouse-only (FOCUS_NONE): the
+	## card keeps the pane's focus order, and a press on the chip buys through the same
+	## handler the card's own press uses.
+	buy.theme_type_variation = &"StationButton"
+	buy.focus_mode = Control.FOCUS_NONE
+	buy.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	card.add_child(buy)
 	var buy_label := _make_caption(BUY_CHIP, ROLE_CAPTION)
 	buy_label.name = "Label"
@@ -1407,13 +1448,13 @@ func _build_card(pack: Dictionary) -> Dictionary:
 	}
 	if complete:
 		card.pressed.connect(_on_row_pressed.bind(payload))
+		buy.pressed.connect(_on_row_pressed.bind(payload))
 		card.focus_entered.connect(_on_row_focused.bind(card, payload))
 		card.mouse_entered.connect(_on_row_hovered.bind(payload, true))
 		card.mouse_exited.connect(_on_row_hovered.bind(payload, false))
 	_rows.add_child(card)
 	frame.configure(_style)
 	status.configure(_style, false, false)
-	buy.configure(_style, false, false)
 	_position_card(card, Rect2(Vector2.ZERO, Vector2(320.0, 68.0)))
 	return payload
 
@@ -1588,7 +1629,10 @@ func _style_danger(payload: Dictionary, danger: bool) -> void:
 	if tag == null:
 		return
 	if danger:
-		tag.add_theme_color_override(&"font_color", _token(ROLE_DANGER))
+		## A4.3/L227: the danger label is the bright ember. `accent_danger` can never clear
+		## 4.5:1 on any fill (its ceiling is 4.38:1 against pure black); the bright pair
+		## measures 4.86:1 on `chip_danger_bg`.
+		tag.add_theme_color_override(&"font_color", _token(ROLE_DANGER_BRIGHT))
 	else:
 		tag.remove_theme_color_override(&"font_color")
 
@@ -1659,9 +1703,9 @@ static func _clear(node: Node) -> void:
 
 ## Redraw every rack from the profile: the active hull's composed racks as
 ## `battery_groups` derives them (`B1..B5`, in `weapon_1..5` order), each rack as a bay -
-## `B<n>` and its key hint on the head with the `READY`/`OVER CAP` chip, the four cell
-## recesses (the fitted ones named, the empty ones offering `DROP HERE`) and the ledge
-## with the rack's own cycle figure (seconds x 100, the slowest member's cycle: 09
+## `B<n>` and its key hint on the head with the `READY`/`OVER CAP` chip, the four
+## slot-chrome cells (the fitted ones named, the empty ones offering `DROP HERE`) and the
+## ledge with the rack's own cycle figure (seconds x 100, the slowest member's cycle: 09
 ## section 11).
 func _refresh_racks() -> void:
 	_clear(_rack_rows)
@@ -1823,8 +1867,9 @@ func _build_barrel(
 	name_button.add_child(variant_label)
 	var close := Button.new()
 	close.name = "Close"
+	## A4.2: the `X` is a pressable chip and wears the `StationButton` plate (it was flat
+	## under the bespoke language); its 24 px box keeps the S10 hit target.
 	close.theme_type_variation = &"StationButton"
-	close.flat = true
 	close.focus_mode = Control.FOCUS_ALL
 	close.text = BARREL_CLOSE
 	close.clip_text = true

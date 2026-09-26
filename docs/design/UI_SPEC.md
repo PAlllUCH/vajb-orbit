@@ -580,12 +580,17 @@ and the **§5.3 chrome family** takes its place.
 - **A4.5 Salvo ledge (T8) stands:** the `ui_seg_*` seven-seg digits and the
   `SALVO s` caption keep their ticked look and place (tick T5 below can
   re-open this).
-- **Owner tick list (2026-09-26, wave S20 — ticked at handoff):** T1 A4.1–A4.3
-  mapping scope, T2 slot-chrome cells, T3 the L227 cure, T4 the constant
-  inspector height, T5 the seven-seg salvo keep/replace, T6 the bay chip
-  wording (`▲ OVER CAP` at the 4-cell hardcap, the S18-B1 PROPOSED trigger, or
-  `▲ AT CAP`). Implementation wave: **S20** (coder item 25;
-  `slices/S20-armory-chrome-unify/`).
+- **Owner tick list (2026-09-26, wave S20 — recorded at close-out):** **T1–T4 as
+  briefed** (A4.1–A4.3 mapping scope, slot-chrome cells, the L227 cure, the
+  constant inspector height) · **T5 = keep** (the seven-seg salvo ledge and its
+  `SALVO s` caption stand as A4.5 ticks them; no re-open asked for) · **T6
+  open, the owner's word owed** — the bay chip's wording. The wave ships `▲
+  OVER CAP` (S18's T7 semantics, unchanged); the fork is that §5.1's own pack
+  vocabulary already says `AT CAP` for the *full* state, so the bay chip reads
+  more consistently as `▲ AT CAP` — owner's call, and the change is the one
+  chip string plus its suite rows. Implementation wave: **S20** (coder item 25;
+  `slices/S20-armory-chrome-unify/`), gate `887 → 895/0`, closed 2026-09-26 with
+  `OVER CAP` at **4.855:1**.
 
 ## 4. Settings
 

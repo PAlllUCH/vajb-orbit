@@ -456,6 +456,16 @@
 | `ui_slot_weapon_normal.png` | 48x48 | rgba | B | Slot plate: weapon slot, normal state (UI_CHROME_ASSETS_SPEC). |
 | `ui_slot_weapon_pressed.png` | 48x48 | rgba | B | Slot plate: weapon slot, pressed state (UI_CHROME_ASSETS_SPEC). |
 
+**Ship-on-disk-but-unwired chrome (recorded by hand because these postdate the generator
+run; a regeneration would list them in the table above).** `ui_armory_console.png`
+(2720x1032) stays on disk but **leaves the live tree in S20**: UI_SPEC section 3.10
+Amendment 4 (A4.1) retires the scripted master from the ARMORY pane for the theme's
+`ui_panel_frame` chrome (reversal: its scripted renderer re-renders it byte-identical).
+`ui_armory_rack_plate.png` (194x182) and `ui_armory_row_plate.png` are the same case from
+S18 (Amendment 3). Also not in the table for the same reason: `ui_cockpit_panel.png`,
+`ui_cockpit_frame.png` (retired, held only by the status modal's hidden node),
+`ui_status_panel.png`, `ui_readout_glass.png` and the twelve `ui_seg_*` cells.
+
 ## fx - combat and screen effects
 
 | File | px | a | ph | Purpose |
