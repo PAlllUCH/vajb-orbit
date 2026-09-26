@@ -5,14 +5,16 @@ extends McpTestSuite
 ## S18 live playtest: "i need to unify it to the rest of game (chromes) and on hover the
 ## bottom description panel sometis gets 'bigger' and all shifts up").
 ##
-##  - **AC1 (A4.1)** - `ui_armory_console` retires from the pane: no reference in the
-##    pane's code or style, the scene's nine-slice is cleared at build, and the bay cards
-##    and wells halves wear the theme's own `ui_panel_frame` nine-patch (`PanelRaised`,
-##    32 px patch margin, the 1 px border convention) - the very box the sibling panels
-##    resolve.
-##  - **AC2 (A4.2)** - every bay cell draws the `ui_slot_weapon_*` slot chrome (the
-##    `SlotButtonWeapon` family FITTING's weapon slots wear); `BUY` and the cell's `X`
-##    wear `StationButton` / `ui_button_plate_*`.
+##  - **AC1 (A4.1, amended by A5.1 2026-09-26)** - `ui_armory_console` retires from the
+##    pane: no reference in the pane's code or style, the scene's nine-slice is cleared at
+##    build, and the console draws **no inner frame** - the pane's outer edge is the module
+##    host's own `PanelRaised`, and every surface inside is the flat Tokens box (the 32 px
+##    `ui_panel_frame` band does not fit a 260x192 bay).
+##  - **AC2 (A4.2, amended by A5.1/A5.3)** - every bay cell keeps its machined recess and
+##    draws the `ui_slot_weapon_*` plate **at its own 48x48**, centred (the
+##    `SlotButtonWeapon` family FITTING's weapon slots wear, never stretched); `BUY` and
+##    the cell's `X` wear `StationButton` / `ui_button_plate_*` (the `X` pinned at its
+##    laid-out 24x29, L236).
 ##  - **AC3 (A4.3)** - zero hex literal outside `tools/build_theme.gd` in the wave's
 ##    files; the palette fields resolve from `Tokens/armory_*`; the
 ##    `armory_style_user.tres` override path still restyles.
@@ -46,6 +48,7 @@ const CONSOLE_MASTER := "res://assets/ui/ui_armory_console.png"
 const HOST := Vector2(1392.0, 610.0)
 const STATION_HOST := Vector2(1920.0, 1080.0)
 const FRAME_PATCH := 32.0
+const SLOT_SIZE := Vector2(48.0, 48.0)
 const CONTRAST_FLOOR := 4.5
 const BAY_CELLS := 20
 
@@ -212,71 +215,67 @@ func test_ac1_the_console_master_retires_for_the_panel_frame() -> void:
 	assert_true(chrome != null, "the chrome layer ships")
 
 
-## A4.1: the bays and wells halves draw the theme's own `ui_panel_frame` nine-patch - the
-## same box a sibling `PanelRaised` panel resolves, at the 32 px patch margin and the
-## theme's 1 px border convention.
-func test_ac1_the_plates_wear_the_sibling_panels_frame() -> void:
+## A5.1 (2026-09-26, owner-ruled): **no frame is drawn inside the console.** The two clean
+## panes are the yardstick - AUCTION has no framed body surface and SHIPYARD's only frame
+## is its outer `PreviewFrame` - so the bays and well halves wear the flat Tokens box and
+## the pane's own outer frame stays the module host's `PanelRaised`. The asset itself stays
+## registered for the shell (asserted below), so only its *use here* retires.
+func test_ac1_the_console_draws_flat_tokens_boxes_and_no_inner_frame() -> void:
 	var panel := _mount()
 	var chrome := _chrome()
-	var frame: StyleBox = chrome.get(&"frame_box")
-	assert_true(frame is StyleBoxTexture, "the chrome paints the family's texture box")
-	if not (frame is StyleBoxTexture):
-		return
-	var texture_box := frame as StyleBoxTexture
 	assert_eq(
-		String(texture_box.texture.resource_path), FRAME_TEXTURE,
-		"the ui_panel_frame nine-patch"
-	)
-	assert_eq(texture_box.texture_margin_left, FRAME_PATCH, "at the pinned 32 px patch margin")
-	assert_eq(texture_box.texture_margin_top, FRAME_PATCH, "on every side")
-	assert_eq(texture_box.texture_margin_right, FRAME_PATCH, "")
-	assert_eq(texture_box.texture_margin_bottom, FRAME_PATCH, "")
-	assert_eq(
-		texture_box.expand_margin_left, texture_box.expand_margin_top,
-		"the border convention is symmetric"
+		chrome.get(&"frame_box"), null,
+		"the console's chrome draws no frame nine-patch (A5.1)"
 	)
 	var sibling := PanelContainer.new()
 	sibling.theme_type_variation = &"PanelRaised"
 	panel.add_child(sibling)
-	assert_true(
-		frame == sibling.get_theme_stylebox(&"panel"),
-		"the chrome resolves the very box the sibling panels wear"
-	)
+	var host_frame: StyleBox = sibling.get_theme_stylebox(&"panel")
+	assert_true(host_frame is StyleBoxTexture, "the shell's own frame stays registered")
+	if host_frame is StyleBoxTexture:
+		assert_eq(
+			String((host_frame as StyleBoxTexture).texture.resource_path), FRAME_TEXTURE,
+			"the host's frame is the one ui_panel_frame (the pane's outer edge)"
+		)
+		assert_eq(
+			(host_frame as StyleBoxTexture).texture_margin_left, FRAME_PATCH,
+			"at the pinned 32 px patch margin"
+		)
+	sibling.free()
 	var bays: Array = panel.call(&"bay_rects")
-	assert_eq(bays.size(), 5, "all five bays wear it")
+	assert_eq(bays.size(), 5, "all five bays draw the flat box")
 	var wells: Array = panel.call(&"well_rects")
 	assert_eq(wells.size(), 2, "and both wells halves")
-	sibling.free()
 
 
 ## --------------------------------------------------- 2. AC2: cells, BUY and X (A4.2)
 
-## A4.2: every 2x2 bay cell draws the game's weapon-slot chrome - the `SlotButtonWeapon`
-## family's own plate, the one FITTING's slots wear - and the pressable chips wear
+## A4.2 amended by A5.1/A5.3: every 2x2 bay cell draws the game's weapon-slot plate **at
+## its own 48x48**, centred in the cell (never stretched to the cell's 117x52 box, which
+## smeared the painted silhouette across it); the pressable chips keep
 ## `StationButton` / `ui_button_plate_*`.
 func test_ac2_the_cells_and_the_pressables_wear_the_family() -> void:
 	var panel := _mount()
 	var chrome := _chrome()
-	var slot: StyleBox = chrome.get(&"slot_box")
-	assert_true(slot is StyleBoxTexture, "the cells draw the family's slot box")
-	if not (slot is StyleBoxTexture):
+	var plate_texture: Texture2D = chrome.get(&"slot_plate")
+	assert_true(plate_texture != null, "the cells draw the family's own slot plate")
+	if plate_texture == null:
 		return
 	assert_eq(
-		String((slot as StyleBoxTexture).texture.resource_path), SLOT_TEXTURE,
+		String(plate_texture.resource_path), SLOT_TEXTURE,
 		"the ui_slot_weapon_* slot chrome"
+	)
+	assert_eq(
+		plate_texture.get_size(), SLOT_SIZE,
+		"drawn at the size it was cut for (48x48), never stretched"
 	)
 	assert_eq(
 		(chrome.get(&"cells") as Array).size(), BAY_CELLS,
 		"one plate per cell of the five bays (A3's 2x2 grid stands)"
 	)
-	var sibling := Button.new()
-	sibling.theme_type_variation = &"SlotButtonWeapon"
-	panel.add_child(sibling)
-	assert_true(
-		slot == sibling.get_theme_stylebox(&"normal"),
-		"the same normal plate a SlotButtonWeapon draws"
-	)
-	sibling.free()
+	var centred: Rect2 = panel.call(&"slot_plate_rect", Rect2(0.0, 0.0, 117.0, 52.0), plate_texture)
+	assert_eq(centred.position, Vector2(34.5, 2.0), "the plate centres inside the cell")
+	assert_eq(centred.size, SLOT_SIZE, "and keeps its own size")
 	## BUY: a StationButton at the plate's own texture.
 	var card := _card(ROCKET_PACK)
 	assert_true(card != null, "the rocket pack has a card")
@@ -304,6 +303,7 @@ func test_ac2_the_cells_and_the_pressables_wear_the_family() -> void:
 		if close != null:
 			assert_eq(close.theme_type_variation, &"StationButton", "the X is a StationButton")
 			assert_false(close.flat, "and no longer draws flat")
+			assert_eq(close.size, Vector2(24.0, 29.0), "pinned at the plate's own minimum (L236)")
 
 
 ## ----------------------------------------------- 3. AC3: no hex, theme-resolved (A4.3)
@@ -394,7 +394,7 @@ func test_ac4_the_over_cap_label_clears_the_contrast_floor() -> void:
 	_profile.call(&"set_battery_groups", DESTROYER, [[0, 1, 2, 3]])
 	panel.call(&"refresh_profile", &"batteries")
 	var state := _rack_row(0).get_node(^"Box/Head/State") as Label
-	assert_eq(state.text, PanelScript.RACK_STATE_OVER, "the four-cell battery reads OVER CAP")
+	assert_eq(state.text, PanelScript.RACK_STATE_AT_CAP, "the four-cell battery reads AT CAP")
 	var bay_ratio := _contrast(state.get_theme_color(&"font_color"), fill)
 	assert_true(
 		bay_ratio >= CONTRAST_FLOOR,

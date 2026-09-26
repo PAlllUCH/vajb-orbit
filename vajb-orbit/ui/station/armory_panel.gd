@@ -19,7 +19,7 @@ extends Control
 ##     fire together; each bay draws four slot-chrome cells (A4.2), prints the full barrel
 ##     name at 13 px on a fitted cell and `DROP HERE` on an empty one, and carries its
 ##     salvo readout on the ledge (`ui_seg_*` hundredths of a second beside `SALVO s`)
-##     and its `READY` / `OVER CAP` state chip on the head. Dragging an inventory weapon
+##     and its `READY` / `AT CAP` state chip on the head. Dragging an inventory weapon
 ##     onto a bay installs it into the rack's next free W cell through the profile's
 ##     composed `fit_into_rack` (the section 13/16 transactions: `fit_legal` and the
 ##     mandatory set are checked before the first write, a refusal writes nothing). A
@@ -103,12 +103,14 @@ const RACK_COUNT: int = WeaponComponent.GROUPS_MAX
 const RACK_LABEL := "B%d"
 const RACK_KEY := "(%d)"
 const RACK_ACTION := "weapon_%d"
-## The empty cell's cue (T4) and the bay's state chip (T7): the chip states `READY`, or
-## `OVER CAP` when the battery holds the hardcap's four cells - shape (chevron) plus
-## label, never colour alone.
+## The empty cell's cue (T4) and the bay's state chip (T7, owner-ruled 2026-09-26): the
+## chip states `READY`, or `AT CAP` when the battery holds the hardcap's four cells -
+## shape (chevron) plus label, never colour alone. `AT CAP` is the literal wording
+## (UI_SPEC section 3.10 Amendment 5): the pack card's `OVER CAP` is the *other* state
+## (over the advisory hold ceiling), and the two must not share a word.
 const RACK_INSTALL_CUE := "DROP HERE"
 const RACK_READY := "READY"
-const RACK_STATE_OVER := "OVER CAP"
+const RACK_STATE_AT_CAP := "AT CAP"
 const RACK_SALVO := "SALVO %.1f s"
 const BARREL_TEXT := "W%d %s"
 const BARREL_CLOSE := "✕"
@@ -335,7 +337,7 @@ class InventoryRow extends Button:
 		return armory.call(&"drag_inventory", base_id)
 
 
-## A chip: the rounded plate, its border and - for the OVER CAP state - the chevron that
+## A chip: the rounded plate, its border and - for the AT CAP state - the chevron that
 ## makes the state a shape as well as a label (T7, HIGH-3's cure).
 class ChipPlate extends Control:
 	var style: Resource = null
@@ -547,17 +549,16 @@ class RowPlate extends Control:
 	func _draw() -> void:
 		if style == null:
 			return
-		var frame: StyleBox = get_theme_stylebox(&"panel", &"PanelRaised")
-		if frame != null:
-			draw_style_box(frame, Rect2(Vector2.ZERO, size))
-		else:
-			var box := StyleBoxFlat.new()
-			box.bg_color = style.colour(ROLE_ITEM_BG)
-			box.corner_radius_top_left = 6
-			box.corner_radius_top_right = 6
-			box.corner_radius_bottom_left = 6
-			box.corner_radius_bottom_right = 6
-			draw_style_box(box, Rect2(Vector2.ZERO, size))
+		## A5.3: the card is 320x68 - far too small for the frame's 32 px band (a 4 px
+		## opening), so it wears the flat Tokens box plus the 1 px border, the idiom the
+		## AUCTION rows and the section 3.1 chips already speak.
+		var box := StyleBoxFlat.new()
+		box.bg_color = style.colour(ROLE_ITEM_BG)
+		box.corner_radius_top_left = 6
+		box.corner_radius_top_right = 6
+		box.corner_radius_bottom_left = 6
+		box.corner_radius_bottom_right = 6
+		draw_style_box(box, Rect2(Vector2.ZERO, size))
 		draw_rect(
 			Rect2(Vector2.ZERO, size),
 			style.colour(ROLE_DANGER if _danger else ROLE_METAL_MID),
@@ -566,20 +567,22 @@ class RowPlate extends Control:
 
 
 ## The console's own chrome, one node and one `_draw` pass, over the host's panel and
-## under every interactive one. **Amendment 4:** the bay cards and the wells halves wear
-## the theme's `ui_panel_frame` nine-patch (A4.1, `PanelRaised`), every bay cell the game's
-## `ui_slot_weapon_*` slot chrome (A4.2, the `SlotButtonWeapon` family), and the salvo
-## ledges keep their code-drawn band (A4.5: the seven-seg strip stands untouched).
+## under every interactive one. **Amendment 4 amended by Amendment 5 (owner-ruled
+## 2026-09-26):** every inner surface (the two wells halves, the five bay cards, the cells,
+## the ledges) wears the flat Tokens language (A5.1: no frame inside the console - the
+## pane's outer edge is the module host's own `PanelRaised`), every bay cell keeps its
+## machined recess and draws the `ui_slot_weapon_*` slot plate at its own 48x48 centred
+## (never stretched), and the salvo ledges keep their code-drawn band (A4.5).
 class ConsolePanels extends Control:
 	var style: Resource = null
 	var bays: Array[Rect2] = []
 	var cells: Array[Rect2] = []
 	var ledges: Array[Rect2] = []
 	var wells: Array[Rect2] = []
-	## The theme's own chrome boxes, read fresh on every configure so a theme re-band moves
-	## this pane with every sibling panel: the panel frame and the weapon slot plate.
-	var frame_box: StyleBox = null
-	var slot_box: StyleBox = null
+	## The theme's own chrome, read fresh on every configure so a theme re-band moves this
+	## pane with every sibling panel: the weapon slot's own 48x48 plate texture (drawn at
+	## its own size, A5.1). The cards and halves need no asset - A5.1's flat Tokens box.
+	var slot_plate: Texture2D = null
 
 	func configure(
 		new_style: Resource,
@@ -593,41 +596,47 @@ class ConsolePanels extends Control:
 		cells = new_cells
 		ledges = new_ledges
 		wells = new_wells
-		frame_box = get_theme_stylebox(&"panel", &"PanelRaised")
-		slot_box = get_theme_stylebox(&"normal", &"SlotButtonWeapon")
+		slot_plate = _slot_texture()
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
 		queue_redraw()
 
 	func _draw() -> void:
 		if style == null:
 			return
+		## A5.1/A5.3: every inner surface is the flat Tokens box - the two well halves and
+		## the five bay cards (a bay is 260x192: the frame's 32 px band would leave a
+		## 196x128 opening for 240 px of cells, so it is not drawn inside this console).
 		for rect: Rect2 in wells:
-			_frame(rect)
+			_plate(rect, ROLE_BAY_BG, 8)
 		for rect: Rect2 in bays:
-			_frame(rect, ROLE_BAY_BG, 8)
+			_plate(rect, ROLE_BAY_BG, 8)
 		for rect: Rect2 in cells:
 			_slot(rect)
 		for rect: Rect2 in ledges:
 			_plate(rect, ROLE_LEDGE_BG, 6)
 
-	## Section 5.3's panel frame (A4.1): the `ui_panel_frame` nine-patch - 32 px patch
-	## margin, the theme's 1 px border convention - so a bay card or a wells half reads as
-	## every sibling panel. Without a theme box a bay's recorded recess tone returns (the
-	## palette's own reversal path); a wells half simply draws nothing.
-	func _frame(rect: Rect2, role: StringName = &"", radius: int = 0) -> void:
-		if frame_box != null:
-			draw_style_box(frame_box, rect)
-		elif not role.is_empty():
-			_plate(rect, role, radius)
+	## The slot family's own normal plate, whatever the theme's variation holds (a
+	## `StyleBoxTexture` normally): A5.1 draws it at the size it was cut for, never
+	## stretched to a cell's box.
+	func _slot_texture() -> Texture2D:
+		var box := get_theme_stylebox(&"normal", &"SlotButtonWeapon") as StyleBoxTexture
+		return box.texture if box != null else null
 
-	## A4.2: the cell wears the game's weapon-slot chrome - the `SlotButtonWeapon` family's
-	## own plate, the one FITTING's slots draw (a `SlotButton` at the cell's box). Without
-	## the theme's slot plate the pre-S20 machined recess returns.
+	## The slot plate's own rect inside a cell: centred, at the plate's own size (A5.1 -
+	## the drawn rect never reaches the cell's box). The one place that arithmetic lives.
+	static func slot_plate_rect(cell: Rect2, plate: Texture2D) -> Rect2:
+		if plate == null:
+			return cell
+		return Rect2(cell.position + (cell.size - plate.get_size()) * 0.5, plate.get_size())
+
+	## A4.2 amended by A5.1/A5.3: the cell keeps the machined recess and wears the
+	## family's slot plate **at its own 48x48** centred - never stretched to the cell's
+	## 117x52 box, which would smear the painted silhouette across it (the S20 defect).
 	func _slot(rect: Rect2) -> void:
-		if slot_box != null:
-			draw_style_box(slot_box, rect)
-			return
 		_recess(rect)
+		if slot_plate == null:
+			return
+		draw_texture(slot_plate, slot_plate_rect(rect, slot_plate).position)
 
 	## A raised band: the fill plus a 1 px border.
 	func _plate(rect: Rect2, role: StringName, radius: int) -> void:
@@ -1778,12 +1787,12 @@ func _build_rack(rack: int, refs: Array, cells: Array) -> Dictionary:
 	for slot in range(refs.size(), 4):
 		_build_drop_cell(rack, slot, cell_boxes)
 	var cycle := _rack_cycle(refs, cells)
-	var state_text: String = RACK_STATE_OVER if _rack_cells_count(refs) >= WeaponComponent.BATTERY_CELLS_MAX else RACK_READY
+	var state_text: String = RACK_STATE_AT_CAP if _rack_cells_count(refs) >= WeaponComponent.BATTERY_CELLS_MAX else RACK_READY
 	state.text = state_text
-	chip.configure(_style, state_text == RACK_STATE_OVER, state_text == RACK_STATE_OVER)
+	chip.configure(_style, state_text == RACK_STATE_AT_CAP, state_text == RACK_STATE_AT_CAP)
 	state.add_theme_color_override(
 		&"font_color",
-		_token(ROLE_DANGER_BRIGHT if state_text == RACK_STATE_OVER else ROLE_CAPTION)
+		_token(ROLE_DANGER_BRIGHT if state_text == RACK_STATE_AT_CAP else ROLE_CAPTION)
 	)
 	var salvo_line: String = RACK_SALVO % cycle if cycle > 0.0 else RACK_READY
 	state.tooltip_text = salvo_line

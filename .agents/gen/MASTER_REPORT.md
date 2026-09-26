@@ -1213,3 +1213,25 @@ post-S20 tree (gate 895) and the wave ran then, with the D14 design lane
 committing its docs mid-window. Close-out: gate **914/0** twice hermetic,
 `verify --baseline s19_start` green (`"problems": []`), CONTRACTS §9/§10 (v0.35),
 WAVEBOARD, wave-boundary commit. The coder queue is empty.
+
+**Owner-ruled chrome cure, 2026-09-26 (post-S19; UI_SPEC §3.10 Amendment 5 — the
+orchestrator's pass, gate `914/0` unmoved).** The owner looked at the pane live and
+ruled its look against the two clean panes (*"look how clean auction and shipyard are
+done i want all to look this clean"*) plus the mechanism (*"we always should use
+anchors and relative positioning"*, so two workers on one brief cannot diverge). The
+measured cause of the overlaps was the chrome choice, not the layout: `ui_panel_frame`
+is a 96×96 asset with a **32 px** band, so on a 260×192 bay it left a 196×128 opening
+for 240 px of cells and on a 68 px card it left 4 px; `ui_slot_weapon_normal` carries
+a painted pistol and was being stretched 2.44× across each cell; the ✕ squeezed a
+280×56 bar into 24 px. Cure: the pane's one frame is the module host's own
+`PanelRaised`; bays, well halves, pack rows and inventory rows wear the flat Tokens
+box (`_flat`, 1 px `metal_mid`); cells keep their machined recess and draw the slot
+plate **at its own 48×48** centred (`ConsolePanels.slot_plate_rect`); the ✕ is
+accepted and pinned at 24×29 (**L236 closed**); the bay chip reads **`▲ AT CAP`**
+(T6: "at cap when its at cap, literally"). A5.2 records the mechanism as law
+(containers/anchors, stylebox chrome, a mark inside its own rect, `content_margin_*`
+for any band) and AGENTS.md §Rules carries the one-liner. Evidence: gate `914/0`
+twice on fresh scratch stores, 0 FAIL/SKIP; the row set re-pinned in place (no count
+change) in `test_s20_chrome_unify.gd`, `test_s18_armory_rework.gd`, `test_d7_armory.gd`,
+`test_s15_armory_layout.gd` and `probe_s20_review.gd`; windowed capture of the fixed
+pane at `slices/D14-armory-chrome-composition/_evidence/armory_live_after_a5.png`.

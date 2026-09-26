@@ -110,6 +110,18 @@ delegation; the D12 fix wave and D8 item 9 ditched for the armory rework).
 
 **Current state: the universal gate reads `[SUMMARY] passed=914 failed=0`**
 (CONTRACTS §9 carries the authority block; hermetic on scratch stores).
+**Owner-ruled chrome cure, 2026-09-26 (UI_SPEC §3.10 Amendment 5, gate `914/0`
+unmoved — no rows added):** after the S19 close-out the owner ruled the ARMORY's
+look against AUCTION/SHIPYARD (*"i want all to look this clean"*, *"we always
+should use anchors and relative positioning"*). The pane's one frame is the
+module host's own `PanelRaised`; bays, well halves, pack rows and inventory rows
+wear the flat Tokens box; the cells draw `ui_slot_weapon_*` at its own 48×48
+centred (never stretched); the bay chip now reads **`▲ AT CAP`** (T6 ruled);
+**L236 closed** (the `✕` accepted at 24×29). A5.2 carries the mechanism as law
+(containers/anchors, stylebox chrome, no `_draw` over content) and **AGENTS.md
+§Rules** carries the one-line version for every session. The designer slice
+**D14** holds the deeper composition questions (its brief + captures are in
+`slices/D14-armory-chrome-composition/`).
 **S20 (coder item 25) closed 2026-09-26:** the ARMORY wears the §5.3 chrome
 family, the shell inspector holds a constant height, `OVER CAP` measures
 **4.855:1** (**L227 closed**); gate **887 → 895/0** twice hermetic
@@ -121,8 +133,10 @@ rows; forced by A4.3, so a list amendment, never a revert — no fixer may take
 them); recap `MASTER_REPORT.md` §6.
 **Coder queue: empty** — items 25 (S20) and 26 (S19) both closed 2026-09-26;
 the next five-piece is the owner's call.
-**no live designer item** (D13 closed; the owner's armory polish rides his own
-designer session). **Parked (owner-gated, not
+**Live designer item: D14 ARMORY chrome composition** (item 15 in
+`dispatch_designer.md`; brainstorm first, then Amendment 5's follow-ups — the
+deeper container composition and any small-surface art question; brief +
+captures in `slices/D14-armory-chrome-composition/`). **Parked (owner-gated, not
 queued):** the S12 ore caps/scale rows (the owner's §10 ticks — do not
 implement before that wave is briefed), slice 4's remainder (bosses/arena —
 14 §5, blocked on P4 contracts + boss art), the §13 turn/coast column ticks

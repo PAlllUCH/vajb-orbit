@@ -583,14 +583,54 @@ and the **§5.3 chrome family** takes its place.
 - **Owner tick list (2026-09-26, wave S20 — recorded at close-out):** **T1–T4 as
   briefed** (A4.1–A4.3 mapping scope, slot-chrome cells, the L227 cure, the
   constant inspector height) · **T5 = keep** (the seven-seg salvo ledge and its
-  `SALVO s` caption stand as A4.5 ticks them; no re-open asked for) · **T6
-  open, the owner's word owed** — the bay chip's wording. The wave ships `▲
-  OVER CAP` (S18's T7 semantics, unchanged); the fork is that §5.1's own pack
-  vocabulary already says `AT CAP` for the *full* state, so the bay chip reads
-  more consistently as `▲ AT CAP` — owner's call, and the change is the one
-  chip string plus its suite rows. Implementation wave: **S20** (coder item 25;
-  `slices/S20-armory-chrome-unify/`), gate `887 → 895/0`, closed 2026-09-26 with
-  `OVER CAP` at **4.855:1**.
+  `SALVO s` caption stand as A4.5 ticks them; no re-open asked for) · **T6 = AT
+  CAP, ruled 2026-09-26** — the bay chip reads `▲ AT CAP` when the battery holds
+  all four cells ("at cap when it's at cap, literally"); the pack card keeps
+  §5.1's `OVER CAP`, which means over the *advisory* hold ceiling. Implementation
+  wave: **S20** (coder item 25; `slices/S20-armory-chrome-unify/`), gate
+  `887 → 895/0`, closed 2026-09-26 with `OVER CAP` at **4.855:1**.
+
+**Amendment 5 (2026-09-26, owner-ruled after the S20 live playtest — the ARMORY
+chrome composition; A4.1/A4.2's per-surface mapping is amended here).** Owner,
+verbatim: *"look how clean auction and shipyard are done i want all to look this
+clean"* and *"we always should use anchors and relative positioning"* — his
+reason, *"when i dispatch each agent it generates different outcome"*. **This is
+a mechanism amendment**: it fixes how a surface is built so two workers on the
+same brief cannot diverge, and it fixes the chrome that the measured art cannot
+honour. AUCTION/SHIPYARD are the yardstick (`auction_panel.gd:752-800` — rows are
+`Button`s with container children; `shipyard_panel.tscn:74-115` — the one framed
+surface is `PanelContainer`+`PanelRaised`+`MarginContainer`).
+
+- **A5.1 Chrome is chosen by the asset's own cut size — and inside a pane it is flat.**
+  The two clean panes are the yardstick: AUCTION has **no framed surface** in its
+  body at all (rows are `Button`s over the theme's plates), and SHIPYARD's only
+  frame is its outer `PreviewFrame`. So the ARMORY's inner surfaces (the bays, the
+  well halves, the pack rows, the inventory rows) wear the flat Tokens language —
+  `StyleBoxFlat`, 1 px `metal_mid` border, the theme's own `_flat()`
+  (`build_theme.gd:450-457`) — and the pane's only frame is the **module host's
+  own `PanelRaised`**, already the pane's outer edge. `ui_panel_frame` (96×96, a
+  **32 px** band, `build_theme.gd:504-514`) is a pane-scale asset and is no longer
+  drawn inside this console: at bay size it leaves a 196×128 opening for 240 px of
+  cells, and at card size (68 px tall) it leaves 4 px. A code-drawn mark stays
+  inside its own child rect. Reversal: A4.1's per-surface frame assignment (the
+  measured overlap defects return).
+- **A5.2 Composition law (the owner's rule, as mechanism).** (i) Layout is
+  containers + anchors + `custom_minimum_size` + size flags — never coordinates;
+  (ii) a surface's chrome is a theme stylebox or a sibling node, never a `_draw`
+  pass over content; (iii) a code-drawn mark draws **within its own child rect**,
+  anchored to it; (iv) chrome that carries a visual band also sets the
+  `content_margin_*` that keeps content off it. A worker who needs coordinates for
+  anything that must sit inside art is out of contract. Reversal: the S18/S20
+  hand-derived rect layout.
+- **A5.3 The measured cure (what this wave ships):** bays, well halves, pack cards
+  and inventory rows wear the flat Tokens box (`bay_bg`/`item_bg` + the 1 px
+  `metal_mid` border); the cells keep the machined recess (`cell_bg` + the two
+  edge tones) and draw the family's `ui_slot_weapon_*` plate **at its own 48×48**
+  centred (never stretched over a 117×52 cell — the S20 smear); the `✕` chip is
+  pinned at its laid-out size (24×29 — the `StationButton` plate's own minimum,
+  **L236** closed as accepted); A3's geometry numbers all stand (nothing moves).
+  Reversal: the frame on bays/wells/cards and the stretched slot plate (the
+  overlapped look).
 
 ## 4. Settings
 

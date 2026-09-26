@@ -360,6 +360,14 @@ is written loose in `.agents/gen/`. Full law and migration rules:
 ## Rules
 
 - Update docs first, then code, then tests — never the reverse.
+- **UI composition (owner ruling 2026-09-26): containers and relative positioning,
+  never coordinates.** A panel's layout is containers + anchors +
+  `custom_minimum_size` + size flags; a surface's chrome is a theme stylebox or a
+  sibling node, never a `_draw` pass over content; a code-drawn mark draws inside
+  its own child rect; chrome is picked by the asset's own cut size (a nine-slice
+  band only where the surface's content leaves room for it — otherwise the flat
+  Tokens box, 1 px `metal_mid` border). The ARMORY is the worked example and the
+  full law: `docs/design/UI_SPEC.md` §3.10 **Amendment 5** (A5.1–A5.3).
 - Host commands: where a pipeline example says `py -3.14`, that is the Windows
   python.org interpreter; on Linux the same scripts run under `python3`.
   `$GODOT_*`/`$VAJB_*` variables resolve per host from `crushrc`.

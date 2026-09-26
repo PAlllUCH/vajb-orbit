@@ -380,7 +380,7 @@ func test_the_bay_chip_states_the_cap_and_the_empty_cells_offer_drop() -> void:
 	panel.call(&"refresh_profile", &"batteries")
 	var full_state := _rack_row(0).get_node(^"Box/Head/State") as Label
 	var full_chip := _rack_row(0).get_node(^"Box/Head/Chip") as Control
-	assert_eq(full_state.text, PanelScript.RACK_STATE_OVER, "the full battery reads OVER CAP")
+	assert_eq(full_state.text, PanelScript.RACK_STATE_AT_CAP, "the full battery reads AT CAP")
 	assert_eq(bool(full_chip.get(&"chevron")), true, "with its chevron (shape and label)")
 
 

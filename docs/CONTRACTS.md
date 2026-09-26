@@ -35,23 +35,23 @@ later request; one section costs ~2-3k.
 | §6 | Sector / SectorRegistry | L415–L440 |
 | §7 | HUD — frozen API + wave-1 additions | L441–L506 |
 | §8 | Economy / state seams | L507–L550 |
-| §8.1 | Slice 0 — physics & fuel (pinned additions, 2026-09-21) | L551–L633 |
-| §8.2 | Slice 2 — fight (pinned additions, 2026-09-21) | L634–L850 |
-| §9 | Universal test gate | L851–L1386 |
-| §11 | P2 ship frames (2026-09-21) | L1387–L1582 |
-| §12 | P2-B1 weapon fit (2026-09-22) | L1583–L1640 |
-| §13 | P2-B proper fitting (2026-09-22) | L1641–L1762 |
-| §14 | S2.6 truth-and-feel (2026-09-22) | L1763–L1833 |
-| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1834–L1929 |
-| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L1930–L2105 |
-| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L2106–L2184 |
-| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L2185–L2246 |
-| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L2247–L2466 |
-| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2467–L2743 |
-| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2744–L2927 |
-| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L2928–L2976 |
-| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L2977–L3145 |
-| §10 | Changelog | L3146–L4239 |
+| §8.1 | Slice 0 — physics & fuel (pinned additions, 2026-09-21) | L551–L686 |
+| §8.2 | Slice 2 — fight (pinned additions, 2026-09-21) | L687–L903 |
+| §9 | Universal test gate | L904–L1472 |
+| §11 | P2 ship frames (2026-09-21) | L1473–L1668 |
+| §12 | P2-B1 weapon fit (2026-09-22) | L1669–L1726 |
+| §13 | P2-B proper fitting (2026-09-22) | L1727–L1848 |
+| §14 | S2.6 truth-and-feel (2026-09-22) | L1849–L1919 |
+| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1920–L2015 |
+| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L2016–L2191 |
+| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L2192–L2270 |
+| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L2271–L2343 |
+| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L2344–L2563 |
+| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2564–L2840 |
+| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2841–L3024 |
+| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L3025–L3073 |
+| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L3074–L3242 |
+| §10 | Changelog | L3243–L4415 |
 
 <!-- section-index:end -->
 
@@ -927,6 +927,21 @@ Measured the same pass: no damage number moved for a direction-less or out-of-ar
 reviewer's 1441-bearing replay and its 13 boundary cases), and the four forbidden files'
 SHA-256s are unchanged (`5cabf3d9…6269`, `de8596b1…81be`, `e39440bf…5d22`,
 `fcdc549f…8279`).
+
+**Owner-ruled cure (2026-09-26, after the S19 close-out; UI_SPEC §3.10 Amendment 5): the
+ARMORY's inner chrome is flat, and the slot plate is never stretched.** The owner's words
+(*"look how clean auction and shipyard are done i want all to look this clean"*, *"we
+always should use anchors and relative positioning"*) settled A4.1/A4.2's per-surface
+mapping: the pane's one frame is the **module host's own `PanelRaised`**, the bays/well
+halves/pack rows/inventory rows wear the flat Tokens box, the cells keep their machined
+recess and draw `ui_slot_weapon_*` **at its own 48×48** centred (`ConsolePanels.slot_plate_rect`),
+and the ✕ chip is pinned at its laid-out **24×29** (**L236** closed). The bay chip now reads
+`▲ AT CAP` (`RACK_STATE_AT_CAP`, keeping its chevron); the pack card keeps §5.1's `OVER CAP`.
+Measured: `[SUMMARY] passed=914 failed=0`, **twice on fresh scratch stores** (the same count
+as the S19 close-out — no rows added; three suites' rows re-pinned in place:
+`test_s20_chrome_unify.gd` AC1/AC2, `test_d7_armory.gd` and `test_s15_armory_layout.gd`'s
+frame rows, `test_s18_armory_rework.gd`'s chip row). The windowed capture of the live pane
+is clean (flat cards, tiles inside the bays, cards' text no longer crossed by a frame lip).
 
 Expected (S20, 2026-09-26): **`[SUMMARY] passed=895 failed=0`**, exit 0. S20-R1 measured
 **895** twice on two fresh scratch stores (`XDG_DATA_HOME=$(mktemp -d)`, exit 0, identical
@@ -4373,3 +4388,27 @@ hull stops twice and the second stop slides.
   file-collision law — a concurrently dispatched first B1 was stopped before it wrote
   anything, the baseline re-taken on the post-S20 tree), and the D14 design lane
   committed its docs during the window.
+- **v0.35 (2026-09-26, owner-ruled cure — the orchestrator's pass the same day; gate
+  `914/0` twice on fresh scratch stores, **no rows changed**)** — records **UI_SPEC §3.10
+  Amendment 5** and its implementation. The owner's ruling on the pane's look (*"look how
+  clean auction and shipyard are done"*) settles where the chrome comes from: the pane's
+  only frame is the module host's own `PanelRaised` edge, and the bays, well halves, pack
+  rows and inventory rows wear the flat Tokens box (A5.1/A5.3) — the `ui_panel_frame`
+  96×96 asset's 32 px band does not fit a 260×192 bay (a 196×128 opening for 240 px of
+  cells) or a 68 px card (a 4 px opening). The cells keep their machined recess and draw
+  the `ui_slot_weapon_*` plate **at its own 48×48** centred via the new
+  `ConsolePanels.slot_plate_rect` (never stretched — the 2.44× stretch smeared the painted
+  silhouette); the frame's band and the slot plate no longer touch content. A5.2 carries
+  the mechanism as law (containers/anchors, stylebox chrome, a mark drawn inside its own
+  child rect, `content_margin_*` for any band) so two workers on one brief cannot diverge.
+  The bay chip reads **`▲ AT CAP`** (`PanelScript.RACK_STATE_AT_CAP`, chevron kept; T6
+  ruled by the owner: "at cap when its at cap, literally"), the pack card keeps §5.1's
+  `OVER CAP`, and the `✕` chip is pinned at its laid-out **24×29** (**L236** closed as
+  accepted). A4.1/A4.2 are amended in place with their reversal (the frame on
+  bays/wells/cards and the stretched slot plate return). Rows re-pinned in place (same
+  count): `test_s20_chrome_unify.gd`'s AC1 row becomes
+  `test_ac1_the_console_draws_flat_tokens_boxes_and_no_inner_frame`, its AC2 row the
+  native-size + centring assertions; `test_d7_armory.gd`,
+  `test_s15_armory_layout.gd` and the S20 review probe read the host frame instead of the chrome's; `test_s18_armory_rework.gd`'s chip row and the probe
+  use `RACK_STATE_AT_CAP`. Reversal: restore A4.1's per-surface frame assignment and the
+  stretched slot plate (the overlapped look the owner rejected).

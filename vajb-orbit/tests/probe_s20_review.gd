@@ -195,26 +195,28 @@ func _ac1() -> void:
 	_check(source.find("ui_armory_console") == -1, "AC1 pane code mentions the master")
 	_check(_style().get(&"console_path") == null, "AC1 the style still carries console_path")
 	_check(ResourceLoader.exists("res://assets/ui/ui_armory_console.png"), "AC1 master gone from disk")
-	var frame := _chrome().get(&"frame_box") as StyleBox
-	if frame is StyleBoxTexture:
-		var box := frame as StyleBoxTexture
-		print("[r1] ac1 frame=%s patch=%.0f/%.0f/%.0f/%.0f expand=%.0f" % [
-			box.texture.resource_path, box.texture_margin_left, box.texture_margin_top,
-			box.texture_margin_right, box.texture_margin_bottom, box.expand_margin_left,
-		])
-		_check(
-			String(box.texture.resource_path) == "res://assets/ui/ui_panel_frame.png",
-			"AC1 the chrome frame is not ui_panel_frame"
-		)
-		_check(box.texture_margin_left == 32.0, "AC1 the frame patch margin is not 32")
-	else:
-		_fail("AC1 the chrome has no texture frame")
+	## A5.1 (2026-09-26): the console draws no frame at all inside; the frame is the shell's
+	## own. The probe reads the chrome layer's (now absent) frame box and the host's box.
+	_check(_chrome().get(&"frame_box") == null, "AC1 the console still draws an inner frame")
 	var sibling := PanelContainer.new()
 	sibling.theme_type_variation = &"PanelRaised"
 	_panel.add_child(sibling)
+	var host_frame := sibling.get_theme_stylebox(&"panel") as StyleBoxTexture
+	if host_frame != null:
+		print("[r1] ac1 host_frame=%s patch=%.0f expand=%.0f" % [
+			host_frame.texture.resource_path, host_frame.texture_margin_left,
+			host_frame.expand_margin_left,
+		])
+		_check(
+			String(host_frame.texture.resource_path) == "res://assets/ui/ui_panel_frame.png",
+			"AC1 the host frame is not ui_panel_frame"
+		)
+		_check(host_frame.texture_margin_left == 32.0, "AC1 the host frame patch is not 32")
+	else:
+		_fail("AC1 the shell has no texture frame")
 	_check(
-		frame == sibling.get_theme_stylebox(&"panel"),
-		"AC1 the chrome frame is not the PanelRaised panel box"
+		host_frame == sibling.get_theme_stylebox(&"panel"),
+		"AC1 the host frame is not the PanelRaised panel box"
 	)
 	sibling.free()
 	var bays: Array = _panel.call(&"bay_rects")
@@ -228,24 +230,24 @@ func _ac1() -> void:
 
 func _ac2() -> void:
 	var chrome := _chrome()
-	var slot := chrome.get(&"slot_box") as StyleBox
-	if slot is StyleBoxTexture:
-		print("[r1] ac2 slot=%s" % (slot as StyleBoxTexture).texture.resource_path)
+	## A5.1 (2026-09-26): the cells draw the family's plate **at its own 48x48**, centred
+	## (never stretched), so the probe reads the plate texture, not a stylebox.
+	var slot: Texture2D = chrome.get(&"slot_plate")
+	if slot != null:
+		print("[r1] ac2 slot=%s size=%s" % [slot.resource_path, str(slot.get_size())])
 		_check(
-			String((slot as StyleBoxTexture).texture.resource_path)
-			== "res://assets/ui/ui_slot_weapon_normal.png",
-			"AC2 the cell box is not the slot chrome"
+			String(slot.resource_path) == "res://assets/ui/ui_slot_weapon_normal.png",
+			"AC2 the cell plate is not the slot chrome"
 		)
+		_check(slot.get_size() == Vector2(48.0, 48.0), "AC2 the slot plate is not 48x48")
 	else:
-		_fail("AC2 the cells have no slot box")
-	var probe := Button.new()
-	probe.theme_type_variation = &"SlotButtonWeapon"
-	_panel.add_child(probe)
+		_fail("AC2 the cells have no slot plate")
+	var probe := StyleBoxTexture.new()
+	probe.texture = load("res://assets/ui/ui_slot_weapon_normal.png")
 	_check(
-		slot == probe.get_theme_stylebox(&"normal"),
-		"AC2 the cell box is not the SlotButtonWeapon normal box"
+		slot == probe.texture,
+		"AC2 the cell plate is not the SlotButtonWeapon normal texture"
 	)
-	probe.free()
 	## A fitted chip: the name plate is a StationButton plate over the cell, the X a plate.
 	var barrels := _rack_row(0).get_node(^"Box/Barrels") as Control
 	var chip := barrels.get_child(0) as Control
@@ -274,7 +276,7 @@ func _ac2() -> void:
 		state.text, str(chip_plate.get(&"danger")), str(chip_plate.get(&"chevron")),
 		_style().frame_width, (_rack_row(1).get_node(^"Box/Head/State") as Label).text,
 	])
-	_check(state.text == PanelScript.RACK_STATE_OVER, "AC2 the over-cap bay chip reads wrong")
+	_check(state.text == PanelScript.RACK_STATE_AT_CAP, "AC2 the at-cap bay chip reads wrong")
 	_check(bool(chip_plate.get(&"chevron")), "AC2 the over-cap chip carries no chevron")
 	_check(_style().frame_width == 1.0, "AC2 the chip frame is not 1 px")
 	var tag := (card.get_node(^"Status") as Control).get_node(^"Value") as Label

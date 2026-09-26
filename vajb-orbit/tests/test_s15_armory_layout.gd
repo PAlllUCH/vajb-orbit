@@ -213,8 +213,9 @@ func test_the_console_and_the_bays_are_the_derived_geometry() -> void:
 	)
 	assert_eq(panel.call(&"block_size"), CONSOLE, "the pane draws that very console")
 	## S20's A4.1 retires the scripted master from the pane: it still ships on disk (at the
-	## pinned 2x size), but the plate's texture is cleared at build and the chrome is the
-	## theme's own ui_panel_frame nine-patch.
+	## pinned 2x size), but the plate's texture is cleared at build. **A5.1 (2026-09-26):**
+	## the pane's one frame is the module host's own `PanelRaised` edge - the console draws
+	## no inner frame (the 32 px band does not fit a 260x192 bay).
 	var master: Vector2 = ResourceLoader.load(CONSOLE_PATH).get_size()
 	assert_eq(master, CONSOLE_MASTER, "the scripted master still ships at 2x the console")
 	var plate := panel.get_node("%ConsolePlate") as NinePatchRect
@@ -222,13 +223,16 @@ func test_the_console_and_the_bays_are_the_derived_geometry() -> void:
 	assert_true(plate.texture == null, "but the master is unwired from it (A4.1)")
 	assert_eq(plate.size, CONSOLE, "drawn at the console rect (actual %s)" % str(plate.size))
 	var frame := panel.get_theme_stylebox(&"panel", &"PanelRaised") as StyleBoxTexture
-	assert_true(frame != null, "the pane's chrome is the theme's panel frame")
+	assert_true(frame != null, "the theme's panel frame resolves (the shell's edge)")
 	if frame != null:
 		assert_eq(
 			String(frame.texture.resource_path), CONSOLE_PATH_THEME_FRAME,
 			"the ui_panel_frame nine-patch"
 		)
 		assert_eq(frame.texture_margin_left, 32.0, "at the pinned 32 px patch margin")
+	var chrome := (panel.get_node(^"%Console") as Control).get_node(^"ConsolePanels")
+	if chrome != null:
+		assert_eq(chrome.get(&"frame_box"), null, "no frame is drawn inside the console (A5.1)")
 	var bays: Array = panel.call(&"bay_rects")
 	assert_eq(bays.size(), RACK_COUNT, "five bays across the band")
 	for index in bays.size():

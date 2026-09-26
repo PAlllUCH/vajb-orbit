@@ -304,8 +304,11 @@ func _delete_file(path: String) -> void:
 
 ## The pane's geometry rides the host everywhere it goes (P6): the console is the host
 ## less its insets, the master is exactly 2x it and still on disk - but **S20's A4.1
-## retires it from the pane** (the plate's texture is cleared at build) and the chrome is
-## the theme's own `ui_panel_frame` nine-patch now.
+## retires it from the pane** (the plate's texture is cleared at build). **A5.1
+## (2026-09-26) amends where the chrome comes from:** the pane's one frame is the **module
+## host's own `PanelRaised`** (its outer edge) and every surface inside the console is the
+## flat Tokens box - the `ui_panel_frame` asset is a pane-scale nine-patch and is no longer
+## drawn over 260x192 bays (the band ate the cells' room).
 func test_the_pane_mounts_on_the_painted_console_plate() -> void:
 	var panel := _mount()
 	var style := _style()
@@ -330,9 +333,10 @@ func test_the_pane_mounts_on_the_painted_console_plate() -> void:
 	assert_eq(plate.size, CONSOLE, "the floor is drawn at the derived console rect (actual %s)" % str(plate.size))
 	assert_eq(plate.position, Vector2.ZERO, "the floor fills its console control")
 	assert_eq(plate.global_position, CONSOLE_ORIGIN, "which the host's own inset places")
-	## A4.1: the pane's chrome is the theme's own panel frame - the sibling panels' box.
+	## A5.1: the frame stays registered for the shell, but the console draws none -
+	## the sibling `PanelRaised` box is the host's, not an inner surface's.
 	var frame := panel.get_theme_stylebox(&"panel", &"PanelRaised") as StyleBoxTexture
-	assert_true(frame != null, "the theme's panel frame resolves")
+	assert_true(frame != null, "the theme's panel frame resolves (the shell's edge)")
 	if frame != null:
 		assert_eq(
 			String(frame.texture.resource_path), "res://assets/ui/ui_panel_frame.png",
@@ -342,6 +346,12 @@ func test_the_pane_mounts_on_the_painted_console_plate() -> void:
 		assert_eq(frame.texture_margin_top, 32.0, "on every side")
 		assert_eq(frame.texture_margin_right, 32.0, "")
 		assert_eq(frame.texture_margin_bottom, 32.0, "")
+	var chrome := (panel.get_node(^"%Console") as Control).get_node(^"ConsolePanels")
+	if chrome != null:
+		assert_eq(
+			chrome.get(&"frame_box"), null,
+			"no frame is drawn inside the console (A5.1)"
+		)
 
 
 ## The wells band's two halves (Amendment 3): BARREL INVENTORY left, AMMUNITION right,
