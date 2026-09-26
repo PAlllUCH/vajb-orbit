@@ -238,6 +238,12 @@ save-schema bump per the P1 migration pattern (save v3). `set_vitals` grows the
 field while its callers' contract is unchanged: the shield-alone exemption
 above still governs the fee, so a shield-only docking report is not taxed.
 
+> **Amendment 2026-09-26 (S19):** the repairs panel's damage report gains
+> four per-quadrant lines and a full repair restores the four armour pools
+> (18 §4.5; the pool law and its proposed numbers are 09 §3.3's S19 block).
+> The fee math above is unchanged — the hull sum is the same number it always
+> was. Reversal: drop the four lines and repair the sum only.
+
 ## 7. Persistence and transaction integrity
 
 - Credits, cargo and sell results persist through the existing

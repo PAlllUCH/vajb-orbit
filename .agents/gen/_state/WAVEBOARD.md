@@ -6,6 +6,19 @@
 
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-25 clear-outs (owner asks):** every closed slice folder moved to the system trash (last git tree carrying them: `7a081ef`), old session reports live in `_state/_archive/`, and the two dispatch files were purged to live-items-only (2026-09-25 ter). Citation paths into purged trees name historical files.
 
+**Updated 2026-09-26 (ter): S19 (directional armour & breach malfunctions)
+queued as coder item 25** — the owner's direction is gameplay implementation
+first, balance later, so ruling 23's quadrants are the wave: `ctx.direction`
+routes hits into four armour pools, stern ×1.6, breach malfunctions (RCS
+drift / engine flicker / clipped turn), repairs + readouts. Pin:
+`09_ship_slots_modules.md` §3.3's 2026-09-26 amendment (P1–P8 PROPOSED with
+reversals, tick list T1–T7 — balance deferred, calibrate later). Five-piece:
+`slices/S19-directional-armour/`. Gate re-measured this session: **887/0**.
+The developer session closed its two docs debts: the S18 MED (UI_SPEC §3.10
+A3 cell **117×52**) and **L212** (02 §5.2 ter "exactly" → "at most"; rows
+stand as history). Roadmap after S19: nebula clouds (ruling 25) → wreck hulks
++ the sibelon seam (art seam) → P4 services; all balance rows stay parked.
+
 **Updated 2026-09-26 (S18): armory rework IMPLEMENTED, reviewed and closed.**
 Gate **877/0 → 886/0** (S18's `test_s18_armory_rework.gd` 8 rows + `test_s10`'s
 right-click row; six rows renamed 1:1, none lost), twice on fresh scratch
@@ -65,9 +78,10 @@ delegation; the D12 fix wave and D8 item 9 ditched for the armory rework).
 
 **Current state: the universal gate reads `[SUMMARY] passed=887 failed=0`**
 (CONTRACTS §9 carries the authority block; hermetic on scratch stores).
-Queued: **no coder item — the coder queue is empty** (item 24 = S18 armory
-rework closed 2026-09-26); **no live designer item**
-(D13 closed). **Parked (owner-gated, not
+Queued: **coder item 25 = S19 directional armour & breach malfunctions**
+(`slices/S19-directional-armour/`; B1 → R1 → F1 on HIGH/MED);
+**no live designer item** (D13 closed; the owner's armory polish rides his own
+designer session). **Parked (owner-gated, not
 queued):** the S12 ore caps/scale rows (the owner's §10 ticks — do not
 implement before that wave is briefed), slice 4's remainder
 (quadrants/directional armour — 18 §4.5 + ruling 23; bosses/arena — 14 §5,

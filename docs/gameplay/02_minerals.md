@@ -277,7 +277,7 @@ the once split asteroid doesnt split further. this need to change."
   spawned rock that rolled no ore breaks bare and cleaves into nothing.
 - **Money is untouched:** a 0-bore fragment pays nothing at any shatter
   (`_pay_burst` returns on `owed <= 0.0`), so a fully shot family realises
-  exactly the root's capped burst — `GUN_BURST_SHARE × _bore_ore`, never
+  at most the root's capped burst — `GUN_BURST_SHARE × _bore_ore`, never
   more (01 §5.6: shooting never out-earns mining). The debris chain is
   physical only; mining chains are unchanged (S13's shares, no fresh rolls).
 - **Termination:** children stay strictly smaller, so every chain ends at

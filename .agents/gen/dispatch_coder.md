@@ -19,7 +19,7 @@ lane, WAVEBOARD, wave-boundary commit).
 
 | # | Wave | Item | What | Status |
 |---|---|---|---|---|
-| — | — | *(Empty — no coder item is queued. The next wave needs its own docs-first five-piece from the developer/designer session.)* | — | — |
+| 25 | S19 | Directional armour & breach malfunctions (ruling 23) | Four armour pools routed by `ctx.direction`, stern ×1.6, breach malfunctions (RCS drift / engine flicker / clipped turn), repairs + readouts. `slices/S19-directional-armour/` (`S19_BRIEF.md`, `S19_prompts.md`); pin `09_ship_slots_modules.md` §3.3's 2026-09-26 amendment. Run B1 → R1 → F1 on HIGH/MED. | **queued** |
 
 ## Parked (owner-gated — not queued; say the word and the five-piece lands)
 
@@ -38,11 +38,16 @@ taking the gate **886 → 887/0**.
 
 ## Handoff (live)
 
-**No coder item is queued.** The coder lane is idle at gate **887/0** (S18 closed
-2026-09-26; the design lane has no live item, D13 closed). Before the next code
-wave, the developer/designer session owes: (1) the S18 MED — UI_SPEC §3.10
-Amendment 3's Layout bullet says cells **117×50**, the shipped/tested cell is
-**117×52** (bucket 2, docs text — no worker may edit it); (2) the next wave's
-docs-first five-piece. Note L229: probes that mount the station boot the owner's
-live profile — run them under `XDG_DATA_HOME=$(mktemp -d)`. Everything else is
-parked above.
+Read `.agents/gen/dispatch_coder.md` and execute queue item 25 only — S19
+directional armour & breach malfunctions (ruling 23). Brief:
+`.agents/gen/slices/S19-directional-armour/S19_BRIEF.md`. Prompts:
+`.agents/gen/slices/S19-directional-armour/S19_prompts.md`. Snapshot + commit
+before the first dispatch, run B1 → R1, and the fixer only if the review
+leaves HIGH or MED. Stop before any next item (there is none queued). Close
+out per the brief's close-out section (gate re-run ×2 on scratch stores,
+`verify_wave.py verify --baseline s19_start`, WAVEBOARD update, wave-boundary
+commit), then report back: the measured gate count, the builder's
+per-deliverable numbers (P1–P8 const table, per-AC measurements), the
+reviewer's findings by tier, and the owner ticks (T1–T7 in the 09 §3.3
+amendment — balance is deferred, they calibrate later). Note L229: probes
+that mount the station run under `XDG_DATA_HOME=$(mktemp -d)`.

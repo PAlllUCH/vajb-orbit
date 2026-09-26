@@ -502,7 +502,7 @@ the wave's own and carries its reversal.
   the mockup's `_b`/`_b_wide`/`_b_tall`. Reversal: pinned rects.
 - **Layout.** Bays band: top **38**, height **192**, side margin **16**, five
   bays on a **7** gap → **260×192** each, `B1`..`B5`. Bay: head **34**; cells
-  **2×2,** **117×50** on a 6 gap, margin **10**; ledge **240×34** at bay-y
+  **2×2,** **117×52** on a 6 gap, margin **10**; ledge **240×34** at bay-y
   **150** carrying three `ui_seg_*` cells **18×32** on a 20 pitch and the
   13 px `SALVO s` caption beside them. Wells band: top **286**, foot **10**
   (height **220**), gutter **32** → two halves **648** wide, each a

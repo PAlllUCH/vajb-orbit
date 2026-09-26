@@ -153,6 +153,40 @@ Armour never draws power and never slows to a cliff: percentages are
 multiplicative on the hull's base speed, and two heavy plates stack to
 −24 % — survivable, but the Mule stays the slow king.
 
+> **Amendment 2026-09-26 (owner go — S19, ruling 23's directional armour and
+> breach malfunctions; balance deferred by the owner the same day, so every
+> proposed number below ships as a §13-class playtest-tunable initial).** The
+> hull's armour becomes **four quadrant pools** — prow, stern, port, starboard.
+> Pinned (ruling 23 / 18 §4.5): hits route by the §4.2 item-5 `ctx.direction`;
+> a hit from the **rear 160° arc is ×1.6**; a pool at 0 is a **breach** and runs
+> its malfunction — stern = **RCS drift** (random rotational torque every
+> **2 s**), prow = **engine flicker** (**15 %** of thrust inputs ignored),
+> port/starboard = the turn rate toward that side clipped; any repair that
+> lifts the pool above 0 ends the malfunction (derived state, no flags).
+> **PROPOSED (P1–P8; each reverses in one edit/const):** P1 pools split
+> `hull_max / 4` evenly at full repair — plating feeds them through `hull_max`
+> exactly as today (reversal: plating-only pools). P2 routing quarters —
+> prow `|d| ≤ 45°`, stern `|d| ≥ 135°`, starboard `45° < d < 135°`, port
+> `−135° < d < −45°`; a missing `direction` reads 0.0 (dead ahead = prow =
+> ×1.0, so every direction-less hit keeps today's numbers) (reversal: any
+> other arc map). P3 the ×1.6 multiplies the incoming amount **before** the
+> shield-first absorb (reversal: hull-side only). P4 RCS drift torque = 15 %
+> of the hull's max turn torque, random sign (reversal: any fraction). P5 the
+> clipped side runs at ×0.5 turn (reversal: any fraction). P6 a hit that
+> empties its pool spills the remainder evenly over the other three (reversal:
+> proportional to remaining capacity, or drop at the breach). P7 player-side
+> only this wave — `NpcShip` hulls stay flat (reversal: mirror the routing).
+> P8 the ship status screen gains four append-only pool rows; the repairs
+> panel's damage report gains the four per-quadrant lines 18 §4.5 calls for
+> (reversal: drop the rows/lines).
+> **The invariant that keeps the gate green: `hull` remains the sum of the four
+> pools** (`set_hull` redistributes proportionally, evenly when all are zero;
+> death flow and every signal unchanged), so no existing test row is expected
+> to move. Owner tick list (calibrate later): T1 P1 split, T2 P2 arcs, T3 P3
+> application point, T4 P4/P5 malfunction strengths, T5 P6 spill, T6 P7 NPC
+> staging, T7 P8 rows. Implementation wave: **S19** (coder item 25,
+> `slices/S19-directional-armour/`).
+
 ### 3.4 COMPUTERS (C slots)
 
 | Module | Tier | Draw | Effect | Cost |
