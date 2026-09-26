@@ -350,6 +350,23 @@ func test_the_bay_chip_states_the_cap_and_the_empty_cells_offer_drop() -> void:
 		var cue := child.get_node_or_null(^"Cue") as Label
 		assert_true(cue != null, "every empty cell carries its cue")
 		assert_eq(String(cue.text), "DROP HERE", "the T4 wording, at 13 px")
+	var bay1 := _rack_row(0)
+	var bay1_pads := bay1.get_node(^"Box/Cells") as Control
+	assert_eq(bay1_pads.get_child_count(), 3, "B1's fitted cell leaves three empty slots")
+	var bay1_rect := Rect2(Vector2.ZERO, bay1.size)
+	for index in bay1_pads.get_child_count():
+		var pad := bay1_pads.get_child(index)
+		var pad_slot := int(pad.get(&"slot"))
+		assert_true(
+			pad_slot >= 0 and pad_slot < 4,
+			"the pad carries its own grid slot (pad %d reads %d)" % [index, pad_slot]
+		)
+		assert_eq(
+			(pad as Control).position,
+			_style().bay_cell_rect(pad_slot, bay1_rect).position,
+			"pad %d sits in its own slot %d, not on the fitted chip (actual %s)"
+			% [index, pad_slot, str((pad as Control).position)]
+		)
 	## The hardcap's four cells: the same bay's chip turns OVER CAP and grows its chevron.
 	_profile.set(&"_active_ship", DESTROYER)
 	_profile.set(&"_owned_ships", [DESTROYER] as Array[StringName])
@@ -442,3 +459,32 @@ func test_the_barrel_inspector_carries_two_body_lines() -> void:
 		],
 		"and the facts line states the family's own salvo and dps"
 	)
+
+
+func test_the_chrome_layer_paints_under_every_text_and_control() -> void:
+	var panel := _mount()
+	var console := panel.get_node(^"%Console") as Control
+	var chrome := console.get_node(^"ConsolePanels") as Control
+	assert_true(chrome != null, "the console carries its code-drawn chrome layer")
+	if chrome == null:
+		return
+	assert_eq(
+		chrome.get_index(), 1,
+		"the chrome sits directly over the painted plate (actual index %d)" % chrome.get_index()
+	)
+	var rack_rows := console.get_node(^"%RackRows") as Control
+	var inventory := console.get_node(^"%InventoryMargin") as Control
+	var ammo := console.get_node(^"%AmmoMargin") as Control
+	assert_true(rack_rows != null, "the rack rows are in the console")
+	assert_true(inventory != null, "the inventory margin is in the console")
+	assert_true(ammo != null, "the ammunition margin is in the console")
+	for content: Control in [rack_rows, inventory, ammo]:
+		if content == null:
+			continue
+		assert_true(
+			chrome.get_index() < content.get_index(),
+			"the chrome paints under %s (chrome at %d, %s at %d)" % [
+				String(content.name), chrome.get_index(),
+				String(content.name), content.get_index(),
+			]
+		)

@@ -856,13 +856,14 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
-Expected (S18, 2026-09-26): **`[SUMMARY] passed=886 failed=0`**, exit 0. S18's
+Expected (S18, 2026-09-26): **`[SUMMARY] passed=887 failed=0`**, exit 0. S18's
 close-out measured **886** twice on two fresh scratch stores
 (`XDG_DATA_HOME=$(mktemp -d)`, exit 0, identical counts, zero `failed`) and ran
 the mandated `verify --baseline s18_start --tests --expect-reports
 S18-B1_report.md S18-R1_review.md` green (`"problems": []`; modified = the wave's
-10 files (3 armory, 5 suites, 2 docs) + 6 state/close-out files, deleted = []). **Growth `877 → 886`** = S18's
-`test_s18_armory_rework.gd` **8** rows + `test_s10_armory_input.gd` **+1**
+10 files (3 armory, 5 suites, 2 docs) + 6 state/close-out files, deleted = []). **Growth `877 → 887`** = S18's
+`test_s18_armory_rework.gd` **9** rows (the 9th, the layer-order guard, arrived
+with the post-close-out owner fix below) + `test_s10_armory_input.gd` **+1**
 (right-click-to-pull); six rows were renamed 1:1 with their retired subjects
 (`test_d7_armory.gd`, `test_s15_armory_layout.gd`; mapping in
 `S18-R1_review.md`), none lost. The close-out also ran one fixer pass
@@ -892,6 +893,20 @@ session owes the one-number fix; no fixer pass was run) — plus L229, the
 T-93-class probe note (station-mounting probes boot the owner's live profile;
 one persisted an auction/exchange band roll at 01:19:16 on 2026-09-26; no
 player-owned state changed).
+
+**2026-09-26 post-close-out (owner-reported live bug: "the texts in armoury arent
+in front, they are in back").** Two defects, both fixed and guarded:
+`ConsolePanels` (the bay cards, cell recesses, ledges and item plates) was appended
+last under `%Console`, so it painted over every label, chip, salvo strip and card —
+`armory_panel.gd` now inserts it at console index **1**, over the painted plate and
+under every interactive node, exactly the layer contract its class doc states; and
+`_position_drop_cells` placed the `DROP HERE` pads by child order while the pads
+only exist for the empty slots, so a partially-filled bay drew its first cue on the
+fitted chip and left its last slot bare — each pad now carries its own `slot` and
+sits at `bay_cell_rect(slot, …)`. Guards: the suite's 9th row asserts the layer
+order, and the chip/drop row asserts every pad's position equals its own slot's
+cell. **886 → 887/0**, one hermetic full gate + the s18 suite 9/0, and a fresh
+windowed capture shows the text in front with the cues in slots 1..3.
 
 Expected (S17, 2026-09-25): **`[SUMMARY] passed=877 failed=0`**, exit 0. The S17
 review (S17-R1) measured **877** twice on two fresh scratch stores
@@ -4129,3 +4144,19 @@ hull stops twice and the second stop slides.
   01:19:16; no player-owned state changed; run station-mounting probes under
   `XDG_DATA_HOME=$(mktemp -d)`). Owner decisions owed: the MED's one-number docs
   fix (developer session) and nothing else.
+- **v0.31 (2026-09-26, post-close-out owner fix — the coder lane's orchestrator
+  session; gate `886/0 → 887/0`)** — records the owner-reported live rendering bug
+  ("the texts in armoury arent in front, they are in back") and its two causes.
+  **§9**'s expected count becomes 887. **No pin moves**: UI_SPEC §3.10 A3,
+  STATION_HUB §5.11, 09 §11/§12 and CONTRACTS §17 are untouched — the pane's
+  design-of-record numbers stand (including the open MED L223). Shipped changes:
+  `armory_panel.gd` inserts `ConsolePanels` at console index **1** (over the
+  painted plate, under every interactive node — the layer contract its class doc
+  already stated; it had been appended last and painted over every label, chip,
+  strip and card) and `_position_drop_cells` reads each `DropCell`'s own `slot`
+  (the pads exist only for the empty slots, so child-order placement put the first
+  cue on the fitted chip and left the bay's last slot bare). Guards:
+  `test_s18_armory_rework.gd` gains the layer-order row (suite 9 rows) and the
+  chip/drop row gains per-slot position assertions. Evidence: a fresh windowed
+  `probe_s18_capture` render shows the pane's text in front of every background
+  with the cues in slots 1..3; rows **L232–L233** (closed this pass).

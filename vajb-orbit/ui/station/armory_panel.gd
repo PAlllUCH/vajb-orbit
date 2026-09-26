@@ -280,6 +280,7 @@ class BarrelCell extends HBoxContainer:
 class DropCell extends Control:
 	var armory: Control = null
 	var rack := 0
+	var slot := 0
 
 	func _can_drop_data(_at: Vector2, data: Variant) -> bool:
 		return armory != null and bool(armory.call(&"can_drop", rack, DROP_RACK_BODY, data))
@@ -803,6 +804,7 @@ func _build_console() -> void:
 	_chrome = ConsolePanels.new()
 	_chrome.name = "ConsolePanels"
 	_console.add_child(_chrome)
+	_console.move_child(_chrome, 1)
 	_stretch(_chrome)
 	## The bays live in a `VBoxContainer` whose own stacking the layout pass corrects on
 	## every sort (the S5 suites read it by child index); the two scroll grids are plain
@@ -1073,24 +1075,25 @@ func _position_cell_children(chip: Control) -> void:
 		variant_label.size = Vector2(maxf(cell.size.x - 24.0, 0.0), 18.0)
 
 
-## One bay's empty cells: the `DROP HERE` cue centred in each recess.
+## One bay's empty cells: the `DROP HERE` cue centred in each recess. Every pad sits in
+## its **own** grid slot (the slot it was built for), never in its child order: the pads
+## only exist for the empty slots, so counting them from zero would land the first cue on
+## the fitted chip and leave the bay's last slot bare.
 func _position_drop_cells(cells: Control) -> void:
 	if _style == null or cells == null:
 		return
 	var bay := Rect2(Vector2.ZERO, _bay_size_of(cells))
-	var index := 0
 	for child: Node in cells.get_children():
-		var pad := child as Control
+		var pad := child as DropCell
 		if pad == null:
 			continue
-		var cell: Rect2 = _style.bay_cell_rect(index, bay)
+		var cell: Rect2 = _style.bay_cell_rect(pad.slot, bay)
 		pad.position = cell.position
 		pad.size = cell.size
 		var cue := pad.get_node_or_null(^"Cue") as Control
 		if cue != null:
 			cue.position = Vector2.ZERO
 			cue.size = cell.size
-		index += 1
 
 
 ## The barrel inventory's rows, in the left half's 2x3 grid. The grid's rect is the
@@ -1858,6 +1861,7 @@ func _build_drop_cell(rack: int, slot: int, parent: Control) -> void:
 	pad.name = "Cell%d" % (slot + 1)
 	pad.armory = self
 	pad.rack = rack
+	pad.slot = slot
 	pad.mouse_filter = Control.MOUSE_FILTER_STOP
 	var cue := _make_caption(RACK_INSTALL_CUE)
 	cue.name = "Cue"

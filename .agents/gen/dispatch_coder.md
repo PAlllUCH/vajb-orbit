@@ -26,16 +26,19 @@ lane, WAVEBOARD, wave-boundary commit).
 
 ## Done
 
-Items 1–24 closed (gate 437 → **886/0** through the waves); detail,
+Items 1–24 closed (gate 437 → **887/0** through the waves); detail,
 reviews, incidents and LOW rows in `.agents/gen/MASTER_REPORT.md` §6 and the
 archived session reports. The last closed wave: item 24 = **S18 armory rework**
 (2026-09-26, gate 877 → 886/0, 0 HIGH / **1 MED** / 5 LOW L223–L229, no fixer —
 the MED is UI_SPEC §3.10 A3's cell **117×50 → 117×52**, docs text, **owed by the
-developer session**, not the coder lane).
+developer session**, not the coder lane). The owner's same-day live bug report
+(text behind backgrounds) was fixed post-close-out — the chrome layer under the
+content, the drop cues in their own grid slots (L232–L233 closed, two guards) —
+taking the gate **886 → 887/0**.
 
 ## Handoff (live)
 
-**No coder item is queued.** The coder lane is idle at gate **886/0** (S18 closed
+**No coder item is queued.** The coder lane is idle at gate **887/0** (S18 closed
 2026-09-26; the design lane has no live item, D13 closed). Before the next code
 wave, the developer/designer session owes: (1) the S18 MED — UI_SPEC §3.10
 Amendment 3's Layout bullet says cells **117×50**, the shipped/tested cell is

@@ -1121,3 +1121,15 @@ close-out: s5 13/0, d7 11/0, zero abort markers), `verify --baseline s18_start`
 green (`"problems": []`), the four `.uid` sidecars landed by the editor scan, the
 wave-boundary commit carrying the reworked pane + suites + docs amendments + the
 close-out state. The coder queue is empty.
+
+**Owner fix, 2026-09-26 (live bug, post-close-out):** the pane's text rendered
+behind its own backgrounds — `ConsolePanels` was appended last under `%Console`, so
+its plate/recess/ledge/item pass painted over every label, chip, salvo strip and
+card (its class doc always said "over the painted plate and under every interactive
+one"), and `_position_drop_cells` placed the `DROP HERE` pads by child order while
+pads exist only for the empty slots, so a partially-filled bay drew its first cue on
+the fitted chip and left its last slot bare. Both fixed (`_console.move_child(_chrome,
+1)`; each `DropCell` now carries its own `slot`), both guarded (the suite's
+layer-order row + per-slot position assertions), re-measured **886 → 887/0** and
+visually re-verified with a fresh windowed capture; rows **L232–L233** closed, §9/§10
+amended (v0.31).
