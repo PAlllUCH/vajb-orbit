@@ -99,6 +99,17 @@ VAJB_KEEP_SKILLS="
 # Crush's embedded shell, whose printf mangles a format string that starts
 # with `--args` (verified 2026-09-24). Add or remove a pair here only.
 
+# ---------------------------------------------------------------------------
+# LLM request timeout -- raised from the 120 s built-in on 2026-09-25 after a
+# MiMo orchestration session died with "The model stopped sending data for
+# 2m0s". The timeout covers streaming *inactivity*, so 600 s only buys room for
+# a genuinely stalled provider; a slow but active stream was already safe.
+# 0 disables the timeout entirely, negative values are invalid.
+# Applies to the interactive session and to every `crush run` worker, since
+# both load this file. Reversal: delete the two lines below.
+# ---------------------------------------------------------------------------
+option request-timeout 600
+
 if [ -d "$WORKSPACE/.crush/hooks" ]; then
 
     # ===================== Linux ==========================================
