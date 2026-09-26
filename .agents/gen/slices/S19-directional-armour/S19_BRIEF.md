@@ -116,6 +116,7 @@ the expected verdict. "unchanged" = the row's numbers cannot move under the
 | Row (`file:line`) | Route | Verdict |
 |---|---|---|
 | `test_engine2_damage.gd:41` ctx/damage rows | pipeline absorb, direction-less hits | unchanged |
+| `test_engine2_damage.gd:136-144` astern shielded hit | real ctx, astern `±PI`, shielded | **moves (L240, corrected by S19-F1):** inside P3's rear arc, so the shield absorbs 144 (90 × 1.6), not 90 — the row reads `SHIELD_MAX - 90 * PlayerState.STERN_DAMAGE_MULT` |
 | `test_engine2_pools.gd` pool rows | sums/clamps; sum invariant holds | unchanged |
 | `test_engine_c3_flight_decay.gd`, `test_flight_feel_g1.gd`, `test_s2_6_flight.gd` | flight response on fresh fixtures (no breach) | unchanged |
 | `test_p1_repairs.gd` fee/repair rows | repair restores the same hull sum | unchanged |
@@ -124,10 +125,11 @@ the expected verdict. "unchanged" = the row's numbers cannot move under the
 | `probe_c2_weapons.gd:118` sink stub | the 2-arg/3-arg `take_damage` forms | unchanged |
 | `test_engine2_fixes.gd` damage-adjacent rows | fixtures carry no rear-arc `direction` | unchanged |
 
-Expected gate growth: **baseline + `test_s19_quadrants.gd`'s rows only** (a
-hermetic `[SUMMARY]` with any other suite's count moved is a red). Any
-existing row that must move is a **bucket-2 pause**: report it, leave it,
-stop.
+Expected gate growth: **baseline + `test_s19_quadrants.gd`'s rows**, with
+`test_engine2_damage.gd` holding its own 20 (one corrected row above, L240) — a
+hermetic `[SUMMARY]` with any *other* suite's count moved is a red. Measured
+after the L240 correction: **914/0**. Any other row that must move is a
+**bucket-2 pause**: report it, leave it, stop.
 
 ## 4. Hard rules
 

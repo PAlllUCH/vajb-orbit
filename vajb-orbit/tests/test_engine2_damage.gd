@@ -136,7 +136,11 @@ func test_apply_still_lands_on_a_two_argument_sink() -> void:
 func test_apply_reaches_a_player_state_through_its_own_method() -> void:
 	var ctx: Dictionary = DamageScript.context(Vector2.ZERO, 0.0, Vector2(-40.0, 0.0), 0.0, &"missile")
 	DamageScript.apply(_state, 90.0, false, ctx)
-	assert_eq(_state.shield, SHIELD_MAX - 90.0, "PlayerState.damage took the hit")
+	assert_eq(
+		_state.shield,
+		SHIELD_MAX - 90.0 * PlayerStateScript.STERN_DAMAGE_MULT,
+		"PlayerState.damage took the astern hit (the rear arc's x1.6 lands before the absorb)"
+	)
 	assert_true(
 		is_equal_approx(absf(float(_state.last_damage_ctx().get(DamageScript.CTX_DIRECTION, 0.0))), PI),
 		"the context's direction is recorded (a hit from astern reads -PI), got %s"

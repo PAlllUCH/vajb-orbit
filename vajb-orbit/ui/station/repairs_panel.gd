@@ -67,13 +67,26 @@ const FEE_FORMAT := "%s CR"
 ## instead of carrying copy that can drift away from Repairs.fee.
 const FOOTER_FORMAT := "FEE · 1 CR PER %d MISSING HULL · 1 CR PER %d MISSING SHIELD"
 
+## The damage report's rows. P8 / 01 section 6's 2026-09-26 amendment adds the four
+## per-quadrant armour lines (18 section 4.5's pointer) after the shipped rows, so every
+## existing row keeps its key and its place; the four are the armour pools `Repairs.pools`
+## splits the report's hull sum into.
 const REPORT_ROWS: Array[Dictionary] = [
 	{&"key": &"hull_name", &"label": "ACTIVE HULL"},
 	{&"key": &"hull", &"label": "HULL"},
 	{&"key": &"shield", &"label": "SHIELD"},
 	{&"key": &"missing", &"label": "MISSING"},
 	{&"key": &"fee", &"label": "FEE"},
+	{&"key": &"prow", &"label": "PROW"},
+	{&"key": &"stern", &"label": "STERN"},
+	{&"key": &"port", &"label": "PORT"},
+	{&"key": &"starboard", &"label": "STBD"},
 ]
+
+## The four armour-pool keys, in 09 section 3.3 P2's prow/stern/port/starboard order:
+## one list for the refresh and the missing-report sweep, so the drawn rows and the
+## service's own vector cannot drift apart.
+const QUADRANT_KEYS: Array[StringName] = [&"prow", &"stern", &"port", &"starboard"]
 
 @onready var _tag: Label = %PanelTag
 @onready var _rows: VBoxContainer = %ReportRows
@@ -196,6 +209,19 @@ func _refresh_all() -> void:
 		str(maxi(0, hull_max - hull)), str(maxi(0, shield_max - shield))
 	])
 	_set_report(&"fee", FEE_FORMAT % str(fee))
+	## P8: the damage report's four per-quadrant armour lines, splitting the report's own
+	## hull sum evenly (`Repairs.pools`, 09 section 3.3 P1's split). The pools themselves
+	## are flight state the station does not hold -- the repair restores the sum this
+	## vector describes -- and P1 seeds them from the same figure at launch.
+	var current_pools := RepairsService.pools(float(hull))
+	var max_pools := RepairsService.pools(float(hull_max))
+	for index: int in QUADRANT_KEYS.size():
+		_set_report(
+			QUADRANT_KEYS[index],
+			VALUE_FORMAT % [
+				str(int(round(current_pools[index]))), str(int(round(max_pools[index])))
+			]
+		)
 	_fee_danger = fee > 0 and profile != null and int(profile.call(&"credits")) < fee
 	_apply_fee_colour()
 	_button.disabled = not repairable
@@ -212,7 +238,7 @@ func _refresh_missing_report(hull_name: String) -> void:
 	## No vitals record: the hull is still known from the catalogue, but nothing can be
 	## said about its damage, its fee or its repairability (section 5.9).
 	_set_report(&"hull_name", hull_name)
-	for key: StringName in [&"hull", &"shield", &"missing", &"fee"]:
+	for key: StringName in [&"hull", &"shield", &"missing", &"fee"] + QUADRANT_KEYS:
 		_set_report(key, NOT_REPORTED)
 	_fee_danger = false
 	_apply_fee_colour()

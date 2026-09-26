@@ -582,8 +582,61 @@ reactor_efficiency() -> float             # 0.7 under emergency, else 1.0
 tick(delta: float) -> void                # refill at energy_regen × efficiency, then
                                           # the fuel-cell cooldown; a full pool gains 0
 set_energy(v) / set_fuel(v)               # clamp + emit
-damage(amount, bypass_shield := false, ctx := {})   # ctx accepted, no-op until slice 3
+damage(amount, bypass_shield := false, ctx := {})   # S19: x1.6 in the rear arc, then
+                                          # the shield-first absorb, then the routed pool
 ```
+
+**Directional armour (S19, 2026-09-26 — owner ruling 23; `09_ship_slots_modules.md` §3.3's
+2026-09-26 amendment owns the mechanics and P1–P8 with the reversals, `01_economy_core.md`
+§6's owns the repairs half).** The hull's points live in four quadrant pools and `hull` is
+their sum at every store; the reviewer's gate read `895/0 → 913/1` (the one red is the
+unlisted astern row, §9).
+
+```gdscript
+armour_prow / armour_stern / armour_port / armour_starboard: float
+                                          # P1: hull_max / 4 each at full repair
+const QUADRANT_PROWS/STERN/PORT/STARBOARD: StringName   # P2's four pool ids
+const QUADRANTS: Array[StringName]        # prow, stern, port, starboard (every pool walk)
+const QUADRANT_COUNT := 4
+const PROW_ARC := PI / 4.0                # P2: |d| <= 45 deg -- the prow
+const REAR_ARC := 3.0 * PI / 4.0          # P2: |d| >= 135 deg -- the stern
+const STERN_VULN_ARC := PI * 5.0 / 9.0    # P3: the 160 deg rear arc (half-width 100 deg)
+const STERN_DAMAGE_MULT := 1.6            # P3: multiplied into the incoming amount
+                                          # BEFORE the shield-first absorb
+const CTX_DIRECTION: StringName = &"direction"   # the §4.2 item-5 key, spelled locally
+                                          # (game/damage.gd is a forbidden file)
+static quadrant_for(direction: float) -> StringName   # the pure P2 arc map (absf(d))
+pool_of(quadrant: StringName) -> float    # the one pool reader
+breached(quadrant: StringName) -> bool    # pool <= 0; the derived-state gate
+set_hull(value: float)                    # proportional pool redistribution, even when
+                                          # there is nothing to scale; a breached 0 pool
+                                          # is never lifted by a heal, only a repair/relaunch
+```
+
+Rules that fix the interface: a missing, zero, null or non-numeric `direction` reads 0.0
+(dead ahead, the prow, ×1.0), so every direction-less hit keeps its shipped numbers; the
+shield-first absorb with no carry-over is untouched (the rear hit's overshoot over a
+standing shield is lost exactly as before); a hit that empties its routed pool spills the
+remainder evenly over the other three, clamped at each pool's own capacity, and
+`hull == sum(pools)` holds through every store (the clamp can leave part of the remainder
+unabsorbed when the neighbours are nearly empty); `died` fires once on the crossing to 0
+and `hull_changed` once per landed hit.
+
+**`PlayerShip`'s breach effects (S19, P4/P5)** — derived state: each effect runs exactly
+while its pool reads `breached`. `BREACH_DRIFT_FRACTION` 0.15 of the hull's max turn torque
+(`I × spin_rate`) every `BREACH_DRIFT_INTERVAL` 2.0 s, random sign, through `_apply_torque`;
+`BREACH_FLICKER_CHANCE` 0.15 of thrust application ticks ignore the thrust (joined to the
+Emergency Flight Mode gate, so both thrust axes zero together and an idle stick rolls
+nothing); `BREACH_TURN_CLIP` 0.5 of the spin rate towards a breached flank. `BREACH_SEED`
+20260926 seeds the one roll generator (drift sign + flicker roll); `seed_breach_rolls(value)`
+and `flicker_ignores()` are the deterministic test seams.
+
+**Repairs (01 §6's 2026-09-26 amendment)** — `Repairs.repair()`'s success dict gains
+`&"pools"`, the four-figure vector `Repairs.pools(hull_max)` (`hull_max / 4` each, P1's
+split; the fee law is byte-identical to the pre-wave text). The repairs panel's damage
+report gains the four per-quadrant lines (PROW/STERN/PORT/STBD off that same split of its
+own hull figure; the pools are flight state the station does not hold) and the ship status
+screen the four append-only rows §18 records.
 
 `BOOST_FUEL` 3.0/s and `DASH_FUEL` 25 are §13 rows. Their single shipping owner is
 `PlayerShip` (`player_ship.gd`, beside `BRAKE_MULT` and the arrive radii) — the hull
@@ -856,6 +909,24 @@ actually fired.
 # run it as: `source ~/.profile && godot --headless --path vajb-orbit \
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
+
+Expected (S19, 2026-09-26): **`[SUMMARY] passed=914 failed=0`**, exit 0. S19-R1 measured
+`913/1` on its fresh scratch store, with the **baseline replayed byte-identically at
+`895/0`** (a reconstructed HEAD tree, 77 suites, exit 0). The one red was the wave's only
+moved row: `test_engine2_damage.gd`'s
+`test_apply_reaches_a_player_state_through_its_own_method` (`:136-144`) builds a real
+astern `ctx.direction` (`-PI`), so P3's ×1.6 drops its 600 shield by **144**, not 90. The
+row was **not** on the wave's §3 existing-rows list (`S19_BRIEF.md` §3, whose route column
+for that file read "direction-less hits"), so R1 filed it **HIGH** (bucket 2: the list,
+not the code — the implementer correctly left the row alone). **S19-F1** then moved the row
+onto P3's own `PlayerState.STERN_DAMAGE_MULT` and wrote the §3 list amendment (**L240
+closed**; the edit's reversal is in the F1 report), and the close-out re-read **`914/0`**
+twice on two fresh scratch stores. **Growth `895 → 914` rows** = S19's
+`test_s19_quadrants.gd` **19** rows (AC1–AC6, all green); **no other suite's count moved**.
+Measured the same pass: no damage number moved for a direction-less or out-of-arc hit (the
+reviewer's 1441-bearing replay and its 13 boundary cases), and the four forbidden files'
+SHA-256s are unchanged (`5cabf3d9…6269`, `de8596b1…81be`, `e39440bf…5d22`,
+`fcdc549f…8279`).
 
 Expected (S20, 2026-09-26): **`[SUMMARY] passed=895 failed=0`**, exit 0. S20-R1 measured
 **895** twice on two fresh scratch stores (`XDG_DATA_HOME=$(mktemp -d)`, exit 0, identical
@@ -2243,6 +2314,17 @@ assertion was weakened) and the owner-approved Mockup v6/v7 blocks make the
 pre-v6 rows unassertable; the D7 brief's "compass rows only" list is superseded
 by the v6/v7 surface. Reversal: none owed — these rows are the yardstick the
 shipped surface needs.
+
+**§18 S19 additive (2026-09-26, P8 — the ship status screen's four armour-pool rows).**
+After the fit rows the screen appends `PROW/STERN/PORT/STBD n / m` (`QUADRANT_ROWS` +
+`QUADRANT_ROW_FORMAT`), fed by the additive `set_quadrants(prow, stern, port, starboard)`
+and read back by `pool_rows()`; each row's max is `hull_max / 4`. Unfed (no production
+caller as built — `ui/hud/hud.gd` is outside S19's file set) the rows print the hull
+figure's even split, which is P1's launch seed; the one-line feed belongs in
+`hud.gd:_push_status()`, which already pushes `set_pools(...)` from its own `PlayerState`
+(the LOW row below, **L241**). Every pre-S19 row keeps its key, its order and its text:
+the reviewer's gate re-ran `test_d6_status.gd` unmoved and the probe re-read
+`module_rows()`/`footer_lines()` identical across the new push.
 
 ## §19 S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, heat, loot
 
@@ -4236,3 +4318,58 @@ hull stops twice and the second stop slides.
   the brief's tests-that-move list (`S20_BRIEF.md` §3) missing
   `test_d7_armory.gd:601-608` and `:817-818` — a developer-session list edit,
   no code revert, recorded as **L238–L239**.
+- **v0.34 (2026-09-26, wave S19 review — the coder lane's reviewer session; gate
+  `895/0` → `913/1` on fresh scratch stores, the baseline replayed byte-identically
+  in a reconstructed HEAD tree)** — records ruling 23's directional armour and the
+  breach malfunctions as built. **§8.1** gains the S19 block (the four pools and the
+  `hull == sum(pools)` invariant, P1–P3/P6's consts, `quadrant_for`/`pool_of`/
+  `breached`, `set_hull`'s proportional redistribution, `PlayerShip`'s four breach
+  consts and its two test seams, `Repairs.pools` + the `&"pools"` success key) and
+  **§18** the four append-only status rows with their unfed caveat; **§9** carries
+  the wave's expected-count paragraph above. Re-measured independently (the
+  reviewer's `tests/probe_s19r1_review.gd`, 33 checks, scratch store, self-quitting):
+  1441 bearings against a hand-derived arc map with 0 mismatches, the ×1.6 inside the
+  160 deg arc and ×1.0 outside it and direction-less, the multiplier proven to land
+  **before** the absorb (62.5 × 1.6 empties a 100 shield whole), the spill arithmetic
+  ([400 → 0/200/200/200], then 300 → 0/100/100/100), the sum invariant re-derived
+  after every step of a 40-hit seeded sequence, `died` once and `hull_changed` once
+  per landed hit, the drift at **±21214.285714** = 15 % of the fixture's
+  **141428.571429** peak on the 2.0 s cadence with the seeded sign (and the clock
+  resetting when the pool is lifted by either a direct write or `setup()`), the
+  flicker's **31 of 200** seeded thrust ticks (plus strafe ticks), the flank clip
+  exactly ×0.5 with stern/prow breaches leaving the turn alone, the fee law's doc
+  example (**500 CR**) and the shield-alone exemption, and both readouts' four new
+  entries with their shipped rows unmoved. `Repairs.fee` and the panel's
+  `REPORT_ROWS` are append-only as text against the HEAD copy. Findings: **1 HIGH**
+  (bucket 2, filed as **L240**) — `test_engine2_damage.gd:136-144`'s astern row is off
+  §3's list, so the gate's one red is a list edit owed by the developer/designer
+  session, no code revert — plus **5 LOW (L241–L245)**: the status screen's rows have
+  no production feed (`hud.gd` out of the file set; one line owed in `_push_status()`),
+  the even-split spill's capacity clamp under-lands (a 400 hit on `[200,100,0,0]` leaves
+  hull **33.333**, owner tick T5), the ctx key now spelled in two files with nothing
+  asserting they agree, the pre-existing panel mismatch between the resolved-fit
+  `MISSING` figure and the catalogue-based fee (shield 300/800 prints "500 SHIELD"
+  against a 300-shortfall fee), and the harness note that directory entries in
+  `verify_wave.py --forbidden` are inert (exact-string matching; the close-out command's
+  `docs/`, `addons/` and `autoload/` protect nothing — measured).
+- **v0.35 (2026-09-26, wave S19 close-out — the orchestrator's pass; gate `914/0` twice
+  on fresh scratch stores)** — the review's one HIGH is cured: **S19-F1** moved
+  `test_engine2_damage.gd:136-144`'s expectation onto P3's own
+  `PlayerState.STERN_DAMAGE_MULT` (the astern hit's shield drop reads 90 × 1.6, both of
+  the row's proofs standing) and wrote the one-line §3 list amendment the review asked
+  for (**L240 closed**, the edit's reversal in the F1 report). The close-out's own
+  double-run on two fresh `XDG_DATA_HOME` stores re-read
+  **`[SUMMARY] passed=914 failed=0`** both times (exit 0, zero `[FAIL]`; the lone
+  `SCRIPT ERROR` is L237's pre-existing `test_weapon_fx_f4.gd:178`), and
+  `verify_wave.py verify --baseline s19_start` is green (`"problems": []`, the four
+  forbidden files hash-identical to HEAD; `docs/`, `addons/`, `autoload/` given as
+  directory entries remain inert per L245's measurement). Deliverable recap: four
+  `hull_max/4` pools with `hull == sum(pools)`, `damage()`'s P2 routing with P3's
+  pre-absorb ×1.6 and P6's even spill, `player_ship.gd`'s three derived breach effects
+  with their seeded seam, `repairs.gd`'s `pools()` restore, the four per-quadrant panel
+  lines and the four append-only status rows. LOW rows **L241–L245** stand open as the
+  review wrote them; owner ticks **T1–T7** (09 §3.3's amendment) stay the owner's,
+  balance deferred. Sequencing note: the wave ran only after S20's close-out (the
+  file-collision law — a concurrently dispatched first B1 was stopped before it wrote
+  anything, the baseline re-taken on the post-S20 tree), and the D14 design lane
+  committed its docs during the window.

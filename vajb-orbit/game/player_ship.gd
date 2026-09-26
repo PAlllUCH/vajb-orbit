@@ -202,6 +202,27 @@ const ARC_INTERVAL_MIN := 1.6
 const ARC_INTERVAL_MAX := 2.6
 const ARC_SEED := 20260921
 
+## Ruling 23's breach malfunctions (09 section 3.3's 2026-09-26 amendment, P4/P5 and the
+## pinned prow roll): the stern breach's RCS drift (a random-sign torque this fraction
+## of the hull's max turn torque, every this many seconds), the flank breach's turn clip
+## and the prow breach's thrust-ignore chance. All three are derived state - a quadrant
+## pool at 0 runs its effect, a repair that lifts it above 0 ends it, no flags - and
+## every one of these four is playtest-tunable with its named reversal.
+const BREACH_DRIFT_FRACTION := 0.15
+const BREACH_DRIFT_INTERVAL := 2.0
+const BREACH_TURN_CLIP := 0.5
+const BREACH_FLICKER_CHANCE := 0.15
+
+## The breach rolls' own determinism seam, the `ARC_SEED` pattern: one generator for the
+## drift's sign and the flicker's roll, seeded here so a launch replays, and reseedable
+## through `seed_breach_rolls` so a suite can predict every roll the hull will make.
+const BREACH_SEED := 20260926
+
+## The player state's quadrants and breach ids (rule 5: reached by preload path, never
+## through the global class table), so the three malfunctions below read the pools the
+## same names `PlayerState` writes them under.
+const PLAYER_STATE := preload("res://game/player_state.gd")
+
 var _stats: ShipStats = null
 var _state: PlayerState = null
 var _body: RigidBody2D = null
@@ -227,6 +248,13 @@ var _arc_clock := 0.0
 var _arc_next := 0.0
 var _arc_count := 0
 var _arc_rng := RandomNumberGenerator.new()
+
+## Ruling 23's breach malfunctions (P4/P5, section 4.5): the RCS drift's own clock, the
+## one generator both it and the flicker roll from, and how many thrust ticks the prow
+## breach has swallowed (the `arc_count` read-back shape).
+var _breach_drift_clock := 0.0
+var _breach_rng := RandomNumberGenerator.new()
+var _flicker_ignores := 0
 ## How many afterburner activations this hull has lit, so "one charge and one cue per
 ## activation" is measurable after the 0.2 s charge has freed itself.
 var _boost_activations := 0
@@ -268,6 +296,7 @@ var _applied_torque := 0.0
 func _ready() -> void:
 	add_to_group(&"player_ship")
 	_arc_rng.seed = ARC_SEED
+	_breach_rng.seed = BREACH_SEED
 	_body = get_node_or_null(NodePath(HULL_BODY_NODE)) as RigidBody2D
 	if _body != null:
 		_body.body_entered.connect(_on_hull_body_entered)
@@ -508,6 +537,20 @@ func boost_activations() -> int:
 	return _boost_activations
 
 
+## How many thrust ticks a prow breach has swallowed (P4's engine flicker), the
+## `arc_count`/`boost_activations` read-back shape: a suite reads the effect without a
+## frame the runner cannot await.
+func flicker_ignores() -> int:
+	return _flicker_ignores
+
+
+## P4's determinism seam, the injectable half: reseeds the one generator the drift's
+## signs and the flicker's rolls draw from, so a suite that mirrors the same sequence in
+## its own `RandomNumberGenerator` can predict every roll this hull will make.
+func seed_breach_rolls(value: int) -> void:
+	_breach_rng.seed = value
+
+
 ## The pinned damage sink (slice-2 brief, pinned interface item 4; W2's measured gap 1):
 ## `Damage.apply(target, ...)` and every weapon's delivery reach the ship node, which
 ## forwards into `PlayerState.damage`, so the wave-1 verified shield-first absorb with no
@@ -621,10 +664,14 @@ func _physics_process(delta: float) -> void:
 	if _has_move_target and global_position.distance_to(_move_target) <= ARRIVE_RADIUS:
 		cancel_orders()
 
-	var throttle := 0.0 if _thrust_locked() else stick
+	## Ruling 14's lockout and S19's prow flicker (P4) are one gate: both zero the two
+	## thrust axes for the frame. The flicker's roll happens once per thrust application
+	## tick, so the axes cannot disagree with each other inside one frame.
+	var ignore_thrust := _thrust_locked() or _breach_flicker(stick, strafe)
+	var throttle := 0.0 if ignore_thrust else stick
 	## The strafe is thrust, so ruling 14 locks it with the throttle: a dry tank strafes
 	## nowhere. Its *turn* is not thrust, so the cursor steering below stays live.
-	var lateral := 0.0 if _thrust_locked() else strafe
+	var lateral := 0.0 if ignore_thrust else strafe
 	var desired_turn := 0.0
 	var desired_lateral := 0.0
 	var desired_speed := 0.0
@@ -632,9 +679,10 @@ func _physics_process(delta: float) -> void:
 	if _has_move_target:
 		desired_turn = _order_turn()
 		desired_speed = _order_speed()
-		## The autopilot commands thrust too, so ruling 14 locks it with the stick: a
-		## dry tank steers towards the order and coasts instead of accelerating.
-		if _thrust_locked():
+		## The autopilot commands thrust too, so ruling 14 locks it with the stick (and
+		## S19's flicker with the same gate): a dry tank steers towards the order and
+		## coasts instead of accelerating.
+		if ignore_thrust:
 			desired_speed = 0.0
 		if absf(desired_speed) > absf(_velocity_along_heading()):
 			rate = _accel_rate()
@@ -646,6 +694,7 @@ func _physics_process(delta: float) -> void:
 		if not is_zero_approx(throttle):
 			rate = _accel_rate() * (BRAKE_MULT if throttle < 0.0 else 1.0)
 	_step_turn(desired_turn, delta)
+	_step_breach_drift(delta)
 	if _is_released(throttle, lateral):
 		## CONTRACTS section 14's 23.5 amendment: "a released forward+strafe decays as a
 		## single velocity vector". Nothing is commanded, so the whole velocity is what
@@ -797,16 +846,76 @@ func _order_speed() -> float:
 ## compensated for, so the spin-up is the class rate and not the class rate minus
 ## drag; `apply_torque` is a global torque and positive is clockwise, which is the
 ## same sign the turn actions and the old `_heading` integration used.
+##
+## S19's P5 clips the command's own bound: a breached flank halves the spin rate the
+## turn **towards** it may reach (a turn away stays the class's own), so the clip is the
+## turn rate and not merely one frame's torque.
 func _step_turn(desired_turn: float, delta: float) -> void:
 	if _body == null or delta <= 0.0:
 		return
-	var spin_rate := _spin_rate()
+	var spin_rate := _spin_rate() * _breach_turn_scale(desired_turn)
 	var omega := _body.angular_velocity
 	var alpha := clampf((desired_turn - omega) / delta, -spin_rate, spin_rate)
 	var torque := _angular_inertia() * (alpha + _angular_damp() * omega)
 	if is_zero_approx(torque):
 		return
 	_apply_torque(torque)
+
+
+## P4's RCS drift: a stern breach applies a random-sign torque through `_apply_torque`
+## every BREACH_DRIFT_INTERVAL seconds, sized as BREACH_DRIFT_FRACTION of the hull's max
+## turn torque (`I * spin_rate`, the torque `_step_turn` commands at full deflection from
+## rest). Derived state, no timer object: the clock runs only while the stern pool is 0
+## and is reset the moment it is not, so a repaired hull drifts no more and a fresh
+## breach starts its own wait.
+func _step_breach_drift(delta: float) -> void:
+	if _body == null or _stats == null:
+		return
+	if _state == null or not _state.breached(PLAYER_STATE.QUADRANT_STERN):
+		_breach_drift_clock = 0.0
+		return
+	_breach_drift_clock += delta
+	if _breach_drift_clock < BREACH_DRIFT_INTERVAL:
+		return
+	_breach_drift_clock -= BREACH_DRIFT_INTERVAL
+	var peak := _angular_inertia() * _spin_rate()
+	_apply_torque(_breach_drift_sign() * BREACH_DRIFT_FRACTION * peak)
+
+
+## The drift's random sign: one roll of the breach generator, half the circle either way
+## (`-1` below the midpoint, `+1` at or above it -- positive is clockwise, like every
+## torque in this file).
+func _breach_drift_sign() -> float:
+	return -1.0 if _breach_rng.randf() < 0.5 else 1.0
+
+
+## P4's engine flicker: while the prow pool is 0, one roll per thrust application tick
+## swallows the thrust with probability BREACH_FLICKER_CHANCE. The gate Emergency Flight
+## Mode uses is the gate this joins (the caller zeroes both thrust axes), and the roll is
+## seeded so a suite can predict it. A tick with no thrust commanded rolls nothing: only
+## a thrust application tick can be flickered.
+func _breach_flicker(throttle: float, lateral: float) -> bool:
+	if _state == null or not _state.breached(PLAYER_STATE.QUADRANT_PROWS):
+		return false
+	if is_zero_approx(throttle) and is_zero_approx(lateral):
+		return false
+	if _breach_rng.randf() >= BREACH_FLICKER_CHANCE:
+		return false
+	_flicker_ignores += 1
+	return true
+
+
+## P5's clipped flank: a breached starboard clips the spin rate of a positive
+## (clockwise) turn to BREACH_TURN_CLIP, a breached port the negative one; a turn away
+## from the breach, and a hull with no breach at all, keep the class's own rate (1.0).
+func _breach_turn_scale(desired_turn: float) -> float:
+	if _state == null or is_zero_approx(desired_turn):
+		return 1.0
+	if desired_turn > 0.0 and _state.breached(PLAYER_STATE.QUADRANT_STARBOARD):
+		return BREACH_TURN_CLIP
+	if desired_turn < 0.0 and _state.breached(PLAYER_STATE.QUADRANT_PORT):
+		return BREACH_TURN_CLIP
+	return 1.0
 
 
 ## The manual command as one body-frame velocity (x = the nose, y = the hull's right side),

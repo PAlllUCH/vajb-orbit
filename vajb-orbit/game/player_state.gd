@@ -20,6 +20,12 @@ extends Resource
 ## (ENGINE_SPEC section 4.2 item 2), which `game/damage.gd`'s `Damage.regen` spends once
 ## the hull has been quiet for `Damage.REGEN_QUIET`. The `damage(amount, bypass_shield,
 ## ctx)` route and the recorded context were already here (wave 1 and slice 0).
+##
+## S19 turns ruling 23's directional armour on (09 section 3.3's 2026-09-26 amendment,
+## P1-P3/P6): the hull's points live in four quadrant pools, `damage` routes each hit
+## by the ctx's `direction` (the rear 160 degree arc bites x1.6 before the shield-first
+## absorb) and an emptying pool spills its remainder over the other three, while `hull`
+## stays the **sum** of the four pools through every store.
 
 signal hull_changed(current: float, maximum: float)
 signal shield_changed(current: float, maximum: float)
@@ -53,6 +59,39 @@ const ENERGY_REGEN_DEFAULT := 5.0
 ## snapshot replaces.
 const SHIELD_REGEN_DEFAULT := 2.0
 
+## --- Ruling 23's directional armour (09 section 3.3's 2026-09-26 amendment) ---
+
+## P2's quadrant ids, the four names every pool walk and breach reader speaks.
+const QUADRANT_PROWS: StringName = &"prow"
+const QUADRANT_STERN: StringName = &"stern"
+const QUADRANT_PORT: StringName = &"port"
+const QUADRANT_STARBOARD: StringName = &"starboard"
+
+## The four ids in the fixed order every pool walk reads (P1's split, P6's spill).
+const QUADRANTS: Array[StringName] = [
+	QUADRANT_PROWS, QUADRANT_STERN, QUADRANT_PORT, QUADRANT_STARBOARD
+]
+
+## P1: the hull's points divide into this many even pools at full repair
+## (`hull_max / 4` each). Reversal: plating-only pools.
+const QUADRANT_COUNT := 4
+
+## P2's routing quarters: prow `|d| <= 45 deg`, stern `|d| >= 135 deg`, starboard the
+## positive side between them and port the mirror. Reversal: any other arc map.
+const PROW_ARC := PI / 4.0
+const REAR_ARC := PI * 3.0 / 4.0
+
+## P3: the rear vulnerability arc is 160 degrees wide (half-width 100 degrees) and its
+## hits multiply the incoming amount by STERN_DAMAGE_MULT **before** the shield-first
+## absorb. Reversal: 1.0 (and 2 * PI / 3.0 for a 120 degree arc).
+const STERN_VULN_ARC := PI * 5.0 / 9.0
+const STERN_DAMAGE_MULT := 1.6
+
+## Section 4.2 item 5's `direction` key, spelled here so this resource never preloads
+## the pipeline it is hit through (`game/damage.gd`'s CTX_DIRECTION carries the same
+## key: a signed bearing over [-PI, PI], 0.0 dead ahead, half-open at +PI).
+const CTX_DIRECTION: StringName = &"direction"
+
 ## Ruling 11's fuel toll: every 1 point of Energy spent burns this much Fuel.
 const FUEL_PER_ENERGY := 0.10
 
@@ -75,6 +114,15 @@ var shield_max: float = 600.0
 var cargo_max: int = 40
 var hull: float
 var shield: float
+
+## Ruling 23's four quadrant pools (P1: `hull_max / 4` each at full repair). `hull` is
+## their **sum** at every point -- `set_hull` redistributes proportionally, `damage`
+## charges one quadrant and spills the remainder over the other three, and nothing else
+## writes them -- so the pools are a split of the same figure every existing row reads.
+var armour_prow: float = 0.0
+var armour_stern: float = 0.0
+var armour_port: float = 0.0
+var armour_starboard: float = 0.0
 
 ## The resolved shield regeneration rate, in points per second (ENGINE_SPEC section 4.2
 ## item 2): the base plus the fitted shield module's value. `game.gd` seeds it off the
@@ -136,8 +184,8 @@ var fuel: float
 var fuel_cell_cooldown: float = 0.0
 
 ## The last `damage` call's context (section 4.2 item 5: the slice-2 pipeline
-## carries `direction` here for slice 3's quadrants). Accepted and recorded now,
-## no-op until the quadrants exist.
+## carries `direction` here for slice 3's quadrants). Accepted and recorded on every
+## hit; S19's `damage` reads its `direction` to route the hit.
 var _last_damage_ctx: Dictionary = {}
 
 
@@ -189,6 +237,7 @@ func _resize_ammo() -> void:
 
 func setup() -> void:
 	hull = hull_max
+	_seed_even_pools(hull)
 	shield = shield_max
 	cargo_used = 0
 	_resize_ammo()
@@ -206,9 +255,15 @@ func setup() -> void:
 	fuel_changed.emit(fuel, fuel_max)
 
 
+## The one writer of the hull's total, and the pools' proportional feed (rule 1 of the
+## wave's pinned interface): `hull` is clamped exactly as it always was and the four
+## pools are scaled to the new total, so `hull == sum(pools)` survives every heal, seed
+## and clamp, and the death flow below is byte-for-byte the shipped one.
 func set_hull(value: float) -> void:
 	var was_alive := hull > 0.0
+	var previous := hull
 	hull = clampf(value, 0.0, hull_max)
+	_redistribute_pools(previous, hull)
 	hull_changed.emit(hull, hull_max)
 	if was_alive and hull <= 0.0:
 		died.emit()
@@ -221,17 +276,157 @@ func set_hull(value: float) -> void:
 ## the hull directly. Both pools keep their existing signals, so the HUD and the
 ## ship's damage-quiet gate see the same channel as before.
 ##
-## `ctx` is section 4.2 item 5's combat context (`direction` from slice 2, routed
-## by slice 3's quadrants). It is accepted and recorded on every hit and is a no-op
-## until those quadrants exist, which is why the parameter is last and defaulted.
+## `ctx` is section 4.2 item 5's combat context. S19 routes on its `direction`
+## (P2): the hit is charged to the quadrant that bearing names, and a bearing inside
+## the rear 160 degree arc multiplies the incoming amount by P3's 1.6 **before** the
+## shield-first absorb. A missing, zero or non-numeric `direction` reads 0.0 -- dead
+## ahead, the prow, x1.0 -- so every direction-less hit keeps today's numbers.
 func damage(amount: float, bypass_shield: bool = false, ctx: Dictionary = {}) -> void:
 	_last_damage_ctx = ctx
 	if amount <= 0.0:
 		return
+	var direction := _ctx_direction(ctx)
+	if absf(direction) >= STERN_VULN_ARC:
+		amount *= STERN_DAMAGE_MULT
 	if not bypass_shield and shield > 0.0:
 		set_shield(shield - amount)
 		return
-	set_hull(hull - amount)
+	_charge_quadrant(quadrant_for(direction), amount)
+
+
+## P2's arc map, the one reading of a signed bearing: the prow takes everything up to
+## and including 45 degrees off the nose, the stern everything from 135 degrees out,
+## and the flanks split the two quarters between them (starboard positive, port
+## negative -- the sign every turn in this project carries). Static, because the map is
+## a pure function of the bearing: `damage` and a reader both reach it without a state.
+static func quadrant_for(direction: float) -> StringName:
+	var magnitude := absf(direction)
+	if magnitude <= PROW_ARC:
+		return QUADRANT_PROWS
+	if magnitude >= REAR_ARC:
+		return QUADRANT_STERN
+	return QUADRANT_STARBOARD if direction > 0.0 else QUADRANT_PORT
+
+
+## One quadrant's pool, by P2's id. The breach readers (`player_ship.gd`'s three
+## malfunctions) and the HUD-facing pool rows read the pools through this one door.
+func pool_of(quadrant: StringName) -> float:
+	match quadrant:
+		QUADRANT_PROWS:
+			return armour_prow
+		QUADRANT_STERN:
+			return armour_stern
+		QUADRANT_PORT:
+			return armour_port
+		QUADRANT_STARBOARD:
+			return armour_starboard
+	return 0.0
+
+
+## A quadrant at 0 is a breach, and its malfunction is **derived state**: the effect
+## runs exactly while this reads true, and a repair that lifts the pool above 0 ends
+## it with no flag to clear (rule 4 of the wave's pinned interface).
+func breached(quadrant: StringName) -> bool:
+	return pool_of(quadrant) <= 0.0
+
+
+## P3/P6's charge: the routed pool takes what it can, and an emptying hit spills the
+## remainder **evenly** over the other three (P6's pinned reading; the reversal is a
+## proportional-to-capacity split or a drop at the breach). The total is committed
+## from the pools, so `hull` is their sum to the last bit.
+func _charge_quadrant(quadrant: StringName, amount: float) -> void:
+	var facing := pool_of(quadrant)
+	var taken := minf(amount, facing)
+	_set_pool(quadrant, facing - taken)
+	var remainder := amount - taken
+	if remainder > 0.0:
+		var share := remainder / float(QUADRANT_COUNT - 1)
+		for other: StringName in QUADRANTS:
+			if other == quadrant:
+				continue
+			_set_pool(other, maxf(pool_of(other) - share, 0.0))
+	_commit_hull()
+
+
+## The hull's total after a pool write, with the shipped death flow (one `hull_changed`
+## per hit, `died` on the crossing to 0) so every signal a suite counts is unchanged.
+func _commit_hull() -> void:
+	var was_alive := hull > 0.0
+	hull = clampf(_pool_sum(), 0.0, hull_max)
+	hull_changed.emit(hull, hull_max)
+	if was_alive and hull <= 0.0:
+		died.emit()
+
+
+## `set_hull`'s redistribution (rule 1): proportional to the pools the state already
+## carries, evenly when there is nothing to scale (a fresh state, a zeroed hull coming
+## back up). A breached pool stays at 0 -- only a repair (P8) lifts it.
+func _redistribute_pools(previous_total: float, total: float) -> void:
+	if previous_total > 0.0:
+		var scale := total / previous_total
+		armour_prow *= scale
+		armour_stern *= scale
+		armour_port *= scale
+		armour_starboard *= scale
+	else:
+		_seed_even_pools(total)
+		return
+	_credit_residual(total - _pool_sum())
+
+
+## P1's split: `hull_max / 4` per quadrant at full repair, the vector `Repairs.pools`
+## reports and the launch's own seed.
+func _seed_even_pools(total: float) -> void:
+	var quarter := total / float(QUADRANT_COUNT)
+	armour_prow = quarter
+	armour_stern = quarter
+	armour_port = quarter
+	armour_starboard = quarter
+	_credit_residual(total - _pool_sum())
+
+
+## The floating-point residual the scaling above can leave behind, absorbed by the
+## largest pool (ties to the prow) so `hull == sum(pools)` holds exactly and a breached
+## pool is never lifted off 0 by a rounding crumb.
+func _credit_residual(residual: float) -> void:
+	if is_zero_approx(residual):
+		return
+	var pools: Array[float] = [armour_prow, armour_stern, armour_port, armour_starboard]
+	var largest := 0
+	for index: int in pools.size():
+		if pools[index] > pools[largest]:
+			largest = index
+	pools[largest] += residual
+	armour_prow = pools[0]
+	armour_stern = pools[1]
+	armour_port = pools[2]
+	armour_starboard = pools[3]
+
+
+func _set_pool(quadrant: StringName, value: float) -> void:
+	match quadrant:
+		QUADRANT_PROWS:
+			armour_prow = value
+		QUADRANT_STERN:
+			armour_stern = value
+		QUADRANT_PORT:
+			armour_port = value
+		QUADRANT_STARBOARD:
+			armour_starboard = value
+
+
+func _pool_sum() -> float:
+	return armour_prow + armour_stern + armour_port + armour_starboard
+
+
+## The ctx's bearing, read as a number only: a missing key, a null, a string or any
+## other shape reads 0.0 (dead ahead, P2's rule 2), never a rear-arc default and never
+## a scatter. `int` is accepted because a hand-built ctx may spell a whole degree count.
+func _ctx_direction(ctx: Dictionary) -> float:
+	var value: Variant = ctx.get(CTX_DIRECTION)
+	if value is float or value is int:
+		return float(value)
+	return 0.0
 
 
 func set_shield(value: float) -> void:

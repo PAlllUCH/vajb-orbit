@@ -32,6 +32,11 @@ const Catalog := preload("res://game/station_catalog.gd")
 const Fit := preload("res://game/ship_fit.gd")
 const Log := preload("res://game/economy_log.gd")
 
+## The quadrant count's single owner (09 section 3.3 P1: the hull splits into that many
+## even pools), reached by preload path so this service and the flight state cannot
+## disagree about the split.
+const State := preload("res://game/player_state.gd")
+
 const HULL_CR_PER_POINTS := 2
 const SHIELD_CR_PER_POINTS := 3
 const SHIELD_MIN_EXEMPT_PERCENT := 0.9
@@ -77,8 +82,11 @@ static func fee(profile: Node, ship_id: StringName) -> int:
 
 ## One all-or-nothing repair (01 section 7: verify -> pay -> restore -> log).
 ## Nothing is touched unless every step can be completed. Success returns
-## {&"ok": true, &"ship_id", &"fee", &"hull_max", &"shield_max"}; a refusal returns
-## {&"ok": false, &"reason": ...} and leaves credits and vitals exactly as they were.
+## {&"ok": true, &"ship_id", &"fee", &"hull_max", &"shield_max", &"pools"} where
+## `pools` is the four-figure armour vector the repair leaves behind (`pools(hull_max)`,
+## P8: a full repair restores all four armour pools to `hull_max / 4`); a refusal
+## returns {&"ok": false, &"reason": ...} and leaves credits and vitals exactly as they
+## were. The fee law above is unchanged -- the hull sum is the same number it always was.
 static func repair(profile: Node, ship_id: StringName) -> Dictionary:
 	var current := _vitals(profile, ship_id)
 	if current.is_empty():
@@ -106,6 +114,7 @@ static func repair(profile: Node, ship_id: StringName) -> Dictionary:
 		&"fee": cost,
 		&"hull_max": hull_max,
 		&"shield_max": shield_max,
+		&"pools": pools(hull_max),
 	}
 
 
@@ -163,6 +172,22 @@ static func recharge(profile: Node, ship_id: StringName) -> Dictionary:
 		&"fee": FREE_FEE,
 		&"energy_max": cells,
 	}
+
+
+## P8 (01 section 6's 2026-09-26 amendment; 09 section 3.3 P1 owns the split): the four
+## armour pools a hull of this figure carries at full repair, `hull_max / 4` each, in
+## prow/stern/port/starboard order (09 section 3.3 P2's ids). A full repair restores
+## exactly this vector; the pools themselves are flight state (`PlayerState`), so the
+## station's half of the restore is the full hull sum the next launch seeds them from --
+## `PlayerState.setup` splits that sum evenly and `_seed_vitals`' proportional
+## redistribution keeps the split -- which is why this one helper is both the repair's
+## report and the panel's per-quadrant lines' arithmetic.
+static func pools(total: float) -> Array[float]:
+	var quarter := maxf(0.0, total) / float(State.QUADRANT_COUNT)
+	var shards: Array[float] = []
+	for _index: int in State.QUADRANT_COUNT:
+		shards.append(quarter)
+	return shards
 
 
 ## Whether the REPAIRS panel should offer anything at all: false for a full ship

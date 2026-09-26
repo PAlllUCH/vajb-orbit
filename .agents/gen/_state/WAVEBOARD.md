@@ -6,6 +6,22 @@
 
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-25 clear-outs (owner asks):** every closed slice folder moved to the system trash (last git tree carrying them: `7a081ef`), old session reports live in `_state/_archive/`, and the two dispatch files were purged to live-items-only (2026-09-25 ter). Citation paths into purged trees name historical files.
 
+**Updated 2026-09-26 (S19, closed): ruling 23's directional armour ships — hits
+route by `ctx.direction` into four `hull_max/4` pools, the rear 160° arc bites
+×1.6 before the shield-first absorb, and an emptied pool runs its breach
+malfunction (RCS drift / engine flicker / clipped turn) until repaired.**
+Gate **895 → 914/0** twice hermetic (S19's 19 new `test_s19_quadrants.gd` rows +
+`test_engine2_damage.gd`'s one corrected row, L240); `verify --baseline s19_start`
+green (`"problems": []`). Pin: `09_ship_slots_modules.md` §3.3's 2026-09-26
+amendment (P1–P8; owner ticks **T1–T7** stay open, balance deferred) +
+`01_economy_core.md` §6's repair note. Five-piece:
+`slices/S19-directional-armour/`; recap `MASTER_REPORT.md` §6. Review **1 HIGH
+(bucket 2 — the astern shielded row was off the §3 list; S19-F1 moved it onto
+P3's own multiplier and wrote the list amendment, L240 closed) / 0 MED / 5 LOW
+(L241–L245)**. Ran after S20's close-out per the file-collision law (a first
+concurrent dispatch was stopped before writing; baseline re-taken post-S20).
+**The coder queue is empty.**
+
 **Updated 2026-09-26 (S20, closed): the owner's S18 playtest feedback became
 coder item 25 — ARMORY chrome unification + the hover reflow fix — and it is
 done.** The D13 layout stayed frozen; the pane's §3.9 cockpit plates retired for
@@ -92,7 +108,7 @@ sector edges, coder item 17) closed and verified 2026-09-25:** gate 866 →
 2026-09-25 answers stand (spawn mix kept; the §6/§13/§15 rewording applied on
 delegation; the D12 fix wave and D8 item 9 ditched for the armory rework).
 
-**Current state: the universal gate reads `[SUMMARY] passed=895 failed=0`**
+**Current state: the universal gate reads `[SUMMARY] passed=914 failed=0`**
 (CONTRACTS §9 carries the authority block; hermetic on scratch stores).
 **S20 (coder item 25) closed 2026-09-26:** the ARMORY wears the §5.3 chrome
 family, the shell inspector holds a constant height, `OVER CAP` measures
@@ -103,15 +119,14 @@ retired master's ext_resource) and the **two HIGHs are bucket-2 pin-list items,
 L238–L239** (brief §3's tests-that-move list missing two `test_d7_armory.gd`
 rows; forced by A4.3, so a list amendment, never a revert — no fixer may take
 them); recap `MASTER_REPORT.md` §6.
-Queued: **coder item 26 = S19 directional armour & breach malfunctions**
-(`slices/S19-directional-armour/`; B1 → R1 → F1 on HIGH/MED).
+**Coder queue: empty** — items 25 (S20) and 26 (S19) both closed 2026-09-26;
+the next five-piece is the owner's call.
 **no live designer item** (D13 closed; the owner's armory polish rides his own
 designer session). **Parked (owner-gated, not
 queued):** the S12 ore caps/scale rows (the owner's §10 ticks — do not
-implement before that wave is briefed), slice 4's remainder
-(quadrants/directional armour — 18 §4.5 + ruling 23; bosses/arena — 14 §5,
-blocked on P4 contracts + boss art), the §13 turn/coast column ticks and
-slice 2.5's engine-bed/vignette calls, S8's owner gates (O1/O2 FITTING-drag
+implement before that wave is briefed), slice 4's remainder (bosses/arena —
+14 §5, blocked on P4 contracts + boss art), the §13 turn/coast column ticks
+and slice 2.5's engine-bed/vignette calls, S8's owner gates (O1/O2 FITTING-drag
 UX, O3, L168, L169), the chrome art half, the designer candidates (D9-11,
 D10-12, D3-1, D3-2a/2b, D4-3/4, blocked 5/6 — parked in
 `dispatch_designer.md`), and adopting the D13 layout language across the game

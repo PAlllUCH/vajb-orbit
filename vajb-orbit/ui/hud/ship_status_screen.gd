@@ -116,6 +116,18 @@ const THRUSTER_MODES: Array[StringName] = [&"rear", &"front", &"left", &"right"]
 const MODULE_ROW_FORMAT := "%s%d · %s"
 const MODULE_ROW_RACK_FORMAT := "%s%d · B%d · %s"
 
+## P8 (09 section 3.3's 2026-09-26 amendment): the four armour-pool rows the screen
+## appends after its fit rows. Key and label per row, in the pinned prow/stern/port/
+## starboard order; the max each row prints is the hull maximum split by the table's own
+## size, so the four names and the divisor live once.
+const QUADRANT_ROWS: Array[Dictionary] = [
+	{&"key": &"prow", &"label": "PROW"},
+	{&"key": &"stern", &"label": "STERN"},
+	{&"key": &"port", &"label": "PORT"},
+	{&"key": &"starboard", &"label": "STBD"},
+]
+const QUADRANT_ROW_FORMAT := "%s %d / %d"
+
 ## UI_SPEC section 3.8's footer: HULL/SHLD `cur / max` as an 18 px `HudReadout`, POWER draw over
 ## capacity. The power line is the fitting panel's own `METER_IDLE` wording, reused verbatim.
 const FOOTER_HULL_FORMAT := "HULL %d / %d"
@@ -182,6 +194,12 @@ var _render_scale: float = 1.0
 var _rows: Array[Dictionary] = []
 var _footer: Dictionary = {}
 var _cells: Array[Dictionary] = []
+
+## The armour-pool rows' own state (P8): the labels, keyed by quadrant id, and the last
+## live pools `set_quadrants` pushed. Empty pools read the even split of the hull figure --
+## P1's launch seed, and the only reading a screen that receives no pool feed can show.
+var _quadrant_values: Dictionary = {}
+var _quadrant_pools: Dictionary = {}
 ## One entry per drawn (non-gap) cell: its ref, the matrix position and the drawn widgets, so a
 ## probe can assert the Mockup C grid without a screenshot.
 var _refs: Array[Dictionary] = []
@@ -531,6 +549,7 @@ func set_pools(
 	_shield_current = maxf(shield_current, 0.0)
 	_shield_max = maxf(shield_max, 0.0)
 	_refresh_footer()
+	_set_quadrant_texts()
 
 
 ## ---------------------------------------------------------------- the refresh
@@ -781,6 +800,67 @@ func _refresh_module_rows() -> void:
 		_set_font_size(label, _style.status_row_font_size)
 		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_module_rows.add_child(label)
+	_build_quadrant_rows()
+
+
+## P8: the four armour-pool rows, appended after the fit rows. Built with the module rows
+## (the band's children are rebuilt as one list) and re-read in place whenever the pools
+## or the hull figure move.
+func _build_quadrant_rows() -> void:
+	_quadrant_values = {}
+	for row: Dictionary in QUADRANT_ROWS:
+		var label := Label.new()
+		label.name = "Quadrant%s" % String(row[&"key"]).to_pascal_case()
+		label.theme_type_variation = CAPTION_VARIATION
+		_set_font_size(label, _style.status_row_font_size)
+		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_module_rows.add_child(label)
+		_quadrant_values[row[&"key"]] = label
+	_set_quadrant_texts()
+
+
+## One pass over the four pool rows: the pushed pool when there is one, the even split of
+## the hull figure otherwise, each against `_hull_max / QUADRANT_ROWS.size()`.
+func _set_quadrant_texts() -> void:
+	if _quadrant_values.is_empty():
+		return
+	var count := float(QUADRANT_ROWS.size())
+	var quarter_max := _hull_max / count
+	for row: Dictionary in QUADRANT_ROWS:
+		var label: Label = _quadrant_values.get(row[&"key"])
+		if label == null:
+			continue
+		var current := float(_quadrant_pools.get(row[&"key"], _hull_current / count))
+		label.text = QUADRANT_ROW_FORMAT % [
+			row[&"label"], int(round(current)), int(round(quarter_max))
+		]
+
+
+## The live armour pools, pushed by the HUD's own frame when it carries them (P8): four
+## values in 09 section 3.3 P2's prow/stern/port/starboard order. Additive -- a HUD that
+## pushes none still draws the even split of its hull figure, which is exactly P1's
+## launch seed -- and null-safe, so it may be called before the screen is built.
+func set_quadrants(prow: float, stern: float, port: float, starboard: float) -> void:
+	_quadrant_pools = {
+		&"prow": maxf(prow, 0.0),
+		&"stern": maxf(stern, 0.0),
+		&"port": maxf(port, 0.0),
+		&"starboard": maxf(starboard, 0.0),
+	}
+	_set_quadrant_texts()
+
+
+## The four pool rows' own read-back (the `module_rows()` precedent): one
+## {&"key", &"text"} per row, in the table's pinned order.
+func pool_rows() -> Array[Dictionary]:
+	var rows: Array[Dictionary] = []
+	for row: Dictionary in QUADRANT_ROWS:
+		var label: Label = _quadrant_values.get(row[&"key"])
+		rows.append({
+			&"key": row[&"key"],
+			&"text": label.text if label != null else "",
+		})
+	return rows
 
 
 ## The footer (UI_SPEC section 3.8): HULL/SHLD `cur / max` as 18 px readouts, and POWER draw

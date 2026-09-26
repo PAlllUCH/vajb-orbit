@@ -1174,3 +1174,42 @@ the consistent read; the change is one chip string plus its rows). Close-out: ga
 895/0 twice hermetic, `verify --baseline s20_start` green (`"problems": []`,
 `--tests` re-run included, project.godot/game/autoload/addons untouched), CONTRACTS
 §9/§10 (v0.33) + §23.1's reserved-height row, WAVEBOARD, wave-boundary commit.
+
+**S19 (2026-09-26): ruling 23's directional armour goes live — four pools, the ×1.6
+rear arc and three breach malfunctions (coder item 26) — DONE** (gate 895 → **914/0**
+twice hermetic; `test_s19_quadrants.gd` 19 rows + `test_engine2_damage.gd`'s one
+corrected row; **1 HIGH / 0 MED / 5 LOW (L240–L245)**). Owner go:
+*"gameplay needs implementation, balance can be done later"* — the pin is
+`09_ship_slots_modules.md` §3.3's 2026-09-26 amendment (P1–P8 proposed with
+reversals) + `01_economy_core.md` §6's repair note. Shipped: four `hull_max/4`
+pools with `hull == sum(pools)` (proportional `set_hull`, even when all are zero;
+the direction-less default is prow ×1.0, so every pre-S19 damage number stands);
+`damage()`'s P2 routing (prow `|d| ≤ π/4`, stern `|d| ≥ 3π/4`, starboard/port the
+mirror) with P3's ×1.6 for `|d| ≥ 5π/9` applied **before** the shield-first absorb
+and P6's even spill from an emptying pool; `player_ship.gd`'s derived breach
+effects (P4: seeded RCS drift, 15 % of the hull's 141428.571429 peak turn torque at
+the 2.0 s cadence; 15 % flicker joined to the Emergency Flight thrust gate; P5: the
+breached flank's turn ×0.5) with the pool's own state as the only switch;
+`repairs.gd`'s `pools(hull_max)` restore inside the fee-untouched `repair()`, and
+the four per-quadrant lines/rows in both panes (P8). The builder's pre-grep
+caught the one row the pin moves (`test_engine2_damage.gd:136-144`, an astern
+shielded hit: 144, not 90) and paused it as bucket 2; R1 re-measured everything
+itself (its own probe, 33 checks, scratch store: 1441 bearings 0 mismatches, the
+×1.6 proven to land before the absorb, a 40-hit sum-invariant sequence, both
+seeded malfunction replays, the fee example and both readouts) and filed the HIGH
+plus **L241–L245** (the status rows' missing production feed; the spill clamp's
+under-landing, tick T5; the duplicated ctx key; the pre-existing panel/fee shield
+split; and `verify_wave.py --forbidden` directory entries being inert — exact-string
+matching, so the close-out command's `docs/`, `addons/`, `autoload/` protect
+nothing). **S19-F1** ran on the HIGH, moved the row onto P3's own
+`PlayerState.STERN_DAMAGE_MULT` and wrote §3's list amendment (**L240 closed**) —
+the first fixer to take a bucket-2 list item, disclosed as a deviation with its
+reversal. Owner ticks **T1–T7** (P1 split, P2 arcs, P3 application point, P4/P5
+strengths, P6 spill, P7 NPC staging, P8 rows) stay open, balance deferred.
+Sequencing incident: the wave's first B1 was dispatched while S20 was still
+running and was stopped before it wrote anything (the file-collision law — the
+two waves hold `vajb-orbit/tests/` + `tools/`); `s19_start` was re-taken on the
+post-S20 tree (gate 895) and the wave ran then, with the D14 design lane
+committing its docs mid-window. Close-out: gate **914/0** twice hermetic,
+`verify --baseline s19_start` green (`"problems": []`), CONTRACTS §9/§10 (v0.35),
+WAVEBOARD, wave-boundary commit. The coder queue is empty.

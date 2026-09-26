@@ -19,17 +19,31 @@ lane, WAVEBOARD, wave-boundary commit).
 
 | # | Wave | Item | What | Status |
 |---|---|---|---|---|
-| 26 | S19 | Directional armour & breach malfunctions (ruling 23) | Four armour pools routed by `ctx.direction`, stern ×1.6, breach malfunctions (RCS drift / engine flicker / clipped turn), repairs + readouts. `slices/S19-directional-armour/` (`S19_BRIEF.md`, `S19_prompts.md`); pin `09_ship_slots_modules.md` §3.3's 2026-09-26 amendment. Run B1 → R1 → F1 on HIGH/MED. | **queued** |
+
+(empty — the queue's next item is the owner's to brief)
 
 ## Parked (owner-gated — not queued; say the word and the five-piece lands)
 
 
 ## Done
 
-Items 1–25 closed (gate 437 → **895/0** through the waves); detail, reviews,
+Items 1–26 closed (gate 437 → **914/0** through the waves); detail, reviews,
 incidents and LOW rows in `.agents/gen/MASTER_REPORT.md` §6 and the archived
 session reports.
 
+- **Item 26 = S19 directional armour & breach malfunctions** (2026-09-26,
+  gate 895 → **914/0** twice hermetic, 1 HIGH / 0 MED / 5 LOW **L240–L245**).
+  Four `hull_max/4` pools route by `ctx.direction` with the sum invariant, the
+  rear 160° arc's ×1.6 lands before the shield-first absorb, an emptied pool
+  runs its breach malfunction (RCS drift / flicker / turn clip, derived state),
+  repairs and both readouts carry the four quadrants. Its one HIGH was bucket 2
+  (the astern shielded row the pin moves, off the brief's §3 list): **S19-F1**
+  ran, moved the row onto P3's own `STERN_DAMAGE_MULT` and wrote the §3 list
+  amendment (L240 closed), the first fixer to take a bucket-2 list item,
+  disclosed as a deviation. Ran only after S20's close-out per the
+  file-collision law (its first, concurrent B1 was stopped before it wrote
+  anything; the baseline was re-taken on the post-S20 tree). Owner ticks
+  **T1–T7** in 09 §3.3's amendment stay open (balance deferred).
 - **Item 25 = S20 ARMORY chrome unification & the hover reflow fix**
   (2026-09-26, gate 887 → **895/0** twice hermetic, 2 HIGH / **1 MED** /
   4 LOW **L234–L239**). The pane wears the §5.3 chrome family with the D13
@@ -50,15 +64,7 @@ session reports.
 
 ## Handoff (live)
 
-Read `.agents/gen/dispatch_coder.md` and execute queue item 26 only — S19
-directional armour & breach malfunctions (ruling 23). Brief:
-`.agents/gen/slices/S19-directional-armour/S19_BRIEF.md`. Prompts:
-`.agents/gen/slices/S19-directional-armour/S19_prompts.md`. Snapshot + commit
-before the first dispatch, run B1 → R1, and the fixer only if the review
-leaves HIGH or MED. Close out per the brief's close-out section (gate re-run ×2
-on scratch stores, `verify_wave.py verify --baseline s19_start`, WAVEBOARD
-update, wave-boundary commit), then report back: the measured gate count, the
-builder's per-deliverable numbers (P1–P8 const table, per-AC measurements),
-the reviewer's findings by tier, and the owner ticks (T1–T7 in the 09 §3.3
-amendment — balance is deferred, they calibrate later). Note L229: probes
-that mount the station run under `XDG_DATA_HOME=$(mktemp -d)`.
+**Empty: the code queue has no queued item.** Items 25 (S20) and 26 (S19)
+closed 2026-09-26; the next five-piece (roadmap: nebula clouds → wreck hulks +
+the sibelon seam → P4 services) waits on the owner's word, and the parked list
+above stands owner-gated.
