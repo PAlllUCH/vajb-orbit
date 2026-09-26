@@ -540,6 +540,53 @@ the wave's own and carries its reversal.
   salvo readouts, the §13/§16 transactions (refusals write nothing) and
   CONTRACTS §17's seams. A dropped datum is HIGH.
 
+**Amendment 4 (2026-09-26 — chrome unification + the shell inspector pin;
+wave S20, owner feedback after the S18 live playtest).** Owner, verbatim: *"i
+very much like the layout but i need to unify it to the rest of game (chromes)
+and on hover the bottom description panel sometis gets 'bigger' and all shifts
+up."* **Surfaces only** for the pane plus **one shell fix**. Amendment 3's
+layout law (P1–P6 geometry, the 13 px ink floor, captions ≥ 4.5:1, T7 chip
+semantics, the P5 wording, host-derived rects) stands **unmoved** — a moved
+geometry number is HIGH. The §3.9 cockpit-plate language retires from the pane
+and the **§5.3 chrome family** takes its place.
+
+- **A4.1 Frames.** The scripted console master `ui_armory_console` retires
+  from the pane (the file stays on disk; `ASSET_CATALOG.md` records it
+  unwired). The bay cards, the wells halves and the pack/row plates wear the
+  §5.3 family — the `ui_panel_frame` nine-patch (`panel_frame` /
+  `PanelRaised`, 32 px patch margin, the theme's 1 px border convention) — and
+  the module host's own frame is the pane's outer edge. Nine-slice flat band
+  zones only (the D3 defect class). Reversal: the master returns (its scripted
+  renderer re-renders byte-identical).
+- **A4.2 Cells & controls.** The bays' 2×2 cells wear the game's weapon-slot
+  chrome (`ui_slot_weapon_*`, the `SlotButtonWeapon` family — the plates
+  FITTING's weapon slots wear); `BUY`, `✕` and any pressable chip wear
+  `StationButton` / `ui_button_plate_*`. Reversal: the code-drawn recess and
+  chip plates return.
+- **A4.3 Palette & state chips.** `READY` / `▲ OVER CAP` and the §5.1 four
+  stock chips keep §3.1/3.1b's **label + 1 px frame** idiom in theme
+  **Tokens** tones; hex literals live only in `tools/build_theme.gd`, so
+  `ArmoryStyle`'s hex palette fields resolve from the theme (the
+  `armory_style_user.tres` override path stays). The `OVER CAP` label clears
+  **4.5:1** on its fill — **L227** closes here. Reversal: the mockup palette
+  fields return (L227 reopens).
+- **A4.4 Shell inspector pin (the hover reflow fix).** The station shell's
+  `Inspector` reserves a **constant height** — the title line +
+  `INSPECTOR_BODY_MAX_LINES` (2) body lines + the margins — as
+  `custom_minimum_size` derived from the theme fonts, so the empty hover state
+  reserves the same box and the module host never reflows when
+  `inspect_requested` fires. Shell-wide: every pane's hover descriptions.
+  Reversal: the collapse-when-empty behaviour (the bug).
+- **A4.5 Salvo ledge (T8) stands:** the `ui_seg_*` seven-seg digits and the
+  `SALVO s` caption keep their ticked look and place (tick T5 below can
+  re-open this).
+- **Owner tick list (2026-09-26, wave S20 — ticked at handoff):** T1 A4.1–A4.3
+  mapping scope, T2 slot-chrome cells, T3 the L227 cure, T4 the constant
+  inspector height, T5 the seven-seg salvo keep/replace, T6 the bay chip
+  wording (`▲ OVER CAP` at the 4-cell hardcap, the S18-B1 PROPOSED trigger, or
+  `▲ AT CAP`). Implementation wave: **S20** (coder item 25;
+  `slices/S20-armory-chrome-unify/`).
+
 ## 4. Settings
 
 Scene: `vajb-orbit/ui/screens/settings.tscn`. Root `Control` full-rect, bg `void_base` drawn by a full-rect `PanelContainer` with the `panel` stylebox (or `ColorRect` with `void_base` as first child — spec choice: `PanelContainer` for consistency).

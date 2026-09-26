@@ -6,8 +6,20 @@
 
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-25 clear-outs (owner asks):** every closed slice folder moved to the system trash (last git tree carrying them: `7a081ef`), old session reports live in `_state/_archive/`, and the two dispatch files were purged to live-items-only (2026-09-25 ter). Citation paths into purged trees name historical files.
 
+**Updated 2026-09-26 (S20 queue): the owner's S18 playtest feedback becomes
+coder item 25 — ARMORY chrome unification + the hover reflow fix.** The owner
+likes the D13 layout and rules it **frozen**; the pane's §3.9 cockpit plates
+retire for the **§5.3 chrome family** (`ui_panel_frame`, `ui_slot_weapon_*`,
+`ui_button_plate_*`, theme Tokens; `ui_armory_console` unwired, **L227**
+closes) and the station shell's Inspector reserves constant height (the "bottom
+description panel gets bigger / all shifts up" bug). Pin:
+`UI_SPEC.md` §3.10 **Amendment 4** (A4.1–A4.5; owner tick list T1–T6 at
+handoff, T6 = the `▲ OVER CAP` vs `▲ AT CAP` wording fork). Five-piece:
+`slices/S20-armory-chrome-unify/`. **S19 moves to coder item 26** (the two
+collide on `vajb-orbit/tests/` + `vajb-orbit/tools/`, so they serialize).
+
 **Updated 2026-09-26 (ter): S19 (directional armour & breach malfunctions)
-queued as coder item 25** — the owner's direction is gameplay implementation
+queued as coder item 26** — the owner's direction is gameplay implementation
 first, balance later, so ruling 23's quadrants are the wave: `ctx.direction`
 routes hits into four armour pools, stern ×1.6, breach malfunctions (RCS
 drift / engine flicker / clipped turn), repairs + readouts. Pin:
@@ -78,8 +90,12 @@ delegation; the D12 fix wave and D8 item 9 ditched for the armory rework).
 
 **Current state: the universal gate reads `[SUMMARY] passed=887 failed=0`**
 (CONTRACTS §9 carries the authority block; hermetic on scratch stores).
-Queued: **coder item 25 = S19 directional armour & breach malfunctions**
-(`slices/S19-directional-armour/`; B1 → R1 → F1 on HIGH/MED);
+Queued: **coder item 25 = S20 ARMORY chrome unification + the hover reflow
+fix** (`slices/S20-armory-chrome-unify/`; B1 → R1 → F1 on HIGH/MED) and
+**coder item 26 = S19 directional armour & breach malfunctions**
+(`slices/S19-directional-armour/`; same run order) — the two serialize on
+`vajb-orbit/tests/` + `vajb-orbit/tools/`, so S20 (the owner's live feedback)
+runs first.
 **no live designer item** (D13 closed; the owner's armory polish rides his own
 designer session). **Parked (owner-gated, not
 queued):** the S12 ore caps/scale rows (the owner's §10 ticks — do not
