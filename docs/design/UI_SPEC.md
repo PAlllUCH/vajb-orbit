@@ -21,10 +21,10 @@ and every tool result is re-sent on each later request.
 |---|---|---|
 | 1. | Colour Tokens | L32–L57 |
 | 2. | Theme Architecture | L58–L100 |
-| 3. | In-Game HUD | L101–L657 |
-| 4. | Settings | L658–L719 |
-| 5. | Tooltips, Dialogs & Nine-Patch Panels | L720–L797 |
-| 6. | Font & Sizing Reference (coding checklist) | L798–L817 |
+| 3. | In-Game HUD | L101–L690 |
+| 4. | Settings | L691–L752 |
+| 5. | Tooltips, Dialogs & Nine-Patch Panels | L753–L830 |
+| 6. | Font & Sizing Reference (coding checklist) | L831–L850 |
 
 <!-- section-index:end -->
 
@@ -654,6 +654,39 @@ surface is `PanelContainer`+`PanelRaised`+`MarginContainer`).
   **L236** closed as accepted); A3's geometry numbers all stand (nothing moves).
   Reversal: the frame on bays/wells/cards and the stretched slot plate (the
   overlapped look).
+- **A5.4 The per-surface chrome table (D14, 2026-09-26 — surface → asset/stylebox →
+  content inset, every inset measured from the asset's real cut size).** The law
+  this table implements, in the owner's words: **containers + anchors, never
+  coordinates; no chrome drawn over content** (A5.2's four clauses, mechanism
+  unchanged). Rule (Q1): a banded asset may dress a surface only when the surface's
+  *ruled content* sits at least the asset's patch margin inside it — measured, the
+  `ui_panel_frame` band is **32 px** (cut 96×96, `texture_margin_*` 32 + 1 px
+  expand, `build_theme.gd:504-514`), so only pane-scale surfaces qualify; anything
+  whose content margin is smaller wears the flat Tokens box (`_flat()`, 1 px
+  `metal_mid`, `build_theme.gd:450-457`).
+
+  | Surface | Size @ base (A3) | Chrome: asset / stylebox | Content inset, from the cut |
+  |---|---|---|---|
+  | Pane outer edge (module host) | host 1392×610 + `HostMargin` 20 | `ui_panel_frame` as `PanelRaised` (96×96, band 32 + 1 expand) | **36/88/36/46** — `HostMargin` 20 + console inset (16, 68, 16, 26) clears the 33 px band (≥4 px, measured); the inset is carried by the **containers**, not `content_margin_*` — registering 32 on the stylebox would move the host rect (452,214)+1392×610 → (464,226)+1368×586 = every A3 number = HIGH |
+  | Console floor | 1360×516 | none — `ConsolePlate` is a `NinePatchRect` with `texture = null` (`armory_panel.gd:879`, the retired master); the host frame is the pane's edge | n/a (no chrome to clear) |
+  | Bay card | 260×192 | flat Tokens box `bay_bg` + 1 px `metal_mid` | **10** (`cell_margin`); head **34**, ledge **240×34 @ y150**, foot **8** — unchanged A3 |
+  | Bay cell | 117×52 | machined recess (`cell_bg` + 2 edge tones) + `ui_slot_weapon_*` drawn **1:1 at 48×48** centred as a mark (cut 48×48, silhouette x8–47 y0–34 → never stretched) | text **6** (name x6, width cell−24); the 48×48 plate sits behind the text at the cell centre (34.5, 2) |
+  | Salvo ledge | 240×34 | flat Tokens box `ledge_bg` + 1 px | **10** from the bay edge (`ledge_rect` = bay−`cell_margin`); segs `ui_seg_*` (cut 48×88) drawn **18×32** on a 20 pitch, caption 13 px beside |
+  | Well half | 648×220 | flat Tokens box + 1 px; caption on the 20 px band gap **above** the box | **0** — the grid fills the half exactly (2×320+8 = 648; 3×68+2×8 = 220); a 32 px band here would put the outer cards under the metal (why the frame is refused) |
+  | Pack card | 320×68 | flat Tokens box `item_bg` + 1 px `metal_mid`; danger state = 1 px `accent_danger` frame (§3.1/3.1b), never colour alone | **6** (`ROW_TEXT_INSET`): icon **24** at x6, text x38, price right-aligned **76** wide |
+  | Inventory row | 320×68 | same flat box | **6**: icon `item_icon`, name x40, status right-aligned **116** |
+  | State chips (`READY`, `▲ AT CAP`, §5.1's four) | label + 1 px frame | §3.1/3.1b flat chip, fill `chip_bg`/`chip_danger_bg` — **no asset** | label centred; danger ≥ 4.5:1 (4.855 measured, S20) |
+  | Pressables (`BUY`, `✕`) | 64×16 / 24×24 as written | `StationButton` → `ui_button_plate_*` (cut 280×56, **no texture margins** — whole texture stretches; bolts at x7–19 / x261–277) | laid out at the plate's own minimum **24×29** (**L236** accepted); a pressable that needs more room than its plate's cut wears the flat §3.1 chip instead |
+
+  Reversal: A4.1's per-surface frame assignment returns, the slot plate stretches
+  back to 2.44×, and the well-half grid re-opens under a 32 px band — i.e. the
+  measured S20 overlaps. Row shape (Q5): the pack/inventory row becomes the
+  AUCTION row verbatim — `Button` + `MarginContainer`/`HBox`/`VBox` children, element
+  order fixed (icon, name, price, `<rounds> ROUNDS PER PACK`,
+  `HELD … - HOLD … UNITS`, §5.1 state line, `BUY`); its chrome is the flat box above
+  (AUCTION's own rows wear the base `Button` bevel, not the plate). Deferred to the
+  coder wave: converting the pane's remaining `_position_*` coordinates to that
+  container tree (A5.2(i)) — geometry numbers do not move.
 
 ## 4. Settings
 
