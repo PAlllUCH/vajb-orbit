@@ -674,3 +674,44 @@ selected slot".
 
 **Reversal:** `GROUPS_MAX` → 7, the per-battery cap deleted, the 7-rack
 composition path restored. Implementation wave: **S15**.
+
+## 2026-09-27 — P3 wave pins (waves S22/S23/S27) — PROPOSED, ticks open
+
+Amendment 2026-09-27 (phase `P3-content-feel-push`). Rows are PROPOSED with
+reversals and ticks; the ticks are calibration rows ("implementation first,
+balance later" — the owner's S19 ruling stands).
+
+### S22 — balance & magazine rows (amends §3.1/§3.3)
+
+| Row | Change | PROPOSED value | Reversal | Tick |
+|---|---|---|---|---|
+| R-S22-2 (L242) | Battery spill takes P6's named reversal | an emptying hit's remainder re-offers to the other pools **proportional to remaining capacity** until landed or all full — a 400 hit on `[200,100,0,0]` lands 300 and kills (damage is conserved) | the even-split clamp (current; lands 266.67) | **M5** (= S19 T5) |
+| R-S22-3 (S19 T1–T7) | Calibration stance | S19's P1–P8 initials stand; T1–T4/T6–T7 keep "calibrate later" and re-tick after playtest round 2 | — | **M6** |
+| R-S22-4 (L169) | Twin-battery magazine model | **keep** the per-cell model `CONTRACTS.md` §21 (H1) already accepts: a same-family battery seeds each cell from the family pack (2× on a twin) | the family-pack model (one magazine per family) | **M7** |
+
+### S23 — the firing rows (amends §3.1) and the stock fits (amends §7/§9)
+
+| Row | Change | PROPOSED value | Reversal | Tick |
+|---|---|---|---|---|
+| R-S23-1 | `w_proton` family row (Choir exclusive, proton missile launcher) | alpha 220, projectile 750 u/s, homing turn 2.6 rad/s, interval 1.6 s, tracking 70, bypass_shield yes, pack `ammo_proton` (10 rounds/unit), draw 12 | row edit | **C1** |
+| R-S23-2 | `w_flak` family row (Concord exclusive, flak battery) | 4-pellet cone of 22 damage at 12° spread, 1 100 u/s, interval 0.55 s, tracking 140, bypass_shield no, pack `ammo_flak` (10/unit), draw 8, ×2 vs `swarmer` | row edit | **C2** |
+| R-S23-3 | `STANDARD_FITS` for the 7 starter-less hulls | one role fit per hull below (mandatory E/P cells always filled; bare modules, no affixes) | mandatory-only starters (current) | **C3** |
+
+R-S23-3's rows (cell order follows each hull's own `SLOT_GRIDS`; U/H fill to the
+grid's cell count):
+
+| Hull | Modules beyond the mandatory set |
+|---|---|
+| `ship_miner` | `w_mining`, `w_laser`, `h_plate_light`, `c_scanner`, `u_tractor`, `u_refine`, `u_cargo` |
+| `ship_trader` | `w_laser`, `s_light`×2, `c_scanner`, `c_target`, `h_plate_light`, `u_cargo`×3 |
+| `ship_corvette` | `w_cannon`×2, `w_laser`, `w_rocket`, `s_light`, `s_heavy`, `c_target`, `b_afterburner` |
+| `ship_freighter` | `w_laser`, `h_plate_heavy`×2, `s_light`, `u_cargo`×4 |
+| `ship_gunship` | `w_cannon`×3, `w_rocket`, `s_heavy`×2, `h_composite`, `c_target`, `u_cargo` |
+| `ship_patrol` | `w_laser`×2, `w_cannon`, `c_target`, `c_scanner`, `s_light`×2, `h_plate_heavy`, `b_afterburner`, `u_cargo`×2 |
+| `ship_destroyer` | `w_railgun`, `w_cannon`×2, `w_plasma`, `c_nexus`, `c_target`, `s_ion`, `s_heavy`, `h_composite`, `h_plate_heavy`, `b_afterburner` |
+
+### S27 — variant shape (amends §3.8)
+
+| Row | Change | PROPOSED value | Reversal | Tick |
+|---|---|---|---|---|
+| R-S27-1 | Tier-variant rows (the `p_mk2` precedent generalised) | a variant `<base>_mk2` prices at 10 §3.2's shape rule one tier up and carries **+15 %** on its family's headline stat per variant step | no variants ship | **K1** |

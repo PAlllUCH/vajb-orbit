@@ -222,3 +222,12 @@ to the sector's border. Placement law:
 Reversal: restore `sector.gd`'s `_add_gate` to
 `centre + _gate_bearing(dest) * GATE_RING_RADIUS` (900 u) and revert this
 section.
+
+## 2026-09-27 — P3 wave pin (wave S24) — PROPOSED, tick open
+
+Ruling 25's nebulae ship in S24. Counts stand at §1's 0–2 clouds per sector;
+the effects row is:
+
+| Row | Change | PROPOSED value | Reversal | Tick |
+|---|---|---|---|---|
+| R-S24-3 | Nebula cover effects while inside a cloud | radar/scan range ×0.5, lock-acquire range ×0.5, a 15 % hull tint overlay; no stat effects | cosmetic tint only | **W2** |

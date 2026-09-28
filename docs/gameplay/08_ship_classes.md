@@ -306,3 +306,26 @@ move and none of them changes its target:
 - **Spearhead** rises to 4 mounts and a second plate: "wins the 1v1 it initiates"
   is now backed by a grid that out-guns a Lancer, exactly the owner's ruling that
   a cruiser-class hull carries more than a fighter.
+
+## 2026-09-27 — P3 wave pins (waves S23/S26) — PROPOSED, ticks open
+
+Amendment 2026-09-27 (phase `P3-content-feel-push`). §4's "class entries may be
+added later as amendments" is this block. NPC-only rows carry no price (never
+sold); every row is PROPOSED with its reversal and tick.
+
+### S23 — the missing enemy hulls (amends §4)
+
+| Row | Change | PROPOSED value | Reversal | Tick |
+|---|---|---|---|---|
+| R-S23-4 | `ship_interceptor` class row (NPC-only, hunter band) | hull 650, shield 350, speed 130 % of Fighter, 2 W — the fast-attack shape §4's group row names | keep the dangling `hunter` hull-map ref | **C4** |
+| R-S23-5 | `ship_turret_platform` class row (NPC-only, static) | hull 2 000, shield 800, speed 0 (fixed emplacement), 3 W | keep the sprite-only asset | **C5** |
+| R-S23-6 | Ship the station turret — 13 §5's named reversal (its owner tick 7) | one `turret` NPC mounted per station, +25 heat on attacking, aggro until scan range (13 §5) | turret aggro stays staged (current) | **C6** |
+
+### S26 — the bosses (amends §4)
+
+| Row | Change | PROPOSED value | Reversal | Tick |
+|---|---|---|---|---|
+| R-S26-1 | Boss class rows | Boneyard Behemoth = `ship_boss_boneyard`, gunship-tier vitals ×2.5, 5 W (14 §5's "gunship-tier fit"); Pyre Hierophant = `ship_boss_pyre`, frigate-tier vitals ×2.5, 4 W; The Maw = `ship_boss_maw`, hull 12 000 / shield 6 000, 7 W (only the Maw's vitals are invented; the tier multipliers derive from §2 rows) | per-row edit | **E1** |
+
+The leviathan/spire/thorn renders are **staged** (art ships, no design row):
+not in S26's scope.

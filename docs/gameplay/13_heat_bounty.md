@@ -143,3 +143,14 @@ plumbing already exists (`PlayerProfile.heat()`, `NpcRegistry.heat_tier()`,
   consumer) and a station has no damage sink — the +25 lands on attacking a station
   and turret aggro is **staged** (reversal: ship the turret
   as a station-attached NPC). Owner tick 7.
+
+## 2026-09-27 — P3 wave pin (wave S24) — PROPOSED, tick open
+
+§4's densities and the two-axis rule stand. The global `HOSTILE_FILL` becomes a
+per-sector band (the split "stated by no doc" is this row):
+
+| Row | Change | PROPOSED value | Reversal | Tick |
+|---|---|---|---|---|
+| R-S24-2 | Hostile band per sector | S1–S2 `[pirate]`; S3–S4 `[pirate, swarmer]`; S5–S6 `[swarmer, sibelon, pirate]`; S7 `[pirate, swarmer]` + roaming hunter pressure (heat-driven hunters stay map-wide) | global `[pirate, swarmer]` (current) | **W1** |
+
+Turret staging is resolved by 08 §4's R-S23-6 (tick C6).

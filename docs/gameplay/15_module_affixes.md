@@ -282,3 +282,10 @@ session; each carries its reversal.
   three negative bands stay negative), a percent affix modifies its own instance's
   contribution, suffixes are once-per-perk flags, everything lands before 09 §5's
   clamp. **Reversal:** one helper change in `Affixes.summary`.
+
+## 2026-09-27 — P3 wave pins (wave S27) — PROPOSED, ticks open
+
+| Row | Change | PROPOSED value | Reversal | Tick |
+|---|---|---|---|---|
+| R-S27-2 | New affix rows (§3/§4 formats, family bands stand) | +4 prefixes (stat modifiers): **Dense** +damage band, **Quickwarm** +fire-rate band, **Layered** +armour-pool band, **Farflung** +range band; +3 suffixes (binary boons): **of Echoes** (every 5th shot costs no ammo), **of the Long Watch** (+2 s lock hold), **of the Pyre** (a kill below 25 % hull detonates a 50-damage ring) | rows deleted | **K2** |
+| R-S27-3 | Suffix perks go live | every §4 perk names its wired consumer and is applied at the §20 aggregation seam; the "displayed, never applied" note dies (Embers/Leeches/Cartograph are already live) | display-only (current) | **K3** |

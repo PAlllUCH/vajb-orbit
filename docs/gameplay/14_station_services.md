@@ -151,3 +151,33 @@ a reason to exist without diluting the service deck.
 - One 20-minute station clock drives: exchange bands (05), auction rotation
   (10), contract re-roll, arena cooldowns, sector respawn (11) — one timer,
   five consumers.
+
+## 2026-09-27 — P3 wave pins (waves S24/S25) — PROPOSED, ticks open
+
+### S24 — the nine docking places get names (amends §1/§8)
+
+Service menus stand exactly as §1/§8's matrix. Names and character were not
+stated; proposed (tick **W3** covers the whole set):
+
+| Place | PROPOSED name | Character (one line) |
+|---|---|---|
+| S1 primary (Concord capital) | **Halcyon Anchorage** | forge-grey bastion, the full menu |
+| S2 primary (Concord) | **Ironworks Depot** | mill-town market floor |
+| S2 outpost | **Marchgate Post** | a dock and a vending wall |
+| S3 primary (Meridian capital) | **Spanport Meridian** | the merchant's harbour, best contract rates |
+| S4 primary (Meridian) | **Ashveil Exchange** | free-port chaos, component prices |
+| S4 outpost | **Rimward Depot** | caravan stop |
+| S5 primary (Choir) | **Cinder Gate** | incense and plasma scorch |
+| S5 shrine (outpost) | **The First Ember** | the Choir's smallest rite |
+| S6 primary (Choir capital) | **Emberlight** | cathedral dark, meanest turrets |
+
+Reversal for any name: rename in the registry row.
+
+### S25 — the contracts board (amends §2)
+
+| Row | Change | PROPOSED value | Reversal | Tick |
+|---|---|---|---|---|
+| R-S25-1 | Board size and the Expedition seam | 6 rows visible per board, re-rolled on §9's 20-minute clock; Haul/Hunt/Gather/Escort ship in S25, **Expedition is a seam row** until S26's arenas | board-size edit | **J1** |
+
+§2's reward shapes, the escrow + 100 CR cancel fee, the max-3 rule and the
+standing gates are the operative law and are not amended here.

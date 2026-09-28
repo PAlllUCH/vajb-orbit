@@ -272,3 +272,23 @@ Ranked from safest to most disruptive:
 5. Commission percent (05 §5) — changes the gap between sell and walk away.
 6. Asteroid respawn timers (02 §8) — changes farming pressure.
 7. StationCatalog prices — **never.** Frozen contract.
+
+## 2026-09-27 — P3 wave pins (waves S21/S22) — PROPOSED, ticks open
+
+Amendment 2026-09-27 (phase `P3-content-feel-push`). Every row is **PROPOSED**
+with its reversal and its tick; a wave implements the written value where the
+owner has not ticked (the S19 precedent: implementation first, calibration
+later). Nothing downstream may invent a number.
+
+### S21 — the money edges (amends §3 S4, §4 K4)
+
+| Row | Change | PROPOSED value | Reversal | Tick |
+|---|---|---|---|---|
+| R-S21-1 (L130) | Ammunition sales skip the commission floor | `KIND_AMMO` pays `roundi(0.02 × gross)` with no 10 CR floor (a 2 CR gross sale pays 0 and nets 2) | the floor applies to every kind (current; J2 decision 5) | **M2** |
+| R-S21-2 (L131) | Launch auto-load splits the last pack unit | packs store a round remainder (≤ 9 rounds); a launch draws rounds first and consumes hold units only for full 10-round draws | whole-unit burn of the overshoot (current; J2 decision 3) | **M3** |
+
+### S22 — repairs read one figure (amends §6)
+
+| Row | Change | PROPOSED value | Reversal | Tick |
+|---|---|---|---|---|
+| R-S22-1 (L168, L244) | The repair transaction and both pane rows read one figure | `Repairs.fee()`/`repair()` resolve `hull_max`/`shield_max` from `ShipFit.resolve` — the same pair the panes print | the base `station_catalog` rows (current) | **M4** |

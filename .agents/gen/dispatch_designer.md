@@ -24,14 +24,15 @@ prefix, nor one `staging/` driver). One live session per workspace.
 
 | # | Wave | Item | What | Status |
 |---|---|---|---|---|
-| 15 | D14 | ARMORY chrome composition — brainstorm + Amendment 5 (owner 2026-09-26) | The pane must read as clean as AUCTION/SHIPYARD: per-surface chrome pinned from the art's own cut size, and the owner's "anchors + relative positioning" rule written as mechanism so two workers cannot diverge. Owner's words, the sibling idiom (`file:line`) and the measured defect table: `slices/D14-armory-chrome-composition/D14_BRIEF.md`; captures in its `_evidence/`. Design only (docs + mockup); shares no file with the coder lane's S19 wave. | **live** |
+| 16 | D15 | Flight feel & feedback design (phase P3) | Resolve the feel tick sheet (T-feel-1..7, S19 T1–T7, CONTRACTS §22 T3, L39/L103/L182/L57) with values + reversals + tick ids; FX/AUDIO spec amendment drafts (mine cue, chip sparks, arc interval, anti-flam wiring note); the quadrant-feed + hit-marker composition under A5.2. Five-piece: `slices/D15-flight-feedback/`. Design only. | queued · after item 15 (one live session); S22 waits on its ticks |
+| 17 | D16 | Station identity & contracts UI design (phase P3) | CONTRACTS panel spec (14 §2 + R-S25-1), insurance/vaults panels (14 §3/§4), the nine places' identity treatment with shipped chrome only, the W3 name tick sheet. Five-piece: `slices/D16-station-ui/`. Design only. | queued · after 16; S24/S25/S26 cite it |
 
 ## Parked (owner-gated — not queued; say the item and its five-piece lands)
 
 
 ## Done
 
-Items 1-13 closed (D2 icon unification, D6 instruments, D7 cockpit rework,
+Items 1-14 closed (D2 icon unification, D6 instruments, D7 cockpit rework,
 D11 station scene, the D8/D12 fix waves ditched or absorbed); detail in
 `.agents/gen/MASTER_REPORT.md` §6. Item 14 = **D13 armory rework — design**
 closed 2026-09-25 (gate 877/0 unmoved, 0 HIGH / 0 MED / 2 LOW L221-L222; A0 ran
@@ -57,7 +58,7 @@ The owner's ask (verbatim) and the measured defects are in
 `.agents/gen/slices/D14-armory-chrome-composition/D14_BRIEF.md`; work Q1–Q6 with
 him, then draft `UI_SPEC.md` §3.10 Amendment 5 (per-surface chrome + the
 containers/anchors law) and the revised mockup band, and bring back a tick list.
-Design only — no code wave until he ticks. The coder lane's live item is
-**item 26 = S19 directional armour** (`dispatch_coder.md`); it holds
-`vajb-orbit/tests/` + `vajb-orbit/tools/`, so the armory composition's
-implementation wave is queued behind it.
+Design only — no code wave until he ticks. The coder lane's queue is phase
+**P3** (`dispatch_coder.md` items 27–33; order and collisions in
+`WAVEBOARD.md` §Queued) and runs its items between this lane's — D15 (item 16)
+feeds coder item 28, D16 (item 17) feeds items 30/31/32.

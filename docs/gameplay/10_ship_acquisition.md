@@ -275,3 +275,12 @@ The double path keeps the 01 milestone pace intact:
 - **Anti-snowball:** the build queue's one-at-a-time limit means credits
   (auction) remain the only way to acquire two things at once, so wealth
   still converts to fleet strength linearly, not exponentially.
+
+## 2026-09-27 — P3 wave pin (wave S21) — PROPOSED, tick open
+
+| Row | Change | PROPOSED value | Reversal | Tick |
+|---|---|---|---|---|
+| R-S21-3 (L114) | An owned hull's AUCTION row is honest before the press | the row renders **disabled with an `OWNED` plate** (the shipyard §5.2 idiom) | a live row + `REFUSED · ALREADY OWNED` on press (current) | **M1** |
+
+§2's shelf law, §2.3's sell-back and §3's build path stand as written (S27's
+shipyard work codes against §3 unchanged and invents no number).

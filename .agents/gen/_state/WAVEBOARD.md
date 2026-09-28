@@ -6,6 +6,19 @@
 
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-25 clear-outs (owner asks):** every closed slice folder moved to the system trash (last git tree carrying them: `7a081ef`), old session reports live in `_state/_archive/`, and the two dispatch files were purged to live-items-only (2026-09-25 ter). Citation paths into purged trees name historical files.
 
+**Updated 2026-09-27 (P3 planned and queued):** the owner's plan round (focus:
+content, bugfixes, playability, feel — pillars A–D all ticked, **no new AI art**,
+playtesting owner-first then an external build) landed as phase
+**P3-content-feel-push**: docs-first five-pieces for **coder items 27–33**
+(S21 stability, S22 feel/juice, S23 content activation, S24 world identity,
+S25 contracts, S26 bosses/insurance/vaults, S27 catalog + shipyard) and
+**designer items 16–17** (D15 flight-feedback design, D16 station/contracts
+UI). The pin rows are the **2026-09-27 P3 blocks** in 01/08/09/10/11/13/14/15
+(PROPOSED values + reversals + tick ids M1–M7, C1–C6, W1–W3, J1, E1/E2, K1–K3;
+unticked rows implement at their PROPOSED value, the S19 precedent). Manifest:
+`phases/P3-content-feel-push/PHASE.md`. **Coder queue: items 27–33 in that
+order; designer queue: 16–17 behind live item 15 (D14).**
+
 **Updated 2026-09-26 (S19, closed): ruling 23's directional armour ships — hits
 route by `ctx.direction` into four `hull_max/4` pools, the rear 160° arc bites
 ×1.6 before the shield-first absorb, and an emptied pool runs its breach
@@ -108,8 +121,12 @@ sector edges, coder item 17) closed and verified 2026-09-25:** gate 866 →
 2026-09-25 answers stand (spawn mix kept; the §6/§13/§15 rewording applied on
 delegation; the D12 fix wave and D8 item 9 ditched for the armory rework).
 
-**Current state: the universal gate reads `[SUMMARY] passed=914 failed=0`**
-(CONTRACTS §9 carries the authority block; hermetic on scratch stores).
+**Current state: the universal gate reads `[SUMMARY] passed=917 failed=0`**
+(measured 2026-09-28 on a fresh scratch store; CONTRACTS §9 carries the
+authority block, hermetic on scratch stores). The `914` figures in the S19
+blocks below are that close-out's measurement — `d3e246e` added
+`tests/test_wiring_map.gd`'s 3 rows afterwards with no gate-figure update, which
+is why S21 opens on 917.
 **Owner-ruled chrome cure, 2026-09-26 (UI_SPEC §3.10 Amendment 5, gate `914/0`
 unmoved — no rows added):** after the S19 close-out the owner ruled the ARMORY's
 look against AUCTION/SHIPYARD (*"i want all to look this clean"*, *"we always
@@ -146,6 +163,25 @@ D10-12, D3-1, D3-2a/2b, D4-3/4, blocked 5/6 — parked in
 `dispatch_designer.md`), and adopting the D13 layout language across the game
 (owner-deferred).
 Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
+
+## Queued (phase P3 — `phases/P3-content-feel-push/`; one live session, one item per order)
+
+| Pos | Lane item | Wave | Runs after | The collision/dependency that forces the order |
+|---|---|---|---|---|
+| 1 | coder 27 | S21 stability & playtest fixes **(running 2026-09-28, three builders B1/B2/B3, baseline 917/0)** | — | — |
+| 2 | designer 16 | D15 flight feel & feedback design | coder 27 | one live session (L82); its tick sheet is coder 28's input |
+| 3 | coder 28 | S22 feel, juice & balance | designer 16 | implements D15's ticks; both touch `ui/hud/` |
+| 4 | coder 29 | S23 content activation | coder 28 | `vajb-orbit/game/` + `tests/` (weapons/projectile/mining seams) |
+| 5 | designer 17 | D16 station identity & contracts UI | coder 29 | one live session; its spec is coder 30/31/32's design law |
+| 6 | coder 30 | S24 world identity | designer 17 | `station_catalog` + the station screen (D16 spec first) |
+| 7 | coder 31 | S25 contracts board | coder 30 | `ui/station/` + `autoload/player_profile.gd` + S24's `contracts_visible` seam |
+| 8 | coder 32 | S26 bosses, arenas, insurance, vaults | coder 31 | `game/` + `player_profile.gd` + S25's Expedition seam |
+| 9 | coder 33 | S27 catalog breadth & shipyard | coder 32 | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/` |
+
+Designer item 15 (D14, live) stays ahead of 16–17 in its own queue. Playtest
+pass #1 (the owner's, `19_testing_notes.md`'s eye list) runs alongside pos 1;
+build 2 + the tester template are phase exit criteria. Every brief's §11 tick
+sheet feeds its wave (unticked rows implement at their PROPOSED value).
 
 ## Living contracts
 
