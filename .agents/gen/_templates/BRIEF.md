@@ -20,11 +20,25 @@ tier: free             # pinned by the owner in review; coder picks models withi
    `rg -n '^## §' docs/CONTRACTS.md` and read that range (`view --offset … --limit …`),
    or paste the section here if it is short. Never read the file whole: it is
    ~3,200 lines and ~80k tokens against ~2-3k for one section.
-3. Anything else, by exact path — again by range if the file is long
+3. `docs/CODE_MAP.md` — what lies where: scenes, scripts, wiring (by range)
+4. Anything else, by exact path — again by range if the file is long
+
+## Spec extract (the pinned law, verbatim)
+The exact §text the deliverable must satisfy, pasted here by the orchestrator
+with its source cite (`doc §N`) above each block. A requirement not extracted
+here is not binding on the worker, so extract everything the acceptance list
+below grades; the worker never hunts the big specs for its law.
 
 ## Task
 What this worker builds, in prose. Include the interfaces this code must
 integrate with (names, signatures) — workers cannot infer them.
+
+## Acceptance list
+Numbered, derived from the spec extract above, one item per requirement. The
+report answers every item with its cite (`§…` / `file:line`) or marks it
+`NOT DONE`; the reviewer grades this list first, the source spec second. An
+unanswered item means the deliverable is not done. A designer deliverable also
+names the owner rulings it implements (escalation-ladder bucket 3).
 
 ## Hard constraints
 - File set: `game/x.gd, ui/y.tscn` (dispatch sets `VAJB_WORKER_FILES` to exactly this)
@@ -34,6 +48,7 @@ integrate with (names, signatures) — workers cannot infer them.
 
 ## Output contract
 - Report: `slices/S2.5-feel/S2.5-V0_report.md` (from `_templates/REPORT.md`)
+- The report answers the acceptance list item by item, each with its cite
 - Gate: run the universal test gate; record before/after `[SUMMARY]` in the report
 - Never leave a command in the background
 

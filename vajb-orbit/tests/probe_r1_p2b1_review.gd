@@ -22,8 +22,8 @@ extends Node
 ## mutation, every field the pane can write is snapshotted and handed back, the store is
 ## flushed while the scratch path is still in place, and the scratch file is removed.
 
-const PanelScene := preload("res://ui/station/outfitting_panel.tscn")
-const PanelScript := preload("res://ui/station/outfitting_panel.gd")
+const PanelScene := preload("res://ui/station/fitting_panel.tscn")
+const PanelScript := preload("res://ui/station/fitting_panel.gd")
 const StationScript := preload("res://ui/screens/station.gd")
 const ThemeRes := preload("res://ui/theme/vajb_theme.tres")
 const ModuleData := preload("res://game/module_catalog.gd")

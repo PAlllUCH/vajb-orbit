@@ -75,6 +75,12 @@ next wave, tells you "BRIEF ready at `slices/S2.5-feel/S2.5-V0_BRIEF.md`" with a
 session. The coder decides per-task model dispatch; the BRIEF pins only tier,
 file set, and the output contract.
 
+**Brief law (2026-09-26):** every brief carries a verbatim **spec extract** (the
+exact §text the deliverable must satisfy, with source cites) and a numbered
+**acceptance list** derived from it. The report answers every item with a cite
+and the reviewer grades that list first, so a worker never hunts the big specs
+for its law and drift shows up as an unanswered or drifted line.
+
 ## Slice lifecycle
 
 `draft` → `active` (folder created, SPEC filled, baseline snapshot + commit) →

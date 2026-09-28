@@ -6,9 +6,10 @@ gate: ""              # before → after
 ---
 
 > **Use when:** a review wave runs. Copy to the slice folder as
-> `<ReviewerID>_review.md`. Diff findings against `docs/CONTRACTS.md`, never
-> against the brief. Tiering per WAVEBOARD: HIGH blocks, MED gets one fixer
-> pass, LOW moves to LOW_BACKLOG as `T-###`.
+> `<ReviewerID>_review.md`. Grade the brief's acceptance list first, then diff
+> findings against `docs/CONTRACTS.md`, never against the brief. Tiering per
+> WAVEBOARD: HIGH blocks, MED gets one fixer pass, LOW moves to LOW_BACKLOG as
+> `T-###`.
 >
 > **Hard cap: 150 lines.** One row per finding, one line of evidence each (the
 > probe output or the `file:line`), no pasted source and no pasted logs. Read
@@ -16,6 +17,11 @@ gate: ""              # before → after
 > full.
 
 # S2.5-R0 review
+
+## Acceptance list
+One line per brief item: `N — pass | drift | unanswered — <evidence cite>`.
+Unanswered or drifted items become findings: drift is at least MED, unanswered
+is HIGH.
 
 ## Findings
 | ID | Tier | File:area | Finding | Fix owner |

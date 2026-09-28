@@ -1,0 +1,5155 @@
+{
+ "autoloads": {
+  "AudioManager": "res://autoload/audio_manager.gd",
+  "DialogManager": "res://autoload/dialog_manager.gd",
+  "PlayerProfile": "res://autoload/player_profile.gd",
+  "Router": "res://autoload/router.gd",
+  "SettingsManager": "res://autoload/settings_manager.gd",
+  "WorldClock": "res://autoload/world_clock.gd",
+  "_mcp_game_helper": "res://addons/godot_ai/runtime/game_helper.gd"
+ },
+ "orphans": [
+  "res://game/ship_stats.gd",
+  "res://tools/derive_icon_tints.gd",
+  "res://tools/r1_s13_ac3_replay.gd",
+  "res://tools/r1_s14_ac_replay.gd",
+  "res://tools/r1_s15_ac_replay.gd",
+  "res://tools/r1_s15_seed_store.gd",
+  "res://tools/r1_s17_ac_replay.gd",
+  "res://ui/hud/cockpit_cluster.gd"
+ ],
+ "scenes": {
+  "res://game/game.tscn": {
+   "assets": [
+    "res://assets/env/tile/env_stars_layer1.png",
+    "res://assets/env/tile/env_stars_layer2.png",
+    "res://assets/env/tile/env_stars_layer3.png"
+   ],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node2D",
+   "scripts": [
+    "res://game/game.gd",
+    "res://game/speed_fantasy.gd"
+   ]
+  },
+  "res://game/mining_laser.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node2D",
+   "scripts": [
+    "res://game/mining_laser.gd"
+   ]
+  },
+  "res://game/player_ship.tscn": {
+   "assets": [
+    "res://assets/ships/ship_vanguard_side.png"
+   ],
+   "connections": [],
+   "groups": [
+    "player_ship"
+   ],
+   "instanced": [],
+   "root_type": "Node2D",
+   "scripts": [
+    "res://game/player_ship.gd"
+   ]
+  },
+  "res://tests/headless_runner.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/headless_runner.gd"
+   ]
+  },
+  "res://tests/probe_c1_ram.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node2D",
+   "scripts": [
+    "res://tests/probe_c1_ram.gd"
+   ]
+  },
+  "res://tests/probe_c2_weapons.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node2D",
+   "scripts": [
+    "res://tests/probe_c2_weapons.gd"
+   ]
+  },
+  "res://tests/probe_c3_flight_decay.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_c3_flight_decay.gd"
+   ]
+  },
+  "res://tests/probe_c6_pins.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_c6_pins.gd"
+   ]
+  },
+  "res://tests/probe_f1_residual.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_f1_residual.gd"
+   ]
+  },
+  "res://tests/probe_f1_weapon_fx.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node2D",
+   "scripts": [
+    "res://tests/probe_f1_weapon_fx.gd"
+   ]
+  },
+  "res://tests/probe_f2_weapon_fx.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node2D",
+   "scripts": [
+    "res://tests/probe_f2_weapon_fx.gd"
+   ]
+  },
+  "res://tests/probe_f3_weapon_fx.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node2D",
+   "scripts": [
+    "res://tests/probe_f3_weapon_fx.gd"
+   ]
+  },
+  "res://tests/probe_f4_weapon_fx.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node2D",
+   "scripts": [
+    "res://tests/probe_f4_weapon_fx.gd"
+   ]
+  },
+  "res://tests/probe_g1_flight_feel.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_g1_flight_feel.gd"
+   ]
+  },
+  "res://tests/probe_g1_lint.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_g1_lint.gd"
+   ]
+  },
+  "res://tests/probe_g2_lint.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_g2_lint.gd"
+   ]
+  },
+  "res://tests/probe_g3_lint.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_g3_lint.gd"
+   ]
+  },
+  "res://tests/probe_g3_shadow.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_g3_shadow.gd"
+   ]
+  },
+  "res://tests/probe_g4_beam.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_g4_beam.gd"
+   ]
+  },
+  "res://tests/probe_g4_beam_head.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_g4_beam_head.gd"
+   ]
+  },
+  "res://tests/probe_g4_lint.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_g4_lint.gd"
+   ]
+  },
+  "res://tests/probe_p2a_w4_launch.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_p2a_w4_launch.gd"
+   ]
+  },
+  "res://tests/probe_p2b1_panel_fit.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_p2b1_panel_fit.gd"
+   ]
+  },
+  "res://tests/probe_r1_fit_panes.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_r1_fit_panes.gd"
+   ]
+  },
+  "res://tests/probe_r1_fit_profile.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_r1_fit_profile.gd"
+   ]
+  },
+  "res://tests/probe_r1_frames.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_r1_frames.gd"
+   ]
+  },
+  "res://tests/probe_r1_p2b1_edge.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_r1_p2b1_edge.gd"
+   ]
+  },
+  "res://tests/probe_r1_p2b1_edge2.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_r1_p2b1_edge2.gd"
+   ]
+  },
+  "res://tests/probe_r1_p2b1_edge3.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_r1_p2b1_edge3.gd"
+   ]
+  },
+  "res://tests/probe_r1_p2b1_fit.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_r1_p2b1_fit.gd"
+   ]
+  },
+  "res://tests/probe_r1_p2b1_layout.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_r1_p2b1_layout.gd"
+   ]
+  },
+  "res://tests/probe_r1_p2b1_persist.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_r1_p2b1_persist.gd"
+   ]
+  },
+  "res://tests/probe_r1_p2b1_review.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_r1_p2b1_review.gd"
+   ]
+  },
+  "res://tests/probe_r1_v5_migration.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_r1_v5_migration.gd"
+   ]
+  },
+  "res://tests/probe_rock_cleave.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node2D",
+   "scripts": [
+    "res://tests/probe_rock_cleave.gd"
+   ]
+  },
+  "res://tests/probe_rock_cleave_a2.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node2D",
+   "scripts": [
+    "res://tests/probe_rock_cleave_a2.gd"
+   ]
+  },
+  "res://tests/probe_rock_cleave_lint.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_rock_cleave_lint.gd"
+   ]
+  },
+  "res://tests/probe_s10_a0_armory.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s10_a0_armory.gd"
+   ]
+  },
+  "res://tests/probe_s10_r1_armory_hits.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s10_r1_armory_hits.gd"
+   ]
+  },
+  "res://tests/probe_s18_capture.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s18_capture.gd"
+   ]
+  },
+  "res://tests/probe_s18_resolutions.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s18_resolutions.gd"
+   ]
+  },
+  "res://tests/probe_s18r1_audit.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s18r1_audit.gd"
+   ]
+  },
+  "res://tests/probe_s19r1_review.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s19r1_review.gd"
+   ]
+  },
+  "res://tests/probe_s20_capture.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s20_capture.gd"
+   ]
+  },
+  "res://tests/probe_s20_review.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s20_review.gd"
+   ]
+  },
+  "res://tests/probe_s25_pixels.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node2D",
+   "scripts": [
+    "res://tests/probe_s25_pixels.gd"
+   ]
+  },
+  "res://tests/probe_s2_5_feel.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node2D",
+   "scripts": [
+    "res://tests/probe_s2_5_feel.gd"
+   ]
+  },
+  "res://tests/probe_s2_5_node_scale.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node2D",
+   "scripts": [
+    "res://tests/probe_s2_5_node_scale.gd"
+   ]
+  },
+  "res://tests/probe_s2_5_review.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node2D",
+   "scripts": [
+    "res://tests/probe_s2_5_review.gd"
+   ]
+  },
+  "res://tests/probe_s2_5_review_pixels.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node2D",
+   "scripts": [
+    "res://tests/probe_s2_5_review_pixels.gd"
+   ]
+  },
+  "res://tests/probe_s2_5_shot.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node2D",
+   "scripts": [
+    "res://tests/probe_s2_5_shot.gd"
+   ]
+  },
+  "res://tests/probe_s2_5_trail_draw.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node2D",
+   "scripts": [
+    "res://tests/probe_s2_5_trail_draw.gd"
+   ]
+  },
+  "res://tests/probe_s2_5_voice.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node2D",
+   "scripts": [
+    "res://tests/probe_s2_5_voice.gd"
+   ]
+  },
+  "res://tests/probe_s2_6_flight.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s2_6_flight.gd"
+   ]
+  },
+  "res://tests/probe_s3_levers.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node2D",
+   "scripts": [
+    "res://tests/probe_s3_levers.gd"
+   ]
+  },
+  "res://tests/probe_s3_mine.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s3_mine.gd"
+   ]
+  },
+  "res://tests/probe_s3_rewire.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s3_rewire.gd"
+   ]
+  },
+  "res://tests/probe_s3_trail_quad.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node2D",
+   "scripts": [
+    "res://tests/probe_s3_trail_quad.gd"
+   ]
+  },
+  "res://tests/probe_s7r1_affixes.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s7r1_affixes.gd"
+   ]
+  },
+  "res://tests/probe_s7r1_delivery.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s7r1_delivery.gd"
+   ]
+  },
+  "res://tests/probe_s7r1_prestats.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s7r1_prestats.gd"
+   ]
+  },
+  "res://tests/probe_s7r1_suffixes.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s7r1_suffixes.gd"
+   ]
+  },
+  "res://tests/probe_s8_q0_armory.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s8_q0_armory.gd"
+   ]
+  },
+  "res://tests/probe_s8_q0_exchange.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s8_q0_exchange.gd"
+   ]
+  },
+  "res://tests/probe_s8_q0_launch.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s8_q0_launch.gd"
+   ]
+  },
+  "res://tests/probe_s8_q0_ram.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node2D",
+   "scripts": [
+    "res://tests/probe_s8_q0_ram.gd"
+   ]
+  },
+  "res://tests/probe_s8_q3_lint.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s8_q3_lint.gd"
+   ]
+  },
+  "res://tests/probe_s8_r1_fragment_shape.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node2D",
+   "scripts": [
+    "res://tests/probe_s8_r1_fragment_shape.gd"
+   ]
+  },
+  "res://tests/probe_w1_lint.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_w1_lint.gd"
+   ]
+  },
+  "res://tests/probe_w1_type_hole.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_w1_type_hole.gd"
+   ]
+  },
+  "res://tests/probe_w2_fitting.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_w2_fitting.gd"
+   ]
+  },
+  "res://tests/probe_w2_lint.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_w2_lint.gd"
+   ]
+  },
+  "res://tests/probe_w2_scene_uids.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_w2_scene_uids.gd"
+   ]
+  },
+  "res://tests/probe_w3_lint.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_w3_lint.gd"
+   ]
+  },
+  "res://tests/probe_w3_services.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_w3_services.gd"
+   ]
+  },
+  "res://tests/probe_w3_services_lint.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_w3_services_lint.gd"
+   ]
+  },
+  "res://tests/probe_w5_layout.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_w5_layout.gd"
+   ]
+  },
+  "res://tests/probe_w5_lint.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_w5_lint.gd"
+   ]
+  },
+  "res://tests/probe_w5_overlay.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_w5_overlay.gd"
+   ]
+  },
+  "res://tools/d8_glyph_audit.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tools/d8_glyph_audit.gd"
+   ]
+  },
+  "res://ui/components/menu_button.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Control",
+   "scripts": [
+    "res://ui/components/glow_underlay.gd",
+    "res://ui/components/menu_button.gd"
+   ]
+  },
+  "res://ui/components/slot_button.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "TextureButton",
+   "scripts": [
+    "res://ui/components/slot_button.gd"
+   ]
+  },
+  "res://ui/dev/dev_tuning_menu.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "CanvasLayer",
+   "scripts": [
+    "res://ui/dev/dev_tuning_menu.gd"
+   ]
+  },
+  "res://ui/dialogs/dialog.tscn": {
+   "assets": [
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Control",
+   "scripts": [
+    "res://ui/dialogs/dialog.gd"
+   ]
+  },
+  "res://ui/dialogs/quit_confirm.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [
+    "res://ui/dialogs/dialog.tscn"
+   ],
+   "root_type": "(inherited)",
+   "scripts": []
+  },
+  "res://ui/hud/hud.tscn": {
+   "assets": [
+    "res://assets/icons/cargo/icon_cargo_container.svg",
+    "res://assets/icons/hud/icon_close.svg",
+    "res://assets/icons/hud/icon_hull.svg",
+    "res://assets/icons/hud/icon_shield.svg",
+    "res://assets/icons/weapon/icon_ammo.svg",
+    "res://assets/ui/ui_bar_caps.png",
+    "res://assets/ui/ui_minimap_bezel.png",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Control",
+   "scripts": [
+    "res://ui/hud/hud.gd",
+    "res://ui/hud/minimap.gd",
+    "res://ui/hud/target_reticle.gd"
+   ]
+  },
+  "res://ui/screens/_mockup_station.tscn": {
+   "assets": [
+    "res://assets/icons/cargo/icon_credits.svg",
+    "res://assets/icons/equip/icon_equip_generator.png",
+    "res://assets/icons/equip/icon_equip_module.png",
+    "res://assets/icons/hud/icon_hull.svg",
+    "res://assets/icons/map/icon_map_node_station.png",
+    "res://assets/icons/map/icon_map_route.png",
+    "res://assets/ui/ui_backdrop_hangar.png",
+    "res://ui/theme/grain.tres",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Control",
+   "scripts": [
+    "res://ui/screens/_mockup_station.gd"
+   ]
+  },
+  "res://ui/screens/boot.tscn": {
+   "assets": [
+    "res://assets/ui/logo_vajb_orbit.png",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Control",
+   "scripts": [
+    "res://ui/screens/boot.gd"
+   ]
+  },
+  "res://ui/screens/loading.tscn": {
+   "assets": [
+    "res://assets/env/backdrop/env_loading_bg.png",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Control",
+   "scripts": [
+    "res://ui/screens/loading.gd"
+   ]
+  },
+  "res://ui/screens/main_menu.tscn": {
+   "assets": [
+    "res://assets/env/backdrop/env_menu_bg.png",
+    "res://assets/fx/fx_ember_pulse.png",
+    "res://assets/ui/logo_vajb_orbit.png",
+    "res://assets/ui/ui_insignia_neutral.png",
+    "res://ui/theme/grain.tres",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "connections": [],
+   "groups": [],
+   "instanced": [
+    "res://ui/components/menu_button.tscn"
+   ],
+   "root_type": "Control",
+   "scripts": [
+    "res://ui/screens/main_menu.gd"
+   ]
+  },
+  "res://ui/screens/settings.tscn": {
+   "assets": [
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Control",
+   "scripts": [
+    "res://ui/screens/settings.gd"
+   ]
+  },
+  "res://ui/screens/settings_rebind_row.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "HBoxContainer",
+   "scripts": [
+    "res://ui/screens/settings_rebind_row.gd"
+   ]
+  },
+  "res://ui/screens/station.tscn": {
+   "assets": [
+    "res://assets/icons/cargo/icon_credits.svg",
+    "res://assets/icons/map/icon_map_node_station.png",
+    "res://assets/ui/ui_backdrop_hangar.png",
+    "res://ui/theme/grain.tres",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Control",
+   "scripts": [
+    "res://ui/screens/station.gd"
+   ]
+  },
+  "res://ui/station/armory_panel.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Control",
+   "scripts": [
+    "res://ui/station/armory_panel.gd"
+   ]
+  },
+  "res://ui/station/auction_panel.tscn": {
+   "assets": [
+    "res://assets/icons/cargo/icon_credits.svg"
+   ],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "VBoxContainer",
+   "scripts": [
+    "res://ui/station/auction_panel.gd"
+   ]
+  },
+  "res://ui/station/exchange_panel.tscn": {
+   "assets": [
+    "res://assets/icons/cargo/icon_credits.svg"
+   ],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "VBoxContainer",
+   "scripts": [
+    "res://ui/station/exchange_panel.gd"
+   ]
+  },
+  "res://ui/station/fitting_panel.tscn": {
+   "assets": [
+    "res://assets/icons/equip/icon_equip_generator.png"
+   ],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "VBoxContainer",
+   "scripts": [
+    "res://ui/station/fitting_panel.gd"
+   ]
+  },
+  "res://ui/station/launch_panel.tscn": {
+   "assets": [
+    "res://assets/icons/map/icon_map_route.png"
+   ],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "VBoxContainer",
+   "scripts": [
+    "res://ui/station/launch_panel.gd"
+   ]
+  },
+  "res://ui/station/refinery_panel.tscn": {
+   "assets": [
+    "res://assets/icons/cargo/icon_cargo_ore.svg"
+   ],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "VBoxContainer",
+   "scripts": [
+    "res://ui/station/refinery_panel.gd"
+   ]
+  },
+  "res://ui/station/repairs_panel.tscn": {
+   "assets": [
+    "res://assets/icons/status/icon_status_repairing.png"
+   ],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "VBoxContainer",
+   "scripts": [
+    "res://ui/station/repairs_panel.gd"
+   ]
+  },
+  "res://ui/station/shipyard_panel.tscn": {
+   "assets": [
+    "res://assets/icons/hud/icon_hull.svg"
+   ],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "VBoxContainer",
+   "scripts": [
+    "res://ui/station/shipyard_panel.gd"
+   ]
+  }
+ },
+ "scripts": {
+  "res://autoload/audio_manager.gd": {
+   "autoload": "AudioManager",
+   "class_name": "",
+   "connects": [
+    "timer.timeout \u2192 _play_take.bind(take"
+   ],
+   "extends": "Node",
+   "refs": [
+    "res://ui/paths.gd"
+   ],
+   "signals": []
+  },
+  "res://autoload/dialog_manager.gd": {
+   "autoload": "DialogManager",
+   "class_name": "",
+   "connects": [
+    "_retry_timer.timeout \u2192 _show_next"
+   ],
+   "extends": "Node",
+   "refs": [],
+   "signals": [
+    "dialog_cancelled",
+    "dialog_confirmed"
+   ]
+  },
+  "res://autoload/player_profile.gd": {
+   "autoload": "PlayerProfile",
+   "class_name": "",
+   "connects": [
+    "_save_timer.timeout \u2192 _write_profile"
+   ],
+   "extends": "Node",
+   "refs": [
+    "res://game/auction.gd",
+    "res://game/economy_log.gd",
+    "res://game/module_catalog.gd",
+    "res://game/ship_fit.gd",
+    "res://game/station_catalog.gd",
+    "res://game/weapons.gd"
+   ],
+   "signals": [
+    "profile_changed",
+    "purchase_failed"
+   ]
+  },
+  "res://autoload/router.gd": {
+   "autoload": "Router",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://ui/paths.gd"
+   ],
+   "signals": [
+    "overlay_popped",
+    "overlay_pushed",
+    "screen_changed"
+   ]
+  },
+  "res://autoload/settings_manager.gd": {
+   "autoload": "SettingsManager",
+   "class_name": "",
+   "connects": [
+    "_save_timer.timeout \u2192 _write_settings"
+   ],
+   "extends": "Node",
+   "refs": [
+    "res://ui/paths.gd"
+   ],
+   "signals": [
+    "setting_changed"
+   ]
+  },
+  "res://autoload/world_clock.gd": {
+   "autoload": "WorldClock",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [],
+   "signals": []
+  },
+  "res://game/affixes.gd": {
+   "autoload": "",
+   "class_name": "Affixes",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [],
+   "signals": []
+  },
+  "res://game/asteroid.gd": {
+   "autoload": "",
+   "class_name": "Asteroid",
+   "connects": [],
+   "extends": "RigidBody2D",
+   "refs": [
+    "res://assets/env/prop/env_asteroid_L1.png",
+    "res://assets/env/prop/env_asteroid_L2.png",
+    "res://assets/env/prop/env_asteroid_L3.png",
+    "res://assets/env/prop/env_asteroid_M1.png",
+    "res://assets/env/prop/env_asteroid_M2.png",
+    "res://assets/env/prop/env_asteroid_M3.png",
+    "res://assets/env/prop/env_asteroid_S1.png",
+    "res://assets/env/prop/env_asteroid_S2.png",
+    "res://assets/env/prop/env_asteroid_S3.png",
+    "res://game/ore_tuning.gd",
+    "res://game/ship_fit.gd"
+   ],
+   "signals": [
+    "cracked"
+   ]
+  },
+  "res://game/asteroid_field.gd": {
+   "autoload": "",
+   "class_name": "AsteroidField",
+   "connects": [],
+   "extends": "Node2D",
+   "refs": [
+    "res://autoload/world_clock.gd",
+    "res://game/asteroid.gd",
+    "res://game/impact.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/ore_tuning.gd",
+    "res://game/pickup.gd",
+    "res://game/projectile.gd"
+   ],
+   "signals": []
+  },
+  "res://game/auction.gd": {
+   "autoload": "",
+   "class_name": "Auction",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [
+    "res://autoload/world_clock.gd",
+    "res://game/module_catalog.gd",
+    "res://game/ship_fit.gd",
+    "res://game/station_catalog.gd"
+   ],
+   "signals": []
+  },
+  "res://game/component_catalog.gd": {
+   "autoload": "",
+   "class_name": "ComponentCatalog",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [
+    "res://assets/icons/cargo/icon_cargo_container.svg",
+    "res://assets/icons/cargo/icon_cargo_crate.svg",
+    "res://assets/icons/cargo/icon_cargo_data_core.svg",
+    "res://assets/icons/cargo/icon_cargo_fuel_cell.svg",
+    "res://assets/icons/cargo/icon_cargo_ore.svg",
+    "res://assets/icons/cargo/icon_cargo_salvage.svg"
+   ],
+   "signals": []
+  },
+  "res://game/corridor.gd": {
+   "autoload": "",
+   "class_name": "Corridor",
+   "connects": [],
+   "extends": "Area2D",
+   "refs": [],
+   "signals": [
+    "crossed"
+   ]
+  },
+  "res://game/damage.gd": {
+   "autoload": "",
+   "class_name": "Damage",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [
+    "res://game/impact.gd"
+   ],
+   "signals": []
+  },
+  "res://game/economy_log.gd": {
+   "autoload": "",
+   "class_name": "EconomyLog",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [],
+   "signals": []
+  },
+  "res://game/exchange.gd": {
+   "autoload": "",
+   "class_name": "Exchange",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [
+    "res://autoload/world_clock.gd",
+    "res://game/component_catalog.gd",
+    "res://game/economy_log.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/station_catalog.gd"
+   ],
+   "signals": []
+  },
+  "res://game/fx.gd": {
+   "autoload": "",
+   "class_name": "Fx",
+   "connects": [
+    "sprite.animation_finished \u2192 sprite.queue_free"
+   ],
+   "extends": "RefCounted",
+   "refs": [],
+   "signals": []
+  },
+  "res://game/game.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "_ship.damage_taken \u2192 _on_ship_damage_taken",
+    "_state.died \u2192 _on_ship_died"
+   ],
+   "extends": "Node2D",
+   "refs": [
+    "res://game/affixes.gd",
+    "res://game/asteroid.gd",
+    "res://game/damage.gd",
+    "res://game/economy_log.gd",
+    "res://game/impact.gd",
+    "res://game/loot_tables.gd",
+    "res://game/module_catalog.gd",
+    "res://game/npc_registry.gd",
+    "res://game/npc_ship.gd",
+    "res://game/pickup.gd",
+    "res://game/player_ship.gd",
+    "res://game/player_ship.tscn",
+    "res://game/player_state.gd",
+    "res://game/poi.gd",
+    "res://game/sector.gd",
+    "res://game/sector_registry.gd",
+    "res://game/ship_fit.gd",
+    "res://game/speed_fantasy.gd",
+    "res://game/weapons.gd",
+    "res://ui/dev/dev_tuning_menu.tscn",
+    "res://ui/paths.gd"
+   ],
+   "signals": [
+    "route_requested"
+   ]
+  },
+  "res://game/gate.gd": {
+   "autoload": "",
+   "class_name": "Gate",
+   "connects": [],
+   "extends": "Area2D",
+   "refs": [
+    "res://assets/env/poi/env_jump_gate.png",
+    "res://game/economy_log.gd",
+    "res://game/npc_registry.gd",
+    "res://game/sector_registry.gd"
+   ],
+   "signals": [
+    "jumped"
+   ]
+  },
+  "res://game/impact.gd": {
+   "autoload": "",
+   "class_name": "Impact",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [],
+   "signals": []
+  },
+  "res://game/loot_tables.gd": {
+   "autoload": "",
+   "class_name": "LootTables",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [
+    "res://game/component_catalog.gd"
+   ],
+   "signals": []
+  },
+  "res://game/mineral_catalog.gd": {
+   "autoload": "",
+   "class_name": "MineralCatalog",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [
+    "res://assets/icons/ingot/icon_ingot_aluminium.svg",
+    "res://assets/icons/ingot/icon_ingot_cerulite.svg",
+    "res://assets/icons/ingot/icon_ingot_chromium.svg",
+    "res://assets/icons/ingot/icon_ingot_cobalt.svg",
+    "res://assets/icons/ingot/icon_ingot_copper.svg",
+    "res://assets/icons/ingot/icon_ingot_emberite.svg",
+    "res://assets/icons/ingot/icon_ingot_gold.svg",
+    "res://assets/icons/ingot/icon_ingot_iridium.svg",
+    "res://assets/icons/ingot/icon_ingot_iron.svg",
+    "res://assets/icons/ingot/icon_ingot_krilium.svg",
+    "res://assets/icons/ingot/icon_ingot_neodymium.svg",
+    "res://assets/icons/ingot/icon_ingot_nickel.svg",
+    "res://assets/icons/ingot/icon_ingot_osmium.svg",
+    "res://assets/icons/ingot/icon_ingot_palladium.svg",
+    "res://assets/icons/ingot/icon_ingot_platinum.svg",
+    "res://assets/icons/ingot/icon_ingot_silicon.svg",
+    "res://assets/icons/ingot/icon_ingot_silver.svg",
+    "res://assets/icons/ingot/icon_ingot_titanium.svg",
+    "res://assets/icons/ingot/icon_ingot_tungsten.svg",
+    "res://assets/icons/ingot/icon_ingot_voidglass.svg",
+    "res://assets/icons/mineral/icon_mineral_aluminium.svg",
+    "res://assets/icons/mineral/icon_mineral_cerulite.svg",
+    "res://assets/icons/mineral/icon_mineral_chromium.svg",
+    "res://assets/icons/mineral/icon_mineral_cobalt.svg",
+    "res://assets/icons/mineral/icon_mineral_copper.svg",
+    "res://assets/icons/mineral/icon_mineral_emberite.svg",
+    "res://assets/icons/mineral/icon_mineral_gold.svg",
+    "res://assets/icons/mineral/icon_mineral_iridium.svg",
+    "res://assets/icons/mineral/icon_mineral_iron.svg",
+    "res://assets/icons/mineral/icon_mineral_krilium.svg",
+    "res://assets/icons/mineral/icon_mineral_neodymium.svg",
+    "res://assets/icons/mineral/icon_mineral_nickel.svg",
+    "res://assets/icons/mineral/icon_mineral_osmium.svg",
+    "res://assets/icons/mineral/icon_mineral_palladium.svg",
+    "res://assets/icons/mineral/icon_mineral_platinum.svg",
+    "res://assets/icons/mineral/icon_mineral_silicon.svg",
+    "res://assets/icons/mineral/icon_mineral_silver.svg",
+    "res://assets/icons/mineral/icon_mineral_titanium.svg",
+    "res://assets/icons/mineral/icon_mineral_tungsten.svg",
+    "res://assets/icons/mineral/icon_mineral_voidglass.svg",
+    "res://game/ore_tuning.gd"
+   ],
+   "signals": []
+  },
+  "res://game/mining_laser.gd": {
+   "autoload": "",
+   "class_name": "MiningLaser",
+   "connects": [],
+   "extends": "Node2D",
+   "refs": [
+    "res://game/mineral_catalog.gd",
+    "res://game/ore_tuning.gd",
+    "res://game/pickup.gd",
+    "res://game/projectile.gd",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://game/module_catalog.gd": {
+   "autoload": "",
+   "class_name": "ModuleCatalog",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [
+    "res://assets/icons/module/",
+    "res://assets/icons/module/icon_module_",
+    "res://assets/icons/module/icon_module_b_afterburner.svg",
+    "res://assets/icons/module/icon_module_b_fold.svg",
+    "res://assets/icons/module/icon_module_c_ewar.svg",
+    "res://assets/icons/module/icon_module_c_nexus.svg",
+    "res://assets/icons/module/icon_module_c_scanner.svg",
+    "res://assets/icons/module/icon_module_c_target.svg",
+    "res://assets/icons/module/icon_module_c_twin.svg",
+    "res://assets/icons/module/icon_module_e_ion.svg",
+    "res://assets/icons/module/icon_module_e_std.svg",
+    "res://assets/icons/module/icon_module_e_vector.svg",
+    "res://assets/icons/module/icon_module_h_composite.svg",
+    "res://assets/icons/module/icon_module_h_plate_heavy.svg",
+    "res://assets/icons/module/icon_module_h_plate_light.svg",
+    "res://assets/icons/module/icon_module_p_core.svg",
+    "res://assets/icons/module/icon_module_p_mk2.svg",
+    "res://assets/icons/module/icon_module_p_std.svg",
+    "res://assets/icons/module/icon_module_s_heavy.svg",
+    "res://assets/icons/module/icon_module_s_ion.svg",
+    "res://assets/icons/module/icon_module_s_light.svg",
+    "res://assets/icons/module/icon_module_u_cargo.svg",
+    "res://assets/icons/module/icon_module_u_drones.svg",
+    "res://assets/icons/module/icon_module_u_holds.svg",
+    "res://assets/icons/module/icon_module_u_refine.svg",
+    "res://assets/icons/module/icon_module_u_salvage.svg",
+    "res://assets/icons/module/icon_module_u_tractor.svg",
+    "res://assets/icons/module/icon_module_w_mining.svg",
+    "res://assets/icons/module/icon_module_w_railgun.svg",
+    "res://assets/icons/service/icon_service_vault.svg",
+    "res://assets/icons/weapon/",
+    "res://assets/icons/weapon/icon_weapon_",
+    "res://assets/icons/weapon/icon_weapon_cannon.svg",
+    "res://assets/icons/weapon/icon_weapon_laser.svg",
+    "res://assets/icons/weapon/icon_weapon_mine.svg",
+    "res://assets/icons/weapon/icon_weapon_plasma.svg",
+    "res://assets/icons/weapon/icon_weapon_rocket.svg"
+   ],
+   "signals": []
+  },
+  "res://game/npc_brain.gd": {
+   "autoload": "",
+   "class_name": "NpcBrain",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [
+    "res://game/npc_registry.gd"
+   ],
+   "signals": []
+  },
+  "res://game/npc_registry.gd": {
+   "autoload": "",
+   "class_name": "NpcRegistry",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [
+    "res://assets/ships/",
+    "res://game/sector_registry.gd"
+   ],
+   "signals": []
+  },
+  "res://game/npc_ship.gd": {
+   "autoload": "",
+   "class_name": "NpcShip",
+   "connects": [
+    "_body.body_entered \u2192 _on_body_entered"
+   ],
+   "extends": "Node2D",
+   "refs": [
+    "res://game/asteroid.gd",
+    "res://game/damage.gd",
+    "res://game/impact.gd",
+    "res://game/npc_brain.gd",
+    "res://game/npc_registry.gd",
+    "res://game/projectile.gd"
+   ],
+   "signals": [
+    "died"
+   ]
+  },
+  "res://game/ore_tuning.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [],
+   "signals": []
+  },
+  "res://game/pickup.gd": {
+   "autoload": "",
+   "class_name": "Pickup",
+   "connects": [],
+   "extends": "Node2D",
+   "refs": [
+    "res://assets/env/pickup/env_pickup_ore_pod.png",
+    "res://game/economy_log.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/ship_fit.gd"
+   ],
+   "signals": []
+  },
+  "res://game/player_ship.gd": {
+   "autoload": "",
+   "class_name": "PlayerShip",
+   "connects": [
+    "_body.body_entered \u2192 _on_hull_body_entered",
+    "_state.died \u2192 _on_hull_death",
+    "_state.hull_changed \u2192 _on_hull_changed",
+    "_state.shield_changed \u2192 _on_shield_changed"
+   ],
+   "extends": "Node2D",
+   "refs": [
+    "res://game/damage.gd",
+    "res://game/impact.gd",
+    "res://game/mining_laser.tscn",
+    "res://game/player_state.gd",
+    "res://game/projectile.gd",
+    "res://game/ship_fit.gd",
+    "res://game/weapons.gd"
+   ],
+   "signals": [
+    "damage_taken"
+   ]
+  },
+  "res://game/player_state.gd": {
+   "autoload": "",
+   "class_name": "PlayerState",
+   "connects": [],
+   "extends": "Resource",
+   "refs": [],
+   "signals": [
+    "cargo_changed",
+    "died",
+    "energy_changed",
+    "fuel_changed",
+    "hull_changed",
+    "shield_changed",
+    "weapon_changed"
+   ]
+  },
+  "res://game/poi.gd": {
+   "autoload": "",
+   "class_name": "Poi",
+   "connects": [
+    "pickup.tree_exited \u2192 _on_cache_pickup_left.bind(pickup"
+   ],
+   "extends": "Node2D",
+   "refs": [
+    "res://game/asteroid.gd",
+    "res://game/component_catalog.gd",
+    "res://game/economy_log.gd",
+    "res://game/loot_tables.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/module_catalog.gd",
+    "res://game/pickup.gd",
+    "res://game/sector_registry.gd",
+    "res://game/ship_fit.gd"
+   ],
+   "signals": [
+    "cache_collected",
+    "revealed",
+    "scanned",
+    "triggered"
+   ]
+  },
+  "res://game/projectile.gd": {
+   "autoload": "",
+   "class_name": "Projectile",
+   "connects": [],
+   "extends": "Area2D",
+   "refs": [
+    "res://assets/fx/fx_arc_spark_f1.png",
+    "res://assets/fx/fx_arc_spark_f2.png",
+    "res://assets/fx/fx_arc_spark_f3.png",
+    "res://assets/fx/fx_arc_spark_f4.png",
+    "res://assets/fx/fx_dash_charge_f1.png",
+    "res://assets/fx/fx_dust_streak_f1.png",
+    "res://assets/fx/fx_engine_trail_f1.png",
+    "res://assets/fx/fx_explosion_f1.png",
+    "res://assets/fx/fx_explosion_f2.png",
+    "res://assets/fx/fx_explosion_f3.png",
+    "res://assets/fx/fx_explosion_f4.png",
+    "res://assets/fx/fx_explosion_f5.png",
+    "res://assets/fx/fx_laser_bolt_f1.png",
+    "res://assets/fx/fx_laser_bolt_f3.png",
+    "res://assets/fx/fx_mine_f1.png",
+    "res://assets/fx/fx_mine_f2.png",
+    "res://assets/fx/fx_mine_f3.png",
+    "res://assets/fx/fx_mine_f4.png",
+    "res://assets/fx/fx_mining_beam_f1.png",
+    "res://assets/fx/fx_mining_beam_f2.png",
+    "res://assets/fx/fx_mining_beam_f3.png",
+    "res://assets/fx/fx_mining_beam_f4.png",
+    "res://assets/fx/fx_missile_trail_f1.png",
+    "res://assets/fx/fx_missile_trail_f2.png",
+    "res://assets/fx/fx_missile_trail_f3.png",
+    "res://assets/fx/fx_missile_trail_f4.png",
+    "res://assets/fx/fx_secondary_explosion_f1.png",
+    "res://assets/fx/fx_secondary_explosion_f2.png",
+    "res://assets/fx/fx_secondary_explosion_f3.png",
+    "res://assets/fx/fx_secondary_explosion_f4.png",
+    "res://assets/fx/fx_shield_break_f1.png",
+    "res://assets/fx/fx_shield_break_f2.png",
+    "res://assets/fx/fx_shield_break_f3.png",
+    "res://assets/fx/fx_shield_break_f4.png",
+    "res://assets/fx/fx_shield_ripple_f1.png",
+    "res://assets/fx/fx_smoke_plume_f1.png",
+    "res://game/fx.gd",
+    "res://game/impact.gd"
+   ],
+   "signals": [
+    "detonated"
+   ]
+  },
+  "res://game/refinery.gd": {
+   "autoload": "",
+   "class_name": "Refinery",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [
+    "res://game/economy_log.gd",
+    "res://game/mineral_catalog.gd"
+   ],
+   "signals": []
+  },
+  "res://game/repairs.gd": {
+   "autoload": "",
+   "class_name": "Repairs",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [
+    "res://game/economy_log.gd",
+    "res://game/player_state.gd",
+    "res://game/ship_fit.gd",
+    "res://game/station_catalog.gd"
+   ],
+   "signals": []
+  },
+  "res://game/sector.gd": {
+   "autoload": "",
+   "class_name": "Sector",
+   "connects": [],
+   "extends": "Node2D",
+   "refs": [
+    "res://assets/env/poi/env_station.png",
+    "res://assets/env/poi/env_station_hero.png",
+    "res://autoload/world_clock.gd",
+    "res://game/asteroid_field.gd",
+    "res://game/corridor.gd",
+    "res://game/gate.gd",
+    "res://game/npc_registry.gd",
+    "res://game/npc_ship.gd",
+    "res://game/poi.gd",
+    "res://game/sector_registry.gd",
+    "res://game/ship_fit.gd",
+    "res://game/station_scene.gd"
+   ],
+   "signals": [
+    "npc_spawned",
+    "poi_spawned"
+   ]
+  },
+  "res://game/sector_registry.gd": {
+   "autoload": "",
+   "class_name": "SectorRegistry",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [
+    "res://assets/env/backdrop/env_sector_1_bg.png",
+    "res://assets/env/backdrop/env_sector_2_bg.png",
+    "res://assets/env/backdrop/env_sector_3_bg.png",
+    "res://assets/env/backdrop/env_sector_4_bg.png",
+    "res://assets/env/backdrop/env_sector_5_bg.png",
+    "res://assets/env/backdrop/env_sector_6_bg.png",
+    "res://assets/env/backdrop/env_sector_7_bg.png",
+    "res://game/mineral_catalog.gd"
+   ],
+   "signals": []
+  },
+  "res://game/ship_fit.gd": {
+   "autoload": "",
+   "class_name": "ShipFit",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [
+    "res://assets/ships/ship_",
+    "res://tests/probe_s5_hardpoints.gd"
+   ],
+   "signals": []
+  },
+  "res://game/ship_stats.gd": {
+   "autoload": "",
+   "class_name": "ShipStats",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [],
+   "signals": []
+  },
+  "res://game/speed_fantasy.gd": {
+   "autoload": "",
+   "class_name": "SpeedFantasy",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://assets/fx/fx_hull_critical_vignette_f1.png",
+    "res://game/fx.gd",
+    "res://game/projectile.gd",
+    "res://game/speed_blur.gdshader"
+   ],
+   "signals": []
+  },
+  "res://game/station_catalog.gd": {
+   "autoload": "",
+   "class_name": "StationCatalog",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [
+    "res://assets/icons/module/icon_module_w_railgun.svg",
+    "res://assets/icons/weapon/icon_ammo_laser.png",
+    "res://assets/icons/weapon/icon_ammo_rocket.png",
+    "res://assets/icons/weapon/icon_weapon_cannon.svg",
+    "res://assets/icons/weapon/icon_weapon_mine.svg",
+    "res://assets/icons/weapon/icon_weapon_plasma.svg",
+    "res://assets/ships/ship_corvette_side.png",
+    "res://assets/ships/ship_destroyer_side.png",
+    "res://assets/ships/ship_fighter_side.png",
+    "res://assets/ships/ship_freighter_side.png",
+    "res://assets/ships/ship_gunship_side.png",
+    "res://assets/ships/ship_miner_side.png",
+    "res://assets/ships/ship_patrol_side.png",
+    "res://assets/ships/ship_trader_side.png",
+    "res://assets/ships/ship_vanguard_side.png"
+   ],
+   "signals": []
+  },
+  "res://game/station_scene.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node2D",
+   "refs": [
+    "res://assets/env/poi/env_station_arm_a.png",
+    "res://assets/env/poi/env_station_arm_b.png",
+    "res://assets/env/poi/env_station_gantry_a.png",
+    "res://assets/env/poi/env_station_gantry_b.png",
+    "res://assets/env/poi/env_station_lamp_a.png",
+    "res://assets/env/poi/env_station_lamp_b.png",
+    "res://assets/env/poi/env_station_mast_a.png",
+    "res://assets/env/poi/env_station_mast_b.png",
+    "res://assets/env/poi/env_station_plate_a.png",
+    "res://assets/env/poi/env_station_plate_b.png",
+    "res://assets/env/poi/env_station_shuttle_a.png",
+    "res://assets/env/poi/env_station_shuttle_b.png",
+    "res://assets/env/poi/env_station_windows_a.png",
+    "res://assets/env/poi/env_station_windows_b.png"
+   ],
+   "signals": []
+  },
+  "res://game/weapons.gd": {
+   "autoload": "",
+   "class_name": "WeaponComponent",
+   "connects": [
+    "shot_fired \u2192 _on_shot_fired"
+   ],
+   "extends": "Node2D",
+   "refs": [
+    "res://assets/fx/fx_muzzle_flash_f1.png",
+    "res://assets/fx/fx_muzzle_flash_f2.png",
+    "res://assets/fx/fx_muzzle_flash_f3.png",
+    "res://assets/fx/fx_muzzle_flash_f4.png",
+    "res://game/fx.gd",
+    "res://game/impact.gd",
+    "res://game/ore_tuning.gd",
+    "res://game/player_state.gd",
+    "res://game/projectile.gd",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": [
+    "countermeasure_used",
+    "dry_fired",
+    "locks_broken",
+    "shot_fired"
+   ]
+  },
+  "res://tests/c1_stub_rock.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "\"res://game/asteroid.gd\"",
+   "refs": [
+    "res://game/asteroid.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/headless_runner.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://game/economy_log.gd",
+    "res://tests",
+    "res://tests directory",
+    "res://tests/headless_runner.tscn",
+    "res://tests/test_"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_c1_ram.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "_body.body_entered \u2192 _on_body_entered"
+   ],
+   "extends": "Node2D",
+   "refs": [
+    "res://game/asteroid.gd",
+    "res://game/impact.gd",
+    "res://game/player_ship.gd",
+    "res://game/player_ship.tscn",
+    "res://game/player_state.gd",
+    "res://game/ship_fit.gd",
+    "res://tests/c1_stub_rock.gd",
+    "res://tests/probe_c1_ram.tscn --quit-after 100000"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_c2_weapons.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node2D",
+   "refs": [
+    "res://assets/ships/ship_fighter_side.png",
+    "res://game/asteroid.gd",
+    "res://game/damage.gd",
+    "res://game/npc_ship.gd",
+    "res://game/player_ship.gd",
+    "res://game/player_ship.tscn",
+    "res://game/player_state.gd",
+    "res://game/projectile.gd",
+    "res://game/ship_fit.gd",
+    "res://game/station_catalog.gd",
+    "res://game/weapons.gd",
+    "res://tests/probe_c2_weapons.tscn --quit-after 12000"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_c3_flight_decay.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://game/player_ship.gd",
+    "res://game/player_ship.tscn",
+    "res://game/player_state.gd",
+    "res://game/ship_fit.gd",
+    "res://tests/probe_c3_flight_decay.tscn "
+   ],
+   "signals": []
+  },
+  "res://tests/probe_c6_pins.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://game/asteroid.gd",
+    "res://game/player_ship.tscn",
+    "res://tests/probe_c6_pins.tscn --quit-after 600"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_f1_residual.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://tests/probe_f1_residual.tscn --quit-after 600",
+    "res://ui/station/fitting_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_f1_weapon_fx.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node2D",
+   "refs": [
+    "res://game/fx.gd",
+    "res://game/game.tscn",
+    "res://game/player_ship.gd",
+    "res://game/projectile.gd",
+    "res://game/weapons.gd",
+    "res://tests/probe_f1_weapon_fx.tscn --quit-after 600"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_f2_weapon_fx.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node2D",
+   "refs": [
+    "res://assets/ships/ship_fighter_side.png",
+    "res://autoload/audio_manager.gd",
+    "res://game/asteroid.gd",
+    "res://game/fx.gd",
+    "res://game/game.tscn",
+    "res://game/npc_ship.gd",
+    "res://game/player_ship.tscn",
+    "res://game/player_state.gd",
+    "res://game/projectile.gd",
+    "res://game/ship_fit.gd",
+    "res://tests/probe_f2_weapon_fx.tscn --quit-after 600"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_f3_weapon_fx.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node2D",
+   "refs": [
+    "res://assets/fx/",
+    "res://assets/fx/...png",
+    "res://assets/ships/ship_fighter_side.png",
+    "res://autoload/audio_manager.gd",
+    "res://game/asteroid.gd",
+    "res://game/fx.gd",
+    "res://game/game.tscn",
+    "res://game/mining_laser.gd",
+    "res://game/mining_laser.tscn",
+    "res://game/npc_ship.gd",
+    "res://game/player_ship.gd",
+    "res://game/player_ship.tscn",
+    "res://game/player_state.gd",
+    "res://game/projectile.gd",
+    "res://game/ship_fit.gd",
+    "res://game/weapons.gd",
+    "res://tests/probe_f3_weapon_fx.tscn --quit-after 900"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_f4_weapon_fx.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node2D",
+   "refs": [
+    "res://assets/fx/fx_explosion.png",
+    "res://assets/fx/fx_shield_ripple.png",
+    "res://assets/ships/ship_fighter_side.png",
+    "res://autoload/audio_manager.gd",
+    "res://game/game.tscn",
+    "res://game/npc_ship.gd",
+    "res://game/player_ship.gd",
+    "res://game/projectile.gd",
+    "res://game/ship_fit.gd",
+    "res://game/weapons.gd",
+    "res://tests/probe_f4_weapon_fx.tscn --quit-after 900"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_g1_flight_feel.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://game/player_ship.gd",
+    "res://game/player_ship.tscn",
+    "res://game/player_state.gd",
+    "res://game/ship_fit.gd",
+    "res://tests/probe_g1_flight_feel.tscn "
+   ],
+   "signals": []
+  },
+  "res://tests/probe_g1_lint.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://autoload/settings_manager.gd",
+    "res://autoload/world_clock.gd",
+    "res://game/player_ship.gd",
+    "res://game/ship_fit.gd",
+    "res://game/weapons.gd",
+    "res://tests/probe_g1_lint.tscn --quit-after 600",
+    "res://ui/hud/minimap.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_g2_lint.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://autoload/world_clock.gd",
+    "res://file",
+    "res://game/projectile.gd",
+    "res://game/weapons.gd",
+    "res://tests/probe_g2_lint.tscn --quit-after 600",
+    "res://ui/hud/minimap.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_g3_lint.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://autoload/world_clock.gd",
+    "res://file",
+    "res://game/sector.gd",
+    "res://game/weapons.gd",
+    "res://tests/probe_g3_lint.tscn --quit-after 600",
+    "res://ui/components/slot_button.gd",
+    "res://ui/hud/minimap.gd",
+    "res://ui/station/exchange_panel.gd",
+    "res://ui/station/launch_panel.gd",
+    "res://ui/station/shipyard_panel.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_g3_shadow.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://game/component_catalog.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/sector.gd",
+    "res://tests/probe_g3_shadow.tscn --quit-after 600",
+    "res://ui/components/slot_button.gd",
+    "res://ui/station/exchange_panel.gd",
+    "res://ui/station/launch_panel.gd",
+    "res://ui/station/shipyard_panel.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_g4_beam.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://assets/fx/fx_mining_beam.png",
+    "res://game/asteroid.gd",
+    "res://game/fx.gd",
+    "res://game/mining_laser.gd",
+    "res://game/player_state.gd",
+    "res://game/projectile.gd",
+    "res://game/weapons.gd",
+    "res://tests/probe_g4_beam.tscn --quit-after 1200"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_g4_beam_head.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://game/player_state.gd",
+    "res://game/projectile.gd",
+    "res://game/weapons.gd",
+    "res://tests/probe_g4_beam_head.tscn --quit-after 600"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_g4_lint.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://autoload/settings_manager.gd",
+    "res://autoload/world_clock.gd",
+    "res://file",
+    "res://game/player_ship.gd",
+    "res://game/projectile.gd",
+    "res://game/sector.gd",
+    "res://game/ship_fit.gd",
+    "res://game/weapons.gd",
+    "res://tests/probe_g1_flight_feel.gd",
+    "res://tests/probe_g1_lint.gd",
+    "res://tests/probe_g2_lint.gd",
+    "res://tests/probe_g3_lint.gd",
+    "res://tests/probe_g3_shadow.gd",
+    "res://tests/probe_g4_lint.tscn --quit-after 900",
+    "res://tests/test_combat_repair_c5.gd",
+    "res://tests/test_flight_beam_g2.gd",
+    "res://tests/test_flight_feel_g1.gd",
+    "res://ui/components/slot_button.gd",
+    "res://ui/hud/minimap.gd",
+    "res://ui/station/exchange_panel.gd",
+    "res://ui/station/launch_panel.gd",
+    "res://ui/station/shipyard_panel.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_p2a_fits_migration.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "SceneTree",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/ship_fit.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_p2a_w4_launch.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://game/game.tscn",
+    "res://game/module_catalog.gd",
+    "res://game/ship_fit.gd",
+    "res://game/weapons.gd",
+    "res://tests/probe_p2a_w4_launch.tscn"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_p2b1_buy_module.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "profile.profile_changed \u2192 _on_changed",
+    "profile.purchase_failed \u2192 _on_failed"
+   ],
+   "extends": "SceneTree",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/economy_log.gd",
+    "res://game/module_catalog.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_p2b1_panel_fit.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/module_catalog.gd",
+    "res://game/ship_fit.gd",
+    "res://tests/probe_p2b1_panel_fit.tscn",
+    "res://ui/station/fitting_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_r1_fit_panes.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://game/module_catalog.gd",
+    "res://game/repairs.gd",
+    "res://game/ship_fit.gd",
+    "res://game/station_catalog.gd",
+    "res://tests/probe_r1_fit_panes.tscn --quit-after 600",
+    "res://ui/screens/station.gd",
+    "res://ui/screens/station.tscn",
+    "res://ui/station/fitting_panel.gd",
+    "res://ui/station/fitting_panel.tscn",
+    "res://ui/station/launch_panel.tscn",
+    "res://ui/station/shipyard_panel.tscn",
+    "res://ui/station/upgrades_panel.gd",
+    "res://ui/station/upgrades_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_r1_fit_profile.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "_profile.profile_changed \u2192 _on_changed"
+   ],
+   "extends": "Node",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/economy_log.gd",
+    "res://game/ship_fit.gd",
+    "res://tests/probe_r1_fit_profile.tscn --quit-after 600"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_r1_frames.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://assets/ships/ship_%s_side.png",
+    "res://game/module_catalog.gd",
+    "res://game/ship_fit.gd",
+    "res://game/station_catalog.gd",
+    "res://tests/probe_r1_frames.tscn",
+    "res://tests/probe_r1_prewave_fit.gd",
+    "res://ui/hud/hud.tscn",
+    "res://ui/station/launch_panel.tscn",
+    "res://ui/station/shipyard_panel.tscn"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_r1_migration.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "SceneTree",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/ship_fit.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_r1_p2b1_edge.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://../docs/design/STATION_HUB.md",
+    "res://game/economy_log.gd",
+    "res://game/module_catalog.gd",
+    "res://game/ship_fit.gd",
+    "res://tests/probe_r1_p2b1_edge.tscn",
+    "res://ui/station/fitting_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_r1_p2b1_edge2.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://game/economy_log.gd",
+    "res://game/module_catalog.gd",
+    "res://game/ship_fit.gd",
+    "res://tests/probe_r1_p2b1_edge2.tscn",
+    "res://ui/station/fitting_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_r1_p2b1_edge3.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://game/economy_log.gd",
+    "res://game/ship_fit.gd",
+    "res://tests/probe_r1_p2b1_edge3.tscn",
+    "res://ui/station/fitting_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_r1_p2b1_fit.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://../docs/design/STATION_HUB.md",
+    "res://../docs/gameplay/09_ship_slots_modules.md",
+    "res://game/economy_log.gd",
+    "res://game/module_catalog.gd",
+    "res://game/ship_fit.gd",
+    "res://tests/probe_r1_p2b1_fit.tscn",
+    "res://ui/station/fitting_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_r1_p2b1_layout.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://game/economy_log.gd",
+    "res://tests/probe_r1_p2b1_layout.tscn",
+    "res://ui/station/fitting_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_r1_p2b1_persist.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://game/economy_log.gd",
+    "res://game/module_catalog.gd",
+    "res://game/ship_fit.gd",
+    "res://tests/probe_r1_p2b1_persist.tscn",
+    "res://ui/station/fitting_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_r1_p2b1_review.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://../docs/design/STATION_HUB.md",
+    "res://../docs/gameplay/09_ship_slots_modules.md",
+    "res://game/economy_log.gd",
+    "res://game/module_catalog.gd",
+    "res://game/ship_fit.gd",
+    "res://tests/probe_r1_p2b1_review.tscn",
+    "res://ui/screens/station.gd",
+    "res://ui/station/fitting_panel.gd",
+    "res://ui/station/fitting_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_r1_prewave_fit.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [],
+   "signals": []
+  },
+  "res://tests/probe_r1_v5_migration.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/module_catalog.gd",
+    "res://game/station_catalog.gd",
+    "res://tests/probe_r1_v5_migration.tscn --quit-after 600"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_rock_cleave.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node2D",
+   "refs": [
+    "res://autoload/audio_manager.gd",
+    "res://game/asteroid.gd",
+    "res://game/asteroid_field.gd",
+    "res://game/fx.gd",
+    "res://game/impact.gd",
+    "res://game/pickup.gd",
+    "res://game/projectile.gd",
+    "res://tests/probe_rock_cleave.tscn --quit-after 900"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_rock_cleave_a2.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node2D",
+   "refs": [
+    "res://autoload/audio_manager.gd",
+    "res://autoload/world_clock.gd",
+    "res://game/asteroid.gd",
+    "res://game/asteroid_field.gd",
+    "res://game/fx.gd",
+    "res://game/impact.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/mining_laser.gd",
+    "res://game/ore_tuning.gd",
+    "res://game/pickup.gd",
+    "res://game/projectile.gd",
+    "res://game/weapons.gd",
+    "res://tests/probe_rock_cleave_a2.tscn --quit-after 900"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_rock_cleave_lint.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://autoload/audio_manager.gd",
+    "res://autoload/world_clock.gd",
+    "res://file",
+    "res://game/asteroid.gd",
+    "res://game/asteroid_field.gd",
+    "res://game/projectile.gd",
+    "res://path",
+    "res://tests/probe_rock_cleave.gd",
+    "res://tests/probe_rock_cleave_lint.tscn --quit-after 900",
+    "res://tests/test_engine2_cleaving.gd",
+    "res://tests/test_weapon_fx_f2.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s10_a0_armory.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://game/weapons.gd",
+    "res://tests/probe_s10_a0_armory.tscn --quit-after 5400",
+    "res://ui/screens/station.tscn"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s10_r1_armory_hits.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://tests/probe_s10_r1_armory_hits.tscn --quit-after 3000",
+    "res://ui/screens/station.tscn"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s12_field_budget.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "SceneTree",
+   "refs": [
+    "res://game/asteroid.gd",
+    "res://game/asteroid_field.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/mining_laser.gd",
+    "res://game/ore_tuning.gd",
+    "res://game/ship_fit.gd",
+    "res://game/weapons.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s12_rock_rate.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "SceneTree",
+   "refs": [
+    "res://game/asteroid.gd",
+    "res://game/asteroid_field.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/mining_laser.gd",
+    "res://game/ore_tuning.gd",
+    "res://game/ship_fit.gd",
+    "res://game/weapons.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s18_capture.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://tests/probe_s18_capture.tscn --quit-after 400",
+    "res://ui/screens/station.tscn"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s18_resolutions.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://tests/probe_s18_resolutions.tscn ",
+    "res://ui/screens/station.tscn"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s18r1_audit.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://tests/probe_s18r1_audit.tscn --quit-after 1200",
+    "res://ui/screens/station.tscn"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s19r1_review.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "absorbed.hull_changed \u2192 _on_absorbed",
+    "died.died \u2192 _on_died",
+    "died.hull_changed \u2192 _on_hull_changed"
+   ],
+   "extends": "Node",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/damage.gd",
+    "res://game/npc_brain.gd",
+    "res://game/npc_ship.gd",
+    "res://game/player_ship.gd",
+    "res://game/player_ship.tscn",
+    "res://game/player_state.gd",
+    "res://game/repairs.gd",
+    "res://game/ship_fit.gd",
+    "res://game/weapons.gd",
+    "res://tests/probe_s19r1_review.tscn --quit-after 600",
+    "res://ui/hud/ship_status_screen.gd",
+    "res://ui/station/repairs_panel.gd",
+    "res://ui/station/repairs_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s20_capture.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://game/ship_fit.gd",
+    "res://tests/probe_s20_capture.tscn --quit-after 400",
+    "res://ui/screens/station.tscn"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s20_review.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "pane.status_requested \u2192 func(_message: String",
+    "watchdog.timeout \u2192 func("
+   ],
+   "extends": "Node",
+   "refs": [
+    "res://assets/ui/ui_armory_console.png",
+    "res://assets/ui/ui_panel_frame.png",
+    "res://assets/ui/ui_slot_weapon_normal.png",
+    "res://game/ship_fit.gd",
+    "res://tests/probe_s20_review.tscn --quit-after 900",
+    "res://tests/test_d7_armory.gd",
+    "res://tests/test_s11_inspector.gd",
+    "res://tests/test_s15_armory_layout.gd",
+    "res://tests/test_s20_chrome_unify.gd",
+    "res://tools/build_theme.gd",
+    "res://ui/screens/station.gd",
+    "res://ui/screens/station.tscn",
+    "res://ui/station/armory_panel.gd",
+    "res://ui/station/armory_panel.tscn",
+    "res://ui/station/armory_style.gd",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s25_pixels.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node2D",
+   "refs": [
+    "res://game/speed_fantasy.gd",
+    "res://tests/probe_s25_pixels.tscn"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s2_5_feel.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node2D",
+   "refs": [
+    "res://assets/fx/fx_arc_spark_f1.png",
+    "res://assets/fx/fx_dash_charge_f1.png",
+    "res://assets/fx/fx_dust_streak_f1.png",
+    "res://assets/fx/fx_engine_trail_f1.png",
+    "res://assets/fx/fx_hull_critical_vignette_f1.png",
+    "res://autoload/audio_manager.gd",
+    "res://game/fx.gd",
+    "res://game/game.tscn",
+    "res://game/player_ship.gd",
+    "res://game/player_ship.tscn",
+    "res://game/player_state.gd",
+    "res://game/projectile.gd",
+    "res://game/ship_fit.gd",
+    "res://game/speed_fantasy.gd",
+    "res://tests/probe_s2_5_feel.tscn "
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s2_5_node_scale.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node2D",
+   "refs": [
+    "res://tests/probe_s2_5_node_scale_world.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s2_5_node_scale_world.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node2D",
+   "refs": [],
+   "signals": []
+  },
+  "res://tests/probe_s2_5_review.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node2D",
+   "refs": [
+    "res://assets/fx/fx_arc_spark_f1.png",
+    "res://assets/fx/fx_hull_critical_vignette.png",
+    "res://autoload/audio_manager.gd",
+    "res://game/game.tscn",
+    "res://game/mining_laser.tscn",
+    "res://game/player_ship.tscn",
+    "res://game/player_state.gd",
+    "res://game/projectile.gd",
+    "res://game/ship_fit.gd",
+    "res://game/speed_fantasy.gd",
+    "res://tests/probe_s2_5_review.tscn "
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s2_5_review_pixels.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node2D",
+   "refs": [
+    "res://assets/fx/fx_engine_trail_f1.png",
+    "res://game/projectile.gd",
+    "res://game/speed_fantasy.gd",
+    "res://tests/probe_s2_5_review_pixels.tscn"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s2_5_shot.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node2D",
+   "refs": [
+    "res://game/game.tscn",
+    "res://tests/probe_s2_5_shot.tscn"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s2_5_trail_draw.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node2D",
+   "refs": [
+    "res://game/fx.gd",
+    "res://game/game.tscn",
+    "res://game/projectile.gd",
+    "res://tests/probe_s2_5_trail_draw.tscn"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s2_5_voice.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node2D",
+   "refs": [
+    "res://autoload/audio_manager.gd",
+    "res://game/player_ship.tscn",
+    "res://game/player_state.gd",
+    "res://game/ship_fit.gd",
+    "res://tests/probe_s2_5_voice.tscn "
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s2_6_burst.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "SceneTree",
+   "refs": [
+    "res://game/asteroid.gd",
+    "res://game/asteroid_field.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s2_6_flight.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://game/player_ship.tscn",
+    "res://game/player_state.gd",
+    "res://game/ship_fit.gd",
+    "res://tests/probe_s2_6_flight.tscn "
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s3_levers.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node2D",
+   "refs": [
+    "res://tests/probe_s2_5_node_scale_world.gd",
+    "res://tests/probe_s3_levers.tscn"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s3_mine.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://game/fx.gd",
+    "res://game/projectile.gd",
+    "res://tests/probe_s3_mine.tscn"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s3_rewire.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://game/projectile.gd",
+    "res://game/speed_fantasy.gd",
+    "res://game/weapons.gd",
+    "res://tests/probe_s3_rewire.tscn"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s3_trail_quad.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node2D",
+   "refs": [
+    "res://game/fx.gd",
+    "res://game/projectile.gd",
+    "res://tests/probe_s2_5_node_scale_world.gd",
+    "res://tests/probe_s3_trail_quad.tscn"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s4h4_stream.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "process_frame \u2192 _on_frame"
+   ],
+   "extends": "SceneTree",
+   "refs": [
+    "res://game/player_state.gd",
+    "res://game/weapons.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s5_hardpoints.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "SceneTree",
+   "refs": [
+    "res://assets/ships/ship_",
+    "res://assets/ships/ship_%s_side.png",
+    "res://game/ship_fit.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s7r1_affixes.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/affixes.gd",
+    "res://game/module_catalog.gd",
+    "res://game/ship_fit.gd",
+    "res://tests/probe_s7r1_affixes.tscn --quit-after 600"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s7r1_delivery.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://game/impact.gd",
+    "res://game/player_ship.gd",
+    "res://game/player_state.gd",
+    "res://game/projectile.gd",
+    "res://game/ship_fit.gd",
+    "res://game/weapons.gd",
+    "res://tests/probe_s7r1_delivery.tscn --quit-after 600"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s7r1_prestats.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://game/ship_fit.gd",
+    "res://tests/probe_s7r1_prestats.tscn --quit-after 600"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s7r1_suffixes.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/affixes.gd",
+    "res://game/auction.gd",
+    "res://game/economy_log.gd",
+    "res://game/game.gd",
+    "res://game/game.tscn",
+    "res://game/module_catalog.gd",
+    "res://game/npc_registry.gd",
+    "res://game/player_state.gd",
+    "res://game/ship_fit.gd",
+    "res://game/weapons.gd",
+    "res://tests/probe_s7r1_suffixes.tscn --quit-after 600"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s8_q0_armory.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://tests/probe_s8_q0_armory.tscn --quit-after 1200",
+    "res://ui/station/armory_panel.tscn",
+    "res://ui/station/fitting_panel.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s8_q0_exchange.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://autoload/world_clock.gd",
+    "res://game/exchange.gd",
+    "res://game/mineral_catalog.gd",
+    "res://tests/probe_s8_q0_exchange.tscn --quit-after 1200",
+    "res://ui/station/exchange_panel.tscn"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s8_q0_launch.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "guns.dry_fired \u2192 _on_dry",
+    "guns.shot_fired \u2192 _on_shot",
+    "mixed_guns.dry_fired \u2192 _on_dry",
+    "mixed_guns.shot_fired \u2192 _on_shot"
+   ],
+   "extends": "Node",
+   "refs": [
+    "res://game/game.tscn",
+    "res://game/player_state.gd",
+    "res://game/projectile.gd",
+    "res://game/ship_fit.gd",
+    "res://game/station_catalog.gd",
+    "res://game/weapons.gd",
+    "res://tests/probe_s8_q0_launch.tscn ",
+    "res://ui/station/repairs_panel.tscn"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s8_q0_ram.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "_body.body_entered \u2192 _on_body_entered"
+   ],
+   "extends": "Node2D",
+   "refs": [
+    "res://game/asteroid.gd",
+    "res://game/asteroid_field.gd",
+    "res://game/impact.gd",
+    "res://game/npc_ship.gd",
+    "res://game/player_ship.gd",
+    "res://game/player_ship.tscn",
+    "res://game/player_state.gd",
+    "res://game/ship_fit.gd",
+    "res://tests/probe_s8_q0_ram.tscn "
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s8_q3_lint.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://game/asteroid.gd",
+    "res://game/asteroid_field.gd",
+    "res://game/game.gd",
+    "res://game/module_catalog.gd",
+    "res://game/player_state.gd",
+    "res://game/projectile.gd",
+    "res://game/weapons.gd",
+    "res://tests/probe_s8_q3_lint.tscn --quit-after 600",
+    "res://ui/hud/hud.gd",
+    "res://ui/station/launch_panel.gd",
+    "res://ui/station/repairs_panel.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s8_r1_fragment_shape.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node2D",
+   "refs": [
+    "res://game/asteroid.gd",
+    "res://game/asteroid_field.gd",
+    "res://tests/probe_s8_r1_fragment_shape.tscn "
+   ],
+   "signals": []
+  },
+  "res://tests/probe_w1_lint.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://autoload/world_clock.gd",
+    "res://game/station_catalog.gd",
+    "res://game/weapons.gd",
+    "res://tests/probe_r1_migration.gd",
+    "res://tests/probe_w1_lint.tscn --quit-after 600",
+    "res://tests/probe_w1_type_hole.gd",
+    "res://tests/test_p1_profile.gd",
+    "res://tests/test_p2a_profile_fits.gd",
+    "res://tests/test_p2b_retirement.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_w1_type_hole.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/ship_fit.gd",
+    "res://tests/probe_w1_type_hole.tscn --quit-after 600"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_w2_fitting.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://game/module_catalog.gd",
+    "res://tests/probe_w2_fitting.tscn --quit-after 600",
+    "res://ui/screens/station.gd",
+    "res://ui/screens/station.tscn",
+    "res://ui/station/fitting_panel.gd",
+    "res://ui/station/fitting_panel.tscn",
+    "res://ui/station/shipyard_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_w2_lint.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://autoload/world_clock.gd",
+    "res://game/weapons.gd",
+    "res://tests/probe_w2_fitting.gd",
+    "res://tests/probe_w2_lint.tscn --quit-after 600",
+    "res://tests/test_p2b_fitting_panel.gd",
+    "res://ui/screens/station.gd",
+    "res://ui/station/fitting_panel.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_w2_scene_uids.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res:// literal in the file must resolve as a resource or as a file",
+    "res://addons/",
+    "res://game/game.tscn",
+    "res://game/pickup.gd",
+    "res://game/player_ship.tscn",
+    "res://game/sector.gd",
+    "res://game/sector_registry.gd",
+    "res://tests/probe_w2_scene_uids.tscn ",
+    "res://ui/screens/loading.tscn",
+    "res://ui/screens/main_menu.tscn"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_w3_lint.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://autoload/audio_manager.gd",
+    "res://autoload/dialog_manager.gd",
+    "res://autoload/player_profile.gd",
+    "res://autoload/router.gd",
+    "res://autoload/settings_manager.gd",
+    "res://game/exchange.gd",
+    "res://tests/probe_w3_lint.tscn --quit-after 600",
+    "res://ui/screen.gd",
+    "res://ui/screens/station.gd",
+    "res://ui/station/refinery_panel.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_w3_services.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "plate.mouse_entered \u2192 func(",
+    "plate.mouse_exited \u2192 func("
+   ],
+   "extends": "Node",
+   "refs": [
+    "res://game/module_catalog.gd",
+    "res://game/repairs.gd",
+    "res://game/station_catalog.gd",
+    "res://tests/probe_w3_services.tscn --quit-after 600",
+    "res://ui/station/launch_panel.tscn",
+    "res://ui/station/shipyard_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_w3_services_lint.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://autoload/world_clock.gd",
+    "res://game/weapons.gd",
+    "res://tests/probe_w3_services.gd",
+    "res://tests/probe_w3_services_lint.tscn --quit-after 600",
+    "res://tests/test_p2b_services.gd",
+    "res://ui/station/launch_panel.gd",
+    "res://ui/station/shipyard_panel.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_w5_layout.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://tests/probe_w5_layout.tscn --quit-after 300",
+    "res://ui/components/slot_button.tscn",
+    "res://ui/hud/hud.tscn",
+    "res://ui/station/launch_panel.tscn",
+    "res://ui/station/shipyard_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_w5_lint.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://autoload/audio_manager.gd",
+    "res://autoload/dialog_manager.gd",
+    "res://autoload/player_profile.gd",
+    "res://autoload/router.gd",
+    "res://autoload/settings_manager.gd",
+    "res://autoload/world_clock.gd",
+    "res://game/exchange.gd",
+    "res://game/pickup.gd",
+    "res://game/sector.gd",
+    "res://game/sector_registry.gd",
+    "res://game/weapons.gd",
+    "res://tests/probe_w5_lint.tscn --quit-after 600",
+    "res://ui/components/slot_button.gd",
+    "res://ui/hud/hud.gd",
+    "res://ui/hud/minimap.gd",
+    "res://ui/screen.gd",
+    "res://ui/screens/station.gd",
+    "res://ui/station/launch_panel.gd",
+    "res://ui/station/refinery_panel.gd",
+    "res://ui/station/shipyard_panel.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_w5_overlay.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "router.overlay_pushed \u2192 _on_overlay_pushed",
+    "router.screen_changed \u2192 _on_screen_changed"
+   ],
+   "extends": "Node",
+   "refs": [
+    "res://tests/probe_w5_overlay.tscn --quit-after 300"
+   ],
+   "signals": []
+  },
+  "res://tests/test_combat_repair_c5.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://assets/ships/ship_fighter_side.png",
+    "res://game/asteroid.gd",
+    "res://game/npc_ship.gd",
+    "res://game/player_ship.gd",
+    "res://game/player_ship.tscn",
+    "res://game/ship_fit.gd",
+    "res://game/weapons.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_d11_station.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://assets/env/poi/env_station_hero.png",
+    "res://game/sector.gd",
+    "res://game/station_scene.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_d6_cluster.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://ui/hud/hud.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_d6_status.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://assets/icons/hud/icon_close.svg",
+    "res://assets/icons/slot/",
+    "res://assets/ships/ship_%s_damaged_side.png",
+    "res://assets/ships/ship_%s_side.png",
+    "res://assets/ui/ui_cockpit_frame.png",
+    "res://game/module_catalog.gd",
+    "res://ui/hud/hud.tscn",
+    "res://ui/hud/ship_status_screen.gd",
+    "res://ui/station/repairs_panel.gd",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_d7_armory.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://assets/ui/ui_armory_console.png",
+    "res://assets/ui/ui_panel_frame.png",
+    "res://assets/ui/ui_seg_7.png",
+    "res://game/module_catalog.gd",
+    "res://game/ship_fit.gd",
+    "res://game/station_catalog.gd",
+    "res://ui/hud/cockpit_style.gd",
+    "res://ui/station/armory_panel.gd",
+    "res://ui/station/armory_panel.tscn",
+    "res://ui/station/armory_style.gd",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_d7_cockpit.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://ui/hud/cockpit_style.gd",
+    "res://ui/hud/d7_missing_style.tres",
+    "res://ui/hud/hud.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_d7_status.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://assets/icons/hud/icon_close.svg",
+    "res://assets/icons/slot/icon_slot_%s.svg",
+    "res://assets/ui/ui_cockpit_frame.png",
+    "res://assets/ui/ui_cockpit_panel.png",
+    "res://assets/ui/ui_status_panel.png",
+    "res://game/module_catalog.gd",
+    "res://ui/hud/cockpit_style.gd",
+    "res://ui/hud/hud.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_d8_hud_visibility.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://ui/hud/cockpit_style.gd",
+    "res://ui/hud/hud.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_engine2_cleaving.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/audio_manager.gd",
+    "res://game/asteroid.gd",
+    "res://game/asteroid_field.gd",
+    "res://game/fx.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/ore_tuning.gd",
+    "res://game/pickup.gd",
+    "res://game/projectile.gd",
+    "res://game/ship_fit.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_engine2_damage.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/damage.gd",
+    "res://game/impact.gd",
+    "res://game/player_state.gd",
+    "res://game/ship_fit.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_engine2_dock.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/economy_log.gd",
+    "res://game/game.tscn"
+   ],
+   "signals": []
+  },
+  "res://tests/test_engine2_fixes.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "profile.profile_changed \u2192 _on_profile_changed"
+   ],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/asteroid.gd",
+    "res://game/economy_log.gd",
+    "res://game/game.tscn",
+    "res://game/npc_registry.gd",
+    "res://game/npc_ship.gd",
+    "res://game/player_ship.gd",
+    "res://game/player_ship.tscn",
+    "res://game/player_state.gd",
+    "res://game/projectile.gd",
+    "res://game/ship_fit.gd",
+    "res://game/weapons.gd",
+    "res://ui/hud/minimap.gd",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_engine2_hud.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://ui/hud/hud.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_engine2_loot.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/component_catalog.gd",
+    "res://game/loot_tables.gd",
+    "res://game/mineral_catalog.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_engine2_npc.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://assets/ships/ship_fighter_side.png",
+    "res://assets/ships/ship_patrol_side.png",
+    "res://assets/ships/ship_swarmer_side.png",
+    "res://game/loot_tables.gd",
+    "res://game/npc_brain.gd",
+    "res://game/npc_registry.gd",
+    "res://game/npc_ship.gd",
+    "res://game/sector_registry.gd",
+    "res://game/ship_fit.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_engine2_pools.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "_state.energy_changed \u2192 func(current: float",
+    "_state.fuel_changed \u2192 func(current: float"
+   ],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/player_state.gd",
+    "res://game/ship_fit.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_engine2_weapons.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/player_state.gd",
+    "res://game/projectile.gd",
+    "res://game/weapons.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_engine2_wiring.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/damage.gd",
+    "res://game/game.tscn",
+    "res://game/npc_registry.gd",
+    "res://game/npc_ship.gd",
+    "res://game/player_ship.gd",
+    "res://game/sector.gd",
+    "res://game/sector_registry.gd",
+    "res://game/ship_fit.gd",
+    "res://game/weapons.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_engine_c3_flight_decay.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/player_ship.gd",
+    "res://game/player_ship.tscn",
+    "res://game/player_state.gd",
+    "res://game/ship_fit.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_flight_beam_g2.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://assets/fx/fx_mining_beam_f1.png",
+    "res://assets/fx/fx_muzzle_flash_f1.png",
+    "res://game/asteroid.gd",
+    "res://game/fx.gd",
+    "res://game/mining_laser.gd",
+    "res://game/player_state.gd",
+    "res://game/projectile.gd",
+    "res://game/weapons.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_flight_feel_g1.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/settings_manager.gd",
+    "res://game/player_ship.gd",
+    "res://game/player_ship.tscn",
+    "res://game/player_state.gd",
+    "res://game/ship_fit.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_p1_catalogues.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://assets/icons/ingot/icon_ingot_%s.svg",
+    "res://assets/icons/mineral/icon_mineral_%s.svg",
+    "res://game/component_catalog.gd",
+    "res://game/economy_log.gd",
+    "res://game/mineral_catalog.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_p1_clock_log.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/world_clock.gd",
+    "res://game/economy_log.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_p1_market.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "profile.profile_changed \u2192 _on_reentrant_profile_changed"
+   ],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://autoload/world_clock.gd",
+    "res://game/component_catalog.gd",
+    "res://game/economy_log.gd",
+    "res://game/exchange.gd",
+    "res://game/mineral_catalog.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_p1_pricing.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/economy_log.gd",
+    "res://game/exchange.gd",
+    "res://game/mineral_catalog.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_p1_profile.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "profile.profile_changed \u2192 _on_profile_changed",
+    "profile.purchase_failed \u2192 _on_purchase_failed"
+   ],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://autoload/world_clock.gd",
+    "res://game/economy_log.gd",
+    "res://game/exchange.gd",
+    "res://game/module_catalog.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_p1_refinery.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/economy_log.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/refinery.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_p1_repairs.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://autoload/world_clock.gd",
+    "res://game/economy_log.gd",
+    "res://game/repairs.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_p2a_launch_fit.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "state.weapon_changed \u2192 _on_weapon_changed"
+   ],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/game.tscn",
+    "res://game/module_catalog.gd",
+    "res://game/player_state.gd",
+    "res://game/ship_fit.gd",
+    "res://game/weapons.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_p2a_lint_shadow.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://tests",
+    "res://tests/",
+    "res://tests/test_p2a_ship_roster.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_p2a_profile_fits.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "profile.profile_changed \u2192 _on_profile_changed"
+   ],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/ship_fit.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_p2a_ship_roster.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://assets/ships/ship_%s_side.png",
+    "res://game/ship_fit.gd",
+    "res://game/station_catalog.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_p2b1_outfitting_panel.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/module_catalog.gd",
+    "res://game/ship_fit.gd",
+    "res://game/station_catalog.gd",
+    "res://ui/screens/station.gd",
+    "res://ui/station/armory_panel.gd",
+    "res://ui/station/armory_panel.tscn",
+    "res://ui/station/auction_panel.gd",
+    "res://ui/station/auction_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_p2b_fitting_panel.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://assets/icons/equip/icon_equip_generator.png",
+    "res://assets/icons/slot/",
+    "res://game/auction.gd",
+    "res://game/module_catalog.gd",
+    "res://ui/screens/station.gd",
+    "res://ui/screens/station.tscn",
+    "res://ui/station/fitting_panel.gd",
+    "res://ui/station/fitting_panel.tscn",
+    "res://ui/station/shipyard_panel.tscn",
+    "res://ui/station/upgrades_panel.gd",
+    "res://ui/station/upgrades_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_p2b_retirement.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "profile.profile_changed \u2192 _on_profile_changed"
+   ],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/economy_log.gd",
+    "res://game/ship_fit.gd",
+    "res://game/station_catalog.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_p2b_services.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://assets/icons/slot/",
+    "res://game/auction.gd",
+    "res://game/repairs.gd",
+    "res://game/station_catalog.gd",
+    "res://ui/station/launch_panel.gd",
+    "res://ui/station/launch_panel.tscn",
+    "res://ui/station/shipyard_panel.gd",
+    "res://ui/station/shipyard_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s10_armory_input.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://ui/station/armory_panel.gd",
+    "res://ui/station/armory_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s11_describe.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/station_catalog.gd",
+    "res://ui/screens/station.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s11_flight_stop.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/player_ship.gd",
+    "res://game/player_ship.tscn",
+    "res://game/player_state.gd",
+    "res://game/ship_fit.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s11_inspector.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/station_catalog.gd",
+    "res://ui/hud/hud.tscn",
+    "res://ui/screens/station.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s13_caps.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/asteroid.gd",
+    "res://game/asteroid_field.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/mining_laser.gd",
+    "res://game/ore_tuning.gd",
+    "res://game/weapons.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s13_devmenu.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/asteroid.gd",
+    "res://game/ore_tuning.gd",
+    "res://ui/dev/dev_tuning_menu.gd",
+    "res://ui/dev/dev_tuning_menu.tscn"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s13_mining_batteries.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/asteroid.gd",
+    "res://game/mining_laser.gd",
+    "res://game/ore_tuning.gd",
+    "res://game/player_ship.gd",
+    "res://game/player_ship.tscn"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s14_splits.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/asteroid.gd",
+    "res://game/asteroid_field.gd",
+    "res://game/ore_tuning.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s15_armory_layout.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://assets/ui/ui_armory_console.png",
+    "res://assets/ui/ui_panel_frame.png",
+    "res://game/ship_fit.gd",
+    "res://game/weapons.gd",
+    "res://ui/hud/cockpit_style.gd",
+    "res://ui/hud/hud.tscn",
+    "res://ui/station/armory_panel.gd",
+    "res://ui/station/armory_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s15_battery_cap.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/ship_fit.gd",
+    "res://game/weapons.gd",
+    "res://ui/station/armory_panel.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s16_resplits.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/asteroid.gd",
+    "res://game/asteroid_field.gd",
+    "res://game/ore_tuning.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s17_gate_edges.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/gate.gd",
+    "res://game/sector.gd",
+    "res://game/sector_registry.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s18_armory_rework.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/ship_fit.gd",
+    "res://game/station_catalog.gd",
+    "res://ui/station/armory_panel.gd",
+    "res://ui/station/armory_panel.tscn",
+    "res://ui/station/armory_style.gd",
+    "res://ui/station/armory_style_user.tres",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s19_quadrants.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "state.died \u2192 func(",
+    "state.hull_changed \u2192 func(current: float"
+   ],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/damage.gd",
+    "res://game/economy_log.gd",
+    "res://game/npc_brain.gd",
+    "res://game/npc_ship.gd",
+    "res://game/player_ship.gd",
+    "res://game/player_ship.tscn",
+    "res://game/player_state.gd",
+    "res://game/repairs.gd",
+    "res://game/ship_fit.gd",
+    "res://game/weapons.gd",
+    "res://ui/hud/ship_status_screen.gd",
+    "res://ui/station/repairs_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s20_chrome_unify.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://assets/ui/ui_armory_console.png",
+    "res://assets/ui/ui_button_plate_normal.png",
+    "res://assets/ui/ui_panel_frame.png",
+    "res://assets/ui/ui_slot_weapon_normal.png",
+    "res://game/ship_fit.gd",
+    "res://ui/screens/station.gd",
+    "res://ui/screens/station.tscn",
+    "res://ui/station/armory_panel.gd",
+    "res://ui/station/armory_panel.tscn",
+    "res://ui/station/armory_style.gd",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s2_6_beam.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://assets/fx/fx_explosion_f1.png",
+    "res://assets/fx/fx_mining_beam_f1.png",
+    "res://assets/fx/fx_shield_ripple_f1.png",
+    "res://game/asteroid.gd",
+    "res://game/fx.gd",
+    "res://game/mining_laser.gd",
+    "res://game/mining_laser.tscn",
+    "res://game/pickup.gd",
+    "res://game/player_state.gd",
+    "res://game/projectile.gd",
+    "res://game/weapons.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s2_6_blur.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/game.tscn",
+    "res://game/player_ship.tscn",
+    "res://game/speed_blur.gdshader",
+    "res://game/speed_fantasy.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s2_6_burst.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/asteroid.gd",
+    "res://game/asteroid_field.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s2_6_flight.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/player_ship.gd",
+    "res://game/player_ship.tscn",
+    "res://game/player_state.gd",
+    "res://game/ship_fit.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s2_6_gate_hygiene.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/economy_log.gd",
+    "res://game/game.tscn",
+    "res://game/ship_fit.gd",
+    "res://tests/headless_runner.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s3_auction.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://autoload/world_clock.gd",
+    "res://game/auction.gd",
+    "res://game/module_catalog.gd",
+    "res://game/ship_fit.gd",
+    "res://game/station_catalog.gd",
+    "res://ui/screens/station.gd",
+    "res://ui/screens/station.tscn",
+    "res://ui/station/auction_panel.gd",
+    "res://ui/station/auction_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s3_instances.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/module_catalog.gd",
+    "res://game/ship_fit.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s3_migration.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/module_catalog.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s4_batteries.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/module_catalog.gd",
+    "res://game/ship_fit.gd",
+    "res://game/station_catalog.gd",
+    "res://ui/station/armory_panel.gd",
+    "res://ui/station/fitting_panel.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s5_ammo_cargo.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://assets/icons/module/icon_module_w_railgun.svg",
+    "res://autoload/player_profile.gd",
+    "res://autoload/world_clock.gd",
+    "res://game/component_catalog.gd",
+    "res://game/exchange.gd",
+    "res://game/game.tscn",
+    "res://game/mineral_catalog.gd",
+    "res://game/module_catalog.gd",
+    "res://game/player_state.gd",
+    "res://game/station_catalog.gd",
+    "res://ui/station/exchange_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s5_batteries_v2.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/game.gd",
+    "res://game/game.tscn",
+    "res://game/module_catalog.gd",
+    "res://game/player_state.gd",
+    "res://game/ship_fit.gd",
+    "res://game/weapons.gd",
+    "res://ui/hud/hud.gd",
+    "res://ui/screens/station.gd",
+    "res://ui/station/armory_panel.gd",
+    "res://ui/station/armory_panel.tscn",
+    "res://ui/station/outfitting_panel.gd",
+    "res://ui/station/outfitting_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s5_commerce.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/world_clock.gd",
+    "res://game/auction.gd",
+    "res://game/module_catalog.gd",
+    "res://game/ship_fit.gd",
+    "res://game/station_catalog.gd",
+    "res://ui/station/auction_panel.gd",
+    "res://ui/station/auction_panel.tscn",
+    "res://ui/station/shipyard_panel.gd",
+    "res://ui/station/shipyard_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s5_hardpoints.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://assets/ships/ship_%s_side.png",
+    "res://game/player_ship.tscn",
+    "res://game/player_state.gd",
+    "res://game/projectile.gd",
+    "res://game/ship_fit.gd",
+    "res://game/weapons.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s6_heat.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "scene.route_requested \u2192 func(route: StringName"
+   ],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/asteroid.gd",
+    "res://game/economy_log.gd",
+    "res://game/game.gd",
+    "res://game/game.tscn",
+    "res://game/loot_tables.gd",
+    "res://game/npc_registry.gd",
+    "res://game/npc_ship.gd",
+    "res://game/sector_registry.gd",
+    "res://game/ship_fit.gd",
+    "res://game/station_catalog.gd",
+    "res://ui/station/launch_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s6_poi_loot.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "site.cache_collected \u2192 func(amount: int"
+   ],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/component_catalog.gd",
+    "res://game/economy_log.gd",
+    "res://game/game.gd",
+    "res://game/game.tscn",
+    "res://game/loot_tables.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/module_catalog.gd",
+    "res://game/npc_registry.gd",
+    "res://game/pickup.gd",
+    "res://game/poi.gd",
+    "res://game/sector.gd",
+    "res://game/sector_registry.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s6_travel.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "corridor.crossed \u2192 func(dest: int",
+    "gate.jumped \u2192 func(dest: int",
+    "scene.route_requested \u2192 handler"
+   ],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/corridor.gd",
+    "res://game/economy_log.gd",
+    "res://game/game.gd",
+    "res://game/game.tscn",
+    "res://game/gate.gd",
+    "res://game/npc_registry.gd",
+    "res://game/pickup.gd",
+    "res://game/sector_registry.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s7_affixes.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/module_catalog.gd",
+    "res://game/ship_fit.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s7_suffixes.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/affixes.gd",
+    "res://game/auction.gd",
+    "res://game/economy_log.gd",
+    "res://game/game.gd",
+    "res://game/game.tscn",
+    "res://game/module_catalog.gd",
+    "res://game/npc_registry.gd",
+    "res://game/player_state.gd",
+    "res://game/poi.gd",
+    "res://game/ship_fit.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s7_weapon_affixes.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/game.tscn",
+    "res://game/impact.gd",
+    "res://game/player_ship.gd",
+    "res://game/player_state.gd",
+    "res://game/projectile.gd",
+    "res://game/ship_fit.gd",
+    "res://game/weapons.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s8_launch_ammo.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "guns.shot_fired \u2192 _on_shot"
+   ],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/game.tscn",
+    "res://game/module_catalog.gd",
+    "res://game/projectile.gd",
+    "res://game/ship_fit.gd",
+    "res://game/station_catalog.gd",
+    "res://game/weapons.gd",
+    "res://ui/hud/hud.tscn",
+    "res://ui/station/fitting_panel.tscn",
+    "res://ui/station/launch_panel.gd",
+    "res://ui/station/launch_panel.tscn",
+    "res://ui/station/repairs_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s8_qa_fixes.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/world_clock.gd",
+    "res://game/asteroid.gd",
+    "res://game/asteroid_field.gd",
+    "res://game/exchange.gd",
+    "res://game/module_catalog.gd",
+    "res://game/player_state.gd",
+    "res://game/projectile.gd",
+    "res://game/weapons.gd",
+    "res://ui/station/armory_panel.tscn",
+    "res://ui/station/exchange_panel.tscn",
+    "res://ui/station/fitting_panel.gd",
+    "res://ui/station/refinery_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_ship_grids.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://../docs/gameplay/08_ship_classes.md",
+    "res://assets/icons/module/icon_module_%s.svg",
+    "res://assets/icons/weapon/icon_weapon_%s.svg",
+    "res://game/module_catalog.gd",
+    "res://game/ship_fit.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_slice2_5_feel.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://assets/audio/sfx/sfx_ship_boost_01.ogg",
+    "res://assets/audio/sfx/sfx_ship_engine_01.ogg",
+    "res://assets/audio/sfx/sfx_ship_engine_02_loop.ogg",
+    "res://assets/fx/fx_arc_spark_f1.png",
+    "res://assets/fx/fx_dash_charge_f1.png",
+    "res://assets/fx/fx_dust_streak_f1.png",
+    "res://assets/fx/fx_engine_trail_f1.png",
+    "res://assets/fx/fx_explosion_f1.png",
+    "res://assets/fx/fx_hull_critical_vignette_f1.png",
+    "res://assets/fx/fx_mine_f1.png",
+    "res://autoload/audio_manager.gd",
+    "res://game/fx.gd",
+    "res://game/game.tscn",
+    "res://game/player_ship.gd",
+    "res://game/player_ship.tscn",
+    "res://game/player_state.gd",
+    "res://game/projectile.gd",
+    "res://game/ship_fit.gd",
+    "res://game/speed_blur.gdshader",
+    "res://game/speed_fantasy.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_ui_slot_layout.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://assets/icons/slot/",
+    "res://assets/icons/slot/icon_slot_w.svg",
+    "res://game/module_catalog.gd",
+    "res://game/ship_fit.gd",
+    "res://game/station_catalog.gd",
+    "res://game/weapons.gd",
+    "res://ui/components/slot_button.gd",
+    "res://ui/components/slot_button.tscn",
+    "res://ui/hud/hud.gd",
+    "res://ui/hud/hud.tscn",
+    "res://ui/station/launch_panel.gd",
+    "res://ui/station/launch_panel.tscn",
+    "res://ui/station/shipyard_panel.gd",
+    "res://ui/station/shipyard_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_weapon_fx_f1.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://assets/",
+    "res://assets/audio/sfx/sfx_mining_beam_01.ogg",
+    "res://assets/fx/fx_laser_bolt_f1.png",
+    "res://assets/fx/fx_laser_bolt_f3.png",
+    "res://assets/fx/fx_mine_f1.png",
+    "res://assets/fx/fx_missile_trail_f1.png",
+    "res://assets/fx/fx_muzzle_flash_f1.png",
+    "res://autoload/audio_manager.gd",
+    "res://game/fx.gd",
+    "res://game/mining_laser.gd",
+    "res://game/mining_laser.tscn",
+    "res://game/player_state.gd",
+    "res://game/projectile.gd",
+    "res://game/weapons.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_weapon_fx_f2.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://assets/",
+    "res://assets/fx/fx_arc_spark_f1.png",
+    "res://assets/fx/fx_explosion_f1.png",
+    "res://assets/fx/fx_secondary_explosion_f1.png",
+    "res://assets/fx/fx_shield_break_f1.png",
+    "res://assets/fx/fx_shield_ripple_f1.png",
+    "res://assets/fx/fx_smoke_plume_f1.png",
+    "res://assets/ships/ship_fighter_side.png",
+    "res://autoload/audio_manager.gd",
+    "res://game/asteroid.gd",
+    "res://game/fx.gd",
+    "res://game/npc_ship.gd",
+    "res://game/player_ship.tscn",
+    "res://game/player_state.gd",
+    "res://game/projectile.gd",
+    "res://game/ship_fit.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_weapon_fx_f4.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://assets/fx/fx_explosion_f1.png",
+    "res://assets/fx/fx_shield_ripple_f1.png",
+    "res://autoload/audio_manager.gd",
+    "res://game/fx.gd",
+    "res://game/mining_laser.gd",
+    "res://game/player_state.gd",
+    "res://game/projectile.gd",
+    "res://game/weapons.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_wiring_map.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://",
+    "res:// loads as a PackedScene "
+   ],
+   "signals": []
+  },
+  "res://tools/build_theme.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "SceneTree",
+   "refs": [
+    "res://assets/fonts/Oxanium",
+    "res://assets/fonts/Rajdhani-Medium.ttf",
+    "res://assets/fonts/Rajdhani-Regular.ttf",
+    "res://assets/fonts/Rajdhani-SemiBold.ttf",
+    "res://assets/fonts/SairaStencilOne-Regular.ttf",
+    "res://assets/ui/ui_button_plate_%s.png",
+    "res://assets/ui/ui_panel_frame.png",
+    "res://assets/ui/ui_slot_cargo_%s.png",
+    "res://assets/ui/ui_slot_weapon_%s.png",
+    "res://ui/paths.gd",
+    "res://ui/theme/vajb_theme.tres. Re-runnable and deterministic"
+   ],
+   "signals": []
+  },
+  "res://tools/d8_glyph_audit.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://assets/fonts/Oxanium",
+    "res://assets/fonts/Rajdhani-Medium.ttf",
+    "res://assets/fonts/Rajdhani-Regular.ttf",
+    "res://assets/fonts/Rajdhani-SemiBold.ttf",
+    "res://assets/fonts/SairaStencilOne-Regular.ttf",
+    "res://tools/d8_glyph_audit.tscn --quit-after 600",
+    "res://ui/hud/hud.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tools/derive_icon_tints.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "SceneTree",
+   "refs": [
+    "res://assets/icons",
+    "res://assets/icons/tint"
+   ],
+   "signals": []
+  },
+  "res://tools/r1_s13_ac3_replay.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "SceneTree",
+   "refs": [
+    "res://game/asteroid.gd",
+    "res://game/mining_laser.gd",
+    "res://game/ore_tuning.gd"
+   ],
+   "signals": []
+  },
+  "res://tools/r1_s14_ac_replay.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "SceneTree",
+   "refs": [
+    "res://game/asteroid.gd",
+    "res://game/asteroid_field.gd",
+    "res://game/ore_tuning.gd"
+   ],
+   "signals": []
+  },
+  "res://tools/r1_s15_ac_replay.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "SceneTree",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/ship_fit.gd",
+    "res://game/weapons.gd"
+   ],
+   "signals": []
+  },
+  "res://tools/r1_s15_seed_store.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "SceneTree",
+   "refs": [
+    "res://game/ship_fit.gd"
+   ],
+   "signals": []
+  },
+  "res://tools/r1_s17_ac_replay.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "SceneTree",
+   "refs": [
+    "res://",
+    "res://game/gate.gd",
+    "res://game/sector.gd",
+    "res://game/sector_registry.gd"
+   ],
+   "signals": []
+  },
+  "res://ui/components/glow_underlay.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Control",
+   "refs": [],
+   "signals": []
+  },
+  "res://ui/components/menu_button.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "_button.button_down \u2192 _on_button_down",
+    "_button.button_up \u2192 _on_button_up",
+    "_button.mouse_entered \u2192 _on_mouse_entered",
+    "_button.mouse_exited \u2192 _on_mouse_exited",
+    "_button.pressed \u2192 _on_button_pressed"
+   ],
+   "extends": "Control",
+   "refs": [],
+   "signals": [
+    "hovered",
+    "pressed",
+    "unhovered"
+   ]
+  },
+  "res://ui/components/slot_button.gd": {
+   "autoload": "",
+   "class_name": "SlotButton",
+   "connects": [],
+   "extends": "TextureButton",
+   "refs": [],
+   "signals": []
+  },
+  "res://ui/dev/dev_tuning_menu.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "control.value_changed \u2192 _on_slider_changed.bind(key",
+    "reset_button.pressed \u2192 reset",
+    "save_button.pressed \u2192 save"
+   ],
+   "extends": "CanvasLayer",
+   "refs": [
+    "res://game/ore_tuning.gd"
+   ],
+   "signals": []
+  },
+  "res://ui/dialogs/dialog.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "_cancel_button.pressed \u2192 _on_cancel_pressed",
+    "_confirm_button.pressed \u2192 _on_confirm_pressed"
+   ],
+   "extends": "Screen",
+   "refs": [],
+   "signals": []
+  },
+  "res://ui/hud/cockpit_cluster.gd": {
+   "autoload": "",
+   "class_name": "CockpitCluster",
+   "connects": [],
+   "extends": "Control",
+   "refs": [
+    "res://ui/hud/cockpit_style.gd"
+   ],
+   "signals": []
+  },
+  "res://ui/hud/cockpit_style.gd": {
+   "autoload": "",
+   "class_name": "CockpitStyle",
+   "connects": [],
+   "extends": "Resource",
+   "refs": [
+    "res://assets/icons/hud/icon_close.svg",
+    "res://assets/ui/",
+    "res://assets/ui/ui_cockpit_frame.png",
+    "res://assets/ui/ui_cockpit_panel.png",
+    "res://assets/ui/ui_gauge_face.png",
+    "res://assets/ui/ui_gauge_needle.png",
+    "res://assets/ui/ui_status_panel.png",
+    "res://ui/hud/cockpit_style_user.tres"
+   ],
+   "signals": []
+  },
+  "res://ui/hud/hud.gd": {
+   "autoload": "",
+   "class_name": "Hud",
+   "connects": [
+    "SettingsManager.setting_changed \u2192 _on_ui_scale_setting_changed",
+    "_cargo_close.pressed \u2192 _on_cargo_close_pressed",
+    "_cargo_toggle.pressed \u2192 _on_cargo_toggle_pressed",
+    "_fade.finished \u2192 _on_faded",
+    "_state.cargo_changed \u2192 _on_cargo_changed",
+    "_state.energy_changed \u2192 _on_energy_changed",
+    "_state.fuel_changed \u2192 _on_fuel_changed",
+    "_state.hull_changed \u2192 _on_hull_changed",
+    "_state.shield_changed \u2192 _on_shield_changed",
+    "_state.weapon_changed \u2192 _on_weapon_changed",
+    "_zoom_minus.pressed \u2192 _on_zoom_pressed.bind(ZOOM_DELTA_OUT",
+    "_zoom_plus.pressed \u2192 _on_zoom_pressed.bind(ZOOM_DELTA_IN",
+    "button.mouse_entered \u2192 _on_zoom_hovered.bind(button",
+    "button.mouse_exited \u2192 _on_zoom_unhovered.bind(button",
+    "slot.pressed \u2192 _on_weapon_slot_pressed.bind(index"
+   ],
+   "extends": "Control",
+   "refs": [
+    "res://assets/icons/cargo/icon_cargo_container.svg",
+    "res://assets/icons/cargo/icon_cargo_crate.svg",
+    "res://assets/icons/cargo/icon_cargo_data_core.svg",
+    "res://assets/icons/cargo/icon_cargo_fuel_cell.svg",
+    "res://assets/icons/cargo/icon_cargo_ore.svg",
+    "res://assets/icons/cargo/icon_cargo_salvage.svg",
+    "res://assets/icons/cargo/icon_credits.svg",
+    "res://assets/icons/module/icon_module_w_mining.svg",
+    "res://assets/icons/module/icon_module_w_railgun.svg",
+    "res://assets/icons/slot/icon_slot_w.svg",
+    "res://assets/icons/weapon/icon_weapon_cannon.svg",
+    "res://assets/icons/weapon/icon_weapon_laser.svg",
+    "res://assets/icons/weapon/icon_weapon_mine.svg",
+    "res://assets/icons/weapon/icon_weapon_plasma.svg",
+    "res://assets/icons/weapon/icon_weapon_rocket.svg",
+    "res://assets/ui/ui_gauge_face.png",
+    "res://assets/ui/ui_gauge_needle.png",
+    "res://ui/components/slot_button.tscn",
+    "res://ui/hud/ship_status_screen.gd"
+   ],
+   "signals": [
+    "cargo_toggled",
+    "minimap_zoom_changed",
+    "weapon_slot_selected"
+   ]
+  },
+  "res://ui/hud/minimap.gd": {
+   "autoload": "",
+   "class_name": "Minimap",
+   "connects": [],
+   "extends": "Control",
+   "refs": [],
+   "signals": []
+  },
+  "res://ui/hud/ship_status_screen.gd": {
+   "autoload": "",
+   "class_name": "ShipStatusScreen",
+   "connects": [
+    "_close.pressed \u2192 close"
+   ],
+   "extends": "Control",
+   "refs": [
+    "res://assets/icons/slot/",
+    "res://ui/hud/cockpit_style.gd",
+    "res://ui/station/repairs_panel.gd"
+   ],
+   "signals": []
+  },
+  "res://ui/hud/target_reticle.gd": {
+   "autoload": "",
+   "class_name": "TargetReticle",
+   "connects": [],
+   "extends": "Control",
+   "refs": [],
+   "signals": []
+  },
+  "res://ui/paths.gd": {
+   "autoload": "",
+   "class_name": "UIPaths",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [
+    "res:// path the UI layer needs",
+    "res://assets/audio/ambience/",
+    "res://assets/audio/music/",
+    "res://assets/audio/sfx/",
+    "res://assets/audio/ui/",
+    "res://game/game.tscn",
+    "res://ui/dialogs/dialog.tscn",
+    "res://ui/dialogs/quit_confirm.tscn",
+    "res://ui/hud/hud.tscn",
+    "res://ui/screens/boot.tscn",
+    "res://ui/screens/loading.tscn",
+    "res://ui/screens/main_menu.tscn",
+    "res://ui/screens/settings.tscn",
+    "res://ui/screens/station.tscn",
+    "res://ui/theme/grain.tres",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://ui/screen.gd": {
+   "autoload": "",
+   "class_name": "Screen",
+   "connects": [],
+   "extends": "Control",
+   "refs": [],
+   "signals": [
+    "overlay_close_requested",
+    "overlay_requested",
+    "route_requested"
+   ]
+  },
+  "res://ui/screens/_mockup_station.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "_arm_timer.timeout \u2192 _on_arm_timeout",
+    "_launch_button.pressed \u2192 _arm_launch",
+    "_leave_cancel.pressed \u2192 _close_leave_confirm",
+    "_leave_logout.pressed \u2192 _on_logout_pressed",
+    "_preview_center.resized \u2192 _update_preview_size",
+    "_ship_action.pressed \u2192 _on_ship_action_pressed",
+    "logout.pressed \u2192 _on_logout_pressed",
+    "row.focus_entered \u2192 _on_row_focused.bind(row",
+    "row.mouse_entered \u2192 _on_row_hovered.bind(payload",
+    "row.mouse_exited \u2192 _on_row_hovered.bind(payload",
+    "row.pressed \u2192 _on_row_pressed.bind(payload"
+   ],
+   "extends": "Control",
+   "refs": [
+    "res://assets/icons/cargo/icon_cargo_data_core.svg",
+    "res://assets/icons/cargo/icon_cargo_ore.svg",
+    "res://assets/icons/cargo/icon_cargo_salvage.svg",
+    "res://assets/icons/equip/icon_equip_drone.png",
+    "res://assets/icons/equip/icon_equip_engine.png",
+    "res://assets/icons/equip/icon_equip_extra.png",
+    "res://assets/icons/equip/icon_equip_generator.png",
+    "res://assets/icons/equip/icon_equip_module.png",
+    "res://assets/icons/equip/icon_equip_shield_gen.png",
+    "res://assets/icons/hud/icon_hull.svg",
+    "res://assets/icons/hud/icon_logout.svg",
+    "res://assets/icons/map/icon_map_route.png",
+    "res://assets/icons/weapon/icon_ammo_laser.png",
+    "res://assets/icons/weapon/icon_ammo_rocket.png",
+    "res://assets/icons/weapon/icon_weapon_cannon.svg",
+    "res://assets/icons/weapon/icon_weapon_mine.svg",
+    "res://assets/icons/weapon/icon_weapon_plasma.svg",
+    "res://assets/ships/ship_destroyer_side.png",
+    "res://assets/ships/ship_fighter_side.png",
+    "res://assets/ships/ship_gunship_side.png",
+    "res://assets/ships/ship_vanguard_side.png"
+   ],
+   "signals": []
+  },
+  "res://ui/screens/boot.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Screen",
+   "refs": [],
+   "signals": []
+  },
+  "res://ui/screens/loading.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Screen",
+   "refs": [
+    "res://ui/paths.gd"
+   ],
+   "signals": []
+  },
+  "res://ui/screens/main_menu.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "Router.overlay_popped \u2192 _on_overlay_popped",
+    "_backdrop.resized \u2192 _on_backdrop_resized",
+    "plate.focus_entered \u2192 _on_verb_focused.bind(index"
+   ],
+   "extends": "Screen",
+   "refs": [],
+   "signals": []
+  },
+  "res://ui/screens/settings.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "_back_button.pressed \u2192 _on_back_pressed",
+    "_display_mode_option.item_selected \u2192 _on_display_mode_selected",
+    "_effects_option.item_selected \u2192 _on_effects_selected",
+    "_hud_opacity_slider.value_changed \u2192 _on_hud_opacity_changed",
+    "_render_scale_slider.value_changed \u2192 _on_render_scale_changed",
+    "_reset_all_button.pressed \u2192 _on_reset_all_pressed",
+    "_resolution_option.item_selected \u2192 _on_resolution_selected",
+    "_save_button.pressed \u2192 _on_save_pressed",
+    "_ui_scale_slider.value_changed \u2192 _on_ui_scale_changed",
+    "_vsync_check.toggled \u2192 _on_vsync_toggled",
+    "control.focus_entered \u2192 _on_rebind_focus_entered.bind(row"
+   ],
+   "extends": "Screen",
+   "refs": [
+    "res://ui/screens/settings_rebind_row.tscn"
+   ],
+   "signals": []
+  },
+  "res://ui/screens/settings_rebind_row.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "_alternate.pressed \u2192 _on_binding_button_pressed.bind(ALTERNATE_INDEX",
+    "_primary.pressed \u2192 _on_binding_button_pressed.bind(PRIMARY_INDEX",
+    "_reset.pressed \u2192 _on_reset_button_pressed"
+   ],
+   "extends": "HBoxContainer",
+   "refs": [],
+   "signals": [
+    "binding_pressed",
+    "reset_pressed"
+   ]
+  },
+  "res://ui/screens/station.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "_leave_cancel.pressed \u2192 _close_leave_confirm",
+    "_leave_logout.pressed \u2192 _on_logout_pressed",
+    "entry.pressed \u2192 _on_module_pressed.bind(index",
+    "logout.pressed \u2192 _on_logout_pressed"
+   ],
+   "extends": "Screen",
+   "refs": [
+    "res://assets/icons/cargo/icon_cargo_ore.svg",
+    "res://assets/icons/cargo/icon_credits.svg",
+    "res://assets/icons/equip/icon_equip_generator.png",
+    "res://assets/icons/equip/icon_equip_module.png",
+    "res://assets/icons/hud/icon_hull.svg",
+    "res://assets/icons/hud/icon_logout.svg",
+    "res://assets/icons/map/icon_map_route.png",
+    "res://assets/icons/status/icon_status_repairing.png",
+    "res://autoload/player_profile.gd",
+    "res://game/station_catalog.gd",
+    "res://ui/station/",
+    "res://ui/station/ and are"
+   ],
+   "signals": []
+  },
+  "res://ui/station/armory_panel.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "_rack_rows.sort_children \u2192 _lay_bays",
+    "box.sort_children \u2192 _position_bay.bind(row",
+    "buy.pressed \u2192 _on_row_pressed.bind(payload",
+    "card.focus_entered \u2192 _on_row_focused.bind(card",
+    "card.mouse_entered \u2192 _on_row_hovered.bind(payload",
+    "card.mouse_exited \u2192 _on_row_hovered.bind(payload",
+    "card.pressed \u2192 _on_row_pressed.bind(payload",
+    "chip.mouse_entered \u2192 _on_barrel_inspected.bind(rack",
+    "chip.mouse_exited \u2192 _on_barrel_inspected.bind(rack",
+    "chip.sort_children \u2192 _position_cell_children.bind(chip",
+    "close.pressed \u2192 _on_remove_barrel.bind(rack",
+    "name_button.focus_entered \u2192 _on_barrel_focused.bind(rack",
+    "resized \u2192 _lay",
+    "row.focus_entered \u2192 _on_inventory_focused.bind(base_id",
+    "row.mouse_entered \u2192 _on_inventory_inspected.bind(base_id",
+    "row.mouse_exited \u2192 _on_inventory_inspected.bind(base_id",
+    "strip.resized \u2192 _position_bay.bind(row"
+   ],
+   "extends": "Control",
+   "refs": [
+    "res://assets/icons/tint/",
+    "res://assets/icons/weapon/icon_weapon_cannon.svg",
+    "res://assets/icons/weapon/icon_weapon_mine.svg",
+    "res://assets/icons/weapon/icon_weapon_plasma.svg",
+    "res://autoload/player_profile.gd",
+    "res://game/module_catalog.gd",
+    "res://game/station_catalog.gd",
+    "res://ui/station/armory_style.gd"
+   ],
+   "signals": [
+    "inspect_requested",
+    "status_requested"
+   ]
+  },
+  "res://ui/station/armory_style.gd": {
+   "autoload": "",
+   "class_name": "ArmoryStyle",
+   "connects": [],
+   "extends": "\"res://ui/hud/cockpit_style.gd\"",
+   "refs": [
+    "res://ui/hud/cockpit_style.gd",
+    "res://ui/station/armory_style_user.tres",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://ui/station/auction_panel.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    ".visibility_changed \u2192 _queue_header_fit",
+    "_scroll.resized \u2192 _queue_header_fit",
+    "button.pressed \u2192 _on_tab_pressed.bind(tab_id",
+    "cell.resized \u2192 _queue_section_fit.bind(section",
+    "header.resized \u2192 _queue_section_fit.bind(section",
+    "row.focus_entered \u2192 _on_row_focused.bind(row",
+    "row.mouse_entered \u2192 _on_row_hovered.bind(payload",
+    "row.mouse_exited \u2192 _on_row_hovered.bind(payload",
+    "row.pressed \u2192 _on_action_pressed.bind(payload",
+    "rows.resized \u2192 _queue_section_fit.bind(section"
+   ],
+   "extends": "VBoxContainer",
+   "refs": [
+    "res://assets/icons/tint/",
+    "res://assets/icons/weapon/icon_weapon_cannon.svg",
+    "res://assets/icons/weapon/icon_weapon_mine.svg",
+    "res://assets/icons/weapon/icon_weapon_plasma.svg",
+    "res://autoload/player_profile.gd",
+    "res://autoload/world_clock.gd",
+    "res://game/auction.gd",
+    "res://game/module_catalog.gd",
+    "res://game/station_catalog.gd"
+   ],
+   "signals": [
+    "inspect_requested",
+    "status_requested"
+   ]
+  },
+  "res://ui/station/exchange_panel.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "_cancel.pressed \u2192 _on_cancel_pressed",
+    "_sell.pressed \u2192 _on_sell_pressed",
+    "_sell_all.pressed \u2192 _on_sell_all_pressed",
+    "_step_plus.pressed \u2192 _on_step_pressed.bind(1",
+    "row.focus_entered \u2192 _on_row_focused.bind(row",
+    "row.mouse_entered \u2192 _on_row_hovered.bind(payload",
+    "row.mouse_exited \u2192 _on_row_hovered.bind(payload",
+    "row.pressed \u2192 _on_row_pressed.bind(payload"
+   ],
+   "extends": "VBoxContainer",
+   "refs": [
+    "res://assets/icons/",
+    "res://assets/icons/tint/",
+    "res://autoload/player_profile.gd",
+    "res://autoload/world_clock.gd",
+    "res://game/component_catalog.gd",
+    "res://game/exchange.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/station_catalog.gd"
+   ],
+   "signals": [
+    "inspect_requested",
+    "status_requested"
+   ]
+  },
+  "res://ui/station/fitting_panel.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "_remove.pressed \u2192 _on_remove_pressed",
+    "button.pressed \u2192 _on_expander_pressed.bind(base_id",
+    "plate.focus_entered \u2192 _on_cell_focused.bind(payload",
+    "plate.pressed \u2192 _on_cell_pressed.bind(payload",
+    "row.focus_entered \u2192 _on_module_focused.bind(row",
+    "row.focus_entered \u2192 _on_subrow_focused.bind(row",
+    "row.mouse_entered \u2192 _on_module_hovered.bind(payload",
+    "row.mouse_entered \u2192 _on_subrow_hovered.bind(sub",
+    "row.mouse_exited \u2192 _on_module_hovered.bind(payload",
+    "row.mouse_exited \u2192 _on_subrow_hovered.bind(sub",
+    "row.pressed \u2192 _on_module_pressed.bind(payload",
+    "row.pressed \u2192 _on_subrow_pressed.bind(sub"
+   ],
+   "extends": "VBoxContainer",
+   "refs": [
+    "res://assets/icons/slot/",
+    "res://assets/icons/tint/",
+    "res://assets/icons/weapon/icon_weapon_cannon.svg",
+    "res://assets/icons/weapon/icon_weapon_mine.svg",
+    "res://assets/icons/weapon/icon_weapon_plasma.svg",
+    "res://autoload/player_profile.gd",
+    "res://game/auction.gd"
+   ],
+   "signals": [
+    "inspect_requested",
+    "status_requested"
+   ]
+  },
+  "res://ui/station/launch_panel.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "_arm_timer.timeout \u2192 _on_arm_timeout",
+    "_hull_center.resized \u2192 _update_preview_size",
+    "_launch_button.focus_entered \u2192 _on_launch_focused",
+    "_launch_button.pressed \u2192 _on_launch_pressed",
+    "button.focus_entered \u2192 _on_service_focused",
+    "button.pressed \u2192 _on_service_pressed.bind(service_id"
+   ],
+   "extends": "VBoxContainer",
+   "refs": [
+    "res://assets/icons/cargo/",
+    "res://assets/icons/cargo/icon_cargo_crate.svg",
+    "res://autoload/player_profile.gd",
+    "res://game/repairs.gd",
+    "res://game/station_catalog.gd",
+    "res://game/weapons.gd",
+    "res://ui/paths.gd"
+   ],
+   "signals": [
+    "inspect_requested",
+    "launch_requested",
+    "status_requested"
+   ]
+  },
+  "res://ui/station/refinery_panel.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "_cancel_button.pressed \u2192 _on_cancel_pressed",
+    "_refine_all_button.pressed \u2192 _on_refine_all_pressed",
+    "_refine_button.pressed \u2192 _on_refine_pressed",
+    "_stepper_more.pressed \u2192 _on_stepper_pressed.bind(1",
+    "row.focus_entered \u2192 _on_row_focused.bind(row",
+    "row.mouse_entered \u2192 _on_row_hovered.bind(payload",
+    "row.mouse_exited \u2192 _on_row_hovered.bind(payload",
+    "row.pressed \u2192 _on_row_pressed.bind(payload"
+   ],
+   "extends": "VBoxContainer",
+   "refs": [
+    "res://assets/icons/tint/",
+    "res://autoload/player_profile.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/refinery.gd",
+    "res://game/station_catalog.gd"
+   ],
+   "signals": [
+    "inspect_requested",
+    "status_requested"
+   ]
+  },
+  "res://ui/station/repairs_panel.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "_button.focus_entered \u2192 _on_repair_focused",
+    "_button.pressed \u2192 _on_repair_pressed",
+    "_hull_center.resized \u2192 _update_preview_size"
+   ],
+   "extends": "VBoxContainer",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/repairs.gd",
+    "res://game/station_catalog.gd"
+   ],
+   "signals": [
+    "inspect_requested",
+    "status_requested"
+   ]
+  },
+  "res://ui/station/shipyard_panel.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "_action.pressed \u2192 _on_action_pressed",
+    "_preview_center.resized \u2192 _update_preview_size",
+    "plate.mouse_entered \u2192 _on_plate_hovered.bind(cell",
+    "plate.mouse_exited \u2192 _on_plate_unhovered",
+    "row.focus_entered \u2192 _on_row_focused.bind(row",
+    "row.mouse_entered \u2192 _on_row_hovered.bind(payload",
+    "row.mouse_exited \u2192 _on_row_hovered.bind(payload",
+    "row.pressed \u2192 _on_row_pressed.bind(payload"
+   ],
+   "extends": "VBoxContainer",
+   "refs": [
+    "res://assets/icons/slot/",
+    "res://autoload/player_profile.gd",
+    "res://game/auction.gd",
+    "res://game/station_catalog.gd"
+   ],
+   "signals": [
+    "inspect_requested",
+    "status_requested"
+   ]
+  }
+ }
+}

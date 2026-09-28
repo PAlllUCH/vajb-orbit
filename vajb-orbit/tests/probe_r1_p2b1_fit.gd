@@ -13,7 +13,7 @@ extends Node
 ## still in place, and the scratch file is removed - so the owner's `user://profile.cfg`
 ## is never written (probe hygiene L17).
 
-const PanelScene := preload("res://ui/station/outfitting_panel.tscn")
+const PanelScene := preload("res://ui/station/fitting_panel.tscn")
 const ThemeRes := preload("res://ui/theme/vajb_theme.tres")
 const ModuleData := preload("res://game/module_catalog.gd")
 const FitData := preload("res://game/ship_fit.gd")

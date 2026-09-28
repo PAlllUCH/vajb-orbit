@@ -20,6 +20,11 @@ gate: ""              # e.g. "219/0 → 235/0"
 ## Result
 2–3 lines: what now works, measured (gate numbers, probe counts).
 
+## Acceptance list answers
+One line per brief acceptance item: `N — <answer> — <§/file:line cite>`, or
+`N — NOT DONE — <why>`. The reviewer grades this list first; an unanswered item
+means the deliverable is not done.
+
 ## Deviations from SLICE.md
 Every place the shipped work differs from the SPEC or made a judgment call on
 an unpinned value. Format: what, why, the one-line reversal if the owner

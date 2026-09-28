@@ -7,7 +7,7 @@ extends Node
 ##
 ##   godot --headless --path vajb-orbit res://tests/probe_r1_p2b1_layout.tscn
 
-const PanelScene := preload("res://ui/station/outfitting_panel.tscn")
+const PanelScene := preload("res://ui/station/fitting_panel.tscn")
 const ThemeRes := preload("res://ui/theme/vajb_theme.tres")
 const Log := preload("res://game/economy_log.gd")
 
