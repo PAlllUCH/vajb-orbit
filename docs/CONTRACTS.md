@@ -37,21 +37,21 @@ later request; one section costs ~2-3k.
 | §8 | Economy / state seams | L507–L550 |
 | §8.1 | Slice 0 — physics & fuel (pinned additions, 2026-09-21) | L551–L686 |
 | §8.2 | Slice 2 — fight (pinned additions, 2026-09-21) | L687–L903 |
-| §9 | Universal test gate | L904–L1472 |
-| §11 | P2 ship frames (2026-09-21) | L1473–L1668 |
-| §12 | P2-B1 weapon fit (2026-09-22) | L1669–L1726 |
-| §13 | P2-B proper fitting (2026-09-22) | L1727–L1848 |
-| §14 | S2.6 truth-and-feel (2026-09-22) | L1849–L1919 |
-| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1920–L2015 |
-| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L2016–L2191 |
-| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L2192–L2270 |
-| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L2271–L2343 |
-| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L2344–L2563 |
-| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2564–L2840 |
-| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2841–L3024 |
-| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L3025–L3073 |
-| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L3074–L3242 |
-| §10 | Changelog | L3243–L4415 |
+| §9 | Universal test gate | L904–L1489 |
+| §11 | P2 ship frames (2026-09-21) | L1490–L1685 |
+| §12 | P2-B1 weapon fit (2026-09-22) | L1686–L1743 |
+| §13 | P2-B proper fitting (2026-09-22) | L1744–L1865 |
+| §14 | S2.6 truth-and-feel (2026-09-22) | L1866–L1936 |
+| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1937–L2032 |
+| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L2033–L2208 |
+| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L2209–L2287 |
+| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L2288–L2360 |
+| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L2361–L2580 |
+| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2581–L2857 |
+| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2858–L3041 |
+| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L3042–L3090 |
+| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L3091–L3259 |
+| §10 | Changelog | L3260–L4450 |
 
 <!-- section-index:end -->
 
@@ -909,6 +909,23 @@ actually fired.
 # run it as: `source ~/.profile && godot --headless --path vajb-orbit \
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
+
+Expected (S21, 2026-09-29): **`[SUMMARY] passed=941 failed=0`**, exit 0. S21-R1 measured
+**941** on a fresh scratch store, **941** again on a copy of the live account's store (identical
+counts, exit 0, zero `[FAIL]`/`[SKIP]`; the live file's md5/mtime unchanged after), and re-read
+the same after the review's own value-flips were reverted. **Growth `917 → 941`** =
+`test_s21_stability.gd`'s **23** rows (A1–A10) + `test_s19_quadrants.gd`'s **+1** (A10's
+`CTX_DIRECTION` row); no suite lost a row (80 suites; every suite's executed count equals its
+`func test_` count, and the baseline row-set diff adds only those two files' rows). The wave's
+one HIGH is a **bucket-2 pin-list edit** (**L246**): §8's candidate table missed
+`test_s5_ammo_cargo.gd`'s fee/paid rows (`:465-489`, `:538-544`) and `test_s5_commerce.gd`'s
+action-plate helper (`:493-497`), whose pinned expectations moved with R-S21-1/R-S21-3 — counts
+unchanged, rows correct as built, the list owes the amendment. One MED (**S21-R1/F1**): the
+pre-existing `test_s20_chrome_unify.gd:276` abort skips that row's whole tail (measured: a
+flipped `:306` still prints `[PASS]`) — left to the fixer. The S19 byte-seal's `npc_ship.gd`
+entry carries the finished tree's `a694170c…` (owner-ruled re-pin; interim `728268c5…` in the
+pin's comment); `damage.gd` stays `5cabf3d9…` (byte-identical to HEAD), `npc_brain.gd`
+`e39440bf…`, `weapons.gd` `fcdc549f…`. The gate log's only `SCRIPT ERROR` is the s20 row's.
 
 Expected (S19, 2026-09-26): **`[SUMMARY] passed=914 failed=0`**, exit 0. S19-R1 measured
 `913/1` on its fresh scratch store, with the **baseline replayed byte-identically at
@@ -4412,3 +4429,21 @@ hull stops twice and the second stop slides.
   `test_s15_armory_layout.gd` and the S20 review probe read the host frame instead of the chrome's; `test_s18_armory_rework.gd`'s chip row and the probe
   use `RACK_STATE_AT_CAP`. Reversal: restore A4.1's per-surface frame assignment and the
   stretched slot plate (the overlapped look the owner rejected).
+- **v0.36 (2026-09-29, wave S21 review — S21-R1; gate `917/0 → 941/0`)** — the stability wave's
+  review pass, pre-fix. Measured twice: **`[SUMMARY] passed=941 failed=0`** on a fresh scratch
+  store and on a copy of the live account's store, identical (the live file was not touched), and
+  re-read after the review's own value-flip pass. Deliverables verified individually: A1's dead
+  state (no input/force/torque, a monitor charging nothing, §7's blast→drop→route order), A2's
+  300 s wreck window on a static sector ledger re-materialised through `Pickup.setup`'s lifetime
+  seam, A3's two-sided ram authority (probe: `pairs=player:1 npc:1 row15=93.789474
+  player_loss=npc_loss=93.789474`; rocks still single-sided), A4's write-nothing station boot
+  (the reviewer's own md5 run) and transit-flag clear, A5's hermetic fixtures (one gate count on
+  both stores), A6's accessor law plus the lost-instance row, A7's R-S21-1/R-S21-2 arithmetic
+  (2 CR → net 2; 295 + 1 unit → 300 with 5 banked), A8's `OWNED` plate, A9's heat bank / gate
+  cancels / funds rung / respawn stamp / cleave reset / MOVED line, A10's f4 row (flip →
+  `[FAIL] … (read 1)`, no `SCRIPT ERROR`) plus the `CTX_DIRECTION` row, A11's seals. Findings:
+  **1 HIGH (bucket 2, L246 — §8's list missed the two s5 suites' moved fee/plate rows; list
+  amendment, no revert) / 1 MED (S21-R1/F1 — S20's `test_s20_chrome_unify.gd:276` silent abort,
+  its tail including L236's closure assertion; left to the fixer) / 3 LOW (L247–L249)**. The
+  four forbidden files: `damage.gd 5cabf3d9…`, `npc_ship.gd a694170c…` (owner-ruled re-pin,
+  chain in the pin), `npc_brain.gd e39440bf…`, `weapons.gd fcdc549f…`.

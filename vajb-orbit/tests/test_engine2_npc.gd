@@ -17,6 +17,7 @@ extends McpTestSuite
 const Registry := preload("res://game/npc_registry.gd")
 const Brain := preload("res://game/npc_brain.gd")
 const Ship := preload("res://game/npc_ship.gd")
+const AsteroidScript := preload("res://game/asteroid.gd")
 const Loot := preload("res://game/loot_tables.gd")
 const SectorRegistry := preload("res://game/sector_registry.gd")
 const ShipFitScript := preload("res://game/ship_fit.gd")
@@ -398,7 +399,16 @@ func test_the_hull_body_mirrors_the_players_physics_contract() -> void:
 	var body := ship.call(&"impact_body") as RigidBody2D
 	assert_true(body != null, "the hull builds its own rigid body")
 	assert_eq(body.collision_layer, Ship.HULL_LAYER, "layer 2, the ship layer")
-	assert_eq(body.collision_mask, Ship.HULL_MASK, "masking the rock layer only")
+	assert_eq(
+		body.collision_mask,
+		Ship.HULL_MASK,
+		"the body wears L22's mask (S21 widened it from the rock layer alone)"
+	)
+	assert_eq(
+		Ship.HULL_MASK,
+		AsteroidScript.COLLISION_LAYER | Ship.HULL_LAYER,
+		"rock | ship: any hull pair resolves, the pair the player's own body carries"
+	)
 	assert_true(body.gravity_scale == 0.0, "space: no gravity")
 	assert_true(body.contact_monitor, "a ram resolves through the contact monitor")
 	assert_true(not body.can_sleep, "a hull always answers a contact")

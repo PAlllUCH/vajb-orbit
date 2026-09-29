@@ -645,16 +645,38 @@ func _fit_weapons(profile: ProfileScript, ship_id: StringName) -> Array[StringNa
 
 
 ## CONTRACTS section 21 (H1): the strip's total is the **launched fit's** own packs summed,
-## one term per fitted W cell - the same slots `game.gd:_seed_ammo` fills from - so it agrees
-## with the flight slots and the store's `ammo_*` packs. The six `Catalog.AMMO_PACKS` summed
-## was the defect: a fit carrying three of them read the other three's rounds too.
+## one term per fitted W cell - the same slots `game.gd:_seed_ammo` fills from - so it
+## agrees with the flight slots and the store's `ammo_*` packs. The six
+## `Catalog.AMMO_PACKS` summed was the defect: a fit carrying three of them read the other
+## three's rounds too.
+##
+## L136 / A7: each term is the rounds **that cell will fly with**, which is what the
+## launch's own auto-load leaves in the pack - the pack's last load plus its opened-unit
+## remainder plus whatever the hold's `ammo_*` units can still add, at `ammo_max`. A docked
+## fit that has just bought 30 units therefore reads them, where the bare `ammo_of` read
+## showed only the last launch's load. The figure is a **read**: the pane never draws from
+## the hold (`load_ammo_from_hold` is the launch's own call).
 func _ammo_total(profile: ProfileScript, ship_id: StringName) -> int:
 	if profile == null:
 		return 0
 	var total := 0
 	for family: StringName in _fit_weapons(profile, ship_id):
-		total += int(profile.call(&"ammo_of", family))
+		total += _cell_ordnance(profile, family)
 	return total
+
+
+## One cell's flyable rounds, without the write: `load_ammo_from_hold`'s own answer -
+## `pack` when the pack already sits at or above `ammo_max` (the "never lowered" pin), else
+## `pack + min(shortfall, remainder + units x ROUNDS_PER_CARGO_UNIT)`. 0 for a family-less
+## weapon (`_fit_weapons` keeps those entries, exactly as `PlayerState` does).
+func _cell_ordnance(profile: ProfileScript, family: StringName) -> int:
+	var pack := int(profile.call(&"ammo_of", family))
+	var shortfall := int(profile.call(&"ammo_max", family)) - pack
+	if shortfall <= 0:
+		return pack
+	var available := int(profile.call(&"ammo_remainder", family))
+	available += int(profile.call(&"ammo_units", family)) * Catalog.ROUNDS_PER_CARGO_UNIT
+	return pack + mini(shortfall, available)
 
 
 ## The count the total is spread across: the launched fit's own W cells, which is the length

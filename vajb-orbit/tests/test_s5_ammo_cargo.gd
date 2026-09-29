@@ -73,6 +73,7 @@ var _previous_ship: StringName = &""
 var _previous_credits := 0
 var _previous_cargo: Dictionary = {}
 var _previous_ammo: Dictionary = {}
+var _previous_ammo_rem: Dictionary = {}
 var _previous_fits: Dictionary = {}
 var _previous_owned: Array = []
 var _previous_modules: Dictionary = {}
@@ -93,6 +94,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_credits = int(_profile.call(&"credits"))
 	_previous_cargo = (_profile.get(&"_cargo") as Dictionary).duplicate(true)
 	_previous_ammo = (_profile.get(&"_ammo") as Dictionary).duplicate(true)
+	_previous_ammo_rem = (_profile.get(&"_ammo_rem") as Dictionary).duplicate(true)
 	_previous_fits = _profile.call(&"fits")
 	_previous_owned = _profile.call(&"owned_ships")
 	_previous_modules = _profile.call(&"modules")
@@ -114,6 +116,7 @@ func suite_teardown() -> void:
 	_profile.set(&"_active_ship", _previous_ship)
 	_profile.set(&"_cargo", _previous_cargo)
 	_profile.set(&"_ammo", _previous_ammo)
+	_profile.set(&"_ammo_rem", _previous_ammo_rem)
 	_profile.set(&"_fits", _previous_fits)
 	_profile.set(&"_owned_ships", _previous_owned)
 	_profile.set(&"_modules", _previous_modules)
@@ -150,6 +153,10 @@ func _seed_account() -> void:
 	_profile.set(&"_modules", {})
 	_profile.set(&"_cargo", {})
 	_profile.set(&"_ammo", packs)
+	## R-S21-2's opened-unit remainder is part of the pack store's state: a fixture that
+	## writes its own packs writes its own remainder, or a previous test's half unit would
+	## ride into this one's draw.
+	_profile.set(&"_ammo_rem", {})
 
 
 # --------------------------------------------------------------- AC4a: the six cargo items
@@ -351,8 +358,10 @@ func test_a_twin_weapon_fit_draws_its_family_once() -> void:
 ## The ceiling is the **family's** `ammo_max`, and the auto-load never lowers a pack that is
 ## already at or above it: the shipped 300-round default sits above the rocket's 100, so a
 ## full hold still draws nothing for it -- "up to `ammo_max`" is a ceiling on the fill, not a
-## clamp on the magazine. Under the ceiling the last indivisible unit may overshoot by up to
-## `ROUNDS_PER_CARGO_UNIT - 1` rounds, and the pack is clamped there.
+## clamp on the magazine. Under the ceiling the shortfall is drawn **in rounds** (R-S21-2):
+## the last unit's unused rounds are banked as the family's remainder (<= 9) instead of
+## being burned with the unit, so the 5-round shortfall below loads 5 rounds, spends one
+## unit and keeps 5.
 func test_the_ceiling_is_the_family_max_and_the_last_unit_may_overshoot() -> void:
 	_profile.set(&"_ammo", {&"cannon": 295})
 	_profile.set(&"_cargo", {&"ammo_cannon": 1})
@@ -360,6 +369,11 @@ func test_the_ceiling_is_the_family_max_and_the_last_unit_may_overshoot() -> voi
 	var state: Variant = scene.get(&"_state")
 	assert_eq(int(state.ammo[0]), 300, "the 5-round shortfall took a whole 10-round unit")
 	assert_eq(int(_profile.call(&"cargo_qty", &"ammo_cannon")), 0, "and the unit left the hold")
+	assert_eq(
+		int(_profile.call(&"ammo_remainder", &"cannon")),
+		5,
+		"whose 5 unused rounds are banked, not burned (R-S21-2)"
+	)
 	## Above the ceiling: nothing is drawn and nothing is lowered.
 	_seed_account()
 	_profile.set(&"_ammo", {&"rocket": ProfileData.DEFAULT_AMMO})
@@ -451,8 +465,9 @@ func test_the_exchange_prices_a_unit_at_sixty_percent_of_its_list() -> void:
 
 
 ## A sale through the shipped transaction: the hold pays whole cargo units, the credits
-## receive `gross - fee` at the exchange's own commission (05 section 5), and the third book
-## moves **no** market state -- there is no demand to cool and no quota to queue against.
+## receive `gross - fee` at the exchange's own commission for ammunition (R-S21-1: no 10 CR
+## floor, `roundi(0.02 x gross)`), and the third book moves **no** market state -- there is
+## no demand to cool and no quota to queue against.
 func test_an_ammo_sale_moves_cargo_and_credits_and_no_market_state() -> void:
 	_profile.set(&"_cargo", {&"ammo_laser": 30})
 	_profile.set(&"_credits", START_CREDITS)
@@ -465,12 +480,12 @@ func test_an_ammo_sale_moves_cargo_and_credits_and_no_market_state() -> void:
 	assert_eq(int(result[&"sellable"]), 30, "all 30 units are taken")
 	assert_eq(int(result[&"unit"]), 2, "at the pinned 2 CR unit")
 	assert_eq(int(result[&"gross"]), 60, "gross 30 x 2")
-	assert_eq(int(result[&"fee"]), 10, "the 10 CR commission floor")
-	assert_eq(int(result[&"paid"]), 50, "so the account is paid 50")
+	assert_eq(int(result[&"fee"]), 1, "R-S21-1: roundi(0.02 x 60), no 10 CR floor")
+	assert_eq(int(result[&"paid"]), 59, "so the account is paid 59")
 	assert_eq(int(result[&"queued"]), 0, "nothing is queued: the station always takes ammo")
 	assert_eq(int(_profile.call(&"cargo_qty", &"ammo_laser")), 0, "the units left the hold")
 	assert_eq(
-		int(_profile.call(&"credits")) - START_CREDITS, 50, "and exactly the paid figure arrived"
+		int(_profile.call(&"credits")) - START_CREDITS, 59, "and exactly the paid figure arrived"
 	)
 	assert_eq(_profile.call(&"market"), market_before, "the market state is byte-identical")
 	## A quantity the hold cannot cover is refused and moves nothing.
@@ -523,12 +538,12 @@ func test_the_exchange_hold_surface_lists_ammo_units_beside_the_minerals() -> vo
 	assert_eq(_hold_cell(laser, "TitleBox/Meta"), "AMMO", "and its own meta word")
 	assert_eq(_hold_cell(laser, "Qty/Value"), "30", "30 cargo units")
 	assert_eq(_hold_cell(laser, "Unit/Value"), "2", "at the pinned 2 CR unit")
-	assert_eq(_hold_cell(laser, "Total/Value"), "50", "and the 50 CR the sale pays")
+	assert_eq(_hold_cell(laser, "Total/Value"), "59", "and the 59 CR the sale pays (R-S21-1)")
 	var railgun := _hold_row(panel, &"ammo_railgun")
 	assert_eq(_hold_cell(railgun, "TitleBox/Title"), "RAILGUN SLUGS", "the railgun row")
 	assert_eq(_hold_cell(railgun, "Qty/Value"), "4", "4 units")
 	assert_eq(_hold_cell(railgun, "Unit/Value"), "14", "at 14 CR")
-	assert_eq(_hold_cell(railgun, "Total/Value"), "46", "for 46 CR (56 less the 10 CR fee)")
+	assert_eq(_hold_cell(railgun, "Total/Value"), "55", "for 55 CR (56 less the 1 CR fee)")
 	## A family the hold does not carry is not drawn, exactly as an unheld mineral is not.
 	assert_true(
 		_hold_row_or_null(panel, &"ammo_cannon") == null, "an unheld family draws no row"

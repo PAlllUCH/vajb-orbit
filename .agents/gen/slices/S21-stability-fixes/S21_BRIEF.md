@@ -8,6 +8,9 @@
 ### Amendment 2026-09-28 (owner-ruled, this session)
 1. **Baseline corrected `914/0` → `917/0`** — the figure above was stale, not a pin move; reversal is re-reading the number off the gate. `CONTRACTS.md` §9 stays R1's.
 2. **The builder is split in three** (§7/§8): one worker for eleven fixes across ~15 files was the size risk the owner named, so `S21-B1`, `S21-B2` and `S21-B3` run sequentially on disjoint file regions and the mandatory review grades the whole A1–A11 across all three reports. The acceptance list, the pins (R-S21-1..3) and the file sets are unchanged; only the ownership of the work is. Reversal: one builder, the original §7 row.
+3. **Two owner-ruled pin moves after B1 reported** (bucket 2, ruled in the orchestrator session 2026-09-28):
+   - **The S19 byte-seal is re-pinned by `S21-B3`.** `test_s19_quadrants.gd`'s `FORBIDDEN_FILES` pins `res://game/npc_ship.gd`'s hash; A3's accepted authority cannot be written without that file (it is in B1's §7 set), so the owner took the fast route: B3 updates that one string and its comment, keeps the other three hashes, and discloses the move. **Recorded 2026-09-28 (B3's report, deviation (a)):** the shipped pin is the **finished** tree's hash `a694170c9783b44ed1dd91e07d0632288535eef91ef391f4036ff2ede9b889f7`, because this amendment's own mask item edits the same file again — the interim `728268c53526dd8436c236ba923528bffea123b31ec0237438fc2baaa8ab661a` could not survive it and survives in the pin's own comment as the chain. Reversal: `git revert` B3's commit, or restore the pinned value `de8596b1…81be`.
+   - **A3's reach widens (owner: "widen").** B1 fixed the pair through the player's mask alone, leaving NPC-vs-NPC unresolved; the owner ruled the NPC mask widens with it, so A3 now means **any** hull pair. The two rows that move are `test_engine2_npc.gd` (~:401) and `test_s6_heat.gd` (~:236) — both on this list by that ruling — and they are re-pinned to the measured truth in the same change. Reversal: unmask the NPC body and restore both rows.
 
 ## 1. The law to read, in order
 1. `slices/S21-stability-fixes/SLICE.md` — scope, file sets, carries-forward.
@@ -156,8 +159,8 @@ B3 → R1 → F1** — strictly sequential, each writing on its predecessor's ou
 | ID | Role | Acceptance subset | Regions it owns (nobody else edits these) | Deliverable |
 |---|---|---|---|---|
 | S21-B1 | coder (builder) | A1, A2, A3, A4b (the sticky route flag), A9a (heat), A9b (gate) | `game/game.gd`, `game/player_ship.gd`, `game/npc_ship.gd`, `game/pickup.gd`, `game/gate.gd` | A1/A2/A3/A4b/A9a/A9b landed + their rows in `tests/test_s21_stability.gd` + `S21-B1_report.md` |
-| S21-B2 | coder (builder) | A4a (boot writes nothing), A5, A6, A7, A8 | `ui/screens/station.gd`, `ui/station/auction_panel.gd`, `ui/station/launch_panel.gd`, `ui/station/outfitting_panel.gd`, `autoload/player_profile.gd`, `game/exchange.gd`, `tests/test_engine2_dock.gd`, `tests/test_engine2_fixes.gd`, `tests/test_engine2_wiring.gd` | those five items landed + their rows in `tests/test_s21_stability.gd` + `S21-B2_report.md` |
-| S21-B3 | coder (builder) | A9c (asteroids), A9d (the `MOVED` line), A10, A11 | `game/asteroid_field.gd`, `game/asteroid.gd`, `ui/station/armory_panel.gd`, `tests/test_weapon_fx_f4.gd`, `tests/test_s19_quadrants.gd` | those items landed + their rows + the whole `tests/test_s21_stability.gd` green + `S21-B3_report.md` |
+| S21-B2 | coder (builder) | A4a (boot writes nothing), A5, A6, A7, A8 | `ui/screens/station.gd`, `ui/station/auction_panel.gd`, `ui/station/launch_panel.gd`, `ui/station/fitting_panel.gd` (B2's report (b): L124's site today; the brief's §3 row still quotes the older `outfitting_panel.gd` path), `autoload/player_profile.gd`, `game/exchange.gd`, `tests/test_engine2_dock.gd`, `tests/test_engine2_fixes.gd`, `tests/test_engine2_wiring.gd` | those five items landed + their rows in `tests/test_s21_stability.gd` + `S21-B2_report.md` |
+| S21-B3 | coder (builder) | A9c (asteroids), A9d (the `MOVED` line), A10, A11 + the two owner-ruled pin moves (amendment 3) | `game/asteroid_field.gd`, `game/asteroid.gd`, `ui/station/armory_panel.gd`, `game/npc_ship.gd` (the mask only), `tests/test_weapon_fx_f4.gd`, `tests/test_s19_quadrants.gd`, `tests/test_engine2_npc.gd`, `tests/test_s6_heat.gd` | those items landed + their rows + the whole `tests/test_s21_stability.gd` green + `S21-B3_report.md` |
 | S21-R1 | reviewer | grades **A1–A11 across all three reports** | `vajb-orbit/tests/`, `vajb-orbit/tools/`, `docs/CONTRACTS.md`, its report | `S21-R1_review.md` + CONTRACTS §9/§10 rows + LOW rows |
 | S21-F1 | fixer (only on HIGH/MED) | `vajb-orbit/game/, vajb-orbit/ui/, vajb-orbit/autoload/player_profile.gd, vajb-orbit/tests/, vajb-orbit/tools/, docs/CONTRACTS.md, .agents/gen/slices/S21-stability-fixes/` | `S21-F1_report.md` |
 
@@ -178,6 +181,9 @@ move and their verdicts:
 | `test_p1_market.gd`, `test_s3_auction.gd`, `test_p2b_services.gd` | A7/A8 money edges | unchanged (asserts read pinned prices) |
 | `test_engine2_fixes.gd` respawn rows, `test_s13_mining_batteries.gd` | A9's fixes | unchanged |
 | `test_weapon_fx_f4.gd` | A10 re-order | same `[PASS]` count, the dead row now executes |
+| `test_s19_quadrants.gd` | A10's assert row **and** amendment 3's byte-seal re-pin | +1 row (A10); the seal row stays, its `npc_ship.gd` string moves |
+| `test_engine2_npc.gd`, `test_s6_heat.gd` | amendment 3's NPC-mask widening | 1 row each, re-pinned to the measured truth (counts unchanged) |
+| `test_s5_ammo_cargo.gd`, `test_s5_commerce.gd` | **Missed at brief time, added by S21-F1 (2026-09-29) per L246 (S21-B2/F1):** R-S21-1 moved the ammo rows' pinned fee/paid (`test_s5_ammo_cargo.gd:465-489` 10→1, 50→59; `:538-544` 50→59, 46→55) and R-S21-3 the auction helper's action plate (`test_s5_commerce.gd:493-497`, `BUY`→`OWNED` iff owned) | counts unchanged; the values are correct as built, so this is a list amendment, never a revert |
 
 Any other suite count moving is a **bucket-2 pause**: report it, leave it, stop.
 

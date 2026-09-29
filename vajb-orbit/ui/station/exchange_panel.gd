@@ -162,8 +162,10 @@ var _tweens: Array[Tween] = []
 
 
 func _ready() -> void:
-	## The one evaluation on entry (05 section 2 and 8); every quote and sale evaluates again.
-	_evaluate()
+	## A4a / L18: the build draws the board from the market as it stands and **does not**
+	## advance it - booting the station writes nothing to `user://`. The market normalises
+	## when the station is docked (`ui/screens/station.gd`'s `on_route`) and again on this
+	## pane's own entry (`focus_primary`), and every quote and sale evaluates for itself.
 	_hold_scroll.custom_minimum_size.x = HOLD_CONTENT_WIDTH
 	_build_header()
 	_build_board()
@@ -200,6 +202,9 @@ func refresh_profile(key: StringName) -> void:
 
 
 func focus_primary() -> void:
+	## The pane's own entry (05 section 2 and 8): the market is advanced to the clock here
+	## rather than at build (A4a/L18), the same switch the AUCTION pane pops its shelf on.
+	_evaluate()
 	## A disabled control must not take the ring: when nothing enabled can, the panel
 	## returns without grabbing and the shell's rail fallback runs (station.gd:401-410).
 	for payload: Dictionary in _hold_payloads:

@@ -2372,17 +2372,13 @@ func move_barrel(
 	var hull := _active_hull(profile)
 	if not _can_move(hull, from_rack, from_position, to_rack, to_position):
 		return _refuse(REFUSAL_FIT_ILLEGAL)
+	var name_text := _rack_barrel_name(profile, from_rack, from_position)
 	if not bool(
 		profile.call(&"move_rack_cell", hull, from_rack, from_position, to_rack, to_position)
 	):
 		return _refuse(REFUSAL_FIT_ILLEGAL)
 	AudioManager.play_ui(AudioManager.UiCue.CLICK)
-	status_requested.emit(
-		STATUS_MOVED % [
-			_rack_barrel_name(profile, from_rack, from_position), RACK_LABEL % (to_rack + 1)
-		],
-		false
-	)
+	status_requested.emit(STATUS_MOVED % [name_text, RACK_LABEL % (to_rack + 1)], false)
 	return true
 
 

@@ -229,13 +229,20 @@ func test_a_blocked_line_or_a_witness_past_the_range_is_no_witness() -> void:
 ## 2D broadphase yet: a ray cast from a test hits nothing, measured (a 66 u-radius rock
 ## placed across a 400 u ray is not seen). The harness therefore cannot measure rock
 ## occlusion; what it can measure - and what this test does - is that the hull's own
-## verdict is the one the witness rule reads, plus that both rays mask the same layer
-## (`NpcShip.HULL_MASK` is `Asteroid.COLLISION_LAYER`, the brain's own mask).
+## verdict is the one the witness rule reads, plus that the ray's own mask is the rock
+## layer. S21 split that reading from the hull body's: `LOS_MASK` stays the rock layer,
+## while `HULL_MASK` is the body's rock|ship pair (the owner-ruled widening, `S21_BRIEF.md`
+## amendment 3) that any hull pair needs.
 func test_the_witness_line_is_the_brains_own_rock_check() -> void:
 	assert_eq(
-		NpcShipScript.HULL_MASK,
+		NpcShipScript.LOS_MASK,
 		AsteroidScript.COLLISION_LAYER,
 		"the brain's LOS ray and the rock layer are the same mask"
+	)
+	assert_eq(
+		NpcShipScript.HULL_MASK,
+		AsteroidScript.COLLISION_LAYER | NpcShipScript.HULL_LAYER,
+		"while the hull body's mask is the rock|ship pair S21 widened it to"
 	)
 	var scene := _open_game()
 	var profile := _store()

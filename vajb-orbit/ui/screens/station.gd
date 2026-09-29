@@ -21,6 +21,8 @@ const TOKENS_TYPE: StringName = &"Tokens"
 
 const Catalog := preload("res://game/station_catalog.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
+const ExchangeScript := preload("res://game/exchange.gd")
+const Clock := preload("res://autoload/world_clock.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
@@ -185,7 +187,20 @@ func _exit_tree() -> void:
 
 
 func on_route(_params: Dictionary) -> void:
+	_normalise_market()
 	_focus_active_panel()
+
+
+## A4a / L18: the market is normalised **at the dock** - once, when the station is routed
+## to - and never at build, so booting the screen leaves `user://` untouched while a real
+## docking still prices the exchange's board to now. `Exchange.evaluate_market` is
+## idempotent at one clock reading, so the panes' own entry evaluations (the EXCHANGE
+## pane's `focus_primary`, every quote and sale) cost nothing afterwards.
+func _normalise_market() -> void:
+	var profile := _profile()
+	if profile == null:
+		return
+	ExchangeScript.evaluate_market(profile, Clock.now())
 
 
 func _unhandled_input(event: InputEvent) -> void:

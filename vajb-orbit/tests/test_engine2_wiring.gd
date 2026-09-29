@@ -29,6 +29,22 @@ const GAME_SCENE := "res://game/game.tscn"
 const SEED := 20260921
 const SECTORS: Array[StringName] = [&"sector_1", &"sector_4", &"sector_7"]
 
+## A5 (L90/L93): this suite's own fit, staged on the active hull before `game.tscn` is
+## instantiated, so `test_the_ship_mounts_its_weapons_component`'s "the launched fit mounts
+## at least one firing barrel" holds whatever the account flies (the live Vanguard fit was
+## `["w_mining", "w_cannon", ""]`, which mounts no laser at all). The packs the fixture's
+## families read are its own too, below their ceilings, with the hold emptied - the launch's
+## auto-load cannot move them.
+const FIXTURE_FIT: Dictionary = {
+	&"engines": [&"e_std"],
+	&"power": &"p_std",
+	&"weapons": [&"w_laser", &"w_cannon"],
+	&"shields": [&"s_light"],
+	&"armour": [&"h_plate_light"],
+}
+const FIXTURE_PACKS: Dictionary = {&"laser": 120, &"cannon": 60}
+const FIXTURE_FAMILIES: Array[StringName] = [&"laser", &"cannon"]
+
 var _scene: Node2D = null
 var _sector: Node2D = null
 var _ship: Node2D = null
@@ -36,6 +52,10 @@ var _state: Variant = null
 var _hud: Control = null
 var _guns: Node2D = null
 var _staged: Array[Node2D] = []
+var _previous_fits: Dictionary = {}
+var _previous_ammo: Dictionary = {}
+var _previous_cargo: Dictionary = {}
+var _previous_rem: Dictionary = {}
 
 
 func suite_name() -> String:
@@ -43,6 +63,7 @@ func suite_name() -> String:
 
 
 func suite_setup(_ctx: Dictionary) -> void:
+	_stage_fixture()
 	_sector = SectorScript.new()
 	_sector.name = &"SuiteSector"
 	## The sector's own contents are built with `add_child` on this node, which needs no
@@ -77,6 +98,55 @@ func suite_teardown() -> void:
 	if _sector != null and is_instance_valid(_sector):
 		_sector.free()
 	_sector = null
+	_restore_fixture()
+
+
+## The fixture's own fit and ammo, written before the scene is instantiated and handed back
+## in `suite_teardown`, so the account ends this suite exactly as it started (the same
+## discipline `test_engine2_dock.gd` and `test_engine2_fixes.gd` keep).
+func _stage_fixture() -> void:
+	var profile := _profile()
+	if profile == null:
+		return
+	_previous_fits = profile.call(&"fits")
+	_previous_ammo = (profile.get(&"_ammo") as Dictionary).duplicate(true)
+	_previous_cargo = (profile.get(&"_cargo") as Dictionary).duplicate(true)
+	_previous_rem = (profile.get(&"_ammo_rem") as Dictionary).duplicate(true)
+	profile.call(&"set_fit", StringName(profile.call(&"active_ship")), FIXTURE_FIT)
+	var packs: Dictionary = _previous_ammo.duplicate(true)
+	var cargo: Dictionary = _previous_cargo.duplicate(true)
+	var rem: Dictionary = _previous_rem.duplicate(true)
+	for family: StringName in FIXTURE_FAMILIES:
+		packs[family] = int(FIXTURE_PACKS[family])
+		rem.erase(family)
+		cargo.erase(family)
+		var item_id := StringName(profile.call(&"ammo_item_id", family))
+		if item_id != &"":
+			cargo.erase(item_id)
+	profile.set(&"_ammo", packs)
+	profile.set(&"_cargo", cargo)
+	profile.set(&"_ammo_rem", rem)
+	profile.call(&"flush")
+
+
+func _restore_fixture() -> void:
+	var profile := _profile()
+	if profile == null:
+		return
+	profile.call(&"set_fits", _previous_fits)
+	profile.set(&"_ammo", _previous_ammo)
+	profile.set(&"_cargo", _previous_cargo)
+	profile.set(&"_ammo_rem", _previous_rem)
+	profile.call(&"flush")
+	_previous_fits = {}
+	_previous_ammo = {}
+	_previous_cargo = {}
+	_previous_rem = {}
+
+
+## The profile autoload, the store the fixture writes and the launch reads.
+func _profile() -> Node:
+	return _tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
 
 
 ## Where the scene may enter the tree. The runner calls every test from inside its own
@@ -253,12 +323,13 @@ func test_every_hull_is_anchored_on_a_poi() -> void:
 
 
 func test_the_ship_mounts_its_weapons_component() -> void:
-	assert_true(_guns != null, "the standard fit's w_laser mounted a WeaponComponent")
+	assert_true(_guns != null, "the fixture's own w_laser mounted a WeaponComponent")
 	assert_eq(int(_guns.call(&"selected_group")), 1, "group 1 is the selected one")
 	## The mounted barrels are read off the launched fit rather than named, so the
-	## assertion holds for whatever the launch mounts (the sandboxed default account flies
-	## the hull's standard fit) and the family-less tools - `w_mining` maps to `&""` - drop
-	## out exactly as `WeaponComponent.set_fitted` drops them.
+	## assertion holds for whatever the launch mounts - the fixture writes its own fit
+	## before the scene is instantiated (A5), so the launched fit is this suite's own -
+	## and the family-less tools - `w_mining` maps to `&""` - drop out exactly as
+	## `WeaponComponent.set_fitted` drops them.
 	##
 	## **Per barrel, duplicates kept** (CONTRACTS section 16 rule 1): `_state.weapons` is
 	## one slot per fitted W cell, and the component keeps one entry per barrel of the fit,

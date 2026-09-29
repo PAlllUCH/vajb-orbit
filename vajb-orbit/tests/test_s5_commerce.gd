@@ -492,8 +492,9 @@ func _assert_s3_rendering(panel: Control, profile: Node, tab_id: StringName) -> 
 		)
 		assert_eq(
 			_cell_text(row, "Action"),
-			PanelScript.ACTION_BUY,
-			"%s: hull row %d keeps the auction's buy door" % [String(tab_id), index]
+			PanelScript.ACTION_OWNED if bool(entry[&"owned"]) else PanelScript.ACTION_BUY,
+			"%s: hull row %d keeps the auction's own door (R-S21-3: OWNED on an owned hull)"
+			% [String(tab_id), index]
 		)
 	for index in listing_rows.size():
 		var entry: Dictionary = listings[index]

@@ -124,6 +124,11 @@ const HULL_CLASS_FORMAT := "%s CLASS"
 ## live here rather than in the rotation module the words are read from.
 const ACTION_BUY := "BUY"
 const ACTION_SELL := "SELL"
+## R-S21-3 (10's 2026-09-27 P3 block, tick M1): the plate an owned hull's row wears in
+## place of `BUY` - the row is disabled, so the ACTION column is where the shipyard's
+## section 5.2 `OWNED` status reads on this pane. Reversal: delete the const and render
+## `ACTION_BUY` on a live row again (the press then refuses as `STATUS_REFUSED_OWNED`).
+const ACTION_OWNED := "OWNED"
 const SUBTITLE := "THE HOUSE BROKER · %d HULLS · %d MODULES"
 const TAG_INTERIM := "F LOT · ONE PER SHELF"
 
@@ -203,7 +208,10 @@ func _ready() -> void:
 	_build_family_tabs()
 	_apply_tokens()
 	_connect_scroll()
-	enter_pane()
+	## A4a / L122: the build draws the pane it is standing on but **never** advances the
+	## shelf - a station boot must write nothing to `user://`. The shell's switch into this
+	## pane is what pops `enter_pane()` below.
+	_draw_pane()
 
 
 func _notification(what: int) -> void:
@@ -220,12 +228,20 @@ func _exit_tree() -> void:
 
 ## Pane entry: the shelf is advanced to the clock's reading (10 section 2.1's lazy bands,
 ## the exchange's own shape) and the whole pane is drawn from it. The shell calls this
-## through `focus_primary` when the module is switched to; `_ready` calls it once for the
-## pane the shell builds but does not show.
+## through `focus_primary` when the module is switched to - the **only** place the shelf
+## rolls, so merely booting the station does not touch the account (L122/A4a). `_ready`
+## draws the pane read-only through `_draw_pane`.
 func enter_pane() -> void:
 	var profile := _profile()
 	if profile != null:
 		AuctionScript.evaluate_shelf(profile, Clock.now())
+	_draw_pane()
+
+
+## The read-only draw `_ready` and `enter_pane` share: every row, the restock reading and
+## the idle status line, rebuilt from whatever the shelf already holds. Advances nothing,
+## writes nothing.
+func _draw_pane() -> void:
 	_rebuild()
 	_take_restock_reading()
 	_set_status(status_idle(), false)
@@ -891,9 +907,13 @@ func _refresh_hull_row(payload: Dictionary, profile: ProfileScript) -> void:
 		if bool(payload[&"hot"])
 		else LIST_CAPTION
 	)
-	payload[&"action"].text = ACTION_BUY
+	## R-S21-3: an owned hull's row is honest before the press - disabled, its ACTION
+	## column wearing the `OWNED` plate instead of a `BUY` the press would have to refuse
+	## (`buy_hull`'s `STATUS_REFUSED_OWNED` path stays as the transaction's own backstop).
 	payload[&"owned"] = _owns(profile, payload[&"id"])
-	payload[&"row"].disabled = false
+	var owned := bool(payload[&"owned"])
+	payload[&"action"].text = ACTION_OWNED if owned else ACTION_BUY
+	payload[&"row"].disabled = owned
 
 
 func _refresh_module_row(payload: Dictionary, profile: ProfileScript) -> void:

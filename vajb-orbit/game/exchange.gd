@@ -110,6 +110,21 @@ static func commission_for(gross: int) -> int:
 	return maxi(COMMISSION_MIN, ceili(gross * COMMISSION))
 
 
+## The commission one **item's** sale pays, the one entry point the quote, the
+## transaction and `sell`'s quoted-gross re-derivation all read (R-S21-1, 01's
+## 2026-09-27 P3 block, tick M2): ammunition cargo units skip the 10 CR floor
+## and pay `roundi(0.02 x gross)` - a 2 CR gross sale pays 0 and nets 2, where
+## the floor ate the whole payout (L130). Every other kind keeps
+## `commission_for`'s floor and ceiling exactly.
+## Reversal: return `commission_for(gross)` for every kind and delete the branch.
+static func commission_for_item(item_id: StringName, gross: int) -> int:
+	if is_ammo(item_id):
+		if gross <= 0:
+			return 0
+		return roundi(gross * COMMISSION)
+	return commission_for(gross)
+
+
 ## One transaction-level quote: gross, fee and what the player is paid. The
 ## transaction rounding base (see the header); reproduces 05 section 5.
 static func sale_quote(baseline: int, demand: float, qty: int) -> Dictionary:
@@ -277,9 +292,11 @@ static func quote(
 ## `quoted_total` (S8, CONTRACTS section 21 M3 / 05 section 9): the **gross total
 ## the confirm strip showed at preview**. `-1` (the default) is today's live-price
 ## path, byte-identical. A value `>= 0` overrides the live quote's `gross`, and
-## `fee`/`paid` are re-derived from it through `commission_for` (the one pricing
-## function still owns the arithmetic), so a market that re-rolls between preview
-## and press still credits exactly the shown `YOU GET`.
+## `fee`/`paid` are re-derived from it through `commission_for_item` (the one
+## pricing function still owns the arithmetic, and it is the same one the preview
+## and the ammo branch read: R-S21-1's floor-free ammo figure commits as shown),
+## so a market that re-rolls between preview and press still credits exactly the
+## shown `YOU GET`.
 static func sell(
 	profile: Node,
 	item_id: StringName,
@@ -294,7 +311,7 @@ static func sell(
 	if not bool(result[&"ok"]):
 		return result
 	if quoted_total >= 0:
-		var quoted_fee := commission_for(quoted_total)
+		var quoted_fee := commission_for_item(item_id, quoted_total)
 		result[&"gross"] = quoted_total
 		result[&"fee"] = quoted_fee
 		result[&"paid"] = maxi(0, quoted_total - quoted_fee)
@@ -387,13 +404,13 @@ static func _quote_from(state: Dictionary, held: int, item_id: StringName, qty: 
 		return _refuse(result, REASON_INSUFFICIENT_CARGO)
 	## Ammunition cargo units (S5): a fixed unit price, the station always takes them, and
 	## nothing is queued -- there is no demand index and no surplus quota for the third
-	## book. The commission is the exchange's own and applies as it does to every sale
-	## (05 section 5), so `gross`/`fee`/`paid` read exactly as the pane's confirm strip
-	## expects them to.
+	## book. The commission is the exchange's own item-aware one (R-S21-1: ammo skips the
+	## 10 CR floor and pays `roundi(0.02 x gross)`), so `gross`/`fee`/`paid` read exactly as
+	## the pane's confirm strip expects them to.
 	if is_ammo(item_id):
 		var ammo_unit := ammo_unit_price(item_id)
 		var ammo_gross := ammo_unit * qty
-		var ammo_fee := commission_for(ammo_gross)
+		var ammo_fee := commission_for_item(item_id, ammo_gross)
 		result[&"kind"] = KIND_AMMO
 		result[&"sellable"] = qty
 		result[&"unit"] = ammo_unit

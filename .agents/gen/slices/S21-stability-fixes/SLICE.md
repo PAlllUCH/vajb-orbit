@@ -2,7 +2,7 @@
 slice: S21
 phase: P3
 lane: code
-status: draft
+status: done
 gate_baseline: "914/0"
 ---
 
@@ -51,7 +51,9 @@ See `S21_BRIEF.md` §6 (A1–A10), each probe- or gate-provable.
 ## Worker file sets
 The builder is split in three (owner-ruled 2026-09-28, `S21_BRIEF.md` §7): same
 `VAJB_WORKER_FILES`, disjoint regions, strictly sequential. `S21-B1` carries
-A1/A2/A3/A4b/A9a/A9b, `S21-B2` A4a/A5/A6/A7/A8, `S21-B3` A9c/A9d/A10/A11.
+A1/A2/A3/A4b/A9a/A9b, `S21-B2` A4a/A5/A6/A7/A8, `S21-B3` A9c/A9d/A10/A11 plus
+the two owner-ruled pin moves of amendment 3 (the `npc_ship.gd` byte-seal
+re-pin and the NPC-mask widening with its two rows).
 
 | Worker | Files (becomes `VAJB_WORKER_FILES`) | Brief |
 |---|---|---|

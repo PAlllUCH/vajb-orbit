@@ -73,8 +73,13 @@ const EMBERS_FRACTION := 0.10
 
 ## ENGINE_SPEC section 6, "Rocks are solid: ships collide with them" + ruling 8.
 ## The scene's `HullBody` (a RigidBody2D at local zero) carries the ship's own physics
-## layer and masks only the rock layer (Asteroid.COLLISION_LAYER), so rocks stop the
-## hull and no unrelated body can; its CircleShape2D radius is the hull's half-length:
+## layer and masks the **rock layer and the ship layer** (`player_ship.tscn`'s
+## `collision_mask` 3: `Asteroid.COLLISION_LAYER` bit 0, `NpcShip.HULL_LAYER` bit 1), so
+## rocks stop the hull, another hull is a contact rather than a ghost (L22: the rock-only
+## mask the tree shipped with meant no ship-vs-ship impact ever resolved) and no
+## unrelated body can. Two hulls whose masks name each other report one contact on both
+## monitors, which is what `ram_authority` settles exactly once. Its CircleShape2D radius
+## is the hull's half-length:
 ## the shipped sprite's 905 px at this scene's 0.0663 hull scale is 60.0 u long, the
 ## same art-derived basis asteroid.gd's LOOK_WIDTHS reads. A circle is
 ## rotation-invariant and the long axis dominates, so a side-on stop leaves ~17 u of
@@ -83,6 +88,11 @@ const EMBERS_FRACTION := 0.10
 ## the camera riding this node stay with the hull.
 const HULL_BODY_NODE: StringName = &"HullBody"
 const HULL_SHAPE_NODE: StringName = &"Shape"
+
+## The two groups a hull answers in, `weapons.gd`'s own pair: the walk a contact's
+## collider takes to reach the ship behind it (`hull_behind`), because a hull's
+## `HullBody` is a bare RigidBody2D and the ram's other half belongs to the ship.
+const SHIP_GROUPS: Array[StringName] = [&"player_ship", &"npc_ship"]
 ## The artwork node. S5 (09 section 11) reads its own `scale` to turn the measured px
 ## anchors into hull-local units, so the map and the sprite cannot drift: re-scaling the
 ## art moves every anchor with it.
@@ -280,6 +290,15 @@ var _vitals_seeded := false
 ## events arrive after the solver has already spent the approach speed, so this is the
 ## pre-impact velocity `_on_hull_body_entered` charges damage from (section 4.2 item 6).
 var _last_velocity := Vector2.ZERO
+
+## L24 / 18 §7: the hull's own death state. `game.gd`'s `_on_ship_died` sets it the
+## moment the pools empty - before the wreck's blast, its dropped hold and the respawn
+## route - and from then until the route lands the hull samples no input, commands no
+## force or torque, and its contact monitor charges nothing. A state rather than the
+## wiring's switch-off, so "the wreck is inert" is one reading on the hull itself
+## (`is_dead`) instead of three flags on three nodes, and a probe can step the death
+## frames through the real `_physics_process`.
+var _dead := false
 
 ## The net central force and torque the flight law handed the body in the step being
 ## processed -- the same shape of observability seam as `boost_activations` and
@@ -557,9 +576,52 @@ func seed_breach_rolls(value: int) -> void:
 ## carry-over is what gates the player's hull and `ctx` (section 4.2 item 5) rides every
 ## hit. A hull that has not launched has no pools and takes nothing.
 func take_damage(amount: float, bypass_shield: bool = false, ctx: Dictionary = {}) -> void:
-	if _state == null:
+	if _dead or _state == null:
 		return
 	_state.damage(amount, bypass_shield, ctx)
+
+
+## The other half of a body-body impact (section 4.2 item 6; the door `NpcShip` has
+## carried since slice 2): a peer's monitor offers this hull the ram's other half through
+## it, so `PlayerShip` answers the same name `Asteroid` and `NpcShip` do. Shield-first and
+## context-free, exactly as `Damage.ram` charges the half the hull records itself.
+func apply_collision_damage(amount: float) -> void:
+	take_damage(amount)
+
+
+## L24 / 18 §7: the death state's entry. `game.gd:_on_ship_died` is the wiring's caller
+## and the state's own `died` signal reaches it too (`_on_hull_death`), so the blast, the
+## dropped hold and the respawn route all run on one inert hull. Idempotent, and the
+## order - state, then the blast - is §7's "hull 0 → explosion → the wreck".
+func die() -> void:
+	if _dead:
+		return
+	_dead = true
+	cancel_orders()
+	_has_aim_override = false
+	_applied_force = Vector2.ZERO
+	_applied_torque = 0.0
+	set_process_unhandled_input(false)
+	PROJECTILE.spawn_hull_death(self, self)
+	PROJECTILE.release_shield(self)
+	## A wreck does not thrust: the bed goes out by its own cue and the emitters stop with
+	## the hull they were parented to.
+	PROJECTILE.release_thruster(self)
+	PROJECTILE.clear_thruster_trails(self)
+	_thruster_trails.clear()
+
+
+## Whether the hull is the wreck of a death that has not yet reached its respawn route.
+func is_dead() -> bool:
+	return _dead
+
+
+## The velocity the hull carried *into* the step a contact was reported in. The live body
+## has already been solved by then, and two monitors comparing a live value could read it
+## a step apart, so this stable reading - `_last_velocity`, the closing speed's own basis -
+## is what `ram_authority` compares.
+func step_velocity() -> Vector2:
+	return _last_velocity
 
 
 ## Whether the shield is still up, for section 4.1's shield rules (W1 report finding 3:
@@ -638,6 +700,12 @@ func _physics_process(delta: float) -> void:
 	_applied_force = Vector2.ZERO
 	_applied_torque = 0.0
 	_sync_hull_transform()
+	if _dead:
+		## L24 / 18 §7's dead state (rule 3: a state, not a switch-off). From `die()` to the
+		## respawn route the wreck samples no input, commands no force or torque, and ticks
+		## nothing else - but the mirror above still runs, so the art stays on the body the
+		## solver keeps coasting until the route lands.
+		return
 	_update_boosters(delta)
 	_update_mining_laser()
 	_step_reactor(delta)
@@ -722,7 +790,7 @@ func _physics_process(delta: float) -> void:
 ## LMB on empty space orders a fly-to (section 3.1). Slice 2 splits this into
 ## "click a hostile hull to lock it"; with no NPCs there is no hostile pick yet.
 func _unhandled_input(event: InputEvent) -> void:
-	if _stats == null:
+	if _dead or _stats == null:
 		return
 	var button := event as InputEventMouseButton
 	if button == null or not button.pressed:
@@ -1072,9 +1140,19 @@ func _sync_hull_transform() -> void:
 ## The player's half lands on `PlayerState.damage`, so the shield absorbs it like any
 ## other hit (section 4.2 item 1) and `damage_taken` rides the same channel; the
 ## peer's half is offered to `apply_collision_damage` when the peer has one (M2's
-## rocks take it; a wall or a station has no hull to charge).
+## rocks take it, a hull's own `apply_collision_damage` takes it, and a wall or a
+## station has no hull to charge).
+##
+## L22 / 18 §2.1 row 15: when the peer is another *hull*, both monitors report the same
+## impact, so `ram_authority` decides which side resolves the pair and only that side
+## charges - both halves, exactly once. The authority may be the peer, in which case this
+## monitor goes quiet and the peer's own handler charges this hull through the
+## `apply_collision_damage` door above.
 func _on_hull_body_entered(other: Node) -> void:
-	if _state == null or other == null:
+	if _dead or _state == null or other == null:
+		return
+	var peer_hull := hull_behind(other)
+	if peer_hull != null and peer_hull != self and not ram_authority(self, peer_hull):
 		return
 	## Section 4.2 item 5 through the pipeline rather than by hand: `Damage.ram` computes
 	## the same `Impact.collision_damage` figure and records the item-5 context off the
@@ -1087,11 +1165,61 @@ func _on_hull_body_entered(other: Node) -> void:
 	)
 	if damage <= 0.0:
 		return
-	if other.has_method(&"apply_collision_damage"):
+	var sink: Object = peer_hull if peer_hull != null else other
+	if sink.has_method(&"apply_collision_damage"):
 		## S7 (CONTRACTS section 20, site 5): the peer's half is a player-origin damage
 		## amount, so it takes the launch's `damage_mult` exactly once here. The player's
 		## own half already landed on `PlayerState.damage` inside `DAMAGE.ram`.
-		other.call(&"apply_collision_damage", damage * _damage_scale())
+		sink.call(&"apply_collision_damage", damage * _damage_scale())
+
+
+## The ship behind a contact's collider (`weapons.gd:_sink_for`'s walk): a hull's contact
+## monitor reports its `HullBody`, a bare RigidBody2D, so both the peer's half of a ram
+## and the pair's authority need the ship the body belongs to. Null when no hull owns the
+## collider - a rock is its own body, a probe fixture is nobody's - which keeps every
+## non-hull contact on the shipped single-sided path. A wreck has left the ship groups
+## (`game.gd:_switch_ship_off`), so a dead hull is never a ram peer.
+static func hull_behind(collider: Node) -> Node2D:
+	if collider == null:
+		return null
+	var cursor := collider
+	while cursor != null:
+		for group: StringName in SHIP_GROUPS:
+			if cursor.is_in_group(group):
+				return cursor as Node2D
+		cursor = cursor.get_parent()
+	return null
+
+
+## L22 / 18 §2.1 row 15: which hull of a ram pair resolves the impact. Two hulls whose
+## masks name each other report the same contact on **both** monitors, so "row 15 charged
+## to both sides exactly once" needs one agreed authority; this is that agreement, and it
+## is computed from the same two readings on either side, so the two monitors can never
+## both charge or both stand down:
+##   1. the heavier hull is the authority;
+##   2. an equal mass hands it to the hull that carried the greater speed into the contact
+##      - the rammer, i.e. the initiator of the impact;
+##   3. a perfectly symmetric head-on falls to the lower instance id: arbitrary, but the
+##      same answer on both sides, which is the whole guarantee the pair needs.
+## The speeds are the hulls' own pre-step readings (`step_velocity`), not the live bodies:
+## the solver has already spent the approach speed when a contact is reported, and a value
+## that is stable across both callbacks is what keeps the two verdicts complementary.
+static func ram_authority(a: Node2D, b: Node2D) -> bool:
+	if a == null or b == null or a == b:
+		return false
+	var body_a := a.call(&"impact_body") as RigidBody2D
+	var body_b := b.call(&"impact_body") as RigidBody2D
+	if body_a == null or body_b == null:
+		return false
+	var offset := b.global_position - a.global_position
+	var axis := offset.normalized() if offset.length_squared() > 0.0001 else Vector2.RIGHT
+	var approach_a := Vector2(a.call(&"step_velocity")).dot(axis)
+	var approach_b := -Vector2(b.call(&"step_velocity")).dot(axis)
+	if not is_equal_approx(body_a.mass, body_b.mass):
+		return body_a.mass > body_b.mass
+	if not is_equal_approx(approach_a, approach_b):
+		return approach_a > approach_b
+	return a.get_instance_id() < b.get_instance_id()
 
 
 ## The closing speed of a contact: the relative velocity project on the line between
@@ -1561,18 +1689,15 @@ func _on_hull_changed(current: float, _maximum: float) -> void:
 	_note_damage_state()
 
 
-## ENGINE_SPEC section 7's death, the hull's own half: the blast is FX_SPEC section
-## 1.4's explosion plus section 7.2's secondary, on the wreck's own position, and the
-## shield's bed stops with the ship that was holding it. What the death means for the
-## hold, the wreck and the respawn stays `game.gd`'s (`_on_ship_died`).
+## ENGINE_SPEC section 7's death, the state's own signal handler: a death that arrives
+## through the pools (a shot, a ram, a warp-damage tick) enters the same state the wiring's
+## `_on_ship_died` enters, so the blast (FX_SPEC section 1.4's explosion plus section 7.2's
+## secondary, on the wreck's own position), the released shield bed and the stopped
+## thrusters are drawn exactly once whichever route the death takes - and, on the wiring's
+## route, *before* the hold drops and the respawn route, which is §7's order. What the
+## death means for the hold, the wreck and the respawn stays `game.gd`'s.
 func _on_hull_death() -> void:
-	PROJECTILE.spawn_hull_death(self, self)
-	PROJECTILE.release_shield(self)
-	## A wreck does not thrust: the bed goes out by its own cue and the emitters stop with
-	## the hull they were parented to.
-	PROJECTILE.release_thruster(self)
-	PROJECTILE.clear_thruster_trails(self)
-	_thruster_trails.clear()
+	die()
 
 
 ## FX_SPEC sections 7.1/7.3, the damage state the HUD's own critical line marks

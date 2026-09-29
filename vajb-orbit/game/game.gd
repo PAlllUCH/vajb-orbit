@@ -55,6 +55,10 @@ const ImpactScript := preload("res://game/impact.gd")
 const PickupScript := preload("res://game/pickup.gd")
 const WeaponsScript := preload("res://game/weapons.gd")
 const EconomyLogScript := preload("res://game/economy_log.gd")
+## 17 §4's one timer: the 20-minute station clock. The wreck ledger's expiry is an
+## absolute stamp on it (seconds), so the window keeps running while no flight scene
+## exists - and a probe pins it through `WorldClock.set_override`.
+const ClockScript := preload("res://autoload/world_clock.gd")
 ## S6's POI and loot tables (CONTRACTS §19): the kill roll and the wreck site the
 ## kill leaves, reached by path like every other cross-file table here.
 const PoiScript := preload("res://game/poi.gd")
@@ -132,8 +136,13 @@ const CAMERA_ZOOM_SECONDS := 0.18
 const DOCK_PROMPT := "F · DOCK"
 ## 11 §5's gate prompt lines, verbatim (CONTRACTS §19). The em dash is the pin's own
 ## copy; it is written as a `\u2014` escape so the source file stays plain ASCII.
+## `GATE_REFUSED_FUNDS` is L153's missing rung, in the same ladder and the same shape as
+## the Outlaw line: `Gate.jump` has always answered -2 for an unaffordable fee and the
+## ladder threw it away, so a short account read the priced line and the confirm was
+## silently inert.
 const GATE_PROMPT_FORMAT := "JUMP TO %s \u2014 %d CR"
 const GATE_REFUSED_PROMPT := "GATE REFUSED \u2014 OUTLAW"
+const GATE_REFUSED_FUNDS_PROMPT := "GATE REFUSED \u2014 NOT ENOUGH CR"
 const INTERACT_ACTION: StringName = &"interact"
 const WARP_ACTION: StringName = &"warp"
 ## ENGINE_SPEC section 13 `WARP_CHANNEL`.
@@ -210,9 +219,9 @@ const COUNTERMEASURE_ACTIONS: Dictionary = {
 const TARGET_NEXT_ACTION: StringName = &"target_next"
 
 ## Section 2.7 / decision 7: a death's cargo drops at the wreck with a 5-minute recovery
-## window. `Pickup` owns a 60 s lifetime (section 13) and publishes no override, so the
-## window is expressed through its own age clock; a `lifetime` argument on
-## `Pickup.setup` is the clean fix (reported, slice 4).
+## window. The window is a `Pickup.setup` lifetime argument (L23's seam) rather than an
+## age offset against the shared 60 s field lifetime, and it is an absolute stamp on the
+## one WorldClock so the wreck outlives the scene that drew it (see `_wreck_drops`).
 const DROP_WINDOW := 300.0
 
 ## The group `PlayerShip` joins in `_ready` and both the pickups' tractor and the NPCs'
@@ -233,7 +242,25 @@ const EVENT_KILL := "KILL"
 ## across the crossing. The outgoing scene names the destination here before it routes;
 ## `_ready` reads it and seeds the packs from the filed store instead. A static because
 ## the instance that wrote it is gone by the time the new one boots.
+##
+## L154's stale flag: only a route that lands a *game* scene consumes it, so every route
+## that lands something else (a dock, the respawn) drops it (`_clear_transit_flag`), and a
+## scene that leaves while a flag it never armed is set clears it in `_exit_tree`. Without
+## that, a crossing whose route was dropped leaves the flag armed through a station visit
+## and the next launch reads `_seed_ammo_from_store` instead of drawing the hold.
 static var _transit_destination: StringName = &""
+
+## L23 / §2 dec. 7's recovery window, one entry per **uncollected** stack a wreck dropped:
+## `{sector, position, item, amount, expires, face}` with `expires` an absolute WorldClock
+## stamp and `face` the scene's live pickup (null once that scene is gone). The window
+## belongs to the sector, not to the scene that happened to draw it: the respawn route and
+## a crossing discard the flight scene, so a scene's drop would otherwise die with it and
+## §2 dec. 7's "5-minute recovery window" would be a 1.4-second one. Each game scene
+## re-materialises the entries of its own sector with the seconds they have left, through
+## the same `Pickup.setup` lifetime seam a fresh drop uses (`_materialise_wreck_drops`),
+## and a collected stack leaves the ledger at once (`Pickup.collected`). Static for the
+## same reason `_transit_destination` is: the scene that wrote it is gone by then.
+static var _wreck_drops: Array[Dictionary] = []
 
 const HUD_METHODS: Array[StringName] = [
 	&"bind",
@@ -331,9 +358,27 @@ var _ammo_seed: Array[int] = []
 
 var _dead := false
 
+## L154's bookkeeping: whether *this* scene armed `_transit_destination` for a crossing
+## whose successor game scene is still coming. A route can be dropped while the Router is
+## busy, and the scene then leaves by another route (a dock), so `_exit_tree` may only
+## clear a flag this scene did not arm itself.
+var _crossing_routed := false
+
+## The gate ring the ship is inside, as the prompt ladder last read it, so leaving the ring
+## (or entering another) disarms a running charge (L152: `cancel_jump` was dead code).
+var _gate_in_ring: Node = null
+
+## The wreck drops this scene has materialised, so a sector change takes its own faces
+## down while the ledger keeps their entries (`_clear_drop_faces`).
+var _drop_faces: Array[Node2D] = []
+
 ## 13 §7's heat clock: seconds of play since the last decay tick. A float on this scene's
 ## own tick, not a Timer (17 §4); `WorldClock` is untouched and keeps its five consumers.
-var _heat_play_time := 0.0
+## **Static** (L150, beside `_transit_destination`): `Router.route` rebuilds this scene on
+## every crossing and every launch, so a scene-scoped bank would discard the minute in
+## progress - up to one heat point per rebuild - against 13 §2's "−1 per minute of play,
+## **anywhere**".
+static var _heat_play_time := 0.0
 ## 13 §3's hunter bookkeeping, all of it per sector entry (`_spawn_sector` re-arms it):
 ## whether a Wanted/Outlaw wing has already been spawned for this entry, and the countdown
 ## to the perma-tail respawn after the wing dies. The faction is never stored - it is the
@@ -382,13 +427,22 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	if _camera_zoom_tween != null and _camera_zoom_tween.is_valid():
 		_camera_zoom_tween.kill()
+	## L154: a scene that leaves with a crossing flag it did *not* arm is leaving for a
+	## route that will never boot a game scene, so the flag is stale - drop it, or the next
+	## launch seeds its ammo from the store instead of drawing the hold. A flag this scene
+	## armed is the real crossing's and stays: the successor game scene's `_ready` consumes
+	## it (the Router frees that scene before the next one is added, so this is the only
+	## window the flag may survive in).
+	if not _crossing_routed:
+		_clear_transit_flag()
+	_clear_drop_faces()
 	_disconnect_profile()
 
 
 func _physics_process(delta: float) -> void:
 	if _dead:
 		## Section 7's death flow replaces the ship; until the loading route lands the
-		## wreck neither flies nor fires (the hull is switched off in `_on_ship_died`).
+		## wreck is inert (`PlayerShip.die` holds the state and its monitor).
 		return
 	_update_weapon_input()
 	_update_countermeasure_input()
@@ -426,7 +480,7 @@ func on_route(params: Dictionary) -> void:
 	_push_sector_name()
 	## The transition flag has done its work in `_ready`; a same-scene `on_route` (a probe
 	## or a test) must not leave it armed for the next real launch.
-	_transit_destination = &""
+	_clear_transit_flag()
 
 
 ## Section 9.8 item 4: the wheel zooms the flight camera, and section 3.1's LMB
@@ -713,6 +767,9 @@ func _spawn_sector(row: Dictionary) -> void:
 		_pending_spawn = _sector.populate(row)
 		_bind_travel_seams()
 	_reveal_pois_for_cartograph()
+	## §2 dec. 7 / L23: the wreck's uncollected drops belong to the sector, so the entry
+	## that knows which sector this scene is now in is the one that re-materialises them.
+	_materialise_wreck_drops()
 
 
 ## 15 section 4's Cartograph (CONTRACTS section 20): a launch whose fitted instances
@@ -862,6 +919,7 @@ func _update_cancel_input() -> void:
 ## scanner's channel, which outranks the salvage feed, which outranks the dock.
 func _update_dock_prompt() -> void:
 	var gate := _gate_under_ship()
+	_track_gate_ring(gate)
 	if gate != null:
 		_push_gate_prompt(gate)
 		return
@@ -900,24 +958,61 @@ func _dock_refused() -> bool:
 	return int(profile.call(&"standing_of", faction)) <= STANDING_OUTLAW
 
 
-## 11 §5's gate readout: `GATE_REFUSED_PROMPT` at the Outlaw heat tier (13 §3), otherwise
-## the jump line (`GATE_PROMPT_FORMAT`, the destination's name and fee). `interact`
-## confirms through `Gate.jump` (17 §5's law; a refusal writes nothing), and the ring's
-## own charge-up raises `jumped` when it completes.
+## 11 §5's gate readout, the one ladder that carries every gate line: `GATE_REFUSED_PROMPT`
+## at the Outlaw heat tier (13 §3), `GATE_REFUSED_FUNDS_PROMPT` when the account cannot pay
+## `Gate.fee_for` (L153: the ring has always answered -2 and no rung read it), otherwise the
+## jump line (`GATE_PROMPT_FORMAT`, the destination's name and fee). `interact` confirms
+## through `Gate.jump` (17 §5's law; a refusal writes nothing), and the ring's own charge-up
+## raises `jumped` when it completes.
+##
+## A running charge-up skips the refusal rungs: the fee is already paid, so a hull that is
+## short *because* it paid must not be told it cannot afford its own jump.
 func _push_gate_prompt(gate: Node) -> void:
 	var tier := _player_heat_tier()
-	if tier == NpcRegistryScript.HEAT_OUTLAW:
-		_push_prompt(GATE_REFUSED_PROMPT)
-	else:
-		_push_prompt(
-			GATE_PROMPT_FORMAT % [
-				String(gate.call(&"destination_name")), int(gate.call(&"fee_for", tier))
-			]
-		)
+	var line := GATE_PROMPT_FORMAT % [
+		String(gate.call(&"destination_name")), int(gate.call(&"fee_for", tier))
+	]
+	if not bool(gate.call(&"is_charging")):
+		if tier == NpcRegistryScript.HEAT_OUTLAW:
+			line = GATE_REFUSED_PROMPT
+		elif not _gate_affordable(gate, tier):
+			line = GATE_REFUSED_FUNDS_PROMPT
+	_push_prompt(line)
 	if bool(gate.call(&"is_charging")):
 		return
 	if InputMap.has_action(INTERACT_ACTION) and Input.is_action_just_pressed(INTERACT_ACTION):
 		_request_gate_jump(gate)
+
+
+## Whether the account can pay the ring's fee at the player's own heat tier - the same
+## `fee_for` and the same `can_afford` call `Gate.jump` makes, read here so the prompt and
+## the refusal can never disagree. A missing profile reads as "cannot pay", which is what
+## `jump` answers too (17 §5's law).
+func _gate_affordable(gate: Node, tier: StringName) -> bool:
+	var profile := _profile()
+	if profile == null or not profile.has_method(&"can_afford"):
+		return false
+	return bool(profile.call(&"can_afford", int(gate.call(&"fee_for", tier))))
+
+
+## L152: the ring the ship is inside, tracked as the ladder reads it, so leaving it (or
+## entering another) calls off a running charge. The charge is the ring's own tick, so
+## nothing else in this scene may stop it - and the fee paid at confirm stays paid, which is
+## 11 §2.1's own reading (the confirm is the transaction).
+func _track_gate_ring(gate: Node) -> void:
+	if gate == _gate_in_ring:
+		return
+	if _gate_in_ring != null and is_instance_valid(_gate_in_ring):
+		_gate_in_ring.call(&"cancel_jump")
+	_gate_in_ring = gate
+
+
+## Calls off a running charge on the ring the ship is inside - the damage and death halves
+## of L152 (`_on_ship_damage_taken`, `_on_ship_died`); the zone-exit half is
+## `_track_gate_ring`.
+func _cancel_gate_charge() -> void:
+	if _gate_in_ring != null and is_instance_valid(_gate_in_ring):
+		_gate_in_ring.call(&"cancel_jump")
 
 
 ## The ring under the ship, or null. The gate is the sector's geometry (its own
@@ -989,15 +1084,28 @@ func _transition_to_sector(dest_number: int) -> void:
 	_request_sector_route(row)
 
 
+## Arms the crossing flag and asks the `loading` bridge for the destination game scene.
+## `_crossing_routed` records that *this* scene armed it: the Router can drop the request
+## while it is busy, and the scene then leaves by another route, so `_exit_tree` may only
+## clear a flag somebody else armed (L154).
 func _request_sector_route(row: Dictionary) -> void:
 	if route_requested.get_connections().is_empty():
 		return
 	_transit_destination = StringName(row.get(&"id", &""))
+	_crossing_routed = true
 	_file_damage_report()
 	route_requested.emit(
 		ROUTE_LOADING,
 		{PARAM_DESTINATION: DESTINATION_GAME, PARAM_SECTOR: StringName(row[&"id"])}
 	)
+
+
+## L154's one clear: the crossing flag is consumed by the next game scene's `_ready`, so
+## any route that lands something else - a dock, the respawn, a scene leaving on a route it
+## did not arm - drops it here rather than leaving it for a launch to misread.
+func _clear_transit_flag() -> void:
+	_transit_destination = &""
+	_crossing_routed = false
 
 
 func _on_gate_jumped(dest_sector: int) -> void:
@@ -1152,6 +1260,9 @@ func _request_dock() -> void:
 		return
 	if route_requested.get_connections().is_empty():
 		return
+	## L154: the station route boots no game scene, so a crossing flag still armed (its own
+	## route was dropped while the Router was busy) must not survive into the next launch.
+	_clear_transit_flag()
 	_file_damage_report()
 	_file_docked_faction()
 	route_requested.emit(ROUTE_LOADING, {PARAM_DESTINATION: DESTINATION_STATION})
@@ -1241,11 +1352,14 @@ func _finish_warp() -> void:
 
 ## Section 7: the channel breaks on damage. The ship raises this from the hull and
 ## shield signals, so a hit fully absorbed by the shield breaks it too. S6 extends the
-## same break to the derelict scan channel (11 §3.1: "interruptible").
+## same break to the derelict scan channel (11 §3.1: "interruptible"), and L152 gives the
+## gate's charge-up the same break: a paid jump that a hull hit interrupts calls off the
+## ring's charge (`cancel_jump`), which was dead code until S21.
 func _on_ship_damage_taken(_amount: float) -> void:
 	_cancel_warp()
 	if _scan_poi != null and is_instance_valid(_scan_poi):
 		_scan_poi.call(&"interrupt")
+	_cancel_gate_charge()
 
 
 ## The two section 9.9 HUD additions land with W5, so the calls are method-guarded
@@ -2512,10 +2626,15 @@ func _sector_owner() -> StringName:
 	return NpcRegistryScript.space_owner(_sector_row_id)
 
 
-## Section 7's death flow, the minimal shape the brief pins: hull 0 → the wreck's
-## explosion (the shockwave §13's `EXPLOSION_P0` is labelled for), the hold dropped at the
+## Section 7's death flow, in §7's own order: hull 0 → the wreck's explosion (the blast's
+## face and the shockwave §13's `EXPLOSION_P0` is labelled for), the hold dropped at the
 ## wreck with its recovery window, then a respawn docked. 14 §3's insurance, the mercy
 ## clause and the hull replacement are slice 4 and are reported, not guessed.
+##
+## The hull's own half is `PlayerShip.die` (L24's real death state: no input, no force or
+## torque, a contact monitor that charges nothing) and it runs **first**, because the blast
+## hangs off the death and §7 puts the explosion before the wreck; this scene's own gate -
+## the `player_ship` group - follows in `_switch_ship_off`.
 ##
 ## Nothing is filed to the profile's vitals here on purpose: a 0-hull record would be the
 ## next launch's starting state, and the ship that comes back is 14 §3's business.
@@ -2524,6 +2643,8 @@ func _on_ship_died() -> void:
 		return
 	_dead = true
 	_cancel_lock()
+	## L152: a charge-up that outlived the hull would cross the sector from a wreck.
+	_cancel_gate_charge()
 	_switch_ship_off()
 	if _hud != null:
 		_hud.call(&"clear_target")
@@ -2535,19 +2656,14 @@ func _on_ship_died() -> void:
 	_respawn_docked()
 
 
-## The wreck stops flying and stops firing the frame it dies: the hull's own physics and
-## unhandled input are switched off (its reactor ticks, its guns' trigger and the fly-to
-## order all live there), and it leaves the `player_ship` group, because a wreck is not a
-## hull anything tractors to - without that, the hold's pickups (spawned on the wreck) would
-## be pulled straight back aboard by the dead ship and an uncollected death would cost
-## nothing.
-##
-## This is the wiring's own gate: `PlayerShip` has no death state and this pass may not
-## reshape its flight code (reported for slice 4).
+## The wiring's own half of the death: the wreck leaves the `player_ship` group, because a
+## wreck is not a hull anything tractors to - without that, the hold's pickups (spawned on
+## the wreck) would be pulled straight back aboard by the dead ship and an uncollected death
+## would cost nothing - and the weapon component stops ticking. The hull's own inertness is
+## `PlayerShip.die`'s (L24: a state on the hull, not this function's switch-off).
 func _switch_ship_off() -> void:
 	if _ship != null:
-		_ship.set_physics_process(false)
-		_ship.set_process_unhandled_input(false)
+		_ship.call(&"die")
 		_ship.remove_from_group(PLAYER_GROUP)
 	if _guns != null:
 		_guns.set_physics_process(false)
@@ -2586,12 +2702,10 @@ func _bodies_near() -> Array[Node]:
 
 ## Decision 7 / §2.7: "cargo spawns as pickups at the wreck with a 5-minute recovery
 ## window". The hold goes over the side through the only cargo owner (`remove_cargo`, 17
-## §5 rule 2) as one pickup per stack, one `economy_log` line each, and the window rides
-## `Pickup`'s own age clock (see `DROP_WINDOW`).
-##
-## Reported: the recovery itself needs the wreck to outlive the transition to the station
-## screen, which today's single-scene world cannot do (the flight scene is discarded on the
-## respawn route), so a death costs the hold until slice 4 persists the wreck.
+## §5 rule 2) as one pickup per stack, one `economy_log` line each, and the window is
+## `DROP_WINDOW` carried on the pickup's own lifetime argument *and* filed in the sector
+## ledger, so the respawn route's scene rebuild re-materialises the drop instead of ending
+## the window with the scene that drew it (L23; `_wreck_drops`).
 func _drop_cargo_at_wreck() -> void:
 	var profile := _profile()
 	if profile == null or _ship == null:
@@ -2612,14 +2726,76 @@ func _drop_cargo_at_wreck() -> void:
 
 
 ## One dropped stack. Credits are not cargo (they are the wallet) so the drop is always a
-## cargo pickup; the window is expressed as the pickup's starting age, because
-## `Pickup.LIFETIME` is the only lifetime knob it has and it is a constant.
+## cargo pickup. The entry is the window's record - an absolute `DROP_WINDOW` ahead on the
+## WorldClock, so a scene that comes later can hand the pickup the seconds it has left -
+## and the pickup is its visible face, carrying the same figure through `Pickup.setup`'s
+## lifetime argument.
 func _spawn_drop(item_id: StringName, amount: int, wreck: Vector2) -> void:
+	var entry := {
+		&"sector": String(_sector_row_id),
+		&"position": wreck,
+		&"item": item_id,
+		&"amount": amount,
+		&"expires": ClockScript.now() + int(DROP_WINDOW),
+		&"face": null,
+	}
+	_wreck_drops.append(entry)
+	entry[&"face"] = _materialise_drop(entry, DROP_WINDOW)
+
+
+## Every wreck drop this sector still has inside its window, as live pickups. The window
+## is the ledger's (an absolute stamp), so a scene that boots mid-window - after the
+## respawn route, after a crossing - hands each entry the seconds it has left through the
+## same `Pickup.setup` lifetime seam a fresh drop uses, and an entry past its stamp is
+## dropped for good. Called from `_spawn_sector`, the one place that knows which sector
+## this scene is in (a crossing re-spawns the sector inside the same scene, so the faces
+## of the sector being left come down first).
+func _materialise_wreck_drops() -> void:
+	_clear_drop_faces()
+	var now := ClockScript.now()
+	var sector := String(_sector_row_id)
+	for i in range(_wreck_drops.size() - 1, -1, -1):
+		var entry: Dictionary = _wreck_drops[i]
+		var expires := int(entry.get(&"expires", 0))
+		if expires <= now:
+			_wreck_drops.remove_at(i)
+			continue
+		if String(entry.get(&"sector", "")) != sector:
+			continue
+		entry[&"face"] = _materialise_drop(entry, float(expires - now))
+
+
+## One ledger entry's face: the pickup itself, positioned at the wreck and carrying the
+## seconds `window` says are left. The same `Pickup.collected` signal a *fresh* drop is
+## wired to, so a stack taken aboard leaves the ledger the moment it is taken.
+func _materialise_drop(entry: Dictionary, window: float) -> Node2D:
 	var pickup: Node2D = PickupScript.new() as Node2D
 	add_child(pickup)
-	pickup.global_position = wreck
-	pickup.call(&"setup", item_id, amount, false)
-	pickup.set(&"_age", PickupScript.LIFETIME - DROP_WINDOW)
+	pickup.global_position = entry[&"position"]
+	pickup.call(&"setup", entry[&"item"], int(entry[&"amount"]), false, window)
+	pickup.connect(&"collected", _on_wreck_drop_collected.bind(pickup))
+	_drop_faces.append(pickup)
+	return pickup
+
+
+## The ledger's other door: a collected stack is gone, so its entry goes with it. The face
+## is the entry's own, compared by identity (Objects compare by instance).
+func _on_wreck_drop_collected(_item_id: StringName, _amount: int, face: Node2D) -> void:
+	for i in range(_wreck_drops.size() - 1, -1, -1):
+		if _wreck_drops[i].get(&"face") == face:
+			_wreck_drops.remove_at(i)
+			return
+
+
+## Takes this scene's drop faces down without touching the ledger: a sector change destroys
+## the pickups the old sector was drawn with, and the entries outlive them by design.
+func _clear_drop_faces() -> void:
+	for face: Node2D in _drop_faces:
+		if is_instance_valid(face):
+			face.free()
+	_drop_faces.clear()
+	for entry: Dictionary in _wreck_drops:
+		entry[&"face"] = null
 
 
 ## 14 §3's first clause, the only one this slice can honour: "on death you respawn docked
@@ -2638,4 +2814,8 @@ func _respawn_docked() -> void:
 	## stays inert rather than emitting into nothing - the same guard docking uses.
 	if route_requested.get_connections().is_empty():
 		return
+	## L154: this route lands the station, never a game scene, so a crossing flag that never
+	## found its successor must not survive it (`_clear_transit_flag`, `_request_dock`'s own
+	## reason).
+	_clear_transit_flag()
 	route_requested.emit(ROUTE_LOADING, {PARAM_DESTINATION: DESTINATION_STATION})

@@ -623,14 +623,13 @@ func _on_cell_focused(payload: Dictionary) -> void:
 ## ------------------------------------------------------------------- the OWNED MODULES rows
 
 
-## The owned module ids and their totals, one entry per base id: the inventory's own keys
-## aggregated through `base_module_id`, and an id the catalogue cannot name (no name, no slot,
-## no draw) never becomes a row.
-##
-## The sum is over the bag's own keys and not `module_count(base_id)`, which answers one
-## record's count: since save v6 an instance is its own key at `count` 1, so three `w_laser`
-## instances are three keys with `module_count(&"w_laser") == 0` (K1's measured note).
-func _owned_counts(profile: ProfileScript) -> Dictionary:
+## The bag's own **unit** sum per base id: every key the inventory carries, its record's
+## `module_count` added under `base_module_id` - the one accessor path both aggregates below
+## read (the bag's accessor law, S21-B2/A6: `module_count` is a *record* read, never a
+## base-id aggregate, so a base whose units are all instances answers 0 there and is
+## summed here from the keys themselves). An id the catalogue cannot name (no name, no
+## slot, no draw) never enters the sum.
+func _bag_units(profile: ProfileScript) -> Dictionary:
 	var counts: Dictionary = {}
 	if profile == null:
 		return counts
@@ -643,6 +642,20 @@ func _owned_counts(profile: ProfileScript) -> Dictionary:
 		if ModuleCatalog.module(base).is_empty():
 			continue
 		counts[base] = int(counts.get(base, 0)) + held
+	return counts
+
+
+## The owned module ids and their totals, one entry per base id, plus (A6/L124) the fit's
+## own cells the bag no longer carries: a fitted instance whose record is gone resolves to
+## itself through `_base_id`, and keying it by that id is what still renders **one** row
+## for a module the hull is flying - its `OWNED x<n>` cell then reads 0 spares.
+func _owned_counts(profile: ProfileScript) -> Dictionary:
+	var counts := _bag_units(profile)
+	if profile == null:
+		return counts
+	for entry: StringName in _lost_entries(profile):
+		if not counts.has(entry):
+			counts[entry] = 0
 	return counts
 
 
@@ -660,24 +673,44 @@ func _instances_of(profile: ProfileScript, base_id: StringName) -> Array[StringN
 	return ids
 
 
-## The base id's held total, summed the way `_owned_counts` sums it: every bag key whose
-## `base_module_id` is that base, its count added. `module_count(base_id)` cannot answer this
-## for an instance-keyed bag (see `_owned_counts`).
+## The base id's own unit total, read off `_bag_units` - the same sum `_owned_counts`
+## carries, so a row's `OWNED x<n>` cell and the row set can never disagree. A base the bag
+## does not carry (including a lost fitted instance, `_lost_entries`) reads 0.
 func _owned_total(profile: ProfileScript, base_id: StringName) -> int:
-	var total := 0
-	if profile == null or base_id == &"":
-		return total
-	for key: Variant in profile.call(&"modules"):
-		var entry := StringName(str(key))
-		var held := int(profile.call(&"module_count", entry))
-		if held <= 0:
-			continue
-		if StringName(profile.call(&"base_module_id", entry)) == base_id:
-			total += held
-	return total
+	if base_id == &"":
+		return 0
+	return int(_bag_units(profile).get(base_id, 0))
 
 
-## The row ids in render order: `ShipFit.FIT_SLOT_KEYS` first, catalogue order inside a group.
+## The fit's own cells whose module the bag can no longer resolve (L124/A6): `_base_id`
+## answers such an entry itself and the catalogue cannot name it, which is a fitted
+## instance whose record is gone - `take_module` called on a fitted instance is the one
+## call that opens it. Each id is listed once, and `_owned_counts` renders it as its own
+## row rather than letting the strip drop a module the hull is flying.
+func _lost_entries(profile: ProfileScript) -> Array[StringName]:
+	var lost: Array[StringName] = []
+	if profile == null:
+		return lost
+	var hull := _active_hull(profile)
+	var fit := _resolved_fit(profile, hull)
+	for slot_key: StringName in ShipFit.FIT_SLOT_KEYS:
+		var cells := 1 if slot_key == POWER_SLOT else ShipFit.slot_capacity(hull, slot_key)
+		for index in cells:
+			var entry := _cell_module(fit, slot_key, index)
+			if entry == &"" or lost.has(entry):
+				continue
+			if _base_id(profile, entry) != entry:
+				continue
+			if not ModuleCatalog.module(entry).is_empty():
+				continue
+			lost.append(entry)
+	return lost
+
+
+## The row ids in render order: `ShipFit.FIT_SLOT_KEYS` first, catalogue order inside a group,
+## and (A6/L124) the fit's unresolved ids last, in the fit's own order - a fitted instance
+## whose bag record is gone carries no catalogue slot to group it under, and dropping it
+## would hide a module the hull is flying.
 func _owned_ids(counts: Dictionary) -> Array[StringName]:
 	var ids: Array[StringName] = []
 	for slot_key: StringName in ShipFit.FIT_SLOT_KEYS:
@@ -686,6 +719,11 @@ func _owned_ids(counts: Dictionary) -> Array[StringName]:
 				continue
 			if _slot_key_of(module_id) == slot_key:
 				ids.append(module_id)
+	for entry: Variant in counts:
+		var module_id := StringName(str(entry))
+		if ids.has(module_id) or not ModuleCatalog.module(module_id).is_empty():
+			continue
+		ids.append(module_id)
 	return ids
 
 

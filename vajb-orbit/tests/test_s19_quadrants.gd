@@ -89,10 +89,17 @@ const FIXTURE_FIT: Dictionary = {
 
 ## AC6's byte-identity yardstick: the four forbidden files' SHA-256s, taken at the wave's
 ## start (pre-grep, before the first edit). Any agent that touches one of these moves its
-## hash, so the suite is the wave's own seal.
+## hash, so the suite is the wave's own seal. S21's re-pin of the `npc_ship.gd` entry (its
+## own comment) is the one owner-ruled exception; the other three are still the wave start.
 const FORBIDDEN_FILES: Dictionary = {
 	"res://game/damage.gd": "5cabf3d9302fe942aff2ad97b4f3dc85c298e7e204fffb0e86f89e444cbf6269",
-	"res://game/npc_ship.gd": "de8596b161dda9edbaef8e39f36c460303b4902d48cdacdbf64b1979c91981be",
+	## S21 (owner-ruled 2026-09-28, `S21_BRIEF.md` amendment 3): A3's accepted ram
+	## authority was written into this file by S21-B1, and B3's own half of that same
+	## amendment (the NPC hull mask's widening) moves it once more, so the pin is the
+	## finished tree's reading. B1's accepted fix hashed this file
+	## 728268c53526dd8436c236ba923528bffea123b31ec0237438fc2baaa8ab661a and the mask
+	## widening is the only other edit in the wave - disclosed in `S21-B3_report.md`.
+	"res://game/npc_ship.gd": "a694170c9783b44ed1dd91e07d0632288535eef91ef391f4036ff2ede9b889f7",
 	"res://game/npc_brain.gd": "e39440bf410b535c50f924208290e54dc8085eea52731890b778a4ad3fbe5d22",
 	"res://game/weapons.gd": "fcdc549f0b0b3c6a3523e79af2b4797472f65b380f88b9771837b3b6497f8279",
 }
@@ -649,6 +656,18 @@ func test_the_four_forbidden_files_are_byte_identical() -> void:
 			FORBIDDEN_FILES[path],
 			"%s is byte-identical" % path
 		)
+
+
+## L243: 09 section 3.3's item-5 `direction` key is spelled in two files - `PlayerState`
+## duplicates `Damage`'s const so the state never preloads the pipeline - and nothing
+## asserted the two agree. A drift would read every real hit from dead ahead (x1.0) with
+## the gate still green; this is the row that pins them as one spelling.
+func test_the_direction_ctx_key_is_one_spelling() -> void:
+	assert_eq(
+		PlayerStateScript.CTX_DIRECTION,
+		DamageScript.CTX_DIRECTION,
+		"the state's `direction` key is the pipeline's own, not a copy that can drift"
+	)
 
 
 ## ---------------------------------------------------------------------------

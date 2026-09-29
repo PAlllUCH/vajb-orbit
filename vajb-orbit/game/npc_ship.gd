@@ -60,11 +60,21 @@ const BODY_NODE: StringName = &"HullBody"
 const SHAPE_NODE: StringName = &"Shape"
 
 ## The ship layer convention of the shipped tree (`player_ship.tscn`: the hull body is
-## layer 2 and masks only the rock layer), so ships are solid to rocks and to nothing
-## else - which is also why an NPC may carry a contact monitor without double-charging a
-## ram: two ship bodies never pair, so a rock is the only thing this monitor can report.
+## layer 2 with a mask of rock **and ship**, L22's mask), so ships are solid to rocks and
+## to each other. S21 (owner-ruled, `S21_BRIEF.md` amendment 3) widened this hull's body
+## mask with the player's: Godot pairs two bodies when **either** side's mask names the
+## other's layer, so a pair exists through one side, but with both sides naming each other
+## **any** hull pair resolves - NPC-vs-NPC included - and both hulls report the same
+## contact, which is why `_on_body_entered` asks `PlayerShip.ram_authority` and why an NPC
+## that is not the authority charges nothing (L22's "one side charges both halves").
 const HULL_LAYER := 2
-const HULL_MASK: int = AsteroidScript.COLLISION_LAYER
+const HULL_MASK: int = AsteroidScript.COLLISION_LAYER | HULL_LAYER
+
+## The brain's own line-of-sight mask keeps the spec's rock-blocking check. It is **not**
+## `HULL_MASK`: the ray is cast to the contact's centre, so a mask that also named the ship
+## layer would report the target's own hull as the blocker and no NPC could ever see what
+## it is shooting at.
+const LOS_MASK: int = AsteroidScript.COLLISION_LAYER
 
 ## The shipped art scale (the player's hull sprite draws at this scale in
 ## `player_ship.tscn`, and `sector.gd` draws the station at it too). The hull circle's
@@ -535,8 +545,18 @@ func _sync_hull_transform() -> void:
 ## kinetic damage `impact.gd` owns, shield-first, and offers the same figure to the peer.
 ## The closing speed is the velocity carried into the step (`_last_velocity`), measured
 ## along the line between the centres.
+##
+## L22 / 18 §2.1 row 15: a rock is this monitor's only single-sided contact. When the peer
+## is another *hull*, both monitors report the same impact and `PlayerShip.ram_authority`
+## settles which one resolves it; the non-authority side charges nothing, and the authority
+## charges both halves - its own through `take_damage`, the peer's through the ship behind
+## the peer's body (the offer below walks a `HullBody` up to its ship, exactly as
+## `weapons.gd:_sink_for` does for a shot).
 func _on_body_entered(other: Node) -> void:
 	if other == null or _done:
+		return
+	var peer_hull := PlayerShip.hull_behind(other)
+	if peer_hull != null and peer_hull != self and not PlayerShip.ram_authority(self, peer_hull):
 		return
 	var damage := IMPACT.collision_damage(
 		_hull_mass(), _peer_mass(other), _closing_speed(other)
@@ -544,8 +564,9 @@ func _on_body_entered(other: Node) -> void:
 	if damage <= 0.0:
 		return
 	take_damage(damage)
-	if other.has_method(&"apply_collision_damage"):
-		other.call(&"apply_collision_damage", damage)
+	var sink: Object = peer_hull if peer_hull != null else other
+	if sink.has_method(&"apply_collision_damage"):
+		sink.call(&"apply_collision_damage", damage)
 
 
 func _closing_speed(other: Node) -> float:
@@ -572,15 +593,15 @@ func _peer_velocity(other: Node) -> Vector2:
 
 
 ## Section 5's LOS check, the shipping half: a physics ray over the rock layer
-## (`Asteroid.COLLISION_LAYER`), so a rock between the hull and its contact blocks the
-## line exactly as the spec requires. Installed into the brain at setup.
+## (`LOS_MASK`, never the hull's own widened mask), so a rock between the hull and its
+## contact blocks the line exactly as the spec requires. Installed into the brain at setup.
 func _line_of_sight(from: Vector2, to: Vector2) -> bool:
 	if not is_inside_tree():
 		return true
 	var world := get_world_2d()
 	if world == null:
 		return true
-	var query := PhysicsRayQueryParameters2D.create(from, to, HULL_MASK)
+	var query := PhysicsRayQueryParameters2D.create(from, to, LOS_MASK)
 	var hit := world.direct_space_state.intersect_ray(query)
 	return hit.is_empty()
 
@@ -909,6 +930,14 @@ func impact_body() -> RigidBody2D:
 
 func velocity() -> Vector2:
 	return _body.linear_velocity if _body != null else Vector2.ZERO
+
+
+## The velocity the hull carried *into* the step a contact was reported in, the addendum
+## `PlayerShip.step_velocity` publishes: the live body has already been solved by then, so
+## this stable reading is what `ram_authority` compares across the two monitors of one
+## hull-vs-hull impact (L22 / 18 §2.1 row 15).
+func step_velocity() -> Vector2:
+	return _last_velocity
 
 
 func apply_impulse(impulse: Vector2) -> void:

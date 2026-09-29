@@ -287,6 +287,7 @@ func setup(
 	_bore_ore = maxf(bore, float(yield_units)) if bore >= 0.0 else derive_bore(yield_units)
 	_reserve = maxf(_bore_ore - float(yield_units), 0.0)
 	_shatter_mining = true
+	_cleave_child = false
 	add_to_group(ROCK_GROUP)
 	collision_layer = COLLISION_LAYER
 	collision_mask = COLLISION_MASK

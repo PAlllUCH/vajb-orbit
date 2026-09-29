@@ -121,12 +121,32 @@ sector edges, coder item 17) closed and verified 2026-09-25:** gate 866 →
 2026-09-25 answers stand (spawn mix kept; the §6/§13/§15 rewording applied on
 delegation; the D12 fix wave and D8 item 9 ditched for the armory rework).
 
-**Current state: the universal gate reads `[SUMMARY] passed=917 failed=0`**
-(measured 2026-09-28 on a fresh scratch store; CONTRACTS §9 carries the
-authority block, hermetic on scratch stores). The `914` figures in the S19
-blocks below are that close-out's measurement — `d3e246e` added
-`tests/test_wiring_map.gd`'s 3 rows afterwards with no gate-figure update, which
-is why S21 opens on 917.
+**Current state: the universal gate reads `[SUMMARY] passed=941 failed=0`**
+(S21's close-out, 2026-09-29: twice on fresh scratch stores, identical on a copy
+of the live account, and the live `profile.cfg` byte-identical after; CONTRACTS
+§9 carries the authority block, hermetic on scratch stores).
+
+**Updated 2026-09-29 (S21, closed): the P3 bugfix pillar ships — gate 917 →
+941/0.** Item 27 ran as **three sequential builders** (owner-ruled 2026-09-28):
+B1 the hull and flight scene (A1/A2/A3/A4b/A9a/A9b), B2 the account and station
+(A4a/A5/A6/A7/A8), B3 the world bodies, pane copy and harness (A9c/A9d/A10/A11)
+plus **two owner-ruled pin moves** — the S19 byte-seal's `npc_ship.gd` hash
+re-pinned to the finished tree's `a694170c…`, and A3's reach widened to
+NPC-vs-NPC with `LOS_MASK` split out and both moved rows re-pinned. New suite
+`tests/test_s21_stability.gd` (23 rows); `verify --baseline s21_start` green
+(`"problems": []`); `damage.gd` byte-identical. Review **1 HIGH (bucket 2 — brief
+§8's tests-that-move list missing the two `test_s5_*` suites, L246; landed by
+S21-F1 as the list amendment on the S19 precedent) / 1 MED (S20's own
+silent-abort row at `test_s20_chrome_unify.gd:276`, cured by F1) / 3 LOW
+(L247–L249)**. **22 backlog rows closed** (L18/L22/L23/L24/L73/L90/L93/L110/
+L114/L122/L124/L130/L131/L136/L150/L152/L153/L154/L176/L215/L237/L243) with
+their reversals; the three R-S21 rows ship at their PROPOSED values (ticks
+M1/M2/M3 still open). Incident: the first F1 wedged 28 minutes on an **unbounded
+Godot `--script` run** and needed a `python3 os.kill` SIGKILL — the shell's
+`kill` did not reach it, so bound every worker probe with `--quit-after`. Recap
+`MASTER_REPORT.md` §6. **D14 is closed** (owner 2026-09-29; its A5.4 chrome
+table landed in `4c0de38`), so the designer lane's live item is **16 = D15**,
+which runs next per the queue; coder item 28 (S22) starts on D15's tick sheet.
 **Owner-ruled chrome cure, 2026-09-26 (UI_SPEC §3.10 Amendment 5, gate `914/0`
 unmoved — no rows added):** after the S19 close-out the owner ruled the ARMORY's
 look against AUCTION/SHIPYARD (*"i want all to look this clean"*, *"we always
@@ -150,10 +170,10 @@ rows; forced by A4.3, so a list amendment, never a revert — no fixer may take
 them); recap `MASTER_REPORT.md` §6.
 **Coder queue: empty** — items 25 (S20) and 26 (S19) both closed 2026-09-26;
 the next five-piece is the owner's call.
-**Live designer item: D14 ARMORY chrome composition** (item 15 in
-`dispatch_designer.md`; brainstorm first, then Amendment 5's follow-ups — the
-deeper container composition and any small-surface art question; brief +
-captures in `slices/D14-armory-chrome-composition/`). **Parked (owner-gated, not
+**Live designer item: 16 = D15 flight feel & feedback** (queued after D14, which
+the owner closed 2026-09-29 — its Amendment 5 follow-ups and A5.4 chrome table
+landed in `4c0de38`); coder item 28 (S22) implements D15's tick sheet. Briefs and
+in-place captures: `slices/D15-flight-feedback/`, then `D16-station-ui` after it. **Parked (owner-gated, not
 queued):** the S12 ore caps/scale rows (the owner's §10 ticks — do not
 implement before that wave is briefed), slice 4's remainder (bosses/arena —
 14 §5, blocked on P4 contracts + boss art), the §13 turn/coast column ticks
@@ -168,7 +188,7 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 
 | Pos | Lane item | Wave | Runs after | The collision/dependency that forces the order |
 |---|---|---|---|---|
-| 1 | coder 27 | S21 stability & playtest fixes **(running 2026-09-28, three builders B1/B2/B3, baseline 917/0)** | — | — |
+| 1 | coder 27 | S21 stability & playtest fixes (**done 2026-09-29**, 917 → 941/0) | — | — |
 | 2 | designer 16 | D15 flight feel & feedback design | coder 27 | one live session (L82); its tick sheet is coder 28's input |
 | 3 | coder 28 | S22 feel, juice & balance | designer 16 | implements D15's ticks; both touch `ui/hud/` |
 | 4 | coder 29 | S23 content activation | coder 28 | `vajb-orbit/game/` + `tests/` (weapons/projectile/mining seams) |
@@ -178,7 +198,8 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | 8 | coder 32 | S26 bosses, arenas, insurance, vaults | coder 31 | `game/` + `player_profile.gd` + S25's Expedition seam |
 | 9 | coder 33 | S27 catalog breadth & shipyard | coder 32 | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/` |
 
-Designer item 15 (D14, live) stays ahead of 16–17 in its own queue. Playtest
+Designer item **16 (D15)** is the designer queue's live item (D14 closed
+2026-09-29); 17 (D16) follows it. Playtest
 pass #1 (the owner's, `19_testing_notes.md`'s eye list) runs alongside pos 1;
 build 2 + the tester template are phase exit criteria. Every brief's §11 tick
 sheet feeds its wave (unticked rows implement at their PROPOSED value).

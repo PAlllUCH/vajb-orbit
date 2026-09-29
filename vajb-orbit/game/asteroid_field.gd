@@ -179,14 +179,18 @@ func is_depleted() -> bool:
 ## `last_respawn_time` first, so the new rocks roll inside the ×0.7 window.
 ##
 ## Returns false when the field still has rocks. `now` defaults to the WorldClock
-## and exists so probes and review sheets can drive the window without waiting.
+## and exists so probes and review sheets can drive the window without waiting; it
+## is the one reading that stamps `last_respawn_time` **and** the one the cycle's
+## yield roll is taken against (L73), so a caller that stamps a cycle rolls the
+## ×0.7 band it just opened instead of whatever the wall clock says.
 func respawn(now: int = -1) -> bool:
 	if not is_depleted():
 		return false
-	last_respawn_time = now if now >= 0 else Clock.now()
+	var stamp := now if now >= 0 else Clock.now()
+	last_respawn_time = stamp
 	_clear_rocks()
 	_ore_credit = 0.0
-	_roll_rocks(_rocks_per_cycle)
+	_roll_rocks(_rocks_per_cycle, stamp)
 	return true
 
 
@@ -221,7 +225,10 @@ func tier_weights() -> Dictionary:
 	return _tier_weights.duplicate()
 
 
-func _roll_rocks(count: int) -> void:
+## `now` is the caller's own stamp when it has one (`respawn`'s, L73) and the
+## WorldClock otherwise; it reaches `_rolled_yield` so the cycle's window and the
+## cycle's yields are read off one clock.
+func _roll_rocks(count: int, now: int = -1) -> void:
 	if _tier_weights.is_empty():
 		## Defensive only: a field with no weights cannot roll a tier. W4 always
 		## hands in `SectorRegistry`'s table, which is 11 §1.1.
@@ -234,15 +241,16 @@ func _roll_rocks(count: int) -> void:
 		if mineral_id == &"":
 			push_warning("AsteroidField: unknown tier %d, rock %d skipped" % [tier, index])
 			continue
-		_spawn_rock(index, mineral_id, tier, _rolled_yield(tier))
+		_spawn_rock(index, mineral_id, tier, _rolled_yield(tier, now))
 
 
 ## 02 §5's yield roll (`base × variance`) with 02 §8's ×0.7 window applied, exactly
 ## as the field roll has always applied it. One helper, so a rock the field rolls and
-## a fragment a cleave rolls cannot drift apart.
-func _rolled_yield(tier: int) -> int:
+## a fragment a cleave rolls cannot drift apart. `now` is the caller's stamp when it
+## has one (`respawn`'s, L73) and the WorldClock otherwise.
+func _rolled_yield(tier: int, now: int = -1) -> int:
 	var units := MineralCatalogScript.roll_yield(tier, rng)
-	var multiplier := _yield_multiplier()
+	var multiplier := _yield_multiplier(now)
 	if multiplier < 1.0:
 		units = maxi(1, roundi(float(units) * multiplier))
 	return units
@@ -604,11 +612,13 @@ func _clear_rocks() -> void:
 ## The ×0.7 window, evaluated at roll time against `last_respawn_time` — the
 ## literal 02 §8 implementation note. A virgin field (no stamp) rolls at full
 ## yield; every respawn stamps first, so a respawned field's rocks roll at ×0.7.
+## `now` is the caller's own stamp when the whole cycle hangs off one (`respawn`'s,
+## L73) and the WorldClock otherwise, which is every other caller.
 ## See the W3 report for the reading of 02 §8's note and its reversal path.
-func _yield_multiplier() -> float:
+func _yield_multiplier(now: int = -1) -> float:
 	if last_respawn_time <= 0:
 		return 1.0
-	if Clock.now() - last_respawn_time >= DIMINISHING_WINDOW_SECONDS:
+	if (now if now >= 0 else Clock.now()) - last_respawn_time >= DIMINISHING_WINDOW_SECONDS:
 		return 1.0
 	return DIMINISHING_YIELD_MULT
 

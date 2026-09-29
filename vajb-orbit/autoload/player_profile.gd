@@ -88,6 +88,14 @@ const KEY_AMMO: StringName = &"ammo"
 const KEY_SHIPS: StringName = &"ships"
 const KEY_CARGO: StringName = &"cargo"
 
+## R-S21-2 (01's 2026-09-27 P3 block, tick M3): the rounds an opened ammo unit
+## left behind, per family, 0..9. A **sibling** key of `ammo` rather than a change
+## to the pack store's shape, so a file written before it loads unchanged (the
+## absent key is an empty remainder) and `save_version` stays 7. Reversal: delete
+## the const, the store, `ammo_remainder` and `_write_profile`'s line, and draw
+## whole units again.
+const KEY_AMMO_REM: StringName = &"ammo_rem"
+
 ## The retired `upgrades` key (save v5): every id in the record is converted to
 ## one inventory module and the key is dropped. No live writer or reader of it
 ## survives the migration, and `_write_profile` no longer persists it.
@@ -238,6 +246,10 @@ var _owned_ships: Array[StringName] = []
 var _active_ship: StringName = DEFAULT_SHIP
 var _cargo: Dictionary = {}
 var _ammo: Dictionary = {}
+## R-S21-2: family -> the rounds a partially spent hold unit left in the pack's
+## own store (0..9), the half `ammo` cannot carry because a pack is clamped at
+## `ammo_max`.
+var _ammo_rem: Dictionary = {}
 var _known_ships: Dictionary = {}
 
 var _modules: Dictionary = {}
@@ -360,18 +372,31 @@ func buy_ammo(weapon_id: StringName, rounds: int, cost: int) -> bool:
 	return true
 
 
-## The auto-load (10 section 6.1 / CONTRACTS section 17): top the family's pack up to its
-## `ammo_max` from the hold's cargo units, drawing whole units only, and answer the rounds
-## the pack now holds. Called **once at launch** and never in flight; a pack already at or
-## over its ceiling draws nothing and is never lowered, so a magazine filled last flight
-## keeps its rounds and a pack that emptied in flight stays empty until the next launch.
+## 01 section 6.1's unit split, the reading side (R-S21-2): the rounds one family
+## has left out of the last ammo unit the auto-load opened, 0..9, and 0 for a
+## family the catalogue does not ship. These are rounds a launch draws **before**
+## any hold unit - they are spendable, they are just not a whole unit.
+func ammo_remainder(weapon_id: StringName) -> int:
+	if not AMMO_MAX.has(weapon_id):
+		return 0
+	return clampi(int(_ammo_rem.get(weapon_id, 0)), 0, Catalog.ROUNDS_PER_CARGO_UNIT - 1)
+
+
+## The auto-load (10 section 6.1 / CONTRACTS section 17, R-S21-2): top the family's pack
+## up to its `ammo_max` from the hold, drawing **rounds first** and consuming hold units
+## only for whole `ROUNDS_PER_CARGO_UNIT` draws, and answer the rounds the pack now
+## holds. Called **once at launch** and never in flight; a pack already at or over its
+## ceiling draws nothing and is never lowered, so a magazine filled last flight keeps its
+## rounds and a pack that emptied in flight stays empty until the next launch.
 ##
-## The draw is `min(units_needed, units_held)` where `units_needed` is
-## `ceil((ammo_max - pack) / ROUNDS_PER_CARGO_UNIT)`: a unit is indivisible, so the last
-## unit can overshoot the ceiling by up to `ROUNDS_PER_CARGO_UNIT - 1` rounds and the pack
-## is clamped at `ammo_max` (the overshoot's rounds are gone with the unit -- the measured
-## cost of the pinned granularity). A family the catalogue does not ship, or one with
-## nothing to fill, writes nothing and answers the pack as it stands.
+## The draw is `min(shortfall, available)` where `available` is the stored remainder plus
+## the hold's units in rounds; the remainder is spent first, then the units taken are
+## `min(held, ceil((draw - spent remainder) / ROUNDS_PER_CARGO_UNIT))` and the last unit's
+## unused rounds (<= 9) are **kept as the new remainder** instead of being burned with the
+## unit (L131 before R-S21-2: cannon 295 + 1 unit loaded 300 and lost the unit's 5 surplus
+## rounds). The pack itself is still clamped at `ammo_max`, and a family the catalogue
+## does not ship, or one with nothing to fill, writes nothing and answers the pack as it
+## stands.
 func load_ammo_from_hold(weapon_id: StringName) -> int:
 	if not AMMO_MAX.has(weapon_id):
 		return 0
@@ -380,16 +405,39 @@ func load_ammo_from_hold(weapon_id: StringName) -> int:
 	var shortfall := ceiling - pack
 	if shortfall <= 0:
 		return pack
-	var needed := _ammo_units_for(shortfall)
+	var remainder := ammo_remainder(weapon_id)
 	var held := ammo_units(weapon_id)
-	var drawn := mini(needed, held)
+	var available := remainder + held * Catalog.ROUNDS_PER_CARGO_UNIT
+	var drawn := mini(shortfall, available)
 	if drawn <= 0:
 		return pack
-	if not remove_cargo(Catalog.ammo_item_id(weapon_id), drawn):
+	var from_remainder := mini(remainder, drawn)
+	var units := mini(held, _ammo_units_for(drawn - from_remainder))
+	var from_units := mini(drawn - from_remainder, units * Catalog.ROUNDS_PER_CARGO_UNIT)
+	if units > 0 and not remove_cargo(Catalog.ammo_item_id(weapon_id), units):
 		return pack
-	var loaded := mini(ceiling, pack + drawn * Catalog.ROUNDS_PER_CARGO_UNIT)
+	## The new bank is the **unspent half of the old one** plus the opened units' unused
+	## rounds: a shortfall of 3 against a banked 6 spends 3 and keeps 3 (never a whole
+	## remainder), exactly as an opened unit keeps `10 - drawn` of its own.
+	var banked := (remainder - from_remainder) + units * Catalog.ROUNDS_PER_CARGO_UNIT - from_units
+	_set_ammo_remainder(weapon_id, banked)
+	var loaded := mini(ceiling, pack + from_remainder + from_units)
 	set_ammo(weapon_id, loaded)
 	return loaded
+
+
+## The remainder's own writer: clamps to the unit's round span, drops the key at 0 so a
+## spent remainder leaves no empty row in the file, and touches the `ammo` signal key
+## because a pane that shows the hold's rounds redraws on it.
+func _set_ammo_remainder(weapon_id: StringName, rounds: int) -> void:
+	var holding := clampi(rounds, 0, Catalog.ROUNDS_PER_CARGO_UNIT - 1)
+	if ammo_remainder(weapon_id) == holding:
+		return
+	if holding == 0:
+		_ammo_rem.erase(weapon_id)
+	else:
+		_ammo_rem[weapon_id] = holding
+	_touch(KEY_AMMO)
 
 
 ## Rounds -> cargo units (`ROUNDS_PER_CARGO_UNIT` apiece), rounded up because a unit is
@@ -515,6 +563,16 @@ func base_module_id(entry: StringName) -> StringName:
 ## for an id the inventory does not carry. The id is the record's own key, so an
 ## instance (`mod_0007`) and a plain base id answer alike; a record written
 ## before the count existed reads as 0.
+##
+## **This is a record read, never a base-id aggregate** (L110, the bag's one
+## accessor law, S21-B2): a base whose units are all instances reads 0 here while
+## `instances_of(base_id)` answers one id per in-bag record, which is the read
+## every aggregate caller uses - the panes' `OWNED x<n>` cells, the armory's
+## inventory rows, `Auction`'s sell rows. A record the bag *stacks* (`count` 2)
+## answers 2 here and is still **one** entry of `instances_of`, one cell, one
+## `FIT ALL` pairing. The FITTING pane's `OWNED x<n>` cell is the one figure that
+## counts units (`_owned_counts`' sum over the bag's keys), because
+## STATION_HUB section 5.3 pins it as the inventory *count*.
 func module_count(module_id: StringName) -> int:
 	var record := _module_record(module_id)
 	if record.is_empty():
@@ -544,18 +602,25 @@ func add_module(module_id: StringName, count: int = 1) -> void:
 ## moved into a hull). Refuses, and writes nothing, when the account holds fewer;
 ## the record is erased once its count reaches zero, exactly as `remove_cargo`
 ## drops an emptied item.
+##
+## The held figure is read **off the keyed record itself** and never through
+## `module_count`: the writer must address exactly the entry it is handed, so a
+## take on a base id can never spend an instance of that base (the bag's one
+## accessor law, `module_count`'s own note).
 func take_module(module_id: StringName, count: int = 1) -> bool:
 	if module_id == &"" or count <= 0:
 		return false
-	var held := module_count(module_id)
+	var key := String(module_id)
+	var record := _module_record(module_id)
+	if record.is_empty():
+		return false
+	var held := maxi(0, int(record.get(KEY_COUNT, 0)))
 	if held < count:
 		return false
-	var key := String(module_id)
 	if held == count:
 		_modules.erase(key)
 	else:
-		var record := _module_record(module_id)
-		record["count"] = held - count
+		record[KEY_COUNT] = held - count
 		_modules[key] = record
 	_touch(KEY_MODULES)
 	return true
@@ -1931,6 +1996,7 @@ func _apply_defaults() -> void:
 	_active_ship = DEFAULT_SHIP
 	_cargo.clear()
 	_ammo.clear()
+	_ammo_rem.clear()
 	for weapon: StringName in AMMO_MAX:
 		_ammo[weapon] = DEFAULT_AMMO
 	_modules.clear()
@@ -1963,6 +2029,8 @@ func _read_values() -> void:
 	for weapon: StringName in AMMO_MAX:
 		if not _ammo.has(weapon):
 			_ammo[weapon] = DEFAULT_AMMO
+	## R-S21-2: absent in every file written before it, which reads as "no opened unit".
+	_ammo_rem = _read_qty(String(KEY_AMMO_REM))
 	_modules = _read_plain_dict("modules")
 	_fits = _read_plain_dict("fits")
 	_market = _normalise_market(_read_plain_dict("market"))
@@ -2534,6 +2602,8 @@ func _write_profile() -> void:
 	_config.set_value(SECTION, "active_ship", String(_active_ship))
 	_config.set_value(SECTION, "cargo", _keys_to_strings(_cargo))
 	_config.set_value(SECTION, "ammo", _keys_to_strings(_ammo))
+	## R-S21-2's opened-unit remainder, a sibling of `ammo` (save_version stays 7).
+	_config.set_value(SECTION, String(KEY_AMMO_REM), _keys_to_strings(_ammo_rem))
 	_config.set_value(SECTION, "modules", _modules)
 	_config.set_value(SECTION, "instance_counter", _instance_counter)
 	_config.set_value(SECTION, "auction", _auction)

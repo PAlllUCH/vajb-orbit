@@ -55,6 +55,13 @@ const FIXTURE_FIT: Dictionary = {
 	&"armour": [&"h_plate_light"],
 }
 
+## The fixture's own pack store and hold (A5/L90/L93), staged beside the fit: the launch's
+## auto-load draws the hold, so the dock-filing test's `live == mini(stored, ceiling)` must
+## not depend on the account's cargo. Both packs sit below their ceilings and the hold
+## carries none of the fit's families.
+const FIXTURE_PACKS: Dictionary = {&"laser": 120, &"cannon": 60}
+const FIXTURE_FAMILIES: Array[StringName] = [&"laser", &"cannon"]
+
 ## The reviewers' own alpha extremes for section 3.3's flicker: a sine at 6 Hz reaches
 ## 0.7 a quarter period in and 0.3 three quarters in, so these are the two instants the
 ## curve must hit, not invented numbers.
@@ -74,6 +81,9 @@ var _staged: Array[Node] = []
 var _profiles: Array[Node] = []
 var _signals: Array[StringName] = []
 var _previous_fits: Dictionary = {}
+var _previous_ammo: Dictionary = {}
+var _previous_cargo: Dictionary = {}
+var _previous_rem: Dictionary = {}
 
 
 func suite_name() -> String:
@@ -81,7 +91,7 @@ func suite_name() -> String:
 
 
 func suite_setup(_ctx: Dictionary) -> void:
-	_stage_fixture_fit()
+	_stage_fixture()
 	var host := _fixture_host()
 	var pair := _build_ship(host, Vector2(-400.0, 0.0))
 	_shooter = pair[0]
@@ -141,28 +151,52 @@ func suite_teardown() -> void:
 	_delete_file(SCRATCH_PROFILE)
 	_delete_file(SCRATCH_LOG)
 	Log.log_path = Log.DEFAULT_PATH
-	_restore_fits()
+	_restore_fixture()
 
 
-## The fixture's own fit, written before the scene is instantiated (`set_fit` is the store's
-## plain per-hull setter) and reversed in `suite_teardown`, so the account ends this suite
-## exactly as it started.
-func _stage_fixture_fit() -> void:
+## The fixture's own fit and ammo, written before the scene is instantiated (`set_fit` is the
+## store's plain per-hull setter) and reversed in `suite_teardown`, so the account ends this
+## suite exactly as it started. A5 (L90/L93): the fit is not the whole fixture - the launch
+## draws each fitted family's pack from the hold, so the packs and the hold (R-S21-2's
+## opened-unit remainder included) are staged too.
+func _stage_fixture() -> void:
 	var profile: Node = _tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
 	if profile == null:
 		return
 	_previous_fits = profile.call(&"fits")
+	_previous_ammo = (profile.get(&"_ammo") as Dictionary).duplicate(true)
+	_previous_cargo = (profile.get(&"_cargo") as Dictionary).duplicate(true)
+	_previous_rem = (profile.get(&"_ammo_rem") as Dictionary).duplicate(true)
 	profile.call(&"set_fit", StringName(profile.call(&"active_ship")), FIXTURE_FIT)
+	var packs: Dictionary = _previous_ammo.duplicate(true)
+	var cargo: Dictionary = _previous_cargo.duplicate(true)
+	var rem: Dictionary = _previous_rem.duplicate(true)
+	for family: StringName in FIXTURE_FAMILIES:
+		packs[family] = int(FIXTURE_PACKS[family])
+		rem.erase(family)
+		cargo.erase(family)
+		var item_id := StringName(profile.call(&"ammo_item_id", family))
+		if item_id != &"":
+			cargo.erase(item_id)
+	profile.set(&"_ammo", packs)
+	profile.set(&"_cargo", cargo)
+	profile.set(&"_ammo_rem", rem)
 	profile.call(&"flush")
 
 
-func _restore_fits() -> void:
+func _restore_fixture() -> void:
 	var profile: Node = _tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
 	if profile == null:
 		return
 	profile.call(&"set_fits", _previous_fits)
+	profile.set(&"_ammo", _previous_ammo)
+	profile.set(&"_cargo", _previous_cargo)
+	profile.set(&"_ammo_rem", _previous_rem)
 	profile.call(&"flush")
 	_previous_fits = {}
+	_previous_ammo = {}
+	_previous_cargo = {}
+	_previous_rem = {}
 
 
 ## Each test opens on a full victim and a charged shooter, so the deltas below are the

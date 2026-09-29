@@ -174,7 +174,10 @@ func test_a_held_beam_reads_one_hit_per_contact_interval() -> void:
 	_beam_frame(guns, other)
 	assert_eq(_fx_nodes_from(RIPPLE_SHEET).size(), 3, "a fresh contact reads on its own first frame")
 	## And a fresh hold on a hull already read is fresh again: the release clears contact.
-	_clear()
+	## Only the rings are wiped here, never `_clear()`: that frees the whole fixture (the rig
+	## included, `:470`), so the release and the re-hold must run on a live `guns` and `hull`.
+	for ring: Node in _fx_nodes_from(RIPPLE_SHEET):
+		ring.free()
 	guns.call(&"_hide_beam")
 	_beam_frame(guns, hull)
 	assert_eq(_fx_nodes_from(RIPPLE_SHEET).size(), 1, "a new hold reads from its own first frame")

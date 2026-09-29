@@ -1235,3 +1235,61 @@ twice on fresh scratch stores, 0 FAIL/SKIP; the row set re-pinned in place (no c
 change) in `test_s20_chrome_unify.gd`, `test_s18_armory_rework.gd`, `test_d7_armory.gd`,
 `test_s15_armory_layout.gd` and `probe_s20_review.gd`; windowed capture of the fixed
 pane at `slices/D14-armory-chrome-composition/_evidence/armory_live_after_a5.png`.
+
+### S21 (coder item 27) — **DONE 2026-09-29 — gate 917 → 941/0, detail §Closed.**
+The bugfix pillar of phase P3: eleven acceptance items restoring already-pinned
+behaviour — the death state (L24), the wreck window across transitions (L23),
+ship-vs-ship crash damage (L22), station/profile hygiene (L18/L122/L154), the
+hermetic gate (L90/L93), the bag accessors (L110/L124), the money edges
+(L130/L131/L136), the owned hull row (L114), the world sim (L73/L150/L152/L153/
+L215/L176) and the harness (L61/L237/L243). Ran as **three sequential builders**
+(owner-ruled 2026-09-28, brief amendment 2 — one worker for eleven fixes across
+~15 files was the size risk): `S21-B1` the hull and flight scene, `S21-B2` the
+account and station, `S21-B3` the world bodies, pane copy and harness. New suite
+`tests/test_s21_stability.gd`, **23 rows**, one or more per item; every row
+flip-proven by R1 (13 temporary value flips).
+
+Numbers: the hull is inert from `die()` to the respawn route with §7's order (24
+held-thrust death frames); the drop's window is an absolute-expiry static ledger
+re-materialised per sector, so `DROP_WINDOW` 300 s survives a crossing and the
+respawn route; both hull bodies now mask rock|ship and one authority charges row
+15's figure to both halves exactly once (`row15=93.789474` per side, probe re-run
+by R1) with rocks single-sided; a boot-only station run leaves `profile.cfg`'s
+md5 **and mtime** identical; the gate reads **941/0 identically on a fresh scratch
+store and on a copy of the live account**, the live file byte-identical after
+(`3940cdef…`); `module_count(id)` is the key-exact record read with aggregates on
+`instances_of`; ammo pays 2 % with no 10 CR floor and packs bank a 0..9 round
+remainder; the owned hull row is disabled with an `OWNED` plate — the three
+R-S21 rows at their PROPOSED values, ticks **M1/M2/M3 still open**; `respawn(now)`
+threads its stamp into the yield roll; the heat bank is `static`; `cancel_jump` is
+live with a `GATE REFUSED — NOT ENOUGH CR` rung; `setup` clears `_cleave_child`;
+the `MOVED` line names the barrel; `test_weapon_fx_f4.gd`'s dead row executes and
+the two `CTX_DIRECTION` spellings are pinned equal.
+
+**Two owner-ruled pin moves** (brief amendment 3): the S19 byte-seal's
+`npc_ship.gd` hash re-pinned to the finished tree's `a694170c…` (B3, disclosed —
+its own mask item edits the same file, so the interim hash could not hold), and
+A3's reach widened to NPC-vs-NPC with `LOS_MASK` split out for the brain's ray and
+both moved rows re-pinned to the measured truth (`test_engine2_npc.gd:400-411`,
+`test_s6_heat.gd:238-245`). Review **1 HIGH (bucket 2 — brief §8's
+tests-that-move list missed the two `test_s5_*` suites; landed as the list
+amendment by S21-F1 on the S19 precedent, L246 closed) / 1 MED (S20's own
+silent-abort row at `test_s20_chrome_unify.gd:276`, cured by F1 — the flip that
+printed 7/0 pre-fix reads 6/1) / 3 LOW (L247–L249)**; **22 backlog rows closed
+(L18/L22/L23/L24/L73/L90/L93/L110/L114/L122/L124/L130/L131/L136/L150/L152/L153/
+L154/L176/L215/L237/L243)** with their reversals. Evidence: gate `941/0` twice on
+fresh scratch stores with **zero `[FAIL]` and zero `SCRIPT ERROR`**;
+`verify --baseline s21_start` → `"problems": []` (only `.crush/shell-output`
+transients deleted); `damage.gd` byte-identical (`5cabf3d9…`), `npc_brain.gd`
+(`e39440bf…`) and `weapons.gd` (`fcdc549f…`) unmoved.
+
+Incidents: the first `S21-F1` wedged 28 minutes on an **unbounded Godot `--script`
+run** (0 CPU, frozen `/proc/io`) and needed `python3 os.kill` SIGKILL — the
+shell's own `kill` did not reach it; its one temp file was removed and the
+re-dispatch was bounded (`--quit-after`). The machine also crashed mid-`S21-B2`
+(33 h down), so B2 resumed on its own on-disk draft, repaired two defects it
+found there (a dropped remainder bank and three aliased fixture dicts) and then
+wrote its report. The `_power_arithmetic` warning with a backtrace is
+**pre-existing and identical in scratch and live-copy runs** (2 WARNINGs per run)
+— not a live coupling. `staging/verify_wave.py`'s `--forbidden` directory entries
+stay inert (**L245**), so this close-out forbade the explicit file paths instead.

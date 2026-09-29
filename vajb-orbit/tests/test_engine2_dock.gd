@@ -50,9 +50,20 @@ const FIXTURE_FIT: Dictionary = {
 	&"armour": [&"h_plate_light"],
 }
 
+## The fixture's own pack store and hold (A5/L90/L93): the launch's auto-load draws the
+## hold, so a test that expects `live == mini(stored, ceiling)` must own both halves. The
+## packs sit **below** their ceilings and the hold carries none of the fixture's families,
+## so the load is exactly the store's own figure whatever the account holds, on live or
+## scratch `user://`.
+const FIXTURE_PACKS: Dictionary = {&"laser": 120, &"cannon": 60}
+const FIXTURE_FAMILIES: Array[StringName] = [&"laser", &"cannon"]
+
 var _scene: Node2D = null
 var _state: Variant = null
 var _previous_fits: Dictionary = {}
+var _previous_ammo: Dictionary = {}
+var _previous_cargo: Dictionary = {}
+var _previous_rem: Dictionary = {}
 
 
 func suite_name() -> String:
@@ -60,7 +71,7 @@ func suite_name() -> String:
 
 
 func suite_setup(_ctx: Dictionary) -> void:
-	_stage_fixture_fit()
+	_stage_fixture()
 	var packed := load(GAME_SCENE) as PackedScene
 	if packed == null:
 		fail_setup("game.tscn did not load")
@@ -87,7 +98,7 @@ func suite_teardown() -> void:
 	_delete_file(SCRATCH_PROFILE)
 	_delete_file(SCRATCH_LOG)
 	Log.log_path = Log.DEFAULT_PATH
-	_restore_fits()
+	_restore_fixture()
 
 
 ## Every test hands the store back itself, so this only clears what a failed run left behind.
@@ -248,22 +259,51 @@ func _slot() -> int:
 ## plain per-hull setter (no inventory or power-budget legality - that is `fit_legal`'s and
 ## the fitting panel's), and the stored value is captured first so the account ends this
 ## suite exactly as it started.
-func _stage_fixture_fit() -> void:
+##
+## A5 (L90/L93): the fit is not the whole fixture. The launch resolves the fit's families
+## **and** draws each family's pack from the hold, so the fixture also writes the packs it
+## names and empties the hold (and R-S21-2's opened-unit remainder) of those families.
+## Every captured field is handed back in `_restore_fixture`, all flushes landing on the
+## harness's own scratch `save_path`.
+func _stage_fixture() -> void:
 	var profile: Node = _store()
 	if profile == null:
 		return
 	_previous_fits = profile.call(&"fits")
+	_previous_ammo = (profile.get(&"_ammo") as Dictionary).duplicate(true)
+	_previous_cargo = (profile.get(&"_cargo") as Dictionary).duplicate(true)
+	_previous_rem = (profile.get(&"_ammo_rem") as Dictionary).duplicate(true)
 	profile.call(&"set_fit", StringName(profile.call(&"active_ship")), FIXTURE_FIT)
+	var packs: Dictionary = _previous_ammo.duplicate(true)
+	for family: StringName in FIXTURE_FAMILIES:
+		packs[family] = int(FIXTURE_PACKS[family])
+	profile.set(&"_ammo", packs)
+	var cargo: Dictionary = _previous_cargo.duplicate(true)
+	var rem: Dictionary = _previous_rem.duplicate(true)
+	for family: StringName in FIXTURE_FAMILIES:
+		cargo.erase(family)
+		var item_id := StringName(profile.call(&"ammo_item_id", family))
+		if item_id != &"":
+			cargo.erase(item_id)
+		rem.erase(family)
+	profile.set(&"_cargo", cargo)
+	profile.set(&"_ammo_rem", rem)
 	profile.call(&"flush")
 
 
-func _restore_fits() -> void:
+func _restore_fixture() -> void:
 	var profile: Node = _store()
 	if profile == null:
 		return
 	profile.call(&"set_fits", _previous_fits)
+	profile.set(&"_ammo", _previous_ammo)
+	profile.set(&"_cargo", _previous_cargo)
+	profile.set(&"_ammo_rem", _previous_rem)
 	profile.call(&"flush")
 	_previous_fits = {}
+	_previous_ammo = {}
+	_previous_cargo = {}
+	_previous_rem = {}
 
 
 ## The scratch handover, in the order the finding's own measurements use: repoint the writer

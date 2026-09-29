@@ -273,7 +273,9 @@ func test_ac2_the_cells_and_the_pressables_wear_the_family() -> void:
 		(chrome.get(&"cells") as Array).size(), BAY_CELLS,
 		"one plate per cell of the five bays (A3's 2x2 grid stands)"
 	)
-	var centred: Rect2 = panel.call(&"slot_plate_rect", Rect2(0.0, 0.0, 117.0, 52.0), plate_texture)
+	var centred: Rect2 = PanelScript.ConsolePanels.slot_plate_rect(
+		Rect2(0.0, 0.0, 117.0, 52.0), plate_texture
+	)
 	assert_eq(centred.position, Vector2(34.5, 2.0), "the plate centres inside the cell")
 	assert_eq(centred.size, SLOT_SIZE, "and keeps its own size")
 	## BUY: a StationButton at the plate's own texture.

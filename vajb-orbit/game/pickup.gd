@@ -32,6 +32,13 @@ const LIFETIME := 60.0
 const TRACTOR_RANGE := 120.0
 const TRACTOR_SPEED := 90.0
 
+## The recovery window this pickup carries, in seconds from `setup` (L23's seam): a
+## field pickup takes §13's own 60 s, a wreck drop is handed 18 §2 dec. 7/§7's 5-minute
+## window by `game.gd` and no longer inherits the shared constant through a subtractive
+## age trick. The window is the pickup's, so a scene that rebuilds it can hand the
+## seconds it has left and the arithmetic never doubles back through `LIFETIME`.
+var lifetime := LIFETIME
+
 ## The distance at which a pulled pickup counts as aboard. No spec number exists
 ## (the ship is ~60 u long, so this is the hold mouth); one edit reverses it.
 const ARRIVAL_RADIUS := 16.0
@@ -50,6 +57,11 @@ const POD_WIDTH := 20.0
 const PICKUP_GROUP: StringName = &"pickup"
 const PLAYER_GROUP: StringName = &"player_ship"
 
+## Raised on the frame the pickup is taken aboard, before it frees itself (signals travel
+## UP): the flight scene hangs a wreck drop's ledger entry off it, so a collected stack
+## leaves the sector's record the moment its cargo lands in the hold.
+signal collected(item_id: StringName, amount: int)
+
 var item_id: StringName = &""
 var amount: int = 1
 var is_credit_cache := false
@@ -62,17 +74,24 @@ var _sprite: Sprite2D = null
 ## rock's mineral (a bare catalogue id like `&"iron"`); the cargo key is the item
 ## id the rest of the economy reads (`mineral_iron`), so both forms are accepted
 ## and resolved once, at collection.
-func setup(item: StringName, quantity: int, credit_cache: bool) -> void:
+##
+## `window` is the pickup's own recovery time in seconds (L23): omit it for §13's 60 s
+## field lifetime, pass 18 §2 dec. 7's 300 s for a wreck drop. Clamped at zero, because a
+## negative window would outlive its own clock rather than expire.
+func setup(
+	item: StringName, quantity: int, credit_cache: bool, window: float = LIFETIME
+) -> void:
 	item_id = item
 	amount = maxi(quantity, 1)
 	is_credit_cache = credit_cache
+	lifetime = maxf(window, 0.0)
 	add_to_group(PICKUP_GROUP)
 	_build_look()
 
 
 func _physics_process(delta: float) -> void:
 	_age += delta
-	if _age >= LIFETIME:
+	if _age >= lifetime:
 		queue_free()
 		return
 	var ship := _player_ship()
@@ -96,7 +115,9 @@ func _physics_process(delta: float) -> void:
 
 
 ## The credits/cargo handoff. Credits go through the profile's credit API, ore
-## through `add_cargo`, and both write exactly one `economy_log` line (01 §7).
+## through `add_cargo`, and both write exactly one `economy_log` line (01 §7). The
+## `collected` signal is raised first, so a listener that owns a record of this stack
+## (the wreck ledger) has dropped it by the time the pickup leaves the tree.
 func _collect() -> void:
 	var profile := _profile()
 	if profile == null:
@@ -108,6 +129,7 @@ func _collect() -> void:
 	else:
 		profile.call(&"add_cargo", key, amount)
 		Log.append(EVENT_MINE, key, amount, 0, int(profile.call(&"credits")))
+	collected.emit(item_id, amount)
 	queue_free()
 
 
