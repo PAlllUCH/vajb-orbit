@@ -28,6 +28,7 @@ extends McpTestSuite
 ## not have, so the collider is handed in directly.
 
 const AsteroidScript := preload("res://game/asteroid.gd")
+const OreTuningScript := preload("res://game/ore_tuning.gd")
 const WeaponScript := preload("res://game/weapons.gd")
 const NpcShipScript := preload("res://game/npc_ship.gd")
 const ShipFitScript := preload("res://game/ship_fit.gd")
@@ -154,33 +155,48 @@ func test_the_rock_takes_its_half_of_a_ram_through_the_shipped_gun_chip_rate() -
 		"the rock answers the peer's half of a collision (CONTRACTS section 4)"
 	)
 	assert_true(rock.has_method(&"apply_work"), "and keeps its mining channel")
+	## S22.5 (02 §5.3 A2): the ram's chip divides by the rock's own gun divisor
+	## (`size_toughness_mult x toughness`) exactly as a shot's does. The fixture pins
+	## the roll at 1.0, so the M class's 2.5 is the whole divisor and both sides of the
+	## comparison read the shipped arithmetic.
+	var divisor := _gun_divisor(rock)
+	var offer_work := RAM_OFFER * WeaponScript.GUN_CHIP_RATE / divisor
 	rock.call(&"apply_collision_damage", RAM_OFFER)
-	control.call(&"apply_work", RAM_OFFER * WeaponScript.GUN_CHIP_RATE)
+	control.call(&"apply_work", offer_work)
 	assert_true(
 		_near(rock.work, control.work),
-		"the ram's conversion is the shipped gun chip rate, not a second constant (%.9f vs %.9f)"
+		"the ram's conversion is the shipped gun chip rate over the rock's own divisor (%.9f vs %.9f)"
 		% [rock.work, control.work]
 	)
 	## `apply_work` converts whole units the moment they are reached, so the credit is the
 	## units that left plus the fraction still in the accumulator (C2's `work_credited`).
 	var credited := float(ROCK_UNITS - int(rock.yield_units)) + float(rock.work)
 	assert_true(
-		_near(credited, RAM_OFFER * WeaponScript.GUN_CHIP_RATE),
-		"a 186.179 offer credits exactly 10 %% of it, 18.618 work: %.9f" % credited
+		_near(credited, offer_work),
+		"a 186.179 offer credits 10 %% of it over the x2.5 class divisor, %.9f work: %.9f"
+		% [offer_work, credited]
 	)
-	assert_eq(rock.yield_units, ROCK_UNITS - 18, "18 whole ore units leave the rock")
-	assert_eq(control.yield_units, ROCK_UNITS - 18, "nothing is lost on the way through")
+	assert_eq(rock.yield_units, ROCK_UNITS - int(offer_work),
+		"%d whole ore units leave the rock" % int(offer_work))
+	assert_eq(control.yield_units, ROCK_UNITS - int(offer_work), "nothing is lost on the way through")
 
 
-## The same channel is the one that cracks a rock, so a hard ram can deplete a low-yield
-## rock exactly as gunfire can (measured: 18.618 work against an 8-unit roll).
+## The same channel is the one that cracks a rock, so rams can deplete a low-yield
+## rock exactly as gunfire can: 18.618 work over the M rock's x2.5 gun divisor is
+## 7.448 a call (02 §5.3 A2), so two 450 u/s rams empty the 8-unit roll.
 func test_a_ram_reaches_the_crack_path_the_guns_use() -> void:
 	var small := _rock(ROCK_UNITS_SMALL)
 	var cracks: Array[int] = []
 	small.connect(&"cracked", func() -> void: cracks.append(1))
 	assert_true(not small.is_depleted(), "the fixture starts with ore in it")
+	var offer_work := RAM_OFFER * WeaponScript.GUN_CHIP_RATE / _gun_divisor(small)
 	small.call(&"apply_collision_damage", RAM_OFFER)
-	assert_eq(small.yield_units, 0, "the ram's chip emptied the rock")
+	assert_eq(small.yield_units,
+		ROCK_UNITS_SMALL - int(offer_work),
+		"the first ram's chip is the divisor-scaled credit")
+	assert_true(not small.is_depleted(), "and one call is short of the 8-unit roll")
+	small.call(&"apply_collision_damage", RAM_OFFER)
+	assert_eq(small.yield_units, 0, "the second ram's chip emptied the rock")
 	assert_true(small.is_depleted(), "and the rock is depleted")
 	assert_eq(cracks.size(), 1, "cracked fires once, through the same door a gun uses")
 
@@ -325,11 +341,20 @@ func test_the_coast_column_is_the_retuned_half_of_the_section_13_rows() -> void:
 
 ## A rock as `Asteroid.setup` builds it. Detached, like the cleaving suite's field: the
 ## body properties are measurable without a physics world.
+## A Medium ore rock with its S22.5 toughness pinned at 1.0, so the gun door's class
+## divisor is the shipped 2.5 and every credited-work figure below is exact.
 func _rock(units: int) -> RigidBody2D:
 	var rock := AsteroidScript.new() as RigidBody2D
-	rock.call(&"setup", ROCK_MINERAL, 1, units, AsteroidScript.SIZE_MEDIUM)
+	rock.call(&"setup", ROCK_MINERAL, 1, units, AsteroidScript.SIZE_MEDIUM, false, -1.0, 1.0)
 	_staged.append(rock)
 	return rock
+
+
+## S22.5 (02 §5.3 A2): the gun door's divisor for this rock,
+## `size_toughness_mult[size_class()] x toughness`, read off the rock and the live table.
+func _gun_divisor(rock: RigidBody2D) -> float:
+	return float(OreTuningScript.size_toughness_mult.get(
+		int(rock.call(&"size_class")), 1.0)) * float(rock.call(&"toughness"))
 
 
 ## A real `NpcShip` with `shield_max` forced to the passed pool (0.0 is the inert case:

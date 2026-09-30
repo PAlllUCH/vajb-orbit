@@ -348,15 +348,34 @@ func _member(field: Node2D, size_class: int, units: int, node_name: String) -> N
 
 
 ## The mining door: deplete the rock in one call (`apply_work` is mining-attributed).
+## S22.5 (02 §5.3 A3): a rock with no ore cracks at `fragment_work[class]`, so the
+## 0-unit fixtures are handed that budget rather than WORK_PER_UNIT's single point.
 func _deplete(rock: Node2D) -> void:
-	rock.call(&"apply_work", maxf(float(int(rock.get(&"yield_units"))),
-		AsteroidScript.WORK_PER_UNIT))
+	rock.call(&"apply_work", maxf(_work_budget(rock), AsteroidScript.WORK_PER_UNIT))
 
 
 ## The gun door: deplete the rock in one call (`apply_gun_work` is gun-attributed).
+## S22.5 (02 §5.3 A2): the door divides an ore-bearing rock's work by its own
+## `size_toughness_mult[class] x toughness`, so the call carries that divisor; a rock
+## with no ore keeps the raw A3 budget (02 §5.3 A3).
 func _gun_deplete(rock: Node2D) -> void:
-	rock.call(&"apply_gun_work", maxf(float(int(rock.get(&"yield_units"))),
-		AsteroidScript.WORK_PER_UNIT))
+	var units := float(int(rock.get(&"yield_units")))
+	if units <= 0.0:
+		rock.call(&"apply_gun_work", maxf(_work_budget(rock), AsteroidScript.WORK_PER_UNIT))
+		return
+	var class_mult := float(OreTuningScript.size_toughness_mult.get(
+		int(rock.call(&"size_class")), 1.0))
+	rock.call(&"apply_gun_work",
+		units * class_mult * float(rock.call(&"toughness")) + AsteroidScript.WORK_EPSILON)
+
+
+## The work a rock needs before its crack: the extractable units' worth for a rock
+## that carries ore, A3's `fragment_work[class]` budget for one that does not.
+func _work_budget(rock: Node2D) -> float:
+	var units := float(int(rock.get(&"yield_units")))
+	if units > 0.0:
+		return units
+	return float(OreTuningScript.fragment_work.get(int(rock.call(&"size_class")), 0.0))
 
 
 func _live_ids(field: Node2D) -> Array[int]:

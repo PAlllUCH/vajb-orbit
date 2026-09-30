@@ -80,6 +80,34 @@ static var split_mix: Dictionary = {
 static var spawn_size_weights: Dictionary = {0: 40, 1: 32, 2: 20, 3: 8}
 
 
+## S22.5 / 02 §5.3 A1: the per-rock toughness roll's band. Every spawned rock rolls
+## uniform in [min, max] on the field's own seeded RNG, keeps it for life and reads it
+## back through `Asteroid.toughness()`; the gun door divides by it (A2). Reversal:
+## `1.0` / `1.0` (no roll - every rock reads the pre-S22.5 gun door exactly).
+static var toughness_min: float = 0.80
+static var toughness_max: float = 1.60
+
+## S22.5 / 02 §5.3 A2: `SIZE_TOUGHNESS_MULT`, keyed by `asteroid.gd`'s integer size
+## classes (S 0, M 1, L 2, XL 3). `Asteroid.apply_gun_work` divides its amount by this
+## times the rock's own `toughness`, so a bigger rock takes longer to crack under fire
+## and S no longer reads as XL; the **mining** door never reads it (A5). Reversal: all
+## `1.0` (the pre-S22.5 door).
+static var size_toughness_mult: Dictionary = {0: 1.5, 1: 2.5, 2: 4.0, 3: 6.0}
+
+## S22.5 / 02 §5.3 A3: `FRAGMENT_WORK`, the work units a rock with **no ore** needs
+## before it cracks, keyed by the rock's own size class. XL is absent by the §5.2 bis
+## table: a child is always strictly smaller than its parent, so no gun-born XL exists.
+## Reversal: `0.0` for every class (today's instant crack).
+static var fragment_work: Dictionary = {0: 2.0, 1: 3.0, 2: 4.5}
+
+## S22.5 / 02 §5.3 A4: the chance a gun hit that did **not** crack an L/XL rock sheds
+## one splinter, and the per-rock interval (seconds) that caps it at one shed per
+## window. Both are read live by `AsteroidField`. Reversal: `0.0` (no splinters),
+## `0.0` (cap removed).
+static var splinter_chance: float = 0.25
+static var splinter_interval: float = 0.5
+
+
 ## Every field back to its owner-file default. The dev overlay's Reset button is
 ## this call plus the removal of `user://dev_tuning.cfg`.
 static func reset_to_defaults() -> void:
@@ -102,6 +130,14 @@ static func reset_to_defaults() -> void:
 		0: {},
 	}
 	spawn_size_weights = {0: 40, 1: 32, 2: 20, 3: 8}
+	## The S22.5 pair of tables and the three A1/A4 scalars, written out exactly as
+	## their declarations above (the same anti-drift pattern the S14 tables follow).
+	toughness_min = 0.80
+	toughness_max = 1.60
+	size_toughness_mult = {0: 1.5, 1: 2.5, 2: 4.0, 3: 6.0}
+	fragment_work = {0: 2.0, 1: 3.0, 2: 4.5}
+	splinter_chance = 0.25
+	splinter_interval = 0.5
 
 
 ## A serialisable snapshot of every field, for `user://dev_tuning.cfg` (the
@@ -120,6 +156,12 @@ static func to_dict() -> Dictionary:
 		&"pickup_burst": pickup_burst,
 		&"split_mix": split_mix.duplicate(true),
 		&"spawn_size_weights": spawn_size_weights.duplicate(),
+		&"toughness_min": toughness_min,
+		&"toughness_max": toughness_max,
+		&"size_toughness_mult": size_toughness_mult.duplicate(),
+		&"fragment_work": fragment_work.duplicate(),
+		&"splinter_chance": splinter_chance,
+		&"splinter_interval": splinter_interval,
 	}
 
 
@@ -181,12 +223,37 @@ static func from_dict(d: Dictionary) -> void:
 			for key: Variant in (weights as Dictionary).keys():
 				counts[int(key)] = maxi(int(_number((weights as Dictionary)[key], 0.0)), 0)
 			spawn_size_weights = counts
+	if d.has(&"toughness_min"):
+		toughness_min = maxf(_number(d[&"toughness_min"], toughness_min), 0.0)
+	if d.has(&"toughness_max"):
+		toughness_max = maxf(_number(d[&"toughness_max"], toughness_max), 0.0)
+	if d.has(&"size_toughness_mult"):
+		size_toughness_mult = _class_floats(d[&"size_toughness_mult"], size_toughness_mult)
+	if d.has(&"fragment_work"):
+		fragment_work = _class_floats(d[&"fragment_work"], fragment_work)
+	if d.has(&"splinter_chance"):
+		splinter_chance = clampf(_number(d[&"splinter_chance"], splinter_chance), 0.0, 1.0)
+	if d.has(&"splinter_interval"):
+		splinter_interval = maxf(_number(d[&"splinter_interval"], splinter_interval), 0.0)
 
 
 ## A count range from whatever shape a config carried it in: a `Vector2i`, a
 ## `Vector2`, or a two-element array (`[x, y]`). A `Vector2i.ZERO` is the answer for
 ## anything else, which `from_dict` then rejects for an inverted range, so an
 ## unusable row is dropped rather than allowed to make a shatter roll nothing.
+## A size-class-keyed table of numbers (A2's multiplier, A3's work budget) from
+## whatever shape a config carried it in: keys are normalised to the integer class and
+## values to non-negative floats, so a hand-edited row lands usable. An empty or
+## unreadable payload leaves `current` alone rather than emptying the table.
+static func _class_floats(value: Variant, current: Dictionary) -> Dictionary:
+	if not value is Dictionary or (value as Dictionary).is_empty():
+		return current
+	var out: Dictionary = {}
+	for key: Variant in (value as Dictionary).keys():
+		out[int(key)] = maxf(_number((value as Dictionary)[key], 0.0), 0.0)
+	return out if not out.is_empty() else current
+
+
 static func _span(value: Variant) -> Vector2i:
 	if value is Vector2i:
 		return value

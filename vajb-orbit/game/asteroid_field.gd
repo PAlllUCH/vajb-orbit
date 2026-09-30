@@ -29,6 +29,14 @@ extends Node2D
 ## ruling's two other halves are untouched: the direction is still the full circle
 ## and a break is still the rock's death.
 ##
+## **S22.5 (2026-09-30, 02 §5.3) adds the rock's own life and the chip splinter:**
+## every rock this file builds (originals, cleave children and splinters) rolls its
+## `toughness` off the field's seeded `rng` (A1) and a non-cracking gun chip on an
+## L/XL rock rolls `splinter_chance` to shed one S-class splinter (A4), capped per
+## rock by `splinter_interval`. The splinter is a field member born on the same
+## ring/cone/kick carrier as a cleave child, so it lives, blocks and dies like any
+## other debris; it carries `bore 0` and pays nothing, so Rule A still holds.
+##
 ## Consumer contract — W4's `game/sector.gd` binds this script duck-typed, so the
 ## three names below are the frozen handoff:
 ##   * `setup(config)` with `{&"tier_weights": Dictionary, &"rocks": int,
@@ -300,8 +308,9 @@ func _roll_size() -> int:
 
 
 ## The one construction path for every rock in the field, originals and fragments
-## alike: named, parented, initialised and connected before it is measured. The
-## connect carries the rock itself (`bind`), because the `cracked` signal is the
+## alike: named, parented, initialised and connected before it is measured, with its
+## S22.5 toughness rolled on the way in (02 §5.3 A1). The connect carries the rock
+## itself (`bind`), because the `cracked` signal is the
 ## pinned bare signature and the field is what needs to know which rock died. The
 ## counter increments last, so a caller that names its child from `_spawned + 1`
 ## gets a unique name every time.
@@ -317,8 +326,16 @@ func _new_rock(
 	var rock := AsteroidScript.new() as RigidBody2D
 	rock.name = node_name
 	add_child(rock)
-	rock.call(&"setup", mineral_id, tier, units, size_class, defer_shape, bore)
+	## S22.5 (02 §5.3 A1): the roll comes off the field's own seeded RNG, so two
+	## fields built with one seed carry identical toughnesses and a suite can
+	## reproduce any reading without guessing.
+	var toughness := rng.randf_range(
+		OreTuningScript.toughness_min, OreTuningScript.toughness_max
+	)
+	rock.call(&"setup", mineral_id, tier, units, size_class, defer_shape, bore, toughness)
 	rock.connect(&"cracked", _on_rock_cracked.bind(rock))
+	## S22.5 (02 §5.3 A4): a non-cracking gun chip asks the field for its roll.
+	rock.connect(&"gun_chipped", _on_gun_chipped.bind(rock))
 	_rocks.append(rock)
 	_spawned += 1
 	return rock
@@ -463,24 +480,79 @@ func _cleave(rock: Node2D) -> void:
 			float(units)
 		)
 		## S16 (02 §5.2 ter): every rock this cleave builds is debris, so it
-		## re-splits per its own size class whatever its bore. Only `_cleave`
-		## marks: an original stays unmarked and keeps ruling 17's yield-0 law.
+		## re-splits per its own size class whatever its bore. Only debris is
+		## marked (here and in `_spawn_splinter`): an original stays unmarked
+		## and keeps ruling 17's yield-0 law.
 		fragment.call(&"mark_cleave_child")
 		var angle := TAU * float(index) / float(count)
 		angle += rng.randf_range(-FRAGMENT_ANGLE_JITTER, FRAGMENT_ANGLE_JITTER)
-		var distance := ring + float(fragment.call(&"world_radius"))
-		## One direction, two uses: this is the placement radial, and §14's kick rides
-		## the same vector, so a fragment always leaves along the ray it was born on.
-		var outward := Vector2.RIGHT.rotated(angle)
-		fragment.global_position = origin + outward * distance
-		fragment.linear_velocity = velocity.rotated(
-			deg_to_rad(
-				rng.randf_range(
-					-AsteroidScript.FRAGMENT_EJECT_CONE_DEG,
-					AsteroidScript.FRAGMENT_EJECT_CONE_DEG
-				)
+		_deploy_debris(fragment, origin, ring, angle, velocity)
+
+
+## The one placement and ejection arithmetic every debris body rides: a `_cleave`
+## child and an S22.5 splinter alike (02 §5.3 A4's "same cone/carrier"). `angle` is
+## the caller's placement radial (the cleave's ring slot plus its jitter, or the
+## splinter's own roll) and `velocity` is the shape's inherited half
+## (`Asteroid.eject_velocity()`, the parent's velocity x 1.2). The cone roll stays
+## here, on the field's own seeded RNG, exactly where the shipped block took it, so
+## the cleave's draw order is unchanged.
+func _deploy_debris(
+	child: Node2D, origin: Vector2, ring: float, angle: float, velocity: Vector2
+) -> void:
+	var distance := ring + float(child.call(&"world_radius"))
+	## One direction, two uses: this is the placement radial, and §14's kick rides
+	## the same vector, so a fragment always leaves along the ray it was born on.
+	var outward := Vector2.RIGHT.rotated(angle)
+	child.global_position = origin + outward * distance
+	child.linear_velocity = velocity.rotated(
+		deg_to_rad(
+			rng.randf_range(
+				-AsteroidScript.FRAGMENT_EJECT_CONE_DEG,
+				AsteroidScript.FRAGMENT_EJECT_CONE_DEG
 			)
-		) + outward * FRAGMENT_OUTWARD_KICK
+		)
+	) + outward * FRAGMENT_OUTWARD_KICK
+
+
+## S22.5 (02 §5.3 A4): a gun hit that did not crack an L/XL rock rolls
+## `OreTuning.splinter_chance` to shed one splinter, capped at one per rock per
+## `OreTuning.splinter_interval` seconds. The cap is asked first, so a hit inside the
+## window consumes no roll; every roll is the field's own seeded RNG. S/M rocks shed
+## none and a cracking hit never reaches here (its break is `cracked`).
+func _on_gun_chipped(rock: Node2D) -> void:
+	var kind: int = int(rock.call(&"size_class"))
+	if kind != AsteroidScript.SIZE_LARGE and kind != AsteroidScript.SIZE_XL:
+		return
+	var now_ms := Time.get_ticks_msec()
+	if not bool(rock.call(&"splinter_ready", now_ms)):
+		return
+	if rng.randf() >= OreTuningScript.splinter_chance:
+		return
+	rock.call(&"mark_splinter_shed", now_ms)
+	_spawn_splinter(rock)
+
+
+## S22.5 (02 §5.3 A4): the splinter itself, a real S-class body rather than a
+## particle. Born `bore 0` (Rule A: it pays nothing at any shatter) with A3's S budget
+## by class, marked as debris like a `_cleave` child, and placed on the same
+## ring/cone/kick carrier. Its S class is why it never splits further: the §5.2 bis
+## table gives S no children, so its own crack is the bare break.
+func _spawn_splinter(rock: Node2D) -> void:
+	var splinter := _new_rock(
+		"Splinter%d" % (_spawned + 1),
+		StringName(rock.get(&"mineral_id")),
+		int(rock.get(&"tier")),
+		0,
+		AsteroidScript.SIZE_SMALL,
+		true,
+		0.0
+	)
+	splinter.call(&"mark_cleave_child")
+	var origin: Vector2 = rock.global_position
+	var ring := maxf(float(rock.call(&"world_radius")), 0.0)
+	var velocity: Vector2 = rock.call(&"eject_velocity")
+	var angle := rng.randf_range(0.0, TAU)
+	_deploy_debris(splinter, origin, ring, angle, velocity)
 
 
 ## S14's child roll (02 §5.2, S14_BRIEF §2 rule 1): for each `(child_kind, range)`

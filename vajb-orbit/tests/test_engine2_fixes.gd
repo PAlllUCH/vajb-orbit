@@ -28,6 +28,7 @@ const PlayerShipScene := preload("res://game/player_ship.tscn")
 const PlayerStateScript := preload("res://game/player_state.gd")
 const ShipFitScript := preload("res://game/ship_fit.gd")
 const AsteroidScript := preload("res://game/asteroid.gd")
+const OreTuningScript := preload("res://game/ore_tuning.gd")
 const NpcShipScript := preload("res://game/npc_ship.gd")
 const NpcRegistryScript := preload("res://game/npc_registry.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
@@ -477,10 +478,15 @@ func test_an_npc_hull_is_reached_through_its_body_too() -> void:
 
 ## The rock branch of the beam is the one path that already worked, and the delivery
 ## fix renamed its local: it must still chip at section 6's 10 % rate and extract
-## nothing (ruling 17).
+## nothing (ruling 17). S22.5 (02 §5.3 A2): the chip then divides by the rock's own
+## `size_toughness_mult x toughness`, so the fixture pins the roll at 1.0 and the
+## L rock's 4.0 multiplier is the whole divisor; the chip is read off `work`, because
+## 0.75 work is below the one-unit conversion.
+const CHIP_TOUGHNESS := 1.0
+
 func test_a_gun_still_chips_a_rock_and_extracts_nothing() -> void:
 	var rock: Node2D = AsteroidScript.new() as Node2D
-	rock.call(&"setup", &"ore_iron", 1, 20, AsteroidScript.SIZE_LARGE)
+	rock.call(&"setup", &"ore_iron", 1, 20, AsteroidScript.SIZE_LARGE, false, -1.0, CHIP_TOUGHNESS)
 	_fixture_host().add_child(rock)
 	_staged.append(rock)
 	assert_eq(
@@ -493,12 +499,14 @@ func test_a_gun_still_chips_a_rock_and_extracts_nothing() -> void:
 	_guns.call(
 		&"_apply_beam", &"laser", WeaponsScript.FAMILIES[&"laser"], rock, rock.global_position, 1.0
 	)
-	var chipped: int = units_before - int(rock.get(&"yield_units"))
-	assert_eq(
-		chipped,
-		3,
-		"one second of the 30 dps laser at the 10 %% chip rate is three work units (got %d)" % chipped
+	var expected := WeaponsScript.dps_of(&"laser") * 1.0 * WeaponsScript.GUN_CHIP_RATE \
+		/ (float(OreTuningScript.size_toughness_mult[AsteroidScript.SIZE_LARGE]) * CHIP_TOUGHNESS)
+	assert_true(
+		is_equal_approx(float(rock.get(&"work")), expected),
+		"one second of the 30 dps laser at the 10 %% chip rate lands %.6f work over the L rock's x4 divisor (got %.6f)"
+		% [expected, float(rock.get(&"work"))]
 	)
+	assert_eq(int(rock.get(&"yield_units")), units_before, "and the chip extracts no ore")
 	assert_eq(_pickup_count(), pickups_before, "a gun chip extracts no ore (ruling 17)")
 
 

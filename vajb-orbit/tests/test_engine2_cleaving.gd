@@ -175,11 +175,15 @@ func _member(size_class: int, units: int, node_name: String = "Probe") -> Node2D
 	return _field.call(&"_new_rock", node_name, &"iron", 1, units, size_class)
 
 
-## Deplete through the rock's own arithmetic, with WORK_PER_UNIT as the floor so a
-## 0-unit rock is handed the positive work that cracks it.
+## Deplete through the rock's own arithmetic (the mining door), with WORK_PER_UNIT as
+## the floor so a 0-unit rock is handed the positive work that cracks it. S22.5
+## (02 §5.3 A3): a rock with no ore cracks at `fragment_work[class]`, so that budget
+## is the floor that actually applies to the yield-0 fixtures.
 func _deplete(rock: Node2D) -> void:
-	rock.call(&"apply_work", maxf(float(int(rock.get(&"yield_units"))),
-		AsteroidScript.WORK_PER_UNIT))
+	var amount := float(int(rock.get(&"yield_units")))
+	if amount <= 0.0:
+		amount = float(OreTuningScript.fragment_work.get(int(rock.call(&"size_class")), 0.0))
+	rock.call(&"apply_work", maxf(amount, AsteroidScript.WORK_PER_UNIT))
 
 
 ## Every explosion sprite a break has left: a detached field's effects hang off the

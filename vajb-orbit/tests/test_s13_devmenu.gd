@@ -195,6 +195,39 @@ func test_tuned_badge_tracks_the_fields() -> void:
 		assert_true(_menu.badge_visible(), "%s shows the badge" % key)
 
 
+## S22.5 (rule 5): the toughness/splinter rows live in the same `OreTuning` surface
+## the overlay's Save/Load pair carries (`to_dict`/`from_dict`) and its Reset restores
+## (`reset_to_defaults`), so the panel's own buttons cover them without a slider row:
+## Save writes the file, Reset brings the shipped 0.80-1.60 band back, and opening
+## reads every one of the five back.
+func test_the_snapshot_carries_the_s22_5_toughness_fields() -> void:
+	_open()
+	OreTuningScript.toughness_min = 0.55
+	OreTuningScript.toughness_max = 2.25
+	OreTuningScript.size_toughness_mult = {0: 2.0, 1: 3.0, 2: 5.0, 3: 7.0}
+	OreTuningScript.fragment_work = {0: 1.0, 1: 2.0, 2: 3.0}
+	OreTuningScript.splinter_chance = 0.95
+	OreTuningScript.splinter_interval = 1.75
+	assert_true(_menu.is_tuned(), "a tuned toughness field is TUNED")
+	assert_eq(_menu.save(), OK, "Save writes the config")
+	_menu.close()
+	OreTuningScript.reset_to_defaults()
+	assert_true(is_equal_approx(OreTuningScript.toughness_min, 0.80), "Reset restores the band")
+	assert_true(is_equal_approx(OreTuningScript.splinter_chance, 0.25), "and the chance")
+	assert_false(_menu.is_tuned(), "and the badge clears")
+	_menu.open()
+	assert_true(is_equal_approx(OreTuningScript.toughness_min, 0.55), "open applies the band floor")
+	assert_true(is_equal_approx(OreTuningScript.toughness_max, 2.25), "and its ceiling")
+	assert_true(is_equal_approx(
+		float(OreTuningScript.size_toughness_mult.get(3, 0.0)), 7.0
+	), "and the class multiplier")
+	assert_true(is_equal_approx(
+		float(OreTuningScript.fragment_work.get(2, 0.0)), 3.0
+	), "and the debris budget")
+	assert_true(is_equal_approx(OreTuningScript.splinter_chance, 0.95), "and the splinter chance")
+	assert_true(is_equal_approx(OreTuningScript.splinter_interval, 1.75), "and its cap window")
+
+
 ## ------------------------------------------------------------------- AC4 guard
 
 

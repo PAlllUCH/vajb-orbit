@@ -22,6 +22,18 @@ extends RigidBody2D
 ## is owner-locked); this file and `asteroid_field.gd` cite the amendment until it
 ## lands.
 ##
+## **S22.5 -- rock toughness, debris budgets and chip splinters (02 §5.3, owner-ticked
+## 2026-09-30).** Every rock rolls its own `toughness` (A1) uniform in
+## `OreTuning.toughness_min..max` at spawn, rolled by the field on its own seeded RNG
+## and kept for life; the **gun** door (`apply_gun_work`) divides its amount by
+## `OreTuning.size_toughness_mult[size_class()] x _toughness` (A2), so an XL under fire
+## lasts several S rocks and the divisor never reaches the mining door (`apply_work`).
+## A rock with **no ore** (`_bore_ore <= 0.0`, a gun-born fragment, a splinter, or a
+## bare original) cracks at `OreTuning.fragment_work[size_class()]` work instead of on
+## the first positive point (A3); the field rolls the 25 %-per-hit splinter off a
+## non-cracking L/XL chip (A4) through `gun_chipped`. Reversals are the five rows'
+## own (`ore_tuning.gd` carries each).
+##
 ## Work, not damage: `apply_work` accumulates fractional work and converts it to
 ## whole ore units at `OreTuning.work_per_unit`, so 02 §7.1's "one completed
 ## extraction cycle pops one ore unit" and ENGINE_SPEC §6's 10 % gun rate are the
@@ -59,6 +71,12 @@ extends RigidBody2D
 ## row to roll from.
 
 signal cracked
+
+## S22.5 (02 §5.3 A4): emitted once per **gun-door** contribution that did not crack
+## this rock, so the field that spawned it can roll the chip splinter. Mining work
+## never emits (a splinter is the gun's chip, not the laser's tailings) and a cracking
+## hit never emits (its break is `cracked`).
+signal gun_chipped
 
 ## 02 §7.1 / §15: one unit of ore per unit of work. The mining laser applies
 ## exactly this per cycle; a weapon applies a fraction of it per hit.
@@ -246,6 +264,18 @@ var _shatter_mining := true
 ## never marked. Runtime-only: one field, one method, one call site, never persisted.
 var _cleave_child := false
 
+## S22.5 (02 §5.3 A1): this rock's own rolled toughness, uniform in
+## `OreTuning.toughness_min..max`. The field rolls it on its seeded RNG and passes it
+## to `setup`; a `setup` call with no explicit value rolls on the global RNG (seedable
+## by a caller that needs it), so every rock carries one. Read back through
+## `toughness()`. `1.0` is A1's reversal (no roll).
+var _toughness := 1.0
+
+## S22.5 (02 §5.3 A4): the `Time.get_ticks_msec()` stamp of the last splinter this
+## rock shed. The field's cap reads it through `splinter_ready`; runtime-only state
+## that dies with the rock, like the marker above.
+var _last_splinter_ms := -1
+
 
 ## 02 §5's roll lands here: which mineral the rock holds, its tier and how many ore
 ## units it carries. The look is rolled here too, uniformly over the shipped rows
@@ -271,13 +301,20 @@ var _cleave_child := false
 ## `fragment_core_share`, which keeps every pre-S13 five-argument caller (and
 ## `test_combat_repair_c5.gd`'s `setup(..., 100, ...)`) exact: its `yield_units` is
 ## the number it passed and its reserve is the derived remainder.
+##
+## `toughness` is S22.5's seam (02 §5.3 A1): the field rolls it on its own seeded RNG
+## and hands it in, so the value is reproducible under `setup(config)`'s seed. The
+## default `-1.0` rolls on the global RNG (a caller that wants a repeatable one seeds
+## it first), because every spawned rock must carry a roll; an explicit value pins a
+## fixture exactly.
 func setup(
 	mineral: StringName,
 	mineral_tier: int,
 	units: int,
 	size_class: int = SIZE_ANY,
 	defer_shape: bool = false,
-	bore: float = -1.0
+	bore: float = -1.0,
+	toughness: float = -1.0
 ) -> void:
 	mineral_id = mineral
 	tier = mineral_tier
@@ -288,6 +325,8 @@ func setup(
 	_reserve = maxf(_bore_ore - float(yield_units), 0.0)
 	_shatter_mining = true
 	_cleave_child = false
+	_toughness = toughness if toughness > 0.0 else _roll_toughness()
+	_last_splinter_ms = -1
 	add_to_group(ROCK_GROUP)
 	collision_layer = COLLISION_LAYER
 	collision_mask = COLLISION_MASK
@@ -307,16 +346,30 @@ func apply_work(amount: float) -> int:
 
 
 ## The **gun** door (projectile.gd's rock branch, weapons.gd's beam branch, and
-## `apply_collision_damage`'s ram). Same arithmetic as `apply_work`, but a shatter
-## it delivers is attributed to the gun route: its payout is capped at
+## `apply_collision_damage`'s ram). S22.5 (02 §5.3 A2): the amount divides by
+## `size_toughness_mult[size_class()] x toughness` before it reaches the accumulation,
+## so a bigger rock (and a tougher roll) takes proportionally more fire. A rock that
+## carries **no ore** (a cleave child, a splinter: `_bore_ore <= 0.0`) keeps the raw
+## amount: its crack is A3's flat `fragment_work` budget, measured in the chip's own
+## work (02 §5.3's own figures: a 10-damage chip is work 1.0 against an S budget of
+## 2.0). A shatter it delivers is attributed to the gun route: its payout is capped at
 ## `OreTuning.gun_burst_share x _bore_ore` and the excess reserve burns.
 func apply_gun_work(amount: float) -> int:
-	return _accumulate(amount, false)
+	var scaled := amount
+	if _bore_ore > 0.0:
+		scaled = amount / _gun_divisor()
+	return _accumulate(scaled, false)
 
 
 ## The one work arithmetic both doors share. `from_mining` is stamped on the rock
 ## only when the last unit leaves, so a non-cracking chip cannot re-attribute an
 ## earlier shatter (a rock cracks once and is freed).
+##
+## S22.5 (02 §5.3 A3): a rock with **no ore** (`_bore_ore <= 0.0`) does not crack on
+## the first positive work point; it must reach `fragment_work[size_class()]`. A rock
+## that carried ore keeps the S13 rule exactly: it cracks when its extractable units
+## run out, and the mining door's per-unit conversion is untouched (A5). Every
+## non-cracking gun-door call emits `gun_chipped` for the field's A4 splinter roll.
 func _accumulate(amount: float, from_mining: bool) -> int:
 	if amount <= 0.0 or _cracked:
 		return 0
@@ -327,9 +380,12 @@ func _accumulate(amount: float, from_mining: bool) -> int:
 		work = maxf(work - per_unit, 0.0)
 		yield_units -= 1
 		units += 1
-	if yield_units <= 0:
+	var cracks := yield_units <= 0 if _bore_ore > 0.0 else work >= _fragment_budget()
+	if cracks:
 		_shatter_mining = from_mining
 		_crack()
+	elif not from_mining:
+		gun_chipped.emit()
 	return units
 
 
@@ -337,6 +393,27 @@ func _accumulate(amount: float, from_mining: bool) -> int:
 ## shatter for the gun cap and the reserve.
 func bore_ore() -> float:
 	return _bore_ore
+
+
+## S22.5 (02 §5.3 A1): this rock's own rolled toughness, its life multiplier on the
+## gun door. Rolled once at spawn and kept: the accessor a suite reads instead of
+## guessing at the roll.
+func toughness() -> float:
+	return _toughness
+
+
+## S22.5 (02 §5.3 A4): true when this rock may shed another splinter at `now_ms`
+## (the field's own `Time.get_ticks_msec()` reading): the first shed is always due and
+## the cap is `OreTuning.splinter_interval` seconds per rock.
+func splinter_ready(now_ms: int) -> bool:
+	if _last_splinter_ms < 0:
+		return true
+	return float(now_ms - _last_splinter_ms) >= OreTuningScript.splinter_interval * 1000.0
+
+
+## S22.5 (02 §5.3 A4): stamp the shed the field just rolled, starting the cap window.
+func mark_splinter_shed(now_ms: int) -> void:
+	_last_splinter_ms = now_ms
 
 
 ## 02 §5.1 Rule A's reserve: the part of `_bore_ore` a mining-attributed shatter
@@ -444,6 +521,27 @@ func _crack() -> void:
 	_cracked = true
 	cracked.emit()
 	queue_free()
+
+
+## S22.5 (02 §5.3 A1): the roll itself, uniform over the live band. Read live so the
+## F1 overlay can retune the band and the next spawn takes it.
+func _roll_toughness() -> float:
+	return randf_range(OreTuningScript.toughness_min, OreTuningScript.toughness_max)
+
+
+## S22.5 (02 §5.3 A2): the gun door's divisor,
+## `size_toughness_mult[class] x toughness`. The epsilon guards a tuned-to-zero table
+## or roll from turning the door into a divide-by-zero.
+func _gun_divisor() -> float:
+	var class_mult := float(
+		OreTuningScript.size_toughness_mult.get(size_class(), 1.0)
+	)
+	return maxf(class_mult * _toughness, WORK_EPSILON)
+
+
+## S22.5 (02 §5.3 A3): the work a no-ore rock needs to crack, by its own class.
+func _fragment_budget() -> float:
+	return maxf(float(OreTuningScript.fragment_work.get(size_class(), 0.0)), WORK_EPSILON)
 
 
 ## Slice 0's rigid body: a heavy, damped, gravity-free rock (ruling 8). The mass is

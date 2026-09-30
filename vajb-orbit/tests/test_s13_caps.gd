@@ -165,12 +165,17 @@ func test_a_gun_shatter_pays_at_most_the_capped_share() -> void:
 ## S14 (02 §5.2) moves only this row's count: a Medium's child set is now the rolled
 ## `S 1-3`, so "still leaves fragments" is `>= 1` rather than the retired fixed 2-5
 ## pair. The conservation rows are untouched: the reserve is split across whatever
-## child set was rolled, and a gun's children still carry no ore.
+## child set was rolled, and a gun's children still carry no ore. S22.5 (02 §5.3 A2)
+## moves only the call's amount: the gun door divides by the rock's own
+## `size_toughness_mult x toughness`, so the one-call crack carries that divisor and
+## the claims below stand.
 func test_a_gun_shatter_never_hands_its_fragments_ore() -> void:
 	var field := _field()
 	var rock := _member(field, AsteroidScript.SIZE_MEDIUM, 12, "DebrisRock")
 	var before := _live_ids(field)
-	rock.call(&"apply_gun_work", float(int(rock.get(&"yield_units"))) + 1.0)
+	var divisor := float(OreTuningScript.size_toughness_mult.get(
+		int(rock.call(&"size_class")), 1.0)) * float(rock.call(&"toughness"))
+	rock.call(&"apply_gun_work", (float(int(rock.get(&"yield_units"))) + 1.0) * divisor)
 	var children: Array = []
 	for node: Node2D in field.call(&"rocks"):
 		if not before.has(node.get_instance_id()):
