@@ -1973,6 +1973,13 @@ LAUNCH's service rows (the `STATION_HUB.md` §5.4 amendment — owner request 4)
   in place, `_step_lateral_drag` is inert, and `COAST_TIME_MULT` ticks `2.0 → 2.5`. The rest
   of this bullet — `ACCEL_TIME_MULT 2.0`, `STEER_WITHOUT_THROTTLE`, the neutral-turn leak
   bound — stands unchanged. Reversal: restore the pre-amendment `_lateral_damp()` body.
+- **Amended again (2026-09-30, S22.6's owner tick — "why do ships stop moving as soon as i
+  stop thrusting").** `COAST_TIME_MULT` ticks `2.5 → 5.0`: the release is still a scripted
+  constant brake at `max_speed / coast_time` (it is NOT drag — the body damp is compensated
+  out along the released vector), it now takes twice as long and carries twice as far
+  (Vanguard 427.5 u/s → 4.0 s over ~855 u, 18 §13's table). Every class keeps its
+  relativity, the §23.5 "one stop, one line" acceptance stands, and the S-thrust brake
+  (1.8 × acceleration) is unmoved. Reversal: `2.5`.
 - **Disclosed asymmetry, the NPC brake (L39/L103; owner tick T-feel-2, 2026-09-29).**
   The retune sentence above ("no NPC file is edited") is true of the *files* and false of
   the *effect*: `coast_time` reaches every hull through `ShipStats`, so the ×0.50 retune
@@ -3109,7 +3116,7 @@ linearly with the resolved coast (S2.6's measured pairs: 430.32 u @ 2.0 s,
 
 | # | lever (one constant, §14's multiplier pattern) | today | **proposed** | measured effect, Vanguard worked row | reversal |
 |---|---|---|---|---|---|
-| T1 | `COAST_TIME_MULT` (`ship_fit.gd:499`) | 2.0 | **2.5** | stop time 2.0 → **2.5 s**; carry 430 → **≈538 u** (measured pair ×1.25); forward damp 0.5 → **0.4 s⁻¹**; every hull and NPC scales together | 2.0 |
+| T1 | `COAST_TIME_MULT` (`ship_fit.gd`) | 2.0 | **2.5 → 5.0** (the second tick is **S22.6's**, owner 2026-09-30) | stop time 2.0 → **2.5 → 4.0 s**; carry 430 → ≈538 → **≈855 u**; forward damp 0.5 → 0.4 → **0.25 s⁻¹**; every hull and NPC scales together | **2.5** (the S22.6 reversal) |
 | T2 | `ANGULAR_DAMP_MULT` — **new**, multiplying `_angular_damp()` | none (damp = 1/turn_spinup) | **0.5** | Vanguard spin-down damp 2.0 → **1.0 s⁻¹**: a released turn keeps rotating ~**2×** longer and the torque law's damping half halves | 1.0 (constant stays; 1.0 = today byte-for-byte) |
 | ~~T3~~ | ~~`STRAFE_RATE_MULT` — **new**, multiplying the strafe chase rate in `_step_strafe`~~ — **STRUCK 2026-09-29 (owner tick `T3`, through D15's sheet): the row is self-contradictory** (a × 0.75 chase *rate* against its own worked 4.8 → 3.6 s, that multiplier's inverse) and §23.5's one-vector lever had already superseded it; **nothing implements it** | none (chases at `_accel_rate`) | **struck** | — | re-propose a corrected row (chase × 1.333 → the stated 3.6 s) at a later tick |
 | T4 | `LATERAL_DAMP_MULT` (`ship_fit.gd:500`) | 1.0 | **0.6** | the explicit sideways drag's extra falls 0.5 → **0.1 s⁻¹** — an uncommanded skid rides nearly pure body damp (the "inertia/slide" reading) | 1.0 |
@@ -3276,7 +3283,7 @@ hull stops twice and the second stop slides.
 | one decay | `player_ship._lateral_damp()` **returns `_linear_damp()`** — one rate owns both axes. `_lateral_extra_damp()` then returns `0.0` and `_step_lateral_drag` is inert (both kept) | restore `SHIP_FIT.COAST_TIME_MULT * SHIP_FIT.LATERAL_DAMP_MULT / _stats.coast_time` |
 | `LATERAL_DAMP_MULT` | **retired in place** (unread; its doc says so). §14's "the lateral damp *is* the skid" clause is superseded here | restore the reader |
 | commanded strafe | unchanged in effect: `_step_strafe` compensates the one damp on its own axis, so a commanded strafe still chases at the class rate | — |
-| T1 | `ship_fit.COAST_TIME_MULT` `2.0 → 2.5` | `2.0` |
+| T1 | `ship_fit.COAST_TIME_MULT` `2.0 → 2.5`, then `2.5 → 5.0` (**S22.6**, owner 2026-09-30) | `2.5` |
 | T2 | new `ship_fit.ANGULAR_DAMP_MULT := 0.5`, read by `player_ship._angular_damp()` as `SHIP_FIT.ANGULAR_DAMP_MULT / _stats.turn_spinup` | `1.0` (byte-for-byte today) |
 | T3 | **struck 2026-09-29** (owner tick through D15's sheet): §22's row multiplied the strafe chase *rate* by `0.75` while its own worked effect (lateral time-to-top 4.8 → 3.6 s) was that multiplier's inverse, so it contradicted itself and could not be implemented as written; **§22 now carries it struck and nothing implements it** | re-propose a corrected row (the chase × 1.333 reading) |
 | release ramp (T-feel-3, owner-ticked 2026-09-29) | a released hull decays through `player_ship._step_release()` → `_thrust_axis()` with `_coast_rate()` as its driving term, so **axial and lateral releases ride the same ramp** (`d(along)/dt = -rate + damp·along`: one time constant, not a pure exponential) — measured `t_10` at v0 200 u/s is Vanguard **1.150 s**, freighter 4.400 s, miner 2.500 s on *both* axes (L182) | restore a damp-shaped release (lateral `t_10` → 2.383 s) |

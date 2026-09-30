@@ -443,6 +443,8 @@ can land before or in parallel.
 |-------|---------|
 | `SECTOR_SIZE` | 10 000 × 10 000 u; station near centre; player spawns 300 u off the dock ring |
 | Speed scale | `max_speed = hull % (08 §2) × 450 u/s` — replaced by **speed table v2** below once the owner ticks it |
+| Hull release coast (`COAST_TIME_MULT`) — **owner 2026-09-30 (S22.6)** | **5.0** on the nine `coast_time` rows (4.0–14.0 s resolved). A released hull brakes at a constant `max_speed / coast_time`, so a Vanguard (427.5 u/s) stops in **4.0 s over ~855 u** where it stopped in 2.0 s over ~427 u at the previous 2.5. Reversal: 2.5 |
+| Rock drift damping — **owner 2026-09-30 (S22.6)** | `LINEAR_DAMP` **0.35** for a field rock and **0.25** for a cleave child (`FRAGMENT_LINEAR_DAMP`), both with `DAMP_MODE_REPLACE`: a 150 u/s kick reads ~106 u/s after one second and carries **~429 u** (a child ~600 u) before settling, and the worst ram's 409 u/s hand-off settles in ~10.6 s. Supersedes the 3.71 derived for `DRIFT_SPEED_CEILING` (10 u/s one second after the worst ram). Reversal: 3.71 for both |
 | Camera zoom | 0.70–1.50 (shipped); speed pull-back multiplies it (§3.4) |
 | Minimap radius | 800–6 400, step 800 (shipped) |
 | Autopilot | slow-down radius 240 u, arrive radius 40 u |
