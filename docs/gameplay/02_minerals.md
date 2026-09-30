@@ -325,6 +325,14 @@ survives **≈0.7 s** of beam or one solid hit instead of zero, and mining stays
 **7.2 s** — the mining laser remains the efficient door and guns the wasteful one,
 which 01 §5.6's payout cap already assumes.
 
+**Two readings the table needs (settled at S22.5's close).** (i) The figures are
+**per 6 work units at the bore**: a *field-spawned* T1 rock carries S13's reserve
+(4 extractable of a 6 bore, §5.1), so its real times scale by **2/3** — S ≈2.4 s ·
+M ≈4.0 s · L ≈6.4 s · XL ≈9.6 s. (ii) **A2's divisor is the ore-bearing
+channel's**; a rock with no ore cracks on `fragment_work` alone, in raw chip work,
+which is what makes A3's "2.0" and the "≈0.7 s" fragment figure mean something (a
+fragment's class multiplier and roll are otherwise undefined at the tick).
+
 **What does not change.** Rule A ("no method mints ore") holds: a splinter and
 every gun-born child carry `bore 0` and pay nothing (`_pay_burst` returns on
 `owed <= 0`), so a fully shot family still realises at most `GUN_BURST_SHARE ×
