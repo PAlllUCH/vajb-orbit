@@ -29,13 +29,16 @@ below is the amended law and §11/§6/§7 carry the changes.
 Also closed at this open (no code): **L250** (D15's stale anchors — the §3 table
 below is re-anchored) and **L251** (the chip-spark re-cut now rides §10).
 
-### Amendment 2026-09-30b (developer-ruled after S22-B1, S21 precedent)
+### Amendment 2026-09-30b (developer-ruled after S22-B1 and S22-B2, S21 precedent)
 
 | # | Ruling | Reversal |
 |---|---|---|
 | 6 | **S19's byte-seal row is red by design until B3 re-pins it.** A1 edits `weapons.gd` and A2 `npc_ship.gd`, both pinned in `tests/test_s19_quadrants.gd:94-105`, and B2 moves `weapons.gd` again (FIRE_CUES) — so the **last** builder (`S22-B3`) re-pins both strings from the finished tree, once, with the hashes in its report (the S21 rule: the last editor re-pins; B1 must not edit the yardstick) | restore the two pinned strings and accept the red row |
 | 7 | **`test_engine2_wiring.gd:428`'s one rewritten row is accepted** (B1's deviation (d)): it pinned the retired pool-drop poll's exact behaviour, so it now proves a drop does *not* mark and a landed delivery does. Row count unchanged | restore the poll and the row with it |
 | 8 | **A3's "nose" is the hull's bow band** (B1's deviation (b)): the acceptance's intent — the flare must read at the nose, not over the hull middle — governs the tick's literal "(mount, else radius-forward)", because the mounts sit amidships. Bucket 1 (inside a pinned acceptance); R1 grades the measured mouth against the intent | anchor at the firing barrel's `muzzle_position`, or restore the origin |
+| 9 | **A6 is behavioural, not cosmetic** — so §8's "`test_weapon_fx_f1/f2/f4` unchanged" row was wrong: the anti-flam rules supersede what four `test_weapon_fx_f1.gd` rows and one `test_engine2_cleaving.gd:623` row pinned (same-cue bursts with no spacing). B2's updates are accepted; counts unchanged | restore the rows with the pre-tick behaviour |
+| 10 | **`headless_runner.gd` clears the new anti-flam memory between methods** (B2's deviation 2): the 30 ms floor is wall clock and every gate method runs microseconds apart, so 8 rows were timing-dependent without it. Bucket 1 (test mechanics). R1 grades it explicitly (no row may stay timing-dependent, and `_pool_next` must be untouched) | drop the call and space every same-cue row by hand |
+| 11 | **The audio import ran in B2's pass** (its deviation 6), because the gate cannot resolve the new cue without the `.import` sidecar; the close-out re-checks both sidecars rather than assuming them | delete the sidecars and re-import at close-out |
 
 ## 1. The law to read, in order
 1. `slices/S22-feel-and-juice/SLICE.md` — scope, file sets.
@@ -214,9 +217,11 @@ suites only, one row per acceptance. Candidates:
 | `test_s19_quadrants.gd` | A11's spill **+ the byte-seal row** | one corrected row (the 400-hit spill row); **the seal row is red from B1 until B3 re-pins it** (amendment 6) |
 | `test_engine2_npc.gd` | T-feel-2's NPC drag | may move; ~1 row |
 | `test_engine2_wiring.gd` | A1's retired pool-drop poll | one row rewritten (amendment 7, accepted) |
-| `test_weapon_fx_f1/f2/f4.gd` | A1/A3/A13 seams | unchanged (cosmetic, rule 1) |
+| `test_weapon_fx_f1.gd` (4 rows), `test_engine2_cleaving.gd:623` | A6's anti-flam rules | **rows updated** (amendment 9: A6 is behavioural, so my "unchanged" was wrong); counts unchanged |
+| `test_weapon_fx_f2/f4.gd` | A1/A3/A13 seams | unchanged |
 | `test_p1_repairs.gd`, `test_combat_repair_c5.gd` | A10's repair figure | unchanged totals; only the source of the pair |
 | `test_s5_ammo_cargo.gd` | A14's take list | unchanged (the drop is a pool member, not a test pin) |
+| `headless_runner.gd` | A6's anti-flam memory | the per-method reset (amendment 10, bucket 1) |
 
 Any other count moving is a bucket-2 pause: report it, leave it, stop. The
 **audio reimport** (a new `.ogg` needs its `.import` sidecar) is the
