@@ -19,6 +19,7 @@ const SUITE_FLAG := "--suite="
 ## write the owner's live account, so both writable stores are sandboxed before the
 ## first suite loads.
 const PROFILE_SERVICE := &"PlayerProfile"
+const AUDIO_SERVICE := &"AudioManager"
 const GATE_SCRATCH_DIR := "user://_gate_scratch"
 const GATE_SCRATCH_PROFILE := "user://_gate_scratch/profile.cfg"
 const GATE_SCRATCH_LOG := "user://_gate_scratch/economy_log.txt"
@@ -79,6 +80,23 @@ func _profile() -> Node:
 func _sandbox_log() -> void:
 	if EconomyLogScript.log_path == EconomyLogScript.DEFAULT_PATH:
 		EconomyLogScript.log_path = GATE_SCRATCH_LOG
+
+
+## The AudioManager's anti-flam memory is wall-clock state (AUDIO_SPEC section 4.1's
+## rules, S22 A6), and every method in this runner runs inside one frame, microseconds
+## apart: a burst one method ends could otherwise refuse another's first trigger. Clearing
+## it between methods (the `_sandbox_log` pattern) keeps each method's audio its own; the
+## rules themselves are proven by probes that call several times inside one method.
+func _reset_audio_pool_history() -> void:
+	var audio := _audio_service()
+	if audio != null and audio.has_method(&"clear_pool_history"):
+		audio.call(&"clear_pool_history")
+
+
+func _audio_service() -> Node:
+	if not is_inside_tree():
+		return null
+	return get_tree().root.get_node_or_null(NodePath(AUDIO_SERVICE))
 
 
 ## Optional scoping for a single worker's gate: `-- --suite=test_p1_pricing`
@@ -146,6 +164,7 @@ func _run_file(path: String) -> void:
 		return
 	var suite: McpTestSuite = instance
 	_sandbox_log()
+	_reset_audio_pool_history()
 	suite.suite_setup({})
 	if suite.get("_suite_failed"):
 		_failed += 1
@@ -160,6 +179,7 @@ func _run_file(path: String) -> void:
 		suite.call("_reset")
 		suite.setup()
 		_sandbox_log()
+		_reset_audio_pool_history()
 		suite.call(method)
 		suite.teardown()
 		if bool(suite.get("_failed")):

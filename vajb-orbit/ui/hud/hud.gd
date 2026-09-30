@@ -325,6 +325,10 @@ var _lock_progress: float = -1.0
 var _speedometer_ratio: float = 0.0
 var _lock_ring: LockRing = null
 var _hit_marker: HitMarker = null
+## S22 A1 (L28): the player's delivery seam, bound by `game.gd` after the ship mounts
+## (`bind_weapons`). The component's one `hit_landed` signal is what flashes the marker;
+## the HUD consumes it and never reads a pool to guess a hit.
+var _guns: Node = null
 var _speedometer: Speedometer = null
 ## UI_SPEC section 3.7: the cluster the dial lives in. It carries the compass and the five
 ## readout rows, and derives them from the feeds this HUD already receives.
@@ -584,6 +588,27 @@ func hit_marker() -> void:
 	_hit_marker.flash()
 
 
+## S22 A1 (L28): bind the player's weapons component. The component publishes
+## `hit_landed` for every delivery that lands - beams and projectiles alike - and this
+## HUD answers with the marker, so a hit reads for any hull the player hits, not only
+## the marked one. Layer Cake: the signal travels up, `hit_marker()` travels down.
+## Re-bindable: a hull swap connects the new component and drops the old one.
+func bind_weapons(guns: Node) -> void:
+	if _guns != null and is_instance_valid(_guns) and _guns.has_signal(&"hit_landed"):
+		if _guns.hit_landed.is_connected(_on_hit_landed):
+			_guns.hit_landed.disconnect(_on_hit_landed)
+	_guns = guns
+	if _guns != null and _guns.has_signal(&"hit_landed"):
+		if not _guns.hit_landed.is_connected(_on_hit_landed):
+			_guns.hit_landed.connect(_on_hit_landed)
+
+
+## One landed delivery (the component's own seam): the marker, nothing else - neither
+## the target nor the amount is read, so no feedback can disagree with the damage.
+func _on_hit_landed(_target: Object, _amount: float) -> void:
+	hit_marker()
+
+
 ## Read-only mirrors of the three slice-2 readings, so a caller (or a headless probe) can
 ## assert what the HUD was told without reaching into a sub-node - the same reason
 ## `TargetReticle.state()` exists.
@@ -829,15 +854,24 @@ func _build_status_screen() -> void:
 	_push_status()
 
 
-## Section 3.8's two pushes: the launched hull with its W cells (`set_hull_slots`) and the live
-## HULL/SHLD pairs the HUD already mirrors from `PlayerState`. The screen writes nothing, so
-## every refresh is a re-read behind these two calls.
+## Section 3.8's three pushes: the launched hull with its W cells (`set_hull_slots`), the live
+## HULL/SHLD pairs the HUD already mirrors from `PlayerState`, and (A5 / L241) the four
+## armour pools behind `set_quadrants`, so a breached quadrant reads its real pool in flight
+## instead of the screen's even split. The screen writes nothing, so every refresh is a
+## re-read behind these calls; a HUD with no state still pushes the two it has.
 func _push_status() -> void:
 	if _status == null:
 		return
 	if not _hull_id.is_empty():
 		_status.set_hull(_hull_id)
 	_status.set_pools(_hull_current, _hull_max, _shield_current, _shield_max)
+	if _state != null:
+		_status.set_quadrants(
+			_state.pool_of(PlayerState.QUADRANT_PROWS),
+			_state.pool_of(PlayerState.QUADRANT_STERN),
+			_state.pool_of(PlayerState.QUADRANT_PORT),
+			_state.pool_of(PlayerState.QUADRANT_STARBOARD),
+		)
 
 
 ## Section 3.8 / MENU_FLOW section 3.9: the toggle. Esc stays Pause-only, so this reads the
@@ -1056,16 +1090,22 @@ func _barrel_of_battery(battery: int) -> int:
 	return battery - 1
 
 
-## The firing family a rack ordinal's first cell carries, `&""` when no pushed cell claims
-## the rack (the caller then keeps its own fallback). `_barrel_of_battery` answers that same
-## first cell, so the caption and the pack the readout shows name one weapon.
-func _battery_family(battery: int) -> StringName:
+## The module id a rack ordinal's first cell carries, `&""` when no pushed cell claims
+## the rack. `_barrel_of_battery` answers that same first cell, so the caption and the
+## pack the readout shows name one weapon.
+func _battery_module(battery: int) -> StringName:
 	for index: int in _hull_slots.size():
 		if _cell_battery(index) != battery:
 			continue
-		var module := StringName(_hull_slots[index].get(&"module", &""))
-		return WeaponComponent.weapon_id(module)
+		return StringName(_hull_slots[index].get(&"module", &""))
 	return &""
+
+
+## The firing family a rack ordinal's first cell carries, `&""` when no pushed cell claims
+## the rack or the cell is a family-less tool (`w_mining`) - the caller then keeps its own
+## fallback.
+func _battery_family(battery: int) -> StringName:
+	return WeaponComponent.weapon_id(_battery_module(battery))
 
 
 ## Point the readout's ammo figures at one **barrel position** (`_ammo_of`'s index). The
@@ -1540,7 +1580,15 @@ func _refresh_weapon() -> void:
 	var low_ammo: bool = _ammo_is_low()
 	if _ammo_label != null:
 		var label: String = WEAPON_LABELS[_active_slot] if _active_slot < WEAPON_LABELS.size() else ""
-		if not _weapon_id.is_empty():
+		var module := _battery_module(_active_slot + 1)
+		if not module.is_empty() and WeaponComponent.weapon_id(module).is_empty():
+			## S22 A12 (L70, tick T-feel-6): a tool module has no firing family, so the
+			## slot reads its `ModuleCatalog` name ("Mining Laser") rather than the gun
+			## that happens to sit at the rack's ordinal.
+			var named := String(ModuleCatalog.module(module).get(&"name", ""))
+			if not named.is_empty():
+				label = named
+		elif not _weapon_id.is_empty():
 			var known: int = WEAPON_IDS.find(_weapon_id)
 			if known >= 0:
 				label = WEAPON_LABELS[known]

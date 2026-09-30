@@ -7,11 +7,22 @@ extends McpTestSuite
 ## instances whose save_path is repointed at a scratch file before the first
 ## mutation; `user://profile.cfg` is never touched, and the economy log is
 ## redirected to a scratch file truncated before every test.
+##
+## R-S22-1 (M4, S22-B3): the transaction resolves the same `ShipFit.resolve` pair the
+## panes print, so a throwaway profile's standard Vanguard fit (plate + shield) is the
+## ceiling every figure below is measured against: 1250 hull / 800 shield, not the
+## catalogue's 1000 / 600.
 
 const Repairs := preload("res://game/repairs.gd")
 const Clock := preload("res://autoload/world_clock.gd")
 const Log := preload("res://game/economy_log.gd")
 const Profile := preload("res://autoload/player_profile.gd")
+
+## The resolved pair a fresh profile's standard Vanguard fit prints (R-S22-1):
+## `ShipFit.resolve(HULL, STANDARD_FIT)` = 1000 + h_plate_light's 250 hull, 600 +
+## s_light's 200 shield.
+const HULL_MAX := 1250
+const SHIELD_MAX := 800
 
 const PROFILE_PATH := "user://test_p1_repairs.cfg"
 const LOG_PATH := "user://test_p1_log.txt"
@@ -48,18 +59,18 @@ func suite_teardown() -> void:
 func test_vanguard_home_fee_and_repair() -> void:
 	var profile = _fresh()
 	profile.set_vitals(&"ship_vanguard", 200, 300)
-	assert_eq(Repairs.fee(profile, &"ship_vanguard"), 500, "(800/2) + (300/3)")
+	assert_eq(Repairs.fee(profile, &"ship_vanguard"), 692, "(1050/2) + (500/3), resolve's pair")
 	assert_true(Repairs.is_repairable(profile, &"ship_vanguard"))
 
 	var result: Dictionary = Repairs.repair(profile, &"ship_vanguard")
 	assert_true(bool(result["ok"]))
-	assert_eq(int(result["fee"]), 500)
-	assert_eq(int(result["hull_max"]), 1000)
-	assert_eq(int(result["shield_max"]), 600)
-	assert_eq(profile.credits(), 9500, "exactly the fee is spent")
+	assert_eq(int(result["fee"]), 692)
+	assert_eq(int(result["hull_max"]), HULL_MAX)
+	assert_eq(int(result["shield_max"]), SHIELD_MAX)
+	assert_eq(profile.credits(), 9308, "exactly the fee is spent")
 	var vitals: Dictionary = profile.vitals_of(&"ship_vanguard")
-	assert_eq(int(vitals["hull"]), 1000, "hull restored")
-	assert_eq(int(vitals["shield"]), 600, "shield restored")
+	assert_eq(int(vitals["hull"]), HULL_MAX, "hull restored to the resolved ceiling")
+	assert_eq(int(vitals["shield"]), SHIELD_MAX, "shield restored")
 	assert_eq(Repairs.fee(profile, &"ship_vanguard"), 0, "nothing left to pay")
 	assert_false(Repairs.is_repairable(profile, &"ship_vanguard"))
 
@@ -70,13 +81,13 @@ func test_vanguard_home_fee_and_repair() -> void:
 	assert_eq(fields[1], "REPAIR")
 	assert_eq(fields[2], "ship_vanguard")
 	assert_eq(fields[3], "0", "a repair takes no goods")
-	assert_eq(fields[4], "-500")
-	assert_eq(fields[5], "9500")
+	assert_eq(fields[4], "-692")
+	assert_eq(fields[5], "9308")
 
 
 func test_full_pools_report_no_damage() -> void:
 	var profile = _fresh()
-	profile.set_vitals(&"ship_vanguard", 1000, 600)
+	profile.set_vitals(&"ship_vanguard", HULL_MAX, SHIELD_MAX)
 	assert_eq(Repairs.fee(profile, &"ship_vanguard"), 0)
 	assert_false(Repairs.is_repairable(profile, &"ship_vanguard"))
 	var result: Dictionary = Repairs.repair(profile, &"ship_vanguard")
@@ -84,14 +95,14 @@ func test_full_pools_report_no_damage() -> void:
 	assert_eq(result["reason"], Repairs.REASON_NO_DAMAGE)
 	assert_eq(profile.credits(), 10000, "nothing is charged")
 	var vitals: Dictionary = profile.vitals_of(&"ship_vanguard")
-	assert_eq(int(vitals["hull"]), 1000)
-	assert_eq(int(vitals["shield"]), 600)
+	assert_eq(int(vitals["hull"]), HULL_MAX)
+	assert_eq(int(vitals["shield"]), SHIELD_MAX)
 	assert_eq(_log_lines().size(), 0, "a refused repair logs nothing")
 
 
 func test_shield_exemption_is_free() -> void:
 	var profile = _fresh()
-	profile.set_vitals(&"ship_vanguard", 1000, 570)
+	profile.set_vitals(&"ship_vanguard", HULL_MAX, 760)
 	assert_eq(Repairs.fee(profile, &"ship_vanguard"), 0, "shield alone at 95% is exempt")
 	assert_true(
 		Repairs.is_repairable(profile, &"ship_vanguard"), "the free top-up is still a repair"
@@ -101,8 +112,8 @@ func test_shield_exemption_is_free() -> void:
 	assert_eq(int(result["fee"]), 0, "no fee")
 	assert_eq(profile.credits(), 10000, "a free repair costs nothing")
 	var vitals: Dictionary = profile.vitals_of(&"ship_vanguard")
-	assert_eq(int(vitals["hull"]), 1000, "hull already full")
-	assert_eq(int(vitals["shield"]), 600, "shield topped up to the maximum")
+	assert_eq(int(vitals["hull"]), HULL_MAX, "hull already full")
+	assert_eq(int(vitals["shield"]), SHIELD_MAX, "shield topped up to the maximum")
 	var lines := _log_lines()
 	assert_eq(lines.size(), 1, "the free repair is still logged")
 	assert_eq(lines[0].split(", ")[4], "+0")
@@ -135,7 +146,7 @@ func test_insufficient_credits_refuses() -> void:
 	assert_true(profile.spend(9800))
 	assert_eq(profile.credits(), 200)
 	profile.set_vitals(&"ship_vanguard", 200, 300)
-	assert_eq(Repairs.fee(profile, &"ship_vanguard"), 500, "the fee exceeds the balance")
+	assert_eq(Repairs.fee(profile, &"ship_vanguard"), 692, "the fee exceeds the balance")
 
 	var result: Dictionary = Repairs.repair(profile, &"ship_vanguard")
 	assert_false(bool(result["ok"]))

@@ -47,16 +47,41 @@ const SILENT_DB := -80.0
 const POOL_ROUND_ROBIN: StringName = &"round_robin"
 const POOL_TIER: StringName = &"tier"
 
+## AUDIO_SPEC section 4.1's anti-flam numbers, exactly the three rules section 8.6's
+## AUDIO-2 (owner-ticked 2026-09-29) resolves: a 30 ms floor between two triggers of one
+## cue, a per-class concurrent-voice cap whose excess is dropped rather than queued, and
+## the round-robin's last used variant skipped when the pool carries more than two takes.
+## The caps are the spec's own (weapons 4 / impacts 6 / mining 1 / UI 2); a cue's class is
+## the prefix its name carries (section 6's naming law), so a new row of an existing family
+## needs no second registration. Section 4.1's other reading ("overlapping triggers steal
+## the oldest playing voice") is non-operative: the cap's drop fires first and no
+## voice-stealing path exists.
+const POOL_MIN_INTERVAL_MS := 30
+const POOL_CAPS: Dictionary = {
+	&"weapons": 4,
+	&"impacts": 6,
+	&"mining": 1,
+	&"ui": 2,
+}
+const POOL_CLASS_BY_PREFIX: Dictionary = {
+	&"sfx_weapon_": &"weapons",
+	&"sfx_impact_": &"impacts",
+	&"sfx_mining_": &"mining",
+	&"ui_": &"ui",
+}
+
 ## AUDIO_SPEC section 8's cue table with section 4.1's variant rules. The table is
 ## data, not policy: a caller asks for a cue name and gets a take.
 const CUE_POOLS: Dictionary = {
 	## S1: "round-robin of 3-4 laser one-shots, pitch +/-10 %, vol +/-3 dB".
 	&"sfx_weapon_laser": {
+		## AUDIO-3 (ticked 2026-09-29): take 04 (1.244 s against the pool's 0.064-0.092 s)
+		## dropped; the round-robin runs 01-03 and skip-last still applies at N = 3. The file
+		## stays on disk with the returning 0.06-0.09 s trim staged (L49).
 		&"takes": [
 			&"sfx_weapon_laser_01",
 			&"sfx_weapon_laser_02",
 			&"sfx_weapon_laser_03",
-			&"sfx_weapon_laser_04",
 		],
 		&"mode": POOL_ROUND_ROBIN,
 		&"pitch": 0.10,
@@ -87,6 +112,17 @@ const CUE_POOLS: Dictionary = {
 				&"volume_db": [0.0, 0.0],
 			},
 		],
+	},
+	## S26 (AUDIO_SPEC section 8.6's AUDIO-1, owner-ticked 2026-09-29): the mine's release
+	## clunk - one CC0 mechanical deploy cue sourced through `assetmcp` (qubodup's "7
+	## mechanical clicks and buzzes"; both takes are the pack's own and <= 0.5 s). The spec's
+	## row states no pitch/volume range, so this row states neither; the detonation keeps
+	## S3's explosion cue (`projectile.gd:BLAST_CUE`), this is the drop alone.
+	&"sfx_weapon_mine_drop": {
+		&"takes": [&"sfx_weapon_mine_drop_01", &"sfx_weapon_mine_drop_02"],
+		&"mode": POOL_ROUND_ROBIN,
+		&"pitch": 0.0,
+		&"volume_db": [0.0, 0.0],
 	},
 	&"sfx_weapon_explosion": {
 		&"takes": [&"sfx_weapon_explosion_01", &"sfx_weapon_explosion_02"],
@@ -229,6 +265,13 @@ var _thruster_latched := false
 ## probe cannot hear a cue, so it reads this instead).
 var _pool_next: Dictionary = {}
 var _last_sfx: StringName = &""
+## Anti-flam state (AUDIO_SPEC section 4.1's three rules): the millisecond each cue last
+## accepted a trigger and the round-robin index it last played; `_sfx_until` is the
+## millisecond each one-shot voice's stream ends, so "concurrent voices" is a fact rather
+## than a guess. `play_pool` is their only writer; a probe clears them between readings.
+var _pool_last_ms: Dictionary = {}
+var _pool_last_take: Dictionary = {}
+var _sfx_until: Array[int] = []
 
 
 func _ready() -> void:
@@ -238,6 +281,7 @@ func _ready() -> void:
 		_sfx_players.append(_make_player(&"SFX"))
 		_sfx_take.append(&"")
 		_sfx_stamp.append(0)
+		_sfx_until.append(0)
 	_music_player = _make_player(&"Music")
 	_music_player.name = &"MusicPlayer"
 	_ambience_player = _make_player(&"SFX")
@@ -346,9 +390,14 @@ func pool_takes(cue: StringName) -> Array:
 ## the row: `round_robin` cycles the takes call by call, `tier` stays on the first.
 ## A cue with no pool falls back to `play_sfx`, so one call site can address both.
 ##
+## The three anti-flam rules below run here so every caller meets one gate: 30 ms of
+## wall clock between two triggers of this cue, the class cap on fresh voices, and the
+## round-robin's skip-last. A trigger any of them drops returns `{}` without playing,
+## without advancing a cursor and without stamping the gate's clock.
+##
 ## Returns the plan that went out - `{cue, take, take_index, path, pitch, volume_db,
-## layers: [{take, delay}]}` - or `{}` when nothing resolved. A headless probe reads
-## this instead of listening.
+## layers: [{take, delay}]}` - or `{}` when nothing resolved **or the anti-flam rules
+## dropped the trigger**. A headless probe reads this instead of listening.
 func play_pool(cue: StringName, take: int = -1) -> Dictionary:
 	var pool := cue_pool(cue)
 	if pool.is_empty():
@@ -357,10 +406,23 @@ func play_pool(cue: StringName, take: int = -1) -> Dictionary:
 	var takes: Array = pool.get(&"takes", [])
 	if takes.is_empty():
 		return {}
+	var now := _now_ms()
+	## Rule (i): at least 30 ms between two triggers of one cue. A trigger inside the window
+	## is dropped, not queued, and consumes neither a variant nor a voice.
+	if not _pool_interval_open(cue, now):
+		return {}
 	var index := _pool_index(cue, pool, take, takes.size())
-	var played := _play_take(StringName(takes[index]), pool)
+	var take_name := StringName(takes[index])
+	## Rule (ii): a class already at its cap refuses a trigger that would need a **fresh**
+	## voice; a take whose own voice still holds it re-triggers that voice and is no excess
+	## (the cannon's 3.46 s take against its 0.6 s cadence depends on that reuse).
+	if not _pool_voice_open(take_name, now):
+		return {}
+	var played := _play_take(take_name, pool)
 	if played.is_empty():
 		return {}
+	_pool_last_ms[cue] = now
+	_pool_last_take[cue] = index
 	var layers: Array = []
 	for layer: Variant in pool.get(&"layers", []):
 		if not layer is Dictionary:
@@ -594,6 +656,20 @@ func voice_takes() -> Array[StringName]:
 	return _sfx_take.duplicate()
 
 
+## Drop the anti-flam memory (section 4.1's rules i and ii): the per-cue trigger stamps,
+## the round-robin's last used index and every voice's sounding-until stamp. The wall clock
+## is the gate's own time source, so two test methods microseconds apart inside the
+## runner's single frame would otherwise share one burst; the headless runner clears this
+## beside `_sandbox_log` so every method's first trigger is its own. The `_pool_next`
+## cursors are the pre-wave state suites snapshot and restore themselves, and are left
+## alone.
+func clear_pool_history() -> void:
+	_pool_last_ms.clear()
+	_pool_last_take.clear()
+	for index in _sfx_until.size():
+		_sfx_until[index] = 0
+
+
 ## The `res://` path a cue resolves to on the `sfx` bus ("" when nothing resolves).
 ## The same lookup `play_sfx` and the pools use, exposed so a headless test can prove
 ## a cue resolves without hearing it.
@@ -661,13 +737,15 @@ func _make_player(bus: StringName) -> AudioStreamPlayer:
 ## take's variation can never leak into the next caller's `play_sfx`.
 ##
 ## `key` is the take about to be handed the voice. A voice that already holds that same
-## take is the one this call re-triggers (AUDIO_SPEC section 4.1, "overlapping triggers
-## steal the oldest playing voice"), so a one-shot that outlasts its own cadence
+## take is the one this call re-triggers, so a one-shot that outlasts its own cadence
 ## re-starts itself rather than consuming the pool and cutting another take's tail: the
 ## cannon's 3.46 s take against its 0.60 s cadence needed 5.8 of the 4 voices (reported).
 ## An empty key is the plain `play_sfx` path, whose rotation is pre-wave behaviour: the
 ## round-robin cursor always advances there.
-func _take_sfx_player(key: StringName = &"") -> AudioStreamPlayer:
+##
+## `until_ms` is the wall-clock millisecond the voice's sound ends (0 for a stream that
+## reports no length), which the class caps read as "still sounding".
+func _take_sfx_player(key: StringName = &"", until_ms: int = 0) -> AudioStreamPlayer:
 	var index := -1
 	if key != &"":
 		index = _oldest_voice_of(key)
@@ -677,6 +755,7 @@ func _take_sfx_player(key: StringName = &"") -> AudioStreamPlayer:
 	_sfx_take[index] = key
 	_sfx_stamp[index] = _sfx_clock
 	_sfx_clock += 1
+	_sfx_until[index] = until_ms
 	var player := _sfx_players[index]
 	player.pitch_scale = 1.0
 	player.volume_db = 0.0
@@ -808,7 +887,7 @@ func _play(bus: StringName, cue: StringName) -> void:
 		_ui_player.stream = stream
 		_ui_player.play()
 		return
-	var player := _take_sfx_player()
+	var player := _take_sfx_player(&"", _now_ms() + _stream_ms(stream))
 	player.stream = stream
 	player.play()
 
@@ -828,7 +907,7 @@ func _play_take(take: StringName, row: Dictionary) -> Dictionary:
 	if spread > 0.0:
 		pitch = 1.0 + randf_range(-spread, spread)
 	var volume := _db_range(row)
-	var player := _take_sfx_player(take)
+	var player := _take_sfx_player(take, _now_ms() + _stream_ms(stream))
 	player.stream = stream
 	player.pitch_scale = pitch
 	player.volume_db = volume
@@ -849,6 +928,11 @@ func _db_range(row: Dictionary) -> float:
 
 ## The take index a call plays: an explicit index wins (a weapon's own tier), else
 ## the row's mode picks - a round-robin cursor per cue, or the row's first take.
+##
+## Rule (iii): the pick skips the last used variant when the row carries more than two
+## takes, so a variant can never follow itself. The cursor alone would need an explicit
+## tier landing on it; an explicit pick is a use like any other, so `_pool_last_take`
+## carries whichever trigger last played.
 func _pool_index(cue: StringName, pool: Dictionary, take: int, count: int) -> int:
 	if count <= 0:
 		return 0
@@ -856,9 +940,57 @@ func _pool_index(cue: StringName, pool: Dictionary, take: int, count: int) -> in
 		return clampi(take, 0, count - 1)
 	if StringName(pool.get(&"mode", POOL_TIER)) == POOL_ROUND_ROBIN:
 		var index := int(_pool_next.get(cue, 0)) % count
+		if count > 2 and index == int(_pool_last_take.get(cue, -1)):
+			index = (index + 1) % count
 		_pool_next[cue] = (index + 1) % count
 		return index
 	return 0
+
+
+## Rule (i), 30 ms of wall clock since this cue's last accepted trigger.
+func _pool_interval_open(cue: StringName, now: int) -> bool:
+	if not _pool_last_ms.has(cue):
+		return true
+	return now - int(_pool_last_ms[cue]) >= POOL_MIN_INTERVAL_MS
+
+
+## Rule (ii): whether this trigger may take a voice, given its class's cap. A take whose
+## own voice is still assigned re-triggers that voice and passes; a fresh voice is taken
+## only while the class is below its cap.
+func _pool_voice_open(take: StringName, now: int) -> bool:
+	var pool_class := _pool_class_of(take)
+	var cap := int(POOL_CAPS.get(pool_class, 0))
+	if cap <= 0:
+		return true
+	if _oldest_voice_of(take) >= 0:
+		return true
+	return _active_class_voices(pool_class, now) < cap
+
+
+## The voices whose take belongs to `pool_class` and whose stream has not ended yet.
+func _active_class_voices(pool_class: StringName, now: int) -> int:
+	var count := 0
+	for index in _sfx_take.size():
+		if _sfx_until[index] <= now:
+			continue
+		if _pool_class_of(_sfx_take[index]) == pool_class:
+			count += 1
+	return count
+
+
+## The section 4.1 class a cue name carries; "" for a name no class prefix matches.
+func _pool_class_of(cue: StringName) -> StringName:
+	var name := String(cue)
+	for prefix: StringName in POOL_CLASS_BY_PREFIX:
+		if name.begins_with(String(prefix)):
+			return StringName(POOL_CLASS_BY_PREFIX[prefix])
+	return &""
+
+
+## A stream's length in whole milliseconds; a stream that reports none reads 0, so its
+## voice is never counted as sounding.
+func _stream_ms(stream: AudioStream) -> int:
+	return int(maxf(stream.get_length(), 0.0) * 1000.0)
 
 
 ## A layer the row asks for after a delay (S3's warhead at +80 ms): the caller owns

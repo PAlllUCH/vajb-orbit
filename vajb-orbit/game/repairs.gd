@@ -20,11 +20,15 @@ extends RefCounted
 ## Depends on the PlayerProfile `vitals` amendment added for this panel (01
 ## section 6, extended by 18 section 12 item 13): vitals_of(ship_id) ->
 ## {hull, shield, fuel} is the stored damage report and set_vitals(ship_id, hull,
-## shield, fuel) writes it back. Ship maxima come from StationCatalog.ship(); the
-## tank figure comes from ShipFit's snapshot — the 18 section 9/13 single owner of
-## the pool numbers, so no rate or pool size is written twice. Profile calls are
-## dynamic (call()): the autoload has no class_name on purpose (see
-## autoload/player_profile.gd).
+## shield, fuel) writes it back. Hull and shield maxima come from the same
+## `ShipFit.resolve` pair the two panes print (R-S22-1, owner tick M4): the service
+## resolves the fit the launch would fly, through the profile's own accessors, so the
+## fee, the pane rows and the restored vitals can never disagree about the ceiling.
+## The catalogue row is the fallback for a hull with no fit and for a profile without
+## the resolver (`repairs_panel.gd:_pool_maxima`'s own guard). The tank figure comes
+## from ShipFit's snapshot — the 18 section 9/13 single owner of the pool numbers, so
+## no rate or pool size is written twice. Profile calls are dynamic (call()): the
+## autoload has no class_name on purpose (see autoload/player_profile.gd).
 ## Contract: docs/gameplay/01_economy_core.md sections 6 and 7,
 ## docs/gameplay/14_station_services.md section 1.
 
@@ -66,8 +70,9 @@ static func fee(profile: Node, ship_id: StringName) -> int:
 	var ship := Catalog.ship(ship_id)
 	if ship.is_empty():
 		return 0
-	var hull_max := int(ship.get(&"hull", 0))
-	var shield_max := int(ship.get(&"shield", 0))
+	var maxima := _maxima(profile, ship_id)
+	var hull_max := int(maxima.get(&"hull", 0))
+	var shield_max := int(maxima.get(&"shield", 0))
 	var hull := int(current.get(&"hull", 0))
 	var shield := int(current.get(&"shield", 0))
 	var hull_missing := maxi(0, hull_max - hull)
@@ -80,13 +85,49 @@ static func fee(profile: Node, ship_id: StringName) -> int:
 	)
 
 
+## R-S22-1 (01 section 6's 2026-09-27 P3 block, tick M4): the `hull_max` /
+## `shield_max` pair the repair transaction and both pane rows read. The pane resolves
+## the pair `ShipFit.resolve` gives the fit the launch would fly
+## (`repairs_panel.gd:_pool_maxima`, plates and affixes included) and this service
+## resolves the identical pair through the profile's own accessors, so the fee, the
+## pane's rows and the restored vitals share one ceiling. The catalogue row is the
+## fallback for a hull the catalogue does not know and for a profile without the
+## resolver, which also keeps `resolve` from pushing its unknown-hull error for a
+## stray vitals record.
+static func _maxima(profile: Node, ship_id: StringName) -> Dictionary:
+	var ship := Catalog.ship(ship_id)
+	var fallback := {
+		&"hull": int(ship.get(&"hull", 0)),
+		&"shield": int(ship.get(&"shield", 0)),
+	}
+	if (
+		ship.is_empty()
+		or profile == null
+		or not profile.has_method(&"resolved_fit")
+		or not profile.has_method(&"base_fit")
+	):
+		return fallback
+	var stored: Variant = profile.call(&"resolved_fit", ship_id)
+	if not stored is Dictionary:
+		return fallback
+	var fit: Dictionary = profile.call(&"base_fit", stored as Dictionary)
+	var summary: Variant = {}
+	if profile.has_method(&"affix_summary"):
+		summary = profile.call(&"affix_summary", ship_id)
+	var stats: ShipStats = Fit.resolve(ship_id, fit, summary if summary is Dictionary else {})
+	if stats == null:
+		return fallback
+	return {&"hull": int(round(stats.hull_max)), &"shield": int(round(stats.shield_max))}
+
+
 ## One all-or-nothing repair (01 section 7: verify -> pay -> restore -> log).
 ## Nothing is touched unless every step can be completed. Success returns
 ## {&"ok": true, &"ship_id", &"fee", &"hull_max", &"shield_max", &"pools"} where
 ## `pools` is the four-figure armour vector the repair leaves behind (`pools(hull_max)`,
 ## P8: a full repair restores all four armour pools to `hull_max / 4`); a refusal
 ## returns {&"ok": false, &"reason": ...} and leaves credits and vitals exactly as they
-## were. The fee law above is unchanged -- the hull sum is the same number it always was.
+## were. The fee law is unchanged (01 section 6's rates); only the ceiling it measures
+## against is the resolved pair (R-S22-1), exactly as the pane prints it.
 static func repair(profile: Node, ship_id: StringName) -> Dictionary:
 	var current := _vitals(profile, ship_id)
 	if current.is_empty():
@@ -94,8 +135,9 @@ static func repair(profile: Node, ship_id: StringName) -> Dictionary:
 	var ship := Catalog.ship(ship_id)
 	if ship.is_empty():
 		return _refuse(REASON_NO_DAMAGE_REPORT)
-	var hull_max := int(ship.get(&"hull", 0))
-	var shield_max := int(ship.get(&"shield", 0))
+	var maxima := _maxima(profile, ship_id)
+	var hull_max := int(maxima.get(&"hull", 0))
+	var shield_max := int(maxima.get(&"shield", 0))
 	var hull := int(current.get(&"hull", 0))
 	var shield := int(current.get(&"shield", 0))
 	if hull >= hull_max and shield >= shield_max:
@@ -191,7 +233,9 @@ static func pools(total: float) -> Array[float]:
 
 
 ## Whether the REPAIRS panel should offer anything at all: false for a full ship
-## and for a ship with no damage report.
+## and for a ship with no damage report. The pair it measures "full" against is the
+## same resolved `_maxima` the fee and the pane rows read, so the pane's button can
+## never disagree with the figures beside it (R-S22-1).
 static func is_repairable(profile: Node, ship_id: StringName) -> bool:
 	var current := _vitals(profile, ship_id)
 	if current.is_empty():
@@ -199,14 +243,17 @@ static func is_repairable(profile: Node, ship_id: StringName) -> bool:
 	var ship := Catalog.ship(ship_id)
 	if ship.is_empty():
 		return false
+	var maxima := _maxima(profile, ship_id)
+	var hull_max := int(maxima.get(&"hull", 0))
+	var shield_max := int(maxima.get(&"shield", 0))
 	var hull := int(current.get(&"hull", 0))
 	var shield := int(current.get(&"shield", 0))
-	if hull >= int(ship.get(&"hull", 0)) and shield >= int(ship.get(&"shield", 0)):
+	if hull >= hull_max and shield >= shield_max:
 		return false
 	if fee(profile, ship_id) > 0:
 		return true
 	# Exemption case (01 section 6): the free top-up is still a repair.
-	return shield < int(ship.get(&"shield", 0))
+	return shield < shield_max
 
 
 ## The 18 section 9/13 pool figure for a hull, from its single owner: the launch

@@ -344,10 +344,6 @@ var _lock_channeling := false
 var _lock_progress := -1.0
 var _lock_progress_pushed := -2.0
 
-## The target's pool total as it was the last time the window was pushed, so a drop is a
-## confirmed hit (§4.2 item 4's marker). -1 means "no reading yet".
-var _target_pools_seen := -1.0
-
 ## The packs as they were seeded at launch, **one entry per live weapon slot** in
 ## `PlayerState.weapons` order: the dock files the difference (section 4.3), so a store
 ## the launch could not load whole is never overwritten by a clamped live figure. Per
@@ -813,6 +809,11 @@ func _spawn_ship() -> void:
 		## persisted cell refs into the component's own barrel positions.
 		if _guns.has_method(&"set_batteries"):
 			_guns.call(&"set_batteries", _launch_batteries())
+	## S22 A1 (L28): the HUD consumes the component's one `hit_landed` signal, so the
+	## marker fires for any hull the player's fire lands on (not only the marked one).
+	## Guarded like every other HUD push, so a HUD that predates the wave stays inert.
+	if _hud != null and _hud.has_method(&"bind_weapons"):
+		_hud.call(&"bind_weapons", _guns)
 	_seat_ship(_pending_spawn)
 
 
@@ -1662,7 +1663,6 @@ func _reset_lock_channel() -> void:
 func _acquire_lock() -> void:
 	_lock_channeling = false
 	_lock_progress = 1.0
-	_target_pools_seen = -1.0
 	if _guns != null and _guns.has_method(&"set_lock_target"):
 		_guns.call(&"set_lock_target", _lock_target)
 	_push_lock_progress()
@@ -1675,7 +1675,6 @@ func _cancel_lock() -> void:
 	_lock_elapsed = 0.0
 	_lock_channeling = false
 	_lock_progress = -1.0
-	_target_pools_seen = -1.0
 	if _guns != null and _guns.has_method(&"clear_lock_target"):
 		_guns.call(&"clear_lock_target")
 	_push_lock_progress()
@@ -1741,7 +1740,6 @@ func _mark(target: Node2D) -> void:
 	_lock_elapsed = 0.0
 	_lock_channeling = false
 	_lock_progress = -1.0
-	_target_pools_seen = -1.0
 	if _guns != null and _guns.has_method(&"clear_lock_target"):
 		_guns.call(&"clear_lock_target")
 	_push_lock_progress()
@@ -1773,15 +1771,14 @@ func _push_lock_progress() -> void:
 
 ## §10's target window: the marked hull's name (08 §2's own hull name where the hull has a
 ## row), its two pools as fractions, the distance, §10's range state and §8's threat class.
-## The pushed reading is also where a confirmed hit is noticed (§4.2 item 4's marker): the
-## marked target's pools only ever move down on a hit or up on regeneration, so a drop
-## between two pushes is a hit that landed.
+## The marker no longer rides this push: since S22 A1 the confirmed hit is the delivery
+## seam's own `hit_landed` signal (`hud.gd`'s `bind_weapons`), so the window is a pure
+## reading again and a regenerating pool cannot be mistaken for one.
 func _push_target() -> void:
 	if _hud == null:
 		return
 	if _lock_target == null or not is_instance_valid(_lock_target):
 		_hud.call(&"clear_target")
-		_target_pools_seen = -1.0
 		return
 	var hull := _hull_read(_lock_target, &"hull")
 	var shield := _hull_read(_lock_target, &"shield")
@@ -1804,10 +1801,6 @@ func _push_target() -> void:
 			"threat": _threat_reading(_lock_target),
 		}
 	)
-	var pools := hull + shield
-	if _target_pools_seen >= 0.0 and pools < _target_pools_seen - 0.0001:
-		_hud.call(&"hit_marker")
-	_target_pools_seen = pools
 
 
 ## 08 §2's hull name ("Lancer", "Vanguard", ...) for the hull the target flies, falling back

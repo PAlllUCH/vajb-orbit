@@ -157,6 +157,16 @@ var _heat_clock := 0.0
 ## item 6's closing speed, exactly as `player_ship.gd` reads it).
 var _last_velocity := Vector2.ZERO
 
+## The net central force and torque this frame handed the body, the same observability
+## seam `player_ship.gd` publishes and for the same reason: the headless runner calls a
+## test method synchronously and never awaits a frame, so the physics server never
+## integrates a hull a suite builds. S22 A9's NPC-drag row integrates the force through
+## `applied_force()` (the `test_s2_6_flight.gd` pattern). Zeroed at the top of every
+## `_physics_process`; a caller that drives `_apply_intent` directly reads the delta
+## between two reads.
+var _applied_force := Vector2.ZERO
+var _applied_torque := 0.0
+
 var _done := false
 
 
@@ -417,6 +427,10 @@ func despawn() -> void:
 func _physics_process(delta: float) -> void:
 	if _done:
 		return
+	## The observability recorder's own frame boundary: everything below is this step's
+	## force and torque, and a step that commands neither reaches a suite as exactly zero.
+	_applied_force = Vector2.ZERO
+	_applied_torque = 0.0
 	_sync_hull_transform()
 	_steer_frame(delta)
 	_damage_quiet += delta
@@ -467,6 +481,10 @@ func _apply_intent(waypoint: Vector2, speed: float, delta: float) -> void:
 		return
 	if bool(_row.get(NpcRegistryScript.KEY_STATIC, false)):
 		return
+	## T-feel-2 (L103): the midline drag runs every flying frame, exactly where the
+	## player's own call site sits (`PlayerShip._physics_process`), so the sideways
+	## degree of freedom the thrust laws never command decays at the player's rate.
+	_step_lateral_drag(delta)
 	if speed <= 0.0:
 		_step_turn(0.0, delta)
 		_step_speed(0.0, _coast_rate(), delta)
@@ -510,7 +528,7 @@ func _step_turn(desired_turn: float, delta: float) -> void:
 	var torque := _angular_inertia() * (alpha + _angular_damp() * omega)
 	if is_zero_approx(torque):
 		return
-	_body.apply_torque(torque)
+	_apply_torque(torque)
 
 
 ## The thrust, on the body's velocity along its heading, with the class damp compensated
@@ -526,7 +544,62 @@ func _step_speed(desired_speed: float, rate: float, delta: float) -> void:
 	var force := _hull_mass() * (accel + _linear_damp() * along)
 	if is_zero_approx(force):
 		return
-	_body.apply_central_force(forward * force)
+	_apply_force(forward * force)
+
+
+## T-feel-2 (L103; CONTRACTS section 14's disclosed NPC brake, owner tick 2026-09-29):
+## the midline drag, mirrored. The player's uncommanded sideways velocity decays along
+## its own line at the class coast rate (`PlayerShip._step_release`, the law its retired
+## `_step_lateral_drag` names), while an NPC's was left to the body's `linear_damp`
+## alone and so settled about twice as slowly. This twin chases the sideways component
+## to zero at `_coast_rate()` with the same damp compensation the forward axis gets, so
+## an NPC skid settles at the player's rate - which deliberately moves one NPC flight
+## number (D15's tick T-feel-2; the disclosure is in CONTRACTS section 14). Reversal:
+## drop the call in `_apply_intent` and the body damp owns the sideways axis again.
+func _step_lateral_drag(delta: float) -> void:
+	if _body == null or delta <= 0.0:
+		return
+	var forward := Vector2.RIGHT.rotated(_heading())
+	var velocity := _body.linear_velocity
+	var sideways := velocity - forward * velocity.dot(forward)
+	var speed := sideways.length()
+	if is_zero_approx(speed):
+		return
+	var rate := _coast_rate()
+	var accel := clampf(-speed / delta, -rate, rate)
+	var force := _hull_mass() * (accel + _linear_damp() * speed)
+	if is_zero_approx(force):
+		return
+	_apply_force(sideways / speed * force)
+
+
+## The net central force this frame handed the body, in newtons, accumulated across the
+## frame's axes. Observability only: nothing in the flight law reads it back.
+func applied_force() -> Vector2:
+	return _applied_force
+
+
+## The net torque this frame handed the body, the angular twin of `applied_force`.
+func applied_torque() -> float:
+	return _applied_torque
+
+
+## The one place a central force reaches the body (`_step_speed` and
+## `_step_lateral_drag` are its callers), so "how hard did the law push" is readable.
+## Nothing about the force changes here: it is handed to the body exactly as before.
+func _apply_force(force: Vector2) -> void:
+	if _body == null:
+		return
+	_applied_force += force
+	_body.apply_central_force(force)
+
+
+## The torque twin of `_apply_force` (`_step_turn` is its only caller).
+func _apply_torque(torque: float) -> void:
+	if _body == null:
+		return
+	_applied_torque += torque
+	_body.apply_torque(torque)
 
 
 ## The body owns the live transform and this node mirrors it, so the sprite stays with
@@ -563,10 +636,36 @@ func _on_body_entered(other: Node) -> void:
 	)
 	if damage <= 0.0:
 		return
+	## S22 A2 (L56): the ram reads with S4's foley (hull or rock) and one chip burst at
+	## the contact point - the same two pieces the player's own monitor draws. Cosmetic
+	## only (ruling 18).
+	var other_node := other as Node2D
+	var contact := _contact_point(
+		other_node.global_position if other_node != null else global_position
+	)
+	PROJECTILE.play_impact(
+		self,
+		PROJECTILE.IMPACT_KIND_HULL if peer_hull != null else PROJECTILE.IMPACT_KIND_ROCK
+	)
+	var fx_parent := get_parent()
+	PROJECTILE.spawn_chip_sparks(fx_parent if fx_parent != null else self, contact)
 	take_damage(damage)
 	var sink: Object = peer_hull if peer_hull != null else other
 	if sink.has_method(&"apply_collision_damage"):
 		sink.call(&"apply_collision_damage", damage)
+
+
+## S22 A2 (L56): the world point a ram's spark is drawn at - on the line between the two
+## centres, at this hull's own collision radius (the surface the peer touched), with the
+## midpoint as the fallback for a hull whose radius cannot be read.
+func _contact_point(peer_position: Vector2) -> Vector2:
+	var offset := peer_position - global_position
+	if offset.is_zero_approx():
+		return global_position
+	var radius := _hull_radius()
+	if radius <= 0.0:
+		return global_position + offset * 0.5
+	return global_position + offset.normalized() * minf(radius, offset.length())
 
 
 func _closing_speed(other: Node) -> float:

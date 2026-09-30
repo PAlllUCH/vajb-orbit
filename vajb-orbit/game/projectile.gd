@@ -69,6 +69,19 @@ const TARGET_MASK := ROCK_LAYER_MASK | HULL_LAYER_MASK
 ## sprite's size comes from the sheet's own pixels (`SHEETS`) and never reads this.
 const HIT_RADIUS := 4.0
 
+## S22 A9 (L25; 18_engine_spec.md section 13's Rocket fuze row, owner 2026-09-29,
+## D15's ticks T-feel-1/1b): a seeking shot's lock detonates on a near miss inside
+## `SEEKER_FUSE` of the target, or when its `SEEKER_FUSE_S` flight fuze expires.
+## At 900 u/s and 2.2 rad/s a pursuit's minimum turn radius is 409 u, so a lock
+## acquired abeam inside that distance would be orbited and never struck - the
+## proxy is what catches that geometry, and the fuze bounds the chase when even
+## the proxy cannot. `0.0` on either constant is the pre-tick behaviour (no fuze,
+## the orbit blessed); the flight clock only runs while a homing shot holds a
+## live target (a decoy included), so a dumb-fired rocket keeps its plain range
+## fizzle.
+const SEEKER_FUSE := 80.0
+const SEEKER_FUSE_S := 6.0
+
 ## --- The shot's art (FX_SPEC sections 0 and 1.1, Phase G's trail sheet) -----
 ##
 ## One row per kind: the per-frame file the kind draws, the art's own ink box inside that
@@ -455,6 +468,11 @@ var chip := 0.0
 ## player launch), which is byte-identical to pre-S7.
 var damage_mult := 1.0
 var embers := false
+## S22 A1 (L28): the delivery report back to the weapons component that spawned this
+## shot (`configure`'s `hit_landed` Callable). Every landed delivery in `_deliver`
+## calls it, so the component's one `hit_landed` signal covers projectiles as well as
+## beams. An invalid Callable - a fixture shot with no spawner - reports nothing.
+var _hit_landed_cb: Callable = Callable()
 
 var _velocity := Vector2.ZERO
 var _lock_target: Node2D = null
@@ -466,6 +484,9 @@ var _shape: CollisionShape2D = null
 var _visual: Node2D = null
 var _visual_kind: StringName = &""
 var _travelled := 0.0
+## S22 A9 (L25): the seeker's flight clock, accumulated only while a homing shot
+## holds a live target and compared against `SEEKER_FUSE_S`.
+var _flight_clock := 0.0
 var _armed := false
 var _arm_clock := 0.0
 var _spent := false
@@ -477,13 +498,14 @@ var _ctx_arity: Dictionary = {}
 
 ## The pinned configuration entry point. Every pinned key is read here - `kind`,
 ## `speed`, `damage`, `bypass_shield`, `homing`, `target`, `turn_rate`, `source` -
-## plus seven additive keys the projectile cannot derive on its own: `direction`
+## plus eight additive keys the projectile cannot derive on its own: `direction`
 ## (the muzzle's aim, which a cursor-only design would put in the weapon and a
 ## second caller such as an NPC could not reproduce), `range` (the fizzle
 ## distance), `arm`/`trigger` (the mine rows), `mass` (section 4.2 item 7's term),
-## `chip` (section 6's 10 %), and S7's `damage_mult`/`embers` (CONTRACTS section
-## 20's delivery product and Embers flag, which the weapons component owns). Keys
-## are normalized to `StringName`, so a caller passing plain strings still lands.
+## `chip` (section 6's 10 %), S7's `damage_mult`/`embers` (CONTRACTS section
+## 20's delivery product and Embers flag, which the weapons component owns) and S22
+## A1's `hit_landed` (the report up to that component's own signal). Keys are
+## normalized to `StringName`, so a caller passing plain strings still lands.
 ##
 ## Call order: `configure` first, then `add_child`, then the spawner's
 ## `global_position`. Both orders work (`_ready` only needs the shape, and the
@@ -508,6 +530,9 @@ func configure(config: Dictionary) -> void:
 	## additive `configure` keys the projectile cannot derive on its own.
 	damage_mult = maxf(_number(cfg.get(&"damage_mult"), 1.0), 0.0)
 	embers = bool(cfg.get(&"embers", false))
+	var landed: Variant = cfg.get(&"hit_landed")
+	if landed is Callable:
+		_hit_landed_cb = landed as Callable
 	var aim: Variant = cfg.get(&"direction")
 	_velocity = Vector2.ZERO
 	if aim is Vector2 and not (aim as Vector2).is_zero_approx():
@@ -632,10 +657,35 @@ func _step_flight(delta: float) -> void:
 		_travelled += from.distance_to(to)
 		if _reaches_decoy(to, delta):
 			return
+		if _step_seeker_fuze(delta):
+			return
 		if max_range > 0.0 and _travelled >= max_range:
 			fizzle()
 		return
 	_resolve(hit)
+
+
+## S22 A9 (L25; section 13's Rocket fuze row): a homing shot under a live lock
+## detonates when the target is inside `SEEKER_FUSE`, or when the shot's own
+## `SEEKER_FUSE_S` flight clock runs out. Both doors deliver the warhead to the
+## target the lock names (the near miss is the point of the row), and the fuze
+## answers before the range fizzle so a lock that cannot be closed still goes off
+## on its target rather than vanishing. A shot with no live target - a dumb-fire,
+## or a lock that died - accumulates nothing.
+func _step_seeker_fuze(delta: float) -> bool:
+	if not homing or speed <= 0.0:
+		return false
+	var target := _homing_target()
+	if target == null:
+		return false
+	_flight_clock += delta
+	if SEEKER_FUSE_S > 0.0 and _flight_clock >= SEEKER_FUSE_S:
+		_detonate(global_position, target)
+		return true
+	if SEEKER_FUSE > 0.0 and global_position.distance_to(target.global_position) <= SEEKER_FUSE:
+		_detonate(global_position, target)
+		return true
+	return false
 
 
 ## Section 4.1: "homing, 2.2 rad/s turn" toward the lock target, and section 4.6:
@@ -910,6 +960,10 @@ func _shockwave_radius() -> float:
 ## here, to the amount that reaches the sink - this file's only delivery path - and
 ## Embers heals the shooter's shield through `PlayerShip.heal_from_damage` on the
 ## `_source` when the sink is an NPC hull.
+##
+## S22 A1 (L28): a landed delivery is also reported back through the spawner's
+## Callable (`_report_landed`), so the weapons component's one `hit_landed` signal
+## fires for a shot exactly as it does for a beam.
 func _deliver(
 	target: Object, amount: float, bypass: bool, point: Vector2, impulse: Vector2
 ) -> void:
@@ -925,12 +979,22 @@ func _deliver(
 			target.call(&"take_damage", dealt, bypass, _ctx(target, point, impulse))
 		else:
 			target.call(&"take_damage", dealt, bypass)
+		_report_landed(target, dealt)
 		return
 	if target.has_method(&"damage"):
 		if _takes_ctx(target, &"damage"):
 			target.call(&"damage", dealt, bypass, _ctx(target, point, impulse))
 		else:
 			target.call(&"damage", dealt, bypass)
+		_report_landed(target, dealt)
+
+
+## S22 A1 (L28): the one landed-delivery report. The component that spawned the shot
+## handed over a Callable, so a travelling family's delivery reaches the same signal a
+## beam's does; a shot with no callable (every fixture) reports nothing.
+func _report_landed(target: Object, dealt: float) -> void:
+	if _hit_landed_cb.is_valid():
+		_hit_landed_cb.call(target, dealt)
 
 
 ## Embers (CONTRACTS section 20): when the shot carries the flag and the sink

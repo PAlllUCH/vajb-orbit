@@ -12,6 +12,12 @@ first and last 50 ms of a loop: a small number means the seam is level-continuou
 Loop candidates whose seam exceeded 3 dB were loop-prepared (dead air trimmed, tail
 crossfaded into the head); `seam was` shows the before value for those.
 
+**2026-09-30 (S22 A7):** two S26 takes (`sfx_weapon_mine_drop_01/02.ogg`) added from a
+fresh `assetmcp` pass (qubodup, "7 mechanical clicks and buzzes", CC0 1.0; manifest entry
+in `asset-library/ASSET_MANIFEST.json`). They ran through the same pipeline rules as the
+rows below - Ogg Vorbis q5, peak normalisation to -1 dBFS, silence trim on the one-shot -
+executed inline for the two files.
+
 | File | Cue | Source pack | Author | Mode | Len s | Ch | Hz | seam dB | seam was |
 |---|---|---|---|---|---|---|---|---|---|
 | `assets/audio/ambience/amb_space_drone_01.ogg` | S13 dead-ship sector drone | projects | yd | loopfix | 223.52 | 2 | 44100 | 0.07 | 57.06 |
@@ -98,6 +104,8 @@ crossfaded into the head); `seam was` shows the before value for those.
 | `assets/audio/sfx/sfx_weapon_laser_04.ogg` | S1 laser round-robin 4/4 | sci-fi-sfx | rubberduck | copy | 1.244 | 2 | 44100 | - | - |
 | `assets/audio/sfx/sfx_weapon_rocket_01.ogg` | S3 rocket launch layer | sci-fi-sfx | rubberduck | copy | 2.051 | 2 | 48000 | - | - |
 | `assets/audio/sfx/sfx_weapon_rocket_02_warhead.ogg` | S3 warhead layer (+80 ms offset in code) | 25-cc0-bang-sfx | OpenGameArt community | copy | 1.085 | 2 | 48000 | - | - |
+| `assets/audio/sfx/sfx_weapon_mine_drop_01.ogg` | S26 mine deploy clunk 1/2 (AUDIO-1; primary take) | mine_deploy-mechanical | qubodup | encode | 0.351 | 2 | 44100 | - | - |
+| `assets/audio/sfx/sfx_weapon_mine_drop_02.ogg` | S26 mine deploy clunk 2/2 (AUDIO-1) | mine_deploy-mechanical | qubodup | encode | 0.359 | 2 | 96000 | - | - |
 | `assets/audio/ui/ui_click.ogg` | S9 UI click (primary, exact name the AudioManager resolves) | kenney_interface-sounds | Kenney | copy | 0.1 | 1 | 44100 | - | - |
 | `assets/audio/ui/ui_click_02.ogg` | S9 UI click pool 2/5 | kenney_interface-sounds | Kenney | copy | 0.012 | 1 | 44100 | - | - |
 | `assets/audio/ui/ui_click_03.ogg` | S9 UI click pool 3/5 | kenney_interface-sounds | Kenney | copy | 0.01 | 1 | 44100 | - | - |
@@ -121,6 +129,7 @@ crossfaded into the head); `seam was` shows the before value for those.
 - **kenney_interface-sounds** - Kenney - https://kenney.nl/assets/interface-sounds - CC0 1.0 Universal (public domain)
 - **launch** - qubodup - https://opengameart.org/content/rocket-launch - CC0 1.0 Universal (public domain)
 - **metal_interactions** - OpenGameArt community - https://opengameart.org/content/metal-interactions - CC0 1.0 Universal (public domain)
+- **mine_deploy-mechanical** - qubodup - https://opengameart.org/content/7-mechanical-clicks-and-buzzes - CC0 1.0 Universal (public domain)
 - **projects** - yd - https://opengameart.org/content/background-space-track - CC0 1.0 Universal (public domain)
 - **raw-audio-oga_bart_boiler_loop** - bart - https://opengameart.org/content/steam-boiler-sound-loop - CC0 1.0 Universal (public domain)
 - **raw-audio-oga_combat_loops** - Ville Nousiainen / XCVG - https://opengameart.org/content/fast-fight-battle-music-looped - CC0 1.0 Universal (public domain)

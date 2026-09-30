@@ -76,6 +76,12 @@ const QUADRANTS: Array[StringName] = [
 ## (`hull_max / 4` each). Reversal: plating-only pools.
 const QUADRANT_COUNT := 4
 
+## R-S22-2's overflow guard: the proportional spill's passes per hit. One pass lands
+## the whole remainder while it fits the surviving capacity, and a pass that clamps a
+## pool at 0 hands its surplus to the next, so two passes are the most any geometry
+## needs; the bound only stops a floating-point crumb from spinning.
+const SPILL_PASSES := 4
+
 ## P2's routing quarters: prow `|d| <= 45 deg`, stern `|d| >= 135 deg`, starboard the
 ## positive side between them and port the mirror. Reversal: any other arc map.
 const PROW_ARC := PI / 4.0
@@ -330,21 +336,40 @@ func breached(quadrant: StringName) -> bool:
 	return pool_of(quadrant) <= 0.0
 
 
-## P3/P6's charge: the routed pool takes what it can, and an emptying hit spills the
-## remainder **evenly** over the other three (P6's pinned reading; the reversal is a
-## proportional-to-capacity split or a drop at the breach). The total is committed
-## from the pools, so `hull` is their sum to the last bit.
+## P3's charge and R-S22-2's spill (09 section 3.3's 2026-09-27 P3 block, tick M5;
+## P6's named reversal landed): the routed pool takes what it can, and an emptying
+## hit's remainder re-offers to the other pools **proportional to their remaining
+## capacity** - a pool's distance to 0, the same figure a breach reads - until the
+## hit has landed or every other pool is empty. Damage is conserved: a 400 hit on
+## `[200, 100, 0, 0]` lands 300 and kills, and the landed total equals the incoming
+## amount exactly while any pool still has room. The total is committed from the
+## pools, so `hull` is their sum to the last bit. Reversal: the even-split clamp
+## (`remainder / (QUADRANT_COUNT - 1)` per surviving pool, the pre-tick reading).
 func _charge_quadrant(quadrant: StringName, amount: float) -> void:
 	var facing := pool_of(quadrant)
 	var taken := minf(amount, facing)
 	_set_pool(quadrant, facing - taken)
-	var remainder := amount - taken
-	if remainder > 0.0:
-		var share := remainder / float(QUADRANT_COUNT - 1)
+	var pending := amount - taken
+	## One pass lands everything while the remainder fits the surviving capacity
+	## (every share is then at most its own pool); a pass that clamps a pool at 0
+	## returns its surplus, so the loop re-offers that too. Two passes are the most
+	## the geometry can need - a full pass empties what it can - and the bound keeps
+	## a floating-point crumb from spinning.
+	for _pass: int in SPILL_PASSES:
+		if pending <= 0.0:
+			break
+		var capacity := _pool_sum()
+		if capacity <= 0.0:
+			break
+		var landed := 0.0
 		for other: StringName in QUADRANTS:
-			if other == quadrant:
+			var pool := pool_of(other)
+			if pool <= 0.0:
 				continue
-			_set_pool(other, maxf(pool_of(other) - share, 0.0))
+			var applied := minf(pending * (pool / capacity), pool)
+			_set_pool(other, pool - applied)
+			landed += applied
+		pending -= landed
 	_commit_hull()
 
 

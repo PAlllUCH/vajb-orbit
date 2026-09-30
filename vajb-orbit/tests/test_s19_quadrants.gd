@@ -9,8 +9,8 @@ extends McpTestSuite
 ## AC2 the rear 160 degree arc (P3): x1.6 inside it, x1.0 outside, multiplied into the
 ##     incoming amount **before** the shield-first absorb;
 ## AC3 the pools (P1/P6): `hull_max / 4` each at full repair, shield-first with no
-##     carry-over, the emptying pool's even spill, `hull == sum(pools)` after every step
-##     and `died` firing exactly once;
+##     carry-over, the emptying pool's proportional spill (R-S22-2, M5), `hull ==
+##     sum(pools)` after every step and `died` firing exactly once;
 ## AC4 the malfunctions (P4/P5): the seeded drift sign on its 2.0 s cadence, the seeded
 ##     flicker share of thrust ticks, the flank turn clip, and the derived clear a
 ##     repair gives;
@@ -87,21 +87,27 @@ const FIXTURE_FIT: Dictionary = {
 	&"armour": [],
 }
 
-## AC6's byte-identity yardstick: the four forbidden files' SHA-256s, taken at the wave's
-## start (pre-grep, before the first edit). Any agent that touches one of these moves its
-## hash, so the suite is the wave's own seal. S21's re-pin of the `npc_ship.gd` entry (its
-## own comment) is the one owner-ruled exception; the other three are still the wave start.
+## AC6's byte-identity yardstick: the four forbidden files' SHA-256s. Any agent that
+## touches one of these moves its hash, so the suite is the wave's own seal. Two entries
+## carry a re-pin comment naming the wave that moved them and the report that discloses
+## it; the other two are still the S19 wave start (S21's own re-pin is the precedent).
 const FORBIDDEN_FILES: Dictionary = {
 	"res://game/damage.gd": "5cabf3d9302fe942aff2ad97b4f3dc85c298e7e204fffb0e86f89e444cbf6269",
 	## S21 (owner-ruled 2026-09-28, `S21_BRIEF.md` amendment 3): A3's accepted ram
 	## authority was written into this file by S21-B1, and B3's own half of that same
-	## amendment (the NPC hull mask's widening) moves it once more, so the pin is the
-	## finished tree's reading. B1's accepted fix hashed this file
-	## 728268c53526dd8436c236ba923528bffea123b31ec0237438fc2baaa8ab661a and the mask
-	## widening is the only other edit in the wave - disclosed in `S21-B3_report.md`.
-	"res://game/npc_ship.gd": "a694170c9783b44ed1dd91e07d0632288535eef91ef391f4036ff2ede9b889f7",
+	## amendment (the NPC hull mask's widening) moved it once more, so the S21 pin was
+	## the finished tree's reading (`728268c5…` -> `a694170c…`, disclosed in
+	## `S21-B3_report.md`). **S22 re-pins it once more** (amendment 6, the S21 rule): B1's
+	## ram-contact cue + spark (A2) and B3's `_step_lateral_drag` twin (T-feel-2) are the
+	## wave's edits, and this pin is the finished tree's reading - quoted in
+	## `S22-B3_report.md`.
+	"res://game/npc_ship.gd": "12ab0ae2aeef61d2638387dfe65ee3901c8f1a26433f380442d45e480a242db3",
 	"res://game/npc_brain.gd": "e39440bf410b535c50f924208290e54dc8085eea52731890b778a4ad3fbe5d22",
-	"res://game/weapons.gd": "fcdc549f0b0b3c6a3523e79af2b4797472f65b380f88b9771837b3b6497f8279",
+	## S22 (amendment 6, disclosed in `S22-B3_report.md`): B1's one `hit_landed` delivery
+	## seam (`ab861ce9…`) and B2's mine cue row (`FIRE_CUES[&"mine"]`) are the wave's
+	## edits, so B3 - the wave's last editor of this file - re-pins it once from the
+	## finished tree (the S21 rule; the row is deliberately red until this pin lands).
+	"res://game/weapons.gd": "6f95a9c2f0c2039f5c369f68bf50ee2baaed6875257ddfcdc77b2833400ca4a1",
 }
 
 var _staged: Array[Node] = []
@@ -285,11 +291,12 @@ func test_the_pools_take_what_the_shield_leaves() -> void:
 	_sum_holds(state, "after the shield fell")
 
 
-func test_an_emptying_pool_spills_its_remainder_evenly() -> void:
+func test_an_emptying_pool_spills_proportionally() -> void:
 	var state := _fresh_state()
 	state.set_shield(0.0)
 	state.damage(400.0, false, _ctx(0.0))
 	assert_true(is_equal_approx(state.pool_of(&"prow"), 0.0), "the prow emptied")
+	## Equal capacities, so the proportional re-offer lands the even thirds here.
 	for other: StringName in [&"stern", &"port", &"starboard"]:
 		assert_true(
 			is_equal_approx(state.pool_of(other), QUARTER - 50.0),
@@ -313,6 +320,25 @@ func test_an_emptying_pool_spills_its_remainder_evenly() -> void:
 	assert_true(is_equal_approx(second.hull, HULL_MAX - 300.0), "and drops the hull by 300")
 	_sum_holds(second, "after the direction-less spill")
 
+	## R-S22-2 (M5, S22-B3): the law is proportional to **remaining capacity**, so the
+	## L242 vector under-lands nothing - the 400 hit lands 300 and kills. The pre-tick
+	## even-split clamp landed 266.67 here and left 33.33 hull standing.
+	var uneven := _fresh_state()
+	uneven.set(&"hull_max", 400.0)
+	uneven.set(&"hull", 300.0)
+	uneven.set(&"armour_prow", 200.0)
+	uneven.set(&"armour_stern", 100.0)
+	uneven.set(&"armour_port", 0.0)
+	uneven.set(&"armour_starboard", 0.0)
+	uneven.set_shield(0.0)
+	uneven.damage(400.0, true, _ctx(0.0))
+	assert_true(is_equal_approx(uneven.pool_of(&"prow"), 0.0), "the routed pool emptied")
+	assert_true(is_equal_approx(uneven.pool_of(&"stern"), 0.0), "the pool with room took it all")
+	assert_true(is_equal_approx(uneven.pool_of(&"port"), 0.0), "a breached pool takes nothing")
+	assert_true(is_equal_approx(uneven.pool_of(&"starboard"), 0.0), "and neither does its twin")
+	assert_true(is_equal_approx(uneven.hull, 0.0), "the 400 hit landed 300 and killed (L242)")
+	_sum_holds(uneven, "after the proportional spill")
+
 
 func test_the_hull_stays_the_sum_of_the_pools_through_hits_and_heals() -> void:
 	var state := _fresh_state()
@@ -326,14 +352,25 @@ func test_the_hull_stays_the_sum_of_the_pools_through_hits_and_heals() -> void:
 	for step: Array in steps:
 		state.damage(float(step[0]), bool(step[1]), _ctx(float(step[2])))
 		_sum_holds(state, "after a %s hit at %s" % [step[0], step[2]])
-	assert_true(state.breached(&"stern"), "the rear hit emptied the stern")
-	var before := state.hull
-	state.set_hull(state.hull + 120.0)
-	_sum_holds(state, "after a proportional heal")
-	assert_true(state.hull > before, "the heal moved the hull")
-	assert_true(state.breached(&"stern"), "and a heal cannot lift a breached pool off 0")
+	## R-S22-2 (M5, S22-B3): the spill is proportional to remaining capacity and damage
+	## is conserved, so the 260-point spill empties every remaining pool and the hull with
+	## them (the pre-tick even-split clamp under-landed and left 100 standing).
+	assert_true(state.breached(&"stern"), "the spill emptied the stern")
+	assert_true(state.hull <= 0.0, "and the conserved spill emptied the hull")
+	## The heal half runs on a fixture where the hull lives: an exact rear hit empties the
+	## stern and spills nothing, so the proportional heal below has a breach to hold down.
+	var healed := _fresh_state()
+	healed.set_shield(0.0)
+	healed.damage(QUARTER / PlayerStateScript.STERN_DAMAGE_MULT, true, _ctx(PI))
+	assert_true(healed.breached(&"stern"), "the exact rear hit empties the stern")
+	var before := healed.hull
+	assert_true(before > 0.0, "and the hull lives")
+	healed.set_hull(healed.hull + 120.0)
+	_sum_holds(healed, "after a proportional heal")
+	assert_true(healed.hull > before, "the heal moved the hull")
+	assert_true(healed.breached(&"stern"), "and a heal cannot lift a breached pool off 0")
 	assert_true(
-		is_equal_approx(state.pool_of(&"prow"), state.pool_of(&"port")),
+		is_equal_approx(healed.pool_of(&"prow"), healed.pool_of(&"port")),
 		"the heal scaled the intact pools together"
 	)
 
@@ -534,24 +571,29 @@ func test_a_repair_clears_the_breach_and_its_malfunctions() -> void:
 func test_a_repair_restores_the_pools_and_keeps_the_fee_law() -> void:
 	var profile := _scratch_profile()
 	profile.set_vitals(HULL, 200, 300)
-	assert_eq(RepairsScript.fee(profile, HULL), 500, "(800 / 2) + (300 / 3)")
+	## R-S22-1 (M4, S22-B3): the transaction resolves the same `ShipFit.resolve` pair
+	## the panes print, so this throwaway profile's standard Vanguard fit (1250 hull /
+	## 800 shield) is the ceiling the fee is measured against.
+	assert_eq(RepairsScript.fee(profile, HULL), 692, "(1050 / 2) + (500 / 3)")
 	var result: Dictionary = RepairsScript.repair(profile, HULL)
 	assert_true(bool(result[&"ok"]))
-	assert_eq(int(result[&"fee"]), 500, "the fee law is the same figure")
-	assert_eq(profile.credits(), 9500, "exactly the fee is spent")
-	assert_eq(int(result[&"hull_max"]), 1000, "the Vanguard's ceiling")
+	assert_eq(int(result[&"fee"]), 692, "the fee law is the same figure")
+	assert_eq(profile.credits(), 9308, "exactly the fee is spent")
+	assert_eq(int(result[&"hull_max"]), 1250, "the resolved Vanguard ceiling")
 	print("[s19] repair fee=%d pools=%s" % [int(result[&"fee"]), str(result[&"pools"])])
 	var pools: Array = result[&"pools"]
 	assert_eq(pools.size(), 4, "the repair reports four pools")
+	var quarter := float(result[&"hull_max"]) / 4.0
 	for value: float in pools:
-		assert_true(is_equal_approx(value, QUARTER), "each pool is hull_max / 4")
+		assert_true(is_equal_approx(value, quarter), "each pool is hull_max / 4")
 	## The launch's half of the restore: the repaired sum seeds the four even pools (P1).
 	var state := _fresh_state()
+	state.set(&"hull_max", float(result[&"hull_max"]))
 	state.set_hull(200.0)
 	state.set_hull(float(result[&"hull_max"]))
 	for quadrant: StringName in PlayerStateScript.QUADRANTS:
 		assert_true(
-			is_equal_approx(state.pool_of(quadrant), QUARTER),
+			is_equal_approx(state.pool_of(quadrant), quarter),
 			"%s is back at hull_max / 4" % quadrant
 		)
 		assert_false(state.breached(quadrant), "%s is no longer breached" % quadrant)

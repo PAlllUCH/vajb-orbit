@@ -618,6 +618,9 @@ func test_the_break_plays_the_rock_cue_from_its_four_take_pool() -> void:
 	var played := StringName(audio.call(&"last_sfx"))
 	assert_true(played != SEED_CUE, "the break played a cue (was %s, now %s)" % [SEED_CUE, played])
 	assert_true(takes.has(played), "S4's rock takes: it played %s" % played)
+	## S22 A6 (AUDIO-2): one cue's triggers are >= 30 ms apart, so the second read of the
+	## row spaces itself; a refused trigger would leave the last take in place.
+	OS.delay_msec(AudioScript.POOL_MIN_INTERVAL_MS + 5)
 	audio.call(&"play_pool", ROCK_CUE)
 	assert_true(StringName(audio.call(&"last_sfx")) != played,
 		"the next read of the row takes the next take (played %s)"

@@ -323,6 +323,10 @@ func test_the_energy_families_fire_the_laser_pool() -> void:
 		assert_true(false, "the AudioManager autoload is live")
 		return
 	for weapon_id: StringName in [&"laser", &"plasma"]:
+		## S22 A6 (AUDIO-2): two triggers of one cue must be >= 30 ms apart, and both
+		## families fire the laser pool; the wall clock is the gate's clock (the runner
+		## clears its memory between methods), so the row spaces its own triggers.
+		OS.delay_msec(AudioScript.POOL_MIN_INTERVAL_MS + 5)
 		_fire_once(weapon_id)
 		var played := StringName(audio.call(&"last_sfx"))
 		assert_true(
@@ -344,19 +348,24 @@ func test_the_rocket_fires_the_launch_layer() -> void:
 	)
 
 
-func test_the_mine_drops_with_no_cue() -> void:
+func test_the_mine_drops_with_the_mine_pools_own_cue() -> void:
 	var audio := _audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
-	_fire_once(&"cannon")
-	var before := StringName(audio.call(&"last_sfx"))
-	_fire_once(&"mine")
-	assert_eq(WeaponScript.fire_cue_of(&"mine"), &"", "AUDIO_SPEC 8 states no deployable cue")
+	## A7 (L48): AUDIO-1's S26 row is the mine's release cue - the CC0 deploy clunk.
 	assert_eq(
-		StringName(audio.call(&"last_sfx")),
-		before,
-		"so the mine's drop leaves the last cue alone"
+		WeaponScript.fire_cue_of(&"mine"),
+		&"sfx_weapon_mine_drop",
+		"AUDIO-1 wires the mine's release to S26"
+	)
+	var takes: Array = AudioScript.CUE_POOLS[&"sfx_weapon_mine_drop"][&"takes"]
+	assert_true(takes.size() >= 1, "the pool carries the sourced take(s)")
+	_fire_once(&"mine")
+	assert_true(
+		takes.has(StringName(audio.call(&"last_sfx"))),
+		"the drop plays a take of the mine pool (played %s)"
+		% StringName(audio.call(&"last_sfx"))
 	)
 
 
@@ -380,9 +389,15 @@ func test_the_laser_pool_round_robins_its_takes_within_the_specs_ranges() -> voi
 		assert_true(false, "the AudioManager autoload is live")
 		return
 	var takes: Array = AudioScript.CUE_POOLS[LASER_POOL][&"takes"]
-	assert_eq(takes.size(), 4, "takes 01 to 04")
+	assert_eq(takes.size(), 3, "AUDIO-3: takes 01 to 03, 04 dropped (the trim stays staged)")
+	var cursors: Variant = audio.get(&"_pool_next")
+	if cursors is Dictionary:
+		(cursors as Dictionary).erase(LASER_POOL)
 	var heard: Array[StringName] = []
 	for index in takes.size():
+		## S22 A6: one cue's triggers are >= 30 ms apart, so a probe spaces its own; a
+		## refused trigger would leave the round-robin where it was.
+		OS.delay_msec(AudioScript.POOL_MIN_INTERVAL_MS + 5)
 		var plan: Dictionary = audio.call(&"play_pool", LASER_POOL, -1)
 		if plan.is_empty():
 			assert_true(false, "take %d resolved" % index)
@@ -409,11 +424,14 @@ func test_the_pool_reaches_every_cannon_tier() -> void:
 	var takes: Array = AudioScript.CUE_POOLS[CANNON_POOL][&"takes"]
 	assert_eq(takes.size(), 3, "S2 ships three lengths")
 	for index in takes.size():
+		## S22 A6: one cue's triggers are >= 30 ms apart; the row spaces its tier reads.
+		OS.delay_msec(AudioScript.POOL_MIN_INTERVAL_MS + 5)
 		var plan: Dictionary = audio.call(&"play_pool", CANNON_POOL, index)
 		if plan.is_empty():
 			assert_true(false, "tier %d resolved" % index)
 			return
 		assert_eq(StringName(plan[&"take"]), StringName(takes[index]), "tier index picks the take")
+	OS.delay_msec(AudioScript.POOL_MIN_INTERVAL_MS + 5)
 	var clamped: Dictionary = audio.call(&"play_pool", CANNON_POOL, 99)
 	assert_eq(clamped.get(&"take_index", -1), takes.size() - 1, "an out-of-range tier clamps")
 

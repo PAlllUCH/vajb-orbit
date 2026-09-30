@@ -56,6 +56,12 @@ signal shot_fired(weapon_id: StringName)
 ## Raised when a trigger pull could not shoot: an empty ammo pack or a short Energy
 ## pool (section 4.4). Once per pull, never per frame.
 signal dry_fired(weapon_id: StringName)
+## S22 A1 (L28): one landed delivery, from any family and any seam - the beam's own
+## `_deliver` below, and a projectile's hit reported back through the callable every
+## spawned shot carries (`_note_projectile_hit`). The HUD listens (`bind_weapons`)
+## and flashes the hit marker for any hull the hit lands on, marked or not.
+## Feedback only: nothing consumes this to move a number (rule 1).
+signal hit_landed(target: Object, amount: float)
 ## Section 4.6's chaff breaks the active lock. The lock's owner (W5's channel)
 ## listens here; this component clears its own lock target at the same moment.
 signal locks_broken()
@@ -259,16 +265,18 @@ const AUDIO_SERVICE: StringName = &"AudioManager"
 ##
 ## One row per firing family: the cue the family's shot plays, plus the pool tier the
 ## cannon family fires at. AUDIO_SPEC section 8's S1 is the player's light and medium
-## energy weapons (one cue, a four-take round-robin), S2 is the heavy cannon's three
-## tiers by length (take 0 the cannon's own, take 1 the heavier railgun's, take 2 the
-## long charge-up left to the pool), S3 is the rocket's launch + warhead pair. The
-## mine is absent on purpose: section 8 states no deployable cue (reported).
+## energy weapons (one cue, a round-robin over takes 01-03 after AUDIO-3's drop), S2 is
+## the heavy cannon's three tiers by length (take 0 the cannon's own, take 1 the heavier
+## railgun's, take 2 the long charge-up left to the pool), S3 is the rocket's launch +
+## warhead pair, and S26 (AUDIO-1) is the mine's release - the deploy clunk, with the
+## detonation keeping S3's explosion cue (`projectile.gd:BLAST_CUE`).
 const FIRE_CUES: Dictionary = {
 	&"laser": {&"cue": &"sfx_weapon_laser"},
 	&"plasma": {&"cue": &"sfx_weapon_laser"},
 	&"cannon": {&"cue": &"sfx_weapon_cannon", &"take": 0},
 	&"railgun": {&"cue": &"sfx_weapon_cannon", &"take": 1},
 	&"rocket": {&"cue": &"sfx_weapon_rocket"},
+	&"mine": {&"cue": &"sfx_weapon_mine_drop"},
 }
 
 ## FX_SPEC section 1.2's muzzle flash: the four pre-cut frames at the spec's own
@@ -1245,6 +1253,9 @@ func _spawn_shot(
 		## (`projectile.gd:_deliver`) with no new accessor.
 		&"damage_mult": _damage_scale(),
 		&"embers": _state_has_flag(FLAG_EMBERS),
+		## S22 A1 (L28): the shot reports each landed delivery back through this
+		## component's one `hit_landed` signal (the HUD's marker rides it).
+		&"hit_landed": _note_projectile_hit,
 	})
 	parent.add_child(shot)
 	shot.global_position = muzzle_position(barrel)
@@ -1438,10 +1449,10 @@ func _on_shot_fired(weapon: StringName) -> void:
 	_play_fire_cue(weapon)
 
 
-## FX_SPEC section 1.2's four-frame flash on the muzzle. The muzzle is this
-## component's own origin - the point a shot leaves from and a beam launches from -
-## and the frame is offset so the flash's mouth, not its middle, sits there. Freed by
-## the animation itself (`Fx.play_once`).
+## FX_SPEC section 1.2's four-frame flash on the muzzle. The frame is offset so the
+## flash's mouth, not its middle, sits on the anchor: since S22 A3 (tick T-feel-4) that
+## anchor is the hull's nose (`_flash_anchor`), not this component's origin, which read
+## over the hull's middle. Freed by the animation itself (`Fx.play_once`).
 func _spawn_muzzle_flash(direction: Vector2) -> void:
 	var textures: Array = []
 	for path: String in FLASH_FRAMES:
@@ -1452,16 +1463,40 @@ func _spawn_muzzle_flash(direction: Vector2) -> void:
 	if frames.get_frame_count(FxScript.ANIMATION) == 0:
 		return
 	var scale_factor := FxScript.scale_for(FLASH_FRAME_SIZE, FLASH_WORLD)
+	## The frame rotates about its own top-left, so the offset is the mouth vector turned
+	## with the flash: the mouth stays the point that lands on the anchor, whichever way
+	## the aim points. At rest (the probe's own reading) this is the shipped `-mouth`.
+	var angle := direction.angle() - global_rotation
+	var mouth := FLASH_MUZZLE_PX * scale_factor
 	var flash := FxScript.play_once(
 		self,
 		frames,
-		-FLASH_MUZZLE_PX * scale_factor,
-		direction.angle() - global_rotation,
+		_flash_anchor() - mouth.rotated(angle),
+		angle,
 		scale_factor,
 		false
 	)
 	if flash != null:
 		flash.z_index = FEEDBACK_Z
+
+
+## S22 A3 (tick T-feel-4): the flash's mouth anchor in this component's own space - the
+## hull's measured nose (`PlayerShip.nose_point`: the `ShipFit.HARDPOINTS` bow band, else
+## a radius-forward point), converted through the host's frame so a component that is not
+## at the hull's origin still lands on the bow. A fixture host without the `nose_point`
+## seam keeps the shipped origin (the pre-wave behaviour). A shot still leaves from its
+## pinned mount (`muzzle_position`), so flash and shot desync - which the tick accepts
+## (cosmetic, rule 1).
+func _flash_anchor() -> Vector2:
+	var host := _host()
+	if host == null or not host.has_method(&"nose_point"):
+		return Vector2.ZERO
+	var nose: Variant = host.call(&"nose_point")
+	if not nose is Vector2:
+		return Vector2.ZERO
+	if host.is_inside_tree() and is_inside_tree():
+		return to_local(host.to_global(nose as Vector2))
+	return nose as Vector2
 
 
 ## The family's cue, through the audio service's pool route (the extra takes on disk
@@ -1856,12 +1891,22 @@ func _deliver(
 			target.call(&"take_damage", amount, bypass, _ctx(target, point, family, impulse))
 		else:
 			target.call(&"take_damage", amount, bypass)
+		hit_landed.emit(target, amount)
 		return
 	if target.has_method(&"damage"):
 		if _takes_ctx(target, &"damage"):
 			target.call(&"damage", amount, bypass, _ctx(target, point, family, impulse))
 		else:
 			target.call(&"damage", amount, bypass)
+		hit_landed.emit(target, amount)
+
+
+## S22 A1 (L28): a projectile's landed hit, reported back through the callable every
+## spawned shot carries (`_spawn_shot`'s `&"hit_landed"` key), so the one signal fires
+## for the travelling families exactly as it does for a beam. The shot guards the call
+## with `Callable.is_valid()`, so a fixture seam with no spawner reports nothing.
+func _note_projectile_hit(target: Object, amount: float) -> void:
+	hit_landed.emit(target, amount)
 
 
 ## The ship behind a physics collider, so a hit that lands on a hull's own body is

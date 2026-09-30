@@ -422,8 +422,9 @@ func test_a_npc_hull_answers_the_hostility_the_targeting_reads() -> void:
 
 
 ## The target window: a marked hull fills the payload (name from 08 section 2's hull row,
-## the range state from the selected weapon) and a pool drop between two pushes is the
-## confirmed hit that flashes the marker (section 4.2 item 4).
+## the range state from the selected weapon). The confirmed hit is the delivery seam's own
+## `hit_landed` signal since S22 A1 (L28): the old pool-drop poll is retired, so a pool
+## moved by anything but the player's fire no longer flashes the marker.
 func test_a_marked_hostile_fills_the_window_and_a_hit_flashes_the_marker() -> void:
 	var hull := _spawn_hull(_ship.global_position + Vector2(300.0, 0.0))
 	_scene.call(&"_start_lock", hull)
@@ -437,9 +438,18 @@ func test_a_marked_hostile_fills_the_window_and_a_hit_flashes_the_marker() -> vo
 
 	var marker: Control = _hud.call(&"hit_marker_node")
 	assert_false(marker.visible, "nothing has hit yet")
+	assert_true(
+		_hud.get(&"_guns") == _guns, "the HUD consumes the component's own delivery seam"
+	)
+	## The retired poll's own reading: a pool moved by something other than the player's
+	## fire is not a confirmed hit any more (S22 A1 / L28).
 	DamageScript.apply(hull, 25.0, false, {})
 	_scene.call(&"_push_target")
-	assert_true(marker.visible, "a pool drop between two pushes is a confirmed hit")
+	assert_false(marker.visible, "a pool drop between two pushes is no longer a hit")
+	## The seam is: any landed delivery through the component flashes the marker, whatever
+	## hull it lands on.
+	_guns.call(&"_deliver", hull, 10.0, false, hull.global_position, &"laser", Vector2.ZERO)
+	assert_true(marker.visible, "a landed delivery flashes the marker (any hull)")
 
 
 ## ---------------------------------------------------------------------------

@@ -1,0 +1,23 @@
+{
+  "assets": [
+    {
+      "added_at": "2026-09-30T16:57:22.289832+00:00",
+      "attribution_required": false,
+      "attribution_text": null,
+      "author": "qubodup",
+      "checksum_sha256": "3884bdb73f6bbb852a120a21d84f0f75261031050e9a839c4ab5e3804302329f",
+      "files": [
+        "/home/kamil-paluszkiewicz/VajbOrbit/asset-library/mine_deploy/mechanical.7z"
+      ],
+      "id": "OpenGameArt:7 mechanical clicks and buzzes",
+      "license": "CC0 1.0 Universal (public domain)",
+      "license_status": "allowed_public_domain",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/",
+      "source_name": "OpenGameArt",
+      "source_url": "https://opengameart.org/content/7-mechanical-clicks-and-buzzes",
+      "title": "7 mechanical clicks and buzzes",
+      "warnings": []
+    }
+  ],
+  "version": 1
+}

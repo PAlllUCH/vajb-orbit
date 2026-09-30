@@ -534,6 +534,23 @@ func weapon_mount(index: int) -> Dictionary:
 	}
 
 
+## S22 A3 (tick T-feel-4): the hull's nose point in this hull's own units - the average
+## of the measured hardpoint map's bow band (`ShipFit.HARDPOINTS`' `thrusters.front`, the
+## two bow ink extremes), scaled by the sprite's own scale exactly as `weapon_mount`
+## scales its mounts. A hull with no map answers a point one hull radius forward of the
+## centre (the radius-forward fallback). The muzzle flash's mouth anchors here while a
+## shot still leaves from its pinned mount, so the two may desync - which the tick
+## accepts (cosmetic, rule 1).
+func nose_point() -> Vector2:
+	var front := ShipFit.thruster_points(_hull_id, &"front")
+	if not front.is_empty():
+		var local := Vector2.ZERO
+		for point: Vector2 in front:
+			local += point
+		return (local / float(front.size())) * _hull_sprite_scale()
+	return Vector2(_hull_radius(), 0.0)
+
+
 ## The trail emitters in anchor order, one per engine cell (empty before the first frame
 ## the hull is set up, and for a hull whose anchors are unknown).
 func thruster_trails() -> Array[GPUParticles2D]:
@@ -1165,12 +1182,35 @@ func _on_hull_body_entered(other: Node) -> void:
 	)
 	if damage <= 0.0:
 		return
+	## S22 A2 (L56): a ram that charges reads like every other contact - the peer's own
+	## foley (hull or rock) and one chip burst at the contact point. Cosmetic only
+	## (ruling 18): neither reads nor moves a gameplay number.
+	var contact := _contact_point(peer_position)
+	PROJECTILE.play_impact(
+		self,
+		PROJECTILE.IMPACT_KIND_HULL if peer_hull != null else PROJECTILE.IMPACT_KIND_ROCK
+	)
+	var fx_parent := get_parent()
+	PROJECTILE.spawn_chip_sparks(fx_parent if fx_parent != null else self, contact)
 	var sink: Object = peer_hull if peer_hull != null else other
 	if sink.has_method(&"apply_collision_damage"):
 		## S7 (CONTRACTS section 20, site 5): the peer's half is a player-origin damage
 		## amount, so it takes the launch's `damage_mult` exactly once here. The player's
 		## own half already landed on `PlayerState.damage` inside `DAMAGE.ram`.
 		sink.call(&"apply_collision_damage", damage * _damage_scale())
+
+
+## S22 A2 (L56): the world point a ram's spark is drawn at - on the line between the two
+## centres, at this hull's own collision radius (the surface the peer touched), with the
+## midpoint as the fallback for a hull whose radius cannot be read.
+func _contact_point(peer_position: Vector2) -> Vector2:
+	var offset := peer_position - global_position
+	if offset.is_zero_approx():
+		return global_position
+	var radius := _hull_radius()
+	if radius <= 0.0:
+		return global_position + offset * 0.5
+	return global_position + offset.normalized() * minf(radius, offset.length())
 
 
 ## The ship behind a contact's collider (`weapons.gd:_sink_for`'s walk): a hull's contact
