@@ -328,7 +328,7 @@ func test_the_coast_column_is_the_retuned_half_of_the_section_13_rows() -> void:
 				1e-6
 			),
 			(
-				"the launched Vanguard's coast time is 2.1 s (the revert of the x 0.50), measured %.3f"
+				"the launched Vanguard's coast time scales with COAST_TIME_MULT and the affix penalty, measured %.3f"
 				% float(stats.coast_time)
 			)
 		)
