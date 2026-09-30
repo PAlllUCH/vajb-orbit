@@ -45,6 +45,7 @@ below is re-anchored) and **L251** (the chip-spark re-cut now rides §10).
 | 15 | **`Repairs.is_repairable` reads the resolved pair too** (B3's deviation 3): A10 names `fee`/`repair`, but the pane's button reads this while printing the resolved rows, so leaving it on the catalogue key would show a fee with a dead button | the catalogue pair |
 | 16 | **The fuze delivers to the lock, with no distance gate** (B3's deviations 1–2): both doors land the warhead on the target the shot names, which is the tick's intent ("orbiting not blessed"); a dumb-fired shot or a dead lock keeps the plain range fizzle. Tabulated as a LOW for R1/owner confirm | `_detonate(global_position)` on expiry, clock from launch |
 | 17 | **`npc_ship.gd` gains a force/torque observability seam** (B3's deviation 5, the `player_ship.gd:311` twin): the runner never awaits a frame, so the mirrored drag is otherwise unprovable. No force changes | inline the two `_body.apply_*` calls |
+| 18 | **The review's one HIGH is discharged here, not by a fixer** (R1's S22-B3/F1 = **L252**, closed): §8's `test_s19_quadrants.gd` line now names all three moved rows, including `test_a_repair_restores_the_pools_and_keeps_the_fee_law` (R-S22-1's pair). A bucket-2 finding whose artefact *is* this brief belongs to its owner under the ladder, so no F1 dispatch follows (R1 left 0 MED and 2 LOW: L253 the fuze's no-gate delivery, L254 the audio docstring's overclaim) | restore the one-row line and reopen L252 |
 
 ## 1. The law to read, in order
 1. `slices/S22-feel-and-juice/SLICE.md` — scope, file sets.
@@ -220,7 +221,7 @@ suites only, one row per acceptance. Candidates:
 |---|---|---|
 | `test_s22_feedback.gd`, `test_s22_audio.gd`, `test_s22_balance.gd` | new, one per builder | **+ rows (the only expected growth)** |
 | `test_flight_feel_g1.gd`, `test_s2_6_flight.gd`, `test_engine_c3_flight_decay.gd`, `test_slice2_5_feel.gd` | A9's seeker fuse + NPC drag | may move (the NPC skid number is *expected* to move — T-feel-2) ⇒ a row moving on the **player** side is bucket 2 |
-| `test_s19_quadrants.gd` | A11's spill **+ the byte-seal row** | one corrected row (the 400-hit spill row); **the seal row is red from B1 until B3 re-pins it** (amendment 6) |
+| `test_s19_quadrants.gd` | A11's spill **+ the byte-seal row** | **three rows** (amendment 18): the 400-hit spill row, the hull-sum row + one rename (amendment 13), and `test_a_repair_restores_the_pools_and_keeps_the_fee_law` — fee 500→**692**, `hull_max` 1000→**1250**, credits 9500→**9308** (R-S22-1's pair, `:573-605`; R1's S22-B3/F1 = L252); **the seal row was red from B1 until B3 re-pinned it** (amendment 6) |
 | `test_engine2_npc.gd` | T-feel-2's NPC drag | may move; ~1 row |
 | `test_engine2_wiring.gd` | A1's retired pool-drop poll | one row rewritten (amendment 7, accepted) |
 | `test_weapon_fx_f1.gd` (4 rows), `test_engine2_cleaving.gd:623` | A6's anti-flam rules | **rows updated** (amendment 9: A6 is behavioural, so my "unchanged" was wrong); counts unchanged |
@@ -234,10 +235,13 @@ Any other count moving is a bucket-2 pause: report it, leave it, stop. The
 orchestrator's close-out step, not a worker's.
 
 ## 9. Hard rules
-- Docs read-only (`CONTRACTS.md` is R1's). `--forbidden` at verify: explicit
-  files — `vajb-orbit/project.godot`, `vajb-orbit/game/damage.gd`,
-  `vajb-orbit/addons/`, `docs/CONTRACTS.md` — **never a directory** (L245:
-  directory entries are inert).
+- Docs read-only to the builders (`CONTRACTS.md` is R1's, so it is **not**
+  `--forbidden` at the wave verify — the reviewer writes it). `--forbidden` at
+  verify: explicit files only — `vajb-orbit/project.godot`,
+  `vajb-orbit/game/damage.gd`, `vajb-orbit/game/ship_fit.gd`,
+  `docs/gameplay/{18_engine_spec,01_economy_core,09_ship_slots_modules,19_testing_notes}.md`,
+  `docs/design/{AUDIO_SPEC,FX_SPEC}.md` — **never a directory** (L245: directory
+  entries are inert).
 - Audio is **CC0 1.0 only** (assetmcp, license recorded in the manifest; no
   CC-BY/OGA-BY). No AI art. Bounded runs, scratch stores (L229), no shell edits.
 - Bounded runs only: every Godot invocation carries `--quit-after`; never wait on

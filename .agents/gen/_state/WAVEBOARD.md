@@ -195,17 +195,31 @@ random 1.6–2.6 s, §6 cadence); the forks resolved as the seeker fuze pair
 with a staged trim.** The developer lands the flight/§13/CONTRACTS rows in the
 owning docs at S22's open. Recap `MASTER_REPORT.md` §6.
 
-**Updated 2026-09-30 (S22, live — coder item 28):** the feel/juice wave opened
-docs-first on D15's fully-ticked sheet; baseline re-measured **941/0** (exit 0)
-and the brief's stale `914` corrected. Amendment (owner-ruled 2026-09-30, in
-`S22_BRIEF.md`): the five bucket-2 doc edits landed in the pre-flight commit
-(**CONTRACTS §22's T3 row struck**, **§23.5's release-ramp row**, **§14's
-NPC-brake disclosure**, **18 §13's Rocket fuze row** on the owner's grant, and
-`ship_fit.gd`'s retune comment corrected), **L250/L251 closed**, the rows already
-shipped at their ticked values reclassified **verify-only** (A4 mining chip, A8
-arcs, A13 the FX pins, plus the A11/A9 disposition halves), and the run split
-into **three sequential builders** (B1 feedback seams → B2 HUD + audio → B3
-flight & balance, one suite each). Next: B1 dispatch.
+**Updated 2026-09-30 (S22, closed — coder item 28): the feel/juice pillar ships —
+gate 941 → 971/0 twice hermetic** (`"problems": []` on `--baseline s22_start`,
+`--forbidden` on explicit files per L245). Opened docs-first on D15's fully-ticked
+sheet: the brief's stale `914` corrected to the measured baseline, five bucket-2
+doc edits landed before any code (**CONTRACTS §22's T3 row struck**, **§23.5's
+release-ramp row**, **§14's NPC-brake disclosure**, **18 §13's Rocket fuze row**
+on the owner's grant, `ship_fit.gd`'s retune comment corrected), **L250/L251
+closed**, and the rows already shipped at their ticked values reclassified
+**verify-only** rather than rebuilt (A4 mining chip `mining_laser.gd:214-225`,
+A8 arcs at the ticked random 1.6–2.6 s, A13 every FX-2 pin, plus the A11/A9
+disposition halves). Ran as **three sequential builders** (owner-ruled
+2026-09-30): B1 the feedback seams (the `hit_landed` signal, any-hull marker,
+ram cue + spark, nose muzzle, `ModuleCatalog` label), B2 the HUD quadrant feed +
+the audio pass (the three §4.1 anti-flam rules, a **CC0 mine release cue** sourced
+through `assetmcp`, `laser_04` dropped), B3 the flight and balance rows
+(`SEEKER_FUSE` 80 u + `SEEKER_FUSE_S` 6 s, the NPC midline-drag twin, `Repairs`
+on `ShipFit.resolve`, the damage-conserving proportional spill) plus the S19
+byte-seal re-pin (`npc_ship.gd 12ab0ae2…`, `weapons.gd 6f95a9c2…`; the S21 rule:
+the last editor re-pins). New suites `test_s22_feedback.gd` (11),
+`test_s22_audio.gd` (7), `test_s22_balance.gd` (12) = **+30 rows**, the only
+growth. Review: **1 HIGH (bucket 2, L252 — §8's s19 line missing R-S22-1's third
+moved row; discharged by the developer at close, no F1) / 0 MED / 2 LOW (L253 the
+fuze's no-distance-gate delivery, owner confirm; L254 the anti-flam docstring's
+overclaim)**. **Owner ticks: all 25 of D15's rows ticked 2026-09-29** — nothing
+in this wave shipped at a proposed default. Recap `MASTER_REPORT.md` §6.
 
 Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 
@@ -215,16 +229,16 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 |---|---|---|---|---|
 | 1 | coder 27 | S21 stability & playtest fixes (**done 2026-09-29**, 917 → 941/0) | — | — |
 | 2 | designer 16 | D15 flight feel & feedback design (**done + ticked 2026-09-29** — sheet → S22) | coder 27 | one live session (L82); its tick sheet is coder 28's input |
-| 3 | coder 28 | S22 feel, juice & balance (**live 2026-09-30** — baseline 941/0, B1 → B2 → B3 → R1) | designer 16 | implements D15's ticks; both touch `ui/hud/` |
-| 4 | coder 29 | S23 content activation | coder 28 | `vajb-orbit/game/` + `tests/` (weapons/projectile/mining seams) |
+| 3 | coder 28 | S22 feel, juice & balance (**done 2026-09-30** — 941 → 971/0; 1 HIGH bucket-2 list closed by the developer, 2 LOW L253/L254) | designer 16 | implements D15's ticks; both touch `ui/hud/` |
+| 4 | coder 29 | S23 content activation (**next**) | coder 28 | `vajb-orbit/game/` + `tests/` (weapons/projectile/mining seams) |
 | 5 | designer 17 | D16 station identity & contracts UI | coder 29 | one live session; its spec is coder 30/31/32's design law |
 | 6 | coder 30 | S24 world identity | designer 17 | `station_catalog` + the station screen (D16 spec first) |
 | 7 | coder 31 | S25 contracts board | coder 30 | `ui/station/` + `autoload/player_profile.gd` + S24's `contracts_visible` seam |
 | 8 | coder 32 | S26 bosses, arenas, insurance, vaults | coder 31 | `game/` + `player_profile.gd` + S25's Expedition seam |
 | 9 | coder 33 | S27 catalog breadth & shipyard | coder 32 | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/` |
 
-Designer item **16 (D15)** is the designer queue's live item (D14 closed
-2026-09-29); 17 (D16) follows it. Playtest
+Designer item **16 (D15)** is closed (ticked 2026-09-29); 17 (D16) is the designer
+queue's next item. Playtest
 pass #1 (the owner's, `19_testing_notes.md`'s eye list) runs alongside pos 1;
 build 2 + the tester template are phase exit criteria. Every brief's §11 tick
 sheet feeds its wave (unticked rows implement at their PROPOSED value).

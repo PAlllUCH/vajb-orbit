@@ -20,7 +20,7 @@ lane, WAVEBOARD, wave-boundary commit).
 | # | Wave | Item | What | Status |
 |---|---|---|---|---|
 | 27 | S21 | Stability & playtest fixes | Death state, wreck window across transitions, ship-vs-ship crash damage, profile/hermeticity hygiene, bag reads, money edges, world-sim fixes (L18/L22/L23/L24/L73/L90/L93/L110/L114/L122/L124/L130/L131/L136/L150/L152/L153/L154/L176/L215/L237/L243). Five-piece: `slices/S21-stability-fixes/`; pins R-S21-1..3 (01/10's 2026-09-27 P3 blocks, ticks M1–M3). **Split into three builders (B1/B2/B3, owner-ruled 2026-09-28)** — disjoint regions, sequential, review grades A1–A11 across all three. | **done 2026-09-29** (gate 917 → **941/0**, 1 HIGH bucket-2 list landed by F1 / 0 MED left / 3 LOW) |
-| 28 | S22 | Feel, juice & balance | Hit/ram feedback, muzzle at nose, quadrant HUD feed, anti-flam + mine cue, laser_04 drop, the feel tick rows and the S19 balance rows (L28/L56/L51/L241/L54/L48/L49/L25/L39/L103/L168/L244/L242/L70; L52/L65/L55 and the FX pins are verify-only — already shipped at the ticked values). Five-piece: `slices/S22-feel-and-juice/`; pins R-S22-1..4 (01/09 P3 blocks, ticks M4–M7) + D15's ticked sheet. **Split into three builders (B1/B2/B3, owner-ruled 2026-09-30)** — sequential, review grades A1–A14 across all three. | **in progress 2026-09-30** (baseline 941/0) |
+| 28 | S22 | Feel, juice & balance | Hit/ram feedback, muzzle at nose, quadrant HUD feed, anti-flam + mine cue, laser_04 drop, the feel tick rows and the S19 balance rows (L28/L56/L51/L241/L54/L48/L49/L25/L39/L103/L168/L244/L242/L70; L52/L65/L55 and the FX pins were verify-only — already shipped at the ticked values). Five-piece: `slices/S22-feel-and-juice/`; pins R-S22-1..4 (01/09 P3 blocks, ticks M4–M7) + D15's ticked sheet. **Split into three builders (B1/B2/B3, owner-ruled 2026-09-30)** — sequential, review graded A1–A14 across all three. | **done 2026-09-30** (gate 941 → **971/0**, 1 HIGH bucket-2 list closed by the developer / 0 MED / 2 LOW) |
 | 29 | S23 | Content activation | `w_proton`/`w_flak` families, the three dead module effects, 7 stock fits, sibelon seam, interceptor/turret-platform hulls, per-hull sprites + liveries (L137), loot rows (L48-class closed). Five-piece: `slices/S23-content-activation/`; pins R-S23-1..6 (09/08 P3 blocks, ticks C1–C6). | queued · after 28 (`game/`) |
 | 30 | S24 | World identity | Named stations + per-faction menus/flavours, standing band effects, per-sector hostile bands, nebula clouds (L-band-split). Five-piece: `slices/S24-world-identity/`; pins R-S24-1..3 (14/13/11 P3 blocks, ticks W1–W3). | queued · after 17 (D16's spec) + 29 |
 | 31 | S25 | Contracts board | `contract_registry` + the board panel: Haul/Hunt/Gather/Escort, escrow + 100 CR cancel, standing gates, the escort convoy loop. Five-piece: `slices/S25-contracts/`; pin R-S25-1 (14 P3 block, tick J1). | queued · after 30 (`ui/station/` + profile) |
@@ -32,9 +32,22 @@ lane, WAVEBOARD, wave-boundary commit).
 
 ## Done
 
-Items 1–27 closed (gate 437 → **941/0** through the waves); detail, reviews,
+Items 1–28 closed (gate 437 → **971/0** through the waves); detail, reviews,
 incidents and LOW rows in `.agents/gen/MASTER_REPORT.md` §6 and the archived
 session reports.
+
+- **Item 28 = S22 feel, juice & balance** (2026-09-30, gate 941 → **971/0**
+  twice hermetic, 1 HIGH / 0 MED / 2 LOW **L252–L254**). Three sequential
+  builders (owner-ruled 2026-09-30): B1 the feedback seams (A1–A4/A8/A12/A13),
+  B2 the HUD feed and the audio pass (A5–A7/A14, incl. a CC0 mine cue sourced
+  through `assetmcp`), B3 the flight and balance rows (A9–A11) plus the S19
+  byte-seal re-pin (`npc_ship.gd 12ab0ae2…`, `weapons.gd 6f95a9c2…`). New
+  suites `test_s22_feedback.gd` (11) / `test_s22_audio.gd` (7) /
+  `test_s22_balance.gd` (12) = 30 rows. Its one HIGH was bucket 2 (brief §8's
+  `test_s19_quadrants.gd` line missing R-S22-1's third moved row, L252) and it
+  was **discharged by the developer at close** — the artefact was the brief
+  itself, so no F1 ran; the two LOWs are the fuze's no-distance-gate delivery
+  (owner confirm, L253) and the anti-flam docstring's overclaim (L254).
 
 - **Item 27 = S21 stability & playtest fixes** (2026-09-29, gate 917 → **941/0**
   twice hermetic, 1 HIGH / 1 MED / 3 LOW **L246–L249**). Three sequential
@@ -85,10 +98,9 @@ session reports.
 
 ## Handoff (live)
 
-**Item 28 = S22 feel, juice & balance — live 2026-09-30** (D15's tick sheet landed
-2026-09-29 and is fully ticked; paste the block at the bottom of
-`.agents/gen/slices/S22-feel-and-juice/S22_prompts.md`; the later items' handoff
-blocks live in their own `<WaveID>_prompts.md`).
+**Item 29 = S23 content activation — next** (paste the block at the bottom of
+`.agents/gen/slices/S23-content-activation/S23_prompts.md`; the later items'
+handoff blocks live in their own `<WaveID>_prompts.md`).
 
 The whole queue is phase **P3** (`phases/P3-content-feel-push/PHASE.md`);
 order and the collisions that force it are in `WAVEBOARD.md` §Queued. The

@@ -1344,3 +1344,85 @@ ripple item is a misread (§1.5 states it), T-feel-1b staged as its own tick.
 Evidence: `verify --baseline d15_start` → `"problems": []` (diff surface exactly
 `docs/design/` + the slice folder + `staging/mockup/out/`'s SVG + R1's
 `LOW_BACKLOG` rows); gate re-run `941/0`; no worker incidents.
+
+### S22 (coder item 28) — **DONE 2026-09-30 — gate 941 → 971/0, detail §Closed.**
+
+**Deliverables.** The playability/feel pillar of P3, implemented against D15's
+**fully-ticked** 25-row sheet (2026-09-29) — nothing shipped at a proposed default.
+Owned by three sequential builders (owner-ruled 2026-09-30):
+
+- **B1 (A1–A4/A8/A12/A13)** — one `hit_landed(target, amount)` signal on the
+  delivery seam (`weapons.gd`; the shot reports back through a `&"hit_landed"`
+  Callable so beams and projectiles share it), the HUD marker now fires for **any**
+  hull and the marked-target pool-drop poll (`game.gd _target_pools_seen`) is
+  retired; both hull monitors play `sfx_impact_hull`/`_rock` and spawn one contact
+  spark at `_contact_point`; the muzzle flash's mouth anchors on the hull's
+  **bow band** (`PlayerShip.nose_point()`, S22 amendment 8) while the shot's spawn
+  stays pinned; a family-less tool slot labels by `ModuleCatalog` name. The
+  verify-only rows were measured, not rewritten: A4's chip burst (`[S22B1] A4 chip
+  burst=4 cue=true world=40.0 fps=20.0`), A8's arcs (six draws, every interval in
+  1.6–2.6 s), A13's pins (trail 12/loop/48, mine 22, plume 16/1.4/0.6/14/25/8–24/
+  0.5–1.1, chip+arc 40, bolt 64 / slug 96).
+- **B2 (A5–A7/A14)** — `_push_status` feeds the four real armour pools to
+  `set_quadrants` (a breached `STBD 0 / 313` through a real hit); `play_pool`
+  enforces **exactly** §4.1's three anti-flam rules (30 ms floor, caps
+  weapons 4 / impacts 6 / mining 1 / UI 2 dropped-not-queued, skip-last at N > 2);
+  `sfx_weapon_mine_drop` is **sourced CC0 via `assetmcp`** (qubodup, "7 mechanical
+  clicks and buzzes", two takes 0.351/0.359 s, `.import` sidecars landed,
+  `generation_log_audio.md` + `ASSET_MANIFEST.json` + `CREDITS.md` rows), wired in
+  `FIRE_CUES`, with the detonation unchanged; `sfx_weapon_laser_04` drops from the
+  pool (N = 3, trim staged).
+- **B3 (A9–A11)** — `SEEKER_FUSE := 80.0 u` **and** `SEEKER_FUSE_S := 6.0 s`
+  (`_step_seeker_fuze` answers before the range fizzle); the NPC midline-drag twin
+  (`npc_ship.gd _step_lateral_drag`) makes an NPC skid settle at the player's own
+  rate (`t_10` 0.900 s both); `Repairs.fee()`/`repair()`/`is_repairable` resolve the
+  same `ShipFit.resolve` pair the panes print (fresh standard Vanguard fit:
+  1250/800, fee 692, `_pool_maxima` asserted equal); the spill re-offers the
+  remainder **proportional to remaining capacity** and conserves damage (400 on
+  `[200,100,0,0]` lands **300 and kills**, `hull == sum(pools)` exact).
+  R-S22-3 (S19's initials stand) and R-S22-4 (per-cell magazine kept) are tabled
+  dispositions, no code. Plus the **S19 byte-seal re-pin** (the S21 rule, the last
+  editor re-pins: `npc_ship.gd 12ab0ae2…`, `weapons.gd 6f95a9c2…`).
+
+**Numbers.** Gate **941 → 971/0** twice on fresh scratch stores (exit 0, zero
+`[FAIL]`), and the review replayed the baseline (`93d6afb` reconstructed) at
+941/0. Growth is **the three new suites only** — `test_s22_feedback.gd` (11),
+`test_s22_audio.gd` (7), `test_s22_balance.gd` (12) = 30; every existing suite's
+executed count is identical baseline→HEAD. `verify --baseline s22_start` → exit 0,
+`"problems": []` (`--forbidden` on explicit files only, L245). `damage.gd`
+byte-identical to the S19 wave start; `npc_brain.gd` unmoved.
+
+**Review (S22-R1): 1 HIGH / 0 MED / 2 LOW.** The HIGH is **bucket 2** and its
+artefact is the brief itself: §8's `test_s19_quadrants.gd` line under-counted the
+rows R-S22-1 moves (`test_a_repair_restores_the_pools_and_keeps_the_fee_law`
+also moved — fee 500→692, `hull_max`→1250, credits→9308), so **the developer
+discharged it at close** by naming all three rows in §8 and recording amendment
+18; no fixer ran (the ladder assigns a bucket-2 finding on the wave's own law to
+the session that owns it, and no MED remained). LOWs ticketed: **L253** the 6 s
+fuze expiry delivers to the lock with no distance gate (180 dealt at 5423 u — the
+tick's "orbiting not blessed" cuts both ways, so it is the owner's confirm) and
+**L254** `play_pool`'s docstring overclaims that a dropped trigger advances no
+cursor (a *cap* drop has already advanced `_pool_next`; no §4.1 rule broken).
+All of A1–A14 graded **pass** on the reviewer's own re-measurement (29-check probe,
+two gates).
+
+**Docs-first open (before any code).** The stale baseline `914 → 941`; the five
+bucket-2 edits D15 routed to the developer — CONTRACTS §22's T3 row **struck**,
+§23.5 gains the **release-ramp** row, §14 gains the **NPC-brake disclosure**,
+`18_engine_spec.md` §13 gains the **Rocket fuze** row (on the owner's grant, its
+own file being owner-locked), and `ship_fit.gd`'s retune comment is corrected plus
+one playtest-note line in `19_testing_notes.md`; **L250/L251 closed**; and the
+rows found already shipped at their ticked values (A4, A8, A13, the A11/A9
+disposition halves) were **reclassified verify-only** rather than rebuilt — the
+single biggest planning finding of the wave, worth ~25 % of the brief's apparent
+work.
+
+**Wave-wide dispositions worth remembering.** A6 is **behavioural, not cosmetic**
+— so it moved four `test_weapon_fx_f1.gd` rows and one `test_engine2_cleaving.gd`
+row that pinned unspaced same-cue bursts, and the gate runner now clears the new
+trigger memory between methods because the 30 ms floor is wall clock (S22
+amendment 9/10). A11's pair also moves `test_s19_quadrants.gd`'s hull-sum row and
+one rename, and R-S22-1 moves four `test_p1_repairs.gd` rows (amendment 13/14).
+Two new LOWs' worth of taste lives in L253/L254. The wave's own seal lesson: a
+mid-wave red seal row is expected when a wave legitimately edits a pinned file —
+name the last editor as the re-pinner at the open, not at the close.

@@ -910,6 +910,25 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
+Expected (S22, 2026-09-30): **`[SUMMARY] passed=971 failed=0`**, exit 0. S22-R1 measured
+**971/0** on a fresh scratch store and replayed the baseline (`93d6afb`, reconstructed in
+`/tmp/s22base`) at **941/0**, exit 0, both with zero `[FAIL]`/`[SKIP]`. **Growth `941 → 971`
+is the three new suites only** (`test_s22_feedback.gd` 11, `test_s22_audio.gd` 7,
+`test_s22_balance.gd` 12 = 30) — every other suite's executed count is identical baseline→HEAD
+and each new suite's pass count equals its `func test_` count. The moved rows: the two renames
+(`test_s19_quadrants.gd`'s `…_spills_its_remainder_evenly` → `…_spills_proportionally` and
+`test_weapon_fx_f1.gd`'s mine row → `…_with_the_mine_pools_own_cue`) plus the content moves
+§8 and amendments 6/7/9/13/14 name — and one §8 did not:
+`test_s19_quadrants.gd`'s `test_a_repair_restores_the_pools_and_keeps_the_fee_law` (fee
+500→**692**, `hull_max`→**1250**, credits→**9308**), the wave's one **HIGH** (**S22-B3/F1**,
+bucket 2 — **L252**; list amendment, the row correct as built). Two LOWs: the fuze's
+no-distance-gate delivery at expiry (probe: 180 dealt at **5423 u**, **L253**, owner confirm)
+and the anti-flam cap-drop's cursor advance against the docstring (**S22-B2/F1**, **L254**).
+`damage.gd` stays byte-identical to the S19 wave start, and the S19 seal is green again with
+the finished tree's readings — `npc_ship.gd 12ab0ae2…`, `weapons.gd 6f95a9c2…`,
+`damage.gd 5cabf3d9…`, `npc_brain.gd e39440bf…` (4/4 re-verified by
+`tests/probe_s22r1_review.gd`).
+
 Expected (S21, 2026-09-29): **`[SUMMARY] passed=941 failed=0`**, exit 0. S21-R1 measured
 **941** on a fresh scratch store, **941** again on a copy of the live account's store (identical
 counts, exit 0, zero `[FAIL]`/`[SKIP]`; the live file's md5/mtime unchanged after), and re-read
@@ -4465,3 +4484,19 @@ hull stops twice and the second stop slides.
   its tail including L236's closure assertion; left to the fixer) / 3 LOW (L247–L249)**. The
   four forbidden files: `damage.gd 5cabf3d9…`, `npc_ship.gd a694170c…` (owner-ruled re-pin,
   chain in the pin), `npc_brain.gd e39440bf…`, `weapons.gd fcdc549f…`.
+- **v0.37 (2026-09-30, wave S22 review — S22-R1; gate `941/0 → 971/0`)** — the feel wave's
+  review pass. The baseline replayed at **941/0** (a reconstruction of `93d6afb`) and HEAD
+  measured **971/0** on fresh scratch stores, zero `[FAIL]`; growth is the three new suites
+  only (30 rows), and `vajb-orbit/tests/probe_s22r1_review.gd` re-derived 29 checks at 0
+  fails on scratch. All fourteen acceptance items pass as measured: the one `hit_landed` seam
+  with the poll retired, the ram cue + contact-surface spark, the nose-anchored flash with the
+  spawn line unmoved, the chip burst at 40 u / 20 FPS, the four-pool status feed through a
+  real breach (`STBD 0 / 313`, hull 937.5), the three anti-flam rules at their thresholds
+  (20 ms refused, 5th weapon voice dropped), the CC0 mine cue (0.351/0.359 s), the ticked
+  1.6–2.6 s arc cadence, the 80 u / 6 s fuze, the mirrored NPC drag (`t_10` 0.900 = 0.900),
+  the one repair figure (fee 692 on 1250/800), the conserved spill (400 on `[200,100,0,0]` →
+  300 landed, `hull == sum(pools)`), the `ModuleCatalog` label and every FX pin. Findings:
+  **1 HIGH (bucket 2, L252 — S22-B3/F1: §8's s19 line missed the moved repair fee row; list
+  edit) / 0 MED / 2 LOW (L253 the fuze delivery's no-distance-gate reading for the owner;
+  L254 the anti-flam cap-drop docstring)**. The S19 seal is green with the finished tree
+  (`npc_ship 12ab0ae2…`, `weapons 6f95a9c2…`) and `damage.gd` stays `5cabf3d9…`.
