@@ -910,6 +910,31 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
+Expected (S22.6, 2026-09-30): **`[SUMMARY] passed=990 failed=0`**, exit 0. S22.6-R1 measured
+**990/0** twice on fresh scratch stores (row-identical pass lists, zero `[FAIL]`/`[SKIP]`) and
+replayed the wave baseline (`6de1081`, a `/tmp` worktree with the current assets) at **983/0**:
+the growth is the new `test_s22_6_inertia.gd` (**7** rows, AC1–AC7) and **no other suite's
+executed count moved**; the by-name readers stay untouched and green
+(`test_engine2_cleaving.gd:267` compares a real rock's damp to `Asteroid.LINEAR_DAMP`,
+`test_s7_affixes.gd:72/366/376` read `ShipFit.COAST_TIME_MULT`; both files byte-identical
+baseline→HEAD). The wave's own independent replay is `vajb-orbit/tools/s226_r1_probe.gd` (real
+frames, `--fixed-fps 60`, scratch store, self-quitting, **0 failures**): `COAST_TIME_MULT` **5.0**
+with the nine unplated rows **4.00/5.00/8.50/6.50/4.50/13.00/9.50/8.50/14.00 s**; the shipped
+Vanguard (406.60 u/s, coast 5.25 s) released at cruise brakes on a **straight line** (max
+deviation from `v0 − rate·t` **0.0000 u/s**, against an exponential misfit of **149.1**) to a
+stop at **5.250 s / 1 061.12 u** (derived 1 065.91) with **0.000000** residual drift; the
+200 u/s hand-off's `t_10` is **2.333 s** = **2.03×** S22's recorded 1.150 s; `LINEAR_DAMP`
+**0.35** / `FRAGMENT_LINEAR_DAMP` **0.25** (both `DAMP_MODE_REPLACE`) give a 150 u/s kick
+**105.595 u/s at 1 s / 424.65 u**, a cleave child **116.759 / 595.52**, a real splinter body
+0.25, a rock at rest **0.000000 u over 6 s**, and the 409 u/s ram **1 160.34 u** against the
+superseded 3.71's **103.30 u** (**×11.23**). Findings: **0 HIGH / 0 MED / 2 LOW (L256–L257)** —
+the Hull release row's worked `4.0 s / ~855 u` is the arithmetic pair `0.5 × 427.5 × 4.0` with
+no shipped hull reading it (unplated fighter 4.0 s / 900 u, plated fighter 4.2 s / 894 u), and
+the two pre-existing probe states (`probe_s2_6_flight`'s mirror row, `probe_c3_flight_decay`
+measuring nothing) at both constants. The five forbidden files are snapshot-identical
+(`project.godot`, `damage.gd 5cabf3d9…`, `weapons.gd 6f95a9c2…`, `02_minerals.md`,
+`01_economy_core.md`) and `verify_wave.py verify --baseline s226_start` reads `"problems": []`.
+
 Expected (S22.5, 2026-09-30): **`[SUMMARY] passed=983 failed=0`**, exit 0. S22.5-R1 measured
 **983/0** twice on fresh scratch stores (per-suite counts identical between runs, zero
 `[FAIL]`/`[SKIP]`) and diffed every suite's executed count against the `0e03baa` tree: the only
@@ -1977,7 +2002,8 @@ LAUNCH's service rows (the `STATION_HUB.md` §5.4 amendment — owner request 4)
   stop thrusting").** `COAST_TIME_MULT` ticks `2.5 → 5.0`: the release is still a scripted
   constant brake at `max_speed / coast_time` (it is NOT drag — the body damp is compensated
   out along the released vector), it now takes twice as long and carries twice as far
-  (Vanguard 427.5 u/s → 4.0 s over ~855 u, 18 §13's table). Every class keeps its
+  (measured shipped hulls: fighter 4.2 s over ~894 u, Vanguard 5.25 s over 1 063.94 u —
+  18 §13's table; the bare `4.0 s / ~855 u` pair is the unplated 0.8 s row). Every class keeps its
   relativity, the §23.5 "one stop, one line" acceptance stands, and the S-thrust brake
   (1.8 × acceleration) is unmoved. Reversal: `2.5`.
 - **Disclosed asymmetry, the NPC brake (L39/L103; owner tick T-feel-2, 2026-09-29).**
@@ -4543,3 +4569,19 @@ hull stops twice and the second stop slides.
   close-out's `--forbidden docs/gameplay/02_minerals.md` reports a forbidden touch on a
   developer-authored change; re-baseline the path or record the exception. The sealed files are
   snapshot-identical (`project.godot`, `damage.gd 5cabf3d9…`, `weapons.gd 6f95a9c2…`).
+- **v0.39 (2026-09-30, wave S22.6 review — S22.6-R1; gate `983/0 → 990/0`)** — the inertia
+  wave's review pass. Baseline replayed at **983/0** (a `6de1081` worktree) and HEAD measured
+  **990/0** twice on fresh scratch stores with row-identical pass lists; growth is the new
+  `test_s22_6_inertia.gd` (7 rows) only, and the by-name readers are untouched and green
+  (`test_engine2_cleaving.gd:267`, `test_s7_affixes.gd:72/366/376`). The ticked constants match
+  18 §13's two rows and this file's §22 T1 / §23.5 T1 exactly (`COAST_TIME_MULT` **5.0**,
+  reversal 2.5; `LINEAR_DAMP` **0.35** and `FRAGMENT_LINEAR_DAMP` **0.25**, reversal 3.71), and
+  the release law is unchanged — the reviewer's real-frame probe (`tools/s226_r1_probe.gd`,
+  0 failures) measures the released Vanguard's velocity as a straight line to zero (max
+  deviation **0.0000 u/s**, exponential misfit **149.1**) stopping at **5.250 s / 1 061.12 u**
+  with no residual drift, plus the rock figures: kick **105.595 u/s at 1 s / 424.65 u**, child
+  **116.759 / 595.52**, rest **0.000000 u over 6 s**, ram **×11.23**. The five forbidden files
+  are snapshot-identical and `verify_wave.py verify --baseline s226_start` reads
+  `"problems": []`. Findings: **0 HIGH / 0 MED / 2 LOW (L256–L257)** — the Hull release row's
+  `4.0 s / ~855 u` arithmetic pair (no shipped hull reads it; unplated fighter 4.0 s / 900 u,
+  plated fighter 4.2 s / 894 u), and the two pre-existing probe states at both constants.

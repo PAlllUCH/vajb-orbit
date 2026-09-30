@@ -22,7 +22,7 @@ lane, WAVEBOARD, wave-boundary commit).
 | 27 | S21 | Stability & playtest fixes | Death state, wreck window across transitions, ship-vs-ship crash damage, profile/hermeticity hygiene, bag reads, money edges, world-sim fixes (L18/L22/L23/L24/L73/L90/L93/L110/L114/L122/L124/L130/L131/L136/L150/L152/L153/L154/L176/L215/L237/L243). Five-piece: `slices/S21-stability-fixes/`; pins R-S21-1..3 (01/10's 2026-09-27 P3 blocks, ticks M1–M3). **Split into three builders (B1/B2/B3, owner-ruled 2026-09-28)** — disjoint regions, sequential, review grades A1–A11 across all three. | **done 2026-09-29** (gate 917 → **941/0**, 1 HIGH bucket-2 list landed by F1 / 0 MED left / 3 LOW) |
 | 28 | S22 | Feel, juice & balance | Hit/ram feedback, muzzle at nose, quadrant HUD feed, anti-flam + mine cue, laser_04 drop, the feel tick rows and the S19 balance rows (L28/L56/L51/L241/L54/L48/L49/L25/L39/L103/L168/L244/L242/L70; L52/L65/L55 and the FX pins were verify-only — already shipped at the ticked values). Five-piece: `slices/S22-feel-and-juice/`; pins R-S22-1..4 (01/09 P3 blocks, ticks M4–M7) + D15's ticked sheet. **Split into three builders (B1/B2/B3, owner-ruled 2026-09-30)** — sequential, review graded A1–A14 across all three. | **done 2026-09-30** (gate 941 → **971/0**, 1 HIGH bucket-2 list closed by the developer / 0 MED / 2 LOW) |
 | 28.5 | S22.5 | Asteroid toughness & chip splinters | The owner's 2026-09-30 ask: a per-rock randomised toughness, size carrying toughness (S 1.5 · M 2.5 · L 4.0 · XL 6.0 on the gun door only), a real work budget for gun-born debris instead of its instant crack, and 25 %-per-hit splinters shed by an L/XL under fire. Five-piece: `slices/S22.5-asteroid-toughness/`; pins **02 §5.3's A1–A5** (owner-ticked 2026-09-30). One builder (small region: `asteroid.gd`/`asteroid_field.gd`/`ore_tuning.gd` + tests). | **done 2026-09-30** (gate 971 → **983/0**, 0 HIGH / 0 MED / 1 LOW L255 closed by the developer) |
-| 28.6 | S22.6 | Inertia — hull coast & rock drift | The owner's 2026-09-30 question answered and ticked the same day: `COAST_TIME_MULT` 2.5 → **5.0** (a released hull brakes at a constant `max_speed / coast_time`; a Vanguard now takes 4.0 s over ~855 u) and the rock damping 3.71 → **0.35** with cleave children on **0.25**, so a kick carries ~429 u (a child ~600 u) instead of ~40 u. Pins: **18 §13's two new rows** + CONTRACTS §22 T1 / §23.5 T1. One builder (`ship_fit.gd`, `asteroid.gd`, `asteroid_field.gd` + tests). | **next** (after 28.5; shares `vajb-orbit/game/` with 29, so strictly before it) |
+| 28.6 | S22.6 | Inertia — hull coast & rock drift | The owner's 2026-09-30 question answered and ticked the same day: `COAST_TIME_MULT` 2.5 → **5.0** (a released hull brakes at a constant `max_speed / coast_time`; the shipped Vanguard now stops in 5.25 s over 1 063.94 u) and the rock damping 3.71 → **0.35** with cleave children on **0.25**, so a kick carries ~429 u (a child ~600 u) instead of ~40 u. Pins: **18 §13's two new rows** + CONTRACTS §22 T1 / §23.5 T1. One builder (`ship_fit.gd`, `asteroid.gd`, `asteroid_field.gd` + tests). | **done 2026-09-30** (gate 983 → **990/0**, 0 HIGH / 0 MED / 2 LOW — L256 closed by the developer, L257 pre-existing) |
 | 29 | S23 | Content activation | `w_proton`/`w_flak` families, the three dead module effects, 7 stock fits, sibelon seam, interceptor/turret-platform hulls, per-hull sprites + liveries (L137), loot rows (L48-class closed). Five-piece: `slices/S23-content-activation/`; pins R-S23-1..6 (09/08 P3 blocks, ticks C1–C6). | queued · after 28.6 (`game/`) |
 | 30 | S24 | World identity | Named stations + per-faction menus/flavours, standing band effects, per-sector hostile bands, nebula clouds (L-band-split). Five-piece: `slices/S24-world-identity/`; pins R-S24-1..3 (14/13/11 P3 blocks, ticks W1–W3). | queued · after 17 (D16's spec) + 29 |
 | 31 | S25 | Contracts board | `contract_registry` + the board panel: Haul/Hunt/Gather/Escort, escrow + 100 CR cancel, standing gates, the escort convoy loop. Five-piece: `slices/S25-contracts/`; pin R-S25-1 (14 P3 block, tick J1). | queued · after 30 (`ui/station/` + profile) |
@@ -34,7 +34,7 @@ lane, WAVEBOARD, wave-boundary commit).
 
 ## Done
 
-Items 1–28.5 closed (gate 437 → **983/0** through the waves); detail, reviews,
+Items 1–28.6 closed (gate 437 → **990/0** through the waves); detail, reviews,
 incidents and LOW rows in `.agents/gen/MASTER_REPORT.md` §6 and the archived
 session reports.
 
@@ -66,6 +66,25 @@ session reports.
   the developer's own close-out command (the §5.3 clarifying sentence landed after
   the snapshot), closed by dropping that path from `--forbidden` with the
   exception recorded.
+
+- **Item 28.6 = S22.6 inertia — hull coast & rock drift** (2026-09-30, gate
+  983 → **990/0** twice hermetic, 0 HIGH / 0 MED / 2 LOW — **L256** closed by the
+  developer, **L257** recorded as pre-existing). The owner asked why hulls stop
+  the moment the stick centres and why a shatter's debris settles within its own
+  width; both were scripted values rather than drag, and both took their tick
+  the same day: `COAST_TIME_MULT` 2.5 → **5.0** (a released hull still brakes at a
+  constant `max_speed / coast_time` — the shipped Vanguard now stops in
+  **5.25 s over 1 063.94 u**, the fighter 4.2 s / ~894 u) and the rock's
+  **`LINEAR_DAMP` 3.71 → 0.35** with a new **`FRAGMENT_LINEAR_DAMP` 0.25** carried
+  by every cleave child and splinter (a kicked 150 u/s reads 105.6 u/s after one
+  second and carries **424.65 u**, a child **595.52 u**, a ram hand-off
+  **1 160.34 u** — ×11.2 the old 103.31 u). §23.5's "one stop, one line"
+  acceptance holds at the new rate (`drift 0.000000°`, re-derived `t_10` 4.733 s),
+  and only the flight-decay suites' numerics moved: one builder,
+  `test_s22_6_inertia.gd` (7 rows) = 983 → 990, every constant-reading row
+  untouched. Its one doc LOW was the developer's own worked example (the
+  427.5 u/s pair belongs to the *fighter*, not the Vanguard), corrected in
+  18 §13 and CONTRACTS §14 at close.
 
 - **Item 27 = S21 stability & playtest fixes** (2026-09-29, gate 917 → **941/0**
   twice hermetic, 1 HIGH / 1 MED / 3 LOW **L246–L249**). Three sequential
@@ -116,9 +135,8 @@ session reports.
 
 ## Handoff (live)
 
-**Item 28.6 = S22.6 inertia — next** (the owner's 2026-09-30 question, docs-first
-in 18 §13 + CONTRACTS §22/§23.5/§14 and ticked the same day; paste the block at the
-bottom of `.agents/gen/slices/S22.6-inertia/S22.6_prompts.md`; the later items'
+**Item 29 = S23 content activation — next** (paste the block at the bottom of
+`.agents/gen/slices/S23-content-activation/S23_prompts.md`; the later items'
 handoff blocks live in their own `<WaveID>_prompts.md`).
 
 The whole queue is phase **P3** (`phases/P3-content-feel-push/PHASE.md`);

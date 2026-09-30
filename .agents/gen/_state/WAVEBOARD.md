@@ -195,6 +195,23 @@ random 1.6–2.6 s, §6 cadence); the forks resolved as the seeker fuze pair
 with a staged trim.** The developer lands the flight/§13/CONTRACTS rows in the
 owning docs at S22's open. Recap `MASTER_REPORT.md` §6.
 
+**Updated 2026-09-30 (S22.6, closed — coder item 28.6): hulls coast and broken rocks
+fly — gate 983 → 990/0 twice hermetic** (`"problems": []`; `18_engine_spec.md`'s
+§13 row and `CONTRACTS.md` §14 were re-worded by the developer after the snapshot
+— L256's cure — and both stay outside `--forbidden` by design). The owner asked why
+things stop moving in vacuum; the answer was that nothing coasts: the release is a
+scripted constant brake at `max_speed / coast_time` (the body damp is compensated
+out, so it is not drag), and the rock's damping was hand-derived so even the
+heaviest possible ram leaves it at 10 u/s after one second. Ticked the same day:
+**`COAST_TIME_MULT` 2.5 → 5.0** (the nine rows resolve 4.0–14.0 s; the shipped
+Vanguard stops in **5.25 s over 1 063.94 u**, the fighter 4.2 s / ~894 u) and
+**`LINEAR_DAMP` 3.71 → 0.35** with a new **`FRAGMENT_LINEAR_DAMP` 0.25** on every
+cleave child and splinter (a kicked 150 u/s reads **105.6 u/s** after one second
+and carries **424.65 u**, a child **595.52 u**, a ram hand-off **1 160.34 u** —
+×11.2). §23.5's "one stop, one line" acceptance holds at the new rate and only the
+flight-decay numerics re-derived; `test_s22_6_inertia.gd` (7 rows) is the only
+growth. Recap `MASTER_REPORT.md` §6.
+
 **Updated 2026-09-30 (S22.5, closed — coder item 28.5): rock toughness and chip
 splinters ship — gate 971 → 983/0 twice hermetic** (`"problems": []`;
 `docs/gameplay/02_minerals.md` deliberately outside `--forbidden` because the
@@ -249,8 +266,8 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | 2 | designer 16 | D15 flight feel & feedback design (**done + ticked 2026-09-29** — sheet → S22) | coder 27 | one live session (L82); its tick sheet is coder 28's input |
 | 3 | coder 28 | S22 feel, juice & balance (**done 2026-09-30** — 941 → 971/0; 1 HIGH bucket-2 list closed by the developer, 2 LOW L253/L254) | designer 16 | implements D15's ticks; both touch `ui/hud/` |
 | 4 | coder 28.5 | S22.5 asteroid toughness (**done 2026-09-30** — 971 → 983/0; 0 HIGH / 0 MED / 1 LOW L255 closed by the developer) | coder 28 | one builder; shares `vajb-orbit/game/` with 29, so it ran strictly before it (inserted at the owner's ask, not renumbered) |
-| 5 | coder 28.6 | S22.6 inertia (**next** — the owner's 2026-09-30 question: ship coast 2.5 → 5.0, rock damping 3.71 → 0.35, cleave children 0.25) | coder 28.5 | one builder; shares `vajb-orbit/game/` with 29, so it runs strictly before it |
-| 6 | coder 29 | S23 content activation | coder 28.6 | `vajb-orbit/game/` + `tests/` (weapons/projectile/mining seams) |
+| 5 | coder 28.6 | S22.6 inertia (**done 2026-09-30** — 983 → 990/0; 0 HIGH / 0 MED / 2 LOW — L256 closed by the developer, L257 pre-existing) | coder 28.5 | one builder; shares `vajb-orbit/game/` with 29, so it ran strictly before it |
+| 6 | coder 29 | S23 content activation (**next**) | coder 28.6 | `vajb-orbit/game/` + `tests/` (weapons/projectile/mining seams) |
 | 7 | designer 17 | D16 station identity & contracts UI | coder 29 | one live session; its spec is coder 30/31/32's design law |
 | 8 | coder 30 | S24 world identity | designer 17 | `station_catalog` + the station screen (D16 spec first) |
 | 9 | coder 31 | S25 contracts board | coder 30 | `ui/station/` + `autoload/player_profile.gd` + S24's `contracts_visible` seam |

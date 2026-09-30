@@ -1483,3 +1483,54 @@ what makes A3's "2.0" and the "≈0.7 s" fragment figure mean something.
 its snapshot must exclude that doc from `--forbidden` in the same breath, or the
 close-out reports the developer's own sentence as a forbidden touch (L255). The
 S22 seal lesson is the mirror image: name the last editor at the open.
+
+### S22.6 (coder item 28.6) — **DONE 2026-09-30 — gate 983 → 990/0, detail §Closed.**
+
+**The question and the answer.** The owner asked *"why do things stop moving? in space there
+is vaccum of why asteroid upon breaking stops moving after few meters? why ships stop moving
+as soon as i stop thrusting?"* — and both had a scripted answer, not a physical one:
+
+- **A hull's release is a constant brake, not drag.** `_step_release` drives the *whole*
+  velocity to zero at `max_speed / coast_time` (`player_ship.gd:1067` → `_thrust_axis:1083`,
+  `_coast_rate:1368`), and the body damp (`1 / coast_time`) is **compensated out** along the
+  released vector, so the hull decelerates at a fixed rate from the first frame after the
+  stick centres. That is CONTRACTS §23.5's "one stop, one line" acceptance, and
+  `COAST_TIME_MULT` is its size.
+- **A rock's damping was hand-derived.** `LINEAR_DAMP = 3.71` (`asteroid.gd:181`) exists so
+  the worst possible ram (a Destroyer at max speed under afterburner handing over 409 u/s)
+  leaves a rock drifting at **10 u/s after one second** (`DRIFT_SPEED_CEILING`, `~/4` and
+  the M2 probe measured 8.88). A kick's total travel is `v0 / λ`, so a shatter's 150 u/s
+  outward kick carried **~40 u** — a rock's own width — and settled in 0.73 s.
+
+**Ticks (owner, 2026-09-30): N1** `COAST_TIME_MULT` **2.5 → 5.0**; **N4** cleave children
+`FRAGMENT_LINEAR_DAMP` **0.25**; **N5** `LINEAR_DAMP` **0.35**. N2 (a release-rate
+multiplier) and N3 (a true-vacuum rewrite with counter-thrust only) were offered and **not
+taken** — both stay staged with their own future tick. The model itself is unchanged: the
+release is still a scripted brake, no drag was introduced, and `BRAKE_MULT` 1.8, the
+per-axis thrust law, the collision maths and every class's `max_speed`/`accel_time`/
+`turn_*` are untouched.
+
+**Numbers.** Gate **983 → 990/0**, exit 0, zero `[FAIL]`, twice by the builder, twice by the
+reviewer and twice more at close-out; growth is `test_s22_6_inertia.gd` (7 rows) only. The
+nine `coast_time` rows resolve 4.0–14.0 s; the shipped standard-fit Vanguard (406.6 u/s,
+5.25 s) stops in **5.25 s over 1 063.94 u** against 2.37 s / 530.28 u, and a released 200 u/s
+hull's `t_10` reads **2.333 s** = 2.03× §23.5's recorded 1.150 s. §23.5's acceptance holds at
+the new rate (`drift 0.000000°`, Vanguard 284 ticks). Rocks: a kicked 150 u/s reads
+**105.595 u/s** after one second, carries **424.65 u** total (a child **595.52 u**), a ram
+hand-off settles in 10.58 s over **1 160.34 u** against the superseded 103.31 u (**×11.2**),
+and a rock at rest moves **0.000000 u over 6 s**. `test_engine2_cleaving.gd:267` and
+`test_s7_affixes.gd`'s constant-reading rows survived untouched; `probe_c1_ram` exits 0
+reading `damp=0.350`. `verify --baseline s226_start` → exit 0, `"problems": []`.
+
+**Review (S22.6-R1): 0 HIGH / 0 MED / 2 LOW — `passed-with-followups`, no fixer.** Both LOWs
+were documentation, not code: **L256** the developer's own worked example mixed the
+*fighter's* plated 427.5 u/s with the 0.8 s row's unplated 4.0 s, a pair no shipped hull
+reads (corrected at close in 18 §13 and CONTRACTS §14 to the measured fighter 4.2 s / ~894 u
+and Vanguard 5.25 s / 1 063.94 u, with the bare pair marked unplated arithmetic), and
+**L257** the two pre-existing broken probes (`probe_s2_6_flight`'s mirror row, and
+`probe_c3_flight_decay` measuring nothing) verified **at both constants** so they are not
+this wave's doing — ticketed for the next probe owner.
+
+**Lesson worth carrying.** A worked example in an owner-locked calibration table is a
+*hull-and-plating* statement, not a formula: name the hull whose resolved pair you measured,
+or the next reader re-derives from a hull that does not read those numbers.
