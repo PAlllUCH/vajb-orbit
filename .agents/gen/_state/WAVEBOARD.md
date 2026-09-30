@@ -171,7 +171,7 @@ them); recap `MASTER_REPORT.md` §6.
 **Coder queue: empty** — items 25 (S20) and 26 (S19) both closed 2026-09-26;
 the next five-piece is the owner's call.
 **Live designer item: 17 = D16 station identity & contracts UI** (queued after
-D15, closed 2026-09-29 — its tick sheet awaits the owner's ticks); S24/S25/S26
+D15 — closed and ticked 2026-09-29); S24/S25/S26
 cite D16's spec. Five-piece: `slices/D16-station-ui/`. **Parked (owner-gated, not
 queued):** the S12 ore caps/scale rows (the owner's §10 ticks — do not
 implement before that wave is briefed), slice 4's remainder (bosses/arena —
@@ -182,16 +182,18 @@ D10-12, D3-1, D3-2a/2b, D4-3/4, blocked 5/6 — parked in
 `dispatch_designer.md`), and adopting the D13 layout language across the game
 (owner-deferred).
 
-**Updated 2026-09-29 (D15, closed): the 25-row feel tick sheet is resolved and
-waiting on the owner's ticks** (`slices/D15-flight-feedback/D15-A1_report.md`;
-`FX_SPEC.md` §8 + `AUDIO_SPEC.md` §8.6 append-only amendment blocks and the A5.2
-feedback composition landed with it — quadrant feed, hit-marker strike-X, ram
-spark, `staging/mockup/out/d15_feedback_composition.svg`). A1 → R1, **0 HIGH /
-2 MED cured / 2 LOW (L250–L251)**; `verify --baseline d15_start` green, gate
-**941/0 unmoved**. **Two bucket-3 forks wait on the owner**: AUDIO-3/L49
-(`sfx_weapon_laser_04` drop-then-trim vs keep) and T-feel-1's fuse-vs-orbit.
-Unticked rows implement at their PROPOSED value when S22 opens (docs-first).
-Recap `MASTER_REPORT.md` §6.
+**Updated 2026-09-29 (D15, closed + ticked): the 25-row feel tick sheet is
+ruled and S22 may open docs-first** (`slices/D15-flight-feedback/D15-A1_report.md`
+carries the tick record; `FX_SPEC.md` §8 + `AUDIO_SPEC.md` §8.6 append-only
+amendment blocks and the A5.2 feedback composition landed with it — quadrant
+feed, hit-marker strike-X, ram spark, `staging/mockup/out/d15_feedback_composition.svg`).
+A1 → R1, **0 HIGH / 2 MED cured / 2 LOW (L250–L251)**; `verify --baseline
+d15_start` green, gate **941/0 unmoved**. **Owner ticks 2026-09-29 (interactive
+pass): every row y — except T-feel-5, ticked to its REVERSAL (arc onsets at
+random 1.6–2.6 s, §6 cadence); the forks resolved as the seeker fuze pair
+(`SEEKER_FUSE` 80 u + `SEEKER_FUSE_S` 6 s) and dropping `sfx_weapon_laser_04`
+with a staged trim.** The developer lands the flight/§13/CONTRACTS rows in the
+owning docs at S22's open. Recap `MASTER_REPORT.md` §6.
 
 Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 
@@ -200,7 +202,7 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | Pos | Lane item | Wave | Runs after | The collision/dependency that forces the order |
 |---|---|---|---|---|
 | 1 | coder 27 | S21 stability & playtest fixes (**done 2026-09-29**, 917 → 941/0) | — | — |
-| 2 | designer 16 | D15 flight feel & feedback design (**done 2026-09-29** — tick sheet → S22) | coder 27 | one live session (L82); its tick sheet is coder 28's input |
+| 2 | designer 16 | D15 flight feel & feedback design (**done + ticked 2026-09-29** — sheet → S22) | coder 27 | one live session (L82); its tick sheet is coder 28's input |
 | 3 | coder 28 | S22 feel, juice & balance | designer 16 | implements D15's ticks; both touch `ui/hud/` |
 | 4 | coder 29 | S23 content activation | coder 28 | `vajb-orbit/game/` + `tests/` (weapons/projectile/mining seams) |
 | 5 | designer 17 | D16 station identity & contracts UI | coder 29 | one live session; its spec is coder 30/31/32's design law |

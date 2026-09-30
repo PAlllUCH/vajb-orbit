@@ -36,8 +36,9 @@ feel tick sheet (`slices/D15-flight-feedback/D15-A1_report.md` — T-feel-1..7 +
 T-feel-1b, S19 T1–T7/M4–M7, §22 T3, L39/L103/L182/L57; unticked rows implement
 at their PROPOSED value at S22's open), `FX_SPEC.md` §8 + `AUDIO_SPEC.md` §8.6
 append-only amendment blocks, and the A5.2 feedback composition; A1 → R1,
-0 HIGH / 2 MED cured / 2 LOW (L250–L251); two bucket-3 forks await the owner
-(AUDIO-3/L49, T-feel-1 fuse-vs-orbit). Gate 941/0 unmoved.
+0 HIGH / 2 MED cured / 2 LOW (L250–L251). **Ticked the same day: every row y,
+T-feel-5 to its §6 reversal (random 1.6–2.6 s); forks resolved = the seeker fuze
+pair + laser_04 drop-then-trim.** Gate 941/0 unmoved.
 Items 1-15 closed (D2 icon unification, D6 instruments, D7 cockpit rework,
 D11 station scene, the D8/D12 fix waves ditched or absorbed); detail in
 `.agents/gen/MASTER_REPORT.md` §6. Item 15 = **D14 armory chrome composition**
@@ -68,9 +69,10 @@ of `.agents/gen/slices/D16-station-ui/D16_prompts.md`): the CONTRACTS panel spec
 (14 §2 + R-S25-1), the insurance/vaults panels (14 §3/§4), the nine places'
 identity treatment with shipped chrome only, and the W3 name tick sheet. Design
 only — coder items 30/31/32 (S24/S25/S26) cite its spec.
-**Item 16 = D15 closed 2026-09-29**: the 25-row feel tick sheet awaits the
-owner's ticks (`slices/D15-flight-feedback/D15-A1_report.md`; 0 HIGH / 2 MED
-cured / 2 LOW L250–L251; two bucket-3 forks for the owner). The coder lane's
+**Item 16 = D15 closed and ticked 2026-09-29**: the 25-row feel tick sheet is
+ruled (all y except T-feel-5 = the §6 reversal 1.6–2.6 s; `slices/D15-flight-feedback/
+D15-A1_report.md` carries the tick record; 0 HIGH / 2 MED
+cured / 2 LOW L250–L251). The coder lane's
 queue is phase **P3** (`dispatch_coder.md` items 28–33; order and collisions in
 `WAVEBOARD.md` §Queued) and runs its items between this lane's — item 28 (S22)
-starts on D15's tick sheet, D16 (item 17) feeds items 30/31/32.
+opens docs-first on the ticked sheet, D16 (item 17) feeds items 30/31/32.

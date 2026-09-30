@@ -467,7 +467,7 @@ during file reimport` for about 87 paths. Those are a race between the rebuild a
 predate the final import pass, and they are stale - the same paths all load cleanly in the check
 above. Re-triggering a filesystem scan adds no new errors.
 
-### 8.6 Amendment 2026-09-27 (D15 — the deployable cue, the anti-flam wiring note, laser_04's trim; PROPOSED, owner ticks open)
+### 8.6 Amendment 2026-09-27 (D15 — the deployable cue, the anti-flam wiring note, laser_04's trim; **ticked 2026-09-29**, all rows y)
 
 Wave D15 (`slices/D15-flight-feedback/`); these rows are what S22's audio work
 implements (its A6/A7). Every row is PROPOSED with its reversal and tick id and
@@ -480,3 +480,7 @@ with manifest + `CREDITS.md` rows before any wiring.
 | AUDIO-1 | `mine_drop` (L48) | §3's S-table gains **S26 — Mine deploy (drop + arm)**: cue `sfx_weapon_mine_drop`, primary take `sfx_weapon_mine_drop_01.ogg`, **[D]** one CC0 mechanical deploy clunk sourced via `assetmcp` (2–3 takes if the pack carries them), **≤ 0.5 s**, `SFX` bus, **weapons** pool (cap 4); `game/weapons.gd` `FIRE_CUES` gains `&"mine": {&"cue": &"sfx_weapon_mine_drop"}` played on release; the detonation keeps `sfx_weapon_explosion` | any other cue name or pool; silence (today) | L48 ("the deployable family is absent from the S-table (no row exists for a mine/deployable)"); §3's S-table gap; S22 A7 |
 | AUDIO-2 | §4.1 anti-flam wiring note (L54) | `play_pool` (`autoload/audio_manager.gd:352`) enforces **exactly three** rules: (i) ≥ **30 ms** between triggers of one cue; (ii) per-pool caps **weapons 4 / impacts 6 / mining 1 / UI 2**, excess **dropped, not queued**; (iii) **skip the last used variant** when N > 2. §4.1's anti-flam bullet's "overlapping triggers steal the oldest playing voice" is **non-operative**: the Cap bullet's "dropped, not queued" fires first, so no voice-stealing path exists and no fourth rule is invented | implement steal-oldest instead of the drop (§4.1's other reading) | §4.1's five bullets resolve to three enforced rules — the same three S22's rule 3 pins (L54's evidence: no `Time.*`/cooldown code exists) |
 | AUDIO-3 | `sfx_weapon_laser_04` trim (L49 — taste, owner's call) | **drop take 04** from `CUE_POOLS[&"sfx_weapon_laser"][&"takes"]` now (1.244 s against the pool's 0.064–0.092 s takes; ASSET_AUDIT C9 already refused it as a pool member) — the round-robin continues over 01–03 and skip-last still applies (N = 3) — and stage an audio-lane trim that returns it normalised to **0.06–0.09 s** as `_04` | keep 04 (a 1.2 s tail audible on one shot in four) | revises the S5 wave brief's "round-robin over takes 01 to 04" pin; L49 |
+
+**Owner ticks (recorded 2026-09-29):** AUDIO-1 y · AUDIO-2 y · **AUDIO-3 y** —
+the PROPOSED wins: take 04 drops now and the returning 0.06–0.09 s trim stays
+staged (L49 resolved). Every row ships as its PROPOSED value above.

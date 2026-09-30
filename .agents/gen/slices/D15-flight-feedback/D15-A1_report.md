@@ -17,7 +17,32 @@ A2 — done — FX_SPEC.md §8 (ticks FX-1, FX-2a–e, T-feel-5, T-feel-7) and A
 A3 — done — composition + labelled sketch `staging/mockup/out/d15_feedback_composition.svg` under A5.2; rulings 18, 23 and the A5 chrome law named there and below.
 A4 — done — rulings + escalations below; writes stayed inside `docs/design/`, `staging/mockup/` and this slice folder.
 
-## A1 — the owner tick sheet (tick by marking the Tick column; unticked ⇒ the PROPOSED value ships)
+## A1 — the owner tick sheet — **TICKED 2026-09-29 (owner, interactive pass)**
+
+Every row ticked; the record below is the ruling of record. One row is ticked to
+its **REVERSAL** (T-feel-5); all others ship at their PROPOSED value. Both
+bucket-3 forks are resolved (the seeker fuze pair; `sfx_weapon_laser_04` drops
+with a staged trim).
+
+| Tick | Ruling (2026-09-29) |
+|---|---|
+| T-feel-1 | y — `SEEKER_FUSE := 80 u` proxy detonation |
+| T-feel-1b | y — `SEEKER_FUSE_S := 6 s` flight fuze (orbiting not blessed) |
+| T-feel-2 | y — mirror the midline drag into `npc_ship.gd` + the L39 disclosure fix |
+| T-feel-3 | y — keep the release ramp; the developer tightens §23.5's wording at S22's open |
+| T3 | y — strike the §22 strafe row |
+| T-feel-4 | y — muzzle flash anchors at the nose (desync accepted) |
+| T-feel-5 | **y to the REVERSAL** — arc onsets at random **1.6–2.6 s** (§6 cadence); the 4.0 s proposal does **not** ship |
+| T-feel-6 | y — tool slots label by `ModuleCatalog` name |
+| T-feel-7 | y — accepted deviation: 64×4 u / 96×10 u pinned as measured (re-cut stays staged) |
+| S19 T1–T7, M4–M7 | y — all at PROPOSED (M6's post-playtest-2 re-tick stands) |
+| FX-1, FX-2a–e | y — as drafted in `FX_SPEC.md` §8 |
+| AUDIO-1, AUDIO-2 | y — as drafted in `AUDIO_SPEC.md` §8.6 |
+| AUDIO-3 | y — drop `sfx_weapon_laser_04` now; the 0.06–0.09 s trim stays staged (L49 resolved) |
+
+The developer lands the flight/§13/CONTRACTS rows in the owning docs at S22's
+open (docs-first, close-out 1). The original sheet (values | reversals | cites)
+follows.
 
 | Row | PROPOSED value | Reversal | Tick | Implements (§text · evidence) |
 |---|---|---|---|---|

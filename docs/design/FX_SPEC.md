@@ -360,3 +360,7 @@ that supersedes earlier wording names the sentence it replaces. No new art (owne
 T-feel-1/1b (the seeker fuze) are gameplay numbers and live in the tick sheet
 only; their §13 consequence (one new row) is the owner's to fold into
 `18_engine_spec.md` at its next pass (the §23 range-row precedent).
+
+**Owner ticks (recorded 2026-09-29):** FX-1 y · FX-2a–e y · T-feel-7 y (the
+accepted deviation stands) · **T-feel-5 ticked to its REVERSAL** — arc onsets at
+random **1.6–2.6 s** (§6's cadence); the 4.0 s proposal does **not** ship.

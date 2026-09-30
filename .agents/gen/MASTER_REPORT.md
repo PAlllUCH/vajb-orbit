@@ -1294,7 +1294,7 @@ wrote its report. The `_power_arithmetic` warning with a backtrace is
 — not a live coupling. `staging/verify_wave.py`'s `--forbidden` directory entries
 stay inert (**L245**), so this close-out forbade the explicit file paths instead.
 
-### D15 (designer item 16) — **DONE 2026-09-29 — design only, gate 941/0 unmoved; tick sheet awaiting owner ticks.**
+### D15 (designer item 16) — **DONE 2026-09-29 — design only, gate 941/0 unmoved; tick sheet ticked the same day.**
 The "report, never guess" feel pile resolves into one owner-tickable **25-row
 sheet** (`slices/D15-flight-feedback/D15-A1_report.md`, A1 → R1 on
 `opencode-go/mimo-v2.6-pro` low): T-feel-1/1b (seeker `SEEKER_FUSE` 80 u proxy +
@@ -1331,8 +1331,13 @@ false on the sheet's own rows) and F2 (two rows misattributed the CONTRACTS
 §22/§23.5 edits to R1, who may not make them) were cured the same day by the
 designer session under the owner's **direct-patch** ruling — that ruling resolves
 the D15 handoff's "no fixer" vs the standing fixer-on-HIGH/MED rule for this wave.
-**Bucket-3 forks for the owner: AUDIO-3/L49 (drop `sfx_weapon_laser_04` now +
-stage a trim, or keep) and T-feel-1's fuse-vs-orbit fork.** A1's recorded
+**Both bucket-3 forks were ruled by the owner the same day (interactive tick
+pass): T-feel-1's fork chose the fuze pair (`SEEKER_FUSE` 80 u + `SEEKER_FUSE_S`
+6 s — orbiting not blessed) and AUDIO-3 chose the drop (`sfx_weapon_laser_04`
+out now, its 0.06–0.09 s trim staged, L49 resolved). Every row ticked y except
+T-feel-5, which was ticked to its REVERSAL — arc onsets at random 1.6–2.6 s
+(§6's cadence), so the 4.0 s proposal does not ship. The tick record lives in
+`D15-A1_report.md` and at the foot of `FX_SPEC.md` §8 / `AUDIO_SPEC.md` §8.6.** A1's recorded
 deviations: T-feel-7 defined as L57 (S22 §11 stops at 6), L55's "no interval
 anywhere" is factually wrong (§6 has one — named as T-feel-5's reversal), L59's
 ripple item is a misread (§1.5 states it), T-feel-1b staged as its own tick.
