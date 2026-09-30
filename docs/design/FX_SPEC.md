@@ -337,3 +337,26 @@ draw `_f1`. The deviation is deliberate and recorded here rather than silently e
   no new gameplay coupling.
 - HUD surfacing for the radial speedometer is UI_SPEC §3.6; the prograde
   needle's cyan is a navigation colour, not an FX glow (STYLE_BIBLE §3).
+
+## 8. Amendment 2026-09-27 (D15 — feedback pins; PROPOSED, owner ticks open)
+
+Wave D15 (`slices/D15-flight-feedback/`, the flight-feel tick pass) drafts these
+rows; the owner ticks them in `D15-A1_report.md`'s sheet and **unticked rows
+implement at the PROPOSED value** (S22's rule 4). Nothing above is edited — a row
+that supersedes earlier wording names the sentence it replaces. No new art (owner
+2026-09-27): every row reads shipped masters. Tick ids match the report's sheet.
+
+| Tick | Row | PROPOSED | Reversal | Supersedes / implements (evidence) |
+|---|---|---|---|---|
+| FX-1 | Chip-spark master correction (L52) | §1.6's "4-frame mini sheet" is corrected to a **3-object master** (`asset-library/INDEX.md`: "Source sheet holding 3 objects … bright burst; dimming burst; faint scattered sparks") cut to `fx_mining_beam_f1..f4`; measured ink **35.4 / 47.6 / 29.9 / 5.5 %** (2026-09-27, Pillow over the four cuts), f4 the faint tail cell. Playback stands: **4 cells at 20 FPS = 0.2 s** (`projectile.gd` `FEEDBACK[&"chip"]`) | art-lane re-cut of a true 4-object master (staged — generation budget) | corrects §1.6 Timing's object count only; §1.6's subject, palette and one-shot law stand (`fx_mining_beam.png`; L52) |
+| T-feel-5 | Low-hull arc interval (L55) | `ARC_INTERVAL := 4.0 s` between arc onsets while hull < 25 %; the arc joins the plume emitter and plays 0.2 s per arc (§7.2's rate) | §6's own proposed cadence: one arc every **1.6–2.6 s** (random) | supersedes §6's Electrical-arcs row cadence ("proposed: one arc every 1.6–2.6 s (random)"); §7.1's "intermittent electrical arcs" gains the interval L55 found missing; S22 §11's default |
+| FX-2a | Rocket trail (L59) | `fx_missile_trail_f1..f4`: **12 FPS, `loop = true`, world length 48 u** | one constant each | no rate or length stated before (`projectile.gd` `SHEETS[&"rocket"]`) |
+| FX-2b | Mine sprite (L59) | `fx_mine_f1..f4` at **22 u** world, 20 FPS lamp loop | one constant | §7.2's `fx_mine` row states no world size (`projectile.gd` `SHEETS[&"mine"]`) |
+| FX-2c | Low-hull plume emitter (L59) | amount **16**, lifetime **1.4 s**, preprocess **0.6**, emission radius **14 u**, spread **25°**, initial speed **8–24 u/s**, scale **0.5–1.1×** | one constant each | §7.1's "persistent black plume puffs" states no emitter numbers (`projectile.gd` `PLUME_*`, L59) |
+| FX-2d | Burst world sizes (L64) | the chip burst and the arc spark both read **40 u** | one constant | §1.6 states no chip world size; matches §7.2's arc read (`projectile.gd` `FEEDBACK[&"chip"]/[&"arc"]`) |
+| FX-2e | Ripple track (L59 — correction) | **not pinned here**: §1.5 already states it ("ring scale animated 0→1.5× over 0.3 s with alpha fade in engine") and the wiring matches. L59's inclusion of it is a misread, recorded so this pin list is exact | — | §1.5 |
+| T-feel-7 | Bolt/slug aspect (L57) | **Accepted deviation**: the shipped objects are 16.4:1 and 9.4:1 and the wired reads stay **64×4 u (light) / 96×10 u (medium)**; §1.1's "light (thin, 4:1)" / "medium (6:1 elongation)" is **superseded by measurement** until a re-cut | wiring-side aspect fix refused (a non-uniform scale is the A5.3 smear by another name); the art-lane re-cut restores 4:1/6:1 and §1.1's wording (staged — generation budget) | supersedes §1.1 Purpose's aspect phrase (evidence: `assets/fx/fx_laser_bolt.png`, `projectile.gd` `SHEETS[&"bolt"]/[&"slug"]`, L57's `shot kind=` probe) |
+
+T-feel-1/1b (the seeker fuze) are gameplay numbers and live in the tick sheet
+only; their §13 consequence (one new row) is the owner's to fold into
+`18_engine_spec.md` at its next pass (the §23 range-row precedent).

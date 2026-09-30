@@ -741,3 +741,16 @@ from this file at write time); the next free ticket is still **T-94**.
 | L248 | **LOW (S21-B2/F2): §7's B2 region row misses `ui/station/exchange_panel.gd`.** A4a cannot pass without moving that pane's build-time `_evaluate()` to `focus_primary`, so B2 edited off the region list and disclosed it (deviation (d)). No pin moved and no collision happened (the builders ran sequentially). | [DOC] | `S21_BRIEF.md` §7's S21-B2 row; `vajb-orbit/ui/station/exchange_panel.gd:164-207` | Developer session: widen the row's region list (bucket 2; the brief is the yardstick). |
 | L249 | **LOW (S21-B2/F3): `probe_w3_services.gd` still prints `module_count` as "owned".** Under A6's accessor law `module_count(base_id)` is the key-exact record read, so a bag holding instances prints 0 "owned" where the pane shows them; the aggregate read is `instances_of`/the bag sum. B2 disclosed it; not a gate row. | [CODE] | `vajb-orbit/tests/probe_w3_services.gd:208` | Next services-probe owner: print the aggregate read. |
 
+### D15 flight-feedback review block (2026-09-29)
+
+Source: `.agents/gen/slices/D15-flight-feedback/D15-R1_review.md`. Wave D15 is design-only (no
+gate rows move); the review leaves **2 MED (report text, one fixer pass) and 2 LOW**, no HIGH —
+the tick sheet's 25 rows all carry value | reversal | tick | §text + cite, and the tree diff is
+`problems: []`. Rows run **L250–L251** (ids read from this file at write time); the next free
+ticket is still **T-94**.
+
+| # | Item | Kind | Where | Disposition |
+|---|------|------|-------|-------------|
+| L250 | **LOW (D15-A1/F3): three inherited evidence anchors do not re-land.** `projectile.gd:68,74` names neither constant (`HIT_RADIUS` is `:70`; `SHOT_MASS` lives at `weapons.gd:224`, whose own comment calls itself §13's missing row); `ship_fit.gd:151` is the HARDPOINTS probe note, while the retune doc's "No other file reads this [column]" sits at `:401`; `player_ship.gd:873-884` is turn steering (`_turn_toward`/`_aim_turn`), while the release ramp is `_step_release`/`_thrust_axis` (`:771`, L182's own symbols). The anchors ride this file's L25/L39/L182 rows and `D15_BRIEF.md` §3's table, so A1 inherited them and the rows stay sourced by symbol + §text — only the line numbers are stale. | [DOC] | `LOW_BACKLOG.md` L25/L39/L182 rows; `D15_BRIEF.md` §3 table | Next docs/backlog pass: re-anchor to `projectile.gd:70` + `weapons.gd:224`, `ship_fit.gd:401`, `player_ship.gd` `_step_release`/`_thrust_axis`. No design value moves. |
+| L251 | **LOW (D15-A1/F4): FX-1's staged chip-spark re-cut rides no staged/deferred list.** `FX_SPEC.md` §8's FX-1 reversal stages "art-lane re-cut of a true 4-object master (generation budget)", but `D15_BRIEF.md` §10 stages only the bolt/slug re-cut, the anti-flam assets pass and §13's columns, and `S22_BRIEF.md` §10 carries only L49's trim — so the one deferral with no forward home is the chip-spark master. Nothing ships (the disposition reads the shipped 3-object master), but a staged item nobody carries is a staged item that disappears. | [DOC] | `docs/design/FX_SPEC.md` §8 FX-1 reversal; `D15_BRIEF.md` §10; `S22_BRIEF.md` §10 | Next designer/orchestrator pass: name it in a staged list or drop "staged" from the reversal (the reversal path itself may stand). The generation budget stays closed meanwhile. |
+

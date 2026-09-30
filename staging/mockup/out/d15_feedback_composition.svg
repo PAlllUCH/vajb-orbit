@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="880" viewBox="0 0 1240 880" font-family="DejaVu Sans, sans-serif">
+  <rect width="1240" height="880" fill="#0A0E14"/>
+  <text x="24" y="36" fill="#B8BDC4" font-size="20" font-weight="bold">D15 — feedback composition, labelled sketch (2026-09-27, wave D15)</text>
+  <text x="24" y="58" fill="#7A828C" font-size="12">Hand-drawn SVG, no generated art (owner 2026-09-27). Implements ruling 18 (speed fantasy / feedback is cosmetic), ruling 23 (quadrants + breach malfunctions), UI_SPEC §3.10 A5.1 (flat chrome inside a pane), A5.2 (containers + anchors, chrome as stylebox/sibling, marks inside their own child rect), A5.4 (danger never colour alone).</text>
+
+  <!-- ================= Panel 1: quadrant feed on the status screen ================= -->
+  <rect x="24" y="80" width="560" height="520" fill="#12161C" stroke="#3A3F46"/>
+  <text x="40" y="106" fill="#E8703A" font-size="15" font-weight="bold">1 · The quadrant feed lands on the status screen (right well)</text>
+
+  <!-- the right well -->
+  <rect x="48" y="124" width="300" height="360" fill="#0F1319" stroke="#3A3F46" stroke-width="2"/>
+  <text x="60" y="146" fill="#7A828C" font-size="11">RIGHT WELL (UI_SPEC §3.8 D7 mockup, well (316,60)–(696,348))</text>
+
+  <!-- module rows -->
+  <text x="64" y="176" fill="#B8BDC4" font-size="13">W1 · laser</text>
+  <text x="64" y="200" fill="#B8BDC4" font-size="13">W2 · mining</text>
+  <text x="64" y="224" fill="#B8BDC4" font-size="13">H1 · plate light</text>
+  <text x="64" y="252" fill="#7A828C" font-size="11">— appended pool rows, P8 order —</text>
+
+  <!-- quadrant rows -->
+  <text x="64" y="282" fill="#B8BDC4" font-size="13">PROW   250 / 250</text>
+  <text x="64" y="310" fill="#B8BDC4" font-size="13">STERN  250 / 250</text>
+  <rect x="56" y="322" width="200" height="26" fill="none" stroke="#E8703A"/>
+  <text x="64" y="340" fill="#E8703A" font-size="13">PORT     0 / 250</text>
+  <text x="64" y="370" fill="#B8BDC4" font-size="13">STBD   190 / 250</text>
+
+  <!-- annotation lines -->
+  <line x1="264" y1="335" x2="384" y2="252" stroke="#565C63"/>
+  <text x="388" y="248" fill="#B8BDC4" font-size="11">breach state (pool 0): 1 px accent_danger</text>
+  <text x="388" y="262" fill="#B8BDC4" font-size="11">frame on the row + the 0 figure itself —</text>
+  <text x="388" y="276" fill="#B8BDC4" font-size="11">never colour alone (A5.4)</text>
+
+  <text x="48" y="512" fill="#B8BDC4" font-size="11">Four `Label`s appended after the fit rows in the well's own container —</text>
+  <text x="48" y="528" fill="#B8BDC4" font-size="11">containers + anchors, no coordinates (A5.2(i)); flat caption text, no chrome</text>
+  <text x="48" y="544" fill="#B8BDC4" font-size="11">drawn over it (A5.1 / A5.2(ii)). Format stays "%s %d / %d" (PROW 250 / 250).</text>
+  <text x="48" y="566" fill="#7A828C" font-size="11">Feed: every status update the HUD pushes set_quadrants(prow, stern, port,</text>
+  <text x="48" y="580" fill="#7A828C" font-size="11">starboard) beside set_pools (hud.gd:_push_status; L241 closes). Breach read =</text>
+  <text x="48" y="594" fill="#7A828C" font-size="11">18 §4.5's malfunction state surfaced, zero gameplay numbers (ruling 18).</text>
+
+  <!-- ================= Panel 2: hit marker verb ================= -->
+  <rect x="608" y="80" width="608" height="252" fill="#12161C" stroke="#3A3F46"/>
+  <text x="624" y="106" fill="#E8703A" font-size="15" font-weight="bold">2 · The hit marker's visual verb: a strike (X) at the reticle centre</text>
+
+  <!-- reticle -->
+  <circle cx="712" cy="200" r="52" fill="none" stroke="#565C63" stroke-width="2"/>
+  <line x1="712" y1="136" x2="712" y2="152" stroke="#565C63" stroke-width="2"/>
+  <line x1="712" y1="248" x2="712" y2="264" stroke="#565C63" stroke-width="2"/>
+  <line x1="648" y1="200" x2="664" y2="200" stroke="#565C63" stroke-width="2"/>
+  <line x1="760" y1="200" x2="776" y2="200" stroke="#565C63" stroke-width="2"/>
+  <!-- the X -->
+  <line x1="704" y1="192" x2="720" y2="208" stroke="#E8703A" stroke-width="2"/>
+  <line x1="720" y1="192" x2="704" y2="208" stroke="#E8703A" stroke-width="2"/>
+
+  <text x="800" y="146" fill="#B8BDC4" font-size="11">Verb: a strike — the X stamps where your fire landed.</text>
+  <text x="800" y="162" fill="#B8BDC4" font-size="11">accent_danger_bright, 4 px arms, 1 px width (shipped,</text>
+  <text x="800" y="178" fill="#B8BDC4" font-size="11">hud.gd:1960 HitMarker), 8×8 footprint over the reticle.</text>
+  <text x="800" y="200" fill="#B8BDC4" font-size="11">A5.2(iii): the mark draws inside its own full-rect child</text>
+  <text x="800" y="216" fill="#B8BDC4" font-size="11">of the reticle, never over HUD content.</text>
+  <text x="800" y="238" fill="#B8BDC4" font-size="11">Flash: alpha 1.0 → 0.0 over 0.25 s Tween (house rule: no</text>
+  <text x="800" y="254" fill="#B8BDC4" font-size="11">per-frame UI animation); a second hit restarts the tween,</text>
+  <text x="800" y="270" fill="#B8BDC4" font-size="11">so spam reads as one solid strike (anti-spam for free).</text>
+  <text x="800" y="292" fill="#7A828C" font-size="11">Fires per landed hit on any hull (S22 A1 / L28 — the pool-</text>
+  <text x="800" y="306" fill="#7A828C" font-size="11">drop poll becomes the hit_landed signal).</text>
+  <text x="624" y="322" fill="#7A828C" font-size="11">Verb language: strike = hit landed · steel ring (§1.5) = shield absorbed · chip burst = physical contact. Three events, three verbs.</text>
+
+  <!-- ================= Panel 3: ram spark ================= -->
+  <rect x="608" y="352" width="608" height="248" fill="#12161C" stroke="#3A3F46"/>
+  <text x="624" y="378" fill="#E8703A" font-size="15" font-weight="bold">3 · The ram spark lands at the contact point</text>
+
+  <!-- two hulls in contact -->
+  <ellipse cx="712" cy="470" rx="72" ry="34" fill="#1A2230" stroke="#565C63" stroke-width="2"/>
+  <ellipse cx="856" cy="470" rx="58" ry="30" fill="#232629" stroke="#565C63" stroke-width="2"/>
+  <!-- spark burst at contact -->
+  <g stroke="#E8703A" stroke-width="2">
+    <line x1="788" y1="452" x2="788" y2="488"/>
+    <line x1="770" y1="470" x2="806" y2="470"/>
+    <line x1="776" y1="458" x2="800" y2="482"/>
+    <line x1="800" y1="458" x2="776" y2="482"/>
+    <line x1="778" y1="446" x2="798" y2="446"/>
+    <line x1="778" y1="494" x2="798" y2="494"/>
+  </g>
+  <circle cx="788" cy="470" r="4" fill="#C8461B"/>
+
+  <text x="944" y="432" fill="#B8BDC4" font-size="11">One chip burst (fx_mining_beam f1..f4, 20 FPS,</text>
+  <text x="944" y="448" fill="#B8BDC4" font-size="11">0.2 s one-shot — FX-1's 3-object master) at the</text>
+  <text x="944" y="464" fill="#B8BDC4" font-size="11">contact point the handler already resolves</text>
+  <text x="944" y="480" fill="#B8BDC4" font-size="11">(player_ship.gd:472-492 / npc_ship.gd:538-548).</text>
+  <text x="944" y="502" fill="#B8BDC4" font-size="11">No §1.6 jitter disc — that scatter's readers stay</text>
+  <text x="944" y="518" fill="#B8BDC4" font-size="11">exactly three; a ram is one contact event.</text>
+  <text x="944" y="540" fill="#7A828C" font-size="11">Cue beside it: sfx_impact_hull (hull) /</text>
+  <text x="944" y="556" fill="#7A828C" font-size="11">sfx_impact_rock (rock) — S22 A2 / L56.</text>
+  <text x="624" y="580" fill="#7A828C" font-size="11">World-space FX under §7.3's wiring law (one-shot sheet, loop = false, animation_finished → queue_free); the A5 chrome law binds the Control surfaces in panels 1–2.</text>
+
+  <!-- ================= Footer: rulings + ticks ================= -->
+  <line x1="24" y1="624" x2="1216" y2="624" stroke="#3A3F46"/>
+  <text x="24" y="650" fill="#B8BDC4" font-size="12" font-weight="bold">Owner rulings implemented</text>
+  <text x="24" y="672" fill="#B8BDC4" font-size="11">ruling 18 — speed fantasy / feedback is cosmetic: every element in this sketch is feedback; zero gameplay numbers live here (18 §3.4). The only feel rows that move gameplay (T-feel-1/1b seeker fuze) are flagged in the tick sheet, not drawn here.</text>
+  <text x="24" y="690" fill="#B8BDC4" font-size="11">ruling 23 — quadrants and breach malfunctions (18 §4.5): panel 1 surfaces the four pools and their breach state on the status screen; the S19 T1–T7 rows carry the mechanic.</text>
+  <text x="24" y="708" fill="#B8BDC4" font-size="11">A5 chrome law (UI_SPEC §3.10 Amendment 5): A5.1 flat chrome inside the pane, A5.2's four composition clauses, A5.4's "danger never colour alone".</text>
+  <text x="24" y="726" fill="#B8BDC4" font-size="11">"Hits must read" (the S2.6 feel rulings): panels 2–3 are the hit/contact reads; the UI-animation house rule (Tween, never per-frame) keeps the marker legal.</text>
+  <text x="24" y="756" fill="#7A828C" font-size="11">Tick cross-refs: panel 1 rows = S19 T7 (P8) + T-feel-5's breach read adjacency · panel 2 = T-feel-4's neighbour (the muzzle row) untouched · panel 3 = S22 A2's ram cue/spark.</text>
+  <text x="24" y="774" fill="#7A828C" font-size="11">Reversal of this whole composition: the panels fall back to today's silent behaviours (no feed push, marker only on the marked target, ram with no spark/cue).</text>
+  <text x="24" y="832" fill="#565C63" font-size="10">staging/mockup/out/d15_feedback_composition.svg · D15-A1 · specs: FX_SPEC.md §8, AUDIO_SPEC.md §8.6, report slices/D15-flight-feedback/D15-A1_report.md</text>
+</svg>

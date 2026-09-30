@@ -1293,3 +1293,49 @@ wrote its report. The `_power_arithmetic` warning with a backtrace is
 **pre-existing and identical in scratch and live-copy runs** (2 WARNINGs per run)
 — not a live coupling. `staging/verify_wave.py`'s `--forbidden` directory entries
 stay inert (**L245**), so this close-out forbade the explicit file paths instead.
+
+### D15 (designer item 16) — **DONE 2026-09-29 — design only, gate 941/0 unmoved; tick sheet awaiting owner ticks.**
+The "report, never guess" feel pile resolves into one owner-tickable **25-row
+sheet** (`slices/D15-flight-feedback/D15-A1_report.md`, A1 → R1 on
+`opencode-go/mimo-v2.6-pro` low): T-feel-1/1b (seeker `SEEKER_FUSE` 80 u proxy +
+`SEEKER_FUSE_S` 6 s flight fuze vs blessed orbiting — L25's fork, staged as two
+ticks because an 80 u proxy alone cannot catch the measured 409 u orbit),
+T-feel-2 (mirror `_step_lateral_drag` into `npc_ship.gd` + L39's disclosure fix —
+the row flags its NPC flight-number move), T-feel-3 (keep the §23 release ramp;
+the developer tightens §23.5's wording at S22's open), **§22 T3 struck** (chase
+×0.75 row superseded by §23.5), T-feel-4 (muzzle flash anchors at the nose,
+shot spawn pinned, cosmetic desync accepted), T-feel-5 (`ARC_INTERVAL` 4.0 s vs
+§6's 1.6–2.6 s cadence as its reversal), T-feel-6 (tool slots label by
+`ModuleCatalog` name), T-feel-7 (L57 accepted deviation: 64×4 u / 96×10 u pinned
+as measured, re-cut staged), S19 T1–T7 + M4–M7 cross-refs (S19 T5 = M5's
+proportional-spill stance) and L39/L103/L182/L57's rows — every row carrying
+PROPOSED value | reversal | tick id | §text + cite; unticked rows implement at
+their PROPOSED value when S22 opens (docs-first, close-out 1).
+
+Deliverables: `FX_SPEC.md` **§8** (FX-1 chip 3-object master correction with f4's
+measured 5.5 % ink, T-feel-5's interval row, FX-2a–e pinning trail 12 FPS/loop/
+48 u, mine 22 u, the plume's emitter set and chip/arc 40 u — FX-2e deliberately
+unpinned because §1.5 already states the ripple) and `AUDIO_SPEC.md` **§8.6**
+(AUDIO-1 `mine_drop` S26 CC0 via `assetmcp`, AUDIO-2 the §4.1 three-rule
+`play_pool` wiring note with "steal the oldest" marked non-operative, AUDIO-3
+laser_04 drop-then-trim) as dated append-only blocks (**37 insertions, 0
+deletions**), plus the A5.2 feedback composition — quadrant feed as four Labels
+in the status screen's right well (breach = danger frame + 0 figure, never
+colour alone), hit marker = the shipped strike-X inside its own full-rect child
+(`hud.gd:1958-1969`), ram spark = one chip burst at the handler's contact point —
+sketched in `staging/mockup/out/d15_feedback_composition.svg`.
+
+Review **0 HIGH / 2 MED / 2 LOW (L250–L251)**. F1 (T-feel-2 moved an NPC flight
+number without rule-3 disclosure; the "only T-feel-1/1b move gameplay" claim was
+false on the sheet's own rows) and F2 (two rows misattributed the CONTRACTS
+§22/§23.5 edits to R1, who may not make them) were cured the same day by the
+designer session under the owner's **direct-patch** ruling — that ruling resolves
+the D15 handoff's "no fixer" vs the standing fixer-on-HIGH/MED rule for this wave.
+**Bucket-3 forks for the owner: AUDIO-3/L49 (drop `sfx_weapon_laser_04` now +
+stage a trim, or keep) and T-feel-1's fuse-vs-orbit fork.** A1's recorded
+deviations: T-feel-7 defined as L57 (S22 §11 stops at 6), L55's "no interval
+anywhere" is factually wrong (§6 has one — named as T-feel-5's reversal), L59's
+ripple item is a misread (§1.5 states it), T-feel-1b staged as its own tick.
+Evidence: `verify --baseline d15_start` → `"problems": []` (diff surface exactly
+`docs/design/` + the slice folder + `staging/mockup/out/`'s SVG + R1's
+`LOW_BACKLOG` rows); gate re-run `941/0`; no worker incidents.
