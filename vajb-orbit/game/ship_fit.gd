@@ -398,8 +398,11 @@ const HULLS: Dictionary = {
 ## reverse is now 2.5, item 18's tick (T1, CONTRACTS section 23.5: "go ahead with all"), so
 ## the resolved column sits 1.25 x section 13's own and the reversal is the constant back to
 ## 2.0; the older reversal sentence (multiply the nine rows by 2.0) is superseded by the
-## constant, so the revert is one number and not a nine-row edit. No other file reads this
-## column by hand.
+## constant, so the revert is one number and not a nine-row edit. **One other file
+## reads this column by hand** (`npc_ship.gd`'s `_coast_rate`/`_linear_damp`), and it
+## reaches every hull through `ShipStats`: the x 0.50 retune also halves each NPC's
+## coast/release time and doubles its damp, so pirate and patrol hulls brake about
+## twice as hard as they did pre-S2.6 (L39; disclosed in CONTRACTS section 14).
 ##
 ## **The `turn_rate` column is retuned (owner ruling, 2026-09-21, third round): all
 ## nine rows are scaled x 0.50.** "i dont like how fast ship turn" is this column,

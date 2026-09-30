@@ -195,6 +195,18 @@ random 1.6–2.6 s, §6 cadence); the forks resolved as the seeker fuze pair
 with a staged trim.** The developer lands the flight/§13/CONTRACTS rows in the
 owning docs at S22's open. Recap `MASTER_REPORT.md` §6.
 
+**Updated 2026-09-30 (S22, live — coder item 28):** the feel/juice wave opened
+docs-first on D15's fully-ticked sheet; baseline re-measured **941/0** (exit 0)
+and the brief's stale `914` corrected. Amendment (owner-ruled 2026-09-30, in
+`S22_BRIEF.md`): the five bucket-2 doc edits landed in the pre-flight commit
+(**CONTRACTS §22's T3 row struck**, **§23.5's release-ramp row**, **§14's
+NPC-brake disclosure**, **18 §13's Rocket fuze row** on the owner's grant, and
+`ship_fit.gd`'s retune comment corrected), **L250/L251 closed**, the rows already
+shipped at their ticked values reclassified **verify-only** (A4 mining chip, A8
+arcs, A13 the FX pins, plus the A11/A9 disposition halves), and the run split
+into **three sequential builders** (B1 feedback seams → B2 HUD + audio → B3
+flight & balance, one suite each). Next: B1 dispatch.
+
 Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 
 ## Queued (phase P3 — `phases/P3-content-feel-push/`; one live session, one item per order)
@@ -203,7 +215,7 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 |---|---|---|---|---|
 | 1 | coder 27 | S21 stability & playtest fixes (**done 2026-09-29**, 917 → 941/0) | — | — |
 | 2 | designer 16 | D15 flight feel & feedback design (**done + ticked 2026-09-29** — sheet → S22) | coder 27 | one live session (L82); its tick sheet is coder 28's input |
-| 3 | coder 28 | S22 feel, juice & balance | designer 16 | implements D15's ticks; both touch `ui/hud/` |
+| 3 | coder 28 | S22 feel, juice & balance (**live 2026-09-30** — baseline 941/0, B1 → B2 → B3 → R1) | designer 16 | implements D15's ticks; both touch `ui/hud/` |
 | 4 | coder 29 | S23 content activation | coder 28 | `vajb-orbit/game/` + `tests/` (weapons/projectile/mining seams) |
 | 5 | designer 17 | D16 station identity & contracts UI | coder 29 | one live session; its spec is coder 30/31/32's design law |
 | 6 | coder 30 | S24 world identity | designer 17 | `station_catalog` + the station screen (D16 spec first) |

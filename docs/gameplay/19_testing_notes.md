@@ -89,6 +89,11 @@ ESC → dock to Kepler-9 confirmed working in the live build (hint + route both 
 - INFO: `assets/ships/ship_vanguard_side.png` predates the display pass (shimmer context);
   canvas filter is now Linear Mipmap (set 2026-09-18 via the project-settings route), so
   mip sampling is live — confirm no side effects when downscaling at 720p.
+- Flight, NPC handling (L39): **pirate and patrol hulls brake about twice as hard** as they
+  did before the S2.6 retune, because `coast_time` reaches every hull through `ShipStats`
+  and the ×0.50 retune applies to NPCs too. Inside the ruling, disclosed here so it is not
+  read as drift; S22 mirrors the player's midline drag into `npc_ship.gd`, which settles an
+  NPC's sideways skid at the player's rate (owner tick T-feel-2).
 
 ## Context pointers
 

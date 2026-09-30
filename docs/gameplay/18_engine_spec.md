@@ -538,6 +538,7 @@ Corvette 90 · Hauler 260 · Gunship 190 · Frigate 220 · Destroyer 300 (t).
 |-------|---------|
 | Weapon ranges (u) | laser 500 · plasma 450 · cannon 600 · railgun 800 · rocket 900 (lock range 900) |
 | Rocket | 180 alpha, 1.2 s interval, 2.2 rad/s homing, 900 u/s, one hit kills it |
+| Rocket fuze — **owner 2026-09-29** (D15's ticks T-feel-1/1b) | the lock detonates on a near miss inside **80 u** of the target, **or** when its **6 s** flight fuze expires: a 900 u/s, 2.2 rad/s pursuit has a minimum turn radius of 409 u, so a lock acquired abeam inside that distance would otherwise be orbited and never struck. Reversal: no fuze (bless the orbit — the pre-tick behaviour) |
 | Mine | arm 2 s, trigger 60 u |
 | Shield regen | base 2/s + module values; resumes 4 s after last hit |
 | Aggro radii | pirate 900 · patrol scan 1 000 · turret 750 · flee at 30 % hull · leash 2 500 |
