@@ -50,11 +50,15 @@ extends RigidBody2D
 ## reserve, a gun shatter at most `gun_burst_share x _bore_ore`.
 ##
 ## **Slice 0 (ruling 8): the rock is a real body.** A `RigidBody2D` with a heavy
-## mass and linear damping, so a rammed rock is a near-wall and a knocked rock
-## settles instead of wandering (ruling 15/16: every body-body impact deals kinetic
-## damage to both sides). Gravity is off — this is space, not a planet — and
-## `can_sleep` stays false so a rock is always able to answer a contact, which is
-## what the ship's contact monitor needs to charge the ram to both sides.
+## mass and linear damping, so a rammed rock is a near-wall and a knocked rock settles
+## like the vacuum it is in (ruling 15/16: every body-body impact deals kinetic
+## damage to both sides). S22.6 (18 §13's Rock drift damping row, owner 2026-09-30)
+## lightens that damping -- a kicked rock now carries its own width many times over
+## instead of settling inside it -- and gives debris a lighter one still; the two
+## constants below carry the row and its superseded derivation. Gravity is off -- this is
+## space, not a planet -- and `can_sleep` stays false so a rock is always able to answer a
+## contact, which is what the ship's contact monitor needs to charge the ram to both
+## sides.
 ##
 ## **Cleaving (ruling 17):** this file owns the *rules and the numbers*; the field
 ## that spawned the rock does the spawning, because it owns the generation RNG, the
@@ -168,21 +172,43 @@ const FRAGMENT_EJECT_CONE_DEG := 360.0
 const ROCK_MASS_MULT := 4.0
 const ROCK_MASS_REFERENCE: StringName = &"ship_miner"
 
-## The damping that makes "a free rock drifts at most about 10 u/s" true. Derivation
-## (§13 numbers only, in the M2 report): the heaviest hull at its §13 max speed
-## under the +60 % afterburner carries the most momentum of the nine classes
-## (Destroyer 300 t × 504 u/s = 151 200), a momentum-conserving contact with a
-## `ROCK_MASS_MULT` rock hands it `2·151200/(300+560) ≈ 409 u/s`, and requiring that
-## to fall to the 10 u/s drift ceiling inside one second gives
-## `d = ln(409/10) ≈ 3.71·s⁻¹`. Discrete check at 60 Hz:
-## `409 · (1 − 3.71/60)⁶⁰ ≈ 8.9 u/s`, measured 8.88 u/s by the M2 probe.
+## The rock's body damp (18 §13's Rock drift damping row, owner tick 2026-09-30,
+## S22.6: "why asteroid upon breaking stops moving after few meters?"). In a vacuum a
+## rock flies: continuous form `v(t) = v0 · e^(−d·t)`, carry `v0 / d`. The row's own
+## targets -- the fragment kick's 150 u/s reads ≈106 u/s after one second and carries
+## ≈429 u before settling; a cleave child, on its own `FRAGMENT_LINEAR_DAMP` below,
+## reads ≈117 u/s and carries ≈600 u. Discrete check at 60 Hz (the integration the
+## probe measured): `150 · (1 − 0.35/60)⁶⁰ ≈ 105.6 u/s`. The worst ram's 409 u/s
+## hand-off (the unchanged collision half) then settles to the 10 u/s ceiling in
+## `ln(409/10) / 0.35 ≈ 10.6 s` over ≈1 140 u.
+##
+## **SUPERSEDED -- the derivation `3.71` was sized to, kept as the record (not the
+## target):** the heaviest hull at its §13 max speed under the +60 % afterburner
+## carries the most momentum of the nine classes (Destroyer 300 t × 504 u/s =
+## 151 200), a momentum-conserving contact with a `ROCK_MASS_MULT` rock hands it
+## `2·151200/(300+560) ≈ 409 u/s`, and requiring that to fall to the 10 u/s drift
+## ceiling inside one second gave `d = ln(409/10) ≈ 3.71·s⁻¹` -- discrete check
+## `409 · (1 − 3.71/60)⁶⁰ ≈ 8.9 u/s`, measured 8.88 u/s by the M2 probe and again by
+## the S22.6 probe for its "before" row. S22.6 replaced that one-second ceiling with
+## the row above. Reversal: `3.71` here and on `FRAGMENT_LINEAR_DAMP`.
+##
 ## `DAMP_MODE_REPLACE` is required: the project default (`physics/2d/
 ## default_linear_damp` 0.1) would otherwise be *added* and the derivation drift.
-const LINEAR_DAMP := 3.71
+const LINEAR_DAMP := 0.35
 
-## The drift the damping is sized to (`DRIFT_SPEED_CEILING` u/s one second after the
-## worst ram). Not a runtime clamp -- the number the derivation targets, so the probe
-## can read the ceiling instead of repeating it.
+## The damp a **debris** body carries (18 §13's Rock drift damping row): a cleave
+## child and an S22.5 chip splinter are the rocks that should fly, so the field hands
+## them this lighter damp through `AsteroidField._deploy_debris` -- the one placement
+## and ejection carrier both debris paths ride -- instead of letting them inherit the
+## parent's. Targets: the kick's 150 u/s carries ≈600 u (continuous `150 / 0.25`) and
+## reads ≈117 u/s after one second. Reversal: `3.71` (the parent's own damp, what a
+## pre-S22.6 child inherited).
+const FRAGMENT_LINEAR_DAMP := 0.25
+
+## The drift the **superseded** damping was sized to (10 u/s one second after the worst
+## ram, above). Not a runtime clamp -- the number that derivation targeted, and the
+## "settled" line the S22.6 probe still reads, so it reads the ceiling instead of
+## repeating it. S22.6 keeps the constant as the record of why 3.71 existed.
 const DRIFT_SPEED_CEILING := 10.0
 
 ## The twelve rock sprites: ENVIRONMENT_SPEC §4's three size tiers times three
@@ -486,6 +512,17 @@ func size_class() -> int:
 ## original and keeps ruling 17's yield-0 law below.
 func mark_cleave_child() -> void:
 	_cleave_child = true
+
+
+## S22.6 (18 §13's Rock drift damping row): the lighter damp a debris body carries, so
+## a cleave child and an S22.5 splinter fly instead of inheriting the parent rock's
+## damp. `AsteroidField._deploy_debris` calls this on every body it places, which is
+## the one carrier both debris paths ride; a field spawn and a `setup` fixture never
+## call it, so an original keeps `LINEAR_DAMP`. The mode is restated because this is
+## the debris body's whole damp story, not a delta on the parent's.
+func apply_fragment_damp() -> void:
+	linear_damp = FRAGMENT_LINEAR_DAMP
+	linear_damp_mode = RigidBody2D.DAMP_MODE_REPLACE
 
 
 ## Ruling 17's "a yield-0 rock still cracks and despawns without fragments": only a

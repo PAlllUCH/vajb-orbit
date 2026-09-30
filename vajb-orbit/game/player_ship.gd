@@ -1387,8 +1387,8 @@ func _spin_rate() -> float:
 ##
 ## This is the **forward** decay -- and, since CONTRACTS section 23.5, the *only* linear
 ## damp: `_lateral_damp` returns this too, so one rate owns both axes. `coast_time` is the
-## resolved row the ruling's `COAST_TIME_MULT` scales (2.5 since 23.5's T1 tick), which is
-## what gives the ship its carry back.
+## resolved row the ruling's `COAST_TIME_MULT` scales (5.0 since S22.6's 2026-09-30 tick;
+## 2.5 under 23.5's T1 before it), which is what gives the ship its carry back.
 func _linear_damp() -> float:
 	if _stats == null or _stats.coast_time <= 0.0:
 		return 0.0

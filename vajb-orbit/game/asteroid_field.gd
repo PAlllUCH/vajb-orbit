@@ -496,9 +496,16 @@ func _cleave(rock: Node2D) -> void:
 ## (`Asteroid.eject_velocity()`, the parent's velocity x 1.2). The cone roll stays
 ## here, on the field's own seeded RNG, exactly where the shipped block took it, so
 ## the cleave's draw order is unchanged.
+##
+## S22.6 (18 §13's Rock drift damping row): every body placed here also takes
+## `Asteroid.apply_fragment_damp()` -- `FRAGMENT_LINEAR_DAMP` 0.25, replacing its own
+## body damp -- because this is the one point both debris paths pass through. It is
+## the last write to the body, so the parent's `LINEAR_DAMP` is gone before the child
+## is ever measured.
 func _deploy_debris(
 	child: Node2D, origin: Vector2, ring: float, angle: float, velocity: Vector2
 ) -> void:
+	child.call(&"apply_fragment_damp")
 	var distance := ring + float(child.call(&"world_radius"))
 	## One direction, two uses: this is the placement radial, and §14's kick rides
 	## the same vector, so a fragment always leaves along the ray it was born on.

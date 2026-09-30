@@ -394,11 +394,15 @@ const HULLS: Dictionary = {
 ## the Vanguard's resolved coast time is 1.05 s): time to 10 % of the release speed
 ## 1.890 s -> 0.945 s, carried distance 430.32 u -> 216.85 u, and the two accelerate legs
 ## are unchanged. **The rows below still carry that x 0.50, and `COAST_TIME_MULT` below is
-## the reverse of it** (owner ruling 2026-09-22: "ship loses speed way too fast") -- the
-## reverse is now 2.5, item 18's tick (T1, CONTRACTS section 23.5: "go ahead with all"), so
-## the resolved column sits 1.25 x section 13's own and the reversal is the constant back to
-## 2.0; the older reversal sentence (multiply the nine rows by 2.0) is superseded by the
-## constant, so the revert is one number and not a nine-row edit. **One other file
+## the reverse of it** (owner ruling 2026-09-22: "ship loses speed way too fast"), ticked
+## twice since -- the reverse is now 5.0, S22.6's tick (owner 2026-09-30: "why do ships stop
+## moving as soon as i stop thrusting?"), so the resolved column sits 2.5 x section 13's own
+## and the reversal is the constant back to 2.5 (what 23.5's T1 and S22 shipped); the older
+## reversal sentence (multiply the nine rows by 2.0) is superseded by the constant, so the
+## revert is one number and not a nine-row edit. Measured on the same shipped Vanguard
+## launch (the S22.6 probe, 2026-09-30): across the 2.5 -> 5.0 tick the time to 10 % of the
+## release speed went 2.367 -> 4.733 s and the carried distance 530.28 -> 1 063.94 u, with
+## the stop landing exactly on the resolved 5.25 s coast. **One other file
 ## reads this column by hand** (`npc_ship.gd`'s `_coast_rate`/`_linear_damp`), and it
 ## reaches every hull through `ShipStats`: the x 0.50 retune also halves each NPC's
 ## coast/release time and doubles its damp, so pirate and patrol hulls brake about
@@ -503,12 +507,15 @@ const HANDLING: Dictionary = {
 ##   top speed that quickly". Measured by `tests/probe_s2_6_flight.tscn` on the launched
 ##   Vanguard: t_90 2.283 -> 4.567 s, the accelerate leg doubling per class and every hull's
 ##   ceiling unmoved (`max_speed` never moves). **Reversal: 1.0.** Unchanged by 23.5.
-## - `COAST_TIME_MULT` **2.5** on **today's** `coast_time` rows (was 2.0, which was exactly
-##   section 13's own column; 23.5's T1 tick). The owner: "ship loses speed way too fast",
-##   then item 18's flight-feel ruling. Measured on the same launch: the release envelope
-##   scales with the constant (time to 10 % of the release speed 0.9 x coast_time, carried
-##   distance `0.5 x v0 x coast_time`). It reaches every NPC hull through `ShipStats` (NPCs
-##   carry further, as they did before the retune). **Reversal: 2.0.**
+## - `COAST_TIME_MULT` **5.0** on **today's** `coast_time` rows (was 2.5, and 2.0 before it;
+##   S22.6's tick, owner 2026-09-30, on 23.5's T1). The owner: "ship loses speed way too
+##   fast", then item 18's flight-feel ruling, then S22.6's "why do ships stop moving as
+##   soon as i stop thrusting?". Measured on the same shipped Vanguard launch (the S22.6
+##   probe): the release envelope scales with the constant (time to 10 % of the release
+##   speed 0.9 x coast_time, carried distance `0.5 x v0 x coast_time`), so the class-ceiling
+##   stop went 2.367 -> 4.733 s and its carry 530.28 -> 1 063.94 u, and a 200 u/s release's
+##   `t_10` went 1.167 -> 2.333 s. It reaches every NPC hull through `ShipStats` (NPCs carry
+##   further still, as they did before the retune). **Reversal: 2.5.**
 ## - `LATERAL_DAMP_MULT` **1.0, RETIRED IN PLACE by 23.5: nothing reads it.** It used to
 ##   size the explicit lateral drag that held the sideways decay at today's time constant
 ##   while the forward carry grew; 23.5's one-decay row gives both axes the one body damp
@@ -526,7 +533,7 @@ const HANDLING: Dictionary = {
 ## inverse, so it cannot be written as specified. 23.5's T4 is superseded by the one-decay
 ## row (there is no sideways extra left to scale).
 const ACCEL_TIME_MULT := 2.0
-const COAST_TIME_MULT := 2.5
+const COAST_TIME_MULT := 5.0
 const LATERAL_DAMP_MULT := 1.0
 const ANGULAR_DAMP_MULT := 0.5
 
@@ -621,7 +628,7 @@ static func resolve(hull_id: StringName, fit: Dictionary, affixes: Dictionary = 
 	# 1. Hull base (08 section 2 + ENGINE_SPEC section 13 handling column, which
 	# now carries `hull_mass` too). The two times are the row times the ruling
 	# multipliers (CONTRACTS section 14 and its 23.5 amendment: the accelerate leg
-	# x 2.0, the release x 2.5), so the literals above stay the shipped table and
+	# x 2.0, the release x 5.0), so the literals above stay the shipped table and
 	# a reversal is one constant. `max_speed` takes no multiplier and never moves.
 	stats.hull_max = float(hull[&"hull"])
 	stats.shield_max = float(hull[&"shield"])

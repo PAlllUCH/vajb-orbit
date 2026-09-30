@@ -57,7 +57,8 @@ func teardown() -> void:
 func test_the_coast_column_reaches_every_hulls_body_as_the_damp() -> void:
 	## The resolved coast time is the row times the fit's plating multiplier times the
 	## 2026-09-22 flight-feel ruling's `COAST_TIME_MULT`, ticked 2.0 -> 2.5 by CONTRACTS
-	## section 23.5's T1 (owner "go ahead with all", 2026-09-24). The row itself is the
+	## section 23.5's T1 (owner "go ahead with all", 2026-09-24) and 2.5 -> 5.0 by S22.6
+	## (owner 2026-09-30). The row itself is the
 	## retuned half-of-section-13 literal this suite's other test pins, so the two halves
 	## of the release are asserted against their own sources.
 	var plate_penalty := absf(float(ShipFitScript.MODULES[PLATE][&"effects"][&"speed_penalty"]))

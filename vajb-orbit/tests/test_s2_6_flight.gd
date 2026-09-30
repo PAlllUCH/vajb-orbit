@@ -7,8 +7,9 @@ extends McpTestSuite
 ## suite pins the laws those numbers are built from, one seam per ruling:
 ##
 ## 1. the multiplier pattern: `ACCEL_TIME_MULT` 2.0 on `accel_time` (and `max_speed` never
-##    moves -- the ceiling is the loaded ceiling), `COAST_TIME_MULT` 2.5 on today's
-##    `coast_time` rows (section 23.5's T1 tick), `LATERAL_DAMP_MULT` retired in place by
+##    moves -- the ceiling is the loaded ceiling), `COAST_TIME_MULT` 5.0 on today's
+##    `coast_time` rows (S22.6's tick, owner 2026-09-30, on section 23.5's T1),
+##    `LATERAL_DAMP_MULT` retired in place by
 ##    section 23.5 (still 1.0, read by nothing) and `ANGULAR_DAMP_MULT` 0.5 as the angular
 ##    damp's multiplier (23.5's T2);
 ## 2. the ramp: per class, the derived `t_90 = 0.9 x accel_time` doubles (>= 1.8 x the
@@ -115,8 +116,8 @@ func test_the_ruling_multipliers_are_the_pinned_constants() -> void:
 		"the accelerate leg's multiplier is 2.0"
 	)
 	assert_true(
-		is_equal_approx(ShipFitScript.COAST_TIME_MULT, 2.5),
-		"the release's multiplier is the 23.5 T1 tick (today's rows x 2.5)"
+		is_equal_approx(ShipFitScript.COAST_TIME_MULT, 5.0),
+		"the release's multiplier is S22.6's tick on 23.5's T1 (today's rows x 5.0)"
 	)
 	assert_true(
 		is_equal_approx(ShipFitScript.LATERAL_DAMP_MULT, 1.0),
@@ -200,7 +201,8 @@ func test_the_accelerate_leg_doubles_per_class_and_the_ceiling_never_moves() -> 
 
 ## The one decay (CONTRACTS section 23.5's row), per class: the released hull's linear
 ## path is no longer axis-dependent --
-## - the resolved `coast_time` is today's row on the T1 tick (`COAST_TIME_MULT` 2.5) times
+## - the resolved `coast_time` is today's row on the ticked `COAST_TIME_MULT` (5.0 since
+##   S22.6, owner 2026-09-30) times
 ##   the fit's plating multiplier, and the body damps at `1 / coast_time`;
 ## - `_lateral_damp()` returns that *same* `1 / coast_time`: one rate owns both axes, the
 ##   pre-23.5 sideways time constant is gone;
