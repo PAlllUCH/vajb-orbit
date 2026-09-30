@@ -287,6 +287,65 @@ the once split asteroid doesnt split further. this need to change."
 
 Implementation wave: **S16** (coder item 23, `slices/S16-fragment-resplit/`).
 
+### 5.3 Amendment 2026-09-30 — rock toughness and chip splinters (owner-ticked, S22.5)
+
+The owner's verbatim ask (2026-09-30): *"asteroids when breaking/splitting have
+like 1hp, are destroyed almost asap with anything, they should have randomised
+amount of life. also asteroids are too squishy, are desroyed too fast. another
+thing: when shooting a large asteroid it would be nice if small splinters of it
+split from it"*.
+
+**The measured defect.** A rock carries no health: it cracks when its
+`yield_units` reach 0 and every unit costs `work_per_unit` = 1.0 (`ore_tuning.gd`),
+while a gun's contribution is `damage × 0.10` into the same channel (`weapons.gd`
+`apply_gun_work`, `asteroid.gd` `apply_collision_damage`). So a T1 field rock
+(6 units at the mean roll) dies to **≈2.0 s of `w_laser`** or **≈2 cannon shots**,
+**whatever its size class** — `SIZE_YIELD_MULT` is still deferred (§5.2 bis), so an
+XL is exactly as tough as an S. Worse, a **gun** shatter's children are born
+`units = 0` (§5.2 ter), and `_accumulate` cracks the moment `yield_units <= 0`, so
+**any positive work cracks a fragment instantly — including a ram**: literally one
+hit point.
+
+**The rules (owner ticks, 2026-09-30).** All five are `OreTuning` fields beside
+S13/S14's, read live by their callers and carried through the F1 overlay's
+Save/Load like every other ore constant (rule 5).
+
+| Tick | Row | Value | Reversal |
+|---|---|---|---|
+| **A1** | **Per-rock toughness roll** — this is the "randomised amount of life": every rock rolls `toughness` uniform **0.80–1.60** at spawn on the field's own seeded RNG and keeps it for life | **0.80–1.60** | `1.0` (no roll) |
+| **A2** | **Size carries toughness** (`SIZE_TOUGHNESS_MULT`), applied as a **divisor on the gun door only** | **S 1.5 · M 2.5 · L 4.0 · XL 6.0** | all `1.0` |
+| **A3** | **Debris gets a real budget** (`FRAGMENT_WORK`, work units by the child's own class): a rock with no ore cracks at this budget instead of on the first work point | **S 2.0 · M 3.0 · L 4.5** (XL is never a gun-born child — a child is always strictly smaller) | `0.0` = today's instant crack |
+| **A4** | **Chip splinters off large rocks**: a gun hit that does **not** crack an L or XL rock rolls **25 %** to shed one splinter, at most **1 per 0.5 s** per rock | **25 % / 0.5 s cap** | `0 %` (no splinters) |
+| **A5** | **Mining keeps today's pace**: A2 divides the gun door only, so the mining laser's pinned **1.2 s per ore unit** (§7.1) is untouched | gun-door only | apply A2 to both doors |
+
+**What this does, at the mean roll (1.2×), for a T1 rock:** time-to-crack under
+`w_laser` 30 dps becomes **S ≈3.6 s · M ≈6.0 s · L ≈9.6 s · XL ≈14.4 s** (cannon
+≈4 / 6.6 / 10.6 / 16 shots), A1's roll spreads each figure ±33 %, an S fragment
+survives **≈0.7 s** of beam or one solid hit instead of zero, and mining stays
+**7.2 s** — the mining laser remains the efficient door and guns the wasteful one,
+which 01 §5.6's payout cap already assumes.
+
+**What does not change.** Rule A ("no method mints ore") holds: a splinter and
+every gun-born child carry `bore 0` and pay nothing (`_pay_burst` returns on
+`owed <= 0`), so a fully shot family still realises at most `GUN_BURST_SHARE ×
+_bore_ore`. §5.2 ter's rule holds: a fragment split is gated by **parentage**, and
+its chain still terminates at the Small burst. The mining laser's numbers, the
+split table, the spawn mix and the tier yields are all untouched.
+
+**Splinter shape.** A shed splinter is a real **S-class** body (not a particle):
+born `bore 0` with A3's S budget (2.0), ejected outward on the same cone/carrier
+the field's `_cleave` children use, and it never splits further. It is shootable
+and it is mineable-for-nothing, which is the point — it is debris the rock shed,
+not a new ore deposit.
+
+`18_engine_spec.md` §13's world row still reads "gun chip rate 10 %" and stays
+true (`gun_chip_rate` is unmoved; the divisor is the rock's own); the fold-in of a
+`SIZE_TOUGHNESS_MULT` row into that owner-locked table is the owner's at its next
+pass (the §23 range-row and S13-amendment precedent — `asteroid.gd` cites this
+section until then).
+
+Implementation wave: **S22.5** (coder lane, `slices/S22.5-asteroid-toughness/`).
+
 ## 6. Icons
 
 The shipped icon set covers generic cargo glyphs (`icon_cargo_ore_48.png`
