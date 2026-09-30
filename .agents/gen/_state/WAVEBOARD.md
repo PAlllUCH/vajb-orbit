@@ -195,6 +195,24 @@ random 1.6–2.6 s, §6 cadence); the forks resolved as the seeker fuze pair
 with a staged trim.** The developer lands the flight/§13/CONTRACTS rows in the
 owning docs at S22's open. Recap `MASTER_REPORT.md` §6.
 
+**Updated 2026-09-30 (S22.5, closed — coder item 28.5): rock toughness and chip
+splinters ship — gate 971 → 983/0 twice hermetic** (`"problems": []`;
+`docs/gameplay/02_minerals.md` deliberately outside `--forbidden` because the
+developer's own `ec6207b` clarifying sentence lands after the snapshot, the LOW
+R1 filed as L255 and closed the same way). The owner's ask (2026-09-30),
+docs-first as **02 §5.3's A1–A5** and ticked the same day: every rock rolls its own
+**0.80–1.60** toughness on the field's seeded RNG; size multiplies it as a
+**gun-door divisor** (S 1.5 · M 2.5 · L 4.0 · XL 6.0) so a T1 rock takes
+**S 3.61 s · M 6.00 s · L 9.61 s · XL 14.41 s** of `w_laser` at the mean roll
+instead of ≈2.0 s for every class; the mining door is untouched (1.2 s/unit
+pinned); oreless debris cracks on a **work budget** (S 2.0 · M 3.0 · L 4.5) rather
+than the first point of damage, so one chip and a ram no longer delete it; and a
+**non-cracking gun hit on an L/XL sheds a real S-class splinter** at 25 %, capped
+at 1 per 0.5 s. One builder, `test_s22_5_asteroids.gd` (11 rows) + one dev-menu
+Save/Load row = +12; `test_s14_splits`/`test_s16_resplits`/`test_s13_caps`/
+`test_s13_mining_batteries` row-identical; Rule A's "no ore minted" holds (a fully
+shot family realised 1 unit against the cap). Recap `MASTER_REPORT.md` §6.
+
 **Updated 2026-09-30 (S22, closed — coder item 28): the feel/juice pillar ships —
 gate 941 → 971/0 twice hermetic** (`"problems": []` on `--baseline s22_start`,
 `--forbidden` on explicit files per L245). Opened docs-first on D15's fully-ticked
@@ -230,8 +248,8 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | 1 | coder 27 | S21 stability & playtest fixes (**done 2026-09-29**, 917 → 941/0) | — | — |
 | 2 | designer 16 | D15 flight feel & feedback design (**done + ticked 2026-09-29** — sheet → S22) | coder 27 | one live session (L82); its tick sheet is coder 28's input |
 | 3 | coder 28 | S22 feel, juice & balance (**done 2026-09-30** — 941 → 971/0; 1 HIGH bucket-2 list closed by the developer, 2 LOW L253/L254) | designer 16 | implements D15's ticks; both touch `ui/hud/` |
-| 4 | coder 28.5 | S22.5 asteroid toughness (**next** — the owner's 2026-09-30 ask: randomised per-rock life, size toughness S 1.5/M 2.5/L 4.0/XL 6.0, a real budget for gun-born debris, chip splinters off L/XL) | coder 28 | one builder; shares `vajb-orbit/game/` with 29, so it runs strictly before it (inserted at the owner's ask, not renumbered) |
-| 5 | coder 29 | S23 content activation | coder 28.5 | `vajb-orbit/game/` + `tests/` (weapons/projectile/mining seams) |
+| 4 | coder 28.5 | S22.5 asteroid toughness (**done 2026-09-30** — 971 → 983/0; 0 HIGH / 0 MED / 1 LOW L255 closed by the developer) | coder 28 | one builder; shares `vajb-orbit/game/` with 29, so it ran strictly before it (inserted at the owner's ask, not renumbered) |
+| 5 | coder 29 | S23 content activation (**next**) | coder 28.5 | `vajb-orbit/game/` + `tests/` (weapons/projectile/mining seams) |
 | 6 | designer 17 | D16 station identity & contracts UI | coder 29 | one live session; its spec is coder 30/31/32's design law |
 | 7 | coder 30 | S24 world identity | designer 17 | `station_catalog` + the station screen (D16 spec first) |
 | 8 | coder 31 | S25 contracts board | coder 30 | `ui/station/` + `autoload/player_profile.gd` + S24's `contracts_visible` seam |

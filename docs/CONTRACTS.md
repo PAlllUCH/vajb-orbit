@@ -37,21 +37,21 @@ later request; one section costs ~2-3k.
 | §8 | Economy / state seams | L507–L550 |
 | §8.1 | Slice 0 — physics & fuel (pinned additions, 2026-09-21) | L551–L686 |
 | §8.2 | Slice 2 — fight (pinned additions, 2026-09-21) | L687–L903 |
-| §9 | Universal test gate | L904–L1489 |
-| §11 | P2 ship frames (2026-09-21) | L1490–L1685 |
-| §12 | P2-B1 weapon fit (2026-09-22) | L1686–L1743 |
-| §13 | P2-B proper fitting (2026-09-22) | L1744–L1865 |
-| §14 | S2.6 truth-and-feel (2026-09-22) | L1866–L1936 |
-| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1937–L2032 |
-| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L2033–L2208 |
-| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L2209–L2287 |
-| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L2288–L2360 |
-| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L2361–L2580 |
-| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2581–L2857 |
-| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2858–L3041 |
-| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L3042–L3090 |
-| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L3091–L3259 |
-| §10 | Changelog | L3260–L4450 |
+| §9 | Universal test gate | L904–L1529 |
+| §11 | P2 ship frames (2026-09-21) | L1530–L1725 |
+| §12 | P2-B1 weapon fit (2026-09-22) | L1726–L1783 |
+| §13 | P2-B proper fitting (2026-09-22) | L1784–L1905 |
+| §14 | S2.6 truth-and-feel (2026-09-22) | L1906–L1987 |
+| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1988–L2083 |
+| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L2084–L2259 |
+| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L2260–L2338 |
+| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L2339–L2411 |
+| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L2412–L2631 |
+| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2632–L2908 |
+| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2909–L3092 |
+| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L3093–L3147 |
+| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L3148–L3317 |
+| §10 | Changelog | L3318–L4539 |
 
 <!-- section-index:end -->
 
@@ -909,6 +909,27 @@ actually fired.
 # run it as: `source ~/.profile && godot --headless --path vajb-orbit \
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
+
+Expected (S22.5, 2026-09-30): **`[SUMMARY] passed=983 failed=0`**, exit 0. S22.5-R1 measured
+**983/0** twice on fresh scratch stores (per-suite counts identical between runs, zero
+`[FAIL]`/`[SKIP]`) and diffed every suite's executed count against the `0e03baa` tree: the only
+movement is the new `test_s22_5_asteroids.gd` (**11** rows) plus `test_s13_devmenu.gd`'s **+1**
+(growth `971 → 983`), so the four must-not-move suites stand (`test_s14_splits` 9,
+`test_s16_resplits` 7, `test_s13_caps` 10, `test_s13_mining_batteries` 4) and every other suite
+is row-identical. The five existing suites that moved are fixture arithmetic only (brief
+amendment 2; claims unchanged): `test_s13_caps.gd`, `test_s16_resplits.gd`,
+`test_engine2_cleaving.gd`, `test_engine2_fixes.gd`, `test_combat_repair_c5.gd`. The wave's
+independent replay is `vajb-orbit/tools/s225_r1_probe.gd` (**65 checks, 0 fails**, scratch
+stores, self-quitting): A2's four mean-roll times **S 3.609 · M 6.000 · L 9.609 · XL 14.406 s**
+of `w_laser` against the 3/5/8/12 s floors (a field-spawned 4-of-6-bore L at 4.359 s is §5.3's
+own 2/3 note), A3's 1.2 s/unit at both roll extremes, A4's chip/ram survival plus the 0.672 s
+beam, A5's bore-0/S-stops/M-re-splits, A6's cap-spaced L/XL sheds (min gap 502 ms) with the
+rate pooled at **0.2583** (field-RNG stream control 0.2479), and A7's fully shot family
+realising **1 ≤ floor(0.10 × 24)**. Findings: **0 HIGH / 0 MED / 1 LOW (L255)** — the
+`s225_start` snapshot predates the developer's `ec6207b` §5.3 sentence, so §12's close-out
+`--forbidden docs/gameplay/02_minerals.md` reports a forbidden touch on a developer-authored
+change (re-baseline the path or record the exception; no worker docs edit). `project.godot`,
+`damage.gd`, `weapons.gd`, `01_economy_core.md` and `18_engine_spec.md` are snapshot-identical.
 
 Expected (S22, 2026-09-30): **`[SUMMARY] passed=971 failed=0`**, exit 0. S22-R1 measured
 **971/0** on a fresh scratch store and replayed the baseline (`93d6afb`, reconstructed in
@@ -4500,3 +4521,18 @@ hull stops twice and the second stop slides.
   edit) / 0 MED / 2 LOW (L253 the fuze delivery's no-distance-gate reading for the owner;
   L254 the anti-flam cap-drop docstring)**. The S19 seal is green with the finished tree
   (`npc_ship 12ab0ae2…`, `weapons 6f95a9c2…`) and `damage.gd` stays `5cabf3d9…`.
+- **v0.38 (2026-09-30, wave S22.5 review — S22.5-R1; gate `971/0 → 983/0`)** — the asteroid
+  toughness wave's review pass. Measured **983/0** twice on fresh scratch stores with identical
+  per-suite counts; the diff against the `0e03baa` tree shows only the new
+  `test_s22_5_asteroids.gd` (11 rows) and `test_s13_devmenu.gd` (+1) moving, so the four
+  must-not-move suites stand and the five amendment-2 fixture edits are arithmetic-only.
+  `vajb-orbit/tools/s225_r1_probe.gd` re-derived **65 checks at 0 fails**: the roll's band and
+  reproducibility per seed, the four mean-roll `w_laser` times (3.609/6.000/9.609/14.406 s over
+  the 3/5/8/12 s floors, S vs XL ≈4×), the mining door's 1.2 s/unit at both roll extremes, the
+  S fragment's 1.0-chip/1.0-ram survival and 0.672 s beam, bore 0 + S-stop + M-resplit, the L/XL
+  splinter cap at a 502 ms minimum gap with the rate pooled at 0.2583 (field-RNG control 0.2479),
+  and the fully shot family's **1 ≤ floor(0.10 × 24)**. Findings: **0 HIGH / 0 MED / 1 LOW
+  (L255)** — the `s225_start` snapshot predates the developer's `ec6207b` §5.3 sentence, so the
+  close-out's `--forbidden docs/gameplay/02_minerals.md` reports a forbidden touch on a
+  developer-authored change; re-baseline the path or record the exception. The sealed files are
+  snapshot-identical (`project.godot`, `damage.gd 5cabf3d9…`, `weapons.gd 6f95a9c2…`).

@@ -1426,3 +1426,60 @@ one rename, and R-S22-1 moves four `test_p1_repairs.gd` rows (amendment 13/14).
 Two new LOWs' worth of taste lives in L253/L254. The wave's own seal lesson: a
 mid-wave red seal row is expected when a wave legitimately edits a pinned file —
 name the last editor as the re-pinner at the open, not at the close.
+
+### S22.5 (coder item 28.5) — **DONE 2026-09-30 — gate 971 → 983/0, detail §Closed.**
+
+**Deliverables.** The owner's 2026-09-30 ask, docs-first as `02_minerals.md`
+**§5.3** (A1–A5, ticked the same day) and implemented by one builder:
+
+- **A1 — randomised life.** Every spawned rock rolls `toughness` uniform
+  **0.80–1.60** on the field's own seeded RNG (`asteroid_field.gd`'s roll path),
+  keeps it for life, and exposes it through an accessor.
+- **A2 — size carries toughness** (`size_toughness_mult` S 1.5 · M 2.5 · L 4.0 ·
+  XL 6.0) as a **divisor on the gun door only**. Measured at the mean roll, a
+  6-work rock takes **S 3.609 s · M 6.000 s · L 9.609 s · XL 14.406 s** of
+  `w_laser` 30 dps (S vs XL **3.99×**) where every class took ≈2.0 s before.
+- **A3 — debris gets a budget** (`fragment_work` S 2.0 · M 3.0 · L 4.5): a rock
+  with no ore cracks on that much chip work instead of on the first positive
+  point, so a 10-damage chip (work 1.0) and a 10-damage ram both leave an S
+  fragment alive and 2.0 work cracks it (beam 0.672 s).
+- **A4 — chip splinters:** a gun hit that does **not** crack an L or XL rolls
+  **25 %** to shed one splinter, capped at **1 per 0.5 s** per rock; each is a
+  real S-class body, `bore 0`, ejected outward on the field's existing cone/kick,
+  never splitting further (review-measured pooled rate 0.2583 over 960 draws
+  against a 0.2479 stream control).
+- **A5 — mining is untouched:** `apply_gun_work` divides, `apply_work` does not,
+  so the mining laser's pinned 1.2 s/unit pace and every mining payout row stand.
+
+**Numbers.** Gate **971 → 983/0**, exit 0, zero `[FAIL]` — twice by the builder,
+twice by the reviewer and twice more at close-out. Growth is `test_s22_5_asteroids`
+(11 rows) + one `test_s13_devmenu` Save/Load row = 12; **every** other suite's
+executed count is row-identical, including the four the brief forbade
+(`test_s14_splits` 9, `test_s16_resplits` 7, `test_s13_caps` 10,
+`test_s13_mining_batteries` 4). Five suites carry arithmetic-only fixture edits
+(the old fixtures encoded the one-point crack); claims unchanged, each diff read.
+`verify --baseline s225_start` → exit 0, `"problems": []`; `project.godot`,
+`damage.gd`, `weapons.gd`, `01_economy_core.md` and `18_engine_spec.md` verified
+snapshot-identical. Rule A holds: a fully shot XL family terminated in 17 steps
+realising **1** pickup against `floor(0.10 × 24) = 2`.
+
+**Review (S22.5-R1): 0 HIGH / 0 MED / 1 LOW — `passed-with-followups`.** The LOW
+(**L255**) was not a code defect: the developer's own `ec6207b` clarifying sentence
+lands on `02_minerals.md` *after* `s225_start`, so brief §12's `--forbidden` list
+named a path the developer had legitimately touched — measured as
+`problems: ['forbidden files touched: docs/gameplay/02_minerals.md']`. Closed by
+dropping that path from the close-out list and recording the exception (brief
+amendment 5); re-baselining would have hidden the developer's own authorship. No
+fixer ran.
+
+**Two readings settled in the doc** (so the next wave cannot read them two ways):
+the four-times table is stated **per 6 work units at the bore** — a field-spawned
+T1 rock carries S13's reserve (4 extractable of 6), scaling the figures by 2/3 to
+S 2.4 s · M 4.0 s · L 6.4 s · XL 9.6 s — and **A2's divisor is the ore-bearing
+channel's**, so a no-ore rock cracks on `fragment_work` in raw chip work, which is
+what makes A3's "2.0" and the "≈0.7 s" fragment figure mean something.
+
+**Lesson worth carrying.** A wave that opens with a docs-first amendment *after*
+its snapshot must exclude that doc from `--forbidden` in the same breath, or the
+close-out reports the developer's own sentence as a forbidden touch (L255). The
+S22 seal lesson is the mirror image: name the last editor at the open.
