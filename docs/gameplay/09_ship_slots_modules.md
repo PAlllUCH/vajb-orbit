@@ -74,6 +74,14 @@ Note: **H armour is a slot, not a hull stat.** The hull's `hull` number
 masses something. This is the "more hull armour = slower" rule the system is
 built on.
 
+> **Amended 2026-09-30 (S22.7, owner "go ahead"):** the rule now resolves
+> through **one channel** — plating's `1 + |speed penalty|` "ponderous" half
+> multiplies the resolved **mass** (beside any `mass_add`) instead of the three
+> handling times, and the flight forces are derived from the class mass and
+> applied against the fit's (18 §3.2's mass law). `h_composite`'s penalty and
+> its own `mass_add` stack in that one channel (its fit resolves ~9 %
+> ponderouser than the old double-read); an unfitted hull is byte-identical.
+
 ## 2. The power economy
 
 Every non-ENGINE module has a **power draw**. A hull's fit is legal only

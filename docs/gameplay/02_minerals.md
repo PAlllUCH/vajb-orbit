@@ -354,6 +354,28 @@ section until then).
 
 Implementation wave: **S22.5** (coder lane, `slices/S22.5-asteroid-toughness/`).
 
+### 5.4 Amendment 2026-09-30 — rock mass by size and random split speed (owner-ticked, S22.7)
+
+The owner's ask (2026-09-30): *"every split of asteroid should have a random
+speed"* and "everything physics based on mass". Two rules ride the wave:
+
+| Tick | Row | Value | Reversal |
+|---|---|---|---|
+| **B1** | **Rock mass by size** — `mass = ROCK_MASS_DENSITY × r²`, the density anchored so the M class keeps today's 560 t | **S 183 · M 560 · L 1 383 · XL 2 571 t** (radii 24/42/66/90 u) | flat `ROCK_MASS_MULT 4.0` (560 t every class — L8's inference) |
+| **B2** | **Random split speed** — every cleave child and splinter rolls a speed jitter uniform **0.7–1.3** on its whole ejection vector, times the mass weighting `(m_M / m_child)^0.5` | **0.7–1.3 × √(m_M/m_child)** | jitter `(1.0, 1.0)`, exponent `0.0` |
+
+**B1 closes L8** (the backlog's "ask §13 for its own rock row" — §13 now carries
+the row). Consequences, disclosed: a rammed **S** rock is 3× lighter than today
+and takes the shove instead of being the wall (the reduced mass falls, so rock
+ram damage re-scales down for small rocks); an **XL** is 4.6× heavier and is a
+real wall. **B2** reads on `AsteroidField._deploy_debris` (the one carrier both
+debris paths ride): a resting rock's children leave at 105–195 u/s, and a
+resting XL's S splinters at ~315 u/s while its L children take ~77 u/s. Rocks
+now also collide with each other (§13's Rock-rock contact row, `COLLISION_MASK`
+3) — that row is the engine spec's, not this section's.
+
+Implementation wave: **S22.7** (coder lane, `slices/S22.7-mass-physics/`).
+
 ## 6. Icons
 
 The shipped icon set covers generic cargo glyphs (`icon_cargo_ore_48.png`

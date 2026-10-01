@@ -267,12 +267,13 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | 3 | coder 28 | S22 feel, juice & balance (**done 2026-09-30** — 941 → 971/0; 1 HIGH bucket-2 list closed by the developer, 2 LOW L253/L254) | designer 16 | implements D15's ticks; both touch `ui/hud/` |
 | 4 | coder 28.5 | S22.5 asteroid toughness (**done 2026-09-30** — 971 → 983/0; 0 HIGH / 0 MED / 1 LOW L255 closed by the developer) | coder 28 | one builder; shares `vajb-orbit/game/` with 29, so it ran strictly before it (inserted at the owner's ask, not renumbered) |
 | 5 | coder 28.6 | S22.6 inertia (**done 2026-09-30** — 983 → 990/0; 0 HIGH / 0 MED / 2 LOW — L256 closed by the developer, L257 pre-existing) | coder 28.5 | one builder; shares `vajb-orbit/game/` with 29, so it ran strictly before it |
-| 6 | coder 29 | S23 content activation (**next**) | coder 28.6 | `vajb-orbit/game/` + `tests/` (weapons/projectile/mining seams) |
-| 7 | designer 17 | D16 station identity & contracts UI | coder 29 | one live session; its spec is coder 30/31/32's design law |
-| 8 | coder 30 | S24 world identity | designer 17 | `station_catalog` + the station screen (D16 spec first) |
-| 9 | coder 31 | S25 contracts board | coder 30 | `ui/station/` + `autoload/player_profile.gd` + S24's `contracts_visible` seam |
-| 10 | coder 32 | S26 bosses, arenas, insurance, vaults | coder 31 | `game/` + `player_profile.gd` + S25's Expedition seam |
-| 11 | coder 33 | S27 catalog breadth & shipyard | coder 32 | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/` |
+| 6 | coder 28.7 | S22.7 mass physics & rock contact (**next**) | coder 28.6 | two sequential builders (`ship_stats`/`ship_fit`/`player_ship` then `asteroid`/`asteroid_field`); shares `vajb-orbit/game/` + `tests/` with 29, so it runs strictly before it (inserted at the owner's 2026-10-01 ask, not renumbered; **workers on `opencode-go/glm-5.3-flash`**) |
+| 7 | coder 29 | S23 content activation | coder 28.7 | `vajb-orbit/game/` + `tests/` (weapons/projectile/mining seams) |
+| 8 | designer 17 | D16 station identity & contracts UI | coder 29 | one live session; its spec is coder 30/31/32's design law |
+| 9 | coder 30 | S24 world identity | designer 17 | `station_catalog` + the station screen (D16 spec first) |
+| 10 | coder 31 | S25 contracts board | coder 30 | `ui/station/` + `autoload/player_profile.gd` + S24's `contracts_visible` seam |
+| 11 | coder 32 | S26 bosses, arenas, insurance, vaults | coder 31 | `game/` + `player_profile.gd` + S25's Expedition seam |
+| 12 | coder 33 | S27 catalog breadth & shipyard | coder 32 | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/` |
 
 Designer item **16 (D15)** is closed (ticked 2026-09-29); 17 (D16) is the designer
 queue's next item. Playtest

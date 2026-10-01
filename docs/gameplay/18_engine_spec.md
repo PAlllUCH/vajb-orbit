@@ -88,10 +88,24 @@ where they overlap; §12 carries the doc amendments, §13 the numbers.
   (+60 % speed 3 s, 8 s cooldown, burns fuel while active — §4.4);
   **fold = Hyperdrive Dash** (ruling 9): a 400 u displacement burst that burns
   25 fuel and grants 0.8 s invulnerability, 20 s cooldown, with a charge FX.
-- **Mass sources.** Hull class (handling table, §13) + armour plating, which
-  multiplies handling times by `1 + |its speed penalty|` on top of its 09 §3.3
-  speed cost (plating = slow *and* ponderous). Engines buy it back: `e_ion`
-  ×1.15 speed, `e_vector` ×1.25 speed / ×1.20 turn.
+- **Mass sources.** Hull class (handling table, §13) + armour plating.
+  **Amended 2026-09-30 (S22.7, owner "go ahead"):** plating's *ponderous* half is
+  **mass**, not time — its `1 + |speed penalty|` multiplies the resolved
+  `hull_mass` (beside any `mass_add`) and no longer multiplies
+  `accel_time`/`coast_time`/`turn_spinup`, because the flight forces are derived
+  from the class mass and applied against the fit's (the law below): the same
+  slow-*and*-ponderous feel through one channel. Engines buy the speed back:
+  `e_ion` ×1.15 speed, `e_vector` ×1.25 speed / ×1.20 turn (unchanged).
+- **The mass law (S22.7, owner 2026-09-30): the forces are the class's; the
+  inertia is the fit's.** `thrust = class_mass × max_speed / accel_time` and the
+  coast brake `class_mass × max_speed / coast_time` are derived once from the
+  handling row's own `hull_mass` (`ShipStats` gains `base_mass`; no new literal),
+  and the thrust/brake/turn-torque laws apply them against the **fitted** mass —
+  so `mass_add` plating finally makes a hull slower and a heavier fit coasts
+  further and turns ponderouser. At an unfitted hull base = fitted and every
+  shipped figure is byte-identical (the S2.6/S22.6 measured pairs stand).
+  Reversal: derive the forces from the fitted mass (`player_ship.gd`'s
+  pre-S22.7 `_hull_mass()` line).
 
 ### 3.3 Stats source
 
@@ -445,6 +459,8 @@ can land before or in parallel.
 | Speed scale | `max_speed = hull % (08 §2) × 450 u/s` — replaced by **speed table v2** below once the owner ticks it |
 | Hull release coast (`COAST_TIME_MULT`) — **owner 2026-09-30 (S22.6)** | **5.0** on the nine `coast_time` rows (unplated 4.0–14.0 s; the shipped standard-fit Vanguard resolves **5.25 s** through `h_plate_light`). A released hull brakes at a constant `max_speed / coast_time`. **Measured shipped hulls: fighter 4.2 s / ~894 u** (427.5 u/s), **Vanguard 5.25 s / 1 063.94 u** (406.6 u/s; `t_10` 2.367 → 4.733 s, carry 530.28 → 1 063.94 u). The bare pair `0.5 × 427.5 × 4.0 = 855 u` is the **unplated** 0.8 s row's arithmetic and no shipped hull reads it.** Reversal: 2.5 |
 | Rock drift damping — **owner 2026-09-30 (S22.6)** | `LINEAR_DAMP` **0.35** for a field rock and **0.25** for a cleave child (`FRAGMENT_LINEAR_DAMP`), both with `DAMP_MODE_REPLACE`: a 150 u/s kick reads ~106 u/s after one second and carries **~429 u** (a child ~600 u) before settling, and the worst ram's 409 u/s hand-off settles in ~10.6 s. Supersedes the 3.71 derived for `DRIFT_SPEED_CEILING` (10 u/s one second after the worst ram). Reversal: 3.71 for both |
+| Rock mass — **owner 2026-09-30 (S22.7)** | `mass = ROCK_MASS_DENSITY × r²` with the density anchored so the **M class keeps today's 560 t**: **S 183 · M 560 · L 1 383 · XL 2 571 t** (radii 24/42/66/90 u). A pebble is no longer a wall and an XL is 4.6× one; ram damage re-scales with the reduced mass (small rocks stop hurting). Resolves the backlog's L8 (§13 owed a rock row). Reversal: flat `ROCK_MASS_MULT 4.0 × ship_miner` (560 t every class) |
+| Rock-rock contact — **owner 2026-09-30 (S22.7)** | `COLLISION_MASK` **2 → 3**: rocks meet each other as well as the hull. A rock-rock impact is a **nudge, not a fight** — rocks carry no contact monitor, so ruling 15/16's kinetic damage stays ship-vs-rock (a rock monitor would cascade breakages). Placement gains a **minimum-separation pass** (field spawn ring and cleave/debris ring, margin 8 u) so enabling the pair cannot shove overlapping rocks apart at spawn or at a split. Reversal: mask `2`, and the separation pass reverts to the pure ring rolls |
 | Camera zoom | 0.70–1.50 (shipped); speed pull-back multiplies it (§3.4) |
 | Minimap radius | 800–6 400, step 800 (shipped) |
 | Autopilot | slow-down radius 240 u, arrive radius 40 u |
@@ -483,8 +499,8 @@ Corvette 90 · Hauler 260 · Gunship 190 · Frigate 220 · Destroyer 300 (t).
 | `energy_max` base / `fuel_max` base | 100 / 200 (doc §1) |
 | `energy_regen` (reactor refill) | 5/s (doc `recharge_rate`) |
 | `FUEL_PER_ENERGY` | 0.10 fuel per 1 Energy spent |
-| `BOOST_FUEL` | 3.0/s while afterburner runs |
-| `DASH_FUEL` | 25 per fold/dash burst (doc) |
+| `BOOST_FUEL` — **amended 2026-09-30 (S22.7)** | burn **∝ thrust**: `burn = thrust / Isp`, `Isp` anchored so the Vanguard's burn stays **3.0/s** → fighter **2.75** · corvette 3.10 · miner **1.81** · trader 3.12 · gunship 2.38 · patrol **3.22** · freighter **1.94** · destroyer **2.26** per second. Boost endurance becomes class-shaped on the flat 200 tank (fighter ≈73 s, miner ≈111 s — was 66.7 s for everyone). Reversal: flat **3.0/s** |
+| `DASH_FUEL` — **amended 2026-09-30 (S22.7)** | `25 × mass / 110 t` (the Vanguard anchor) — a dash's fuel is proportional to the impulse it delivers: fighter **18.2**, destroyer **68.2**. Reversal: flat **25** |
 | `FUEL_CELL_UNITS` | 40 fuel per `fuel_cell` item, 10 s cooldown |
 | Emergency mode | thrust locked, boost/dash locked, reactor ×0.7 |
 | Weapon draw | laser 6 E/s · plasma 10 E/s · mining 5 E/s · kinetics 0 |
@@ -504,7 +520,7 @@ Corvette 90 · Hauler 260 · Gunship 190 · Frigate 220 · Destroyer 300 (t).
 | Value | Initial |
 |-------|---------|
 | Size classes / fragment split | `XL > L > M > S`, RNG child mixes per 02 §5.2 (`OreTuning.split_mix`); S → the reserve as pickups (float credit, whole units) |
-| Ejection | `current_velocity × 1.2`, uniform random direction (the ±15° cone was retired 2026-09-21) |
+| Ejection — **amended 2026-09-30 (S22.7)** | `current_velocity × 1.2`, uniform random direction (the ±15° cone was retired 2026-09-21), **times a per-child speed jitter uniform (0.7, 1.3) and the mass weighting `(m_M / m_child)^0.5`** — a resting rock's children leave at 105–195 u/s instead of a flat 150, an S splinter at ~1.75× the base kick and an L child at ~0.64× (splinters fly, boulders lumber). Reversal: jitter `(1.0, 1.0)` and exponent `0.0` |
 | Fragment mineral | parent's mineral; yield is the parent's reserve, redistributed, never re-rolled |
 | Gun shatter | pays at most `GUN_BURST_SHARE` 0.10 of the rock's own yield; the excess burns, the gun's fragments carry no ore |
 

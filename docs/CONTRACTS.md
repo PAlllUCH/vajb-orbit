@@ -2017,6 +2017,25 @@ LAUNCH's service rows (the `STATION_HUB.md` §5.4 amendment — owner request 4)
   deliberately moves one NPC flight number: the NPC skid then settles at the player's
   rate. The brake half stays as ruled. Reversal: the `COAST_TIME_MULT` constant back to
   `2.0` (one number, every hull).
+- **Amended again (2026-09-30, S22.7 — the owner's "everything physics based on
+  mass").** The flight forces are derived from the **class** mass and applied
+  against the **fitted** mass (`ShipStats` gains `base_mass`; plating's
+  `1 + |speed penalty|` ponderous half now multiplies the resolved mass instead
+  of the three handling times, beside any `mass_add`), so fitted plating finally
+  slows the hull — **byte-identical at an unfitted hull** (base = fitted; the
+  S2.6/S22.6 measured pairs stand, §23.5's 5°/one-line acceptance included).
+  Rock mass becomes size-scaled (`ROCK_MASS_DENSITY × r²`, M anchored at 560 t →
+  S 183 / L 1 383 / XL 2 571 — **L8 closed**, 18 §13's new row), rocks collide
+  with each other (`COLLISION_MASK` 3; a rock-rock impact is a nudge — no
+  monitor, no damage — and placement gains a minimum-separation pass, margin
+  8 u), split speeds roll a 0.7–1.3 jitter × a √(m_M/m_child) weighting, and
+  fuel burns ∝ thrust (Vanguard-anchored 3.0/s → fighter 2.75 … patrol 3.22)
+  with the dash's 25 ∝ mass. **Disclosure:** NPC hulls carry no fit, so their
+  forces are unchanged; the fitted-plating figures move as 18 §13's rows table
+  (`h_composite` resolves ~9 % ponderouser than today — its penalty and its
+  `mass_add` now stack in one channel). Reversals: derive the forces from the
+  fitted mass, flat 560 t, mask 2, jitter (1, 1) / exponent 0, flat 3.0/s and
+  flat 25.
 
 ## §15 S3 item economy — instances and the AUCTION (2026-09-22)
 
