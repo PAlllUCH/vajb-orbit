@@ -156,15 +156,22 @@ const TURN_TRANSLATE_LEAK_MAX := 5.0
 ## not by global class name, for the reason the IMPACT preload's comment gives.
 const SHIP_FIT := preload("res://game/ship_fit.gd")
 
-## ENGINE_SPEC section 13 "Energy & fuel (rulings 10-14)": the afterburner burns
-## BOOST_FUEL 3.0 per second while it runs and a fold/dash burst spends DASH_FUEL 25.
-## Both are global calibration rows -- no class column and no module effect carries
-## them -- so the hull that spends them is their single owner, exactly as it is for
-## the brake multiplier and the arrive radii above (slice-0 review finding F3; the
-## dash's own activation and displacement stay slice 4's booster work, CONTRACTS
-## section 8.1). Both are spent through `PlayerState.try_spend_fuel`.
-const BOOST_FUEL := 3.0
-const DASH_FUEL := 25.0
+## ENGINE_SPEC section 13 "Energy & fuel (rulings 10-14)", as amended 2026-09-30
+## (S22.7): the afterburner burns fuel in proportion to the thrust it buys --
+## `BOOST_FUEL_REF` per second at the reference thrust (the Vanguard's own, so the
+## anchor is exact) -- and a fold/dash burst spends `DASH_FUEL_REF` scaled by the
+## class mass over the same Vanguard's 110 t (a dash's fuel is proportional to the
+## impulse it delivers). Neither is a class column in this file and no module
+## effect carries them -- the thrust comes resolved on the snapshot and the class
+## mass with it -- so the hull that spends them is their single owner, exactly as
+## it is for the brake multiplier and the arrive radii above (slice-0 review
+## finding F3; the dash's own activation and displacement stay slice 4's booster
+## work, CONTRACTS section 8.1). Both are spent through `PlayerState.try_spend_fuel`.
+const BOOST_FUEL_REF := 3.0
+const DASH_FUEL_REF := 25.0
+## Section 13's DASH_FUEL anchor mass: the Vanguard's own class column, the hull
+## the flat 25 was the burn of.
+const DASH_FUEL_REFERENCE_MASS := 110.0
 
 ## ENGINE_SPEC section 7: safe warp is available after 5 s without a hit.
 const WARP_DAMAGE_QUIET := 5.0
@@ -186,11 +193,12 @@ const DAMAGE := preload("res://game/damage.gd")
 ## the player and an NPC hull read one copy of it.
 const PROJECTILE := preload("res://game/projectile.gd")
 
-## Mass used when the launch snapshot carries no `hull_mass`: the section 13 class
-## column is M2's field on ShipStats, and the migration stands on its own until it is
-## there (the hull flies either way, because the flight maths is mass-independent, see
-## `_step_speed`; but collision damage and every impulse are charged per mass, so a
-## missing field is announced in `setup` rather than flown at a wrong weight).
+## Mass used when the launch snapshot carries no `hull_mass`/`base_mass`: the
+## section 13 class column is M2's field on ShipStats, and the migration stands on
+## its own until it is there (the hull flies either way, because the flight maths
+## is mass-independent, see `_step_speed`; but collision damage and every impulse
+## are charged per mass, so a missing field is announced in `setup` rather than
+## flown at a wrong weight).
 const UNRESOLVED_HULL_MASS := 1.0
 
 ## --- The owner's request (2026-09-21): "ship while traveling has to make sounds
@@ -941,7 +949,14 @@ func _step_turn(desired_turn: float, delta: float) -> void:
 	var spin_rate := _spin_rate() * _breach_turn_scale(desired_turn)
 	var omega := _body.angular_velocity
 	var alpha := clampf((desired_turn - omega) / delta, -spin_rate, spin_rate)
-	var torque := _angular_inertia() * (alpha + _angular_damp() * omega)
+	# S22.7's mass law (ENGINE_SPEC section 3.2): the torque's drive derives from
+	# the class mass (the class-mass twin of the body's own inertia) while the
+	# angular damp is compensated at the inertia the body actually carries, so
+	# the commanded spin-up is the class rate scaled by base/fitted and a released
+	# turn decays on the one angular damp, not on a second constant.
+	var torque := (
+		_angular_inertia_class() * alpha + _angular_inertia() * _angular_damp() * omega
+	)
 	if is_zero_approx(torque):
 		return
 	_apply_torque(torque)
@@ -1087,7 +1102,13 @@ func _thrust_axis(
 		return
 	var along := _body.linear_velocity.dot(axis)
 	var accel := clampf((desired_speed - along) / delta, -rate, rate)
-	var force := _hull_mass() * (accel + damp * along)
+	# S22.7's mass law (ENGINE_SPEC section 3.2): the drive force derives from the
+	# class mass (base_mass) -- the same class rate, applied against the fitted
+	# mass the body carries, which is what makes fitted plating slow the hull --
+	# while the damp compensation stays at the body's own mass, cancelling the one
+	# body damp exactly as before (the released hull's decay is still one ramp, one
+	# line). At an unfitted hull base = fitted and the force is today's to the digit.
+	var force := _base_mass() * accel + _hull_mass() * damp * along
 	if is_zero_approx(force):
 		return
 	_apply_force(axis * force)
@@ -1117,7 +1138,7 @@ func _step_lateral_drag(delta: float) -> void:
 	var sideways := velocity - nose * velocity.dot(nose)
 	if is_zero_approx(sideways.length_squared()):
 		return
-	_apply_force(-sideways * (_hull_mass() * extra))
+	_apply_force(-sideways * (_base_mass() * extra))
 
 
 ## Linear motion, on the body's velocity (ruling 8: thrust is `mass x acceleration`,
@@ -1292,6 +1313,35 @@ func _hull_mass() -> float:
 	return UNRESOLVED_HULL_MASS
 
 
+## The hull's CLASS mass (S22.7's mass law, ENGINE_SPEC section 3.2): the section
+## 13 column read before any module multiplication -- the figure the thrust, the
+## coast brake and the turn torque derive from, while the fitted `hull_mass`
+## above is what the body carries and what those forces are applied against. The
+## same null-tolerant read and the same fallback as `_hull_mass`, for the same
+## reason: a snapshot without the field is announced once, not flown silently
+## wrong.
+func _base_mass() -> float:
+	if _stats == null:
+		return UNRESOLVED_HULL_MASS
+	var mass: Variant = _stats.get(&"base_mass")
+	if (mass is float or mass is int) and float(mass) > 0.0:
+		return float(mass)
+	return UNRESOLVED_HULL_MASS
+
+
+## The snapshot's derived thrust (section 3.2: `base_mass x max_speed /
+## accel_time`, resolved once by ShipFit), the figure the boost burn is
+## proportional to. Zero when the snapshot predates the field -- the burn then
+## falls back to the flat reference rate instead of billing on a guess.
+func _engine_thrust() -> float:
+	if _stats == null:
+		return 0.0
+	var thrust: Variant = _stats.get(&"engine_thrust")
+	if thrust is float or thrust is int:
+		return maxf(float(thrust), 0.0)
+	return 0.0
+
+
 ## A peer that carries no simulated mass of its own (a wall, a station, anything that
 ## is not a rigid body) is immovable, which the reduced mass reads as an infinite
 ## mass.
@@ -1353,6 +1403,20 @@ func _angular_inertia() -> float:
 	if radius <= 0.0:
 		return 0.0
 	return 0.5 * _hull_mass() * radius * radius
+
+
+## S22.7's mass law (ENGINE_SPEC section 3.2): the turn torque's drive derives
+## from the CLASS mass, so the class-mass twin of the body's own inertia is what
+## `_step_turn` sizes its spin-up with -- the same class number means the same
+## commanded spin-up on every fit, and a fitted `mass_add` turns the hull
+## ponderouser by the ratio it adds to the body. The body's own inertia (the
+## fitted one, above) stays what the engine integrates and what the damp half
+## compensates.
+func _angular_inertia_class() -> float:
+	var radius := _hull_radius()
+	if radius <= 0.0:
+		return 0.0
+	return 0.5 * _base_mass() * radius * radius
 
 
 ## ENGINE_SPEC section 13's handling column, as the accelerations ruling 8 turns into
@@ -1441,7 +1505,9 @@ func _apply_rigid_body() -> void:
 	_body.linear_damp = _linear_damp()
 	_body.angular_damp = _angular_damp()
 	_last_velocity = _body.linear_velocity
-	if _stats != null and _hull_mass() <= UNRESOLVED_HULL_MASS:
+	if _stats != null and (
+		_hull_mass() <= UNRESOLVED_HULL_MASS or _base_mass() <= UNRESOLVED_HULL_MASS
+	):
 		push_warning(
 			"PlayerShip: ShipStats carries no hull_mass for this hull; flying at the "
 			+ "unit mass (collision damage and impulses are charged per mass)."
@@ -1498,15 +1564,41 @@ func _update_boosters(delta: float) -> void:
 	_on_booster_activated()
 
 
-## The afterburner's burn (ruling 11, section 13's BOOST_FUEL 3.0/s) through
-## `PlayerState.try_spend_fuel` -- the one gate boost and the dash share, so the tank
-## itself is the authority on whether a booster may run. A hull with no reactor yet (a
-## scene smoke test before `setup`) has no tank to bill and keeps the booster seam
-## working, exactly as `_manual_throttle` tolerates a missing input action.
+## The afterburner's burn (ruling 11, section 13's BOOST_FUEL row as amended
+## 2026-09-30, S22.7) through `PlayerState.try_spend_fuel` -- the one gate boost
+## and the dash share, so the tank itself is the authority on whether a booster
+## may run. The burn is proportional to the thrust it buys: `BOOST_FUEL_REF` per
+## second at the Vanguard's own derived thrust (the row's anchor), scaled by the
+## hull's resolved `engine_thrust` -- the section 13 eight-rate table, one figure
+## per class. A hull with no reactor yet (a scene smoke test before `setup`) has
+## no tank to bill and keeps the booster seam working, exactly as
+## `_manual_throttle` tolerates a missing input action; a snapshot without the
+## derived thrust bills the flat reference rather than a guess.
 func _burn_boost_fuel(delta: float) -> bool:
 	if _state == null:
 		return true
-	return _state.try_spend_fuel(BOOST_FUEL * delta)
+	return _state.try_spend_fuel(_boost_burn_rate() * delta)
+
+
+## The afterburner's per-second burn: `BOOST_FUEL_REF x engine_thrust /
+## engine_thrust_vanguard` (section 13's BOOST_FUEL row) -- 3.0/s exactly on the
+## unfitted Vanguard, the eight class rates of the row on the others.
+func _boost_burn_rate() -> float:
+	var thrust := _engine_thrust()
+	var reference := SHIP_FIT.engine_thrust_reference()
+	if thrust <= 0.0 or reference <= 0.0:
+		return BOOST_FUEL_REF
+	return BOOST_FUEL_REF * thrust / reference
+
+
+## The fold dash's burst cost (section 13's DASH_FUEL row as amended 2026-09-30,
+## S22.7): `DASH_FUEL_REF x base_mass / DASH_FUEL_REFERENCE_MASS` -- a dash's
+## fuel is proportional to the impulse it delivers, anchored at the Vanguard's
+## 25 (fighter 18.2, destroyer 68.2). The dash's own displacement stays slice
+## 4's booster work (CONTRACTS section 8.1); this is the receipt it will spend
+## through the one gate.
+func _dash_fuel() -> float:
+	return DASH_FUEL_REF * _base_mass() / DASH_FUEL_REFERENCE_MASS
 
 
 func _boost_multiplier() -> float:

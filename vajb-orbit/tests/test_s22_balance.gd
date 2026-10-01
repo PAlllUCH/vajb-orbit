@@ -187,11 +187,18 @@ func test_a9_the_npc_skid_settles_at_the_players_rate() -> void:
 		npc_t10, player_t10, float(stats.coast_time), 1.0 / float(stats.coast_time)
 	])
 	assert_true(npc_t10 > 0.0 and player_t10 > 0.0, "both fixtures settled inside the budget")
+	## S22.7's mass law: the player's launch fit carries a light plate, whose
+	## ponderous half is mass now -- the player's release rides the class coast
+	## scaled by base/fitted, the NPC (whose law is mass-cancelling and whose
+	## snapshot carries no fit of its own in flight terms) settles at the class
+	## rate itself. The parity claim is measured at that one correction.
+	var body: RigidBody2D = ship.call(&"impact_body")
+	var mass_ratio := float(stats.base_mass) / float(body.mass)
 	assert_true(
-		absf(npc_t10 - player_t10) / maxf(npc_t10, player_t10) <= SKID_TOLERANCE,
-		"the NPC skid settles at the player's rate (npc %.3f s vs player %.3f s)" % [
-			npc_t10, player_t10
-		]
+		absf(npc_t10 - player_t10 * mass_ratio) / maxf(npc_t10, player_t10 * mass_ratio)
+		<= SKID_TOLERANCE,
+		"the NPC skid settles at the player's class rate (npc %.3f s vs player %.3f s x base/fitted)"
+		% [npc_t10, player_t10]
 	)
 
 

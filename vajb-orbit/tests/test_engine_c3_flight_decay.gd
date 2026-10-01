@@ -55,14 +55,15 @@ func teardown() -> void:
 
 
 func test_the_coast_column_reaches_every_hulls_body_as_the_damp() -> void:
-	## The resolved coast time is the row times the fit's plating multiplier times the
-	## 2026-09-22 flight-feel ruling's `COAST_TIME_MULT`, ticked 2.0 -> 2.5 by CONTRACTS
+	## The resolved coast time is the row times the 2026-09-22 flight-feel ruling's
+	## `COAST_TIME_MULT`, ticked 2.0 -> 2.5 by CONTRACTS
 	## section 23.5's T1 (owner "go ahead with all", 2026-09-24) and 2.5 -> 5.0 by S22.6
-	## (owner 2026-09-30). The row itself is the
+	## (owner 2026-09-30); since S22.7 plating pays in mass, so the times stay the class
+	## rows and the fit's plate rides the resolved `hull_mass`. The row itself is the
 	## retuned half-of-section-13 literal this suite's other test pins, so the two halves
 	## of the release are asserted against their own sources.
 	var plate_penalty := absf(float(ShipFitScript.MODULES[PLATE][&"effects"][&"speed_penalty"]))
-	var multiplier := (1.0 + plate_penalty) * ShipFitScript.COAST_TIME_MULT
+	var multiplier := ShipFitScript.COAST_TIME_MULT
 	var checked := 0
 	for raw_key: Variant in ShipFitScript.HANDLING.keys():
 		var hull_id := StringName(raw_key)
@@ -76,8 +77,19 @@ func test_the_coast_column_reaches_every_hulls_body_as_the_damp() -> void:
 		assert_true(
 			_near(stats.coast_time, float(row[&"coast_time"]) * multiplier, TOLERANCE),
 			(
-				"%s: the resolved coast time is the row x the plating multiplier x COAST_TIME_MULT (got %.6f)"
+				"%s: the resolved coast time is the row x COAST_TIME_MULT (plating pays in mass since S22.7, got %.6f)"
 				% [hull_id, stats.coast_time]
+			)
+		)
+		assert_true(
+			_near(
+				float(stats.hull_mass),
+				float(row[&"hull_mass"]) * (1.0 + plate_penalty),
+				TOLERANCE
+			),
+			(
+				"%s: and the fitted mass is the class column x the plating multiplier (got %.3f)"
+				% [hull_id, float(stats.hull_mass)]
 			)
 		)
 		var body: RigidBody2D = ship.impact_body()

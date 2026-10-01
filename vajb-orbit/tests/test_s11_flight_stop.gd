@@ -24,7 +24,9 @@ extends McpTestSuite
 ##      the force during that decay is antiparallel to the velocity on every tick -- one
 ##      vector, one line;
 ##   3. the time to the tenth is the derived `0.9 x coast_time x (v_release / max_speed)`,
-##      the class's own coast rate applied to the whole velocity: one stop.
+##      scaled by the fit's own mass ratio (S22.7: the forces are the class's, applied
+##      against the fitted mass) -- the class's own coast rate applied to the whole
+##      velocity: one stop.
 ##
 ## A fourth test holds the wave's own hazard (S11-R1's brief names it): the release branch
 ## must not slow a *commanded* strafe, which still reaches 90 % of the class ceiling in
@@ -231,12 +233,16 @@ func test_a_commanded_strafe_still_reaches_the_class_ceiling_at_the_class_rate()
 		var body: RigidBody2D = ship.impact_body()
 		var dt := 1.0 / float(Engine.physics_ticks_per_second)
 		var mass := float(body.mass)
+		## S22.7's mass law: the launch fit's plate pays in mass, so the chase is
+		## the class rate scaled by base/fitted and the mass-scaled window is what
+		## 90 % of `accel_time` means on the fitted hull.
+		var mass_ratio := mass / float(stats.base_mass)
 		var heading := float(body.global_rotation)
 		var position := Vector2.ZERO
 		var velocity := Vector2.ZERO
 		var side := Vector2.RIGHT.rotated(heading + PI * 0.5)
 		var ceiling := float(stats.max_speed)
-		var steps := int(STRAFE_ARRIVAL_FRACTION * float(stats.accel_time) * 60.0)
+		var steps := int(STRAFE_ARRIVAL_FRACTION * float(stats.accel_time) * mass_ratio * 60.0)
 		_press(STRAFE_RIGHT)
 		for i: int in range(steps):
 			velocity = _tick(ship, body, heading, position, velocity, dt, mass)
@@ -347,11 +353,14 @@ func _measure_release(hull_id: StringName) -> Dictionary:
 			break
 
 	## The derived tenth point: the whole velocity ramps to zero at the class's own coast
-	## rate, so the tenth is `0.9 x (v_release / max_speed) x coast_time`.
+	## rate scaled by the fit's mass ratio (S22.7: the forces are the class's, applied
+	## against the fitted mass), so the tenth is
+	## `0.9 x (v_release / max_speed) x coast_time x fitted/base`.
 	var derived := (
 		(1.0 - RELEASE_SPEED_FRACTION)
 		* (release_speed / ceiling)
 		* float(stats.coast_time)
+		* mass / float(stats.base_mass)
 	)
 	return {
 		&"cruised": true,

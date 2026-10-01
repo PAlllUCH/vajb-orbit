@@ -261,8 +261,12 @@ func test_the_retuned_turn_rate_reaches_the_hull_through_the_snapshot() -> void:
 			)
 		)
 		assert_true(
-			_near(float(stats.turn_spinup), float(row[&"turn_spinup"]) * (1.0 + penalty), 1e-6),
-			"%s: the spin-up keeps the plating multiplier the retune must not touch" % hull_id
+			_near(float(stats.turn_spinup), float(row[&"turn_spinup"]), 1e-6),
+			"%s: the spin-up stays the class row (plating pays in mass since S22.7)" % hull_id
+		)
+		assert_true(
+			_near(float(stats.hull_mass), float(row[&"hull_mass"]) * (1.0 + penalty), 1e-6),
+			"%s: and the plate's ponderous half rides the mass (x%.2f)" % [hull_id, 1.0 + penalty]
 		)
 
 

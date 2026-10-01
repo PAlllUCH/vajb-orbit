@@ -21,15 +21,18 @@ extends RefCounted
 ## is its alias, so `ShipFit.MODULES[id][&"effects"]` still indexes one literal.
 ##
 ## Interpretation the docs leave open (all reported in the W1 report):
-## * Plating multiplies the handling *times* (accel, coast, turn spin-up) by
-##   1 + |speed penalty| (ENGINE_SPEC section 3.2); `turn_rate` is a rate, so it
-##   moves only with the engine's `turn_mult`.
+## * Plating's ponderous half is **mass** since S22.7 (ENGINE_SPEC section 3.2 as
+##   amended 2026-09-30): the `1 + |speed penalty|` multiplies the resolved
+##   `hull_mass` beside any `mass_add`; `turn_rate` is a rate, so it moves only
+##   with the engine's `turn_mult`.
 ## * Pools clamp at 3x their own hull base (09 section 5 step 4).
 ## * Regen is base + the best single shield module value ("best value", 09 section 5).
 ## * The booster-on-activation speed multiplier is not baked into the snapshot
 ##   (it depends on whether the booster is firing); `boosters` carries the ids.
 ## * `hull_mass` is the ENGINE_SPEC section 13 class column (which gains the
-##   mass row v2 of that table describes) times any plating `mass_add`; the two
+##   mass row v2 of that table describes) times the plating's `mass_add` and,
+##   since S22.7, its `1 + |speed penalty|` ponderous half; `base_mass` is the
+##   class column itself, read before the module passes. The two
 ##   power pools are the section 13 flat base (100 / 200 / 5 per second), not a
 ##   class column.
 
@@ -639,6 +642,12 @@ static func resolve(hull_id: StringName, fit: Dictionary, affixes: Dictionary = 
 	stats.turn_rate = float(handling[&"turn_rate"])
 	stats.turn_spinup = float(handling[&"turn_spinup"])
 	stats.hull_mass = float(handling[&"hull_mass"])
+	# S22.7's mass law (ENGINE_SPEC section 3.2, owner 2026-09-30): the class
+	# column's own mass, read before any module pass touches it -- the forces are
+	# the class's, the inertia is the fit's, so the resolved `hull_mass` above is
+	# the body/collision figure and `base_mass` is what the thrust, the brake and
+	# the turn torque derive from.
+	stats.base_mass = float(handling[&"hull_mass"])
 	stats.shield_regen = BASE_SHIELD_REGEN
 	stats.damage_mult = 1.0
 	stats.scan_range = BASE_SCAN_RANGE
@@ -660,7 +669,28 @@ static func resolve(hull_id: StringName, fit: Dictionary, affixes: Dictionary = 
 	_apply_boosters(stats, ids, affixes)
 	_clamp(stats, hull, handling)
 	stats.lock_range = stats.scan_range
+	# Section 3.2's derived thrust, on the fully resolved rates: the figure the
+	# boost burn is proportional to (section 13's BOOST_FUEL row). A snapshot
+	# resolved with no accel time at all carries no thrust to bill.
+	stats.engine_thrust = (
+		stats.base_mass * stats.max_speed / stats.accel_time if stats.accel_time > 0.0 else 0.0
+	)
 	return stats
+
+
+## ENGINE_SPEC section 13's `BOOST_FUEL` row anchor: the thrust the Vanguard's own
+## handling row derives (`base_mass x max_speed / accel_time`, the resolved rate
+## the multiplier pattern ships), the figure every boost burn divides by so the
+## Vanguard's burn is `BOOST_FUEL_REF` (3.0/s) exactly and the other eight
+## classes land on the row's table (fighter 2.75 ... destroyer 2.26). Derived
+## from the section 13 rows and the resolve's own multiplier -- no new literal.
+static func engine_thrust_reference() -> float:
+	var vanguard: Dictionary = HANDLING[&"ship_vanguard"]
+	return (
+		float(vanguard[&"hull_mass"])
+		* float(vanguard[&"max_speed"])
+		/ (float(vanguard[&"accel_time"]) * ACCEL_TIME_MULT)
+	)
 
 
 ## Module ids of a fit in resolution order: the list slots in `LIST_SLOT_KEYS`
@@ -986,9 +1016,13 @@ static func _apply_flat(
 static func _apply_speed(
 	stats: ShipStats, ids: Array[StringName], affixes: Dictionary, rows: Array[Dictionary]
 ) -> void:
-	# 09 section 5 step 3 order: armour, then engine. Plating pays twice — its
-	# 09 section 3.3 speed cost and the handling-time multiplier of ENGINE_SPEC
-	# section 3.2 ("slow *and* ponderous").
+	# 09 section 5 step 3 order: armour, then engine. Plating pays **once, in
+	# mass** (S22.7's amendment of ENGINE_SPEC section 3.2, owner 2026-09-30):
+	# its `1 + |speed penalty|` ponderous half multiplies the resolved mass,
+	# beside its own `mass_add`, and the three handling-time multipliers this
+	# branch used to apply are retired -- the flight forces derive from the class
+	# mass and are applied against this fitted mass, so the same slow-*and*
+	# -ponderous feel rides one channel.
 	var lightened := absf(_affix_magnitude(affixes, &"lightened"))
 	for index: int in range(ids.size()):
 		var id: StringName = ids[index]
@@ -1003,16 +1037,12 @@ static func _apply_speed(
 		if _row_has_prefix(rows[index], &"lightened"):
 			penalty = minf(penalty + lightened, 0.0)
 		stats.max_speed *= 1.0 + penalty
-		var mass := 1.0 + absf(penalty)
-		stats.accel_time *= mass
-		stats.coast_time *= mass
-		stats.turn_spinup *= mass
 		# ENGINE_SPEC section 3.2 "Mass sources: hull class + armour plating": a
 		# plating module's own `mass_add` (09 section 3.3, only `h_composite`
-		# carries one today) is the collision/inertia mass the class column does
-		# not know about. The handling-time multiplier above is the feel; this is
-		# the number the collision formula and the rigid body read.
-		stats.hull_mass *= 1.0 + _effect(row, &"mass_add", 0.0)
+		# carries one today) and the penalty's ponderous half are the collision /
+		# inertia mass the class column does not know about -- one channel, the
+		# number the body reads and the forces are applied against.
+		stats.hull_mass *= (1.0 + absf(penalty)) * (1.0 + _effect(row, &"mass_add", 0.0))
 	# 09 section 3.7 as amended 2026-09-21: the engine set's deltas are **summed,
 	# never multiplied**, and the summed speed multiplier is clamped to
 	# `ENGINE_MULT_CEILING`; the turn multiplier carries no ceiling. Applied once,

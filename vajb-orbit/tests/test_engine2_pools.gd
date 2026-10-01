@@ -75,11 +75,17 @@ func test_fit_resolves_the_pool_base_and_the_mass_column() -> void:
 	assert_eq(cutter.energy_max, 100.0, "energy_max base")
 	assert_eq(cutter.fuel_max, 200.0, "fuel_max base")
 	assert_eq(cutter.energy_regen, 5.0, "energy_regen base")
-	assert_eq(cutter.hull_mass, 110.0, "Cutter hull_mass (13 class column)")
+	## S22.7: the standard fit's light plate pays its penalty in mass now
+	## (80/110/300 class columns x 1.05), the class figure rides `base_mass`.
+	assert_true(is_equal_approx(cutter.hull_mass, 110.0 * 1.05),
+		"Cutter hull_mass (13 class column x the plate's 1.05), got %s" % cutter.hull_mass)
+	assert_true(is_equal_approx(cutter.base_mass, 110.0), "Cutter base_mass (13 class column)")
 	var fighter: ShipStats = ShipFitScript.resolve(&"ship_fighter", ShipFitScript.STANDARD_FIT)
-	assert_eq(fighter.hull_mass, 80.0, "Fighter hull_mass")
+	assert_true(is_equal_approx(fighter.hull_mass, 80.0 * 1.05), "Fighter hull_mass x 1.05")
+	assert_true(is_equal_approx(fighter.base_mass, 80.0), "Fighter base_mass")
 	var destroyer: ShipStats = ShipFitScript.resolve(&"ship_destroyer", ShipFitScript.STANDARD_FIT)
-	assert_eq(destroyer.hull_mass, 300.0, "Destroyer hull_mass")
+	assert_true(is_equal_approx(destroyer.hull_mass, 300.0 * 1.05), "Destroyer hull_mass x 1.05")
+	assert_true(is_equal_approx(destroyer.base_mass, 300.0), "Destroyer base_mass")
 
 
 func test_plating_mass_lands_on_the_hull_mass() -> void:
@@ -87,8 +93,12 @@ func test_plating_mass_lands_on_the_hull_mass() -> void:
 		&"engine": &"e_std", &"power": &"p_std", &"weapons": [], &"shields": [],
 		&"armour": [&"h_composite"], &"computers": [], &"boosters": [], &"utility": [],
 	})
-	assert_true(is_equal_approx(plated.hull_mass, 110.0 * 1.10),
-		"h_composite mass_add 0.10 -> 121 t, got %s" % plated.hull_mass)
+	## S22.7: the penalty half and the module's own mass_add stack in the one
+	## channel -- 110 x (1 + 0.10) x (1 + 0.10) = 133.1 t.
+	assert_true(is_equal_approx(plated.hull_mass, 110.0 * 1.10 * 1.10),
+		"h_composite penalty 0.10 + mass_add 0.10 -> 133.1 t, got %s" % plated.hull_mass)
+	assert_true(is_equal_approx(plated.accel_time, 2.4 * 2.0),
+		"the handling times stay the class rows (plating pays in mass now)")
 	assert_true(is_equal_approx(plated.hull_max, 1000.0 + 1000.0),
 		"the plate's flat hull_add still applies")
 

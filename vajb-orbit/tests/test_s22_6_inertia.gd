@@ -175,8 +175,12 @@ func test_ac1_the_release_coast_is_five_seconds_and_lands_on_the_rows_envelope()
 		)
 		var stats: Variant = ShipFitScript.resolve(hull_id, ShipFitScript.STANDARD_FIT)
 		assert_true(
-			_near(float(stats.coast_time), resolved * plating, 1e-6),
-			"%s: the resolved coast is the row x 5.0 x the fit's plating multiplier" % hull_id
+			_near(float(stats.coast_time), resolved, 1e-6),
+			"%s: the resolved coast is the row x 5.0 (plating pays in mass since S22.7)" % hull_id
+		)
+		assert_true(
+			_near(float(stats.hull_mass), float(row[&"hull_mass"]) * plating, 1e-6),
+			"%s: and the plate's ponderous half rides the mass (x%.2f)" % [hull_id, plating]
 		)
 		unplated.append("%s=%.2f" % [String(hull_id).trim_prefix("ship_"), resolved])
 	print("[S226] AC1 rows %s" % " ".join(unplated))
@@ -189,24 +193,29 @@ func test_ac1_the_release_coast_is_five_seconds_and_lands_on_the_rows_envelope()
 		return
 	var coast := float(stats.coast_time)
 	var ceiling := float(stats.max_speed)
+	## S22.7's mass law: the release ramp rides the resolved coast time scaled by
+	## the fit's own mass ratio (fitted/base) -- the plate's ponderous half is
+	## mass now, and the heavier fit coasts proportionally further.
+	var body: RigidBody2D = ship.call(&"impact_body")
+	var coast_ramp := coast * float(body.mass) / float(stats.base_mass)
 	var at_ceiling := _released_envelope(ship, Vector2(ceiling, 0.0))
-	var derived_t_10 := 0.9 * coast
+	var derived_t_10 := 0.9 * coast_ramp
 	assert_true(
-		_near(float(at_ceiling[&"t_10"]), derived_t_10, ENVELOPE_TOLERANCE * coast),
+		_near(float(at_ceiling[&"t_10"]), derived_t_10, ENVELOPE_TOLERANCE * coast_ramp),
 		(
-			"released at the ceiling %.1f u/s the tenth point is 0.9 x coast_time = %.3f s (measured %.3f)"
+			"released at the ceiling %.1f u/s the tenth point is 0.9 x coast_time x fitted/base = %.3f s (measured %.3f)"
 			% [ceiling, derived_t_10, at_ceiling[&"t_10"]]
 		)
 	)
 	assert_true(
-		absf(float(at_ceiling[&"t_stop"]) - coast) <= float(STOP_TICKS) * _dt,
-		"the stop lands on the resolved coast time %.3f s (measured %.3f)" % [coast, at_ceiling[&"t_stop"]]
+		absf(float(at_ceiling[&"t_stop"]) - coast_ramp) <= float(STOP_TICKS) * _dt,
+		"the stop lands on the mass-scaled coast time %.3f s (measured %.3f)" % [coast_ramp, at_ceiling[&"t_stop"]]
 	)
-	var derived_carry := 0.5 * ceiling * coast
+	var derived_carry := 0.5 * ceiling * coast_ramp
 	assert_true(
 		_near(float(at_ceiling[&"carry"]), derived_carry, ENVELOPE_TOLERANCE * derived_carry),
 		(
-			"the carried distance is 0.5 x v0 x coast_time = %.2f u (measured %.2f)"
+			"the carried distance is 0.5 x v0 x coast_time x fitted/base = %.2f u (measured %.2f)"
 			% [derived_carry, at_ceiling[&"carry"]]
 		)
 	)
@@ -296,7 +305,15 @@ func test_ac2_the_released_forward_strafe_holds_its_bearing_to_the_tenth() -> vo
 		if velocity.length() <= RELEASE_FRACTION * release_speed:
 			t_10 = elapsed
 			break
-	var derived := 0.9 * (release_speed / ceiling) * float(stats.coast_time)
+	## The derived tenth point (S22.7's mass law): the whole velocity ramps to
+	## zero at the class coast rate scaled by the fit's mass ratio, so the tenth
+	## is `0.9 x (v_release / max_speed) x coast_time x fitted/base`.
+	var derived := (
+		0.9
+		* (release_speed / ceiling)
+		* float(stats.coast_time)
+		* mass / float(stats.base_mass)
+	)
 	print(
 		(
 			"[S226] AC2 v_release=%.3f drift=%.6f deg cross_share=%.9f t_10=%.4f derived=%.4f coast=%.3f"
@@ -582,8 +599,7 @@ func test_ac7_the_by_name_readers_see_the_same_law() -> void:
 		_near(
 			float(vanguard.coast_time),
 			float(ShipFitScript.HANDLING[&"ship_vanguard"][&"coast_time"])
-			* ShipFitScript.COAST_TIME_MULT
-			* (1.0 + absf(float(ShipFitScript.MODULES[PLATE][&"effects"][&"speed_penalty"]))),
+			* ShipFitScript.COAST_TIME_MULT,
 			1e-6
 		),
 		"test_s7_affixes.gd:72,366,376 read COAST_TIME_MULT by name -- the identity holds"

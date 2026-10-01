@@ -63,16 +63,16 @@ const MK2_REACTOR: StringName = &"p_mk2"
 ## byte-identical (CONTRACTS section 20). Every value is derived here, not copied
 ## from another suite: hull 1000 / shield 600 / cargo 40, `s_light` +200 shield and
 ## +4/s regen, `h_plate_light` +250 hull at a -0.05 speed penalty (x0.95 speed,
-## x1.05 on the three handling times), `w_laser` and `e_std`/`p_std` with no
-## effects, and the section 14 handling multipliers (accel x2.0, coast x COAST_TIME_MULT,
-## 2.5 since section 23.5's T1).
+## x1.05 on the mass -- S22.7's one-channel read: the three handling times stay
+## the class rows), `w_laser` and `e_std`/`p_std` with no effects, and the section
+## 14 handling multipliers (accel x2.0, coast x COAST_TIME_MULT, 5.0 since S22.6).
 const PRE_S7_VANGUARD: Dictionary = {
 	"max_speed": 406.6,
-	"accel_time": 5.04,
-	"coast_time": ShipFit.COAST_TIME_MULT * 1.05,
+	"accel_time": 4.8,
+	"coast_time": ShipFit.COAST_TIME_MULT,
 	"turn_rate": 1.5,
-	"turn_spinup": 0.525,
-	"hull_mass": 110.0,
+	"turn_spinup": 0.5,
+	"hull_mass": 110.0 * 1.05,
 	"hull_max": 1250.0,
 	"shield_max": 800.0,
 	"shield_regen": 6.0,
@@ -362,19 +362,21 @@ func test_lightened_flips_its_own_plate_and_never_crosses_into_a_bonus() -> void
 	_profile.set_fit(VANGUARD, {&"engines": [STD_ENGINE], &"power": STD_REACTOR, &"armour": [plate]})
 	var stats := _resolve(VANGUARD)
 	assert_close(stats.max_speed, 428.0, "the clamped penalty adds no speed")
-	assert_close(stats.accel_time, 2.4 * 2.0, "and the mass term follows it (1 + |0|)")
+	assert_close(stats.accel_time, 2.4 * 2.0, "the class accelerate leg (plating pays in mass now)")
 	assert_close(stats.coast_time, 1.0 * ShipFit.COAST_TIME_MULT, "coast too")
 	assert_close(stats.turn_spinup, 0.5, "and the spin-up")
-	assert_close(stats.hull_mass, 110.0, "hull_mass carries the plate's own mass_add only")
+	assert_close(stats.hull_mass, 110.0, "the clamped penalty adds no mass either (1 + |0|)")
 
-	## Inside the band: -0.04 leaves -0.01, and the speed **and** mass terms follow.
+	## Inside the band: -0.04 leaves -0.01, and the speed **and** mass terms follow
+	## (S22.7: the ponderous half is mass -- the times stay the class rows).
 	var plate_b := _fitted(LIGHT_PLATE, [{"id": "lightened", "value": -0.04}])
 	_profile.set_fit(VANGUARD, {&"engines": [STD_ENGINE], &"power": STD_REACTOR, &"armour": [plate_b]})
 	var stats_b := _resolve(VANGUARD)
 	assert_close(stats_b.max_speed, 428.0 * 0.99, "a -0.01 effective penalty")
-	assert_close(stats_b.accel_time, 2.4 * 2.0 * 1.01, "with the handling mass at 1.01")
-	assert_close(stats_b.coast_time, 1.0 * ShipFit.COAST_TIME_MULT * 1.01, "on every handling time")
-	assert_close(stats_b.turn_spinup, 0.5 * 1.01, "including the spin-up")
+	assert_close(stats_b.accel_time, 2.4 * 2.0, "the class accelerate leg, untouched")
+	assert_close(stats_b.coast_time, 1.0 * ShipFit.COAST_TIME_MULT, "coast untouched too")
+	assert_close(stats_b.turn_spinup, 0.5, "and the spin-up")
+	assert_close(stats_b.hull_mass, 110.0 * 1.01, "with the mass at 1 + |penalty|")
 
 	## Two plates, one carrying: the aggregate scales only the carrying instance.
 	var light := _fitted(LIGHT_PLATE, [{"id": "lightened", "value": -0.04}])
@@ -384,6 +386,34 @@ func test_lightened_flips_its_own_plate_and_never_crosses_into_a_bonus() -> void
 	})
 	## sum = -0.10 -> light -0.05 + 0.10 = +0.05 clamps to 0, heavy -0.12 + 0.10 = -0.02.
 	assert_close(_resolve(VANGUARD).max_speed, 428.0 * 1.0 * 0.98, "each plate's own penalty")
+
+
+## S22.7 (18 section 3.2 amended, owner 2026-09-30): plating's ponderous half is
+## **mass** -- `1 + |penalty|` multiplies the resolved `hull_mass` beside any
+## `mass_add`, and the three handling-time multipliers are retired. The two
+## shipped plates land on 09 section 1's amendment's figures: light x1.05,
+## composite x1.10 x 1.10 = x1.21.
+func test_platings_ponderous_half_is_mass_and_the_times_stay_class() -> void:
+	_profile.set_fit(VANGUARD, {
+		&"engines": [STD_ENGINE], &"power": STD_REACTOR, &"armour": [LIGHT_PLATE]
+	})
+	var light := _resolve(VANGUARD)
+	assert_close(light.accel_time, 2.4 * 2.0, "the class accelerate leg")
+	assert_close(light.coast_time, 1.0 * ShipFit.COAST_TIME_MULT, "the class coast")
+	assert_close(light.turn_spinup, 0.5, "and the class spin-up")
+	assert_close(light.hull_mass, 110.0 * 1.05, "light plating pays x1.05 in mass")
+
+	_profile.set_fit(VANGUARD, {
+		&"engines": [STD_ENGINE], &"power": STD_REACTOR, &"armour": [COMPOSITE]
+	})
+	var composite := _resolve(VANGUARD)
+	assert_close(composite.accel_time, 2.4 * 2.0, "the class accelerate leg")
+	assert_close(composite.coast_time, 1.0 * ShipFit.COAST_TIME_MULT, "the class coast")
+	assert_close(composite.turn_spinup, 0.5, "and the class spin-up")
+	assert_close(
+		composite.hull_mass, 110.0 * 1.10 * 1.10,
+		"the penalty and the mass_add stack in the one channel: x1.21"
+	)
 
 
 func test_deep_hold_adds_its_units_on_top_of_the_instance_cargo() -> void:

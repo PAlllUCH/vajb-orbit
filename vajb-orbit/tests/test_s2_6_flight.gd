@@ -141,14 +141,14 @@ func test_the_ruling_multipliers_are_the_pinned_constants() -> void:
 
 
 ## AC5's construction half, per class: the *resolved* accelerate leg is today's row times
-## `ACCEL_TIME_MULT` times the fit's own plating multiplier, and the hull's ceiling is
-## untouched by it -- which is what makes the derived time to 90 % of `max_speed` grow by
-## the multiplier and nothing else. Measured end to end by `probe_s2_6_flight.tscn`
+## `ACCEL_TIME_MULT`, and the hull's ceiling is untouched by it -- which is what makes the
+## derived time to 90 % of `max_speed` grow by the multiplier and nothing else. Measured end
+## to end by `probe_s2_6_flight.tscn`
 ## (Vanguard t_90 2.283 -> 4.550 s, ratio 1.99; every class within 1 % of the multiplier).
 func test_the_accelerate_leg_doubles_per_class_and_the_ceiling_never_moves() -> void:
 	var speed_penalty := float(ShipFitScript.MODULES[PLATE][&"effects"][&"speed_penalty"])
-	## Plating pays twice (09 section 3.3): a speed *penalty* on the ceiling and a
-	## multiplier on the handling times.
+	## Plating's speed *penalty* sits on the ceiling; since S22.7 its ponderous
+	## half is mass (the resolved `hull_mass`), not the handling times.
 	var plating := 1.0 + absf(speed_penalty)
 	var checked := 0
 	for hull_id: StringName in TODAY_HANDLING:
@@ -165,12 +165,19 @@ func test_the_accelerate_leg_doubles_per_class_and_the_ceiling_never_moves() -> 
 		assert_true(
 			_near(
 				float(stats.accel_time),
-				float(row[&"accel_time"]) * ShipFitScript.ACCEL_TIME_MULT * plating,
+				float(row[&"accel_time"]) * ShipFitScript.ACCEL_TIME_MULT,
 				TOLERANCE
 			),
 			(
-				"%s: the resolved accelerate leg is the row x %.2f x the plating multiplier (got %.4f)"
+				"%s: the resolved accelerate leg is the row x %.2f -- plating pays in mass now (got %.4f)"
 				% [hull_id, ShipFitScript.ACCEL_TIME_MULT, float(stats.accel_time)]
+			)
+		)
+		assert_true(
+			_near(float(stats.hull_mass), float(handling[&"hull_mass"]) * plating, TOLERANCE),
+			(
+				"%s: the fitted mass is the class column x the plating multiplier (got %.3f)"
+				% [hull_id, float(stats.hull_mass)]
 			)
 		)
 		assert_true(
@@ -183,9 +190,10 @@ func test_the_accelerate_leg_doubles_per_class_and_the_ceiling_never_moves() -> 
 		## The two times the ramp is derived from, with the ruling applied on one side only:
 		## t_90 is 90 % of the accelerate leg (the chase is a linear ramp at
 		## `max_speed / accel_time`), so its ratio is the multiplier's own -- the plating
-		## multiplier is on both sides and cancels.
+		## multiplier is on both sides and cancels. Under the mass law the plated ramp is
+		## the resolved time scaled by the mass ratio (fitted/base = the plating here).
 		var before := 0.9 * float(row[&"accel_time"]) * plating
-		var after := 0.9 * float(stats.accel_time)
+		var after := 0.9 * float(stats.accel_time) * plating
 		var growth := after / before
 		assert_true(
 			growth >= RAMP_GROWTH_FLOOR - TOLERANCE,
@@ -202,8 +210,8 @@ func test_the_accelerate_leg_doubles_per_class_and_the_ceiling_never_moves() -> 
 ## The one decay (CONTRACTS section 23.5's row), per class: the released hull's linear
 ## path is no longer axis-dependent --
 ## - the resolved `coast_time` is today's row on the ticked `COAST_TIME_MULT` (5.0 since
-##   S22.6, owner 2026-09-30) times
-##   the fit's plating multiplier, and the body damps at `1 / coast_time`;
+##   S22.6, owner 2026-09-30) -- plating pays in mass since S22.7, so the times stay the
+##   class rows and the fit's mass rides the resolved `hull_mass`;
 ## - `_lateral_damp()` returns that *same* `1 / coast_time`: one rate owns both axes, the
 ##   pre-23.5 sideways time constant is gone;
 ## - the explicit lateral drag is therefore exactly 0.0 and `_step_lateral_drag` applies
@@ -227,12 +235,23 @@ func test_one_decay_owns_both_axes_and_the_carry_reverts() -> void:
 		assert_true(
 			_near(
 				float(stats.coast_time),
-				float(row[&"coast_time"]) * ShipFitScript.COAST_TIME_MULT * plating,
+				float(row[&"coast_time"]) * ShipFitScript.COAST_TIME_MULT,
 				TOLERANCE
 			),
 			(
-				"%s: the resolved coast time is today's row x %.2f x the plating multiplier (got %.4f)"
+				"%s: the resolved coast time is today's row x %.2f -- plating pays in mass now (got %.4f)"
 				% [hull_id, ShipFitScript.COAST_TIME_MULT, float(stats.coast_time)]
+			)
+		)
+		assert_true(
+			_near(
+				float(stats.hull_mass),
+				float(ShipFitScript.HANDLING[hull_id][&"hull_mass"]) * plating,
+				TOLERANCE
+			),
+			(
+				"%s: and the fitted mass is the class column x the plating multiplier (got %.3f)"
+				% [hull_id, float(stats.hull_mass)]
 			)
 		)
 		var forward := float(ship.call(&"_linear_damp"))
@@ -475,6 +494,7 @@ func test_each_axis_compensates_its_own_damp() -> void:
 	var body: RigidBody2D = ship.impact_body()
 	var dt := 1.0 / float(Engine.physics_ticks_per_second)
 	var mass := float(body.mass)
+	var base_mass := float(stats.base_mass)
 	var nose := Vector2.RIGHT.rotated(float(body.global_rotation))
 	var side := Vector2.RIGHT.rotated(float(body.global_rotation) + QUARTER_TURN)
 	var forward_damp := float(ship.call(&"_linear_damp"))
@@ -497,7 +517,7 @@ func test_each_axis_compensates_its_own_damp() -> void:
 	var chase := clampf(
 		(float(stats.max_speed) - sideways_velocity) / dt, -rate, rate
 	)
-	var expected_sum := mass * (chase + sideways_damp * sideways_velocity - extra * sideways_velocity)
+	var expected_sum := base_mass * chase + mass * (sideways_damp - extra) * sideways_velocity
 	assert_true(
 		strafe_force.dot(side) > 0.0,
 		"the strafe pushes towards the hull's right (%.3f N)" % strafe_force.dot(side)
@@ -505,22 +525,23 @@ func test_each_axis_compensates_its_own_damp() -> void:
 	assert_true(
 		_near(strafe_force.dot(side), expected_sum, FORCE_TOLERANCE),
 		(
-			"and the step's whole sideways force is the chase plus the compensated damp (%.3f against a derived %.3f N)"
+			"and the step's whole sideways force is the chase at the class mass plus the compensated damp at the body's (%.3f against a derived %.3f N)"
 			% [strafe_force.dot(side), expected_sum]
 		)
 	)
 	## The reading that matters: net of the body's own damp -- which the engine applies to the
-	## velocity too -- the strafe accelerates at the class's own rate, so a commanded strafe
-	## still reaches the class ceiling in 90 % of `accel_time`. The released branch must not
-	## touch this: the strafe is commanded, so `_is_released` is false and the per-axis law
-	## runs (section 23.5's own row).
+	## velocity too -- the strafe accelerates at the class's own rate scaled by the mass law's
+	## base/fitted ratio (S22.7: the forces are the class's, the inertia is the fit's), so a
+	## commanded strafe still reaches the class ceiling in 90 % of the mass-scaled
+	## `accel_time`. The released branch must not touch this: the strafe is commanded, so
+	## `_is_released` is false and the per-axis law runs (section 23.5's own row).
 	assert_true(
 		_near(
 			strafe_force.dot(side) / mass - forward_damp * sideways_velocity,
-			chase,
+			(base_mass / mass) * chase,
 			FORCE_TOLERANCE
 		),
-		"net of the body damp the chase is the class rate (%.3f u/s^2)" % chase
+		"net of the body damp the chase is the class rate x base/fitted (%.3f u/s^2)" % chase
 	)
 	assert_true(
 		absf(strafe_force.dot(nose)) <= AXIS_SHARE * strafe_force.length(),
@@ -538,7 +559,7 @@ func test_each_axis_compensates_its_own_damp() -> void:
 	_drive(ship, dt)
 	var drag: Vector2 = ship.call(&"applied_force")
 	var release_accel := clampf(-sideways_velocity / dt, -coast_rate, coast_rate)
-	var release_sum := mass * (release_accel + forward_damp * sideways_velocity)
+	var release_sum := base_mass * release_accel + mass * forward_damp * sideways_velocity
 	assert_true(
 		_near(drag.dot(side), release_sum, FORCE_TOLERANCE),
 		(
@@ -547,8 +568,12 @@ func test_each_axis_compensates_its_own_damp() -> void:
 		)
 	)
 	assert_true(
-		_near(drag.dot(side) / mass - forward_damp * sideways_velocity, release_accel, FORCE_TOLERANCE),
-		"net of the one damp the release is the class's own coast rate (%.3f u/s^2)" % release_accel
+		_near(
+			drag.dot(side) / mass - forward_damp * sideways_velocity,
+			(base_mass / mass) * release_accel,
+			FORCE_TOLERANCE
+		),
+		"net of the one damp the release is the class's own coast rate x base/fitted (%.3f u/s^2)" % release_accel
 	)
 	assert_true(
 		drag.dot(side) < 0.0,
@@ -576,7 +601,7 @@ func test_each_axis_compensates_its_own_damp() -> void:
 	assert_true(
 		_near(
 			forward_force.dot(nose),
-			mass * clampf(-forward_velocity / dt, -coast_rate, coast_rate) + mass * forward_damp * forward_velocity,
+			base_mass * clampf(-forward_velocity / dt, -coast_rate, coast_rate) + mass * forward_damp * forward_velocity,
 			FORCE_TOLERANCE
 		),
 		"the nose axis rides the one damp and the coast rate (%.3f N)" % forward_force.dot(nose)
