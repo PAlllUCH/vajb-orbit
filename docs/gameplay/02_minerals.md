@@ -369,8 +369,9 @@ the row). Consequences, disclosed: a rammed **S** rock is 3× lighter than today
 and takes the shove instead of being the wall (the reduced mass falls, so rock
 ram damage re-scales down for small rocks); an **XL** is 4.6× heavier and is a
 real wall. **B2** reads on `AsteroidField._deploy_debris` (the one carrier both
-debris paths ride): a resting rock's children leave at 105–195 u/s, and a
-resting XL's S splinters at ~315 u/s while its L children take ~77 u/s. Rocks
+debris paths ride): a resting rock's weight-1.0 children leave at 105–195 u/s, its
+S splinters at **~262 u/s at the mean jitter** (184–341 across the 0.7–1.3 roll) and
+its L children at **~95 u/s** (66–124). Rocks
 now also collide with each other (§13's Rock-rock contact row, `COLLISION_MASK`
 3) — that row is the engine spec's, not this section's.
 

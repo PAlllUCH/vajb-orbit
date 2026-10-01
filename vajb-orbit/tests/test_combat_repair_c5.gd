@@ -99,8 +99,8 @@ func teardown() -> void:
 
 
 ## The shipped `HullBody`'s own layer/mask pair, read off the scene rather than quoted:
-## the mask the rock must name is the hull's layer, and the pairing is two-way only when
-## each side's mask contains the other's layer.
+## the mask the rock must cover is the hull's layer (and, since S22.7, the rock's own),
+## and the pairing is two-way only when each side's mask contains the other's layer.
 func test_the_rock_masks_the_hull_layer_so_a_ram_pair_is_two_way() -> void:
 	var ship := PlayerShipScene.instantiate() as Node2D
 	assert_true(ship != null, "the shipped player_ship.tscn instantiates")
@@ -120,10 +120,9 @@ func test_the_rock_masks_the_hull_layer_so_a_ram_pair_is_two_way() -> void:
 		AsteroidScript.COLLISION_MASK,
 		"setup writes the shipped mask"
 	)
-	assert_eq(
-		AsteroidScript.COLLISION_MASK,
-		hull_layer,
-		"the mask names the hull's own layer (%d), not merely a non-zero value" % hull_layer
+	assert_true(
+		(AsteroidScript.COLLISION_MASK & hull_layer) == hull_layer,
+		"the mask covers the hull's own layer (%d), not merely a non-zero value" % hull_layer
 	)
 	assert_ne(
 		rock.collision_mask & hull_layer,
@@ -137,8 +136,8 @@ func test_the_rock_masks_the_hull_layer_so_a_ram_pair_is_two_way() -> void:
 	)
 	assert_eq(
 		AsteroidScript.COLLISION_MASK & AsteroidScript.COLLISION_LAYER,
-		0,
-		"two rocks are both layer 1, so rocks still do not collide with each other"
+		AsteroidScript.COLLISION_LAYER,
+		"two rocks are both layer 1, and since S22.7 the mask covers it too: rocks meet rocks (a nudge, no monitor)"
 	)
 
 

@@ -76,7 +76,7 @@ const PIN_OUTWARD_KICK := 150.0
 const PIN_ANGLE_JITTER := 0.25
 const PIN_EJECT_MULT := 1.2
 const PIN_EJECT_CONE := 360.0
-const PIN_ROCK_MASS_MULT := 4.0
+const PIN_ROCK_MASS_DENSITY := 560.0 / (42.0 * 42.0)
 const PIN_WORK_PER_UNIT := 1.0
 ## 18 §13's handling table x 0.5 on the two columns the owner retunes (coast time,
 ## turn rate) -- the rows `ship_fit.gd` carries, read from the doc's table.
@@ -170,7 +170,7 @@ func _case_pins() -> void:
 		is_equal_approx(float(ShipFitScript.ANGULAR_DAMP_MULT), PIN_ANGULAR_MULT),
 		is_equal_approx(float(PlayerShipScript.BRAKE_MULT), PIN_BRAKE_MULT),
 		is_equal_approx(float(AsteroidScript.WORK_PER_UNIT), PIN_WORK_PER_UNIT),
-		is_equal_approx(float(AsteroidScript.ROCK_MASS_MULT), PIN_ROCK_MASS_MULT),
+		is_equal_approx(float(AsteroidScript.ROCK_MASS_DENSITY), PIN_ROCK_MASS_DENSITY),
 		is_equal_approx(float(AsteroidScript.FRAGMENT_EJECT_MULT), PIN_EJECT_MULT),
 		is_equal_approx(float(AsteroidScript.FRAGMENT_EJECT_CONE_DEG), PIN_EJECT_CONE),
 		is_equal_approx(float(FieldScript.FRAGMENT_OUTWARD_KICK), PIN_OUTWARD_KICK),

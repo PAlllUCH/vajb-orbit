@@ -842,14 +842,14 @@ func _invariants() -> void:
 	)
 	_check(
 		"invariant_body",
-		is_equal_approx(body.mass, 560.0)
+		is_equal_approx(body.mass, AsteroidScript.ROCK_MASS_DENSITY * 42.0 * 42.0)
 			and is_equal_approx(body.linear_damp, 3.71)
 			and body.linear_damp_mode == RigidBody2D.DAMP_MODE_REPLACE
 			and is_equal_approx(body.gravity_scale, 0.0)
 			and body.can_sleep == false
 			and body.collision_layer == 1
-			and body.collision_mask == 2,
-		"ruling 8 intact: mass 4 x ship_miner, damp 3.71 REPLACE, no gravity, layer 1 / mask 2"
+			and body.collision_mask == 3,
+		"ruling 8 intact: mass ROCK_MASS_DENSITY x 42^2 (the M anchor), damp 3.71 REPLACE, no gravity, layer 1 / mask 3"
 	)
 	_check(
 		"invariant_gun_chip",

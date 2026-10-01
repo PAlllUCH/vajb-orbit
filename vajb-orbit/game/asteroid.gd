@@ -91,25 +91,21 @@ const WORK_PER_UNIT := 1.0
 ## more, so 02 §6's 10 % rate is exact by intent rather than an eleventh hit.
 const WORK_EPSILON := 0.0001
 
-## Physics layer 1 (bit 0). Rocks are solid to ships and block shots and beams
-## (ENGINE_SPEC §6), so this body carries the rock layer and, for the hull layer, a
-## mask. Godot pairs two bodies from both sides: `interacts_with` (either mask) decides
+## Physics layer 1 (bit 0). Rocks are solid to ships, to shots and beams (ENGINE_SPEC
+## §6) and -- since S22.7 (18 §13's Rock-rock contact row, owner tick R1) -- to each
+## other. Godot pairs two bodies from both sides: `interacts_with` (either mask) decides
 ## the pair exists, and `collides_with` (this body's mask ∩ the peer's layer) decides
 ## whether this body's mass enters the solve. With the shipped `collision_mask` 0 the
 ## rock's inverse mass was forced to 0, so the solver resolved every contact as if the
 ## rock were immovable: the ship's half landed and the rock's half was dropped (C1
-## measured `v_peak = 0.000 u/s`, `pos_delta = 0.000 u`). The mask names the hull layer
-## (`player_ship.tscn`'s `HullBody` is layer 2 / mask 1), never the rock's own: two
-## rocks are both layer 1, so `mask 2 & layer 1 = 0` and rocks still do not collide
-## with each other.
+## measured `v_peak = 0.000 u/s`, `pos_delta = 0.000 u`). The hull is layer 2 / mask 1
+## (`player_ship.tscn`'s `HullBody`), and mask 3 (layers 1|2) pairs rock-vs-hull (`3 &
+## 2`) and rock-vs-rock (`3 & 1`) alike. A rock-rock contact stays a **nudge, not a
+## fight** (R2): this file carries no contact monitor, so no damage route reads a
+## rock-rock pair -- ruling 15/16's kinetic damage stays ship-vs-rock.
 const COLLISION_LAYER := 1
-const COLLISION_MASK := 2
+const COLLISION_MASK := 3
 const ROCK_GROUP: StringName = &"asteroid"
-
-## The §13 class mass column's single owner: `ShipFit.HANDLING`. Read as data
-## only, so the rock's mass cannot drift from the hull table (§13 v2 puts
-## `hull_mass` in that table and nowhere else).
-const ShipFitScript := preload("res://game/ship_fit.gd")
 
 ## The ram sink's conversion is the shipped 10 % gun chip (ENGINE_SPEC §6, ruling 17):
 ## the owner's 2026-09-21 re-scope rejected a second damage-to-work constant, so a ram
@@ -162,13 +158,37 @@ const FRAGMENT_EJECT_MULT := 1.2
 ## `15.0` restores the retired cone exactly.
 const FRAGMENT_EJECT_CONE_DEG := 360.0
 
-## §13's class mass column (the engine-slice-0 `hull_mass` row) × 4 — the brief's
-## "heavy mass (class `hull_mass` × 4, proposed)". A rock has no class of its own
-## and §13 gives no size mapping, so one mass serves all three looks: the rock's
-## size stays a look (this file's rule, amended only by cleaving) and the brief's
-## single factor is applied to one named reference row. `ship_miner` is that row —
-## the rock-facing hull and the median of the nine-class column (see the M2 report
-## for the derivation and the reversal).
+## §13's Ejection row as amended 2026-09-30 (S22.7, ticks S1+S2): every debris body's
+## **whole** ejection vector -- the `FRAGMENT_EJECT_MULT` inherit plus the field's
+## outward kick together -- scales by a per-child jitter uniform over this band, so a
+## split never leaves at one speed. The field draws it (`asteroid_field.gd`'s
+## `_deploy_debris`, the one carrier). Reversal: `(1.0, 1.0)`.
+const FRAGMENT_SPEED_JITTER := Vector2(0.7, 1.3)
+
+## The ejection row's mass weighting, applied to the same whole vector: the per-child
+## scale is also `pow(m_M / child_mass, THIS)` with `m_M` the M-class mass
+## (`ROCK_MASS_M`) -- splinters fly, boulders lumber. Reversal: exponent `0.0`.
+const FRAGMENT_MASS_SPEED_EXP := 0.5
+
+## §13's Rock mass row (S22.7, owner tick M1): `mass = ROCK_MASS_DENSITY × r²`, the
+## density anchored so the M class (§13's own radius, 42 u) keeps today's 560 t --
+## S 183 · M 560 · L 1 383 · XL 2 571 t at the shipped look widths (48/84/132/180 u).
+## A pebble is no longer a wall and an XL is 4.6× one. `_configure_body` reads the
+## **built** `_radius`, which is why `setup` runs it after `_build_look`. Reversal:
+## the flat pair below.
+const ROCK_MASS_DENSITY := 560.0 / (42.0 * 42.0)
+
+## The M-class mass the ejection row's weighting divides by -- the density's own
+## anchor, not a second literal (§13 pins the M class at 560 t).
+const ROCK_MASS_M := ROCK_MASS_DENSITY * 42.0 * 42.0
+
+## **SUPERSEDED (S22.7, 18 §13's Rock mass row): the flat one-mass rule** -- every
+## rock weighed `ROCK_MASS_MULT ×` the `ROCK_MASS_REFERENCE` handling row
+## (`ship_miner`, 4.0 × 140 = 560 t whatever the size). Kept, not deleted, as the
+## reversal's record with **no live reader** (the `FRAGMENT_SPLIT` precedent): the
+## frozen evidence probes read these as their own wave's record. Restoring it (and
+## retiring `ROCK_MASS_DENSITY`/`ROCK_MASS_M`) puts the flat 560 t back on every
+## class.
 const ROCK_MASS_MULT := 4.0
 const ROCK_MASS_REFERENCE: StringName = &"ship_miner"
 
@@ -356,8 +376,12 @@ func setup(
 	add_to_group(ROCK_GROUP)
 	collision_layer = COLLISION_LAYER
 	collision_mask = COLLISION_MASK
-	_configure_body()
 	_build_look(size_class, defer_shape)
+	## S22.7: after `_build_look`, so the mass reads the built `_radius` (the density
+	## law). The reorder draws nothing: `_build_look`'s look roll is the only RNG draw
+	## between the two, and `_configure_body` rolls none -- the RNG stream is
+	## unchanged.
+	_configure_body()
 
 
 ## Fractional work in, whole ore units out. Work accumulates across calls, so a
@@ -582,10 +606,10 @@ func _fragment_budget() -> float:
 
 
 ## Slice 0's rigid body: a heavy, damped, gravity-free rock (ruling 8). The mass is
-## the §13 class column × `ROCK_MASS_MULT` read from the one owner of that table,
-## so no number is duplicated here.
+## §13's Rock mass row (S22.7): `ROCK_MASS_DENSITY × _radius²` off the **built**
+## look, so a rock weighs what its size says (S 183 / M 560 / L 1 383 / XL 2 571 t).
 func _configure_body() -> void:
-	mass = ROCK_MASS_MULT * _reference_hull_mass()
+	mass = ROCK_MASS_DENSITY * _radius * _radius
 	linear_damp = LINEAR_DAMP
 	linear_damp_mode = RigidBody2D.DAMP_MODE_REPLACE
 	## Space, not a planet: the project's 980 u/s² 2D gravity would rain the field.
@@ -593,11 +617,6 @@ func _configure_body() -> void:
 	## A sleeping body stops answering contacts, and the ship's contact monitor is
 	## what charges a ram to both sides (ruling 15). Rocks are few and cheap.
 	can_sleep = false
-
-
-func _reference_hull_mass() -> float:
-	var row: Dictionary = ShipFitScript.HANDLING.get(ROCK_MASS_REFERENCE, {})
-	return float(row.get(&"hull_mass", 0.0))
 
 
 func _build_look(size_class: int, defer_shape: bool = false) -> void:

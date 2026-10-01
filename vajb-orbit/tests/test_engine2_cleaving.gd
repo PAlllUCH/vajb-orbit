@@ -10,11 +10,13 @@ extends McpTestSuite
 ##     `M -> S 1-3`, `S -> none` -- replacing the 2026-09-21 uniform 2-5 pair that
 ##     replaced the fixed (2,3)/(2,2) rows;
 ##   * the ejection direction is **uniform over the full circle** -- the retired +-15
-##     deg cone is `FRAGMENT_EJECT_CONE_DEG`'s own 360.0 -- and the speed is still the
-##     parent's velocity x 1.2, which is now the **shape's half** only: CONTRACTS 14's
-##     `FRAGMENT_OUTWARD_KICK` (150 u/s along the placement radial) rides on top of it,
-##     so the rows below read the shape back out of the deployed velocity and assert the
-##     deployed magnitude inside the additive bounds (S2.6-R2 / F3);
+##     deg cone is `FRAGMENT_EJECT_CONE_DEG`'s own 360.0 -- and the speed is the
+##     parent's velocity x 1.2 as the **shape's half**: CONTRACTS 14's
+##     `FRAGMENT_OUTWARD_KICK` (150 u/s along the placement radial) rides on top of
+##     it, and since S22.7 the WHOLE vector then scales by the per-child jitter x the
+##     mass weight (18 §13's Ejection row as amended), so the rows below assert the
+##     deployed magnitude inside the scaled additive bounds and read the cone off the
+##     s-invariant lean;
 ##   * **every depletion draws the break**: FX_SPEC 1.4's five-frame explosion at the
 ##     rock's own centre, scaled to the rock (1.2 x its collision diameter, clamped
 ##     96-224 u), S4's rock cue through the four-take pool row, and section 4.2 item 8's
@@ -46,7 +48,6 @@ extends McpTestSuite
 
 const AsteroidScript := preload("res://game/asteroid.gd")
 const FieldScript := preload("res://game/asteroid_field.gd")
-const ShipFitScript := preload("res://game/ship_fit.gd")
 const ProjectileScript := preload("res://game/projectile.gd")
 const MineralCatalogScript := preload("res://game/mineral_catalog.gd")
 const OreTuningScript := preload("res://game/ore_tuning.gd")
@@ -80,6 +81,12 @@ const DIRECTION_CLEAVES := 8
 
 var _field: Node2D = null
 var _root: Node2D = null
+
+## The amended ejection row's own band (S22.7): the per-child scale on the WHOLE
+## ejection vector is a jitter uniform over `FRAGMENT_SPEED_JITTER` times the mass
+## weight, so the per-fragment bounds below read the const rather than re-literal it.
+const SPEED_FLOOR: float = 0.7
+const SPEED_CEIL: float = 1.3
 
 
 func suite_name() -> String:
@@ -233,13 +240,25 @@ func _fragment_headings(fragments: Array[Node2D], heading: Vector2) -> Array[flo
 	return out
 
 
-## §5's shape recovered from a fragment's deployed velocity: CONTRACTS 14's
-## `FRAGMENT_OUTWARD_KICK` rides the fragment's own placement radial (rock centre to spawn
-## point, the direction the field places it on), so taking that vector back out leaves
-## exactly the rolled inherit `FRAGMENT_EJECT_CONE_DEG` owns.
-func _shape_half(fragment: Node2D, origin: Vector2) -> Vector2:
+## The amended ejection row's mass weight (S22.7), read off the fragment's own body:
+## `pow(m_M / child_mass, FRAGMENT_MASS_SPEED_EXP)` -- exact per class, so the
+## per-fragment speed bounds below are the law's own numbers, not a slack band.
+func _fragment_weight(fragment: Node2D) -> float:
+	return pow(
+		AsteroidScript.ROCK_MASS_M / (fragment as RigidBody2D).mass,
+		AsteroidScript.FRAGMENT_MASS_SPEED_EXP
+	)
+
+
+## The lean a fragment's deployed velocity keeps to its own placement radial: the
+## scaled whole vector's direction, which the per-child scale cannot rotate -- the
+## s-invariant reading of the cone roll (the pre-S22.7 shape recovery is gone by
+## design; see test_a_large_cleaves_into_a_mixed_m_and_s_set).
+func _lean_degrees(fragment: Node2D, origin: Vector2) -> float:
 	var radial := (fragment.global_position - origin).normalized()
-	return (fragment as RigidBody2D).linear_velocity - radial * FieldScript.FRAGMENT_OUTWARD_KICK
+	return rad_to_deg(
+		(radial as Vector2).angle_to((fragment as RigidBody2D).linear_velocity)
+	)
 
 
 func _widest_pair(headings: Array[float]) -> float:
@@ -260,9 +279,12 @@ func test_rock_is_a_heavy_damped_rigid_body() -> void:
 	var rock: Node2D = _rocks()[0]
 	var body := rock as RigidBody2D
 	assert_true(body != null, "the rock is a RigidBody2D")
-	var reference_row: Dictionary = ShipFitScript.HANDLING[AsteroidScript.ROCK_MASS_REFERENCE]
-	var want := float(reference_row[&"hull_mass"]) * AsteroidScript.ROCK_MASS_MULT
-	assert_eq(body.mass, want, "mass = ROCK_MASS_MULT x the reference class hull_mass")
+	var radius := float(rock.call(&"world_radius"))
+	var want := AsteroidScript.ROCK_MASS_DENSITY * radius * radius
+	assert_true(
+		is_equal_approx(body.mass, want),
+		"mass = ROCK_MASS_DENSITY x the built radius squared (%.4f vs %.4f)" % [body.mass, want]
+	)
 	assert_eq(body.gravity_scale, 0.0, "gravity is off in space")
 	assert_true(is_equal_approx(body.linear_damp, AsteroidScript.LINEAR_DAMP),
 		"the derived linear damp, got %s" % body.linear_damp)
@@ -270,16 +292,17 @@ func test_rock_is_a_heavy_damped_rigid_body() -> void:
 		"the project's default damp must not be added on top")
 	assert_false(body.can_sleep, "a rock never sleeps (contacts must answer)")
 	assert_eq(body.collision_layer, AsteroidScript.COLLISION_LAYER, "rock layer")
-	## The rock's mask is the hull layer, and it must be: Godot pairs two bodies from both
-	## sides, and a body whose mask misses the peer's layer is solved with a forced-zero
-	## inverse mass (C1 measured a rock handed 0.000 u/s and moved 0.000 u by a 450 u/s
-	## ram). "Rocks mask nothing" was half of the engine rule; `mask 2 & layer 1 = 0` is
-	## what still keeps two rocks apart.
-	assert_eq(body.collision_mask, AsteroidScript.COLLISION_MASK, "the rock masks the hull layer")
+	## The rock's mask is the hull layer AND its own (S22.7): Godot pairs two bodies
+	## from both sides, and a body whose mask misses the peer's layer is solved with a
+	## forced-zero inverse mass (C1 measured a rock handed 0.000 u/s and moved 0.000 u
+	## by a 450 u/s ram). Mask 3 (layers 1|2) pairs rock-vs-hull and -- the S22.7 tick
+	## R1 -- rock-vs-rock, whose contacts stay a nudge: no monitor, no damage (R2).
+	assert_eq(body.collision_mask, AsteroidScript.COLLISION_MASK,
+		"the rock masks the hull layer and its own")
 	assert_eq(
 		AsteroidScript.COLLISION_MASK & AsteroidScript.COLLISION_LAYER,
-		0,
-		"and nothing else: two rocks are both layer 1, so rocks do not collide with rocks"
+		AsteroidScript.COLLISION_LAYER,
+		"and its own layer: two rocks are both layer 1, so rocks meet rocks (a nudge, no monitor)"
 	)
 	assert_gt(float(rock.call(&"world_radius")), 0.0, "the shape follows the sprite")
 	assert_eq(field.call(&"rock_count"), ROCK_COUNT, "the field rolled its rocks")
@@ -398,23 +421,20 @@ func test_a_large_cleaves_into_a_mixed_m_and_s_set() -> void:
 				"the fragment inherits the parent's mineral")
 			child_bore += float(fragment.call(&"bore_ore"))
 			var ejected := (fragment as RigidBody2D).linear_velocity
-			var shape := _shape_half(fragment, origin)
-			## The inherit, measured as §5's shape: the deployed velocity with the field's
-			## radial kick taken back out is still `parent velocity x 1.2` exactly, so the
-			## kick is additive and does not scale with the parent (F3's "stays measurable").
-			assert_true(is_equal_approx(shape.length(),
-				velocity.length() * AsteroidScript.FRAGMENT_EJECT_MULT),
-				"the fragment still inherits x%s of the parent's speed, got %s"
-				% [AsteroidScript.FRAGMENT_EJECT_MULT, shape.length()])
-			## And the deployed magnitude sits inside the additive bounds: the two vectors
-			## can only be as short as their difference and as long as their sum.
+			var weight := _fragment_weight(fragment)
+			## The amended ejection row (S22.7): the WHOLE vector -- the x1.2 inherit
+			## plus the kick -- scales by the per-child jitter x the mass weight, so
+			## the pre-S22.7 shape recovery (an unscaled-kick residual) is gone by
+			## design. What the law still pins exactly, per fragment: the weight off
+			## its own mass, and the speed inside the jitter band x weight over the
+			## cone's additive reach (the two vectors' difference..sum, scaled).
 			var lowest := absf(velocity.length() * AsteroidScript.FRAGMENT_EJECT_MULT
-				- FieldScript.FRAGMENT_OUTWARD_KICK)
-			var highest := velocity.length() * AsteroidScript.FRAGMENT_EJECT_MULT \
-				+ FieldScript.FRAGMENT_OUTWARD_KICK
+				- FieldScript.FRAGMENT_OUTWARD_KICK) * SPEED_FLOOR * weight
+			var highest := (velocity.length() * AsteroidScript.FRAGMENT_EJECT_MULT \
+				+ FieldScript.FRAGMENT_OUTWARD_KICK) * SPEED_CEIL * weight
 			assert_true(ejected.length() >= lowest - ADDITIVE_SLACK
 					and ejected.length() <= highest + ADDITIVE_SLACK,
-				"the burst is the shape plus the kick, so its magnitude is %.3f..%.3f, got %.3f"
+				"the burst is the whole vector x the jitter x weight, so its magnitude is %.3f..%.3f, got %.3f"
 				% [lowest, highest, ejected.length()])
 		## The rolled mix is per kind, so both kinds are present in one Large's children
 		## (`M 1-3` and `S 2-4` both have a floor of 1).
@@ -485,16 +505,17 @@ func test_the_fragment_count_varies_inside_the_amended_bounds() -> void:
 
 ## The owner's "moving in random directions" as a measurement: with the cone retired a
 ## fragment can land more than 90 deg off its parent's heading (a +-15 deg cone cannot
-## produce that), and two fragments of one cleave can land more than 90 deg apart. Both are
-## read twice -- on the deployed velocity, which since §14 is the rolled shape **plus** the
-## field's radial kick, and on the shape alone (the residual), which is the roll the cone
-## constant owns -- so the kick cannot hide a narrowed cone.
+## produce that), and two fragments of one cleave can land more than 90 deg apart. Both
+## are read on the deployed velocity. S22.7 scales the whole vector per child, so the
+## pre-S22.7 shape recovery (an unscaled-kick residual) no longer exists; the cone's own
+## width is instead read off the s-invariant lean: the deployed velocity's angle to its
+## own placement radial is the cone roll's reach (the scale cannot rotate the vector),
+## and a +-15 deg cone could lean a fragment at most 7.36 deg off its radial.
 func test_ejection_directions_are_uniform_over_the_full_circle() -> void:
 	_field_with()
 	var deviations: Array[float] = []
-	var shapes: Array[float] = []
+	var leans: Array[float] = []
 	var widest := 0.0
-	var shape_widest := 0.0
 	for index in DIRECTION_CLEAVES:
 		var parent := _member(AsteroidScript.SIZE_LARGE, 4, "Spinner%d" % index)
 		var origin: Vector2 = (parent as Node2D).global_position
@@ -504,17 +525,11 @@ func test_ejection_directions_are_uniform_over_the_full_circle() -> void:
 		_deplete(parent)
 		var fragments := _new_since(before)
 		var deviations_here := _fragment_headings(fragments, heading)
-		var shapes_here: Array[float] = []
 		for fragment: Node2D in fragments:
-			shapes_here.append(
-				rad_to_deg(heading.angle_to(_shape_half(fragment, origin)))
-			)
+			leans.append(_lean_degrees(fragment, origin))
 		for deviation: float in deviations_here:
 			deviations.append(deviation)
-		for deviation: float in shapes_here:
-			shapes.append(deviation)
 		widest = maxf(widest, _widest_pair(deviations_here))
-		shape_widest = maxf(shape_widest, _widest_pair(shapes_here))
 	var beyond: int = 0
 	for deviation: float in deviations:
 		if absf(deviation) > 90.0:
@@ -524,17 +539,17 @@ func test_ejection_directions_are_uniform_over_the_full_circle() -> void:
 		% [beyond, deviations.size(), widest])
 	assert_true(widest > 90.0,
 		"two fragments of one cleave landed %.1f deg apart" % widest)
-	var shape_beyond: int = 0
-	for deviation: float in shapes:
-		if absf(deviation) > 90.0:
-			shape_beyond += 1
-	assert_true(shape_beyond > 0,
-		"and the roll alone does too (%d of %d, widest pair %.1f deg): the kick rotates the"
-		% [shape_beyond, shapes.size(), shape_widest]
-		+ " 360 deg spread without narrowing it")
-	assert_true(shape_widest > 90.0,
-		"the rolled shape spreads a cleave %.1f deg, so the cone constant is still 360"
-		% shape_widest)
+	var lean_widest := 0.0
+	for lean: float in leans:
+		lean_widest = maxf(lean_widest, absf(lean))
+	var shape := EJECT_SPEED * AsteroidScript.FRAGMENT_EJECT_MULT
+	var retired_reach: float = rad_to_deg(atan2(
+		shape * sin(deg_to_rad(15.0)),
+		FieldScript.FRAGMENT_OUTWARD_KICK + shape * cos(deg_to_rad(15.0))
+	))
+	assert_true(lean_widest > 2.0 * retired_reach,
+		"the cone still leans a fragment %.1f deg off its radial, past the retired +-15 deg cone's %.2f"
+		% [lean_widest, retired_reach])
 
 
 func test_fragments_join_the_same_field() -> void:

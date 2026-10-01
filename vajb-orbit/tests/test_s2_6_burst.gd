@@ -16,23 +16,22 @@ extends McpTestSuite
 ##   1. the pin's own shape -- one field-side constant, and the rock's §5 half untouched
 ##      (`eject_velocity()` is still exactly `linear_velocity × 1.2`);
 ##   2. **AC2**: 200 seeded breaks of a near-stationary rock, every fragment's radial
-##      component ≥ 0.5 × the kick, the deployed speed inside the kick ± the shape, the
+##      component ≥ 0.5 × the kick, the deployed speed inside the S22.7-amended band
+##      (the scaled kick ± the shape: the per-child jitter × the mass weight), the
 ##      per-cleave spread past 90° and all four quadrants covered;
-##   3. the **zero-kick control**: subtracting the pinned radial from a fragment's velocity
-##      reconstructs the pre-wave ejection exactly -- `× 1.2` of the parent's speed, in the
-##      rolled direction -- so the inherit stays measurable with the kick on top (it is not
-##      measurable by deleting the assertion), and a **stopped** rock's residual reads
-##      exactly 0.0 -- the pre-kick ejection the owner complained about;
-##   4. the two halves add: the deployed magnitude of a drifting rock's fragment sits inside
-##      `|shape − kick| .. shape + kick`, which only holds if the kick is a separate vector
-##      and the shape is unchanged.
+##   3. the **stopped-rock control**: S22.7 scales the whole vector per child, so the
+##      pre-S22.7 residual no longer isolates the inherit; what stays exact is that a
+##      **stopped** rock's fragment deploys exactly along its placement radial at the
+##      weighted-jitter speed -- §13's 105-195 u/s span at weight 1.0;
+##   4. the two halves add: the deployed magnitude of a drifting rock's fragment sits
+##      inside the scaled `|shape − kick| .. shape + kick`, which only holds if the
+##      kick is a separate vector scaled together with the shape.
 ##
 ## Nothing awaits a frame: a detached field needs no physics world for any of this (the
 ## fragments are real `RigidBody2D`s and their velocity is set, not simulated), and the
 ## breaks' FX and cue are the cleaving suite's rows. A subclass cannot zero the constant --
 ## GDScript refuses to redeclare a parent's member (measured: `Parse Error: The member
-## "FRAGMENT_OUTWARD_KICK" already exists in parent class AsteroidField`), which is why the
-## control in test 3 is the exact arithmetic residual rather than a second build.
+## "FRAGMENT_OUTWARD_KICK" already exists in parent class AsteroidField`).
 
 const AsteroidScript := preload("res://game/asteroid.gd")
 const FieldScript := preload("res://game/asteroid_field.gd")
@@ -109,8 +108,9 @@ func test_the_kick_is_one_field_side_constant_on_top_of_the_shape() -> void:
 
 
 ## 200 seeded breaks of a near-stationary rock: every fragment leaves along its own radial
-## with at least half the kick of outward speed, its deployed speed is the kick to within
-## the (tiny) shape it also carries, and the burst still leaves in every direction.
+## with at least half the kick of outward speed, its deployed speed is the S22.7-amended
+## whole vector (the kick +- the tiny shape, scaled by the per-child jitter x the mass
+## weight), and the burst still leaves in every direction.
 func test_every_fragment_moves_outward_from_the_rock_centre() -> void:
 	var velocity := Vector2(NEAR_STATIONARY, 0.0).rotated(DRIFT_HEADING)
 	var shape := velocity.length() * AsteroidScript.FRAGMENT_EJECT_MULT
@@ -143,9 +143,29 @@ func test_every_fragment_moves_outward_from_the_rock_centre() -> void:
 		"every break spawned fragments: %d over %d breaks" % [total, SWEEP_BREAKS])
 	assert_gt(lowest, HALF_KICK,
 		"AC2: the lowest radial component is %.3f u/s over %d fragments, against the %.1f floor" % [lowest, total, HALF_KICK])
-	assert_true(slowest >= KICK - shape - SPEED_EPSILON
-			and fastest <= KICK + shape + SPEED_EPSILON,
-		"a near-stationary rock's burst is the kick +- the %.3f u/s shape it carries: %.3f .. %.3f" % [shape, slowest, fastest])
+	## The amended ejection row (S22.7): the whole vector -- the shape plus the kick --
+	## scales by the per-child jitter x the mass weight, read per fragment off its own
+	## body (a Large's children: M at weight 1.0, S at weight 1.75 -- splinters fly).
+	for index in SWEEP_BREAKS:
+		var field := _field_with(FIELD_SEED + index)
+		for fragment: Node2D in _break_member("SweepCheck%d" % index, velocity):
+			var w := _weight(fragment)
+			var speed := (fragment as RigidBody2D).linear_velocity.length()
+			assert_true(
+				speed >= (KICK - shape) * AsteroidScript.FRAGMENT_SPEED_JITTER.x * w - SPEED_EPSILON
+					and speed <= (KICK + shape) * AsteroidScript.FRAGMENT_SPEED_JITTER.y * w + SPEED_EPSILON,
+				"the burst is the scaled kick for weight %.3f: got %.3f u/s" % [w, speed]
+			)
+		field.free()
+	print(
+		"[S26B] AC2 sweep slowest=%.3f fastest=%.3f (scaled band M %.3f..%.3f, S %.3f..%.3f)" % [
+			slowest, fastest,
+			(KICK - shape) * AsteroidScript.FRAGMENT_SPEED_JITTER.x,
+			(KICK + shape) * AsteroidScript.FRAGMENT_SPEED_JITTER.y,
+			(KICK - shape) * AsteroidScript.FRAGMENT_SPEED_JITTER.x * _class_weight(AsteroidScript.SIZE_SMALL),
+			(KICK + shape) * AsteroidScript.FRAGMENT_SPEED_JITTER.y * _class_weight(AsteroidScript.SIZE_SMALL),
+		]
+	)
 	assert_gt(narrowest, 90.0,
 		"the burst still leaves in every direction: the narrowest cleave spans %.3f deg (cleave %d)" % [narrowest, narrowest_cleave])
 	for quadrant: int in [0, 1, 2, 3]:
@@ -158,57 +178,71 @@ func test_every_fragment_moves_outward_from_the_rock_centre() -> void:
 ## ---------------------------------------------------------------------------
 
 
-## The control, run as arithmetic because the pin is a `const` (see the header): take the
-## pinned radial back out of a fragment's velocity and what is left must be §5's shape
-## exactly -- `× 1.2` of the parent's speed, rolled over the full circle. The stopped case is
-## the same subtraction on a rock the owner would recognise, and there the residual is
-## exactly 0.0 (measured before §14: its fragments read radial 0.000), so the measurement is
-## sensitive to the kick and not to the arithmetic.
-func test_the_zero_kick_residual_isolates_the_x1_2_inherit() -> void:
+## The control, run as arithmetic because the pin is a `const` (see the header). S22.7
+## scales the WHOLE ejection vector per child (the jitter x the mass weight), so the
+## pre-S22.7 residual -- taking the unscaled kick back out -- no longer isolates the
+## inherit. What the law still pins exactly is the owner's own stopped case: the whole
+## vector is the scaled kick alone, so every fragment deploys exactly along its
+## placement radial, at the weighted-jitter speed (the §13 span: 105-195 u/s at weight
+## 1.0, 183.75-341.25 at the S splinter's 1.75) -- measured, not prose. The drifting
+## parent's directions still land on both sides of the heading and past 90 deg, which
+## a +-15 deg cone cannot produce.
+func test_the_stopped_rock_deploys_the_weighted_kick_radially() -> void:
 	var velocity := Vector2(DRIFT_SPEED, 0.0).rotated(DRIFT_HEADING)
-	var shape := velocity.length() * AsteroidScript.FRAGMENT_EJECT_MULT
 	var deviation_low := INF
 	var deviation_high := -INF
 	var widest := 0.0
-	var residuals := 0
+	var readings := 0
 	var beyond := 0
 	for index in DIRECTION_CLEAVES:
 		var field := _field_with(FIELD_SEED + index)
 		var here: Array[float] = []
 		for fragment: Node2D in _break_member("Residual%d" % index, velocity):
-			var residual := _residual(fragment)
-			assert_true(is_equal_approx(residual.length(), shape),
-				"the residual is the parent's velocity x %s: %.6f against %.6f" % [AsteroidScript.FRAGMENT_EJECT_MULT, residual.length(), shape])
-			var deviation := rad_to_deg(velocity.angle_to(residual))
+			var deviation := rad_to_deg(velocity.angle_to((fragment as RigidBody2D).linear_velocity))
 			here.append(deviation)
 			deviation_low = minf(deviation_low, deviation)
 			deviation_high = maxf(deviation_high, deviation)
 			if absf(deviation) > 90.0:
 				beyond += 1
-			residuals += 1
+			readings += 1
 		widest = maxf(widest, _widest(here))
 		field.free()
-	assert_gt(residuals, 0, "the control measured at least one fragment")
+	assert_gt(readings, 0, "the control measured at least one fragment")
 	assert_true(deviation_low < 0.0 and deviation_high > 0.0,
-		"the rolled shape still lands on both sides of the parent's heading: %.3f .. %.3f deg" % [deviation_low, deviation_high])
+		"the deployed burst still lands on both sides of the parent's heading: %.3f .. %.3f deg" % [deviation_low, deviation_high])
 	assert_gt(beyond, 0,
-		"and past 90 deg off it (%d of %d), which a +-15 deg cone cannot produce" % [beyond, residuals])
+		"and past 90 deg off it (%d of %d), which a +-15 deg cone cannot produce" % [beyond, readings])
 	assert_gt(widest, 90.0,
-		"two residual headings of one cleave are %.3f deg apart" % widest)
+		"two deployed headings of one cleave are %.3f deg apart" % widest)
 	_field_with(FIELD_SEED)
 	var fragments := _break_member("Stopped", Vector2.ZERO)
 	assert_true(fragments.size() >= 2,
 		"the stopped break left a roll of fragments to read, got %d" % fragments.size())
+	var slowest := INF
+	var fastest := 0.0
 	for fragment: Node2D in fragments:
-		var residual := _residual(fragment)
-		assert_true(residual.length() <= SPEED_EPSILON,
-			"with the kick subtracted a stopped rock's fragment reads the pre-kick 0.0: %s"
-			% residual)
 		var deployed := (fragment as RigidBody2D).linear_velocity
-		assert_true(is_equal_approx(deployed.length(), KICK),
-			"and the deployed velocity is the kick alone: %.6f u/s" % deployed.length())
-		assert_true(is_equal_approx(deployed.dot(_radial(fragment)), KICK),
-			"all of it radial, measured %.6f u/s" % deployed.dot(_radial(fragment)))
+		var radial := _radial(fragment)
+		var w := _weight(fragment)
+		## Exactly radial: the scaled whole vector has no second term to rotate it.
+		assert_true(is_equal_approx(deployed.dot(radial), deployed.length()),
+			"all of it radial, measured %.6f u/s" % deployed.dot(radial))
+		var span := AsteroidScript.FRAGMENT_SPEED_JITTER
+		assert_true(
+			deployed.length() >= span.x * w * KICK - SPEED_EPSILON
+				and deployed.length() <= span.y * w * KICK + SPEED_EPSILON,
+			"the deployed speed is the weighted-jitter kick (weight %.3f): %.3f u/s" % [w, deployed.length()]
+		)
+		slowest = minf(slowest, deployed.length())
+		fastest = maxf(fastest, deployed.length())
+	var span := AsteroidScript.FRAGMENT_SPEED_JITTER
+	print(
+		"[S26B] stopped rock's burst %.3f..%.3f u/s over %d fragments (the law: %.1f..%.1f at weight 1.0, %.1f..%.1f at the S weight 1.75)"
+		% [slowest, fastest, fragments.size(),
+		span.x * KICK, span.y * KICK,
+		span.x * KICK * _class_weight(AsteroidScript.SIZE_SMALL),
+		span.y * KICK * _class_weight(AsteroidScript.SIZE_SMALL)]
+	)
 
 
 ## ---------------------------------------------------------------------------
@@ -217,9 +251,10 @@ func test_the_zero_kick_residual_isolates_the_x1_2_inherit() -> void:
 
 
 ## A drifting parent's fragment carries both terms, so its magnitude sits inside the
-## additive bounds `|shape − kick| .. shape + kick` -- the bound only holds if the deployed
-## velocity is `shape + kick` as separate vectors, and a shape that had absorbed the kick
-## (or a kick scaled by the parent's speed) leaves it.
+## additive bounds `|shape − kick| .. shape + kick` scaled by the S22.7 per-child
+## whole-vector factor (the jitter x the mass weight, read off the fragment's own
+## body) -- the bound only holds if the deployed velocity is the scaled `shape + kick`,
+## and a shape that had absorbed the kick (or a kick outside the scale) leaves it.
 func test_the_burst_is_additive_on_the_rolled_shape() -> void:
 	var velocity := Vector2(DRIFT_SPEED, 0.0).rotated(DRIFT_HEADING)
 	var shape := velocity.length() * AsteroidScript.FRAGMENT_EJECT_MULT
@@ -229,16 +264,23 @@ func test_the_burst_is_additive_on_the_rolled_shape() -> void:
 	for index in DIRECTION_CLEAVES:
 		var field := _field_with(FIELD_SEED + index)
 		for fragment: Node2D in _break_member("Additive%d" % index, velocity):
+			var w := _weight(fragment)
 			var deployed := (fragment as RigidBody2D).linear_velocity.length()
+			assert_true(
+				deployed >= absf(shape - KICK) * AsteroidScript.FRAGMENT_SPEED_JITTER.x * w - SPEED_EPSILON,
+				"no fragment falls under the scaled |shape - kick| = %.3f u/s, got %.3f"
+					% [absf(shape - KICK) * AsteroidScript.FRAGMENT_SPEED_JITTER.x * w, deployed]
+			)
+			assert_true(
+				deployed <= (shape + KICK) * AsteroidScript.FRAGMENT_SPEED_JITTER.y * w + SPEED_EPSILON,
+				"none passes the scaled shape + kick = %.3f u/s, got %.3f"
+					% [(shape + KICK) * AsteroidScript.FRAGMENT_SPEED_JITTER.y * w, deployed]
+			)
 			lowest = minf(lowest, deployed)
 			highest = maxf(highest, deployed)
 			total += 1
 		field.free()
 	assert_gt(total, 0, "the additive sample measured at least one fragment")
-	assert_true(lowest >= absf(shape - KICK),
-		"no fragment falls under |shape - kick| = %.3f u/s, lowest %.3f" % [absf(shape - KICK), lowest])
-	assert_true(highest <= shape + KICK,
-		"none passes shape + kick = %.3f u/s, highest %.3f" % [shape + KICK, highest])
 	assert_true(lowest < KICK and highest > KICK,
 		"the roll still spreads the burst around the kick: %.3f .. %.3f u/s" % [lowest, highest])
 	assert_gt(highest - lowest, 90.0,
@@ -283,9 +325,22 @@ func _radial(fragment: Node2D) -> Vector2:
 	return (fragment.global_position - ORIGIN).normalized()
 
 
-## §5's shape, recovered: the deployed velocity with the pinned kick taken back out.
-func _residual(fragment: Node2D) -> Vector2:
-	return (fragment as RigidBody2D).linear_velocity - _radial(fragment) * KICK
+## The amended ejection row's mass weight (S22.7), read off a fragment's own body.
+func _weight(fragment: Node2D) -> float:
+	return pow(
+		AsteroidScript.ROCK_MASS_M / (fragment as RigidBody2D).mass,
+		AsteroidScript.FRAGMENT_MASS_SPEED_EXP
+	)
+
+
+## The same weight for a size class, measured off a fixture rock of that class -- the
+## printed bands are the law's own numbers, not re-literals.
+func _class_weight(size_class: int) -> float:
+	var rock := AsteroidScript.new() as RigidBody2D
+	rock.call(&"setup", &"iron", 1, 4, size_class)
+	var w := _weight(rock)
+	rock.free()
+	return w
 
 
 func _live_ids() -> Array[int]:

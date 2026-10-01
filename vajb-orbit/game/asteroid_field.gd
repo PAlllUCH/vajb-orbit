@@ -107,6 +107,17 @@ const DIMINISHING_YIELD_MULT := 0.7
 ## exists for a spawn ring and none is invented as a gameplay value.
 const FRAGMENT_ANGLE_JITTER := 0.25
 
+## 18 §13's Rock-rock contact row (S22.7, owner tick R3): a placed rock -- a field
+## spawn or a cleave sibling -- may never land closer than the two collision radii
+## plus this margin, so turning the rock-rock pair on cannot shove overlapping bodies
+## apart at spawn or at a split. The margin is §13's own number; `PLACEMENT_RETRIES`
+## is the pass's mechanics, not a gameplay value: how many re-rolls a blocked
+## candidate gets on the field's seeded RNG before the widest-gap candidate wins
+## (a saturated field must still place). Reversal: delete the pass and these two
+## constants -- the pure ring rolls of record.
+const PLACEMENT_MARGIN := 8.0
+const PLACEMENT_RETRIES := 8
+
 ## CONTRACTS §14's "Fragment burst" (the owner's "when breaking asteroids they
 ## should move when exploding"): every fragment also carries this much speed along
 ## its own outward radial -- **the placement direction above**, rock centre to spawn
@@ -118,6 +129,11 @@ const FRAGMENT_ANGLE_JITTER := 0.25
 ## shape's half. Reversal: `0.0` is today exactly (measured before the change: a
 ## resting rock's four fragments all read radial 0.000 u/s).
 const FRAGMENT_OUTWARD_KICK := 150.0
+##
+## S22.7 (18 §13's Ejection row as amended): the fragment's WHOLE ejection vector
+## (this kick plus the inherited `×1.2` shape) then scales by the per-child jitter
+## roll × the mass weighting read off `Asteroid.FRAGMENT_SPEED_JITTER` /
+## `FRAGMENT_MASS_SPEED_EXP`, so a split never leaves at one speed.
 
 ## 02 §7's floating pickup prop and the group `Pickup.setup` joins. The burst's ore
 ## is placed on the same ring as the fragments, for the same reason.
@@ -279,7 +295,18 @@ func _spawn_rock(index: int, mineral_id: StringName, tier: int, bore: int) -> vo
 		"Rock%d" % (index + 1), mineral_id, tier,
 		AsteroidScript.extractable_units(bore), _roll_size(), false, float(bore)
 	)
-	rock.position = _rock_position(index)
+	## §13's minimum-separation pass (S22.7 R3): the candidate rolls against every
+	## rock the cycle has already placed -- field-local positions on both sides.
+	var avoid: Array[Dictionary] = []
+	for placed: Node2D in rocks():
+		if placed != rock:
+			avoid.append({
+				&"pos": placed.position,
+				&"radius": float(placed.call(&"world_radius")),
+			})
+	rock.position = _rock_position(
+		index, float(rock.call(&"world_radius")), avoid
+	)
 
 
 ## S14 (02 §5.2, S14_BRIEF §2 rule 4): the size class a spawned rock rolls, read
@@ -468,6 +495,7 @@ func _cleave(rock: Node2D) -> void:
 	var ring := maxf(float(rock.call(&"world_radius")), 0.0)
 	var mineral_id := StringName(rock.get(&"mineral_id"))
 	var tier := int(rock.get(&"tier"))
+	var siblings: Array[Node2D] = []
 	for index in count:
 		var units: int = int(shares[index]) if from_mining else 0
 		var fragment := _new_rock(
@@ -486,7 +514,8 @@ func _cleave(rock: Node2D) -> void:
 		fragment.call(&"mark_cleave_child")
 		var angle := TAU * float(index) / float(count)
 		angle += rng.randf_range(-FRAGMENT_ANGLE_JITTER, FRAGMENT_ANGLE_JITTER)
-		_deploy_debris(fragment, origin, ring, angle, velocity)
+		_deploy_debris(fragment, origin, ring, angle, velocity, siblings)
+		siblings.append(fragment)
 
 
 ## The one placement and ejection arithmetic every debris body rides: a `_cleave`
@@ -502,23 +531,108 @@ func _cleave(rock: Node2D) -> void:
 ## body damp -- because this is the one point both debris paths pass through. It is
 ## the last write to the body, so the parent's `LINEAR_DAMP` is gone before the child
 ## is ever measured.
+##
+## S22.7 (18 §13's Rock-rock contact row, tick R3): `siblings` -- the cleave's
+## already-placed children -- hold their rolled slots while a blocked candidate
+## re-rolls its angle along the ring system (bounded by `PLACEMENT_RETRIES`), and a
+## candidate that no angle clears slides out along its own placement ray to the exact
+## distance that clears every sibling by the margin. The slide is the pass's
+## load-bearing half: at the pinned per-kind ring distances an XL's fullest mixed
+## brood (3L + 4M + 5S) needs ~450 deg of angular clearance around one centre, so no
+## angle-only search can hold the invariant -- the own-ray slide can, for every
+## brood. A splinter has no siblings and never enters the pass.
+##
+## S22.7 (18 §13's Ejection row as amended, ticks S1+S2): the child's WHOLE ejection
+## vector -- the inherited `×1.2` part and the outward kick together -- then scales
+## by a per-child jitter roll times the mass weighting
+## `pow(ROCK_MASS_M / child_mass, FRAGMENT_MASS_SPEED_EXP)`, so splinters fly and
+## boulders lumber. Reversal: drop the scale (and the sibling pass).
 func _deploy_debris(
-	child: Node2D, origin: Vector2, ring: float, angle: float, velocity: Vector2
+	child: Node2D, origin: Vector2, ring: float, angle: float, velocity: Vector2,
+	siblings: Array[Node2D] = []
 ) -> void:
 	child.call(&"apply_fragment_damp")
 	var distance := ring + float(child.call(&"world_radius"))
+	if not siblings.is_empty():
+		var avoid: Array[Dictionary] = []
+		for sibling: Node2D in siblings:
+			avoid.append({
+				&"pos": sibling.global_position,
+				&"radius": float(sibling.call(&"world_radius")),
+			})
+		var placement := _sibling_placement(
+			origin, distance, float(child.call(&"world_radius")), angle, avoid
+		)
+		angle = placement.x
+		distance = placement.y
+	var outward := Vector2.RIGHT.rotated(angle)
 	## One direction, two uses: this is the placement radial, and §14's kick rides
 	## the same vector, so a fragment always leaves along the ray it was born on.
-	var outward := Vector2.RIGHT.rotated(angle)
 	child.global_position = origin + outward * distance
-	child.linear_velocity = velocity.rotated(
-		deg_to_rad(
-			rng.randf_range(
-				-AsteroidScript.FRAGMENT_EJECT_CONE_DEG,
-				AsteroidScript.FRAGMENT_EJECT_CONE_DEG
+	var weight := pow(
+		AsteroidScript.ROCK_MASS_M / (child as RigidBody2D).mass,
+		AsteroidScript.FRAGMENT_MASS_SPEED_EXP
+	)
+	var scale := weight * rng.randf_range(
+		AsteroidScript.FRAGMENT_SPEED_JITTER.x, AsteroidScript.FRAGMENT_SPEED_JITTER.y
+	)
+	child.linear_velocity = (
+		velocity.rotated(
+			deg_to_rad(
+				rng.randf_range(
+					-AsteroidScript.FRAGMENT_EJECT_CONE_DEG,
+					AsteroidScript.FRAGMENT_EJECT_CONE_DEG
+				)
 			)
+		) + outward * FRAGMENT_OUTWARD_KICK
+	) * scale
+
+
+## The debris ring's half of the placement pass. The first candidate is the caller's
+## slot at the parent-clearance distance; while it is blocked, candidates re-roll
+## their angle on the field's seeded RNG (bounded, like `_rock_position`), each taken
+## at its own exact clear distance along its ray. The winner is the first candidate
+## that is clear at the floor, else the one needing the least outward slide. Returns
+## `(angle, distance)`.
+func _sibling_placement(
+	origin: Vector2, floor_distance: float, radius: float, angle: float, avoid: Array[Dictionary]
+) -> Vector2:
+	var best_angle := angle
+	var best_distance := _clear_distance(origin, floor_distance, radius, angle, avoid)
+	for attempt in PLACEMENT_RETRIES:
+		if is_equal_approx(best_distance, floor_distance):
+			break
+		var candidate := rng.randf_range(0.0, TAU)
+		var needed := _clear_distance(origin, floor_distance, radius, candidate, avoid)
+		if is_equal_approx(needed, floor_distance):
+			return Vector2(candidate, floor_distance)
+		if needed < best_distance:
+			best_distance = needed
+			best_angle = candidate
+	return Vector2(best_angle, best_distance)
+
+
+## The least distance along the `angle` ray from `origin` that a body of `radius`
+## needs to clear every placed entry by `PLACEMENT_MARGIN` -- the floor distance when
+## the pure ring slot already does, else the binding entry's exact quadratic root
+## (`d = d_j·cosΔ + sqrt(need² − d_j²·sin²Δ)`, the ray's outward exit from that
+## entry's exclusion disc). Exact arithmetic, no RNG, so a slide is reproducible.
+func _clear_distance(
+	origin: Vector2, floor_distance: float, radius: float, angle: float, avoid: Array[Dictionary]
+) -> float:
+	var distance := floor_distance
+	var ray := Vector2.RIGHT.rotated(angle)
+	for entry: Dictionary in avoid:
+		var offset: Vector2 = entry[&"pos"] - origin
+		var need := radius + float(entry[&"radius"]) + PLACEMENT_MARGIN
+		var across := absf(offset.cross(ray))
+		if across >= need:
+			continue
+		distance = maxf(
+			distance,
+				offset.dot(ray) + sqrt(need * need - across * across)
 		)
-	) + outward * FRAGMENT_OUTWARD_KICK
+	return distance
 
 
 ## S22.5 (02 §5.3 A4): a gun hit that did not crack an L/XL rock rolls
@@ -722,13 +836,42 @@ func _roll_tier() -> int:
 	return 0
 
 
-## An even angular spread at a jittered radius: 6-12 rocks cannot stack, which
-## keeps a separation pass out of the loop.
-func _rock_position(index: int) -> Vector2:
-	var angle := TAU * float(index) / float(maxi(_rocks_per_cycle, 1))
-	angle += rng.randf_range(-FIELD_ANGLE_JITTER, FIELD_ANGLE_JITTER)
-	var radius := rng.randf_range(FIELD_RADIUS * FIELD_INNER_FRACTION, FIELD_RADIUS)
-	return Vector2.RIGHT.rotated(angle) * radius
+## An even angular spread at a jittered radius, guarded by §13's minimum-separation
+## pass (S22.7 R3): a candidate that lands inside an already-placed rock's clearance
+## (`r_i + r_j + PLACEMENT_MARGIN`) is re-rolled on the field's own seeded RNG --
+## bounded by `PLACEMENT_RETRIES`, so a saturated field still places -- and the
+## widest-gap candidate wins when every roll is blocked. The first roll is the pure
+## ring roll of record; `radius` is the arriving rock's collision radius and `avoid`
+## carries what is already standing (field-local positions, like the return value).
+func _rock_position(index: int, radius: float, avoid: Array[Dictionary]) -> Vector2:
+	var best := Vector2.ZERO
+	var best_gap := -INF
+	for attempt in PLACEMENT_RETRIES + 1:
+		var angle := TAU * float(index) / float(maxi(_rocks_per_cycle, 1))
+		angle += rng.randf_range(-FIELD_ANGLE_JITTER, FIELD_ANGLE_JITTER)
+		var ring := rng.randf_range(FIELD_RADIUS * FIELD_INNER_FRACTION, FIELD_RADIUS)
+		var candidate := Vector2.RIGHT.rotated(angle) * ring
+		var gap := _placement_gap(candidate, radius, avoid)
+		if gap >= PLACEMENT_MARGIN:
+			return candidate
+		if gap > best_gap:
+			best_gap = gap
+			best = candidate
+	return best
+
+
+## The smallest gap a body of `radius` at `candidate` keeps to the placed entries --
+## the number the pass's margin is judged against (negative: the bodies overlap).
+func _placement_gap(
+	candidate: Vector2, radius: float, avoid: Array[Dictionary]
+) -> float:
+	var gap := INF
+	for entry: Dictionary in avoid:
+		gap = minf(
+			gap,
+			candidate.distance_to(entry[&"pos"]) - radius - float(entry[&"radius"])
+		)
+	return gap
 
 
 ## Weight tables are int-keyed in `MineralCatalog.SECTOR_TIER_MIX`; a string-keyed

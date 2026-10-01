@@ -521,7 +521,10 @@ func test_ac5_no_other_gameplay_number_moved() -> void:
 	assert_true(is_equal_approx(AsteroidScript.WORK_PER_UNIT, 1.0), "WORK_PER_UNIT 1.0 (_accumulate)")
 	assert_true(is_equal_approx(AsteroidScript.FRAGMENT_EJECT_MULT, 1.2), "FRAGMENT_EJECT_MULT 1.2 (eject_velocity)")
 	assert_true(is_equal_approx(AsteroidScript.FRAGMENT_EJECT_CONE_DEG, 360.0), "the eject cone 360 (the field's roll)")
-	assert_true(is_equal_approx(AsteroidScript.ROCK_MASS_MULT, 4.0), "ROCK_MASS_MULT 4.0 (_configure_body)")
+	assert_true(
+		is_equal_approx(AsteroidScript.ROCK_MASS_DENSITY * 42.0 * 42.0, 560.0),
+		"the M class anchors the density law at 560 t (ROCK_MASS_DENSITY x 42^2, _configure_body)"
+	)
 	assert_true(is_equal_approx(FieldScript.FRAGMENT_OUTWARD_KICK, 150.0), "FRAGMENT_OUTWARD_KICK 150 (_deploy_debris)")
 	assert_true(is_equal_approx(FieldScript.FRAGMENT_ANGLE_JITTER, 0.25), "FRAGMENT_ANGLE_JITTER 0.25 (_cleave)")
 	assert_true(is_equal_approx(OreTuningScript.gun_chip_rate, 0.10), "gun_chip_rate 0.10 (the gun door)")

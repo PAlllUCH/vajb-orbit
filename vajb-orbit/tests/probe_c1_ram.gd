@@ -189,8 +189,7 @@ func _measure_medium_radius() -> void:
 
 
 func _rock_mass() -> float:
-	var row: Dictionary = ShipFitScript.HANDLING.get(AsteroidScript.ROCK_MASS_REFERENCE, {})
-	return AsteroidScript.ROCK_MASS_MULT * float(row.get(&"hull_mass", 0.0))
+	return AsteroidScript.ROCK_MASS_DENSITY * _medium_radius * _medium_radius
 
 
 func _start_scenario(index: int) -> void:
