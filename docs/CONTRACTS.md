@@ -910,6 +910,33 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
+Expected (S22.7, 2026-10-01): **`[SUMMARY] passed=1002 failed=0`**, exit 0. S22.7-R1 measured
+**1002/0** on a fresh scratch store (a second full-gate run flaked only the pre-existing
+`test_s21_stability` boot row — 4/4 isolated passes on HEAD and 2/2 on the baseline; see
+L260) and replayed the wave baseline (`fbae367`, a `/tmp` worktree) at **990 executed** (987
+passed + the 3 gitignored-asset rows a text-only checkout cannot pass): growth is exactly
+§8's table — the two new suites (**7 + 4** rows) plus `test_s7_affixes`'s new mass row (**+1**),
+with one count-flat re-derive-rename in `test_s2_6_burst` (L259). The reviewer's own probes
+(`vajb-orbit/tools/s227_r1_probe.gd`, ships + rocks modes, 0 fails on scratch) re-measured:
+`base_mass` = the class row on all nine hulls with `fuel_max` the flat **200**; the plate
+fits resolve mass **×1.05 / ×1.21** with the three handling times untouched; the boost burns
+§13's eight rates (fighter 2.7528 · corvette 3.0969 · miner 1.8092 · trader 3.1239 · gunship
+2.3774 · patrol 3.2215 · freighter 1.9417 · destroyer 2.2581, the Vanguard **3.0000** exactly)
+and the dash **18.1818 / 68.1818**; rock masses **182.857 / 560.000 / 1382.857 / 2571.428 t**
+against §13's 183/560/1 383/2 571 (mask **3**, layer 1, no monitor, `can_sleep` false); a
+seeded 12-rock spawn keeps all **66 pairs** clear (tightest 39.861 u) and 24 seeded M/L/XL
+cleaves land ≥ **8.000 u**, the layout seed-reproducible; split speeds from rest span
+**106.7–193.2 u/s** on the weight-1.0 children (S mean factor **1.7624**, L mean **0.6521**,
+S splinters mean **1.7414** — §13's 105–195 / ~1.75× / ~0.64×), every child radial. The
+real-frame A/B (`tools/s226_r1_probe.gd` on both trees) shows the plated Vanguard's decay
+**byte-identical** (t_10 **4.7333**, t_stop **5.2500**, carry **1061.12**, drift
+**0.000017°**, §23.5's acceptance) with the plate's ×1.05 riding the mass channel — the
+probe's own *derived* rows went stale (L258) and the children's v0 moves by the ticked
+jitter × weighting (150 → 108.971 / 203.584 on the probe's rolls). The seven forbidden
+files: six snapshot-identical; `02_minerals.md` differs by exactly the developer's own
+Amendment-6 prose correction (L261). Findings: **0 HIGH / 0 MED / 4 LOW (L258–L261)** — no
+fixer pass.
+
 Expected (S22.6, 2026-09-30): **`[SUMMARY] passed=990 failed=0`**, exit 0. S22.6-R1 measured
 **990/0** twice on fresh scratch stores (row-identical pass lists, zero `[FAIL]`/`[SKIP]`) and
 replayed the wave baseline (`6de1081`, a `/tmp` worktree with the current assets) at **983/0**:
@@ -4604,3 +4631,20 @@ hull stops twice and the second stop slides.
   `"problems": []`. Findings: **0 HIGH / 0 MED / 2 LOW (L256–L257)** — the Hull release row's
   `4.0 s / ~855 u` arithmetic pair (no shipped hull reads it; unplated fighter 4.0 s / 900 u,
   plated fighter 4.2 s / 894 u), and the two pre-existing probe states at both constants.
+- **v0.40 (2026-10-01, wave S22.7 review — S22.7-R1; gate `990/0 → 1002/0`)** — the mass
+  physics wave's review pass. HEAD measured **1002/0** on a fresh scratch store (the only
+  second-run blemish is the pre-existing `test_s21_stability` boot row's clock-band flake,
+  4/4 isolated passes — L260) and the `fbae367` baseline replayed at **990 executed** in a
+  `/tmp` worktree; growth is §8's own table (the two new suites' **11** rows + `test_s7_affixes`'
+  mass row), plus one count-flat re-derive-rename in `test_s2_6_burst` (L259). The reviewer's
+  `tools/s227_r1_probe.gd` (0 fails) re-measures the mass law end to end: nine-hull
+  `base_mass == hull_mass == row` with `fuel_max` flat 200, plates **×1.05 / ×1.21** with the
+  times untouched, the boost on §13's eight rates with the Vanguard **3.0000** and the dash
+  **18.1818 / 68.1818**, rock masses **182.857/560.000/1382.857/2571.428 t**, mask **3** / no
+  monitor, the 12-rock spawn and 24 seeded cleaves all ≥ **8.000 u** apart, and split speeds
+  **106.7–193.2 u/s** with the S factor mean **1.7624** and the L mean **0.6521**. The
+  real-frame A/B across the wave boundary keeps the plated Vanguard's decay byte-identical
+  (t_10 **4.7333**, carry **1061.12**, drift **0.000017°**) — `tools/s226_r1_probe.gd`'s own
+  derived rows are the one stale read (L258). Findings: **0 HIGH / 0 MED / 4 LOW
+  (L258–L261)**; `02_minerals.md` carries the developer's Amendment-6 correction against the
+  snapshot (L261, the L255 precedent).

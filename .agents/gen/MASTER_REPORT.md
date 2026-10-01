@@ -1534,3 +1534,37 @@ this wave's doing — ticketed for the next probe owner.
 **Lesson worth carrying.** A worked example in an owner-locked calibration table is a
 *hull-and-plating* statement, not a formula: name the hull whose resolved pair you measured,
 or the next reader re-derives from a hull that does not read those numbers.
+
+### S22.7 (coder item 28.7) — **DONE 2026-10-01 — gate 990 → 1002/0, detail §Closed.**
+The owner's "everything physics based on mass" ask (with "asteroids dont collide with
+each other" and "every split should have a random speed"), ticked the same day off the
+developer's tick sheet: **R1** rock-rock collision on (`COLLISION_MASK` 2 → 3), **R2** a
+rock-rock impact is a nudge (no monitor, no damage — ruling 15/16 stays ship-vs-rock),
+**R3** a minimum-separation placement pass (margin 8 u, field spawn ring and debris
+ring), **S1** split-speed jitter (0.7, 1.3), **S2** the √(m_M/m_child) mass weighting,
+**M1** rock mass `ROCK_MASS_DENSITY × r²` (M anchored 560 t → S 183 / L 1 383 / XL
+2 571 — **L8 closed**), **M2** derived thrust (`ShipStats.base_mass` + `engine_thrust`;
+the four force sites drive from the class mass, the body keeps the fitted mass), **M3**
+the coast as a mass-scaled brake, **M4** fuel burn ∝ thrust (Vanguard-anchored 3.0/s,
+dash `25 × mass/110`), **M5 kept flat** (`fuel_max` 200 — §13's locked pool), **M2b/M6
+staged**. Two sequential builders on `hyper/glm-5.3-flash` (owner route ruling mid-wave;
+the first B1 dispatch on `opencode-go` died mid-recon with no artefacts): **B1 ships**
+(`846a39d` — the mass law, one-channel plating, the fuel law; 990 → 998/0) then **B2
+rocks** (`9fc4e6d` — the density law, mask 3, the separation pass, the split speeds; 998
+→ 1002/0). Docs-first `fbae367`: 18 §3.2's mass law + §13's four rows (Rock mass,
+Rock-rock contact, Ejection, `BOOST_FUEL`/`DASH_FUEL`), 02 §5.4, 09 §1's note, CONTRACTS
+§14's disclosure bullet. Ruler-grade review **S22.7-R1**: every AC re-measured on its own
+probes (`tools/s227_r1_probe.gd`), the plated Vanguard's decay byte-identical across the
+wave boundary (t_10 4.7333, carry 1061.12, drift 0.000017° — §23.5's acceptance),
+findings **0 HIGH / 0 MED / 4 LOW (L258–L261)** — **no fixer**. The developer's
+amendments (brief 2026-10-01a): B1's damp-compensation mass split accepted (bucket 1),
+§8's must-survive reading resolved, the NPC plated-stat drift disclosed, B2's sibling
+slide accepted, and the developer's own 02 §5.4 prose corrected (~262/~95 u/s, the
+from-rest means — L261's snapshot exception, resolved by the `s227_start_devdocs`
+re-snapshot, verify green). Close-out: gate ×2 hermetic (1002/0), verify green against
+the dev-docs snapshot, **L8 closed** in the backlog.
+
+**Lesson worth carrying.** "Physics-based" is a claim about *which mass a force is
+derived from*, not about adding mass to formulas: the shipped law is one sentence — the
+forces are the class's, the inertia is the fit's — and every shipped flight figure
+survives it unchanged until a module changes the fit.

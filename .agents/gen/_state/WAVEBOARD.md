@@ -195,6 +195,29 @@ random 1.6–2.6 s, §6 cadence); the forks resolved as the seeker fuze pair
 with a staged trim.** The developer lands the flight/§13/CONTRACTS rows in the
 owning docs at S22's open. Recap `MASTER_REPORT.md` §6.
 
+**Updated 2026-10-01 (S22.7, closed — coder item 28.7): mass is load-bearing and
+rocks knock into each other — gate 990 → 1002/0 twice hermetic + the close-out's
+own ×2.** The owner's "everything physics based on mass" landed as the **mass law**
+(18 §3.2): the flight forces derive from the **class** mass (`ShipStats.base_mass`
++ a derived `engine_thrust`) and act against the **fitted** mass, so plating's
+ponderous half is one mass channel (its `1+|penalty|` now multiplies mass instead
+of the three handling times) — a hull is byte-identical at unfitted launches,
+`h_composite` resolves ~9 % slower / ~10 % longer-carrying, and `mass_add` finally
+slows a hull. Fuel is thrust's receipt: the boost burns §13's eight rates (fighter
+2.75 … patrol 3.22, the Vanguard exactly 3.0/s) and the dash spends `25 × mass/110`;
+`fuel_max` stays the flat 200 (M5 kept flat). Rocks weigh `ROCK_MASS_DENSITY × r²`
+(M anchored 560 t → **S 183 / L 1 383 / XL 2 571**, **L8 closed**), collide with
+each other (`COLLISION_MASK` 3, a nudge — no monitor, no damage) behind a
+minimum-separation placement pass (margin 8 u, both rings, seed-reproducible), and
+every split child leaves at its own random speed — a 0.7–1.3 jitter × a
+√(m_M/m_child) weighting, so an S splinter leaves at ~1.75× the base kick and an L
+child at ~0.64×. Two builders (B1 ships `846a39d`, B2 rocks `9fc4e6d`), review
+**0 HIGH / 0 MED / 4 LOW (L258–L261)**, no fixer; the first B1 dispatch on
+`opencode-go` died mid-recon (no artefacts) and the wave re-ran on
+**`hyper/glm-5.3-flash`** per the owner's mid-wave route ruling. Verify green
+against `s227_start_devdocs` (the pre-correction snapshot's one expected
+`02_minerals.md` touch is L261's evidence). Recap `MASTER_REPORT.md` §6.
+
 **Updated 2026-09-30 (S22.6, closed — coder item 28.6): hulls coast and broken rocks
 fly — gate 983 → 990/0 twice hermetic** (`"problems": []`; `18_engine_spec.md`'s
 §13 row and `CONTRACTS.md` §14 were re-worded by the developer after the snapshot
@@ -267,8 +290,8 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | 3 | coder 28 | S22 feel, juice & balance (**done 2026-09-30** — 941 → 971/0; 1 HIGH bucket-2 list closed by the developer, 2 LOW L253/L254) | designer 16 | implements D15's ticks; both touch `ui/hud/` |
 | 4 | coder 28.5 | S22.5 asteroid toughness (**done 2026-09-30** — 971 → 983/0; 0 HIGH / 0 MED / 1 LOW L255 closed by the developer) | coder 28 | one builder; shares `vajb-orbit/game/` with 29, so it ran strictly before it (inserted at the owner's ask, not renumbered) |
 | 5 | coder 28.6 | S22.6 inertia (**done 2026-09-30** — 983 → 990/0; 0 HIGH / 0 MED / 2 LOW — L256 closed by the developer, L257 pre-existing) | coder 28.5 | one builder; shares `vajb-orbit/game/` with 29, so it ran strictly before it |
-| 6 | coder 28.7 | S22.7 mass physics & rock contact (**next**) | coder 28.6 | two sequential builders (`ship_stats`/`ship_fit`/`player_ship` then `asteroid`/`asteroid_field`); shares `vajb-orbit/game/` + `tests/` with 29, so it runs strictly before it (inserted at the owner's 2026-10-01 ask, not renumbered; **workers on `opencode-go/glm-5.3-flash`**) |
-| 7 | coder 29 | S23 content activation | coder 28.7 | `vajb-orbit/game/` + `tests/` (weapons/projectile/mining seams) |
+| 6 | coder 28.7 | S22.7 mass physics & rock contact (**done 2026-10-01** — 990 → 1002/0 twice hermetic + the close-out's own ×2; 0 HIGH / 0 MED / 4 LOW L258–L261; **L8 closed**; verify green against `s227_start_devdocs`) | coder 28.6 | two sequential builders (`ship_stats`/`ship_fit`/`player_ship` then `asteroid`/`asteroid_field`); inserted at the owner's ask, not renumbered; **workers on `hyper/glm-5.3-flash`** (owner ruling mid-wave: never `opencode-go`) |
+| 7 | coder 29 | S23 content activation (**next**) | coder 28.7 | `vajb-orbit/game/` + `tests/` (weapons/projectile/mining seams) |
 | 8 | designer 17 | D16 station identity & contracts UI | coder 29 | one live session; its spec is coder 30/31/32's design law |
 | 9 | coder 30 | S24 world identity | designer 17 | `station_catalog` + the station screen (D16 spec first) |
 | 10 | coder 31 | S25 contracts board | coder 30 | `ui/station/` + `autoload/player_profile.gd` + S24's `contracts_visible` seam |
