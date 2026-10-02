@@ -370,6 +370,14 @@ stopped rock; over 200 seeded breaks: 681 fragments, lowest radial `149.520` u/s
 against the 75.0 floor, all four quadrants populated, narrowest spread `122.165°`).
 The RNG stream is untouched — the kick consumes no roll — so every seeded sequence
 reads what it always read. Reversal of the kick: `FRAGMENT_OUTWARD_KICK := 0.0`.
+**Amended 2026-10-01 (S22.7 fix rounds, 02 §5.5/§5.6):** the kick ships **50.0**
+now (the owner's ÷3 on both band ends), the WHOLE ejection vector scales by the
+crack's last-hit impact factor (mining flat 0.35; gun raw damage ÷ 50 clamped
+0.3–2.0), and the largest kind's first child is the **core** — deployed by
+`AsteroidField._deploy_core` at the parent's centre on the shape's half alone
+(no kick, no jitter, no impact) while every other rolled child rides this carrier
+as a splinter. Reversal of the pair: kick `150.0`, the factor flat `1.0`, every
+rolled child on the ring.
 Every depletion — a cleave, a Small's burst or a yield-0 crack —
 also reads as the rock's **death**, not an ore event: FX_SPEC §1.4's explosion at the
 rock's own centre scaled `clamp(1.2 × diameter, 96, 224) u` through
@@ -909,6 +917,27 @@ actually fired.
 # run it as: `source ~/.profile && godot --headless --path vajb-orbit \
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
+
+Expected (S22.7 fix rounds, 2026-10-01): **`[SUMMARY] passed=1006 failed=0`**, exit 0,
+twice hermetic on fresh scratch stores. The two owner-directed fix rounds ride one
+working tree: the splash round (02 §5.5 — the baseline kick **150 → 50**, the last-hit
+impact factor scaling the child roll and the whole ejection vector; the new
+`test_s22_7_splash.gd`, **4** rows: the law pins, the gentle mining end, the route
+decides, the gun anchors reference/rocket/floor/ceiling) and the core-layer round
+(02 §5.6 — the largest kind's first child stays at the parent's centre on the shape's
+half alone, every other rolled child flies; asserted inside the existing rows, which
+exempt the `Core*` body and pin its law: `engine2_cleaving`'s large row, `s2_6_burst`'s
+AC2/stopped/additive rows, `s22_7_rocks` AC8, the splash suite throughout; `s8_qa_fixes`'
+deferred-shape row collects `Core*` beside `Fragment*`). Re-derived at the neutral
+anchor (a reference-strength gun hit, impact exactly 1.0): `test_s14_splits` AC1's
+per-kind spans, `test_engine2_cleaving`'s variety/direction rows, the burst suite's
+shape rows; the mining-route rows re-derived to the gentle law (a mined Large leaves
+exactly 1M+1S, a Medium exactly one S — which is the core). Measured anchors: brood
+4–5 at 36.7–113.7 u/s (reference), 5–9 at 66.7–163.7 (rocket, impact 1.44), exactly 2
+at 20.5–33.6 (beam floor), 6–12 at 78.0–226.2 (ceiling) — and S14 AC1's 200-shatter
+spans hold with the core guaranteeing the L (size2 min 1). The two kick pins in
+`tools/s226_r1_probe.gd` / `tools/s227_r1_probe.gd` still read the pre-fix 150 (a LOW
+follow-up, not gate-run).
 
 Expected (S22.7, 2026-10-01): **`[SUMMARY] passed=1002 failed=0`**, exit 0. S22.7-R1 measured
 **1002/0** on a fresh scratch store (a second full-gate run flaked only the pre-existing
@@ -1980,7 +2009,13 @@ LAUNCH's service rows (the `STATION_HUB.md` §5.4 amendment — owner request 4)
   computes), so slow and stationary rocks burst visibly (owner: "when breaking
   asteroids they should move when exploding"). §5's `eject_velocity()` comment
   stays true as the shape's half; the radial lives beside the placement.
-  Reversal: `0.0` = today exactly.
+  Reversal: `0.0` = today exactly. **Amended 2026-10-01 (S22.7 fix rounds, 02
+  §5.5/§5.6):** the kick ships **50.0**; the whole vector scales by the crack's
+  last-hit impact factor (mining flat 0.35, gun raw damage ÷ 50 clamped 0.3–2.0);
+  and the largest kind's first child is the **core**, deployed by
+  `_deploy_core` at the parent's centre on the shape's half alone — only the
+  splinters ride this carrier. Reversal of the pair: kick `150.0`, the factor flat
+  `1.0`, every rolled child on the ring.
 - **Beam feel** — `BEAM_SINK := 0.45` and `HIT_FX_JITTER_MULT := 0.35` (FX_SPEC
   §1.6's amendment): drawn beam lines end at `hit_point.lerp(body_centre, 0.45)`
   and contact FX scatter in a disc of `clamp(0.35 × collision radius, 8, 48) u`
@@ -2063,6 +2098,20 @@ LAUNCH's service rows (the `STATION_HUB.md` §5.4 amendment — owner request 4)
   `mass_add` now stack in one channel). Reversals: derive the forces from the
   fitted mass, flat 560 t, mask 2, jitter (1, 1) / exponent 0, flat 3.0/s and
   flat 25.
+- **Amended again (2026-10-01, the S22.7 fix rounds — the owner's "splinters
+  depending on the damage of the last hit" and "each layer leaves behind a smaller
+  asteroid").** The baseline kick is cut **150 → 50** (both band ends ÷3: a resting
+  rock's weight-1.0 children leave at 35–65 u/s), and every cleave reads an
+  **impact factor** off the crack's last hit — a mining shatter a flat **0.35**, a
+  gun shatter the raw delivered damage ÷ 50 clamped **0.3–2.0** (proposed; the
+  rocket's 72 raw → 1.44, a beam's per-frame slice the floor, a ram the gun door) —
+  scaling both the child roll and the whole ejection vector; the rock records each
+  door's last amount (`Asteroid.last_hit_force`). **The core layer law (02 §5.6):**
+  the largest kind's first child stays at the parent's centre on the shape's half
+  alone — no kick, no jitter, no impact (XL leaves an L, L an M, M an S, S bursts to
+  pickups) — and every other rolled child flies as a splinter. Gate **1002 → 1006/0**,
+  twice hermetic. Reversals: kick `150.0`, the factor flat `1.0`, every rolled child
+  on the ring.
 
 ## §15 S3 item economy — instances and the AUCTION (2026-09-22)
 
@@ -4648,3 +4697,23 @@ hull stops twice and the second stop slides.
   derived rows are the one stale read (L258). Findings: **0 HIGH / 0 MED / 4 LOW
   (L258–L261)**; `02_minerals.md` carries the developer's Amendment-6 correction against the
   snapshot (L261, the L255 precedent).
+- **v0.41 (2026-10-01, the S22.7 fix rounds — owner-directed, no review wave; gate
+  `1002/0 → 1006/0`, twice hermetic)** — two rounds on one tree. The **splash round**
+  (02 §5.5): the baseline kick **150 → 50** (the owner's ÷3 on both band ends) and the
+  last-hit impact factor — mining a flat **0.35**, gun the raw delivered damage ÷ 50
+  clamped **0.3–2.0** (proposed) — scaling the child roll (`maxi(1, roundi(roll ×
+  impact))`, a kind never rolls to zero) and the whole ejection vector; the rock
+  records each door's last amount (`Asteroid.last_hit_force`, the ram rides the gun
+  door). The **core-layer round** (02 §5.6): the largest kind's first child stays at
+  the parent's centre on the shape's half alone (no kick/jitter/impact) and every
+  other rolled child flies as a splinter — XL leaves an L, L an M, M an S, S bursts
+  to pickups. New suite `test_s22_7_splash.gd` (**4** rows); the flyer bands re-derived
+  at the neutral anchor (a reference-strength gun hit, impact 1.0) across
+  `test_engine2_cleaving`, `test_s14_splits` AC1, `test_s2_6_burst` and
+  `test_s22_7_rocks` AC8, with the `Core*` body exempted and its own law pinned;
+  the mining-route rows re-derived to the gentle law (a mined Large leaves exactly
+  1M+1S, a Medium exactly one S — the core). Measured anchors: brood 4–5 at
+  36.7–113.7 u/s (reference), 5–9 at 66.7–163.7 (rocket), exactly 2 at 20.5–33.6
+  (beam floor), 6–12 at 78.0–226.2 (ceiling). Stale by design, ungated: the two kick
+  pins in `tools/s226_r1_probe.gd` / `tools/s227_r1_probe.gd` still read 150 (a LOW
+  follow-up).

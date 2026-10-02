@@ -170,6 +170,23 @@ const FRAGMENT_SPEED_JITTER := Vector2(0.7, 1.3)
 ## (`ROCK_MASS_M`) -- splinters fly, boulders lumber. Reversal: exponent `0.0`.
 const FRAGMENT_MASS_SPEED_EXP := 0.5
 
+## The S22.7 fix round (owner 2026-10-01, 02 §5.5): the last hit sets the splash.
+## A **mining** shatter is gentle by definition, whatever the bank size -- its
+## impact is this flat factor. A **gun** shatter's impact is the raw damage of the
+## last hit (the recorded chip work divided back by `OreTuning.gun_chip_rate`, so
+## the launch's `damage_mult` rides along) over `SPLIT_IMPACT_REFERENCE`, clamped
+## to `[SPLIT_IMPACT_FLOOR, SPLIT_IMPACT_CEIL]`. The field's `_split_impact` maps
+## the rock's `last_hit_force()` through these and applies the factor to BOTH the
+## child roll and the whole ejection vector; the A4 splinter sheds stay at 1.0.
+## The anchors: the rocket's 72 raw per shot reads 1.44, a beam's per-frame slice
+## reads the floor, a railgun-class single hit reads the ceiling. Reversal: the
+## field stops reading `_split_impact` (every cleave at 1.0) and the kick goes
+## back to `150.0`.
+const SPLIT_IMPACT_MINING := 0.35
+const SPLIT_IMPACT_REFERENCE := 50.0
+const SPLIT_IMPACT_FLOOR := 0.3
+const SPLIT_IMPACT_CEIL := 2.0
+
 ## §13's Rock mass row (S22.7, owner tick M1): `mass = ROCK_MASS_DENSITY × r²`, the
 ## density anchored so the M class (§13's own radius, 42 u) keeps today's 560 t --
 ## S 183 · M 560 · L 1 383 · XL 2 571 t at the shipped look widths (48/84/132/180 u).
@@ -286,6 +303,14 @@ var _sprite: Sprite2D = null
 var _shape: CollisionShape2D = null
 var _radius := 0.0
 var _cracked := false
+
+## The S22.7 fix round (02 §5.5): the raw size of the last hit this rock took, in
+## the delivering door's own units -- the mining door's work (one cycle's
+## `bank x work_per_unit`) and the gun door's chip work (the hit's damage x
+## `gun_chip_rate` x the launch's damage mult, before the S22.5 divisor). The
+## field's `_split_impact` divides the gun route's reading back by
+## `gun_chip_rate` to recover the delivered damage. Reset at setup.
+var _last_hit_force := 0.0
 ## The rock's own original yield (02 §5.1 Rule A's `_bore_ore`), in units. Ruling
 ## 17's "a yield-0 rock still cracks and despawns bare" is `_bore_ore <= 0`: a rock
 ## that never carried ore has nothing to cleave, so it cracks, emits and frees
@@ -367,6 +392,7 @@ func setup(
 	yield_units = maxi(units, 0)
 	work = 0.0
 	_cracked = false
+	_last_hit_force = 0.0
 	_bore_ore = maxf(bore, float(yield_units)) if bore >= 0.0 else derive_bore(yield_units)
 	_reserve = maxf(_bore_ore - float(yield_units), 0.0)
 	_shatter_mining = true
@@ -392,6 +418,8 @@ func setup(
 ## path, and every direct caller. A gun's chip work must come through
 ## `apply_gun_work`, which attributes a shatter to the gun route instead.
 func apply_work(amount: float) -> int:
+	if amount > 0.0:
+		_last_hit_force = amount
 	return _accumulate(amount, true)
 
 
@@ -405,6 +433,8 @@ func apply_work(amount: float) -> int:
 ## 2.0). A shatter it delivers is attributed to the gun route: its payout is capped at
 ## `OreTuning.gun_burst_share x _bore_ore` and the excess reserve burns.
 func apply_gun_work(amount: float) -> int:
+	if amount > 0.0:
+		_last_hit_force = amount
 	var scaled := amount
 	if _bore_ore > 0.0:
 		scaled = amount / _gun_divisor()
@@ -475,6 +505,13 @@ func reserve_units() -> float:
 ## Which route delivered the work that cracked this rock (S13_BRIEF §2 rule 3).
 func shatter_from_mining() -> bool:
 	return _shatter_mining
+
+
+## The S22.7 fix round's raw last-hit record (02 §5.5): what `_split_impact` reads
+## during the `cracked` emission, in the delivering door's own units. See the
+## `_last_hit_force` var for the two currencies.
+func last_hit_force() -> float:
+	return _last_hit_force
 
 
 ## The extractable whole units a bore of `bore_total` leaves after the reserve is

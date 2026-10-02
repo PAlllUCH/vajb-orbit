@@ -22,7 +22,9 @@ extends McpTestSuite
 ##   3. the **stopped-rock control**: S22.7 scales the whole vector per child, so the
 ##      pre-S22.7 residual no longer isolates the inherit; what stays exact is that a
 ##      **stopped** rock's fragment deploys exactly along its placement radial at the
-##      weighted-jitter speed -- §13's 105-195 u/s span at weight 1.0;
+##      weighted-jitter speed -- §13's 35-65 u/s span at weight 1.0 (the 2026-10-01
+##      fix round's ÷3) -- while the **core** (02 §5.6, fix round 2) stays at the
+##      centre, speedless;
 ##   4. the two halves add: the deployed magnitude of a drifting rock's fragment sits
 ##      inside the scaled `|shape − kick| .. shape + kick`, which only holds if the
 ##      kick is a separate vector scaled together with the shape.
@@ -32,11 +34,18 @@ extends McpTestSuite
 ## breaks' FX and cue are the cleaving suite's rows. A subclass cannot zero the constant --
 ## GDScript refuses to redeclare a parent's member (measured: `Parse Error: The member
 ## "FRAGMENT_OUTWARD_KICK" already exists in parent class AsteroidField`).
+##
+## The 2026-10-01 fix round 2 (02 §5.6) adds the core layer: the largest kind's first
+## child stays at the parent's centre on the shape's half alone, so every row below
+## exempts the `Core*` body from the flyer measurements and pins its own law.
 
 const AsteroidScript := preload("res://game/asteroid.gd")
 const FieldScript := preload("res://game/asteroid_field.gd")
+const OreTuningScript := preload("res://game/ore_tuning.gd")
 
-const KICK := 150.0
+## §14's kick, as the 2026-10-01 fix round cut it (02 §5.5 tick F1: 150 → 50, the
+## owner's ÷3 on both band ends; the jitter band is untouched).
+const KICK := 50.0
 ## AC2's floor: half the kick. A fragment that fails it is barely moving outward.
 const HALF_KICK := 0.5 * KICK
 ## The band the two additive terms must land inside is measured on `float32`-backed
@@ -50,9 +59,11 @@ const FIELD_ROCKS := 6
 ## 0.4 × 1.2 = 0.48 u/s, so the burst it deploys is the kick to within half a unit -- and
 ## before §14 it ejected at 0.48 u/s, which is the "they should move" complaint.
 const NEAR_STATIONARY := 0.4
-const DRIFT_SPEED := 120.0
+## The drifting parent's shape is 25 × 1.2 = 30 u/s, under the amended 50 u/s kick, so
+## the additive roll still straddles the kick (the two-halves row below).
+const DRIFT_SPEED := 25.0
 const DRIFT_HEADING := 0.7
-## 200 distinct seeded breaks: one field seed each, so the sweep covers the whole 2-5 count
+## 200 distinct seeded breaks: one field seed each, so the sweep covers the whole 3-7 count
 ## roll and the whole placement ring rather than one sequence repeated 200 times.
 const SWEEP_BREAKS := 200
 const DIRECTION_CLEAVES := 8
@@ -86,7 +97,7 @@ func teardown() -> void:
 ## which is what "additive on top of §5's shape" means in code.
 func test_the_kick_is_one_field_side_constant_on_top_of_the_shape() -> void:
 	assert_true(is_equal_approx(FieldScript.FRAGMENT_OUTWARD_KICK, KICK),
-		"the field's kick is §14's 150.0 u/s, got %s" % FieldScript.FRAGMENT_OUTWARD_KICK)
+		"the field's kick is the amended 50.0 u/s (02 §5.5's ÷3), got %s" % FieldScript.FRAGMENT_OUTWARD_KICK)
 	assert_true(is_equal_approx(AsteroidScript.FRAGMENT_EJECT_MULT, 1.2),
 		"§5's ejection multiplier is untouched, got %s" % AsteroidScript.FRAGMENT_EJECT_MULT)
 	assert_true(is_equal_approx(AsteroidScript.FRAGMENT_EJECT_CONE_DEG, 360.0),
@@ -125,6 +136,8 @@ func test_every_fragment_moves_outward_from_the_rock_centre() -> void:
 		var field := _field_with(FIELD_SEED + index)
 		var angles: Array[float] = []
 		for fragment: Node2D in _break_member("Sweep%d" % index, velocity):
+			if String(fragment.name).begins_with("Core"):
+				continue
 			var outward := _radial(fragment)
 			var deployed := (fragment as RigidBody2D).linear_velocity
 			lowest = minf(lowest, deployed.dot(outward))
@@ -149,6 +162,8 @@ func test_every_fragment_moves_outward_from_the_rock_centre() -> void:
 	for index in SWEEP_BREAKS:
 		var field := _field_with(FIELD_SEED + index)
 		for fragment: Node2D in _break_member("SweepCheck%d" % index, velocity):
+			if String(fragment.name).begins_with("Core"):
+				continue
 			var w := _weight(fragment)
 			var speed := (fragment as RigidBody2D).linear_velocity.length()
 			assert_true(
@@ -183,8 +198,8 @@ func test_every_fragment_moves_outward_from_the_rock_centre() -> void:
 ## pre-S22.7 residual -- taking the unscaled kick back out -- no longer isolates the
 ## inherit. What the law still pins exactly is the owner's own stopped case: the whole
 ## vector is the scaled kick alone, so every fragment deploys exactly along its
-## placement radial, at the weighted-jitter speed (the §13 span: 105-195 u/s at weight
-## 1.0, 183.75-341.25 at the S splinter's 1.75) -- measured, not prose. The drifting
+## placement radial, at the weighted-jitter speed (the §13 span: 35-65 u/s at weight
+## 1.0, 61.25-113.75 at the S splinter's 1.75) -- measured, not prose. The drifting
 ## parent's directions still land on both sides of the heading and past 90 deg, which
 ## a +-15 deg cone cannot produce.
 func test_the_stopped_rock_deploys_the_weighted_kick_radially() -> void:
@@ -221,6 +236,15 @@ func test_the_stopped_rock_deploys_the_weighted_kick_radially() -> void:
 	var slowest := INF
 	var fastest := 0.0
 	for fragment: Node2D in fragments:
+		if String(fragment.name).begins_with("Core"):
+			## The core layer (02 §5.6): it stays at the parent's centre, and a
+			## stopped parent leaves it speedless -- the shape's half alone.
+			assert_true(
+				(fragment as Node2D).global_position.is_equal_approx(ORIGIN)
+					and (fragment as RigidBody2D).linear_velocity.length() < SPEED_EPSILON,
+				"the stopped rock's core stays at the centre, speedless"
+			)
+			continue
 		var deployed := (fragment as RigidBody2D).linear_velocity
 		var radial := _radial(fragment)
 		var w := _weight(fragment)
@@ -264,6 +288,8 @@ func test_the_burst_is_additive_on_the_rolled_shape() -> void:
 	for index in DIRECTION_CLEAVES:
 		var field := _field_with(FIELD_SEED + index)
 		for fragment: Node2D in _break_member("Additive%d" % index, velocity):
+			if String(fragment.name).begins_with("Core"):
+				continue
 			var w := _weight(fragment)
 			var deployed := (fragment as RigidBody2D).linear_velocity.length()
 			assert_true(
@@ -306,6 +332,11 @@ func _field_with(seed_value: int, count: int = FIELD_ROCKS) -> Node2D:
 
 
 ## Cracks a field member of the cleaving tier and hands back what it left behind.
+## The 2026-10-01 fix round (02 §5.5): the crack goes through the gun door at the
+## reference hit -- chip work `SPLIT_IMPACT_REFERENCE x gun_chip_rate` -- so the
+## field's impact factor reads exactly 1.0 and the rows below measure the ejection
+## shape at its neutral anchor. The A4 splinter sheds are suppressed for the loop
+## (a shed joins `rocks`); the chance is restored before the helper returns.
 func _break_member(node_name: String, velocity: Vector2) -> Array[Node2D]:
 	var rock: Node2D = _field.call(
 		&"_new_rock", node_name, &"iron", 1, 4, AsteroidScript.SIZE_LARGE
@@ -313,9 +344,14 @@ func _break_member(node_name: String, velocity: Vector2) -> Array[Node2D]:
 	rock.position = ORIGIN
 	(rock as RigidBody2D).linear_velocity = velocity
 	var before := _live_ids()
-	rock.call(&"apply_work", maxf(
-		float(int(rock.get(&"yield_units"))), AsteroidScript.WORK_PER_UNIT
-	))
+	var chance := OreTuningScript.splinter_chance
+	OreTuningScript.splinter_chance = 0.0
+	var chip: float = AsteroidScript.SPLIT_IMPACT_REFERENCE * OreTuningScript.gun_chip_rate
+	for _attempt in 256:
+		if not is_instance_valid(rock) or bool(rock.call(&"is_depleted")):
+			break
+		rock.call(&"apply_gun_work", chip)
+	OreTuningScript.splinter_chance = chance
 	return _new_since(before)
 
 

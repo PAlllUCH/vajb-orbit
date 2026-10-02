@@ -1568,3 +1568,20 @@ the dev-docs snapshot, **L8 closed** in the backlog.
 derived from*, not about adding mass to formulas: the shipped law is one sentence — the
 forces are the class's, the inertia is the fit's — and every shipped flight figure
 survives it unchanged until a module changes the fit.
+
+### S22.7 fix rounds 1 & 2 (developer hands-on, 2026-10-01) — **DONE — gate 1002 → 1006/0**
+The owner played the wave and asked two feel fixes direct ("a coder who does a fix round
+of slice 22"): **R1 the last hit sets the splash** — baseline kick 150 → **50** (the
+owner's ÷3, both band ends) and an impact factor from the last hit: mining flat 0.35,
+gun = recorded chip ÷ `gun_chip_rate` ÷ 50 clamped 0.3–2.0, scaling the per-kind child
+roll and the whole ejection vector (a rocket blast throws a fast crowd, a mining tick a
+few slow ones); **R2 the core layer law** — the largest kind's first child stays at the
+parent's centre on the shape's half alone (`velocity × 1.2`, no kick/jitter/impact), so
+XL → L core + flyers, L → M, M → S, S → pickup burst only. Two new consts pairs on
+`asteroid.gd`/`asteroid_field.gd`, one new suite (`test_s22_7_splash.gd`, 4 rows), five
+suites re-derived (`_crack_reference` neutral-impact door, `splinter_chance` suppression
+around repeated gun chips), gate **1006/0 twice hermetic**. Docs-first: 02 §5.5/§5.6 +
+§5.4 superseded pointer, 18 §13's Ejection/Last-hit/Size-classes/damping rows, CONTRACTS
+§3/§9/§14/§10 v0.41. LOW **L262** (the two R1 tool probes' kick pins still read 150).
+Owner accepted ("Feels much better now"). Closed with the wave-boundary commit; no
+worker dispatch, no review wave (owner-directed fix rounds, the S22 fix-round precedent).

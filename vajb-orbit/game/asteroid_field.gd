@@ -128,12 +128,20 @@ const PLACEMENT_RETRIES := 8
 ## owns it because the field is what rolls the spawn point; the rock keeps the
 ## shape's half. Reversal: `0.0` is today exactly (measured before the change: a
 ## resting rock's four fragments all read radial 0.000 u/s).
-const FRAGMENT_OUTWARD_KICK := 150.0
+##
+## **Amended 2026-10-01** (owner, S22.7 fix round, 02 §5.5 tick F1): 150 → 50 —
+## the owner cut the splinters' top and bottom speed 3×, and the kick is the one
+## constant both band ends scale with (the jitter band 0.7–1.3 is untouched), so a
+## weight-1.0 child now leaves a resting rock at 35–65 u/s. Reversal: `150.0`.
+const FRAGMENT_OUTWARD_KICK := 50.0
 ##
 ## S22.7 (18 §13's Ejection row as amended): the fragment's WHOLE ejection vector
 ## (this kick plus the inherited `×1.2` shape) then scales by the per-child jitter
 ## roll × the mass weighting read off `Asteroid.FRAGMENT_SPEED_JITTER` /
-## `FRAGMENT_MASS_SPEED_EXP`, so a split never leaves at one speed.
+## `FRAGMENT_MASS_SPEED_EXP`, so a split never leaves at one speed. **S22.7 fix
+## round (02 §5.5):** the whole vector also scales by the crack's impact factor
+## (`_split_impact`) — the last hit sets the splash, so the same roll lands gentle
+## behind a mining finish and violent behind a rocket.
 
 ## 02 §7's floating pickup prop and the group `Pickup.setup` joins. The burst's ore
 ## is placed on the same ring as the fragments, for the same reason.
@@ -466,6 +474,17 @@ func _blast_targets() -> Array:
 ## A **gun** shatter pays at most `gun_burst_share x _bore_ore` as pickups and the
 ## excess reserve burns; an M/L/XL still leaves physical fragments, but they carry no
 ## ore (the reserve is spent).
+##
+## S22.7 fix round 2 (owner 2026-10-01, 02 §5.6's core layer law): the largest kind's
+## first child is the **core** -- the smaller asteroid the parent leaves behind. It
+## takes the parent's own centre and keeps the shape's half of the ejection row alone
+## (`_deploy_core`: no kick, no jitter, no impact factor); every other rolled child
+## flies as a splinter on the ring. The core is exempt from the §5.5 impact scaling
+## in count too: the layer is left behind whatever the last hit was; only the
+## splinter half scales. The core is a full child in S13's terms -- the mining
+## reserve is split across the whole set including it, and a gun-shatter core carries
+## bore 0 like every flyer. Reversal: every rolled child on the ring (the pre-core
+## law).
 func _cleave(rock: Node2D) -> void:
 	if not bool(rock.call(&"cleaves")):
 		return
@@ -481,7 +500,10 @@ func _cleave(rock: Node2D) -> void:
 	if not from_mining:
 		## The gun's capped payout lands here; its fragments below are debris.
 		_pay_burst(rock, owed)
-	var children := _roll_children(size_class)
+	## S22.7 fix round (02 §5.5): the last hit sets the splash — the impact factor
+	## scales both the child roll below and every child's ejection vector.
+	var impact := _split_impact(rock, from_mining)
+	var children := _roll_children(size_class, impact)
 	if children.is_empty():
 		return
 	var count := children.size()
@@ -496,7 +518,30 @@ func _cleave(rock: Node2D) -> void:
 	var mineral_id := StringName(rock.get(&"mineral_id"))
 	var tier := int(rock.get(&"tier"))
 	var siblings: Array[Node2D] = []
+	## S22.7 fix round 2 (02 §5.6): the core layer. The largest kind's first child
+	## stays behind at the parent's centre; the rest fly.
+	var core_index := 0
+	var largest := -1
 	for index in count:
+		if int(children[index]) > largest:
+			largest = int(children[index])
+			core_index = index
+	var core_units: int = int(shares[core_index]) if from_mining else 0
+	var core := _new_rock(
+		"Core%d" % (_spawned + 1),
+		mineral_id,
+		tier,
+		core_units,
+		largest,
+		true,
+		float(core_units)
+	)
+	core.call(&"mark_cleave_child")
+	_deploy_core(core, origin, velocity)
+	siblings.append(core)
+	for index in count:
+		if index == core_index:
+			continue
 		var units: int = int(shares[index]) if from_mining else 0
 		var fragment := _new_rock(
 			"Fragment%d" % (_spawned + 1),
@@ -514,8 +559,28 @@ func _cleave(rock: Node2D) -> void:
 		fragment.call(&"mark_cleave_child")
 		var angle := TAU * float(index) / float(count)
 		angle += rng.randf_range(-FRAGMENT_ANGLE_JITTER, FRAGMENT_ANGLE_JITTER)
-		_deploy_debris(fragment, origin, ring, angle, velocity, siblings)
+		_deploy_debris(fragment, origin, ring, angle, velocity, siblings, impact)
 		siblings.append(fragment)
+
+
+## The S22.7 fix round's impact factor (02 §5.5): how violent the crack was, read
+## off the rock during the `cracked` emission. A **mining** shatter is gentle by
+## definition (the flat `SPLIT_IMPACT_MINING`, whatever the bank size); a **gun**
+## shatter scales with the raw damage of the last hit -- the rock's recorded chip
+## work divided back by `gun_chip_rate`, so the launch's `damage_mult` rides along
+## -- over `SPLIT_IMPACT_REFERENCE`, clamped to
+## `[SPLIT_IMPACT_FLOOR, SPLIT_IMPACT_CEIL]`. The epsilon guards an
+## overlay-tuned-to-zero chip rate. Reversal: return `1.0`.
+func _split_impact(rock: Node2D, from_mining: bool) -> float:
+	if from_mining:
+		return AsteroidScript.SPLIT_IMPACT_MINING
+	var chip := maxf(float(rock.call(&"last_hit_force")), 0.0)
+	var raw := chip / maxf(OreTuningScript.gun_chip_rate, 0.0001)
+	return clampf(
+		raw / AsteroidScript.SPLIT_IMPACT_REFERENCE,
+		AsteroidScript.SPLIT_IMPACT_FLOOR,
+		AsteroidScript.SPLIT_IMPACT_CEIL
+	)
 
 
 ## The one placement and ejection arithmetic every debris body rides: a `_cleave`
@@ -547,9 +612,17 @@ func _cleave(rock: Node2D) -> void:
 ## by a per-child jitter roll times the mass weighting
 ## `pow(ROCK_MASS_M / child_mass, FRAGMENT_MASS_SPEED_EXP)`, so splinters fly and
 ## boulders lumber. Reversal: drop the scale (and the sibling pass).
+##
+## S22.7 fix round (02 §5.5): the whole vector ALSO scales by the crack's impact
+## factor -- the last hit sets the splash, so a mining finish sheds its few children
+## slow and a rocket blasts its brood out fast. The A4 splinter sheds ride the
+## default `1.0` (the ÷3 baseline only). Reversal: drop the factor.
+##
+## S22.7 fix round 2 (02 §5.6): the CORE does not ride this carrier at all -- it is
+## the layer that stays behind, and `_deploy_core` places it.
 func _deploy_debris(
 	child: Node2D, origin: Vector2, ring: float, angle: float, velocity: Vector2,
-	siblings: Array[Node2D] = []
+	siblings: Array[Node2D] = [], impact: float = 1.0
 ) -> void:
 	child.call(&"apply_fragment_damp")
 	var distance := ring + float(child.call(&"world_radius"))
@@ -573,7 +646,7 @@ func _deploy_debris(
 		AsteroidScript.ROCK_MASS_M / (child as RigidBody2D).mass,
 		AsteroidScript.FRAGMENT_MASS_SPEED_EXP
 	)
-	var scale := weight * rng.randf_range(
+	var scale := weight * impact * rng.randf_range(
 		AsteroidScript.FRAGMENT_SPEED_JITTER.x, AsteroidScript.FRAGMENT_SPEED_JITTER.y
 	)
 	child.linear_velocity = (
@@ -586,6 +659,19 @@ func _deploy_debris(
 			)
 		) + outward * FRAGMENT_OUTWARD_KICK
 	) * scale
+
+
+## The S22.7 fix round's core carrier (02 §5.6): the layer that stays behind. The
+## core takes the parent's own centre and keeps only the shape's half of the
+## ejection row -- the inherited `x1.2` -- with no outward kick, no jitter roll and
+## no impact factor: the rock's mass stays where it was, and only the splinters
+## fly. It still takes the debris damp with every other cleave child
+## (`apply_fragment_damp`), because parentage, not ore, gates a fragment's cleave.
+## Reversal: deploy the core through `_deploy_debris` like every other child.
+func _deploy_core(child: Node2D, origin: Vector2, velocity: Vector2) -> void:
+	child.call(&"apply_fragment_damp")
+	child.global_position = origin
+	child.linear_velocity = velocity
 
 
 ## The debris ring's half of the placement pass. The first candidate is the caller's
@@ -683,7 +769,14 @@ func _spawn_splinter(rock: Node2D) -> void:
 ## it, so a mixed set is one debris spread and not one ring per kind. An empty list
 ## means the table gives this parent no children (a Small), and a row whose value is
 ## not a count range is skipped rather than allowed to roll nothing.
-func _roll_children(parent_kind: int) -> Array[int]:
+##
+## S22.7 fix round (02 §5.5): `impact` -- the crack's last-hit factor -- scales each
+## kind's rolled count (`maxi(1, roundi(roll × impact))`), so a gentle break leaves
+## one child per kind the table gives and a heavy hit multiplies the brood. A kind
+## the table gives children never rolls to zero. The draw sequence is unchanged
+## (the roll is drawn first, scaled after), so a seeded sweep rolls identically at
+## impact 1.0. Reversal: `scaled = rolled`.
+func _roll_children(parent_kind: int, impact: float = 1.0) -> Array[int]:
 	var out: Array[int] = []
 	var mix: Dictionary = OreTuningScript.split_mix.get(parent_kind, {})
 	for child_kind: Variant in mix.keys():
@@ -693,7 +786,11 @@ func _roll_children(parent_kind: int) -> Array[int]:
 		var pair: Vector2i = span
 		if pair.x < 0 or pair.y < pair.x:
 			continue
-		for _roll in rng.randi_range(pair.x, pair.y):
+		var rolled := rng.randi_range(pair.x, pair.y)
+		if rolled <= 0:
+			continue
+		var scaled := maxi(1, roundi(float(rolled) * impact))
+		for _roll in scaled:
 			out.append(int(child_kind))
 	return out
 

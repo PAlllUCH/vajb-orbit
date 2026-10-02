@@ -6,6 +6,17 @@
 
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-25 clear-outs (owner asks):** every closed slice folder moved to the system trash (last git tree carrying them: `7a081ef`), old session reports live in `_state/_archive/`, and the two dispatch files were purged to live-items-only (2026-09-25 ter). Citation paths into purged trees name historical files.
 
+**Updated 2026-10-01 (S22.7 fix rounds closed; the queue's next item stands):** the
+owner played S22.7 and ruled two feel fixes, which the developer landed hands-on (no
+worker dispatch): the splash now bills by the last hit (kick 150 → **50**, an impact
+factor — mining 0.35, gun chip÷rate÷50 clamped 0.3–2.0 — scaling the child roll and the
+ejection vector) and every cleave leaves a **core layer** (the largest kind's first child
+stays at the parent's centre on the shape's half alone; XL→L, L→M, M→S, S→pickup burst).
+Gate **1006/0** twice hermetic; pins in 02 §5.5/§5.6, 18 §13, CONTRACTS §3/§9/§14/§10
+v0.41; LOW **L262** (two tool probes' kick pins). **Next: the owner's weapons-cadence
+overhaul (spam vs cooldown split) inserted before S23, then S23 content activation with
+the F1 dev-menu credits toggle riding it (owner 2026-10-01).**
+
 **Updated 2026-09-27 (P3 planned and queued):** the owner's plan round (focus:
 content, bugfixes, playability, feel — pillars A–D all ticked, **no new AI art**,
 playtesting owner-first then an external build) landed as phase
@@ -290,7 +301,7 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | 3 | coder 28 | S22 feel, juice & balance (**done 2026-09-30** — 941 → 971/0; 1 HIGH bucket-2 list closed by the developer, 2 LOW L253/L254) | designer 16 | implements D15's ticks; both touch `ui/hud/` |
 | 4 | coder 28.5 | S22.5 asteroid toughness (**done 2026-09-30** — 971 → 983/0; 0 HIGH / 0 MED / 1 LOW L255 closed by the developer) | coder 28 | one builder; shares `vajb-orbit/game/` with 29, so it ran strictly before it (inserted at the owner's ask, not renumbered) |
 | 5 | coder 28.6 | S22.6 inertia (**done 2026-09-30** — 983 → 990/0; 0 HIGH / 0 MED / 2 LOW — L256 closed by the developer, L257 pre-existing) | coder 28.5 | one builder; shares `vajb-orbit/game/` with 29, so it ran strictly before it |
-| 6 | coder 28.7 | S22.7 mass physics & rock contact (**done 2026-10-01** — 990 → 1002/0 twice hermetic + the close-out's own ×2; 0 HIGH / 0 MED / 4 LOW L258–L261; **L8 closed**; verify green against `s227_start_devdocs`) | coder 28.6 | two sequential builders (`ship_stats`/`ship_fit`/`player_ship` then `asteroid`/`asteroid_field`); inserted at the owner's ask, not renumbered; **workers on `hyper/glm-5.3-flash`** (owner ruling mid-wave: never `opencode-go`) |
+| 6 | coder 28.7 | S22.7 mass physics & rock contact (**done 2026-10-01** — 990 → 1002/0 twice hermetic + the close-out's own ×2; then the owner's two fix rounds hands-on, 1002 → **1006/0**; 0 HIGH / 0 MED / 5 LOW L258–L262; **L8 closed**; verify green against `s227_start_devdocs`) | coder 28.6 | two sequential builders (`ship_stats`/`ship_fit`/`player_ship` then `asteroid`/`asteroid_field`); inserted at the owner's ask, not renumbered; **workers on `hyper/glm-5.3-flash`** (owner ruling mid-wave: never `opencode-go`) |
 | 7 | coder 29 | S23 content activation (**next**) | coder 28.7 | `vajb-orbit/game/` + `tests/` (weapons/projectile/mining seams) |
 | 8 | designer 17 | D16 station identity & contracts UI | coder 29 | one live session; its spec is coder 30/31/32's design law |
 | 9 | coder 30 | S24 world identity | designer 17 | `station_catalog` + the station screen (D16 spec first) |

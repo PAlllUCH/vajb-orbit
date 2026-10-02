@@ -12,11 +12,11 @@ extends McpTestSuite
 ##   and every cleave's siblings clear, deterministically on the field's seeded RNG;
 ## - AC8 the split speed is random and mass-weighted: a resting rock's children leave
 ##   along their own radial at the per-child jitter (0.7-1.3) x the weight
-##   `(m_M/m_child)^0.5` -- 105-195 u/s at weight 1.0, an S splinter ~1.75x the kick,
-##   an L child ~0.64x;
-## - AC9 no other gameplay number moved: the ejection shape (x1.2, 360 deg, kick 150),
-##   both rock damps, the S22.5 ore tables and the flight multipliers, each against
-##   its reader.
+##   `(m_M/m_child)^0.5` -- 35-65 u/s at weight 1.0 since the 2026-10-01 fix round's
+##   ÷3 (02 §5.5), an S splinter ~1.75x the kick, an L child ~0.64x;
+## - AC9 no other gameplay number moved: the ejection shape (x1.2, 360 deg, kick 50
+##   as amended), both rock damps, the S22.5 ore tables and the flight multipliers,
+##   each against its reader.
 ##
 ## Nothing awaits a frame: the fields are detached (the `test_engine2_cleaving.gd`
 ## idiom), every roll is seeded, so each number below is reproducible.
@@ -37,8 +37,8 @@ const CLASS_RADII: Dictionary = {0: 24.0, 1: 42.0, 2: 66.0, 3: 90.0}
 const CLASS_MASSES: Dictionary = {0: 183.0, 1: 560.0, 2: 1383.0, 3: 2571.0}
 const MASS_TOLERANCE := 0.10
 ## §13's Ejection row as amended: the jitter band, the exponent and the base kick the
-## per-child speed is judged against.
-const KICK: float = 150.0
+## per-child speed is judged against (50 u/s since the 2026-10-01 fix round, 02 §5.5).
+const KICK: float = 50.0
 const SPEED_EPSILON := 0.01
 ## The mean-factor slack on the jitter's own mean of 1.0 (a uniform band's standard
 ## error over ~24 rolls is ~0.04 of the weight; the slack is ~2.5 sigma).
@@ -139,7 +139,9 @@ func test_ac7_rocks_meet_rocks_and_placement_stays_clear() -> void:
 
 	for parent_class: int in [AsteroidScript.SIZE_MEDIUM, AsteroidScript.SIZE_LARGE, AsteroidScript.SIZE_XL]:
 		var brood := _cleave_brood(parent_class, FIELD_SEED + parent_class)
-		assert_true(brood.size() >= 2, "the class-%d parent left a brood to read" % parent_class)
+		## The mix's own floor: an M rolls 1-3 S, so a one-child brood is legal; the
+		## separation pass is read over whatever the roll left.
+		assert_true(brood.size() >= 1, "the class-%d parent left a brood to read" % parent_class)
 		_assert_pairwise_clear(brood, "the class-%d cleave" % parent_class)
 		var gaps := _min_gap(brood)
 		print(
@@ -163,10 +165,20 @@ func test_ac8_the_split_speed_is_random_and_mass_weighted() -> void:
 		parent.position = ORIGIN
 		(parent as RigidBody2D).linear_velocity = Vector2.ZERO
 		var before := _live_ids()
-		_deplete(parent)
+		_crack_reference(parent)
 		for fragment: Node2D in _new_since(before):
 			var body := fragment as RigidBody2D
 			var kind := int(fragment.call(&"size_class"))
+			if String(fragment.name).begins_with("Core"):
+				## The core layer (02 §5.6): it stays at the parent's centre, and a
+				## resting parent leaves it speedless -- the shape's half alone, no
+				## kick, no jitter, no impact factor. Exempt from the flyer bands.
+				assert_true(
+					(fragment as Node2D).global_position.is_equal_approx(ORIGIN)
+						and body.linear_velocity.length() < SPEED_EPSILON,
+					"the core layer stays at the parent's centre, speedless behind a resting rock"
+				)
+				continue
 			var radial := ((fragment as Node2D).global_position - ORIGIN).normalized()
 			assert_true(
 				absf(body.linear_velocity.cross(radial)) <= 0.0001,
@@ -203,11 +215,11 @@ func test_ac8_the_split_speed_is_random_and_mass_weighted() -> void:
 			expectations[kind], observed_low * KICK, observed_high * KICK]
 		)
 	## The M children carry the weight the row names (m_M / m_M = 1.0): their span IS
-	## §13's 105-195 u/s.
+	## §13's 35-65 u/s (the 2026-10-01 fix round's ÷3).
 	var m_factors: Array = speeds[1]
 	assert_true(
-		m_factors.min() * KICK >= 105.0 - SPEED_EPSILON and m_factors.max() * KICK <= 195.0 + SPEED_EPSILON,
-		"the weight-1.0 children span §13's 105-195 u/s (%.1f..%.1f measured)"
+		m_factors.min() * KICK >= 35.0 - SPEED_EPSILON and m_factors.max() * KICK <= 65.0 + SPEED_EPSILON,
+		"the weight-1.0 children span §13's 35-65 u/s (%.1f..%.1f measured)"
 			% [m_factors.min() * KICK, m_factors.max() * KICK]
 	)
 	## The splinter path rides the same carrier: a resting rock's S splinter at the
@@ -258,7 +270,7 @@ func test_ac9_no_other_gameplay_number_moved() -> void:
 	## The ejection shape and its readers (`Asteroid.eject_velocity`, the field's roll).
 	assert_true(is_equal_approx(AsteroidScript.FRAGMENT_EJECT_MULT, 1.2), "FRAGMENT_EJECT_MULT 1.2 (eject_velocity)")
 	assert_true(is_equal_approx(AsteroidScript.FRAGMENT_EJECT_CONE_DEG, 360.0), "FRAGMENT_EJECT_CONE_DEG 360 (the field's roll)")
-	assert_true(is_equal_approx(FieldScript.FRAGMENT_OUTWARD_KICK, 150.0), "FRAGMENT_OUTWARD_KICK 150 (_deploy_debris)")
+	assert_true(is_equal_approx(FieldScript.FRAGMENT_OUTWARD_KICK, 50.0), "FRAGMENT_OUTWARD_KICK 50, the 2026-10-01 fix round's ÷3 (_deploy_debris)")
 	assert_true(is_equal_approx(FieldScript.FRAGMENT_ANGLE_JITTER, 0.25), "FRAGMENT_ANGLE_JITTER 0.25 (_cleave)")
 	## Both rock damps (18 §13's Rock drift damping row) and the retired flat pair,
 	## intact as the SUPERSEDED record with no live reader.
@@ -331,6 +343,22 @@ func _deplete(rock: Node2D) -> void:
 	rock.call(&"apply_work", maxf(amount, AsteroidScript.WORK_PER_UNIT))
 
 
+## Cracks through the gun door at the S22.7 fix round's reference hit -- chip work
+## `SPLIT_IMPACT_REFERENCE x gun_chip_rate` -- so `AsteroidField._split_impact`
+## reads exactly 1.0: the brood below is the mix table's own fullest roll, which is
+## what the minimum-separation pass has to hold. The A4 splinter sheds are
+## suppressed for the loop; the chance is restored before the helper returns.
+func _crack_reference(rock: Node2D) -> void:
+	var chance := OreTuningScript.splinter_chance
+	OreTuningScript.splinter_chance = 0.0
+	var chip: float = AsteroidScript.SPLIT_IMPACT_REFERENCE * OreTuningScript.gun_chip_rate
+	for _attempt in 256:
+		if not is_instance_valid(rock) or bool(rock.call(&"is_depleted")):
+			break
+		rock.call(&"apply_gun_work", chip)
+	OreTuningScript.splinter_chance = chance
+
+
 ## One seeded cleave of a class-`size_class` member at `ORIGIN`, at rest: the brood it
 ## leaves behind (the parent is gone).
 func _cleave_brood(size_class: int, seed_value: int) -> Array[Node2D]:
@@ -341,7 +369,7 @@ func _cleave_brood(size_class: int, seed_value: int) -> Array[Node2D]:
 	parent.position = ORIGIN
 	(parent as RigidBody2D).linear_velocity = Vector2.ZERO
 	var before := _live_ids()
-	_deplete(parent)
+	_crack_reference(parent)
 	return _new_since(before)
 
 

@@ -12,11 +12,18 @@ extends McpTestSuite
 ##   * the ejection direction is **uniform over the full circle** -- the retired +-15
 ##     deg cone is `FRAGMENT_EJECT_CONE_DEG`'s own 360.0 -- and the speed is the
 ##     parent's velocity x 1.2 as the **shape's half**: CONTRACTS 14's
-##     `FRAGMENT_OUTWARD_KICK` (150 u/s along the placement radial) rides on top of
-##     it, and since S22.7 the WHOLE vector then scales by the per-child jitter x the
-##     mass weight (18 §13's Ejection row as amended), so the rows below assert the
-##     deployed magnitude inside the scaled additive bounds and read the cone off the
-##     s-invariant lean;
+##     `FRAGMENT_OUTWARD_KICK` (150 u/s at the ship, **50 u/s since the 2026-10-01
+##     fix round** -- 02 §5.5's ÷3) rides on top of it, and since S22.7 the WHOLE
+##     vector then scales by the per-child jitter x the mass weight and, since the
+##     fix round, by the crack's last-hit impact factor (a mining crack reads the
+##     flat 0.35; the neutral 1.0 needs a reference-strength gun hit, which is what
+##     `_crack_reference` delivers), so the rows below assert the deployed magnitude
+##     inside the scaled additive bounds and read the cone off the s-invariant lean;
+##   * **S22.7 fix round 2 (02 §5.6), the core layer law:** the largest kind's first
+##     child is the core -- it takes the parent's centre on the shape's half alone
+##     (`x1.2`, no kick/jitter/impact) and every other rolled child flies as a
+##     splinter; the rows below exempt the `Core*` body from the flyer bands and pin
+##     its own law;
 ##   * **every depletion draws the break**: FX_SPEC 1.4's five-frame explosion at the
 ##     rock's own centre, scaled to the rock (1.2 x its collision diameter, clamped
 ##     96-224 u), S4's rock cue through the four-take pool row, and section 4.2 item 8's
@@ -191,6 +198,22 @@ func _deplete(rock: Node2D) -> void:
 	if amount <= 0.0:
 		amount = float(OreTuningScript.fragment_work.get(int(rock.call(&"size_class")), 0.0))
 	rock.call(&"apply_work", maxf(amount, AsteroidScript.WORK_PER_UNIT))
+
+
+## Cracks through the gun door at the S22.7 fix round's reference hit -- chip work
+## `SPLIT_IMPACT_REFERENCE x gun_chip_rate`, so `AsteroidField._split_impact` reads
+## exactly 1.0 and the S14 mix bounds below hold unscaled. The A4 splinter sheds are
+## suppressed for the loop (a shed joins `rocks` and would pollute the counts); the
+## chance is restored before the helper returns.
+func _crack_reference(rock: Node2D) -> void:
+	var chance := OreTuningScript.splinter_chance
+	OreTuningScript.splinter_chance = 0.0
+	var chip: float = AsteroidScript.SPLIT_IMPACT_REFERENCE * OreTuningScript.gun_chip_rate
+	for _attempt in 256:
+		if not is_instance_valid(rock) or bool(rock.call(&"is_depleted")):
+			break
+		rock.call(&"apply_gun_work", chip)
+	OreTuningScript.splinter_chance = chance
 
 
 ## Every explosion sprite a break has left: a detached field's effects hang off the
@@ -407,8 +430,12 @@ func test_a_large_cleaves_into_a_mixed_m_and_s_set() -> void:
 		var before := _live_ids()
 		_deplete(parent)
 		var fragments := _new_since(before)
-		assert_true(fragments.size() >= 3 and fragments.size() <= 7,
-			"a Large spawns the mix's 3-7 children, got %d" % fragments.size())
+		## The S22.7 fix round (02 §5.5): a mining crack reads the flat impact 0.35,
+		## and the per-kind floor keeps one child per kind the table gives -- so the
+		## gentle brood is exactly one M and one S. The unscaled S14 span (3-7) is
+		## measured at the neutral anchor in the variety row below.
+		assert_eq(fragments.size(), 2,
+			"a gently mined Large leaves the 1M+1S brood, got %d" % fragments.size())
 		counts.append(fragments.size())
 		var kinds: Dictionary = {}
 		var child_bore := 0.0
@@ -420,6 +447,18 @@ func test_a_large_cleaves_into_a_mixed_m_and_s_set() -> void:
 			assert_eq(StringName(fragment.get(&"mineral_id")), mineral,
 				"the fragment inherits the parent's mineral")
 			child_bore += float(fragment.call(&"bore_ore"))
+			if String(fragment.name).begins_with("Core"):
+				## The core layer (02 §5.6): the largest kind's first child stays at
+				## the parent's centre on the shape's half alone -- no kick, no
+				## jitter, no impact factor. Only the splinters fly.
+				assert_true(
+					(fragment as Node2D).global_position.is_equal_approx(origin)
+						and (fragment as RigidBody2D).linear_velocity.is_equal_approx(
+							velocity * AsteroidScript.FRAGMENT_EJECT_MULT
+						),
+					"the core takes the parent's centre on the shape's half alone"
+				)
+				continue
 			var ejected := (fragment as RigidBody2D).linear_velocity
 			var weight := _fragment_weight(fragment)
 			## The amended ejection row (S22.7): the WHOLE vector -- the x1.2 inherit
@@ -429,9 +468,11 @@ func test_a_large_cleaves_into_a_mixed_m_and_s_set() -> void:
 			## its own mass, and the speed inside the jitter band x weight over the
 			## cone's additive reach (the two vectors' difference..sum, scaled).
 			var lowest := absf(velocity.length() * AsteroidScript.FRAGMENT_EJECT_MULT
-				- FieldScript.FRAGMENT_OUTWARD_KICK) * SPEED_FLOOR * weight
+				- FieldScript.FRAGMENT_OUTWARD_KICK) * SPEED_FLOOR * weight \
+				* AsteroidScript.SPLIT_IMPACT_MINING
 			var highest := (velocity.length() * AsteroidScript.FRAGMENT_EJECT_MULT \
-				+ FieldScript.FRAGMENT_OUTWARD_KICK) * SPEED_CEIL * weight
+				+ FieldScript.FRAGMENT_OUTWARD_KICK) * SPEED_CEIL * weight \
+				* AsteroidScript.SPLIT_IMPACT_MINING
 			assert_true(ejected.length() >= lowest - ADDITIVE_SLACK
 					and ejected.length() <= highest + ADDITIVE_SLACK,
 				"the burst is the whole vector x the jitter x weight, so its magnitude is %.3f..%.3f, got %.3f"
@@ -450,9 +491,10 @@ func test_a_large_cleaves_into_a_mixed_m_and_s_set() -> void:
 	assert_eq(counts.size(), 6, "six Large rocks were cracked")
 
 
-## S14 (02 §5.2): a Medium's row is `S 1-3`, so its children are all Small and there
-## are never none of them.
-func test_a_medium_cleaves_into_one_to_three_smalls() -> void:
+## S14 (02 §5.2): a Medium's row is `S 1-3`. The S22.7 fix round (02 §5.5) scales
+## the roll by the crack's impact, and a mining crack reads the flat 0.35 with the
+## per-kind floor at 1 -- so a gently mined Medium sheds exactly one Small.
+func test_a_gently_mined_medium_leaves_one_small() -> void:
 	_field_with()
 	var counts: Array[int] = []
 	for index in 6:
@@ -461,8 +503,8 @@ func test_a_medium_cleaves_into_one_to_three_smalls() -> void:
 		var before := _live_ids()
 		_deplete(parent)
 		var fragments := _new_since(before)
-		assert_true(fragments.size() >= 1 and fragments.size() <= 3,
-			"a Medium spawns 1-3 fragments, got %d" % fragments.size())
+		assert_eq(fragments.size(), 1,
+			"a gently mined Medium sheds one Small, got %d" % fragments.size())
 		counts.append(fragments.size())
 		for fragment: Node2D in fragments:
 			assert_eq(int(fragment.call(&"size_class")), AsteroidScript.SIZE_SMALL,
@@ -473,7 +515,10 @@ func test_a_medium_cleaves_into_one_to_three_smalls() -> void:
 ## The count is a *roll*, not a fixed row: over `VARIETY_CLEAVES` seeded cleaves each
 ## size's observed counts must include at least two distinct values, and all of them
 ## inside its own S14 row -- `L` sums `M 1-3` and `S 2-4`, so 3-7; `M` is `S 1-3`, so
-## 1-3. A fixed row cannot produce two distinct counts.
+## 1-3. A fixed row cannot produce two distinct counts. The cracks go through the
+## reference-strength gun hit (`_crack_reference`), so the impact factor reads its
+## neutral 1.0 and the span is the table's own; the gentle mining end is measured in
+## the two rows above.
 func test_the_fragment_count_varies_inside_the_amended_bounds() -> void:
 	_field_with()
 	var seen: Dictionary = {
@@ -488,7 +533,7 @@ func test_the_fragment_count_varies_inside_the_amended_bounds() -> void:
 		var size_class := AsteroidScript.SIZE_LARGE if index % 2 == 0 else AsteroidScript.SIZE_MEDIUM
 		var parent := _member(size_class, 3, "Variety%d" % index)
 		var before := _live_ids()
-		_deplete(parent)
+		_crack_reference(parent)
 		var counts: Dictionary = seen[size_class]
 		counts[_new_since(before).size()] = true
 	for size_class: int in bounds.keys():
@@ -522,7 +567,7 @@ func test_ejection_directions_are_uniform_over_the_full_circle() -> void:
 		var heading := Vector2(EJECT_SPEED, 0.0).rotated(EJECT_HEADING)
 		(parent as RigidBody2D).linear_velocity = heading
 		var before := _live_ids()
-		_deplete(parent)
+		_crack_reference(parent)
 		var fragments := _new_since(before)
 		var deviations_here := _fragment_headings(fragments, heading)
 		for fragment: Node2D in fragments:

@@ -140,9 +140,11 @@ func test_a_fragment_takes_its_shape_on_the_next_step() -> void:
 	rock.call(&"apply_work", 3.0)
 	var fragments: Array[Node] = []
 	for child: Node in field.get_children():
-		if String(child.name).begins_with("Fragment"):
+		## The core layer (02 §5.6) rides the same deferred-shape path: a cleave's
+		## `Core*` body defers its shape exactly like its `Fragment*` siblings.
+		if String(child.name).begins_with("Fragment") or String(child.name).begins_with("Core"):
 			fragments.append(child)
-	assert_gt(fragments.size(), 0, "the depleted medium cleaved into fragments")
+	assert_gt(fragments.size(), 0, "the depleted medium cleaved into fragments (core included)")
 	for fragment: Node in fragments:
 		assert_true(
 			fragment.get_node_or_null(NodePath(SHAPE_NODE)) == null,

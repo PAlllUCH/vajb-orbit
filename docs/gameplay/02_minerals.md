@@ -377,6 +377,72 @@ now also collide with each other (§13's Rock-rock contact row, `COLLISION_MASK`
 
 Implementation wave: **S22.7** (coder lane, `slices/S22.7-mass-physics/`).
 
+**Superseded in part (2026-10-01, §5.5 + §5.6):** this block's speed figures
+(105–195 / ~262 / ~95 u/s) are the pre-fix record — the baseline kick is now **50**
+(weight-1.0 children 35–65 u/s), the last-hit impact factor scales the roll and the
+speed, and the largest kind's first child is the core that stays behind. The mass
+row (B1) stands unchanged.
+
+### 5.5 Amendment 2026-10-01 — the last hit sets the splash (owner, S22.7 fix round)
+
+The owner's ask (2026-10-01): *"i want different amount of splinters and
+splinters speeds depending on the damage that last hit receiver"* — a rocket
+into an asteroid should *"splash out a lot of splinters at high speed"*, a
+mining finish should *"only spawn few very slow splinters"* — and the
+splinters' max and min speed cut 3×. Three rules ride the fix round:
+
+| Tick | Row | Value | Reversal |
+|---|---|---|---|
+| **F1** (owner-directed) | **Baseline splinter speed ÷3** — `FRAGMENT_OUTWARD_KICK` 150 → 50; the jitter band (0.7–1.3) is untouched, so both band ends fall 3× with it | weight-1.0 children of a resting rock: **35–65 u/s** (was 105–195) | `150.0` |
+| **F2** (proposed) | **Mining shatters are gentle** — a mining-attributed crack reads a flat impact factor, whatever the bank size | **0.35** (`Asteroid.SPLIT_IMPACT_MINING`) | `1.0` (the pre-fix count and speed) |
+| **F3** (proposed) | **Gun shatters scale with the last hit** — impact = the last hit's raw delivered damage (the rock's recorded chip work ÷ `gun_chip_rate`, so the launch's `damage_mult` rides along) ÷ 50, clamped | **clamp(raw ÷ 50, 0.3, 2.0)** (`Asteroid.SPLIT_IMPACT_REFERENCE/FLOOR/CEIL`) | the factor read flat `1.0` (no scaling) |
+
+The impact factor scales **both** halves of the split: each rolled kind's child
+count (`maxi(1, roundi(roll × impact))` — a kind the §5.2 table gives children
+never rolls to zero, so a gentle break still leaves one of it) and the child's
+whole ejection vector. The anchors, at the shipped weapon rows (§4's dps:
+rocket 60 × 1.2 s = 72 raw per shot, laser 180 dps = 3 raw per frame):
+
+- **Mining** an M rock: exactly **one** S splinter at **21–40 u/s**; an XL leaves
+  3–4 children (one per kind, S possibly two). Mining is gentle whatever the bank.
+- **Rocket** into an M: impact 1.44 → **1–4** S splinters at **88–164 u/s**; into
+  an XL the brood reaches **7–17** children.
+- **Beam** chip-crack (any per-frame slice ≤ 15 raw): the 0.3 floor — an L leaves
+  exactly 1 M + 1 S at the gentle speeds.
+- **Railgun-class single hit** (raw ≥ 100): the 2.0 ceiling — and the wildest
+  splash still tops out under the pre-fix maximum (50 × 1.3 × 2.0 = 130 < 195).
+- **A4 splinter sheds** (non-cracking gun chips) stay at impact 1.0 — they ride
+  the ÷3 baseline only.
+
+Implementation: S22.7 fix round (coder lane); `Asteroid.last_hit_force()`
+records each door's last amount (the collision ram's offer rides the gun door),
+`AsteroidField._split_impact` maps it, and `_roll_children`/`_deploy_debris`
+apply it.
+
+### 5.6 Amendment 2026-10-01 (bis) — the core layer law (owner, S22.7 fix round 2)
+
+The owner's ask (2026-10-01): *"each asteroid layer to leave behind a smaller
+asteroid ... when i destroy XL it leaves behind L and splinters fly away, L to M
+and splinters, M to S, S to particles only"*. One rule rides the round:
+
+| Tick | Row | Value | Reversal |
+|---|---|---|---|
+| **C1** (owner-directed) | **The core layer** — of every rolled child set, the largest kind's **first** child is the **core**: it takes the parent's own centre and keeps only the shape's half of the ejection row (`current_velocity × 1.2` — no outward kick, no jitter roll, no impact factor), while **every other rolled child flies as a splinter** on the ring/kick carrier with §5.5's impact factor | XL → 1 L core + the M/S roll as flyers; L → 1 M core + S flyers; M → 1 S core (+ 0–2 S flyers off the `S 1-3` roll); S → the pickup burst only (there is no smaller layer) | every rolled child on the ring (the pre-core law) |
+
+The core is a full child in S13's terms: the mining reserve is split across the
+whole set **including the core**, so a mined family still realises the root's
+own budget, and a gun-shatter core carries bore 0 like every flyer. The core is
+exempt from §5.5's impact factor in count as well — the layer is left behind
+whatever the last hit was; only the splinter half scales. §5.5's anchor prose
+reads through this law: the "one S splinter" a gently mined M leaves **is** the
+core now (at the parent's place, not kicked out), and an XL's gentle brood is
+the L core plus 2–3 slow flyers. "S to particles only" is read as the shipped
+Small end: no rock remains, the break explosion draws and the 1–2 pickups
+burst — say the word if the pickups should go too.
+
+Implementation: S22.7 fix round 2 (coder lane); `AsteroidField._cleave`
+promotes the largest kind's first child and `_deploy_core` places it.
+
 ## 6. Icons
 
 The shipped icon set covers generic cargo glyphs (`icon_cargo_ore_48.png`

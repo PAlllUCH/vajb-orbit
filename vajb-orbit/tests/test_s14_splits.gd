@@ -90,7 +90,10 @@ func test_ac1_two_hundred_xl_shatters_roll_the_mixed_child_set() -> void:
 	for index in SHATTERS:
 		var parent := _member(field, AsteroidScript.SIZE_XL, 8, "Xl%d" % index)
 		var before := _live_ids(field)
-		_deplete(parent)
+		## The S22.7 fix round (02 §5.5): the mix roll is measured at the neutral
+		## impact anchor (the reference gun hit); the gentle mining end is measured
+		## in the s22_7_splash suite.
+		_crack_reference(parent)
 		var children := _new_since(field, before)
 		parents += 1
 		children_total += children.size()
@@ -405,6 +408,22 @@ func _member(field: Node2D, size_class: int, units: int, node_name: String) -> N
 func _deplete(rock: Node2D) -> void:
 	rock.call(&"apply_work", maxf(float(int(rock.get(&"yield_units"))),
 		AsteroidScript.WORK_PER_UNIT))
+
+
+## Cracks through the gun door at the S22.7 fix round's reference hit (02 §5.5) --
+## chip work `SPLIT_IMPACT_REFERENCE x gun_chip_rate`, so the field's impact factor
+## reads exactly 1.0 and AC1's per-kind spans are the mix table's own. The A4
+## splinter sheds are suppressed for the loop (a shed joins `rocks` and would
+## pollute the per-kind counts); the chance is restored before the helper returns.
+func _crack_reference(rock: Node2D) -> void:
+	var chance := OreTuningScript.splinter_chance
+	OreTuningScript.splinter_chance = 0.0
+	var chip: float = AsteroidScript.SPLIT_IMPACT_REFERENCE * OreTuningScript.gun_chip_rate
+	for _attempt in 256:
+		if not is_instance_valid(rock) or bool(rock.call(&"is_depleted")):
+			break
+		rock.call(&"apply_gun_work", chip)
+	OreTuningScript.splinter_chance = chance
 
 
 func _live_ids(field: Node2D) -> Array[int]:
