@@ -1492,7 +1492,8 @@ func _refresh_stat_block(profile: ProfileScript, fit: Dictionary) -> void:
 
 
 ## One entry's block: the base line plus one line per affix, joined by `BLOCK_SEPARATOR`.
-## `""` for an empty cell or an id the catalogue does not ship.
+## `""` for an empty cell or an id the catalogue does not ship. The record-independent
+## half is `stat_block` below, which the AUCTION's inspector calls (15 section 11).
 func _stat_block_of(profile: ProfileScript, entry: StringName) -> String:
 	if entry == &"":
 		return ""
@@ -1500,9 +1501,17 @@ func _stat_block_of(profile: ProfileScript, entry: StringName) -> String:
 	var module_row := ModuleCatalog.module(base)
 	if module_row.is_empty():
 		return ""
+	return stat_block(module_row, _instance_record(profile, entry))
+
+
+## 15 section 7's block for one record, shared with the AUCTION's hover inspector
+## (15 section 11): the base module's catalogue stats line, then one line per rolled
+## affix, joined by `BLOCK_SEPARATOR`. The AUCTION supplies the record; the format
+## stays this panel's alone.
+static func stat_block(module_row: Dictionary, record: Dictionary) -> String:
 	var lines := PackedStringArray()
 	lines.append(_base_stats_line(module_row))
-	for line: String in _affix_lines(_instance_record(profile, entry)):
+	for line: String in _affix_lines(record):
 		lines.append(line)
 	return BLOCK_SEPARATOR.join(lines)
 
@@ -1511,7 +1520,7 @@ func _stat_block_of(profile: ProfileScript, entry: StringName) -> String:
 ## - its draw and every `effects` entry (`shield_add` 200 -> `SHIELD +200`, `damage_add` 0.15
 ## -> `DAMAGE +15 %`, `speed_mult` 1.15 -> `SPEED ×1.15`). A row with no effects (every weapon
 ## row) shows its draw alone.
-func _base_stats_line(module_row: Dictionary) -> String:
+static func _base_stats_line(module_row: Dictionary) -> String:
 	var parts := PackedStringArray([BASE_LINE_FORMAT % int(module_row.get(&"draw", 0))])
 	var effects: Dictionary = module_row.get(&"effects", {})
 	for key: Variant in effects:
@@ -1522,7 +1531,7 @@ func _base_stats_line(module_row: Dictionary) -> String:
 ## 15 section 7's second line onward: one line per rolled affix, in the record's own order.
 ## A prefix reads `<NAME> · <STAT> <value>` from 15 section 3's row and the value the record
 ## carries; a suffix reads `<NAME> · <perk>` with 15 section 4's own perk prose verbatim.
-func _affix_lines(record: Dictionary) -> Array[String]:
+static func _affix_lines(record: Dictionary) -> Array[String]:
 	var lines: Array[String] = []
 	if record.is_empty():
 		return lines
@@ -1600,11 +1609,11 @@ static func signed_number(value: float) -> String:
 ## The `{id, value}` prefix rows and the plain suffix ids one record carries, through the same
 ## two shapes `PlayerProfile._affix_rows`/`_affix_names` normalise to (a hand-built fixture may
 ## hand in either).
-func _rows_of(raw: Variant) -> Array:
+static func _rows_of(raw: Variant) -> Array:
 	return raw as Array if raw is Array else []
 
 
-func _row_id_of(raw: Variant) -> String:
+static func _row_id_of(raw: Variant) -> String:
 	if raw is Dictionary:
 		return str((raw as Dictionary).get("id", ""))
 	if raw is String or raw is StringName:

@@ -31,6 +31,7 @@ Every module instance rolls 0–2 affixes:
 | Source | Common | Magic | Rare |
 |--------|--------|-------|------|
 | Auction purchase | 65 % | 30 % | 5 % |
+| Auction stock listing (10 §2.1's 2026-10-01 amendment) | 100 % | — | — |
 | Shipyard build (10 §3) | 100 % | — | — (building is reliable, not lucky) |
 | Enemy/hunter drops (06) | 70 % | 25 % | 5 % |
 | Boss/arena rewards (14 §5) | 20 % | 40 % | 40 % |
@@ -289,3 +290,23 @@ session; each carries its reversal.
 |---|---|---|---|---|
 | R-S27-2 | New affix rows (§3/§4 formats, family bands stand) | +4 prefixes (stat modifiers): **Dense** +damage band, **Quickwarm** +fire-rate band, **Layered** +armour-pool band, **Farflung** +range band; +3 suffixes (binary boons): **of Echoes** (every 5th shot costs no ammo), **of the Long Watch** (+2 s lock hold), **of the Pyre** (a kill below 25 % hull detonates a 50-damage ring) | rows deleted | **K2** |
 | R-S27-3 | Suffix perks go live | every §4 perk names its wired consumer and is applied at the §20 aggregation seam; the "displayed, never applied" note dies (Embers/Leeches/Cartograph are already live) | display-only (current) | **K3** |
+
+## 11. Amendment 2026-10-01 (the stock shelf and the inspector stat block)
+
+Owner-ruled detour from the slice plan; every number carries its reversal.
+
+- **The stock shelf.** Every AUCTION restock draws, after §8's ten rolled listings,
+  **ten stock listings** from tier I's pool (10 §2.1's 2026-10-01 amendment): base
+  catalogue rows, rolled **Common** through the new `auction_stock` source row in
+  §2's table (100 % Common), **no affixes** — a stock cannon is the catalogue's own
+  cannon, which is the point: a buyer who just bought a hull can always mount
+  something. Price, hot-slot eligibility, restock discard and the record shape are
+  every other listing's. **Reversal:** drop the stock loop in
+  `Auction._draw_listings` and the `auction_stock` row in `ModuleCatalog.SOURCE_ROLLS`;
+  §8's shelf returns.
+- **The inspector stat block.** The AUCTION's hover inspector on a module listing
+  shows what FITTING shows (§7's two-line block): the catalogue description first,
+  then the base module's catalogue stats line and one line per rolled affix. The
+  format is FITTING's own (`fitting_panel.gd`'s stat-block statics); the AUCTION
+  invents no number — every value reads off the catalogue `effects` dict or §3/§4's
+  rows. **Reversal:** the inspector returns to the description alone.

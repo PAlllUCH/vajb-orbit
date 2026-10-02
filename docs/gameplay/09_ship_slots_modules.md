@@ -21,18 +21,18 @@ and every tool result is re-sent on each later request.
 
 | Section | Topic | Lines |
 |---|---|---|
-| 1. | Slot types | L40–L76 |
-| 2. | The power economy | L77–L103 |
-| 3. | Module catalogue | L104–L310 |
-| 4. | Fit rules (the actual constraints) | L311–L397 |
-| 5. | Stats resolution order | L398–L431 |
-| 6. | Balance ledger (per-class reference fits, for playtests) | L432–L448 |
-| 7. | What a hull arrives with (amendment 2026-09-21) | L449–L478 |
-| 8. | Layouts (new — how the matrix is consumed) | L479–L506 |
-| 9. | Per-hull standard fits (new) | L507–L529 |
-| 10. | Weapon batteries (amendment 2026-09-22, S4) | L530–L590 |
-| 11. | Playtest amendments 2026-09-23 (wave S5 — batteries v2, hardpoints, … | L591–L652 |
-| 12. | Battery hardcap (amendment 2026-09-25, S15) | L653–L677 |
+| 1. | Slot types | L40–L84 |
+| 2. | The power economy | L85–L111 |
+| 3. | Module catalogue | L112–L318 |
+| 4. | Fit rules (the actual constraints) | L319–L405 |
+| 5. | Stats resolution order | L406–L439 |
+| 6. | Balance ledger (per-class reference fits, for playtests) | L440–L456 |
+| 7. | What a hull arrives with (amendment 2026-09-21) | L457–L486 |
+| 8. | Layouts (new — how the matrix is consumed) | L487–L514 |
+| 9. | Per-hull standard fits (new) | L515–L549 |
+| 10. | Weapon batteries (amendment 2026-09-22, S4) | L550–L610 |
+| 11. | Playtest amendments 2026-09-23 (wave S5 — batteries v2, hardpoints, … | L611–L672 |
+| 12. | Battery hardcap (amendment 2026-09-25, S15) | L673–L746 |
 
 <!-- section-index:end -->
 

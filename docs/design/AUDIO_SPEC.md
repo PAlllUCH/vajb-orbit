@@ -35,7 +35,7 @@ and every tool result is re-sent on each later request.
 | 5. | Format, conversion and looping | L236–L270 |
 | 6. | Import layout and naming convention | L271–L358 |
 | 7. | TODO list (confirmation before import batch) | L359–L376 |
-| 8. | Implementation amendments (2026-09-17 - sources downloaded and impor… | L377–L469 |
+| 8. | Implementation amendments (2026-09-17 - sources downloaded and impor… | L377–L487 |
 
 <!-- section-index:end -->
 

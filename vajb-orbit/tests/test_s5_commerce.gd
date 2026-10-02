@@ -338,7 +338,7 @@ func test_the_family_tabs_are_the_pins_ten_in_the_pins_order() -> void:
 		)
 	assert_eq(panel.call(&"family_tab"), PanelScript.TAB_ALL, "the pane opens on the flat list")
 	assert_eq(panel.call(&"shown_hull_ids").size(), 6, "which shows the six hulls")
-	assert_eq(panel.call(&"shown_listing_ids").size(), 10, "and the ten listings")
+	assert_eq(panel.call(&"shown_listing_ids").size(), 20, "and the twenty listings")
 	## The strip has to live inside the pane's own content box (STATION_HUB section 3.1).
 	var measured := strip.get_combined_minimum_size().x
 	print("[S5-COMMERCE] tab strip minimum width %.1f px of %.0f px" % [measured, PANE_CONTENT_WIDTH])
@@ -349,7 +349,8 @@ func test_the_family_tabs_are_the_pins_ten_in_the_pins_order() -> void:
 
 
 ## AC1: the tab tour is display grouping and nothing else. After every tab the shelf is
-## still 10 section 2.1's six hulls + ten rolled listings; every rendered price, meta, `WAS`
+## still 10 section 2.1's six hulls + ten rolled listings + the 2026-10-01 amendment's ten
+## stock listings; every rendered price, meta, `WAS`
 ## line and F LOT tag is `Auction.hull_rows` / `Auction.listing_rows`' own value for that
 ## row; the pane's built payloads are unchanged; and the shelf's state, its hot slot and the
 ## restock reading are byte-identical to the readings taken before the tour.
@@ -364,7 +365,7 @@ func test_the_tab_tour_leaves_the_draw_prices_and_restock_byte_identical() -> vo
 	var hulls_before := AuctionScript.hull_rows(profile)
 	var listings_before := AuctionScript.listing_rows(profile)
 	assert_eq(hulls_before.size(), 6, "S3's six hull rows")
-	assert_eq(listings_before.size(), 10, "and its ten listing rows")
+	assert_eq(listings_before.size(), 20, "and its twenty listing rows")
 	var hot_before := AuctionScript.hot_id(profile)
 	var panel := _mount(PanelScene)
 	var restock_before := String(panel.call(&"restock_text"))
@@ -372,7 +373,7 @@ func test_the_tab_tour_leaves_the_draw_prices_and_restock_byte_identical() -> vo
 	var payloads_hulls: Array[Dictionary] = panel.call(&"hull_payloads")
 	var payloads_listings: Array[Dictionary] = panel.call(&"module_payloads")
 	assert_eq(payloads_hulls.size(), 6, "the pane builds the six hull rows")
-	assert_eq(payloads_listings.size(), 10, "and the ten listing rows")
+	assert_eq(payloads_listings.size(), 20, "and the twenty listing rows")
 	for tab: Dictionary in PIN_TABS:
 		var tab_id: StringName = tab[&"id"]
 		panel.call(&"select_family", tab_id)
@@ -382,7 +383,7 @@ func test_the_tab_tour_leaves_the_draw_prices_and_restock_byte_identical() -> vo
 		var hull_rows := _rows_of(panel, "HullRows")
 		var listing_rows := _rows_of(panel, "ModuleRows")
 		assert_eq(hull_rows.size(), 6, "%s keeps six hull rows" % String(tab_id))
-		assert_eq(listing_rows.size(), 10, "%s keeps ten listing rows" % String(tab_id))
+		assert_eq(listing_rows.size(), 20, "%s keeps twenty listing rows" % String(tab_id))
 		## 2. The pane's built payloads are the ones it built before the tour.
 		assert_eq(
 			panel.call(&"hull_payloads"), payloads_hulls, "%s moves no hull payload" % String(tab_id)
@@ -403,7 +404,9 @@ func test_the_tab_tour_leaves_the_draw_prices_and_restock_byte_identical() -> vo
 			panel.call(&"restock_text"), restock_before, "the restock reading never moves"
 		)
 		assert_eq(panel.call(&"status_text"), status_before, "and neither does the strip")
-		assert_eq(AuctionScript.listing_ids(profile).size(), 10, "the shelf still lists ten")
+		assert_eq(
+			AuctionScript.listing_ids(profile).size(), 20, "the shelf still lists twenty"
+		)
 	## The grouping itself: each tab shows exactly its own family, and the two non-family tabs
 	## show the whole shelf. The tabs are driven through their own `pressed` -- the plate the
 	## player clicks, not the pane's value setter.

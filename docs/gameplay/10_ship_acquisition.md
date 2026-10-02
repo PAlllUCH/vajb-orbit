@@ -40,6 +40,19 @@ house broker with a rotating shelf.
 - Rotation state persists in the profile save (same section family as the
   exchange's market state).
 
+**Amendment 2026-10-01 (owner-ruled: the stock shelf).** The shelf's module half
+grows from **10** to **20 listings**: the 10 rolled instances above, then **10 stock
+listings** — base catalogue rows drawn uniformly from **tier I's** pool (the stock
+cannon, bolter, standard drive and their tier-I peers, never the 15 §5 exclusives),
+rolled **Common** with **no affixes** through 15 §2's new `auction_stock` source row
+(100 % Common), priced at the ordinary `09 list × Common` multiplier, and eligible
+for the hot slot like any other listing (the hot draw walks every listed id). The
+stock ten ride the same restock, the same discard and the same `auction.modules`
+record shape — §2.3's buying rules are unchanged, and a buyer who just bought a hull
+always finds something to mount. **Reversal:** drop the stock loop in
+`Auction._draw_listings` and the `auction_stock` row in `ModuleCatalog.SOURCE_ROLLS`;
+the shelf returns to 10 rolled listings.
+
 ### 2.2 Hull availability weights
 
 Class list price is 08 §2's column. Availability is weighted so the ladder

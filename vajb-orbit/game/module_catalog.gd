@@ -90,8 +90,11 @@ const HOT_DISCOUNT_PERCENT := 20
 ## `shipyard` is 100 % Common ("building is reliable, not lucky"); `derelict` has no
 ## Common at all. `faction_lot` is 15 section 9.2's proposed split for 15 section 8's
 ## interim F lot: section 2's own 30:5 auction ratio renormalised over the two
-## rarities that are legal for an exclusive (30/35, 5/35).
+## rarities that are legal for an exclusive (30/35, 5/35). `auction_stock` is 15
+## section 11's 2026-10-01 amendment (10 §2.1's stock shelf): the shelf's ten stock
+## listings are always Common, never affixed.
 const SOURCE_AUCTION: StringName = &"auction"
+const SOURCE_AUCTION_STOCK: StringName = &"auction_stock"
 const SOURCE_SHIPYARD: StringName = &"shipyard"
 const SOURCE_DROP: StringName = &"drop"
 const SOURCE_ARENA: StringName = &"arena"
@@ -106,6 +109,7 @@ const SOURCE_ROLLS: Dictionary = {
 	&"derelict": {&"common": 0, &"magic": 75, &"rare": 25},
 	&"crafting": {&"common": 40, &"magic": 45, &"rare": 15},
 	&"faction_lot": {&"common": 0, &"magic": 85, &"rare": 15},
+	&"auction_stock": {&"common": 100, &"magic": 0, &"rare": 0},
 }
 
 ## 15 section 5's three faction exclusives and the faction each one belongs to

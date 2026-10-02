@@ -46,13 +46,18 @@ const ModuleData := preload("res://game/module_catalog.gd")
 const Catalog := preload("res://game/station_catalog.gd")
 const Clock := preload("res://autoload/world_clock.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
+## 15 section 11: the inspector's stat block is FITTING's own format, so the block
+## builder is that panel's static and this pane adds no number of its own.
+const FittingScript := preload("res://ui/station/fitting_panel.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
 signal status_requested(message: String, danger: bool)
 ## CONTRACTS section 23.1: emitted when the pointer lands on or leaves a shelf row (a
 ## hull, a rolled listing or a sell row). `title` is the row's identity line, `body` its
-## catalogue description (empty when the row carries none), `danger` colours the title.
+## catalogue description -- for a module listing, 15 section 11's amendment appends the
+## 15 section 7 stat block (the base stats, then one line per rolled affix), so a shelf
+## row says its numbers without a trip to FITTING -- `danger` colours the title.
 ## `title == ""` clears the shell's inspector block.
 signal inspect_requested(title: String, body: String, danger: bool)
 
@@ -710,6 +715,10 @@ func _build_module_row(entry: Dictionary) -> Dictionary:
 		&"price_caption": price[1],
 		&"status": status[0],
 		&"action": action[0],
+		## 15 section 11: the record's affix rows, carried so `_inspect_row` can build
+		## the stat block; their presence is what marks a payload as a module listing.
+		&"prefixes": entry.get(&"prefixes", []),
+		&"suffixes": entry.get(&"suffixes", []),
 	}
 	row.pressed.connect(_on_action_pressed.bind(payload, &"listing"))
 	_wire_row(row, payload)
@@ -1031,14 +1040,34 @@ func _on_row_hovered(payload: Dictionary, hovered: bool) -> void:
 ## CONTRACTS section 23.1: the shelf row's additive inspector line. The row's own
 ## identity line is the title (never a second format string); the body resolves the
 ## row's id - a `mod_*` listing through its base plus its rolled affixes, a hull through
-## the ship row - and a leave clears both.
+## the ship row - and a leave clears both. 15 section 11's amendment: a module listing's
+## body carries the 15 section 7 stat block after the description, the base stats and
+## one line per rolled affix in FITTING's own format.
 func _inspect_row(payload: Dictionary, shown: bool) -> void:
 	if not shown:
 		inspect_requested.emit("", "", false)
 		return
-	inspect_requested.emit(
-		_row_title(payload), Catalog.describe(StringName(payload[&"id"])), false
-	)
+	var body := ""
+	if payload.has(&"prefixes"):
+		body = Catalog.describe(StringName(payload.get(&"base_id", ""))) + _stat_block(payload)
+	else:
+		body = Catalog.describe(StringName(payload[&"id"]))
+	inspect_requested.emit(_row_title(payload), body, false)
+
+
+## 15 section 11's stat block for one listing: FITTING's `stat_block` over the base
+## module's catalogue row and the record's affix rows, prefixed with the block
+## separator so it starts on its own line. `""` for a base the catalogue does not ship.
+func _stat_block(payload: Dictionary) -> String:
+	var module_row := ModuleData.module(StringName(payload.get(&"base_id", "")))
+	if module_row.is_empty():
+		return ""
+	var record := {
+		&"prefixes": payload.get(&"prefixes", []),
+		&"suffixes": payload.get(&"suffixes", []),
+	}
+	var block := FittingScript.stat_block(module_row, record)
+	return FittingScript.BLOCK_SEPARATOR + block if not block.is_empty() else ""
 
 
 ## The footer hint a focused row writes, in the OUTFITTING pane's own shape.

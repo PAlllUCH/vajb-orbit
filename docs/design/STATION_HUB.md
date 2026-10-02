@@ -46,16 +46,16 @@ and every tool result is re-sent on each later request.
 | 2. | Navigation model | L81–L131 |
 | 3. | Composition | L132–L272 |
 | 4. | Node tree (exact) | L273–L399 |
-| 5. | Per-module spec | L400–L1005 |
-| 6. | Type scale | L1006–L1027 |
-| 7. | Art map | L1028–L1078 |
-| 8. | Theme items used (all present in | L1079–L1100 |
-| 9. | Motion table | L1101–L1128 |
-| 10. | Focus and input | L1129–L1149 |
-| 11. | Audio hooks | L1150–L1176 |
-| 12. | Implementation notes for the coder | L1177–L1256 |
-| 13. | Verification performed on the mockup | L1257–L1273 |
-| 14. | Open questions for the owner | L1274–L1307 |
+| 5. | Per-module spec | L400–L1014 |
+| 6. | Type scale | L1015–L1036 |
+| 7. | Art map | L1037–L1087 |
+| 8. | Theme items used (all present in | L1088–L1109 |
+| 9. | Motion table | L1110–L1137 |
+| 10. | Focus and input | L1138–L1158 |
+| 11. | Audio hooks | L1159–L1185 |
+| 12. | Implementation notes for the coder | L1186–L1265 |
+| 13. | Verification performed on the mockup | L1266–L1282 |
+| 14. | Open questions for the owner | L1283–L1316 |
 
 <!-- section-index:end -->
 
@@ -925,6 +925,15 @@ and an instance id resolves to `{}`, so it would render `0 NEEDED` and the raw i
 name (`station.gd:456-492`). The wordings are unchanged — §13's three plus 09 §2's
 `<n> NEEDED` — only their owner is. **Reversal:** route the strip back through the
 shell once the shell can price an instance.
+
+**Amendment 2026-10-01 (the stock shelf + the inspector stat block).** The MODULES
+section lists **20 rows**: §8's ten rolled instances, then ten **stock** listings —
+tier-I catalogue rows at Common, no affixes (10 §2.1's 2026-10-01 amendment; the
+meta line reads the same, its rarity is always Common). And the hover inspector on a
+module listing appends **15 §7's stat block** to the description — the base module's
+catalogue stats, then one line per rolled affix, FITTING's own text — so a shelf row
+says its numbers without a trip to FITTING. **Reversal:** the inspector returns to
+the description alone; the shelf returns to ten rolled rows.
 
 ### 5.11 Playtest amendments 2026-09-23 (wave S5 — owner's ten findings, station batch)
 

@@ -6,6 +6,17 @@
 
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-25 clear-outs (owner asks):** every closed slice folder moved to the system trash (last git tree carrying them: `7a081ef`), old session reports live in `_state/_archive/`, and the two dispatch files were purged to live-items-only (2026-09-25 ter). Citation paths into purged trees name historical files.
 
+**Updated 2026-10-02 (owner's auction detour — no wave, developer session):** the
+owner ruled two AUCTION fixes outside the slice plan: (1) a listing's hover
+inspector now carries **15 §7's stat block** after the description (FITTING's own
+statics; `listing_rows` gained `prefixes`/`suffixes`), and (2) every restock draws
+**ten extra stock listings** — tier-I rows, 100 % Common, never affixed, hot
+eligible — through the new `auction_stock` row in `ModuleCatalog.SOURCE_ROLLS`
+(10 §2.1's amendment + 15 §11; CONTRACTS §15 + §10 v0.44). Gate **1030 → 1031/0**
+twice hermetic (the s3/s5 shelf-count rows moved to 20; one new inspector row).
+Untracked as ever: `staging/compare/`. **The phase's next item is still designer
+17 (D16) before coder 30 (S24).**
+
 **Updated 2026-10-02 (S23 closed — content activation; the phase's next item is
 designer 17 / D16):** the owner delegated the wave's open values to the developer
 (brief §0's V1–V5) and added the F1 credits toggle (A8); the owner then ruled the

@@ -252,9 +252,10 @@ func _digits_only(text: String) -> String:
 ## ---------------------------------------------------------------------------
 
 
-## One shelf in CONTRACTS section 15's shape: six hulls, ten rolled instance listings and
-## one hot slot drawn from the sixteen of them, with the F lot's exclusive first while
-## 15 section 8's interim is on.
+## One shelf in CONTRACTS section 15's shape (as its 2026-10-01 amendment reads it): six
+## hulls, ten rolled instance listings, ten stock listings and one hot slot drawn from
+## the twenty-six of them, with the F lot's exclusive first while 15 section 8's interim
+## is on.
 func test_the_rotation_draws_six_hulls_and_ten_listings() -> void:
 	var profile := _fresh()
 	var shelf: Dictionary = _draw_shelf(profile)
@@ -262,8 +263,23 @@ func test_the_rotation_draws_six_hulls_and_ten_listings() -> void:
 	var listings: Dictionary = shelf[&"modules"]
 	assert_eq(hulls.size(), AuctionScript.HULL_SLOTS, "10 section 2.1's six hulls")
 	assert_eq(hulls.size(), 6, "and six is six")
-	assert_eq(listings.size(), AuctionScript.MODULE_SLOTS, "and its ten module listings")
-	assert_eq(listings.size(), 10, "and ten is ten")
+	assert_eq(
+		listings.size(),
+		AuctionScript.MODULE_SLOTS + AuctionScript.STOCK_SLOTS,
+		"and its twenty module listings"
+	)
+	assert_eq(listings.size(), 20, "and twenty is twenty")
+	## 15 section 11: the stock ten are Common and never affixed; the rolled ten may
+	## carry an affix but need not (65 % of them are Common too).
+	var stock := 0
+	for key: Variant in listings:
+		var record: Dictionary = listings[key]
+		var prefixes: Array = record.get("prefixes", [])
+		var suffixes: Array = record.get("suffixes", [])
+		if prefixes.is_empty() and suffixes.is_empty():
+			assert_eq(String(record.get("rarity", "")), "common", "an unaffixed listing is Common")
+			stock += 1
+	assert_true(stock >= 10, "the shelf carries its ten stock listings (%d)" % stock)
 	## The two starter hulls never leave the shelf (10 section 2.2).
 	assert_eq(hulls[0], String(&"ship_fighter"), "the Lancer is always listed")
 	assert_eq(hulls[1], String(&"ship_vanguard"), "and so is the Vanguard")
@@ -526,7 +542,7 @@ func test_the_restock_advances_by_bands_and_lives_in_the_top_level_auction_key()
 	var first: Dictionary = profile.call(&"auction")
 	assert_eq(int(first[&"last_band"]), now, "the stamp is the call's own reading")
 	var first_ids := AuctionScript.listing_ids(profile)
-	assert_eq(first_ids.size(), 10, "ten listings")
+	assert_eq(first_ids.size(), 20, "ten rolled and ten stock listings")
 	assert_eq(
 		AuctionScript.next_restock_seconds(profile, now), BAND, "a full band is left"
 	)
@@ -542,7 +558,7 @@ func test_the_restock_advances_by_bands_and_lives_in_the_top_level_auction_key()
 	assert_eq(_evaluate(profile, now + BAND), 1, "one band")
 	assert_eq(int(profile.call(&"auction")[&"last_band"]), now + BAND, "the stamp moved")
 	assert_ne(AuctionScript.listing_ids(profile), first_ids, "and the shelf was redrawn")
-	assert_eq(AuctionScript.listing_ids(profile).size(), 10, "still ten listings")
+	assert_eq(AuctionScript.listing_ids(profile).size(), 20, "still ten rolled and ten stock")
 	## Three bands at once redraws three times and stamps the last reading (the exchange's
 	## own loop shape).
 	assert_eq(
@@ -550,7 +566,7 @@ func test_the_restock_advances_by_bands_and_lives_in_the_top_level_auction_key()
 	)
 	assert_eq(int(profile.call(&"auction")[&"last_band"]), now + BAND * 4, "and the last stamp")
 	var ids := AuctionScript.listing_ids(profile)
-	assert_eq(ids.size(), 10, "the redrawn shelf still carries ten listings")
+	assert_eq(ids.size(), 20, "the redrawn shelf still carries twenty listings")
 	## The shelf is the profile's own top-level key, in CONTRACTS section 15's four members,
 	## and it is **not** a `market` sub-key -- `_normalise_market` rebuilds that dictionary
 	## from `MARKET_KEYS` and would drop it on load.
@@ -707,8 +723,9 @@ func test_the_three_rarity_tokens_are_the_pins_hexes() -> void:
 	)
 
 
-## The pane renders 10 section 2.1's shelf: six hull rows, ten listing rows with the F LOT
-## tag and the hot row's `WAS` line, the sell sub-list, and its **own** footer strip with
+## The pane renders 10 section 2.1's shelf as its 2026-10-01 amendment reads it: six hull
+## rows, twenty listing rows (ten rolled with the F LOT tag, ten stock) with the hot row's
+## `WAS` line, the sell sub-list, and its **own** footer strip with
 ## the restock reading (section 5.10's S3 amendment).
 func test_the_pane_renders_the_shelf_the_sell_list_and_its_own_footer() -> void:
 	var profile := _borrow_autoload()
@@ -723,7 +740,7 @@ func test_the_pane_renders_the_shelf_the_sell_list_and_its_own_footer() -> void:
 	var kept: StringName = StringName(profile.call(&"add_instance", LASER, ModuleData.RARITY_MAGIC, [], []))
 	var panel := _mount(ThemeRes)
 	assert_eq(_rows_of(panel, "HullRows").size(), 6, "six HULLS rows")
-	assert_eq(_rows_of(panel, "ModuleRows").size(), 10, "ten MODULES rows")
+	assert_eq(_rows_of(panel, "ModuleRows").size(), 20, "twenty MODULES rows")
 	assert_eq(_rows_of(panel, "SellRows").size(), 1, "one SELL MODULES row for the bag's one instance")
 	## The rows are the shelf's own, in its own drawn order, priced by the listing rows.
 	var listings := AuctionScript.listing_rows(profile)
@@ -962,3 +979,46 @@ func _first_icon(node: Node) -> TextureRect:
 	for child: Node in node.find_children("*", "TextureRect", true, false):
 		return child as TextureRect
 	return null
+
+
+## 15 section 11: a module listing's inspector body is the catalogue description with
+## 15 section 7's stat block after it -- the base stats, then one line per rolled affix,
+## in FITTING's own format (`fitting_panel.gd`'s statics). A hull row's body stays the
+## description alone, and a leave clears both.
+func test_the_listing_inspector_carries_the_stat_block() -> void:
+	var panel := _mount(ThemeRes)
+	var seen: Array = []
+	panel.connect(
+		&"inspect_requested",
+		func(title: String, body: String, danger: bool) -> void:
+			seen.append([title, body, danger])
+	)
+	var prefixes: Array = [{"id": "sturdy", "value": 0.15}]
+	var suffixes: Array = ["whale"]
+	var listing := {
+		&"id": &"mod_9001",
+		&"base_id": LASER,
+		&"name": "LASER MKI · STURDY",
+		&"cost": 900,
+		&"action_word": "BUY",
+		&"prefixes": prefixes,
+		&"suffixes": suffixes,
+	}
+	panel.call(&"_inspect_row", listing, true)
+	assert_eq(seen.size(), 1, "the hover writes the inspector once")
+	if seen.is_empty():
+		return
+	var body := String(seen[0][1])
+	assert_contains(body, Catalog.describe(LASER), "the description leads")
+	assert_contains(body, "BASE DRAW", "the base stats line follows")
+	assert_contains(body, "STURDY · SHIELD +15 %", "the prefix reads its stat and value")
+	assert_contains(body, "OF THE WHALE · +50 max hull structure", "the suffix reads its perk")
+	## And a leave clears both.
+	panel.call(&"_inspect_row", listing, false)
+	assert_eq(seen.size(), 2, "the leave writes once more")
+	assert_true(String(seen[1][0]).is_empty(), "and clears the inspector")
+	## A hull row carries no affix rows, so its body stays the description alone.
+	var hull := {&"id": &"ship_fighter", &"name": "LANCER", &"cost": 100, &"action_word": "BUY"}
+	panel.call(&"_inspect_row", hull, true)
+	assert_eq(seen.size(), 3, "the hull's hover writes once more")
+	assert_eq(String(seen[2][1]), Catalog.describe(&"ship_fighter"), "and its body is the description")

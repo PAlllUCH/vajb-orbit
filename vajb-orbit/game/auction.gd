@@ -8,7 +8,8 @@ extends RefCounted
 ## docs/design/STATION_HUB.md section 5.10 and docs/CONTRACTS.md section 15.
 ## Panel: `ui/station/auction_panel.gd`.
 ##
-## The shelf is 10 section 2.1's: **6 hulls + 10 modules** at a time, restocked on
+## The shelf is 10 section 2.1's, as its 2026-10-01 amendment reads it: **6 hulls +
+## 20 modules** (ten rolled, ten stock) at a time, restocked on
 ## the shared 20-minute station clock, one "hot slot" per restock at -20 %. The
 ## state lives in the profile's top-level `auction` key -- never a `market`
 ## sub-key, because `PlayerProfile._normalise_market` rebuilds that dictionary
@@ -48,9 +49,11 @@ const Catalog := preload("res://game/station_catalog.gd")
 const FitData := preload("res://game/ship_fit.gd")
 const Clock := preload("res://autoload/world_clock.gd")
 
-## 10 section 2.1's shelf: six hulls and ten modules at a time.
+## 10 section 2.1's shelf: six hulls and twenty modules at a time -- the ten rolled
+## listings, then 10 section 2.1's 2026-10-01 amendment's ten stock listings.
 const HULL_SLOTS := 6
 const MODULE_SLOTS := 10
+const STOCK_SLOTS := 10
 
 ## 10 section 2.2's availability weights, keyed by 08 section 2's asset ids and
 ## read against `StationCatalog.SHIPS`' own order (the 2026-09-22 correction:
@@ -195,7 +198,7 @@ static func draw_shelf(profile: Node, rng: RandomNumberGenerator = null) -> Dict
 	return {"last_band": 0, "hulls": hulls, "modules": modules, "hot": _draw_hot(hulls, modules, stream)}
 
 
-## 10 section 2.1's one hot slot: a uniform pick over the six hull ids and the ten
+## 10 section 2.1's one hot slot: a uniform pick over the six hull ids and the twenty
 ## listing ids, `&""` for a shelf that lists nothing.
 static func _draw_hot(hulls: Array, modules: Dictionary, rng: RandomNumberGenerator) -> StringName:
 	var candidates: Array[StringName] = []
@@ -277,16 +280,23 @@ static func hull_chance(ship_id: StringName) -> float:
 	return float(HULL_CHANCE.get(ship_id, 1.0))
 
 
-## The ten module listings, keyed by their minted instance id, each an ordinary
-## instance record (`PlayerProfile.roll_listing`'s shape).
+## The twenty module listings (10 section 2.1 as amended 2026-10-01), keyed by their
+## minted instance id, each an ordinary instance record
+## (`PlayerProfile.roll_listing`'s shape).
 ##
-## The F lot takes the **first** slot while 15 section 8's interim is on: one of
-## 15 section 5's three exclusives, uniformly picked, rolled from 15 section 9.2's
-## `faction_lot` row so its rarity is Magic or Rare and never Common. The other
-## nine come from `draw_tier` -- 10 section 2.1's "tier weights I 50 / II 35 /
-## III 15" -- and a uniform pick from that tier's catalogue rows, so a shelf may
-## list one base id twice with two different rolls, which is exactly what an
-## instance is for.
+## The ten rolled slots come first. The F lot takes the **first** slot while
+## 15 section 8's interim is on: one of 15 section 5's three exclusives, uniformly
+## picked, rolled from 15 section 9.2's `faction_lot` row so its rarity is Magic or
+## Rare and never Common. The other nine come from `draw_tier` -- 10 section 2.1's
+## "tier weights I 50 / II 35 / III 15" -- and a uniform pick from that tier's
+## catalogue rows, so a shelf may list one base id twice with two different rolls,
+## which is exactly what an instance is for.
+##
+## Then the ten stock slots (10 section 2.1's 2026-10-01 amendment; 15 section 11):
+## tier I's own rows, rolled through `SOURCE_AUCTION_STOCK` -- 100 % Common, never
+## affixed -- so a buyer who just bought a hull always finds something to mount.
+## An id the profile could not roll is skipped, so a shelf always holds only records
+## the catalogue can price.
 static func _draw_listings(profile: Node, rng: RandomNumberGenerator) -> Dictionary:
 	var listings: Dictionary = {}
 	if profile == null:
@@ -302,6 +312,12 @@ static func _draw_listings(profile: Node, rng: RandomNumberGenerator) -> Diction
 			continue
 		var base: StringName = pool[rng.randi_range(0, pool.size() - 1)]
 		_mint(profile, base, ModuleData.SOURCE_AUCTION, listings)
+	var stock_pool := tier_pool(1)
+	for _slot: int in range(STOCK_SLOTS):
+		if stock_pool.is_empty():
+			continue
+		var base: StringName = stock_pool[rng.randi_range(0, stock_pool.size() - 1)]
+		_mint(profile, base, ModuleData.SOURCE_AUCTION_STOCK, listings)
 	return listings
 
 
@@ -498,6 +514,10 @@ static func listing_rows(profile: Node) -> Array[Dictionary]:
 			&"hot": discounted,
 			&"faction_lot": ModuleData.EXCLUSIVES.has(base),
 			&"owned": _held(profile, base),
+			## 15 section 11's inspector stat block: the record's own affix rows, so the
+			## pane can render the block beside the description without a second read.
+			&"prefixes": record.get("prefixes", []),
+			&"suffixes": record.get("suffixes", []),
 		})
 	return rows
 

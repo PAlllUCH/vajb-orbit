@@ -946,6 +946,14 @@ two now-stale staged-pack asserts (`:113-116`). Findings: **2 HIGH (the P3 rows'
 bucket 2) / 1 MED (the stale staged-pack asserts) / 3 LOW (L264–L266)** — verdict
 blocked pending the fixer and the §8 list amendment.
 
+Expected (2026-10-02, the owner's auction detour — developer session, no wave):
+**`[SUMMARY] passed=1031 failed=0`**, exit 0, twice hermetic on fresh scratch stores.
+The stock shelf's count rows in `test_s3_auction.gd`/`test_s5_commerce.gd` move
+10 → 20 (ten rolled + ten stock), the stock ten are asserted Common and never
+affixed, and the new `test_the_listing_inspector_carries_the_stat_block` row pins
+the inspector body (description + 15 §7's block, FITTING's statics; a hull row stays
+description-only). Growth: 1030 → 1031 (one new row).
+
 Expected (S22.8, 2026-10-01): **`[SUMMARY] passed=1014 failed=0`**, exit 0, twice
 hermetic on fresh scratch stores. The owner's weapons-cadence split (18 §4.1's
 amendment, values owner-delegated): the spam tier (laser/plasma/cannon) untouched;
@@ -2254,6 +2262,15 @@ SAVE_VERSION := 6
   `auction` key. `Auction.rolled_name` is the single 15 §7 name builder; FITTING and the
   shipyard call it rather than carrying a second grammar. Reversal: inline the statics into
   the panel.
+
+**Amendment 2026-10-01 (the stock shelf + the inspector stat block).** The shelf's
+`modules` dictionary holds **20 listings** at restock: the ten rolled above, then ten
+**stock** listings minted through 15 §2's new `auction_stock` source row (100 %
+Common, no affixes) from tier I's pool — same record shape, same price law, hot
+eligible (10 §2.1's 2026-10-01 amendment carries the numbers and the reversal).
+`listing_rows` gains `prefixes`/`suffixes` from the record so the pane's inspector
+can render 15 §7's stat block beside the description; the format is FITTING's
+statics, the AUCTION adds no number of its own.
 
 ## §16 S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0)
 
@@ -4791,3 +4808,10 @@ hull stops twice and the second stop slides.
   `test_d7_armory.gd`'s pack-caption row (the V1 landing's two undisclosed
   consequences); MED — the suite's staged-pack asserts are stale against the landed
   packs (masked by the abort). LOW L264–L266. See §9's S23 block.
+- **v0.44 (2026-10-02, the owner's auction detour — developer session, no wave; gate
+  moved with the wave's commit)** — the owner-ruled stock shelf and the inspector
+  stat block: every AUCTION restock draws ten extra **stock** listings (tier-I pool,
+  100 % Common, no affixes, hot eligible) through the new `auction_stock` row in
+  `ModuleCatalog.SOURCE_ROLLS`, and a module listing's hover inspector appends 15 §7's
+  stat block (FITTING's own statics) to the catalogue description. §15 carries the
+  amendment; 10 §2.1 and 15 §11 carry the numbers and reversals.
