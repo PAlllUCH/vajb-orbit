@@ -6,6 +6,22 @@
 `python3 staging/verify_wave.py snapshot --name s23_start` before the first dispatch.
 **Owner go (2026-09-27):** "a lot of new content as right now there isnt much" — pillar A ("activate dead content") was ticked first. **No new AI art** (owner): every sprite already ships in `asset-library/`/`vajb-orbit/assets/`.
 
+## 0. Amendment 2026-10-01 — the owner delegated the values; the developer assumed them
+
+The owner reviewed the wave plan and ruled: "everything else looks golden, i think it
+will be better for you to assume values than to me to 'tell you' them" — and inserted
+**S22.8** (the weapons-cadence split) ahead of this wave. The values the P3 blocks left
+open are therefore assumed as follows, each with its reversal; the owner's eye at the
+next playtest is the tick.
+
+| # | Assumed value | Derivation | Reversal |
+|---|---|---|---|
+| V1 | `ammo_proton` pack **40 rounds / 400 CR**, `AMMO_MAX` **60**; `ammo_flak` pack **300 rounds / 260 CR**, `AMMO_MAX` **300**; the proton pack borrows `icon_ammo_rocket.png`, the flak pack `icon_weapon_cannon.svg` (the placeholder law — no new art) | the rocket pod's 60/240 and the cannon's 300/180, one tier of exclusive premium each; `AMMO_MAX` follows the rocket's 100 and the cannon's 300 | row edit in `station_catalog.AMMO_PACKS` + `player_profile.AMMO_MAX` |
+| V2 | The **sibelon flies the corvette column** — `ship_corvette` vitals through the swarmer precedent (an alien hull with no 08 class row flies an existing class column, `npc_registry.gd:240`'s own comment), `ship_sibelon` sprite, loot kind **`corvette`** (06 §3's corvette table; the fighter band is the swarmer's), and a **global `HOSTILE_FILL` third entry** so it spawns until S24's W1 bands it to S5–S6 | the shipped swarmer row is the precedent; the corvette band is the smallest step up from the swarmer's fighter band | a dedicated `ship_sibelon` `HULLS`/`HANDLING` row + the fill entry removed (the row returns to the seam) |
+| V3 | The **A5 world-length ladder** (per-hull side-view world length, u): fighter **46** · vanguard **60 (frozen — scale 0.0663 and the 30 u radius stay as shipped)** · miner **62** · trader **58** · corvette **64** · freighter **88** · gunship **70** · patrol **78** · destroyer **96**; radius = half the length (the shipped law), sprite scale = length ÷ the render's own ink width (measured: fighter 831 · miner 909 · trader 946 · corvette 962 · freighter 910 · gunship 911 · patrol 933 · destroyer 952 px) | 08 §2's class/cost ladder, the Vanguard's shipped 60 u as the anchor; the side views share one render scale (~830–980 px ink), so the ladder is the one free parameter | the per-hull table row edit (each row back to the vanguard's numbers) |
+| V4 | **A8 (new acceptance row): the F1 developer menu carries a CREDITS section** — an integer amount field (default **1 000**) and **Add**/**Remove** buttons calling `PlayerProfile.add_credits(±n)` (floors at 0 by construction), a status line reporting the new balance, no-op safety when no profile is in the tree. Boot law untouched: the overlay still reads nothing until opened. | the owner's ask 2026-10-01 ("add to F1 menu option to add credits for tests and remove credits"); the amount is the dev-overlay's own round figure | the section's removal (the overlay returns to OreTuning-only) |
+| V5 | The cadence split reads the new rows: **`w_proton` joins the cooldown tier at the rocket's 12 s** (its P3 "interval 1.6 s" superseded — a heavy missile), **`w_flak` stays spam at its 0.55 s interval** (a bolter) — recorded in 18 §4.1's amendment | 18 §4.1's 2026-10-01 amendment, last bullet | 18 §4.1's amendment reversal |
+
 ## 1. The law to read, in order
 1. `slices/S23-content-activation/SLICE.md` — scope, file sets.
 2. `docs/gameplay/09_ship_slots_modules.md` + `08_ship_classes.md` **2026-09-27
@@ -120,24 +136,30 @@ default PROPOSED).
   matching collider radius and FX anchors scaled off the drawn hull's map;
   hunters/pirates fly faction skins (choir/concord/meridian sheets) in their
   bands' flavour; REPAIRS/LAUNCH show `ship_vanguard_damaged` for a damaged
-  Vanguard. All assets provenance-clean via `staging/roster/` + `pull.py` +
-  `validate_names.py --library` (paste its summary line in the report).
+  Vanguard. **Amended 2026-10-01:** every sprite already ships in-project, so the
+  provenance proof is `validate_names.py --library` green over the wired names —
+  the `staging/roster/` driver is staged (build it only if a referenced file is
+  missing) and the V3 ladder fixes the sizes.
 - **A6 (loot):** `uncatalogued_items()` returns empty (`cm_chaff`/`cm_flare`
   rows), `HUNTER_EXTRA` rolls as the `hunter` table, caches scale ×1/×1.5/×2 by
   sector tier (06 §7).
 - **A7 (summary):** every new value tabled with its reversal and its tick id;
   no gate row outside §8's list moved; no new art bytes entered the pipeline.
+- **A8 (V4, amendment 2026-10-01):** the F1 overlay's CREDITS section adds and
+  removes credits through the profile's own API, floors at 0, reports the balance,
+  and leaves the boot-time law untouched (a fresh overlay instance moves nothing).
 
 ## 7. Worker table
 | ID | Role | `VAJB_WORKER_FILES` | Deliverable |
 |---|---|---|---|
-| S23-B1 | coder (builder) | `vajb-orbit/game/, vajb-orbit/ui/, vajb-orbit/tests/, vajb-orbit/assets/, staging/roster/, .agents/gen/slices/S23-content-activation/S23-B1_report.md` | A1–A7 + `S23-B1_report.md` |
+| S23-B1 | coder (builder) | `vajb-orbit/game/, vajb-orbit/ui/, vajb-orbit/tests/, vajb-orbit/assets/, staging/roster/, .agents/gen/slices/S23-content-activation/S23-B1_report.md` | A1–A8 + `S23-B1_report.md` |
 | S23-R1 | reviewer | `vajb-orbit/tests/, vajb-orbit/tools/, docs/CONTRACTS.md, .agents/gen/slices/S23-content-activation/S23-R1_review.md` | `S23-R1_review.md` + CONTRACTS §9/§10 + LOW rows |
 | S23-F1 | fixer (only on HIGH/MED) | `vajb-orbit/game/, vajb-orbit/ui/, vajb-orbit/tests/, vajb-orbit/assets/, staging/roster/, vajb-orbit/tools/, docs/CONTRACTS.md, .agents/gen/slices/S23-content-activation/` | `S23-F1_report.md` |
 
 ## 8. Run order + the tests that move
 **B1 → R1 → F1 only on HIGH/MED.** Expected gate growth: **+
-`test_s23_content.gd` rows (one per AC)** only. Candidates:
+`test_s23_content.gd` rows (one per AC)** plus **+ `test_s13_devmenu.gd` rows
+(A8's credits section, the brief's §0 V4)** only. Candidates:
 
 | Suite | Why | Verdict |
 |---|---|---|

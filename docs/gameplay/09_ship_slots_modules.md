@@ -519,17 +519,22 @@ every hull, plus the full fit for the two starter hulls. It is the fallback a
 launch uses when the profile holds no fit for the active hull, and the fit the
 auction delivers with those two hulls.
 
+**Amended 2026-10-01 (S23, R-S23-3):** the seven starter-less hulls carry their
+stock fit from §7's 2026-09-27 P3 block (bare modules, no affixes; the mandatory
+E/P cells always filled). The pre-S23 record was mandatory-only for those seven —
+reversal: empty the seven rows back to the mandatory set.
+
 | Hull | `engines` | `power` | `weapons` | `shields` | `armour` | other |
 |------|-----------|---------|-----------|-----------|----------|-------|
 | Lancer | `[e_std]` | `p_std` | `[w_laser, w_laser]` | `[s_light]` | `[h_plate_light]` | — |
 | Vanguard | `[e_std]` | `p_std` | `[w_laser]` | `[s_light]` | `[h_plate_light]` | — |
-| Delver | `[e_std, e_std]` | `p_std` | — | — | — | — |
-| Courier | `[e_std, e_std]` | `p_std` | — | — | — | — |
-| Spearhead | `[e_std]` | `p_std` | — | — | — | — |
-| Mule | `[e_std, e_std, e_std]` | `p_std` | — | — | — | — |
-| Bulwark | `[e_std, e_std]` | `p_std` | — | — | — | — |
-| Warden | `[e_std, e_std]` | `p_std` | — | — | — | — |
-| Obliterator | `[e_std, e_std, e_std]` | `p_std` | — | — | — | — |
+| Delver | `[e_std, e_std]` | `p_std` | `[w_mining, w_laser]` | `[s_light]` | `[h_plate_light]` | C `[c_scanner]` · U `[u_tractor, u_refine, u_cargo]` |
+| Courier | `[e_std, e_std]` | `p_std` | `[w_laser]` | `[s_light, s_light]` | `[h_plate_light]` | C `[c_scanner, c_target]` · U `[u_cargo, u_cargo, u_cargo]` |
+| Spearhead | `[e_std]` | `p_std` | `[w_cannon, w_cannon, w_laser, w_rocket]` | `[s_light, s_heavy]` | — | C `[c_target]` · B `[b_afterburner]` |
+| Mule | `[e_std, e_std, e_std]` | `p_std` | `[w_laser]` | `[s_light]` | `[h_plate_heavy, h_plate_heavy]` | U `[u_cargo, u_cargo, u_cargo, u_cargo]` |
+| Bulwark | `[e_std, e_std]` | `p_std` | `[w_cannon, w_cannon, w_cannon, w_rocket]` | `[s_heavy, s_heavy]` | `[h_composite]` | C `[c_target]` · U `[u_cargo]` |
+| Warden | `[e_std, e_std]` | `p_std` | `[w_laser, w_laser, w_cannon]` | `[s_light, s_light]` | `[h_plate_heavy]` | C `[c_target, c_scanner]` · B `[b_afterburner]` · U `[u_cargo, u_cargo]` |
+| Obliterator | `[e_std, e_std, e_std]` | `p_std` | `[w_railgun, w_cannon, w_cannon, w_plasma]` | `[s_ion, s_heavy]` | `[h_composite, h_plate_heavy]` | C `[c_nexus, c_target]` · B `[b_afterburner]` |
 
 `STANDARD_FIT` (the Vanguard row) stays as the one alias existing callers and
 tests already use; the Lancer's two-laser fit is the second full fit the auction
@@ -717,6 +722,14 @@ grid's cell count):
 | `ship_gunship` | `w_cannon`×3, `w_rocket`, `s_heavy`×2, `h_composite`, `c_target`, `u_cargo` |
 | `ship_patrol` | `w_laser`×2, `w_cannon`, `c_target`, `c_scanner`, `s_light`×2, `h_plate_heavy`, `b_afterburner`, `u_cargo`×2 |
 | `ship_destroyer` | `w_railgun`, `w_cannon`×2, `w_plasma`, `c_nexus`, `c_target`, `s_ion`, `s_heavy`, `h_composite`, `h_plate_heavy`, `b_afterburner` |
+
+**Amendment 2026-10-01 (developer-assumed, owner-delegated — S23):** the two packs
+the rows above name are tabled in the brief's V1 (the P3 rows pin only the
+rounds-per-unit): `ammo_proton` 40 rounds / 400 CR, `AMMO_MAX` 60; `ammo_flak`
+300 / 260, `AMMO_MAX` 300; icons borrow the rocket/cannon glyphs. The cadence law
+of 18 §4.1's 2026-10-01 amendment reads these rows: `w_proton` cools **12 s** (its
+"interval 1.6 s" above is superseded — a heavy missile), `w_flak` stays spam at
+**0.55 s**.
 
 ### S27 — variant shape (amends §3.8)
 

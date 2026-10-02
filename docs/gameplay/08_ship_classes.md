@@ -321,6 +321,14 @@ sold); every row is PROPOSED with its reversal and tick.
 | R-S23-5 | `ship_turret_platform` class row (NPC-only, static) | hull 2 000, shield 800, speed 0 (fixed emplacement), 3 W | keep the sprite-only asset | **C5** |
 | R-S23-6 | Ship the station turret — 13 §5's named reversal (its owner tick 7) | one `turret` NPC mounted per station, +25 heat on attacking, aggro until scan range (13 §5) | turret aggro stays staged (current) | **C6** |
 
+**Amendment 2026-10-01 (developer-assumed, owner-delegated — S23):** the `sibelon`
+(anomaly entity, ruling 24; no 08 class row exists for it) flies the **corvette
+column** through the swarmer precedent — an alien hull with no class row borrows an
+existing class column, wears its own `ship_sibelon` sprite and rolls the **corvette**
+loot table — and joins the sector population as a third `HOSTILE_FILL` entry until
+S24's W1 bands the hostiles per sector (S5–S6 per R-S24-2). Reversal: a dedicated
+`ship_sibelon` hull row and the fill entry removed (the row returns to its seam).
+
 ### S26 — the bosses (amends §4)
 
 | Row | Change | PROPOSED value | Reversal | Tick |
