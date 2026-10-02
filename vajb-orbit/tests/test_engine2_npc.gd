@@ -61,12 +61,15 @@ func test_hostile_bands_sum_to_the_section_13_shape() -> void:
 	]
 	for index in wanted.size():
 		var sector: StringName = &"sector_%d" % (index + 1)
-		var pirate := Registry.density(&"pirate", sector)
-		var swarmer := Registry.density(&"swarmer", sector)
+		## S23 (V2): the sibelon is the band's third filler, so the sum runs over all
+		## three - the columns still add back to section 13's band exactly.
+		var band := Registry.density(&"pirate", sector)
+		band += Registry.density(&"swarmer", sector)
+		band += Registry.density(&"sibelon", sector)
 		assert_eq(
-			pirate + swarmer,
+			band,
 			wanted[index],
-			"%s hostiles (pirate %s + swarmer %s) match section 13" % [sector, pirate, swarmer]
+			"%s hostiles (pirate + swarmer + sibelon %s) match section 13" % [sector, band]
 		)
 
 
@@ -126,7 +129,8 @@ func test_seams_and_station_rows_never_spawn_with_a_sector() -> void:
 			var id := StringName(spawn[Registry.KEY_ARCHETYPE])
 			assert_ne(id, &"hunter", "hunters are a slice-4 seam")
 			assert_ne(id, &"boss", "the boss is a slice-4 seam")
-			assert_ne(id, &"sibelon", "the sibelon is a slice-3 seam")
+			## S23 (V2): the sibelon spawns with the population now (HOSTILE_FILL's third
+			## entry), so it is no longer a seam row; the apex stays one.
 			assert_ne(id, &"apex", "the apex is a slice-4 seam")
 			assert_ne(id, &"turret", "a turret is mounted on a station, not spawned in a sector")
 
@@ -135,7 +139,7 @@ func test_sector_seven_is_the_hardcore_band() -> void:
 	var total := Vector2i.ZERO
 	for spawn: Dictionary in Registry.spawns_for(&"sector_7"):
 		var id := StringName(spawn[Registry.KEY_ARCHETYPE])
-		if id == &"pirate" or id == &"swarmer":
+		if id == &"pirate" or id == &"swarmer" or id == &"sibelon":
 			total += Vector2i(int(spawn[&"min"]), int(spawn[&"max"]))
 	assert_eq(total, Vector2i(6, 8), "S7 is section 13's 6-8, no patrol and no convoy")
 
@@ -166,10 +170,18 @@ func test_sprite_paths_are_swap_ready_and_livery_aware() -> void:
 		"res://assets/ships/ship_swarmer_side.png",
 		"ruling 24's alien hull is named by the row, not by its class row"
 	)
+	## S23 (A5): the pirate wears the space owner's sheet in owned space; the
+	## factionless-livery law itself reads on the swarmer, whose row still carries
+	## no livery source.
 	var pirate := Registry.archetype(&"pirate")
 	assert_eq(
 		Registry.sprite_path(pirate, &"concord"),
-		"res://assets/ships/ship_fighter_side.png",
+		"res://assets/ships/ship_fighter_concord_side.png",
+		"the pirate wears the space owner's sheet in owned space"
+	)
+	assert_eq(
+		Registry.sprite_path(Registry.archetype(&"swarmer"), &"concord"),
+		"res://assets/ships/ship_swarmer_side.png",
 		"a factionless hull never wears a livery"
 	)
 	var patrol := Registry.archetype(&"patrol")

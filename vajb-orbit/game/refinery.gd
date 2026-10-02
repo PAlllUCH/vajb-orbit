@@ -25,6 +25,7 @@ extends RefCounted
 
 const Catalog := preload("res://game/mineral_catalog.gd")
 const Log := preload("res://game/economy_log.gd")
+const ShipFitScript := preload("res://game/ship_fit.gd")
 
 ## CR per ore unit consumed (04 section 3).
 const FEE_PER_UNIT := 5
@@ -33,6 +34,15 @@ const ORE_PER_INGOT := 3
 ## CR per conversion (3 ore), derived so 04 section 2 and section 3 cannot drift.
 const FEE_PER_CONVERSION := FEE_PER_UNIT * ORE_PER_INGOT
 
+## 09 section 3.6's `u_refine` row (S23, A2): "refinery fee -50 % for its ore". The
+## multiplier a hull fitted with the module refines at; the ratio stays 3:1 (A2's
+## own bracket) and only the fee halves. `refine`/`refine_all`/`stacks` read it
+## through `fee_multiplier(profile)`, so a caller cannot price one path at the
+## discount and another at the list.
+const REFINE_FEE_MULT := 0.5
+## The fitted module the discount reads.
+const REFINE_MODULE: StringName = &"u_refine"
+
 const REASON_UNKNOWN_MINERAL: StringName = &"unknown_mineral"
 const REASON_INVALID_COUNT: StringName = &"invalid_count"
 const REASON_INSUFFICIENT_ORE: StringName = &"insufficient_ore"
@@ -40,11 +50,34 @@ const REASON_INSUFFICIENT_CREDITS: StringName = &"insufficient_credits"
 const REASON_NOTHING_TO_REFINE: StringName = &"nothing_to_refine"
 
 
-## Fee for a batch of `conversions` whole conversions; 0 for a non-positive count.
-static func fee_for(conversions: int) -> int:
+## The fee multiplier the account's active hull refines at: 1.0 without `u_refine`
+## fitted, `REFINE_FEE_MULT` with it. The profile arrives as a Node handle (the
+## house pattern); a stub without the fit accessors reads 1.0, so every existing
+## caller and test keeps its list-fee behaviour.
+static func fee_multiplier(profile: Node) -> float:
+	if profile == null or not profile.has_method(&"resolved_fit"):
+		return 1.0
+	var ship: StringName = &""
+	if profile.has_method(&"active_ship"):
+		ship = StringName(profile.call(&"active_ship"))
+	if ship == &"":
+		return 1.0
+	var fit: Dictionary = profile.call(&"resolved_fit", ship)
+	var ids := ShipFitScript.fitted_ids(fit)
+	for id: StringName in ids:
+		if id == REFINE_MODULE:
+			return REFINE_FEE_MULT
+	return 1.0
+
+
+## Fee for a batch of `conversions` whole conversions at `mult`; 0 for a
+## non-positive count. The discounted fee is the conversion's own 15 CR share at
+## the multiplier, floored (integers only, 04 section 3's whole-credit law): one
+## discounted conversion is 7 CR, not 7.5.
+static func fee_for(conversions: int, mult: float = 1.0) -> int:
 	if conversions <= 0:
 		return 0
-	return conversions * FEE_PER_CONVERSION
+	return int(float(conversions) * float(FEE_PER_CONVERSION) * maxf(mult, 0.0))
 
 
 ## Whole conversions currently available in the hold for one mineral; 0 for an
@@ -57,8 +90,10 @@ static func convertible(profile: Node, mineral_id: StringName) -> int:
 
 
 ## Read-only panel helper: one row per mineral with at least one conversion
-## available, in catalogue order. Nothing is mutated.
+## available, in catalogue order, each row's fee at the hull's own multiplier
+## (`u_refine`'s discount). Nothing is mutated.
 static func stacks(profile: Node) -> Array[Dictionary]:
+	var mult := fee_multiplier(profile)
 	var rows: Array[Dictionary] = []
 	for entry: Dictionary in Catalog.MINERALS:
 		var mineral_id: StringName = entry.get(&"id", &"")
@@ -72,7 +107,7 @@ static func stacks(profile: Node) -> Array[Dictionary]:
 			&"entry": entry,
 			&"ore_qty": int(profile.call(&"cargo_qty", Catalog.ore_id(mineral_id))),
 			&"conversions": conversions,
-			&"fee": fee_for(conversions),
+			&"fee": fee_for(conversions, mult),
 		})
 	return rows
 
@@ -89,7 +124,7 @@ static func refine(profile: Node, mineral_id: StringName, conversions: int) -> D
 	var ore_id: StringName = Catalog.ore_id(mineral_id)
 	var ingot_id: StringName = Catalog.ingot_id(mineral_id)
 	var ore_taken := conversions * ORE_PER_INGOT
-	var fee := fee_for(conversions)
+	var fee := fee_for(conversions, fee_multiplier(profile))
 
 	if int(profile.call(&"cargo_qty", ore_id)) < ore_taken:
 		return _refusal(REASON_INSUFFICIENT_ORE, mineral_id, conversions)

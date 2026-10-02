@@ -101,7 +101,11 @@ const FORBIDDEN_FILES: Dictionary = {
 	## ram-contact cue + spark (A2) and B3's `_step_lateral_drag` twin (T-feel-2) are the
 	## wave's edits, and this pin is the finished tree's reading - quoted in
 	## `S22-B3_report.md`.
-	"res://game/npc_ship.gd": "12ab0ae2aeef61d2638387dfe65ee3901c8f1a26433f380442d45e480a242db3",
+	## S23 re-pin (disclosed in `S23-B1_report.md`): A2's EWAR targeting slow
+	## (`_targeting_slow` + `_resolve_targeting_slow` + the `_order_turn` scale) is
+	## the wave's edit to this file, and this pin is the finished tree's reading -
+	## the S22 re-pin procedure.
+	"res://game/npc_ship.gd": "b91b0cbb49712d2b13cfcaced4fdb33345857d12ef5d29431630fe2cd99ef98a",
 	"res://game/npc_brain.gd": "e39440bf410b535c50f924208290e54dc8085eea52731890b778a4ad3fbe5d22",
 	## S22 (amendment 6, disclosed in `S22-B3_report.md`): B1's one `hit_landed` delivery
 	## seam (`ab861ce9…`) and B2's mine cue row (`FIRE_CUES[&"mine"]`) are the wave's
@@ -111,7 +115,13 @@ const FORBIDDEN_FILES: Dictionary = {
 	## (2026-10-01, 18 §4.1's amendment block) wrote the three `cooldown` rows, the
 	## railgun's derived `alpha 450` and the `interval_of`/`rack_cooldown` readings -
 	## disclosed in `docs/CONTRACTS.md` §10 v0.42.
-	"res://game/weapons.gd": "cc91f4a35c8ac51a55c14a501e3d9bb9270e328d2d1045188144b1bb78856482",
+	## S23 re-pin (disclosed in `S23-B1_report.md`): A1's two family rows, the
+	## flak cone's pellet fan and the `target_bonus` delivery are the wave's edits
+	## to this file; this pin is the finished tree's reading (the S22 procedure).
+	## S23-F1 re-pin (disclosed in `S23-F1_report.md`): the two family rows'
+	## pinned `draw` keys (R-S23-1's 12, R-S23-2's 8) are the fixer's edit to
+	## this file; this pin is the finished tree's reading (the S22 procedure).
+	"res://game/weapons.gd": "6848270a0a0c0952173546ab88492aa9dc3e1c0f0256611e81db41d288429f50",
 }
 
 var _staged: Array[Node] = []

@@ -107,7 +107,10 @@ One static table in `game/component_catalog.gd` (same style contract as 02
 §3 — data, no logic). Per-entry keys:
 
 - `&"id"`, `&"name"`, `&"family"` (`&"salvage"` | `&"mech"` | `&"elec"` |
-  `&"weap"` | `&"pow"` | `&"ore_grade"`), `&"grade"` (1–3),
+  `&"weap"` | `&"pow"` | `&"ore_grade"` | **`&"countermeasure"`** — the seventh
+  family since S23, whose two members are 06 §3.1's `cm_chaff`/`cm_flare` (18
+  §4.6's one-shot items; developer amendment 2026-10-01, the builder's bucket-2
+  disclosure)), `&"grade"` (1–3),
 - `&"value"` (int, credits, baseline),
 - `&"units"` (1),
 - `&"description"`,

@@ -407,6 +407,12 @@ func test_a_family_less_cell_composes_into_a_rack() -> void:
 	)
 	assert_eq(_groups(), [[0, 1]], "into one rack")
 	assert_eq(_profile.call(&"battery_groups", &"ship_npc"), [], "an NPC hull has no racks")
+	## S23 (A3) gave the Mule a stock laser, so the weaponless delivered fit is
+	## written explicitly: the mandatory set alone derives no rack.
+	_profile.call(
+		&"set_fit", &"ship_freighter",
+		{&"engines": [&"e_std", &"e_std", &"e_std"], &"power": &"p_std"}
+	)
 	assert_eq(
 		_profile.call(&"battery_groups", &"ship_freighter"),
 		[],

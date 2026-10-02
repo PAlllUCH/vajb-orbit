@@ -382,7 +382,7 @@ func test_the_two_wells_mount_at_the_pinned_halves() -> void:
 	)
 	assert_eq(
 		String((panel.get_node("%AmmoCaption") as Label).text),
-		"AMMUNITION - 6 PACKS", "and the ammunition caption the catalogue's packs"
+		"AMMUNITION - 8 PACKS", "and the ammunition caption the catalogue's packs"
 	)
 
 

@@ -18,8 +18,9 @@ extends RefCounted
 ## kind          06 table                              band  rolled for
 ## &"fighter"     06 §3.1 Fighter (Grade I)               1    fighter-band hulls, e.g. 13 §3's fighter-band hunters
 ## &"swarmer"     06 §3.1 weights (18 §5 ruling 24)       1    the alien swarmer archetype
+## &"hunter"      fighter lines + 06 §8's extra (S23)     1    the hunter archetype's own kill roll
 ## &"freighter"   06 §3.2 Freighter (Grade I)             1    traders / convoys (18 §5)
-## &"corvette"    06 §3.3 Corvette (Grade II)             2    corvette-band hulls
+## &"corvette"    06 §3.3 Corvette (Grade II)             2    corvette-band hulls, the sibelon (S23)
 ## &"maw"         06 §3.4 Maw dreadnought (Grade III)     3    the Maw (slice-4 seam)
 ##
 ## The kind is the 06 table's hull-band name, not the 18 §5 archetype name: a hull
@@ -52,8 +53,8 @@ const KEY_AMOUNT: StringName = &"amount"
 const KEY_CACHE: StringName = &"is_credit_cache"
 
 ## 06 §3.1's fighter table, whole. Lines 1-4 are the catalogue components; lines 5-6
-## are the 2026-09-20 amendment's countermeasures (06 §3.1, 18 §4.6), which carry
-## the 03 §3 names' shape but have no 03 row yet (see `uncatalogued_items`).
+## are the 2026-09-20 amendment's countermeasures (06 §3.1, 18 §4.6), catalogued
+## since S23 (A6) so `uncatalogued_items` answers empty.
 ##
 ## 18 §5 (ruling 24) gives the alien `swarmer` pirate-like behaviour, and slice 2's
 ## brief extends that to its loot ("the swarmer table reuses the same weights"), so
@@ -102,10 +103,23 @@ const MAW_LINES: Array[Dictionary] = [
 const TABLES: Dictionary = {
 	&"fighter": {&"band": 1, &"lines": FIGHTER_LINES},
 	&"swarmer": {&"band": 1, &"lines": FIGHTER_LINES},
+	&"hunter": {&"band": 1, &"lines": HUNTER_LINES},
 	&"freighter": {&"band": 1, &"lines": FREIGHTER_LINES},
 	&"corvette": {&"band": 2, &"lines": CORVETTE_LINES},
 	&"maw": {&"band": 3, &"lines": MAW_LINES},
 }
+
+## 06 §7's sector-scaled caches, built in now (S23 A6): the credit-cache lines
+## multiply their range by the **sector tier** the kill's sector carries - ×1 for
+## T1-T2, ×1.5 for T3, ×2 for T4 - and the component odds never move. The tier is
+## `SectorRegistry.sector_tier`'s (the tier-mix index's own ladder: a sector's tier
+## is the highest mineral grade its 11 §1.1 mix carries). Bounds round to whole
+## credits; the component lines are untouched by the scale.
+const CACHE_SCALE: Dictionary = {1: 1.0, 2: 1.0, 3: 1.5, 4: 2.0}
+
+## The cache multiplier one sector tier rolls at; 1.0 for an unknown tier.
+static func cache_scale(tier: int) -> float:
+	return float(CACHE_SCALE.get(tier, 1.0))
 
 ## 06 §8's amendment (13 §3's "`comp_elec`-weighted table", owner tick 8): the
 ## electronics a hunter drops **in addition to** its band table. The rows are the
@@ -119,6 +133,12 @@ const HUNTER_EXTRA: Array[Dictionary] = [
 	{&"item": &"comp_elec_2", &"chance": 0.25, &"min": 1, &"max": 1},
 	{&"item": &"comp_elec_3", &"chance": 0.10, &"min": 1, &"max": 1},
 ]
+
+## S23 A6: the hunter's own table - the fighter band's lines with 06 §8's extra
+## promoted into it, in table order - so a hunter kill rolls **one** table (the
+## wiring's `roll_band`) and the extra can never roll twice beside it. The rows are
+## the two source tables' own, concatenated here so the three cannot drift.
+const HUNTER_LINES: Array[Dictionary] = FIGHTER_LINES + HUNTER_EXTRA
 
 
 ## Whether this file carries a table for `kind`. The wiring should gate on this
@@ -140,7 +160,9 @@ static func has(kind: StringName) -> bool:
 ##
 ## `random_seed` 0 randomizes (the in-game call); a non-zero seed makes a roll
 ## reproducible for probes and tests, the same contract `Sector.populate` carries.
-static func roll(kind: StringName, tier: int, random_seed: int = 0) -> Array[Dictionary]:
+static func roll(
+	kind: StringName, tier: int, random_seed: int = 0, cache_scale: float = 1.0
+) -> Array[Dictionary]:
 	if not has(kind):
 		push_error(
 			"LootTables.roll: no table for kind %s (have: %s)"
@@ -155,13 +177,30 @@ static func roll(kind: StringName, tier: int, random_seed: int = 0) -> Array[Dic
 	else:
 		rng.seed = random_seed
 	var payload: Array[Dictionary] = []
+	var band := int((TABLES[kind] as Dictionary)[&"band"])
 	for line: Dictionary in _lines(kind):
+		## 06 §1.4's grade cap, applied at roll time against the **table's own band**:
+		## a line whose catalogue grade exceeds it pays nothing. The shipped tables are
+		## cap-clean, so this only ever bites the S23 `hunter` table - 06 §8's promoted
+		## extra carries grade 2-3 rows whose own roll-time cap (the old
+		## `roll_hunter_extra` read) keeps a fighter-band hunter on `comp_elec_1` only.
+		## Keying the cap on the table band keeps 06 §7's own law intact: the tier
+		## argument never changes a roll.
+		if _grade_of(StringName(line[&"item"])) > band:
+			continue
 		if rng.randf() >= float(line[&"chance"]):
 			continue
 		var item: StringName = line[&"item"]
+		var lo := int(line[&"min"])
+		var hi := int(line[&"max"])
+		## 06 §7's sector-scaled caches: the credit line's range multiplies by the
+		## sector tier's factor, rounded to whole credits; everything else is verbatim.
+		if item == CREDIT_ITEM and cache_scale != 1.0:
+			lo = roundi(float(lo) * cache_scale)
+			hi = roundi(float(hi) * cache_scale)
 		payload.append({
 			KEY_ITEM: item,
-			KEY_AMOUNT: rng.randi_range(int(line[&"min"]), int(line[&"max"])),
+			KEY_AMOUNT: rng.randi_range(lo, hi),
 			KEY_CACHE: item == CREDIT_ITEM,
 		})
 	return payload
@@ -171,16 +210,22 @@ static func roll(kind: StringName, tier: int, random_seed: int = 0) -> Array[Dic
 ## through the shipped `roll` with the table's own band as `tier` (06 §3's headings).
 ## A thin delegate on purpose - the shipped shape (one entry per line, `amount =
 ## randi_range`, caches last and distinct) stays byte-identical, and the `swarmer`
-## kind keeps reusing the fighter weights (18 §5 ruling 24). An unknown kind is
-## refused loudly, exactly as `roll` refuses it.
-static func roll_band(kind: StringName, random_seed: int = 0) -> Array[Dictionary]:
+## kind keeps reusing the fighter weights (18 §5 ruling 24). The S23 `hunter` kind
+## rolls the promoted table (fighter lines + the extra) so a hunter kill rolls the
+## band exactly once. An unknown kind is refused loudly, exactly as `roll` refuses
+## it. `cache_scale` is 06 §7's sector factor (1.0 by default).
+static func roll_band(
+	kind: StringName, random_seed: int = 0, cache_scale: float = 1.0
+) -> Array[Dictionary]:
 	if not has(kind):
 		push_error(
 			"LootTables.roll_band: no table for kind %s (have: %s)"
 			% [kind, ", ".join(_kind_names())]
 		)
 		return []
-	return roll(kind, int((TABLES[kind] as Dictionary)[&"band"]), random_seed)
+	return roll(
+		kind, int((TABLES[kind] as Dictionary)[&"band"]), random_seed, cache_scale
+	)
 
 
 ## 06 §8's hunter extra roll, in addition to the victim's band table: `HUNTER_EXTRA`'s
@@ -227,10 +272,15 @@ static func hunter_extra_violations(band: int) -> Array[String]:
 
 ## 06 §6 check 2: "no table references a component grade above its hull band; this is
 ## assertable directly against the 03 catalogue at load time." One line per offending
-## (table, item) pair, so an empty array is the check passing.
+## (table, item) pair, so an empty array is the check passing. The S23 `hunter` table
+## is 06 §8's own exception - its promoted extra carries grade 2-3 rows whose cap is
+## the roll-time one `roll` applies - so it is exempt here by the amendment's own
+## reading, not silently.
 static func cap_violations() -> Array[String]:
 	var violations: Array[String] = []
 	for kind: StringName in TABLES:
+		if kind == &"hunter":
+			continue
 		var band := int((TABLES[kind] as Dictionary)[&"band"])
 		for line: Dictionary in _lines(kind):
 			var item: StringName = line[&"item"]

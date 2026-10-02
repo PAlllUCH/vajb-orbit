@@ -86,7 +86,11 @@ const HOSTILE_BAND: Array[Vector2i] = [
 
 ## Who fills the band, in fill order (see the file doc). Slot 0 is present whenever the
 ## band's count is at least 1, slot 1 whenever it is at least 2, and so on.
-const HOSTILE_FILL: Array[StringName] = [&"pirate", &"swarmer"]
+## **S23 (brief V2, ruling 24's seam release): the `sibelon` joins as the third
+## entry** - it spawns with the population until S24's W1 bands the hostiles per
+## sector (R-S24-2's S5-S6 split). Reversal: the entry removed and the row returns
+## to its `slice_3` seam.
+const HOSTILE_FILL: Array[StringName] = [&"pirate", &"swarmer", &"sibelon"]
 
 ## Doc 13 section 3's bounty-hunter row id, the one archetype a heat tier spawns
 ## (`game.gd:HUNTER_ARCHETYPE` spells the same id for the kill's loot). `hunter_spawn`,
@@ -214,7 +218,10 @@ static func _ensure() -> void:
 			KEY_FACTION: FACTION_NONE,
 			KEY_HULL_ID: &"ship_fighter",
 			KEY_SPRITE_BASE: &"ship_fighter",
-			KEY_LIVERY_SOURCE: &"",
+			## S23 A5: the pirate wears the space owner's fighter livery (the shipped
+			## choir/concord/meridian sheets) where the sector has one, and the plain
+			## hull in nobody's - `sprite_path`'s livery-first fallback does the rest.
+			KEY_LIVERY_SOURCE: FACTION_SPACE_OWNER,
 			KEY_TIER: 1,
 			KEY_LOOT_KIND: &"fighter",
 			KEY_AGGRO_RADIUS: 900.0,
@@ -365,8 +372,11 @@ static func _ensure() -> void:
 			KEY_SPRITE_BASE: &"ship_fighter",
 			KEY_LIVERY_SOURCE: FACTION_SPACE_OWNER,
 			KEY_TIER: 1,
-			## Doc 13 section 3: "Hunters drop loot like pirates of their band".
-			KEY_LOOT_KIND: &"fighter",
+			## Doc 13 section 3: "Hunters drop loot like pirates of their band" - and since
+			## S23 (A6) through the hunter's own table: the fighter band's lines with 06
+			## section 8's extra promoted into it, so one roll pays both and the wiring's
+			## old band + extra double roll is gone.
+			KEY_LOOT_KIND: &"hunter",
 			## Doc 13 section 7 (wave S6, CONTRACTS section 19): the row flips off its
 			## slice-4 seam and carries the aggro/scan radius the pirate fighter band
 			## flies at. **Proposed**: the radius is the pirate row's own 900.0
@@ -446,16 +456,22 @@ static func _ensure() -> void:
 		{
 			KEY_ID: &"sibelon",
 			KEY_FACTION: FACTION_NONE,
-			## Ruling 24: "the `sibelon` (anomaly entity, slice 3)". Its hull is not an
-			## 08 class either, so slice 3 resolves its own snapshot.
-			KEY_HULL_ID: &"ship_sibelon",
+			## Brief V2 (the 2026-10-01 amendment, 08's P3 block): the anomaly entity has
+			## no 08 class row, so it flies the **corvette column** through the swarmer
+			## precedent - an alien hull with no class row borrows an existing class
+			## column - wearing its own `ship_sibelon` sprite and rolling the **corvette**
+			## loot table (06 section 3.3; the fighter band stays the swarmer's). It spawns
+			## with the sector population as `HOSTILE_FILL`'s third entry until S24's W1
+			## bands it to S5-S6. Reversal: a dedicated `ship_sibelon` HULLS/HANDLING row
+			## and the fill entry removed (the row returns to its seam).
+			KEY_HULL_ID: &"ship_corvette",
 			KEY_SPRITE_BASE: &"ship_sibelon",
 			KEY_LIVERY_SOURCE: &"",
-			KEY_TIER: 0,
-			KEY_LOOT_KIND: &"",
-			KEY_AGGRO_RADIUS: 0.0,
+			KEY_TIER: 2,
+			KEY_LOOT_KIND: &"corvette",
+			KEY_AGGRO_RADIUS: 900.0,
 			KEY_SCAN_RADIUS: 0.0,
-			KEY_FLEE_HULL: 0.0,
+			KEY_FLEE_HULL: 0.30,
 			KEY_FLEE_TIER: &"",
 			KEY_SCAN_TIER: &"",
 			KEY_ATTACK_TIER: &"",
@@ -464,9 +480,9 @@ static func _ensure() -> void:
 			KEY_BLIP_KIND: BLIP_HOSTILE,
 			KEY_HEAT_ON_KILL: NO_HEAT,
 			KEY_STANDING_ON_KILL: NO_STANDING,
-			KEY_SPAWN: SPAWN_SEAM,
-			KEY_SEAM: SEAM_SLICE_3,
-			KEY_DENSITY: _zero_column(),
+			KEY_SPAWN: SPAWN_SECTOR,
+			KEY_SEAM: SEAM_NONE,
+			KEY_DENSITY: _hostile_column(2),
 			KEY_GROUP_KIND: GROUP_NONE,
 			KEY_MEMBERS: [],
 		},
@@ -502,8 +518,8 @@ static func _ensure() -> void:
 ## One filler's column: filler `i` is present whenever the band's count reaches it, and
 ## the *last* filler takes whatever is left of the band, so the columns always sum back
 ## to `HOSTILE_BAND` exactly - the test suite and the probe both assert that. With
-## `HOSTILE_FILL` as shipped (pirate, swarmer) every sector splits into one guarding
-## pirate and the rest of the band as aliens.
+## `HOSTILE_FILL` as shipped (pirate, swarmer, sibelon) every sector splits into one
+## guarding pirate, one swarmer and the rest of the band as sibelons.
 static func _hostile_column(slot: int) -> Array[Vector2i]:
 	var last := slot == HOSTILE_FILL.size() - 1
 	var column: Array[Vector2i] = []

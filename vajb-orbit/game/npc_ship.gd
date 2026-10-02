@@ -153,6 +153,12 @@ var _intent: Dictionary = {}
 var _heat_tier := NpcRegistryScript.HEAT_CLEAN
 var _heat_clock := 0.0
 
+## S23 A2 (09 section 3.4): the targeting slow an EWAR-fitted player projects while
+## it sits in this hull's scan - the factor the engaged turn toward the target is
+## scaled by (0.25, or 0.35 with the Nexus boost). Resolved once per frame in
+## `_steer_frame`, read by `_order_turn` and `targeting_slow()`.
+var _targeting_slow := 0.0
+
 ## The velocity carried into the physics step that resolved a contact (section 4.2
 ## item 6's closing speed, exactly as `player_ship.gd` reads it).
 var _last_velocity := Vector2.ZERO
@@ -464,6 +470,7 @@ func _steer_frame(delta: float) -> void:
 		CTX_ATTACKED: _attacked,
 	}
 	_intent = _brain.call(&"tick", delta, ctx)
+	_targeting_slow = _resolve_targeting_slow()
 	if bool(_intent.get(BrainScript.INTENT_DESPAWN, false)):
 		despawn()
 		return
@@ -501,7 +508,40 @@ func _apply_intent(waypoint: Vector2, speed: float, delta: float) -> void:
 func _order_turn(waypoint: Vector2) -> float:
 	var bearing := (waypoint - global_position).angle()
 	var error := wrapf(bearing - _heading(), -PI, PI)
-	return clampf(error, -1.0, 1.0) * _stats.turn_rate
+	## S23 A2 (09 section 3.4): the engaged hull swings toward its target at the
+	## class rate minus the EWAR slow it is under, so its targeting reads measurably
+	## heavier while the suite holds it in scan.
+	return clampf(error, -1.0, 1.0) * _stats.turn_rate * (1.0 - _targeting_slow)
+
+
+## The slow this hull's targeting is under this frame, and the one read a probe or
+## a suite can take instead of re-deriving it from the torque: 0.0 unless the brain
+## is engaged on the player, the player's hull carries the EWAR suite (0.25, or 0.35
+## with the Nexus beside it), and the player sits inside this hull's scan radius -
+## the brain's own scan-radius fallback (scan when the row states one, the aggro
+## radius when it does not) is the "their scan" the row names.
+func _resolve_targeting_slow() -> float:
+	if _brain == null or not bool(_brain.call(&"is_engaged")):
+		return 0.0
+	var target: Node2D = _brain.call(&"target")
+	if target == null or not is_instance_valid(target):
+		return 0.0
+	if not target.is_in_group(PLAYER_GROUP) or not target.has_method(&"ewar_slow"):
+		return 0.0
+	var slow := float(target.call(&"ewar_slow"))
+	if slow <= 0.0:
+		return 0.0
+	var reach := float(_row.get(NpcRegistryScript.KEY_SCAN_RADIUS, 0.0))
+	if reach <= 0.0:
+		reach = float(_row.get(NpcRegistryScript.KEY_AGGRO_RADIUS, 0.0))
+	if reach <= 0.0 or global_position.distance_to(target.global_position) > reach:
+		return 0.0
+	return slow
+
+
+## The frame's targeting slow, published for the probe (A2's measured value).
+func targeting_slow() -> float:
+	return _targeting_slow
 
 
 func _order_speed(waypoint: Vector2, speed: float) -> float:

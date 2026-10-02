@@ -266,6 +266,70 @@ func test_config_is_never_read_at_boot() -> void:
 	assert_eq(_default_path_signature(), baseline, "and the store is clean again")
 
 
+## ------------------------------------------------------- S23 A8: the CREDITS section
+
+
+## Brief V4: the F1 overlay carries a CREDITS section - an integer amount field
+## defaulting to 1 000, Add/Remove buttons, and a balance line.
+func test_the_credits_section_carries_the_default_field() -> void:
+	var field: SpinBox = _menu.get_node("DevTuningPanel/Column/CreditsRow/CreditsAmount")
+	assert_true(field != null, "the amount field exists")
+	if field != null:
+		assert_true(is_equal_approx(field.value, 1000.0), "the field defaults to 1 000")
+		assert_true(field.step == 1.0, "whole credits only")
+	assert_true(_menu.get_node_or_null("DevTuningPanel/Column/CreditsRow/CreditsAdd") != null, "the Add button exists")
+	assert_true(_menu.get_node_or_null("DevTuningPanel/Column/CreditsRow/CreditsRemove") != null, "the Remove button exists")
+
+
+## Add credits through the profile's own API and report the new balance.
+func test_the_credits_add_button_moves_the_balance() -> void:
+	var before := int(_host.call(&"credits"))
+	var field: SpinBox = _menu.get_node("DevTuningPanel/Column/CreditsRow/CreditsAmount")
+	field.value = 250
+	_menu.get_node("DevTuningPanel/Column/CreditsRow/CreditsAdd").pressed.emit()
+	assert_eq(int(_host.call(&"credits")), before + 250, "Add paid the field's amount in")
+	assert_eq(_menu.credits_status_text(), "credits: %d" % (before + 250), "the status line reports the new balance")
+	_host.call(&"add_credits", before - int(_host.call(&"credits")))
+	assert_eq(int(_host.call(&"credits")), before, "and the suite leaves the account where it found it")
+
+
+## Remove credits the same way, flooring at 0 by the profile's own writer.
+func test_the_credits_remove_button_takes_the_balance_and_floors() -> void:
+	var field: SpinBox = _menu.get_node("DevTuningPanel/Column/CreditsRow/CreditsAmount")
+	var before := int(_host.call(&"credits"))
+	field.value = 100
+	_menu.get_node("DevTuningPanel/Column/CreditsRow/CreditsRemove").pressed.emit()
+	assert_eq(int(_host.call(&"credits")), before - 100, "Remove took the field's amount out")
+	field.value = 1000000000
+	_menu.get_node("DevTuningPanel/Column/CreditsRow/CreditsRemove").pressed.emit()
+	assert_eq(int(_host.call(&"credits")), 0, "removing more than held floors at 0 (the profile's own law)")
+	assert_eq(_menu.credits_status_text(), "credits: 0", "and the balance line says so")
+	_host.set(&"_credits", before)
+	assert_eq(int(_host.call(&"credits")), before, "and the suite leaves the account where it found it")
+
+
+## The no-op guard: a service without the API is reported and moves nothing, and a
+## freshly mounted overlay (the boot law) moves nothing either.
+func test_the_credits_section_is_a_no_op_without_a_profile_and_at_boot() -> void:
+	var before := int(_host.call(&"credits"))
+	var bare := Node.new()
+	_menu.set(&"profile_override", bare)
+	var field: SpinBox = _menu.get_node("DevTuningPanel/Column/CreditsRow/CreditsAmount")
+	field.value = 500
+	_menu.get_node("DevTuningPanel/Column/CreditsRow/CreditsAdd").pressed.emit()
+	assert_eq(int(_host.call(&"credits")), before, "a service without the API moved nothing")
+	assert_eq(_menu.credits_status_text(), "no profile in the tree", "and the line says why")
+	_menu.set(&"profile_override", null)
+	_menu.close()
+	var fresh := MenuScene.instantiate() as CanvasLayer
+	fresh.set(&"config_path", CONFIG_PATH)
+	_host.add_child(fresh)
+	assert_eq(int(_host.call(&"credits")), before, "a freshly mounted overlay moved nothing at boot")
+	assert_eq(fresh.credits_status_text(), "", "and its balance line starts empty")
+	fresh.free()
+	bare.free()
+
+
 ## ---------------------------------------------------------------- the helpers
 
 

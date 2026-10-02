@@ -62,10 +62,18 @@ const COMPONENT_VALUES: Dictionary = {
 	&"comp_ore_1": 25,
 	&"comp_ore_2": 60,
 	&"comp_ore_3": 140,
+	## S23 A6: the two countermeasures join the catalogue at the 0 CR sell baseline
+	## 06 §3.1's re-checked haul arithmetic prices them at (the items count, the
+	## credits do not).
+	&"cm_chaff": 0,
+	&"cm_flare": 0,
 }
 
 const COMPONENT_FAMILIES: Array[StringName] = [
 	&"salvage", &"mech", &"elec", &"weap", &"pow", &"ore_grade",
+	## S23 A6: the consumables' own family (03 §4's six crafting families do not
+	## take a one-shot item).
+	&"countermeasure",
 ]
 
 ## docs/gameplay/11_galactic_map.md section 1.1, verbatim: sector -> tier -> weight.
@@ -268,8 +276,8 @@ func test_seeded_rolls_are_tier_scoped() -> void:
 
 
 func test_component_catalogue_shape() -> void:
-	assert_eq(Components.COMPONENTS.size(), 18, "18 components")
-	assert_eq(Components.component_ids().size(), 18, "18 distinct component ids")
+	assert_eq(Components.COMPONENTS.size(), 20, "18 components plus the two countermeasures")
+	assert_eq(Components.component_ids().size(), 20, "20 distinct component ids")
 	var families: Dictionary = {}
 	var grades: Dictionary = {1: 0, 2: 0, 3: 0}
 	var seen: Dictionary = {}
@@ -283,18 +291,28 @@ func test_component_catalogue_shape() -> void:
 		families[family] = int(families.get(family, 0)) + 1
 		var grade: int = int(entry.get(&"grade", 0))
 		grades[grade] = int(grades.get(grade, 0)) + 1
-	assert_eq(families.size(), 6, "six families")
+	assert_eq(families.size(), 7, "six crafting families plus the countermeasures")
 	for family: StringName in COMPONENT_FAMILIES:
-		assert_eq(int(families.get(family, 0)), 3, "family %s holds three grades" % String(family))
+		var expected := 2 if family == &"countermeasure" else 3
+		assert_eq(
+			int(families.get(family, 0)), expected,
+			"family %s holds its rows" % String(family)
+		)
 	for grade: int in [1, 2, 3]:
-		assert_eq(int(grades[grade]), 6, "grade %d holds six families" % grade)
-		assert_eq(Components.grade_components(grade).size(), 6, "grade %d lookup" % grade)
+		var expected := 8 if grade == 1 else 6
+		assert_eq(
+			int(grades[grade]), expected,
+			"grade %d holds its families' rows" % grade
+		)
+		assert_eq(
+			Components.grade_components(grade).size(), expected, "grade %d lookup" % grade
+		)
 	assert_eq(Components.family_components(&"salvage").size(), 3, "family lookup")
 	assert_eq(Components.family_components(&"nonsense").size(), 0, "unknown family is empty")
 
 
 func test_component_values_match_docs() -> void:
-	assert_eq(COMPONENT_VALUES.size(), 18, "the table covers all 18 components")
+	assert_eq(COMPONENT_VALUES.size(), 20, "the table covers all 20 components")
 	for component_id: StringName in COMPONENT_VALUES:
 		var entry := Components.component(component_id)
 		assert_false(entry.is_empty(), "missing component %s" % String(component_id))

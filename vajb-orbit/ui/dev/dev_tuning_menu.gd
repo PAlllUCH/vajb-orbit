@@ -22,6 +22,15 @@ extends CanvasLayer
 
 const OreTuningScript := preload("res://game/ore_tuning.gd")
 
+## S23 A8 (brief V4): the F1 overlay's CREDITS section. The amount field defaults to
+## the dev overlay's own round figure, Add/Remove call `PlayerProfile.add_credits`
+## with plus/minus that amount (the profile's own writer floors at 0), and the
+## section's status line reports the new balance. A tree with no profile service is
+## a no-op that says so. The boot law is untouched: the section reads nothing and
+## moves nothing until a button is pressed.
+const CREDITS_DEFAULT := 1000
+const PROFILE_SERVICE: StringName = &"PlayerProfile"
+
 ## The pinned dev config path (S13_BRIEF section 2 rule 6). A test may point
 ## `config_path` at its own scratch file, but production uses this one.
 const CONFIG_PATH := "user://dev_tuning.cfg"
@@ -154,6 +163,9 @@ var _status: Label = null
 var _sliders: Dictionary = {}
 var _value_labels: Dictionary = {}
 var _syncing := false
+## A8: the credits section's own widgets, kept beside the ore-tuning ones.
+var _credits_field: SpinBox = null
+var _credits_status: Label = null
 
 
 func _ready() -> void:
@@ -499,10 +511,104 @@ func _build() -> void:
 	reset_button.pressed.connect(reset)
 	buttons.add_child(reset_button)
 
+	_build_credits(column)
+
 	_status = Label.new()
 	_status.name = "Status"
 	_status.text = ""
 	column.add_child(_status)
+
+
+## A8: the CREDITS section - the amount field, the two buttons and the balance
+## line. Built in code like every other row here; the default sits in the field
+## before any press, and nothing reads the profile until a button is pressed.
+func _build_credits(parent: Control) -> void:
+	var caption := Label.new()
+	caption.name = "CreditsCaption"
+	caption.text = "CREDITS"
+	parent.add_child(caption)
+
+	var row := HBoxContainer.new()
+	row.name = "CreditsRow"
+	row.add_theme_constant_override(&"separation", 8)
+	parent.add_child(row)
+
+	_credits_field = SpinBox.new()
+	_credits_field.name = "CreditsAmount"
+	_credits_field.min_value = 0
+	_credits_field.max_value = 1000000000
+	_credits_field.step = 1
+	_credits_field.value = CREDITS_DEFAULT
+	_credits_field.custom_minimum_size = Vector2(110.0, 0.0)
+	row.add_child(_credits_field)
+
+	var add_button := Button.new()
+	add_button.name = "CreditsAdd"
+	add_button.text = "Add"
+	add_button.pressed.connect(_apply_credits.bind(1))
+	row.add_child(add_button)
+
+	var remove_button := Button.new()
+	remove_button.name = "CreditsRemove"
+	remove_button.text = "Remove"
+	remove_button.pressed.connect(_apply_credits.bind(-1))
+	row.add_child(remove_button)
+
+	_credits_status = Label.new()
+	_credits_status.name = "CreditsStatus"
+	_credits_status.text = ""
+	parent.add_child(_credits_status)
+
+
+## The signed amount the field holds right now.
+func credits_amount() -> int:
+	return int(_credits_field.value) if _credits_field != null else 0
+
+
+## The section's own status text (the balance line after a press, the no-profile
+## note when the tree carries no service).
+func credits_status_text() -> String:
+	return _credits_status.text if _credits_status != null else ""
+
+
+## The profile service, reached at the tree root the way `player_state.gd` and
+## `npc_ship.gd` reach it; null outside a running game (a bare instance, a probe).
+## A8's test hook: a caller may pin the service the section acts on, so the
+## no-profile guard is provable in a tree that carries the real autoload.
+var profile_override: Node = null
+
+
+func _profile() -> Node:
+	if profile_override != null:
+		return profile_override
+	var loop := Engine.get_main_loop()
+	if not loop is SceneTree:
+		return null
+	var root := (loop as SceneTree).root
+	if root == null:
+		return null
+	return root.get_node_or_null(NodePath(PROFILE_SERVICE))
+
+
+## A8's one action: `add_credits(+n)` / `add_credits(-n)` through the profile's own
+## API (its writer floors at 0 by construction), then the balance line. No profile
+## in the tree is a no-op that reports itself; a zero amount changes nothing.
+func _apply_credits(sign: int) -> void:
+	var profile := _profile()
+	if profile == null or not profile.has_method(&"add_credits"):
+		_set_credits_status("no profile in the tree")
+		return
+	var amount := credits_amount()
+	if amount <= 0:
+		_set_credits_status("credits: %d" % int(profile.call(&"credits")))
+		return
+	profile.call(&"add_credits", sign * amount)
+	_set_credits_status("credits: %d" % int(profile.call(&"credits")))
+
+
+func _set_credits_status(text: String) -> void:
+	if _credits_status != null:
+		_credits_status.text = text
 
 
 func _add_slider_row(parent: Control, spec: Dictionary) -> void:

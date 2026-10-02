@@ -2343,12 +2343,13 @@ func _heal_leeches() -> void:
 	_state.set_hull(minf(_state.hull + LEECHES_FRACTION * _state.hull_max, _state.hull_max))
 
 
-## 06 §8's kill roll and wreck site: the victim's 06 band table plus, for a hunter,
-## 06 §8's `comp_elec` extra, held by a wreck site at the kill point for
-## `LootTables.WRECK_PICKUP_LIFETIME`. A hull whose row names no table (the boss, the
-## parked `sibelon`) leaves no site - 06 §3 has no table for it, and a site with
+## 06 §8's kill roll and wreck site: the victim's 06 band table - since S23 (A6) the
+## hunter's own promoted table, and every cache line scaled by 06 §7's sector-tier
+## factor - held by a wreck site at the kill point for
+## `LootTables.WRECK_PICKUP_LIFETIME`. A hull whose row names no table (the boss)
+## leaves no site - 06 §3 has no table for it, and a site with
 ## nothing in it is not 06 §4's wreck.
-func _spawn_kill_loot(kill_position: Vector2, archetype: StringName, ship: Node2D) -> void:
+func _spawn_kill_loot(kill_position: Vector2, _archetype: StringName, ship: Node2D) -> void:
 	if _sector == null or ship == null:
 		return
 	if not ship.has_method(&"row"):
@@ -2357,10 +2358,13 @@ func _spawn_kill_loot(kill_position: Vector2, archetype: StringName, ship: Node2
 	var kind := StringName(row.get(NpcRegistryScript.KEY_LOOT_KIND, &""))
 	if kind == &"" or not LootTablesScript.has(kind):
 		return
-	var band := int((LootTablesScript.TABLES[kind] as Dictionary)[&"band"])
-	var payload: Array[Dictionary] = LootTablesScript.roll_band(kind)
-	if archetype == HUNTER_ARCHETYPE:
-		payload.append_array(LootTablesScript.roll_hunter_extra(band))
+	## S23 A6: the hunter rolls its own promoted table (`hunter` = the fighter band's
+	## lines with 06 §8's extra), so the band rolls exactly once - the old
+	## `roll_band` + `roll_hunter_extra` double roll is gone - and every cache line
+	## scales by 06 §7's sector-tier factor (`SectorRegistry.sector_tier`).
+	var payload: Array[Dictionary] = LootTablesScript.roll_band(
+		kind, 0, LootTablesScript.cache_scale(Registry.sector_tier(_sector_row_id))
+	)
 	var site: Node2D = PoiScript.new() as Node2D
 	site.name = &"WreckSite"
 	_sector.call(&"add_wreck_site", site)

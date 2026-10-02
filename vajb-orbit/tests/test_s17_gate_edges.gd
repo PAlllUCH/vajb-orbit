@@ -46,7 +46,10 @@ const SPINE: Array[int] = [1, 2, 3, 4, 5, 6, 7]
 ## The two forbidden files (S17_BRIEF §2 rule 2), pinned as the pre-wave hashes so
 ## any byte of drift in either fails here.
 const GATE_MD5 := "c13574f6af658c1fcd4728c34901caf3"
-const REGISTRY_MD5 := "584d206c15c1ab7541e6bcebfb368101"
+## S23 re-pin (disclosed in `S23-B1_report.md`): A6's sector tier (06 section 7's
+## cache scaling) reads the tier mix through `sector_tier`, the wave's one edit
+## to this file; the pin is the finished tree's reading, the S21/S22 procedure.
+const REGISTRY_MD5 := "124dd68b6ffb65f7d905752f56e27ca8"
 
 var _sectors: Array[Node2D] = []
 

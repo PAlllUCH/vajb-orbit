@@ -223,9 +223,11 @@ func test_a_sector_spawns_every_archetype_inside_its_registry_band() -> void:
 		var hostiles := (
 			int(counts.get(&"pirate", 0))
 			+ int(counts.get(&"swarmer", 0))
+			+ int(counts.get(&"sibelon", 0))
 			+ int(counts.get(&"patrol", 0))
 		)
-		## Section 13's band is the pirate + swarmer total; the patrol's own count comes from
+		## Section 13's band is the hostile fillers' total (pirate + swarmer + the
+		## S23 sibelon); the patrol's own count comes from
 		## the registry's patrol row (one per owned sector, none in unaligned space).
 		var patrol: Vector2i = expected.get(&"patrol", Vector2i.ZERO)
 		var band: Vector2i = NpcRegistryScript.HOSTILE_BAND[
@@ -311,7 +313,7 @@ func test_every_hull_is_anchored_on_a_poi() -> void:
 	for ship: Node2D in _sector.call(&"npcs"):
 		var home: Vector2 = ship.call(&"home")
 		var archetype := StringName(ship.call(&"archetype"))
-		if archetype == &"pirate" or archetype == &"swarmer":
+		if archetype == &"pirate" or archetype == &"swarmer" or archetype == &"sibelon":
 			assert_true(anchors.has(home), "a field guard anchors on a field, not a new point")
 		else:
 			assert_eq(home, station, "%s anchors on the station" % archetype)

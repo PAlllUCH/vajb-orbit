@@ -67,6 +67,10 @@ const CARGO_ICON_DIR := "res://assets/icons/cargo/"
 const CARGO_ICON_TEMPLATE := "icon_cargo_%s.svg"
 const CARGO_ICON_FALLBACK := "res://assets/icons/cargo/icon_cargo_crate.svg"
 
+## S23 A5: the damaged side view a hurt hull shows (the same swap REPAIRS ships).
+const SIDE_SUFFIX := "_side.png"
+const DAMAGED_SIDE_SUFFIX := "_damaged_side.png"
+
 ## The free area of the deck-control column carries the active hull's side render, with the
 ## readiness line under it (the same empty frame REPAIRS fills). Contain-fit to this share
 ## of the frame's width, aspect kept.
@@ -688,12 +692,55 @@ func _weapon_count(profile: ProfileScript, ship_id: StringName) -> int:
 ## The active hull's side render, resolved the way shipyard_panel.gd resolves its preview
 ## (the catalogue's `preview` key) rather than restating a path here. LAUNCH shows the intact
 ## cut only: a hull launches as it is, and the damaged state belongs to the REPAIRS report.
+## The hull damage the account's filed vitals carry for one ship: the resolved
+## maximum minus the filed hull, 0 when the profile holds no reading for it (a hull
+## the account never flew is not known to be hurt) or answers without the accessors
+## (a stub). The maximum is the launch's own resolved snapshot (the fit's plate
+## moves it), so the comparison is the same one the flight HUD's bar makes.
+func _hull_missing(profile: ProfileScript, ship_id: StringName) -> int:
+	if profile == null or not profile.has_method(&"vitals_of"):
+		return 0
+	if not ShipFit.HULLS.has(ship_id):
+		return 0
+	var vitals: Dictionary = profile.call(&"vitals_of", ship_id)
+	if vitals.is_empty():
+		return 0
+	var fit: Dictionary = profile.call(&"resolved_fit", ship_id)
+	var stats := ShipFit.resolve(ship_id, fit)
+	if stats == null:
+		return 0
+	var filed := int(vitals.get(&"hull", int(stats.hull_max)))
+	return maxi(int(stats.hull_max) - filed, 0)
+
+
 static func hull_preview(ship_id: StringName) -> String:
 	return String(Catalog.ship(ship_id).get(&"preview", ""))
 
 
+## S23 A5: the damaged side view a hull shows in LAUNCH while it is hurt - the
+## catalogue preview's own name with `_side.png` swapped for `_damaged_side.png`,
+## the same reading REPAIRS' `hull_render` ships. Only a hull whose damaged sheet
+## actually exists swaps (the Vanguard is the one that ships one); everything else
+## keeps its catalogue render.
+static func damaged_preview(ship_id: StringName) -> String:
+	var preview := hull_preview(ship_id)
+	if preview.is_empty():
+		return ""
+	var damaged := preview.replace(SIDE_SUFFIX, DAMAGED_SIDE_SUFFIX)
+	return damaged if ResourceLoader.exists(damaged) else ""
+
+
 func _refresh_preview(ship_id: StringName, hull_name: String) -> void:
 	var path := hull_preview(ship_id)
+	## S23 A5: a hull below its maximum shows the damaged sheet in LAUNCH, the same
+	## reading REPAIRS previews with. The profile's vitals carry the damage (the
+	## filed tank survives the dock); a hull the account holds no reading for is not
+	## known to be hurt and keeps its catalogue render.
+	var hurt := _hull_missing(_profile(), ship_id) > 0
+	if hurt:
+		var damaged := damaged_preview(ship_id)
+		if not damaged.is_empty():
+			path = damaged
 	var texture: Texture2D = null
 	if not path.is_empty():
 		texture = load(path) as Texture2D

@@ -468,6 +468,10 @@ var chip := 0.0
 ## player launch), which is byte-identical to pre-S7.
 var damage_mult := 1.0
 var embers := false
+## R-S23-2 (S23): the flak's per-archetype damage multiplier, keyed by the sink's own
+## archetype id (`x2 vs swarmer`). A sink that names no archetype (the player, a rock,
+## a fixture) reads 1.0, so only the row's own targets move.
+var target_bonus: Dictionary = {}
 ## S22 A1 (L28): the delivery report back to the weapons component that spawned this
 ## shot (`configure`'s `hit_landed` Callable). Every landed delivery in `_deliver`
 ## calls it, so the component's one `hit_landed` signal covers projectiles as well as
@@ -530,6 +534,8 @@ func configure(config: Dictionary) -> void:
 	## additive `configure` keys the projectile cannot derive on its own.
 	damage_mult = maxf(_number(cfg.get(&"damage_mult"), 1.0), 0.0)
 	embers = bool(cfg.get(&"embers", false))
+	var bonus: Variant = cfg.get(&"target_bonus")
+	target_bonus = (bonus as Dictionary).duplicate() if bonus is Dictionary else {}
 	var landed: Variant = cfg.get(&"hit_landed")
 	if landed is Callable:
 		_hit_landed_cb = landed as Callable
@@ -972,7 +978,7 @@ func _deliver(
 	target = _sink_for(target)
 	if target == null:
 		return
-	var dealt := amount * damage_mult
+	var dealt := amount * damage_mult * _archetype_bonus(target)
 	_heal_embers(target, dealt)
 	if target.has_method(&"take_damage"):
 		if _takes_ctx(target, &"take_damage"):
@@ -987,6 +993,15 @@ func _deliver(
 		else:
 			target.call(&"damage", dealt, bypass)
 		_report_landed(target, dealt)
+
+
+## R-S23-2's per-archetype multiplier: the sink's own `archetype` id against the
+## shot's `target_bonus` row (the flak's `x2 vs swarmer`). A sink without the
+## accessor - the player's hull, a rock, a fixture - reads 1.0.
+func _archetype_bonus(sink: Object) -> float:
+	if target_bonus.is_empty() or not sink.has_method(&"archetype"):
+		return 1.0
+	return float(target_bonus.get(StringName(sink.call(&"archetype")), 1.0))
 
 
 ## S22 A1 (L28): the one landed-delivery report. The component that spawned the shot

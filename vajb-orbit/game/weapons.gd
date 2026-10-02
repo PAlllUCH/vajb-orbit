@@ -184,6 +184,47 @@ const FAMILIES: Dictionary = {
 		&"edge": true,
 		&"cooldown": 10.0,
 	},
+	## R-S23-1 (09 section 7's 2026-09-27 P3 block, tick C1) read through the S22.8
+	## cadence law (brief V5, 18 section 4.1's amendment): the proton is a heavy
+	## missile, so its "interval 1.6 s" is superseded and it joins the cooldown tier
+	## at the rocket's 12 s. The row's own values: alpha 220, 750 u/s, homing turn
+	## 2.6 rad/s, tracking 70, bypass_shield, pack `ammo_proton` (10 rounds/unit),
+	## draw 12. `range` states no P3 value and borrows the missile kind's own 900
+	## (`&"rocket"`'s row) rather than inventing one; the reversal is a stated value.
+	&"proton": {
+		&"module": &"w_proton",
+		&"track_dps": 70.0,
+		&"family": &"missile",
+		&"kind": &"rocket",
+		&"range": 900.0,
+		&"alpha": 220.0,
+		&"draw": 12.0,
+		&"speed": 750.0,
+		&"turn_rate": 2.6,
+		&"cooldown": 12.0,
+		&"homing": true,
+		&"bypass_shield": true,
+	},
+	## R-S23-2 (tick C2): the flak is a spam bolter - 4-pellet cone of 22 damage at
+	## 12 degree spread, 1 100 u/s, interval 0.55 s, tracking 140, no shield bypass,
+	## pack `ammo_flak` (10/unit), draw 8, x2 vs `swarmer`. The volley is one round
+	## (a flak shell bursts into its pellets), so `alpha` is the whole 22 and the
+	## spread carries `pellets` x `spread_deg`; the cone's release is `_fire_projectile`'s.
+	&"flak": {
+		&"module": &"w_flak",
+		&"track_dps": 140.0,
+		&"family": &"kinetic",
+		&"kind": &"bolt",
+		&"range": NEAR_INFINITE_RANGE,
+		&"alpha": 22.0,
+		&"draw": 8.0,
+		&"speed": 1100.0,
+		&"interval": 0.55,
+		&"bypass_shield": false,
+		&"pellets": 4,
+		&"spread_deg": 12.0,
+		&"target_bonus": {&"swarmer": 2.0},
+	},
 }
 
 ## The module-side halves of the tracking column (S5, 09 section 3.1): the `w_mining`
@@ -289,6 +330,10 @@ const FIRE_CUES: Dictionary = {
 	&"railgun": {&"cue": &"sfx_weapon_cannon", &"take": 1},
 	&"rocket": {&"cue": &"sfx_weapon_rocket"},
 	&"mine": {&"cue": &"sfx_weapon_mine_drop"},
+	## The two exclusives borrow their kind's own cue (the placeholder law - no new
+	## audio): the proton is a missile, the flak a kinetic battery.
+	&"proton": {&"cue": &"sfx_weapon_rocket"},
+	&"flak": {&"cue": &"sfx_weapon_cannon", &"take": 0},
 }
 
 ## FX_SPEC section 1.2's muzzle flash: the four pre-cut frames at the spec's own
@@ -1255,6 +1300,30 @@ func _spawn_shot(
 	var parent := _world_parent()
 	if parent == null:
 		return null
+	## R-S23-2's flak cone: a row that states `pellets` releases that many shots per
+	## round, fanned evenly across `spread_deg` (both edges included), each carrying
+	## the volley's own share of `shot_damage`. One round is still one release: the
+	## ammo, the recoil and the cadence timer are the caller's, unchanged.
+	var pellets := maxi(int(row.get(&"pellets", 1)), 1)
+	var spread := deg_to_rad(float(row.get(&"spread_deg", 0.0)))
+	var share := 1.0 / float(pellets)
+	var shot: Node2D = null
+	for index in pellets:
+		var angle := 0.0 if pellets == 1 else -spread * 0.5 + spread * float(index) / float(pellets - 1)
+		shot = _spawn_one_shot(
+			weapon, row, direction.rotated(angle), barrel, share
+		)
+		if shot == null:
+			return null
+	return shot
+
+
+func _spawn_one_shot(
+	weapon: StringName, row: Dictionary, direction: Vector2, barrel: int, share: float
+) -> Node2D:
+	var parent := _world_parent()
+	if parent == null:
+		return null
 	var shot := ProjectileScript.new() as Node2D
 	if shot == null:
 		return null
@@ -1265,7 +1334,7 @@ func _spawn_shot(
 		## S7 (CONTRACTS section 20): Keen rides the shot **at composition** - this
 		## barrel's own cell scales its damage by `1 + sum(keen)` before the shot exists,
 		## so barrel 1 of a battery with Keen only in cell 2 is byte-identical to today.
-		&"damage": shot_damage(weapon) * _prefix_factor(
+		&"damage": shot_damage(weapon) * share * _prefix_factor(
 			_prefix_magnitude(_barrel_affixes(barrel), PREFIX_KEEN)
 		),
 		&"bypass_shield": bool(row.get(&"bypass_shield", false)),
@@ -1279,6 +1348,10 @@ func _spawn_shot(
 		&"trigger": float(row.get(&"trigger", 0.0)),
 		&"mass": SHOT_MASS,
 		&"chip": OreTuningScript.gun_chip_rate,
+		## R-S23-2's x2 vs `swarmer`: the row's per-archetype multiplier rides with the
+		## shot and lands once per delivered amount, on the target the pellet actually
+		## reached (`projectile.gd:_deliver` reads the sink's own archetype).
+		&"target_bonus": row.get(&"target_bonus", {}),
 		## S7 (CONTRACTS section 20): the projectile reads no stats and holds no state,
 		## so the launch's delivery multiplier and Embers' flag ride in with the shot.
 		## The product then lands once per delivered amount on the projectile side

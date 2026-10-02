@@ -295,6 +295,37 @@ const HARDPOINTS: Dictionary = {
 const DUPLICATE_GUARD_KEYS: Array[StringName] = [&"engines", &"computers"]
 const REFERENCE_ENGINE_ID: StringName = &"e_std"
 
+## S23 A5 (brief V3, L137): the per-hull side view the player's flight scene draws,
+## with the world-length ladder the brief pins (fighter 46 u ... destroyer 96 u) and
+## each render's own ink width in px. `scale = length / ink` is the sprite scale the
+## `Hull` node draws at and `radius = length / 2` is the collider circle (the shipped
+## law - the Vanguard's 30 u circle is half its 60 u length), so FX anchors scaled by
+## `_hull_sprite_scale()` land on the pixels of the hull actually drawn. The
+## Vanguard's row is frozen at its shipped scale (0.0663) and radius (30.0), which is
+## the ladder's anchor: its ink is that scale's own 60 / 0.0663 = 904.98 px. The
+## measured ink widths are the brief's (fighter 831, miner 909, trader 946,
+## corvette 962, freighter 910, gunship 911, patrol 933, destroyer 952 px).
+## Reversal: every row back to the Vanguard's numbers.
+const SIDE_VIEWS: Dictionary = {
+	&"ship_fighter": {&"length": 46.0, &"ink": 831.0, &"scale": 0.05535, &"radius": 23.0},
+	&"ship_vanguard": {&"length": 60.0, &"ink": 904.98, &"scale": 0.0663, &"radius": 30.0},
+	&"ship_miner": {&"length": 62.0, &"ink": 909.0, &"scale": 0.06821, &"radius": 31.0},
+	&"ship_trader": {&"length": 58.0, &"ink": 946.0, &"scale": 0.06131, &"radius": 29.0},
+	&"ship_corvette": {&"length": 64.0, &"ink": 962.0, &"scale": 0.06653, &"radius": 32.0},
+	&"ship_freighter": {&"length": 88.0, &"ink": 910.0, &"scale": 0.09670, &"radius": 44.0},
+	&"ship_gunship": {&"length": 70.0, &"ink": 911.0, &"scale": 0.07684, &"radius": 35.0},
+	&"ship_patrol": {&"length": 78.0, &"ink": 933.0, &"scale": 0.08360, &"radius": 39.0},
+	&"ship_destroyer": {&"length": 96.0, &"ink": 952.0, &"scale": 0.10084, &"radius": 48.0},
+}
+
+## The side view one hull draws in flight (`res://assets/ships/ship_<id>_side.png`),
+## or &"" for a hull with no row - the caller keeps its shipped art.
+static func side_view(hull_id: StringName) -> Dictionary:
+	var row: Variant = SIDE_VIEWS.get(hull_id, {})
+	if row is Dictionary:
+		return (row as Dictionary).duplicate()
+	return {}
+
 ## 08 section 2's hull rows, one per class. `weapons` is that table's Weapons
 ## column, which 08 section 3 derives from the hull's 08 section 3.2 matrix: it
 ## equals `grid_counts(hull)[&"weapons"]` (and so `slot_capacity(hull, &"weapons")`)
@@ -381,6 +412,29 @@ const HULLS: Dictionary = {
 		&"cargo": 80,
 		&"weapons": 7,
 		&"power_out": 15,
+	},
+	## R-S23-4 (08 section 4's 2026-09-27 P3 block, tick C4): the hunter band's
+	## fast-attack hull, NPC-only (never sold - no price, no grid, 08 section 4's
+	## "enemy-only in v1"). The row's own values: hull 650, shield 350, 2 W.
+	&"ship_interceptor": {
+		&"name": "Interceptor",
+		&"ship_class": "Interceptor",
+		&"hull": 650.0,
+		&"shield": 350.0,
+		&"cargo": 0,
+		&"weapons": 2,
+		&"power_out": 6,
+	},
+	## R-S23-5 (tick C5): the static emplacement the `turret` archetype flies,
+	## NPC-only. The row's own values: hull 2 000, shield 800, speed 0, 3 W.
+	&"ship_turret_platform": {
+		&"name": "Turret Platform",
+		&"ship_class": "Turret Platform",
+		&"hull": 2000.0,
+		&"shield": 800.0,
+		&"cargo": 0,
+		&"weapons": 3,
+		&"power_out": 6,
 	},
 }
 
@@ -497,6 +551,28 @@ const HANDLING: Dictionary = {
 		&"turn_spinup": 1.2,
 		&"hull_mass": 300.0,
 	},
+	## S23 A4: the two NPC-only class rows state only hull/shield/speed/W (R-S23-4/5),
+	## so their handling borrows the Fighter column through the swarmer precedent (an
+	## NPC hull borrows an existing class column; `npc_registry.gd`'s own comment),
+	## with the rows' one stated change applied: the interceptor at 130 % of the
+	## Fighter's 450 (585), the turret platform at speed 0 (its `static` row freezes
+	## the body anyway, so the column's rates never fire).
+	&"ship_interceptor": {
+		&"max_speed": 585.0,
+		&"accel_time": 2.0,
+		&"coast_time": 0.8,
+		&"turn_rate": 1.7,
+		&"turn_spinup": 0.4,
+		&"hull_mass": 80.0,
+	},
+	&"ship_turret_platform": {
+		&"max_speed": 0.0,
+		&"accel_time": 2.0,
+		&"coast_time": 0.8,
+		&"turn_rate": 1.7,
+		&"turn_spinup": 0.4,
+		&"hull_mass": 80.0,
+	},
 }
 
 ## CONTRACTS section 14 (owner rulings 2026-09-22) and its amendment by section 23.5
@@ -572,30 +648,71 @@ const STANDARD_FITS: Dictionary = {
 	&"ship_miner": {
 		&"engines": [&"e_std", &"e_std"],
 		&"power": &"p_std",
+		&"weapons": [&"w_mining", &"w_laser"],
+		&"shields": [&"s_light"],
+		&"armour": [&"h_plate_light"],
+		&"computers": [&"c_scanner"],
+		&"utility": [&"u_tractor", &"u_refine", &"u_cargo"],
 	},
+	## R-S23-3 (09 section 7's 2026-09-27 P3 block, tick C3), landed per 09 section 9's
+	## amended table with the grid as the cell authority ("cell order follows each
+	## hull's own SLOT_GRIDS"). The Spearhead, Bulwark and Obliterator rows carry
+	## `p_core` (the developer amendment of 2026-10-01: their tabled kits draw
+	## 13/9, 12/11 and 18/15 against section 4 rule 2's budget, and section 4 rule 6
+	## sanctions the better reactor; section 6's Obliterator reference fit already
+	## carries one), and the Courier ships the one `s_light` its single S cell holds.
 	&"ship_trader": {
 		&"engines": [&"e_std", &"e_std"],
 		&"power": &"p_std",
+		&"weapons": [&"w_laser"],
+		&"shields": [&"s_light"],
+		&"armour": [&"h_plate_light"],
+		&"computers": [&"c_scanner", &"c_target"],
+		&"utility": [&"u_cargo", &"u_cargo", &"u_cargo"],
 	},
 	&"ship_corvette": {
 		&"engines": [&"e_std"],
-		&"power": &"p_std",
+		&"power": &"p_core",
+		&"weapons": [&"w_cannon", &"w_cannon", &"w_laser", &"w_rocket"],
+		&"shields": [&"s_light", &"s_heavy"],
+		&"computers": [&"c_target"],
+		&"boosters": [&"b_afterburner"],
 	},
 	&"ship_freighter": {
 		&"engines": [&"e_std", &"e_std", &"e_std"],
 		&"power": &"p_std",
+		&"weapons": [&"w_laser"],
+		&"shields": [&"s_light"],
+		&"armour": [&"h_plate_heavy", &"h_plate_heavy"],
+		&"utility": [&"u_cargo", &"u_cargo", &"u_cargo", &"u_cargo"],
 	},
 	&"ship_gunship": {
 		&"engines": [&"e_std", &"e_std"],
-		&"power": &"p_std",
+		&"power": &"p_core",
+		&"weapons": [&"w_cannon", &"w_cannon", &"w_cannon", &"w_rocket"],
+		&"shields": [&"s_heavy", &"s_heavy"],
+		&"armour": [&"h_composite"],
+		&"computers": [&"c_target"],
+		&"utility": [&"u_cargo"],
 	},
 	&"ship_patrol": {
 		&"engines": [&"e_std", &"e_std"],
 		&"power": &"p_std",
+		&"weapons": [&"w_laser", &"w_laser", &"w_cannon"],
+		&"shields": [&"s_light", &"s_light"],
+		&"armour": [&"h_plate_heavy"],
+		&"computers": [&"c_target", &"c_scanner"],
+		&"boosters": [&"b_afterburner"],
+		&"utility": [&"u_cargo", &"u_cargo"],
 	},
 	&"ship_destroyer": {
 		&"engines": [&"e_std", &"e_std", &"e_std"],
-		&"power": &"p_std",
+		&"power": &"p_core",
+		&"weapons": [&"w_railgun", &"w_cannon", &"w_cannon", &"w_plasma"],
+		&"shields": [&"s_ion", &"s_heavy"],
+		&"armour": [&"h_composite", &"h_plate_heavy"],
+		&"computers": [&"c_nexus", &"c_target"],
+		&"boosters": [&"b_afterburner"],
 	},
 }
 

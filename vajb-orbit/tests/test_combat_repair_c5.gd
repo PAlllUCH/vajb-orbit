@@ -75,6 +75,10 @@ const SECTION_13_COAST: Dictionary = {
 	&"ship_gunship": 3.8,
 	&"ship_patrol": 3.4,
 	&"ship_destroyer": 5.6,
+	## S23 A4: the two NPC-only rows borrow the Fighter column (the swarmer
+	## precedent), so their transcription is the fighter's own.
+	&"ship_interceptor": 1.6,
+	&"ship_turret_platform": 1.6,
 }
 
 const RETUNE_SCALE := 0.50
@@ -286,7 +290,7 @@ func test_the_coast_column_is_the_retuned_half_of_the_section_13_rows() -> void:
 	assert_eq(
 		ShipFitScript.HANDLING.size(),
 		SECTION_13_COAST.size(),
-		"all nine classes of the handling column were retuned"
+		"every class of the handling column was retuned"
 	)
 	for hull_id: StringName in SECTION_13_COAST:
 		assert_true(

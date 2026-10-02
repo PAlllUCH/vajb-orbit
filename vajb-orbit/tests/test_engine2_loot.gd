@@ -393,6 +393,12 @@ func test_payloads_are_pickup_setup_arguments_within_their_ranges() -> void:
 func test_grade_caps_hold_against_the_03_catalogue() -> void:
 	assert_eq(LootTablesScript.cap_violations(), [] as Array[String], "06 §6 check 2")
 	for kind: StringName in LootTablesScript.TABLES:
+		if kind == &"hunter":
+			## S23 (A6): 06 §8's promoted extra is the one table whose grade 2-3 rows
+			## are legal above its band - their cap is the roll-time one `roll` applies
+			## against the table's own band, so the check skips the table by the
+			## amendment's own reading (`cap_violations` exempts it the same way).
+			continue
 		var band := int((LootTablesScript.TABLES[kind] as Dictionary)[&"band"])
 		for line: Dictionary in LootTablesScript.TABLES[kind][&"lines"]:
 			var item: StringName = line[&"item"]
@@ -405,13 +411,14 @@ func test_grade_caps_hold_against_the_03_catalogue() -> void:
 			)
 
 
-## The 03 catalogue gap this wave found: 06 §3.1's countermeasure rows have no 03 §3
-## row, so their grade (and so their cap) cannot be proved. Reported, not assumed.
+## The 03 catalogue gap this wave found is closed (S23 A6): 06 §3.1's countermeasure
+## rows carry catalogue rows now, so `uncatalogued_items` answers empty and their
+## grade cap is provable.
 func test_the_only_uncatalogued_items_are_the_two_countermeasures() -> void:
 	assert_eq(
 		LootTablesScript.uncatalogued_items(),
-		COUNTERMEASURES,
-		"cm_chaff and cm_flare are the two ids 03 §3 does not carry",
+		[] as Array[StringName],
+		"the tables roll only catalogued items since the countermeasure rows landed",
 	)
 	for item: StringName in COUNTERMEASURES:
 		assert_true(
@@ -422,9 +429,13 @@ func test_the_only_uncatalogued_items_are_the_two_countermeasures() -> void:
 ## The kind axis is the 06 table name, so an 18 §5 archetype with no 06 table is
 ## refused rather than guessed (the caller maps archetype -> band).
 func test_unknown_kinds_are_not_tables() -> void:
-	for kind: StringName in [KIND_FIGHTER, KIND_SWARMER, KIND_FREIGHTER, KIND_CORVETTE, KIND_MAW]:
+	## S23 (A6): the hunter kind is a table now (the promoted extra); the sibelon
+	## archetype still rolls no table of its own - its row names the corvette kind.
+	for kind: StringName in [
+		KIND_FIGHTER, KIND_SWARMER, KIND_FREIGHTER, KIND_CORVETTE, KIND_MAW, &"hunter",
+	]:
 		assert_true(LootTablesScript.has(kind), "%s is shipped" % kind)
-	for kind: StringName in [&"boss", &"hunter", &"patrol", &"turret", &"sibelon", &"apex", &""]:
+	for kind: StringName in [&"boss", &"patrol", &"turret", &"sibelon", &"apex", &""]:
 		assert_false(LootTablesScript.has(kind), "%s has no 06 table" % kind)
 
 

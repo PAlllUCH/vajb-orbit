@@ -322,9 +322,8 @@ const MODULES: Dictionary = {
 	},
 	## 15 section 9.1's two exclusive weapons: their family's tier-III top line
 	## (`w_railgun`'s draw 3 / 5 200), no `effects` dict (no weapon row carries one),
-	## and the railgun's own glyph. A fitted one fires nothing yet -- no `weapons.gd`
-	## `FAMILIES` entry -- which is the status `u_refine`, `u_drones` and `c_ewar`
-	## already ship with (15 section 9.1, owner tick).
+	## and the railgun's own glyph. S23 (A1) gives each its `weapons.gd` `FAMILIES`
+	## row and its `ammo_*` pack the S22.8 cadence law names, so both fire.
 	&"w_proton": {
 		&"name": "Proton Missile Launcher",
 		&"slot": &"weapons",
@@ -333,7 +332,7 @@ const MODULES: Dictionary = {
 		&"cost": 5200,
 		&"icon": "res://assets/icons/module/icon_module_w_railgun.svg",
 		&"effects": {},
-		&"description": "Exclusive launcher on the tier three line. No family row fires it yet.",
+		&"description": "Exclusive launcher on the tier three line. One heavy missile, then the barrel cools.",
 	},
 	&"w_flak": {
 		&"name": "Flak Battery",
@@ -343,7 +342,7 @@ const MODULES: Dictionary = {
 		&"cost": 5200,
 		&"icon": "res://assets/icons/module/icon_module_w_railgun.svg",
 		&"effects": {},
-		&"description": "Exclusive battery on the tier three line. No family row fires it yet.",
+		&"description": "Exclusive battery on the tier three line. A cone of pellets that shreds swarms.",
 	},
 	&"s_light": {
 		&"name": "Light Shield",
@@ -443,7 +442,7 @@ const MODULES: Dictionary = {
 		&"cost": 3800,
 		&"icon": "res://assets/icons/module/icon_module_c_ewar.svg",
 		&"effects": {},
-		&"description": "Electronic warfare suite. Fitted and recognised, with no effect row yet.",
+		&"description": "Electronic warfare suite. Enemy targeting slows 25 percent while you sit in its scan.",
 	},
 	&"c_nexus": {
 		&"name": "Nexus Computer",
@@ -503,7 +502,7 @@ const MODULES: Dictionary = {
 		&"cost": 2600,
 		&"icon": "res://assets/icons/module/icon_module_u_refine.svg",
 		&"effects": {},
-		&"description": "A refinery on the hull. Fitted and recognised, with no effect row yet.",
+		&"description": "A refinery on the hull. Its fee halves for every batch this hold refines.",
 	},
 	&"u_drones": {
 		&"name": "Repair Drone Bay",
@@ -513,7 +512,7 @@ const MODULES: Dictionary = {
 		&"cost": 3000,
 		&"icon": "res://assets/icons/module/icon_module_u_drones.svg",
 		&"effects": {},
-		&"description": "Repair drones on call. Fitted and recognised, with no effect row yet.",
+		&"description": "Repair drones on call. Two hull a second, wherever you are flying.",
 	},
 	&"u_tractor": {
 		&"name": "Tractor Array",

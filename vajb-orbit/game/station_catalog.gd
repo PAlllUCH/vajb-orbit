@@ -77,6 +77,25 @@ const AMMO_PACKS: Array[Dictionary] = [
 		&"icon": "res://assets/icons/module/icon_module_w_railgun.svg",
 		&"description": "Sabot slugs cut for the rail's own bore; the cannon's shells will not seat.",
 	},
+	## S23's V1 (the brief's 2026-10-01 amendment, owner-delegated): the two
+	## exclusive families' packs. The proton borrows the rocket glyph, the flak the
+	## cannon's - the placeholder law, no new art.
+	{
+		&"id": &"proton",
+		&"name": "Proton Pods",
+		&"rounds": 40,
+		&"cost": 400,
+		&"icon": "res://assets/icons/weapon/icon_ammo_rocket.png",
+		&"description": "Choir-guided warheads, sold to Choir crews alone. One pod per trigger.",
+	},
+	{
+		&"id": &"flak",
+		&"name": "Flak Drums",
+		&"rounds": 300,
+		&"cost": 260,
+		&"icon": "res://assets/icons/weapon/icon_weapon_cannon.svg",
+		&"description": "Concord burst flak for the swarm line. Four pellets a throw.",
+	},
 ]
 
 ## Nine player hulls, in 08 section 2's ladder order. Cost/hull/shield/cargo are

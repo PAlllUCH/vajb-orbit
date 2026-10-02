@@ -136,7 +136,12 @@ const WEAPON_ICON_FAMILIES: Dictionary = {
 	&"w_plasma": "plasma",
 }
 
-## 09 section 9's per-hull standard fits, transcribed in `HULL_IDS` order.
+## 09 section 9's per-hull standard fits, transcribed in `HULL_IDS` order. S23 (A3,
+## R-S23-3): the seven starter-less hulls gain their stock fit per 09 section 9's
+## amended table - the Spearhead, Bulwark and Obliterator rows carry `p_core` (the
+## developer amendment of 2026-10-01: their tabled kits draw 13/9, 12/11 and 18/15
+## against 09 section 4 rule 2's budget, and rule 6 sanctions the better reactor),
+## and the Courier ships the one `s_light` its single S cell holds.
 const STANDARD_FITS: Array[Dictionary] = [
 	{
 		&"engines": [&"e_std"],
@@ -152,13 +157,68 @@ const STANDARD_FITS: Array[Dictionary] = [
 		&"shields": [&"s_light"],
 		&"armour": [&"h_plate_light"],
 	},
-	{&"engines": [&"e_std", &"e_std"], &"power": &"p_std"},
-	{&"engines": [&"e_std", &"e_std"], &"power": &"p_std"},
-	{&"engines": [&"e_std"], &"power": &"p_std"},
-	{&"engines": [&"e_std", &"e_std", &"e_std"], &"power": &"p_std"},
-	{&"engines": [&"e_std", &"e_std"], &"power": &"p_std"},
-	{&"engines": [&"e_std", &"e_std"], &"power": &"p_std"},
-	{&"engines": [&"e_std", &"e_std", &"e_std"], &"power": &"p_std"},
+	{
+		&"engines": [&"e_std", &"e_std"],
+		&"power": &"p_std",
+		&"weapons": [&"w_mining", &"w_laser"],
+		&"shields": [&"s_light"],
+		&"armour": [&"h_plate_light"],
+		&"computers": [&"c_scanner"],
+		&"utility": [&"u_tractor", &"u_refine", &"u_cargo"],
+	},
+	{
+		&"engines": [&"e_std", &"e_std"],
+		&"power": &"p_std",
+		&"weapons": [&"w_laser"],
+		&"shields": [&"s_light"],
+		&"armour": [&"h_plate_light"],
+		&"computers": [&"c_scanner", &"c_target"],
+		&"utility": [&"u_cargo", &"u_cargo", &"u_cargo"],
+	},
+	{
+		&"engines": [&"e_std"],
+		&"power": &"p_core",
+		&"weapons": [&"w_cannon", &"w_cannon", &"w_laser", &"w_rocket"],
+		&"shields": [&"s_light", &"s_heavy"],
+		&"computers": [&"c_target"],
+		&"boosters": [&"b_afterburner"],
+	},
+	{
+		&"engines": [&"e_std", &"e_std", &"e_std"],
+		&"power": &"p_std",
+		&"weapons": [&"w_laser"],
+		&"shields": [&"s_light"],
+		&"armour": [&"h_plate_heavy", &"h_plate_heavy"],
+		&"utility": [&"u_cargo", &"u_cargo", &"u_cargo", &"u_cargo"],
+	},
+	{
+		&"engines": [&"e_std", &"e_std"],
+		&"power": &"p_core",
+		&"weapons": [&"w_cannon", &"w_cannon", &"w_cannon", &"w_rocket"],
+		&"shields": [&"s_heavy", &"s_heavy"],
+		&"armour": [&"h_composite"],
+		&"computers": [&"c_target"],
+		&"utility": [&"u_cargo"],
+	},
+	{
+		&"engines": [&"e_std", &"e_std"],
+		&"power": &"p_std",
+		&"weapons": [&"w_laser", &"w_laser", &"w_cannon"],
+		&"shields": [&"s_light", &"s_light"],
+		&"armour": [&"h_plate_heavy"],
+		&"computers": [&"c_target", &"c_scanner"],
+		&"boosters": [&"b_afterburner"],
+		&"utility": [&"u_cargo", &"u_cargo"],
+	},
+	{
+		&"engines": [&"e_std", &"e_std", &"e_std"],
+		&"power": &"p_core",
+		&"weapons": [&"w_railgun", &"w_cannon", &"w_cannon", &"w_plasma"],
+		&"shields": [&"s_ion", &"s_heavy"],
+		&"armour": [&"h_composite", &"h_plate_heavy"],
+		&"computers": [&"c_nexus", &"c_target"],
+		&"boosters": [&"b_afterburner"],
+	},
 ]
 
 const EPSILON := 0.000001

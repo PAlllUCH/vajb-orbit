@@ -91,10 +91,11 @@ func test_fresh_defaults_without_a_file() -> void:
 	## STATION_SPEC section 2.8 lists the five P1 weapon families; **six** is the shipped
 	## count since S5 (CONTRACTS section 17, the owner's 2026-09-23 railgun ruling: it ships
 	## its own pack -- rounds 150, cost 360, `ammo_max` 150 -- instead of sharing the cannon's
-	## family, so `AMMO_MAX` carries a sixth row). Every family's pack default stays
-	## `DEFAULT_AMMO`, the railgun's included: the figure is the magazine a launch loads, and
-	## the family's ceiling is what the load fills to.
-	assert_eq(Profile.AMMO_MAX.size(), 6, "the five weapons of section 2.8 plus the railgun")
+	## family, so `AMMO_MAX` carries a sixth row). **Eight since S23's V1** (the brief's
+	## 2026-10-01 amendment): the two exclusive families' packs join, and the railgun's own
+	## precedent holds for them too - a default above the ceiling is legal state (the
+	## ceiling is what a load fills to, never a clamp).
+	assert_eq(Profile.AMMO_MAX.size(), 8, "the five weapons of section 2.8, the railgun, the two exclusives")
 	for weapon: StringName in Profile.AMMO_MAX:
 		assert_eq(profile.ammo_of(weapon), 300, "%s ammo default" % String(weapon))
 	## The P1 keys.

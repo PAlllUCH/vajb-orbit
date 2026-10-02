@@ -1612,3 +1612,39 @@ cannon+rocket gate's second salvo waits the full 12 s), `test_d7_armory` /
 `weapons.gd` (the S21/S22 re-pin rule). Close-out: gate ×2 hermetic (1014/0);
 five-piece not owed (developer hands-on, the S22.7 fix-round precedent); slice
 folder `slices/S22.8-weapons-cadence/`.
+
+### S23 (coder item 29) — **DONE 2026-10-02 — gate 1014 → 1030/0**
+The dead-content wave, run on **dispatched workers** at the owner's ruling ("you can
+spawn coders to do it") on `hyper/glm-5.3-flash`, after the owner delegated the P3
+blocks' open values to the developer (brief §0's V1–V5, committed `cd454a6` with the
+dispatch-prompt update to the ratified route) and added **A8** (the F1 developer
+menu's CREDITS section). **B1** landed A1–A8: the `w_proton`/`w_flak` families
+firing under the S22.8 cadence law (proton cooldown-tier 12 s / alpha 220 / draw 12;
+flak spam 0.55 s / 4-pellet 22-damage 12° cone / draw 8 / ×2 vs `swarmer`), the
+three dead-module effects end-to-end (`c_ewar` slows the engaged NPC's turn 25 %,
+35 % with `c_nexus`; `u_refine` halves the refinery fee, 3:1 kept; `u_drones` 2
+hull/s in flight), the seven stock fits, the sibelon released onto the **corvette
+column** (V2 — the swarmer precedent) with `corvette` loot and a third
+`HOSTILE_FILL` entry, the `ship_interceptor` (650/350 @ 585 u/s) and
+`ship_turret_platform` (2 000/800, speed 0) hull rows, the per-hull flight sprites
+on the **V3 ladder** (Vanguard frozen; eight ink widths measured off the PNGs),
+pirate/hunter faction liveries, the damaged Vanguard in LAUNCH, the loot rows
+(`uncatalogued_items()` empty, `HUNTER_EXTRA` promoted to the `hunter` table, caches
+×1/×1.5/×2 by the tier-mix ladder), and the F1 CREDITS section (default 1 000,
+`add_credits(±n)`, 0 floor, boot law untouched). The station turret stays **staged**
+(tick C6 open, rule 5). The developer discharged B1's three bucket-2 disclosures:
+the **V1 pack rows** (`ammo_proton` 40/400 CR, `ammo_flak` 300/260 CR,
+`AMMO_MAX` 60/300) + their transcription re-derivations, the **three power-illegal
+stock fits on `p_core`** (13/13, 12/15, 18/19 — 09 §9's developer amendment, §4
+rule 6's own reactor-replacement sanction), and 03 §4's `countermeasure` family.
+**R1** graded A1–A8: 2 HIGH + 1 MED — F1 the P3 draws quoted but unkeyed (the A1 row
+silently aborted at its first missing-key index, the L230/L231 class live again),
+F2 the row's stale staged-pack tail, F3 the developer's two moved rows unlisted (the
+§8 list amendment landed by the developer) — plus LOW **L264–L266** (the §8-list
+transcription rows, B1's arithmetic split, the two released-seam orphans). **F1
+(the fixer)** fixed F1/F2, re-pinned the `weapons.gd` seal once more. Close-out:
+gate ×2 fresh scratch (**1030/0** both), `verify --baseline s23_start_b1fix` green
+(`"problems": []`, exit 0); `validate_names --library` cannot run on this host
+(archives away) — the disclosed substitute is the 20/20 wired-art loader probe +
+the suite's `ResourceLoader.exists` rows. CONTRACTS §9's S23 block + §10 **v0.43**
+by R1. Five-piece: `slices/S23-content-activation/`.

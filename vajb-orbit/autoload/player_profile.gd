@@ -231,6 +231,11 @@ const AMMO_MAX: Dictionary = {
 	&"mine": 100,
 	&"plasma": 100,
 	&"railgun": 150,
+	## S23's V1 (the brief's 2026-10-01 amendment, owner-delegated): the two
+	## exclusive families' ceilings - the proton rides the rocket's, the flak the
+	## cannon's.
+	&"proton": 60,
+	&"flak": 300,
 }
 
 ## Test/support hook: the P1 suites and migration fixtures repoint this at a

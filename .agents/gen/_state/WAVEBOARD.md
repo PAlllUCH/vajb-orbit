@@ -6,7 +6,26 @@
 
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-25 clear-outs (owner asks):** every closed slice folder moved to the system trash (last git tree carrying them: `7a081ef`), old session reports live in `_state/_archive/`, and the two dispatch files were purged to live-items-only (2026-09-25 ter). Citation paths into purged trees name historical files.
 
-**Updated 2026-10-01 (S22.8 closed — the weapons-cadence split; S23 next):** the
+**Updated 2026-10-02 (S23 closed — content activation; the phase's next item is
+designer 17 / D16):** the owner delegated the wave's open values to the developer
+(brief §0's V1–V5) and added the F1 credits toggle (A8); the owner then ruled the
+wave runs on **dispatched coders, not hands-on** — so it ran B1 → R1 → F1 on
+`hyper/glm-5.3-flash`. B1 landed A1–A8 (both exclusive families firing under the
+S22.8 cadence law, the three dead-module effects, the sibelon on the corvette
+column as `HOSTILE_FILL`'s third entry, the interceptor/turret hull rows, the
+per-hull V3 ladder sprites, the loot rows, the F1 CREDITS section); the developer
+discharged B1's three bucket-2 disclosures (the V1 pack rows + `AMMO_MAX`, the
+three stock fits on `p_core` per 09 §9's developer amendment, 03 §4's
+`countermeasure` family) and R1's F3 §8 list amendment; R1 graded **A1–A8**
+(2 HIGH + 1 MED, all bucket-2/disclosure class) and **S23-F1 fixed F1/F2** (the
+pinned draws keyed, the staged-pack asserts flipped). Gate **1014 → 1030/0**
+(×2 at every stage, fresh scratch); `verify --baseline s23_start_b1fix` green
+(`"problems": []`). `validate_names --library` cannot run on this host (archives
+away) — the disclosed substitute is a 20/20 wired-art loader probe. LOW
+**L264–L266** (R1's ticket rows). **Next in the phase: designer 17 (D16 station
+identity & contracts UI design, one live session) before coder 30 (S24).**
+
+**Updated 2026-10-01 (S22.8 closed — the weapons-cadence split):** the
 owner split the weapons before S23 and delegated the values: the spam tier
 (laser/plasma/cannon) fires exactly as shipped, the heavy tier fires one shot and
 cools — **railgun 15 s, rocket 12 s, mine 10 s** — with the cooldown *as* the
@@ -16,9 +35,8 @@ down and dims cooling batteries; the armory SALVO drum grew a fourth cell for th
 10.00–15.00 s figures (L263, owner's eye owed). Gate **1006 → 1014/0** twice
 hermetic; new suite `test_s22_8_cadence.gd` (8 rows); pins in 18 §4.1's amendment
 + §13, CONTRACTS §9/§10 v0.42; the S19 seal re-pinned for `weapons.gd`. Slice:
-`slices/S22.8-weapons-cadence/`. **Next: S23 content activation** (the owner
-approved the plan with the values delegated; the F1 dev-menu credits toggle rides
-it as A8).
+`slices/S22.8-weapons-cadence/`. (Its "next: S23" pointer is superseded by the
+block above.)
 
 **Updated 2026-10-01 (S22.7 fix rounds closed; the queue's next item stands):** the
 owner played S22.7 and ruled two feel fixes, which the developer landed hands-on (no

@@ -128,6 +128,11 @@ func test_roll_band_delegates_to_the_shipped_roll() -> void:
 ## computed from the doc's tables a second time here, never read off the shipped data.
 func test_roll_band_expected_hauls_hold_within_five_percent() -> void:
 	for kind: StringName in LootTablesScript.TABLES:
+		if kind == &"hunter":
+			## S23 (A6): the promoted hunter table has no 06 §6 expectation of its own -
+			## it is 06 §8's additive extra over the fighter band, and the two §8 rows
+			## below measure that composition.
+			continue
 		var expected := _expected_haul(kind)
 		var sample := _sample_haul(kind)
 		var tolerance := EV_TOLERANCE * maxf(float(expected[&"credits"]), 1.0)
@@ -202,9 +207,9 @@ func test_wreck_pickup_lifetime_is_ninety_seconds() -> void:
 ## not reshape it).
 func test_the_shipped_tables_and_roll_are_untouched() -> void:
 	var kinds: Array[StringName] = [
-		&"fighter", &"swarmer", &"freighter", &"corvette", &"maw",
+		&"fighter", &"swarmer", &"hunter", &"freighter", &"corvette", &"maw",
 	]
-	assert_eq(LootTablesScript.TABLES.size(), 5, "the five slice-2 tables are all here")
+	assert_eq(LootTablesScript.TABLES.size(), 6, "the five slice-2 tables plus the S23 hunter table")
 	for kind: StringName in kinds:
 		assert_true(LootTablesScript.has(kind), "%s is still a shipped kind" % kind)
 		var payload: Array = LootTablesScript.roll(kind, 1, SAMPLE_SEED)

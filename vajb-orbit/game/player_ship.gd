@@ -187,6 +187,20 @@ const IMPACT := preload("res://game/impact.gd")
 ## pipeline's own arithmetic and not a private copy of it (slice-2 brief, pinned
 ## interfaces 1 and 4; W2 report section "What the wave still owes", items 2 and 4).
 const DAMAGE := preload("res://game/damage.gd")
+## S23 A2 (09 section 3.6): the fitted module ids the two hull-side effects read.
+const DRONE_MODULE: StringName = &"u_drones"
+## 09 section 3.6's `u_drones` row: "hull regen 2/s in space" - the flight scene is
+## the space this regen runs in, so the rate is a hull-side constant next to the
+## module gate.
+const DRONE_REGEN := 2.0
+## 09 section 3.4's `c_ewar` row (S23, A2): "enemy targeting slowed 25 % while you
+## are in their scan", and `c_nexus`'s own "boosts `c_ewar` to 35 %" - the Nexus
+## raises the same effect only while the EWAR suite is also fitted, so Nexus alone
+## carries none.
+const EWAR_MODULE: StringName = &"c_ewar"
+const NEXUS_MODULE: StringName = &"c_nexus"
+const EWAR_SLOW := 0.25
+const EWAR_SLOW_NEXUS := 0.35
 
 ## The hit's feedback seam F1's `game/fx.gd` sits behind: the death blast, the low-hull
 ## plume and the shield's held bed are `projectile.gd`'s (the hit site's own table), so
@@ -335,11 +349,46 @@ func _ready() -> void:
 ## it from the same hull it resolved the snapshot and the fit from, and the engine
 ## cells' mount anchors are read off it. Separate from `setup` so the pinned launch
 ## signature is untouched; a hull that never gets one keeps the single tail anchor.
+##
+## S23 A5 (L137): the hull also dresses itself here - its own side view at its own
+## `ShipFit.SIDE_VIEWS` scale and its own collider radius (half the ladder length),
+## so the FX anchors that scale by `_hull_sprite_scale()` land on the hull actually
+## drawn instead of the Vanguard's. A hull with no row (an unknown id, or art missing
+## on disk) keeps the shipped Vanguard scene art and its 30 u circle.
 func set_hull_id(hull_id: StringName) -> void:
 	_hull_id = hull_id
+	_apply_hull_art()
 
 
-## Launch handshake (pinned interface): the resolved snapshot plus the scene's
+## The per-hull side view: the row's texture and scale on the `Hull` sprite and the
+## row's radius on the hull body's circle. The Vanguard scene values are the
+## fallback a hull without a row keeps, so an unset `_hull_id` is byte-identical to
+## the shipped scene.
+func _apply_hull_art() -> void:
+	var row := ShipFit.side_view(_hull_id)
+	if row.is_empty():
+		return
+	var path := "res://assets/ships/%s_side.png" % String(_hull_id)
+	var texture := load(path) as Texture2D
+	if texture == null:
+		push_warning("PlayerShip: no side view at '%s'; the Vanguard art stays." % path)
+		return
+	var sprite := get_node_or_null(NodePath(HULL_SPRITE_NODE)) as Sprite2D
+	if sprite != null:
+		sprite.texture = texture
+		var scale := float(row.get(&"scale", 0.0))
+		if scale > 0.0:
+			sprite.scale = Vector2(scale, scale)
+	if _body != null:
+		var shape := _body.get_node_or_null(NodePath(HULL_SHAPE_NODE)) as CollisionShape2D
+		var radius := float(row.get(&"radius", 0.0))
+		if shape != null and radius > 0.0:
+			var circle := CircleShape2D.new()
+			circle.radius = radius
+			shape.shape = circle
+
+
+## The launch handshake (pinned interface): the resolved snapshot plus the scene's
 ## live pools. Safe to call again on a hull swap; the old state is released and the
 ## rigid body is re-sized for the new hull.
 ##
@@ -405,6 +454,16 @@ func warp_available() -> bool:
 
 func has_booster(id: StringName) -> bool:
 	return _stats != null and _stats.boosters.has(id)
+
+
+## S23 A2 (09 section 3.4): the targeting slow this hull's fit projects onto an enemy
+## that holds the player in its scan - 0.0, `EWAR_SLOW` with `c_ewar` fitted, and
+## `EWAR_SLOW_NEXUS` with `c_nexus` beside it. `NpcShip._resolve_targeting_slow` is
+## the consumer; a hull without the module answers 0.0 so nothing else moves.
+func ewar_slow() -> float:
+	if not _fit_ids.has(EWAR_MODULE):
+		return 0.0
+	return EWAR_SLOW_NEXUS if _fit_ids.has(NEXUS_MODULE) else EWAR_SLOW
 
 
 ## The live hold this hull flies with (ENGINE_SPEC section 9: PlayerState's maxima
@@ -741,6 +800,16 @@ func _physics_process(delta: float) -> void:
 	## the window keeps one owner). Nothing else in the shipped game spends the rate, so
 	## without this call a shield never recovers in flight (W2 report, gap 4).
 	DAMAGE.regen(_state, delta, _damage_quiet)
+	## S23 A2 (09 section 3.6): the repair drone bay regenerates the hull itself,
+	## 2/s while the flight scene runs - the space the row names. The pool's own
+	## writer keeps the signal and the HUD on one read; a hull without the module,
+	## a dead one or a full one writes nothing.
+	if (
+		_fit_ids.has(DRONE_MODULE)
+		and _state.hull > 0.0
+		and _state.hull < _state.hull_max
+	):
+		_state.set_hull(minf(_state.hull + DRONE_REGEN * delta, _state.hull_max))
 	if _stats == null or _body == null:
 		return
 

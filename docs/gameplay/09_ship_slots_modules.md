@@ -522,19 +522,26 @@ auction delivers with those two hulls.
 **Amended 2026-10-01 (S23, R-S23-3):** the seven starter-less hulls carry their
 stock fit from §7's 2026-09-27 P3 block (bare modules, no affixes; the mandatory
 E/P cells always filled). The pre-S23 record was mandatory-only for those seven —
-reversal: empty the seven rows back to the mandatory set.
+reversal: empty the seven rows back to the mandatory set. **Developer amendment
+(same day, the builder's bucket-2 disclosure):** the tabled Spearhead, Bulwark and
+Obliterator kits draw 13/9, 12/11 and 18/15 power against §4 rule 2's budget, so
+their power cell is **`p_core`** (+4 output, §4 rule 6's own "a reactor cell may
+be *replaced* by a better module"; §6's Obliterator reference fit already carries
+one) — the tabled kit ships intact and legal. The Courier's tabled second
+`s_light` has no cell to sit in (08 §3.2's matrix is the authority): the row ships
+the one `s_light` its single S cell holds; reversal restores two.
 
 | Hull | `engines` | `power` | `weapons` | `shields` | `armour` | other |
 |------|-----------|---------|-----------|-----------|----------|-------|
 | Lancer | `[e_std]` | `p_std` | `[w_laser, w_laser]` | `[s_light]` | `[h_plate_light]` | — |
 | Vanguard | `[e_std]` | `p_std` | `[w_laser]` | `[s_light]` | `[h_plate_light]` | — |
 | Delver | `[e_std, e_std]` | `p_std` | `[w_mining, w_laser]` | `[s_light]` | `[h_plate_light]` | C `[c_scanner]` · U `[u_tractor, u_refine, u_cargo]` |
-| Courier | `[e_std, e_std]` | `p_std` | `[w_laser]` | `[s_light, s_light]` | `[h_plate_light]` | C `[c_scanner, c_target]` · U `[u_cargo, u_cargo, u_cargo]` |
-| Spearhead | `[e_std]` | `p_std` | `[w_cannon, w_cannon, w_laser, w_rocket]` | `[s_light, s_heavy]` | — | C `[c_target]` · B `[b_afterburner]` |
+| Courier | `[e_std, e_std]` | `p_std` | `[w_laser]` | `[s_light]` | `[h_plate_light]` | C `[c_scanner, c_target]` · U `[u_cargo, u_cargo, u_cargo]` |
+| Spearhead | `[e_std]` | `p_core` | `[w_cannon, w_cannon, w_laser, w_rocket]` | `[s_light, s_heavy]` | — | C `[c_target]` · B `[b_afterburner]` |
 | Mule | `[e_std, e_std, e_std]` | `p_std` | `[w_laser]` | `[s_light]` | `[h_plate_heavy, h_plate_heavy]` | U `[u_cargo, u_cargo, u_cargo, u_cargo]` |
-| Bulwark | `[e_std, e_std]` | `p_std` | `[w_cannon, w_cannon, w_cannon, w_rocket]` | `[s_heavy, s_heavy]` | `[h_composite]` | C `[c_target]` · U `[u_cargo]` |
+| Bulwark | `[e_std, e_std]` | `p_core` | `[w_cannon, w_cannon, w_cannon, w_rocket]` | `[s_heavy, s_heavy]` | `[h_composite]` | C `[c_target]` · U `[u_cargo]` |
 | Warden | `[e_std, e_std]` | `p_std` | `[w_laser, w_laser, w_cannon]` | `[s_light, s_light]` | `[h_plate_heavy]` | C `[c_target, c_scanner]` · B `[b_afterburner]` · U `[u_cargo, u_cargo]` |
-| Obliterator | `[e_std, e_std, e_std]` | `p_std` | `[w_railgun, w_cannon, w_cannon, w_plasma]` | `[s_ion, s_heavy]` | `[h_composite, h_plate_heavy]` | C `[c_nexus, c_target]` · B `[b_afterburner]` |
+| Obliterator | `[e_std, e_std, e_std]` | `p_core` | `[w_railgun, w_cannon, w_cannon, w_plasma]` | `[s_ion, s_heavy]` | `[h_composite, h_plate_heavy]` | C `[c_nexus, c_target]` · B `[b_afterburner]` |
 
 `STANDARD_FIT` (the Vanguard row) stays as the one alias existing callers and
 tests already use; the Lancer's two-laser fit is the second full fit the auction

@@ -918,6 +918,34 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
+Expected (S23, 2026-10-02): **`[SUMMARY] passed=1030 failed=0`**, exit 0, twice
+hermetic on fresh scratch stores (S23-R1's A/B; pass lists identical, the only log
+diffs are sub-frame timing prints). The dead-content wave: the two exclusive families
+fire (the proton joins the cooldown tier at the rocket's **12 s** per 18 §4.1's S22.8
+amendment, the flak stays spam at **0.55 s** with its 4-pellet 12° cone and ×2 vs
+`swarmer`), the three dead modules carry their effects (`c_ewar` **25 %/35 %**
+targeting slow, engaged turn ×0.75; `u_refine` halves the fee **15 → 7/15 CR** at the
+3:1 unchanged; `u_drones` **2 hull/s**), the seven stock fits land on 09 §9's amended
+table (the three heavy kits on `p_core`: drawn/out **13/13, 12/15, 18/19**), the
+sibelon flies the corvette column as `HOSTILE_FILL`'s third entry (the fill columns
+sum back to 13's bands), the interceptor (**650/350 at 585 u/s**) and turret-platform
+(**2 000/800 at 0**) hull rows resolve, every hull draws its own V3-ladder side view
+(radius = half the length, FX anchors off the drawn sprite; the ladder's eight ink
+widths re-measured exact off the PNGs), the loot rows land (`uncatalogued_items()`
+empty, the hunter promoted table rolled once under 06 §8's own grade cap, caches
+**×1/×1.5/×2** by the sector tier S1=1 … S7=4) and the F1 CREDITS section rides
+`add_credits(±n)` with the 0 floor and the boot law untouched. Growth:
+`test_s23_content.gd` **12** rows + `test_s13_devmenu.gd` **+4** = 1014 → 1030. The
+reviewer's probe (`tests/probe_s23_r1.tscn`, scratch store, self-quitting) re-measured
+the values above plus the 20-path wired-art provenance (all resolve; the disclosed
+loader-probe substitute). **The gate is green but not clean**: one `SCRIPT ERROR` —
+`test_s23_content.gd:92` indexes the proton row's missing `draw` key, aborts the A1
+row mid-way and is recorded PASS (the S18 L230 class), which also masks the suite's
+two now-stale staged-pack asserts (`:113-116`). Findings: **2 HIGH (the P3 rows' draw
+12/8 unlanded; two unlisted moved rows in `test_p1_profile.gd`/`test_d7_armory.gd` —
+bucket 2) / 1 MED (the stale staged-pack asserts) / 3 LOW (L264–L266)** — verdict
+blocked pending the fixer and the §8 list amendment.
+
 Expected (S22.8, 2026-10-01): **`[SUMMARY] passed=1014 failed=0`**, exit 0, twice
 hermetic on fresh scratch stores. The owner's weapons-cadence split (18 §4.1's
 amendment, values owner-delegated): the spam tier (laser/plasma/cannon) untouched;
@@ -4747,3 +4775,19 @@ hull stops twice and the second stop slides.
   cooldown tier at 12 s (its "interval 1.6 s" superseded), `w_flak` stays spam at
   0.55 s. HUD: the selected weapon's readout counts the cooling barrel down and a
   cooling battery's cells dim.
+- **v0.43 (2026-10-02, wave S23 review — S23-R1; gate `1014 → 1030/0` twice)** —
+  the content-activation wave graded against the 2026-09-27 P3 blocks read through
+  18 §4.1's S22.8 cadence amendment: the two exclusive families (proton cooldown-tier
+  12 s, flak spam cone ×2 vs `swarmer`), the three dead modules' effects
+  (`c_ewar` 25 %/35 %, `u_refine` −50 % fee, `u_drones` 2/s), the seven stock fits on
+  09 §9's amended table (`p_core` developer amendment), the sibelon seam release
+  (the corvette column, `HOSTILE_FILL`'s third entry), the interceptor/turret-platform
+  hull rows, the per-hull V3 side views (L137), the loot rows (the countermeasure
+  catalogue, the promoted hunter table, the tier-scaled caches) and the F1 CREDITS
+  section. Review verdict **blocked**: HIGH — the P3 rows' pinned draws (proton 12 /
+  flak 8) are quoted but keyed into neither family row, and the suite's A1 row aborts
+  on the missing key while the harness records PASS; HIGH (bucket 2) — §8's
+  tests-that-move list owes `test_p1_profile.gd`'s AMMO_MAX-size row and
+  `test_d7_armory.gd`'s pack-caption row (the V1 landing's two undisclosed
+  consequences); MED — the suite's staged-pack asserts are stale against the landed
+  packs (masked by the abort). LOW L264–L266. See §9's S23 block.

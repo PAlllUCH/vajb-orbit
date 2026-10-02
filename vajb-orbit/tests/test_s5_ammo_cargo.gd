@@ -163,9 +163,9 @@ func _seed_account() -> void:
 
 
 ## CONTRACTS section 17 / 10 section 6.1: one cargo item per family, counted in
-## `ROUNDS_PER_CARGO_UNIT` rounds, with the `ammo_` prefix the one mapping. The six ids are
-## the pinned namespace, and the pack set is exactly six -- which is also the "countermeasure
-## packs are staged out" reading: nothing flare- or chaff-shaped ships as a seventh pack.
+## `ROUNDS_PER_CARGO_UNIT` rounds, with the `ammo_` prefix the one mapping. The eight ids
+## are the pinned namespace since S23's V1 (the two exclusive families' packs), and the
+## countermeasure reading stands: nothing flare- or chaff-shaped ships as a pack.
 func test_the_six_ammo_items_are_a_ten_round_cargo_unit() -> void:
 	assert_eq(Catalog.ROUNDS_PER_CARGO_UNIT, 10, "the pinned granularity")
 	assert_eq(Catalog.AMMO_PREFIX, "ammo_", "and the pinned cargo namespace")
@@ -176,9 +176,11 @@ func test_the_six_ammo_items_are_a_ten_round_cargo_unit() -> void:
 		&"ammo_mine",
 		&"ammo_plasma",
 		&"ammo_railgun",
+		&"ammo_proton",
+		&"ammo_flak",
 	]
-	assert_eq(Catalog.ammo_item_ids(), expected, "the six pinned cargo ids, in pack order")
-	assert_eq(Catalog.ammo_ids().size(), 6, "six families, no seventh pack")
+	assert_eq(Catalog.ammo_item_ids(), expected, "the eight pinned cargo ids, in pack order")
+	assert_eq(Catalog.ammo_ids().size(), 8, "eight families, still no countermeasure pack")
 	for item_id: StringName in expected:
 		assert_true(ExchangeScript.is_ammo(item_id), "%s is an ammo cargo id" % String(item_id))
 		assert_true(ExchangeScript.is_sellable(item_id), "and the exchange buys it")

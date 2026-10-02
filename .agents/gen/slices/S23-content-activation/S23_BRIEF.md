@@ -169,6 +169,13 @@ default PROPOSED).
 | `test_s6_poi_loot.gd`, `test_engine2_loot.gd` | A6's loot | unchanged (EV drift ≤ the suite's own bound) |
 | `test_p1_refinery.gd` | A2's `u_refine` | unchanged (fee halves only with the module fitted) |
 
+**List amendment 2026-10-01 (the developer's V1 landing, S23-R1's F3):** two more
+rows moved with the pack set and are correct as built — `test_p1_profile.gd`'s
+`AMMO_MAX` size row (**6 → 8**, the two exclusive ceilings; the fresh default stays
+300 per the railgun's own over-ceiling precedent) and `test_d7_armory.gd`'s
+ammunition caption (**"6 PACKS" → "8 PACKS"**). Count-flat transcription rows the
+builder disclosed sit in suites this table does not name (ticketed **L264**).
+
 Any other count moving is a bucket-2 pause: report it, leave it, stop.
 
 ## 9. Hard rules

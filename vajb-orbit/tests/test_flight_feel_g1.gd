@@ -127,6 +127,26 @@ const WAVE_START_HANDLING: Dictionary = {
 		&"turn_spinup": 1.2,
 		&"hull_mass": 300.0,
 	},
+	## S23 A4: the two NPC-only rows borrow the Fighter column (the swarmer
+	## precedent) except each row's own stated speed - the interceptor's 130 percent
+	## of the Fighter (585) and the turret platform's 0 - so the untouched-columns
+	## law below reads the shipped rows.
+	&"ship_interceptor": {
+		&"max_speed": 585.0,
+		&"accel_time": 2.0,
+		&"coast_time": 0.8,
+		&"turn_rate": 3.4,
+		&"turn_spinup": 0.4,
+		&"hull_mass": 80.0,
+	},
+	&"ship_turret_platform": {
+		&"max_speed": 0.0,
+		&"accel_time": 2.0,
+		&"coast_time": 0.8,
+		&"turn_rate": 3.4,
+		&"turn_spinup": 0.4,
+		&"hull_mass": 80.0,
+	},
 }
 
 const RETUNE_SCALE := 0.50
@@ -187,7 +207,7 @@ func test_the_turn_column_is_the_retuned_half_of_the_wave_start_rows() -> void:
 	assert_eq(
 		ShipFitScript.HANDLING.size(),
 		WAVE_START_HANDLING.size(),
-		"all nine classes of the handling column are still there"
+		"every class of the handling column is still there"
 	)
 	for hull_id: StringName in WAVE_START_HANDLING:
 		var row: Dictionary = ShipFitScript.HANDLING.get(hull_id, {})

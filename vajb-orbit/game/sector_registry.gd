@@ -209,6 +209,19 @@ static func sector(sector_id: StringName) -> Dictionary:
 	return {}
 
 
+## S23 A6 (06 §7's cache scaling): the sector's **tier**, derived from the 11 §1.1
+## tier mix the row already carries - the highest mineral grade its `tier_weights`
+## weights. The ladder lands on the spine's own escalation (S1 T1; S2-S3 T2;
+## S4-S5 T3; S6-S7 T4), which is the mapping `LootTables.CACHE_SCALE` reads (×1
+## T1-T2, ×1.5 T3, ×2 T4). 0 for an unknown sector or an empty mix.
+static func sector_tier(sector_id: StringName) -> int:
+	var mix: Dictionary = MineralCatalogScript.sector_mix(sector_number(sector_id))
+	var tier := 0
+	for grade: Variant in mix:
+		tier = maxi(tier, int(grade))
+	return tier
+
+
 static func sector_ids() -> Array[StringName]:
 	var ids: Array[StringName] = []
 	for row: Dictionary in SECTORS:

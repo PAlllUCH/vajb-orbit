@@ -1,6 +1,8 @@
 class_name ComponentCatalog
 extends RefCounted
-## Read-only catalogue of the 18 loot/crafting components.
+## Read-only catalogue of the 18 crafting components plus the two countermeasure
+## consumables the fighter loot table rolls (S23 A6; 03 section 3's own table stays
+## the eighteen).
 ## Data, not logic: no nodes, no autoload, no mutation API.
 ## Values and representation: docs/gameplay/03_components.md (§3 the catalogue,
 ## §4 keys, §4.1 family icons and grade tints). Grade tints reuse the hexes
@@ -186,6 +188,37 @@ const COMPONENTS: Array[Dictionary] = [
 		&"units": 1,
 		&"description": "A voidshard. It does not throw light back the way it should, and exotic work needs it.",
 		&"icon": "res://assets/icons/cargo/icon_cargo_ore.svg",
+	},
+	## S23 A6 (06 section 3.1's lines 5-6, 18 section 4.6): the two countermeasures
+	## the fighter table has rolled since slice 2 gain their 03 rows, so
+	## `LootTables.uncatalogued_items()` answers empty and the grade cap reads them.
+	## Names are 06 section 3.1's own; grade 1 is the fighter band they drop in. The
+	## value is **derived, not invented**: 06 section 3.1's re-checked haul (2.15
+	## items, 28.375 CR) counts the two lines in the items and not in the credits, so
+	## the tables' own arithmetic prices them at 0 CR sell baseline. The family is a
+	## seventh, outside 03 section 4's six-family enum - a consumable is not a
+	## crafting material - and the icon borrows the ordnance container glyph (the
+	## placeholder law). Reversal: the two rows deleted (the countermeasures return
+	## to `uncatalogued_items`).
+	{
+		&"id": &"cm_chaff",
+		&"name": "Chaff Dispenser",
+		&"family": &"countermeasure",
+		&"grade": 1,
+		&"value": 0,
+		&"units": 1,
+		&"description": "Three ghost signatures for three seconds, and every lock on you lets go.",
+		&"icon": "res://assets/icons/cargo/icon_cargo_container.svg",
+	},
+	{
+		&"id": &"cm_flare",
+		&"name": "Flare Pack",
+		&"family": &"countermeasure",
+		&"grade": 1,
+		&"value": 0,
+		&"units": 1,
+		&"description": "A flare the seeker cannot resist; launch it and turn hard.",
+		&"icon": "res://assets/icons/cargo/icon_cargo_container.svg",
 	},
 ]
 
