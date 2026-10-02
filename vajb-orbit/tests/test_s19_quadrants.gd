@@ -107,7 +107,11 @@ const FORBIDDEN_FILES: Dictionary = {
 	## seam (`ab861ce9…`) and B2's mine cue row (`FIRE_CUES[&"mine"]`) are the wave's
 	## edits, so B3 - the wave's last editor of this file - re-pins it once from the
 	## finished tree (the S21 rule; the row is deliberately red until this pin lands).
-	"res://game/weapons.gd": "6f95a9c2f0c2039f5c369f68bf50ee2baaed6875257ddfcdc77b2833400ca4a1",
+	## **S22.8 re-pins it once more** (the same rule): the owner's cadence split
+	## (2026-10-01, 18 §4.1's amendment block) wrote the three `cooldown` rows, the
+	## railgun's derived `alpha 450` and the `interval_of`/`rack_cooldown` readings -
+	## disclosed in `docs/CONTRACTS.md` §10 v0.42.
+	"res://game/weapons.gd": "cc91f4a35c8ac51a55c14a501e3d9bb9270e328d2d1045188144b1bb78856482",
 }
 
 var _staged: Array[Node] = []

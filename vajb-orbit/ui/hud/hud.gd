@@ -278,6 +278,12 @@ var _cargo_cells: Array[SlotButton] = []
 ## five-family default, which is the state a HUD with no pushed hull draws.
 var _hull_id: StringName = &""
 var _hull_slots: Array = []
+## S22.8's cooldown read-out state: the plain readout `_refresh_weapon` last wrote
+## (the cooling suffix is appended per frame while the selected rack cools) and the
+## per-cell cooling flags, so the frame tick only writes on a change.
+var _weapon_readout := ""
+var _cell_cooling: Array[bool] = []
+var _last_cooling_text := ""
 
 var _hull_current: float = 0.0
 var _hull_max: float = 0.0
@@ -923,6 +929,7 @@ func _refresh_widget_theme() -> void:
 
 
 func _build_weapon_slots() -> void:
+	_cell_cooling.clear()
 	for index: int in WEAPON_IDS.size():
 		var slot: SlotButton = SLOT_SCENE.instantiate() as SlotButton
 		slot.ignore_texture_size = true
@@ -969,6 +976,7 @@ func _rebuild_weapon_slots() -> void:
 		_weapon_grid.remove_child(slot)
 		slot.queue_free()
 	_weapon_slots.clear()
+	_cell_cooling.clear()
 	var count: int = _hull_slots.size()
 	_weapon_grid.columns = maxi(mini(count, GROUPS_MAX), 1)
 	for index: int in count:
@@ -1593,6 +1601,8 @@ func _refresh_weapon() -> void:
 			if known >= 0:
 				label = WEAPON_LABELS[known]
 		_ammo_label.text = "%s  %d/%d" % [label, _ammo, _ammo_max]
+		_weapon_readout = _ammo_label.text
+		_last_cooling_text = ""
 	_set_text_alert(_ammo_label, low_ammo, TOKEN_DANGER)
 	_push_tint(_ammo_icon, TOKEN_DANGER if low_ammo else TOKEN_TEXT_DIM)
 	## Every cell of the **selected rack** is marked active (09 section 11): the
@@ -1608,6 +1618,41 @@ func _refresh_weapon() -> void:
 	if _cockpit != null:
 		_cockpit.set_active_rack(_active_slot + 1)
 		_cockpit.set_ammo(_ammo)
+
+
+## S22.8's cooldown read-out (18 §4.1's cadence split): the frame tick that keeps
+## the cooldown visible. The selected rack's remaining seconds join the ammo
+## readout, and every battery whose barrels are still cooling dims its weapon
+## cells, so the rotation the cooldown asks for is readable without opening
+## anything. All of it is written on change only, and the whole pass is a no-op
+## while no rack reports a timer (the spam tier's steady state).
+func _process(_delta: float) -> void:
+	_refresh_cooldown_state()
+
+
+func _refresh_cooldown_state() -> void:
+	if _guns == null or not is_instance_valid(_guns) or _ammo_label == null:
+		return
+	var cooling: Array[bool] = []
+	for index: int in _weapon_slots.size():
+		var group := _cell_battery(index)
+		cooling.append(_guns.call(&"rack_cooldown", group) > 0.0)
+	var selected_remaining: float = _guns.call(&"rack_cooldown", _active_slot + 1)
+	var text := _weapon_readout
+	if selected_remaining > 0.0:
+		text = "%s  ·  COOLING %.1fs" % [_weapon_readout, selected_remaining]
+	if text != _last_cooling_text:
+		_last_cooling_text = text
+		_ammo_label.text = text
+	while _cell_cooling.size() < cooling.size():
+		_cell_cooling.append(false)
+	for index: int in cooling.size():
+		if _cell_cooling[index] == cooling[index]:
+			continue
+		_cell_cooling[index] = cooling[index]
+		var slot: SlotButton = _weapon_slots[index]
+		if slot != null:
+			slot.modulate = Color(1.0, 1.0, 1.0, 0.45) if cooling[index] else Color.WHITE
 
 
 func _refresh_cargo() -> void:

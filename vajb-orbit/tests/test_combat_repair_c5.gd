@@ -250,22 +250,25 @@ func test_plasma_bonus_lands_once_the_npc_shield_pool_is_down() -> void:
 
 func test_the_interval_fallback_is_family_aware() -> void:
 	assert_eq(WeaponScript.family_of(MINE), &"deployable", "the mine's family is a deployable")
+	## S22.8 (18 §4.1's cadence split): the heavy tier states its cooldown in its own
+	## row, so the mine no longer reads the guns' fallback and the railgun no longer
+	## borrows the cannon's burst cycle - each cooldown is the row's own cadence.
 	assert_eq(
 		WeaponScript.interval_of(MINE),
-		0.0,
-		"a deployable that states no cadence reads none, not the guns' 0.600"
+		10.0,
+		"the mine's cooldown is its row's own (S22.8)"
 	)
 	assert_eq(
 		WeaponScript.interval_of(&"cannon"),
 		WeaponScript.KINETIC_INTERVAL,
-		"a kinetic row still borrows the cannon's burst cycle"
+		"a spam-tier kinetic still borrows the cannon's burst cycle"
 	)
 	assert_eq(
 		WeaponScript.interval_of(&"railgun"),
-		WeaponScript.KINETIC_INTERVAL,
-		"and so does the railgun, whose row states no cycle either"
+		15.0,
+		"the railgun's cooldown is its row's own (S22.8)"
 	)
-	assert_eq(WeaponScript.interval_of(&"rocket"), 1.2, "the rocket keeps its own row")
+	assert_eq(WeaponScript.interval_of(&"rocket"), 12.0, "the rocket keeps its own row (cooldown)")
 	assert_eq(WeaponScript.interval_of(&"laser"), 0.0, "an instant family has no shot cadence")
 	assert_eq(
 		WeaponScript.shot_damage(MINE),

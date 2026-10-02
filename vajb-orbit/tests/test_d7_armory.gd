@@ -14,7 +14,7 @@ extends McpTestSuite
 ##  2. each rack `B1..B5` is a code-drawn card in the one band, with the P3 2x2 cell
 ##     recesses, the fitted cell's name on two 13 px lines and `DROP HERE` on the empty
 ##     ones;
-##  3. the ledge's three `ui_seg_*` cells render the rack's cycle figure (Mockup A's
+##  3. the ledge's four `ui_seg_*` cells render the rack's cycle figure (Mockup A's
 ##     approved `073` = 0.73 s readout) and read blanks for a rack with no cadence;
 ##  4. the inventory rows and pack cards ride the code-drawn plate at the well grid's own
 ##     320 x 68 box, and the pack card carries the P5 worded held line;
@@ -81,7 +81,7 @@ const LEDGE_ORIGIN := Vector2(10.0, 150.0)
 const LEDGE := Vector2(240.0, 34.0)
 const SALVO_CELL := Vector2(18.0, 32.0)
 const SALVO_PITCH := 20.0
-const SALVO_CAPTION_ORIGIN := Vector2(74.0, 11.0)
+const SALVO_CAPTION_ORIGIN := Vector2(78.0, 11.0)
 ## The wells band's two halves (barrel inventory left, ammunition right), in the pane's
 ## own space (the console inset added).
 const WELL_LEFT := Rect2(CONSOLE_ORIGIN + Vector2(16.0, 286.0), Vector2(648.0, 220.0))
@@ -484,8 +484,8 @@ func test_the_salvo_strip_renders_the_cycle_figure() -> void:
 		caption.position, SALVO_CAPTION_ORIGIN,
 		"adjacent to the drum cells (T8; actual %s)" % str(caption.position)
 	)
-	assert_eq(strip.call(&"cell_nodes").size(), 3, "three ui_seg_* cells")
-	for index in 3:
+	assert_eq(strip.call(&"cell_nodes").size(), 4, "four ui_seg_* cells (S22.8's drum)")
+	for index in 4:
 		var cell: TextureRect = strip.call(&"cell_nodes")[index]
 		assert_eq(
 			Rect2(cell.position, cell.size),
@@ -495,7 +495,7 @@ func test_the_salvo_strip_renders_the_cycle_figure() -> void:
 	## A laser rack has no travelling member: no figure, blanks in every cell.
 	var laser: Dictionary = panel.call(&"salvo_readout", 0)
 	assert_eq(int(laser[&"figure"]), -1, "a laser rack states no cadence")
-	assert_eq(laser[&"cells"], [-1, -1, -1], "so its cells stay blank")
+	assert_eq(laser[&"cells"], [-1, -1, -1, -1], "so its cells stay blank")
 	## A cannon's 0.6 s cycle reads 060 (Mockup A's approved figure: hundredths, zero-padded).
 	_profile.call(&"add_module", CANNON, 1)
 	assert_true(
@@ -514,10 +514,10 @@ func test_the_salvo_strip_renders_the_cycle_figure() -> void:
 		"the cannon's 0.6 s reads 60 hundredths (actual %s)" % str(cannon)
 	)
 	assert_eq(
-		String(cannon[&"text"]), "060",
-		"which the three cells render as 060 (actual %s)" % String(cannon[&"text"])
+		String(cannon[&"text"]), "0060",
+		"which the four cells render as 0060 (actual %s)" % String(cannon[&"text"])
 	)
-	## A rocket's 1.2 s cylinder reads 120 - the approved format holds every real cadence.
+	## A rocket's 12 s cooldown reads 1200 - the S22.8 drum carries the heavy tier.
 	_profile.call(&"add_module", ROCKET, 1)
 	assert_true(
 		bool(_profile.call(&"fit_module_at", VANGUARD, WEAPON_SLOT, 2, ROCKET)),
@@ -525,10 +525,10 @@ func test_the_salvo_strip_renders_the_cycle_figure() -> void:
 	)
 	_profile.call(&"set_battery_groups", VANGUARD, [[0, 1, 2]])
 	var mixed: Dictionary = panel.call(&"salvo_readout", 0)
-	assert_eq(int(mixed[&"figure"]), 120, "the mixed rack gates on the rocket's 1.2 s")
-	assert_eq(String(mixed[&"text"]), "120", "read as 120")
+	assert_eq(int(mixed[&"figure"]), 1200, "the mixed rack gates on the rocket's 12 s cooldown")
+	assert_eq(String(mixed[&"text"]), "1200", "read as 1200")
 	assert_true(
-		PanelScript.SALVO_MAX >= 999, "the format holds a cycle up to 9.99 s in three cells"
+		PanelScript.SALVO_MAX >= 9999, "the format holds a cycle up to 99.99 s in four cells"
 	)
 
 
@@ -720,8 +720,8 @@ func test_the_drag_ordering_and_the_close_are_unchanged() -> void:
 	)
 	## The SALVO strip follows the rack's own read: the rocket is its slowest member.
 	assert_eq(
-		String(panel.call(&"salvo_readout", 1)[&"text"]), "120",
-		"the strip renders the slowest member's cadence"
+		String(panel.call(&"salvo_readout", 1)[&"text"]), "1200",
+		"the strip renders the slowest member's cooldown"
 	)
 	## A within-rack re-order follows the record.
 	var payload: Variant = panel.call(&"drag_barrel", 1, 1)
@@ -826,7 +826,7 @@ func test_the_style_extends_cockpit_style_with_the_pinned_metrics() -> void:
 	)
 	assert_eq(style.bay_columns, BAY_COLUMNS, "the five-across band")
 	assert_eq(style.cell_columns, 2, "the P3 2x2 rack")
-	assert_eq(style.salvo_cells, 3, "three SALVO cells")
+	assert_eq(style.salvo_cells, 4, "four SALVO cells (S22.8's drum)")
 	assert_eq(style.salvo_cell, SALVO_CELL, "an 18 x 32 drum cell")
 	assert_eq(style.salvo_pitch, SALVO_PITCH, "on the 20 px pitch")
 	assert_eq(style.item_gap, 8.0, "the well grid's own gap")

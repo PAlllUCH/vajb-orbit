@@ -20,11 +20,12 @@ extends McpTestSuite
 ##
 ## **AC3's own numbers, measured and reported** (`S5-J3_report.md`): the acceptance asks for
 ## "a 0.6 s + 1.5 s pair cycles at 1.5 s". No shipped family states a 1.5 s cadence --
-## `interval_of` answers 0.6 for the cannon, 1.2 for the rocket, 0.0 for both instant
-## families and 0.0 for the mine's drop -- so a 0.6+1.5 pair cannot be built out of the
-## family table, and this suite measures the rule instead with the pairs the table has:
-## laser+cannon reads 0.6 (the cannon's window; the laser states none) and cannon+rocket
-## reads 1.2 (the rocket's interval), each one `max(members' cadence)`.
+## `interval_of` answers 0.6 for the cannon, 12 for the rocket (its S22.8 cooldown),
+## 0.0 for both instant families and 10 for the mine's drop -- so a 0.6+1.5 pair cannot
+## be built out of the family table, and this suite measures the rule instead with the
+## pairs the table has: laser+cannon reads 0.6 (the cannon's window; the laser states
+## none) and cannon+rocket reads 12 (the rocket's cooldown), each one
+## `max(members' cadence)`.
 ##
 ## The profile is the shipped autoload, borrowed the way `test_s4_batteries.gd` borrows it:
 ## `save_path` is repointed at a scratch file before the first mutation, every field this
@@ -667,8 +668,10 @@ func test_a_mixed_rack_fires_both_barrels_and_gates_on_the_slowest() -> void:
 	guns.call(&"tick", frame)
 
 
-## The gate over two **non-zero** cycles: a cannon (0.6) plus a rocket (1.2) reads 1.2, which
-## is the rule AC3 asks for with the numbers the family table actually states.
+## The gate over two **non-zero** cycles: a cannon (0.6) plus a rocket (its S22.8
+## cooldown, 12 s) reads 12, which is the rule AC3 asks for with the numbers the family
+## table actually states - the heavy member's cooldown gates the whole battery, which is
+## the rotation law the cadence split asks for.
 func test_a_rack_gates_on_the_slowest_of_two_travelling_members() -> void:
 	var guns := _rig([&"w_cannon", &"w_rocket"], [[0, 1]])
 	if guns == null:
@@ -676,8 +679,8 @@ func test_a_rack_gates_on_the_slowest_of_two_travelling_members() -> void:
 	_state.set_ammo(WeaponScript.ammo_slot(&"cannon"), 30)
 	_state.set_ammo(WeaponScript.ammo_slot(&"rocket"), 30)
 	assert_eq(WeaponScript.interval_of(&"cannon"), 0.6, "the cannon's burst cycle")
-	assert_eq(WeaponScript.interval_of(&"rocket"), 1.2, "the rocket's interval")
-	assert_eq(guns.call(&"battery_cycle"), 1.2, "the rack waits for its slowest member")
+	assert_eq(WeaponScript.interval_of(&"rocket"), 12.0, "the rocket's cooldown (S22.8)")
+	assert_eq(guns.call(&"battery_cycle"), 12.0, "the rack waits for its slowest member")
 	var frame := 1.0 / 60.0
 	var marks: Array[int] = []
 	var counter := [0]
@@ -688,24 +691,27 @@ func test_a_rack_gates_on_the_slowest_of_two_travelling_members() -> void:
 				marks.append(counter[0])
 	)
 	guns.call(&"set_firing", true)
-	for index in int(3.0 / frame):
+	## The heavy member's cooldown is the battery's gate now, so the cannon's second
+	## salvo waits the full 12 s: the run steps 13.0 s and expects exactly two salvos,
+	## the second at the rack's 12 s cycle.
+	for index in int(13.0 / frame):
 		counter[0] = index
 		guns.call(&"tick", frame)
 	var gaps := PackedStringArray()
 	for index in range(1, marks.size()):
 		gaps.append(str(marks[index] - marks[index - 1]))
 	print(
-		"[s5-batteries] cannon+rocket rack: cycle 1.2 s, cannon salvos at %s (gaps %s frames)"
+		"[s5-batteries] cannon+rocket rack: cycle 12.0 s (S22.8), cannon salvos at %s (gaps %s frames)"
 		% [str(marks), gaps]
 	)
-	assert_true(marks.size() >= 2, "the cannon streams inside the rack's slower cycle")
+	assert_eq(marks.size(), 2, "the cannon streams only at the rack's heavy member's cooldown")
 	for index in range(1, marks.size()):
 		## The same slack, and this rack is the decisive one: the alternative S4 rule (each
-		## barrel on its own cadence) would put the cannon on 0.6 s / 36 frames, which 72 +/- 6
+		## barrel on its own cadence) would put the cannon on 0.6 s / 36 frames, which 720 +/- 6
 		## excludes by a wide margin.
 		assert_true(
-			absi(marks[index] - marks[index - 1] - int(round(1.2 / frame))) <= 6,
-			"every salvo waits the rack's 1.2 s cycle (measured gap %d frames)"
+			absi(marks[index] - marks[index - 1] - int(round(12.0 / frame))) <= 6,
+			"every salvo waits the rack's 12 s cooldown (measured gap %d frames)"
 			% (marks[index] - marks[index - 1])
 		)
 	guns.call(&"set_firing", false)

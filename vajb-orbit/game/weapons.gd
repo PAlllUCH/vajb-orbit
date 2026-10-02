@@ -92,6 +92,15 @@ const NEAR_INFINITE_RANGE := 30000.0
 ## (0.35 + 0.25), and the railgun borrows it (reported: section 4.1 gives the
 ## railgun no cycle and no rate of fire).
 ##
+## **The cadence split (owner 2026-10-01, 18 §4.1's amendment, S22.8):** the heavy
+## tier fires one shot, then the barrel cools - `cooldown` is the row's cadence
+## (railgun 15, rocket 12, mine 10; the spec's own seconds), and `interval_of`
+## reads it, so the per-barrel timers, the battery cycle, the held-trigger stream
+## and the `Rapid` affix all keep their shape. The spam tier (laser/plasma/cannon)
+## states no cooldown. The railgun's slug carries `alpha 450` - derived
+## `dps x half the cooldown` - in place of the `dps x interval` 36; the rocket and
+## the mine keep their 180 alpha.
+##
 ## `track_dps` is S5's column (09 section 3.1's new one, CONTRACTS section 17): the
 ## degrees per second a barrel of that family swings toward the aim, the owner's "i want
 ## weapons to not turn as fast ... weapons can have different turn speeds". The order is
@@ -145,6 +154,8 @@ const FAMILIES: Dictionary = {
 		&"dps": 60.0,
 		&"speed": 1400.0,
 		&"bypass_shield": true,
+		&"alpha": 450.0,
+		&"cooldown": 15.0,
 	},
 	&"rocket": {
 		&"module": &"w_rocket",
@@ -155,7 +166,7 @@ const FAMILIES: Dictionary = {
 		&"alpha": 180.0,
 		&"speed": 900.0,
 		&"turn_rate": 2.2,
-		&"interval": 1.2,
+		&"cooldown": 12.0,
 		&"homing": true,
 		&"bypass_shield": true,
 	},
@@ -171,6 +182,7 @@ const FAMILIES: Dictionary = {
 		&"trigger": 60.0,
 		&"bypass_shield": true,
 		&"edge": true,
+		&"cooldown": 10.0,
 	},
 }
 
@@ -722,6 +734,26 @@ func rack_cycle(rack: int) -> float:
 	if rack < 0 or rack >= _racks.size():
 		return 0.0
 	return _rack_cycle(rack)
+
+
+## The cooling read-out (S22.8, 18 §4.1's cadence split): the largest remaining
+## cadence timer across one battery's **cooldown-tier** barrels - the seconds before
+## the rack can fire again - or 0.0 when every barrel is ready, or the group
+## addresses no rack. A barrel whose family states no `cooldown` (the spam tier's
+## burst gap, a beam) never counts: the cannon's 0.6 s window is not a cooldown.
+## The HUD dims a battery's cells and counts the selected rack down from this; a
+## mixed rack dims as a whole even while its beam half still draws (the readout
+## names the selected weapon, so the cooldown is never read off the dim alone).
+func rack_cooldown(group: int) -> float:
+	var rack := group - 1
+	if rack < 0 or rack >= _racks.size():
+		return 0.0
+	var remaining := 0.0
+	for barrel: int in _racks[rack]:
+		if not row_of(_fitted[barrel]).has(&"cooldown"):
+			continue
+		remaining = maxf(remaining, _barrel_timers[barrel])
+	return remaining
 
 
 func _rack_cycle(rack: int) -> float:
@@ -2458,6 +2490,12 @@ static func interval_of(id: StringName) -> float:
 	var row := row_of(id)
 	if row.is_empty() or bool(row.get(&"instant", false)):
 		return 0.0
+	## The cadence split (S22.8, 18 §4.1): a heavy row's `cooldown` *is* its
+	## cadence, stated in the spec's own seconds, so every reader of this
+	## function - the barrel timers, the battery cycle, the stream - keeps its
+	## shape and the reversal is deleting the three values.
+	if row.has(&"cooldown"):
+		return float(row[&"cooldown"])
 	if row.has(&"interval"):
 		return float(row[&"interval"])
 	var on := float(row.get(&"burst_on", 0.0))
@@ -2470,9 +2508,9 @@ static func interval_of(id: StringName) -> float:
 
 
 ## The damage one released shot carries: section 4.1's `alpha` where the row
-## states one (rocket 180, mine 180), else `DPS x interval`, so a stream of hits
-## delivers exactly the spec's DPS. The instant families carry none (their damage
-## is per second, not per shot).
+## states one (railgun 450 - S22.8's derived spike -, rocket 180, mine 180),
+## else `DPS x interval`, so a stream of hits delivers exactly the spec's DPS.
+## The instant families carry none (their damage is per second, not per shot).
 static func shot_damage(id: StringName) -> float:
 	var row := row_of(id)
 	if row.is_empty() or bool(row.get(&"instant", false)):

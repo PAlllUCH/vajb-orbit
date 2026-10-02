@@ -120,9 +120,11 @@ const INVENTORY_CAPTION := "BARREL INVENTORY - %d OWNED"
 const AMMO_CAPTION := "AMMUNITION - %d PACKS"
 
 ## The SALVO drum's approved figure (Mockup A, owner "Looks good" 2026-09-24; T8 keeps
-## it): the cycle in **hundredths of a second**, three cells, zero-padded (`073` =
-## 0.73 s). A cycle of 0 s has no figure and reads blanks.
-const SALVO_MAX := 999
+## it): the cycle in **hundredths of a second**, zero-padded (`073` = 0.73 s). A cycle
+## of 0 s has no figure and reads blanks. **Four cells since S22.8** (the cadence
+## split): the heavy tier's cooldowns read 10.00-15.00 s, so the drum carries up to
+## 99.99 s.
+const SALVO_MAX := 9999
 
 ## The pack card's own lines (P5, MED-1/2's cures): the worded held line, the price's
 ## unit word (the section 5.1 `CREDITS` caption became the `CR` word beside the number),
@@ -409,7 +411,7 @@ class BayMarks extends Control:
 		)
 
 
-## One rack bay's SALVO strip: the engraved ledge, the three `ui_seg_*` drum cells and
+## One rack bay's SALVO strip: the engraved ledge, the four `ui_seg_*` drum cells and
 ## the 13 px `SALVO s` caption beside them (T8: no hidden head line - the digits and the
 ## label are adjacent).
 class SalvoStrip extends Control:
@@ -475,7 +477,7 @@ class SalvoStrip extends Control:
 	func figure() -> int:
 		return _figure
 
-	## The three cells' own text, `"073"` style, for a probe that wants the readout.
+	## The four cells' own text, `"073"` style, for a probe that wants the readout.
 	func figure_text() -> String:
 		var text := ""
 		for digit: int in _shown:
@@ -2010,7 +2012,7 @@ func _rack_cycle(refs: Array, cells: Array) -> float:
 
 
 ## The approved figure (Mockup A: `073` = 0.73 s): the cycle in **hundredths** of a
-## second, three cells, zero-padded. 0 s has no figure and reads blanks.
+## second, four cells, zero-padded. 0 s has no figure and reads blanks.
 func _salvo_figure(cycle: float) -> int:
 	if cycle <= 0.0:
 		return -1
@@ -2162,7 +2164,7 @@ func rack_rows() -> Array[Dictionary]:
 	return rows
 
 
-## One bay's SALVO readout as the pane drew it: the strip's three cells (`-1` = blank) and
+## One bay's SALVO readout as the pane drew it: the strip's four cells (`-1` = blank) and
 ## the figure it was handed (-1 for a rack with no travelling member).
 func salvo_readout(rack: int) -> Dictionary:
 	if rack < 0 or rack >= _rack_views.size():

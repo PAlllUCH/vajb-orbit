@@ -467,7 +467,7 @@ func test_an_instance_keyed_rack_reads_the_cycle_figure() -> void:
 	assert_true(bool(_profile.call(&"set_battery_groups", VANGUARD, [[0], [1]])), "one barrel per rack")
 	assert_eq(String(_cells()[1]), String(cannon), "the cell holds the instance id")
 	assert_eq(_figure(1), 60, "the instance-keyed rack reads the cannon's 0.6 s in hundredths")
-	assert_eq(_figure_text(1), "060", "which the three drum cells render as 060")
+	assert_eq(_figure_text(1), "0060", "which the four drum cells render as 0060")
 	## A base-keyed cell answers the same figure: the resolution is an identity for a base id.
 	_profile.call(&"add_module", LASER, 1)
 	assert_true(
@@ -477,7 +477,7 @@ func test_an_instance_keyed_rack_reads_the_cycle_figure() -> void:
 	assert_true(
 		bool(_profile.call(&"set_battery_groups", VANGUARD, [[0], [1, 2]])), "the laser joins B2"
 	)
-	assert_eq(_figure_text(1), "060", "the mixed rack still gates on its slowest member")
+	assert_eq(_figure_text(1), "0060", "the mixed rack still gates on its slowest member")
 
 
 ## ------------------------------------------------- 3. the selection seam

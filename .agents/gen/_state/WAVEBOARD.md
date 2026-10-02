@@ -6,6 +6,20 @@
 
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-25 clear-outs (owner asks):** every closed slice folder moved to the system trash (last git tree carrying them: `7a081ef`), old session reports live in `_state/_archive/`, and the two dispatch files were purged to live-items-only (2026-09-25 ter). Citation paths into purged trees name historical files.
 
+**Updated 2026-10-01 (S22.8 closed — the weapons-cadence split; S23 next):** the
+owner split the weapons before S23 and delegated the values: the spam tier
+(laser/plasma/cannon) fires exactly as shipped, the heavy tier fires one shot and
+cools — **railgun 15 s, rocket 12 s, mine 10 s** — with the cooldown *as* the
+barrel's cadence (battery gate, held-trigger stream and `Rapid` all read it) and
+the railgun's slug the derived **alpha 450**. The HUD counts the selected rack
+down and dims cooling batteries; the armory SALVO drum grew a fourth cell for the
+10.00–15.00 s figures (L263, owner's eye owed). Gate **1006 → 1014/0** twice
+hermetic; new suite `test_s22_8_cadence.gd` (8 rows); pins in 18 §4.1's amendment
++ §13, CONTRACTS §9/§10 v0.42; the S19 seal re-pinned for `weapons.gd`. Slice:
+`slices/S22.8-weapons-cadence/`. **Next: S23 content activation** (the owner
+approved the plan with the values delegated; the F1 dev-menu credits toggle rides
+it as A8).
+
 **Updated 2026-10-01 (S22.7 fix rounds closed; the queue's next item stands):** the
 owner played S22.7 and ruled two feel fixes, which the developer landed hands-on (no
 worker dispatch): the splash now bills by the last hit (kick 150 → **50**, an impact

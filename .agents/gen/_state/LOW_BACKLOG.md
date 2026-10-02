@@ -824,3 +824,13 @@ dispatched). The block leaves **1 LOW**. The next free ticket is still **T-94**.
 | # | Item | Kind | Where | Disposition |
 |---|------|------|-------|-------------|
 | L262 | **LOW (S22.7 fix rounds, ungated tools): the two R1 probes' kick pins still read the pre-fix 150.** `tools/s227_r1_probe.gd` (`KICK := 150.0`, the CONST row `["FRAGMENT_OUTWARD_KICK", …, 150.0]`, and the AC8 span row's 105/195 literals) and `tools/s226_r1_probe.gd` (`KICK_SPEED := 150.0`, `PIN_OUTWARD_KICK := 150.0`) pin the wave-review record; the shipped kick is **50.0** (02 §5.5) and the s227 probe's speed rows would also need the impact factor (mining 0.35 / gun clamp) folded in. Neither is a gate suite; both ran clean at their own wave's close. | [TOOL] | `vajb-orbit/tools/s227_r1_probe.gd:18,171,223`; `vajb-orbit/tools/s226_r1_probe.gd:62,75` | Next tools owner: pin 50.0 and fold the impact factor into the s227 probe's speed rows (or mark them pre-fix records like the `FRAGMENT_SPLIT` precedent). No gate row reads either probe. Reversal: revert both files to `9742783`. |
+
+### S22.8 block (2026-10-01)
+
+Source: the owner-directed weapons-cadence split, hands-on (18 §4.1's amendment;
+gate **1006 → 1014/0**, twice hermetic, no review wave dispatched). The block leaves
+**1 LOW**. The next free ticket is still **T-94**.
+
+| # | Item | Kind | Where | Disposition |
+|---|------|------|-------|-------------|
+| L263 | **LOW (S22.8, owner's eye owed): the armory SALVO drum grew a fourth cell, and the zero-padded figures re-render (`073` → `0073`, `120` → `1200`).** Mockup A approved a three-cell drum when the fastest heavy cadence was 1.2 s; the cadence split's 10.00–15.00 s cooldowns do not fit its 9.99 s ceiling, so `armory_style.salvo_cells` is 4 and `SALVO_MAX` 9999 — every existing figure gains a leading zero. The caption's origin moved 74 → 78 px with the drum block. All pin rows re-derived (`test_d7_armory`, `test_s10_armory_input`); no layout row moved (`test_s15` reads `salvo_cells` dynamically and the ledge stays bay-wide). | [UI] + owner's eye | `vajb-orbit/ui/station/armory_style.gd:95`; `vajb-orbit/ui/station/armory_panel.gd:127` | Owner ticks the four-cell drum at the next playtest (or D16's station pass redesigns it); reversal is `salvo_cells 3` + `SALVO_MAX 999` + the pin rows back. No gate row is red. |

@@ -188,11 +188,14 @@ func test_energy_draw_is_six_and_ten() -> void:
 	assert_false(WeaponScript.row_of(&"mine").has(&"draw"), "mines draw no Energy")
 
 
-func test_cannon_burst_cycle_and_the_rocket_interval() -> void:
+## S22.8 (18 §4.1's cadence split): the rocket's cadence is its cooldown now, and the
+## railgun's slug carries the derived spike alpha - the two rows re-derived, never
+## weakened.
+func test_cannon_burst_cycle_and_the_rocket_cooldown() -> void:
 	assert_eq(float(WeaponScript.row_of(&"cannon")[&"burst_on"]), 0.35, "0.35 s on")
 	assert_eq(float(WeaponScript.row_of(&"cannon")[&"burst_off"]), 0.25, "0.25 s off")
 	assert_eq(WeaponScript.interval_of(&"cannon"), 0.6, "the burst cycle sums to the cadence")
-	assert_eq(WeaponScript.interval_of(&"rocket"), 1.2, "rocket 1.2 s interval")
+	assert_eq(WeaponScript.interval_of(&"rocket"), 12.0, "rocket 12 s cooldown (S22.8)")
 	assert_eq(WeaponScript.interval_of(&"laser"), 0.0, "an instant family has no shot cadence")
 
 
@@ -207,7 +210,7 @@ func test_mine_rows_are_the_arm_and_trigger() -> void:
 ## spec's DPS exactly. `alpha` is used where the row states one.
 func test_shot_damage_follows_dps_times_interval() -> void:
 	assert_eq(WeaponScript.shot_damage(&"cannon"), 27.0, "45 DPS x 0.6 s")
-	assert_eq(WeaponScript.shot_damage(&"railgun"), 36.0, "60 DPS x 0.6 s")
+	assert_eq(WeaponScript.shot_damage(&"railgun"), 450.0, "the S22.8 spike alpha (dps x half the cooldown)")
 	assert_eq(WeaponScript.shot_damage(&"rocket"), 180.0, "rocket alpha")
 	assert_eq(WeaponScript.shot_damage(&"mine"), 180.0, "mine alpha")
 	assert_eq(WeaponScript.shot_damage(&"laser"), 0.0, "an instant family carries no shot damage")
@@ -488,12 +491,15 @@ func test_the_salvo_gate_is_the_slowest_members_cycle() -> void:
 		maxf(WeaponScript.interval_of(&"rocket"), WeaponScript.interval_of(&"laser"))
 	)
 	assert_eq(_guns.call(&"battery_cycle"), slowest, "the rack's own max(members' cadence)")
-	assert_eq(_guns.call(&"battery_cycle"), 1.2, "cannon 0.6 + rocket 1.2 + laser 0 -> 1.2")
+	assert_eq(
+		_guns.call(&"battery_cycle"), 12.0,
+		"cannon 0.6 + rocket 12 (S22.8 cooldown) + laser 0 -> 12"
+	)
 	_guns.call(&"set_batteries", [[0], [1, 2]])
 	_guns.call(&"select_group", 1)
 	assert_eq(_guns.call(&"battery_cycle"), 0.6, "a cannon rack reads 0.6")
 	_guns.call(&"select_group", 2)
-	assert_eq(_guns.call(&"battery_cycle"), 1.2, "and the rocket's rack 1.2")
+	assert_eq(_guns.call(&"battery_cycle"), 12.0, "and the rocket's rack its 12 s cooldown")
 	assert_eq(int(_guns.call(&"rack_cycle", 9)), 0, "an index outside the racks reads 0")
 
 
@@ -805,12 +811,20 @@ func test_a_held_pull_keeps_the_mine_to_one_release() -> void:
 		guns.call(&"tick", 1.0 / 60.0)
 	assert_eq(shots[0], 1, "a held pull drops one mine, however long it is held")
 	assert_eq(int(_state.ammo[slot]), 9, "and spends one round")
-	## A second pull drops the next one: the arm is the pull, not the frame.
+	## A second pull drops the next one - **after the S22.8 cooldown**: the arm is the
+	## pull, the cooldown is the floor, so an immediate second pull stays dry and the
+	## next one past the 10 s drops its own.
 	_release_trigger(guns, 1.0 / 60.0)
 	guns.call(&"set_firing", true)
 	guns.call(&"tick", 1.0 / 60.0)
-	assert_eq(shots[0], 2, "and the next pull drops its own")
-	assert_eq(_shots().size(), 2, "two pulls, two mines in the world")
+	assert_eq(shots[0], 1, "a pull inside the cooldown drops nothing (S22.8)")
+	_release_trigger(guns, 1.0 / 60.0)
+	for _frame in int(10.2 / (1.0 / 60.0)):
+		guns.call(&"tick", 1.0 / 60.0)
+	guns.call(&"set_firing", true)
+	guns.call(&"tick", 1.0 / 60.0)
+	assert_eq(shots[0], 2, "and the next pull past the cooldown drops its own")
+	assert_eq(_shots().size(), 2, "two pulls past the cooldown, two mines in the world")
 	_release_trigger(guns, 1.0 / 60.0)
 
 

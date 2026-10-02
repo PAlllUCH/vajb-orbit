@@ -1585,3 +1585,30 @@ around repeated gun chips), gate **1006/0 twice hermetic**. Docs-first: 02 §5.5
 §3/§9/§14/§10 v0.41. LOW **L262** (the two R1 tool probes' kick pins still read 150).
 Owner accepted ("Feels much better now"). Closed with the wave-boundary commit; no
 worker dispatch, no review wave (owner-directed fix rounds, the S22 fix-round precedent).
+
+### S22.8 (developer hands-on, 2026-10-01) — **DONE — gate 1006 → 1014/0**
+The owner's weapons-cadence split, played in ahead of S23 ("lasers/blasters/bolters
+spam; railguns, mines, rockets need a COOLDOWN like 10-15 seconds — battery
+rotations"), with the values delegated to the developer: the spam tier
+(laser/plasma/cannon) is byte-identical; the heavy tier fires one shot and cools —
+**railgun 15 s, rocket 12 s, mine 10 s** — and the cooldown *is* the barrel's
+cadence, so `interval_of` reads the row's `cooldown` and every existing law keeps
+its shape (per-barrel timers, the battery gate as the slowest member, the
+held-trigger stream, the `Rapid` affix, the mine's edge law under the cooldown).
+The railgun's slug becomes **alpha 450** (derived `dps × half the cooldown`; was 36
+= 60 × 0.6); rocket/mine keep 180. `rack_cooldown(group)` is the new read (cooldown-
+tier barrels only — the cannon's 0.6 s burst gap is not a cooldown), and the HUD
+counts the selected rack down ("· COOLING 12.4 s") while cooling batteries' cells
+dim. The armory SALVO drum grew a **fourth cell** (`SALVO_MAX` 999 → 9999) because
+the three-cell drum's 9.99 s ceiling could not carry the cooldowns — figures re-
+render zero-padded (`073` → `0073`), caption origin 74 → 78 px (**L263**, owner's
+eye owed). Docs-first: 18 §4.1's dated amendment block + §13's two rows (the 09 P3
+rows read through the law: `w_proton` joins the cooldown tier at 12 s, `w_flak`
+stays spam at 0.55 s), CONTRACTS §9/§10 v0.42. Tests: new `test_s22_8_cadence.gd`
+(**8** rows) + re-derived pins in `test_engine2_weapons` (rocket/railgun/mine; the
+mine's two-pull row), `test_combat_repair_c5`, `test_s5_batteries_v2` (the
+cannon+rocket gate's second salvo waits the full 12 s), `test_d7_armory` /
+`test_s10_armory_input` (drum cells/figures), and the S19 seal re-pinned for
+`weapons.gd` (the S21/S22 re-pin rule). Close-out: gate ×2 hermetic (1014/0);
+five-piece not owed (developer hands-on, the S22.7 fix-round precedent); slice
+folder `slices/S22.8-weapons-cadence/`.

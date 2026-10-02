@@ -90,9 +90,11 @@ const ARMORY_SCRIPT_PATH: String = "res://ui/station/armory_style.gd"
 @export var cell_gap: float = 6.0
 ## A cell's own text inset (the name block's left/right padding).
 @export var cell_text_inset: float = 6.0
-## The salvo ledge's parts: the three `ui_seg_*` drum cells and the carved 13 px caption's
-## gap from them.
-@export var salvo_cells: int = 3
+## The salvo ledge's parts: the four `ui_seg_*` drum cells and the carved 13 px caption's
+## gap from them. **Four cells since S22.8** (the owner's cadence split): the heavy
+## tier's cooldowns read 10.00-15.00 s, which the three-cell drum's 9.99 s ceiling
+## could not carry.
+@export var salvo_cells: int = 4
 @export var salvo_cell: Vector2 = Vector2(18.0, 32.0)
 @export var salvo_pitch: float = 20.0
 @export var salvo_caption: String = "SALVO s"

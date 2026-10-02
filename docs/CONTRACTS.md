@@ -918,6 +918,24 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
+Expected (S22.8, 2026-10-01): **`[SUMMARY] passed=1014 failed=0`**, exit 0, twice
+hermetic on fresh scratch stores. The owner's weapons-cadence split (18 §4.1's
+amendment, values owner-delegated): the spam tier (laser/plasma/cannon) untouched;
+the heavy tier fires one shot, then its barrel cools — **railgun 15 s, rocket 12 s,
+mine 10 s** — with the cooldown *as* the barrel's cadence (`interval_of` reads the
+row's `cooldown`, so the battery gate, the held-trigger stream and the `Rapid`
+affix keep their shapes) and the railgun's slug the derived **alpha 450**. New
+suite `test_s22_8_cadence.gd`, **8** rows (the table law, the one-shot-then-wait
+stream, the battery gate, the mine's edge under the cooldown, the Rapid division,
+the spam tier's untouched figures, the HUD's cooling readout + dimmed cells and
+its spam-tier no-op). Re-derived: the rocket/railgun/mine cadence and damage pins
+in `test_engine2_weapons` (the mine's two-pull row now waits the cooldown),
+`test_combat_repair_c5`'s fallback row, `test_s5_batteries_v2`'s cannon+rocket
+gate (the second salvo waits the full 12 s), the armory drum's cell-count and
+figure pins (`test_d7_armory`, `test_s10_armory_input` — the drum grew a fourth
+cell so the 10.00–15.00 s cooldowns fit the hundredths format), and the S19 seal
+re-pinned for `weapons.gd` (the S21/S22 re-pin rule).
+
 Expected (S22.7 fix rounds, 2026-10-01): **`[SUMMARY] passed=1006 failed=0`**, exit 0,
 twice hermetic on fresh scratch stores. The two owner-directed fix rounds ride one
 working tree: the splash round (02 §5.5 — the baseline kick **150 → 50**, the last-hit
@@ -4717,3 +4735,15 @@ hull stops twice and the second stop slides.
   (beam floor), 6–12 at 78.0–226.2 (ceiling). Stale by design, ungated: the two kick
   pins in `tools/s226_r1_probe.gd` / `tools/s227_r1_probe.gd` still read 150 (a LOW
   follow-up).
+- **v0.42 (2026-10-01, the weapons-cadence split — owner-directed S22.8, the owner
+  delegated the values)** — 18 §4.1's amendment: the families split into a **spam
+  tier** (laser/plasma/cannon, hold to fire, unchanged) and a **cooldown tier**
+  (railgun **15 s**, rocket **12 s**, mine **10 s** — one shot, then the barrel
+  cools). The cooldown *is* the barrel's cadence, so the battery cycle, the
+  held-trigger stream and the `Rapid` affix read it unchanged; the mine keeps its
+  edge law under the cooldown. The railgun's slug becomes **alpha 450** (derived
+  `dps × half the cooldown`; was 36 = 60 × 0.6); rocket/mine keep 180. Ammo
+  economy untouched. The 09 P3 rows read through the law: `w_proton` joins the
+  cooldown tier at 12 s (its "interval 1.6 s" superseded), `w_flak` stays spam at
+  0.55 s. HUD: the selected weapon's readout counts the cooling barrel down and a
+  cooling battery's cells dim.

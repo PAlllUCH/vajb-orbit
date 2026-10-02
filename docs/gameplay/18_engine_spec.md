@@ -157,6 +157,39 @@ reads, no formula soup in movement code.
   `PASSIVE_RADIUS` (1 500 u). Lock range = the scanner's range (§9), which
   gives `c_scanner` a combat job. Countermeasures: §4.6.
 
+**Amendment 2026-10-01 (owner, the weapons-cadence split — S22.8).** "right now
+all weapons fire very fast, i want it to be split. lasers/blasters/bolters should
+be the ones that can just be spammed (holding fire button) but railguns, mines,
+rockets need a COOLDOWN like 10-15 seconds — this will add a bit of skill to the
+combat with battery rotations."
+
+- **Spam tier (hold to fire, unchanged):** `w_laser`, `w_plasma` (the beams) and
+  `w_cannon` (the bolter and its 0.35/0.25 burst). Every figure these three
+  carry above is untouched.
+- **Cooldown tier (one shot, then the barrel cools):** `w_railgun` **15 s**,
+  `w_rocket` **12 s**, `w_mine` **10 s**. The cooldown *is* the barrel's cadence:
+  a row's `cooldown` is what the component's interval reads, so every existing
+  law keeps its shape — per-barrel timers, the battery cycle as the slowest
+  member (a mixed rack cycles at its heavy member's cooldown, which is the
+  battery-rotation skill the owner named), the held-trigger stream (holding fire
+  repeats one shot per cooldown), the `Rapid` affix dividing it, and the mine's
+  edge law (one drop per pull, now also never sooner than its cooldown).
+- **Per-shot damage:** the rocket's and the mine's 180 alpha are untouched. The
+  railgun's slug becomes **alpha 450** — derived `dps × half the cooldown`
+  (60 × 7.5): the spike's premium is the shield bypass and the 1400 u/s arrival,
+  its price is 30 sustained dps (the laser's). The `dps 60` figure stays the
+  row's identity line.
+- **Ammo economy is untouched:** pack sizes, costs and `AMMO_MAX` stand; heavy
+  packs simply last ~10–25× longer.
+- **HUD:** the selected weapon's readout shows the cooling barrel's remaining
+  seconds, and a cooling battery's weapon cells dim, so the rotation is readable.
+- **The 2026-09-27 P3 rows read through this law:** `w_proton`'s "interval 1.6 s"
+  is superseded — the launcher is a heavy missile and joins the cooldown tier at
+  the rocket's **12 s**; `w_flak`'s 0.55 s interval stands (a bolter, spam tier).
+- Reversal: delete the three `cooldown` values and the railgun's `alpha` — the
+  rows return to the pre-amendment table (railgun 60 dps at the 0.6 s kinetic
+  cadence, rocket at the 1.2 s interval, mine per pull, slug 36 = 60 × 0.6).
+
 ### 4.2 Damage pipeline
 
 1. `damage(amount, bypass_shield)` extends `PlayerState.damage` (§12
@@ -556,7 +589,8 @@ Corvette 90 · Hauler 260 · Gunship 190 · Frigate 220 · Destroyer 300 (t).
 | Value | Initial |
 |-------|---------|
 | Weapon ranges (u) | laser 500 · plasma 450 · cannon 600 · railgun 800 · rocket 900 (lock range 900) |
-| Rocket | 180 alpha, 1.2 s interval, 2.2 rad/s homing, 900 u/s, one hit kills it |
+| Rocket | 180 alpha, 2.2 rad/s homing, 900 u/s, one hit kills it; **cooldown 12 s — amended 2026-10-01 (S22.8**, the cadence split; was "1.2 s interval") |
+| Weapon cooldowns — **owner 2026-10-01 (S22.8)** | the heavy tier fires one shot, then the barrel cools: **railgun 15 s · rocket 12 s · mine 10 s**; the laser/plasma/cannon spam tier carries none. The railgun's slug is **alpha 450** (`dps × half the cooldown`; was 36 = 60 × 0.6). The cooldown is the barrel's cadence: the battery cycle, the held-trigger stream and the `Rapid` affix all read it. Reversal: no `cooldown` rows, slug `60 × interval` |
 | Rocket fuze — **owner 2026-09-29** (D15's ticks T-feel-1/1b) | the lock detonates on a near miss inside **80 u** of the target, **or** when its **6 s** flight fuze expires: a 900 u/s, 2.2 rad/s pursuit has a minimum turn radius of 409 u, so a lock acquired abeam inside that distance would otherwise be orbited and never struck. Reversal: no fuze (bless the orbit — the pre-tick behaviour) |
 | Mine | arm 2 s, trigger 60 u |
 | Shield regen | base 2/s + module values; resumes 4 s after last hit |
