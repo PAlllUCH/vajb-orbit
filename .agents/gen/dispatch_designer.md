@@ -28,12 +28,20 @@ prefix, nor one `staging/` driver). One live session per workspace.
 
 | # | Wave | Item | What | Status |
 |---|---|---|---|---|
-| 17 | D16 | Station identity & contracts UI design (phase P3) | CONTRACTS panel spec (14 §2 + R-S25-1), insurance/vaults panels (14 §3/§4), the nine places' identity treatment with shipped chrome only, the W3 name tick sheet. Five-piece: `slices/D16-station-ui/`. Design only. | **live** (D15 closed 2026-09-29) · S24/S25/S26 cite it |
+| 17 | D16 | Station identity & contracts UI design (phase P3) | CONTRACTS panel spec (14 §2 + R-S25-1), insurance/vaults panels (14 §3/§4), the nine places' identity treatment with shipped chrome only, the W3 name tick sheet. Five-piece: `slices/D16-station-ui/`. Design only. | **closed 2026-10-03** (see Done) |
 
 ## Parked (owner-gated — not queued; say the item and its five-piece lands)
 
 
 ## Done
+
+Item 17 = **D16 station identity & contracts UI design** closed **2026-10-03**:
+A1 → R1 → F1 on the owner's routes (`xiaomi/mimo-v2.6-pro` @ high for design,
+`hyper/glm-5.3-flash` @ high for review). `STATION_HUB.md` §15 + `UI_SPEC.md`
+§7 (A5.4-1…6, incl. the L263 SALVO-drum answer, tick U18) + four wireframe
+mockups; presentation values U1–U20. R1: 0 HIGH / 2 MED cured / 2 LOW
+(L267–L268). `verify --baseline d16_start` green; gate n/a. The tick sheet
+(W3 + U1–U20) is with the owner; next in the phase is coder 30 (S24).
 
 Item 16 = **D15 flight feel & feedback design** closed **2026-09-29**: the 25-row
 feel tick sheet (`slices/D15-flight-feedback/D15-A1_report.md` — T-feel-1..7 +
@@ -68,11 +76,11 @@ generate → stage → **review sheet → owner approval** → ship → reimport
 
 ## Handoff (live)
 
-**Item 17 = D16 station identity & contracts UI** (paste the block at the bottom
-of `.agents/gen/slices/D16-station-ui/D16_prompts.md`): the CONTRACTS panel spec
-(14 §2 + R-S25-1), the insurance/vaults panels (14 §3/§4), the nine places'
-identity treatment with shipped chrome only, and the W3 name tick sheet. Design
-only — coder items 30/31/32 (S24/S25/S26) cite its spec.
+The design queue is **empty** — item 17 (D16) closed 2026-10-03 (see Done).
+The phase's next item is **coder 30 (S24 world identity)**, which opens
+docs-first on the ticked W3 names and cites `STATION_HUB.md` §15 +
+`UI_SPEC.md` §7 as its design law; coder items 30/31/32 ride it in
+`dispatch_coder.md` (order and collisions in `WAVEBOARD.md` §Queued).
 **Item 16 = D15 closed and ticked 2026-09-29**: the 25-row feel tick sheet is
 ruled (all y except T-feel-5 = the §6 reversal 1.6–2.6 s; `slices/D15-flight-feedback/
 D15-A1_report.md` carries the tick record; 0 HIGH / 2 MED

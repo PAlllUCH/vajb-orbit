@@ -42,20 +42,21 @@ and every tool result is re-sent on each later request.
 
 | Section | Topic | Lines |
 |---|---|---|
-| 1. | Intent | L63–L80 |
-| 2. | Navigation model | L81–L131 |
-| 3. | Composition | L132–L272 |
-| 4. | Node tree (exact) | L273–L399 |
-| 5. | Per-module spec | L400–L1014 |
-| 6. | Type scale | L1015–L1036 |
-| 7. | Art map | L1037–L1087 |
-| 8. | Theme items used (all present in | L1088–L1109 |
-| 9. | Motion table | L1110–L1137 |
-| 10. | Focus and input | L1138–L1158 |
-| 11. | Audio hooks | L1159–L1185 |
-| 12. | Implementation notes for the coder | L1186–L1265 |
-| 13. | Verification performed on the mockup | L1266–L1282 |
-| 14. | Open questions for the owner | L1283–L1316 |
+| 1. | Intent | L64–L81 |
+| 2. | Navigation model | L82–L132 |
+| 3. | Composition | L133–L273 |
+| 4. | Node tree (exact) | L274–L400 |
+| 5. | Per-module spec | L401–L1015 |
+| 6. | Type scale | L1016–L1037 |
+| 7. | Art map | L1038–L1088 |
+| 8. | Theme items used (all present in | L1089–L1110 |
+| 9. | Motion table | L1111–L1138 |
+| 10. | Focus and input | L1139–L1159 |
+| 11. | Audio hooks | L1160–L1186 |
+| 12. | Implementation notes for the coder | L1187–L1266 |
+| 13. | Verification performed on the mockup | L1267–L1283 |
+| 14. | Open questions for the owner | L1284–L1317 |
+| 15. | Station services deck & station identity (amendment 2026-10-02, wave… | L1318–L1481 |
 
 <!-- section-index:end -->
 
@@ -1313,3 +1314,167 @@ constants above.
    frames read as thick housing, which matches the menu), shrink the inner margins to compensate, or regenerate
    `ui_panel_frame.png` at a smaller `texture_margin` (14 px would give the 7 px painted frame plus a normal
    1 px border footprint)?
+
+## 15. Station services deck & station identity (amendment 2026-10-02, wave D16 — D16-A1)
+
+**Design of record:** `slices/D16-station-ui/D16-A1_report.md`; this block is
+the design law the S24 (identity), S25 (contracts board) and S26 (insurance,
+vaults) waves cite. Content is `docs/gameplay/14_station_services.md` §1–§4/§8
+verbatim — no invented service, price or reward line. Composition law is
+UI_SPEC §3.10 **A5.1–A5.4**: A5.2's four clauses are mechanism (containers +
+anchors + `custom_minimum_size` + size flags, never coordinates; chrome is a
+theme stylebox or a sibling node, never a `_draw` over content; a code-drawn
+mark draws within its own child rect; banded chrome carries the
+`content_margin_*` that keeps content off it) and the **A5.4 per-surface chrome
+table is the second law** — every surface below names its A5.4 row or the row it
+proposes, and the proposed rows ship as `UI_SPEC §7`. Shipped chrome and theme
+Tokens only (owner 2026-09-27 — no new renders); every surface names its
+`ASSET_CATALOG.md` row or its theme idiom. Rows are the AUCTION row verbatim
+(A5.4 row shape Q5, `auction_panel.gd:752-800`): `Button` +
+`MarginContainer`/`HBox`/`VBox` children. Hover text goes through the A4.4
+shell inspector pin. Every number is cited or marked **PROPOSED** with its
+reversal; every wording rides §15.6 with its tick id (letter **U**, fresh for
+this slice — W/J/E/K/T are taken).
+
+**Layout spine (all three panels; D13 approach B carried over — landscape, and
+nothing the decision needs is hidden).** Each service panel is one
+`VBoxContainer`: a `SectionHeader` caption strip, then an `HBoxContainer` split
+— the list half (`h3`) beside a right column (`custom_minimum_size (420, 0)`,
+**PROPOSED**; reversal `(300, 0)` — SHIPYARD's measured stat column, §3.1).
+Rows and columns are §3.1's measured idioms: 76-tall `Button` rows with
+`RowInner` 12/8, right-aligned value columns of 220/130/160. Ink floor 13 px
+everywhere (A3's ink law): sizes come from the theme variations only
+(`StationCaption` 13, `Label`/`Button` 14, `SectionHeader` 16, `StationValue`
+18, `StationPanelTitle` 20), no `font_size` override on any node. Captions use
+the light ramp (`CAP` on painted metal, `CAP_VOID` on the host), ≥ 4.5:1.
+
+### 15.1 SERVICES rail entry and the service strip
+
+14 §1: "The station gains a **SERVICES** rail entry beside the existing
+modules. Every service below is a panel under it."
+
+| Surface | Spec | Chrome (A5.4 row) | Cite |
+|---|---|---|---|
+| Rail entry `SERVICES` | rail entry 8 between REPAIRS and LAUNCH (LAUNCH becomes entry 9). Nine 56 px entries + 8 × 6 px separation = 552 px inside the 769 px rail content box; the spacer absorbs the rest. Reversal: SERVICES appended below LAUNCH — LAUNCH keeps entry 8, its live entry. Tick **U1** | `StationButton` → `ui_button_plate_*` (A5.4 `Pressables`) | 14 §1:13; live rail `ui/screens/station.gd:67` (`enum Module`, 8 entries) + `:80-87` (`MODULE_LABELS`, LAUNCH eighth); ASSET_CATALOG.md:437 |
+| Rail icon | the station's faction glyph `icon_insignia_<faction>_48.png` at the rail idiom's 40×40 (as `icon_equip_module_48` at 40, §7.1), `modulate text_primary`. Reversal: `icon_map_node_station_48` returns. **U1** | own `TextureRect` (A5.2(iii)) | ASSET_CATALOG.md:332-334 (the _16/_48/_96/_192 cuts) |
+| Service strip | three `Button`s (base `Button` theme, `toggle_mode`, min (0, 56)): `CONTRACTS` / `INSURANCE` / `VAULTS`; one service panel below at a time. Reversal: labels `BOARD`/`POLICY`/`STORAGE`. **U2** | base `Button` bevel (`button_*`, UI_SPEC §2.1 — theme cite) | 14 §1:19-22; UI_SPEC.md:63-71 |
+| Unavailable service | the strip button keeps its label at `button_disabled` + `text_dim` and a `StationCaption` reason sits under the strip: Choir station → "the Choir does not believe in accidents"; outpost → "fly to a capital" (both 14 verbatim). State by label + disabled plate, never colour alone. Reversal: hide unavailable services instead. **U2** | §3.1/§3.1b label idiom (A5.4 `State chips`) | 14 §1:21; 14 §8 |
+| PAY BOUNTY strip | heat > 0 only, below the service strip: `PAY BOUNTY` (the pin's own words — nothing to tick), one confirm (14 §7) | `icon_service_bounty.svg` 24×24 in its own rect + flat chip | 14 §7:133-134; ASSET_CATALOG.md:391 |
+
+### 15.2 CONTRACTS panel (14 §2 + R-S25-1)
+
+Left half: the board, **6 rows visible** (R-S25-1, tick J1), re-rolled on §9's
+20-minute clock. Right column: the active contracts and their escrow.
+
+| Surface | Spec | Chrome (A5.4 row) | Cite |
+|---|---|---|---|
+| Header strip | `SectionHeader` 16 columns `TYPE` / `OBJECTIVE` / `REWARD` / `FACTION` + one `StationCaption` note under them: `THE BOARD PAYS OVER THE EXCHANGE'S BUY PRICE — GOODS LOCK INTO ESCROW AT ACCEPT · CANCEL FEE 100 CR`. Reversal: headers only, no note. **U3** | caption on the band gap above the list (A5.4 `Well half` idiom) | 14 §2:47-49 (over-exchange + escrow + fee) |
+| Board row (open) | §3.1 row (76 tall, `RowInner` 12/8). Cells: **type** = `icon_contract_<type>.svg` 24×24 in its own rect + the §2 type name; **objective** = §2's Example column verbatim; **reward** = the contract's CR + standing computed at §2's reward shape for its type (12 §3 demand biases), right-aligned 220; **faction** = `icon_insignia_<faction>` 24 + the faction name, 130. Column widths proposed (140/220/130), reversal: §3.1's 40/130/110/160 | flat Tokens `item_bg` + 1 px `metal_mid` (A5.4-4) | 14 §2:30-43; ASSET_CATALOG.md:293-297, 332-334 |
+| ACCEPT pressable | per open row, right end: `ACCEPT` | A5.4 `Pressables` (`StationButton` → `ui_button_plate_*`) | 14 §2; ASSET_CATALOG.md:437 |
+| Max-3 state | counter on the right column head: `ACTIVE CONTRACTS 2/3`; at 3/3 every `ACCEPT` goes `button_disabled` and carries the chip `MAX 3 ACTIVE` (label + 1 px `chip_danger_bg` frame, §3.1/§3.1b — never colour alone). Reversal: counter only, no chip. **U6** | A5.4 `State chips` | 14 §2:45 (max 3 active contracts) |
+| Expedition row | greyed whole row (`button_disabled`, `text_dim`), type icon `icon_contract_expedition.svg` at `text_dim`, chip `STAGED`, caption `arenas arrive with S26`. S26 flips the row live (R-S25-1's seam). Reversal: hide the row until S26. **U7** | A5.4-4 + `State chips` | 14 §2:36 (Expedition = arena contract); 14:182 |
+| Active-contract card | one 76-tall card per active contract: type icon + objective + reward + faction glyph (board row anatomy), then the **escrow readout** line(s): `ESCROW — RESERVED FROM YOUR HOLD`, one `StationCaption` line per reserved stack: `40× ingot_titanium · RESERVED`. Reversal: the `RESERVED` lines only, no block header. **U5** | A5.4-4 | 14 §2:48-49 ("quantity reserved from the manifest") |
+| Cancel affordance | `CANCEL · 100 CR FEE` — the fee at the decision point — then the §5.2 confirm dialog, body `CANCEL THIS CONTRACT? — 100 CR FEE · THE RESERVED GOODS UNLOCK.` (the fee is therefore visible at both decision points, with U3's note at accept). Reversal: the button reads `CANCEL` and the fee appears in the confirm only. **U4** | A5.4 `Pressables`; §5.2 dialog | 14 §2:49 (100 CR fee) |
+| Empty states | no jobs at a roll: `NO OPEN JOBS — NEW JOBS ROLL ON THE 20-MINUTE CLOCK`; standing-gated (Shunned/Outlaw): `REDEMPTION MUST PRECEDE EMPLOYMENT` (pin verbatim). Reversal: silent empty board. **U8** | `StationCaption` on the empty list | 14 §2:28, :50-51 |
+
+### 15.3 INSURANCE panel (14 §3)
+
+Left half: the premium table. Right column (the POLICY column): states, the
+one-death and mercy readouts, the loss warning and the opt-in toggle.
+
+| Surface | Spec | Chrome (A5.4 row) | Cite |
+|---|---|---|---|
+| Premium rows | header `HULL CLASS` / `PREMIUM PER LAUNCH`; six rows verbatim from the §3 table (Fighter 200, Cutter 250, Delver/Trader/Corvette 300, Hauler/Gunship 400, Frigate 500, Destroyer 700); the player's own class row carries the chip `YOUR CLASS`. Note under the table (pin words): `Champion standing multiplies the premium ×0.8`. Reversal: pin's own header casing, no chips/notes. **U9** | A5.4-4 rows | 14 §3:60-70 |
+| Policy states | chips, always label + 1 px frame: `UNINSURED` → `INSURED · COVERS ONE LOSS` → `PAID OUT · POLICY SPENT`. One-death line under them (pin words): `THE PAYOUT COVERS ONE LOSS · THE POLICY DOES NOT RENEW MID-FLIGHT`. Reversal: a single `INSURED` flag chip. **U10** | A5.4 `State chips` | 14 §3:74-75 |
+| Mercy states | chips `MERCY AVAILABLE` / `MERCY USED` + caption (pin words): `mercy clause: if you have no other hull, the Concord reissues a bare Fighter — once per profile`. Reversal: no mercy readout (the profile field alone). **U11** | A5.4 `State chips` | 14 §3:78-80; 14 §9:150 (`mercy_used`) |
+| Loss warning | one danger row (§3.1/§3.1b: label + 1 px `accent_danger` frame — this is a loss alert, so ember is legal): `UNINSURED LOSS: HULL AND ALL INSTALLED MODULES ARE GONE`. Reversal: the warning drops. **U12** | §3.1/§3.1b danger row | 14 §3:71-73 |
+| Opt-in toggle | `INSURE LAUNCHES` / `CANCEL POLICY` (one `Button` toggle) + value line `PREMIUM 200 CR PER LAUNCH · CHARGED AT LAUNCH` (the class's own figure). Reversal: `INSURE` / `UNINSURE`. **U13** | A5.4 `Pressables` + `StationValue` line | 14 §3:57-58 ("charged at launch") |
+| Grey states | Choir station: panel body greyed with the reason caption `the Choir does not believe in accidents`; outpost: `fly to a capital` (14 verbatim). **U2** (shared with §15.1) | §3.1/§3.1b label idiom | 14 §1:21; 14 §8 |
+
+### 15.4 VAULTS panel (14 §4)
+
+Band one: the tier rows (full-width, §3.1 row idiom). Band two: the contents
+split — `YOUR HOLD` beside `VAULT CONTENTS`, both `ItemList`s (the §3.1
+`CargoList` idiom: `metal_mid` selected band), one `DEPOSIT` / `WITHDRAW`
+pressable under each.
+
+| Surface | Spec | Chrome (A5.4 row) | Cite |
+|---|---|---|---|
+| Tier rows | `TIER 1 · +20 UNITS · 500 CR`, `TIER 2 · +20 UNITS · 1 200 CR`, `TIER 3 · +20 UNITS · 2 400 CR` (prices one-off per station). Capacity totals **PROPOSED** `40 / 60 / 80` (the pin's "20 units base, +20 per upgrade tier" with the base outside the tiers; reversal: `20 / 40 / 60`, the base folded into tier 1). Row action `RENT` / `OWNED` chip. **U14** | A5.4-4 rows + `Pressables` | 14 §4:85-87 |
+| Meridian note | at Meridian stations the rows show `625 / 1 500 / 3 000` (**derived** 500/1 200/2 400 × 1.25) and carry the pin's own line: `Meridian's stations rent 40-unit vaults and the rental tiers cost 25 % more (they know what a vault is worth).` Reversal: base prices + note drops. **U14** | `BriefNote` (`StationCaption`) | 14 §4:88-89 |
+| Contents view | headers `YOUR HOLD` / `VAULT CONTENTS`; stacks as `40× ingot_titanium` rows; `DEPOSIT` under the hold list, `WITHDRAW` under the vault list. Caption: `DEPOSITS AND WITHDRAWALS ARE FREE`. Reversal: one list + `STORE`/`TAKE`. **U15** | A5.4-5 lists + `Pressables` | 14 §4:90-93 |
+| Not-cargo readout | the vault list header carries the chip `NOT CARGO` and two captions (pin words): `VAULT CONTENTS DO NOT COUNT AGAINST CARGO ON LAUNCH` and `CONTENTS PERSIST PER-STATION — THE VAULT IS FURNITURE, NOT A POCKET`. **U15** | A5.4 `State chips` | 14 §4:92-94 |
+| Capacity readout | `THIS VAULT — 12 / 40 UNITS` beside the vault header. Reversal: no readout. **U16** | `StationValue` | 14 §4:85-86 |
+| Outpost tier grey | at outposts tiers 2/3 rows grey (`button_disabled`) with caption `tier 1 only — this is an outpost`. Reversal: hide tiers 2/3 instead. **U16** | §3.1/§3.1b label idiom | 14 §8 (outposts offer vault tier 1) |
+
+### 15.5 Station identity (the nine places, R-S24-1)
+
+The header band's title block (node tree §4: `StationMark` + `TitleBox`
+(`StationName` + `StationLocation`)) becomes the **name plate**: a flat Tokens
+box (UI_SPEC §7 A5.4-1) wrapped around the faction glyph (48×48 at its own cut,
+A5.2(iii)) and the two text lines — `StationName` (`HeroTitle` 48,
+`text_primary`) and the **character line** in `StationLocation`'s slot
+(`StationCaption` 13, `text_dim`, R-S24-1's character column verbatim). Layout
+is the header's own `HBox`/`VBox` children with `custom_minimum_size` from
+content; no coordinates. Reversal: today's bare `StationMark` + `TitleBox` and
+the location caption. **U17**.
+
+**Per-faction accent (shipped chrome/Tokens only).** The plate's 1 px border
+steps the metal ramp per faction and the glyph is the faction's own mark:
+Concord `metal_mid` ("forge-grey bastion"), Meridian `metal_light` ("the
+merchant's harbour"), Choir `metal_dark` ("cathedral dark"). No new hue is
+legal — UI_SPEC §1 admits exactly one accent (`accent_danger`, danger only) and
+`accent_nav` is needle-only — so a faction colour is out of contract; a
+per-faction hue would need a Tokens amendment the owner ticks, and is staged
+with the per-station emblem family (D16 brief §10).
+
+| Place | Name (tick W3) | Character line (tick W3) | Faction | Plate border | Glyph |
+|---|---|---|---|---|---|
+| S1 primary (Concord capital) | Halcyon Anchorage | forge-grey bastion, the full menu | Concord | `metal_mid` | `icon_insignia_concord_48` |
+| S2 primary (Concord) | Ironworks Depot | mill-town market floor | Concord | `metal_mid` | `icon_insignia_concord_48` |
+| S2 outpost | Marchgate Post | a dock and a vending wall | Concord (**PROPOSED** — the sector primary's faction; reversal: the registry names its own) | `metal_mid` | `icon_insignia_concord_48` |
+| S3 primary (Meridian capital) | Spanport Meridian | the merchant's harbour, best contract rates | Meridian | `metal_light` | `icon_insignia_meridian_48` |
+| S4 primary (Meridian) | Ashveil Exchange | free-port chaos, component prices | Meridian | `metal_light` | `icon_insignia_meridian_48` |
+| S4 outpost | Rimward Depot | caravan stop | Meridian (**PROPOSED** — as above) | `metal_light` | `icon_insignia_meridian_48` |
+| S5 primary (Choir) | Cinder Gate | incense and plasma scorch | Choir | `metal_dark` | `icon_insignia_choir_48` |
+| S5 shrine (outpost) | The First Ember | the Choir's smallest rite | Choir (**PROPOSED** — as above) | `metal_dark` | `icon_insignia_choir_48` |
+| S6 primary (Choir capital) | Emberlight | cathedral dark, meanest turrets | Choir | `metal_dark` | `icon_insignia_choir_48` |
+
+Worked mockups: `staging/mockup/d16_identity_wireframe.md` (one plate per
+faction — Halcyon Anchorage / Spanport Meridian / Emberlight).
+
+### 15.6 Presentation values (labels and wordings — the tick detail)
+
+Every string this wave introduces, verbatim, with its reversal. Tick **U18** is
+the armory SALVO drum row (UI_SPEC §7), which is design-only and touches no
+code. Tick W3 is the nine names + character lines of §15.5's table (14's P3
+block, R-S24-1).
+
+| Value (verbatim) | Where | Tick | Reversal |
+|---|---|---|---|
+| `SERVICES` rail placement (entry 8, before LAUNCH) + faction-glyph rail icon | §15.1 | U1 | LAUNCH keeps entry 8 (its live entry, `ui/screens/station.gd:67`), SERVICES appended below it; `icon_map_node_station_48` |
+| `CONTRACTS` / `INSURANCE` / `VAULTS` strip labels | §15.1 | U2 | `BOARD` / `POLICY` / `STORAGE` |
+| `the Choir does not believe in accidents`, `fly to a capital` (grey reasons) | §15.1, §15.3 | U2 | hide unavailable services; captions drop |
+| `TYPE` / `OBJECTIVE` / `REWARD` / `FACTION` headers | §15.2 | U3 | headers drop (rows self-label) |
+| `THE BOARD PAYS OVER THE EXCHANGE'S BUY PRICE — GOODS LOCK INTO ESCROW AT ACCEPT · CANCEL FEE 100 CR` | §15.2 | U3 | note drops |
+| `ACCEPT` | §15.2 | U4 | `TAKE JOB` |
+| `CANCEL · 100 CR FEE` | §15.2 | U4 | `CANCEL`, fee in the confirm only |
+| `CANCEL THIS CONTRACT? — 100 CR FEE · THE RESERVED GOODS UNLOCK.` | §15.2 | U4 | the §5.2 default body |
+| `ESCROW — RESERVED FROM YOUR HOLD`; line form `40× ingot_titanium · RESERVED` | §15.2 | U5 | the `RESERVED` lines alone |
+| `ACTIVE CONTRACTS %d/3`; `MAX 3 ACTIVE` | §15.2 | U6 | `%d ACTIVE CONTRACTS`; chip drops |
+| `STAGED`; `arenas arrive with S26` | §15.2 | U7 | Expedition row hidden until S26 |
+| `NO OPEN JOBS — NEW JOBS ROLL ON THE 20-MINUTE CLOCK`; `REDEMPTION MUST PRECEDE EMPLOYMENT` | §15.2 | U8 | silent empty board |
+| `HULL CLASS` / `PREMIUM PER LAUNCH`; `YOUR CLASS`; `Champion standing multiplies the premium ×0.8` | §15.3 | U9 | pin's header casing; chips/notes drop |
+| `UNINSURED` / `INSURED · COVERS ONE LOSS` / `PAID OUT · POLICY SPENT`; `THE PAYOUT COVERS ONE LOSS · THE POLICY DOES NOT RENEW MID-FLIGHT` | §15.3 | U10 | one `INSURED` chip |
+| `MERCY AVAILABLE` / `MERCY USED`; `mercy clause: if you have no other hull, the Concord reissues a bare Fighter — once per profile` | §15.3 | U11 | no mercy readout |
+| `UNINSURED LOSS: HULL AND ALL INSTALLED MODULES ARE GONE` | §15.3 | U12 | warning drops |
+| `INSURE LAUNCHES` / `CANCEL POLICY`; `PREMIUM %d CR PER LAUNCH · CHARGED AT LAUNCH` | §15.3 | U13 | `INSURE` / `UNINSURE` |
+| `TIER %d · +20 UNITS · %d CR` rows; totals `40 / 60 / 80` (**PROPOSED** reading); Meridian `625 / 1 500 / 3 000` (derived ×1.25) + the §4 Meridian line | §15.4 | U14 | totals `20 / 40 / 60`; base prices; note drops |
+| `YOUR HOLD`; `VAULT CONTENTS`; `DEPOSIT`; `WITHDRAW`; `DEPOSITS AND WITHDRAWALS ARE FREE` | §15.4 | U15 | one list; `STORE` / `TAKE` |
+| `NOT CARGO`; `VAULT CONTENTS DO NOT COUNT AGAINST CARGO ON LAUNCH`; `CONTENTS PERSIST PER-STATION — THE VAULT IS FURNITURE, NOT A POCKET` | §15.4 | U15 | chip + captions drop |
+| `THIS VAULT — %d / %d UNITS`; `tier 1 only — this is an outpost` | §15.4 | U16 | readout drops; tiers 2/3 hidden at outposts |
+| name plate (flat Tokens box, faction glyph 48, `HeroTitle` name + `StationCaption` character line); ramp borders `metal_mid` / `metal_light` / `metal_dark` | §15.5 | U17 | today's `StationMark` + `TitleBox`, `StationLocation` returns |
+| SALVO drum: four `ui_seg_*` cells 18×32 on the 20 pitch, `SALVO s` caption, figures `0073` style (UI_SPEC §7) | UI_SPEC §7 | U18 | `salvo_cells 3` + `SALVO_MAX 999` + the pin rows back (L263's reversal) |
+| contents-list height `min (0, 200)` (new presentation value) | §15.4 / UI_SPEC §7 A5.4-5 | U19 | `min (0, 110)` — the shipped `CargoList` height |
+| 24 px stack icon in `ItemList` rows (**PROPOSED** — the shipped `CargoList` is plain text with no row icons) | §15.4 / UI_SPEC §7 A5.4-5 | U20 | plain-text `40× ingot_titanium` rows, no row icon |
+

@@ -6,6 +6,22 @@
 
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-25 clear-outs (owner asks):** every closed slice folder moved to the system trash (last git tree carrying them: `7a081ef`), old session reports live in `_state/_archive/`, and the two dispatch files were purged to live-items-only (2026-09-25 ter). Citation paths into purged trees name historical files.
 
+**Updated 2026-10-03 (D16 closed — station identity & contracts UI design):**
+ran A1 → R1 → F1 (fixer pass for the review's two MEDs) on the owner's
+2026-10-02 routes (A1 `xiaomi/mimo-v2.6-pro` @ high, R1 `hyper/glm-5.3-flash`
+@ high). A1 landed `STATION_HUB.md` §15 (the three service panels, the
+nine-place identity treatment, presentation values **U1–U20** with reversals)
++ `UI_SPEC.md` §7 (A5.4 extension rows A5.4-1…6; A5.4-6 answers **L263**'s
+four-cell SALVO drum, tick U18, heavy-cadence icon staged pending generation
+budget) + four `.md` wireframe mockups in `staging/mockup/` (ruled lawful by
+R1). R1 graded A1–A5 all pass — **0 HIGH / 2 MED cured / 2 LOW → L267–L268**.
+Tick sheet with the owner: **W3** (nine names) + U1–U20; owner flags: vault
+unit totals 40/60/80 vs 20/40/60 (U14), outpost faction = sector primary
+(PROPOSED), character line replaces `StationLocation` (U17). `verify
+--baseline d16_start` green (`"problems": []`); gate n/a (design only, no row
+moved). Slice: `slices/D16-station-ui/`. **Next in the phase: coder 30 (S24
+world identity), opening docs-first on the ticked names.**
+
 **Updated 2026-10-02 (owner's auction detour — no wave, developer session):** the
 owner ruled two AUCTION fixes outside the slice plan: (1) a listing's hover
 inspector now carries **15 §7's stat block** after the description (FITTING's own

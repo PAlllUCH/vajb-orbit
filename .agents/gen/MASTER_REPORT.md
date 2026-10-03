@@ -1648,3 +1648,28 @@ gate ×2 fresh scratch (**1030/0** both), `verify --baseline s23_start_b1fix` gr
 (archives away) — the disclosed substitute is the 20/20 wired-art loader probe +
 the suite's `ResourceLoader.exists` rows. CONTRACTS §9's S23 block + §10 **v0.43**
 by R1. Five-piece: `slices/S23-content-activation/`.
+
+### D16 (designer item 17) — **DONE 2026-10-03 — design only, gate n/a**
+
+Station identity & contracts UI design — the law S24/S25/S26 cite. Ran A1 → R1 →
+F1 on the owner's 2026-10-02 routes (A1 `xiaomi/mimo-v2.6-pro` @ high, R1
+`hyper/glm-5.3-flash` @ high; recorded in the wave's prompts file). **A1** landed
+`STATION_HUB.md` §15 (the CONTRACTS/INSURANCE/VAULTS panels, the nine-place
+identity treatment, presentation values **U1–U20** each with reversal + tick id)
++ `UI_SPEC.md` §7 (the **A5.4** extension rows A5.4-1…6; **A5.4-6** answers LOW
+**L263** — the four-cell SALVO drum is the design of record, tick U18, the
+heavy-cadence icon STAGED pending generation budget, no render) + four `.md`
+wireframe mockups in `staging/mockup/`. **R1** graded A1–A5 **all pass** (content
+verbatim against 14 §1–§4/§8, chrome cites spot-checked true, A5.2 clauses
+mechanism throughout) and ruled the two form questions lawful (wireframe
+mockups; §7 as a heading-appended amendment site): **0 HIGH / 2 MED / 2 LOW** —
+F1 the U1 rail numbers built on the stale seven-entry grid (live rail is 8
+entries, `station.gd:67`), F2 A5.4-5's two new values carrying no tick id;
+LOW **L267–L268** (A5.4-6's cite drift; the "24 px at its own cut" wording).
+**F1** cured both MEDs as amendment-block edits (U1 recomputed: SERVICES entry 8,
+LAUNCH 9, stack 552 px; U19/U20 registered). Close-out: `verify --baseline
+d16_start` green (`"problems": []`), no gate row moved (negative control: git
+diff touches only the two permitted docs). Tick sheet handed to the owner:
+**W3** (nine names) + U1–U20; owner flags: vault unit totals 40/60/80 vs
+20/40/60 (U14), outpost faction = sector primary (PROPOSED), the character line
+replaces `StationLocation` (U17). Five-piece: `slices/D16-station-ui/`.
