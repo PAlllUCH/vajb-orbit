@@ -36,6 +36,12 @@ const ProfileScript := preload("res://autoload/player_profile.gd")
 ## 15 section 7's naming grammar has one builder (`Auction.rolled_name`); the hover line and
 ## the stat block below the grid call it rather than growing a second copy (K2's deviation 7).
 const AuctionScript := preload("res://game/auction.gd")
+## P5 (STATION_HUB section 17.2): the repair block reads `repairs_panel.gd:74-89`'s own
+## `REPORT_ROWS` (minus the `MISSING` and `FEE` body rows) and its wordings verbatim, the
+## cite the law names - one home for the damage table's shapes, the file the HUD's own
+## `hull_render` reads too.
+const RepairsPanelScript := preload("res://ui/station/repairs_panel.gd")
+const RepairsService := preload("res://game/repairs.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
@@ -95,6 +101,19 @@ const STAT_ROWS: Array[Dictionary] = [
 const COMPARISON_CAPTION := "COMPARISON"
 const COMPARISON_SELECTED := "SELECTED"
 const COMPARISON_ACTIVE := "ACTIVE"
+## A7 (D17-P2's own fix: "show + / - deltas"): the comparison's third column. PROPOSED
+## format `%+d` (`+150` / `+0` / `-40`), reversal: the two shipped columns alone.
+const COMPARISON_DELTA := "DELTA"
+const DELTA_FORMAT := "%+d"
+## P12/P13 (section 17.5): the installed-modules caption and the intact-row word.
+const INSTALLED_CAPTION := "INSTALLED MODULES"
+const ROW_NOMINAL := "NOMINAL"
+## The repair block's body rows: section 17.2's own slice of `repairs_panel.gd:74-89`'s
+## REPORT_ROWS - `MISSING` and `FEE` never reach the body (the fee lives in the footer line).
+const REPAIR_VALUE_FORMAT := "%s / %s"
+const DAMAGE_CONTEXT := "POOL %s / %s"
+const ACTION_REPAIR := "REPAIR"
+const REPAIR_ROW_SEPARATION := 6
 
 const SUBTITLE := "YOUR HULLS · %d IN THE HANGAR · SIDE VIEWS ONLY"
 const TAG_ACTIVE_HULL := "ACTIVE HULL %s"
@@ -152,6 +171,9 @@ const STATUS_ACTIVE := "ACTIVE HULL IS NOW %s"
 @onready var _stats: VBoxContainer = %ShipStats
 @onready var _hardpoint_caption: Label = %HardpointCaption
 @onready var _hardpoints: GridContainer = %HardpointSlots
+@onready var _repair_rows: VBoxContainer = %RepairRows
+@onready var _repair_footer: Label = %RepairFooter
+@onready var _repair_button: Button = %RepairButton
 @onready var _action: Button = %ShipAction
 
 var _payloads: Array[Dictionary] = []
@@ -162,16 +184,23 @@ var _native_preview := Vector2.ZERO
 var _tweens: Array[Tween] = []
 ## The hovered cell's stat block label, built in script under the grid.
 var _hover_block: Label = null
+## The repair block's row labels: `{key, label, value, state, row}` for the seven body rows
+## (ACTIVE HULL/HULL/SHIELD + the four armour quadrants, 09 section 3.3 P2's order).
+var _repair_values: Array[Dictionary] = []
+## The comparison's per-row delta labels, keyed by stat key.
+var _delta_cells: Dictionary = {}
 
 
 func _ready() -> void:
 	_build_comparison()
 	_build_layout_grid()
+	_build_repair_rows()
 	_build_rows()
 	_mount_hover_block()
 	_apply_tokens()
 	_preview_center.resized.connect(_update_preview_size)
 	_action.pressed.connect(_on_action_pressed)
+	_repair_button.pressed.connect(_on_repair_pressed)
 	_refresh_all()
 
 
@@ -179,6 +208,11 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_THEME_CHANGED and is_node_ready():
 		_apply_tokens()
 		_refresh_plate_textures()
+	elif what == NOTIFICATION_VISIBILITY_CHANGED and is_node_ready() and is_visible_in_tree():
+		## P6 (S29's half, section 17.3): the pane fills the band with its own summary
+		## instead of leaving it empty after the shell's clear on a module switch.
+		_refresh_all()
+		publish_idle_summary()
 
 
 func _exit_tree() -> void:
@@ -414,6 +448,7 @@ func _build_comparison() -> void:
 		{&"text": COMPARISON_CAPTION, &"width": 0.0, &"expand": true},
 		{&"text": COMPARISON_SELECTED, &"width": COL_STAT, &"expand": false},
 		{&"text": COMPARISON_ACTIVE, &"width": COL_STAT, &"expand": false},
+		{&"text": COMPARISON_DELTA, &"width": COL_STAT, &"expand": false},
 	]:
 		header.add_child(_make_header_cell(cell))
 	for row: Dictionary in STAT_ROWS:
@@ -427,6 +462,9 @@ func _build_comparison() -> void:
 		var selected := _make_stat_value(line)
 		var active := _make_stat_value(line)
 		active.add_theme_color_override(&"font_color", _token(&"text_dim"))
+		var delta := _make_stat_value(line)
+		delta.add_theme_color_override(&"font_color", _token(&"text_dim"))
+		_delta_cells[row[&"key"]] = delta
 		_stat_cells[row[&"key"]] = [selected, active]
 
 
@@ -822,6 +860,9 @@ func _on_plate_unhovered() -> void:
 	var payload := _payload(_selected_id)
 	if not payload.is_empty():
 		status_requested.emit(_row_hint(payload), false)
+		_inspect_row(payload, true)
+	else:
+		publish_idle_summary()
 
 
 func _payload(ship_id: StringName) -> Dictionary:
@@ -899,6 +940,7 @@ func _refresh_all() -> void:
 	_refresh_rows(profile)
 	_refresh_preview(profile)
 	_refresh_action(profile)
+	_refresh_repair(profile)
 
 
 ## Section 5.11's row: the `ACTIVE` badge on the hull the account flies, nothing on any
@@ -964,6 +1006,11 @@ func _refresh_comparison(ship: Dictionary, profile: ProfileScript) -> void:
 			selected_label.add_theme_color_override(&"font_color", _token(&"text_dim"))
 		else:
 			selected_label.remove_theme_color_override(&"font_color")
+		## A7's hull-comparison deltas (D17-P2's fix): the signed difference, `+0` honest
+		## when the hull is compared to itself.
+		var delta := _delta_cells.get(key, null) as Label
+		if delta != null:
+			delta.text = DELTA_FORMAT % (selected_value - active_value)
 
 
 ## The footer's one action: `SET ACTIVE` for an owned hull that is not the active one,
@@ -990,18 +1037,51 @@ func _on_row_focused(row: Button, payload: Dictionary) -> void:
 
 ## CONTRACTS section 23.1: the shipyard's additive hover surface. A hover publishes the
 ## hull's own identity line as the title and its catalogue description as the body; a
-## leave clears both (`title == ""`).
+## leave hands the band back to the selection's own line (P6: the band is never stale and
+## never empty on this pane - the idle state is the pane's own summary).
 func _on_row_hovered(payload: Dictionary, hovered: bool) -> void:
 	_inspect_row(payload, hovered)
 
 
 func _inspect_row(payload: Dictionary, shown: bool) -> void:
 	if not shown:
-		inspect_requested.emit("", "", false)
+		## P6 (S29's half): the idle band carries the pane's own summary - the active
+		## hull's name and its worst pool - never a stale hover and never blank.
+		publish_idle_summary()
 		return
 	inspect_requested.emit(
 		_row_title(payload), Catalog.describe(StringName(payload[&"id"])), false
 	)
+
+
+## P6 (S29's half, section 17.3): the pane's own idle summary - the active hull's name and
+## its worst pool - published through the existing `inspect_requested` chain whenever the
+## band would otherwise be empty (a module switch, an unhover with no selection).
+func publish_idle_summary() -> void:
+	var profile := _profile()
+	var active_id := _active_id(profile)
+	if active_id == &"":
+		inspect_requested.emit(EMPTY_HULLS, "", false)
+		return
+	var worst := _worst_pool(profile, active_id)
+	inspect_requested.emit(
+		TAG_ACTIVE_HULL % _ship_name(active_id),
+		"%s %s" % [String(worst.get(&"label", "")), String(worst.get(&"value", ""))],
+		false
+	)
+
+
+## The active hull's worst pool - the damage table's own rows read, so the summary can
+## never disagree with the block below it.
+func _worst_pool(profile: ProfileScript, ship_id: StringName) -> Dictionary:
+	var worst := {&"label": "HULL", &"value": "", &"missing": -1}
+	for row: Dictionary in _repair_values:
+		if row[&"key"] == &"hull_name":
+			continue
+		var missing := int(row.get(&"missing", 0))
+		if missing > int(worst.get(&"missing", -1)):
+			worst = {&"label": row[&"label"], &"value": row[&"value_text"], &"missing": missing}
+	return worst
 
 
 ## Selecting a row previews it and writes nothing (section 5.11: "selecting a row previews
@@ -1124,3 +1204,230 @@ func _make_tween() -> Tween:
 	var tween := create_tween()
 	_tweens.append(tween)
 	return tween
+
+
+## CONTRACTS section 23.1: one home for the digit-grouping rule (`StationCatalog.group_int`),
+## the shell's own copy - so the fee line and the credits readout cannot drift.
+func _format_int(value: int) -> String:
+	return Catalog.group_int(value)
+
+
+## ---------------------------------------------------- the repair block (P5, P13)
+##
+## STATION_HUB section 17.2: the repairs surface folds in below the comparison - the
+## damage table on `repairs_panel.gd:74-89`'s own REPORT_ROWS minus the `MISSING` and
+## `FEE` body rows, `NOMINAL` in `text_dim` for intact systems (P13), the fee in the
+## footer line only (`REPAIR AVAILABLE · <n> CR` / `ALL SYSTEMS NOMINAL`, both shipped
+## wordings) and `REPAIR` as the P1 ActionPrimary at the foot. The block is the ACTIVE
+## hull's (the table's own first row names it), so the repair restores the hull the
+## launch would fly.
+
+
+func _build_repair_rows() -> void:
+	_repair_rows.add_theme_constant_override(&"separation", REPAIR_ROW_SEPARATION)
+	for row: Dictionary in RepairsPanelScript.REPORT_ROWS:
+		if row[&"key"] == &"missing" or row[&"key"] == &"fee":
+			continue
+		var line := HBoxContainer.new()
+		line.name = "Report%s" % String(row[&"key"]).to_pascal_case()
+		line.add_theme_constant_override(&"separation", COLUMN_SEPARATION)
+		line.mouse_filter = Control.MOUSE_FILTER_STOP
+		_repair_rows.add_child(line)
+		var caption := _make_label(&"StationCaption", String(row[&"label"]))
+		caption.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		line.add_child(caption)
+		var value := _make_label(&"StationValue", PRICE_ZERO)
+		value.custom_minimum_size = Vector2(COL_STAT, 0.0)
+		value.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		line.add_child(value)
+		var state := _make_label(&"StationValue", "")
+		state.custom_minimum_size = Vector2(COL_STAT, 0.0)
+		state.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		line.add_child(state)
+		var payload := {
+			&"key": row[&"key"],
+			&"label": String(row[&"label"]),
+			&"value": value,
+			&"state": state,
+			&"value_text": "",
+			&"missing": 0,
+		}
+		line.mouse_entered.connect(_on_damage_hovered.bind(payload, true))
+		line.mouse_exited.connect(_on_damage_hovered.bind(payload, false))
+		_repair_values.append(payload)
+
+
+## One damage row describes through the existing chain, its payload carrying one line of
+## `Repairs` context - what the pool is and its max (section 17.2's own rule).
+func _on_damage_hovered(payload: Dictionary, hovered: bool) -> void:
+	if not hovered:
+		publish_idle_summary()
+		return
+	inspect_requested.emit(
+		"%s %s" % [String(payload[&"label"]), String(payload[&"value_text"])],
+		_damage_context(payload),
+		false
+	)
+
+
+func _damage_context(payload: Dictionary) -> String:
+	var text := String(payload[&"value_text"])
+	var parts := text.split(" / ")
+	if parts.size() != 2:
+		return text
+	return DAMAGE_CONTEXT % [parts[0], parts[1]]
+
+
+## The damage table's read: the vitals the profile filed for the ACTIVE hull and the
+## resolved maxima (plates and affixes included, `repairs_panel.gd:_pool_maxima`'s own
+## rule) - the same figures the fee is computed from, so the block cannot disagree with
+## `Repairs.fee`.
+func _refresh_repair(profile: ProfileScript) -> void:
+	var active_id := _active_id(profile)
+	var ship := Catalog.ship(active_id)
+	var vitals := _vitals_of(profile, active_id)
+	var maxima := _pool_maxima(profile, active_id, ship)
+	var hull_max := int(maxima.get(&"hull", 0))
+	var shield_max := int(maxima.get(&"shield", 0))
+	var hull := clampi(int(vitals.get(&"hull", 0)), 0, hull_max) if not vitals.is_empty() else hull_max
+	var shield := clampi(int(vitals.get(&"shield", 0)), 0, shield_max) if not vitals.is_empty() else shield_max
+	var current_pools: Array = RepairsService.pools(float(hull))
+	var max_pools: Array = RepairsService.pools(float(hull_max))
+	for payload: Dictionary in _repair_values:
+		var key: StringName = payload[&"key"]
+		var text := ""
+		var missing := 0
+		if key == &"hull_name":
+			text = _ship_name(active_id) if active_id != &"" else RepairsPanelScript.UNKNOWN_HULL
+		elif key == &"hull" or key == &"shield":
+			var current := hull if key == &"hull" else shield
+			var maximum := hull_max if key == &"hull" else shield_max
+			text = REPAIR_VALUE_FORMAT % [str(current), str(maximum)]
+			missing = maxi(0, maximum - current)
+		else:
+			var index: int = RepairsPanelScript.QUADRANT_KEYS.find(key)
+			if index < 0:
+				continue
+			var current := int(round(float(current_pools[index])))
+			var maximum := int(round(float(max_pools[index])))
+			text = REPAIR_VALUE_FORMAT % [str(current), str(maximum)]
+			missing = maxi(0, maximum - current)
+		payload[&"value_text"] = text
+		payload[&"missing"] = missing
+		var value: Label = payload[&"value"]
+		value.text = text
+		var state: Label = payload[&"state"]
+		if key == &"hull_name":
+			state.text = ""
+		elif missing == 0:
+			## P13: intact rows read `NOMINAL` in `text_dim` (label + state, never a
+			## colour alone).
+			state.text = ROW_NOMINAL
+			state.add_theme_color_override(&"font_color", _token(&"text_dim"))
+		else:
+			state.text = str(missing)
+			state.remove_theme_color_override(&"font_color")
+	_refresh_repair_footer(profile, active_id)
+
+
+## The fee line (P5: the fee lives in the footer, never a body row) and the `REPAIR`
+## primary's state - all-nominal disables it with `text_dim` (A5.4-2's unavailable idiom).
+func _refresh_repair_footer(profile: ProfileScript, active_id: StringName) -> void:
+	var vitals := _vitals_of(profile, active_id)
+	if vitals.is_empty():
+		_repair_footer.text = RepairsPanelScript.HINT_NO_REPORT
+		_set_repair_enabled(false)
+		return
+	var fee := RepairsService.fee(profile, active_id)
+	var repairable := RepairsService.is_repairable(profile, active_id)
+	if not repairable:
+		_repair_footer.text = RepairsPanelScript.NOMINAL
+	elif fee == 0:
+		_repair_footer.text = RepairsPanelScript.EXEMPT_HINT
+	else:
+		_repair_footer.text = RepairsPanelScript.HINT_REPAIR % _format_int(fee)
+	_set_repair_enabled(repairable)
+
+
+func _set_repair_enabled(enabled: bool) -> void:
+	_repair_button.disabled = not enabled
+	_repair_button.text = ACTION_REPAIR
+	if enabled:
+		_repair_button.remove_theme_color_override(&"font_color")
+	else:
+		_repair_button.add_theme_color_override(&"font_color", _token(&"text_dim"))
+
+
+## The pane's one repair write: `Repairs.repair` on the ACTIVE hull (the composed service,
+## `repairs_panel.gd`'s own route), then the block rebuilds and the result line lands in
+## the footer and the shell's strip.
+func _on_repair_pressed() -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	var profile := _profile()
+	if profile == null:
+		return
+	var active_id := _active_id(profile)
+	var result: Dictionary = RepairsService.repair(profile, active_id)
+	_refresh_all()
+	if bool(result.get(&"ok", false)):
+		AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
+		status_requested.emit(
+			RepairsPanelScript.STATUS_REPAIRED % _format_int(int(result.get(&"fee", 0))), false
+		)
+		return
+	var reason: StringName = result.get(&"reason", &"")
+	AudioManager.play_ui(AudioManager.UiCue.DENIED)
+	_pulse(_repair_button)
+	if reason == RepairsService.REASON_NO_DAMAGE:
+		status_requested.emit(RepairsPanelScript.NOMINAL, false)
+	elif reason == RepairsService.REASON_NO_DAMAGE_REPORT:
+		status_requested.emit(RepairsPanelScript.HINT_NO_REPORT, false)
+	else:
+		var fee := RepairsService.fee(profile, active_id)
+		status_requested.emit(RepairsPanelScript.REFUSAL_INSUFFICIENT % _format_int(fee), true)
+
+
+func _vitals_of(profile: ProfileScript, ship_id: StringName) -> Dictionary:
+	if profile == null or ship_id == &"":
+		return {}
+	var raw: Variant = profile.call(&"vitals_of", ship_id)
+	return raw if raw is Dictionary else {}
+
+
+## The two denominators the HULL and SHIELD rows print (`repairs_panel.gd:382-400`'s own
+## rule): `ShipFit.resolve`'s figures for the fit the launch would fly, plates and affixes
+## included, with the catalogue row as the fallback.
+func _pool_maxima(profile: ProfileScript, ship_id: StringName, ship: Dictionary) -> Dictionary:
+	var fallback := {
+		&"hull": int(ship.get(&"hull", 0)),
+		&"shield": int(ship.get(&"shield", 0)),
+	}
+	if profile == null or ship.is_empty():
+		return fallback
+	var stored: Variant = profile.call(&"resolved_fit", ship_id)
+	if not stored is Dictionary:
+		return fallback
+	var fit: Dictionary = profile.call(&"base_fit", stored as Dictionary)
+	var summary: Variant = {}
+	if profile.has_method(&"affix_summary"):
+		summary = profile.call(&"affix_summary", ship_id)
+	var stats: ShipStats = ShipFit.resolve(ship_id, fit, summary if summary is Dictionary else {})
+	if stats == null:
+		return fallback
+	return {&"hull": int(round(stats.hull_max)), &"shield": int(round(stats.shield_max))}
+
+
+## The footer line's own text and the repair rows' values, read back for probes and tests.
+func repair_footer_text() -> String:
+	return _repair_footer.text
+
+
+func repair_row_values() -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for payload: Dictionary in _repair_values:
+		out.append({
+			&"key": payload[&"key"],
+			&"value": String(payload[&"value_text"]),
+			&"state": String((payload[&"state"] as Label).text),
+		})
+	return out

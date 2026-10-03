@@ -402,42 +402,27 @@ func _delete_file(path: String) -> void:
 ## ------------------------------------------------------------- the rail swap (section 5.3)
 
 
-## FITTING takes the retired UPGRADES entry: the same rail position, label word, icon path and
-## tint, and the retired pane's two files are gone. Measured both on the script's own tables and
-## on the assembled shell, so the entry the player sees is the one asserted.
-func test_the_rail_entry_is_fitting_and_the_upgrades_pane_is_gone() -> void:
-	## FITTING is the sixth rail entry since AUCTION took index 3 (STATION_HUB section
-	## 5.10's S3 amendment, "directly after EXCHANGE"): the retired UPGRADES position is
-	## still the one it took, shifted by that insertion.
-	var module := 5
-	assert_eq(StationScript.MODULE_LABELS[module], "FITTING", "the sixth rail entry is FITTING")
-	assert_eq(StationScript.MODULE_FILES[module], "fitting", "and it loads the FITTING pane")
+## P7 (STATION_HUB section 17.4, S29): the rail folds 8 -> 6 entries - FITTING folds into
+## ARMORY and REPAIRS into SHIPYARD, and the two tiles retire with their panes. Measured
+## both on the script's own tables and on the assembled shell, so the entries the player
+## sees are the ones asserted.
+func test_the_rail_folds_to_six_entries_and_the_fitting_tile_retires() -> void:
 	assert_eq(
-		StationScript.MODULE_ICONS[module],
-		"res://assets/icons/equip/icon_equip_generator.png",
-		"and keeps the retired entry's icon"
+		StationScript.MODULE_LABELS,
+		["ARMORY", "REFINERY", "EXCHANGE", "AUCTION", "SHIPYARD", "LAUNCH"] as Array[String],
+		"the six entries are P7's own, in order"
 	)
-	assert_eq(StationScript.MODULE_TINTED[module], false, "and its untinted treatment")
-	assert_eq(
-		StationScript.MODULE_BEDS[module],
-		&"amb_station_noise_loop_01",
-		"and its ambience (STATION_HUB section 11)"
-	)
-	assert_false(StationScript.MODULE_FILES.has("upgrades"), "no rail entry loads UPGRADES")
-	assert_false(StationScript.MODULE_LABELS.has("UPGRADES"), "and no label reads UPGRADES")
-	assert_false(
-		ResourceLoader.exists("res://ui/station/upgrades_panel.tscn"),
-		"the retired pane scene is deleted"
-	)
-	assert_false(
-		ResourceLoader.exists("res://ui/station/upgrades_panel.gd"),
-		"and its script with it"
-	)
-	assert_true(
-		ResourceLoader.exists("res://ui/station/fitting_panel.tscn"), "FITTING's scene ships"
-	)
-	## The assembled shell: eight entries, the sixth FITTING, and one pane per module with no
-	## Upgrades pane among them.
+	assert_eq(StationScript.MODULE_FILES.size(), 6, "one pane file per entry")
+	assert_false(StationScript.MODULE_FILES.has("fitting"), "no rail entry loads FITTING")
+	assert_false(StationScript.MODULE_FILES.has("repairs"), "and none loads REPAIRS")
+	assert_eq(StationScript.MODULE_LABELS[0], "ARMORY", "the first entry is ARMORY")
+	assert_eq(StationScript.MODULE_FILES[0], "armory", "and it loads the merged ARMORY pane")
+	assert_eq(StationScript.MODULE_ICONS[0],
+		"res://assets/icons/equip/icon_equip_module.png",
+		"the ARMORY entry keeps its icon (section 17.4)")
+	assert_eq(StationScript.MODULE_ICONS[4], "res://assets/icons/hud/icon_hull.svg",
+		"and SHIPYARD its hull icon")
+	## The assembled shell: six entries and one pane per module, FITTING and REPAIRS gone.
 	var screen := StationScene.instantiate() as Control
 	_host.add_child(screen)
 	var buttons := screen.get_node("%ModuleButtons") as VBoxContainer
@@ -446,24 +431,14 @@ func test_the_rail_entry_is_fitting_and_the_upgrades_pane_is_gone() -> void:
 		StationScript.MODULE_LABELS.size(),
 		"one rail entry per module"
 	)
-	var entry := buttons.get_child(module) as Button
-	assert_eq(entry.name, "FittingEntry", "the sixth entry is named for its label")
-	var label := _first_label(entry)
-	assert_eq(label.text, "FITTING", "and carries the FITTING label")
-	var icon := _first_icon(entry)
-	assert_true(icon != null, "the entry carries an icon")
-	if icon != null:
-		assert_eq(
-			icon.texture.resource_path,
-			"res://assets/icons/equip/icon_equip_generator.png",
-			"the retired entry's own icon, not new art"
-		)
 	var host := screen.get_node("%HostMargin") as MarginContainer
+	assert_true(host.get_node_or_null(^"Armory") != null, "the shell loads the ARMORY pane")
+	assert_true(host.get_node_or_null(^"Fitting") == null, "and no FITTING pane with it")
+	assert_true(host.get_node_or_null(^"Repairs") == null, "and no REPAIRS pane")
+	assert_true(host.get_node_or_null(^"Launch") != null, "LAUNCH closes the rail")
 	assert_true(
-		host.get_node_or_null(^"Fitting") != null, "the shell loaded the FITTING pane"
-	)
-	assert_true(
-		host.get_node_or_null(^"Upgrades") == null, "and no UPGRADES pane exists"
+		ResourceLoader.exists("res://ui/station/fitting_panel.tscn"),
+		"FITTING's scene retires from the rail but stays on disk (the shared helpers' home)"
 	)
 	screen.free()
 

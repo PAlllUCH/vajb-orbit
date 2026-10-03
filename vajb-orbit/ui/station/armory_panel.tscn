@@ -1,22 +1,149 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://ui/station/armory_panel.gd" id="1_armory"]
+[ext_resource type="Texture2D" path="res://assets/icons/equip/icon_equip_module.png" id="2_pane_icon"]
 
-[node name="Armory" type="Control"]
+[node name="Armory" type="VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/separation = 12
 script = ExtResource("1_armory")
 
-[node name="Console" type="Control" parent="."]
+[node name="PaneHeader" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PaneIcon" type="TextureRect" parent="PaneHeader"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("2_pane_icon")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TitleBox" type="VBoxContainer" parent="PaneHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+
+[node name="PaneTitle" type="Label" parent="PaneHeader/TitleBox"]
 unique_name_in_owner = true
-layout_mode = 0
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"StationPanelTitle"
+text = "ARMORY"
+
+[node name="PaneSubtitle" type="Label" parent="PaneHeader/TitleBox"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"StationCaption"
+text = "BATTERY RACKS AND AMMUNITION"
+
+[node name="PaneHint" type="Label" parent="PaneHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"StationCaption"
+text = "DRAG TO FIT - RIGHT-CLICK TO PULL - 1-5 SELECT RACK"
+horizontal_alignment = 2
+
+[node name="PanelTag" type="Label" parent="PaneHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"StationCaption"
+horizontal_alignment = 2
+
+[node name="Split" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="GridHalf" type="VBoxContainer" parent="Split"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="SlotCaption" type="Label" parent="Split/GridHalf"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+
+[node name="LayoutMargin" type="MarginContainer" parent="Split/GridHalf"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_right = 12
+
+[node name="LayoutBox" type="VBoxContainer" parent="Split/GridHalf/LayoutMargin"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="SlotLayoutGrid" type="GridContainer" parent="Split/GridHalf/LayoutMargin/LayoutBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 4
+
+[node name="MeterLabel" type="Label" parent="Split/GridHalf"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationValue"
+
+[node name="SelectionLine" type="Label" parent="Split/GridHalf"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+
+[node name="BrowserHalf" type="VBoxContainer" parent="Split"]
+custom_minimum_size = Vector2(420, 0)
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="BrowserCaption" type="Label" parent="Split/BrowserHalf"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "MODULES · OWNED & BUYABLE"
+
+[node name="FamilyTabs" type="HBoxContainer" parent="Split/BrowserHalf"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="BrowserScroll" type="ScrollContainer" parent="Split/BrowserHalf"]
+unique_name_in_owner = true
+horizontal_scroll_mode = 0
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="BrowserRows" type="VBoxContainer" parent="Split/BrowserHalf/BrowserScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="BodyScroll" type="ScrollContainer" parent="."]
+unique_name_in_owner = true
+horizontal_scroll_mode = 0
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Console" type="Control" parent="BodyScroll"]
+unique_name_in_owner = true
+layout_mode = 2
 mouse_filter = 2
 
-[node name="ConsolePlate" type="NinePatchRect" parent="Console"]
+[node name="ConsolePlate" type="NinePatchRect" parent="BodyScroll/Console"]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -26,85 +153,82 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="PaneTitle" type="Label" parent="."]
-unique_name_in_owner = true
-layout_mode = 0
-mouse_filter = 2
-theme_type_variation = &"StationPanelTitle"
-text = "ARMORY"
-
-[node name="PaneSubtitle" type="Label" parent="."]
-unique_name_in_owner = true
-layout_mode = 0
-mouse_filter = 2
-theme_type_variation = &"StationCaption"
-text = "BATTERY RACKS AND AMMUNITION"
-
-[node name="PaneHint" type="Label" parent="."]
-unique_name_in_owner = true
-layout_mode = 0
-mouse_filter = 2
-theme_type_variation = &"StationCaption"
-text = "DRAG TO FIT - RIGHT-CLICK TO PULL - 1-5 SELECT RACK"
-horizontal_alignment = 2
-
-[node name="PanelTag" type="Label" parent="."]
-unique_name_in_owner = true
-layout_mode = 0
-mouse_filter = 2
-theme_type_variation = &"StationCaption"
-horizontal_alignment = 2
-
-[node name="RackRows" type="VBoxContainer" parent="Console"]
+[node name="RackRows" type="VBoxContainer" parent="BodyScroll/Console"]
 unique_name_in_owner = true
 layout_mode = 0
 mouse_filter = 2
 theme_override_constants/separation = 0
 
-[node name="InventoryMargin" type="Control" parent="Console"]
+[node name="InventoryMargin" type="Control" parent="BodyScroll/Console"]
 unique_name_in_owner = true
 layout_mode = 0
 mouse_filter = 2
 
-[node name="InventoryCaption" type="Label" parent="Console/InventoryMargin"]
+[node name="InventoryCaption" type="Label" parent="BodyScroll/Console/InventoryMargin"]
 unique_name_in_owner = true
 layout_mode = 0
 mouse_filter = 2
 theme_type_variation = &"StationCaption"
 text = "BARREL INVENTORY"
 
-[node name="InventoryScroll" type="ScrollContainer" parent="Console/InventoryMargin"]
+[node name="InventoryScroll" type="ScrollContainer" parent="BodyScroll/Console/InventoryMargin"]
 unique_name_in_owner = true
 layout_mode = 0
 horizontal_scroll_mode = 0
 vertical_scroll_mode = 2
 
-[node name="InventoryRows" type="Control" parent="Console/InventoryMargin/InventoryScroll"]
+[node name="InventoryRows" type="Control" parent="BodyScroll/Console/InventoryMargin/InventoryScroll"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 0
 
-[node name="AmmoMargin" type="Control" parent="Console"]
+[node name="AmmoMargin" type="Control" parent="BodyScroll/Console"]
 unique_name_in_owner = true
 layout_mode = 0
 mouse_filter = 2
 
-[node name="AmmoCaption" type="Label" parent="Console/AmmoMargin"]
+[node name="AmmoCaption" type="Label" parent="BodyScroll/Console/AmmoMargin"]
 unique_name_in_owner = true
 layout_mode = 0
 mouse_filter = 2
 theme_type_variation = &"StationCaption"
 text = "AMMUNITION"
 
-[node name="AmmoScroll" type="ScrollContainer" parent="Console/AmmoMargin"]
+[node name="AmmoScroll" type="ScrollContainer" parent="BodyScroll/Console/AmmoMargin"]
 unique_name_in_owner = true
 layout_mode = 0
 horizontal_scroll_mode = 0
 vertical_scroll_mode = 2
 
-[node name="ArmoryRows" type="Control" parent="Console/AmmoMargin/AmmoScroll"]
+[node name="ArmoryRows" type="Control" parent="BodyScroll/Console/AmmoMargin/AmmoScroll"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 0
+
+[node name="ActionsRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="RowSpacer" type="Control" parent="ActionsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="RemoveButton" type="Button" parent="ActionsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 56)
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationButton"
+disabled = true
+text = "REMOVE"
+
+[node name="BuyFitButton" type="Button" parent="ActionsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 56)
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationButton"
+text = "BUY & FIT"

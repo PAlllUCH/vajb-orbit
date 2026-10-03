@@ -95,7 +95,8 @@ func test_s6_dock_and_blip_seams_still_answer() -> void:
 	var blips: Array = sector.call(&"blips")
 	assert_eq(blips.size(), 1, "one blip for one station")
 	assert_eq(blips[0].get("pos"), CENTRE, "the blip sits at the centre")
-	assert_eq(blips[0].get("kind"), &"friendly", "the station blips friendly")
+	assert_eq(blips[0].get("kind"), &"station",
+		"the station blips its own N15 class (S29's re-anchor, UI_SPEC.md section 10)")
 
 
 ## AC4: a two-frame motion probe — under the named constants the shuttles move,

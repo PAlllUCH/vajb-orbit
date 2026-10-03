@@ -129,6 +129,12 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 6
 
+[node name="InstalledCaption" type="Label" parent="ShipyardBody/StatsBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "INSTALLED MODULES"
+
 [node name="HardpointCaption" type="Label" parent="ShipyardBody/StatsBox"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -141,14 +147,43 @@ size_flags_horizontal = 0
 theme_override_constants/h_separation = 4
 theme_override_constants/v_separation = 4
 
+[node name="RepairRows" type="VBoxContainer" parent="ShipyardBody/StatsBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
 [node name="StatsSpacer" type="Control" parent="ShipyardBody/StatsBox"]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="ShipAction" type="Button" parent="ShipyardBody/StatsBox"]
+[node name="RepairFooter" type="Label" parent="."]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
+theme_type_variation = &"StationCaption"
+
+[node name="ActionsRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="RowSpacer" type="Control" parent="ActionsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="ShipAction" type="Button" parent="ActionsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 56)
+layout_mode = 2
+size_flags_vertical = 4
 theme_type_variation = &"StationButton"
 text = "SET ACTIVE"
+
+[node name="RepairButton" type="Button" parent="ActionsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 56)
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationButton"
+disabled = true
+text = "REPAIR"

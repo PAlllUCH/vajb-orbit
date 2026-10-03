@@ -6,6 +6,23 @@
 
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-25 clear-outs (owner asks):** every closed slice folder moved to the system trash (last git tree carrying them: `7a081ef`), old session reports live in `_state/_archive/`, and the two dispatch files were purged to live-items-only (2026-09-25 ter). Citation paths into purged trees name historical files.
 
+**Updated 2026-10-03 (S29 closed — the overhaul implemented; one provider
+incident):** coder 35 ran B1 → B2 → R1 → F1. B1's first dispatch
+(`hyper/glm-5.3`) **died on provider credits mid-build** (partial artefacts, no
+report); the owner re-routed the resume and B2 to `xiaomi/mimo-v2.6-pro` @
+high. Gate chain **1038 → 1063/0** (B1, +25 rows) **→ 1073/0** (B2, +10 rows;
+nine moved suites disclosed) — ×2 fresh scratch at every stage, R1's re-run
+agreed. The merged ARMORY and SHIPYARD are live (rail 8 → 6), the map deck
+with pin navigation and the `e_hyperdrive` module ships. R1: 1 HIGH (the pin
+marks drew `Color.WHITE` vs the pinned `text_primary`) + 1 MED (the ESC-open
+desync) both cured by F1 — the MED by the designer's bucket-1 ruling (ESC-open
+cancel and pin-remove are one operation, reversal recorded); 7 LOW →
+**T-100–T-106** (the D13 battery body's keep-or-retire is the owner's tick).
+Verify green against `s29_start`. The parallel **D17-P3 test worker died on
+the same credits mid-route**; its partial report verifies the S28 menu rows it
+reached (quit copy FIXED, Q/E deconfliction FIXED, TURN fold PARTLY) and is
+honest about the rest. **Next in the phase: coder 30 (S24 world identity).**
+
 **Updated 2026-10-03 (the parallel pair closed — S28 + D18, first approved
 two-wave run):** dispatched back-to-back on disjoint file sets (S28:
 `vajb-orbit/ui game tests`; D18: `docs/design staging/mockup`) — **S28-B1**
@@ -406,15 +423,15 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | 8 | designer 17 | D16 station identity & contracts UI (**done 2026-10-03** — 0 HIGH / 2 MED cured / 2 LOW L267–L268; law for 30/31/32) | coder 29 | one live session; its spec is coder 30/31/32's design law |
 | 9 | designer 18 | **D18 map deck & panel consolidation design** (**live**, owner 2026-10-03; `slices/D18-map-panels/`) | designer 17 | inserted at the owner's ask ahead of 30–33; its spec is S29's law |
 | 10 | coder 34 | **S28 station chrome quick-fix wave** (**done 2026-10-03** — 1031 → 1038/0 ×2 + R1 re-run; 0 HIGH / 0 MED / 2 LOW T-98/T-99) | beside D18 | disjoint file sets — the only parallel pair, owner-approved |
-| 11 | coder 35 | **S29 panel consolidation + the map deck** (**live**, owner 2026-10-03; `slices/S29-consolidation/`; implements D18's §10/§17 law) | D18 + S28 (both done) | rewrites `armory_panel/fitting/shipyard/repairs` + `ui/hud/` — runs alone |
+| 11 | coder 35 | **S29 panel consolidation + the map deck** (**done 2026-10-03** — 1038 → 1073/0 ×2 at every stage; 1 HIGH + 1 MED cured by F1, 7 LOW T-100–T-106; B1 crashed on provider credits, the resume + B2 ran xiaomi/mimo-v2.6-pro) | D18 + S28 (both done) | ran alone |
 | 12 | coder 30 | S24 world identity | designer 17 (+ S29 for the rail/pane shape) | `station_catalog` + the station screen (D16 spec first) |
 | 13 | coder 31 | S25 contracts board | coder 30 | `ui/station/` + `autoload/player_profile.gd` + S24's `contracts_visible` seam |
 | 14 | coder 32 | S26 bosses, arenas, insurance, vaults | coder 31 | `game/` + `player_profile.gd` + S25's Expedition seam |
 | 15 | coder 33 | S27 catalog breadth & shipyard | coder 32 | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/` |
 
-Designer items 16 (D15), 17 (D16) and 18 (D18) are closed; coder 34 (S28) is
-closed; **coder 35 (S29) is live** — the parallel pair closed 2026-10-03 and
-S29 runs alone. Playtest
+Designer items 16 (D15), 17 (D16) and 18 (D18) are closed; coders 34 (S28) and
+35 (S29) are closed — the owner's overhaul round is implemented. **Next: coder
+30 (S24 world identity)**, opening docs-first on the ticked W3 names. Playtest
 pass #1 (the owner's, `19_testing_notes.md`'s eye list) runs alongside pos 1;
 build 2 + the tester template are phase exit criteria. Every brief's §11 tick
 sheet feeds its wave (unticked rows implement at their PROPOSED value).

@@ -332,7 +332,10 @@ func test_the_pane_mounts_on_the_painted_console_plate() -> void:
 	)
 	assert_eq(plate.size, CONSOLE, "the floor is drawn at the derived console rect (actual %s)" % str(plate.size))
 	assert_eq(plate.position, Vector2.ZERO, "the floor fills its console control")
-	assert_eq(plate.global_position, CONSOLE_ORIGIN, "which the host's own inset places")
+	assert_eq(
+		String((plate.get_parent_control() as Control).get_parent().name), "BodyScroll",
+		"and the body rides the scroll window under the split (S29: it moved)"
+	)
 	## A5.1: the frame stays registered for the shell, but the console draws none -
 	## the sibling `PanelRaised` box is the host's, not an inner surface's.
 	var frame := panel.get_theme_stylebox(&"panel", &"PanelRaised") as StyleBoxTexture
@@ -454,11 +457,11 @@ func test_the_cells_are_the_2x2_rack_on_the_bay() -> void:
 		"and its variant on the second"
 	)
 	var cells := row.get_node(^"Box/Cells") as Control
-	assert_eq(cells.get_child_count(), 3, "the three empty cells carry the drop cue")
+	assert_eq(cells.get_child_count(), 3, "the three empty cells stay bare drop zones")
 	for child: Node in cells.get_children():
-		assert_eq(
-			String((child.get_node(^"Cue") as Label).text), PanelScript.RACK_INSTALL_CUE,
-			"each one the pane's own DROP HERE wording"
+		assert_true(
+			child.get_node_or_null(^"Cue") == null,
+			"each one carries no ghost cue (S29 A7: the DROP HERE text is gone)"
 		)
 	var marks = panel.call(&"bay_marks", 0)
 	assert_true(marks != null, "the bay carries its code-drawn marks")

@@ -29,7 +29,7 @@ const REFINERY := 1
 const EXCHANGE := 2
 const AUCTION := 3
 const SHIPYARD := 4
-const FITTING := 5
+const LAUNCH := 5
 
 const MINERAL: StringName = &"iron"
 const ORE: StringName = &"mineral_iron"
@@ -246,16 +246,20 @@ func test_refinery_title_is_the_identity_and_the_hint_keeps_its_verb() -> void:
 
 func test_fitting_title_is_the_identity_with_no_hint_verb() -> void:
 	## FITTING carries no leading hint verb: its rows print FIT/SWAP in the ACTION cell and
-	## its status line is its own footer line, so B1's title (the row's own name) already is
+	## its status line is its own line, so the title (the row's own name) already is
 	## the identity. The pane's status surface must still publish its own wording.
-	var pane := _pane(FITTING)
-	var payload := {&"name": "MAULER", &"entry": MODULE}
-	var seen := _emit_inspect(pane, payload)
+	var pane := _pane(ARMORY)
+	var payload := {&"name": "MAULER", &"base": MODULE, &"entry": MODULE}
+	var seen: Array[Array] = []
+	var recorder0 := _recorder(seen)
+	pane.connect(&"inspect_requested", recorder0)
+	pane.call(&"_inspect_browser", payload, true)
+	pane.disconnect(&"inspect_requested", recorder0)
 	assert_eq(seen.size(), 1, "a focus writes the inspector once")
 	if seen.size() == 1:
 		var title := String(seen[0][0])
-		assert_eq(title, "MAULER", "the fitting title is the row's own name")
-		assert_true(title.find("ENTER") == -1, "the fitting title carries no key-hint verb")
+		assert_eq(title, "MAULER", "the merged ARMORY title is the row's own name")
+		assert_true(title.find("ENTER") == -1, "the title carries no key-hint verb")
 	var fit_word := String(pane.get_script().get_script_constant_map()["ACTION_FIT"])
 	var lines: Array[String] = []
 	var recorder := func(message: String, _danger: bool) -> void:

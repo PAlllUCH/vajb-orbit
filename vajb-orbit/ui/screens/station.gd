@@ -64,7 +64,13 @@ const EXIT_AMBIENCE_FADE := 1.0
 ## turn the rail entry into a placeholder. `Module.OUTFITTING` is the enum member's own
 ## name and stays: it is referenced by every `_select_module` caller, and an enum is
 ## not a label. **Reversal:** the `outfitting` file name and the `OUTFITTING` label.
-enum Module { OUTFITTING, REFINERY, EXCHANGE, AUCTION, SHIPYARD, FITTING, REPAIRS, LAUNCH }
+##
+## **S29 (2026-10-03, STATION_HUB section 17.4 P7): the rail folds 8 -> 6 entries.**
+## FITTING folds into ARMORY and REPAIRS into SHIPYARD (P4/P5); the two tiles retire
+## with their panes. The entries, their icons and their beds all move together, the
+## rename rule above unchanged. **Reversal:** the two entries and their enum slots
+## return (P7's own).
+enum Module { OUTFITTING, REFINERY, EXCHANGE, AUCTION, SHIPYARD, LAUNCH }
 
 const MODULE_FILES: Array[String] = [
 	"armory",
@@ -72,8 +78,6 @@ const MODULE_FILES: Array[String] = [
 	"exchange",
 	"auction",
 	"shipyard",
-	"fitting",
-	"repairs",
 	"launch",
 ]
 const MODULE_LABELS: Array[String] = [
@@ -82,8 +86,6 @@ const MODULE_LABELS: Array[String] = [
 	"EXCHANGE",
 	"AUCTION",
 	"SHIPYARD",
-	"FITTING",
-	"REPAIRS",
 	"LAUNCH",
 ]
 const MODULE_ICONS: Array[String] = [
@@ -92,13 +94,11 @@ const MODULE_ICONS: Array[String] = [
 	"res://assets/icons/cargo/icon_credits.svg",
 	"res://assets/icons/cargo/icon_credits.svg",
 	"res://assets/icons/hud/icon_hull.svg",
-	"res://assets/icons/equip/icon_equip_generator.png",
-	"res://assets/icons/status/icon_status_repairing.png",
 	"res://assets/icons/map/icon_map_route.png",
 ]
-const MODULE_TINTED: Array[bool] = [false, true, true, true, true, false, false, false]
+const MODULE_TINTED: Array[bool] = [false, true, true, true, true, false]
 const MODULE_BEDS: Array[StringName] = [
-	BED_ROOM, BED_PUMP, BED_NOISE, BED_NOISE, BED_PUMP, BED_NOISE, BED_ROOM, BED_ROOM
+	BED_ROOM, BED_PUMP, BED_NOISE, BED_NOISE, BED_PUMP, BED_ROOM
 ]
 const ICON_LOGOUT := "res://assets/icons/hud/icon_logout.svg"
 

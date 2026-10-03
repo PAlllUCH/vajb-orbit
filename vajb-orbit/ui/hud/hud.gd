@@ -40,6 +40,11 @@ extends Control
 signal weapon_slot_selected(slot: int)
 signal cargo_toggled(open: bool)
 signal minimap_zoom_changed(delta: int)
+## S29 A2 (UI_SPEC.md section 9 N4): the map deck's pin events, re-emitted from
+## `map_deck.gd` for the flight scene (`game.gd` owns the orders and the N5 machine).
+signal map_autopilot_to(pos: Vector2)
+signal map_autopilot_cancel()
+signal map_jump_requested(pos: Vector2)
 
 const TOKENS_TYPE: StringName = &"Tokens"
 const TOKEN_TEXT_PRIMARY: StringName = &"text_primary"
@@ -52,6 +57,11 @@ const TOKEN_VOID_BASE: StringName = &"void_base"
 
 const SETTINGS_SECTION: StringName = &"interface"
 const SETTINGS_KEY_OPACITY: StringName = &"hud_opacity"
+
+## S29 A1's map deck (`map_deck.gd`, built in code like the other HUD blocks) and
+## N10's `DIST <n>` read (the deck under the pin, the compact footer's SectorLabel).
+const DeckScript := preload("res://ui/hud/map_deck.gd")
+const PIN_DIST_FORMAT := "DIST %s"
 
 const SLOT_SCENE: PackedScene = preload("res://ui/components/slot_button.tscn")
 const VARIATION_WEAPON: StringName = &"SlotButtonWeapon"
@@ -258,6 +268,9 @@ const RANGE_FORMAT := "%s  %s"
 @onready var _sector_label: Label = %SectorLabel
 @onready var _zoom_minus: TextureButton = %ZoomMinus
 @onready var _zoom_plus: TextureButton = %ZoomPlus
+## S29 (UI_SPEC.md section 10): the compact footer's corner EXPAND button, the third
+## N1 toggle route (a 36x36 `TextureButton` beside `ZoomMinus`/`ZoomPlus`).
+@onready var _expand_button: TextureButton = %ExpandMap
 @onready var _reticle: TargetReticle = %TargetReticle
 @onready var _target_panel: PanelContainer = %TargetPanel
 @onready var _target_name_label: Label = %TargetName
@@ -306,6 +319,12 @@ var _minimap_radius: float = 0.0
 var _blips: Array[Dictionary] = []
 var _sector_name: String = ""
 var _zoom_hovered: TextureButton = null
+## S29 A1/A2: the map deck (N1-N3, N7-N9) and the pin's two reads (N4's caption, N10's
+## distance) - the strings live here so the one distance format serves both the deck's
+## under-pin label and the compact footer's SectorLabel line.
+var _map_deck: Control = null
+var _pin_caption_text := ""
+var _pin_distance_text := ""
 
 var _target_set: bool = false
 var _target_position: Vector2 = Vector2.ZERO
@@ -387,6 +406,8 @@ func _ready() -> void:
 	_build_hud_widgets()
 	_build_minimap_legend()
 	_build_zoom_marks()
+	_build_map_deck()
+	_build_expand_mark()
 	_build_weapon_slots()
 	_place_cargo_panel()
 	_retire_old_column()
@@ -394,6 +415,8 @@ func _ready() -> void:
 	_cargo_close.pressed.connect(_on_cargo_close_pressed)
 	_zoom_minus.pressed.connect(_on_zoom_pressed.bind(ZOOM_DELTA_OUT))
 	_zoom_plus.pressed.connect(_on_zoom_pressed.bind(ZOOM_DELTA_IN))
+	if _expand_button != null:
+		_expand_button.pressed.connect(toggle_map_deck)
 	_bind_zoom_feedback(_zoom_minus)
 	_bind_zoom_feedback(_zoom_plus)
 	_apply_caption_tints()
@@ -454,8 +477,137 @@ func set_minimap_scale(world_radius: float) -> void:
 
 func set_minimap_blips(blips: Array[Dictionary]) -> void:
 	_blips = blips
+	_apply_minimap()
+	_refresh_pin_reads()
+
+
+## S29 (UI_SPEC.md section 9 N1/N4): the map deck's public seam - the toggle routes
+## (M in `map_deck.gd`, this corner button, ESC in `game.gd`), the N5 read line and
+## N4's caption, plus the read-backs the gate and probes assert through.
+func toggle_map_deck() -> void:
+	if _map_deck != null:
+		_map_deck.call(&"toggle")
+
+
+func map_deck_open() -> bool:
+	return _map_deck != null and bool(_map_deck.call(&"is_open"))
+
+
+func map_deck() -> Control:
+	return _map_deck
+
+
+func set_map_jump_read(text: String) -> void:
+	if _map_deck != null:
+		_map_deck.call(&"set_jump_read", text)
+
+
+## N4's `NO HYPERDRIVE INSTALLED` caption (under the pin).
+func set_map_pin_caption(text: String) -> void:
+	_pin_caption_text = text
+	_refresh_pin_reads()
+
+
+## The arrival state's "blip re-centring" (N13): the deck view snaps back to the player.
+func map_recenter() -> void:
+	var deck_map := _deck_map()
+	if deck_map != null:
+		deck_map.recenter_on_player()
+
+
+## The ESC-open seam's pin half (game.gd): section 9.9's cancel and section 10's
+## pin-remove are one operation (the S29-F1 designer ruling), so the deck never
+## reopens on an orderless pin. Rides `pin_changed`, so the compact map clears too.
+func clear_map_pin() -> void:
+	if _map_deck != null:
+		_map_deck.call(&"clear_pin")
+
+
+func _deck_map() -> Minimap:
+	if _map_deck == null:
+		return null
+	return _map_deck.call(&"map_view") as Minimap
+
+
+## The deck rides the HUD's CanvasLayer at N1's 80 % centred pane (the deck script owns
+## its own anchors and its A5.4 chrome); the compact map mirrors its pin and its filters,
+## because N3/N6 read "on deck and compact map" as one feed.
+func _build_map_deck() -> void:
+	if _map_deck != null:
+		return
+	var layer := get_node_or_null(NodePath("CanvasLayer"))
+	if layer == null:
+		return
+	_map_deck = DeckScript.new()
+	_map_deck.name = "MapDeck"
+	## The `_instantiate_hud` precedent (`game.gd`): a branch the theme chain does not
+	## reach gets the theme handed to it explicitly - measured, the deck's labels under
+	## `CanvasLayer` otherwise resolve the engine fallback font (D8-H3's floor reads
+	## 0.00 px cap).
+	_map_deck.theme = theme
+	layer.add_child(_map_deck)
+	_map_deck.connect(&"pin_changed", _on_deck_pin_changed)
+	_map_deck.connect(&"filters_changed", _on_deck_filters_changed)
+	_map_deck.connect(&"autopilot_to", _on_deck_autopilot_to)
+	_map_deck.connect(&"autopilot_cancel", _on_deck_autopilot_cancel)
+	_map_deck.connect(&"jump_requested", _on_deck_jump_requested)
+	_apply_minimap()
+	var deck_map := _deck_map()
+	if _minimap != null and deck_map != null:
+		_minimap.set_filters(deck_map.filters())
+	_refresh_pin_reads()
+
+
+## The corner EXPAND button's code-drawn mark (the compact footer's `ZoomMark` idiom,
+## `map_deck.gd`'s DeckMark): kept out of `zoom_marks()` so that read-back still names
+## the two zoom glyphs only (D8 item 10's own contract).
+func _build_expand_mark() -> void:
+	if _expand_button == null or _expand_button.get_child_count() > 0:
+		return
+	var mark := DeckScript.DeckMark.new()
+	mark.name = ZOOM_MARK
+	mark.mode = DeckScript.DeckMark.MODE_EXPAND
+	mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	mark.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_expand_button.add_child(mark)
+
+
+func _on_deck_pin_changed(pin: Variant) -> void:
 	if _minimap != null:
-		_minimap.set_blips(blips)
+		_minimap.set_pin(pin)
+	if pin == null:
+		## N4's caption is its pin's: no pin, no caption.
+		_pin_caption_text = ""
+	_refresh_pin_reads()
+
+
+func _on_deck_filters_changed(state: Dictionary) -> void:
+	if _minimap != null:
+		_minimap.set_filters(state)
+
+
+func _on_deck_autopilot_to(pos: Vector2) -> void:
+	map_autopilot_to.emit(pos)
+
+
+func _on_deck_autopilot_cancel() -> void:
+	map_autopilot_cancel.emit()
+
+
+func _on_deck_jump_requested(pos: Vector2) -> void:
+	map_jump_requested.emit(pos)
+
+
+## N10's `DIST <n>`: one format, two homes - the deck's under-pin label and the compact
+## footer's SectorLabel line (which `_apply_sector_name` composes).
+func _refresh_pin_reads() -> void:
+	_pin_distance_text = ""
+	if _minimap != null and _minimap.pin() != null:
+		_pin_distance_text = PIN_DIST_FORMAT % _format_int(int(round(_minimap.pin_distance())))
+	var deck_map := _deck_map()
+	if deck_map != null:
+		deck_map.set_pin_reads(_pin_distance_text, _pin_caption_text)
+	_apply_sector_name()
 
 
 func set_target(screen_position: Vector2, hull_fraction: float) -> void:
@@ -1789,8 +1941,13 @@ func _push_tint(item: CanvasItem, token: StringName) -> void:
 
 
 func _apply_sector_name() -> void:
-	if _sector_label != null:
-		_sector_label.text = _sector_name
+	if _sector_label == null:
+		return
+	var text := _sector_name
+	## N10: the pin's `DIST <n>` appended to the compact footer's SectorLabel line.
+	if not _pin_distance_text.is_empty():
+		text += " · " + _pin_distance_text
+	_sector_label.text = text
 
 
 func _apply_prompt() -> void:
@@ -1863,6 +2020,11 @@ func _apply_minimap() -> void:
 	if _minimap_radius > 0.0:
 		_minimap.set_world_radius(_minimap_radius)
 	_minimap.set_blips(_blips)
+	var deck_map := _deck_map()
+	if deck_map != null:
+		if _minimap_radius > 0.0:
+			deck_map.set_world_radius(_minimap_radius)
+		deck_map.set_blips(_blips)
 
 
 ## A W-slot press addresses the **battery ordinal** the pressed cell fires from (09

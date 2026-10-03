@@ -496,7 +496,11 @@ func test_ammo_purchase_charges_the_catalogue_price_and_greys_when_short() -> vo
 ## header, no rows box, no row set, no constants and none of the four fit actions. The S5
 ## racks and inventory are **not** part of the retirement (STATION_HUB section 5.11 reworks
 ## this pane), so they are asserted present here and measured in their own tests.
-func test_the_module_rows_are_retired_from_the_pane_its_scene_and_its_script() -> void:
+func test_the_module_rows_return_as_the_p4_inventory_browser() -> void:
+	## S5's retirement row MOVES (S29 P4 supersedes it): the merged ARMORY carries module
+	## rows again - P4's inventory browser over owned + buyable rows - plus the fit flow's
+	## own confirmation wording (P11 `FITTED · <MODULE>`). The battery racks and the wells
+	## band stay exactly as the retirement row pinned them.
 	var panel := _mount()
 	assert_true(
 		panel.get_node_or_null("%RackRows") != null, "the battery racks are drawn"
@@ -509,28 +513,21 @@ func test_the_module_rows_are_retired_from_the_pane_its_scene_and_its_script() -
 	assert_true(
 		panel.get_node_or_null("%InventoryRows") != null, "and so is the inventory list"
 	)
-	for gone: String in ["%ModuleRows", "%ModulesHeader", "%ModulesCaption", "%ModulesMargin"]:
-		assert_true(panel.get_node_or_null(gone) == null, "no node %s exists" % gone)
-	for constant: String in ["MODULE_ROWS", "EFFECT_TEXT", "STATUS_FITTED", "STATUS_OWNED"]:
-		assert_false(
-			_has_member(PanelScript, constant), "the script carries no %s" % constant
-		)
-	for method: String in [
-		"module_row_ids",
-		"module_action",
-		"buy_module",
-		"install_module",
-		"swap_module",
-		"fit_index_of",
-		"_module_state",
-		"_build_module_rows",
-	]:
-		assert_false(_has_member(PanelScript, method), "the script carries no %s()" % method)
-	## The scene file itself carries no MODULES caption and no rows box: the retirement is
+	assert_true(panel.get_node_or_null("%BrowserRows") != null, "P4's inventory browser ships")
+	assert_true(
+		String((panel.get_node("%BrowserCaption") as Label).text)
+			== "MODULES · OWNED & BUYABLE",
+		"under P8's own caption"
+	)
+	for constant: String in ["STATUS_FITTED", "ACTION_BUY_FIT", "BROWSER_CAPTION"]:
+		assert_true(_has_member(PanelScript, constant), "the script carries %s" % constant)
+	for method: String in ["module_row_ids", "install_module", "remove_selected"]:
+		assert_true(_has_member(PanelScript, method), "the script carries %s()" % method)
+	## The scene file itself carries the browser's caption and its rows box: the merge is
 	## in the shipped scene, not only in the script.
 	var scene := FileAccess.get_file_as_string("res://ui/station/armory_panel.tscn")
-	assert_false(scene.contains("MODULES"), "the pane scene names no MODULES section")
-	assert_false(scene.contains("ModuleRows"), "and carries no rows box for one")
+	assert_true(scene.contains("MODULES"), "the pane scene names its MODULES section")
+	assert_true(scene.contains("BrowserRows"), "and carries the rows box for one")
 
 
 ## Whether a script exposes a member (a constant, a method or a property) by name. The
@@ -673,14 +670,15 @@ func test_the_racks_draw_seven_drop_zones_over_the_inventory() -> void:
 	)
 	assert_eq(rows[1][&"cells"], [], "an empty rack holds nothing")
 	assert_eq(rows[3][&"cells"], [], "and so does a rack past the hull's cells")
-	## T4/T7 (Amendment 3): the empty cells' own `DROP HERE` cues offer the drop (the head's
-	## single hint label retired), and the head's state chip stays visible on every rack.
+	## T7 (Amendment 3) stays; T4 moves (S29 A7, D17-P1's own fix): the empty cells carry
+	## **no** `DROP HERE` cue - a dim recess with no text - and the head's state chip stays
+	## visible on every rack.
 	var loaded := _rack_row(panel, 0)
 	assert_true((loaded.get_node(^"Box/Head/State") as Label).visible, "a loaded rack shows its state chip")
 	assert_eq(_rack_text(panel, 0), PanelScript.RACK_READY, "a laser rack reads READY")
 	assert_eq(
 		(loaded.get_node(^"Box/Cells") as Control).get_child_count(), 3,
-		"and its three empty cells carry the drop cue"
+		"and its three empty cells stay bare drop zones"
 	)
 	var empty := _rack_row(panel, 1)
 	assert_eq(
@@ -688,9 +686,9 @@ func test_the_racks_draw_seven_drop_zones_over_the_inventory() -> void:
 		"an empty rack offers all four cells"
 	)
 	for child: Node in (empty.get_node(^"Box/Cells") as Control).get_children():
-		assert_eq(
-			String((child.get_node(^"Cue") as Label).text), PanelScript.RACK_INSTALL_CUE,
-			"each one the pane's own DROP HERE words"
+		assert_true(
+			child.get_node_or_null(^"Cue") == null,
+			"each one carries no ghost cue (A7: no DROP HERE on empty cells)"
 		)
 
 

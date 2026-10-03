@@ -201,6 +201,12 @@ const EWAR_MODULE: StringName = &"c_ewar"
 const NEXUS_MODULE: StringName = &"c_nexus"
 const EWAR_SLOW := 0.25
 const EWAR_SLOW_NEXUS := 0.35
+## S29 A2/A3 (R-S29-1, `10_ship_acquisition.md`'s 2026-10-03 block): the engine-family
+## module whose fit gates the map deck's hold-to-jump (`UI_SPEC.md` section 9 N4/N5).
+## The jump's clocks (1 s spool, 30 s cooldown) are the flight scene's own state, not
+## the hull's - the hull only answers whether the module is fitted and performs the
+## teleport, the same split `u_drones` uses.
+const HYPERDRIVE_MODULE: StringName = &"e_hyperdrive"
 
 ## The hit's feedback seam F1's `game/fx.gd` sits behind: the death blast, the low-hull
 ## plume and the shield's held bed are `projectile.gd`'s (the hit site's own table), so
@@ -426,6 +432,32 @@ func set_move_target(pos: Vector2) -> void:
 
 func cancel_orders() -> void:
 	_has_move_target = false
+
+
+## S29 (R-S29-1): whether the launched fit carries the hyperdrive, the one gate the
+## map deck's hold-to-jump reads. Fitted-id query, the `u_drones` precedent - the
+## row carries no stat effect, so no second copy of the gate exists anywhere.
+func has_hyperdrive() -> bool:
+	return _fit_ids.has(HYPERDRIVE_MODULE)
+
+
+## S29 A2 (UI_SPEC.md section 9 N4/N5): the jump itself. A hyperdrive jump is an
+## arrival, not a flight: the hull is placed at the pin, the velocity it carried into
+## the fold is dropped (a jump that landed moving would hand the autopilot a target
+## it is already past), and every order is cancelled - the pin was the destination,
+## and the ship is there. The spool and cooldown clocks are `game.gd`'s (N5's own
+## numbers), so this method stays the single writer of the hull's position. The
+## placement moves the **solver's body** (`_sync_hull_transform` mirrors body -> node
+## every physics step, so a node-only teleport snaps back) and restores the mirror's
+## own invariant (the body sits at the node's origin).
+func jump_to(pos: Vector2) -> void:
+	global_position = pos
+	if _body != null:
+		_body.linear_velocity = Vector2.ZERO
+		_body.angular_velocity = 0.0
+		_body.global_position = pos
+		_body.position = Vector2.ZERO
+	cancel_orders()
 
 
 ## The aim override (additive seam): while `thrust_forward` is held the nose chases this

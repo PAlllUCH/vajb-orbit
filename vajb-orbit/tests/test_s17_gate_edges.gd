@@ -246,12 +246,14 @@ func test_ac5_every_gate_blips_friendly_at_its_new_position() -> void:
 			var position: Vector2 = gate.position
 			var matches := 0
 			for blip: Dictionary in blips:
-				if StringName(blip.get("kind", &"")) != &"friendly":
+				## S29 (UI_SPEC.md section 10 N16) moved this row's class: the gate rings
+				## blip their own `gate` class (N6's always-on pair) since the re-anchor.
+				if StringName(blip.get("kind", &"")) != &"gate":
 					continue
 				var blip_position: Vector2 = blip.get("pos", Vector2.ZERO)
 				if blip_position.is_equal_approx(position):
 					matches += 1
-			assert_eq(matches, 1, "sector %d gate->%d has one friendly blip at %s"
+			assert_eq(matches, 1, "sector %d gate->%d has one gate blip at %s"
 				% [number, int(gate.get(&"dest_sector")), position])
 
 

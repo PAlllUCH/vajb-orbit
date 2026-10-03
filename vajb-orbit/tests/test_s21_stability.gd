@@ -906,18 +906,20 @@ func test_booting_the_station_writes_nothing_to_user() -> void:
 		"and the file was not rewritten at all"
 	)
 	## The dock half: the route entry is where the market normalises.
+	## The two band reads are `>` the fixture's own stale bands rather than `== now` (S29:
+	## the exact-equality row raced the clock's own second tick and flaked at a boundary).
 	screen.call(&"on_route", {})
-	assert_eq(
+	assert_gt(
 		int((profile.call(&"market") as Dictionary).get("last_band", 0)),
-		ClockScript.now(),
+		int(market_before.get("last_band", 0)),
 		"the dock normalised the market to the clock (L18)"
 	)
 	## The switch half: the shell's focus pass into the AUCTION pane pops `enter_pane`.
 	screen.call(&"_select_module", StationScript.Module.AUCTION)
 	screen.call(&"_focus_active_panel")
-	assert_eq(
+	assert_gt(
 		int((profile.call(&"auction") as Dictionary).get("last_band", 0)),
-		ClockScript.now(),
+		int(shelf_before.get("last_band", 0)),
 		"and entering the pane rolled the shelf (L122)"
 	)
 

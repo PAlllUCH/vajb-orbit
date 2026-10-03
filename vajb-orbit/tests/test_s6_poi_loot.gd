@@ -561,6 +561,10 @@ func test_beacon_reveals_the_sectors_unscanned_pois() -> void:
 
 ## 11 §5's soft fog in `blips()`: unrevealed POIs are absent, revealed ones are
 ## `neutral`, beacons and wreck sites are `friendly`/`neutral` and always present.
+## S29 (UI_SPEC.md section 10 N15/N16) moved the friendly count below: the station
+## and the gate rings blip their own `station`/`gate` classes now (N6's always-on
+## pair, drawn as the friendly diamond they wore), so the beacons alone are the
+## friendly blips.
 func test_blips_apply_the_soft_fog() -> void:
 	var sector := _bare_sector()
 	sector.call(&"populate", _row(&"sector_3"), 4243)
@@ -580,9 +584,19 @@ func test_blips_apply_the_soft_fog() -> void:
 		"only the fields and the convoys blip neutral while every POI is fogged"
 	)
 	assert_eq(
+		int(fogged.get(&"station", 0)),
+		1,
+		"the station blips its own N15 class"
+	)
+	assert_eq(
+		int(fogged.get(&"gate", 0)),
+		gates,
+		"the gates blip their own N16 class"
+	)
+	assert_eq(
 		int(fogged.get(&"friendly", 0)),
-		gates + beacons + 1,
-		"the station, the gates and the beacons are the friendly blips"
+		beacons,
+		"and the beacons are the friendly blips"
 	)
 	sector.call(&"reveal_pois")
 	var revealed := _blip_kinds(sector)

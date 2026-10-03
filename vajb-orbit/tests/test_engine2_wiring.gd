@@ -295,10 +295,18 @@ func test_the_minimap_feed_carries_every_hull_plus_the_pois() -> void:
 	assert_eq(
 		int(kinds.get(&"hostile", 0)), hostiles, "every hostile hull shows hostile"
 	)
+	## S29 (UI_SPEC.md section 10 N15/N16) moved the friendly count: the station and the
+	## gate rings blip their own `station`/`gate` classes (N6's always-on pair).
+	assert_eq(
+		int(kinds.get(&"station", 0)), 1, "the station blips its own N15 class"
+	)
+	assert_eq(
+		int(kinds.get(&"gate", 0)), gates, "every gate ring blips its own N16 class"
+	)
 	assert_eq(
 		int(kinds.get(&"friendly", 0)),
-		gates + beacons + 1,
-		"the station, every gate ring and every nav beacon are the friendly blips"
+		beacons,
+		"and every nav beacon is a friendly blip"
 	)
 	assert_true(hostiles >= 1, "and the sector has hostiles to show")
 

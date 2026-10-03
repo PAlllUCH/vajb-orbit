@@ -183,6 +183,79 @@ const PULSE_MIN_ALPHA := 0.35
 const PULSE_DOWN_SECONDS := 0.12
 const PULSE_UP_SECONDS := 0.16
 
+## ------------------------------------------------- the S29 merged surfaces (P4, P8-P14)
+## STATION_HUB section 16 P4 and section 17.1: FITTING folds in as the pane's left half
+## (the ship grid on `fitting_panel.gd:18-70,148-149`'s own numbers) and the right half is
+## the inventory browser - the AUCTION's family-tab strip minus `HULLS` (a hull is not a
+## module row and fits no cell; D18-A1's judgment, reversal: ship the tab disabled) over
+## owned + buyable module rows in the auction row idiom.
+const TAB_ALL: StringName = &"all"
+const BROWSER_TABS: Array[Dictionary] = [
+	{&"id": &"weapons", &"label": "WEAPONS", &"slot": &"weapons"},
+	{&"id": &"drives", &"label": "DRIVES", &"slot": &"engine"},
+	{&"id": &"shields", &"label": "SHIELDS", &"slot": &"shields"},
+	{&"id": &"armour", &"label": "ARMOUR", &"slot": &"armour"},
+	{&"id": &"power", &"label": "POWER", &"slot": &"power"},
+	{&"id": &"computers", &"label": "COMPUTERS", &"slot": &"computers"},
+	{&"id": &"boosters", &"label": "BOOSTERS", &"slot": &"boosters"},
+	{&"id": &"utility", &"label": "UTILITY", &"slot": &"utility"},
+	{&"id": &"all", &"label": "ALL", &"slot": &""},
+]
+const TAB_MIN_SIZE := Vector2(0.0, 32.0)
+## P8 (section 17.5): the browser caption. Reversal: `OWNED MODULES` (the fitting label).
+const BROWSER_CAPTION := "MODULES · OWNED & BUYABLE"
+const BROWSER_META_FORMAT := "SLOT %s · DRAW %d"
+const BROWSER_ROW_HEIGHT := 76.0
+const BROWSER_ICON := 24.0
+const COL_OWNED := 130.0
+## P1 (UI_SPEC section 8): the row-corner BUY is an `ActionInline` 96x32 flat chip.
+const ACTION_INLINE := Vector2(96.0, 32.0)
+## The ship grid's own recipe (FITTING's numbers, section 17.1's own cite): 48 px
+## `SlotButtonWeapon` plates, gaps as empty 48 x 48 Controls, the glyph inset 6, the
+## `SLOT LAYOUT` caption. The meter's preview word is A7's CANDIDATE rename (D17-P1:
+## "CANDIDATE uses an undefined term"); PROPOSED `IF FITTED`, reversal: `CANDIDATE`.
+const PLATE_VARIATION: StringName = &"SlotButtonWeapon"
+const PLATE_SIZE := 48.0
+const PLATE_SEPARATION := 4
+const PLATE_ICON_INSET := 6.0
+const HARDPOINT_CAPTION := "SLOT LAYOUT · %d CELLS · %d ENGINES"
+const SLOT_GLYPHS: Dictionary = {
+	&"engines": "engine",
+	&"power": "power",
+	&"weapons": "w",
+	&"shields": "s",
+	&"armour": "h",
+	&"computers": "c",
+	&"boosters": "b",
+	&"utility": "u",
+}
+const SLOT_GLYPH_DIR := "res://assets/icons/slot/"
+const SLOT_GLYPH_TEMPLATE := "icon_slot_%s.svg"
+const SLOT_KEY_ALIASES: Dictionary = {&"engine": &"engines"}
+const METER_IDLE := "PWR %d / %d"
+const METER_PREVIEW := "PWR %d / %d · IF FITTED %d / %d"
+const METER_OVER := " — OVER BY %d"
+const SELECTION_FORMAT := "%s%d · %s · OWNED ×%d"
+const CELL_EMPTY := "EMPTY"
+const ACTION_SELECT: StringName = &"SELECT A CELL"
+const ACTION_FIT: StringName = &"FIT"
+const ACTION_SWAP: StringName = &"SWAP"
+const OWNED_FORMAT := "OWNED ×%d"
+## P9/P10/P11/P14 (section 17.5): the wrong-slot refusal line, the 0.5 s slot-caption
+## flash (label + state, never a colour alone), the fit confirmation and the cluster
+## primary's own label (`SELECTED` appended when a cell is selected).
+const REFUSAL_DROP := "DROP REFUSED — %s FITS NO %s CELL"
+const SLOT_FLASH_SECONDS := 0.5
+const STATUS_FITTED := "FITTED · %s"
+const STATUS_SHORTFALL := "REFUSED · NOT ENOUGH CREDITS · %s NEEDED"
+const ACTION_REMOVE := "REMOVE"
+const ACTION_BUY_FIT := "BUY & FIT"
+const ACTION_BUY_FIT_SELECTED := "BUY & FIT SELECTED"
+const DRAG_BROWSER: StringName = &"browser"
+const DRAG_KEY_ENTRY: StringName = &"entry"
+const DRAG_KEY_OWNED: StringName = &"owned"
+const DRAG_KEY_PRICE: StringName = &"price"
+
 ## Audit anomaly C16: these three catalogue icons are flat Phase B glyphs (mean RGB about
 ## 40, 44, 47) that read as near-black shapes on the row chrome, so the row draws the
 ## derived icons/tint/ stencil moderated with Tokens/text_primary instead. Every other
@@ -337,6 +410,35 @@ class InventoryRow extends Button:
 		if armory == null:
 			return null
 		return armory.call(&"drag_inventory", base_id)
+
+
+## One ship-grid cell (P4's left half): selectable (`FOCUS_ALL`, the one focus ring), a
+## drop target filtered by slot and the owner of the slot caption that flashes 0.5 s on a
+## refused drop (P10). The empty cell draws its dim glyph and no cue text at all (A7: the
+## `DROP HERE` ghosts never land on the merged panels).
+class SlotCell extends Button:
+	var armory: Control = null
+	var cell: Dictionary = {}
+
+	func _can_drop_data(_at: Vector2, data: Variant) -> bool:
+		return armory != null and bool(armory.call(&"cell_can_drop", cell, data))
+
+	func _drop_data(_at: Vector2, data: Variant) -> void:
+		if armory != null:
+			armory.call(&"cell_drop", cell, data)
+
+
+## One browser row: the auction row idiom (a `Button` carrying its own children), the
+## drag source of every fit flow and a hover emitter for the shared inspector. The
+## row-corner BUY is the P1 `ActionInline` chip nested in the row.
+class BrowserRow extends Button:
+	var armory: Control = null
+	var payload: Dictionary = {}
+
+	func _get_drag_data(_at: Vector2) -> Variant:
+		if armory == null:
+			return null
+		return armory.call(&"drag_browser", payload)
 
 
 ## A chip: the rounded plate, its border and - for the AT CAP state - the chevron that
@@ -687,6 +789,14 @@ class ConsolePanels extends Control:
 @onready var _ammo_caption: Label = %AmmoCaption
 @onready var _ammo_scroll: ScrollContainer = %AmmoScroll
 @onready var _rows: Control = %ArmoryRows
+@onready var _slot_caption: Label = %SlotCaption
+@onready var _grid: GridContainer = %SlotLayoutGrid
+@onready var _meter: Label = %MeterLabel
+@onready var _line: Label = %SelectionLine
+@onready var _tabs: HBoxContainer = %FamilyTabs
+@onready var _browser_rows: VBoxContainer = %BrowserRows
+@onready var _remove_button: Button = %RemoveButton
+@onready var _buy_fit_button: Button = %BuyFitButton
 
 ## The style in force (`ArmoryStyle`, a `CockpitStyle`): every colour, metric and asset
 ## path on this surface comes from here (section 3.9 rule 5).
@@ -712,12 +822,32 @@ var _tweens: Array[Tween] = []
 ## rack ordinal the cluster's lamp lights. It follows focus and never writes anything.
 var _selected_rack: int = 0
 
+## The merged grid (P4's left half): the cells (`{type, token, index, node, caption}`),
+## the selected cell's identity and the entry the meter previews (`fitting_panel.gd`'s own
+## shapes, so the fit arithmetic ports cell for cell).
+var _cells: Array[Dictionary] = []
+var _selected: Dictionary = {}
+var _candidate: StringName = &""
+var _grid_hull: StringName = &""
+var _line_override := ""
+var _line_danger := false
+## The browser: one payload per built row, the tab in force and the focused row (the one
+## the cluster's `BUY & FIT` acts on).
+var _browser_payloads: Array[Dictionary] = []
+var _browser_tab: StringName = &"all"
+var _browser_focused: Dictionary = {}
+var _browser_signature: Array[String] = []
+var _grid_tweens: Array[Tween] = []
+
 
 func _ready() -> void:
 	_build_console()
 	_build_rows()
 	_build_racks()
 	_build_inventory()
+	_build_grid_surface()
+	_build_browser()
+	_wire_actions()
 	_apply_tokens()
 	_connect_scroll()
 	resized.connect(_lay)
@@ -745,16 +875,34 @@ func _exit_tree() -> void:
 func refresh_profile(key: StringName) -> void:
 	if key == &"credits" or key == &"ammo" or key == &"cargo":
 		_refresh_rows()
+		_refresh_browser()
 	if key == &"fits" or key == &"ships" or key == &"batteries":
 		_refresh_racks()
 	if key == &"modules" or key == &"fits" or key == &"ships" or key == &"batteries":
 		_refresh_inventory()
+		_refresh_browser()
+	if key == &"fits" or key == &"ships" or key == &"modules":
+		_sync_grid(_active_hull(_profile()))
+		_refresh_footer()
 
 
 ## The focus order: the racks' barrels first (rack order, each chip's own plate), then
 ## the inventory rows - the pane's one action source - then the ammunition rows, then the
 ## pane's own footer and the rail (STATION_HUB section 10).
+## The focus order: the SLOT LAYOUT cells first (row-major, STATION_HUB section 17.1:
+## "the cells stay selectable and keep the one focus ring"), then the browser rows, then
+## the racks' barrels, then the ammunition rows (STATION_HUB section 10).
 func focus_primary() -> void:
+	for payload: Dictionary in _cells:
+		var plate := payload[&"node"] as Button
+		if plate != null and is_instance_valid(plate) and not plate.disabled:
+			plate.grab_focus()
+			return
+	for payload: Dictionary in _browser_payloads:
+		var row := payload[&"row"] as Button
+		if row != null and is_instance_valid(row) and not row.disabled:
+			row.grab_focus()
+			return
 	for view: Dictionary in _rack_views:
 		for barrel: Dictionary in view[&"barrels"]:
 			var control := barrel[&"name"] as Button
@@ -893,28 +1041,28 @@ func _apply_style() -> void:
 		_refresh_inventory_row(view)
 
 
-## P6's one layout entry: every rect the pane draws derives from its own rect (the host
-## the station shell gave it) through the style. Safe to call before the host has a size
-## (a zero host derives zero rects and nothing is clipped).
+## P6's one layout entry for the console body (the racks band and the wells band). The
+## body rides in its own scroll window below the P4 split and lays out at the style's
+## base-host console (S29: the body moves under the merged split; its internal derivation
+## is unmoved). Safe to call before the host has a size.
 func _lay() -> void:
 	if _style == null or not is_node_ready():
 		return
-	var host := Rect2(Vector2.ZERO, size)
-	var console: Rect2 = _style.console_rect(host)
-	_console.position = console.position
+	var console := Rect2(Vector2.ZERO, _style.console_size_at_base())
+	_console.position = Vector2.ZERO
 	_console.size = console.size
+	_console.custom_minimum_size = console.size
 	var band: Rect2 = _style.bays_band(console)
-	_rack_rows.position = band.position - console.position
+	_rack_rows.position = band.position
 	_rack_rows.size = band.size
 	_rack_rows.custom_minimum_size = band.size
-	_position_chrome()
 	_lay_half(
 		_inventory_margin, _inventory_caption, _inventory_scroll,
-		_shift(_style.well_half_rect(0, console), -console.position)
+		_style.well_half_rect(0, console)
 	)
 	_lay_half(
 		_ammo_margin, _ammo_caption, _ammo_scroll,
-		_shift(_style.well_half_rect(1, console), -console.position)
+		_style.well_half_rect(1, console)
 	)
 	## The captions read their own counts (they cannot go stale) - refreshed here, on
 	## every layout pass, so a resize and a profile change tell the same story.
@@ -926,6 +1074,26 @@ func _lay() -> void:
 	_lay_inventory()
 	_lay_cards()
 	_update_chrome()
+	_flush_layout()
+
+
+## The merged pane's container tree flushes its own sort here, so the synchronous pass a
+## headless suite reads (and `_settle_layout` drives) leaves every child at its laid-out
+## position before the first input lands - the pre-merge pane positioned by hand and the
+## suites read the very same frame.
+func _flush_layout() -> void:
+	var stack: Array[Node] = [self]
+	while not stack.is_empty():
+		var node: Node = stack.pop_back()
+		if node == _console:
+			## The console body is laid out by `_lay`'s own pass (the pre-merge pane's
+			## contract: its positions are exact before any container sort), so the
+			## flush stops here rather than re-stacking the rack band.
+			continue
+		if node is Container:
+			(node as Container).notification(Container.NOTIFICATION_SORT_CHILDREN)
+		for child: Node in node.get_children():
+			stack.append(child)
 
 
 ## The pane's own chrome inside the console: the title and the hint on the top line, the
@@ -1910,8 +2078,10 @@ static func _split_name(full_name: String) -> Array[String]:
 	return [full_name.substr(0, cut), full_name.substr(cut + 1)]
 
 
-## One empty cell: the `DROP HERE` cue and the physical drop zone (the body-drop route).
-## `slot` is the grid position it fills, not a W-cell index.
+## One empty cell: the bare drop zone (the body-drop route). A7 - the `DROP HERE` ghost
+## cue is gone; the empty cell reads as a dim recess with no text (D17-P1's own fix:
+## "dim outline slots with no text"). `slot` is the grid position it fills, not a W-cell
+## index.
 func _build_drop_cell(rack: int, slot: int, parent: Control) -> void:
 	var pad := DropCell.new()
 	pad.name = "Cell%d" % (slot + 1)
@@ -1919,11 +2089,6 @@ func _build_drop_cell(rack: int, slot: int, parent: Control) -> void:
 	pad.rack = rack
 	pad.slot = slot
 	pad.mouse_filter = Control.MOUSE_FILTER_STOP
-	var cue := _make_caption(RACK_INSTALL_CUE)
-	cue.name = "Cue"
-	cue.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	cue.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	pad.add_child(cue)
 	parent.add_child(pad)
 
 
@@ -2189,7 +2354,7 @@ func bay_rects() -> Array[Rect2]:
 	var out: Array[Rect2] = []
 	if _style == null:
 		return out
-	var console := Rect2(_console.position, _console.size)
+	var console := _base_console_rect()
 	for index in _rack_views.size():
 		out.append(_style.bay_rect(index, console))
 	return out
@@ -2200,10 +2365,19 @@ func well_rects() -> Array[Rect2]:
 	var out: Array[Rect2] = []
 	if _style == null:
 		return out
-	var console := Rect2(_console.position, _console.size)
+	var console := _base_console_rect()
 	out.append(_style.well_half_rect(0, console))
 	out.append(_style.well_half_rect(1, console))
 	return out
+
+
+## The body's own derivation space: the style's base-host console (P6's derivation at the
+## pinned host), which is the rectangle `_lay` draws the body's internals against. The
+## body's placement in the merged pane moved under the P4 split; its internal law did not.
+func _base_console_rect() -> Rect2:
+	if _style == null:
+		return Rect2()
+	return _style.console_rect(Rect2(Vector2.ZERO, _style.host_base))
 
 
 ## The console's own size as drawn.
@@ -2656,6 +2830,9 @@ func _refresh_all() -> void:
 	_refresh_rows()
 	_refresh_racks()
 	_refresh_inventory()
+	_sync_grid(_active_hull(_profile()))
+	_refresh_browser()
+	_refresh_footer()
 
 
 func _profile() -> ProfileScript:
@@ -2700,3 +2877,945 @@ func _format_int(value: int) -> String:
 		if count % 3 == 0 and index > 0:
 			grouped = " " + grouped
 	return ("-" if value < 0 else "") + grouped
+
+
+## ================================================== the merged grid (P4's left half)
+##
+## STATION_HUB section 17.1: "Left: the ship grid exactly as FITTING ships it" - 48 px
+## `SlotButtonWeapon` plates, gaps as empty Controls, the glyph inset 6, separations 4,
+## the `SLOT LAYOUT` caption and the footer power meter on FITTING's own numbers
+## (`fitting_panel.gd:18-70,148-149`). The cells stay selectable and drop-accepting;
+## the fit arithmetic below ports `fitting_panel.gd`'s own (the composed calls are the
+## profile's, CONTRACTS section 13).
+
+
+func _build_grid_surface() -> void:
+	_grid.add_theme_constant_override(&"h_separation", PLATE_SEPARATION)
+	_grid.add_theme_constant_override(&"v_separation", PLATE_SEPARATION)
+
+
+func _wire_actions() -> void:
+	_remove_button.text = ACTION_REMOVE
+	_remove_button.pressed.connect(_on_remove_pressed)
+	_buy_fit_button.pressed.connect(_on_buy_fit_pressed)
+
+
+## Build (or keep) the SLOT LAYOUT grid for `hull` - a function of the hull's own matrix,
+## rebuilt when that matrix changes. A refresh of the same hull keeps its cells and only
+## re-applies the selection.
+func _sync_grid(hull: StringName) -> void:
+	if hull == _grid_hull and not _cells.is_empty():
+		_apply_cell_selection()
+		return
+	_grid_hull = hull
+	_cells.clear()
+	_selected = {}
+	_candidate = &""
+	for child: Node in _grid.get_children():
+		_grid.remove_child(child)
+		child.queue_free()
+	var cells: Array = ShipFit.grid_cells(hull)
+	if cells.is_empty():
+		_grid.columns = 1
+		_slot_caption.text = ""
+		return
+	_grid.columns = ShipFit.grid_size(hull).x
+	var slot_cells := 0
+	for cell: Dictionary in cells:
+		if bool(cell[&"gap"]):
+			var gap := Control.new()
+			gap.name = "Gap"
+			gap.custom_minimum_size = Vector2(PLATE_SIZE, PLATE_SIZE)
+			gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			_grid.add_child(gap)
+		else:
+			_cells.append(_make_grid_cell(cell))
+			slot_cells += 1
+	var engines := int(ShipFit.grid_counts(hull).get(&"engines", 0))
+	_slot_caption.text = HARDPOINT_CAPTION % [slot_cells, engines]
+
+
+## One non-gap matrix cell: the 48 px plate, the type's glyph inset 6, the hidden slot
+## caption that flashes 0.5 s on a refused drop (P10) and the cell's own naming line as
+## its tooltip (A7's cell tooltips). The empty cell draws dim and carries no cue text.
+func _make_grid_cell(cell: Dictionary) -> Dictionary:
+	var slot_key: StringName = cell[&"type"]
+	var plate := SlotCell.new()
+	plate.name = "Slot%s%02d" % [String(cell[&"token"]), int(cell[&"index"])]
+	plate.armory = self
+	plate.cell = {
+		&"type": slot_key,
+		&"token": String(cell[&"token"]),
+		&"index": int(cell[&"index"]),
+	}
+	plate.theme_type_variation = PLATE_VARIATION
+	plate.toggle_mode = true
+	plate.focus_mode = Control.FOCUS_ALL
+	plate.custom_minimum_size = Vector2(PLATE_SIZE, PLATE_SIZE)
+	plate.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	_grid.add_child(plate)
+	var glyph := TextureRect.new()
+	glyph.name = "Icon"
+	glyph.custom_minimum_size = Vector2(
+		PLATE_SIZE - PLATE_ICON_INSET * 2.0, PLATE_SIZE - PLATE_ICON_INSET * 2.0
+	)
+	glyph.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	glyph.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	glyph.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	glyph.texture = _slot_glyph(slot_key)
+	glyph.modulate = _token(&"text_dim")
+	plate.add_child(glyph)
+	glyph.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	glyph.offset_left = PLATE_ICON_INSET
+	glyph.offset_top = PLATE_ICON_INSET
+	glyph.offset_right = -PLATE_ICON_INSET
+	glyph.offset_bottom = -PLATE_ICON_INSET
+	var caption := Label.new()
+	caption.name = "SlotCaption"
+	caption.theme_type_variation = &"StationCaption"
+	caption.text = _slot_word(slot_key)
+	caption.visible = false
+	caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	caption.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	plate.add_child(caption)
+	caption.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	plate.cell[&"node"] = plate
+	plate.cell[&"caption"] = caption
+	var payload := plate.cell
+	plate.pressed.connect(_on_cell_pressed.bind(payload))
+	plate.focus_entered.connect(_on_cell_focused.bind(payload))
+	return payload
+
+
+## 09 section 1's shipped slot glyph for a slot-type key (`fitting_panel.gd:565-574`'s
+## own table), null for a type with no glyph so the cell draws its plate alone.
+func _slot_glyph(slot_key: StringName) -> Texture2D:
+	var stem := String(SLOT_GLYPHS.get(slot_key, ""))
+	if stem.is_empty():
+		return null
+	var path := SLOT_GLYPH_DIR + SLOT_GLYPH_TEMPLATE % stem
+	if not ResourceLoader.exists(path):
+		return null
+	return load(path) as Texture2D
+
+
+## The cell's own slot caption word (the label P10 flashes and the word P9's refusal
+## names): the fit's own slot key in upper case, `WEAPONS` / `ENGINES` / `POWER` / ...
+func _slot_word(slot_key: StringName) -> String:
+	return String(slot_key).to_upper()
+
+
+func _apply_cell_selection() -> void:
+	for payload: Dictionary in _cells:
+		var plate := payload[&"node"] as Button
+		if plate == null or not is_instance_valid(plate):
+			continue
+		plate.set_pressed_no_signal(_is_selected(payload))
+
+
+func _is_selected(payload: Dictionary) -> bool:
+	return (
+		not _selected.is_empty()
+		and payload[&"type"] == _selected[&"type"]
+		and int(payload[&"index"]) == int(_selected[&"index"])
+	)
+
+
+## One cell selected: the identity is kept, the meter's preview follows and the footer's
+## line and the cluster's label move with it. A click and a focus move both arrive here.
+func _select(payload: Dictionary, clicked: bool) -> void:
+	if clicked:
+		AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	else:
+		AudioManager.play_ui(AudioManager.UiCue.HOVER)
+	_selected = {
+		&"type": payload[&"type"],
+		&"token": payload[&"token"],
+		&"index": int(payload[&"index"]),
+	}
+	_line_override = ""
+	_line_danger = false
+	_apply_cell_selection()
+	_refresh_footer()
+
+
+func _on_cell_pressed(payload: Dictionary) -> void:
+	_select(payload, true)
+
+
+func _on_cell_focused(payload: Dictionary) -> void:
+	_select(payload, false)
+
+
+## Select one cell by its 09 section 4.5 identity, the keyboard's and a probe's door into
+## the same selection a click makes. False when the active hull carries no such cell.
+func select_cell(slot_key: StringName, index: int) -> bool:
+	for payload: Dictionary in _cells:
+		if payload[&"type"] == slot_key and int(payload[&"index"]) == index:
+			_select(payload, false)
+			return true
+	return false
+
+
+func clear_selection() -> void:
+	_selected = {}
+	_candidate = &""
+	_line_override = ""
+	_line_danger = false
+	_apply_cell_selection()
+	_refresh_footer()
+
+
+## The cell the pane has selected, `{type, token, index}`, or `{}` when nothing is.
+func selected_cell() -> Dictionary:
+	return _selected.duplicate()
+
+
+## The active hull, the same source the grid, the caption, the fit and the meter read.
+func active_hull() -> StringName:
+	return _active_hull(_profile())
+
+
+## The meter's own text, read back for probes and tests (the idle form without a selection
+## and the `IF FITTED` preview with one).
+func meter_text() -> String:
+	return _meter.text
+
+
+## The selection line's text, read back for probes and tests.
+func footer_text() -> String:
+	return _line.text
+
+
+## The browser's row ids in render order, read back for probes and tests.
+func module_row_ids() -> Array[StringName]:
+	var ids: Array[StringName] = []
+	for payload: Dictionary in _browser_payloads:
+		ids.append(payload[&"base"])
+	return ids
+
+
+## The tab in force (`&"all"` by default), read back for probes and tests.
+func active_tab() -> StringName:
+	return _browser_tab
+
+
+## Move the browser to one family tab (the keyboard's and a probe's door into the same
+## move a tab press makes).
+func select_tab(tab_id: StringName) -> void:
+	for tab: Dictionary in BROWSER_TABS:
+		if tab[&"id"] == tab_id:
+			_browser_tab = tab_id
+			_refresh_browser()
+			return
+
+
+## The base id's held units, summed over the bag's own keys (`OWNED ×<n>`'s own count).
+func owned_total(base_id: StringName) -> int:
+	return _owned_total(_profile(), base_id)
+
+
+## ------------------------------------------------------------------ the fit arithmetic
+
+
+func _refresh_footer() -> void:
+	var profile := _profile()
+	var hull := _active_hull(profile)
+	_sync_grid(hull)
+	var fit := _resolved_fit(profile, hull)
+	_meter.text = _meter_line(profile, hull, fit)
+	if _meter_danger(profile, hull, fit):
+		_meter.add_theme_color_override(&"font_color", _token(&"accent_danger"))
+	else:
+		_meter.remove_theme_color_override(&"font_color")
+	if not _line_override.is_empty():
+		_line.text = _line_override
+	else:
+		_line.text = _selection_line(profile, fit)
+	for payload: Dictionary in _cells:
+		var plate := payload[&"node"] as Button
+		if plate != null and is_instance_valid(plate):
+			plate.tooltip_text = cell_tooltip(payload, profile, fit)
+	_remove_button.disabled = not can_remove()
+	_buy_fit_button.text = (
+		ACTION_BUY_FIT_SELECTED if not _selected.is_empty() else ACTION_BUY_FIT
+	)
+	_buy_fit_button.disabled = _browser_focused.is_empty()
+
+
+## The meter as text: the fit the launch flies (`PWR <Σ> / <out>`) and, with a cell
+## selected, the `IF FITTED` preview on the candidate's own arithmetic - every number is
+## `fit_legal`'s `power` dictionary, never a second arithmetic (section 5.3's own rule).
+func _meter_line(profile: ProfileScript, hull: StringName, fit: Dictionary) -> String:
+	var power := _power_of(profile, hull, fit)
+	var draws := int(power.get(&"draw", 0))
+	var out := int(power.get(&"out", 0))
+	if _selected.is_empty():
+		return METER_IDLE % [draws, out]
+	var candidate := _candidate_power(profile, hull, fit)
+	var line := METER_PREVIEW % [
+		draws, out, int(candidate.get(&"draw", 0)), int(candidate.get(&"out", 0))
+	]
+	if not bool(candidate.get(&"legal", true)):
+		line += METER_OVER % (int(candidate.get(&"draw", 0)) - int(candidate.get(&"out", 0)))
+	return line
+
+
+func _meter_danger(profile: ProfileScript, hull: StringName, fit: Dictionary) -> bool:
+	if _selected.is_empty():
+		return false
+	return not bool(_candidate_power(profile, hull, fit).get(&"legal", true))
+
+
+## The candidate's arithmetic: the resolved fit with the selected cell set to the entry the
+## player is reading (the hovered or focused browser row), the resolved fit itself when no
+## such entry is being read or its slot is not the selected cell's.
+func _candidate_power(profile: ProfileScript, hull: StringName, fit: Dictionary) -> Dictionary:
+	if _selected.is_empty() or _candidate == &"":
+		return _power_of(profile, hull, fit)
+	var slot_key: StringName = _selected[&"type"]
+	if _candidate_slot(profile, _candidate) != slot_key:
+		return _power_of(profile, hull, fit)
+	return _power_of(
+		profile,
+		hull,
+		_with_cell(_resolved_fit(profile, hull), slot_key, int(_selected[&"index"]), _candidate)
+	)
+
+
+func _power_of(profile: ProfileScript, hull: StringName, fit: Dictionary) -> Dictionary:
+	return ShipFit.fit_legal(hull, _base_fit(profile, fit)).get(&"power", {})
+
+
+## The selected cell's line, `<TYPE><n> · <MODULE NAME or EMPTY> · OWNED ×<n>` (the
+## fitting surface's own format), or `SELECT A CELL` with no selection - the line is never
+## blank (the pin's own rule).
+func _selection_line(profile: ProfileScript, fit: Dictionary) -> String:
+	if _selected.is_empty():
+		return ACTION_SELECT
+	return cell_line(_selected, profile, fit)
+
+
+## One cell's own naming line - the footer's selection line and the cell tooltip (A7)
+## share it, so the two can never describe two different cells.
+func cell_line(cell: Dictionary, profile: ProfileScript, fit: Dictionary) -> String:
+	var slot_key: StringName = cell[&"type"]
+	var index := int(cell[&"index"])
+	var entry := _cell_module(fit, slot_key, index)
+	var base := _base_id(profile, entry)
+	var owned := 0
+	var name_text := CELL_EMPTY
+	if base != &"":
+		name_text = _module_name(base)
+		owned = _owned_total(profile, base)
+	return SELECTION_FORMAT % [String(cell[&"token"]), index + 1, name_text, owned]
+
+
+func cell_tooltip(cell: Dictionary, profile: ProfileScript, fit: Dictionary) -> String:
+	return cell_line(cell, profile, fit)
+
+
+## The fit cell's module, `&""` for an empty cell and an index the hull does not carry.
+## POWER is one id, not a set (CONTRACTS section 11 rule 1).
+func _cell_module(fit: Dictionary, slot_key: StringName, index: int) -> StringName:
+	if slot_key == POWER_SLOT:
+		var single: Variant = fit.get(slot_key, fit.get(String(slot_key), ""))
+		if single is Array:
+			for entry: Variant in single as Array:
+				if String(entry) != "":
+					return StringName(String(entry))
+			return &""
+		return StringName(String(single)) if single != null else &""
+	var raw: Variant = fit.get(slot_key, fit.get(String(slot_key), []))
+	if not raw is Array:
+		return &""
+	var cells: Array = raw as Array
+	if index < 0 or index >= cells.size():
+		return &""
+	return StringName(String(cells[index]))
+
+
+## The catalogue's slot key of an entry in the fit's own spelling (`engine` -> `engines`).
+func _slot_key_of(module_id: StringName) -> StringName:
+	var slot: StringName = ModuleData.slot_of(module_id)
+	return SLOT_KEY_ALIASES.get(slot, slot)
+
+
+## An entry's own catalogue slot in the fit's spelling; instances translate to their base.
+func _candidate_slot(profile: ProfileScript, entry: StringName) -> StringName:
+	return _slot_key_of(_base_id(profile, entry))
+
+
+## ------------------------------------------------------------- the two fit actions
+
+
+## Whether the per-cell REMOVE is offered: a cell is selected and it holds a module.
+func can_remove() -> bool:
+	var profile := _profile()
+	if profile == null or _selected.is_empty():
+		return false
+	var hull := _active_hull(profile)
+	var fit := _resolved_fit(profile, hull)
+	return _cell_module(fit, StringName(_selected[&"type"]), int(_selected[&"index"])) != &""
+
+
+## The composed remove of the selected cell: `PlayerProfile.clear_fit_slot`. A mandatory
+## cell (`ShipFit.MANDATORY_SLOT_KEYS`) is never emptied and answers the pin's wording.
+func remove_selected() -> bool:
+	var profile := _profile()
+	if profile == null or _selected.is_empty():
+		return false
+	var hull := _active_hull(profile)
+	var slot_key: StringName = _selected[&"type"]
+	var index := int(_selected[&"index"])
+	if ShipFit.MANDATORY_SLOT_KEYS.has(slot_key):
+		return _refuse(REFUSAL_MANDATORY)
+	var module_id := _cell_module(_resolved_fit(profile, hull), slot_key, index)
+	if module_id == &"":
+		return false
+	if not bool(profile.call(&"clear_fit_slot", hull, slot_key, index)):
+		return _refuse(REFUSAL_FIT_ILLEGAL)
+	_clear_notice()
+	AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
+	return true
+
+
+## The composed install of one entry into the selected cell (`PlayerProfile.fit_module_at`,
+## the displaced module returns to the hold through the profile's own transaction). The
+## candidate is judged with `ShipFit.fit_legal` first, so an illegal one is refused before
+## anything is written (CONTRACTS section 13).
+func install_module(module_id: StringName) -> bool:
+	var profile := _profile()
+	var cell := _row_target_cell(module_id)
+	if profile == null or cell.is_empty():
+		_notice(ACTION_SELECT, false)
+		return false
+	return _fit_entry_at(
+		module_id, StringName(cell[&"type"]), int(cell[&"index"]), false, 0
+	)
+
+
+## The cell one entry's row acts on: the selected cell when it is of the entry's own
+## catalogue slot, `{}` otherwise (the `SELECT A CELL` state).
+func _row_target_cell(module_id: StringName) -> Dictionary:
+	if _selected.is_empty() or module_id == &"":
+		return {}
+	if _candidate_slot(_profile(), module_id) != StringName(_selected[&"type"]):
+		return {}
+	return _selected
+
+
+## The ACTION word one entry carries right now: `FIT` when the selected cell is of its own
+## type and empty, `SWAP` when it already holds a module and `SELECT A CELL` otherwise.
+func module_action(module_id: StringName) -> StringName:
+	var profile := _profile()
+	if profile == null or module_id == &"":
+		return &""
+	var cell := _row_target_cell(module_id)
+	if cell.is_empty():
+		return ACTION_SELECT
+	var hull := _active_hull(profile)
+	var fit := _resolved_fit(profile, hull)
+	var occupant := _cell_module(fit, StringName(cell[&"type"]), int(cell[&"index"]))
+	return ACTION_SWAP if occupant != &"" else ACTION_FIT
+
+
+## The buy-into-cell one flow (P4): one press, credits checked first. An owned entry fits
+## at once; an unowned row buys-then-fits (`PlayerProfile.buy_module` then the same
+## composed install). A shortfall refuses through the shell's status line with the shipped
+## wording; a legal fit confirms with P11's `FITTED · <MODULE>`.
+func _fit_entry_at(
+	entry: StringName, slot_key: StringName, index: int, buy: bool, price: int
+) -> bool:
+	var profile := _profile()
+	if profile == null:
+		return false
+	var hull := _active_hull(profile)
+	var base := _base_id(profile, entry)
+	var candidate := _with_cell(_resolved_fit(profile, hull), slot_key, index, entry)
+	var legal := ShipFit.fit_legal(hull, _base_fit(profile, candidate))
+	if not bool(legal[&"legal"]):
+		return _refuse(_fit_refusal(legal))
+	if buy:
+		if int(profile.call(&"credits")) < price:
+			return _refuse(STATUS_SHORTFALL % _format_int(price))
+		if not bool(profile.call(&"buy_module", base, price)):
+			return false
+	if not bool(profile.call(&"fit_module_at", hull, slot_key, index, entry)):
+		return _refuse(REFUSAL_FIT_ILLEGAL)
+	_clear_notice()
+	AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
+	status_requested.emit(STATUS_FITTED % _module_name(base), false)
+	return true
+
+
+## The row's own fit-into-cell flow: an owned row fits its held entry, a buyable row
+## buys-then-fits (P4's one flow). The target is the selected cell (a selected cell of
+## another family refuses with P9's line and P10's flash) or the next free legal cell.
+func _flow_row_into_cell(payload: Dictionary) -> bool:
+	var profile := _profile()
+	if profile == null:
+		return false
+	var base: StringName = payload.get(&"base", &"")
+	var slot_key := _slot_key_of(base)
+	var owned := bool(payload.get(&"owned", false))
+	var entry: StringName = _row_entry(profile, base) if owned else base
+	var target := _flow_target(slot_key, base, payload)
+	if target.is_empty():
+		return false
+	return _fit_entry_at(
+		entry, StringName(target[&"type"]), int(target[&"index"]), not owned,
+		int(payload.get(&"price", 0))
+	)
+
+
+## The target cell of a flow: the selected cell when it is of the module's own family
+## (a wrong-family selection refuses with words), else the next free legal cell, else a
+## refusal (`REFUSED · FIT ILLEGAL` - the pin's catch-all).
+func _flow_target(slot_key: StringName, base: StringName, payload: Dictionary) -> Dictionary:
+	if not _selected.is_empty():
+		if StringName(_selected[&"type"]) != slot_key:
+			_refuse_drop(base, StringName(_selected[&"type"]), _selected_cell_payload())
+			return {}
+		return _selected
+	var free := _next_free_cell(slot_key)
+	if free.is_empty():
+		_refuse(REFUSAL_FIT_ILLEGAL)
+		return {}
+	return free
+
+
+## The first cell of one family that holds nothing, `{}` when the family is full.
+func _next_free_cell(slot_key: StringName) -> Dictionary:
+	var profile := _profile()
+	var fit := _resolved_fit(profile, _active_hull(profile))
+	for payload: Dictionary in _cells:
+		if payload[&"type"] != slot_key:
+			continue
+		if _cell_module(fit, StringName(payload[&"type"]), int(payload[&"index"])) == &"":
+			return payload
+	return {}
+
+
+## The selected cell's own grid payload (the drop-callback shape), or `{}` with none.
+func _selected_cell_payload() -> Dictionary:
+	for payload: Dictionary in _cells:
+		if _is_selected(payload):
+			return payload
+	return {}
+
+
+## The row-corner BUY and the cluster's `BUY & FIT` (P4/P14): always buys-then-fits into
+## the selected cell or the next free legal cell, credits checked first.
+func _buy_into_cell(payload: Dictionary) -> bool:
+	if payload.is_empty():
+		return false
+	var base: StringName = payload.get(&"base", &"")
+	var slot_key := _slot_key_of(base)
+	var target := _flow_target(slot_key, base, payload)
+	if target.is_empty():
+		return false
+	return _fit_entry_at(
+		base, StringName(target[&"type"]), int(target[&"index"]), true,
+		int(payload.get(&"price", 0))
+	)
+
+
+func _on_remove_pressed() -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	remove_selected()
+
+
+func _on_buy_fit_pressed() -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	_buy_into_cell(_browser_focused)
+
+
+func _notice(message: String, danger: bool) -> void:
+	_line_override = message
+	_line_danger = danger
+	status_requested.emit(message, danger)
+	_refresh_footer()
+
+
+func _clear_notice() -> void:
+	_line_override = ""
+	_line_danger = false
+	_refresh_footer()
+
+
+## ------------------------------------------------------- the drag-and-drop law (P4)
+
+
+## One browser row's drag payload: its base id, the entry a fit would take and whether the
+## bag holds it (a drop of an unowned row buys-then-fits).
+func drag_browser(payload: Dictionary) -> Dictionary:
+	var profile := _profile()
+	var base: StringName = payload.get(&"base", &"")
+	return {
+		&"kind": DRAG_BROWSER,
+		DRAG_KEY_BASE: base,
+		DRAG_KEY_ENTRY: _row_entry(profile, base),
+		DRAG_KEY_OWNED: bool(payload.get(&"owned", false)),
+		DRAG_KEY_PRICE: int(payload.get(&"price", 0)),
+	}
+
+
+func _drag_payload_of(data: Variant) -> Dictionary:
+	if data is Dictionary:
+		var payload: Dictionary = data
+		if payload.get(&"kind", &"") == DRAG_BROWSER:
+			return payload
+	return {}
+
+
+## A browser payload may land on any cell (so a wrong-slot drop can refuse itself with
+## words and a flash rather than a silent no); anything else is not this surface's.
+func cell_can_drop(cell: Dictionary, data: Variant) -> bool:
+	return not _drag_payload_of(data).is_empty()
+
+
+## A drop on one grid cell: a legal family fits (or buys-then-fits) the entry; a wrong-slot
+## drop is refused by two signals together, never a colour alone (P9/P10): the shell's
+## status line and the cell's own slot caption flashing 0.5 s.
+func cell_drop(cell: Dictionary, data: Variant) -> void:
+	var payload := _drag_payload_of(data)
+	if payload.is_empty():
+		return
+	var base: StringName = payload.get(DRAG_KEY_BASE, &"")
+	var slot_key: StringName = cell.get(&"type", &"")
+	if _slot_key_of(base) != slot_key:
+		_refuse_drop(base, slot_key, cell)
+		return
+	var entry: StringName = payload.get(DRAG_KEY_ENTRY, base)
+	var owned := bool(payload.get(DRAG_KEY_OWNED, false))
+	_fit_entry_at(
+		entry, slot_key, int(cell.get(&"index", -1)), not owned,
+		int(payload.get(DRAG_KEY_PRICE, 0))
+	)
+
+
+## The wrong-slot refusal: P9's line in the shell's status strip and P10's 0.5 s slot
+## caption flash on the cell itself - label plus state, never a colour alone.
+func _refuse_drop(base: StringName, slot_key: StringName, cell: Dictionary) -> bool:
+	AudioManager.play_ui(AudioManager.UiCue.DENIED)
+	status_requested.emit(
+		REFUSAL_DROP % [_module_name(base), _slot_word(slot_key)], true
+	)
+	_flash_slot_caption(cell)
+	return false
+
+
+## P10: the cell's own slot caption, shown for 0.5 s in the danger-bright token and hidden
+## again (the caption text itself is the signal - the flash is a label, not a tint).
+func _flash_slot_caption(cell: Dictionary) -> void:
+	var caption := cell.get(&"caption", null) as Label
+	if caption == null or not is_instance_valid(caption):
+		return
+	caption.visible = true
+	caption.add_theme_color_override(&"font_color", _token(&"accent_danger_bright"))
+	var tween := _make_tween()
+	tween.tween_interval(SLOT_FLASH_SECONDS)
+	tween.tween_callback(caption.hide)
+
+
+## ================================================== the inventory browser (P4's right)
+
+
+## The family-tab strip (the AUCTION's own idiom minus `HULLS`) over the browser's rows.
+func _build_browser() -> void:
+	for tab: Dictionary in BROWSER_TABS:
+		var button := Button.new()
+		button.name = "Tab%s" % String(tab[&"id"]).to_pascal_case()
+		button.toggle_mode = true
+		button.focus_mode = Control.FOCUS_ALL
+		button.custom_minimum_size = TAB_MIN_SIZE
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		button.text = String(tab[&"label"])
+		button.set_meta(&"tab", StringName(tab[&"id"]))
+		button.add_theme_color_override(
+			&"font_color",
+			_token(&"text_primary") if tab[&"id"] == _browser_tab else _token(&"text_dim")
+		)
+		button.pressed.connect(_on_tab_pressed.bind(StringName(tab[&"id"])))
+		_tabs.add_child(button)
+
+
+func _on_tab_pressed(tab_id: StringName) -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	select_tab(tab_id)
+	_apply_tab_states()
+
+
+## The browser's row ids: every catalogue module the tab keeps (buyable rows) plus the
+## fit's own lost entries (`fitting_panel.gd`'s L124 law - a fitted instance whose record
+## is gone still renders one row), in catalogue order.
+func _browser_ids(profile: ProfileScript) -> Array[StringName]:
+	var ids: Array[StringName] = []
+	var wanted := &""
+	for tab: Dictionary in BROWSER_TABS:
+		if tab[&"id"] == _browser_tab:
+			wanted = StringName(tab[&"slot"])
+	for module_id: StringName in ModuleData.MODULES:
+		if wanted != &"" and ModuleData.slot_of(module_id) != wanted:
+			continue
+		ids.append(module_id)
+	if wanted == &"":
+		for entry: StringName in _lost_entries(profile):
+			ids.append(entry)
+	return ids
+
+
+## The fit's own cells whose module the bag can no longer resolve (a fitted instance whose
+## record is gone) - each id listed once (`fitting_panel.gd:690-707`'s own law).
+func _lost_entries(profile: ProfileScript) -> Array[StringName]:
+	var lost: Array[StringName] = []
+	if profile == null:
+		return lost
+	var hull := _active_hull(profile)
+	var fit := _resolved_fit(profile, hull)
+	for slot_key: StringName in ShipFit.FIT_SLOT_KEYS:
+		var cells := 1 if slot_key == POWER_SLOT else ShipFit.slot_capacity(hull, slot_key)
+		for index in cells:
+			var entry := _cell_module(fit, slot_key, index)
+			if entry == &"" or lost.has(entry):
+				continue
+			if _base_id(profile, entry) != entry:
+				continue
+			if not ModuleData.module(entry).is_empty():
+				continue
+			lost.append(entry)
+	return lost
+
+
+func _refresh_browser() -> void:
+	var profile := _profile()
+	_apply_tab_states()
+	var ids := _browser_ids(profile)
+	var signature: Array[String] = []
+	for module_id: StringName in ids:
+		signature.append(String(module_id) + "|" + str(_owned_total(profile, module_id)))
+	if signature != _browser_signature:
+		_browser_signature = signature
+		_build_browser_rows(ids, profile)
+	for payload: Dictionary in _browser_payloads:
+		_refresh_browser_row(payload, profile)
+
+
+func _build_browser_rows(ids: Array[StringName], profile: ProfileScript) -> void:
+	_browser_payloads.clear()
+	_browser_focused = {}
+	for child: Node in _browser_rows.get_children():
+		_browser_rows.remove_child(child)
+		child.queue_free()
+	for module_id: StringName in ids:
+		_browser_payloads.append(_build_browser_row(module_id, profile))
+
+
+## The active tab's plate reads `text_primary` and wears its pressed state; the rest read
+## `text_dim` - the theme's own `TabBar` colour language (the auction's tab idiom).
+func _apply_tab_states() -> void:
+	for button: Node in _tabs.get_children():
+		var tab_button := button as Button
+		if tab_button == null:
+			continue
+		var active := StringName(tab_button.get_meta(&"tab", &"")) == _browser_tab
+		tab_button.set_pressed_no_signal(active)
+		tab_button.add_theme_color_override(
+			&"font_color", _token(&"text_primary") if active else _token(&"text_dim")
+		)
+
+
+## One browser row (the auction row idiom: 76 tall, `RowInner` 12/8): the module's icon,
+## its name and `SLOT <TYPE> · DRAW <n>` meta, the `OWNED ×n` / price read and the
+## row-corner BUY chip (P1's `ActionInline` 96x32). Every row is a drag source.
+func _build_browser_row(base_id: StringName, profile: ProfileScript) -> Dictionary:
+	var module_row := ModuleData.module(base_id)
+	var name_text := String(module_row.get(&"name", String(base_id))).to_upper()
+	if name_text.is_empty():
+		name_text = String(base_id).to_upper()
+	var row := BrowserRow.new()
+	row.name = "Module%s" % String(base_id).to_pascal_case()
+	row.armory = self
+	row.toggle_mode = true
+	row.focus_mode = Control.FOCUS_ALL
+	row.custom_minimum_size = Vector2(0.0, BROWSER_ROW_HEIGHT)
+	row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	row.tooltip_text = Catalog.describe(base_id)
+	var inner := MarginContainer.new()
+	inner.name = "RowInner"
+	inner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	inner.add_theme_constant_override(&"margin_left", ROW_TEXT_INSET * 2.0)
+	inner.add_theme_constant_override(&"margin_top", 8.0)
+	inner.add_theme_constant_override(&"margin_right", ROW_TEXT_INSET * 2.0)
+	inner.add_theme_constant_override(&"margin_bottom", 8.0)
+	row.add_child(inner)
+	inner.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var box := HBoxContainer.new()
+	box.name = "RowBox"
+	box.add_theme_constant_override(&"separation", 12)
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	inner.add_child(box)
+	var icon := _make_icon(String(module_row.get(&"icon", "")), BROWSER_ICON)
+	if icon != null:
+		box.add_child(icon)
+	var title_box := VBoxContainer.new()
+	title_box.name = "TitleBox"
+	title_box.add_theme_constant_override(&"separation", 2)
+	title_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	title_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	title_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(title_box)
+	var title := _make_label(&"StationValue", name_text)
+	title.name = "Title"
+	title_box.add_child(title)
+	var meta := _make_label(
+		&"StationCaption",
+		BROWSER_META_FORMAT % [
+			String(module_row.get(&"slot", "")).to_upper(), int(module_row.get(&"draw", 0))
+		]
+	)
+	meta.name = "Meta"
+	title_box.add_child(meta)
+	var read := _make_label(&"StationValue", "")
+	read.name = "Read"
+	read.custom_minimum_size = Vector2(COL_OWNED, 0.0)
+	read.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	box.add_child(read)
+	var buy := Button.new()
+	buy.name = "Buy"
+	buy.custom_minimum_size = ACTION_INLINE
+	buy.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	buy.focus_mode = Control.FOCUS_ALL
+	buy.text = BUY_CHIP
+	box.add_child(buy)
+	var payload := {
+		&"base": base_id,
+		&"name": name_text,
+		&"slot": StringName(module_row.get(&"slot", &"")),
+		&"draw": int(module_row.get(&"draw", 0)),
+		&"price": int(module_row.get(&"cost", 0)),
+		&"owned": false,
+		&"row": row,
+		&"read": read,
+		&"buy": buy,
+		&"icon": icon,
+	}
+	row.payload = payload
+	row.pressed.connect(_on_browser_pressed.bind(payload))
+	row.focus_entered.connect(_on_browser_focused.bind(row, payload))
+	row.mouse_entered.connect(_on_browser_hovered.bind(payload, true))
+	row.mouse_exited.connect(_on_browser_hovered.bind(payload, false))
+	buy.pressed.connect(_on_buy_pressed.bind(payload))
+	_browser_rows.add_child(row)
+	return payload
+
+
+func _refresh_browser_row(payload: Dictionary, profile: ProfileScript) -> void:
+	var base_id: StringName = payload[&"base"]
+	var owned := _owned_total(profile, base_id)
+	payload[&"owned"] = owned > 0
+	var read: Label = payload[&"read"]
+	if owned > 0:
+		read.text = OWNED_FORMAT % owned
+	else:
+		read.text = PRICE_FORMAT % _format_int(int(payload[&"price"]))
+
+
+func _on_browser_pressed(payload: Dictionary) -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	var row := payload[&"row"] as Button
+	if row != null and is_instance_valid(row):
+		row.set_pressed_no_signal(true)
+	_browser_focused = payload
+	var profile := _profile()
+	_candidate = _row_entry(profile, StringName(payload[&"base"]))
+	_inspect_browser(payload, true)
+	_flow_row_into_cell(payload)
+
+
+func _on_buy_pressed(payload: Dictionary) -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	_browser_focused = payload
+	_inspect_browser(payload, true)
+	_buy_into_cell(payload)
+
+
+func _on_browser_focused(row: Button, payload: Dictionary) -> void:
+	AudioManager.play_ui(AudioManager.UiCue.HOVER)
+	if _browser_focused.get(&"row", null) != null and _browser_focused[&"row"] != row:
+		var previous := _browser_focused[&"row"] as Button
+		if previous != null and is_instance_valid(previous):
+			previous.set_pressed_no_signal(false)
+	_browser_focused = payload
+	row.set_pressed_no_signal(true)
+	var profile := _profile()
+	_candidate = _row_entry(profile, StringName(payload[&"base"]))
+	_refresh_footer()
+	_inspect_browser(payload, true)
+
+
+func _on_browser_hovered(payload: Dictionary, hovered: bool) -> void:
+	var icon := payload.get(&"icon", null) as TextureRect
+	if icon != null and is_instance_valid(icon):
+		var tween := _make_tween()
+		tween.tween_property(
+			icon, "modulate:a", 1.0 if hovered else ROW_ICON_IDLE_ALPHA, HOVER_SECONDS
+		)
+	var profile := _profile()
+	_candidate = _row_entry(profile, StringName(payload[&"base"])) if hovered else &""
+	_refresh_footer()
+	_inspect_browser(payload, hovered)
+
+
+## CONTRACTS section 23.1: the browser row's additive inspector line through the existing
+## `describe()` chain (a leave clears the block with `title == ""`).
+func _inspect_browser(payload: Dictionary, shown: bool) -> void:
+	if not shown:
+		inspect_requested.emit("", "", false)
+		return
+	inspect_requested.emit(
+		String(payload.get(&"name", "")),
+		Catalog.describe(StringName(payload.get(&"base", &""))),
+		false
+	)
+
+
+## ------------------------------------------------------- the bag reads (5.3's own)
+
+
+## The bag's own unit sum per base id (`fitting_panel.gd:632-645`'s own accessor law).
+func _bag_units(profile: ProfileScript) -> Dictionary:
+	var counts: Dictionary = {}
+	if profile == null:
+		return counts
+	for key: Variant in profile.call(&"modules"):
+		var entry := StringName(str(key))
+		var held := int(profile.call(&"module_count", entry))
+		if held <= 0:
+			continue
+		var base := StringName(profile.call(&"base_module_id", entry))
+		if ModuleData.module(base).is_empty():
+			continue
+		counts[base] = int(counts.get(base, 0)) + held
+	return counts
+
+
+func _owned_total(profile: ProfileScript, base_id: StringName) -> int:
+	if base_id == &"":
+		return 0
+	return int(_bag_units(profile).get(base_id, 0))
+
+
+## The entry one row's flow acts on: the base id's first held instance, in the bag's own
+## order (`fitting_panel.gd:992-994`'s own rule), the base id itself for a base-keyed
+## record.
+func _row_entry(profile: ProfileScript, base_id: StringName) -> StringName:
+	var ids: Array[StringName] = []
+	if profile != null and base_id != &"":
+		var raw: Variant = profile.call(&"instances_of", base_id)
+		if raw is Array:
+			for entry: Variant in raw as Array:
+				ids.append(StringName(str(entry)))
+	return ids[0] if not ids.is_empty() else base_id

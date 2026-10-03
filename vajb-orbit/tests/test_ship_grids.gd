@@ -90,10 +90,14 @@ const MODULE_ROWS: Array[Dictionary] = [
 	## 15 section 9.1's three faction exclusives (proposed by the S3 docs pass, one owner
 	## tick): the two weapons take the weapon family's tier-III top line (`w_railgun`'s
 	## draw 3 / 5 200) and `u_vault` takes `u_holds`'s (`draw` 0 / 4 500), so the table
-	## the catalogue may be checked against is 35 rows and not 09 section 3's 32.
+	## the catalogue may be checked against is 36 rows (35 plus S29's R-S29-1) and not
+	## 09 section 3's 32.
 	{"id": &"w_proton", "name": "Proton Missile Launcher", "slot": &"weapons", "draw": 3, "tier": 3, "cost": 5200},
 	{"id": &"w_flak", "name": "Flak Battery", "slot": &"weapons", "draw": 3, "tier": 3, "cost": 5200},
 	{"id": &"u_vault", "name": "Station Vault Access", "slot": &"utility", "draw": 0, "tier": 3, "cost": 4500},
+	## S29's R-S29-1 (`10_ship_acquisition.md`'s 2026-10-03 block, tick N5): the
+	## hyperdrive's own numbers verbatim.
+	{"id": &"e_hyperdrive", "name": "Hyperdrive", "slot": &"engine", "draw": 3, "tier": 3, "cost": 12000},
 ]
 
 ## 09 section 3's stat effects, verbatim (the rows CONTRACTS section 11 says the
@@ -852,7 +856,10 @@ func test_mount_offset_is_zero_where_there_is_no_cell() -> void:
 
 
 func test_module_catalog_carries_the_pinned_rows() -> void:
-	assert_eq(Catalog.MODULES.size(), MODULE_ROWS.size(), "35 rows (09 section 3 + 15 section 9.1)")
+	assert_eq(
+		Catalog.MODULES.size(), MODULE_ROWS.size(),
+		"36 rows (09 section 3 + 15 section 9.1 + S29's R-S29-1)"
+	)
 	for row: Dictionary in MODULE_ROWS:
 		var id: StringName = row["id"]
 		var published := Catalog.module(id)

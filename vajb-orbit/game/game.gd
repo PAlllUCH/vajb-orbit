@@ -126,6 +126,24 @@ const MINIMAP_RADIUS_STEP := 800.0
 const MINIMAP_RADIUS_MIN := 800.0
 const MINIMAP_RADIUS_MAX := 6400.0
 
+## S29 (R-S29-1, `10_ship_acquisition.md`'s 2026-10-03 block): the hyperdrive's own
+## numbers - 1 s spool, one jump per 30 s cooldown, no fuel charge - and the N11-N13
+## read spellings verbatim (UI_SPEC.md section 10; the `\u00b7` escape keeps the source
+## ASCII the way `GATE_REFUSED_FUNDS` does). The flight scene owns these clocks: the
+## hull only answers `has_hyperdrive` and performs `jump_to`.
+const HYPERDRIVE_SPOOL := 1.0
+const HYPERDRIVE_COOLDOWN := 30.0
+const HYPERDRIVE_ARRIVAL := 2.0
+const JUMP_SPOOL: StringName = &"spool"
+const JUMP_ARRIVE: StringName = &"arrive"
+const JUMP_COOLDOWN: StringName = &"cooldown"
+const JUMP_READY: StringName = &"ready"
+const JUMP_READ_READY := "JUMP READY"
+const JUMP_READ_SPOOL := "HYPERDRIVE SPOOLING"
+const JUMP_READ_COOLDOWN := "JUMP COOLDOWN %d s"
+const JUMP_READ_ARRIVED := "ARRIVED \u00b7 %s"
+const PIN_CAPTION_NO_DRIVE := "NO HYPERDRIVE INSTALLED"
+
 ## Section 9.8 item 4: mouse-wheel camera zoom, script-side so the input map stays
 ## untouched. Wheel up reads as zoom in, which is a larger Camera2D.zoom.
 const CAMERA_ZOOM_STEP := 0.10
@@ -274,11 +292,19 @@ const HUD_METHODS: Array[StringName] = [
 	&"set_target_info",
 	&"clear_target",
 	&"set_cargo_open",
+	&"toggle_map_deck",
+	&"map_deck_open",
+	&"set_map_jump_read",
+	&"set_map_pin_caption",
+	&"map_recenter",
 ]
 const HUD_SIGNALS: Array[StringName] = [
 	&"weapon_slot_selected",
 	&"cargo_toggled",
 	&"minimap_zoom_changed",
+	&"map_autopilot_to",
+	&"map_autopilot_cancel",
+	&"map_jump_requested",
 ]
 
 @onready var _camera: Camera2D = $Camera
@@ -314,6 +340,13 @@ var _guns: Node2D = null
 var _reticle_state: int = TargetReticle.State.PLAIN
 var _weapon_index := 0
 var _minimap_radius := MINIMAP_RADIUS_DEFAULT
+## S29's N5 machine state (UI_SPEC.md section 10's hyperdrive reads): the phase, its
+## clock, the cooldown's clock from the teleport and the pin the spool is folding to.
+var _jump_phase: StringName = JUMP_READY
+var _jump_clock := 0.0
+var _jump_cooldown := 0.0
+var _jump_target := Vector2.ZERO
+var _jump_read_cache := ""
 var _cargo_open := false
 ## The wheel's clamped target. `_camera_zoom_shown` is the same wheel value after the
 ## 0.18 s tween, and it is the one `speed_fantasy.gd` multiplies by the pull-back: this
@@ -451,6 +484,7 @@ func _physics_process(delta: float) -> void:
 	_update_lock(delta)
 	_update_cargo_input()
 	_update_cancel_input()
+	_update_hyperdrive(delta)
 	_update_travel(delta)
 	_update_pois(delta)
 	_decay_heat(delta)
@@ -907,11 +941,32 @@ func _row_for(sector_key: String) -> Dictionary:
 
 ## Section 3.1 / section 9.9: ESC cancels the fly-to order and the lock. Docking
 ## is the dock zone's `interact` prompt now, not a key.
+##
+## S29's N1 gives the same key the map deck's toggle (M and the corner EXPAND button
+## are its other two routes), so one press does exactly one thing: a press that closes
+## an open deck is the toggle alone - the pin's order must survive the map (its own
+## cancel routes are stick input (player_ship.gd), the pin's remove and arrival) - and
+## a press while the deck is closed opens it **and** keeps section 9.9 verbatim - and
+## because section 9.9's cancel and section 10's pin-remove are one operation (the
+## S29-F1 designer ruling, 2026-10-03; reversal: drop the `clear_map_pin` call below
+## and the two are separate operations again), that same press clears the pin, so the
+## deck never reopens on an orderless pin.
+## Reversal: drop `cancel_orders` below and ESC is map-only; restore it on both presses
+## and the pin's issued order dies on every map close.
 func _update_cancel_input() -> void:
 	if not Input.is_action_just_pressed(&"ui_cancel"):
 		return
+	var deck_open := false
+	if _hud != null and _hud.has_method(&"map_deck_open"):
+		deck_open = bool(_hud.call(&"map_deck_open"))
+		if _hud.has_method(&"toggle_map_deck"):
+			_hud.call(&"toggle_map_deck")
+	if deck_open:
+		return
 	if _ship != null:
 		_ship.cancel_orders()
+		if _hud != null and _hud.has_method(&"clear_map_pin"):
+			_hud.call(&"clear_map_pin")
 	_cancel_lock()
 	if _hud != null:
 		_hud.call(&"clear_target")
@@ -2155,6 +2210,9 @@ func _bind_hud() -> void:
 	_hud.connect(&"weapon_slot_selected", _on_weapon_slot_selected)
 	_hud.connect(&"cargo_toggled", _on_cargo_toggled)
 	_hud.connect(&"minimap_zoom_changed", _on_minimap_zoom_changed)
+	_hud.connect(&"map_autopilot_to", _on_map_autopilot_to)
+	_hud.connect(&"map_autopilot_cancel", _on_map_autopilot_cancel)
+	_hud.connect(&"map_jump_requested", _on_map_jump_requested)
 
 
 ## CONTRACTS section 11's `set_hull_slots`: the launched hull's W cells, pushed once per
@@ -2282,6 +2340,98 @@ func _on_minimap_zoom_changed(delta: int) -> void:
 		MINIMAP_RADIUS_MAX,
 	)
 	_hud.call(&"set_minimap_scale", _minimap_radius)
+
+
+## --- S29 A2: the pin's orders and the N5 hyperdrive machine (UI_SPEC.md section 9 N4,
+## section 10's hyperdrive reads) ---------------------------------------------------
+
+
+## N4's short press: the existing autopilot order (ENGINE_SPEC section 3.1,
+## `player_ship.gd`'s `set_move_target`) to the pin the deck already placed.
+func _on_map_autopilot_to(pos: Vector2) -> void:
+	if _ship != null:
+		_ship.set_move_target(pos)
+
+
+## The fixer's precedence law: a short press on the pin removes it and cancels orders
+## (UI_SPEC.md section 10, `cancel_orders`).
+func _on_map_autopilot_cancel() -> void:
+	if _ship != null:
+		_ship.cancel_orders()
+
+
+## N4's hold (>= 0.5 s): the hyperdrive jump when N5 is fitted, N4's
+## `NO HYPERDRIVE INSTALLED` caption under the pin otherwise. A press inside the
+## cooldown is refused by the cooldown read itself (N12: label + state, never colour
+## alone) - nothing else changes.
+func _on_map_jump_requested(pos: Vector2) -> void:
+	if _dead or _ship == null:
+		return
+	if not _ship.has_hyperdrive():
+		if _hud != null and _hud.has_method(&"set_map_pin_caption"):
+			_hud.call(&"set_map_pin_caption", PIN_CAPTION_NO_DRIVE)
+		return
+	if _jump_phase != JUMP_READY:
+		return
+	_jump_target = pos
+	_jump_phase = JUMP_SPOOL
+	_jump_clock = 0.0
+	_push_jump_read()
+
+
+## The N5 clocks: 1 s spool (N11), the arrival read for ~2 s (N13) and the 30 s
+## cooldown (N12), all as the deck footer's caption-strip reads. The arrival state is
+## the read plus the blip re-centring only (the arrival FX is staged on the art budget).
+func _update_hyperdrive(delta: float) -> void:
+	var step := maxf(delta, 0.0)
+	if _jump_phase == JUMP_SPOOL:
+		_jump_clock += step
+		if _jump_clock >= HYPERDRIVE_SPOOL:
+			_arrive_at_pin()
+	elif _jump_phase == JUMP_ARRIVE:
+		_jump_clock += step
+		if _jump_clock >= HYPERDRIVE_ARRIVAL:
+			_jump_phase = JUMP_COOLDOWN
+	if _jump_cooldown > 0.0:
+		_jump_cooldown = maxf(0.0, _jump_cooldown - step)
+		if _jump_cooldown <= 0.0:
+			_jump_phase = JUMP_READY
+	_push_jump_read()
+
+
+func _arrive_at_pin() -> void:
+	if _ship != null:
+		## The hull's `jump_to` is the position's single writer (it moves the solver's
+		## body, which `_sync_hull_transform` mirrors).
+		_ship.jump_to(_jump_target)
+	_jump_phase = JUMP_ARRIVE
+	_jump_clock = 0.0
+	_jump_cooldown = HYPERDRIVE_COOLDOWN
+	if _hud != null and _hud.has_method(&"map_recenter"):
+		_hud.call(&"map_recenter")
+
+
+func _push_jump_read() -> void:
+	var text := ""
+	if _ship != null and _ship.has_hyperdrive():
+		text = jump_read_text(_jump_phase, int(ceil(_jump_cooldown)), _sector_name)
+	if text == _jump_read_cache:
+		return
+	_jump_read_cache = text
+	if _hud != null and _hud.has_method(&"set_map_jump_read"):
+		_hud.call(&"set_map_jump_read", text)
+
+
+## N11-N13's wordings in one place (the gate reads them off this builder):
+## `HYPERDRIVE SPOOLING`, `JUMP COOLDOWN <t> s` / `JUMP READY`, `ARRIVED \u00b7 <name>`.
+static func jump_read_text(phase: StringName, cooldown_seconds: int, arrived_name: String) -> String:
+	if phase == JUMP_SPOOL:
+		return JUMP_READ_SPOOL
+	if phase == JUMP_ARRIVE:
+		return JUMP_READ_ARRIVED % arrived_name.to_upper()
+	if phase == JUMP_COOLDOWN:
+		return JUMP_READ_COOLDOWN % cooldown_seconds
+	return JUMP_READ_READY
 
 
 ## --- NPCs and death (ENGINE_SPEC §5/§7) -------------------------------------------

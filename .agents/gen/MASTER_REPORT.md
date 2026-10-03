@@ -1727,3 +1727,46 @@ follows the cursor; the toggle→class table with six new PROPOSED classes as
 new station/gate classes). 4 LOW cite-drift rows → **T-94–T-97**. Verify green
 against `d18_start` (`"problems": []`); no gate row moved. Five-piece:
 `slices/D18-map-panels/`. S29 (coder 35) implements §10 + §17.
+
+### S29 (coder item 35) — **DONE 2026-10-03 — gate 1038 → 1073/0 — the overhaul implemented; one provider incident**
+
+Panel consolidation + the map deck, implementing D18's law. **Run order
+B1 → B2 → R1 → F1; the wave's models moved twice on the owner's rulings** —
+B1 first dispatched on `hyper/glm-5.3` @ high, **crashed at ~mid-build on
+provider credits** (`payment required`, the GOAWAY-free hard stop; partial
+artefacts: `minimap.gd`, `player_ship.gd`, `module_catalog.gd` — no report),
+re-dispatched **`xiaomi/mimo-v2.6-pro` @ high** with a resume instruction
+(inspect the partial diff, keep what is lawful); B2 ran the same route. The
+parallel D17-P3 test worker died on the same credits mid-route (its partial
+report is honest about what it reached). **B1** shipped A1–A3: the map deck
+(80 % anchors pane, three toggle routes, wheel 25–400 % cursor-centred + 64 px
+arrows, the eight-toggle filter column persisted per profile, the §10
+toggle→class table verbatim with the six new classes, N23 inert, N6 exempt),
+the navigation pin (press hit-tests the pin first; placed at press-down, never
+follows; 8 px = pan; the existing autopilot order; stick-cancel; hold ≥ 0.5 s
+jump; `NO HYPERDRIVE INSTALLED`; the compact bearing arrow + `DIST <n>`), and
+`e_hyperdrive` figure-by-figure with the auction engine column. Gate
+**1038 → 1063/0** ×2 (+25 rows). **B2** shipped A4–A7: the merged ARMORY (P4
+split, DnD per slot with the label+flash refusal, buy-into-cell with the
+credits check first, hover through the one chain, `IF FITTED`, tooltips), the
+merged SHIPYARD (labelled stats, delta column, the hull's installed modules,
+`NOMINAL` repair rows, fee in the footer, `REPAIR` primary), the rail 8 → 6,
+the P6 idle fills, the P1–P3 tokens on the merged panes, and the D17 leftovers
+(no DROP HERE ghosts, fit toasts, cell tooltips, CANDIDATE → `IF FITTED`,
+comparison deltas, the dead band gone, scroll affordances). Gate
+**1063 → 1073/0** ×2 (+10 `test_s29_station_panels` rows); nine moved suites,
+every row disclosed. **R1** (`hyper/glm-5.3-flash`): A1–A8 pass on the law,
+**1 HIGH** — the pin's two marks drew `Color.WHITE` where §10 pins
+`text_primary` — and **1 MED**, the ESC-open desync (§9.9 cancels orders, the
+pin stood), plus **7 LOW → T-100–T-106** (the deck-foot buttons, the
+`map_toggle` InputMap row, the `_config` reach, the dead cue const, the
+browser's second description surface, the weakened clock rows, the D13 battery
+body's keep-or-retire tick). **F1** (`hyper/glm-5.3-flash`) cured the HIGH
+(`PIN_COLOUR := &"text_primary"`) and the MED by the designer's bucket-1
+reconciliation — ESC-open's §9.9 cancel and §10's pin-remove are one operation
+(`clear_pin()`/`clear_map_pin()` riding `pin_changed`; a closing ESC toggles
+alone; the ruling + its reversal recorded in code and the report). Gate
+**1073/0** ×2 after the cure; R1's own fresh-scratch re-run agreed. Verify
+green against `s29_start` (`"problems": []`, 27 modified + 12 added, all in
+the declared union). Five-piece: `slices/S29-consolidation/`. **Next in the
+phase: coder 30 (S24 world identity).**

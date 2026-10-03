@@ -214,6 +214,19 @@ func _ready() -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_THEME_CHANGED and is_node_ready():
 		_apply_tokens()
+	elif what == NOTIFICATION_VISIBILITY_CHANGED and is_node_ready() and is_visible_in_tree():
+		## P6 (S29's half, STATION_HUB section 17.3): LAUNCH fills the band with its own
+		## launch summary when idle, so the shell's clear on a module switch never leaves
+		## the band empty on this pane.
+		_refresh_all()
+		publish_idle_summary()
+
+
+## P6's LAUNCH fill: the pane's own ready line and its standing arm instruction, published
+## through the existing `inspect_requested` chain (`title == ""` still clears).
+func publish_idle_summary() -> void:
+	var title := _hull_caption.text if _hull_caption != null else ""
+	inspect_requested.emit(title, IDLE_TEXT % int(ARM_SECONDS), false)
 
 
 func _exit_tree() -> void:

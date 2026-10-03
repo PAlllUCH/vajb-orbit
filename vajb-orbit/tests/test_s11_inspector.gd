@@ -34,10 +34,11 @@ const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
 const PROFILE_PATH := "user://test_s11_inspector.cfg"
 
-## The six item panes and the two item-less ones (CONTRACTS section 23.1: all eight declare
-## the signal; only the six emit).
+## The merged rail's six panes (P7 folded FITTING into ARMORY and REPAIRS into SHIPYARD):
+## all six declare the signal and all six emit - the item panes on hover, SHIPYARD and
+## LAUNCH with their own idle summaries (P6's S29 half).
 const EMITTERS: Array[int] = [0, 1, 2, 3, 4, 5]
-const DECLARERS_ONLY: Array[int] = [6, 7]
+const DECLARERS_ONLY: Array[int] = []
 
 const PACK: StringName = &"laser"
 const SHIP: StringName = &"ship_vanguard"
@@ -139,7 +140,7 @@ func _pane(index: int) -> CanvasItem:
 
 func test_every_pane_declares_the_signal() -> void:
 	var panels: Array = _station.get(&"_panels")
-	assert_eq(panels.size(), 8, "the shell loads one pane per module")
+	assert_eq(panels.size(), 6, "the shell loads one pane per module (P7's six)")
 	for index in panels.size():
 		var pane: CanvasItem = panels[index]
 		assert_true(
@@ -153,13 +154,13 @@ func test_every_pane_declares_the_signal() -> void:
 
 
 func test_the_six_item_panes_are_the_emitters() -> void:
-	## A panes' own source declares the signal; emission is checked on ARMORY below. The
-	## two item-less panes are still the shell's own module list entries 6 and 7.
+	## S29 (P4/P5/P7): the rail carries six panes and every one of them publishes -
+	## the item panes on hover, SHIPYARD and LAUNCH with their idle summaries (P6).
 	assert_eq(EMITTERS.size(), 6)
-	assert_eq(DECLARERS_ONLY.size(), 2)
+	assert_eq(DECLARERS_ONLY.size(), 0)
 	assert_eq(_pane(0).name, "Armory")
-	assert_eq(_pane(6).name, "Repairs")
-	assert_eq(_pane(7).name, "Launch")
+	assert_eq(_pane(4).name, "Shipyard")
+	assert_eq(_pane(5).name, "Launch")
 
 
 ## ------------------------------------------------------- 2. the hover signal and the clear

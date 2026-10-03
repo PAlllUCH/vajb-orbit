@@ -426,6 +426,16 @@ focus_mode = 0
 ignore_texture_size = true
 stretch_mode = 5
 
+[node name="ExpandMap" type="TextureButton" parent="CanvasLayer/BottomRight/MinimapPanel/MinimapBox/MinimapFooter"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+focus_mode = 0
+ignore_texture_size = true
+stretch_mode = 5
+
 [node name="BottomCenter" type="MarginContainer" parent="CanvasLayer"]
 layout_mode = 3
 anchors_preset = 12

@@ -427,7 +427,7 @@ func test_ac5_the_inspector_reserves_a_constant_height() -> void:
 	var inspector := _station.get_node(^"%Inspector") as Control
 	var module_host := _station.get_node(^"%ModuleHost") as Control
 	var panels: Array = _station.get(&"_panels")
-	assert_eq(panels.size(), 8, "the shell mounted its eight panes")
+	assert_eq(panels.size(), 6, "the shell mounted its six panes (P7's folded rail)")
 	var pane := panels[0] as CanvasItem
 	assert_true(
 		pane != null and pane.has_signal(&"inspect_requested"), "the armory pane ships"

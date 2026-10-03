@@ -58,6 +58,10 @@ const ICON_REUSE: Dictionary = {
 	&"w_proton": "res://assets/icons/module/icon_module_w_railgun.svg",
 	&"w_flak": "res://assets/icons/module/icon_module_w_railgun.svg",
 	&"u_vault": "res://assets/icons/service/icon_service_vault.svg",
+	## R-S29-1 (10's 2026-10-03 block): the hyperdrive draws the tier-3 drive's own
+	## glyph -- the S3 reuse precedent (a new row may not add art, owner 2026-09-27),
+	## and `e_vector` is the tier-3 engine the row sits beside.
+	&"e_hyperdrive": "res://assets/icons/module/icon_module_e_vector.svg",
 }
 
 ## 09 section 1's slot-type keys and the catalogue's own spelling of the engine
@@ -579,6 +583,24 @@ const MODULES: Dictionary = {
 		&"icon": "res://assets/icons/module/icon_module_e_vector.svg",
 		&"effects": {&"speed_mult": 1.25, &"turn_mult": 1.20},
 		&"description": "More speed and a faster turn. The quick hull's engine.",
+	},
+	## R-S29-1, `10_ship_acquisition.md`'s 2026-10-03 block verbatim: name "Hyperdrive",
+	## tier 3, slot `engine`, cost 12 000 CR, draw 3, one jump per 30 s cooldown, 1 s
+	## spool, no fuel charge. The jump itself is gated on the fitted id the way the
+	## repair drone bay is (`player_ship.gd`'s `u_drones` precedent, effects empty):
+	## the module carries no stat effect, it enables the map deck's hold-to-jump
+	## (`UI_SPEC.md` section 9 N4). Rolls: the AUCTION's tier-3 pool reads this table,
+	## so the row joins `SOURCE_ROLLS`' engine column by existing; the ARMORY browser
+	## listing is the station half's surface.
+	&"e_hyperdrive": {
+		&"name": "Hyperdrive",
+		&"slot": &"engine",
+		&"draw": 3,
+		&"tier": 3,
+		&"cost": 12000,
+		&"icon": "res://assets/icons/module/icon_module_e_vector.svg",
+		&"effects": {},
+		&"description": "Folds space to the navigation pin. One jump every thirty seconds, one second to spool, no fuel spent.",
 	},
 	&"p_std": {
 		&"name": "Standard Reactor",

@@ -286,51 +286,47 @@ func test_the_pack_card_carries_the_p5_worded_line() -> void:
 ## (base 1920x1080, wide 21:9, tall 5:4) all derive, none clips, and the geometry tracks
 ## the host's own proportions rather than any pinned rect.
 func test_every_rect_derives_from_the_host_at_the_three_proofs() -> void:
+	## S29 moves this row: the body rides the merged pane's scroll window at the style's
+	## **base** numbers (its placement moved under the P4 split, its internal law did not),
+	## so the three proofs now measure the body's own invariants at every host - the base
+	## console, its band, its bays and its wells, all enclosed, none moving with the host.
 	var panel := _mount()
 	var style := _style()
-	var widths: Array[float] = []
+	var base: Rect2 = style.console_rect(Rect2(Vector2.ZERO, style.host_base))
+	var band: Rect2 = style.bays_band(base)
+	var bays: Array = panel.call(&"bay_rects")
+	var wells: Array = panel.call(&"well_rects")
+	assert_eq(bays.size(), 5, "five bays at every canvas")
+	assert_eq(wells.size(), 2, "two wells at every canvas")
+	assert_true(band.encloses(bays[0] as Rect2), "the bay band encloses its bays")
+	assert_true(base.encloses(wells[0] as Rect2), "and the base console its wells")
+	assert_true(
+		band.encloses(bays[4] as Rect2), "the band carries all five bays"
+	)
 	for host_size: Vector2 in [PROOF_BASE, PROOF_WIDE, PROOF_TALL]:
 		_host.size = host_size
 		panel.call(&"_lay")
-		var host := Rect2(Vector2.ZERO, host_size)
-		var console: Rect2 = style.console_rect(host)
-		assert_true(host.encloses(console), "the console stays inside the host at %s" % str(host_size))
-		assert_eq(panel.call(&"block_size"), console.size, "the pane draws that console")
-		var band: Rect2 = style.bays_band(console)
-		assert_true(host.encloses(band), "the bay band stays inside the host at %s" % str(host_size))
-		var bays: Array = panel.call(&"bay_rects")
-		assert_eq(bays.size(), 5, "five bays at every canvas")
-		for index in bays.size():
-			assert_true(
-				band.encloses(bays[index] as Rect2),
-				"bay %d stays inside the band at %s" % [index, str(host_size)]
-			)
-		for index in 4:
-			var cell: Rect2 = style.bay_cell_rect(index, Rect2(Vector2.ZERO, (bays[0] as Rect2).size))
-			assert_true(
-				(Rect2(Vector2.ZERO, (bays[0] as Rect2).size)).encloses(cell),
-				"cell %d stays inside its bay at %s" % [index, str(host_size)]
-			)
-		var wells: Array = panel.call(&"well_rects")
-		assert_eq(wells.size(), 2, "two wells at every canvas")
-		for index in wells.size():
-			assert_true(
-				host.encloses(wells[index] as Rect2),
-				"well %d stays inside the host at %s" % [index, str(host_size)]
-			)
-		widths.append((bays[0] as Rect2).size.x)
-	## The wide canvas widens the bays; the tall one does not (both are derived, not pinned).
-	assert_true(
-		widths[1] > widths[0],
-		"the wide canvas widens the bays (%.1f -> %.1f)" % [widths[0], widths[1]]
-	)
-	assert_true(
-		is_equal_approx(widths[2], widths[0]),
-		"and the tall one keeps them (%.1f -> %.1f)" % [widths[0], widths[2]]
-	)
+		assert_eq(
+			panel.call(&"block_size"), base.size,
+			"the body draws the base console at %s" % str(host_size)
+		)
+		assert_eq(
+			panel.call(&"bay_rects"), bays,
+			"and the bays never move with the host at %s" % str(host_size)
+		)
+		assert_eq(
+			panel.call(&"well_rects"), wells,
+			"nor the wells at %s" % str(host_size)
+		)
+	for index in 4:
+		var cell: Rect2 = style.bay_cell_rect(index, Rect2(Vector2.ZERO, (bays[0] as Rect2).size))
+		assert_true(
+			(Rect2(Vector2.ZERO, (bays[0] as Rect2).size)).encloses(cell),
+			"cell %d stays inside its bay" % index
+		)
 	_host.size = HOST
 	panel.call(&"_lay")
-	assert_eq(panel.call(&"block_size"), CONSOLE, "the base host is back to the ruled console")
+	assert_eq(panel.call(&"block_size"), base.size, "the base host is back to the ruled console")
 
 
 ## --------------------------------------------- 5. the states (T4 / T7)
@@ -343,13 +339,14 @@ func test_the_bay_chip_states_the_cap_and_the_empty_cells_offer_drop() -> void:
 	var chip := _rack_row(0).get_node(^"Box/Head/Chip") as Control
 	assert_eq(state.text, PanelScript.RACK_READY, "a one-cell battery reads READY")
 	assert_eq(bool(chip.get(&"chevron")), false, "with no chevron")
-	## The empty cells of B2: every one carries the drop cue.
+	## The empty cells of B2 (T4 moves under S29 A7): every one is a bare drop zone - the
+	## `DROP HERE` ghost cue is gone (D17-P1's own fix: dim outline, no text).
 	var pads := _rack_row(1).get_node(^"Box/Cells") as Control
 	assert_eq(pads.get_child_count(), 4, "an empty bay has four cells")
 	for child: Node in pads.get_children():
-		var cue := child.get_node_or_null(^"Cue") as Label
-		assert_true(cue != null, "every empty cell carries its cue")
-		assert_eq(String(cue.text), "DROP HERE", "the T4 wording, at 13 px")
+		assert_true(
+			child.get_node_or_null(^"Cue") == null, "every empty cell carries no cue text"
+		)
 	var bay1 := _rack_row(0)
 	var bay1_pads := bay1.get_node(^"Box/Cells") as Control
 	assert_eq(bay1_pads.get_child_count(), 3, "B1's fitted cell leaves three empty slots")

@@ -265,7 +265,10 @@ func corridors() -> Array[Node2D]:
 ## Minimap feed for game.gd (brief item 7): one blip per field, not per rock, plus
 ## the station, the gate rings, the live NPC hulls and S6's POIs. Key names are the
 ## string keys the shipped HUD minimap reads (`"pos"` / `"kind"`); kinds are the
-## 11 §3/§5 mapping (gates, stations and beacons `friendly`). A hull's own class comes
+## 11 §3/§5 mapping (beacons `friendly`), with S29's N15/N16 re-anchor: the station
+## and the gate rings blip `KIND_STATION`/`KIND_GATE` (drawn as the friendly diamond
+## they wear today, always visible per N6) so the deck's FRIENDLY toggle can never
+## hide them. A hull's own class comes
 ## off its registry row (`NpcShip.blip_kind()`: hostile for pirates, swarmers and
 ## patrols, neutral for a convoy). 11 §5's soft fog is applied here: a derelict's or
 ## anomaly's blip appears only once scanned or beacon-revealed (`Poi.is_revealed`),
@@ -273,10 +276,10 @@ func corridors() -> Array[Node2D]:
 func blips() -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	if _station != null:
-		out.append({"pos": _station.global_position, "kind": &"friendly"})
+		out.append({"pos": _station.global_position, "kind": &"station"})
 	for gate: Node2D in _gates:
 		if is_instance_valid(gate):
-			out.append({"pos": gate.global_position, "kind": &"friendly"})
+			out.append({"pos": gate.global_position, "kind": &"gate"})
 	for field: Node2D in _fields:
 		out.append({"pos": field.global_position, "kind": &"neutral"})
 	for poi: Node2D in _pois:
