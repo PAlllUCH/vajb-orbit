@@ -29,6 +29,14 @@ const RESOLUTIONS: Array[Vector2i] = [
 const DISPLAY_MODES: Array[String] = ["WINDOWED", "FULLSCREEN", "BORDERLESS"]
 const EFFECT_LEVELS: Array[String] = ["LOW", "MEDIUM", "HIGH"]
 
+## S28's A2 (D17-P1/D17-P2 CONTROLS): the two flight-stick actions the project ships with
+## no keys at all. They fold behind an ADVANCED row so a fresh profile never opens on two
+## UNBOUND lines at the top of the tab; the fold is display-only - both actions stay
+## rebindable through the same list the manager owns. Reversal: drop the fold and every
+## action ships a row like before.
+const ADVANCED_ACTIONS: Array[StringName] = [&"turn_left", &"turn_right"]
+const ADVANCED_LABEL := "ADVANCED (STICK ACTIONS)"
+
 @onready var _back_button: Button = %BackButton
 @onready var _resolution_option: OptionButton = %ResolutionOption
 @onready var _display_mode_option: OptionButton = %DisplayModeOption
@@ -59,12 +67,15 @@ var _conflict_actions: Array[StringName] = []
 var _listening_row: HBoxContainer = null
 var _listening_action: StringName = &""
 var _listening_index := -1
+var _advanced_visible := false
+var _advanced_toggle: Button = null
 
 
 func _ready() -> void:
 	_load_persisted_controls()
 	_build_rebind_rows()
 	_connect_signals()
+	_apply_focus_language()
 	_resolution_option.grab_focus()
 
 
@@ -174,8 +185,48 @@ func _connect_signals() -> void:
 
 func _build_rebind_rows() -> void:
 	for action: StringName in SettingsManager.rebindable_actions():
+		if not _advanced_visible and ADVANCED_ACTIONS.has(action):
+			continue
 		_add_rebind_row(action)
 	_wire_rebind_focus()
+	_ensure_advanced_toggle()
+	_scan_conflicts()
+
+
+## Rebuilds the row list when the fold opens or closes, without leaking the old rows.
+func _rebuild_rebind_rows() -> void:
+	for row: HBoxContainer in _rows:
+		if is_instance_valid(row):
+			_rebind_rows.remove_child(row)
+			row.queue_free()
+	_rows.clear()
+	_rows_by_action.clear()
+	_conflict_actions.clear()
+	_listening_row = null
+	_listening_action = &""
+	_listening_index = -1
+	_build_rebind_rows()
+
+
+## The ADVANCED row itself: one toggle button under the list, focus-linked like a row.
+func _ensure_advanced_toggle() -> void:
+	if _advanced_toggle == null:
+		_advanced_toggle = Button.new()
+		_advanced_toggle.name = &"AdvancedToggle"
+		_advanced_toggle.toggle_mode = true
+		_advanced_toggle.text = ADVANCED_LABEL
+	var host := _rebind_scroll.get_parent()
+	if _advanced_toggle.get_parent() != host:
+		host.add_child(_advanced_toggle)
+		host.move_child(_advanced_toggle, _rebind_scroll.get_index() + 1)
+	_advanced_toggle.set_pressed_no_signal(_advanced_visible)
+	if not _advanced_toggle.pressed.is_connected(_on_advanced_pressed):
+		_advanced_toggle.pressed.connect(_on_advanced_pressed)
+
+
+func _on_advanced_pressed() -> void:
+	_advanced_visible = not _advanced_visible
+	_rebuild_rebind_rows()
 
 
 func _add_rebind_row(action: StringName) -> void:
@@ -246,23 +297,55 @@ func _commit_binding(event: InputEvent) -> void:
 		return
 	var captured := event.duplicate() as InputEvent
 	SettingsManager.set_binding(action, index, captured)
+	## A2 (D17-P1: "CONTROLS ships conflicting bindings without warning"): one binding
+	## per key, enforced at the map. A captured key is **stolen** from every other
+	## rebindable action, so a Q can never ride three actions again; the write goes
+	## through the manager's own `save_inputs`, the same persistence every rebind uses.
+	_steal_binding(action, String(SettingsManager.event_text(captured)))
 	_refresh_bindings()
-	_apply_conflicts(action, SettingsManager.event_text(captured))
+	_scan_conflicts()
 	var row: Variant = _rows_by_action.get(action)
 	if row != null:
 		(row as HBoxContainer).call(&"focus_button", index)
 
 
-func _apply_conflicts(action: StringName, text: String) -> void:
-	_clear_conflicts()
+## A2: the steal half of "one binding per action per key" - the same key event, by its
+## display text (the manager's own identity for a binding), leaves every other action.
+func _steal_binding(action: StringName, text: String) -> void:
 	if text.is_empty():
 		return
-	var others := _conflicting_actions(action, text)
-	if others.is_empty():
-		return
-	_highlight(action)
-	for other: StringName in others:
-		_highlight(other)
+	var moved := false
+	for other: StringName in SettingsManager.rebindable_actions():
+		if other == action or not InputMap.has_action(other):
+			continue
+		for event: InputEvent in InputMap.action_get_events(other):
+			if String(SettingsManager.event_text(event)) == text:
+				InputMap.action_erase_event(other, event)
+				moved = true
+	if moved:
+		SettingsManager.save_inputs()
+
+
+## A2: every visible binding is read once at build (and after every commit), so a profile
+## that already carries a duplicated key shows it on the existing conflict highlight
+## instead of shipping it silently (the D17-P1 "without warning" half).
+func _scan_conflicts() -> void:
+	_clear_conflicts()
+	var owners: Dictionary = {}
+	for action: StringName in SettingsManager.rebindable_actions():
+		for slot in BINDING_SLOTS:
+			var text := _raw_binding_text(action, slot)
+			if text.is_empty():
+				continue
+			var holders: Array = owners.get(text, [])
+			if holders.has(action):
+				break
+			holders.append(action)
+			owners[text] = holders
+	for holders: Variant in owners.values():
+		if (holders as Array).size() > 1:
+			for holder: Variant in holders as Array:
+				_highlight(holder as StringName)
 
 
 func _clear_conflicts() -> void:
@@ -274,18 +357,6 @@ func _clear_conflicts() -> void:
 func _highlight(action: StringName) -> void:
 	_conflict_actions.append(action)
 	_set_row_conflict(action, true)
-
-
-func _conflicting_actions(excluded: StringName, text: String) -> Array[StringName]:
-	var matches: Array[StringName] = []
-	for action: StringName in SettingsManager.rebindable_actions():
-		if action == excluded:
-			continue
-		for slot in BINDING_SLOTS:
-			if _raw_binding_text(action, slot) == text:
-				matches.append(action)
-				break
-	return matches
 
 
 func _set_row_conflict(action: StringName, enabled: bool) -> void:
@@ -367,6 +438,38 @@ func _on_save_pressed() -> void:
 
 func _on_rebind_focus_entered(row: Control) -> void:
 	_rebind_scroll.ensure_control_visible(row)
+
+
+## S28's A16 (UI_SPEC section 8 P3): one focus language on this overlay too - the 1 px
+## `accent_danger_bright` ring of section 6, the same box `tools/build_theme.gd` registers
+## for `Button`. The sliders were the one family that drew the fallback default-theme ring;
+## the separate settings focus look is retired here, in code, without touching the
+## generated theme file.
+func _apply_focus_language() -> void:
+	var ring := _focus_ring()
+	if ring == null:
+		return
+	for slider: HSlider in [
+		_render_scale_slider, _master_slider, _music_slider, _sfx_slider, _ui_slider,
+		_ui_scale_slider, _hud_opacity_slider,
+	]:
+		slider.add_theme_stylebox_override(&"focus", ring)
+
+
+## The section 6 ring, mirrored from the theme's own `_focus_box()` (an accent box whose
+## centre is not drawn is a 1 px frame). Null when the token cannot resolve, so the
+## control keeps whatever the theme gives it.
+func _focus_ring() -> StyleBoxFlat:
+	if not has_theme_color(&"accent_danger_bright", &"Tokens"):
+		return null
+	var accent := get_theme_color(&"accent_danger_bright", &"Tokens")
+	var box := StyleBoxFlat.new()
+	box.bg_color = accent
+	box.border_color = accent
+	box.set_border_width_all(1)
+	box.set_corner_radius_all(0)
+	box.draw_center = false
+	return box
 
 
 ## Per-action reset is not part of the frozen SettingsManager API, so the shipped

@@ -552,6 +552,59 @@ func test_the_exchange_hold_surface_lists_ammo_units_beside_the_minerals() -> vo
 	)
 
 
+## S28's chrome law on the surviving EXCHANGE pane (S28_BRIEF A10, A11, A12, A16): the
+## SELL ALL RAW precondition, the one-unit stepper default with the quantity on the
+## primary, the holdings header band, and the P1/P2 action cluster.
+func test_the_sale_column_ships_the_s28_chrome_law() -> void:
+	## A10 at zero raw: an ingot-only hold lists rows but the bulk action is dead (D17-P2).
+	_profile.set(&"_cargo", {&"ingot_iron": 5})
+	var panel := _mount_panel()
+	assert_true(_hold_row_or_null(panel, &"ingot_iron") != null, "the ingot stack lists")
+	assert_true(
+		(panel.get(&"_sell_all") as Button).disabled,
+		"SELL ALL RAW disables when no raw stack matches (A10)"
+	)
+	assert_eq(String((panel.get(&"_step_value") as Label).text), "0 UNITS", "nothing is armed")
+	_free_host()
+	## A11: a raw stack of five arms the stepper at ONE unit and the primary carries it.
+	_profile.set(&"_cargo", {&"mineral_iron": 5})
+	panel = _mount_panel()
+	assert_false(
+		(panel.get(&"_sell_all") as Button).disabled, "with a raw stack SELL ALL RAW wakes"
+	)
+	panel.call(&"_select", &"mineral_iron")
+	assert_eq(String((panel.get(&"_step_value") as Label).text), "1 UNIT", "A11 with A5 grammar")
+	assert_eq(String((panel.get(&"_sell") as Button).text), "SELL 1 UNIT", "the quantity rides the primary")
+	assert_eq(int(panel.get(&"_step")), 1, "a stray click can never dump the stack")
+	## A12: the holdings grid wears its header band over the same three value columns.
+	var header := panel.get_node_or_null(
+		NodePath("ExchangeBody/HoldBox/HoldHeader/HoldHeaderRow")
+	) as HBoxContainer
+	assert_true(header != null, "the holdings header band ships (A12)")
+	if header != null:
+		var words: Array[String] = []
+		for cell: Node in header.get_children():
+			if cell is Label:
+				words.append((cell as Label).text)
+		assert_true(
+			words.has("HELD") and words.has("CR EACH") and words.has("VALUE"),
+			"HELD, CR EACH and VALUE title the three columns"
+		)
+	## A16: the action cluster is one P2 row at the foot, plates at the P1 token, primary rightmost.
+	var row := panel.get_node_or_null(NodePath("ActionsRow")) as HBoxContainer
+	assert_true(row != null, "the P2 cluster row ships")
+	if row != null:
+		var sell := panel.get(&"_sell") as Button
+		var cancel := panel.get(&"_cancel") as Button
+		var sell_all := panel.get(&"_sell_all") as Button
+		assert_eq(sell.get_parent(), row, "SELL sits in the cluster")
+		assert_eq(cancel.get_parent(), row, "CANCEL sits in the cluster")
+		assert_eq(sell_all.get_parent(), row, "SELL ALL RAW sits in the cluster")
+		assert_eq(sell.custom_minimum_size, Vector2(360.0, 56.0), "the P1 plate")
+		assert_eq(row.get_theme_constant("separation"), 16, "the P2 gutter")
+		assert_eq(sell.get_index(), row.get_child_count() - 1, "the primary is rightmost")
+
+
 # ------------------------------------------------------------- AC4d: the fuel-cell delist
 
 

@@ -369,6 +369,15 @@ static func group_int(value: int) -> String:
 	return ("-" if value < 0 else "") + grouped
 
 
+## S28's A5 (UI_SPEC count grammar, D17-P2: "1 ENGINES", "1 WEAPONS"): the station's one
+## count-aware line. The noun takes its plural on every count but one, mirroring the
+## refinery stepper's pinned S8 law (`1 CONVERSION`). Callers pass the uppercase singular;
+## the plural is the singular plus "S" - every station noun this covers follows it
+## (UNIT/UNITS, STACK/STACKS, WEAPON/WEAPONS, HULL/HULLS, MODULE/MODULES, INGOT/INGOTS).
+static func plural(count: int, singular_noun: String) -> String:
+	return "%d %s" % [count, singular_noun if count == 1 else singular_noun + "S"]
+
+
 ## One id's catalogue base: a `mod_*` instance resolves through the profile's own bridge,
 ## a base id answers itself, and an id the bag does not carry is returned unchanged.
 static func _base_of(id: StringName) -> StringName:

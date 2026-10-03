@@ -33,7 +33,7 @@ prefix, nor one `staging/` driver). One live session per workspace.
 | # | Wave | Item | What | Status |
 |---|---|---|---|---|
 | 17 | D16 | Station identity & contracts UI design (phase P3) | CONTRACTS panel spec (14 §2 + R-S25-1), insurance/vaults panels (14 §3/§4), the nine places' identity treatment with shipped chrome only, the W3 name tick sheet. Five-piece: `slices/D16-station-ui/`. Design only. | **closed 2026-10-03** (see Done) |
-| 18 | D18 | Map deck & station panel consolidation design (the owner's 2026-10-03 overhaul ruling) | The map deck spec + wireframes on UI_SPEC §9's N1–N6 pins (expand, pan, zoom, per-sector filters, pin navigation + hold-LMB hyperdrive jump), the merged ARMORY and SHIPYARD panels on STATION_HUB §16's P4–P7 pins (drag-and-drop, slot filter tabs, hover→describe, equipped items, repair block), the N/P tick detail. Five-piece: `slices/D18-map-panels/`. Design only; S29 (coder 35) implements. | **live** (owner 2026-10-03, inserted ahead of the phase's tail) · A1 `hyper/glm-5.3` @ high → R1 `hyper/glm-5.3-flash` @ high |
+| 18 | D18 | Map deck & station panel consolidation design (the owner's 2026-10-03 overhaul ruling) | The map deck spec + wireframes on UI_SPEC §9's N1–N6 pins (expand, pan, zoom, per-sector filters, pin navigation + hold-LMB hyperdrive jump), the merged ARMORY and SHIPYARD panels on STATION_HUB §16's P4–P7 pins (drag-and-drop, slot filter tabs, hover→describe, equipped items, repair block), the N/P tick detail. Five-piece: `slices/D18-map-panels/`. Design only; S29 (coder 35) implements. | **closed 2026-10-03** (0 HIGH / 3 MED cured by the fixer / 4 LOW T-94–T-97; law: UI_SPEC §10 N7–N23 + STATION_HUB §17 P8–P14) |
 
 ## Parked (owner-gated — not queued; say the item and its five-piece lands)
 
@@ -81,10 +81,11 @@ generate → stage → **review sheet → owner approval** → ship → reimport
 
 ## Handoff (live)
 
-**Item 18 = D18 map deck & panel consolidation design** (brief
-`.agents/gen/slices/D18-map-panels/D18_BRIEF.md`, prompts `D18_prompts.md`)
-runs **live in parallel with coder 34 (S28)** — the only approved parallel
-pair, disjoint file sets. Item 17 (D16) closed 2026-10-03 (see Done).
+The design queue is **empty** — items 17 (D16) and 18 (D18) are closed
+(2026-10-03). The phase's next item is **coder 35 (S29)**, implementing
+D18's law (`UI_SPEC.md` §10, `STATION_HUB.md` §17) in
+`dispatch_coder.md`; then items 30–33. Design items return with the next
+owner ask.
 The phase's next item is **coder 30 (S24 world identity)**, which opens
 docs-first on the ticked W3 names and cites `STATION_HUB.md` §15 +
 `UI_SPEC.md` §7 as its design law; coder items 30/31/32 ride it in

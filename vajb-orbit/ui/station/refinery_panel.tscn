@@ -184,26 +184,39 @@ layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="RefineButton" type="Button" parent="RefineryBody/RefineBox"]
+[node name="ActionsRow" type="HBoxContainer" parent="."]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 88)
 layout_mode = 2
-theme_type_variation = &"StationButton"
-text = "REFINE 1"
+theme_override_constants/separation = 16
 
-[node name="RefineAllButton" type="Button" parent="RefineryBody/RefineBox"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 88)
+[node name="RowSpacer" type="Control" parent="ActionsRow"]
 layout_mode = 2
-theme_type_variation = &"StationButton"
-text = "REFINERY ALL"
+size_flags_horizontal = 3
+mouse_filter = 2
 
-[node name="CancelButton" type="Button" parent="RefineryBody/RefineBox"]
+[node name="RefineAllButton" type="Button" parent="ActionsRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 88)
+custom_minimum_size = Vector2(360, 56)
 layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationButton"
+text = "REFINE ALL"
+
+[node name="CancelButton" type="Button" parent="ActionsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 56)
+layout_mode = 2
+size_flags_vertical = 4
 theme_type_variation = &"StationButton"
 text = "CANCEL"
+
+[node name="RefineButton" type="Button" parent="ActionsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 56)
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationButton"
+text = "REFINE 1"
 
 [node name="PaneFooter" type="Label" parent="."]
 unique_name_in_owner = true

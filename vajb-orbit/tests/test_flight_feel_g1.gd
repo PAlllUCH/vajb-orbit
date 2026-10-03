@@ -35,6 +35,8 @@ const PlayerShipScene := preload("res://game/player_ship.tscn")
 const PlayerStateScript := preload("res://game/player_state.gd")
 const ShipFitScript := preload("res://game/ship_fit.gd")
 const SettingsScript := preload("res://autoload/settings_manager.gd")
+## S28's A2: the Controls tab itself - the overlay this suite measures for bindings.
+const SettingsScene := preload("res://ui/screens/settings.tscn")
 
 const HULL_SHIPPED: StringName = &"ship_vanguard"
 const HULL_BODY: StringName = &"HullBody"
@@ -46,6 +48,12 @@ const STRAFE_LEFT: StringName = &"strafe_left"
 const STRAFE_RIGHT: StringName = &"strafe_right"
 const TURN_LEFT: StringName = &"turn_left"
 const TURN_RIGHT: StringName = &"turn_right"
+## S28's A2 fixtures: the two single-event actions the doubled-key test rides, the clean
+## key it duplicates, and the conflict word the row's label carries.
+const INTERACT_ACTION: StringName = &"interact"
+const WARP_ACTION: StringName = &"warp"
+const SHARED_KEY: Key = KEY_Y
+const CONFLICT_SUFFIX := " · CONFLICT"
 
 ## Where the Controls-tab round-trip writes instead of the player's `user://inputs.cfg`;
 ## the suite removes it in `suite_teardown`, so a gate run leaves nothing behind (F10).
@@ -643,6 +651,83 @@ func test_the_two_strafe_actions_are_rebindable_and_the_old_set_survives() -> vo
 	## The project's input map carries both, so the tab has a binding to show and rebind.
 	assert_true(InputMap.has_action(STRAFE_LEFT), "the input map carries strafe_left")
 	assert_true(InputMap.has_action(STRAFE_RIGHT), "the input map carries strafe_right")
+
+
+## S28's A2 (D17-P1/D17-P2 CONTROLS): the shipped law in the overlay. The two stick
+## actions fold behind the ADVANCED row on a fresh tab, and a duplicated key never rides
+## two actions silently: the build pass flags the rows, and a commit steals the key from
+## the old holder (`settings.gd::_steal_binding`), persisting through the manager's own
+## `save_inputs`. Bindings are written to the suite's scratch file and every live entry
+## is restored, exactly like the round-trip test below.
+func test_the_controls_tab_folds_the_stick_actions_and_deconflicts_a_shared_key() -> void:
+	var manager := _settings_manager()
+	if manager == null:
+		assert_true(false, "the SettingsManager autoload is in the tree")
+		return
+	var scratch: String = manager.get(&"inputs_file")
+	manager.set(&"inputs_file", SCRATCH_INPUTS)
+	var before_interact := _dup_events(INTERACT_ACTION)
+	var before_warp := _dup_events(WARP_ACTION)
+	var shared := _key_event(SHARED_KEY)
+	manager.call(&"set_binding", INTERACT_ACTION, 1, shared)
+	manager.call(&"set_binding", WARP_ACTION, 1, _key_event(SHARED_KEY))
+	var screen: Control = SettingsScene.instantiate()
+	_host().add_child(screen)
+	_staged.append(screen)
+	var rows: Dictionary = screen.get(&"_rows_by_action")
+	assert_false(rows.has(TURN_LEFT), "TURN LEFT folds behind the ADVANCED row at open")
+	assert_false(rows.has(TURN_RIGHT), "TURN RIGHT folds with it")
+	assert_true(
+		rows.has(INTERACT_ACTION) and rows.has(WARP_ACTION),
+		"the two doubled actions still show"
+	)
+	assert_true(
+		_row_label(rows[INTERACT_ACTION]).ends_with(CONFLICT_SUFFIX),
+		"a duplicated key is flagged at build, not shipped silently"
+	)
+	assert_true(_row_label(rows[WARP_ACTION]).ends_with(CONFLICT_SUFFIX), "on both holders")
+	## The commit route: binding the key to WARP steals it from every other action.
+	screen.call(&"_steal_binding", WARP_ACTION, String(manager.call(&"event_text", shared)))
+	screen.call(&"_rebuild_rebind_rows")
+	assert_false(_action_shows(manager, INTERACT_ACTION, "Y"), "the old holder lost the key")
+	assert_true(_action_shows(manager, WARP_ACTION, "Y"), "the new holder keeps it")
+	rows = screen.get(&"_rows_by_action")
+	assert_false(
+		_row_label(rows[INTERACT_ACTION]).ends_with(CONFLICT_SUFFIX),
+		"and the flag clears with the conflict"
+	)
+	## The fold opens on demand, with both stick actions back on the tab.
+	screen.call(&"_on_advanced_pressed")
+	rows = screen.get(&"_rows_by_action")
+	assert_true(rows.has(TURN_LEFT) and rows.has(TURN_RIGHT), "ADVANCED reveals the stick rows")
+	screen.free()
+	_restore_events(INTERACT_ACTION, before_interact)
+	_restore_events(WARP_ACTION, before_warp)
+	manager.set(&"inputs_file", scratch)
+
+
+func _dup_events(action: StringName) -> Array[InputEvent]:
+	var stored: Array[InputEvent] = []
+	for event: InputEvent in InputMap.action_get_events(action):
+		stored.append(event.duplicate())
+	return stored
+
+
+func _restore_events(action: StringName, events: Array[InputEvent]) -> void:
+	InputMap.action_erase_events(action)
+	for event: InputEvent in events:
+		InputMap.action_add_event(action, event)
+
+
+func _action_shows(manager: Node, action: StringName, text: String) -> bool:
+	for slot in 4:
+		if String(manager.call(&"binding_text", action, slot)) == text:
+			return true
+	return false
+
+
+func _row_label(row: Variant) -> String:
+	return String(((row as Node).get_node("ActionLabel") as Label).text)
 
 
 func test_the_strafe_binding_round_trips_through_the_settings_manager() -> void:

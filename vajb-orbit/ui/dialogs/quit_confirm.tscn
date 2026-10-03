@@ -4,7 +4,7 @@
 
 [node name="QuitConfirm" instance=ExtResource("1_dialog")]
 default_title = "Quit Vajb Orbit?"
-default_body = "You are docked in the hangar. Progress is saved."
+default_body = "Progress is saved."
 default_confirm_text = "QUIT"
 default_cancel_text = "CANCEL"
 focus_confirm = false

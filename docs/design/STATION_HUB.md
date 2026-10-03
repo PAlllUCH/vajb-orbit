@@ -42,22 +42,23 @@ and every tool result is re-sent on each later request.
 
 | Section | Topic | Lines |
 |---|---|---|
-| 1. | Intent | L65–L82 |
-| 2. | Navigation model | L83–L133 |
-| 3. | Composition | L134–L274 |
-| 4. | Node tree (exact) | L275–L401 |
-| 5. | Per-module spec | L402–L1016 |
-| 6. | Type scale | L1017–L1038 |
-| 7. | Art map | L1039–L1089 |
-| 8. | Theme items used (all present in | L1090–L1111 |
-| 9. | Motion table | L1112–L1139 |
-| 10. | Focus and input | L1140–L1160 |
-| 11. | Audio hooks | L1161–L1187 |
-| 12. | Implementation notes for the coder | L1188–L1267 |
-| 13. | Verification performed on the mockup | L1268–L1284 |
-| 14. | Open questions for the owner | L1285–L1318 |
-| 15. | Station services deck & station identity (amendment 2026-10-02, wave… | L1319–L1482 |
-| 16. | Panel consolidation and the inspector band (amendment 2026-10-03, ow… | L1483–L1521 |
+| 1. | Intent | L66–L83 |
+| 2. | Navigation model | L84–L134 |
+| 3. | Composition | L135–L275 |
+| 4. | Node tree (exact) | L276–L402 |
+| 5. | Per-module spec | L403–L1017 |
+| 6. | Type scale | L1018–L1039 |
+| 7. | Art map | L1040–L1090 |
+| 8. | Theme items used (all present in | L1091–L1112 |
+| 9. | Motion table | L1113–L1140 |
+| 10. | Focus and input | L1141–L1161 |
+| 11. | Audio hooks | L1162–L1188 |
+| 12. | Implementation notes for the coder | L1189–L1268 |
+| 13. | Verification performed on the mockup | L1269–L1285 |
+| 14. | Open questions for the owner | L1286–L1319 |
+| 15. | Station services deck & station identity (amendment 2026-10-02, wave… | L1320–L1483 |
+| 16. | Panel consolidation and the inspector band (amendment 2026-10-03, ow… | L1484–L1522 |
+| 17. | The merged panels — design detail, the inspector law, the panel temp… | L1523–L1631 |
 
 <!-- section-index:end -->
 
@@ -1518,3 +1519,112 @@ chrome by the per-surface table; marks in their own rects). D18 produces the
 wireframe mockups and the per-panel spec detail on these pins; S29 implements;
 S28 ships the P6 mechanical cure ahead of them. No new art anywhere in this
 pass — the merged panels reuse the shipped chrome and Tokens only.
+
+## 17. The merged panels — design detail, the inspector law, the panel template (amendment 2026-10-03, wave D18 — D18-A1)
+
+§16's P4–P7 are the law; this section is the wireframe-grade detail S29 codes
+against (mockups: `staging/mockup/d18_armory_wireframe.md`,
+`d18_shipyard_wireframe.md`). Composition is UI_SPEC §3.10 A5.1–A5.4 and §8
+P1–P3 throughout; no new art (owner 2026-09-27). New presentation values
+carry their reversal and tick id in §17.5 — the **P** rows continue §16's
+series at P8; nothing above is renumbered. (Namespace note: 09 §3.3's own S19
+tick series also runs P1–P8 — a different doc-local series, already cited as
+such by `repairs_panel.gd:70`; this series is the §8/§16 presentation series.)
+
+### 17.1 ARMORY — one pane (P4)
+
+One pane, **D13 approach B landscape split** (§5's own idiom, STATION_HUB.md:
+996-997), on the §15 layout spine (list half + right column 420 PROPOSED).
+Left: **the ship grid exactly as FITTING ships it** — 48 px `SlotButtonWeapon`
+plates, gap = empty 48×48 `Control`, the slot glyph inset 6, separation 4,
+the caption `SLOT LAYOUT · %d CELLS · %d ENGINES`, and the footer power meter
+`PWR %d / %d` (+ `· CANDIDATE %d / %d`) — every number FITTING's own
+(`fitting_panel.gd:18-70,148-149`); the cells stay selectable and keep the
+one focus ring (§10). Right: **the inventory browser** — the auction's
+family-tab strip minus `HULLS` (a hull is not a module row and fits no cell;
+judgment call, reversal: ship the tab disabled) over owned + buyable module
+rows in the auction row idiom (76 tall, `RowInner` 12/8, A5.4 row shape Q5),
+every row draggable, owned rows reading `OWNED ×n` and buyable rows their
+price; the row-corner BUY is a P1 `ActionInline` 96×32 flat chip.
+
+**Drag-and-drop law.** Cells accept drops filtered by slot — a cell's family
+is its identity (`fitting_panel.gd:74-93`, `SLOT_ALIASES`); engines drag like
+any family. A **wrong-slot drop is refused** by two signals together, never a
+colour alone: the shell's status line and the cell's own slot caption
+flashing 0.5 s (P10). An owned module dropped on a legal cell fits it (the
+displaced module returns to the hold); an **unowned** row dropped on a legal
+cell **buys-then-fits** — one flow, one press, credits checked first (a
+shortfall refuses through the status line, the shipped
+`REFUSED · NOT ENOUGH CREDITS · <n> NEEDED` wording, `auction_panel.gd:160`).
+`BUY` on a browser row buys into
+the next free legal cell or the selected cell; the P2 cluster's primary
+(`BUY & FIT`, P14; P1 plate 360×56, rightmost) does the same for the
+focused row.
+
+**Hover.** Rows, cells and tabs all describe through the existing
+`inspect_requested` chain (`station.tscn:214`, `station.gd:150-151`,
+`tests/test_s11_inspector.gd:140-233`); the pane adds no second description
+surface.
+
+### 17.2 SHIPYARD — one pane (P5)
+
+One pane on the §15 spine. The hull list (name, `ACTIVE` badge,
+`<class> CLASS · <hull> · <slots>` meta — `shipyard_panel.gd:82-84`) beside
+the side render in the pane's own `PreviewFrame`
+(`shipyard_panel.tscn:74-115`). The **labelled** stat pairs
+(HULL/SHIELD/CARGO/ENGINES/SLOT CELLS — `shipyard_panel.gd:74-80`) and the
+comparison block (`SELECTED` vs `ACTIVE`, the catalogue's ladder order,
+`shipyard_panel.gd:84-86,203`) below it. Under the comparison: the selected
+hull's **installed modules** — the slot-layout grid with filled plates named
+on hover by the existing `<TYPE><n> · <MODULE NAME or EMPTY> · OWNED ×<n>`
+line (`shipyard_panel.gd:60-88`) under the `INSTALLED MODULES` caption (P12).
+
+**The repair block.** The damage table (ACTIVE HULL/HULL/SHIELD + the four
+armour quadrants, `repairs_panel.gd:74-89`'s REPORT_ROWS **minus the
+`MISSING` and `FEE` body rows**) with `NOMINAL` for intact systems (P13); the
+fee lives in the footer line (`REPAIR AVAILABLE · <n> CR` — the shipped
+wording, `repairs_panel.gd:52`; `ALL SYSTEMS NOMINAL` when intact, `:50`);
+`REPAIR` is the P1 ActionPrimary (with `SET ACTIVE` as the P1 secondary for a
+non-active selection). All-nominal: `REPAIR` disabled + `text_dim` (A5.4-2's
+unavailable idiom — label + state). Hover on hull rows, module plates and
+damage rows routes through the existing chain; when idle the pane fills the
+band with its own summary (P6).
+
+### 17.3 The inspector band lifecycle (P6) — the law text
+
+The shell clears and re-anchors the band on **every module switch** and on
+**unhover-with-no-selection**; every pane publishes through the existing
+`inspect_requested` signal; the band never carries another module's content.
+SHIPYARD and LAUNCH fill the band with their own summary when idle (active
+hull / launch summary) instead of leaving it empty. S28 ships the mechanical
+clear (the defect cure for the stale band, `D17-P1_report.md` §Station hub);
+S29 ships the fills. Reversal: none — a defect cure.
+
+### 17.4 The one panel template and the six-entry rail (P7)
+
+Every station panel is, and only is: a `PaneHeader` (module icon + title at
+the shared x) / a content split / the UI_SPEC §8 P2 action cluster / the
+shared footer hint — nothing else. The rail folds 8 → **6 entries**:
+ARMORY, REFINERY, EXCHANGE, AUCTION, SHIPYARD, LAUNCH (FITTING into ARMORY,
+REPAIRS into SHIPYARD). The rail's own `StationButton` 272×56 idiom and
+entry counts do not change otherwise (`station.gd:60-101`); the ARMORY entry
+keeps its icon (`icon_equip_module.png`, ASSET_CATALOG.md:302), the SHIPYARD
+entry its `icon_hull.svg` (:307); the FITTING and REPAIRS tiles retire with
+their panels (reversal: the two entries return, P7's own). Both merged panes
+keep exactly one `PaneHeader` each — the fold adds no second header.
+
+### 17.5 Presentation values added by this amendment (the tick detail)
+
+| Tick | Value | Reversal |
+|---|---|---|
+| **P8** | browser caption `MODULES · OWNED & BUYABLE` | `OWNED MODULES` (the fitting label) |
+| **P9** | refusal status line `DROP REFUSED — <MODULE> FITS NO <SLOT> CELL` | the bare `DROP REFUSED` |
+| **P10** | the cell's slot-caption flash on a refused drop, **0.5 s** | 0.25 s |
+| **P11** | buy-and-fit confirmation `FITTED · <MODULE>` | silent fit |
+| **P12** | shipyard `INSTALLED MODULES` caption | the `SLOT LAYOUT · %d CELLS · %d ENGINES` caption alone (`shipyard_panel.gd:83`) |
+| **P13** | intact damage rows read `NOMINAL` in `text_dim` | the `MISSING` count row (`repairs_panel.gd:79`) |
+| **P14** | the ARMORY cluster primary's label `BUY & FIT` (focused row; `SELECTED` appended when a cell is selected) | `BUY` (P1's own row) |
+
+`REPAIR AVAILABLE · <n> CR` and `ALL SYSTEMS NOMINAL` ship today
+(`repairs_panel.gd:50,52`) and do not re-tick. The map-side wordings (N7–N14)
+live in UI_SPEC §10.

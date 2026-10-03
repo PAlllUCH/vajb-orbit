@@ -58,6 +58,7 @@ func set_conflict(enabled: bool) -> void:
 		return
 	_conflict = enabled
 	if is_node_ready():
+		_apply_texts()
 		_apply_label_color()
 
 
@@ -82,7 +83,9 @@ func _apply_texts_when_ready() -> void:
 
 
 func _apply_texts() -> void:
-	_label.text = _label_text
+	## A conflict reads as label plus state, never colour alone (UI_SPEC section 3.1b):
+	## the row's own name carries the word while the highlight is on.
+	_label.text = "%s · CONFLICT" % _label_text if _conflict else _label_text
 	_primary.text = LISTEN_TEXT if _listening_index == PRIMARY_INDEX else _primary_text
 	_alternate.text = LISTEN_TEXT if _listening_index == ALTERNATE_INDEX else _alternate_text
 

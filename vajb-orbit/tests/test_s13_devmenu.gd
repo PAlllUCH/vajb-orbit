@@ -330,6 +330,20 @@ func test_the_credits_section_is_a_no_op_without_a_profile_and_at_boot() -> void
 	bare.free()
 
 
+## S28's A7 (D17-P2 flight: "a DevTuningMenu ships inside the flight scene tree"): the
+## overlay is a developer tool, so `game/game.gd` mounts it only on debug builds - a
+## release never instantiates it. The gate asserts the shipped law from the scene script,
+## because the gate itself is a debug run and cannot stand in the release branch.
+func test_the_flight_scene_gates_the_overlay_to_debug_builds() -> void:
+	var source := FileAccess.get_file_as_string("res://game/game.gd")
+	var gate := source.find("if OS.is_debug_build():")
+	var mount := source.find("add_child(DevTuningMenuScene.instantiate())")
+	assert_true(mount >= 0, "the mount ships")
+	assert_true(gate >= 0, "the mount sits behind the debug-build gate")
+	assert_true(mount > gate, "and the gated line is the mount itself")
+	assert_true(OS.is_debug_build(), "this gate run is a debug build, so the tool stays available")
+
+
 ## ---------------------------------------------------------------- the helpers
 
 

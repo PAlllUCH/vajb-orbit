@@ -19,15 +19,16 @@ and every tool result is re-sent on each later request.
 
 | Section | Topic | Lines |
 |---|---|---|
-| 1. | Colour Tokens | L35–L60 |
-| 2. | Theme Architecture | L61–L103 |
-| 3. | In-Game HUD | L104–L693 |
-| 4. | Settings | L694–L755 |
-| 5. | Tooltips, Dialogs & Nine-Patch Panels | L756–L833 |
-| 6. | Font & Sizing Reference (coding checklist) | L834–L853 |
-| 7. | Station surfaces chrome — the A5.4 extension (amendment 2026-10-02, … | L854–L889 |
-| 8. | Station action buttons and the one focus language (amendment 2026-10… | L890–L922 |
-| 9. | The map deck — flight minimap and navigation (amendment 2026-10-03, … | L923–L950 |
+| 1. | Colour Tokens | L36–L61 |
+| 2. | Theme Architecture | L62–L104 |
+| 3. | In-Game HUD | L105–L694 |
+| 4. | Settings | L695–L756 |
+| 5. | Tooltips, Dialogs & Nine-Patch Panels | L757–L834 |
+| 6. | Font & Sizing Reference (coding checklist) | L835–L854 |
+| 7. | Station surfaces chrome — the A5.4 extension (amendment 2026-10-02, … | L855–L890 |
+| 8. | Station action buttons and the one focus language (amendment 2026-10… | L891–L923 |
+| 9. | The map deck — flight minimap and navigation (amendment 2026-10-03, … | L924–L951 |
+| 10. | The map deck and the navigation pin — design detail (amendment 2026-… | L952–L1049 |
 
 <!-- section-index:end -->
 
@@ -947,3 +948,101 @@ The deck's chrome and rows obey A5.1–A5.4 like any station pane (flat Tokens
 inside; the pin and the bearing arrow are code-drawn marks inside their own
 child rects, A5.2(iii)). The compact minimap otherwise ships as today; this
 block adds only the pin's bearing arrow and the N6 always-on blips.
+
+## 10. The map deck and the navigation pin — design detail (amendment 2026-10-03, wave D18 — D18-A1)
+
+§9's N1–N6 are the law; this section is the wireframe-grade detail S29 codes
+against (mockup: `staging/mockup/d18_map_deck_wireframe.md`). Composition is
+A5.1–A5.4 throughout; no new art (owner 2026-09-27). Presentation values new
+in this block carry their reversal and tick id below — the **N** rows continue
+§9's series at N7; nothing above is renumbered.
+
+**Deck composition (N1/N2).** One `PanelContainer` (A5.4 `Pane outer edge`,
+`ui_panel_frame`, ASSET_CATALOG.md:444) centred at 80 % of the viewport. Its
+body is one `HBoxContainer`: the map viewport (a `Control` that expands; the
+compact map's own blip classes and drawing law move up into it —
+`minimap.gd`) beside the filter column at `custom_minimum_size (240, 0)`
+(**PROPOSED**; reversal `(180, 0)`). The deck's foot is the A5.4-3 caption
+strip carrying the zoom read, the hint line and the spool/cooldown/arrival
+reads (§A2 of the mockup). Toggle paths: **M**, the compact map's corner
+EXPAND button (a 36×36 `TextureButton` beside the shipped `ZoomMinus`/
+`ZoomPlus`, `hud.tscn:409-431`), and **ESC** (N1's three routes). Pan/zoom:
+LMB drag pans — a press only counts as a drag past an **8 px** threshold
+(**N14**); wheel zooms 25 %–400 % centred on the cursor; arrow keys pan in
+64 px steps (N2's numbers).
+
+**The filter column (N3).** A `VBoxContainer` of toggle rows, each the A5.4-2
+service-strip idiom (base `Button` bevel + a `StationValue` label — the
+auction tab plate idiom, `auction_panel.gd:98-100`): the N3 label with a
+trailing `ON`/`OFF` state read (`text_primary`/`text_dim` — label + state,
+never colour alone). The eight toggles persist per profile through the
+existing `PlayerProfile` save (`user://profile.cfg`, 01 §7). **N6's exemption
+lands on the classes that draw STATION and GATE blips** — `KIND_STATION`/
+`KIND_GATE` (**N15**/**N16** below, PROPOSED): those two classes are drawn on
+deck and compact map whatever the filters say, and until they ship nothing on
+either map is exempt (N6 filters nothing today). `KIND_SELF` carries no toggle
+and is never filterable. **The toggle→blip-class mapping** (`minimap.gd:141`
+names the shipped five — `KIND_SELF`, `KIND_HOSTILE`, `KIND_FRIENDLY`,
+`KIND_SWARMER`, `KIND_GHOST`):
+
+| Toggle | Rides |
+|---|---|
+| STATIONS | `KIND_STATION` — new class (**N15**) |
+| GATES | `KIND_GATE` — new class (**N16**) |
+| ASTEROID FIELDS | `KIND_ASTEROID_FIELD` — new class (**N17**) |
+| POIS | `KIND_POI` — new class (**N18**); the shipped `KIND_GHOST` also rides this toggle (**N19**) |
+| HOSTILES | the shipped `KIND_HOSTILE` (N3's own row); the shipped `KIND_SWARMER` also rides this toggle (**N20**) |
+| FRIENDLY | the shipped `KIND_FRIENDLY` (N3's own row) |
+| CARGO & WRECKS | `KIND_WRECK` — new class (**N21**) |
+| CONTRACTS | `KIND_CONTRACT` — new class (**N22**) |
+
+**The navigation pin (N4).** Press-down **hit-tests the pin first**: a press
+that hits the pin is a **remove candidate and never a place or move** (a short
+press on it removes the pin — `cancel_orders`, `player_ship.gd:426`); a press
+that misses the pin places or moves the one destination pin, and its release
+< 0.5 s issues the **existing** autopilot order (`set_move_target`,
+`player_ship.gd:419`) to the pin — one action, one press; any stick input
+cancels the order (`player_ship.gd:816`). Hold ≥ 0.5 s (N5 fitted) jumps —
+armed from press-down, on a fresh pin and on the existing pin alike. **The pin
+is placed at press-down and does not follow the cursor**: it is set at the
+press point and stays there; a held move past N14's 8 px threshold is a pan
+(N2), not a pin move, and the pan leaves the pin where it was placed. Pin
+reads: the diamond mark is a code-drawn
+mark in its own child rect (A5.2(iii)) in `text_primary` at 6 px — friendly
+blips are 3 px (`minimap.gd` FRIENDLY_RADIUS) — **PROPOSED**, reversal
+`accent_ember`; the edge bearing arrow clamps to the bezel's inner edge
+(`ui_minimap_bezel.png`, ASSET_CATALOG.md:443, band 16) when the pin is
+out of view; the distance read rides the deck under the pin and the compact
+footer's `SectorLabel` line (`hud.tscn:401`).
+
+**The hyperdrive reads (N5's UX).** Spool (`HYPERDRIVE SPOOLING`, N5's 1 s),
+cooldown (`JUMP COOLDOWN <t> s` → `JUMP READY`, N5's 30 s) and arrival
+(`ARRIVED · <name>`, ~2 s) are caption-strip reads in the deck footer; a jump
+attempt inside the cooldown is refused by the cooldown read itself (label +
+state, never colour alone). The compact map carries none of them; the arrival
+**FX** is staged on the art budget (D18_BRIEF.md §10) — this wave's arrival
+state is the read plus the blip re-centring only.
+
+| Tick | Value | Reversal |
+|---|---|---|
+| **N7** | filter column caption `MAP FILTERS` | no caption |
+| **N8** | deck zoom read `ZOOM <n>%` | no read |
+| **N9** | deck hint `DRAG PAN · WHEEL ZOOM · CLICK PIN · HOLD JUMP` | no hint |
+| **N10** | pin distance read `DIST <n>` (deck + compact footer) | no read |
+| **N11** | spool read `HYPERDRIVE SPOOLING` | none (silent spool) |
+| **N12** | cooldown read `JUMP COOLDOWN <t> s` / `JUMP READY` | none |
+| **N13** | arrival read `ARRIVED · <name>`, ~2 s | flash only, no read |
+| **N14** | drag threshold **8 px** (press→drag); 0.5 s hold per N4 | 4 px; N4's own |
+| **N15** | new blip class `KIND_STATION` (drawn on deck + compact map) rides the STATIONS toggle; N6-exempt | toggle inert (N23) until the class ships |
+| **N16** | new blip class `KIND_GATE` (drawn on deck + compact map) rides the GATES toggle; N6-exempt | toggle inert (N23) until the class ships |
+| **N17** | new blip class `KIND_ASTEROID_FIELD` rides the ASTEROID FIELDS toggle | toggle inert (N23) until the class ships |
+| **N18** | new blip class `KIND_POI` rides the POIS toggle | toggle inert (N23) until the class ships |
+| **N19** | the shipped `KIND_GHOST` rides the POIS toggle | ghost gets its own toggle |
+| **N20** | the shipped `KIND_SWARMER` rides the HOSTILES toggle | swarmer gets its own toggle |
+| **N21** | new blip class `KIND_WRECK` rides the CARGO & WRECKS toggle | toggle inert (N23) until the class ships |
+| **N22** | new blip class `KIND_CONTRACT` rides the CONTRACTS toggle | toggle inert (N23) until the class ships |
+| **N23** | a toggle whose class has not shipped is drawn, persists, and filters nothing | the toggle is hidden until its class ships |
+
+`NO HYPERDRIVE INSTALLED` (N4) and the N5 module row itself
+(`10_ship_acquisition.md` 2026-10-03 block, R-S29-1) are pinned above and do
+not re-tick here.

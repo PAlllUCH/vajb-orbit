@@ -251,6 +251,16 @@ func _strip_danger() -> bool:
 	return label.has_theme_color_override(&"font_color")
 
 
+## S28's A3: service reports reach the shell's status line, not the confirm strip; the
+## suite's recorded `status_requested` captures ("_status"/"_danger") are the new reader.
+func _last_status() -> String:
+	return _status[_status.size() - 1] if not _status.is_empty() else ""
+
+
+func _last_danger() -> bool:
+	return _danger[_danger.size() - 1] if not _danger.is_empty() else false
+
+
 func _press(button: Button) -> void:
 	assert_true(button != null, "the service button exists")
 	if button != null:
@@ -618,10 +628,6 @@ func _read_source(path: String) -> String:
 	return FileAccess.get_file_as_string(path)
 
 
-func _last_status() -> String:
-	return _status[_status.size() - 1] if not _status.is_empty() else ""
-
-
 ## ---------------------------------------------------------------------------- the services
 
 
@@ -630,11 +636,13 @@ func test_refuel_fills_the_tank_and_reports_the_figures_own_key() -> void:
 	var credits := _credits()
 	var tank := _pool_max(false)
 	_press(_refuel_button())
-	assert_eq(_strip(), WORDING_REPORT % ["FUEL_MAX", tank])
+	assert_eq(_last_status(), WORDING_REPORT % ["FUEL_MAX", tank])
 	assert_eq(_fuel_of(HULL), tank, "the service filed the tank on the active hull")
 	assert_eq(_credits(), credits, "a free service moves no credits")
-	assert_false(_strip_danger(), "a success is not a refusal")
-	assert_false(_strip().contains("CR"), "no price is printed")
+	assert_false(_last_danger(), "a success is not a refusal")
+	assert_false(_last_status().contains("CR"), "no price is printed")
+	## S28's A3: the strip keeps the arming copy while a service reports.
+	assert_true(_strip().contains("PRESS LAUNCH TO ARM"), "the strip stays on the arm copy")
 
 
 func test_recharge_reports_the_energy_figure_and_files_nothing() -> void:
@@ -643,10 +651,10 @@ func test_recharge_reports_the_energy_figure_and_files_nothing() -> void:
 	var fuel := _fuel_of(HULL)
 	var cells := _pool_max(true)
 	_press(_recharge_button())
-	assert_eq(_strip(), WORDING_REPORT % ["ENERGY_MAX", cells])
+	assert_eq(_last_status(), WORDING_REPORT % ["ENERGY_MAX", cells])
 	assert_eq(_fuel_of(HULL), fuel, "Energy recomputes at launch, so the call files no tank")
 	assert_eq(_credits(), credits, "a free service moves no credits")
-	assert_false(_strip_danger(), "a success is not a refusal")
+	assert_false(_last_danger(), "a success is not a refusal")
 
 
 func test_the_full_tank_refusal_is_rendered() -> void:
@@ -654,30 +662,58 @@ func test_the_full_tank_refusal_is_rendered() -> void:
 	_file_report(tank)
 	var credits := _credits()
 	_press(_refuel_button())
-	assert_eq(_strip(), String(RepairsService.REASON_FUEL_FULL).to_upper())
-	assert_true(_strip_danger(), "a refusal is rendered in the danger colour")
+	## S28's A3 (D17-P2 LAUNCH): the refusal reads as play copy in the shell's line, and
+	## the raw token never rides the confirm strip; `Repairs`' reason token API is unmoved.
+	assert_eq(_last_status(), "FUEL TANK ALREADY FULL")
+	assert_true(_last_danger(), "a refusal is rendered in the danger colour")
 	assert_eq(_credits(), credits, "a refused service moves no credits")
 	assert_eq(_fuel_of(HULL), tank, "and leaves the tank where it was")
 	assert_false(_refuel_button().disabled, "the button stays pressable")
+	assert_ne(_strip(), String(RepairsService.REASON_FUEL_FULL).to_upper(), "no raw token on the strip")
 
 
 func test_an_unfiled_hull_refuses_with_the_services_own_reason() -> void:
 	assert_true(_profile.call(&"vitals_of", HULL).is_empty(), "the fixture files no report")
 	_press(_refuel_button())
-	assert_eq(_strip(), String(RepairsService.REASON_NO_DAMAGE_REPORT).to_upper())
-	assert_true(_strip_danger(), "a refusal is rendered in the danger colour")
+	## S28's A3: the strip shows arm/confirm copy, never the raw `NO_DAMAGE_REPORT` token;
+	## the refusal reads as play copy in the shell's status line.
+	assert_eq(_last_status(), "NO DAMAGE REPORT ON FILE FOR THIS HULL")
+	assert_true(_last_danger(), "a refusal is rendered in the danger colour")
+	assert_true(_strip().contains("PRESS LAUNCH TO ARM"), "the strip keeps the arming copy")
+	assert_false(_strip().contains("NO_DAMAGE_REPORT"), "the raw token never rides the strip")
 
 
 func test_the_service_actions_are_deck_controls_own_catalogued_names() -> void:
 	var refuel := _refuel_button()
 	var recharge := _recharge_button()
 	var launch_button := _launch.get_node("%LaunchButton") as Button
-	var box := launch_button.get_parent()
+	var row := _launch.get_node("%ActionsRow") as Container
 	assert_true(refuel != null and recharge != null, "both actions exist")
+	assert_true(row != null, "the P2 cluster row ships at the foot of the pane")
 	assert_eq(refuel.text, _catalogue_name(&"refuel"), "the label is the catalogue's own name")
 	assert_eq(recharge.text, _catalogue_name(&"recharge"))
 	assert_eq(refuel.theme_type_variation, &"StationButton")
-	assert_eq(refuel.custom_minimum_size, Vector2(0.0, 56.0))
-	assert_eq(refuel.get_parent().get_parent(), box, "the row lives in DECK CONTROL's own box")
-	assert_eq(recharge.get_parent(), refuel.get_parent(), "one row holds both")
-	assert_gt(launch_button.get_index(), refuel.get_parent().get_index(), "LAUNCH stays last")
+	assert_eq(refuel.custom_minimum_size, Vector2(360.0, 56.0), "the P1 plate token")
+	assert_eq(recharge.custom_minimum_size, Vector2(360.0, 56.0))
+	assert_eq(launch_button.custom_minimum_size, Vector2(360.0, 56.0), "88 px retires")
+	assert_eq(refuel.get_parent(), row, "the service plates sit in the cluster row")
+	assert_eq(recharge.get_parent(), row, "one row holds both")
+	assert_gt(launch_button.get_index(), refuel.get_index(), "LAUNCH sits rightmost in the row")
+
+
+## S28's A4 (D17-P2: "LANCER shield disagrees across screens - 450 in SHIPYARD, 400 in
+## LAUNCH"): the one shield figure is the catalogue hull row's `shield` field - the value
+## `ShipFit.HULLS` resolves the flight base from. The shipyard comparison's ACTIVE column
+## and the launch briefing's SHIELD LIMIT cell must read the same number on the same
+## account, which is what this gate row pins; a future second source trips it.
+func test_the_shipyard_comparison_and_the_launch_briefing_read_one_shield_figure() -> void:
+	var ship := Catalog.ship(HULL)
+	var cells: Array = (_shipyard.get(&"_stat_cells") as Dictionary).get(&"shield", [])
+	var brief: Dictionary = _launch.get(&"_brief_values")
+	var active_cell: Label = cells[1] if cells.size() > 1 else null
+	var brief_label: Label = brief.get(&"shield")
+	assert_true(active_cell != null and brief_label != null, "both shield readers ship")
+	if active_cell == null or brief_label == null:
+		return
+	assert_eq(active_cell.text, str(int(ship.get(&"shield", 0))), "the comparison is the catalogue row")
+	assert_eq(brief_label.text, active_cell.text, "and the briefing reads the same figure, not a second source")

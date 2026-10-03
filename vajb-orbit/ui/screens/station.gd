@@ -126,6 +126,12 @@ const PULSE_UP_SECONDS := 0.16
 
 const STATUS_DOCKED := "DOCKED · ALL SYSTEMS NOMINAL"
 
+## S28's A8: the credits box reserves the width of its widest readout once, so a balance
+## change never reflows the header corner (D17-P2: CreditsPanel 186 -> 185 px after one
+## 59-credit sale). The reserve is font-derived - nine grouped digits, more than the
+## ledger prints this wave - measured with the value label's own face at its own size.
+const CREDITS_WIDTH_RESERVE := 999999999
+
 ## CONTRACTS section 23.1: the inspector body's own line budget. The scene carries the same
 ## two, and `_apply_tokens` re-applies this const so the two cannot drift. A4.4 (UI_SPEC
 ## section 3.10) turns it into the reserved block height too: the title line plus this many
@@ -268,6 +274,18 @@ func _apply_tokens() -> void:
 	_inspector_body.add_theme_color_override(&"font_color", _token(&"text_primary"))
 	_pin_inspector_height()
 	_apply_inspector_colour()
+	_reserve_credits_width()
+
+
+## A8: one font-measured reservation on the value label; right alignment (the scene) keeps
+## the digits off the icon while the width never moves again.
+func _reserve_credits_width() -> void:
+	var font := _credits_value.get_theme_font(&"font")
+	if font == null:
+		return
+	var size := _credits_value.get_theme_font_size(&"font_size")
+	var reserve := ceilf(font.get_string_width(_format_int(CREDITS_WIDTH_RESERVE), size))
+	_credits_value.custom_minimum_size.x = maxf(reserve, _credits_value.custom_minimum_size.x)
 
 
 ## **A4.4 (UI_SPEC section 3.10): the inspector reserves a constant height.** The title
@@ -284,14 +302,15 @@ func _pin_inspector_height() -> void:
 
 ## A wrapped label's own height for `lines` lines: the font's line height per line plus the
 ## label's own `line_spacing` constant between them (the quantity `Label` shapes to). 0.0
-## when no font resolves, which leaves the label's own minimum in charge.
+## when no font resolves, which leaves the label's own minimum in charge. S28's A9 rows:
+## the value floors, so a reserved block never lands a sibling on a half pixel.
 static func _lines_height(label: Label, lines: int) -> float:
 	var font: Font = label.get_theme_font(&"font")
 	if font == null:
 		return 0.0
 	var size: int = label.get_theme_font_size(&"font_size")
 	var spacing: float = float(label.get_theme_constant(&"line_spacing"))
-	return float(lines) * font.get_height(size) + float(maxi(lines - 1, 0)) * spacing
+	return floorf(float(lines) * font.get_height(size) + float(maxi(lines - 1, 0)) * spacing)
 
 
 func _token(token: StringName) -> Color:
@@ -363,7 +382,7 @@ func _connect_panel(pane: Node) -> void:
 	if pane.has_signal(&"launch_requested"):
 		pane.connect(&"launch_requested", _on_launch_requested)
 	if pane.has_signal(&"inspect_requested"):
-		pane.connect(&"inspect_requested", _on_panel_inspect)
+		pane.connect(&"inspect_requested", _on_panel_inspect.bind(pane))
 
 
 func _make_placeholder(index: int, path: String) -> CanvasItem:
@@ -448,6 +467,10 @@ func _select_module(module: int, instant: bool = false) -> void:
 		AudioManager.play_sfx(SFX_MODULE_SWITCH)
 		AudioManager.play_ambience(MODULE_BEDS[module], SWITCH_AMBIENCE_FADE)
 	_set_status(STATUS_DOCKED, false)
+	## P6 (STATION_HUB section 16, S28's mechanical half): the band is the shell's, so the
+	## shell empties it on every switch - a hover from the outgoing module never rides into
+	## the incoming one.
+	_clear_inspector()
 	if instant or outgoing == null or outgoing == incoming:
 		for pane: CanvasItem in _panels:
 			pane.visible = pane == incoming
@@ -493,11 +516,21 @@ func _on_panel_status(message: String, danger: bool) -> void:
 ## CONTRACTS section 23.1: the additive hover surface. `status_requested` keeps its meaning
 ## and its wording; the inspector is hover-driven and `title == ""` clears the block. The
 ## strip's own words, tokens and danger colour are unmoved.
-func _on_panel_inspect(title: String, body: String, danger: bool) -> void:
+## STATION_HUB section 16 P6 (S28): the band never carries another module's content, so a
+## publish from a pane that is not the one on the host is dropped.
+func _on_panel_inspect(title: String, body: String, danger: bool, pane: Node) -> void:
+	if pane != _panel_for(_module):
+		return
 	_inspector_title.text = title
 	_inspector_body.text = body
 	_inspector_danger = danger
 	_apply_inspector_colour()
+
+
+## P6's mechanical clear: the shell owns the band, so every module switch takes the block
+## back to empty. The re-anchor is the A4.4 height pin, which never moves with content.
+func _clear_inspector() -> void:
+	_on_panel_inspect("", "", false, _panel_for(_module))
 
 
 func _apply_inspector_colour() -> void:

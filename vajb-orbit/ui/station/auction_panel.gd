@@ -134,8 +134,14 @@ const ACTION_SELL := "SELL"
 ## section 5.2 `OWNED` status reads on this pane. Reversal: delete the const and render
 ## `ACTION_BUY` on a live row again (the press then refuses as `STATUS_REFUSED_OWNED`).
 const ACTION_OWNED := "OWNED"
-const SUBTITLE := "THE HOUSE BROKER · %d HULLS · %d MODULES"
-const TAG_INTERIM := "F LOT · ONE PER SHELF"
+const SUBTITLE := "THE HOUSE BROKER · %s · %s"
+## S28's A13 (D17-P2 AUCTION: the tag claimed the whole stockpile while the shelf showed
+## five hulls and nothing said the rest awaited the band): the shelf tag reads the live
+## count of the pane's listing rows against the shelf's own capacity, with the restock
+## reading beside it - `5 OF 20 ON SHELF · NEXT RESTOCK 20:00`. The F-lot interim stays
+## told where it lives: on the tagged row itself (`Auction.FACTION_LOT_TAG`).
+const SHELF_TAG_FORMAT := "%d OF %d ON SHELF · %s"
+const SHELF_TAG_EMPTY := "SHELF CLEARED · %s"
 
 ## The pane's own empty states. Section 5.10 gives no wording for a bought-out shelf (the
 ## shelf persists and refills at the next band, 10 section 2.1), so the caption names the
@@ -578,6 +584,25 @@ func _take_restock_reading() -> void:
 	_restock.text = AuctionScript.restock_text(seconds)
 
 
+## A13: the live shelf count and the restock reading, in one line, on the pane's tag.
+## Both halves are reads - `listing_rows` and `next_restock_seconds` write nothing - so
+## the tag costs the no-write boot rule (A4a/L122) nothing.
+func _refresh_shelf_tag() -> void:
+	var profile := _profile()
+	var seconds := (
+		AuctionScript.next_restock_seconds(profile, Clock.now())
+		if profile != null
+		else Clock.BAND_SECONDS
+	)
+	var capacity := AuctionScript.MODULE_SLOTS + AuctionScript.STOCK_SLOTS
+	if _listings.is_empty():
+		_tag.text = SHELF_TAG_EMPTY % AuctionScript.restock_text(seconds)
+		return
+	_tag.text = SHELF_TAG_FORMAT % [
+		_listings.size(), capacity, AuctionScript.restock_text(seconds)
+	]
+
+
 ## ------------------------------------------------------------------- the rows
 
 
@@ -603,8 +628,10 @@ func _rebuild() -> void:
 		_module_rows.add_child(_empty_row(EMPTY_MODULES))
 	if _sales.is_empty():
 		_sell_rows.add_child(_empty_row(EMPTY_SELL))
-	_subtitle.text = SUBTITLE % [_hulls.size(), _listings.size()]
-	_tag.text = TAG_INTERIM if AuctionScript.AUCTION_FACTION_LOTS_INTERIM else ""
+	_subtitle.text = SUBTITLE % [
+		Catalog.plural(_hulls.size(), "HULL"), Catalog.plural(_listings.size(), "MODULE"),
+	]
+	_refresh_shelf_tag()
 	_refresh_rows()
 	## The rebuild restores every row's visibility, so the tab's own write pass runs again
 	## after it -- a rebuilt shelf shows the family the player was already looking at.

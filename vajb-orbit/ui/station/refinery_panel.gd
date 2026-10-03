@@ -54,19 +54,18 @@ const HOVER_SECONDS := 0.09
 
 ## STATION_HUB section 12.3 fixes the RefineBox geometry (box 360, stepper plates 48,
 ## totals value column 220): those are static rects, so they live in the scene file as the
-## one source and are not mirrored here. Fix Wave 1 W2.3 raised all three action buttons
-## to one height: REFINE N keeps section 5.7's 88 px primary height (the LaunchButton
-## height) and the two secondary plates are 88 px in the scene as well, so the column no
-## longer stacks an 88 px plate over two 56 px ones. The width is already shared: all three
-## are children of RefineBox, a VBoxContainer. All three heights stay scene values and no
-## code mirrors them (W6-3).
+## one source and are not mirrored here. S28's A16 moves the three action buttons onto the
+## UI_SPEC section 8 P2 cluster row - an HBox at the foot of the panel, 16 px gutter,
+## primary (REFINE N) rightmost - each at the P1 360x56 Pressables token; the W2.3 88 px
+## trio retires with the six measured sizes. All heights and the cluster's place stay
+## scene values and no code mirrors them (W6-3).
 const STEPPER_MIN := 1
 
 const HEADER_MINERAL := "MINERAL"
 const HEADER_ORE := "ORE"
 const HEADER_INGOTS := "INGOTS"
 const HEADER_FEE := "FEE"
-const TAG_FORMAT := "%d STACKS · %d CONVERSIONS READY"
+const TAG_FORMAT := "%s · %s READY"
 const TAG_EMPTY := "NO CONVERTIBLE STACKS"
 const SELECTED_NONE := "NO STACK SELECTED"
 const STEPPER_FORMAT := "%d CONVERSIONS"
@@ -88,8 +87,8 @@ const STATUS_READY := "READY · %s · %s · %s FEE"
 ## and fee phrases as `STATUS_READY`, joined by the pane's own separator, with the leading
 ## state verb dropped so the always-visible title is the ore row, not the action.
 const INSPECT_TITLE_FORMAT := "%s · %s · %s FEE"
-const STATUS_REFINED := "REFINED · %s · %d INGOTS · %s CR FEE"
-const STATUS_REFINED_ALL := "REFINED · ALL ORE · %d INGOTS · %s CR FEE"
+const STATUS_REFINED := "REFINED · %s · %s · %s CR FEE"
+const STATUS_REFINED_ALL := "REFINED · ALL ORE · %s · %s CR FEE"
 const STATUS_REFUSED_CREDITS := "REFUSED · NOT ENOUGH CREDITS · %s NEEDED"
 const STATUS_REFUSED_ORE := "REFUSED · NOT ENOUGH ORE · %s NEEDED"
 const STATUS_REFUSED_COUNT := "REFUSED · NO CONVERSIONS SELECTED"
@@ -538,7 +537,10 @@ func _refresh_tag() -> void:
 	var conversions := 0
 	for stack: Dictionary in stacks:
 		conversions += int(stack.get(&"conversions", 0))
-	_tag.text = TAG_FORMAT % [stacks.size(), conversions]
+	_tag.text = TAG_FORMAT % [
+		StationCatalogScript.plural(stacks.size(), "STACK"),
+		StationCatalogScript.plural(conversions, "CONVERSION"),
+	]
 
 
 func _refresh_footer() -> void:
@@ -640,7 +642,12 @@ func _on_refine_pressed() -> void:
 		AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
 		_finish_rebuild()
 		status_requested.emit(
-			STATUS_REFINED % [name_text.to_upper(), conversions, _format_int(fee)], false
+			STATUS_REFINED % [
+				name_text.to_upper(),
+				StationCatalogScript.plural(conversions, "INGOT"),
+				_format_int(fee),
+			],
+			false
 		)
 		return
 	AudioManager.play_ui(AudioManager.UiCue.DENIED)
@@ -670,7 +677,11 @@ func _on_refine_all_pressed() -> void:
 		AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
 		_finish_rebuild()
 		status_requested.emit(
-			STATUS_REFINED_ALL % [int(result.get(&"ingots", 0)), _format_int(fee)], false
+			STATUS_REFINED_ALL % [
+				StationCatalogScript.plural(int(result.get(&"ingots", 0)), "INGOT"),
+				_format_int(fee),
+			],
+			false
 		)
 		return
 	AudioManager.play_ui(AudioManager.UiCue.DENIED)

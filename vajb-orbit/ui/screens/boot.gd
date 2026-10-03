@@ -49,7 +49,10 @@ func _apply_scene_colors() -> void:
 	## Palette comes from the theme tokens; the scene holds no raw colour literals.
 	_backdrop.color = _token(&"void_base")
 	_track.color = _token(&"metal_dark")
-	_progress_fill.color = _token(&"metal_light")
+	## S28's A15 (D17-P1 boot: "the progress line under the logo is barely visible at
+	## 640"): the fill takes one step up the shipped ramp - `metal_light` -> `text_dim`,
+	## both existing tokens, no new hue.
+	_progress_fill.color = _token(&"text_dim")
 
 
 func _run() -> void:

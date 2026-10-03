@@ -42,7 +42,9 @@ const ROW_INNER_MARGIN := Vector2i(12, 8)
 const COLUMN_SEPARATION := 12
 const CELL_SEPARATION := 2
 const STEPPER_SIZE := 48.0
-const SELL_HEIGHT := 88.0
+## UI_SPEC section 8 P1 (S28's A16): every action button on this pane is the Pressables
+## plate at the token size; the old 88 px SELL plate retires with the six measured sizes.
+const SELL_HEIGHT := 56.0
 const ACTION_HEIGHT := 56.0
 const COL_ICON := 40.0
 const COL_QTY := 70.0
@@ -96,6 +98,12 @@ const META_AMMO := "AMMO"
 const CAPTION_UNITS := "UNITS"
 const CAPTION_CR_EACH := "CR EACH"
 const CAPTION_CR_NET := "CR NET"
+## S28's A12 (D17-P1 EXCHANGE: "YOUR HOLDINGS table has no column headers"): the holdings
+## grid gains a header band over its three value columns - HELD over the count, CR EACH
+## over the unit price, VALUE over the net worth. There is no per-item cap column to
+## title CAP: the quota pair ships on the board, already captioned QUOTA.
+const CAPTION_HELD := "HELD"
+const CAPTION_VALUE := "VALUE"
 const CAPTION_INDEX := "INDEX"
 const CAPTION_BAND := "BAND"
 const CAPTION_QUOTA := "QUOTA"
@@ -107,7 +115,9 @@ const SUBTITLE := "MINERALS AND SURPLUS"
 
 const HOLD_EMPTY := "HOLD EMPTY"
 const NO_SELECTION := "NO STACK SELECTED"
-const STEP_FORMAT := "%d UNITS"
+## S28's A11 (D17-P2 EXCHANGE): the primary carries the quantity the stepper holds.
+const SELL_WORD := "SELL"
+const SELL_QUANTITY_FORMAT := "SELL %s"
 const TITLE_FORMAT := "%s · %d HELD"
 const CONFIRM_FORMAT := "SELL %d %s — GROSS %s · FEE %s · YOU GET %s"
 const CONFIRM_IDLE := "SELECT A STACK · THE STRIP QUOTES THE CONFIRMED PRICE"
@@ -122,9 +132,9 @@ const STATUS_HINT := "ENTER SELECT · %s · %s CR EACH"
 ## key-hint verb dropped so the always-visible title is the item, not the action.
 const INSPECT_TITLE_FORMAT := "%s · %s CR EACH"
 const STATUS_SOLD := "SOLD · %d %s · +%s CR"
-const STATUS_QUEUED := "STOCK FULL · %d UNITS QUEUED"
-const STATUS_ALL := "SOLD ALL RAW · %d STACKS · +%s CR"
-const STATUS_ALL_QUEUED := " · %d UNITS QUEUED"
+const STATUS_QUEUED := "STOCK FULL · %s QUEUED"
+const STATUS_ALL := "SOLD ALL RAW · %s · +%s CR"
+const STATUS_ALL_QUEUED := " · %s QUEUED"
 const STATUS_REFUSED_EMPTY := "REFUSED · HOLD EMPTY"
 const STATUS_REFUSED_RAW := "REFUSED · NO RAW STACK TO SELL"
 const STATUS_REFUSED_UNKNOWN := "REFUSED · NOT FOR SALE"
@@ -168,6 +178,7 @@ func _ready() -> void:
 	## pane's own entry (`focus_primary`), and every quote and sale evaluates for itself.
 	_hold_scroll.custom_minimum_size.x = HOLD_CONTENT_WIDTH
 	_build_header()
+	_build_hold_header()
 	_build_board()
 	_rebuild_hold()
 	_apply_tokens()
@@ -268,6 +279,44 @@ func _build_header() -> void:
 ## ---------------------------------------------------------------------------
 ## Market board
 ## ---------------------------------------------------------------------------
+
+
+## S28's A12: the holdings header band. It mirrors a row's own grid - the same inner
+## margin, the same icon width, the same column separations and the same three value
+## columns - so the titles seat exactly over the numbers without a coordinate anywhere.
+func _build_hold_header() -> void:
+	var margin := MarginContainer.new()
+	margin.name = "HoldHeader"
+	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	margin.add_theme_constant_override(&"margin_left", ROW_INNER_MARGIN.x)
+	margin.add_theme_constant_override(&"margin_top", 0)
+	margin.add_theme_constant_override(&"margin_right", ROW_INNER_MARGIN.x)
+	margin.add_theme_constant_override(&"margin_bottom", 0)
+	var box := HBoxContainer.new()
+	box.name = "HoldHeaderRow"
+	box.add_theme_constant_override(&"separation", COLUMN_SEPARATION)
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	margin.add_child(box)
+	var icon_gap := Control.new()
+	icon_gap.name = "IconGap"
+	icon_gap.custom_minimum_size = Vector2(COL_ICON, 0.0)
+	icon_gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(icon_gap)
+	var title_gap := Control.new()
+	title_gap.name = "TitleGap"
+	title_gap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	title_gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(title_gap)
+	for column: Array in [
+		[COL_QTY, CAPTION_HELD], [COL_UNIT, CAPTION_CR_EACH], [COL_TOTAL, CAPTION_VALUE],
+	]:
+		var cell := _make_label(&"StationCaption", String(column[1]), true)
+		cell.name = "Header%s" % String(column[1]).to_pascal_case()
+		cell.custom_minimum_size = Vector2(float(column[0]), 0.0)
+		box.add_child(cell)
+	var hold_box := _hold_scroll.get_parent()
+	hold_box.add_child(margin)
+	hold_box.move_child(margin, _hold_scroll.get_index())
 
 
 func _build_board() -> void:
@@ -452,6 +501,21 @@ func _sellable_ids(profile: ProfileScript) -> Array[StringName]:
 	return ids
 
 
+## S28's A10 (D17-P2: "SELL ALL RAW stays enabled with zero raw stacks in hold"): the
+## button's precondition is `Exchange.sell_all`'s own reach - raw ore and surplus
+## components, never ingots or ammunition - read off the hold this pane already lists.
+func _has_raw(profile: ProfileScript) -> bool:
+	if profile == null:
+		return false
+	for item_id: StringName in _hold_ids:
+		if ExchangeScript.is_component(item_id):
+			return true
+		var mineral_id := MineralCatalogScript.mineral_id_of_item(item_id)
+		if mineral_id != &"" and item_id == MineralCatalogScript.ore_id(mineral_id):
+			return true
+	return false
+
+
 func _build_hold_row(item_id: StringName) -> Dictionary:
 	var row := Button.new()
 	row.name = "Hold%s" % String(item_id).to_pascal_case()
@@ -561,11 +625,15 @@ func _refresh_trade() -> void:
 		else NO_SELECTION if has_hold
 		else HOLD_EMPTY
 	)
-	_step_value.text = STEP_FORMAT % (_step if armed else 0)
+	_step_value.text = StationCatalogScript.plural(_step if armed else 0, "UNIT")
 	_step_minus.disabled = not armed
 	_step_plus.disabled = not armed
 	_sell.disabled = not armed
-	_sell_all.disabled = not has_hold
+	_sell.text = (
+		SELL_QUANTITY_FORMAT % StationCatalogScript.plural(_step, "UNIT") if armed
+		else SELL_WORD
+	)
+	_sell_all.disabled = not _has_raw(profile)
 	_cancel.disabled = not armed
 	_quoted = _quote(profile, _selected_id, _step) if armed else {}
 	_confirm_strip.text = _confirm_text() if armed else CONFIRM_IDLE
@@ -588,8 +656,9 @@ func _select(item_id: StringName) -> void:
 	if profile != null:
 		held = int(profile.call(&"cargo_qty", item_id))
 	if item_id != _selected_id or _step <= 0:
-		## 05 section 6: the stepper defaults to the whole stack.
-		_step = held
+		## S28's A11 (D17-P2: "the trade stepper defaults to the whole stack ... one stray
+		## click dumps everything"): a fresh selection steps one unit, never the whole hold.
+		_step = 1
 	_selected_id = item_id
 	_refresh_trade()
 
@@ -665,9 +734,11 @@ func _on_sell_all_pressed() -> void:
 		_deny(STATUS_REFUSED_RAW)
 		return
 	AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
-	var line := STATUS_ALL % [sold, _format_int(int(result[&"paid"]))]
+	var line := STATUS_ALL % [
+		StationCatalogScript.plural(sold, "STACK"), _format_int(int(result[&"paid"]))
+	]
 	if queued > 0:
-		line += STATUS_ALL_QUEUED % queued
+		line += STATUS_ALL_QUEUED % StationCatalogScript.plural(queued, "UNIT")
 	_report(line)
 
 
@@ -675,7 +746,7 @@ func _announce_sale(item_id: StringName, result: Dictionary) -> void:
 	var queued := int(result[&"queued"])
 	var line := ""
 	if queued > 0:
-		line = STATUS_QUEUED % queued
+		line = STATUS_QUEUED % StationCatalogScript.plural(queued, "UNIT")
 	else:
 		line = STATUS_SOLD % [
 			int(result[&"sellable"]),

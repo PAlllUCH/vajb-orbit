@@ -6,6 +6,28 @@
 
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-25 clear-outs (owner asks):** every closed slice folder moved to the system trash (last git tree carrying them: `7a081ef`), old session reports live in `_state/_archive/`, and the two dispatch files were purged to live-items-only (2026-09-25 ter). Citation paths into purged trees name historical files.
 
+**Updated 2026-10-03 (the parallel pair closed — S28 + D18, first approved
+two-wave run):** dispatched back-to-back on disjoint file sets (S28:
+`vajb-orbit/ui game tests`; D18: `docs/design staging/mockup`) — **S28-B1**
+(`hyper/qwen3.8-flash` @ high) shipped A1–A16 on the survivor panels: the
+inspector band clears on every module switch, CONTROLS deconflicts (steal +
+worded conflict flag, TURN LEFT/RIGHT behind ADVANCED), the strip never rides
+`NO_DAMAGE_REPORT`, shield reads one source (400, the catalogue row),
+`StationCatalog.plural()`, DevTuningMenu debug-gated, and P1–P3 button/focus
+unification on the survivors — gate **1031 → 1038/0** (B1 ×2 + R1's re-run,
+fresh scratch), 7 added rows, every moved row disclosed. **S28-R1**
+(`hyper/glm-5.3-flash`): all sixteen pass, **0 HIGH / 0 MED / 2 LOW →
+T-98/T-99** (the CAP-vs-CR-EACH tick; three stale doc rows). **D18-A1**
+(`hyper/glm-5.3` @ high, the demanding slot) landed the design depth:
+UI_SPEC **§10** (map deck + pin detail, **N7–N14**; after the fixer **N15–N23**
+blip classes) and STATION_HUB **§17** (merged-panel detail, **P8–P14**, the
+P6/P7 law blocks) + three wireframes. **D18-R1**: A1–A6 all pass, **0 HIGH /
+3 MED** (pin press precedence, pin-follow vs N14 pan, the toggle→blip-class
+mapping) **cured by D18-F1**; 4 LOW → **T-94–T-97** (cite drift rows).
+Both verifies green against the shared `s28_start`/`d18_start` baseline
+(`"problems": []`). **Next: coder 35 (S29) implements D18's law — its
+five-piece is live this session; then the phase's items 30–33.**
+
 **Updated 2026-10-03 (the owner's overhaul ruling — D18/S28/S29 queued, live
 this session):** after the two in-game playtest reviews (`slices/D17-playtest-pass/`),
 the owner ruled the map/navigation and panel overhaul (`D16_UserInput.md` at the
@@ -383,16 +405,16 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | 7 | coder 29 | S23 content activation (**done 2026-10-02** — 1014 → 1030/0 ×2; 2 HIGH bucket-2 cured, 3 LOW L264–L266) | coder 28.7 | `vajb-orbit/game/` + `tests/` (weapons/projectile/mining seams) |
 | 8 | designer 17 | D16 station identity & contracts UI (**done 2026-10-03** — 0 HIGH / 2 MED cured / 2 LOW L267–L268; law for 30/31/32) | coder 29 | one live session; its spec is coder 30/31/32's design law |
 | 9 | designer 18 | **D18 map deck & panel consolidation design** (**live**, owner 2026-10-03; `slices/D18-map-panels/`) | designer 17 | inserted at the owner's ask ahead of 30–33; its spec is S29's law |
-| 10 | coder 34 | **S28 station chrome quick-fix wave** (**live**, owner 2026-10-03; `slices/S28-station-chrome/`) | beside D18 | disjoint file sets (S28: `vajb-orbit/ui/ game/ tests/`; D18: `docs/design/ staging/mockup/`) — the only parallel pair, owner-approved |
-| 11 | coder 35 | **S29 panel consolidation + the map deck** (implements D18's law; five-piece lands at D18's close) | D18 + S28 | rewrites `armory_panel/fitting/shipyard/repairs` + `ui/hud/` — must follow both |
+| 10 | coder 34 | **S28 station chrome quick-fix wave** (**done 2026-10-03** — 1031 → 1038/0 ×2 + R1 re-run; 0 HIGH / 0 MED / 2 LOW T-98/T-99) | beside D18 | disjoint file sets — the only parallel pair, owner-approved |
+| 11 | coder 35 | **S29 panel consolidation + the map deck** (**live**, owner 2026-10-03; `slices/S29-consolidation/`; implements D18's §10/§17 law) | D18 + S28 (both done) | rewrites `armory_panel/fitting/shipyard/repairs` + `ui/hud/` — runs alone |
 | 12 | coder 30 | S24 world identity | designer 17 (+ S29 for the rail/pane shape) | `station_catalog` + the station screen (D16 spec first) |
 | 13 | coder 31 | S25 contracts board | coder 30 | `ui/station/` + `autoload/player_profile.gd` + S24's `contracts_visible` seam |
 | 14 | coder 32 | S26 bosses, arenas, insurance, vaults | coder 31 | `game/` + `player_profile.gd` + S25's Expedition seam |
 | 15 | coder 33 | S27 catalog breadth & shipyard | coder 32 | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/` |
 
-Designer items 16 (D15) and 17 (D16) are closed; **18 (D18) and coder 34 (S28)
-are live in parallel** (the only pair with disjoint files), then coder 35 (S29),
-then the phase's 30–33. Playtest
+Designer items 16 (D15), 17 (D16) and 18 (D18) are closed; coder 34 (S28) is
+closed; **coder 35 (S29) is live** — the parallel pair closed 2026-10-03 and
+S29 runs alone. Playtest
 pass #1 (the owner's, `19_testing_notes.md`'s eye list) runs alongside pos 1;
 build 2 + the tester template are phase exit criteria. Every brief's §11 tick
 sheet feeds its wave (unticked rows implement at their PROPOSED value).

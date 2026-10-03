@@ -881,6 +881,35 @@ func test_the_pane_renders_the_shelf_the_sell_list_and_its_own_footer() -> void:
 	assert_eq(_danger[_danger.size() - 1], true, "and marks it as danger")
 
 
+## S28's A13 (D17-P2 AUCTION: the tag claimed the whole stockpile while only part of it
+## stood on the shelf, and nothing said the rest awaited the band): the pane's tag reads
+## the live listing count against the shelf's own capacity, with the restock reading
+## beside it - the `5 OF 20 ON SHELF · NEXT RESTOCK 20:00` form. Both halves are reads.
+func test_the_shelf_tag_reads_the_live_count_and_the_restock() -> void:
+	var profile := _borrow_autoload()
+	assert_true(profile != null, "the autoload is the pane's store")
+	if profile == null:
+		return
+	var shelf: Dictionary = _draw_shelf(profile)
+	shelf[&"last_band"] = Clock.now()
+	profile.call(&"set_auction", shelf)
+	var panel := _mount(ThemeRes)
+	var tag := panel.get_node_or_null("%PanelTag") as Label
+	assert_true(tag != null, "the pane's tag ships")
+	if tag == null:
+		return
+	var capacity := AuctionScript.MODULE_SLOTS + AuctionScript.STOCK_SLOTS
+	var live := AuctionScript.listing_rows(profile).size()
+	assert_contains(
+		tag.text, "%d OF %d ON SHELF" % [live, capacity], "the live count rides the capacity"
+	)
+	assert_contains(tag.text, "RESTOCK", "the restock reading sits beside it")
+	assert_true(
+		String(panel.call(&"restock_text")).begins_with("NEXT RESTOCK "),
+		"and the footer keeps section 5.10's own restock line"
+	)
+
+
 ## The pane's `_format_int` grouping, mirrored so a rendered number and the arithmetic
 ## behind it can be compared without the thousands space in the way.
 func _group(value: int) -> String:

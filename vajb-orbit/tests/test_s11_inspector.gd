@@ -297,6 +297,7 @@ func test_the_block_carries_the_pinned_nodes() -> void:
 
 
 func test_the_shell_writes_and_clears_the_block() -> void:
+	_station.call(&"_select_module", 0, true)
 	var pane := _pane(0)
 	var title := _station.get_node_or_null(NodePath("%InspectorTitle")) as Label
 	var body := _station.get_node_or_null(NodePath("%InspectorBody")) as Label
@@ -306,6 +307,34 @@ func test_the_shell_writes_and_clears_the_block() -> void:
 	pane.inspect_requested.emit("", "", false)
 	assert_eq(title.text, "", "an empty title clears the block")
 	assert_eq(body.text, "", "an empty title clears the body too")
+
+
+## **S28's A1 (STATION_HUB section 16 P6, the S28 mechanical half).** The stale-band
+## defect (D17-P1/D17-P2: the band kept the previous module's hover text after a switch):
+## the shell clears the band on every module switch, and a publish from a pane that is
+## not the one on the host never rides in.
+func test_the_band_clears_on_module_switch() -> void:
+	var pane := _pane(0)
+	var title := _station.get_node_or_null(NodePath("%InspectorTitle")) as Label
+	var body := _station.get_node_or_null(NodePath("%InspectorBody")) as Label
+	pane.inspect_requested.emit("VANGUARD", "General purpose hull.", false)
+	assert_eq(title.text, "VANGUARD", "the active pane fills the band")
+	_station.call(&"_select_module", 1)
+	assert_eq(title.text, "", "the switch empties the band")
+	assert_eq(body.text, "", "both lines, every module, every switch")
+	_station.call(&"_select_module", 0, true)
+
+
+func test_an_inactive_pane_never_fills_the_band() -> void:
+	var outgoing := _pane(0)
+	var incoming := _pane(1)
+	_station.call(&"_select_module", 1)
+	outgoing.inspect_requested.emit("LASER CELLS", "Standard laser capacitors.", false)
+	var title := _station.get_node_or_null(NodePath("%InspectorTitle")) as Label
+	assert_eq(title.text, "", "a hidden module's hover cannot ride into the next one")
+	incoming.inspect_requested.emit("IRON ORE", "Raw iron.", false)
+	assert_eq(title.text, "IRON ORE", "the pane on the host still publishes")
+	_station.call(&"_select_module", 0, true)
 
 
 ## **A4.4 (UI_SPEC section 3.10 Amendment 4, wave S20): the block reserves a constant

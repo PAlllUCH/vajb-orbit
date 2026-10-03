@@ -176,13 +176,16 @@ func test_one_launch_agrees_with_the_strip_the_slots_and_the_packs() -> void:
 	assert_eq(fitted, [&"cannon", &"railgun", &""] as Array[StringName], "the QA fit's families")
 	assert_eq(
 		text,
-		LaunchScript.AMMO_FORMAT % [panel.call(&"_format_int", total), fitted.size()],
+		LaunchScript.AMMO_FORMAT % [
+			panel.call(&"_format_int", total), Catalog.plural(fitted.size(), "WEAPON")
+		],
 		"the strip reads the launched fit's own packs and cells (currently %s)" % text
 	)
 	assert_ne(
 		text,
 		LaunchScript.AMMO_FORMAT % [
-			panel.call(&"_format_int", _store_total(_all_families())), _all_families().size()
+			panel.call(&"_format_int", _store_total(_all_families())),
+			Catalog.plural(_all_families().size(), "WEAPON"),
 		],
 		"not the six-pack sum the QA read as a briefing"
 	)
@@ -313,7 +316,8 @@ func test_an_instance_fit_reads_the_same_strip_and_slots() -> void:
 	assert_eq(
 		_brief_value(panel, &"ammo"),
 		LaunchScript.AMMO_FORMAT % [
-			panel.call(&"_format_int", ProfileData.DEFAULT_AMMO * 2), 3
+			panel.call(&"_format_int", ProfileData.DEFAULT_AMMO * 2),
+			Catalog.plural(3, "WEAPON"),
 		],
 		"the strip reads the resolved fit's two stocked packs across three cells"
 	)

@@ -1673,3 +1673,57 @@ diff touches only the two permitted docs). Tick sheet handed to the owner:
 **W3** (nine names) + U1–U20; owner flags: vault unit totals 40/60/80 vs
 20/40/60 (U14), outpost faction = sector primary (PROPOSED), the character line
 replaces `StationLocation` (U17). Five-piece: `slices/D16-station-ui/`.
+
+### S28 (coder item 34) — **DONE 2026-10-03 — gate 1031 → 1038/0, the first half of the owner's overhaul round**
+
+Station chrome quick-fix wave, run **in parallel with D18** (the first
+approved two-wave pair — disjoint file sets; S28 `vajb-orbit/ui game tests`,
+D18 `docs/design staging/mockup`). **B1** (`hyper/qwen3.8-flash` @ high — the
+roster's new "other work" slot) shipped A1–A16 on the survivor panels: the
+inspector band clears on every module switch + foreign-pane publish guard
+(`station.gd:470-523`, pins `test_s11_inspector.gd:313-330`); CONTROLS
+deconflicted (the shipped map binds Q/E once — the playtest's triple-binding
+was a persisted profile; commit steals the key, worded conflict flag, TURN
+LEFT/RIGHT fold behind ADVANCED, `settings.gd:302-350`); the LAUNCH strip
+never rides raw reason tokens (`launch_panel.gd:504-521`); shield single
+source = the catalogue hull row (400, disclosed; `launch_panel.gd:561` +
+`station_catalog.gd`); `StationCatalog.plural()` across the survivors;
+dev-speak rewritten; DevTuningMenu debug-gated (`game.gd:391-393`, pinned by
+`test_s13_devmenu.gd:333-346`); credits-box fixed width; integer origins;
+`SELL ALL RAW` mirrors the bulk reach; stepper defaults 1 with the quantity on
+the button; holdings headers; live auction shelf tag; state-neutral quit copy;
+one-step-brighter splash line; and **P1–P3** (the two 360×56 `Pressables`
+tokens + 96×32 inline, the P2 action cluster, the one focus ring) on every
+survivor. Gate **1031 → 1038/0** — B1 ×2 fresh-scratch + R1's own re-run; 7
+added rows, every moved row disclosed (7 suites, listed in the review).
+**R1** (`hyper/glm-5.3-flash`): all sixteen pass, **0 HIGH / 0 MED / 2 LOW →
+T-98/T-99** (the CAP-vs-CR-EACH header tick; three stale doc rows). Verify
+green against `s28_start` (`"problems": []`). Five-piece:
+`slices/S28-station-chrome/`.
+
+### D18 (designer item 18) — **DONE 2026-10-03 — design only, the second half of the round; S29's law**
+
+Map deck & panel consolidation design on the 2026-10-03 pins (UI_SPEC §8/§9,
+STATION_HUB §16, 10's N5 row — landed docs-first by the orchestrator before
+dispatch). **A1** (`hyper/glm-5.3` @ high — the roster's new "very demanding"
+slot): UI_SPEC **§10** (map deck + navigation pin detail, **N7–N14**: the 80 %
+deck, 8 px drag threshold, filter column, pin semantics, hyperdrive UX) and
+STATION_HUB **§17** (the merged ARMORY on P4 — ship grid + browser with the
+auction tab strip minus HULLS, slot-filtered drag-and-drop with label +
+caption-flash refusal, buy-into-cell one flow; the merged SHIPYARD on P5 —
+labelled stats, comparison, the hull's installed modules, `NOMINAL` repair
+block, fee in the footer; the P6 inspector lifecycle law text; the P7 one
+panel template + six-entry rail; **P8–P14**) + three wireframes
+(`staging/mockup/d18_{map_deck,armory,shipyard}_wireframe.md`). Two bucket-1
+judgment calls disclosed (HULLS tab dropped; unpinned values written PROPOSED
+with reversals); the 09-series P8 collision flagged, not renumbered (bucket 2).
+**R1** (`hyper/glm-5.3-flash`): A1–A6 all pass, **0 HIGH / 3 MED** — the pin
+press precedence, the wireframe's pin-follows-while-held contradicting N14,
+and the filter column's eight toggles naming no blip class the shipped minimap
+has — **all cured by F1** (the press hit-tests the pin first; the pin never
+follows the cursor; the toggle→class table with six new PROPOSED classes as
+**N15–N18/N21–N22**, `KIND_GHOST`→POIs N19, HOSTILES→`KIND_HOSTILE`+
+`KIND_SWARMER` N20, unshipped-class toggles inert N23, N6 re-anchored on the
+new station/gate classes). 4 LOW cite-drift rows → **T-94–T-97**. Verify green
+against `d18_start` (`"problems": []`); no gate row moved. Five-piece:
+`slices/D18-map-panels/`. S29 (coder 35) implements §10 + §17.

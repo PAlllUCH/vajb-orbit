@@ -84,7 +84,11 @@ const HULL_READY_FORMAT := "%s — READY"
 ## priced: refuel and recharge are free and instant, no credits move, and the spec carries no
 ## rate to print (14 section 1; `Repairs.FREE_FEE` is 0).
 const SERVICE_ROW_HEIGHT := 56.0
-const SERVICE_ROW_SEPARATION := 12
+## S28's A16 (UI_SPEC section 8 P1/P2): the service actions and LAUNCH share the P2
+## cluster row at the foot of the pane - an HBox, 16 px gutter, primary rightmost - and
+## the P1 Pressables token, 360x56. The gutter and the sizes live in the scene.
+const SERVICE_ROW_SEPARATION := 16
+const ACTION_MIN := Vector2(360.0, 56.0)
 ## CONTRACTS section 8's two service ids, which are `Repairs`' own function names.
 const SERVICE_REFUEL: StringName = &"refuel"
 const SERVICE_RECHARGE: StringName = &"recharge"
@@ -129,15 +133,15 @@ const BRIEF_ROWS: Array[Dictionary] = [
 
 const SUBTITLE := "UNDOCK AND RETURN TO OPEN SPACE · %s DESTINATION %s"
 const TAG_FORMAT := "TWO PRESSES · %d s WINDOW"
-const CARGO_CAPTION := "CARGO HOLD · %d STACKS"
+const CARGO_CAPTION := "CARGO HOLD · %s"
 const CARGO_FORMAT := "%d / %d"
-const AMMO_FORMAT := "%s ROUNDS ACROSS %d WEAPONS"
+const AMMO_FORMAT := "%s ROUNDS ACROSS %s"
 const MANIFEST_FORMAT := "%s   %d"
 const HOLD_EMPTY := "HOLD EMPTY"
-const BRIEF_NOTE := (
-	"CARGO ITEM NAMES AND GLYPHS ARE DERIVED FROM THE ITEM ID · "
-	+ "NO SELL OR DEPOSIT FLOW IN V1"
-)
+## S28's A6 (D17-P2: dev-speak in player copy): the note tells the pilot what the
+## manifest is and where trade happens, in play words; the derivation of names is a
+## build fact and lives in the code, not on the pane.
+const BRIEF_NOTE := "CARGO AS THE HOLD FILES IT · BUY AND SELL AT THE EXCHANGE"
 
 const IDLE_TEXT := "PRESS LAUNCH TO ARM · A SECOND PRESS CONFIRMS WITHIN %d s"
 const ARM_TEXT := "ARMED · PRESS LAUNCH AGAIN WITHIN %d s TO UNDOCK"
@@ -145,6 +149,16 @@ const EXPIRED_TEXT := "ARMING EXPIRED · PRESS LAUNCH TO ARM AGAIN"
 const FIRED_TEXT := "LAUNCH CONFIRMED · HANDOFF TO THE %s · DESTINATION %s"
 
 const SFX_ARM: StringName = &"sfx_station_breaker_on_01"
+## S28's A3 (D17-P2 LAUNCH: the strip rendered the raw `NO_DAMAGE_REPORT` token): the
+## reason tokens stay `Repairs`' own API; this is the pane's reading of them into play
+## copy. An unmapped token de-underscores rather than printing underscores again.
+const REFUSAL_COPY: Dictionary = {
+	RepairsService.REASON_NO_DAMAGE_REPORT: "NO DAMAGE REPORT ON FILE FOR THIS HULL",
+	RepairsService.REASON_NO_DAMAGE: "ALL SYSTEMS NOMINAL",
+	RepairsService.REASON_FUEL_FULL: "FUEL TANK ALREADY FULL",
+	RepairsService.REASON_NO_SERVICE: "SERVICE OFFLINE AT THIS STATION",
+	RepairsService.REASON_INSUFFICIENT: BOUNTY_REFUSED,
+}
 const STATUS_ARMED := "LAUNCH ARMED · PRESS AGAIN TO CONFIRM"
 const STATUS_DISARMED := "LAUNCH DISARMED"
 const STATUS_EXPIRED := "LAUNCH DISARMED · ARMING EXPIRED"
@@ -158,6 +172,8 @@ const STATUS_FIRED := "LAUNCH CONFIRMED · UNDOCKING"
 @onready var _cargo_list: ItemList = %CargoList
 @onready var _brief_note: Label = %BriefNote
 @onready var _launch_button: Button = %LaunchButton
+@onready var _actions_row: HBoxContainer = %ActionsRow
+@onready var _deck_box: VBoxContainer = %LaunchActionBox
 @onready var _confirm_strip: Label = %ConfirmStrip
 @onready var _hull_center: CenterContainer = %HullCenter
 @onready var _hull_image: TextureRect = %HullImage
@@ -344,40 +360,33 @@ func _refresh_plate_textures() -> void:
 		_apply_plate_textures(plate)
 
 
-## DECK CONTROL's service actions (STATION_HUB section 5.4's 2026-09-22 amendment), built
-## above the LAUNCH button so the primary action stays the last and lowest control in the box.
-## The row is built here rather than in the scene file because this pass owns the panel's
-## script only; the buttons are named after the catalogue's own services.
-##
-## The bounty row (13 section 7 / 14 section 7) joins the same row: it is the third service
-## and it is **shown only for the docked station's faction while its heat is above zero**,
-## which is `_refresh_bounty_row`'s reading of the profile. A hidden Control takes no space
-## in a container, so the row collapses back to REFUEL/RECHARGE at a clean station.
+## DECK CONTROL's service actions (STATION_HUB section 5.4's 2026-09-22 amendment). S28's
+## A16 moves the row onto the UI_SPEC section 8 P2 cluster - the panel's own `ActionsRow`
+## at its foot, 16 px gutter, primary (LAUNCH) rightmost - with the service plates at the
+## P1 token. The bounty action (13 section 7 / 14 section 7) is not one of section 8's
+## named actions and a fourth 360 px plate cannot share the row inside the pane box, so it
+## keeps DECK CONTROL's own column, under the hull frame. The buttons are named after the
+## catalogue's own services, exactly as before.
 func _build_service_rows() -> void:
-	var box := _launch_button.get_parent()
-	if box == null:
-		return
-	var row := HBoxContainer.new()
-	row.name = &"ServiceRow"
-	row.add_theme_constant_override(&"separation", SERVICE_ROW_SEPARATION)
-	_refuel_button = _make_service_button(row, SERVICE_REFUEL)
-	_recharge_button = _make_service_button(row, SERVICE_RECHARGE)
-	_bounty_button = _make_service_button(row, SERVICE_BOUNTY)
-	box.add_child(row)
-	box.move_child(row, _launch_button.get_index())
+	_refuel_button = _make_service_button(_actions_row, SERVICE_REFUEL)
+	_actions_row.move_child(_refuel_button, 1)
+	_recharge_button = _make_service_button(_actions_row, SERVICE_RECHARGE)
+	_actions_row.move_child(_recharge_button, 2)
+	_bounty_button = _make_service_button(_deck_box, SERVICE_BOUNTY)
 	_refresh_bounty_row()
 
 
-## One service action: the catalogue's own `name` on a `StationButton` of the secondary height,
-## so a catalogue that renames a service moves the button with it and no label is a literal.
-func _make_service_button(parent: HBoxContainer, service_id: StringName) -> Button:
+## One service action: the catalogue's own `name` on a `StationButton` at the P1 token
+## size, so a catalogue that renames a service moves the button with it and no label is a
+## literal. The parent is the P2 cluster row for the two power services and DECK CONTROL's
+## column for the bounty row.
+func _make_service_button(parent: Control, service_id: StringName) -> Button:
 	var service: Dictionary = Catalog.service(service_id)
 	var label := String(service.get(&"name", String(service_id)))
 	var button := Button.new()
 	button.name = "%sButton" % label.to_pascal_case()
 	button.theme_type_variation = &"StationButton"
-	button.custom_minimum_size = Vector2(0.0, SERVICE_ROW_HEIGHT)
-	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	button.custom_minimum_size = ACTION_MIN
 	button.text = label
 	button.pressed.connect(_on_service_pressed.bind(service_id))
 	button.focus_entered.connect(_on_service_focused)
@@ -442,8 +451,7 @@ func _run_bounty() -> void:
 	var text := BOUNTY_PAID_FORMAT % fine
 	if not paid:
 		text = BOUNTY_REFUSED if fine > 0 else BOUNTY_NOTHING_OWED
-	_set_confirm(text, not paid)
-	status_requested.emit(text, not paid)
+	_report_status(text, not paid)
 
 
 func _on_service_focused() -> void:
@@ -474,19 +482,42 @@ func _run_service(service_id: StringName) -> void:
 		_render_service(RepairsService.recharge(profile, active_id), FIGURE_ENERGY_MAX)
 
 
-## The service's own result, in this pane's status line and in the shell's strip: the result
-## key and its figure on success, the service's own reason on a refusal, and the refusal in the
-## danger colour. Free and instant, so no price is printed and no credits move; a full tank or
-## an unfiled hull is the service's refusal, rendered rather than hidden, and the button stays
+## The service's own result in the shell's status strip: the result key and its figure on
+## success, the service's reason read into play copy on a refusal, the refusal in the
+## danger colour. S28's A3: the confirm strip keeps the arming copy - the raw reason token
+## never rides it again - and the strip re-anchors to the arm state on every report.
+## Free and instant, so no price is printed and no credits move; a full tank or an unfiled
+## hull is the service's refusal, rendered rather than hidden, and the button stays
 ## pressable (section 5.4).
 func _render_service(result: Dictionary, figure: StringName) -> void:
 	var ok := bool(result.get(&"ok", false))
 	var text := SERVICE_REPORT % [String(figure).to_upper(), int(result.get(figure, 0))]
 	if not ok:
-		# The service's own reason constant, upper case like every other line in this pane.
-		text = String(result.get(&"reason", &"")).to_upper()
-	_set_confirm(text, not ok)
-	status_requested.emit(text, not ok)
+		text = _refusal_copy(result.get(&"reason", &""))
+	_report_status(text, not ok)
+
+
+## A3's strip rule: service and bounty reports reach the shell's footer line; the pane's
+## confirm strip is owned by the arming copy, so a press of a service button can never
+## read as a launch state (D17-P1 LOW: "the click that was meant to refuel read as a
+## launch arm in the status line").
+func _report_status(text: String, danger: bool) -> void:
+	_set_confirm(_armed_copy(), false)
+	status_requested.emit(text, danger)
+
+
+## The strip's copy for the arming state the pane is in right now.
+func _armed_copy() -> String:
+	return ARM_TEXT % int(ARM_SECONDS) if _armed else _idle_text()
+
+
+## Read a `Repairs` reason token as play copy (A3). The token stays the API; only its
+## rendering changes here.
+func _refusal_copy(reason: Variant) -> String:
+	var key := StringName(str(reason))
+	if REFUSAL_COPY.has(key):
+		return String(REFUSAL_COPY[key])
+	return String(key).replace("_", " ").to_upper()
 
 
 ## The pane's one status-line writer: the arming copy and a service report share it, so a
@@ -522,6 +553,11 @@ func _refresh_brief() -> void:
 	_set_brief(&"destination", destination_line())
 	_set_brief(&"hull_name", hull_name)
 	_set_brief(&"hull", str(int(ship.get(&"hull", 0))))
+	## S28's A4 (D17-P2: "LANCER shield disagrees across screens"): the one shield figure is
+	## the catalogue hull row's `shield` - the same field the SHIPYARD comparison's
+	## `_stat_value` reads (ui/station/shipyard_panel.gd:843-848), and the row the flight
+	## `ShipFit` base resolves from (`ship_fit.gd` `HULLS`, 400 on the Lancer). The 450 the
+	## playtest read at 640 is not a shield value anywhere in the pane's code paths.
 	_set_brief(&"shield", str(int(ship.get(&"shield", 0))))
 	_set_brief(&"engines", str(int(ShipFit.grid_counts(active_id).get(&"engines", 0))))
 	_set_brief(&"hardpoints", str(int(ship.get(&"hardpoints", 0))))
@@ -530,7 +566,8 @@ func _refresh_brief() -> void:
 	_set_brief(
 		&"ammo",
 		AMMO_FORMAT % [
-			_format_int(_ammo_total(profile, active_id)), _weapon_count(profile, active_id)
+			_format_int(_ammo_total(profile, active_id)),
+			Catalog.plural(_weapon_count(profile, active_id), "WEAPON"),
 		]
 	)
 
@@ -553,7 +590,7 @@ func _slot_cell_count(hull_id: StringName) -> int:
 
 func _refresh_cargo() -> void:
 	var items := _cargo_items()
-	_cargo_caption.text = CARGO_CAPTION % items.size()
+	_cargo_caption.text = CARGO_CAPTION % Catalog.plural(items.size(), "STACK")
 	_refresh_plates(items)
 	_refresh_manifest(items)
 
@@ -760,8 +797,11 @@ func _update_preview_size() -> void:
 		target = _native_preview * (box.x * PREVIEW_FIT / _native_preview.x)
 		if box.y > 1.0 and target.y > box.y:
 			target *= box.y / target.y
-	if not _hull_image.custom_minimum_size.is_equal_approx(target):
-		_hull_image.custom_minimum_size = target
+		## S28's A9 (D17-P2: content on fractional pixels at 105 percent UI scale): the fitted
+		## plate floors, so the preview never seats a sprite on half a pixel.
+		target = Vector2(floorf(target.x), floorf(target.y))
+		if not _hull_image.custom_minimum_size.is_equal_approx(target):
+			_hull_image.custom_minimum_size = target
 
 
 func _active_id(profile: ProfileScript) -> StringName:

@@ -150,34 +150,47 @@ layout_mode = 2
 theme_type_variation = &"StationValue"
 autowrap_mode = 3
 
-[node name="SellButton" type="Button" parent="ExchangeBody/TradeBox"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 88)
-layout_mode = 2
-theme_type_variation = &"StationButton"
-text = "SELL"
-
-[node name="SellAllButton" type="Button" parent="ExchangeBody/TradeBox"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 56)
-layout_mode = 2
-theme_type_variation = &"StationButton"
-text = "SELL ALL RAW"
-
-[node name="CancelButton" type="Button" parent="ExchangeBody/TradeBox"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 56)
-layout_mode = 2
-theme_type_variation = &"StationButton"
-text = "CANCEL"
-
 [node name="TradeSlack" type="Control" parent="ExchangeBody/TradeBox"]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
+[node name="ActionsRow" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="RowSpacer" type="Control" parent="ActionsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="SellAllButton" type="Button" parent="ActionsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 56)
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationButton"
+text = "SELL ALL RAW"
+
+[node name="CancelButton" type="Button" parent="ActionsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 56)
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationButton"
+text = "CANCEL"
+
+[node name="SellButton" type="Button" parent="ActionsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 56)
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationButton"
+text = "SELL"
+
 [node name="PaneFooter" type="Label" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"StationCaption"
-text = "THE STATION BUYS · IT NEVER SELLS IN V1"
+text = "THE STATION BUYS · IT DOES NOT SELL"

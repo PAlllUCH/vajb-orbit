@@ -35,7 +35,10 @@ const SectorScript := preload("res://game/sector.gd")
 const Registry := preload("res://game/sector_registry.gd")
 ## The developer tuning overlay (S13, owner ask 2026-09-25): mounted by this
 ## scene so F1 reaches OreTuning in flight. It reads user://dev_tuning.cfg only
-## when opened, so the gate stays byte-identical on any store.
+## when opened, so the gate stays byte-identical on any store. S28's A7 (D17-P2
+## flight: "a DevTuningMenu ships inside the flight scene tree"): the mount below is
+## gated to debug builds; the scene may still ride the export pack as data, but a
+## release build never instantiates it and F1 reaches nothing.
 const DevTuningMenuScene := preload("res://ui/dev/dev_tuning_menu.tscn")
 ## The one module catalogue (W1, CONTRACTS section 11): reached by path like every
 ## other cross-file table here, because the HUD's slot cells carry a module's own icon
@@ -385,7 +388,9 @@ var _hunter_respawn := 0.0
 
 
 func _ready() -> void:
-	add_child(DevTuningMenuScene.instantiate())
+	## S28's A7: the developer overlay is a debug-build tool; a release never mounts it.
+	if OS.is_debug_build():
+		add_child(DevTuningMenuScene.instantiate())
 	_state = PlayerStateScript.new()
 	_stats = _resolve_stats()
 	_apply_ship_maxima()
