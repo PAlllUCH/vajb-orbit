@@ -6,6 +6,25 @@
 
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-25 clear-outs (owner asks):** every closed slice folder moved to the system trash (last git tree carrying them: `7a081ef`), old session reports live in `_state/_archive/`, and the two dispatch files were purged to live-items-only (2026-09-25 ter). Citation paths into purged trees name historical files.
 
+**Updated 2026-10-03 (the owner's overhaul ruling — D18/S28/S29 queued, live
+this session):** after the two in-game playtest reviews (`slices/D17-playtest-pass/`),
+the owner ruled the map/navigation and panel overhaul (`D16_UserInput.md` at the
+root, committed verbatim): the minimap grows a **map deck** (expand, pan, zoom,
+per-sector filters, **pin navigation** with hold-LMB **hyperdrive** jump — a new
+module, none exists today), **ARMORY+FITTING** and **SHIPYARD+REPAIRS** fold into
+single panels (drag-and-drop with auction-style slot filter tabs, hover→describe
+in the bottom inspector, equipped items shown on hulls), the stale inspector band
+is cured, and the whole station chrome pile from the reports is fixed. The pins
+landed docs-first: **UI_SPEC §8 (P1–P3 buttons/focus) + §9 (N1–N6 map deck) +
+STATION_HUB §16 (P4–P7 consolidation) + 10's 2026-10-03 block (N5 hyperdrive
+row)**. Waves: **D18** (design, `slices/D18-map-panels/`) and **S28** (the
+mechanical chrome fixes, `slices/S28-station-chrome/`) run **in parallel** (disjoint
+file sets); **S29** (implementation of D18's law) follows them; the phase's
+items 30–33 shift behind. **Model roster (owner, 2026-10-03): very demanding
+work runs `hyper/glm-5.3`; the rest `hyper/qwen3.8-flash` or
+`hyper/glm-5.3-flash`.** D18-A1 = glm-5.3 @ high; S28-B1 = qwen3.8-flash @
+high; both R1s = glm-5.3-flash @ high.
+
 **Updated 2026-10-03 (D16 closed — station identity & contracts UI design):**
 ran A1 → R1 → F1 (fixer pass for the review's two MEDs) on the owner's
 2026-10-02 routes (A1 `xiaomi/mimo-v2.6-pro` @ high, R1 `hyper/glm-5.3-flash`
@@ -361,15 +380,19 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | 4 | coder 28.5 | S22.5 asteroid toughness (**done 2026-09-30** — 971 → 983/0; 0 HIGH / 0 MED / 1 LOW L255 closed by the developer) | coder 28 | one builder; shares `vajb-orbit/game/` with 29, so it ran strictly before it (inserted at the owner's ask, not renumbered) |
 | 5 | coder 28.6 | S22.6 inertia (**done 2026-09-30** — 983 → 990/0; 0 HIGH / 0 MED / 2 LOW — L256 closed by the developer, L257 pre-existing) | coder 28.5 | one builder; shares `vajb-orbit/game/` with 29, so it ran strictly before it |
 | 6 | coder 28.7 | S22.7 mass physics & rock contact (**done 2026-10-01** — 990 → 1002/0 twice hermetic + the close-out's own ×2; then the owner's two fix rounds hands-on, 1002 → **1006/0**; 0 HIGH / 0 MED / 5 LOW L258–L262; **L8 closed**; verify green against `s227_start_devdocs`) | coder 28.6 | two sequential builders (`ship_stats`/`ship_fit`/`player_ship` then `asteroid`/`asteroid_field`); inserted at the owner's ask, not renumbered; **workers on `hyper/glm-5.3-flash`** (owner ruling mid-wave: never `opencode-go`) |
-| 7 | coder 29 | S23 content activation (**next**) | coder 28.7 | `vajb-orbit/game/` + `tests/` (weapons/projectile/mining seams) |
-| 8 | designer 17 | D16 station identity & contracts UI | coder 29 | one live session; its spec is coder 30/31/32's design law |
-| 9 | coder 30 | S24 world identity | designer 17 | `station_catalog` + the station screen (D16 spec first) |
-| 10 | coder 31 | S25 contracts board | coder 30 | `ui/station/` + `autoload/player_profile.gd` + S24's `contracts_visible` seam |
-| 11 | coder 32 | S26 bosses, arenas, insurance, vaults | coder 31 | `game/` + `player_profile.gd` + S25's Expedition seam |
-| 12 | coder 33 | S27 catalog breadth & shipyard | coder 32 | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/` |
+| 7 | coder 29 | S23 content activation (**done 2026-10-02** — 1014 → 1030/0 ×2; 2 HIGH bucket-2 cured, 3 LOW L264–L266) | coder 28.7 | `vajb-orbit/game/` + `tests/` (weapons/projectile/mining seams) |
+| 8 | designer 17 | D16 station identity & contracts UI (**done 2026-10-03** — 0 HIGH / 2 MED cured / 2 LOW L267–L268; law for 30/31/32) | coder 29 | one live session; its spec is coder 30/31/32's design law |
+| 9 | designer 18 | **D18 map deck & panel consolidation design** (**live**, owner 2026-10-03; `slices/D18-map-panels/`) | designer 17 | inserted at the owner's ask ahead of 30–33; its spec is S29's law |
+| 10 | coder 34 | **S28 station chrome quick-fix wave** (**live**, owner 2026-10-03; `slices/S28-station-chrome/`) | beside D18 | disjoint file sets (S28: `vajb-orbit/ui/ game/ tests/`; D18: `docs/design/ staging/mockup/`) — the only parallel pair, owner-approved |
+| 11 | coder 35 | **S29 panel consolidation + the map deck** (implements D18's law; five-piece lands at D18's close) | D18 + S28 | rewrites `armory_panel/fitting/shipyard/repairs` + `ui/hud/` — must follow both |
+| 12 | coder 30 | S24 world identity | designer 17 (+ S29 for the rail/pane shape) | `station_catalog` + the station screen (D16 spec first) |
+| 13 | coder 31 | S25 contracts board | coder 30 | `ui/station/` + `autoload/player_profile.gd` + S24's `contracts_visible` seam |
+| 14 | coder 32 | S26 bosses, arenas, insurance, vaults | coder 31 | `game/` + `player_profile.gd` + S25's Expedition seam |
+| 15 | coder 33 | S27 catalog breadth & shipyard | coder 32 | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/` |
 
-Designer item **16 (D15)** is closed (ticked 2026-09-29); 17 (D16) is the designer
-queue's next item. Playtest
+Designer items 16 (D15) and 17 (D16) are closed; **18 (D18) and coder 34 (S28)
+are live in parallel** (the only pair with disjoint files), then coder 35 (S29),
+then the phase's 30–33. Playtest
 pass #1 (the owner's, `19_testing_notes.md`'s eye list) runs alongside pos 1;
 build 2 + the tester template are phase exit criteria. Every brief's §11 tick
 sheet feeds its wave (unticked rows implement at their PROPOSED value).

@@ -19,13 +19,15 @@ and every tool result is re-sent on each later request.
 
 | Section | Topic | Lines |
 |---|---|---|
-| 1. | Colour Tokens | L33–L58 |
-| 2. | Theme Architecture | L59–L101 |
-| 3. | In-Game HUD | L102–L691 |
-| 4. | Settings | L692–L753 |
-| 5. | Tooltips, Dialogs & Nine-Patch Panels | L754–L831 |
-| 6. | Font & Sizing Reference (coding checklist) | L832–L851 |
-| 7. | Station surfaces chrome — the A5.4 extension (amendment 2026-10-02, … | L852–L887 |
+| 1. | Colour Tokens | L35–L60 |
+| 2. | Theme Architecture | L61–L103 |
+| 3. | In-Game HUD | L104–L693 |
+| 4. | Settings | L694–L755 |
+| 5. | Tooltips, Dialogs & Nine-Patch Panels | L756–L833 |
+| 6. | Font & Sizing Reference (coding checklist) | L834–L853 |
+| 7. | Station surfaces chrome — the A5.4 extension (amendment 2026-10-02, … | L854–L889 |
+| 8. | Station action buttons and the one focus language (amendment 2026-10… | L890–L922 |
+| 9. | The map deck — flight minimap and navigation (amendment 2026-10-03, … | L923–L950 |
 
 <!-- section-index:end -->
 
@@ -884,3 +886,64 @@ The dedicated **heavy-cadence icon** — a 16 px line mark beside the drum for t
 generation budget**: no shipped icon exists and no art may be generated (owner
 2026-09-27), so until a budget is granted the figure carries the read alone.
 Reversal for the staged icon: never generate it.
+
+## 8. Station action buttons and the one focus language (amendment 2026-10-03, owner ruling; waves S28/D18/S29)
+
+**The owner's words (2026-10-03, playtest pass):** "unification of buttons.
+the same sizes, the same sprites/chromes best if even kept in the same lauouy
+between planes". Every station action button is the **same sprite** (A5.4
+`Pressables` plate, `ui_button_plate_*`, cut 280×56, no texture margins) at one
+of **two** sizes — nothing else is legal, and no new art exists in this pass
+(the 2026-09-27 no-AI-art gate stands). Rail entries are navigation, not
+actions: they keep their own `StationButton` 272×56 idiom.
+
+| Tick | Token | Size | Chrome | Carries |
+|---|---|---|---|---|
+| **P1** | `ActionPrimary` | **360×56** | `Pressables` plate | the commit action: SELL, LAUNCH, REPAIR, REFINE, ACCEPT, BUY (panel-level) |
+| **P1** | `ActionSecondary` | **360×56** | same plate, flat + disabled states only | CANCEL, REMOVE, REFUEL, RECHARGE, DEPOSIT, WITHDRAW, SET ACTIVE |
+| **P1** | `ActionInline` | **96×32** | flat chip-button (theme `Button`, no asset) | row-corner actions inside data rows (ammo BUY/SELL) |
+
+Reversal (P1): the shipped six measured sizes — BUY 64×16, REMOVE 160×48,
+REFUEL/RECHARGE 174×56, SELL ALL RAW/CANCEL 360×56, SELL/LAUNCH 360×88, rail
+272×56 (`D17-P2_report.md` §Station chrome). Roles read by position, never by
+size: the primary sits rightmost in its cluster.
+
+**P2 — the action cluster sits in the same place on every panel:** an `HBox`
+at the foot of the panel's action column, 16 px gutter, primary rightmost,
+secondary beside it, at the same vertical band the shared footer hint line
+tops. Reversal: each panel's shipped placement.
+
+**P3 — one focus language everywhere.** The focused state of every interactive
+control — station, settings, menus — is §6's existing theme row: the 1 px
+`accent_danger_bright` focus ring, plus the menu's lit tick bar where a tick
+bar exists. Settings' separate ember-box + red-value focus style is retired.
+Hover (the B2-1 plate pick) stays a separate, owner-gated ruling. Reversal:
+the per-screen shipped focus styles.
+
+## 9. The map deck — flight minimap and navigation (amendment 2026-10-03, owner ruling; waves D18/S29)
+
+**The owner's words (2026-10-03):** "The minimap needs to be expandable, and
+when expanded there needs to be an option to PAN it and SCROLL it … it needs a
+menu to show what in currect sector i want to show on minimap and an ABILITY
+FOR NAVIGATION, this means you pin on map where to go, or hold LPM and the
+ship uses hyper drive (if installed) to go there or something like that".
+Mechanism facts already measured: the compact minimap is `ui/hud/minimap.gd`;
+the **arrive-steering autopilot already exists** as the player's order API
+(`game/player_ship.gd:419`, ENGINE_SPEC §3.1) and any stick input cancels it
+(`player_ship.gd:816`); **no hyperdrive module exists anywhere in the
+catalogue** (measured 2026-10-03) — the module is new content pinned as
+`10_ship_acquisition.md`'s 2026-10-03 block, tick **N5**.
+
+| Tick | Value | Reversal |
+|---|---|---|
+| **N1** | The minimap expands to a **`MapDeck`** pane: `PanelContainer` on A5.4 `Pane outer edge` chrome (`ui_panel_frame`), centre of the viewport at **80 %** of it, toggled by M, by the minimap's corner button, and by ESC | 60 %; no deck |
+| **N2** | In the deck: **LMB drag pans**, **wheel scrolls/zooms 25 %–400 %** (centred on the cursor), arrow keys pan in 64 px steps | zoom clamped 100–200 %; drag only |
+| **N3** | A filter column in the deck, per profile persisted: STATIONS / GATES / ASTEROID FIELDS / POIS / HOSTILES / FRIENDLY / CARGO & WRECKS / CONTRACTS — each a toggle (label + state, never colour alone) | all-on, no menu, no persistence |
+| **N4** | **The navigation pin.** A click (no drag) on the deck places/moves one destination pin (diamond mark + edge bearing arrow on the compact minimap, distance read under it); short press issues the **existing autopilot order** to the pin; stick input cancels; clicking the pin removes it. **Hold LMB ≥ 0.5 s = hyperdrive jump to the pin** (only with N5 installed; otherwise the caption `NO HYPERDRIVE INSTALLED` under the pin) | pin only, no hold; 0.25 s hold |
+| **N5** | The hyperdrive module (content row in `10_ship_acquisition.md`'s 2026-10-03 block): tier-3 `engine`, 12 000 CR, draw 3, one jump per **30 s** cooldown, **1 s** spool then arrival flash; no fuel charge | delete the module; pin + autopilot remain |
+| **N6** | STATION and GATE blips are always visible on deck and compact map, whatever the filters say | filters hide them too |
+
+The deck's chrome and rows obey A5.1–A5.4 like any station pane (flat Tokens
+inside; the pin and the bearing arrow are code-drawn marks inside their own
+child rects, A5.2(iii)). The compact minimap otherwise ships as today; this
+block adds only the pin's bearing arrow and the N6 always-on blips.

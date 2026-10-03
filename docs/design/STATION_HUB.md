@@ -42,21 +42,22 @@ and every tool result is re-sent on each later request.
 
 | Section | Topic | Lines |
 |---|---|---|
-| 1. | Intent | L64–L81 |
-| 2. | Navigation model | L82–L132 |
-| 3. | Composition | L133–L273 |
-| 4. | Node tree (exact) | L274–L400 |
-| 5. | Per-module spec | L401–L1015 |
-| 6. | Type scale | L1016–L1037 |
-| 7. | Art map | L1038–L1088 |
-| 8. | Theme items used (all present in | L1089–L1110 |
-| 9. | Motion table | L1111–L1138 |
-| 10. | Focus and input | L1139–L1159 |
-| 11. | Audio hooks | L1160–L1186 |
-| 12. | Implementation notes for the coder | L1187–L1266 |
-| 13. | Verification performed on the mockup | L1267–L1283 |
-| 14. | Open questions for the owner | L1284–L1317 |
-| 15. | Station services deck & station identity (amendment 2026-10-02, wave… | L1318–L1481 |
+| 1. | Intent | L65–L82 |
+| 2. | Navigation model | L83–L133 |
+| 3. | Composition | L134–L274 |
+| 4. | Node tree (exact) | L275–L401 |
+| 5. | Per-module spec | L402–L1016 |
+| 6. | Type scale | L1017–L1038 |
+| 7. | Art map | L1039–L1089 |
+| 8. | Theme items used (all present in | L1090–L1111 |
+| 9. | Motion table | L1112–L1139 |
+| 10. | Focus and input | L1140–L1160 |
+| 11. | Audio hooks | L1161–L1187 |
+| 12. | Implementation notes for the coder | L1188–L1267 |
+| 13. | Verification performed on the mockup | L1268–L1284 |
+| 14. | Open questions for the owner | L1285–L1318 |
+| 15. | Station services deck & station identity (amendment 2026-10-02, wave… | L1319–L1482 |
+| 16. | Panel consolidation and the inspector band (amendment 2026-10-03, ow… | L1483–L1521 |
 
 <!-- section-index:end -->
 
@@ -1478,3 +1479,42 @@ block, R-S24-1).
 | contents-list height `min (0, 200)` (new presentation value) | §15.4 / UI_SPEC §7 A5.4-5 | U19 | `min (0, 110)` — the shipped `CargoList` height |
 | 24 px stack icon in `ItemList` rows (**PROPOSED** — the shipped `CargoList` is plain text with no row icons) | §15.4 / UI_SPEC §7 A5.4-5 | U20 | plain-text `40× ingot_titanium` rows, no row icon |
 
+
+## 16. Panel consolidation and the inspector band (amendment 2026-10-03, owner ruling; waves D18/S28/S29)
+
+**The owner's words (2026-10-03, playtest pass):** "1. fix bottom inspector
+band going stale … 3. i want shipyard and repairs to be the same panel, in
+shipyard when i hover on an element i want to see a description in botton
+field. if a ship has equipped item it should show in shipyard as well. armory
+and fitting i want together as well, they serve the same purpose. the same
+mechanics. drag and drop engines, but we need an option to filter by slot
+(like in auction) overall an overhaul of these panel." Button and focus law
+for all of this is `UI_SPEC.md` §8 (P1–P3); the map half of the ruling is
+`UI_SPEC.md` §9.
+
+Mechanism facts already measured: the inspector band is
+`ui/screens/station.tscn:214` (`Inspector` PanelContainer) +
+`station.gd:150-151` (`InspectorTitle`/`InspectorBody`); the hover→describe
+signal system already exists and is tested (`tests/test_s11_inspector.gd`:
+every pane declares the signal, the six item panes are the emitters, armory
+hover emits and unhover clears, `describe()` resolves instances through base
+ids and appends rolled affix perks); the stale-band defect is that the band
+survives a module switch (`D17-P1_report.md` §Station hub, `D17-P2_report.md`
+§REFINERY). The auction's slot filter tabs are the pinned idiom
+(`ui/station/auction_panel.gd:82-100`: HULLS · WEAPONS · DRIVES · SHIELDS ·
+ARMOUR · POWER · COMPUTERS · BOOSTERS · UTILITY · ALL, keyed on the
+catalogue's own slot words); slot families are `engine`/`engines`,
+`weapon`/`weapons`, `shields`, `utility` (`game/module_catalog.gd`).
+
+| Tick | Value | Reversal |
+|---|---|---|
+| **P4** | **ARMORY + FITTING fold into one ARMORY panel** (one pane, D13 approach B landscape split). Left: the ship grid exactly as FITTING ships it (hardpoint cells, PWR/CPU meters). Right: the inventory browser — the auction's filter-tab strip over owned + buyable module rows (the auction row idiom), every row draggable. Cells accept drops **filtered by slot** (a wrong-slot drop is refused: the status line says so and the cell flashes its slot caption — never colour alone); engines drag like any family. **Buy and fit are one flow:** BUY on a browser row buys into the next free legal cell (or the selected cell); dragging an unowned row to a legal cell buys-then-fits. Hover anywhere (row, cell, tab) describes in the shared inspector via the existing `describe()` chain | the two panels return as separate panes + rail entries |
+| **P5** | **SHIPYARD + REPAIRS fold into one SHIPYARD panel.** The hull list (stat pairs **labelled** per the D17 finding) beside a comparison block; the selected hull's **installed modules are shown** (the equipped items the owner asked for) under the comparison; the repair block sits below: the damage table with `NOMINAL` for intact systems (no MISSING/FEE rows in the body; the fee lives in the footer line) + the `REPAIR` primary button. Hover on any element — hull row, module, damage row — describes in the bottom inspector | the two panels return as separate panes + rail entries |
+| **P6** | **The inspector band lifecycle.** The shell clears/re-anchors the band on every module switch and on unhover-with-no-selection; every pane publishes through the existing inspector signal; the band never carries another module's content. SHIPYARD and LAUNCH fill the band with their own summary when idle (active hull / launch summary) instead of leaving it empty. S28 ships the mechanical clear (the defect cure); S29 ships the fills | none — a defect cure |
+| **P7** | **The one panel template + the six-entry rail.** Every station panel is: `PaneHeader` (module icon + title at the shared x) / content split / the UI_SPEC §8 P2 action cluster / the shared footer hint — nothing else. The rail folds 8 → **6 entries**: ARMORY, REFINERY, EXCHANGE, AUCTION, SHIPYARD, LAUNCH (FITTING into ARMORY, REPAIRS into SHIPYARD) | FITTING/REPAIRS return as their own rail entries |
+
+All composition obeys A5.1–A5.4 (containers + anchors, never coordinates;
+chrome by the per-surface table; marks in their own rects). D18 produces the
+wireframe mockups and the per-panel spec detail on these pins; S29 implements;
+S28 ships the P6 mechanical cure ahead of them. No new art anywhere in this
+pass — the merged panels reuse the shipped chrome and Tokens only.

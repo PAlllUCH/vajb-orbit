@@ -11,6 +11,10 @@ The owner pastes only the handoff block at the bottom.
 **2026-10-02 (owner, item 17/D16):** this wave runs A1 on `xiaomi/mimo-v2.6-pro`
 @ `high` and R1 on `hyper/glm-5.3-flash` @ `high` — owner's routes, recorded in
 the wave's prompts file; later items return to the standing rule unless ruled.
+**2026-10-03 (owner, standing):** the design roster moves to Charm Hyper —
+**very demanding design work runs `hyper/glm-5.3` @ high**; other design work
+`hyper/glm-5.3-flash` (or `hyper/qwen3.8-flash`) @ high. MiMo stays available
+when named.
 
 **File-collision law:** two waves never hold one file (nor the same `test_*`
 prefix, nor one `staging/` driver). One live session per workspace.
@@ -29,6 +33,7 @@ prefix, nor one `staging/` driver). One live session per workspace.
 | # | Wave | Item | What | Status |
 |---|---|---|---|---|
 | 17 | D16 | Station identity & contracts UI design (phase P3) | CONTRACTS panel spec (14 §2 + R-S25-1), insurance/vaults panels (14 §3/§4), the nine places' identity treatment with shipped chrome only, the W3 name tick sheet. Five-piece: `slices/D16-station-ui/`. Design only. | **closed 2026-10-03** (see Done) |
+| 18 | D18 | Map deck & station panel consolidation design (the owner's 2026-10-03 overhaul ruling) | The map deck spec + wireframes on UI_SPEC §9's N1–N6 pins (expand, pan, zoom, per-sector filters, pin navigation + hold-LMB hyperdrive jump), the merged ARMORY and SHIPYARD panels on STATION_HUB §16's P4–P7 pins (drag-and-drop, slot filter tabs, hover→describe, equipped items, repair block), the N/P tick detail. Five-piece: `slices/D18-map-panels/`. Design only; S29 (coder 35) implements. | **live** (owner 2026-10-03, inserted ahead of the phase's tail) · A1 `hyper/glm-5.3` @ high → R1 `hyper/glm-5.3-flash` @ high |
 
 ## Parked (owner-gated — not queued; say the item and its five-piece lands)
 
@@ -76,7 +81,10 @@ generate → stage → **review sheet → owner approval** → ship → reimport
 
 ## Handoff (live)
 
-The design queue is **empty** — item 17 (D16) closed 2026-10-03 (see Done).
+**Item 18 = D18 map deck & panel consolidation design** (brief
+`.agents/gen/slices/D18-map-panels/D18_BRIEF.md`, prompts `D18_prompts.md`)
+runs **live in parallel with coder 34 (S28)** — the only approved parallel
+pair, disjoint file sets. Item 17 (D16) closed 2026-10-03 (see Done).
 The phase's next item is **coder 30 (S24 world identity)**, which opens
 docs-first on the ticked W3 names and cites `STATION_HUB.md` §15 +
 `UI_SPEC.md` §7 as its design law; coder items 30/31/32 ride it in

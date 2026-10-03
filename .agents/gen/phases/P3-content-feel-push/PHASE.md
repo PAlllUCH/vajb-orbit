@@ -28,6 +28,9 @@ library. Ends in playtest build 2.
 | 7 | S25 | contracts board | S24 (`station` screen + profile) |
 | 8 | S26 | bosses, arenas, insurance, vaults | S25 (Expedition seam) |
 | 9 | S27 | catalog breadth + shipyard | S26 (`game/` collision) |
+| 9.5 | D18 | map deck & panel consolidation design | S23 (owner 2026-10-03, inserted ahead of S24) |
+| 9.6 | S28 | station chrome quick-fix wave (the D17 playtest pile) | beside D18 (disjoint files) |
+| 9.7 | S29 | panel consolidation + the map deck (implements D18) | D18 + S28 |
 
 ## Owner gates
 - **Playtest pass #1** is the owner's: the "awaiting the owner's eye" list in
