@@ -8,6 +8,10 @@ design worker** on `--reasoning-effort low` (owner standing rule 2026-09-25;
 measured that day, `medium` stalls on long worker loops while `low` is fast).
 The owner pastes only the handoff block at the bottom.
 
+**2026-10-02 (owner, item 17/D16):** this wave runs A1 on `xiaomi/mimo-v2.6-pro`
+@ `high` and R1 on `hyper/glm-5.3-flash` @ `high` — owner's routes, recorded in
+the wave's prompts file; later items return to the standing rule unless ruled.
+
 **File-collision law:** two waves never hold one file (nor the same `test_*`
 prefix, nor one `staging/` driver). One live session per workspace.
 
