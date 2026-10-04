@@ -29,7 +29,7 @@ renumber, only retire.
 ```
 .agents/gen/
 ├── _templates/          # the 6 templates. Read-only for workers.
-├── _state/              # WAVEBOARD.md, LOW_BACKLOG.md, _wave_state/ baselines
+├── _state/              # WAVEBOARD.md, LOW_BACKLOG.md, TICKS.md, _wave_state/ baselines
 ├── _dispatch/           # dispatch .sh/.log evidence
 ├── slices/
 │   ├── S00-physics-fuel/
@@ -85,6 +85,7 @@ for its law and drift shows up as an unanswered or drifted line.
 
 `draft` → `active` (folder created, SPEC filled, baseline snapshot + commit) →
 `review` (review wave ran, gate re-measured) → `done` (every finding tiered:
-HIGH fixed, MED fixed, LOW in backlog; WAVEBOARD row closed; briefs archived).
+HIGH fixed, MED fixed, LOW in backlog; WAVEBOARD row closed; briefs archived;
+TICKS.md refreshed — decided/done rows deleted from it).
 Status lives in the SLICE.md front matter AND the WAVEBOARD table — WAVEBOARD is
 the display, SLICE.md is the record.

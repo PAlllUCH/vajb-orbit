@@ -41,6 +41,7 @@ are in `docs/AGENT_PIPELINE_NOTES.md`. New detail belongs in the owning spec.
 |---|---|
 | Live state, queued work, next dispatch, closure history | `.agents/gen/_state/WAVEBOARD.md` — **read first when resuming**; live state only, recaps live in `MASTER_REPORT.md` §6 |
 | Open LOW findings and tickets (`T-###`) | `.agents/gen/_state/LOW_BACKLOG.md` |
+| The owner's open decisions + actions (one screen) | `.agents/gen/_state/TICKS.md` — live only: rows leave when decided/done; refreshed at every wave close-out |
 | Engine contract (§2/§2.1 owner decisions, §13 calibration, §14 build slices) | `docs/gameplay/18_engine_spec.md` — owner-locked |
 | Pinned interfaces every worker brief references | `docs/CONTRACTS.md` — review waves own updating it |
 | Palette/style, UI/theming tokens, screen inventory + flow | `docs/design/STYLE_BIBLE.md`, `UI_SPEC.md`, `MENU_FLOW.md` |
