@@ -39,7 +39,7 @@ glm-5.3-flash @ high — governed items 34–35 and is closed.)
 
 | 34 | S28 | Station chrome quick-fix wave (the D17 playtest pile) | The mechanical half of the owner's 2026-10-03 ruling: inspector band clear (STATION_HUB §16 P6 S28 half), CONTROLS bindings, copy + hygiene rows (`NO_DAMAGE_REPORT` strip, dev-speak, plurals, quit dialog, splash line, shelf tag, `MINE BACK`), shield single source (450/400), `SELL ALL RAW` state, exchange stepper + headers, credits box, sub-pixel floor, DevTuningMenu gate, and UI_SPEC §8's P1–P3 button/focus unification on the panels S29 does not rewrite. Five-piece: `slices/S28-station-chrome/`; law UI_SPEC §8 + STATION_HUB §16 P6 + the D17 reports. | **done 2026-10-03** (gate 1031 → 1038/0 ×2 + R1 re-run; 0 HIGH / 0 MED / 2 LOW T-98/T-99; B1 qwen3.8-flash → R1 glm-5.3-flash, both @ high) |
 | 35 | S29 | Panel consolidation + the map deck | Implements D18's law (`slices/D18-map-panels/`): ARMORY+FITTING and SHIPYARD+REPAIRS fold (rail 8 → 6), drag-and-drop with the slot filter tabs, hover→describe, equipped items on hulls, the map deck (expand/pan/zoom/filters, pin navigation, the N5 hyperdrive row from 10's 2026-10-03 block). Five-piece lands at D18's close. | **done 2026-10-03** (1038 → 1073/0 ×2; 1 HIGH + 1 MED cured by F1, 7 LOW T-100–T-106; B1 crashed on provider credits — the resume + B2 ran xiaomi/mimo-v2.6-pro @ high, R1 glm-5.3-flash) |
-| 36 | S30 | Station shell v2 build | Implements D19's law (`UI_SPEC.md` §12, `STATION_HUB.md` §19 + the `staging/mockup/d19_*` wireframes): the TERMINAL drawer over the layout, the OVERVIEW landing pane, the tooltip + INSPECT modal sinks, the one skeleton on all seven panes, and the A5.5 census cures (N24–N30 / P15–P21). Proposed split B1 shell/drawer/overview ∥ B2 popups + skeleton + census — the S30 brief re-checks the split against §12/§19's final shape. Five-piece lands at D19's close. | queued · after 19 (D19's §12/§19) — ahead of 30–33 |
+| 36 | S30 | Station shell v2 build | Implements D19's law (`UI_SPEC.md` §12, `STATION_HUB.md` §19 + the `staging/mockup/d19_*` wireframes): the TERMINAL drawer over the layout, the OVERVIEW landing pane, the tooltip + INSPECT modal sinks, the one skeleton on all seven panes, and the A5.5 census cures (N24–N30 / P15–P21). Proposed split B1 shell/drawer/overview ∥ B2 popups + skeleton + census — the S30 brief re-checks the split against §12/§19's final shape. Five-piece lands at D19's close. | **live 2026-10-03** (B1 running; `hyper/deepseek-4.1-flash` builders @ max, `hyper/glm-5.3-flash` review; all TICKS decision rows took their defaults at the owner's word) — ahead of 30–33 |
 
 ## Parked (owner-gated — not queued; say the word and the five-piece lands)
 
@@ -147,10 +147,11 @@ session reports.
 
 ## Handoff (live)
 
-**Item 36 = S30 station shell v2 build — next, as soon as designer 19 (D19)
-closes** (its five-piece lands at D19's close; the handoff block will live in
-`slices/S30-*/S30_prompts.md`). Items 30–33 then resume in order and each one
-now also waits on 36 — S30 re-lays the station shell every one of them touches.
+**Item 36 = S30 station shell v2 build — LIVE 2026-10-03** (B1 → B2 → R1 →
+F1 on HIGH/MED; dispatch blocks in `slices/S30-shell-v2/S30_prompts.md`; owner:
+"assume default if not chosen. proceed with coder"). Items 30–33 then resume in
+order and each one now also waits on 36 — S30 re-lays the station shell every
+one of them touches.
 
 The whole queue is phase **P3** (`phases/P3-content-feel-push/PHASE.md`);
 order and the collisions that force it are in `WAVEBOARD.md` §Queued. The
