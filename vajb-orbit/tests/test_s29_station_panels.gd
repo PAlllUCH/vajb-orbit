@@ -144,6 +144,33 @@ func test_the_browser_caption_and_the_tab_strip_minus_hulls() -> void:
 	_free_host(panel)
 
 
+## N45 (UI_SPEC section 13.1): the browser half widens to 620 and every row's title trims to a
+## fixed 160 px ellipsis column, so no row control can leave the window (D20 note 2).
+func test_n45_the_browser_half_and_the_title_column() -> void:
+	var panel := _mount(ArmoryScene)
+	var half := panel.get_node_or_null(^"Split/BrowserHalf") as Control
+	assert_true(half != null, "the browser half ships")
+	if half != null:
+		assert_eq(half.custom_minimum_size.x, 620.0, "the browser half widens to 620 (N45)")
+	assert_true(not (panel.get(&"_browser_payloads") as Array).is_empty(), "the browser has rows")
+	for payload: Dictionary in panel.get(&"_browser_payloads"):
+		var row := payload[&"row"] as Button
+		var rbox := row.get_node_or_null(^"RowInner/RowBox") as Control
+		var title_box := row.get_node_or_null(^"RowInner/RowBox/TitleBox") as Control
+		assert_eq(title_box.custom_minimum_size.x, 160.0, "the title column is a fixed 160 (N45)")
+		var title := title_box.get_node_or_null(^"Title") as Label
+		assert_eq(
+			title.text_overrun_behavior, TextServer.OVERRUN_TRIM_ELLIPSIS,
+			"the title trims with an ellipsis (N45)"
+		)
+		assert_true(
+			rbox.get_combined_minimum_size().x <= 620.0,
+			"the row content fits the 620 browser (min %s)"
+				% str(rbox.get_combined_minimum_size())
+		)
+	_free_host(panel)
+
+
 func test_the_hyperdrive_row_is_visible_at_tier_3() -> void:
 	var panel := _mount(ArmoryScene)
 	var ids: Array[StringName] = panel.call(&"module_row_ids")

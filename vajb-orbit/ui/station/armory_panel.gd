@@ -212,6 +212,8 @@ const BROWSER_META_FORMAT := "SLOT %s · DRAW %d"
 const BROWSER_ROW_HEIGHT := 76.0
 const BROWSER_ICON := 24.0
 const COL_OWNED := 130.0
+## N45: the browser row's fixed 160 px ellipsis title column.
+const BROWSER_TITLE_COLUMN := 160.0
 ## P1 (UI_SPEC section 8): the row-corner BUY is an `ActionInline` 96x32 flat chip.
 const ACTION_INLINE := Vector2(96.0, 32.0)
 ## S30-F1 (F7, N37): the INSPECT chip's own box - UI_SPEC section 8's `ActionInline` 96x32.
@@ -1670,11 +1672,15 @@ func _build_card(pack: Dictionary) -> Dictionary:
 	return payload
 
 
-func _make_label(variation: StringName, text: String) -> Label:
+func _make_label(variation: StringName, text: String, trim := false) -> Label:
 	var label := Label.new()
 	label.theme_type_variation = variation
 	label.text = text
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if trim:
+		## N45: a catalogue name squeezed into a fixed column trims with an ellipsis instead
+		## of spilling past the branch (a Button is not a Container and does not clip).
+		label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	return label
 
 
@@ -3809,21 +3815,30 @@ func _build_browser_row(base_id: StringName, profile: ProfileScript) -> Dictiona
 	var title_box := VBoxContainer.new()
 	title_box.name = "TitleBox"
 	title_box.add_theme_constant_override(&"separation", 2)
-	title_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	## N45: a fixed 160 px ellipsis column - long catalogue names trim instead of pushing the
+	## BUY / INSPECT chips past the window.
+	title_box.custom_minimum_size = Vector2(BROWSER_TITLE_COLUMN, 0.0)
+	title_box.size_flags_horizontal = Control.SIZE_FILL
 	title_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	title_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	box.add_child(title_box)
-	var title := _make_label(&"StationValue", name_text)
+	var title := _make_label(&"StationValue", name_text, true)
 	title.name = "Title"
 	title_box.add_child(title)
 	var meta := _make_label(
 		&"StationCaption",
 		BROWSER_META_FORMAT % [
 			String(module_row.get(&"slot", "")).to_upper(), int(module_row.get(&"draw", 0))
-		]
+		],
+		true
 	)
 	meta.name = "Meta"
 	title_box.add_child(meta)
+	var slack := Control.new()
+	slack.name = "TitleSlack"
+	slack.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	slack.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(slack)
 	var read := _make_label(&"StationValue", "")
 	read.name = "Read"
 	read.custom_minimum_size = Vector2(COL_OWNED, 0.0)
@@ -3879,14 +3894,18 @@ func _on_browser_pressed(payload: Dictionary) -> void:
 	_browser_focused = payload
 	var profile := _profile()
 	_candidate = _row_entry(profile, StringName(payload[&"base"]))
-	_inspect_browser(payload, true)
+	## T-118: a keyboard `ui_accept` press must not pop the popup at the OS cursor.
+	if _pointer_over(row):
+		_inspect_browser(payload, true)
 	_flow_row_into_cell(payload)
 
 
 func _on_buy_pressed(payload: Dictionary) -> void:
 	AudioManager.play_ui(AudioManager.UiCue.CLICK)
 	_browser_focused = payload
-	_inspect_browser(payload, true)
+	## T-118: only a pointer over the row publishes the hover line.
+	if _pointer_over(payload[&"row"] as Button):
+		_inspect_browser(payload, true)
 	_buy_into_cell(payload)
 
 
@@ -3901,7 +3920,17 @@ func _on_browser_focused(row: Button, payload: Dictionary) -> void:
 	var profile := _profile()
 	_candidate = _row_entry(profile, StringName(payload[&"base"]))
 	_refresh_footer()
-	_inspect_browser(payload, true)
+	## T-118: the hover popup is the pointer's sink - a keyboard focus (Tab) must not pop it
+	## at the OS cursor.
+	if _pointer_over(row):
+		_inspect_browser(payload, true)
+
+
+## T-118: is the OS pointer inside the row's own rect? A keyboard-driven focus is not a hover.
+func _pointer_over(row: Button) -> bool:
+	if row == null or not is_instance_valid(row):
+		return false
+	return row.get_global_rect().has_point(row.get_global_mouse_position())
 
 
 func _on_browser_hovered(payload: Dictionary, hovered: bool) -> void:

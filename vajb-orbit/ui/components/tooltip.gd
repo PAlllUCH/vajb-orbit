@@ -14,7 +14,9 @@ extends PanelContainer
 ## handlers; the tooltip is an overlay, not in-flow).
 
 const TOKENS_TYPE: StringName = &"Tokens"
-const CAP_WIDTH := 320.0
+## N47: the cap widens 320 -> 360 and the body's own font is 15 px scoped to this node.
+const CAP_WIDTH := 360.0
+const BODY_FONT_SIZE := 15
 const CURSOR_OFFSET := Vector2(12.0, 12.0)
 const VIEWPORT_MARGIN := 8.0
 const HINT_TEXT := "INSPECT"
@@ -77,6 +79,14 @@ func _refresh() -> void:
 	_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_label.custom_minimum_size = Vector2(CAP_WIDTH, 0.0)
 	_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	## N47: the tooltip's own 15 px, scoped to this node - never the theme's 13 px default
+	## in `vajb_theme.tres`. Every RichTextLabel face is overridden so the title's bold run
+	## matches the body's size.
+	for face: StringName in [
+		&"normal_font_size", &"bold_font_size", &"italics_font_size",
+		&"bold_italics_font_size", &"mono_font_size",
+	]:
+		_label.add_theme_font_size_override(face, BODY_FONT_SIZE)
 	_label.text = _compose()
 
 
@@ -90,7 +100,9 @@ func _compose() -> String:
 	if not _title.is_empty():
 		lines.append("[b][color=#%s]%s[/color][/b]" % [primary, _title])
 	if not _body.is_empty():
-		var body_color := danger if _danger else dim
+		## N47: the body renders `text_primary` (not bold); only a danger clause takes
+		## `accent_danger`. The INSPECT hint below stays `text_dim`.
+		var body_color := danger if _danger else primary
 		lines.append("[color=#%s]%s[/color]" % [body_color, _body])
 	lines.append("[color=#%s]%s[/color]" % [dim, HINT_TEXT])
 	return "\n".join(lines)

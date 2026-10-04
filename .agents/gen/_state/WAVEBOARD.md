@@ -6,6 +6,18 @@
 
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-25 clear-outs (owner asks):** every closed slice folder moved to the system trash (last git tree carrying them: `7a081ef`), old session reports live in `_state/_archive/`, and the two dispatch files were purged to live-items-only (2026-09-25 ter). Citation paths into purged trees name historical files.
 
+**Updated 2026-10-04 (S31 closed — the D20 quick fixes shipped):** B1
+(`hyper/deepseek-v4.1-flash` @ xhigh) → R1 (`hyper/glm-5.3-flash` @ max), **no
+fixer** (acceptance 1–7 all PASS; 0 HIGH / 0 MED / 4 LOW). N42–N47 live: the
+exchange parity cluster (title 232–242 px, both lists on one y, per-book
+bands), the armory browser contained (620 half, 160 px ellipsis titles), the
+tooltip's 0.5 s linger + readable `text_primary` body. Gate **1093 → 1099/0**
+×2, verify green vs `s31_start`; T-118–T-121 closed, T-122 rides S32,
+T-127/T-128 filed. The T-101/T-110 input-map rows landed the same close (M,
+E + pad X, PageUp/PageDown, T — `project.godot` via `input_map_manage`).
+Process lesson: `VAJB_WORKER_FILES` needs trailing slashes or the hook denies
+every edit. **Next: coder 38 (S32 armory two-module rework).**
+
 **Updated 2026-10-04 (D20 closed — the owner's own playtest compiled):** two
 live game reviews on the same brief (`xiaomi/mimo-v2.6-pro` @ high →
 `hyper/glm-5.3-flash` @ max; one game window, shared save profile) merged with
@@ -444,12 +456,15 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | 15 | coder 33 | S27 catalog breadth & shipyard | coder 32 | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/` |
 | 16 | designer 19 | **D19 station shell v2 design** (**done 2026-10-03** — UI_SPEC §12 + STATION_HUB §19 + 3 wireframes + the A5.5 census; 2 HIGH + 9 MED cured by F1 under two designer rulings, 6 LOW T-107–T-112 + close-out T-113; gate 1074/0 ×2, verify green vs `d19_start`) | coder 35 (done) | inserted at the owner's ask ahead of coders 30–33; its §12/§19 detail is S30's (coder 36) law, and S30 re-lays `ui/screens/station.*` + `ui/station/` before those coder items touch the panels |
 | 17 | coder 36 | **S30 station shell v2 build** (**done 2026-10-04** — 1074 → 1093/0 ×2; 3 HIGH + 7 MED cured by F1, 4 LOW T-114–T-117; B1/B2/F1 `hyper/deepseek-v4.1-flash` @ xhigh, R1 `hyper/glm-5.3-flash` @ max; verify green vs `s30_start`) | designer 19 (done) | ran alone — rail + inspector band deleted, TERMINAL drawer + OVERVIEW + popups shipped |
+| 18 | coder 37 | **S31 shell fixes** — the D20 fix wave F1–F3+F5 (`UI_SPEC.md` §13.1 N42–N47) — **done 2026-10-04**: 1093 → 1099/0 ×2; acceptance 1–7 all PASS, 0 HIGH / 0 MED / 4 LOW (T-127/T-128); N42 amended post-review (a book = a list); T-118–T-121 closed, T-122 deferred to S32 | D20 (done) | re-laid `ui/station/exchange_panel.*` + `armory_panel.*` + the tooltip before S32 touches them |
+| 19 | coder 38 | **S32 ARMORY two-module rework** (`STATION_HUB.md` §20.1 P32–P37; T-125/T-126 defaults; closes T-122) | coder 37 (S31) | both rewrite `ui/station/armory_panel.*` — strictly sequential |
 
 Designer items 16–19 and coders 34–36 are closed — the overhaul round and its
 shell-v2 follow-up are **shipped** (station: TERMINAL drawer, OVERVIEW landing
-pane, popup descriptions, one skeleton; gate 1093/0). **Next: coder 30 (S24
-world identity)** — its five-piece predates the shell, so the brief re-checks
-against `UI_SPEC.md` §12 + `STATION_HUB.md` §19 before dispatch. Playtest
+pane, popup descriptions, one skeleton; gate 1093/0). **Next: coder 38 (S32 armory two-module rework)** — live 2026-10-04 — then coder
+30 (S24 world identity); its five-piece predates the shell, so the brief
+re-checks against `UI_SPEC.md` §12–§13 + `STATION_HUB.md` §19–§20 before
+dispatch. Playtest
 pass #1 (the owner's, `19_testing_notes.md`'s eye list) runs alongside pos 1;
 build 2 + the tester template are phase exit criteria. Every brief's §11 tick
 sheet feeds its wave (unticked rows implement at their PROPOSED value).

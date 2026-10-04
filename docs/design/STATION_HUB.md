@@ -1791,6 +1791,12 @@ nothing in the skeleton scales (§3.3's "never scaled" list stands).
 
 ### 19.5 Presentation values added by this amendment (the tick detail)
 
+**Registration note (2026-10-04, T-110 closed):** the shell-v2 input rows are
+registered in `project.godot`'s input map — `station_prev_module` (PageUp),
+`station_next_module` (PageDown), `station_inspect` (E + pad X),
+`station_terminal` (T) — plus `map_toggle` (M). UI_SPEC §12.6 carries the same
+note. Reversal: remove the actions.
+
 | Tick | Value | Reversal |
 |---|---|---|
 | **P22** | OVERVIEW's block stack: `VBoxContainer` separation 12 inside a vertical `ScrollContainer` (the 776 vs 633 arithmetic, §19.1) | no scroll; separation 8 and the flavour line dropped |

@@ -936,3 +936,19 @@ T-123 ride the D20 fix wave (F5's fixer); T-124–T-126 are the owner's calls
 | T-124 | **OWNER (D20, note 3): what "inspect time twice as long on hover" means** — A: keep while hovered + linger 0.5 s (2× 0.25) after unhover + steady across intra-row hover churn; B: appear delay 0.25 → 0.5 s. | [OWNER] | `D20_synthesis.md` §5 | Default A. Reversal: B. |
 | T-125 | **OWNER (D20, note 2): the armory split's shape** — two full-screen modes (FIT CELLS / BATTERY CONFIG, one visible at a time) vs two panes on one screen. | [OWNER] | `D20_synthesis.md` §5 | Default two modes. Reversal: two panes. |
 | T-126 | **OWNER (D20, note 2): the battery module's scope** — rack regrouping (`set_battery_groups` editor) + SALVO/cycle readout vs also loadout presets. | [OWNER] | `D20_synthesis.md` §5 | Default regroup + readout. Reversal: add presets. |
+
+### S31 review block (2026-10-04)
+
+Source: wave S31's mandatory review (S31-R1, `hyper/glm-5.3-flash` @ max;
+acceptance 1–7 all PASS, pins N42–N47 met; **0 HIGH / 0 MED / 4 LOW**; no
+fixer). Dispositions superseding the D20 block: **T-118–T-121 CLOSED** (S31-B1
+fixed them: pointer guard, total on its own line, the widen cured the tabs,
+the landing no longer auto-focuses), **T-124–T-126 DECIDED** at the owner's go
+2026-10-04 (defaults taken; the pins carry the record), T-122 rides S32
+(structural cure), T-123 stays deferred. The next free ticket after these rows
+is **T-129**.
+
+| # | Item | Kind | Where | Disposition |
+|---|------|------|-------|-------------|
+| T-127 | **LOW (S31-R1/F3): the worker-file hook's trailing-slash trap** — `VAJB_WORKER_FILES='vajb-orbit/ui,vajb-orbit/tests'` (bare dir entries) makes `enforce_worker_files.py` deny EVERY edit (`:50-54` needs a trailing slash); S31-B1's edits rode a scripted applier inside its set. | [HARNESS] | `.crush/hooks/enforce_worker_files.py` | Accept bare directory entries in the hook (or dispatch law: always trailing slashes — S32 onwards do). Reversal: none — tooling. |
+| T-128 | **LOW (S31-R1/F4 + B1): the T-118 pointer guard is not yet ported** to the remaining focus-driven tooltip sites (armory ammo cards, shipyard, launch, slot cells). | [CODE] | `ui/station/*.gd` | Ride the next pane touch / S32 (armory dies there). Reversal: none. |

@@ -1317,6 +1317,13 @@ A5.5's three events.
 
 ### 12.6 Presentation values added by this section (the tick detail)
 
+**Registration note (2026-10-04, T-110 closed):** `station_prev_module`
+(PageUp), `station_next_module` (PageDown), `station_inspect` (E + pad X —
+N34's binding), `station_terminal` (T) and `map_toggle` (M — §9 N1, T-101) are
+registered in `project.godot`'s input map (the `ship_status` precedent),
+mirroring the raw-key fallbacks, which stay as belt-and-braces. Reversal:
+`remove_action` on each row.
+
 | Tick | Value | Reversal |
 |---|---|---|
 | **N31** | A5.5's operational test (§12.5): the bar (size / `custom_minimum_size` / position / offsets / in-flow `visible` / node tree on a hover/focus/selection state change), content swaps in pinned boxes legal, the command clause, focused-row auto-reveal legal but hover never scrolls | the strict reading: colour/`modulate`/`_draw` only, all content feedback in the popup layer, no auto-reveal |
@@ -1359,7 +1366,10 @@ pins build on (D20-P1/P2, 1920×1080): hold RowBox 474 px inside the 500 px box
 | **N47** | the tooltip body renders `text_primary` (not bold; the INSPECT hint stays `text_dim`) and its `RichTextLabel` font is **15 px scoped to the tooltip node** (never the theme default), cap width **320 → 360** | the dim body at 13 px / 320 cap |
 
 N43 amends N37 for the exchange hold list only (N28's amendment idiom); every
-other row keeps its trailing chip. N42–N47 implement the owner's notes 1–3 at
+other row keeps its trailing chip. **N42 amended 2026-10-04 post-S31-R1: the
+board's two books each wear their own band — a book counts as a list** (a single
+band cannot seat over both column sets; reversal: one band with the mineral
+words, mislabeling the component rows). N42–N47 implement the owner's notes 1–3 at
 the values the D20 synthesis derives; each is PROPOSED with the reversal column
 beside it. A5.5/N24 still govern: none of these may hover-mutate size, position
 or an in-flow `visible`.

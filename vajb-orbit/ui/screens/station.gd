@@ -175,6 +175,9 @@ const SHEET_LAYER := 20
 ## (20), added before the sheet so the sheet stacks above it.
 const DRAWER_LAYER := 20
 const TOOLTIP_DELAY := 0.25
+## N46 (T-124's A reading): the hover popup lingers 0.5 s (2x TOOLTIP_DELAY) after the
+## pointer leaves and holds steady across a row's own child churn.
+const TOOLTIP_LINGER := 0.5
 ## N34's `station_inspect`: keyboard `E`, pad `JOY_BUTTON_X`. The action is not in the input
 ## map this wave (rule 3), so the raw key is read here; the close-out registers it.
 const INSPECT_KEY := KEY_E
@@ -238,6 +241,7 @@ var _sheet_layer: CanvasLayer = null
 var _tooltip: Control = null
 var _sheet: Control = null
 var _hover_timer: Timer = null
+var _linger_timer: Timer = null
 var _hover_title := ""
 var _hover_body := ""
 var _hover_danger := false
@@ -381,6 +385,13 @@ func _build_popups() -> void:
 	_hover_timer.wait_time = TOOLTIP_DELAY
 	_hover_timer.timeout.connect(_show_hover_tooltip)
 	add_child(_hover_timer)
+	## N46: the leave linger (2x the appear delay).
+	_linger_timer = Timer.new()
+	_linger_timer.name = "HoverLinger"
+	_linger_timer.one_shot = true
+	_linger_timer.wait_time = TOOLTIP_LINGER
+	_linger_timer.timeout.connect(_on_linger_timeout)
+	add_child(_linger_timer)
 
 
 ## S30's TERMINAL drawer (UI_SPEC section 12.1, N26): a full-rect overlay on layer 20, the
@@ -609,8 +620,40 @@ func _show_hover_tooltip() -> void:
 func _hide_tooltip() -> void:
 	if _hover_timer != null:
 		_hover_timer.stop()
+	if _linger_timer != null:
+		_linger_timer.stop()
 	if _tooltip != null and bool(_tooltip.call(&"is_open")):
 		_tooltip.call(&"hide_tooltip")
+
+
+## N46: the pointer left the target. If the popup is up, hold it for the linger window and
+## drop it (and its payload) when the window elapses; if it never opened, cancel the pending
+## show outright.
+func _begin_linger() -> void:
+	if _tooltip != null and bool(_tooltip.call(&"is_open")):
+		if _linger_timer != null:
+			_linger_timer.start(TOOLTIP_LINGER)
+		return
+	if _hover_timer != null:
+		_hover_timer.stop()
+	_clear_hover_payload()
+
+
+func _cancel_linger() -> void:
+	if _linger_timer != null:
+		_linger_timer.stop()
+
+
+func _on_linger_timeout() -> void:
+	if _tooltip != null and bool(_tooltip.call(&"is_open")):
+		_tooltip.call(&"hide_tooltip")
+	_clear_hover_payload()
+
+
+func _clear_hover_payload() -> void:
+	_hover_title = ""
+	_hover_body = ""
+	_hover_danger = false
 
 
 ## N28's explicit sink: a pane's own INSPECT chip (or `station_inspect`) publishes here.
@@ -1051,6 +1094,11 @@ func _show_only(incoming: CanvasItem) -> void:
 
 
 func _focus_active_panel() -> void:
+	## T-121: the OVERVIEW landing pane's tiles are navigation, and auto-focusing the first
+	## one pre-lights its focus ring before any input. The landing leaves focus unset; Tab /
+	## ui_down still walk into the tiles.
+	if _module == OVERVIEW:
+		return
 	## A pane with nothing focusable (the offline placeholder) leaves the ring on a hidden
 	## row, so the TERMINAL button takes it instead.
 	var panel := _panel_for(_module)
@@ -1086,12 +1134,21 @@ func _on_panel_status(message: String, danger: bool) -> void:
 func _on_panel_inspect(title: String, body: String, danger: bool, pane: Node) -> void:
 	if pane != _panel_for(_module):
 		return
+	## N46: an empty payload means the pointer left the target - the popup lingers 0.5 s
+	## (2x the appear delay) instead of vanishing, so crossing a row's children never
+	## flickers. A payload for the same target cancels the linger and holds the popup
+	## steady; only a different target restarts the appear delay (N33's one-content rule).
+	if title.is_empty() and body.is_empty():
+		_begin_linger()
+		return
+	_cancel_linger()
+	if title == _hover_title and body == _hover_body:
+		return
 	_hover_title = title
 	_hover_body = body
 	_hover_danger = danger
-	if title.is_empty() and body.is_empty():
-		_clear_inspector()
-		return
+	if _tooltip != null and bool(_tooltip.call(&"is_open")):
+		_tooltip.call(&"hide_tooltip")
 	if _hover_timer != null:
 		_hover_timer.start(TOOLTIP_DELAY)
 

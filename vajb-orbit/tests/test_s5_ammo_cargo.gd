@@ -31,6 +31,7 @@ extends McpTestSuite
 
 const GameScene := preload("res://game/game.tscn")
 const PanelScene := preload("res://ui/station/exchange_panel.tscn")
+const PanelScript := preload("res://ui/station/exchange_panel.gd")
 const ThemeRes := preload("res://ui/theme/vajb_theme.tres")
 const Catalog := preload("res://game/station_catalog.gd")
 const ExchangeScript := preload("res://game/exchange.gd")
@@ -576,19 +577,20 @@ func test_the_sale_column_ships_the_s28_chrome_law() -> void:
 	assert_eq(String((panel.get(&"_step_value") as Label).text), "1 UNIT", "A11 with A5 grammar")
 	assert_eq(String((panel.get(&"_sell") as Button).text), "SELL 1 UNIT", "the quantity rides the primary")
 	assert_eq(int(panel.get(&"_step")), 1, "a stray click can never dump the stack")
-	## A12: the holdings grid wears its header band over the same three value columns.
+	## N42 (supersedes S28-A12): the hold list wears one column-header band, inside its
+	## scroll above the rows, captioned with the row stacks' own words UNITS / CR EACH / CR NET.
 	var header := panel.get_node_or_null(
-		NodePath("ExchangeBody/HoldBox/HoldHeader/HoldHeaderRow")
+		NodePath("ExchangeBody/HoldBox/HoldScroll/HoldRows/HoldHeader/HoldHeaderRow")
 	) as HBoxContainer
-	assert_true(header != null, "the holdings header band ships (A12)")
+	assert_true(header != null, "the hold column-header band ships (N42)")
 	if header != null:
 		var words: Array[String] = []
 		for cell: Node in header.get_children():
 			if cell is Label:
 				words.append((cell as Label).text)
 		assert_true(
-			words.has("HELD") and words.has("CR EACH") and words.has("VALUE"),
-			"HELD, CR EACH and VALUE title the three columns"
+			words.has("UNITS") and words.has("CR EACH") and words.has("CR NET"),
+			"UNITS, CR EACH and CR NET title the three columns (N42)"
 		)
 	## A16: the action cluster is one P2 row at the foot, plates at the P1 token, primary rightmost.
 	## S30 (UI_SPEC section 19.3): the cluster now rides the pane's shared `PaneFoot` band.
@@ -604,6 +606,119 @@ func test_the_sale_column_ships_the_s28_chrome_law() -> void:
 		assert_eq(sell.custom_minimum_size, Vector2(360.0, 56.0), "the P1 plate")
 		assert_eq(row.get_theme_constant("separation"), 16, "the P2 gutter")
 		assert_eq(sell.get_index(), row.get_child_count() - 1, "the primary is rightmost")
+
+
+## N42 (D20 note 1, UI_SPEC section 13.1): both lists render one shared row plate and wear a
+## column-header band. The per-row caption stacks are gone and the board carries one band per
+## book (minerals, components).
+func test_n42_the_lists_share_one_row_plate_and_wear_their_bands() -> void:
+	_profile.set(&"_cargo", {&"mineral_iron": 5})
+	var panel := _mount_panel()
+	var hold := _hold_row(panel, &"mineral_iron")
+	assert_true(
+		hold.get_node_or_null(NodePath("RowInner/RowBox/TitleBox/Title")) != null,
+		"the hold row renders the shared plate (icon, title, value columns)"
+	)
+	for cell_name: String in ["Qty", "Unit", "Total"]:
+		assert_true(
+			hold.get_node_or_null(NodePath("RowInner/RowBox/%s/Value" % cell_name)) != null,
+			"the %s cell keeps its Value child" % cell_name
+		)
+		assert_true(
+			hold.get_node_or_null(NodePath("RowInner/RowBox/%s/Caption" % cell_name)) == null,
+			"the %s per-row caption stack is deleted (N42)" % cell_name
+		)
+	var hold_band := panel.get_node_or_null(
+		NodePath("ExchangeBody/HoldBox/HoldScroll/HoldRows/HoldHeader/HoldHeaderRow")
+	) as HBoxContainer
+	assert_true(hold_band != null, "the hold band ships (N42)")
+	var board_rows := panel.get_node_or_null(NodePath("%BoardRows"))
+	var mineral_band := board_rows.get_node_or_null(^"MineralHeader/MineralHeaderRow") as HBoxContainer
+	assert_true(mineral_band != null, "the board's mineral band ships (N42)")
+	var mineral_words := _band_words(mineral_band)
+	assert_true(
+		mineral_words.has("CR EACH") and mineral_words.has("INDEX") and mineral_words.has("BAND"),
+		"the mineral band carries CR EACH / INDEX / BAND (N42)"
+	)
+	var component_band := board_rows.get_node_or_null(
+		^"ComponentHeader/ComponentHeaderRow"
+	) as HBoxContainer
+	assert_true(component_band != null, "and its component band (two column sets)")
+	var component_words := _band_words(component_band)
+	assert_true(
+		component_words.has("QUOTA") and component_words.has("KIND") and component_words.has("GRADE"),
+		"the component band carries QUOTA / KIND / GRADE (N42)"
+	)
+	_free_host()
+
+
+## A band's own caption words, in order.
+func _band_words(band: HBoxContainer) -> Array[String]:
+	var out: Array[String] = []
+	if band == null:
+		return out
+	for cell: Node in band.get_children():
+		if cell is Label:
+			out.append((cell as Label).text)
+	return out
+
+
+## N43 (UI_SPEC section 13.1): the hold title column never renders below 180 px, the hold
+## list is an N37 cluster (no per-row INSPECT chip), and the trade column's single INSPECT
+## ActionInline stays dimmed until a row holds focus/selection.
+func test_n43_the_hold_cluster_and_the_title_room() -> void:
+	assert_eq(int(PanelScript.COL_QTY), 60, "the qty column rebalances to 60 (N43)")
+	assert_eq(int(PanelScript.COL_UNIT), 64, "the unit column to 64 (N43)")
+	assert_eq(int(PanelScript.COL_TOTAL), 80, "the total column to 80 (N43)")
+	var margin: Vector2i = PanelScript.ROW_INNER_MARGIN
+	var room := int(
+		PanelScript.HOLD_CONTENT_WIDTH - 2.0 * margin.x - PanelScript.COL_ICON
+		- 4.0 * PanelScript.COLUMN_SEPARATION - (PanelScript.COL_QTY + PanelScript.COL_UNIT + PanelScript.COL_TOTAL)
+	)
+	assert_true(room >= 180, "the hold title keeps %d px, >= 180 (N43)" % room)
+	_profile.set(&"_cargo", {&"mineral_iron": 5})
+	var panel := _mount_panel()
+	var row := _hold_row(panel, &"mineral_iron")
+	assert_true(
+		row.get_node_or_null(NodePath("RowInner/RowBox/InspectChip")) == null,
+		"the hold row carries no per-row INSPECT chip (N43)"
+	)
+	var cluster := panel.get(&"_inspect_cluster") as Button
+	assert_true(cluster != null, "the trade column's cluster INSPECT ships (N43)")
+	if cluster != null:
+		assert_true(cluster.disabled, "and starts disabled (no row armed)")
+		var payload: Dictionary = {}
+		for entry: Dictionary in panel.get(&"_hold_payloads"):
+			if entry[&"id"] == &"mineral_iron":
+				payload = entry
+		panel.call(&"_on_row_pressed", payload)
+		assert_false(cluster.disabled, "a selected row wakes the cluster chip")
+	_free_host()
+
+
+## N44 (UI_SPEC section 13.1): both lists' scroll viewports begin on one y - each list's box
+## is caption -> scroll with its band as the scroll's first child, so both identically-built
+## captions top the scrolls at the same y and the outer boxes stay even.
+func test_n44_the_lists_start_on_one_y() -> void:
+	_profile.set(&"_cargo", {&"mineral_iron": 5})
+	var panel := _mount_panel()
+	var hold_box := panel.get_node_or_null(^"ExchangeBody/HoldBox") as VBoxContainer
+	var board_box := panel.get_node_or_null(^"ExchangeBody/MarketBoard") as VBoxContainer
+	assert_true(hold_box != null and board_box != null, "both list boxes ship")
+	if hold_box != null and board_box != null:
+		assert_eq(hold_box.get_child_count(), 2, "the hold box is caption -> scroll (N44)")
+		assert_eq(board_box.get_child_count(), 2, "the board box is caption -> scroll (N44)")
+		assert_true(hold_box.get_child(0) is Label, "the hold caption leads")
+		assert_eq((hold_box.get_child(1) as Node).name, "HoldScroll", "then the scroll")
+		assert_true(board_box.get_child(0) is Label, "the board caption leads")
+		assert_eq((board_box.get_child(1) as Node).name, "BoardScroll", "then the scroll")
+	var hold_rows := panel.get_node_or_null(^"ExchangeBody/HoldBox/HoldScroll/HoldRows")
+	var board_rows := panel.get_node_or_null(^"ExchangeBody/MarketBoard/BoardScroll/BoardRows")
+	assert_eq((hold_rows.get_child(0) as Node).name, "HoldHeader", "the hold band tops its scroll")
+	assert_eq(
+		(board_rows.get_child(0) as Node).name, "MineralHeader", "the board band tops its scroll"
+	)
+	_free_host()
 
 
 # ------------------------------------------------------------- AC4d: the fuel-cell delist

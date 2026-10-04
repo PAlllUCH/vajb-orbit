@@ -293,9 +293,61 @@ func test_the_shell_shows_the_hover_tooltip_and_clears_it() -> void:
 	assert_true(bool(tooltip.call(&"is_open")), "the tooltip opens once the delay elapses")
 	assert_eq(String(tooltip.call(&"content_title")), "LASER CELLS", "with the row's title")
 	assert_contains(String(tooltip.call(&"rendered_text")), "INSPECT", "and N33's hint line")
+	## N46 (supersedes S30's immediate clear): an empty emit is the pointer leaving, so the
+	## popup lingers 0.5 s (2x the 0.25 s appear delay) before it drops; the payload is held
+	## until the linger elapses.
 	pane.inspect_requested.emit("", "", false)
-	assert_false(bool(tooltip.call(&"is_open")), "an empty emit clears the tooltip")
-	assert_eq(String(_station.get(&"_hover_title")), "", "and drops the payload")
+	assert_true(bool(tooltip.call(&"is_open")), "an empty emit lingers, never clears at once (N46)")
+	var linger := _station.get(&"_linger_timer") as Timer
+	assert_true(linger != null and linger.time_left > 0.0, "the 0.5 s linger runs (N46)")
+	assert_eq(linger.wait_time, 0.5, "the linger is 2x the appear delay (N46)")
+	_station.call(&"_on_linger_timeout")
+	assert_false(bool(tooltip.call(&"is_open")), "the linger's timeout drops the popup")
+	assert_eq(String(_station.get(&"_hover_title")), "", "and clears the payload")
+
+
+## N46 (UI_SPEC section 13.1): the popup holds steady while the pointer crosses a row's
+## children - a same-target payload cancels the linger and never re-arms the appear delay;
+## only a different target restarts it.
+func test_n46_the_popup_holds_steady_across_one_row() -> void:
+	_station.call(&"_select_module", 0, true)
+	var pane := _pane(0)
+	var tooltip := _tooltip()
+	pane.inspect_requested.emit("LASER CELLS", "Standard laser capacitors.", false)
+	_station.call(&"_show_hover_tooltip")
+	_hover_timer().stop()
+	assert_true(bool(tooltip.call(&"is_open")), "the popup is up")
+	pane.inspect_requested.emit("", "", false)
+	pane.inspect_requested.emit("LASER CELLS", "Standard laser capacitors.", false)
+	assert_true(bool(tooltip.call(&"is_open")), "the popup stays up across child churn (N46)")
+	assert_true(_hover_timer().time_left <= 0.0, "and the appear delay is not re-armed (N46)")
+	pane.inspect_requested.emit("IRON ORE", "Raw iron.", false)
+	assert_true(_hover_timer().time_left > 0.0, "a new target re-arms the appear delay (N46)")
+	assert_false(bool(tooltip.call(&"is_open")), "and drops the stale popup (N33)")
+	_station.call(&"_clear_inspector")
+
+
+## N47 (UI_SPEC section 13.1): the tooltip body renders `text_primary` (not bold), the
+## RichTextLabel font is 15 px scoped to the tooltip node (never the theme's 13 px default),
+## the INSPECT hint stays `text_dim`, and the cap widens to 360.
+func test_n47_the_tooltip_body_and_its_own_font() -> void:
+	var tooltip := _tooltip()
+	tooltip.call(
+		&"show_for", "LASER CELLS", "Standard laser capacitors.", false,
+		Vector2.ZERO, Vector2(1920.0, 1080.0)
+	)
+	var text := String(tooltip.call(&"rendered_text"))
+	var primary := (tooltip.call(&"_token", &"text_primary") as Color).to_html(false)
+	var dim := (tooltip.call(&"_token", &"text_dim") as Color).to_html(false)
+	assert_true(
+		text.contains("[color=#%s]Standard laser capacitors.[/color]" % primary),
+		"the body renders text_primary, not bold (N47)"
+	)
+	assert_true(text.contains("[color=#%s]INSPECT[/color]" % dim), "the hint stays text_dim (N47)")
+	var label := tooltip.get_node("%TooltipLabel") as RichTextLabel
+	assert_eq(label.get_theme_font_size(&"normal_font_size"), 15, "the body font is 15 px (N47)")
+	assert_eq(label.custom_minimum_size.x, 360.0, "the cap widens to 360 (N47)")
+	tooltip.call(&"hide_tooltip")
 
 
 ## **S30 (UI_SPEC section 12.2).** The stale-hover defect (S28's A1): the switch takes the

@@ -51,9 +51,11 @@ const STEPPER_SIZE := 48.0
 const SELL_HEIGHT := 56.0
 const ACTION_HEIGHT := 56.0
 const COL_ICON := 40.0
-const COL_QTY := 70.0
-const COL_UNIT := 80.0
-const COL_TOTAL := 100.0
+## N43: the hold value columns rebalance to <= 60/64/80 so the expand-fill title keeps
+## >= 180 px inside the 500 px hold box (measured in the S31 report).
+const COL_QTY := 60.0
+const COL_UNIT := 64.0
+const COL_TOTAL := 80.0
 const COL_PRICE := 80.0
 const COL_DEMAND := 60.0
 const COL_TREND := 95.0
@@ -62,10 +64,10 @@ const COL_FAMILY := 130.0
 const COL_GRADE := 60.0
 ## The hold column's real width: what one 76 px row needs to seat its icon, its title, its
 ## three value cells and the row margins. `HoldBox` keeps section 5.8's 340 px floor in the
-## scene; this is the measured content width that raises the column (see the P1i report for
-## the arithmetic: section 5.8's 130/110/160 triple plus the 360 px trade column plus the
-## board's own triple does not fit the 1440 px pane box).
-const HOLD_CONTENT_WIDTH := 500.0
+## scene; this is the measured content width that raises the column. N43: rebalancing the
+## value cells to 60/64/80 still left the title at 172 px (measured in the S31 probe), so the
+## box widens 500 -> 560 (the pin's own remedy) to hold the title at ~232 px.
+const HOLD_CONTENT_WIDTH := 560.0
 const ROW_ICON_IDLE_ALPHA := 0.72
 const HOVER_SECONDS := 0.09
 const PULSE_MIN_ALPHA := 0.35
@@ -102,12 +104,9 @@ const META_AMMO := "AMMO"
 const CAPTION_UNITS := "UNITS"
 const CAPTION_CR_EACH := "CR EACH"
 const CAPTION_CR_NET := "CR NET"
-## S28's A12 (D17-P1 EXCHANGE: "YOUR HOLDINGS table has no column headers"): the holdings
-## grid gains a header band over its three value columns - HELD over the count, CR EACH
-## over the unit price, VALUE over the net worth. There is no per-item cap column to
-## title CAP: the quota pair ships on the board, already captioned QUOTA.
-const CAPTION_HELD := "HELD"
-const CAPTION_VALUE := "VALUE"
+## N42: the row stacks' own words title each list's column-header band - the hold band
+## carries UNITS / CR EACH / CR NET, the board bands carry their books' own words. S28-A12's
+## HELD / VALUE pair is superseded and deleted.
 const CAPTION_INDEX := "INDEX"
 const CAPTION_BAND := "BAND"
 const CAPTION_QUOTA := "QUOTA"
@@ -123,7 +122,8 @@ const NO_SELECTION := "NO STACK SELECTED"
 const SELL_WORD := "SELL"
 const SELL_QUANTITY_FORMAT := "SELL %s"
 const TITLE_FORMAT := "%s · %d HELD"
-const CONFIRM_FORMAT := "SELL %d %s — GROSS %s · FEE %s · YOU GET %s"
+## T-119: the total rides its own line so the 360 px TradeBox never wraps and orphans it.
+const CONFIRM_FORMAT := "SELL %d %s — GROSS %s · FEE %s\nYOU GET %s"
 const CONFIRM_IDLE := "SELECT A STACK · THE STRIP QUOTES THE CONFIRMED PRICE"
 const DEMAND_FORMAT := "%sx"
 ## The mineral board row's meta line (05 §2): the ingot kind and the baseline the net PRICE
@@ -172,6 +172,8 @@ var _selected_id: StringName = &""
 var _selected_row: Button = null
 ## S30: the payload `station_inspect` (N34) inspects - the focused hold row.
 var _focused_payload: Dictionary = {}
+## N43: the trade column's single INSPECT ActionInline (the hold list's cluster chip).
+var _inspect_cluster: Button = null
 var _step := 0
 var _quoted: Dictionary = {}
 var _tweens: Array[Tween] = []
@@ -184,7 +186,6 @@ func _ready() -> void:
 	## pane's own entry (`focus_primary`), and every quote and sale evaluates for itself.
 	_hold_scroll.custom_minimum_size.x = HOLD_CONTENT_WIDTH
 	_build_header()
-	_build_hold_header()
 	_build_board()
 	_rebuild_hold()
 	_apply_tokens()
@@ -287,19 +288,20 @@ func _build_header() -> void:
 ## ---------------------------------------------------------------------------
 
 
-## S28's A12: the holdings header band. It mirrors a row's own grid - the same inner
-## margin, the same icon width, the same column separations and the same three value
-## columns - so the titles seat exactly over the numbers without a coordinate anywhere.
-func _build_hold_header() -> void:
+## N42: one AUCTION-idiom column-header band per list - the same inner margin, icon width
+## and column separations as the row's own grid, so the caption cells seat exactly over
+## their value columns. The band rides inside its scroll, above its rows (the AUCTION idiom,
+## whose section headers scroll with their sections), so both lists' viewports begin on one y.
+func _add_band(parent: VBoxContainer, node_name: String, columns: Array[Dictionary]) -> void:
 	var margin := MarginContainer.new()
-	margin.name = "HoldHeader"
+	margin.name = node_name
 	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	margin.add_theme_constant_override(&"margin_left", ROW_INNER_MARGIN.x)
 	margin.add_theme_constant_override(&"margin_top", 0)
 	margin.add_theme_constant_override(&"margin_right", ROW_INNER_MARGIN.x)
 	margin.add_theme_constant_override(&"margin_bottom", 0)
 	var box := HBoxContainer.new()
-	box.name = "HoldHeaderRow"
+	box.name = "%sRow" % node_name
 	box.add_theme_constant_override(&"separation", COLUMN_SEPARATION)
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	margin.add_child(box)
@@ -313,22 +315,58 @@ func _build_hold_header() -> void:
 	title_gap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title_gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	box.add_child(title_gap)
-	for column: Array in [
-		[COL_QTY, CAPTION_HELD], [COL_UNIT, CAPTION_CR_EACH], [COL_TOTAL, CAPTION_VALUE],
-	]:
-		var cell := _make_label(&"StationCaption", String(column[1]), true)
-		cell.name = "Header%s" % String(column[1]).to_pascal_case()
-		cell.custom_minimum_size = Vector2(float(column[0]), 0.0)
+	for column: Dictionary in columns:
+		var cell := _make_label(&"StationCaption", String(column[&"caption"]), true)
+		cell.name = "Header%s" % String(column[&"caption"]).to_pascal_case()
+		cell.custom_minimum_size = Vector2(float(column[&"width"]), 0.0)
 		box.add_child(cell)
-	var hold_box := _hold_scroll.get_parent()
-	hold_box.add_child(margin)
-	hold_box.move_child(margin, _hold_scroll.get_index())
+	parent.add_child(margin)
+
+
+func _hold_columns() -> Array[Dictionary]:
+	return [
+		{&"key": &"qty", &"width": COL_QTY, &"caption": CAPTION_UNITS},
+		{&"key": &"unit", &"width": COL_UNIT, &"caption": CAPTION_CR_EACH},
+		{&"key": &"total", &"width": COL_TOTAL, &"caption": CAPTION_CR_NET},
+	]
+
+
+func _mineral_columns() -> Array[Dictionary]:
+	return [
+		{&"key": &"price", &"width": COL_PRICE, &"caption": CAPTION_CR_EACH},
+		{&"key": &"demand", &"width": COL_DEMAND, &"caption": CAPTION_INDEX},
+		{&"key": &"trend", &"width": COL_TREND, &"caption": CAPTION_BAND},
+	]
+
+
+func _component_columns() -> Array[Dictionary]:
+	return [
+		{&"key": &"stock", &"width": COL_STOCK, &"caption": CAPTION_QUOTA},
+		{&"key": &"family", &"width": COL_FAMILY, &"caption": CAPTION_KIND},
+		{&"key": &"grade", &"width": COL_GRADE, &"caption": CAPTION_GRADE},
+	]
 
 
 func _build_board() -> void:
 	_board_payloads.clear()
+	var mineral_specs: Array[Dictionary] = []
+	var component_specs: Array[Dictionary] = []
 	for spec: Dictionary in _board_specs():
-		_board_payloads.append(_build_board_row(spec))
+		if spec[&"mineral"] == &"":
+			component_specs.append(spec)
+		else:
+			mineral_specs.append(spec)
+	## N42: one AUCTION-idiom band per book, seated over its own rows. The board carries two
+	## column sets (minerals and components), so it wears one band per book - a single band
+	## cannot seat over both.
+	if not mineral_specs.is_empty():
+		_add_band(_board_rows, "MineralHeader", _mineral_columns())
+		for spec: Dictionary in mineral_specs:
+			_board_payloads.append(_build_board_row(spec))
+	if not component_specs.is_empty():
+		_add_band(_board_rows, "ComponentHeader", _component_columns())
+		for spec: Dictionary in component_specs:
+			_board_payloads.append(_build_board_row(spec))
 	_add_slack(_board_rows)
 	for payload: Dictionary in _board_payloads:
 		_apply_icon_tokens(payload)
@@ -348,11 +386,7 @@ func _board_specs() -> Array[Dictionary]:
 			&"meta": META_INGOT,
 			&"icon_path": String(mineral.get(&"icon_ingot", "")),
 			&"tint": _tier_tint(int(mineral.get(&"tier", 0))),
-			&"columns": [
-				{&"key": &"price", &"width": COL_PRICE, &"caption": CAPTION_CR_EACH},
-				{&"key": &"demand", &"width": COL_DEMAND, &"caption": CAPTION_INDEX},
-				{&"key": &"trend", &"width": COL_TREND, &"caption": CAPTION_BAND},
-			],
+			&"columns": _mineral_columns(),
 		})
 	for entry: Dictionary in ComponentCatalogScript.COMPONENTS:
 		var component_id: StringName = entry.get(&"id", &"")
@@ -367,11 +401,7 @@ func _board_specs() -> Array[Dictionary]:
 			&"tint": _grade_tint(int(entry.get(&"grade", 0))),
 			&"grade": int(entry.get(&"grade", 0)),
 			&"family": String(entry.get(&"family", "")),
-			&"columns": [
-				{&"key": &"stock", &"width": COL_STOCK, &"caption": CAPTION_QUOTA},
-				{&"key": &"family", &"width": COL_FAMILY, &"caption": CAPTION_KIND},
-				{&"key": &"grade", &"width": COL_GRADE, &"caption": CAPTION_GRADE},
-			],
+			&"columns": _component_columns(),
 		})
 	return specs
 
@@ -382,29 +412,15 @@ func _build_board_row(spec: Dictionary) -> Dictionary:
 	row.focus_mode = Control.FOCUS_NONE
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.custom_minimum_size = Vector2(0.0, ROW_HEIGHT)
-	var box := _make_inner(row)
-	var icon := _make_icon(String(spec[&"icon_path"]))
-	if icon != null:
-		box.add_child(icon)
-	var title_box := _make_title_box(String(spec[&"name"]), String(spec[&"meta"]))
-	box.add_child(title_box)
-	var payload := {
-		&"item": spec[&"item"],
-		&"mineral": spec[&"mineral"],
-		&"grade_no": int(spec.get(&"grade", 0)),
-		&"family_key": String(spec.get(&"family", "")),
-		&"row": row,
-		&"icon": icon,
-		&"tint": _icon_tint(String(spec[&"icon_path"]), spec[&"tint"]),
-		## The meta caption is the baseline and the demand of the row's own item (05 §2,
-		## "the current price next to the baseline"), so the label is kept for refresh.
-		&"meta": title_box.get_node("Meta") as Label,
-	}
-	for column: Dictionary in spec[&"columns"]:
-		var cell := _make_cell(
-			box, float(column[&"width"]), "", String(column[&"caption"]), String(column[&"key"])
-		)
-		payload[column[&"key"]] = cell[0]
+	var payload := _build_row_plate(
+		row, String(spec[&"icon_path"]), String(spec[&"name"]), String(spec[&"meta"]),
+		spec[&"columns"]
+	)
+	payload[&"item"] = spec[&"item"]
+	payload[&"mineral"] = spec[&"mineral"]
+	payload[&"grade_no"] = int(spec.get(&"grade", 0))
+	payload[&"family_key"] = String(spec.get(&"family", ""))
+	payload[&"tint"] = _icon_tint(String(spec[&"icon_path"]), spec[&"tint"])
 	_board_rows.add_child(row)
 	return payload
 
@@ -462,9 +478,12 @@ func _rebuild_hold() -> void:
 	_clear(_hold_rows)
 	_hold_payloads.clear()
 	_selected_row = null
+	_focused_payload = {}
 	if not _hold_ids.has(_selected_id):
 		_selected_id = &""
 		_step = 0
+	## N42: the hold list wears the same column-header band as the board.
+	_add_band(_hold_rows, "HoldHeader", _hold_columns())
 	if _hold_ids.is_empty():
 		_hold_rows.add_child(_make_caption_row(HOLD_EMPTY, "HoldEmpty"))
 		return
@@ -530,27 +549,15 @@ func _build_hold_row(item_id: StringName) -> Dictionary:
 	row.custom_minimum_size = Vector2(0.0, ROW_HEIGHT)
 	row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	row.set_meta(&"id", item_id)
-	var box := _make_inner(row)
 	var icon_path := _icon_path(item_id)
-	var icon := _make_icon(icon_path)
-	if icon != null:
-		box.add_child(icon)
-	box.add_child(_make_title_box(_item_name(item_id), _meta_of(item_id)))
-	var qty := _make_cell(box, COL_QTY, "", CAPTION_UNITS, "Qty")
-	var unit := _make_cell(box, COL_UNIT, "", CAPTION_CR_EACH, "Unit")
-	var total := _make_cell(box, COL_TOTAL, "", CAPTION_CR_NET, "Total")
-	var payload := {
-		&"id": item_id,
-		&"name": _item_name(item_id),
-		&"row": row,
-		&"icon": icon,
-		&"tint": _icon_tint(icon_path, _tint_of(item_id)),
-		&"qty": qty[0],
-		&"unit": unit[0],
-		&"total": total[0],
-	}
-	## N37: every hold row carries its own trailing INSPECT chip.
-	box.add_child(_make_inspect_chip(payload))
+	var payload := _build_row_plate(
+		row, icon_path, _item_name(item_id), _meta_of(item_id), _hold_columns()
+	)
+	payload[&"id"] = item_id
+	payload[&"name"] = _item_name(item_id)
+	payload[&"tint"] = _icon_tint(icon_path, _tint_of(item_id))
+	## N43: the hold list is an N37 cluster - no per-row INSPECT chip. The trade column's
+	## single INSPECT ActionInline acts on the focused/selected row.
 	row.pressed.connect(_on_row_pressed.bind(payload))
 	row.focus_entered.connect(_on_row_focused.bind(row, payload))
 	row.mouse_entered.connect(_on_row_hovered.bind(payload, true))
@@ -614,6 +621,19 @@ func _wire_trade() -> void:
 	_sell.pressed.connect(_on_sell_pressed)
 	_sell_all.pressed.connect(_on_sell_all_pressed)
 	_cancel.pressed.connect(_on_cancel_pressed)
+	_build_inspect_cluster()
+
+
+## N43: one INSPECT ActionInline in the trade column (the N37 cluster idiom), disabled +
+## text_dim until a row holds focus or selection; it opens the sheet for that row.
+func _build_inspect_cluster() -> void:
+	_inspect_cluster = InspectChipScript.new()
+	_inspect_cluster.name = "InspectCluster"
+	_inspect_cluster.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	_inspect_cluster.inspect_chip_pressed.connect(inspect_focused)
+	var parent := _confirm_strip.get_parent()
+	parent.add_child(_inspect_cluster)
+	parent.move_child(_inspect_cluster, _confirm_strip.get_index() + 1)
 
 
 func _refresh_trade() -> void:
@@ -645,6 +665,8 @@ func _refresh_trade() -> void:
 	_cancel.disabled = not armed
 	_quoted = _quote(profile, _selected_id, _step) if armed else {}
 	_confirm_strip.text = _confirm_text() if armed else CONFIRM_IDLE
+	if _inspect_cluster != null:
+		_inspect_cluster.set_dimmed(_focused_payload.is_empty())
 	_refresh_hold()
 
 
@@ -808,7 +830,17 @@ func _on_row_focused(row: Button, payload: Dictionary) -> void:
 	row.set_pressed_no_signal(true)
 	_select(payload[&"id"])
 	_focused_payload = payload
-	_inspect_row(payload, true)
+	## T-118: the hover popup is the pointer's sink - a keyboard focus (Tab) must not pop it
+	## at the OS cursor. Only a pointer genuinely over the row publishes the hover line.
+	if _pointer_over(row):
+		_inspect_row(payload, true)
+
+
+## T-118: is the OS pointer inside the row's own rect? A keyboard-driven focus is not a hover.
+func _pointer_over(row: Button) -> bool:
+	if row == null or not is_instance_valid(row):
+		return false
+	return row.get_global_rect().has_point(row.get_global_mouse_position())
 
 
 func _on_row_pressed(payload: Dictionary) -> void:
@@ -816,8 +848,11 @@ func _on_row_pressed(payload: Dictionary) -> void:
 	var row: Button = payload[&"row"]
 	row.set_pressed_no_signal(true)
 	_selected_row = row
+	_focused_payload = payload
 	_select(payload[&"id"])
-	_inspect_row(payload, true)
+	## T-118: a keyboard `ui_accept` press must not pop the popup at the OS cursor.
+	if _pointer_over(row):
+		_inspect_row(payload, true)
 
 
 func _on_row_hovered(payload: Dictionary, hovered: bool) -> void:
@@ -840,15 +875,6 @@ func _inspect_row(payload: Dictionary, shown: bool) -> void:
 	inspect_requested.emit(
 		_row_title(payload), StationCatalogScript.describe(StringName(payload[&"id"])), false
 	)
-
-
-## ------------------------------------------------- the INSPECT sheet (N28/N37, S30)
-func _make_inspect_chip(payload: Dictionary) -> Button:
-	var chip := InspectChipScript.new()
-	chip.name = "InspectChip"
-	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	chip.inspect_chip_pressed.connect(_emit_sheet.bind(payload))
-	return chip
 
 
 func _emit_sheet(payload: Dictionary) -> void:
@@ -925,24 +951,42 @@ func _make_title_box(name_text: String, meta_text: String) -> VBoxContainer:
 	return box
 
 
-func _make_cell(
-	parent: HBoxContainer, width: float, value_text: String, caption_text: String, cell_name: String
-) -> Array[Label]:
+## N42: the one shared row plate both lists render - the board's praised anatomy: icon 40,
+## expand-fill title + meta line, then the value columns. The per-row caption stacks are
+## deleted; the words live on the band alone.
+func _build_row_plate(
+	button: Button, icon_path: String, name_text: String, meta_text: String,
+	columns: Array[Dictionary]
+) -> Dictionary:
+	var box := _make_inner(button)
+	var icon := _make_icon(icon_path)
+	if icon != null:
+		box.add_child(icon)
+	var title_box := _make_title_box(name_text, meta_text)
+	box.add_child(title_box)
+	var payload := {
+		&"row": button,
+		&"icon": icon,
+		&"meta": title_box.get_node("Meta") as Label,
+	}
+	for column: Dictionary in columns:
+		payload[column[&"key"]] = _make_value(
+			box, float(column[&"width"]), String(column[&"key"])
+		)
+	return payload
+
+
+func _make_value(parent: HBoxContainer, width: float, cell_name: String) -> Label:
 	var box := VBoxContainer.new()
-	box.name = cell_name
+	box.name = cell_name.to_pascal_case()
 	box.custom_minimum_size = Vector2(width, 0.0)
 	box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	box.add_theme_constant_override(&"separation", CELL_SEPARATION)
 	parent.add_child(box)
-	var value := _make_label(&"StationValue", value_text)
+	var value := _make_label(&"StationValue", "")
 	value.name = "Value"
 	box.add_child(value)
-	var caption := _make_label(&"StationCaption", caption_text)
-	caption.name = "Caption"
-	box.add_child(caption)
-	var out: Array[Label] = [value, caption]
-	return out
+	return value
 
 
 func _make_caption_row(text: String, node_name: String) -> Label:
