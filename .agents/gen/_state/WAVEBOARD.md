@@ -428,10 +428,14 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | 13 | coder 31 | S25 contracts board | coder 30 | `ui/station/` + `autoload/player_profile.gd` + S24's `contracts_visible` seam |
 | 14 | coder 32 | S26 bosses, arenas, insurance, vaults | coder 31 | `game/` + `player_profile.gd` + S25's Expedition seam |
 | 15 | coder 33 | S27 catalog breadth & shipyard | coder 32 | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/` |
+| 16 | designer 19 | **D19 station shell v2 design** (**live**, owner 2026-10-03; `slices/D19-station-shell-v2/`) | coder 35 (done) | inserted at the owner's ask ahead of coders 30–33; its §12/§19 detail is S30's (coder 36) law, and S30 re-lays `ui/screens/station.*` + `ui/station/` before those coder items touch the panels |
 
 Designer items 16 (D15), 17 (D16) and 18 (D18) are closed; coders 34 (S28) and
-35 (S29) are closed — the owner's overhaul round is implemented. **Next: coder
-30 (S24 world identity)**, opening docs-first on the ticked W3 names. Playtest
+35 (S29) are closed — the owner's overhaul round is implemented. **Next:
+designer 19 (D19 station shell v2)** — the owner's shell-v2 ruling pinned at
+`UI_SPEC.md` §11 (A5.5, N24–N30) + `STATION_HUB.md` §18 (P15–P21); then S30
+(coder 36) implements it, then coder 30 (S24 world identity) resumes its
+docs-first opening on the ticked W3 names. Playtest
 pass #1 (the owner's, `19_testing_notes.md`'s eye list) runs alongside pos 1;
 build 2 + the tester template are phase exit criteria. Every brief's §11 tick
 sheet feeds its wave (unticked rows implement at their PROPOSED value).

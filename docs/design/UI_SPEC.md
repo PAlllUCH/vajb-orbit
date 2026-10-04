@@ -19,16 +19,17 @@ and every tool result is re-sent on each later request.
 
 | Section | Topic | Lines |
 |---|---|---|
-| 1. | Colour Tokens | L36–L61 |
-| 2. | Theme Architecture | L62–L104 |
-| 3. | In-Game HUD | L105–L694 |
-| 4. | Settings | L695–L756 |
-| 5. | Tooltips, Dialogs & Nine-Patch Panels | L757–L834 |
-| 6. | Font & Sizing Reference (coding checklist) | L835–L854 |
-| 7. | Station surfaces chrome — the A5.4 extension (amendment 2026-10-02, … | L855–L890 |
-| 8. | Station action buttons and the one focus language (amendment 2026-10… | L891–L923 |
-| 9. | The map deck — flight minimap and navigation (amendment 2026-10-03, … | L924–L951 |
-| 10. | The map deck and the navigation pin — design detail (amendment 2026-… | L952–L1049 |
+| 1. | Colour Tokens | L37–L62 |
+| 2. | Theme Architecture | L63–L105 |
+| 3. | In-Game HUD | L106–L695 |
+| 4. | Settings | L696–L757 |
+| 5. | Tooltips, Dialogs & Nine-Patch Panels | L758–L835 |
+| 6. | Font & Sizing Reference (coding checklist) | L836–L855 |
+| 7. | Station surfaces chrome — the A5.4 extension (amendment 2026-10-02, … | L856–L891 |
+| 8. | Station action buttons and the one focus language (amendment 2026-10… | L892–L924 |
+| 9. | The map deck — flight minimap and navigation (amendment 2026-10-03, … | L925–L952 |
+| 10. | The map deck and the navigation pin — design detail (amendment 2026-… | L953–L1050 |
+| 11. | Station shell v2 — the TERMINAL drawer, the popups, the one skeleton… | L1051–L1096 |
 
 <!-- section-index:end -->
 
@@ -1046,3 +1047,49 @@ state is the read plus the blip re-centring only.
 `NO HYPERDRIVE INSTALLED` (N4) and the N5 module row itself
 (`10_ship_acquisition.md` 2026-10-03 block, R-S29-1) are pinned above and do
 not re-tick here.
+
+## 11. Station shell v2 — the TERMINAL drawer, the popups, the one skeleton (amendment 2026-10-03, owner ruling; waves D19/S30)
+
+**The owner's words (2026-10-03, the shell-v2 ruling):** "the containers dont
+sit in the same place when hovering between different sections. First the select
+menu where i select 'auction' 'refinery' etc has to be gone but only the visual
+aspect, not the functionality. i want it to slide from left of the screen when
+you press a Menu button (come up with something) and also i want new pane: space
+station overwiew (where you will be able to press on shipyard on move to
+shipyard instead of using menu) Lets remove the bottom panel with description it
+occupies way too much space. instead of it lets make a popup when you hover on
+something? or add 'inspect' button. if we inspect a module make a screen popup
+as well, it was bo be responsive menu." Tone and budget (same day): "i want the
+screen to look grimdarky but operate smoothly. if new sprites are needed then
+there are credits on kie.ai to use." The five open points were ruled by the
+owner's tick answers the same day: **both** hover tooltip and INSPECT modal;
+OVERVIEW carries tiles + identity + ship + services + flavour (**all five**);
+OVERVIEW is the **landing pane on dock**; the drawer button is **TERMINAL**;
+both instability defects are live (cross-pane misalignment **and**
+hover-induced movement).
+
+Mechanism facts already measured: the band is `ui/screens/station.tscn:214`
+(`Inspector`, `InspectorTitle`/`InspectorBody` `station.gd:150-151`) and dies
+with this wave (STATION_HUB §18's supersession block); the hover→describe chain
+survives (`inspect_requested`, `station.gd:518`, `tests/test_s11_inspector.gd`)
+and only its sink changes; the hover-induced movement is measured at
+`ui/station/shipyard_panel.gd:703-733` (`HoverStatBlock` — an in-flow `Label`
+inserted mid-stack in `_stats`, visibility-toggled with rewrapping text on every
+cell hover) with its fitting twin (`fitting_panel.gd`, same formatter); the
+cross-pane misalignment is per-pane skeleton drift (scene `custom_minimum_size`
+counts 1–10 across `ui/station/*.tscn`, zero `offset_` placements — A5 holds at
+scene level, the divergence is in what each pane's skeleton declares). The
+tooltip idiom (§5.1) and the modal idiom (§5.2) are law and unimplemented in
+`ui/` today. Wireframe-grade detail is `UI_SPEC.md` §12 (wave D19).
+
+### 11.1 The A5.5 layout law and the shell pins (N24–N30)
+
+| Tick | Value | Reversal |
+|---|---|---|
+| **N24** | **A5.5 (extends §3.10's Amendment 5): hover, focus and selection mutate colour, `modulate` and `_draw` only — never size, never an in-flow node's `visible`, never position.** Hover-revealed content lives in the popup layer or in one fixed reserved slot per pane | one fixed reserved slot per pane is allowed (its height is stated in §12) |
+| **N25** | the TERMINAL button is a P2 `ActionInline` 96×32 at the header's left edge; press toggles the drawer | P1 360×56 plate (requires an §8 P1 amendment) |
+| **N26** | the drawer is 360 px (the ModuleRail's measured width) and **slides over** the body from the left with the §5.2 dimmer (`void_base` 60 %) above it — the layout never reflows (A5.5); motion **0.18 s in / 0.12 s out**, `TRANS_CUBIC` `EASE_OUT` | 0.30 s / 0.20 s; a push-layout drawer (reintroduces the defect and is barred by A5.5) |
+| **N27** | the hover tooltip is §5.1 implemented for real: `tooltip.tscn` (`tooltip_panel` + BBCode `RichTextLabel`, `fit_content`), 320 px cap, 0.25 s delay, cursor +12/12, clamped to the viewport, `MOUSE_FILTER_IGNORE`; content grammar §5.1 unchanged + a final hint line `INSPECT` | Godot's default tooltip path; 240/400 px cap |
+| **N28** | the INSPECT modal is the §5.2 modal idiom extended: one read-only sheet (name + rolled affixes, full stat block, slot family, price / `OWNED ×<n>`), size-to-content, min 420 / max 720 px wide; opens from the row/cell `INSPECT` inline chip (P2) and from the focused item's inspect key; ESC closes; one at a time (§5.2 queue) | min 360 / max 840; transactional actions inside the modal |
+| **N29** | **grimdark tone, smooth motion** (owner 2026-10-03): chrome keeps §1 Tokens only — void blacks, `metal_*` plates, `accent_danger` for danger and nothing else (no new decorative hue); all motion is overlay-only (drawer/modal translate + opacity), ≤ 0.2 s, `TRANS_CUBIC` `EASE_OUT`, and never layout-affecting (A5.5) | the STATION_HUB §9 per-element motion durations |
+| **N30** | the in-flow hover stat blocks (`ui/station/shipyard_panel.gd:703-733`, the fitting twin) are **deleted**; their content is the N27 tooltip's stat lines | restore the blocks behind A5.5's fixed reserved slot |

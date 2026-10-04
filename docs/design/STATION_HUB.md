@@ -42,23 +42,24 @@ and every tool result is re-sent on each later request.
 
 | Section | Topic | Lines |
 |---|---|---|
-| 1. | Intent | L66–L83 |
-| 2. | Navigation model | L84–L134 |
-| 3. | Composition | L135–L275 |
-| 4. | Node tree (exact) | L276–L402 |
-| 5. | Per-module spec | L403–L1017 |
-| 6. | Type scale | L1018–L1039 |
-| 7. | Art map | L1040–L1090 |
-| 8. | Theme items used (all present in | L1091–L1112 |
-| 9. | Motion table | L1113–L1140 |
-| 10. | Focus and input | L1141–L1161 |
-| 11. | Audio hooks | L1162–L1188 |
-| 12. | Implementation notes for the coder | L1189–L1268 |
-| 13. | Verification performed on the mockup | L1269–L1285 |
-| 14. | Open questions for the owner | L1286–L1319 |
-| 15. | Station services deck & station identity (amendment 2026-10-02, wave… | L1320–L1483 |
-| 16. | Panel consolidation and the inspector band (amendment 2026-10-03, ow… | L1484–L1522 |
-| 17. | The merged panels — design detail, the inspector law, the panel temp… | L1523–L1631 |
+| 1. | Intent | L67–L84 |
+| 2. | Navigation model | L85–L135 |
+| 3. | Composition | L136–L276 |
+| 4. | Node tree (exact) | L277–L403 |
+| 5. | Per-module spec | L404–L1018 |
+| 6. | Type scale | L1019–L1040 |
+| 7. | Art map | L1041–L1091 |
+| 8. | Theme items used (all present in | L1092–L1113 |
+| 9. | Motion table | L1114–L1141 |
+| 10. | Focus and input | L1142–L1162 |
+| 11. | Audio hooks | L1163–L1189 |
+| 12. | Implementation notes for the coder | L1190–L1269 |
+| 13. | Verification performed on the mockup | L1270–L1286 |
+| 14. | Open questions for the owner | L1287–L1320 |
+| 15. | Station services deck & station identity (amendment 2026-10-02, wave… | L1321–L1484 |
+| 16. | Panel consolidation and the inspector band (amendment 2026-10-03, ow… | L1485–L1523 |
+| 17. | The merged panels — design detail, the inspector law, the panel temp… | L1524–L1632 |
+| 18. | Shell v2 — the TERMINAL drawer, the OVERVIEW pane, the popup sinks (… | L1633–L1676 |
 
 <!-- section-index:end -->
 
@@ -1628,3 +1629,47 @@ keep exactly one `PaneHeader` each — the fold adds no second header.
 `REPAIR AVAILABLE · <n> CR` and `ALL SYSTEMS NOMINAL` ship today
 (`repairs_panel.gd:50,52`) and do not re-tick. The map-side wordings (N7–N14)
 live in UI_SPEC §10.
+
+## 18. Shell v2 — the TERMINAL drawer, the OVERVIEW pane, the popup sinks (amendment 2026-10-03, owner ruling; waves D19/S30)
+
+The owner's words, the tone ruling and the five tick answers are quoted verbatim
+in `UI_SPEC.md` §11; the button/tooltip/modal pins are its N24–N30 and the
+layout law is its **A5.5**. This section owns the station-side supersessions,
+the drawer contents, the OVERVIEW pane and the input model. Wireframe-grade
+detail is `STATION_HUB.md` §19 (wave D19).
+
+**Supersession ledger (bucket 3 — the owner's own ruling supersedes):**
+
+- **P6 is retired.** The inspector band (`station.tscn:214`,
+  `station.gd:150-151,273-301`) is removed; its status duty stays in the footer
+  status strip and its idle fills become pane-internal or OVERVIEW blocks. The
+  hover→describe chain itself is untouched (N27/N28 sinks).
+- **P7 is amended.** Its "rail folds 8 → 6 entries" row is superseded: the
+  `ModuleRail` dies entirely — its navigation becomes the TERMINAL drawer
+  (P16/P20). P7's one-panel-template half **stands and is extended to every
+  pane, OVERVIEW included**: `PaneHeader` (icon + title at the shared x) /
+  content split / the §8 P2 action cluster / the shared footer hint, and
+  nothing else.
+- §17.1/§17.2's "describes in the shared inspector" re-points to the N27
+  tooltip / N28 modal; §17.2's on-grid hover line and hover stat block fold
+  into the tooltip (N30).
+
+### 18.1 The shell pins (P15–P21)
+
+| Tick | Value | Reversal |
+|---|---|---|
+| **P15** | the shell is header (TERMINAL · station identity line · credits housing) / body (one pane at full body width) / footer status strip — and nothing else | the rail or the band return |
+| **P16** | the drawer holds OVERVIEW + ARMORY, REFINERY, EXCHANGE, AUCTION, SHIPYARD, LAUNCH on the existing rail plates, a spacer, then LOG OUT (confirm dialog first, §2 unchanged) | alphabetical order; drop the captions |
+| **P17** | **OVERVIEW is the landing pane on dock** (owner tick), reachable again via the drawer | land on the last-used pane |
+| **P18** | OVERVIEW's five blocks: identity (§15 treatment) / 6 department tiles (3×2 `PanelRaised` grid, min 300×140) / active hull + repair summary with `REPAIR →` deep-linking to SHIPYARD / services rows (CONTRACTS · INSURANCE · VAULTS, §15's W3 names) / one flavour line | tile min 360×160; 2×3 rows; drop the flavour line |
+| **P19** | `ui_cancel` unwinds topmost-first in the station: INSPECT modal → drawer → LAUNCH disarm → leave confirm — **each step is one operation** (S29-F1's `game.gd:951` precedent) | ESC leaves the station directly |
+| **P20** | module cycling survives the rail: `PageUp`/`PageDown` + `JOY_BUTTON_*_SHOULDER` wrap the six panes from anywhere (§2's own bindings) | cycle only from the drawer |
+| **P21** | every pane publishes hover descriptions through the existing `inspect_requested` chain (`station.gd:518`); the sinks are N27 (hover) and N28 (explicit) — the chain is unchanged | drop the chain and describe inline |
+
+**Art budget (owner 2026-10-03).** The 2026-09-27 no-new-art gate is **lifted
+for this wave only**: "if new sprites are needed then there are credits on
+kie.ai to use." The pipeline law stands unchanged (render → cut → key →
+**review sheet → owner approval** → ship; 10 credits = $0.05 per 2K run;
+generation log beside the family; naming law `ASSET_NAMING_SPEC.md`). D19 stages
+the needs list, nothing ships before the owner approves a sheet. **Reversal:**
+re-impose the gate by ruling.
