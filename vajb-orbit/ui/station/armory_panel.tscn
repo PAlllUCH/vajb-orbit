@@ -1,11 +1,10 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://teqt0new3ru8"]
 
-[ext_resource type="Script" path="res://ui/station/armory_panel.gd" id="1_armory"]
-[ext_resource type="Texture2D" path="res://assets/icons/equip/icon_equip_module.png" id="2_pane_icon"]
+[ext_resource type="Script" uid="uid://b0l8c0v3aq4hk" path="res://ui/station/armory_panel.gd" id="1_armory"]
+[ext_resource type="Texture2D" uid="uid://cymqsfgj8muyo" path="res://assets/icons/equip/icon_equip_module.png" id="2_pane_icon"]
 
 [node name="Armory" type="VBoxContainer"]
 unique_name_in_owner = true
-layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -48,9 +47,32 @@ mouse_filter = 2
 theme_type_variation = &"StationCaption"
 text = "BATTERY RACKS AND AMMUNITION"
 
+[node name="ModeSwitch" type="HBoxContainer" parent="PaneHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 6
+
+[node name="ModeFitCells" type="Button" parent="PaneHeader/ModeSwitch"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 32)
+layout_mode = 2
+toggle_mode = true
+focus_mode = 1
+text = "FIT CELLS"
+
+[node name="ModeBatteryConfig" type="Button" parent="PaneHeader/ModeSwitch"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 32)
+layout_mode = 2
+toggle_mode = true
+focus_mode = 1
+text = "BATTERY CONFIG"
+
 [node name="PaneHint" type="Label" parent="PaneHeader"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 4
 mouse_filter = 2
 theme_type_variation = &"StationCaption"
@@ -65,81 +87,163 @@ mouse_filter = 2
 theme_type_variation = &"StationCaption"
 horizontal_alignment = 2
 
-[node name="Split" type="HBoxContainer" parent="."]
+[node name="ModeHost" type="MarginContainer" parent="."]
+unique_name_in_owner = true
+clip_contents = true
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="FitCells" type="VBoxContainer" parent="ModeHost"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="FitTop" type="HBoxContainer" parent="ModeHost/FitCells"]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="GridHalf" type="VBoxContainer" parent="Split"]
+[node name="GridBlock" type="VBoxContainer" parent="ModeHost/FitCells/FitTop"]
 layout_mode = 2
-size_flags_horizontal = 3
+size_flags_vertical = 0
 theme_override_constants/separation = 6
 
-[node name="SlotCaption" type="Label" parent="Split/GridHalf"]
+[node name="SlotCaption" type="Label" parent="ModeHost/FitCells/FitTop/GridBlock"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"SectionHeader"
 
-[node name="LayoutMargin" type="MarginContainer" parent="Split/GridHalf"]
+[node name="LayoutMargin" type="MarginContainer" parent="ModeHost/FitCells/FitTop/GridBlock"]
 layout_mode = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_right = 12
 
-[node name="LayoutBox" type="VBoxContainer" parent="Split/GridHalf/LayoutMargin"]
+[node name="LayoutBox" type="VBoxContainer" parent="ModeHost/FitCells/FitTop/GridBlock/LayoutMargin"]
 layout_mode = 2
 theme_override_constants/separation = 2
 
-[node name="SlotLayoutGrid" type="GridContainer" parent="Split/GridHalf/LayoutMargin/LayoutBox"]
+[node name="SlotLayoutGrid" type="GridContainer" parent="ModeHost/FitCells/FitTop/GridBlock/LayoutMargin/LayoutBox"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
 theme_override_constants/h_separation = 4
 theme_override_constants/v_separation = 4
 
-[node name="SelectionLine" type="Label" parent="Split/GridHalf"]
+[node name="CellInfoBlock" type="VBoxContainer" parent="ModeHost/FitCells/FitTop"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+theme_override_constants/separation = 2
+
+[node name="CellInfoCaption" type="Label" parent="ModeHost/FitCells/FitTop/CellInfoBlock"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "CELL INFO"
+
+[node name="CellInfoId" type="Label" parent="ModeHost/FitCells/FitTop/CellInfoBlock"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"StationCaption"
 
-[node name="BrowserHalf" type="VBoxContainer" parent="Split"]
-custom_minimum_size = Vector2(620, 0)
+[node name="CellInfoPower" type="Label" parent="ModeHost/FitCells/FitTop/CellInfoBlock"]
+unique_name_in_owner = true
 layout_mode = 2
+theme_type_variation = &"StationCaption"
+
+[node name="CellInfoFitted" type="Label" parent="ModeHost/FitCells/FitTop/CellInfoBlock"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+
+[node name="CellInfoLegal" type="Label" parent="ModeHost/FitCells/FitTop/CellInfoBlock"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+
+[node name="InventoryMargin" type="VBoxContainer" parent="ModeHost/FitCells"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
 theme_override_constants/separation = 6
 
-[node name="BrowserCaption" type="Label" parent="Split/BrowserHalf"]
+[node name="InventoryCaption" type="Label" parent="ModeHost/FitCells/InventoryMargin"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"SectionHeader"
-text = "MODULES · OWNED & BUYABLE"
+text = "FITS HERE"
 
-[node name="FamilyTabs" type="HBoxContainer" parent="Split/BrowserHalf"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 6
-
-[node name="BrowserScroll" type="ScrollContainer" parent="Split/BrowserHalf"]
+[node name="InventoryScroll" type="ScrollContainer" parent="ModeHost/FitCells/InventoryMargin"]
 unique_name_in_owner = true
 horizontal_scroll_mode = 0
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="BrowserRows" type="VBoxContainer" parent="Split/BrowserHalf/BrowserScroll"]
+[node name="InventoryRows" type="VBoxContainer" parent="ModeHost/FitCells/InventoryMargin/InventoryScroll"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
-[node name="BodyScroll" type="ScrollContainer" parent="."]
+[node name="BuyableBlock" type="VBoxContainer" parent="ModeHost/FitCells"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="BrowserCaption" type="Label" parent="ModeHost/FitCells/BuyableBlock"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "BUYABLE THAT FITS"
+
+[node name="FamilyTabs" type="HBoxContainer" parent="ModeHost/FitCells/BuyableBlock"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="BrowserScroll" type="ScrollContainer" parent="ModeHost/FitCells/BuyableBlock"]
 unique_name_in_owner = true
 horizontal_scroll_mode = 0
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Console" type="Control" parent="BodyScroll"]
+[node name="BrowserRows" type="VBoxContainer" parent="ModeHost/FitCells/BuyableBlock/BrowserScroll"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="BatteryConfig" type="VBoxContainer" parent="ModeHost"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="ConsoleHost" type="MarginContainer" parent="ModeHost/BatteryConfig"]
+layout_mode = 2
+size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="ConsolePlate" type="NinePatchRect" parent="BodyScroll/Console"]
+[node name="Console" type="MarginContainer" parent="ModeHost/BatteryConfig/ConsoleHost"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="ConsolePlate" type="NinePatchRect" parent="ModeHost/BatteryConfig/ConsoleHost/Console"]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -149,96 +253,120 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="RackRows" type="VBoxContainer" parent="BodyScroll/Console"]
-unique_name_in_owner = true
-layout_mode = 0
+[node name="BodyBox" type="VBoxContainer" parent="ModeHost/BatteryConfig/ConsoleHost/Console"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 mouse_filter = 2
-theme_override_constants/separation = 0
+theme_override_constants/separation = 6
 
-[node name="InventoryMargin" type="Control" parent="BodyScroll/Console"]
+[node name="RackRows" type="VBoxContainer" parent="ModeHost/BatteryConfig/ConsoleHost/Console/BodyBox"]
 unique_name_in_owner = true
-layout_mode = 0
+layout_mode = 2
+size_flags_vertical = 3
 mouse_filter = 2
+theme_override_constants/separation = 6
 
-[node name="InventoryCaption" type="Label" parent="BodyScroll/Console/InventoryMargin"]
+[node name="WellsRow" type="HBoxContainer" parent="ModeHost/BatteryConfig/ConsoleHost/Console/BodyBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 92)
+mouse_filter = 2
+theme_override_constants/separation = 32
+
+[node name="EmptyMargin" type="VBoxContainer" parent="ModeHost/BatteryConfig/ConsoleHost/Console/BodyBox/WellsRow"]
 unique_name_in_owner = true
-layout_mode = 0
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="EmptyCaption" type="Label" parent="ModeHost/BatteryConfig/ConsoleHost/Console/BodyBox/WellsRow/EmptyMargin"]
+unique_name_in_owner = true
+layout_mode = 2
 mouse_filter = 2
 theme_type_variation = &"StationCaption"
-text = "BARREL INVENTORY"
+text = "EMPTY CELLS"
 
-[node name="InventoryScroll" type="ScrollContainer" parent="BodyScroll/Console/InventoryMargin"]
+[node name="EmptyScroll" type="ScrollContainer" parent="ModeHost/BatteryConfig/ConsoleHost/Console/BodyBox/WellsRow/EmptyMargin"]
 unique_name_in_owner = true
-layout_mode = 0
+layout_mode = 2
+size_flags_vertical = 3
 horizontal_scroll_mode = 0
 vertical_scroll_mode = 2
 
-[node name="InventoryRows" type="Control" parent="BodyScroll/Console/InventoryMargin/InventoryScroll"]
+[node name="EmptyRows" type="VBoxContainer" parent="ModeHost/BatteryConfig/ConsoleHost/Console/BodyBox/WellsRow/EmptyMargin/EmptyScroll"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 0
 
-[node name="AmmoMargin" type="Control" parent="BodyScroll/Console"]
+[node name="SummaryMargin" type="VBoxContainer" parent="ModeHost/BatteryConfig/ConsoleHost/Console/BodyBox/WellsRow"]
 unique_name_in_owner = true
-layout_mode = 0
+layout_mode = 2
+size_flags_horizontal = 3
 mouse_filter = 2
+theme_override_constants/separation = 4
 
-[node name="AmmoCaption" type="Label" parent="BodyScroll/Console/AmmoMargin"]
+[node name="SummaryCaption" type="Label" parent="ModeHost/BatteryConfig/ConsoleHost/Console/BodyBox/WellsRow/SummaryMargin"]
 unique_name_in_owner = true
-layout_mode = 0
+layout_mode = 2
 mouse_filter = 2
+theme_type_variation = &"StationCaption"
+text = "BATTERY CONFIG"
+
+[node name="SummaryHint" type="Label" parent="ModeHost/BatteryConfig/ConsoleHost/Console/BodyBox/WellsRow/SummaryMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"StationCaption"
+text = "FITTED WEAPONS ONLY - DRAG BETWEEN RACKS TO REGROUP"
+
+[node name="FootBand" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 92)
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="AmmoMargin" type="VBoxContainer" parent="FootBand"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="AmmoCaption" type="Label" parent="FootBand/AmmoMargin"]
+unique_name_in_owner = true
+layout_mode = 2
 theme_type_variation = &"StationCaption"
 text = "AMMUNITION"
 
-[node name="AmmoScroll" type="ScrollContainer" parent="BodyScroll/Console/AmmoMargin"]
+[node name="AmmoScroll" type="ScrollContainer" parent="FootBand/AmmoMargin"]
 unique_name_in_owner = true
-layout_mode = 0
-horizontal_scroll_mode = 0
-vertical_scroll_mode = 2
-
-[node name="ArmoryRows" type="Control" parent="BodyScroll/Console/AmmoMargin/AmmoScroll"]
-unique_name_in_owner = true
+vertical_scroll_mode = 0
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 0
+size_flags_vertical = 3
 
-[node name="PaneFoot" type="HBoxContainer" parent="."]
-custom_minimum_size = Vector2(0, 56)
-layout_mode = 2
-theme_override_constants/separation = 16
-
-[node name="MeterLabel" type="Label" parent="PaneFoot"]
+[node name="ArmoryRows" type="HBoxContainer" parent="FootBand/AmmoMargin/AmmoScroll"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 7
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="MeterLabel" type="Label" parent="FootBand"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
 theme_type_variation = &"StationValue"
 
-[node name="ActionsRow" type="HBoxContainer" parent="PaneFoot"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_vertical = 4
-theme_override_constants/separation = 16
-
-[node name="RowSpacer" type="Control" parent="PaneFoot/ActionsRow"]
-layout_mode = 2
-size_flags_horizontal = 3
-mouse_filter = 2
-
-[node name="RemoveButton" type="Button" parent="PaneFoot/ActionsRow"]
+[node name="RemoveButton" type="Button" parent="FootBand"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(360, 56)
 layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"StationButton"
-disabled = true
-text = "REMOVE"
 
-[node name="BuyFitButton" type="Button" parent="PaneFoot/ActionsRow"]
+[node name="BuyFitButton" type="Button" parent="FootBand"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(360, 56)
 layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"StationButton"
-text = "BUY & FIT"

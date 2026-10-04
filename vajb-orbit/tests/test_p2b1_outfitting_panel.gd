@@ -520,26 +520,27 @@ func test_the_module_rows_return_as_the_p4_inventory_browser() -> void:
 	)
 	assert_eq(
 		String((panel.get_node("%InventoryCaption") as Label).text),
-		"BARREL INVENTORY - 0 OWNED",
-		"and the wells band carries their own caption"
+		"OWNED WEAPONS - 0 OWNED",
+		"S32 (STATION_HUB section 20.1 P33): FITS HERE falls back to the owned list with no cell"
 	)
 	assert_true(
-		panel.get_node_or_null("%InventoryRows") != null, "and so is the inventory list"
+		panel.get_node_or_null("%InventoryRows") != null, "and so is the FITS HERE list"
 	)
 	assert_true(panel.get_node_or_null("%BrowserRows") != null, "P4's inventory browser ships")
 	assert_true(
 		String((panel.get_node("%BrowserCaption") as Label).text)
 			== "MODULES · OWNED & BUYABLE",
-		"under P8's own caption"
+		"under P8's own caption with no cell narrowing it"
 	)
 	for constant: String in ["STATUS_FITTED", "ACTION_BUY_FIT", "BROWSER_CAPTION"]:
 		assert_true(_has_member(PanelScript, constant), "the script carries %s" % constant)
 	for method: String in ["module_row_ids", "install_module", "remove_selected"]:
 		assert_true(_has_member(PanelScript, method), "the script carries %s()" % method)
 	## The scene file itself carries the browser's caption and its rows box: the merge is
-	## in the shipped scene, not only in the script.
+	## in the shipped scene, not only in the script. S32 renamed the caption to
+	## `BUYABLE THAT FITS` (P33) while keeping the rows box.
 	var scene := FileAccess.get_file_as_string("res://ui/station/armory_panel.tscn")
-	assert_true(scene.contains("MODULES"), "the pane scene names its MODULES section")
+	assert_true(scene.contains("BUYABLE"), "the pane scene names its BUYABLE section")
 	assert_true(scene.contains("BrowserRows"), "and carries the rows box for one")
 
 

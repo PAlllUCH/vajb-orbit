@@ -952,3 +952,20 @@ is **T-129**.
 |---|------|------|-------|-------------|
 | T-127 | **LOW (S31-R1/F3): the worker-file hook's trailing-slash trap** — `VAJB_WORKER_FILES='vajb-orbit/ui,vajb-orbit/tests'` (bare dir entries) makes `enforce_worker_files.py` deny EVERY edit (`:50-54` needs a trailing slash); S31-B1's edits rode a scripted applier inside its set. | [HARNESS] | `.crush/hooks/enforce_worker_files.py` | Accept bare directory entries in the hook (or dispatch law: always trailing slashes — S32 onwards do). Reversal: none — tooling. |
 | T-128 | **LOW (S31-R1/F4 + B1): the T-118 pointer guard is not yet ported** to the remaining focus-driven tooltip sites (armory ammo cards, shipyard, launch, slot cells). | [CODE] | `ui/station/*.gd` | Ride the next pane touch / S32 (armory dies there). Reversal: none. |
+
+### S32 review block (2026-10-04)
+
+Source: wave S32 (B1 → R1 → F1). R1's verdict **blocked** on 1 HIGH — P36's
+dead-space clause against the pinned 1360×516 console rect — cured by F1 under
+the designer's bucket-2 ruling (`STATION_HUB.md` §20.1 P36's amendment: the
+console stretches full-width, the racks are full-width rows; 13 geometry rows
+re-anchored across d7/s15/s18/s10/s32, disclosed in `S32-F1_report.md`).
+Dispositions superseding earlier blocks: **T-122 CLOSED** (the dead space is
+gone), **T-128 narrowed** (armory's tooltip sites rebuilt with the pane;
+shipyard/launch/slot-cell ports remain). Gate 1099 → **1110/0** ×2. The next
+free ticket after these rows is **T-131**.
+
+| # | Item | Kind | Where | Disposition |
+|---|------|------|-------|-------------|
+| T-129 | **LOW (S32-R1/F6): `_summary_hint` is placed by raw coordinates** inside the console's hand-derived well — an A5 slip in the new summary path. | [CODE] | `ui/station/armory_panel.gd` (`_summary_hint`) | Next touch of the pane re-lays it in a container. Reversal: none — law. |
+| T-130 | **LOW (S32-R1/F5): the no-selection fallbacks** — FITS HERE shows the pane's owned-weapon list and BUYABLE the tab filter when no cell is selected (disclosed deviation; the mode is never blank). | [UI] | `ui/station/armory_panel.gd` (`_fits_here_rows`, `_browser_ids`) | Keep (never-blank) or require a selection at the next armory pass. Reversal: require selection. |

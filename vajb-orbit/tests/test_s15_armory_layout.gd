@@ -41,15 +41,20 @@ const CONSOLE_ORIGIN := Vector2(16.0, 68.0)
 const CONSOLE := Vector2(1360.0, 516.0)
 const CONSOLE_MASTER := Vector2(2720.0, 1032.0)
 const ART_SCALE := 2.0
-const BAND_ORIGIN := Vector2(16.0, 38.0)
-const BAND := Vector2(1328.0, 192.0)
-const BAY := Vector2(260.0, 192.0)
-const BAY_GAP := 7.0
-const CELL := Vector2(117.0, 52.0)
-const CELL_ORIGIN := Vector2(10.0, 34.0)
+## P36's amendment (2026-10-04, S32-F1): the console **stretches to the mode host** (1392 x
+## 447 at the pinned host) and the five racks are **full-width rows** stacked top-down; the
+## wells band is the fixed 92 px foot. These are the moved rows.
+const MODE_HOST := Vector2(1392.0, 447.0)
+const MODE_HOST_TOP := 53.0
+const RACK_BAND := Vector2(1392.0, 349.0)
+const RACK_ROW := Vector2(1392.0, 65.0)
+const RACK_GAP := 6.0
+const BAY_COLUMNS := 5
+const CELL := Vector2(221.0, 45.0)
+const CELL_ORIGIN := Vector2(210.0, 10.0)
 const CELL_GAP := 6.0
-const LEDGE_ORIGIN := Vector2(10.0, 150.0)
-const LEDGE := Vector2(240.0, 34.0)
+const LEDGE_ORIGIN := Vector2(1122.0, 0.0)
+const LEDGE := Vector2(270.0, 65.0)
 const SALVO_CELL := Vector2(18.0, 32.0)
 const SALVO_PITCH := 20.0
 ## The retired S15 plate-fit block (finding F1's cure, superseded by P3): the 4-in-a-row
@@ -211,7 +216,7 @@ func test_the_console_and_the_bays_are_the_derived_geometry() -> void:
 		style.console_rect(Rect2(Vector2.ZERO, HOST)), Rect2(CONSOLE_ORIGIN, CONSOLE),
 		"and it derives from the host rect (P6)"
 	)
-	assert_eq(panel.call(&"block_size"), CONSOLE, "the pane draws that very console")
+	assert_eq(panel.call(&"block_size"), MODE_HOST, "the console stretches to the mode host (P36)")
 	## S20's A4.1 retires the scripted master from the pane: it still ships on disk (at the
 	## pinned 2x size), but the plate's texture is cleared at build. **A5.1 (2026-09-26):**
 	## the pane's one frame is the module host's own `PanelRaised` edge - the console draws
@@ -221,7 +226,7 @@ func test_the_console_and_the_bays_are_the_derived_geometry() -> void:
 	var plate := panel.get_node("%ConsolePlate") as NinePatchRect
 	assert_true(plate != null, "the console floor node stays in the scene")
 	assert_true(plate.texture == null, "but the master is unwired from it (A4.1)")
-	assert_eq(plate.size, CONSOLE, "drawn at the console rect (actual %s)" % str(plate.size))
+	assert_eq(plate.size, MODE_HOST, "drawn at the stretched console rect (actual %s)" % str(plate.size))
 	var frame := panel.get_theme_stylebox(&"panel", &"PanelRaised") as StyleBoxTexture
 	assert_true(frame != null, "the theme's panel frame resolves (the shell's edge)")
 	if frame != null:
@@ -234,34 +239,29 @@ func test_the_console_and_the_bays_are_the_derived_geometry() -> void:
 	if chrome != null:
 		assert_eq(chrome.get(&"frame_box"), null, "no frame is drawn inside the console (A5.1)")
 	var bays: Array = panel.call(&"bay_rects")
-	assert_eq(bays.size(), RACK_COUNT, "five bays across the band")
+	assert_eq(bays.size(), RACK_COUNT, "five full-width rows (P36)")
 	for index in bays.size():
 		var want := Rect2(
-			CONSOLE_ORIGIN + BAND_ORIGIN + Vector2(float(index) * (BAY.x + BAY_GAP), 0.0), BAY
+			Vector2(0.0, MODE_HOST_TOP + float(index) * (RACK_ROW.y + RACK_GAP)), RACK_ROW
 		)
-		assert_eq(bays[index], want, "bay %d is the band's own cell (actual %s)" % [index, str(bays[index])])
-	## The P3 rack: four cells inside the bay, the ledge at the foot, the drums on it.
-	var bay := Rect2(Vector2.ZERO, BAY)
+		assert_eq(bays[index], want, "row %d is the band's own cell (actual %s)" % [index, str(bays[index])])
+	## The rack row: four cells across it, the ledge at its right, the drums on it.
+	var row := Rect2(Vector2.ZERO, RACK_ROW)
 	for index in 4:
-		var cell: Rect2 = style.bay_cell_rect(index, bay)
-		assert_true(bay.encloses(cell), "cell %d sits inside its bay (actual %s)" % [index, str(cell)])
+		var cell: Rect2 = style.bay_cell_rect(index, row)
+		assert_true(row.encloses(cell), "cell %d sits inside its row (actual %s)" % [index, str(cell)])
 		assert_eq(
 			cell,
-			Rect2(
-				CELL_ORIGIN + Vector2(
-					float(index % 2) * (CELL.x + CELL_GAP), float(index / 2) * (CELL.y + CELL_GAP)
-				),
-				CELL
-			),
-			"cell %d is the 2x2 rack's own recess" % index
+			Rect2(CELL_ORIGIN + Vector2(float(index) * (CELL.x + CELL_GAP), 0.0), CELL),
+			"cell %d is the rack row's own recess" % index
 		)
-	var ledge: Rect2 = style.ledge_rect(bay)
-	assert_eq(ledge, Rect2(LEDGE_ORIGIN, LEDGE), "the ledge is the bay's own foot band")
+	var ledge: Rect2 = style.ledge_rect(row)
+	assert_eq(ledge, Rect2(LEDGE_ORIGIN, LEDGE), "the ledge is the row's own right block")
 	for index in style.salvo_cells:
 		var drum: Rect2 = style.salvo_cell_rect(index, ledge)
 		assert_true(ledge.encloses(drum), "SALVO drum %d sits on the ledge" % index)
 		assert_eq(
-			drum, Rect2(LEDGE_ORIGIN + Vector2(float(index) * SALVO_PITCH, 1.0), SALVO_CELL),
+			drum, Rect2(LEDGE_ORIGIN + Vector2(float(index) * SALVO_PITCH, 16.5), SALVO_CELL),
 			"drum %d on the ledge's own pitch" % index
 		)
 	## --- superseded: the retired S15 4-in-a-row block ---------
@@ -279,22 +279,23 @@ func test_the_pane_draws_five_bays_across_one_band() -> void:
 	assert_eq(PanelScript.RACK_COUNT, RACK_COUNT, "the pane's rack count is the hardcap's five")
 	assert_eq(RACK_COUNT, WeaponData.GROUPS_MAX, "and it is the input map's own number")
 	var bays: Array = panel.call(&"bay_rects")
-	assert_eq(bays.size(), RACK_COUNT, "five bays, no more")
+	assert_eq(bays.size(), RACK_COUNT, "five rows, no more")
 	var style := _style()
-	assert_eq(style.bay_columns, 5, "the band's five columns")
+	assert_eq(style.bay_columns, BAY_COLUMNS, "the rack count")
 	for index in bays.size():
 		assert_eq(
-			(bays[index] as Rect2).position.y, (bays[0] as Rect2).position.y,
-			"bay %d rides the same band row as the first (actual %s)" % [index, str(bays[index])]
+			(bays[index] as Rect2).size, RACK_ROW,
+			"row %d is the band's own box (actual %s)" % [index, str(bays[index])]
 		)
 		assert_eq(
-			(bays[index] as Rect2).size, BAY,
-			"bay %d is the band's own box (actual %s)" % [index, str(bays[index])]
+			(bays[index] as Rect2).position.y,
+			MODE_HOST_TOP + float(index) * (RACK_ROW.y + RACK_GAP),
+			"row %d stacks one row-gap below the last (actual %s)" % [index, str(bays[index])]
 		)
-	var band: Rect2 = style.bays_band(Rect2(CONSOLE_ORIGIN, CONSOLE))
-	assert_eq(band.size, BAND, "the band is the console less its side margins")
+	var band: Rect2 = style.bays_band(Rect2(Vector2.ZERO, MODE_HOST))
+	assert_eq(band.size, RACK_BAND, "the band is the console less the wells band")
 	var rack_rows := _panel.get_node("%RackRows") as VBoxContainer
-	assert_eq(rack_rows.custom_minimum_size, BAND, "and the container fills it")
+	assert_eq(rack_rows.custom_minimum_size, Vector2.ZERO, "and the container shares the band")
 	for index in RACK_COUNT:
 		var row := _rack_row(index)
 		assert_eq(

@@ -2,7 +2,7 @@
 slice: S31
 phase: P3
 lane: code
-status: active
+status: done
 gate_baseline: "1093/0"
 ---
 

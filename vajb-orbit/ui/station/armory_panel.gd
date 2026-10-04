@@ -96,9 +96,62 @@ const STATUS_REMOVED := "REMOVED · %s · BACK IN INVENTORY"
 ## line). The subtitle counts the racks the pane draws (`GROUPS_MAX`, `game/weapons.gd`)
 ## and the packs the catalogue carries, so neither figure can go stale.
 const SUBTITLE := "BATTERY RACKS AND AMMUNITION - %d RACKS - %d PACKS"
+## The pane hint is per mode (STATION_HUB section 20.1 P32; the shipped line is kept for
+## FIT CELLS, the rack-regroup line for BATTERY CONFIG). Swapping the text of one fixed
+## label is a content swap in a pinned box (N31's legal set), never a layout mutation.
 const PANE_HINT := "DRAG TO FIT - RIGHT-CLICK TO PULL - 1-5 SELECT RACK"
+const PANE_HINT_FIT := "DRAG TO FIT - RIGHT-CLICK TO PULL - 1-5 SELECT RACK"
+const PANE_HINT_BATTERY := "DRAG BETWEEN RACKS TO REGROUP - 1-5 SELECT RACK"
 const TAG_LIST_PREFIX := "IDS "
 const TAG_LIST_SEPARATOR := " · "
+
+## ------------------------------------------------- the two modes (P32, STATION_HUB 20.1)
+## The ARMORY is one pane with two full-screen modes behind a two-entry switch in the
+## header band. Exactly one mode root is visible at a time and the switch is a pure
+## visibility operation (A5.5/N24: no size, no position, no in-flow rebuild).
+const MODE_FIT: StringName = &"fit"
+const MODE_BATTERY: StringName = &"battery"
+const MODE_FIT_LABEL := "FIT CELLS"
+const MODE_BATTERY_LABEL := "BATTERY CONFIG"
+## The pane's hint per mode, keyed by the mode id (the one place the swap lives).
+const MODE_HINTS: Dictionary = {
+	MODE_FIT: PANE_HINT_FIT,
+	MODE_BATTERY: PANE_HINT_BATTERY,
+}
+
+## ---------------------------------------------------- the CELL INFO block (P33, item 1)
+## The one-line SelectionLine retires into a real block: the cell's identity (id + family
+## word), its power draw, the fitted module (or EMPTY) and a proactive legality line built
+## from the pane's own refusal strings (lines above).
+const CELL_INFO_CAPTION := "CELL INFO"
+const CELL_INFO_ID := "%s%d · %s CELL"
+const CELL_INFO_POWER := "POWER DRAW %d · PWR %d / %d"
+const CELL_INFO_FITTED := "FITTED · %s"
+const CELL_INFO_FITTED_EMPTY := "EMPTY"
+const CELL_INFO_LEGAL_OK := "LEGAL · THIS CELL FITS"
+const CELL_INFO_SELECT := "SELECT A CELL FOR ITS FACTS AND ITS FITS"
+
+## --------------------------------------------------- FITS HERE / BUYABLE (P33, 2 and 3)
+## FITS HERE is the owned candidates for the selected cell (family + `fit_legal` filtered);
+## with no cell selected it falls back to the pane's own owned-weapon list, so the mode is
+## never blank. BUYABLE THAT FITS is the browser's buy side narrowed to the selected cell.
+const FITS_HERE_CAPTION := "FITS HERE - %d CANDIDATES"
+const FITS_HERE_EMPTY := "SELECT A CELL TO SEE WHAT FITS"
+const FITS_HERE_NONE := "NOTHING OWNED FITS THIS CELL"
+const OWNED_CAPTION := "OWNED WEAPONS - %d OWNED"
+const OWNED_EMPTY := "NO WEAPONS IN THE INVENTORY · BUY THEM IN THE AUCTION"
+const BUYABLE_CAPTION := "BUYABLE THAT FITS"
+const BUYABLE_CAPTION_ALL := "MODULES · OWNED & BUYABLE"
+const BUYABLE_EMPTY := "SELECT A CELL TO SEE WHAT IS BUYABLE"
+const BUYABLE_NONE := "NOTHING BUYABLE FITS THIS CELL"
+## A rack's empty hull W cell reads read-only (09 section 10's idiom): `W<n> — EMPTY`.
+const EMPTY_CELL_FORMAT := "W%d — EMPTY"
+const EMPTY_CELLS_CAPTION := "EMPTY CELLS - %d"
+## The ammunition card's own box in the shared foot band (P36): the shipped 320 x 68 pack
+## card, one per catalogue pack, riding the band's horizontal scroll.
+const AMMO_CARD := Vector2(320.0, 68.0)
+## The FITS HERE / BUYABLE row height (the browser's own 76 px auction-row idiom).
+const LIST_ROW_HEIGHT := 76.0
 
 ## The rack column (09 section 11/12): `B1..B5`, one drop zone per `weapon_1..5` key.
 const WEAPON_SLOT: StringName = &"weapons"
@@ -783,6 +836,8 @@ class ConsolePanels extends Control:
 
 
 @onready var _console: Control = %Console
+## The BATTERY CONFIG mode's host box (P32): the console stretches to it (P36).
+@onready var _mode_host: Control = %ModeHost
 ## The scene's own nine-slice slot for the console master; **its texture is cleared at
 ## build** (A4.1: the master retires from the pane).
 @onready var _plate: NinePatchRect = %ConsolePlate
@@ -790,20 +845,35 @@ class ConsolePanels extends Control:
 @onready var _subtitle: Label = %PaneSubtitle
 @onready var _hint: Label = %PaneHint
 @onready var _tag: Label = %PanelTag
+@onready var _mode_fit: Button = %ModeFitCells
+@onready var _mode_battery: Button = %ModeBatteryConfig
+@onready var _fit_cells: Control = %FitCells
+@onready var _battery_config: Control = %BatteryConfig
 @onready var _rack_rows: VBoxContainer = %RackRows
+@onready var _empty_margin: Control = %EmptyMargin
+@onready var _empty_caption: Label = %EmptyCaption
+@onready var _empty_scroll: ScrollContainer = %EmptyScroll
+@onready var _empty_rows: VBoxContainer = %EmptyRows
+@onready var _summary_margin: Control = %SummaryMargin
+@onready var _summary_caption: Label = %SummaryCaption
+@onready var _summary_hint: Label = %SummaryHint
 @onready var _inventory_margin: Control = %InventoryMargin
 @onready var _inventory_caption: Label = %InventoryCaption
 @onready var _inventory_scroll: ScrollContainer = %InventoryScroll
-@onready var _inventory_rows: Control = %InventoryRows
+@onready var _inventory_rows: VBoxContainer = %InventoryRows
 @onready var _ammo_margin: Control = %AmmoMargin
 @onready var _ammo_caption: Label = %AmmoCaption
 @onready var _ammo_scroll: ScrollContainer = %AmmoScroll
-@onready var _rows: Control = %ArmoryRows
+@onready var _rows: HBoxContainer = %ArmoryRows
 @onready var _slot_caption: Label = %SlotCaption
 @onready var _grid: GridContainer = %SlotLayoutGrid
 @onready var _meter: Label = %MeterLabel
-@onready var _line: Label = %SelectionLine
+@onready var _cell_info_id: Label = %CellInfoId
+@onready var _cell_info_power: Label = %CellInfoPower
+@onready var _cell_info_fitted: Label = %CellInfoFitted
+@onready var _cell_info_legal: Label = %CellInfoLegal
 @onready var _tabs: HBoxContainer = %FamilyTabs
+@onready var _browser_caption: Label = %BrowserCaption
 @onready var _browser_rows: VBoxContainer = %BrowserRows
 @onready var _remove_button: Button = %RemoveButton
 @onready var _buy_fit_button: Button = %BuyFitButton
@@ -852,12 +922,20 @@ var _browser_tab: StringName = &"all"
 var _browser_focused: Dictionary = {}
 var _browser_signature: Array[String] = []
 var _grid_tweens: Array[Tween] = []
+## The mode in force (P32). Exactly one of `_fit_cells` / `_battery_config` is visible.
+var _mode: StringName = MODE_FIT
+## The FITS HERE / BUYABLE signatures, so a profile or selection change rebuilds only when
+## the row set moves.
+var _fits_signature: Array[String] = []
+var _buyable_signature: Array[String] = []
 
 
 func _ready() -> void:
+	_build_modes()
 	_build_console()
 	_build_rows()
 	_build_racks()
+	_build_empty_cells()
 	_build_inventory()
 	_build_grid_surface()
 	_build_browser()
@@ -881,6 +959,52 @@ func _exit_tree() -> void:
 			tween.kill()
 
 
+## -------------------------------------------------------------- the two modes (P32)
+##
+## The two-entry switch (P2 `ActionInline` pair, UI_SPEC section 8) sits in the header band.
+## `set_mode` is a pure visibility operation (A5.5/N24): it hides the other mode root and
+## swaps the one hint label's text, never a size, a position or a tree shape.
+func _build_modes() -> void:
+	if _mode_fit != null:
+		_mode_fit.text = MODE_FIT_LABEL
+		_mode_fit.pressed.connect(set_mode.bind(MODE_FIT))
+	if _mode_battery != null:
+		_mode_battery.text = MODE_BATTERY_LABEL
+		_mode_battery.pressed.connect(set_mode.bind(MODE_BATTERY))
+	_apply_mode()
+
+
+## The mode in force, `MODE_FIT` by default.
+func mode() -> StringName:
+	return _mode
+
+
+## Switch to one of the two modes. `MODE_FIT` and `MODE_BATTERY` are the only legal values;
+## anything else is ignored. Exactly one mode root ends up visible.
+func set_mode(wanted: StringName) -> void:
+	if wanted != MODE_FIT and wanted != MODE_BATTERY:
+		return
+	if wanted == _mode:
+		return
+	_mode = wanted
+	_apply_mode()
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+
+
+func _apply_mode() -> void:
+	var fitting := _mode == MODE_FIT
+	if _fit_cells != null:
+		_fit_cells.visible = fitting
+	if _battery_config != null:
+		_battery_config.visible = not fitting
+	if _mode_fit != null:
+		_mode_fit.set_pressed_no_signal(fitting)
+	if _mode_battery != null:
+		_mode_battery.set_pressed_no_signal(not fitting)
+	if _hint != null:
+		_hint.text = String(MODE_HINTS.get(_mode, PANE_HINT_FIT))
+
+
 ## STATION_HUB section 12.4 plus 09 section 11: `&"credits"` moves every price and tag,
 ## `&"ammo"` and `&"cargo"` the held figures (an ammo purchase moves both), and the racks
 ## and the inventory follow `&"fits"` (the fit a rack's cells live in), `&"modules"` (the
@@ -892,12 +1016,14 @@ func refresh_profile(key: StringName) -> void:
 		_refresh_browser()
 	if key == &"fits" or key == &"ships" or key == &"batteries":
 		_refresh_racks()
+		_refresh_empty_cells()
 	if key == &"modules" or key == &"fits" or key == &"ships" or key == &"batteries":
 		_refresh_inventory()
 		_refresh_browser()
 	if key == &"fits" or key == &"ships" or key == &"modules":
 		_sync_grid(_active_hull(_profile()))
 		_refresh_footer()
+	_refresh_cell_info()
 
 
 ## The focus order: the racks' barrels first (rack order, each chip's own plate), then
@@ -1043,7 +1169,7 @@ func _apply_style() -> void:
 	_plate.texture = null
 	_title.text = "ARMORY"
 	_subtitle.text = SUBTITLE % [RACK_COUNT, Catalog.AMMO_PACKS.size()]
-	_hint.text = PANE_HINT
+	_hint.text = String(MODE_HINTS.get(_mode, PANE_HINT_FIT))
 	_tag.text = TAG_LIST_PREFIX + TAG_LIST_SEPARATOR.join(_id_list())
 	_apply_tokens()
 	_lay()
@@ -1056,79 +1182,72 @@ func _apply_style() -> void:
 
 
 ## P6's one layout entry for the console body (the racks band and the wells band). The
-## body rides in its own scroll window below the P4 split and lays out at the style's
-## base-host console (S29: the body moves under the merged split; its internal derivation
-## is unmoved). Safe to call before the host has a size.
+## console rides in the BATTERY CONFIG mode (P34); its internal derivation is unmoved. The
+## FITS HERE and AMMUNITION lists are containers of their own modes/foot band, laid out by
+## the container sort; only the console's own hand-derived bands are placed here. Safe to
+## P36's one layout entry: the console fills the BATTERY CONFIG mode host (its plate and its
+## body are anchored full-rect in the scene), the racks are **full-width rows** stacked by
+## their own container, and the wells band is the container's fixed-height foot. The pane
+## places only what sits *inside* a row or a well; the boxes themselves are the container's.
+## Safe to call before the host has a size.
 func _lay() -> void:
 	if _style == null or not is_node_ready():
 		return
-	var console := Rect2(Vector2.ZERO, _style.console_size_at_base())
-	_console.position = Vector2.ZERO
-	_console.size = console.size
-	_console.custom_minimum_size = console.size
-	var band: Rect2 = _style.bays_band(console)
-	_rack_rows.position = band.position
-	_rack_rows.size = band.size
-	_rack_rows.custom_minimum_size = band.size
-	_lay_half(
-		_inventory_margin, _inventory_caption, _inventory_scroll,
-		_style.well_half_rect(0, console)
-	)
-	_lay_half(
-		_ammo_margin, _ammo_caption, _ammo_scroll,
-		_style.well_half_rect(1, console)
-	)
-	## The captions read their own counts (they cannot go stale) - refreshed here, on
-	## every layout pass, so a resize and a profile change tell the same story.
-	if _inventory_caption != null:
-		_inventory_caption.text = INVENTORY_CAPTION % _inventory_views.size()
+	## The ammunition caption reads its own pack count (it cannot go stale).
 	if _ammo_caption != null:
 		_ammo_caption.text = AMMO_CAPTION % _payloads.size()
+	_flush_layout()
+	## The console rides the BATTERY CONFIG mode, which is hidden while FIT CELLS shows, and
+	## Godot does not sort a hidden container. Show it for this one layout pass (the draw
+	## happens after the frame, so nothing flickers), pin the console's own rect and its body
+	## (the pre-P36 pane set the same rect by hand), sort the console tree, then restore the
+	## mode's visibility. This keeps `block_size()`, `bay_rects()` and `well_rects()` correct
+	## in the landing mode, where the suites read them.
+	var was_hidden: bool = _battery_config != null and not _battery_config.visible
+	if was_hidden:
+		_battery_config.visible = true
+	if _mode_host != null:
+		_console.position = Vector2.ZERO
+		_console.size = _mode_host.size
+		var body := _console.get_node_or_null(^"BodyBox") as Control
+		if body != null:
+			body.position = Vector2.ZERO
+			body.size = _console.size
+	_flush_console()
+	if was_hidden:
+		_battery_config.visible = false
 	_lay_bays()
 	_lay_inventory()
 	_lay_cards()
 	_update_chrome()
-	_flush_layout()
 
 
-## The merged pane's container tree flushes its own sort here, so the synchronous pass a
-## headless suite reads (and `_settle_layout` drives) leaves every child at its laid-out
-## position before the first input lands - the pre-merge pane positioned by hand and the
-## suites read the very same frame.
-func _flush_layout() -> void:
-	var stack: Array[Node] = [self]
+## Sort the console's own body tree (the stacked rack rows and the wells band) after `_lay`
+## pinned the console rect, so every row carries its container-given box before the pane
+## places what sits inside it (a hidden mode is not sorted by the engine).
+func _flush_console() -> void:
+	var stack: Array[Node] = [_console]
 	while not stack.is_empty():
 		var node: Node = stack.pop_back()
-		if node == _console:
-			## The console body is laid out by `_lay`'s own pass (the pre-merge pane's
-			## contract: its positions are exact before any container sort), so the
-			## flush stops here rather than re-stacking the rack band.
-			continue
 		if node is Container:
 			(node as Container).notification(Container.NOTIFICATION_SORT_CHILDREN)
 		for child: Node in node.get_children():
 			stack.append(child)
 
 
-## The pane's own chrome inside the console: the title and the hint on the top line, the
-## caption and the id list on the second (all 13 px captions on the light ramp, the title
-## the theme's own 20 px).
-func _position_chrome() -> void:
-	if _style == null:
-		return
-	## The chrome sits in the host band **above** the console (the mockup's own
-	## composition): the title on the top line, the caption and the id list under it, the
-	## hint opposite the title - all clear of the bays.
-	var width: float = maxf(size.x, 0.0)
-	var top: float = _console.position.y
-	_title.position = Vector2(20.0, maxf(top - 58.0, 0.0))
-	_title.size = Vector2(240.0, 30.0)
-	_subtitle.position = Vector2(20.0, maxf(top - 28.0, 0.0))
-	_subtitle.size = Vector2(maxf(width - 460.0, 0.0), 18.0)
-	_hint.position = Vector2(maxf(width - 460.0, 0.0), maxf(top - 58.0, 0.0))
-	_hint.size = Vector2(440.0, 18.0)
-	_tag.position = Vector2(maxf(width - 460.0, 0.0), maxf(top - 28.0, 0.0))
-	_tag.size = Vector2(440.0, 18.0)
+## The merged pane's container tree flushes its own sort here, so the synchronous pass a
+## headless suite reads (and `_settle_layout` drives) leaves every child at its laid-out
+## position before the first input lands - the pre-merge pane positioned by hand and the
+## suites read the very same frame. P36: the console's own body is a container tree now
+## (the stacked rack rows and the wells band), so it sorts like every other box.
+func _flush_layout() -> void:
+	var stack: Array[Node] = [self]
+	while not stack.is_empty():
+		var node: Node = stack.pop_back()
+		if node is Container:
+			(node as Container).notification(Container.NOTIFICATION_SORT_CHILDREN)
+		for child: Node in node.get_children():
+			stack.append(child)
 
 
 ## A rect moved by an offset (Rect2 has no `- Vector2` operator).
@@ -1136,51 +1255,24 @@ static func _shift(rect: Rect2, by: Vector2) -> Rect2:
 	return Rect2(rect.position + by, rect.size)
 
 
-## One wells half: the margin is the half's own box and its scrolling grid fills it; its
-## caption sits **above** the box, on the band gap the mockup puts it on, so the item grid
-## keeps the half's whole height (the 68 px rows the design rules).
-func _lay_half(margin: Control, caption: Label, scroll: ScrollContainer, rect: Rect2) -> void:
-	if margin == null:
-		return
-	var band: float = _style.caption_band
-	margin.position = rect.position
-	margin.size = rect.size
-	margin.custom_minimum_size = Vector2.ONE
-	if caption != null:
-		caption.position = Vector2(4.0, -band)
-		caption.size = Vector2(maxf(rect.size.x - 8.0, 0.0), band)
-	if scroll == null:
-		return
-	scroll.position = Vector2.ZERO
-	scroll.size = Vector2(maxf(rect.size.x, 0.0), maxf(rect.size.y, 0.0))
+## A control's rect in the pane's own space (the suites read the pane's frame).
+func _pane_rect(control: Control) -> Rect2:
+	if control == null:
+		return Rect2()
+	return Rect2(control.get_global_rect().position - get_global_rect().position, control.size)
 
 
-## Lay the rack bays out in the five-across band. The container is a `VBoxContainer` by
-## the existing suites' own contract (`%RackRows` is cast to one and read by child index),
-## so its own stacking is corrected here on every sort - the positions are exact before
-## any layout pass, which is what lets a headless suite read them.
+## Place every rack row's own children inside the row the container gave it (the row's head
+## block, its four cells and its salvo ledge). The rows themselves are stacked full-width by
+## `%RackRows`; only what sits inside a row is the pane's to place.
 func _lay_bays() -> void:
-	if _style == null or _rack_rows == null or _console == null:
+	if _style == null or _rack_rows == null:
 		return
-	var console: Rect2 = Rect2(Vector2.ZERO, _console.size)
-	var band: Rect2 = _style.bays_band(console)
-	var index := 0
 	for child: Node in _rack_rows.get_children():
-		var control := child as Control
-		if control == null:
+		var row := child as Control
+		if row == null:
 			continue
-		var bay: Rect2 = _style.bay_rect(index, console)
-		control.position = bay.position - band.position
-		control.custom_minimum_size = Vector2.ONE
-		control.size = bay.size
-		index += 1
-	_rack_rows.custom_minimum_size = band.size
-	_rack_rows.size = _rack_rows.custom_minimum_size
-	for child: Node in _rack_rows.get_children():
-		var bay_control := child as Control
-		if bay_control == null:
-			continue
-		_position_bay(bay_control)
+		_position_bay(row)
 	_update_chrome()
 
 
@@ -1209,21 +1301,22 @@ func _position_bay(bay: Control) -> void:
 		chip.size = _style.head_chip_rect(rect).size
 
 
-## One bay's head, at the mockup's offsets: `B<n>` and its key hint at the left, the state
-## chip with its label at the right. The head's own rect is the bay's, so the offsets are
-## bay-relative; the containing box reflows its children on every sort, so the positions
-## are re-applied here each time (the suites read the labels by name).
+## One rack row's head, at the row's left: `B<n>` and its key hint beside it, the state chip
+## with its label right-aligned in the head block. The head's own rect is the row's, so the
+## offsets are row-relative; the containing box reflows its children on every sort, so the
+## positions are re-applied here each time (the suites read the labels by name).
 func _position_head(head: Control) -> void:
 	if _style == null or head == null:
 		return
 	var bay := Rect2(Vector2.ZERO, _bay_size_of(head))
+	var mid: float = maxf((bay.size.y - 18.0) * 0.5, 0.0)
 	var label := head.get_node_or_null(^"Label") as Control
 	if label != null:
-		label.position = Vector2(_style.cell_margin, (_style.bay_head - 18.0) * 0.5)
+		label.position = Vector2(_style.cell_margin, mid)
 		label.size = Vector2(40.0, 18.0)
 	var key := head.get_node_or_null(^"Key") as Control
 	if key != null:
-		key.position = Vector2(_style.cell_margin + 30.0, (_style.bay_head - 18.0) * 0.5)
+		key.position = Vector2(_style.cell_margin + 30.0, mid)
 		key.size = Vector2(36.0, 18.0)
 	var chip := head.get_node_or_null(^"Chip") as Control
 	if chip != null:
@@ -1327,61 +1420,40 @@ func _position_drop_cells(cells: Control) -> void:
 			cue.size = cell.size
 
 
-## The barrel inventory's rows, in the left half's 2x3 grid. The grid's rect is the
-## scroll's own (the panel's item rects are item-grid-local); the rows are plain `Control`s
-## so nothing re-stacks them.
+## The FITS HERE rows: one row per candidate, stacked full-width in the mode's own column
+## (P37). The rows are `Button`s whose children the pane places by hand from the row's own
+## allocated rect; the container places the rows themselves.
 func _lay_inventory() -> void:
-	if _style == null or _inventory_rows == null or _inventory_scroll == null:
+	if _inventory_rows == null:
 		return
-	var grid := Rect2(Vector2.ZERO, _inventory_scroll.size)
-	var index := 0
 	for child: Node in _inventory_rows.get_children():
 		var control := child as Control
 		if control == null:
 			continue
-		var rect: Rect2 = _style.item_rect(index, grid)
-		control.position = rect.position
-		control.custom_minimum_size = Vector2.ONE
-		control.size = rect.size
-		_position_inventory_item(control, rect)
-		index += 1
-	## Only the content height is declared: the grid's width is the scroll's viewport (a
-	## declared width would feed the scroll's own minimum back into itself).
-	_inventory_rows.custom_minimum_size = Vector2(0.0, _grid_content_height(index, grid))
-	_inventory_rows.size = Vector2(grid.size.x, _grid_content_height(index, grid))
+		_position_inventory_item(control, Rect2(Vector2.ZERO, control.size))
 
 
-## The ammunition cards' grid in the right half, the same 2x3.
+## The AMMUNITION cards: one horizontal row inside the foot band's own scroll (P36), each
+## card the pinned 320 x 68. The container places the cards; the pane places each card's
+## children.
 func _lay_cards() -> void:
-	if _style == null or _rows == null or _ammo_scroll == null:
+	if _rows == null:
 		return
-	var grid := Rect2(Vector2.ZERO, _ammo_scroll.size)
-	var index := 0
 	for child: Node in _rows.get_children():
 		var control := child as Control
 		if control == null:
 			continue
-		var rect: Rect2 = _style.item_rect(index, grid)
-		control.position = rect.position
-		control.custom_minimum_size = Vector2.ONE
-		control.size = rect.size
-		_position_card(control, rect)
-		index += 1
-	_rows.custom_minimum_size = Vector2(0.0, _grid_content_height(index, grid))
-	_rows.size = Vector2(grid.size.x, _grid_content_height(index, grid))
+		_position_card(control, Rect2(Vector2.ZERO, control.size))
 
 
-## A grid's own content height: `count` items on the visible row height, so a grid that
-## outgrows its half drives the scroll instead of clipping (the item height derives from
-## the visible rows, not the item count).
-func _grid_content_height(count: int, grid: Rect2) -> float:
-	if count <= 0 or _style == null:
-		return grid.size.y
-	var columns: int = maxi(_style.item_columns, 1)
-	var rows: int = int(ceil(float(count) / float(columns)))
-	var visible: int = maxi(_style.item_rows, 1)
-	var row_h: float = (grid.size.y - float(visible - 1) * _style.item_gap) / float(visible)
-	return float(rows) * row_h + float(maxi(rows - 1, 0)) * _style.item_gap
+## A row's own re-position on its container's resize, so a widened window moves the row's
+## children with it (the container owns the box, the pane owns what sits inside it).
+func _on_inventory_resized(row: Control) -> void:
+	_position_inventory_item(row, Rect2(Vector2.ZERO, row.size))
+
+
+func _on_card_resized(card: Control) -> void:
+	_position_card(card, Rect2(Vector2.ZERO, card.size))
 
 
 ## One inventory row's own children: the icon, the name and the OWNED figure, plus the
@@ -1576,6 +1648,10 @@ func _build_card(pack: Dictionary) -> Dictionary:
 	card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	card.disabled = not complete
 	card.clip_contents = true
+	## The foot band's own card box (P36): the 320 x 68 pack card, one per catalogue pack,
+	## riding the band's horizontal scroll. The card's children are placed from this box.
+	card.custom_minimum_size = Vector2(AMMO_CARD.x, AMMO_CARD.y)
+	card.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	var frame := RowPlate.new()
 	frame.name = "RowPlate"
 	card.add_child(frame)
@@ -1668,7 +1744,8 @@ func _build_card(pack: Dictionary) -> Dictionary:
 	_rows.add_child(card)
 	frame.configure(_style)
 	status.configure(_style, false, false)
-	_position_card(card, Rect2(Vector2.ZERO, Vector2(320.0, 68.0)))
+	_position_card(card, Rect2(Vector2.ZERO, AMMO_CARD))
+	card.resized.connect(_on_card_resized.bind(card))
 	return payload
 
 
@@ -1926,6 +2003,88 @@ func _build_inventory() -> void:
 	_refresh_inventory()
 
 
+func _build_empty_cells() -> void:
+	_refresh_empty_cells()
+
+
+## BATTERY CONFIG's read-only empty-cell list (P34, 09 section 10's idiom): one
+## `W<n> — EMPTY` line per hull W cell that holds no weapon. The racks above carry the
+## fitted weapons; this list carries the cells no rack reaches.
+func _refresh_empty_cells() -> void:
+	if _empty_rows == null:
+		return
+	_clear(_empty_rows)
+	var profile := _profile()
+	var cells := _weapon_cells(profile) if profile != null else []
+	var count := 0
+	for index in cells.size():
+		if StringName(String(cells[index])) != &"":
+			continue
+		var line := _make_caption(EMPTY_CELL_FORMAT % (index + 1), ROLE_CAPTION)
+		line.name = "Empty%d" % (index + 1)
+		line.custom_minimum_size = Vector2(0.0, 22.0)
+		_empty_rows.add_child(line)
+		count += 1
+	if _empty_caption != null:
+		_empty_caption.text = EMPTY_CELLS_CAPTION % count
+
+
+## The CELL INFO block (P33, item 1): the selected cell's identity (id + family), its power
+## draw, the fitted module (or EMPTY) and a proactive legality line built from the pane's
+## own refusal strings. The block reads its select prompt with no selection.
+func _refresh_cell_info() -> void:
+	if _cell_info_id == null:
+		return
+	if _selected.is_empty():
+		_cell_info_id.text = CELL_INFO_SELECT
+		_cell_info_power.text = ""
+		_cell_info_fitted.text = ""
+		_cell_info_legal.text = ""
+		return
+	var profile := _profile()
+	var hull := _active_hull(profile)
+	var fit := _resolved_fit(profile, hull)
+	var slot_key: StringName = _selected[&"type"]
+	var index := int(_selected[&"index"])
+	var entry := _cell_module(fit, slot_key, index)
+	var base := _base_id(profile, entry)
+	_cell_info_id.text = CELL_INFO_ID % [
+		String(_selected[&"token"]), index + 1, _slot_word(slot_key)
+	]
+	var power := _power_of(profile, hull, fit)
+	var cell_draw := int(ModuleData.module(base).get(&"draw", 0)) if base != &"" else 0
+	_cell_info_power.text = CELL_INFO_POWER % [
+		cell_draw, int(power.get(&"draw", 0)), int(power.get(&"out", 0))
+	]
+	_cell_info_fitted.text = (
+		CELL_INFO_FITTED_EMPTY if entry == &"" else CELL_INFO_FITTED % _module_name(base)
+	)
+	var legal := _cell_legality(profile, hull, fit, slot_key, index)
+	_cell_info_legal.text = legal
+	_cell_info_legal.add_theme_color_override(
+		&"font_color",
+		_token(ROLE_CAPTION if legal == CELL_INFO_LEGAL_OK else ROLE_DANGER_BRIGHT)
+	)
+
+
+## The selected cell's proactive legality hint (P33): the mandatory refusal for a mandatory
+## cell, the read candidate's own refusal when one is being read, else the current fit's
+## legality - every wording is a pinned refusal string, never a second vocabulary.
+func _cell_legality(
+	profile: ProfileScript, hull: StringName, fit: Dictionary,
+	slot_key: StringName, index: int
+) -> String:
+	if ShipFit.MANDATORY_SLOT_KEYS.has(slot_key):
+		return REFUSAL_MANDATORY
+	if _candidate != &"" and _candidate_slot(profile, _candidate) == slot_key:
+		var refusal := _cell_refusal(profile, hull, index, _candidate)
+		return refusal if not refusal.is_empty() else CELL_INFO_LEGAL_OK
+	var legal := ShipFit.fit_legal(hull, _base_fit(profile, fit))
+	if bool(legal.get(&"legal", true)):
+		return CELL_INFO_LEGAL_OK
+	return _fit_refusal(legal)
+
+
 ## Release one container's children at the end of the frame: the plate whose own
 ## `_drop_data` (or `pressed`) started the write that triggered this refresh is still on
 ## the stack, so it may not be freed under it (CONTRACTS section 16 rule 10's hazard,
@@ -1966,6 +2125,11 @@ func _build_rack(rack: int, refs: Array, cells: Array) -> Dictionary:
 	row.rack = rack
 	row.mouse_filter = Control.MOUSE_FILTER_STOP
 	row.clip_contents = false
+	## P36: the racks are full-width rows - the container stacks them and gives each one the
+	## whole console width (relative sizing, never a hand-placed rect).
+	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	row.custom_minimum_size = Vector2(0.0, _style.rack_row_height if _style != null else 56.0)
 	row.add_theme_stylebox_override(&"panel", StyleBoxEmpty.new())
 	var box := PanelContainer.new()
 	box.name = "Box"
@@ -2242,22 +2406,75 @@ func _salvo_figure(cycle: float) -> int:
 	return clampi(int(round(cycle * 100.0)), 0, SALVO_MAX)
 
 
-## The inventory: one row per owned weapon id, in catalogue order, each one a drag
-## source. `OWNED ×n` is `PlayerProfile.instances_of(base_id)` - the number of cells one
-## install can pair - which is the same figure S4's strip showed.
+## The FITS HERE list (P33): the owned candidates for the selected cell - the module's
+## catalogue slot matches the cell's family and `ShipFit.fit_legal` accepts the candidate
+## (the same `_cell_refusal` the fit flow judges with). With no cell selected the list falls
+## back to the pane's own owned-weapon list, so the mode is never blank and the shipped
+## inventory read-back (`inventory_rows()`) is unchanged.
 func _refresh_inventory() -> void:
 	_clear(_inventory_rows)
 	_inventory_views.clear()
-	var rows := inventory_rows()
+	var rows := _fits_here_rows()
 	if rows.is_empty():
-		var empty := _make_caption(INVENTORY_EMPTY)
+		var empty := _make_caption(_fits_empty_text())
 		empty.name = "Empty"
 		_inventory_rows.add_child(empty)
-		_lay()
-		return
-	for entry: Dictionary in rows:
-		_build_inventory_row(entry)
+	else:
+		for entry: Dictionary in rows:
+			_build_inventory_row(entry)
+	if _inventory_caption != null:
+		_inventory_caption.text = _fits_caption(rows.size())
 	_lay()
+
+
+## The FITS HERE candidates: the owned modules that can slot in the selected cell (family +
+## `fit_legal`), or the owned-weapon list when no cell is selected. Public so a probe reads
+## the same list the pane draws.
+func fits_here_rows() -> Array[Dictionary]:
+	return _fits_here_rows()
+
+
+## The FITS HERE candidates: the owned modules that can slot in the selected cell (family +
+## `fit_legal`), or the owned-weapon list when no cell is selected.
+func _fits_here_rows() -> Array[Dictionary]:
+	if _selected.is_empty():
+		return inventory_rows()
+	var profile := _profile()
+	if profile == null:
+		return []
+	var hull := _active_hull(profile)
+	var slot_key: StringName = _selected[&"type"]
+	var index := int(_selected[&"index"])
+	var rows: Array[Dictionary] = []
+	for key: Variant in ModuleData.MODULES:
+		var base_id := StringName(str(key))
+		if _slot_key_of(base_id) != slot_key:
+			continue
+		var owned := _owned_total(profile, base_id)
+		if owned <= 0:
+			continue
+		if not _cell_refusal(profile, hull, index, base_id).is_empty():
+			continue
+		rows.append({
+			&"base": base_id,
+			&"name": _module_name(base_id),
+			&"owned": owned,
+			&"draw": int(ModuleData.module(base_id).get(&"draw", 0)),
+		})
+	return rows
+
+
+## The FITS HERE caption: the candidate count for a selected cell, the owned count otherwise.
+func _fits_caption(count: int) -> String:
+	if _selected.is_empty():
+		return OWNED_CAPTION % count
+	return FITS_HERE_CAPTION % count
+
+
+func _fits_empty_text() -> String:
+	if _selected.is_empty():
+		return OWNED_EMPTY
+	return FITS_HERE_NONE
 
 
 func _build_inventory_row(entry: Dictionary) -> Dictionary:
@@ -2268,7 +2485,8 @@ func _build_inventory_row(entry: Dictionary) -> Dictionary:
 	row.base_id = base_id
 	row.focus_mode = Control.FOCUS_ALL
 	row.clip_contents = true
-	row.custom_minimum_size = Vector2.ONE
+	row.custom_minimum_size = Vector2(0.0, LIST_ROW_HEIGHT)
+	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	var frame := RowPlate.new()
 	frame.name = "RowPlate"
@@ -2312,10 +2530,22 @@ func _build_inventory_row(entry: Dictionary) -> Dictionary:
 	row.focus_entered.connect(_on_inventory_focused.bind(base_id, String(entry[&"name"])))
 	row.mouse_entered.connect(_on_inventory_inspected.bind(base_id, String(entry[&"name"]), true))
 	row.mouse_exited.connect(_on_inventory_inspected.bind(base_id, String(entry[&"name"]), false))
+	row.pressed.connect(_on_fits_here_pressed.bind(base_id))
 	_inventory_rows.add_child(row)
+	row.resized.connect(_on_inventory_resized.bind(row))
 	_refresh_inventory_row(view)
 	_inventory_views.append(view)
 	return view
+
+
+## Select-to-fit (P33): a FITS HERE row's press fits the held instance into the selected
+## cell (the same composed flow the browser row uses). With no cell selected the press is
+## inert - the fallback owned list is a browse surface, not a fit flow.
+func _on_fits_here_pressed(base_id: StringName) -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	if _selected.is_empty():
+		return
+	_flow_row_into_cell({&"base": base_id, &"owned": true, &"price": 0})
 
 
 ## One inventory row's own figure (the bag's pairing count) and its ink.
@@ -2412,38 +2642,29 @@ func bay_marks(rack: int) -> BayMarks:
 	return _rack_views[rack][&"marks"]
 
 
-## Every bay's rect as drawn (the five-across band, in the console's own space).
+## Every rack row's rect as drawn (P36: the full-width rows stacked top-down), in the
+## pane's own space. The rows follow the console, which follows the mode host.
 func bay_rects() -> Array[Rect2]:
 	var out: Array[Rect2] = []
-	if _style == null:
-		return out
-	var console := _base_console_rect()
-	for index in _rack_views.size():
-		out.append(_style.bay_rect(index, console))
+	for view: Dictionary in _rack_views:
+		var row := view.get(&"row") as Control
+		if row != null:
+			out.append(_pane_rect(row))
 	return out
 
 
-## The wells band's two halves as drawn.
+## The wells band's two halves as drawn (the read-only empty-cell list left, the mode's own
+## summary right), in the pane's own space.
 func well_rects() -> Array[Rect2]:
 	var out: Array[Rect2] = []
-	if _style == null:
-		return out
-	var console := _base_console_rect()
-	out.append(_style.well_half_rect(0, console))
-	out.append(_style.well_half_rect(1, console))
+	for margin: Control in [_empty_margin, _summary_margin]:
+		if margin != null:
+			out.append(_pane_rect(margin))
 	return out
 
 
-## The body's own derivation space: the style's base-host console (P6's derivation at the
-## pinned host), which is the rectangle `_lay` draws the body's internals against. The
-## body's placement in the merged pane moved under the P4 split; its internal law did not.
-func _base_console_rect() -> Rect2:
-	if _style == null:
-		return Rect2()
-	return _style.console_rect(Rect2(Vector2.ZERO, _style.host_base))
-
-
-## The console's own size as drawn.
+## The console's own size as drawn (P36: the console stretches to the mode host, so this is
+## the host's own body box rather than the retired 1360x516 base).
 func block_size() -> Vector2:
 	return _console.size
 
@@ -2892,10 +3113,12 @@ func _module_name(module_id: StringName) -> String:
 func _refresh_all() -> void:
 	_refresh_rows()
 	_refresh_racks()
+	_refresh_empty_cells()
 	_refresh_inventory()
 	_sync_grid(_active_hull(_profile()))
 	_refresh_browser()
 	_refresh_footer()
+	_refresh_cell_info()
 
 
 func _profile() -> ProfileScript:
@@ -3189,6 +3412,9 @@ func _select(payload: Dictionary, clicked: bool) -> void:
 	_line_danger = false
 	_apply_cell_selection()
 	_refresh_footer()
+	_refresh_inventory()
+	_refresh_browser()
+	_refresh_cell_info()
 
 
 func _on_cell_pressed(payload: Dictionary) -> void:
@@ -3219,6 +3445,9 @@ func clear_selection() -> void:
 	_line_danger = false
 	_apply_cell_selection()
 	_refresh_footer()
+	_refresh_inventory()
+	_refresh_browser()
+	_refresh_cell_info()
 
 
 ## The cell the pane has selected, `{type, token, index}`, or `{}` when nothing is.
@@ -3237,9 +3466,10 @@ func meter_text() -> String:
 	return _meter.text
 
 
-## The selection line's text, read back for probes and tests.
+## The CELL INFO identity line's text, read back for probes and tests (P33: the one-line
+## SelectionLine's replacement).
 func footer_text() -> String:
-	return _line.text
+	return _cell_info_id.text
 
 
 ## The browser's row ids in render order, read back for probes and tests.
@@ -3286,10 +3516,6 @@ func _refresh_footer() -> void:
 		_meter.add_theme_color_override(&"font_color", _token(&"accent_danger"))
 	else:
 		_meter.remove_theme_color_override(&"font_color")
-	if not _line_override.is_empty():
-		_line.text = _line_override
-	else:
-		_line.text = _selection_line(profile, fit)
 	_remove_button.disabled = not can_remove()
 	_buy_fit_button.text = (
 		ACTION_BUY_FIT_SELECTED if not _selected.is_empty() else ACTION_BUY_FIT
@@ -3341,17 +3567,8 @@ func _power_of(profile: ProfileScript, hull: StringName, fit: Dictionary) -> Dic
 	return ShipFit.fit_legal(hull, _base_fit(profile, fit)).get(&"power", {})
 
 
-## The selected cell's line, `<TYPE><n> · <MODULE NAME or EMPTY> · OWNED ×<n>` (the
-## fitting surface's own format), or `SELECT A CELL` with no selection - the line is never
-## blank (the pin's own rule).
-func _selection_line(profile: ProfileScript, fit: Dictionary) -> String:
-	if _selected.is_empty():
-		return ACTION_SELECT
-	return cell_line(_selected, profile, fit)
-
-
-## One cell's own naming line - the footer's selection line and the cell tooltip (A7)
-## share it, so the two can never describe two different cells.
+## One cell's own naming line - the CELL INFO block and the cell tooltip (A7) share it, so
+## the two can never describe two different cells. (`cell_tooltip` is kept as the A7 seam.)
 func cell_line(cell: Dictionary, profile: ProfileScript, fit: Dictionary) -> String:
 	var slot_key: StringName = cell[&"type"]
 	var index := int(cell[&"index"])
@@ -3623,30 +3840,38 @@ func _drag_payload_of(data: Variant) -> Dictionary:
 	return {}
 
 
-## A browser payload may land on any cell (so a wrong-slot drop can refuse itself with
-## words and a flash rather than a silent no); anything else is not this surface's.
+## A browser row's drag and a FITS HERE row's own inventory drag both land on a grid cell
+## (P33: drag-to-fit from the list); anything else is not this surface's.
 func cell_can_drop(cell: Dictionary, data: Variant) -> bool:
-	return not _drag_payload_of(data).is_empty()
+	return not _drag_payload_of(data).is_empty() or not _payload_of(data).is_empty()
 
 
 ## A drop on one grid cell: a legal family fits (or buys-then-fits) the entry; a wrong-slot
 ## drop is refused by two signals together, never a colour alone (P9/P10): the shell's
 ## status line and the cell's own slot caption flashing 0.5 s.
 func cell_drop(cell: Dictionary, data: Variant) -> void:
-	var payload := _drag_payload_of(data)
-	if payload.is_empty():
-		return
-	var base: StringName = payload.get(DRAG_KEY_BASE, &"")
 	var slot_key: StringName = cell.get(&"type", &"")
-	if _slot_key_of(base) != slot_key:
-		_refuse_drop(base, slot_key, cell)
+	var index := int(cell.get(&"index", -1))
+	var browser := _drag_payload_of(data)
+	if not browser.is_empty():
+		var base: StringName = browser.get(DRAG_KEY_BASE, &"")
+		if _slot_key_of(base) != slot_key:
+			_refuse_drop(base, slot_key, cell)
+			return
+		_fit_entry_at(
+			browser.get(DRAG_KEY_ENTRY, base), slot_key, index,
+			not bool(browser.get(DRAG_KEY_OWNED, false)),
+			int(browser.get(DRAG_KEY_PRICE, 0))
+		)
 		return
-	var entry: StringName = payload.get(DRAG_KEY_ENTRY, base)
-	var owned := bool(payload.get(DRAG_KEY_OWNED, false))
-	_fit_entry_at(
-		entry, slot_key, int(cell.get(&"index", -1)), not owned,
-		int(payload.get(DRAG_KEY_PRICE, 0))
-	)
+	var inv := _payload_of(data)
+	if String(inv.get(DRAG_KEY_KIND, "")) != String(DRAG_INVENTORY):
+		return
+	var base_id: StringName = inv.get(DRAG_KEY_BASE, &"")
+	if _slot_key_of(base_id) != slot_key:
+		_refuse_drop(base_id, slot_key, cell)
+		return
+	_fit_entry_at(_row_entry(_profile(), base_id), slot_key, index, false, 0)
 
 
 ## The wrong-slot refusal: P9's line in the shell's status strip and P10's 0.5 s slot
@@ -3701,20 +3926,29 @@ func _on_tab_pressed(tab_id: StringName) -> void:
 	_apply_tab_states()
 
 
-## The browser's row ids: every catalogue module the tab keeps (buyable rows) plus the
-## fit's own lost entries (`fitting_panel.gd`'s L124 law - a fitted instance whose record
-## is gone still renders one row), in catalogue order.
+## The BUYABLE THAT FITS rows: every catalogue module the tab keeps, narrowed to the
+## selected cell's family and `fit_legal` when one is selected (P33), plus the fit's own
+## lost entries (`fitting_panel.gd`'s L124 law - a fitted instance whose record is gone
+## still renders one row) when no cell narrows it.
 func _browser_ids(profile: ProfileScript) -> Array[StringName]:
 	var ids: Array[StringName] = []
 	var wanted := &""
 	for tab: Dictionary in BROWSER_TABS:
 		if tab[&"id"] == _browser_tab:
 			wanted = StringName(tab[&"slot"])
+	var cell_slot := StringName(_selected[&"type"]) if not _selected.is_empty() else &""
+	var hull := _active_hull(profile)
+	var index := int(_selected[&"index"]) if not _selected.is_empty() else -1
 	for module_id: StringName in ModuleData.MODULES:
 		if wanted != &"" and ModuleData.slot_of(module_id) != wanted:
 			continue
+		if cell_slot != &"":
+			if _slot_key_of(module_id) != cell_slot:
+				continue
+			if not _cell_refusal(profile, hull, index, module_id).is_empty():
+				continue
 		ids.append(module_id)
-	if wanted == &"":
+	if wanted == &"" and cell_slot == &"":
 		for entry: StringName in _lost_entries(profile):
 			ids.append(entry)
 	return ids
@@ -3746,7 +3980,13 @@ func _refresh_browser() -> void:
 	var profile := _profile()
 	_apply_tab_states()
 	var ids := _browser_ids(profile)
+	if _browser_caption != null:
+		_browser_caption.text = (
+			BUYABLE_CAPTION if not _selected.is_empty() else BUYABLE_CAPTION_ALL
+		)
 	var signature: Array[String] = []
+	if not _selected.is_empty():
+		signature.append("cell:%s:%d" % [String(_selected[&"type"]), int(_selected[&"index"])])
 	for module_id: StringName in ids:
 		signature.append(String(module_id) + "|" + str(_owned_total(profile, module_id)))
 	if signature != _browser_signature:
@@ -3762,6 +4002,11 @@ func _build_browser_rows(ids: Array[StringName], profile: ProfileScript) -> void
 	for child: Node in _browser_rows.get_children():
 		_browser_rows.remove_child(child)
 		child.queue_free()
+	if ids.is_empty():
+		var empty := _make_caption(BUYABLE_NONE if not _selected.is_empty() else BUYABLE_EMPTY)
+		empty.name = "Empty"
+		_browser_rows.add_child(empty)
+		return
 	for module_id: StringName in ids:
 		_browser_payloads.append(_build_browser_row(module_id, profile))
 
@@ -3920,6 +4165,7 @@ func _on_browser_focused(row: Button, payload: Dictionary) -> void:
 	var profile := _profile()
 	_candidate = _row_entry(profile, StringName(payload[&"base"]))
 	_refresh_footer()
+	_refresh_cell_info()
 	## T-118: the hover popup is the pointer's sink - a keyboard focus (Tab) must not pop it
 	## at the OS cursor.
 	if _pointer_over(row):
@@ -3943,6 +4189,7 @@ func _on_browser_hovered(payload: Dictionary, hovered: bool) -> void:
 	var profile := _profile()
 	_candidate = _row_entry(profile, StringName(payload[&"base"])) if hovered else &""
 	_refresh_footer()
+	_refresh_cell_info()
 	_inspect_browser(payload, hovered)
 
 

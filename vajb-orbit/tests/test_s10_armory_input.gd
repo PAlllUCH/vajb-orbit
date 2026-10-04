@@ -128,6 +128,10 @@ func setup() -> void:
 	_host.add_child(_panel)
 	_profile.connect(&"profile_changed", Callable(_panel, &"refresh_profile"))
 	_panel.connect(&"status_requested", _on_status)
+	## S32 (STATION_HUB section 20.1 P32/P34): the racks are the BATTERY CONFIG mode's own
+	## content, so this suite - which drives the racks through real mouse input - enters that
+	## mode. FIT CELLS is the pane's landing mode.
+	_panel.call(&"set_mode", PanelScript.MODE_BATTERY)
 	_mount_canary()
 	_run_canary()
 
@@ -261,9 +265,13 @@ func _block_centre(rack: int, position: int) -> Vector2:
 	)
 
 
+## A point on a rack row that is **not** one of its cells: the head block's own top-left
+## corner (the `B<n>` strip), where the row control is the topmost hit target. P36 makes the
+## racks full-width rows, so their geometric centre now falls on a cell.
 func _bay_centre(rack: int) -> Vector2:
 	var views: Array = _panel.get("_rack_views")
-	return _centre(views[rack][&"row"] as Control)
+	var row := views[rack][&"row"] as Control
+	return row.global_position + Vector2(5.0, 5.0)
 
 
 ## The pane's own layout pass, as the frame after the build makes it: a box container's sort
@@ -379,11 +387,11 @@ func _delete_file(path: String) -> void:
 func test_a_real_named_plate_drag_commits_the_swap() -> void:
 	_three_barrel_rack()
 	_settle_layout()
-	## Unlisted in 09 section 12's moved rows but forced by S15's plate-fit correction:
-	## the chip is the drawn slot, and the slot moved onto the plate's own ink (34 x 40).
+	## Unlisted in 09 section 12's moved rows but forced by S15's plate-fit correction and
+	## re-anchored by P36 (the racks are full-width rows now, so the cell is 221 x 45).
 	assert_eq(
-		_chip(0, 0).size, Vector2(117.0, 52.0),
-		"the chip keeps its slot recess (the P3 2x2 cell at the pinned host; actual %s)"
+		_chip(0, 0).size, Vector2(221.0, 45.0),
+		"the chip keeps its slot recess (the rack row's cell at the pinned host; actual %s)"
 			% str(_chip(0, 0).size)
 	)
 	_hover(_name_centre(0, 2))
@@ -491,7 +499,7 @@ func test_a_bay_click_and_the_keys_move_the_selection() -> void:
 	assert_eq(_selected(), 0, "B1 wears the frame by default")
 	var at := _bay_centre(2)
 	_hover(at)
-	assert_eq(_hovered_name(), "Rack3", "the bay itself owns its centre")
+	assert_eq(_hovered_name(), "Rack3", "the rack card itself owns its head block")
 	_click(at)
 	assert_eq(_selected(), 2, "a real click moves the selection to B3")
 	assert_true(_marked(2), "and B3 wears the ember frame")

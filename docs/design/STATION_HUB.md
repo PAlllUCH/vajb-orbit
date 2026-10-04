@@ -1905,4 +1905,11 @@ slowest member's cooldown, volley strum 0–40 ms).
 
 P32–P37 are PROPOSED at the values above with their reversal column; they
 implement the owner's note 2 and the T-125/T-126 defaults verbatim. UI_SPEC
-§11.1 A5.5/N24 govern the mode switch and every hover state.
+§11.1 A5.5/N24 govern the mode switch and every hover state. **P36 amended
+2026-10-04 (designer ruling at S32-R1/F1, escalation bucket 2): the BATTERY
+CONFIG console stretches to the mode's full width** (the racks become
+full-width rows; containers + relative sizing per UI_SPEC §3.10 A5, never
+coordinates) — T-122's dead space dies for real, and the
+d7/s15/s18/s20 `block_size()`/`bay_rects()`/`well_rects()` rows re-anchor to
+the new geometry as disclosed moved rows. Reversal: R1's option (a) — the
+1360×516 console centred in the mode host with the old rect rows restored.

@@ -2,7 +2,7 @@
 slice: S32
 phase: P3
 lane: code
-status: active
+status: done
 gate_baseline: "TBD — S31's close count (started 1093/0)"
 ---
 

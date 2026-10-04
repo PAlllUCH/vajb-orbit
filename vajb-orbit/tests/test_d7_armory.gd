@@ -66,26 +66,32 @@ const CONSOLE := Vector2(1360.0, 516.0)
 const CONSOLE_MASTER := Vector2(2720.0, 1032.0)
 const CONSOLE_ORIGIN := Vector2(16.0, 68.0)
 const CONSOLE_INSET := Vector4(16.0, 68.0, 16.0, 26.0)
-const BAND_ORIGIN := Vector2(16.0, 38.0)
-const BAND_HEIGHT := 192.0
-const BAND_WIDTH := 1328.0
-const BAY := Vector2(260.0, 192.0)
-const BAY_GAP := 7.0
+## P36's amendment (2026-10-04, S32-F1): the console **stretches to the mode host** (1392 x
+## 447 at the pinned host) and the five racks are **full-width rows** stacked top-down; the
+## wells band is the fixed 92 px foot. These are the moved rows.
+const MODE_HOST := Vector2(1392.0, 447.0)
+const MODE_HOST_TOP := 53.0
+const RACK_BAND := Vector2(1392.0, 349.0)
+const RACK_ROW := Vector2(1392.0, 65.0)
+const RACK_GAP := 6.0
+const RACK_HEAD_WIDTH := 200.0
+const RACK_SALVO_WIDTH := 270.0
 const BAY_COLUMNS := 5
-## The P3 2x2 rack: a 117 x 52 cell at (10, 34), 6 apart, inside the bay.
-const CELL := Vector2(117.0, 52.0)
-const CELL_ORIGIN := Vector2(10.0, 34.0)
+## One rack row's four cells: a 221 x 45 cell at (210, 10), 6 apart, inside the row.
+const CELL := Vector2(221.0, 45.0)
+const CELL_ORIGIN := Vector2(210.0, 10.0)
 const CELL_GAP := 6.0
-## The salvo ledge at the bay's foot and the three 18 x 32 drum cells on a 20 pitch.
-const LEDGE_ORIGIN := Vector2(10.0, 150.0)
-const LEDGE := Vector2(240.0, 34.0)
+## The salvo ledge at the row's right and the four 18 x 32 drum cells on a 20 pitch.
+const LEDGE_ORIGIN := Vector2(1122.0, 0.0)
+const LEDGE := Vector2(270.0, 65.0)
 const SALVO_CELL := Vector2(18.0, 32.0)
 const SALVO_PITCH := 20.0
-const SALVO_CAPTION_ORIGIN := Vector2(78.0, 11.0)
-## The wells band's two halves (barrel inventory left, ammunition right), in the pane's
-## own space (the console inset added).
-const WELL_LEFT := Rect2(CONSOLE_ORIGIN + Vector2(16.0, 286.0), Vector2(648.0, 220.0))
-const WELL_RIGHT := Rect2(CONSOLE_ORIGIN + Vector2(696.0, 286.0), Vector2(648.0, 220.0))
+const SALVO_CAPTION_ORIGIN := Vector2(78.0, 26.5)
+## The wells band's two halves (the read-only empty cells left, the mode's summary right),
+## in the pane's own space.
+const WELL := Vector2(680.0, 92.0)
+const WELL_LEFT := Rect2(Vector2(0.0, 408.0), WELL)
+const WELL_RIGHT := Rect2(Vector2(712.0, 408.0), WELL)
 ## One well item (an inventory row / a pack card) at the base host.
 const ITEM := Vector2(320.0, 68.0)
 const RACK_COUNT := 5
@@ -321,7 +327,7 @@ func test_the_pane_mounts_on_the_painted_console_plate() -> void:
 		style.console_rect(Rect2(Vector2.ZERO, HOST)), Rect2(CONSOLE_ORIGIN, CONSOLE),
 		"and the console derives from the host rect (P6)"
 	)
-	assert_eq(panel.call(&"block_size"), CONSOLE, "the pane draws the console it derived")
+	assert_eq(panel.call(&"block_size"), MODE_HOST, "the console stretches to the mode host (P36)")
 	assert_eq(CONSOLE_MASTER, CONSOLE * ART_SCALE, "the scripted master is exactly 2x the console")
 	var plate := panel.get_node("%ConsolePlate") as NinePatchRect
 	assert_true(plate != null, "the console floor node stays in the scene")
@@ -330,11 +336,14 @@ func test_the_pane_mounts_on_the_painted_console_plate() -> void:
 		ResourceLoader.exists("res://assets/ui/ui_armory_console.png"),
 		"the master itself stays on disk (unwired; ASSET_CATALOG notes it)"
 	)
-	assert_eq(plate.size, CONSOLE, "the floor is drawn at the derived console rect (actual %s)" % str(plate.size))
+	assert_eq(plate.size, MODE_HOST, "the floor fills the stretched console (actual %s)" % str(plate.size))
 	assert_eq(plate.position, Vector2.ZERO, "the floor fills its console control")
+	## S32 (STATION_HUB section 20.1 P36): the BodyScroll fold retires with the two-mode
+	## rework - the console is the BATTERY CONFIG mode's own content, parented to the mode's
+	## console host rather than a body scroll.
 	assert_eq(
-		String((plate.get_parent_control() as Control).get_parent().name), "BodyScroll",
-		"and the body rides the scroll window under the split (S29: it moved)"
+		String((plate.get_parent_control() as Control).get_parent().name), "ConsoleHost",
+		"the console rides the BATTERY CONFIG mode's own host (P32/P36)"
 	)
 	## A5.1: the frame stays registered for the shell, but the console draws none -
 	## the sibling `PanelRaised` box is the host's, not an inner surface's.
@@ -357,85 +366,97 @@ func test_the_pane_mounts_on_the_painted_console_plate() -> void:
 		)
 
 
-## The wells band's two halves (Amendment 3): BARREL INVENTORY left, AMMUNITION right,
-## each holding a 2x3 grid of 320 x 68 items. Mockup A's three stacked wells and their
-## pinned rects are superseded.
-func test_the_two_wells_mount_at_the_pinned_halves() -> void:
+## The console's two wells now hold BATTERY CONFIG's read-only blocks (STATION_HUB section
+## 20.1 P34): the empty hull W cells on the left, the mode's own summary on the right. FITS
+## HERE and AMMUNITION are containers of the FIT CELLS mode and the shared foot band
+## (P33/P36), not console halves.
+func test_the_two_console_wells_hold_the_empty_and_summary_blocks() -> void:
 	var panel := _mount()
 	var wells: Array = panel.call(&"well_rects")
-	assert_eq(wells.size(), 2, "BARREL INVENTORY left, AMMUNITION right")
-	assert_eq(wells[0], WELL_LEFT, "the barrel inventory half is the band's own left half")
-	assert_eq(wells[1], WELL_RIGHT, "and the ammunition half, one 32 px gutter right")
-	var inventory := panel.get_node("%InventoryMargin") as Control
+	assert_eq(wells.size(), 2, "the console still derives its two wells")
+	assert_eq(wells[0], WELL_LEFT, "the left well is the band's own left half")
+	assert_eq(wells[1], WELL_RIGHT, "and the right well, one 32 px gutter right")
+	var empty := panel.get_node("%EmptyMargin") as Control
 	assert_eq(
-		inventory.position, WELL_LEFT.position - CONSOLE_ORIGIN,
-		"the inventory margin sits in its own half"
+		empty.position, Vector2.ZERO,
+		"the empty-cells block opens its own half (the container places it)"
 	)
-	assert_eq(inventory.size, WELL_LEFT.size, "at the half's own box")
+	assert_eq(empty.size, WELL_LEFT.size, "at the well's own box")
 	assert_eq(
-		(panel.get_node("%AmmoMargin") as Control).size, WELL_RIGHT.size,
-		"and so does the ammunition margin"
+		(panel.get_node("%SummaryMargin") as Control).size, WELL_RIGHT.size,
+		"and the summary block in the right well"
 	)
 	var racks := panel.get_node("%RackRows") as VBoxContainer
-	assert_eq(racks.position, BAND_ORIGIN, "the bay band opens at its own origin (console-local)")
-	assert_eq(racks.size, Vector2(BAND_WIDTH, BAND_HEIGHT), "spanning the console less its side margins")
+	assert_eq(racks.position, Vector2.ZERO, "the rack band opens at the console's own origin")
+	assert_eq(racks.size, RACK_BAND, "and spans the console less the wells band")
 	assert_eq(
 		String((panel.get_node("%InventoryCaption") as Label).text),
-		"BARREL INVENTORY - 0 OWNED", "the inventory caption counts its own rows"
+		"OWNED WEAPONS - 0 OWNED", "the FITS HERE caption counts its own rows"
 	)
 	assert_eq(
 		String((panel.get_node("%AmmoCaption") as Label).text),
 		"AMMUNITION - 8 PACKS", "and the ammunition caption the catalogue's packs"
+	)
+	## P33/P36: FITS HERE is the FIT CELLS mode's own block and AMMUNITION the shared foot
+	## band's - neither is a console well any more.
+	assert_eq(
+		String((panel.get_node("%InventoryMargin") as Control).get_parent().name), "FitCells",
+		"FITS HERE rides the FIT CELLS mode"
+	)
+	assert_eq(
+		String((panel.get_node("%AmmoMargin") as Control).get_parent().name), "FootBand",
+		"and AMMUNITION the shared foot band"
 	)
 
 
 ## ------------------------------------------------------------- 2. the rack bay plates
 
 
-## The rack bays: five across one band (P3 supersedes S15's 4+1 flow), each a code-drawn
-## card at the band's own 260 x 192 cell - the rack plate master retires with the rework.
+## The rack rows: five **full-width rows** stacked top-down (P36's amendment supersedes the
+## five-across band), each a code-drawn card - the rack plate master retires with the rework.
 func test_the_bays_draw_five_across_the_band() -> void:
 	var panel := _mount()
 	assert_eq(PanelScript.RACK_COUNT, RACK_COUNT, "the pin's own rack count")
 	var bays: Array = panel.call(&"bay_rects")
-	assert_eq(bays.size(), RACK_COUNT, "one bay per weapon key")
+	assert_eq(bays.size(), RACK_COUNT, "one row per weapon key")
 	for index in bays.size():
 		var want := Rect2(
-			CONSOLE_ORIGIN + BAND_ORIGIN + Vector2(float(index) * (BAY.x + BAY_GAP), 0.0), BAY
+			Vector2(0.0, MODE_HOST_TOP + float(index) * (RACK_ROW.y + RACK_GAP)), RACK_ROW
 		)
-		assert_eq(bays[index], want, "bay %d is the band's own cell (actual %s)" % [index, str(bays[index])])
+		assert_eq(bays[index], want, "row %d is the band's own cell (actual %s)" % [index, str(bays[index])])
 	for index in bays.size():
 		var row := _rack_row(panel, index)
-		assert_eq(row.size, BAY, "the drawn bay is the same box (actual %s)" % str(row.size))
+		assert_eq(row.size, RACK_ROW, "the drawn row is the same box (actual %s)" % str(row.size))
 		assert_false(
 			row.get_node_or_null(^"Box/BayPlate") != null,
 			"the rack plate retires: the bay card is code-drawn (T6)"
 		)
 	var rows := panel.get_node("%RackRows") as VBoxContainer
-	assert_eq(rows.custom_minimum_size, Vector2(BAND_WIDTH, BAND_HEIGHT), "the band's own box")
+	assert_eq(rows.custom_minimum_size, Vector2.ZERO, "the rows share the band's own height")
 
 
 ## The P3 2x2 rack: every bay carries four code-drawn cell recesses at the style's own
-## rects, the fitted cell prints the full barrel name on two 13 px lines (T3, HIGH-5's
-## cure) and every empty cell offers `DROP HERE` at 13 px (T4).
-func test_the_cells_are_the_2x2_rack_on_the_bay() -> void:
+## The rack row's four cells: every row carries four code-drawn cell recesses at the
+## style's own rects, the fitted cell prints the full barrel name on two 13 px lines (T3,
+## HIGH-5's cure) and every empty cell offers `DROP HERE` at 13 px (T4).
+func test_the_cells_are_the_four_across_the_rack_row() -> void:
 	var panel := _mount()
 	var style := _style()
-	assert_eq(style.cell_columns, 2, "the P3 rack is 2 x 2")
-	assert_eq(style.cell_rows, 2, "")
+	assert_eq(style.cell_columns, 4, "the rack row carries four cells (P36)")
+	assert_eq(style.cell_rows, 1, "")
 	assert_eq(
-		style.bay_cell_rect(0, Rect2(Vector2.ZERO, BAY)), Rect2(CELL_ORIGIN, CELL),
-		"cell 0 is the rack's own first recess"
+		style.bay_cell_rect(0, Rect2(Vector2.ZERO, RACK_ROW)), Rect2(CELL_ORIGIN, CELL),
+		"cell 0 is the row's own first recess"
 	)
 	assert_eq(
-		style.bay_cell_rect(1, Rect2(Vector2.ZERO, BAY)),
+		style.bay_cell_rect(1, Rect2(Vector2.ZERO, RACK_ROW)),
 		Rect2(CELL_ORIGIN + Vector2(CELL.x + CELL_GAP, 0.0), CELL),
-		"the second column one gap right"
+		"the second cell one gap right"
 	)
 	assert_eq(
-		style.bay_cell_rect(3, Rect2(Vector2.ZERO, BAY)),
-		Rect2(CELL_ORIGIN + Vector2(CELL.x + CELL_GAP, CELL.y + CELL_GAP), CELL),
-		"and the rack's own last cell at the diagonal"
+		style.bay_cell_rect(3, Rect2(Vector2.ZERO, RACK_ROW)),
+		Rect2(CELL_ORIGIN + Vector2(3.0 * (CELL.x + CELL_GAP), 0.0), CELL),
+		"and the row's own last cell three gaps right"
 	)
 	var row := _rack_row(panel, 0)
 	var barrels := row.get_node_or_null(^"Box/Barrels") as Control
@@ -492,7 +513,7 @@ func test_the_salvo_strip_renders_the_cycle_figure() -> void:
 		var cell: TextureRect = strip.call(&"cell_nodes")[index]
 		assert_eq(
 			Rect2(cell.position, cell.size),
-			Rect2(Vector2(0.0, 1.0) + Vector2(index * SALVO_PITCH, 0.0), SALVO_CELL),
+			Rect2(Vector2(0.0, 16.5) + Vector2(index * SALVO_PITCH, 0.0), SALVO_CELL),
 			"cell %d sits inside the ledge on the 20 px pitch" % index
 		)
 	## A laser rack has no travelling member: no figure, blanks in every cell.
@@ -563,11 +584,14 @@ func test_the_items_ride_the_code_drawn_plate() -> void:
 	)
 	assert_eq(
 		(rows.get_child(1) as Control).position, Vector2(ITEM.x + style.item_gap, 0.0),
-		"the second column sits one gap right"
+		"the second card sits one gap right"
 	)
+	## S32 (STATION_HUB section 20.1 P36): the ammunition cards are one horizontal row in the
+	## shared foot band now, not a 2x3 wells grid.
 	assert_eq(
-		(rows.get_child(2) as Control).position, Vector2(0.0, ITEM.y + style.item_gap),
-		"and the second row one gap down (actual %s)" % str((rows.get_child(2) as Control).position)
+		(rows.get_child(2) as Control).position, Vector2((ITEM.x + style.item_gap) * 2.0, 0.0),
+		"and the third card another gap right, on the band's one row (actual %s)"
+			% str((rows.get_child(2) as Control).position)
 	)
 	## The fixture holds 15 cannon units at a 30-unit ceiling: 150 rounds held.
 	assert_eq(
@@ -593,7 +617,10 @@ func test_the_items_ride_the_code_drawn_plate() -> void:
 	_profile.call(&"add_module", CANNON, 1)
 	var row := inventory.get_child(0) as Button
 	assert_true(row != null, "an owned weapon lists")
-	assert_eq(row.size, ITEM, "at the half's own item box")
+	## S32 (STATION_HUB section 20.1 P37): a FITS HERE row is a full-width column of the
+	## mode, not a half-cell - its own 76 px auction-row height on the mode's whole width.
+	assert_eq(row.size.y, 76.0, "at the list row's own height")
+	assert_gt(row.size.x, ITEM.x, "spanning the mode's column, not a 320 px half-cell")
 	assert_true(_plate(row) != null, "on the pane's code-drawn plate")
 	assert_eq(
 		String(_cell(row, "Status").get_node(^"Value").text),
@@ -749,9 +776,8 @@ func test_the_drag_ordering_and_the_close_are_unchanged() -> void:
 func test_a_user_tres_restyles_and_relayouts_with_no_code_edit() -> void:
 	var panel := _mount()
 	var probe := StyleScript.defaults()
-	probe.band_top = 20.0
-	probe.band_height = 100.0
-	probe.bay_gap = 12.0
+	probe.rack_gap = 12.0
+	probe.rack_row_height = 40.0
 	probe.cell_gap = 4.0
 	probe.item_gap = 4.0
 	probe.text_dim = Color(0.1, 0.9, 0.2)
@@ -759,36 +785,42 @@ func test_a_user_tres_restyles_and_relayouts_with_no_code_edit() -> void:
 	assert_eq(saved, OK, "the user's style writes")
 	panel.call(&"set_style_file", STYLE_PROBE_PATH)
 	var live := _style()
-	assert_eq(live.band_height, 100.0, "the band height moved")
-	assert_eq(live.bay_gap, 12.0, "and the bay gap")
-	var host := Rect2(Vector2.ZERO, HOST)
-	var console: Rect2 = live.console_rect(host)
+	assert_eq(live.rack_gap, 12.0, "the rack gap moved")
+	assert_eq(live.rack_row_height, 40.0, "and the row height")
+	var console := Rect2(Vector2.ZERO, MODE_HOST)
 	var band: Rect2 = live.bays_band(console)
-	assert_eq(band.size, Vector2(BAND_WIDTH, 100.0), "the band follows the file's own height")
-	var bay_want := Vector2((BAND_WIDTH - 4.0 * 12.0) / 5.0, 100.0)
 	assert_eq(
-		(panel.call(&"bay_rects")[0] as Rect2).size, bay_want,
-		"the drawn bay follows the relayout (actual %s)" % str(panel.call(&"bay_rects")[0])
+		band.size, Vector2(MODE_HOST.x, MODE_HOST.y - 92.0 - 6.0),
+		"the band follows the console (the wells band's fixed foot)"
 	)
+	var live_rows: Array = panel.call(&"bay_rects")
 	assert_eq(
-		(live.bay_cell_rect(0, Rect2(Vector2.ZERO, bay_want)) as Rect2).size,
-		Vector2((bay_want.x - 20.0 - 4.0) / 2.0, (100.0 - 34.0 - 8.0 - 34.0 - 4.0 - 4.0) / 2.0),
-		"and so does the cell grid"
+		(live_rows[0] as Rect2).size.x, MODE_HOST.x,
+		"the row still spans the console (P36's full-width rows)"
+	)
+	assert_true(
+		(live_rows[1] as Rect2).position.y - (live_rows[0] as Rect2).position.y
+			> RACK_ROW.y,
+		"the rows follow the file's own 12 px gap (actual %s)" % str(live_rows[1])
+	)
+	var row_rect := Rect2(Vector2.ZERO, Vector2(MODE_HOST.x, (band.size.y - 4.0 * 12.0) / 5.0))
+	var area: Rect2 = live.cells_area(row_rect)
+	assert_eq(
+		(live.bay_cell_rect(0, row_rect) as Rect2).size,
+		Vector2((area.size.x - 3.0 * 4.0) / 4.0, area.size.y),
+		"and so does the cell row"
 	)
 	assert_eq(live.colour(&"text_dim"), Color(0.1, 0.9, 0.2), "and the palette is the file's")
-	assert_eq(
-		_rack_row(panel, 0).size, bay_want, "the drawn bay follows the relayout"
-	)
 	## Dropping the file returns the shipped numbers: the override is not a one-way door.
 	panel.call(&"set_style_file", StyleScript.ARMORY_USER_PATH)
-	assert_eq(_style().band_height, BAND_HEIGHT, "the shipped band is back")
+	assert_eq(_style().rack_gap, RACK_GAP, "the shipped gap is back")
 	assert_eq(
 		panel.call(&"bay_rects")[0],
-		Rect2(CONSOLE_ORIGIN + BAND_ORIGIN, BAY), "and the shipped bay band"
+		Rect2(Vector2(0.0, MODE_HOST_TOP), RACK_ROW), "and the shipped rack band"
 	)
 	assert_eq(
-		_rack_row(panel, 0).size, BAY,
-		"drawn at the shipped bay box (actual %s)" % str(_rack_row(panel, 0).size)
+		_rack_row(panel, 0).size, RACK_ROW,
+		"drawn at the shipped row box (actual %s)" % str(_rack_row(panel, 0).size)
 	)
 
 
@@ -827,8 +859,8 @@ func test_the_style_extends_cockpit_style_with_the_pinned_metrics() -> void:
 		style.get(&"row_plate_path"), null,
 		"and so does the row plate"
 	)
-	assert_eq(style.bay_columns, BAY_COLUMNS, "the five-across band")
-	assert_eq(style.cell_columns, 2, "the P3 2x2 rack")
+	assert_eq(style.bay_columns, BAY_COLUMNS, "the rack count (P36: five stacked rows)")
+	assert_eq(style.cell_columns, 4, "the rack row's four cells (P36)")
 	assert_eq(style.salvo_cells, 4, "four SALVO cells (S22.8's drum)")
 	assert_eq(style.salvo_cell, SALVO_CELL, "an 18 x 32 drum cell")
 	assert_eq(style.salvo_pitch, SALVO_PITCH, "on the 20 px pitch")

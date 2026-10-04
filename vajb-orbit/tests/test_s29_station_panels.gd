@@ -144,14 +144,17 @@ func test_the_browser_caption_and_the_tab_strip_minus_hulls() -> void:
 	_free_host(panel)
 
 
-## N45 (UI_SPEC section 13.1): the browser half widens to 620 and every row's title trims to a
-## fixed 160 px ellipsis column, so no row control can leave the window (D20 note 2).
+## N45 (UI_SPEC section 13.1): every row's title trims to a fixed 160 px ellipsis column, so
+## no row control can leave the window (D20 note 2). S32 (STATION_HUB section 20.1 P37)
+## supersedes the 620 px half: BUYABLE THAT FITS is a full-width column of the FIT CELLS mode.
 func test_n45_the_browser_half_and_the_title_column() -> void:
 	var panel := _mount(ArmoryScene)
-	var half := panel.get_node_or_null(^"Split/BrowserHalf") as Control
-	assert_true(half != null, "the browser half ships")
-	if half != null:
-		assert_eq(half.custom_minimum_size.x, 620.0, "the browser half widens to 620 (N45)")
+	var block := panel.get_node_or_null(^"ModeHost/FitCells/BuyableBlock") as Control
+	assert_true(block != null, "the BUYABLE THAT FITS block ships (P37)")
+	if block != null:
+		assert_true(
+			block.custom_minimum_size.x <= 0.0, "the block is a full-width column, not a 620 half (P37)"
+		)
 	assert_true(not (panel.get(&"_browser_payloads") as Array).is_empty(), "the browser has rows")
 	for payload: Dictionary in panel.get(&"_browser_payloads"):
 		var row := payload[&"row"] as Button
@@ -164,8 +167,8 @@ func test_n45_the_browser_half_and_the_title_column() -> void:
 			"the title trims with an ellipsis (N45)"
 		)
 		assert_true(
-			rbox.get_combined_minimum_size().x <= 620.0,
-			"the row content fits the 620 browser (min %s)"
+			rbox.get_combined_minimum_size().x <= 1765.0,
+			"the row content fits the full-width column (min %s)"
 				% str(rbox.get_combined_minimum_size())
 		)
 	_free_host(panel)

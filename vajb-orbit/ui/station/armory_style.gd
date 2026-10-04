@@ -70,22 +70,26 @@ const ARMORY_SCRIPT_PATH: String = "res://ui/station/armory_style.gd"
 ## The base console (drawn 1360x516; 2x = the master's 2720x1072); `canvas * art_scale`
 ## must equal `host_base` less `console_inset`.
 @export var canvas: Vector2 = Vector2(680.0, 258.0)
-## The bays band: its top offset and height inside the console (both scale with the
-## console's height), and its side margin (fixed).
-@export var band_top: float = 38.0
-@export var band_height: float = 192.0
-@export var band_side: float = 16.0
+## The rack band (P36's amendment): the five racks are full-width rows stacked from the
+## console's top down to the wells band, so the whole console width is used. `band_top`
+## and `band_side` are the band's own insets (both fixed drawn pixels).
+@export var band_top: float = 0.0
+@export var band_side: float = 0.0
 @export var bay_columns: int = 5
-@export var bay_gap: float = 7.0
-## A bay's head (the label + key + state chip band) and its ledge height, and the ledge's
-## own bottom inset; all fixed drawn pixels.
-@export var bay_head: float = 34.0
-@export var bay_ledge: float = 34.0
-@export var bay_foot: float = 8.0
-## The bay's 2x2 cells (P3): the margin from the bay's edges and the gap between the
-## cells (both fixed).
-@export var cell_columns: int = 2
-@export var cell_rows: int = 2
+## The gap between two stacked rack rows, and the one gap between the rack band and the
+## wells band below it (both fixed).
+@export var rack_gap: float = 6.0
+@export var body_gap: float = 6.0
+## A rack row's own minimum height, its head block's width and its salvo ledge's width.
+@export var rack_row_height: float = 56.0
+@export var row_head_width: float = 200.0
+@export var row_salvo_width: float = 270.0
+## The wells band's own height at the console's foot (the empty-cell list and the summary).
+@export var wells_height: float = 92.0
+## A rack row's four cells (P36: the four W cells ride one row), the margin from the row's
+## edges and the gap between the cells (all fixed).
+@export var cell_columns: int = 4
+@export var cell_rows: int = 1
 @export var cell_margin: float = 10.0
 @export var cell_gap: float = 6.0
 ## A cell's own text inset (the name block's left/right padding).
@@ -99,10 +103,7 @@ const ARMORY_SCRIPT_PATH: String = "res://ui/station/armory_style.gd"
 @export var salvo_pitch: float = 20.0
 @export var salvo_caption: String = "SALVO s"
 @export var salvo_caption_left: float = 74.0
-## The wells band: its top offset inside the console (scales with the height), its foot
-## inset, and the fixed gutter between the two halves.
-@export var wells_top: float = 286.0
-@export var wells_foot: float = 10.0
+## The wells band: the fixed gutter between its two halves.
 @export var wells_gutter: float = 32.0
 ## The band's item grid, per half: two columns of three (barrel inventory rows left,
 ## ammunition pack cards right) on a fixed gap.
@@ -208,64 +209,72 @@ func console_rect(host: Rect2) -> Rect2:
 	)
 
 
-## The bays band inside `console`: the top offset and height scale with the console's own
-## height, the side margin is fixed. The five bays fill it on fixed gaps.
+## The rack band inside `console` (P36's amendment): the five racks are **full-width rows**
+## stacked from the console's top down to the wells band, so the whole console width is
+## used (T-122's dead space dies). The band is the console less the wells band and the one
+## body gap.
 func bays_band(console: Rect2) -> Rect2:
-	var sy := _axis(console.size.y, console_size_at_base().y)
+	var bottom: float = console.position.y + console.size.y - wells_height - body_gap
 	return Rect2(
-		console.position + Vector2(band_side, _scale(band_top, sy)),
-		Vector2(maxf(console.size.x - band_side * 2.0, 0.0), _scale(band_height, sy))
+		console.position + Vector2(band_side, band_top),
+		Vector2(
+			maxf(console.size.x - band_side * 2.0, 0.0),
+			maxf(bottom - (console.position.y + band_top), 0.0)
+		)
 	)
 
 
-## One bay's rect inside the band (drawn pixels), `index` 0-based, `B1` at the left.
+## One rack row's rect inside the band (drawn pixels), `index` 0-based, `B1` at the top.
+## The rows stack full-width on the fixed rack gap.
 func bay_rect(index: int, console: Rect2) -> Rect2:
 	var band := bays_band(console)
 	var count: int = maxi(bay_columns, 1)
-	var width: float = (band.size.x - float(count - 1) * bay_gap) / float(count)
+	var height: float = (band.size.y - float(count - 1) * rack_gap) / float(count)
 	return Rect2(
-		band.position + Vector2(float(index) * (width + bay_gap), 0.0),
-		Vector2(width, band.size.y)
+		band.position + Vector2(0.0, float(index) * (height + rack_gap)),
+		Vector2(band.size.x, maxf(height, 0.0))
 	)
 
 
-## A bay's head band: the strip the label, key hint and state chip sit on.
-func bay_head_rect(bay: Rect2) -> Rect2:
-	return Rect2(bay.position, Vector2(bay.size.x, bay_head))
+## A rack row's head block: the strip the `B<n>` label, its key hint and its state chip sit
+## on, at the row's left.
+func bay_head_rect(row: Rect2) -> Rect2:
+	return Rect2(row.position, Vector2(minf(row_head_width, row.size.x), row.size.y))
 
 
-## One cell's rect inside its bay (0..3, row-major: the 2x2 rack, P3). The cells area is
-## the bay less its head, its ledge zone and its foot; the cell size derives from it with
-## the fixed margin and gap.
-func bay_cell_rect(index: int, bay: Rect2) -> Rect2:
-	var area := cells_area(bay)
+## One cell's rect inside its rack row (0..3, left to right: the rack's four W cells). The
+## cells block is the row less its head and its salvo ledge; the cell size derives from it
+## with the fixed margin and gap.
+func bay_cell_rect(index: int, row: Rect2) -> Rect2:
+	var area := cells_area(row)
 	var count: int = maxi(cell_columns, 1)
-	var rows: int = maxi(cell_rows, 1)
 	var width: float = (area.size.x - float(count - 1) * cell_gap) / float(count)
-	var height: float = (area.size.y - float(rows - 1) * cell_gap) / float(rows)
-	var column: int = index % count
-	var row: int = floori(float(index) / float(count))
 	return Rect2(
-		area.position + Vector2(float(column) * (width + cell_gap), float(row) * (height + cell_gap)),
-		Vector2(width, height)
+		area.position + Vector2(float(index) * (width + cell_gap), 0.0),
+		Vector2(maxf(width, 0.0), area.size.y)
 	)
 
 
-## The cells area of one bay: below the head, above the ledge zone.
-func cells_area(bay: Rect2) -> Rect2:
-	var top: float = bay.position.y + bay_head
-	var bottom: float = bay.position.y + bay.size.y - bay_foot - bay_ledge - cell_gap
+## The cells block of one rack row: right of the head, left of the salvo ledge, inset by the
+## fixed cell margin.
+func cells_area(row: Rect2) -> Rect2:
+	var left: float = row.position.x + minf(row_head_width, row.size.x)
+	var right: float = row.position.x + row.size.x - minf(row_salvo_width, row.size.x)
 	return Rect2(
-		Vector2(bay.position.x + cell_margin, top),
-		Vector2(maxf(bay.size.x - cell_margin * 2.0, 0.0), maxf(bottom - top, 0.0))
+		Vector2(left + cell_margin, row.position.y + cell_margin),
+		Vector2(
+			maxf(right - left - cell_margin * 2.0, 0.0),
+			maxf(row.size.y - cell_margin * 2.0, 0.0)
+		)
 	)
 
 
-## A bay's salvo ledge: the band its `ui_seg_*` cells and the `SALVO s` caption sit in.
-func ledge_rect(bay: Rect2) -> Rect2:
+## A rack row's salvo ledge: the block its `ui_seg_*` cells and the `SALVO s` caption sit
+## in, at the row's right.
+func ledge_rect(row: Rect2) -> Rect2:
 	return Rect2(
-		Vector2(bay.position.x + cell_margin, bay.position.y + bay.size.y - bay_foot - bay_ledge),
-		Vector2(maxf(bay.size.x - cell_margin * 2.0, 0.0), bay_ledge)
+		Vector2(row.position.x + row.size.x - minf(row_salvo_width, row.size.x), row.position.y),
+		Vector2(minf(row_salvo_width, row.size.x), row.size.y)
 	)
 
 
@@ -286,15 +295,15 @@ func salvo_caption_pos(ledge: Rect2) -> Vector2:
 	return ledge.position + Vector2(maxf(block, salvo_caption_left), ledge.size.y * 0.5)
 
 
-## The wells band inside `console`: its top offset scales with the console's height, its
-## foot inset is fixed. The two halves split it on the fixed gutter.
+## The wells band inside `console` (P34/P36): a fixed-height band at the console's foot,
+## holding the read-only empty-cell list (left) and the mode's own summary (right).
 func wells_rect(console: Rect2) -> Rect2:
-	var sy := _axis(console.size.y, console_size_at_base().y)
-	var top: float = console.position.y + _scale(wells_top, sy)
-	var bottom: float = console.position.y + console.size.y - wells_foot
 	return Rect2(
-		Vector2(console.position.x + band_side, top),
-		Vector2(maxf(console.size.x - band_side * 2.0, 0.0), maxf(bottom - top, 0.0))
+		console.position + Vector2(band_side, maxf(console.size.y - wells_height, 0.0)),
+		Vector2(
+			maxf(console.size.x - band_side * 2.0, 0.0),
+			minf(wells_height, console.size.y)
+		)
 	)
 
 
@@ -324,9 +333,9 @@ func item_rect(index: int, grid: Rect2) -> Rect2:
 	)
 
 
-## A bay head's state chip, right-aligned in the head band.
-func head_chip_rect(bay: Rect2) -> Rect2:
-	var head := bay_head_rect(bay)
+## A rack row head's state chip, right-aligned in the row's head block.
+func head_chip_rect(row: Rect2) -> Rect2:
+	var head := bay_head_rect(row)
 	return Rect2(
 		Vector2(head.position.x + head.size.x - head_chip.x - cell_margin, head.position.y + (head.size.y - head_chip.y) * 0.5),
 		head_chip

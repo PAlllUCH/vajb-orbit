@@ -2983,6 +2983,19 @@
    ],
    "signals": []
   },
+  "res://tests/probe_s32_review.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "SceneTree",
+   "refs": [
+    "res://game/module_catalog.gd",
+    "res://game/ship_fit.gd",
+    "res://ui/station/armory_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
   "res://tests/probe_s3_levers.gd": {
    "autoload": "",
    "class_name": "",
@@ -4513,6 +4526,21 @@
    ],
    "signals": []
   },
+  "res://tests/test_s32_armory_modes.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/module_catalog.gd",
+    "res://game/ship_fit.gd",
+    "res://game/station_catalog.gd",
+    "res://ui/station/armory_panel.gd",
+    "res://ui/station/armory_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
   "res://tests/test_s3_auction.gd": {
    "autoload": "",
    "class_name": "",
@@ -5516,6 +5544,8 @@
    "class_name": "",
    "connects": [
     "_buy_fit_button.pressed \u2192 _on_buy_fit_pressed",
+    "_mode_battery.pressed \u2192 set_mode.bind(MODE_BATTERY",
+    "_mode_fit.pressed \u2192 set_mode.bind(MODE_FIT",
     "_rack_rows.sort_children \u2192 _lay_bays",
     "_remove_button.pressed \u2192 _on_remove_pressed",
     "box.sort_children \u2192 _position_bay.bind(row",
@@ -5525,6 +5555,7 @@
     "card.mouse_entered \u2192 _on_row_hovered.bind(payload",
     "card.mouse_exited \u2192 _on_row_hovered.bind(payload",
     "card.pressed \u2192 _on_row_pressed.bind(payload",
+    "card.resized \u2192 _on_card_resized.bind(card",
     "chip.inspect_chip_pressed \u2192 _emit_sheet.bind(payload",
     "chip.inspect_chip_pressed \u2192 inspect_focused",
     "chip.mouse_entered \u2192 _on_barrel_inspected.bind(rack",
@@ -5546,6 +5577,8 @@
     "row.mouse_exited \u2192 _on_inventory_inspected.bind(base_id",
     "row.mouse_exited \u2192 _on_rack_inspected.bind(salvo_line",
     "row.pressed \u2192 _on_browser_pressed.bind(payload",
+    "row.pressed \u2192 _on_fits_here_pressed.bind(base_id",
+    "row.resized \u2192 _on_inventory_resized.bind(row",
     "strip.resized \u2192 _position_bay.bind(row"
    ],
    "extends": "Control",

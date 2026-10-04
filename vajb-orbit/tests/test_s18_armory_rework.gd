@@ -286,47 +286,39 @@ func test_the_pack_card_carries_the_p5_worded_line() -> void:
 ## (base 1920x1080, wide 21:9, tall 5:4) all derive, none clips, and the geometry tracks
 ## the host's own proportions rather than any pinned rect.
 func test_every_rect_derives_from_the_host_at_the_three_proofs() -> void:
-	## S29 moves this row: the body rides the merged pane's scroll window at the style's
-	## **base** numbers (its placement moved under the P4 split, its internal law did not),
-	## so the three proofs now measure the body's own invariants at every host - the base
-	## console, its band, its bays and its wells, all enclosed, none moving with the host.
+	## P36 (S32-F1) moves this row: the console now **stretches to the mode host** and the
+	## racks are **full-width rows** stacked top-down, so the geometry *does* follow the host
+	## - every row spans the pane's own width and the wells band sits at the console's foot.
 	var panel := _mount()
 	var style := _style()
-	var base: Rect2 = style.console_rect(Rect2(Vector2.ZERO, style.host_base))
-	var band: Rect2 = style.bays_band(base)
-	var bays: Array = panel.call(&"bay_rects")
-	var wells: Array = panel.call(&"well_rects")
-	assert_eq(bays.size(), 5, "five bays at every canvas")
-	assert_eq(wells.size(), 2, "two wells at every canvas")
-	assert_true(band.encloses(bays[0] as Rect2), "the bay band encloses its bays")
-	assert_true(base.encloses(wells[0] as Rect2), "and the base console its wells")
-	assert_true(
-		band.encloses(bays[4] as Rect2), "the band carries all five bays"
-	)
 	for host_size: Vector2 in [PROOF_BASE, PROOF_WIDE, PROOF_TALL]:
 		_host.size = host_size
 		panel.call(&"_lay")
+		var console: Vector2 = panel.call(&"block_size")
 		assert_eq(
-			panel.call(&"block_size"), base.size,
-			"the body draws the base console at %s" % str(host_size)
+			console.x, host_size.x,
+			"the console spans the host's own width at %s (actual %s)" % [str(host_size), str(console)]
 		)
-		assert_eq(
-			panel.call(&"bay_rects"), bays,
-			"and the bays never move with the host at %s" % str(host_size)
-		)
-		assert_eq(
-			panel.call(&"well_rects"), wells,
-			"nor the wells at %s" % str(host_size)
-		)
-	for index in 4:
-		var cell: Rect2 = style.bay_cell_rect(index, Rect2(Vector2.ZERO, (bays[0] as Rect2).size))
+		var bays: Array = panel.call(&"bay_rects")
+		assert_eq(bays.size(), 5, "five rows at every canvas")
+		for index in bays.size():
+			assert_eq(
+				(bays[index] as Rect2).size.x, host_size.x,
+				"row %d spans the host at %s (actual %s)" % [index, str(host_size), str(bays[index])]
+			)
+		var wells: Array = panel.call(&"well_rects")
+		assert_eq(wells.size(), 2, "two wells at every canvas")
 		assert_true(
-			(Rect2(Vector2.ZERO, (bays[0] as Rect2).size)).encloses(cell),
-			"cell %d stays inside its bay" % index
+			(wells[0] as Rect2).position.y > (bays[4] as Rect2).position.y,
+			"the wells band sits below the rack rows at %s" % str(host_size)
 		)
+	var row := Rect2(Vector2.ZERO, (panel.call(&"bay_rects")[0] as Rect2).size)
+	for index in 4:
+		var cell: Rect2 = style.bay_cell_rect(index, row)
+		assert_true(row.encloses(cell), "cell %d stays inside its row" % index)
 	_host.size = HOST
 	panel.call(&"_lay")
-	assert_eq(panel.call(&"block_size"), base.size, "the base host is back to the ruled console")
+	assert_eq(panel.call(&"block_size"), Vector2(HOST.x, 447.0), "the base host is back to the ruled console")
 
 
 ## --------------------------------------------- 5. the states (T4 / T7)
@@ -469,19 +461,21 @@ func test_the_chrome_layer_paints_under_every_text_and_control() -> void:
 		chrome.get_index(), 1,
 		"the chrome sits directly over the painted plate (actual index %d)" % chrome.get_index()
 	)
+	var body := console.get_node_or_null(^"BodyBox") as Control
 	var rack_rows := console.get_node(^"%RackRows") as Control
-	var inventory := console.get_node(^"%InventoryMargin") as Control
-	var ammo := console.get_node(^"%AmmoMargin") as Control
+	## S32 (STATION_HUB section 20.1 P34/P36): the console's wells hold BATTERY CONFIG's
+	## read-only blocks now, and the racks are full-width rows inside the console's own body
+	## box (the container that stacks them); the chrome is a sibling of that box.
+	var empty := console.get_node(^"%EmptyMargin") as Control
+	var summary := console.get_node(^"%SummaryMargin") as Control
+	assert_true(body != null, "the console's own body box holds the racks and the wells")
 	assert_true(rack_rows != null, "the rack rows are in the console")
-	assert_true(inventory != null, "the inventory margin is in the console")
-	assert_true(ammo != null, "the ammunition margin is in the console")
-	for content: Control in [rack_rows, inventory, ammo]:
-		if content == null:
-			continue
+	assert_true(empty != null, "the empty-cells block is in the console")
+	assert_true(summary != null, "the battery summary is in the console")
+	if body != null:
 		assert_true(
-			chrome.get_index() < content.get_index(),
-			"the chrome paints under %s (chrome at %d, %s at %d)" % [
-				String(content.name), chrome.get_index(),
-				String(content.name), content.get_index(),
+			chrome.get_index() < body.get_index(),
+			"the chrome paints under the console's body (chrome at %d, body at %d)" % [
+				chrome.get_index(), body.get_index()
 			]
 		)
