@@ -6,6 +6,20 @@
 
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-25 clear-outs (owner asks):** every closed slice folder moved to the system trash (last git tree carrying them: `7a081ef`), old session reports live in `_state/_archive/`, and the two dispatch files were purged to live-items-only (2026-09-25 ter). Citation paths into purged trees name historical files.
 
+**Updated 2026-10-04 (D20 closed — the owner's own playtest compiled):** two
+live game reviews on the same brief (`xiaomi/mimo-v2.6-pro` @ high →
+`hyper/glm-5.3-flash` @ max; one game window, shared save profile) merged with
+the owner's five notes in `slices/D20-station-playtest/D20_synthesis.md`.
+Confirmed: the armory browser overflow (**HIGH** — rows 542–620 px min in a
+478 px viewport, INSPECT chips past the window edge) and the exchange hold
+cluster (titles 28 px vs 517, header band +109 px off its columns, lists 26 px
+apart); TERMINAL/AUCTION verified as the owner reads them (my brief's "right
+drawer" wording was wrong — N26 pins left, the build matches). Tickets
+**T-118–T-126** filed (6 LOW + 3 owner calls). **Next: the D20 fix wave
+five-piece (F1 exchange parity, F2 armory overflow, F3 inspect popup — quick;
+F4 the armory 2-module rework — its own wave; F5 the LOW pack) on the owner's
+go; coder 30 (S24) stays parked behind it.**
+
 **Updated 2026-10-03 (S29 closed — the overhaul implemented; one provider
 incident):** coder 35 ran B1 → B2 → R1 → F1. B1's first dispatch
 (`hyper/glm-5.3`) **died on provider credits mid-build** (partial artefacts, no

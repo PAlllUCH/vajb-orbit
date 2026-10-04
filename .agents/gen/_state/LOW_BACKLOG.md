@@ -916,3 +916,23 @@ The next free ticket after these rows is **T-118**.
 | T-115 | **LOW (S30-R1/F12): two pins disagree on the ARMORY meter word.** STATION_HUB §19.4's hint keeps `CANDIDATE` while the shipped meter words the preview `IF FITTED` (D17-P1's unticked PROPOSED). | [DOC] | `docs/design/STATION_HUB.md` §19.4; `armory_panel.gd:219-220` | Designer reconciles at the next docs pass (one wording wins). Reversal: the other word. |
 | T-116 | **LOW (S30-R1/F13): two pins disagree on the auction foot band.** The band ships §5.10's two-label footer (RestockLabel + StatusLabel) where §19.4 wants a one-line hint cell. | [SPEC] | `docs/design/STATION_HUB.md` §5.10 vs §19.4 | Designer reconciles at the next docs pass (one shape wins). Reversal: the other shape. |
 | T-117 | **LOW (S30-R1/F14): the drawer content box lands 1 px off the pin** (x 69..341 measured vs R-S30-1's 68..340; disclosed as B2's deviation 2). | [SPEC] | `ui/screens/station.gd` (drawer plate); `docs/design/UI_SPEC.md` §12.1 | Owner tick at close-out — accept the 1 px or snap the plate. Reversal: snap to 68..340. |
+
+### D20 playtest block (2026-10-04)
+
+Source: the owner's own five playtest notes + two live game reviews (D20-P1
+`xiaomi/mimo-v2.6-pro` @ high → D20-P2 `hyper/glm-5.3-flash` @ max;
+`slices/D20-station-playtest/D20_synthesis.md`). Gate n/a (review only). T-118–
+T-123 ride the D20 fix wave (F5's fixer); T-124–T-126 are the owner's calls
+(mirrored in `TICKS.md`). The next free ticket after these rows is **T-127**.
+
+| # | Item | Kind | Where | Disposition |
+|---|------|------|-------|-------------|
+| T-118 | **LOW (D20-P1/F1): the hover tooltip also pops on keyboard focus with no pointer near it** while anchoring at the OS cursor — it appears detached from the row that triggered it. | [CODE] | `ui/screens/station.gd:593-607`; `ui/station/exchange_panel.gd:803-813` | Ride the D20 fix wave: anchor at the triggering row or require real pointer hover. Reversal: leave as-is. |
+| T-119 | **LOW (D20-P1/F2): the exchange confirm strip wraps and orphans the total** ("YOU GET / 24") in the 360 px TradeBox. | [UI] | `ui/station/exchange_panel.tscn:148-152` | Ride F1's exchange pass. Reversal: none — copy/layout. |
+| T-120 | **LOW (D20-P2/F3): the armory family tab strip crams 8 tabs into 490 px** (ALL tab 23 px wide). | [UI] | `ui/station/armory_panel.tscn` (tab strip) | Ride F2's browser rebalance. Reversal: none. |
+| T-121 | **LOW (D20-P2/F4): the first OVERVIEW tile carries its focus ring on pane open** before any input — reads pre-lit. | [UI] | `ui/station/overview_panel.gd` | Ride the wave: clear the auto-focus ring or style it intentional. Reversal: leave. |
+| T-122 | **LOW (D20-P1/F5): the armory Console plate leaves ~330 px dead space** right of the 1360 px plate in the 1768 px band. | [UI] | `ui/station/armory_panel.gd:1008` | Ride F4's armory rework. Reversal: none. |
+| T-123 | **LOW (D20-P1/F6): the main-menu InsigniaBadge glyph is unverifiable at 640** (reads as a bare hex mark). | [UI] | `ui/screens/main_menu.tscn` (CommandHeader/InsigniaBadge) | Verify at native res at the next chrome pass; regenerate the glyph only if it is actually blank. Reversal: none. |
+| T-124 | **OWNER (D20, note 3): what "inspect time twice as long on hover" means** — A: keep while hovered + linger 0.5 s (2× 0.25) after unhover + steady across intra-row hover churn; B: appear delay 0.25 → 0.5 s. | [OWNER] | `D20_synthesis.md` §5 | Default A. Reversal: B. |
+| T-125 | **OWNER (D20, note 2): the armory split's shape** — two full-screen modes (FIT CELLS / BATTERY CONFIG, one visible at a time) vs two panes on one screen. | [OWNER] | `D20_synthesis.md` §5 | Default two modes. Reversal: two panes. |
+| T-126 | **OWNER (D20, note 2): the battery module's scope** — rack regrouping (`set_battery_groups` editor) + SALVO/cycle readout vs also loadout presets. | [OWNER] | `D20_synthesis.md` §5 | Default regroup + readout. Reversal: add presets. |

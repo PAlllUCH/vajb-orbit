@@ -2,7 +2,7 @@
 slice: D20
 phase: P3
 lane: design
-status: active
+status: done
 gate_baseline: "n/a (review only; live gate 1093/0 at open)"
 ---
 
