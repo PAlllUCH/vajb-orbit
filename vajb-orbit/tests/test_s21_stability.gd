@@ -875,6 +875,10 @@ func test_booting_the_station_writes_nothing_to_user() -> void:
 	if profile == null:
 		assert_true(false, "the PlayerProfile autoload is the station's store")
 		return
+	## T-105's ruling: the two clock rows below are exact-equality, so the clock is frozen to
+	## one stamp for the length of the row (the S29 `>` reading raced the second tick and
+	## flaked at a boundary). `_reset_shared_state` clears the override around every test.
+	ClockScript.set_override(FAKE_NOW)
 	var market := profile.call(&"market") as Dictionary
 	market["last_band"] = ClockScript.now() - ClockScript.BAND_SECONDS * 3
 	profile.call(&"set_market", market)
@@ -905,22 +909,21 @@ func test_booting_the_station_writes_nothing_to_user() -> void:
 		mtime_before,
 		"and the file was not rewritten at all"
 	)
-	## The dock half: the route entry is where the market normalises.
-	## The two band reads are `>` the fixture's own stale bands rather than `== now` (S29:
-	## the exact-equality row raced the clock's own second tick and flaked at a boundary).
+	## The dock half: the route entry is where the market normalises. The clock is frozen
+	## (T-105), so the band lands on the stamp exactly.
 	screen.call(&"on_route", {})
-	assert_gt(
+	assert_eq(
 		int((profile.call(&"market") as Dictionary).get("last_band", 0)),
-		int(market_before.get("last_band", 0)),
-		"the dock normalised the market to the clock (L18)"
+		ClockScript.now(),
+		"the dock normalised the market to the frozen clock (L18)"
 	)
 	## The switch half: the shell's focus pass into the AUCTION pane pops `enter_pane`.
 	screen.call(&"_select_module", StationScript.Module.AUCTION)
 	screen.call(&"_focus_active_panel")
-	assert_gt(
+	assert_eq(
 		int((profile.call(&"auction") as Dictionary).get("last_band", 0)),
-		int(shelf_before.get("last_band", 0)),
-		"and entering the pane rolled the shelf (L122)"
+		ClockScript.now(),
+		"and entering the pane rolled the shelf to the same stamp (L122)"
 	)
 
 

@@ -1802,3 +1802,38 @@ ledger row 16; P31 = the shared x 129. Gate **1074/0** ×2 fresh scratch
 runner's missing `ScriptErrorCapture` class); verify green vs `d19_start`
 (`"problems": []`). Five-piece: `slices/D19-station-shell-v2/`. **Next in the
 phase: coder 36 (S30 station shell v2 build)**, then coder 30 (S24).
+
+### S30 — station shell v2 build (2026-10-04, coder 36)
+
+The owner took every TICKS default ("assume default if not chosen. proceed with
+coder") and the wave built D19's law (brief `slices/S30-shell-v2/`, pins
+R-S30-1 the 272 px drawer content box / R-S30-2 the first-class `map_filters`
+door). **B1** (`hyper/deepseek-v4.1-flash` @ xhigh — its enum's max; the slug is
+`deepseek-v4.1-flash`, and `max` is rejected) landed the popup layer
+(`tooltip`/`inspect_sheet`/`inspect_chip`, N28's amended triggers: row chips,
+cells via the cluster chip), the §12.5 census row-by-row (in-flow hover blocks
+deleted to the tooltip, grid rebuilds off hover/focus, every `tooltip_text`/
+status-hint write gone), the one skeleton (`PaneHeader` + `PaneFoot` bands) and
+R-S30-2's door; gate **1074 → 1079/0** ×2. **B2** landed the P15 shell (header
+with TERMINAL + identity + credits, one body pane, footer strip; **ModuleRail
+and Inspector band deleted**), the TERMINAL drawer (layer-20 overlay, R-S30-1's
+box, 0.18/0.12 s `TRANS_CUBIC`, P19's topmost-first unwind), the OVERVIEW
+landing pane (identity, 3×2 department tiles, hull+repair with `REPAIR →`, U2
+services rows, flavour line), P20 cycling and the raw-key fallbacks; gate
+**1079 → 1089/0** ×2 (`test_s30_shell` +12, T-105's frozen clock restored).
+**R1** (`hyper/glm-5.3-flash` @ max): **blocked** — 3 HIGH (shipyard's 862 px
+min reflowed the shell off-screen; the drawer plate's stale `offset_bottom`
+stranded LOG OUT at y 1548; the sheet's `reset_size()` collapsed its root to
+0×0), 7 MED (CanvasLayer theme resolution, idle summaries re-arming the
+tooltip, census-16 on the focus route, ARMORY chips + foot band, LAUNCH's band,
+the drawer root blocking the header), 4 LOW → **T-114–T-117**; CONTRACTS §9/§10
+updated; probe files `tests/probe_s30_review1-4` as evidence. **F1** cured
+F1–F10 (stats column → scroll, plate box reset post-`add_child`, `_fit()` on
+the content node, explicit themes, `publish_idle_summary` deleted, same-hull
+short-circuit, chips + bands, scrim body-only); the probes folded into 4 real
+rows; gate **1093/0** ×2. Close-out: gate 1093/0 ×2, verify green vs
+`s30_start`; the docs-cite batch (T-94–T-97, T-99a/c, L267, L268) re-measured
+against the rewritten panels and fixed to symbol-stable cites (T-99b closed,
+zero hits); the input-map rows T-101/T-110 deferred (`EDITOR_PLAYING` at
+close-out — the owner's own session is live in-game). **Next in the phase:
+coder 30 (S24 world identity)**, its brief re-checked against the new shell.

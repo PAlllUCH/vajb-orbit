@@ -51,7 +51,8 @@ func _ready() -> void:
 	_button.button_up.connect(_on_button_up)
 	_button.mouse_entered.connect(_on_mouse_entered)
 	_button.mouse_exited.connect(_on_mouse_exited)
-	_glow.visible = false
+	_glow.visible = true
+	_set_glow(false)
 	_refresh_colors()
 	_apply_breath(0.0)
 	_start_breathing()
@@ -158,20 +159,20 @@ func _on_button_pressed() -> void:
 
 
 func _on_button_down() -> void:
-	_glow.visible = false
+	_set_glow(false)
 	_tween_press_scale(PRESS_SCALE)
 
 
 func _on_button_up() -> void:
 	_tween_press_scale(1.0)
-	_glow.visible = _hovered
+	_set_glow(_hovered)
 
 
 func _on_mouse_entered() -> void:
 	if _hovered:
 		return
 	_hovered = true
-	_glow.visible = true
+	_set_glow(true)
 	queue_redraw()
 	hovered.emit()
 
@@ -180,6 +181,14 @@ func _on_mouse_exited() -> void:
 	if not _hovered:
 		return
 	_hovered = false
-	_glow.visible = false
+	_set_glow(false)
 	queue_redraw()
 	unhovered.emit()
+
+
+## S30 census row 5 (UI_SPEC section 12.5): the ember underlay's own `modulate.a` - never
+## its in-flow `visible` (A5.5). The underlay stays a node of the tree and keeps its own
+## rect; only the alpha moves, so the look of section 2.2's pinned glow is unchanged.
+func _set_glow(on: bool) -> void:
+	if _glow != null:
+		_glow.modulate.a = 1.0 if on else 0.0

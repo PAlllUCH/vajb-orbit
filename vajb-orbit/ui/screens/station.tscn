@@ -76,7 +76,31 @@ custom_minimum_size = Vector2(0, 76)
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="StationMark" type="TextureRect" parent="Layout/Page/Header"]
+[node name="TerminalButton" type="Button" parent="Layout/Page/Header"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 32)
+layout_mode = 2
+size_flags_vertical = 4
+text = "TERMINAL"
+
+[node name="StationPlate" type="PanelContainer" parent="Layout/Page/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="PlateMargin" type="MarginContainer" parent="Layout/Page/Header/StationPlate"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 8
+
+[node name="PlateRow" type="HBoxContainer" parent="Layout/Page/Header/StationPlate/PlateMargin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="StationMark" type="TextureRect" parent="Layout/Page/Header/StationPlate/PlateMargin/PlateRow"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 size_flags_vertical = 4
@@ -85,19 +109,21 @@ texture = ExtResource("5_mark")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="TitleBox" type="VBoxContainer" parent="Layout/Page/Header"]
+[node name="TitleBox" type="VBoxContainer" parent="Layout/Page/Header/StationPlate/PlateMargin/PlateRow"]
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_constants/separation = 2
 
-[node name="StationName" type="Label" parent="Layout/Page/Header/TitleBox"]
+[node name="StationName" type="Label" parent="Layout/Page/Header/StationPlate/PlateMargin/PlateRow/TitleBox"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"HeroTitle"
 text = "ORBITAL DRYDOCK KEPLER-9"
 
-[node name="StationLocation" type="Label" parent="Layout/Page/Header/TitleBox"]
+[node name="StationLocation" type="Label" parent="Layout/Page/Header/StationPlate/PlateMargin/PlateRow/TitleBox"]
+unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"FlavourText"
+theme_type_variation = &"StationCaption"
 text = "DOCKING RING 04 · HELIOS DRIFT · HULL TRAFFIC LOW"
 
 [node name="Spacer" type="Control" parent="Layout/Page/Header"]
@@ -154,49 +180,6 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 16
 
-[node name="ModuleRail" type="PanelContainer" parent="Layout/Page/Body"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(360, 0)
-layout_mode = 2
-size_flags_vertical = 3
-theme_type_variation = &"PanelRaised"
-
-[node name="RailMargin" type="MarginContainer" parent="Layout/Page/Body/ModuleRail"]
-layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 12
-
-[node name="RailBox" type="VBoxContainer" parent="Layout/Page/Body/ModuleRail/RailMargin"]
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="RailCaption" type="Label" parent="Layout/Page/Body/ModuleRail/RailMargin/RailBox"]
-layout_mode = 2
-theme_type_variation = &"StationCaption"
-text = "MODULES"
-
-[node name="ModuleButtons" type="VBoxContainer" parent="Layout/Page/Body/ModuleRail/RailMargin/RailBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 6
-
-[node name="RailSpacer" type="Control" parent="Layout/Page/Body/ModuleRail/RailMargin/RailBox"]
-layout_mode = 2
-size_flags_vertical = 3
-mouse_filter = 2
-
-[node name="SessionCaption" type="Label" parent="Layout/Page/Body/ModuleRail/RailMargin/RailBox"]
-layout_mode = 2
-theme_type_variation = &"StationCaption"
-text = "SESSION"
-
-[node name="SessionButtons" type="VBoxContainer" parent="Layout/Page/Body/ModuleRail/RailMargin/RailBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 6
-
 [node name="ModuleHost" type="PanelContainer" parent="Layout/Page/Body"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -211,36 +194,6 @@ theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
-
-[node name="Inspector" type="PanelContainer" parent="Layout/Page"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"PanelRaised"
-
-[node name="InspectorMargin" type="MarginContainer" parent="Layout/Page/Inspector"]
-layout_mode = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 10
-
-[node name="InspectorBox" type="VBoxContainer" parent="Layout/Page/Inspector/InspectorMargin"]
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="InspectorTitle" type="Label" parent="Layout/Page/Inspector/InspectorMargin/InspectorBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"StationPanelTitle"
-clip_text = true
-
-[node name="InspectorBody" type="Label" parent="Layout/Page/Inspector/InspectorMargin/InspectorBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"SectionHeader"
-theme_override_colors/font_color = Color(0.7882353, 0.81960785, 0.8627451, 1)
-autowrap_mode = 3
-max_lines_visible = 2
 
 [node name="Footer" type="HBoxContainer" parent="Layout/Page"]
 unique_name_in_owner = true
@@ -267,10 +220,11 @@ size_flags_horizontal = 3
 mouse_filter = 2
 
 [node name="HintLabel" type="Label" parent="Layout/Page/Footer"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"StationCaption"
-text = "ARROWS MOVE · ENTER CONFIRM · TAB RAIL · PGUP/PGDN MODULE · ESC BACK"
+text = "ARROWS MOVE · ENTER CONFIRM · E INSPECT · PGUP/PGDN PANE · ESC BACK"
 
 [node name="LeaveConfirm" type="Control" parent="."]
 unique_name_in_owner = true

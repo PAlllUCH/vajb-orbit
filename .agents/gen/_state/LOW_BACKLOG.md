@@ -901,3 +901,18 @@ ticket after these rows is **T-114**.
 | T-111 | **LOW (D19-A1/F16): §12.1 seats 272×56 plates in the 270 px content box** (2 px overflow; the shipped plate art measures x 71..325 in `station.tscn`). | [SPEC] | `docs/design/UI_SPEC.md` §12.1; `vajb-orbit/ui/screens/station.tscn` | S30 seats at the measured 254 or §12.1 widens the box 2 px (PROPOSED, reversal). Reversal: the 270 box. |
 | T-112 | **LOW (D19-A1/F17): the three-plate clusters have no seat arithmetic.** §19.3's cluster box seats one primary + one secondary; EXCHANGE, LAUNCH and SERVICES run three plates (F6's REFINERY cure now joins them). | [SPEC] | `docs/design/STATION_HUB.md` §19.3/§19.4 | Designer amendment at S30's brief if the build needs it (PROPOSED, reversal). Reversal: drop to two plates. |
 | T-113 | **LOW (D19 close-out, orchestrator): the headless gate carries a `SCRIPT ERROR` on stderr and stays green.** Both 2026-10-03 close-out runs printed `Invalid access to property or key 'text' on a base object of type 'null instance'` beside `[SUMMARY] passed=1074 failed=0`; the headless runner never installs the editor runner's `ScriptErrorCapture` (S29-F2's fixer note flagged the class), so a silent script abort cannot fail a row. Not attributable to D19 (docs-only wave). | [HARNESS] | `vajb-orbit/tests/headless_runner.gd` (`_run_file`) | Owner call (bucket 2 — it moves gate behaviour): wire `ScriptErrorCapture` into the headless runner so script errors fail their row, then attribute this one. Reversal: keep the runner as-is. |
+
+
+### S30 review block (2026-10-04)
+
+Source: wave S30's mandatory review (S30-R1, `hyper/glm-5.3-flash`; verdict
+**blocked**; 3 HIGH + 7 MED cured by S30-F1, 4 LOW ride here;
+`.agents/gen/slices/S30-shell-v2/S30-R1_review.md`). Gate 1074 → **1093/0**.
+The next free ticket after these rows is **T-118**.
+
+| # | Item | Kind | Where | Disposition |
+|---|------|------|-------|-------------|
+| T-114 | **LOW (S30-R1/F11): four dead `_row_hint` helpers remain** with no callers after the census-7 cures (the status-strip hint path is gone). | [CODE] | `shipyard_panel.gd:1240`, `auction_panel.gd:1150`, `exchange_panel.gd:590`, `armory_panel.gd:1857` | Next touch of those panes deletes them. Reversal: none — dead code. |
+| T-115 | **LOW (S30-R1/F12): two pins disagree on the ARMORY meter word.** STATION_HUB §19.4's hint keeps `CANDIDATE` while the shipped meter words the preview `IF FITTED` (D17-P1's unticked PROPOSED). | [DOC] | `docs/design/STATION_HUB.md` §19.4; `armory_panel.gd:219-220` | Designer reconciles at the next docs pass (one wording wins). Reversal: the other word. |
+| T-116 | **LOW (S30-R1/F13): two pins disagree on the auction foot band.** The band ships §5.10's two-label footer (RestockLabel + StatusLabel) where §19.4 wants a one-line hint cell. | [SPEC] | `docs/design/STATION_HUB.md` §5.10 vs §19.4 | Designer reconciles at the next docs pass (one shape wins). Reversal: the other shape. |
+| T-117 | **LOW (S30-R1/F14): the drawer content box lands 1 px off the pin** (x 69..341 measured vs R-S30-1's 68..340; disclosed as B2's deviation 2). | [SPEC] | `ui/screens/station.gd` (drawer plate); `docs/design/UI_SPEC.md` §12.1 | Owner tick at close-out — accept the 1 px or snap the plate. Reversal: snap to 68..340. |

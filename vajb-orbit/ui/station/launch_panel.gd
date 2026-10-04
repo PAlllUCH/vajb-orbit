@@ -215,18 +215,11 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_THEME_CHANGED and is_node_ready():
 		_apply_tokens()
 	elif what == NOTIFICATION_VISIBILITY_CHANGED and is_node_ready() and is_visible_in_tree():
-		## P6 (S29's half, STATION_HUB section 17.3): LAUNCH fills the band with its own
-		## launch summary when idle, so the shell's clear on a module switch never leaves
-		## the band empty on this pane.
+		## P6 is retired with the inspector band (STATION_HUB section 18's ledger), so a pane
+		## show publishes the chain's clear - never a fill that would re-arm the N27 tooltip
+		## (S30-F1, F5: the tooltip opens on a real hover only).
 		_refresh_all()
-		publish_idle_summary()
-
-
-## P6's LAUNCH fill: the pane's own ready line and its standing arm instruction, published
-## through the existing `inspect_requested` chain (`title == ""` still clears).
-func publish_idle_summary() -> void:
-	var title := _hull_caption.text if _hull_caption != null else ""
-	inspect_requested.emit(title, IDLE_TEXT % int(ARM_SECONDS), false)
+		inspect_requested.emit("", "", false)
 
 
 func _exit_tree() -> void:
@@ -381,10 +374,13 @@ func _refresh_plate_textures() -> void:
 ## keeps DECK CONTROL's own column, under the hull frame. The buttons are named after the
 ## catalogue's own services, exactly as before.
 func _build_service_rows() -> void:
+	## S30 (UI_SPEC section 19.3): the cluster lost its `RowSpacer` when it moved into the
+	## shared `PaneFoot` band, so the two service plates insert ahead of the scene's
+	## LAUNCH plate (the primary stays rightmost, section 8's P2).
 	_refuel_button = _make_service_button(_actions_row, SERVICE_REFUEL)
-	_actions_row.move_child(_refuel_button, 1)
+	_actions_row.move_child(_refuel_button, _actions_row.get_child_count() - 2)
 	_recharge_button = _make_service_button(_actions_row, SERVICE_RECHARGE)
-	_actions_row.move_child(_recharge_button, 2)
+	_actions_row.move_child(_recharge_button, _actions_row.get_child_count() - 2)
 	_bounty_button = _make_service_button(_deck_box, SERVICE_BOUNTY)
 	_refresh_bounty_row()
 

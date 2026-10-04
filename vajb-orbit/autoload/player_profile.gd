@@ -159,6 +159,10 @@ const KEY_INSTANCE_COUNTER := "instance_counter"
 ## `auction`, for the same reason. It is also the signal key a rack write emits,
 ## which is what redraws the ARMORY pane's drop zones.
 const KEY_BATTERIES: StringName = &"batteries"
+## S30's **R-S30-2** (T-102's default): the map deck's per-profile filter states. The
+## save key is `map_filters`, a string-keyed dictionary of booleans, exactly the shape
+## `ui/hud/map_deck.gd` stores. Reversal: the deck's private `_config` borrow.
+const KEY_MAP_FILTERS := "map_filters"
 
 ## The weapon module id prefix, for the pane's own reading of a rack entry: a rack
 ## holds W cells, and `game/weapons.gd`'s `GROUPS_MAX` / `BATTERY_CELLS_MAX` are the
@@ -1876,6 +1880,31 @@ func set_vitals(ship_id: StringName, hull: int, shield: int, fuel: int = FUEL_UN
 		_mark_dirty()
 	else:
 		_touch(KEY_FUEL)
+
+
+## S30's **R-S30-2** (T-102's default): the map deck's per-profile filter states behind a
+## first-class door, so `ui/hud/map_deck.gd` never reaches the profile's private
+## `_config`. The stored shape is a string-keyed dictionary of booleans.
+func map_filters() -> Dictionary:
+	var raw: Variant = _config.get_value(SECTION, KEY_MAP_FILTERS, {})
+	if not raw is Dictionary:
+		return {}
+	var out := {}
+	for key: Variant in (raw as Dictionary):
+		out[String(key)] = bool((raw as Dictionary)[key])
+	return out
+
+
+## Store the deck's filter states and announce the write. A no-op when nothing changed, so
+## a re-save of the same set never dirties the profile.
+func set_map_filters(filters: Dictionary) -> void:
+	var stored := {}
+	for key: Variant in filters:
+		stored[String(key)] = bool(filters[key])
+	if stored == map_filters():
+		return
+	_config.set_value(SECTION, KEY_MAP_FILTERS, stored)
+	_touch(&"map_filters")
 
 
 func save() -> void:

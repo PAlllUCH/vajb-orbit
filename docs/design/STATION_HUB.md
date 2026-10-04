@@ -685,7 +685,7 @@ Left: the flight briefing and the cargo hold. Right: DECK CONTROL.
 | `AMMUNITION` | `ammo_of()` summed over the five weapons | `"800 ROUNDS ACROSS 5 WEAPONS"` |
 | cargo strip | `cargo_items()` | 5 `SlotButtonCargo` plates of 40 px, the first `n` carrying the item icon (24 px inset 8), the rest `disabled` |
 | manifest | `cargo_items()` | `ItemList`, one item per stack as `"<name>   <qty>"`, first item auto-selected |
-| `REFUEL` | `Repairs.refuel(profile, active_ship)` | an action in DECK CONTROL, for the active hull: the service's own result in the pane's status line (`fuel_max` on success; the service's refusal reason otherwise) |
+| `REFUEL` | `Repairs.refuel(profile, active_ship)` | an action in DECK CONTROL, for the active hull: the service's own result in the shell's footer status strip (`fuel_max` on success; the service's refusal reason otherwise) |
 | `RECHARGE` | `Repairs.recharge(profile, active_ship)` | as `REFUEL`, for `energy_max` |
 | launch control | - | two-press arm/fire per section 2 |
 
@@ -704,7 +704,7 @@ the `ShipFit` source, and read the three stats from the frozen `StationCatalog` 
 **Amendment 2026-09-22 (P2-B proper — the two service rows, owner request 4).** Transcribed from
 `.agents/gen/p2b_proper_wave_task.md` §3.3. DECK CONTROL gains the `REFUEL` and `RECHARGE` actions for the
 active hull, calling `Repairs.refuel(profile, active_ship)` / `Repairs.recharge(profile, active_ship)` and
-rendering the service's own result in the pane's status line (`fuel_max` on success; `energy_max` for
+rendering the service's own result in the shell's footer status strip (`fuel_max` on success; `energy_max` for
 `RECHARGE`; the service's refusal reason otherwise). The services are free and instant: **no price column
 and no credits move** (14 §1's rate; `FREE_FEE` is 0). Already-full and no-damage-report states are the
 service's own refusals, rendered and never hidden: the button stays pressable and the footer says why (the
@@ -1557,7 +1557,8 @@ flashing 0.5 s (P10). An owned module dropped on a legal cell fits it (the
 displaced module returns to the hold); an **unowned** row dropped on a legal
 cell **buys-then-fits** — one flow, one press, credits checked first (a
 shortfall refuses through the status line, the shipped
-`REFUSED · NOT ENOUGH CREDITS · <n> NEEDED` wording, `auction_panel.gd:160`).
+`REFUSED · NOT ENOUGH CREDITS · <n> NEEDED` wording,
+`STATUS_REFUSED_CREDITS`, `auction_panel.gd:170`).
 `BUY` on a browser row buys into
 the next free legal cell or the selected cell; the P2 cluster's primary
 (`BUY & FIT`, P14; P1 plate 360×56, rightmost) does the same for the
@@ -1571,15 +1572,17 @@ surface.
 ### 17.2 SHIPYARD — one pane (P5)
 
 One pane on the §15 spine. The hull list (name, `ACTIVE` badge,
-`<class> CLASS · <hull> · <slots>` meta — `shipyard_panel.gd:82-84`) beside
+`<class> CLASS · <hull> · <slots>` meta — `META_FORMAT`,
+`shipyard_panel.gd:135`) beside
 the side render in the pane's own `PreviewFrame`
 (`shipyard_panel.tscn:74-115`). The **labelled** stat pairs
-(HULL/SHIELD/CARGO/ENGINES/SLOT CELLS — `shipyard_panel.gd:74-80`) and the
+(HULL/SHIELD/CARGO/ENGINES/SLOT CELLS — `STAT_ROWS`,
+`shipyard_panel.gd:106`) and the
 comparison block (`SELECTED` vs `ACTIVE`, the catalogue's ladder order,
-`shipyard_panel.gd:84-86,203`) below it. Under the comparison: the selected
+the catalogue's ladder order) below it. Under the comparison: the selected
 hull's **installed modules** — the slot-layout grid with filled plates named
 on hover by the existing `<TYPE><n> · <MODULE NAME or EMPTY> · OWNED ×<n>`
-line (`shipyard_panel.gd:60-88`) under the `INSTALLED MODULES` caption (P12).
+line (`HOVER_FORMAT`, `shipyard_panel.gd:144`) under the `INSTALLED MODULES` caption (P12).
 
 **The repair block.** The damage table (ACTIVE HULL/HULL/SHIELD + the four
 armour quadrants, `repairs_panel.gd:74-89`'s REPORT_ROWS **minus the
@@ -1623,7 +1626,7 @@ keep exactly one `PaneHeader` each — the fold adds no second header.
 | **P9** | refusal status line `DROP REFUSED — <MODULE> FITS NO <SLOT> CELL` | the bare `DROP REFUSED` |
 | **P10** | the cell's slot-caption flash on a refused drop, **0.5 s** | 0.25 s |
 | **P11** | buy-and-fit confirmation `FITTED · <MODULE>` | silent fit |
-| **P12** | shipyard `INSTALLED MODULES` caption | the `SLOT LAYOUT · %d CELLS · %d ENGINES` caption alone (`shipyard_panel.gd:83`) |
+| **P12** | shipyard `INSTALLED MODULES` caption | the `SLOT LAYOUT · %d CELLS · %d ENGINES` caption alone (the caption's own const in `shipyard_panel.gd`) |
 | **P13** | intact damage rows read `NOMINAL` in `text_dim` | the `MISSING` count row (`repairs_panel.gd:79`) |
 | **P14** | the ARMORY cluster primary's label `BUY & FIT` (focused row; `SELECTED` appended when a cell is selected) | `BUY` (P1's own row) |
 
@@ -1702,7 +1705,7 @@ no scroll — separation 8 and the flavour line dropped (P18's own reversal).
 |---|---|---|---|---|
 | 1 | Identity | the §15.5 name plate (UI_SPEC §7 A5.4-1) verbatim — faction glyph 48 at its own cut + `StationName` (`HeroTitle` 48) + the character line (`StationCaption` 13) — stretched to the block width | A5.4-1 (flat Tokens box, faction ramp border) | P18 "identity (§15 treatment)"; §15.5 (U17, W3) |
 | 2 | Department tiles | `GridContainer` columns 3, separation 16; 6 tiles min 300×140 (P18), row-major ARMORY · REFINERY · EXCHANGE / AUCTION · SHIPYARD · LAUNCH (**P23**) | §19.2 | P18 |
-| 3 | Active hull + repair | `HBoxContainer` separation 16: left `VBoxContainer` — caption `ACTIVE HULL` (A5.4-3), the hull name + `<class> CLASS · <hull> · <slots>` meta (`shipyard_panel.gd:123`, `META_FORMAT`), the labelled stat-pair line HULL/SHIELD/CARGO/ENGINES/SLOT CELLS (`:94-100`, `STAT_ROWS`), and the repair summary `REPAIR AVAILABLE · %d CR` / `ALL SYSTEMS NOMINAL` (`repairs_panel.gd:50,52` — shipped, not re-ticked); right: `REPAIR →` (§8 `ActionInline` 96×32; the words are P18's own) | caption A5.4-3; the chip is §8's flat `ActionInline` | P18; §17.2 (**P24**) |
+| 3 | Active hull + repair | `HBoxContainer` separation 16: left `VBoxContainer` — caption `ACTIVE HULL` (A5.4-3), the hull name + `<class> CLASS · <hull> · <slots>` meta (`META_FORMAT`, `shipyard_panel.gd:135`), the labelled stat-pair line HULL/SHIELD/CARGO/ENGINES/SLOT CELLS (`STAT_ROWS`, `:106`), and the repair summary `REPAIR AVAILABLE · %d CR` / `ALL SYSTEMS NOMINAL` (`repairs_panel.gd:50,52` — shipped, not re-ticked); right: `REPAIR →` (§8 `ActionInline` 96×32; the words are P18's own) | caption A5.4-3; the chip is §8's flat `ActionInline` | P18; §17.2 (**P24**) |
 | 4 | Services rows | three §3.1 rows (76 tall, `RowInner` 12/8, pitch 82): icon 24 at its own cut + the service name (Label 14 — U2's `CONTRACTS` / `INSURANCE` / `VAULTS`) + the right-aligned readout (`ACTIVE CONTRACTS %d/3` (U6), the `INSURED · COVERS ONE LOSS` family (U10), `THIS VAULT — %d / %d UNITS` (U16)) + a trailing `OPEN →` `ActionInline` (**P25**) → the SERVICES pane (**P26**) | A5.4-4 (flat `item_bg` + 1 px `metal_mid`) | P18; §15.1/§15.6 |
 | 5 | Flavour line | `THE DOCK CLAMPS ARE CHEAP. THE AMMUNITION IS NOT.` (**P27**), `StationCaption` 13 `text_dim`, the stack's last row | A5.4-3's caption idiom | P18 "one flavour line" |
 

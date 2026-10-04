@@ -886,7 +886,7 @@ Scene: `vajb-orbit/ui/screens/boot.tscn`. Root `Control` full-rect,
 | 0.0–0.5 | Solid `void_base`. Nothing else. |
 | 0.5–1.4 | Logo fades in (alpha 0→1, 0.9 s, ease out). The logo is the generated lockup art (UI_CHROME spec). |
 | 1.4–1.7 | One "ember flicker": logo modulate briefly (0.15 s) toward `accent_danger_bright` then back — single pulse, never looping. |
-| 1.4–2.4 | Thin 2 px progress line under the logo, width 240, centred. Fill `metal_light`; 3 scripted ticks (25 % / 60 % / 100 %) with 0.3 s gaps — preflight is cosmetic in v1 (no server). |
+| 1.4–2.4 | Thin 2 px progress line under the logo, width 240, centred. Fill `text_dim`; 3 scripted ticks (25 % / 60 % / 100 %) with 0.3 s gaps — preflight is cosmetic in v1 (no server). |
 | 2.4–3.0 | 0.6 s crossfade to Main Menu (`Tween` on a full-rect black `ColorRect` alpha 0→1→0 across the scene swap). |
 
 - Any key press during boot is ignored (sequence is short by design).

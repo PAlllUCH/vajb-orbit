@@ -918,6 +918,32 @@ actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
+Expected (S30, 2026-10-04): **`[SUMMARY] passed=1089 failed=0`**, exit 0, twice
+hermetic on fresh scratch stores (S30-R1's A/B; identical pass lists). The
+station shell v2: `test_s11_inspector.gd` retargets to the popup sinks (8 new
+rows — tooltip show/clear/delay, sheet open/rows/ESC/queue, `station_inspect`,
+hover-never-moves; 3 band rows retired, **+3** net), new `test_s30_shell.gd`
+**12** rows (P17 landing, the header trio, drawer toggle/ESC/entry/focus-trap,
+OVERVIEW's five blocks + U2 rows + tile/REPAIR deep links, P20's cycle wrap and
+its OVERVIEW entry), `test_s20_chrome_unify` AC5 repointed to the band's
+retirement, `test_s29_station_panels` retargeted to the chain (the cell naming
+line + the idle summaries), `test_p2b_services` (3 rows) /
+`test_p2b1_outfitting_panel` / `test_p2b_fitting_panel` (the chip joins the
+focus walk) / `test_s5_ammo_cargo` retarget to the chain and the moved cluster
+paths, `test_s3_auction` reads `drawer_entries()`, `test_s5_batteries_v2` reads
+`PaneTitle` via `find_child`, `test_s21_stability`'s L18/L122 rows are
+exact-equality on the frozen clock (T-105's ruling). Growth: 1074 → 1089
+(**+15**: s11 +3 net, s30_shell +12). The reviewer's probe
+(`tests/probe_s30_review*.gd`, scratch store, self-quitting) re-measured the
+hover-never-moves bar on every pane at 1920×1080 and 1440×1080 (28+12 hovers, 0
+moves), the skeleton origins per pane, the drawer/sheet geometry and the popup
+layers' theme resolution. Findings: **3 HIGH (the shipyard pane's 862 px min
+reflows the whole shell — Header at y −29, Footer at y 1091; the drawer plate
+594 px too tall, LOG OUT at y ≈1548; `_fit()` collapses the sheet root to 0×0,
+the sheet opens half off-screen at the top-left corner) / 7 MED / 4 LOW
+(T-114–T-117)** — verdict blocked pending the fixer. The S24–S29 waves left §9
+untouched; 1074 is the brief's D19-close baseline.
+
 Expected (S23, 2026-10-02): **`[SUMMARY] passed=1030 failed=0`**, exit 0, twice
 hermetic on fresh scratch stores (S23-R1's A/B; pass lists identical, the only log
 diffs are sub-frame timing prints). The dead-content wave: the two exclusive families
@@ -4815,3 +4841,24 @@ hull stops twice and the second stop slides.
   `ModuleCatalog.SOURCE_ROLLS`, and a module listing's hover inspector appends 15 §7's
   stat block (FITTING's own statics) to the catalogue description. §15 carries the
   amendment; 10 §2.1 and 15 §11 carry the numbers and reversals.
+- **v0.45 (2026-10-04, wave S30 review — S30-R1; gate `1074 → 1089/0` twice)** —
+  the station shell v2 graded against UI_SPEC §11/§12 and STATION_HUB §18/§19
+  plus the D19 wireframes: the popup layer (N27 tooltip, N28 sheet, N37 chips)
+  and the §12.5 census cured row by row, the one skeleton (P7/§19.3), the shell
+  re-lay (P15) with the ModuleRail and the inspector band deleted, the TERMINAL
+  drawer (N25/N26/N39/N40), OVERVIEW (P17/P18/P22–P27), P20's cycle, T-105's
+  frozen clock and R-S30-2's `map_filters` door. §9 carries the S30 expected
+  block (the S24–S29 waves left it untouched; 1074 is the brief's D19-close
+  baseline). Review verdict **blocked**: HIGH ×3 — the shipyard pane's 862 px
+  min reflows the whole shell (Header at y −29, Footer at y 1091, both
+  off-screen; the body band breaks §12.4's "exactly"); the drawer plate ships
+  594 px too tall (LOG OUT at y ≈1548, the shell's only logout route dead) on a
+  default flat panel at a 338 px content box — no theme under the popup layers
+  (dialog.tscn:14's root-theme idiom missed, R-S30-1's 272 box unmet); `_fit()`
+  collapses the sheet root to 0×0 so the sheet opens half off-screen at the
+  top-left corner. MED ×7 — the P6 idle summary re-arms the tooltip on unhover
+  (N33), the shipyard's census-16 focus route still rebuilds the grid, ARMORY's
+  positioned rows carry no chip and its skeleton has no shared foot band,
+  LAUNCH's foot band sits 35 px high under the legacy ConfirmStrip, and the
+  drawer's full-rect STOP root kills TERMINAL's toggle while open (N40). LOW
+  ×4 (T-114–T-117).

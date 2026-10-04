@@ -331,10 +331,11 @@ func test_the_rail_says_armory_and_loads_the_renamed_pane() -> void:
 		"the two rail arrays stay the same length"
 	)
 	## The pane's own title is the same word: a pane whose header disagreed with the rail
-	## entry it was loaded from would read as two surfaces.
+	## entry it was loaded from would read as two surfaces. (S30: the title is nested under
+	## `PaneHeader/TitleBox`, so the read walks the tree instead of the pane root.)
 	var panel := _mount()
 	assert_eq(
-		String((panel.get_node(^"PaneTitle") as Label).text),
+		String((panel.find_child("PaneTitle", true, false) as Label).text),
 		"ARMORY",
 		"the pane's title reads the same word as the rail"
 	)

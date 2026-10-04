@@ -413,109 +413,26 @@ func test_ac4_the_over_cap_label_clears_the_contrast_floor() -> void:
 	)
 
 
-## ---------------------------------------- 5. AC5: the constant inspector (A4.4)
+## ------------------------------ 5. AC5: the shell-v2 body band (A4.4 retired)
 
-## A4.4: the shell's Inspector reserves one title line plus `INSPECTOR_BODY_MAX_LINES` body
-## lines as font-derived minimums, so "", one line, two lines and 3+ line hover content all
-## reserve the same box and the ModuleHost never reflows when `inspect_requested` fires.
-func test_ac5_the_inspector_reserves_a_constant_height() -> void:
+## **S30 (STATION_HUB section 18's supersession ledger, P6 retired).** A4.4's constant
+## inspector is superseded by A5.5: the band is removed and the one body pane spans the body
+## band at full width (P15). The hover sink is the N27 tooltip (UI_SPEC section 12.2).
+func test_ac5_the_inspector_band_is_retired_and_the_pane_fills_the_body() -> void:
 	_station = StationScene.instantiate() as Control
 	_host.size = STATION_HOST
 	_host.add_child(_station)
-	var title := _station.get_node(^"%InspectorTitle") as Label
-	var body := _station.get_node(^"%InspectorBody") as Label
-	var inspector := _station.get_node(^"%Inspector") as Control
+	var page := _station.get_node(^"Layout/Page") as Control
+	assert_true(page.get_node_or_null(^"Inspector") == null, "the inspector band is retired")
+	var body := _station.get_node(^"Layout/Page/Body") as Control
 	var module_host := _station.get_node(^"%ModuleHost") as Control
 	var panels: Array = _station.get(&"_panels")
-	assert_eq(panels.size(), 6, "the shell mounted its six panes (P7's folded rail)")
-	var pane := panels[0] as CanvasItem
+	assert_eq(panels.size(), 6, "the shell mounted its six service panes (P16)")
+	assert_true(module_host != null, "the one body pane ships")
+	assert_eq(module_host.get_parent(), body, "the pane sits in the body band (P15)")
 	assert_true(
-		pane != null and pane.has_signal(&"inspect_requested"), "the armory pane ships"
+		(panels[0] as CanvasItem).has_signal(&"inspect_requested"), "the armory pane ships"
 	)
-	if title == null or body == null or inspector == null or module_host == null or pane == null:
-		return
-	## The pin itself: measured against the label's own shaped minimum for that many lines
-	## (not re-derived from the production formula).
-	var title_line := _label_min_for(title, "T")
-	var body_lines := _label_min_for(body, _two_lines("a", "b"))
-	assert_true(title_line > 0.0 and body_lines > 0.0, "both labels resolve a theme font")
-	assert_eq(
-		title.custom_minimum_size.y, title_line,
-		"the title line is reserved, font-derived (%.1f)" % title_line
-	)
-	assert_eq(
-		body.custom_minimum_size.y, body_lines,
-		"and the body's two lines (INSPECTOR_BODY_MAX_LINES, %.1f)" % body_lines
-	)
-	## The four content states, each measured after a forced layout settle.
-	var states: Array = [
-		["", ""],
-		["LASER CELLS", "One line of catalogue prose."],
-		["LASER CELLS", _two_lines("Two lines", "of hover prose.")],
-		["LASER CELLS", "Four\nlines\nof\nhover prose."],
-	]
-	var heights: Array[float] = []
-	var host_rects: Array[Rect2] = []
-	var mins: Array[float] = []
-	for state: Array in states:
-		pane.inspect_requested.emit(String(state[0]), String(state[1]), false)
-		_settle_station()
-		heights.append(inspector.size.y)
-		host_rects.append(Rect2(module_host.position, module_host.size))
-		mins.append(inspector.get_combined_minimum_size().y)
-	for index in range(1, heights.size()):
-		assert_true(
-			is_equal_approx(heights[index], heights[0]),
-			"the inspector height at state %d is state 0's (%.1f vs %.1f)"
-			% [index, heights[index], heights[0]]
-		)
-		assert_eq(
-			host_rects[index], host_rects[0],
-			"and the ModuleHost rect never moves (state %d)" % index
-		)
-	for index in range(1, mins.size()):
-		assert_true(
-			is_equal_approx(mins[index], mins[0]),
-			"the reserved minimum is constant (state %d: %.1f vs %.1f)"
-			% [index, mins[index], mins[0]]
-		)
-	assert_eq(title.text, "LASER CELLS", "the last emit wrote the title")
-	print("[s20] inspector heights=%s host=%s title_pin=%.1f body_pin=%.1f" % [
-		str(heights), str(host_rects[0]), title.custom_minimum_size.y,
-		body.custom_minimum_size.y,
-	])
-
-
-## Two body lines, the pane's own P4 shape.
-func _two_lines(first: String, second: String) -> String:
-	return first + "\n" + second
-
-
-## A label's own shaped minimum height for a given text, measured off the label itself.
-func _label_min_for(label: Label, text: String) -> float:
-	var saved := label.text
-	label.text = text
-	var height := label.get_minimum_size().y
-	label.text = saved
-	return height
-
-
-## The frame after the build, as the shell's own containers make it: the page and the
-## block's own containers reflow to the new minimums, top down.
-func _settle_station() -> void:
-	var blocks: Array[Container] = [
-		_station.get_node(^"Layout") as Container,
-		_station.get_node(^"Layout/Page") as Container,
-		_station.get_node(^"Layout/Page/Body") as Container,
-		_station.get_node(^"Layout/Page/Body/ModuleHost") as Container,
-		_station.get_node(^"Layout/Page/Body/ModuleHost/HostMargin") as Container,
-		_station.get_node(^"Layout/Page/Inspector") as Container,
-		_station.get_node(^"Layout/Page/Inspector/InspectorMargin") as Container,
-		_station.get_node(^"Layout/Page/Inspector/InspectorMargin/InspectorBox") as Container,
-	]
-	for _pass in 2:
-		for block: Container in blocks:
-			block.notification(Container.NOTIFICATION_SORT_CHILDREN)
 
 
 ## WCAG 2.x relative luminance and contrast ratio, computed here so the floor is measured

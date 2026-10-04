@@ -239,13 +239,21 @@ func test_the_buy_flow_checks_credits_first() -> void:
 func test_the_cell_tooltips_name_the_cell() -> void:
 	var panel := _mount(ArmoryScene)
 	var plate := (panel.get(&"_cells")[0] as Dictionary)[&"node"] as Button
-	assert_true(
-		plate.tooltip_text.contains(" · ") and plate.tooltip_text.contains("OWNED ×"),
-		"A7: the cell tooltip is the cell's own naming line (actual \"%s\")" % plate.tooltip_text
+	## S30 (UI_SPEC section 12.5 row 7): the cell's naming line rides the N27 tooltip now,
+	## published on the existing `inspect_requested` chain instead of `tooltip_text`.
+	var seen: Array = []
+	panel.connect(
+		&"inspect_requested",
+		func(title: String, _body: String, _danger: bool) -> void: seen.append(title)
 	)
+	plate.mouse_entered.emit()
+	var line := String(seen[0]) if not seen.is_empty() else ""
+	assert_true(seen.size() == 1, "the hover publishes on the chain")
 	assert_true(
-		not String(plate.tooltip_text).contains("CANDIDATE"), "and carries no dead term"
+		line.contains(" · ") and line.contains("OWNED ×"),
+		"A7: the cell's naming line is the tooltip title (actual \"%s\")" % line
 	)
+	assert_true(not line.contains("CANDIDATE"), "and carries no dead term")
 	_free_host(panel)
 
 
@@ -321,7 +329,7 @@ func test_the_cluster_is_the_p1_pair_with_the_primary_rightmost() -> void:
 ## ----------------------------------------------------------------- A6 - the shell fills
 
 
-func test_the_shipyard_and_launch_fill_the_band_when_idle() -> void:
+func test_the_shipyard_and_launch_idle_paths_never_arm_the_tooltip() -> void:
 	var screen := StationScene.instantiate() as Control
 	var host := Control.new()
 	host.theme = ThemeRes
@@ -330,19 +338,33 @@ func test_the_shipyard_and_launch_fill_the_band_when_idle() -> void:
 	host.add_child(screen)
 	var panels: Array = screen.get(&"_panels")
 	assert_eq(panels.size(), 6, "P7's folded rail carries six panes")
-	var title: Label = screen.get_node("%InspectorTitle")
+	## S30-F1 (F5, UI_SPEC section 12.2/N33): P6's band fill is retired with the inspector
+	## band (STATION_HUB section 18's ledger), so the unhover/pane-show path publishes the
+	## chain's clear - the N27 tooltip opens on a real hover only.
 	screen.call(&"_select_module", StationScript.Module.SHIPYARD, true)
-	assert_true(
-		not title.text.is_empty(), "P6: the band is never empty on SHIPYARD (actual \"%s\")" % title.text
-	)
 	var shipyard := panels[StationScript.Module.SHIPYARD] as CanvasItem
-	shipyard.call(&"_inspect_row", {&"id": SHIP, &"name": "VANGUARD"}, false)
-	assert_true(
-		String(title.text).contains("ACTIVE HULL"),
-		"the idle fill is the active hull's summary (actual \"%s\")" % title.text
+	var seen: Array = []
+	shipyard.connect(
+		&"inspect_requested",
+		func(title: String, body: String, _danger: bool) -> void: seen.append([title, body])
+	)
+	shipyard.call(&"_on_row_hovered", {}, false)
+	assert_true(seen.size() == 1, "SHIPYARD's unhover publishes once on the chain")
+	if seen.size() == 1:
+		assert_eq(String(seen[0][0]), "", "P6 retired: the unhover clears, never fills")
+		assert_eq(String(seen[0][1]), "", "and the body clears too")
+	assert_eq(
+		String(screen.get(&"_hover_title")), "", "so the shell's tooltip payload stays empty"
+	)
+	var launch := panels[StationScript.Module.LAUNCH] as CanvasItem
+	var launch_seen: Array = []
+	launch.connect(
+		&"inspect_requested",
+		func(title: String, _body: String, _danger: bool) -> void: launch_seen.append(title)
 	)
 	screen.call(&"_select_module", StationScript.Module.LAUNCH, true)
 	assert_true(
-		not title.text.is_empty(), "P6: LAUNCH fills the band with its own summary (actual \"%s\")" % title.text
+		launch_seen.is_empty() or String(launch_seen[launch_seen.size() - 1]).is_empty(),
+		"LAUNCH's pane-show path never publishes an idle fill"
 	)
 	host.free()

@@ -41,11 +41,11 @@ Design law: `docs/design/STATION_HUB.md` §16 P5 + §17 (this wave's detail) +
 
 | # | Surface | Chrome (A5.4 row) | Asset / theme cite | Tick |
 |---|---|---|---|---|
-| 1 | hull list rows (name, `ACTIVE` badge, `<class> CLASS · <hull> · <slots>` meta) | A5.4-4 data row (76 tall, `RowInner` 12/8) | SHIPYARD's own rows, `shipyard_panel.gd:82-84`; STATION_HUB.md:177-178 | P5 |
+| 1 | hull list rows (name, `ACTIVE` badge, `<class> CLASS · <hull> · <slots>` meta) | A5.4-4 data row (76 tall, `RowInner` 12/8) | SHIPYARD's own rows, `META_FORMAT` `shipyard_panel.gd:135`; STATION_HUB.md:177-178 | P5 |
 | 2 | side render + name plate | the pane's own `PreviewFrame` (SHIPYARD's one framed surface) | `shipyard_panel.tscn:74-115` (UI_SPEC.md:626-628) | P5 |
-| 3 | **labelled** stat pairs + comparison block (`SELECTED` vs `ACTIVE`, ladder order) | A5.4-3 caption + flat value columns | `shipyard_panel.gd:74-86,203` (HULL/SHIELD/CARGO/ENGINES/SLOT CELLS; COMPARISON) | P5 |
+| 3 | **labelled** stat pairs + comparison block (`SELECTED` vs `ACTIVE`, ladder order) | A5.4-3 caption + flat value columns | `STAT_ROWS` `shipyard_panel.gd:106` (HULL/SHIELD/CARGO/ENGINES/SLOT CELLS); comparison = the catalogue's ladder order | P5 |
 | 4 | `INSTALLED MODULES` caption under the comparison | A5.4-3 caption strip | theme `SectionHeader` 16 / `StationCaption` 13 | P12 |
-| 5 | the selected hull's installed modules: the slot-layout grid, filled plates named on hover (`<TYPE><n> · <MODULE NAME or EMPTY> · OWNED ×<n>`) | A5.4 `Bay cell` (glyph at 1:1) | `icon_slot_*.svg` (ASSET_CATALOG.md:394-401); `shipyard_panel.gd:60-88` (plates, glyphs, HOVER_FORMAT) | P5 |
+| 5 | the selected hull's installed modules: the slot-layout grid, filled plates named on hover (`<TYPE><n> · <MODULE NAME or EMPTY> · OWNED ×<n>`) | A5.4 `Bay cell` (glyph at 1:1) | `icon_slot_*.svg` (ASSET_CATALOG.md:394-401); `shipyard_panel.gd` plates/glyphs + `HOVER_FORMAT :144` | P5 |
 | 6 | damage table: `ACTIVE HULL`/`HULL`/`SHIELD` + the four armour quadrants, `NOMINAL` for intact systems, **no MISSING/FEE rows in the body** | A5.4-4 data row, intact value `text_dim` (label + state, never colour alone) | `repairs_panel.gd:74-89` (REPORT_ROWS minus `missing`/`fee`); quadrant order 09 §3.3 P2 | P5, P13 |
 | 7 | repair footer line (the fee lives here) + `REPAIR AVAILABLE · <n> CR` / `ALL SYSTEMS NOMINAL` | A5.4-3 caption strip | `repairs_panel.gd:50,52` (both wordings ship today) | P5 |
 | 8 | `REPAIR` primary (+ `SET ACTIVE` secondary for a non-active selection) | §8 P1/P2 — ActionPrimary/Secondary 360×56, primary rightmost | `ui_button_plate_*` (ASSET_CATALOG.md:435-438) | P1, P2 |

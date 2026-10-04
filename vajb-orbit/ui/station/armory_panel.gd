@@ -59,6 +59,7 @@ const TOKENS_TYPE: StringName = &"Tokens"
 const Catalog := preload("res://game/station_catalog.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
 const ModuleData := preload("res://game/module_catalog.gd")
+const InspectChipScript := preload("res://ui/components/inspect_chip.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
@@ -69,6 +70,9 @@ signal status_requested(message: String, danger: bool)
 ## line with its salvo/dps facts (P4) - and `danger` colours the title. `title == ""`
 ## clears the shell's inspector block.
 signal inspect_requested(title: String, body: String, danger: bool)
+## S30 (UI_SPEC section 12.3, N28/P21): the explicit sink. A row's own INSPECT chip (or
+## `station_inspect` on the focused row / cell) publishes the sheet's payload here.
+signal sheet_requested(payload: Dictionary)
 
 ## The three refusal wordings, byte-equivalent to `ui/station/fitting_panel.gd:147-149`
 ## (CONTRACTS section 16 rule 9, the L116 precedent): ARMORY may not preload the pane
@@ -210,6 +214,10 @@ const BROWSER_ICON := 24.0
 const COL_OWNED := 130.0
 ## P1 (UI_SPEC section 8): the row-corner BUY is an `ActionInline` 96x32 flat chip.
 const ACTION_INLINE := Vector2(96.0, 32.0)
+## S30-F1 (F7, N37): the INSPECT chip's own box - UI_SPEC section 8's `ActionInline` 96x32.
+## The hand-positioned ammo cards and inventory rows reserve this trailing cell.
+const CHIP_WIDTH := 96.0
+const CHIP_HEIGHT := 32.0
 ## The ship grid's own recipe (FITTING's numbers, section 17.1's own cite): 48 px
 ## `SlotButtonWeapon` plates, gaps as empty 48 x 48 Controls, the glyph inset 6, the
 ## `SLOT LAYOUT` caption. The meter's preview word is A7's CANDIDATE rename (D17-P1:
@@ -818,6 +826,10 @@ var _rack_views: Array[Dictionary] = []
 var _inventory_views: Array[Dictionary] = []
 var _selected_row: Button = null
 var _tweens: Array[Tween] = []
+## S30: the payload `station_inspect` (N34) inspects - the focused row or cell - and the
+## P2 cluster's own INSPECT chip (N37).
+var _focused_payload: Dictionary = {}
+var _cluster_chip: Button = null
 ## The selected rack (0-based), the bay that wears the section 3.2 ember frame - the same
 ## rack ordinal the cluster's lamp lights. It follows focus and never writes anything.
 var _selected_rack: int = 0
@@ -1370,28 +1382,37 @@ func _grid_content_height(count: int, grid: Rect2) -> float:
 	return float(rows) * row_h + float(maxi(rows - 1, 0)) * _style.item_gap
 
 
-## One inventory row's own children: the icon, the name and the OWNED figure.
+## One inventory row's own children: the icon, the name and the OWNED figure, plus the
+## trailing INSPECT chip (S30-F1, F7). The name and the OWNED figure stack in the left
+## column so the chip's reserved 96 px cell on the right is never crowded.
 func _position_inventory_item(row: Control, rect: Rect2) -> void:
 	var icon := row.get_node_or_null(^"Icon") as Control
 	if icon != null:
 		icon.position = _style.item_icon_rect(rect).position
 		icon.size = Vector2(_style.item_icon, _style.item_icon)
+	var text_x: float = _style.item_icon + 16.0
+	var text_w: float = maxf(rect.size.x - text_x - CHIP_WIDTH - 20.0, 0.0)
 	var name_label := row.get_node_or_null(^"Name") as Control
 	if name_label != null:
-		name_label.position = Vector2(_style.item_icon + 16.0, (rect.size.y - 18.0) * 0.5)
-		name_label.size = Vector2(maxf(rect.size.x - _style.item_icon - 140.0, 0.0), 18.0)
+		name_label.position = Vector2(text_x, (rect.size.y - 36.0) * 0.5)
+		name_label.size = Vector2(text_w, 18.0)
 	var status := row.get_node_or_null(^"Status") as Control
 	if status != null:
-		status.position = Vector2(maxf(rect.size.x - 116.0, 0.0), (rect.size.y - 18.0) * 0.5)
-		status.size = Vector2(108.0, 18.0)
+		status.position = Vector2(text_x, (rect.size.y - 36.0) * 0.5 + 18.0)
+		status.size = Vector2(text_w, 18.0)
 		var value := status.get_node_or_null(^"Value") as Control
 		if value != null:
 			value.position = Vector2(0.0, 0.0)
 			value.size = status.size
+	var chip := row.get_node_or_null(^"InspectChip") as Control
+	if chip != null:
+		chip.position = Vector2(maxf(rect.size.x - CHIP_WIDTH - 6.0, 0.0), maxf((rect.size.y - CHIP_HEIGHT) * 0.5, 0.0))
+		chip.size = Vector2(CHIP_WIDTH, CHIP_HEIGHT)
 
 
 ## One pack card's own children, at the card's four lines: title + price, meta + state
-## chip, the worded held line, the state line + BUY chip.
+## chip, the worded held line, the state line + BUY chip, plus the trailing INSPECT chip
+## (S30-F1, F7) in its reserved 96 px cell on the right.
 func _position_card(card: Control, rect: Rect2) -> void:
 	var inset: float = ROW_TEXT_INSET
 	var icon := card.get_node_or_null(^"Icon") as Control
@@ -1417,7 +1438,7 @@ func _position_card(card: Control, rect: Rect2) -> void:
 		meta.size = Vector2(maxf(rect.size.x - text_x - 112.0, 0.0), 18.0)
 	var status := card.get_node_or_null(^"Status") as Control
 	if status != null:
-		status.position = Vector2(maxf(rect.size.x - 104.0 - inset, 0.0), _card_line(1) - 2.0)
+		status.position = Vector2(maxf(rect.size.x - 104.0 - inset, 0.0), _card_line(1) - 6.0)
 		status.size = Vector2(104.0, 22.0)
 		var value := status.get_node_or_null(^"Value") as Control
 		if value != null:
@@ -1426,7 +1447,8 @@ func _position_card(card: Control, rect: Rect2) -> void:
 	var held := card.get_node_or_null(^"Held") as Control
 	if held != null:
 		held.position = Vector2(text_x, _card_line(2))
-		held.size = Vector2(maxf(rect.size.x - text_x - inset, 0.0), 36.0)
+		## S30-F1 (F7): the card reserves the trailing 96 px cell for the INSPECT chip.
+		held.size = Vector2(maxf(rect.size.x - text_x - CHIP_WIDTH - 12.0, 0.0), 36.0)
 		var value := held.get_node_or_null(^"Value") as Control
 		if value != null:
 			value.position = Vector2.ZERO
@@ -1437,12 +1459,17 @@ func _position_card(card: Control, rect: Rect2) -> void:
 			caption.size = Vector2(held.size.x, 18.0)
 	var buy := card.get_node_or_null(^"Buy") as Control
 	if buy != null:
-		buy.position = Vector2(maxf(rect.size.x - 64.0 - inset, 0.0), _card_line(3))
+		buy.position = Vector2(maxf(rect.size.x - CHIP_WIDTH - 8.0 - 64.0 - inset, 0.0), _card_line(3))
 		buy.size = Vector2(64.0, 16.0)
 		var label := buy.get_node_or_null(^"Label") as Control
 		if label != null:
 			label.position = Vector2(4.0, 2.0)
 			label.size = Vector2(buy.size.x - 8.0, 18.0)
+	## S30-F1 (F7, N37): the card's own trailing INSPECT chip, in the reserved cell.
+	var chip := card.get_node_or_null(^"InspectChip") as Control
+	if chip != null:
+		chip.position = Vector2(maxf(rect.size.x - CHIP_WIDTH - inset, 0.0), maxf(rect.size.y - CHIP_HEIGHT - 2.0, 0.0))
+		chip.size = Vector2(CHIP_WIDTH, CHIP_HEIGHT)
 
 
 ## One card line's top offset inside the 68 px base card.
@@ -1625,6 +1652,11 @@ func _build_card(pack: Dictionary) -> Dictionary:
 		&"status": status,
 		&"buy": buy,
 	}
+	## S30-F1 (F7, N28/N37): the card's own trailing INSPECT chip, hand-positioned with the
+	## rest of the card's children (`_position_card`).
+	var chip := _make_inspect_chip(payload)
+	card.add_child(chip)
+	payload[&"chip"] = chip
 	if complete:
 		card.pressed.connect(_on_row_pressed.bind(payload))
 		buy.pressed.connect(_on_row_pressed.bind(payload))
@@ -1691,14 +1723,33 @@ func _on_row_focused(row: Button, payload: Dictionary) -> void:
 	if _selected_row != null and _selected_row != row and is_instance_valid(_selected_row):
 		_selected_row.set_pressed_no_signal(false)
 	_selected_row = row
+	_focused_payload = payload
 	row.set_pressed_no_signal(true)
-	status_requested.emit(_row_hint(payload), false)
 	_inspect_row(payload, true)
 
 
 func _on_row_hovered(payload: Dictionary, hovered: bool) -> void:
 	_inspect_row(payload, hovered)
-	var icon: TextureRect = payload[&"icon"]
+
+
+## S30 census row 7 (UI_SPEC section 12.5): the rack's salvo line describes through the
+## existing `inspect_requested` chain (the N27 tooltip) instead of `tooltip_text`.
+func _on_rack_inspected(line: String, hovered: bool) -> void:
+	if not hovered:
+		inspect_requested.emit("", "", false)
+		return
+	inspect_requested.emit(line, "", false)
+
+
+## S30 census row 7: a grid cell's own naming line, published on the same chain.
+func _on_cell_hovered(payload: Dictionary, hovered: bool) -> void:
+	if not hovered:
+		inspect_requested.emit("", "", false)
+		return
+	var profile := _profile()
+	var fit := _resolved_fit(profile, _active_hull(profile))
+	inspect_requested.emit(cell_tooltip(payload, profile, fit), "", false)
+	var icon := payload.get(&"icon", null) as TextureRect
 	if icon == null:
 		return
 	var target := 1.0 if hovered else ROW_ICON_IDLE_ALPHA
@@ -1965,7 +2016,9 @@ func _build_rack(rack: int, refs: Array, cells: Array) -> Dictionary:
 		_token(ROLE_DANGER_BRIGHT if state_text == RACK_STATE_AT_CAP else ROLE_CAPTION)
 	)
 	var salvo_line: String = RACK_SALVO % cycle if cycle > 0.0 else RACK_READY
-	state.tooltip_text = salvo_line
+	## S30 census row 7: the salvo line rides the N27 tooltip now (no `tooltip_text`).
+	row.mouse_entered.connect(_on_rack_inspected.bind(salvo_line, true))
+	row.mouse_exited.connect(_on_rack_inspected.bind(salvo_line, false))
 	_rack_rows.add_child(row)
 	## The bay box (a `PanelContainer`) sizes its children to itself on every sort, and the
 	## ledge follows its own resize: both re-enter the bay layout, so the strip, the head
@@ -2026,7 +2079,6 @@ func _build_barrel(
 	name_button.text = full_name
 	name_button.custom_minimum_size = Vector2.ZERO
 	name_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	name_button.tooltip_text = full_name
 	for state: StringName in [
 		&"font_color", &"font_hover_color", &"font_pressed_color", &"font_focus_color"
 	]:
@@ -2246,6 +2298,11 @@ func _build_inventory_row(entry: Dictionary) -> Dictionary:
 		&"tinted": _is_flat_glyph(icon_path),
 		&"status": status_value,
 	}
+	## S30-F1 (F7, N28/N37): the row's own trailing INSPECT chip, hand-positioned with the
+	## rest of the row's children (`_position_inventory_item`).
+	var chip := _make_inspect_chip(view)
+	row.add_child(chip)
+	view[&"chip"] = chip
 	row.focus_entered.connect(_on_inventory_focused.bind(base_id, String(entry[&"name"])))
 	row.mouse_entered.connect(_on_inventory_inspected.bind(base_id, String(entry[&"name"]), true))
 	row.mouse_exited.connect(_on_inventory_inspected.bind(base_id, String(entry[&"name"]), false))
@@ -2898,6 +2955,88 @@ func _wire_actions() -> void:
 	_remove_button.text = ACTION_REMOVE
 	_remove_button.pressed.connect(_on_remove_pressed)
 	_buy_fit_button.pressed.connect(_on_buy_fit_pressed)
+	## S30 (UI_SPEC section 12.3, N37): the grid cells inspect through the pane's P2 action
+	## cluster's own INSPECT chip, `disabled` + `text_dim` until a cell holds focus or
+	## selection.
+	_cluster_chip = _make_cluster_chip(_remove_button.get_parent())
+
+
+## ------------------------------------------------- the INSPECT sheet (N28/N37, S30)
+func _make_cluster_chip(parent: Node) -> Button:
+	if parent == null:
+		return null
+	var chip := InspectChipScript.new()
+	chip.name = "ClusterInspectChip"
+	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	chip.set_dimmed(true)
+	chip.inspect_chip_pressed.connect(inspect_focused)
+	parent.add_child(chip)
+	parent.move_child(chip, 0)
+	return chip
+
+
+## N37's chip on a container-built row's trailing cell.
+func _make_inspect_chip(payload: Dictionary) -> Button:
+	var chip := InspectChipScript.new()
+	chip.name = "InspectChip"
+	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	chip.inspect_chip_pressed.connect(_emit_sheet.bind(payload))
+	return chip
+
+
+func _emit_sheet(payload: Dictionary) -> void:
+	var sheet := _sheet_payload(payload)
+	if not sheet.is_empty():
+		sheet_requested.emit(sheet)
+
+
+## N34's route: inspect the focused row, or the focused/selected grid cell through the
+## cluster chip (N37).
+func inspect_focused() -> void:
+	## N34: the selected grid cell first (its own module), then the focused row.
+	if not _selected.is_empty():
+		var cell := _cell_sheet_payload(_selected)
+		if not cell.is_empty():
+			sheet_requested.emit(cell)
+			return
+	if _focused_payload.is_empty():
+		return
+	_emit_sheet(_focused_payload)
+
+
+## A grid cell's sheet: the module fitted there (N35's rows, where the cell holds one).
+func _cell_sheet_payload(cell: Dictionary) -> Dictionary:
+	var profile := _profile()
+	var fit := _resolved_fit(profile, _active_hull(profile))
+	var entry := _cell_module(fit, StringName(cell.get(&"type", &"")), int(cell.get(&"index", -1)))
+	if entry == &"":
+		return {}
+	var base := _base_id(profile, entry)
+	var module_row := ModuleData.module(base)
+	return {
+		&"name": String(module_row.get(&"name", String(base))).to_upper(),
+		&"stats": Catalog.describe(base),
+		&"family": String(module_row.get(&"slot", "")).to_upper(),
+		&"owned": _owned_total(profile, base),
+	}
+
+
+## A row's sheet (UI_SPEC section 12.3, N35): the row's own name, the catalogue's
+## description as the stat line, its slot family and its held count.
+func _sheet_payload(payload: Dictionary) -> Dictionary:
+	var base_id: StringName = payload.get(&"base", payload.get(&"id", &""))
+	if base_id == &"":
+		return {}
+	var name_text := String(payload.get(&"name", ""))
+	var module_row := ModuleData.module(base_id)
+	if module_row.is_empty():
+		return {&"name": name_text, &"stats": Catalog.describe(base_id)}
+	return {
+		&"name": name_text,
+		&"stats": Catalog.describe(base_id),
+		&"family": String(module_row.get(&"slot", "")).to_upper(),
+		&"owned": _owned_total(_profile(), base_id),
+	}
 
 
 ## Build (or keep) the SLOT LAYOUT grid for `hull` - a function of the hull's own matrix,
@@ -2985,6 +3124,9 @@ func _make_grid_cell(cell: Dictionary) -> Dictionary:
 	var payload := plate.cell
 	plate.pressed.connect(_on_cell_pressed.bind(payload))
 	plate.focus_entered.connect(_on_cell_focused.bind(payload))
+	## S30 census row 7: the cell's naming line describes through the N27 tooltip.
+	plate.mouse_entered.connect(_on_cell_hovered.bind(payload, true))
+	plate.mouse_exited.connect(_on_cell_hovered.bind(payload, false))
 	return payload
 
 
@@ -3012,6 +3154,9 @@ func _apply_cell_selection() -> void:
 		if plate == null or not is_instance_valid(plate):
 			continue
 		plate.set_pressed_no_signal(_is_selected(payload))
+	## N37: the cluster chip is live only while the grid holds a target.
+	if _cluster_chip != null:
+		_cluster_chip.set_dimmed(_selected.is_empty())
 
 
 func _is_selected(payload: Dictionary) -> bool:
@@ -3045,6 +3190,9 @@ func _on_cell_pressed(payload: Dictionary) -> void:
 
 
 func _on_cell_focused(payload: Dictionary) -> void:
+	_focused_payload = payload
+	if _cluster_chip != null:
+		_cluster_chip.set_dimmed(false)
 	_select(payload, false)
 
 
@@ -3120,9 +3268,12 @@ func owned_total(base_id: StringName) -> int:
 
 
 func _refresh_footer() -> void:
+	## S30 census row 16 (UI_SPEC section 12.5): the grid sync belongs to the hull-change
+	## command (`_refresh_all` / `refresh_profile`); a hover or focus reaching the footer
+	## must never rebuild the slot matrix. S30 census row 7: the cells' `tooltip_text`
+	## writes are gone - their descriptions ride the N27 tooltip through the chain.
 	var profile := _profile()
 	var hull := _active_hull(profile)
-	_sync_grid(hull)
 	var fit := _resolved_fit(profile, hull)
 	_meter.text = _meter_line(profile, hull, fit)
 	if _meter_danger(profile, hull, fit):
@@ -3133,10 +3284,6 @@ func _refresh_footer() -> void:
 		_line.text = _line_override
 	else:
 		_line.text = _selection_line(profile, fit)
-	for payload: Dictionary in _cells:
-		var plate := payload[&"node"] as Button
-		if plate != null and is_instance_valid(plate):
-			plate.tooltip_text = cell_tooltip(payload, profile, fit)
 	_remove_button.disabled = not can_remove()
 	_buy_fit_button.text = (
 		ACTION_BUY_FIT_SELECTED if not _selected.is_empty() else ACTION_BUY_FIT
@@ -3642,7 +3789,6 @@ func _build_browser_row(base_id: StringName, profile: ProfileScript) -> Dictiona
 	row.focus_mode = Control.FOCUS_ALL
 	row.custom_minimum_size = Vector2(0.0, BROWSER_ROW_HEIGHT)
 	row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	row.tooltip_text = Catalog.describe(base_id)
 	var inner := MarginContainer.new()
 	inner.name = "RowInner"
 	inner.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -3703,6 +3849,8 @@ func _build_browser_row(base_id: StringName, profile: ProfileScript) -> Dictiona
 		&"icon": icon,
 	}
 	row.payload = payload
+	## N37: the row's own trailing INSPECT chip.
+	box.add_child(_make_inspect_chip(payload))
 	row.pressed.connect(_on_browser_pressed.bind(payload))
 	row.focus_entered.connect(_on_browser_focused.bind(row, payload))
 	row.mouse_entered.connect(_on_browser_hovered.bind(payload, true))

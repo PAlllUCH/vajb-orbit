@@ -42,6 +42,7 @@ const AuctionScript := preload("res://game/auction.gd")
 ## `hull_render` reads too.
 const RepairsPanelScript := preload("res://ui/station/repairs_panel.gd")
 const RepairsService := preload("res://game/repairs.gd")
+const InspectChipScript := preload("res://ui/components/inspect_chip.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
@@ -50,7 +51,12 @@ signal status_requested(message: String, danger: bool)
 ## pane's catalogue item). `title` is the row's identity line, `body` its catalogue
 ## description (empty when the row carries none), `danger` colours the title.
 ## `title == ""` clears the shell's inspector block.
+## S30 (UI_SPEC section 12.2, P21): the shell's sink for this signal is the N27 tooltip.
 signal inspect_requested(title: String, body: String, danger: bool)
+## S30 (UI_SPEC section 12.3, N28/P21): the explicit sink. A row's own INSPECT chip (or
+## `station_inspect` on the focused row) publishes the sheet's payload here; the shell opens
+## the N28 sheet from it. Rows appear only where the data carries them (N35).
+signal sheet_requested(payload: Dictionary)
 
 const ROW_HEIGHT := 76.0
 const COL_TAG := 130.0
@@ -87,6 +93,12 @@ const SLOT_GLYPH_TEMPLATE := "icon_slot_%s.svg"
 
 const PREVIEW_SCALE := 0.70
 const PREVIEW_MAX_WIDTH := 480.0
+## S30 census row 3 (UI_SPEC section 12.5): the preview image keeps one pinned box and the
+## hull scales inside it (a texture swap in a fixed box is legal; resizing the node on
+## selection is not). 240 x 180 is 08 section 3's side-view envelope at `PREVIEW_SCALE`,
+## rounded to a Tokens-grid box - PROPOSED, reversal: the shipped per-selection
+## `custom_minimum_size` write (`_update_preview_size`, deleted here).
+const PREVIEW_BOX := Vector2(240.0, 180.0)
 
 ## CONTRACTS section 11: `hull`, `shield` and `cargo` are catalogue fields; `engines`
 ## and `slots` are the hull's 08 section 3 counts, read through `ShipFit` (see
@@ -165,7 +177,6 @@ const STATUS_ACTIVE := "ACTIVE HULL IS NOW %s"
 @onready var _pane_icon: TextureRect = %PaneIcon
 @onready var _list: VBoxContainer = %ShipList
 @onready var _preview_caption: Label = %PreviewCaption
-@onready var _preview_center: CenterContainer = %PreviewCenter
 @onready var _preview_image: TextureRect = %PreviewImage
 @onready var _preview_name: Label = %PreviewName
 @onready var _stats: VBoxContainer = %ShipStats
@@ -180,10 +191,17 @@ var _payloads: Array[Dictionary] = []
 var _stat_cells: Dictionary = {}
 var _selected_id: StringName = &""
 var _selected_row: Button = null
-var _native_preview := Vector2.ZERO
 var _tweens: Array[Tween] = []
-## The hovered cell's stat block label, built in script under the grid.
-var _hover_block: Label = null
+## S30 (UI_SPEC section 12.5 row 1, N30): the hovered cell's stat block text. The in-flow
+## `HoverStatBlock` label is deleted; its bytes now ride the N27 tooltip's body and are
+## tracked here for probes.
+var _hover_block_text: String = ""
+## The cell under the pointer and the grid's cluster chip (N37), so the chip knows whether
+## it has a target to inspect.
+var _hovered_cell: Dictionary = {}
+var _cluster_chip: Button = null
+## The payload the focused hull row carries, for `station_inspect` (N34).
+var _focused_payload: Dictionary = {}
 ## The repair block's row labels: `{key, label, value, state, row}` for the seven body rows
 ## (ACTIVE HULL/HULL/SHIELD + the four armour quadrants, 09 section 3.3 P2's order).
 var _repair_values: Array[Dictionary] = []
@@ -191,14 +209,22 @@ var _repair_values: Array[Dictionary] = []
 var _delta_cells: Dictionary = {}
 
 
+## S30-F1 (F6, UI_SPEC section 12.5 row 16): the hull whose slot matrix is already laid
+## out. The grid is rebuilt for a **selection command** only; a focus move that lands on
+## the hull already on the grid (the shell's `focus_primary` on every switch, a focus
+## return from the sheet) never touches the tree.
+var _grid_hull: StringName = &""
+var _grid_built := false
+
+
 func _ready() -> void:
 	_build_comparison()
 	_build_layout_grid()
+	_build_cluster_chip()
 	_build_repair_rows()
 	_build_rows()
-	_mount_hover_block()
+	_pin_preview_box()
 	_apply_tokens()
-	_preview_center.resized.connect(_update_preview_size)
 	_action.pressed.connect(_on_action_pressed)
 	_repair_button.pressed.connect(_on_repair_pressed)
 	_refresh_all()
@@ -209,10 +235,11 @@ func _notification(what: int) -> void:
 		_apply_tokens()
 		_refresh_plate_textures()
 	elif what == NOTIFICATION_VISIBILITY_CHANGED and is_node_ready() and is_visible_in_tree():
-		## P6 (S29's half, section 17.3): the pane fills the band with its own summary
-		## instead of leaving it empty after the shell's clear on a module switch.
+		## P6 is retired with the inspector band (STATION_HUB section 18's ledger), so a
+		## pane show publishes the chain's clear - never a fill that would re-arm the N27
+		## tooltip (S30-F1, F5: the tooltip opens on a real hover only).
 		_refresh_all()
-		publish_idle_summary()
+		inspect_requested.emit("", "", false)
 
 
 func _exit_tree() -> void:
@@ -261,6 +288,17 @@ func focus_primary() -> void:
 			return
 	if not _action.disabled:
 		_action.grab_focus()
+
+
+## P24's deep link (S30): OVERVIEW's `REPAIR` chip lands here - the active hull selected
+## and the repair block focused. Reversal: the hull list's first row focused.
+func focus_repair() -> void:
+	var active := _active_id(_profile())
+	var row := row_of(active)
+	if row != null and not row.disabled:
+		row.grab_focus()
+	if not _repair_button.disabled:
+		_repair_button.grab_focus()
 
 
 ## The row that carries one owned hull, or null for a hull the account does not own (the
@@ -362,6 +400,8 @@ func _build_row(ship: Dictionary) -> Dictionary:
 		&"icon": null,
 		&"tag": tag[0],
 	}
+	## N37: every row carries its own trailing INSPECT chip (UI_SPEC section 12.3).
+	box.add_child(_make_inspect_chip(payload))
 	row.pressed.connect(_on_row_pressed.bind(payload))
 	row.focus_entered.connect(_on_row_focused.bind(row, payload))
 	row.mouse_entered.connect(_on_row_hovered.bind(payload, true))
@@ -506,6 +546,13 @@ func _build_layout_grid() -> void:
 ## `Control` with no plate; a slot cell is a disabled plate carrying its type's slot
 ## glyph. The caption reads the same hull, so it can never describe a previous one.
 func _set_layout_grid(hull_id: StringName) -> void:
+	## S30-F1 (F6, UI_SPEC section 12.5 row 16): a same-hull call is a no-op, so the focus
+	## route (`_on_row_focused` -> `_preview_row` -> `_refresh_preview`) never rebuilds the
+	## slot matrix for a hull the grid already carries.
+	if _grid_built and hull_id == _grid_hull:
+		return
+	_grid_built = true
+	_grid_hull = hull_id
 	_clear_hover_block()
 	for child: Node in _hardpoints.get_children():
 		_hardpoints.remove_child(child)
@@ -689,53 +736,120 @@ func _base_id(profile: ProfileScript, entry: StringName) -> StringName:
 	return StringName(profile.call(&"base_module_id", entry))
 
 
-## The catalogue's own name for a module, in this pane's upper case; an id the catalogue cannot
-## name reads as the id itself rather than as a blank line.
 ## ------------------------------------------------------- the hover stat block (15 section 7)
 ##
 ## STATION_HUB section 5.3's S3 amendment: a plate that holds an instance shows the rolled name
 ## in the hover line and the pane adds the instance's stat block - the base module's catalogue
-## stats plus one line per rolled affix - under the grid. The block is a reading (nothing here
-## reaches a flight stat: 15 section 9.3) and it is built in script, so the frozen scene file
-## carries no new node. The formatter is `fitting_panel.gd`'s, byte-equivalently: both panes
-## print the same block, and a shared `ui/station/` helper is a file outside this worker's set
-## (K2's deviation 6 records the same shape for the header-fit machinery).
-func _mount_hover_block() -> void:
-	if _hover_block != null and is_instance_valid(_hover_block):
-		return
-	var label := Label.new()
-	label.name = "HoverStatBlock"
-	label.theme_type_variation = &"StationCaption"
-	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	label.visible = false
-	_hover_block = label
-	_stats.add_child(label)
-	_stats.move_child(label, _hardpoints.get_index() + 1)
-
-
-## The block for one grid cell: empty and hidden for a gap, an empty cell and an entry the
-## catalogue cannot name; otherwise the base line plus one line per affix.
+## stats plus one line per rolled affix. **S30 (UI_SPEC section 12.5 row 1, N30): the in-flow
+## `HoverStatBlock` label is deleted** - the block's bytes now ride the N27 tooltip's body
+## (UI_SPEC section 12.2), so no node is added, moved or made visible on a hover. The text is
+## tracked in `_hover_block_text` for probes. The formatter is `fitting_panel.gd`'s,
+## byte-equivalently.
 func _refresh_hover_block(cell: Dictionary) -> void:
-	if _hover_block == null or not is_instance_valid(_hover_block):
-		return
-	var text := ""
-	var entry := _hover_entry(cell)
-	if entry != &"":
-		text = _stat_block_of(_profile(), entry)
-	_hover_block.text = text
-	_hover_block.visible = not text.is_empty()
+	_hover_block_text = _stat_block_of(_profile(), _hover_entry(cell))
 
 
 func _clear_hover_block() -> void:
-	if _hover_block != null and is_instance_valid(_hover_block):
-		_hover_block.text = ""
-		_hover_block.visible = false
+	_hover_block_text = ""
+	_hovered_cell = {}
+	if _cluster_chip != null:
+		_cluster_chip.set_dimmed(true)
 
 
-## The block's own text, read back for probes and tests.
+## The block's own text, read back for probes and tests (now the tooltip body's stat half).
 func hover_block_text() -> String:
-	return "" if _hover_block == null else _hover_block.text
+	return _hover_block_text
+
+
+## S30 census row 3 (UI_SPEC section 12.5): the preview keeps one pinned box; a selection
+## swaps the texture inside it and never writes `custom_minimum_size`.
+func _pin_preview_box() -> void:
+	_preview_image.custom_minimum_size = PREVIEW_BOX
+	_preview_image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_preview_image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+
+
+## ------------------------------------------------- the INSPECT sheet (N28/N37, S30)
+##
+## The pane's explicit sink (UI_SPEC section 12.3): a row's own chip, or `station_inspect` on
+## the focused row / hovered cell. The payload carries only the rows the data has (N35).
+func _make_inspect_chip(payload: Dictionary) -> Button:
+	var chip := InspectChipScript.new()
+	chip.name = "InspectChip"
+	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	chip.inspect_chip_pressed.connect(_emit_sheet.bind(payload))
+	return chip
+
+
+func _build_cluster_chip() -> void:
+	var parent := _hardpoints.get_parent()
+	if parent == null:
+		return
+	_cluster_chip = InspectChipScript.new()
+	_cluster_chip.name = "ClusterInspectChip"
+	_cluster_chip.set_dimmed(true)
+	_cluster_chip.inspect_chip_pressed.connect(_inspect_hovered_cell)
+	parent.add_child(_cluster_chip)
+	parent.move_child(_cluster_chip, _hardpoints.get_index() + 1)
+
+
+func _emit_sheet(payload: Dictionary) -> void:
+	var sheet := _sheet_payload(payload)
+	if not sheet.is_empty():
+		sheet_requested.emit(sheet)
+
+
+## N34's route: inspect whatever the pane holds - the hovered grid cell first, then the
+## focused hull row.
+func inspect_focused() -> void:
+	if not _hovered_cell.is_empty():
+		var cell := _cell_sheet_payload(_hovered_cell)
+		if not cell.is_empty():
+			sheet_requested.emit(cell)
+			return
+	if _focused_payload.is_empty():
+		return
+	_emit_sheet(_focused_payload)
+
+
+func _inspect_hovered_cell() -> void:
+	var payload := _cell_sheet_payload(_hovered_cell)
+	if not payload.is_empty():
+		sheet_requested.emit(payload)
+
+
+## A hull's sheet: its own name, the labelled stat pairs (section 17.2), and `OWNED ×1`
+## (every shipyard row is an owned hull; a hull keeps row 5 and drops the family row, N35).
+func _sheet_payload(payload: Dictionary) -> Dictionary:
+	var ship_id: StringName = payload.get(&"id", &"")
+	var ship := Catalog.ship(ship_id)
+	if ship.is_empty():
+		return {}
+	var lines := PackedStringArray()
+	for stat: Dictionary in STAT_ROWS:
+		lines.append("%s %d" % [String(stat[&"label"]), _stat_value(ship, ship_id, stat[&"key"])])
+	return {
+		&"name": String(payload.get(&"name", "")).to_upper(),
+		&"stats": "\n".join(lines),
+		&"owned": 1,
+	}
+
+
+## A grid cell's sheet: the rolled name, its affixes and stat block, the module's slot
+## family and its held count.
+func _cell_sheet_payload(cell: Dictionary) -> Dictionary:
+	var entry := _hover_entry(cell)
+	if entry == &"":
+		return {}
+	var profile := _profile()
+	var base := _base_id(profile, entry)
+	return {
+		&"name": _hover_name(profile, base, entry),
+		&"affixes": _affix_lines(_instance_record(profile, entry)),
+		&"stats": _stat_block_of(profile, entry),
+		&"family": String(ModuleCatalog.module(base).get(&"slot", "")).to_upper(),
+		&"owned": _owned_total(profile, base),
+	}
 
 
 func _stat_block_of(profile: ProfileScript, entry: StringName) -> String:
@@ -846,23 +960,44 @@ func _row_id_of(raw: Variant) -> String:
 	return ""
 
 
-## Hovering a plate publishes its line on the channel every hint in this pane uses
-## (`status_requested`), and fills the pane's own stat block under the grid; leaving it puts the
-## selected hull's own hint back and clears the block, so neither keeps a line for a cell the
-## pointer has left.
+## Hovering a plate publishes its line and the cell's stat block through the existing
+## `inspect_requested` chain (S30/UI_SPEC section 12.2, N30: the shell's sink is the N27
+## tooltip; the in-flow block and the status write are gone). Leaving it clears the chain
+## (S30-F1, F5: P6's band fill is retired), so neither keeps a line for a cell the pointer
+## has left and no unhover re-arms the tooltip.
 func _on_plate_hovered(cell: Dictionary) -> void:
-	status_requested.emit(hover_line(cell), false)
+	_hovered_cell = cell
 	_refresh_hover_block(cell)
+	if _cluster_chip != null:
+		_cluster_chip.set_dimmed(_hover_entry(cell) == &"")
+	inspect_requested.emit(hover_line(cell), _tooltip_body(_hover_entry(cell)), false)
 
 
 func _on_plate_unhovered() -> void:
+	_hovered_cell = {}
 	_clear_hover_block()
-	var payload := _payload(_selected_id)
-	if not payload.is_empty():
-		status_requested.emit(_row_hint(payload), false)
-		_inspect_row(payload, true)
-	else:
-		publish_idle_summary()
+	if _cluster_chip != null:
+		_cluster_chip.set_dimmed(true)
+	## S30-F1 (F5, N33): a leave clears the shell's tooltip payload; it never re-publishes
+	## the selection or an idle summary, which would re-arm the delayed tooltip.
+	inspect_requested.emit("", "", false)
+
+
+## UI_SPEC section 12.2's content grammar: the identity line is the title and the body is the
+## catalogue description plus the shipped stat block (`_stat_block_of`), which is where N30's
+## deleted in-flow blocks' bytes live.
+func _tooltip_body(entry: StringName) -> String:
+	if entry == &"":
+		return ""
+	var profile := _profile()
+	var parts := PackedStringArray()
+	var described := Catalog.describe(_base_id(profile, entry))
+	if not described.is_empty():
+		parts.append(described)
+	var block := _stat_block_of(profile, entry)
+	if not block.is_empty():
+		parts.append(block)
+	return "\n".join(parts)
 
 
 func _payload(ship_id: StringName) -> Dictionary:
@@ -958,8 +1093,6 @@ func _refresh_preview(profile: ProfileScript) -> void:
 	var ship := Catalog.ship(_selected_id)
 	if ship.is_empty():
 		_preview_image.texture = null
-		_native_preview = Vector2.ZERO
-		_preview_image.custom_minimum_size = Vector2.ZERO
 		_preview_name.text = PREVIEW_EMPTY
 		_preview_caption.text = ""
 		_refresh_comparison({}, profile)
@@ -967,25 +1100,10 @@ func _refresh_preview(profile: ProfileScript) -> void:
 		return
 	var texture := load(String(ship.get(&"preview", ""))) as Texture2D
 	_preview_image.texture = texture
-	_native_preview = texture.get_size() if texture != null else Vector2.ZERO
 	_preview_name.text = String(ship.get(&"name", String(_selected_id)))
 	_preview_caption.text = String(ship.get(&"description", ""))
-	_update_preview_size()
 	_refresh_comparison(ship, profile)
 	_set_layout_grid(_selected_id)
-
-
-func _update_preview_size() -> void:
-	var target := _native_preview * PREVIEW_SCALE
-	if target.x > PREVIEW_MAX_WIDTH:
-		target *= PREVIEW_MAX_WIDTH / target.x
-	var box := _preview_center.size
-	if box.x > 1.0 and target.x > box.x:
-		target *= box.x / target.x
-	if box.y > 1.0 and target.y > box.y:
-		target *= box.y / target.y
-	if not _preview_image.custom_minimum_size.is_equal_approx(target):
-		_preview_image.custom_minimum_size = target
 
 
 func _refresh_comparison(ship: Dictionary, profile: ProfileScript) -> void:
@@ -1037,51 +1155,19 @@ func _on_row_focused(row: Button, payload: Dictionary) -> void:
 
 ## CONTRACTS section 23.1: the shipyard's additive hover surface. A hover publishes the
 ## hull's own identity line as the title and its catalogue description as the body; a
-## leave hands the band back to the selection's own line (P6: the band is never stale and
-## never empty on this pane - the idle state is the pane's own summary).
+## leave clears the chain (S30-F1, F5: P6's band fill is retired, so an unhover never
+## re-arms the N27 tooltip).
 func _on_row_hovered(payload: Dictionary, hovered: bool) -> void:
 	_inspect_row(payload, hovered)
 
 
 func _inspect_row(payload: Dictionary, shown: bool) -> void:
 	if not shown:
-		## P6 (S29's half): the idle band carries the pane's own summary - the active
-		## hull's name and its worst pool - never a stale hover and never blank.
-		publish_idle_summary()
+		inspect_requested.emit("", "", false)
 		return
 	inspect_requested.emit(
 		_row_title(payload), Catalog.describe(StringName(payload[&"id"])), false
 	)
-
-
-## P6 (S29's half, section 17.3): the pane's own idle summary - the active hull's name and
-## its worst pool - published through the existing `inspect_requested` chain whenever the
-## band would otherwise be empty (a module switch, an unhover with no selection).
-func publish_idle_summary() -> void:
-	var profile := _profile()
-	var active_id := _active_id(profile)
-	if active_id == &"":
-		inspect_requested.emit(EMPTY_HULLS, "", false)
-		return
-	var worst := _worst_pool(profile, active_id)
-	inspect_requested.emit(
-		TAG_ACTIVE_HULL % _ship_name(active_id),
-		"%s %s" % [String(worst.get(&"label", "")), String(worst.get(&"value", ""))],
-		false
-	)
-
-
-## The active hull's worst pool - the damage table's own rows read, so the summary can
-## never disagree with the block below it.
-func _worst_pool(profile: ProfileScript, ship_id: StringName) -> Dictionary:
-	var worst := {&"label": "HULL", &"value": "", &"missing": -1}
-	for row: Dictionary in _repair_values:
-		if row[&"key"] == &"hull_name":
-			continue
-		var missing := int(row.get(&"missing", 0))
-		if missing > int(worst.get(&"missing", -1)):
-			worst = {&"label": row[&"label"], &"value": row[&"value_text"], &"missing": missing}
-	return worst
 
 
 ## Selecting a row previews it and writes nothing (section 5.11: "selecting a row previews
@@ -1101,13 +1187,15 @@ func _on_action_pressed() -> void:
 
 
 ## The selection itself: the previewed hull moves, the three preview readers move with it,
-## and the hint names the hull now previewed. Nothing here touches the profile.
+## and the hint names the hull now previewed. Nothing here touches the profile. S30 census
+## row 7 (UI_SPEC section 12.5): the status write is gone - the strip keeps transaction
+## outcomes, and the hull's description rides the N27 tooltip.
 func _preview_row(payload: Dictionary) -> void:
 	var profile := _profile()
 	_selected_id = payload[&"id"]
+	_focused_payload = payload
 	_refresh_preview(profile)
 	_refresh_action(profile)
-	status_requested.emit(_row_hint(payload), false)
 	_inspect_row(payload, true)
 
 
@@ -1261,7 +1349,7 @@ func _build_repair_rows() -> void:
 ## `Repairs` context - what the pool is and its max (section 17.2's own rule).
 func _on_damage_hovered(payload: Dictionary, hovered: bool) -> void:
 	if not hovered:
-		publish_idle_summary()
+		inspect_requested.emit("", "", false)
 		return
 	inspect_requested.emit(
 		"%s %s" % [String(payload[&"label"]), String(payload[&"value_text"])],

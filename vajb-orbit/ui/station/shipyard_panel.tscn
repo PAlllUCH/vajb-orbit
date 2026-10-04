@@ -9,6 +9,7 @@ theme_override_constants/separation = 12
 script = ExtResource("1_shipyard")
 
 [node name="PaneHeader" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 theme_override_constants/separation = 12
 
@@ -114,64 +115,73 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"StationPanelTitle"
 
-[node name="StatsBox" type="VBoxContainer" parent="ShipyardBody"]
+[node name="StatsBox" type="ScrollContainer" parent="ShipyardBody"]
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="StatsStack" type="VBoxContainer" parent="ShipyardBody/StatsBox"]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
-[node name="StatsCaption" type="Label" parent="ShipyardBody/StatsBox"]
+[node name="StatsCaption" type="Label" parent="ShipyardBody/StatsBox/StatsStack"]
 layout_mode = 2
 theme_type_variation = &"SectionHeader"
 text = "COMPARISON VS ACTIVE HULL"
 
-[node name="ShipStats" type="VBoxContainer" parent="ShipyardBody/StatsBox"]
+[node name="ShipStats" type="VBoxContainer" parent="ShipyardBody/StatsBox/StatsStack"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="InstalledCaption" type="Label" parent="ShipyardBody/StatsBox"]
+[node name="InstalledCaption" type="Label" parent="ShipyardBody/StatsBox/StatsStack"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"SectionHeader"
 text = "INSTALLED MODULES"
 
-[node name="HardpointCaption" type="Label" parent="ShipyardBody/StatsBox"]
+[node name="HardpointCaption" type="Label" parent="ShipyardBody/StatsBox/StatsStack"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"StationCaption"
 
-[node name="HardpointSlots" type="GridContainer" parent="ShipyardBody/StatsBox"]
+[node name="HardpointSlots" type="GridContainer" parent="ShipyardBody/StatsBox/StatsStack"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
 theme_override_constants/h_separation = 4
 theme_override_constants/v_separation = 4
 
-[node name="RepairRows" type="VBoxContainer" parent="ShipyardBody/StatsBox"]
+[node name="RepairRows" type="VBoxContainer" parent="ShipyardBody/StatsBox/StatsStack"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="StatsSpacer" type="Control" parent="ShipyardBody/StatsBox"]
+[node name="StatsSpacer" type="Control" parent="ShipyardBody/StatsBox/StatsStack"]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="RepairFooter" type="Label" parent="."]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"StationCaption"
-
-[node name="ActionsRow" type="HBoxContainer" parent="."]
+[node name="PaneFoot" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="RowSpacer" type="Control" parent="ActionsRow"]
+[node name="RepairFooter" type="Label" parent="PaneFoot"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-mouse_filter = 2
+size_flags_vertical = 7
+theme_type_variation = &"StationCaption"
 
-[node name="ShipAction" type="Button" parent="ActionsRow"]
+[node name="ActionsRow" type="HBoxContainer" parent="PaneFoot"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 16
+
+[node name="ShipAction" type="Button" parent="PaneFoot/ActionsRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(360, 56)
 layout_mode = 2
@@ -179,7 +189,7 @@ size_flags_vertical = 4
 theme_type_variation = &"StationButton"
 text = "SET ACTIVE"
 
-[node name="RepairButton" type="Button" parent="ActionsRow"]
+[node name="RepairButton" type="Button" parent="PaneFoot/ActionsRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(360, 56)
 layout_mode = 2

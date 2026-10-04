@@ -26,6 +26,7 @@ const ComponentCatalogScript := preload("res://game/component_catalog.gd")
 const StationCatalogScript := preload("res://game/station_catalog.gd")
 const Clock := preload("res://autoload/world_clock.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
+const InspectChipScript := preload("res://ui/components/inspect_chip.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
@@ -35,6 +36,9 @@ signal status_requested(message: String, danger: bool)
 ## description (empty when the row carries none), `danger` colours the title.
 ## `title == ""` clears the shell's inspector block.
 signal inspect_requested(title: String, body: String, danger: bool)
+## S30 (UI_SPEC section 12.3, N28/P21): the explicit sink. A hold row's own INSPECT chip
+## (or `station_inspect` on the focused row) publishes the sheet's payload here.
+signal sheet_requested(payload: Dictionary)
 
 ## Section 12.3 constants, carried from the measured grid.
 const ROW_HEIGHT := 76.0
@@ -166,6 +170,8 @@ var _hold_payloads: Array[Dictionary] = []
 var _board_payloads: Array[Dictionary] = []
 var _selected_id: StringName = &""
 var _selected_row: Button = null
+## S30: the payload `station_inspect` (N34) inspects - the focused hold row.
+var _focused_payload: Dictionary = {}
 var _step := 0
 var _quoted: Dictionary = {}
 var _tweens: Array[Tween] = []
@@ -543,6 +549,8 @@ func _build_hold_row(item_id: StringName) -> Dictionary:
 		&"unit": unit[0],
 		&"total": total[0],
 	}
+	## N37: every hold row carries its own trailing INSPECT chip.
+	box.add_child(_make_inspect_chip(payload))
 	row.pressed.connect(_on_row_pressed.bind(payload))
 	row.focus_entered.connect(_on_row_focused.bind(row, payload))
 	row.mouse_entered.connect(_on_row_hovered.bind(payload, true))
@@ -799,7 +807,7 @@ func _on_row_focused(row: Button, payload: Dictionary) -> void:
 	_selected_row = row
 	row.set_pressed_no_signal(true)
 	_select(payload[&"id"])
-	status_requested.emit(_row_hint(payload), false)
+	_focused_payload = payload
 	_inspect_row(payload, true)
 
 
@@ -832,6 +840,40 @@ func _inspect_row(payload: Dictionary, shown: bool) -> void:
 	inspect_requested.emit(
 		_row_title(payload), StationCatalogScript.describe(StringName(payload[&"id"])), false
 	)
+
+
+## ------------------------------------------------- the INSPECT sheet (N28/N37, S30)
+func _make_inspect_chip(payload: Dictionary) -> Button:
+	var chip := InspectChipScript.new()
+	chip.name = "InspectChip"
+	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	chip.inspect_chip_pressed.connect(_emit_sheet.bind(payload))
+	return chip
+
+
+func _emit_sheet(payload: Dictionary) -> void:
+	var sheet := _sheet_payload(payload)
+	if not sheet.is_empty():
+		sheet_requested.emit(sheet)
+
+
+func inspect_focused() -> void:
+	if _focused_payload.is_empty():
+		return
+	_emit_sheet(_focused_payload)
+
+
+## A hold row's sheet (UI_SPEC section 12.3, N35): the item's name, the catalogue's
+## description and the held count.
+func _sheet_payload(payload: Dictionary) -> Dictionary:
+	var item_id: StringName = payload.get(&"id", &"")
+	if item_id == &"":
+		return {}
+	return {
+		&"name": _row_title(payload),
+		&"stats": StationCatalogScript.describe(item_id),
+		&"owned": _qty(_profile().call(&"cargo") as Dictionary, item_id),
+	}
 
 
 func _connect_scroll() -> void:

@@ -939,10 +939,10 @@ func _same_color(a: Color, b: Color) -> bool:
 	return _hex(a) == _hex(b)
 
 
-## The shell assembles the AUCTION pane behind its own rail entry, so the entry the player
-## presses is the pane this suite measured: index 3 (directly after EXCHANGE, STATION_HUB
-## section 5.10's rail amendment), a label and an icon the shell's own tables declare, and a
-## **loaded** pane rather than the offline placeholder the shell synthesises for a module
+## The shell assembles the AUCTION pane behind its own drawer entry, so the entry the player
+## presses is the pane this suite measured: index 4 (OVERVIEW first, then the six service
+## decks, STATION_HUB section 18 P16), a label and an icon the shell's own tables declare, and
+## a **loaded** pane rather than the offline placeholder the shell synthesises for a module
 ## whose scene is missing.
 func test_the_shell_mounts_the_auction_pane_behind_its_rail_entry() -> void:
 	var profile := _borrow_autoload()
@@ -954,12 +954,12 @@ func test_the_shell_mounts_the_auction_pane_behind_its_rail_entry() -> void:
 	## `enter_pane` from drawing one.
 	profile.set(&"_auction", {"last_band": Clock.now(), "hulls": [], "modules": {}, "hot": &""})
 	var screen := _mount_shell()
-	var buttons := screen.get_node("%ModuleButtons") as VBoxContainer
-	assert_eq(
-		buttons.get_child_count(), StationScript.MODULE_LABELS.size(), "one rail entry per module"
-	)
-	var entry := buttons.get_child(3) as Button
-	assert_eq(entry.name, "AuctionEntry", "the fourth entry is AUCTION")
+	## S30 (STATION_HUB section 18 P16): the rail is the TERMINAL drawer's entry list, in
+	## P16's order - OVERVIEW first, then the six service decks.
+	var entries := screen.call(&"drawer_entries") as Array
+	assert_eq(entries.size(), StationScript.DRAWER_DECKS.size(), "one drawer entry per deck")
+	var entry := entries[4] as Button
+	assert_eq(entry.name, "AuctionEntry", "AUCTION is the drawer's fifth entry (P16)")
 	var label := _first_label(entry)
 	assert_eq(label.text, "AUCTION", "and it carries the AUCTION label")
 	var icon := _first_icon(entry)

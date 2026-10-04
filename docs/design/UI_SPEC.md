@@ -873,14 +873,14 @@ Tokens only (owner 2026-09-27). This wave is design-only: no code moves.
 | **A5.4-1** Station name plate | header leading cell (STATION_HUB §3.1 header band, 123 tall); width from content | flat Tokens box `_flat()`: `void_panel` fill + 1 px border — `metal_mid` Concord / `metal_light` Meridian / `metal_dark` Choir (§1 ramp; no new hue is legal) | **12/8** (`MarginContainer` idiom): `icon_insignia_<faction>_48` at its own cut **1:1 48×48** in its own `TextureRect`, then the `StationName` + character-line VBox |
 | **A5.4-2** Service strip button | min (0, 56) | base `Button` bevel (`button_*`, §2.1) — **no asset** (theme cite) | label centred; unavailable = `button_disabled` + `text_dim` + a reason caption below the strip (label + state, never colour alone) |
 | **A5.4-3** Panel caption strip | text band above a list | none — theme `SectionHeader` 16 `text_dim` on the band gap (the `Well half` row's caption idiom) | n/a |
-| **A5.4-4** Data row (board row, active-contract card, premium row, vault tier row) | §3.1's row: 76 tall, `RowInner` 12/8 | flat Tokens `item_bg` + 1 px `metal_mid`; danger state = 1 px `accent_danger` frame (§3.1/§3.1b), never colour alone | **12/8**: type/faction icons 24 at their own cut in their own rects, text columns per STATION_HUB §15, values right-aligned |
+| **A5.4-4** Data row (board row, active-contract card, premium row, vault tier row) | §3.1's row: 76 tall, `RowInner` 12/8 | flat Tokens `item_bg` + 1 px `metal_mid`; danger state = 1 px `accent_danger` frame (§3.1/§3.1b), never colour alone | **12/8**: type/faction icons 24 as a display of the 96 px SVG master / the `_48` insignia cut, in their own rects, text columns per STATION_HUB §15, values right-aligned |
 | **A5.4-5** Contents list (`YOUR HOLD` / `VAULT CONTENTS`) | min (0, 200) each (**U19** — new presentation value; reversal: `min (0, 110)`, the shipped `CargoList` height, `STATION_HUB.md:358`) | theme `ItemList` (`panel` + `metal_mid` selected band — §3.1's `CargoList` idiom) — **no asset** | rows = 24 px stack icon + `40× ingot_titanium` (the stack icon is **PROPOSED** — **U20**: the shipped `CargoList` is a plain-text list with no row icons, `STATION_HUB.md:358` and `:683`, so no cite carries it; reversal: plain-text `40× ingot_titanium` rows, no row icon); one `Pressables` button under each list |
 | (names existing rows) | pane outer edge = A5.4 `Pane outer edge`; chips = A5.4 `State chips`; `ACCEPT`/`CANCEL · 100 CR FEE`/`DEPOSIT`/`WITHDRAW` = A5.4 `Pressables` (`ui_button_plate_*`, cut 280×56, no texture margins) | as those rows | as those rows |
-| **A5.4-6** Salvo ledge — four-cell drum (2026-10-02; amends A5.4 `Salvo ledge`; L263) | 240×34 at bay-y 150 (A3 unchanged) | flat Tokens `ledge_bg` + 1 px `metal_mid`; **four** `ui_seg_*` marks (cut 48×88, the twelve shipped cells — ASSET_CATALOG.md:467) at **18×32** in an `HBoxContainer` (separation 2 = the 20 pitch; each mark its own `TextureRect`, A5.2(iii)) + `SALVO s` 13 px `StationCaption` beside (measured origin 78 px from the block start — L263) | **10** from the bay edge (`ledge_rect` = bay − `cell_margin`, A3 unchanged) |
+| **A5.4-6** Salvo ledge — four-cell drum (2026-10-02; amends A5.4 `Salvo ledge`; L263) | 240×34 at bay-y 150 (A3 unchanged) | flat Tokens `ledge_bg` + 1 px `metal_mid`; **four** `ui_seg_*` marks (cut 48×88, the twelve shipped cells — ASSET_CATALOG.md:467) at **18×32** in an `HBoxContainer` (separation 2 = the 20 pitch; each mark its own `TextureRect`, A5.2(iii)) + `SALVO s` 13 px `StationCaption` beside (block-derived `maxf(block, 74)` — `armory_style.gd:284-286`; L263) | **10** from the bay edge (`ledge_rect` = bay − `cell_margin`, A3 unchanged) |
 
 **A5.4-6 values.** Figures are seconds ×100 in four zero-padded cells (`0073` =
 0.73 s, `1200` = 12.00 s), blanks when there is no cadence (A3's rule),
-`SALVO_MAX` 9999 — the look `armory_style.salvo_cells:95` already renders
+`SALVO_MAX` 9999 — the look `armory_style.salvo_cells:97` already renders
 (L263: "the zero-padded figures re-render"). Tick **U18** ticks this four-cell
 drum as the design of record; reversal is L263's own: `salvo_cells 3` +
 `SALVO_MAX 999` + the pin rows back (`test_d7_armory`, `test_s10_armory_input`).
@@ -975,7 +975,7 @@ LMB drag pans — a press only counts as a drag past an **8 px** threshold
 
 **The filter column (N3).** A `VBoxContainer` of toggle rows, each the A5.4-2
 service-strip idiom (base `Button` bevel + a `StationValue` label — the
-auction tab plate idiom, `auction_panel.gd:98-100`): the N3 label with a
+auction tab plate idiom, `auction_panel.gd:113,361-362`): the N3 label with a
 trailing `ON`/`OFF` state read (`text_primary`/`text_dim` — label + state,
 never colour alone). The eight toggles persist per profile through the
 existing `PlayerProfile` save (`user://profile.cfg`, 01 §7). **N6's exemption

@@ -30,6 +30,7 @@ const TOKENS_TYPE: StringName = &"Tokens"
 const RefineryModule := preload("res://game/refinery.gd")
 const Catalog := preload("res://game/mineral_catalog.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
+const InspectChipScript := preload("res://ui/components/inspect_chip.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
@@ -38,6 +39,9 @@ signal status_requested(message: String, danger: bool)
 ## `title` is the row's identity line, `body` its catalogue description (empty when the
 ## row carries none), `danger` colours the title. `title == ""` clears the shell's block.
 signal inspect_requested(title: String, body: String, danger: bool)
+## S30 (UI_SPEC section 12.3, N28/P21): the explicit sink. A row's own INSPECT chip (or
+## `station_inspect` on the focused row) publishes the sheet's payload here.
+signal sheet_requested(payload: Dictionary)
 ## The inspector's body reader lives in the station catalogue (CONTRACTS section 23.1).
 const StationCatalogScript := preload("res://game/station_catalog.gd")
 
@@ -123,6 +127,8 @@ const DEDICATED_ICON_PREFIX := "icon_mineral_"
 var _payloads: Array[Dictionary] = []
 var _selected_id: StringName = &""
 var _selected_row: Button = null
+## S30: the payload `station_inspect` (N34) inspects - the focused ore row.
+var _focused_payload: Dictionary = {}
 var _stepper: int = STEPPER_MIN
 var _stepper_max: int = STEPPER_MIN
 var _transaction := false
@@ -331,6 +337,8 @@ func _build_row(stack: Dictionary) -> Dictionary:
 		&"tint": _icon_tint(entry),
 		&"fee_value": fee_cell,
 	}
+	## N37: every row carries its own trailing INSPECT chip (UI_SPEC section 12.3).
+	box.add_child(_make_inspect_chip(payload))
 	row.pressed.connect(_on_row_pressed.bind(payload))
 	row.focus_entered.connect(_on_row_focused.bind(row, payload))
 	row.mouse_entered.connect(_on_row_hovered.bind(payload, true))
@@ -554,15 +562,8 @@ func _refresh_footer() -> void:
 
 
 func _on_row_focused(_row: Button, payload: Dictionary) -> void:
+	_focused_payload = payload
 	_arm(payload, true)
-	status_requested.emit(
-		STATUS_READY % [
-			String(payload[&"name"]).to_upper(),
-			_conversions_text(int(payload[&"conversions"])),
-			_format_int(int(payload[&"fee"])),
-		],
-		false,
-	)
 	_inspect_row(payload, true)
 
 
@@ -600,6 +601,43 @@ func _inspect_row(payload: Dictionary, shown: bool) -> void:
 		StationCatalogScript.describe(StringName(payload[&"id"])),
 		false,
 	)
+
+
+## ------------------------------------------------- the INSPECT sheet (N28/N37, S30)
+func _make_inspect_chip(payload: Dictionary) -> Button:
+	var chip := InspectChipScript.new()
+	chip.name = "InspectChip"
+	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	chip.inspect_chip_pressed.connect(_emit_sheet.bind(payload))
+	return chip
+
+
+func _emit_sheet(payload: Dictionary) -> void:
+	var sheet := _sheet_payload(payload)
+	if not sheet.is_empty():
+		sheet_requested.emit(sheet)
+
+
+func inspect_focused() -> void:
+	if _focused_payload.is_empty():
+		return
+	_emit_sheet(_focused_payload)
+
+
+## An ore row's sheet (UI_SPEC section 12.3, N35): the row's name and the catalogue's
+## description; a stack keeps rows 1, the description and 5 (the held count is the ore).
+func _sheet_payload(payload: Dictionary) -> Dictionary:
+	var mineral_id: StringName = payload.get(&"id", &"")
+	if mineral_id == &"":
+		return {}
+	var out := {
+		&"name": String(payload.get(&"name", "")).to_upper(),
+		&"stats": StationCatalogScript.describe(mineral_id),
+	}
+	var ore := int(payload.get(&"ore", -1))
+	if ore >= 0:
+		out[&"owned"] = ore
+	return out
 
 
 func _on_scroll_started() -> void:

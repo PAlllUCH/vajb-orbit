@@ -72,13 +72,10 @@ const DRAG_THRESHOLD_PX := 8.0
 const HOLD_SECONDS := 0.5
 
 ## N3's per-profile persistence: the eight toggles ride the existing `PlayerProfile`
-## save (`user://profile.cfg`) through its config store and its save cycle. The store is
-## reached dynamically (the sibling suites' own borrow idiom, `test_s10_armory_input.gd:93`)
-## because the profile exposes no map-filters door - a judgment call disclosed in the
-## S29-B1 report; reversal: a first-class `map_filters` key on `player_profile.gd`.
+## save (`user://profile.cfg`). **S30's R-S30-2 (T-102's default): the profile now owns a
+## first-class `map_filters` door** (`player_profile.gd`), so this file no longer borrows
+## the private `_config` (the S29-B1 borrow is retired). Reversal: keep the borrow.
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
-const PROFILE_SECTION := "profile"
-const PROFILE_KEY_MAP_FILTERS := "map_filters"
 
 const ROLE_NONE := 0
 const ROLE_PLACE := 1
@@ -510,14 +507,14 @@ func _profile() -> Node:
 	return service
 
 
+## S30's **R-S30-2** (T-102's default): the deck reads and writes the profile's public
+## `map_filters` door instead of borrowing its private `_config` (the profile owns the
+## save shape; the deck owns only the on-screen states).
 func _load_filters() -> void:
 	var profile := _profile()
-	if profile == null:
+	if profile == null or not profile.has_method(&"map_filters"):
 		return
-	var config: Variant = profile.get(&"_config")
-	if config == null:
-		return
-	var stored: Variant = config.get_value(PROFILE_SECTION, PROFILE_KEY_MAP_FILTERS, {})
+	var stored: Variant = profile.call(&"map_filters")
 	if not (stored is Dictionary):
 		return
 	var loaded := {}
@@ -528,17 +525,16 @@ func _load_filters() -> void:
 
 func _save_filters() -> void:
 	var profile := _profile()
-	if profile == null:
-		return
-	var config: Variant = profile.get(&"_config")
-	if config == null:
+	if profile == null or not profile.has_method(&"set_map_filters"):
 		return
 	## String keys, the profile's own `_keys_to_strings` idiom, so the save file's
 	## dictionary round-trips (`_load_filters` re-names the keys on the way in).
 	var stored := {}
 	for key: Variant in _filter_states:
 		stored[String(StringName(str(key)))] = bool(_filter_states[key])
-	config.set_value(PROFILE_SECTION, PROFILE_KEY_MAP_FILTERS, stored)
+	profile.call(&"set_map_filters", stored)
+	## The deck's own write is immediate (the retired `save()` call): a filter toggle is a
+	## discrete command, not a per-frame edit worth debouncing.
 	profile.call(&"save")
 
 

@@ -73,6 +73,8 @@ var _host: Control = null
 var _panel: Control = null
 var _status: Array[String] = []
 var _danger: Array[bool] = []
+## S30: the titles published on the `inspect_requested` chain (the N27 tooltip's sink).
+var _inspect_titles: Array[String] = []
 var _previous_path := ""
 var _previous_ship: StringName = &""
 var _previous_credits := 0
@@ -187,12 +189,23 @@ func _mount() -> Control:
 	_host.add_child(_panel)
 	_profile.connect(&"profile_changed", Callable(_panel, &"refresh_profile"))
 	_panel.connect(&"status_requested", _on_status)
+	## S30 (UI_SPEC section 12.2, N27): the rack's salvo line rides the `inspect_requested`
+	## chain (the tooltip's sink) instead of `tooltip_text`.
+	_panel.connect(&"inspect_requested", _on_inspect)
 	return _panel
 
 
 func _on_status(message: String, danger: bool) -> void:
 	_status.append(message)
 	_danger.append(danger)
+
+
+func _on_inspect(title: String, _body: String, _danger: bool) -> void:
+	_inspect_titles.append(title)
+
+
+func _last_inspect() -> String:
+	return _inspect_titles[_inspect_titles.size() - 1] if not _inspect_titles.is_empty() else ""
 
 
 ## --------------------------------------------------------------- panel read-backs
@@ -712,10 +725,13 @@ func test_a_rack_states_its_slowest_members_cycle() -> void:
 		PanelScript.RACK_SALVO % WeaponComponent.interval_of(&"cannon"),
 		"the cannon rack states its own 0.6 s cycle (T8: on its ledge, the line on the head's tooltip)"
 	)
+	## S30 (UI_SPEC section 12.5 row 7): the same line now rides the N27 tooltip.
+	var rack_row := _rack_row(panel, 1) as Control
+	rack_row.mouse_entered.emit()
 	assert_eq(
-		String(_rack_row(panel, 1).get_node(^"Box/Head/State").tooltip_text),
+		_last_inspect(),
 		PanelScript.RACK_SALVO % WeaponComponent.interval_of(&"cannon"),
-		"and the chip's tooltip carries the same line"
+		"and the chip's hover publishes the same line"
 	)
 	_profile.call(&"add_module", &"w_rocket", 1)
 	assert_true(

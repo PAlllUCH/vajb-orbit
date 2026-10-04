@@ -285,7 +285,9 @@ func _apply_strip_colour() -> void:
 
 func _on_repair_focused() -> void:
 	AudioManager.play_ui(AudioManager.UiCue.HOVER)
-	status_requested.emit(_strip.text, _strip_danger)
+	## S30 census row 7 (UI_SPEC section 12.5): the strip's line describes through the
+	## existing `inspect_requested` chain (the N27 tooltip), not the status strip.
+	inspect_requested.emit(_strip.text, "", _strip_danger)
 
 
 func _on_repair_pressed() -> void:

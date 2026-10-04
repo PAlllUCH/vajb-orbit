@@ -9,6 +9,7 @@ theme_override_constants/separation = 12
 script = ExtResource("1_fitting")
 
 [node name="PaneHeader" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 theme_override_constants/separation = 12
 

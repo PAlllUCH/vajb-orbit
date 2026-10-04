@@ -49,6 +49,7 @@ const ProfileScript := preload("res://autoload/player_profile.gd")
 ## 15 section 11: the inspector's stat block is FITTING's own format, so the block
 ## builder is that panel's static and this pane adds no number of its own.
 const FittingScript := preload("res://ui/station/fitting_panel.gd")
+const InspectChipScript := preload("res://ui/components/inspect_chip.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
@@ -60,6 +61,9 @@ signal status_requested(message: String, danger: bool)
 ## row says its numbers without a trip to FITTING -- `danger` colours the title.
 ## `title == ""` clears the shell's inspector block.
 signal inspect_requested(title: String, body: String, danger: bool)
+## S30 (UI_SPEC section 12.3, N28/P21): the explicit sink. A shelf row's own INSPECT chip
+## (or `station_inspect` on the focused row) publishes the sheet's payload here.
+signal sheet_requested(payload: Dictionary)
 
 ## ------------------------------------------------------------------ 12.3 constants
 const ROW_HEIGHT := 76.0
@@ -200,6 +204,8 @@ var _sections: Array[Dictionary] = []
 
 var _pending_rebuild := false
 var _selected_row: Button = null
+## S30: the payload `station_inspect` (N34) inspects - the focused shelf row.
+var _focused_payload: Dictionary = {}
 var _tweens: Array[Tween] = []
 
 ## The family tab the pane is showing, `&"all"` at entry; `_tab_entries` is one
@@ -695,6 +701,8 @@ func _build_hull_row(entry: Dictionary) -> Dictionary:
 	}
 	row.pressed.connect(_on_action_pressed.bind(payload, &"hull"))
 	_wire_row(row, payload)
+	## N37: every row carries its own trailing INSPECT chip.
+	box.add_child(_make_inspect_chip(payload))
 	_hull_rows.add_child(row)
 	return payload
 
@@ -749,6 +757,7 @@ func _build_module_row(entry: Dictionary) -> Dictionary:
 	}
 	row.pressed.connect(_on_action_pressed.bind(payload, &"listing"))
 	_wire_row(row, payload)
+	box.add_child(_make_inspect_chip(payload))
 	_module_rows.add_child(row)
 	return payload
 
@@ -797,6 +806,7 @@ func _build_sell_row(entry: Dictionary) -> Dictionary:
 	}
 	row.pressed.connect(_on_action_pressed.bind(payload, &"sale"))
 	_wire_row(row, payload)
+	box.add_child(_make_inspect_chip(payload))
 	_sell_rows.add_child(row)
 	return payload
 
@@ -1050,7 +1060,7 @@ func _on_row_focused(row: Button, payload: Dictionary) -> void:
 		_selected_row.set_pressed_no_signal(false)
 	_selected_row = row
 	row.set_pressed_no_signal(true)
-	_set_status(_row_hint(payload), false)
+	_focused_payload = payload
 	_inspect_row(payload, true)
 
 
@@ -1080,6 +1090,45 @@ func _inspect_row(payload: Dictionary, shown: bool) -> void:
 	else:
 		body = Catalog.describe(StringName(payload[&"id"]))
 	inspect_requested.emit(_row_title(payload), body, false)
+
+
+## ------------------------------------------------- the INSPECT sheet (N28/N37, S30)
+func _make_inspect_chip(payload: Dictionary) -> Button:
+	var chip := InspectChipScript.new()
+	chip.name = "InspectChip"
+	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	chip.inspect_chip_pressed.connect(_emit_sheet.bind(payload))
+	return chip
+
+
+func _emit_sheet(payload: Dictionary) -> void:
+	var sheet := _sheet_payload(payload)
+	if not sheet.is_empty():
+		sheet_requested.emit(sheet)
+
+
+func inspect_focused() -> void:
+	if _focused_payload.is_empty():
+		return
+	_emit_sheet(_focused_payload)
+
+
+## A shelf row's sheet (UI_SPEC section 12.3, N35): the row's rolled name, its affixes and
+## stat block where it is a module listing, its slot family and its price or held count.
+func _sheet_payload(payload: Dictionary) -> Dictionary:
+	var name_text := _row_title(payload)
+	if payload.has(&"prefixes"):
+		var base_id: StringName = StringName(payload.get(&"base_id", ""))
+		var module_row := ModuleData.module(base_id)
+		return {
+			&"name": name_text,
+			&"stats": Catalog.describe(base_id) + _stat_block(payload),
+			&"family": String(module_row.get(&"slot", "")).to_upper(),
+			&"price": int(payload.get(&"cost", -1)),
+		}
+	if payload.has(&"ship_class"):
+		return {&"name": name_text, &"price": int(payload.get(&"cost", -1))}
+	return {&"name": name_text, &"price": int(payload.get(&"cost", -1))}
 
 
 ## 15 section 11's stat block for one listing: FITTING's `stat_block` over the base

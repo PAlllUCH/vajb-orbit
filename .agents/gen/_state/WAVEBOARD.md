@@ -429,14 +429,13 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | 14 | coder 32 | S26 bosses, arenas, insurance, vaults | coder 31 | `game/` + `player_profile.gd` + S25's Expedition seam |
 | 15 | coder 33 | S27 catalog breadth & shipyard | coder 32 | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/` |
 | 16 | designer 19 | **D19 station shell v2 design** (**done 2026-10-03** — UI_SPEC §12 + STATION_HUB §19 + 3 wireframes + the A5.5 census; 2 HIGH + 9 MED cured by F1 under two designer rulings, 6 LOW T-107–T-112 + close-out T-113; gate 1074/0 ×2, verify green vs `d19_start`) | coder 35 (done) | inserted at the owner's ask ahead of coders 30–33; its §12/§19 detail is S30's (coder 36) law, and S30 re-lays `ui/screens/station.*` + `ui/station/` before those coder items touch the panels |
-| 17 | coder 36 | **S30 station shell v2 build** (**live**, owner go 2026-10-03 "assume default if not chosen. proceed with coder"; `slices/S30-shell-v2/`; B1 → B2 → R1, fixer on HIGH/MED — `hyper/deepseek-4.1-flash` builders, `hyper/glm-5.3-flash` review) | designer 19 (done) | runs alone — all TICKS decision rows took their defaults; every open action row closes in this wave or its close-out |
+| 17 | coder 36 | **S30 station shell v2 build** (**done 2026-10-04** — 1074 → 1093/0 ×2; 3 HIGH + 7 MED cured by F1, 4 LOW T-114–T-117; B1/B2/F1 `hyper/deepseek-v4.1-flash` @ xhigh, R1 `hyper/glm-5.3-flash` @ max; verify green vs `s30_start`) | designer 19 (done) | ran alone — rail + inspector band deleted, TERMINAL drawer + OVERVIEW + popups shipped |
 
-Designer items 16 (D15), 17 (D16), 18 (D18) and 19 (D19) are closed; coders 34
-(S28) and 35 (S29) are closed — the owner's overhaul round and its shell-v2
-follow-up are designed. **Coder 36 (S30 station shell v2 build) is LIVE** (B1
-running; five-piece in `slices/S30-shell-v2/`, law `UI_SPEC.md` §12 +
-`STATION_HUB.md` §19); then coder 30 (S24 world identity) resumes its
-docs-first opening on the ticked W3 names. Playtest
+Designer items 16–19 and coders 34–36 are closed — the overhaul round and its
+shell-v2 follow-up are **shipped** (station: TERMINAL drawer, OVERVIEW landing
+pane, popup descriptions, one skeleton; gate 1093/0). **Next: coder 30 (S24
+world identity)** — its five-piece predates the shell, so the brief re-checks
+against `UI_SPEC.md` §12 + `STATION_HUB.md` §19 before dispatch. Playtest
 pass #1 (the owner's, `19_testing_notes.md`'s eye list) runs alongside pos 1;
 build 2 + the tester template are phase exit criteria. Every brief's §11 tick
 sheet feeds its wave (unticked rows implement at their PROPOSED value).

@@ -422,14 +422,15 @@ func test_the_rail_folds_to_six_entries_and_the_fitting_tile_retires() -> void:
 		"the ARMORY entry keeps its icon (section 17.4)")
 	assert_eq(StationScript.MODULE_ICONS[4], "res://assets/icons/hud/icon_hull.svg",
 		"and SHIPYARD its hull icon")
-	## The assembled shell: six entries and one pane per module, FITTING and REPAIRS gone.
+	## The assembled shell: the six service decks behind the drawer plus OVERVIEW (S30 P16),
+	## one pane per module, FITTING and REPAIRS gone.
 	var screen := StationScene.instantiate() as Control
 	_host.add_child(screen)
-	var buttons := screen.get_node("%ModuleButtons") as VBoxContainer
+	var entries := screen.call(&"drawer_entries") as Array
 	assert_eq(
-		buttons.get_child_count(),
-		StationScript.MODULE_LABELS.size(),
-		"one rail entry per module"
+		entries.size(),
+		StationScript.MODULE_LABELS.size() + 1,
+		"one drawer entry per module plus OVERVIEW (S30 P16)"
 	)
 	var host := screen.get_node("%HostMargin") as MarginContainer
 	assert_true(host.get_node_or_null(^"Armory") != null, "the shell loads the ARMORY pane")
@@ -1080,8 +1081,10 @@ func test_the_focus_order_is_cells_then_rows_then_footer() -> void:
 			expected.append("Slot%s%02d" % [String(cell[&"token"]), int(cell[&"index"])])
 	for module_id: StringName in panel.call(&"module_row_ids"):
 		expected.append("Module%s" % String(module_id).to_pascal_case())
+		## S30 (UI_SPEC section 12.3, N37): the row's own INSPECT chip is a focus stop.
+		expected.append("InspectChip")
 	expected.append("RemoveButton")
-	assert_eq(order, expected, "the walk is cells, then rows, then the footer")
+	assert_eq(order, expected, "the walk is cells, then rows with their chip, then the footer: %s" % str(order))
 	## Nothing else in the pane is a stop: the scroll container is not one, so the pin's bullet
 	## is the whole walk.
 	assert_eq(
@@ -1416,10 +1419,14 @@ func test_the_focus_order_carries_the_expander_and_its_subrows() -> void:
 			expected.append("Slot%s%02d" % [String(cell[&"token"]), int(cell[&"index"])])
 	expected.append("Module%s" % String(PLASMA).to_pascal_case())
 	expected.append("Expander%s" % String(PLASMA).to_pascal_case())
+	## S30 (UI_SPEC section 12.3, N37): every row's own INSPECT chip is a focus stop, so it
+	## joins the walk after the row (and its expander) and before the next row.
+	expected.append("InspectChip")
 	for instance_id: StringName in [first, second]:
 		expected.append(SUBROW_PREFIX + String(instance_id).to_pascal_case())
+		expected.append("InspectChip")
 	expected.append("RemoveButton")
-	assert_eq(order, expected, "the walk is cells, then rows with their expander and sub-rows")
+	assert_eq(order, expected, "the walk is cells, then rows with their expander, chip and sub-rows: %s" % str(order))
 	panel.call(&"focus_primary")
 	var owner := panel.get_viewport().gui_get_focus_owner()
 	assert_true(owner != null, "the ring still enters at the first cell")

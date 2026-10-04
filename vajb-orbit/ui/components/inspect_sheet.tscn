@@ -1,0 +1,92 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://ui/components/inspect_sheet.gd" id="1_sheet"]
+[ext_resource type="Theme" path="res://ui/theme/vajb_theme.tres" id="2_vajb_theme"]
+
+[node name="InspectSheet" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+theme = ExtResource("2_vajb_theme")
+script = ExtResource("1_sheet")
+
+[node name="SheetDimmer" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SheetCenter" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="SheetPanel" type="PanelContainer" parent="SheetCenter"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(420, 0)
+layout_mode = 2
+theme_type_variation = &"PanelRaised"
+
+[node name="SheetMargin" type="MarginContainer" parent="SheetCenter/SheetPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="SheetScroll" type="ScrollContainer" parent="SheetCenter/SheetPanel/SheetMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="SheetContent" type="VBoxContainer" parent="SheetCenter/SheetPanel/SheetMargin/SheetScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="SheetName" type="Label" parent="SheetCenter/SheetPanel/SheetMargin/SheetScroll/SheetContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationValue"
+autowrap_mode = 3
+
+[node name="SheetAffixes" type="Label" parent="SheetCenter/SheetPanel/SheetMargin/SheetScroll/SheetContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+autowrap_mode = 3
+
+[node name="SheetStats" type="Label" parent="SheetCenter/SheetPanel/SheetMargin/SheetScroll/SheetContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+autowrap_mode = 3
+
+[node name="SheetFamily" type="Label" parent="SheetCenter/SheetPanel/SheetMargin/SheetScroll/SheetContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+autowrap_mode = 3
+
+[node name="SheetValue" type="Label" parent="SheetCenter/SheetPanel/SheetMargin/SheetScroll/SheetContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationValue"
+horizontal_alignment = 2
+
+[node name="SheetHint" type="Label" parent="SheetCenter/SheetPanel/SheetMargin/SheetScroll/SheetContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"

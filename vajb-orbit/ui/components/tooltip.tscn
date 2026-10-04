@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://ui/components/tooltip.gd" id="1_tooltip"]
+[ext_resource type="Theme" path="res://ui/theme/vajb_theme.tres" id="2_vajb_theme"]
+
+[node name="Tooltip" type="PanelContainer"]
+theme = ExtResource("2_vajb_theme")
+theme_type_variation = &"TooltipPanel"
+mouse_filter = 2
+script = ExtResource("1_tooltip")
+
+[node name="TooltipLabel" type="RichTextLabel" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 0)
+offset_right = 320.0
+offset_bottom = 20.0
+mouse_filter = 2
+bbcode_enabled = true
+fit_content = true
+scroll_active = false

@@ -35,8 +35,8 @@ const PROFILE_SERVICE: StringName = &"PlayerProfile"
 const PROFILE_PATH := "user://test_s11_inspector.cfg"
 
 ## The merged rail's six panes (P7 folded FITTING into ARMORY and REPAIRS into SHIPYARD):
-## all six declare the signal and all six emit - the item panes on hover, SHIPYARD and
-## LAUNCH with their own idle summaries (P6's S29 half).
+## all six declare the signal and all six emit - every one on a real hover, and a leave
+## publishes the chain's clear (P6's idle fill retired with the inspector band, S30-F1/F5).
 const EMITTERS: Array[int] = [0, 1, 2, 3, 4, 5]
 const DECLARERS_ONLY: Array[int] = []
 
@@ -154,8 +154,8 @@ func test_every_pane_declares_the_signal() -> void:
 
 
 func test_the_six_item_panes_are_the_emitters() -> void:
-	## S29 (P4/P5/P7): the rail carries six panes and every one of them publishes -
-	## the item panes on hover, SHIPYARD and LAUNCH with their idle summaries (P6).
+	## S29 (P4/P5/P7): the rail carries six panes and every one of them publishes - each on
+	## a real hover (P6's idle summaries retired, S30-F1/F5).
 	assert_eq(EMITTERS.size(), 6)
 	assert_eq(DECLARERS_ONLY.size(), 0)
 	assert_eq(_pane(0).name, "Armory")
@@ -260,114 +260,180 @@ func test_shell_format_int_delegates_to_group_int() -> void:
 ## ------------------------------------------------------------------- 4. the block
 
 
-func test_the_block_sits_above_the_status_strip() -> void:
+## **S30 (STATION_HUB section 18's supersession ledger, P6 retired).** The inspector band is
+## removed with the shell-v2 re-lay: the hover sink is the N27 tooltip (section 12.2), so the
+## retired band's nodes are gone and the footer status strip is the last band.
+func test_the_inspector_band_is_retired() -> void:
 	var page := _station.get_node_or_null(^"Layout/Page") as Control
 	assert_true(page != null, "the page container ships")
-	var inspector := page.get_node_or_null(^"Inspector") as Control
+	assert_true(
+		page.get_node_or_null(^"Inspector") == null, "the inspector band is removed (S30)"
+	)
+	assert_true(
+		_station.get_node_or_null(NodePath("%InspectorTitle")) == null,
+		"and its title label with it"
+	)
 	var footer := page.get_node_or_null(^"Footer") as Control
-	assert_true(inspector != null, "the Inspector block ships")
 	assert_true(footer != null, "the status strip ships")
-	assert_eq(
-		inspector.get_index() + 1,
-		footer.get_index(),
-		"the Inspector sits immediately above the status strip"
-	)
+	assert_eq(footer.get_index(), page.get_child_count() - 1, "the footer is the last band")
 
 
-func test_the_block_carries_the_pinned_nodes() -> void:
-	var title := _station.get_node_or_null(NodePath("%InspectorTitle")) as Label
-	var body := _station.get_node_or_null(NodePath("%InspectorBody")) as Label
-	assert_true(title != null, "InspectorTitle ships")
-	assert_true(body != null, "InspectorBody ships")
-	if title == null or body == null:
-		return
-	assert_eq(title.theme_type_variation, &"StationPanelTitle", "the title's own variation")
-	assert_true(title.clip_text, "the title is one clipped line")
-	assert_eq(body.theme_type_variation, &"SectionHeader", "the body's own variation")
-	assert_eq(
-		body.autowrap_mode,
-		TextServer.AUTOWRAP_WORD_SMART,
-		"the body wraps on words"
-	)
-	assert_eq(body.max_lines_visible, 2, "the two-line cap (INSPECTOR_BODY_MAX_LINES)")
-	assert_eq(
-		body.get_theme_color(&"font_color"),
-		ThemeRes.get_color(&"text_primary", &"Tokens"),
-		"the body carries the theme's text_primary override"
-	)
-
-
-func test_the_shell_writes_and_clears_the_block() -> void:
+## **S30 (UI_SPEC section 12.2, N27).** The shell's sink is the hover tooltip: a pane's
+## `inspect_requested` payload starts the 0.25 s delay (N33 restarts it per target) and the
+## tooltip opens at the cursor once it elapses; an empty emit clears both.
+func test_the_shell_shows_the_hover_tooltip_and_clears_it() -> void:
 	_station.call(&"_select_module", 0, true)
 	var pane := _pane(0)
-	var title := _station.get_node_or_null(NodePath("%InspectorTitle")) as Label
-	var body := _station.get_node_or_null(NodePath("%InspectorBody")) as Label
+	var tooltip := _tooltip()
+	assert_true(tooltip != null, "the shell builds the N27 tooltip")
 	pane.inspect_requested.emit("LASER CELLS", "Standard laser capacitors.", false)
-	assert_eq(title.text, "LASER CELLS", "the shell writes the title")
-	assert_eq(body.text, "Standard laser capacitors.", "the shell writes the body")
+	assert_eq(String(_station.get(&"_hover_title")), "LASER CELLS", "the shell stores the title")
+	assert_true(_hover_timer().time_left > 0.0, "the 0.25 s delay is running (N33)")
+	_station.call(&"_show_hover_tooltip")
+	assert_true(bool(tooltip.call(&"is_open")), "the tooltip opens once the delay elapses")
+	assert_eq(String(tooltip.call(&"content_title")), "LASER CELLS", "with the row's title")
+	assert_contains(String(tooltip.call(&"rendered_text")), "INSPECT", "and N33's hint line")
 	pane.inspect_requested.emit("", "", false)
-	assert_eq(title.text, "", "an empty title clears the block")
-	assert_eq(body.text, "", "an empty title clears the body too")
+	assert_false(bool(tooltip.call(&"is_open")), "an empty emit clears the tooltip")
+	assert_eq(String(_station.get(&"_hover_title")), "", "and drops the payload")
 
 
-## **S28's A1 (STATION_HUB section 16 P6, the S28 mechanical half).** The stale-band
-## defect (D17-P1/D17-P2: the band kept the previous module's hover text after a switch):
-## the shell clears the band on every module switch, and a publish from a pane that is
-## not the one on the host never rides in.
-func test_the_band_clears_on_module_switch() -> void:
+## **S30 (UI_SPEC section 12.2).** The stale-hover defect (S28's A1): the switch takes the
+## tooltip down and drops the payload, so the previous module's hover never rides in.
+func test_the_tooltip_clears_on_module_switch() -> void:
 	var pane := _pane(0)
-	var title := _station.get_node_or_null(NodePath("%InspectorTitle")) as Label
-	var body := _station.get_node_or_null(NodePath("%InspectorBody")) as Label
+	var tooltip := _tooltip()
 	pane.inspect_requested.emit("VANGUARD", "General purpose hull.", false)
-	assert_eq(title.text, "VANGUARD", "the active pane fills the band")
+	_station.call(&"_show_hover_tooltip")
+	assert_true(bool(tooltip.call(&"is_open")), "the active pane fills the tooltip")
 	_station.call(&"_select_module", 1)
-	assert_eq(title.text, "", "the switch empties the band")
-	assert_eq(body.text, "", "both lines, every module, every switch")
+	assert_false(bool(tooltip.call(&"is_open")), "the switch takes it down")
+	assert_eq(String(_station.get(&"_hover_title")), "", "and drops the payload")
 	_station.call(&"_select_module", 0, true)
 
 
-func test_an_inactive_pane_never_fills_the_band() -> void:
+func test_an_inactive_pane_never_fills_the_tooltip() -> void:
 	var outgoing := _pane(0)
 	var incoming := _pane(1)
 	_station.call(&"_select_module", 1)
 	outgoing.inspect_requested.emit("LASER CELLS", "Standard laser capacitors.", false)
-	var title := _station.get_node_or_null(NodePath("%InspectorTitle")) as Label
-	assert_eq(title.text, "", "a hidden module's hover cannot ride into the next one")
+	assert_eq(
+		String(_station.get(&"_hover_title")), "",
+		"a hidden module's hover cannot ride into the next one"
+	)
 	incoming.inspect_requested.emit("IRON ORE", "Raw iron.", false)
-	assert_eq(title.text, "IRON ORE", "the pane on the host still publishes")
+	assert_eq(String(_station.get(&"_hover_title")), "IRON ORE", "the pane on the host publishes")
 	_station.call(&"_select_module", 0, true)
 
 
-## **A4.4 (UI_SPEC section 3.10 Amendment 4, wave S20): the block reserves a constant
-## height.** Both labels carry a font-derived `custom_minimum_size` - one title line, two
-## body lines - so the empty hover state reserves the same box as a full one. Measured
-## against the labels' own shaped minima, not a re-derived formula (the full four-state
-## measurement lives in `tests/test_s20_chrome_unify.gd`).
-func test_the_block_reserves_the_a4_4_height() -> void:
-	var title := _station.get_node_or_null(NodePath("%InspectorTitle")) as Label
-	var body := _station.get_node_or_null(NodePath("%InspectorBody")) as Label
-	assert_true(title != null and body != null, "the block's two labels ship")
-	if title == null or body == null:
-		return
-	assert_true(title.custom_minimum_size.y > 0.0, "the title's line is reserved")
-	assert_true(body.custom_minimum_size.y > 0.0, "and the body's two lines")
-	assert_eq(
-		title.custom_minimum_size.y, _shaped_min(title, "T"),
-		"the title's pin is its own one-line minimum (font-derived)"
-	)
-	assert_eq(
-		body.custom_minimum_size.y, _shaped_min(body, "one\ntwo"),
-		"the body's pin is its own two-line minimum (INSPECTOR_BODY_MAX_LINES)"
-	)
+## **S30 (UI_SPEC section 12.3, N28/N35/N36).** The shell's explicit sink: a pane's
+## `sheet_requested` payload opens the INSPECT sheet, and its rows are the pinned ones.
+func test_the_sheet_opens_from_a_pane_payload() -> void:
+	_station.call(&"_select_module", 0, true)
+	var pane := _pane(0)
+	var sheet := _sheet()
+	assert_true(sheet != null, "the shell builds the N28 sheet")
+	assert_true(pane.has_signal(&"sheet_requested"), "every pane declares the sheet signal")
+	pane.sheet_requested.emit({
+		&"name": "Thruster Mk II",
+		&"affixes": ["+12 % thrust · SCAVENGED"],
+		&"stats": "PWR 2 · DRAW 3",
+		&"family": "ENGINES",
+		&"owned": 2,
+	})
+	assert_true(bool(sheet.call(&"is_open")), "the sheet opens on the pane's payload")
+	var rows: PackedStringArray = sheet.call(&"row_texts")
+	assert_eq(rows[0], "Thruster Mk II", "row 1 carries the name")
+	assert_eq(rows[1], "+12 % thrust · SCAVENGED", "row 2 carries the affix lines")
+	assert_eq(rows[2], "PWR 2 · DRAW 3", "row 3 carries the stat block")
+	assert_eq(rows[3], "SLOT FAMILY · ENGINES", "row 4 carries the family (N35)")
+	assert_eq(rows[4], "OWNED ×2", "row 5 carries the held count (N35)")
+	assert_eq(rows[5], "ESC · CLOSE", "row 6 is N36's close hint")
+	## Leave the sheet closed so the suite's one mounted shell does not leak it forward.
+	_station.call(&"_handle_cancel")
 
 
-## A label's shaped minimum height for a text, read off the label itself.
-func _shaped_min(label: Label, text: String) -> float:
-	var saved := label.text
-	label.text = text
-	var height := label.get_minimum_size().y
-	label.text = saved
-	return height
+## **S30 (UI_SPEC section 12.6, N28/P19).** ESC is the sheet's own close step in the
+## station's topmost-first unwind (P19), one operation.
+func test_the_sheet_closes_on_the_cancel_route() -> void:
+	var pane := _pane(0)
+	var sheet := _sheet()
+	pane.sheet_requested.emit({&"name": "Laser Cells"})
+	assert_true(bool(sheet.call(&"is_open")), "the sheet is up")
+	_station.call(&"_handle_cancel")
+	assert_false(bool(sheet.call(&"is_open")), "the cancel route closes it in one operation")
+
+
+## **S30 (UI_SPEC section 12.3, section 5.2's queue).** A second open while one is up
+## queues behind the first rather than stacking.
+func test_the_sheet_queues_a_second_open() -> void:
+	var pane := _pane(0)
+	var sheet := _sheet()
+	_station.call(&"_handle_cancel")
+	assert_false(bool(sheet.call(&"is_open")), "the sheet starts closed")
+	pane.sheet_requested.emit({&"name": "First"})
+	assert_eq(int(sheet.call(&"pending_count")), 0, "nothing waits behind the first")
+	pane.sheet_requested.emit({&"name": "Second"})
+	assert_true(bool(sheet.call(&"is_open")), "the first stays up")
+	assert_eq(int(sheet.call(&"pending_count")), 1, "the second queues (one at a time)")
+	_station.call(&"_handle_cancel")
+
+
+## **S30 (UI_SPEC section 12.6, N34).** `station_inspect` on the focused row opens the
+## sheet for that row's payload.
+func test_station_inspect_opens_the_sheet_on_the_focused_row() -> void:
+	_station.call(&"_select_module", 0, true)
+	var pane := _pane(0)
+	var payload := _ammo_payload(pane, PACK)
+	assert_true(not payload.is_empty(), "the armory carries a %s card" % String(PACK))
+	pane.call(&"_on_row_focused", payload[&"row"], payload)
+	_station.call(&"_inspect_focused")
+	assert_true(bool(_sheet().call(&"is_open")), "E on the focused row opens the sheet")
+	_station.call(&"_handle_cancel")
+
+
+## **S30 (A5.5, UI_SPEC section 12.5).** The reviewer's probe: a pane's own geometry is
+## byte-identical before, during and after a hover - the state change mutates colour,
+## `modulate` and `_draw` only.
+func test_a_hover_never_moves_a_pane() -> void:
+	_station.call(&"_select_module", 0, true)
+	var pane := _pane(0)
+	var payload := _ammo_payload(pane, PACK)
+	var row := payload[&"row"] as Button
+	var before := _geometry(pane)
+	row.mouse_entered.emit()
+	assert_eq(_geometry(pane), before, "the hover moved nothing (A5.5)")
+	row.mouse_exited.emit()
+	assert_eq(_geometry(pane), before, "and the unhover moved nothing (A5.5)")
+
+
+## One pane's geometry: its own rect plus every descendant's, so a single moved cell fails
+## the probe.
+func _geometry(root: Node) -> Array:
+	var out: Array = []
+	_collect_geometry(root, out)
+	return out
+
+
+func _collect_geometry(node: Node, out: Array) -> void:
+	if node is Control:
+		var control := node as Control
+		out.append([control.name, control.position, control.size, control.custom_minimum_size])
+	for child: Node in node.get_children():
+		_collect_geometry(child, out)
+
+
+## The popup layer's own nodes (S30, UI_SPEC section 12.2/12.3), read off the shell.
+func _tooltip() -> Control:
+	return _station.get(&"_tooltip") as Control
+
+
+func _hover_timer() -> Timer:
+	return _station.get(&"_hover_timer") as Timer
+
+
+func _sheet() -> Control:
+	return _station.get(&"_sheet") as Control
 
 
 ## -------------------------------------------------------- 5. the HUD credits block

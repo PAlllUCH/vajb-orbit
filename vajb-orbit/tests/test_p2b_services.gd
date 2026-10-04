@@ -65,6 +65,8 @@ var _shipyard: Control = null
 var _launch: Control = null
 var _status: Array[String] = []
 var _danger: Array[bool] = []
+## S30: the titles published on the `inspect_requested` chain (the N27 tooltip's sink).
+var _inspect_titles: Array[String] = []
 var _previous_path := ""
 var _previous_ship: StringName = &""
 var _previous_credits := 0
@@ -179,12 +181,19 @@ func _mount(scene: PackedScene) -> Control:
 	_host.add_child(panel)
 	_profile.connect(&"profile_changed", Callable(panel, &"refresh_profile"))
 	panel.connect(&"status_requested", _on_status)
+	## S30 (UI_SPEC section 12.2, N27): the pane's hover descriptions now ride the
+	## `inspect_requested` chain (the shell's sink is the tooltip), so the suite records it too.
+	panel.connect(&"inspect_requested", _on_inspect)
 	return panel
 
 
 func _on_status(message: String, danger: bool) -> void:
 	_status.append(message)
 	_danger.append(danger)
+
+
+func _on_inspect(title: String, _body: String, _danger: bool) -> void:
+	_inspect_titles.append(title)
 
 
 ## ----------------------------------------------------------------------- shipyard readers
@@ -255,6 +264,12 @@ func _strip_danger() -> bool:
 ## suite's recorded `status_requested` captures ("_status"/"_danger") are the new reader.
 func _last_status() -> String:
 	return _status[_status.size() - 1] if not _status.is_empty() else ""
+
+
+## S30 (UI_SPEC section 12.2): the last title published on the `inspect_requested` chain
+## (the N27 tooltip's sink), which is where a pane's hover line lives now.
+func _last_inspect() -> String:
+	return _inspect_titles[_inspect_titles.size() - 1] if not _inspect_titles.is_empty() else ""
 
 
 func _last_danger() -> bool:
@@ -496,7 +511,7 @@ func test_hovering_a_plate_publishes_its_line_and_costs_the_plate_nothing() -> v
 		assert_eq(glyph.offset_left, PLATE_ICON_INSET)
 	var before := [plate.texture_normal, plate.texture_hover, grid.columns, caption]
 	plate.mouse_entered.emit()
-	assert_eq(_last_status(), _hover(_cell(&"weapons", 0)), "the hover line goes up the shell's strip")
+	assert_eq(_last_inspect(), _hover(_cell(&"weapons", 0)), "the hover line rides the tooltip chain (N27)")
 	assert_eq(
 		[plate.texture_normal, plate.texture_hover, grid.columns, (_shipyard.get_node("%HardpointCaption") as Label).text],
 		before,
@@ -509,8 +524,11 @@ func test_hovering_a_plate_publishes_its_line_and_costs_the_plate_nothing() -> v
 		]
 	)
 	plate.mouse_exited.emit()
-	assert_ne(_last_status(), _hover(_cell(&"weapons", 0)), "leaving the plate drops its line")
-	assert_contains(_last_status(), String(Catalog.ship(HULL).get(&"name", "")).to_upper())
+	assert_ne(_last_inspect(), _hover(_cell(&"weapons", 0)), "leaving the plate drops its line")
+	## S30-F1 (F5, UI_SPEC section 12.2/N33): P6's band fill is retired, so a leave publishes
+	## the chain's clear rather than handing the band back to the selection - the N27 tooltip
+	## opens on a real hover only.
+	assert_eq(_last_inspect(), "", "leaving the plate clears the chain, never fills it")
 	assert_eq(_block(), "", "and the stat block goes with it")
 
 
@@ -541,7 +559,7 @@ func test_the_hover_line_and_block_read_a_rolled_instance() -> void:
 	var plate := _plate("W", 0)
 	plate.mouse_entered.emit()
 	assert_eq(_block(), BLOCK_MAGIC_LASER, "and the instance's own stat block")
-	assert_eq(_last_status(), _hover(fitted), "on the same hover the line went up for")
+	assert_eq(_last_inspect(), _hover(fitted), "on the same hover the line went up for")
 	## The read is a reading: the cell still holds the instance, `module_count(base_id)` still
 	## cannot see it, and the aggregate the line carries is the bag's own sum.
 	assert_eq(
@@ -557,8 +575,9 @@ func test_the_hover_line_and_block_read_a_rolled_instance() -> void:
 	assert_eq(_block(), "", "and a cell with no instance has no block")
 
 
-## The hover block is the shipyard's own node under the grid: hovering a filled plate fills it,
-## leaving the plate clears it, and the plate itself never moves for it (section 5.2's own rule).
+## **S30 (UI_SPEC section 12.5 rows 1–2, N30).** The in-flow hover block is deleted; the
+## block's bytes now ride the N27 tooltip's body. The hover still fills the block reading,
+## leaving the plate clears it, and the plate itself never moves for it (A5.5).
 func test_the_hover_block_is_the_panes_own_and_follows_the_plate() -> void:
 	var instance := _mint(
 		LASER, &"magic", [{"id": String(LASER_PREFIX), "value": LASER_PREFIX_VALUE}],
@@ -567,25 +586,23 @@ func test_the_hover_block_is_the_panes_own_and_follows_the_plate() -> void:
 	_profile.call(&"set_fit_slot", HULL, &"weapons", 0, instance)
 	_shipyard.call(&"refresh_profile", &"fits")
 	var stats := _shipyard.get_node("%ShipStats") as VBoxContainer
-	var block := stats.get_node_or_null(^"HoverStatBlock") as Label
-	assert_true(block != null, "the block is a node of the pane's own stats column")
-	if block == null:
-		return
-	assert_false(block.visible, "and it starts hidden")
+	assert_true(
+		stats.get_node_or_null(^"HoverStatBlock") == null,
+		"the in-flow block node is gone (N30)"
+	)
 	var grid := _shipyard.get_node("%HardpointSlots") as GridContainer
 	var plate := _plate("W", 0)
 	var before := [plate.custom_minimum_size, plate.disabled, grid.columns]
+	assert_eq(_block(), "", "the block reading starts empty")
 	plate.mouse_entered.emit()
-	assert_true(block.visible, "hovering a filled plate shows it")
-	assert_eq(block.text, BLOCK_MAGIC_LASER, "with the instance's own block")
+	assert_eq(_block(), BLOCK_MAGIC_LASER, "hovering a filled plate fills the reading")
 	assert_eq(
 		[plate.custom_minimum_size, plate.disabled, grid.columns],
 		before,
 		"and the plate, its state and the grid are untouched"
 	)
 	plate.mouse_exited.emit()
-	assert_false(block.visible, "leaving the plate hides it again")
-	assert_eq(_block(), "", "with no text left behind")
+	assert_eq(_block(), "", "leaving the plate clears it again")
 
 
 func test_the_shipyard_reads_the_fit_without_ever_writing_it() -> void:

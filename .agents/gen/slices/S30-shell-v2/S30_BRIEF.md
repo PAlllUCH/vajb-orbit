@@ -6,7 +6,7 @@
 snapshot --name s30_start` before the first dispatch.
 **Owner go (2026-10-03):** "everything in ticks looks good. assume default if
 not chosen. proceed with coder" — every `.agents/gen/_state/TICKS.md` decision
-row takes its default. Routing: code `hyper/deepseek-4.1-flash`, review
+row takes its default. Routing: code `hyper/deepseek-v4.1-flash`, review
 `hyper/glm-5.3-flash`, each at the provider's max reasoning effort.
 
 ## 1. The law to read, in order

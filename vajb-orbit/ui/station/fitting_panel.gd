@@ -39,12 +39,17 @@ const AuctionScript := preload("res://game/auction.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
+const InspectChipScript := preload("res://ui/components/inspect_chip.gd")
+
 signal status_requested(message: String, danger: bool)
 ## CONTRACTS section 23.1: emitted when the pointer lands on or leaves an OWNED MODULES
 ## row or sub-row. `title` is the row's identity line, `body` its catalogue description
 ## (empty when the row carries none), `danger` colours the title. `title == ""` clears the
 ## shell's inspector block.
 signal inspect_requested(title: String, body: String, danger: bool)
+## S30 (UI_SPEC section 12.3, N28/P21): the explicit sink. A row's own INSPECT chip (or
+## `station_inspect` on the focused row) publishes the sheet's payload here.
+signal sheet_requested(payload: Dictionary)
 
 ## ------------------------------------------------ the section 5.1 host-pane construct
 const ROW_HEIGHT := 76.0
@@ -199,11 +204,13 @@ var _instance_ids: Array[StringName] = []
 ## The base ids whose `▸` expander is open. Kept across a rebuild, so the sub-row list a player
 ## opened survives the very transaction it just made.
 var _expanded: Dictionary = {}
-## The instance stat block (15 section 7's second line and its affix lines), built in script
-## under the footer's selection line: no scene file carries it, the way the rows carry their own
-## nodes. Empty and hidden while the selected cell holds nothing.
-var _stat_block: Label = null
+## S30 (UI_SPEC section 12.5 row 2, N30): the instance stat block (15 section 7's second line
+## and its affix lines) is no longer an in-flow label - the in-flow `StatBlock` node is
+## deleted and its bytes ride the N27 tooltip's body. The text is tracked here for probes.
+var _stat_block_text: String = ""
 var _selected_row: Button = null
+## The payload `station_inspect` (N34) inspects: the focused row or sub-row.
+var _focused_payload: Dictionary = {}
 var _tweens: Array[Tween] = []
 
 
@@ -214,7 +221,6 @@ func _ready() -> void:
 	_remove.text = REMOVE_ACTION
 	_connect_scroll()
 	_remove.pressed.connect(_on_remove_pressed)
-	_mount_stat_block()
 	_apply_tokens()
 	_refresh_all()
 
@@ -333,7 +339,7 @@ func footer_text() -> String:
 ## The stat block's own text, read back for probes and tests: the selected cell's base line
 ## plus one line per rolled affix (15 section 7's two-line block), "" while the cell is empty.
 func stat_block_text() -> String:
-	return "" if _stat_block == null else _stat_block.text
+	return _stat_block_text
 
 
 ## The base id's held instances, summed the way STATION_HUB section 5.3's `OWNED ×<n>` counts
@@ -851,6 +857,8 @@ func _build_row(base_id: StringName, profile: ProfileScript) -> Dictionary:
 	row.focus_entered.connect(_on_module_focused.bind(row, payload))
 	row.mouse_entered.connect(_on_module_hovered.bind(payload, true))
 	row.mouse_exited.connect(_on_module_hovered.bind(payload, false))
+	## N37: every row carries its own trailing INSPECT chip (UI_SPEC section 12.3).
+	box.add_child(_make_inspect_chip(payload))
 	_rows.add_child(row)
 	if bool(_expanded.get(base_id, false)):
 		_build_subrows(payload, profile)
@@ -923,6 +931,7 @@ func _build_subrows(payload: Dictionary, profile: ProfileScript) -> void:
 		row.focus_entered.connect(_on_subrow_focused.bind(row, sub))
 		row.mouse_entered.connect(_on_subrow_hovered.bind(sub, true))
 		row.mouse_exited.connect(_on_subrow_hovered.bind(sub, false))
+		box.add_child(_make_inspect_chip(sub))
 		_rows.add_child(row)
 		payload[&"subrows"].append(sub)
 		_instance_ids.append(instance_id)
@@ -1187,6 +1196,7 @@ func _on_module_focused(row: Button, payload: Dictionary) -> void:
 	if _selected_row != null and _selected_row != row and is_instance_valid(_selected_row):
 		_selected_row.set_pressed_no_signal(false)
 	_selected_row = row
+	_focused_payload = payload
 	row.set_pressed_no_signal(true)
 	_candidate = _payload_entry(payload)
 	_refresh_footer()
@@ -1218,16 +1228,72 @@ func _on_subrow_hovered(payload: Dictionary, hovered: bool) -> void:
 ## CONTRACTS section 23.1: the OWNED MODULES row's additive inspector line. The row's own
 ## display name is the title (the rolled name where the row or sub-row stands for one
 ## instance); the body resolves the row's entry - a `mod_*` instance through its base plus
-## its rolled affixes - and a leave clears both.
+## its rolled affixes - and a leave clears both. S30 (UI_SPEC section 12.2): the shell's
+## sink is the N27 tooltip; the deleted in-flow `StatBlock`'s bytes ride the body's tail.
 func _inspect_row(payload: Dictionary, shown: bool) -> void:
 	if not shown:
 		inspect_requested.emit("", "", false)
 		return
 	inspect_requested.emit(
 		String(payload.get(&"name", "")),
-		StationCatalog.describe(_payload_entry(payload)),
+		_tooltip_body(_payload_entry(payload)),
 		false
 	)
+
+
+## UI_SPEC section 12.2's grammar: the catalogue description plus the shipped stat block.
+func _tooltip_body(entry: StringName) -> String:
+	if entry == &"":
+		return ""
+	var parts := PackedStringArray()
+	var described := StationCatalog.describe(entry)
+	if not described.is_empty():
+		parts.append(described)
+	var block := _stat_block_of(_profile(), entry)
+	if not block.is_empty():
+		parts.append(block)
+	return "\n".join(parts)
+
+
+## ------------------------------------------------- the INSPECT sheet (N28/N37, S30)
+func _make_inspect_chip(payload: Dictionary) -> Button:
+	var chip := InspectChipScript.new()
+	chip.name = "InspectChip"
+	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	chip.inspect_chip_pressed.connect(_emit_sheet.bind(payload))
+	return chip
+
+
+func _emit_sheet(payload: Dictionary) -> void:
+	var sheet := _sheet_payload(payload)
+	if not sheet.is_empty():
+		sheet_requested.emit(sheet)
+
+
+func inspect_focused() -> void:
+	if _focused_payload.is_empty():
+		return
+	_emit_sheet(_focused_payload)
+
+
+## A row's sheet (UI_SPEC section 12.3, N35): the rolled name, its affixes and stat block,
+## the module's slot family and its held count.
+func _sheet_payload(payload: Dictionary) -> Dictionary:
+	var entry := _payload_entry(payload)
+	if entry == &"":
+		return {}
+	var profile := _profile()
+	var base := _base_id(profile, entry)
+	var module_row := ModuleCatalog.module(base)
+	if module_row.is_empty():
+		return {}
+	return {
+		&"name": String(payload.get(&"name", "")),
+		&"affixes": _affix_lines(_instance_record(profile, entry)),
+		&"stats": _stat_block_of(profile, entry),
+		&"family": String(module_row.get(&"slot", "")).to_upper(),
+		&"owned": _owned_total(profile, base),
+	}
 
 
 func _on_remove_pressed() -> void:
@@ -1466,29 +1532,13 @@ func _base_id(profile: ProfileScript, entry: StringName) -> StringName:
 ## The block's own node, built in script under the footer's selection line: no scene file
 ## carries it (the pane's rows carry their own nodes the same way), so the frozen
 ## `fitting_panel.tscn` needs no edit for this surface.
-func _mount_stat_block() -> void:
-	if _stat_block != null and is_instance_valid(_stat_block):
-		return
-	_stat_block = _make_label(&"StationCaption", "")
-	_stat_block.name = "StatBlock"
-	_stat_block.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_stat_block.visible = false
-	_footer.add_child(_stat_block)
-	_footer.move_child(_stat_block, _line.get_index() + 1)
-
-
-## The block for the selected cell: the base module's catalogue stats, then one line per rolled
-## affix. Empty and hidden while the cell holds nothing (or holds a module the bag does not
-## carry and the catalogue cannot name).
 func _refresh_stat_block(profile: ProfileScript, fit: Dictionary) -> void:
-	if _stat_block == null or not is_instance_valid(_stat_block):
-		return
-	var text := ""
+	## S30 (UI_SPEC section 12.5 row 2, N30): a string write, never a node - the block's
+	## bytes go to the N27 tooltip through `_inspect_row`.
+	_stat_block_text = ""
 	if not _selected.is_empty():
 		var entry := _cell_module(fit, StringName(_selected[&"type"]), int(_selected[&"index"]))
-		text = _stat_block_of(profile, entry)
-	_stat_block.text = text
-	_stat_block.visible = not text.is_empty()
+		_stat_block_text = _stat_block_of(profile, entry)
 
 
 ## One entry's block: the base line plus one line per affix, joined by `BLOCK_SEPARATOR`.

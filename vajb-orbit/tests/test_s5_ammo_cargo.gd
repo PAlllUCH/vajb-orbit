@@ -591,7 +591,8 @@ func test_the_sale_column_ships_the_s28_chrome_law() -> void:
 			"HELD, CR EACH and VALUE title the three columns"
 		)
 	## A16: the action cluster is one P2 row at the foot, plates at the P1 token, primary rightmost.
-	var row := panel.get_node_or_null(NodePath("ActionsRow")) as HBoxContainer
+	## S30 (UI_SPEC section 19.3): the cluster now rides the pane's shared `PaneFoot` band.
+	var row := panel.get_node_or_null(^"PaneFoot/ActionsRow") as HBoxContainer
 	assert_true(row != null, "the P2 cluster row ships")
 	if row != null:
 		var sell := panel.get(&"_sell") as Button
