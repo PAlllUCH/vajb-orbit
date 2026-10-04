@@ -19,18 +19,19 @@ and every tool result is re-sent on each later request.
 
 | Section | Topic | Lines |
 |---|---|---|
-| 1. | Colour Tokens | L38–L63 |
-| 2. | Theme Architecture | L64–L106 |
-| 3. | In-Game HUD | L107–L696 |
-| 4. | Settings | L697–L758 |
-| 5. | Tooltips, Dialogs & Nine-Patch Panels | L759–L836 |
-| 6. | Font & Sizing Reference (coding checklist) | L837–L856 |
-| 7. | Station surfaces chrome — the A5.4 extension (amendment 2026-10-02, … | L857–L892 |
-| 8. | Station action buttons and the one focus language (amendment 2026-10… | L893–L925 |
-| 9. | The map deck — flight minimap and navigation (amendment 2026-10-03, … | L926–L953 |
-| 10. | The map deck and the navigation pin — design detail (amendment 2026-… | L954–L1051 |
-| 11. | Station shell v2 — the TERMINAL drawer, the popups, the one skeleton… | L1052–L1107 |
-| 12. | Station shell v2 design detail — the TERMINAL drawer, the popup pair… | L1108–L1332 |
+| 1. | Colour Tokens | L39–L64 |
+| 2. | Theme Architecture | L65–L107 |
+| 3. | In-Game HUD | L108–L697 |
+| 4. | Settings | L698–L759 |
+| 5. | Tooltips, Dialogs & Nine-Patch Panels | L760–L837 |
+| 6. | Font & Sizing Reference (coding checklist) | L838–L857 |
+| 7. | Station surfaces chrome — the A5.4 extension (amendment 2026-10-02, … | L858–L893 |
+| 8. | Station action buttons and the one focus language (amendment 2026-10… | L894–L926 |
+| 9. | The map deck — flight minimap and navigation (amendment 2026-10-03, … | L927–L954 |
+| 10. | The map deck and the navigation pin — design detail (amendment 2026-… | L955–L1052 |
+| 11. | Station shell v2 — the TERMINAL drawer, the popups, the one skeleton… | L1053–L1108 |
+| 12. | Station shell v2 design detail — the TERMINAL drawer, the popup pair… | L1109–L1333 |
+| 13. | The D20 fix wave — exchange parity, the armory browser, the hover-in… | L1334–L1366 |
 
 <!-- section-index:end -->
 
@@ -1329,3 +1330,36 @@ A5.5's three events.
 | **N39** | the overlay focus law (drawer trap from the current pane's entry, wrap through LOG OUT, `ui_accept` switches + `focus_primary()`, close returns to `TERMINAL`; the sheet traps and returns focus to its trigger) | no trap; the drawer opens on OVERVIEW's entry; the sheet leaves focus put |
 | **N40** | the drawer scrim covers the Body band only (x 0..1920, y 163..1022) — header and footer stay live | the §5.2 full-rect dimmer; `TERMINAL` inert while open |
 | **N41** | the OVERVIEW glyph is `icon_insignia_<faction>_48` until the staged `icon_overview` (STATION_HUB §19.7) ships | `icon_map_node_station_48` (§15.1's own fallback idiom) |
+
+## 13. The D20 fix wave — exchange parity, the armory browser, the hover-inspect popup (amendment 2026-10-04, owner's playtest notes 1–3; wave S31)
+
+Owner notes verbatim (`slices/D20-station-playtest/D20_synthesis.md` §0):
+note 1 — "make the 'your hold' in exchange look the same and make sure that
+they are even = on same height" (the same = the marker board); note 2 — "in
+armory the 'modules owned and buyable' shifts out of screen"; note 3 — "inspect
+time twice as long on hover, make it a bit clearer maybe to read?". Ticks
+**T-124–T-126 decided at the owner's go 2026-10-04** (defaults taken: the
+linger reading, two full-screen modes, regroup + readout). Measured facts these
+pins build on (D20-P1/P2, 1920×1080): hold RowBox 474 px inside the 500 px box
+(icon 40 + cells 70/80/100 + the 96×32 chip + 6×12 separations leave the title
+28 px), board title 517 px, the hold's header band off its own columns by
+96+12 px, the lists starting 26 px apart, armory row inner 542–620 px in a
+478 px row / 490 px `BrowserScroll`, `TOOLTIP_DELAY := 0.25`, tooltip body
+`text_dim` at 13 px in a 320 px cap.
+
+### 13.1 The pins (N42–N47)
+
+| Pin | Law | Reversal |
+|---|---|---|
+| **N42** | both EXCHANGE lists render **one shared row builder** (the board's praised plate: 76 px row, icon 40, expand-fill title, meta line, value columns) and **one AUCTION-idiom column-header band** per list (§5.10's row: caption cells seated exactly over their value columns, values right-aligned). The captions are the row stacks' own words — hold `UNITS · CR EACH · CR NET`, board `INDEX · BAND · QUOTA`; the per-row caption stacks and `CAPTION_HELD`/`CAPTION_VALUE` are deleted (S28-A12's band superseded) | S28-A12's hold-only band + the per-row caption stacks as shipped |
+| **N43** | the hold title column never renders below **180 px**: value columns rebalance to ≤ 60/64/80, and the hold list becomes an **N37 cluster** — no per-row `INSPECT` chip; one `INSPECT` `ActionInline` in the trade column acts on the focused/selected row (`disabled` + `text_dim` until one exists). Only if a row still starves the title may the hold box widen **500 → 560** (board 876 → 816) | the per-row chip + 70/80/100 + the 500 box |
+| **N44** | both lists' scroll viewports begin on **one y** (identical caption → header → scroll stacks) and the outer boxes stay even at 635 px | the hold-only band's 26 px offset |
+| **N45** | the armory browser row trims its title to a fixed **160 px ellipsis column** (port `exchange_panel.gd`'s trimming `_make_label`) and the browser half widens **490 → 620** (split 1262/490 → 1132/620). Acceptance: every row control lands inside the 1920×1080 window | untrimmed titles + the 490 half (the shipped overflow) |
+| **N46** | the hover-inspect popup **lingers 0.5 s after the pointer leaves** (2× `TOOLTIP_DELAY` — T-124's A reading, the owner's "twice as long") and holds steady while the pointer crosses a row's children (re-arms only when the hovered row/cluster changes) | no linger; re-arm per child enter/exit |
+| **N47** | the tooltip body renders `text_primary` (not bold; the INSPECT hint stays `text_dim`) and its `RichTextLabel` font is **15 px scoped to the tooltip node** (never the theme default), cap width **320 → 360** | the dim body at 13 px / 320 cap |
+
+N43 amends N37 for the exchange hold list only (N28's amendment idiom); every
+other row keeps its trailing chip. N42–N47 implement the owner's notes 1–3 at
+the values the D20 synthesis derives; each is PROPOSED with the reversal column
+beside it. A5.5/N24 still govern: none of these may hover-mutate size, position
+or an in-flow `visible`.

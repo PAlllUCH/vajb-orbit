@@ -42,25 +42,26 @@ and every tool result is re-sent on each later request.
 
 | Section | Topic | Lines |
 |---|---|---|
-| 1. | Intent | L68–L85 |
-| 2. | Navigation model | L86–L136 |
-| 3. | Composition | L137–L277 |
-| 4. | Node tree (exact) | L278–L404 |
-| 5. | Per-module spec | L405–L1019 |
-| 6. | Type scale | L1020–L1041 |
-| 7. | Art map | L1042–L1092 |
-| 8. | Theme items used (all present in | L1093–L1114 |
-| 9. | Motion table | L1115–L1142 |
-| 10. | Focus and input | L1143–L1163 |
-| 11. | Audio hooks | L1164–L1190 |
-| 12. | Implementation notes for the coder | L1191–L1270 |
-| 13. | Verification performed on the mockup | L1271–L1287 |
-| 14. | Open questions for the owner | L1288–L1321 |
-| 15. | Station services deck & station identity (amendment 2026-10-02, wave… | L1322–L1485 |
-| 16. | Panel consolidation and the inspector band (amendment 2026-10-03, ow… | L1486–L1524 |
-| 17. | The merged panels — design detail, the inspector law, the panel temp… | L1525–L1633 |
-| 18. | Shell v2 — the TERMINAL drawer, the OVERVIEW pane, the popup sinks (… | L1634–L1677 |
-| 19. | Station shell v2 design detail — the OVERVIEW pane and the one skele… | L1678–L1869 |
+| 1. | Intent | L69–L86 |
+| 2. | Navigation model | L87–L137 |
+| 3. | Composition | L138–L278 |
+| 4. | Node tree (exact) | L279–L405 |
+| 5. | Per-module spec | L406–L1020 |
+| 6. | Type scale | L1021–L1042 |
+| 7. | Art map | L1043–L1093 |
+| 8. | Theme items used (all present in | L1094–L1115 |
+| 9. | Motion table | L1116–L1143 |
+| 10. | Focus and input | L1144–L1164 |
+| 11. | Audio hooks | L1165–L1191 |
+| 12. | Implementation notes for the coder | L1192–L1271 |
+| 13. | Verification performed on the mockup | L1272–L1288 |
+| 14. | Open questions for the owner | L1289–L1322 |
+| 15. | Station services deck & station identity (amendment 2026-10-02, wave… | L1323–L1486 |
+| 16. | Panel consolidation and the inspector band (amendment 2026-10-03, ow… | L1487–L1525 |
+| 17. | The merged panels — design detail, the inspector law, the panel temp… | L1526–L1637 |
+| 18. | Shell v2 — the TERMINAL drawer, the OVERVIEW pane, the popup sinks (… | L1638–L1681 |
+| 19. | Station shell v2 design detail — the OVERVIEW pane and the one skele… | L1682–L1873 |
+| 20. | The ARMORY two-module rework (amendment 2026-10-04, owner's playtest… | L1874–L1903 |
 
 <!-- section-index:end -->
 
@@ -1869,3 +1870,33 @@ review sheet's own header art, left empty unless the owner asks); **+2 in-batch
 retry runs budgeted** (GENERATION_PLAN.md's measured overage pattern) — 5 paid
 runs = **50 credits ≈ $0.25**. Reversal for the whole list: generate nothing —
 every fallback column value ships as today (the §18 gate re-imposed by ruling).
+
+## 20. The ARMORY two-module rework (amendment 2026-10-04, owner's playtest note 2; wave S32)
+
+Owner note 2 verbatim: "in armory the 'modules owned and buyable' shifts out of
+screen. make the armory more like 2 separate modules not all on 1 screen. first
+module where i select cell and get info what the cell is, what i have that can
+be slotted there and select/drag fit items. second to create battery
+configurations based on fitted weapons." Ticks decided at the owner's go
+2026-10-04: **T-125 = two full-screen modes** (one visible at a time),
+**T-126 = rack regrouping + SALVO/cycle readout only** (no loadout presets).
+Grounding (`slices/D20-station-playtest/D20_synthesis.md` §3): a battery is the
+player-composed rack of W-cell weapons under one trigger (09 §10–§12,
+L555-746; `battery_groups`/`set_battery_groups`/`fit_battery` at
+`player_profile.gd:1178-1353`; hardcap 5 racks × 4 cells; `battery_cycle` = the
+slowest member's cooldown, volley strum 0–40 ms).
+
+### 20.1 The pins (P32–P37)
+
+| Pin | Law | Reversal |
+|---|---|---|
+| **P32** | ARMORY is one pane with **two full-screen modes** — `FIT CELLS` and `BATTERY CONFIG` — behind a two-entry mode switch (P2 `ActionInline` pair, UI_SPEC §8) in the pane's header band; exactly one mode is visible at a time and switching is a pure visibility operation under A5.5 | two side-by-side halves (the shipped single screen) |
+| **P33** | **FIT CELLS** carries three blocks: (1) the shipped cell grid (23 cells + 3 engines) with a real **CELL INFO block** replacing the one-line SelectionLine — cell id + family, power draw, fitted module or `EMPTY`, and the legality line (`armory_panel.gd:86-90`'s refusal strings wired as proactive hints); (2) **FITS HERE** — everything the profile owns that can slot in the selected cell (family + `fit_legal` filtered), each row select-to-fit and drag-to-fit; (3) **BUYABLE THAT FITS** — the browser's buy side filtered to the selected cell, with `BUY` + `INSPECT` | the family-tab browser as the only filter; the one-line SelectionLine |
+| **P34** | **BATTERY CONFIG** is the rack editor over **fitted weapons only**: B1–B5 racks (09 §12's hardcap), drag between racks writes `set_battery_groups`, empty cells read-only `W<n> — EMPTY` (09 §10's idiom); each rack shows its SALVO pip meters and its `battery_cycle` (the slowest member's cooldown) | fit/unfit-only racks welded to the one screen |
+| **P35** | no loadout presets (T-126): the editor composes the live fit only | saved battery sets |
+| **P36** | AMMUNITION and the PWR meter live in a shared foot band on both modes — the 264 px BodyScroll fold and T-122's dead space die with the rework | the below-fold console band |
+| **P37** | both modes' lists are full-width columns of the mode (UI_SPEC §13.1 N45's trim law applies to every row) — no list is ever a 490 px half | a split half-list |
+
+P32–P37 are PROPOSED at the values above with their reversal column; they
+implement the owner's note 2 and the T-125/T-126 defaults verbatim. UI_SPEC
+§11.1 A5.5/N24 govern the mode switch and every hover state.

@@ -147,11 +147,17 @@ session reports.
 
 ## Handoff (live)
 
-**Item 30 = S24 world identity — next** (its five-piece predates the shell-v2
-round, so the developer re-checks `slices/S24-world-identity/S24_BRIEF.md`
-against `UI_SPEC.md` §12 + `STATION_HUB.md` §19 before dispatch; the handoff
-block is re-cut in `S24_prompts.md` at that re-check). Item 36 (S30) is done —
-items 30–33 each waited on it and now run in order.
+**Item 37 = S31 shell fixes — next (live 2026-10-04)** (`slices/S31-shell-fixes/`;
+the D20 fix wave F1–F3+F5 against `UI_SPEC.md` §13.1 N42–N47 — exchange parity,
+the armory browser overflow, the hover-inspect linger/legibility, T-118–T-123).
+**Item 38 = S32 ARMORY two-module rework** (`slices/S32-armory-modules/`;
+`STATION_HUB.md` §20.1 P32–P37 — FIT CELLS / BATTERY CONFIG, T-125/T-126
+defaults) runs strictly after it — both rewrite `ui/station/armory_panel.*`.
+**Item 30 = S24 world identity — after 38** (its five-piece predates the
+shell-v2 round, so the developer re-checks
+`slices/S24-world-identity/S24_BRIEF.md` against `UI_SPEC.md` §12–§13 +
+`STATION_HUB.md` §19–§20 before dispatch; the handoff block is re-cut in
+`S24_prompts.md` at that re-check). Items 30–33 then run in order.
 
 The whole queue is phase **P3** (`phases/P3-content-feel-push/PHASE.md`);
 order and the collisions that force it are in `WAVEBOARD.md` §Queued. The

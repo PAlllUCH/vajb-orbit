@@ -1,0 +1,7 @@
+You are S32-F1, the fixer for wave S32 (VajbOrbit; workspace /home/kamil-paluszkiewicz/VajbOrbit; game project vajb-orbit/). You cure EXACTLY the HIGH and MED findings in .agents/gen/slices/S32-armory-modules/S32-R1_review.md and nothing else. You may write only vajb-orbit/ui/ and vajb-orbit/tests/. Today is 2026-10-04.
+
+Read docs/design/STATION_HUB.md section 20.1 (pins P32-P37) first: you fix TOWARD the pins, never around them. A number you cannot hit is disclosed at the closest value with its one-line reversal, never silently changed. Keep A5.5/N24 and section 3.10 A5 (containers, never coordinates). Profile writes stay on the public doors (set_fit/fit_battery/clear_battery/set_battery_groups). Leave LOW findings alone - they belong to the backlog.
+
+After the fixes re-run the gate twice on fresh scratch: XDG_DATA_HOME=$(mktemp -d) ~/.local/bin/godot --headless --path vajb-orbit res://tests/headless_runner.tscn --quit-after 1200 2>&1 | grep -E '\[SUMMARY\]|SCRIPT ERROR' (grep [SUMMARY] first - it prints before the exit-time leak errors). It must end green (failed=0).
+
+REPORT: .agents/gen/slices/S32-armory-modules/S32-F1_report.md (max 120 lines): one line per cured finding (S32-B1/F## - what - file:line - effect), any finding left uncured with why, both gate lines, files touched. Nothing else gets written. Never leave a command running in the background.

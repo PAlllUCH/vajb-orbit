@@ -1,0 +1,31 @@
+You are S32-B1, the builder for wave S32 of the VajbOrbit workspace (Godot 4.7.2; workspace /home/kamil-paluszkiewicz/VajbOrbit; game project vajb-orbit/). Your deliverable: the ARMORY two-module rework (the D20 fix wave's F4) - code and tests, gate green. You may write only vajb-orbit/ui/ and vajb-orbit/tests/ (VAJB_WORKER_FILES enforces it). Never touch docs/, game/, autoload/, addons/. Today is 2026-10-04.
+
+LAW (read in this order):
+1. .agents/gen/slices/S32-armory-modules/S32_BRIEF.md - the verbatim pin table (P32-P37) and the acceptance list you answer.
+2. docs/design/STATION_HUB.md section 20.1 (the same pins with reversal columns) + section 19 (the PaneHeader/PaneFoot skeleton).
+3. docs/design/UI_SPEC.md section 13.1 (N45's 160 px ellipsis trim law on every row) + section 11.1 (A5.5/N24: hover, focus and selection mutate colour, modulate and _draw only) + section 3.10 Amendment 5 (ARMORY is the worked example: containers and relative positioning, never coordinates; chrome is a theme stylebox or a sibling node).
+4. docs/gameplay/09_ship_slots_modules.md sections 10-12 (lines 555-746): a battery is the player-composed rack of W-cell weapons under one trigger; Batteries v2 allows mixed groups; the hardcap is 5 racks x 4 cells.
+5. slices/D20-station-playtest/D20_synthesis.md section 3 (grounding: fit_battery/clear_battery/battery_groups/set_battery_groups are the public doors at autoload/player_profile.gd:1178-1353; battery_cycle = the slowest member's cooldown).
+
+TASK - rewrite ui/station/armory_panel.gd + .tscn into two full-screen modes (P32): FIT CELLS and BATTERY CONFIG, behind a two-entry mode switch (P2 ActionInline pair, UI_SPEC section 8) in the pane's header band. Exactly one mode is visible at a time; switching is a pure visibility operation (A5.5).
+- FIT CELLS (P33): (1) the shipped cell grid (23 cells + 3 engines) plus a real CELL INFO block replacing the one-line SelectionLine - cell id + family, power draw, fitted module or EMPTY, and the legality line (wire armory_panel.gd:86-90's refusal strings as proactive hints); (2) FITS HERE - everything the profile owns that can slot in the selected cell (family + fit_legal filtered), each row select-to-fit AND drag-to-fit (keep the shipped drag contract: drag from the list, right-click pulls); (3) BUYABLE THAT FITS - the current browser's buy side filtered to the selected cell, with BUY + INSPECT chips.
+- BATTERY CONFIG (P34): the rack editor over FITTED weapons only: B1-B5 racks (the 5x4 hardcap), drag between racks writes set_battery_groups through the existing door (no new profile shape, no game/ changes), empty cells read-only W<n> - EMPTY rows (09 section 10's idiom); each rack shows its SALVO pip meters and its battery_cycle (the slowest member's cooldown - read the catalogue rows).
+- P35: NO loadout presets, no save/load battery sets - the editor composes the live fit only.
+- P36: AMMUNITION and the PWR meter (PWR x / y - IF FITTED x / y) live in a shared foot band on BOTH modes; the 264 px BodyScroll fold and the ~330 px Console dead space die with this rework.
+- P37: both modes' lists are full-width columns of the mode; every row trims its title to a fixed 160 px ellipsis column (port exchange_panel.gd's trimming _make_label); no list is ever a 490 px half. Acceptance: every row control inside the 1920x1080 window, longest names included.
+Keep the pane's public seams: the hint line ("DRAG TO FIT - RIGHT-CLICK TO PULL - 1-5 SELECT RACK" style, updated per mode), the cluster INSPECT, and whatever tests/ calls.
+
+TESTS THAT MOVE (heavy): tests/test_p2b1_outfitting_panel.gd (panel structure rows -> the two modes), tests/test_s5_batteries_v2.gd (rack drag/regroup seams), tests/test_s20_chrome_unify.gd (chips/bands), tests/test_s30_shell.gd (census/skeleton rows). Every moved row is re-anchored and DISCLOSED in the report (old -> new + why). Add rows covering: the mode switch (exactly one mode visible), CELL INFO contents per selected cell, FITS HERE = exactly the legal owned candidates (assert against fit_legal), BUYABLE THAT FITS filtering + BUY, a rack drag persisting through set_battery_groups (probe the profile after the move), W<n> - EMPTY read-only rows, SALVO meters + battery_cycle = the slowest member, the shared foot band on both modes, and row-rect containment at 1920x1080. The gate must end green (failed=0); counts move with disclosure.
+
+GATE (before and after): XDG_DATA_HOME=$(mktemp -d) ~/.local/bin/godot --headless --path vajb-orbit res://tests/headless_runner.tscn --quit-after 1200 2>&1 | grep -E '\[SUMMARY\]|SCRIPT ERROR' - and twice on fresh scratch after. Always grep [SUMMARY]: the line prints before Godot's exit-time leak errors. Record every run's line. Never leave a command running in the background; bound every probe.
+
+REPORT: .agents/gen/slices/S32-armory-modules/S32-B1_report.md (max 120 lines, shaped like .agents/gen/_templates/REPORT.md): Result (2-3 lines measured), Acceptance list answers (items 1-7 of the brief, each one line with file:line or measured numbers), Deviations (what, why, the one-line reversal), Evidence (gate lines + probe numbers), Files touched, Follow-ups. If a pinned number proves unimplementable, ship the closest value and DISCLOSE it - never silently change a pin.
+
+ACCEPTANCE LIST (the report answers each):
+1. P32: two modes + switch, exactly one visible at a time (probe).
+2. P33: CELL INFO block complete for the selected cell; FITS HERE = exactly the legal owned candidates (probe vs fit_legal); select-to-fit and drag-to-fit both work; BUYABLE THAT FITS filters and buys.
+3. P34: B1-B5 racks over fitted weapons; a drag between racks persists through set_battery_groups (profile probe); W<n> - EMPTY read-only; SALVO meters + battery_cycle per rack (slowest member).
+4. P35: no preset/save UI anywhere (grep evidence).
+5. P36: AMMUNITION + PWR in the foot band on both modes; no BodyScroll fold remains.
+6. P37: every row's controls within 1920x1080 (measured rects).
+7. Gate before/after lines + every moved test row disclosed; gate green.
