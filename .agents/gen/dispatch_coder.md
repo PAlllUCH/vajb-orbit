@@ -17,9 +17,12 @@ lane, WAVEBOARD, wave-boundary commit).
 
 ## Queue
 
-**Model roster (owner, 2026-10-03):** very demanding work runs
-`hyper/glm-5.3` @ high; other work runs `hyper/qwen3.8-flash` or
-`hyper/glm-5.3-flash` (all Charm Hyper — "a lot tokens to burn on hyper").
+**Model roster (owner, 2026-10-03, shell-v2 round):** code runs
+`hyper/deepseek-4.1-flash`, heavy design runs `xiaomi/mimo-v2.6-pro`, review
+runs `hyper/glm-5.3-flash` — every run at the provider's max reasoning effort
+(mimo's enum caps at `high`, measured 2026-10-03). Nothing heavier without
+asking the owner first. (The earlier roster — `hyper/glm-5.3` / qwen3.8-flash /
+glm-5.3-flash @ high — governed items 34–35 and is closed.)
 
 | # | Wave | Item | What | Status |
 |---|---|---|---|---|
@@ -29,13 +32,14 @@ lane, WAVEBOARD, wave-boundary commit).
 | 28.6 | S22.6 | Inertia — hull coast & rock drift | The owner's 2026-09-30 question answered and ticked the same day: `COAST_TIME_MULT` 2.5 → **5.0** (a released hull brakes at a constant `max_speed / coast_time`; the shipped Vanguard now stops in 5.25 s over 1 063.94 u) and the rock damping 3.71 → **0.35** with cleave children on **0.25**, so a kick carries ~429 u (a child ~600 u) instead of ~40 u. Pins: **18 §13's two new rows** + CONTRACTS §22 T1 / §23.5 T1. One builder (`ship_fit.gd`, `asteroid.gd`, `asteroid_field.gd` + tests). | **done 2026-09-30** (gate 983 → **990/0**, 0 HIGH / 0 MED / 2 LOW — L256 closed by the developer, L257 pre-existing) |
 | 28.7 | S22.7 | Mass physics & rock contact | The owner's 2026-10-01 ask ticked the same day: the flight forces derive from the **class** mass and act against the **fit's** (`ShipStats.base_mass`; plating's ponderous half becomes mass — `mass_add` finally slows a hull), fuel burns ∝ thrust (Vanguard-anchored 3.0/s) with the dash ∝ mass, rock mass = `ROCK_MASS_DENSITY × r²` (M anchored 560 t → S 183 / XL 2 571, **L8 closes**), rocks collide with rocks (`COLLISION_MASK` 3, a nudge not a fight) behind a min-separation placement pass, and split speeds roll a 0.7–1.3 jitter × a √(m_M/m_child) weighting. Pins: **18 §3.2's mass law + §13's four rows**, 02 §5.4, 09 §1's note, CONTRACTS §14. **Two sequential builders** (`ship_stats`/`ship_fit`/`player_ship` then `asteroid`/`asteroid_field`) — owner-ruled (W2). **Workers run `hyper/glm-5.3-flash` (owner 2026-10-01: GLM 5.3 Flash only, Charm Hyper route only — the first B1 dispatch on `opencode-go` died mid-recon, no artefacts, re-dispatched).** | **done 2026-10-01** (gate 990 → **1002/0** twice hermetic + the close-out's own ×2; 0 HIGH / 0 MED / 4 LOW L258–L261 — L259 is the developer's list edit, L261 resolved by the dev-docs re-snapshot; **L8 closed**; verify green against `s227_start_devdocs`) |
 | 29 | S23 | Content activation | `w_proton`/`w_flak` families, the three dead module effects, 7 stock fits, sibelon seam, interceptor/turret-platform hulls, per-hull sprites + liveries (L137), loot rows (L48-class closed). Five-piece: `slices/S23-content-activation/`; pins R-S23-1..6 (09/08 P3 blocks, ticks C1–C6). | **done 2026-10-02** (gate 1014 → 1030/0 ×2; B1 → R1 → F1 on hyper/glm-5.3-flash; 2 HIGH bucket-2 cured, 3 LOW L264–L266) |
-| 30 | S24 | World identity | Named stations + per-faction menus/flavours, standing band effects, per-sector hostile bands, nebula clouds (L-band-split). Five-piece: `slices/S24-world-identity/`; pins R-S24-1..3 (14/13/11 P3 blocks, ticks W1–W3). | queued · after 17 (D16's spec) + 29 |
+| 30 | S24 | World identity | Named stations + per-faction menus/flavours, standing band effects, per-sector hostile bands, nebula clouds (L-band-split). Five-piece: `slices/S24-world-identity/`; pins R-S24-1..3 (14/13/11 P3 blocks, ticks W1–W3). | queued · after 17 (D16's spec) + 29 + 36 (S30 re-lays the station shell it touches) |
 | 31 | S25 | Contracts board | `contract_registry` + the board panel: Haul/Hunt/Gather/Escort, escrow + 100 CR cancel, standing gates, the escort convoy loop. Five-piece: `slices/S25-contracts/`; pin R-S25-1 (14 P3 block, tick J1). | queued · after 30 (`ui/station/` + profile) |
 | 32 | S26 | Bosses, arenas, insurance, vaults | The Boneyard + The Pyre arena runs, the Maw roaming S7 with 06 §3.4's table, death persistence, insurance + mercy clause, vaults + `u_vault`. Five-piece: `slices/S26-endgame/`; pin R-S26-1 (08 P3 block, ticks E1/E2). | queued · after 31 (Expedition seam) |
 | 33 | S27 | Catalog breadth & shipyard | +7 affix rows with perks live, tier variants, per-archetype loot, the 10 §3 shipyard (recipes/queue/scrap). Five-piece: `slices/S27-catalog-breadth/`; pins R-S27-1..3 (09/15 P3 blocks, ticks K1–K3). | queued · after 32 (`game/`) |
 
 | 34 | S28 | Station chrome quick-fix wave (the D17 playtest pile) | The mechanical half of the owner's 2026-10-03 ruling: inspector band clear (STATION_HUB §16 P6 S28 half), CONTROLS bindings, copy + hygiene rows (`NO_DAMAGE_REPORT` strip, dev-speak, plurals, quit dialog, splash line, shelf tag, `MINE BACK`), shield single source (450/400), `SELL ALL RAW` state, exchange stepper + headers, credits box, sub-pixel floor, DevTuningMenu gate, and UI_SPEC §8's P1–P3 button/focus unification on the panels S29 does not rewrite. Five-piece: `slices/S28-station-chrome/`; law UI_SPEC §8 + STATION_HUB §16 P6 + the D17 reports. | **done 2026-10-03** (gate 1031 → 1038/0 ×2 + R1 re-run; 0 HIGH / 0 MED / 2 LOW T-98/T-99; B1 qwen3.8-flash → R1 glm-5.3-flash, both @ high) |
 | 35 | S29 | Panel consolidation + the map deck | Implements D18's law (`slices/D18-map-panels/`): ARMORY+FITTING and SHIPYARD+REPAIRS fold (rail 8 → 6), drag-and-drop with the slot filter tabs, hover→describe, equipped items on hulls, the map deck (expand/pan/zoom/filters, pin navigation, the N5 hyperdrive row from 10's 2026-10-03 block). Five-piece lands at D18's close. | **done 2026-10-03** (1038 → 1073/0 ×2; 1 HIGH + 1 MED cured by F1, 7 LOW T-100–T-106; B1 crashed on provider credits — the resume + B2 ran xiaomi/mimo-v2.6-pro @ high, R1 glm-5.3-flash) |
+| 36 | S30 | Station shell v2 build | Implements D19's law (`UI_SPEC.md` §12, `STATION_HUB.md` §19 + the `staging/mockup/d19_*` wireframes): the TERMINAL drawer over the layout, the OVERVIEW landing pane, the tooltip + INSPECT modal sinks, the one skeleton on all seven panes, and the A5.5 census cures (N24–N30 / P15–P21). Proposed split B1 shell/drawer/overview ∥ B2 popups + skeleton + census — the S30 brief re-checks the split against §12/§19's final shape. Five-piece lands at D19's close. | queued · after 19 (D19's §12/§19) — ahead of 30–33 |
 
 ## Parked (owner-gated — not queued; say the word and the five-piece lands)
 
@@ -143,9 +147,10 @@ session reports.
 
 ## Handoff (live)
 
-**Item 29 = S23 content activation — next** (paste the block at the bottom of
-`.agents/gen/slices/S23-content-activation/S23_prompts.md`; the later items'
-handoff blocks live in their own `<WaveID>_prompts.md`).
+**Item 36 = S30 station shell v2 build — next, as soon as designer 19 (D19)
+closes** (its five-piece lands at D19's close; the handoff block will live in
+`slices/S30-*/S30_prompts.md`). Items 30–33 then resume in order and each one
+now also waits on 36 — S30 re-lays the station shell every one of them touches.
 
 The whole queue is phase **P3** (`phases/P3-content-feel-push/PHASE.md`);
 order and the collisions that force it are in `WAVEBOARD.md` §Queued. The

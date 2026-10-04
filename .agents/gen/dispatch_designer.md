@@ -81,15 +81,17 @@ generate → stage → **review sheet → owner approval** → ship → reimport
 
 ## Handoff (live)
 
-**Item 19 = D19 station shell v2 design** (queued 2026-10-03 at the owner's ask,
-ahead of coders 30–33): the shell-v2 ruling is pinned at `UI_SPEC.md` §11 (A5.5,
-N24–N30) + `STATION_HUB.md` §18 (P15–P21); brief and prompts are
-`slices/D19-station-shell-v2/D19_BRIEF.md` / `D19_prompts.md`; its §12/§19
-detail is S30's (coder 36) law. Items 17 (D16) and 18 (D18) are closed
-(2026-10-03). After D19 + S30, coder 30 (S24 world identity) resumes its
-docs-first opening on the ticked W3 names and cites `STATION_HUB.md` §15 +
-`UI_SPEC.md` §7 as its design law (order and collisions in `WAVEBOARD.md`
-§Queued).
+**Item 19 = D19 station shell v2 design — done 2026-10-03** (2 HIGH + 9 MED
+cured by F1 under two designer rulings — N28's cell trigger becomes the cluster
+chip N37, §5.7's `REFINE N` · `REFINERY ALL` · `CANCEL` restored verbatim; 6 LOW
+T-107–T-112 + close-out T-113; `UI_SPEC.md` §12 N31–N41 + `STATION_HUB.md` §19
+P22–P30 + three wireframes + the A5.5 census landed; gate 1074/0 ×2, verify
+green vs `d19_start`). Items 17 (D16) and 18 (D18) are closed (2026-10-03).
+**The design queue is empty again.** Next action is the coder lane's S30
+station shell v2 build (coder 36, `dispatch_coder.md`) against §12/§19; then
+coder 30 (S24 world identity) resumes its docs-first opening on the ticked W3
+names and cites `STATION_HUB.md` §15 + `UI_SPEC.md` §7 as its design law (order
+and collisions in `WAVEBOARD.md` §Queued).
 **Item 16 = D15 closed and ticked 2026-09-29**: the 25-row feel tick sheet is
 ruled (all y except T-feel-5 = the §6 reversal 1.6–2.6 s; `slices/D15-flight-feedback/
 D15-A1_report.md` carries the tick record; 0 HIGH / 2 MED

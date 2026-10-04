@@ -42,24 +42,25 @@ and every tool result is re-sent on each later request.
 
 | Section | Topic | Lines |
 |---|---|---|
-| 1. | Intent | L67–L84 |
-| 2. | Navigation model | L85–L135 |
-| 3. | Composition | L136–L276 |
-| 4. | Node tree (exact) | L277–L403 |
-| 5. | Per-module spec | L404–L1018 |
-| 6. | Type scale | L1019–L1040 |
-| 7. | Art map | L1041–L1091 |
-| 8. | Theme items used (all present in | L1092–L1113 |
-| 9. | Motion table | L1114–L1141 |
-| 10. | Focus and input | L1142–L1162 |
-| 11. | Audio hooks | L1163–L1189 |
-| 12. | Implementation notes for the coder | L1190–L1269 |
-| 13. | Verification performed on the mockup | L1270–L1286 |
-| 14. | Open questions for the owner | L1287–L1320 |
-| 15. | Station services deck & station identity (amendment 2026-10-02, wave… | L1321–L1484 |
-| 16. | Panel consolidation and the inspector band (amendment 2026-10-03, ow… | L1485–L1523 |
-| 17. | The merged panels — design detail, the inspector law, the panel temp… | L1524–L1632 |
-| 18. | Shell v2 — the TERMINAL drawer, the OVERVIEW pane, the popup sinks (… | L1633–L1676 |
+| 1. | Intent | L68–L85 |
+| 2. | Navigation model | L86–L136 |
+| 3. | Composition | L137–L277 |
+| 4. | Node tree (exact) | L278–L404 |
+| 5. | Per-module spec | L405–L1019 |
+| 6. | Type scale | L1020–L1041 |
+| 7. | Art map | L1042–L1092 |
+| 8. | Theme items used (all present in | L1093–L1114 |
+| 9. | Motion table | L1115–L1142 |
+| 10. | Focus and input | L1143–L1163 |
+| 11. | Audio hooks | L1164–L1190 |
+| 12. | Implementation notes for the coder | L1191–L1270 |
+| 13. | Verification performed on the mockup | L1271–L1287 |
+| 14. | Open questions for the owner | L1288–L1321 |
+| 15. | Station services deck & station identity (amendment 2026-10-02, wave… | L1322–L1485 |
+| 16. | Panel consolidation and the inspector band (amendment 2026-10-03, ow… | L1486–L1524 |
+| 17. | The merged panels — design detail, the inspector law, the panel temp… | L1525–L1633 |
+| 18. | Shell v2 — the TERMINAL drawer, the OVERVIEW pane, the popup sinks (… | L1634–L1677 |
+| 19. | Station shell v2 design detail — the OVERVIEW pane and the one skele… | L1678–L1869 |
 
 <!-- section-index:end -->
 
@@ -1673,3 +1674,195 @@ kie.ai to use." The pipeline law stands unchanged (render → cut → key →
 generation log beside the family; naming law `ASSET_NAMING_SPEC.md`). D19 stages
 the needs list, nothing ships before the owner approves a sheet. **Reversal:**
 re-impose the gate by ruling.
+
+## 19. Station shell v2 design detail — the OVERVIEW pane and the one skeleton (amendment 2026-10-04, wave D19 — D19-A1)
+
+§18's supersession block and its P15–P21 are law (its three ledger rows are
+completed in §19.6); the popup and shell-band half of the detail is
+`UI_SPEC.md` §12. Mockups: `staging/mockup/d19_overview_wireframe.md`,
+`d19_shell_wireframe.md`, `d19_popup_wireframe.md`. Composition is A5.1–A5.4 +
+A5.5 throughout; tone is N29 (Tokens only, overlay-only motion ≤ 0.2 s). The
+brief's unticked PROPOSED pins (P16's entry order, P18's tile grid + min size)
+implement at their stated value (S19's precedent). Every value this section must
+choose ships **PROPOSED** with its reversal and a fresh tick (**P22–P30**,
+continuing the P series). Measured-grid rows are §3.1's idiom; *derived* boxes
+are arithmetic from its rows, not new measurements.
+
+### 19.1 OVERVIEW — the five blocks (P18)
+
+The content split carries the five blocks in P18's order as one stack — a
+`VBoxContainer` (separation 12) inside a vertical `ScrollContainer` (**P22**).
+The arithmetic is why: the skeleton's split is 633 tall (§19.3) and the blocks'
+minima sum to ~776 (identity 90 + tiles 296 + hull/repair 84 + services 240 +
+flavour 18 + 4 × 12 gaps), so the stack scrolls at 16:9 and 21:9 and fits
+unscrolled at 4:3, where §3.3 hands the body its extra 360 px. Reversal (P22's):
+no scroll — separation 8 and the flavour line dropped (P18's own reversal).
+
+| # | Block row | Anatomy | Chrome (A5.4 row) | Cite / tick |
+|---|---|---|---|---|
+| 1 | Identity | the §15.5 name plate (UI_SPEC §7 A5.4-1) verbatim — faction glyph 48 at its own cut + `StationName` (`HeroTitle` 48) + the character line (`StationCaption` 13) — stretched to the block width | A5.4-1 (flat Tokens box, faction ramp border) | P18 "identity (§15 treatment)"; §15.5 (U17, W3) |
+| 2 | Department tiles | `GridContainer` columns 3, separation 16; 6 tiles min 300×140 (P18), row-major ARMORY · REFINERY · EXCHANGE / AUCTION · SHIPYARD · LAUNCH (**P23**) | §19.2 | P18 |
+| 3 | Active hull + repair | `HBoxContainer` separation 16: left `VBoxContainer` — caption `ACTIVE HULL` (A5.4-3), the hull name + `<class> CLASS · <hull> · <slots>` meta (`shipyard_panel.gd:123`, `META_FORMAT`), the labelled stat-pair line HULL/SHIELD/CARGO/ENGINES/SLOT CELLS (`:94-100`, `STAT_ROWS`), and the repair summary `REPAIR AVAILABLE · %d CR` / `ALL SYSTEMS NOMINAL` (`repairs_panel.gd:50,52` — shipped, not re-ticked); right: `REPAIR →` (§8 `ActionInline` 96×32; the words are P18's own) | caption A5.4-3; the chip is §8's flat `ActionInline` | P18; §17.2 (**P24**) |
+| 4 | Services rows | three §3.1 rows (76 tall, `RowInner` 12/8, pitch 82): icon 24 at its own cut + the service name (Label 14 — U2's `CONTRACTS` / `INSURANCE` / `VAULTS`) + the right-aligned readout (`ACTIVE CONTRACTS %d/3` (U6), the `INSURED · COVERS ONE LOSS` family (U10), `THIS VAULT — %d / %d UNITS` (U16)) + a trailing `OPEN →` `ActionInline` (**P25**) → the SERVICES pane (**P26**) | A5.4-4 (flat `item_bg` + 1 px `metal_mid`) | P18; §15.1/§15.6 |
+| 5 | Flavour line | `THE DOCK CLAMPS ARE CHEAP. THE AMMUNITION IS NOT.` (**P27**), `StationCaption` 13 `text_dim`, the stack's last row | A5.4-3's caption idiom | P18 "one flavour line" |
+
+Block 3's `REPAIR →` deep-links to the SHIPYARD pane (P18) with the active hull
+selected and the repair block's `REPAIR` focused (**P24**; reversal: the hull
+list's first row focused). Block 4's rows deep-link to the SERVICES pane with
+that service's panel showing (**P26**). Row-4 icons are the shipped service
+glyphs — `icon_service_insurance.svg` / `icon_service_vault.svg`
+(ASSET_CATALOG.md:392-393) and `icon_contract_haul.svg` for CONTRACTS until the
+staged `icon_service_contracts` (§19.7) — the interim is P25's.
+
+### 19.2 The department tile (P23)
+
+One `Button` (A5.4 row shape Q5: `Button` + container children), min (300, 140)
+(P18), `toggle_mode` off. Chrome is the theme's `panel_raised` flat bevel
+(UI_SPEC §2.1) — P18's "`PanelRaised` grid" read as the theme stylebox of that
+name; the `ui_panel_frame` band cannot dress a surface whose content margin is
+under 32 px (A5.1/Q1). The alternative reading (the band at a 33 px inset) is
+reported in `D19-A1_report.md`, not taken.
+
+- Interior (**P23**): `MarginContainer` 16 → `VBoxContainer` separation 8 —
+  `HBoxContainer` (separation 12) with the glyph `TextureRect` 48×48 in its own
+  rect (A5.2(iii)) + the title (`SectionHeader` 16 `text_primary`, vertically
+  centred); then the one-line caption (`StationCaption` 13 `text_dim`).
+- The six captions (**P23**, verbatim): ARMORY `BUY, FIT AND SWAP MODULES` ·
+  REFINERY `3 ORE = 1 INGOT` · EXCHANGE `SELL YOUR HOLD` · AUCTION `THE HOUSE
+  SHELF · 20-MINUTE RESTOCK` · SHIPYARD `HULLS, MODULES AND REPAIRS` · LAUNCH
+  `BRIEF, CARGO, UNDOCK`. Reversal: the captions drop and the title carries the
+  tile.
+- The trailing affordance is a chevron **mark** in its own child rect (A5.2(iii),
+  `text_dim`) — never the `→` glyph, which the theme font set does not guarantee
+  (§5.8's measured finding) (**P30**).
+- States (all A5.5-legal): hover = `button_hover` bevel (UI_SPEC §2.1) + the
+  glyph `modulate` `text_dim`→`text_primary`; focus = UI_SPEC §8 P3's 1 px
+  `accent_danger_bright` ring; pressed = the `button_pressed` stylebox (§10's
+  selected idiom — a second, non-colour channel). No state changes any box.
+- Glyphs: the pane's own `MODULE_ICONS` entry (`station.gd:91-98`) until the
+  staged tile masters (§19.7) are owner-approved. OVERVIEW's own marks ride
+  **N41** (UI_SPEC §12.6).
+
+### 19.3 The one skeleton, measured once (P7's template at the §3.1 idiom)
+
+P7's standing half, extended to every pane OVERVIEW included (§18's ledger):
+`PaneHeader` / content split / the UI_SPEC §8 P2 action cluster / the shared
+footer hint, and nothing else. Measured once at 1920×1080; §19.4 is its per-pane
+conformance.
+
+| Region | Carrier | Container / anchor | `size_flags` | `custom_minimum_size` | Measured box |
+|---|---|---|---|---|---|
+| Body pane | `PaneFrame`, `PanelContainer` `PanelRaised` (A5.4 `Pane outer edge`) | child of `Body`, full body width (P15) | h 3, v 3 | none | x 23..1896, y 163..1021 — frame bands 23..30 / 1889..1895 / 163..170 / 1015..1021 (*derived*: §3.1's `ModuleRail` + `ModuleHost` bands merge into one pane edge) |
+| Pane content box | `HostMargin`, `MarginContainer` 20 | child of the frame | n/a | content + 40 | x 77..1842, y 216..969 (*derived*: 24+1+32+20 … 1895−1−32−20 — §3.4's inset chain ±54 off the frame plate, the host's `453..1842` precedent; y as §3.1's host row) |
+| Pane stack | `PaneBox`, `VBoxContainer`, separation 12 (**P28**) | child of `HostMargin` | fill | none | 1765 wide (1842−77) |
+| PaneHeader | `PaneHeader`, `HBoxContainer`, separation 12 | child of `PaneBox` | v 0 | `(0, 40)` (**P28**) | y 216..255; the module icon 40 at its own cut at x 77..116 and the title (`StationPanelTitle` 20) at the shared x 129 (**P31**; P7's "shared x") |
+| Content split | `PaneSplit` (the pane's own arrangement) | child of `PaneBox` | v 3 | none | y 268..901 (633 tall — *derived*) |
+| Foot band | `PaneFoot`, `HBoxContainer`, separation 16 (**P28**) | child of `PaneBox` | v 0 | `(0, 56)` | y 913..969 |
+| Footer hint | `PaneFooter`, `Label` (`StationCaption` 13 `text_dim`) | child of `PaneFoot` | h 3, v 7 (`SHRINK_END`) | text | ink y 957..965 — §3.1's `PaneFooter` measurement, kept by bottom-aligning in the band; this cell is N24's reserved slot (UI_SPEC §12.5: 18 px, width-reserved) |
+| Action cluster | `PaneActions`, `HBoxContainer`, separation 16 | child of `PaneFoot` | h 0 | `(0, 56)` | right-aligned to x 1842: `ActionPrimary` 360×56 rightmost at x 1482..1842, its secondary beside it at x 1106..1466 (*derived* — P2's "primary rightmost … 16 px gutter") |
+
+P2's "at the same vertical band the shared footer hint line tops" is read as one
+band: the hint line and the cluster share the 56 px foot band (hint left,
+cluster right). The alternative — the hint on its own row under the cluster — is
+P28's reversal. The hint cell's text is the pane's own §5.x footer wording where
+one is pinned; §19.4 names each.
+
+### 19.4 Per-pane conformance — all seven panes plus the PROPOSED SERVICES
+
+| Pane | PaneHeader (icon + title) | Content split — what moves in | Action cluster (UI_SPEC §8 P1) | Foot-band hint |
+|---|---|---|---|---|
+| OVERVIEW | `OVERVIEW` + the N41 glyph | the five blocks (§19.1) | none — the band is kept (P28's uniformity) | `PICK A TILE TO CHANGE DECKS` (**P29**) |
+| ARMORY | `ARMORY` + `icon_equip_module.png` (`station.gd:92`) | P4's landscape split: the ship grid (§17.1 left, FITTING's own numbers) + the inventory browser in the §15 spine's 420 right column | `REMOVE` + `BUY & FIT` (P14) | `PWR %d / %d · CANDIDATE %d / %d` (§17.1's footer power meter) |
+| REFINERY | `REFINERY` + `icon_cargo_ore.svg` | §5.7's `RefineryTable` rows + `RefineBox` (the stepper + the `ORE IN` / `INGOTS OUT` / `FEE` totals) | `REFINE N` + `REFINERY ALL` + `CANCEL` | `3 ORE = 1 INGOT · FEE 15 CR PER CONVERSION` (§5.7; empty state `BRING RAW ORE FROM THE BELT`) |
+| EXCHANGE | `EXCHANGE` + `icon_credits.svg` | §5.8's three columns: `HoldBox` + `MarketBoard` + `TradeBox` | `SELL ALL RAW` + `CANCEL` + `SELL` | `THE STATION BUYS · IT NEVER SELLS IN V1` (§5.8) |
+| AUCTION | `AUCTION` + `icon_credits.svg` | §5.10's two shelf sections (HULLS 6, MODULES 20) + the `SELL MODULES` sub-list | none at pane level — the row press is the action (§5.10; `auction_panel.gd:750,798`) | `NEXT RESTOCK <m:ss>` (§5.10) |
+| SHIPYARD | `SHIPYARD` + `icon_hull.svg` | P5/§17.2 whole: the hull list + `PreviewFrame` + the labelled pairs + the comparison block + `INSTALLED MODULES` + the repair block | `SET ACTIVE` + `REPAIR` (§17.2) | `REPAIR AVAILABLE · %d CR` / `ALL SYSTEMS NOMINAL` (§17.2) |
+| LAUNCH | `LAUNCH` + `icon_map_route.png` | §5.4's brief rows + cargo strip + manifest + the deck-control services (`REFUEL` / `RECHARGE` / `PAY BOUNTY` — `launch_panel.gd:456-495`, §5.4 P2-B) | `REFUEL` + `RECHARGE` + `LAUNCH` | `ARM ONCE · LAUNCH TWICE · 3 s TO UNDOCK` (**P29**; §2's two-press law) |
+| SERVICES (**P26**) | `SERVICES` + `icon_service_*` | §15.1's service strip + one §15.2–§15.4 panel at a time | that panel's own (`ACCEPT` / `CANCEL · 100 CR FEE`; `INSURE LAUNCHES` / `CANCEL POLICY`; `DEPOSIT` / `WITHDRAW` / `RENT`) | `ONE SERVICE AT A TIME · ESC BACK` (**P29**) |
+
+Focus per pane is §10's rows with the drawer substituted (§19.6's ledger rows);
+each pane's first focusable is its own `focus_primary()` target. The clusters'
+plates and the list columns keep their pinned sizes (UI_SPEC §8 P1, §5.x) and
+nothing in the skeleton scales (§3.3's "never scaled" list stands).
+
+### 19.5 Presentation values added by this amendment (the tick detail)
+
+| Tick | Value | Reversal |
+|---|---|---|
+| **P22** | OVERVIEW's block stack: `VBoxContainer` separation 12 inside a vertical `ScrollContainer` (the 776 vs 633 arithmetic, §19.1) | no scroll; separation 8 and the flavour line dropped |
+| **P23** | the tile grid (`GridContainer` columns 3, separation 16, row-major ARMORY · REFINERY · EXCHANGE / AUCTION · SHIPYARD · LAUNCH) + the tile interior (margin 16, `VBox` 8, glyph 48, `SectionHeader` title, one caption line) + the six captions verbatim (§19.2) | 2 columns × 3 rows (P18's own); captions dropped; glyph 40 |
+| **P24** | block 3's anatomy (caption + name + meta + labelled pairs + repair summary; `REPAIR →` at the right) and its landing (SHIPYARD with the active hull selected, `REPAIR` focused) | the pairs in §3.1 cells; land on the hull list's first row |
+| **P25** | the services row (76 row idiom + icon 24 + name + right-aligned readout + trailing `OPEN →` chip) and the CONTRACTS interim icon `icon_contract_haul.svg` | 56-tall A5.4-2 strip buttons; no chips (the whole row presses); `icon_credits.svg` |
+| **P26** | the SERVICES pane as the deep-link target: §15.1's strip + one §15.2–§15.4 panel, no drawer entry, outside P20's six-pane cycle, reachable from OVERVIEW's rows | SERVICES becomes drawer entry 8 (before LOG OUT) and joins the cycle (U1's own placement, §15.1) |
+| **P27** | the flavour line `THE DOCK CLAMPS ARE CHEAP. THE AMMUNITION IS NOT.` | the line drops (P18's own) |
+| **P28** | the skeleton bands: `PaneHeader` min (0, 40), foot band min (0, 56), `PaneBox` separation 12, hint bottom-aligned (ink y 957..965), cluster right-aligned with a 16 px gutter | header 56 / foot 72 (the shipped 88 plate band) / the hint on its own row (§3.1's `PaneFooter` row) |
+| **P29** | hint wordings: the shell key-hint line (UI_SPEC §12.4) becomes `ARROWS MOVE · ENTER CONFIRM · E INSPECT · PGUP/PGDN PANE · ESC BACK`; pane hints where §5.x pins none — OVERVIEW `PICK A TILE TO CHANGE DECKS`, LAUNCH `ARM ONCE · LAUNCH TWICE · 3 s TO UNDOCK`, SERVICES `ONE SERVICE AT A TIME · ESC BACK` | the shipped line (`station.tscn:273` — `TAB RAIL`, no `E`) and blank pane hints |
+| **P30** | arrows render as a chevron mark in its own child rect (A5.2(iii), `text_dim`) wherever a label names one — `REPAIR →` (P18's words), `OPEN →` (P25), the tile affordance | literal `→` glyphs and the tofu risk (§5.8's finding) |
+| **P31** | the `PaneHeader` shared x 129 — every pane's title starts at x 129 (the module icon's 40 px at x 77 + the header's 12 separation — §19.3's own row arithmetic) | x 128 (this wave's first draft) |
+
+### 19.6 Supersession ledger (D19 — completes §18's)
+
+Every `docs/design/` sentence this wave re-points, old cite → new cite. Rows 1–3
+are §18's own ledger rows completed; the rest were found on this pass.
+
+| # | Old cite (what it says) | New cite (what supersedes it) |
+|---|---|---|
+| 1 | §16 **P6** row + §17.3 in full: the inspector band lifecycle (`station.tscn:214`, `station.gd:150-151,273-301`) | RETIRED (§18's own word): the band is removed in S30; the chain survives (P21) with sinks N27/N28 (UI_SPEC §12.2/§12.3); the idle fills become OVERVIEW block 3 (§19.1) and the foot-band hints (§19.4) |
+| 2 | §16 **P7**'s rail half + §17.4 ¶2 ("The rail folds 8 → 6 entries…") + its `station.gd:60-101` cite | P16's drawer (UI_SPEC §12.1's seven plates); P7's template half stands, extended to OVERVIEW and measured at §19.3/§19.4 |
+| 3 | §17.1 "Hover." + §17.2's hover lines ("describes in the shared inspector…", "the pane adds no second description surface") + §17.2's on-grid hover line and hover stat block | N27's tooltip / N28's sheet (UI_SPEC §12.2/§12.3); the stat block is deleted into the tooltip (N30 — UI_SPEC §12.5's census rows 1–2) |
+| 4 | §2 ¶1 ("a persistent module rail plus a single module host") + §2's module table (`OUTFITTING … rail entry 7`) + "Why the rail, not tabs or cards" | P15's shell + P16's drawer (UI_SPEC §12.1); the drawer-over-body argument is N26's — A5.5 bars the push layout |
+| 5 | §2 "How the player moves between modules" ¶1 ("The rail entry itself…") + ¶4 ("Tab … crosses the rail and the active host pane") + §2's Escape three steps ("the current rail entry") | UI_SPEC §12.1's entry press + N39's drawer focus trap; P19's unwind replaces the three steps (its step-2 disarm survives inside P19) |
+| 6 | §3.1 rows `Module rail` + the rail's own grid (`Rail content` … `LOG OUT`) | LIVE, re-homed: they are the drawer's measurements verbatim (UI_SPEC §12.1's table). §3.1's `Module host` / `Panes` rows become §19.3's body-pane skeleton |
+| 7 | §3.2's prose "the left fifth is the console (rail)" | the drawer — hidden at rest; its fifth belongs to the pane when closed |
+| 8 | §4 node tree's `ModuleRail` subtree (`:304-311`) + its `Inspector` + §4's "Rail entry anatomy" (`:389`) | UI_SPEC §12.4 (shell bands) + §12.1 (drawer tree); the entry anatomy is LIVE as the drawer plate's (UI_SPEC §12.1) |
+| 9 | §5.5's "returns focus to the current rail entry" (`:720`) | N39 (focus returns to `TERMINAL` / the opener) |
+| 10 | §5.10's "Focus order: … then the rail (§10)" (`:923-924`) + §10's `Tab` row (`:1148`), `ui_accept` row (`:1151`), `ui_cancel` row (`:1154`) | N39 + P19 (UI_SPEC §12.1/§12.6); §10's `PageUp`/`PageDown` and shoulder rows STAND (P20) with P20's own scope: the six panes, wrapping |
+| 11 | §15.1's `SERVICES` rail-entry rows (U1, `:1361-1362`) | superseded with the rail: services are OVERVIEW block 4 (§19.1) + the SERVICES pane (P26). §15.1's service strip and §15.2–§15.4's panels STAND as that pane's content |
+| 12 | §9's motion row `Entry · ModuleRail` (`:1124`) | the drawer's open beat (UI_SPEC §12.1's motion); the rest of §9 stands as N29's own reversal |
+| 13 | §12 implementation-note rows `rail width 360` / `rail entry height 56` (`:1222-1223`) + UI_SPEC §8's "Rail entries … own `StationButton` 272×56 idiom" | LIVE as the drawer's plate law (UI_SPEC §12.1) |
+| 14 | UI_SPEC §3.10 **A4.4** ("the inspector reserves a constant height … so the module host never reflows") | superseded by A5.5/N24: the band dies and the layout is hover-reflow-proof as a whole; A4.4's pinned-height cure becomes one census row (UI_SPEC §12.5 row 6) |
+| 15 | `station.tscn:273`'s shared key-hint wording (`TAB RAIL`) — law in practice though no doc cites it | P29's replacement line (UI_SPEC §12.4's footer table) |
+| 16 | §19.4's REFINERY cluster `CANCEL` + `REFINE` (this wave's first-draft wording — `REFINERY ALL` dropped, `REFINE N` renamed) | §5.7's pinned action set `REFINE N` · `REFINERY ALL` · `CANCEL` (`:760-766`) restored verbatim into §19.4; §5.7 STANDS as the pin |
+
+Named and **not** superseded (readers' traps): UI_SPEC §5.1's tooltip grammar and
+§5.2's dialog idiom STAND (N27/N28 extend them); UI_SPEC §8 P1–P3 STAND (the
+TERMINAL button is N25's own choice among the §8 tokens); §9's other motion rows
+and §10's focus-ring prose STAND (N29's reversal names §9); the two
+forward-references "wireframe-grade detail is §12/§19" (UI_SPEC `:1083`, §18
+`:1639`) resolve to these sections and are not superseded.
+
+### 19.7 Staged art-needs list (§18's art-budget block — staged only)
+
+Nothing here is generated or shipped until the owner approves a review sheet
+(§18's budget block: render → cut → key → **review sheet → owner tick** → ship).
+Price basis **10 credits = $0.05 per 2K run** (the kie.ai console is the
+authority; the generator's printed estimate is stale). Model: `flare`
+(`gpt-image-2-5-flare-text-to-image`), fallback `sunburst` (GENERATION_PLAN.md
+"Model + price", locked 2026-09-17). Route for every row: one
+`staging/phase_d/wave1.py <run-id>` sheet run → `staging/cut/build_plan.py` →
+`deepseek_layout.py` → `cut_sheets.py` → `build_review.py` → **owner tick** →
+`staging/cut/pull.py` → `tools/derive_icon_tints.gd` →
+`staging/phase_f/apply_import_settings.py` → a `filesystem_manage` reimport →
+`build_catalog.py` → `validate_names.py --library`; keying `--transparent` first
+(Pillow-verified) with the `--strip-bg local` fallback for icon cuts; the
+generation log sits beside the family (AI art is not CC0). Names are DRAFT —
+`ASSET_NAMING_SPEC.md`'s rename chain re-derives them.
+
+| # | Sprite (draft name) | Slot | Prompt draft (subject; the sheet's shared style block is the icon family's) | Model | Price | Shipped fallback |
+|---|---|---|---|---|---|---|
+| 1 | `icon_tile_armory` | OVERVIEW tile glyph + ARMORY plate/header | "a rack of riveted cannon cells on a machined module plate, single cold key light, gunmetal and void black, painted icon, centered, no text" | `flare` | sheet T1 (4-up 2K) = 10 cr ($0.05) | `icon_equip_module.png` (`station.gd:92`) |
+| 2 | `icon_tile_refinery` | tile + REFINERY plate/header | "a squat smelter pouring a bright ingot stream into a mold, soot-dark iron, one ember accent, painted icon, centered, no text" | `flare` | T1 share | `icon_cargo_ore.svg` |
+| 3 | `icon_tile_exchange` | tile + EXCHANGE plate/header | "a stack of stamped credit chits beside two ingots on a steel counter, cold light, painted icon, centered, no text" | `flare` | T1 share | `icon_credits.svg` |
+| 4 | `icon_tile_auction` | tile + AUCTION plate/header | "a sealed auction lot crate under a wax-stamped manifest tag, grimdark gunmetal, painted icon, centered, no text" | `flare` | T1 share | `icon_credits.svg` (shared today) |
+| 5 | `icon_tile_shipyard` | tile + SHIPYARD plate/header | "a bare hull skeleton in a drydock cradle, gantry jaws either side, cold floodlight, painted icon, centered, no text" | `flare` | sheet T2 (4-up 2K) = 10 cr | `icon_hull.svg` |
+| 6 | `icon_tile_launch` | tile + LAUNCH plate/header | "a dock clamp releasing a ship's collar, sparks at the seam, painted icon, centered, no text" | `flare` | T2 share | `icon_map_route.png` |
+| 7 | `icon_overview` | OVERVIEW plate/header/tile (N41's staged upgrade) | "a wheel station silhouette with three spokes and a lit hub, stamped like an insignia plate, painted icon, centered, no text" | `flare` | T2 share | `icon_insignia_<faction>_48` (N41) |
+| 8 | `icon_terminal` | the TERMINAL button's optional glyph (N25 ships text-only) | "a hinged bulkhead terminal panel with a glowing chevron rail, brushed steel, painted icon, centered, no text" | `flare` | T2 share | none wanted (N25 is a text chip) |
+| 9 | `icon_service_contracts` | OVERVIEW services row 1 (completes P25's interim) | "a rolled contract chit under a faction wax seal, one burnt-orange thread, painted icon, centered, no text" | `flare` | sheet T3 (4-up 2K) = 10 cr | `icon_contract_haul.svg` (P25) |
+| 10 | — | drawer / sheet / tooltip chrome | **none wanted**: the drawer wears the shipped `ui_panel_frame` (A5.4 `Pane outer edge`) and the popups the flat Tokens boxes (UI_SPEC §2.1) — N29 bars a new decorative layer | — | 0 | — |
+
+Sheet plan: T1 (rows 1–4), T2 (rows 5–8), T3 (row 9 plus one spare slot for the
+review sheet's own header art, left empty unless the owner asks); **+2 in-batch
+retry runs budgeted** (GENERATION_PLAN.md's measured overage pattern) — 5 paid
+runs = **50 credits ≈ $0.25**. Reversal for the whole list: generate nothing —
+every fallback column value ships as today (the §18 gate re-imposed by ruling).

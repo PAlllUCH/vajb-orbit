@@ -1770,3 +1770,35 @@ alone; the ruling + its reversal recorded in code and the report). Gate
 green against `s29_start` (`"problems": []`, 27 modified + 12 added, all in
 the declared union). Five-piece: `slices/S29-consolidation/`. **Next in the
 phase: coder 30 (S24 world identity).**
+
+### D19 — station shell v2 design (2026-10-03, designer 19)
+
+The owner's shell-v2 ruling ("the containers dont sit in the same place… the
+select menu… gone but only the visual aspect… slide from left… new pane: space
+station overwiew… remove the bottom panel with description… popup when you
+hover… 'inspect' button… screen popup… responsive menu"; "grimdarky but operate
+smoothly"; kie.ai credits open) was pinned by the orchestrator as
+`UI_SPEC.md` §11 (**A5.5** + N24–N30) + `STATION_HUB.md` §18 (P15–P21; **P6
+retired**, P7's rail row superseded, the one-template half extended to all
+panes; the art budget opened for this wave) in `8be1187`, with the owner's five
+tick answers recorded (both description sinks; all five OVERVIEW blocks;
+OVERVIEW lands on dock; the button is TERMINAL; both defects in scope).
+**A1** (`xiaomi/mimo-v2.6-pro` @ high — the provider's ceiling; `max` is
+rejected) landed `UI_SPEC.md` §12 (N31–N41) + `STATION_HUB.md` §19 (P22–P30),
+three wireframes (`staging/mockup/d19_*`), the 15-row A5.5 defect census, a
+15-row supersession ledger and 9 staged sprite needs (~$0.25, nothing
+generated). **R1** (`hyper/glm-5.3-flash` @ max): **blocked** — 2 HIGH (the
+overview wireframe's tile caption and hull meta line contradict P23/§19.1 and
+the shipped `META_FORMAT`), 9 MED (the census's missed grid-rebuild class and
+four `tooltip_text` second surfaces, dead fitting cites, N37-vs-N28 trigger
+drift, the dropped `REFINERY ALL`, §19.3's arithmetic, five off-by-one ledger
+cites, T-95-class stale cites, one wireframe miscite), 6 LOW → **T-107–T-112**.
+**F1** (`xiaomi/mimo-v2.6-pro`) cured F1–F11 under two designer rulings: N28's
+cell trigger becomes the cluster's `INSPECT` chip (N37; the 48 px cell cannot
+seat a 96×32 chip — amendment note, owner tick pending), and §5.7's pinned
+`REFINE N` · `REFINERY ALL` · `CANCEL` set is restored verbatim into §19.4 +
+ledger row 16; P31 = the shared x 129. Gate **1074/0** ×2 fresh scratch
+(docs-only; one pre-existing stderr `SCRIPT ERROR` disclosed as **T-113**, the
+runner's missing `ScriptErrorCapture` class); verify green vs `d19_start`
+(`"problems": []`). Five-piece: `slices/D19-station-shell-v2/`. **Next in the
+phase: coder 36 (S30 station shell v2 build)**, then coder 30 (S24).

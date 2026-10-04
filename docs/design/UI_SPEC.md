@@ -19,17 +19,18 @@ and every tool result is re-sent on each later request.
 
 | Section | Topic | Lines |
 |---|---|---|
-| 1. | Colour Tokens | L37–L62 |
-| 2. | Theme Architecture | L63–L105 |
-| 3. | In-Game HUD | L106–L695 |
-| 4. | Settings | L696–L757 |
-| 5. | Tooltips, Dialogs & Nine-Patch Panels | L758–L835 |
-| 6. | Font & Sizing Reference (coding checklist) | L836–L855 |
-| 7. | Station surfaces chrome — the A5.4 extension (amendment 2026-10-02, … | L856–L891 |
-| 8. | Station action buttons and the one focus language (amendment 2026-10… | L892–L924 |
-| 9. | The map deck — flight minimap and navigation (amendment 2026-10-03, … | L925–L952 |
-| 10. | The map deck and the navigation pin — design detail (amendment 2026-… | L953–L1050 |
-| 11. | Station shell v2 — the TERMINAL drawer, the popups, the one skeleton… | L1051–L1096 |
+| 1. | Colour Tokens | L38–L63 |
+| 2. | Theme Architecture | L64–L106 |
+| 3. | In-Game HUD | L107–L696 |
+| 4. | Settings | L697–L758 |
+| 5. | Tooltips, Dialogs & Nine-Patch Panels | L759–L836 |
+| 6. | Font & Sizing Reference (coding checklist) | L837–L856 |
+| 7. | Station surfaces chrome — the A5.4 extension (amendment 2026-10-02, … | L857–L892 |
+| 8. | Station action buttons and the one focus language (amendment 2026-10… | L893–L925 |
+| 9. | The map deck — flight minimap and navigation (amendment 2026-10-03, … | L926–L953 |
+| 10. | The map deck and the navigation pin — design detail (amendment 2026-… | L954–L1051 |
+| 11. | Station shell v2 — the TERMINAL drawer, the popups, the one skeleton… | L1052–L1107 |
+| 12. | Station shell v2 design detail — the TERMINAL drawer, the popup pair… | L1108–L1332 |
 
 <!-- section-index:end -->
 
@@ -1090,6 +1091,241 @@ tooltip idiom (§5.1) and the modal idiom (§5.2) are law and unimplemented in
 | **N25** | the TERMINAL button is a P2 `ActionInline` 96×32 at the header's left edge; press toggles the drawer | P1 360×56 plate (requires an §8 P1 amendment) |
 | **N26** | the drawer is 360 px (the ModuleRail's measured width) and **slides over** the body from the left with the §5.2 dimmer (`void_base` 60 %) above it — the layout never reflows (A5.5); motion **0.18 s in / 0.12 s out**, `TRANS_CUBIC` `EASE_OUT` | 0.30 s / 0.20 s; a push-layout drawer (reintroduces the defect and is barred by A5.5) |
 | **N27** | the hover tooltip is §5.1 implemented for real: `tooltip.tscn` (`tooltip_panel` + BBCode `RichTextLabel`, `fit_content`), 320 px cap, 0.25 s delay, cursor +12/12, clamped to the viewport, `MOUSE_FILTER_IGNORE`; content grammar §5.1 unchanged + a final hint line `INSPECT` | Godot's default tooltip path; 240/400 px cap |
-| **N28** | the INSPECT modal is the §5.2 modal idiom extended: one read-only sheet (name + rolled affixes, full stat block, slot family, price / `OWNED ×<n>`), size-to-content, min 420 / max 720 px wide; opens from the row/cell `INSPECT` inline chip (P2) and from the focused item's inspect key; ESC closes; one at a time (§5.2 queue) | min 360 / max 840; transactional actions inside the modal |
+| **N28** | the INSPECT modal is the §5.2 modal idiom extended: one read-only sheet (name + rolled affixes, full stat block, slot family, price / `OWNED ×<n>`), size-to-content, min 420 / max 720 px wide; opens from the row's own `INSPECT` inline chip; a grid cell is inspected through the cluster's `INSPECT` chip (N37); and from the focused item's inspect key; ESC closes; one at a time (§5.2 queue) | min 360 / max 840; transactional actions inside the modal |
 | **N29** | **grimdark tone, smooth motion** (owner 2026-10-03): chrome keeps §1 Tokens only — void blacks, `metal_*` plates, `accent_danger` for danger and nothing else (no new decorative hue); all motion is overlay-only (drawer/modal translate + opacity), ≤ 0.2 s, `TRANS_CUBIC` `EASE_OUT`, and never layout-affecting (A5.5) | the STATION_HUB §9 per-element motion durations |
 | **N30** | the in-flow hover stat blocks (`ui/station/shipyard_panel.gd:703-733`, the fitting twin) are **deleted**; their content is the N27 tooltip's stat lines | restore the blocks behind A5.5's fixed reserved slot |
+
+**Amendment note (2026-10-04, wave D19 — D19-F1, designer ruling; owner tick
+pending):** N28's trigger line is amended to the precise form "the row's own
+INSPECT inline chip; a grid cell is inspected through the cluster's INSPECT
+chip (N37)" — the old `row/cell` half is physically impossible on a 48 px
+plate (the 96×32 `ActionInline` cannot seat in one). Reversal: the
+`row/cell INSPECT inline chip` wording, viable only with a cell-level `INSPECT`
+chip that fits the 48 px plate. **Owner tick pending** — the 2026-10-03 ticks
+carry the original wording; the amended trigger is what S30 implements until
+the owner ticks it.
+
+## 12. Station shell v2 design detail — the TERMINAL drawer, the popup pair, the shell bands (amendment 2026-10-04, wave D19 — D19-A1)
+
+§11's ruling and §11.1's N24–N30 are law; this section is the wireframe-grade
+detail S30 codes against (mockups: `staging/mockup/d19_shell_wireframe.md`,
+`d19_popup_wireframe.md`; the OVERVIEW half is `STATION_HUB.md` §19 +
+`d19_overview_wireframe.md`). A5.5 binds every line: hover, focus and selection
+mutate colour, `modulate` and `_draw` and nothing else (N24, operationally §12.5).
+Chrome is §1 Tokens and the shipped assets (N29); motion is overlay-only, ≤ 0.2 s
+`TRANS_CUBIC` `EASE_OUT` (N26/N29). Where N24–N30 already fix a value this
+section restates it with its tick id — and the brief's unticked PROPOSED rows
+(N25's sizing, N26's motion pair, N28's widths) implement at their stated value
+(S19's precedent). Every value the detail must choose ships **PROPOSED** with its
+reversal and a fresh tick (**N31–N41**, continuing the series). Composition is
+A5.1–A5.4; the measured-grid tables are `STATION_HUB.md` §3.1's idiom (Region |
+Carrier | Container / anchor | `size_flags` | `custom_minimum_size` | Measured
+box at 1920×1080) and every box marked *derived* is arithmetic from that table's
+rows, not a new measurement.
+
+### 12.1 The TERMINAL drawer (N25/N26, P16's plates)
+
+The button (N25): a P2 `ActionInline` 96×32 flat chip (§8; theme `Button`, no
+asset) labelled `TERMINAL` at the header's left edge. It is navigation, so its
+press **toggles** the drawer and never routes away (N25); the P1 360×56 plate is
+its reversal.
+
+Geometry: the drawer is the `ModuleRail` re-homed as an overlay, so §3.1's rail
+rows are its measurements verbatim (§19.6's ledger keeps them live):
+
+| Region | Carrier | Container / anchor | `size_flags` | `custom_minimum_size` | Measured box |
+|---|---|---|---|---|---|
+| Drawer overlay | `TerminalDrawer`, `Control` full-rect, `MOUSE_FILTER_STOP` | the shell's overlay `CanvasLayer` (layer 20 — §2.3's dialog layer) | n/a | n/a | 0..1920 × 0..1080 while open (input-blocking root, §5.2's `DialogRoot` idiom) |
+| Scrim | `ColorRect`, `void_base` @ 60 % (N26 = §5.2's dimmer) | child of the overlay | fill | none | x 0..1920, y 163..1022 — the Body band only (**N40**), so the header's TERMINAL toggle and the footer stay live |
+| Drawer plate | `PanelContainer` + `PanelRaised` (`ui_panel_frame`) | anchored left in the overlay | v 3 | `(360, 0)` (N26) | x 23..384, y 163..1021 (§3.1's `ModuleRail` box verbatim — frame bands 23..30, 377..384, 163..170, 1015..1021) |
+| Drawer content | `RailMargin`, `MarginContainer` | child of the plate | n/a | content + 24 | content box x 69..339, y 208..977 (§3.1 verbatim) |
+| Drawer stack | `RailBox`, `VBoxContainer`, separation 10 | child of `RailMargin` | fill | none | 270 wide (§3.1) |
+| Caption `MODULES` | `RailCaption`, `Label` (`StationCaption`) | child of stack | fill | text | y 208..226 (§3.1); text `station.tscn:178` |
+| Entry list | `ModuleButtons`, `VBoxContainer`, separation 6 | child of stack | fill | 7 × 56 | 7 plates × 56 + 6 × 6 = 428 px (*derived*), from y 236 |
+| One entry | `Button` (`StationButton`), `toggle_mode` | child of the list | fill | `(0, 56)` | x 69..339, 56 tall (§3.1 verbatim) |
+| Spacer | `RailSpacer`, `Control` | child of stack | v 3 | none | absorbs the slack (§3.1) |
+| Caption `SESSION` | `SessionCaption`, `Label` (`StationCaption`) | child of stack | fill | text | bottom group (§3.1's ink y 899..907); text `station.tscn:193` |
+| LOG OUT | `Button` (`StationButton`), `toggle_mode` | child of `SessionButtons` | fill | `(0, 56)` | plate band y 924..974, x 71..325 (§3.1 verbatim); opens the leave confirm first (P16 — §2 unchanged) |
+
+Entry plates (P16, an unticked PROPOSED row implementing at its stated value):
+OVERVIEW, ARMORY, REFINERY, EXCHANGE, AUCTION, SHIPYARD, LAUNCH — then the
+spacer, then LOG OUT, both captions kept (P16's reversal is alphabetical order /
+captions dropped). Each plate is the rail entry anatomy (STATION_HUB §4,
+`station.gd:320-353`): `StationButton` 272×56 (§8 — rail entries are navigation,
+not actions), icon 40 at its own cut + the label (`station.gd:83-98`
+`MODULE_LABELS`/`MODULE_ICONS` verbatim; OVERVIEW's glyph is **N41**). The entry
+of the current pane is pressed (`set_pressed_no_signal`, §10's own idiom).
+
+Motion (N26's pair): 0.18 s in / 0.12 s out, `TRANS_CUBIC` `EASE_OUT`; the tween
+touches the overlay only — the drawer's `position.x` (offscreen → its rest box)
+and the scrim's `color:a` (0 → 0.6) — and the body layout is byte-still at every
+frame (A5.5/N29). The out tween ends in `hide()` (§9's module-switch pattern).
+
+Focus (N39): opening focuses the current pane's entry (OVERVIEW's on dock);
+`ui_up`/`ui_down`/`Tab` walk the seven entries then LOG OUT and wrap inside the
+drawer (trap); `ui_accept` switches panes, closes, and focuses the incoming
+pane's first control (`focus_primary()` — the panes' own API,
+`fitting_panel.gd:242`, `auction_panel.gd:261`); closing returns focus to
+`TERMINAL`.
+
+Close paths (each one operation, P19's law): `TERMINAL` press (N25's toggle) ·
+`ui_cancel` (P19's unwind step) · an entry press / `ui_accept` (navigation) ·
+scrim press (N38) · a P20 cycle press (N38).
+
+### 12.2 The N27 hover tooltip (the hover sink)
+
+Restated pins (N27/§5.1): `tooltip.tscn` = `PanelContainer` `tooltip_panel` +
+BBCode `RichTextLabel` (`fit_content`), 320 px cap, 0.25 s delay, cursor +12/12,
+clamped to the viewport, `MOUSE_FILTER_IGNORE`. Content grammar is §5.1
+unchanged — name line `text_primary` bold, stats `text_dim`, danger lines
+`[color=#c8471f]`, strings from the item `Resource` (`tooltip_string`), never
+hardcoded — plus N27's final hint line.
+
+| Item | Law |
+|---|---|
+| Content source | the `inspect_requested` chain (P21 — unchanged): title = the row/cell's identity line, body = `describe()` + the stat block (`_stat_block_of`, `shipyard_panel.gd:741-751`) — which is where N30's deleted blocks' bytes live |
+| Hint line | `INSPECT`, its own line after the stats — **N33** |
+| Delay / restart | 0.25 s from the pointer settling (N27); every target change restarts the delay; one content per target, never a mid-hover re-flow (**N33**) |
+| Offset | cursor + (12, 12) (N27); the anchor is the tooltip's top-left |
+| Clamp | **N32** — flip to the cursor's opposite quadrant on the overflowing axis, then clamp 8 px inside the viewport |
+| Dismiss | unhover, press, pane switch, drawer open, sheet open (**N33**) |
+| Stacking | above the panes, below the drawer/sheet overlays |
+| Non-interactive | `MOUSE_FILTER_IGNORE` (N27) — the hint line is a hint, never a button |
+| Not a sink | hover never opens the sheet and never writes the footer status line (P21's sinks are N27/N28; §12.5's census rows the shipped status-writers) |
+
+### 12.3 The N28 INSPECT sheet (the explicit sink)
+
+The §5.2 modal idiom extended (N28): `DialogRoot` full-rect `MOUSE_FILTER_STOP`
+→ `ColorRect` dimmer (`void_base` 60 %) → `CenterContainer` → `PanelContainer`
+(`panel_raised`) → `MarginContainer` 16 → `VBoxContainer` separation 12. Width
+size-to-content inside min 420 / max 720 (N28); height size-to-content under
+N32's 80 %-viewport scroll rule. One at a time (§5.2's queue); no transactional
+control inside (N28's reversal bars one).
+
+Sheet anatomy, row by row (the `VBoxContainer`'s children):
+
+| Row | Content (verbatim) | Type |
+|---|---|---|
+| 1 Name | the instance's rolled name, or the base name where no instance exists (N28) | §5.2's title row — `Label` 18 `text_primary` |
+| 2 Rolled affixes | one line per affix — the shipped `_affix_lines` output (N30's content path) | `Label` 13 `text_dim`; a damage/danger clause takes `accent_danger` (§5.1's danger rule) |
+| 3 Stat block | the full block — the shipped `_stat_block_of` output (catalogue stats + `effects`) | `Label` 13 `text_dim` |
+| 4 Slot family | `SLOT FAMILY · %s` (the catalogue's own family word) | `StationCaption` 13 `text_dim` |
+| 5 Price / owned | `%d CR` when the item prices, `OWNED ×%d` when it is held (N28's own fields; formats **N35**) | `StationValue` 18 `text_primary`, right-aligned |
+| 6 Close hint | `ESC · CLOSE` (**N36**) | `StationCaption` 13 `text_dim` |
+
+Rows appear only where the data carries them (N35): a hull sheet swaps rows 2–3
+for the labelled stat pairs (STATION_HUB §17.2, `shipyard_panel.gd:74-80`) and
+keeps row 5; a stack sheet (ore, ingot, component) keeps 1, the description and
+5.
+
+Triggers — every route: (1) the row's `INSPECT` inline chip pressed by pointer;
+(2) `ui_accept` on the focused chip; (3) `station_inspect` (**N34** — keyboard
+`E`, pad `JOY_BUTTON_X`) on the focused row or cell. No hover path opens it
+(hover is N27's alone). A second open while one is up queues behind §5.2's
+one-at-a-time rule rather than stacking.
+
+Sizing law: size-to-content on both axes inside N28's 420/720 band and N32's
+clamp; rows wrap (`autowrap`) at the 720 edge and the body scrolls per N32
+rather than the sheet leaving the viewport. Open/close is N29's envelope:
+`modulate:a` 0→1 / 1→0 in ≤ 0.2 s `TRANS_CUBIC` `EASE_OUT` (an overlay — A5.5
+never touches the layout). ESC closes (N28), one operation (P19); the scrim
+closes (N38); focus returns to the trigger (N39).
+
+### 12.4 The shell bands at the §3.1 idiom (P15)
+
+P15's shell is header / body (one pane at full body width) / footer status strip.
+The bands keep §3.1's measured boxes exactly; only their contents move.
+
+Header (§3.1's `Header` row: y 24..147, 123 tall — the credits housing sets the
+height, §3.4):
+
+| Region | Carrier | Container / anchor | `size_flags` | `custom_minimum_size` | Measured box |
+|---|---|---|---|---|---|
+| Header band | `Header`, `HBoxContainer`, separation 16 | child of `Page` | v 0 | `(0, 76)` | y 24..147 (§3.1 verbatim) |
+| TERMINAL cell | `TerminalButton`, `Button` (`ActionInline`, N25) | child of `Header` | v 4 (`SHRINK_CENTER`) | `(96, 32)` | x 24..120, y 69..101 (*derived*: 32 centred in the 123 band) |
+| Station identity | the §15.5 name plate (§7 A5.4-1): faction glyph 48 at its own cut + `StationName` (`HeroTitle` 48) + the character line (`StationCaption` 13) | child of `Header` | v 4 | width from content | x 136..content (*derived*: TERMINAL + the band's 16 separation); name ink y 58..95 and character ink y 110..128 stay (§3.1) |
+| Header spacer | `Spacer`, `Control` | child of `Header` | h 3 | none | absorbs extra width (§3.3) |
+| Credits housing | `CreditsPanel`, `PanelContainer` `PanelRaised`, `CreditsMargin` 16/8 | child of `Header` | v 4 | none | x 1709..1896, y 23..147 (§3.1 verbatim; S28's width reserve keeps it still, `station.gd:129-133`) |
+
+Footer (§3.1's `Footer` row: y 1038..1056):
+
+| Region | Carrier | Container / anchor | `size_flags` | `custom_minimum_size` | Measured box |
+|---|---|---|---|---|---|
+| Footer band | `Footer`, `HBoxContainer`, separation 16 | child of `Page` | v 0 | none | y 1038..1056 (§3.1 verbatim) |
+| Status strip | `StatusLabel` (`StationCaption` 13) | child of `Footer` | h 3 | text | status ink y 1041..1052 (§3.1); P6's status duty lands here (STATION_HUB §18's ledger) and §5.6's refusal/confirmation wordings are its content |
+| Footer spacer | `FooterSpacer`, `Control` | child of `Footer` | h 3 | none | absorbs extra width (§3.3) |
+| Key hints | `FooterHints`, `Label` (`StationCaption` 13 `text_dim`) | child of `Footer` | h 0 | text | right-aligned to x 1896 (*derived* — §3.3 pins the band's right cell); wording **P29** (STATION_HUB §19.5), replacing `station.tscn:273`'s `TAB RAIL` line |
+
+Body: one pane at full body width (P15) wearing A5.4 `Pane outer edge` chrome;
+its skeleton is measured once at `STATION_HUB.md` §19.3.
+
+### 12.5 A5.5 operationally — the test, the reserved slot, the defect census
+
+**The test (N31).** A handler violates A5.5 when a hover / focus / selection
+**state change** mutates any node's size or `custom_minimum_size`, its position
+or offsets, an in-flow node's `visible`, or the node tree (add, remove,
+`move_child`, reorder). Legal on the same events: colour, `modulate`, `_draw` /
+`queue_redraw`, theme state swaps (stylebox/texture states), and in-place content
+swaps (text, texture) inside a pinned box. A user **command** — press, drop,
+filter-tab press, expander press, pane switch, overlay open/close — is not state
+feedback and may rebuild and show/hide content (the auction filter tabs' shipped
+row filtering, `auction_panel.gd:403-408`, is the pinned precedent). A
+`ScrollContainer` may auto-reveal the focused row (a viewport offset, never a
+node's position); hover never scrolls.
+
+**The reserved slot (N24's "one fixed reserved slot per pane"):** the foot band's
+hint cell (STATION_HUB §19.3), fixed at **18 px** — one `StationCaption` line
+box inside the 56 px band, width-reserved so a content swap cannot reflow the
+band. It is the one place hover-revealed content may live in-flow (the
+`· CANDIDATE` fit preview, `armory_panel.gd:3767-3768`); multi-line hover
+content is N27/N28's. Reversal is N24's own: a taller slot reinstated at a
+stated height.
+
+**The census** — every hover/focus/selection handler under `vajb-orbit/ui/` at
+write time. Cure classes: **DELETE → TOOLTIP** (the in-flow content dies; its
+bytes ship in the N27 tooltip) / **RESERVED SLOT** (pin the slot so a content
+swap cannot reflow) / **RETROFIT** (swap the violating mechanism for
+colour/`modulate`/`_draw`, look unchanged) / **ALREADY LEGAL** (no cure). S30
+cures the shell rows from this table alone; menu/HUD rows are named for
+completeness and ride their own screens.
+
+| # | Site | Trigger | Mutation | Verdict | Cure |
+|---|---|---|---|---|---|
+| 1 | `ui/station/shipyard_panel.gd:703-733` (`_mount/_refresh/_clear_hover_block`) | cell hover (`:549-550`, `:853-859`) | `HoverStatBlock` `add_child` + `move_child` mid-`_stats` (`:713-714`); autowrap `text` + `visible` per hover (`:726-727`, `:733`) | violation (node tree + in-flow `visible` + reflowing text) | **DELETE → TOOLTIP** (N30) |
+| 2 | `ui/station/fitting_panel.gd:1469-1491` (`_mount/_refresh_stat_block` — the fitting twin) | row/sub-row hover + focus (`:852-853`, `:924-925`, `:1200-1215`) | `StatBlock` `add_child` + `move_child` into `_footer` (`:1476-1477`); `text` + `visible` (`:1490-1491`) | violation (the same defect) | **DELETE → TOOLTIP** (N30) |
+| 3 | `ui/station/shipyard_panel.gd:957-988` (`_refresh_preview` / `_update_preview_size`) | selection (`_on_row_focused` `:1029-1035` → `_preview_row` `:1105-1110`) | `_preview_image.custom_minimum_size` (`:962`, `:988`) | violation (size on selection) | **RESERVED SLOT** — the `PreviewFrame` keeps one pinned box (§3.1's preview row); the ship scales inside it |
+| 4 | `ui/station/armory_panel.gd:3755,3768` (`_refresh_footer` `:3122-3127`) + `ui/station/fitting_panel.gd:1192,1210` | browser-row hover/focus | the foot meter's `text` swap (`· CANDIDATE` preview) in an auto-width label | violation risk (foot-band reflow) | **RESERVED SLOT** — the 18 px hint cell above, width-reserved |
+| 5 | `ui/components/menu_button.gd:167,174,183` | hover / press-up | `_glow.visible` on the in-flow underlay | violation (an in-flow node's `visible`) | **RETROFIT** — `_glow.modulate.a` 0↔1 (§2.2's pinned glow look unchanged) |
+| 6 | `ui/screens/station.gd:518-540` + `:273-301` | every pane's `inspect_requested` | `InspectorTitle`/`InspectorBody` text writes into the band | legal today (A4.4's pinned height) but the band dies with P6 | **DELETE → TOOLTIP** (P21's sink retarget to N27/N28; the band nodes go) |
+| 7 | `shipyard_panel.gd:854,862,1110` · `refinery_panel.gd:558-565` · `repairs_panel.gd:286-288` · `exchange_panel.gd:802` · `armory_panel.gd:1695` · `auction_panel.gd:1053` · `armory_panel.gd:1968,2029,3139,3645` (`tooltip_text` writes — Godot's default tooltip path, N27's own reversal; `:3645` is already T-104) | hover/focus | `status_requested.emit(_row_hint …)` — description text into the footer status line · default `tooltip_text` writes (the same descriptions through Godot's own tooltip surface) | not an A5.5 mutation (fixed one-line slot) but a third description surface | **DELETE → TOOLTIP** (P21: the sinks are N27/N28; the status strip keeps transaction outcomes) |
+| 8 | `ui/screens/main_menu.gd:184-191,252-255` | hover | `grab_focus()` + the active-verb swap (ticks/emblem are `modulate` — `:237-273`) | legal by N31 (focus is not a layout mutation); the look is §2.2's menu law | **ALREADY LEGAL** (the station never moves focus on hover) |
+| 9 | `ui/screens/settings.gd:439-440` · `ui/screens/settings_rebind_row.gd:30` | focus | `ensure_control_visible(row)` · manual focus neighbours (§2.2's named exception) | legal by N31 (viewport offset; navigation config) | **ALREADY LEGAL** |
+| 10 | `ui/station/auction_panel.gd:373,403-408` | filter-tab press | row/margin `visible` toggles | legal by N31 (a command — the pinned tab idiom, `:82-100`) | **ALREADY LEGAL** |
+| 11 | `ui/station/fitting_panel.gd:1172-1183` + the sub-row build `:794-926` · `ui/dialogs/dialog.gd:103` | expander press · dialog open | add/remove sub-rows · `grab_default_focus` | legal by N31 (commands) | **ALREADY LEGAL** |
+| 12 | `ui/station/armory_panel.gd:2097-2139` (`set_selected_rack` / `_style_bay`) · `:2977,3516` · `fitting_panel.gd:617-620` | focus/selection · drop | `BayMarks`/`SalvoStrip` `_draw` reconfigure · the P10 caption flash | legal (draw marks; the flash is drop feedback and is P10's pinned channel) | **ALREADY LEGAL** |
+| 13 | row focus/hover twins `auction_panel.gd:1047-1082` · `shipyard_panel.gd:1029-1054,1262-1270` · `refinery_panel.gd:556-601` · `exchange_panel.gd:795-834` · `armory_panel.gd:1685-1706,2268-2280,3759-3782` · `fitting_panel.gd:1185-1230` · `launch_panel.gd:470-471,836-837` | hover/focus | `set_pressed_no_signal` (theme state), icon `modulate:a` tweens, `inspect_requested` emits, audio cues | legal (P21 keeps the chain; the sink is N27) | **ALREADY LEGAL** |
+| 14 | `ui/components/slot_button.gd:52-56,89-94,108-122` · `ui/components/glow_underlay.gd:28-35` | hover/selection state | `_draw` frame colour, `texture_hover` state plates, halo `_draw` in its own rect | legal (draw + theme state; A5.2(iii)) | **ALREADY LEGAL** |
+| 15 | `ui/hud/hud.gd:2115-2131` (zoom hover) · `ui/screens/_mockup_station.gd:880-882,1117-1121` | hover | `modulate` tint / icon alpha | legal — flight HUD and the D5 mockup, outside D19's shell scope | **ALREADY LEGAL** |
+| 16 | the selection/hover grid-rebuild class — `ui/station/shipyard_panel.gd:508-527` (`_set_layout_grid`) via `_on_row_focused` `:1029` → `_preview_row` `:1105` → `_refresh_preview` `:966,975` · `ui/station/armory_panel.gd:2906-2935` (`_sync_grid`) via `_refresh_footer` `:3122-3127` on row 4's hover/focus path · `ui/station/fitting_panel.gd:484` (`_sync_grid`) | selection / hover / focus (the fitting twin fires from `_refresh_all` `:1630-1633`) | `remove_child` + `queue_free` + `add_child` — the slot matrix rebuilt per state change (`shipyard_panel.gd:510-524`, `armory_panel.gd:2914-2933`) | violation (a node-tree rebuild on state change — N31's own bar) | **RETROFIT** — the rebuild rides the **selection** command only (§3.1's own `rebuilt per selection` row; N31's command clause); focus/hover keeps colour/`modulate` + the N27 tooltip and never touches the tree |
+
+Named and out of census scope: the panes' hand-derived `_position_*` build passes
+(`armory_panel.gd:1429-1445` and kin) are A5.2(i) work already deferred (A5.4's
+Q5 note) — layout build code, not state handlers; `menu_button.gd:148-153`'s
+press-scale tween is a *press* effect under the menu's own law (§2.2), outside
+A5.5's three events.
+
+### 12.6 Presentation values added by this section (the tick detail)
+
+| Tick | Value | Reversal |
+|---|---|---|
+| **N31** | A5.5's operational test (§12.5): the bar (size / `custom_minimum_size` / position / offsets / in-flow `visible` / node tree on a hover/focus/selection state change), content swaps in pinned boxes legal, the command clause, focused-row auto-reveal legal but hover never scrolls | the strict reading: colour/`modulate`/`_draw` only, all content feedback in the popup layer, no auto-reveal |
+| **N32** | the popup clamp rule: 8 px viewport margins; the tooltip flips to the cursor's opposite quadrant before clamping; the sheet scrolls its body before exceeding 80 % viewport height and never leaves the viewport | 24 px margins; hard clamp without flip; the sheet body always scrolls |
+| **N33** | the tooltip hint line `INSPECT` (own line, `StationCaption` 13 `text_dim`) + lifecycle (the delay restarts per target; closes on unhover / press / pane switch / overlay open) | `text_primary` + `INSPECT · E`; instant re-target, no restart |
+| **N34** | the `station_inspect` action: keyboard `E`, pad `JOY_BUTTON_X`, focused row/cell only | keyboard `F`, no pad binding |
+| **N35** | the sheet's formats `SLOT FAMILY · %s`, `%d CR`, `OWNED ×%d` + the row-presence rule (the hull and stack variants) | `SLOT — %s`, `PRICE %d CR`, `OWNED %d`, fixed rows with blanks |
+| **N36** | the sheet's close-hint row `ESC · CLOSE` | no hint row |
+| **N37** | the `INSPECT` chip: in every row's trailing action cell (always present); for grid cells the cluster's `INSPECT` `ActionInline`, `disabled` + `text_dim` until a cell holds focus or selection | one cluster chip shared by rows and cells |
+| **N38** | a scrim press closes the topmost overlay; a P20 cycle press closes the drawer | the scrim is inert; the cycle leaves the drawer open |
+| **N39** | the overlay focus law (drawer trap from the current pane's entry, wrap through LOG OUT, `ui_accept` switches + `focus_primary()`, close returns to `TERMINAL`; the sheet traps and returns focus to its trigger) | no trap; the drawer opens on OVERVIEW's entry; the sheet leaves focus put |
+| **N40** | the drawer scrim covers the Body band only (x 0..1920, y 163..1022) — header and footer stay live | the §5.2 full-rect dimmer; `TERMINAL` inert while open |
+| **N41** | the OVERVIEW glyph is `icon_insignia_<faction>_48` until the staged `icon_overview` (STATION_HUB §19.7) ships | `icon_map_node_station_48` (§15.1's own fallback idiom) |
