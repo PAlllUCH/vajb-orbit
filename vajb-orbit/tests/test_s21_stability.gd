@@ -924,6 +924,40 @@ func test_booting_the_station_writes_nothing_to_user() -> void:
 	)
 
 
+## The S29-F2 hotfix row: the owner's crash is the shell's own `_ready` ->
+## `_apply_tokens` -> `_reserve_credits_width` calling a method the theme font's class
+## does not carry (S28 A8 shipped `get_string_width`, which no 4.x `Font` has). The
+## runtime error aborts the sizing pass before the minimum width lands, so the row
+## re-measures the same reserve with the 4.x API (`Font.get_string_size`) off the same
+## live theme font and holds the label's landed reserve to it: a nonexistent font API
+## now fails the gate instead of silently under-reserving the credits box.
+func test_the_credits_reserve_is_measured_with_an_api_the_theme_font_has() -> void:
+	_reset_profile()
+	var screen := _mount_station()
+	if screen == null:
+		assert_true(false, "station.tscn mounts on a themed host")
+		return
+	var label := screen.get_node(^"%CreditsValue") as Label
+	assert_true(label != null, "the credits value label resolves in the shell")
+	if label == null:
+		return
+	var font := label.get_theme_font(&"font")
+	assert_true(font != null, "the shell theme resolves the credits label's font")
+	if font == null:
+		return
+	var size := label.get_theme_font_size(&"font_size")
+	var formatted: String = screen.call(&"_format_int", StationScript.CREDITS_WIDTH_RESERVE)
+	var reserve := ceilf(
+		font.get_string_size(formatted, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
+	)
+	assert_gt(reserve, 0.0, "the reserve string measures non-empty on the live theme font")
+	assert_true(
+		label.custom_minimum_size.x >= reserve,
+		"the credits box holds the measured fixed-width reserve (got %d px, need %d px)"
+			% [int(label.custom_minimum_size.x), int(reserve)]
+	)
+
+
 ## ---------------------------------------------------------------------------
 ## A5 - the launch orders its slots by the fit, never the catalogue (L90/L93)
 ## ---------------------------------------------------------------------------

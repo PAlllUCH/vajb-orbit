@@ -134,3 +134,45 @@ fresh scratch: `[SUMMARY] passed=1073 failed=0` both runs (1063 + 10 new `test_s
 - Moved-row edits: `test_d7_armory.gd`, `test_p2b1_outfitting_panel.gd`,
   `test_s18_armory_rework.gd`, `test_s11_inspector.gd`, `test_s11_describe.gd`,
   `test_s20_chrome_unify.gd`, `test_p2b_fitting_panel.gd`, `test_s21_stability.gd`.
+
+## S29-F2 fixer note (2026-10-04)
+
+Owner-reported hotfix: the game crashed going main menu → station — `Invalid call.
+Nonexistent function get_string_width in base FontFile` at the S28 A8 credits-box width
+reserve. No other S29 finding touched; the LOW rows T-100–T-106 ride.
+
+- **The cure** — the call site measured a string with a 3.x-era method no Godot 4.x
+  `Font` carries (`get_string_width`); the theme font there resolves to a `FontFile`,
+  hence the crash. Replaced with the 4.x API that exists on the `Font` base every
+  `get_theme_font` result shares, taking `Vector2.x`:
+  `font.get_string_size(_format_int(CREDITS_WIDTH_RESERVE), HORIZONTAL_ALIGNMENT_LEFT,
+  -1, size).x` (`station.gd:287-289`). Same text, same font, same size — the measured
+  intent is unchanged and the credits box stays fixed-width with no reflow.
+- **API sweep** — whole project, `addons/` excluded: every `get_string_width`,
+  `get_char_size`, `get_multiline_string_size` and sibling 3.x font call grepped. Exactly
+  one hit (the call site above). The other font-measurement sites already use the 4.x
+  API and are untouched: `auction_panel.gd:386-388` (`get_string_size(...).x`),
+  `station.gd:313` (`get_height(size)`). **Zero bad calls remain.**
+- **New gate row** — `test_s21_stability.gd:927-957`
+  `test_the_credits_reserve_is_measured_with_an_api_the_theme_font_has`: mounts
+  `station.tscn` under the live theme host exactly the way the owner's crash boots it
+  (the shell's `_ready` → `_apply_tokens` → `_reserve_credits_width`), then re-measures
+  the same reserve with `Font.get_string_size` off the same resolved theme font and
+  holds the label's landed `custom_minimum_size.x` to it. Verified both directions:
+  with the broken call the row fails (`got 0 px, need 92 px`); with the cure it passes.
+- **Why the gate missed it** — the plugin's editor-side runner aborts a test on any
+  captured script error (`addons/godot_ai/testing/test_runner.gd:87-105`), but the
+  headless gate runner (`tests/headless_runner.gd:_run_file`) calls `suite.call(method)`
+  with no script-error capture installed, and a nonexistent-method call only aborts the
+  calling function — `_reserve_credits_width` died silently, the A4a boot row kept
+  passing, and the gate stayed green. The new row closes it behaviourally: a broken
+  sizing pass leaves the reserve at 0 and the row fails. (Reported, not fixed here:
+  wiring the same `ScriptErrorCapture` into `headless_runner.gd` would harden every
+  suite at once but moves gate behaviour for all 1074 rows — bucket-2, owner to decide.)
+- **Gate** — twice, fresh `XDG_DATA_HOME` scratch each (`mktemp -d`),
+  `~/.local/bin/godot --headless --path "$VAJB_PROJ"
+  res://tests/headless_runner.tscn --quit-after 1200`:
+  run 1 `[SUMMARY] passed=1074 failed=0`; run 2 `[SUMMARY] passed=1074 failed=0`.
+  1074 = the wave's 1073 + the new row.
+- **Files touched** — `vajb-orbit/ui/screens/station.gd` (the cure),
+  `vajb-orbit/tests/test_s21_stability.gd` (the new row), this note.

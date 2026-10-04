@@ -284,7 +284,9 @@ func _reserve_credits_width() -> void:
 	if font == null:
 		return
 	var size := _credits_value.get_theme_font_size(&"font_size")
-	var reserve := ceilf(font.get_string_width(_format_int(CREDITS_WIDTH_RESERVE), size))
+	var reserve := ceilf(
+		font.get_string_size(_format_int(CREDITS_WIDTH_RESERVE), HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
+	)
 	_credits_value.custom_minimum_size.x = maxf(reserve, _credits_value.custom_minimum_size.x)
 
 
