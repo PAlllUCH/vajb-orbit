@@ -14,8 +14,9 @@ renders ignored the class aspect, so owner call 1 (drawer entries → C9) is
 **blocked** and the $0.20 four-run re-batch is **T-140** (owner). R1 0 HIGH /
 3 MED: F1 cured the flare alpha veil free (7 files, α-floor + reversal
 store); 5 LOW → T-141–T-143. Variants $0.00 (modulate carries). Gate
-**1138/0** ×2, verify green vs `g2_start`. **Next: the owner's cut-sheet eye
-+ T-140 → S36 (the chrome re-skin, row 25); then coder 30 (S24).**
+**1138/0** ×2, verify green vs `g2_start`. **Next (T-140 decided 2026-10-05:
+re-run the 4 failed classes at $0.20): D21-G2-B2 → S36 (the chrome re-skin,
+row 25, its eyeball gate satisfied by the T-140 look); then coder 30 (S24).**
 
 **Updated 2026-10-05 (the owner's fix round closed — S35 + G1 + D22):** three
 parallel dispatches. **S35** (B1 `hyper/deepseek-v4.1-flash` @ xhigh → R1
@@ -529,13 +530,13 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | 22 | coder 40 | **S34 the refinery queue** (`docs/gameplay/04_refinery.md` §7 + `STATION_HUB.md` §21.3 P42–P43) — **done 2026-10-05**: 1121 → 1132/0 ×2; 1 MED cured by F1 + 2 LOW ride-alongs; T-133 decided by default | coder 39 | ran sequentially after S33 |
 | 23 | coder 41 | **S35 owner fixes** — **done 2026-10-05**: 1132 → 1138/0 ×2 (B1 +4, F1 +2); R1 **pass** (0 HIGH / 0 MED / 4 LOW); F1 also cured D22's F01; beside D21-G1 (16/16, $0.80) and D22-P1 (integrity PASS) | S34 (done) | three disjoint sets — ran as the third parallel triple |
 | 24 | D21-G2 | **the chrome cut/key/land run** — **done 2026-10-05** (15/16 landed at exact master pixels; C1/C2/C9 crop-FAILs + C5 unusable → **T-140** owner call on the $0.20 re-batch; R1 0 HIGH / 3 MED, F1 cured the alpha veil free; gate 1138/0 ×2) | after the owner's plan go | asset lane: `asset-library/` + `vajb-orbit/assets/ui/` — it produced what row 25 wires |
-| 25 | coder 42 | **S36 the chrome re-skin** (`StyleBoxTexture` per class + the BG-1..4 backdrops; keep-list untouched; chrome-census regression suite) | the owner's eyeball on the cut sheet **and** T-140 | shares `vajb-orbit/ui` + `tests` with S24 (coder 30), so S24 waits |
+| 25 | coder 42 | **S36 the chrome re-skin** (`StyleBoxTexture` per class + the BG-1..4 backdrops; keep-list untouched; chrome-census regression suite) | D21-G2-B2 (T-140 decided: the 4 re-runs land first) | shares `vajb-orbit/ui` + `tests` with S24 (coder 30), so S24 waits |
 
 Designer items 16–20 and coders 34–41 are closed — the overhaul round, its
 shell-v2 follow-up and the 2026-10-05 round are **shipped** (gate 1138/0).
-**Next (live 2026-10-05, D21-G2 closed 15/16): the owner's eyeball on the cut
-contact sheet + T-140 (the four failed classes) → row 25 (S36 the chrome
-re-skin); then coder 30 (S24 world identity)** — its five-piece predates
+**Next (live 2026-10-05, T-140 decided): D21-G2-B2 (the 4 re-runs at $0.20,
+class aspect re-stated) → row 25 (S36 the chrome re-skin); then coder 30 (S24
+world identity)** — its five-piece predates
 shell v2 AND the 2026-10-05 rounds, so the brief re-checks against
 `UI_SPEC.md` §12–§15 + `STATION_HUB.md` §19–§21 before dispatch. Playtest
 pass #1 (the owner's, `19_testing_notes.md`'s eye list) runs alongside pos 1;

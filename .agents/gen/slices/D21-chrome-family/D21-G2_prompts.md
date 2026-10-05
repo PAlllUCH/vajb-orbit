@@ -37,6 +37,23 @@ Wedged past ~40 min: SIGKILL + re-dispatch with an inspect-partial-diff note.
 cd "$VAJB_WORKSPACE" && source ~/.profile && VAJB_SLIM=1 VAJB_WORKER_FILES='asset-library/,.agents/gen/slices/D21-chrome-family/' crush run "$(cat .agents/gen/slices/D21-chrome-family/D21-G2-R1_body.txt)" -m hyper/glm-5.3-flash --reasoning-effort max --cwd "$VAJB_WORKSPACE" > /tmp/D21-G2-R1.log 2>&1
 ```
 
+## D21-G2-B2 — the owner-approved 4-run re-batch (T-140 decided 2026-10-05)
+
+Before dispatch: `git tag g2b2_start` + `python3 staging/verify_wave.py
+snapshot --name g2b2_start` on the B2 briefs commit.
+
+```bash
+cd "$VAJB_WORKSPACE" && source ~/.profile && VAJB_SLIM=1 VAJB_WORKER_FILES='asset-library/,vajb-orbit/assets/ui/,.agents/gen/slices/D21-chrome-family/' crush run "$(cat .agents/gen/slices/D21-chrome-family/D21-G2-B2_body.txt)" -m hyper/glm-5.3-flash --reasoning-effort max --cwd "$VAJB_WORKSPACE" > /tmp/D21-G2-B2.log 2>&1
+```
+
+```bash
+cd "$VAJB_WORKSPACE" && source ~/.profile && VAJB_SLIM=1 VAJB_WORKER_FILES='asset-library/,.agents/gen/slices/D21-chrome-family/' crush run "$(cat .agents/gen/slices/D21-chrome-family/D21-G2-B2-R1_body.txt)" -m hyper/glm-5.3-flash --reasoning-effort max --cwd "$VAJB_WORKSPACE" > /tmp/D21-G2-B2-R1.log 2>&1
+```
+
+B2-F1 only on HIGH/MED (cut B2's body + the review's fix list; same model and
+file set). Close-out: reimport the four cuts, `build_catalog.py`, gate ×2,
+`verify --baseline g2b2_start`, state refresh, commit.
+
 ## D21-G2-F1 — fixer (ONLY if R1 leaves HIGH or MED)
 
 Cut `D21-G2_body.txt` and append R1's fix list verbatim; same model, effort and
