@@ -1,13 +1,17 @@
 extends VBoxContainer
-## REFINERY module panel: one row per mineral with ore to convert, the conversion
-## stepper, the batch totals and the two action buttons. Contract:
-## docs/design/STATION_HUB.md sections 3.1, 5.6, 5.7 and 12.3/12.4,
-## docs/gameplay/04_refinery.md section 5.
+## REFINERY module panel: the queue pane (STATION_HUB section 21.3 P42/P43, the
+## model is 04 section 7). Three blocks: LEFT the hold ore stacks plus the input
+## inventory (rows tagged LOADED); CENTRE the stepper, the ORE IN / INGOTS OUT /
+## FEE / TIME totals and the QUEUE N / QUEUE ALL / CANCEL / LOAD / COLLECT ALL
+## actions; RIGHT the job list (running rows with an mm:ss countdown, pending rows,
+## done rows awaiting collection). The SLOTS n/5 readout and UPGRADE live in the
+## pane header band.
 ##
-## The station shell loads this scene into its host, so the panel never routes and never
-## writes the profile: it emits status_requested up, reads Refinery / MineralCatalog /
-## PlayerProfile down, and every printed number is a Refinery or MineralCatalog read
-## (04 section 5: the panel hardcodes no price).
+## The station shell loads this scene into its host, so the panel never routes and
+## never writes the profile directly: it emits status_requested up, reads Refinery
+## / MineralCatalog / PlayerProfile down, and every printed number is a Refinery or
+## MineralCatalog read (04 section 7.3: the panel hardcodes no price and no
+## duration).
 ##
 ## Panel contract with the shell:
 ##   signal status_requested(message: String, danger: bool)   write the footer strip
@@ -15,15 +19,15 @@ extends VBoxContainer
 ##   func focus_primary() -> void                              focus entry after a switch
 ##   func disarm() -> bool                                     ui_cancel step 2 / CANCEL
 ##
-## Selection is arming (04 section 5: a stepper is not a transaction, only the two action
-## buttons are): a row takes the selection on focus or press, the stepper spans
-## 1..Refinery.convertible(id) and every stepper tick only rewrites the totals.
+## Jobs run station-side on wall-clock `ready_at` (R6), so the panel settles
+## finished jobs on becoming visible, on every `&"refinery"` refresh, and on a 1 Hz
+## tick while it is open.
 ##
-## Refinery.refine() emits profile_changed(&"cargo") / (&"credits") from inside the
-## transaction, so the shell forwards a refresh into this panel while its own button
-## handler is still on the stack. A rebuild there would free the row the signal chain is
-## walking, so a &"cargo" refresh seen mid-transaction is deferred to one rebuild right
-## after the call returns, and the handler captures its name / count / fee first.
+## A Refinery transaction emits profile_changed(&"refinery") / (&"cargo") /
+## (&"credits") from inside the call, so the shell forwards a refresh into this
+## panel while its own handler is still on the stack. A rebuild there would free
+## the row the signal chain is walking, so a refresh seen mid-transaction is
+## deferred to one rebuild right after the call returns.
 
 const TOKENS_TYPE: StringName = &"Tokens"
 
@@ -31,87 +35,90 @@ const RefineryModule := preload("res://game/refinery.gd")
 const Catalog := preload("res://game/mineral_catalog.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
 const InspectChipScript := preload("res://ui/components/inspect_chip.gd")
+const StationCatalogScript := preload("res://game/station_catalog.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
 signal status_requested(message: String, danger: bool)
-## CONTRACTS section 23.1: emitted when the pointer lands on or leaves an ore stack row.
-## `title` is the row's identity line, `body` its catalogue description (empty when the
-## row carries none), `danger` colours the title. `title == ""` clears the shell's block.
 signal inspect_requested(title: String, body: String, danger: bool)
-## S30 (UI_SPEC section 12.3, N28/P21): the explicit sink. A row's own INSPECT chip (or
-## `station_inspect` on the focused row) publishes the sheet's payload here.
 signal sheet_requested(payload: Dictionary)
-## The inspector's body reader lives in the station catalogue (CONTRACTS section 23.1).
-const StationCatalogScript := preload("res://game/station_catalog.gd")
 
 const ROW_HEIGHT := 76.0
+const JOB_ROW_HEIGHT := 56.0
 const COL_ICON := 40.0
 const COL_ORE := 130.0
-const COL_INGOTS := 110.0
-const COL_FEE := 160.0
+const COL_STATE := 160.0
 const ROW_INNER_MARGIN := Vector2i(12, 8)
 const COLUMN_SEPARATION := 12
 const CELL_SEPARATION := 2
 const ROW_ICON_IDLE_ALPHA := 0.72
 const HOVER_SECONDS := 0.09
-
-## STATION_HUB section 12.3 fixes the RefineBox geometry (box 360, stepper plates 48,
-## totals value column 220): those are static rects, so they live in the scene file as the
-## one source and are not mirrored here. S28's A16 moves the three action buttons onto the
-## UI_SPEC section 8 P2 cluster row - an HBox at the foot of the panel, 16 px gutter,
-## primary (REFINE N) rightmost - each at the P1 360x56 Pressables token; the W2.3 88 px
-## trio retires with the six measured sizes. All heights and the cluster's place stay
-## scene values and no code mirrors them (W6-3).
 const STEPPER_MIN := 1
+const TICK_SECONDS := 1.0
 
 const HEADER_MINERAL := "MINERAL"
 const HEADER_ORE := "ORE"
-const HEADER_INGOTS := "INGOTS"
-const HEADER_FEE := "FEE"
+const HEADER_STATE := "STATE"
+const HEADER_JOB := "JOB"
+const HEADER_TIME := "TIME"
+
 const TAG_FORMAT := "%s · %s READY"
 const TAG_EMPTY := "NO CONVERTIBLE STACKS"
+const TAG_LOADED := "LOADED"
+const TAG_HELD_FORMAT := "%d ORE HELD"
+const TAG_INPUT_FORMAT := "%d IN INPUT"
 const SELECTED_NONE := "NO STACK SELECTED"
 const STEPPER_FORMAT := "%d CONVERSIONS"
 const STEPPER_ONE := "1 CONVERSION"
 const STEPPER_IDLE := "0 CONVERSIONS"
-const ORE_HELD_FORMAT := "%d ORE HELD"
 const FEE_FORMAT := "%s CR"
 const ZERO_TEXT := "0"
-const REFINE_FORMAT := "REFINE %d"
-const EMPTY_ROW := "NO ORE TO REFINE"
+const ZERO_TIME := "00:00"
+const QUEUE_FORMAT := "QUEUE %d"
+const QUEUE_ALL_WORD := "QUEUE ALL"
+const CANCEL_WORD := "CANCEL"
+const LOAD_WORD := "LOAD"
+const COLLECT_WORD := "COLLECT ALL"
+const SLOTS_FORMAT := "SLOTS %d/%d"
+const UPGRADE_FORMAT := "UPGRADE (%s CR)"
 const FOOTER_FORMAT := "%d ORE = 1 INGOT · FEE %d CR PER CONVERSION"
 const FOOTER_EMPTY := "BRING RAW ORE FROM THE BELT"
+const FOOTER_LOAD := "LOAD ORE TO START A JOB"
+const EMPTY_HOLD_ROW := "NO ORE IN HOLD"
+const EMPTY_JOB_ROW := "NO JOBS QUEUED"
+const JOB_LINE_FORMAT := "%s · %s · %s"
+const JOB_DONE_FORMAT := "%s · %s · DONE · COLLECT"
+const JOB_RUNNING_TAG := "RUNNING"
+const JOB_PENDING_TAG := "PENDING"
 
-## Status strip copy (STATION_HUB section 5.7 wording, section 5.6 the refusal shape). The
-## fee text always comes from Refinery.fee_for, never from the module's `fee` field, which
-## is 0 on a refusal because nothing was charged.
 const STATUS_READY := "READY · %s · %s · %s FEE"
-## CONTRACTS section 23.1: the inspector's own identity line - the same name, conversions
-## and fee phrases as `STATUS_READY`, joined by the pane's own separator, with the leading
-## state verb dropped so the always-visible title is the ore row, not the action.
 const INSPECT_TITLE_FORMAT := "%s · %s · %s FEE"
-const STATUS_REFINED := "REFINED · %s · %s · %s CR FEE"
-const STATUS_REFINED_ALL := "REFINED · ALL ORE · %s · %s CR FEE"
+const STATUS_QUEUED := "QUEUED · %s · %s · %s CR FEE"
+const STATUS_QUEUED_ALL := "QUEUED · ALL ORE · %s · %s CR FEE"
 const STATUS_REFUSED_CREDITS := "REFUSED · NOT ENOUGH CREDITS · %s NEEDED"
 const STATUS_REFUSED_ORE := "REFUSED · NOT ENOUGH ORE · %s NEEDED"
+const STATUS_REFUSED_INPUT := "REFUSED · INPUT FULL"
 const STATUS_REFUSED_COUNT := "REFUSED · NO CONVERSIONS SELECTED"
-const STATUS_REFUSED_EMPTY := "REFUSED · NO ORE TO REFINE"
+const STATUS_REFUSED_EMPTY := "REFUSED · NOTHING TO QUEUE"
 const STATUS_REFUSED_UNKNOWN := "REFUSED · UNKNOWN MINERAL"
+const STATUS_REFUSED_MAX_SLOTS := "REFUSED · ALL SLOTS BOUGHT"
+const STATUS_CANCELLED := "CANCELLED · %s · %s RETURNED"
+const STATUS_LOADED := "LOADED · %s · %s"
+const STATUS_COLLECTED := "COLLECTED · %s"
+const STATUS_OUTPUT_FULL := "OUTPUT FULL · COLLECT FIRST"
+const STATUS_UPGRADED := "SLOTS UPGRADED · %d"
 const STATUS_IDLE := "REFINERY IDLE · SELECT A STACK"
 
 const TINT_DIR := "res://assets/icons/tint/"
-## ICONS_SPEC §8.1 names the dedicated ore glyphs `icon_mineral_<id>_48.png`. A mineral that
-## carries one is drawn with that art as it is: the file name is the one signal that tells a
-## dedicated glyph apart from the generic fallback, because `derive_icon_tints` writes a
-## tint/ stencil for every icon in the set, dedicated family included.
 const DEDICATED_ICON_PREFIX := "icon_mineral_"
 
 @onready var _pane_icon: TextureRect = %PaneIcon
 @onready var _tag: Label = %PanelTag
-@onready var _header: HBoxContainer = %RefineryHeader
-@onready var _scroll: ScrollContainer = %RefineryScroll
-@onready var _rows: VBoxContainer = %RefineryRows
+@onready var _slots_label: Label = %SlotsLabel
+@onready var _upgrade_button: Button = %UpgradeButton
+@onready var _hold_header: HBoxContainer = %HoldHeader
+@onready var _hold_scroll: ScrollContainer = %HoldScroll
+@onready var _hold_rows: VBoxContainer = %HoldRows
 @onready var _selected_name: Label = %SelectedName
 @onready var _stepper_less: Button = %StepperLess
 @onready var _stepper_value: Label = %StepperValue
@@ -119,29 +126,41 @@ const DEDICATED_ICON_PREFIX := "icon_mineral_"
 @onready var _ore_in: Label = %OreInValue
 @onready var _ingots_out: Label = %IngotsOutValue
 @onready var _fee_value: Label = %FeeValue
-@onready var _refine_button: Button = %RefineButton
-@onready var _refine_all_button: Button = %RefineAllButton
+@onready var _time_value: Label = %TimeValue
+@onready var _queue_button: Button = %QueueButton
+@onready var _queue_all_button: Button = %QueueAllButton
 @onready var _cancel_button: Button = %CancelButton
+@onready var _load_button: Button = %LoadButton
+@onready var _collect_button: Button = %CollectButton
+@onready var _jobs_header: HBoxContainer = %JobsHeader
+@onready var _jobs_scroll: ScrollContainer = %JobsScroll
+@onready var _jobs_rows: VBoxContainer = %JobsRows
 @onready var _footer: Label = %PaneFooter
 
 var _payloads: Array[Dictionary] = []
+var _job_payloads: Array[Dictionary] = []
 var _selected_id: StringName = &""
 var _selected_row: Button = null
-## S30: the payload `station_inspect` (N34) inspects - the focused ore row.
+var _selected_job_id: int = -1
 var _focused_payload: Dictionary = {}
 var _stepper: int = STEPPER_MIN
-var _stepper_max: int = STEPPER_MIN
+var _stepper_max: int = 0
+var _job_signature := PackedStringArray()
 var _transaction := false
 var _rebuild_pending := false
+var _tick_timer: Timer = null
 var _tweens: Array[Tween] = []
 
 
 func _ready() -> void:
-	_build_header()
+	_build_headers()
 	_build_rows()
+	_build_jobs()
 	_apply_tokens()
 	_wire_controls()
 	_connect_scroll()
+	_make_tick_timer()
+	visibility_changed.connect(_on_visibility_changed)
 
 
 func _notification(what: int) -> void:
@@ -156,16 +175,16 @@ func _exit_tree() -> void:
 
 
 func refresh_profile(key: StringName) -> void:
-	## STATION_HUB section 12.4: &"cargo" rebuilds the table (a stack that falls below 3
-	## ore leaves it), &"credits" only moves the affordability colour. Every other key
-	## belongs to another panel.
-	if key == &"cargo":
-		if _transaction:
-			_rebuild_pending = true
-			return
-		_build_rows()
-	elif key == &"credits":
-		_refresh_affordability()
+	## STATION_HUB section 12.4 / 04 section 7: &"cargo" and &"refinery" rebuild the
+	## blocks, &"credits" only moves the affordability colour.
+	if key != &"cargo" and key != &"credits" and key != &"refinery":
+		return
+	if _transaction:
+		_rebuild_pending = true
+		return
+	if key == &"refinery":
+		_settle()
+	_rebuild_all()
 
 
 func focus_primary() -> void:
@@ -176,52 +195,101 @@ func focus_primary() -> void:
 		if not row.disabled:
 			row.grab_focus()
 			return
-	if not _refine_button.disabled:
-		_refine_button.grab_focus()
-		return
-	if not _refine_all_button.disabled:
-		_refine_all_button.grab_focus()
+	if not _queue_button.disabled:
+		_queue_button.grab_focus()
 
 
 func disarm() -> bool:
-	## ui_cancel step 2 (STATION_HUB section 2) and the CANCEL button: the selection is
-	## the only thing this panel arms, so clearing it is the whole disarm.
+	## ui_cancel step 2 (STATION_HUB section 2) and the CANCEL button's idle path: the
+	## job selection first, then the mineral selection.
+	if _selected_job_id >= 0:
+		_select_job(-1)
+		return true
 	if _selected_id == &"":
 		return false
 	_clear_selection()
 	return true
 
 
+func inspect_focused() -> void:
+	if _focused_payload.is_empty():
+		return
+	_emit_sheet(_focused_payload)
+
+
+## --------------------------------------------------------------- the shell wiring
+
+
 func _wire_controls() -> void:
 	_stepper_less.pressed.connect(_on_stepper_pressed.bind(-1))
 	_stepper_more.pressed.connect(_on_stepper_pressed.bind(1))
-	_refine_button.pressed.connect(_on_refine_pressed)
-	_refine_all_button.pressed.connect(_on_refine_all_pressed)
+	_queue_button.pressed.connect(_on_queue_pressed)
+	_queue_all_button.pressed.connect(_on_queue_all_pressed)
 	_cancel_button.pressed.connect(_on_cancel_pressed)
+	_load_button.pressed.connect(_on_load_pressed)
+	_collect_button.pressed.connect(_on_collect_pressed)
+	_upgrade_button.pressed.connect(_on_upgrade_pressed)
 
 
 func _connect_scroll() -> void:
-	if _scroll.has_signal(&"scroll_started"):
-		_scroll.connect(&"scroll_started", _on_scroll_started)
+	if _hold_scroll.has_signal(&"scroll_started"):
+		_hold_scroll.connect(&"scroll_started", _on_scroll_started)
+	if _jobs_scroll.has_signal(&"scroll_started"):
+		_jobs_scroll.connect(&"scroll_started", _on_scroll_started)
 
 
-func _apply_tokens() -> void:
-	_pane_icon.modulate = _token(&"text_primary")
-	for payload: Dictionary in _payloads:
-		var icon: TextureRect = payload[&"icon"]
-		if icon != null:
-			icon.modulate = payload[&"tint"]
+func _make_tick_timer() -> void:
+	_tick_timer = Timer.new()
+	_tick_timer.name = "RefineryTick"
+	_tick_timer.one_shot = false
+	_tick_timer.wait_time = TICK_SECONDS
+	_tick_timer.timeout.connect(_tick)
+	add_child(_tick_timer)
 
 
-func _token(token: StringName) -> Color:
-	if has_theme_color(token, TOKENS_TYPE):
-		return get_theme_color(token, TOKENS_TYPE)
-	return Color.WHITE
+func _on_visibility_changed() -> void:
+	if _tick_timer == null:
+		return
+	if is_visible_in_tree():
+		_settle()
+		_rebuild_all()
+		_tick_timer.start()
+	else:
+		_tick_timer.stop()
 
 
-func _build_header() -> void:
+## R6's 1 Hz tick: settle finished jobs, then refresh the countdowns in place (a
+## full rebuild would drop the focus ring). A state change rebuilds the list.
+func _tick() -> void:
+	if not is_visible_in_tree():
+		return
+	_settle()
+	if _live_signature() != _job_signature:
+		_build_jobs()
+		_refresh_slots()
+		return
+	_refresh_countdowns()
+
+
+func _settle() -> void:
+	var profile := _profile()
+	if profile == null:
+		return
+	_transaction = true
+	RefineryModule.settle(profile)
+	_transaction = false
+	_rebuild_pending = false
+
+
+## --------------------------------------------------------------------- the header
+
+
+func _build_headers() -> void:
 	for cell: Dictionary in _header_cells():
-		_header.add_child(_make_header_cell(cell))
+		_hold_header.add_child(_make_header_cell(cell))
+	for cell: Dictionary in _job_header_cells():
+		_jobs_header.add_child(_make_header_cell(cell))
+	_refresh_slots()
 
 
 func _header_cells() -> Array[Dictionary]:
@@ -229,8 +297,14 @@ func _header_cells() -> Array[Dictionary]:
 		{&"text": "", &"width": COL_ICON, &"expand": false},
 		{&"text": HEADER_MINERAL, &"width": 0.0, &"expand": true},
 		{&"text": HEADER_ORE, &"width": COL_ORE, &"expand": false},
-		{&"text": HEADER_INGOTS, &"width": COL_INGOTS, &"expand": false},
-		{&"text": HEADER_FEE, &"width": COL_FEE, &"expand": false},
+		{&"text": HEADER_STATE, &"width": COL_STATE, &"expand": false},
+	]
+
+
+func _job_header_cells() -> Array[Dictionary]:
+	return [
+		{&"text": HEADER_JOB, &"width": 0.0, &"expand": true},
+		{&"text": HEADER_TIME, &"width": COL_STATE, &"expand": false},
 	]
 
 
@@ -251,21 +325,32 @@ func _make_header_cell(cell: Dictionary) -> Control:
 	return label
 
 
+func _refresh_slots() -> void:
+	var profile := _profile()
+	var current := RefineryModule.slots(profile) if profile != null else RefineryModule.BASE_SLOTS
+	_slots_label.text = SLOTS_FORMAT % [current, RefineryModule.MAX_SLOTS]
+	_upgrade_button.text = UPGRADE_FORMAT % _format_cost(RefineryModule.SLOT_UPGRADE_COST)
+	_upgrade_button.disabled = current >= RefineryModule.MAX_SLOTS
+
+
+## ------------------------------------------------------------- the LEFT block rows
+
+
 func _build_rows() -> void:
-	## Every row is rebuilt, because the row set is the stack set: RowInner is created
-	## again rather than refreshed in place, so a conversion that left less than 3 ore
-	## removes its row here and nowhere else (04 section 2).
 	_clear_rows()
 	_selected_row = null
-	var stacks := _stacks()
-	if stacks.is_empty():
+	var hold := _stacks()
+	var input := _input_stacks()
+	if hold.is_empty() and input.is_empty():
 		_selected_id = &""
 		_stepper = STEPPER_MIN
-		_stepper_max = STEPPER_MIN
+		_stepper_max = 0
 		_build_empty_row()
 	else:
-		for stack: Dictionary in stacks:
-			_payloads.append(_build_row(stack))
+		for stack: Dictionary in hold:
+			_payloads.append(_build_row(stack, false))
+		for stack: Dictionary in input:
+			_payloads.append(_build_row(stack, true))
 		_add_slack()
 		_reselect()
 	_rebuild_pending = false
@@ -277,8 +362,8 @@ func _build_rows() -> void:
 
 func _clear_rows() -> void:
 	_payloads.clear()
-	for child: Node in _rows.get_children():
-		_rows.remove_child(child)
+	for child: Node in _hold_rows.get_children():
+		_hold_rows.remove_child(child)
 		child.queue_free()
 
 
@@ -292,23 +377,23 @@ func _build_empty_row() -> void:
 	var label := Label.new()
 	label.name = "EmptyCaption"
 	label.theme_type_variation = &"StationCaption"
-	label.text = EMPTY_ROW
+	label.text = EMPTY_HOLD_ROW
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	box.add_child(label)
-	_rows.add_child(row)
+	_hold_rows.add_child(row)
 
 
-func _build_row(stack: Dictionary) -> Dictionary:
+func _build_row(stack: Dictionary, loaded: bool) -> Dictionary:
 	var mineral_id: StringName = stack.get(&"mineral_id", &"")
 	var entry: Dictionary = stack.get(&"entry", {})
 	var name_text := String(entry.get(&"name", String(mineral_id)))
 	var ore_qty := int(stack.get(&"ore_qty", 0))
-	var conversions := int(stack.get(&"conversions", 0))
-	var fee := int(stack.get(&"fee", 0))
+	var conversions := int(stack.get(&"conversions", RefineryModule.input_conversions(_profile(), mineral_id)))
+	var fee := RefineryModule.fee_for(conversions, RefineryModule.fee_multiplier(_profile()))
 	var row := Button.new()
-	row.name = "Ore%s" % String(mineral_id).to_pascal_case()
+	row.name = "%s%s" % ["Input" if loaded else "Hold", String(mineral_id).to_pascal_case()]
 	row.toggle_mode = true
 	row.focus_mode = Control.FOCUS_ALL
 	row.custom_minimum_size = Vector2(0.0, ROW_HEIGHT)
@@ -318,13 +403,12 @@ func _build_row(stack: Dictionary) -> Dictionary:
 	var icon := _make_icon(entry)
 	if icon != null:
 		box.add_child(icon)
-	box.add_child(_make_title_box(name_text, ore_qty))
+	box.add_child(_make_title_box(name_text, ore_qty, loaded))
 	var ore := _make_value_cell(box, COL_ORE, "Ore")
 	ore.text = _format_int(ore_qty)
-	var ingots := _make_value_cell(box, COL_INGOTS, "Ingots")
-	ingots.text = _format_int(conversions)
-	var fee_cell := _make_value_cell(box, COL_FEE, "Fee")
-	fee_cell.text = FEE_FORMAT % _format_int(fee)
+	var state := _make_value_cell(box, COL_STATE, "State")
+	state.theme_type_variation = &"StationCaption"
+	state.text = TAG_LOADED if loaded else ""
 	var payload := {
 		&"id": mineral_id,
 		&"name": name_text,
@@ -332,22 +416,22 @@ func _build_row(stack: Dictionary) -> Dictionary:
 		&"ore": ore_qty,
 		&"conversions": conversions,
 		&"fee": fee,
+		&"loaded": loaded,
 		&"row": row,
 		&"icon": icon,
 		&"tint": _icon_tint(entry),
-		&"fee_value": fee_cell,
+		&"fee_value": state,
 	}
-	## N37: every row carries its own trailing INSPECT chip (UI_SPEC section 12.3).
 	box.add_child(_make_inspect_chip(payload))
 	row.pressed.connect(_on_row_pressed.bind(payload))
 	row.focus_entered.connect(_on_row_focused.bind(row, payload))
 	row.mouse_entered.connect(_on_row_hovered.bind(payload, true))
 	row.mouse_exited.connect(_on_row_hovered.bind(payload, false))
-	_rows.add_child(row)
+	_hold_rows.add_child(row)
 	return payload
 
 
-func _make_title_box(name_text: String, ore_qty: int) -> VBoxContainer:
+func _make_title_box(name_text: String, ore_qty: int, loaded: bool) -> VBoxContainer:
 	var box := VBoxContainer.new()
 	box.name = "TitleBox"
 	box.add_theme_constant_override(&"separation", CELL_SEPARATION)
@@ -357,7 +441,10 @@ func _make_title_box(name_text: String, ore_qty: int) -> VBoxContainer:
 	var title := _make_label(&"StationValue", name_text)
 	title.name = "Title"
 	box.add_child(title)
-	var meta := _make_label(&"StationCaption", ORE_HELD_FORMAT % ore_qty)
+	var meta := _make_label(
+		&"StationCaption",
+		TAG_INPUT_FORMAT % ore_qty if loaded else TAG_HELD_FORMAT % ore_qty
+	)
 	meta.name = "Meta"
 	box.add_child(meta)
 	return box
@@ -413,10 +500,6 @@ func _make_icon(entry: Dictionary) -> TextureRect:
 
 
 func _icon_source(entry: Dictionary) -> String:
-	## All icon families are single-colour silhouettes, so the white tint/ stencil is the
-	## render source whenever one exists; the dedicated Phase F ore glyph (ICONS_SPEC §8.1)
-	## then takes neutral state ink and the generic 02 §6 fallback its tier tint. The master
-	## path is the last resort for art without a derived stencil.
 	var icon_path := String(entry.get(&"icon_ore", ""))
 	if icon_path.is_empty():
 		return ""
@@ -445,12 +528,10 @@ func _add_slack() -> void:
 	slack.name = "Slack"
 	slack.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	slack.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_rows.add_child(slack)
+	_hold_rows.add_child(slack)
 
 
 func _reselect() -> void:
-	## A rebuild keeps the selection when that mineral still has a convertible stack
-	## (Refinery.refine of a partial batch), and clears it when the stack is gone.
 	if _selected_id == &"":
 		return
 	for payload: Dictionary in _payloads:
@@ -459,7 +540,7 @@ func _reselect() -> void:
 			return
 	_selected_id = &""
 	_stepper = STEPPER_MIN
-	_stepper_max = STEPPER_MIN
+	_stepper_max = 0
 
 
 func _arm(payload: Dictionary, cue: bool) -> void:
@@ -473,8 +554,8 @@ func _arm(payload: Dictionary, cue: bool) -> void:
 	_selected_row = row
 	row.set_pressed_no_signal(true)
 	_selected_id = payload[&"id"]
-	_stepper_max = maxi(STEPPER_MIN, int(payload[&"conversions"]))
-	_stepper = _stepper_max
+	_stepper_max = RefineryModule.input_conversions(_profile(), _selected_id)
+	_stepper = maxi(STEPPER_MIN, _stepper_max)
 	_refresh_box()
 	_refresh_affordability()
 
@@ -485,7 +566,7 @@ func _clear_selection() -> void:
 	_selected_row = null
 	_selected_id = &""
 	_stepper = STEPPER_MIN
-	_stepper_max = STEPPER_MIN
+	_stepper_max = 0
 	_refresh_box()
 	_refresh_affordability()
 
@@ -500,7 +581,12 @@ func _conversions_text(count: int) -> String:
 	return STEPPER_FORMAT % count
 
 
+func _armed() -> bool:
+	return _selected_id != &"" and _stepper_max >= 1
+
+
 func _refresh_box() -> void:
+	var profile := _profile()
 	var armed := _selected_id != &""
 	if armed:
 		_selected_name.text = _selected_name_text().to_upper()
@@ -508,26 +594,23 @@ func _refresh_box() -> void:
 	else:
 		_selected_name.text = SELECTED_NONE
 		_stepper_value.text = STEPPER_IDLE
-	_refine_button.text = REFINE_FORMAT % _stepper
+	_queue_button.text = QUEUE_FORMAT % _stepper
+	_queue_button.disabled = not _armed()
 	_stepper_less.disabled = not armed or _stepper <= STEPPER_MIN
 	_stepper_more.disabled = not armed or _stepper >= _stepper_max
-	_refine_button.disabled = not armed
-	_refine_all_button.disabled = _payloads.is_empty()
-	_cancel_button.disabled = not armed
-	_ore_in.text = _format_int(_stepper * RefineryModule.ORE_PER_INGOT) if armed else ZERO_TEXT
-	_ingots_out.text = _format_int(_stepper) if armed else ZERO_TEXT
-	_fee_value.text = FEE_FORMAT % _format_int(_selected_fee() if armed else 0)
+	_queue_all_button.disabled = _queueable_total() < 1
+	_cancel_button.disabled = _selected_job_id < 0
+	_load_button.disabled = not _load_available()
+	_collect_button.disabled = RefineryModule.output_total(profile) < 1 if profile != null else true
+	_ore_in.text = _format_int(_stepper * RefineryModule.ORE_PER_INGOT) if _armed() else ZERO_TEXT
+	_ingots_out.text = _format_int(_stepper) if _armed() else ZERO_TEXT
+	_fee_value.text = FEE_FORMAT % _format_int(_selected_fee() if _armed() else 0)
+	_time_value.text = _selected_time_text() if _armed() else ZERO_TIME
 
 
 func _refresh_affordability() -> void:
-	## STATION_HUB section 5.6 channel 1 is presentation only: the price is red when the
-	## balance cannot cover it and the profile still decides the outcome on the press.
 	var profile := _profile()
-	var armed := _selected_id != &""
-	_colour_fee(_fee_value, profile, _selected_fee() if armed else 0)
-	for payload: Dictionary in _payloads:
-		var cell: Label = payload[&"fee_value"]
-		_colour_fee(cell, profile, int(payload[&"fee"]))
+	_colour_fee(_fee_value, profile, _selected_fee() if _armed() else 0)
 
 
 func _colour_fee(cell: Label, profile: ProfileScript, fee: int) -> void:
@@ -552,13 +635,144 @@ func _refresh_tag() -> void:
 
 
 func _refresh_footer() -> void:
-	if _payloads.is_empty():
-		_footer.text = FOOTER_EMPTY
+	if _queueable_total() >= 1:
+		_footer.text = FOOTER_FORMAT % [
+			RefineryModule.ORE_PER_INGOT,
+			RefineryModule.FEE_PER_CONVERSION,
+		]
 		return
-	_footer.text = FOOTER_FORMAT % [
-		RefineryModule.ORE_PER_INGOT,
-		RefineryModule.FEE_PER_CONVERSION,
-	]
+	if not _stacks().is_empty():
+		_footer.text = FOOTER_LOAD
+		return
+	_footer.text = FOOTER_EMPTY
+
+
+## ------------------------------------------------------------------- the RIGHT jobs
+
+
+func _build_jobs() -> void:
+	_clear_jobs()
+	var jobs := RefineryModule.jobs(_profile())
+	if jobs.is_empty():
+		_build_empty_job_row()
+	else:
+		for job: Dictionary in jobs:
+			_job_payloads.append(_build_job_row(job))
+		_add_job_slack()
+	_job_signature = _live_signature()
+	_refresh_box()
+
+
+func _clear_jobs() -> void:
+	_job_payloads.clear()
+	for child: Node in _jobs_rows.get_children():
+		_jobs_rows.remove_child(child)
+		child.queue_free()
+
+
+func _build_empty_job_row() -> void:
+	var row := Button.new()
+	row.name = "EmptyJobRow"
+	row.disabled = true
+	row.focus_mode = Control.FOCUS_NONE
+	row.custom_minimum_size = Vector2(0.0, JOB_ROW_HEIGHT)
+	var box := _make_inner(row)
+	var label := _make_label(&"StationCaption", EMPTY_JOB_ROW)
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	box.add_child(label)
+	_jobs_rows.add_child(row)
+
+
+func _build_job_row(job: Dictionary) -> Dictionary:
+	var job_id := int(job.get(&"id", -1))
+	var mineral_id := StringName(job.get(&"mineral_id", &""))
+	var entry := Catalog.mineral(mineral_id)
+	var name_text := String(entry.get(&"name", String(mineral_id))).to_upper()
+	var ingots := int(job.get(&"conversions", 0))
+	var state := StringName(job.get(&"state", RefineryModule.JOB_PENDING))
+	var row := Button.new()
+	row.name = "Job%d" % job_id
+	row.toggle_mode = true
+	row.focus_mode = Control.FOCUS_ALL
+	row.custom_minimum_size = Vector2(0.0, JOB_ROW_HEIGHT)
+	row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	var box := _make_inner(row)
+	var label := _make_label(&"StationValue", _job_line(state, name_text, ingots))
+	label.name = "JobLine"
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	box.add_child(label)
+	var time := _make_value_cell(box, COL_STATE, "Time")
+	time.text = _job_time_text(job)
+	var payload := {&"id": job_id, &"row": row, &"time": time, &"state": state}
+	row.pressed.connect(_on_job_pressed.bind(job_id))
+	_jobs_rows.add_child(row)
+	if job_id == _selected_job_id:
+		row.set_pressed_no_signal(true)
+	return payload
+
+
+func _add_job_slack() -> void:
+	var slack := Control.new()
+	slack.name = "Slack"
+	slack.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	slack.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_jobs_rows.add_child(slack)
+
+
+func _job_line(state: StringName, name_text: String, ingots: int) -> String:
+	var count := StationCatalogScript.plural(ingots, "INGOT")
+	if state == RefineryModule.JOB_DONE:
+		return JOB_DONE_FORMAT % [name_text, count]
+	if state == RefineryModule.JOB_RUNNING:
+		return JOB_LINE_FORMAT % [name_text, count, JOB_RUNNING_TAG]
+	return JOB_LINE_FORMAT % [name_text, count, JOB_PENDING_TAG]
+
+
+func _job_time_text(job: Dictionary) -> String:
+	if StringName(job.get(&"state", RefineryModule.JOB_PENDING)) != RefineryModule.JOB_RUNNING:
+		return ""
+	var remaining := maxi(int(job.get(&"ready_at", 0)) - int(Time.get_unix_time_from_system()), 0)
+	return _mmss(remaining)
+
+
+func _refresh_countdowns() -> void:
+	var jobs := RefineryModule.jobs(_profile())
+	var by_id: Dictionary = {}
+	for job: Dictionary in jobs:
+		by_id[int(job.get(&"id", -1))] = job
+	for payload: Dictionary in _job_payloads:
+		var job: Dictionary = by_id.get(int(payload[&"id"]), {})
+		var time: Label = payload[&"time"]
+		if job.is_empty():
+			continue
+		time.text = _job_time_text(job)
+
+
+## The signature of the jobs the profile currently holds, so a tick can tell a
+## countdown change (refresh in place) from a state change (rebuild).
+func _live_signature() -> PackedStringArray:
+	var signature := PackedStringArray()
+	for job: Dictionary in RefineryModule.jobs(_profile()):
+		signature.append("%d:%s" % [int(job.get(&"id", -1)), String(job.get(&"state", ""))])
+	return signature
+
+
+func _select_job(job_id: int) -> void:
+	_selected_job_id = job_id
+	for payload: Dictionary in _job_payloads:
+		var row: Button = payload[&"row"]
+		row.set_pressed_no_signal(int(payload[&"id"]) == job_id)
+	_refresh_box()
+
+
+func _on_job_pressed(job_id: int) -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	_select_job(-1 if _selected_job_id == job_id else job_id)
+
+
+## ------------------------------------------------------------------- interactions
 
 
 func _on_row_focused(_row: Button, payload: Dictionary) -> void:
@@ -568,8 +782,6 @@ func _on_row_focused(_row: Button, payload: Dictionary) -> void:
 
 
 func _on_row_pressed(payload: Dictionary) -> void:
-	## Focus selects first on a mouse or keyboard entry, so the press only cues and arms
-	## when it actually moves the selection.
 	_arm(payload, true)
 	_inspect_row(payload, true)
 
@@ -586,8 +798,7 @@ func _on_row_hovered(payload: Dictionary, hovered: bool) -> void:
 
 ## CONTRACTS section 23.1: the ore row's additive inspector line. The row's own
 ## identity line (name, conversions and fee) is the title; the body is whatever
-## `StationCatalog.describe` answers for the row's own id, which is `""` for a row the
-## station catalogue does not carry.
+## `StationCatalog.describe` answers for the row's own id.
 func _inspect_row(payload: Dictionary, shown: bool) -> void:
 	if not shown:
 		inspect_requested.emit("", "", false)
@@ -603,7 +814,6 @@ func _inspect_row(payload: Dictionary, shown: bool) -> void:
 	)
 
 
-## ------------------------------------------------- the INSPECT sheet (N28/N37, S30)
 func _make_inspect_chip(payload: Dictionary) -> Button:
 	var chip := InspectChipScript.new()
 	chip.name = "InspectChip"
@@ -618,14 +828,6 @@ func _emit_sheet(payload: Dictionary) -> void:
 		sheet_requested.emit(sheet)
 
 
-func inspect_focused() -> void:
-	if _focused_payload.is_empty():
-		return
-	_emit_sheet(_focused_payload)
-
-
-## An ore row's sheet (UI_SPEC section 12.3, N35): the row's name and the catalogue's
-## description; a stack keeps rows 1, the description and 5 (the held count is the ore).
 func _sheet_payload(payload: Dictionary) -> Dictionary:
 	var mineral_id: StringName = payload.get(&"id", &"")
 	if mineral_id == &"":
@@ -647,7 +849,7 @@ func _on_scroll_started() -> void:
 func _on_stepper_pressed(step: int) -> void:
 	if _selected_id == &"":
 		return
-	var next := clampi(_stepper + step, STEPPER_MIN, _stepper_max)
+	var next := clampi(_stepper + step, STEPPER_MIN, maxi(_stepper_max, STEPPER_MIN))
 	if next == _stepper:
 		return
 	AudioManager.play_ui(AudioManager.UiCue.SCROLL)
@@ -656,31 +858,22 @@ func _on_stepper_pressed(step: int) -> void:
 	_refresh_affordability()
 
 
-func _on_cancel_pressed() -> void:
-	AudioManager.play_ui(AudioManager.UiCue.CLICK)
-	if disarm():
-		status_requested.emit(STATUS_IDLE, false)
-
-
-func _on_refine_pressed() -> void:
+func _on_queue_pressed() -> void:
 	AudioManager.play_ui(AudioManager.UiCue.CLICK)
 	var profile := _profile()
-	if profile == null or _selected_id == &"":
+	if profile == null or not _armed():
 		return
-	## Captured before the call: Refinery.refine emits profile_changed while it runs, and
-	## the deferred rebuild below may clear the selection out from under this handler.
 	var mineral_id := _selected_id
 	var name_text := _selected_name_text()
 	var conversions := _stepper
-	var fee := RefineryModule.fee_for(conversions)
-	_transaction = true
-	var result: Dictionary = RefineryModule.refine(profile, mineral_id, conversions)
-	_transaction = false
+	var fee := RefineryModule.fee_for(conversions, RefineryModule.fee_multiplier(profile))
+	_begin()
+	var result: Dictionary = RefineryModule.queue(profile, mineral_id, conversions)
+	_end()
 	if bool(result.get(&"ok", false)):
 		AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
-		_finish_rebuild()
 		status_requested.emit(
-			STATUS_REFINED % [
+			STATUS_QUEUED % [
 				name_text.to_upper(),
 				StationCatalogScript.plural(conversions, "INGOT"),
 				_format_int(fee),
@@ -689,54 +882,142 @@ func _on_refine_pressed() -> void:
 		)
 		return
 	AudioManager.play_ui(AudioManager.UiCue.DENIED)
-	_finish_rebuild()
 	status_requested.emit(_refusal_text(result.get(&"reason", &""), fee, conversions), true)
 
 
-func _on_refine_all_pressed() -> void:
+func _on_queue_all_pressed() -> void:
 	AudioManager.play_ui(AudioManager.UiCue.CLICK)
 	var profile := _profile()
 	if profile == null:
 		return
-	var stacks := _stacks()
-	if stacks.is_empty():
-		AudioManager.play_ui(AudioManager.UiCue.DENIED)
-		status_requested.emit(STATUS_REFUSED_EMPTY, true)
-		return
-	## One fee for the whole batch (04 section 2), summed from the same stacks the rows
-	## were drawn from, so the quoted fee matches the table the player is looking at.
-	var fee := 0
-	for stack: Dictionary in stacks:
-		fee += int(stack.get(&"fee", 0))
-	_transaction = true
-	var result: Dictionary = RefineryModule.refine_all(profile)
-	_transaction = false
+	var fee := _queueable_fee()
+	_begin()
+	var result: Dictionary = RefineryModule.queue_all(profile)
+	_end()
 	if bool(result.get(&"ok", false)):
 		AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
-		_finish_rebuild()
 		status_requested.emit(
-			STATUS_REFINED_ALL % [
+			STATUS_QUEUED_ALL % [
 				StationCatalogScript.plural(int(result.get(&"ingots", 0)), "INGOT"),
-				_format_int(fee),
+				_format_int(int(result.get(&"fee", fee))),
 			],
 			false
 		)
 		return
 	AudioManager.play_ui(AudioManager.UiCue.DENIED)
-	_finish_rebuild()
+	status_requested.emit(_refusal_text(result.get(&"reason", &""), fee, int(result.get(&"conversions", 0))), true)
+
+
+func _on_cancel_pressed() -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	var profile := _profile()
+	if profile == null:
+		return
+	if _selected_job_id < 0:
+		if disarm():
+			status_requested.emit(STATUS_IDLE, false)
+		return
+	var job_id := _selected_job_id
+	var job := _job_by_id(job_id)
+	var name_text := _mineral_name(StringName(job.get(&"mineral_id", &""))).to_upper()
+	var ore_units := int(job.get(&"conversions", 0)) * RefineryModule.ORE_PER_INGOT
+	_begin()
+	var result: Dictionary = RefineryModule.cancel(profile, job_id)
+	_end()
+	_select_job(-1)
+	if bool(result.get(&"ok", false)):
+		AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
+		status_requested.emit(
+			STATUS_CANCELLED % [name_text, StationCatalogScript.plural(ore_units, "ORE UNIT")],
+			false
+		)
+		return
+	AudioManager.play_ui(AudioManager.UiCue.DENIED)
+	status_requested.emit(STATUS_REFUSED_EMPTY, true)
+
+
+func _on_load_pressed() -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	var profile := _profile()
+	if profile == null or _selected_id == &"":
+		return
+	var units := _load_units()
+	if units < 1:
+		AudioManager.play_ui(AudioManager.UiCue.DENIED)
+		status_requested.emit(STATUS_REFUSED_INPUT, true)
+		return
+	var name_text := _selected_name_text()
+	_begin()
+	var result: Dictionary = RefineryModule.load_ore(profile, _selected_id, units)
+	_end()
+	if bool(result.get(&"ok", false)):
+		AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
+		status_requested.emit(
+			STATUS_LOADED % [name_text.to_upper(), StationCatalogScript.plural(units, "ORE UNIT")],
+			false
+		)
+		return
+	AudioManager.play_ui(AudioManager.UiCue.DENIED)
+	status_requested.emit(_refusal_text(result.get(&"reason", &""), 0, 0), true)
+
+
+func _on_collect_pressed() -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	var profile := _profile()
+	if profile == null:
+		return
+	_begin()
+	var result: Dictionary = RefineryModule.collect_all(profile)
+	_end()
+	if bool(result.get(&"ok", false)):
+		AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
+		status_requested.emit(
+			STATUS_COLLECTED % StationCatalogScript.plural(int(result.get(&"collected", 0)), "INGOT"),
+			false
+		)
+		return
+	AudioManager.play_ui(AudioManager.UiCue.DENIED)
+	status_requested.emit(STATUS_OUTPUT_FULL, true)
+
+
+func _on_upgrade_pressed() -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	var profile := _profile()
+	if profile == null:
+		return
+	_begin()
+	var result: Dictionary = RefineryModule.upgrade_slots(profile)
+	_end()
+	if bool(result.get(&"ok", false)):
+		AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
+		status_requested.emit(STATUS_UPGRADED % int(result.get(&"slots", 0)), false)
+		return
+	AudioManager.play_ui(AudioManager.UiCue.DENIED)
+	if StringName(result.get(&"reason", &"")) == RefineryModule.REASON_MAX_SLOTS:
+		status_requested.emit(STATUS_REFUSED_MAX_SLOTS, true)
+		return
 	status_requested.emit(
-		_refusal_text(result.get(&"reason", &""), fee, int(result.get(&"conversions", 0))), true
+		STATUS_REFUSED_CREDITS % _format_int(RefineryModule.SLOT_UPGRADE_COST), true
 	)
 
 
-func _finish_rebuild() -> void:
-	## Called straight after a transaction returns, so the panel is never left waiting on a
-	## rebuild that a signal already asked for.
+## Run one module transaction inside the deferred-rebuild guard, then flush any
+## rebuild the transaction's own signals asked for.
+func _begin() -> void:
+	_transaction = true
+
+
+func _end() -> void:
 	_transaction = false
-	if not _rebuild_pending:
-		return
-	_rebuild_pending = false
+	if _rebuild_pending:
+		_rebuild_pending = false
+		_rebuild_all()
+
+
+func _rebuild_all() -> void:
 	_build_rows()
+	_build_jobs()
+	_refresh_slots()
 
 
 func _refusal_text(reason: Variant, fee: int, conversions: int) -> String:
@@ -745,15 +1026,25 @@ func _refusal_text(reason: Variant, fee: int, conversions: int) -> String:
 		return STATUS_REFUSED_CREDITS % _format_int(fee)
 	if key == &"insufficient_ore":
 		return STATUS_REFUSED_ORE % _format_int(conversions * RefineryModule.ORE_PER_INGOT)
+	if key == &"input_full":
+		return STATUS_REFUSED_INPUT
 	if key == &"invalid_count":
 		return STATUS_REFUSED_COUNT
-	if key == &"nothing_to_refine":
+	if key == &"nothing_to_queue" or key == &"nothing_to_refine":
 		return STATUS_REFUSED_EMPTY
 	return STATUS_REFUSED_UNKNOWN
 
 
+## ------------------------------------------------------------------------- helpers
+
+
 func _selected_fee() -> int:
-	return RefineryModule.fee_for(_stepper)
+	return RefineryModule.fee_for(_stepper, RefineryModule.fee_multiplier(_profile()))
+
+
+func _selected_time_text() -> String:
+	var seconds := RefineryModule.resource_seconds(_selected_id) * _stepper
+	return _mmss(seconds)
 
 
 func _selected_name_text() -> String:
@@ -761,6 +1052,18 @@ func _selected_name_text() -> String:
 		if payload[&"id"] == _selected_id:
 			return String(payload[&"name"])
 	return ""
+
+
+func _mineral_name(mineral_id: StringName) -> String:
+	var entry := Catalog.mineral(mineral_id)
+	return String(entry.get(&"name", String(mineral_id)))
+
+
+func _job_by_id(job_id: int) -> Dictionary:
+	for job: Dictionary in RefineryModule.jobs(_profile()):
+		if int(job.get(&"id", -1)) == job_id:
+			return job
+	return {}
 
 
 func _stacks() -> Array[Dictionary]:
@@ -771,10 +1074,65 @@ func _stacks() -> Array[Dictionary]:
 	return RefineryModule.stacks(profile)
 
 
+## One row per mineral whose input holds ore, in catalogue order, shaped like a
+## `stacks` row (the LEFT block's input inventory).
+func _input_stacks() -> Array[Dictionary]:
+	var rows: Array[Dictionary] = []
+	var profile := _profile()
+	if profile == null:
+		return rows
+	for entry: Dictionary in Catalog.MINERALS:
+		var mineral_id: StringName = entry.get(&"id", &"")
+		if mineral_id == &"":
+			continue
+		var units := RefineryModule.input_units(profile, mineral_id)
+		if units < 1:
+			continue
+		rows.append({&"mineral_id": mineral_id, &"entry": entry, &"ore_qty": units})
+	return rows
+
+
+## How many minerals the input can queue at least one conversion for (QUEUE ALL).
+func _queueable_total() -> int:
+	var profile := _profile()
+	if profile == null:
+		return 0
+	var total := 0
+	for entry: Dictionary in Catalog.MINERALS:
+		if RefineryModule.input_conversions(profile, entry.get(&"id", &"")) >= 1:
+			total += 1
+	return total
+
+
+## The combined fee QUEUE ALL would charge, read off the same input the button acts on.
+func _queueable_fee() -> int:
+	var profile := _profile()
+	if profile == null:
+		return 0
+	var mult := RefineryModule.fee_multiplier(profile)
+	var total := 0
+	for entry: Dictionary in Catalog.MINERALS:
+		var conversions := RefineryModule.input_conversions(profile, entry.get(&"id", &""))
+		if conversions >= 1:
+			total += RefineryModule.fee_for(conversions, mult)
+	return total
+
+
+func _load_available() -> bool:
+	return _selected_id != &"" and _load_units() >= 1
+
+
+func _load_units() -> int:
+	var profile := _profile()
+	if profile == null or _selected_id == &"":
+		return 0
+	var ore_id: StringName = Catalog.ore_id(_selected_id)
+	var held := int(profile.call(&"cargo_qty", ore_id))
+	var space := RefineryModule.INPUT_CAP - RefineryModule.input_total(profile)
+	return clampi(mini(held, space), 0, RefineryModule.INPUT_CAP)
+
+
 func _profile() -> ProfileScript:
-	## Autoloads are children of /root; STATION_HUB section 12.4 names a bare
-	## ^"PlayerProfile" path, which would resolve against this node instead, so the
-	## lookup is anchored at the tree root the way router.gd anchors its services.
 	if not is_inside_tree():
 		return null
 	var service := get_tree().root.get_node_or_null(NodePath(PROFILE_SERVICE))
@@ -782,6 +1140,20 @@ func _profile() -> ProfileScript:
 		return null
 	var profile: ProfileScript = service
 	return profile
+
+
+func _apply_tokens() -> void:
+	_pane_icon.modulate = _token(&"text_primary")
+	for payload: Dictionary in _payloads:
+		var icon: TextureRect = payload[&"icon"]
+		if icon != null:
+			icon.modulate = payload[&"tint"]
+
+
+func _token(token: StringName) -> Color:
+	if has_theme_color(token, TOKENS_TYPE):
+		return get_theme_color(token, TOKENS_TYPE)
+	return Color.WHITE
 
 
 func _make_tween() -> Tween:
@@ -793,6 +1165,13 @@ func _make_tween() -> Tween:
 	return tween
 
 
+func _mmss(seconds: int) -> String:
+	var clamped := maxi(seconds, 0)
+	@warning_ignore("integer_division")
+	var minutes := clamped / 60
+	return "%02d:%02d" % [minutes, clamped % 60]
+
+
 func _format_int(value: int) -> String:
 	var digits := str(absi(value))
 	var grouped := ""
@@ -802,4 +1181,18 @@ func _format_int(value: int) -> String:
 		count += 1
 		if count % 3 == 0 and index > 0:
 			grouped = " " + grouped
+	return ("-" if value < 0 else "") + grouped
+
+
+## The header's slot price reads the §21.3 wording `3,000 CR` (comma-grouped, not
+## the house `_format_int`'s spaces), so the label matches the pinned copy.
+func _format_cost(value: int) -> String:
+	var digits := str(absi(value))
+	var grouped := ""
+	var count := 0
+	for index in range(digits.length() - 1, -1, -1):
+		grouped = digits[index] + grouped
+		count += 1
+		if count % 3 == 0 and index > 0:
+			grouped = "," + grouped
 	return ("-" if value < 0 else "") + grouped

@@ -610,6 +610,16 @@
     "res://tests/probe_s2_6_flight.gd"
    ]
   },
+  "res://tests/probe_s34_review.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s34_review.gd"
+   ]
+  },
   "res://tests/probe_s3_levers.tscn": {
    "assets": [],
    "connections": [],
@@ -1225,6 +1235,7 @@
     "res://game/auction.gd",
     "res://game/economy_log.gd",
     "res://game/module_catalog.gd",
+    "res://game/refinery.gd",
     "res://game/ship_fit.gd",
     "res://game/station_catalog.gd",
     "res://game/weapons.gd"
@@ -3009,6 +3020,20 @@
    ],
    "signals": []
   },
+  "res://tests/probe_s34_review.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://game/economy_log.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/refinery.gd",
+    "res://tests/probe_s34_review.tscn --quit-after 300",
+    "res://ui/station/refinery_panel.tscn"
+   ],
+   "signals": []
+  },
   "res://tests/probe_s3_levers.gd": {
    "autoload": "",
    "class_name": "",
@@ -4554,6 +4579,21 @@
    ],
    "signals": []
   },
+  "res://tests/test_s34_refinery_queue.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "_profile.profile_changed \u2192 _on_profile_changed"
+   ],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/economy_log.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/refinery.gd"
+   ],
+   "signals": []
+  },
   "res://tests/test_s3_auction.gd": {
    "autoload": "",
    "class_name": "",
@@ -5795,14 +5835,20 @@
    "class_name": "",
    "connects": [
     "_cancel_button.pressed \u2192 _on_cancel_pressed",
-    "_refine_all_button.pressed \u2192 _on_refine_all_pressed",
-    "_refine_button.pressed \u2192 _on_refine_pressed",
+    "_collect_button.pressed \u2192 _on_collect_pressed",
+    "_load_button.pressed \u2192 _on_load_pressed",
+    "_queue_all_button.pressed \u2192 _on_queue_all_pressed",
+    "_queue_button.pressed \u2192 _on_queue_pressed",
     "_stepper_more.pressed \u2192 _on_stepper_pressed.bind(1",
+    "_tick_timer.timeout \u2192 _tick",
+    "_upgrade_button.pressed \u2192 _on_upgrade_pressed",
     "chip.inspect_chip_pressed \u2192 _emit_sheet.bind(payload",
     "row.focus_entered \u2192 _on_row_focused.bind(row",
     "row.mouse_entered \u2192 _on_row_hovered.bind(payload",
     "row.mouse_exited \u2192 _on_row_hovered.bind(payload",
-    "row.pressed \u2192 _on_row_pressed.bind(payload"
+    "row.pressed \u2192 _on_job_pressed.bind(job_id",
+    "row.pressed \u2192 _on_row_pressed.bind(payload",
+    "visibility_changed \u2192 _on_visibility_changed"
    ],
    "extends": "VBoxContainer",
    "refs": [

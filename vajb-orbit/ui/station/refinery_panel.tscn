@@ -48,36 +48,50 @@ layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"StationCaption"
 
+[node name="SlotsLabel" type="Label" parent="PaneHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationValue"
+
+[node name="UpgradeButton" type="Button" parent="PaneHeader"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationButton"
+text = "UPGRADE"
+
 [node name="RefineryBody" type="HBoxContainer" parent="."]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 16
 
-[node name="RefineryTable" type="VBoxContainer" parent="RefineryBody"]
+[node name="HoldTable" type="VBoxContainer" parent="RefineryBody"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
-[node name="HeaderMargin" type="MarginContainer" parent="RefineryBody/RefineryTable"]
+[node name="HeaderMargin" type="MarginContainer" parent="RefineryBody/HoldTable"]
 layout_mode = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 0
 
-[node name="RefineryHeader" type="HBoxContainer" parent="RefineryBody/RefineryTable/HeaderMargin"]
+[node name="HoldHeader" type="HBoxContainer" parent="RefineryBody/HoldTable/HeaderMargin"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="RefineryScroll" type="ScrollContainer" parent="RefineryBody/RefineryTable"]
+[node name="HoldScroll" type="ScrollContainer" parent="RefineryBody/HoldTable"]
 unique_name_in_owner = true
 horizontal_scroll_mode = 0
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="RefineryRows" type="VBoxContainer" parent="RefineryBody/RefineryTable/RefineryScroll"]
+[node name="HoldRows" type="VBoxContainer" parent="RefineryBody/HoldTable/HoldScroll"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -180,10 +194,109 @@ layout_mode = 2
 theme_type_variation = &"StationValue"
 horizontal_alignment = 2
 
+[node name="TimeRow" type="HBoxContainer" parent="RefineryBody/RefineBox/TotalsBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TimeCaption" type="Label" parent="RefineryBody/RefineBox/TotalsBox/TimeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"StationCaption"
+text = "TIME"
+
+[node name="TimeValue" type="Label" parent="RefineryBody/RefineBox/TotalsBox/TimeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+theme_type_variation = &"StationValue"
+horizontal_alignment = 2
+
 [node name="RefineSpacer" type="Control" parent="RefineryBody/RefineBox"]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
+
+[node name="ActionGrid" type="VBoxContainer" parent="RefineryBody/RefineBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="QueueRow" type="HBoxContainer" parent="RefineryBody/RefineBox/ActionGrid"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="QueueAllButton" type="Button" parent="RefineryBody/RefineBox/ActionGrid/QueueRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"StationButton"
+text = "QUEUE ALL"
+
+[node name="CancelButton" type="Button" parent="RefineryBody/RefineBox/ActionGrid/QueueRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"StationButton"
+text = "CANCEL"
+
+[node name="QueueButton" type="Button" parent="RefineryBody/RefineBox/ActionGrid/QueueRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"StationButton"
+text = "QUEUE"
+
+[node name="TransferRow" type="HBoxContainer" parent="RefineryBody/RefineBox/ActionGrid"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="LoadButton" type="Button" parent="RefineryBody/RefineBox/ActionGrid/TransferRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"StationButton"
+text = "LOAD"
+
+[node name="CollectButton" type="Button" parent="RefineryBody/RefineBox/ActionGrid/TransferRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"StationButton"
+text = "COLLECT ALL"
+
+[node name="JobsTable" type="VBoxContainer" parent="RefineryBody"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="JobsHeaderMargin" type="MarginContainer" parent="RefineryBody/JobsTable"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 0
+
+[node name="JobsHeader" type="HBoxContainer" parent="RefineryBody/JobsTable/JobsHeaderMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="JobsScroll" type="ScrollContainer" parent="RefineryBody/JobsTable"]
+unique_name_in_owner = true
+horizontal_scroll_mode = 0
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="JobsRows" type="VBoxContainer" parent="RefineryBody/JobsTable/JobsScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
 
 [node name="PaneFoot" type="HBoxContainer" parent="."]
 custom_minimum_size = Vector2(0, 56)
@@ -196,33 +309,3 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 7
 theme_type_variation = &"StationCaption"
-
-[node name="ActionsRow" type="HBoxContainer" parent="PaneFoot"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_vertical = 4
-theme_override_constants/separation = 16
-
-[node name="RefineAllButton" type="Button" parent="PaneFoot/ActionsRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(360, 56)
-layout_mode = 2
-size_flags_vertical = 4
-theme_type_variation = &"StationButton"
-text = "REFINE ALL"
-
-[node name="CancelButton" type="Button" parent="PaneFoot/ActionsRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(360, 56)
-layout_mode = 2
-size_flags_vertical = 4
-theme_type_variation = &"StationButton"
-text = "CANCEL"
-
-[node name="RefineButton" type="Button" parent="PaneFoot/ActionsRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(360, 56)
-layout_mode = 2
-size_flags_vertical = 4
-theme_type_variation = &"StationButton"
-text = "REFINE 1"

@@ -40,9 +40,9 @@ const LINE_CHECKS: Array[Dictionary] = [
 	{&"path": "res://autoload/settings_manager.gd", &"line": 427, &"must": "_service(service_name"},
 	{&"path": "res://autoload/audio_manager.gd", &"line": 249, &"must": "_service(service_name"},
 	{&"path": "res://autoload/dialog_manager.gd", &"line": 111, &"must": "_service(service_name"},
-	# SHADOWED_VARIABLE: player_profile.gd 576 (`var name`) and 735 (iterator `name`)
-	{&"path": "res://autoload/player_profile.gd", &"line": 576, &"must": "var entry_name := StringName("},
-	{&"path": "res://autoload/player_profile.gd", &"line": 735, &"must": "for entry_name: StringName in names:"},
+	# SHADOWED_VARIABLE: player_profile.gd 2210 (`var entry_name`) and 2795 (iterator `entry_name`)
+	{&"path": "res://autoload/player_profile.gd", &"line": 2210, &"must": "var entry_name := StringName("},
+	{&"path": "res://autoload/player_profile.gd", &"line": 2795, &"must": "for entry_name: StringName in names:"},
 	# SHADOWED_VARIABLE: router.gd parameters `route` vs the method `route()` (83-264)
 	{&"path": "res://autoload/router.gd", &"line": 83, &"must": "func route(route_name: StringName"},
 	{&"path": "res://autoload/router.gd", &"line": 111, &"must": "func push_overlay(route_name: StringName"},
@@ -62,8 +62,8 @@ const LINE_CHECKS: Array[Dictionary] = [
 	# SHADOWED_VARIABLE_BASE_CLASS: station.gd 348 (`size` vs Control.size) and 407 (`var owner`)
 	{&"path": "res://ui/screens/station.gd", &"line": 348, &"must": "func _make_icon(icon_path: String, tinted: bool, icon_size: float)"},
 	{&"path": "res://ui/screens/station.gd", &"line": 407, &"must": "var focus_owner := get_viewport().gui_get_focus_owner()"},
-	# unused parameter: refinery_panel.gd 533
-	{&"path": "res://ui/station/refinery_panel.gd", &"line": 533, &"must": "func _on_row_focused(_row: Button, payload: Dictionary)"},
+	# unused parameter: refinery_panel.gd 778 (the S34 queue-pane rewrite moved it)
+	{&"path": "res://ui/station/refinery_panel.gd", &"line": 778, &"must": "func _on_row_focused(_row: Button, payload: Dictionary)"},
 	# SHADOWED_GLOBAL_IDENTIFIER: exchange.gd 45 / 46
 	{&"path": "res://game/exchange.gd", &"line": 45, &"must": "const MineralCatalogScript := preload("},
 	{&"path": "res://game/exchange.gd", &"line": 46, &"must": "const ComponentCatalogScript := preload("},

@@ -6,6 +6,18 @@
 
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-25 clear-outs (owner asks):** every closed slice folder moved to the system trash (last git tree carrying them: `7a081ef`), old session reports live in `_state/_archive/`, and the two dispatch files were purged to live-items-only (2026-09-25 ter). Citation paths into purged trees name historical files.
 
+**Updated 2026-10-05 (S34 closed — the refinery queue ships):** B1
+(`hyper/deepseek-v4.1-flash` @ xhigh) → R1 (`hyper/glm-5.3-flash` @ max,
+**blocked** — 1 MED / 4 LOW) → F1 cured the MED at the root (a done job now
+leaves the list only once its ingots reach the hold) + took 2 LOW; gate
+**1121 → 1131 → 1132/0** ×2. The refinery is jobs on 2–5 bought slots,
+wall-clock timed per resource (04 §7 R1–R8 at their PROPOSED values,
+**T-133 decided by default**), input/output inventory, the P42/P43 panel;
+the sealed `test_p1_refinery` row is byte-identical. Verify green vs
+`s34_start`; R1/F4's ordering note landed in 04 §7.2. **Next: the chrome
+generation batch (16 runs = $0.80) behind the owner's go → review sheet →
+S35; then coder 30 (S24).**
+
 **Updated 2026-10-05 (S33 + D21 closed — shell v3 + the chrome family spec):**
 the owner's 2026-10-05 round ran as the second parallel pair on disjoint file
 sets. **S33** (`slices/S33-shell-v3/`): B1 (`hyper/deepseek-v4.1-flash` @
@@ -489,7 +501,7 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | 19 | coder 38 | **S32 ARMORY two-module rework** (`STATION_HUB.md` §20.1 P32–P37) — **done 2026-10-04**: 1099 → 1110/0 ×2; acceptance 1–7 all PASS; 1 HIGH (P36 dead space) cured by F1 under the designer's bucket-2 ruling (full-width console, 13 rows re-anchored), 2 LOW T-129/T-130; T-122 closed | coder 37 (S31) | rewrote `ui/station/armory_panel.*` sequentially after S31 |
 | 20 | designer 20 | **D21 the one true-aspect chrome family** (`UI_SPEC.md` §15 + `UI_CHROME_ASSETS_SPEC.md` §13) — **done 2026-10-05**: 2 HIGH + 3 MED cured by F1; cost 16 runs / $0.80; T-131 open | beside coder 39 | `docs/design` + `staging/mockup` only — the D18/S28 parallel-pair shape |
 | 21 | coder 39 | **S33 shell v3 — armory two sectors + the exchange sell cluster** (`STATION_HUB.md` §21.1 P38–P41 + `UI_SPEC.md` §14.1 N48/N49) — **done 2026-10-05**: 1110 → 1121/0 ×2; 2 HIGH + 2 MED cured by F1; T-130 closed | beside designer 20 | `vajb-orbit/ui` + `tests` only; rewrote `armory_panel.*`/`exchange_panel.*` after S32 |
-| 22 | coder 40 | **S34 the refinery queue** (`docs/gameplay/04_refinery.md` §7 + `STATION_HUB.md` §21.3 P42–P43; T-133) | coder 39 | strictly after S33 — both land rows in `vajb-orbit/tests/` and the whole-tree verify baselines must not see each other's diffs |
+| 22 | coder 40 | **S34 the refinery queue** (`docs/gameplay/04_refinery.md` §7 + `STATION_HUB.md` §21.3 P42–P43) — **done 2026-10-05**: 1121 → 1132/0 ×2; 1 MED cured by F1 + 2 LOW ride-alongs; T-133 decided by default | coder 39 | ran sequentially after S33 |
 
 Designer items 16–19 and coders 34–36 are closed — the overhaul round and its
 shell-v2 follow-up are **shipped** (station: TERMINAL drawer, OVERVIEW landing

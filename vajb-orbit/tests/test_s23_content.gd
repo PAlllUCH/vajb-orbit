@@ -248,11 +248,23 @@ func test_a2_u_refine_halves_the_refinery_fee() -> void:
 	var mineral: StringName = MineralCatalogScript.MINERALS[0][&"id"]
 	var ore: StringName = MineralCatalogScript.ore_id(mineral)
 	profile.call(&"add_cargo", ore, 6)
+	assert_true(
+		bool(RefineryScript.load_ore(profile, mineral, 6)[&"ok"]),
+		"the 6 ore load into the input"
+	)
 	var before := int(profile.call(&"credits"))
-	var result: Dictionary = RefineryScript.refine(profile, mineral, 2)
-	assert_true(bool(result[&"ok"]), "the batch refines")
+	var result: Dictionary = RefineryScript.queue(profile, mineral, 2)
+	assert_true(bool(result[&"ok"]), "the batch queues")
 	assert_eq(int(result[&"fee"]), 15, "two discounted conversions are 15 CR, not 30 (the batch's 7.5 x 2 floors whole)")
 	assert_eq(int(profile.call(&"credits")), before - 15, "the discounted fee left the balance")
+	## S34: force the job ready (the wall clock is not waited on), settle it into
+	## the output and collect it, so the 3:1 ratio pays the ingots.
+	var jobs: Array = profile.call(&"refinery_jobs")
+	for job: Variant in jobs:
+		(job as Dictionary)[&"ready_at"] = 0
+	profile.call(&"set_refinery_jobs", jobs)
+	RefineryScript.settle(profile)
+	RefineryScript.collect_all(profile)
 	assert_eq(int(profile.call(&"cargo_qty", MineralCatalogScript.ingot_id(mineral))), 2, "and the 3:1 ratio paid the ingots")
 	## An unfitted hull (or a stub without the fit accessors) pays the list.
 	assert_true(is_equal_approx(float(RefineryScript.fee_multiplier(null)), 1.0), "no profile, list fee")
@@ -641,6 +653,10 @@ func _borrow_profile() -> Node:
 		&"fits": (profile.get(&"_fits") as Dictionary).duplicate(true),
 		&"cargo": (profile.get(&"_cargo") as Dictionary).duplicate(true),
 		&"credits": profile.get(&"_credits"),
+		&"refinery_input": (profile.get(&"_refinery_input") as Dictionary).duplicate(true),
+		&"refinery_output": (profile.get(&"_refinery_output") as Dictionary).duplicate(true),
+		&"refinery_jobs": (profile.get(&"_refinery_jobs") as Array).duplicate(true),
+		&"refinery_next_job_id": profile.get(&"_refinery_next_job_id"),
 	}
 	profile.set(&"_active_ship", &"ship_vanguard")
 	return profile
@@ -654,6 +670,10 @@ func _restore_profile() -> void:
 		profile.set(&"_active_ship", _profile_snapshot[&"active"])
 		profile.set(&"_fits", _profile_snapshot[&"fits"])
 		profile.set(&"_cargo", _profile_snapshot[&"cargo"])
+		profile.set(&"_refinery_input", _profile_snapshot[&"refinery_input"])
+		profile.set(&"_refinery_output", _profile_snapshot[&"refinery_output"])
+		profile.set(&"_refinery_jobs", _profile_snapshot[&"refinery_jobs"])
+		profile.set(&"_refinery_next_job_id", _profile_snapshot[&"refinery_next_job_id"])
 		profile.call(&"add_credits", int(_profile_snapshot[&"credits"]) - int(profile.call(&"credits")))
 	_profile_snapshot = {}
 

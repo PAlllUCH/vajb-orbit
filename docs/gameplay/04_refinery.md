@@ -151,6 +151,11 @@ costs *time*, never RNG.
 | R7 | `QUEUE ALL` = one job per mineral, FIFO pending beyond free slots | queue only into free slots and leave the rest |
 | R8 | `COLLECT ALL` fills the hold, overflow stays in output | per-mineral collect only |
 
+Ordering note (S34-R1/F4's reconciliation of 01 §7's wording): the queue
+spends the fee **before** taking the ore and restores symmetrically on any
+failure — 01 §7's pairing law (verify → take → pay → emit, all-or-nothing)
+holds with the middle two steps swapped; measured leak-free at S34 close.
+
 ### 7.3 Panel contract (supersedes §5's action rows; pixel law STATION_HUB §21.3)
 
 `REFINE N` → `QUEUE N`, `REFINERY ALL` → `QUEUE ALL` (the old QA wording tick

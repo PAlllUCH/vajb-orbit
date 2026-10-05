@@ -76,6 +76,9 @@ const WeaponData := preload("res://game/weapons.gd")
 const AuctionData := preload("res://game/auction.gd")
 ## The economy transaction log (01 section 7): one line per purchase.
 const Log := preload("res://game/economy_log.gd")
+## S34: the refinery queue's own constants (04 section 7.2's R3/R4/R5), so the
+## profile's default slot count and its clamp share one source with the module.
+const RefineryData := preload("res://game/refinery.gd")
 
 const SAVE_FILE := "user://profile.cfg"
 const SECTION := "profile"
@@ -159,6 +162,17 @@ const KEY_INSTANCE_COUNTER := "instance_counter"
 ## `auction`, for the same reason. It is also the signal key a rack write emits,
 ## which is what redraws the ARMORY pane's drop zones.
 const KEY_BATTERIES: StringName = &"batteries"
+
+## S34: the refinery queue's store (04 section 7). Five top-level save keys, read
+## by `game/refinery.gd` through the public doors below, which are its only
+## mutators. The signal key every refinery write emits is `&"refinery"`. Reversal:
+## drop the five keys, the five stores and the ten doors.
+const KEY_REFINERY: StringName = &"refinery"
+const KEY_REFINERY_SLOTS := "refinery_slots"
+const KEY_REFINERY_INPUT := "refinery_input"
+const KEY_REFINERY_OUTPUT := "refinery_output"
+const KEY_REFINERY_JOBS := "refinery_jobs"
+const KEY_REFINERY_NEXT_ID := "refinery_next_job_id"
 ## S30's **R-S30-2** (T-102's default): the map deck's per-profile filter states. The
 ## save key is `map_filters`, a string-keyed dictionary of booleans, exactly the shape
 ## `ui/hud/map_deck.gd` stores. Reversal: the deck's private `_config` borrow.
@@ -283,6 +297,15 @@ var _auction: Dictionary = {"last_band": 0, "hulls": [], "modules": {}, "hot": &
 ## each one a list of W-cell layout indices (CONTRACTS section 17). Empty for a
 ## v6 file until `migrate_batteries` has grouped its fitted weapons.
 var _batteries: Dictionary = {}
+
+## S34's refinery store (04 section 7): the slot count, the input ore and output
+## ingot inventories, the job list and the id counter. Every field is private; the
+## `refinery_*` doors are the only writers, and each write emits `&"refinery"`.
+var _refinery_slots := RefineryData.BASE_SLOTS
+var _refinery_input: Dictionary = {}
+var _refinery_output: Dictionary = {}
+var _refinery_jobs: Array = []
+var _refinery_next_job_id := 1
 
 
 func _ready() -> void:
@@ -1705,6 +1728,80 @@ func retire_legacy_upgrades() -> int:
 	return migrated
 
 
+## --------------------------------------------------------- refinery (S34, 04 section 7)
+##
+## The refinery queue's store, reached only through these ten doors: the five
+## getters hand out copies (a caller cannot mutate the store through them) and the
+## five setters normalise, stay silent on an unchanged write, and emit
+## `profile_changed(&"refinery")` on a real one. `game/refinery.gd` is their only
+## production caller.
+
+## R3: the bought slot count, clamped to the pin's ladder.
+func refinery_slots() -> int:
+	return _refinery_slots
+
+
+func set_refinery_slots(value: int) -> void:
+	var candidate := clampi(value, RefineryData.BASE_SLOTS, RefineryData.MAX_SLOTS)
+	if candidate == _refinery_slots:
+		return
+	_refinery_slots = candidate
+	_touch(KEY_REFINERY)
+
+
+## R5: input ore, `{mineral_ore_id: units}`, capped by `INPUT_CAP` at the module.
+func refinery_input() -> Dictionary:
+	return _refinery_input.duplicate()
+
+
+func set_refinery_input(value: Dictionary) -> void:
+	var candidate := _normalise_qty(value)
+	if candidate == _refinery_input:
+		return
+	_refinery_input = candidate
+	_touch(KEY_REFINERY)
+
+
+## R5: output ingots, `{ingot_id: units}`, capped by `OUTPUT_CAP` at the module.
+func refinery_output() -> Dictionary:
+	return _refinery_output.duplicate()
+
+
+func set_refinery_output(value: Dictionary) -> void:
+	var candidate := _normalise_qty(value)
+	if candidate == _refinery_output:
+		return
+	_refinery_output = candidate
+	_touch(KEY_REFINERY)
+
+
+## The job list, a deep copy: `[{id, mineral_id, conversions, ready_at, state,
+## fee, settled}]`.
+func refinery_jobs() -> Array:
+	return _refinery_jobs.duplicate(true)
+
+
+func set_refinery_jobs(value: Array) -> void:
+	var candidate := _normalise_jobs(value)
+	if candidate == _refinery_jobs:
+		return
+	_refinery_jobs = candidate
+	_touch(KEY_REFINERY)
+
+
+## The next job id to mint; never rewinds.
+func refinery_next_job_id() -> int:
+	return _refinery_next_job_id
+
+
+func set_refinery_next_job_id(value: int) -> void:
+	var candidate := maxi(1, value)
+	if candidate == _refinery_next_job_id:
+		return
+	_refinery_next_job_id = candidate
+	_touch(KEY_REFINERY)
+
+
 func standing() -> Dictionary:
 	return _standing.duplicate(true)
 
@@ -2047,6 +2144,11 @@ func _apply_defaults() -> void:
 	_instance_counter = 0
 	_auction = _auction_default()
 	_batteries.clear()
+	_refinery_slots = RefineryData.BASE_SLOTS
+	_refinery_input.clear()
+	_refinery_output.clear()
+	_refinery_jobs.clear()
+	_refinery_next_job_id = 1
 
 
 func _read_values() -> void:
@@ -2078,6 +2180,15 @@ func _read_values() -> void:
 	_instance_counter = maxi(0, _read_int(KEY_INSTANCE_COUNTER, 0))
 	_auction = _normalise_auction(_read_plain_dict(KEY_AUCTION))
 	_batteries = _normalise_batteries(_read_plain_dict(KEY_BATTERIES))
+	_refinery_slots = clampi(
+		_read_int(KEY_REFINERY_SLOTS, RefineryData.BASE_SLOTS),
+		RefineryData.BASE_SLOTS,
+		RefineryData.MAX_SLOTS
+	)
+	_refinery_input = _read_qty(KEY_REFINERY_INPUT)
+	_refinery_output = _read_qty(KEY_REFINERY_OUTPUT)
+	_refinery_jobs = _read_plain_array(KEY_REFINERY_JOBS)
+	_refinery_next_job_id = maxi(1, _read_int(KEY_REFINERY_NEXT_ID, 1))
 
 
 func _read_int(key: String, fallback: int) -> int:
@@ -2133,12 +2244,28 @@ func _read_qty(key: String) -> Dictionary:
 	if not raw is Dictionary:
 		push_warning("PlayerProfile: %s.%s is not a dictionary; ignored" % [SECTION, key])
 		return quantities
-	var source: Dictionary = raw
+	return _normalise_qty(raw as Dictionary)
+
+
+## The canonical quantity store: keys as StringName, every value an int at or above
+## zero. Shared by `_read_qty` (a file read) and the refinery setters (an in-memory
+## write), so a live store and a loaded one are the same shape.
+func _normalise_qty(source: Dictionary) -> Dictionary:
+	var quantities: Dictionary = {}
 	for item: Variant in source:
 		var item_id := StringName(str(item))
 		if item_id != &"":
 			quantities[item_id] = maxi(0, int(source[item]))
 	return quantities
+
+
+## The canonical job list: plain String keys (`_to_plain`'s shape), so a record
+## written through the door and one read back from the file compare equal.
+func _normalise_jobs(value: Variant) -> Array:
+	var plain: Variant = _to_plain(value)
+	if plain is Array:
+		return plain as Array
+	return []
 
 
 func _read_plain_dict(key: String) -> Dictionary:
@@ -2642,6 +2769,11 @@ func _write_profile() -> void:
 	_config.set_value(SECTION, "instance_counter", _instance_counter)
 	_config.set_value(SECTION, "auction", _auction)
 	_config.set_value(SECTION, "batteries", _batteries)
+	_config.set_value(SECTION, KEY_REFINERY_SLOTS, _refinery_slots)
+	_config.set_value(SECTION, KEY_REFINERY_INPUT, _keys_to_strings(_refinery_input))
+	_config.set_value(SECTION, KEY_REFINERY_OUTPUT, _keys_to_strings(_refinery_output))
+	_config.set_value(SECTION, KEY_REFINERY_JOBS, _refinery_jobs)
+	_config.set_value(SECTION, KEY_REFINERY_NEXT_ID, _refinery_next_job_id)
 	_config.set_value(SECTION, "fits", _fits)
 	_config.set_value(SECTION, "market", _market)
 	_config.set_value(SECTION, "heat", _heat)
