@@ -1,0 +1,16 @@
+You are S35-F1, the fixer for wave S35 of the VajbOrbit workspace (Godot 4.7.2; workspace /home/kamil-paluszkiewicz/VajbOrbit; game project vajb-orbit/). Your deliverable: cure exactly the three items below (the owner's integrity review's MED + two cheap gate-row gaps the S35 review named). You may write only vajb-orbit/ui/ and vajb-orbit/tests/ (VAJB_WORKER_FILES enforces it). Never touch docs/, game/, autoload/, addons/. Today is 2026-10-05.
+
+LAW (read in this order):
+1. .agents/gen/slices/D22-screen-integrity/D22-P1_report.md - finding F01 (MED) and its fixer note.
+2. .agents/gen/slices/S35-owner-fixes/S35-R1_review.md - findings F2 and F3 (LOW) and the suggested rows.
+3. .agents/gen/slices/S35-owner-fixes/S35_BRIEF.md + docs/design/STATION_HUB.md section 21.1 (P38-P41 + the P38a/P39a amendment) + docs/design/UI_SPEC.md section 11.1 (A5.5/N24).
+
+FIX LIST:
+1. F01 (MED, mandatory): ARMORY FIT CELLS renders the BATTERY CONFIG descriptor as its subtitle - armory_panel.gd:1214 sets _subtitle.text = SUBTITLE unconditionally in _apply_style (SUBTITLE at :98 = "BATTERY RACKS AND AMMUNITION - %d RACKS - %d PACKS") and %PaneSubtitle (armory_panel.tscn:43) is never hidden. Give FIT CELLS its own subtitle in the same shape (the mode's subject + its two live counts; wording is yours - PROPOSED it with a one-line reversal in the report), swapped per mode. Keep A5.5 legal (a mode command may set text; never a hover/focus state).
+2. S35-R1/F2 (LOW, cheap): add ONE gate row pinning the battery-mode drag route - drag_browser's battery branch (armory_panel.gd:3696) returns DRAG_INVENTORY and a drop persists it through the rack door (the route S35-R1's probe c4/c5 verified but no gate row pins).
+3. S35-R1/F3 (LOW, cheap): add the brief-promised "mode actions intact" row (FIT CELLS fit/drag/BUY + BATTERY CONFIG drag persist) as a real gate row.
+Change nothing else.
+
+GATE (before and after): XDG_DATA_HOME=$(mktemp -d) ~/.local/bin/godot --headless --path vajb-orbit res://tests/headless_runner.tscn --quit-after 1200 2>&1 | grep -E '\[SUMMARY\]|SCRIPT ERROR' - twice on fresh scratch after. Always grep [SUMMARY]. Record every run's line. Never leave a command running in the background; bound every probe.
+
+REPORT: .agents/gen/slices/S35-owner-fixes/S35-F1_report.md (max 120 lines, shaped like .agents/gen/_templates/REPORT.md): per-item outcome (F01 with its PROPOSED wording + reversal, F2/F3 rows listed), Evidence (gate lines + probe numbers), Files touched. Never silently change a pin.

@@ -266,7 +266,9 @@ func test_the_pack_card_carries_the_p5_worded_line() -> void:
 	_profile.call(&"add_cargo", &"ammo_cannon", 15)
 	panel.call(&"refresh_profile", &"cargo")
 	var card: Button = null
-	for child: Node in (panel.get_node("%ArmoryRows") as Control).get_children():
+	## P39a: the pack cards live in the shared menu's AMMUNITION category.
+	panel.call(&"select_tab", PanelScript.EQ_TAB_AMMO)
+	for child: Node in (panel.get_node("%BrowserRows") as Control).get_children():
 		var row := child as Button
 		if row != null and row.name == "AmmoCannon":
 			card = row

@@ -8,10 +8,10 @@ entry. addons/ is vendored and excluded. The JSON twin
 | Section | Lines |
 |---|---|
 | 1. Autoloads | L18–L27 |
-| 2. Scenes | L28–L140 |
-| 3. Signal wiring | L141–L389 |
-| 4. Scripts | L390–L670 |
-| 5. Orphan scripts | L671–L684 |
+| 2. Scenes | L28–L145 |
+| 3. Signal wiring | L146–L393 |
+| 4. Scripts | L394–L679 |
+| 5. Orphan scripts | L680–L693 |
 
 
 ## 1. Autoloads (project.godot)
@@ -36,6 +36,9 @@ entry. addons/ is vendored and excluded. The JSON twin
 | res://tests/probe_c2_weapons.tscn | Node2D | res://tests/probe_c2_weapons.gd | — | — |
 | res://tests/probe_c3_flight_decay.tscn | Node | res://tests/probe_c3_flight_decay.gd | — | — |
 | res://tests/probe_c6_pins.tscn | Node | res://tests/probe_c6_pins.gd | — | — |
+| res://tests/probe_d22_integrity.tscn | Node | res://tests/probe_d22_integrity.gd | — | — |
+| res://tests/probe_d22_integrity_screens.tscn | Node | res://tests/probe_d22_integrity_screens.gd | — | — |
+| res://tests/probe_d22_integrity_station.tscn | Node | res://tests/probe_d22_integrity_station.gd | — | — |
 | res://tests/probe_f1_residual.tscn | Node | res://tests/probe_f1_residual.gd | — | — |
 | res://tests/probe_f1_weapon_fx.tscn | Node2D | res://tests/probe_f1_weapon_fx.gd | — | — |
 | res://tests/probe_f2_weapon_fx.tscn | Node2D | res://tests/probe_f2_weapon_fx.gd | — | — |
@@ -87,6 +90,8 @@ entry. addons/ is vendored and excluded. The JSON twin
 | res://tests/probe_s2_5_voice.tscn | Node2D | res://tests/probe_s2_5_voice.gd | — | — |
 | res://tests/probe_s2_6_flight.tscn | Node | res://tests/probe_s2_6_flight.gd | — | — |
 | res://tests/probe_s34_review.tscn | Node | res://tests/probe_s34_review.gd | — | — |
+| res://tests/probe_s35_f1_subtitle.tscn | Node | res://tests/probe_s35_f1_subtitle.gd | — | — |
+| res://tests/probe_s35_review.tscn | Node | res://tests/probe_s35_review.gd | — | — |
 | res://tests/probe_s3_levers.tscn | Node2D | res://tests/probe_s3_levers.gd | — | — |
 | res://tests/probe_s3_mine.tscn | Node | res://tests/probe_s3_mine.gd | — | — |
 | res://tests/probe_s3_rewire.tscn | Node | res://tests/probe_s3_rewire.gd | — | — |
@@ -171,6 +176,8 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://tests/probe_s21_contacts.gd | npc_body.body_entered → func(_other: Node |
 | res://tests/probe_s22r1_review.gd | doomed.died → func( |
 | res://tests/probe_s22r1_review.gd | guns.hit_landed → func(target: Object |
+| res://tests/probe_s35_f1_subtitle.gd | watchdog.timeout → func( |
+| res://tests/probe_s35_review.gd | watchdog.timeout → func( |
 | res://tests/probe_s4h4_stream.gd | process_frame → _on_frame |
 | res://tests/probe_s8_q0_launch.gd | guns.dry_fired → _on_dry |
 | res://tests/probe_s8_q0_launch.gd | guns.shot_fired → _on_shot |
@@ -301,15 +308,11 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://ui/station/armory_panel.gd | plate.pressed → _on_cell_pressed.bind(payload |
 | res://ui/station/armory_panel.gd | resized → _lay |
 | res://ui/station/armory_panel.gd | row.focus_entered → _on_browser_focused.bind(row |
-| res://ui/station/armory_panel.gd | row.focus_entered → _on_eq_focused.bind(row |
 | res://ui/station/armory_panel.gd | row.mouse_entered → _on_browser_hovered.bind(payload |
-| res://ui/station/armory_panel.gd | row.mouse_entered → _on_eq_hovered.bind(payload |
 | res://ui/station/armory_panel.gd | row.mouse_entered → _on_rack_inspected.bind(salvo_line |
 | res://ui/station/armory_panel.gd | row.mouse_exited → _on_browser_hovered.bind(payload |
-| res://ui/station/armory_panel.gd | row.mouse_exited → _on_eq_hovered.bind(payload |
 | res://ui/station/armory_panel.gd | row.mouse_exited → _on_rack_inspected.bind(salvo_line |
 | res://ui/station/armory_panel.gd | row.pressed → _on_browser_pressed.bind(payload |
-| res://ui/station/armory_panel.gd | row.pressed → _on_eq_pressed.bind(payload |
 | res://ui/station/armory_panel.gd | strip.resized → _position_bay.bind(row |
 | res://ui/station/auction_panel.gd | .visibility_changed → _queue_header_fit |
 | res://ui/station/auction_panel.gd | _scroll.resized → _queue_header_fit |
@@ -326,8 +329,9 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://ui/station/exchange_panel.gd | _inspect_cluster.inspect_chip_pressed → inspect_focused |
 | res://ui/station/exchange_panel.gd | _sell.pressed → _on_sell_pressed |
 | res://ui/station/exchange_panel.gd | _sell_all.pressed → _on_sell_all_pressed |
+| res://ui/station/exchange_panel.gd | _sell_max.pressed → _on_sell_max_pressed |
 | res://ui/station/exchange_panel.gd | _sell_plus.pressed → _on_sell_units_pressed.bind(1 |
-| res://ui/station/exchange_panel.gd | _step_plus.pressed → _on_step_pressed.bind(1 |
+| res://ui/station/exchange_panel.gd | _sell_zero.pressed → _on_sell_zero_pressed |
 | res://ui/station/exchange_panel.gd | row.focus_entered → _on_row_focused.bind(row |
 | res://ui/station/exchange_panel.gd | row.mouse_entered → _on_row_hovered.bind(payload |
 | res://ui/station/exchange_panel.gd | row.mouse_exited → _on_row_hovered.bind(payload |
@@ -440,6 +444,9 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://tests/probe_c2_weapons.gd | Node2D | — | res://assets/ships/ship_fighter_side.png, res://game/asteroid.gd, res://game/damage.gd, res://game/npc_ship.gd …(+8) | res://tests/probe_c2_weapons.tscn, res://tests/probe_c2_weapons.tscn (ext_resource) |
 | res://tests/probe_c3_flight_decay.gd | Node | — | res://game/player_ship.gd, res://game/player_ship.tscn, res://game/player_state.gd, res://game/ship_fit.gd …(+1) | res://tests/probe_c3_flight_decay.tscn, res://tests/probe_c3_flight_decay.tscn (ext_resource) |
 | res://tests/probe_c6_pins.gd | Node | — | res://game/asteroid.gd, res://game/player_ship.tscn, res://tests/probe_c6_pins.tscn --quit-after 600 | res://tests/probe_c6_pins.tscn, res://tests/probe_c6_pins.tscn (ext_resource) |
+| res://tests/probe_d22_integrity.gd | Node | — | res://tests/probe_d22_integrity.tscn --quit-after 900, res://ui/components/inspect_sheet.tscn …(+10) | res://tests/probe_d22_integrity.tscn, res://tests/probe_d22_integrity.tscn (ext_resource) |
+| res://tests/probe_d22_integrity_screens.gd | Node | — | res://tests/probe_d22_integrity_screens.tscn --quit-after 1200, res://ui/components/inspect_sheet.tscn …(+12) | res://tests/probe_d22_integrity_screens.tscn, res://tests/probe_d22_integrity_screens.tscn (ext_resource) |
+| res://tests/probe_d22_integrity_station.gd | Node | — | res://tests/probe_d22_integrity_station.tscn --quit-after 1200, res://ui/components/inspect_sheet.tscn …(+3) | res://tests/probe_d22_integrity_station.tscn, res://tests/probe_d22_integrity_station.tscn (ext_resource) |
 | res://tests/probe_f1_residual.gd | Node | — | res://tests/probe_f1_residual.tscn --quit-after 600, res://ui/station/fitting_panel.tscn …(+1) | res://tests/probe_f1_residual.tscn, res://tests/probe_f1_residual.tscn (ext_resource) |
 | res://tests/probe_f1_weapon_fx.gd | Node2D | — | res://game/fx.gd, res://game/game.tscn, res://game/player_ship.gd, res://game/projectile.gd …(+2) | res://tests/probe_f1_weapon_fx.tscn, res://tests/probe_f1_weapon_fx.tscn (ext_resource) |
 | res://tests/probe_f2_weapon_fx.gd | Node2D | — | res://assets/ships/ship_fighter_side.png, res://autoload/audio_manager.gd, res://game/asteroid.gd …(+8) | res://tests/probe_f2_weapon_fx.tscn, res://tests/probe_f2_weapon_fx.tscn (ext_resource) |
@@ -502,6 +509,8 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://tests/probe_s32_review.gd | SceneTree | — | res://game/module_catalog.gd, res://game/ship_fit.gd, res://ui/station/armory_panel.tscn …(+1) | — |
 | res://tests/probe_s33_review.gd | SceneTree | — | res://ui/station/armory_panel.gd, res://ui/station/armory_panel.tscn, res://ui/station/exchange_panel.tscn …(+1) | — |
 | res://tests/probe_s34_review.gd | Node | — | res://game/economy_log.gd, res://game/mineral_catalog.gd, res://game/refinery.gd …(+2) | res://tests/probe_s34_review.tscn, res://tests/probe_s34_review.tscn (ext_resource) |
+| res://tests/probe_s35_f1_subtitle.gd | Node | — | res://tests/probe_s35_f1_subtitle.tscn --quit-after 300, res://ui/station/armory_panel.gd …(+2) | res://tests/probe_s35_f1_subtitle.tscn, res://tests/probe_s35_f1_subtitle.tscn (ext_resource) |
+| res://tests/probe_s35_review.gd | Node | — | res://tests/probe_s35_review.tscn --quit-after 900, res://ui/station/armory_panel.gd …(+4) | res://tests/probe_s35_review.tscn, res://tests/probe_s35_review.tscn (ext_resource) |
 | res://tests/probe_s3_levers.gd | Node2D | — | res://tests/probe_s2_5_node_scale_world.gd, res://tests/probe_s3_levers.tscn | res://tests/probe_s3_levers.tscn, res://tests/probe_s3_levers.tscn (ext_resource) |
 | res://tests/probe_s3_mine.gd | Node | — | res://game/fx.gd, res://game/projectile.gd, res://tests/probe_s3_mine.tscn | res://tests/probe_s3_mine.tscn, res://tests/probe_s3_mine.tscn (ext_resource) |
 | res://tests/probe_s3_rewire.gd | Node | — | res://game/projectile.gd, res://game/speed_fantasy.gd, res://game/weapons.gd, res://tests/probe_s3_rewire.tscn | res://tests/probe_s3_rewire.tscn, res://tests/probe_s3_rewire.tscn (ext_resource) |
@@ -660,10 +669,10 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://ui/screens/settings.gd | Screen | — | res://ui/screens/settings_rebind_row.tscn | res://ui/screens/settings.tscn, res://ui/screens/settings.tscn (ext_resource) |
 | res://ui/screens/settings_rebind_row.gd | HBoxContainer | binding_pressed, reset_pressed | — | res://ui/screens/settings_rebind_row.tscn, res://ui/screens/settings_rebind_row.tscn (ext_resource) |
 | res://ui/screens/station.gd | Screen | — | res://assets/icons/cargo/icon_cargo_ore.svg, res://assets/icons/cargo/icon_credits.svg …(+16) | res://tests/probe_r1_fit_panes.gd, res://tests/probe_r1_p2b1_review.gd, res://tests/probe_s20_review.gd …(+14) |
-| res://ui/station/armory_panel.gd | Control | inspect_requested, sheet_requested, status_requested | res://assets/icons/slot/, res://assets/icons/tint/, res://assets/icons/weapon/icon_weapon_cannon.svg …(+7) | res://tests/probe_s20_review.gd, res://tests/probe_s33_review.gd, res://tests/test_d7_armory.gd …(+13) |
+| res://ui/station/armory_panel.gd | Control | inspect_requested, sheet_requested, status_requested | res://assets/icons/slot/, res://assets/icons/tint/, res://assets/icons/weapon/icon_weapon_cannon.svg …(+7) | res://tests/probe_s20_review.gd, res://tests/probe_s33_review.gd, res://tests/probe_s35_f1_subtitle.gd …(+15) |
 | res://ui/station/armory_style.gd | "res://ui/hud/cockpit_style.gd" | — | res://ui/hud/cockpit_style.gd, res://ui/station/armory_style_user.tres, res://ui/theme/vajb_theme.tres | res://tests/probe_s20_review.gd, res://tests/test_d7_armory.gd, res://tests/test_s18_armory_rework.gd …(+2) |
 | res://ui/station/auction_panel.gd | VBoxContainer | inspect_requested, sheet_requested, status_requested | res://assets/icons/tint/, res://assets/icons/weapon/icon_weapon_cannon.svg …(+9) | res://tests/test_p2b1_outfitting_panel.gd, res://tests/test_s3_auction.gd, res://tests/test_s5_commerce.gd …(+2) |
-| res://ui/station/exchange_panel.gd | VBoxContainer | inspect_requested, sheet_requested, status_requested | res://assets/icons/, res://assets/icons/tint/, res://autoload/player_profile.gd, res://autoload/world_clock.gd …(+5) | res://tests/probe_g3_lint.gd, res://tests/probe_g3_shadow.gd, res://tests/probe_g4_lint.gd …(+3) |
+| res://ui/station/exchange_panel.gd | VBoxContainer | inspect_requested, sheet_requested, status_requested | res://assets/icons/, res://assets/icons/tint/, res://autoload/player_profile.gd, res://autoload/world_clock.gd …(+5) | res://tests/probe_g3_lint.gd, res://tests/probe_g3_shadow.gd, res://tests/probe_g4_lint.gd …(+4) |
 | res://ui/station/fitting_panel.gd | VBoxContainer | inspect_requested, sheet_requested, status_requested | res://assets/icons/slot/, res://assets/icons/tint/, res://assets/icons/weapon/icon_weapon_cannon.svg …(+5) | res://tests/probe_r1_fit_panes.gd, res://tests/probe_r1_p2b1_review.gd, res://tests/probe_s8_q0_armory.gd …(+8) |
 | res://ui/station/launch_panel.gd | VBoxContainer | inspect_requested, launch_requested, status_requested | res://assets/icons/cargo/, res://assets/icons/cargo/icon_cargo_crate.svg, res://autoload/player_profile.gd …(+4) | res://tests/probe_g3_lint.gd, res://tests/probe_g3_shadow.gd, res://tests/probe_g4_lint.gd …(+9) |
 | res://ui/station/overview_panel.gd | VBoxContainer | inspect_requested, navigate_requested, status_requested | res://assets/icons/cargo/icon_cargo_ore.svg, res://assets/icons/cargo/icon_credits.svg …(+12) | res://ui/station/overview_panel.tscn, res://ui/station/overview_panel.tscn (ext_resource) |

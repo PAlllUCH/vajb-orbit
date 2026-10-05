@@ -110,6 +110,36 @@
     "res://tests/probe_c6_pins.gd"
    ]
   },
+  "res://tests/probe_d22_integrity.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_d22_integrity.gd"
+   ]
+  },
+  "res://tests/probe_d22_integrity_screens.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_d22_integrity_screens.gd"
+   ]
+  },
+  "res://tests/probe_d22_integrity_station.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_d22_integrity_station.gd"
+   ]
+  },
   "res://tests/probe_f1_residual.tscn": {
    "assets": [],
    "connections": [],
@@ -618,6 +648,26 @@
    "root_type": "Node",
    "scripts": [
     "res://tests/probe_s34_review.gd"
+   ]
+  },
+  "res://tests/probe_s35_f1_subtitle.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s35_f1_subtitle.gd"
+   ]
+  },
+  "res://tests/probe_s35_review.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s35_review.gd"
    ]
   },
   "res://tests/probe_s3_levers.tscn": {
@@ -2025,6 +2075,64 @@
    ],
    "signals": []
   },
+  "res://tests/probe_d22_integrity.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://tests/probe_d22_integrity.tscn --quit-after 900",
+    "res://ui/components/inspect_sheet.tscn",
+    "res://ui/components/tooltip.tscn",
+    "res://ui/dialogs/dialog.tscn",
+    "res://ui/dialogs/quit_confirm.tscn",
+    "res://ui/hud/hud.tscn",
+    "res://ui/screens/boot.tscn",
+    "res://ui/screens/loading.tscn",
+    "res://ui/screens/main_menu.tscn",
+    "res://ui/screens/settings.tscn",
+    "res://ui/screens/station.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_d22_integrity_screens.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://tests/probe_d22_integrity_screens.tscn --quit-after 1200",
+    "res://ui/components/inspect_sheet.tscn",
+    "res://ui/components/menu_button.tscn",
+    "res://ui/components/slot_button.tscn",
+    "res://ui/components/tooltip.tscn",
+    "res://ui/dialogs/dialog.tscn",
+    "res://ui/dialogs/quit_confirm.tscn",
+    "res://ui/hud/hud.tscn",
+    "res://ui/screens/boot.tscn",
+    "res://ui/screens/loading.tscn",
+    "res://ui/screens/main_menu.tscn",
+    "res://ui/screens/settings.tscn",
+    "res://ui/screens/settings_rebind_row.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_d22_integrity_station.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://tests/probe_d22_integrity_station.tscn --quit-after 1200",
+    "res://ui/components/inspect_sheet.tscn",
+    "res://ui/components/tooltip.tscn",
+    "res://ui/screens/station.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
   "res://tests/probe_f1_residual.gd": {
    "autoload": "",
    "class_name": "",
@@ -3031,6 +3139,38 @@
     "res://game/refinery.gd",
     "res://tests/probe_s34_review.tscn --quit-after 300",
     "res://ui/station/refinery_panel.tscn"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s35_f1_subtitle.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "watchdog.timeout \u2192 func("
+   ],
+   "extends": "Node",
+   "refs": [
+    "res://tests/probe_s35_f1_subtitle.tscn --quit-after 300",
+    "res://ui/station/armory_panel.gd",
+    "res://ui/station/armory_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s35_review.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "watchdog.timeout \u2192 func("
+   ],
+   "extends": "Node",
+   "refs": [
+    "res://tests/probe_s35_review.tscn --quit-after 900",
+    "res://ui/station/armory_panel.gd",
+    "res://ui/station/armory_panel.tscn",
+    "res://ui/station/exchange_panel.gd",
+    "res://ui/station/exchange_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
    ],
    "signals": []
   },
@@ -5622,15 +5762,11 @@
     "plate.pressed \u2192 _on_cell_pressed.bind(payload",
     "resized \u2192 _lay",
     "row.focus_entered \u2192 _on_browser_focused.bind(row",
-    "row.focus_entered \u2192 _on_eq_focused.bind(row",
     "row.mouse_entered \u2192 _on_browser_hovered.bind(payload",
-    "row.mouse_entered \u2192 _on_eq_hovered.bind(payload",
     "row.mouse_entered \u2192 _on_rack_inspected.bind(salvo_line",
     "row.mouse_exited \u2192 _on_browser_hovered.bind(payload",
-    "row.mouse_exited \u2192 _on_eq_hovered.bind(payload",
     "row.mouse_exited \u2192 _on_rack_inspected.bind(salvo_line",
     "row.pressed \u2192 _on_browser_pressed.bind(payload",
-    "row.pressed \u2192 _on_eq_pressed.bind(payload",
     "strip.resized \u2192 _position_bay.bind(row"
    ],
    "extends": "Control",
@@ -5708,8 +5844,9 @@
     "_inspect_cluster.inspect_chip_pressed \u2192 inspect_focused",
     "_sell.pressed \u2192 _on_sell_pressed",
     "_sell_all.pressed \u2192 _on_sell_all_pressed",
+    "_sell_max.pressed \u2192 _on_sell_max_pressed",
     "_sell_plus.pressed \u2192 _on_sell_units_pressed.bind(1",
-    "_step_plus.pressed \u2192 _on_step_pressed.bind(1",
+    "_sell_zero.pressed \u2192 _on_sell_zero_pressed",
     "row.focus_entered \u2192 _on_row_focused.bind(row",
     "row.mouse_entered \u2192 _on_row_hovered.bind(payload",
     "row.mouse_exited \u2192 _on_row_hovered.bind(payload",

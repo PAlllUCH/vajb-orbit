@@ -1,0 +1,31 @@
+{
+  "ok": true,
+  "ledger": "/home/kamil-paluszkiewicz/.local/share/crush/skills/image-generator/usage-ledger.jsonl",
+  "totals": {
+    "generations": 90,
+    "credits": 2625.0,
+    "usd": 13.13
+  },
+  "by_model": {
+    "nano-banana-pro": {
+      "generations": 2,
+      "credits": 60.0
+    },
+    "flux-2/pro-text-to-image": {
+      "generations": 4,
+      "credits": 80.0
+    },
+    "flux-2/pro-image-to-image": {
+      "generations": 1,
+      "credits": 20.0
+    },
+    "gpt-image-2-text-to-image": {
+      "generations": 5,
+      "credits": 125.0
+    },
+    "gpt-image-2-5-flare-text-to-image": {
+      "generations": 78,
+      "credits": 2340.0
+    }
+  }
+}

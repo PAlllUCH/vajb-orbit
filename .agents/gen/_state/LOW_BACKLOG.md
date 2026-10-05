@@ -969,3 +969,17 @@ free ticket after these rows is **T-131**.
 |---|------|------|-------|-------------|
 | T-129 | **LOW (S32-R1/F6): `_summary_hint` is placed by raw coordinates** inside the console's hand-derived well — an A5 slip in the new summary path. | [CODE] | `ui/station/armory_panel.gd` (`_summary_hint`) | Next touch of the pane re-lays it in a container. Reversal: none — law. |
 | T-130 | **LOW (S32-R1/F5): the no-selection fallbacks** — FITS HERE shows the pane's owned-weapon list and BUYABLE the tab filter when no cell is selected (disclosed deviation; the mode is never blank). | [UI] | `ui/station/armory_panel.gd` (`_fits_here_rows`, `_browser_ids`) | Keep (never-blank) or require a selection at the next armory pass. Reversal: require selection. |
+
+### S35 + D22 block (2026-10-05)
+
+Source: the owner's fix round (wave S35: B1 → R1 **pass** → F1 on the integrity
+MED) + the D22-P1 screen-integrity review (verdict PASS: every screen mounts,
+nothing escapes the window). Gate 1132 → 1136/0 ×2 (+ F1's rows). D22's F01
+(the FIT CELLS subtitle) is cured by S35-F1, F02 (the exchange footer wording)
+by the designer's doc sync, F03 (SERVICES content) rides S25 (T-138), F06 is
+no action. The next free ticket after these rows is **T-138**.
+
+| # | Item | Kind | Where | Disposition |
+|---|------|------|-------|-------------|
+| T-136 | **LOW (D22-P1/F04): seven empty layout containers report zero-size visible rects** (OVERVIEW `PaneActions`, HUD `PromptBlock`/`CreditsSpacer`, EXCHANGE `BoardRows/Slack`, SHIPYARD `StatsSpacer`/`ShipList/Slack`, `settings_rebind_row` `Spacer`) — empty spacers, polish only. | [UI] | `ui/**/*.tscn` | Hide the spacers at the S36 re-skin touch. Reversal: leave (they render nothing). |
+| T-137 | **LOW (D22-P1/F05): `menu_button`'s Glow underlay extends 6 px past its plate** (measured −6,−6,362×82) — the pinned halo look (`glow_underlay.gd`). | [UI] | `ui/components/menu_button.tscn` | Keep (informational) or inset the halo 6 px at S36. Reversal: inset. |

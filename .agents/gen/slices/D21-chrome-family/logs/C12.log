@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "task_id": "fa6a67ecf0389b96f7876e44ec605d54",
+  "model": "gpt-image-2-5-flare-text-to-image",
+  "estimate": {
+    "credits": 30,
+    "usd": 0.15,
+    "price_source": "hint"
+  },
+  "elapsed_s": 42.9,
+  "urls": [
+    "https://tempfile.aiquickdraw.com/gpt-image-2-5/1791224682322-8h2hf4uaecg.png"
+  ],
+  "local_paths": [
+    "/home/kamil-paluszkiewicz/VajbOrbit/asset-library/raw/chrome-family/20261005-202444/grimdark-painted-sci-fi-semi-realistic-1.png"
+  ],
+  "alpha_paths": [],
+  "upscaled_paths": [],
+  "asset_paths": [],
+  "ledger_note": "run with --usage to see cumulative spend"
+}

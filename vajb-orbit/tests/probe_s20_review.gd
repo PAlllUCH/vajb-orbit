@@ -169,7 +169,9 @@ func _rack_row(index: int) -> Control:
 
 
 func _card(pack_id: StringName) -> Button:
-	for child: Node in (_panel.get_node("%ArmoryRows") as Control).get_children():
+	## P39a (S35): the pack cards live in the shared menu's AMMUNITION category.
+	_panel.call(&"select_tab", &"ammo")
+	for child: Node in (_panel.get_node("%BrowserRows") as Control).get_children():
 		var row := child as Button
 		if row != null and String(row.name).to_lower().ends_with(String(pack_id)):
 			return row
@@ -354,7 +356,8 @@ func _buy_click() -> void:
 	pane.call(&"refresh_profile", &"ammo")
 	await get_tree().process_frame
 	var card: Button = null
-	for child: Node in (pane.get_node("%ArmoryRows") as Control).get_children():
+	pane.call(&"select_tab", &"ammo")
+	for child: Node in (pane.get_node("%BrowserRows") as Control).get_children():
 		var row := child as Button
 		if row != null and String(row.name).to_lower().ends_with("rocket"):
 			card = row

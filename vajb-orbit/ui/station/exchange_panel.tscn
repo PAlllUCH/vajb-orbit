@@ -115,36 +115,6 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"StationValue"
 
-[node name="StepperRow" type="HBoxContainer" parent="ExchangeBody/TradeBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="StepMinus" type="Button" parent="ExchangeBody/TradeBox/StepperRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-size_flags_vertical = 4
-theme_type_variation = &"StationButton"
-text = "-"
-
-[node name="StepValue" type="Label" parent="ExchangeBody/TradeBox/StepperRow"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-theme_type_variation = &"StationValue"
-text = "0 UNITS"
-horizontal_alignment = 1
-
-[node name="StepPlus" type="Button" parent="ExchangeBody/TradeBox/StepperRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-size_flags_vertical = 4
-theme_type_variation = &"StationButton"
-text = "+"
-
 [node name="SellUnitsCaption" type="Label" parent="ExchangeBody/TradeBox"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -180,6 +150,20 @@ layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"StationButton"
 text = "+"
+
+[node name="SellMaxButton" type="Button" parent="ExchangeBody/TradeBox/SellUnitsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 32)
+layout_mode = 2
+size_flags_vertical = 4
+text = "MAX"
+
+[node name="SellZeroButton" type="Button" parent="ExchangeBody/TradeBox/SellUnitsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 32)
+layout_mode = 2
+size_flags_vertical = 4
+text = "0"
 
 [node name="ConfirmStrip" type="Label" parent="ExchangeBody/TradeBox"]
 unique_name_in_owner = true

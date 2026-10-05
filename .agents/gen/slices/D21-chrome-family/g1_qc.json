@@ -1,0 +1,178 @@
+[
+  {
+    "id": "C1",
+    "aspect_arg": "4:3",
+    "resolution": "2K",
+    "file": "asset-library/raw/chrome-family/20261005-201427/grimdark-painted-sci-fi-semi-realistic-1.png",
+    "pixels": "2368x1776",
+    "mode": "RGBA",
+    "alpha0_pct": 59.9,
+    "aspect_diff_pct": 0.0,
+    "result": "PASS"
+  },
+  {
+    "id": "C2",
+    "aspect_arg": "4:3",
+    "resolution": "2K",
+    "file": "asset-library/raw/chrome-family/20261005-201500/grimdark-painted-sci-fi-semi-realistic-1.png",
+    "pixels": "2368x1776",
+    "mode": "RGBA",
+    "alpha0_pct": 0.0,
+    "aspect_diff_pct": 0.0,
+    "result": "PASS"
+  },
+  {
+    "id": "C3",
+    "aspect_arg": "21:9",
+    "resolution": "1K",
+    "file": "asset-library/raw/chrome-family/20261005-201604/grimdark-painted-sci-fi-semi-realistic-1.png",
+    "pixels": "1916x821",
+    "mode": "RGBA",
+    "alpha0_pct": 63.2,
+    "aspect_diff_pct": 0.02,
+    "result": "PASS"
+  },
+  {
+    "id": "C4",
+    "aspect_arg": "4:3",
+    "resolution": "2K",
+    "file": "asset-library/raw/chrome-family/20261005-201632/grimdark-painted-sci-fi-semi-realistic-1.png",
+    "pixels": "2368x1776",
+    "mode": "RGBA",
+    "alpha0_pct": 84.8,
+    "aspect_diff_pct": 0.0,
+    "result": "PASS"
+  },
+  {
+    "id": "C5",
+    "aspect_arg": "4:3",
+    "resolution": "2K",
+    "file": "asset-library/raw/chrome-family/20261005-201700/grimdark-painted-sci-fi-semi-realistic-1.png",
+    "pixels": "2368x1776",
+    "mode": "RGBA",
+    "alpha0_pct": 57.2,
+    "aspect_diff_pct": 0.0,
+    "result": "PASS"
+  },
+  {
+    "id": "C6",
+    "aspect_arg": "4:3",
+    "resolution": "4K",
+    "file": "asset-library/raw/chrome-family/20261005-201732/grimdark-painted-sci-fi-semi-realistic-1.png",
+    "pixels": "3312x2480",
+    "mode": "RGBA",
+    "alpha0_pct": 54.1,
+    "aspect_diff_pct": 0.16,
+    "result": "PASS"
+  },
+  {
+    "id": "C7",
+    "aspect_arg": "3:2",
+    "resolution": "2K",
+    "file": "asset-library/raw/chrome-family/20261005-202052/grimdark-painted-sci-fi-semi-realistic-1.png",
+    "pixels": "2512x1664",
+    "mode": "RGBA",
+    "alpha0_pct": 13.8,
+    "aspect_diff_pct": 0.64,
+    "result": "PASS"
+  },
+  {
+    "id": "C8",
+    "aspect_arg": "1:1",
+    "resolution": "2K",
+    "file": "asset-library/raw/chrome-family/20261005-202141/grimdark-painted-sci-fi-semi-realistic-1.png",
+    "pixels": "2048x2048",
+    "mode": "RGBA",
+    "alpha0_pct": 0.0,
+    "aspect_diff_pct": 0.0,
+    "result": "PASS"
+  },
+  {
+    "id": "C9",
+    "aspect_arg": "4:3",
+    "resolution": "2K",
+    "file": "asset-library/raw/chrome-family/20261005-202203/grimdark-painted-sci-fi-semi-realistic-1.png",
+    "pixels": "2368x1776",
+    "mode": "RGBA",
+    "alpha0_pct": 79.3,
+    "aspect_diff_pct": 0.0,
+    "result": "PASS"
+  },
+  {
+    "id": "C10",
+    "aspect_arg": "21:9",
+    "resolution": "1K",
+    "file": "asset-library/raw/chrome-family/20261005-202312/grimdark-painted-sci-fi-semi-realistic-1.png",
+    "pixels": "1916x821",
+    "mode": "RGBA",
+    "alpha0_pct": 74.3,
+    "aspect_diff_pct": 0.02,
+    "result": "PASS"
+  },
+  {
+    "id": "C11",
+    "aspect_arg": "1:1",
+    "resolution": "2K",
+    "file": "asset-library/raw/chrome-family/20261005-202401/grimdark-painted-sci-fi-semi-realistic-1.png",
+    "pixels": "2048x2048",
+    "mode": "RGBA",
+    "alpha0_pct": 0.0,
+    "aspect_diff_pct": 0.0,
+    "result": "PASS"
+  },
+  {
+    "id": "C12",
+    "aspect_arg": "1:1",
+    "resolution": "2K",
+    "file": "asset-library/raw/chrome-family/20261005-202444/grimdark-painted-sci-fi-semi-realistic-1.png",
+    "pixels": "2048x2048",
+    "mode": "RGBA",
+    "alpha0_pct": 0.0,
+    "aspect_diff_pct": 0.0,
+    "result": "PASS"
+  },
+  {
+    "id": "BG-1",
+    "aspect_arg": "21:9",
+    "resolution": "2K",
+    "file": "asset-library/raw/chrome-family/20261005-202512/grimdark-painted-sci-fi-semi-realistic-1.png",
+    "pixels": "3136x1344",
+    "mode": "RGB",
+    "alpha0_pct": null,
+    "aspect_diff_pct": 0.0,
+    "result": "PASS"
+  },
+  {
+    "id": "BG-2",
+    "aspect_arg": "21:9",
+    "resolution": "2K",
+    "file": "asset-library/raw/chrome-family/20261005-202550/grimdark-painted-sci-fi-semi-realistic-1.png",
+    "pixels": "3136x1344",
+    "mode": "RGB",
+    "alpha0_pct": null,
+    "aspect_diff_pct": 0.0,
+    "result": "PASS"
+  },
+  {
+    "id": "BG-3",
+    "aspect_arg": "21:9",
+    "resolution": "2K",
+    "file": "asset-library/raw/chrome-family/20261005-202617/grimdark-painted-sci-fi-semi-realistic-1.png",
+    "pixels": "3136x1344",
+    "mode": "RGB",
+    "alpha0_pct": null,
+    "aspect_diff_pct": 0.0,
+    "result": "PASS"
+  },
+  {
+    "id": "BG-4",
+    "aspect_arg": "21:9",
+    "resolution": "2K",
+    "file": "asset-library/raw/chrome-family/20261005-203106/grimdark-painted-sci-fi-semi-realistic-1.png",
+    "pixels": "3136x1344",
+    "mode": "RGB",
+    "alpha0_pct": null,
+    "aspect_diff_pct": 0.0,
+    "result": "PASS"
+  }
+]

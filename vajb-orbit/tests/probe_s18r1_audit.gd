@@ -108,7 +108,9 @@ func _style_contrast(pane: Control) -> void:
 
 
 func _card_texts(pane: Control) -> void:
-	var rows := pane.get_node_or_null("%ArmoryRows") as Control
+	## P39a (S35): the pack cards live in the shared menu's AMMUNITION category.
+	pane.call(&"select_tab", &"ammo")
+	var rows := pane.get_node_or_null("%BrowserRows") as Control
 	if rows == null:
 		return
 	for child: Node in rows.get_children():

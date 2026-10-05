@@ -242,7 +242,11 @@ func _rack_row(panel: Control, index: int) -> PanelContainer:
 
 
 func _ammo_card(panel: Control, pack_id: StringName) -> Button:
-	for child: Node in (panel.get_node("%ArmoryRows") as Control).get_children():
+	## P39a: the AMMUNITION category's cards live in the shared menu's row box; move the menu
+	## to that category first.
+	panel.call(&"select_tab", PanelScript.EQ_TAB_AMMO)
+	panel.call(&"_lay")
+	for child: Node in (panel.get_node("%BrowserRows") as Control).get_children():
 		var row := child as Button
 		if row == null:
 			continue
@@ -402,22 +406,28 @@ func test_the_two_console_wells_hold_the_empty_and_summary_blocks() -> void:
 	assert_eq(
 		String((panel.get_node("%BrowserCaption") as Label).text),
 		PanelScript.LIST_CAPTION_BROWSE % list_rows.get_child_count(),
-		"the list caption counts the rows it draws"
+		"the shared menu caption counts the rows it draws"
 	)
+	## P39a: the shared menu's AMMUNITION category counts the catalogue's packs.
+	panel.call(&"select_tab", PanelScript.EQ_TAB_AMMO)
 	assert_eq(
-		String((panel.get_node("%AmmoCaption") as Label).text),
-		"AMMUNITION - 8 PACKS", "and the EQ container's caption the catalogue's packs"
+		String((panel.get_node("%BrowserCaption") as Label).text),
+		"AMMUNITION - 8 PACKS", "the AMMUNITION category caption counts the catalogue's packs"
 	)
-	## P38/P39: the list is the FIT CELLS mode's right sector and the EQ container the BATTERY
-	## CONFIG mode's right sector - neither is a console well any more.
+	panel.call(&"select_tab", PanelScript.TAB_ALL)
+	## P39a: ONE shared menu subtree, reparented between the two modes' right sectors - the
+	## FIT CELLS socket filter and the BATTERY CONFIG list are the same component now.
 	assert_eq(
-		String((panel.get_node("%BrowserRows") as Control).get_parent().get_parent().name), "FitRight",
-		"the one list rides the FIT CELLS right sector"
+		String((panel.get_node("%MenuSector") as Control).get_parent().name), "FitRight",
+		"the shared menu rides the FIT CELLS right sector"
 	)
+	panel.call(&"set_mode", PanelScript.MODE_BATTERY)
+	panel.call(&"_lay")
 	assert_eq(
-		String((panel.get_node("%AmmoMargin") as Control).get_parent().name), "EqSector",
-		"and the EQ container the BATTERY CONFIG right sector"
+		String((panel.get_node("%MenuSector") as Control).get_parent().name), "EqSector",
+		"and the SAME menu the BATTERY CONFIG right sector (P39a)"
 	)
+	panel.call(&"set_mode", PanelScript.MODE_FIT)
 
 
 ## ------------------------------------------------------------- 2. the rack bay plates
@@ -588,16 +598,16 @@ func test_the_items_ride_the_code_drawn_plate() -> void:
 		plate.get_node_or_null(^"Plate") == null,
 		"code-drawn: the nine-slice row plate retires with Amendment 3"
 	)
-	var rows := panel.get_node("%ArmoryRows") as Control
+	var rows := panel.get_node("%BrowserRows") as Control
 	assert_eq(
 		rows.get_child_count(), Catalog.AMMO_PACKS.size(),
 		"one card per pack, no slack row (MED-1's cure)"
 	)
 	assert_eq(
 		(rows.get_child(1) as Control).position, Vector2(0.0, ITEM.y + 6.0),
-		"the second card sits one row below (the EQ container stacks them, P39)"
+		"the second card sits one row below (the shared menu stacks them, P39a)"
 	)
-	## P39: the ammunition cards are a vertical list in the EQ container now, not a 2x3 grid.
+	## P39a: the ammunition cards are a vertical list in the shared menu, not a 2x3 grid.
 	assert_eq(
 		(rows.get_child(2) as Control).position, Vector2(0.0, (ITEM.y + 6.0) * 2.0),
 		"and the third two rows down (actual %s)"
@@ -618,8 +628,10 @@ func test_the_items_ride_the_code_drawn_plate() -> void:
 		PanelScript.PRICE_FORMAT % Catalog.group_int(int(Catalog.ammo_pack(&"cannon")[&"cost"])),
 		"the price's own unit word"
 	)
-	## P38/F1: with no cell selected the one list is the browse state; a clean fixture still
-	## lists the ship's own fitted bases (bag units UNION fitted bases).
+	## P38/F1/P39a: the ALL category's list is the browse state; a clean fixture still lists
+	## the ship's own fitted bases (bag units UNION fitted bases).
+	panel.call(&"select_tab", PanelScript.TAB_ALL)
+	panel.call(&"_lay")
 	var list := panel.get_node("%BrowserRows") as Control
 	assert_true(list.get_child_count() >= 1, "the browse list lists the ship's fitted equipment")
 	_profile.call(&"add_module", CANNON, 1)

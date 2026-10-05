@@ -5,8 +5,9 @@ file when decided or done** (deleted at the wave close-out or the ruling — the
 record lives in the cited file and `MASTER_REPORT.md` §6, this is the index
 only). Refreshed at every wave close-out and after every owner ruling.
 
-*Last refreshed: 2026-10-05 (the owner's fix round — T-131/T-134/T-135 decided;
-S35 + D21-G1 + D22-P1 live in parallel)*
+*Last refreshed: 2026-10-05 (round close — S35 shipped (gate 1138/0), the
+chrome batch 16/16 PASS ($0.80), D22 integrity PASS; awaiting the owner on
+`S36_proposal.md`)*
 
 ## Waiting on the owner
 
@@ -25,6 +26,8 @@ below.
 | T-114 | Dead `_row_hint` helpers — shipyard, auction, exchange remain (armory's died with S32) | builder | next pane touch |
 | T-115 | ARMORY meter word: `CANDIDATE` vs `IF FITTED` (two pins disagree) | designer | next docs pass |
 | T-116 | Auction foot band shape: §5.10 two-label vs §19.4 one-line (two pins disagree) | designer | next docs pass |
+| T-138 | SERVICES deck: `MODULE OFFLINE` placeholder until the contracts/insurance/vaults strip (D22-P1/F03) | builder | S25 contracts wave |
+| T-139 | Shared-menu words (S35-B1/R1 F4): `POWER` supersedes `PWR/FUEL RODS`; the landing category is `ALL` | owner | the S36 proposal's open calls |
 
 *Closed at this refresh: **T-131** (4 backdrops as proposed — the batch runs
 now), **T-134** (resolved by S35: one selector + MAX/0 per the owner),

@@ -579,6 +579,9 @@ func test_the_hud_credits_block_is_absent_safe_without_the_service() -> void:
 
 
 func _ammo_payload(pane: CanvasItem, pack_id: StringName) -> Dictionary:
+	## P39a: the pack cards live in the shared menu's AMMUNITION category.
+	if pane.has_method(&"select_tab"):
+		pane.call(&"select_tab", &"ammo")
 	var payloads: Array = pane.get(&"_payloads")
 	for payload: Variant in payloads:
 		if (payload as Dictionary).get(&"id", &"") == pack_id:

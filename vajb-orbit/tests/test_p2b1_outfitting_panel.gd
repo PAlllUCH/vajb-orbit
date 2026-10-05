@@ -212,7 +212,9 @@ func _last_inspect() -> String:
 
 
 func _ammo_rows(panel: Control) -> Control:
-	return panel.get_node("%ArmoryRows") as Control
+	## P39a: the pack cards live in the shared menu's AMMUNITION category.
+	panel.call(&"select_tab", PanelScript.EQ_TAB_AMMO)
+	return panel.get_node("%BrowserRows") as Control
 
 
 func _ammo_row(panel: Control, pack_id: StringName) -> Button:

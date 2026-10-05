@@ -182,7 +182,9 @@ func _rack_row(index: int) -> PanelContainer:
 
 
 func _card(pack_id: StringName) -> Button:
-	for child: Node in (_panel.get_node("%ArmoryRows") as Control).get_children():
+	## P39a: the pack cards live in the shared menu's AMMUNITION category.
+	_panel.call(&"select_tab", PanelScript.EQ_TAB_AMMO)
+	for child: Node in (_panel.get_node("%BrowserRows") as Control).get_children():
 		var row := child as Button
 		if row != null and String(row.name).to_lower().ends_with(String(pack_id)):
 			return row

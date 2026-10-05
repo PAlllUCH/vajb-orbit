@@ -1,0 +1,130 @@
+[
+  {
+    "id": "C1",
+    "aspect": "4:3",
+    "resolution": "2K",
+    "transparent": true,
+    "prompt_file": "/home/kamil-paluszkiewicz/VajbOrbit/.agents/gen/slices/D21-chrome-family/prompts/C1.txt",
+    "prompt_chars": 2193
+  },
+  {
+    "id": "C2",
+    "aspect": "4:3",
+    "resolution": "2K",
+    "transparent": true,
+    "prompt_file": "/home/kamil-paluszkiewicz/VajbOrbit/.agents/gen/slices/D21-chrome-family/prompts/C2.txt",
+    "prompt_chars": 2147
+  },
+  {
+    "id": "C3",
+    "aspect": "21:9",
+    "resolution": "1K",
+    "transparent": true,
+    "prompt_file": "/home/kamil-paluszkiewicz/VajbOrbit/.agents/gen/slices/D21-chrome-family/prompts/C3.txt",
+    "prompt_chars": 2027
+  },
+  {
+    "id": "C4",
+    "aspect": "4:3",
+    "resolution": "2K",
+    "transparent": true,
+    "prompt_file": "/home/kamil-paluszkiewicz/VajbOrbit/.agents/gen/slices/D21-chrome-family/prompts/C4.txt",
+    "prompt_chars": 2161
+  },
+  {
+    "id": "C5",
+    "aspect": "4:3",
+    "resolution": "2K",
+    "transparent": true,
+    "prompt_file": "/home/kamil-paluszkiewicz/VajbOrbit/.agents/gen/slices/D21-chrome-family/prompts/C5.txt",
+    "prompt_chars": 2189
+  },
+  {
+    "id": "C6",
+    "aspect": "4:3",
+    "resolution": "4K",
+    "transparent": true,
+    "prompt_file": "/home/kamil-paluszkiewicz/VajbOrbit/.agents/gen/slices/D21-chrome-family/prompts/C6.txt",
+    "prompt_chars": 2229
+  },
+  {
+    "id": "C7",
+    "aspect": "3:2",
+    "resolution": "2K",
+    "transparent": true,
+    "prompt_file": "/home/kamil-paluszkiewicz/VajbOrbit/.agents/gen/slices/D21-chrome-family/prompts/C7.txt",
+    "prompt_chars": 2002
+  },
+  {
+    "id": "C8",
+    "aspect": "1:1",
+    "resolution": "2K",
+    "transparent": true,
+    "prompt_file": "/home/kamil-paluszkiewicz/VajbOrbit/.agents/gen/slices/D21-chrome-family/prompts/C8.txt",
+    "prompt_chars": 2010
+  },
+  {
+    "id": "C9",
+    "aspect": "4:3",
+    "resolution": "2K",
+    "transparent": true,
+    "prompt_file": "/home/kamil-paluszkiewicz/VajbOrbit/.agents/gen/slices/D21-chrome-family/prompts/C9.txt",
+    "prompt_chars": 2136
+  },
+  {
+    "id": "C10",
+    "aspect": "21:9",
+    "resolution": "1K",
+    "transparent": true,
+    "prompt_file": "/home/kamil-paluszkiewicz/VajbOrbit/.agents/gen/slices/D21-chrome-family/prompts/C10.txt",
+    "prompt_chars": 1950
+  },
+  {
+    "id": "C11",
+    "aspect": "1:1",
+    "resolution": "2K",
+    "transparent": true,
+    "prompt_file": "/home/kamil-paluszkiewicz/VajbOrbit/.agents/gen/slices/D21-chrome-family/prompts/C11.txt",
+    "prompt_chars": 1973
+  },
+  {
+    "id": "C12",
+    "aspect": "1:1",
+    "resolution": "2K",
+    "transparent": true,
+    "prompt_file": "/home/kamil-paluszkiewicz/VajbOrbit/.agents/gen/slices/D21-chrome-family/prompts/C12.txt",
+    "prompt_chars": 2117
+  },
+  {
+    "id": "BG-1",
+    "aspect": "21:9",
+    "resolution": "2K",
+    "transparent": false,
+    "prompt_file": "/home/kamil-paluszkiewicz/VajbOrbit/.agents/gen/slices/D21-chrome-family/prompts/BG-1.txt",
+    "prompt_chars": 2244
+  },
+  {
+    "id": "BG-2",
+    "aspect": "21:9",
+    "resolution": "2K",
+    "transparent": false,
+    "prompt_file": "/home/kamil-paluszkiewicz/VajbOrbit/.agents/gen/slices/D21-chrome-family/prompts/BG-2.txt",
+    "prompt_chars": 2230
+  },
+  {
+    "id": "BG-3",
+    "aspect": "21:9",
+    "resolution": "2K",
+    "transparent": false,
+    "prompt_file": "/home/kamil-paluszkiewicz/VajbOrbit/.agents/gen/slices/D21-chrome-family/prompts/BG-3.txt",
+    "prompt_chars": 2222
+  },
+  {
+    "id": "BG-4",
+    "aspect": "21:9",
+    "resolution": "2K",
+    "transparent": false,
+    "prompt_file": "/home/kamil-paluszkiewicz/VajbOrbit/.agents/gen/slices/D21-chrome-family/prompts/BG-4.txt",
+    "prompt_chars": 2222
+  }
+]

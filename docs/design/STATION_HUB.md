@@ -820,7 +820,8 @@ rebuild, strip `SOLD · 10 INGOT_GOLD · +4645 CR`. Surplus over quota -> strip 
 (05 section 4); queued units pay out at the next band evaluation. `SELL ALL RAW` sells every ore stack and
 every surplus-book component within quota in one confirmed action (05 section 6); ingots sell stack by stack,
 never through the shortcut. Refusal -> section 5.6 plus `REFUSED · HOLD EMPTY`. Empty state: empty hold -> a
-single `HOLD EMPTY` caption row, `TradeBox` disabled. Footer: `THE STATION BUYS · IT NEVER SELLS IN V1`.
+single `HOLD EMPTY` caption row, `TradeBox` disabled. Footer: `THE STATION BUYS · IT DOES NOT SELL` (S28-B1's dev-speak cure,
+recorded here 2026-10-05 per D22-P1/F02; reversal: the V1 wording).
 
 ### 5.9 REPAIRS (restore hull and shield) — amendment 2026-09-18
 
@@ -1779,7 +1780,7 @@ one is pinned; §19.4 names each.
 | OVERVIEW | `OVERVIEW` + the N41 glyph | the five blocks (§19.1) | none — the band is kept (P28's uniformity) | `PICK A TILE TO CHANGE DECKS` (**P29**) |
 | ARMORY | `ARMORY` + `icon_equip_module.png` (`station.gd:92`) | P4's landscape split: the ship grid (§17.1 left, FITTING's own numbers) + the inventory browser in the §15 spine's 420 right column | `REMOVE` + `BUY & FIT` (P14) | `PWR %d / %d · CANDIDATE %d / %d` (§17.1's footer power meter) |
 | REFINERY | `REFINERY` + `icon_cargo_ore.svg` | §5.7's `RefineryTable` rows + `RefineBox` (the stepper + the `ORE IN` / `INGOTS OUT` / `FEE` totals) | `REFINE N` + `REFINERY ALL` + `CANCEL` | `3 ORE = 1 INGOT · FEE 15 CR PER CONVERSION` (§5.7; empty state `BRING RAW ORE FROM THE BELT`) |
-| EXCHANGE | `EXCHANGE` + `icon_credits.svg` | §5.8's three columns: `HoldBox` + `MarketBoard` + `TradeBox` | `SELL ALL RAW` + `CANCEL` + `SELL` | `THE STATION BUYS · IT NEVER SELLS IN V1` (§5.8) |
+| EXCHANGE | `EXCHANGE` + `icon_credits.svg` | §5.8's three columns: `HoldBox` + `MarketBoard` + `TradeBox` | `SELL ALL RAW` + `CANCEL` + `SELL` | `THE STATION BUYS · IT DOES NOT SELL` (§5.8; S28's wording, recorded 2026-10-05) |
 | AUCTION | `AUCTION` + `icon_credits.svg` | §5.10's two shelf sections (HULLS 6, MODULES 20) + the `SELL MODULES` sub-list | none at pane level — the row press is the action (§5.10; `auction_panel.gd:750,798`) | `NEXT RESTOCK <m:ss>` (§5.10) |
 | SHIPYARD | `SHIPYARD` + `icon_hull.svg` | P5/§17.2 whole: the hull list + `PreviewFrame` + the labelled pairs + the comparison block + `INSTALLED MODULES` + the repair block | `SET ACTIVE` + `REPAIR` (§17.2) | `REPAIR AVAILABLE · %d CR` / `ALL SYSTEMS NOMINAL` (§17.2) |
 | LAUNCH | `LAUNCH` + `icon_map_route.png` | §5.4's brief rows + cargo strip + manifest + the deck-control services (`REFUEL` / `RECHARGE` / `PAY BOUNTY` — `launch_panel.gd:456-495`, §5.4 P2-B) | `REFUEL` + `RECHARGE` + `LAUNCH` | `ARM ONCE · LAUNCH TWICE · 3 s TO UNDOCK` (**P29**; §2's two-press law) |

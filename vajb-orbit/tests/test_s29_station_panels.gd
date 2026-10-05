@@ -138,10 +138,10 @@ func test_the_browser_caption_and_the_tab_strip_minus_hulls() -> void:
 	assert_eq(
 		labels,
 		[
-			"WEAPONS", "DRIVES", "SHIELDS", "ARMOUR", "POWER",
+			"AMMUNITION", "WEAPONS", "DRIVES", "SHIELDS", "ARMOUR", "POWER",
 			"COMPUTERS", "BOOSTERS", "UTILITY", "ALL",
 		] as Array[String],
-		"the auction's family tabs minus HULLS (P4's judgment)"
+		"the shared menu's one category set (P39a: AMMUNITION + the families minus HULLS)"
 	)
 	assert_true(not labels.has("HULLS"), "a hull is not a module row and fits no cell")
 	assert_eq(StringName(panel.call(&"active_tab")), &"all", "ALL is the entry tab")

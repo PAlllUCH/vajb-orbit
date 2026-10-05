@@ -565,7 +565,10 @@ func test_the_sale_column_ships_the_s28_chrome_law() -> void:
 		(panel.get(&"_sell_all") as Button).disabled,
 		"SELL ALL RAW disables when no raw stack matches (A10)"
 	)
-	assert_eq(String((panel.get(&"_step_value") as Label).text), "0 UNITS", "nothing is armed")
+	assert_eq(
+		String((panel.get(&"_sell_value") as Label).text), "0 UNITS",
+		"the one SELL UNITS selector reads zero (N49-amended)"
+	)
 	_free_host()
 	## A11: a raw stack of five arms the stepper at ONE unit and the primary carries it.
 	_profile.set(&"_cargo", {&"mineral_iron": 5})
@@ -574,15 +577,13 @@ func test_the_sale_column_ships_the_s28_chrome_law() -> void:
 		(panel.get(&"_sell_all") as Button).disabled, "with a raw stack SELL ALL RAW wakes"
 	)
 	panel.call(&"_select", &"mineral_iron")
-	assert_eq(String((panel.get(&"_step_value") as Label).text), "1 UNIT", "A11 with A5 grammar")
 	## N48: the commit button is always worded SELL; the count rides the SELL UNITS selector.
 	assert_eq(String((panel.get(&"_sell") as Button).text), "SELL", "the commit button reads SELL")
 	assert_eq(
 		String((panel.get(&"_sell_value") as Label).text), "1 UNIT",
-		"and the SELL UNITS selector carries the count (N49)"
+		"and the SELL UNITS selector arms at one unit (A11 with A5 grammar)"
 	)
-	assert_eq(int(panel.get(&"_step")), 1, "a stray click can never dump the stack")
-	assert_eq(int(panel.get(&"_sell_units")), 1, "and the SELL UNITS selector arms at one unit")
+	assert_eq(int(panel.get(&"_sell_units")), 1, "a stray click can never dump the stack")
 	## N42 (supersedes S28-A12): the hold list wears one column-header band, inside its
 	## scroll above the rows, captioned with the row stacks' own words UNITS / CR EACH / CR NET.
 	var header := panel.get_node_or_null(
@@ -752,9 +753,10 @@ func test_n48_the_commit_button_reads_sell_in_every_state() -> void:
 	_free_host()
 
 
-## N49: the `SELL UNITS` selector sits beneath the unit-number selector, bounds min 1 /
-## selected-row units, and reads disabled + `text_dim` with no selection. The trade column
-## stacks top-down: unit selector -> SELL UNITS -> INSPECT cluster -> SELL.
+## N49-amended (S35): the trade column carries ONE quantity control - the `SELL UNITS`
+## selector (min 0, max the selected row's units) with its `MAX` / `0` quick-set chips. The
+## S33 duplicate unit-number selector dies. Stack top-down: SellUnitsRow -> InspectCluster ->
+## PaneFoot.
 func test_n49_the_sell_units_selector_bounds_and_the_stack_order() -> void:
 	_profile.set(&"_cargo", {&"mineral_iron": 5})
 	var panel := _mount_panel()
@@ -772,21 +774,21 @@ func test_n49_the_sell_units_selector_bounds_and_the_stack_order() -> void:
 	panel.call(&"_select", &"mineral_iron")
 	assert_false(minus.disabled and plus.disabled, "a selection wakes the stepper")
 	assert_eq(value.text, "1 UNIT", "arming at one unit")
-	panel.call(&"_set_sell_units", 0)
-	assert_eq(int(panel.get(&"_sell_units")), 1, "the floor is one unit (min 1)")
+	panel.call(&"_set_sell_units", -5)
+	assert_eq(int(panel.get(&"_sell_units")), 0, "the floor is zero units (min 0, N49-amended)")
 	panel.call(&"_set_sell_units", 99)
 	assert_eq(int(panel.get(&"_sell_units")), 5, "the ceiling is the row's own units")
-	## The stack order (N49): unit selector -> SELL UNITS -> INSPECT cluster -> SELL. The
-	## trade column is a `VBoxContainer`, so the child order is the vertical order.
-	var step_row := (panel.get(&"_step_minus") as Control).get_parent() as Control
+	## The S33 duplicate unit-number selector is gone entirely.
+	assert_true(
+		panel.get_node_or_null(^"ExchangeBody/TradeBox/StepperRow") == null,
+		"the duplicate unit-number selector (StepperRow) dies (N49-amended)"
+	)
+	## The stack order: SellUnitsRow -> INSPECT cluster -> PaneFoot. The trade column is a
+	## `VBoxContainer`, so the child order is the vertical order.
 	var sell_row := panel.get(&"_sell_units_row") as Control
 	var cluster := panel.get(&"_inspect_cluster") as Control
 	assert_true(cluster != null, "the INSPECT cluster ships (N43/N49)")
 	if cluster != null:
-		assert_true(
-			step_row.get_index() < sell_row.get_index(),
-			"the SELL UNITS selector sits beneath the unit selector (N49)"
-		)
 		assert_true(
 			sell_row.get_index() < cluster.get_index(),
 			"the INSPECT cluster sits beneath the SELL UNITS selector (N49)"
@@ -796,6 +798,61 @@ func test_n49_the_sell_units_selector_bounds_and_the_stack_order() -> void:
 				< (panel.get_node(^"PaneFoot") as Control).get_index(),
 			"and the SELL / SELL ALL RAW cluster in the pane foot below the trade column"
 		)
+	_free_host()
+
+
+## N49-amended (S35): the `MAX` chip fills the row's units and the `0` chip empties the
+## selector; SELL is disabled at zero.
+func test_n49_the_max_and_zero_quick_buttons() -> void:
+	_profile.set(&"_cargo", {&"mineral_iron": 5})
+	var panel := _mount_panel()
+	var max_button := panel.get(&"_sell_max") as Button
+	var zero_button := panel.get(&"_sell_zero") as Button
+	var sell := panel.get(&"_sell") as Button
+	assert_true(max_button != null and zero_button != null, "both quick-set chips ship")
+	assert_eq(max_button.text, "MAX", "the fill chip reads MAX")
+	assert_eq(zero_button.text, "0", "the empty chip reads 0")
+	assert_true(
+		(max_button.get_parent() == panel.get(&"_sell_units_row")),
+		"and both sit beside the SELL UNITS stepper (N49-amended)"
+	)
+	assert_true(max_button.disabled and zero_button.disabled, "disabled with no selection")
+	panel.call(&"_select", &"mineral_iron")
+	panel.call(&"_on_sell_zero_pressed")
+	assert_eq(int(panel.get(&"_sell_units")), 0, "0 empties the selector")
+	assert_eq(String((panel.get(&"_sell_value") as Label).text), "0 UNITS", "the read follows")
+	assert_true(sell.disabled, "and SELL is disabled at zero (N49-amended)")
+	panel.call(&"_on_sell_max_pressed")
+	assert_eq(int(panel.get(&"_sell_units")), 5, "MAX fills the row's units")
+	assert_eq(String((panel.get(&"_sell_value") as Label).text), "5 UNITS", "the read follows")
+	assert_false(sell.disabled, "and SELL wakes at a positive count")
+	_free_host()
+
+
+## N49-amended (S35): no second units-number selector exists anywhere in the exchange - the
+## grep half (no `StepperRow` / `StepValue` / `_step_value` in the pane source or scene) and
+## the scene half (no `%StepValue` / `%StepMinus` / `%StepPlus` node).
+func test_n49_no_second_units_selector() -> void:
+	var source := FileAccess.get_file_as_string("res://ui/station/exchange_panel.gd")
+	var scene := FileAccess.get_file_as_string("res://ui/station/exchange_panel.tscn")
+	for word: String in ["StepperRow", "StepValue", "StepMinus", "StepPlus", "_step_value", "_set_step"]:
+		assert_true(
+			source.find(word) == -1,
+			"the pane's script carries no '%s' (N49-amended)" % word
+		)
+	for word: String in ["StepperRow", "StepValue", "StepMinus", "StepPlus"]:
+		assert_true(
+			scene.find(word) == -1,
+			"the pane's scene carries no '%s' node (N49-amended)" % word
+		)
+	_profile.set(&"_cargo", {&"mineral_iron": 5})
+	var panel := _mount_panel()
+	for node_name: String in ["%StepValue", "%StepMinus", "%StepPlus", "%StepperRow"]:
+		assert_true(
+			panel.get_node_or_null(NodePath(node_name)) == null,
+			"%s is gone (N49-amended)" % node_name
+		)
+	assert_true(panel.get(&"_sell_max") != null, "the MAX chip is the surviving control")
 	_free_host()
 
 

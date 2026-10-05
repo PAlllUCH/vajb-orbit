@@ -123,6 +123,10 @@ const NO_SELECTION := "NO STACK SELECTED"
 ## and the confirm strip keeps its counted wording (`CONFIRM_FORMAT`).
 const SELL_WORD := "SELL"
 const SELL_UNITS_CAPTION := "SELL UNITS"
+## N49-amended (S35): the two P2 `ActionInline` quick-set chips beside the `SELL UNITS`
+## stepper - `MAX` fills the row's units, `0` empties the selector (SELL then disables).
+const SELL_MAX_WORD := "MAX"
+const SELL_ZERO_WORD := "0"
 const TITLE_FORMAT := "%s · %d HELD"
 ## T-119: the total rides its own line so the 360 px TradeBox never wraps and orphans it.
 const CONFIRM_FORMAT := "SELL %d %s — GROSS %s · FEE %s\nYOU GET %s"
@@ -159,14 +163,13 @@ const REASON_INSUFFICIENT_CARGO: StringName = &"insufficient_cargo"
 @onready var _hold_scroll: ScrollContainer = %HoldScroll
 @onready var _board_scroll: ScrollContainer = %BoardScroll
 @onready var _trade_title: Label = %TradeTitle
-@onready var _step_minus: Button = %StepMinus
-@onready var _step_value: Label = %StepValue
-@onready var _step_plus: Button = %StepPlus
 @onready var _sell_units_caption: Label = %SellUnitsCaption
 @onready var _sell_units_row: HBoxContainer = %SellUnitsRow
 @onready var _sell_minus: Button = %SellMinus
 @onready var _sell_value: Label = %SellValue
 @onready var _sell_plus: Button = %SellPlus
+@onready var _sell_max: Button = %SellMaxButton
+@onready var _sell_zero: Button = %SellZeroButton
 @onready var _confirm_strip: Label = %ConfirmStrip
 @onready var _sell: Button = %SellButton
 @onready var _sell_all: Button = %SellAllButton
@@ -181,9 +184,9 @@ var _selected_row: Button = null
 var _focused_payload: Dictionary = {}
 ## N43: the trade column's single INSPECT ActionInline (the hold list's cluster chip).
 var _inspect_cluster: Button = null
-var _step := 0
-## N49: the `SELL UNITS` selector's own value - min 1, max the selected row's units, 0 with
-## no selection (the selector then reads disabled + `text_dim`). `SELL` moves exactly this.
+## N49-amended (S35): the `SELL UNITS` selector is the trade column's one quantity control -
+## min 0, max the selected row's units, 0 with no selection (the selector then reads disabled
+## + `text_dim`). The `MAX` and `0` quick-set chips move the same value a SELL press moves.
 var _sell_units := 0
 var _quoted: Dictionary = {}
 var _tweens: Array[Tween] = []
@@ -247,7 +250,7 @@ func focus_primary() -> void:
 func disarm() -> bool:
 	## ui_cancel step 2 (STATION_HUB section 2): the selection and the stepper own the first
 	## cancel, and the shell keeps the ring where it is when this returns true.
-	if _selected_id == &"" and _step == 0 and _sell_units == 0:
+	if _selected_id == &"" and _sell_units == 0:
 		return false
 	_clear_selection()
 	return true
@@ -491,7 +494,7 @@ func _rebuild_hold() -> void:
 	_focused_payload = {}
 	if not _hold_ids.has(_selected_id):
 		_selected_id = &""
-		_step = 0
+		_sell_units = 0
 	## N42: the hold list wears the same column-header band as the board.
 	_add_band(_hold_rows, "HoldHeader", _hold_columns())
 	if _hold_ids.is_empty():
@@ -626,14 +629,16 @@ func _row_title(payload: Dictionary) -> String:
 
 
 func _wire_trade() -> void:
-	_step_minus.pressed.connect(_on_step_pressed.bind(-1))
-	_step_plus.pressed.connect(_on_step_pressed.bind(1))
 	_sell_minus.pressed.connect(_on_sell_units_pressed.bind(-1))
 	_sell_plus.pressed.connect(_on_sell_units_pressed.bind(1))
+	_sell_max.pressed.connect(_on_sell_max_pressed)
+	_sell_zero.pressed.connect(_on_sell_zero_pressed)
 	_sell.pressed.connect(_on_sell_pressed)
 	_sell_all.pressed.connect(_on_sell_all_pressed)
 	_cancel.pressed.connect(_on_cancel_pressed)
 	_sell_units_caption.text = SELL_UNITS_CAPTION
+	_sell_max.text = SELL_MAX_WORD
+	_sell_zero.text = SELL_ZERO_WORD
 	_build_inspect_cluster()
 
 
@@ -657,11 +662,9 @@ func _refresh_trade() -> void:
 		held = int(profile.call(&"cargo_qty", _selected_id))
 	if held <= 0:
 		_selected_id = &""
-		_step = 0
 		_sell_units = 0
 	if held > 0:
-		_step = clampi(maxi(_step, 1), 1, held)
-		_sell_units = clampi(maxi(_sell_units, 1), 1, held)
+		_sell_units = clampi(_sell_units, 0, held)
 	var armed := held > 0 and _selected_id != &""
 	var has_hold := not _hold_ids.is_empty()
 	_trade_title.text = (
@@ -669,26 +672,27 @@ func _refresh_trade() -> void:
 		else NO_SELECTION if has_hold
 		else HOLD_EMPTY
 	)
-	## N49: the unit-number selector (as shipped) and the `SELL UNITS` selector beneath it.
-	_step_value.text = StationCatalogScript.plural(_step if armed else 0, "UNIT")
-	_step_minus.disabled = not armed
-	_step_plus.disabled = not armed
+	## N49-amended (S35): one quantity control - the `SELL UNITS` stepper (min 0, max the
+	## row's units) with its `MAX` / `0` quick-set chips beside it.
 	_sell_value.text = StationCatalogScript.plural(_sell_units if armed else 0, "UNIT")
 	_sell_minus.disabled = not armed
 	_sell_plus.disabled = not armed
+	_sell_max.disabled = not armed
+	_sell_zero.disabled = not armed
 	_sell_value.add_theme_color_override(
 		&"font_color", _token(&"text_primary") if armed else _token(&"text_dim")
 	)
 	_sell_units_caption.add_theme_color_override(
 		&"font_color", _token(&"text_primary") if armed else _token(&"text_dim")
 	)
-	## N48: the commit button is always worded `SELL`; the count rides the selector.
-	_sell.disabled = not armed
+	## N48: the commit button is always worded `SELL`; the count rides the selector. N49:
+	## SELL is disabled at zero units or with no selection.
+	_sell.disabled = not armed or _sell_units <= 0
 	_sell.text = SELL_WORD
 	_sell_all.disabled = not _has_raw(profile)
 	_cancel.disabled = not armed
-	_quoted = _quote(profile, _selected_id, _sell_units) if armed else {}
-	_confirm_strip.text = _confirm_text() if armed else CONFIRM_IDLE
+	_quoted = _quote(profile, _selected_id, _sell_units) if armed and _sell_units > 0 else {}
+	_confirm_strip.text = _confirm_text() if armed and _sell_units > 0 else CONFIRM_IDLE
 	if _inspect_cluster != null:
 		_inspect_cluster.set_dimmed(_focused_payload.is_empty())
 	_refresh_hold()
@@ -709,12 +713,11 @@ func _select(item_id: StringName) -> void:
 	var held := 0
 	if profile != null:
 		held = int(profile.call(&"cargo_qty", item_id))
-	if item_id != _selected_id or _step <= 0:
-		## S28's A11 (D17-P2: "the trade stepper defaults to the whole stack ... one stray
-		## click dumps everything"): a fresh selection steps one unit, never the whole hold.
-		_step = 1
-	## N49: the `SELL UNITS` selector arms at one unit with the selection too.
-	_sell_units = 1
+	## S28's A11 (D17-P2: "the trade stepper defaults to the whole stack ... one stray
+	## click dumps everything"): a fresh selection steps one unit, never the whole hold.
+	## N49-amended (S35): the `SELL UNITS` selector arms at one unit with the selection too.
+	if item_id != _selected_id or _sell_units <= 0:
+		_sell_units = 1
 	_selected_id = item_id
 	_refresh_trade()
 
@@ -722,37 +725,21 @@ func _select(item_id: StringName) -> void:
 func _clear_selection() -> void:
 	if _selected_row != null and is_instance_valid(_selected_row):
 		_selected_row.set_pressed_no_signal(false)
-	_selected_row = null
+		_selected_row = null
 	_selected_id = &""
-	_step = 0
 	_sell_units = 0
 	_refresh_trade()
 
 
-func _set_step(value: int) -> void:
-	var held := 0
-	var profile := _profile()
-	if profile != null and _selected_id != &"":
-		held = int(profile.call(&"cargo_qty", _selected_id))
-	_step = clampi(value, 1, maxi(1, held))
-	_refresh_trade()
-
-
-## N49: the `SELL UNITS` selector's own move - min 1, max the selected row's units.
+## N49-amended (S35): the `SELL UNITS` selector's own move - min 0, max the selected row's
+## units (0 with no selection).
 func _set_sell_units(value: int) -> void:
 	var held := 0
 	var profile := _profile()
 	if profile != null and _selected_id != &"":
 		held = int(profile.call(&"cargo_qty", _selected_id))
-	_sell_units = clampi(value, 1, maxi(1, held))
+	_sell_units = clampi(value, 0, maxi(0, held))
 	_refresh_trade()
-
-
-func _on_step_pressed(direction: int) -> void:
-	AudioManager.play_ui(AudioManager.UiCue.SCROLL)
-	if _selected_id == &"":
-		return
-	_set_step(_step + direction)
 
 
 func _on_sell_units_pressed(direction: int) -> void:
@@ -760,6 +747,21 @@ func _on_sell_units_pressed(direction: int) -> void:
 	if _selected_id == &"":
 		return
 	_set_sell_units(_sell_units + direction)
+
+
+## N49-amended (S35): the `MAX` quick-set chip fills the row's units.
+func _on_sell_max_pressed() -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	if _selected_id == &"":
+		return
+	var profile := _profile()
+	_set_sell_units(int(profile.call(&"cargo_qty", _selected_id)) if profile != null else 0)
+
+
+## N49-amended (S35): the `0` quick-set chip empties the selector (SELL then disables).
+func _on_sell_zero_pressed() -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	_set_sell_units(0)
 
 
 func _on_cancel_pressed() -> void:
@@ -834,7 +836,6 @@ func _after_sale() -> void:
 	## Rows rebuild, the board restocks and the credits readout is the shell's (it hears
 	## profile_changed); the quote is re-read only after the profile has settled.
 	_selected_id = &""
-	_step = 0
 	_sell_units = 0
 	_selected_row = null
 	_evaluate()

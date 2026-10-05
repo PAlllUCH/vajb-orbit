@@ -7,8 +7,8 @@ extends McpTestSuite
 ##   2. P38 - the right list's two states: browse (bag units union fitted bases, `FIT`/`STORED`)
 ##      and selected (owned-that-fits `OWNED` first, then buyable-that-fits `BUYABLE`, legality
 ##      per row).
-##   3. P39 - BATTERY CONFIG is two equal sectors; the EQ container carries its category tabs
-##      and count rows.
+##   3. P39a (S35) - BATTERY CONFIG is two equal sectors; ONE shared right menu carries the
+##      category strip, the band and the rows both modes render (the EQ container merges in).
 ##   4. P34 - B1-B5 racks over fitted weapons, a drag between racks persisting through the
 ##      profile's battery record, the read-only `W<n> — EMPTY` rows and the SALVO/cycle.
 ##   5. P35 - no preset/save surface (a grep row).
@@ -191,8 +191,9 @@ func test_battery_config_is_two_equal_sectors() -> void:
 	)
 	assert_true(left.is_ancestor_of(_panel.get_node("%RackRows")), "the racks are left (P39)")
 	assert_true(left.is_ancestor_of(_panel.get_node("%EmptyRows")), "with the empty-cell list")
-	assert_true(right.is_ancestor_of(_panel.get_node("%ArmoryRows")), "the EQ container is right")
-	assert_true(right.is_ancestor_of(_panel.get_node("%EqTabs")), "with its category tabs")
+	## P39a: BATTERY CONFIG's right sector hosts the SAME shared menu subtree FIT CELLS shows.
+	assert_true(right.is_ancestor_of(_panel.get_node("%BrowserRows")), "the shared menu is right")
+	assert_true(right.is_ancestor_of(_panel.get_node("%FamilyTabs")), "with its category tabs")
 
 
 ## --------------------------------------------------------------- 2. CELL INFO (P33.1)
@@ -497,51 +498,116 @@ func test_the_salvo_meter_and_cycle_are_the_slowest_member() -> void:
 	assert_eq(String(readout[&"text"]), "%04d" % figure, "as four zero-padded cells")
 
 
-## ----------------------------------------------------- 8. the EQ container (P39)
-
-
-func test_the_eq_container_lists_the_non_weapon_categories_with_counts() -> void:
+## ----------------------------------------------------- 8. the shared menu (P39a)
+##
+## P39a (S35): both modes' right sector render ONE shared menu. It lists the AMMUNITION
+## category's pack cards and every other category's equipment rows in the SAME row shape.
+func test_the_shared_menu_lists_ammunition_and_the_equipment_categories() -> void:
 	_settle()
 	_profile.call(&"add_module", &"p_std", 2)
 	_profile.call(&"add_module", &"e_ion", 1)
 	_panel.call(&"refresh_profile", &"modules")
 	_panel.call(&"set_mode", PanelScript.MODE_BATTERY)
 	_settle()
-	var tabs := _panel.get_node("%EqTabs") as HBoxContainer
+	var tabs := _panel.get_node("%FamilyTabs") as HBoxContainer
 	var labels: Array[String] = []
 	for child: Node in tabs.get_children():
 		labels.append((child as Button).text)
-	assert_true(labels.has("AMMUNITION"), "the EQ container carries the AMMUNITION category")
-	assert_true(labels.has("PWR/FUEL RODS"), "and the PWR/FUEL RODS category (P39)")
+	assert_true(labels.has("AMMUNITION"), "the shared menu carries the AMMUNITION category")
+	assert_true(labels.has("POWER"), "and the POWER category (the P39 PWR/FUEL RODS family)")
 	assert_true(labels.has("DRIVES"), "and the other browser families")
 	assert_eq(
-		StringName(_panel.call(&"active_eq_tab")), PanelScript.EQ_TAB_AMMO,
-		"AMMUNITION is the landing category"
+		StringName(_panel.call(&"active_tab")), PanelScript.TAB_ALL,
+		"ALL is the landing category"
 	)
-	var rows := _panel.get_node("%ArmoryRows") as VBoxContainer
+	_panel.call(&"select_tab", PanelScript.EQ_TAB_AMMO)
+	_settle()
+	var rows := _panel.get_node("%BrowserRows") as VBoxContainer
 	assert_eq(
 		rows.get_child_count(), Catalog.AMMO_PACKS.size(),
 		"the AMMUNITION category draws the shipped pack cards"
 	)
-	## A module category lists the owned modules as count rows.
-	_panel.call(&"select_eq_tab", &"power")
+	## A module category lists the owned modules as the shared equipment rows.
+	_panel.call(&"select_tab", &"power")
 	_settle()
-	assert_eq(
-		StringName(_panel.call(&"active_eq_tab")), &"power", "the PWR category is in force"
-	)
-	rows = _panel.get_node("%ArmoryRows") as VBoxContainer
+	assert_eq(StringName(_panel.call(&"active_tab")), &"power", "the POWER category is in force")
+	rows = _panel.get_node("%BrowserRows") as VBoxContainer
 	assert_true(rows.get_child_count() >= 1, "the owned power module lists")
 	var first := rows.get_child(0) as Control
-	var count := first.get_node_or_null(NodePath("RowInner/RowBox/Count")) as Label
-	assert_true(count != null, "a count row ships (P39)")
-	if count != null:
-		assert_eq(count.text, PanelScript.EQ_COUNT_FORMAT % 2, "and carries its ×n count")
+	var read := first.get_node_or_null(NodePath("RowInner/RowBox/Read")) as Label
+	assert_true(read != null, "the shared equipment row shape ships (P39a)")
+	if read != null:
+		assert_eq(read.text, PanelScript.OWNED_FORMAT % 2, "and carries its OWNED ×n count")
 	assert_true(
 		first.get_node_or_null(NodePath("RowInner/RowBox/InspectChip")) != null,
-		"with its INSPECT chip (P39)"
+		"with its INSPECT chip"
 	)
-	var caption := String((_panel.get_node("%AmmoCaption") as Label).text)
-	assert_true(caption.begins_with("PWR/FUEL RODS"), "and the caption names the category")
+	var caption := String((_panel.get_node("%BrowserCaption") as Label).text)
+	assert_true(caption.begins_with("OWNED EQUIPMENT"), "and the shared caption counts the rows")
+
+
+## P39a (S35): the right menu is ONE shared component - the same subtree, the identical
+## category set in both modes and a single builder.
+func test_p39a_one_shared_menu_in_both_modes() -> void:
+	_settle()
+	var fit_tabs := _tab_labels(_panel.get_node("%FamilyTabs") as HBoxContainer)
+	var menu := _panel.get_node("%MenuSector") as Control
+	assert_true(menu != null, "the one menu subtree ships (P39a)")
+	assert_eq(String(menu.get_parent().name), "FitRight", "the menu rides FIT CELLS' right sector")
+	_panel.call(&"set_mode", PanelScript.MODE_BATTERY)
+	_settle()
+	var battery_tabs := _tab_labels(_panel.get_node("%FamilyTabs") as HBoxContainer)
+	assert_eq(battery_tabs, fit_tabs, "both modes render the identical category set (P39a)")
+	assert_eq(
+		String(menu.get_parent().name), "EqSector",
+		"and the SAME subtree rides BATTERY CONFIG's right sector"
+	)
+	## A single builder: the EQ container's own builders are gone, one menu builder remains.
+	var source := FileAccess.get_file_as_string("res://ui/station/armory_panel.gd")
+	for dead: String in ["_build_eq", "_build_eq_row", "_refresh_eq", "_eq_module_rows"]:
+		assert_true(source.find(dead) == -1, "the EQ container's '%s' dies (P39a)" % dead)
+	assert_eq(source.count("func _build_browser("), 1, "exactly one menu builder ships (P39a)")
+
+
+## P38a (S35): a press on empty chrome clears the selection and the preview (the right menu
+## back to browse, CELL INFO cleared, the hint idle).
+func test_p38a_click_away_clears_the_selection_and_preview() -> void:
+	_settle()
+	## The browse state carries the fitted laser; arm a hover preview, then select a cell.
+	var rows := _panel.get_node("%BrowserRows") as VBoxContainer
+	var payload := _payload_of(rows, LASER)
+	assert_true(not payload.is_empty(), "the laser row ships in the browse list")
+	_panel.call(&"_on_browser_hovered", payload, true)
+	assert_true(StringName(_panel.get(&"_candidate")) != &"", "a hover preview is live")
+	assert_true(bool(_panel.call(&"select_cell", WEAPON_SLOT, 0)), "W1 selects")
+	assert_false((_panel.call(&"selected_cell") as Dictionary).is_empty(), "the selection is live")
+	assert_eq(
+		String((_panel.get_node("%CellInfoId") as Label).text), "W1 · WEAPONS CELL",
+		"CELL INFO names the selected cell"
+	)
+	var event := InputEventMouseButton.new()
+	event.button_index = MOUSE_BUTTON_LEFT
+	event.pressed = true
+	event.global_position = (_panel as Control).get_global_rect().get_center()
+	_panel.call(&"_unhandled_input", event)
+	assert_true((_panel.call(&"selected_cell") as Dictionary).is_empty(), "the press clears the cell")
+	assert_eq(StringName(_panel.get(&"_candidate")), &"", "and the hover preview")
+	assert_eq(
+		String((_panel.get_node("%CellInfoId") as Label).text), PanelScript.CELL_INFO_SELECT,
+		"CELL INFO returns to its select prompt"
+	)
+	assert_eq(
+		String((_panel.get_node("%PaneHint") as Label).text), PanelScript.PANE_HINT_FIT,
+		"and the hint returns to idle (P40)"
+	)
+
+
+## A tab strip's labels in order.
+func _tab_labels(strip: HBoxContainer) -> Array[String]:
+	var out: Array[String] = []
+	for child: Node in strip.get_children():
+		out.append((child as Button).text)
+	return out
 
 
 ## ---------------------------------- 9. no wide blocks, no foot band (P38/P39, grep + probe)
@@ -587,9 +653,10 @@ func test_every_row_control_lands_inside_the_window() -> void:
 	)
 	_panel.call(&"set_mode", PanelScript.MODE_BATTERY)
 	_settle()
+	## P39a: the SAME shared menu subtree rides BATTERY CONFIG's right sector.
 	_assert_rows_scroll_contained(
-		_panel.get_node("%ArmoryRows") as VBoxContainer,
-		_panel.get_node("%AmmoScroll") as ScrollContainer, "the EQ container"
+		_panel.get_node("%BrowserRows") as VBoxContainer,
+		_panel.get_node("%BrowserScroll") as ScrollContainer, "the shared menu"
 	)
 
 
@@ -647,6 +714,104 @@ func test_a_owned_row_fits_by_press_and_by_drag() -> void:
 	)
 
 
+## ------------------------------ the mode actions intact (S35-B1/F3, brief section 7)
+##
+## S35-B1/F3: the brief promised a NEW "mode actions intact" row. FIT CELLS' fit / drag / BUY
+## actions and BATTERY CONFIG's drag-to-rack all persist through the profile's own doors.
+func test_mode_actions_intact_through_the_public_doors() -> void:
+	_settle()
+	_profile.call(&"add_module", CANNON, 2)
+	_panel.call(&"refresh_profile", &"modules")
+	## FIT CELLS select-to-fit: the row's own press writes the selected cell.
+	assert_true(bool(_panel.call(&"select_cell", WEAPON_SLOT, 1)), "W2 selects for the fit flow")
+	_panel.call(&"_on_fits_here_pressed", CANNON)
+	var fit: Dictionary = _profile.call(&"fit_for", VANGUARD)
+	assert_eq(
+		StringName(String((fit.get(WEAPON_SLOT, []) as Array)[1])), CANNON,
+		"FIT CELLS' press-to-fit writes the selected cell"
+	)
+	## FIT CELLS drag-to-fit: a list payload lands on the grid cell through `cell_drop`.
+	assert_true(bool(_profile.call(&"clear_fit_slot", VANGUARD, WEAPON_SLOT, 1)), "W2 empties")
+	var cell := {&"type": WEAPON_SLOT, &"token": "W", &"index": 1}
+	var drag: Dictionary = _panel.call(&"drag_inventory", CANNON)
+	assert_true(bool(_panel.call(&"cell_can_drop", cell, drag)), "a FIT CELLS drag reaches the cell")
+	_panel.call(&"cell_drop", cell, drag)
+	fit = _profile.call(&"fit_for", VANGUARD)
+	assert_eq(
+		StringName(String((fit.get(WEAPON_SLOT, []) as Array)[1])), CANNON,
+		"and the drag-to-fit persists it"
+	)
+	assert_true(bool(_profile.call(&"clear_fit_slot", VANGUARD, WEAPON_SLOT, 1)), "W2 empties again")
+	## FIT CELLS BUY: a buyable row's BUY buys then fits the selected cell.
+	assert_true(bool(_panel.call(&"select_cell", ENGINE_SLOT, 0)), "the engine cell selects")
+	var buyable: Dictionary = {}
+	for entry: Dictionary in _panel.get(&"_browser_payloads"):
+		if StringName(entry[&"base"]) == &"e_ion":
+			buyable = entry
+			break
+	assert_true(not buyable.is_empty(), "the e_ion row is buyable")
+	if not buyable.is_empty():
+		var before := int(_profile.call(&"credits"))
+		_panel.call(&"_on_buy_pressed", buyable)
+		assert_true(int(_profile.call(&"credits")) < before, "BUY charged the catalogue price")
+		var bought: Dictionary = _profile.call(&"fit_for", VANGUARD)
+		assert_eq(
+			StringName(String((bought.get(ENGINE_SLOT, []) as Array)[0])), &"e_ion",
+			"and BUY fitted the engine cell"
+		)
+	_panel.call(&"clear_selection")
+	## BATTERY CONFIG drag-to-rack: an owned weapon row drags the rack route and persists.
+	_panel.call(&"set_mode", PanelScript.MODE_BATTERY)
+	_settle()
+	var rack_payload: Dictionary = _panel.call(&"drag_browser", {&"base": CANNON, &"owned": true})
+	assert_eq(
+		StringName(rack_payload.get(PanelScript.DRAG_KEY_KIND, &"")), PanelScript.DRAG_INVENTORY,
+		"a BATTERY CONFIG weapon row drags the rack's inventory payload (P39a)"
+	)
+	assert_true(
+		bool(_panel.call(&"drop", 0, PanelScript.DROP_RACK_BODY, rack_payload)),
+		"and its drop persists through the rack door"
+	)
+	assert_true(
+		not (_profile.call(&"battery_groups", VANGUARD) as Array).is_empty(),
+		"the battery record covers the installed barrel"
+	)
+	_panel.call(&"set_mode", PanelScript.MODE_FIT)
+	_panel.call(&"clear_selection")
+
+
+## ------------------------------------ the battery drag route (S35-B1/F2, P39a)
+##
+## S35-B1/F2: the BATTERY CONFIG menu-row drag route (`drag_browser`'s battery branch) had no
+## gate row - an owned weapon row drags the rack's own `DRAG_INVENTORY` payload and the drop
+## persists it through the rack door.
+func test_a_battery_menu_row_drags_the_rack_route() -> void:
+	_settle()
+	_profile.call(&"add_module", CANNON, 1)
+	_panel.call(&"refresh_profile", &"modules")
+	_panel.call(&"set_mode", PanelScript.MODE_BATTERY)
+	_settle()
+	var payload: Dictionary = _panel.call(&"drag_browser", {&"base": CANNON, &"owned": true})
+	assert_eq(
+		StringName(payload.get(PanelScript.DRAG_KEY_KIND, &"")), PanelScript.DRAG_INVENTORY,
+		"a BATTERY CONFIG owned weapon row drags the DRAG_INVENTORY payload (P39a)"
+	)
+	assert_eq(
+		StringName(payload.get(PanelScript.DRAG_KEY_BASE, &"")), CANNON,
+		"and carries the dragged base id"
+	)
+	assert_true(
+		bool(_panel.call(&"drop", 0, PanelScript.DROP_RACK_BODY, payload)),
+		"the drop door accepts it on the rack body"
+	)
+	var fit: Dictionary = _profile.call(&"fit_for", VANGUARD)
+	assert_true(
+		(fit.get(WEAPON_SLOT, []) as Array).has(String(CANNON)),
+		"and the rack's drop persisted the weapon into the fit"
+	)
+	_panel.call(&"set_mode", PanelScript.MODE_FIT)
+
+
 ## ------------------------------------------ 11. bands + the 160 px trim (P40)
 
 
@@ -674,20 +839,21 @@ func test_every_list_wears_its_band_and_the_160_px_trim() -> void:
 		assert_eq(title_box.custom_minimum_size.x, 160.0, "at the N45 160 px trim column")
 	_panel.call(&"set_mode", PanelScript.MODE_BATTERY)
 	_settle()
-	var eq_band := _panel.get_node("%EqBand") as HBoxContainer
-	assert_true(eq_band.get_child_count() >= 2, "the EQ container wears its band (P40)")
+	## P39a: the SAME shared band rides BATTERY CONFIG's right sector.
+	var eq_band := _panel.get_node("%BrowserBand") as HBoxContainer
+	assert_true(eq_band.get_child_count() >= 2, "the shared menu wears its band (P40)")
 	var eq_words := _band_words(eq_band)
 	assert_true(
-		eq_words.has(PanelScript.EQ_BAND_EQUIPMENT) and eq_words.has(PanelScript.EQ_BAND_COUNT),
-		"with the equipment/count words (%s)" % str(eq_words)
+		eq_words.has(PanelScript.BAND_MODULE) and eq_words.has(PanelScript.BAND_STATE),
+		"with the row stacks' own words (%s)" % str(eq_words)
 	)
-	var eq_rows := _panel.get_node("%ArmoryRows") as VBoxContainer
+	var eq_rows := _panel.get_node("%BrowserRows") as VBoxContainer
 	for child: Node in eq_rows.get_children():
 		var row := child as Control
 		var title_box := row.get_node_or_null(NodePath("RowInner/RowBox/TitleBox")) as Control
 		if title_box == null:
 			continue
-		assert_eq(title_box.custom_minimum_size.x, 160.0, "the EQ rows trim at 160 too (P40)")
+		assert_eq(title_box.custom_minimum_size.x, 160.0, "the shared rows trim at 160 too (P40)")
 
 
 ## A band's own caption words, in order.

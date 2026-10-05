@@ -1,0 +1,279 @@
+{
+  "started_utc": "2026-10-05T18:13:45Z",
+  "model": "gpt-image-2-5-flare-text-to-image",
+  "runs": {
+    "C1": {
+      "rc": 0,
+      "seconds": 43.7,
+      "task_id": "10e00c749f3f48a1f2c44fc93067ee68",
+      "estimate": {
+        "credits": 30,
+        "usd": 0.15,
+        "price_source": "hint"
+      },
+      "local_paths": [
+        "/home/kamil-paluszkiewicz/VajbOrbit/asset-library/raw/chrome-family/20261005-201427/grimdark-painted-sci-fi-semi-realistic-1.png"
+      ],
+      "urls": [
+        "https://tempfile.aiquickdraw.com/gpt-image-2-5/1791224063200-cxji7fkaz3k.png"
+      ],
+      "ok": true
+    },
+    "C2": {
+      "rc": 0,
+      "seconds": 32.7,
+      "task_id": "baf386db4f729a6823230c0c50904b64",
+      "estimate": {
+        "credits": 30,
+        "usd": 0.15,
+        "price_source": "hint"
+      },
+      "local_paths": [
+        "/home/kamil-paluszkiewicz/VajbOrbit/asset-library/raw/chrome-family/20261005-201500/grimdark-painted-sci-fi-semi-realistic-1.png"
+      ],
+      "urls": [
+        "https://tempfile.aiquickdraw.com/gpt-image-2-5/1791224095742-0yu9y72tf0kg.png"
+      ],
+      "ok": true
+    },
+    "C3": {
+      "rc": 0,
+      "seconds": 64.1,
+      "task_id": "adb3b72b43e6d7c29972dea7dcf6922e",
+      "estimate": {
+        "credits": 30,
+        "usd": 0.15,
+        "price_source": "hint"
+      },
+      "local_paths": [
+        "/home/kamil-paluszkiewicz/VajbOrbit/asset-library/raw/chrome-family/20261005-201604/grimdark-painted-sci-fi-semi-realistic-1.png"
+      ],
+      "urls": [
+        "https://tempfile.aiquickdraw.com/images/chatgpt/file_000000006ba081f5a377f86735c3291b.png"
+      ],
+      "ok": true
+    },
+    "C4": {
+      "rc": 0,
+      "seconds": 27.7,
+      "task_id": "0b99d77dbc7997065499e395f2762ea5",
+      "estimate": {
+        "credits": 30,
+        "usd": 0.15,
+        "price_source": "hint"
+      },
+      "local_paths": [
+        "/home/kamil-paluszkiewicz/VajbOrbit/asset-library/raw/chrome-family/20261005-201632/grimdark-painted-sci-fi-semi-realistic-1.png"
+      ],
+      "urls": [
+        "https://tempfile.aiquickdraw.com/gpt-image-2-5/1791224185010-b7e311q90t5.png"
+      ],
+      "ok": true
+    },
+    "C5": {
+      "rc": 0,
+      "seconds": 27.3,
+      "task_id": "2d4912b76704cf0e0a581975a2279079",
+      "estimate": {
+        "credits": 30,
+        "usd": 0.15,
+        "price_source": "hint"
+      },
+      "local_paths": [
+        "/home/kamil-paluszkiewicz/VajbOrbit/asset-library/raw/chrome-family/20261005-201700/grimdark-painted-sci-fi-semi-realistic-1.png"
+      ],
+      "urls": [
+        "https://tempfile.aiquickdraw.com/gpt-image-2-5/1791224215319-a6ytaw4qfka.png"
+      ],
+      "ok": true
+    },
+    "C6": {
+      "rc": 0,
+      "seconds": 33.2,
+      "task_id": "a31e12782bc1b689c7aebb3bd885fe3a",
+      "estimate": {
+        "credits": 30,
+        "usd": 0.15,
+        "price_source": "hint"
+      },
+      "local_paths": [
+        "/home/kamil-paluszkiewicz/VajbOrbit/asset-library/raw/chrome-family/20261005-201732/grimdark-painted-sci-fi-semi-realistic-1.png"
+      ],
+      "urls": [
+        "https://tempfile.aiquickdraw.com/gpt-image-2-5/1791224249376-mecy4r6je88.png"
+      ],
+      "ok": true
+    },
+    "C7": {
+      "rc": 0,
+      "seconds": 199.6,
+      "task_id": "898922324608524f8df442b87a7dd500",
+      "estimate": {
+        "credits": 30,
+        "usd": 0.15,
+        "price_source": "hint"
+      },
+      "local_paths": [
+        "/home/kamil-paluszkiewicz/VajbOrbit/asset-library/raw/chrome-family/20261005-202052/grimdark-painted-sci-fi-semi-realistic-1.png"
+      ],
+      "urls": [
+        "https://tempfile.aiquickdraw.com/gpt-image-2-5/1791224446855-3j7uj3896oe.png"
+      ],
+      "ok": true
+    },
+    "C8": {
+      "rc": 0,
+      "seconds": 48.3,
+      "task_id": "c321e7af3a5cba60ac7cb08990dca61d",
+      "estimate": {
+        "credits": 30,
+        "usd": 0.15,
+        "price_source": "hint"
+      },
+      "local_paths": [
+        "/home/kamil-paluszkiewicz/VajbOrbit/asset-library/raw/chrome-family/20261005-202141/grimdark-painted-sci-fi-semi-realistic-1.png"
+      ],
+      "urls": [
+        "https://tempfile.aiquickdraw.com/gpt-image-2-5/1791224499522-3y5bl0jy8ix.png"
+      ],
+      "ok": true
+    },
+    "C9": {
+      "rc": 0,
+      "seconds": 22.3,
+      "task_id": "42c39720a950c3354a34fa6823d2f261",
+      "estimate": {
+        "credits": 30,
+        "usd": 0.15,
+        "price_source": "hint"
+      },
+      "local_paths": [
+        "/home/kamil-paluszkiewicz/VajbOrbit/asset-library/raw/chrome-family/20261005-202203/grimdark-painted-sci-fi-semi-realistic-1.png"
+      ],
+      "urls": [
+        "https://tempfile.aiquickdraw.com/gpt-image-2-5/1791224520151-vbron5s3fsq.png"
+      ],
+      "ok": true
+    },
+    "C10": {
+      "rc": 0,
+      "seconds": 69.5,
+      "task_id": "1b32632951e626a679dc7a8f28facd97",
+      "estimate": {
+        "credits": 30,
+        "usd": 0.15,
+        "price_source": "hint"
+      },
+      "local_paths": [
+        "/home/kamil-paluszkiewicz/VajbOrbit/asset-library/raw/chrome-family/20261005-202312/grimdark-painted-sci-fi-semi-realistic-1.png"
+      ],
+      "urls": [
+        "https://tempfile.aiquickdraw.com/images/chatgpt/file_0000000097d8822f846925491eef9dda.png"
+      ],
+      "ok": true
+    },
+    "C11": {
+      "rc": 0,
+      "seconds": 48.7,
+      "task_id": "dc1233fc36fe3789225850013798ff5b",
+      "estimate": {
+        "credits": 30,
+        "usd": 0.15,
+        "price_source": "hint"
+      },
+      "local_paths": [
+        "/home/kamil-paluszkiewicz/VajbOrbit/asset-library/raw/chrome-family/20261005-202401/grimdark-painted-sci-fi-semi-realistic-1.png"
+      ],
+      "urls": [
+        "https://tempfile.aiquickdraw.com/gpt-image-2-5/1791224636714-x2l2ahof57.png"
+      ],
+      "ok": true
+    },
+    "C12": {
+      "rc": 0,
+      "seconds": 43.2,
+      "task_id": "fa6a67ecf0389b96f7876e44ec605d54",
+      "estimate": {
+        "credits": 30,
+        "usd": 0.15,
+        "price_source": "hint"
+      },
+      "local_paths": [
+        "/home/kamil-paluszkiewicz/VajbOrbit/asset-library/raw/chrome-family/20261005-202444/grimdark-painted-sci-fi-semi-realistic-1.png"
+      ],
+      "urls": [
+        "https://tempfile.aiquickdraw.com/gpt-image-2-5/1791224682322-8h2hf4uaecg.png"
+      ],
+      "ok": true
+    },
+    "BG-1": {
+      "rc": 0,
+      "seconds": 27.5,
+      "task_id": "b2c3f874c46404b420482a795879975b",
+      "estimate": {
+        "credits": 30,
+        "usd": 0.15,
+        "price_source": "hint"
+      },
+      "local_paths": [
+        "/home/kamil-paluszkiewicz/VajbOrbit/asset-library/raw/chrome-family/20261005-202512/grimdark-painted-sci-fi-semi-realistic-1.png"
+      ],
+      "urls": [
+        "https://tempfile.aiquickdraw.com/gpt-image-2-5/1791224708552-4ejl6mux0kg.png"
+      ],
+      "ok": true
+    },
+    "BG-2": {
+      "rc": 0,
+      "seconds": 38.1,
+      "task_id": "6c1492f3d82d8d199663283635a1b830",
+      "estimate": {
+        "credits": 30,
+        "usd": 0.15,
+        "price_source": "hint"
+      },
+      "local_paths": [
+        "/home/kamil-paluszkiewicz/VajbOrbit/asset-library/raw/chrome-family/20261005-202550/grimdark-painted-sci-fi-semi-realistic-1.png"
+      ],
+      "urls": [
+        "https://tempfile.aiquickdraw.com/gpt-image-2-5/1791224746384-5to2vgpzps.png"
+      ],
+      "ok": true
+    },
+    "BG-3": {
+      "rc": 0,
+      "seconds": 27.4,
+      "task_id": "cebbf5f384a6c16a32008069d13bc342",
+      "estimate": {
+        "credits": 30,
+        "usd": 0.15,
+        "price_source": "hint"
+      },
+      "local_paths": [
+        "/home/kamil-paluszkiewicz/VajbOrbit/asset-library/raw/chrome-family/20261005-202617/grimdark-painted-sci-fi-semi-realistic-1.png"
+      ],
+      "urls": [
+        "https://tempfile.aiquickdraw.com/gpt-image-2-5/1791224776636-cmcc3vwg2ga.png"
+      ],
+      "ok": true
+    },
+    "BG-4": {
+      "rc": 0,
+      "seconds": 288.4,
+      "task_id": "9b50bbf9033373afde733065f197e759",
+      "estimate": {
+        "credits": 30,
+        "usd": 0.15,
+        "price_source": "hint"
+      },
+      "local_paths": [
+        "/home/kamil-paluszkiewicz/VajbOrbit/asset-library/raw/chrome-family/20261005-203106/grimdark-painted-sci-fi-semi-realistic-1.png"
+      ],
+      "urls": [
+        "https://tempfile.aiquickdraw.com/gpt-image-2-5/1791225063404-mzct8s91wr9.png"
+      ],
+      "ok": true
+    }
+  },
+  "updated_utc": "2026-10-05T18:31:06Z"
+}

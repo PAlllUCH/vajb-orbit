@@ -180,29 +180,36 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
-[node name="FamilyTabs" type="HBoxContainer" parent="ModeHost/FitCells/FitSectors/FitRight"]
+[node name="MenuSector" type="VBoxContainer" parent="ModeHost/FitCells/FitSectors/FitRight"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="FamilyTabs" type="HBoxContainer" parent="ModeHost/FitCells/FitSectors/FitRight/MenuSector"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="BrowserCaption" type="Label" parent="ModeHost/FitCells/FitSectors/FitRight"]
+[node name="BrowserCaption" type="Label" parent="ModeHost/FitCells/FitSectors/FitRight/MenuSector"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"SectionHeader"
 text = "MODULES"
 
-[node name="BrowserBand" type="HBoxContainer" parent="ModeHost/FitCells/FitSectors/FitRight"]
+[node name="BrowserBand" type="HBoxContainer" parent="ModeHost/FitCells/FitSectors/FitRight/MenuSector"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="BrowserScroll" type="ScrollContainer" parent="ModeHost/FitCells/FitSectors/FitRight"]
+[node name="BrowserScroll" type="ScrollContainer" parent="ModeHost/FitCells/FitSectors/FitRight/MenuSector"]
 unique_name_in_owner = true
 horizontal_scroll_mode = 0
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="BrowserRows" type="VBoxContainer" parent="ModeHost/FitCells/FitSectors/FitRight/BrowserScroll"]
+[node name="BrowserRows" type="VBoxContainer" parent="ModeHost/FitCells/FitSectors/FitRight/MenuSector/BrowserScroll"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -349,41 +356,6 @@ theme_type_variation = &"StationCaption"
 text = "FITTED WEAPONS ONLY - DRAG BETWEEN RACKS TO REGROUP"
 
 [node name="EqSector" type="VBoxContainer" parent="ModeHost/BatteryConfig/BatterySectors"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 6
-
-[node name="EqTabs" type="HBoxContainer" parent="ModeHost/BatteryConfig/BatterySectors/EqSector"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 6
-
-[node name="AmmoMargin" type="VBoxContainer" parent="ModeHost/BatteryConfig/BatterySectors/EqSector"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-theme_override_constants/separation = 2
-
-[node name="AmmoCaption" type="Label" parent="ModeHost/BatteryConfig/BatterySectors/EqSector/AmmoMargin"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"StationCaption"
-text = "AMMUNITION"
-
-[node name="EqBand" type="HBoxContainer" parent="ModeHost/BatteryConfig/BatterySectors/EqSector/AmmoMargin"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="AmmoScroll" type="ScrollContainer" parent="ModeHost/BatteryConfig/BatterySectors/EqSector/AmmoMargin"]
-unique_name_in_owner = true
-horizontal_scroll_mode = 0
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="ArmoryRows" type="VBoxContainer" parent="ModeHost/BatteryConfig/BatterySectors/EqSector/AmmoMargin/AmmoScroll"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3

@@ -6,6 +6,19 @@
 
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-25 clear-outs (owner asks):** every closed slice folder moved to the system trash (last git tree carrying them: `7a081ef`), old session reports live in `_state/_archive/`, and the two dispatch files were purged to live-items-only (2026-09-25 ter). Citation paths into purged trees name historical files.
 
+**Updated 2026-10-05 (the owner's fix round closed — S35 + G1 + D22):** three
+parallel dispatches. **S35** (B1 `hyper/deepseek-v4.1-flash` @ xhigh → R1
+`hyper/glm-5.3-flash` @ max **pass** 0 HIGH / 0 MED → F1 on the integrity
+MED): one `SELL UNITS` selector with `MAX`/`0` quick buttons, click-away
+preview clear, one shared menu in both ARMORY modes; gate **1132 → 1136 →
+1138/0** ×2. **D21-G1** (glm flash @ max driving `gpt-image-2-5-flare`): the
+16-run chrome batch — 16/16 aspect PASS, $0.80, contact sheet approved by the
+owner's eye + his keep-list (every native surface stays). **D22-P1** (deepseek
+@ xhigh): screen integrity **PASS** (18 screens) — F01 cured by S35-F1, F02
+doc-synced, T-136–T-139 filed. Verify green vs `s35_start`. **Next: the
+owner's call on `slices/D21-chrome-family/S36_proposal.md` → D21-G2 (cut/key)
+→ S36 (wire); then coder 30 (S24).**
+
 **Updated 2026-10-05 (S34 closed — the refinery queue ships):** B1
 (`hyper/deepseek-v4.1-flash` @ xhigh) → R1 (`hyper/glm-5.3-flash` @ max,
 **blocked** — 1 MED / 4 LOW) → F1 cured the MED at the root (a done job now
@@ -502,16 +515,15 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | 20 | designer 20 | **D21 the one true-aspect chrome family** (`UI_SPEC.md` §15 + `UI_CHROME_ASSETS_SPEC.md` §13) — **done 2026-10-05**: 2 HIGH + 3 MED cured by F1; cost 16 runs / $0.80; T-131 open | beside coder 39 | `docs/design` + `staging/mockup` only — the D18/S28 parallel-pair shape |
 | 21 | coder 39 | **S33 shell v3 — armory two sectors + the exchange sell cluster** (`STATION_HUB.md` §21.1 P38–P41 + `UI_SPEC.md` §14.1 N48/N49) — **done 2026-10-05**: 1110 → 1121/0 ×2; 2 HIGH + 2 MED cured by F1; T-130 closed | beside designer 20 | `vajb-orbit/ui` + `tests` only; rewrote `armory_panel.*`/`exchange_panel.*` after S32 |
 | 22 | coder 40 | **S34 the refinery queue** (`docs/gameplay/04_refinery.md` §7 + `STATION_HUB.md` §21.3 P42–P43) — **done 2026-10-05**: 1121 → 1132/0 ×2; 1 MED cured by F1 + 2 LOW ride-alongs; T-133 decided by default | coder 39 | ran sequentially after S33 |
-| 23 | coder 41 | **S35 owner fixes** (`UI_SPEC.md` §14 N49-amended + `STATION_HUB.md` §21.1 P38a/P39a — one sell selector with MAX/0, click-away preview clear, one shared right menu) — **live 2026-10-05**; beside **D21-G1** (chrome generation: `hyper/glm-5.3-flash` @ max driving `gpt-image-2-5-flare-text-to-image`, 16 runs = $0.80) and **D22-P1** (screen integrity: `hyper/deepseek-v4.1-flash` @ xhigh) | S34 (done) | three disjoint sets: `vajb-orbit/ui`+`tests` / `asset-library`+the D21 slice / `tests` probes + the D22 slice; S35's two files are judged settled-state-only by D22 (its brief's concurrency note) |
+| 23 | coder 41 | **S35 owner fixes** — **done 2026-10-05**: 1132 → 1138/0 ×2 (B1 +4, F1 +2); R1 **pass** (0 HIGH / 0 MED / 4 LOW); F1 also cured D22's F01; beside D21-G1 (16/16, $0.80) and D22-P1 (integrity PASS) | S34 (done) | three disjoint sets — ran as the third parallel triple |
 
 Designer items 16–19 and coders 34–36 are closed — the overhaul round and its
 shell-v2 follow-up are **shipped** (station: TERMINAL drawer, OVERVIEW landing
-pane, popup descriptions, one skeleton; gate 1093/0). **Next (live
-2026-10-05): coder 41 (S35 owner fixes) + D21-G1 (the chrome generation
-batch) + D22-P1 (the screen-integrity review) in parallel; then the owner's
-review-sheet pick → S36 (the chrome re-skin — earlier notes' "S35" build
-placeholder); then coder 30 (S24 world identity)** — its five-piece predates
-shell v2 AND the 2026-10-05 rounds, so the brief re-checks against
+pane, popup descriptions, one skeleton; gate 1093/0). **Next (live 2026-10-05, round closed): the owner's call on
+`slices/D21-chrome-family/S36_proposal.md` (keep/swap map + 4 open calls) →
+D21-G2 (cut/key/center) → S36 (the chrome re-skin — earlier notes' "S35"
+build placeholder); then coder 30 (S24 world identity)** — its five-piece
+predates shell v2 AND the 2026-10-05 rounds, so the brief re-checks against
 `UI_SPEC.md` §12–§15 + `STATION_HUB.md` §19–§21 before dispatch. Playtest
 pass #1 (the owner's, `19_testing_notes.md`'s eye list) runs alongside pos 1;
 build 2 + the tester template are phase exit criteria. Every brief's §11 tick
