@@ -293,7 +293,7 @@ func _close_barrel(panel: Control, rack: int, position: int) -> void:
 
 
 func _inventory_rows(panel: Control) -> Control:
-	return panel.get_node("%InventoryRows") as Control
+	return panel.get_node("%BrowserRows") as Control
 
 
 ## One inventory row's drag payload, exactly as its own `_get_drag_data` builds it: the
@@ -518,29 +518,28 @@ func test_the_module_rows_return_as_the_p4_inventory_browser() -> void:
 	assert_true(
 		panel.get_node_or_null("%RackRows") != null, "the battery racks are drawn"
 	)
+	## S33 (STATION_HUB section 21.1 P38): the FITS HERE wide block retires - the one list is
+	## the FIT CELLS mode's right sector, in its browse state with no cell selected.
+	var list_rows := panel.get_node("%BrowserRows") as Control
 	assert_eq(
-		String((panel.get_node("%InventoryCaption") as Label).text),
-		"OWNED WEAPONS - 0 OWNED",
-		"S32 (STATION_HUB section 20.1 P33): FITS HERE falls back to the owned list with no cell"
+		String((panel.get_node("%BrowserCaption") as Label).text),
+		PanelScript.LIST_CAPTION_BROWSE % list_rows.get_child_count(),
+		"the one list captions the rows it draws"
 	)
 	assert_true(
-		panel.get_node_or_null("%InventoryRows") != null, "and so is the FITS HERE list"
+		panel.get_node_or_null("%BrowserRows") != null, "and the list's rows box ships"
 	)
-	assert_true(panel.get_node_or_null("%BrowserRows") != null, "P4's inventory browser ships")
 	assert_true(
-		String((panel.get_node("%BrowserCaption") as Label).text)
-			== "MODULES · OWNED & BUYABLE",
-		"under P8's own caption with no cell narrowing it"
+		panel.get_node_or_null("%BrowserBand") != null, "with its AUCTION-idiom band (P40)"
 	)
-	for constant: String in ["STATUS_FITTED", "ACTION_BUY_FIT", "BROWSER_CAPTION"]:
+	for constant: String in ["STATUS_FITTED", "ACTION_BUY_FIT"]:
 		assert_true(_has_member(PanelScript, constant), "the script carries %s" % constant)
 	for method: String in ["module_row_ids", "install_module", "remove_selected"]:
 		assert_true(_has_member(PanelScript, method), "the script carries %s()" % method)
-	## The scene file itself carries the browser's caption and its rows box: the merge is
-	## in the shipped scene, not only in the script. S32 renamed the caption to
-	## `BUYABLE THAT FITS` (P33) while keeping the rows box.
+	## The scene file itself carries the list's caption and its rows box: the merge is
+	## in the shipped scene, not only in the script.
 	var scene := FileAccess.get_file_as_string("res://ui/station/armory_panel.tscn")
-	assert_true(scene.contains("BUYABLE"), "the pane scene names its BUYABLE section")
+	assert_true(scene.contains("BrowserCaption"), "the pane scene names its list caption")
 	assert_true(scene.contains("BrowserRows"), "and carries the rows box for one")
 
 
@@ -755,11 +754,9 @@ func test_a_rack_states_its_slowest_members_cycle() -> void:
 ## does not carry. An account owning none shows the pane's own empty state instead.
 func test_the_inventory_lists_the_owned_weapon_ids() -> void:
 	var panel := _mount()
-	assert_eq(_inventory_rows(panel).get_child_count(), 1, "no weapons owned: one empty-state line")
-	assert_eq(
-		String((_inventory_rows(panel).get_child(0) as Label).text),
-		PanelScript.INVENTORY_EMPTY,
-		"which is the pane's own words"
+	assert_true(
+		_inventory_rows(panel).get_child_count() >= 1,
+		"a clean fixture still lists the ship's fitted equipment (bag units UNION fitted bases)"
 	)
 	_profile.call(&"add_module", &"w_laser", 1)
 	_profile.call(&"add_module", &"w_railgun", 1)

@@ -1,0 +1,19 @@
+You are S33-F1, the fixer for wave S33 of the VajbOrbit workspace (Godot 4.7.2; workspace /home/kamil-paluszkiewicz/VajbOrbit; game project vajb-orbit/). Your deliverable: cure exactly S33-R1's HIGH/MED findings (items 1-4 below), nothing else. You may write only vajb-orbit/ui/ and vajb-orbit/tests/ (VAJB_WORKER_FILES enforces it). Never touch docs/, game/, autoload/, addons/. Today is 2026-10-05.
+
+LAW (read in this order):
+1. .agents/gen/slices/S33-shell-v3/S33-R1_review.md - the findings and the fixer list (your item list is its numbered list, verbatim below).
+2. .agents/gen/slices/S33-shell-v3/S33_BRIEF.md - the pinned interface + acceptance list.
+3. docs/design/STATION_HUB.md section 21.1 (P38-P41); docs/design/UI_SPEC.md section 14.1 (N48/N49) + section 11.1 (A5.5/N24) + section 3.10 Amendment 5.
+
+FIX LIST (S33-R1's order):
+1. F1 (HIGH): source the browse state from bag units UNION fitted bases - a fitted-only base lists (tag FIT, count reading its fitted state, e.g. FITTED), a bag-only base lists STORED, a base both fitted and in the bag lists FIT with its bag count; keep the family-tab filter. See armory_panel.gd:4113 and :4497-4500 (_bag_units -> module_count) and player_profile.gd:1108 (take_instance removes from the bag). Re-run the two-state rows; ADD a row asserting a fitted-only module lists.
+2. F2 (HIGH): call _update_hint() from _select (armory_panel.gd:3255) and clear_selection (:3295) - a content swap, N31-legal. ADD a hint row (mode swap + selection + clear).
+3. F3 (MED): restore the P32 row deleted from tests/test_s32_armory_modes.gd - exactly one mode visible both ways + the per-mode hint swap (the old row is at git show HEAD:vajb-orbit/tests/test_s32_armory_modes.gd:127).
+4. F4 (MED): restore the "an empty cell reads EMPTY" assertion inside the CELL INFO row (the old assertion is at git show HEAD:...test_s32_armory_modes.gd:175-193).
+5. Optional ride-along: the stale comment at armory_panel.gd:3697 ("a FITS HERE row's own inventory drag"). F5's three deviations stand as accepted - change nothing there. Change nothing outside this list.
+
+TESTS: the two-state rows re-run green; the two restored rows + the two added rows land; every touched row is disclosed in the report (old -> new -> why).
+
+GATE (before and after): XDG_DATA_HOME=$(mktemp -d) ~/.local/bin/godot --headless --path vajb-orbit res://tests/headless_runner.tscn --quit-after 1200 2>&1 | grep -E '\[SUMMARY\]|SCRIPT ERROR' - twice on fresh scratch after. Always grep [SUMMARY]: the line prints before Godot's exit-time leak errors. Record every run's line. Never leave a command running in the background; bound every probe.
+
+REPORT: .agents/gen/slices/S33-shell-v3/S33-F1_report.md (max 120 lines, shaped like .agents/gen/_templates/REPORT.md): per-item outcome (F1-F4 each one line with file:line or probe numbers), Deviations (only if an item proved unimplementable - what, why, the one-line reversal), Evidence (gate lines + probe numbers), Files touched, the restored/added test rows listed explicitly. Never silently change a pin.

@@ -2996,6 +2996,19 @@
    ],
    "signals": []
   },
+  "res://tests/probe_s33_review.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "SceneTree",
+   "refs": [
+    "res://ui/station/armory_panel.gd",
+    "res://ui/station/armory_panel.tscn",
+    "res://ui/station/exchange_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
   "res://tests/probe_s3_levers.gd": {
    "autoload": "",
    "class_name": "",
@@ -5569,16 +5582,15 @@
     "plate.pressed \u2192 _on_cell_pressed.bind(payload",
     "resized \u2192 _lay",
     "row.focus_entered \u2192 _on_browser_focused.bind(row",
-    "row.focus_entered \u2192 _on_inventory_focused.bind(base_id",
+    "row.focus_entered \u2192 _on_eq_focused.bind(row",
     "row.mouse_entered \u2192 _on_browser_hovered.bind(payload",
-    "row.mouse_entered \u2192 _on_inventory_inspected.bind(base_id",
+    "row.mouse_entered \u2192 _on_eq_hovered.bind(payload",
     "row.mouse_entered \u2192 _on_rack_inspected.bind(salvo_line",
     "row.mouse_exited \u2192 _on_browser_hovered.bind(payload",
-    "row.mouse_exited \u2192 _on_inventory_inspected.bind(base_id",
+    "row.mouse_exited \u2192 _on_eq_hovered.bind(payload",
     "row.mouse_exited \u2192 _on_rack_inspected.bind(salvo_line",
     "row.pressed \u2192 _on_browser_pressed.bind(payload",
-    "row.pressed \u2192 _on_fits_here_pressed.bind(base_id",
-    "row.resized \u2192 _on_inventory_resized.bind(row",
+    "row.pressed \u2192 _on_eq_pressed.bind(payload",
     "strip.resized \u2192 _position_bay.bind(row"
    ],
    "extends": "Control",
@@ -5656,6 +5668,7 @@
     "_inspect_cluster.inspect_chip_pressed \u2192 inspect_focused",
     "_sell.pressed \u2192 _on_sell_pressed",
     "_sell_all.pressed \u2192 _on_sell_all_pressed",
+    "_sell_plus.pressed \u2192 _on_sell_units_pressed.bind(1",
     "_step_plus.pressed \u2192 _on_step_pressed.bind(1",
     "row.focus_entered \u2192 _on_row_focused.bind(row",
     "row.mouse_entered \u2192 _on_row_hovered.bind(payload",

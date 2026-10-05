@@ -1,0 +1,17 @@
+# d21_census unique counts (2026-10-05, D21-F1 — D21-R1 fix item F6)
+#
+# The three raw greps (grep_stylebox.txt, grep_theme_override.txt,
+# grep_plate.txt) were run over three paths where `ui` already recurses into
+# `ui/hud` and `ui/screens`, so every line of those subtrees appears twice in
+# the saved output. Unique counts below are `sort -u` over each saved file
+# (identical file:line:text lines collapse):
+
+grep_stylebox.txt        raw   69  unique   47
+grep_theme_override.txt  raw  519  unique  337
+grep_plate.txt           raw  217  unique  148
+
+totals                   raw  805  unique  632
+
+# Coverage conclusions are unaffected (the `ui` pass alone covers every file in
+# the census scope); the raw files stay as provenance of the run as issued.
+# UI_SPEC.md section 15.1 quotes the unique counts and names both figures.

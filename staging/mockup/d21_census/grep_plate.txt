@@ -1,0 +1,217 @@
+ui/screens/_mockup_station.gd:220:		&"id": &"salvage_plate",
+ui/screens/_mockup_station.gd:443:	_refresh_plate_textures()
+ui/screens/_mockup_station.gd:644:		var plate := _make_slot_plate(_hardpoint_slots, &"SlotButtonWeapon", 48.0)
+ui/screens/_mockup_station.gd:649:func _make_slot_plate(parent: HBoxContainer, variation: StringName, size: float) -> TextureButton:
+ui/screens/_mockup_station.gd:662:	_apply_plate_textures(plate)
+ui/screens/_mockup_station.gd:666:func _apply_plate_textures(plate: TextureButton) -> void:
+ui/screens/_mockup_station.gd:668:	plate.texture_normal = _plate_texture(variation, &"normal")
+ui/screens/_mockup_station.gd:669:	plate.texture_hover = _plate_texture(variation, &"hover")
+ui/screens/_mockup_station.gd:670:	plate.texture_pressed = _plate_texture(variation, &"pressed")
+ui/screens/_mockup_station.gd:671:	plate.texture_disabled = _plate_texture(variation, &"disabled")
+ui/screens/_mockup_station.gd:674:func _plate_texture(variation: StringName, state: StringName) -> Texture2D:
+ui/screens/_mockup_station.gd:683:func _refresh_plate_textures() -> void:
+ui/screens/_mockup_station.gd:688:				_apply_plate_textures(plate)
+ui/screens/_mockup_station.gd:693:		var plate := _make_slot_plate(_cargo_slots, &"SlotButtonCargo", 40.0)
+ui/screens/main_menu.gd:174:		var plate := _plate(index)
+ui/screens/main_menu.gd:253:	var plate := _plate(index)
+ui/screens/main_menu.gd:258:func _plate(index: int) -> Button:
+ui/hud/ship_status_screen.gd:170:var _plate: TextureRect = null
+ui/hud/ship_status_screen.gd:237:	_build_plate()
+ui/hud/ship_status_screen.gd:267:func _build_plate() -> void:
+ui/hud/ship_status_screen.gd:268:	_plate = TextureRect.new()
+ui/hud/ship_status_screen.gd:269:	_plate.name = NODE_PLATE
+ui/hud/ship_status_screen.gd:270:	_plate.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+ui/hud/ship_status_screen.gd:271:	_plate.stretch_mode = TextureRect.STRETCH_SCALE
+ui/hud/ship_status_screen.gd:272:	_plate.set_anchors_preset(Control.PRESET_FULL_RECT)
+ui/hud/ship_status_screen.gd:273:	_plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+ui/hud/ship_status_screen.gd:274:	_body.add_child(_plate)
+ui/hud/ship_status_screen.gd:410:	_plate.texture = _style.texture(_style.status_panel_path)
+ui/hud/ship_status_screen.gd:411:	_wells.configure(_style, _plate.texture == null)
+ui/hud/ship_status_screen.gd:665:		## `_make_slot_cell` parents its own plate (the shipyard's `_make_plate` convention).
+ui/hud/ship_status_screen.gd:694:	_apply_plate_textures(plate)
+ui/hud/ship_status_screen.gd:772:func _apply_plate_textures(plate: TextureButton) -> void:
+ui/hud/ship_status_screen.gd:773:	plate.texture_normal = _plate_texture(PLATE_VARIATION, &"normal")
+ui/hud/ship_status_screen.gd:774:	plate.texture_hover = _plate_texture(PLATE_VARIATION, &"hover")
+ui/hud/ship_status_screen.gd:775:	plate.texture_pressed = _plate_texture(PLATE_VARIATION, &"pressed")
+ui/hud/ship_status_screen.gd:776:	plate.texture_disabled = _plate_texture(PLATE_VARIATION, &"disabled")
+ui/hud/ship_status_screen.gd:779:func _plate_texture(variation: StringName, state: StringName) -> Texture2D:
+ui/hud/ship_status_screen.gd:1050:	return _plate
+ui/hud/ship_status_screen.gd:1111:	var _plate_missing: bool = false
+ui/hud/ship_status_screen.gd:1115:		_plate_missing = plate_missing
+ui/hud/ship_status_screen.gd:1127:		if _plate_missing:
+ui/hud/cockpit_cluster.gd:430:	var _plate_missing: bool = false
+ui/hud/cockpit_cluster.gd:435:		_plate_missing = plate_missing
+ui/hud/cockpit_cluster.gd:447:		if _plate_missing:
+ui/components/slot_button.gd:39:	_apply_plates(theme_type_variation)
+ui/components/slot_button.gd:47:		_apply_plates(theme_type_variation)
+ui/components/slot_button.gd:66:	_apply_plates(variation)
+ui/components/slot_button.gd:84:	_apply_plates(variation)
+ui/components/slot_button.gd:108:func _apply_plates(variation: StringName) -> void:
+ui/components/slot_button.gd:111:	var normal: Texture2D = _plate_texture(variation, STATE_NORMAL)
+ui/components/slot_button.gd:112:	var hover: Texture2D = _plate_texture(variation, STATE_HOVER)
+ui/components/slot_button.gd:113:	var pressed_plate: Texture2D = _plate_texture(variation, STATE_PRESSED)
+ui/components/slot_button.gd:114:	var disabled_plate: Texture2D = _plate_texture(variation, STATE_DISABLED)
+ui/components/slot_button.gd:119:	if pressed_plate != null:
+ui/components/slot_button.gd:120:		texture_pressed = pressed_plate
+ui/components/slot_button.gd:121:	if disabled_plate != null:
+ui/components/slot_button.gd:122:		texture_disabled = disabled_plate
+ui/components/slot_button.gd:125:func _plate_texture(variation: StringName, state: StringName) -> Texture2D:
+ui/screens/station.gd:203:@onready var _station_plate: PanelContainer = %StationPlate
+ui/screens/station.gd:232:var _drawer_plate: PanelContainer = null
+ui/screens/station.gd:467:	_drawer_plate = PanelContainer.new()
+ui/screens/station.gd:468:	_drawer_plate.name = "DrawerPlate"
+ui/screens/station.gd:469:	_drawer_plate.theme_type_variation = &"PanelRaised"
+ui/screens/station.gd:470:	_drawer_plate.custom_minimum_size = Vector2(DRAWER_SLIDE_WIDTH, 0.0)
+ui/screens/station.gd:471:	_drawer_slide.add_child(_drawer_plate)
+ui/screens/station.gd:475:	_drawer_plate.anchor_left = 0.0
+ui/screens/station.gd:476:	_drawer_plate.anchor_top = 0.0
+ui/screens/station.gd:477:	_drawer_plate.anchor_right = 1.0
+ui/screens/station.gd:478:	_drawer_plate.anchor_bottom = 1.0
+ui/screens/station.gd:479:	_drawer_plate.offset_left = 0.0
+ui/screens/station.gd:480:	_drawer_plate.offset_top = 0.0
+ui/screens/station.gd:481:	_drawer_plate.offset_right = 0.0
+ui/screens/station.gd:482:	_drawer_plate.offset_bottom = 0.0
+ui/screens/station.gd:487:	_drawer_plate.add_child(rail_margin)
+ui/screens/station.gd:740:		_station_plate.add_theme_stylebox_override(&"panel", box)
+ui/screens/station.gd:894:	_drawer_plate.position.x = -DRAWER_SLIDE_WIDTH
+ui/screens/station.gd:901:	_reset_plate_box()
+ui/screens/station.gd:902:	_reset_plate_box.call_deferred()
+ui/screens/station.gd:907:func _reset_plate_box() -> void:
+ui/screens/station.gd:908:	if _drawer_plate == null:
+ui/screens/station.gd:910:	_drawer_plate.offset_top = 0.0
+ui/screens/station.gd:911:	_drawer_plate.offset_bottom = 0.0
+ui/screens/station.gd:934:	_drawer_tween.tween_property(_drawer_plate, "position:x", x, seconds)
+ui/screens/_mockup_station.gd:220:		&"id": &"salvage_plate",
+ui/screens/_mockup_station.gd:443:	_refresh_plate_textures()
+ui/screens/_mockup_station.gd:644:		var plate := _make_slot_plate(_hardpoint_slots, &"SlotButtonWeapon", 48.0)
+ui/screens/_mockup_station.gd:649:func _make_slot_plate(parent: HBoxContainer, variation: StringName, size: float) -> TextureButton:
+ui/screens/_mockup_station.gd:662:	_apply_plate_textures(plate)
+ui/screens/_mockup_station.gd:666:func _apply_plate_textures(plate: TextureButton) -> void:
+ui/screens/_mockup_station.gd:668:	plate.texture_normal = _plate_texture(variation, &"normal")
+ui/screens/_mockup_station.gd:669:	plate.texture_hover = _plate_texture(variation, &"hover")
+ui/screens/_mockup_station.gd:670:	plate.texture_pressed = _plate_texture(variation, &"pressed")
+ui/screens/_mockup_station.gd:671:	plate.texture_disabled = _plate_texture(variation, &"disabled")
+ui/screens/_mockup_station.gd:674:func _plate_texture(variation: StringName, state: StringName) -> Texture2D:
+ui/screens/_mockup_station.gd:683:func _refresh_plate_textures() -> void:
+ui/screens/_mockup_station.gd:688:				_apply_plate_textures(plate)
+ui/screens/_mockup_station.gd:693:		var plate := _make_slot_plate(_cargo_slots, &"SlotButtonCargo", 40.0)
+ui/station/shipyard_panel.gd:236:		_refresh_plate_textures()
+ui/station/shipyard_panel.gd:586:## glyph, wired to the section 5.2 amendment's hover line. `_make_plate` parents it (it always
+ui/station/shipyard_panel.gd:589:	var plate := _make_plate(_hardpoints, PLATE_VARIATION, PLATE_SIZE)
+ui/station/shipyard_panel.gd:593:	# pointer, which is what the section 5.2 amendment's hover line needs (`_make_plate` leaves
+ui/station/shipyard_panel.gd:596:	plate.mouse_entered.connect(_on_plate_hovered.bind(cell))
+ui/station/shipyard_panel.gd:597:	plate.mouse_exited.connect(_on_plate_unhovered)
+ui/station/shipyard_panel.gd:968:func _on_plate_hovered(cell: Dictionary) -> void:
+ui/station/shipyard_panel.gd:976:func _on_plate_unhovered() -> void:
+ui/station/shipyard_panel.gd:1029:func _make_plate(parent: GridContainer, variation: StringName, plate_size: float) -> TextureButton:
+ui/station/shipyard_panel.gd:1041:	_apply_plate_textures(plate)
+ui/station/shipyard_panel.gd:1045:func _apply_plate_textures(plate: TextureButton) -> void:
+ui/station/shipyard_panel.gd:1047:	plate.texture_normal = _plate_texture(variation, &"normal")
+ui/station/shipyard_panel.gd:1048:	plate.texture_hover = _plate_texture(variation, &"hover")
+ui/station/shipyard_panel.gd:1049:	plate.texture_pressed = _plate_texture(variation, &"pressed")
+ui/station/shipyard_panel.gd:1050:	plate.texture_disabled = _plate_texture(variation, &"disabled")
+ui/station/shipyard_panel.gd:1053:func _plate_texture(variation: StringName, state: StringName) -> Texture2D:
+ui/station/shipyard_panel.gd:1062:func _refresh_plate_textures() -> void:
+ui/station/shipyard_panel.gd:1068:			_apply_plate_textures(plate)
+ui/screens/main_menu.gd:174:		var plate := _plate(index)
+ui/screens/main_menu.gd:253:	var plate := _plate(index)
+ui/screens/main_menu.gd:258:func _plate(index: int) -> Button:
+ui/screens/station.gd:203:@onready var _station_plate: PanelContainer = %StationPlate
+ui/screens/station.gd:232:var _drawer_plate: PanelContainer = null
+ui/screens/station.gd:467:	_drawer_plate = PanelContainer.new()
+ui/screens/station.gd:468:	_drawer_plate.name = "DrawerPlate"
+ui/screens/station.gd:469:	_drawer_plate.theme_type_variation = &"PanelRaised"
+ui/screens/station.gd:470:	_drawer_plate.custom_minimum_size = Vector2(DRAWER_SLIDE_WIDTH, 0.0)
+ui/screens/station.gd:471:	_drawer_slide.add_child(_drawer_plate)
+ui/screens/station.gd:475:	_drawer_plate.anchor_left = 0.0
+ui/screens/station.gd:476:	_drawer_plate.anchor_top = 0.0
+ui/screens/station.gd:477:	_drawer_plate.anchor_right = 1.0
+ui/screens/station.gd:478:	_drawer_plate.anchor_bottom = 1.0
+ui/screens/station.gd:479:	_drawer_plate.offset_left = 0.0
+ui/screens/station.gd:480:	_drawer_plate.offset_top = 0.0
+ui/screens/station.gd:481:	_drawer_plate.offset_right = 0.0
+ui/screens/station.gd:482:	_drawer_plate.offset_bottom = 0.0
+ui/screens/station.gd:487:	_drawer_plate.add_child(rail_margin)
+ui/screens/station.gd:740:		_station_plate.add_theme_stylebox_override(&"panel", box)
+ui/screens/station.gd:894:	_drawer_plate.position.x = -DRAWER_SLIDE_WIDTH
+ui/screens/station.gd:901:	_reset_plate_box()
+ui/screens/station.gd:902:	_reset_plate_box.call_deferred()
+ui/screens/station.gd:907:func _reset_plate_box() -> void:
+ui/screens/station.gd:908:	if _drawer_plate == null:
+ui/screens/station.gd:910:	_drawer_plate.offset_top = 0.0
+ui/screens/station.gd:911:	_drawer_plate.offset_bottom = 0.0
+ui/screens/station.gd:934:	_drawer_tween.tween_property(_drawer_plate, "position:x", x, seconds)
+ui/station/armory_panel.gd:752:	var slot_plate: Texture2D = null
+ui/station/armory_panel.gd:766:		slot_plate = _slot_texture()
+ui/station/armory_panel.gd:777:			_plate(rect, ROLE_BAY_BG, 8)
+ui/station/armory_panel.gd:779:			_plate(rect, ROLE_BAY_BG, 8)
+ui/station/armory_panel.gd:783:			_plate(rect, ROLE_LEDGE_BG, 6)
+ui/station/armory_panel.gd:794:	static func slot_plate_rect(cell: Rect2, plate: Texture2D) -> Rect2:
+ui/station/armory_panel.gd:804:		if slot_plate == null:
+ui/station/armory_panel.gd:806:		draw_texture(slot_plate, slot_plate_rect(rect, slot_plate).position)
+ui/station/armory_panel.gd:809:	func _plate(rect: Rect2, role: StringName, radius: int) -> void:
+ui/station/armory_panel.gd:843:@onready var _plate: NinePatchRect = %ConsolePlate
+ui/station/armory_panel.gd:1169:	_plate.texture = null
+ui/station/armory_panel.gd:1702:	## (`ui_button_plate_*`) instead of the code-drawn chip. Mouse-only (FOCUS_NONE): the
+ui/hud/ship_status_screen.gd:170:var _plate: TextureRect = null
+ui/hud/ship_status_screen.gd:237:	_build_plate()
+ui/hud/ship_status_screen.gd:267:func _build_plate() -> void:
+ui/hud/ship_status_screen.gd:268:	_plate = TextureRect.new()
+ui/hud/ship_status_screen.gd:269:	_plate.name = NODE_PLATE
+ui/hud/ship_status_screen.gd:270:	_plate.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+ui/hud/ship_status_screen.gd:271:	_plate.stretch_mode = TextureRect.STRETCH_SCALE
+ui/hud/ship_status_screen.gd:272:	_plate.set_anchors_preset(Control.PRESET_FULL_RECT)
+ui/hud/ship_status_screen.gd:273:	_plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+ui/hud/ship_status_screen.gd:274:	_body.add_child(_plate)
+ui/hud/ship_status_screen.gd:410:	_plate.texture = _style.texture(_style.status_panel_path)
+ui/hud/ship_status_screen.gd:411:	_wells.configure(_style, _plate.texture == null)
+ui/hud/ship_status_screen.gd:665:		## `_make_slot_cell` parents its own plate (the shipyard's `_make_plate` convention).
+ui/hud/ship_status_screen.gd:694:	_apply_plate_textures(plate)
+ui/hud/ship_status_screen.gd:772:func _apply_plate_textures(plate: TextureButton) -> void:
+ui/hud/ship_status_screen.gd:773:	plate.texture_normal = _plate_texture(PLATE_VARIATION, &"normal")
+ui/hud/ship_status_screen.gd:774:	plate.texture_hover = _plate_texture(PLATE_VARIATION, &"hover")
+ui/hud/ship_status_screen.gd:775:	plate.texture_pressed = _plate_texture(PLATE_VARIATION, &"pressed")
+ui/hud/ship_status_screen.gd:776:	plate.texture_disabled = _plate_texture(PLATE_VARIATION, &"disabled")
+ui/hud/ship_status_screen.gd:779:func _plate_texture(variation: StringName, state: StringName) -> Texture2D:
+ui/hud/ship_status_screen.gd:1050:	return _plate
+ui/hud/ship_status_screen.gd:1111:	var _plate_missing: bool = false
+ui/hud/ship_status_screen.gd:1115:		_plate_missing = plate_missing
+ui/hud/ship_status_screen.gd:1127:		if _plate_missing:
+ui/station/launch_panel.gd:183:var _plates: Array[TextureButton] = []
+ui/station/launch_panel.gd:184:var _plate_icons: Array[TextureRect] = []
+ui/station/launch_panel.gd:200:	_build_cargo_plates()
+ui/station/launch_panel.gd:276:	_refresh_plate_textures()
+ui/station/launch_panel.gd:308:func _build_cargo_plates() -> void:
+ui/station/launch_panel.gd:311:		var plate := _make_plate(_cargo_slots, CARGO_PLATE_VARIATION, CARGO_PLATE_SIZE)
+ui/station/launch_panel.gd:327:		_plates.append(plate)
+ui/station/launch_panel.gd:328:		_plate_icons.append(icon)
+ui/station/launch_panel.gd:331:func _make_plate(parent: HBoxContainer, variation: StringName, plate_size: float) -> TextureButton:
+ui/station/launch_panel.gd:343:	_apply_plate_textures(plate)
+ui/station/launch_panel.gd:347:func _apply_plate_textures(plate: TextureButton) -> void:
+ui/station/launch_panel.gd:349:	plate.texture_normal = _plate_texture(variation, &"normal")
+ui/station/launch_panel.gd:350:	plate.texture_hover = _plate_texture(variation, &"hover")
+ui/station/launch_panel.gd:351:	plate.texture_pressed = _plate_texture(variation, &"pressed")
+ui/station/launch_panel.gd:352:	plate.texture_disabled = _plate_texture(variation, &"disabled")
+ui/station/launch_panel.gd:355:func _plate_texture(variation: StringName, state: StringName) -> Texture2D:
+ui/station/launch_panel.gd:364:func _refresh_plate_textures() -> void:
+ui/station/launch_panel.gd:365:	for plate: TextureButton in _plates:
+ui/station/launch_panel.gd:366:		_apply_plate_textures(plate)
+ui/station/launch_panel.gd:603:	_refresh_plates(items)
+ui/station/launch_panel.gd:607:func _refresh_plates(items: Dictionary) -> void:
+ui/station/launch_panel.gd:609:	for index in _plates.size():
+ui/station/launch_panel.gd:611:		var plate := _plates[index]
+ui/station/launch_panel.gd:612:		var icon := _plate_icons[index]
+ui/hud/cockpit_cluster.gd:430:	var _plate_missing: bool = false
+ui/hud/cockpit_cluster.gd:435:		_plate_missing = plate_missing
+ui/hud/cockpit_cluster.gd:447:		if _plate_missing:
+ui/station/overview_panel.gd:77:var _identity_plate: PanelContainer = null
+ui/station/overview_panel.gd:153:	_identity_plate = PanelContainer.new()
+ui/station/overview_panel.gd:154:	_identity_plate.name = "IdentityBlock"
+ui/station/overview_panel.gd:155:	_identity_plate.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+ui/station/overview_panel.gd:156:	_stack.add_child(_identity_plate)
+ui/station/overview_panel.gd:163:	_identity_plate.add_child(margin)
+ui/station/overview_panel.gd:553:	if _identity_plate != null:
+ui/station/overview_panel.gd:563:			_identity_plate.add_theme_stylebox_override(&"panel", box)
+ui/station/exchange_panel.gd:415:	var payload := _build_row_plate(
+ui/station/exchange_panel.gd:553:	var payload := _build_row_plate(
+ui/station/exchange_panel.gd:957:func _build_row_plate(

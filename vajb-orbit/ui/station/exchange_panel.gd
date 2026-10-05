@@ -118,9 +118,11 @@ const SUBTITLE := "MINERALS AND SURPLUS"
 
 const HOLD_EMPTY := "HOLD EMPTY"
 const NO_SELECTION := "NO STACK SELECTED"
-## S28's A11 (D17-P2 EXCHANGE): the primary carries the quantity the stepper holds.
+## N48 (UI_SPEC section 14.1): the commit button is always worded `SELL` - the armed
+## quantity wording (`SELL %s`) retires. The count lives in the `SELL UNITS` selector (N49)
+## and the confirm strip keeps its counted wording (`CONFIRM_FORMAT`).
 const SELL_WORD := "SELL"
-const SELL_QUANTITY_FORMAT := "SELL %s"
+const SELL_UNITS_CAPTION := "SELL UNITS"
 const TITLE_FORMAT := "%s · %d HELD"
 ## T-119: the total rides its own line so the 360 px TradeBox never wraps and orphans it.
 const CONFIRM_FORMAT := "SELL %d %s — GROSS %s · FEE %s\nYOU GET %s"
@@ -160,6 +162,11 @@ const REASON_INSUFFICIENT_CARGO: StringName = &"insufficient_cargo"
 @onready var _step_minus: Button = %StepMinus
 @onready var _step_value: Label = %StepValue
 @onready var _step_plus: Button = %StepPlus
+@onready var _sell_units_caption: Label = %SellUnitsCaption
+@onready var _sell_units_row: HBoxContainer = %SellUnitsRow
+@onready var _sell_minus: Button = %SellMinus
+@onready var _sell_value: Label = %SellValue
+@onready var _sell_plus: Button = %SellPlus
 @onready var _confirm_strip: Label = %ConfirmStrip
 @onready var _sell: Button = %SellButton
 @onready var _sell_all: Button = %SellAllButton
@@ -175,6 +182,9 @@ var _focused_payload: Dictionary = {}
 ## N43: the trade column's single INSPECT ActionInline (the hold list's cluster chip).
 var _inspect_cluster: Button = null
 var _step := 0
+## N49: the `SELL UNITS` selector's own value - min 1, max the selected row's units, 0 with
+## no selection (the selector then reads disabled + `text_dim`). `SELL` moves exactly this.
+var _sell_units := 0
 var _quoted: Dictionary = {}
 var _tweens: Array[Tween] = []
 
@@ -237,7 +247,7 @@ func focus_primary() -> void:
 func disarm() -> bool:
 	## ui_cancel step 2 (STATION_HUB section 2): the selection and the stepper own the first
 	## cancel, and the shell keeps the ring where it is when this returns true.
-	if _selected_id == &"" and _step == 0:
+	if _selected_id == &"" and _step == 0 and _sell_units == 0:
 		return false
 	_clear_selection()
 	return true
@@ -618,22 +628,26 @@ func _row_title(payload: Dictionary) -> String:
 func _wire_trade() -> void:
 	_step_minus.pressed.connect(_on_step_pressed.bind(-1))
 	_step_plus.pressed.connect(_on_step_pressed.bind(1))
+	_sell_minus.pressed.connect(_on_sell_units_pressed.bind(-1))
+	_sell_plus.pressed.connect(_on_sell_units_pressed.bind(1))
 	_sell.pressed.connect(_on_sell_pressed)
 	_sell_all.pressed.connect(_on_sell_all_pressed)
 	_cancel.pressed.connect(_on_cancel_pressed)
+	_sell_units_caption.text = SELL_UNITS_CAPTION
 	_build_inspect_cluster()
 
 
-## N43: one INSPECT ActionInline in the trade column (the N37 cluster idiom), disabled +
-## text_dim until a row holds focus or selection; it opens the sheet for that row.
+## N43/N49: one INSPECT ActionInline in the trade column (the N37 cluster idiom), disabled +
+## text_dim until a row holds focus or selection; it opens the sheet for that row. N49 seats
+## it directly beneath the `SELL UNITS` selector.
 func _build_inspect_cluster() -> void:
 	_inspect_cluster = InspectChipScript.new()
 	_inspect_cluster.name = "InspectCluster"
 	_inspect_cluster.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	_inspect_cluster.inspect_chip_pressed.connect(inspect_focused)
-	var parent := _confirm_strip.get_parent()
+	var parent := _sell_units_row.get_parent()
 	parent.add_child(_inspect_cluster)
-	parent.move_child(_inspect_cluster, _confirm_strip.get_index() + 1)
+	parent.move_child(_inspect_cluster, _sell_units_row.get_index() + 1)
 
 
 func _refresh_trade() -> void:
@@ -644,8 +658,10 @@ func _refresh_trade() -> void:
 	if held <= 0:
 		_selected_id = &""
 		_step = 0
+		_sell_units = 0
 	if held > 0:
 		_step = clampi(maxi(_step, 1), 1, held)
+		_sell_units = clampi(maxi(_sell_units, 1), 1, held)
 	var armed := held > 0 and _selected_id != &""
 	var has_hold := not _hold_ids.is_empty()
 	_trade_title.text = (
@@ -653,17 +669,25 @@ func _refresh_trade() -> void:
 		else NO_SELECTION if has_hold
 		else HOLD_EMPTY
 	)
+	## N49: the unit-number selector (as shipped) and the `SELL UNITS` selector beneath it.
 	_step_value.text = StationCatalogScript.plural(_step if armed else 0, "UNIT")
 	_step_minus.disabled = not armed
 	_step_plus.disabled = not armed
-	_sell.disabled = not armed
-	_sell.text = (
-		SELL_QUANTITY_FORMAT % StationCatalogScript.plural(_step, "UNIT") if armed
-		else SELL_WORD
+	_sell_value.text = StationCatalogScript.plural(_sell_units if armed else 0, "UNIT")
+	_sell_minus.disabled = not armed
+	_sell_plus.disabled = not armed
+	_sell_value.add_theme_color_override(
+		&"font_color", _token(&"text_primary") if armed else _token(&"text_dim")
 	)
+	_sell_units_caption.add_theme_color_override(
+		&"font_color", _token(&"text_primary") if armed else _token(&"text_dim")
+	)
+	## N48: the commit button is always worded `SELL`; the count rides the selector.
+	_sell.disabled = not armed
+	_sell.text = SELL_WORD
 	_sell_all.disabled = not _has_raw(profile)
 	_cancel.disabled = not armed
-	_quoted = _quote(profile, _selected_id, _step) if armed else {}
+	_quoted = _quote(profile, _selected_id, _sell_units) if armed else {}
 	_confirm_strip.text = _confirm_text() if armed else CONFIRM_IDLE
 	if _inspect_cluster != null:
 		_inspect_cluster.set_dimmed(_focused_payload.is_empty())
@@ -672,7 +696,7 @@ func _refresh_trade() -> void:
 
 func _confirm_text() -> String:
 	return CONFIRM_FORMAT % [
-		_step,
+		_sell_units,
 		_item_name(_selected_id),
 		_format_int(int(_quoted.get(&"gross", 0))),
 		_format_int(int(_quoted.get(&"fee", 0))),
@@ -689,6 +713,8 @@ func _select(item_id: StringName) -> void:
 		## S28's A11 (D17-P2: "the trade stepper defaults to the whole stack ... one stray
 		## click dumps everything"): a fresh selection steps one unit, never the whole hold.
 		_step = 1
+	## N49: the `SELL UNITS` selector arms at one unit with the selection too.
+	_sell_units = 1
 	_selected_id = item_id
 	_refresh_trade()
 
@@ -699,6 +725,7 @@ func _clear_selection() -> void:
 	_selected_row = null
 	_selected_id = &""
 	_step = 0
+	_sell_units = 0
 	_refresh_trade()
 
 
@@ -711,11 +738,28 @@ func _set_step(value: int) -> void:
 	_refresh_trade()
 
 
+## N49: the `SELL UNITS` selector's own move - min 1, max the selected row's units.
+func _set_sell_units(value: int) -> void:
+	var held := 0
+	var profile := _profile()
+	if profile != null and _selected_id != &"":
+		held = int(profile.call(&"cargo_qty", _selected_id))
+	_sell_units = clampi(value, 1, maxi(1, held))
+	_refresh_trade()
+
+
 func _on_step_pressed(direction: int) -> void:
 	AudioManager.play_ui(AudioManager.UiCue.SCROLL)
 	if _selected_id == &"":
 		return
 	_set_step(_step + direction)
+
+
+func _on_sell_units_pressed(direction: int) -> void:
+	AudioManager.play_ui(AudioManager.UiCue.SCROLL)
+	if _selected_id == &"":
+		return
+	_set_sell_units(_sell_units + direction)
 
 
 func _on_cancel_pressed() -> void:
@@ -728,11 +772,11 @@ func _on_sell_pressed() -> void:
 	var profile := _profile()
 	if profile == null:
 		return
-	if _selected_id == &"" or _step <= 0:
+	if _selected_id == &"" or _sell_units <= 0:
 		_deny(STATUS_REFUSED_EMPTY)
 		return
 	var item_id := _selected_id
-	var quantity := _step
+	var quantity := _sell_units
 	var result: Dictionary = ExchangeScript.sell(
 		profile, item_id, quantity, Clock.now(), null, int(_quoted.get(&"gross", -1))
 	)
@@ -791,6 +835,7 @@ func _after_sale() -> void:
 	## profile_changed); the quote is re-read only after the profile has settled.
 	_selected_id = &""
 	_step = 0
+	_sell_units = 0
 	_selected_row = null
 	_evaluate()
 	_rebuild_hold()

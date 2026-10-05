@@ -101,6 +101,9 @@ const SUBTITLE := "BATTERY RACKS AND AMMUNITION - %d RACKS - %d PACKS"
 ## label is a content swap in a pinned box (N31's legal set), never a layout mutation.
 const PANE_HINT := "DRAG TO FIT - RIGHT-CLICK TO PULL - 1-5 SELECT RACK"
 const PANE_HINT_FIT := "DRAG TO FIT - RIGHT-CLICK TO PULL - 1-5 SELECT RACK"
+## P40: the hint line updates per mode **and** selection - a selected cell turns the list into
+## the fit flow, so the line says so.
+const PANE_HINT_FIT_CELL := "PRESS OR DRAG A ROW TO FIT THE CELL - RIGHT-CLICK PULLS A BARREL"
 const PANE_HINT_BATTERY := "DRAG BETWEEN RACKS TO REGROUP - 1-5 SELECT RACK"
 const TAG_LIST_PREFIX := "IDS "
 const TAG_LIST_SEPARATOR := " · "
@@ -113,11 +116,6 @@ const MODE_FIT: StringName = &"fit"
 const MODE_BATTERY: StringName = &"battery"
 const MODE_FIT_LABEL := "FIT CELLS"
 const MODE_BATTERY_LABEL := "BATTERY CONFIG"
-## The pane's hint per mode, keyed by the mode id (the one place the swap lives).
-const MODE_HINTS: Dictionary = {
-	MODE_FIT: PANE_HINT_FIT,
-	MODE_BATTERY: PANE_HINT_BATTERY,
-}
 
 ## ---------------------------------------------------- the CELL INFO block (P33, item 1)
 ## The one-line SelectionLine retires into a real block: the cell's identity (id + family
@@ -131,27 +129,61 @@ const CELL_INFO_FITTED_EMPTY := "EMPTY"
 const CELL_INFO_LEGAL_OK := "LEGAL · THIS CELL FITS"
 const CELL_INFO_SELECT := "SELECT A CELL FOR ITS FACTS AND ITS FITS"
 
-## --------------------------------------------------- FITS HERE / BUYABLE (P33, 2 and 3)
-## FITS HERE is the owned candidates for the selected cell (family + `fit_legal` filtered);
-## with no cell selected it falls back to the pane's own owned-weapon list, so the mode is
-## never blank. BUYABLE THAT FITS is the browser's buy side narrowed to the selected cell.
-const FITS_HERE_CAPTION := "FITS HERE - %d CANDIDATES"
-const FITS_HERE_EMPTY := "SELECT A CELL TO SEE WHAT FITS"
-const FITS_HERE_NONE := "NOTHING OWNED FITS THIS CELL"
-const OWNED_CAPTION := "OWNED WEAPONS - %d OWNED"
-const OWNED_EMPTY := "NO WEAPONS IN THE INVENTORY · BUY THEM IN THE AUCTION"
-const BUYABLE_CAPTION := "BUYABLE THAT FITS"
-const BUYABLE_CAPTION_ALL := "MODULES · OWNED & BUYABLE"
-const BUYABLE_EMPTY := "SELECT A CELL TO SEE WHAT IS BUYABLE"
-const BUYABLE_NONE := "NOTHING BUYABLE FITS THIS CELL"
+## ----------------------------------------- the one equipment list (P38, its two states)
+## The right sector of FIT CELLS is ONE list in two states. With no cell selected it browses
+## everything the profile owns (rows tagged `FIT` when the active hull carries a cell of the
+## module's family, `STORED` otherwise). With a cell selected it lists every possibility for
+## that cell - the owned candidates first (`OWNED`, select-to-fit and drag-to-fit) then the
+## catalogue's buyable ones (`BUYABLE`, BUY + INSPECT) - each row carrying the legality line
+## the CELL INFO block speaks (the refusal strings above, wired proactively).
+const TAG_FIT := "FIT"
+const TAG_STORED := "STORED"
+const TAG_OWNED := "OWNED"
+const TAG_BUYABLE := "BUYABLE"
+const LIST_CAPTION_BROWSE := "OWNED EQUIPMENT - %d"
+const LIST_CAPTION_CELL := "FITS %s%d - %d"
+const LIST_EMPTY_BROWSE := "NOTHING OWNED TO SHOW"
+const LIST_EMPTY_CELL := "NOTHING FITS THIS CELL"
+## The one AUCTION-idiom column-header band each list wears (P40): the row stacks' own words,
+## seated over their columns (the module's title, its state tag and its cost/owned figure).
+const BAND_MODULE := "MODULE"
+const BAND_STATE := "STATE"
+const BAND_COST := "COST"
+const BAND_TAG_COLUMN := 96.0
+const BAND_COST_COLUMN := 130.0
 ## A rack's empty hull W cell reads read-only (09 section 10's idiom): `W<n> — EMPTY`.
 const EMPTY_CELL_FORMAT := "W%d — EMPTY"
 const EMPTY_CELLS_CAPTION := "EMPTY CELLS - %d"
-## The ammunition card's own box in the shared foot band (P36): the shipped 320 x 68 pack
-## card, one per catalogue pack, riding the band's horizontal scroll.
+## The ammunition card's own box in the EQ container: the shipped 320 x 68 pack card.
 const AMMO_CARD := Vector2(320.0, 68.0)
-## The FITS HERE / BUYABLE row height (the browser's own 76 px auction-row idiom).
-const LIST_ROW_HEIGHT := 76.0
+
+## ------------------------------------------------------------ the EQ container (P39)
+## BATTERY CONFIG's right sector: one compact list of the non-weapon equipment under the same
+## category tabs as before (AMMUNITION first, then the other families), count rows and the
+## INSPECT + BUY top-ups the old foot band offered. `AMMUNITION` reuses the shipped pack card
+## (the BUY route), every other family lists the owned modules with their count.
+const EQ_TAB_AMMO: StringName = &"ammo"
+const EQ_TABS: Array[Dictionary] = [
+	{&"id": &"ammo", &"label": "AMMUNITION", &"slot": &""},
+	{&"id": &"power", &"label": "PWR/FUEL RODS", &"slot": &"power"},
+	{&"id": &"drives", &"label": "DRIVES", &"slot": &"engine"},
+	{&"id": &"shields", &"label": "SHIELDS", &"slot": &"shields"},
+	{&"id": &"armour", &"label": "ARMOUR", &"slot": &"armour"},
+	{&"id": &"computers", &"label": "COMPUTERS", &"slot": &"computers"},
+	{&"id": &"boosters", &"label": "BOOSTERS", &"slot": &"boosters"},
+	{&"id": &"utility", &"label": "UTILITY", &"slot": &"utility"},
+	{&"id": &"all", &"label": "ALL", &"slot": &""},
+]
+const EQ_CAPTION := "%s - %d"
+const EQ_EMPTY := "NOTHING IN THIS CATEGORY"
+const EQ_BAND_EQUIPMENT := "EQUIPMENT"
+const EQ_BAND_COUNT := "COUNT"
+const EQ_BAND_COST := "COST"
+const EQ_COUNT_FORMAT := "×%d"
+const EQ_TAG_COLUMN := 96.0
+const EQ_COST_COLUMN := 80.0
+## The two sectors of each mode are equal (P38/P39): one gutter between them, A5 tokens.
+const SECTOR_GUTTER := 16
 
 ## The rack column (09 section 11/12): `B1..B5`, one drop zone per `weapon_1..5` key.
 const WEAPON_SLOT: StringName = &"weapons"
@@ -171,9 +203,7 @@ const RACK_STATE_AT_CAP := "AT CAP"
 const RACK_SALVO := "SALVO %.1f s"
 const BARREL_TEXT := "W%d %s"
 const BARREL_CLOSE := "✕"
-const INVENTORY_EMPTY := "NO WEAPONS IN THE INVENTORY · BUY THEM IN THE AUCTION"
 const INVENTORY_TEXT := "%s  ×%d"
-const INVENTORY_CAPTION := "BARREL INVENTORY - %d OWNED"
 const AMMO_CAPTION := "AMMUNITION - %d PACKS"
 
 ## The SALVO drum's approved figure (Mockup A, owner "Looks good" 2026-09-24; T8 keeps
@@ -304,6 +334,9 @@ const ACTION_SELECT: StringName = &"SELECT A CELL"
 const ACTION_FIT: StringName = &"FIT"
 const ACTION_SWAP: StringName = &"SWAP"
 const OWNED_FORMAT := "OWNED ×%d"
+## P38: a browse row whose base is fitted but holds no bag spare reads its fitted state
+## instead of a price (`FITTED`), never `0 CR`.
+const READ_FITTED := "FITTED"
 ## P9/P10/P11/P14 (section 17.5): the wrong-slot refusal line, the 0.5 s slot-caption
 ## flash (label + state, never a colour alone), the fit confirmation and the cluster
 ## primary's own label (`SELECTED` appended when a cell is selected).
@@ -461,18 +494,6 @@ class RackRow extends PanelContainer:
 	func _drop_data(_at: Vector2, data: Variant) -> void:
 		if armory != null:
 			armory.call(&"drop", rack, -1, data)
-
-
-## One inventory row: a drag source carrying its base id, drawn from the catalogue and
-## the bag. Its own `pressed` does nothing - the row is a handle, not an action.
-class InventoryRow extends Button:
-	var armory: Control = null
-	var base_id: StringName = &""
-
-	func _get_drag_data(_at: Vector2) -> Variant:
-		if armory == null:
-			return null
-		return armory.call(&"drag_inventory", base_id)
 
 
 ## One ship-grid cell (P4's left half): selectable (`FOCUS_ALL`, the one focus ring), a
@@ -836,8 +857,6 @@ class ConsolePanels extends Control:
 
 
 @onready var _console: Control = %Console
-## The BATTERY CONFIG mode's host box (P32): the console stretches to it (P36).
-@onready var _mode_host: Control = %ModeHost
 ## The scene's own nine-slice slot for the console master; **its texture is cleared at
 ## build** (A4.1: the master retires from the pane).
 @onready var _plate: NinePatchRect = %ConsolePlate
@@ -857,14 +876,12 @@ class ConsolePanels extends Control:
 @onready var _summary_margin: Control = %SummaryMargin
 @onready var _summary_caption: Label = %SummaryCaption
 @onready var _summary_hint: Label = %SummaryHint
-@onready var _inventory_margin: Control = %InventoryMargin
-@onready var _inventory_caption: Label = %InventoryCaption
-@onready var _inventory_scroll: ScrollContainer = %InventoryScroll
-@onready var _inventory_rows: VBoxContainer = %InventoryRows
 @onready var _ammo_margin: Control = %AmmoMargin
 @onready var _ammo_caption: Label = %AmmoCaption
 @onready var _ammo_scroll: ScrollContainer = %AmmoScroll
-@onready var _rows: HBoxContainer = %ArmoryRows
+@onready var _rows: VBoxContainer = %ArmoryRows
+@onready var _eq_tabs: HBoxContainer = %EqTabs
+@onready var _eq_band: HBoxContainer = %EqBand
 @onready var _slot_caption: Label = %SlotCaption
 @onready var _grid: GridContainer = %SlotLayoutGrid
 @onready var _meter: Label = %MeterLabel
@@ -874,6 +891,7 @@ class ConsolePanels extends Control:
 @onready var _cell_info_legal: Label = %CellInfoLegal
 @onready var _tabs: HBoxContainer = %FamilyTabs
 @onready var _browser_caption: Label = %BrowserCaption
+@onready var _browser_band: HBoxContainer = %BrowserBand
 @onready var _browser_rows: VBoxContainer = %BrowserRows
 @onready var _remove_button: Button = %RemoveButton
 @onready var _buy_fit_button: Button = %BuyFitButton
@@ -889,13 +907,11 @@ var _seg: Array[Texture2D] = []
 var _seg_blank: Texture2D = null
 
 var _payloads: Array[Dictionary] = []
-## The rack chips and inventory rows the current frame drew, for the read-backs
-## (`rack_rows()` / `inventory_rows()`) and for `focus_primary`'s walk. Both are
-## rebuilt on every refresh: a rack's shape is player-composed, so it is not a fixed
-## node set, and a freed chip is released with `queue_free` so the plate whose
-## `_drop_data` started the write is still alive while that write finishes.
+## The rack chips the current frame drew, for the read-back (`rack_rows()`) and for
+## `focus_primary`'s walk. Rebuilt on every refresh: a rack's shape is player-composed, so
+## it is not a fixed node set, and a freed chip is released with `queue_free` so the plate
+## whose `_drop_data` started the write is still alive while that write finishes.
 var _rack_views: Array[Dictionary] = []
-var _inventory_views: Array[Dictionary] = []
 var _selected_row: Button = null
 var _tweens: Array[Tween] = []
 ## S30: the payload `station_inspect` (N34) inspects - the focused row or cell - and the
@@ -924,21 +940,20 @@ var _browser_signature: Array[String] = []
 var _grid_tweens: Array[Tween] = []
 ## The mode in force (P32). Exactly one of `_fit_cells` / `_battery_config` is visible.
 var _mode: StringName = MODE_FIT
-## The FITS HERE / BUYABLE signatures, so a profile or selection change rebuilds only when
-## the row set moves.
-var _fits_signature: Array[String] = []
-var _buyable_signature: Array[String] = []
+## The EQ container's own category in force (`AMMUNITION` by default) and the rows it drew.
+var _eq_tab: StringName = EQ_TAB_AMMO
+var _eq_payloads: Array[Dictionary] = []
+var _eq_signature: Array[String] = []
 
 
 func _ready() -> void:
 	_build_modes()
 	_build_console()
-	_build_rows()
 	_build_racks()
 	_build_empty_cells()
-	_build_inventory()
 	_build_grid_surface()
 	_build_browser()
+	_build_eq()
 	_wire_actions()
 	_apply_tokens()
 	_connect_scroll()
@@ -1001,8 +1016,20 @@ func _apply_mode() -> void:
 		_mode_fit.set_pressed_no_signal(fitting)
 	if _mode_battery != null:
 		_mode_battery.set_pressed_no_signal(not fitting)
-	if _hint != null:
-		_hint.text = String(MODE_HINTS.get(_mode, PANE_HINT_FIT))
+	_update_hint()
+
+
+## P40: the one hint label's text follows the mode and the selection (a content swap in a
+## pinned box, N31's legal set - never a layout mutation).
+func _update_hint() -> void:
+	if _hint == null:
+		return
+	if _mode == MODE_BATTERY:
+		_hint.text = PANE_HINT_BATTERY
+	elif _selected.is_empty():
+		_hint.text = PANE_HINT_FIT
+	else:
+		_hint.text = PANE_HINT_FIT_CELL
 
 
 ## STATION_HUB section 12.4 plus 09 section 11: `&"credits"` moves every price and tag,
@@ -1014,12 +1041,13 @@ func refresh_profile(key: StringName) -> void:
 	if key == &"credits" or key == &"ammo" or key == &"cargo":
 		_refresh_rows()
 		_refresh_browser()
+		_refresh_eq()
 	if key == &"fits" or key == &"ships" or key == &"batteries":
 		_refresh_racks()
 		_refresh_empty_cells()
 	if key == &"modules" or key == &"fits" or key == &"ships" or key == &"batteries":
-		_refresh_inventory()
 		_refresh_browser()
+		_refresh_eq()
 	if key == &"fits" or key == &"ships" or key == &"modules":
 		_sync_grid(_active_hull(_profile()))
 		_refresh_footer()
@@ -1049,11 +1077,6 @@ func focus_primary() -> void:
 			if control != null and control.visible and not control.disabled:
 				control.grab_focus()
 				return
-	for view: Dictionary in _inventory_views:
-		var row := view[&"row"] as Button
-		if row != null and row.visible and not row.disabled:
-			row.grab_focus()
-			return
 	for payload: Dictionary in _payloads:
 		var row: Button = payload[&"row"]
 		if not row.disabled:
@@ -1169,7 +1192,7 @@ func _apply_style() -> void:
 	_plate.texture = null
 	_title.text = "ARMORY"
 	_subtitle.text = SUBTITLE % [RACK_COUNT, Catalog.AMMO_PACKS.size()]
-	_hint.text = String(MODE_HINTS.get(_mode, PANE_HINT_FIT))
+	_update_hint()
 	_tag.text = TAG_LIST_PREFIX + TAG_LIST_SEPARATOR.join(_id_list())
 	_apply_tokens()
 	_lay()
@@ -1177,47 +1200,36 @@ func _apply_style() -> void:
 		_style_bay(view)
 	for payload: Dictionary in _payloads:
 		_refresh_row(payload)
-	for view: Dictionary in _inventory_views:
-		_refresh_inventory_row(view)
+	for payload: Dictionary in _eq_payloads:
+		_refresh_eq_row(payload)
 
 
-## P6's one layout entry for the console body (the racks band and the wells band). The
-## console rides in the BATTERY CONFIG mode (P34); its internal derivation is unmoved. The
-## FITS HERE and AMMUNITION lists are containers of their own modes/foot band, laid out by
-## the container sort; only the console's own hand-derived bands are placed here. Safe to
-## P36's one layout entry: the console fills the BATTERY CONFIG mode host (its plate and its
-## body are anchored full-rect in the scene), the racks are **full-width rows** stacked by
-## their own container, and the wells band is the container's fixed-height foot. The pane
-## places only what sits *inside* a row or a well; the boxes themselves are the container's.
-## Safe to call before the host has a size.
+## P38/P39's one layout entry. Each mode is two equal sectors (containers + relative sizing,
+## A5): the console rides BATTERY CONFIG's left sector, the EQ container its right, and the
+## two equipment lists are containers of their own sectors. The pane places only what sits
+## *inside* a hand-derived box (a rack row's own children); the boxes themselves are the
+## container's. The console is sized by its sector on the sort, so `block_size()`, `bay_rects()`
+## and `well_rects()` read the sector's own box. Safe to call before the host has a size.
 func _lay() -> void:
 	if _style == null or not is_node_ready():
 		return
-	## The ammunition caption reads its own pack count (it cannot go stale).
+	## The EQ container's caption reads its own category and count (it cannot go stale).
 	if _ammo_caption != null:
-		_ammo_caption.text = AMMO_CAPTION % _payloads.size()
+		_ammo_caption.text = _eq_caption_text()
 	_flush_layout()
 	## The console rides the BATTERY CONFIG mode, which is hidden while FIT CELLS shows, and
 	## Godot does not sort a hidden container. Show it for this one layout pass (the draw
-	## happens after the frame, so nothing flickers), pin the console's own rect and its body
-	## (the pre-P36 pane set the same rect by hand), sort the console tree, then restore the
-	## mode's visibility. This keeps `block_size()`, `bay_rects()` and `well_rects()` correct
-	## in the landing mode, where the suites read them.
+	## happens after the frame, so nothing flickers), let the sector sort size the console and
+	## its body, then restore the mode's visibility. This keeps `block_size()`, `bay_rects()`
+	## and `well_rects()` correct in the landing mode, where the suites read them.
 	var was_hidden: bool = _battery_config != null and not _battery_config.visible
 	if was_hidden:
 		_battery_config.visible = true
-	if _mode_host != null:
-		_console.position = Vector2.ZERO
-		_console.size = _mode_host.size
-		var body := _console.get_node_or_null(^"BodyBox") as Control
-		if body != null:
-			body.position = Vector2.ZERO
-			body.size = _console.size
+	_flush_layout()
 	_flush_console()
 	if was_hidden:
 		_battery_config.visible = false
 	_lay_bays()
-	_lay_inventory()
 	_lay_cards()
 	_update_chrome()
 
@@ -1248,11 +1260,6 @@ func _flush_layout() -> void:
 			(node as Container).notification(Container.NOTIFICATION_SORT_CHILDREN)
 		for child: Node in node.get_children():
 			stack.append(child)
-
-
-## A rect moved by an offset (Rect2 has no `- Vector2` operator).
-static func _shift(rect: Rect2, by: Vector2) -> Rect2:
-	return Rect2(rect.position + by, rect.size)
 
 
 ## A control's rect in the pane's own space (the suites read the pane's frame).
@@ -1420,22 +1427,8 @@ func _position_drop_cells(cells: Control) -> void:
 			cue.size = cell.size
 
 
-## The FITS HERE rows: one row per candidate, stacked full-width in the mode's own column
-## (P37). The rows are `Button`s whose children the pane places by hand from the row's own
-## allocated rect; the container places the rows themselves.
-func _lay_inventory() -> void:
-	if _inventory_rows == null:
-		return
-	for child: Node in _inventory_rows.get_children():
-		var control := child as Control
-		if control == null:
-			continue
-		_position_inventory_item(control, Rect2(Vector2.ZERO, control.size))
-
-
-## The AMMUNITION cards: one horizontal row inside the foot band's own scroll (P36), each
-## card the pinned 320 x 68. The container places the cards; the pane places each card's
-## children.
+## The AMMUNITION cards of the EQ container (P39): one stacked card per catalogue pack, each
+## the pinned 320 x 68. The container places the cards; the pane places each card's children.
 func _lay_cards() -> void:
 	if _rows == null:
 		return
@@ -1446,42 +1439,8 @@ func _lay_cards() -> void:
 		_position_card(control, Rect2(Vector2.ZERO, control.size))
 
 
-## A row's own re-position on its container's resize, so a widened window moves the row's
-## children with it (the container owns the box, the pane owns what sits inside it).
-func _on_inventory_resized(row: Control) -> void:
-	_position_inventory_item(row, Rect2(Vector2.ZERO, row.size))
-
-
 func _on_card_resized(card: Control) -> void:
 	_position_card(card, Rect2(Vector2.ZERO, card.size))
-
-
-## One inventory row's own children: the icon, the name and the OWNED figure, plus the
-## trailing INSPECT chip (S30-F1, F7). The name and the OWNED figure stack in the left
-## column so the chip's reserved 96 px cell on the right is never crowded.
-func _position_inventory_item(row: Control, rect: Rect2) -> void:
-	var icon := row.get_node_or_null(^"Icon") as Control
-	if icon != null:
-		icon.position = _style.item_icon_rect(rect).position
-		icon.size = Vector2(_style.item_icon, _style.item_icon)
-	var text_x: float = _style.item_icon + 16.0
-	var text_w: float = maxf(rect.size.x - text_x - CHIP_WIDTH - 20.0, 0.0)
-	var name_label := row.get_node_or_null(^"Name") as Control
-	if name_label != null:
-		name_label.position = Vector2(text_x, (rect.size.y - 36.0) * 0.5)
-		name_label.size = Vector2(text_w, 18.0)
-	var status := row.get_node_or_null(^"Status") as Control
-	if status != null:
-		status.position = Vector2(text_x, (rect.size.y - 36.0) * 0.5 + 18.0)
-		status.size = Vector2(text_w, 18.0)
-		var value := status.get_node_or_null(^"Value") as Control
-		if value != null:
-			value.position = Vector2(0.0, 0.0)
-			value.size = status.size
-	var chip := row.get_node_or_null(^"InspectChip") as Control
-	if chip != null:
-		chip.position = Vector2(maxf(rect.size.x - CHIP_WIDTH - 6.0, 0.0), maxf((rect.size.y - CHIP_HEIGHT) * 0.5, 0.0))
-		chip.size = Vector2(CHIP_WIDTH, CHIP_HEIGHT)
 
 
 ## One pack card's own children, at the card's four lines: title + price, meta + state
@@ -1579,8 +1538,10 @@ func _update_chrome() -> void:
 func _apply_tokens() -> void:
 	for payload: Dictionary in _payloads:
 		_apply_icon_token(payload)
-	for view: Dictionary in _inventory_views:
-		_apply_icon_token(view)
+	for payload: Dictionary in _eq_payloads:
+		var icon: TextureRect = payload.get(&"icon", null)
+		if icon != null and bool(payload.get(&"tinted", false)):
+			_apply_icon_token(payload)
 
 
 func _apply_icon_token(payload: Dictionary) -> void:
@@ -1623,13 +1584,6 @@ func _id_list() -> PackedStringArray:
 	return ids
 
 
-func _build_rows() -> void:
-	_payloads.clear()
-	for pack: Dictionary in Catalog.AMMO_PACKS:
-		_payloads.append(_build_card(pack))
-	_lay_cards()
-
-
 ## One ammunition **card** (T4/P2/P5): the pack's name and price, its rounds-per-pack,
 ## the worded held line, the section 5.1 state tag and state line, and the `BUY` chip, on
 ## the theme's panel-frame plate (A4.1). Every cell the S5 suites read is still built here
@@ -1648,10 +1602,11 @@ func _build_card(pack: Dictionary) -> Dictionary:
 	card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	card.disabled = not complete
 	card.clip_contents = true
-	## The foot band's own card box (P36): the 320 x 68 pack card, one per catalogue pack,
-	## riding the band's horizontal scroll. The card's children are placed from this box.
+	## The EQ container's own card box (P39): the 320 x 68 pack card, one per catalogue pack,
+	## stacked left-aligned in the container. The card's children are placed from this box.
 	card.custom_minimum_size = Vector2(AMMO_CARD.x, AMMO_CARD.y)
-	card.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	card.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	card.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	var frame := RowPlate.new()
 	frame.name = "RowPlate"
 	card.add_child(frame)
@@ -1792,7 +1747,7 @@ func _icon_source(icon_path: String) -> String:
 
 func _connect_scroll() -> void:
 	## The scroll cue has no other home: the station shell owns no list of its own.
-	for scroll: ScrollContainer in [_inventory_scroll, _ammo_scroll]:
+	for scroll: ScrollContainer in [_ammo_scroll]:
 		if scroll != null and scroll.has_signal(&"scroll_started"):
 			scroll.connect(&"scroll_started", _on_scroll_started)
 
@@ -1997,10 +1952,6 @@ func _inspect_row(payload: Dictionary, shown: bool) -> void:
 
 func _build_racks() -> void:
 	_refresh_racks()
-
-
-func _build_inventory() -> void:
-	_refresh_inventory()
 
 
 func _build_empty_cells() -> void:
@@ -2406,39 +2357,17 @@ func _salvo_figure(cycle: float) -> int:
 	return clampi(int(round(cycle * 100.0)), 0, SALVO_MAX)
 
 
-## The FITS HERE list (P33): the owned candidates for the selected cell - the module's
-## catalogue slot matches the cell's family and `ShipFit.fit_legal` accepts the candidate
-## (the same `_cell_refusal` the fit flow judges with). With no cell selected the list falls
-## back to the pane's own owned-weapon list, so the mode is never blank and the shipped
-## inventory read-back (`inventory_rows()`) is unchanged.
-func _refresh_inventory() -> void:
-	_clear(_inventory_rows)
-	_inventory_views.clear()
-	var rows := _fits_here_rows()
-	if rows.is_empty():
-		var empty := _make_caption(_fits_empty_text())
-		empty.name = "Empty"
-		_inventory_rows.add_child(empty)
-	else:
-		for entry: Dictionary in rows:
-			_build_inventory_row(entry)
-	if _inventory_caption != null:
-		_inventory_caption.text = _fits_caption(rows.size())
-	_lay()
-
-
-## The FITS HERE candidates: the owned modules that can slot in the selected cell (family +
-## `fit_legal`), or the owned-weapon list when no cell is selected. Public so a probe reads
-## the same list the pane draws.
+## The owned candidates for the selected cell (P38's `OWNED` rows): the module's catalogue
+## slot matches the cell's family and `fit_legal` accepts the candidate (the same
+## `_cell_refusal` the fit flow judges with). `[]` with no cell selected. Public so a probe
+## reads the same list the pane draws.
 func fits_here_rows() -> Array[Dictionary]:
 	return _fits_here_rows()
 
 
-## The FITS HERE candidates: the owned modules that can slot in the selected cell (family +
-## `fit_legal`), or the owned-weapon list when no cell is selected.
 func _fits_here_rows() -> Array[Dictionary]:
 	if _selected.is_empty():
-		return inventory_rows()
+		return []
 	var profile := _profile()
 	if profile == null:
 		return []
@@ -2464,106 +2393,33 @@ func _fits_here_rows() -> Array[Dictionary]:
 	return rows
 
 
-## The FITS HERE caption: the candidate count for a selected cell, the owned count otherwise.
-func _fits_caption(count: int) -> String:
+## The list caption (P38): the cell's own id and candidate count when a cell is selected,
+## the owned count otherwise.
+func _list_caption(count: int) -> String:
 	if _selected.is_empty():
-		return OWNED_CAPTION % count
-	return FITS_HERE_CAPTION % count
+		return LIST_CAPTION_BROWSE % count
+	return LIST_CAPTION_CELL % [
+		String(_selected[&"token"]), int(_selected[&"index"]) + 1, count
+	]
 
 
-func _fits_empty_text() -> String:
-	if _selected.is_empty():
-		return OWNED_EMPTY
-	return FITS_HERE_NONE
+func _list_empty_text() -> String:
+	return LIST_EMPTY_CELL if not _selected.is_empty() else LIST_EMPTY_BROWSE
 
 
-func _build_inventory_row(entry: Dictionary) -> Dictionary:
-	var base_id: StringName = entry[&"base"]
-	var row := InventoryRow.new()
-	row.name = "Owned%s" % String(base_id).to_pascal_case()
-	row.armory = self
-	row.base_id = base_id
-	row.focus_mode = Control.FOCUS_ALL
-	row.clip_contents = true
-	row.custom_minimum_size = Vector2(0.0, LIST_ROW_HEIGHT)
-	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	var frame := RowPlate.new()
-	frame.name = "RowPlate"
-	row.add_child(frame)
-	frame.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	frame.configure(_style)
-	var icon_path := ModuleData.icon_path(base_id)
-	var icon := _make_icon(icon_path, _style.item_icon)
-	if icon != null:
-		row.add_child(icon)
-	var name_label := _make_caption(String(entry[&"name"]), ROLE_BONE)
-	name_label.name = "Name"
-	row.add_child(name_label)
-	var status := Control.new()
-	status.name = "Status"
-	status.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	row.add_child(status)
-	var status_value := _make_caption("")
-	status_value.name = "Value"
-	status_value.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	status.add_child(status_value)
-	var status_caption := _make_caption("")
-	status_caption.name = "Caption"
-	status.add_child(status_caption)
-	var view := {
-		&"base": base_id,
-		&"name": String(entry[&"name"]),
-		&"owned": int(entry[&"owned"]),
-		&"draw": int(entry[&"draw"]),
-		&"row": row,
-		&"plate": frame,
-		&"icon": icon,
-		&"tinted": _is_flat_glyph(icon_path),
-		&"status": status_value,
-	}
-	## S30-F1 (F7, N28/N37): the row's own trailing INSPECT chip, hand-positioned with the
-	## rest of the row's children (`_position_inventory_item`).
-	var chip := _make_inspect_chip(view)
-	row.add_child(chip)
-	view[&"chip"] = chip
-	row.focus_entered.connect(_on_inventory_focused.bind(base_id, String(entry[&"name"])))
-	row.mouse_entered.connect(_on_inventory_inspected.bind(base_id, String(entry[&"name"]), true))
-	row.mouse_exited.connect(_on_inventory_inspected.bind(base_id, String(entry[&"name"]), false))
-	row.pressed.connect(_on_fits_here_pressed.bind(base_id))
-	_inventory_rows.add_child(row)
-	row.resized.connect(_on_inventory_resized.bind(row))
-	_refresh_inventory_row(view)
-	_inventory_views.append(view)
-	return view
-
-
-## Select-to-fit (P33): a FITS HERE row's press fits the held instance into the selected
-## cell (the same composed flow the browser row uses). With no cell selected the press is
-## inert - the fallback owned list is a browse surface, not a fit flow.
-func _on_fits_here_pressed(base_id: StringName) -> void:
+## Select-to-fit (P38): an `OWNED` row's press fits the held instance into the selected cell
+## (the same composed flow the buyable row uses). With no cell selected the press is inert -
+## the browse state is a browse surface, not a fit flow.
+func _on_equip_pressed(base_id: StringName) -> void:
 	AudioManager.play_ui(AudioManager.UiCue.CLICK)
 	if _selected.is_empty():
 		return
 	_flow_row_into_cell({&"base": base_id, &"owned": true, &"price": 0})
 
 
-## One inventory row's own figure (the bag's pairing count) and its ink.
-func _refresh_inventory_row(view: Dictionary) -> void:
-	if not is_node_ready():
-		return
-	var status: Label = view[&"status"]
-	status.text = INVENTORY_TEXT % ["OWNED", int(view[&"owned"])]
-	status.add_theme_color_override(&"font_color", _token(ROLE_CAPTION))
-	_position_inventory_item(view[&"row"] as Control, Rect2(Vector2.ZERO, (view[&"row"] as Control).size))
-
-
-func _on_inventory_focused(base_id: StringName, name_text: String) -> void:
-	_inspect_module(base_id, name_text, true)
-
-
-func _on_inventory_inspected(base_id: StringName, name_text: String, hovered: bool) -> void:
-	_inspect_module(base_id, name_text, hovered)
+## S32's own row-press door, kept as the one alias the older suites drive.
+func _on_fits_here_pressed(base_id: StringName) -> void:
+	_on_equip_pressed(base_id)
 
 
 func _inspect_module(base_id: StringName, name_text: String, shown: bool) -> void:
@@ -2669,16 +2525,17 @@ func block_size() -> Vector2:
 	return _console.size
 
 
-## The inventory rows as drawn, in order, `{base, name, owned, draw, text}`.
+## The inventory rows as drawn, in order, `{base, name, owned, draw, text}` - the browse
+## state's own read-back: the owned weapons with their `OWNED ×<n>` figure.
 func inventory_view_rows() -> Array[Dictionary]:
 	var rows: Array[Dictionary] = []
-	for view: Dictionary in _inventory_views:
+	for entry: Dictionary in inventory_rows():
 		rows.append({
-			&"base": view[&"base"],
-			&"name": view[&"name"],
-			&"owned": int(view[&"owned"]),
-			&"draw": int(view[&"draw"]),
-			&"text": (view[&"status"] as Label).text,
+			&"base": entry[&"base"],
+			&"name": entry[&"name"],
+			&"owned": int(entry[&"owned"]),
+			&"draw": int(entry[&"draw"]),
+			&"text": INVENTORY_TEXT % ["OWNED", int(entry[&"owned"])],
 		})
 	return rows
 
@@ -3114,7 +2971,7 @@ func _refresh_all() -> void:
 	_refresh_rows()
 	_refresh_racks()
 	_refresh_empty_cells()
-	_refresh_inventory()
+	_refresh_eq()
 	_sync_grid(_active_hull(_profile()))
 	_refresh_browser()
 	_refresh_footer()
@@ -3412,9 +3269,10 @@ func _select(payload: Dictionary, clicked: bool) -> void:
 	_line_danger = false
 	_apply_cell_selection()
 	_refresh_footer()
-	_refresh_inventory()
+	_refresh_eq()
 	_refresh_browser()
 	_refresh_cell_info()
+	_update_hint()
 
 
 func _on_cell_pressed(payload: Dictionary) -> void:
@@ -3445,9 +3303,10 @@ func clear_selection() -> void:
 	_line_danger = false
 	_apply_cell_selection()
 	_refresh_footer()
-	_refresh_inventory()
+	_refresh_eq()
 	_refresh_browser()
 	_refresh_cell_info()
+	_update_hint()
 
 
 ## The cell the pane has selected, `{type, token, index}`, or `{}` when nothing is.
@@ -3840,7 +3699,7 @@ func _drag_payload_of(data: Variant) -> Dictionary:
 	return {}
 
 
-## A browser row's drag and a FITS HERE row's own inventory drag both land on a grid cell
+## A browser row's drag and the list's own inventory drag both land on a grid cell
 ## (P33: drag-to-fit from the list); anything else is not this surface's.
 func cell_can_drop(cell: Dictionary, data: Variant) -> bool:
 	return not _drag_payload_of(data).is_empty() or not _payload_of(data).is_empty()
@@ -3901,7 +3760,8 @@ func _flash_slot_caption(cell: Dictionary) -> void:
 ## ================================================== the inventory browser (P4's right)
 
 
-## The family-tab strip (the AUCTION's own idiom minus `HULLS`) over the browser's rows.
+## The family-tab strip (the AUCTION's own idiom minus `HULLS`) over the one list, plus its
+## AUCTION-idiom column-header band (P40).
 func _build_browser() -> void:
 	for tab: Dictionary in BROWSER_TABS:
 		var button := Button.new()
@@ -3918,6 +3778,35 @@ func _build_browser() -> void:
 		)
 		button.pressed.connect(_on_tab_pressed.bind(StringName(tab[&"id"])))
 		_tabs.add_child(button)
+	_build_list_band(
+		_browser_band, [BAND_STATE, BAND_COST], [BAND_TAG_COLUMN, BAND_COST_COLUMN], BAND_MODULE
+	)
+
+
+## One list's AUCTION-idiom column-header band (P40): a leading caption cell over the title
+## column, then one caption cell seated over each value column at that column's own width.
+func _build_list_band(
+	band: HBoxContainer, captions: Array, widths: Array, leading: String
+) -> void:
+	if band == null:
+		return
+	for child: Node in band.get_children():
+		band.remove_child(child)
+		child.queue_free()
+	var icon_gap := Control.new()
+	icon_gap.name = "IconGap"
+	icon_gap.custom_minimum_size = Vector2(BROWSER_ICON, 0.0)
+	icon_gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	band.add_child(icon_gap)
+	var lead := _make_caption(leading, ROLE_CAPTION)
+	lead.name = "HeaderLead"
+	lead.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	band.add_child(lead)
+	for index in captions.size():
+		var cell := _make_caption(String(captions[index]), ROLE_CAPTION)
+		cell.name = "Header%s" % String(captions[index]).to_pascal_case()
+		cell.custom_minimum_size = Vector2(float(widths[index]), 0.0)
+		band.add_child(cell)
 
 
 func _on_tab_pressed(tab_id: StringName) -> void:
@@ -3926,32 +3815,385 @@ func _on_tab_pressed(tab_id: StringName) -> void:
 	_apply_tab_states()
 
 
-## The BUYABLE THAT FITS rows: every catalogue module the tab keeps, narrowed to the
-## selected cell's family and `fit_legal` when one is selected (P33), plus the fit's own
-## lost entries (`fitting_panel.gd`'s L124 law - a fitted instance whose record is gone
-## still renders one row) when no cell narrows it.
-func _browser_ids(profile: ProfileScript) -> Array[StringName]:
-	var ids: Array[StringName] = []
+## ==================================================== the EQ container (P39)
+##
+## BATTERY CONFIG's right sector: one compact list of the non-weapon equipment under the
+## same category tabs as before (AMMUNITION first, then the other families), count rows and
+## the INSPECT + BUY top-ups the old foot band offered. The AMMUNITION category reuses the
+## shipped pack card (its BUY route); every other category lists the owned modules with their
+## count and an INSPECT chip.
+
+
+func _build_eq() -> void:
+	for tab: Dictionary in EQ_TABS:
+		var button := Button.new()
+		button.name = "EqTab%s" % String(tab[&"id"]).to_pascal_case()
+		button.toggle_mode = true
+		button.focus_mode = Control.FOCUS_ALL
+		button.custom_minimum_size = TAB_MIN_SIZE
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		button.text = String(tab[&"label"])
+		button.set_meta(&"eq_tab", StringName(tab[&"id"]))
+		button.pressed.connect(_on_eq_tab_pressed.bind(StringName(tab[&"id"])))
+		_eq_tabs.add_child(button)
+	_build_list_band(
+		_eq_band, [EQ_BAND_COUNT, EQ_BAND_COST], [EQ_TAG_COLUMN, EQ_COST_COLUMN],
+		EQ_BAND_EQUIPMENT
+	)
+	_refresh_eq()
+
+
+func _on_eq_tab_pressed(tab_id: StringName) -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	select_eq_tab(tab_id)
+
+
+## Move the EQ container to one category (the keyboard's and a probe's door into the same
+## move a tab press makes).
+func select_eq_tab(tab_id: StringName) -> void:
+	for tab: Dictionary in EQ_TABS:
+		if tab[&"id"] == tab_id:
+			_eq_tab = tab_id
+			_eq_signature.clear()
+			_refresh_eq()
+			return
+
+
+## The EQ container's category in force (`AMMUNITION` by default).
+func active_eq_tab() -> StringName:
+	return _eq_tab
+
+
+## The EQ container's own list rows in the active category: the owned non-weapon modules of
+## the tab's family (`×<n>` count rows), `[]` for the AMMUNITION category (which draws the
+## shipped pack cards).
+func _eq_module_rows(profile: ProfileScript) -> Array[Dictionary]:
+	var rows: Array[Dictionary] = []
+	if profile == null:
+		return rows
+	var wanted := &""
+	for tab: Dictionary in EQ_TABS:
+		if tab[&"id"] == _eq_tab:
+			wanted = StringName(tab[&"slot"])
+	for key: Variant in ModuleData.MODULES:
+		var base_id := StringName(str(key))
+		var slot := ModuleData.slot_of(base_id)
+		if slot == WEAPON_SLOT:
+			continue
+		if wanted != &"" and _slot_key_of(base_id) != wanted:
+			continue
+		var owned := _owned_total(profile, base_id)
+		if owned <= 0:
+			continue
+		rows.append({
+			&"base": base_id,
+			&"name": _module_name(base_id),
+			&"owned": owned,
+			&"draw": int(ModuleData.module(base_id).get(&"draw", 0)),
+			&"price": int(ModuleData.module(base_id).get(&"cost", 0)),
+			&"slot": slot,
+		})
+	return rows
+
+
+## The EQ container's own signature: the category plus every row's held count, so a profile
+## or category change rebuilds only when the row set moves.
+func _eq_signature_of() -> Array[String]:
+	var out: Array[String] = [String(_eq_tab)]
+	if _eq_tab == EQ_TAB_AMMO:
+		for pack: Dictionary in Catalog.AMMO_PACKS:
+			out.append(String(pack.get(&"id", &"")))
+		return out
+	for entry: Dictionary in _eq_module_rows(_profile()):
+		out.append("%s|%d" % [String(entry[&"base"]), int(entry[&"owned"])])
+	return out
+
+
+func _refresh_eq() -> void:
+	_apply_eq_tab_states()
+	var signature := _eq_signature_of()
+	if signature != _eq_signature:
+		_eq_signature = signature
+		_eq_rebuild()
+	else:
+		_refresh_rows()
+		for payload: Dictionary in _eq_payloads:
+			_refresh_eq_row(payload)
+	if _ammo_caption != null:
+		_ammo_caption.text = _eq_caption_text()
+
+
+## Rebuild the EQ container's own list for the category in force: the shipped pack cards for
+## AMMUNITION, the owned modules' count rows for every other family.
+func _eq_rebuild() -> void:
+	_clear(_rows)
+	_payloads.clear()
+	_eq_payloads.clear()
+	if _eq_tab == EQ_TAB_AMMO:
+		for pack: Dictionary in Catalog.AMMO_PACKS:
+			_payloads.append(_build_card(pack))
+		_lay_cards()
+		for payload: Dictionary in _payloads:
+			_refresh_row(payload)
+		return
+	var rows := _eq_module_rows(_profile())
+	if rows.is_empty():
+		var empty := _make_caption(EQ_EMPTY)
+		empty.name = "Empty"
+		_rows.add_child(empty)
+		return
+	for entry: Dictionary in rows:
+		var payload := _build_eq_row(entry)
+		_eq_payloads.append(payload)
+		_refresh_eq_row(payload)
+
+
+## One EQ count row (the auction row idiom): the module's icon, its name and
+## `SLOT <TYPE> · DRAW <n>` meta, its `×<n>` count, its price and its INSPECT chip.
+func _build_eq_row(entry: Dictionary) -> Dictionary:
+	var base_id: StringName = entry[&"base"]
+	var module_row := ModuleData.module(base_id)
+	var row := BrowserRow.new()
+	row.name = "Eq%s" % String(base_id).to_pascal_case()
+	row.armory = self
+	row.toggle_mode = true
+	row.focus_mode = Control.FOCUS_ALL
+	row.custom_minimum_size = Vector2(0.0, BROWSER_ROW_HEIGHT)
+	row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	var inner := MarginContainer.new()
+	inner.name = "RowInner"
+	inner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	inner.add_theme_constant_override(&"margin_left", ROW_TEXT_INSET * 2.0)
+	inner.add_theme_constant_override(&"margin_top", 8.0)
+	inner.add_theme_constant_override(&"margin_right", ROW_TEXT_INSET * 2.0)
+	inner.add_theme_constant_override(&"margin_bottom", 8.0)
+	row.add_child(inner)
+	inner.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var box := HBoxContainer.new()
+	box.name = "RowBox"
+	box.add_theme_constant_override(&"separation", 12)
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	inner.add_child(box)
+	var icon := _make_icon(String(module_row.get(&"icon", "")), BROWSER_ICON)
+	if icon != null:
+		box.add_child(icon)
+	var title_box := VBoxContainer.new()
+	title_box.name = "TitleBox"
+	title_box.add_theme_constant_override(&"separation", 2)
+	title_box.custom_minimum_size = Vector2(BROWSER_TITLE_COLUMN, 0.0)
+	title_box.size_flags_horizontal = Control.SIZE_FILL
+	title_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	title_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(title_box)
+	var title := _make_label(&"StationValue", String(entry[&"name"]), true)
+	title.name = "Title"
+	title_box.add_child(title)
+	var meta := _make_label(
+		&"StationCaption",
+		BROWSER_META_FORMAT % [
+			String(module_row.get(&"slot", "")).to_upper(), int(module_row.get(&"draw", 0))
+		],
+		true
+	)
+	meta.name = "Meta"
+	title_box.add_child(meta)
+	var slack := Control.new()
+	slack.name = "TitleSlack"
+	slack.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	slack.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(slack)
+	var count := _make_label(&"StationValue", "")
+	count.name = "Count"
+	count.custom_minimum_size = Vector2(EQ_TAG_COLUMN, 0.0)
+	count.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	box.add_child(count)
+	var cost := _make_label(&"StationCaption", "")
+	cost.name = "Cost"
+	cost.custom_minimum_size = Vector2(EQ_COST_COLUMN, 0.0)
+	cost.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	box.add_child(cost)
+	var payload := {
+		&"base": base_id,
+		&"name": String(entry[&"name"]),
+		&"slot": StringName(module_row.get(&"slot", &"")),
+		&"draw": int(module_row.get(&"draw", 0)),
+		&"price": int(entry[&"price"]),
+		&"owned": int(entry[&"owned"]),
+		&"row": row,
+		&"count": count,
+		&"cost": cost,
+		&"icon": icon,
+		&"tinted": _is_flat_glyph(String(module_row.get(&"icon", ""))),
+	}
+	row.payload = payload
+	box.add_child(_make_inspect_chip(payload))
+	row.pressed.connect(_on_eq_pressed.bind(payload))
+	row.focus_entered.connect(_on_eq_focused.bind(row, payload))
+	row.mouse_entered.connect(_on_eq_hovered.bind(payload, true))
+	row.mouse_exited.connect(_on_eq_hovered.bind(payload, false))
+	_rows.add_child(row)
+	return payload
+
+
+func _refresh_eq_row(payload: Dictionary) -> void:
+	var count: Label = payload[&"count"]
+	count.text = EQ_COUNT_FORMAT % int(payload[&"owned"])
+	count.add_theme_color_override(&"font_color", _token(ROLE_CAPTION))
+	var cost: Label = payload[&"cost"]
+	cost.text = PRICE_FORMAT % _format_int(int(payload[&"price"]))
+	cost.add_theme_color_override(&"font_color", _token(ROLE_CAPTION))
+
+
+func _on_eq_pressed(payload: Dictionary) -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	var row := payload[&"row"] as Button
+	if row != null and is_instance_valid(row):
+		row.set_pressed_no_signal(true)
+	_focused_payload = payload
+	_inspect_browser(payload, true)
+
+
+func _on_eq_focused(row: Button, payload: Dictionary) -> void:
+	AudioManager.play_ui(AudioManager.UiCue.HOVER)
+	row.set_pressed_no_signal(true)
+	_focused_payload = payload
+
+
+func _on_eq_hovered(payload: Dictionary, hovered: bool) -> void:
+	var icon := payload.get(&"icon", null) as TextureRect
+	if icon != null and is_instance_valid(icon):
+		var tween := _make_tween()
+		tween.tween_property(
+			icon, "modulate:a", 1.0 if hovered else ROW_ICON_IDLE_ALPHA, HOVER_SECONDS
+		)
+	_inspect_browser(payload, hovered)
+
+
+## The EQ container's own caption: the category's own label and count.
+func _eq_caption_text() -> String:
+	if _eq_tab == EQ_TAB_AMMO:
+		return AMMO_CAPTION % _payloads.size()
+	return EQ_CAPTION % [_eq_label(), _eq_payloads.size()]
+
+
+func _eq_label() -> String:
+	for tab: Dictionary in EQ_TABS:
+		if tab[&"id"] == _eq_tab:
+			return String(tab[&"label"])
+	return String(_eq_tab).to_upper()
+
+
+func _apply_eq_tab_states() -> void:
+	for button: Node in _eq_tabs.get_children():
+		var tab_button := button as Button
+		if tab_button == null:
+			continue
+		var active := StringName(tab_button.get_meta(&"eq_tab", &"")) == _eq_tab
+		tab_button.set_pressed_no_signal(active)
+		tab_button.add_theme_color_override(
+			&"font_color", _token(&"text_primary") if active else _token(&"text_dim")
+		)
+
+
+## The one list's rows in the state the pane is in (P38). With no cell selected it browses
+## everything the profile owns (the tab's family) - the bag's units UNION the active hull's
+## fitted bases, so a base owned only as a fitted instance still lists - tagged `FIT` when
+## the hull carries a cell of that family and `STORED` otherwise. With a cell selected it
+## lists every possibility for that cell - the owned candidates first (`OWNED`, select-to-fit
+## and drag-to-fit) then the catalogue's buyable ones (`BUYABLE`, BUY + INSPECT) - each row
+## carrying the legality line the CELL INFO block speaks.
+func _equip_rows(profile: ProfileScript) -> Array[Dictionary]:
+	var rows: Array[Dictionary] = []
+	if profile == null:
+		return rows
+	var hull := _active_hull(profile)
 	var wanted := &""
 	for tab: Dictionary in BROWSER_TABS:
 		if tab[&"id"] == _browser_tab:
 			wanted = StringName(tab[&"slot"])
-	var cell_slot := StringName(_selected[&"type"]) if not _selected.is_empty() else &""
-	var hull := _active_hull(profile)
-	var index := int(_selected[&"index"]) if not _selected.is_empty() else -1
+	if _selected.is_empty():
+		var fitted := _fitted_bases(profile, hull)
+		for module_id: StringName in ModuleData.MODULES:
+			if wanted != &"" and ModuleData.slot_of(module_id) != wanted:
+				continue
+			var owned := _owned_total(profile, module_id)
+			var is_fitted := fitted.has(module_id)
+			if owned <= 0 and not is_fitted:
+				continue
+			var tag: String = TAG_FIT if is_fitted else TAG_STORED
+			rows.append(_equip_entry(module_id, tag, owned, 0, ""))
+		if wanted == &"":
+			for entry: StringName in _lost_entries(profile):
+				rows.append(_equip_entry(entry, TAG_STORED, 0, 0, ""))
+		return rows
+	var slot_key: StringName = _selected[&"type"]
+	var index := int(_selected[&"index"])
 	for module_id: StringName in ModuleData.MODULES:
-		if wanted != &"" and ModuleData.slot_of(module_id) != wanted:
+		if _slot_key_of(module_id) != slot_key:
 			continue
-		if cell_slot != &"":
-			if _slot_key_of(module_id) != cell_slot:
+		if _owned_total(profile, module_id) <= 0:
+			continue
+		if not _cell_refusal(profile, hull, index, module_id).is_empty():
+			continue
+		rows.append(_equip_entry(
+			module_id, TAG_OWNED, _owned_total(profile, module_id), 0,
+			_row_legality(profile, hull, index, module_id)
+		))
+	for module_id: StringName in ModuleData.MODULES:
+		if _slot_key_of(module_id) != slot_key:
+			continue
+		if _owned_total(profile, module_id) > 0:
+			continue
+		if not _cell_refusal(profile, hull, index, module_id).is_empty():
+			continue
+		rows.append(_equip_entry(
+			module_id, TAG_BUYABLE, 0, int(ModuleData.module(module_id).get(&"cost", 0)),
+			_row_legality(profile, hull, index, module_id)
+		))
+	return rows
+
+
+## One list row's shape, the one place the two states agree.
+func _equip_entry(
+	base_id: StringName, tag: String, owned: int, price: int, legal: String
+) -> Dictionary:
+	return {
+		&"base": base_id,
+		&"name": _module_name(base_id),
+		&"tag": tag,
+		&"owned": owned,
+		&"price": price,
+		&"legal": legal,
+		&"slot": ModuleData.slot_of(base_id),
+		&"draw": int(ModuleData.module(base_id).get(&"draw", 0)),
+	}
+
+
+## The active hull's fitted base ids - the set a `FIT` tag reads against (a browse row is
+## `FIT` when the ship already carries that base, `STORED` when the bag holds it and the fit
+## does not).
+func _fitted_bases(profile: ProfileScript, hull: StringName) -> Array[StringName]:
+	var out: Array[StringName] = []
+	var fit := _resolved_fit(profile, hull)
+	for slot_key: StringName in ShipFit.FIT_SLOT_KEYS:
+		var cells := 1 if slot_key == POWER_SLOT else ShipFit.slot_capacity(hull, slot_key)
+		for index in cells:
+			var entry := _cell_module(fit, slot_key, index)
+			if entry == &"":
 				continue
-			if not _cell_refusal(profile, hull, index, module_id).is_empty():
-				continue
-		ids.append(module_id)
-	if wanted == &"" and cell_slot == &"":
-		for entry: StringName in _lost_entries(profile):
-			ids.append(entry)
-	return ids
+			var base := _base_id(profile, entry)
+			if base != &"" and not out.has(base):
+				out.append(base)
+	return out
+
+
+## One row's proactive legality line (P38): `LEGAL · THIS CELL FITS` when the cell takes it,
+## else the pane's own refusal wording (`_cell_refusal`'s, the strings at the file's head).
+func _row_legality(
+	profile: ProfileScript, hull: StringName, index: int, base_id: StringName
+) -> String:
+	var refusal := _cell_refusal(profile, hull, index, base_id)
+	return CELL_INFO_LEGAL_OK if refusal.is_empty() else refusal
 
 
 ## The fit's own cells whose module the bag can no longer resolve (a fitted instance whose
@@ -3979,36 +4221,39 @@ func _lost_entries(profile: ProfileScript) -> Array[StringName]:
 func _refresh_browser() -> void:
 	var profile := _profile()
 	_apply_tab_states()
-	var ids := _browser_ids(profile)
+	var rows := _equip_rows(profile)
 	if _browser_caption != null:
-		_browser_caption.text = (
-			BUYABLE_CAPTION if not _selected.is_empty() else BUYABLE_CAPTION_ALL
-		)
+		_browser_caption.text = _list_caption(rows.size())
 	var signature: Array[String] = []
-	if not _selected.is_empty():
-		signature.append("cell:%s:%d" % [String(_selected[&"type"]), int(_selected[&"index"])])
-	for module_id: StringName in ids:
-		signature.append(String(module_id) + "|" + str(_owned_total(profile, module_id)))
+	signature.append(
+		"cell:%s:%d" % [String(_selected[&"type"]), int(_selected[&"index"])]
+		if not _selected.is_empty()
+		else "browse"
+	)
+	for entry: Dictionary in rows:
+		signature.append("%s|%s|%d" % [
+			String(entry[&"base"]), String(entry[&"tag"]), int(entry[&"owned"])
+		])
 	if signature != _browser_signature:
 		_browser_signature = signature
-		_build_browser_rows(ids, profile)
+		_build_browser_rows(rows, profile)
 	for payload: Dictionary in _browser_payloads:
 		_refresh_browser_row(payload, profile)
 
 
-func _build_browser_rows(ids: Array[StringName], profile: ProfileScript) -> void:
+func _build_browser_rows(rows: Array[Dictionary], profile: ProfileScript) -> void:
 	_browser_payloads.clear()
 	_browser_focused = {}
 	for child: Node in _browser_rows.get_children():
 		_browser_rows.remove_child(child)
 		child.queue_free()
-	if ids.is_empty():
-		var empty := _make_caption(BUYABLE_NONE if not _selected.is_empty() else BUYABLE_EMPTY)
+	if rows.is_empty():
+		var empty := _make_caption(_list_empty_text())
 		empty.name = "Empty"
 		_browser_rows.add_child(empty)
 		return
-	for module_id: StringName in ids:
-		_browser_payloads.append(_build_browser_row(module_id, profile))
+	for entry: Dictionary in rows:
+		_browser_payloads.append(_build_browser_row(entry, profile))
 
 
 ## The active tab's plate reads `text_primary` and wears its pressed state; the rest read
@@ -4025,14 +4270,17 @@ func _apply_tab_states() -> void:
 		)
 
 
-## One browser row (the auction row idiom: 76 tall, `RowInner` 12/8): the module's icon,
-## its name and `SLOT <TYPE> · DRAW <n>` meta, the `OWNED ×n` / price read and the
-## row-corner BUY chip (P1's `ActionInline` 96x32). Every row is a drag source.
-func _build_browser_row(base_id: StringName, profile: ProfileScript) -> Dictionary:
+## One list row (the auction row idiom: 76 tall, `RowInner` 12/8): the module's icon, its
+## name and `SLOT <TYPE> · DRAW <n>` meta, its proactive legality line, its state tag
+## (`FIT`/`STORED`/`OWNED`/`BUYABLE`), its `OWNED ×n` / price read and - on a `BUYABLE` row -
+## the row-corner BUY chip (P1's `ActionInline` 96x32). Every row is a drag source.
+func _build_browser_row(entry: Dictionary, _profile_unused: ProfileScript) -> Dictionary:
+	var base_id: StringName = entry[&"base"]
 	var module_row := ModuleData.module(base_id)
-	var name_text := String(module_row.get(&"name", String(base_id))).to_upper()
+	var name_text := String(entry[&"name"])
 	if name_text.is_empty():
 		name_text = String(base_id).to_upper()
+	var tag_text := String(entry[&"tag"])
 	var row := BrowserRow.new()
 	row.name = "Module%s" % String(base_id).to_pascal_case()
 	row.armory = self
@@ -4079,32 +4327,47 @@ func _build_browser_row(base_id: StringName, profile: ProfileScript) -> Dictiona
 	)
 	meta.name = "Meta"
 	title_box.add_child(meta)
+	## P38: the row's own proactive legality line (the CELL INFO block's own vocabulary).
+	var legal := _make_label(&"StationCaption", String(entry[&"legal"]), true)
+	legal.name = "Legal"
+	title_box.add_child(legal)
 	var slack := Control.new()
 	slack.name = "TitleSlack"
 	slack.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	slack.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	box.add_child(slack)
+	var tag := _make_label(&"StationCaption", tag_text, true)
+	tag.name = "Tag"
+	tag.custom_minimum_size = Vector2(BAND_TAG_COLUMN, 0.0)
+	tag.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	box.add_child(tag)
 	var read := _make_label(&"StationValue", "")
 	read.name = "Read"
 	read.custom_minimum_size = Vector2(COL_OWNED, 0.0)
 	read.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	box.add_child(read)
-	var buy := Button.new()
-	buy.name = "Buy"
-	buy.custom_minimum_size = ACTION_INLINE
-	buy.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	buy.focus_mode = Control.FOCUS_ALL
-	buy.text = BUY_CHIP
-	box.add_child(buy)
+	var buy: Button = null
+	if tag_text == TAG_BUYABLE:
+		buy = Button.new()
+		buy.name = "Buy"
+		buy.custom_minimum_size = ACTION_INLINE
+		buy.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		buy.focus_mode = Control.FOCUS_ALL
+		buy.text = BUY_CHIP
+		box.add_child(buy)
 	var payload := {
 		&"base": base_id,
 		&"name": name_text,
 		&"slot": StringName(module_row.get(&"slot", &"")),
 		&"draw": int(module_row.get(&"draw", 0)),
-		&"price": int(module_row.get(&"cost", 0)),
-		&"owned": false,
+		&"price": int(entry[&"price"]),
+		&"tag": tag_text,
+		&"legal": String(entry[&"legal"]),
+		&"owned": int(entry[&"owned"]) > 0,
 		&"row": row,
 		&"read": read,
+		&"tag_label": tag,
+		&"legal_label": legal,
 		&"buy": buy,
 		&"icon": icon,
 	}
@@ -4115,7 +4378,8 @@ func _build_browser_row(base_id: StringName, profile: ProfileScript) -> Dictiona
 	row.focus_entered.connect(_on_browser_focused.bind(row, payload))
 	row.mouse_entered.connect(_on_browser_hovered.bind(payload, true))
 	row.mouse_exited.connect(_on_browser_hovered.bind(payload, false))
-	buy.pressed.connect(_on_buy_pressed.bind(payload))
+	if buy != null:
+		buy.pressed.connect(_on_buy_pressed.bind(payload))
 	_browser_rows.add_child(row)
 	return payload
 
@@ -4127,8 +4391,17 @@ func _refresh_browser_row(payload: Dictionary, profile: ProfileScript) -> void:
 	var read: Label = payload[&"read"]
 	if owned > 0:
 		read.text = OWNED_FORMAT % owned
+	elif String(payload[&"tag"]) == TAG_FIT:
+		read.text = READ_FITTED
 	else:
 		read.text = PRICE_FORMAT % _format_int(int(payload[&"price"]))
+	var legal: Label = payload[&"legal_label"]
+	var legal_text := String(payload[&"legal"])
+	legal.text = legal_text
+	legal.add_theme_color_override(
+		&"font_color",
+		_token(ROLE_CAPTION if legal_text.is_empty() or legal_text == CELL_INFO_LEGAL_OK else ROLE_DANGER_BRIGHT)
+	)
 
 
 func _on_browser_pressed(payload: Dictionary) -> void:
@@ -4142,6 +4415,10 @@ func _on_browser_pressed(payload: Dictionary) -> void:
 	## T-118: a keyboard `ui_accept` press must not pop the popup at the OS cursor.
 	if _pointer_over(row):
 		_inspect_browser(payload, true)
+	## P38: the browse state is a browse surface - a press only inspects it. With a cell
+	## selected the press is the select-to-fit flow.
+	if _selected.is_empty():
+		return
 	_flow_row_into_cell(payload)
 
 

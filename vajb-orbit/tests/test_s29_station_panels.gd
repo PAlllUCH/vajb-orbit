@@ -123,9 +123,13 @@ func _last_status() -> String:
 
 func test_the_browser_caption_and_the_tab_strip_minus_hulls() -> void:
 	var panel := _mount(ArmoryScene)
+	## P38/F1: a clean fixture still lists the ship's own fitted bases (bag units UNION fitted
+	## bases), so the caption counts the rows the list draws.
+	var rows := panel.get_node("%BrowserRows") as Control
 	assert_eq(
-		String((panel.get_node("%BrowserCaption") as Label).text), "MODULES · OWNED & BUYABLE",
-		"P8's own browser caption"
+		String((panel.get_node("%BrowserCaption") as Label).text),
+		ArmoryScript.LIST_CAPTION_BROWSE % rows.get_child_count(),
+		"P38's own browse caption counts the listed rows"
 	)
 	var tabs := panel.get_node("%FamilyTabs") as HBoxContainer
 	var labels: Array[String] = []
@@ -145,15 +149,19 @@ func test_the_browser_caption_and_the_tab_strip_minus_hulls() -> void:
 
 
 ## N45 (UI_SPEC section 13.1): every row's title trims to a fixed 160 px ellipsis column, so
-## no row control can leave the window (D20 note 2). S32 (STATION_HUB section 20.1 P37)
-## supersedes the 620 px half: BUYABLE THAT FITS is a full-width column of the FIT CELLS mode.
+## no row control can leave the window (D20 note 2). S33 (STATION_HUB section 21.1 P38)
+## supersedes the 620 px half: the one list is the FIT CELLS mode's right sector.
 func test_n45_the_browser_half_and_the_title_column() -> void:
 	var panel := _mount(ArmoryScene)
-	var block := panel.get_node_or_null(^"ModeHost/FitCells/BuyableBlock") as Control
-	assert_true(block != null, "the BUYABLE THAT FITS block ships (P37)")
+	## P38: the browse state lists what the profile owns, so give it one to draw.
+	_profile.call(&"add_module", &"w_laser", 1)
+	panel.call(&"refresh_profile", &"modules")
+	var block := panel.get_node_or_null(^"ModeHost/FitCells/FitSectors/FitRight") as Control
+	assert_true(block != null, "the one list's right sector ships (P38)")
 	if block != null:
 		assert_true(
-			block.custom_minimum_size.x <= 0.0, "the block is a full-width column, not a 620 half (P37)"
+			block.custom_minimum_size.x <= 0.0,
+			"the sector is a relative column, not a pinned 620 half (P38)"
 		)
 	assert_true(not (panel.get(&"_browser_payloads") as Array).is_empty(), "the browser has rows")
 	for payload: Dictionary in panel.get(&"_browser_payloads"):
@@ -168,7 +176,7 @@ func test_n45_the_browser_half_and_the_title_column() -> void:
 		)
 		assert_true(
 			rbox.get_combined_minimum_size().x <= 1765.0,
-			"the row content fits the full-width column (min %s)"
+			"the row content fits the sector column (min %s)"
 				% str(rbox.get_combined_minimum_size())
 		)
 	_free_host(panel)
@@ -176,8 +184,10 @@ func test_n45_the_browser_half_and_the_title_column() -> void:
 
 func test_the_hyperdrive_row_is_visible_at_tier_3() -> void:
 	var panel := _mount(ArmoryScene)
+	## P38: a buyable row appears when a cell of its family is selected.
+	assert_true(bool(panel.call(&"select_cell", &"engines", 0)), "an engine cell selects")
 	var ids: Array[StringName] = panel.call(&"module_row_ids")
-	assert_true(ids.has(HYPERDRIVE), "the browser lists e_hyperdrive (R-S29-1's tier 3 row)")
+	assert_true(ids.has(HYPERDRIVE), "the list carries e_hyperdrive (R-S29-1's tier 3 row)")
 	var read := ""
 	for payload: Dictionary in panel.get(&"_browser_payloads"):
 		if payload[&"base"] == HYPERDRIVE:

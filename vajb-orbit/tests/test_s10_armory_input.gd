@@ -388,9 +388,10 @@ func test_a_real_named_plate_drag_commits_the_swap() -> void:
 	_three_barrel_rack()
 	_settle_layout()
 	## Unlisted in 09 section 12's moved rows but forced by S15's plate-fit correction and
-	## re-anchored by P36 (the racks are full-width rows now, so the cell is 221 x 45).
+	## re-anchored by S33's two-sector split (the racks ride the left sector now, so the cell
+	## is 45 x 67 at the pinned host).
 	assert_eq(
-		_chip(0, 0).size, Vector2(221.0, 45.0),
+		_chip(0, 0).size, Vector2(45.0, 67.0),
 		"the chip keeps its slot recess (the rack row's cell at the pinned host; actual %s)"
 			% str(_chip(0, 0).size)
 	)

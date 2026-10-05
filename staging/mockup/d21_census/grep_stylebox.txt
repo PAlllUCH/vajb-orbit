@@ -1,0 +1,69 @@
+ui/screens/_mockup_station.gd:678:	if box is StyleBoxTexture:
+ui/screens/_mockup_station.gd:679:		return (box as StyleBoxTexture).texture
+ui/hud/ship_status_screen.gd:783:	if box is StyleBoxTexture:
+ui/hud/ship_status_screen.gd:784:		return (box as StyleBoxTexture).texture
+ui/screens/settings.gd:462:func _focus_ring() -> StyleBoxFlat:
+ui/screens/settings.gd:466:	var box := StyleBoxFlat.new()
+ui/hud/hud.gd:367:var _hull_fill_danger: StyleBoxFlat
+ui/hud/hud.gd:395:var _pool_background_box: StyleBoxFlat = null
+ui/hud/hud.gd:903:	var raised: StyleBox = theme.get_stylebox(&"panel_raised", &"")
+ui/hud/hud.gd:1859:func _pool_background() -> StyleBoxFlat:
+ui/hud/hud.gd:1861:		var box := StyleBoxFlat.new()
+ui/hud/hud.gd:1870:func _pool_fill(token: StringName) -> StyleBoxFlat:
+ui/hud/hud.gd:1871:	var cached: StyleBoxFlat = _pool_fill_boxes.get(token, null)
+ui/hud/hud.gd:1875:	var box := StyleBoxFlat.new()
+ui/hud/hud.gd:1917:func _danger_fill() -> StyleBoxFlat:
+ui/hud/hud.gd:1919:		_hull_fill_danger = StyleBoxFlat.new()
+ui/components/slot_button.gd:128:	var box: StyleBox = get_theme_stylebox(state, variation)
+ui/components/slot_button.gd:129:	if box is StyleBoxTexture:
+ui/components/slot_button.gd:130:		return (box as StyleBoxTexture).texture
+ui/hud/cockpit_cluster.gd:482:	var _box_lit: StyleBoxFlat = null
+ui/hud/cockpit_cluster.gd:483:	var _box_unlit: StyleBoxFlat = null
+ui/hud/cockpit_cluster.gd:567:		_box_lit = StyleBoxFlat.new()
+ui/hud/cockpit_cluster.gd:572:		_box_unlit = StyleBoxFlat.new()
+ui/screens/station.gd:737:	if base is StyleBoxFlat:
+ui/screens/station.gd:738:		var box := (base as StyleBoxFlat).duplicate() as StyleBoxFlat
+ui/components/glow_underlay.gd:11:var _style: StyleBoxFlat
+ui/components/glow_underlay.gd:15:	_style = StyleBoxFlat.new()
+ui/dev/dev_tuning_menu.gd:460:	var style := StyleBoxFlat.new()
+ui/screens/_mockup_station.gd:678:	if box is StyleBoxTexture:
+ui/screens/_mockup_station.gd:679:		return (box as StyleBoxTexture).texture
+ui/dialogs/dialog.gd:121:func _danger_normal_style(source: Theme) -> StyleBox:
+ui/dialogs/dialog.gd:125:	var style := base.duplicate() as StyleBox
+ui/dialogs/dialog.gd:126:	if style is StyleBoxFlat:
+ui/dialogs/dialog.gd:127:		(style as StyleBoxFlat).border_color = _token(&"accent_danger")
+ui/screens/settings.gd:462:func _focus_ring() -> StyleBoxFlat:
+ui/screens/settings.gd:466:	var box := StyleBoxFlat.new()
+ui/hud/cockpit_cluster.gd:482:	var _box_lit: StyleBoxFlat = null
+ui/hud/cockpit_cluster.gd:483:	var _box_unlit: StyleBoxFlat = null
+ui/hud/cockpit_cluster.gd:567:		_box_lit = StyleBoxFlat.new()
+ui/hud/cockpit_cluster.gd:572:		_box_unlit = StyleBoxFlat.new()
+ui/station/shipyard_panel.gd:1057:	if box is StyleBoxTexture:
+ui/station/shipyard_panel.gd:1058:		return (box as StyleBoxTexture).texture
+ui/station/armory_panel.gd:524:		var box := StyleBoxFlat.new()
+ui/station/armory_panel.gd:678:		var box := StyleBoxFlat.new()
+ui/station/armory_panel.gd:722:		var box := StyleBoxFlat.new()
+ui/station/armory_panel.gd:786:	## `StyleBoxTexture` normally): A5.1 draws it at the size it was cut for, never
+ui/station/armory_panel.gd:789:		var box := get_theme_stylebox(&"normal", &"SlotButtonWeapon") as StyleBoxTexture
+ui/station/armory_panel.gd:810:		var box := StyleBoxFlat.new()
+ui/station/armory_panel.gd:822:		var box := StyleBoxFlat.new()
+ui/station/armory_panel.gd:2133:	row.add_theme_stylebox_override(&"panel", StyleBoxEmpty.new())
+ui/station/armory_panel.gd:2137:	box.add_theme_stylebox_override(&"panel", StyleBoxEmpty.new())
+ui/station/launch_panel.gd:359:	if box is StyleBoxTexture:
+ui/station/launch_panel.gd:360:		return (box as StyleBoxTexture).texture
+ui/hud/ship_status_screen.gd:783:	if box is StyleBoxTexture:
+ui/hud/ship_status_screen.gd:784:		return (box as StyleBoxTexture).texture
+ui/station/overview_panel.gd:560:		if base is StyleBoxFlat:
+ui/station/overview_panel.gd:561:			var box := (base as StyleBoxFlat).duplicate() as StyleBoxFlat
+ui/hud/hud.gd:367:var _hull_fill_danger: StyleBoxFlat
+ui/hud/hud.gd:395:var _pool_background_box: StyleBoxFlat = null
+ui/hud/hud.gd:903:	var raised: StyleBox = theme.get_stylebox(&"panel_raised", &"")
+ui/hud/hud.gd:1859:func _pool_background() -> StyleBoxFlat:
+ui/hud/hud.gd:1861:		var box := StyleBoxFlat.new()
+ui/hud/hud.gd:1870:func _pool_fill(token: StringName) -> StyleBoxFlat:
+ui/hud/hud.gd:1871:	var cached: StyleBoxFlat = _pool_fill_boxes.get(token, null)
+ui/hud/hud.gd:1875:	var box := StyleBoxFlat.new()
+ui/hud/hud.gd:1917:func _danger_fill() -> StyleBoxFlat:
+ui/hud/hud.gd:1919:		_hull_fill_danger = StyleBoxFlat.new()
+ui/screens/station.gd:737:	if base is StyleBoxFlat:
+ui/screens/station.gd:738:		var box := (base as StyleBoxFlat).duplicate() as StyleBoxFlat

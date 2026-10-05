@@ -575,8 +575,14 @@ func test_the_sale_column_ships_the_s28_chrome_law() -> void:
 	)
 	panel.call(&"_select", &"mineral_iron")
 	assert_eq(String((panel.get(&"_step_value") as Label).text), "1 UNIT", "A11 with A5 grammar")
-	assert_eq(String((panel.get(&"_sell") as Button).text), "SELL 1 UNIT", "the quantity rides the primary")
+	## N48: the commit button is always worded SELL; the count rides the SELL UNITS selector.
+	assert_eq(String((panel.get(&"_sell") as Button).text), "SELL", "the commit button reads SELL")
+	assert_eq(
+		String((panel.get(&"_sell_value") as Label).text), "1 UNIT",
+		"and the SELL UNITS selector carries the count (N49)"
+	)
 	assert_eq(int(panel.get(&"_step")), 1, "a stray click can never dump the stack")
+	assert_eq(int(panel.get(&"_sell_units")), 1, "and the SELL UNITS selector arms at one unit")
 	## N42 (supersedes S28-A12): the hold list wears one column-header band, inside its
 	## scroll above the rows, captioned with the row stacks' own words UNITS / CR EACH / CR NET.
 	var header := panel.get_node_or_null(
@@ -718,6 +724,91 @@ func test_n44_the_lists_start_on_one_y() -> void:
 	assert_eq(
 		(board_rows.get_child(0) as Node).name, "MineralHeader", "the board band tops its scroll"
 	)
+	_free_host()
+
+
+# ------------------------------------------------ N48/N49: the exchange sell cluster (S33)
+
+
+## N48 (UI_SPEC section 14.1): the trade column's commit button is always worded `SELL` - the
+## armed quantity wording retires; the count lives in the `SELL UNITS` selector.
+func test_n48_the_commit_button_reads_sell_in_every_state() -> void:
+	_profile.set(&"_cargo", {&"mineral_iron": 5})
+	var panel := _mount_panel()
+	var sell := panel.get(&"_sell") as Button
+	assert_eq(sell.text, "SELL", "with nothing armed the commit button reads SELL (N48)")
+	assert_true(sell.disabled, "and is disabled")
+	panel.call(&"_select", &"mineral_iron")
+	assert_eq(sell.text, "SELL", "armed, it still reads SELL (N48)")
+	assert_false(sell.disabled, "and wakes")
+	panel.call(&"_set_sell_units", 3)
+	assert_eq(sell.text, "SELL", "at three units it still reads SELL")
+	assert_true(
+		String((panel.get(&"_confirm_strip") as Label).text).contains("SELL 3"),
+		"and the confirm strip keeps its counted wording (N48)"
+	)
+	panel.call(&"_clear_selection")
+	assert_eq(sell.text, "SELL", "cleared, it still reads SELL")
+	_free_host()
+
+
+## N49: the `SELL UNITS` selector sits beneath the unit-number selector, bounds min 1 /
+## selected-row units, and reads disabled + `text_dim` with no selection. The trade column
+## stacks top-down: unit selector -> SELL UNITS -> INSPECT cluster -> SELL.
+func test_n49_the_sell_units_selector_bounds_and_the_stack_order() -> void:
+	_profile.set(&"_cargo", {&"mineral_iron": 5})
+	var panel := _mount_panel()
+	var minus := panel.get(&"_sell_minus") as Button
+	var plus := panel.get(&"_sell_plus") as Button
+	var value := panel.get(&"_sell_value") as Label
+	assert_true(minus.disabled and plus.disabled, "no selection disables the SELL UNITS stepper (N49)")
+	assert_eq(value.text, "0 UNITS", "and it reads zero")
+	assert_true(
+		value.get_theme_color(&"font_color").is_equal_approx(
+			panel.call(&"_token", &"text_dim") as Color
+		),
+		"dimmed with no selection (N49)"
+	)
+	panel.call(&"_select", &"mineral_iron")
+	assert_false(minus.disabled and plus.disabled, "a selection wakes the stepper")
+	assert_eq(value.text, "1 UNIT", "arming at one unit")
+	panel.call(&"_set_sell_units", 0)
+	assert_eq(int(panel.get(&"_sell_units")), 1, "the floor is one unit (min 1)")
+	panel.call(&"_set_sell_units", 99)
+	assert_eq(int(panel.get(&"_sell_units")), 5, "the ceiling is the row's own units")
+	## The stack order (N49): unit selector -> SELL UNITS -> INSPECT cluster -> SELL. The
+	## trade column is a `VBoxContainer`, so the child order is the vertical order.
+	var step_row := (panel.get(&"_step_minus") as Control).get_parent() as Control
+	var sell_row := panel.get(&"_sell_units_row") as Control
+	var cluster := panel.get(&"_inspect_cluster") as Control
+	assert_true(cluster != null, "the INSPECT cluster ships (N43/N49)")
+	if cluster != null:
+		assert_true(
+			step_row.get_index() < sell_row.get_index(),
+			"the SELL UNITS selector sits beneath the unit selector (N49)"
+		)
+		assert_true(
+			sell_row.get_index() < cluster.get_index(),
+			"the INSPECT cluster sits beneath the SELL UNITS selector (N49)"
+		)
+		assert_true(
+			(panel.get_node(^"ExchangeBody") as Control).get_index()
+				< (panel.get_node(^"PaneFoot") as Control).get_index(),
+			"and the SELL / SELL ALL RAW cluster in the pane foot below the trade column"
+		)
+	_free_host()
+
+
+## N49: a SELL press moves exactly the `SELL UNITS` value of the selected row.
+func test_n49_a_sell_press_moves_exactly_the_selector_value() -> void:
+	_profile.set(&"_cargo", {&"mineral_iron": 5})
+	var panel := _mount_panel()
+	panel.call(&"_select", &"mineral_iron")
+	panel.call(&"_set_sell_units", 3)
+	var before := int(_profile.call(&"cargo_qty", &"mineral_iron"))
+	panel.call(&"_on_sell_pressed")
+	var after := int(_profile.call(&"cargo_qty", &"mineral_iron"))
+	assert_eq(before - after, 3, "a SELL press moves exactly the SELL UNITS value (N49)")
 	_free_host()
 
 

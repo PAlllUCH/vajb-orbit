@@ -6,6 +6,23 @@
 
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-25 clear-outs (owner asks):** every closed slice folder moved to the system trash (last git tree carrying them: `7a081ef`), old session reports live in `_state/_archive/`, and the two dispatch files were purged to live-items-only (2026-09-25 ter). Citation paths into purged trees name historical files.
 
+**Updated 2026-10-05 (S33 + D21 closed — shell v3 + the chrome family spec):**
+the owner's 2026-10-05 round ran as the second parallel pair on disjoint file
+sets. **S33** (`slices/S33-shell-v3/`): B1 (`hyper/deepseek-v4.1-flash` @
+xhigh) → R1 (`hyper/glm-5.3-flash` @ max, **blocked** — 2 HIGH / 2 MED) → F1
+cured all four; gate **1110 → 1118 → 1121/0** ×2. ARMORY is now two equal
+sectors per mode (FIT CELLS: grid + CELL INFO | the two-state equipment list;
+BATTERY CONFIG: racks | the EQ container) and the exchange sells by
+`SELL UNITS` under one `SELL` button (N48/N49). P38 defines the no-selection
+semantics (**T-130 closed**); T-132's reading taken as the default. **D21**
+(`slices/D21-chrome-family/`): A1 (`xiaomi/mimo-v2.6-pro` @ high) → R1
+(**blocked** — 2 HIGH / 3 MED) → F1 cured F1–F9; `UI_SPEC.md` §15 (the
+67-row census + the aspect law) + `UI_CHROME_ASSETS_SPEC.md` §13 (13 prompts,
+the run mapping + crop-to-master route, T-131's 4 station backdrops,
+**16 runs = $0.80**). Verify green vs `s33_start` + `d21_start`.
+**Next: coder 40 (S34 the refinery queue)**; the generation batch + the
+owner's review sheet gate S35.
+
 **Updated 2026-10-04 (S32 closed — ARMORY ships as two modules):** B1
 (`hyper/deepseek-v4.1-flash` @ xhigh) → R1 (`hyper/glm-5.3-flash` @ max,
 verdict blocked on 1 HIGH) → F1 (as B1). ARMORY is now FIT CELLS (cell grid +
@@ -470,8 +487,8 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | 17 | coder 36 | **S30 station shell v2 build** (**done 2026-10-04** — 1074 → 1093/0 ×2; 3 HIGH + 7 MED cured by F1, 4 LOW T-114–T-117; B1/B2/F1 `hyper/deepseek-v4.1-flash` @ xhigh, R1 `hyper/glm-5.3-flash` @ max; verify green vs `s30_start`) | designer 19 (done) | ran alone — rail + inspector band deleted, TERMINAL drawer + OVERVIEW + popups shipped |
 | 18 | coder 37 | **S31 shell fixes** — the D20 fix wave F1–F3+F5 (`UI_SPEC.md` §13.1 N42–N47) — **done 2026-10-04**: 1093 → 1099/0 ×2; acceptance 1–7 all PASS, 0 HIGH / 0 MED / 4 LOW (T-127/T-128); N42 amended post-review (a book = a list); T-118–T-121 closed, T-122 deferred to S32 | D20 (done) | re-laid `ui/station/exchange_panel.*` + `armory_panel.*` + the tooltip before S32 touches them |
 | 19 | coder 38 | **S32 ARMORY two-module rework** (`STATION_HUB.md` §20.1 P32–P37) — **done 2026-10-04**: 1099 → 1110/0 ×2; acceptance 1–7 all PASS; 1 HIGH (P36 dead space) cured by F1 under the designer's bucket-2 ruling (full-width console, 13 rows re-anchored), 2 LOW T-129/T-130; T-122 closed | coder 37 (S31) | rewrote `ui/station/armory_panel.*` sequentially after S31 |
-| 20 | designer 20 | **D21 the one true-aspect chrome family** (`UI_SPEC.md` §15 + `UI_CHROME_ASSETS_SPEC.md` amendment; owner ruling 2026-10-05, scope **full**; T-131) — **live this session** | beside coder 39 | `docs/design` + `staging/mockup` only — disjoint from every code wave (the D18/S28 parallel-pair shape) |
-| 21 | coder 39 | **S33 shell v3 — armory two sectors + the exchange sell cluster** (`STATION_HUB.md` §21.1 P38–P41 + `UI_SPEC.md` §14.1 N48/N49; T-132) — **live this session** | beside designer 20 | `vajb-orbit/ui` + `tests` only; disjoint from D21; rewrites `armory_panel.*`/`exchange_panel.*` after S32 |
+| 20 | designer 20 | **D21 the one true-aspect chrome family** (`UI_SPEC.md` §15 + `UI_CHROME_ASSETS_SPEC.md` §13) — **done 2026-10-05**: 2 HIGH + 3 MED cured by F1; cost 16 runs / $0.80; T-131 open | beside coder 39 | `docs/design` + `staging/mockup` only — the D18/S28 parallel-pair shape |
+| 21 | coder 39 | **S33 shell v3 — armory two sectors + the exchange sell cluster** (`STATION_HUB.md` §21.1 P38–P41 + `UI_SPEC.md` §14.1 N48/N49) — **done 2026-10-05**: 1110 → 1121/0 ×2; 2 HIGH + 2 MED cured by F1; T-130 closed | beside designer 20 | `vajb-orbit/ui` + `tests` only; rewrote `armory_panel.*`/`exchange_panel.*` after S32 |
 | 22 | coder 40 | **S34 the refinery queue** (`docs/gameplay/04_refinery.md` §7 + `STATION_HUB.md` §21.3 P42–P43; T-133) | coder 39 | strictly after S33 — both land rows in `vajb-orbit/tests/` and the whole-tree verify baselines must not see each other's diffs |
 
 Designer items 16–19 and coders 34–36 are closed — the overhaul round and its

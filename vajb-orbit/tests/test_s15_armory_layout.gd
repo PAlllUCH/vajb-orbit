@@ -41,20 +41,22 @@ const CONSOLE_ORIGIN := Vector2(16.0, 68.0)
 const CONSOLE := Vector2(1360.0, 516.0)
 const CONSOLE_MASTER := Vector2(2720.0, 1032.0)
 const ART_SCALE := 2.0
-## P36's amendment (2026-10-04, S32-F1): the console **stretches to the mode host** (1392 x
-## 447 at the pinned host) and the five racks are **full-width rows** stacked top-down; the
-## wells band is the fixed 92 px foot. These are the moved rows.
-const MODE_HOST := Vector2(1392.0, 447.0)
+## S33's two-sector rework (STATION_HUB section 21.1 P38/P39): the mode host is 1392 x 557 at
+## the pinned host, split into two equal 688-wide sectors on a 16 px gutter. The console
+## rides the BATTERY CONFIG mode's **left** sector. These are the moved rows.
+const MODE_HOST := Vector2(1392.0, 557.0)
 const MODE_HOST_TOP := 53.0
-const RACK_BAND := Vector2(1392.0, 349.0)
-const RACK_ROW := Vector2(1392.0, 65.0)
+const SECTOR_GUTTER := 16.0
+const RACK_SECTOR := Vector2(688.0, 557.0)
+const RACK_BAND := Vector2(688.0, 459.0)
+const RACK_ROW := Vector2(688.0, 87.0)
 const RACK_GAP := 6.0
 const BAY_COLUMNS := 5
-const CELL := Vector2(221.0, 45.0)
+const CELL := Vector2(45.0, 67.0)
 const CELL_ORIGIN := Vector2(210.0, 10.0)
 const CELL_GAP := 6.0
-const LEDGE_ORIGIN := Vector2(1122.0, 0.0)
-const LEDGE := Vector2(270.0, 65.0)
+const LEDGE_ORIGIN := Vector2(418.0, 0.0)
+const LEDGE := Vector2(270.0, 87.0)
 const SALVO_CELL := Vector2(18.0, 32.0)
 const SALVO_PITCH := 20.0
 ## The retired S15 plate-fit block (finding F1's cure, superseded by P3): the 4-in-a-row
@@ -216,7 +218,7 @@ func test_the_console_and_the_bays_are_the_derived_geometry() -> void:
 		style.console_rect(Rect2(Vector2.ZERO, HOST)), Rect2(CONSOLE_ORIGIN, CONSOLE),
 		"and it derives from the host rect (P6)"
 	)
-	assert_eq(panel.call(&"block_size"), MODE_HOST, "the console stretches to the mode host (P36)")
+	assert_eq(panel.call(&"block_size"), RACK_SECTOR, "the console fills its sector (P38/P39)")
 	## S20's A4.1 retires the scripted master from the pane: it still ships on disk (at the
 	## pinned 2x size), but the plate's texture is cleared at build. **A5.1 (2026-09-26):**
 	## the pane's one frame is the module host's own `PanelRaised` edge - the console draws
@@ -226,7 +228,7 @@ func test_the_console_and_the_bays_are_the_derived_geometry() -> void:
 	var plate := panel.get_node("%ConsolePlate") as NinePatchRect
 	assert_true(plate != null, "the console floor node stays in the scene")
 	assert_true(plate.texture == null, "but the master is unwired from it (A4.1)")
-	assert_eq(plate.size, MODE_HOST, "drawn at the stretched console rect (actual %s)" % str(plate.size))
+	assert_eq(plate.size, RACK_SECTOR, "drawn at the sector's console rect (actual %s)" % str(plate.size))
 	var frame := panel.get_theme_stylebox(&"panel", &"PanelRaised") as StyleBoxTexture
 	assert_true(frame != null, "the theme's panel frame resolves (the shell's edge)")
 	if frame != null:
@@ -261,7 +263,7 @@ func test_the_console_and_the_bays_are_the_derived_geometry() -> void:
 		var drum: Rect2 = style.salvo_cell_rect(index, ledge)
 		assert_true(ledge.encloses(drum), "SALVO drum %d sits on the ledge" % index)
 		assert_eq(
-			drum, Rect2(LEDGE_ORIGIN + Vector2(float(index) * SALVO_PITCH, 16.5), SALVO_CELL),
+			drum, Rect2(LEDGE_ORIGIN + Vector2(float(index) * SALVO_PITCH, 27.5), SALVO_CELL),
 			"drum %d on the ledge's own pitch" % index
 		)
 	## --- superseded: the retired S15 4-in-a-row block ---------
@@ -292,7 +294,7 @@ func test_the_pane_draws_five_bays_across_one_band() -> void:
 			MODE_HOST_TOP + float(index) * (RACK_ROW.y + RACK_GAP),
 			"row %d stacks one row-gap below the last (actual %s)" % [index, str(bays[index])]
 		)
-	var band: Rect2 = style.bays_band(Rect2(Vector2.ZERO, MODE_HOST))
+	var band: Rect2 = style.bays_band(Rect2(Vector2.ZERO, RACK_SECTOR))
 	assert_eq(band.size, RACK_BAND, "the band is the console less the wells band")
 	var rack_rows := _panel.get_node("%RackRows") as VBoxContainer
 	assert_eq(rack_rows.custom_minimum_size, Vector2.ZERO, "and the container shares the band")

@@ -1,15 +1,20 @@
 @tool
 extends McpTestSuite
-## Suite s32_armory_modes: wave S32's ARMORY two-module rework (STATION_HUB section 20.1
-## P32-P37). One row per pinned acceptance:
-##   1. P32 - the two full-screen modes behind the header switch, exactly one visible.
-##   2. P33 - the CELL INFO block, FITS HERE (owned, family + fit_legal filtered),
-##      BUYABLE THAT FITS (filtered to the cell) and its BUY.
-##   3. P34 - B1-B5 racks over fitted weapons, a drag between racks persisting through the
+## Suite s32_armory_modes: the ARMORY's two-sector rework (STATION_HUB section 21.1
+## P38-P41, wave S33). One row per pinned acceptance:
+##   0. P32 - the two modes behind the header switch, exactly one visible, the hint swapping.
+##   1. P38 - FIT CELLS is two equal sectors (probe widths); the grid + CELL INFO stay left.
+##   2. P38 - the right list's two states: browse (bag units union fitted bases, `FIT`/`STORED`)
+##      and selected (owned-that-fits `OWNED` first, then buyable-that-fits `BUYABLE`, legality
+##      per row).
+##   3. P39 - BATTERY CONFIG is two equal sectors; the EQ container carries its category tabs
+##      and count rows.
+##   4. P34 - B1-B5 racks over fitted weapons, a drag between racks persisting through the
 ##      profile's battery record, the read-only `W<n> — EMPTY` rows and the SALVO/cycle.
-##   4. P35 - no preset/save surface (a grep row).
-##   5. P36 - AMMUNITION + the PWR meter in the shared foot band on both modes, no BodyScroll.
-##   6. P37 - every row's controls inside the 1920x1080 window, longest names included.
+##   5. P35 - no preset/save surface (a grep row).
+##   6. P38/P39 - no `FITS HERE`/`BUYABLE THAT FITS` wide block and no P36 foot band remain.
+##   7. P40 - every row control lands inside the 1920x1080 window; the hint follows mode +
+##      selection.
 ##
 ## The pane is mounted the way the other armory suites mount it (the shipped scene, the
 ## shipped theme, the profile borrowed and handed back), so nothing here re-implements the
@@ -149,6 +154,47 @@ func test_the_mode_switch_shows_exactly_one_mode() -> void:
 	)
 
 
+## ------------------------------------------------- 1. the two equal sectors (P38/P39)
+
+
+func test_fit_cells_is_two_equal_sectors() -> void:
+	_settle()
+	var sectors := _panel.get_node("%FitSectors") as HBoxContainer
+	assert_true(sectors != null, "the FIT CELLS mode carries its sector split")
+	var left := _panel.get_node("%FitLeft") as Control
+	var right := _panel.get_node("%FitRight") as Control
+	assert_true(left != null and right != null, "both sectors ship")
+	assert_true(
+		absf(left.size.x - right.size.x) <= 1.0,
+		"the two sectors are equal (left %.1f, right %.1f)" % [left.size.x, right.size.x]
+	)
+	assert_true(left.size.x > 0.0, "and the split has a real width")
+	## The grid and the CELL INFO block ride the left sector.
+	assert_true(left.is_ancestor_of(_panel.get_node("%SlotLayoutGrid")), "the grid is left (P38)")
+	assert_true(left.is_ancestor_of(_panel.get_node("%CellInfoId")), "CELL INFO is left (P38)")
+	assert_true(right.is_ancestor_of(_panel.get_node("%BrowserRows")), "the list is right (P38)")
+	assert_true(right.is_ancestor_of(_panel.get_node("%BrowserBand")), "with its band")
+
+
+func test_battery_config_is_two_equal_sectors() -> void:
+	_settle()
+	_panel.call(&"set_mode", PanelScript.MODE_BATTERY)
+	_settle()
+	var sectors := _panel.get_node("%BatterySectors") as HBoxContainer
+	assert_true(sectors != null, "BATTERY CONFIG carries its sector split")
+	var left := _panel.get_node("%RackSector") as Control
+	var right := _panel.get_node("%EqSector") as Control
+	assert_true(left != null and right != null, "both sectors ship")
+	assert_true(
+		absf(left.size.x - right.size.x) <= 1.0,
+		"the two sectors are equal (left %.1f, right %.1f)" % [left.size.x, right.size.x]
+	)
+	assert_true(left.is_ancestor_of(_panel.get_node("%RackRows")), "the racks are left (P39)")
+	assert_true(left.is_ancestor_of(_panel.get_node("%EmptyRows")), "with the empty-cell list")
+	assert_true(right.is_ancestor_of(_panel.get_node("%ArmoryRows")), "the EQ container is right")
+	assert_true(right.is_ancestor_of(_panel.get_node("%EqTabs")), "with its category tabs")
+
+
 ## --------------------------------------------------------------- 2. CELL INFO (P33.1)
 
 
@@ -188,10 +234,124 @@ func test_the_cell_info_block_names_the_selected_cell() -> void:
 	)
 
 
-## --------------------------------------------------------- 3. FITS HERE (P33.2)
+## ------------------------------------- 3. the one list's two states (P38 semantics)
 
 
-func test_fits_here_lists_exactly_the_legal_owned_candidates() -> void:
+func test_the_list_browses_owned_equipment_with_fit_and_stored_tags() -> void:
+	_settle()
+	## `w_laser` is the delivered fit's weapon (FIT); `w_cannon` is only in the bag (STORED).
+	for base: StringName in [LASER, CANNON, &"w_railgun", &"p_std", &"e_ion"]:
+		_profile.call(&"add_module", base, 1)
+	_panel.call(&"refresh_profile", &"modules")
+	_settle()
+	## No cell selected: the list is the browse state, tagged FIT / STORED.
+	assert_true(_panel.call(&"selected_cell").is_empty(), "no cell is selected")
+	var rows := _panel.get_node("%BrowserRows") as VBoxContainer
+	assert_true(rows.get_child_count() > 0, "the browse list draws rows")
+	var tags := _tags_of(rows)
+	assert_true(
+		tags.has(PanelScript.TAG_FIT) and tags.has(PanelScript.TAG_STORED),
+		"the browse state tags FIT and STORED (tags %s)" % str(tags)
+	)
+	assert_eq(
+		_tag_of_base(rows, LASER), PanelScript.TAG_FIT,
+		"a base the ship already carries reads FIT"
+	)
+	assert_eq(
+		_tag_of_base(rows, CANNON), PanelScript.TAG_STORED,
+		"a base held only in the bag reads STORED"
+	)
+	## A press in the browse state only inspects - nothing is fitted.
+	var before: Dictionary = _profile.call(&"fit_for", VANGUARD)
+	_panel.call(&"_on_browser_pressed", _payload_of(rows, &"p_std"))
+	assert_eq(_profile.call(&"fit_for", VANGUARD), before, "a browse press fits nothing (P38)")
+
+
+## F1: the browse state sources its rows from the bag's units UNION the hull's fitted bases, so
+## a base the profile owns only as a fitted instance (no bag spare) still lists - tagged `FIT`,
+## its count reading the fitted state rather than a price.
+func test_a_fitted_only_module_still_lists_in_the_browse_state() -> void:
+	_settle()
+	## The standard Vanguard fit carries `w_laser`; the bag holds no spare of it.
+	_panel.call(&"refresh_profile", &"modules")
+	_settle()
+	assert_true(_panel.call(&"selected_cell").is_empty(), "no cell is selected")
+	var rows := _panel.get_node("%BrowserRows") as VBoxContainer
+	assert_eq(
+		_tag_of_base(rows, LASER), PanelScript.TAG_FIT,
+		"a base owned only as a fitted instance still lists, tagged FIT"
+	)
+	assert_eq(
+		_read_of_base(rows, LASER), PanelScript.READ_FITTED,
+		"and its count reads its fitted state, never a price"
+	)
+	## A base both fitted and held in the bag reads FIT with its bag count (the union rule).
+	_profile.call(&"add_module", LASER, 2)
+	_panel.call(&"refresh_profile", &"modules")
+	_settle()
+	rows = _panel.get_node("%BrowserRows") as VBoxContainer
+	assert_eq(_tag_of_base(rows, LASER), PanelScript.TAG_FIT, "a fitted + held base reads FIT")
+	assert_eq(
+		_read_of_base(rows, LASER), PanelScript.OWNED_FORMAT % 2,
+		"with its bag count, not the fitted read"
+	)
+
+
+## F2: the pane hint line follows the mode AND the selection (P40) - a content swap only.
+func test_the_hint_line_follows_the_mode_and_the_selection() -> void:
+	_settle()
+	var hint := _panel.get_node("%PaneHint") as Label
+	assert_eq(String(hint.text), PanelScript.PANE_HINT_FIT, "FIT CELLS idle reads its hint")
+	assert_true(bool(_panel.call(&"select_cell", WEAPON_SLOT, 0)), "W1 selects")
+	assert_eq(String(hint.text), PanelScript.PANE_HINT_FIT_CELL, "a selection swaps to the cell hint")
+	_panel.call(&"clear_selection")
+	assert_eq(String(hint.text), PanelScript.PANE_HINT_FIT, "clearing returns to the idle hint")
+	_panel.call(&"set_mode", PanelScript.MODE_BATTERY)
+	_settle()
+	assert_eq(
+		String(hint.text), PanelScript.PANE_HINT_BATTERY, "and the mode swap reads the battery hint"
+	)
+
+
+func test_the_selected_list_lists_owned_then_buyable_with_legality() -> void:
+	_settle()
+	for base: StringName in [LASER, CANNON, &"w_railgun"]:
+		_profile.call(&"add_module", base, 1)
+	_panel.call(&"refresh_profile", &"modules")
+	assert_true(bool(_panel.call(&"select_cell", WEAPON_SLOT, 1)), "W2 selects")
+	_settle()
+	var rows := _panel.get_node("%BrowserRows") as VBoxContainer
+	var tags := _tags_of(rows)
+	assert_true(tags.has(PanelScript.TAG_OWNED), "the selected state lists OWNED rows")
+	assert_true(tags.has(PanelScript.TAG_BUYABLE), "and BUYABLE rows")
+	## Owned-that-fits first, then buyable-that-fits (P38's order).
+	var seen_buyable := false
+	for child: Node in rows.get_children():
+		var tag := _row_tag(child)
+		if tag == PanelScript.TAG_BUYABLE:
+			seen_buyable = true
+		elif tag == PanelScript.TAG_OWNED:
+			assert_false(seen_buyable, "every OWNED row precedes every BUYABLE row (P38)")
+	## The legality line is per row and is the CELL INFO vocabulary.
+	for child: Node in rows.get_children():
+		var legal := _row_legal(child)
+		assert_false(legal.is_empty(), "each row carries its legality line (P38)")
+	## A BUYABLE row carries BUY + INSPECT; the press buys-then-fits.
+	var buyable := _first_row_with_tag(rows, PanelScript.TAG_BUYABLE)
+	assert_true(buyable != null, "a buyable row ships")
+	if buyable != null:
+		assert_true(
+			buyable.get_node_or_null(NodePath("RowInner/RowBox/Buy")) != null,
+			"a BUYABLE row carries its BUY chip"
+		)
+		assert_true(
+			buyable.get_node_or_null(NodePath("RowInner/RowBox/InspectChip")) != null,
+			"and its INSPECT chip"
+		)
+
+
+## The owned-that-fits rows are exactly the legal owned candidates (the `OWNED` lane).
+func test_the_owned_lane_is_exactly_the_legal_owned_candidates() -> void:
 	_settle()
 	for base: StringName in [LASER, CANNON, ROCKET, &"w_railgun"]:
 		_profile.call(&"add_module", base, 1)
@@ -203,16 +363,9 @@ func test_fits_here_lists_exactly_the_legal_owned_candidates() -> void:
 		listed.append(StringName(entry[&"base"]))
 	assert_eq(
 		listed, _expected_candidates(WEAPON_SLOT, 1),
-		"FITS HERE is exactly the owned weapons that fit W2 (family + fit_legal)"
+		"the owned lane is exactly the owned weapons that fit W2 (family + fit_legal)"
 	)
 	assert_true(not listed.has(&"p_std"), "a non-weapon module never lists on a W cell")
-	## Every row is a drag source and the list is the mode's own full-width column.
-	assert_true(
-		not (_panel.call(&"drag_inventory", LASER) as Dictionary).is_empty(),
-		"each FITS HERE row drags its own base id"
-	)
-	var caption := String((_panel.get_node("%InventoryCaption") as Label).text)
-	assert_eq(caption, PanelScript.FITS_HERE_CAPTION % listed.size(), "and the caption counts them")
 
 
 ## The exact set the profile owns that can slot in one cell: the catalogue's modules of the
@@ -237,21 +390,20 @@ func _expected_candidates(slot_key: StringName, index: int) -> Array[StringName]
 	return out
 
 
-## --------------------------------------------------- 4. BUYABLE THAT FITS (P33.3)
+## --------------------------------------------------- 4. BUY on a buyable row (P38)
 
 
-func test_buyable_that_fits_filters_and_buys() -> void:
+func test_buy_on_a_buyable_row_buys_then_fits() -> void:
 	_settle()
 	assert_true(bool(_panel.call(&"select_cell", ENGINE_SLOT, 0)), "the engine cell selects")
 	var ids: Array[StringName] = _panel.call(&"module_row_ids")
 	assert_true(ids.has(&"e_ion"), "an engine that fits the cell lists")
-	assert_false(ids.has(LASER), "a weapon never lists on an E cell (P33's cell filter)")
+	assert_false(ids.has(LASER), "a weapon never lists on an E cell (P38's cell filter)")
 	for module_id: StringName in ids:
 		assert_eq(
 			ModuleData.fit_slot_of(module_id), ENGINE_SLOT,
 			"every listed module is the cell's own family"
 		)
-	## BUY on the row buys-then-fits through the profile's own doors.
 	var before := int(_profile.call(&"credits"))
 	var payload: Dictionary = {}
 	for entry: Dictionary in _panel.get(&"_browser_payloads"):
@@ -270,7 +422,7 @@ func test_buyable_that_fits_filters_and_buys() -> void:
 	)
 
 
-## ------------------------------------------------- 5. the rack drag persists (P34)
+## --------------------------------------------- 5. the rack drag persists (P34)
 
 
 func test_a_rack_drag_persists_through_the_battery_record() -> void:
@@ -291,8 +443,6 @@ func test_a_rack_drag_persists_through_the_battery_record() -> void:
 		bool(_panel.call(&"drop", 0, PanelScript.DROP_RACK_BODY, payload)),
 		"and drops onto B1's body"
 	)
-	## The profile probe: the record itself moved (the drag writes the profile's own door,
-	## `move_rack_cell`, which commits through `set_battery_groups`).
 	assert_eq(
 		_profile.call(&"battery_groups", VANGUARD), [[0, 1]],
 		"the rack record persisted the regroup"
@@ -347,32 +497,79 @@ func test_the_salvo_meter_and_cycle_are_the_slowest_member() -> void:
 	assert_eq(String(readout[&"text"]), "%04d" % figure, "as four zero-padded cells")
 
 
-## --------------------------------------------- 8. the shared foot band (P36)
+## ----------------------------------------------------- 8. the EQ container (P39)
 
 
-func test_the_foot_band_is_shared_by_both_modes() -> void:
+func test_the_eq_container_lists_the_non_weapon_categories_with_counts() -> void:
 	_settle()
-	var band := _panel.get_node("%FootBand") as Control
-	assert_true(band.visible, "the foot band shows in FIT CELLS")
-	assert_eq(
-		String((_panel.get_node("%AmmoMargin") as Control).get_parent().name), "FootBand",
-		"and AMMUNITION rides it"
-	)
-	assert_true(
-		String((_panel.get_node("%MeterLabel") as Label).text).begins_with("PWR "),
-		"with the PWR meter"
-	)
+	_profile.call(&"add_module", &"p_std", 2)
+	_profile.call(&"add_module", &"e_ion", 1)
+	_panel.call(&"refresh_profile", &"modules")
 	_panel.call(&"set_mode", PanelScript.MODE_BATTERY)
 	_settle()
-	assert_true(band.visible, "the same foot band shows in BATTERY CONFIG (P36: shared)")
-	assert_true(
-		String((_panel.get_node("%MeterLabel") as Label).text).begins_with("PWR "),
-		"with the meter still live"
+	var tabs := _panel.get_node("%EqTabs") as HBoxContainer
+	var labels: Array[String] = []
+	for child: Node in tabs.get_children():
+		labels.append((child as Button).text)
+	assert_true(labels.has("AMMUNITION"), "the EQ container carries the AMMUNITION category")
+	assert_true(labels.has("PWR/FUEL RODS"), "and the PWR/FUEL RODS category (P39)")
+	assert_true(labels.has("DRIVES"), "and the other browser families")
+	assert_eq(
+		StringName(_panel.call(&"active_eq_tab")), PanelScript.EQ_TAB_AMMO,
+		"AMMUNITION is the landing category"
 	)
-	assert_true(_panel.get_node_or_null("%BodyScroll") == null, "and the BodyScroll fold is gone (P36)")
+	var rows := _panel.get_node("%ArmoryRows") as VBoxContainer
+	assert_eq(
+		rows.get_child_count(), Catalog.AMMO_PACKS.size(),
+		"the AMMUNITION category draws the shipped pack cards"
+	)
+	## A module category lists the owned modules as count rows.
+	_panel.call(&"select_eq_tab", &"power")
+	_settle()
+	assert_eq(
+		StringName(_panel.call(&"active_eq_tab")), &"power", "the PWR category is in force"
+	)
+	rows = _panel.get_node("%ArmoryRows") as VBoxContainer
+	assert_true(rows.get_child_count() >= 1, "the owned power module lists")
+	var first := rows.get_child(0) as Control
+	var count := first.get_node_or_null(NodePath("RowInner/RowBox/Count")) as Label
+	assert_true(count != null, "a count row ships (P39)")
+	if count != null:
+		assert_eq(count.text, PanelScript.EQ_COUNT_FORMAT % 2, "and carries its ×n count")
+	assert_true(
+		first.get_node_or_null(NodePath("RowInner/RowBox/InspectChip")) != null,
+		"with its INSPECT chip (P39)"
+	)
+	var caption := String((_panel.get_node("%AmmoCaption") as Label).text)
+	assert_true(caption.begins_with("PWR/FUEL RODS"), "and the caption names the category")
 
 
-## ------------------------------------------------- 9. row containment (P37)
+## ---------------------------------- 9. no wide blocks, no foot band (P38/P39, grep + probe)
+
+
+func test_no_fits_here_or_buyable_wide_block_and_no_foot_band() -> void:
+	var source := FileAccess.get_file_as_string("res://ui/station/armory_panel.gd")
+	var scene := FileAccess.get_file_as_string("res://ui/station/armory_panel.tscn")
+	for word: String in ["FITS HERE", "BUYABLE THAT FITS"]:
+		assert_true(
+			scene.find(word) == -1,
+			"the pane's scene carries no '%s' wide block (P38)" % word
+		)
+	for symbol: String in ["FITS_HERE_CAPTION", "BUYABLE_CAPTION", "BUYABLE_EMPTY", "BUYABLE_NONE"]:
+		assert_true(
+			source.find(symbol) == -1,
+			"the pane's script retires the '%s' block (P38)" % symbol
+		)
+	assert_true(scene.find("FootBand") == -1, "the scene carries no P36 foot band (P39)")
+	assert_true(scene.find("InventoryRows") == -1, "and no FITS HERE list node (P38)")
+	for node_name: String in ["%FootBand", "%InventoryRows", "%InventoryScroll", "%InventoryCaption"]:
+		assert_true(
+			_panel.get_node_or_null(NodePath(node_name)) == null,
+			"%s is gone (P38/P39)" % node_name
+		)
+
+
+## ------------------------------------------------- 10. row containment (P40)
 
 
 func test_every_row_control_lands_inside_the_window() -> void:
@@ -383,20 +580,21 @@ func test_every_row_control_lands_inside_the_window() -> void:
 			_profile.call(&"add_module", base, 1)
 	_panel.call(&"refresh_profile", &"modules")
 	assert_true(bool(_panel.call(&"select_cell", WEAPON_SLOT, 1)), "W2 selects")
-	var rows := _panel.get_node("%InventoryRows") as VBoxContainer
+	var rows := _panel.get_node("%BrowserRows") as VBoxContainer
 	assert_true(rows.get_child_count() > 0, "the longest weapon names are listed")
 	_assert_rows_scroll_contained(
-		rows, _panel.get_node("%InventoryScroll") as ScrollContainer, "FITS HERE"
+		rows, _panel.get_node("%BrowserScroll") as ScrollContainer, "the list"
 	)
-	var browser := _panel.get_node("%BrowserRows") as VBoxContainer
+	_panel.call(&"set_mode", PanelScript.MODE_BATTERY)
+	_settle()
 	_assert_rows_scroll_contained(
-		browser, _panel.get_node("%BrowserScroll") as ScrollContainer, "BUYABLE"
+		_panel.get_node("%ArmoryRows") as VBoxContainer,
+		_panel.get_node("%AmmoScroll") as ScrollContainer, "the EQ container"
 	)
 
 
-## P37's containment, measured against the row's own **scroll viewport** rather than the raw
-## window: every row must fit its viewport's width (the 160 px trim law) and ride the
-## `ScrollContainer`, so any vertical overflow scrolls and stays reachable, never clips.
+## P40's containment, measured against the row's own **scroll viewport**: every row must fit
+## its viewport's width (the 160 px trim law) and ride the `ScrollContainer`.
 func _assert_rows_scroll_contained(
 	rows: VBoxContainer, scroll: ScrollContainer, label: String
 ) -> void:
@@ -407,7 +605,7 @@ func _assert_rows_scroll_contained(
 			continue
 		var rect := row.get_global_rect()
 		assert_true(
-			rect.position.x >= viewport.position.x and rect.end.x <= viewport.end.x,
+			rect.position.x >= viewport.position.x - 1.0 and rect.end.x <= viewport.end.x + 1.0,
 			"the %s row %s fits its scroll viewport (x %.1f..%.1f, viewport %.1f..%.1f)" % [
 				label, String(row.name), rect.position.x, rect.end.x,
 				viewport.position.x, viewport.end.x
@@ -421,10 +619,10 @@ func _assert_rows_scroll_contained(
 		)
 
 
-## --------------------------------------------- 3b. select-to-fit and drag-to-fit (P33.2)
+## --------------------------------------------- select-to-fit and drag-to-fit (P38)
 
 
-func test_a_fits_here_row_fits_by_press_and_by_drag() -> void:
+func test_a_owned_row_fits_by_press_and_by_drag() -> void:
 	_settle()
 	_profile.call(&"add_module", CANNON, 1)
 	_profile.call(&"add_module", CANNON, 1)
@@ -436,11 +634,11 @@ func test_a_fits_here_row_fits_by_press_and_by_drag() -> void:
 		StringName(String((fit.get(WEAPON_SLOT, []) as Array)[1])), CANNON,
 		"the row's press fitted the held instance into W2"
 	)
-	## Drag-to-fit: an inventory payload lands on the grid cell through `cell_drop`.
+	## Drag-to-fit: a list payload lands on the grid cell through `cell_drop`.
 	assert_true(bool(_profile.call(&"clear_fit_slot", VANGUARD, WEAPON_SLOT, 1)), "W2 empties")
 	var cell := {&"type": WEAPON_SLOT, &"token": "W", &"index": 1}
 	var payload: Dictionary = _panel.call(&"drag_inventory", CANNON)
-	assert_true(bool(_panel.call(&"cell_can_drop", cell, payload)), "a FITS HERE drag reaches the cell")
+	assert_true(bool(_panel.call(&"cell_can_drop", cell, payload)), "a list drag reaches the cell")
 	_panel.call(&"cell_drop", cell, payload)
 	fit = _profile.call(&"fit_for", VANGUARD)
 	assert_eq(
@@ -449,11 +647,61 @@ func test_a_fits_here_row_fits_by_press_and_by_drag() -> void:
 	)
 
 
-## --------------------------------------------------------- 4. no presets (P35)
+## ------------------------------------------ 11. bands + the 160 px trim (P40)
 
 
-## P35 (T-126): the editor composes the live fit only - no loadout presets, no save/load of
-## battery sets. The pane's own script and scene carry no preset surface.
+func test_every_list_wears_its_band_and_the_160_px_trim() -> void:
+	_settle()
+	for base: StringName in [LASER, CANNON]:
+		_profile.call(&"add_module", base, 1)
+	_panel.call(&"refresh_profile", &"modules")
+	_settle()
+	var browser_band := _panel.get_node("%BrowserBand") as HBoxContainer
+	assert_true(browser_band.get_child_count() >= 2, "the one list wears its band (P40)")
+	var words := _band_words(browser_band)
+	assert_true(
+		words.has(PanelScript.BAND_MODULE) and words.has(PanelScript.BAND_STATE)
+			and words.has(PanelScript.BAND_COST),
+		"with the row stacks' own words (%s)" % str(words)
+	)
+	var rows := _panel.get_node("%BrowserRows") as VBoxContainer
+	assert_true(rows.get_child_count() > 0, "the browse list draws rows")
+	for child: Node in rows.get_children():
+		var title_box := (child as Control).get_node_or_null(
+			NodePath("RowInner/RowBox/TitleBox")
+		) as Control
+		assert_true(title_box != null, "every row carries its title column")
+		assert_eq(title_box.custom_minimum_size.x, 160.0, "at the N45 160 px trim column")
+	_panel.call(&"set_mode", PanelScript.MODE_BATTERY)
+	_settle()
+	var eq_band := _panel.get_node("%EqBand") as HBoxContainer
+	assert_true(eq_band.get_child_count() >= 2, "the EQ container wears its band (P40)")
+	var eq_words := _band_words(eq_band)
+	assert_true(
+		eq_words.has(PanelScript.EQ_BAND_EQUIPMENT) and eq_words.has(PanelScript.EQ_BAND_COUNT),
+		"with the equipment/count words (%s)" % str(eq_words)
+	)
+	var eq_rows := _panel.get_node("%ArmoryRows") as VBoxContainer
+	for child: Node in eq_rows.get_children():
+		var row := child as Control
+		var title_box := row.get_node_or_null(NodePath("RowInner/RowBox/TitleBox")) as Control
+		if title_box == null:
+			continue
+		assert_eq(title_box.custom_minimum_size.x, 160.0, "the EQ rows trim at 160 too (P40)")
+
+
+## A band's own caption words, in order.
+func _band_words(band: HBoxContainer) -> Array[String]:
+	var out: Array[String] = []
+	for cell: Node in band.get_children():
+		if cell is Label:
+			out.append((cell as Label).text)
+	return out
+
+
+## --------------------------------------------------------- 12. no presets (P35)
+
+
 func test_no_preset_or_save_surface_ships() -> void:
 	var source := FileAccess.get_file_as_string("res://ui/station/armory_panel.gd")
 	for word: String in ["loadout", "save_battery", "battery_set", "load_battery", "preset_row"]:
@@ -467,3 +715,57 @@ func test_no_preset_or_save_surface_ships() -> void:
 			scene.find(word) == -1,
 			"the pane's scene carries no '%s' node (P35)" % word
 		)
+
+
+## --------------------------------------------------------- the row read-back helpers
+
+
+func _row_tag(row: Node) -> String:
+	var tag := (row as Control).get_node_or_null(NodePath("RowInner/RowBox/Tag")) as Label
+	return tag.text if tag != null else ""
+
+
+func _row_legal(row: Node) -> String:
+	var legal := (row as Control).get_node_or_null(NodePath("RowInner/RowBox/TitleBox/Legal")) as Label
+	return legal.text if legal != null else ""
+
+
+func _tags_of(rows: VBoxContainer) -> Array[String]:
+	var out: Array[String] = []
+	for child: Node in rows.get_children():
+		var tag := _row_tag(child)
+		if not tag.is_empty() and not out.has(tag):
+			out.append(tag)
+	return out
+
+
+func _tag_of_base(rows: VBoxContainer, base: StringName) -> String:
+	var wanted := "Module%s" % String(base).to_pascal_case()
+	for child: Node in rows.get_children():
+		if child.name == wanted:
+			return _row_tag(child)
+	return ""
+
+
+func _read_of_base(rows: VBoxContainer, base: StringName) -> String:
+	var wanted := "Module%s" % String(base).to_pascal_case()
+	for child: Node in rows.get_children():
+		if child.name == wanted:
+			var read := (child as Control).get_node_or_null(NodePath("RowInner/RowBox/Read")) as Label
+			return read.text if read != null else ""
+	return ""
+
+
+func _first_row_with_tag(rows: VBoxContainer, tag: String) -> Control:
+	for child: Node in rows.get_children():
+		if _row_tag(child) == tag:
+			return child as Control
+	return null
+
+
+func _payload_of(rows: VBoxContainer, base: StringName) -> Dictionary:
+	var wanted := "Module%s" % String(base).to_pascal_case()
+	for child: Node in rows.get_children():
+		if child.name == wanted:
+			return (child as Control).get(&"payload")
+	return {}

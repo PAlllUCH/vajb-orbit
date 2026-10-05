@@ -38,6 +38,9 @@ const PROOF_WIDE := Vector2(2032.0, 610.0)
 const PROOF_TALL := Vector2(1392.0, 1066.0)
 const CONSOLE := Vector2(1360.0, 516.0)
 const CELL := Vector2(117.0, 52.0)
+## S33's two-sector rework (STATION_HUB section 21.1 P38/P39): the mode splits into two equal
+## sectors on this gutter; the console rides BATTERY CONFIG's left sector.
+const SECTOR_GUTTER := 16.0
 const MIN_INK := 13.0
 const CONTRAST_FLOOR := 4.5
 
@@ -295,16 +298,17 @@ func test_every_rect_derives_from_the_host_at_the_three_proofs() -> void:
 		_host.size = host_size
 		panel.call(&"_lay")
 		var console: Vector2 = panel.call(&"block_size")
+		var sector_x: float = (host_size.x - SECTOR_GUTTER) * 0.5
 		assert_eq(
-			console.x, host_size.x,
-			"the console spans the host's own width at %s (actual %s)" % [str(host_size), str(console)]
+			console.x, sector_x,
+			"the console fills its sector at %s (actual %s)" % [str(host_size), str(console)]
 		)
 		var bays: Array = panel.call(&"bay_rects")
 		assert_eq(bays.size(), 5, "five rows at every canvas")
 		for index in bays.size():
 			assert_eq(
-				(bays[index] as Rect2).size.x, host_size.x,
-				"row %d spans the host at %s (actual %s)" % [index, str(host_size), str(bays[index])]
+				(bays[index] as Rect2).size.x, sector_x,
+				"row %d spans its sector at %s (actual %s)" % [index, str(host_size), str(bays[index])]
 			)
 		var wells: Array = panel.call(&"well_rects")
 		assert_eq(wells.size(), 2, "two wells at every canvas")
@@ -318,7 +322,10 @@ func test_every_rect_derives_from_the_host_at_the_three_proofs() -> void:
 		assert_true(row.encloses(cell), "cell %d stays inside its row" % index)
 	_host.size = HOST
 	panel.call(&"_lay")
-	assert_eq(panel.call(&"block_size"), Vector2(HOST.x, 447.0), "the base host is back to the ruled console")
+	assert_eq(
+		panel.call(&"block_size"), Vector2((HOST.x - SECTOR_GUTTER) * 0.5, 557.0),
+		"the base host is back to the ruled sector"
+	)
 
 
 ## --------------------------------------------- 5. the states (T4 / T7)

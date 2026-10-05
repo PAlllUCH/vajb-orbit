@@ -19,20 +19,21 @@ and every tool result is re-sent on each later request.
 
 | Section | Topic | Lines |
 |---|---|---|
-| 1. | Colour Tokens | L40–L65 |
-| 2. | Theme Architecture | L66–L108 |
-| 3. | In-Game HUD | L109–L698 |
-| 4. | Settings | L699–L760 |
-| 5. | Tooltips, Dialogs & Nine-Patch Panels | L761–L838 |
-| 6. | Font & Sizing Reference (coding checklist) | L839–L858 |
-| 7. | Station surfaces chrome — the A5.4 extension (amendment 2026-10-02, … | L859–L894 |
-| 8. | Station action buttons and the one focus language (amendment 2026-10… | L895–L927 |
-| 9. | The map deck — flight minimap and navigation (amendment 2026-10-03, … | L928–L955 |
-| 10. | The map deck and the navigation pin — design detail (amendment 2026-… | L956–L1053 |
-| 11. | Station shell v2 — the TERMINAL drawer, the popups, the one skeleton… | L1054–L1109 |
-| 12. | Station shell v2 design detail — the TERMINAL drawer, the popup pair… | L1110–L1341 |
-| 13. | The D20 fix wave — exchange parity, the armory browser, the hover-in… | L1342–L1379 |
-| 14. | Exchange sell cluster + the OVERVIEW tile plates (amendment 2026-10-… | L1380–L1414 |
+| 1. | Colour Tokens | L41–L66 |
+| 2. | Theme Architecture | L67–L109 |
+| 3. | In-Game HUD | L110–L699 |
+| 4. | Settings | L700–L761 |
+| 5. | Tooltips, Dialogs & Nine-Patch Panels | L762–L839 |
+| 6. | Font & Sizing Reference (coding checklist) | L840–L859 |
+| 7. | Station surfaces chrome — the A5.4 extension (amendment 2026-10-02, … | L860–L895 |
+| 8. | Station action buttons and the one focus language (amendment 2026-10… | L896–L928 |
+| 9. | The map deck — flight minimap and navigation (amendment 2026-10-03, … | L929–L956 |
+| 10. | The map deck and the navigation pin — design detail (amendment 2026-… | L957–L1054 |
+| 11. | Station shell v2 — the TERMINAL drawer, the popups, the one skeleton… | L1055–L1110 |
+| 12. | Station shell v2 design detail — the TERMINAL drawer, the popup pair… | L1111–L1342 |
+| 13. | The D20 fix wave — exchange parity, the armory browser, the hover-in… | L1343–L1380 |
+| 14. | Exchange sell cluster + the OVERVIEW tile plates (amendment 2026-10-… | L1381–L1417 |
+| 15. | The one true-aspect chrome family (amendment 2026-10-05, owner rulin… | L1418–L1686 |
 
 <!-- section-index:end -->
 
@@ -1411,3 +1412,274 @@ true-aspect family, whole-game scope** (waves D21/S35; the family law lands as
 §15). The tile swap waits for that family; `ui_button_plate_*` stays the
 documented fallback and tick **T-131** retires with the pair. N48/N49 stand
 and ship in S33.
+
+---
+
+## 15. The one true-aspect chrome family (amendment 2026-10-05, owner ruling; wave D21 — D21-A1)
+
+**The owner's words (2026-10-05, verbatim — `slices/D21-chrome-family/D21_BRIEF.md`
+§0):** "The problem is that the panels used are stretched out of proportion. we
+can run a full redesign with different aspect ratios. wont this be good
+solution? this would unify the panels in all the game" — and on the route:
+"regenerate all the UI panels not only in overview. i like the style of
+ui_cockpit_panel and panel_cockpit panel_armory_playes panel_armory
+panel_status and the chromes in main menu make sure that they are in different
+aspect ratios and they are respected always. we can generate few unique
+backgrounds as well for all the space station panels". Scope: **full** — every
+chrome surface in the game. New plates are **siblings** of the owner's named
+family (`ui_cockpit_panel`, `ui_cockpit_frame`, `ui_armory_console`,
+`ui_armory_rack_plate`, `ui_armory_row_plate`, `ui_status_panel` —
+`UI_CHROME_ASSETS_SPEC.md` §11–§12) plus the main-menu chromes (the §5
+nine-patch family, `ui_panel_frame`, `ui_backdrop_login` — resolved in
+`slices/S33-shell-v3/button_candidates.md:41-51`); **sibling style, never a new
+style**.
+
+**The measured fault this fixes** (`button_candidates.md:23-31,53-62`): the
+shipped button plates are true 5:1 bars (`ui_button_plate_*` 280×56, `file`
+2026-10-05) stretched whole-texture — `StationButton` carries **no texture
+margins** (`tools/build_theme.gd:8`, `vajb_theme.tres:499-511`) — over 15:7
+tiles (`overview_panel.gd:48` `TILE_MIN := Vector2(300.0, 140.0)`) and over the
+§8 P1 360×56 / 360×88 actions: use-aspect mismatch smears every rivet and bevel
+(the §14 fault record). Nine-slice can save only a declared flat band. This
+section is the family law; its generation prompts, its unique station backdrops
+and its credit sum land in `UI_CHROME_ASSETS_SPEC.md`'s 2026-10-05 amendment.
+
+### 15.1 The census (2026-10-05) — surface → class → true aspect → margins → stretch bands
+
+Evidence: the mandated greps over `vajb-orbit/ui`, `ui/hud`, `ui/screens`
+(`*.gd` + `*.tscn`) — `StyleBox*` **47** unique lines, `theme_override` **337**,
+`*_plate` **148** — **632** unique lines (the saved raw greps in
+`staging/mockup/d21_census/` read 69 / 519 / 217 = **805** because the
+three-path run counts `ui/hud` and `ui/screens` twice — `theme_override` is all
+`theme_override_constants`, the stylebox overrides ride
+`add_theme_stylebox_override`; dedup counts beside the raw files in
+`unique_counts.txt`) plus a `file` re-measure of every shipped
+`assets/ui/*.png` (2026-10-05). Row kinds: **flat** = the Tokens box (A5.1 /
+A5.3) — no plate, no aspect obligation; **keep** = already aspect-matched art or
+a `contain` whole-face anchor (§12); **C1–C13** = the family's plates. Margins
+are **draw targets PROPOSED** for the prompts, derived from each surface's own
+pinned content inset where one exists (A5.4/Q1: ruled content sits at least the
+patch margin inside); the shipped margin is re-measured from each final cut's
+own rivet/bevel band (N51) with the 1 px expand on top (`build_theme.gd:24-30`).
+Pinned/measured values carry their cite; every other value is PROPOSED with its
+reversal under the table.
+
+| Surface (measured use, cite) | Class | True-aspect target | Nine-slice margins | Legal stretch bands |
+|---|---|---|---|---|
+| Shell station backdrop, full rect (`station.tscn:5`) — ships `ui_backdrop_hangar` 2048×1152 (`file`), stays per `UI_CHROME_ASSETS_SPEC.md` §13.3 | keep | 2048×1152 as shipped | n/a — opaque cover-fit | none |
+| Pane station backdrops — the four T-131 BGs (`UI_CHROME_ASSETS_SPEC.md` §13.3) | C13 station backdrop | 1765×753 = the pane-content box (STATION_HUB §19.3 `:1761`) | n/a — opaque cover-fit | none — a pane at another aspect orders its own backdrop (A4) |
+| Station name plate, content-width strip × 64 tall in the 123 header band (`station.gd:737-744`; A5.4-1 — 12/8 margins + the 48 px insignia cut; §12.4) | C4 row strip | 560×76 (140:19) | 12/8 (`RowInner`, STATION_HUB §12.3) | h 320–1765, v 64–84 |
+| Header credits housing (`station.gd:748-760`) | flat | — | — | — (pulse is `modulate`, A5.5) |
+| Header/footer shell bands (`station.gd:445,464`) | flat | — | — | — (layout gaps) |
+| Rail/drawer entry plate, 272×56 measured (`station.gd:122,129,541`) — brief §2 pins 360×56, reported | C9 drawer entry plate | 360×56 (45:7) | 16/8 (`RailInner`, `station.gd:124`) | h 272–360 |
+| TERMINAL drawer button 96×32 (§11.1 N25) | C3 inline chip | 96×32 (3:1) | 8 | h 80–160 |
+| Drawer panel, 362 wide (`station.gd:132,470`) | C12 panel frame | 96×96 (1:1) | 32 (measured `build_theme.gd:29`) | edges tile — any rect |
+| Service strip buttons, min 56 (A5.4-2; STATION_HUB §15.1) | C2 action bar | 360×56 (45:7) | 20/12 | h 272–450, v 56–88 |
+| Pane outer edge — `PaneFrame` x 23..1896, y 163..1021 (STATION_HUB §19.3 `:1760`; A5.4) | C12 panel frame | 96×96 (1:1) | 32 | edges tile — any rect |
+| Pane action cluster — `ActionPrimary` 360×56 at x 1482..1842 (§19.3 `:1767`; §8 P1 360×56 and 360×88) | C2 action bar | 360×56 (45:7) | 20/12 | h 272–450, v 56–88 |
+| Pane inline chips (`ActionInline` 96×32, §8 P1) | C3 inline chip | 96×32 (3:1) | 8 | h 80–160 |
+| Pane data rows, pane-width × 76 (brief §2 pin `data row strip`; `ROW_HEIGHT` STATION_HUB §12.3; `exchange_panel.gd:44`) — the 560×76 draw target is a reported deviation (under the table) | C4 row strip | 560×76 (140:19) | 12/8 | h 320–1765, v 64–84 |
+| OVERVIEW identity block, measured 1765×64 (`overview_panel.gd:77,153-163,553-563`; 48 px glyph + 8/8 margins) | C4 row strip | 560×76 | 12/8 | h 320–1765, v 64–84 |
+| OVERVIEW department tiles, drawn ≈ 567–578×140 — 3 columns / separation 16 over the 1765 stack (`TILE_MIN` 300×140 is only the min-size floor, `overview_panel.gd:48-50`; expand-fill `:203-204`; (1765 − 2×16)/3 = 578, ≈ 574 with the `BlockScroll` bar — the review's ≈ 567 counts `TILE_MARGIN` as a grid inset; chrome `_apply_tile_chrome` `:257-268`) | C1 tile slab | 567×140 (≈ 4:1) | 16 (P23 `MarginContainer` 16, STATION_HUB §19.2 `:1731`) | flat interior only, ±10 % both axes (h 510–624, v 126–154) |
+| OVERVIEW service rows, measured pane-width × 76 (`overview_panel.gd:53,340`; rows fill the `BlockStack` = the 1765 content box) | C4 row strip | 560×76 | 12/8 | h 320–1765, v 64–84 |
+| OVERVIEW chips 96×32 (`overview_panel.gd:56,404`) | C3 inline chip | 96×32 | 8 | h 80–160 |
+| EXCHANGE hold/board rows (`_build_row_plate` `exchange_panel.gd:415,553,957`) | C4 row strip | 560×76 | 12/8 | h 320–1765, v 64–84 |
+| EXCHANGE trade steppers 48×48 (`STEPPER_SIZE` `exchange_panel.gd:48`; N49) | C8 square plate | 1:1 (48) | n/a — cut sprite | none — uniform scale only |
+| EXCHANGE `SELL` / `SELL ALL RAW` / `CANCEL` (`SELL_HEIGHT`/`ACTION_HEIGHT` `:51-52`; N48/N49) | C2 action bar | 360×56 (45:7) | 20/12 | h 272–450, v 56–88 |
+| AUCTION shelf rows, measured pane-width × 76 (`auction_panel.gd:752-800,814-819`; Button rows expand-filling the pane stack; A5.4 Q5) | C4 row strip | 560×76 | 12/8 | h 320–1765, v 64–84 |
+| AUCTION row `INSPECT` chips (N37 cluster) | C3 inline chip | 96×32 | 8 | h 80–160 |
+| SHIPYARD hull list rows, measured ≥ 340×76 (`_build_rows` `shipyard_panel.gd:337,390`; `ShipListBox` `shipyard_panel.tscn:55`) | C4 row strip | 560×76 | 12/8 | h 320–1765, v 64–84 |
+| SHIPYARD `PreviewFrame` (A5.1; `shipyard_panel.tscn:74-115`) | C12 panel frame | 96×96 | 32 | edges tile — any rect |
+| SHIPYARD hardpoint plates (`shipyard_panel.gd:589,1029-1053`) | C8 square plate | 1:1 (48) | n/a | none — uniform scale only |
+| SHIPYARD stat/comparison blocks (§17.2) | flat | — | — | — (A5.1) |
+| LAUNCH cargo strip plates (`launch_panel.gd:183-184,311`) | C8 square plate | 1:1 (40) | n/a | none — uniform scale only |
+| LAUNCH manifest rows (`_refresh_manifest` `launch_panel.gd:621`) — theme `ItemList` items in the 560 `BriefBox` (`launch_panel.tscn:53,77`), the A5.4-5 contents-list idiom | flat / theme `ItemList` | — | — | — (no plate obligation; re-classed from C4 on the D21-F1 re-measurement) |
+| LAUNCH deck-control buttons (`launch_panel.gd:456-495`) | C2 action bar | 360×56 | 20/12 | h 272–450, v 56–88 |
+| REFINERY ore rows + job rows, measured ≈ 1390×76 (the `RefineryTable` column = 1765 − 360 `RefineBox` − separation; `refinery_panel.gd:286-314`; STATION_HUB §21.3 P42) | C4 row strip | 560×76 | 12/8 | h 320–1765, v 64–84 |
+| REFINERY stepper + totals block (§5.7 `RefineBox`; P42 CENTRE) | flat + C8 squares | 1:1 (48) | n/a | none |
+| REFINERY `QUEUE N`/`QUEUE ALL`/`CANCEL`/`LOAD`/`COLLECT ALL` (P42) | C2 action bar + C3 chip | 360×56 / 96×32 | 20/12 / 8 | as C2 / C3 |
+| ARMORY console face 1360×516 (`armory_panel.gd:4-8`; A5.4; STATION_HUB §20.1) | C6 armory console face | 1360×516 (340:129) | n/a — whole face (`contain`) | none — never stretch |
+| ARMORY rack bay cards 260×192 (A5.4 `Bay card`; B1–B5 §20.1 P34/P39) | C5 rack bay card | 260×192 (65:48) | 10 (`cell_margin`, A5.4) | none — fixed A3 rect |
+| ARMORY bay cells 117×52 + the `ui_slot_weapon_*` mark at 48×48 (A5.3/A5.4) | recess flat + C8 square plate | 1:1 (48) | n/a | none — uniform scale only |
+| ARMORY salvo ledge 240×34 (A5.4-6; `ui_seg_*` at 18×32) | flat | — | — | — (A5.4-6 stands) |
+| ARMORY well halves 648×220 (A5.4) | flat | — | — | — (A5.1 refusal stands here) |
+| ARMORY pack/inventory/ammo cards 320×68 (A5.4 `Pack card`/`Inventory row`; `AMMO_CARD` `armory_panel.gd:158`) | C4 row strip | 560×76 | 12/8 | h 320–1765, v 64–84 |
+| ARMORY browser/list rows (STATION_HUB §21.1 P38/P40; N45 160 px titles) | C4 row strip | 560×76 | 12/8 | h 320–1765, v 64–84 |
+| ARMORY `CELL INFO` block (P33) | flat | — | — | — (A5.1) |
+| ARMORY pack-card `BUY` chip 64×16 (`armory_panel.gd:1493`; A5.4 `Pressables`, A4.2) | flat (A5.4 flat-chip escape) | — | — | — (below every class band — §15.4-8) |
+| ARMORY barrel `✕` chip, 24×24 written / 24×29 laid out (`armory_panel.gd:1393-1395`; `StationButton` plate minimum — §3.10 A3 `✕` chip, L236) | flat (A5.4 flat-chip escape) | — | — | — (below every class band — §15.4-8) |
+| ARMORY mode switch pair (P32 `ActionInline`) | C3 inline chip | 96×32 | 8 | h 80–160 |
+| Settings tab/panel boxes (`ui/screens/settings.tscn`) | C12 panel frame | 96×96 | 32 | edges tile — any rect |
+| Settings rebind rows + sliders (`settings_rebind_row.tscn:5-33`; `settings.gd`) — plain `HBoxContainer` lines ≈ 1872×32 over the fullscreen `Panel` (`settings.tscn:16-23`) | flat rows + sub-band pressables (A5.4 flat-chip escape / A5.4-2 base `Button` bevel) | — | — | — (re-classed from C4 on the D21-F1 re-measurement; the 150×32 / 64×28 bind buttons are §15.4-8 sub-band pressables) |
+| Settings focus rings (`settings.gd:462-466`; §8 P3) | flat / engine | — | — | — (1 px `accent_danger_bright`) |
+| Dialog panel, min 420 wide (§5.2; `dialog.tscn:37`) | C12 panel frame | 96×96 | 32 | edges tile — any rect |
+| INSPECT sheet, min 420 / max 720 (`inspect_sheet.gd:20-21`; N28) | C12 panel frame | 96×96 | 32 | edges tile — any rect |
+| Tooltip frame, 360 cap (`CAP_WIDTH` `tooltip.gd:18`; N47) | C7 tooltip frame | 360×240 (3:2) | 12 | h 280–360, v 120–400 |
+| INSPECT chips 96×32 (`inspect_chip.gd:14`) | C3 inline chip | 96×32 | 8 | h 80–160 |
+| HUD hull/shield bars 260×14 (§3.1; `POOL_BAR_SIZE` `hud.gd:127`) + caps (`ui_bar_caps` 42×14, `file`; §6 cross-check) | C10 bar caps + engine fill | 42×14 (3:1) | n/a — cut sprite | none |
+| HUD ammo panel (`_ammo_panel` `hud.gd:903`) | C12 panel frame | 96×96 | 32 | edges tile — any rect |
+| HUD weapon/cargo slot buttons 48/40 (`slot_button.gd:18-19`; §3.2/§3.4) | C8 square plate | 1:1 (48 / 40) | n/a | none — uniform scale only |
+| HUD minimap panel + 200×200 view (§3.3) with `ui_minimap_bezel` (margins 16 measured, `hud.tscn:371-379`) | C12 + C11 minimap bezel | C11 200×200 (1:1) | 16 (measured) | none — fixed use |
+| HUD cargo panel 5×40 grid (§3.4) | C12 + C8 | as above | as above | as above |
+| Map deck pane (N1; `map_deck.gd:53` `PANE_MARGIN` 36) | C12 panel frame | 96×96 | 32 | edges tile — any rect |
+| Map filter rows 56 tall (`map_deck.gd:57`; §10 A5.4-2 idiom) | C2 action bar | 360×56 | 20/12 | h 272–450, v 56–88 |
+| Map control buttons 36×36 (`map_deck.gd:62`) | C8 square plate | 1:1 (36) | n/a | none |
+| Radial speedometer 120×120 (`DIAL_SIZE` `hud.gd:200`; §3.6, `ui_gauge_face` 240×240 master) | keep | 1:1 instrument face (§11) | n/a | none |
+| Cockpit cluster face 464×256 (`cockpit_style.gd:79` `box_size`; `ui_cockpit_panel` 928×512, §12) | keep (anchor) | whole face (`contain`) | n/a | none — never stretch |
+| Cockpit/status frames (`ui_cockpit_frame` 192×192, §11) | C12 panel frame at its 2× cut | 1:1 | 64 (2× 32) | edges tile — any rect |
+| Ship status face 720×520 (`ship_status_screen.gd:66`; `ui_status_panel` 1440×1040, §12) | keep (anchor) | whole face (`contain`) | n/a | none — never stretch |
+| Ship status slot plates (`ship_status_screen.gd:76,689`) | C8 square plate | 1:1 (48) | n/a | none |
+| Target reticle (§3.5) | flat / engine | — | — | — (code-drawn) |
+| Menu buttons, min 70 tall (`menu_button.gd:20`; border `_draw` `:73-85`) | C2 action bar | 360×56 (45:7) | 20/12 | h 272–450, v 56–88 |
+| Menu hover glow (`glow_underlay.gd:11-15`; §1.5) | engine | — | — | — (never baked, §1.5) |
+| Logo lockup (`boot.tscn:5`, `main_menu.tscn:8`; frozen — `ASSET_NAMING_SPEC.md` §9) | keep | — | — | — |
+| Loading/boot backdrops (§8 parked) | keep | — | — | — |
+| `_mockup_station` (`ui/screens/_mockup_station.gd`) | dev | — | — | — (retired at §12.6) |
+| `dev_tuning_menu` (`ui/dev/dev_tuning_menu.gd:458-486`) | dev | — | — | — (out of family scope) |
+| `repairs_panel.tscn` (live-unreferenced — mounted only by tests; `PanelRaised` at `repairs_panel.tscn:93`) | retired | — | — | — (out of family scope) |
+| `fitting_panel.tscn` (live-unreferenced — mounted only by tests; 15 `theme_override` hits in the census greps) | retired | — | — | — (out of family scope) |
+
+**The PROPOSED values above and their one-line reversals.** C1 margins 16
+(derived from P23's `MarginContainer` 16), C2 20/12 (derived from the shipped
+bolt band, A5.4 `Pressables` "bolts at x7–19 / x261–277"), C3 8, C4 12/8
+(derived, `RowInner`), C5 10 (derived, `cell_margin`), C7 12, C9 16/8 (derived,
+`RailInner`) — reversal: fixed margins at the §5.3 32 px baseline. Band ranges
+C2 h 272–450 (reversal: 272–360, the measured pair), C3 h 80–160, C4 h 320–960
+/ v 68–84 (reversal: strict pinned sizes only, everything else a new plate), C1
+±10 % (reversal: fixed 300×140), C7 h 280–360 / v 120–400 (reversal: the fixed
+360 cap and 240 nominal). C7's nominal 360×240 target — reversal: 360×360 (1:1).
+C8's 2× master at 112 (reversal: 96, 2× the 48 cut). C13's 2048×874 master —
+the D2 2× rule cannot hold at 2 K (reversal: 3530×1506). AUCTION rows on C4 —
+reversal: the base `Button` bevel as shipped (A5.4 Q5). The C13 backdrop stems
+in the assets amendment — reversal: rename per the owner.
+
+**The 2026-10-05 D21-F1 values and their reversals.** C1's target moves to the
+drawn tile **567×140** (the grid arithmetic in its row; band ±10 % now
+h 510–624 / v 126–154) — reversal: the 300×140 `TILE_MIN` nominal with the
+horizontal band widened 270–640 to cover the drawn grid. C4's bands extend to
+**h 320–1765 / v 64–84** — reversal: h 320–960 / v 68–84 plus a split
+long-strip class at the brief's pin (+1 paid run). The brief §2 pin **"data row
+strip | pane-width × 76"** is restored as the row strip's measured use; C4 draws
+at 560×76 — **deviation: 1205 px narrower than the pinned 1765×76 use** — the
+pin's width rides the extended flat band (the C4 interior is prompted plain and
+even along its whole length, so the 3.15× stretch carries no ornament) —
+reversal: draw C4 at the pin (a 1765×76 long-strip master; it joins C6 as a
+class needing the `UI_CHROME_ASSETS_SPEC.md` §13.6 wider run). LAUNCH manifest
+rows and the settings rebind rows re-class **flat** on the measured evidence in
+their rows — reversal: keep both C4 and extend the bands to their measured 560
+and ≈ 1872. The two small pressables take A5.4's flat-chip escape (§15.4-8) —
+reversal: the `StationButton` plate returns on them as shipped.
+
+### 15.2 The aspect law ("respected always" — the owner's words)
+
+1. **A1 — every plate is drawn at its class's true aspect, and that aspect is
+   respected always.** A surface wears the class whose true aspect is its own
+   measured use aspect (the table); no plate is ever drawn at one aspect and
+   used at another.
+2. **A2 — caps, corners and rivets never stretch.** All ornament lives inside
+   the nine-slice corner squares (§2's recipe: rivets confined to corners, edge
+   bands identical along their run); the margins hold it; only the 1 px expand
+   may leave the cut (`build_theme.gd:24-30`).
+3. **A3 — nine-slice stretch is legal only in the flat bands the table declares
+   per class, only within the declared ranges.** A band is flat: no rivet, bevel
+   catch, seam or glyph may cross it (§2's nine-slice requirement).
+4. **A4 — a surface the family cannot cover gets a new plate, never a stretch.**
+   S35 measures every use rect; one outside its class's bands is reported and
+   ordered as a new class row (N51's "report and revert, never smear", raised to
+   family scale).
+5. **A5 — C12 panel frame is the one aspect-free class, by construction**: square
+   art, uniform edge bands, ornament in the corner squares only — it may dress
+   any rect. Every other class is aspect-bound (A1).
+6. **A6 — whole-face plates (C6 and the `keep` anchors) are drawn at their
+   surface's exact aspect and are never stretched or sliced** (§12's `contain`
+   law).
+7. **A7 — states derive by `modulate` and stylebox tint** (A5.5/N24: never size,
+   never position, never an in-flow `visible`); at most one paid variant per
+   class where modulate fails QC (brief §3).
+
+### 15.3 The margins law — where stretch is legal, per class
+
+- **C1 tile slab** — margins 16 all sides; stretch only the flat interior, both
+  axes within ±10 % of 567×140 (the drawn tile: h 510–624, v 126–154).
+- **C2 action bar** — margins 20 at the short-side caps, 12 top/bottom; the
+  horizontal flat band runs 272→450 wide; the vertical flat band runs 56→88 tall
+  (the §8 pinned pair; the menu's 70 minimum sits inside it). A button taller
+  than 88 — font-driven growth included — orders a new plate (A4).
+- **C3 inline chip** — margins 8; the horizontal flat band runs 80→160 wide.
+- **C4 row strip** — margins 12/8 (RowInner); the horizontal flat band runs
+  320→1765 wide (the measured 320 card, 560 hold (`exchange_panel.gd:70`), 876
+  board (N43), ≈ 1390 REFINERY rows, and the 1765 pane-width rows — brief §2's
+  pinned "pane-width × 76"); the vertical flat band runs 64→84 tall (the measured
+  64 name/identity plates, 68 card and 76 `ROW_HEIGHT`). The band is flat end to
+  end (A3) and the C4 prompt pins it "plain and even along its whole length", so
+  the 3.15× stretch at the pane-width rows carries no grain or seam.
+- **C5 rack bay card** — margins 10; no stretch (the fixed A3 260×192 rect).
+- **C6 armory console face** — no margins, no stretch (A6, `contain`).
+- **C7 tooltip frame** — margins 12; horizontal 280→360 (the 360 cap is N47's
+  law), vertical 120→400 (`fit_content` heights).
+- **C8 square plate** — a cut sprite at 1:1; no nine-slice. Uniform scale across
+  the 16–56 control sizes is **scale, not stretch** and is always legal; any
+  non-uniform use is barred.
+- **C9 drawer entry plate** — margins 16/8 (RailInner); horizontal 272→360 (the
+  measured pair), vertical none (56 fixed).
+- **C10 bar caps** — a cut sprite; no margins, no stretch (the engine fills the
+  bar body).
+- **C11 minimap bezel** — margins 16 (measured); no stretch (the fixed 200×200
+  use).
+- **C12 panel frame** — margins 32 at the 96 cut (64 at the 192 master); edge
+  bands tile over any rect; corners never move or scale (A5).
+- **C13 station backdrop** — opaque cover-fit at 1765:753; no stretch (a pane at
+  another aspect orders its own backdrop, A4).
+
+**Pinned, all classes: caps, corners and rivets never stretch (A2).** A stretch
+that would smear one is illegal even inside a declared band — the builder
+reports and reverts (N51).
+
+### 15.4 What §15 supersedes
+
+1. **§14 N50/N51** — completed here: the family law lands as §15 (§14's closing
+   note), `ui_button_plate_*` stays the documented fallback only.
+2. **§8 P1's one-sprite rule** ("the same sprite (A5.4 `Pressables` plate,
+   `ui_button_plate_*`, cut 280×56, no texture margins) at one of two sizes") is
+   superseded by **C2** drawn at 360×56 true aspect with margins measured from
+   its cut; the whole-texture stretch (the fault) is illegal. The P1 sizes
+   360×56 / 360×88 and the P2 96×32 stand unchanged. **PROPOSED**; reversal: the
+   §8 sprite rule returns and D21's family becomes fallback art.
+3. **§3.10 A5.1's "inside a pane it is flat" and A5.3's flat cure** are
+   superseded for the plated surfaces — rows, cards, tiles, chips, entries: Q1's
+   refusal existed because the 32 px band could not dress small surfaces, and
+   the per-aspect classes carry bands sized to their surfaces' own insets
+   (§15.1). The A5.2 mechanism, the content-margin law (A5.2(iv)), and the
+   well-half / salvo-ledge / bay-cell-recess flats stand unmoved. **PROPOSED**;
+   reversal: A5.1/A5.3 flat language returns and the family plates only
+   pane-scale surfaces.
+4. **§5.3's nine-patch baseline** ("Baseline … 32 px frame in a 96×96 source …
+   if the texture ships a 16 px frame, margins become 16") is amended: every
+   class's margins are declared in §15.1/§15.3 and re-measured from the final
+   cut (N51). §5.3's construction pattern stands.
+5. **STATION_HUB §19.2's tile chrome** ("the theme's `panel_raised` flat bevel";
+   `overview_panel.gd:257-268`) is superseded by **C1** at the drawn tile aspect
+   (567×140 ≈ 4:1, §15.1) — N50's tile
+   intent realized at the tile's own aspect, never a 5:1 bar.
+6. **`UI_CHROME_ASSETS_SPEC.md` §1.1's state-grid law and §3's four-state
+   atlas law, for this family only**, are superseded by A7 (modulate/tint states,
+   ≤1 paid variant per class). The shipped atlases keep their names until S35
+   swaps them. **PROPOSED**; reversal: four-state atlases per §1.1.
+7. **`UI_CHROME_ASSETS_SPEC.md` §1.2's plain-white split substrate, for this
+   family only**, is superseded by the transparent-request + local-key route
+   (the asset rules), because the family's negative list carries "no white
+   backgrounds" (D21 brief). **PROPOSED**; reversal: restore the white substrate
+   and drop that negative.
+8. **§3.10 A5.4's `Pressables` row** (`BUY` 64×16 / `✕` 24×24 written and laid
+   out 24×29 at the `StationButton` → `ui_button_plate_*` whole-texture stretch)
+   is superseded for every **sub-band pressable** — both sizes sit below every
+   class band (C4's vertical floor is 64, C2's is 56), and the whole-texture
+   stretch is §14's N50 fault at its smallest. They wear the **flat §3.1 chip** —
+   A5.4's own escape clause, read in the small direction. The A5.4 `Pressables`
+   sizes and `L236` stand unmoved. **PROPOSED**; reversal: the `StationButton`
+   plate returns on the small pressables and A5.4's row stands as written.
+
+Standing unchanged: A5.2 (containers + anchors, never coordinates), A5.4/Q1
+(measured insets), A5.5/N24 and N29, §12's flat-plate / code-drawn-wells
+amendment, `ASSET_NAMING_SPEC.md` ruling 6 (bar caps stay one sprite), and the
+frozen `logo_vajb_orbit` geometry.
