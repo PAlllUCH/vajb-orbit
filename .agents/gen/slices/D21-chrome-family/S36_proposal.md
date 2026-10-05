@@ -33,21 +33,24 @@ onto the generated family** (16/16 aspect-verified renders,
 | Tooltip frame | C7 `ui_tooltip_frame` | the 360 cap is N47's |
 | Pane frames (9-slice, 96×96 masters) | C12 `ui_panel_frame` | reversal: keep the shipped frame |
 | Station pane backdrops (new layer, 1765×753 cover-fit) | BG-1 ARMORY · BG-2 REFINERY · BG-3 EXCHANGE+AUCTION · BG-4 SHIPYARD+LAUNCH+OVERVIEW | additive — conflicts with nothing |
-| Drawer entry plate | C9 `ui_drawer_entry` (272×56, T-135) | **held as spare** while the terminal side panel stays native |
+| Drawer entry plate | C9 `ui_drawer_entry` (272×56, T-135) | **deployed** — owner call 1 (2026-10-05): the entries swap in; the drawer surface stays native |
 
 C2/C8/C11/C12 renders returned opaque — the free local key fallback keys them
 at the cut stage (G1's follow-up; no re-run owed).
 
-## Open calls (owner's eye)
+## Open calls — all four decided (owner, 2026-10-05)
 
-1. Drawer entries: stay with the terminal side panel (default) or swap to the
-   C9 plate at 272×56?
-2. `MENU_TABS` reads `POWER` (S35-B1: supersedes the EQ's `PWR/FUEL RODS`) —
-   keep the word or restore `PWR/FUEL RODS`?
-3. The exchange TradeBox grows 360 → 393 px for the MAX/0 chips (measured) —
-   accept or shrink the chips?
-4. State variants (≤ 6 runs, ≤ $0.30) stay un-purchased until cut-stage QC
-   says modulate cannot carry hover/pressed.
+The owner's answers, verbatim: **"1. swap, 2. POWER 3. accept 4. ok
+waiting."** The record with reversals is `UI_SPEC.md` §15.5.
+
+1. **swap** — the drawer entries take the C9 plate at 272×56 (the drawer
+   surface itself stays native).
+2. **POWER** — `MENU_TABS` keeps the word; `PWR/FUEL RODS` does not return
+   (T-139 closed).
+3. **accept** — the TradeBox stays at the measured 393 px; the chips do not
+   shrink.
+4. **ok waiting** — state variants stay un-purchased until cut-stage QC says
+   modulate cannot carry hover/pressed (then ≤ 6 runs, ≤ $0.30).
 
 ## The two waves
 

@@ -32,8 +32,8 @@ and every tool result is re-sent on each later request.
 | 11. | Station shell v2 — the TERMINAL drawer, the popups, the one skeleton… | L1055–L1110 |
 | 12. | Station shell v2 design detail — the TERMINAL drawer, the popup pair… | L1111–L1342 |
 | 13. | The D20 fix wave — exchange parity, the armory browser, the hover-in… | L1343–L1380 |
-| 14. | Exchange sell cluster + the OVERVIEW tile plates (amendment 2026-10-… | L1381–L1417 |
-| 15. | The one true-aspect chrome family (amendment 2026-10-05, owner rulin… | L1418–L1686 |
+| 14. | Exchange sell cluster + the OVERVIEW tile plates (amendment 2026-10-… | L1381–L1426 |
+| 15. | The one true-aspect chrome family (amendment 2026-10-05, owner rulin… | L1427–L1718 |
 
 <!-- section-index:end -->
 
@@ -1693,3 +1693,25 @@ Standing unchanged: A5.2 (containers + anchors, never coordinates), A5.4/Q1
 (measured insets), A5.5/N24 and N29, §12's flat-plate / code-drawn-wells
 amendment, `ASSET_NAMING_SPEC.md` ruling 6 (bar caps stay one sprite), and the
 frozen `logo_vajb_orbit` geometry.
+
+### 15.5 The owner's four S36 calls — decided 2026-10-05
+
+The four open calls of `slices/D21-chrome-family/S36_proposal.md`, answered by
+the owner the same day ("1. swap, 2. POWER 3. accept 4. ok waiting"):
+
+1. **Drawer entries swap onto C9 `ui_drawer_entry`** (272×56 at T-135's
+   decided target). The terminal drawer's *surface* stays native — the
+   keep-list row stands — and only its entries take the plate, which is the
+   §15.1 census executed. Reversal: the entries go back to native and the C9
+   cut stays landed but unused.
+2. **`MENU_TABS` keeps the word `POWER`** (S35-B1's wording stands);
+   `PWR/FUEL RODS` does not return and the EQ's own label stays superseded.
+   **T-139 decided.** Reversal: one label change in `MENU_TABS`.
+3. **The exchange TradeBox is accepted at the measured 393 px** (the S35
+   360→393 growth for the MAX/0 chips); the chips do not shrink. Reversal:
+   shrink the chips and the box returns to 360.
+4. **State variants stay un-purchased until cut-stage QC says modulate cannot
+   carry a state** (§13.2's rule; the pressed inset read is the expected
+   case); only then at most one variant per failing class, ≤ 6 runs / ≤ $0.30
+   (§13.6's ceiling). Reversal: buy none and let the failing class fall back
+   to its shipped art.

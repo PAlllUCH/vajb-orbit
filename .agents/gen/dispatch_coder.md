@@ -147,34 +147,42 @@ session reports.
 
 ## Handoff (live)
 
-**Designer item 20 = D21 the one true-aspect chrome family** (live 2026-10-05,
+**Designer item 20 = D21 the one true-aspect chrome family** (done 2026-10-05,
 `slices/D21-chrome-family/`; owner ruling 2026-10-05 — regenerate every UI
 panel at true per-class aspects, whole-game scope ("full"), style anchors the
 `ui_cockpit_*`/`ui_armory_*`/`ui_status_panel` family + the main-menu chromes,
 unique station backgrounds (T-131); `UI_SPEC.md` §15 + `UI_CHROME_ASSETS_SPEC.md`
-amendment) — runs **beside coder 39** (disjoint: docs vs `vajb-orbit/ui`), then
-the generation batch (`$KIE_GENERATE`) + the owner's review sheet before S35.
-**Coder item 39 = S33 shell v3** (live 2026-10-05, `slices/S33-shell-v3/`;
+amendment) — ran **beside coder 39** (disjoint: docs vs `vajb-orbit/ui`);
+**D21-G1** (the generation batch) closed 2026-10-05 with it: 16/16 aspect
+PASS, $0.80.
+**Coder item 39 = S33 shell v3** (done 2026-10-05, `slices/S33-shell-v3/`;
 `STATION_HUB.md` §21.1 P38–P41 + `UI_SPEC.md` §14.1 N48/N49 — armory two
-sectors, the EQ container, the exchange SELL cluster; T-132) — beside designer
-20.
-**Coder item 40 = S34 the refinery queue** (`slices/S34-refinery-queue/`;
+sectors, the EQ container, the exchange SELL cluster; T-132) — ran beside
+designer 20.
+**Coder item 40 = S34 the refinery queue** (done 2026-10-05,
+`slices/S34-refinery-queue/`;
 `docs/gameplay/04_refinery.md` §7 + `STATION_HUB.md` §21.3 P42–P43 — timed
-jobs, upgradable slots, input/output inventory; T-133) — strictly after 39
-(both land rows in `vajb-orbit/tests/`).
-**Coder item 41 = S35 owner fixes** (live 2026-10-05,
+jobs, upgradable slots, input/output inventory; T-133) — ran strictly after
+39 (both land rows in `vajb-orbit/tests/`).
+**Coder item 41 = S35 owner fixes** (done 2026-10-05,
 `slices/S35-owner-fixes/`; `UI_SPEC.md` §14 N49-amended + `STATION_HUB.md`
 §21.1 P38a/P39a — one sell selector with MAX/0 quick buttons, click-away
-preview clear, one shared right menu across both ARMORY modes; resolves
-T-134 at the owner's words) — running beside **D21-G1** (the chrome
-generation batch: `hyper/glm-5.3-flash` @ max driving
-`gpt-image-2-5-flare-text-to-image`, 16 runs = $0.80, T-131's 4 backdrops
-included) and **D22-P1** (the screen-integrity review:
-`hyper/deepseek-v4.1-flash` @ xhigh, `slices/D22-screen-integrity/`).
-**S36 the chrome re-skin** (earlier notes' "S35" build placeholder) runs
-after the owner's review-sheet pick over the generated family. **Item 30 =
-S24 world identity — after these** (its five-piece predates shell v2 AND the
-2026-10-05 rounds, so the developer re-checks
+preview clear, one shared right menu across both ARMORY modes; resolved
+T-134 at the owner's words) — ran beside **D21-G1** and **D22-P1** (the
+screen-integrity review: `hyper/deepseek-v4.1-flash` @ xhigh,
+`slices/D22-screen-integrity/`, 18 screens, PASS).
+**Item 42 = D21-G2 the chrome cut/key/land run** (the D21 slice's G2 phase,
+`slices/D21-chrome-family/D21-G2_BRIEF.md`; `hyper/glm-5.3-flash` @ max —
+crop-to-master per §13.1, key C2/C8/C11/C12, `center_check --apply`, margins
+measured per §15.3, land at the §13.4 stems, cut contact sheet for the
+owner's eye; the owner's four S36 calls decided 2026-10-05 are recorded in
+`UI_SPEC.md` §15.5) — next on the owner's plan go.
+**Coder item 43 = S36 the chrome re-skin** (earlier notes' "S35" build
+placeholder; `hyper/deepseek-v4.1-flash` @ xhigh, R1 `hyper/glm-5.3-flash` @
+max) — after 42 **and** the owner's eyeball on the cut contact sheet (that
+eyeball is S36's entry gate).
+**Item 30 = S24 world identity — after 43** (its five-piece predates shell v2
+AND the 2026-10-05 rounds, so the developer re-checks
 `slices/S24-world-identity/S24_BRIEF.md` against `UI_SPEC.md` §12–§15 +
 `STATION_HUB.md` §19–§21 before dispatch; the handoff block is re-cut in
 `S24_prompts.md` at that re-check). Items 30–33 then run in order.
