@@ -162,9 +162,20 @@ sectors, the EQ container, the exchange SELL cluster; T-132) — beside designer
 `docs/gameplay/04_refinery.md` §7 + `STATION_HUB.md` §21.3 P42–P43 — timed
 jobs, upgradable slots, input/output inventory; T-133) — strictly after 39
 (both land rows in `vajb-orbit/tests/`).
-**Item 30 = S24 world identity — after 40** (its five-piece predates shell v2
-AND the 2026-10-05 round, so the developer re-checks
-`slices/S24-world-identity/S24_BRIEF.md` against `UI_SPEC.md` §12–§14 +
+**Coder item 41 = S35 owner fixes** (live 2026-10-05,
+`slices/S35-owner-fixes/`; `UI_SPEC.md` §14 N49-amended + `STATION_HUB.md`
+§21.1 P38a/P39a — one sell selector with MAX/0 quick buttons, click-away
+preview clear, one shared right menu across both ARMORY modes; resolves
+T-134 at the owner's words) — running beside **D21-G1** (the chrome
+generation batch: `hyper/glm-5.3-flash` @ max driving
+`gpt-image-2-5-flare-text-to-image`, 16 runs = $0.80, T-131's 4 backdrops
+included) and **D22-P1** (the screen-integrity review:
+`hyper/deepseek-v4.1-flash` @ xhigh, `slices/D22-screen-integrity/`).
+**S36 the chrome re-skin** (earlier notes' "S35" build placeholder) runs
+after the owner's review-sheet pick over the generated family. **Item 30 =
+S24 world identity — after these** (its five-piece predates shell v2 AND the
+2026-10-05 rounds, so the developer re-checks
+`slices/S24-world-identity/S24_BRIEF.md` against `UI_SPEC.md` §12–§15 +
 `STATION_HUB.md` §19–§21 before dispatch; the handoff block is re-cut in
 `S24_prompts.md` at that re-check). Items 30–33 then run in order.
 

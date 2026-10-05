@@ -1935,6 +1935,17 @@ keeps browsing buyables too).
 | **P40** | every list wears one AUCTION-idiom column-header band and the N45 trim law (160 px ellipsis titles); every row control lands inside 1920×1080; the mode hint line updates per mode + selection | untrimmed rows; no band |
 | **P41** | the mode switch (P32), no presets (P35) and CELL INFO stand unchanged; §20's pins stay in force except where P38/P39 name them | — |
 
+**P38/P39 amended 2026-10-05 (owner fix round, wave S35):** **P38a** — a
+pointer press outside every socket and row **clears the selection and the
+preview** (the right menu returns to browse, CELL INFO clears, the hint
+follows P40); reversal: the selection persists (the S33 shape). **P39a** —
+both modes' right sector render **one shared menu component**: identical
+categories, rows, band and trim in FIT CELLS and BATTERY CONFIG (P39's EQ
+container merges into it); the modes differ only in the row actions and the
+FIT CELLS socket filter (select-to-fit / drag-to-fit / BUY vs drag-to-rack);
+reversal: the two distinct right blocks (P38's list + P39's container, the
+S33 shape).
+
 ### 21.2 What supersedes what
 
 §20.1 **P33** (three FIT CELLS blocks) → P38. §20.1 **P36** (shared foot band)

@@ -1,0 +1,26 @@
+You are S35-B1, the builder for wave S35 of the VajbOrbit workspace (Godot 4.7.2; workspace /home/kamil-paluszkiewicz/VajbOrbit; game project vajb-orbit/). Your deliverable: the owner's fix round - one sell-quantity control with MAX/0 quick buttons, click-away preview clearing, and one shared right menu across the ARMORY's two modes. Code and tests, gate green. You may write only vajb-orbit/ui/ and vajb-orbit/tests/ (VAJB_WORKER_FILES enforces it). Never touch docs/, game/, autoload/, addons/. Today is 2026-10-05.
+
+LAW (read in this order):
+1. .agents/gen/slices/S35-owner-fixes/S35_BRIEF.md - the pinned interface blocks (section 3) and the acceptance list you answer.
+2. docs/design/UI_SPEC.md section 14 (N48/N49 + the 2026-10-05 N49 amendment) + section 11.1 (A5.5/N24) + section 3.10 Amendment 5.
+3. docs/design/STATION_HUB.md section 21.1 (P38-P41 + the 2026-10-05 P38a/P39a amendment).
+4. slices/S33-shell-v3/S33-B1_report.md + S33-F1_report.md (the current shapes: the two-state list, the EQ container, the trade stack, FIT/FITTED/STORED semantics).
+
+TASK
+A. EXCHANGE (N49 amended): the trade column carries ONE quantity control - the SELL UNITS stepper (min 0, max = the selected hold row's units) with two P2 ActionInline quick buttons beside it: "MAX" (fills the row's units) and "0" (empties the selector; SELL then disabled). The S33 duplicate unit-number selector (StepperRow/_step) dies entirely. SELL stays disabled at 0 and without a selection; a SELL press moves exactly the _sell_units value (unchanged rule). Stack top-down: SellUnitsRow (stepper + MAX + 0) -> InspectCluster -> PaneFoot (SELL / SELL ALL RAW).
+B. ARMORY (P38a): a pointer press outside every socket and row CLEARS the selection and the preview - right menu back to browse, CELL INFO cleared, and the hint follows (P40's rule; _update_hint is already called from _select/clear_selection). A press on any control keeps its own behavior (this is empty-chrome press routing only).
+C. ARMORY (P39a): both modes' right sector render ONE shared menu component - identical categories, rows, band and trim in FIT CELLS and BATTERY CONFIG (the S33 EQ container merges into it; one scene/script builder, not two lookalikes). The modes differ only in the row actions and the FIT CELLS socket filter (select-to-fit / drag-to-fit / BUY vs drag-to-rack).
+
+TESTS THAT MOVE: tests/test_s5_ammo_cargo.gd (the N49 rows restate: bounds 0..row units, MAX/0 behavior, disable at 0), tests/test_s32_armory_modes.gd (the EQ-container rows + the two-state rows restate as shared-menu rows; the P38 semantics + hint rows stay), tests/test_d7_armory.gd (EQ-container geometry rows re-anchor to the shared menu). Every moved row is re-anchored and DISCLOSED (old -> new + why). Add rows covering: MAX fills and 0 empties with SELL disabled at 0 (probe), no second units-number selector exists (grep + scene probe), click-away clears selection + preview + hint (probe: select a socket, press empty chrome, assert cleared), one shared menu (identical category set in both modes + a single builder in grep), and the mode actions intact (FIT CELLS fit/drag/BUY; BATTERY CONFIG drag persists through set_battery_groups - profile probe). The gate must end green (failed=0); counts move with disclosure.
+
+GATE (before and after): XDG_DATA_HOME=$(mktemp -d) ~/.local/bin/godot --headless --path vajb-orbit res://tests/headless_runner.tscn --quit-after 1200 2>&1 | grep -E '\[SUMMARY\]|SCRIPT ERROR' - and twice on fresh scratch after. Always grep [SUMMARY]: the line prints before Godot's exit-time leak errors. Record every run's line. Never leave a command running in the background; bound every probe.
+
+REPORT: .agents/gen/slices/S35-owner-fixes/S35-B1_report.md (max 120 lines, shaped like .agents/gen/_templates/REPORT.md): Result (2-3 lines measured), Acceptance list answers (items 1-6 below, one line each with file:line or probe numbers), Deviations (what, why, the one-line reversal), Evidence (gate lines + probe numbers), Files touched, the moved test rows listed. If a pinned number proves unimplementable, ship the closest value and DISCLOSE it - never silently change a pin.
+
+ACCEPTANCE LIST (the report answers each):
+1. One quantity control; MAX fills the row's units, 0 empties and disables SELL (probe both); bounds 0..row units.
+2. SELL moves exactly the selector value (profile delta probe); disabled at 0 and without a selection; no second units-number selector anywhere in the exchange (grep + scene probe).
+3. Click-away clears the selection + preview (CELL INFO cleared, list back to browse, hint idle) (probe).
+4. The right menu is ONE shared component in both modes (same builder/scene subtree + identical category set; grep proves a single builder).
+5. Mode behavior intact: FIT CELLS' socket filter + fit/drag/BUY actions; BATTERY CONFIG's drag-to-rack persists through the profile doors (probe).
+6. Gate green x2 + every moved test row disclosed.

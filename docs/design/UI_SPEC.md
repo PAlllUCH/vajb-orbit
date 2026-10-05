@@ -1408,10 +1408,19 @@ of these may hover-mutate size, position or an in-flow `visible`.
 **N50/N51 superseded pre-dispatch 2026-10-05** (owner ruling the same day —
 "regenerate all the UI panels … different aspect ratios … respected always …
 unify the panels in all the game"): all UI panels regenerate as **one
-true-aspect family, whole-game scope** (waves D21/S35; the family law lands as
+true-aspect family, whole-game scope** (waves D21 + the build wave **S36**;
+the family law lands as
 §15). The tile swap waits for that family; `ui_button_plate_*` stays the
 documented fallback and tick **T-131** retires with the pair. N48/N49 stand
 and ship in S33.
+
+**N49 amended 2026-10-05 (owner fix round, wave S35):** the trade column
+carries **one quantity control** — the `SELL UNITS` selector with **`MAX`**
+and **`0`** quick-set buttons beside it (P2 `ActionInline` chips; stepper min
+**0**, max = the selected row's units; `SELL` disabled at 0 or with no
+selection; the quick buttons move the same `_sell_units` value a SELL press
+moves). The S33 duplicate unit-number selector dies. Reversal: the S33 stack
+(two selectors, min 1, no quick buttons).
 
 ---
 
@@ -1471,7 +1480,7 @@ reversal under the table.
 | Station name plate, content-width strip × 64 tall in the 123 header band (`station.gd:737-744`; A5.4-1 — 12/8 margins + the 48 px insignia cut; §12.4) | C4 row strip | 560×76 (140:19) | 12/8 (`RowInner`, STATION_HUB §12.3) | h 320–1765, v 64–84 |
 | Header credits housing (`station.gd:748-760`) | flat | — | — | — (pulse is `modulate`, A5.5) |
 | Header/footer shell bands (`station.gd:445,464`) | flat | — | — | — (layout gaps) |
-| Rail/drawer entry plate, 272×56 measured (`station.gd:122,129,541`) — brief §2 pins 360×56, reported | C9 drawer entry plate | 360×56 (45:7) | 16/8 (`RailInner`, `station.gd:124`) | h 272–360 |
+| Rail/drawer entry plate, 272×56 measured (`station.gd:122,129,541`) — **T-135 decided 2026-10-05: the measured 272×56 adopted** (brief §2's 360×56 reported and superseded) | C9 drawer entry plate | 272×56 (measured; band covers 360) | 16/8 (`RailInner`, `station.gd:124`) | h 272–360 |
 | TERMINAL drawer button 96×32 (§11.1 N25) | C3 inline chip | 96×32 (3:1) | 8 | h 80–160 |
 | Drawer panel, 362 wide (`station.gd:132,470`) | C12 panel frame | 96×96 (1:1) | 32 (measured `build_theme.gd:29`) | edges tile — any rect |
 | Service strip buttons, min 56 (A5.4-2; STATION_HUB §15.1) | C2 action bar | 360×56 (45:7) | 20/12 | h 272–450, v 56–88 |
@@ -1621,7 +1630,8 @@ reversal: the `StationButton` plate returns on them as shipped.
   the 16–56 control sizes is **scale, not stretch** and is always legal; any
   non-uniform use is barred.
 - **C9 drawer entry plate** — margins 16/8 (RailInner); horizontal 272→360 (the
-  measured pair), vertical none (56 fixed).
+  measured pair; the target is the measured **272** per T-135, decided
+  2026-10-05), vertical none (56 fixed).
 - **C10 bar caps** — a cut sprite; no margins, no stretch (the engine fills the
   bar body).
 - **C11 minimap bezel** — margins 16 (measured); no stretch (the fixed 200×200

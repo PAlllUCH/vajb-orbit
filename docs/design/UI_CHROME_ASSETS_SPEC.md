@@ -568,7 +568,8 @@ STATION_HUB §19.3's measured content box), assigned across the 7 station panes:
 
 Count and assignment are **PROPOSED** — reversal for the count: **1** shared
 backdrop across all 7 panes, or **7** per-pane backdrops (7 runs). Tick
-**T-131** carries the call (D21_BRIEF §11; default if silent: 4 as proposed).
+**T-131 decided 2026-10-05 (owner go): 4 as proposed** — the batch runs now
+(D21-G1). The shell's own `ui_backdrop_hangar` stays outside the panes.
 Note: UI_SPEC §14's closing note retired an earlier T-131 (the N50 tile pick)
 with N50/N51; the tick-ID reuse is reported in `D21-A1_report.md`. The screen
 shell's own `ui_backdrop_hangar` (`station.tscn:5`) stands outside the panes —

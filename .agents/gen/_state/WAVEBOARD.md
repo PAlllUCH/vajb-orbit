@@ -502,15 +502,17 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | 20 | designer 20 | **D21 the one true-aspect chrome family** (`UI_SPEC.md` §15 + `UI_CHROME_ASSETS_SPEC.md` §13) — **done 2026-10-05**: 2 HIGH + 3 MED cured by F1; cost 16 runs / $0.80; T-131 open | beside coder 39 | `docs/design` + `staging/mockup` only — the D18/S28 parallel-pair shape |
 | 21 | coder 39 | **S33 shell v3 — armory two sectors + the exchange sell cluster** (`STATION_HUB.md` §21.1 P38–P41 + `UI_SPEC.md` §14.1 N48/N49) — **done 2026-10-05**: 1110 → 1121/0 ×2; 2 HIGH + 2 MED cured by F1; T-130 closed | beside designer 20 | `vajb-orbit/ui` + `tests` only; rewrote `armory_panel.*`/`exchange_panel.*` after S32 |
 | 22 | coder 40 | **S34 the refinery queue** (`docs/gameplay/04_refinery.md` §7 + `STATION_HUB.md` §21.3 P42–P43) — **done 2026-10-05**: 1121 → 1132/0 ×2; 1 MED cured by F1 + 2 LOW ride-alongs; T-133 decided by default | coder 39 | ran sequentially after S33 |
+| 23 | coder 41 | **S35 owner fixes** (`UI_SPEC.md` §14 N49-amended + `STATION_HUB.md` §21.1 P38a/P39a — one sell selector with MAX/0, click-away preview clear, one shared right menu) — **live 2026-10-05**; beside **D21-G1** (chrome generation: `hyper/glm-5.3-flash` @ max driving `gpt-image-2-5-flare-text-to-image`, 16 runs = $0.80) and **D22-P1** (screen integrity: `hyper/deepseek-v4.1-flash` @ xhigh) | S34 (done) | three disjoint sets: `vajb-orbit/ui`+`tests` / `asset-library`+the D21 slice / `tests` probes + the D22 slice; S35's two files are judged settled-state-only by D22 (its brief's concurrency note) |
 
 Designer items 16–19 and coders 34–36 are closed — the overhaul round and its
 shell-v2 follow-up are **shipped** (station: TERMINAL drawer, OVERVIEW landing
 pane, popup descriptions, one skeleton; gate 1093/0). **Next (live
-2026-10-05): designer 20 (D21 chrome family) + coder 39 (S33 shell v3) as the
-second parallel pair on disjoint file sets (the D18/S28 shape), then coder 40
-(S34 refinery queue), then coder 30 (S24 world identity)** — its five-piece
-predates shell v2 AND the 2026-10-05 round, so the brief re-checks against
-`UI_SPEC.md` §12–§14 + `STATION_HUB.md` §19–§21 before dispatch. Playtest
+2026-10-05): coder 41 (S35 owner fixes) + D21-G1 (the chrome generation
+batch) + D22-P1 (the screen-integrity review) in parallel; then the owner's
+review-sheet pick → S36 (the chrome re-skin — earlier notes' "S35" build
+placeholder); then coder 30 (S24 world identity)** — its five-piece predates
+shell v2 AND the 2026-10-05 rounds, so the brief re-checks against
+`UI_SPEC.md` §12–§15 + `STATION_HUB.md` §19–§21 before dispatch. Playtest
 pass #1 (the owner's, `19_testing_notes.md`'s eye list) runs alongside pos 1;
 build 2 + the tester template are phase exit criteria. Every brief's §11 tick
 sheet feeds its wave (unticked rows implement at their PROPOSED value).
