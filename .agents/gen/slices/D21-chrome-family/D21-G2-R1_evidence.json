@@ -1,0 +1,1984 @@
+{
+ "renders": {
+  "C1": {
+   "dir": "20261005-201427",
+   "render_px": [
+    2368,
+    1776
+   ],
+   "mode": "RGBA",
+   "alpha0_pct": 60.9,
+   "alpha_partial_px": 1687366,
+   "key": "substrate alpha (transparent return)",
+   "ink": {
+    "box": [
+     79,
+     507,
+     2289,
+     1251
+    ],
+    "ink_px": 1642102,
+    "solidity": 0.999,
+    "asp": 2.97
+   },
+   "law_rect": null,
+   "law_rect_px": [
+    3018,
+    746
+   ],
+   "law_rect_fits": false,
+   "law_rect_aspect_err_pct": 0.109
+  },
+  "C2": {
+   "dir": "20261005-201500",
+   "render_px": [
+    2368,
+    1776
+   ],
+   "mode": "RGBA",
+   "alpha0_pct": 0.2,
+   "alpha_partial_px": 4205568,
+   "border_med": [
+    3,
+    8,
+    13
+   ],
+   "ladder": [
+    {
+     "tol": 26,
+     "solidity": 0.202,
+     "flood_pct": 81.0,
+     "box": [
+      46,
+      16,
+      2314,
+      1760
+     ]
+    },
+    {
+     "tol": 18,
+     "solidity": 0.199,
+     "flood_pct": 81.0,
+     "box": [
+      20,
+      14,
+      2316,
+      1760
+     ]
+    },
+    {
+     "tol": 10,
+     "solidity": 0.199,
+     "flood_pct": 80.4,
+     "box": [
+      0,
+      14,
+      2368,
+      1762
+     ]
+    }
+   ],
+   "key": "refused after ladder: every tolerance leaks into the interior",
+   "ink": {
+    "box": [
+     0,
+     0,
+     2368,
+     1776
+    ],
+    "ink_px": 4205568,
+    "solidity": 1.0
+   },
+   "law_rect": null,
+   "law_rect_px": [
+    11424,
+    1778
+   ],
+   "law_rect_fits": false,
+   "law_rect_aspect_err_pct": 0.052
+  },
+  "C3": {
+   "dir": "20261005-201604",
+   "render_px": [
+    1916,
+    821
+   ],
+   "mode": "RGBA",
+   "alpha0_pct": 63.8,
+   "alpha_partial_px": 577217,
+   "key": "substrate alpha (transparent return)",
+   "ink": {
+    "box": [
+     77,
+     240,
+     1841,
+     564
+    ],
+    "ink_px": 569316,
+    "solidity": 0.996,
+    "asp": 5.444
+   },
+   "law_rect": [
+    77,
+    108,
+    1841,
+    696
+   ],
+   "law_rect_px": [
+    1764,
+    588
+   ],
+   "law_rect_fits": true,
+   "law_rect_aspect_err_pct": 0.0,
+   "containment_pct": 100.0,
+   "scale_fx": 0.10884,
+   "scale_fy": 0.10884,
+   "skew_pct": 0.0
+  },
+  "C4": {
+   "dir": "20261005-201632",
+   "render_px": [
+    2368,
+    1776
+   ],
+   "mode": "RGBA",
+   "alpha0_pct": 85.6,
+   "alpha_partial_px": 637502,
+   "key": "substrate alpha (transparent return)",
+   "ink": {
+    "box": [
+     81,
+     747,
+     2287,
+     1023
+    ],
+    "ink_px": 606155,
+    "solidity": 0.996,
+    "asp": 7.993
+   },
+   "law_rect": [
+    78,
+    734,
+    2289,
+    1035
+   ],
+   "law_rect_px": [
+    2211,
+    301
+   ],
+   "law_rect_fits": true,
+   "law_rect_aspect_err_pct": 0.311,
+   "containment_pct": 100.0,
+   "scale_fx": 0.50656,
+   "scale_fy": 0.50498,
+   "skew_pct": 0.312
+  },
+  "C5": {
+   "dir": "20261005-201700",
+   "render_px": [
+    2368,
+    1776
+   ],
+   "mode": "RGBA",
+   "alpha0_pct": 59.1,
+   "alpha_partial_px": 1801555,
+   "key": "substrate alpha (transparent return)",
+   "ink": {
+    "box": [
+     143,
+     457,
+     2229,
+     1285
+    ],
+    "ink_px": 1718843,
+    "solidity": 0.995,
+    "asp": 2.519
+   },
+   "law_rect": [
+    142,
+    100,
+    2229,
+    1642
+   ],
+   "law_rect_px": [
+    2087,
+    1542
+   ],
+   "law_rect_fits": true,
+   "law_rect_aspect_err_pct": 0.054,
+   "containment_pct": 100.0,
+   "scale_fx": 0.24916,
+   "scale_fy": 0.24903,
+   "skew_pct": 0.054
+  },
+  "C6": {
+   "dir": "20261005-201732",
+   "render_px": [
+    3312,
+    2480
+   ],
+   "mode": "RGBA",
+   "alpha0_pct": 54.6,
+   "alpha_partial_px": 3773972,
+   "key": "substrate alpha (transparent return)",
+   "ink": {
+    "box": [
+     77,
+     647,
+     3238,
+     1828
+    ],
+    "ink_px": 3732931,
+    "solidity": 1.0,
+    "asp": 2.677
+   },
+   "law_rect": [
+    76,
+    637,
+    3239,
+    1838
+   ],
+   "law_rect_px": [
+    3163,
+    1201
+   ],
+   "law_rect_fits": true,
+   "law_rect_aspect_err_pct": 0.077,
+   "containment_pct": 100.0,
+   "scale_fx": 0.85994,
+   "scale_fy": 0.85928,
+   "skew_pct": 0.077
+  },
+  "C7": {
+   "dir": "20261005-202052",
+   "render_px": [
+    2512,
+    1664
+   ],
+   "mode": "RGBA",
+   "alpha0_pct": 15.3,
+   "alpha_partial_px": 3604827,
+   "key": "substrate alpha (transparent return)",
+   "ink": {
+    "box": [
+     26,
+     99,
+     2488,
+     1539
+    ],
+    "ink_px": 3539929,
+    "solidity": 0.998,
+    "asp": 1.71
+   },
+   "law_rect": [
+    26,
+    0,
+    2489,
+    1642
+   ],
+   "law_rect_px": [
+    2463,
+    1642
+   ],
+   "law_rect_fits": true,
+   "law_rect_aspect_err_pct": 0.0,
+   "containment_pct": 100.0,
+   "scale_fx": 0.29233,
+   "scale_fy": 0.29233,
+   "skew_pct": 0.0
+  },
+  "C8": {
+   "dir": "20261005-202141",
+   "render_px": [
+    2048,
+    2048
+   ],
+   "mode": "RGBA",
+   "alpha0_pct": 0.5,
+   "alpha_partial_px": 4194304,
+   "border_med": [
+    43,
+    42,
+    43
+   ],
+   "key": "refused: border band is plate grey, not void substrate",
+   "ink": {
+    "box": [
+     0,
+     0,
+     2048,
+     2048
+    ],
+    "ink_px": 4194304,
+    "solidity": 1.0
+   },
+   "law_rect": [
+    0,
+    0,
+    2048,
+    2048
+   ],
+   "law_rect_px": [
+    2048,
+    2048
+   ],
+   "law_rect_fits": true,
+   "law_rect_aspect_err_pct": 0.0,
+   "containment_pct": 99.12
+  },
+  "C9": {
+   "dir": "20261005-202203",
+   "render_px": [
+    2368,
+    1776
+   ],
+   "mode": "RGBA",
+   "alpha0_pct": 80.1,
+   "alpha_partial_px": 868589,
+   "key": "substrate alpha (transparent return)",
+   "ink": {
+    "box": [
+     80,
+     691,
+     2288,
+     1074
+    ],
+    "ink_px": 834763,
+    "solidity": 0.987,
+    "asp": 5.765
+   },
+   "law_rect": null,
+   "law_rect_px": [
+    2469,
+    385
+   ],
+   "law_rect_fits": false,
+   "law_rect_aspect_err_pct": 0.242
+  },
+  "C10": {
+   "dir": "20261005-202312",
+   "render_px": [
+    1916,
+    821
+   ],
+   "mode": "RGBA",
+   "alpha0_pct": 75.1,
+   "alpha_partial_px": 404440,
+   "key": "substrate alpha (transparent return)",
+   "ink": {
+    "box": [
+     38,
+     299,
+     1880,
+     524
+    ],
+    "ink_px": 391132,
+    "solidity": 0.944,
+    "asp": 8.187
+   },
+   "law_rect": [
+    38,
+    104,
+    1880,
+    718
+   ],
+   "law_rect_px": [
+    1842,
+    614
+   ],
+   "law_rect_fits": true,
+   "law_rect_aspect_err_pct": 0.0,
+   "containment_pct": 100.0
+  },
+  "C11": {
+   "dir": "20261005-202401",
+   "render_px": [
+    2048,
+    2048
+   ],
+   "mode": "RGBA",
+   "alpha0_pct": 0.0,
+   "alpha_partial_px": 4194304,
+   "border_med": [
+    7,
+    10,
+    13
+   ],
+   "ladder": [
+    {
+     "tol": 22,
+     "solidity": 0.332,
+     "flood_pct": 67.5,
+     "box": [
+      12,
+      10,
+      2038,
+      2034
+     ]
+    },
+    {
+     "tol": 14,
+     "solidity": 0.342,
+     "flood_pct": 66.3,
+     "box": [
+      10,
+      0,
+      2038,
+      2036
+     ]
+    },
+    {
+     "tol": 6,
+     "solidity": 0.987,
+     "flood_pct": 1.3,
+     "box": [
+      0,
+      0,
+      2048,
+      2048
+     ]
+    }
+   ],
+   "key": "strip flood clean at tol 6",
+   "ink": {
+    "box": [
+     0,
+     0,
+     2048,
+     2048
+    ],
+    "ink_px": 4141840,
+    "solidity": 0.987,
+    "asp": 1.0
+   },
+   "law_rect": [
+    0,
+    0,
+    2048,
+    2048
+   ],
+   "law_rect_px": [
+    2048,
+    2048
+   ],
+   "law_rect_fits": true,
+   "law_rect_aspect_err_pct": 0.0,
+   "containment_pct": 100.0
+  },
+  "C12": {
+   "dir": "20261005-202444",
+   "render_px": [
+    2048,
+    2048
+   ],
+   "mode": "RGBA",
+   "alpha0_pct": 0.0,
+   "alpha_partial_px": 4194304,
+   "border_med": [
+    4,
+    6,
+    8
+   ],
+   "ladder": [
+    {
+     "tol": 22,
+     "solidity": 0.235,
+     "flood_pct": 76.7,
+     "box": [
+      2,
+      4,
+      2044,
+      2044
+     ]
+    },
+    {
+     "tol": 14,
+     "solidity": 0.248,
+     "flood_pct": 75.4,
+     "box": [
+      2,
+      2,
+      2044,
+      2044
+     ]
+    },
+    {
+     "tol": 6,
+     "solidity": 0.993,
+     "flood_pct": 0.7,
+     "box": [
+      0,
+      0,
+      2048,
+      2048
+     ]
+    }
+   ],
+   "key": "strip flood clean at tol 6",
+   "ink": {
+    "box": [
+     0,
+     0,
+     2048,
+     2048
+    ],
+    "ink_px": 4163128,
+    "solidity": 0.993,
+    "asp": 1.0
+   },
+   "law_rect": [
+    0,
+    0,
+    2048,
+    2048
+   ],
+   "law_rect_px": [
+    2048,
+    2048
+   ],
+   "law_rect_fits": true,
+   "law_rect_aspect_err_pct": 0.0,
+   "containment_pct": 100.0
+  },
+  "BG1": {
+   "dir": "20261005-202512",
+   "render_px": [
+    3136,
+    1344
+   ],
+   "mode": "RGB",
+   "key": "substrate alpha (transparent return)",
+   "ink": {
+    "box": [
+     0,
+     0,
+     3136,
+     1344
+    ],
+    "ink_px": 4214784,
+    "solidity": 1.0,
+    "asp": 2.333
+   }
+  },
+  "BG2": {
+   "dir": "20261005-202550",
+   "render_px": [
+    3136,
+    1344
+   ],
+   "mode": "RGB",
+   "key": "substrate alpha (transparent return)",
+   "ink": {
+    "box": [
+     0,
+     0,
+     3136,
+     1344
+    ],
+    "ink_px": 4214784,
+    "solidity": 1.0,
+    "asp": 2.333
+   }
+  },
+  "BG3": {
+   "dir": "20261005-202617",
+   "render_px": [
+    3136,
+    1344
+   ],
+   "mode": "RGB",
+   "key": "substrate alpha (transparent return)",
+   "ink": {
+    "box": [
+     0,
+     0,
+     3136,
+     1344
+    ],
+    "ink_px": 4214784,
+    "solidity": 1.0,
+    "asp": 2.333
+   }
+  },
+  "BG4": {
+   "dir": "20261005-203106",
+   "render_px": [
+    3136,
+    1344
+   ],
+   "mode": "RGB",
+   "key": "substrate alpha (transparent return)",
+   "ink": {
+    "box": [
+     0,
+     0,
+     3136,
+     1344
+    ],
+    "ink_px": 4214784,
+    "solidity": 1.0,
+    "asp": 2.333
+   }
+  }
+ },
+ "landed": {
+  "ui_inline_chip.png": {
+   "file": "ui_inline_chip.png",
+   "px": [
+    192,
+    64
+   ],
+   "mode": "RGBA",
+   "master": [
+    192,
+    64
+   ],
+   "exact_master_px": true,
+   "alpha0_pct": 43.75,
+   "alpha_partial_px": 6875,
+   "ink": {
+    "box": [
+     0,
+     14,
+     192,
+     50
+    ],
+    "ink_px": 6912,
+    "solidity": 1.0,
+    "asp": 5.333
+   },
+   "fill_pct": 56.2,
+   "centre_off": [
+    0.5,
+    0.5
+   ],
+   "opaque": false,
+   "border_fringe_px": 72,
+   "containment_pct": null,
+   "margins_measured": {
+    "l": 1,
+    "r": 0,
+    "t": 20,
+    "b": 19
+   },
+   "orn_extent": {
+    "l": 0,
+    "r": 0,
+    "t": 16,
+    "b": 19
+   },
+   "margins_sweep": {
+    "l": [
+     3.1,
+     -1
+    ],
+    "r": [
+     3.6,
+     -1
+    ],
+    "t": [
+     1.8,
+     -1
+    ],
+    "b": [
+     1.2,
+     -1
+    ]
+   },
+   "margins_declared_master": [
+    16,
+    16,
+    16,
+    16
+   ],
+   "margins_max_dev_px": 16,
+   "recon_vs_landed": {
+    "mean": 0.19,
+    "max": 7,
+    "shift": [
+     0,
+     0
+    ]
+   }
+  },
+  "ui_row_strip.png": {
+   "file": "ui_row_strip.png",
+   "px": [
+    1120,
+    152
+   ],
+   "mode": "RGBA",
+   "master": [
+    1120,
+    152
+   ],
+   "exact_master_px": true,
+   "alpha0_pct": 8.51,
+   "alpha_partial_px": 156039,
+   "ink": {
+    "box": [
+     1,
+     6,
+     1119,
+     146
+    ],
+    "ink_px": 155473,
+    "solidity": 0.993,
+    "asp": 7.986
+   },
+   "fill_pct": 91.3,
+   "centre_off": [
+    0.5,
+    0.5
+   ],
+   "opaque": false,
+   "border_fringe_px": 0,
+   "containment_pct": null,
+   "margins_measured": {
+    "l": 59,
+    "r": 18,
+    "t": 29,
+    "b": 29
+   },
+   "orn_extent": {
+    "l": 9,
+    "r": 18,
+    "t": 23,
+    "b": 28
+   },
+   "margins_sweep": {
+    "l": [
+     5.1,
+     -1
+    ],
+    "r": [
+     4.3,
+     -1
+    ],
+    "t": [
+     1.8,
+     -1
+    ],
+    "b": [
+     2.0,
+     -1
+    ]
+   },
+   "margins_declared_master": [
+    24,
+    24,
+    16,
+    16
+   ],
+   "margins_max_dev_px": 35,
+   "recon_vs_landed": {
+    "mean": 0.83,
+    "max": 5,
+    "shift": [
+     0,
+     1
+    ]
+   }
+  },
+  "ui_rack_bay_card.png": {
+   "file": "ui_rack_bay_card.png",
+   "px": [
+    520,
+    384
+   ],
+   "mode": "RGBA",
+   "master": [
+    520,
+    384
+   ],
+   "exact_master_px": true,
+   "alpha0_pct": 46.45,
+   "alpha_partial_px": 106647,
+   "ink": {
+    "box": [
+     0,
+     89,
+     520,
+     295
+    ],
+    "ink_px": 106927,
+    "solidity": 0.998,
+    "asp": 2.524
+   },
+   "fill_pct": 53.5,
+   "centre_off": [
+    0.5,
+    0.5
+   ],
+   "opaque": false,
+   "border_fringe_px": 307,
+   "containment_pct": null,
+   "margins_measured": {
+    "l": 4,
+    "r": 3,
+    "t": 116,
+    "b": 127
+   },
+   "orn_extent": {
+    "l": 1,
+    "r": 1,
+    "t": 116,
+    "b": 121
+   },
+   "margins_sweep": {
+    "l": [
+     20.1,
+     -1
+    ],
+    "r": [
+     18.7,
+     -1
+    ],
+    "t": [
+     11.7,
+     -1
+    ],
+    "b": [
+     3.5,
+     -1
+    ]
+   },
+   "margins_declared_master": [
+    20,
+    20,
+    20,
+    20
+   ],
+   "margins_max_dev_px": 107,
+   "recon_vs_landed": {
+    "mean": 0.44,
+    "max": 17,
+    "shift": [
+     0,
+     0
+    ]
+   }
+  },
+  "ui_armory_console.png": {
+   "file": "ui_armory_console.png",
+   "px": [
+    2720,
+    1032
+   ],
+   "mode": "RGBA",
+   "master": [
+    2720,
+    1032
+   ],
+   "exact_master_px": true,
+   "alpha0_pct": 1.75,
+   "alpha_partial_px": 2765019,
+   "ink": {
+    "box": [
+     1,
+     8,
+     2719,
+     1024
+    ],
+    "ink_px": 2757123,
+    "solidity": 0.998,
+    "asp": 2.675
+   },
+   "fill_pct": 98.2,
+   "centre_off": [
+    0.5,
+    0.5
+   ],
+   "opaque": false,
+   "border_fringe_px": 0,
+   "containment_pct": null,
+   "recon_vs_landed": {
+    "mean": 0.0,
+    "max": 1,
+    "shift": [
+     0,
+     0
+    ]
+   }
+  },
+  "ui_tooltip_frame.png": {
+   "file": "ui_tooltip_frame.png",
+   "px": [
+    720,
+    480
+   ],
+   "mode": "RGBA",
+   "master": [
+    720,
+    480
+   ],
+   "exact_master_px": true,
+   "alpha0_pct": 15.22,
+   "alpha_partial_px": 292910,
+   "ink": {
+    "box": [
+     6,
+     33,
+     712,
+     448
+    ],
+    "ink_px": 292990,
+    "solidity": 1.0,
+    "asp": 1.701
+   },
+   "fill_pct": 84.8,
+   "centre_off": [
+    -0.5,
+    1.0
+   ],
+   "opaque": false,
+   "border_fringe_px": 0,
+   "containment_pct": null,
+   "margins_measured": {
+    "l": 21,
+    "r": 23,
+    "t": 48,
+    "b": 44
+   },
+   "orn_extent": {
+    "l": 20,
+    "r": 22,
+    "t": 36,
+    "b": 44
+   },
+   "margins_sweep": {
+    "l": [
+     2.0,
+     -1
+    ],
+    "r": [
+     1.6,
+     -1
+    ],
+    "t": [
+     1.3,
+     -1
+    ],
+    "b": [
+     1.2,
+     -1
+    ]
+   },
+   "margins_declared_master": [
+    24,
+    24,
+    24,
+    24
+   ],
+   "margins_max_dev_px": 24,
+   "recon_vs_landed": {
+    "mean": 2.86,
+    "max": 80,
+    "shift": [
+     -2,
+     1
+    ]
+   }
+  },
+  "ui_slot_weapon_normal.png": {
+   "file": "ui_slot_weapon_normal.png",
+   "px": [
+    112,
+    112
+   ],
+   "mode": "RGBA",
+   "master": [
+    112,
+    112
+   ],
+   "exact_master_px": true,
+   "alpha0_pct": 0.0,
+   "alpha_partial_px": 12112,
+   "ink": {
+    "box": [
+     0,
+     0,
+     112,
+     112
+    ],
+    "ink_px": 12544,
+    "solidity": 1.0,
+    "asp": 1.0
+   },
+   "fill_pct": 100.0,
+   "centre_off": [
+    0.5,
+    0.5
+   ],
+   "opaque": true,
+   "border_fringe_px": 444,
+   "containment_pct": 100.0,
+   "recon_vs_landed": {
+    "mean": 0.0,
+    "max": 0,
+    "shift": [
+     0,
+     0
+    ]
+   }
+  },
+  "ui_slot_cargo_normal.png": {
+   "file": "ui_slot_cargo_normal.png",
+   "px": [
+    112,
+    112
+   ],
+   "mode": "RGBA",
+   "master": [
+    112,
+    112
+   ],
+   "exact_master_px": true,
+   "alpha0_pct": 0.0,
+   "alpha_partial_px": 12112,
+   "ink": {
+    "box": [
+     0,
+     0,
+     112,
+     112
+    ],
+    "ink_px": 12544,
+    "solidity": 1.0,
+    "asp": 1.0
+   },
+   "fill_pct": 100.0,
+   "centre_off": [
+    0.5,
+    0.5
+   ],
+   "opaque": true,
+   "border_fringe_px": 444,
+   "containment_pct": 100.0,
+   "recon_vs_landed": {
+    "mean": 0.0,
+    "max": 0,
+    "shift": [
+     0,
+     0
+    ]
+   }
+  },
+  "ui_slot_inventory_normal.png": {
+   "file": "ui_slot_inventory_normal.png",
+   "px": [
+    112,
+    112
+   ],
+   "mode": "RGBA",
+   "master": [
+    112,
+    112
+   ],
+   "exact_master_px": true,
+   "alpha0_pct": 0.0,
+   "alpha_partial_px": 12112,
+   "ink": {
+    "box": [
+     0,
+     0,
+     112,
+     112
+    ],
+    "ink_px": 12544,
+    "solidity": 1.0,
+    "asp": 1.0
+   },
+   "fill_pct": 100.0,
+   "centre_off": [
+    0.5,
+    0.5
+   ],
+   "opaque": true,
+   "border_fringe_px": 444,
+   "containment_pct": 100.0,
+   "recon_vs_landed": {
+    "mean": 0.0,
+    "max": 0,
+    "shift": [
+     0,
+     0
+    ]
+   }
+  },
+  "ui_bar_caps.png": {
+   "file": "ui_bar_caps.png",
+   "px": [
+    84,
+    28
+   ],
+   "mode": "RGBA",
+   "master": [
+    84,
+    28
+   ],
+   "exact_master_px": true,
+   "alpha0_pct": 59.18,
+   "alpha_partial_px": 1046,
+   "ink": {
+    "box": [
+     0,
+     8,
+     84,
+     20
+    ],
+    "ink_px": 958,
+    "solidity": 0.95,
+    "asp": 7.0
+   },
+   "fill_pct": 40.7,
+   "centre_off": [
+    0.5,
+    0.5
+   ],
+   "opaque": false,
+   "border_fringe_px": 12,
+   "containment_pct": null,
+   "recon_vs_landed": {
+    "mean": 0.02,
+    "max": 2,
+    "shift": [
+     0,
+     0
+    ]
+   }
+  },
+  "ui_minimap_bezel.png": {
+   "file": "ui_minimap_bezel.png",
+   "px": [
+    400,
+    400
+   ],
+   "mode": "RGBA",
+   "master": [
+    400,
+    400
+   ],
+   "exact_master_px": true,
+   "alpha0_pct": 1.78,
+   "alpha_partial_px": 157519,
+   "ink": {
+    "box": [
+     2,
+     1,
+     399,
+     398
+    ],
+    "ink_px": 157054,
+    "solidity": 0.996,
+    "asp": 1.0
+   },
+   "fill_pct": 98.2,
+   "centre_off": [
+    1.0,
+    0.0
+   ],
+   "opaque": false,
+   "border_fringe_px": 0,
+   "containment_pct": null,
+   "margins_measured": {
+    "l": 39,
+    "r": 38,
+    "t": 39,
+    "b": 40
+   },
+   "orn_extent": {
+    "l": 38,
+    "r": 38,
+    "t": 38,
+    "b": 40
+   },
+   "margins_sweep": {
+    "l": [
+     1.0,
+     -1
+    ],
+    "r": [
+     1.1,
+     -1
+    ],
+    "t": [
+     1.2,
+     -1
+    ],
+    "b": [
+     0.9,
+     -1
+    ]
+   },
+   "margins_declared_master": [
+    32,
+    32,
+    32,
+    32
+   ],
+   "margins_max_dev_px": 8,
+   "recon_vs_landed": {
+    "mean": 2.26,
+    "max": 103,
+    "shift": [
+     0,
+     0
+    ]
+   }
+  },
+  "ui_panel_frame.png": {
+   "file": "ui_panel_frame.png",
+   "px": [
+    192,
+    192
+   ],
+   "mode": "RGBA",
+   "master": [
+    192,
+    192
+   ],
+   "exact_master_px": true,
+   "alpha0_pct": 0.0,
+   "alpha_partial_px": 36864,
+   "ink": {
+    "box": [
+     0,
+     0,
+     192,
+     192
+    ],
+    "ink_px": 36864,
+    "solidity": 1.0,
+    "asp": 1.0
+   },
+   "fill_pct": 100.0,
+   "centre_off": [
+    0.5,
+    0.5
+   ],
+   "opaque": true,
+   "border_fringe_px": 764,
+   "containment_pct": 100.0,
+   "margins_measured": {
+    "l": 12,
+    "r": 13,
+    "t": 12,
+    "b": 14
+   },
+   "orn_extent": {
+    "l": 11,
+    "r": 12,
+    "t": 12,
+    "b": 13
+   },
+   "margins_sweep": {
+    "l": [
+     0.8,
+     -1
+    ],
+    "r": [
+     0.7,
+     -1
+    ],
+    "t": [
+     1.2,
+     -1
+    ],
+    "b": [
+     0.6,
+     -1
+    ]
+   },
+   "margins_declared_master": [
+    64,
+    64,
+    64,
+    64
+   ],
+   "margins_max_dev_px": 52,
+   "recon_vs_landed": {
+    "mean": 0.0,
+    "max": 0,
+    "shift": [
+     0,
+     0
+    ]
+   }
+  },
+  "ui_backdrop_armory_deck.png": {
+   "file": "ui_backdrop_armory_deck.png",
+   "px": [
+    2048,
+    874
+   ],
+   "mode": "RGB",
+   "master": [
+    2048,
+    874
+   ],
+   "exact_master_px": true,
+   "opaque": true,
+   "fill_pct": 100.0,
+   "centre_off": [
+    0,
+    0
+   ],
+   "containment_pct": 100.0
+  },
+  "ui_backdrop_refinery_deck.png": {
+   "file": "ui_backdrop_refinery_deck.png",
+   "px": [
+    2048,
+    874
+   ],
+   "mode": "RGB",
+   "master": [
+    2048,
+    874
+   ],
+   "exact_master_px": true,
+   "opaque": true,
+   "fill_pct": 100.0,
+   "centre_off": [
+    0,
+    0
+   ],
+   "containment_pct": 100.0
+  },
+  "ui_backdrop_market_deck.png": {
+   "file": "ui_backdrop_market_deck.png",
+   "px": [
+    2048,
+    874
+   ],
+   "mode": "RGB",
+   "master": [
+    2048,
+    874
+   ],
+   "exact_master_px": true,
+   "opaque": true,
+   "fill_pct": 100.0,
+   "centre_off": [
+    0,
+    0
+   ],
+   "containment_pct": 100.0
+  },
+  "ui_backdrop_dock_deck.png": {
+   "file": "ui_backdrop_dock_deck.png",
+   "px": [
+    2048,
+    874
+   ],
+   "mode": "RGB",
+   "master": [
+    2048,
+    874
+   ],
+   "exact_master_px": true,
+   "opaque": true,
+   "fill_pct": 100.0,
+   "centre_off": [
+    0,
+    0
+   ],
+   "containment_pct": 100.0
+  }
+ },
+ "bands": {
+  "ui_tooltip_frame.png": {
+   "l": {
+    "band_px": 21,
+    "p95_mean": 20.24,
+    "max_mean": 25.43,
+    "max_abs": 85,
+    "struct_secs": 0
+   },
+   "r": {
+    "band_px": 23,
+    "p95_mean": 12.57,
+    "max_mean": 32.48,
+    "max_abs": 255,
+    "struct_secs": 2
+   },
+   "t": {
+    "band_px": 48,
+    "p95_mean": 14.79,
+    "max_mean": 25.44,
+    "max_abs": 255,
+    "struct_secs": 265
+   },
+   "b": {
+    "band_px": 44,
+    "p95_mean": 6.95,
+    "max_mean": 10.98,
+    "max_abs": 85,
+    "struct_secs": 0
+   }
+  },
+  "ui_minimap_bezel.png": {
+   "l": {
+    "band_px": 39,
+    "p95_mean": 32.15,
+    "max_mean": 39.05,
+    "max_abs": 255,
+    "struct_secs": 20
+   },
+   "r": {
+    "band_px": 38,
+    "p95_mean": 29.13,
+    "max_mean": 31.89,
+    "max_abs": 255,
+    "struct_secs": 6
+   },
+   "t": {
+    "band_px": 39,
+    "p95_mean": 33.23,
+    "max_mean": 43.97,
+    "max_abs": 61,
+    "struct_secs": 19
+   },
+   "b": {
+    "band_px": 40,
+    "p95_mean": 24.23,
+    "max_mean": 33.48,
+    "max_abs": 255,
+    "struct_secs": 2
+   }
+  },
+  "ui_panel_frame.png": {
+   "l": {
+    "band_px": 12,
+    "p95_mean": 41.17,
+    "max_mean": 51.33,
+    "max_abs": 30,
+    "struct_secs": 21
+   },
+   "r": {
+    "band_px": 13,
+    "p95_mean": 18.69,
+    "max_mean": 21.38,
+    "max_abs": 31,
+    "struct_secs": 0
+   },
+   "t": {
+    "band_px": 12,
+    "p95_mean": 23.25,
+    "max_mean": 32.75,
+    "max_abs": 34,
+    "struct_secs": 3
+   },
+   "b": {
+    "band_px": 14,
+    "p95_mean": 28.36,
+    "max_mean": 32.93,
+    "max_abs": 33,
+    "struct_secs": 3
+   }
+  }
+ },
+ "band_controls": {
+  "ui_minimap_bezel(shipped)": {
+   "l": {
+    "band_px": 17,
+    "p95_mean": 21.53,
+    "max_mean": 32.29,
+    "max_abs": 57,
+    "struct_secs": 2
+   },
+   "r": {
+    "band_px": 16,
+    "p95_mean": 15.75,
+    "max_mean": 20.06,
+    "max_abs": 37,
+    "struct_secs": 0
+   },
+   "t": {
+    "band_px": 17,
+    "p95_mean": 19.82,
+    "max_mean": 31.71,
+    "max_abs": 59,
+    "struct_secs": 1
+   },
+   "b": {
+    "band_px": 17,
+    "p95_mean": 17.0,
+    "max_mean": 26.0,
+    "max_abs": 43,
+    "struct_secs": 0
+   }
+  },
+  "ui_panel_frame(shipped)": {
+   "l": {
+    "band_px": 24,
+    "p95_mean": 27.29,
+    "max_mean": 31.71,
+    "max_abs": 39,
+    "struct_secs": 2
+   },
+   "r": {
+    "band_px": 12,
+    "p95_mean": 18.75,
+    "max_mean": 18.83,
+    "max_abs": 26,
+    "struct_secs": 0
+   },
+   "t": {
+    "band_px": 12,
+    "p95_mean": 26.75,
+    "max_mean": 31.42,
+    "max_abs": 27,
+    "struct_secs": 1
+   },
+   "b": {
+    "band_px": 11,
+    "p95_mean": 20.91,
+    "max_mean": 26.27,
+    "max_abs": 26,
+    "struct_secs": 0
+   }
+  }
+ },
+ "backdrops": {
+  "ui_backdrop_armory_deck.png": {
+   "file": "ui_backdrop_armory_deck.png",
+   "px": [
+    2048,
+    874
+   ],
+   "mode": "RGB",
+   "master": [
+    2048,
+    874
+   ],
+   "exact_master_px": true,
+   "crop_rect_raw_wh": [
+    3136,
+    1338
+   ],
+   "crop_aspect": 2.3438,
+   "target_aspect": 2.34396,
+   "alpha_min_max": [
+    255,
+    255
+   ],
+   "opaque_no_alpha": true,
+   "vs_my_crop": {
+    "mean": 0.42,
+    "max": 16
+   }
+  },
+  "ui_backdrop_refinery_deck.png": {
+   "file": "ui_backdrop_refinery_deck.png",
+   "px": [
+    2048,
+    874
+   ],
+   "mode": "RGB",
+   "master": [
+    2048,
+    874
+   ],
+   "exact_master_px": true,
+   "crop_rect_raw_wh": [
+    3136,
+    1338
+   ],
+   "crop_aspect": 2.3438,
+   "target_aspect": 2.34396,
+   "alpha_min_max": [
+    255,
+    255
+   ],
+   "opaque_no_alpha": true,
+   "vs_my_crop": {
+    "mean": 0.57,
+    "max": 20
+   }
+  },
+  "ui_backdrop_market_deck.png": {
+   "file": "ui_backdrop_market_deck.png",
+   "px": [
+    2048,
+    874
+   ],
+   "mode": "RGB",
+   "master": [
+    2048,
+    874
+   ],
+   "exact_master_px": true,
+   "crop_rect_raw_wh": [
+    3136,
+    1338
+   ],
+   "crop_aspect": 2.3438,
+   "target_aspect": 2.34396,
+   "alpha_min_max": [
+    255,
+    255
+   ],
+   "opaque_no_alpha": true,
+   "vs_my_crop": {
+    "mean": 0.4,
+    "max": 19
+   }
+  },
+  "ui_backdrop_dock_deck.png": {
+   "file": "ui_backdrop_dock_deck.png",
+   "px": [
+    2048,
+    874
+   ],
+   "mode": "RGB",
+   "master": [
+    2048,
+    874
+   ],
+   "exact_master_px": true,
+   "crop_rect_raw_wh": [
+    3136,
+    1338
+   ],
+   "crop_aspect": 2.3438,
+   "target_aspect": 2.34396,
+   "alpha_min_max": [
+    255,
+    255
+   ],
+   "opaque_no_alpha": true,
+   "vs_my_crop": {
+    "mean": 0.48,
+    "max": 26
+   }
+  }
+ },
+ "backups": {
+  "manifest": {
+   "date": "2026-10-05",
+   "wave": "D21-G2",
+   "swaps": [
+    {
+     "class": "C6",
+     "shipped": "assets/ui/ui_armory_console.png",
+     "backup": "asset-library/_prekey_backup/chrome_family_2026-10-05/ui_armory_console.png",
+     "old_px": [
+      2720,
+      1032
+     ],
+     "old_md5": "b1241913488d4d566e4f670d33d9ca53",
+     "new_px": [
+      2720,
+      1032
+     ]
+    },
+    {
+     "class": "C8",
+     "shipped": "assets/ui/ui_slot_weapon_normal.png",
+     "backup": "asset-library/_prekey_backup/chrome_family_2026-10-05/ui_slot_weapon_normal.png",
+     "old_px": [
+      48,
+      48
+     ],
+     "old_md5": "6f896aef9c4dc369f15e886c10389711",
+     "new_px": [
+      112,
+      112
+     ]
+    },
+    {
+     "class": "C8",
+     "shipped": "assets/ui/ui_slot_cargo_normal.png",
+     "backup": "asset-library/_prekey_backup/chrome_family_2026-10-05/ui_slot_cargo_normal.png",
+     "old_px": [
+      40,
+      40
+     ],
+     "old_md5": "80a174d6b491355b374e9bf6bb06ff9e",
+     "new_px": [
+      112,
+      112
+     ]
+    },
+    {
+     "class": "C8",
+     "shipped": "assets/ui/ui_slot_inventory_normal.png",
+     "backup": "asset-library/_prekey_backup/chrome_family_2026-10-05/ui_slot_inventory_normal.png",
+     "old_px": [
+      56,
+      56
+     ],
+     "old_md5": "d27da0eb4d08ae3fb7b4d2421f84820e",
+     "new_px": [
+      112,
+      112
+     ]
+    },
+    {
+     "class": "C10",
+     "shipped": "assets/ui/ui_bar_caps.png",
+     "backup": "asset-library/_prekey_backup/chrome_family_2026-10-05/ui_bar_caps.png",
+     "old_px": [
+      42,
+      14
+     ],
+     "old_md5": "42605b533e0ed87ddbca1769a885a03a",
+     "new_px": [
+      84,
+      28
+     ]
+    },
+    {
+     "class": "C11",
+     "shipped": "assets/ui/ui_minimap_bezel.png",
+     "backup": "asset-library/_prekey_backup/chrome_family_2026-10-05/ui_minimap_bezel.png",
+     "old_px": [
+      200,
+      200
+     ],
+     "old_md5": "1e1d450d59c6f2936bc88ecdf0953659",
+     "new_px": [
+      400,
+      400
+     ]
+    },
+    {
+     "class": "C12",
+     "shipped": "assets/ui/ui_panel_frame.png",
+     "backup": "asset-library/_prekey_backup/chrome_family_2026-10-05/ui_panel_frame.png",
+     "old_px": [
+      96,
+      96
+     ],
+     "old_md5": "abc8acaf04858e8ca8abc663b93aacf6",
+     "new_px": [
+      192,
+      192
+     ]
+    }
+   ]
+  },
+  "files": {
+   "ui_armory_console.png": {
+    "px": [
+     2720,
+     1032
+    ],
+    "md5": "b1241913488d4d566e4f670d33d9ca53",
+    "landed_md5_differs": true
+   },
+   "ui_bar_caps.png": {
+    "px": [
+     42,
+     14
+    ],
+    "md5": "42605b533e0ed87ddbca1769a885a03a",
+    "landed_md5_differs": true
+   },
+   "ui_minimap_bezel.png": {
+    "px": [
+     200,
+     200
+    ],
+    "md5": "1e1d450d59c6f2936bc88ecdf0953659",
+    "landed_md5_differs": true
+   },
+   "ui_panel_frame.png": {
+    "px": [
+     96,
+     96
+    ],
+    "md5": "abc8acaf04858e8ca8abc663b93aacf6",
+    "landed_md5_differs": true
+   },
+   "ui_slot_cargo_normal.png": {
+    "px": [
+     40,
+     40
+    ],
+    "md5": "80a174d6b491355b374e9bf6bb06ff9e",
+    "landed_md5_differs": true
+   },
+   "ui_slot_inventory_normal.png": {
+    "px": [
+     56,
+     56
+    ],
+    "md5": "d27da0eb4d08ae3fb7b4d2421f84820e",
+    "landed_md5_differs": true
+   },
+   "ui_slot_weapon_normal.png": {
+    "px": [
+     48,
+     48
+    ],
+    "md5": "6f896aef9c4dc369f15e886c10389711",
+    "landed_md5_differs": true
+   }
+  },
+  "c8_three_names_identical": true
+ },
+ "ledger": {
+  "recraft_ledger_lines": 752,
+  "recraft_cache_json": 229,
+  "raw_dir_count": 16
+ },
+ "imports": {
+  "uid_collisions": {},
+  "md5_res_path_ui_status_panel": "1d26fc0498e8b2602eb0aa549739f71a",
+  "ui_status_panel_uid": "uid://djucd2xl1ai6r",
+  "uid_derivation_match": [],
+  "ui_inline_chip.png": {
+   "import_exists": true,
+   "has_uid": true,
+   "source_ok": true,
+   "has_dest": true
+  },
+  "ui_row_strip.png": {
+   "import_exists": true,
+   "has_uid": true,
+   "source_ok": true,
+   "has_dest": true
+  },
+  "ui_rack_bay_card.png": {
+   "import_exists": true,
+   "has_uid": true,
+   "source_ok": true,
+   "has_dest": true
+  },
+  "ui_armory_console.png": {
+   "import_exists": true,
+   "has_uid": true,
+   "source_ok": true,
+   "has_dest": true
+  },
+  "ui_tooltip_frame.png": {
+   "import_exists": true,
+   "has_uid": true,
+   "source_ok": true,
+   "has_dest": true
+  },
+  "ui_slot_weapon_normal.png": {
+   "import_exists": true,
+   "has_uid": true,
+   "source_ok": true,
+   "has_dest": true
+  },
+  "ui_slot_cargo_normal.png": {
+   "import_exists": true,
+   "has_uid": true,
+   "source_ok": true,
+   "has_dest": true
+  },
+  "ui_slot_inventory_normal.png": {
+   "import_exists": true,
+   "has_uid": true,
+   "source_ok": true,
+   "has_dest": true
+  },
+  "ui_bar_caps.png": {
+   "import_exists": true,
+   "has_uid": true,
+   "source_ok": true,
+   "has_dest": true
+  },
+  "ui_minimap_bezel.png": {
+   "import_exists": true,
+   "has_uid": true,
+   "source_ok": true,
+   "has_dest": true
+  },
+  "ui_panel_frame.png": {
+   "import_exists": true,
+   "has_uid": true,
+   "source_ok": true,
+   "has_dest": true
+  },
+  "ui_backdrop_armory_deck.png": {
+   "import_exists": true,
+   "has_uid": true,
+   "source_ok": true,
+   "has_dest": true
+  },
+  "ui_backdrop_refinery_deck.png": {
+   "import_exists": true,
+   "has_uid": true,
+   "source_ok": true,
+   "has_dest": true
+  },
+  "ui_backdrop_market_deck.png": {
+   "import_exists": true,
+   "has_uid": true,
+   "source_ok": true,
+   "has_dest": true
+  },
+  "ui_backdrop_dock_deck.png": {
+   "import_exists": true,
+   "has_uid": true,
+   "source_ok": true,
+   "has_dest": true
+  }
+ },
+ "misc": {
+  "c10_mid_alpha_min": 0,
+  "c10_mid_partial_px": 169,
+  "c6_pad_t": 8,
+  "c6_pad_b": 8,
+  "c8_landed_corner_px": [
+   [
+    67,
+    60,
+    60,
+    34
+   ],
+   [
+    24,
+    24,
+    24,
+    41
+   ]
+  ],
+  "c8_raw_alpha_hist": {
+   "a0": 0,
+   "a_partial": 4194304,
+   "a255": 0,
+   "corner_px": [
+    [
+     52,
+     54,
+     54,
+     7
+    ],
+    [
+     34,
+     35,
+     36,
+     10
+    ]
+   ]
+  },
+  "bg_subject_map": {
+   "BG1": {
+    "dir": "20261005-202512",
+    "keyword_in_prompt": true
+   },
+   "BG2": {
+    "dir": "20261005-202550",
+    "keyword_in_prompt": true
+   },
+   "BG3": {
+    "dir": "20261005-202617",
+    "keyword_in_prompt": true
+   },
+   "BG4": {
+    "dir": "20261005-203106",
+    "keyword_in_prompt": true
+   }
+  },
+  "cut_sheet_exists": true,
+  "state_qc_sheet_exists": true,
+  "c1c2c9_stems_absent": true
+ }
+}

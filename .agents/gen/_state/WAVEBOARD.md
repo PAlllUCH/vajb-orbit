@@ -6,6 +6,17 @@
 
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-25 clear-outs (owner asks):** every closed slice folder moved to the system trash (last git tree carrying them: `7a081ef`), old session reports live in `_state/_archive/`, and the two dispatch files were purged to live-items-only (2026-09-25 ter). Citation paths into purged trees name historical files.
 
+**Updated 2026-10-05 (D21-G2 closed — the chrome family lands, 15/16):** B1 →
+R1 → F1 all `hyper/glm-5.3-flash` @ max. 15 cuts at exact master pixels under
+`vajb-orbit/assets/ui/` (7 swaps backed up, 8 import stanzas, 15/15
+reimported); **C1/C2/C9 crop-FAILs (never clipped) + C5 unusable** — the
+renders ignored the class aspect, so owner call 1 (drawer entries → C9) is
+**blocked** and the $0.20 four-run re-batch is **T-140** (owner). R1 0 HIGH /
+3 MED: F1 cured the flare alpha veil free (7 files, α-floor + reversal
+store); 5 LOW → T-141–T-143. Variants $0.00 (modulate carries). Gate
+**1138/0** ×2, verify green vs `g2_start`. **Next: the owner's cut-sheet eye
++ T-140 → S36 (the chrome re-skin, row 25); then coder 30 (S24).**
+
 **Updated 2026-10-05 (the owner's fix round closed — S35 + G1 + D22):** three
 parallel dispatches. **S35** (B1 `hyper/deepseek-v4.1-flash` @ xhigh → R1
 `hyper/glm-5.3-flash` @ max **pass** 0 HIGH / 0 MED → F1 on the integrity
@@ -517,13 +528,13 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | 21 | coder 39 | **S33 shell v3 — armory two sectors + the exchange sell cluster** (`STATION_HUB.md` §21.1 P38–P41 + `UI_SPEC.md` §14.1 N48/N49) — **done 2026-10-05**: 1110 → 1121/0 ×2; 2 HIGH + 2 MED cured by F1; T-130 closed | beside designer 20 | `vajb-orbit/ui` + `tests` only; rewrote `armory_panel.*`/`exchange_panel.*` after S32 |
 | 22 | coder 40 | **S34 the refinery queue** (`docs/gameplay/04_refinery.md` §7 + `STATION_HUB.md` §21.3 P42–P43) — **done 2026-10-05**: 1121 → 1132/0 ×2; 1 MED cured by F1 + 2 LOW ride-alongs; T-133 decided by default | coder 39 | ran sequentially after S33 |
 | 23 | coder 41 | **S35 owner fixes** — **done 2026-10-05**: 1132 → 1138/0 ×2 (B1 +4, F1 +2); R1 **pass** (0 HIGH / 0 MED / 4 LOW); F1 also cured D22's F01; beside D21-G1 (16/16, $0.80) and D22-P1 (integrity PASS) | S34 (done) | three disjoint sets — ran as the third parallel triple |
-| 24 | D21-G2 | **the chrome cut/key/land run** (`slices/D21-chrome-family/D21-G2_BRIEF.md`; `hyper/glm-5.3-flash` @ max — crop-to-master per §13.1, key C2/C8/C11/C12, `center_check --apply`, margins per §15.3, land at the §13.4 stems + the cut contact sheet) | after the owner's plan go | asset lane: `asset-library/` + `vajb-orbit/assets/ui/` — it produces exactly what row 25 wires |
-| 25 | coder 42 | **S36 the chrome re-skin** (`StyleBoxTexture` per class + the BG-1..4 backdrops; keep-list untouched; chrome-census regression suite) | D21-G2 **and** the owner's eyeball on the cut sheet | shares `vajb-orbit/ui` + `tests` with S24 (coder 30), so S24 waits |
+| 24 | D21-G2 | **the chrome cut/key/land run** — **done 2026-10-05** (15/16 landed at exact master pixels; C1/C2/C9 crop-FAILs + C5 unusable → **T-140** owner call on the $0.20 re-batch; R1 0 HIGH / 3 MED, F1 cured the alpha veil free; gate 1138/0 ×2) | after the owner's plan go | asset lane: `asset-library/` + `vajb-orbit/assets/ui/` — it produced what row 25 wires |
+| 25 | coder 42 | **S36 the chrome re-skin** (`StyleBoxTexture` per class + the BG-1..4 backdrops; keep-list untouched; chrome-census regression suite) | the owner's eyeball on the cut sheet **and** T-140 | shares `vajb-orbit/ui` + `tests` with S24 (coder 30), so S24 waits |
 
 Designer items 16–20 and coders 34–41 are closed — the overhaul round, its
 shell-v2 follow-up and the 2026-10-05 round are **shipped** (gate 1138/0).
-**Next (live 2026-10-05, the S36 calls decided): row 24 (D21-G2 cut/key/land)
-→ the owner's eyeball on the cut contact sheet → row 25 (S36 the chrome
+**Next (live 2026-10-05, D21-G2 closed 15/16): the owner's eyeball on the cut
+contact sheet + T-140 (the four failed classes) → row 25 (S36 the chrome
 re-skin); then coder 30 (S24 world identity)** — its five-piece predates
 shell v2 AND the 2026-10-05 rounds, so the brief re-checks against
 `UI_SPEC.md` §12–§15 + `STATION_HUB.md` §19–§21 before dispatch. Playtest

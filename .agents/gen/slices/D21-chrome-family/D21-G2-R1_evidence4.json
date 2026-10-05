@@ -1,0 +1,209 @@
+{
+ "margins4": {
+  "ui_inline_chip.png": {
+   "l": 8,
+   "r": 34,
+   "t": 20,
+   "b": 39,
+   "declared": [
+    16,
+    16,
+    16,
+    16
+   ],
+   "dev": [
+    -8,
+    18,
+    4,
+    23
+   ]
+  },
+  "ui_row_strip.png": {
+   "l": 70,
+   "r": 73,
+   "t": 32,
+   "b": 49,
+   "declared": [
+    24,
+    24,
+    16,
+    16
+   ],
+   "dev": [
+    46,
+    49,
+    16,
+    33
+   ]
+  },
+  "ui_rack_bay_card.png": {
+   "l": 254,
+   "r": 254,
+   "t": 138,
+   "b": 147,
+   "declared": [
+    20,
+    20,
+    20,
+    20
+   ],
+   "dev": [
+    234,
+    234,
+    118,
+    127
+   ]
+  },
+  "ui_tooltip_frame.png": {
+   "l": 22,
+   "r": 43,
+   "t": 50,
+   "b": 64,
+   "declared": [
+    24,
+    24,
+    24,
+    24
+   ],
+   "dev": [
+    -2,
+    19,
+    26,
+    40
+   ]
+  },
+  "ui_minimap_bezel.png": {
+   "l": 42,
+   "r": 59,
+   "t": 42,
+   "b": 62,
+   "declared": [
+    32,
+    32,
+    32,
+    32
+   ],
+   "dev": [
+    10,
+    27,
+    10,
+    30
+   ]
+  },
+  "ui_panel_frame.png": {
+   "l": 13,
+   "r": 32,
+   "t": 13,
+   "b": 33,
+   "declared": [
+    64,
+    64,
+    64,
+    64
+   ],
+   "dev": [
+    -51,
+    -32,
+    -51,
+    -31
+   ]
+  }
+ },
+ "c7_recon_shifted": {
+  "mean": 16.51,
+  "max": 111,
+  "shift": [
+   1,
+   -4
+  ]
+ },
+ "landed_alpha": {
+  "ui_inline_chip.png": {
+   "min": 0,
+   "max": 255,
+   "mean": 138.0,
+   "pct_lt_250": 50.49
+  },
+  "ui_row_strip.png": {
+   "min": 0,
+   "max": 255,
+   "mean": 229.2,
+   "pct_lt_250": 11.09
+  },
+  "ui_rack_bay_card.png": {
+   "min": 0,
+   "max": 255,
+   "mean": 134.5,
+   "pct_lt_250": 47.57
+  },
+  "ui_armory_console.png": {
+   "min": 0,
+   "max": 255,
+   "mean": 247.9,
+   "pct_lt_250": 2.56
+  },
+  "ui_tooltip_frame.png": {
+   "min": 0,
+   "max": 255,
+   "mean": 213.6,
+   "pct_lt_250": 16.37
+  },
+  "ui_slot_weapon_normal.png": {
+   "min": 34,
+   "max": 255,
+   "mean": 244.4,
+   "pct_lt_250": 45.58
+  },
+  "ui_slot_cargo_normal.png": {
+   "min": 34,
+   "max": 255,
+   "mean": 244.4,
+   "pct_lt_250": 45.58
+  },
+  "ui_slot_inventory_normal.png": {
+   "min": 34,
+   "max": 255,
+   "mean": 244.4,
+   "pct_lt_250": 45.58
+  },
+  "ui_bar_caps.png": {
+   "min": 0,
+   "max": 255,
+   "mean": 86.9,
+   "pct_lt_250": 71.64
+  },
+  "ui_minimap_bezel.png": {
+   "min": 0,
+   "max": 255,
+   "mean": 240.8,
+   "pct_lt_250": 98.97
+  },
+  "ui_panel_frame.png": {
+   "min": 242,
+   "max": 250,
+   "mean": 246.6,
+   "pct_lt_250": 99.98
+  },
+  "ui_backdrop_armory_deck.png": {
+   "min": 255,
+   "max": 255
+  },
+  "ui_backdrop_refinery_deck.png": {
+   "min": 255,
+   "max": 255
+  },
+  "ui_backdrop_market_deck.png": {
+   "min": 255,
+   "max": 255
+  },
+  "ui_backdrop_dock_deck.png": {
+   "min": 255,
+   "max": 255
+  }
+ },
+ "c8_border_med": [
+  43,
+  42,
+  43
+ ]
+}

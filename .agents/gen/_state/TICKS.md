@@ -5,9 +5,8 @@ file when decided or done** (deleted at the wave close-out or the ruling — the
 record lives in the cited file and `MASTER_REPORT.md` §6, this is the index
 only). Refreshed at every wave close-out and after every owner ruling.
 
-*Last refreshed: 2026-10-05 (the owner's S36 answers landed — all four calls
-decided, T-139 closed; the D21-G2 → S36 → S24 plan is proposed and waiting on
-the owner's go)*
+*Last refreshed: 2026-10-05 (D21-G2 closed — gate 1138/0, 15/16 cuts landed;
+awaiting the owner on **T-140** + the cut-sheet eyeball)*
 
 ## Waiting on the owner
 
@@ -15,6 +14,7 @@ the owner's go)*
 |---|---|---|---|
 | T-117 | Drawer content box lands 1 px off the pin (x 69..341 vs 68..340) | `LOW_BACKLOG.md` | accept the 1 px |
 | T-113 | Wire `ScriptErrorCapture` into the headless gate (bucket 2 — moves gate behaviour) | `LOW_BACKLOG.md` | leave the runner as-is |
+| T-140 | The chrome family's 4 failed classes (C1/C2/C9 crop-FAILs + C5 unusable): paid re-batch at **$0.20** (prompts re-state the class aspect) or fallback to shipped art (call 1 reversed) or the nano-banana-pro route | `LOW_BACKLOG.md` + `D21-G2-R1_review.md` | fallback, no spend |
 
 Everything else already defaulted 2026-10-03 and is either shipped or riding
 below.

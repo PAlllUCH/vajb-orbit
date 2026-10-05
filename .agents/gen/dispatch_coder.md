@@ -176,11 +176,14 @@ screen-integrity review: `hyper/deepseek-v4.1-flash` @ xhigh,
 crop-to-master per §13.1, key C2/C8/C11/C12, `center_check --apply`, margins
 measured per §15.3, land at the §13.4 stems, cut contact sheet for the
 owner's eye; the owner's four S36 calls decided 2026-10-05 are recorded in
-`UI_SPEC.md` §15.5) — next on the owner's plan go.
+`UI_SPEC.md` §15.5) — **done 2026-10-05** (15/16 landed at exact master
+pixels; C1/C2/C9 crop-FAILs + C5 unusable → **T-140** owner call on the $0.20
+re-batch; R1 0 HIGH / 3 MED, F1 cured the flare alpha veil free; gate
+1138/0 ×2, verify green vs `g2_start`).
 **Coder item 43 = S36 the chrome re-skin** (earlier notes' "S35" build
 placeholder; `hyper/deepseek-v4.1-flash` @ xhigh, R1 `hyper/glm-5.3-flash` @
-max) — after 42 **and** the owner's eyeball on the cut contact sheet (that
-eyeball is S36's entry gate).
+max) — after the owner's cut-sheet eyeball **and** T-140 (the four failed
+classes' disposition is S36's scope input).
 **Item 30 = S24 world identity — after 43** (its five-piece predates shell v2
 AND the 2026-10-05 rounds, so the developer re-checks
 `slices/S24-world-identity/S24_BRIEF.md` against `UI_SPEC.md` §12–§15 +

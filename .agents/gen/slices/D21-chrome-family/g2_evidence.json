@@ -1,0 +1,1396 @@
+{
+ "classes": {
+  "C1": {
+   "dir": "20261005-201427",
+   "master": [
+    1134,
+    280
+   ],
+   "route": "crop",
+   "render_px": [
+    2368,
+    1776
+   ],
+   "key_route": "substrate trim (alpha < 12 -> 0)",
+   "ink": {
+    "box": [
+     80,
+     507,
+     2288,
+     1251
+    ],
+    "ink_px": 1639586,
+    "solidity": 0.998
+   },
+   "verdict": "FAIL crop-to-master",
+   "fail_cause": "master-aspect rect 3014x745 exceeds frame 2368x1776; never clipped"
+  },
+  "C2": {
+   "dir": "20261005-201500",
+   "master": [
+    720,
+    112
+   ],
+   "route": "crop",
+   "render_px": [
+    2368,
+    1776
+   ],
+   "key_route": "strip-key border-connected dark flood (tol ladder from 26)",
+   "key_stats": {
+    "bg_med": [
+     4,
+     9,
+     13
+    ],
+    "ladder": [
+     {
+      "tol": 26,
+      "seeds": 1,
+      "flood_share": 0.8113,
+      "ink_box": [
+       149,
+       667,
+       2218,
+       1052
+      ],
+      "solidity": 0.995
+     }
+    ]
+   },
+   "ink": {
+    "box": [
+     146,
+     666,
+     2222,
+     1054
+    ],
+    "ink_px": 798493,
+    "solidity": 0.991
+   },
+   "verdict": "FAIL crop-to-master",
+   "fail_cause": "master-aspect rect 2495x389 exceeds frame 2368x1776; never clipped"
+  },
+  "C3": {
+   "dir": "20261005-201604",
+   "master": [
+    192,
+    64
+   ],
+   "route": "crop",
+   "render_px": [
+    1916,
+    821
+   ],
+   "key_route": "substrate trim (alpha < 12 -> 0)",
+   "ink": {
+    "box": [
+     77,
+     241,
+     1840,
+     563
+    ],
+    "ink_px": 567282,
+    "solidity": 0.999
+   },
+   "crop_rect": [
+    76,
+    108,
+    1840,
+    696
+   ],
+   "containment": {
+    "ink_px": 567282,
+    "inside": 567282,
+    "pct": 100.0
+   },
+   "resize_factors": [
+    0.108844,
+    0.108844
+   ],
+   "centre_check": {
+    "offset_before": [
+     0.5,
+     0.5
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "offset_after": [
+     0.5,
+     0.5
+    ]
+   },
+   "margins_master": {
+    "l": 24,
+    "r": 24,
+    "t": 23,
+    "b": 23
+   },
+   "margins_plateau_scan": {
+    "l": 24,
+    "r": 24,
+    "t": 23,
+    "b": 23
+   },
+   "margins_band_scan": {
+    "l": 7,
+    "r": 7,
+    "t": 0,
+    "b": 0
+   },
+   "pad_from_ink": {
+    "l": 0,
+    "t": 14,
+    "r": -1,
+    "b": 13
+   },
+   "margins_declared_master": [
+    16,
+    16,
+    16,
+    16
+   ],
+   "margins_pass": false,
+   "landed_ink_box": [
+    0,
+    14,
+    192,
+    50
+   ],
+   "ink_fill_pct": 56.24,
+   "landed": [
+    "ui_inline_chip.png"
+   ],
+   "verdict": "LANDED"
+  },
+  "C4": {
+   "dir": "20261005-201632",
+   "master": [
+    1120,
+    152
+   ],
+   "route": "crop",
+   "render_px": [
+    2368,
+    1776
+   ],
+   "key_route": "substrate trim (alpha < 12 -> 0)",
+   "ink": {
+    "box": [
+     81,
+     748,
+     2287,
+     1023
+    ],
+    "ink_px": 603952,
+    "solidity": 0.996
+   },
+   "crop_rect": [
+    78,
+    735,
+    2289,
+    1036
+   ],
+   "containment": {
+    "ink_px": 603952,
+    "inside": 603952,
+    "pct": 100.0
+   },
+   "resize_factors": [
+    0.506558,
+    0.504983
+   ],
+   "centre_check": {
+    "offset_before": [
+     0.5,
+     0.5
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "offset_after": [
+     0.5,
+     0.5
+    ]
+   },
+   "margins_master": {
+    "l": 74,
+    "r": 74,
+    "t": 35,
+    "b": 35
+   },
+   "margins_plateau_scan": {
+    "l": 74,
+    "r": 74,
+    "t": 35,
+    "b": 35
+   },
+   "margins_band_scan": {
+    "l": 60,
+    "r": 60,
+    "t": 24,
+    "b": 24
+   },
+   "pad_from_ink": {
+    "l": 1,
+    "t": 6,
+    "r": 0,
+    "b": 6
+   },
+   "margins_declared_master": [
+    24,
+    24,
+    16,
+    16
+   ],
+   "margins_pass": false,
+   "landed_ink_box": [
+    1,
+    6,
+    1119,
+    145
+   ],
+   "ink_fill_pct": 91.2,
+   "landed": [
+    "ui_row_strip.png"
+   ],
+   "verdict": "LANDED"
+  },
+  "C5": {
+   "dir": "20261005-201700",
+   "master": [
+    520,
+    384
+   ],
+   "route": "crop",
+   "render_px": [
+    2368,
+    1776
+   ],
+   "key_route": "substrate trim (alpha < 12 -> 0)",
+   "ink": {
+    "box": [
+     144,
+     457,
+     2229,
+     1284
+    ],
+    "ink_px": 1716560,
+    "solidity": 0.996
+   },
+   "crop_rect": [
+    144,
+    100,
+    2230,
+    1641
+   ],
+   "containment": {
+    "ink_px": 1716560,
+    "inside": 1716560,
+    "pct": 100.0
+   },
+   "resize_factors": [
+    0.249281,
+    0.249189
+   ],
+   "centre_check": {
+    "offset_before": [
+     0.5,
+     1.0
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "offset_after": [
+     0.5,
+     1.0
+    ]
+   },
+   "margins_master": {
+    "l": 55,
+    "r": 55,
+    "t": 151,
+    "b": 151
+   },
+   "margins_plateau_scan": {
+    "l": 55,
+    "r": 55,
+    "t": 151,
+    "b": 151
+   },
+   "margins_band_scan": {
+    "l": 31,
+    "r": 31,
+    "t": 116,
+    "b": 116
+   },
+   "pad_from_ink": {
+    "l": 0,
+    "t": 89,
+    "r": -1,
+    "b": 88
+   },
+   "margins_declared_master": [
+    20,
+    20,
+    20,
+    20
+   ],
+   "margins_pass": false,
+   "landed_ink_box": [
+    0,
+    89,
+    520,
+    295
+   ],
+   "ink_fill_pct": 53.51,
+   "landed": [
+    "ui_rack_bay_card.png"
+   ],
+   "verdict": "LANDED"
+  },
+  "C6": {
+   "dir": "20261005-201732",
+   "master": [
+    2720,
+    1032
+   ],
+   "route": "crop",
+   "render_px": [
+    3312,
+    2480
+   ],
+   "key_route": "substrate trim (alpha < 12 -> 0)",
+   "ink": {
+    "box": [
+     77,
+     647,
+     3238,
+     1828
+    ],
+    "ink_px": 3728052,
+    "solidity": 0.999
+   },
+   "crop_rect": [
+    76,
+    637,
+    3239,
+    1838
+   ],
+   "containment": {
+    "ink_px": 3728052,
+    "inside": 3728052,
+    "pct": 100.0
+   },
+   "resize_factors": [
+    0.859943,
+    0.859284
+   ],
+   "centre_check": {
+    "offset_before": [
+     0.5,
+     0.5
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "offset_after": [
+     0.5,
+     0.5
+    ]
+   },
+   "margins_master": null,
+   "margins_declared_master": null,
+   "margins_pass": null,
+   "landed_ink_box": [
+    1,
+    9,
+    2719,
+    1023
+   ],
+   "ink_fill_pct": 98.18,
+   "landed": [
+    "ui_armory_console.png"
+   ],
+   "verdict": "LANDED"
+  },
+  "C7": {
+   "dir": "20261005-202052",
+   "master": [
+    720,
+    480
+   ],
+   "route": "direct",
+   "render_px": [
+    2512,
+    1664
+   ],
+   "key_route": "substrate trim (alpha < 12 -> 0)",
+   "ink": {
+    "box": [
+     26,
+     100,
+     2488,
+     1538
+    ],
+    "ink_px": 3535981,
+    "solidity": 0.999
+   },
+   "containment": {
+    "ink_px": 3535981,
+    "inside": 3535981,
+    "pct": 100.0
+   },
+   "resize_factors": [
+    0.286624,
+    0.288462
+   ],
+   "centre_check": {
+    "offset_before": [
+     1.0,
+     -3.5
+    ],
+    "shift": [
+     -1,
+     4
+    ],
+    "offset_after": [
+     0.0,
+     0.5
+    ],
+    "applied": true
+   },
+   "margins_master": {
+    "l": 22,
+    "r": 22,
+    "t": 50,
+    "b": 50
+   },
+   "margins_plateau_scan": {
+    "l": 22,
+    "r": 22,
+    "t": 50,
+    "b": 50
+   },
+   "margins_band_scan": {
+    "l": 20,
+    "r": 20,
+    "t": 48,
+    "b": 48
+   },
+   "pad_from_ink": {
+    "l": 6,
+    "t": 33,
+    "r": 7,
+    "b": 31
+   },
+   "margins_declared_master": [
+    24,
+    24,
+    24,
+    24
+   ],
+   "margins_pass": false,
+   "uniform_band": {
+    "l": {
+     "band_px": 22,
+     "p95": 6.59,
+     "max": 8.23,
+     "pass": true
+    },
+    "r": {
+     "band_px": 22,
+     "p95": 3.77,
+     "max": 13.27,
+     "pass": true
+    },
+    "t": {
+     "band_px": 50,
+     "p95": 4.12,
+     "max": 8.12,
+     "pass": true
+    },
+    "b": {
+     "band_px": 50,
+     "p95": 2.14,
+     "max": 3.42,
+     "pass": true
+    }
+   },
+   "uniform_band_pass": true,
+   "landed_ink_box": [
+    6,
+    33,
+    712,
+    448
+   ],
+   "ink_fill_pct": 84.78,
+   "landed": [
+    "ui_tooltip_frame.png"
+   ],
+   "verdict": "LANDED"
+  },
+  "C8": {
+   "dir": "20261005-202141",
+   "master": [
+    112,
+    112
+   ],
+   "route": "direct",
+   "render_px": [
+    2048,
+    2048
+   ],
+   "key_route": "strip-key refused: border band is plate grey, not void substrate",
+   "key_stats": {
+    "bg_med": [
+     42,
+     42,
+     43
+    ]
+   },
+   "ink": {
+    "box": [
+     10,
+     9,
+     2038,
+     2041
+    ],
+    "ink_px": 4109090,
+    "solidity": 0.997
+   },
+   "containment": {
+    "ink_px": 4109090,
+    "inside": 4109090,
+    "pct": 100.0
+   },
+   "resize_factors": [
+    0.054688,
+    0.054688
+   ],
+   "centre_check": {
+    "offset_before": [
+     0.5,
+     0.5
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "offset_after": [
+     0.5,
+     0.5
+    ]
+   },
+   "margins_master": null,
+   "margins_declared_master": null,
+   "margins_pass": null,
+   "landed_ink_box": [
+    0,
+    0,
+    112,
+    112
+   ],
+   "ink_fill_pct": 99.97,
+   "landed": [
+    "ui_slot_weapon_normal.png",
+    "ui_slot_cargo_normal.png",
+    "ui_slot_inventory_normal.png"
+   ],
+   "verdict": "LANDED"
+  },
+  "C9": {
+   "dir": "20261005-202203",
+   "master": [
+    720,
+    112
+   ],
+   "route": "crop",
+   "render_px": [
+    2368,
+    1776
+   ],
+   "key_route": "substrate trim (alpha < 12 -> 0)",
+   "ink": {
+    "box": [
+     80,
+     694,
+     2288,
+     1073
+    ],
+    "ink_px": 832287,
+    "solidity": 0.995
+   },
+   "verdict": "FAIL crop-to-master",
+   "fail_cause": "master-aspect rect 2437x380 exceeds frame 2368x1776; never clipped"
+  },
+  "C10": {
+   "dir": "20261005-202312",
+   "master": [
+    84,
+    28
+   ],
+   "route": "crop",
+   "render_px": [
+    1916,
+    821
+   ],
+   "key_route": "substrate trim (alpha < 12 -> 0)",
+   "ink": {
+    "box": [
+     38,
+     299,
+     1880,
+     524
+    ],
+    "ink_px": 390287,
+    "solidity": 0.942
+   },
+   "crop_rect": [
+    38,
+    104,
+    1880,
+    718
+   ],
+   "containment": {
+    "ink_px": 390287,
+    "inside": 390287,
+    "pct": 100.0
+   },
+   "resize_factors": [
+    0.045603,
+    0.045603
+   ],
+   "centre_check": {
+    "offset_before": [
+     0.5,
+     0.5
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "offset_after": [
+     0.5,
+     0.5
+    ]
+   },
+   "margins_master": null,
+   "margins_declared_master": null,
+   "margins_pass": null,
+   "landed_ink_box": [
+    0,
+    9,
+    84,
+    19
+   ],
+   "ink_fill_pct": 34.18,
+   "landed": [
+    "ui_bar_caps.png"
+   ],
+   "verdict": "LANDED"
+  },
+  "C11": {
+   "dir": "20261005-202401",
+   "master": [
+    400,
+    400
+   ],
+   "route": "direct",
+   "render_px": [
+    2048,
+    2048
+   ],
+   "key_route": "strip-key border-connected dark flood (tol ladder from 22)",
+   "key_stats": {
+    "bg_med": [
+     7,
+     10,
+     13
+    ],
+    "ladder": [
+     {
+      "tol": 22,
+      "seeds": 1,
+      "flood_share": 0.6771,
+      "ink_box": [
+       16,
+       11,
+       2033,
+       2031
+      ],
+      "solidity": 0.332
+     },
+     {
+      "tol": 14,
+      "seeds": 1,
+      "flood_share": 0.6661,
+      "ink_box": [
+       16,
+       11,
+       2033,
+       2031
+      ],
+      "solidity": 0.341
+     },
+     {
+      "tol": 10,
+      "seeds": 3,
+      "flood_share": 0.0237,
+      "ink_box": [
+       16,
+       11,
+       2033,
+       2031
+      ],
+      "solidity": 0.999
+     }
+    ]
+   },
+   "ink": {
+    "box": [
+     11,
+     9,
+     2039,
+     2037
+    ],
+    "ink_px": 4101000,
+    "solidity": 0.997
+   },
+   "containment": {
+    "ink_px": 4101000,
+    "inside": 4101000,
+    "pct": 100.0
+   },
+   "resize_factors": [
+    0.195312,
+    0.195312
+   ],
+   "centre_check": {
+    "offset_before": [
+     0.5,
+     0.5
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "offset_after": [
+     0.5,
+     0.5
+    ]
+   },
+   "margins_master": {
+    "l": 44,
+    "r": 44,
+    "t": 44,
+    "b": 44
+   },
+   "margins_plateau_scan": {
+    "l": 44,
+    "r": 44,
+    "t": 44,
+    "b": 44
+   },
+   "margins_band_scan": {
+    "l": 39,
+    "r": 39,
+    "t": 38,
+    "b": 38
+   },
+   "pad_from_ink": {
+    "l": 2,
+    "t": 2,
+    "r": 1,
+    "b": 1
+   },
+   "margins_declared_master": [
+    32,
+    32,
+    32,
+    32
+   ],
+   "margins_pass": false,
+   "uniform_band": {
+    "l": {
+     "band_px": 44,
+     "p95": 9.32,
+     "max": 11.3,
+     "pass": false
+    },
+    "r": {
+     "band_px": 44,
+     "p95": 7.98,
+     "max": 9.3,
+     "pass": true
+    },
+    "t": {
+     "band_px": 44,
+     "p95": 9.16,
+     "max": 12.3,
+     "pass": false
+    },
+    "b": {
+     "band_px": 44,
+     "p95": 6.36,
+     "max": 9.61,
+     "pass": true
+    }
+   },
+   "uniform_band_pass": false,
+   "landed_ink_box": [
+    2,
+    2,
+    398,
+    398
+   ],
+   "ink_fill_pct": 97.75,
+   "landed": [
+    "ui_minimap_bezel.png"
+   ],
+   "verdict": "LANDED"
+  },
+  "C12": {
+   "dir": "20261005-202444",
+   "master": [
+    192,
+    192
+   ],
+   "route": "direct",
+   "render_px": [
+    2048,
+    2048
+   ],
+   "key_route": "strip-key refused after ladder: every tolerance leaks into the enclosed interior; landed opaque like the shipped convention",
+   "key_stats": {
+    "bg_med": [
+     3,
+     5,
+     8
+    ],
+    "ladder": [
+     {
+      "tol": 22,
+      "seeds": 1,
+      "flood_share": 0.7675,
+      "ink_box": [
+       6,
+       5,
+       2037,
+       2035
+      ],
+      "solidity": 0.234
+     },
+     {
+      "tol": 14,
+      "seeds": 1,
+      "flood_share": 0.7578,
+      "ink_box": [
+       6,
+       5,
+       2037,
+       2035
+      ],
+      "solidity": 0.241
+     },
+     {
+      "tol": 10,
+      "seeds": 1,
+      "flood_share": 0.7031,
+      "ink_box": [
+       6,
+       5,
+       2037,
+       2035
+      ],
+      "solidity": 0.295
+     },
+     {
+      "tol": 10,
+      "seeds": 1,
+      "flood_share": 0.7031,
+      "ink_box": [
+       6,
+       5,
+       2037,
+       2035
+      ],
+      "solidity": 0.295
+     }
+    ]
+   },
+   "ink": {
+    "box": [
+     0,
+     0,
+     2048,
+     2048
+    ],
+    "ink_px": 4194304,
+    "solidity": 1.0
+   },
+   "containment": {
+    "ink_px": 4194304,
+    "inside": 4194304,
+    "pct": 100.0
+   },
+   "resize_factors": [
+    0.09375,
+    0.09375
+   ],
+   "centre_check": {
+    "offset_before": [
+     0.5,
+     0.5
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "offset_after": [
+     0.5,
+     0.5
+    ]
+   },
+   "margins_master": {
+    "l": 13,
+    "r": 13,
+    "t": 15,
+    "b": 15
+   },
+   "margins_plateau_scan": {
+    "l": 13,
+    "r": 13,
+    "t": 15,
+    "b": 15
+   },
+   "margins_band_scan": {
+    "l": 0,
+    "r": 0,
+    "t": 12,
+    "b": 12
+   },
+   "pad_from_ink": {
+    "l": 0,
+    "t": 0,
+    "r": -1,
+    "b": -1
+   },
+   "margins_declared_master": [
+    64,
+    64,
+    64,
+    64
+   ],
+   "margins_pass": false,
+   "uniform_band": {
+    "l": {
+     "band_px": 13,
+     "p95": 12.0,
+     "max": 15.15,
+     "pass": false
+    },
+    "r": {
+     "band_px": 13,
+     "p95": 5.69,
+     "max": 6.77,
+     "pass": true
+    },
+    "t": {
+     "band_px": 15,
+     "p95": 6.07,
+     "max": 8.8,
+     "pass": true
+    },
+    "b": {
+     "band_px": 15,
+     "p95": 7.6,
+     "max": 9.87,
+     "pass": true
+    }
+   },
+   "uniform_band_pass": false,
+   "landed_ink_box": [
+    0,
+    0,
+    192,
+    192
+   ],
+   "ink_fill_pct": 100.0,
+   "landed": [
+    "ui_panel_frame.png"
+   ],
+   "verdict": "LANDED"
+  },
+  "BG-1": {
+   "dir": "20261005-202512",
+   "master": [
+    2048,
+    874
+   ],
+   "route": "backdrop",
+   "render_px": [
+    3136,
+    1344
+   ],
+   "key_route": "none (opaque backdrop, never keyed)",
+   "ink": {
+    "box": [
+     0,
+     0,
+     3136,
+     1344
+    ],
+    "ink_px": 4214784,
+    "solidity": 1.0,
+    "note": "opaque RGB render"
+   },
+   "crop_rect": [
+    0,
+    3,
+    3135,
+    1341
+   ],
+   "resize_factors": [
+    0.655172,
+    0.655172
+   ],
+   "resize_note": "crop 3135x1338 at master aspect -> trim 2 px/side -> 3131x1334 -> one scale 0.655172 -> (2051, 874) -> trim 2 px/side horizontal -> [2048, 874]",
+   "containment": {
+    "ink_px": 4214784,
+    "inside": 4194630,
+    "pct": 100.0
+   },
+   "centre_check": "exempt (full-bleed cover)",
+   "margins_master": null,
+   "margins_declared_master": null,
+   "margins_pass": null,
+   "landed_ink_box": [
+    0,
+    0,
+    2048,
+    874
+   ],
+   "ink_fill_pct": 100.0,
+   "landed": [
+    "ui_backdrop_armory_deck.png"
+   ],
+   "verdict": "LANDED"
+  },
+  "BG-2": {
+   "dir": "20261005-202550",
+   "master": [
+    2048,
+    874
+   ],
+   "route": "backdrop",
+   "render_px": [
+    3136,
+    1344
+   ],
+   "key_route": "none (opaque backdrop, never keyed)",
+   "ink": {
+    "box": [
+     0,
+     0,
+     3136,
+     1344
+    ],
+    "ink_px": 4214784,
+    "solidity": 1.0,
+    "note": "opaque RGB render"
+   },
+   "crop_rect": [
+    0,
+    3,
+    3135,
+    1341
+   ],
+   "resize_factors": [
+    0.655172,
+    0.655172
+   ],
+   "resize_note": "crop 3135x1338 at master aspect -> trim 2 px/side -> 3131x1334 -> one scale 0.655172 -> (2051, 874) -> trim 2 px/side horizontal -> [2048, 874]",
+   "containment": {
+    "ink_px": 4214784,
+    "inside": 4194630,
+    "pct": 100.0
+   },
+   "centre_check": "exempt (full-bleed cover)",
+   "margins_master": null,
+   "margins_declared_master": null,
+   "margins_pass": null,
+   "landed_ink_box": [
+    0,
+    0,
+    2048,
+    874
+   ],
+   "ink_fill_pct": 100.0,
+   "landed": [
+    "ui_backdrop_refinery_deck.png"
+   ],
+   "verdict": "LANDED"
+  },
+  "BG-3": {
+   "dir": "20261005-202617",
+   "master": [
+    2048,
+    874
+   ],
+   "route": "backdrop",
+   "render_px": [
+    3136,
+    1344
+   ],
+   "key_route": "none (opaque backdrop, never keyed)",
+   "ink": {
+    "box": [
+     0,
+     0,
+     3136,
+     1344
+    ],
+    "ink_px": 4214784,
+    "solidity": 1.0,
+    "note": "opaque RGB render"
+   },
+   "crop_rect": [
+    0,
+    3,
+    3135,
+    1341
+   ],
+   "resize_factors": [
+    0.655172,
+    0.655172
+   ],
+   "resize_note": "crop 3135x1338 at master aspect -> trim 2 px/side -> 3131x1334 -> one scale 0.655172 -> (2051, 874) -> trim 2 px/side horizontal -> [2048, 874]",
+   "containment": {
+    "ink_px": 4214784,
+    "inside": 4194630,
+    "pct": 100.0
+   },
+   "centre_check": "exempt (full-bleed cover)",
+   "margins_master": null,
+   "margins_declared_master": null,
+   "margins_pass": null,
+   "landed_ink_box": [
+    0,
+    0,
+    2048,
+    874
+   ],
+   "ink_fill_pct": 100.0,
+   "landed": [
+    "ui_backdrop_market_deck.png"
+   ],
+   "verdict": "LANDED"
+  },
+  "BG-4": {
+   "dir": "20261005-203106",
+   "master": [
+    2048,
+    874
+   ],
+   "route": "backdrop",
+   "render_px": [
+    3136,
+    1344
+   ],
+   "key_route": "none (opaque backdrop, never keyed)",
+   "ink": {
+    "box": [
+     0,
+     0,
+     3136,
+     1344
+    ],
+    "ink_px": 4214784,
+    "solidity": 1.0,
+    "note": "opaque RGB render"
+   },
+   "crop_rect": [
+    0,
+    3,
+    3135,
+    1341
+   ],
+   "resize_factors": [
+    0.655172,
+    0.655172
+   ],
+   "resize_note": "crop 3135x1338 at master aspect -> trim 2 px/side -> 3131x1334 -> one scale 0.655172 -> (2051, 874) -> trim 2 px/side horizontal -> [2048, 874]",
+   "containment": {
+    "ink_px": 4214784,
+    "inside": 4194630,
+    "pct": 100.0
+   },
+   "centre_check": "exempt (full-bleed cover)",
+   "margins_master": null,
+   "margins_declared_master": null,
+   "margins_pass": null,
+   "landed_ink_box": [
+    0,
+    0,
+    2048,
+    874
+   ],
+   "ink_fill_pct": 100.0,
+   "landed": [
+    "ui_backdrop_dock_deck.png"
+   ],
+   "verdict": "LANDED"
+  }
+ },
+ "swaps": [
+  {
+   "class": "C6",
+   "shipped": "assets/ui/ui_armory_console.png",
+   "backup": "asset-library/_prekey_backup/chrome_family_2026-10-05/ui_armory_console.png",
+   "old_px": [
+    2720,
+    1032
+   ],
+   "old_md5": "b1241913488d4d566e4f670d33d9ca53",
+   "new_px": [
+    2720,
+    1032
+   ]
+  },
+  {
+   "class": "C8",
+   "shipped": "assets/ui/ui_slot_weapon_normal.png",
+   "backup": "asset-library/_prekey_backup/chrome_family_2026-10-05/ui_slot_weapon_normal.png",
+   "old_px": [
+    48,
+    48
+   ],
+   "old_md5": "6f896aef9c4dc369f15e886c10389711",
+   "new_px": [
+    112,
+    112
+   ]
+  },
+  {
+   "class": "C8",
+   "shipped": "assets/ui/ui_slot_cargo_normal.png",
+   "backup": "asset-library/_prekey_backup/chrome_family_2026-10-05/ui_slot_cargo_normal.png",
+   "old_px": [
+    40,
+    40
+   ],
+   "old_md5": "80a174d6b491355b374e9bf6bb06ff9e",
+   "new_px": [
+    112,
+    112
+   ]
+  },
+  {
+   "class": "C8",
+   "shipped": "assets/ui/ui_slot_inventory_normal.png",
+   "backup": "asset-library/_prekey_backup/chrome_family_2026-10-05/ui_slot_inventory_normal.png",
+   "old_px": [
+    56,
+    56
+   ],
+   "old_md5": "d27da0eb4d08ae3fb7b4d2421f84820e",
+   "new_px": [
+    112,
+    112
+   ]
+  },
+  {
+   "class": "C10",
+   "shipped": "assets/ui/ui_bar_caps.png",
+   "backup": "asset-library/_prekey_backup/chrome_family_2026-10-05/ui_bar_caps.png",
+   "old_px": [
+    42,
+    14
+   ],
+   "old_md5": "42605b533e0ed87ddbca1769a885a03a",
+   "new_px": [
+    84,
+    28
+   ]
+  },
+  {
+   "class": "C11",
+   "shipped": "assets/ui/ui_minimap_bezel.png",
+   "backup": "asset-library/_prekey_backup/chrome_family_2026-10-05/ui_minimap_bezel.png",
+   "old_px": [
+    200,
+    200
+   ],
+   "old_md5": "1e1d450d59c6f2936bc88ecdf0953659",
+   "new_px": [
+    400,
+    400
+   ]
+  },
+  {
+   "class": "C12",
+   "shipped": "assets/ui/ui_panel_frame.png",
+   "backup": "asset-library/_prekey_backup/chrome_family_2026-10-05/ui_panel_frame.png",
+   "old_px": [
+    96,
+    96
+   ],
+   "old_md5": "abc8acaf04858e8ca8abc663b93aacf6",
+   "new_px": [
+    192,
+    192
+   ]
+  }
+ ],
+ "variants": "NONE",
+ "failures": [
+  {
+   "id": "C1",
+   "cause": "master-aspect rect 3014x745 exceeds frame 2368x1776; never clipped",
+   "ink": {
+    "box": [
+     80,
+     507,
+     2288,
+     1251
+    ],
+    "ink_px": 1639586,
+    "solidity": 0.998
+   }
+  },
+  {
+   "id": "C2",
+   "cause": "master-aspect rect 2495x389 exceeds frame 2368x1776; never clipped",
+   "ink": {
+    "box": [
+     146,
+     666,
+     2222,
+     1054
+    ],
+    "ink_px": 798493,
+    "solidity": 0.991
+   }
+  },
+  {
+   "id": "C9",
+   "cause": "master-aspect rect 2437x380 exceeds frame 2368x1776; never clipped",
+   "ink": {
+    "box": [
+     80,
+     694,
+     2288,
+     1073
+    ],
+    "ink_px": 832287,
+    "solidity": 0.995
+   }
+  }
+ ]
+}
