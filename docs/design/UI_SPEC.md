@@ -19,19 +19,20 @@ and every tool result is re-sent on each later request.
 
 | Section | Topic | Lines |
 |---|---|---|
-| 1. | Colour Tokens | L39–L64 |
-| 2. | Theme Architecture | L65–L107 |
-| 3. | In-Game HUD | L108–L697 |
-| 4. | Settings | L698–L759 |
-| 5. | Tooltips, Dialogs & Nine-Patch Panels | L760–L837 |
-| 6. | Font & Sizing Reference (coding checklist) | L838–L857 |
-| 7. | Station surfaces chrome — the A5.4 extension (amendment 2026-10-02, … | L858–L893 |
-| 8. | Station action buttons and the one focus language (amendment 2026-10… | L894–L926 |
-| 9. | The map deck — flight minimap and navigation (amendment 2026-10-03, … | L927–L954 |
-| 10. | The map deck and the navigation pin — design detail (amendment 2026-… | L955–L1052 |
-| 11. | Station shell v2 — the TERMINAL drawer, the popups, the one skeleton… | L1053–L1108 |
-| 12. | Station shell v2 design detail — the TERMINAL drawer, the popup pair… | L1109–L1333 |
-| 13. | The D20 fix wave — exchange parity, the armory browser, the hover-in… | L1334–L1366 |
+| 1. | Colour Tokens | L40–L65 |
+| 2. | Theme Architecture | L66–L108 |
+| 3. | In-Game HUD | L109–L698 |
+| 4. | Settings | L699–L760 |
+| 5. | Tooltips, Dialogs & Nine-Patch Panels | L761–L838 |
+| 6. | Font & Sizing Reference (coding checklist) | L839–L858 |
+| 7. | Station surfaces chrome — the A5.4 extension (amendment 2026-10-02, … | L859–L894 |
+| 8. | Station action buttons and the one focus language (amendment 2026-10… | L895–L927 |
+| 9. | The map deck — flight minimap and navigation (amendment 2026-10-03, … | L928–L955 |
+| 10. | The map deck and the navigation pin — design detail (amendment 2026-… | L956–L1053 |
+| 11. | Station shell v2 — the TERMINAL drawer, the popups, the one skeleton… | L1054–L1109 |
+| 12. | Station shell v2 design detail — the TERMINAL drawer, the popup pair… | L1110–L1341 |
+| 13. | The D20 fix wave — exchange parity, the armory browser, the hover-in… | L1342–L1379 |
+| 14. | Exchange sell cluster + the OVERVIEW tile plates (amendment 2026-10-… | L1380–L1414 |
 
 <!-- section-index:end -->
 
@@ -1373,3 +1374,40 @@ words, mislabeling the component rows). N42–N47 implement the owner's notes 1�
 the values the D20 synthesis derives; each is PROPOSED with the reversal column
 beside it. A5.5/N24 still govern: none of these may hover-mutate size, position
 or an in-flow `visible`.
+
+---
+
+## 14. Exchange sell cluster + the OVERVIEW tile plates (amendment 2026-10-05, owner's notes 1 and 4 of the 2026-10-05 round; wave S33)
+
+Owner notes verbatim (`slices/S33-shell-v3/S33_BRIEF.md` §0 quotes both).
+Measured facts these pins build on: `exchange_panel.gd` `SELL_HEIGHT := 56.0`
+(:51), `SELL_WORD := "SELL"` (:122), `SELL_QUANTITY_FORMAT := "SELL %s"`
+(:123), the armed-wording read at :661-662 (`SELL n UNIT(S)` when a step is
+armed, else `SELL`), `%SellButton`/`%SellAllButton` (:164-165),
+`CONFIRM_FORMAT` (:126); `overview_panel.gd` `TILE_MIN := Vector2(300, 140)`
+(:48), the tile chrome `_apply_tile_chrome` (:259-268 — theme `panel_raised`
++ Button `hover`/`pressed` flat bevels).
+
+### 14.1 The pins (N48–N51)
+
+| Pin | Law | Reversal |
+|---|---|---|
+| **N48** | the EXCHANGE trade column's commit button is always worded **`SELL`** (360×56 `ActionPrimary`, §8 P1 — the P1 table's own word); the armed quantity wording (`SELL_QUANTITY_FORMAT`, `exchange_panel.gd:661-662`) retires. The confirm dialog keeps its counted wording (`CONFIRM_FORMAT` names the count) | the `SELL n UNIT(S)` button wording |
+| **N49** | the trade column stacks top-down: the unit-number selector (buy quantity, as shipped) → **`SELL UNITS`** selector directly beneath it (same stepper family; min 1, max the selected hold row's units; `text_dim` + disabled with no selection) → the N43 `INSPECT` cluster → `SELL` / `SELL ALL RAW`. `SELL` sells exactly the `SELL UNITS` value of the selected row | one shared stepper; sell = 1 unit per press |
+| **N50** | the six OVERVIEW department tiles wear the **button-plate state set** as nine-slice `StyleBoxTexture` chrome — `ui_button_plate_normal` / `_hover` / `_pressed` / `_disabled` (T-131's PROPOSED pick; alternatives `ui_armory_row_plate`, `ui_armory_rack_plate`, `ui_panel_frame_alt`) — replacing `_apply_tile_chrome`'s theme bevels (`overview_panel.gd:259-268`). Chips and service rows keep theme chrome | the theme `panel_raised` bevels as shipped |
+| **N51** | the nine-slice margins are measured from the cut's own rivet/bevel band (§3.10 A5.1 — chrome is picked by the asset's own cut size) and no stretch may smear a rivet or bevel through the label area at `TILE_MIN` 300×140; if the chosen cut cannot stretch cleanly the builder reports and reverts (never smear) | arbitrary fixed margins |
+
+N48/N49 implement owner note 4, N50/N51 owner note 1 ("lets look for new
+backgrounds for the buttons. these ones dont look good. search in the assets
+first" — the search is `slices/S33-shell-v3/button_candidates.md`; the library
+held a complete four-state button-plate set, so no generation is needed).
+Every pin is PROPOSED with its reversal column. A5.5/N24 still govern: none
+of these may hover-mutate size, position or an in-flow `visible`.
+
+**N50/N51 superseded pre-dispatch 2026-10-05** (owner ruling the same day —
+"regenerate all the UI panels … different aspect ratios … respected always …
+unify the panels in all the game"): all UI panels regenerate as **one
+true-aspect family, whole-game scope** (waves D21/S35; the family law lands as
+§15). The tile swap waits for that family; `ui_button_plate_*` stays the
+documented fallback and tick **T-131** retires with the pair. N48/N49 stand
+and ship in S33.

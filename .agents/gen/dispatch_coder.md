@@ -147,16 +147,25 @@ session reports.
 
 ## Handoff (live)
 
-**Item 37 = S31 shell fixes — next (live 2026-10-04)** (`slices/S31-shell-fixes/`;
-the D20 fix wave F1–F3+F5 against `UI_SPEC.md` §13.1 N42–N47 — exchange parity,
-the armory browser overflow, the hover-inspect linger/legibility, T-118–T-123).
-**Item 38 = S32 ARMORY two-module rework** (`slices/S32-armory-modules/`;
-`STATION_HUB.md` §20.1 P32–P37 — FIT CELLS / BATTERY CONFIG, T-125/T-126
-defaults) runs strictly after it — both rewrite `ui/station/armory_panel.*`.
-**Item 30 = S24 world identity — after 38** (its five-piece predates the
-shell-v2 round, so the developer re-checks
-`slices/S24-world-identity/S24_BRIEF.md` against `UI_SPEC.md` §12–§13 +
-`STATION_HUB.md` §19–§20 before dispatch; the handoff block is re-cut in
+**Designer item 20 = D21 the one true-aspect chrome family** (live 2026-10-05,
+`slices/D21-chrome-family/`; owner ruling 2026-10-05 — regenerate every UI
+panel at true per-class aspects, whole-game scope ("full"), style anchors the
+`ui_cockpit_*`/`ui_armory_*`/`ui_status_panel` family + the main-menu chromes,
+unique station backgrounds (T-131); `UI_SPEC.md` §15 + `UI_CHROME_ASSETS_SPEC.md`
+amendment) — runs **beside coder 39** (disjoint: docs vs `vajb-orbit/ui`), then
+the generation batch (`$KIE_GENERATE`) + the owner's review sheet before S35.
+**Coder item 39 = S33 shell v3** (live 2026-10-05, `slices/S33-shell-v3/`;
+`STATION_HUB.md` §21.1 P38–P41 + `UI_SPEC.md` §14.1 N48/N49 — armory two
+sectors, the EQ container, the exchange SELL cluster; T-132) — beside designer
+20.
+**Coder item 40 = S34 the refinery queue** (`slices/S34-refinery-queue/`;
+`docs/gameplay/04_refinery.md` §7 + `STATION_HUB.md` §21.3 P42–P43 — timed
+jobs, upgradable slots, input/output inventory; T-133) — strictly after 39
+(both land rows in `vajb-orbit/tests/`).
+**Item 30 = S24 world identity — after 40** (its five-piece predates shell v2
+AND the 2026-10-05 round, so the developer re-checks
+`slices/S24-world-identity/S24_BRIEF.md` against `UI_SPEC.md` §12–§14 +
+`STATION_HUB.md` §19–§21 before dispatch; the handoff block is re-cut in
 `S24_prompts.md` at that re-check). Items 30–33 then run in order.
 
 The whole queue is phase **P3** (`phases/P3-content-feel-push/PHASE.md`);

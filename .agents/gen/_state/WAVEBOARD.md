@@ -470,12 +470,18 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | 17 | coder 36 | **S30 station shell v2 build** (**done 2026-10-04** — 1074 → 1093/0 ×2; 3 HIGH + 7 MED cured by F1, 4 LOW T-114–T-117; B1/B2/F1 `hyper/deepseek-v4.1-flash` @ xhigh, R1 `hyper/glm-5.3-flash` @ max; verify green vs `s30_start`) | designer 19 (done) | ran alone — rail + inspector band deleted, TERMINAL drawer + OVERVIEW + popups shipped |
 | 18 | coder 37 | **S31 shell fixes** — the D20 fix wave F1–F3+F5 (`UI_SPEC.md` §13.1 N42–N47) — **done 2026-10-04**: 1093 → 1099/0 ×2; acceptance 1–7 all PASS, 0 HIGH / 0 MED / 4 LOW (T-127/T-128); N42 amended post-review (a book = a list); T-118–T-121 closed, T-122 deferred to S32 | D20 (done) | re-laid `ui/station/exchange_panel.*` + `armory_panel.*` + the tooltip before S32 touches them |
 | 19 | coder 38 | **S32 ARMORY two-module rework** (`STATION_HUB.md` §20.1 P32–P37) — **done 2026-10-04**: 1099 → 1110/0 ×2; acceptance 1–7 all PASS; 1 HIGH (P36 dead space) cured by F1 under the designer's bucket-2 ruling (full-width console, 13 rows re-anchored), 2 LOW T-129/T-130; T-122 closed | coder 37 (S31) | rewrote `ui/station/armory_panel.*` sequentially after S31 |
+| 20 | designer 20 | **D21 the one true-aspect chrome family** (`UI_SPEC.md` §15 + `UI_CHROME_ASSETS_SPEC.md` amendment; owner ruling 2026-10-05, scope **full**; T-131) — **live this session** | beside coder 39 | `docs/design` + `staging/mockup` only — disjoint from every code wave (the D18/S28 parallel-pair shape) |
+| 21 | coder 39 | **S33 shell v3 — armory two sectors + the exchange sell cluster** (`STATION_HUB.md` §21.1 P38–P41 + `UI_SPEC.md` §14.1 N48/N49; T-132) — **live this session** | beside designer 20 | `vajb-orbit/ui` + `tests` only; disjoint from D21; rewrites `armory_panel.*`/`exchange_panel.*` after S32 |
+| 22 | coder 40 | **S34 the refinery queue** (`docs/gameplay/04_refinery.md` §7 + `STATION_HUB.md` §21.3 P42–P43; T-133) | coder 39 | strictly after S33 — both land rows in `vajb-orbit/tests/` and the whole-tree verify baselines must not see each other's diffs |
 
 Designer items 16–19 and coders 34–36 are closed — the overhaul round and its
 shell-v2 follow-up are **shipped** (station: TERMINAL drawer, OVERVIEW landing
-pane, popup descriptions, one skeleton; gate 1093/0). **Next: coder 30 (S24 world identity)** — its five-piece predates the shell,
-so the brief re-checks against `UI_SPEC.md` §12–§13 + `STATION_HUB.md` §19–§20
-before dispatch. Playtest
+pane, popup descriptions, one skeleton; gate 1093/0). **Next (live
+2026-10-05): designer 20 (D21 chrome family) + coder 39 (S33 shell v3) as the
+second parallel pair on disjoint file sets (the D18/S28 shape), then coder 40
+(S34 refinery queue), then coder 30 (S24 world identity)** — its five-piece
+predates shell v2 AND the 2026-10-05 round, so the brief re-checks against
+`UI_SPEC.md` §12–§14 + `STATION_HUB.md` §19–§21 before dispatch. Playtest
 pass #1 (the owner's, `19_testing_notes.md`'s eye list) runs alongside pos 1;
 build 2 + the tester template are phase exit criteria. Every brief's §11 tick
 sheet feeds its wave (unticked rows implement at their PROPOSED value).

@@ -97,3 +97,73 @@ With the 01 §5 session shape (a full 40-unit hold of mixed T1/T2 ore):
 - Tuning lever order if the refinery is too weak/strong: ore value (02 §4),
   then conversion ratio (4→1), then fee. Change one at a time and re-check
   the 01 §5.3 net-income targets.
+
+---
+
+## 7. 2026-10-05 amendment — refining takes time: jobs, slots, inventory (owner request; wave S34)
+
+Owner request verbatim: "refinery needs to take time to refine, different per
+resource. maybe make it so that it has slots (upgradable) and inventory (for
+output and input)".
+
+This **supersedes §4's "instant in-play" bullet** — the owner's own request
+supersedes it (escalation bucket 3 discharged at the request) — and amends
+§2's batch rule and §5's action rows. §1's decision framing, §2's 3:1 rule,
+and §3 in full (fee schedule, deterministic no-failure) stand: refining now
+costs *time*, never RNG.
+
+### 7.1 The model
+
+- **Job.** A confirmed batch becomes one job `{mineral_id, conversions}` on
+  one slot; wall duration = `conversions × RESOURCE_SECONDS(mineral)`. A job
+  never fails and never yields differently (§3 stands).
+- **RESOURCE_SECONDS (R1).** `clamp(round(ingot_value_cr / 10), 10, 60)`
+  seconds per conversion, read from 02 §2's ingot value — every resource
+  differs by its own value (Iron ≈ 10 s, Gold ≈ 40 s per conversion).
+- **Slots (R3/R4).** `refinery_slots` jobs run in parallel: **2** base,
+  bought +1 at the panel for **3,000 CR flat**, hardcap **5**. The upgrade
+  persists on the profile.
+- **Inventory (R5).** Input ore lives in `refinery_input` (cap **60** ore
+  units), output ingots in `refinery_output` (cap **60** ingot units). `LOAD`
+  transfers hold → input; `COLLECT ALL` transfers output → hold, space
+  permitting (overflow stays, R8). Transfers move no credits; 01 §7's
+  verify → take → pay → emit order governs the fee and the conversions.
+- **Queue (R7).** `QUEUE N` (was `REFINE N`) starts a job on a free slot or
+  appends to the FIFO pending queue; `QUEUE ALL` (was `REFINERY ALL`) queues
+  one job per convertible mineral. `CANCEL` drops a pending or running job,
+  refunds its fee and returns its ore to input.
+- **Time (R6).** Jobs carry `ready_at` (unix seconds,
+  `Time.get_unix_time_from_system`); the profile settles finished jobs
+  (conversions → `refinery_output`) on load, on pane refresh, and on a 1 Hz
+  tick while the pane is open. Jobs run station-side: they complete while the
+  player is docked elsewhere or away.
+
+### 7.2 Values — PROPOSED, tick **T-133** (unticked rows implement at their PROPOSED value)
+
+| # | Value | Reversal |
+|---|---|---|
+| R1 | `RESOURCE_SECONDS = clamp(round(ingot_value/10), 10, 60)` per conversion | per-tier ladder: T1 20 s / T2 40 s / T3 60 s |
+| R2 | fee 5 CR/ore-unit charged at queue time (verify → spend → load ore into the job) | fee charged at collection |
+| R3 | 2 slots base, +1 per purchase, hardcap 5 | 1 base / hardcap 3 — or slots granted by fitted `u_refine` modules instead of purchases |
+| R4 | slot upgrade 3,000 CR flat per +1 | 2,000 CR × slots already owned |
+| R5 | caps: input 60 ore units, output 60 ingot units | 40 / 40 (one hold-load each) |
+| R6 | wall-clock `ready_at`, settled on load / refresh / 1 Hz | process-time only while the pane is open |
+| R7 | `QUEUE ALL` = one job per mineral, FIFO pending beyond free slots | queue only into free slots and leave the rest |
+| R8 | `COLLECT ALL` fills the hold, overflow stays in output | per-mineral collect only |
+
+### 7.3 Panel contract (supersedes §5's action rows; pixel law STATION_HUB §21.3)
+
+`REFINE N` → `QUEUE N`, `REFINERY ALL` → `QUEUE ALL` (the old QA wording tick
+dies with this rename — `REFINERY ALL` was docs-pinned; this amendment is the
+docs change that moves it), `CANCEL` stands; the totals row gains `TIME` (the
+job's wall duration). New controls: `SLOTS n/5 · UPGRADE (3,000 CR)`, `LOAD`,
+`COLLECT ALL`. Left = hold ore stacks + `refinery_input` (rows tagged
+`LOADED`); centre = stepper + totals (`ORE IN · INGOTS OUT · FEE · TIME`) +
+actions; right = the job list (running rows with a countdown, pending rows,
+done rows awaiting collection). Numbers still come only from 02 §3, the fee
+and R1's formula — the panel hardcodes no prices and no durations.
+
+§6's balance reference stands (fees unchanged); the tuning lever order gains
+R1's divisor last. Test rows that pinned instant conversion restate as queue
+rows (disclosed in the S34 report); `test_p1_refinery.gd:192` (the
+hide-sub-convertible-stacks row — the sealed row) **must not move**.

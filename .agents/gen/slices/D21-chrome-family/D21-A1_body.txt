@@ -1,0 +1,23 @@
+You are D21-A1, the design author for wave D21 of the VajbOrbit workspace (Godot 4.7.2; workspace /home/kamil-paluszkiewicz/VajbOrbit; game project vajb-orbit/). Your deliverable: the one true-aspect UI chrome family spec plus the regeneration prompt set - docs only. You may write only docs/design/ and staging/mockup/ (VAJB_WORKER_FILES enforces it). Never touch vajb-orbit/, .agents/gen/ (beyond reading), or docs/gameplay/. Today is 2026-10-05.
+
+LAW (read in this order):
+1. .agents/gen/slices/D21-chrome-family/D21_BRIEF.md - the constraints, the surface/aspect table, the acceptance list you answer.
+2. docs/design/UI_SPEC.md section 5 (nine-patch panels), section 8 (P1/P2 buttons), section 14 (the stretched-proportion fault record + the N50/N51 supersede note), section 3.10 Amendment 5 (chrome composition law), section 11.1 (A5.5/N24).
+3. docs/design/UI_CHROME_ASSETS_SPEC.md section 2 (nine-slice recipes) and sections 11-12 (the style-anchor family ui_cockpit_panel / ui_cockpit_frame / ui_armory_console / ui_armory_rack_plate / ui_armory_row_plate / ui_status_panel, their prompt recipes and the >=95% ink-box QC law).
+4. docs/design/STYLE_BIBLE.md (palette) and docs/design/ASSET_NAMING_SPEC.md (the name law).
+5. .agents/gen/slices/S33-shell-v3/button_candidates.md (the asset search record + anchor resolution).
+6. docs/design/STATION_HUB.md section 19.2 and section 21 (the surfaces the family lands over - you change no layout).
+
+TASK
+A. Write docs/design/UI_SPEC.md section 15 "The one true-aspect chrome family" (dated amendment 2026-10-05, owner ruling): the complete census table (surface -> class -> true-aspect target size -> nine-slice margins -> legal stretch bands), the aspect law ("respected always": every plate drawn at its class's true aspect; caps/corners/rivets never stretch; stretch only in declared flat bands; a surface the family cannot cover gets a new plate, never a stretch), and which existing chrome pins it supersedes. Complete the census by grepping every StyleBox*, theme_override and *_plate site under vajb-orbit/ui, vajb-orbit/ui/hud and vajb-orbit/ui/screens and give every surface a row (the brief's table is the seed, not the limit; measure real file pixels and control rects, cite file:line).
+B. Write docs/design/UI_CHROME_ASSETS_SPEC.md's 2026-10-05 amendment: one shell-safe kie.ai generation prompt per surface class, drawn at the class's true aspect (aspect ratios differ per class and are respected always), style anchored to the owner's named family plus the main-menu chromes (sibling style, never a new style), one shared style block, a negative list per prompt (no text, no logos, no bevel smear, no white backgrounds), states derived by modulate/tint where possible with at most one paid variant per class, and the unique station panel backgrounds: PROPOSED 4 unique backdrops at the pane-content aspect assigned across the 7 station panes (ARMORY, REFINERY, EXCHANGE, AUCTION, SHIPYARD, LAUNCH, OVERVIEW) - every value PROPOSED with a one-line reversal and tick T-131. Sum the generation cost (10 credits = $0.05 per 2K run). Shell-safe means no parentheses, backticks, &&, < or > inside the prompt texts; describe in prose.
+
+HARD RULES: this brief is law - a number you believe wrong gets reported and left, never silently changed. Every new value is PROPOSED with its reversal. Invent no asset names, no anchors, no numbers not derivable from the cited docs. Medium is game UI chrome rendered as Godot StyleBoxTexture nine-slice and TextureRect panels at 1920x1080 - not CSS.
+
+REPORT: .agents/gen/slices/D21-chrome-family/D21-A1_report.md (max 120 lines, shaped like .agents/gen/_templates/REPORT.md): Result (2-3 lines), Acceptance list answers (items 1-4 of the brief's section 4, one line each with file:line or measured numbers), Deviations (what, why, one-line reversal), Evidence (the grep census line count + the summed credit cost), Files touched, Follow-ups.
+
+ACCEPTANCE LIST (the report answers each):
+1. AC1: the census table is complete against cited grep evidence; every class carries a true-aspect target.
+2. AC2: one shell-safe prompt per class with aspect + anchors + negative list; the credit cost summed exactly.
+3. AC3: the margins law names per class where stretch is allowed and pins "caps never stretch".
+4. AC4: the unique station backgrounds carry count + assignment as PROPOSED with reversals + tick T-131.

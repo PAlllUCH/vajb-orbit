@@ -1,0 +1,30 @@
+You are S33-B1, the builder for wave S33 of the VajbOrbit workspace (Godot 4.7.2; workspace /home/kamil-paluszkiewicz/VajbOrbit; game project vajb-orbit/). Your deliverable: shell v3 - ARMORY's two modes re-cut into two equal sectors each, and the EXCHANGE sell cluster per N48/N49. Code and tests, gate green. You may write only vajb-orbit/ui/ and vajb-orbit/tests/ (VAJB_WORKER_FILES enforces it). Never touch docs/, game/, autoload/, addons/. Today is 2026-10-05.
+
+LAW (read in this order):
+1. .agents/gen/slices/S33-shell-v3/S33_BRIEF.md - the pinned interface blocks (section 3) and the acceptance list you answer.
+2. docs/design/STATION_HUB.md section 21.1 (P38-P41) + section 21.2 (what supersedes what) + section 20.1 (P32-P35 as amended) + section 19 (the pane skeleton).
+3. docs/design/UI_SPEC.md section 14.1 (N48/N49) + section 13.1 (N42-N47) + section 11.1 (A5.5/N24) + section 3.10 Amendment 5 (containers + relative positioning, never coordinates).
+4. docs/gameplay/09_ship_slots_modules.md sections 10-12 (the battery law).
+5. slices/D20-station-playtest/D20_synthesis.md section 3 (doors: fit_battery/clear_battery/battery_groups/set_battery_groups at autoload/player_profile.gd:1178-1353).
+
+TASK
+A. ARMORY (STATION_HUB section 21.1 P38): re-cut BOTH modes into two equal sectors (LeftSector/RightSector, equal widths via containers, one A5 gutter).
+- FIT CELLS: LEFT keeps the shipped cell grid (23 cells + 3 engines) + the CELL INFO block unchanged. RIGHT becomes ONE equipment list in two states: (1) no cell selected -> browse everything the profile owns that the active hull can use, rows tagged FIT / STORED, the family tabs stand; (2) a cell selected -> all possibilities for that cell, owned-that-fits FIRST (select-to-fit + drag-to-fit) then buyable-that-fits (BUY + INSPECT), rows tagged OWNED / BUYABLE with the legality line per row (wire armory_panel.gd:86-90's refusal strings as proactive hints). The FITS HERE and BUYABLE THAT FITS wide blocks die.
+- BATTERY CONFIG (P39): LEFT = the B1-B5 rack editor full-height (the S32 drag law stands: drag between racks writes set_battery_groups, W<n> - EMPTY read-only cells, SALVO pip meters + battery_cycle per rack). RIGHT = the EQ container: one compact list of non-weapon equipment under the same category tabs as before (AMMUNITION, PWR/FUEL RODS, the other browser families present on the ship), count rows, INSPECT + BUY top-ups where the old foot band offered them. The P36 shared foot band dies.
+- P40: every list wears one AUCTION-idiom column-header band and N45's 160 px ellipsis trim on every row title; every row control lands inside 1920x1080; the mode hint line updates per mode + selection.
+B. EXCHANGE (UI_SPEC section 14.1 N48/N49): the commit button reads exactly "SELL" in every state (exchange_panel.gd:122/:661-662's armed quantity wording retires; CONFIRM_FORMAT keeps its counted wording). The trade column stacks top-down: UnitSelector (buy, as shipped) -> SellUnitsSelector ("SELL UNITS", same stepper family, min 1, max the selected hold row's units, disabled + text_dim with no selection) -> the N43 INSPECT cluster -> SELL / SELL ALL RAW. A SELL press moves exactly the SELL UNITS value of the selected row.
+
+TESTS THAT MOVE: tests/test_s32_armory_modes.gd (FITS HERE / BUYABLE lane + foot-band rows restate as the two-state list + EQ container rows), tests/test_s5_batteries_v2.gd (rack rows re-anchor to the left sector), tests/test_s5_ammo_cargo.gd + tests/test_s11_inspector.gd (sell / INSPECT rows), tests/test_s20_chrome_unify.gd + tests/test_s30_shell.gd (census rows), the d7/s15/s18/s10 geometry rows (re-anchor). Every moved row is re-anchored and DISCLOSED in the report (old -> new + why). Add rows covering: sector equality per mode (probe widths), the right list's two states incl. tags/legality ordering, EQ container categories + counts, no FITS HERE/BUYABLE wide block and no foot band (grep + probe), SELL wording in all states, SELL UNITS bounds + disabled-without-selection, a SELL press's profile delta == the selector value, the trade stack order, and row-rect containment at 1920x1080. The gate must end green (failed=0); counts move with disclosure.
+
+GATE (before and after): XDG_DATA_HOME=$(mktemp -d) ~/.local/bin/godot --headless --path vajb-orbit res://tests/headless_runner.tscn --quit-after 1200 2>&1 | grep -E '\[SUMMARY\]|SCRIPT ERROR' - and twice on fresh scratch after. Always grep [SUMMARY]: the line prints before Godot's exit-time leak errors. Record every run's line. Never leave a command running in the background; bound every probe.
+
+REPORT: .agents/gen/slices/S33-shell-v3/S33-B1_report.md (max 120 lines, shaped like .agents/gen/_templates/REPORT.md): Result (2-3 lines measured), Acceptance list answers (items 1-7 below, each one line with file:line or measured numbers), Deviations (what, why, the one-line reversal), Evidence (gate lines + probe numbers), Files touched, Follow-ups. If a pinned number proves unimplementable, ship the closest value and DISCLOSE it - never silently change a pin.
+
+ACCEPTANCE LIST (the report answers each):
+1. P38 layout: FIT CELLS two equal sectors; left = grid + CELL INFO unchanged (measured widths).
+2. P38 semantics: the right list's two states exactly (owned browse with FIT/STORED; selected with OWNED-then-BUYABLE + legality + fit/BUY/INSPECT).
+3. P39: BATTERY CONFIG two equal sectors - left racks full-height (drag persists via set_battery_groups, profile probe), right = EQ container (tabs + counts + INSPECT/BUY).
+4. No FITS HERE / BUYABLE THAT FITS wide block, no P36 foot band anywhere (grep + scene probe).
+5. N48: the commit button reads SELL in every state; the confirm dialog keeps counts.
+6. N49: stack order exact; SELL UNITS min 1 / max selected units, disabled without selection; SELL moves exactly that value (profile delta probe).
+7. P40 + gate: bands + 160 px trim on every list, containment at 1920x1080 (measured rects), gate green x2, every moved test row disclosed.

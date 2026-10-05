@@ -42,26 +42,27 @@ and every tool result is re-sent on each later request.
 
 | Section | Topic | Lines |
 |---|---|---|
-| 1. | Intent | L69–L86 |
-| 2. | Navigation model | L87–L137 |
-| 3. | Composition | L138–L278 |
-| 4. | Node tree (exact) | L279–L405 |
-| 5. | Per-module spec | L406–L1020 |
-| 6. | Type scale | L1021–L1042 |
-| 7. | Art map | L1043–L1093 |
-| 8. | Theme items used (all present in | L1094–L1115 |
-| 9. | Motion table | L1116–L1143 |
-| 10. | Focus and input | L1144–L1164 |
-| 11. | Audio hooks | L1165–L1191 |
-| 12. | Implementation notes for the coder | L1192–L1271 |
-| 13. | Verification performed on the mockup | L1272–L1288 |
-| 14. | Open questions for the owner | L1289–L1322 |
-| 15. | Station services deck & station identity (amendment 2026-10-02, wave… | L1323–L1486 |
-| 16. | Panel consolidation and the inspector band (amendment 2026-10-03, ow… | L1487–L1525 |
-| 17. | The merged panels — design detail, the inspector law, the panel temp… | L1526–L1637 |
-| 18. | Shell v2 — the TERMINAL drawer, the OVERVIEW pane, the popup sinks (… | L1638–L1681 |
-| 19. | Station shell v2 design detail — the OVERVIEW pane and the one skele… | L1682–L1873 |
-| 20. | The ARMORY two-module rework (amendment 2026-10-04, owner's playtest… | L1874–L1903 |
+| 1. | Intent | L70–L87 |
+| 2. | Navigation model | L88–L138 |
+| 3. | Composition | L139–L279 |
+| 4. | Node tree (exact) | L280–L406 |
+| 5. | Per-module spec | L407–L1021 |
+| 6. | Type scale | L1022–L1043 |
+| 7. | Art map | L1044–L1094 |
+| 8. | Theme items used (all present in | L1095–L1116 |
+| 9. | Motion table | L1117–L1144 |
+| 10. | Focus and input | L1145–L1165 |
+| 11. | Audio hooks | L1166–L1192 |
+| 12. | Implementation notes for the coder | L1193–L1272 |
+| 13. | Verification performed on the mockup | L1273–L1289 |
+| 14. | Open questions for the owner | L1290–L1323 |
+| 15. | Station services deck & station identity (amendment 2026-10-02, wave… | L1324–L1487 |
+| 16. | Panel consolidation and the inspector band (amendment 2026-10-03, ow… | L1488–L1526 |
+| 17. | The merged panels — design detail, the inspector law, the panel temp… | L1527–L1638 |
+| 18. | Shell v2 — the TERMINAL drawer, the OVERVIEW pane, the popup sinks (… | L1639–L1682 |
+| 19. | Station shell v2 design detail — the OVERVIEW pane and the one skele… | L1683–L1880 |
+| 20. | The ARMORY two-module rework (amendment 2026-10-04, owner's playtest… | L1881–L1919 |
+| 21. | The two-sector rework — ARMORY's two modes and the REFINERY queue pa… | L1920–L1955 |
 
 <!-- section-index:end -->
 
@@ -1913,3 +1914,41 @@ coordinates) — T-122's dead space dies for real, and the
 d7/s15/s18/s20 `block_size()`/`bay_rects()`/`well_rects()` rows re-anchor to
 the new geometry as disclosed moved rows. Reversal: R1's option (a) — the
 1360×516 console centred in the mode host with the old rect rows restored.
+
+---
+
+## 21. The two-sector rework — ARMORY's two modes and the REFINERY queue panel (amendment 2026-10-05, owner's playtest notes; waves S33/S34)
+
+Owner notes verbatim (`slices/S33-shell-v3/S33_BRIEF.md` §0 quotes both; the
+refinery note is quoted in `docs/gameplay/04_refinery.md` §7). Note 2's
+garbled clause "left with overwiev we have not" is read as "left with the
+overview we have now" — the shipped cell-grid/ship view stays left (tick
+**T-132** carries the reading; reversal: the current single-list right side
+keeps browsing buyables too).
+
+### 21.1 ARMORY — two sectors per mode (P38–P41)
+
+| Pin | Law | Reversal |
+|---|---|---|
+| **P38** | **FIT CELLS is two equal sectors** (the pane gutter splits the mode; containers + anchors per UI_SPEC §3.10 A5). LEFT = the shipped cell grid + the CELL INFO block (§20.1 P33 block 1 unchanged). RIGHT = **one equipment list in two states**: no cell selected → browse **everything the profile owns that the active hull can use** (rows tagged `FIT` / `STORED`; the family tabs stand); a cell selected → **all possibilities for that cell** — owned-that-fits first (select-to-fit, drag-to-fit), buyable-that-fits after (BUY + INSPECT) — rows tagged `OWNED` / `BUYABLE`, legality line per row. `FITS HERE` and `BUYABLE THAT FITS` as separate wide blocks die | §20.1 P33's three blocks; the 1132/620 split |
+| **P39** | **BATTERY CONFIG is two equal sectors.** LEFT = the B1–B5 rack editor full-height (§20.1 P34's drag / SALVO / `battery_cycle` law stands). RIGHT = **the EQ container** — one compact list of the non-weapon equipment under the same category tabs as before (AMMUNITION · PWR/FUEL RODS · the other browser families present on the ship), count rows, INSPECT + BUY top-ups where the old band offered them | §20.1 P36's shared foot band |
+| **P40** | every list wears one AUCTION-idiom column-header band and the N45 trim law (160 px ellipsis titles); every row control lands inside 1920×1080; the mode hint line updates per mode + selection | untrimmed rows; no band |
+| **P41** | the mode switch (P32), no presets (P35) and CELL INFO stand unchanged; §20's pins stay in force except where P38/P39 name them | — |
+
+### 21.2 What supersedes what
+
+§20.1 **P33** (three FIT CELLS blocks) → P38. §20.1 **P36** (shared foot band)
+→ P39's EQ container (the post-S32-R1 full-width-console amendment dies with
+it). §20.1 **P37** is re-pinned as P40 ("full-width of its sector"). P32 /
+P34 / P35 stand.
+
+### 21.3 REFINERY — the queue panel (P42–P43; the model is 04 §7)
+
+| Pin | Law | Reversal |
+|---|---|---|
+| **P42** | the REFINERY pane is **three blocks**: LEFT = hold ore stacks + the input inventory (rows tagged `LOADED`); CENTRE = the stepper + totals (`ORE IN · INGOTS OUT · FEE · TIME`) + `QUEUE N` / `QUEUE ALL` / `CANCEL` + `LOAD` / `COLLECT ALL`; RIGHT = the job list (running rows with a countdown, pending rows, done rows awaiting collection). The SLOTS readout (`n/5 · UPGRADE (3,000 CR)`) sits in the pane header band | §5.7's two-block ore table + RefineBox |
+| **P43** | every number reads from `MineralCatalog` + 04 §7's constants (fee, R1's `RESOURCE_SECONDS` formula, caps) — no prices or durations hardcoded; countdowns render `mm:ss`; empty states keep the §19.4 idiom (`BRING RAW ORE FROM THE BELT` → `LOAD ORE TO START A JOB`) | hardcoded durations |
+
+Ticks **T-132/T-133** carry the interpretation call and the value pack. Every
+pin is PROPOSED with its reversal column; A5.5/N24 govern every hover and
+focus state.

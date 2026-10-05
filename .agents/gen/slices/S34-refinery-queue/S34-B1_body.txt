@@ -1,0 +1,28 @@
+You are S34-B1, the builder for wave S34 of the VajbOrbit workspace (Godot 4.7.2; workspace /home/kamil-paluszkiewicz/VajbOrbit; game project vajb-orbit/). Your deliverable: the refinery queue - timed refining per resource, upgradable job slots, input/output inventory - model, doors, panel and tests, gate green. You may write only vajb-orbit/game/, vajb-orbit/autoload/, vajb-orbit/ui/ and vajb-orbit/tests/ (VAJB_WORKER_FILES enforces it). Never touch docs/ or addons/. Today is 2026-10-05.
+
+LAW (read in this order):
+1. .agents/gen/slices/S34-refinery-queue/S34_BRIEF.md - the pinned interface (section 3) and the acceptance list you answer.
+2. docs/gameplay/04_refinery.md section 7 (the model, values R1-R8, panel contract - this wave's whole law) + sections 1-3 (3:1 conversion, fee 5 CR/ore-unit, deterministic no-failure) + section 4 as amended.
+3. docs/design/STATION_HUB.md section 21.3 (P42/P43) + section 5.7 (superseded pixel spec) + section 12.4 (data wiring) + section 19.4 (empty-state idiom).
+4. docs/design/UI_SPEC.md section 8 (buttons) + section 11.1 (A5.5/N24) + section 3.10 Amendment 5.
+5. docs/gameplay/01_economy_core.md section 7 (verify -> take -> pay -> emit) + section 3 K3.
+
+TASK
+A. Rewrite game/refinery.gd to the brief's section 3 surface exactly: constants BASE_SLOTS 2, MAX_SLOTS 5, SLOT_UPGRADE_COST 3000, INPUT_CAP 60, OUTPUT_CAP 60; resource_seconds = clamp(round(ingot_value/10), 10, 60) per conversion from MineralCatalog's ingot value (Iron ~10 s, Gold ~40 s); queue/queue_all/cancel/settle/load_ore/collect_all/upgrade_slots/jobs; fee_for/fee_multiplier stand. queue() is all-or-nothing (verify fee -> spend -> take ore -> job; restore on any failure). cancel() refunds the fee and returns ore (to input; to the hold if input is full). settle() moves done jobs' conversions into refinery_output (cap-checked; uncollectable output keeps the job "done"). Jobs carry ready_at (Time.get_unix_time_from_system) and run station-side (wall clock).
+B. Extend autoload/player_profile.gd with the brief's pinned keys (refinery_slots=2, refinery_input, refinery_output, refinery_jobs, refinery_next_job_id) behind public doors only, with defaults so old saves load; every mutation emits profile_changed(&"refinery").
+C. Rewrite ui/station/refinery_panel.gd/.tscn to STATION_HUB section 21.3 P42/P43: three blocks (LEFT hold ore stacks + input inventory tagged LOADED; CENTRE stepper + totals ORE IN / INGOTS OUT / FEE / TIME + QUEUE N / QUEUE ALL / CANCEL + LOAD / COLLECT ALL; RIGHT the job list with mm:ss countdowns, pending rows, done-uncollected rows), the SLOTS readout n/5 + UPGRADE (3,000 CR) in the pane header band, empty-state idiom (BRING RAW ORE FROM THE BELT -> LOAD ORE TO START A JOB), and settle() on pane refresh + a 1 Hz tick while open. REFINE N / REFINERY ALL words become QUEUE N / QUEUE ALL. Numbers come only from MineralCatalog + the constants (grep proves no hardcoded prices/durations).
+
+TESTS THAT MOVE: tests/test_p1_refinery.gd - the instant-conversion rows restate as queue/settle/collect rows (map them explicitly in your report; row :192, the hide-sub-convertible-stacks row, MUST NOT move; the fee-arithmetic rows stand); tests/test_s23_content.gd's refinery rows and tests/probe_s23_r1.gd's Refinery.refine/refine_all calls move to the new API (disclosed). Add a new suite tests/test_s34_refinery_queue.gd covering: resource_seconds values (Iron ~10, Gold ~40, clamped 10..60), queue all-or-nothing on each failure path, cancel refund + ore return, the slot ladder (2 base -> 5 max, 3,000 CR each, refusal at 5), input/output cap refusals, settle completing a fake-ready job, QUEUE ALL = one job per mineral with FIFO pending, COLLECT ALL overflow stays, and a save round-trip of the new keys with old-save defaults. The gate must end green (failed=0); counts move with disclosure.
+
+GATE (before and after): XDG_DATA_HOME=$(mktemp -d) ~/.local/bin/godot --headless --path vajb-orbit res://tests/headless_runner.tscn --quit-after 1200 2>&1 | grep -E '\[SUMMARY\]|SCRIPT ERROR' - and twice on fresh scratch after. Always grep [SUMMARY]: the line prints before Godot's exit-time leak errors. Record every run's line. Never leave a command running in the background; bound every probe.
+
+REPORT: .agents/gen/slices/S34-refinery-queue/S34-B1_report.md (max 120 lines, shaped like .agents/gen/_templates/REPORT.md): Result (2-3 lines measured), Acceptance list answers (items 1-7 below, each one line with file:line or measured numbers), Deviations (what, why, the one-line reversal), Evidence (gate lines + probe numbers), Files touched, Follow-ups. If a pinned number proves unimplementable, ship the closest value and DISCLOSE it - never silently change a pin.
+
+ACCEPTANCE LIST (the report answers each):
+1. R1 exact: resource_seconds = clamp(round(ingot_value/10), 10, 60) (probe Iron ~10 s, Gold ~40 s).
+2. queue() all-or-nothing (each failure path restores) and duration = conversions x resource_seconds; jobs never fail.
+3. Slots: 2 base, upgrade +1 for 3,000 CR, hardcap 5 refuses; parallel jobs; QUEUE ALL one job per mineral, FIFO pending beyond free slots.
+4. Inventory: LOAD hold->input, COLLECT ALL output->hold, caps enforced (over-cap refused / overflow stays); CANCEL refunds fee + returns ore.
+5. settle() completes ready jobs into refinery_output on wall-clock ready_at (fake-ready probe), called on load, pane refresh and a 1 Hz tick.
+6. Panel per P42/P43: three blocks, header SLOTS n/5 + UPGRADE (3,000 CR), exact action words (QUEUE N / QUEUE ALL / CANCEL / LOAD / COLLECT ALL), mm:ss countdowns, empty-state idiom, no hardcoded prices/durations (grep).
+7. Gate green x2 + moved rows disclosed; test_p1_refinery.gd:192 unchanged.
