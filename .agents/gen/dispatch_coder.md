@@ -186,7 +186,8 @@ verify green vs `g2b2_start`.
 placeholder; `hyper/deepseek-v4.1-flash` @ xhigh, R1 `hyper/glm-5.3-flash` @
 max) — next; T-140 resolved 2026-10-06 (all four hard classes ship the
 owner-picked rail look, `UI_SPEC.md` §15.6), so S36 wires the FULL family
-(16 classes + BG-1..4).
+(16 classes + BG-1..4) — **live 2026-10-06** (`slices/S36-chrome-reskin/`;
+B1 `hyper/deepseek-v4.1-flash` @ xhigh, R1 `hyper/glm-5.3-flash` @ max).
 **Item 30 = S24 world identity — after 43** (its five-piece predates shell v2
 AND the 2026-10-05 rounds, so the developer re-checks
 `slices/S24-world-identity/S24_BRIEF.md` against `UI_SPEC.md` §12–§15 +

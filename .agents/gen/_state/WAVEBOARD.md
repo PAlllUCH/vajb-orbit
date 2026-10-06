@@ -550,9 +550,10 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 
 Designer items 16–20 and coders 34–41 are closed — the overhaul round, its
 shell-v2 follow-up and the 2026-10-05 round are **shipped** (gate 1138/0).
-**Next (live 2026-10-06, the family complete): row 25 (S36 the chrome
-re-skin — wire the full family + BG-1..4 + the census suite); then coder 30
-(S24 world identity)** — its five-piece predates
+**Next (live 2026-10-06, the family complete): S36 (row 25) DISPATCHED —
+`slices/S36-chrome-reskin/`, B1 `hyper/deepseek-v4.1-flash` @ xhigh → R1
+`hyper/glm-5.3-flash` @ max; then coder 30 (S24 world identity)** — its
+five-piece predates
 shell v2 AND the 2026-10-05 rounds, so the brief re-checks against
 `UI_SPEC.md` §12–§15 + `STATION_HUB.md` §19–§21 before dispatch. Playtest
 pass #1 (the owner's, `19_testing_notes.md`'s eye list) runs alongside pos 1;
