@@ -1,0 +1,302 @@
+{
+ "runs": [
+  {
+   "id": "C5",
+   "task_id": "a15e6507f0eb0c4043342ed32c24948a",
+   "render": "asset-library/raw/chrome-family/20261005-224628/grimdark-painted-sci-fi-semi-realistic-1.png",
+   "px": [
+    2368,
+    1776
+   ]
+  }
+ ],
+ "classes": {
+  "C1": {
+   "prompt_file": "prompts/C1_b2.txt",
+   "delta": "numeric proportion 4.05 inserted",
+   "master": [
+    1134,
+    280
+   ],
+   "task_id": "819343bcfb566d8f9b2bab927c4ad54e",
+   "estimate": {
+    "credits": 30,
+    "usd": 0.15,
+    "price_source": "hint"
+   },
+   "render": "asset-library/raw/chrome-family/20261005-224516/grimdark-painted-sci-fi-semi-realistic-1.png",
+   "render_px": [
+    2368,
+    1776
+   ],
+   "run_aspect_diff_pct": 0.0,
+   "alpha0_pct": 64.7,
+   "key_route": "substrate trim (alpha < 12 -> 0; 64.7 % alpha-0)",
+   "ink": {
+    "box": [
+     104,
+     552,
+     2265,
+     1219
+    ],
+    "ink_px": 1441349,
+    "solidity": 1.0
+   },
+   "verdict": "FAIL crop-to-master",
+   "fail_cause": "master-aspect rect 2702x668 exceeds frame 2368x1776; reported, never clipped, never re-run without a fresh owner call"
+  },
+  "C2": {
+   "prompt_file": "prompts/C2_b2.txt",
+   "delta": "numeric proportion 6.43 inserted",
+   "master": [
+    720,
+    112
+   ],
+   "task_id": "f04d80f794eca91e9cf995917ba4b0fc",
+   "estimate": {
+    "credits": 30,
+    "usd": 0.15,
+    "price_source": "hint"
+   },
+   "render": "asset-library/raw/chrome-family/20261005-224538/grimdark-painted-sci-fi-semi-realistic-1.png",
+   "render_px": [
+    2368,
+    1776
+   ],
+   "run_aspect_diff_pct": 0.0,
+   "alpha0_pct": 79.6,
+   "key_route": "substrate trim (alpha < 12 -> 0; 79.6 % alpha-0)",
+   "ink": {
+    "box": [
+     113,
+     691,
+     2255,
+     1068
+    ],
+    "ink_px": 806760,
+    "solidity": 0.999
+   },
+   "verdict": "FAIL crop-to-master",
+   "fail_cause": "master-aspect rect 2424x378 exceeds frame 2368x1776; reported, never clipped, never re-run without a fresh owner call"
+  },
+  "C9": {
+   "prompt_file": "prompts/C9_b2.txt",
+   "delta": "numeric proportion 6.43 inserted",
+   "master": [
+    720,
+    112
+   ],
+   "task_id": "e6d014ca06bfb6d8067fd4fa8566983b",
+   "estimate": {
+    "credits": 30,
+    "usd": 0.15,
+    "price_source": "hint"
+   },
+   "render": "asset-library/raw/chrome-family/20261005-224600/grimdark-painted-sci-fi-semi-realistic-1.png",
+   "render_px": [
+    2368,
+    1776
+   ],
+   "run_aspect_diff_pct": 0.0,
+   "alpha0_pct": 79.1,
+   "key_route": "substrate trim (alpha < 12 -> 0; 79.1 % alpha-0)",
+   "ink": {
+    "box": [
+     72,
+     670,
+     2297,
+     1058
+    ],
+    "ink_px": 857724,
+    "solidity": 0.994
+   },
+   "verdict": "FAIL crop-to-master",
+   "fail_cause": "master-aspect rect 2495x389 exceeds frame 2368x1776; reported, never clipped, never re-run without a fresh owner call"
+  },
+  "C5": {
+   "prompt_file": "prompts/C5_b2.txt",
+   "delta": "numeric proportion 1.35 inserted",
+   "master": [
+    520,
+    384
+   ],
+   "task_id": "a15e6507f0eb0c4043342ed32c24948a",
+   "estimate": {
+    "credits": 30,
+    "usd": 0.15,
+    "price_source": "hint"
+   },
+   "render": "asset-library/raw/chrome-family/20261005-224628/grimdark-painted-sci-fi-semi-realistic-1.png",
+   "render_px": [
+    2368,
+    1776
+   ],
+   "run_aspect_diff_pct": 0.0,
+   "alpha0_pct": 0.0,
+   "key_route": "strip-key border-connected dark flood (tol ladder from 22)",
+   "key_stats": {
+    "bg_med": [
+     4,
+     8,
+     13
+    ],
+    "ladder": [
+     {
+      "tol": 22,
+      "seeds": 1,
+      "flood_share": 0.683,
+      "ink_box": [
+       247,
+       508,
+       2121,
+       1218
+      ],
+      "solidity": 1.0
+     }
+    ]
+   },
+   "ink": {
+    "box": [
+     243,
+     507,
+     2125,
+     1223
+    ],
+    "ink_px": 1338811,
+    "solidity": 0.994
+   },
+   "crop_rect": [
+    242,
+    170,
+    2125,
+    1561
+   ],
+   "containment": {
+    "ink_px": 1338811,
+    "inside": 1338811,
+    "pct": 100.0
+   },
+   "resize_factors": [
+    0.276155,
+    0.27606
+   ],
+   "centre_check": {
+    "offset_before": [
+     0.5,
+     0.0
+    ],
+    "shift": [
+     0,
+     0
+    ],
+    "offset_after": [
+     0.5,
+     0.0
+    ]
+   },
+   "margins_master": {
+    "l": 48,
+    "r": 48,
+    "t": 175,
+    "b": 175
+   },
+   "margins_plateau_scan": {
+    "l": 48,
+    "r": 48,
+    "t": 175,
+    "b": 175
+   },
+   "margins_band_scan": {
+    "l": 34,
+    "r": 34,
+    "t": 139,
+    "b": 139
+   },
+   "pad_from_ink": {
+    "l": 0,
+    "t": 93,
+    "r": -1,
+    "b": 93
+   },
+   "margins_declared_master": [
+    20,
+    20,
+    20,
+    20
+   ],
+   "margins_pass": false,
+   "landed_ink_box": [
+    0,
+    93,
+    520,
+    290
+   ],
+   "ink_fill_pct": 51.22,
+   "landed": [
+    "ui_rack_bay_card.png"
+   ],
+   "verdict": "LANDED"
+  }
+ },
+ "swaps": [
+  {
+   "class": "C5",
+   "shipped": "assets/ui/ui_rack_bay_card.png",
+   "backup": "asset-library/_prekey_backup/chrome_family_b2_2026-10-05/ui_rack_bay_card.png",
+   "old_px": [
+    520,
+    384
+   ],
+   "old_md5": "d4ade9d6cc2b0cbb74f2e4c0e101611b",
+   "new_px": [
+    520,
+    384
+   ],
+   "note": "rejected D21-G2 cut (t/b pads 89/88, fill 53.5 %)"
+  }
+ ],
+ "failures": [
+  {
+   "id": "C1",
+   "cause": "master-aspect rect 2702x668 exceeds frame 2368x1776; reported, never clipped, never re-run without a fresh owner call",
+   "ink": {
+    "box": [
+     104,
+     552,
+     2265,
+     1219
+    ],
+    "ink_px": 1441349,
+    "solidity": 1.0
+   }
+  },
+  {
+   "id": "C2",
+   "cause": "master-aspect rect 2424x378 exceeds frame 2368x1776; reported, never clipped, never re-run without a fresh owner call",
+   "ink": {
+    "box": [
+     113,
+     691,
+     2255,
+     1068
+    ],
+    "ink_px": 806760,
+    "solidity": 0.999
+   }
+  },
+  {
+   "id": "C9",
+   "cause": "master-aspect rect 2495x389 exceeds frame 2368x1776; reported, never clipped, never re-run without a fresh owner call",
+   "ink": {
+    "box": [
+     72,
+     670,
+     2297,
+     1058
+    ],
+    "ink_px": 857724,
+    "solidity": 0.994
+   }
+  }
+ ]
+}

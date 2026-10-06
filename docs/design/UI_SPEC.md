@@ -33,7 +33,7 @@ and every tool result is re-sent on each later request.
 | 12. | Station shell v2 design detail — the TERMINAL drawer, the popup pair… | L1111–L1342 |
 | 13. | The D20 fix wave — exchange parity, the armory browser, the hover-in… | L1343–L1380 |
 | 14. | Exchange sell cluster + the OVERVIEW tile plates (amendment 2026-10-… | L1381–L1426 |
-| 15. | The one true-aspect chrome family (amendment 2026-10-05, owner rulin… | L1427–L1718 |
+| 15. | The one true-aspect chrome family (amendment 2026-10-05, owner rulin… | L1427–L1753 |
 
 <!-- section-index:end -->
 
@@ -1715,3 +1715,38 @@ the owner the same day ("1. swap, 2. POWER 3. accept 4. ok waiting"):
    case); only then at most one variant per failing class, ≤ 6 runs / ≤ $0.30
    (§13.6's ceiling). Reversal: buy none and let the failing class fall back
    to its shipped art.
+
+### 15.6 Cut-stage outcome — the four hard classes (2026-10-05/06)
+
+Three attempts (D21-G1 $0.80, D21-G2-B2 $0.20, B3 hands-on $0.20 — **$1.20
+total**) could not draw C1/C2/C9 at their class aspects nor C5 at 65:48; flare
+delivers thin rails (C1 9.87:1, C2 17.67:1, C9 14.45:1) and a square card
+(C5 0.99:1). The owner reviewed `asset-library/_review/
+CHROME_REVIEW_2026-10-05.jpg` (OLD vs NEW at true slot sizes) and ruled,
+verbatim: **"for rack bay i like both. new a bit better. drawer entry new.
+action button i like both. overview new."** — so **all four classes ship the
+new art at its drawn shape**, cut pad-to-master (crop law satisfied,
+containment 100 %; fill 41 % / 36 % / 44 % / 73 % — the air around the rails
+is the accepted look). The rail language (C1 tile beam, C2 button strip, C9
+entry strip) plus the square C5 card is the family's long-surface idiom.
+Landed: `ui_tile_slab`, `ui_action_bar`, `ui_drawer_entry`,
+`ui_rack_bay_card` (B3 cuts; the earlier C5 attempts rest in
+`asset-library/_prekey_backup/chrome_family_b2_2026-10-05/` and
+`chrome_family_b3_2026-10-05/`). Reversal: per class return to the §15.4-2 /
+§15.4-5 fallbacks, or re-run on nano-banana-pro (§13.1).
+
+**Keep-restore at close-out (2026-10-06).** The keep-list governs the five
+fixed-size surfaces: `ui_slot_*` faces, `ui_bar_caps` and `ui_minimap_bezel`
+stand **shipped** (the owner's criterion — native chrome drawn at its own
+aspect keeps it). G2 had swapped them against the keep table (the
+`D21-G2_BRIEF` acceptance item 9 over-rode it via §13.4's "in place" stems —
+disclosed, corrected here); the gate's two red rows (`test_s20` AC2's cut-size
+law and `test_d8`'s 12 px ink floor) guarded exactly that and return to green
+on the restore. The C8/C10/C11 masters rest as spares in
+`asset-library/_prekey_backup/chrome_keep_restore_2026-10-06/` (re-cuttable
+from `raw/`). **The swap map is the wiring scope for S36:** C1/C2/C3/C4/C5/
+C6/C7/C9/C12 + BG-1..4. Process note (harness): `filesystem_manage reimport`
+proved a no-op for cache refresh in this workspace — the reliable route is
+delete the texture's `.godot/imported/` entries + `filesystem_manage scan`
+(the stale `.ctex` twins served old art to the gate; a probe that prints
+`Texture2D.get_size()` settles it).

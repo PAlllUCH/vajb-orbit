@@ -5,8 +5,9 @@ file when decided or done** (deleted at the wave close-out or the ruling — the
 record lives in the cited file and `MASTER_REPORT.md` §6, this is the index
 only). Refreshed at every wave close-out and after every owner ruling.
 
-*Last refreshed: 2026-10-05 (T-140 decided — re-run the 4 failed chrome
-classes at $0.20; D21-G2-B2 in flight → S36 next)*
+*Last refreshed: 2026-10-06 (the chrome family is complete — 16/16 classes
+landed, the owner picked the rail look (`UI_SPEC.md` §15.6); S36 dispatches
+next)*
 
 ## Waiting on the owner
 
@@ -27,8 +28,9 @@ below.
 | T-116 | Auction foot band shape: §5.10 two-label vs §19.4 one-line (two pins disagree) | designer | next docs pass |
 | T-138 | SERVICES deck: `MODULE OFFLINE` placeholder until the contracts/insurance/vaults strip (D22-P1/F03) | builder | S25 contracts wave |
 
-*Closed at this refresh: **T-140** (owner, 2026-10-05: re-run the 4 failed
-classes at $0.20 with the class aspect re-stated — D21-G2-B2 executes). The
+*Closed at this refresh: **T-140** (owner, 2026-10-05/06: re-run, then the
+fallback test — B3's rails won the owner's review-sheet call and all four hard
+classes ship the new art, `UI_SPEC.md` §15.6). The
 four `S36_proposal.md` calls (owner answers 2026-10-05: drawer entries swap
 onto C9, `POWER` stays, the 393 px TradeBox is accepted, state variants wait
 for cut-stage QC — `UI_SPEC.md` §15.5) and **T-139** with them. Earlier the **T-131** (4 backdrops as proposed

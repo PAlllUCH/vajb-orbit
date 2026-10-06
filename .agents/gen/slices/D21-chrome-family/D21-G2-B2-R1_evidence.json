@@ -1,0 +1,517 @@
+{
+ "generated_utc": "2026-10-06T18:05:53Z",
+ "prompts": {
+  "C1": {
+   "style_verbatim_spec": true,
+   "body_minus_clause_eq_spec": true,
+   "body_minus_clause_eq_g1": true,
+   "g1_body_eq_spec": true,
+   "clause_count": 1,
+   "b2_chars": 2240,
+   "g1_chars": 2193
+  },
+  "C2": {
+   "style_verbatim_spec": true,
+   "body_minus_clause_eq_spec": true,
+   "body_minus_clause_eq_g1": true,
+   "g1_body_eq_spec": true,
+   "clause_count": 1,
+   "b2_chars": 2194,
+   "g1_chars": 2147
+  },
+  "C9": {
+   "style_verbatim_spec": true,
+   "body_minus_clause_eq_spec": true,
+   "body_minus_clause_eq_g1": true,
+   "g1_body_eq_spec": true,
+   "clause_count": 1,
+   "b2_chars": 2183,
+   "g1_chars": 2136
+  },
+  "C5": {
+   "style_verbatim_spec": true,
+   "body_minus_clause_eq_spec": true,
+   "body_minus_clause_eq_g1": true,
+   "g1_body_eq_spec": true,
+   "clause_count": 1,
+   "b2_chars": 2236,
+   "g1_chars": 2189
+  }
+ },
+ "renders": {
+  "C1": {
+   "render": "asset-library/raw/chrome-family/20261005-224516/grimdark-painted-sci-fi-semi-realistic-1.png",
+   "px": [
+    2368,
+    1776
+   ],
+   "aspect_diff_pct_4x3": 0.0,
+   "alpha0_pct": 64.7,
+   "route": "alpha>=48 (transparent return)",
+   "box_a1": [
+    0,
+    17,
+    2332,
+    1752
+   ],
+   "solidity": null,
+   "ink_box_mine": [
+    104,
+    552,
+    2265,
+    1219
+   ],
+   "ink_wh_mine": [
+    2161,
+    667
+   ],
+   "ink_aspect_mine": 3.24,
+   "ink_frame_w_pct": 91.3,
+   "g1_ink_aspect": 2.968,
+   "law_rect_needed_wh_mine": [
+    2706,
+    669
+   ],
+   "verdict_mine": "FAIL crop-to-master (rect exceeds frame)"
+  },
+  "C2": {
+   "render": "asset-library/raw/chrome-family/20261005-224538/grimdark-painted-sci-fi-semi-realistic-1.png",
+   "px": [
+    2368,
+    1776
+   ],
+   "aspect_diff_pct_4x3": 0.0,
+   "alpha0_pct": 79.6,
+   "route": "alpha>=48 (transparent return)",
+   "box_a1": [
+    0,
+    17,
+    2368,
+    1752
+   ],
+   "solidity": null,
+   "ink_box_mine": [
+    113,
+    691,
+    2255,
+    1068
+   ],
+   "ink_wh_mine": [
+    2142,
+    377
+   ],
+   "ink_aspect_mine": 5.682,
+   "ink_frame_w_pct": 90.5,
+   "g1_ink_aspect": 5.351,
+   "law_rect_needed_wh_mine": [
+    2430,
+    378
+   ],
+   "verdict_mine": "FAIL crop-to-master (rect exceeds frame)"
+  },
+  "C9": {
+   "render": "asset-library/raw/chrome-family/20261005-224600/grimdark-painted-sci-fi-semi-realistic-1.png",
+   "px": [
+    2368,
+    1776
+   ],
+   "aspect_diff_pct_4x3": 0.0,
+   "alpha0_pct": 79.1,
+   "route": "alpha>=48 (transparent return)",
+   "box_a1": [
+    49,
+    20,
+    2346,
+    1738
+   ],
+   "solidity": null,
+   "ink_box_mine": [
+    72,
+    670,
+    2297,
+    1058
+   ],
+   "ink_wh_mine": [
+    2225,
+    388
+   ],
+   "ink_aspect_mine": 5.735,
+   "ink_frame_w_pct": 94.0,
+   "g1_ink_aspect": 5.826,
+   "law_rect_needed_wh_mine": [
+    2501,
+    390
+   ],
+   "verdict_mine": "FAIL crop-to-master (rect exceeds frame)"
+  },
+  "C5": {
+   "render": "asset-library/raw/chrome-family/20261005-224628/grimdark-painted-sci-fi-semi-realistic-1.png",
+   "px": [
+    2368,
+    1776
+   ],
+   "aspect_diff_pct_4x3": 0.0,
+   "alpha0_pct": 0.0,
+   "bg_med_mine": [
+    4,
+    8,
+    13
+   ],
+   "flood_share_tol22": 0.683,
+   "unbounded_keep_box": [
+    16,
+    5,
+    2342,
+    1768
+   ],
+   "structure_box": [
+    247,
+    508,
+    2120,
+    1218
+   ],
+   "route": "own border-connected flood tol 22, bounded by own bright-structure box (dist>=60, row/col density>=9) + 3x3 opening",
+   "solidity": null,
+   "ink_box_mine": [
+    244,
+    508,
+    2124,
+    1219
+   ],
+   "ink_wh_mine": [
+    1880,
+    711
+   ],
+   "ink_aspect_mine": 2.644,
+   "ink_frame_w_pct": 79.4,
+   "g1_ink_aspect": 2.521,
+   "law_rect_needed_wh_mine": [
+    1881,
+    1390
+   ],
+   "law_rect_mine": [
+    244,
+    168,
+    2125,
+    1558
+   ],
+   "b2_crop_rect": [
+    242,
+    170,
+    2125,
+    1561
+   ],
+   "rect_delta": [
+    2,
+    -2,
+    0,
+    -3
+   ],
+   "containment_mine_pct": 100.0,
+   "incrop_ink_bbox": [
+    2,
+    338,
+    1882,
+    1049
+   ],
+   "incrop_expected_bbox": [
+    2,
+    338,
+    1882,
+    1049
+   ],
+   "clipped_ink_px": 0,
+   "resize_factors_mine": [
+    0.276155,
+    0.27606
+   ],
+   "scale_skew_pct": 0.0343,
+   "verdict_mine": "FIT"
+  }
+ },
+ "landed_c5": {
+  "px": [
+   520,
+   384
+  ],
+  "md5": "12e3c4deceba8602c4dab8f6884988ad",
+  "aspect_exact_65x48": true,
+  "alpha0_px": 95836,
+  "alpha_buckets": {
+   "a0": 95836,
+   "a1_99": 1915,
+   "a100_199": 1065,
+   "a200_249": 25999,
+   "a250plus": 74865
+  },
+  "alpha_ge250_pct": 37.49,
+  "raw_c5_alpha_buckets": {
+   "a0": 0,
+   "a1_99": 131059,
+   "a100_199": 528554,
+   "a200_249": 2562416,
+   "a250plus": 983539
+  },
+  "old_g2_cut_alpha_buckets": {
+   "a0": 91703,
+   "a200_249": 1095,
+   "a250plus_pct": 52.43
+  },
+  "ink_box_mine_a48": [
+   0,
+   93,
+   520,
+   290
+  ],
+  "ink_box_mine_a1": [
+   0,
+   90,
+   520,
+   293
+  ],
+  "ink_aspect_mine": 2.64,
+  "master_aspect": 1.3542,
+  "ink_fill_pct": 51.22,
+  "centre_offset_mine": [
+   0.0,
+   -0.5
+  ],
+  "pads_mine_a48": {
+   "l": 0,
+   "t": 93,
+   "r": 0,
+   "b": 94
+  },
+  "margins_mine": {
+   "l": {
+    "settled": 43,
+    "first_gradient": 33,
+    "inner_ref": 31.4
+   },
+   "r": {
+    "settled": 43,
+    "first_gradient": 33,
+    "inner_ref": 31.4
+   },
+   "t": {
+    "settled": 153,
+    "first_gradient": 95,
+    "inner_ref": 25.0
+   },
+   "b": {
+    "settled": 153,
+    "first_gradient": 95,
+    "inner_ref": 25.0
+   }
+  }
+ },
+ "state": {
+  "backup_exists": true,
+  "backup_md5": "d4ade9d6cc2b0cbb74f2e4c0e101611b",
+  "backup_px": [
+   520,
+   384
+  ],
+  "manifest_swap_row": {
+   "class": "C5",
+   "shipped": "assets/ui/ui_rack_bay_card.png",
+   "backup": "asset-library/_prekey_backup/chrome_family_b2_2026-10-05/ui_rack_bay_card.png",
+   "old_px": [
+    520,
+    384
+   ],
+   "old_md5": "d4ade9d6cc2b0cbb74f2e4c0e101611b",
+   "new_px": [
+    520,
+    384
+   ],
+   "note": "rejected D21-G2 cut (t/b pads 89/88, fill 53.5 %)"
+  },
+  "landed_md5": "12e3c4deceba8602c4dab8f6884988ad",
+  "landed_import_stanza": true,
+  "stem_absent_ui_tile_slab.png": true,
+  "import_absent_ui_tile_slab.png": true,
+  "stem_absent_ui_action_bar.png": true,
+  "import_absent_ui_action_bar.png": true,
+  "stem_absent_ui_drawer_entry.png": true,
+  "import_absent_ui_drawer_entry.png": true,
+  "state_variant_files": [
+   "ui_slot_weapon_hover.png",
+   "ui_slot_cargo_disabled.png",
+   "ui_button_plate_pressed.png",
+   "ui_slot_weapon_disabled.png",
+   "ui_slot_cargo_pressed.png",
+   "ui_slot_inventory_hover.png",
+   "ui_button_plate_disabled.png",
+   "ui_button_plate_hover.png",
+   "ui_slot_weapon_pressed.png",
+   "ui_slot_cargo_hover.png",
+   "ui_slot_inventory_pressed.png",
+   "ui_slot_inventory_disabled.png"
+  ],
+  "recraft_oct5_evening": [],
+  "variant_file_mtimes_sample": {
+   "ui_button_plate_pressed.png": "09-22 23:40",
+   "ui_slot_cargo_pressed.png": "09-22 23:40",
+   "ui_slot_inventory_pressed.png": "09-22 23:40",
+   "ui_slot_weapon_pressed.png": "09-22 23:40"
+  },
+  "raw_dir_count": 24,
+  "raw_b2_dirs": [
+   "20261006-195910",
+   "20261006-195938",
+   "20261006-200005",
+   "20261006-200137"
+  ],
+  "ledger_entries": 114,
+  "ledger_flare": 102,
+  "b2_ledger_rows": [
+   {
+    "ts": "2026-10-05T20:45:17.165937+00:00",
+    "task_id": "819343bcfb566d8f9b2bab927c4ad54e",
+    "model": "gpt-image-2-5-flare-text-to-image",
+    "aspect": "4:3",
+    "resolution": "2K",
+    "est_credits": 30
+   },
+   {
+    "ts": "2026-10-05T20:45:39.249793+00:00",
+    "task_id": "f04d80f794eca91e9cf995917ba4b0fc",
+    "model": "gpt-image-2-5-flare-text-to-image",
+    "aspect": "4:3",
+    "resolution": "2K",
+    "est_credits": 30
+   },
+   {
+    "ts": "2026-10-05T20:46:01.355032+00:00",
+    "task_id": "e6d014ca06bfb6d8067fd4fa8566983b",
+    "model": "gpt-image-2-5-flare-text-to-image",
+    "aspect": "4:3",
+    "resolution": "2K",
+    "est_credits": 30
+   },
+   {
+    "ts": "2026-10-05T20:46:35.200989+00:00",
+    "task_id": "a15e6507f0eb0c4043342ed32c24948a",
+    "model": "gpt-image-2-5-flare-text-to-image",
+    "aspect": "4:3",
+    "resolution": "2K",
+    "est_credits": 30
+   }
+  ],
+  "b2_ledger_all_flare": true,
+  "rows_between_last_g1_and_first_b2": [
+   {
+    "ts": "2026-10-05T18:25:51.100770+00:00",
+    "model": "gpt-image-2-5-flare-text-to-image",
+    "task_id": "6c1492f3d82d8d199663283635a1b830"
+   },
+   {
+    "ts": "2026-10-05T18:26:18.511530+00:00",
+    "model": "gpt-image-2-5-flare-text-to-image",
+    "task_id": "cebbf5f384a6c16a32008069d13bc342"
+   },
+   {
+    "ts": "2026-10-05T18:31:06.885896+00:00",
+    "model": "gpt-image-2-5-flare-text-to-image",
+    "task_id": "9b50bbf9033373afde733065f197e759"
+   }
+  ],
+  "ledger_rows_after_b2": [
+   {
+    "ts": "2026-10-06T17:59:11.480279+00:00",
+    "task_id": "29e7e1fd3f61d5b52dbabf0a6339b0b4",
+    "model": "gpt-image-2-5-flare-text-to-image",
+    "aspect": "4:3",
+    "resolution": "2K",
+    "est_credits": 30
+   },
+   {
+    "ts": "2026-10-06T17:59:38.922346+00:00",
+    "task_id": "2c2149e60ecf86fd47450a26fd98c76f",
+    "model": "gpt-image-2-5-flare-text-to-image",
+    "aspect": "4:3",
+    "resolution": "2K",
+    "est_credits": 30
+   },
+   {
+    "ts": "2026-10-06T18:00:06.510875+00:00",
+    "task_id": "fd7aaad71d53216d3cb8b91167ab763f",
+    "model": "gpt-image-2-5-flare-text-to-image",
+    "aspect": "4:3",
+    "resolution": "2K",
+    "est_credits": 30
+   },
+   {
+    "ts": "2026-10-06T18:01:38.622441+00:00",
+    "task_id": "26e01a6c40eabe80542b6a04b54ab695",
+    "model": "gpt-image-2-5-flare-text-to-image",
+    "aspect": "4:3",
+    "resolution": "2K",
+    "est_credits": 30
+   }
+  ],
+  "raw_dirs_after_b2": [
+   "20261006-195910",
+   "20261006-195938",
+   "20261006-200005",
+   "20261006-200137"
+  ],
+  "post_b2_job_json": {
+   "20261006-195910": {
+    "task_id": "29e7e1fd3f61d5b52dbabf0a6339b0b4",
+    "ratio_clause": [],
+    "b3_style": false,
+    "prompt_head": ""
+   },
+   "20261006-195938": {
+    "task_id": "2c2149e60ecf86fd47450a26fd98c76f",
+    "ratio_clause": [],
+    "b3_style": false,
+    "prompt_head": ""
+   },
+   "20261006-200005": {
+    "task_id": "fd7aaad71d53216d3cb8b91167ab763f",
+    "ratio_clause": [],
+    "b3_style": false,
+    "prompt_head": ""
+   },
+   "20261006-200137": {
+    "task_id": "26e01a6c40eabe80542b6a04b54ab695",
+    "ratio_clause": [],
+    "b3_style": false,
+    "prompt_head": ""
+   }
+  }
+ },
+ "sheets": {
+  "shipped_owner_px": [
+   1370,
+   1516
+  ],
+  "rebuild_new_vs_shipped": {
+   "same_size": true,
+   "diff_bbox": null,
+   "max_channel_delta": 0
+  },
+  "rebuild_old_vs_shipped": {
+   "same_size": true,
+   "diff_bbox": [
+    14,
+    505,
+    336,
+    637
+   ],
+   "max_channel_delta": 0
+  },
+  "shipped_state_px": [
+   932,
+   760
+  ],
+  "rebuild_state_vs_shipped": {
+   "same_size": true,
+   "diff_bbox": null,
+   "max_channel_delta": 0
+  }
+ }
+}

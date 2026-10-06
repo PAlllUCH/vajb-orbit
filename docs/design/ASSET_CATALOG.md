@@ -1,6 +1,6 @@
 # Vajb Orbit - Asset Catalog
 
-**Generated:** 2026-10-05 22:27 from `vajb-orbit/assets/` by `staging/phase_d/build_catalog.py`. Tables are mechanical (filesystem); do not hand-edit - regenerate instead.
+**Generated:** 2026-10-06 20:16 from `vajb-orbit/assets/` by `staging/phase_d/build_catalog.py`. Tables are mechanical (filesystem); do not hand-edit - regenerate instead.
 
 **Scope:** Phase B (109 files, `GENERATION_PLAN.md`) + Phase D expansion (141 files, `ASSET_EXPANSION_SPEC.md`) + Phase E expansion (67 files, `ASSET_EXPANSION_SPEC_E.md`) + Phase F RPG/economy layer (`docs/gameplay/16_art_design_brief.md`) + the F.1 resolution and integrity pass (icon quartet, `ICONS_SPEC.md` 9.7) + the audio family (95 files, `AUDIO_SPEC.md` section 8), all imported by the live editor.
 
@@ -21,9 +21,9 @@
 | `res://assets/ships/` | 104 | 33 | 53 | 0 | 18 |
 | `res://assets/icons/` | 279 | 159 | 18 | 16 | 86 |
 | `res://assets/env/` | 0 | 0 | 0 | 0 | 0 |
-| `res://assets/ui/` | 60 | 49 | 11 | 0 | 0 |
+| `res://assets/ui/` | 63 | 52 | 11 | 0 | 0 |
 | `res://assets/fx/` | 146 | 96 | 35 | 0 | 15 |
-| **Total** | **589** | **337** | **117** | **16** | **119** |
+| **Total** | **592** | **340** | **117** | **16** | **119** |
 
 | Audio folder | Files |
 |---|---|
@@ -436,6 +436,7 @@
 | File | px | a | ph | Purpose |
 |---|---|---|---|---|
 | `logo_vajb_orbit.png` | 2048x2048 | rgba | B | Game logo (menu title) |
+| `ui_action_bar.png` | 720x112 | rgba | B | UI sprite. |
 | `ui_armory_console.png` | 2720x1032 | rgba | B | UI sprite. |
 | `ui_armory_rack_plate.png` | 194x182 | rgba | B | UI sprite. |
 | `ui_armory_row_plate.png` | 192x64 | rgba | B | UI sprite. |
@@ -456,6 +457,7 @@
 | `ui_cockpit_panel.png` | 928x512 | rgba | B | UI sprite. |
 | `ui_compass_lubber.png` | 32x24 | rgba | B | UI sprite. |
 | `ui_compass_rose.png` | 192x192 | rgba | B | UI sprite. |
+| `ui_drawer_entry.png` | 720x112 | rgba | B | UI sprite. |
 | `ui_gauge_face.png` | 240x240 | rgba | B | UI sprite. |
 | `ui_gauge_needle.png` | 16x192 | rgba | B | UI sprite. |
 | `ui_inline_chip.png` | 192x64 | rgba | B | UI sprite. |
@@ -494,6 +496,7 @@
 | `ui_slot_weapon_normal.png` | 112x112 | rgba | B | Slot plate: weapon slot, normal state (UI_CHROME_ASSETS_SPEC). |
 | `ui_slot_weapon_pressed.png` | 48x48 | rgba | B | Slot plate: weapon slot, pressed state (UI_CHROME_ASSETS_SPEC). |
 | `ui_status_panel.png` | 1440x1040 | rgba | B | UI sprite. |
+| `ui_tile_slab.png` | 1134x280 | rgba | B | UI sprite. |
 | `ui_tooltip_frame.png` | 720x480 | rgba | B | UI sprite. |
 
 ## fx - combat and screen effects

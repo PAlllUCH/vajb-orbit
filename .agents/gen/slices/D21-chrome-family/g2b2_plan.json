@@ -1,0 +1,38 @@
+[
+  {
+    "id": "C1",
+    "aspect": "4:3",
+    "resolution": "2K",
+    "transparent": true,
+    "prompt_file": "/home/kamil-paluszkiewicz/VajbOrbit/.agents/gen/slices/D21-chrome-family/prompts/C1_b2.txt",
+    "prompt_chars": 2240,
+    "delta": "inserted 'the plate's width about 4.05 times its height' before the centre clause; style block + negative list verbatim from C1.txt (D21-G1)"
+  },
+  {
+    "id": "C2",
+    "aspect": "4:3",
+    "resolution": "2K",
+    "transparent": true,
+    "prompt_file": "/home/kamil-paluszkiewicz/VajbOrbit/.agents/gen/slices/D21-chrome-family/prompts/C2_b2.txt",
+    "prompt_chars": 2194,
+    "delta": "inserted 'the plate's width about 6.43 times its height' before the centre clause; style block + negative list verbatim from C2.txt (D21-G1)"
+  },
+  {
+    "id": "C9",
+    "aspect": "4:3",
+    "resolution": "2K",
+    "transparent": true,
+    "prompt_file": "/home/kamil-paluszkiewicz/VajbOrbit/.agents/gen/slices/D21-chrome-family/prompts/C9_b2.txt",
+    "prompt_chars": 2183,
+    "delta": "inserted 'the plate's width about 6.43 times its height' before the centre clause; style block + negative list verbatim from C9.txt (D21-G1)"
+  },
+  {
+    "id": "C5",
+    "aspect": "4:3",
+    "resolution": "2K",
+    "transparent": true,
+    "prompt_file": "/home/kamil-paluszkiewicz/VajbOrbit/.agents/gen/slices/D21-chrome-family/prompts/C5_b2.txt",
+    "prompt_chars": 2236,
+    "delta": "inserted 'the plate's width about 1.35 times its height' before the centre clause; style block + negative list verbatim from C5.txt (D21-G1)"
+  }
+]

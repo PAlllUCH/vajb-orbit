@@ -178,12 +178,15 @@ measured per §15.3, land at the §13.4 stems, cut contact sheet for the
 owner's eye; the owner's four S36 calls decided 2026-10-05 are recorded in
 `UI_SPEC.md` §15.5) — **done 2026-10-05** (15/16 landed at exact master
 pixels; C1/C2/C9 crop-FAILs + C5 unusable → **T-140** owner call on the $0.20
-re-batch; R1 0 HIGH / 3 MED, F1 cured the flare alpha veil free; gate
-1138/0 ×2, verify green vs `g2_start`).
+re-batch; R1 0 HIGH / 3 MED, F1 cured the flare alpha veil free) — completed
+by B2 (T-140) + B3 (hands-on) on 2026-10-06: all 16 classes land, the
+owner-picked rails (`UI_SPEC.md` §15.6), family total $1.20, gate 1138/0 ×2,
+verify green vs `g2b2_start`.
 **Coder item 43 = S36 the chrome re-skin** (earlier notes' "S35" build
 placeholder; `hyper/deepseek-v4.1-flash` @ xhigh, R1 `hyper/glm-5.3-flash` @
-max) — after the owner's cut-sheet eyeball **and** T-140 (the four failed
-classes' disposition is S36's scope input).
+max) — next; T-140 resolved 2026-10-06 (all four hard classes ship the
+owner-picked rail look, `UI_SPEC.md` §15.6), so S36 wires the FULL family
+(16 classes + BG-1..4).
 **Item 30 = S24 world identity — after 43** (its five-piece predates shell v2
 AND the 2026-10-05 rounds, so the developer re-checks
 `slices/S24-world-identity/S24_BRIEF.md` against `UI_SPEC.md` §12–§15 +
