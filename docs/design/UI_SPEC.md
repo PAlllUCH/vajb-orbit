@@ -1824,3 +1824,23 @@ Reversal: restore the five cuts from `_prekey_backup` (the retired files live in
 `/tmp/orig_cuts` for this pass; the generation is reproducible from the run
 folder) and restore §15.3's N51 table.
 
+**Readability polish (owner 2026-10-07, a full live pass over every deck).**
+Three follow-on fixes, all from the walk's notes:
+
+- **The row meta line gets its own token.** `SLOT … · DRAW …` / `LEGAL: …` were
+  `StationCaption` (`text_dim` #6b7484), ~3.9:1 on the row plates — under WCAG
+  AA. They now wear the new **`StationMeta`** variation (`text_meta` #9aa3b0,
+  ≥ 4.5:1); the row meta + the armory's legality line switch to it
+  (`build_theme.gd`, every pane's `_make_title_box`).
+- **The canvas chrome lights up on hover.** The C1/C2/C5/C9 hover was a 6 %
+  white overlay that read as almost no feedback next to the rows' tinted
+  nine-slice; `ChromeFamily.apply_canvas` now brightens the chrome
+  (`modulate` 1.2) on `mouse_entered` / back on `mouse_exited` (A7-safe: a
+  modulate, never a size or position change).
+- **The LAUNCH briefing pairs each label with its value.** A wide expanding
+  label column left the values far from their labels; the label now sits in a
+  fixed 180 px column with the value directly after it
+  (`launch_panel.gd:_build_brief_rows`, `COL_LABEL`).
+
+Reversal: `git revert` this block (the token, the two hooks and `COL_LABEL`).
+

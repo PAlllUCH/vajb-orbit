@@ -4123,7 +4123,7 @@ func _build_browser_row(entry: Dictionary, _profile_unused: ProfileScript) -> Di
 	title.name = "Title"
 	title_box.add_child(title)
 	var meta := _make_label(
-		&"StationCaption",
+		&"StationMeta",
 		BROWSER_META_FORMAT % [
 			String(module_row.get(&"slot", "")).to_upper(), int(module_row.get(&"draw", 0))
 		],
@@ -4132,7 +4132,7 @@ func _build_browser_row(entry: Dictionary, _profile_unused: ProfileScript) -> Di
 	meta.name = "Meta"
 	title_box.add_child(meta)
 	## P38: the row's own proactive legality line (the CELL INFO block's own vocabulary).
-	var legal := _make_label(&"StationCaption", String(entry[&"legal"]), true)
+	var legal := _make_label(&"StationMeta", String(entry[&"legal"]), true)
 	legal.name = "Legal"
 	title_box.add_child(legal)
 	var slack := Control.new()

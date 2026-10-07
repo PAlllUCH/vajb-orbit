@@ -344,15 +344,27 @@ static func apply_canvas(control: Control, cls: String) -> void:
 	if control is Button:
 		var button := control as Button
 		button.add_theme_stylebox_override(&"normal", StyleBoxEmpty.new())
-		var hover := StyleBoxFlat.new()
-		hover.bg_color = Color(1.0, 1.0, 1.0, 0.06)
-		button.add_theme_stylebox_override(&"hover", hover)
+		button.add_theme_stylebox_override(&"hover", StyleBoxEmpty.new())
 		var pressed := StyleBoxFlat.new()
 		pressed.bg_color = Color(0.0, 0.0, 0.0, 0.12)
 		button.add_theme_stylebox_override(&"pressed", pressed)
 		var disabled := StyleBoxFlat.new()
 		disabled.bg_color = Color(0.0, 0.0, 0.0, 0.35)
 		button.add_theme_stylebox_override(&"disabled", disabled)
+		## S37 rev (owner 2026-10-07): the canvas chrome lights up on hover by a modulate
+		## brighten (the 6 % white overlay the styleboxes used read as almost no feedback
+		## next to the rows' tinted nine-slice). Guarded so a re-apply never double-connects.
+		if not button.has_meta(&"chrome_hover_wired"):
+			button.set_meta(&"chrome_hover_wired", true)
+			button.mouse_entered.connect(_canvas_hover.bind(canvas, true))
+			button.mouse_exited.connect(_canvas_hover.bind(canvas, false))
+
+
+## The canvas-class hover look: a modulate brighten on the chrome, a slight dim on press.
+static func _canvas_hover(canvas: TextureRect, on: bool) -> void:
+	if canvas == null or not is_instance_valid(canvas):
+		return
+	canvas.modulate = Color(1.2, 1.2, 1.2) if on else Color.WHITE
 
 
 ## C7 tooltip frame: the measured nine-slice scaled to the panel's drawn rect, with the

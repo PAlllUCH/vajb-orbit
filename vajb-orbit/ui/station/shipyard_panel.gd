@@ -423,7 +423,7 @@ func _make_title_box(name_text: String, meta: String) -> VBoxContainer:
 	var title := _make_label(&"StationValue", name_text)
 	title.name = "Title"
 	box.add_child(title)
-	var meta_label := _make_label(&"StationCaption", meta)
+	var meta_label := _make_label(&"StationMeta", meta)
 	meta_label.name = "Meta"
 	box.add_child(meta_label)
 	return box

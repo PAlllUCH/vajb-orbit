@@ -450,7 +450,7 @@ func _make_title_box(name_text: String, ore_qty: int, loaded: bool) -> VBoxConta
 	title.name = "Title"
 	box.add_child(title)
 	var meta := _make_label(
-		&"StationCaption",
+		&"StationMeta",
 		TAG_INPUT_FORMAT % ore_qty if loaded else TAG_HELD_FORMAT % ore_qty
 	)
 	meta.name = "Meta"

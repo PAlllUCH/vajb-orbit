@@ -840,7 +840,7 @@ func _make_title_box(name_text: String, meta_text: String, tint: StringName) -> 
 	if tint != &"":
 		title.add_theme_color_override(&"font_color", _rarity_color(tint))
 	box.add_child(title)
-	var meta := _make_label(&"StationCaption", meta_text)
+	var meta := _make_label(&"StationMeta", meta_text)
 	meta.name = "Meta"
 	box.add_child(meta)
 	return box

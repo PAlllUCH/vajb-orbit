@@ -9,9 +9,9 @@ entry. addons/ is vendored and excluded. The JSON twin
 |---|---|
 | 1. Autoloads | L18–L27 |
 | 2. Scenes | L28–L147 |
-| 3. Signal wiring | L148–L392 |
-| 4. Scripts | L393–L683 |
-| 5. Orphan scripts | L684–L698 |
+| 3. Signal wiring | L148–L394 |
+| 4. Scripts | L395–L685 |
+| 5. Orphan scripts | L686–L700 |
 
 
 ## 1. Autoloads (project.godot)
@@ -390,6 +390,8 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://ui/station/shipyard_panel.gd | row.mouse_entered → _on_row_hovered.bind(payload |
 | res://ui/station/shipyard_panel.gd | row.mouse_exited → _on_row_hovered.bind(payload |
 | res://ui/station/shipyard_panel.gd | row.pressed → _on_row_pressed.bind(payload |
+| res://ui/theme/chrome_family.gd | button.mouse_entered → _canvas_hover.bind(canvas |
+| res://ui/theme/chrome_family.gd | button.mouse_exited → _canvas_hover.bind(canvas |
 | res://ui/theme/chrome_family.gd | control.resized → func( |
 
 ## 4. Scripts

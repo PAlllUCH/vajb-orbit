@@ -6145,6 +6145,8 @@
    "autoload": "",
    "class_name": "",
    "connects": [
+    "button.mouse_entered \u2192 _canvas_hover.bind(canvas",
+    "button.mouse_exited \u2192 _canvas_hover.bind(canvas",
     "control.resized \u2192 func("
    ],
    "extends": "RefCounted",

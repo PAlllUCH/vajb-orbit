@@ -65,6 +65,7 @@ const FONT_ROLES: Dictionary = {
 	&"StationValue": &"semibold",
 	&"SectionHeader": &"medium",
 	&"StationCaption": &"medium",
+	&"StationMeta": &"medium",
 	&"Version": &"flavour",
 	&"FlavourText": &"flavour",
 }
@@ -78,6 +79,9 @@ const TOKENS: Dictionary = {
 	&"metal_light": "#3d4654",
 	&"text_primary": "#c9d1dc",
 	&"text_dim": "#6b7484",
+	## S37 rev (owner 2026-10-07): the row meta line's own token - `text_dim` read under
+	## WCAG AA on the dark row plates, so the meta gets a brighter grey (>= 4.5:1).
+	&"text_meta": "#9aa3b0",
 	&"accent_danger": "#c8471f",
 	&"accent_danger_bright": "#e8622a",
 	&"menu_glow": "#e8703a",
@@ -128,6 +132,7 @@ const LABEL_VARIATIONS: Dictionary = {
 	&"StationPanelTitle": 20,
 	&"StationValue": 18,
 	&"StationCaption": 13,
+	&"StationMeta": 13,
 	&"FlavourText": 13,
 }
 
@@ -142,6 +147,7 @@ const VARIATION_BASE: Dictionary = {
 	&"StationPanelTitle": &"Label",
 	&"StationValue": &"Label",
 	&"StationCaption": &"Label",
+	&"StationMeta": &"Label",
 	&"FlavourText": &"Label",
 	&"MenuButton": &"Button",
 	&"MenuButtonPlate": &"Button",
@@ -357,6 +363,7 @@ func _register_variations(theme: Theme) -> void:
 	theme.set_color(&"font_color", &"StationPanelTitle", _c(&"text_primary"))
 	theme.set_color(&"font_color", &"StationValue", _c(&"text_primary"))
 	theme.set_color(&"font_color", &"StationCaption", _c(&"text_dim"))
+	theme.set_color(&"font_color", &"StationMeta", _c(&"text_meta"))
 	theme.set_color(&"font_color", &"FlavourText", _c(&"text_dim"))
 	_register_plate_variations(theme)
 	theme.set_stylebox(&"background", &"HudHullBar", _boxes[&"progress_bg"])

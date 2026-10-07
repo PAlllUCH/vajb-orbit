@@ -114,7 +114,10 @@ const BOUNTY_PAID_FORMAT := "BOUNTY PAID · %d CR"
 const BOUNTY_REFUSED := "REFUSED · NOT ENOUGH CREDITS"
 const BOUNTY_NOTHING_OWED := "NO BOUNTY DUE"
 
-const COL_BRIEF := 220.0
+## The briefing's label column (owner 2026-10-07: a wide label column left the
+## values far from their labels). The label sits in a fixed column and the value
+## follows it directly, so a row reads as one label + value pair.
+const COL_LABEL := 180.0
 const BRIEF_SEPARATION := 12
 
 ## CONTRACTS section 11: the two new rows are the active hull's 08 section 3 counts, read
@@ -296,13 +299,14 @@ func _build_brief_rows() -> void:
 		var caption := Label.new()
 		caption.theme_type_variation = &"StationCaption"
 		caption.text = String(row[&"label"])
-		caption.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		caption.custom_minimum_size = Vector2(COL_LABEL, 0.0)
+		caption.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 		caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		line.add_child(caption)
 		var value := Label.new()
 		value.theme_type_variation = &"StationValue"
-		value.custom_minimum_size = Vector2(COL_BRIEF, 0.0)
-		value.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		value.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		value.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 		value.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		line.add_child(value)
 		_brief_values[row[&"key"]] = value
