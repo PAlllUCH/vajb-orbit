@@ -214,6 +214,7 @@ const CREDITS_WIDTH_RESERVE := 999999999
 @onready var _credits_icon: TextureRect = %CreditsIcon
 @onready var _credits_value: Label = %CreditsValue
 @onready var _terminal_button: Button = %TerminalButton
+@onready var _inspect_button: Button = %InspectButton
 @onready var _station_plate: PanelContainer = %StationPlate
 @onready var _station_mark: TextureRect = %StationMark
 @onready var _station_name: Label = %StationName
@@ -231,6 +232,9 @@ var _module: int = OVERVIEW
 var _panels: Array[CanvasItem] = []
 var _overview: CanvasItem = null
 var _services: CanvasItem = null
+## N37 rev (owner 2026-10-07): the one persistent INSPECT toggle. When on, the active pane
+## routes an item press to its sheet instead of its normal action, and no per-row chip ships.
+var _inspect_mode := false
 var _module_entries: Array[Button] = []
 var _drawer_focus_order: Array[Control] = []
 var _displayed_credits := 0
@@ -375,6 +379,7 @@ func _wire_controls() -> void:
 	_leave_cancel.pressed.connect(_close_leave_confirm)
 	_leave_logout.pressed.connect(_on_logout_pressed)
 	_terminal_button.pressed.connect(_toggle_drawer)
+	_inspect_button.toggled.connect(_on_inspect_toggled)
 
 
 ## S30's popup layer (UI_SPEC section 12.2/12.3): the N27 tooltip on its own CanvasLayer
@@ -693,6 +698,45 @@ func open_sheet(payload: Dictionary) -> void:
 	if focused != null:
 		_sheet_trigger = focused
 	_sheet.call(&"open", payload)
+
+
+## N37 rev (owner 2026-10-07): the header's one INSPECT toggle. On, the active pane routes
+## an item press to its sheet (and shows the pointer hand); off, an item press is its normal
+## action. The button carries the mode in its own `pressed` state (A7: no new visual channel).
+func _on_inspect_toggled(on: bool) -> void:
+	_inspect_mode = on
+	_apply_inspect_mode()
+	_style_inspect_button()
+
+
+## The toggle's own "on" look (owner 2026-10-07: the header button must read lit while the
+## mode is in force). The pressed stylebox takes the ember accent border + label; A7-safe
+## (a stylebox/colour swap, never a size or position change).
+func _style_inspect_button() -> void:
+	if _inspect_button == null:
+		return
+	if _inspect_mode:
+		var accent: Color = _token(&"accent_danger_bright")
+		var box := StyleBoxFlat.new()
+		box.bg_color = _token(&"void_base")
+		box.border_color = accent
+		box.set_border_width_all(2)
+		_inspect_button.add_theme_stylebox_override(&"pressed", box)
+		_inspect_button.add_theme_stylebox_override(&"hover_pressed", box)
+		_inspect_button.add_theme_color_override(&"font_pressed_color", accent)
+		_inspect_button.add_theme_color_override(&"font_hover_pressed_color", accent)
+	else:
+		_inspect_button.remove_theme_stylebox_override(&"pressed")
+		_inspect_button.remove_theme_stylebox_override(&"hover_pressed")
+		_inspect_button.remove_theme_color_override(&"font_pressed_color")
+		_inspect_button.remove_theme_color_override(&"font_hover_pressed_color")
+
+
+## Push the mode onto the active pane (and the drawer's entries stay navigation).
+func _apply_inspect_mode() -> void:
+	var panel := _panel_for(_module)
+	if panel != null and panel.has_method(&"set_inspect_mode"):
+		panel.call(&"set_inspect_mode", _inspect_mode)
 
 
 ## N34's keyboard/pad route: ask the pane on the host to inspect whatever it holds focused.
@@ -1079,6 +1123,7 @@ func _select_module(module: int, instant: bool = false) -> void:
 	_module = module
 	_sync_entry_pressed()
 	_sync_backdrop()
+	_apply_inspect_mode()
 	if not instant:
 		AudioManager.play_sfx(SFX_MODULE_SWITCH)
 		AudioManager.play_ambience(_bed_for(module), SWITCH_AMBIENCE_FADE)

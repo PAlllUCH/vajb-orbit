@@ -53,12 +53,15 @@ const CUT := {
 	"C12": "ui_panel_frame.png",
 }
 
-## The nine-slice classes and their N51 measured margins (cut px), left/right/top/bottom
-## (the order R1's `probe_s36_r1_measure.py` publishes as "lrtb"). S36-F1 corrected B1's
-## assignment, which read this vector as (l, t, r, b) and so swapped top and right.
+## The nine-slice classes and their margins (cut px), left/right/top/bottom (the order R1's
+## `probe_s36_r1_measure.py` publishes as "lrtb"). S36-F1 corrected B1's assignment, which
+## read this vector as (l, t, r, b) and so swapped top and right. S37 re-cut C3/C4 to the
+## replacement rails: the N51 values sized the OLD cuts' recessed well (a 55 % C4 and 97 %
+## C3 vertical ornament, i.e. a 34 px and 1 px drawn band) and are replaced by the thin frame
+## of the new flat rails, so the drawn band now clears its content. Reversal: the N51 table.
 const MARGINS := {
-	"C3": Vector4(24.0, 34.0, 23.0, 39.0),
-	"C4": Vector4(74.0, 74.0, 35.0, 49.0),
+	"C3": Vector4(18.0, 18.0, 9.0, 11.0),
+	"C4": Vector4(30.0, 30.0, 8.0, 10.0),
 	"C7": Vector4(22.0, 43.0, 50.0, 64.0),
 }
 

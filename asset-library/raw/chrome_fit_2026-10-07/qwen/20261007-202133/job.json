@@ -1,0 +1,20 @@
+{
+  "task_id": "fd74a1783f28654e10d351ced500c03e",
+  "model": "qwen2-1/text-to-image",
+  "input": {
+    "prompt": "grimdark painted sci-fi, semi-realistic weathered metal, harsh directional rim light from upper-left with a thin cold pale steel rim tracing shadow-side silhouettes, subtle film grain over the whole image, top-down orthographic view. Fixed palette: gunmetal mid #3A3F46, gunmetal dark #2B2F35, iron black #232629, steel highlight #565C63, rusted ochre #6E5B4A, dry rust #8A6A50, grimy umber #4A423B, void black #0A0E14, deep void blue #111823, void haze #1A2230, burnt ember #C8461B, ember glow #E8703A, panel black #15181D, panel steel #2A2E35, ash text #8D939B, bone text #C9CDD2. Metal colour is desaturated gunmetal and rusted steel, dark and tired, with scratches, oil stains, hull grime, rust streaks, pitted metal, scorch marks and battle damage. Glow colours are burnt ember #C8461B and ember glow #E8703A only, small and hot, used exclusively for engines, weapons and warning lights; no other glow or accent colour exists anywhere in the image. The background is completely transparent, an empty alpha channel, nothing behind or beneath the pieces: no backdrop, no floor, no ground plane, no horizon, no colour field, no stars, no gradient, no texture, no reflection. Painted grimdark game UI chrome, straight-on flat view, every piece centred in its own band at its stated aspect, isolated on the transparent background with no shadow of any kind cast onto it. The style is a sibling of the existing Vajb Orbit metal chrome family, the cockpit instrument panel, the armory console face, the armory rack and row plates, the status console face, the riveted panel frame and the main menu button plates, never a new style.\n\nSubject: one sheet of five separate horizontal game UI chrome rails of five different aspect ratios, stacked as five evenly spaced horizontal bands in a single vertical column on the transparent background, generous empty transparent gaps between the bands, nothing touching the sheet edge, no grid lines, no labels, no text, no numbers. Every rail is a flat brushed gunmetal plate, perfectly rectangular with sharp square corners, a one-pixel steel border, a shallow bevelled top and bottom edge, one round rivet head near each corner (four rivets per rail), and a wide flat empty panel-black interior; each rail fills its own band edge to edge vertically with no transparent space above or below it inside its band. No indicator lamps, no glowing dots, no corner brackets, no hinge tabs, no recessed well, no inner lip. From top to bottom: (1) a wide tile slab, aspect about four to one, the widest piece; (2) a drawer-entry rail, aspect about five to one; (3) a button bar, aspect about six to one, a little shorter; (4) a small inline chip, aspect about three to one, the shortest and thickest piece; (5) a long thin data-row strip, aspect about twenty-three to one, very long and very thin, the last band. Subtle film grain. Negative list: no text, no letters, no numbers, no logos, no bevel smear, no white, no background, no backdrop, no rounded corners, no gloss, no neon, no rainbow, no saturated colours, no second accent colour, no perspective, no drop shadow, no cast shadow, no contact shadow, no soft shadow, no ambient occlusion, no dark halo, no glow behind the plates, no indicator lamps, no reflections, no vignette.",
+    "aspect_ratio": "1:1",
+    "resolution": "2K",
+    "output_format": "png",
+    "background": "transparent"
+  },
+  "urls": [
+    "https://tempfile.aiquickdraw.com/js/q2/45da96130ce0.png"
+  ],
+  "local_paths": [
+    "/home/kamil-paluszkiewicz/VajbOrbit/asset-library/raw/chrome_fit_2026-10-07/qwen/20261007-202133/grimdark-painted-sci-fi-semi-realistic-1.png"
+  ],
+  "alpha_paths": [],
+  "upscaled_paths": [],
+  "asset_paths": []
+}

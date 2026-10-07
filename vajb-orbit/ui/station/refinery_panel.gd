@@ -35,7 +35,6 @@ const ChromeFamily := preload("res://ui/theme/chrome_family.gd")
 const RefineryModule := preload("res://game/refinery.gd")
 const Catalog := preload("res://game/mineral_catalog.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
-const InspectChipScript := preload("res://ui/components/inspect_chip.gd")
 const StationCatalogScript := preload("res://game/station_catalog.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
@@ -162,6 +161,10 @@ func _ready() -> void:
 	## S36-F1 (A4, F2): the four QUEUE / QUEUE ALL / LOAD / COLLECT ALL bars live at
 	## 114-176 px wide, under C2's 272 h-band floor - they revert to their pre-swap
 	## StationButton style (reported as new-plate candidates). CANCEL stays native too.
+	## S37-F1 (section 15.1 C8): the 48x48 StepperLess/StepperMore wear the flat Tokens
+	## box, not the plate - the census's C8 square slot plate is a TextureButton variation
+	## a plain Button cannot resolve (measured StyleBoxFlat), so the tscn drops their
+	## StationButton variation (the brief's A5.1 fallback).
 	_connect_scroll()
 	_make_tick_timer()
 	visibility_changed.connect(_on_visibility_changed)
@@ -428,7 +431,6 @@ func _build_row(stack: Dictionary, loaded: bool) -> Dictionary:
 		&"tint": _icon_tint(entry),
 		&"fee_value": state,
 	}
-	box.add_child(_make_inspect_chip(payload))
 	row.pressed.connect(_on_row_pressed.bind(payload))
 	row.focus_entered.connect(_on_row_focused.bind(row, payload))
 	row.mouse_entered.connect(_on_row_hovered.bind(payload, true))
@@ -790,6 +792,9 @@ func _on_row_focused(_row: Button, payload: Dictionary) -> void:
 
 
 func _on_row_pressed(payload: Dictionary) -> void:
+	if _inspect_mode:
+		_emit_sheet(payload)
+		return
 	_arm(payload, true)
 	_inspect_row(payload, true)
 
@@ -822,12 +827,13 @@ func _inspect_row(payload: Dictionary, shown: bool) -> void:
 	)
 
 
-func _make_inspect_chip(payload: Dictionary) -> Button:
-	var chip := InspectChipScript.new()
-	chip.name = "InspectChip"
-	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	chip.inspect_chip_pressed.connect(_emit_sheet.bind(payload))
-	return chip
+## N37 rev (owner 2026-10-07): the station's one INSPECT toggle. On, an item press opens the
+## sheet instead of the normal action; the per-row INSPECT chip is retired.
+var _inspect_mode := false
+
+
+func set_inspect_mode(on: bool) -> void:
+	_inspect_mode = on
 
 
 func _emit_sheet(payload: Dictionary) -> void:

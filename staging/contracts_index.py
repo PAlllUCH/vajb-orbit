@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Regenerate the section index at the top of docs/CONTRACTS.md.
 
-Why: the file is 3,200+ lines and ~245 KB, and every worker brief cites one or
-two of its sections. Read whole it costs ~80k tokens of context that is then
+Why: the file is 2,700+ lines and ~200 KB (compressed 2026-10-07; its wave
+history now lives in .agents/gen/_archive/contracts_retired_2026-10-07.md), and
+every worker brief cites one or two of its sections. Read whole it costs ~60k
+tokens of context that is then
 re-sent on every later request; located and read by range it costs ~2-3k. The
 index is what makes the cheap path the obvious one.
 
@@ -38,7 +40,7 @@ INTRO = [
     "```",
     "",
     "then read only that range (`view --offset <line-1> --limit <span>`). Reading",
-    "the whole file costs ~80k tokens and every tool result is re-sent on each",
+    "the whole file costs ~60k tokens and every tool result is re-sent on each",
     "later request; one section costs ~2-3k.",
     "",
 ]

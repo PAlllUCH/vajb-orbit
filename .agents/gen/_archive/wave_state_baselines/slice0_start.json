@@ -1,0 +1,2713 @@
+{
+ "name": "slice0_start",
+ "files": {
+  "crush.json": {
+   "size": 2095,
+   "sha256": "4288f255cdf57b557cd0352e92d120bae0a434bf7e2a825f14ef89e83deae0ad"
+  },
+  "AGENTS.md": {
+   "size": 23697,
+   "sha256": "d844a826483c72a98d5b97ae7c052011bf1d83a4921bd5617dbc5470813299b1"
+  },
+  ".gitignore": {
+   "size": 726,
+   "sha256": "007c740f707cb89c17fac7fe4ec77932251a8903f515bf177356c3a96ed5d785"
+  },
+  "desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  ".crush/.gitignore": {
+   "size": 2,
+   "sha256": "cdbcae15105d6b781e620813c79c7e868740d4e9cc53ce6f5fcbbc12387adf4b"
+  },
+  ".crush/crush.db": {
+   "size": 289460224,
+   "sha256": "BINARY"
+  },
+  ".crush/crush.db-wal": {
+   "size": 7370712,
+   "sha256": "BINARY"
+  },
+  ".crush/crush.db-shm": {
+   "size": 32768,
+   "sha256": "BINARY"
+  },
+  ".crush/crush.db.bak-20260917": {
+   "size": 25645056,
+   "sha256": "BINARY"
+  },
+  ".crush/crush.db.bak-20260917-wal": {
+   "size": 0,
+   "sha256": ""
+  },
+  ".crush/crush.db.bak-20260917-shm": {
+   "size": 32768,
+   "sha256": "BINARY"
+  },
+  ".crush/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  ".crush/logs/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  ".crush/hooks/protect_archive.py": {
+   "size": 951,
+   "sha256": "a98e6d0a3baa9b0c2f72daf1ae69a8e8a399184733e367ec06f7737ef1b812c0"
+  },
+  ".crush/hooks/enforce_worker_files.py": {
+   "size": 1766,
+   "sha256": "cdcc44a80206817cbaa7048f0d3a14b937ae2ce251bf43b128c9b0e2911cc312"
+  },
+  ".crush/hooks/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "vajb-orbit/project.godot": {
+   "size": 7097,
+   "sha256": "312c7fae727a2602088f8d8665b9282f865976891107534bd2c614ece2b1f980"
+  },
+  "vajb-orbit/icon.svg": {
+   "size": 995,
+   "sha256": "6c80384360a5b269d1054bfb27241258154e2cc8167c522016fdc1820e84e0f8"
+  },
+  "vajb-orbit/.gitignore": {
+   "size": 46,
+   "sha256": "d6194b1a176268740a0b7f153bd4926908b4a0955a9a311181c0200b4329bc94"
+  },
+  "vajb-orbit/.gitattributes": {
+   "size": 80,
+   "sha256": "21b01a606c9f85f18bb9230245f00ab104df7409cbb2fe9423f6751ca72ba754"
+  },
+  "vajb-orbit/.editorconfig": {
+   "size": 33,
+   "sha256": "3b2c749c8a940905a08f727d8be9017c9568a12421c0aee7e37e9543b3751b1b"
+  },
+  "vajb-orbit/icon.svg.import": {
+   "size": 1013,
+   "sha256": "c6bc5e07fcabda98e544d7a507526d946fe30896b9518d169f370893ca32542a"
+  },
+  "vajb-orbit/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "vajb-orbit/addons/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "vajb-orbit/addons/godot_ai/LICENSE": {
+   "size": 1078,
+   "sha256": "f2afe4af4ec80c453ca34704bc61d5d24a9bd948d365ca22699cabb8b4a18308"
+  },
+  "vajb-orbit/addons/godot_ai/README.md": {
+   "size": 1742,
+   "sha256": "73ade921edaa0d7fe41278d07d40caaa8ba1d6358368c1954784dd1b119391a2"
+  },
+  "vajb-orbit/addons/godot_ai/client_configurator.gd": {
+   "size": 93044,
+   "sha256": "fd283d5c66d097fd970374c249d75e680540b7704901b2c9d7305abb8efe416e"
+  },
+  "vajb-orbit/addons/godot_ai/client_configurator.gd.uid": {
+   "size": 19,
+   "sha256": "b11391096156780923df61e627d9241a691efd13330aaa0d69c44de3e91f9ccd"
+  },
+  "vajb-orbit/addons/godot_ai/connection.gd": {
+   "size": 48377,
+   "sha256": "802071f7d38251101d448c421ade7b09fb28c2f3438344455f2965dede857910"
+  },
+  "vajb-orbit/addons/godot_ai/connection.gd.uid": {
+   "size": 20,
+   "sha256": "5bd784acd459f5d89ce2290026030f9bac4586f2ab9fa2ce6f680acbba6cd7ec"
+  },
+  "vajb-orbit/addons/godot_ai/dispatcher.gd": {
+   "size": 22386,
+   "sha256": "6a4a802a0d7b44837d9a25b9b95199150881e1acf7e7bd5484f7e51425db921f"
+  },
+  "vajb-orbit/addons/godot_ai/dispatcher.gd.uid": {
+   "size": 20,
+   "sha256": "66d99fb65718903951361405e5f161cab7aa44636aa080c0bb4c7eef774a10c6"
+  },
+  "vajb-orbit/addons/godot_ai/mcp_dock.gd": {
+   "size": 118796,
+   "sha256": "d9766235bd329ae3f63e0e16b9d906fd5b053a636dc613051cad4d4b200b8b03"
+  },
+  "vajb-orbit/addons/godot_ai/mcp_dock.gd.uid": {
+   "size": 20,
+   "sha256": "62248eebd93ecd7e65fae56ddb14ca23ec0b85989079a6e999bfd60c314712db"
+  },
+  "vajb-orbit/addons/godot_ai/migration_bridge.gd": {
+   "size": 286,
+   "sha256": "851afbc299883d6dc3d091070d03a791804ab0f84a46cfacecb2a4b7f49c2e06"
+  },
+  "vajb-orbit/addons/godot_ai/migration_bridge.gd.uid": {
+   "size": 19,
+   "sha256": "81cfb331c7aca2fde909e025312caf3dca2b52499e6aa7e95510c6bc01d24eec"
+  },
+  "vajb-orbit/addons/godot_ai/migration_coordinator.gd": {
+   "size": 626,
+   "sha256": "3dc10fb657cb3485cb80115348281f2e666dcd8c6ee0caec3794824a15ccf100"
+  },
+  "vajb-orbit/addons/godot_ai/migration_coordinator.gd.uid": {
+   "size": 19,
+   "sha256": "098e70726396f27526b26ec4f4ed115d7f81ae1a63a9eae736bdffd5c63988a8"
+  },
+  "vajb-orbit/addons/godot_ai/migration_fallback.gd": {
+   "size": 247,
+   "sha256": "50a5f046be8f44169135d92fa2f945c3454c13b42b99398eaae67d0a54418e08"
+  },
+  "vajb-orbit/addons/godot_ai/migration_fallback.gd.uid": {
+   "size": 20,
+   "sha256": "6c8781f55e5d61deae64832a79c30273ea73b95857d2b847d354bd72c46bf42e"
+  },
+  "vajb-orbit/addons/godot_ai/plugin.cfg": {
+   "size": 127,
+   "sha256": "6447a6e9b4cf265bca7947e8cbca6b12192d2786ba0cc85ef4c0b5ce61535f0f"
+  },
+  "vajb-orbit/addons/godot_ai/plugin.gd": {
+   "size": 80914,
+   "sha256": "8bc48528c68bc16dae211816a93b7b8d2fca2983931e2c1b116ca785d71dc687"
+  },
+  "vajb-orbit/addons/godot_ai/plugin.gd.uid": {
+   "size": 20,
+   "sha256": "35a798ab044b50da51e1624b5aa951551b83aa45573ae2fa0ae378146cbb58c7"
+  },
+  "vajb-orbit/addons/godot_ai/telemetry.gd": {
+   "size": 8767,
+   "sha256": "92755278b554dc0a07b29430edc81abd416e21dc69fbf2c1a569868147b95299"
+  },
+  "vajb-orbit/addons/godot_ai/telemetry.gd.uid": {
+   "size": 20,
+   "sha256": "641f5ee47d5f74c0591652a500324a81b03b8bd152d874caabceab1489d78920"
+  },
+  "vajb-orbit/addons/godot_ai/tool_catalog.gd": {
+   "size": 5299,
+   "sha256": "8629fb510f27b8b4f8c8d45d440eb19cedfafa754fa136ca572f9282d050ef87"
+  },
+  "vajb-orbit/addons/godot_ai/tool_catalog.gd.uid": {
+   "size": 20,
+   "sha256": "a5067a52ef97b89d8c9d587679d661d0c5ca7d550e0eef3c3b8a18bb56f31f68"
+  },
+  "vajb-orbit/addons/godot_ai/vision_routing.gd": {
+   "size": 45078,
+   "sha256": "9eab92fda631edf36297712937c8cef1eff5cfbe804e3634e8422b053f622c1a"
+  },
+  "vajb-orbit/addons/godot_ai/vision_routing.gd.uid": {
+   "size": 20,
+   "sha256": "47ddab7fc353d2a49c3dcf4bbaa5e0e9f05116f7c7fc6bc5ece12246ad0a1494"
+  },
+  "vajb-orbit/addons/godot_ai/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "vajb-orbit/addons/godot_ai/clients/_atomic_write.gd": {
+   "size": 12381,
+   "sha256": "23042ee1ef57f72c102cadbfefdaf6cc2adf1d875a9f7e2f3c499dcbf74f91a8"
+  },
+  "vajb-orbit/addons/godot_ai/clients/_atomic_write.gd.uid": {
+   "size": 19,
+   "sha256": "69d170b100e1477dc969d937664bf32e9f1a41448fbddae997616e4d549f857b"
+  },
+  "vajb-orbit/addons/godot_ai/clients/_base.gd": {
+   "size": 29069,
+   "sha256": "1fbe00b374efebe4cd2b7c02418608102e2dc4b2bd25406471fc681a4a80e367"
+  },
+  "vajb-orbit/addons/godot_ai/clients/_base.gd.uid": {
+   "size": 20,
+   "sha256": "6ad5fd0be314b164e5a501aaf4afff8c17d3c406e4931b3d490fa55ed9399d75"
+  },
+  "vajb-orbit/addons/godot_ai/clients/_cli_exec.gd": {
+   "size": 8426,
+   "sha256": "1f49fcf5c2ed63e575858a13066745f5489ad096f7691261dd768da49e4ca6a5"
+  },
+  "vajb-orbit/addons/godot_ai/clients/_cli_exec.gd.uid": {
+   "size": 20,
+   "sha256": "0a011c6ccf204f647bb410e812452397b8d9d3f82e98e9c8c43255e8a8db43be"
+  },
+  "vajb-orbit/addons/godot_ai/clients/_cli_finder.gd": {
+   "size": 6820,
+   "sha256": "66ec387838fe5c574188ff6d57655ca30c32e992e445e7e1ab2fc957d1b3190c"
+  },
+  "vajb-orbit/addons/godot_ai/clients/_cli_finder.gd.uid": {
+   "size": 20,
+   "sha256": "844ed9a1cb168c6fa4a2ad7369a0b9e2b317a8845780fa551f0ddeb31035d4c7"
+  },
+  "vajb-orbit/addons/godot_ai/clients/_cli_strategy.gd": {
+   "size": 20313,
+   "sha256": "be3772eaa3c9bfbdd269310d58cf286a45008bf60e4d76493c651635466fc73c"
+  },
+  "vajb-orbit/addons/godot_ai/clients/_cli_strategy.gd.uid": {
+   "size": 20,
+   "sha256": "7ea94aa0a18f18001abe6c039d3f9101a20211dafe616bde1171de42e8878188"
+  },
+  "vajb-orbit/addons/godot_ai/clients/_dsh_strategy.gd": {
+   "size": 31296,
+   "sha256": "883adc4181073e1e7d7adacda749f55de0ef8b7f53de518bdecb23a8fa25b067"
+  },
+  "vajb-orbit/addons/godot_ai/clients/_dsh_strategy.gd.uid": {
+   "size": 20,
+   "sha256": "b603679cc9d3071b0029da2200a85ecbe367bc9f03fb1e352eceb544ebe1f4a1"
+  },
+  "vajb-orbit/addons/godot_ai/clients/_json_strategy.gd": {
+   "size": 48846,
+   "sha256": "6781f728f3b8f8498abbdfe694c6a49c50424ba9e7e278d7739919c60e298e30"
+  },
+  "vajb-orbit/addons/godot_ai/clients/_json_strategy.gd.uid": {
+   "size": 19,
+   "sha256": "0d7613d1a25a2637491759c219cdad8610156f840258238df5728eb18523a49d"
+  },
+  "vajb-orbit/addons/godot_ai/clients/_manual_command.gd": {
+   "size": 15256,
+   "sha256": "d77adc6b6f66f700ea1ae26adb5ede8b0f3e70620e071d8a4b15e79b24e64358"
+  },
+  "vajb-orbit/addons/godot_ai/clients/_manual_command.gd.uid": {
+   "size": 20,
+   "sha256": "323e682575c1bf3b1841ec517b59888bf304b3ada97dfd861ec317b8f714635a"
+  },
+  "vajb-orbit/addons/godot_ai/clients/_path_template.gd": {
+   "size": 9696,
+   "sha256": "bc3f01879b1469dc8a72e3025f698441e60f52207282c9fa978156c94fcf98bc"
+  },
+  "vajb-orbit/addons/godot_ai/clients/_path_template.gd.uid": {
+   "size": 19,
+   "sha256": "b110326fea223f45902def5a53b35522f269ad55848718b7ddd143cd63293b86"
+  },
+  "vajb-orbit/addons/godot_ai/clients/_registry.gd": {
+   "size": 5956,
+   "sha256": "0b7f45367f8b208bbee2c521b4513aee3d716c02cad2544f45743d5f815e5442"
+  },
+  "vajb-orbit/addons/godot_ai/clients/_registry.gd.uid": {
+   "size": 19,
+   "sha256": "0fb18ab129e0fba2eb85e7e5b784ce566c586b1711f76f8ab429610172a203ab"
+  },
+  "vajb-orbit/addons/godot_ai/clients/_toml_strategy.gd": {
+   "size": 25296,
+   "sha256": "f1f8481dcd568ef408b9de29a23792921a51a81ab70865463fbb77fcf1efe912"
+  },
+  "vajb-orbit/addons/godot_ai/clients/_toml_strategy.gd.uid": {
+   "size": 20,
+   "sha256": "3f581fce945ceabf62ce7397f0da3c9a64888f7d071fe59edeec9126735c9837"
+  },
+  "vajb-orbit/addons/godot_ai/clients/_yaml_strategy.gd": {
+   "size": 22431,
+   "sha256": "9ca3a596c973603192cb05ebc107d06e54552eeaef61ea3c252bd98c8ec05963"
+  },
+  "vajb-orbit/addons/godot_ai/clients/_yaml_strategy.gd.uid": {
+   "size": 20,
+   "sha256": "bee0844c9cd2c399c1105d4f741e804ac433a0dd89c338a63da9d00b1b983885"
+  },
+  "vajb-orbit/addons/godot_ai/clients/antigravity.gd": {
+   "size": 1815,
+   "sha256": "af2cb95aa3b1e132ac90dbd3eac2d5b993a0c8642368c245644b59b3afb63fbb"
+  },
+  "vajb-orbit/addons/godot_ai/clients/antigravity.gd.uid": {
+   "size": 20,
+   "sha256": "d247b7f9da8ed483178c3f12e207494060181af364ef829951a6de2dec8fb482"
+  },
+  "vajb-orbit/addons/godot_ai/clients/claude_code.gd": {
+   "size": 5009,
+   "sha256": "2660ee8d70f11d4d3d55b12a29551fcdbb749e3002c9eb4bee1894d4853bb362"
+  },
+  "vajb-orbit/addons/godot_ai/clients/claude_code.gd.uid": {
+   "size": 20,
+   "sha256": "18d1ebc89fe7cd71054545da54c04477465e69b8291d082f8c860abc77dd2c41"
+  },
+  "vajb-orbit/addons/godot_ai/clients/claude_desktop.gd": {
+   "size": 1634,
+   "sha256": "25cd87161a8985273b5ad3954b397a95af64ab205ecd8359c63da09a0efbc020"
+  },
+  "vajb-orbit/addons/godot_ai/clients/claude_desktop.gd.uid": {
+   "size": 20,
+   "sha256": "e430bb213b5005f3182aca544fdade6c8a7e89128705907c11228f699eb27fc0"
+  },
+  "vajb-orbit/addons/godot_ai/clients/cline.gd": {
+   "size": 2159,
+   "sha256": "f48504c220090cdb44914241e9ac760246e7e931678c9f4c9f119b651299f85c"
+  },
+  "vajb-orbit/addons/godot_ai/clients/cline.gd.uid": {
+   "size": 20,
+   "sha256": "c8d58f6b86221ef68289a090b836d31f4006d395c3f42ed3000fc027a020c06d"
+  },
+  "vajb-orbit/addons/godot_ai/clients/codebuddy.gd": {
+   "size": 907,
+   "sha256": "7eca77746e458647de6c02befb3cfabc171e988af0dbe3cdfe12e6c055fa9a68"
+  },
+  "vajb-orbit/addons/godot_ai/clients/codebuddy.gd.uid": {
+   "size": 20,
+   "sha256": "e3b12124e5b591f480aff9bc890bcc1169cd6f83907c1d7dbabd95e9f5964eec"
+  },
+  "vajb-orbit/addons/godot_ai/clients/codex.gd": {
+   "size": 1493,
+   "sha256": "1840261a6e6eafdde63a26e3a8d85334fde916f21079192e9b3957231232a103"
+  },
+  "vajb-orbit/addons/godot_ai/clients/codex.gd.uid": {
+   "size": 19,
+   "sha256": "4bdcaae2f5f0c2e850430a7cc275d64bb84b880df8076a1cd9710dfb9fdc17e2"
+  },
+  "vajb-orbit/addons/godot_ai/clients/cursor.gd": {
+   "size": 821,
+   "sha256": "197be68bfa76b0ca142fdde802f14d706b26a85d78aa96f0476dafc1d44a5353"
+  },
+  "vajb-orbit/addons/godot_ai/clients/cursor.gd.uid": {
+   "size": 20,
+   "sha256": "3625853ad9bb909b2668f94f22a592231612d216c384a9a19e59f295eece2314"
+  },
+  "vajb-orbit/addons/godot_ai/clients/deepseek_harness.gd": {
+   "size": 2072,
+   "sha256": "b45feb086a36a19f925bd8de8a619377b72df49ac911609cfd3cb8e914112f3e"
+  },
+  "vajb-orbit/addons/godot_ai/clients/deepseek_harness.gd.uid": {
+   "size": 20,
+   "sha256": "e9f7b2f0544a8c03f4e153af30e21a8c4e4a138814ea16e005416fdc127bc466"
+  },
+  "vajb-orbit/addons/godot_ai/clients/gemini_cli.gd": {
+   "size": 874,
+   "sha256": "647e4627e3977de234aed98f762e7d9a624ed518ebfe189ffd6b4e14bb313d47"
+  },
+  "vajb-orbit/addons/godot_ai/clients/gemini_cli.gd.uid": {
+   "size": 20,
+   "sha256": "7af07715d59b73f3e69173d39364eb4103f5d84eeee312e13ed04fae4c5279d6"
+  },
+  "vajb-orbit/addons/godot_ai/clients/grok.gd": {
+   "size": 1612,
+   "sha256": "b2ae578424587437e14a56c801ef2551e7652ffb01808e6b8285e4b2557d6502"
+  },
+  "vajb-orbit/addons/godot_ai/clients/grok.gd.uid": {
+   "size": 20,
+   "sha256": "e911f4916e044eea03744e3a3e9920d53d18db876a515e0f9415be6f76d3b89b"
+  },
+  "vajb-orbit/addons/godot_ai/clients/hermes.gd": {
+   "size": 1956,
+   "sha256": "28759488fa59ead7c094c59e31f8cf2080f644e17b806929d94a1f8645870782"
+  },
+  "vajb-orbit/addons/godot_ai/clients/hermes.gd.uid": {
+   "size": 19,
+   "sha256": "331b1b1d2699ddc02ed293d674dae6b2d5b69ed5e29a94ce7b6662de6ec24a1e"
+  },
+  "vajb-orbit/addons/godot_ai/clients/kilo_code.gd": {
+   "size": 1937,
+   "sha256": "28cca26f36ae48c0382efde216f7946fcc731cb5ef5a87242580df75b346d0a3"
+  },
+  "vajb-orbit/addons/godot_ai/clients/kilo_code.gd.uid": {
+   "size": 20,
+   "sha256": "73705b20213a8cdabde5c3207cbfd750acba3ecfdb12e5fc0ad2d32c861fdeee"
+  },
+  "vajb-orbit/addons/godot_ai/clients/kimi_code.gd": {
+   "size": 1557,
+   "sha256": "233c5719b1532a7d3d0ad533ca9584dc4eb0d21d3308e9d183ee64a789373e9a"
+  },
+  "vajb-orbit/addons/godot_ai/clients/kimi_code.gd.uid": {
+   "size": 20,
+   "sha256": "caeefab43e4177a581a0a527194db6580c308f640ff3755526b95602c7d284e1"
+  },
+  "vajb-orbit/addons/godot_ai/clients/kiro.gd": {
+   "size": 829,
+   "sha256": "73a1e60d961f81508f6ab5263770978af3a9a0cb29adf5cf30267674c86ccbb3"
+  },
+  "vajb-orbit/addons/godot_ai/clients/kiro.gd.uid": {
+   "size": 20,
+   "sha256": "e36281df5685847acc757533d5ab4beb44391db897e123ebb0b377ce554e0ce5"
+  },
+  "vajb-orbit/addons/godot_ai/clients/opencode.gd": {
+   "size": 2475,
+   "sha256": "fe0cdab3b2541f330367b97c718e3331be323a5d31d056e6502f399ce8711a5e"
+  },
+  "vajb-orbit/addons/godot_ai/clients/opencode.gd.uid": {
+   "size": 19,
+   "sha256": "cebbf0729ea920db3266906f32279189520176bd10225ebbeec69882d97b9c09"
+  },
+  "vajb-orbit/addons/godot_ai/clients/pi.gd": {
+   "size": 2731,
+   "sha256": "0afa45f304d7da41a624aafcb6d684c76fe6a16f3f54c6d5b573e93963be4471"
+  },
+  "vajb-orbit/addons/godot_ai/clients/pi.gd.uid": {
+   "size": 19,
+   "sha256": "6ca88777d2a2a46d7ae8cb27c96650c24821c2db31efdaf14ec1c672770b13a7"
+  },
+  "vajb-orbit/addons/godot_ai/clients/qwen_code.gd": {
+   "size": 884,
+   "sha256": "af8c74797bf3b0617d0639052a86167cabff123fc110487a2f9a53033be5cef1"
+  },
+  "vajb-orbit/addons/godot_ai/clients/qwen_code.gd.uid": {
+   "size": 19,
+   "sha256": "124a3efc1063037a79d1ef713b066808dff87f84b062779108e3df0dfe78c70a"
+  },
+  "vajb-orbit/addons/godot_ai/clients/roo_code.gd": {
+   "size": 2149,
+   "sha256": "7dbdbfa610abfea313d53497b35b3d9f482a6a8d67e37486d2d8e01c9fa48935"
+  },
+  "vajb-orbit/addons/godot_ai/clients/roo_code.gd.uid": {
+   "size": 20,
+   "sha256": "60128a673c0122f6cdc2562d2ad517805c4120b98ae24ebce02c5471a5a2b16b"
+  },
+  "vajb-orbit/addons/godot_ai/clients/trae.gd": {
+   "size": 873,
+   "sha256": "3fabf591a0e7507b509116ec0539f7175cbed74346c82c3f56a2fab81d122746"
+  },
+  "vajb-orbit/addons/godot_ai/clients/trae.gd.uid": {
+   "size": 20,
+   "sha256": "69409fe3a502dd271d2abddbd97ac31187034b3f8aa409226116e2f1bc7199b8"
+  },
+  "vajb-orbit/addons/godot_ai/clients/vscode.gd": {
+   "size": 1219,
+   "sha256": "e44f4c08cf67326ae312c83fa3bb1179840e5bb178352e50e6a432590e0d969a"
+  },
+  "vajb-orbit/addons/godot_ai/clients/vscode.gd.uid": {
+   "size": 20,
+   "sha256": "738e01d95a248402eeca40d764030a4a4063a246904475b49145c6c159d55ddf"
+  },
+  "vajb-orbit/addons/godot_ai/clients/vscode_insiders.gd": {
+   "size": 851,
+   "sha256": "1b9da0fce3d453dd108b28b1e0b645feb12be4e56401f9d5b58aed95f3396a92"
+  },
+  "vajb-orbit/addons/godot_ai/clients/vscode_insiders.gd.uid": {
+   "size": 20,
+   "sha256": "4fd8b6a9a5e330f7428dac1adb0fd0e5406343febd8bafad0a7fe3e5d214cf88"
+  },
+  "vajb-orbit/addons/godot_ai/clients/windsurf.gd": {
+   "size": 1242,
+   "sha256": "9a1a3ba1be1d27dd24684923a483fe8706a65343bf08e47d7625ff6ef2c0f453"
+  },
+  "vajb-orbit/addons/godot_ai/clients/windsurf.gd.uid": {
+   "size": 20,
+   "sha256": "6b348d4a775be6af159c77bbc7ff5df86a921928f76a1920df97060c5f3c5901"
+  },
+  "vajb-orbit/addons/godot_ai/clients/zed.gd": {
+   "size": 1646,
+   "sha256": "e087ab94dea5a41dd1046f83d120583b9258935668e81091ffa12161c4d7cb1b"
+  },
+  "vajb-orbit/addons/godot_ai/clients/zed.gd.uid": {
+   "size": 20,
+   "sha256": "737f5044ffdf88b5d9f00a52e69108378b4bf4dd404fe240b8865a1e13bd45cf"
+  },
+  "vajb-orbit/addons/godot_ai/clients/zoo_code.gd": {
+   "size": 1742,
+   "sha256": "260b57e7e7c7e32854f7e3690adb1e01164f855f8a828948b8f78fd3f9144637"
+  },
+  "vajb-orbit/addons/godot_ai/clients/zoo_code.gd.uid": {
+   "size": 20,
+   "sha256": "9000f73477a13428779c8e1db0631291275fde02913148ec0094ced66bc0080b"
+  },
+  "vajb-orbit/addons/godot_ai/clients/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "vajb-orbit/addons/godot_ai/custom_tools/custom_tool_wrapper.gd": {
+   "size": 4070,
+   "sha256": "5a103ae1c5c26f01028b35e85b1dfdb264a0d1cf04ad9588210cd2dc11ebbe30"
+  },
+  "vajb-orbit/addons/godot_ai/custom_tools/custom_tool_wrapper.gd.uid": {
+   "size": 20,
+   "sha256": "ce5f3ecfd8794eac6ae799df6b73ca6f9ee74637820e99e31eec831ff00bdf70"
+  },
+  "vajb-orbit/addons/godot_ai/custom_tools/mcp_call_context.gd": {
+   "size": 1498,
+   "sha256": "229fa14a9257878dd3dd7ad2628195c09ac9068680498105551540864e55cbd6"
+  },
+  "vajb-orbit/addons/godot_ai/custom_tools/mcp_call_context.gd.uid": {
+   "size": 20,
+   "sha256": "197960618a07c1962b7ae9e2d6cffdfc7e38f66c3980be5f3922e5dbf8be55a2"
+  },
+  "vajb-orbit/addons/godot_ai/custom_tools/mcp_custom_tool_spec.gd": {
+   "size": 4400,
+   "sha256": "c9edada47c56e4aea1735b668d9212dae0420a75ffc66ca4e974962bc8351df2"
+  },
+  "vajb-orbit/addons/godot_ai/custom_tools/mcp_custom_tool_spec.gd.uid": {
+   "size": 19,
+   "sha256": "7472166e686079f1054ca3365154fa4d05db5a7fed8f137ce05d2f268b48f3b3"
+  },
+  "vajb-orbit/addons/godot_ai/custom_tools/mcp_service_locator.gd": {
+   "size": 377,
+   "sha256": "f329eac25097a201c3d00f342ccdb5c9e4cd5bd758bc5504726abe2a6c5b3069"
+  },
+  "vajb-orbit/addons/godot_ai/custom_tools/mcp_service_locator.gd.uid": {
+   "size": 20,
+   "sha256": "4b878baf63f39983325ac5435cb6fc456090a24610f5db7dfefe1d8aa344a9bf"
+  },
+  "vajb-orbit/addons/godot_ai/custom_tools/mcp_tool_registry.gd": {
+   "size": 10436,
+   "sha256": "d9b69c3464dc09e4e1fa224f4cb8b4c928a9190d6d44bd2216c48e3026ea70dc"
+  },
+  "vajb-orbit/addons/godot_ai/custom_tools/mcp_tool_registry.gd.uid": {
+   "size": 20,
+   "sha256": "1c6f5521d3757f347c4cd4171541328008245c9423500f379c4c9bd9ed0cf0fd"
+  },
+  "vajb-orbit/addons/godot_ai/custom_tools/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "vajb-orbit/addons/godot_ai/debugger/mcp_debugger_plugin.gd": {
+   "size": 86484,
+   "sha256": "13766ef2d32d90bdb86df03010e507dff6251959b115d0840ead5695e9294b7b"
+  },
+  "vajb-orbit/addons/godot_ai/debugger/mcp_debugger_plugin.gd.uid": {
+   "size": 20,
+   "sha256": "be3050234c07a27e62be35eb521fb48d37037de4beefe88cbea9e2232051d75c"
+  },
+  "vajb-orbit/addons/godot_ai/debugger/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "vajb-orbit/addons/godot_ai/dock_panels/log_viewer.gd": {
+   "size": 3036,
+   "sha256": "3975f54e49a4259f6cba23d031426ab4cbd90efda6ade75f0d3263d91b202a73"
+  },
+  "vajb-orbit/addons/godot_ai/dock_panels/log_viewer.gd.uid": {
+   "size": 20,
+   "sha256": "0c49d5ca8c63cc2d29614dbc7cbc1dcdc046f4dd85ddfd46cda93c3b3246426c"
+  },
+  "vajb-orbit/addons/godot_ai/dock_panels/port_picker_panel.gd": {
+   "size": 4252,
+   "sha256": "718b8e592abbe2e5b1118a04c452735fdb7e247904ac971003692ddcec3bc225"
+  },
+  "vajb-orbit/addons/godot_ai/dock_panels/port_picker_panel.gd.uid": {
+   "size": 19,
+   "sha256": "c4c8bfff382983add25baf1000e1214a6c6d227cb9ae4dd9c94e078513b74cd1"
+  },
+  "vajb-orbit/addons/godot_ai/dock_panels/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "vajb-orbit/addons/godot_ai/export/mcp_export_plugin.gd": {
+   "size": 3039,
+   "sha256": "e32fd58f473c4d9c974d866ada447058e1f71b933aadcf4b1ef6c6c4ad2a470a"
+  },
+  "vajb-orbit/addons/godot_ai/export/mcp_export_plugin.gd.uid": {
+   "size": 19,
+   "sha256": "35c878e5453ee13abf3955993de021f7cb71b3c50c30a2b3dc84236959eb7e6e"
+  },
+  "vajb-orbit/addons/godot_ai/export/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/_node_validator.gd": {
+   "size": 2864,
+   "sha256": "f24931cfddfec7e0b311e9f53778a5ea7e75026c5a776a6ee75ef1d82050bb7d"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/_node_validator.gd.uid": {
+   "size": 20,
+   "sha256": "3d293beeb180ea1e5ed05a17655a9ba61498d49ddd3ade61608cd56613cc27bb"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/_param_validators.gd": {
+   "size": 1397,
+   "sha256": "d9104c864b375304cf54d7d8825376bae3f606c7ab0956c302b8714968036a33"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/_param_validators.gd.uid": {
+   "size": 20,
+   "sha256": "f77bead393cdf61b23131c5151bd75b08f6671a2457cff7ea3c7cfe38278eb66"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/_property_errors.gd": {
+   "size": 2837,
+   "sha256": "92ddc1dfd433a4aae7d4088a53a0cff36b0b196aaca9d0488e43b7f2614bbd97"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/_property_errors.gd.uid": {
+   "size": 20,
+   "sha256": "2b49d3d85542c5e0af947ab114fbb7f71885d0310f35a026411323df007c0a2c"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/animation_handler.gd": {
+   "size": 33812,
+   "sha256": "7914575e6f8e8ee216a17b43eecde176ab42f61343a218fe88ca29a4feff4789"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/animation_handler.gd.uid": {
+   "size": 20,
+   "sha256": "47b49982ea7e09cddf957ab596d401b28b8838190a434e07c2afd02ad5381567"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/animation_presets.gd": {
+   "size": 20151,
+   "sha256": "39cdcfb12975d194b6cd58c75d5aa4eb08d31aaa36558cb68c9e45198625f47b"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/animation_presets.gd.uid": {
+   "size": 20,
+   "sha256": "8678c72d4d8d9883c7f0282a80058f0d19c41aaf82d32e17215cf3378171c1bd"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/animation_values.gd": {
+   "size": 16811,
+   "sha256": "d6d2d066eee01c312421775e8188aecc6fb235b11329c8b4f5bed36fbac59130"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/animation_values.gd.uid": {
+   "size": 20,
+   "sha256": "d251c65c53fa71891d10e420ed8ca06ac1ca308f853b6a758badad17acc90aa9"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/api_handler.gd": {
+   "size": 3427,
+   "sha256": "9d32daff53e0b78759ff20bca3661ecccd75bef91b9e8bb7feb7928774807fb5"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/api_handler.gd.uid": {
+   "size": 19,
+   "sha256": "b22ddf4e5b697aab7099ce15d47c2086624997f8e86d2e93c92a585fe23eb5b8"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/audio_handler.gd": {
+   "size": 11600,
+   "sha256": "4a1f4832b6cf1b90de41a126d1ccf762c95b18d9f01c6e86cb1b475c4d28c3b1"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/audio_handler.gd.uid": {
+   "size": 20,
+   "sha256": "64b5a9af05623f153e788733749516412509423eb57b945146b0778cd867b146"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/autoload_handler.gd": {
+   "size": 3112,
+   "sha256": "b35b70096de141afa97035127702d6e6dad7f1432218a22dee217a2bc9cfd8b7"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/autoload_handler.gd.uid": {
+   "size": 20,
+   "sha256": "aa05d871c5800e244428010f2a19dc357f0f29b8a025b8c64614357c4db31956"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/batch_handler.gd": {
+   "size": 10760,
+   "sha256": "d951813ac00f536e2f8d14d97d4949ced152ddb94e8a305852193e3bb94f794c"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/batch_handler.gd.uid": {
+   "size": 20,
+   "sha256": "e506e0940373f6e8dbf2c775e1bb690cb7c75b1d877f6e1a0d2493b2d364ce05"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/camera_handler.gd": {
+   "size": 40171,
+   "sha256": "e17a7e037ac887f5b7b78e462ffdc78c51d6f0a11cd846cf5b274507383d99ef"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/camera_handler.gd.uid": {
+   "size": 20,
+   "sha256": "bd89c9cdb3c8834e74b6a8e2fcbf233b516f1c471309f28c21f0b020b9c31792"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/camera_presets.gd": {
+   "size": 2208,
+   "sha256": "b9a3f6814f183ea15cfba625742496fdc6fc26f0952294cf89f526fab653085d"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/camera_presets.gd.uid": {
+   "size": 20,
+   "sha256": "68ef1f3fe020a144155eabe99b2c2c17feb113c095a41b3af57442dc5d36c471"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/camera_values.gd": {
+   "size": 4251,
+   "sha256": "8a0483e799d7e27bfb513670ece5fd0c8638b288fed8ec2c92971cd06a371cbd"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/camera_values.gd.uid": {
+   "size": 20,
+   "sha256": "fa6f2ea8c1bb70167d06426cb01dd29ecd47d8b3cdfe9efa034cfdc16d95427a"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/client_handler.gd": {
+   "size": 1922,
+   "sha256": "7cd2d0873d7b1cdff84abc310ca6b9c0de69167015a437bb93c219f19bcc5a34"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/client_handler.gd.uid": {
+   "size": 20,
+   "sha256": "2599d215b73e6a60b767aba1083a68da6203674c13bb131d29179e98eef029cf"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/command_handler.gd": {
+   "size": 555,
+   "sha256": "2cd67d1e5482c1f1cb1768aaca18b80ea4902ece50ce2b2b67e23c721ca1ac02"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/command_handler.gd.uid": {
+   "size": 19,
+   "sha256": "47fb104a35055fa877816068db671b7dc8afde68734e64ba62f591f54eeda078"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/control_draw_recipe_handler.gd": {
+   "size": 9717,
+   "sha256": "e0d50f72bdc61ee3c6ce0dade726cc7d9668c747af33290e17d74bb92861d0ea"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/control_draw_recipe_handler.gd.uid": {
+   "size": 20,
+   "sha256": "ccb3400c75d59519bdcc4da1931831bae093ce327a9c5fd39938cb3710e37cf3"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/csg_handler.gd": {
+   "size": 4479,
+   "sha256": "45216f2820921f2e94a1ae7c849368c9a738c51d7dda2525ec888b1bf6d5e3d8"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/csg_handler.gd.uid": {
+   "size": 20,
+   "sha256": "a593088c8622b9ac81d8a4790eccb1630e79ce57568a87b2c2f87edb6ba25aba"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/curve_handler.gd": {
+   "size": 9363,
+   "sha256": "b7791298b4362de8191d0b87605dd05d4bb5e408b803d837482cb49d15680050"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/curve_handler.gd.uid": {
+   "size": 20,
+   "sha256": "7fec875de89cf7a634b5fa787d139c601face5e123df6134dc13eecd9e3f3285"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/editor_handler.gd": {
+   "size": 45777,
+   "sha256": "6d88b551b5ec92d210c9ffc0956217229ab91f4959976d0ac81185ed8f11e6fc"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/editor_handler.gd.uid": {
+   "size": 20,
+   "sha256": "d36224d3a7b803805c0e80ce017ea7dcdd395c360ccce81a102edf9b264cc499"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/environment_handler.gd": {
+   "size": 6731,
+   "sha256": "51fa05f0f0c2f4c8ce98569380955815796f6ec33ab198f57be326bb1372d61c"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/environment_handler.gd.uid": {
+   "size": 20,
+   "sha256": "88f573289f80073f1b7556c25c0c235762e9454c38973a71d57a3319e34da63e"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/filesystem_handler.gd": {
+   "size": 13807,
+   "sha256": "9dddf357cafb9ff774f5c1167a71558c41c8956d071b65bf573bfaec22c66988"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/filesystem_handler.gd.uid": {
+   "size": 20,
+   "sha256": "3156268e89d4c2df4d58027620252304ade3622dfffa63621c9cdfa9ea4d8676"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/gridmap_handler.gd": {
+   "size": 7927,
+   "sha256": "308eca951d561a84c13430f5c71b2bb92c0a8bd86f175ea126d3cd47726bc3e1"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/gridmap_handler.gd.uid": {
+   "size": 20,
+   "sha256": "2d7826639c1a23d5b6b2949b4349200b11d4ebd633e1f3fb22b1207cccfab4c0"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/input_handler.gd": {
+   "size": 16046,
+   "sha256": "5c24996f5979ebacdf0321f0383917ae9a31db3aedae2d93087a6c6279f85659"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/input_handler.gd.uid": {
+   "size": 20,
+   "sha256": "33ec35e4bfce00cf0af9bb186a89b6d489690418209d6b3fccdd2d3e5e5a1fce"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/material_handler.gd": {
+   "size": 28527,
+   "sha256": "4d6ad02aaf8a2d4e405e62d5c89f0071d6de28dd46a2754821dd8c7a9c57fec4"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/material_handler.gd.uid": {
+   "size": 20,
+   "sha256": "2ce5a5847745f8992c75e6634fa8292ad145bac78e97a75df6bc3ec5ff4f3c01"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/material_presets.gd": {
+   "size": 2217,
+   "sha256": "cbcff9a52cd25d36e7f462f9b81e85df04d7570afc340f5f741d6a04d80c06b8"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/material_presets.gd.uid": {
+   "size": 20,
+   "sha256": "25ef884fb537b484f3509bd84558598661ed2f48cd1121893b18203aea55f114"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/material_values.gd": {
+   "size": 6776,
+   "sha256": "899d5f9fd614f21f5b98c57ce062d792ef1d6bca204d860e2476680d364e7971"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/material_values.gd.uid": {
+   "size": 20,
+   "sha256": "c610639c2977ceea714b5c0f9dd97251fd2a4b5b3a500d8ca34cff0b65f502ec"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/node_handler.gd": {
+   "size": 53928,
+   "sha256": "d706c30a6286ea1a568f94c40531cfdb2a4cab48058118a841417268d4185819"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/node_handler.gd.uid": {
+   "size": 19,
+   "sha256": "8a6a204c9cc207814aac0a20f3c2837c174dd8b7d0ba452f2a8694bceb8370bc"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/particle_handler.gd": {
+   "size": 30982,
+   "sha256": "f665324b19c2e2e12e57da229b51e0401d83294af12cd0e5934a861b220124ac"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/particle_handler.gd.uid": {
+   "size": 20,
+   "sha256": "e01cc4640e7f68f31ce6a709f5da2b00e1e14fb93d970101bd4df72be351890e"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/particle_presets.gd": {
+   "size": 8261,
+   "sha256": "6a9d93719af847462f057a8ab58dfef61965dbc360f60f045093f4c30187267c"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/particle_presets.gd.uid": {
+   "size": 20,
+   "sha256": "67e6d4b02f715fdbc8abc9df4667176b7638658f46049d4c040d7ea5b6118b00"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/particle_values.gd": {
+   "size": 8356,
+   "sha256": "dc5d00ec054b1aaa4c7c6db2de82f5f18047e2b13bbe5f93ba27c83427ca722e"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/particle_values.gd.uid": {
+   "size": 20,
+   "sha256": "7843a953959bd04557fa586070f376ff1f9fb6ad6452d53fa6602dad80ff2059"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/physics_shape_handler.gd": {
+   "size": 29747,
+   "sha256": "a40de61c3d574a8a4b7c01d9e59c69efc9f6a44982aff43771a956abf09ebee3"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/physics_shape_handler.gd.uid": {
+   "size": 20,
+   "sha256": "c338b89967011e02e6f143c3115da1c25793dcd2394a2e286f5a9f787f8c0d19"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/project_handler.gd": {
+   "size": 30927,
+   "sha256": "ca5d7b9085104824cc9a62802f1bab2e0f34067bf16413b1c857e8f57c4cb892"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/project_handler.gd.uid": {
+   "size": 20,
+   "sha256": "d2de31aa9f55873f21af809e8933555f5975d208e4555f3e1b788e5d9aad53ca"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/resource_handler.gd": {
+   "size": 24437,
+   "sha256": "7b43ae86b51630a9a605963c56ee10c5faf6dda0954fc8924d60eda5a354cf4f"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/resource_handler.gd.uid": {
+   "size": 19,
+   "sha256": "e57815d98359fcc777f4b5c05c0561299da4aff4c1ccf14add572e068dc53daf"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/scene_handler.gd": {
+   "size": 15888,
+   "sha256": "38ab2f20f669ed3641d1606db685993aef8f922a3ab25946417127a22bc04317"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/scene_handler.gd.uid": {
+   "size": 19,
+   "sha256": "7905d18048c92df68d4ad37c176ec366ffaff0f108d8aca733c48142a8f8aae1"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/script_handler.gd": {
+   "size": 21903,
+   "sha256": "2d492cc34949dda110791a87819faa233e3983818e016a977a75465dfcb4d09f"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/script_handler.gd.uid": {
+   "size": 20,
+   "sha256": "4105d57bc4d5524fa01d0a38a227f03ce5ddf0944206c21f72169b030c33a56d"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/signal_handler.gd": {
+   "size": 11116,
+   "sha256": "87183b18355079dbb8350bc81948028a7ac82090654939fea0fb843887733d1c"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/signal_handler.gd.uid": {
+   "size": 20,
+   "sha256": "81475e35a53bccfb598d9679652169729ea2fa69f365f78005454bd1dd762210"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/test_handler.gd": {
+   "size": 14556,
+   "sha256": "91fb4553f92233738d32e30ae1b0e1c6f98b49127ae6fd51fa05eb2aa8988ffe"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/test_handler.gd.uid": {
+   "size": 20,
+   "sha256": "e92068b687252be24be2b95b3b93eabf906282214b583059c2ec6a45f69fa29c"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/texture_handler.gd": {
+   "size": 6466,
+   "sha256": "8c36a856d9fe062075af5427655fab9d9ad9323d70acbd54147f873ac9f8f895"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/texture_handler.gd.uid": {
+   "size": 20,
+   "sha256": "3bdeafe73069a8f04b9486d8b6697e63c4971bb01f7bab619eaedded39722bf7"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/theme_handler.gd": {
+   "size": 18738,
+   "sha256": "cf717acb4c440f6697cb080131c61f35a0cb0a1deeb7da40d167736564a74159"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/theme_handler.gd.uid": {
+   "size": 19,
+   "sha256": "e1c87aa079ad87e7624994e2539414bddf2caadd180458fd49dafd0109982004"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/tilemap_handler.gd": {
+   "size": 6052,
+   "sha256": "13c334e9259965b0990bd7b64fcc249befb98e7cdb520f7ab26cc45558e2ceac"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/tilemap_handler.gd.uid": {
+   "size": 20,
+   "sha256": "3c688fd5b5f2929b092a9d59c7a55c0878834287a78e18b333654c1f4c2421f2"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/tileset_handler.gd": {
+   "size": 5968,
+   "sha256": "d6b11b0e75444aa3e8f9473c7b2ff2207b772f370a77978667541907cd7d56b0"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/tileset_handler.gd.uid": {
+   "size": 20,
+   "sha256": "44eedb2ff0845c76c196b498a020e9aeb667cdb1b45e4da5813ea87a0b9b9ec7"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/ui_handler.gd": {
+   "size": 19080,
+   "sha256": "c3aa8fea776e6bf441f940b90950e890d230b3088acff19381680f61aaddaed4"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/ui_handler.gd.uid": {
+   "size": 20,
+   "sha256": "a0e5f401b82ea94d81b4ec3b7a2a8905d47258335f728932c01bab75476b84ea"
+  },
+  "vajb-orbit/addons/godot_ai/handlers/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "vajb-orbit/addons/godot_ai/runtime/draw_recipe.gd": {
+   "size": 2131,
+   "sha256": "51ca515c420abb816991c5a730e9ee166b5296086cfad98c89c7abce68a0edff"
+  },
+  "vajb-orbit/addons/godot_ai/runtime/draw_recipe.gd.uid": {
+   "size": 20,
+   "sha256": "7ae9a6fc4fe77482b2189b7421f024a35cb544e8b1368107e7f0f26598a778c8"
+  },
+  "vajb-orbit/addons/godot_ai/runtime/editor_logger.gd": {
+   "size": 5510,
+   "sha256": "d4093bea61f6a8275ff752e85b2265e6f0834f420bbf08c3a59b62b57e7a06af"
+  },
+  "vajb-orbit/addons/godot_ai/runtime/editor_logger.gd.uid": {
+   "size": 20,
+   "sha256": "587fd5ccabfe31b6a3c78742cb37fcfa696b6e6b9e27746f455a5e3547508542"
+  },
+  "vajb-orbit/addons/godot_ai/runtime/game_helper.gd": {
+   "size": 55041,
+   "sha256": "99a0391661d957ea5c0210ae51265ce1f14e68855edd6e73d8d048339897328a"
+  },
+  "vajb-orbit/addons/godot_ai/runtime/game_helper.gd.uid": {
+   "size": 19,
+   "sha256": "2bb2be95830555d56ff38ad2bcfd69ef29b4a55348f879a9cb61b97b727558ff"
+  },
+  "vajb-orbit/addons/godot_ai/runtime/game_logger.gd": {
+   "size": 5606,
+   "sha256": "54f4657c2b9ca26b0c8152f21c5d48a2a71a7cb82c062973218172d507e989ac"
+  },
+  "vajb-orbit/addons/godot_ai/runtime/game_logger.gd.uid": {
+   "size": 20,
+   "sha256": "e012598e90decb26fe0acee8a5c722e83ab52760470e74f13a91989c3a0f11b6"
+  },
+  "vajb-orbit/addons/godot_ai/runtime/validation_logger.gd": {
+   "size": 1065,
+   "sha256": "cc1254c56343d69bd531610b25f99b57f4437fb5b10b1c64312247005bcc2c1d"
+  },
+  "vajb-orbit/addons/godot_ai/runtime/validation_logger.gd.uid": {
+   "size": 20,
+   "sha256": "e1ec736f74292480f977c54421dcafb68c5def09ec2bf4b78569521b37bfd816"
+  },
+  "vajb-orbit/addons/godot_ai/runtime/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "vajb-orbit/addons/godot_ai/testing/script_error_capture.gd": {
+   "size": 1102,
+   "sha256": "47363f95b07cff8d2dde46956a7dc46d1721ae5c4b5679633c0038ca0b0ea5cb"
+  },
+  "vajb-orbit/addons/godot_ai/testing/script_error_capture.gd.uid": {
+   "size": 20,
+   "sha256": "99acfa0494027479551559fb293ad0770cf463042bf4c6974703b873916990f5"
+  },
+  "vajb-orbit/addons/godot_ai/testing/test_runner.gd": {
+   "size": 14841,
+   "sha256": "73f1a3efd4024bf6214128c5229c4307f6ee04532a0980defedcf5b3b46301fc"
+  },
+  "vajb-orbit/addons/godot_ai/testing/test_runner.gd.uid": {
+   "size": 19,
+   "sha256": "af6daba585151379f5275a4dca4418521df77249d71f82050ba44135fd04650e"
+  },
+  "vajb-orbit/addons/godot_ai/testing/test_suite.gd": {
+   "size": 9027,
+   "sha256": "7cb7e68509660880d68f98d01e775354b767faff58e31a9f90d33e3857bb5f24"
+  },
+  "vajb-orbit/addons/godot_ai/testing/test_suite.gd.uid": {
+   "size": 20,
+   "sha256": "20d26aae67a6df5b2c40d0f3bd513d1257d4adc8320d9f559f8a87c85cd19744"
+  },
+  "vajb-orbit/addons/godot_ai/testing/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "vajb-orbit/addons/godot_ai/utils/allow_hosts.gd": {
+   "size": 6343,
+   "sha256": "2decc72bb5e3a880a84b4ee4536050bf458f4f4e4987f3672319fa037e64ada5"
+  },
+  "vajb-orbit/addons/godot_ai/utils/allow_hosts.gd.uid": {
+   "size": 20,
+   "sha256": "6c02022e576afca8d8487f87481b8618543df37030d9e0f19bfdf5d9d9c7b373"
+  },
+  "vajb-orbit/addons/godot_ai/utils/class_introspection.gd": {
+   "size": 9452,
+   "sha256": "f0708952ed838349630efe705f70dcc878c86073ddb1d8f37aacd7b5c5b5eca7"
+  },
+  "vajb-orbit/addons/godot_ai/utils/class_introspection.gd.uid": {
+   "size": 20,
+   "sha256": "f4cf97e1f9676bb5bfe0c3af123ef61678a7881b176cf4cd68114c5642ffe3a9"
+  },
+  "vajb-orbit/addons/godot_ai/utils/client_job_owner.gd": {
+   "size": 34489,
+   "sha256": "df1096c71a18842f2fac07227c7af05026eb010ed972bb001fce672d0dd7d86f"
+  },
+  "vajb-orbit/addons/godot_ai/utils/client_job_owner.gd.uid": {
+   "size": 19,
+   "sha256": "753fdba75d6a597d1e7fbbbe5657c35e80a96d009e36f4746157d3c07d05b082"
+  },
+  "vajb-orbit/addons/godot_ai/utils/client_mutation_lock.gd": {
+   "size": 4903,
+   "sha256": "add3b8894d56b66a43ece0406b28601c4d4572ba151e841025499a3ca240d8dc"
+  },
+  "vajb-orbit/addons/godot_ai/utils/client_mutation_lock.gd.uid": {
+   "size": 21,
+   "sha256": "0e0a9933268cb5eb04f14db2e70db024f069a911ffdf06aee572b238614a4719"
+  },
+  "vajb-orbit/addons/godot_ai/utils/diagnostics_capture.gd": {
+   "size": 2386,
+   "sha256": "0eaa9aa3e00274405091cb6d74dc1042341efe88048b6bf168955c5c1b873530"
+  },
+  "vajb-orbit/addons/godot_ai/utils/diagnostics_capture.gd.uid": {
+   "size": 20,
+   "sha256": "811bc51627303add74eec6dcc72f85dc61aef633c0dc3231442d8eb4b7130fe9"
+  },
+  "vajb-orbit/addons/godot_ai/utils/editor_log_buffer.gd": {
+   "size": 3395,
+   "sha256": "f21b0a767b05bd1763f03d1b81e63ad36212071529c1e415b88d874deda0ad43"
+  },
+  "vajb-orbit/addons/godot_ai/utils/editor_log_buffer.gd.uid": {
+   "size": 20,
+   "sha256": "acfbe64271596c496835b86f4b4c2642cd8675e85d456d4ea5e6a8422da5cd29"
+  },
+  "vajb-orbit/addons/godot_ai/utils/error_codes.gd": {
+   "size": 9149,
+   "sha256": "8895a773d74e3b8e7602a4109c8aee8077abd63d3223392f9a87884d27787437"
+  },
+  "vajb-orbit/addons/godot_ai/utils/error_codes.gd.uid": {
+   "size": 20,
+   "sha256": "df7b436601e68a12ecc38acbad7543bfe0fe6cb152c716b8f9dc7f70a417fe80"
+  },
+  "vajb-orbit/addons/godot_ai/utils/fuzzy_suggestions.gd": {
+   "size": 1072,
+   "sha256": "bc2306f4b27d5ae3d8b9a76a00a773382a943ec3df4ce412f92d10bdac336308"
+  },
+  "vajb-orbit/addons/godot_ai/utils/fuzzy_suggestions.gd.uid": {
+   "size": 20,
+   "sha256": "07f5f545e8c14bd19b4fad4bc5d683fcf4268bb6adfc1eda5d30a1603bc36459"
+  },
+  "vajb-orbit/addons/godot_ai/utils/game_log_buffer.gd": {
+   "size": 3080,
+   "sha256": "c3f9e9247ec8b70032bca8ce309c90c938238e859b82f11a7679ce736da55a52"
+  },
+  "vajb-orbit/addons/godot_ai/utils/game_log_buffer.gd.uid": {
+   "size": 20,
+   "sha256": "2d288c2000132251bc1b969c654ca3b9b7593ffb8e32aabe5faa81c0a7d8303b"
+  },
+  "vajb-orbit/addons/godot_ai/utils/json_values.gd": {
+   "size": 3642,
+   "sha256": "cf8b8ca0b9becc9fc7adeb7200972337ef2ee351f77b7cd11cebac90bf7321f5"
+  },
+  "vajb-orbit/addons/godot_ai/utils/json_values.gd.uid": {
+   "size": 19,
+   "sha256": "c52c80ff8b4fc6120879a598831139a5971fc98551aaac1aaf542f74ec8fed55"
+  },
+  "vajb-orbit/addons/godot_ai/utils/log_backtrace.gd": {
+   "size": 3887,
+   "sha256": "d7df786a4437991f403715e6bbdd20bbc396009dc5baf48f7dfeacf75ab2b27b"
+  },
+  "vajb-orbit/addons/godot_ai/utils/log_backtrace.gd.uid": {
+   "size": 20,
+   "sha256": "450dc80371aac8d4d974f042ecdedc15e0766a2442e8765fa298cb3dd18b6a20"
+  },
+  "vajb-orbit/addons/godot_ai/utils/log_buffer.gd": {
+   "size": 2569,
+   "sha256": "81d8a9e24c73b745b3dc90b6b7990f4babada9687189bcffa4379d84f94fb919"
+  },
+  "vajb-orbit/addons/godot_ai/utils/log_buffer.gd.uid": {
+   "size": 20,
+   "sha256": "cdbbcffb78756e9d9b68d19412110fd6e8fb7a8b2dcfe02d9490b2dd1151d1e1"
+  },
+  "vajb-orbit/addons/godot_ai/utils/mcp_adoption_label.gd": {
+   "size": 267,
+   "sha256": "1c6461816767dbc1d3b0ffefffe4147ea06fe5d8137a7760964b131aa73d0112"
+  },
+  "vajb-orbit/addons/godot_ai/utils/mcp_adoption_label.gd.uid": {
+   "size": 19,
+   "sha256": "6720efd543a8f55ed448f5e2a8216a9950adca1942714958932b1149920509cd"
+  },
+  "vajb-orbit/addons/godot_ai/utils/mcp_client_refresh_state.gd": {
+   "size": 4010,
+   "sha256": "589cd2fe35e19a1484ddc10afee2b0070b01b90bda877548aa3f4ff34342f46f"
+  },
+  "vajb-orbit/addons/godot_ai/utils/mcp_client_refresh_state.gd.uid": {
+   "size": 20,
+   "sha256": "509aec8279aced0e854c8e766e9719cd8a436d945e96ee2e1d223d9f16ea4c3d"
+  },
+  "vajb-orbit/addons/godot_ai/utils/mcp_server_state.gd": {
+   "size": 1825,
+   "sha256": "9d44e6d320396375c639bd13f52efd34481cee97edad9b3f244de62f2c7b493f"
+  },
+  "vajb-orbit/addons/godot_ai/utils/mcp_server_state.gd.uid": {
+   "size": 20,
+   "sha256": "0454bc89b123487b8a90927318fa4ec91315971ff0e798395191bc5d225e6f8a"
+  },
+  "vajb-orbit/addons/godot_ai/utils/mcp_startup_path.gd": {
+   "size": 455,
+   "sha256": "ec7ba9d388b6a565598d433eb43ea40eeb9a8006df1cf05fbcc823742f7fec84"
+  },
+  "vajb-orbit/addons/godot_ai/utils/mcp_startup_path.gd.uid": {
+   "size": 20,
+   "sha256": "570bec0886f6787fd3a74de10f76df90840b284a02f2edf4f4dfff956d7b2933"
+  },
+  "vajb-orbit/addons/godot_ai/utils/path_validator.gd": {
+   "size": 11101,
+   "sha256": "9399ba742fc8af571b6ceaa12504efef1a4fafbe6388f74c4e48a20e06ce43fe"
+  },
+  "vajb-orbit/addons/godot_ai/utils/path_validator.gd.uid": {
+   "size": 20,
+   "sha256": "dbbce00244442b32cc776f39d815a4c09c5ce840f3da001d5aa5db37dd1fa0ef"
+  },
+  "vajb-orbit/addons/godot_ai/utils/plugin_reload.gd": {
+   "size": 5092,
+   "sha256": "6fac4ed4e5b3ed6ba54f75d7f9ef6708cfacee8bd532dbad3370a519fedca87c"
+  },
+  "vajb-orbit/addons/godot_ai/utils/plugin_reload.gd.uid": {
+   "size": 20,
+   "sha256": "56054cb7d397405f0a1137b14cc46bc412207594fc28de393856d13bc9e29131"
+  },
+  "vajb-orbit/addons/godot_ai/utils/port_resolver.gd": {
+   "size": 30181,
+   "sha256": "c9d6c9b97501277d86b49ebe84c669b2b612c2e6a4a8674ae505d3bd4840d5a8"
+  },
+  "vajb-orbit/addons/godot_ai/utils/port_resolver.gd.uid": {
+   "size": 19,
+   "sha256": "4f386419a069705d93a56b64395add29e23e9f74745934a515813c119eb96c70"
+  },
+  "vajb-orbit/addons/godot_ai/utils/release_verifier.gd": {
+   "size": 32268,
+   "sha256": "23ed32925d8d6d73874b78b2fa5dbda1f20e57ee3cc433b4bcf25aab96cd1528"
+  },
+  "vajb-orbit/addons/godot_ai/utils/release_verifier.gd.uid": {
+   "size": 20,
+   "sha256": "dc0b8903879c85733a651a06cd702bd3d3c10922c8e3ee7436d49cccafd8964a"
+  },
+  "vajb-orbit/addons/godot_ai/utils/resource_io.gd": {
+   "size": 13172,
+   "sha256": "9afe123cb81f2113f28e7fdbf88daf6a464be6cd327082b813a811b3a7e712c1"
+  },
+  "vajb-orbit/addons/godot_ai/utils/resource_io.gd.uid": {
+   "size": 20,
+   "sha256": "1759b54639494e1fd14b97a87cae668500555e0141148a9e2aea04d3d1d2b48e"
+  },
+  "vajb-orbit/addons/godot_ai/utils/scene_path.gd": {
+   "size": 7545,
+   "sha256": "ab457ce39833897d7448a01e4fe397e44cab022eb407c0b3384bf5bc2bbec7fd"
+  },
+  "vajb-orbit/addons/godot_ai/utils/scene_path.gd.uid": {
+   "size": 20,
+   "sha256": "1d74b073f8cbc0778b3facbba2a7039553a657710f93899c2514104b221a6560"
+  },
+  "vajb-orbit/addons/godot_ai/utils/screenshot_encode.gd": {
+   "size": 1487,
+   "sha256": "6655c7a62d8458656303dc97744f0122aa32b46506d5b6c8b921e599241b085b"
+  },
+  "vajb-orbit/addons/godot_ai/utils/screenshot_encode.gd.uid": {
+   "size": 20,
+   "sha256": "010f223143d099028ccafba428f9cdb40c05d59b0a949dae49eab339bfb8b006"
+  },
+  "vajb-orbit/addons/godot_ai/utils/script_work.gd": {
+   "size": 836,
+   "sha256": "8a0bef00aafda06debe57cd3562e299919b116548ae07acdbfa86328a989bde7"
+  },
+  "vajb-orbit/addons/godot_ai/utils/script_work.gd.uid": {
+   "size": 19,
+   "sha256": "5caa9666d97006f759ecfa3ac3d9f74688563daaab595347fd0a962d40f0db47"
+  },
+  "vajb-orbit/addons/godot_ai/utils/server_authority.gd": {
+   "size": 3745,
+   "sha256": "bbca05a304a369a6ab77a2af34608c0f738e801b13715344b22ccd4f735e9e13"
+  },
+  "vajb-orbit/addons/godot_ai/utils/server_authority.gd.uid": {
+   "size": 19,
+   "sha256": "093b575d10ad2700e48f454a18e3d00c7df64ae9414e6f77a89e14c0c5eed845"
+  },
+  "vajb-orbit/addons/godot_ai/utils/server_lifecycle.gd": {
+   "size": 67067,
+   "sha256": "7570c099314e67d777b67606ccb708f490c7cb35a93ec815911bc8d1ba81b0ad"
+  },
+  "vajb-orbit/addons/godot_ai/utils/server_lifecycle.gd.uid": {
+   "size": 20,
+   "sha256": "546899b3a5d4024aac3b001ca634e8e74d74343faba27e491ac03af2c3fd6bb1"
+  },
+  "vajb-orbit/addons/godot_ai/utils/server_version_check.gd": {
+   "size": 2597,
+   "sha256": "534ca6fd105415d2e9562308a23f62e8e0af6fb0563caf05b9108d1007bfa8d3"
+  },
+  "vajb-orbit/addons/godot_ai/utils/server_version_check.gd.uid": {
+   "size": 20,
+   "sha256": "b71827a9383a60c02e26d59c19530cfc65a2df0d523220780e5283a9a8573f82"
+  },
+  "vajb-orbit/addons/godot_ai/utils/settings.gd": {
+   "size": 6074,
+   "sha256": "8e7409077186eeb15a4a88eeaceb79bacb01d9cfb72bbee4bae745e5c8bcce2f"
+  },
+  "vajb-orbit/addons/godot_ai/utils/settings.gd.uid": {
+   "size": 19,
+   "sha256": "99e66f1dfe502b81097d3d83819bc211e42ef3b3a97bff4ffd3d672bf21b26dc"
+  },
+  "vajb-orbit/addons/godot_ai/utils/structured_log_ring.gd": {
+   "size": 5282,
+   "sha256": "7bb5b56f3b5ec3ba4427b44ac5867005c01ac8a3d84735afd38479993e1f4d7f"
+  },
+  "vajb-orbit/addons/godot_ai/utils/structured_log_ring.gd.uid": {
+   "size": 20,
+   "sha256": "5ff3dab0db39995b662e5aea73ae0223ba92f6a219a283141d29ef9bce6667a1"
+  },
+  "vajb-orbit/addons/godot_ai/utils/surfaced_error_tracker.gd": {
+   "size": 23645,
+   "sha256": "a7e6fc7f4525aa64ceec15a7ab3eab6188f32f744fdd714ad1f4a819e9ede236"
+  },
+  "vajb-orbit/addons/godot_ai/utils/surfaced_error_tracker.gd.uid": {
+   "size": 19,
+   "sha256": "09b485e56fdd3a69a42d9b74400816bd36943fe15d0781da3aefe4b51be0dc6b"
+  },
+  "vajb-orbit/addons/godot_ai/utils/transport_capability.gd": {
+   "size": 10590,
+   "sha256": "9b4d7e41620b1b73aa3e14ba46f57851aa1e38c8cbbeaf365c231ecbc07bebad"
+  },
+  "vajb-orbit/addons/godot_ai/utils/transport_capability.gd.uid": {
+   "size": 20,
+   "sha256": "b3fdc46837d80983269f7c5cd1b3de88577f9a4daa3cf0312bf72cdb87703fff"
+  },
+  "vajb-orbit/addons/godot_ai/utils/update_activation_runner.gd": {
+   "size": 16706,
+   "sha256": "432aa506051e1ffcba51211bb91e9a2a7d98e3c84c8937c7382e70eee95c4601"
+  },
+  "vajb-orbit/addons/godot_ai/utils/update_activation_runner.gd.uid": {
+   "size": 19,
+   "sha256": "6cbd1c1da3fe5addb3144e517eeee7d8ba775f2806bf822f60d87dacfca03cd4"
+  },
+  "vajb-orbit/addons/godot_ai/utils/update_installer.gd": {
+   "size": 22372,
+   "sha256": "d0abd539eda13b8d3b6a00f3b4db8534cf242872a0772853115d5e16f6786d0a"
+  },
+  "vajb-orbit/addons/godot_ai/utils/update_installer.gd.uid": {
+   "size": 20,
+   "sha256": "100a3707894816165ab33e7cadbb07ec9d7346dcde22ff89eebbced7a82f018e"
+  },
+  "vajb-orbit/addons/godot_ai/utils/update_manager.gd": {
+   "size": 17826,
+   "sha256": "615bcde9ea6aa30219b319c0aadc4e17a5bf4abf9482262bebe650f0aa54de12"
+  },
+  "vajb-orbit/addons/godot_ai/utils/update_manager.gd.uid": {
+   "size": 20,
+   "sha256": "2a2e8422a89307dc7c57711daa1aab0629b5a54ec7f108097a36c2273a0735d0"
+  },
+  "vajb-orbit/addons/godot_ai/utils/update_mixed_state.gd": {
+   "size": 6295,
+   "sha256": "97195f0fb8cc005d6a91707dcfd1f14c91c6111f5d675d325de110763b87cd8d"
+  },
+  "vajb-orbit/addons/godot_ai/utils/update_mixed_state.gd.uid": {
+   "size": 20,
+   "sha256": "ed8d5d6740f1bcc183897ec4407487bea769160573353887d7811a8decf8ca3f"
+  },
+  "vajb-orbit/addons/godot_ai/utils/uv_cache_cleanup.gd": {
+   "size": 6444,
+   "sha256": "2f75771088514910b48ff26269e64064a37984f50ba91284185cf3955985269b"
+  },
+  "vajb-orbit/addons/godot_ai/utils/uv_cache_cleanup.gd.uid": {
+   "size": 20,
+   "sha256": "d209b2b5de32eb6cfeb7b18c8e785f26011d44326b43794478967da7705eace4"
+  },
+  "vajb-orbit/addons/godot_ai/utils/uv_resolution_policy.gd": {
+   "size": 3652,
+   "sha256": "9c3da07655e2a0378de430a4612accd1df5709af8555fa9a9df90d0b5abe264f"
+  },
+  "vajb-orbit/addons/godot_ai/utils/uv_resolution_policy.gd.uid": {
+   "size": 20,
+   "sha256": "cde159a474d570d804fb1efba4b289629b4a830b93f89992a8dd1224c115fe60"
+  },
+  "vajb-orbit/addons/godot_ai/utils/variant_serializer.gd": {
+   "size": 3150,
+   "sha256": "25d6e56e62372ea4f1dd7b5be7a1538931177d1dc93ba36687cdb1f2949a4598"
+  },
+  "vajb-orbit/addons/godot_ai/utils/variant_serializer.gd.uid": {
+   "size": 20,
+   "sha256": "3954570c851e2a1c908b24dfe1e542c622feb5efb1ee5137bdf1a201cadafbbc"
+  },
+  "vajb-orbit/addons/godot_ai/utils/windows_port_reservation.gd": {
+   "size": 5248,
+   "sha256": "fbf0060529259bb97dbeb8a0a0f4dce8bbf0ab6a140b9e62170b67908763d14d"
+  },
+  "vajb-orbit/addons/godot_ai/utils/windows_port_reservation.gd.uid": {
+   "size": 20,
+   "sha256": "f369812cbcfa0201ed23ca05081ad8981a0200f53a8ef7e4ba690d722bf13abb"
+  },
+  "vajb-orbit/addons/godot_ai/utils/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "vajb-orbit/tools/build_theme.gd": {
+   "size": 23761,
+   "sha256": "17efcd1eb30cb3db99b8ffa6d1427752918be9ee4120c230b94260b8f35cd3bb"
+  },
+  "vajb-orbit/tools/derive_icon_tints.gd": {
+   "size": 3598,
+   "sha256": "035e3c58649012908feacced4f4e99ed9386c3ed7b331431b6eb916a6115f58e"
+  },
+  "vajb-orbit/tools/build_theme.gd.uid": {
+   "size": 20,
+   "sha256": "55b51b60dfcf530c8b9bffd2a8a9def37515c546df54ecdde8156672262b1c06"
+  },
+  "vajb-orbit/tools/derive_icon_tints.gd.uid": {
+   "size": 20,
+   "sha256": "9fce6a3c1463918afa31299637d11d3c381758516d5bcd929eeb74733da7691b"
+  },
+  "vajb-orbit/tools/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "vajb-orbit/ui/paths.gd": {
+   "size": 1349,
+   "sha256": "7186ace541076b4db329e9675a26460d399918345241e95ec3a5e299734b235e"
+  },
+  "vajb-orbit/ui/screen.gd": {
+   "size": 411,
+   "sha256": "76ea25812bb46d8ff1e6f87d32c913ea286ed26724855cbc3608d33b22a15f21"
+  },
+  "vajb-orbit/ui/paths.gd.uid": {
+   "size": 20,
+   "sha256": "e112ffe82e6febcd155969817335c016864e58e13feac7cd2fb09d4b7cb9f4f4"
+  },
+  "vajb-orbit/ui/screen.gd.uid": {
+   "size": 20,
+   "sha256": "0d2963fa4970ff8a16138c61f0e00b9c85cff275d40c4c702e0b07ab63421d1a"
+  },
+  "vajb-orbit/ui/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "vajb-orbit/ui/theme/vajb_theme.tres": {
+   "size": 25771,
+   "sha256": "7cc0aa02260e9fae9294d39f86f8e3cd4c1100aab43ac7c63140e12b34a8a9bd"
+  },
+  "vajb-orbit/ui/theme/grain.tres": {
+   "size": 272,
+   "sha256": "bcb04ff6c49b33ae3c272095155e5805f7e6ea81e9838e63b89b8968d066e169"
+  },
+  "vajb-orbit/ui/theme/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "vajb-orbit/ui/components/menu_button.gd": {
+   "size": 5369,
+   "sha256": "b0c1d6eeb5c176a5fd44988dbc7a5be748a0915f3411ad8602d1b53bb5c244c0"
+  },
+  "vajb-orbit/ui/components/glow_underlay.gd": {
+   "size": 1282,
+   "sha256": "06740e8f44b8f0191bed2fffd9eefcfe076df34bd9670511d592b51173278209"
+  },
+  "vajb-orbit/ui/components/menu_button.tscn": {
+   "size": 923,
+   "sha256": "b26fc1b5484c7715843816104438fe4716034f33890639b14e75f2a13f770aa6"
+  },
+  "vajb-orbit/ui/components/glow_underlay.gd.uid": {
+   "size": 20,
+   "sha256": "4ba567861e31b26f619d8d6b3f582d72eb1ee1bfecf34b4fd95f30138ae4cc0e"
+  },
+  "vajb-orbit/ui/components/menu_button.gd.uid": {
+   "size": 18,
+   "sha256": "fe5ab42ba748e5113ca02b6c1d95e6c51ba38c2edcd41d62cba4f697b7afdf9f"
+  },
+  "vajb-orbit/ui/components/slot_button.gd": {
+   "size": 3953,
+   "sha256": "d35e01b033a316a86ebc250e03fa7734bbfe46d2aa5a655d0f1beb575dfb8091"
+  },
+  "vajb-orbit/ui/components/slot_button.gd.uid": {
+   "size": 20,
+   "sha256": "94a0fd2c4ce4feb7ad8ed51ebd77044e01db1dca0081c963dd8f660138d8f2c2"
+  },
+  "vajb-orbit/ui/components/slot_button.tscn": {
+   "size": 821,
+   "sha256": "5f6ce1edf70e53aca47aeb03673e87bf917e5a21b8c5a3771919cddae70e45a3"
+  },
+  "vajb-orbit/ui/components/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "vajb-orbit/ui/screens/boot.gd": {
+   "size": 3434,
+   "sha256": "749cc53b5feaf19620d167fcc336c29fe0247945fa4f13fa50b95dfed7cf6edf"
+  },
+  "vajb-orbit/ui/screens/boot.tscn": {
+   "size": 2116,
+   "sha256": "8d9b5214afb8617f4fa9a70f48eaa30ddb276b130f39c7d0fbea2cc2d2ee5e1d"
+  },
+  "vajb-orbit/ui/screens/loading.gd": {
+   "size": 3234,
+   "sha256": "0e3a9b32b34ce5147698fd23fc7a7675e52554120cb65b5a4d252f111d10286b"
+  },
+  "vajb-orbit/ui/screens/loading.tscn": {
+   "size": 1856,
+   "sha256": "0920faf8b0af3f16342722046a26a029c3dd0f6ffd32bda1dd86384daa863154"
+  },
+  "vajb-orbit/ui/screens/settings_rebind_row.gd": {
+   "size": 3510,
+   "sha256": "b7e3a332248159c1240d28020b9b371c3b492b7dde15c4f816f906441ad22deb"
+  },
+  "vajb-orbit/ui/screens/settings_rebind_row.tscn": {
+   "size": 879,
+   "sha256": "2b74df1cff900e99a26ac61415798c51071ebea57d2235bc8ed184c27ae40ae6"
+  },
+  "vajb-orbit/ui/screens/boot.gd.uid": {
+   "size": 20,
+   "sha256": "a1213d2be8c426ea6f1447a7f9b1a0b30e1b73ae47ab03ef4fb4becd0ad997eb"
+  },
+  "vajb-orbit/ui/screens/loading.gd.uid": {
+   "size": 20,
+   "sha256": "b83968a113f137490820c3267e9c782087a391d0e06ed995875fec49e46717eb"
+  },
+  "vajb-orbit/ui/screens/settings_rebind_row.gd.uid": {
+   "size": 20,
+   "sha256": "b28a98e3f5fbf975ed4e8e7cbe27954a15c2d2265a03d8cf8918b9566bd799c6"
+  },
+  "vajb-orbit/ui/screens/settings.gd": {
+   "size": 14085,
+   "sha256": "2276b878cba88cf4f0ef63c301031e56abe17e71b72f60428aa80d486e172600"
+  },
+  "vajb-orbit/ui/screens/settings.tscn": {
+   "size": 10849,
+   "sha256": "39fa558cf8561c0b14e3e65163697cb6bd2fb314862a645e6c5beeff2b8ae862"
+  },
+  "vajb-orbit/ui/screens/settings.gd.uid": {
+   "size": 19,
+   "sha256": "e43a5c5453c872082b222858407f9bc26362a7f348c72ad9a787114cd3871bfa"
+  },
+  "vajb-orbit/ui/screens/main_menu.gd": {
+   "size": 13130,
+   "sha256": "73d1f860728560f409f533480e501e1b807e909b2d404826434cdb5d17866bd4"
+  },
+  "vajb-orbit/ui/screens/main_menu.tscn": {
+   "size": 8109,
+   "sha256": "d63205c8c5f11d6579fab1c5ca1ce6788a4f07d7f6ebaaa6cbd286cee4c6f7d2"
+  },
+  "vajb-orbit/ui/screens/main_menu.gd.uid": {
+   "size": 20,
+   "sha256": "4a6d8994d10819fb9d9bc348fe34a9fc6e0984caa97a8128a0c866cb7f38e400"
+  },
+  "vajb-orbit/ui/screens/_mockup_station.gd": {
+   "size": 45273,
+   "sha256": "c108cafcdd27ac29ae67e19d615073a20bc8c56c344d85be1e378d784c02c979"
+  },
+  "vajb-orbit/ui/screens/_mockup_station.tscn": {
+   "size": 27102,
+   "sha256": "a042fa17707720b6209a1de5ec7b38350b3d186005cb8d967f840a8da5ecf594"
+  },
+  "vajb-orbit/ui/screens/_mockup_station.gd.uid": {
+   "size": 20,
+   "sha256": "7cb8699009d62b5cbf2eeb6a479f44f9a8563f813a158901416a0c3df3e5a556"
+  },
+  "vajb-orbit/ui/screens/station.tscn": {
+   "size": 10432,
+   "sha256": "3de19eaf203d560889f4b8277f932fced99cb06b87967b24ba37436bee61f3f2"
+  },
+  "vajb-orbit/ui/screens/station.gd": {
+   "size": 21516,
+   "sha256": "353e3cfb425ed18b86c301afb986d496eebda67cb5759ac1476fe5104aa84674"
+  },
+  "vajb-orbit/ui/screens/station.gd.uid": {
+   "size": 19,
+   "sha256": "1bf503dade78b40dabd5c8ac35d98050580eb02292d91458744ab276376ac548"
+  },
+  "vajb-orbit/ui/screens/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "vajb-orbit/ui/hud/minimap.gd": {
+   "size": 5698,
+   "sha256": "12866b9c917467966401189244d8c43ce646a858bc1511c948896fdb5653dbc5"
+  },
+  "vajb-orbit/ui/hud/target_reticle.gd": {
+   "size": 6553,
+   "sha256": "a6737e0cb89bb4b76c22252c4abb06754743b1afa05e1699826e7b8e58329f00"
+  },
+  "vajb-orbit/ui/hud/minimap.gd.uid": {
+   "size": 19,
+   "sha256": "1397822ab48e11ffc80e2fc96c9972df9e2173578597f282fa4fb00cfbedd184"
+  },
+  "vajb-orbit/ui/hud/target_reticle.gd.uid": {
+   "size": 19,
+   "sha256": "720089f81c6dd9fa8d8ccd1987800e5295c578d0213f91b571085df4076f61b9"
+  },
+  "vajb-orbit/ui/hud/hud.gd": {
+   "size": 21142,
+   "sha256": "c5a20d037bb440796ed9602544439b23c244ebe759ca8f8cd44e2ab863cde753"
+  },
+  "vajb-orbit/ui/hud/hud.tscn": {
+   "size": 18780,
+   "sha256": "640f8de83b77c3ee473bf9dd818b2913cb748c2616cfb39374cd091fbb385f1d"
+  },
+  "vajb-orbit/ui/hud/hud.gd.uid": {
+   "size": 19,
+   "sha256": "96221b2dc5f6f52031c84133310e947509c5c9cd911115a8824a90e052bb24a4"
+  },
+  "vajb-orbit/ui/hud/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "vajb-orbit/ui/dialogs/dialog.gd": {
+   "size": 4350,
+   "sha256": "dacb9d5464e05e7ebaa996f1f6ebf5046a3eaa7e0574d865b4a5fc7cd18724dd"
+  },
+  "vajb-orbit/ui/dialogs/dialog.tscn": {
+   "size": 2020,
+   "sha256": "ac4413541f33ff109acfa04e49994510a3b9b0248a64125c8676af6f4e365ad2"
+  },
+  "vajb-orbit/ui/dialogs/quit_confirm.tscn": {
+   "size": 362,
+   "sha256": "64f4aeaae489c70bf8b96df2e6c66cdbf902d9ccf518e70b76cdc7c7034e0873"
+  },
+  "vajb-orbit/ui/dialogs/dialog.gd.uid": {
+   "size": 20,
+   "sha256": "f116e32d9408cc724c48c244a6685dcb9c7fc99c7702f7917142980b6c916165"
+  },
+  "vajb-orbit/ui/dialogs/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "vajb-orbit/ui/station/outfitting_panel.tscn": {
+   "size": 2352,
+   "sha256": "78eb167c8aaddab005f0cc39db83ca4f8e77c2ae5b57e39fe4068fa9ec625e32"
+  },
+  "vajb-orbit/ui/station/outfitting_panel.gd": {
+   "size": 19725,
+   "sha256": "803aafdcca150cc4e7617625407912ae765ac6e88b79c67ec30fe3c7f206dbc8"
+  },
+  "vajb-orbit/ui/station/outfitting_panel.gd.uid": {
+   "size": 20,
+   "sha256": "5edb11bc20fab9b98217d41372810403c5231e7db298330e8bf49462650cbca2"
+  },
+  "vajb-orbit/ui/station/upgrades_panel.gd": {
+   "size": 15127,
+   "sha256": "8ce86a4ff8707058128b657c80314efc172a2fc007fc5c47ec22d83d29133bb4"
+  },
+  "vajb-orbit/ui/station/upgrades_panel.tscn": {
+   "size": 2320,
+   "sha256": "d951b51d38f31bc75e993357640f121c5a4d601274419f5e437f4ca5021f8bdc"
+  },
+  "vajb-orbit/ui/station/shipyard_panel.gd": {
+   "size": 20566,
+   "sha256": "bf578dcd3890a328c52bfaadca0be12a02d73392deaf25abf7ac68b558c96ee5"
+  },
+  "vajb-orbit/ui/station/shipyard_panel.tscn": {
+   "size": 5184,
+   "sha256": "216cdce5af91dac62e2797ee7d06c1e9b1df363e4dc244f22644a95083ad1025"
+  },
+  "vajb-orbit/ui/station/launch_panel.gd": {
+   "size": 18797,
+   "sha256": "3251fc98b298b15cf0fa824151bc4dad02f2f32442bafd8f66707664a12cc5c9"
+  },
+  "vajb-orbit/ui/station/launch_panel.tscn": {
+   "size": 4790,
+   "sha256": "933fb6e77c5d50c3dfb09176e51e9db7ee609f7c796f90cb71e8391f1e95db72"
+  },
+  "vajb-orbit/ui/station/upgrades_panel.gd.uid": {
+   "size": 19,
+   "sha256": "382a598f922991ee2a4f7e1853ccba0fae24c44459aa85475442be9188ce282d"
+  },
+  "vajb-orbit/ui/station/shipyard_panel.gd.uid": {
+   "size": 20,
+   "sha256": "b98582b62ed3d39f92dfed86610dfb5ec70b2282b5fd352c39045cf35d9a6f96"
+  },
+  "vajb-orbit/ui/station/launch_panel.gd.uid": {
+   "size": 20,
+   "sha256": "093d0d909d0da168d47c79970e81d912f617a90defa22c3a68ce6a4f044ee087"
+  },
+  "vajb-orbit/ui/station/repairs_panel.tscn": {
+   "size": 4288,
+   "sha256": "f9ccad83e1c88baa533ec6db263b4aaa8688f4e71fb1f587de8adcef890e4592"
+  },
+  "vajb-orbit/ui/station/repairs_panel.gd": {
+   "size": 14053,
+   "sha256": "40f7f940896db655353ed124ec92c3e052a03ec3d55b0b2661cb10598afa9814"
+  },
+  "vajb-orbit/ui/station/refinery_panel.tscn": {
+   "size": 6715,
+   "sha256": "d39a4eba3c7e064723ed83518fb94ef17ae9bbb62ca6c7b5e64e241e439c01a4"
+  },
+  "vajb-orbit/ui/station/refinery_panel.gd": {
+   "size": 24517,
+   "sha256": "20f2c0dabac4dff6bc76128a6981b70fd21c7b0fdfd01360845b3e6bbbb97add"
+  },
+  "vajb-orbit/ui/station/exchange_panel.tscn": {
+   "size": 5520,
+   "sha256": "edc8394d1c30735f9bb392d9e93954f7c67dadb9a98796f4382706a28e685198"
+  },
+  "vajb-orbit/ui/station/exchange_panel.gd": {
+   "size": 34616,
+   "sha256": "195ea395a7c7fe46999ff3c0bf7be093eaf5e32663d5f40e79a7b8ef08e3f76f"
+  },
+  "vajb-orbit/ui/station/repairs_panel.gd.uid": {
+   "size": 20,
+   "sha256": "804b45e7d4c75f72c0786f0d6869d27430bf460b4130fde845aceb4ab83c28b0"
+  },
+  "vajb-orbit/ui/station/refinery_panel.gd.uid": {
+   "size": 20,
+   "sha256": "c9a165a9f0dbc225ad39c4de8d7b4e86d64a78ce59abfc1ab2ae8a23bcf29786"
+  },
+  "vajb-orbit/ui/station/exchange_panel.gd.uid": {
+   "size": 20,
+   "sha256": "92dfc5687c8ba691f0e01a6fd57972508371c7ddaf12bbe0264f708801809251"
+  },
+  "vajb-orbit/ui/station/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "vajb-orbit/autoload/settings_manager.gd": {
+   "size": 12901,
+   "sha256": "12b15d144380bb55e2fe438888ac2bd220c1d222aee7336bbe0755aeb9abbd3f"
+  },
+  "vajb-orbit/autoload/audio_manager.gd": {
+   "size": 7684,
+   "sha256": "34a7fedafc2db6802eb6fdaaf9fddc5d1ee28168c79205b49223d10cc70bd520"
+  },
+  "vajb-orbit/autoload/router.gd": {
+   "size": 11044,
+   "sha256": "c82c756db710dcdcdadf8e07d2887510dd1cf7baaf7e8748faca31b1ccc650ae"
+  },
+  "vajb-orbit/autoload/dialog_manager.gd": {
+   "size": 2957,
+   "sha256": "520abb8b749cf1b30717b3f13dca7b907158ad2be88a449b2bca1c16b0b99776"
+  },
+  "vajb-orbit/autoload/audio_manager.gd.uid": {
+   "size": 20,
+   "sha256": "7efb2c114ef29b2e7de267f7450f43c78e9d1be88a7c253653f7c1ada7061c60"
+  },
+  "vajb-orbit/autoload/dialog_manager.gd.uid": {
+   "size": 19,
+   "sha256": "ae95e6248e5b96ff65258c3876378764bc2c36af29f07d4892229f51c7bc075e"
+  },
+  "vajb-orbit/autoload/router.gd.uid": {
+   "size": 19,
+   "sha256": "531c7e820e5747950dacf4b477d56ce51cc7c96215897ba4fbe0ddfe76737112"
+  },
+  "vajb-orbit/autoload/settings_manager.gd.uid": {
+   "size": 20,
+   "sha256": "d26afd8cdbcf943b78ef8c7e9b8601c380d673d3bd2a349bfa7c980537365e50"
+  },
+  "vajb-orbit/autoload/player_profile.gd": {
+   "size": 18108,
+   "sha256": "472c17adad4fc619e943e90003185faa4c3f25cbd8b80a7a8ec8c5ca0b3a9a24"
+  },
+  "vajb-orbit/autoload/player_profile.gd.uid": {
+   "size": 20,
+   "sha256": "ab346478e11a3367570cd60f34ec7827b70b822db00affb775ff4215b4a62fba"
+  },
+  "vajb-orbit/autoload/world_clock.gd": {
+   "size": 2022,
+   "sha256": "f8c77e7baf6094bde6132f9f51e1046efddac19195180b289042c7f3f827deec"
+  },
+  "vajb-orbit/autoload/world_clock.gd.uid": {
+   "size": 20,
+   "sha256": "7485d537e6c1db43cf42bdc613e3071f00515364a49daa52d03c1d2a45c98c60"
+  },
+  "vajb-orbit/autoload/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "vajb-orbit/game/player_state.gd": {
+   "size": 2571,
+   "sha256": "7314d77fc2cd2e8ac3f9b87405f84be93e118cd1263388be96562d0ee852ac4a"
+  },
+  "vajb-orbit/game/game.gd": {
+   "size": 19715,
+   "sha256": "dd15bbdfc93c294e29aa840d1a80d889fd3fd953915dd6c1949420cf5fbdbe7d"
+  },
+  "vajb-orbit/game/game.tscn": {
+   "size": 1773,
+   "sha256": "eafe43e93824c08d0b45d253e3b2d3706b5d07e5aec4e8f7352e8d43d9090c13"
+  },
+  "vajb-orbit/game/game.gd.uid": {
+   "size": 20,
+   "sha256": "74b3cad96f3c2114e52128924dfaa22de2396a4216dad4d568cdac32781b1db9"
+  },
+  "vajb-orbit/game/player_state.gd.uid": {
+   "size": 20,
+   "sha256": "3ece6285953b62a5a61760f3d63d793cef95e97d91776c3d4225e8207a9aadb6"
+  },
+  "vajb-orbit/game/station_catalog.gd": {
+   "size": 5257,
+   "sha256": "d4709667f43c9458fdca10fbad7ff3a2c6c6b5149841468cf6ef62df2307c716"
+  },
+  "vajb-orbit/game/station_catalog.gd.uid": {
+   "size": 19,
+   "sha256": "95a0b42358e194fdd845cd3f7a5bef6bae8e707bc9f028630458a361028fedcb"
+  },
+  "vajb-orbit/game/economy_log.gd": {
+   "size": 1816,
+   "sha256": "0f415c606fb02147d8ac9c1d72dab8daaceed3525dcc41f6c10a99bdd1549960"
+  },
+  "vajb-orbit/game/mineral_catalog.gd": {
+   "size": 11884,
+   "sha256": "47c81a0c45b0b864f84532e53c3eb850748ab603486044da9ad122e317498b82"
+  },
+  "vajb-orbit/game/component_catalog.gd": {
+   "size": 6610,
+   "sha256": "94ac50d9ffb1f6738fdf6f310e4429f9ee3fd7ceb7240376871cb617af5fd297"
+  },
+  "vajb-orbit/game/component_catalog.gd.uid": {
+   "size": 20,
+   "sha256": "39097e67c6537a4304e9e46af2b4095db06e4d7638e070fc170a8f00a0bb52a7"
+  },
+  "vajb-orbit/game/economy_log.gd.uid": {
+   "size": 20,
+   "sha256": "afb9faa63acbbb543cc2b9e31b5fd1662112a2e27400f6c53c9c45edb8047fa8"
+  },
+  "vajb-orbit/game/mineral_catalog.gd.uid": {
+   "size": 19,
+   "sha256": "49911b631b224da873610dde43a0f877080ffa753b26d36a1a2d1a5e5c5f302a"
+  },
+  "vajb-orbit/game/repairs.gd": {
+   "size": 5019,
+   "sha256": "0d67810cc3049e83543d475f2dcf5d24210a96901fd48613d5f0bdefefcb4b88"
+  },
+  "vajb-orbit/game/refinery.gd": {
+   "size": 7832,
+   "sha256": "632e46ab96a449e4e1a51e523d3fbecaacf35bdb25d524d8f9ed30b63b688c60"
+  },
+  "vajb-orbit/game/exchange.gd": {
+   "size": 21500,
+   "sha256": "08d850b85f0b0615589a84fbdc19a050679a346d61e7cdca3d5f94daeaf6b4d3"
+  },
+  "vajb-orbit/game/exchange.gd.uid": {
+   "size": 20,
+   "sha256": "6a5e29f79683158485bbc04378ef4640f7e13be673a64035fe49420413118fad"
+  },
+  "vajb-orbit/game/refinery.gd.uid": {
+   "size": 20,
+   "sha256": "0cdd2389e8206fc91672327960702c0e5b5cabdef5fb1cb3d8fee1da2087a6c3"
+  },
+  "vajb-orbit/game/repairs.gd.uid": {
+   "size": 20,
+   "sha256": "77d74295af455980340874ee0ca83476e8e1f614cd0d281cdc7118b65d9d8b44"
+  },
+  "vajb-orbit/game/ship_stats.gd": {
+   "size": 1161,
+   "sha256": "8aa0e20a3bea664763ad66bd83b65f2a7055bfd78345226a0e420676ed61e6ef"
+  },
+  "vajb-orbit/game/ship_fit.gd": {
+   "size": 16022,
+   "sha256": "635af0c13f16aae50658c6b699e511589b8d26f5087b91af9650b8176fcc522e"
+  },
+  "vajb-orbit/game/ship_fit.gd.uid": {
+   "size": 20,
+   "sha256": "6285a95ac780cd2f21f51a3a4176fd38bc5f1a18a8db13e4b0b6c3b6c7be8e60"
+  },
+  "vajb-orbit/game/ship_stats.gd.uid": {
+   "size": 19,
+   "sha256": "a09949af0540b8b434cbd4682218f840b8b35edd189ba989e6d5c4a4286ee90f"
+  },
+  "vajb-orbit/game/sector_registry.gd": {
+   "size": 5800,
+   "sha256": "868ee105ef6872cda8f99b321a61263499a14d12913e10d9d17608cc2b59b5e3"
+  },
+  "vajb-orbit/game/sector.gd": {
+   "size": 12413,
+   "sha256": "5c094a620a8ed612098ddfbfb25ba58d45ea9273bae8c07a9ab0b2e3e688c941"
+  },
+  "vajb-orbit/game/player_ship.gd": {
+   "size": 15166,
+   "sha256": "8e0c7a21f363f79ff2ec13b277eb424d0fdc11811c0275533728a40f40a82860"
+  },
+  "vajb-orbit/game/player_ship.tscn": {
+   "size": 725,
+   "sha256": "fd8952f0b8972e5eaacd01bb528f5e608d709da248d703ff04a3d2e15fbd7d63"
+  },
+  "vajb-orbit/game/asteroid.gd": {
+   "size": 5834,
+   "sha256": "329199a1091acff611b44e03349ad1eb5fb092be0828fb7de63ad811b2f0d027"
+  },
+  "vajb-orbit/game/asteroid_field.gd": {
+   "size": 8686,
+   "sha256": "e4a1fee40f3d79bcdee66288206731c40fff2f2930e0b5a526d92eb0307b57ef"
+  },
+  "vajb-orbit/game/pickup.gd": {
+   "size": 7734,
+   "sha256": "25c8f4e849c038005fd97378d4660a8281074d35a8c3543d5d8be39bc59c90c9"
+  },
+  "vajb-orbit/game/mining_laser.gd": {
+   "size": 8428,
+   "sha256": "723b6f089e62289186880bec76c668b88e24adcf77a40728a7578993a1e78b51"
+  },
+  "vajb-orbit/game/mining_laser.tscn": {
+   "size": 333,
+   "sha256": "90b71f43aeaf054660a0b9559b1bbca199cae46ae2916a2508d2883b9f9d62fd"
+  },
+  "vajb-orbit/game/asteroid.gd.uid": {
+   "size": 20,
+   "sha256": "1bbdee8221e4a9e0622a5ffcf573a683114ebd94f0de897a95fa4ca293a8a917"
+  },
+  "vajb-orbit/game/asteroid_field.gd.uid": {
+   "size": 20,
+   "sha256": "df5b7bfbdd7197d667af1c7602b631e9622898a953a8e344facd9d1d40f69948"
+  },
+  "vajb-orbit/game/mining_laser.gd.uid": {
+   "size": 20,
+   "sha256": "2d751998fafcb3f5937b0f7697b3df794be0ea185e3b32bad9ff6409ce8db89b"
+  },
+  "vajb-orbit/game/pickup.gd.uid": {
+   "size": 20,
+   "sha256": "583a7949424805bf089ec06d3778316f11aec6ba28df4dc54ddad8828d060caa"
+  },
+  "vajb-orbit/game/player_ship.gd.uid": {
+   "size": 20,
+   "sha256": "64e08229dc3aa3d311cf185a57fc660703222468d15284ee0ec5ed6e74ea6bff"
+  },
+  "vajb-orbit/game/sector.gd.uid": {
+   "size": 20,
+   "sha256": "49368446fbc623cf636403453f8ca214665d12009fc169fd27f3d6097fe24697"
+  },
+  "vajb-orbit/game/sector_registry.gd.uid": {
+   "size": 19,
+   "sha256": "b263b194a2274f15887081610587dc7949ad18eb950b365e39d943179f8a3b09"
+  },
+  "vajb-orbit/game/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "vajb-orbit/tests/headless_runner.gd": {
+   "size": 4104,
+   "sha256": "fe8bb2dc3eac85694fff27f7b73280030edf427b3c00279e74844121614bf7f8"
+  },
+  "vajb-orbit/tests/headless_runner.tscn": {
+   "size": 208,
+   "sha256": "4d0e80f8df3ed155a01c4ff65b73578caa0550a2c1a133ba0381245d74e1bb3f"
+  },
+  "vajb-orbit/tests/test_p1_market.gd": {
+   "size": 19566,
+   "sha256": "b93f348d6e0e7098091b8c923cef2ab6bbc44f29b4b251d3f08fda33575b1c8f"
+  },
+  "vajb-orbit/tests/test_p1_catalogues.gd": {
+   "size": 12440,
+   "sha256": "c30c2001e5f2d8266917d6c2831f0c8f93a443525a4060a343c25e792ff61ec5"
+  },
+  "vajb-orbit/tests/test_p1_pricing.gd": {
+   "size": 6113,
+   "sha256": "43c76b4dfc0f7f3be15c6ee5f2c8512acc64919dd61fa2c35b16b5ec667c751d"
+  },
+  "vajb-orbit/tests/test_p1_refinery.gd": {
+   "size": 9539,
+   "sha256": "b033a91009ea557ded8c18512fe9624cad0f0ac09de6be3e52315694a61e89f2"
+  },
+  "vajb-orbit/tests/test_p1_profile.gd": {
+   "size": 14440,
+   "sha256": "d39e5e25cc42002cf61810e9a9ded2a053f565d04636ca8358e2282f05723025"
+  },
+  "vajb-orbit/tests/test_p1_repairs.gd": {
+   "size": 6663,
+   "sha256": "bbd5dda48302a884db19246af8b6446b8aef08c7319220b34aeaea171baad4da"
+  },
+  "vajb-orbit/tests/test_p1_clock_log.gd": {
+   "size": 4635,
+   "sha256": "7f4067711155fcd72c114a6a815e7a51ea6240272c13390cfd27cf1a6ce14904"
+  },
+  "vajb-orbit/tests/headless_runner.gd.uid": {
+   "size": 20,
+   "sha256": "4f77b91744092af5d5ff82c0d6b9ba2d54c4cf09f16756a001463390d5c157b2"
+  },
+  "vajb-orbit/tests/test_p1_catalogues.gd.uid": {
+   "size": 20,
+   "sha256": "9e797f903dcdd13a17108e45d150d56a2f962351ff371f4116c175674c6c6915"
+  },
+  "vajb-orbit/tests/test_p1_clock_log.gd.uid": {
+   "size": 20,
+   "sha256": "409f6bb7edb042e1c0fe847190cc81d690410de9592ca3c7c1d75b3a71654293"
+  },
+  "vajb-orbit/tests/test_p1_market.gd.uid": {
+   "size": 20,
+   "sha256": "fdf17016ce265c847465a8d37ca1b5611c6b642963f8b4a9c1c047c69a6656a9"
+  },
+  "vajb-orbit/tests/test_p1_pricing.gd.uid": {
+   "size": 20,
+   "sha256": "b6beb089f6ce99c6c2d44544d1c77fca15d4639730f2f433a0d7cb26aa3b796f"
+  },
+  "vajb-orbit/tests/test_p1_profile.gd.uid": {
+   "size": 20,
+   "sha256": "ee637171b4453435db040388c86a6eae38a2ac56a7433dee17b24d0c6e1f9cfa"
+  },
+  "vajb-orbit/tests/test_p1_refinery.gd.uid": {
+   "size": 20,
+   "sha256": "54522e39a00d2f2bc96dd2103eb7813f840c05577044f2248bba11d6deb19cca"
+  },
+  "vajb-orbit/tests/test_p1_repairs.gd.uid": {
+   "size": 19,
+   "sha256": "5473e465aa585c01c72232417483c01b75e724bb5c6c8202a2d7d14ff5933b21"
+  },
+  "vajb-orbit/tests/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "docs/ASSETS.md": {
+   "size": 5295,
+   "sha256": "f1bbb27e15a673541efdc01de9972aced8b43a5130dad43f5d0a13fb19f0e3ee"
+  },
+  "docs/CONTRACTS.md": {
+   "size": 8062,
+   "sha256": "9dcc8aa50b7a9c05b7044409048efd332e0f52f0f8388f3cc3f5b3839311ca78"
+  },
+  "docs/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "docs/design/STYLE_BIBLE.md": {
+   "size": 16813,
+   "sha256": "0ad5067cac12bae8f3521137a50591c6038b3dbd32c77463c86785fe11ecacb7"
+  },
+  "docs/design/UI_SPEC.md": {
+   "size": 23703,
+   "sha256": "f1aab5623f7b2c67e922207cf56122ef0d44cda7c19aeec928734f95bcf50689"
+  },
+  "docs/design/AUDIO_SPEC.md": {
+   "size": 28535,
+   "sha256": "3eb773601f110857bad9de5df05dad5ef283ccaaf63a36f1c798b5ce221f4d33"
+  },
+  "docs/design/MENU_FLOW.md": {
+   "size": 27786,
+   "sha256": "2934b3a251ada5ba91674e1e50eb60b0f3fd4d5f426888cd8369de3ff729b4e0"
+  },
+  "docs/design/MAIN_MENU_SPEC.md": {
+   "size": 8374,
+   "sha256": "aeab8986102389068dd868c9bb825f976b1ccdcf82c2704c8bc2b4e47c0d2956"
+  },
+  "docs/design/ENVIRONMENT_SPEC.md": {
+   "size": 11823,
+   "sha256": "d9b359809f2b72822206513bffe22500daad454042bfbedf8651b1a89c2c9394"
+  },
+  "docs/design/FX_SPEC.md": {
+   "size": 17707,
+   "sha256": "8e23861a5aa61253d1449942a184ed4ba684d71fa6b027788ecb25888ce91018"
+  },
+  "docs/design/SHIPS_SPEC.md": {
+   "size": 13263,
+   "sha256": "4f0d554eb94de24aeeb1ea5fe5611c9807ad1217a79aeb081e202cd9f77372a5"
+  },
+  "docs/design/ICONS_SPEC.md": {
+   "size": 39013,
+   "sha256": "4d7d01efde70a78305a14e52c02c3150f253f511cb55739c2397057e97b904af"
+  },
+  "docs/design/UI_CHROME_ASSETS_SPEC.md": {
+   "size": 18477,
+   "sha256": "11a68c039735a50cf34d6d61b49e95911440d4d3a01672d9e2738ae76c8adb83"
+  },
+  "docs/design/GENERATION_PLAN.md": {
+   "size": 4806,
+   "sha256": "a9da2ad0c862153c68db2b3bc61a3218d9a46f2d2efaedf33b37c1461b3f32f2"
+  },
+  "docs/design/IMPLEMENTATION_PLAN.md": {
+   "size": 45790,
+   "sha256": "b7f6445ff4e3985c8c8b26235e68fbe4b6ed4102dd27a91cbad98eef1fa48cd1"
+  },
+  "docs/design/ASSET_EXPANSION_SPEC.md": {
+   "size": 25767,
+   "sha256": "b8947e43d1dbf55a25f2b4b1eaf2b14206914cd9ebd014f4fed53ea11670cc47"
+  },
+  "docs/design/PROJECT_SETTINGS_PATCH.md": {
+   "size": 11126,
+   "sha256": "4cf2e75524907aa612d4e82fb8fccb07f2e096c561f95bcc7c20361f60fb7651"
+  },
+  "docs/design/PHASE_C_STATUS.md": {
+   "size": 15256,
+   "sha256": "9e3c0d3e8aefecfe9502eb50cc44274f7bab044cf1b1c96367d40acfabf9b98a"
+  },
+  "docs/design/ASSET_CATALOG.md": {
+   "size": 177563,
+   "sha256": "bba348b942eb9d4b2906fa6734d09640da1d76d828b883bd277c379758b5f127"
+  },
+  "docs/design/ASSET_EXPANSION_SPEC_E.md": {
+   "size": 14957,
+   "sha256": "2dd706bf24d74d5d826d28b0e86a6dcd7f6099ffd703d5571b29508eb577fcff"
+  },
+  "docs/design/ASSET_WIRING_HANDOFF.md": {
+   "size": 13390,
+   "sha256": "81c9d846fe9cbf2979365069526af555f9530444d776d0218578bcc7c117a160"
+  },
+  "docs/design/STATION_SPEC.md": {
+   "size": 18690,
+   "sha256": "5e782399e048165916383af58dd25724168ce66dbb74756329d380f4b8b2e0e2"
+  },
+  "docs/design/THEME_AUDIO_EXTENSION.md": {
+   "size": 18457,
+   "sha256": "86adfa7b70752cef37e5347d974b628a8333a46fe60dd9f79b31f1d4422a4746"
+  },
+  "docs/design/ASSET_AUDIT.md": {
+   "size": 60853,
+   "sha256": "a9a90f6584b1025686cf649c7e9e8e0db5263d8c9d0b767b5a83a0e020bc8ef5"
+  },
+  "docs/design/MAIN_MENU_V2.md": {
+   "size": 66441,
+   "sha256": "079a9e96b8e05daf8d299be655836d4a6b0622cdbdb7c50751cd6f70155fd579"
+  },
+  "docs/design/STATION_HUB.md": {
+   "size": 69524,
+   "sha256": "b537f4a5e07b6efa847d01416a76f4c14d46253585a2436caff3844402636794"
+  },
+  "docs/design/CLEANUP_PLAN.md": {
+   "size": 8236,
+   "sha256": "3a4e3caa329dfd3f920e7b9f6c45a40dfa62b6131f5cb5e504ca3e55464e50ed"
+  },
+  "docs/design/CLOSEOUT_PLAN.md": {
+   "size": 4430,
+   "sha256": "1b5f5d753d14de84461b67e014196d3f6b1b8e7f897578741568d4ae8690fb0a"
+  },
+  "docs/design/ASSET_PIPELINE_V2.md": {
+   "size": 7885,
+   "sha256": "f7af3fa5524b6d0b69555aef462256600d9974e19b70c5419875fbe6bee39501"
+  },
+  "docs/design/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "docs/gameplay/README.md": {
+   "size": 4681,
+   "sha256": "bed8dded4481cdc3b58853c7e4033cd6c149b3b7967e808971572e9f047b39fe"
+  },
+  "docs/gameplay/01_economy_core.md": {
+   "size": 10212,
+   "sha256": "e5aa18e1653dc4eaf9df80d16effb303c5d876248b1fd6f3e7ee2068c3ef447c"
+  },
+  "docs/gameplay/02_minerals.md": {
+   "size": 10664,
+   "sha256": "185c6ee46d8df8b34583f72e4cbf6ca0c427900a5128c8de43d0c7ddac532e13"
+  },
+  "docs/gameplay/03_components.md": {
+   "size": 6475,
+   "sha256": "5572a5945ac640d424015bf865e13471627f2be71e3fbc66a73b526daf06c148"
+  },
+  "docs/gameplay/04_refinery.md": {
+   "size": 4599,
+   "sha256": "f43552a7f68f878e7ea7d0eec26237906ac1c783aa61426eb31b3550899a6eaa"
+  },
+  "docs/gameplay/05_exchange.md": {
+   "size": 6523,
+   "sha256": "f8f57728b36036111c7922d64186c08a1b5663604ed73ef5fb9d363b2ff6168d"
+  },
+  "docs/gameplay/06_loot_drops.md": {
+   "size": 6486,
+   "sha256": "3259940849990cb5b4240d1cace8444583e48540a6c8c207c7e7ea85bfd6f04d"
+  },
+  "docs/gameplay/07_crafting.md": {
+   "size": 3328,
+   "sha256": "84ae064da3180770872aaddae7e7b03219bb178f172bb14d588f532037042bec"
+  },
+  "docs/gameplay/08_ship_classes.md": {
+   "size": 8491,
+   "sha256": "0ceb80a64dec35aba858da59d329d05f8b817693090c8e75062fd648ae51feba"
+  },
+  "docs/gameplay/09_ship_slots_modules.md": {
+   "size": 13562,
+   "sha256": "2e578f1d8854550fc497791b5a8670cd6570142c65d36eeca968bb48f53741ef"
+  },
+  "docs/gameplay/10_ship_acquisition.md": {
+   "size": 8325,
+   "sha256": "ab96793166f431a38ef7265718fe5757f7e842d9ff5c6ba7815e058468af4bdc"
+  },
+  "docs/gameplay/11_galactic_map.md": {
+   "size": 7281,
+   "sha256": "7a58c721c0c58b52cbb7833f5ed6af9ad9f203e40942eaf0a94b071140e2df71"
+  },
+  "docs/gameplay/12_factions.md": {
+   "size": 5277,
+   "sha256": "8c0bae380f81650b3cd14b433197d2c96dff6fcc003833403da5f7d49c2e9045"
+  },
+  "docs/gameplay/13_heat_bounty.md": {
+   "size": 4461,
+   "sha256": "fdc4dd7f07e3a59981005225882efb1760626a98ca442fee36e6847f61af30c7"
+  },
+  "docs/gameplay/14_station_services.md": {
+   "size": 7383,
+   "sha256": "ddd9f3eb4fdbd6a974b7db40eacf51bc5fdcd48fe31ad439195ce73a914db11a"
+  },
+  "docs/gameplay/15_module_affixes.md": {
+   "size": 5868,
+   "sha256": "6a410e39bf91c0455499c4b681b3159660463d2a008e68cb2665817e9473ca2f"
+  },
+  "docs/gameplay/16_art_design_brief.md": {
+   "size": 8271,
+   "sha256": "35eae193c2eba8961f0e446b26ad431fa5732316874edc1a0ff2c35822338e59"
+  },
+  "docs/gameplay/17_coder_handoff.md": {
+   "size": 9602,
+   "sha256": "3e3a0d884d721d2cd6133baf9fd94526865b4da8edf844318cdaafd9c0b6f0bd"
+  },
+  "docs/gameplay/19_testing_notes.md": {
+   "size": 4335,
+   "sha256": "f6ce513142350c0740a09a302936263fa58bcd94bdd4982f99c79b2071b71078"
+  },
+  "docs/gameplay/18_engine_spec.md": {
+   "size": 41156,
+   "sha256": "889ed1bb8105f56841a860bdfff8f7c84c7b4f3f1248c8a66794aa29a2888629"
+  },
+  "docs/gameplay/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  ".agents/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  ".agents/gen/review_report.md": {
+   "size": 31223,
+   "sha256": "f4a0a1d0705200a246b1a69d4ce3ccd1d0396bcad82368d93224d8119b75c3cf"
+  },
+  ".agents/gen/fix_report.md": {
+   "size": 20217,
+   "sha256": "c14ecbc88d2038c17af5cee7a070a6bd228463630bffd3a04fedb002a5a72231"
+  },
+  ".agents/gen/review2_report.md": {
+   "size": 24395,
+   "sha256": "088c0add060e42d7fb130274a559acd7e51cf796b1eec0b6b1cc95f89d3c8c44"
+  },
+  ".agents/gen/headless_sweep.log": {
+   "size": 1538,
+   "sha256": "7eef8691aeb8a2b99a89122aae7e8ce12c2ae2c0598e649d7440ea3ecdb34625"
+  },
+  ".agents/gen/d2_report.md": {
+   "size": 18382,
+   "sha256": "dce5feed52ea9a49d8626cd8852acb08785181864ac62bc0429cbe1a4e7ae873"
+  },
+  ".agents/gen/d3_report.md": {
+   "size": 24588,
+   "sha256": "a14e946391be7166d0bf14f7fc032cd7bfb230ddff4d1f3a0db1a0338e639167"
+  },
+  ".agents/gen/d1_report.md": {
+   "size": 15195,
+   "sha256": "ce2f66a5ea0c6228601eb65d988d15b39f8aa6b862614e2ad977dd48a833d052"
+  },
+  ".agents/gen/d4_report.md": {
+   "size": 14595,
+   "sha256": "7e3b24e00299c312b5953bffeb5d3e4d21bebc93dd6013e1ded6641de7c5827d"
+  },
+  ".agents/gen/d5_report.md": {
+   "size": 30602,
+   "sha256": "3f6badec8c6ccbb2de53c49e4f81bb880f6b7113627fbe733f81ca4e3d69c95d"
+  },
+  ".agents/gen/d4b_report.md": {
+   "size": 29427,
+   "sha256": "11ce8297b42b86a8e2f0e35932373d21409e8f5910a5eb6fb5f11f162f3001d1"
+  },
+  ".agents/gen/d6_report.md": {
+   "size": 11663,
+   "sha256": "53cc989a9688c25ff9b08f36aeb43d14a0948973365542411835c2f5a1dd16ff"
+  },
+  ".agents/gen/d4c_report.md": {
+   "size": 30804,
+   "sha256": "4f2d28eb9f0f2ad2b572d37c4a8449f0f37e9feabc5ab02a0fc59311536ef718"
+  },
+  ".agents/gen/m1_report.md": {
+   "size": 14132,
+   "sha256": "cd5963c7573e75ea869fe6623f628fd790c66228848512f0356187d53ef62c82"
+  },
+  ".agents/gen/s1_report.md": {
+   "size": 28426,
+   "sha256": "e24858265215fde68d0176a89794634a15229cf6c289505999974f19ce0375e0"
+  },
+  ".agents/gen/leak_verbose.log": {
+   "size": 16706,
+   "sha256": "2837f614d94f2bacff0a5169c7886be9f70245ebb1bf868e9f937e626cefad03"
+  },
+  ".agents/gen/s2_report.md": {
+   "size": 37350,
+   "sha256": "93f09a269fa3fce73e54092e3552e576ba07ec653f505a04d02c647f98481698"
+  },
+  ".agents/gen/p1b_report.md": {
+   "size": 4068,
+   "sha256": "dd45a93ded6b4af6f1b7eeb61d42f7c7533a46e245cb95cd1f6bb07035e86379"
+  },
+  ".agents/gen/p1a_report.md": {
+   "size": 5404,
+   "sha256": "f334c7944f467f2e40a5f97a4c995e2503ee7e8c58683b7373e78ce96353a333"
+  },
+  ".agents/gen/p1c_report.md": {
+   "size": 6231,
+   "sha256": "b8b496ec139add80a744902ae41e7c87d8f9f73c7b500e59b098a423eeab7ebd"
+  },
+  ".agents/gen/p1e_report.md": {
+   "size": 5902,
+   "sha256": "451687ea0409f20158de9a63a356fa0fa1c793146b06fded21dcf4c7e90c3b6b"
+  },
+  ".agents/gen/p1f_report.md": {
+   "size": 5731,
+   "sha256": "964f01612d98ac10762a8a4f2f9b3e72f11e1ac4a3ef983c8a6368d86f721207"
+  },
+  ".agents/gen/p1d_report.md": {
+   "size": 8151,
+   "sha256": "01bf53c1d42e143e3c48647b379cd31ea68a66efbca599729ccda2c7447d48f0"
+  },
+  ".agents/gen/p1j_report.md": {
+   "size": 8346,
+   "sha256": "7b02ba9db303c49d7f77ed8212ceb88a0ef01bdb5762295de2ba609408aafd6c"
+  },
+  ".agents/gen/p1k_report.md": {
+   "size": 5404,
+   "sha256": "b01d19ed4b46fe787ae5c83e1d743ad60c9c13f220da4d757598d966ad30563c"
+  },
+  ".agents/gen/p1h_run8.txt": {
+   "size": 4753,
+   "sha256": "79b00fc77be4fc237be77cdb85bd99faeb18129b2d3768fcddebcc45feab0b42"
+  },
+  ".agents/gen/p1h_run_empty8.txt": {
+   "size": 1179,
+   "sha256": "2793762809d51ae2e9926c0f8387ce9ea0d240b9456b42518165c46c69c76db5"
+  },
+  ".agents/gen/p1h_run_hashed.txt": {
+   "size": 4753,
+   "sha256": "79b00fc77be4fc237be77cdb85bd99faeb18129b2d3768fcddebcc45feab0b42"
+  },
+  ".agents/gen/p1h_report.md": {
+   "size": 10711,
+   "sha256": "ce3c20942944b38727b6a47f160db1218b0849572f002b1dd0a160eaecb4eb75"
+  },
+  ".agents/gen/p1i_report.md": {
+   "size": 9487,
+   "sha256": "189779039df08e737290deafc1ad4e616388c68bdaf0535428cf610b4de0b508"
+  },
+  ".agents/gen/p1l_report.md": {
+   "size": 5704,
+   "sha256": "070340e6af783753f6e8d9dac3ea0d8af783db65c94b1460e275c1e23b971618"
+  },
+  ".agents/gen/p1l_run.txt": {
+   "size": 3773,
+   "sha256": "6303c594a39bad43cef2e98ee7a01ced0ae96e21562b64697d6a89fd5bf5a1e2"
+  },
+  ".agents/gen/p1l_run_scoped.txt": {
+   "size": 2548,
+   "sha256": "6acc4f4da18dc584149b34ac0420ab8c4eee59eeb7c36a572ef48925725acad0"
+  },
+  ".agents/gen/p1r_report.md": {
+   "size": 14421,
+   "sha256": "a32f339627b5a5e1b95a719935878808f85d094c1f386a3fe3277fd7fe6e8bc4"
+  },
+  ".agents/gen/p1fix_report.md": {
+   "size": 7672,
+   "sha256": "4ec0ccba266831e145fbfd3f71a9db46030193a04e7967385ea21429d0b6cc34"
+  },
+  ".agents/gen/p1r2_report.md": {
+   "size": 14228,
+   "sha256": "6c0f055270d26b038b8c57416725d21643c698c2746bee2e6d839de4cde19c0f"
+  },
+  ".agents/gen/profile_backup_20260918.cfg": {
+   "size": 1832,
+   "sha256": "b2a5e5ff694bddc3aca72378584c903b65aababbd788742e0aa86f2ea28f46b0"
+  },
+  ".agents/gen/p1_report.md": {
+   "size": 7597,
+   "sha256": "dd946d51ccb8dfc8031293521ae6a768f3c902d03df0873af8a05d57e982fca6"
+  },
+  ".agents/gen/fix_wave1_w4_report.md": {
+   "size": 14203,
+   "sha256": "0625b1af513d786780f1c44b80015d75bb4cd1abf3abff559df5011f7c808be9"
+  },
+  ".agents/gen/fix_wave1_w1_report.md": {
+   "size": 34956,
+   "sha256": "c3e6e0e505aa7c73763d427d5d1bffa2979541dea1838c8bad88570aaddf73ed"
+  },
+  ".agents/gen/fix_wave1_w2_report.md": {
+   "size": 14936,
+   "sha256": "b55a1f291976815162986d952725f02c8e460002ae62e0d824b40fa59a066613"
+  },
+  ".agents/gen/fix_wave1_w3_report.md": {
+   "size": 18749,
+   "sha256": "1e2141ec395c6a344a211da76035b5642993836d231b4e674ad803eb1dcfc37a"
+  },
+  ".agents/gen/w5_theme_run1.txt": {
+   "size": 3895,
+   "sha256": "ad3f1e2a3ce21ce6d971f7cf32b285fe936670c902ed0f090b4e4d90baafd608"
+  },
+  ".agents/gen/w5_theme_run2.txt": {
+   "size": 3895,
+   "sha256": "ad3f1e2a3ce21ce6d971f7cf32b285fe936670c902ed0f090b4e4d90baafd608"
+  },
+  ".agents/gen/w5_determinism.ps1": {
+   "size": 1144,
+   "sha256": "d17386b71e0bd88e028311fc6253b2d6de93ffbf1e7c2e2330173170bc860f86"
+  },
+  ".agents/gen/w5_probe.txt": {
+   "size": 3220,
+   "sha256": "0668b91856dade72ce3e2a8e2338494e8c494bfc0148e28387b772935b857ffc"
+  },
+  ".agents/gen/w5_theme_run3.txt": {
+   "size": 3895,
+   "sha256": "ad3f1e2a3ce21ce6d971f7cf32b285fe936670c902ed0f090b4e4d90baafd608"
+  },
+  ".agents/gen/w5_profile_after.cfg": {
+   "size": 1681,
+   "sha256": "2f114dbe89aff7756ef1e4af136c452c32e2fd5182b5bf2c2b729126ba910da6"
+  },
+  ".agents/gen/w5_probe_rerun.txt": {
+   "size": 3230,
+   "sha256": "69c43ce1a80fee49618b5ccd1156f9243b37fdaeb9d504184e218860ac4f2b66"
+  },
+  ".agents/gen/fix_wave1_w5_report.md": {
+   "size": 28186,
+   "sha256": "7e6c900e987748cc804e2298f7658fbf1dfd12dceb1e88ce723ee2ff8d9a39aa"
+  },
+  ".agents/gen/fix_wave1_review_report.md": {
+   "size": 23610,
+   "sha256": "c59646cf40e1b5389d8e226a85830ba8869e8a29959aa34fd4cdd8b252aa6db1"
+  },
+  ".agents/gen/w7_theme_run1.txt": {
+   "size": 4427,
+   "sha256": "1f313f748fcf044a6e7872cedf10fbc7e850dacb127fd7620be0cce34958d76e"
+  },
+  ".agents/gen/w7_probe.txt": {
+   "size": 1933,
+   "sha256": "e883073b4df5f042980f44507e09c9f0b23528d36d481549d84451635c439abe"
+  },
+  ".agents/gen/w7_tests.txt": {
+   "size": 3931,
+   "sha256": "728a6affc899297a472c314875b7758581b07a3e7a2c2567ec82564b9b254f41"
+  },
+  ".agents/gen/w7_boot_menu.txt": {
+   "size": 408,
+   "sha256": "ccc58880703d2086a534e9ad72c490813b606484fc8f15678ad87a1bfbac26b3"
+  },
+  ".agents/gen/w7_boot_station.txt": {
+   "size": 408,
+   "sha256": "ccc58880703d2086a534e9ad72c490813b606484fc8f15678ad87a1bfbac26b3"
+  },
+  ".agents/gen/w7_boot_game.txt": {
+   "size": 159,
+   "sha256": "5c2ebe559678e9030ab51eca24a9f30efb2c2e31997203070b088d4548ffe12f"
+  },
+  ".agents/gen/w7_md5.ps1": {
+   "size": 282,
+   "sha256": "8950215737c8cdfb63f1bc1879b9a4773601b384e55c9cfafc675ce0c0aaf684"
+  },
+  ".agents/gen/w7_assert_test.txt": {
+   "size": 5001,
+   "sha256": "0692f00e68037aa493722e5726d3f26c8901fe376a3cf4b2edeb61ea860dbac9"
+  },
+  ".agents/gen/w7_theme_focusless_empty.txt": {
+   "size": 4490,
+   "sha256": "a81c0f69b878ee4912ffa80acdffed4c0ab2da8a7b7a62d6aee9cd100cb1057d"
+  },
+  ".agents/gen/fix_wave1_w7_report.md": {
+   "size": 17879,
+   "sha256": "fdd07e81876d315cd7f9bb4354f6326c874f9c40f13c77e9ff3928b9228fc706"
+  },
+  ".agents/gen/fix_wave1_review2_theme_run.txt": {
+   "size": 4427,
+   "sha256": "1f313f748fcf044a6e7872cedf10fbc7e850dacb127fd7620be0cce34958d76e"
+  },
+  ".agents/gen/fix_wave1_review2_tests.txt": {
+   "size": 3931,
+   "sha256": "728a6affc899297a472c314875b7758581b07a3e7a2c2567ec82564b9b254f41"
+  },
+  ".agents/gen/fix_wave1_review2_probe.txt": {
+   "size": 5153,
+   "sha256": "5c955e1504dfb3b9c012fe444bcac6bda95d51866c6054b06b61872e46bbd0f6"
+  },
+  ".agents/gen/fix_wave1_review2_report.md": {
+   "size": 18329,
+   "sha256": "e0e7913df4faa62323ff26945cc8244da6fe33ade5975c3e99d2a9d8bff9a43e"
+  },
+  ".agents/gen/engine_wave1_w0_report.md": {
+   "size": 12100,
+   "sha256": "ba4b85813da1c48542221370ac63c6f11df603cede003e09d22e01e063360900"
+  },
+  ".agents/gen/engine_wave1_w1_probe.txt": {
+   "size": 4303,
+   "sha256": "5cc85fb4566b2dd44d7f180e58952da41d404b69b39d9a2ba3245b3472207e0c"
+  },
+  ".agents/gen/engine_wave1_w1_boot.txt": {
+   "size": 159,
+   "sha256": "5c2ebe559678e9030ab51eca24a9f30efb2c2e31997203070b088d4548ffe12f"
+  },
+  ".agents/gen/engine_wave1_w1_probe_source.gd": {
+   "size": 9009,
+   "sha256": "0fd9d0fea43d8d863862a9c5a8dc4c54d2e0032d291442dc653795d05d0e914c"
+  },
+  ".agents/gen/engine_wave1_w1_report.md": {
+   "size": 17640,
+   "sha256": "729c8c0e882ab993ce9814ae21e136a65b88d8b04d8ac8a362f9fcbfb377ef48"
+  },
+  ".agents/gen/engine_wave1_w1_probe_rerun.txt": {
+   "size": 4286,
+   "sha256": "07f221cca5eab805437f25f03aa2355cd5df9c9f1901834974ea11f9d5d55caf"
+  },
+  ".agents/gen/w3_field_probe.txt": {
+   "size": 3115,
+   "sha256": "878338bc805ecc941ac973b8a524c098ad4d7ad464c4747e31930acdd2d53452"
+  },
+  ".agents/gen/w3_laser_probe.txt": {
+   "size": 1771,
+   "sha256": "0d323698274c0b559a8e34facdebc90005d67db10c49c03dbbf10036962ee50c"
+  },
+  ".agents/gen/engine_wave1_w2_report.md": {
+   "size": 23360,
+   "sha256": "99bc0774a49a4e6a7fbc4cbbdea721d866adea96e45ff12d4d8e0853fa431705"
+  },
+  ".agents/gen/w3_pickup_probe.txt": {
+   "size": 1561,
+   "sha256": "02f1d2b9815cebf6b0210f03a121f5a9f0ae7ddc8bb1b16786381f0be0d56e2f"
+  },
+  ".agents/gen/w3_sector_seam_probe.txt": {
+   "size": 934,
+   "sha256": "1844dcd7d1aabbcce9e1cb6033edcfb74445368dc19b4a217b2370340d417396"
+  },
+  ".agents/gen/w3_p1_regression.txt": {
+   "size": 3931,
+   "sha256": "728a6affc899297a472c314875b7758581b07a3e7a2c2567ec82564b9b254f41"
+  },
+  ".agents/gen/w3_boot_player_ship.txt": {
+   "size": 159,
+   "sha256": "5c2ebe559678e9030ab51eca24a9f30efb2c2e31997203070b088d4548ffe12f"
+  },
+  ".agents/gen/w3_boot_game.txt": {
+   "size": 159,
+   "sha256": "5c2ebe559678e9030ab51eca24a9f30efb2c2e31997203070b088d4548ffe12f"
+  },
+  ".agents/gen/w3_measure.py": {
+   "size": 849,
+   "sha256": "42e7f989280cff74357f37f436d302355ce3da02846040e12cd94dda68a604f2"
+  },
+  ".agents/gen/engine_wave1_w3_report.md": {
+   "size": 27899,
+   "sha256": "53a3ebd68a473f1a97514e7168623705b6acd2c6617a5a39355734cdb31fb134"
+  },
+  ".agents/gen/engine_wave1_w4_report.md": {
+   "size": 21724,
+   "sha256": "1c5004daf900bf57a5bb087be202847222e06ac6186c82e8d544d2bd1279eaea"
+  },
+  ".agents/gen/engine_wave1_w5_probe.txt": {
+   "size": 4704,
+   "sha256": "2a65fbad26494439902d71f1944928f6fd107f7e1731d9222c90cae1fc7403bd"
+  },
+  ".agents/gen/WAVEBOARD.md": {
+   "size": 6866,
+   "sha256": "4dba40cb1b8a2771b6a97e90065980499cd5b827bb5a85f2d91b9a61731ff2bf"
+  },
+  ".agents/gen/engine_wave1_w5_boot_game.txt": {
+   "size": 159,
+   "sha256": "5c2ebe559678e9030ab51eca24a9f30efb2c2e31997203070b088d4548ffe12f"
+  },
+  ".agents/gen/engine_wave1_w5_game_probe.txt": {
+   "size": 1277,
+   "sha256": "195724f5596ce9bead64f7b3f7885dfa3746084b974e7362b2132ee036712e05"
+  },
+  ".agents/gen/engine_wave1_w5_probe_source.gd": {
+   "size": 15379,
+   "sha256": "a70ee7d8bc30184dea32beffe2e73d709f70763138c9279e8815280b2a51e1c7"
+  },
+  ".agents/gen/engine_wave1_w5_probe_source.tscn": {
+   "size": 177,
+   "sha256": "04520d2f330c902f83916a17052cfe2d25f0bc365617c30ee450eb2105491b71"
+  },
+  ".agents/gen/engine_wave1_w5_script_try.txt": {
+   "size": 653,
+   "sha256": "a821abbeb8a3ad0e1e9472f5187898aada179a5474cd82454e964f4625b0593e"
+  },
+  ".agents/gen/engine_wave1_w5_script_control_source.gd": {
+   "size": 779,
+   "sha256": "9c047c23db6371dc0cfca9be0e3e155fa8c8f8f1a02b122b78a0608a159d8da5"
+  },
+  ".agents/gen/engine_wave1_w5_report.md": {
+   "size": 31056,
+   "sha256": "5675ae27c4ecf52ae4aa7985c4a4a65c2a94f8f351aa7a23a2e734b2c2788972"
+  },
+  ".agents/gen/engine_wave1_w6_probe_source.gd": {
+   "size": 23763,
+   "sha256": "bc8589539c45cecdde57285fa854d2d8019bbf6924e8986eabc732c5d0cbef77"
+  },
+  ".agents/gen/engine_wave1_w6_probe_source.tscn": {
+   "size": 188,
+   "sha256": "8e43b43615fc27ac2aed8369508fc463dc1165319fe7b7e3e499c2fd9cd4a2a1"
+  },
+  ".agents/gen/engine_wave1_w6_probe.txt": {
+   "size": 5846,
+   "sha256": "b034c83e00eb3df64884e1a270b5b334c27bbeac848dd7684ffd8dd335d334cf"
+  },
+  ".agents/gen/engine_wave1_w6_boot_game.txt": {
+   "size": 159,
+   "sha256": "5c2ebe559678e9030ab51eca24a9f30efb2c2e31997203070b088d4548ffe12f"
+  },
+  ".agents/gen/engine_wave1_w6_tests.txt": {
+   "size": 3931,
+   "sha256": "728a6affc899297a472c314875b7758581b07a3e7a2c2567ec82564b9b254f41"
+  },
+  ".agents/gen/engine_wave1_w6_script_try.txt": {
+   "size": 602,
+   "sha256": "0c7b5db730515265ee4bffa870205de567102d7795fdeea1ee9965c33edbdb30"
+  },
+  ".agents/gen/engine_wave1_review_report.md": {
+   "size": 22247,
+   "sha256": "3d8123dd3c91da67528f0660e98f926c8992c8edd882d3f1256ab498939b3c67"
+  },
+  ".agents/gen/_orch_boot_check.txt": {
+   "size": 159,
+   "sha256": "5c2ebe559678e9030ab51eca24a9f30efb2c2e31997203070b088d4548ffe12f"
+  },
+  ".agents/gen/engine_wave1_w7_probe.txt": {
+   "size": 5198,
+   "sha256": "292188bc77393e483af6dc94c0d6d7f672a97146cac4ef23aa2b62e56b87cb71"
+  },
+  ".agents/gen/engine_wave1_w7_probe_source.gd": {
+   "size": 24379,
+   "sha256": "26c03670d6815887690ac17489bcb50944a73b5f46fca22b4943b27ef3461619"
+  },
+  ".agents/gen/engine_wave1_w7_probe_source.tscn": {
+   "size": 186,
+   "sha256": "8358ff382ff20bf922e72e0f4dc2510fb5e2f0f326b276b7818c4e090d936ff7"
+  },
+  ".agents/gen/engine_wave1_w7_report.md": {
+   "size": 37917,
+   "sha256": "eef39c927f564f4dd18f80ffe776cdd15997ffa42dac00a793ef94746b4bfbf7"
+  },
+  ".agents/gen/engine_wave1_w7_m3_probe.txt": {
+   "size": 1921,
+   "sha256": "f84ed86588c9065432d6084e629f1310dc92dadc89ecd88e847296945cd95777"
+  },
+  ".agents/gen/engine_wave1_w7_b2_boot_game.txt": {
+   "size": 159,
+   "sha256": "5c2ebe559678e9030ab51eca24a9f30efb2c2e31997203070b088d4548ffe12f"
+  },
+  ".agents/gen/engine_wave1_w7_m3_probe_source.gd": {
+   "size": 9612,
+   "sha256": "9b70693f62fbc1633e1d32d2678c830a3ac41d2d02a34bb3776c0b10d7e1e53d"
+  },
+  ".agents/gen/engine_wave1_w7_m3_probe_source.tscn": {
+   "size": 184,
+   "sha256": "c3403ea7256bcfee53487ec183d8c7393a97ae4b0125b309d9866b1d9dddcccd"
+  },
+  ".agents/gen/engine_wave1_review2_probe.txt": {
+   "size": 4442,
+   "sha256": "e8eb51f28a3d1a4cac4b3c9efeba0fa5157c6955e7a936016f58c4f717b0f70d"
+  },
+  ".agents/gen/engine_wave1_review2_boot_game.txt": {
+   "size": 159,
+   "sha256": "5c2ebe559678e9030ab51eca24a9f30efb2c2e31997203070b088d4548ffe12f"
+  },
+  ".agents/gen/engine_wave1_review2_boot_menu.txt": {
+   "size": 159,
+   "sha256": "5c2ebe559678e9030ab51eca24a9f30efb2c2e31997203070b088d4548ffe12f"
+  },
+  ".agents/gen/engine_wave1_review2_boot_settings.txt": {
+   "size": 159,
+   "sha256": "5c2ebe559678e9030ab51eca24a9f30efb2c2e31997203070b088d4548ffe12f"
+  },
+  ".agents/gen/engine_wave1_review2_boot_station.txt": {
+   "size": 408,
+   "sha256": "ccc58880703d2086a534e9ad72c490813b606484fc8f15678ad87a1bfbac26b3"
+  },
+  ".agents/gen/engine_wave1_review2_tests.txt": {
+   "size": 3931,
+   "sha256": "728a6affc899297a472c314875b7758581b07a3e7a2c2567ec82564b9b254f41"
+  },
+  ".agents/gen/engine_wave1_review2_theme_run.txt": {
+   "size": 4427,
+   "sha256": "1f313f748fcf044a6e7872cedf10fbc7e850dacb127fd7620be0cce34958d76e"
+  },
+  ".agents/gen/engine_wave1_review2_report.md": {
+   "size": 14422,
+   "sha256": "58875769e092258c43de834872e3a612a70c3118aa36b9c25902b971f0e5c1ff"
+  },
+  ".agents/gen/_orch_final_tests.txt": {
+   "size": 3931,
+   "sha256": "728a6affc899297a472c314875b7758581b07a3e7a2c2567ec82564b9b254f41"
+  },
+  ".agents/gen/_orch_final_boot.txt": {
+   "size": 159,
+   "sha256": "5c2ebe559678e9030ab51eca24a9f30efb2c2e31997203070b088d4548ffe12f"
+  },
+  ".agents/gen/cleanup_pass_report.md": {
+   "size": 4672,
+   "sha256": "5954b652df7d387cb4b58d95321daa6e21e347db3fc3334f4561be41194dfbfe"
+  },
+  ".agents/gen/slice2_task.md": {
+   "size": 16763,
+   "sha256": "e41e41f42b80a95a019f6f94aee6f9eafc72fb8c7c8ba2f33e3c71ed811b4176"
+  },
+  ".agents/gen/slice2_prompts.md": {
+   "size": 16312,
+   "sha256": "01dfdb5327af7ef00762a02b2b9eca9237c48e870dfb1feb3cda225ae1bc2c64"
+  },
+  ".agents/gen/batch2_task.md": {
+   "size": 1747,
+   "sha256": "8f3a0cd4c6e68b86d278cbe133873d3144f221c21cf868c86c361a100de3e25f"
+  },
+  ".agents/gen/slice0_task.md": {
+   "size": 11216,
+   "sha256": "09728393824f08d1be319f39717ffdfd0341f45df8bf62109570403a22768aba"
+  },
+  ".agents/gen/slice0_prompts.md": {
+   "size": 14103,
+   "sha256": "a2dc4ed4c91fc7271e6e394161e3570c3d2c4333facc8a7dc6b80ea5c7c113dc"
+  },
+  ".agents/gen/dispatch_coder.md": {
+   "size": 4269,
+   "sha256": "fa41ed3b24a153512b195356edd99edc492efb4f65be61e36ce1ee7ce8ba8b51"
+  },
+  ".agents/gen/dispatch_designer.md": {
+   "size": 3411,
+   "sha256": "ad3fc350bfbf4b5e6d33d1903e2e96f2957df51e5428812210dfdf7ebc6ab1e8"
+  },
+  ".agents/gen/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "staging/verify_wave.py": {
+   "size": 5940,
+   "sha256": "692ca4cb6b3d33a95a9c02e1469c4b2499865402c15dde5633808561b59e6f47"
+  },
+  "staging/desktop.ini": {
+   "size": 246,
+   "sha256": "BINARY"
+  },
+  "staging/review/qc_alpha.py": {
+   "size": 4853,
+   "sha256": "e3cc61c1ece7667c58bcdf105195111ffe536ae6237131f4ec147b9d5e1c3036"
+  },
+  "staging/review/alpha_qc.json": {
+   "size": 110603,
+   "sha256": "46bcc33369bb14aedb80df144a872ff56b97b8afc3f7241bdf7557964d419f43"
+  },
+  "staging/review/build_review_sheet.py": {
+   "size": 5087,
+   "sha256": "1b361c63a52cf8730c54f616e2e90b777c54fe5770b065f71c0e2e344faf82c7"
+  },
+  "staging/review/gather_originals.py": {
+   "size": 11147,
+   "sha256": "c394cc4f561371f3d48e76eb83ddcf1d7367bc6414dc273def3136e8f7af40f1"
+  },
+  "staging/review/build_originals_sheet.py": {
+   "size": 3126,
+   "sha256": "4c12c021d0d3a45e3d2ec5cb2095209b863295bf434105b912d6f52e1865ec4b"
+  },
+  "staging/review/alpha_qc_icons.json": {
+   "size": 323421,
+   "sha256": "bc3d16a0ff7df2da36a2a4fd45733a4c4f8f1416a6bb8cba0f52e786d4101147"
+  },
+  "staging/review/prune_broken.py": {
+   "size": 7293,
+   "sha256": "cec5d341af171faa7564e7709c6681f6ec79ddce6ae47264e5bdcec8bab3131d"
+  },
+  "staging/review/repair_run.log": {
+   "size": 2222,
+   "sha256": "6f3981876ed94ccb38c1d085183409abcaad03c52e299871799a245dc4dc13f9"
+  },
+  "staging/review/repair_run2.log": {
+   "size": 2236,
+   "sha256": "544625b88ba80f43b4220ccb8db5d12467a2e53979b8eacb283bde55a0f146c3"
+  },
+  "staging/review/repair_run3.log": {
+   "size": 2236,
+   "sha256": "310083510e02c2899d5c78b873197fa930b679d6a78fcb9c8640d96b2d0abc39"
+  },
+  "staging/review/repair_run4.log": {
+   "size": 2252,
+   "sha256": "b61d2c989a5ac269cd3a552fc30ca38abde99cf5ba184a10cc9e4405a19c33da"
+  },
+  "staging/review/repair_run5.log": {
+   "size": 2238,
+   "sha256": "94a2eda2da5f408eca07b2b5f80c62a38e17cecf9d1573d98b6148af13cbc1cc"
+  },
+  "staging/assetpipe/matte.py": {
+   "size": 13024,
+   "sha256": "55cfd6ec1839771bd62fcea346b50afa6aac7aa21b5d08862bda712c3db29c4b"
+  },
+  "staging/assetpipe/repair.py": {
+   "size": 6930,
+   "sha256": "bf62f649a9d7eb6dfb067ae3ace82887ff73ced24a8991f578ca39f7f7504910"
+  },
+  "staging/assetpipe/pull.py": {
+   "size": 5242,
+   "sha256": "6236c9145d0f9a5797d90a4c7a1fc9b51ab898a0e3396b73e1647ba92f809f9d"
+  },
+  "staging/cut/spec_runs.json": {
+   "size": 19807,
+   "sha256": "fa1a180bca5cf5007ba96f5f84ba3ceac5429b5a6787e8bef7882e64b7b171de"
+  },
+  "staging/cut/build_plan.py": {
+   "size": 16416,
+   "sha256": "fdd596fb1b225af7c4c7f3269aa416d26b05470960c4fcdc467cc43ac21a109b"
+  },
+  "staging/cut/make_raw.py": {
+   "size": 3690,
+   "sha256": "9c02a96b70e6f8271ac853edea989ad1956b76236848d48e5047dc0ad25985bd"
+  },
+  "staging/cut/cut_sheets.py": {
+   "size": 16891,
+   "sha256": "735cc356d4430a031d990bb6c6cfdf295c65fcd47b411ca0f5a90ef5454f807b"
+  },
+  "staging/cut/build_review.py": {
+   "size": 7159,
+   "sha256": "3007e491841bad931f31b34d3a74e9db8af14fdb73ec8a0eb743e796c2228497"
+  },
+  "staging/cut/deepseek_layout.py": {
+   "size": 10830,
+   "sha256": "a1f1aa88fc15d841cd177a568c6d5af28d2418f650cc669c5b695ba331a246b7"
+  }
+ }
+}

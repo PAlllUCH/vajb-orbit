@@ -199,6 +199,8 @@ border_color = Color(0.23921569, 0.27450982, 0.32941177, 1)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_kdky5"]
 texture = ExtResource("4_7j1ey")
+texture_margin_left = 4.0
+texture_margin_right = 4.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_06e4h"]
 bg_color = Color(0.9098039, 0.38431373, 0.16470589, 1)
@@ -211,12 +213,18 @@ border_color = Color(0.9098039, 0.38431373, 0.16470589, 1)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_kl3va"]
 texture = ExtResource("5_mbsva")
+texture_margin_left = 4.0
+texture_margin_right = 4.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2w1o5"]
 texture = ExtResource("6_fkcca")
+texture_margin_left = 4.0
+texture_margin_right = 4.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3sc54"]
 texture = ExtResource("7_y4uw2")
+texture_margin_left = 4.0
+texture_margin_right = 4.0
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_4e6di"]
 

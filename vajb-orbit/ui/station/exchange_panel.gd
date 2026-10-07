@@ -26,7 +26,6 @@ const ComponentCatalogScript := preload("res://game/component_catalog.gd")
 const StationCatalogScript := preload("res://game/station_catalog.gd")
 const Clock := preload("res://autoload/world_clock.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
-const InspectChipScript := preload("res://ui/components/inspect_chip.gd")
 const ChromeFamily := preload("res://ui/theme/chrome_family.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
@@ -183,8 +182,6 @@ var _selected_id: StringName = &""
 var _selected_row: Button = null
 ## S30: the payload `station_inspect` (N34) inspects - the focused hold row.
 var _focused_payload: Dictionary = {}
-## N43: the trade column's single INSPECT ActionInline (the hold list's cluster chip).
-var _inspect_cluster: Button = null
 ## N49-amended (S35): the `SELL UNITS` selector is the trade column's one quantity control -
 ## min 0, max the selected row's units, 0 with no selection (the selector then reads disabled
 ## + `text_dim`). The `MAX` and `0` quick-set chips move the same value a SELL press moves.
@@ -636,6 +633,10 @@ func _row_title(payload: Dictionary) -> String:
 func _wire_trade() -> void:
 	_sell_minus.pressed.connect(_on_sell_units_pressed.bind(-1))
 	_sell_plus.pressed.connect(_on_sell_units_pressed.bind(1))
+	## S37-F1 (section 15.1 C8): the 48x48 SellMinus/SellPlus wear the flat Tokens box, not
+	## the plate - the census's C8 square slot plate is a TextureButton variation a plain
+	## Button cannot resolve (measured StyleBoxFlat), so the tscn drops their StationButton
+	## variation (the brief's A5.1 fallback).
 	_sell_max.pressed.connect(_on_sell_max_pressed)
 	_sell_zero.pressed.connect(_on_sell_zero_pressed)
 	_sell.pressed.connect(_on_sell_pressed)
@@ -647,20 +648,6 @@ func _wire_trade() -> void:
 	## S36 (UI_SPEC section 15.1): the MAX / 0 quick-set chips wear C3 `ui_inline_chip`.
 	ChromeFamily.apply_chip(_sell_max)
 	ChromeFamily.apply_chip(_sell_zero)
-	_build_inspect_cluster()
-
-
-## N43/N49: one INSPECT ActionInline in the trade column (the N37 cluster idiom), disabled +
-## text_dim until a row holds focus or selection; it opens the sheet for that row. N49 seats
-## it directly beneath the `SELL UNITS` selector.
-func _build_inspect_cluster() -> void:
-	_inspect_cluster = InspectChipScript.new()
-	_inspect_cluster.name = "InspectCluster"
-	_inspect_cluster.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-	_inspect_cluster.inspect_chip_pressed.connect(inspect_focused)
-	var parent := _sell_units_row.get_parent()
-	parent.add_child(_inspect_cluster)
-	parent.move_child(_inspect_cluster, _sell_units_row.get_index() + 1)
 
 
 func _refresh_trade() -> void:
@@ -701,8 +688,6 @@ func _refresh_trade() -> void:
 	_cancel.disabled = not armed
 	_quoted = _quote(profile, _selected_id, _sell_units) if armed and _sell_units > 0 else {}
 	_confirm_strip.text = _confirm_text() if armed and _sell_units > 0 else CONFIRM_IDLE
-	if _inspect_cluster != null:
-		_inspect_cluster.set_dimmed(_focused_payload.is_empty())
 	_refresh_hold()
 
 
@@ -898,6 +883,9 @@ func _pointer_over(row: Button) -> bool:
 
 
 func _on_row_pressed(payload: Dictionary) -> void:
+	if _inspect_mode:
+		_emit_sheet(payload)
+		return
 	AudioManager.play_ui(AudioManager.UiCue.CLICK)
 	var row: Button = payload[&"row"]
 	row.set_pressed_no_signal(true)
@@ -935,6 +923,15 @@ func _emit_sheet(payload: Dictionary) -> void:
 	var sheet := _sheet_payload(payload)
 	if not sheet.is_empty():
 		sheet_requested.emit(sheet)
+
+
+## N37 rev (owner 2026-10-07): the station's one INSPECT toggle. On, a row press opens the
+## sheet instead of the hover line; the trade column's cluster chip is retired.
+var _inspect_mode := false
+
+
+func set_inspect_mode(on: bool) -> void:
+	_inspect_mode = on
 
 
 func inspect_focused() -> void:

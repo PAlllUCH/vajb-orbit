@@ -18,6 +18,7 @@
   "res://tools/r1_s17_ac_replay.gd",
   "res://tools/s225_r1_probe.gd",
   "res://tools/s227_r1_probe.gd",
+  "res://ui/components/inspect_chip.gd",
   "res://ui/hud/cockpit_cluster.gd"
  ],
  "scenes": {
@@ -678,6 +679,16 @@
    "root_type": "Node",
    "scripts": [
     "res://tests/probe_s36_r1_scene.gd"
+   ]
+  },
+  "res://tests/probe_s37_r1_scene.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s37_r1_scene.gd"
    ]
   },
   "res://tests/probe_s3_levers.tscn": {
@@ -3206,6 +3217,27 @@
    "refs": [
     "res://ui/screens/station.gd",
     "res://ui/screens/station.tscn",
+    "res://ui/theme/chrome_family.gd",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s37_r1_scene.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "watchdog.timeout \u2192 func("
+   ],
+   "extends": "Node",
+   "refs": [
+    "res://assets/ui/",
+    "res://assets/ui/ui_slot_weapon_normal.png",
+    "res://autoload/world_clock.gd",
+    "res://game/auction.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/refinery.gd",
+    "res://ui/screens/station.tscn",
+    "res://ui/station/armory_panel.gd",
     "res://ui/theme/chrome_family.gd",
     "res://ui/theme/vajb_theme.tres"
    ],
@@ -5761,6 +5793,7 @@
    "connects": [
     "_drawer_scrim.gui_input \u2192 _on_scrim_input",
     "_hover_timer.timeout \u2192 _show_hover_tooltip",
+    "_inspect_button.toggled \u2192 _on_inspect_toggled",
     "_leave_cancel.pressed \u2192 _close_leave_confirm",
     "_leave_logout.pressed \u2192 _on_logout_pressed",
     "_linger_timer.timeout \u2192 _on_linger_timeout",
@@ -5809,8 +5842,6 @@
     "card.mouse_exited \u2192 _on_row_hovered.bind(payload",
     "card.pressed \u2192 _on_row_pressed.bind(payload",
     "card.resized \u2192 _on_card_resized.bind(card",
-    "chip.inspect_chip_pressed \u2192 _emit_sheet.bind(payload",
-    "chip.inspect_chip_pressed \u2192 inspect_focused",
     "chip.mouse_entered \u2192 _on_barrel_inspected.bind(rack",
     "chip.mouse_exited \u2192 _on_barrel_inspected.bind(rack",
     "chip.sort_children \u2192 _position_cell_children.bind(chip",
@@ -5839,7 +5870,6 @@
     "res://autoload/player_profile.gd",
     "res://game/module_catalog.gd",
     "res://game/station_catalog.gd",
-    "res://ui/components/inspect_chip.gd",
     "res://ui/station/armory_style.gd",
     "res://ui/theme/chrome_family.gd"
    ],
@@ -5869,7 +5899,6 @@
     "_scroll.resized \u2192 _queue_header_fit",
     "button.pressed \u2192 _on_tab_pressed.bind(tab_id",
     "cell.resized \u2192 _queue_section_fit.bind(section",
-    "chip.inspect_chip_pressed \u2192 _emit_sheet.bind(payload",
     "header.resized \u2192 _queue_section_fit.bind(section",
     "row.focus_entered \u2192 _on_row_focused.bind(row",
     "row.mouse_entered \u2192 _on_row_hovered.bind(payload",
@@ -5888,7 +5917,6 @@
     "res://game/auction.gd",
     "res://game/module_catalog.gd",
     "res://game/station_catalog.gd",
-    "res://ui/components/inspect_chip.gd",
     "res://ui/station/fitting_panel.gd",
     "res://ui/theme/chrome_family.gd"
    ],
@@ -5903,7 +5931,6 @@
    "class_name": "",
    "connects": [
     "_cancel.pressed \u2192 _on_cancel_pressed",
-    "_inspect_cluster.inspect_chip_pressed \u2192 inspect_focused",
     "_sell.pressed \u2192 _on_sell_pressed",
     "_sell_all.pressed \u2192 _on_sell_all_pressed",
     "_sell_max.pressed \u2192 _on_sell_max_pressed",
@@ -5924,7 +5951,6 @@
     "res://game/exchange.gd",
     "res://game/mineral_catalog.gd",
     "res://game/station_catalog.gd",
-    "res://ui/components/inspect_chip.gd",
     "res://ui/theme/chrome_family.gd"
    ],
    "signals": [
@@ -5939,7 +5965,6 @@
    "connects": [
     "_remove.pressed \u2192 _on_remove_pressed",
     "button.pressed \u2192 _on_expander_pressed.bind(base_id",
-    "chip.inspect_chip_pressed \u2192 _emit_sheet.bind(payload",
     "plate.focus_entered \u2192 _on_cell_focused.bind(payload",
     "plate.pressed \u2192 _on_cell_pressed.bind(payload",
     "row.focus_entered \u2192 _on_module_focused.bind(row",
@@ -5959,8 +5984,7 @@
     "res://assets/icons/weapon/icon_weapon_mine.svg",
     "res://assets/icons/weapon/icon_weapon_plasma.svg",
     "res://autoload/player_profile.gd",
-    "res://game/auction.gd",
-    "res://ui/components/inspect_chip.gd"
+    "res://game/auction.gd"
    ],
    "signals": [
     "inspect_requested",
@@ -6044,7 +6068,6 @@
     "_stepper_more.pressed \u2192 _on_stepper_pressed.bind(1",
     "_tick_timer.timeout \u2192 _tick",
     "_upgrade_button.pressed \u2192 _on_upgrade_pressed",
-    "chip.inspect_chip_pressed \u2192 _emit_sheet.bind(payload",
     "row.focus_entered \u2192 _on_row_focused.bind(row",
     "row.mouse_entered \u2192 _on_row_hovered.bind(payload",
     "row.mouse_exited \u2192 _on_row_hovered.bind(payload",
@@ -6059,7 +6082,6 @@
     "res://game/mineral_catalog.gd",
     "res://game/refinery.gd",
     "res://game/station_catalog.gd",
-    "res://ui/components/inspect_chip.gd",
     "res://ui/theme/chrome_family.gd"
    ],
    "signals": [
@@ -6092,11 +6114,10 @@
    "class_name": "",
    "connects": [
     "_action.pressed \u2192 _on_action_pressed",
-    "_cluster_chip.inspect_chip_pressed \u2192 _inspect_hovered_cell",
     "_repair_button.pressed \u2192 _on_repair_pressed",
-    "chip.inspect_chip_pressed \u2192 _emit_sheet.bind(payload",
     "line.mouse_entered \u2192 _on_damage_hovered.bind(payload",
     "line.mouse_exited \u2192 _on_damage_hovered.bind(payload",
+    "plate.gui_input \u2192 _on_plate_input.bind(cell",
     "plate.mouse_entered \u2192 _on_plate_hovered.bind(cell",
     "plate.mouse_exited \u2192 _on_plate_unhovered",
     "row.focus_entered \u2192 _on_row_focused.bind(row",
@@ -6111,7 +6132,6 @@
     "res://game/auction.gd",
     "res://game/repairs.gd",
     "res://game/station_catalog.gd",
-    "res://ui/components/inspect_chip.gd",
     "res://ui/station/repairs_panel.gd",
     "res://ui/theme/chrome_family.gd"
    ],

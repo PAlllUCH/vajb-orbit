@@ -30,6 +30,17 @@ const PANEL_FRAME_MARGIN := 32.0
 const FRAME_EXPAND_MARGIN := 1.0
 const SCROLL_CONTENT_MARGIN := 5.0
 
+## The legacy `ui_button_plate_*` bevel band (S37-F1, 2026-10-07), measured on the shipped
+## 280x56 cut: the edge bevel runs ~3-4 px at the sides (cols 1-2) and ~3 px top/bottom (rows
+## 1-3 / 52-54). A nine-slice at 4 side holds the side bevel and stops the whole-texture smear
+## on a non-5:1 use (the S37 DISTORT fault, the 14 surfaces). The vertical band stays 0: a
+## nine-slice's texture margins also raise the stylebox's minimum size (2x the margin), and a
+## non-zero vertical margin grows the pinned 24x29 A4.2 rack X chip (29 -> 41 at vert 6) and
+## the 45x67 rack cells, breaking test_s20/s10/s18/d7. The 4 side keeps the minimum at 8x0, so
+## no pinned control moves. Reversal: zero the four margins (the pre-S37 whole-texture plate).
+const PLATE_MARGIN_SIDE := 4.0
+const PLATE_MARGIN_VERT := 0.0
+
 ## Typography (IMPLEMENTATION_PLAN section 9.8 item 2). Three OFL families ship in
 ## assets/fonts with their licence texts beside them: Oxanium (variable) as the display
 ## face pinned to wght 700, Rajdhani as the body face, Saira Stencil One as the flavour
@@ -359,7 +370,7 @@ func _register_variations(theme: Theme) -> void:
 func _register_plate_variations(theme: Theme) -> void:
 	var boxes: Dictionary = {}
 	for state: StringName in BUTTON_STATES:
-		boxes[state] = _plate(PLATE_PATH % String(state))
+		boxes[state] = _button_plate(PLATE_PATH % String(state))
 	boxes[&"hover_pressed"] = boxes[&"pressed"]
 	boxes[&"focus"] = _focus_box()
 	var no_focus: StyleBoxEmpty = StyleBoxEmpty.new()
@@ -528,6 +539,18 @@ func _plate(path: String) -> StyleBoxTexture:
 		return StyleBoxTexture.new()
 	var box: StyleBoxTexture = StyleBoxTexture.new()
 	box.texture = texture
+	return box
+
+
+## The legacy `ui_button_plate_*` as a real nine-slice (S37-F1): the measured bevel band as
+## texture margins, so only the flat middle stretches on a non-5:1 use. The slot plates stay
+## whole-texture (`_register_slot_variation`) and the panel frame carries its own 32 px band.
+func _button_plate(path: String) -> StyleBoxTexture:
+	var box: StyleBoxTexture = _plate(path)
+	box.texture_margin_left = PLATE_MARGIN_SIDE
+	box.texture_margin_top = PLATE_MARGIN_VERT
+	box.texture_margin_right = PLATE_MARGIN_SIDE
+	box.texture_margin_bottom = PLATE_MARGIN_VERT
 	return box
 
 

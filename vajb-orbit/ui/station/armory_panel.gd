@@ -60,7 +60,6 @@ const ChromeFamily := preload("res://ui/theme/chrome_family.gd")
 const Catalog := preload("res://game/station_catalog.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
 const ModuleData := preload("res://game/module_catalog.gd")
-const InspectChipScript := preload("res://ui/components/inspect_chip.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
@@ -908,7 +907,6 @@ var _tweens: Array[Tween] = []
 ## S30: the payload `station_inspect` (N34) inspects - the focused row or cell - and the
 ## P2 cluster's own INSPECT chip (N37).
 var _focused_payload: Dictionary = {}
-var _cluster_chip: Button = null
 ## The selected rack (0-based), the bay that wears the section 3.2 ember frame - the same
 ## rack ordinal the cluster's lamp lights. It follows focus and never writes anything.
 var _selected_rack: int = 0
@@ -1561,11 +1559,6 @@ func _position_card(card: Control, rect: Rect2) -> void:
 		if label != null:
 			label.position = Vector2(4.0, 2.0)
 			label.size = Vector2(buy.size.x - 8.0, 18.0)
-	## S30-F1 (F7, N37): the card's own trailing INSPECT chip, in the reserved cell.
-	var chip := card.get_node_or_null(^"InspectChip") as Control
-	if chip != null:
-		chip.position = Vector2(maxf(rect.size.x - CHIP_WIDTH - inset, 0.0), maxf(rect.size.y - CHIP_HEIGHT - 2.0, 0.0))
-		chip.size = Vector2(CHIP_WIDTH, CHIP_HEIGHT)
 
 
 ## One card line's top offset inside the 68 px base card.
@@ -1744,11 +1737,6 @@ func _build_card(pack: Dictionary) -> Dictionary:
 		&"status": status,
 		&"buy": buy,
 	}
-	## S30-F1 (F7, N28/N37): the card's own trailing INSPECT chip, hand-positioned with the
-	## rest of the card's children (`_position_card`).
-	var chip := _make_inspect_chip(payload)
-	card.add_child(chip)
-	payload[&"chip"] = chip
 	if complete:
 		card.pressed.connect(_on_row_pressed.bind(payload))
 		buy.pressed.connect(_on_row_pressed.bind(payload))
@@ -1855,6 +1843,9 @@ func _on_cell_hovered(payload: Dictionary, hovered: bool) -> void:
 
 
 func _on_row_pressed(payload: Dictionary) -> void:
+	if _inspect_mode:
+		_emit_sheet(payload)
+		return
 	AudioManager.play_ui(AudioManager.UiCue.CLICK)
 	var row: Button = payload[&"row"]
 	row.set_pressed_no_signal(true)
@@ -3099,35 +3090,20 @@ func _wire_actions() -> void:
 	_remove_button.text = ACTION_REMOVE
 	_remove_button.pressed.connect(_on_remove_pressed)
 	_buy_fit_button.pressed.connect(_on_buy_fit_pressed)
-	## S30 (UI_SPEC section 12.3, N37): the grid cells inspect through the pane's P2 action
-	## cluster's own INSPECT chip, `disabled` + `text_dim` until a cell holds focus or
-	## selection.
-	_cluster_chip = _make_cluster_chip(_remove_button.get_parent())
 
 
 ## ------------------------------------------------- the INSPECT sheet (N28/N37, S30)
-func _make_cluster_chip(parent: Node) -> Button:
-	if parent == null:
-		return null
-	var chip := InspectChipScript.new()
-	chip.name = "ClusterInspectChip"
-	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	chip.set_dimmed(true)
-	chip.inspect_chip_pressed.connect(inspect_focused)
-	parent.add_child(chip)
-	parent.move_child(chip, 0)
-	return chip
+## N37 rev (owner 2026-10-07): the station's one INSPECT toggle. On, an item press (rack
+## card, browser row, grid cell) opens the sheet instead of its normal action, and the
+## per-row / per-cluster INSPECT chips are retired.
+var _inspect_mode := false
 
 
-## N37's chip on a container-built row's trailing cell.
-func _make_inspect_chip(payload: Dictionary) -> Button:
-	var chip := InspectChipScript.new()
-	chip.name = "InspectChip"
-	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	chip.inspect_chip_pressed.connect(_emit_sheet.bind(payload))
-	return chip
+func set_inspect_mode(on: bool) -> void:
+	_inspect_mode = on
 
 
+## N34's route: inspect the focused row, or the focused/selected grid cell.
 func _emit_sheet(payload: Dictionary) -> void:
 	var sheet := _sheet_payload(payload)
 	if not sheet.is_empty():
@@ -3298,9 +3274,6 @@ func _apply_cell_selection() -> void:
 		if plate == null or not is_instance_valid(plate):
 			continue
 		plate.set_pressed_no_signal(_is_selected(payload))
-	## N37: the cluster chip is live only while the grid holds a target.
-	if _cluster_chip != null:
-		_cluster_chip.set_dimmed(_selected.is_empty())
 
 
 func _is_selected(payload: Dictionary) -> bool:
@@ -3333,13 +3306,16 @@ func _select(payload: Dictionary, clicked: bool) -> void:
 
 
 func _on_cell_pressed(payload: Dictionary) -> void:
+	if _inspect_mode:
+		var cell := _cell_sheet_payload(payload)
+		if not cell.is_empty():
+			sheet_requested.emit(cell)
+		return
 	_select(payload, true)
 
 
 func _on_cell_focused(payload: Dictionary) -> void:
 	_focused_payload = payload
-	if _cluster_chip != null:
-		_cluster_chip.set_dimmed(false)
 	_select(payload, false)
 
 
@@ -4200,8 +4176,6 @@ func _build_browser_row(entry: Dictionary, _profile_unused: ProfileScript) -> Di
 		&"icon": icon,
 	}
 	row.payload = payload
-	## N37: the row's own trailing INSPECT chip.
-	box.add_child(_make_inspect_chip(payload))
 	row.pressed.connect(_on_browser_pressed.bind(payload))
 	row.focus_entered.connect(_on_browser_focused.bind(row, payload))
 	row.mouse_entered.connect(_on_browser_hovered.bind(payload, true))
@@ -4235,6 +4209,9 @@ func _refresh_browser_row(payload: Dictionary, profile: ProfileScript) -> void:
 func _on_browser_pressed(payload: Dictionary) -> void:
 	AudioManager.play_ui(AudioManager.UiCue.CLICK)
 	var row := payload[&"row"] as Button
+	if _inspect_mode:
+		_emit_sheet(payload)
+		return
 	if row != null and is_instance_valid(row):
 		row.set_pressed_no_signal(true)
 	_browser_focused = payload

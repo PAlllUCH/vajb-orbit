@@ -39,7 +39,6 @@ const AuctionScript := preload("res://game/auction.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
-const InspectChipScript := preload("res://ui/components/inspect_chip.gd")
 
 signal status_requested(message: String, danger: bool)
 ## CONTRACTS section 23.1: emitted when the pointer lands on or leaves an OWNED MODULES
@@ -617,6 +616,15 @@ func _select(payload: Dictionary, clicked: bool) -> void:
 
 
 func _on_cell_pressed(payload: Dictionary) -> void:
+	if _inspect_mode:
+		var profile := _profile()
+		var entry := _cell_module(
+			_resolved_fit(profile, _active_hull(profile)),
+			StringName(payload.get(&"type", &"")), int(payload.get(&"index", -1))
+		)
+		if entry != &"":
+			_emit_sheet({&"entry": entry})
+		return
 	_select(payload, true)
 
 
@@ -857,8 +865,8 @@ func _build_row(base_id: StringName, profile: ProfileScript) -> Dictionary:
 	row.focus_entered.connect(_on_module_focused.bind(row, payload))
 	row.mouse_entered.connect(_on_module_hovered.bind(payload, true))
 	row.mouse_exited.connect(_on_module_hovered.bind(payload, false))
-	## N37: every row carries its own trailing INSPECT chip (UI_SPEC section 12.3).
-	box.add_child(_make_inspect_chip(payload))
+	## N37 rev (owner 2026-10-07): no per-row chip - the station's INSPECT toggle routes the
+	## row press to the sheet (`_on_module_pressed`).
 	_rows.add_child(row)
 	if bool(_expanded.get(base_id, false)):
 		_build_subrows(payload, profile)
@@ -931,7 +939,6 @@ func _build_subrows(payload: Dictionary, profile: ProfileScript) -> void:
 		row.focus_entered.connect(_on_subrow_focused.bind(row, sub))
 		row.mouse_entered.connect(_on_subrow_hovered.bind(sub, true))
 		row.mouse_exited.connect(_on_subrow_hovered.bind(sub, false))
-		box.add_child(_make_inspect_chip(sub))
 		_rows.add_child(row)
 		payload[&"subrows"].append(sub)
 		_instance_ids.append(instance_id)
@@ -1145,6 +1152,9 @@ func _on_scroll_started() -> void:
 ## whose base id owns exactly one instance presses the instance, and a base-keyed record - every
 ## pre-v6 fixture - presses its own id, exactly as before.
 func _on_module_pressed(payload: Dictionary) -> void:
+	if _inspect_mode:
+		_emit_sheet(payload)
+		return
 	AudioManager.play_ui(AudioManager.UiCue.CLICK)
 	var row: Button = payload[&"row"]
 	row.set_pressed_no_signal(true)
@@ -1163,6 +1173,9 @@ func _on_module_pressed(payload: Dictionary) -> void:
 ## One sub-row, pressed: the same composed install, on **that instance's** id, so the fit cell
 ## holds the instance and its own affixes and rarity travel with it (CONTRACTS section 15).
 func _on_subrow_pressed(payload: Dictionary) -> void:
+	if _inspect_mode:
+		_emit_sheet(payload)
+		return
 	AudioManager.play_ui(AudioManager.UiCue.CLICK)
 	var row: Button = payload[&"row"]
 	row.set_pressed_no_signal(true)
@@ -1256,12 +1269,13 @@ func _tooltip_body(entry: StringName) -> String:
 
 
 ## ------------------------------------------------- the INSPECT sheet (N28/N37, S30)
-func _make_inspect_chip(payload: Dictionary) -> Button:
-	var chip := InspectChipScript.new()
-	chip.name = "InspectChip"
-	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	chip.inspect_chip_pressed.connect(_emit_sheet.bind(payload))
-	return chip
+## N37 rev (owner 2026-10-07): the station's one INSPECT toggle. On, an item press opens the
+## sheet instead of the install/select action; the per-row INSPECT chip is retired.
+var _inspect_mode := false
+
+
+func set_inspect_mode(on: bool) -> void:
+	_inspect_mode = on
 
 
 func _emit_sheet(payload: Dictionary) -> void:

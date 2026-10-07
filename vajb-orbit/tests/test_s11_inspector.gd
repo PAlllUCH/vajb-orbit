@@ -444,6 +444,34 @@ func test_station_inspect_opens_the_sheet_on_the_focused_row() -> void:
 	_station.call(&"_handle_cancel")
 
 
+## **S37 (owner 2026-10-07, N37 rev).** The header's one INSPECT toggle: on, an item press
+## opens the sheet instead of its normal action, and no per-row chip ships.
+func test_the_inspect_toggle_routes_an_item_press_to_the_sheet() -> void:
+	_station.call(&"_select_module", 0, true)
+	var pane := _pane(0)
+	var button := _station.get_node_or_null(NodePath("%InspectButton")) as Button
+	assert_true(button != null, "the header carries the one INSPECT toggle")
+	if button == null:
+		return
+	assert_true(button.toggle_mode, "and it is a toggle")
+	var payload := _ammo_payload(pane, PACK)
+	assert_true(not payload.is_empty(), "the armory carries a %s card" % String(PACK))
+	var row := payload[&"row"] as Button
+	assert_true(
+		row.get_node_or_null(NodePath("RowInner/RowBox/InspectChip")) == null,
+		"the row carries no per-row INSPECT chip"
+	)
+	## On: the press opens the sheet.
+	button.button_pressed = true
+	assert_true(bool(pane.get(&"_inspect_mode")), "the pane takes the inspect mode")
+	pane.call(&"_on_row_pressed", payload)
+	assert_true(bool(_sheet().call(&"is_open")), "an item press opens the sheet in inspect mode")
+	_station.call(&"_handle_cancel")
+	## Off: the pane drops the mode.
+	button.button_pressed = false
+	assert_false(bool(pane.get(&"_inspect_mode")), "the pane drops the mode")
+
+
 ## **S30 (A5.5, UI_SPEC section 12.5).** The reviewer's probe: a pane's own geometry is
 ## byte-identical before, during and after a hover - the state change mutates colour,
 ## `modulate` and `_draw` only.

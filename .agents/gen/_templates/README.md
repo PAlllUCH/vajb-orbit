@@ -89,3 +89,8 @@ HIGH fixed, MED fixed, LOW in backlog; WAVEBOARD row closed; briefs archived;
 TICKS.md refreshed — decided/done rows deleted from it).
 Status lives in the SLICE.md front matter AND the WAVEBOARD table — WAVEBOARD is
 the display, SLICE.md is the record.
+
+**2026-10-07 (owner clear-out):** closed slice folders live in
+`.agents/gen/_archive/slices/` (moved, not deleted); `_state/_archive/` keeps
+the session reports; extracted list history (waveboard blocks, dispatch done
+sections, CLOSED backlog rows) sits beside them in `_archive/`.

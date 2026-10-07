@@ -50,7 +50,6 @@ const ProfileScript := preload("res://autoload/player_profile.gd")
 ## 15 section 11: the inspector's stat block is FITTING's own format, so the block
 ## builder is that panel's static and this pane adds no number of its own.
 const FittingScript := preload("res://ui/station/fitting_panel.gd")
-const InspectChipScript := preload("res://ui/components/inspect_chip.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
@@ -702,8 +701,6 @@ func _build_hull_row(entry: Dictionary) -> Dictionary:
 	}
 	row.pressed.connect(_on_action_pressed.bind(payload, &"hull"))
 	_wire_row(row, payload)
-	## N37: every row carries its own trailing INSPECT chip.
-	box.add_child(_make_inspect_chip(payload))
 	_hull_rows.add_child(row)
 	return payload
 
@@ -758,7 +755,6 @@ func _build_module_row(entry: Dictionary) -> Dictionary:
 	}
 	row.pressed.connect(_on_action_pressed.bind(payload, &"listing"))
 	_wire_row(row, payload)
-	box.add_child(_make_inspect_chip(payload))
 	_module_rows.add_child(row)
 	return payload
 
@@ -807,7 +803,6 @@ func _build_sell_row(entry: Dictionary) -> Dictionary:
 	}
 	row.pressed.connect(_on_action_pressed.bind(payload, &"sale"))
 	_wire_row(row, payload)
-	box.add_child(_make_inspect_chip(payload))
 	_sell_rows.add_child(row)
 	return payload
 
@@ -1043,6 +1038,9 @@ func _sell_payload(id: StringName) -> Dictionary:
 
 
 func _on_action_pressed(payload: Dictionary, kind: StringName) -> void:
+	if _inspect_mode:
+		_emit_sheet(payload)
+		return
 	AudioManager.play_ui(AudioManager.UiCue.CLICK)
 	var row: Button = payload[&"row"]
 	row.set_pressed_no_signal(true)
@@ -1096,12 +1094,13 @@ func _inspect_row(payload: Dictionary, shown: bool) -> void:
 
 
 ## ------------------------------------------------- the INSPECT sheet (N28/N37, S30)
-func _make_inspect_chip(payload: Dictionary) -> Button:
-	var chip := InspectChipScript.new()
-	chip.name = "InspectChip"
-	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	chip.inspect_chip_pressed.connect(_emit_sheet.bind(payload))
-	return chip
+## N37 rev (owner 2026-10-07): the station's one INSPECT toggle. On, an item press opens the
+## sheet instead of the buy/sell action; the per-row INSPECT chip is retired.
+var _inspect_mode := false
+
+
+func set_inspect_mode(on: bool) -> void:
+	_inspect_mode = on
 
 
 func _emit_sheet(payload: Dictionary) -> void:

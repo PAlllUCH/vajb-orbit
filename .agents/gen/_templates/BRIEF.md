@@ -19,7 +19,7 @@ tier: free             # pinned by the owner in review; coder picks models withi
    generated index with each §'s line numbers; locate the heading with
    `rg -n '^## §' docs/CONTRACTS.md` and read that range (`view --offset … --limit …`),
    or paste the section here if it is short. Never read the file whole: it is
-   ~3,200 lines and ~80k tokens against ~2-3k for one section.
+   ~2,800 lines and ~60k tokens against ~2-3k for one section.
 3. `docs/CODE_MAP.md` — what lies where: scenes, scripts, wiring (by range)
 4. Anything else, by exact path — again by range if the file is long
 

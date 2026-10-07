@@ -43,7 +43,6 @@ const AuctionScript := preload("res://game/auction.gd")
 ## `hull_render` reads too.
 const RepairsPanelScript := preload("res://ui/station/repairs_panel.gd")
 const RepairsService := preload("res://game/repairs.gd")
-const InspectChipScript := preload("res://ui/components/inspect_chip.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
@@ -200,7 +199,6 @@ var _hover_block_text: String = ""
 ## The cell under the pointer and the grid's cluster chip (N37), so the chip knows whether
 ## it has a target to inspect.
 var _hovered_cell: Dictionary = {}
-var _cluster_chip: Button = null
 ## The payload the focused hull row carries, for `station_inspect` (N34).
 var _focused_payload: Dictionary = {}
 ## The repair block's row labels: `{key, label, value, state, row}` for the seven body rows
@@ -221,7 +219,6 @@ var _grid_built := false
 func _ready() -> void:
 	_build_comparison()
 	_build_layout_grid()
-	_build_cluster_chip()
 	_build_repair_rows()
 	_build_rows()
 	_pin_preview_box()
@@ -406,8 +403,8 @@ func _build_row(ship: Dictionary) -> Dictionary:
 		&"icon": null,
 		&"tag": tag[0],
 	}
-	## N37: every row carries its own trailing INSPECT chip (UI_SPEC section 12.3).
-	box.add_child(_make_inspect_chip(payload))
+	## N37 rev (owner 2026-10-07): no per-row chip - the station's INSPECT toggle routes the
+	## row press to the sheet (`_on_row_pressed`).
 	row.pressed.connect(_on_row_pressed.bind(payload))
 	row.focus_entered.connect(_on_row_focused.bind(row, payload))
 	row.mouse_entered.connect(_on_row_hovered.bind(payload, true))
@@ -601,6 +598,9 @@ func _make_slot_cell(cell: Dictionary) -> void:
 	plate.mouse_filter = Control.MOUSE_FILTER_STOP
 	plate.mouse_entered.connect(_on_plate_hovered.bind(cell))
 	plate.mouse_exited.connect(_on_plate_unhovered)
+	## N37 rev: in INSPECT mode a click on the display cell opens its sheet (the retired
+	## cluster chip's own job).
+	plate.gui_input.connect(_on_plate_input.bind(cell))
 	var glyph := TextureRect.new()
 	glyph.name = "Icon"
 	glyph.custom_minimum_size = Vector2(PLATE_SIZE - PLATE_ICON_INSET * 2.0, PLATE_SIZE - PLATE_ICON_INSET * 2.0)
@@ -758,8 +758,6 @@ func _refresh_hover_block(cell: Dictionary) -> void:
 func _clear_hover_block() -> void:
 	_hover_block_text = ""
 	_hovered_cell = {}
-	if _cluster_chip != null:
-		_cluster_chip.set_dimmed(true)
 
 
 ## The block's own text, read back for probes and tests (now the tooltip body's stat half).
@@ -776,30 +774,16 @@ func _pin_preview_box() -> void:
 
 
 ## ------------------------------------------------- the INSPECT sheet (N28/N37, S30)
+## The pane's explicit sink (UI_SPEC section 12.3): `station_inspect` on the focused row /
+## hovered cell. The payload carries only the rows the data has (N35).
 ##
-## The pane's explicit sink (UI_SPEC section 12.3): a row's own chip, or `station_inspect` on
-## the focused row / hovered cell. The payload carries only the rows the data has (N35).
-func _make_inspect_chip(payload: Dictionary) -> Button:
-	var chip := InspectChipScript.new()
-	chip.name = "InspectChip"
-	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	chip.inspect_chip_pressed.connect(_emit_sheet.bind(payload))
-	return chip
+## N37 rev (owner 2026-10-07): the station's one INSPECT toggle. On, a row press opens the
+## sheet instead of the preview; the per-row and cluster INSPECT chips are retired.
+var _inspect_mode := false
 
 
-func _build_cluster_chip() -> void:
-	var parent := _hardpoints.get_parent()
-	if parent == null:
-		return
-	_cluster_chip = InspectChipScript.new()
-	_cluster_chip.name = "ClusterInspectChip"
-	## S36-F1 (A4, F5): the cluster chip lays out 452 px wide, past C3's 160 band ceiling -
-	## it keeps the native pre-swap button (no C3 plate), reported as a new-plate candidate.
-	_cluster_chip.wear_chrome = false
-	_cluster_chip.set_dimmed(true)
-	_cluster_chip.inspect_chip_pressed.connect(_inspect_hovered_cell)
-	parent.add_child(_cluster_chip)
-	parent.move_child(_cluster_chip, _hardpoints.get_index() + 1)
+func set_inspect_mode(on: bool) -> void:
+	_inspect_mode = on
 
 
 func _emit_sheet(payload: Dictionary) -> void:
@@ -825,6 +809,17 @@ func _inspect_hovered_cell() -> void:
 	var payload := _cell_sheet_payload(_hovered_cell)
 	if not payload.is_empty():
 		sheet_requested.emit(payload)
+
+
+func _on_plate_input(event: InputEvent, cell: Dictionary) -> void:
+	if not _inspect_mode:
+		return
+	if event is InputEventMouseButton:
+		var click := event as InputEventMouseButton
+		if click.pressed and click.button_index == MOUSE_BUTTON_LEFT:
+			var payload := _cell_sheet_payload(cell)
+			if not payload.is_empty():
+				sheet_requested.emit(payload)
 
 
 ## A hull's sheet: its own name, the labelled stat pairs (section 17.2), and `OWNED ×1`
@@ -977,16 +972,12 @@ func _row_id_of(raw: Variant) -> String:
 func _on_plate_hovered(cell: Dictionary) -> void:
 	_hovered_cell = cell
 	_refresh_hover_block(cell)
-	if _cluster_chip != null:
-		_cluster_chip.set_dimmed(_hover_entry(cell) == &"")
 	inspect_requested.emit(hover_line(cell), _tooltip_body(_hover_entry(cell)), false)
 
 
 func _on_plate_unhovered() -> void:
 	_hovered_cell = {}
 	_clear_hover_block()
-	if _cluster_chip != null:
-		_cluster_chip.set_dimmed(true)
 	## S30-F1 (F5, N33): a leave clears the shell's tooltip payload; it never re-publishes
 	## the selection or an idle summary, which would re-arm the delayed tooltip.
 	inspect_requested.emit("", "", false)
@@ -1183,6 +1174,9 @@ func _inspect_row(payload: Dictionary, shown: bool) -> void:
 ## ... and writes nothing; the footer SET ACTIVE is the sole commit"). The press is the
 ## row's `pressed`, the focus is the ring - both go through `_preview_row`.
 func _on_row_pressed(payload: Dictionary) -> void:
+	if _inspect_mode:
+		_emit_sheet(payload)
+		return
 	AudioManager.play_ui(AudioManager.UiCue.CLICK)
 	var row: Button = payload[&"row"]
 	row.set_pressed_no_signal(true)

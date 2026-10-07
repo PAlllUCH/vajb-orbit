@@ -1,0 +1,104 @@
+{
+ "date": "2026-10-05",
+ "wave": "D21-G2",
+ "swaps": [
+  {
+   "class": "C6",
+   "shipped": "assets/ui/ui_armory_console.png",
+   "backup": "asset-library/_prekey_backup/chrome_family_2026-10-05/ui_armory_console.png",
+   "old_px": [
+    2720,
+    1032
+   ],
+   "old_md5": "b1241913488d4d566e4f670d33d9ca53",
+   "new_px": [
+    2720,
+    1032
+   ]
+  },
+  {
+   "class": "C8",
+   "shipped": "assets/ui/ui_slot_weapon_normal.png",
+   "backup": "asset-library/_prekey_backup/chrome_family_2026-10-05/ui_slot_weapon_normal.png",
+   "old_px": [
+    48,
+    48
+   ],
+   "old_md5": "6f896aef9c4dc369f15e886c10389711",
+   "new_px": [
+    112,
+    112
+   ]
+  },
+  {
+   "class": "C8",
+   "shipped": "assets/ui/ui_slot_cargo_normal.png",
+   "backup": "asset-library/_prekey_backup/chrome_family_2026-10-05/ui_slot_cargo_normal.png",
+   "old_px": [
+    40,
+    40
+   ],
+   "old_md5": "80a174d6b491355b374e9bf6bb06ff9e",
+   "new_px": [
+    112,
+    112
+   ]
+  },
+  {
+   "class": "C8",
+   "shipped": "assets/ui/ui_slot_inventory_normal.png",
+   "backup": "asset-library/_prekey_backup/chrome_family_2026-10-05/ui_slot_inventory_normal.png",
+   "old_px": [
+    56,
+    56
+   ],
+   "old_md5": "d27da0eb4d08ae3fb7b4d2421f84820e",
+   "new_px": [
+    112,
+    112
+   ]
+  },
+  {
+   "class": "C10",
+   "shipped": "assets/ui/ui_bar_caps.png",
+   "backup": "asset-library/_prekey_backup/chrome_family_2026-10-05/ui_bar_caps.png",
+   "old_px": [
+    42,
+    14
+   ],
+   "old_md5": "42605b533e0ed87ddbca1769a885a03a",
+   "new_px": [
+    84,
+    28
+   ]
+  },
+  {
+   "class": "C11",
+   "shipped": "assets/ui/ui_minimap_bezel.png",
+   "backup": "asset-library/_prekey_backup/chrome_family_2026-10-05/ui_minimap_bezel.png",
+   "old_px": [
+    200,
+    200
+   ],
+   "old_md5": "1e1d450d59c6f2936bc88ecdf0953659",
+   "new_px": [
+    400,
+    400
+   ]
+  },
+  {
+   "class": "C12",
+   "shipped": "assets/ui/ui_panel_frame.png",
+   "backup": "asset-library/_prekey_backup/chrome_family_2026-10-05/ui_panel_frame.png",
+   "old_px": [
+    96,
+    96
+   ],
+   "old_md5": "abc8acaf04858e8ca8abc663b93aacf6",
+   "new_px": [
+    192,
+    192
+   ]
+  }
+ ]
+}

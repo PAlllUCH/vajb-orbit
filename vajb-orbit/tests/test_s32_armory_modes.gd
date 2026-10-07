@@ -345,9 +345,11 @@ func test_the_selected_list_lists_owned_then_buyable_with_legality() -> void:
 			buyable.get_node_or_null(NodePath("RowInner/RowBox/Buy")) != null,
 			"a BUYABLE row carries its BUY chip"
 		)
+		## N37 rev (owner 2026-10-07): the per-row INSPECT chip is retired - the station's one
+		## INSPECT toggle routes the row press to the sheet.
 		assert_true(
-			buyable.get_node_or_null(NodePath("RowInner/RowBox/InspectChip")) != null,
-			"and its INSPECT chip"
+			buyable.get_node_or_null(NodePath("RowInner/RowBox/InspectChip")) == null,
+			"and carries no per-row INSPECT chip"
 		)
 
 
@@ -538,9 +540,11 @@ func test_the_shared_menu_lists_ammunition_and_the_equipment_categories() -> voi
 	assert_true(read != null, "the shared equipment row shape ships (P39a)")
 	if read != null:
 		assert_eq(read.text, PanelScript.OWNED_FORMAT % 2, "and carries its OWNED ×n count")
+	## N37 rev (owner 2026-10-07): no per-row INSPECT chip; the station's one INSPECT toggle
+	## routes the row press to the sheet.
 	assert_true(
-		first.get_node_or_null(NodePath("RowInner/RowBox/InspectChip")) != null,
-		"with its INSPECT chip"
+		first.get_node_or_null(NodePath("RowInner/RowBox/InspectChip")) == null,
+		"and carries no per-row INSPECT chip"
 	)
 	var caption := String((_panel.get_node("%BrowserCaption") as Label).text)
 	assert_true(caption.begins_with("OWNED EQUIPMENT"), "and the shared caption counts the rows")

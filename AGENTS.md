@@ -79,8 +79,10 @@ Context is re-sent on every request, so what a session reads once it pays for on
 every later turn. These four rules are the difference between a 60k session and
 a 300k one:
 
-- **Read long docs by range, never whole.** `docs/CONTRACTS.md` is ~3,200 lines
-  and ~80k tokens in full, ~2-3k for the one § your task needs; its top carries
+- **Read long docs by range, never whole.** `docs/CONTRACTS.md` is ~2,800 lines
+  and ~60k tokens in full (its wave history retired to
+  `.agents/gen/_archive/contracts_retired_2026-10-07.md` on 2026-10-07),
+  ~2-3k for the one § your task needs; its top carries
   a generated index of every section and its line range. Locate with
   `rg -n '^## §' docs/CONTRACTS.md`, then `view --offset … --limit …`. The nine
   specs over ~400 lines carry the same generated index (`staging/docs_index.py`;

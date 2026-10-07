@@ -1,0 +1,9 @@
+# chrome-fit waivers - surfaces whose sprite/content gap is a deliberate ruling, not a defect.
+# One `<node-substring>=<reason>` per line; `#` starts a comment. Read by
+# `staging/verify_chrome_fit.py` (a failing surface matching any key here is reported as
+# waived and does not fail the check). Keep this list short and cite the ruling.
+#
+# A4.2 (UI_SPEC 15.4-2): the ARMORY battery rack's X and name plates are pressable chips that
+# wear the StationButton plate by ruling - their small size is intentional, not a fit defect.
+Barrels/Barrel1/Close=A4.2 - the rack X chip wears the StationButton plate by ruling
+Barrels/Barrel1/Name=A4.2 - the rack name plate wears the StationButton plate by ruling

@@ -1,0 +1,21 @@
+{
+ "date": "2026-10-05",
+ "wave": "D21-G2-B2",
+ "swaps": [
+  {
+   "class": "C5",
+   "shipped": "assets/ui/ui_rack_bay_card.png",
+   "backup": "asset-library/_prekey_backup/chrome_family_b2_2026-10-05/ui_rack_bay_card.png",
+   "old_px": [
+    520,
+    384
+   ],
+   "old_md5": "d4ade9d6cc2b0cbb74f2e4c0e101611b",
+   "new_px": [
+    520,
+    384
+   ],
+   "note": "rejected D21-G2 cut (t/b pads 89/88, fill 53.5 %)"
+  }
+ ]
+}

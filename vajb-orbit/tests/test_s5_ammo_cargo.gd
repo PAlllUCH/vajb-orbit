@@ -690,16 +690,12 @@ func test_n43_the_hold_cluster_and_the_title_room() -> void:
 		row.get_node_or_null(NodePath("RowInner/RowBox/InspectChip")) == null,
 		"the hold row carries no per-row INSPECT chip (N43)"
 	)
-	var cluster := panel.get(&"_inspect_cluster") as Button
-	assert_true(cluster != null, "the trade column's cluster INSPECT ships (N43)")
-	if cluster != null:
-		assert_true(cluster.disabled, "and starts disabled (no row armed)")
-		var payload: Dictionary = {}
-		for entry: Dictionary in panel.get(&"_hold_payloads"):
-			if entry[&"id"] == &"mineral_iron":
-				payload = entry
-		panel.call(&"_on_row_pressed", payload)
-		assert_false(cluster.disabled, "a selected row wakes the cluster chip")
+	## N37 rev (owner 2026-10-07): the trade column's cluster chip is retired - the station's
+	## one INSPECT toggle routes the row press to the sheet.
+	assert_true(
+		panel.get(&"_inspect_cluster") == null,
+		"the trade column's cluster chip is retired (N37 rev)"
+	)
 	_free_host()
 
 
@@ -783,21 +779,17 @@ func test_n49_the_sell_units_selector_bounds_and_the_stack_order() -> void:
 		panel.get_node_or_null(^"ExchangeBody/TradeBox/StepperRow") == null,
 		"the duplicate unit-number selector (StepperRow) dies (N49-amended)"
 	)
-	## The stack order: SellUnitsRow -> INSPECT cluster -> PaneFoot. The trade column is a
-	## `VBoxContainer`, so the child order is the vertical order.
-	var sell_row := panel.get(&"_sell_units_row") as Control
-	var cluster := panel.get(&"_inspect_cluster") as Control
-	assert_true(cluster != null, "the INSPECT cluster ships (N43/N49)")
-	if cluster != null:
-		assert_true(
-			sell_row.get_index() < cluster.get_index(),
-			"the INSPECT cluster sits beneath the SELL UNITS selector (N49)"
-		)
-		assert_true(
-			(panel.get_node(^"ExchangeBody") as Control).get_index()
-				< (panel.get_node(^"PaneFoot") as Control).get_index(),
-			"and the SELL / SELL ALL RAW cluster in the pane foot below the trade column"
-		)
+	## N37 rev (owner 2026-10-07): the trade column's cluster chip is retired; the pane foot's
+	## SELL / SELL ALL RAW cluster still sits below the trade column.
+	assert_true(
+		panel.get(&"_inspect_cluster") == null,
+		"the INSPECT cluster is retired (N37 rev)"
+	)
+	assert_true(
+		(panel.get_node(^"ExchangeBody") as Control).get_index()
+			< (panel.get_node(^"PaneFoot") as Control).get_index(),
+		"and the SELL / SELL ALL RAW cluster in the pane foot below the trade column"
+	)
 	_free_host()
 
 

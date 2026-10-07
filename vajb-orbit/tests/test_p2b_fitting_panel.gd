@@ -1081,10 +1081,8 @@ func test_the_focus_order_is_cells_then_rows_then_footer() -> void:
 			expected.append("Slot%s%02d" % [String(cell[&"token"]), int(cell[&"index"])])
 	for module_id: StringName in panel.call(&"module_row_ids"):
 		expected.append("Module%s" % String(module_id).to_pascal_case())
-		## S30 (UI_SPEC section 12.3, N37): the row's own INSPECT chip is a focus stop.
-		expected.append("InspectChip")
 	expected.append("RemoveButton")
-	assert_eq(order, expected, "the walk is cells, then rows with their chip, then the footer: %s" % str(order))
+	assert_eq(order, expected, "the walk is cells, then rows, then the footer: %s" % str(order))
 	## Nothing else in the pane is a stop: the scroll container is not one, so the pin's bullet
 	## is the whole walk.
 	assert_eq(
@@ -1419,14 +1417,10 @@ func test_the_focus_order_carries_the_expander_and_its_subrows() -> void:
 			expected.append("Slot%s%02d" % [String(cell[&"token"]), int(cell[&"index"])])
 	expected.append("Module%s" % String(PLASMA).to_pascal_case())
 	expected.append("Expander%s" % String(PLASMA).to_pascal_case())
-	## S30 (UI_SPEC section 12.3, N37): every row's own INSPECT chip is a focus stop, so it
-	## joins the walk after the row (and its expander) and before the next row.
-	expected.append("InspectChip")
 	for instance_id: StringName in [first, second]:
 		expected.append(SUBROW_PREFIX + String(instance_id).to_pascal_case())
-		expected.append("InspectChip")
 	expected.append("RemoveButton")
-	assert_eq(order, expected, "the walk is cells, then rows with their expander, chip and sub-rows: %s" % str(order))
+	assert_eq(order, expected, "the walk is cells, then rows with their expander and sub-rows: %s" % str(order))
 	panel.call(&"focus_primary")
 	var owner := panel.get_viewport().gui_get_focus_owner()
 	assert_true(owner != null, "the ring still enters at the first cell")

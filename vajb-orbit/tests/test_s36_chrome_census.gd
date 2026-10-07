@@ -28,8 +28,8 @@ const HOST := Vector2(1920.0, 1080.0)
 const SHIP: StringName = &"ship_vanguard"
 
 ## The swap-map classes and their true-aspect masters (UI_SPEC section 15.1/15.3). C9's
-## landed rail is the band's max (360x56), not section 15.1's 272 nominal; the builder
-## reports that doc/cut mismatch (bucket 2) and wires the landed art.
+## landed rail is section 15.1's 272 nominal: S37 re-cut the drawer entry to it (the old
+## 360x56 cut letterboxed to 42.6 px in the 274x56 entry and rode content off the art).
 const CLASS_MASTERS := {
 	"C1": Vector2(567.0, 140.0),
 	"C2": Vector2(360.0, 56.0),
@@ -38,16 +38,17 @@ const CLASS_MASTERS := {
 	"C5": Vector2(260.0, 192.0),
 	"C6": Vector2(1360.0, 516.0),
 	"C7": Vector2(360.0, 240.0),
-	"C9": Vector2(360.0, 56.0),
+	"C9": Vector2(272.0, 56.0),
 	"C12": Vector2(96.0, 96.0),
 }
 const ASPECT_TOLERANCE := 0.01
 
 ## N51 measured margins (cut px), left/right/top/bottom - the order R1's
-## `probe_s36_r1_measure.py` publishes as "lrtb"; the max of its two methods.
+## `probe_s36_r1_measure.py` publishes as "lrtb". S37 replaced C3/C4 with the thin frame of
+## the replacement rails (the N51 values sized the retired recessed-well cuts).
 const MEASURED_MARGINS := {
-	"C3": Vector4(24.0, 34.0, 23.0, 39.0),
-	"C4": Vector4(74.0, 74.0, 35.0, 49.0),
+	"C3": Vector4(18.0, 18.0, 9.0, 11.0),
+	"C4": Vector4(30.0, 30.0, 8.0, 10.0),
 	"C7": Vector4(22.0, 43.0, 50.0, 64.0),
 }
 

@@ -83,6 +83,14 @@ layout_mode = 2
 size_flags_vertical = 4
 text = "TERMINAL"
 
+[node name="InspectButton" type="Button" parent="Layout/Page/Header"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 32)
+layout_mode = 2
+size_flags_vertical = 4
+toggle_mode = true
+text = "INSPECT"
+
 [node name="StationPlate" type="PanelContainer" parent="Layout/Page/Header"]
 unique_name_in_owner = true
 layout_mode = 2

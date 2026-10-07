@@ -1,0 +1,19 @@
+{
+  "task_id": "c321e7af3a5cba60ac7cb08990dca61d",
+  "model": "gpt-image-2-5-flare-text-to-image",
+  "input": {
+    "prompt": "grimdark painted sci-fi, semi-realistic weathered metal, harsh directional rim light from upper-left with a thin cold pale steel rim tracing shadow-side silhouettes, subtle film grain over the whole image, top-down orthographic view. Fixed palette: gunmetal mid #3A3F46, gunmetal dark #2B2F35, iron black #232629, steel highlight #565C63, rusted ochre #6E5B4A, dry rust #8A6A50, grimy umber #4A423B, void black #0A0E14, deep void blue #111823, void haze #1A2230, burnt ember #C8461B, ember glow #E8703A, panel black #15181D, panel steel #2A2E35, ash text #8D939B, bone text #C9CDD2. Metal colour is desaturated gunmetal and rusted steel, dark and tired, with scratches, oil stains, hull grime, rust streaks, pitted metal, scorch marks and battle damage. Glow colours are burnt ember #C8461B and ember glow #E8703A only, small and hot, used exclusively for engines, weapons and warning lights; no other glow or accent colour exists anywhere in the image. Backgrounds are near-black blue void, void black #0A0E14 to deep void blue #111823, sparse faint stars, desaturated throughout, no saturated colours, no chrome, no neon, no gloss, no clean surfaces, moody and menacing. Painted grimdark game UI chrome, straight-on flat view, centred on the frame at the stated aspect, isolated on a plain transparent background. The style is a sibling of the existing Vajb Orbit metal chrome family, the cockpit instrument panel, the armory console face, the armory rack and row plates, the status console face, the riveted panel frame and the main menu button plates, never a new style.\nSubject: one square game UI plate filling the frame at aspect one to one. A recessed gunmetal square slot plate with a one-pixel border, hard corners, a shallow machined recess with a dark void interior and a plain empty centre. Subtle film grain. Negative list: no text, no letters, no numbers, no logos, no bevel smear, no white backgrounds, no weapon shapes, no icons, no rounded corners, no gloss, no neon, no second accent colour.",
+    "aspect_ratio": "1:1",
+    "resolution": "2K",
+    "background": "transparent"
+  },
+  "urls": [
+    "https://tempfile.aiquickdraw.com/gpt-image-2-5/1791224499522-3y5bl0jy8ix.png"
+  ],
+  "local_paths": [
+    "/home/kamil-paluszkiewicz/VajbOrbit/asset-library/raw/chrome-family/20261005-202141/grimdark-painted-sci-fi-semi-realistic-1.png"
+  ],
+  "alpha_paths": [],
+  "upscaled_paths": [],
+  "asset_paths": []
+}

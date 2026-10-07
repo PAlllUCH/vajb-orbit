@@ -157,8 +157,11 @@ if [ -d "$WORKSPACE/.crush/hooks" ]; then
 
     # ---- godot-ai: drives the live editor (HTTP 8000, WS 9500) -----------
     # Pinned to the plugin's release: the addon in vajb-orbit/addons/godot_ai/
-    # is 4.2.2, and a mismatched attach client fails its capability check.
-    # The shim is still required on 4.2.2: it answers SEP-2575
+    # is 4.3.0 (its in-editor updater self-swapped 4.2.2 → 4.3.0 on
+    # 2026-10-07; the pin follows the plugin's version), and a mismatched
+    # attach client fails its capability check. The shim is still required
+    # (the `server/discover` probe has not been re-run on 4.3.0): on 4.2.2
+    # the server answered SEP-2575
     # `server/discover` with -32601, which kills the handshake (measured
     # 2026-09-24), so the shim's legacy version list is what lets the client
     # fall back. Drop it only after a probe shows the server answering that
@@ -173,7 +176,7 @@ if [ -d "$WORKSPACE/.crush/hooks" ]; then
         --args --default-index --args https://pypi.org/simple \
         --args --find-links --args https://pypi.org/simple/godot-ai/ \
         --args --link-mode --args copy \
-        --args --from --args godot-ai==4.2.2 \
+        --args --from --args godot-ai==4.3.0 \
         --args godot-ai --args attach --args --port --args 8000 \
         --args --ws-port --args 9500 \
         --disabled-tools tileset_manage \
@@ -276,7 +279,7 @@ else
         --args --default-index --args https://pypi.org/simple \
         --args --find-links --args https://pypi.org/simple/godot-ai/ \
         --args --link-mode --args copy \
-        --args --from --args godot-ai==4.2.2 \
+        --args --from --args godot-ai==4.3.0 \
         --args godot-ai --args attach --args --port --args 8000 \
         --args --ws-port --args 9500 \
         --disabled-tools tileset_manage \

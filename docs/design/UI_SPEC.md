@@ -30,10 +30,10 @@ and every tool result is re-sent on each later request.
 | 9. | The map deck — flight minimap and navigation (amendment 2026-10-03, … | L929–L956 |
 | 10. | The map deck and the navigation pin — design detail (amendment 2026-… | L957–L1054 |
 | 11. | Station shell v2 — the TERMINAL drawer, the popups, the one skeleton… | L1055–L1110 |
-| 12. | Station shell v2 design detail — the TERMINAL drawer, the popup pair… | L1111–L1342 |
-| 13. | The D20 fix wave — exchange parity, the armory browser, the hover-in… | L1343–L1380 |
-| 14. | Exchange sell cluster + the OVERVIEW tile plates (amendment 2026-10-… | L1381–L1426 |
-| 15. | The one true-aspect chrome family (amendment 2026-10-05, owner rulin… | L1427–L1753 |
+| 12. | Station shell v2 design detail — the TERMINAL drawer, the popup pair… | L1111–L1345 |
+| 13. | The D20 fix wave — exchange parity, the armory browser, the hover-in… | L1346–L1383 |
+| 14. | Exchange sell cluster + the OVERVIEW tile plates (amendment 2026-10-… | L1384–L1429 |
+| 15. | The one true-aspect chrome family (amendment 2026-10-05, owner rulin… | L1430–L1827 |
 
 <!-- section-index:end -->
 
@@ -1094,7 +1094,7 @@ tooltip idiom (§5.1) and the modal idiom (§5.2) are law and unimplemented in
 | **N25** | the TERMINAL button is a P2 `ActionInline` 96×32 at the header's left edge; press toggles the drawer | P1 360×56 plate (requires an §8 P1 amendment) |
 | **N26** | the drawer is 360 px (the ModuleRail's measured width) and **slides over** the body from the left with the §5.2 dimmer (`void_base` 60 %) above it — the layout never reflows (A5.5); motion **0.18 s in / 0.12 s out**, `TRANS_CUBIC` `EASE_OUT` | 0.30 s / 0.20 s; a push-layout drawer (reintroduces the defect and is barred by A5.5) |
 | **N27** | the hover tooltip is §5.1 implemented for real: `tooltip.tscn` (`tooltip_panel` + BBCode `RichTextLabel`, `fit_content`), 320 px cap, 0.25 s delay, cursor +12/12, clamped to the viewport, `MOUSE_FILTER_IGNORE`; content grammar §5.1 unchanged + a final hint line `INSPECT` | Godot's default tooltip path; 240/400 px cap |
-| **N28** | the INSPECT modal is the §5.2 modal idiom extended: one read-only sheet (name + rolled affixes, full stat block, slot family, price / `OWNED ×<n>`), size-to-content, min 420 / max 720 px wide; opens from the row's own `INSPECT` inline chip; a grid cell is inspected through the cluster's `INSPECT` chip (N37); and from the focused item's inspect key; ESC closes; one at a time (§5.2 queue) | min 360 / max 840; transactional actions inside the modal |
+| **N28** | the INSPECT modal is the §5.2 modal idiom extended: one read-only sheet (name + rolled affixes, full stat block, slot family, price / `OWNED ×<n>`), size-to-content, min 420 / max 720 px wide; opens from the header's one INSPECT toggle (N37 rev 2026-10-07 — an item press while it is lit) and from the focused item's inspect key; ESC closes; one at a time (§5.2 queue) | min 360 / max 840; transactional actions inside the modal |
 | **N29** | **grimdark tone, smooth motion** (owner 2026-10-03): chrome keeps §1 Tokens only — void blacks, `metal_*` plates, `accent_danger` for danger and nothing else (no new decorative hue); all motion is overlay-only (drawer/modal translate + opacity), ≤ 0.2 s, `TRANS_CUBIC` `EASE_OUT`, and never layout-affecting (A5.5) | the STATION_HUB §9 per-element motion durations |
 | **N30** | the in-flow hover stat blocks (`ui/station/shipyard_panel.gd:703-733`, the fitting twin) are **deleted**; their content is the N27 tooltip's stat lines | restore the blocks behind A5.5's fixed reserved slot |
 
@@ -1221,8 +1221,10 @@ for the labelled stat pairs (STATION_HUB §17.2, `shipyard_panel.gd:74-80`) and
 keeps row 5; a stack sheet (ore, ingot, component) keeps 1, the description and
 5.
 
-Triggers — every route: (1) the row's `INSPECT` inline chip pressed by pointer;
-(2) `ui_accept` on the focused chip; (3) `station_inspect` (**N34** — keyboard
+Triggers — every route: (1) the header's one **INSPECT** toggle (§12.4; N37 rev
+2026-10-07) — on, an item press (row, card, grid cell) opens the sheet for that
+item instead of its normal action, and the toggle reads lit (ember border); off,
+an item press is its normal action; (2) `station_inspect` (**N34** — keyboard
 `E`, pad `JOY_BUTTON_X`) on the focused row or cell. No hover path opens it
 (hover is N27's alone). A second open while one is up queues behind §5.2's
 one-at-a-time rule rather than stacking.
@@ -1246,6 +1248,7 @@ height, §3.4):
 |---|---|---|---|---|---|
 | Header band | `Header`, `HBoxContainer`, separation 16 | child of `Page` | v 0 | `(0, 76)` | y 24..147 (§3.1 verbatim) |
 | TERMINAL cell | `TerminalButton`, `Button` (`ActionInline`, N25) | child of `Header` | v 4 (`SHRINK_CENTER`) | `(96, 32)` | x 24..120, y 69..101 (*derived*: 32 centred in the 123 band) |
+| INSPECT toggle | `InspectButton`, `Button` (`ActionInline`, N37 rev 2026-10-07), `toggle_mode` | child of `Header` | v 4 | `(96, 32)` | x 136..232 (*derived*: TERMINAL + the band's 16 separation); lit (ember border + label) while the mode is on |
 | Station identity | the §15.5 name plate (§7 A5.4-1): faction glyph 48 at its own cut + `StationName` (`HeroTitle` 48) + the character line (`StationCaption` 13) | child of `Header` | v 4 | width from content | x 136..content (*derived*: TERMINAL + the band's 16 separation); name ink y 58..95 and character ink y 110..128 stay (§3.1) |
 | Header spacer | `Spacer`, `Control` | child of `Header` | h 3 | none | absorbs extra width (§3.3) |
 | Credits housing | `CreditsPanel`, `PanelContainer` `PanelRaised`, `CreditsMargin` 16/8 | child of `Header` | v 4 | none | x 1709..1896, y 23..147 (§3.1 verbatim; S28's width reserve keeps it still, `station.gd:129-133`) |
@@ -1334,7 +1337,7 @@ mirroring the raw-key fallbacks, which stay as belt-and-braces. Reversal:
 | **N34** | the `station_inspect` action: keyboard `E`, pad `JOY_BUTTON_X`, focused row/cell only | keyboard `F`, no pad binding |
 | **N35** | the sheet's formats `SLOT FAMILY · %s`, `%d CR`, `OWNED ×%d` + the row-presence rule (the hull and stack variants) | `SLOT — %s`, `PRICE %d CR`, `OWNED %d`, fixed rows with blanks |
 | **N36** | the sheet's close-hint row `ESC · CLOSE` | no hint row |
-| **N37** | the `INSPECT` chip: in every row's trailing action cell (always present); for grid cells the cluster's `INSPECT` `ActionInline`, `disabled` + `text_dim` until a cell holds focus or selection | one cluster chip shared by rows and cells |
+| **N37** | the `INSPECT` affordance is **one header toggle** (§12.4, next to TERMINAL; owner 2026-10-07): on, an item press opens the sheet for that item, the toggle reads lit (ember border), and no per-row / per-cluster chip ships; off, an item press is its normal action. Supersedes the 2026-09/10 per-row chip + cluster-chip design | a chip in every row's trailing cell + a cluster chip |
 | **N38** | a scrim press closes the topmost overlay; a P20 cycle press closes the drawer | the scrim is inert; the cycle leaves the drawer open |
 | **N39** | the overlay focus law (drawer trap from the current pane's entry, wrap through LOG OUT, `ui_accept` switches + `focus_primary()`, close returns to `TERMINAL`; the sheet traps and returns focus to its trigger) | no trap; the drawer opens on OVERVIEW's entry; the sheet leaves focus put |
 | **N40** | the drawer scrim covers the Body band only (x 0..1920, y 163..1022) — header and footer stay live | the §5.2 full-rect dimmer; `TERMINAL` inert while open |
@@ -1361,7 +1364,7 @@ pins build on (D20-P1/P2, 1920×1080): hold RowBox 474 px inside the 500 px box
 | Pin | Law | Reversal |
 |---|---|---|
 | **N42** | both EXCHANGE lists render **one shared row builder** (the board's praised plate: 76 px row, icon 40, expand-fill title, meta line, value columns) and **one AUCTION-idiom column-header band** per list (§5.10's row: caption cells seated exactly over their value columns, values right-aligned). The captions are the row stacks' own words — hold `UNITS · CR EACH · CR NET`, board `INDEX · BAND · QUOTA`; the per-row caption stacks and `CAPTION_HELD`/`CAPTION_VALUE` are deleted (S28-A12's band superseded) | S28-A12's hold-only band + the per-row caption stacks as shipped |
-| **N43** | the hold title column never renders below **180 px**: value columns rebalance to ≤ 60/64/80, and the hold list becomes an **N37 cluster** — no per-row `INSPECT` chip; one `INSPECT` `ActionInline` in the trade column acts on the focused/selected row (`disabled` + `text_dim` until one exists). Only if a row still starves the title may the hold box widen **500 → 560** (board 876 → 816) | the per-row chip + 70/80/100 + the 500 box |
+| **N43** | the hold title column never renders below **180 px**: value columns rebalance to ≤ 60/64/80. The per-row `INSPECT` chip and the trade-column cluster chip are retired (N37 rev 2026-10-07): the header's one INSPECT toggle opens the sheet. Only if a row still starves the title may the hold box widen **500 → 560** (board 876 → 816) | the per-row chip + 70/80/100 + the 500 box |
 | **N44** | both lists' scroll viewports begin on **one y** (identical caption → header → scroll stacks) and the outer boxes stay even at 635 px | the hold-only band's 26 px offset |
 | **N45** | the armory browser row trims its title to a fixed **160 px ellipsis column** (port `exchange_panel.gd`'s trimming `_make_label`) and the browser half widens **490 → 620** (split 1262/490 → 1132/620). Acceptance: every row control lands inside the 1920×1080 window | untrimmed titles + the 490 half (the shipped overflow) |
 | **N46** | the hover-inspect popup **lingers 0.5 s after the pointer leaves** (2× `TOOLTIP_DELAY` — T-124's A reading, the owner's "twice as long") and holds steady while the pointer crosses a row's children (re-arms only when the hovered row/cluster changes) | no linger; re-arm per child enter/exit |
@@ -1496,7 +1499,7 @@ reversal under the table.
 | EXCHANGE trade steppers 48×48 (`STEPPER_SIZE` `exchange_panel.gd:48`; N49) | C8 square plate | 1:1 (48) | n/a — cut sprite | none — uniform scale only |
 | EXCHANGE `SELL` / `SELL ALL RAW` / `CANCEL` (`SELL_HEIGHT`/`ACTION_HEIGHT` `:51-52`; N48/N49) | C2 action bar | 360×56 (45:7) | 20/12 | h 272–450, v 56–88 |
 | AUCTION shelf rows, measured pane-width × 76 (`auction_panel.gd:752-800,814-819`; Button rows expand-filling the pane stack; A5.4 Q5) | C4 row strip | 560×76 | 12/8 | h 320–1765, v 64–84 |
-| AUCTION row `INSPECT` chips (N37 cluster) | C3 inline chip | 96×32 | 8 | h 80–160 |
+| Header `INSPECT` toggle (N37 rev 2026-10-07) | `ActionInline` `Button` | 96×32 | n/a — native, no plate | none |
 | SHIPYARD hull list rows, measured ≥ 340×76 (`_build_rows` `shipyard_panel.gd:337,390`; `ShipListBox` `shipyard_panel.tscn:55`) | C4 row strip | 560×76 | 12/8 | h 320–1765, v 64–84 |
 | SHIPYARD `PreviewFrame` (A5.1; `shipyard_panel.tscn:74-115`) | C12 panel frame | 96×96 | 32 | edges tile — any rect |
 | SHIPYARD hardpoint plates (`shipyard_panel.gd:589,1029-1053`) | C8 square plate | 1:1 (48) | n/a | none — uniform scale only |
@@ -1614,8 +1617,10 @@ reversal: the `StationButton` plate returns on them as shipped.
   horizontal flat band runs 272→450 wide; the vertical flat band runs 56→88 tall
   (the §8 pinned pair; the menu's 70 minimum sits inside it). A button taller
   than 88 — font-driven growth included — orders a new plate (A4).
-- **C3 inline chip** — margins 8; the horizontal flat band runs 80→160 wide.
-- **C4 row strip** — margins 12/8 (RowInner); the horizontal flat band runs
+- **C3 inline chip** — margins 18 l/r, 9/11 t/b (S37 replacement cut; §15.8); the
+  horizontal flat band runs 80→160 wide.
+- **C4 row strip** — margins 30 l/r, 8/10 t/b (S37 replacement cut; §15.8); the
+  horizontal flat band runs
   320→1765 wide (the measured 320 card, 560 hold (`exchange_panel.gd:70`), 876
   board (N43), ≈ 1390 REFINERY rows, and the 1765 pane-width rows — brief §2's
   pinned "pane-width × 76"); the vertical flat band runs 64→84 tall (the measured
@@ -1784,3 +1789,38 @@ reads 1151/0.
 
 Reversal for the whole §: `git checkout b235816 -- vajb-orbit/ui/` (the
 pre-S36 panes), or per surface per the A4 table.
+
+### 15.8 The S37 replacement cuts (2026-10-07)
+
+The owner's "chromes too small, text over them" (TERMINAL, OVERVIEW, the
+ARMORY/REFINERY/AUCTION rows) traced to two cut faults, both measured by
+`tests/probe_s37_r1_scene.gd` / `staging/verify_chrome_fit.py`: the canvas
+classes (C1/C2/C9) letterboxed because their cuts carried ~55–60 % transparent
+air (C9's opaque rail was 49/112 of the cut → 18.6 px drawn under 40 px of
+content), and the C3/C4 N51 margins over-measured the recessed well (a 97 % C3
+and 55 % C4 vertical ornament → a 1 px and 34 px drawn band).
+
+Five replacement cuts were generated on one qwen2-1 sheet (native transparent,
+five rails of different aspect, `asset-library/raw/chrome_fit_2026-10-07/`),
+cut by `staging/cut_chrome_fit.py` and resized to each class master at 2×:
+
+- **C1 `ui_tile_slab` 1134×280, C2 `ui_action_bar` 720×112, C9
+  `ui_drawer_entry` 544×112, C3 `ui_inline_chip` 192×64, C4 `ui_row_strip`
+  1120×152.** C9 realigns to §15.1's **272×56** master (the retired 360×56 cut
+  letterboxed to 42.6 px in the 274×56 entry); C1/C2 keep their masters.
+- **C3/C4 margins re-measured** off the new thin frames (the retired recessed
+  wells): C3 18 l/r, 9/11 t/b; C4 30 l/r, 8/10 t/b (§15.3 amended above). The
+  old N51 table (24/34/23/39, 74/74/35/49) is the reversal.
+
+**Measured** (`verify_chrome_fit.py`): `too_small 180 → 95`, `DISTORT 0`
+(S37-F1's plate-margin cure holds), gate `1151/0`. Every C1/C2/C9 surface is
+clean; the C4/C3 bands now clear their content vertically. The remaining 95 are
+**content, not chrome** — the C4 row content spans 92–97 % of its slot, so
+content +10 % (the owner's pad) exceeds the slot on 87 rows (needs the row
+content right-sized: T-148) — plus the pinned C7 tooltip (N47), the C12
+`ui_panel_frame` shell frames and one REFINERY `UpgradeButton` (T-149/T-150).
+
+Reversal: restore the five cuts from `_prekey_backup` (the retired files live in
+`/tmp/orig_cuts` for this pass; the generation is reproducible from the run
+folder) and restore §15.3's N51 table.
+
