@@ -1508,7 +1508,7 @@ reversal under the table.
 | REFINERY stepper + totals block (§5.7 `RefineBox`; P42 CENTRE) | flat + C8 squares | 1:1 (48) | n/a | none |
 | REFINERY `QUEUE N`/`QUEUE ALL`/`CANCEL`/`LOAD`/`COLLECT ALL` (P42) | C2 action bar + C3 chip | 360×56 / 96×32 | 20/12 / 8 | as C2 / C3 |
 | ARMORY console face 1360×516 (`armory_panel.gd:4-8`; A5.4; STATION_HUB §20.1) | C6 armory console face | 1360×516 (340:129) | n/a — whole face (`contain`) | none — never stretch |
-| ARMORY rack bay cards 260×192 (A5.4 `Bay card`; B1–B5 §20.1 P34/P39) | C5 rack bay card | 260×192 (65:48) | 10 (`cell_margin`, A5.4) | none — fixed A3 rect |
+| ARMORY rack bay cards 260×192 (A5.4 `Bay card`; B1–B5 §20.1 P34/P39) | C5 rack bay card | 260×192 (65:48) | 10 (`cell_margin`, A5.4) | none — fixed A3 rect *(S36 close-out: the live rack bay rows measure 876×116 — outside every class; see §15.7, T-145)* |
 | ARMORY bay cells 117×52 + the `ui_slot_weapon_*` mark at 48×48 (A5.3/A5.4) | recess flat + C8 square plate | 1:1 (48) | n/a | none — uniform scale only |
 | ARMORY salvo ledge 240×34 (A5.4-6; `ui_seg_*` at 18×32) | flat | — | — | — (A5.4-6 stands) |
 | ARMORY well halves 648×220 (A5.4) | flat | — | — | — (A5.1 refusal stands here) |
@@ -1750,3 +1750,37 @@ proved a no-op for cache refresh in this workspace — the reliable route is
 delete the texture's `.godot/imported/` entries + `filesystem_manage scan`
 (the stale `.ctex` twins served old art to the gate; a probe that prints
 `Texture2D.get_size()` settles it).
+
+### 15.7 The S36 wiring close-out (2026-10-07)
+
+The §15.6 swap map landed as `ui/theme/chrome_family.gd` (S36-B1) and the
+fixer pass (S36-F1) closed the review; the census suite
+(`tests/test_s36_chrome_census.gd`, 13 rows) guards the family and the gate
+reads 1151/0.
+
+- **Margins are drawn-space, not cut-space (implements §15.3).** Every wired
+  nine-slice margin scales per axis `round(measured × drawn / cut)` under the
+  degenerate guard `min(m, ⌊rect/2⌋)` per side, rebuilt on every `resized`
+  (`drawn_margins`). This is §15.3's own proportionality rule with C12's
+  "32 at the 96 cut (64 at the 192 master)" as the worked case; the measured
+  table above stays the law at cut scale. The engine's `map_ninepatch_axis`
+  has no centre branch below the margins sum — that regime is now
+  unreachable (86 degenerate plates → 0 at the scene probe).
+- **The N51 margin table is (l, r, t, b) — lrtb order, ratified.** B1 read it
+  as (l, t, r, b) and swapped top/right on every plate; F1 fixed the
+  assignment (`top = m.z`, `right = m.y`). C12's worked case only lands with
+  the correct order.
+- **C7 content inset restored.** The tooltip's text inset is its stylebox's
+  `content_margin_top/bottom` (the bevel, drawn-space 50/64); width stays
+  inside N47's 360 cap (live 360×174, inside C7's 120–400 band); left/right
+  stay 0.
+- **A4 reverts (a stretch outside a declared band is illegal — A3/A4).** The
+  four REFINERY queue bars (114–176 px wide, under C2's 272 floor), the
+  SHIPYARD cluster inspect chip (452×32, over C3's 160 ceiling) and the
+  ARMORY rack bay rows (876×116, outside every class band) reverted to their
+  pre-swap styles (evidence: `S36-F1_report.md`'s A4 table). New-plate
+  candidates ride as **T-144–T-147** (T-147 = the 32 px inline chips' bevel
+  t+b = 32 = chip height; the guard clamps, b 20→16).
+
+Reversal for the whole §: `git checkout b235816 -- vajb-orbit/ui/` (the
+pre-S36 panes), or per surface per the A4 table.

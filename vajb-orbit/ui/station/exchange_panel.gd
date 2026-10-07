@@ -27,6 +27,7 @@ const StationCatalogScript := preload("res://game/station_catalog.gd")
 const Clock := preload("res://autoload/world_clock.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
 const InspectChipScript := preload("res://ui/components/inspect_chip.gd")
+const ChromeFamily := preload("res://ui/theme/chrome_family.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
@@ -425,6 +426,8 @@ func _build_board_row(spec: Dictionary) -> Dictionary:
 	row.focus_mode = Control.FOCUS_NONE
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.custom_minimum_size = Vector2(0.0, ROW_HEIGHT)
+	## S36 (UI_SPEC section 15.1): the board row wears C4 `ui_row_strip`.
+	ChromeFamily.apply_row(row)
 	var payload := _build_row_plate(
 		row, String(spec[&"icon_path"]), String(spec[&"name"]), String(spec[&"meta"]),
 		spec[&"columns"]
@@ -562,6 +565,8 @@ func _build_hold_row(item_id: StringName) -> Dictionary:
 	row.custom_minimum_size = Vector2(0.0, ROW_HEIGHT)
 	row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	row.set_meta(&"id", item_id)
+	## S36 (UI_SPEC section 15.1): the hold row wears C4 `ui_row_strip`.
+	ChromeFamily.apply_row(row)
 	var icon_path := _icon_path(item_id)
 	var payload := _build_row_plate(
 		row, icon_path, _item_name(item_id), _meta_of(item_id), _hold_columns()
@@ -639,6 +644,9 @@ func _wire_trade() -> void:
 	_sell_units_caption.text = SELL_UNITS_CAPTION
 	_sell_max.text = SELL_MAX_WORD
 	_sell_zero.text = SELL_ZERO_WORD
+	## S36 (UI_SPEC section 15.1): the MAX / 0 quick-set chips wear C3 `ui_inline_chip`.
+	ChromeFamily.apply_chip(_sell_max)
+	ChromeFamily.apply_chip(_sell_zero)
 	_build_inspect_cluster()
 
 

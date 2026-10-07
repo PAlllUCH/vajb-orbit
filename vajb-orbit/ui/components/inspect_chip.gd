@@ -11,14 +11,25 @@ extends Button
 
 signal inspect_chip_pressed
 
+const ChromeFamily := preload("res://ui/theme/chrome_family.gd")
+
 const CHIP_SIZE := Vector2(96.0, 32.0)
 const CHIP_TEXT := "INSPECT"
+
+## S36-F1 (A4, F5): the pane's cluster chip expands to 452 px wide, past C3's 160 band
+## ceiling, so it reverts to the native pre-swap button (no C3 plate). Set before the chip
+## enters the tree (its `_ready` reads it).
+var wear_chrome := true
 
 
 func _ready() -> void:
 	custom_minimum_size = CHIP_SIZE
 	focus_mode = Control.FOCUS_ALL
 	mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	## S36 (UI_SPEC section 15.1): the chip wears C3 `ui_inline_chip` at the measured
+	## nine-slice margins, states by tint (A7) - unless it is the out-of-band cluster chip.
+	if wear_chrome:
+		ChromeFamily.apply_chip(self)
 	if text.is_empty():
 		text = CHIP_TEXT
 	pressed.connect(_on_pressed)

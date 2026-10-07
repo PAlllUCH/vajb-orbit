@@ -40,6 +40,7 @@ extends VBoxContainer
 ##   func focus_primary() -> void                              focus entry after a switch
 
 const TOKENS_TYPE: StringName = &"Tokens"
+const ChromeFamily := preload("res://ui/theme/chrome_family.gd")
 
 const AuctionScript := preload("res://game/auction.gd")
 const ModuleData := preload("res://game/module_catalog.gd")
@@ -819,6 +820,8 @@ func _make_row(node_name: String, id: StringName) -> Button:
 	row.custom_minimum_size = Vector2(0.0, ROW_HEIGHT)
 	row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	row.set_meta(&"id", id)
+	## S36 (UI_SPEC section 15.1): the shelf row wears C4 `ui_row_strip`.
+	ChromeFamily.apply_row(row)
 	return row
 
 

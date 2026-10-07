@@ -30,6 +30,7 @@ extends VBoxContainer
 ## deferred to one rebuild right after the call returns.
 
 const TOKENS_TYPE: StringName = &"Tokens"
+const ChromeFamily := preload("res://ui/theme/chrome_family.gd")
 
 const RefineryModule := preload("res://game/refinery.gd")
 const Catalog := preload("res://game/mineral_catalog.gd")
@@ -158,6 +159,9 @@ func _ready() -> void:
 	_build_jobs()
 	_apply_tokens()
 	_wire_controls()
+	## S36-F1 (A4, F2): the four QUEUE / QUEUE ALL / LOAD / COLLECT ALL bars live at
+	## 114-176 px wide, under C2's 272 h-band floor - they revert to their pre-swap
+	## StationButton style (reported as new-plate candidates). CANCEL stays native too.
 	_connect_scroll()
 	_make_tick_timer()
 	visibility_changed.connect(_on_visibility_changed)
@@ -399,6 +403,8 @@ func _build_row(stack: Dictionary, loaded: bool) -> Dictionary:
 	row.custom_minimum_size = Vector2(0.0, ROW_HEIGHT)
 	row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	row.set_meta(&"id", mineral_id)
+	## S36 (UI_SPEC section 15.1): the ore/hold row wears C4 `ui_row_strip`.
+	ChromeFamily.apply_row(row)
 	var box := _make_inner(row)
 	var icon := _make_icon(entry)
 	if icon != null:
@@ -697,6 +703,8 @@ func _build_job_row(job: Dictionary) -> Dictionary:
 	row.focus_mode = Control.FOCUS_ALL
 	row.custom_minimum_size = Vector2(0.0, JOB_ROW_HEIGHT)
 	row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	## S36 (UI_SPEC section 15.1): the job row wears C4 `ui_row_strip`.
+	ChromeFamily.apply_row(row)
 	var box := _make_inner(row)
 	var label := _make_label(&"StationValue", _job_line(state, name_text, ingots))
 	label.name = "JobLine"

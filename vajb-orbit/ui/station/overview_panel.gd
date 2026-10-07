@@ -11,6 +11,7 @@ extends VBoxContainer
 ## profile: it emits `navigate_requested` up and reads the catalogue down.
 
 const TOKENS_TYPE: StringName = &"Tokens"
+const ChromeFamily := preload("res://ui/theme/chrome_family.gd")
 
 const Catalog := preload("res://game/station_catalog.gd")
 const ShipFit := preload("res://game/ship_fit.gd")
@@ -153,6 +154,8 @@ func _build_identity() -> void:
 	_identity_plate = PanelContainer.new()
 	_identity_plate.name = "IdentityBlock"
 	_identity_plate.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	## S36: the identity block keeps its flat Tokens box and its faction border (a code
+	## feature, not a stretched plate) - the owner's "native chrome keeps it" criterion.
 	_stack.add_child(_identity_plate)
 	var margin := MarginContainer.new()
 	margin.name = "IdentityMargin"
@@ -254,18 +257,11 @@ func _make_tile(tile_data: Dictionary) -> Button:
 	return button
 
 
-## P23's tile chrome: the theme's `panel_raised` flat bevel for normal, `button_hover` and
-## `button_pressed` for the states (the `ui_panel_frame` band is barred in-pane, A5.1/Q1).
+## P23's tile chrome (S36, UI_SPEC section 15.1/15.6): the C1 `ui_tile_slab` rail cut drawn
+## as a uniform canvas at the tile rect - the transparent pad is the owner's accepted look
+## (never cropped to fill). States stay tint-only (A7).
 func _apply_tile_chrome(button: Button) -> void:
-	var normal := get_theme_stylebox(&"panel_raised", &"PanelContainer")
-	if normal != null:
-		button.add_theme_stylebox_override(&"normal", normal)
-	var hover := get_theme_stylebox(&"hover", &"Button")
-	if hover != null:
-		button.add_theme_stylebox_override(&"hover", hover)
-	var pressed := get_theme_stylebox(&"pressed", &"Button")
-	if pressed != null:
-		button.add_theme_stylebox_override(&"pressed", pressed)
+	ChromeFamily.apply_tile(button)
 
 
 func _on_tile_pressed(deck: int) -> void:
@@ -340,6 +336,8 @@ func _make_service_row(service: Dictionary) -> Button:
 	row.custom_minimum_size = Vector2(0.0, ROW_HEIGHT)
 	row.focus_mode = Control.FOCUS_ALL
 	row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	## S36 (UI_SPEC section 15.1): the service row wears C4 `ui_row_strip`.
+	ChromeFamily.apply_row(row)
 	var box := _make_inner(row)
 	box.add_child(_make_icon(String(service[&"icon"]), ROW_ICON, true))
 	var name_label := Label.new()
@@ -404,6 +402,8 @@ func _make_chip(text: String) -> Button:
 	button.custom_minimum_size = CHIP_SIZE
 	button.focus_mode = Control.FOCUS_ALL
 	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	## S36 (UI_SPEC section 15.1): the chip wears C3 `ui_inline_chip`.
+	ChromeFamily.apply_chip(button)
 	var margin := MarginContainer.new()
 	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	margin.add_theme_constant_override(&"margin_left", 10)

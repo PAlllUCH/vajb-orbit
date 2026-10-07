@@ -670,6 +670,16 @@
     "res://tests/probe_s35_review.gd"
    ]
   },
+  "res://tests/probe_s36_r1_scene.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s36_r1_scene.gd"
+   ]
+  },
   "res://tests/probe_s3_levers.tscn": {
    "assets": [],
    "connections": [],
@@ -2009,6 +2019,18 @@
    ],
    "signals": []
   },
+  "res://tests/probe_b3_diag.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "SceneTree",
+   "refs": [
+    "res://assets/ui/ui_bar_caps.png",
+    "res://assets/ui/ui_slot_weapon_normal.png",
+    "res://ui/hud/hud.tscn"
+   ],
+   "signals": []
+  },
   "res://tests/probe_c1_ram.gd": {
    "autoload": "",
    "class_name": "",
@@ -3170,6 +3192,21 @@
     "res://ui/station/armory_panel.tscn",
     "res://ui/station/exchange_panel.gd",
     "res://ui/station/exchange_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s36_r1_scene.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "watchdog.timeout \u2192 func("
+   ],
+   "extends": "Node",
+   "refs": [
+    "res://ui/screens/station.gd",
+    "res://ui/screens/station.tscn",
+    "res://ui/theme/chrome_family.gd",
     "res://ui/theme/vajb_theme.tres"
    ],
    "signals": []
@@ -4734,6 +4771,24 @@
    ],
    "signals": []
   },
+  "res://tests/test_s36_chrome_census.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://assets/ui/ui_bar_caps.png",
+    "res://assets/ui/ui_button_plate_normal.png",
+    "res://assets/ui/ui_minimap_bezel.png",
+    "res://assets/ui/ui_slot_weapon_normal.png",
+    "res://autoload/player_profile.gd",
+    "res://ui/screens/station.gd",
+    "res://ui/screens/station.tscn",
+    "res://ui/theme/chrome_family.gd",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
   "res://tests/test_s3_auction.gd": {
    "autoload": "",
    "class_name": "",
@@ -5341,7 +5396,9 @@
     "pressed \u2192 _on_pressed"
    ],
    "extends": "Button",
-   "refs": [],
+   "refs": [
+    "res://ui/theme/chrome_family.gd"
+   ],
    "signals": [
     "inspect_chip_pressed"
    ]
@@ -5389,7 +5446,9 @@
    "class_name": "",
    "connects": [],
    "extends": "PanelContainer",
-   "refs": [],
+   "refs": [
+    "res://ui/theme/chrome_family.gd"
+   ],
    "signals": []
   },
   "res://ui/dev/dev_tuning_menu.gd": {
@@ -5728,7 +5787,8 @@
     "res://ui/components/tooltip.tscn",
     "res://ui/station/",
     "res://ui/station/ and",
-    "res://ui/station/overview_panel.tscn"
+    "res://ui/station/overview_panel.tscn",
+    "res://ui/theme/chrome_family.gd"
    ],
    "signals": []
   },
@@ -5780,7 +5840,8 @@
     "res://game/module_catalog.gd",
     "res://game/station_catalog.gd",
     "res://ui/components/inspect_chip.gd",
-    "res://ui/station/armory_style.gd"
+    "res://ui/station/armory_style.gd",
+    "res://ui/theme/chrome_family.gd"
    ],
    "signals": [
     "inspect_requested",
@@ -5828,7 +5889,8 @@
     "res://game/module_catalog.gd",
     "res://game/station_catalog.gd",
     "res://ui/components/inspect_chip.gd",
-    "res://ui/station/fitting_panel.gd"
+    "res://ui/station/fitting_panel.gd",
+    "res://ui/theme/chrome_family.gd"
    ],
    "signals": [
     "inspect_requested",
@@ -5862,7 +5924,8 @@
     "res://game/exchange.gd",
     "res://game/mineral_catalog.gd",
     "res://game/station_catalog.gd",
-    "res://ui/components/inspect_chip.gd"
+    "res://ui/components/inspect_chip.gd",
+    "res://ui/theme/chrome_family.gd"
    ],
    "signals": [
     "inspect_requested",
@@ -5924,7 +5987,8 @@
     "res://game/repairs.gd",
     "res://game/station_catalog.gd",
     "res://game/weapons.gd",
-    "res://ui/paths.gd"
+    "res://ui/paths.gd",
+    "res://ui/theme/chrome_family.gd"
    ],
    "signals": [
     "inspect_requested",
@@ -5959,7 +6023,8 @@
     "res://autoload/player_profile.gd",
     "res://game/repairs.gd",
     "res://game/ship_fit.gd",
-    "res://game/station_catalog.gd"
+    "res://game/station_catalog.gd",
+    "res://ui/theme/chrome_family.gd"
    ],
    "signals": [
     "inspect_requested",
@@ -5994,7 +6059,8 @@
     "res://game/mineral_catalog.gd",
     "res://game/refinery.gd",
     "res://game/station_catalog.gd",
-    "res://ui/components/inspect_chip.gd"
+    "res://ui/components/inspect_chip.gd",
+    "res://ui/theme/chrome_family.gd"
    ],
    "signals": [
     "inspect_requested",
@@ -6046,13 +6112,26 @@
     "res://game/repairs.gd",
     "res://game/station_catalog.gd",
     "res://ui/components/inspect_chip.gd",
-    "res://ui/station/repairs_panel.gd"
+    "res://ui/station/repairs_panel.gd",
+    "res://ui/theme/chrome_family.gd"
    ],
    "signals": [
     "inspect_requested",
     "sheet_requested",
     "status_requested"
    ]
+  },
+  "res://ui/theme/chrome_family.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "control.resized \u2192 func("
+   ],
+   "extends": "RefCounted",
+   "refs": [
+    "res://assets/ui/"
+   ],
+   "signals": []
   }
  }
 }

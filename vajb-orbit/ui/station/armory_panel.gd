@@ -55,6 +55,7 @@ extends Control
 const StyleScript := preload("res://ui/station/armory_style.gd")
 
 const TOKENS_TYPE: StringName = &"Tokens"
+const ChromeFamily := preload("res://ui/theme/chrome_family.gd")
 
 const Catalog := preload("res://game/station_catalog.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
@@ -704,6 +705,7 @@ class SalvoStrip extends Control:
 ## section 3.1/3.1b danger frame over it when the row is in a danger state. Without the
 ## theme box the row's recorded recess tone returns (the palette's own reversal path).
 class RowPlate extends Control:
+	const ChromeFamily := preload("res://ui/theme/chrome_family.gd")
 	var style: Resource = null
 	var _danger: bool = false
 
@@ -726,16 +728,12 @@ class RowPlate extends Control:
 	func _draw() -> void:
 		if style == null:
 			return
-		## A5.3: the card is 320x68 - far too small for the frame's 32 px band (a 4 px
-		## opening), so it wears the flat Tokens box plus the 1 px border, the idiom the
-		## AUCTION rows and the section 3.1 chips already speak.
-		var box := StyleBoxFlat.new()
-		box.bg_color = style.colour(ROLE_ITEM_BG)
-		box.corner_radius_top_left = 6
-		box.corner_radius_top_right = 6
-		box.corner_radius_bottom_left = 6
-		box.corner_radius_bottom_right = 6
-		draw_style_box(box, Rect2(Vector2.ZERO, size))
+		## S36 (UI_SPEC section 15.1/15.4-3): the 320x68 pack/inventory card wears C4
+		## `ui_row_strip` at the measured nine-slice margins scaled to the card's own drawn
+		## rect (F1, S36-F1; the card sits inside C4's 320-1765 x 64-84 band).
+		var plate: StyleBox = ChromeFamily.stylebox("C4", size)
+		if plate != null:
+			draw_style_box(plate, Rect2(Vector2.ZERO, size))
 		draw_rect(
 			Rect2(Vector2.ZERO, size),
 			style.colour(ROLE_DANGER if _danger else ROLE_METAL_MID),
@@ -783,6 +781,9 @@ class ConsolePanels extends Control:
 		## A5.1/A5.3: every inner surface is the flat Tokens box - the two well halves and
 		## the five bay cards (a bay is 260x192: the frame's 32 px band would leave a
 		## 196x128 opening for 240 px of cells, so it is not drawn inside this console).
+		## S36-F1 (A4, F3): the live bays are 876x116, outside every class band (C5 is the
+		## fixed 260x192 card), so they keep the flat pre-swap plate - reported as
+		## new-plate candidates.
 		for rect: Rect2 in wells:
 			_plate(rect, ROLE_BAY_BG, 8)
 		for rect: Rect2 in bays:
@@ -967,9 +968,12 @@ func _exit_tree() -> void:
 func _build_modes() -> void:
 	if _mode_fit != null:
 		_mode_fit.text = MODE_FIT_LABEL
+		## S36 (UI_SPEC section 15.1): the mode switch pair wears C3 `ui_inline_chip`.
+		ChromeFamily.apply_chip(_mode_fit)
 		_mode_fit.pressed.connect(set_mode.bind(MODE_FIT))
 	if _mode_battery != null:
 		_mode_battery.text = MODE_BATTERY_LABEL
+		ChromeFamily.apply_chip(_mode_battery)
 		_mode_battery.pressed.connect(set_mode.bind(MODE_BATTERY))
 	_apply_mode()
 
@@ -4110,6 +4114,8 @@ func _build_browser_row(entry: Dictionary, _profile_unused: ProfileScript) -> Di
 	row.focus_mode = Control.FOCUS_ALL
 	row.custom_minimum_size = Vector2(0.0, BROWSER_ROW_HEIGHT)
 	row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	## S36 (UI_SPEC section 15.1): the browser row wears C4 `ui_row_strip`.
+	ChromeFamily.apply_row(row)
 	var inner := MarginContainer.new()
 	inner.name = "RowInner"
 	inner.mouse_filter = Control.MOUSE_FILTER_IGNORE

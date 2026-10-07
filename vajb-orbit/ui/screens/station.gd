@@ -22,6 +22,7 @@ extends Screen
 ##   func inspect_focused() -> void                            optional, station_inspect
 
 const TOKENS_TYPE: StringName = &"Tokens"
+const ChromeFamily := preload("res://ui/theme/chrome_family.gd")
 
 const Catalog := preload("res://game/station_catalog.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
@@ -102,6 +103,19 @@ const ICON_LOGOUT := "res://assets/icons/hud/icon_logout.svg"
 
 const OVERVIEW_LABEL := "OVERVIEW"
 const SERVICES_LABEL := "SERVICES"
+## S36 (UI_SPEC section 15.1 C13, section 13.3): the pane-content backdrops. BG-1 ARMORY,
+## BG-2 REFINERY, BG-3 EXCHANGE + AUCTION, BG-4 SHIPYARD + LAUNCH + OVERVIEW; SERVICES
+## carries none (no assignment). Reversal: one backdrop per deck.
+const DECK_BACKDROP := {
+	0: "BG-1",
+	1: "BG-2",
+	2: "BG-3",
+	3: "BG-3",
+	4: "BG-4",
+	5: "BG-4",
+	6: "BG-4",
+}
+const BACKDROP_IDS: Array[String] = ["BG-1", "BG-2", "BG-3", "BG-4"]
 ## N41's OVERVIEW glyph fallback: the station node mark until the staged `icon_overview`
 ## ships. The per-faction glyph is `icon_insignia_<faction>_48` (STATION_HUB section 19.7).
 const OVERVIEW_FALLBACK_ICON := "res://assets/icons/tint/icon_map_node_station_48.png"
@@ -223,6 +237,8 @@ var _displayed_credits := 0
 var _status_danger := false
 var _tweens: Array[Tween] = []
 var _focus_hint: StringName = &""
+## S36: the pane-content backdrop layers, one per BG id, keyed by the id.
+var _backdrops: Dictionary = {}
 
 ## The drawer (S30, UI_SPEC section 12.1).
 var _drawer_layer: CanvasLayer = null
@@ -251,6 +267,7 @@ var _sheet_trigger: Control = null
 func _ready() -> void:
 	_build_drawer()
 	_build_popups()
+	_build_backdrops()
 	_build_panels()
 	_apply_tokens()
 	_refresh_credits()
@@ -548,6 +565,10 @@ func _make_drawer_entry(
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	box.add_child(label)
+	## S36 (UI_SPEC section 15.1/15.5): the drawer ENTRY wears C9 `ui_drawer_entry` as a
+	## uniform canvas; the drawer SURFACE stays native (the keep-list row stands). Applied
+	## after the content so the canvas never shadows the entry's own icon in a tree walk.
+	ChromeFamily.apply_entry(button)
 	parent.add_child(button)
 	return button
 
@@ -761,6 +782,30 @@ func _token(token: StringName) -> Color:
 	if has_theme_color(token, TOKENS_TYPE):
 		return get_theme_color(token, TOKENS_TYPE)
 	return Color.WHITE
+
+
+## S36 (UI_SPEC section 15.1 C13, section 13.3): the four pane-content backdrops as layers
+## on the module host, behind the pane content. Cover-fit (1765:753), `mouse_filter` IGNORE
+## so they never touch the pointer. One layer per BG id; the active deck's layer shows.
+func _build_backdrops() -> void:
+	for bg_id: String in BACKDROP_IDS:
+		var layer := ChromeFamily.make_backdrop(bg_id, "%sLayer" % bg_id.replace("-", ""))
+		if layer == null:
+			continue
+		_module_host.add_child(layer)
+		## The host's own content (`HostMargin`) is its first child; a backdrop must draw
+		## before it, so each layer is moved to the front (index 0).
+		_module_host.move_child(layer, 0)
+		layer.visible = false
+		_backdrops[bg_id] = layer
+	_sync_backdrop()
+
+
+## Show only the active deck's backdrop (BG-1..4 per `DECK_BACKDROP`); hide the rest.
+func _sync_backdrop() -> void:
+	var active: String = String(DECK_BACKDROP.get(_module, ""))
+	for bg_id: String in _backdrops:
+		(_backdrops[bg_id] as CanvasItem).visible = bg_id == active
 
 
 func _build_panels() -> void:
@@ -1033,6 +1078,7 @@ func _select_module(module: int, instant: bool = false) -> void:
 	var incoming := _panel_for(module)
 	_module = module
 	_sync_entry_pressed()
+	_sync_backdrop()
 	if not instant:
 		AudioManager.play_sfx(SFX_MODULE_SWITCH)
 		AudioManager.play_ambience(_bed_for(module), SWITCH_AMBIENCE_FADE)

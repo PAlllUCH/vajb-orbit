@@ -21,6 +21,7 @@ extends VBoxContainer
 ##   func refuel_button() / recharge_button() / bounty_button() -> Button   the service actions
 
 const TOKENS_TYPE: StringName = &"Tokens"
+const ChromeFamily := preload("res://ui/theme/chrome_family.gd")
 
 const Paths := preload("res://ui/paths.gd")
 const Catalog := preload("res://game/station_catalog.gd")
@@ -205,6 +206,8 @@ func _ready() -> void:
 	_brief_note.text = BRIEF_NOTE
 	_set_confirm(_idle_text(), false)
 	_apply_tokens()
+	## S36 (UI_SPEC section 15.1): the deck-control action bars wear C2 `ui_action_bar`.
+	ChromeFamily.apply_action(_launch_button)
 	_hull_center.resized.connect(_update_preview_size)
 	_launch_button.pressed.connect(_on_launch_pressed)
 	_launch_button.focus_entered.connect(_on_launch_focused)
@@ -397,6 +400,8 @@ func _make_service_button(parent: Control, service_id: StringName) -> Button:
 	button.theme_type_variation = &"StationButton"
 	button.custom_minimum_size = ACTION_MIN
 	button.text = label
+	## S36 (UI_SPEC section 15.1): the service action bar wears C2 `ui_action_bar`.
+	ChromeFamily.apply_action(button)
 	button.pressed.connect(_on_service_pressed.bind(service_id))
 	button.focus_entered.connect(_on_service_focused)
 	parent.add_child(button)

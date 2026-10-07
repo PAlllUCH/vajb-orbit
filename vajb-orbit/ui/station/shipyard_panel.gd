@@ -30,6 +30,7 @@ extends VBoxContainer
 ##   func focus_primary() -> void                              focus entry after a switch
 
 const TOKENS_TYPE: StringName = &"Tokens"
+const ChromeFamily := preload("res://ui/theme/chrome_family.gd")
 
 const Catalog := preload("res://game/station_catalog.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
@@ -225,6 +226,9 @@ func _ready() -> void:
 	_build_rows()
 	_pin_preview_box()
 	_apply_tokens()
+	## S36 (UI_SPEC section 15.1): the two pane action bars wear C2 `ui_action_bar`.
+	ChromeFamily.apply_action(_action)
+	ChromeFamily.apply_action(_repair_button)
 	_action.pressed.connect(_on_action_pressed)
 	_repair_button.pressed.connect(_on_repair_pressed)
 	_refresh_all()
@@ -390,6 +394,8 @@ func _build_row(ship: Dictionary) -> Dictionary:
 	row.custom_minimum_size = Vector2(0.0, ROW_HEIGHT)
 	row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	row.set_meta(&"id", ship_id)
+	## S36 (UI_SPEC section 15.1): the hull row wears C4 `ui_row_strip`.
+	ChromeFamily.apply_row(row)
 	var box := _make_inner(row)
 	box.add_child(_make_title_box(name_text, meta))
 	var tag := _make_cell(box, COL_TAG, "", "", "Status")
@@ -787,6 +793,9 @@ func _build_cluster_chip() -> void:
 		return
 	_cluster_chip = InspectChipScript.new()
 	_cluster_chip.name = "ClusterInspectChip"
+	## S36-F1 (A4, F5): the cluster chip lays out 452 px wide, past C3's 160 band ceiling -
+	## it keeps the native pre-swap button (no C3 plate), reported as a new-plate candidate.
+	_cluster_chip.wear_chrome = false
 	_cluster_chip.set_dimmed(true)
 	_cluster_chip.inspect_chip_pressed.connect(_inspect_hovered_cell)
 	parent.add_child(_cluster_chip)

@@ -14,6 +14,7 @@ extends PanelContainer
 ## handlers; the tooltip is an overlay, not in-flow).
 
 const TOKENS_TYPE: StringName = &"Tokens"
+const ChromeFamily := preload("res://ui/theme/chrome_family.gd")
 ## N47: the cap widens 320 -> 360 and the body's own font is 15 px scoped to this node.
 const CAP_WIDTH := 360.0
 const BODY_FONT_SIZE := 15
@@ -32,6 +33,9 @@ var _danger: bool = false
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	visible = false
+	## S36 (UI_SPEC section 15.1): the tooltip frame wears C7 `ui_tooltip_frame` at the
+	## measured nine-slice margins (the 360 cap is N47's law).
+	ChromeFamily.apply_tooltip(self)
 	_refresh()
 
 
