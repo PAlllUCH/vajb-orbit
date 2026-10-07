@@ -7,17 +7,25 @@
 **Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-25 clear-outs (owner asks):** every closed slice folder moved to the system trash (last git tree carrying them: `7a081ef`), old session reports live in `_state/_archive/`, and the two dispatch files were purged to live-items-only (2026-09-25 ter). **2026-10-07 clear-out (owner ask):** closed slice folders moved to `_archive/slices/` (kept, not deleted), the old Updated blocks to `_archive/waveboard_updates_2026-09-25_to_2026-10-06.md`, the dispatch files' done sections to `_archive/dispatch_*_done_2026-10-07.md`, CLOSED backlog rows to `_archive/low_backlog_closed_rows_2026-10-07.md`. Citation paths into moved trees name historical files.
 
 
-**Updated 2026-10-07 (S36 closed; the owner prune stands):** the clear-out
-record stands in the Paths paragraph above — the workspace keeps S36, S24,
-S25, S26, S27; the retirements live in `_archive/`, TICKS is empty, next free
-ticket **T-148**. **S36 closed 2026-10-07:** R1 blocked (1 HIGH/4 MED/4 LOW)
-→ F1 executed the designer's fix list: the drawn-space margins cure + the
-`⌊rect/2⌋` guard (86 degenerate plates → 0), the A4 reverts (REFINERY bars,
-cluster chip, bay rows), the tooltip inset restored, and F1c fixed B1's
-lrtb-order defect (designer-ratified, `UI_SPEC.md` §15.7). Census 13 rows;
-gate **1151/0 ×2** fresh scratch; verify `"problems": []` vs `s36_start`;
-wave-boundary commit landed. Tickets **T-144–T-147** ride for the fresh
-design round. **Next: S24 world identity** (§Queued row 2).
+**Updated 2026-10-07 (S37 closed — the chrome fit, the one INSPECT toggle, and
+a readability polish):** **S37** (`.agents/gen/slices/S37-chrome-fit/`) went
+from R1's measured list (245 surfaces, 180 too small) to F1's theme-plate cure
+(DISTORT 14→0) to B2's five replacement rail cuts generated on one sheet and
+wired at each class master 2× (C1/C2/C9 clean; the C4 band 33→67 px, C3 4→21
+px; C9 realigned to §15.1's 272×56). `verify_chrome_fit.py` too_small
+**180→95**; the residual 95 are content (C4 x, T-148) and pinned/theme
+(T-149/T-150/T-151). The owner then folded the per-row / per-cluster INSPECT
+chips into **one header INSPECT toggle** (N37 rev; lit while on, an item press
+opens the sheet) and a full live pass produced three readability fixes (the
+`StationMeta` token, the canvas hover brighten, the LAUNCH briefing pairing).
+Gate **1152/0 ×2** fresh scratch; commits `179e098` + `45aae5c`. T-147 closed;
+T-148–T-151 filed; next free **T-152**. Docs: `UI_SPEC.md` §15.3/§15.8,
+§12.3/§12.4, N28/N37/N43. **Next: S24 world identity** (§Queued row 2).
+
+**Updated 2026-10-07 (S36 closed; the owner prune stands):** S36 closed (R1 →
+F1: the drawn-space margins cure, the A4 reverts, the tooltip inset; gate
+1151/0 ×2; §15.7). Retirements in `_archive/`; T-144–T-147 rode the fresh
+design round (T-147 closed in S37).
 
 Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 
@@ -26,6 +34,7 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | Pos | Lane item | Wave | Runs after | The collision/dependency that forces the order |
 |---|---|---|---|---|
 | 1 | coder 43 | **S36 the chrome re-skin** (**done 2026-10-07** — gate 1151/0 ×2, committed at the wave boundary; `slices/S36-chrome-reskin/`) | — | shares `vajb-orbit/ui` + `tests` with S24, so S24 waited |
+| 1b | coder 43 | **S37 the chrome fit + the one INSPECT toggle** (**done 2026-10-07** — gate 1152/0 ×2, commits `179e098` + `45aae5c`; `slices/S37-chrome-fit/`) | S36's close-out | shares `vajb-orbit/ui` + `tests` with S24; the INSPECT rev moved five pinned tests |
 | 2 | coder 30 | S24 world identity | S36's close-out | its five-piece predates shell v2 AND the 2026-10-05/06 rounds — the developer re-checks `slices/S24-world-identity/S24_BRIEF.md` against `UI_SPEC.md` §12–§15 + `STATION_HUB.md` §19–§21 and re-cuts the handoff before dispatch |
 | 3 | coder 31 | S25 contracts board | coder 30 | `ui/station/` + `autoload/player_profile.gd` + S24's `contracts_visible` seam |
 | 4 | coder 32 | S26 bosses, arenas, insurance, vaults | coder 31 | `game/` + `player_profile.gd` + S25's Expedition seam |
