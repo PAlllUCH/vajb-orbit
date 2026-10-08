@@ -508,3 +508,49 @@ Asteroid fields respawn on a timer per field:
 - Buying minerals from the exchange in v1 — the exchange buys; crafting
   requirements (07) are met from the player's own hold. A buy mode is a
   05 amendment if crafting demand makes it necessary.
+
+## 2026-10-08 — S28: the value table (amends §2/§4)
+
+*(S28's block. Every new value carries its reversal and its M-tick — **M8
+owner-ratified green 2026-10-08**, the table ships as printed; 01's 2026-10-08
+block owns the law.)*
+
+**The derivation is one sentence:** tier-mean ore value = **22.6 × 2.0^(t−1)**
+CR; the five minerals of a tier sit at **×{0.80, 0.88, 0.97, 1.11, 1.24}** of
+that mean — T1's own shape, so T1 reproduces byte-for-byte — and
+`ingot_value = round(ore_value × 3.6)` for T2–T4 (T1's historical rounding
+stands). Tier means land at **22.6 / 45.2 / 90.4 / 180.8** ore and
+**81.4 / 163 / 326 / 652** ingot. Only the two value columns move; names,
+descriptions, icons and tiers stand. Reversal: §2's table.
+
+| id | tier | ore now → new | ingot now → new |
+|---|---|---|---|
+| iron | 1 | 18 | 65 |
+| copper | 1 | 22 | 80 |
+| chromium | 1 | 25 | 90 |
+| silicon | 1 | 28 | 100 |
+| aluminium | 1 | 20 | 72 |
+| titanium | 2 | 45 → **36** | 162 → **130** |
+| nickel | 2 | 50 → **40** | 180 → **144** |
+| cobalt | 2 | 55 → **44** | 200 → **158** |
+| tungsten | 2 | 65 → **50** | 235 → **180** |
+| silver | 2 | 70 → **56** | 252 → **202** |
+| gold | 3 | 110 → **72** | 395 → **259** |
+| platinum | 3 | 130 → **80** | 470 → **288** |
+| neodymium | 3 | 150 → **88** | 540 → **317** |
+| iridium | 3 | 170 → **100** | 610 → **360** |
+| osmium | 3 | 190 → **112** | 685 → **403** |
+| palladium | 4 | 300 → **145** | 1 080 → **522** |
+| cerulite | 4 | 350 → **159** | 1 260 → **572** |
+| emberite | 4 | 400 → **175** | 1 440 → **630** |
+| voidglass | 4 | 480 → **201** | 1 730 → **724** |
+| krilium | 4 | 600 → **224** | 2 160 → **806** |
+
+The board stays monotone across tiers (silver 56/202 < gold 72/259; osmium
+112/403 < palladium 145/522) and krilium keeps its apex at 806 = 12.4× iron's
+65. §4's worked examples restate: **Iron — 3 ore = 54 raw; 1 ingot 65 − 15 fee
+= 50 (unchanged; the T1 wash stands). Gold — 3 ore = 216 raw; 1 ingot = 259 −
+20 fee = 239, +10.6 %.** With 04's fee law the refine-vs-raw ramp reads
+−7 % (iron) → +1 % (silicon) → +6…+11 % (T2) → **+11 % (T3–T4, capped)** — the
+2026-09-27 shape kept, its +19 % top shaved. Reversal: the values above.
+

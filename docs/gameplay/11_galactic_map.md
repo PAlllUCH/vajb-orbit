@@ -250,3 +250,20 @@ beacon reveal), and the minimap radius `Game._minimap_radius` — the player's z
 state is untouched, the factor is applied at the push to the HUD, so leaving the
 cloud restores the exact radius. The 15 % tint is the player's hull `modulate`
 toward the wash while inside. Reversal: cosmetic tint only (R-S24-3's own).
+
+## 2026-10-08 — S28: the ore bloom cap (amends §3.2)
+
+*(S28's block; tick M13 owner-ratified green 2026-10-08. 01's 2026-10-08
+block owns the law.)*
+
+§3.2's ore bloom — "a rich T+1 asteroid cluster (10 rocks, 2× yield)" — is a
+faucet the value ladder cannot answer: at the pre-S28 T4 values one event paid
+≈30 000 CR, ≈14 sessions of §5.3's own pace, and under S28's table the same
+10×2 event would still read ≈2.5 SC(4). The cap:
+
+- **The bloom spawns 6 rocks at ×1.5 yield** (T+1, the same 200 u trigger, the
+  same cluster shape) — one event ≈ **0.85 × SC(4)** at the rim. Reversal:
+  10 rocks × 2 (**M13**).
+- `poi.gd`'s `ORE_BLOOM_ROCKS` and `ORE_BLOOM_YIELD_MULT` are the two
+  constants; the yield multiplier reads 1.5 and the roll rounds as
+  `roll_yield` does.

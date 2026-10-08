@@ -29,3 +29,12 @@ S36.)
 Items 1–20 closed (D2 icon unification through D22 screen integrity; the D8/D12
 fix waves ditched or absorbed). Detail: `_archive/dispatch_designer_done_2026-10-07.md`
 and `MASTER_REPORT.md` §6.
+
+## dispatch_coder.md — the closed S24 row (world identity, closed 2026-10-08)
+
+Extracted verbatim from the live queue at the S24 close-out; the slice folder
+now lives in `_archive/slices/S24-world-identity/`.
+
+| # | Wave | Item | What | Status |
+|---|---|---|---|---|
+| 30 | S24 | World identity | Named stations + per-faction menus/flavours, standing band effects, per-sector hostile bands, nebula clouds (L-band-split). Five-piece: `slices/S24-world-identity/`; pins R-S24-1..3 (14/13/11 P3 blocks, ticks W1–W3) + the new mechanism pins V1–V8 (12/14/13/11's 2026-10-08 blocks). | **next — brief re-cut 2026-10-08** against the shipped shell (S30–S37) and re-measured: baseline 1152/0, **two sequential builders** (B1 = the station entity/identity/prices A1–A2, B2 = bands/standing/auction/nebula A3–A5) then R1, then F1 only on HIGH/MED. Dispatch from `S24_prompts.md` |

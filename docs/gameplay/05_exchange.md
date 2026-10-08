@@ -156,3 +156,22 @@ pin; both rules are the developer session's and carry their reversals.
   use (`MINERAL_CHROMIUM` → `CHROMIUM ORE`); §5's `INGOT_GOLD` example is the
   **format**, not a licence to print ids. **Reversal:** ids everywhere (rejected
   — the hold row already renders names).
+
+## 10. 2026-10-08 — S28: §3's examples on the new baselines
+
+*(S28's block; the values are 02's 2026-10-08 table — tick M8 owner-ratified
+green 2026-10-08.)*
+
+§3's verification table restates on the new baselines (`unit_net` =
+round(baseline × demand × 0.98), unchanged):
+
+| Mineral (ingot) | Baseline | At 1.0 | At 0.6 | At 1.6 |
+|-----------------|----------|--------|--------|--------|
+| Iron | 65 | 64 | 38 | 102 |
+| Titanium | 130 | 127 | 76 | 204 |
+| Gold | 259 | 254 | 152 | 406 |
+| Krillum | 806 | 790 | 474 | 1 264 |
+
+Iron's row is byte-unchanged (T1 stands). The raw-ore example restates: Iron
+ore at demand 1.0 = 18 × 0.98 = **18 CR**. §4's surplus book, §5's commission
+and §2's demand model are untouched. Reversal: §3's current table.

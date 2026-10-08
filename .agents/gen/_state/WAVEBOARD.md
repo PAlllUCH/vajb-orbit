@@ -12,30 +12,18 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 
 | Pos | Lane item | Wave | Runs after | The collision/dependency that forces the order |
 |---|---|---|---|---|
-| 1 | coder 31 | **S25 contracts board** | — (S24 closed) | `ui/station/` + `autoload/player_profile.gd` + S24's shipped `contracts_visible`/`insurance_multiplier` seams; **its brief predates shell v2 too — re-cut it the way S24's was before dispatch** |
-| 2 | coder 32 | S26 bosses, arenas, insurance, vaults | coder 31 | `game/` + `player_profile.gd` + S25's Expedition seam |
-| 3 | coder 33 | S27 catalog breadth & shipyard | coder 32 | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/` |
+| 1 | coder 34 | **S28 universal cost law** | — | the value ladder (`02`'s 2026-10-08 block) + the value-relative refine fee (`04` §8) + SC-scaled payouts (`14`'s block) + the battery/bloom caps; **runs first because S25/S26 pin the `14` §2/§7 numbers it amends** — one re-cut of their extracts, not rework; two builders (C1 values+fee → C2 battery+bloom) then R1, F1 on HIGH/MED; ticks M8–M14 |
+| 2 | coder 31 | **S25 contracts board** | coder 34 | `ui/station/` + `autoload/player_profile.gd` + S24's shipped `contracts_visible`/`insurance_multiplier` seams; **its brief predates shell v2 too — re-cut it the way S24's was before dispatch**, and its `14` §2 reward extract re-cuts against S28's block |
+| 3 | coder 32 | S26 bosses, arenas, insurance, vaults | coder 31 | `game/` + `player_profile.gd` + S25's Expedition seam |
+| 4 | coder 33 | S27 catalog breadth & shipyard | coder 32 | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/` |
 
-**Updated 2026-10-08 (S24 world identity closed — item 30).** Gate **1152 → 1186/0**,
-twice hermetic on fresh scratch stores; verify `"problems": []` vs `s24_start`.
-Two sequential builders (`hyper/deepseek-v4.1-flash` @ xhigh): **B1** the station
-registry + identity plate + the V1/V2 price law (+18 rows), **B2** the standing
-effects, the auction flavour, the seven per-sector bands and the nebula (+15
-rows); **R1** (`hyper/glm-5.3-flash` @ max, own 84-check probe) graded A1–A5 pass
-and left **1 HIGH** (the shell's refusal strip priced from the raw catalogue while
-the pane charged the station price) + 2 LOW → **T-152/T-153**; **F1** cured the
-HIGH (+1 row). CONTRACTS gains **§24** (the wave's interface) and §9's stale S30
-figure 1089 was corrected to the measured chain. New files:
-`game/station_registry.gd`, `tests/test_s24_world.gd`, `tests/test_s24_bands.gd`,
-`tests/probe_s24_r1.gd/.tscn`. **All eleven ticks (W1–W3 + V1–V8) were
-owner-ratified green on 2026-10-08** — every value stands as shipped, the
-reversals stay in their blocks, and `TICKS.md` holds no open row for this wave.
-Process note: F1 also edited the law out of scope (AGENTS.md, `dispatch_coder.md`,
-the S24–S27 briefs, via bash, undisclosed) — the developer re-authored the one
-substantive line (`build_code_map.py` in the close-out) with its rationale and
-reversal in `dispatch_coder.md`'s anatomy paragraph, and the map was regenerated.
+**Updated 2026-10-08 (S24 world identity closed — item 30).** Gate **1152 → 1186/0**
+×2 hermetic, verify clean vs `s24_start`; R1's 1 HIGH cured by F1, 2 LOW →
+T-152/T-153; CONTRACTS **§24** + §9 corrected; ticks W1–W3 + V1–V8 all
+owner-ratified green. Full block: `_archive/waveboard_updates_2026-10-07_to_2026-10-08.md`;
+recap: `MASTER_REPORT.md` §6.
 
-These three are the whole live queue — every earlier item is closed and archived
+These four are the whole live queue — every earlier item is closed and archived
 (`_archive/dispatch_coder_done_2026-10-07.md` + `_archive/dispatch_done_2026-10-08.md`
 + `MASTER_REPORT.md` §6). Playtest pass #1 (the owner's, `19_testing_notes.md`'s
 eye list) runs alongside; build 2 + the tester template are phase exit

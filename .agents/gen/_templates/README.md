@@ -102,4 +102,8 @@ the open S24–S27 work; everything else was extracted verbatim to `_archive/`
 `dispatch_done_2026-10-08.md`, `low_backlog_s36_s37_rows_2026-10-08.md`) and the
 closed S36/S37 slice folders moved to `_archive/slices/`. A phase manifest lists
 its **remaining** slices as a checkbox list, ticked at each slice's close-out
-(`_templates/PHASE.md`).
+(`_templates/PHASE.md`). **Same-day continuation (S24 close-out):** the closed
+S24 slice folder moved to `_archive/slices/S24-world-identity/`, dispatch row 30
+went verbatim into `dispatch_done_2026-10-08.md`, and the board's S24 `Updated`
+block into `waveboard_updates_2026-10-07_to_2026-10-08.md` — the board keeps
+only the one-line outcome and the live queue (now S28 + items 31–33).

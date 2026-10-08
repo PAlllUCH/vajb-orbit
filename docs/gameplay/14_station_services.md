@@ -224,3 +224,27 @@ retire). The SERVICES pane's §15.2–§15.4 panels stay S25/S26's; S24 makes th
 **matrix** readable and shows the unavailable state on OVERVIEW block 4's rows
 (§15.1 U2's disabled plate + reason caption). Reversal: the placeholder strings
 return.
+
+## 2026-10-08 — S28: payouts price in sessions (amends §2/§7)
+
+*(S28's block; ticks M10/M11 owner-ratified green 2026-10-08. 01's 2026-10-08
+block owns the law — SC(t) = 1 100 / 1 500 / 3 000 / 6 000.)*
+
+**§7's arena bosses.** 15 000 and 40 000 CR are flat numbers from the
+pre-S28 economy: the Pyre's 40 000 read ≈36 sessions of §5.3's own pace. They
+re-price as ≈2 × SC of the arena's sector tier:
+
+- **Boneyard Behemoth: 6 000 CR** + the magic module roll (was 15 000).
+- **The Pyre Hierophant: 12 000 CR** + the guaranteed rare (was 40 000).
+  Reversal: the flat numbers (**M10**). These land with S26 — its brief's
+  R-S26-1 extract re-cuts against this block before dispatch.
+
+**§2's flat contract rewards.** Hunt 800 / Escort 1 200 are the T1 values; a
+board that pays them in S7 is furniture. Each sector's flat rewards scale
+**×SC(t)/SC(1)** by 11 §1's sector tier — Hunt **800 / 1 100 / 2 200 / 4 400**,
+Escort **1 200 / 1 600 / 3 300 / 6 500**, rounded to 100 CR (Haul's spot×1.25
+and Gather's ×1.4 already scale with the goods). Reversal: flat bases at every
+sector (**M11**). These land with S25 — R-S25-1's extract re-cuts likewise.
+
+**§3's insurance premiums stay** the per-class flats (200–700); **M14** holds
+the optional 1.5 %-of-list re-derivation (135–1 080) for S26's implementation.

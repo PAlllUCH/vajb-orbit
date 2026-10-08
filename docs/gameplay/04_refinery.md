@@ -172,3 +172,29 @@ and R1's formula — the panel hardcodes no prices and no durations.
 R1's divisor last. Test rows that pinned instant conversion restate as queue
 rows (disclosed in the S34 report); `test_p1_refinery.gd:192` (the
 hide-sub-convertible-stacks row — the sealed row) **must not move**.
+
+## 8. 2026-10-08 — S28: the fee stops vanishing (amends §3)
+
+*(S28's block; 01's 2026-10-08 block owns the law. Tick M9 owner-ratified
+green 2026-10-08.)*
+
+§3's flat fee was tuned for T1-era holds and vanishes at the top: 15 CR is
+23 % of an Iron ingot but **0.7 % of a Krillum ingot**. The fee becomes
+value-relative with the historical flat as its floor:
+
+- **Fee per conversion = `max(15, ingot_value × 80 / 1000)` CR** (integer
+  truncation, the codebase's whole-credit law). Reversal: the flat 15 (**M9**).
+- The fee column on 02's 2026-10-08 table: T1 **15** across (the floor holds —
+  §2's worked examples stand unchanged), T2 **15 / 15 / 15 / 15 / 16**, T3
+  **20 / 23 / 25 / 28 / 32**, T4 **41 / 45 / 50 / 57 / 64**.
+- The refine-vs-raw ramp (02's block): −7 % at iron → **+11 % capped at
+  T3–T4** (the flat 15 let T4 refine at +19 % for free).
+- `u_refine` halves as shipped — the multiplier applies to the computed fee,
+  floored ("one discounted conversion is 7 CR, not 7.5").
+- **Interface:** `fee_for(conversions, mult)` gains the mineral —
+  `fee_for(mineral_id, conversions, mult)`; the panel's four call sites
+  re-point and keep hardcoding nothing.
+- R1's duration formula is untouched; on the new ingot values the jobs read
+  Iron 10 s (unchanged) · Gold **26 s** (was 40) · Krillum **60 s** (the
+  ceiling holds). `test_s34_refinery_queue.gd`'s duration rows move with the
+  values; its 15/30/45 CR fee rows survive (T1 keeps the floor).

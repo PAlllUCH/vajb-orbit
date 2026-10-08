@@ -292,3 +292,64 @@ later). Nothing downstream may invent a number.
 | Row | Change | PROPOSED value | Reversal | Tick |
 |---|---|---|---|---|
 | R-S22-1 (L168, L244) | The repair transaction and both pane rows read one figure | `Repairs.fee()`/`repair()` resolve `hull_max`/`shield_max` from `ShipFit.resolve` — the same pair the panes print | the base `station_catalog` rows (current) | **M4** |
+
+## 2026-10-08 — S28: the universal cost law (owner-ratified 2026-10-08; ticks M8–M14 green)
+
+*(S28's block — the economy wave. Not S24's; read it only if your brief names
+it. Every figure carries its reversal and its tick — **all seven ticks
+owner-ratified green 2026-10-08**, so every row below ships as tabled.)*
+
+**The law in one sentence: every price and payout is `k × SC(t)`, and every
+income number derives from one value ladder** (02's 2026-10-08 block is the
+table; this block is the scale).
+
+**SC(t) — the Session Credit** (one good 10-minute session in tier-t space,
+40-cargo hull, net of sinks; ±25 % is the probe's band):
+
+| t | 1 — the S1–S3 belt | 2 — S4–S5 | 3 — S6–S7 | 4 |
+|---|---|---|---|---|
+| SC(t) | **1 100** | **1 500** | **3 000** | **6 000** |
+
+SC(1) is §5.3's own ≈1 100 anchor, unchanged (the 3–12-minute session length
+is the band's own spread). Reversal: §5.3's flat-pace reading stands.
+
+**L1 — income.** The value ladder grows **×2.0 per tier at the mean** (T1
+byte-unchanged; the 20 rows are 02's block). Consequences: T2 −21 %, T3 −40 %,
+T4 −58 % on ingot means; a T4 hold pays **≈8 000 CR gross** (was ≈19 400) and
+the Obliterator reads **≈7–9 S7 sessions** (was 2–5). The belt reads ≈1 800
+against §5.1's 1 900 floor — the T2 −21 % is the universal ladder's price;
+**M8** ruled the factor **×2.0** (the alternatives stay as reversals: ×1.8
+stricter, belt −20 % and ≈75–90 sessions · the T1+T2-legacy hybrid then ×1.6
+above, belt untouched). Reversal: 02's current table.
+
+**L2 — prices (checked, not changed).** S28 ships zero price edits: the frozen
+hull ladder and the module medians already read as sessions of their tier —
+module ≈ **1–2 × SC(t)** (medians 1.09 / 2.00 / 1.93), hull ≈
+**8–18 × SC(band)** rising along the ladder (Lancer 8.2 → Obliterator 12.0),
+consumable ≈ **0.1–0.4 × SC(1)**, one-off service ≈ **2–3 × SC(1)** (the
+refinery slot's 3 000 = 2.7). S25–S27's new rows price from these bands.
+Deviation, flagged not moved: the Hyperdrive's 12 000 = 4.0 × SC(3) (the N5
+exotic).
+
+**L3 — every recurring cost scales with the value it touches.**
+- Refine fee: `max(15, ingot_value × 80 / 1000)` CR per conversion — T1 keeps
+  its 15 CR wash, T4 pays 41–64 (was 15 flat). Reversal: flat 15 (**M9**).
+- Boss caches 15 000/40 000 → **6 000/12 000** (≈2 × SC of the arena's tier;
+  lands with S26). Reversal: current (**M10**).
+- Contract flat bases (Hunt 800, Escort 1 200) become the T1 values; each
+  sector's board scales them ×SC(t)/SC(1) (lands with S25). Reversal: flat at
+  every sector (**M11**).
+- Repairs (per point), gates (per sector), commission (2 %), ammo (tiered
+  packs) already scale — unchanged.
+
+**L4 — scarcity and rate caps.** The mining battery delivers
+**`1 + 0.4 × (N − 1)` work channels** (7 fitted `w_mining` = 3.4×, was 7×;
+**M12**); the ore bloom anomaly drops to **6 rocks × 1.5 yield** (**M13**);
+the field budget, the 20-minute respawn and the ×0.7 window all stand.
+Insurance keeps the per-class flats (200–700) — **M14** ruled them over the
+optional 1.5 %-of-list re-derivation, which stays tabled for S26.
+
+**Pace check (§5.4 is the yardstick).** The 135 000 CR ladder at the SC(t)
+curve reads ≈ **60–75 sessions** (target 70–100, inside §5.4's ±30 %
+tolerance; the S28 probe measures it). Reversal for the whole block: delete
+it — the pre-S28 tables stand.
