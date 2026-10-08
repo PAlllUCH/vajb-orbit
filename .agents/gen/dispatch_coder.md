@@ -32,8 +32,8 @@ asking the owner first.
 
 | # | Wave | Item | What | Status |
 |---|---|---|---|---|
-| 34 | S28 | Universal cost law | The economy's one law: the ×2.0/tier value ladder (`02`'s 2026-10-08 block), the value-relative refine fee (`04` §8), SC-scaled boss/contract payouts (`14`'s block), the battery/bloom caps (`01` L4). Five-piece: `slices/S28-economy-law/`; ticks M8–M14; two builders (C1 values+fee → C2 battery+bloom), R1, F1 on HIGH/MED. | **next** — runs before 31 because S25/S26 pin the `14` §2/§7 payouts it amends (one re-cut of their extracts, not rework) |
-| 31 | S25 | Contracts board | `contract_registry` + the board panel: Haul/Hunt/Gather/Escort, escrow + 100 CR cancel, standing gates, the escort convoy loop. Five-piece: `slices/S25-contracts/`; pin R-S25-1 (14 P3 block, tick J1). | queued · after 34 — `contracts_visible`/`insurance_multiplier` ship as its seams. **Its brief predates shell v2 as S24's did: re-cut it before dispatch** (`UI_SPEC.md` §12–§15 + `STATION_HUB.md` §19–§21 + `STATION_HUB.md` §15.2's U3–U8 rows), **and its `14` §2 reward extract re-cuts against S28's block** |
+| 34 | S28 | Universal cost law | The economy's one law: the ×2.0/tier value ladder (`02`'s 2026-10-08 block), the value-relative refine fee (`04` §8), SC-scaled boss/contract payouts (`14`'s block), the battery/bloom caps (`01` L4). Five-piece: `slices/S28-economy-law/`; ticks M8–M14; two builders (C1 values+fee → C2 battery+bloom), R1, F1 on HIGH/MED. | **closed 2026-10-08** — gate 1202/0 ×2, verify clean vs `s28_start`; C1 +10 rows, C2 +6; R1 no HIGH, its one MED fixed in review, 2 LOW → T-154/T-155; CONTRACTS §25; ticks M8–M14 ratified green |
+| 31 | S25 | Contracts board | `contract_registry` + the board panel: Haul/Hunt/Gather/Escort, escrow + 100 CR cancel, standing gates, the escort convoy loop. Five-piece: `slices/S25-contracts/`; pin R-S25-1 (14 P3 block, tick J1). | **next** — `contracts_visible`/`insurance_multiplier` ship as its seams. **Its brief predates shell v2 as S24's did: re-cut it before dispatch** (`UI_SPEC.md` §12–§15 + `STATION_HUB.md` §19–§21 + `STATION_HUB.md` §15.2's U3–U8 rows), **and its `14` §2 reward extract re-cuts against S28's block**; carries **T-138**, **T-152**, **T-154** |
 | 32 | S26 | Bosses, arenas, insurance, vaults | The Boneyard + The Pyre arena runs, the Maw roaming S7 with 06 §3.4's table, death persistence, insurance + mercy clause, vaults + `u_vault`. Five-piece: `slices/S26-endgame/`; pin R-S26-1 (08 P3 block, ticks E1/E2). | queued · after 31 (Expedition seam) |
 | 33 | S27 | Catalog breadth & shipyard | +7 affix rows with perks live, tier variants, per-archetype loot, the 10 §3 shipyard (recipes/queue/scrap). Five-piece: `slices/S27-catalog-breadth/`; pins R-S27-1..3 (09/15 P3 blocks, ticks K1–K3). | queued · after 32 (`game/`); carries **T-153** (a tier-4 module row) |
 
@@ -41,17 +41,16 @@ asking the owner first.
 
 ## Done
 
-Items 1–44 closed (gate 437 → 1186/0 through the waves). Detail:
+Items 1–44 closed (gate 437 → 1202/0 through the waves). Detail:
 `_archive/dispatch_coder_done_2026-10-07.md`,
 `_archive/dispatch_done_2026-10-08.md` and `MASTER_REPORT.md` §6.
 
 ## Handoff (live)
 
-**Item 34 = S28 universal cost law — next** (the five-piece landed 2026-10-08;
-dispatch from `slices/S28-economy-law/S28_prompts.md`). It runs before item 31
-because S25/S26's briefs pin the `14` §2/§7 payout numbers S28 amends — one
-re-cut of those extracts, not rework of their code. Items 31–33 then run in
-order; re-cut each brief the way S24's was before dispatch. The owner's fresh
+**Item 31 = S25 contracts board — next** (S28 closed 2026-10-08; re-cut its
+brief the way S24's was, then dispatch from `slices/S25-contracts/S25_prompts.md`).
+Its `14` §2 reward extract re-cuts against S28's block, and it carries T-138,
+T-152 and T-154. Items 32–33 then run in order. The owner's fresh
 design round may regenerate the planning before any dispatch — check
 `dispatch_designer.md` first.
 

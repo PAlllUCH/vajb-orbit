@@ -2,7 +2,8 @@
 extends McpTestSuite
 ## P1 refinery suite: the ore -> ingot conversion, its fee sink and its log.
 ## Contract: docs/gameplay/04_refinery.md sections 2 (the conversion rule) and
-## 3 (the fee schedule), amended by section 7 (S34: jobs, slots, inventory),
+## 3 (the fee schedule), amended by section 7 (S34: jobs, slots, inventory) and
+## section 8 (S28: the value-relative fee, tick M9),
 ## docs/gameplay/17_coder_handoff.md section 6 (the 04 checklist item). File under
 ## test: game/refinery.gd.
 ##
@@ -11,7 +12,10 @@ extends McpTestSuite
 ## on the wall clock, so each row drives `queue` (or `queue_all`), forces the job
 ## ready and `settle`s it, then `collect_all`s the output into the hold. The
 ## `test_stacks_lists_only_convertible_minerals` row (the sealed row, the S34 brief
-## section 7) is unchanged.
+## section 7) keeps its hide-sub-convertible-stacks semantics; S28 moved its Gold
+## fee figure (15 -> 20, the T3 fee of 04 section 8) and the two `fee_for` call
+## shapes (the mineral id is now the door's first parameter), disclosed in
+## S28-C1_report.md.
 ##
 ## Every profile is a throwaway instance of autoload/player_profile.gd with
 ## save_path pointed at user://test_p1_refinery.cfg before the first mutation,
@@ -141,10 +145,10 @@ func test_partial_stack_converts_whole_units_only() -> void:
 	var credits_before: int = _profile.credits()
 	var result := Ref.queue(_profile, &"gold", 2)
 	assert_true(bool(result[&"ok"]), "queue must succeed: %s" % String(result[&"reason"]))
-	assert_eq(int(result[&"fee"]), 30, "one fee for the whole batch")
+	assert_eq(int(result[&"fee"]), 40, "one fee for the whole batch (two Gold conversions at 20)")
 	assert_eq(Ref.input_units(_profile, &"gold"), 2, "2 leftover ore stay in the input")
 	assert_eq(Ref.input_conversions(_profile, &"gold"), 0, "the leftovers are no longer convertible")
-	assert_eq(_profile.credits(), credits_before - 30, "credits minus the batch fee")
+	assert_eq(_profile.credits(), credits_before - 40, "credits minus the batch fee")
 	_finish()
 	assert_eq(_profile.cargo_qty(Catalog.ingot_id(&"gold")), 2, "2 ingots held")
 	assert_false(
@@ -199,7 +203,7 @@ func test_queue_all_charges_one_combined_fee() -> void:
 	assert_true(bool(batch[&"ok"]), "the batch must succeed: %s" % String(batch[&"reason"]))
 	assert_eq(int(batch[&"conversions"]), 3, "1 Iron + 2 Gold conversions")
 	assert_eq(int(batch[&"ingots"]), 3, "3 ingots out")
-	assert_eq(int(batch[&"fee"]), 45, "one combined fee (15 + 30)")
+	assert_eq(int(batch[&"fee"]), 55, "one combined fee (Iron's 15 floor + two Gold at 20)")
 	var minerals: Array = batch[&"minerals"]
 	assert_eq(minerals.size(), 2, "two minerals converted")
 	assert_eq(StringName(minerals[0]), &"iron", "catalogue order: Iron first")
@@ -207,7 +211,7 @@ func test_queue_all_charges_one_combined_fee() -> void:
 	assert_eq((batch[&"job_ids"] as Array).size(), 2, "one job per mineral (R7)")
 	assert_eq(Ref.input_units(_profile, &"iron"), 0, "Iron input consumed")
 	assert_eq(Ref.input_units(_profile, &"gold"), 0, "Gold input consumed")
-	assert_eq(_profile.credits(), credits_before - 45, "credits minus the combined fee")
+	assert_eq(_profile.credits(), credits_before - 55, "credits minus the combined fee")
 	_finish()
 	assert_eq(_profile.cargo_qty(&"ingot_iron"), 1, "1 Iron ingot")
 	assert_eq(_profile.cargo_qty(&"ingot_gold"), 2, "2 Gold ingots")
@@ -215,7 +219,7 @@ func test_queue_all_charges_one_combined_fee() -> void:
 	assert_eq(lines.size(), 1, "one combined REFINE line, not one per mineral")
 	assert_contains(
 		lines[0],
-		", REFINE, all, 9, -45, %d" % _profile.credits(),
+		", REFINE, all, 9, -55, %d" % _profile.credits(),
 		"combined log line: item all, total ore taken, total fee"
 	)
 
@@ -251,7 +255,7 @@ func test_stacks_lists_only_convertible_minerals() -> void:
 	assert_eq(StringName(rows[1][&"mineral_id"]), &"gold", "then Gold")
 	assert_eq(int(rows[1][&"ore_qty"]), 3, "Gold ore count")
 	assert_eq(int(rows[1][&"conversions"]), 1, "Gold conversions")
-	assert_eq(int(rows[1][&"fee"]), 15, "Gold fee")
+	assert_eq(int(rows[1][&"fee"]), 20, "Gold fee (the T3 fee of 04 section 8)")
 	var listed: Array[StringName] = []
 	for row: Dictionary in rows:
 		listed.append(StringName(row[&"mineral_id"]))
@@ -259,7 +263,7 @@ func test_stacks_lists_only_convertible_minerals() -> void:
 	assert_false(listed.has(&"comp_scrap_1"), "components never refine")
 	assert_eq(Ref.convertible(_profile, &"iron"), 2, "Iron convertible count")
 	assert_eq(Ref.convertible(_profile, &"copper"), 0, "Copper convertible count")
-	assert_eq(Ref.fee_for(0), 0, "no conversions, no fee")
-	assert_eq(Ref.fee_for(3), 45, "3 conversions cost 45 CR")
+	assert_eq(Ref.fee_for(&"iron", 0), 0, "no conversions, no fee")
+	assert_eq(Ref.fee_for(&"iron", 3), 45, "3 conversions cost 45 CR")
 	assert_eq(Ref.ORE_PER_INGOT, 3, "the 04 section 2 ratio")
 	assert_eq(Ref.FEE_PER_CONVERSION, 15, "the 04 section 3 fee per conversion")

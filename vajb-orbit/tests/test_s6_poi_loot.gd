@@ -418,24 +418,38 @@ func test_anomaly_kinds_and_the_hollows_weighting() -> void:
 	)
 
 
-## 11 §3.2's ore bloom: a T+1 cluster of 10 rocks at 2× yield.
-func test_ore_bloom_spawns_ten_rocks_a_tier_up_at_double_yield() -> void:
+## 11 §3.2's ore bloom, capped by S28 (tick M13): a T+1 cluster of 6 rocks at 1.5x
+## yield (was 10 x 2). The 200 u trigger and the T+1 bonus stand.
+func test_ore_bloom_spawns_six_rocks_a_tier_up_at_the_capped_yield() -> void:
 	var poi := _bare_poi(
 		PoiScript.KIND_ANOMALY,
 		{&"sector_id": &"sector_1", &"anomaly_kind": PoiScript.ANOMALY_ORE_BLOOM, &"seed": 7}
 	)
 	poi.call(&"trigger", _player(Vector2.ZERO))
 	var rocks := _rocks(poi)
-	assert_eq(rocks.size(), PoiScript.ORE_BLOOM_ROCKS, "10 rocks, 11 §3.2")
+	assert_eq(rocks.size(), PoiScript.ORE_BLOOM_ROCKS, "6 rocks, 11 §3.2")
+	assert_true(is_equal_approx(PoiScript.ORE_BLOOM_YIELD_MULT, 1.5),
+		"the S28 yield multiplier is 1.5")
 	var expected_tier := mini(
 		PoiScript.sector_band(1) + PoiScript.ORE_BLOOM_TIER_BONUS, 4
 	)
 	assert_eq(expected_tier, 2, "sector 1 is T1, so the bloom is T2")
+	var base := int(MineralCatalogScript.TIER_BASE_YIELD.get(expected_tier, 0))
+	var low := roundi(
+		float(maxi(1, roundi(float(base) * MineralCatalogScript.YIELD_VARIANCE_MIN)))
+			* PoiScript.ORE_BLOOM_YIELD_MULT
+	)
+	var high := roundi(
+		float(maxi(1, roundi(float(base) * MineralCatalogScript.YIELD_VARIANCE_MAX)))
+			* PoiScript.ORE_BLOOM_YIELD_MULT
+	)
 	for rock: Node2D in rocks:
 		assert_eq(int(rock.get(&"tier")), expected_tier, "every rock is T+1")
 		var units := int(rock.get(&"yield_units"))
-		assert_eq(units % PoiScript.ORE_BLOOM_YIELD_MULT, 0, "the yield is doubled")
-		assert_true(units >= 2, "and never zero")
+		assert_true(
+			units >= low and units <= high,
+			"the yield is a 1.5x roll (%d..%d), got %d" % [low, high, units]
+		)
 	assert_true(bool(poi.call(&"is_consumed")), "the event is one-shot")
 
 

@@ -18,6 +18,7 @@
   "res://tools/r1_s17_ac_replay.gd",
   "res://tools/s225_r1_probe.gd",
   "res://tools/s227_r1_probe.gd",
+  "res://tools/s28_r1_remeasure.gd",
   "res://ui/components/inspect_chip.gd",
   "res://ui/hud/cockpit_cluster.gd"
  ],
@@ -4731,6 +4732,34 @@
    ],
    "signals": []
   },
+  "res://tests/test_s28_econ.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/exchange.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/refinery.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s28_events.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/asteroid.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/mining_laser.gd",
+    "res://game/ore_tuning.gd",
+    "res://game/player_ship.gd",
+    "res://game/player_ship.tscn",
+    "res://game/poi.gd"
+   ],
+   "signals": []
+  },
   "res://tests/test_s29_hyperdrive.gd": {
    "autoload": "",
    "class_name": "",
@@ -5498,6 +5527,22 @@
     "res://game/ship_fit.gd",
     "res://tools/s227_r1_probe.gd -- rocks",
     "res://tools/s227_r1_probe.gd -- ships"
+   ],
+   "signals": []
+  },
+  "res://tools/s28_r1_remeasure.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "SceneTree",
+   "refs": [
+    "res://game/asteroid.gd",
+    "res://game/exchange.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/mining_laser.gd",
+    "res://game/ore_tuning.gd",
+    "res://game/poi.gd",
+    "res://game/refinery.gd"
    ],
    "signals": []
   },

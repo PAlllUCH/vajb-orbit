@@ -236,14 +236,14 @@ func test_a2_u_refine_halves_the_refinery_fee() -> void:
 	if profile == null:
 		skip("no PlayerProfile autoload to price the fee against")
 		return
-	assert_eq(RefineryScript.fee_for(1), 15, "the list fee is 15 CR a conversion")
+	assert_eq(RefineryScript.fee_for(&"iron", 1), 15, "the list fee is 15 CR a conversion")
 	var fit := {&"engines": [&"e_std"], &"power": &"p_std", &"utility": [&"u_refine"]}
 	profile.call(&"set_fit", &"ship_vanguard", fit)
 	assert_true(
 		is_equal_approx(float(RefineryScript.fee_multiplier(profile)), 0.5),
 		"a hull fitted with u_refine refines at half fee"
 	)
-	assert_eq(RefineryScript.fee_for(1, RefineryScript.fee_multiplier(profile)), 7, "one discounted conversion is 7 whole credits")
+	assert_eq(RefineryScript.fee_for(&"iron", 1, RefineryScript.fee_multiplier(profile)), 7, "one discounted conversion is 7 whole credits")
 	assert_eq(RefineryScript.ORE_PER_INGOT, 3, "the 3:1 ratio is untouched")
 	var mineral: StringName = MineralCatalogScript.MINERALS[0][&"id"]
 	var ore: StringName = MineralCatalogScript.ore_id(mineral)

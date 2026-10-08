@@ -87,9 +87,10 @@ const DERELICT_CACHE_MAX := 3
 const DATA_CORE_ITEM: StringName = &"comp_elec_1"
 const DATA_CORE_CREDITS := 120
 
-## 11 §3.2's ore bloom: "a rich T+1 asteroid cluster (10 rocks, 2× yield)".
-const ORE_BLOOM_ROCKS := 10
-const ORE_BLOOM_YIELD_MULT := 2
+## 11 §3.2's ore bloom, capped by S28 (tick M13): a rich T+1 asteroid cluster at
+## 6 rocks x 1.5 yield (was 10 x 2). The 200 u trigger and the T+1 bonus stand.
+const ORE_BLOOM_ROCKS := 6
+const ORE_BLOOM_YIELD_MULT := 1.5
 const ORE_BLOOM_TIER_BONUS := 1
 const ORE_BLOOM_RADIUS := 320.0
 const ORE_BLOOM_JITTER := 0.25
@@ -584,7 +585,9 @@ func _spawn_ore_bloom() -> void:
 		var mineral_id := StringName(mineral.get(&"id", &""))
 		if mineral_id == &"":
 			continue
-		var units := MineralCatalogScript.roll_yield(tier, _rng) * ORE_BLOOM_YIELD_MULT
+		var units := roundi(
+			float(MineralCatalogScript.roll_yield(tier, _rng)) * ORE_BLOOM_YIELD_MULT
+		)
 		var rock: Node2D = AsteroidScript.new() as Node2D
 		_container().add_child(rock)
 		rock.global_position = global_position + _cluster_offset(index)

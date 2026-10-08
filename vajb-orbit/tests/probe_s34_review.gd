@@ -115,7 +115,7 @@ func _force_ready() -> void:
 
 func _probe_r1() -> void:
 	_check(Ref.resource_seconds(&"iron") == 10, "R1 Iron 10 s")
-	_check(Ref.resource_seconds(&"gold") == 40, "R1 Gold 40 s")
+	_check(Ref.resource_seconds(&"gold") == 26, "R1 Gold 26 s")
 	_check(Ref.resource_seconds(&"copper") == 10, "R1 Copper floors at 10")
 	_check(Ref.resource_seconds(&"krilium") == 60, "R1 Krilium ceilings at 60")
 	_check(Ref.resource_seconds(&"unobtainium") == 10, "R1 unknown floors at 10")
@@ -157,7 +157,7 @@ func _probe_duration() -> void:
 	var now := int(Time.get_unix_time_from_system())
 	Ref.queue(_profile, &"gold", 2)
 	var job := Ref.jobs(_profile)[0]
-	_check(absi(int(job[&"ready_at"]) - (now + 80)) <= 2, "duration 2 Gold conversions = 2x40 s")
+	_check(absi(int(job[&"ready_at"]) - (now + 52)) <= 2, "duration 2 Gold conversions = 2x26 s")
 
 
 ## ---------------------------------------------------- QUEUE ALL + FIFO pending
@@ -171,9 +171,9 @@ func _probe_queue_all_fifo() -> void:
 	var credits_before := int(_profile.call(&"credits"))
 	var batch := Ref.queue_all(_profile)
 	var ids: Array = batch[&"job_ids"]
-	_check(bool(batch[&"ok"]) and ids.size() == 3 and int(batch[&"fee"]) == 60,
-		"QUEUE ALL one job per mineral, combined 60 CR (1+2+1 conversions)")
-	_check(int(_profile.call(&"credits")) == credits_before - 60, "QUEUE ALL charges the combined fee once")
+	_check(bool(batch[&"ok"]) and ids.size() == 3 and int(batch[&"fee"]) == 65,
+		"QUEUE ALL one job per mineral, combined 65 CR (Iron 15 + 2 Copper at 15 + Gold 20)")
+	_check(int(_profile.call(&"credits")) == credits_before - 65, "QUEUE ALL charges the combined fee once")
 	var jobs := Ref.jobs(_profile)
 	_check(Ref.running_count(_profile) == 2 and Ref.pending_count(_profile) == 1,
 		"2 slots run, the third waits FIFO")
@@ -246,7 +246,7 @@ func _probe_cancel() -> void:
 	var before := int(_profile.call(&"credits"))
 	var queued := Ref.queue(_profile, &"gold", 2)
 	var cancelled := Ref.cancel(_profile, int(queued[&"job_id"]))
-	_check(bool(cancelled[&"ok"]) and int(cancelled[&"fee"]) == 30
+	_check(bool(cancelled[&"ok"]) and int(cancelled[&"fee"]) == 40
 		and int(_profile.call(&"credits")) == before and Ref.input_units(_profile, &"gold") == 6,
 		"CANCEL refunds the fee and returns the ore to the input")
 	_profile.call(&"set_refinery_input", {})
@@ -339,7 +339,11 @@ func _probe_panel() -> void:
 	var job := Ref.jobs(_profile)[0]
 	var want := String(panel._mmss(maxi(int(job[&"ready_at"]) - int(Time.get_unix_time_from_system()), 0)))
 	var got := String(panel._job_payloads[0][&"time"].text)
-	_check(got == want and got.begins_with("01:"), "running row countdown mm:ss (%s)" % got)
+	## S28: the countdown re-derives off the live R1 duration (two Gold conversions,
+	## 2 x 26 s on 02's 2026-10-08 ingot value) instead of the retired 40 s pin.
+	var live := Ref.resource_seconds(&"gold") * 2
+	_check(got == want and absi(int(job[&"ready_at"]) - int(Time.get_unix_time_from_system()) - live) <= 1,
+		"running row countdown mm:ss (%s, live %d s)" % [got, live])
 	_force_ready()
 	var out_before := Ref.output_total(_profile)
 	panel.refresh_profile(&"refinery")

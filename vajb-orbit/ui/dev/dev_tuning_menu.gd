@@ -86,6 +86,14 @@ const SLIDER_SPECS: Array[Dictionary] = [
 		&"int": false,
 	},
 	{
+		&"key": &"battery_gain",
+		&"label": "battery_gain",
+		&"min": 0.0,
+		&"max": 1.0,
+		&"step": 0.05,
+		&"int": false,
+	},
+	{
 		&"key": &"tier_base_yield_1",
 		&"label": "tier 1 yield",
 		&"min": 1.0,
@@ -354,6 +362,8 @@ func _apply(key: StringName, value: float) -> void:
 			OreTuningScript.mine_cycle = value
 		&"work_per_unit":
 			OreTuningScript.work_per_unit = value
+		&"battery_gain":
+			OreTuningScript.battery_gain = value
 		&"yield_variance_min":
 			OreTuningScript.yield_variance_min = value
 		&"yield_variance_max":
@@ -394,6 +404,8 @@ func _current_value(key: StringName) -> float:
 			return OreTuningScript.mine_cycle
 		&"work_per_unit":
 			return OreTuningScript.work_per_unit
+		&"battery_gain":
+			return OreTuningScript.battery_gain
 		&"yield_variance_min":
 			return OreTuningScript.yield_variance_min
 		&"yield_variance_max":

@@ -1,8 +1,9 @@
 @tool
 extends McpTestSuite
-## Suite s13_mining_batteries: S13_BRIEF §2 rule 5 / AC3 - N fitted `w_mining`
-## modules deliver N x the extraction work per `OreTuning.mine_cycle`, measured
-## 1x / 2x / 3x within 20 percent, with no unit realised twice.
+## Suite s13_mining_batteries: S13_BRIEF §2 rule 5 / AC3, restated by S28's battery
+## law (tick M12) - N fitted `w_mining` modules deliver `1 + gain x (N - 1)` work
+## channels per `OreTuning.mine_cycle`, measured within 20 percent, with no unit
+## realised twice and `battery()` still reporting the fitted count.
 ##
 ## The route is N **work channels on the one laser node** (the alternative, N beam
 ## nodes, would multiply the reticle, the trigger and `_laser`'s single-instance
@@ -29,9 +30,10 @@ func teardown() -> void:
 	OreTuningScript.reset_to_defaults()
 
 
-## The core AC3 measurement: with a rock that can pay every cycle, the units one
-## cycle realises are exactly the module count, so the rate scales N x.
-func test_n_modules_deliver_n_times_the_units_per_cycle() -> void:
+## The core AC3 measurement under S28's battery law: with a rock that can pay every
+## cycle, the work one cycle realises is `1 + gain x (N - 1)` channels, so a 2-module
+## fit mines at 1.4x and a 3-module fit at 1.8x, never the retired linear N.
+func test_n_modules_deliver_the_battery_gain_channels_per_cycle() -> void:
 	var baseline := 0.0
 	for bank in [1, 2, 3]:
 		var laser := MiningLaserScript.new() as Node2D
@@ -43,9 +45,11 @@ func test_n_modules_deliver_n_times_the_units_per_cycle() -> void:
 		for _cycle in CYCLES:
 			delivered += int(laser.call(&"extract_cycle", rock, Vector2.ZERO))
 		var per_cycle := float(delivered) / float(CYCLES)
+		var channels := _channels(bank)
 		assert_true(
-			absf(per_cycle - float(bank)) <= TOLERANCE * float(bank),
-			"bank %d realises %.3f units/cycle, within 20 %% of %d" % [bank, per_cycle, bank]
+			absf(per_cycle - channels) <= TOLERANCE * channels,
+			"bank %d realises %.3f units/cycle, within 20 %% of %.2f channels"
+			% [bank, per_cycle, channels]
 		)
 		assert_true(delivered <= ROCK_UNITS, "never more than the rock carried")
 		var rate := per_cycle / OreTuningScript.mine_cycle
@@ -53,12 +57,17 @@ func test_n_modules_deliver_n_times_the_units_per_cycle() -> void:
 			baseline = rate
 		else:
 			assert_true(
-				absf(rate - baseline * float(bank)) <= TOLERANCE * baseline * float(bank),
-				"bank %d's %.4f units/s is within 20 %% of %d x the 1x rate %.4f"
-				% [bank, rate, bank, baseline]
+				absf(rate - baseline * channels) <= TOLERANCE * baseline * channels,
+				"bank %d's %.4f units/s is within 20 %% of %.2f x the 1x rate %.4f"
+				% [bank, rate, channels, baseline]
 			)
 		laser.free()
 		rock.free()
+
+
+## S28's battery law: N fitted modules deliver `1 + gain x (N - 1)` work channels.
+func _channels(bank: int) -> float:
+	return 1.0 + OreTuningScript.battery_gain * float(bank - 1)
 
 
 ## One unit of work never realises twice: the rock's own extractable is decremented

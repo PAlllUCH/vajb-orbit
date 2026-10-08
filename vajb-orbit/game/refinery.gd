@@ -7,7 +7,8 @@ extends RefCounted
 ## 17 section 5). The profile arrives as a Node handle and is reached through
 ## `call()`, so this module never references the PlayerProfile autoload identifier.
 ## Contract: docs/gameplay/04_refinery.md (section 2 the conversion rule, section 3
-## the fee schedule, section 7 the job/slot/inventory model and values R1-R8).
+## the fee schedule, section 7 the job/slot/inventory model and values R1-R8,
+## section 8 the 2026-10-08 value-relative fee, S28 tick M9).
 ## Deterministic on purpose: a fee-for-service machine, not a gamble; no RNG
 ## anywhere in this module (04 section 3). Integers only.
 ##
@@ -23,12 +24,19 @@ const Catalog := preload("res://game/mineral_catalog.gd")
 const Log := preload("res://game/economy_log.gd")
 const ShipFitScript := preload("res://game/ship_fit.gd")
 
-## CR per ore unit consumed (04 section 3).
-const FEE_PER_UNIT := 5
 ## Ore units consumed per ingot produced (04 section 2).
 const ORE_PER_INGOT := 3
-## CR per conversion (3 ore), derived so 04 section 2 and section 3 cannot drift.
-const FEE_PER_CONVERSION := FEE_PER_UNIT * ORE_PER_INGOT
+## The fee law's floor: CR per conversion, 04 section 3's historical flat, kept whole
+## for T1 (04 section 8's `max(15, ingot × 80 / 1000)`, tick M9). Reversal: the flat
+## 15 for every mineral, i.e. `conversion_fee` returning `FEE_FLOOR` outright.
+const FEE_FLOOR := 15
+## The share of the ingot a conversion produces that the fee takes, per mille
+## (04 section 8: 8 %).
+const FEE_VALUE_PERMILLE := 80
+## The historical flat itself (04 section 3) under the name the P1 suite reads it by:
+## T1's own fee, which is the floor. No fee path reads it (the door is `fee_for`).
+## Reversal: delete it with the last read.
+const FEE_PER_CONVERSION := FEE_FLOOR
 
 ## R3/R4 (04 section 7.2): 2 slots base, +1 bought at the panel for 3,000 CR flat,
 ## hardcap 5. Reversal: 1 base / hardcap 3, or slots granted by `u_refine`.
@@ -93,14 +101,28 @@ static func fee_multiplier(profile: Node) -> float:
 	return 1.0
 
 
-## Fee for a batch of `conversions` whole conversions at `mult`; 0 for a
-## non-positive count. The discounted fee is the conversion's own 15 CR share at
-## the multiplier, floored (integers only, 04 section 3's whole-credit law): one
-## discounted conversion is 7 CR, not 7.5.
-static func fee_for(conversions: int, mult: float = 1.0) -> int:
+## CR one conversion of `mineral_id` pays: `max(FEE_FLOOR, ingot_value × 80 / 1000)`
+## with integer truncation (04 section 8, tick M9). The fee is value-relative because
+## the flat 15 was 23 % of an Iron ingot and 0.7 % of a Krillum one: T1 pays the floor
+## across the board (15), the top pays 64. An unknown mineral pays the floor, the way
+## `resource_seconds` floors at 10.
+static func conversion_fee(mineral_id: StringName) -> int:
+	var entry := Catalog.mineral(mineral_id)
+	if entry.is_empty():
+		return FEE_FLOOR
+	@warning_ignore("integer_division")
+	return maxi(FEE_FLOOR, int(entry.get(&"ingot_value", 0)) * FEE_VALUE_PERMILLE / 1000)
+
+
+## Fee for a batch of `conversions` whole conversions of `mineral_id` at `mult`; 0 for
+## a non-positive count. The floor is per conversion and binds before the multiplier;
+## the whole-credit truncation comes after it (04 section 8): one `u_refine` Iron
+## conversion is 7 CR, not 7.5, and Krillum's 64 halves to 32. Every fee path reads
+## this door, so no caller can price one path at the list and another at the discount.
+static func fee_for(mineral_id: StringName, conversions: int, mult: float = 1.0) -> int:
 	if conversions <= 0:
 		return 0
-	return int(float(conversions) * float(FEE_PER_CONVERSION) * maxf(mult, 0.0))
+	return int(float(conversions) * float(conversion_fee(mineral_id)) * maxf(mult, 0.0))
 
 
 ## R1: the wall seconds one conversion of `mineral_id` takes,
@@ -141,7 +163,7 @@ static func stacks(profile: Node) -> Array[Dictionary]:
 			&"entry": entry,
 			&"ore_qty": int(profile.call(&"cargo_qty", Catalog.ore_id(mineral_id))),
 			&"conversions": conversions,
-			&"fee": fee_for(conversions, mult),
+			&"fee": fee_for(mineral_id, conversions, mult),
 		})
 	return rows
 
@@ -227,7 +249,7 @@ static func queue(profile: Node, mineral_id: StringName, conversions: int) -> Di
 	if input_units(profile, mineral_id) < ore_units:
 		return _refusal(REASON_INSUFFICIENT_ORE, mineral_id, conversions)
 
-	var fee := fee_for(conversions, fee_multiplier(profile))
+	var fee := fee_for(mineral_id, conversions, fee_multiplier(profile))
 	if int(profile.call(&"credits")) < fee:
 		return _refusal(REASON_INSUFFICIENT_CREDITS, mineral_id, conversions)
 
@@ -277,7 +299,7 @@ static func queue_all(profile: Node) -> Dictionary:
 		var conversions := int(input.get(ore_id, 0)) / ORE_PER_INGOT
 		if conversions < 1:
 			continue
-		var fee := fee_for(conversions, mult)
+		var fee := fee_for(mineral_id, conversions, mult)
 		plan.append({&"mineral_id": mineral_id, &"ore_id": ore_id, &"conversions": conversions, &"fee": fee})
 		minerals.append(mineral_id)
 		total_conversions += conversions

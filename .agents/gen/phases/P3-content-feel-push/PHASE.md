@@ -27,12 +27,12 @@ library. Ends in playtest build 2.
       `"problems": []` vs `s24_start` · re-cut before dispatch (two sequential
       builders B1 A1–A2 → B2 A3–A5, R1, F1 on its one HIGH) · **all eleven ticks
       (W1–W3 + V1–V8) owner-ratified green 2026-10-08**
-- [ ] **S28 — universal cost law.** The ×2.0/tier value ladder, the
+- [x] **S28 — universal cost law.** The ×2.0/tier value ladder, the
       value-relative refine fee, SC-scaled boss/contract payouts, the
-      battery/bloom caps. `slices/S28-economy-law/` · runs after: S24 ·
-      baseline `post-S24` (1186/0) · **runs before S25/S26** (they pin the
-      `14` §2/§7 payouts it amends) · **ticks M8–M14 owner-ratified green
-      2026-10-08**
+      battery/bloom caps. `slices/S28-economy-law/` · **closed 2026-10-08**, gate
+      1202/0 ×2, verify `"problems": []` vs `s28_start` · two builders
+      (C1 values+fee → C2 battery+bloom), R1, no F1 (no HIGH; its one MED fixed
+      in review) · **ticks M8–M14 owner-ratified green 2026-10-08**
 - [ ] **S25 — contracts board.** `contract_registry` + the board panel:
       Haul/Hunt/Gather/Escort, escrow + 100 CR cancel, standing gates, the
       escort convoy loop. `slices/S25-contracts/` · runs after: S28 · baseline

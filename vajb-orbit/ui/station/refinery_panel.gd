@@ -81,7 +81,9 @@ const LOAD_WORD := "LOAD"
 const COLLECT_WORD := "COLLECT ALL"
 const SLOTS_FORMAT := "SLOTS %d/%d"
 const UPGRADE_FORMAT := "UPGRADE (%s CR)"
-const FOOTER_FORMAT := "%d ORE = 1 INGOT · FEE %d CR PER CONVERSION"
+## S28 (04 section 8): the fee is value-relative, so the legend prints the live combined
+## charge of the QUEUE ALL button beside it instead of one flat figure.
+const FOOTER_FORMAT := "%d ORE = 1 INGOT · FEE %d CR QUEUED"
 const FOOTER_EMPTY := "BRING RAW ORE FROM THE BELT"
 const FOOTER_LOAD := "LOAD ORE TO START A JOB"
 const EMPTY_HOLD_ROW := "NO ORE IN HOLD"
@@ -398,7 +400,9 @@ func _build_row(stack: Dictionary, loaded: bool) -> Dictionary:
 	var name_text := String(entry.get(&"name", String(mineral_id)))
 	var ore_qty := int(stack.get(&"ore_qty", 0))
 	var conversions := int(stack.get(&"conversions", RefineryModule.input_conversions(_profile(), mineral_id)))
-	var fee := RefineryModule.fee_for(conversions, RefineryModule.fee_multiplier(_profile()))
+	var fee := RefineryModule.fee_for(
+		mineral_id, conversions, RefineryModule.fee_multiplier(_profile())
+	)
 	var row := Button.new()
 	row.name = "%s%s" % ["Input" if loaded else "Hold", String(mineral_id).to_pascal_case()]
 	row.toggle_mode = true
@@ -646,7 +650,7 @@ func _refresh_footer() -> void:
 	if _queueable_total() >= 1:
 		_footer.text = FOOTER_FORMAT % [
 			RefineryModule.ORE_PER_INGOT,
-			RefineryModule.FEE_PER_CONVERSION,
+			_format_int(_queueable_fee()),
 		]
 		return
 	if not _stacks().is_empty():
@@ -880,7 +884,9 @@ func _on_queue_pressed() -> void:
 	var mineral_id := _selected_id
 	var name_text := _selected_name_text()
 	var conversions := _stepper
-	var fee := RefineryModule.fee_for(conversions, RefineryModule.fee_multiplier(profile))
+	var fee := RefineryModule.fee_for(
+		mineral_id, conversions, RefineryModule.fee_multiplier(profile)
+	)
 	_begin()
 	var result: Dictionary = RefineryModule.queue(profile, mineral_id, conversions)
 	_end()
@@ -1053,7 +1059,9 @@ func _refusal_text(reason: Variant, fee: int, conversions: int) -> String:
 
 
 func _selected_fee() -> int:
-	return RefineryModule.fee_for(_stepper, RefineryModule.fee_multiplier(_profile()))
+	return RefineryModule.fee_for(
+		_selected_id, _stepper, RefineryModule.fee_multiplier(_profile())
+	)
 
 
 func _selected_time_text() -> String:
@@ -1126,9 +1134,10 @@ func _queueable_fee() -> int:
 	var mult := RefineryModule.fee_multiplier(profile)
 	var total := 0
 	for entry: Dictionary in Catalog.MINERALS:
-		var conversions := RefineryModule.input_conversions(profile, entry.get(&"id", &""))
+		var mineral_id: StringName = entry.get(&"id", &"")
+		var conversions := RefineryModule.input_conversions(profile, mineral_id)
 		if conversions >= 1:
-			total += RefineryModule.fee_for(conversions, mult)
+			total += RefineryModule.fee_for(mineral_id, conversions, mult)
 	return total
 
 

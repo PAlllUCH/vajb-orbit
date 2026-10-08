@@ -30,32 +30,33 @@ later request; one section costs ~2-3k.
 
 | Section | Topic | Lines |
 |---|---|---|
-| §1 | Input map (project settings) | L63–L83 |
-| §2 | ShipStats | L84–L104 |
-| §3 | ShipFit | L105–L122 |
-| §4 | PlayerShip | L123–L303 |
-| §5 | Combat/mining entities (slice 1 scope) | L304–L408 |
-| §6 | Sector / SectorRegistry | L409–L434 |
-| §7 | HUD — frozen API + wave-1 additions | L435–L500 |
-| §8 | Economy / state seams | L501–L544 |
-| §8.1 | Slice 0 — physics & fuel (pinned additions, 2026-09-21) | L545–L680 |
-| §8.2 | Slice 2 — fight (pinned additions, 2026-09-21) | L681–L885 |
-| §9 | Universal test gate | L886–L965 |
-| §11 | P2 ship frames (2026-09-21) | L966–L1161 |
-| §12 | P2-B1 weapon fit (2026-09-22) | L1162–L1219 |
-| §13 | P2-B proper fitting (2026-09-22) | L1220–L1341 |
-| §14 | S2.6 truth-and-feel (2026-09-22) | L1342–L1470 |
-| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1471–L1575 |
-| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L1576–L1751 |
-| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L1752–L1830 |
-| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L1831–L1903 |
-| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L1904–L2038 |
-| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2039–L2250 |
-| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2251–L2327 |
-| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L2328–L2382 |
-| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L2383–L2552 |
-| §24 | S24 world identity — stations, standing, bands, nebula (2026-10-08) | L2553–L2640 |
-| §10 | Changelog | L2641–L2874 |
+| §1 | Input map (project settings) | L64–L84 |
+| §2 | ShipStats | L85–L105 |
+| §3 | ShipFit | L106–L123 |
+| §4 | PlayerShip | L124–L304 |
+| §5 | Combat/mining entities (slice 1 scope) | L305–L409 |
+| §6 | Sector / SectorRegistry | L410–L435 |
+| §7 | HUD — frozen API + wave-1 additions | L436–L501 |
+| §8 | Economy / state seams | L502–L545 |
+| §8.1 | Slice 0 — physics & fuel (pinned additions, 2026-09-21) | L546–L681 |
+| §8.2 | Slice 2 — fight (pinned additions, 2026-09-21) | L682–L886 |
+| §9 | Universal test gate | L887–L971 |
+| §11 | P2 ship frames (2026-09-21) | L972–L1167 |
+| §12 | P2-B1 weapon fit (2026-09-22) | L1168–L1225 |
+| §13 | P2-B proper fitting (2026-09-22) | L1226–L1347 |
+| §14 | S2.6 truth-and-feel (2026-09-22) | L1348–L1476 |
+| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1477–L1581 |
+| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L1582–L1757 |
+| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L1758–L1836 |
+| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L1837–L1909 |
+| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L1910–L2045 |
+| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2046–L2257 |
+| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2258–L2335 |
+| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L2336–L2390 |
+| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L2391–L2560 |
+| §24 | S24 world identity — stations, standing, bands, nebula (2026-10-08) | L2561–L2648 |
+| §25 | S28 economy law — the value ladder, the fee door, the battery, the b… | L2649–L2709 |
+| §10 | Changelog | L2710–L2959 |
 
 <!-- section-index:end -->
 
@@ -892,25 +893,30 @@ is affected, bounded by the rounds actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
-Expected (S24, 2026-10-08): **`[SUMMARY] passed=1186 failed=0`**, exit 0, twice
-hermetic on fresh scratch stores with a byte-identical replay (S24-R1's own runs
-plus the close-out's; baseline 1152 = the re-cut's own 2026-10-08 measurement).
-Growth **1152 → 1186 (+34)**: `test_s24_world.gd` +19 (S24-B1's 18 + the row
-S24-F1's HIGH cure added), `test_s24_bands.gd` +15 (S24-B2); R1 measured 1185 and
-F1's fix moved the count one further, the close-out's two runs agreeing at 1186.
-A count-vs-HEAD sweep shows **no other suite's row count moved**, and the S17
-`REGISTRY_MD5` re-pin on `sector_registry.gd` (applied by the orchestrator because
-B2's file set held only its own suite, disclosed in the pin's own comment) is the
-finished tree's md5. The wave's reviewer probe (`tests/probe_s24_r1.tscn`, scratch
-store, self-quitting) re-measured the whole S24 list independently of both suites:
-nine rows + the §1/§8 matrix, the price law both directions, the additive 0.75 stack,
-the 1.5 %/2 % commission, the band-free exchange, the hot pair (123/256 seeded
-shelves at Known, 0 at Neutral), the reserved slot at 6 + 20, the shelf bias, the
-two axes, the seven bands + 13 §4's densities, and the three cloud readings inside
-and outside. The previous measured block read S30's `1089` (2026-10-04) and was
-stale: the S31–S37 waves' growth sat between it and the S24 baseline 1152, recorded
-at those waves' own close-outs (`MASTER_REPORT.md` §6), not here.
+Expected (S28, 2026-10-08): **`[SUMMARY] passed=1202 failed=0`**, exit 0, twice
+hermetic on fresh scratch stores (S28-R1's own runs; the two `[SUMMARY]` lines
+agree — the only inter-run log difference is the pre-existing s5-racks salvo-timing
+diagnostic, which jitters one frame, ticketed T-155). Growth **1186 → 1202 (+16)**,
+the chain disclosed: C1 landed at **1184/1** because its new fee signature broke
+`test_s23_content.gd` and `probe_s23_r1.gd`, two suites outside every worker file
+set (12 blocked rows + 10 new); the orchestrator re-pointed those four `fee_for`
+call sites itself (**1196/0**) and R1 graded the repair — every asserted figure
+survives, iron's list 15 and its u_refine 7 being the same numbers the flat
+arithmetic produced; C2's six rows close it at **1202/0**. R1 re-measured the wave
+independently of both suites (`tools/s28_r1_remeasure.gd`, fresh scratch store,
+byte-identical replay, 37/37 ok): the 20-cell fee column, the u_refine halves
+(iron 7, krilium 32), the battery channels at 1/2/3/7 (1.0/1.4/1.8/3.4) with
+`battery()` on the fitted count, the bloom cap (6 × 1.5, T+1, the 200 u trigger)
+and `05` §10's rows off the live baselines. `test_p1_refinery.gd` alone reads
+6/0; its sealed row (`test_stacks_lists_only_convertible_minerals`) keeps its
+hide-sub-convertible-stacks semantics, only its Gold fee figure and the two
+re-signed call shapes moved (disclosed in the suite's own header).
 
+- **S24's block, compressed (2026-10-08):** 1152 → 1186 (+34: s24_world +19 after
+  F1's HIGH cure, s24_bands +15) twice hermetic, no other suite's row count moved,
+  R1's nine-row probe list re-measured independently; the S17 `REGISTRY_MD5` re-pin
+  on `sector_registry.gd` was applied by the orchestrator (B2's file set held only
+  its own suite). The wave's recap is `MASTER_REPORT.md` §6.
 - **S30's block, compressed (2026-10-04):** shell v2 moved 1074 → 1089 (+15: s11 +3
   net, s30_shell +12) with 3 HIGH / 7 MED / 4 LOW (T-114–T-117) — verdict blocked
   pending the fixer; the wave's recap is `MASTER_REPORT.md` §6 (S30, 2026-10-04).
@@ -1939,7 +1945,8 @@ Every seam below is additive; nothing frozen moves.
 #       (03 comp_elec + DATA_CORE_CREDITS 120 CR, proposed, reversal 60) /
 #       0.25 magic module (15 §5); one-shot per respawn cycle
 #   trigger(player) -> void                 # anomalies at 200 u (11 §3.2): ore_bloom
-#       (T+1 cluster, 10 rocks, 2× yield) / grave_cache (3–5 pickups, one grade up)
+#       (T+1 cluster, 6 rocks, 1.5× yield — S28's cap, tick M13; was 10 × 2) /
+#       grave_cache (3–5 pickups, one grade up)
 #       / void_rift (RIFT_DRAIN shield/s inside; 1 exotic: T4 ore, or magic+ module
 #       at 0.10); despawns, respawns on the sector clock (17 §4)
 
@@ -2308,7 +2315,8 @@ a finding Q0 proves fixed or mis-attributed closes there, not in code.
   class, this wave owns the files. L166's `hot_price` idiom stays
   (integer-exact by §15's own requirement).
 - **Staged / owner calls (not this wave's build):** the Refinery hiding
-  sub-convertible stacks (`test_p1_refinery.gd:192` pins it; reads as data loss
+  sub-convertible stacks (`test_p1_refinery.gd`'s `test_stacks_lists_only_convertible_minerals`
+  pins it — the `:192` line cite was S34-era and is retired; reads as data loss
   — keep or show exhausted rows) is an owner tick; M5 (the status close-X), M6
   (the arming countdown), the station dead zones, the HUD top-left/minimap
   visibility and the player-hull visibility pass are **designer-queue items 9–12**
@@ -2638,6 +2646,67 @@ S25 reads `contracts_visible` and the SERVICES pane; S26 reads `insurance_multip
 and the vault record (`station_id -> {tier, contents}`, read per docked station since
 this wave). Outpost **nodes** stay staged (the per-station POI-flavour item).
 
+## §25 S28 economy law — the value ladder, the fee door, the battery, the bloom (2026-10-08)
+
+Every price and payout reads as `k × SC(t)` and every income number derives from one
+value ladder (`01`'s 2026-10-08 block is the law; SC = 1 100 / 1 500 / 3 000 / 6 000,
+±25 %). The spec side is `02_minerals.md` (the value table), `04_refinery.md` §8
+(the fee), `05_exchange.md` §10 (the restated examples), `11_galactic_map.md` (the
+bloom cap) and `14_station_services.md` (the payouts, landing with S25/S26) — all
+2026-10-08 blocks, ticks M8–M14 owner-ratified green. This section pins the shipped
+interface those blocks mandate; every value's reversal lives in its own doc block.
+
+```gdscript
+# game/mineral_catalog.gd — the 20 MINERALS rows ARE 02's 2026-10-08 table
+#   (tier-mean ore 22.6 × 2.0^(t−1); the five minerals of a tier at
+#   ×{0.80, 0.88, 0.97, 1.11, 1.24}; `ingot = round(ore × 3.6)` for T2–T4).
+#   T1's ten value cells are byte-identical to the pre-S28 rows; only the two
+#   value columns moved (tick M8; reversal: 02 §2's table). Every price reads
+#   these cells through `Exchange.baseline_of` — no downstream literal.
+
+# game/refinery.gd — the fee door (tick M9; reversal: the flat 15):
+const FEE_FLOOR := 15              # CR per conversion — the historical flat, T1 keeps it
+const FEE_VALUE_PERMILLE := 80     # 8 % of the ingot the conversion produces
+static func conversion_fee(mineral_id: StringName) -> int
+    # max(FEE_FLOOR, ingot_value × 80 / 1000), integer truncation; an unknown
+    # mineral pays the floor (the way resource_seconds floors at 10).
+static func fee_for(mineral_id: StringName, conversions: int, mult: float = 1.0) -> int
+    # int(conversions × conversion_fee(mineral_id) × mult); 0 for a non-positive
+    # count. The floor is per conversion and binds BEFORE the multiplier; the
+    # whole-credit truncation comes after (u_refine iron = 7, not 7.5; krilium 64 → 32).
+```
+
+- **The door is `fee_for`.** `FEE_PER_CONVERSION` survives only as the floor alias
+  the P1 suite reads (`refinery.gd:39`; no fee path reads it). Its callers: the
+  panel's four (`refinery_panel.gd:403/:887/:1062/:1140`) and `stacks`/`queue`/
+  `queue_all` — the panel hardcodes no number, and its footer legend prints the
+  live combined QUEUE ALL charge (`"FEE %d CR QUEUED"`, `_queueable_fee()`), not a
+  restated flat. `resource_seconds` keeps R1's formula and derives (iron 10,
+  gold 26, krilium 60 ceiling); durations are restated nowhere.
+
+```gdscript
+# game/ore_tuning.gd + game/mining_laser.gd — the battery law
+#   (tick M12; reversal: gain 1.0, the pre-S28 linear N):
+const BATTERY_GAIN := 0.4              # mining_laser.gd's declared const (the S13 pattern)
+static var battery_gain: float = 0.4   # the live value; rides reset_to_defaults /
+                                       # to_dict / from_dict and the dev overlay's slider
+# extract_cycle: work := work_per_unit * (1.0 + battery_gain * (bank - 1))
+#   — 1/1.4/1.8/3.4 channels at 1/2/3/7 fitted w_mining; `battery()` still reports
+#   the fitted count, the floor is one channel, and a fit without `w_mining`
+#   still mounts no laser.
+
+# game/poi.gd — the bloom cap (tick M13; reversal: 10 rocks × 2):
+const ORE_BLOOM_ROCKS := 6
+const ORE_BLOOM_YIELD_MULT := 1.5      # the roll rounds as roll_yield does (roundi)
+# ORE_BLOOM_TIER_BONUS 1 and the 200 u trigger stand.
+```
+
+Tests: `test_s28_econ.gd` (10 rows, C1 — the ladder derivation, the fee column, the
+05 §10 rows and the SC model band off the live catalogue) and `test_s28_events.gd`
+(6 rows, C2 — the battery law and the bloom cap off the live surfaces). S25/S26
+price their new rows from 01's L2 bands and re-cut their `14` extracts before
+dispatch; the boss caches and contract flats land with their waves.
+
 ## §10 Changelog
 
 Rolling log of what each wave changed here. Kept verbatim only where an entry
@@ -2871,3 +2940,19 @@ bottom (the index-line form is only for retired entries).
   row ships **derived** from the shelf's own digest (§15's four-member pin held) and
   the reserved slot's tier is clamped into the catalogue's 1–3, both graded and
   pinned with their reversals.
+- **v0.47 (2026-10-08, wave S28 review — S28-R1, this wave's only CONTRACTS writer;
+  gate `1186 → 1202/0` twice hermetic on fresh scratch stores, the disclosed chain
+  `1184/1 → 1196/0` between the builders recorded in §9)** — adds **§25**, the
+  wave's pinned interface: the value-table pointer to 02's 2026-10-08 block (T1
+  byte-unchanged, `ingot = round(ore × 3.6)` T2–T4), the fee door
+  (`conversion_fee` = `max(15, ingot × 80/1000)` truncated; `fee_for(mineral_id,
+  conversions, mult)` with the floor before the multiplier and the truncation
+  after; `FEE_PER_CONVERSION` kept only as the P1 suite's floor alias; the four
+  panel call sites re-pointed and the footer legend now printing the live combined
+  charge), the battery law (`BATTERY_GAIN`/`battery_gain` 0.4, `1 + 0.4 × (N − 1)`
+  channels, `battery()` still the fitted count) and the bloom cap (6 rocks × 1.5,
+  the 200 u trigger and the T+1 bonus standing). §19's poi block restates the bloom
+  sentence (R1's, per the brief §10); §21's stale `test_p1_refinery.gd:192` seal
+  cite is corrected to the row's name — the pinned hide-sub-convertible-stacks
+  semantics never moved, only the Gold fee figure and two call shapes did,
+  disclosed in the suite's header. M8–M14 owner-ratified green 2026-10-08.

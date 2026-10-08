@@ -6,8 +6,10 @@ extends SceneTree
 ##   XDG_DATA_HOME=/tmp/s13_r1 "$GODOT_CONSOLE" --headless --path "$VAJB_PROJ" \
 ##     --script res://tools/r1_s13_ac3_replay.gd
 ##
-## Banks 1/2/3 over 30 cycles against one 90-unit rock: per_cycle == bank, and the
-## delivered total never exceeds the rock's own extractable (no double-pay).
+## Banks 1/2/3 over 30 cycles against one 90-unit rock: per_cycle reads the law's
+## channels (`1 + gain x (N - 1)`, 01's 2026-10-08 L4, tick M12 — S28-R1 re-pointed
+## the expected side from S13's linear `bank`), and the delivered total never
+## exceeds the rock's own extractable (no double-pay).
 
 const AsteroidScript := preload("res://game/asteroid.gd")
 const MiningLaserScript := preload("res://game/mining_laser.gd")
@@ -50,9 +52,11 @@ func _measure(bank: int) -> void:
 		% [TAG, bank, int(laser.call(&"battery")), per_cycle, rate, ratio, removed, delivered])
 	_check("bank%d_battery" % bank, int(laser.call(&"battery")) == bank,
 		"bank %d holds %d" % [bank, bank])
+	var channels := 1.0 + OreTuningScript.battery_gain * float(bank - 1)
 	_check("bank%d_scaling" % bank,
-		absf(per_cycle - float(bank)) <= 0.20 * float(bank),
-		"bank %d realises %.4f units/cycle (within 20 %% of %d)" % [bank, per_cycle, bank])
+		absf(per_cycle - channels) <= 0.20 * channels,
+		"bank %d realises %.4f units/cycle (within 20 %% of %.2f channels)"
+			% [bank, per_cycle, channels])
 	_check("bank%d_no_double_pay" % bank, removed == delivered and delivered <= ROCK_UNITS,
 		"rock lost %d, cycles paid %d, budget %d" % [removed, delivered, ROCK_UNITS])
 	laser.free()

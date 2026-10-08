@@ -123,7 +123,7 @@ func _exclusivity() -> void:
 
 func _modules() -> void:
 	print("[S23R1] refine list fee1=%s fee2=%s" % [
-		RefineryScript.fee_for(1), RefineryScript.fee_for(2),
+		RefineryScript.fee_for(&"iron", 1), RefineryScript.fee_for(&"iron", 2),
 	])
 	var profile := _profile()
 	if profile == null:
@@ -139,7 +139,7 @@ func _modules() -> void:
 	profile.set(&"_active_ship", &"ship_vanguard")
 	var mult := float(RefineryScript.fee_multiplier(profile))
 	print("[S23R1] refine fitted mult=%s fee1=%s fee2=%s ore_per_ingot=%s" % [
-		mult, RefineryScript.fee_for(1, mult), RefineryScript.fee_for(2, mult),
+		mult, RefineryScript.fee_for(&"iron", 1, mult), RefineryScript.fee_for(&"iron", 2, mult),
 		RefineryScript.ORE_PER_INGOT,
 	])
 	profile.set(&"_active_ship", saved_active)

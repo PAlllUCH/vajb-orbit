@@ -18,28 +18,30 @@ const Log := preload("res://game/economy_log.gd")
 const SUITE_ID := "p1_catalogues"
 const LOG_PATH := "user://test_p1_log.txt"
 
-## docs/gameplay/02_minerals.md section 2, verbatim: mineral id -> [ore, ingot].
+## docs/gameplay/02_minerals.md, 2026-10-08 S28 block, verbatim: mineral id ->
+## [ore, ingot]. T1's rows are byte-unchanged; T2-T4 are the new ladder
+## (tier-mean ore 22.6 / 45.2 / 90.4 / 180.8, `ingot = round(ore × 3.6)`).
 const MINERAL_VALUES: Dictionary = {
 	&"iron": [18, 65],
 	&"copper": [22, 80],
 	&"chromium": [25, 90],
 	&"silicon": [28, 100],
 	&"aluminium": [20, 72],
-	&"titanium": [45, 162],
-	&"nickel": [50, 180],
-	&"cobalt": [55, 200],
-	&"tungsten": [65, 235],
-	&"silver": [70, 252],
-	&"gold": [110, 395],
-	&"platinum": [130, 470],
-	&"neodymium": [150, 540],
-	&"iridium": [170, 610],
-	&"osmium": [190, 685],
-	&"palladium": [300, 1080],
-	&"cerulite": [350, 1260],
-	&"emberite": [400, 1440],
-	&"voidglass": [480, 1730],
-	&"krilium": [600, 2160],
+	&"titanium": [36, 130],
+	&"nickel": [40, 144],
+	&"cobalt": [44, 158],
+	&"tungsten": [50, 180],
+	&"silver": [56, 202],
+	&"gold": [72, 259],
+	&"platinum": [80, 288],
+	&"neodymium": [88, 317],
+	&"iridium": [100, 360],
+	&"osmium": [112, 403],
+	&"palladium": [145, 522],
+	&"cerulite": [159, 572],
+	&"emberite": [175, 630],
+	&"voidglass": [201, 724],
+	&"krilium": [224, 806],
 }
 
 ## docs/gameplay/03_components.md section 3, verbatim: component id -> value.

@@ -38,6 +38,12 @@ static var mine_cycle: float = 1.2
 ## `asteroid.gd`'s work-per-unit: how much extraction work realises one ore unit.
 static var work_per_unit: float = 1.0
 
+## S28's battery law (`mining_laser.gd`'s declared `BATTERY_GAIN`): N fitted
+## `w_mining` modules deliver `1 + gain x (N - 1)` work channels per cycle, so the
+## gain is the step each module past the first adds. Default = the declared 0.4.
+## Reversal: 1.0 restores the pre-S28 linear N channels (tick M12).
+static var battery_gain: float = 0.4
+
 ## `mineral_catalog.gd`'s per-tier base yield (02 §5).
 static var tier_base_yield: Dictionary = {1: 6, 2: 5, 3: 4, 4: 3}
 
@@ -116,6 +122,7 @@ static func reset_to_defaults() -> void:
 	gun_chip_rate = 0.10
 	mine_cycle = 1.2
 	work_per_unit = 1.0
+	battery_gain = 0.4
 	tier_base_yield = {1: 6, 2: 5, 3: 4, 4: 3}
 	yield_variance_min = 0.5
 	yield_variance_max = 1.5
@@ -150,6 +157,7 @@ static func to_dict() -> Dictionary:
 		&"gun_chip_rate": gun_chip_rate,
 		&"mine_cycle": mine_cycle,
 		&"work_per_unit": work_per_unit,
+		&"battery_gain": battery_gain,
 		&"tier_base_yield": tier_base_yield.duplicate(),
 		&"yield_variance_min": yield_variance_min,
 		&"yield_variance_max": yield_variance_max,
@@ -181,6 +189,8 @@ static func from_dict(d: Dictionary) -> void:
 		mine_cycle = maxf(_number(d[&"mine_cycle"], mine_cycle), 0.01)
 	if d.has(&"work_per_unit"):
 		work_per_unit = maxf(_number(d[&"work_per_unit"], work_per_unit), 0.0001)
+	if d.has(&"battery_gain"):
+		battery_gain = maxf(_number(d[&"battery_gain"], battery_gain), 0.0)
 	if d.has(&"tier_base_yield"):
 		var table: Variant = d[&"tier_base_yield"]
 		if table is Dictionary and not (table as Dictionary).is_empty():

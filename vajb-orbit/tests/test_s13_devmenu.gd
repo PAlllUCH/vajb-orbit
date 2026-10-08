@@ -97,6 +97,7 @@ func test_sliders_write_every_live_field() -> void:
 		&"gun_chip_rate": 0.35,
 		&"mine_cycle": 2.4,
 		&"work_per_unit": 3.0,
+		&"battery_gain": 0.85,
 		&"tier_base_yield_1": 9.0,
 		&"tier_base_yield_2": 8.0,
 		&"tier_base_yield_3": 7.0,
@@ -139,6 +140,7 @@ func test_save_then_open_round_trips() -> void:
 	_open()
 	_set_slider(&"gun_burst_share", 0.33)
 	_set_slider(&"mine_cycle", 2.5)
+	_set_slider(&"battery_gain", 0.75)
 	_set_slider(&"tier_base_yield_2", 11.0)
 	assert_eq(_menu.save(), OK, "Save writes the config")
 	assert_true(FileAccess.file_exists(CONFIG_PATH), "the file exists after Save")
@@ -149,6 +151,7 @@ func test_save_then_open_round_trips() -> void:
 	_menu.open()
 	assert_true(is_equal_approx(_ore_value(&"gun_burst_share"), 0.33), "open applied the file")
 	assert_true(is_equal_approx(_ore_value(&"mine_cycle"), 2.5), "and every field")
+	assert_true(is_equal_approx(_ore_value(&"battery_gain"), 0.75), "and the battery gain")
 	assert_eq(int(_ore_value(&"tier_base_yield_2")), 11, "including the tier table")
 
 
@@ -409,6 +412,8 @@ func _ore_value(key: StringName) -> float:
 			return OreTuningScript.mine_cycle
 		&"work_per_unit":
 			return OreTuningScript.work_per_unit
+		&"battery_gain":
+			return OreTuningScript.battery_gain
 		&"yield_variance_min":
 			return OreTuningScript.yield_variance_min
 		&"yield_variance_max":

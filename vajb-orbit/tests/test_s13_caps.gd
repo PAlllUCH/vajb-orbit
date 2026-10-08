@@ -60,6 +60,8 @@ func test_ore_tuning_defaults_are_the_owner_files_consts() -> void:
 		"the cycle default is mining_laser.gd's const")
 	assert_true(is_equal_approx(OreTuningScript.work_per_unit, AsteroidScript.WORK_PER_UNIT),
 		"the work-per-unit default is asteroid.gd's const")
+	assert_true(is_equal_approx(OreTuningScript.battery_gain, MiningLaserScript.BATTERY_GAIN),
+		"the battery gain default is mining_laser.gd's const")
 	assert_eq(str(OreTuningScript.tier_base_yield), str(MineralScript.TIER_BASE_YIELD),
 		"the tier curve default is mineral_catalog.gd's const")
 	assert_true(is_equal_approx(OreTuningScript.yield_variance_min, MineralScript.YIELD_VARIANCE_MIN),
@@ -75,16 +77,19 @@ func test_reset_and_the_dict_round_trip_restore_the_defaults() -> void:
 	OreTuningScript.from_dict({
 		&"gun_burst_share": 0.42,
 		&"fragment_core_share": 0.75,
+		&"battery_gain": 0.9,
 		&"tier_base_yield": {1: 1},
 		&"pickup_burst": Vector2i(3, 4),
 	})
 	assert_true(is_equal_approx(OreTuningScript.gun_burst_share, 0.42), "a tuned value lands")
 	assert_eq(int(OreTuningScript.tier_base_yield.get(1, 0)), 1, "and so does a table")
 	assert_eq(OreTuningScript.pickup_burst, Vector2i(3, 4), "and a burst pair")
+	assert_true(is_equal_approx(OreTuningScript.battery_gain, 0.9), "and the battery gain")
 	OreTuningScript.reset_to_defaults()
 	assert_true(is_equal_approx(OreTuningScript.gun_burst_share, 0.10), "Reset restores it")
 	assert_eq(int(OreTuningScript.tier_base_yield.get(1, 0)), 6, "and the tier curve")
 	assert_true(is_equal_approx(OreTuningScript.fragment_core_share, 0.25), "and the reserve share")
+	assert_true(is_equal_approx(OreTuningScript.battery_gain, 0.4), "and the battery gain default")
 	## A snapshot round-trips (the overlay's Save/Load pair).
 	OreTuningScript.from_dict(snapshot)
 	assert_true(is_equal_approx(OreTuningScript.gun_burst_share, 0.10),

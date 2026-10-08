@@ -54,3 +54,33 @@ Process note: F1 also edited the law out of scope (AGENTS.md, `dispatch_coder.md
 the S24–S27 briefs, via bash, undisclosed) — the developer re-authored the one
 substantive line (`build_code_map.py` in the close-out) with its rationale and
 reversal in `dispatch_coder.md`'s anatomy paragraph, and the map was regenerated.
+
+## The S28-closed Updated block (2026-10-08, moved when the board went back to live-only)
+
+**Updated 2026-10-08 (S28 universal cost law closed — item 34).** Gate **1186 →
+1202/0**, twice hermetic on fresh scratch stores; verify `"problems": []` vs
+`s28_start`. Two sequential builders (`hyper/deepseek-v4.1-flash` @ xhigh):
+**C1** the 20-row value table, the value-relative fee behind one door
+(`conversion_fee` + `fee_for(mineral_id, …)`) and the panel's re-pointed sites
+(+10 rows), **C2** the battery gain law, the bloom cap, the overlay field and
+the moved S13/S6 rows (+6 rows); **R1** (`hyper/glm-5.3-flash` @ max, own
+37-check re-measure probe) graded A1–A11 pass and left **no HIGH** — one MED
+(the S13 replay tool still asserted the retired linear N) which R1 fixed in its
+own `tools/` file set, plus 2 LOW → **T-154/T-155**. CONTRACTS gains **§25**
+(the fee door, the battery law, the bloom constants, the value-table pointer),
+§9's measured block and §10's v0.47 row. New files: `tests/test_s28_econ.gd`,
+`tests/test_s28_events.gd`, `tools/s28_r1_remeasure.gd`. **All seven ticks
+(M8–M14) were owner-ratified green on 2026-10-08** — every value stands as
+shipped and the reversals stay in their blocks.
+Process notes: (1) C1's new fee signature broke two suites outside every
+worker file set (`test_s23_content.gd`, `probe_s23_r1.gd`), so the orchestrator
+re-pointed their four `fee_for` call sites itself — disclosed in the C1 report,
+the R1 review (which graded the repair) and `MASTER_REPORT.md` §6; (2) R1 fixed
+its one MED rather than ticketing it, decided under the orchestrator's
+explicit instruction to choose; (3) C1 escalated brief §8's three
+`test_p1_pricing.gd` literals (bucket 2) because they derive from gold's raw
+3-ore total, not the pinned 259 ingot — R1 confirmed the escalation and the
+rows ship off the live catalogue; (4) the `s28_start` tag collides with the
+retired S28-station-chrome wave's baseline name — the archived snapshot json is
+preserved at `_archive/wave_state_baselines/s28_start.json` and the tag now
+points at this wave's baseline commit.

@@ -1,9 +1,10 @@
 @tool
 extends McpTestSuite
 ## P1 pricing suite: the exchange's one pricing function family.
-## Contract: docs/gameplay/05_exchange.md sections 3 (the table) and 5 (the
-## worked examples), docs/gameplay/17_coder_handoff.md section 6 (the 02/05
-## checklist item). File under test: game/exchange.gd.
+## Contract: docs/gameplay/05_exchange.md section 3 (the table, restated by
+## section 10's 2026-10-08 S28 block) and section 5 (the worked examples),
+## docs/gameplay/17_coder_handoff.md section 6 (the 02/05 checklist item).
+## File under test: game/exchange.gd.
 ## Pure static-function assertions: no profile, no cargo, no market state, so
 ## nothing here can touch user://profile.cfg. The log path is still redirected
 ## and cleaned up, per the P1 suite rules.
@@ -16,13 +17,14 @@ const Log := preload("res://game/economy_log.gd")
 const SUITE_ID := "p1_pricing"
 const LOG_PATH := "user://test_p1_log.txt"
 
-## docs/gameplay/05_exchange.md section 3, verbatim, for the four tabled
-## ingots: mineral id -> [demand 1.0, demand 0.6, demand 1.6].
+## docs/gameplay/05_exchange.md section 10 (the 2026-10-08 S28 restatement of
+## section 3's table), verbatim, for the four tabled ingots: mineral id ->
+## [demand 1.0, demand 0.6, demand 1.6]. The baselines are 02's 2026-10-08 table.
 const INGOT_TABLE: Dictionary = {
 	&"iron": [64, 38, 102],
-	&"titanium": [159, 95, 254],
-	&"gold": [387, 232, 619],
-	&"krilium": [2117, 1270, 3387],
+	&"titanium": [127, 76, 204],
+	&"gold": [254, 152, 406],
+	&"krilium": [790, 474, 1264],
 }
 
 const DEMANDS: Array[float] = [1.0, 0.6, 1.6]
@@ -69,13 +71,14 @@ func test_unit_net_reproduces_the_section_3_table() -> void:
 			)
 
 
-## 17 section 6, bullet 2: the 05 section 5 batch worked example, exactly.
+## 17 section 6, bullet 2: the 05 section 5 batch worked example on the S28 gold
+## baseline (259, 02's 2026-10-08 block): 10 Gold ingots at demand 1.2.
 func test_gold_batch_worked_example() -> void:
-	var quote := Ex.sale_quote(395, 1.2, 10)
-	assert_eq(int(quote[&"gross"]), 4740, "gross of 10 Gold ingots at demand 1.2")
-	assert_eq(int(quote[&"fee"]), 95, "2 percent of 4740")
-	assert_eq(int(quote[&"paid"]), 4645, "what the player is paid")
-	assert_eq(Ex.unit_gross(395, 1.2), 474, "the quoted unit gross beside the net price")
+	var quote := Ex.sale_quote(259, 1.2, 10)
+	assert_eq(int(quote[&"gross"]), 3108, "gross of 10 Gold ingots at demand 1.2")
+	assert_eq(int(quote[&"fee"]), 63, "2 percent of 3108")
+	assert_eq(int(quote[&"paid"]), 3045, "what the player is paid")
+	assert_eq(Ex.unit_gross(259, 1.2), 311, "the quoted unit gross beside the net price")
 
 
 ## 17 section 6, bullet 3: the 05 section 5 component worked example, exactly.
@@ -125,10 +128,10 @@ func test_exchange_price_routing() -> void:
 	assert_eq(Ex.exchange_price(&"comp_scrap_1", 1.0), Ex.component_unit_price(12), "component price")
 	assert_eq(Ex.exchange_price(&"comp_scrap_1", 1.0), 11, "Torn Plating at demand 1.0")
 	assert_eq(Ex.exchange_price(&"comp_scrap_1", 1.6), 11, "components ignore demand")
-	# The per-unit base rounds to 465; the batch base rounds the transaction
-	# gross once and pays 464.5 per unit (05 section 5). Both are documented in
+	# The per-unit base rounds to 305; the batch base rounds the transaction gross
+	# once and pays 304.5 per unit (05 section 5). Both are documented in
 	# exchange.gd's header, so only the unit base is asserted here.
-	assert_eq(Ex.exchange_price(&"ingot_gold", 1.2), 465, "Gold ingot at demand 1.2")
+	assert_eq(Ex.exchange_price(&"ingot_gold", 1.2), 305, "Gold ingot at demand 1.2")
 	assert_eq(Ex.exchange_price(&"iron", 1.0), 0, "a bare mineral id has no price")
 	assert_eq(Ex.exchange_price(&"nonsense", 1.0), 0, "an unknown id has no price")
 	assert_eq(Ex.exchange_price(&"", 1.0), 0, "an empty id has no price")

@@ -35,6 +35,12 @@ const ProjectileScript := preload("res://game/projectile.gd")
 const MINE_LASER_RANGE := 220.0
 const MINE_CYCLE := 1.2
 
+## S28's battery law (tick M12): the declared gain (the S13 pattern).
+## `OreTuning.battery_gain` is the live value `extract_cycle` reads; this const is
+## the anti-drift yardstick `test_s13_caps.gd` asserts. Reversal: 1.0 restores the
+## pre-S28 linear N channels.
+const BATTERY_GAIN := 0.4
+
 ## The rock layer the shaft is masked to (Asteroid.COLLISION_LAYER), so rocks block
 ## the beam among themselves and the nearest rock under the cursor is the target.
 const ROCK_MASK := 1
@@ -98,8 +104,9 @@ var _active := false
 
 ## S13_BRIEF §2 rule 5: the number of fitted `w_mining` modules this one node
 ## serves. N modules are N work channels on this node (`PlayerShip` hands the count
-## in), so one cycle delivers `bank x work_per_unit` of extraction work and spawns
-## that many pickups - one per realised unit, never the same unit twice.
+## in), so one cycle delivers `1 + battery_gain x (N - 1)` channels of extraction
+## work (S28's cap; the fitted count itself is reported unchanged by `battery()`) and
+## spawns that many pickups - one per realised unit, never the same unit twice.
 var _bank := 1
 
 var _target: Node2D = null
@@ -227,14 +234,15 @@ func _apply_cycle() -> void:
 
 ## S13_BRIEF §2 rule 5 / AC3: one cycle's extraction against an explicit target, the
 ## same arithmetic `_apply_cycle` uses. N fitted `w_mining` modules are N work
-## channels on this one node, so the work is `bank x work_per_unit` and the pickups
-## are the units that work realises - once each, so one unit of work never realises
-## twice. Public so a suite can measure the 1x/2x/3x scaling without a physics world
-## (the beam itself needs a ray and the cursor).
+## channels on this one node, so the work is `work_per_unit x (1 + battery_gain x
+## (bank - 1))` and the pickups are the units that work realises - once each, so one
+## unit of work never realises twice. Public so a suite can measure the channel
+## scaling without a physics world (the beam itself needs a ray and the cursor).
 func extract_cycle(target: Node2D, at: Vector2) -> int:
 	if target == null or not is_instance_valid(target):
 		return 0
-	var work := OreTuningScript.work_per_unit * float(_bank)
+	var work := OreTuningScript.work_per_unit \
+		* (1.0 + OreTuningScript.battery_gain * float(_bank - 1))
 	var units := int(target.call(&"apply_work", work))
 	for _unit: int in units:
 		_spawn_pickup(at, target)
