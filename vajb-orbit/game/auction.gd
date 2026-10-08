@@ -10,10 +10,14 @@ extends RefCounted
 ##
 ## The shelf is 10 section 2.1's, as its 2026-10-01 amendment reads it: **6 hulls +
 ## 20 modules** (ten rolled, ten stock) at a time, restocked on
-## the shared 20-minute station clock, one "hot slot" per restock at -20 %. The
-## state lives in the profile's top-level `auction` key -- never a `market`
-## sub-key, because `PlayerProfile._normalise_market` rebuilds that dictionary
-## from `MARKET_KEYS` and would drop the shelf on load (CONTRACTS section 15).
+## the shared 20-minute station clock, one "hot slot" per restock at -20 % -- and, since
+## S24 (12's 2026-10-08 block), V4's **second** hot row at Known standing and above, V5's
+## **reserved** first rolled slot at Trusted and above and V6's shelf bias for the station
+## owner's own tech families. Every price this file quotes goes through the registry's one
+## price law (V1/V2): the catalogue's list, then the band and the owner's tech step, then
+## the hot row's -20 % last. The state lives in the profile's top-level `auction` key --
+## never a `market` sub-key, because `PlayerProfile._normalise_market` rebuilds that
+## dictionary from `MARKET_KEYS` and would drop the shelf on load (CONTRACTS section 15).
 ##
 ## Module listings are **rolled instances**, not catalogue rows (15 section 8:
 ## "auction modules when the shelf is drawn at restock"), so the name and the
@@ -48,6 +52,11 @@ const ModuleData := preload("res://game/module_catalog.gd")
 const Catalog := preload("res://game/station_catalog.gd")
 const FitData := preload("res://game/ship_fit.gd")
 const Clock := preload("res://autoload/world_clock.gd")
+## S24 (12's 2026-10-08 block): the price law and the standing bands are the station
+## registry's, and V5's reserved slot reads the sector registry's own tier band. Both are
+## reached by path like every other cross-file table here.
+const StationData := preload("res://game/station_registry.gd")
+const SectorData := preload("res://game/sector_registry.gd")
 
 ## 10 section 2.1's shelf: six hulls and twenty modules at a time -- the ten rolled
 ## listings, then 10 section 2.1's 2026-10-01 amendment's ten stock listings.
@@ -86,6 +95,11 @@ const AUCTION_FACTION_LOTS_INTERIM := true
 ## 10 section 2.1 / 15 section 1: the one hot slot's -20 %, applied after the
 ## rarity step and never stacked with anything.
 const HOT_DISCOUNT_PERCENT := 20
+
+## 12 section 4.1's Known band opens at +11 (V4's "at Known and above"), and it is the only
+## band boundary this file spells: the other three floors and the deltas live in
+## `StationRegistry` (V1/V2/V7) and are read from there.
+const KNOWN_STANDING := 11
 
 ## 15 section 4 / CONTRACTS section 20: 15 section 4's `of the Ledger` sells for 25 %
 ## more. The suffix id is the catalogue's own row key and the multiplier is a whole
@@ -189,7 +203,9 @@ static func evaluate_shelf(profile: Node, now: int, rng: RandomNumberGenerator =
 ## order holds):
 ##   1. the six hulls, by 10 section 2.2's weights (`_draw_hulls`);
 ##   2. the ten module listings, the F lot first when 15 section 8's interim is on
-##      and the rest by `draw_tier` + a uniform pick from that tier's rows;
+##      and the rest by `draw_tier` + a pick from that tier's rows (`_pick_base`, V6's
+##      bias) -- the **first** rolled slot at Trusted and above takes V5's reserved tier
+##      instead of the draw;
 ##   3. the one hot slot, uniform over the sixteen listed ids.
 static func draw_shelf(profile: Node, rng: RandomNumberGenerator = null) -> Dictionary:
 	var stream := _stream(rng)
@@ -199,7 +215,9 @@ static func draw_shelf(profile: Node, rng: RandomNumberGenerator = null) -> Dict
 
 
 ## 10 section 2.1's one hot slot: a uniform pick over the six hull ids and the twenty
-## listing ids, `&""` for a shelf that lists nothing.
+## listing ids, `&""` for a shelf that lists nothing. V4's second row is not drawn here --
+## it is derived from the shelf's own content (`second_hot_id`), because CONTRACTS
+## section 15 pins the shelf at four members and the derivation needs no fifth.
 static func _draw_hot(hulls: Array, modules: Dictionary, rng: RandomNumberGenerator) -> StringName:
 	var candidates: Array[StringName] = []
 	for id: String in hulls:
@@ -209,6 +227,69 @@ static func _draw_hot(hulls: Array, modules: Dictionary, rng: RandomNumberGenera
 	if candidates.is_empty():
 		return &""
 	return candidates[rng.randi_range(0, candidates.size() - 1)]
+
+
+## The ids that carry 10 section 2.1's -20 % on this shelf: the drawn hot slot always, plus
+## V4's second row at Known standing and above when its own roll lands. A caller that only
+## knows the shipped single slot keeps reading `hot_id`.
+static func hot_ids(profile: Node) -> Array[StringName]:
+	var out: Array[StringName] = []
+	var first := hot_id(profile)
+	if first == &"":
+		return out
+	out.append(first)
+	var second := second_hot_id(profile, first)
+	if second != &"":
+		out.append(second)
+	return out
+
+
+## V4 (12 section 4.1's Known row, 2026-10-08 block): the **second** hot row, `&""` when the
+## standing is below Known, when the shelf lists fewer than two ids, or when the 50 % roll
+## misses.
+##
+## The roll is **derived from the shelf's own content**, not stored: CONTRACTS section 15
+## pins `auction` at `{last_band, hulls, modules, hot}` (`PlayerProfile.AUCTION_KEYS`, and
+## `test_s3_auction.gd` asserts the four), so a fifth key is a pin change this wave may not
+## make. The shelf was drawn by the restock's own seeded RNG, so a seeded restock answers
+## the same pair every time, and the hash's parity is the 50 %: half of the shelves carry a
+## second row. Reversal: one stored key plus `AUCTION_KEYS`' fifth entry.
+static func second_hot_id(profile: Node, first: StringName) -> StringName:
+	if profile == null or first == &"":
+		return &""
+	if _standing(profile) < KNOWN_STANDING:
+		return &""
+	var candidates := _hot_candidates(profile.call(&"auction"))
+	if candidates.size() < 2:
+		return &""
+	var digest := String(first)
+	for id: StringName in candidates:
+		digest += "|" + String(id)
+	## An md5 digest of the shelf's own content, not `String.hash`: the FNV parity of a
+	## digest whose ids only ever differ by the mint counter is invariant (measured: every
+	## shelf of one run took the same branch), while a cryptographic digest mixes the whole
+	## string, so the parity really is a coin toss.
+	var mix := absi(digest.md5_text().substr(0, 8).hex_to_int())
+	if mix % 2 == 0:
+		return &""
+	var pool: Array[StringName] = []
+	for id: StringName in candidates:
+		if id != first:
+			pool.append(id)
+	return pool[(mix / 2) % pool.size()]
+
+
+## The sixteen ids a hot row may land on, read off one shelf state: the six hulls then the
+## twenty listings, the same order `_draw_hot` draws over.
+static func _hot_candidates(state: Dictionary) -> Array[StringName]:
+	var out: Array[StringName] = []
+	for id: String in _names(state, &"hulls"):
+		out.append(StringName(id))
+	var modules: Variant = _lookup(state, &"modules")
+	if modules is Dictionary:
+		for key: Variant in (modules as Dictionary).keys():
+			out.append(StringName(str(key)))
+	return out
 
 
 ## The six listed hulls, in `HULL_ORDER` (the ladder's order).
@@ -301,24 +382,77 @@ static func _draw_listings(profile: Node, rng: RandomNumberGenerator) -> Diction
 	var listings: Dictionary = {}
 	if profile == null:
 		return listings
+	var station := _station(profile)
+	var standing := _standing(profile)
 	if AUCTION_FACTION_LOTS_INTERIM:
 		var exclusives := exclusive_ids()
 		if not exclusives.is_empty():
 			var pick: StringName = exclusives[rng.randi_range(0, exclusives.size() - 1)]
 			_mint(profile, pick, ModuleData.SOURCE_FACTION_LOT, listings)
+	## V5: at Trusted and above the shelf's **first rolled** slot comes off the docked
+	## sector's own tier band instead of 10 section 2.1's I/II/III weights. The shelf's size
+	## does not move (still ten rolled here, still six hulls + twenty modules overall), and
+	## no `draw_tier` call is spent on the reserved slot.
+	var reserved := standing >= StationData.TRUSTED_FLOOR and not station.is_empty()
 	for _slot: int in range(MODULE_SLOTS - listings.size()):
-		var pool := tier_pool(draw_tier(rng))
+		var tier := draw_tier(rng)
+		if reserved:
+			tier = _reserved_tier(station)
+			reserved = false
+		var pool := tier_pool(tier)
 		if pool.is_empty():
 			continue
-		var base: StringName = pool[rng.randi_range(0, pool.size() - 1)]
+		var base: StringName = _pick_base(pool, station, rng)
 		_mint(profile, base, ModuleData.SOURCE_AUCTION, listings)
+	## The stock ten stay 10 section 2.1's fixed tier-I rows: V6's bias is the **rolled**
+	## draw's, and these are the amendment's "always something to mount" slots.
 	var stock_pool := tier_pool(1)
 	for _slot: int in range(STOCK_SLOTS):
 		if stock_pool.is_empty():
 			continue
-		var base: StringName = stock_pool[rng.randi_range(0, stock_pool.size() - 1)]
+		var base: StringName = _pick_base(stock_pool, {}, rng)
 		_mint(profile, base, ModuleData.SOURCE_AUCTION_STOCK, listings)
 	return listings
+
+
+## V5's reserved tier: the docked sector's own band (`SectorRegistry.sector_tier`, 11
+## section 1.1's mix), clamped into the catalogue's own three tiers because a tier-4 sector
+## (S6-S7) has no tier-4 module rows. Reversal: the reserved slot is an added 21st row.
+static func _reserved_tier(station: Dictionary) -> int:
+	var tier := SectorData.sector_tier(
+		SectorData.sector_id_for(int(station.get(&"sector", 0)))
+	)
+	return clampi(tier, TIER_ORDER[0], TIER_ORDER[TIER_ORDER.size() - 1])
+
+
+## V6 (12 section 5, 2026-10-08 block): one rolled slot's base id. The station's owner
+## weights its own tech families x2 through `StationRegistry.shelf_bias`; a pool whose
+## weights are all equal -- every station-less caller, and a pool the owner has no family in
+## -- draws through the shipped uniform call, so a seeded shelf with no docked station is
+## byte-identical to what it was before this wave.
+static func _pick_base(
+	pool: Array[StringName], station: Dictionary, rng: RandomNumberGenerator
+) -> StringName:
+	if pool.is_empty():
+		return &""
+	var weights: Array[float] = []
+	var total := 0.0
+	var uniform := true
+	for id: StringName in pool:
+		var weight := StationData.shelf_bias(station, id)
+		weights.append(weight)
+		total += weight
+		if not is_equal_approx(weight, weights[0]):
+			uniform = false
+	if uniform or total <= 0.0:
+		return pool[rng.randi_range(0, pool.size() - 1)]
+	var roll := rng.randf() * total
+	var accumulated := 0.0
+	for index in pool.size():
+		accumulated += weights[index]
+		if roll < accumulated:
+			return pool[index]
+	return pool[pool.size() - 1]
 
 
 ## Roll one listing and file it under its minted id. An id the profile could not
@@ -449,7 +583,8 @@ static func listing_ids(profile: Node) -> Array[StringName]:
 	return ids
 
 
-## The one discounted listing id, `&""` when the shelf carries none.
+## The one discounted listing id, `&""` when the shelf carries none: V4's **first** row
+## (the shipped draw). `hot_ids` answers the whole pair.
 static func hot_id(profile: Node) -> StringName:
 	if profile == null:
 		return &""
@@ -477,9 +612,9 @@ static func listing(profile: Node, id: StringName) -> Dictionary:
 ##
 ## `name` is 15 section 7's full rolled name, `meta` is section 5.3's own line
 ## with the rarity appended, `price` is the number the row charges (09 list x 15
-## section 1's rarity multiplier, 10 section 2.1's hot slot after) and `was` the
-## pre-discount price on the hot row only. `faction_lot` is 15 section 8's interim
-## tag. Every number is `ModuleCatalog`'s.
+## section 1's rarity multiplier, V1/V2's station factor, 10 section 2.1's hot slot after)
+## and `was` the pre-discount price on a hot row only. `faction_lot` is 15 section 8's
+## interim tag. Every number is `ModuleCatalog`'s or the station registry's.
 static func listing_rows(profile: Node) -> Array[Dictionary]:
 	var rows: Array[Dictionary] = []
 	if profile == null:
@@ -487,7 +622,7 @@ static func listing_rows(profile: Node) -> Array[Dictionary]:
 	var listings: Variant = _lookup(profile.call(&"auction"), &"modules")
 	if not listings is Dictionary:
 		return rows
-	var hot := hot_id(profile)
+	var hot := hot_ids(profile)
 	for key: Variant in (listings as Dictionary).keys():
 		var raw: Variant = (listings as Dictionary)[key]
 		if not raw is Dictionary:
@@ -497,8 +632,8 @@ static func listing_rows(profile: Node) -> Array[Dictionary]:
 		var base := StringName(str(record.get("base_id", "")))
 		var rarity := StringName(str(record.get("rarity", "")))
 		var row := ModuleData.module(base)
-		var list := ModuleData.list_price(base, rarity)
-		var discounted := id == hot
+		var list := _station_price(ModuleData.list_price(base, rarity), profile, base)
+		var discounted := hot.has(id)
 		rows.append({
 			&"id": id,
 			&"base_id": base,
@@ -531,15 +666,19 @@ static func listing_rows(profile: Node) -> Array[Dictionary]:
 ## `preview` only, and there is no `assets/icons/ship/` -- so the slot draws each
 ## hull's own `preview`, the way the shipyard's row does (section 5.2).
 ## `ship_class` is `ShipFit.HULLS`' own class column, the shelf's display value.
+## `list` is `StationCatalog.ship_price` (V1: the catalogue's cost through the registry's
+## one factor), never the catalogue's bare `cost`, so the shelf quotes the station's price.
 static func hull_rows(profile: Node) -> Array[Dictionary]:
 	var rows: Array[Dictionary] = []
 	if profile == null:
 		return rows
-	var hot := hot_id(profile)
+	var hot := hot_ids(profile)
+	var station := _station(profile)
+	var standing := _standing(profile)
 	for ship_id: StringName in hull_ids(profile):
 		var ship := Catalog.ship(ship_id)
-		var list := int(ship.get(&"cost", 0))
-		var discounted := ship_id == hot
+		var list := Catalog.ship_price(ship_id, station, standing)
+		var discounted := hot.has(ship_id)
 		rows.append({
 			&"id": ship_id,
 			&"name": String(ship.get(&"name", "")),
@@ -738,7 +877,7 @@ static func buy_listing(profile: Node, id: StringName) -> Dictionary:
 	var record := listing(profile, id)
 	if record.is_empty():
 		return _refuse(result, REASON_UNKNOWN)
-	var row := _row_for(id, record, id == hot_id(profile))
+	var row := _row_for(profile, id, record, hot_ids(profile).has(id))
 	result[&"base_id"] = row[&"base_id"]
 	result[&"name"] = row[&"name"]
 	result[&"cost"] = int(row[&"price"])
@@ -749,17 +888,18 @@ static func buy_listing(profile: Node, id: StringName) -> Dictionary:
 	return result
 
 
-## Buy one listed hull at 10 section 2.3's buyout: the list price, or the hot slot's
-## -20 % when this hull carries it. `buy_ship` keeps the hull's bare-with-
-## mandatory-set rule (10 section 2.3), so this adds only the shelf's arithmetic.
+## Buy one listed hull at 10 section 2.3's buyout: the station's list price
+## (`StationCatalog.ship_price`, V1), or the hot slot's -20 % when this hull carries it.
+## `buy_ship` keeps the hull's bare-with-mandatory-set rule (10 section 2.3), so this adds
+## only the shelf's arithmetic.
 static func buy_hull(profile: Node, id: StringName) -> Dictionary:
 	var result := _blank(&"hull", id)
 	var ship := Catalog.ship(id)
 	if ship.is_empty():
 		return _refuse(result, REASON_UNKNOWN)
 	result[&"name"] = String(ship.get(&"name", ""))
-	var list := int(ship.get(&"cost", 0))
-	var cost := hot_price(list) if id == hot_id(profile) else list
+	var list := Catalog.ship_price(id, _station(profile), _standing(profile))
+	var cost := hot_price(list) if hot_ids(profile).has(id) else list
 	result[&"cost"] = cost
 	if not bool(profile.call(&"buy_ship", id, cost)):
 		var reason := REASON_ALREADY_OWNED if _owns(profile, id) else REASON_INSUFFICIENT
@@ -800,11 +940,13 @@ static func sell_row(profile: Node, id: StringName) -> Dictionary:
 
 ## One listing row with its `owned` column filled: `listing_rows`' body, kept
 ## separate so `buy_listing` prices a hot row through the same arithmetic the pane
-## renders.
-static func _row_for(id: StringName, record: Dictionary, hot: bool) -> Dictionary:
+## renders - the station factor included (V1/V2), the hot row's -20 % last.
+static func _row_for(
+	profile: Node, id: StringName, record: Dictionary, hot: bool
+) -> Dictionary:
 	var base := StringName(str(record.get("base_id", "")))
 	var rarity := StringName(str(record.get("rarity", "")))
-	var list := ModuleData.list_price(base, rarity)
+	var list := _station_price(ModuleData.list_price(base, rarity), profile, base)
 	return {
 		&"id": id,
 		&"base_id": base,
@@ -813,6 +955,29 @@ static func _row_for(id: StringName, record: Dictionary, hot: bool) -> Dictionar
 		&"was": list if hot else 0,
 		&"hot": hot,
 	}
+
+
+## The docked station's own row (14's 2026-10-08 block), `{}` when no place is filed -
+## every headless probe and every shelf read outside a station.
+static func _station(profile: Node) -> Dictionary:
+	return StationData.docked_station(profile)
+
+
+## The station owner's standing (12 section 4's -100..+100), 0 - Neutral, the bands' own
+## baseline - when there is no place, no profile or no standing accessor.
+static func _standing(profile: Node) -> int:
+	var station := _station(profile)
+	if profile == null or station.is_empty() or not profile.has_method(&"standing_of"):
+		return 0
+	return int(profile.call(&"standing_of", StringName(station.get(&"faction", &""))))
+
+
+## V1+V2 (12's 2026-10-08 block): one station price - the catalogue's own list through the
+## registry's one factor, so the band and the station owner's tech step (V2: added to the
+## band, never multiplied) are live on the shelf, the row and the charge alike. The order is
+## fixed: catalogue list, then the factor, then (at a hot row only) the -20 %.
+static func _station_price(price: int, profile: Node, base_id: StringName = &"") -> int:
+	return StationData.apply_price(price, _station(profile), _standing(profile), base_id)
 
 
 static func _blank(kind: StringName, id: StringName) -> Dictionary:

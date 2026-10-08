@@ -8,10 +8,10 @@ entry. addons/ is vendored and excluded. The JSON twin
 | Section | Lines |
 |---|---|
 | 1. Autoloads | L18–L27 |
-| 2. Scenes | L28–L147 |
-| 3. Signal wiring | L148–L394 |
-| 4. Scripts | L395–L685 |
-| 5. Orphan scripts | L686–L700 |
+| 2. Scenes | L28–L148 |
+| 3. Signal wiring | L149–L396 |
+| 4. Scripts | L397–L691 |
+| 5. Orphan scripts | L692–L706 |
 
 
 ## 1. Autoloads (project.godot)
@@ -80,6 +80,7 @@ entry. addons/ is vendored and excluded. The JSON twin
 | res://tests/probe_s22_6_inertia.tscn | Node2D | res://tests/probe_s22_6_inertia.gd | — | — |
 | res://tests/probe_s22r1_review.tscn | Node | res://tests/probe_s22r1_review.gd | — | — |
 | res://tests/probe_s23_r1.tscn | Node2D | res://tests/probe_s23_r1.gd | — | — |
+| res://tests/probe_s24_r1.tscn | Node | res://tests/probe_s24_r1.gd | — | — |
 | res://tests/probe_s25_pixels.tscn | Node2D | res://tests/probe_s25_pixels.gd | — | — |
 | res://tests/probe_s2_5_feel.tscn | Node2D | res://tests/probe_s2_5_feel.gd | — | — |
 | res://tests/probe_s2_5_node_scale.tscn | Node2D | res://tests/probe_s2_5_node_scale.gd | — | — |
@@ -208,6 +209,7 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://tests/test_s21_stability.gd | scene.route_requested → func(_route_name: StringName |
 | res://tests/test_s21_stability.gd | scene.route_requested → func(route_name: StringName |
 | res://tests/test_s22_feedback.gd | _guns.hit_landed → _on_delivery |
+| res://tests/test_s24_world.gd | scene.route_requested → func(_route: StringName |
 | res://tests/test_s34_refinery_queue.gd | _profile.profile_changed → _on_profile_changed |
 | res://tests/test_s6_heat.gd | scene.route_requested → func(route: StringName |
 | res://tests/test_s6_poi_loot.gd | site.cache_collected → func(amount: int |
@@ -399,29 +401,29 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 |---|---|---|---|---|
 | res://autoload/audio_manager.gd **[AudioManager]** | Node | — | res://ui/paths.gd | res://tests/probe_f2_weapon_fx.gd, res://tests/probe_f3_weapon_fx.gd, res://tests/probe_f4_weapon_fx.gd …(+16) |
 | res://autoload/dialog_manager.gd **[DialogManager]** | Node | dialog_cancelled, dialog_confirmed | — | res://tests/probe_w3_lint.gd, res://tests/probe_w5_lint.gd |
-| res://autoload/player_profile.gd **[PlayerProfile]** | Node | profile_changed, purchase_failed | res://game/auction.gd, res://game/economy_log.gd, res://game/module_catalog.gd, res://game/refinery.gd …(+3) | res://tests/probe_p2a_fits_migration.gd, res://tests/probe_p2b1_buy_module.gd …(+45) |
+| res://autoload/player_profile.gd **[PlayerProfile]** | Node | profile_changed, purchase_failed | res://game/auction.gd, res://game/economy_log.gd, res://game/module_catalog.gd, res://game/refinery.gd …(+3) | res://tests/probe_p2a_fits_migration.gd, res://tests/probe_p2b1_buy_module.gd …(+48) |
 | res://autoload/router.gd **[Router]** | Node | overlay_popped, overlay_pushed, screen_changed | res://ui/paths.gd | res://tests/probe_w3_lint.gd, res://tests/probe_w5_lint.gd |
 | res://autoload/settings_manager.gd **[SettingsManager]** | Node | setting_changed | res://ui/paths.gd | res://tests/probe_g1_lint.gd, res://tests/probe_g4_lint.gd, res://tests/probe_w3_lint.gd …(+2) |
 | res://autoload/world_clock.gd **[WorldClock]** | Node | — | — | res://game/asteroid_field.gd, res://game/auction.gd, res://game/exchange.gd, res://game/game.gd …(+25) |
 | res://game/affixes.gd | RefCounted | — | — | res://game/game.gd, res://tests/probe_s7r1_affixes.gd, res://tests/probe_s7r1_suffixes.gd …(+1) |
 | res://game/asteroid.gd | RigidBody2D | cracked, gun_chipped | res://assets/env/prop/env_asteroid_L1.png, res://assets/env/prop/env_asteroid_L2.png …(+8) | res://game/asteroid_field.gd, res://game/game.gd, res://game/npc_ship.gd, res://game/poi.gd …(+44) |
 | res://game/asteroid_field.gd | Node2D | — | res://autoload/world_clock.gd, res://game/asteroid.gd, res://game/impact.gd, res://game/mineral_catalog.gd …(+3) | res://game/sector.gd, res://tests/probe_rock_cleave.gd, res://tests/probe_rock_cleave_a2.gd …(+23) |
-| res://game/auction.gd | RefCounted | — | res://autoload/world_clock.gd, res://game/module_catalog.gd, res://game/ship_fit.gd …(+1) | res://autoload/player_profile.gd, res://tests/probe_s37_r1_scene.gd, res://tests/probe_s7r1_suffixes.gd …(+10) |
+| res://game/auction.gd | RefCounted | — | res://autoload/world_clock.gd, res://game/module_catalog.gd, res://game/sector_registry.gd …(+3) | res://autoload/player_profile.gd, res://tests/probe_s24_r1.gd, res://tests/probe_s37_r1_scene.gd …(+12) |
 | res://game/component_catalog.gd | RefCounted | — | res://assets/icons/cargo/icon_cargo_container.svg, res://assets/icons/cargo/icon_cargo_crate.svg …(+4) | res://game/exchange.gd, res://game/loot_tables.gd, res://game/poi.gd, res://tests/probe_g3_shadow.gd …(+8) |
 | res://game/corridor.gd | Area2D | crossed | — | res://game/sector.gd, res://tests/test_s6_travel.gd |
 | res://game/damage.gd | RefCounted | — | res://game/impact.gd | res://game/game.gd, res://game/npc_ship.gd, res://game/player_ship.gd, res://tests/probe_c2_weapons.gd …(+4) |
 | res://game/economy_log.gd | RefCounted | — | — | res://autoload/player_profile.gd, res://game/exchange.gd, res://game/game.gd, res://game/gate.gd …(+34) |
-| res://game/exchange.gd | RefCounted | — | res://autoload/world_clock.gd, res://game/component_catalog.gd, res://game/economy_log.gd …(+2) | res://tests/probe_s8_q0_exchange.gd, res://tests/probe_w3_lint.gd, res://tests/probe_w5_lint.gd …(+8) |
+| res://game/exchange.gd | RefCounted | — | res://autoload/world_clock.gd, res://game/component_catalog.gd, res://game/economy_log.gd …(+3) | res://tests/probe_s24_r1.gd, res://tests/probe_s8_q0_exchange.gd, res://tests/probe_w3_lint.gd …(+10) |
 | res://game/fx.gd | RefCounted | — | — | res://game/projectile.gd, res://game/speed_fantasy.gd, res://game/weapons.gd …(+18) |
-| res://game/game.gd | Node2D | route_requested | res://autoload/world_clock.gd, res://game/affixes.gd, res://game/asteroid.gd, res://game/damage.gd …(+18) | res://game/game.tscn, res://game/game.tscn (ext_resource), res://tests/probe_s22r1_review.gd …(+10) |
+| res://game/game.gd | Node2D | route_requested | res://autoload/world_clock.gd, res://game/affixes.gd, res://game/asteroid.gd, res://game/damage.gd …(+19) | res://game/game.tscn, res://game/game.tscn (ext_resource), res://tests/probe_s22r1_review.gd …(+11) |
 | res://game/gate.gd | Area2D | jumped | res://assets/env/poi/env_jump_gate.png, res://game/economy_log.gd, res://game/npc_registry.gd …(+1) | res://game/sector.gd, res://tests/test_s17_gate_edges.gd, res://tests/test_s6_travel.gd …(+1) |
 | res://game/impact.gd | RefCounted | — | — | res://game/asteroid_field.gd, res://game/damage.gd, res://game/game.gd, res://game/npc_ship.gd …(+13) |
 | res://game/loot_tables.gd | RefCounted | — | res://game/component_catalog.gd | res://game/game.gd, res://game/poi.gd, res://tests/probe_s23_r1.gd, res://tests/test_engine2_loot.gd …(+4) |
 | res://game/mineral_catalog.gd | RefCounted | — | res://assets/icons/ingot/icon_ingot_aluminium.svg, res://assets/icons/ingot/icon_ingot_cerulite.svg …(+39) | res://game/asteroid_field.gd, res://game/exchange.gd, res://game/mining_laser.gd, res://game/pickup.gd …(+25) |
 | res://game/mining_laser.gd | Node2D | — | res://game/mineral_catalog.gd, res://game/ore_tuning.gd, res://game/pickup.gd, res://game/projectile.gd …(+1) | res://game/mining_laser.tscn, res://game/mining_laser.tscn (ext_resource), res://tests/probe_f3_weapon_fx.gd …(+14) |
-| res://game/module_catalog.gd | RefCounted | — | res://assets/icons/module/, res://assets/icons/module/icon_module_ …(+35) | res://autoload/player_profile.gd, res://game/auction.gd, res://game/game.gd, res://game/poi.gd …(+47) |
+| res://game/module_catalog.gd | RefCounted | — | res://assets/icons/module/, res://assets/icons/module/icon_module_ …(+35) | res://autoload/player_profile.gd, res://game/auction.gd, res://game/game.gd, res://game/poi.gd …(+51) |
 | res://game/npc_brain.gd | RefCounted | — | res://game/npc_registry.gd | res://game/npc_ship.gd, res://tests/probe_s19r1_review.gd, res://tests/test_engine2_npc.gd …(+1) |
-| res://game/npc_registry.gd | RefCounted | — | res://assets/ships/, res://game/sector_registry.gd | res://game/game.gd, res://game/gate.gd, res://game/npc_brain.gd, res://game/npc_ship.gd, res://game/sector.gd …(+11) |
+| res://game/npc_registry.gd | RefCounted | — | res://assets/ships/, res://game/sector_registry.gd | res://game/game.gd, res://game/gate.gd, res://game/npc_brain.gd, res://game/npc_ship.gd, res://game/sector.gd …(+13) |
 | res://game/npc_ship.gd | Node2D | died | res://game/asteroid.gd, res://game/damage.gd, res://game/impact.gd, res://game/npc_brain.gd …(+2) | res://game/game.gd, res://game/sector.gd, res://tests/probe_c2_weapons.gd, res://tests/probe_f2_weapon_fx.gd …(+16) |
 | res://game/ore_tuning.gd | RefCounted | — | — | res://game/asteroid.gd, res://game/asteroid_field.gd, res://game/mineral_catalog.gd …(+24) |
 | res://game/pickup.gd | Node2D | collected | res://assets/env/pickup/env_pickup_ore_pod.png, res://game/economy_log.gd, res://game/mineral_catalog.gd …(+1) | res://game/asteroid_field.gd, res://game/game.gd, res://game/mining_laser.gd, res://game/poi.gd …(+9) |
@@ -430,13 +432,14 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://game/poi.gd | Node2D | cache_collected, revealed, scanned, triggered | res://game/asteroid.gd, res://game/component_catalog.gd, res://game/economy_log.gd, res://game/loot_tables.gd …(+5) | res://game/game.gd, res://game/sector.gd, res://tests/test_s6_poi_loot.gd, res://tests/test_s7_suffixes.gd |
 | res://game/projectile.gd | Area2D | detonated | res://assets/fx/fx_arc_spark_f1.png, res://assets/fx/fx_arc_spark_f2.png, res://assets/fx/fx_arc_spark_f3.png …(+35) | res://game/asteroid_field.gd, res://game/mining_laser.gd, res://game/npc_ship.gd, res://game/player_ship.gd …(+41) |
 | res://game/refinery.gd | RefCounted | — | res://game/economy_log.gd, res://game/mineral_catalog.gd, res://game/ship_fit.gd | res://autoload/player_profile.gd, res://tests/probe_s23_r1.gd, res://tests/probe_s34_review.gd …(+5) |
-| res://game/repairs.gd | RefCounted | — | res://game/economy_log.gd, res://game/player_state.gd, res://game/ship_fit.gd, res://game/station_catalog.gd | res://tests/probe_r1_fit_panes.gd, res://tests/probe_s19r1_review.gd, res://tests/probe_s22r1_review.gd …(+9) |
+| res://game/repairs.gd | RefCounted | — | res://game/economy_log.gd, res://game/player_state.gd, res://game/ship_fit.gd, res://game/station_catalog.gd …(+1) | res://tests/probe_r1_fit_panes.gd, res://tests/probe_s19r1_review.gd, res://tests/probe_s22r1_review.gd …(+11) |
 | res://game/sector.gd | Node2D | npc_spawned, poi_spawned | res://assets/env/poi/env_station.png, res://assets/env/poi/env_station_hero.png, res://autoload/world_clock.gd …(+9) | res://game/game.gd, res://tests/probe_g3_lint.gd, res://tests/probe_g3_shadow.gd, res://tests/probe_g4_lint.gd …(+7) |
-| res://game/sector_registry.gd | RefCounted | — | res://assets/env/backdrop/env_sector_1_bg.png, res://assets/env/backdrop/env_sector_2_bg.png …(+6) | res://game/game.gd, res://game/gate.gd, res://game/npc_registry.gd, res://game/poi.gd, res://game/sector.gd …(+11) |
+| res://game/sector_registry.gd | RefCounted | — | res://assets/env/backdrop/env_sector_1_bg.png, res://assets/env/backdrop/env_sector_2_bg.png …(+6) | res://game/auction.gd, res://game/game.gd, res://game/gate.gd, res://game/npc_registry.gd, res://game/poi.gd …(+14) |
 | res://game/ship_fit.gd | RefCounted | — | res://assets/ships/ship_, res://tests/probe_s5_hardpoints.gd | res://autoload/player_profile.gd, res://game/auction.gd, res://game/game.gd, res://game/pickup.gd …(+100) |
 | res://game/ship_stats.gd | RefCounted | — | — | — |
 | res://game/speed_fantasy.gd | Node | — | res://assets/fx/fx_hull_critical_vignette_f1.png, res://game/fx.gd, res://game/projectile.gd …(+1) | res://game/game.gd, res://game/game.tscn, res://game/game.tscn (ext_resource), res://tests/probe_s25_pixels.gd …(+6) |
-| res://game/station_catalog.gd | RefCounted | — | res://assets/icons/module/icon_module_w_railgun.svg, res://assets/icons/weapon/icon_ammo_laser.png …(+13) | res://autoload/player_profile.gd, res://game/auction.gd, res://game/exchange.gd, res://game/repairs.gd …(+34) |
+| res://game/station_catalog.gd | RefCounted | — | res://assets/icons/module/icon_module_w_railgun.svg, res://assets/icons/weapon/icon_ammo_laser.png …(+14) | res://autoload/player_profile.gd, res://game/auction.gd, res://game/exchange.gd, res://game/repairs.gd …(+37) |
+| res://game/station_registry.gd | RefCounted | — | res://game/module_catalog.gd | res://game/auction.gd, res://game/exchange.gd, res://game/game.gd, res://game/repairs.gd …(+7) |
 | res://game/station_scene.gd | Node2D | — | res://assets/env/poi/env_station_arm_a.png, res://assets/env/poi/env_station_arm_b.png …(+12) | res://game/sector.gd, res://tests/test_d11_station.gd |
 | res://game/weapons.gd | Node2D | countermeasure_used, dry_fired, hit_landed, locks_broken, shot_fired | res://assets/fx/fx_muzzle_flash_f1.png, res://assets/fx/fx_muzzle_flash_f2.png …(+8) | res://autoload/player_profile.gd, res://game/game.gd, res://game/player_ship.gd …(+53) |
 | res://tests/c1_stub_rock.gd | "res://game/asteroid.gd" | — | res://game/asteroid.gd | res://tests/probe_c1_ram.gd |
@@ -496,6 +499,7 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://tests/probe_s22_6_inertia.gd | Node2D | — | res://game/asteroid.gd, res://game/asteroid_field.gd, res://game/player_ship.tscn, res://game/player_state.gd …(+2) | res://tests/probe_s22_6_inertia.tscn, res://tests/probe_s22_6_inertia.tscn (ext_resource) |
 | res://tests/probe_s22r1_review.gd | Node | — | res://assets/audio/generation_log_audio.md, res://assets/audio/sfx/%s.ogg …(+17) | res://tests/probe_s22r1_review.tscn, res://tests/probe_s22r1_review.tscn (ext_resource) |
 | res://tests/probe_s23_r1.gd | Node2D | — | res://assets/icons/cargo/icon_cargo_container.svg, res://assets/icons/module/icon_module_w_railgun.svg …(+31) | res://tests/probe_s23_r1.tscn, res://tests/probe_s23_r1.tscn (ext_resource) |
+| res://tests/probe_s24_r1.gd | Node | — | res://autoload/player_profile.gd, res://game/auction.gd, res://game/exchange.gd, res://game/game.tscn …(+9) | res://tests/probe_s24_r1.tscn, res://tests/probe_s24_r1.tscn (ext_resource) |
 | res://tests/probe_s25_pixels.gd | Node2D | — | res://game/speed_fantasy.gd, res://tests/probe_s25_pixels.tscn | res://tests/probe_s25_pixels.tscn, res://tests/probe_s25_pixels.tscn (ext_resource) |
 | res://tests/probe_s2_5_feel.gd | Node2D | — | res://assets/fx/fx_arc_spark_f1.png, res://assets/fx/fx_dash_charge_f1.png …(+13) | res://tests/probe_s2_5_feel.tscn, res://tests/probe_s2_5_feel.tscn (ext_resource) |
 | res://tests/probe_s2_5_node_scale.gd | Node2D | — | res://tests/probe_s2_5_node_scale_world.gd | res://tests/probe_s2_5_node_scale.tscn, res://tests/probe_s2_5_node_scale.tscn (ext_resource) |
@@ -604,6 +608,8 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://tests/test_s22_balance.gd | McpTestSuite | — | res://autoload/player_profile.gd, res://game/npc_ship.gd, res://game/player_ship.tscn …(+4) | — |
 | res://tests/test_s22_feedback.gd | McpTestSuite | — | res://assets/fx/fx_arc_spark_f1.png, res://assets/fx/fx_mining_beam_f1.png …(+15) | — |
 | res://tests/test_s23_content.gd | McpTestSuite | — | res://assets/ships/ship_interceptor_side.png, res://assets/ships/ship_sibelon_side.png …(+15) | — |
+| res://tests/test_s24_bands.gd | McpTestSuite | — | res://autoload/player_profile.gd, res://game/auction.gd, res://game/game.gd, res://game/game.tscn …(+5) | — |
+| res://tests/test_s24_world.gd | McpTestSuite | — | res://autoload/player_profile.gd, res://game/exchange.gd, res://game/game.tscn, res://game/module_catalog.gd …(+7) | — |
 | res://tests/test_s29_hyperdrive.gd | McpTestSuite | — | res://game/auction.gd, res://game/game.gd, res://game/game.tscn, res://game/module_catalog.gd …(+3) | — |
 | res://tests/test_s29_map_deck.gd | McpTestSuite | — | res://ui/hud/hud.tscn, res://ui/hud/map_deck.gd, res://ui/hud/minimap.gd, res://ui/theme/vajb_theme.tres | — |
 | res://tests/test_s29_station_panels.gd | McpTestSuite | — | res://autoload/player_profile.gd, res://ui/screens/station.gd, res://ui/screens/station.tscn …(+4) | — |
@@ -673,14 +679,14 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://ui/screens/main_menu.gd | Screen | — | — | res://ui/screens/main_menu.tscn, res://ui/screens/main_menu.tscn (ext_resource) |
 | res://ui/screens/settings.gd | Screen | — | res://ui/screens/settings_rebind_row.tscn | res://ui/screens/settings.tscn, res://ui/screens/settings.tscn (ext_resource) |
 | res://ui/screens/settings_rebind_row.gd | HBoxContainer | binding_pressed, reset_pressed | — | res://ui/screens/settings_rebind_row.tscn, res://ui/screens/settings_rebind_row.tscn (ext_resource) |
-| res://ui/screens/station.gd | Screen | — | res://assets/icons/cargo/icon_cargo_ore.svg, res://assets/icons/cargo/icon_credits.svg …(+17) | res://tests/probe_r1_fit_panes.gd, res://tests/probe_r1_p2b1_review.gd, res://tests/probe_s20_review.gd …(+16) |
-| res://ui/station/armory_panel.gd | Control | inspect_requested, sheet_requested, status_requested | res://assets/icons/slot/, res://assets/icons/tint/, res://assets/icons/weapon/icon_weapon_cannon.svg …(+7) | res://tests/probe_s20_review.gd, res://tests/probe_s33_review.gd, res://tests/probe_s35_f1_subtitle.gd …(+16) |
+| res://ui/screens/station.gd | Screen | — | res://assets/icons/cargo/icon_cargo_ore.svg, res://assets/icons/cargo/icon_credits.svg …(+18) | res://tests/probe_r1_fit_panes.gd, res://tests/probe_r1_p2b1_review.gd, res://tests/probe_s20_review.gd …(+17) |
+| res://ui/station/armory_panel.gd | Control | inspect_requested, sheet_requested, status_requested | res://assets/icons/slot/, res://assets/icons/tint/, res://assets/icons/weapon/icon_weapon_cannon.svg …(+8) | res://tests/probe_s20_review.gd, res://tests/probe_s33_review.gd, res://tests/probe_s35_f1_subtitle.gd …(+16) |
 | res://ui/station/armory_style.gd | "res://ui/hud/cockpit_style.gd" | — | res://ui/hud/cockpit_style.gd, res://ui/station/armory_style_user.tres, res://ui/theme/vajb_theme.tres | res://tests/probe_s20_review.gd, res://tests/test_d7_armory.gd, res://tests/test_s18_armory_rework.gd …(+2) |
 | res://ui/station/auction_panel.gd | VBoxContainer | inspect_requested, sheet_requested, status_requested | res://assets/icons/tint/, res://assets/icons/weapon/icon_weapon_cannon.svg …(+9) | res://tests/test_p2b1_outfitting_panel.gd, res://tests/test_s3_auction.gd, res://tests/test_s5_commerce.gd …(+2) |
 | res://ui/station/exchange_panel.gd | VBoxContainer | inspect_requested, sheet_requested, status_requested | res://assets/icons/, res://assets/icons/tint/, res://autoload/player_profile.gd, res://autoload/world_clock.gd …(+5) | res://tests/probe_g3_lint.gd, res://tests/probe_g3_shadow.gd, res://tests/probe_g4_lint.gd …(+4) |
 | res://ui/station/fitting_panel.gd | VBoxContainer | inspect_requested, sheet_requested, status_requested | res://assets/icons/slot/, res://assets/icons/tint/, res://assets/icons/weapon/icon_weapon_cannon.svg …(+4) | res://tests/probe_r1_fit_panes.gd, res://tests/probe_r1_p2b1_review.gd, res://tests/probe_s8_q0_armory.gd …(+8) |
 | res://ui/station/launch_panel.gd | VBoxContainer | inspect_requested, launch_requested, status_requested | res://assets/icons/cargo/, res://assets/icons/cargo/icon_cargo_crate.svg, res://autoload/player_profile.gd …(+5) | res://tests/probe_g3_lint.gd, res://tests/probe_g3_shadow.gd, res://tests/probe_g4_lint.gd …(+9) |
-| res://ui/station/overview_panel.gd | VBoxContainer | inspect_requested, navigate_requested, status_requested | res://assets/icons/cargo/icon_cargo_ore.svg, res://assets/icons/cargo/icon_credits.svg …(+13) | res://ui/station/overview_panel.tscn, res://ui/station/overview_panel.tscn (ext_resource) |
+| res://ui/station/overview_panel.gd | VBoxContainer | inspect_requested, navigate_requested, status_requested | res://assets/icons/cargo/icon_cargo_ore.svg, res://assets/icons/cargo/icon_credits.svg …(+14) | res://tests/test_s24_world.gd, res://ui/station/overview_panel.tscn …(+1) |
 | res://ui/station/refinery_panel.gd | VBoxContainer | inspect_requested, sheet_requested, status_requested | res://assets/icons/tint/, res://autoload/player_profile.gd, res://game/mineral_catalog.gd …(+3) | res://tests/probe_w3_lint.gd, res://tests/probe_w5_lint.gd, res://ui/station/refinery_panel.tscn …(+1) |
 | res://ui/station/repairs_panel.gd | VBoxContainer | inspect_requested, status_requested | res://autoload/player_profile.gd, res://game/repairs.gd, res://game/station_catalog.gd | res://tests/probe_s19r1_review.gd, res://tests/probe_s22r1_review.gd, res://tests/probe_s8_q3_lint.gd …(+6) |
 | res://ui/station/shipyard_panel.gd | VBoxContainer | inspect_requested, sheet_requested, status_requested | res://assets/icons/slot/, res://autoload/player_profile.gd, res://game/auction.gd, res://game/repairs.gd …(+3) | res://tests/probe_g3_lint.gd, res://tests/probe_g3_shadow.gd, res://tests/probe_g4_lint.gd …(+7) |

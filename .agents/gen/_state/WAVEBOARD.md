@@ -12,13 +12,29 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 
 | Pos | Lane item | Wave | Runs after | The collision/dependency that forces the order |
 |---|---|---|---|---|
-| 1 | coder 30 | **S24 world identity** | — | **re-cut 2026-10-08** against the shipped shell (S30–S37), baseline 1152/0: two sequential builders (`S24-B1` A1–A2 → `S24-B2` A3–A5, both hold `game/game.gd`) then R1; the mechanism pins V1–V8 landed in `docs/gameplay/12|14|13|11`'s 2026-10-08 blocks |
-| 2 | coder 31 | S25 contracts board | coder 30 | `ui/station/` + `autoload/player_profile.gd` + S24's `contracts_visible` seam |
-| 3 | coder 32 | S26 bosses, arenas, insurance, vaults | coder 31 | `game/` + `player_profile.gd` + S25's Expedition seam |
-| 4 | coder 33 | S27 catalog breadth & shipyard | coder 32 | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/` |
+| 1 | coder 31 | **S25 contracts board** | — (S24 closed) | `ui/station/` + `autoload/player_profile.gd` + S24's shipped `contracts_visible`/`insurance_multiplier` seams; **its brief predates shell v2 too — re-cut it the way S24's was before dispatch** |
+| 2 | coder 32 | S26 bosses, arenas, insurance, vaults | coder 31 | `game/` + `player_profile.gd` + S25's Expedition seam |
+| 3 | coder 33 | S27 catalog breadth & shipyard | coder 32 | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/` |
 
-These four are the whole live queue — every earlier item is closed and archived
-(`_archive/dispatch_coder_done_2026-10-07.md` + `_archive/waveboard_updates_2026-10-07_to_2026-10-08.md`
+**Updated 2026-10-08 (S24 world identity closed — item 30).** Gate **1152 → 1186/0**,
+twice hermetic on fresh scratch stores; verify `"problems": []` vs `s24_start`.
+Two sequential builders (`hyper/deepseek-v4.1-flash` @ xhigh): **B1** the station
+registry + identity plate + the V1/V2 price law (+18 rows), **B2** the standing
+effects, the auction flavour, the seven per-sector bands and the nebula (+15
+rows); **R1** (`hyper/glm-5.3-flash` @ max, own 84-check probe) graded A1–A5 pass
+and left **1 HIGH** (the shell's refusal strip priced from the raw catalogue while
+the pane charged the station price) + 2 LOW → **T-152/T-153**; **F1** cured the
+HIGH (+1 row). CONTRACTS gains **§24** (the wave's interface) and §9's stale S30
+figure 1089 was corrected to the measured chain. New files:
+`game/station_registry.gd`, `tests/test_s24_world.gd`, `tests/test_s24_bands.gd`,
+`tests/probe_s24_r1.gd/.tscn`. **Owner ticks open: W1–W3 + V1–V8** (`TICKS.md`).
+Process note: F1 also edited the law out of scope (AGENTS.md, `dispatch_coder.md`,
+the S24–S27 briefs, via bash, undisclosed) — the developer re-authored the one
+substantive line (`build_code_map.py` in the close-out) with its rationale and
+reversal in `dispatch_coder.md`'s anatomy paragraph, and the map was regenerated.
+
+These three are the whole live queue — every earlier item is closed and archived
+(`_archive/dispatch_coder_done_2026-10-07.md` + `_archive/dispatch_done_2026-10-08.md`
 + `MASTER_REPORT.md` §6). Playtest pass #1 (the owner's, `19_testing_notes.md`'s
 eye list) runs alongside; build 2 + the tester template are phase exit
 criteria. Every brief's §11 tick sheet feeds its wave (unticked rows implement
@@ -28,7 +44,7 @@ at their PROPOSED value).
 
 - `docs/CONTRACTS.md` — pinned interfaces; the merged section pins (§5
   cleaving, §11 ship frames, §12 weapon fit, §13 fitting, §14 runner
-  sandbox, §17 armory panel, §18–§23 by wave) are the seams briefs code
+  sandbox, §17 armory panel, §18–§24 by wave) are the seams briefs code
   against; **§9 carries the live gate figure (live in CONTRACTS §9)** and
   §10 the changelog. Briefs say "code against CONTRACTS.md §n"; review
   waves own updating it.
@@ -39,7 +55,7 @@ at their PROPOSED value).
   passed=<live count> failed=0`, run **twice on fresh scratch stores**
   (`XDG_DATA_HOME=$(mktemp -d)`), byte-identical; CONTRACTS §14's runner
   sandbox law and §9's measured block are the authority. Growth history
-  (437 → 1152 across the waves) is `MASTER_REPORT.md` §6.
+  (437 → 1186 across the waves) is `MASTER_REPORT.md` §6.
 - `staging/verify_wave.py` — mechanical wave gates: `snapshot` before a
   wave, `verify --baseline <tag> [--forbidden ...] [--expect-reports ...]
   [--tests]` after. Baselines live in `.agents/gen/_state/_wave_state/`

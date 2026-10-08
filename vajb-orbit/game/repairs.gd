@@ -35,6 +35,9 @@ extends RefCounted
 const Catalog := preload("res://game/station_catalog.gd")
 const Fit := preload("res://game/ship_fit.gd")
 const Log := preload("res://game/economy_log.gd")
+## 12_factions.md's 2026-10-08 V1 block: the one owner of the station's price factor, read
+## by `fee` so the repair is priced where it happens.
+const StationRegistryScript := preload("res://game/station_registry.gd")
 
 ## The quadrant count's single owner (09 section 3.3 P1: the hull splits into that many
 ## even pools), reached by preload path so this service and the flight state cannot
@@ -63,6 +66,11 @@ const EVENT_RECHARGE := "RECHARGE"
 
 ## 01 section 6 fee for topping the ship back up, 0 when there is nothing to pay:
 ## an unknown ship, no damage report, or the shield-alone exemption.
+##
+## V1 (12_factions.md's 2026-10-08 block): the fee is a **station** price, so the section 6
+## figure is the input to the registry's one factor - a Shunned station charges +10 %, a
+## Trusted one -5 %, a Champion one -10 %, and a caller with no docked station (every
+## headless probe, and flight itself) reads the section 6 number exactly.
 static func fee(profile: Node, ship_id: StringName) -> int:
 	var current := _vitals(profile, ship_id)
 	if current.is_empty():
@@ -79,10 +87,29 @@ static func fee(profile: Node, ship_id: StringName) -> int:
 	var shield_missing := maxi(0, shield_max - shield)
 	if hull_missing == 0 and float(shield) >= SHIELD_MIN_EXEMPT_PERCENT * float(shield_max):
 		return 0
-	return (
-		ceili(float(hull_missing) / float(HULL_CR_PER_POINTS))
-		+ ceili(float(shield_missing) / float(SHIELD_CR_PER_POINTS))
+	return _station_price(
+		profile,
+		(
+			ceili(float(hull_missing) / float(HULL_CR_PER_POINTS))
+			+ ceili(float(shield_missing) / float(SHIELD_CR_PER_POINTS))
+		),
 	)
+
+
+## The one station price read of this service (V1): the registry's factor, over the
+## docked station's own row and its faction's standing. `fee` and the transaction it feeds
+## share this call, so the pane's readout and the charge can never disagree.
+static func _station_price(profile: Node, price: int) -> int:
+	var station := StationRegistryScript.docked_station(profile)
+	return StationRegistryScript.apply_price(price, station, _standing(profile, station))
+
+
+## The docked station's owner's standing, 0 (Neutral, the band's own baseline) when there
+## is no station, no profile or no standing accessor.
+static func _standing(profile: Node, station: Dictionary) -> int:
+	if profile == null or station.is_empty() or not profile.has_method(&"standing_of"):
+		return 0
+	return int(profile.call(&"standing_of", StringName(station.get(&"faction", &""))))
 
 
 ## R-S22-1 (01 section 6's 2026-09-27 P3 block, tick M4): the `hull_max` /

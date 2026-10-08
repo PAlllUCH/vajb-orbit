@@ -551,6 +551,16 @@
     "res://tests/probe_s23_r1.gd"
    ]
   },
+  "res://tests/probe_s24_r1.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s24_r1.gd"
+   ]
+  },
   "res://tests/probe_s25_pixels.tscn": {
    "assets": [],
    "connections": [],
@@ -1406,8 +1416,10 @@
    "refs": [
     "res://autoload/world_clock.gd",
     "res://game/module_catalog.gd",
+    "res://game/sector_registry.gd",
     "res://game/ship_fit.gd",
-    "res://game/station_catalog.gd"
+    "res://game/station_catalog.gd",
+    "res://game/station_registry.gd"
    ],
    "signals": []
   },
@@ -1464,7 +1476,8 @@
     "res://game/component_catalog.gd",
     "res://game/economy_log.gd",
     "res://game/mineral_catalog.gd",
-    "res://game/station_catalog.gd"
+    "res://game/station_catalog.gd",
+    "res://game/station_registry.gd"
    ],
    "signals": []
   },
@@ -1506,6 +1519,7 @@
     "res://game/sector_registry.gd",
     "res://game/ship_fit.gd",
     "res://game/speed_fantasy.gd",
+    "res://game/station_registry.gd",
     "res://game/weapons.gd",
     "res://ui/dev/dev_tuning_menu.tscn",
     "res://ui/paths.gd"
@@ -1855,7 +1869,8 @@
     "res://game/economy_log.gd",
     "res://game/player_state.gd",
     "res://game/ship_fit.gd",
-    "res://game/station_catalog.gd"
+    "res://game/station_catalog.gd",
+    "res://game/station_registry.gd"
    ],
    "signals": []
   },
@@ -1952,7 +1967,18 @@
     "res://assets/ships/ship_miner_side.png",
     "res://assets/ships/ship_patrol_side.png",
     "res://assets/ships/ship_trader_side.png",
-    "res://assets/ships/ship_vanguard_side.png"
+    "res://assets/ships/ship_vanguard_side.png",
+    "res://game/station_registry.gd"
+   ],
+   "signals": []
+  },
+  "res://game/station_registry.gd": {
+   "autoload": "",
+   "class_name": "StationRegistry",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [
+    "res://game/module_catalog.gd"
    ],
    "signals": []
   },
@@ -2973,6 +2999,28 @@
     "res://game/ship_fit.gd",
     "res://game/station_catalog.gd",
     "res://game/weapons.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s24_r1.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/auction.gd",
+    "res://game/exchange.gd",
+    "res://game/game.tscn",
+    "res://game/module_catalog.gd",
+    "res://game/npc_registry.gd",
+    "res://game/repairs.gd",
+    "res://game/sector_registry.gd",
+    "res://game/station_catalog.gd",
+    "res://game/station_registry.gd",
+    "res://tests/probe_s24_r1.tscn --quit-after 1200",
+    "res://ui/screens/station.tscn",
+    "res://ui/theme/vajb_theme.tres"
    ],
    "signals": []
   },
@@ -4643,6 +4691,46 @@
    ],
    "signals": []
   },
+  "res://tests/test_s24_bands.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/auction.gd",
+    "res://game/game.gd",
+    "res://game/game.tscn",
+    "res://game/module_catalog.gd",
+    "res://game/npc_registry.gd",
+    "res://game/sector_registry.gd",
+    "res://game/station_catalog.gd",
+    "res://game/station_registry.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s24_world.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "scene.route_requested \u2192 func(_route: StringName"
+   ],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/exchange.gd",
+    "res://game/game.tscn",
+    "res://game/module_catalog.gd",
+    "res://game/repairs.gd",
+    "res://game/station_catalog.gd",
+    "res://game/station_registry.gd",
+    "res://ui/screens/station.gd",
+    "res://ui/screens/station.tscn",
+    "res://ui/station/overview_panel.gd",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
   "res://tests/test_s29_hyperdrive.gd": {
    "autoload": "",
    "class_name": "",
@@ -5816,6 +5904,7 @@
     "res://autoload/world_clock.gd",
     "res://game/exchange.gd",
     "res://game/station_catalog.gd",
+    "res://game/station_registry.gd",
     "res://ui/components/inspect_sheet.tscn",
     "res://ui/components/tooltip.tscn",
     "res://ui/station/",
@@ -5870,6 +5959,7 @@
     "res://autoload/player_profile.gd",
     "res://game/module_catalog.gd",
     "res://game/station_catalog.gd",
+    "res://game/station_registry.gd",
     "res://ui/station/armory_style.gd",
     "res://ui/theme/chrome_family.gd"
    ],
@@ -6048,6 +6138,7 @@
     "res://game/repairs.gd",
     "res://game/ship_fit.gd",
     "res://game/station_catalog.gd",
+    "res://game/station_registry.gd",
     "res://ui/theme/chrome_family.gd"
    ],
    "signals": [

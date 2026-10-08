@@ -314,7 +314,7 @@ fifth is the only thing the owner pastes anywhere.
    queue file plus this one paragraph and nothing else:
 
    ```text
-   Read .agents/gen/dispatch_<lane>.md and execute queue item N only — <wave name>. Brief: <brief path>. Prompts: <prompts path>. Snapshot + commit before the first dispatch, run <builder> → <reviewer>, and the fixer only if the review leaves HIGH or MED. Stop before item N+1. Close out per the brief's close-out section (gate re-run, verify_wave.py verify --baseline <tag>, WAVEBOARD update, wave-boundary commit), then report back: the measured gate count, the builder's per-deliverable numbers, the reviewer's findings by tier, and the owner ticks.
+   Read .agents/gen/dispatch_<lane>.md and execute queue item N only — <wave name>. Brief: <brief path>. Prompts: <prompts path>. Snapshot + commit before the first dispatch, run <builder> → <reviewer>, and the fixer only if the review leaves HIGH or MED. Stop before item N+1. Close out per the brief's close-out section (gate re-run, verify_wave.py verify --baseline <tag>, build_code_map.py, WAVEBOARD update, wave-boundary commit), then report back: the measured gate count, the builder's per-deliverable numbers, the reviewer's findings by tier, and the owner ticks.
    ```
 
 Format rules: the owner never pastes worker prompts; the brief is law (a worker

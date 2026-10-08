@@ -12,6 +12,10 @@ extends RefCounted
 ## "neighbours, gate links" are the 1-2-3-4-5-6-7 spine of 11 §2.3, filled below
 ## by `_spine_neighbours`/`_corridors_for` so the seven rows cannot drift apart.
 ##
+## **S24 adds two more row keys** (13's and 11's 2026-10-08 blocks): `hostile_band`
+## (R-S24-2's per-sector band, in fill order) and `clouds` (V8's rolled nebula rows,
+## empty until `game/sector.gd:populate` rolls them on the sector's own seeded RNG).
+##
 ## Owner ids (`concord`, `meridian`, `choir`, `unaligned`) are the short forms
 ## 12 §3 uses for the factions' economy rows. No spelling existed in code before
 ## this file; 12 §4/17 §2 name `game/faction_registry.gd` as the future owner,
@@ -68,6 +72,37 @@ const DERELICT_SCAN_RANGE := 300.0
 const RIFT_DRAIN := 12.0
 const ANOMALY_WEIGHTS_RIFT_DOUBLED: Array[StringName] = [&"sector_6"]
 
+## R-S24-2's per-sector hostile bands, verbatim (13's 2026-09-27 P3 block, tick W1),
+## spelled once here so the seven row literals below read as data. The **row's order is
+## the fill order** (13's 2026-10-08 block): slot 0 is present whenever the sector's
+## band count is at least 1, and so on.
+const BAND_PIRATE_ONLY: Array[StringName] = [&"pirate"]
+const BAND_PIRATE_SWARMER: Array[StringName] = [&"pirate", &"swarmer"]
+const BAND_SWARMER_SIBELON_PIRATE: Array[StringName] = [&"swarmer", &"sibelon", &"pirate"]
+
+## 11's 2026-10-08 block (V8): the nebula clouds are **sector-row data** - 0-2 rows per
+## sector, `{centre: Vector2, radius: float}`, rolled on the sector's own seeded RNG so a
+## probe that seeds `populate` seeds them. Centres keep `CLOUD_CLEARANCE` from the arena
+## centre (V8, reversal 1000 u) so the station and the spawn ring are never inside one,
+## and `CLOUD_RADIUS` is V8's own 900 u (reversal 600 u). The roll's outer bound is
+## derived, not stated: `SECTOR_SIZE / 2 - CLOUD_RADIUS`, so a drawn disc stays inside
+## the 10 000 u arena (reversal: no bound, or 4500.0).
+const CLOUDS_MIN := 0
+const CLOUDS_MAX := 2
+const CLOUD_RADIUS := 900.0
+const CLOUD_CLEARANCE := 1500.0
+
+## The wash (11's 2026-10-08 block): Void Haze `#1A2230` at 15 % alpha, drawn by the
+## cloud node itself and used as the inside-cloud hull tint. One home, so the node and
+## the tint cannot drift; STYLE_BIBLE §7.2's blue-grey wash, no new palette colour.
+const CLOUD_WASH := Color("#1A2230")
+const CLOUD_WASH_ALPHA := 0.15
+
+## R-S24-3's cover reading (tick W2): inside a cloud the lock range, the POI scan range
+## and the minimap radius all read this factor of their shipped value. Feedback and range
+## math only - no stat, no damage, no AI change.
+const CLOUD_RANGE_FACTOR := 0.5
+
 ## The spine's last sector: 11 §1/§2.1's only lawless one, where a gate charges ×2.
 const LAWLESS_SECTOR := 7
 const SPINE_FIRST := 1
@@ -88,6 +123,8 @@ static func _static_init() -> void:
 			&"tier_weights": MineralCatalogScript.SECTOR_TIER_MIX[1],
 			&"backdrop_id": "res://assets/env/backdrop/env_sector_1_bg.png",
 			&"densities": _densities(0, 1, 1, 0, 1),
+			&"hostile_band": BAND_PIRATE_ONLY,
+			&"clouds": [],
 		},
 		{
 			&"id": &"sector_2",
@@ -96,6 +133,8 @@ static func _static_init() -> void:
 			&"tier_weights": MineralCatalogScript.SECTOR_TIER_MIX[2],
 			&"backdrop_id": "res://assets/env/backdrop/env_sector_2_bg.png",
 			&"densities": _densities(1, 2, 1, 1, 1),
+			&"hostile_band": BAND_PIRATE_ONLY,
+			&"clouds": [],
 		},
 		{
 			&"id": &"sector_3",
@@ -104,6 +143,8 @@ static func _static_init() -> void:
 			&"tier_weights": MineralCatalogScript.SECTOR_TIER_MIX[3],
 			&"backdrop_id": "res://assets/env/backdrop/env_sector_3_bg.png",
 			&"densities": _densities(2, 3, 1, 0, 1),
+			&"hostile_band": BAND_PIRATE_SWARMER,
+			&"clouds": [],
 		},
 		{
 			&"id": &"sector_4",
@@ -112,6 +153,8 @@ static func _static_init() -> void:
 			&"tier_weights": MineralCatalogScript.SECTOR_TIER_MIX[4],
 			&"backdrop_id": "res://assets/env/backdrop/env_sector_4_bg.png",
 			&"densities": _densities(3, 4, 1, 1, 1),
+			&"hostile_band": BAND_PIRATE_SWARMER,
+			&"clouds": [],
 		},
 		{
 			&"id": &"sector_5",
@@ -120,6 +163,8 @@ static func _static_init() -> void:
 			&"tier_weights": MineralCatalogScript.SECTOR_TIER_MIX[5],
 			&"backdrop_id": "res://assets/env/backdrop/env_sector_5_bg.png",
 			&"densities": _densities(3, 5, 1, 1, 1),
+			&"hostile_band": BAND_SWARMER_SIBELON_PIRATE,
+			&"clouds": [],
 		},
 		{
 			&"id": &"sector_6",
@@ -128,6 +173,8 @@ static func _static_init() -> void:
 			&"tier_weights": MineralCatalogScript.SECTOR_TIER_MIX[6],
 			&"backdrop_id": "res://assets/env/backdrop/env_sector_6_bg.png",
 			&"densities": _densities(4, 6, 1, 0, 1),
+			&"hostile_band": BAND_SWARMER_SIBELON_PIRATE,
+			&"clouds": [],
 		},
 		{
 			&"id": &"sector_7",
@@ -136,6 +183,8 @@ static func _static_init() -> void:
 			&"tier_weights": MineralCatalogScript.SECTOR_TIER_MIX[7],
 			&"backdrop_id": "res://assets/env/backdrop/env_sector_7_bg.png",
 			&"densities": _densities(6, 8, 0, 0, 0),
+			&"hostile_band": BAND_PIRATE_SWARMER,
+			&"clouds": [],
 		},
 	]
 	## The §2.3 spine, appended after the row literals so each row stays a readable
@@ -207,6 +256,82 @@ static func sector(sector_id: StringName) -> Dictionary:
 		if StringName(row.get(&"id", &"")) == sector_id:
 			return row
 	return {}
+
+
+## R-S24-2's band of one sector, in the row's own fill order (13's 2026-10-08 block:
+## `NpcRegistry.HOSTILE_FILL` no longer sources a band). An unknown id answers `[]`, so a
+## caller that walks the band spawns nothing rather than guessing one.
+static func hostile_band(sector_id: StringName) -> Array[StringName]:
+	var band: Array[StringName] = []
+	var raw: Variant = sector(sector_id).get(&"hostile_band", [])
+	if not raw is Array:
+		return band
+	for entry: Variant in (raw as Array):
+		band.append(StringName(entry))
+	return band
+
+
+## The rolled cloud rows of one sector (`{centre, radius}`), empty for a sector whose
+## `populate` has not run yet and for an unknown id.
+static func clouds(sector_id: StringName) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	var raw: Variant = sector(sector_id).get(&"clouds", [])
+	if not raw is Array:
+		return out
+	for entry: Variant in (raw as Array):
+		if entry is Dictionary:
+			out.append(entry)
+	return out
+
+
+## Files one sector's rolled clouds on its row - the one writer of the `clouds` key, called
+## by `game/sector.gd:populate` with `roll_clouds`' answer. The rest of the table stays
+## read-only data.
+static func set_clouds(sector_id: StringName, rolled: Array[Dictionary]) -> void:
+	for row: Dictionary in SECTORS:
+		if StringName(row.get(&"id", &"")) == sector_id:
+			row[&"clouds"] = rolled
+			return
+
+
+## V8's roll: 0-2 clouds on the caller's own stream (the sector's seeded one), each with
+## `CLOUD_RADIUS` and a centre in the annulus `CLOUD_CLEARANCE` .. `_cloud_outer_bound()`
+## around the arena centre, at a uniform bearing.
+static func roll_clouds(rng: RandomNumberGenerator) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	if rng == null:
+		return out
+	var count := rng.randi_range(CLOUDS_MIN, CLOUDS_MAX)
+	for _index: int in count:
+		var bearing := rng.randf() * TAU
+		var inner := CLOUD_CLEARANCE
+		var outer := _cloud_outer_bound()
+		var reach := inner + rng.randf() * maxf(outer - inner, 0.0)
+		out.append({
+			&"centre": Vector2.RIGHT.rotated(bearing) * reach,
+			&"radius": CLOUD_RADIUS,
+		})
+	return out
+
+
+## The furthest a cloud's centre may sit from the arena centre: the arena's half-extent less
+## the cloud's own radius, so a drawn disc never crosses the arena edge.
+static func cloud_outer_bound() -> float:
+	return _cloud_outer_bound()
+
+
+## Whether one point sits inside any cloud of a rolled set (R-S24-3's condition, read by
+## `game.gd`'s three range sites and by its hull tint).
+static func in_cloud(rolled: Array[Dictionary], point: Vector2) -> bool:
+	for cloud: Dictionary in rolled:
+		var centre: Vector2 = cloud.get(&"centre", Vector2.ZERO)
+		if point.distance_to(centre) <= float(cloud.get(&"radius", 0.0)):
+			return true
+	return false
+
+
+static func _cloud_outer_bound() -> float:
+	return maxf(SECTOR_SIZE.x, SECTOR_SIZE.y) * 0.5 - CLOUD_RADIUS
 
 
 ## S23 A6 (06 §7's cache scaling): the sector's **tier**, derived from the 11 §1.1

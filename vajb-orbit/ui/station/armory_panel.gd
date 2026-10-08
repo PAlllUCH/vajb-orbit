@@ -60,6 +60,9 @@ const ChromeFamily := preload("res://ui/theme/chrome_family.gd")
 const Catalog := preload("res://game/station_catalog.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
 const ModuleData := preload("res://game/module_catalog.gd")
+## 12's 2026-10-08 V1/V2 block: the one owner of the station's price factor, read by
+## `_module_price` and the pack cards' `Catalog.ammo_pack_price`.
+const StationRegistryScript := preload("res://game/station_registry.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
@@ -1645,7 +1648,9 @@ func _build_card(pack: Dictionary) -> Dictionary:
 	var pack_id: StringName = pack.get(&"id", &"")
 	var name_text := String(pack.get(&"name", ""))
 	var rounds := int(pack.get(&"rounds", 0))
-	var cost := int(pack.get(&"cost", 0))
+	## V1 (12's 2026-10-08 block): the pack's price at this station, through the catalogue's
+	## own station-aware reader, so the card, the buy chip and the charge read one number.
+	var cost := Catalog.ammo_pack_price(pack_id, _docked_station(), _station_standing())
 	var complete := pack_id != &"" and not name_text.is_empty() and rounds > 0
 	var card := Button.new()
 	card.name = "Ammo%s" % String(pack_id).to_pascal_case()
@@ -3040,6 +3045,37 @@ func _profile() -> ProfileScript:
 	return profile
 
 
+## The docked station's own row (14's 2026-10-08 block), empty when no place is filed.
+func _docked_station() -> Dictionary:
+	return StationRegistryScript.docked_station(_profile())
+
+
+## The station faction's standing (12 section 4's -100..+100), the band the price factor
+## reads. 0 - Neutral, the band's own baseline - when there is no place, no profile or no
+## standing accessor.
+func _station_standing() -> int:
+	var station := _docked_station()
+	if station.is_empty():
+		return 0
+	var profile := _profile()
+	if profile == null or not profile.has_method(&"standing_of"):
+		return 0
+	return int(profile.call(&"standing_of", StringName(station.get(&"faction", &""))))
+
+
+## V1+V2 (12's 2026-10-08 block): one module's list price at this station - the catalogue's
+## own `cost` through the registry's one factor, so the band and the station faction's -15 %
+## tech step (added to the band, never multiplied) are live on the row, the `BUY & FIT`
+## chip and the charge alike: `_buy` hands this same figure to `PlayerProfile.buy_module`.
+func _module_price(base_id: StringName) -> int:
+	return StationRegistryScript.apply_price(
+		int(ModuleData.module(base_id).get(&"cost", 0)),
+		_docked_station(),
+		_station_standing(),
+		base_id,
+	)
+
+
 func _pulse(node: CanvasItem) -> void:
 	if node == null:
 		return
@@ -3913,7 +3949,7 @@ func _equip_rows(profile: ProfileScript) -> Array[Dictionary]:
 		if not _cell_refusal(profile, hull, index, module_id).is_empty():
 			continue
 		rows.append(_equip_entry(
-			module_id, TAG_BUYABLE, 0, int(ModuleData.module(module_id).get(&"cost", 0)),
+			module_id, TAG_BUYABLE, 0, _module_price(module_id),
 			_row_legality(profile, hull, index, module_id)
 		))
 	return rows

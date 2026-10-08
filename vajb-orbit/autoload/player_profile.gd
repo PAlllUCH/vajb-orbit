@@ -286,6 +286,11 @@ var _standing: Dictionary = {}
 ## station is only ever reached from flight, so it is not a save key and `_apply_defaults`
 ## clears it rather than persisting it (CONTRACTS section 19's report).
 var _docked_faction: StringName = &""
+## The **place** the account is docked at (14's 2026-10-08 block): the station registry's
+## row id, filed by `game.gd` beside the faction above and read by
+## `StationRegistry.docked_station`. Transient the same way - no save key, no version bump,
+## cleared by `_apply_defaults`.
+var _docked_station: StringName = &""
 var _contracts: Array = []
 var _vaults: Dictionary = {}
 var _insured := false
@@ -1892,6 +1897,20 @@ func set_docked_faction(faction_id: StringName) -> void:
 	_docked_faction = faction_id
 
 
+## The station registry row id of the place the account is docked at, or `&""` when it is
+## not docked (14's 2026-10-08 block). The twin of `docked_faction`: transient, no save key,
+## no save-version change. `StationRegistry.docked_station` resolves it to a row.
+func docked_station() -> StringName:
+	return _docked_station
+
+
+## Set by the docking route (`game.gd:_file_docked_station`) beside the faction filing, so
+## the station shell's plate and every station price read the place the dock landed at.
+## Not persisted.
+func set_docked_station(station_id: StringName) -> void:
+	_docked_station = station_id
+
+
 func contracts() -> Array:
 	return _contracts.duplicate(true)
 
@@ -2136,6 +2155,7 @@ func _apply_defaults() -> void:
 	_heat.clear()
 	_standing.clear()
 	_docked_faction = &""
+	_docked_station = &""
 	_contracts.clear()
 	_vaults.clear()
 	_insured = false

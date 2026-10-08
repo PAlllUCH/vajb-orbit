@@ -15,6 +15,11 @@ extends RefCounted
 ## rounded up, and is always reported separately, never baked into the quoted
 ## unit price (05 section 5).
 ##
+## 12_factions.md section 3 / 14 section 3 (S24): the commission is the one
+## station-aware number here - 1.5 % at a Meridian station, 2 % everywhere else, floor
+## and ammo exemption unchanged. The station's own band multiplier (V1) never touches a
+## quote: the exchange is a market, not a shop.
+##
 ## One pricing function family (05 section 8): UI code reads `exchange_price()`
 ## and never recomputes a price from a baseline.
 ##
@@ -47,8 +52,16 @@ const ComponentCatalogScript := preload("res://game/component_catalog.gd")
 const StationCatalogScript := preload("res://game/station_catalog.gd")
 const Clock := preload("res://autoload/world_clock.gd")
 const Log := preload("res://game/economy_log.gd")
+## 12 section 3's Meridian commission, read through `commission_rate`: the one
+## station-aware number in this file. The band multiplier (V1) never touches a quote here -
+## the exchange is a market, not a shop.
+const StationRegistryScript := preload("res://game/station_registry.gd")
 
 const COMMISSION := 0.02
+## 12 section 3 / 14 section 3: a Meridian station charges 1.5 % instead of 2 %. The 10 CR
+## floor and R-S21-1's ammo exemption are unchanged.
+const COMMISSION_MERIDIAN := 0.015
+const FACTION_MERIDIAN: StringName = &"meridian"
 const COMMISSION_MIN := 10
 const DEMAND_MIN := 0.6
 const DEMAND_MAX := 1.6
@@ -100,36 +113,50 @@ static func unit_gross(baseline: int, demand: float) -> int:
 	return roundi(baseline * demand)
 
 
-## "2 % of each sale, minimum 10 CR per transaction, rounded up" (05 section 5).
+## 12 section 3 / 14 section 3's commission rate for one place: 1.5 % at a Meridian
+## station, 2 % everywhere else (an empty row is "not at a station", so 2 %). Reversal:
+## return `COMMISSION` for every row and delete the branch.
+static func commission_rate(station_row: Dictionary) -> float:
+	if StringName(station_row.get(&"faction", &"")) == FACTION_MERIDIAN:
+		return COMMISSION_MERIDIAN
+	return COMMISSION
+
+
+## "2 % of each sale, minimum 10 CR per transaction, rounded up" (05 section 5), at the
+## station's own rate (12 section 3: 1.5 % in Meridian space).
 ## A zero-gross transaction is not a sale: a component stack the station could
 ## not take at all is queued and pays 0 (05 section 4), so it is charged nothing
 ## rather than the 10 CR floor, which would otherwise become a negative payout.
-static func commission_for(gross: int) -> int:
+static func commission_for(gross: int, station_row: Dictionary = {}) -> int:
 	if gross <= 0:
 		return 0
-	return maxi(COMMISSION_MIN, ceili(gross * COMMISSION))
+	return maxi(COMMISSION_MIN, ceili(gross * commission_rate(station_row)))
 
 
 ## The commission one **item's** sale pays, the one entry point the quote, the
 ## transaction and `sell`'s quoted-gross re-derivation all read (R-S21-1, 01's
 ## 2026-09-27 P3 block, tick M2): ammunition cargo units skip the 10 CR floor
-## and pay `roundi(0.02 x gross)` - a 2 CR gross sale pays 0 and nets 2, where
-## the floor ate the whole payout (L130). Every other kind keeps
+## and pay `roundi(rate x gross)` at the station's own rate - a 2 CR gross sale pays 0
+## and nets 2, where the floor ate the whole payout (L130). Every other kind keeps
 ## `commission_for`'s floor and ceiling exactly.
 ## Reversal: return `commission_for(gross)` for every kind and delete the branch.
-static func commission_for_item(item_id: StringName, gross: int) -> int:
+static func commission_for_item(
+	item_id: StringName, gross: int, station_row: Dictionary = {}
+) -> int:
 	if is_ammo(item_id):
 		if gross <= 0:
 			return 0
-		return roundi(gross * COMMISSION)
-	return commission_for(gross)
+		return roundi(gross * commission_rate(station_row))
+	return commission_for(gross, station_row)
 
 
 ## One transaction-level quote: gross, fee and what the player is paid. The
 ## transaction rounding base (see the header); reproduces 05 section 5.
-static func sale_quote(baseline: int, demand: float, qty: int) -> Dictionary:
+static func sale_quote(
+	baseline: int, demand: float, qty: int, station_row: Dictionary = {}
+) -> Dictionary:
 	var gross := roundi(baseline * demand * qty)
-	var fee := commission_for(gross)
+	var fee := commission_for(gross, station_row)
 	return {&"gross": gross, &"fee": fee, &"paid": maxi(0, gross - fee)}
 
 
@@ -279,7 +306,10 @@ static func quote(
 	profile: Node, item_id: StringName, qty: int, now: int, rng: RandomNumberGenerator = null
 ) -> Dictionary:
 	evaluate_market(profile, now, rng)
-	return _quote_from(profile.market(), profile.cargo_qty(item_id), item_id, qty)
+	return _quote_from(
+		profile.market(), profile.cargo_qty(item_id), item_id, qty,
+		StationRegistryScript.docked_station(profile)
+	)
 
 
 ## The full transaction: evaluate once, verify, take the goods, pay, update the
@@ -307,11 +337,12 @@ static func sell(
 ) -> Dictionary:
 	evaluate_market(profile, now, rng)
 	var state: Dictionary = profile.market()
-	var result := _quote_from(state, profile.cargo_qty(item_id), item_id, qty)
+	var station := StationRegistryScript.docked_station(profile)
+	var result := _quote_from(state, profile.cargo_qty(item_id), item_id, qty, station)
 	if not bool(result[&"ok"]):
 		return result
 	if quoted_total >= 0:
-		var quoted_fee := commission_for_item(item_id, quoted_total)
+		var quoted_fee := commission_for_item(item_id, quoted_total, station)
 		result[&"gross"] = quoted_total
 		result[&"fee"] = quoted_fee
 		result[&"paid"] = maxi(0, quoted_total - quoted_fee)
@@ -341,12 +372,13 @@ static func sell(
 static func sell_all(profile: Node, now: int, rng: RandomNumberGenerator = null) -> Dictionary:
 	evaluate_market(profile, now, rng)
 	var state: Dictionary = profile.market()
+	var station := StationRegistryScript.docked_station(profile)
 	var lines: Array[Dictionary] = []
 	var skipped: Array[StringName] = []
 	var total := 0
 	for item_id: StringName in _bulk_ids(profile):
 		var qty: int = profile.cargo_qty(item_id)
-		var result := _quote_from(state, qty, item_id, qty)
+		var result := _quote_from(state, qty, item_id, qty, station)
 		if not bool(result[&"ok"]):
 			lines.append(result)
 			skipped.append(item_id)
@@ -390,7 +422,9 @@ static func _bulk_ids(profile: Node) -> Array[StringName]:
 ## ---------------------------------------------------------------------------
 
 
-static func _quote_from(state: Dictionary, held: int, item_id: StringName, qty: int) -> Dictionary:
+static func _quote_from(
+	state: Dictionary, held: int, item_id: StringName, qty: int, station_row: Dictionary = {}
+) -> Dictionary:
 	var result := _blank_quote(item_id, qty)
 	if qty <= 0:
 		return _refuse(result, REASON_INVALID_QTY)
@@ -410,7 +444,7 @@ static func _quote_from(state: Dictionary, held: int, item_id: StringName, qty: 
 	if is_ammo(item_id):
 		var ammo_unit := ammo_unit_price(item_id)
 		var ammo_gross := ammo_unit * qty
-		var ammo_fee := commission_for_item(item_id, ammo_gross)
+		var ammo_fee := commission_for_item(item_id, ammo_gross, station_row)
 		result[&"kind"] = KIND_AMMO
 		result[&"sellable"] = qty
 		result[&"unit"] = ammo_unit
@@ -425,7 +459,7 @@ static func _quote_from(state: Dictionary, held: int, item_id: StringName, qty: 
 		var sold := mini(qty, stock)
 		var unit := component_unit_price(baseline_of(item_id))
 		var gross := unit * sold
-		var fee := commission_for(gross)
+		var fee := commission_for(gross, station_row)
 		result[&"sellable"] = sold
 		result[&"queued"] = qty - sold
 		result[&"unit"] = unit
@@ -437,7 +471,7 @@ static func _quote_from(state: Dictionary, held: int, item_id: StringName, qty: 
 		result[&"ok"] = true
 		return result
 	var demand := _demand_from(state, item_id)
-	var quoted := sale_quote(baseline_of(item_id), demand, qty)
+	var quoted := sale_quote(baseline_of(item_id), demand, qty, station_row)
 	result[&"sellable"] = qty
 	result[&"unit"] = unit_net(baseline_of(item_id), demand)
 	result[&"gross"] = int(quoted[&"gross"])
@@ -519,6 +553,7 @@ static func _restock(state: Dictionary) -> void:
 static func _flush_queue(profile: Node, state: Dictionary) -> void:
 	var stock := _bucket(state, &"stock")
 	var queue := _bucket(state, &"queue")
+	var station := StationRegistryScript.docked_station(profile)
 	for entry: Dictionary in ComponentCatalogScript.COMPONENTS:
 		var component_id: StringName = entry.get(&"id", &"")
 		if component_id == &"":
@@ -531,7 +566,7 @@ static func _flush_queue(profile: Node, state: Dictionary) -> void:
 		if sold <= 0:
 			continue
 		var gross := component_unit_price(int(entry.get(&"value", 0))) * sold
-		var fee := commission_for(gross)
+		var fee := commission_for(gross, station)
 		var paid := maxi(0, gross - fee)
 		profile.add_credits(paid)
 		stock[String(component_id)] = available - sold

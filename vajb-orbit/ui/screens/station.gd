@@ -25,6 +25,9 @@ const TOKENS_TYPE: StringName = &"Tokens"
 const ChromeFamily := preload("res://ui/theme/chrome_family.gd")
 
 const Catalog := preload("res://game/station_catalog.gd")
+## 14's 2026-10-08 block: the docked place (the plate's name + character line, and the
+## faction the plate's glyph and border step by).
+const StationRegistryScript := preload("res://game/station_registry.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
 const ExchangeScript := preload("res://game/exchange.gd")
 const Clock := preload("res://autoload/world_clock.gd")
@@ -621,9 +624,12 @@ func _docked_faction() -> StringName:
 		var faction := StringName(profile.call(&"docked_faction"))
 		if not faction.is_empty():
 			return faction
-	if profile.has_method(&"n"):
-		return StringName(profile.call(&"n"))
-	return &""
+	## 14's 2026-10-08 block: with no faction filed, the docked station row's own owner is
+	## the answer. S30's dead branch - it probed the profile for a method named `n`, which
+	## exists nowhere in the project - is deleted; reversal: restore the two lines.
+	return StringName(
+		StationRegistryScript.docked_station(profile).get(&"faction", &"")
+	)
 
 
 ## N33: the delay elapsed with the payload still live, so the tooltip opens at the cursor.
@@ -788,10 +794,20 @@ func _apply_tokens() -> void:
 	_reserve_credits_width()
 
 
-## STATION_HUB section 15.5 / UI_SPEC section 7 A5.4-1: the name plate's faction glyph and
-## its 1 px metal-ramp border. Tokens only (N29): the ramp is the shipped metal tokens, no
-## new hue. A faction the plate cannot resolve keeps the shipped mark and `metal_mid`.
+## STATION_HUB section 15.5 / UI_SPEC section 7 A5.4-1: the name plate's two labels, its
+## faction glyph and its 1 px metal-ramp border. Tokens only (N29): the ramp is the shipped
+## metal tokens, no new hue. A faction the plate cannot resolve keeps the shipped mark and
+## `metal_mid`.
+##
+## 14's 2026-10-08 block: the labels read the docked station **row** (`name` and the W3
+## `character` line), and the same pair is pushed down to OVERVIEW's identity block, so the
+## header stays the one source of truth for the identity text. The scene's placeholder
+## strings are the last resort, for a place the registry cannot resolve.
 func _apply_identity() -> void:
+	var row := StationRegistryScript.docked_station(_profile())
+	if not row.is_empty():
+		_station_name.text = String(row.get(&"name", _station_name.text))
+		_station_location.text = String(row.get(&"character", _station_location.text))
 	var faction := _docked_faction()
 	var border := _token(&"metal_mid")
 	if faction == &"meridian":
@@ -807,6 +823,10 @@ func _apply_identity() -> void:
 		var path := FACTION_ICON_TEMPLATE % String(faction)
 		if ResourceLoader.exists(path):
 			_station_mark.texture = load(path)
+	if _overview != null and _overview.has_method(&"set_identity"):
+		_overview.call(
+			&"set_identity", _station_name.text, _station_location.text, faction
+		)
 
 
 ## A8: one font-measured reservation on the value label; right alignment (the scene) keeps
@@ -865,11 +885,8 @@ func _build_panels() -> void:
 		_connect_panel(_overview)
 		_overview.visible = false
 		_host_margin.add_child(_overview)
-		## The header is the one source of truth for the identity text (section 15.5).
-		if _overview.has_method(&"set_identity"):
-			_overview.call(
-				&"set_identity", _station_name.text, _station_location.text, _docked_faction()
-			)
+		## The header's identity text reaches OVERVIEW from `_apply_identity` (the one source
+		## of truth for the name and character line, section 15.5).
 	_services = _make_placeholder(SERVICES, PANEL_DIR + "services" + PANEL_SUFFIX)
 	_services.name = "Services"
 	_services.visible = false
@@ -1308,17 +1325,37 @@ func _entry_name(id: StringName) -> String:
 	return String(_entry(id).get(&"name", String(id))).to_upper()
 
 
+## F1 (S24-R1): the catalogue's own `cost` is the input and the registry's one reader is the
+## last step, so the strip quotes the figure the pane that triggered the refusal charged at
+## any standing band (12's 2026-10-08 block, rule 7's order). The tech step reads a module's
+## own base id; a pack and a hull take the band alone.
 func _entry_cost(id: StringName) -> int:
-	return int(_entry(id).get(&"cost", 0))
+	var cost := int(_entry(id).get(&"cost", 0))
+	var station := StationRegistryScript.docked_station(_profile())
+	if station.is_empty():
+		return cost
+	var base_id := id if not ModuleCatalog.module(id).is_empty() else &""
+	return StationRegistryScript.apply_price(cost, station, _station_standing(station), base_id)
+
+
+## The docked station faction's standing (12 section 4's -100..+100), the band the price
+## factor reads. 0 - Neutral, the band's own baseline - when there is no profile or no
+## standing accessor.
+func _station_standing(station: Dictionary) -> int:
+	var profile := _profile()
+	if profile == null or not profile.has_method(&"standing_of"):
+		return 0
+	return int(profile.call(&"standing_of", StringName(station.get(&"faction", &""))))
 
 
 func _entry(id: StringName) -> Dictionary:
 	## purchase_failed carries only the reason and the id, so the copy resolves the
-	## entry and its price from the catalogue the panel bought from: the ammo packs,
-	## the ships and the modules. The retired upgrades rows are gone with save v5
-	## (CONTRACTS section 13). A rolled **instance** id resolves to nothing here, which
-	## is why the AUCTION pane owns its own footer strip (STATION_HUB section 5.10's
-	## S3 amendment): this copy would read `0 NEEDED` and the raw id as the name.
+	## entry from the catalogue the panel bought from: the ammo packs, the ships and
+	## the modules (its price is `_entry_cost`'s own step). The retired upgrades rows
+	## are gone with save v5 (CONTRACTS section 13). A rolled **instance** id resolves
+	## to nothing here, which is why the AUCTION pane owns its own footer strip
+	## (STATION_HUB section 5.10's S3 amendment): this copy would read `0 NEEDED` and
+	## the raw id as the name.
 	var entry := Catalog.ammo_pack(id)
 	if entry.is_empty():
 		entry = Catalog.ship(id)

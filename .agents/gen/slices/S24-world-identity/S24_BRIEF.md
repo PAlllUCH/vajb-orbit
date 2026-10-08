@@ -256,5 +256,7 @@ Any other count moving is a bucket-2 pause: report it, leave it, stop.
    --tests --expect-reports .agents/gen/slices/S24-world-identity/S24-B1_report.md
    .agents/gen/slices/S24-world-identity/S24-B2_report.md
    .agents/gen/slices/S24-world-identity/S24-R1_review.md`
-3. WAVEBOARD + `dispatch_coder.md` one-liners; `MASTER_REPORT.md` §6 recap;
+3. `python3 staging/build_code_map.py` — the map must describe the shipped tree
+   (deterministic; a no-change re-run diffs nothing).
+4. WAVEBOARD + `dispatch_coder.md` one-liners; `MASTER_REPORT.md` §6 recap;
    `TICKS.md` refreshed; wave-boundary commit.

@@ -147,5 +147,7 @@ Any other count moving is a bucket-2 pause: report it, leave it, stop.
    vajb-orbit/project.godot docs/ vajb-orbit/addons/
    --tests --expect-reports .agents/gen/slices/S27-catalog-breadth/S27-B1_report.md
    .agents/gen/slices/S27-catalog-breadth/S27-R1_review.md`
-3. WAVEBOARD + `dispatch_coder.md` one-liners; `MASTER_REPORT.md` §6 recap;
+3. `python3 staging/build_code_map.py` — the map must describe the shipped tree
+   (deterministic; a no-change re-run diffs nothing).
+4. WAVEBOARD + `dispatch_coder.md` one-liners; `MASTER_REPORT.md` §6 recap;
    wave-boundary commit. Then the phase exit criteria (playtest build 2).

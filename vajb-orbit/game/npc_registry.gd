@@ -22,13 +22,14 @@ extends RefCounted
 ## and doc 11 section 3 both point back at "13 section 4" for the same counts (the W0
 ## pass recorded the circular pointer as D4), so nothing is re-stated from those.
 ##
-## **The human/alien split of a sector's hostile band is stated by no doc.** Ruling 24
-## requires the alien `swarmer` to be live in slice 2 and section 13 gives one total
-## band per sector, so the band is filled in `HOSTILE_FILL` order - the first filler is
-## the pirate, the second the swarmer - which needs no fraction and leaves the sector's
-## total exactly the section 13 figure. A different mix is an edit to that one array,
-## and it is raised in the W3 report for the owner's tick. Nothing here is inferred
-## from a guess: the fill is a stated rule, the sums are asserted by the test suite.
+## **The human/alien split of a sector's hostile band** is R-S24-2's (13's 2026-09-27 P3
+## block, tick W1) and lives on the **sector row**: each `11 §4` row carries its own
+## `hostile_band` in fill order (S1-S2 `[pirate]`, S3-S4 `[pirate, swarmer]`, S5-S6
+## `[swarmer, sibelon, pirate]`, S7 `[pirate, swarmer]`). A filler is present whenever the
+## sector's own section 13 count reaches its slot in that row's order and the row's **last**
+## filler takes whatever is left, so the columns always sum back to `HOSTILE_BAND` exactly -
+## the shipped fill rule, kept, with the order now the row's. Nothing is inferred from a
+## guess: the fill is a stated rule, the sums are asserted by the test suite.
 ##
 ## **Sprite paths are swap-ready.** A row names its *hull* (`sprite_base`, the
 ## `ship_<hull>` token of ASSET_NAMING_SPEC section 1) and optionally whose livery it
@@ -72,8 +73,8 @@ const HEAT_WANTED: StringName = &"wanted"
 const HEAT_OUTLAW: StringName = &"outlaw"
 
 ## Section 13's seven hostile bands, S1 to S7, in sector-registry order. This is the
-## single home of 0-1 ... 6-8; the pirate and swarmer rows derive their own columns
-## from it (`_hostile_column`), so the two can never drift from the total.
+## single home of 0-1 ... 6-8; the hostile rows derive their own columns from it
+## (`_hostile_column`), so the two can never drift from the total.
 const HOSTILE_BAND: Array[Vector2i] = [
 	Vector2i(0, 1),
 	Vector2i(1, 2),
@@ -84,12 +85,11 @@ const HOSTILE_BAND: Array[Vector2i] = [
 	Vector2i(6, 8),
 ]
 
-## Who fills the band, in fill order (see the file doc). Slot 0 is present whenever the
-## band's count is at least 1, slot 1 whenever it is at least 2, and so on.
-## **S23 (brief V2, ruling 24's seam release): the `sibelon` joins as the third
-## entry** - it spawns with the population until S24's W1 bands the hostiles per
-## sector (R-S24-2's S5-S6 split). Reversal: the entry removed and the row returns
-## to its `slice_3` seam.
+## The band's slot order **as S23 shipped it**, kept for the S23 suite and probe that name
+## it (`test_s23_content.gd`, `probe_s23_r1.gd`). **S24 (13's 2026-10-08 block): it retires
+## as the band source** - `_hostile_column` reads the sector row's own `hostile_band`
+## instead, so a sector's mix and its order are one row's data. Reversal: read this array
+## again (one call site).
 const HOSTILE_FILL: Array[StringName] = [&"pirate", &"swarmer", &"sibelon"]
 
 ## Doc 13 section 3's bounty-hunter row id, the one archetype a heat tier spawns
@@ -237,7 +237,7 @@ static func _ensure() -> void:
 			KEY_STANDING_ON_KILL: 1,
 			KEY_SPAWN: SPAWN_SECTOR,
 			KEY_SEAM: SEAM_NONE,
-			KEY_DENSITY: _hostile_column(0),
+			KEY_DENSITY: _hostile_column(&"pirate"),
 			KEY_GROUP_KIND: GROUP_NONE,
 			KEY_MEMBERS: [],
 		},
@@ -265,7 +265,7 @@ static func _ensure() -> void:
 			KEY_STANDING_ON_KILL: NO_STANDING,
 			KEY_SPAWN: SPAWN_SECTOR,
 			KEY_SEAM: SEAM_NONE,
-			KEY_DENSITY: _hostile_column(1),
+			KEY_DENSITY: _hostile_column(&"swarmer"),
 			KEY_GROUP_KIND: GROUP_NONE,
 			KEY_MEMBERS: [],
 		},
@@ -460,10 +460,10 @@ static func _ensure() -> void:
 			## no 08 class row, so it flies the **corvette column** through the swarmer
 			## precedent - an alien hull with no class row borrows an existing class
 			## column - wearing its own `ship_sibelon` sprite and rolling the **corvette**
-			## loot table (06 section 3.3; the fighter band stays the swarmer's). It spawns
-			## with the sector population as `HOSTILE_FILL`'s third entry until S24's W1
-			## bands it to S5-S6. Reversal: a dedicated `ship_sibelon` HULLS/HANDLING row
-			## and the fill entry removed (the row returns to its seam).
+			## loot table (06 section 3.3; the fighter band stays the swarmer's). S24's W1
+			## bands it: R-S24-2 puts the alien in S5-S6 only, which the sector rows' own
+			## `hostile_band` says and `_hostile_column` reads. Reversal: a dedicated
+			## `ship_sibelon` HULLS/HANDLING row and the band entry removed.
 			KEY_HULL_ID: &"ship_corvette",
 			KEY_SPRITE_BASE: &"ship_sibelon",
 			KEY_LIVERY_SOURCE: &"",
@@ -482,7 +482,7 @@ static func _ensure() -> void:
 			KEY_STANDING_ON_KILL: NO_STANDING,
 			KEY_SPAWN: SPAWN_SECTOR,
 			KEY_SEAM: SEAM_NONE,
-			KEY_DENSITY: _hostile_column(2),
+			KEY_DENSITY: _hostile_column(&"sibelon"),
 			KEY_GROUP_KIND: GROUP_NONE,
 			KEY_MEMBERS: [],
 		},
@@ -515,16 +515,21 @@ static func _ensure() -> void:
 	]
 
 
-## One filler's column: filler `i` is present whenever the band's count reaches it, and
-## the *last* filler takes whatever is left of the band, so the columns always sum back
-## to `HOSTILE_BAND` exactly - the test suite and the probe both assert that. With
-## `HOSTILE_FILL` as shipped (pirate, swarmer, sibelon) every sector splits into one
-## guarding pirate, one swarmer and the rest of the band as sibelons.
-static func _hostile_column(slot: int) -> Array[Vector2i]:
-	var last := slot == HOSTILE_FILL.size() - 1
+## One filler's column: filler `i` of a sector's band is present whenever the sector's
+## section 13 count reaches its slot in that row's order, and the row's **last** filler takes
+## whatever is left, so the columns always sum back to `HOSTILE_BAND` exactly - the test
+## suite and the probe both assert that. With R-S24-2's bands every sector splits into one
+## guarding pirate and the rest, one swarmer per S3-S7 row, and one sibelon in S5-S6 only.
+static func _hostile_column(archetype_id: StringName) -> Array[Vector2i]:
 	var column: Array[Vector2i] = []
-	for band: Vector2i in HOSTILE_BAND:
-		if last:
+	for index in SectorRegistryScript.SECTORS.size():
+		var row: Dictionary = SectorRegistryScript.SECTORS[index]
+		var band: Vector2i = HOSTILE_BAND[index] if index < HOSTILE_BAND.size() else Vector2i.ZERO
+		var members := SectorRegistryScript.hostile_band(StringName(row.get(&"id", &"")))
+		var slot := members.find(archetype_id)
+		if slot < 0:
+			column.append(Vector2i.ZERO)
+		elif slot == members.size() - 1:
 			column.append(Vector2i(maxi(band.x - slot, 0), maxi(band.y - slot, 0)))
 		else:
 			column.append(

@@ -4,7 +4,8 @@ extends RefCounted
 ## Data, not logic: no nodes, no autoload, no mutation API.
 ## Contract: docs/design/STATION_SPEC.md; the service rows are
 ## docs/gameplay/14_station_services.md section 1 and 18_engine_spec section 12
-## item 8.
+## item 8. The two station-aware price readers at `ship` are 12_factions.md's
+## 2026-10-08 V1 block, through the station registry's own factor.
 ##
 ## The six pre-module `UPGRADES` rows (and the slot labels that went with them)
 ## retired in save v5 (09 section 4 item 13, docs/gameplay/10 section 5): their
@@ -19,6 +20,8 @@ extends RefCounted
 ## and `ammo_family` are the one mapping, and reversing it is this constant plus the
 ## two helpers. The railgun joined as the sixth pack at its own J0-ratified numbers
 ## (owner 2026-09-23) rather than borrowing the cannon's family.
+
+const StationRegistryScript := preload("res://game/station_registry.gd")
 
 ## 10 section 6.1 / CONTRACTS section 17: how many rounds one cargo unit carries.
 ## Reversal: 1 (the pre-S5 one-unit-per-round reading).
@@ -260,6 +263,25 @@ static func service(id: StringName) -> Dictionary:
 
 static func ship(id: StringName) -> Dictionary:
 	return _find(SHIPS, id)
+
+
+## V1 (12_factions.md's 2026-10-08 block): the station's own price for one ammunition
+## pack - this catalogue's `cost` through the registry's one reader, so the band
+## multiplier (Shunned +10 %, Trusted -5 %, Champion -10 %) is live wherever a pack is
+## quoted. The tech step takes no part: 12 section 5's families are module families.
+static func ammo_pack_price(family: StringName, station_row: Dictionary, standing: int) -> int:
+	return StationRegistryScript.apply_price(
+		int(ammo_pack(family).get(&"cost", 0)), station_row, standing
+	)
+
+
+## V1: the station's own price for one hull - `SHIPS`' own `cost` through the registry's
+## one reader. The auction's shelf rows (`game/auction.gd`) and `buy_hull` are the read
+## sites; both take the number this returns.
+static func ship_price(ship_id: StringName, station_row: Dictionary, standing: int) -> int:
+	return StationRegistryScript.apply_price(
+		int(ship(ship_id).get(&"cost", 0)), station_row, standing
+	)
 
 
 static func ammo_ids() -> Array[StringName]:

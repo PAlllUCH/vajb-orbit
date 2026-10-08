@@ -33,6 +33,9 @@ const PlayerShipScene := preload("res://game/player_ship.tscn")
 const PlayerShipScript := preload("res://game/player_ship.gd")
 const SectorScript := preload("res://game/sector.gd")
 const Registry := preload("res://game/sector_registry.gd")
+## 14's 2026-10-08 block: the docked **place**, filed beside the faction so the station
+## shell and the price readers resolve the row the dock landed at.
+const StationRegistryScript := preload("res://game/station_registry.gd")
 ## The developer tuning overlay (S13, owner ask 2026-09-25): mounted by this
 ## scene so F1 reaches OreTuning in flight. It reads user://dev_tuning.cfg only
 ## when opened, so the gate stays byte-identical on any store. S28's A7 (D17-P2
@@ -340,6 +343,14 @@ var _guns: Node2D = null
 var _reticle_state: int = TargetReticle.State.PLAIN
 var _weapon_index := 0
 var _minimap_radius := MINIMAP_RADIUS_DEFAULT
+## R-S24-3: the cloud factor of the frame's last reading (`1.0` outside every cloud, `0.5`
+## inside one) and the value last pushed to the HUD. The player's own zoom state is
+## `_minimap_radius`, which nothing here writes - the factor is applied at the push, so
+## leaving a cloud restores the exact radius. The tint's own flag tracks the hull's
+## `modulate`, which is handed back untouched on exit.
+var _cloud_factor := 1.0
+var _cloud_pushed := -1.0
+var _cloud_tinted := false
 ## S29's N5 machine state (UI_SPEC.md section 10's hyperdrive reads): the phase, its
 ## clock, the cooldown's clock from the teleport and the pin the spool is folding to.
 var _jump_phase: StringName = JUMP_READY
@@ -487,6 +498,7 @@ func _physics_process(delta: float) -> void:
 	_update_hyperdrive(delta)
 	_update_travel(delta)
 	_update_pois(delta)
+	_update_clouds()
 	_decay_heat(delta)
 	_update_hunters(delta)
 	_tick_prompt_timers(delta)
@@ -1205,7 +1217,7 @@ func _update_pois(delta: float) -> void:
 ## hull hit to the same `interrupt`.
 func _update_scan(delta: float) -> void:
 	var nearest := _nearest_scannable()
-	if nearest != null and bool(nearest.call(&"in_scan_range", _ship)):
+	if nearest != null and _in_scan_range(nearest):
 		var code := int(nearest.call(&"scan", _ship))
 		if code == PoiScript.SCAN_OK and bool(nearest.call(&"is_channelling")):
 			nearest.call(&"advance_scan", delta)
@@ -1219,6 +1231,76 @@ func _update_scan(delta: float) -> void:
 			## Out of range: the POI's own call cancels the channel and reports it.
 			_scan_poi.call(&"scan", _ship)
 		_scan_poi = null
+
+
+## R-S24-3's POI scan reading (11's 2026-10-08 block): the derelict's 300 u channel and
+## the beacon reveal, both at `_scan_range()`. The POI owns its own range check
+## (`Poi.in_scan_range`, the registry's `DERELICT_SCAN_RANGE`), so the cloud factor is
+## applied here, at the one site that gates the channel - outside a cloud the shipped check
+## is the only one that runs.
+func _in_scan_range(poi: Node) -> bool:
+	if poi == null or not is_instance_valid(poi):
+		return false
+	if not bool(poi.call(&"in_scan_range", _ship)):
+		return false
+	var factor := _cloud_factor_now()
+	if factor >= 1.0:
+		return true
+	if _ship == null:
+		return false
+	return (
+		_ship.global_position.distance_to((poi as Node2D).global_position)
+		<= Registry.DERELICT_SCAN_RANGE * factor
+	)
+
+
+## The POI scan range the frame reads: 11 §5's 300 u, halved inside a cloud.
+func _scan_range() -> float:
+	return Registry.DERELICT_SCAN_RANGE * _cloud_factor_now()
+
+
+## R-S24-3's cover factor: `0.5` while the ship is inside one of the live sector's nebula
+## clouds, `1.0` outside every one of them (and with no sector, no ship or no clouds, so a
+## headless probe reads the shipped value exactly). Feedback and range math only - no stat,
+## no damage, no AI change (ruling 25).
+func _cloud_factor_now() -> float:
+	if _ship == null or _sector == null or not _sector.has_method(&"clouds"):
+		return 1.0
+	if Registry.in_cloud(_sector.call(&"clouds"), _ship.global_position):
+		return Registry.CLOUD_RANGE_FACTOR
+	return 1.0
+
+
+## The frame's cloud pass: the factor, the hull's 15 % wash tint, and the minimap radius
+## pushed to the HUD when the factor changed. `_minimap_radius` - the player's own zoom
+## state - is never written here, so leaving a cloud restores the exact radius.
+func _update_clouds() -> void:
+	_cloud_factor = _cloud_factor_now()
+	if _ship != null:
+		if _cloud_factor < 1.0 and not _cloud_tinted:
+			_ship.modulate = Color.WHITE.lerp(
+				Registry.CLOUD_WASH, Registry.CLOUD_WASH_ALPHA
+			)
+			_cloud_tinted = true
+		elif _cloud_factor >= 1.0 and _cloud_tinted:
+			_ship.modulate = Color.WHITE
+			_cloud_tinted = false
+	if not is_equal_approx(_cloud_factor, _cloud_pushed):
+		_cloud_pushed = _cloud_factor
+		_push_minimap_scale()
+
+
+## The minimap radius the HUD reads: the player's own zoom state through the cloud factor.
+## The push is the only place the factor reaches the HUD (11's block: "applied at the push").
+func _push_minimap_scale() -> void:
+	if _hud == null:
+		return
+	_hud.call(&"set_minimap_scale", _minimap_radius * _cloud_factor)
+
+
+## The radius the HUD is showing this frame, for the probes and the gate.
+func _minimap_radius_shown() -> float:
+	return _minimap_radius * _cloud_factor
 
 
 ## The closest POI the scanner reaches: an unspent derelict or a beacon (11 §3.1/
@@ -1326,6 +1408,7 @@ func _request_dock() -> void:
 	_clear_transit_flag()
 	_file_damage_report()
 	_file_docked_faction()
+	_file_docked_station()
 	route_requested.emit(ROUTE_LOADING, {PARAM_DESTINATION: DESTINATION_STATION})
 
 
@@ -1337,6 +1420,18 @@ func _file_docked_faction() -> void:
 	if profile == null or not profile.has_method(&"set_docked_faction"):
 		return
 	profile.call(&"set_docked_faction", _sector_owner())
+
+
+## 14's 2026-10-08 block: the docked place is filed beside the faction, so the station
+## shell's plate, the OVERVIEW rows and every station price read the row this dock landed
+## at. Only a sector's primary spawns a station node today (14's own block), so the place is
+## that row; a sector with no station (S7) files an empty id and the readers fall back.
+func _file_docked_station() -> void:
+	var profile := _profile()
+	if profile == null or not profile.has_method(&"set_docked_station"):
+		return
+	var row := StationRegistryScript.primary_for(_sector_row_id)
+	profile.call(&"set_docked_station", StringName(row.get(&"id", &"")))
 
 
 ## Section 7: `warp` channels for WARP_CHANNEL seconds and lands docked. The gate
@@ -1591,8 +1686,11 @@ func _is_hostile(node: Node) -> bool:
 	return StringName(node.call(&"blip_kind")) == NpcRegistryScript.BLIP_HOSTILE
 
 
+## R-S24-3: the lock range (the lock channel, `_pick_lock_target` and the weapons'
+## fallback range all read this one function) through the cloud factor.
 func _lock_range() -> float:
-	return _stats.lock_range if _stats != null else 0.0
+	var reach := _stats.lock_range if _stats != null else 0.0
+	return reach * _cloud_factor_now()
 
 
 ## The selected group's own range against the target's distance (§10's range state). A
@@ -2206,7 +2304,7 @@ func _bind_hud() -> void:
 	_hud.call(&"bind", _state)
 	_push_sector_name()
 	_push_hull_slots()
-	_hud.call(&"set_minimap_scale", _minimap_radius)
+	_hud.call(&"set_minimap_scale", _minimap_radius * _cloud_factor)
 	_hud.connect(&"weapon_slot_selected", _on_weapon_slot_selected)
 	_hud.connect(&"cargo_toggled", _on_cargo_toggled)
 	_hud.connect(&"minimap_zoom_changed", _on_minimap_zoom_changed)
@@ -2339,7 +2437,7 @@ func _on_minimap_zoom_changed(delta: int) -> void:
 		MINIMAP_RADIUS_MIN,
 		MINIMAP_RADIUS_MAX,
 	)
-	_hud.call(&"set_minimap_scale", _minimap_radius)
+	_push_minimap_scale()
 
 
 ## --- S29 A2: the pin's orders and the N5 hyperdrive machine (UI_SPEC.md section 9 N4,

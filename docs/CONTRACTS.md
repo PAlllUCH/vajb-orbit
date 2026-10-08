@@ -891,31 +891,26 @@ is affected, bounded by the rounds actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
-Expected (S30, 2026-10-04): **`[SUMMARY] passed=1089 failed=0`**, exit 0, twice
-hermetic on fresh scratch stores (S30-R1's A/B; identical pass lists). The
-station shell v2: `test_s11_inspector.gd` retargets to the popup sinks (8 new
-rows — tooltip show/clear/delay, sheet open/rows/ESC/queue, `station_inspect`,
-hover-never-moves; 3 band rows retired, **+3** net), new `test_s30_shell.gd`
-**12** rows (P17 landing, the header trio, drawer toggle/ESC/entry/focus-trap,
-OVERVIEW's five blocks + U2 rows + tile/REPAIR deep links, P20's cycle wrap and
-its OVERVIEW entry), `test_s20_chrome_unify` AC5 repointed to the band's
-retirement, `test_s29_station_panels` retargeted to the chain (the cell naming
-line + the idle summaries), `test_p2b_services` (3 rows) /
-`test_p2b1_outfitting_panel` / `test_p2b_fitting_panel` (the chip joins the
-focus walk) / `test_s5_ammo_cargo` retarget to the chain and the moved cluster
-paths, `test_s3_auction` reads `drawer_entries()`, `test_s5_batteries_v2` reads
-`PaneTitle` via `find_child`, `test_s21_stability`'s L18/L122 rows are
-exact-equality on the frozen clock (T-105's ruling). Growth: 1074 → 1089
-(**+15**: s11 +3 net, s30_shell +12). The reviewer's probe
-(`tests/probe_s30_review*.gd`, scratch store, self-quitting) re-measured the
-hover-never-moves bar on every pane at 1920×1080 and 1440×1080 (28+12 hovers, 0
-moves), the skeleton origins per pane, the drawer/sheet geometry and the popup
-layers' theme resolution. Findings: **3 HIGH (the shipyard pane's 862 px min
-reflows the whole shell — Header at y −29, Footer at y 1091; the drawer plate
-594 px too tall, LOG OUT at y ≈1548; `_fit()` collapses the sheet root to 0×0,
-the sheet opens half off-screen at the top-left corner) / 7 MED / 4 LOW
-(T-114–T-117)** — verdict blocked pending the fixer. The S24–S29 waves left §9
-untouched; 1074 is the brief's D19-close baseline.
+Expected (S24, 2026-10-08): **`[SUMMARY] passed=1185 failed=0`**, exit 0, twice
+hermetic on fresh scratch stores with a byte-identical replay (S24-R1's own runs;
+baseline 1152 = the re-cut's own 2026-10-08 measurement). Growth **1152 → 1185
+(+33)**: `test_s24_world.gd` +18 (S24-B1), `test_s24_bands.gd` +15 (S24-B2); a
+count-vs-HEAD sweep shows **no other suite's row count moved**, and the S17
+`REGISTRY_MD5` re-pin on `sector_registry.gd` (applied by the orchestrator because
+B2's file set held only its own suite, disclosed in the pin's own comment) is the
+finished tree's md5. The wave's reviewer probe (`tests/probe_s24_r1.tscn`, scratch
+store, self-quitting) re-measured the whole S24 list independently of both suites:
+nine rows + the §1/§8 matrix, the price law both directions, the additive 0.75 stack,
+the 1.5 %/2 % commission, the band-free exchange, the hot pair (123/256 seeded
+shelves at Known, 0 at Neutral), the reserved slot at 6 + 20, the shelf bias, the
+two axes, the seven bands + 13 §4's densities, and the three cloud readings inside
+and outside. The previous measured block read S30's `1089` (2026-10-04) and was
+stale: the S31–S37 waves' growth sat between it and the S24 baseline 1152, recorded
+at those waves' own close-outs (`MASTER_REPORT.md` §6), not here.
+
+- **S30's block, compressed (2026-10-04):** shell v2 moved 1074 → 1089 (+15: s11 +3
+  net, s30_shell +12) with 3 HIGH / 7 MED / 4 LOW (T-114–T-117) — verdict blocked
+  pending the fixer; the wave's recap is `MASTER_REPORT.md` §6 (S30, 2026-10-04).
 
 **Gate law — the measured block (compressed 2026-10-07; the per-wave `Expected`
 blocks S23 and older, the growth chain and the per-suite count recaps are retired
@@ -2552,6 +2547,93 @@ hull stops twice and the second stop slides.
   its own close; S11's test files are named per worker so the two lanes never claim one
   file, and S11-R1 sequences its §9/§10 row after D11's if D11 lands first.
 
+## §24 S24 world identity — stations, standing, bands, nebula (2026-10-08)
+
+The nine docking places become rows; standing starts pricing, gating and flavouring;
+each sector carries its hostile band; nebula clouds ship their cover readings. The
+spec side is `docs/gameplay/14_station_services.md` (the nine rows + the seam + the
+plate landing), `12_factions.md` (V1–V7), `13_heat_bounty.md` (R-S24-2) and
+`11_galactic_map.md` (V8), all 2026-10-08 blocks — this section pins the shipped
+interface those blocks mandate. V1–V8 are **PROPOSED, ticks open**; each value below
+carries its reversal in its own doc block.
+
+```gdscript
+# game/station_registry.gd — NEW, class_name StationRegistry extends RefCounted.
+#   Nine rows (S7 has none, 11 §1): {id, name, character, sector, kind, faction,
+#   services (7 booleans: contracts/refuel/recharge/insurance/vaults/arena/bounty),
+#   vault_tiers (3 primary / 1 outpost)}. The W3 name+character pairs are verbatim;
+#   Concord primaries arena=false, Choir primaries insurance=false, Meridian
+#   primaries the full menu, the three outposts §8's three + §1's free refuel pair.
+static func station(station_id: StringName) -> Dictionary        # {} when unknown
+static func stations() -> Array[Dictionary]
+static func docked_station_id(profile: Node) -> StringName        # &"" when not docked
+static func docked_station(profile: Node) -> Dictionary
+    # the filed row -> the id's sector primary -> {}; a null profile and an unknown
+    # id are normal paths, never errors (the plate keeps its placeholder strings).
+static func primary_for(sector_id: StringName) -> Dictionary
+static func offers(row: Dictionary, service: StringName) -> bool
+static func service_reason(row: Dictionary, service: StringName) -> String
+    # the two U2 captions verbatim ("the Choir does not believe in accidents",
+    # "fly to a capital"); "" elsewhere.
+static func price_factor(row: Dictionary, standing: int, base_id := &"") -> float
+static func apply_price(price: int, row: Dictionary, standing: int, base_id := &"") -> int
+    # V1+V2: 1 + band_delta − tech_discount, band_delta +0.10/0/−0.05/−0.10,
+    # TECH_DISCOUNT 0.15 additive (V2: 0.75 × list, never 0.85 × 0.90); an empty row
+    # is 1.0 and a non-positive input passes through unchanged.
+static func contracts_visible(standing: int) -> bool              # V3: standing > −11
+static func insurance_multiplier(standing: int) -> float          # V7: 0.8 at ≥ +71
+static func shelf_bias(row: Dictionary, base_id: StringName) -> float  # V6: 2.0 / 1.0
+
+# autoload/player_profile.gd — the seam beside docked_faction (both transient, no
+#   save key, no version bump; _apply_defaults clears both):
+func docked_station() -> StringName
+func set_docked_station(station_id: StringName) -> void
+# game/game.gd — _file_docked_station() beside _file_docked_faction() in
+#   _request_dock: the sector's primary row (the only kind that spawns today).
+
+# game/sector_registry.gd — the two row keys S24 adds to every SECTORS row:
+#   &"hostile_band": Array[StringName]   # R-S24-2 verbatim, the row's order IS the
+#     fill order (S1–S2 [pirate]; S3–S4 [pirate, swarmer]; S5–S6 [swarmer, sibelon,
+#     pirate]; S7 [pirate, swarmer]); HOSTILE_FILL retires as the band source and
+#     _hostile_column reads the row (13's 2026-10-08 block); 13 §4's densities and
+#     the two-axis rule are untouched.
+#   &"clouds": Array[Dictionary]         # V8, empty until populate rolls it
+static func hostile_band(sector_id: StringName) -> Array[StringName]   # [] unknown
+static func clouds(sector_id: StringName) -> Array[Dictionary]
+static func set_clouds(sector_id: StringName, rolled: Array[Dictionary]) -> void
+static func roll_clouds(rng: RandomNumberGenerator) -> Array[Dictionary]
+    # 0–2 rows {centre, radius 900.0}, centres in the annulus 1500.0 .. 4100.0
+    # (the outer bound is derived: arena half-extent − radius; reversal 4500.0).
+static func in_cloud(rolled: Array[Dictionary], point: Vector2) -> bool
+const CLOUD_WASH := Color("#1A2230")   # Void Haze, 15 % alpha (reversal #111823)
+const CLOUD_RANGE_FACTOR := 0.5        # W2: the three cover readings inside a cloud
+```
+
+**The price order is pinned** (brief §4 rule 7): catalogue list → `(1 + band_delta −
+tech_discount)` → the hot row's −20 % **last**. `auction.gd`'s `listing_rows`/
+`hull_rows`/`buy_listing`/`buy_hull` and `repairs.fee`, `StationCatalog.ammo_pack_price`
+/`ship_price` and the armory's `_module_price` all read it through `apply_price`; the
+**exchange takes no band multiplier** (V1: a market, not a shop) and its one
+station-aware number is `Exchange.commission_rate` — 1.5 % at a Meridian station, 2 %
+elsewhere, the 10 CR floor and R-S21-1's ammo exemption unchanged. The auction's
+standing mechanics: `Auction.hot_ids(profile)` answers V4's pair (the drawn hot row
+always, plus `Auction.second_hot_id` at Known and above — **derived from the shelf's
+own content by md5 parity, not stored**, because §15 pins `auction` at four members;
+reversal: one stored key + `AUCTION_KEYS`' fifth entry); V5's reserved slot forces the
+first rolled module draw to `clampi(SectorRegistry.sector_tier(...), 1, 3)` (no tier-4
+catalogue row exists; the shelf stays 6 + 20); V6's bias weights the **rolled** draw
+only (the stock ten stay 10 §2.1's fixed tier-I rows). The clouds are feedback + range
+math only (ruling 25): `game.gd`'s `_cloud_factor_now()` halves `_lock_range()`, the
+POI scan gate (`_in_scan_range`) and the minimap radius **at the push to the HUD** (the
+player's zoom state `_minimap_radius` is never written), and tints the hull
+`Color.WHITE.lerp(CLOUD_WASH, 0.15)` while inside.
+
+Tests: `test_s24_world.gd` (18 rows, B1) and `test_s24_bands.gd` (15 rows, B2); the
+reviewer's probe `tests/probe_s24_r1.tscn` re-measures the list independently.
+S25 reads `contracts_visible` and the SERVICES pane; S26 reads `insurance_multiplier`
+and the vault record (`station_id -> {tier, contents}`, read per docked station since
+this wave). Outpost **nodes** stay staged (the per-station POI-flavour item).
+
 ## §10 Changelog
 
 Rolling log of what each wave changed here. Kept verbatim only where an entry
@@ -2767,3 +2849,18 @@ bottom (the index-line form is only for retired entries).
 - **v0.43 (2026-10-02, wave S23 review — S23-R1; gate `1014 → 1030/0` twice)** — full entry: archive.
 - **v0.44 (2026-10-02, the owner's auction detour — developer session, no wave; gate moved with the wave's commit)** — full entry: archive.
 - **v0.45 (2026-10-04, wave S30 review — S30-R1; gate `1074 → 1089/0` twice)** — full entry: archive.
+- **v0.46 (2026-10-08, wave S24 review — S24-R1, this wave's only CONTRACTS writer;
+  the next free row read from §10 at write time, sequenced after S30's v0.45 — the
+  S31–S37 waves left no §10 row; gate `1152 → 1185/0` twice on fresh scratch stores
+  with a byte-identical replay, §9's stale S30 figure `1089` corrected to the
+  measured chain)** — adds **§24**, the wave's pinned interface: `StationRegistry`'s
+  accessors and the nine-row service matrix, the transient `docked_station` profile
+  seam filed beside the faction, the two sector row keys (`hostile_band` verbatim
+  R-S24-2 in fill order with `HOSTILE_FILL` retired as the band source; `clouds` per
+  V8 with the 1500/4100 annulus, the Void Haze wash and the three ×0.5 readings at
+  the push), and the one price order (catalogue list → `1 + band_delta −
+  tech_discount` → the hot −20 % last; the exchange band-free at its own 1.5 %/2 %
+  commission). V1–V8 are PROPOSED with their ticks open; the second hot row ships
+  **derived** from the shelf's own digest (§15's four-member pin held) and the
+  reserved slot's tier is clamped into the catalogue's 1–3, both graded and pinned
+  with their reversals.

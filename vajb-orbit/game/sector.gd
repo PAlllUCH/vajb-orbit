@@ -14,6 +14,8 @@ extends Node2D
 ## registry row: one jump-gate ring per `gate_links` link (11 §2.1), one border
 ## corridor per `corridors` entry (11 §2.2) and the POIs 11 §3 calls for (derelicts,
 ## anomalies and nav beacons, `_spawn_pois`, plus the wreck sites a kill leaves).
+## S24 adds 11's 2026-10-08 block's nebula clouds (`_spawn_clouds`, V8): 0-2 rows rolled
+## on this sector's own seeded stream and drawn by one node each.
 ## Wreck fields and their non-interactive hulks are still counts in `spawn_plan()`
 ## only - nothing is instantiated for them (no doc places them and no consumer reads
 ## them yet).
@@ -106,6 +108,19 @@ signal npc_spawned(ship: Node2D)
 ## bind a derelict's `scanned` reward. A re-population raises it again for the fresh set.
 signal poi_spawned(poi: Node2D)
 
+## V8's nebula cloud (11's 2026-10-08 block): one node per rolled row, drawing its own
+## disc in the Void Haze wash at 15 % alpha. It draws nothing but itself, holds no
+## collision and reads no state, so a cloud is feedback only (ruling 25). The numbers
+## (count, radius, clearance, wash) live in `SectorRegistry`, the one home 11's block
+## gives them.
+class Cloud extends Node2D:
+	var radius := 0.0
+	var wash := Color.WHITE
+
+	func _draw() -> void:
+		draw_circle(Vector2.ZERO, radius, wash)
+
+
 var _row: Dictionary = {}
 var _plan: Dictionary = {}
 var _fields: Array[Node2D] = []
@@ -116,6 +131,7 @@ var _gates: Array[Node2D] = []
 var _corridors: Array[Node2D] = []
 var _pois: Array[Node2D] = []
 var _npcs: Array[Node2D] = []
+var _clouds: Array[Node2D] = []
 var _npc_anchor_index := 0
 var _spawn_point := Vector2.ZERO
 var _rng := RandomNumberGenerator.new()
@@ -187,6 +203,11 @@ func populate(row: Dictionary, random_seed: int = 0) -> Vector2:
 	## registry's own per-sector band (the `_plan` entries are the rolled counts for a
 	## probe to read; the hulls themselves are the live set).
 	_spawn_npcs()
+	## V8's clouds are rolled **last**, on this sector's own seeded stream, so every roll
+	## above keeps the stream it had before S24 - a seeded probe's fields, wrecks, anomalies
+	## and hulls are unchanged. The rolled rows are filed on the sector's registry row
+	## (11's block: "the clouds are sector-row data") and drawn by their own nodes.
+	_spawn_clouds()
 	_last_band = Clock.now()
 	_clock_accumulator = 0.0
 	_populated = true
@@ -303,6 +324,26 @@ func pois() -> Array[Node2D]:
 	for poi: Node2D in _pois:
 		if is_instance_valid(poi):
 			out.append(poi)
+	return out
+
+
+## V8's rolled clouds (11's 2026-10-08 block), the live rows the nodes were built from:
+## `{centre, radius}`. `game.gd` reads them for the three cover readings and the hull tint.
+func clouds() -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for cloud: Node2D in _clouds:
+		if is_instance_valid(cloud):
+			out.append({&"centre": cloud.position, &"radius": (cloud as Cloud).radius})
+	return out
+
+
+## The cloud nodes this sector drew, one per rolled row (11's block: "drawn by the cloud
+## node itself").
+func cloud_nodes() -> Array[Node2D]:
+	var out: Array[Node2D] = []
+	for cloud: Node2D in _clouds:
+		if is_instance_valid(cloud):
+			out.append(cloud)
 	return out
 
 
@@ -472,6 +513,24 @@ func _spawn_npcs() -> void:
 		)
 		for _index in count:
 			_add_npc(spawn)
+
+
+## V8's clouds: roll on this sector's own stream, file the rows on the sector's registry
+## row, then build one node per row. The roll happens before the nodes so a probe that
+## seeds `populate` reads the same rows the nodes were drawn from.
+func _spawn_clouds() -> void:
+	var rolled := Registry.roll_clouds(_rng)
+	Registry.set_clouds(sector_id(), rolled)
+	_row[&"clouds"] = rolled
+	var wash := Color(Registry.CLOUD_WASH, Registry.CLOUD_WASH_ALPHA)
+	for index in rolled.size():
+		var cloud: Cloud = Cloud.new()
+		cloud.name = "Cloud%d" % (index + 1)
+		cloud.radius = float(rolled[index].get(&"radius", Registry.CLOUD_RADIUS))
+		cloud.wash = wash
+		add_child(cloud)
+		cloud.global_position = rolled[index].get(&"centre", Vector2.ZERO)
+		_clouds.append(cloud)
 
 
 ## One hull: the archetype's row drives its behaviour, the resolved `ShipFit` snapshot
@@ -690,6 +749,7 @@ func _clear() -> void:
 	_gates.clear()
 	_corridors.clear()
 	_pois.clear()
+	_clouds.clear()
 	_npc_anchor_index = 0
 	_station = null
 	_dock_zone = null

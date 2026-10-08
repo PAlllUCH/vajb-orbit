@@ -49,7 +49,11 @@ const GATE_MD5 := "c13574f6af658c1fcd4728c34901caf3"
 ## S23 re-pin (disclosed in `S23-B1_report.md`): A6's sector tier (06 section 7's
 ## cache scaling) reads the tier mix through `sector_tier`, the wave's one edit
 ## to this file; the pin is the finished tree's reading, the S21/S22 procedure.
-const REGISTRY_MD5 := "124dd68b6ffb65f7d905752f56e27ca8"
+## S24 re-pin (disclosed in `S24-B2_report.md`, applied by the orchestrator
+## 2026-10-08 because B2's file set held only its own suite): A4/A5 add the
+## `hostile_band` and `clouds` row keys the wave's brief mandates, so the pin is
+## the finished tree's reading again, the same procedure.
+const REGISTRY_MD5 := "3661a0d21ad2de97811e40460c597f2a"
 
 var _sectors: Array[Node2D] = []
 

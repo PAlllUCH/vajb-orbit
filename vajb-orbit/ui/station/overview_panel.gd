@@ -17,6 +17,9 @@ const Catalog := preload("res://game/station_catalog.gd")
 const ShipFit := preload("res://game/ship_fit.gd")
 const RepairsService := preload("res://game/repairs.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
+## 14's 2026-10-08 block: the docked place - its service matrix (block 4's unavailable
+## state) and its own vault record.
+const StationRegistryScript := preload("res://game/station_registry.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
@@ -64,9 +67,10 @@ const CONTRACTS_MAX := 3
 const INSURED_TEXT := "INSURED · COVERS ONE LOSS"
 const UNINSURED_TEXT := "UNINSURED"
 const VAULT_FORMAT := "THIS VAULT — %d / %d UNITS"
-## U14's base capacity (PROPOSED 40/60/80 by tier); the docked station's tier is not
-## resolvable this wave (no station registry), so the base is the read. Reversal: read the
-## tier from the vault record.
+## U14's base capacity (PROPOSED 40/60/80 by tier). The record read below resolves the
+## docked station's own vault (14's 2026-10-08 block); the capacity stays the base tier's
+## reading, because section 4's tiers are rented per station and S26 owns the tier pane.
+## Reversal: read the record's own tier into the denominator.
 const VAULT_BASE_CAPACITY := 40
 const FLAVOUR_LINE := "THE DOCK CLAMPS ARE CHEAP. THE AMMUNITION IS NOT."
 const FACTION_ICON_TEMPLATE := "res://assets/icons/tint/icon_insignia_%s_48.png"
@@ -84,6 +88,9 @@ var _hull_meta: Label = null
 var _hull_stats: Label = null
 var _hull_repair: Label = null
 var _service_reads: Dictionary = {}
+var _service_rows: Dictionary = {}
+var _service_chips: Dictionary = {}
+var _service_names: Dictionary = {}
 var _tile_glyphs: Array[TextureRect] = []
 var _identity_faction: StringName = &""
 
@@ -345,6 +352,7 @@ func _make_service_row(service: Dictionary) -> Button:
 	name_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	box.add_child(name_label)
+	_service_names[service[&"key"]] = name_label
 	var read := Label.new()
 	read.theme_type_variation = &"StationValue"
 	read.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -357,6 +365,8 @@ func _make_service_row(service: Dictionary) -> Button:
 	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	chip.pressed.connect(_on_service_pressed)
 	box.add_child(chip)
+	_service_rows[service[&"key"]] = row
+	_service_chips[service[&"key"]] = chip
 	row.pressed.connect(_on_service_pressed)
 	row.mouse_entered.connect(_on_row_hover.bind(String(service[&"name"])))
 	row.mouse_exited.connect(_on_row_unhover)
@@ -527,24 +537,58 @@ func _refresh_services() -> void:
 		(_service_reads[&"insurance"] as Label).text = INSURED_TEXT if insured else UNINSURED_TEXT
 	if _service_reads.has(&"vaults"):
 		(_service_reads[&"vaults"] as Label).text = VAULT_FORMAT % [vault_units, VAULT_BASE_CAPACITY]
+	_apply_service_availability(profile)
 
 
-## The docked station's vault units. The vaults store is `station_id -> {tier, contents}`
-## (14 section 9); no station registry exists this wave, so the read is the sum of every
-## stored stack - PROPOSED, reversal: resolve the docked station's own record.
+## STATION_HUB section 15.1 U2 / 14's 2026-10-08 block: a service the docked station's
+## matrix does not carry keeps its label and goes `button_disabled`, and its readout cell
+## carries the section 1 / section 8 reason caption in `text_dim` - the label plus the
+## disabled plate is the state, never colour alone. A place the registry cannot resolve
+## leaves every row exactly as shipped. A5.5 (UI_SPEC section 12.5): the caption is N31's
+## in-place content swap in the pinned 76-tall row, so the row box, the chip and the
+## caption's own line box never move - only the text and its colour.
+func _apply_service_availability(profile: ProfileScript) -> void:
+	var station := StationRegistryScript.docked_station(profile)
+	for service: Dictionary in SERVICE_ROWS:
+		var key: StringName = service[&"key"]
+		if not _service_rows.has(key) or not _service_reads.has(key):
+			continue
+		var available := station.is_empty() or StationRegistryScript.offers(station, key)
+		(_service_rows[key] as Button).disabled = not available
+		(_service_chips[key] as Button).disabled = not available
+		var read := _service_reads[key] as Label
+		var name_label := _service_names[key] as Label
+		var reason := "" if available else StationRegistryScript.service_reason(station, key)
+		if reason.is_empty():
+			read.remove_theme_color_override(&"font_color")
+			name_label.remove_theme_color_override(&"font_color")
+			continue
+		read.text = reason
+		read.add_theme_color_override(&"font_color", _token(&"text_dim"))
+		name_label.add_theme_color_override(&"font_color", _token(&"text_dim"))
+
+
+## The docked station's own vault record (14 section 9's `station_id -> {tier, contents}`):
+## the place's record alone, never the sum of every station (14's 2026-10-08 block gives the
+## seam that resolves the id). No place, no record and no contents all read 0.
 func _vault_units(profile: ProfileScript) -> int:
+	if profile == null:
+		return 0
 	var vaults: Variant = profile.call(&"vaults")
 	if not vaults is Dictionary:
 		return 0
+	var station_id := StationRegistryScript.docked_station_id(profile)
+	if station_id == &"":
+		return 0
+	var record: Variant = (vaults as Dictionary).get(String(station_id), {})
+	if not record is Dictionary:
+		return 0
+	var contents: Variant = (record as Dictionary).get(&"contents", {})
+	if not contents is Dictionary:
+		return 0
 	var total := 0
-	for record: Variant in (vaults as Dictionary).values():
-		if not record is Dictionary:
-			continue
-		var contents: Variant = (record as Dictionary).get(&"contents", {})
-		if not contents is Dictionary:
-			continue
-		for value: Variant in (contents as Dictionary).values():
-			total += int(value)
+	for value: Variant in (contents as Dictionary).values():
+		total += int(value)
 	return total
 
 
@@ -617,9 +661,12 @@ func _docked_faction() -> StringName:
 		var faction := StringName(profile.call(&"docked_faction"))
 		if not faction.is_empty():
 			return faction
-	if profile.has_method(&"n"):
-		return StringName(profile.call(&"n"))
-	return &""
+	## The same S30 dead branch `ui/screens/station.gd:_docked_faction` carried - it probed
+	## the profile for a method named `n`, which exists nowhere - is deleted here too; the
+	## docked station row's own owner answers instead. Reversal: restore the two lines.
+	return StringName(
+		StationRegistryScript.docked_station(profile).get(&"faction", &"")
+	)
 
 
 func _profile() -> ProfileScript:
