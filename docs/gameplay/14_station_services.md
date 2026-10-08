@@ -181,3 +181,45 @@ Reversal for any name: rename in the registry row.
 
 §2's reward shapes, the escrow + 100 CR cancel fee, the max-3 rule and the
 standing gates are the operative law and are not amended here.
+
+## 2026-10-08 — S24: the station entity and the nine places (amends §1/§8)
+
+The nine docking places become **rows** in one registry
+(`game/station_registry.gd`), the shape `11 §4`'s sector registry uses. A row
+carries `id`, `sector` (1–7), `kind` (`primary`/`outpost`), `faction`, the
+§1's-2026-09-27 `name` + `character` verbatim (tick W3), the §1/§8 service
+matrix below, the owner's multipliers (`12`'s 2026-10-08 V1–V7 block) and the
+shelf-bias hook. S7 has no station (`11 §1`: no law, no patrol).
+
+| `id` | Place | Sector | Kind | Faction | §1/§8 services offered |
+|---|---|---|---|---|---|
+| `s1_primary` | Halcyon Anchorage | 1 | primary | concord | contracts, refuel/recharge, insurance, vaults, bounty (**no arena** — §1) |
+| `s2_primary` | Ironworks Depot | 2 | primary | concord | as above |
+| `s2_outpost` | Marchgate Post | 2 | outpost | concord | contracts, bounty, vault tier 1 (**§8's three**) |
+| `s3_primary` | Spanport Meridian | 3 | primary | meridian | **the full menu** (§1: best contract rates, largest vaults, the expedition desk) |
+| `s4_primary` | Ashveil Exchange | 4 | primary | meridian | the full menu |
+| `s4_outpost` | Rimward Depot | 4 | outpost | meridian | §8's three |
+| `s5_primary` | Cinder Gate | 5 | primary | choir | contracts, refuel/recharge, vaults, arena, bounty (**no insurance** — §1: "the Choir does not believe in accidents") |
+| `s5_shrine` | The First Ember | 5 | outpost | choir | §8's three |
+| `s6_primary` | Emberlight | 6 | primary | choir | as `s5_primary` |
+
+**Only the primary of a sector spawns today** (`game/sector.gd:_spawn_station`
+spawns `densities.stations`, one node). The three outpost rows are accessor- and
+test-reachable and their §8 subset is proven there; **spawning an outpost node is
+staged** (the per-station POI-flavour item). Reversal: spawn the outpost row as a
+second station node with its own dock zone id.
+
+**The docked-station seam.** `PlayerProfile` gains `docked_station` /
+`set_docked_station` beside the shipped `docked_faction` (both transient, not save
+keys), filed by `game.gd` at dock; the station screen resolves the place through
+`StationRegistry.docked_station(profile)`. Reversal: derive the place from the
+sector's primary row instead.
+
+**The identity plate lands.** The shell header's plate (`STATION_HUB` §15.5,
+`UI_SPEC` §12.4) already ships; S24 fills its two labels — `StationName`
+(`HeroTitle`) and `StationLocation` (`StationCaption`) — from the row's
+`name`/`character` (`ui/screens/station.tscn:125,131`'s placeholder strings
+retire). The SERVICES pane's §15.2–§15.4 panels stay S25/S26's; S24 makes the
+**matrix** readable and shows the unavailable state on OVERVIEW block 4's rows
+(§15.1 U2's disabled plate + reason caption). Reversal: the placeholder strings
+return.

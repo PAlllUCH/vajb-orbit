@@ -2,11 +2,14 @@
 phase: P3
 title: Content & feel push (playtest-2 cycle)
 status: active
-slices: [S21, S22, S22.5, S22.6, S22.7, S22.8, S23, S24, S25, S26, S27, D15, D16, D17, D18, S28, S29, D19, S30]
+slices: [S24, S25, S26, S27]
 ---
 
 > **Use when:** a phase opens. Manifest and index only — work lives in slice
-> folders; this file never grows a work log.
+> folders; this file never grows a work log. **2026-10-08 (owner clear-out):**
+> trimmed to the remaining slices and reworked as a checkbox list, ticked as
+> each slice closes. S21–S23, the D15–D22 design rounds and S28–S37 shipped and
+> are archived (`_archive/slices/`, `MASTER_REPORT.md` §6).
 
 # P3 — Content & feel push (playtest-2 cycle)
 
@@ -16,40 +19,46 @@ juice pass, and fill the measured content voids (dead modules, live
 bosses/aliens, stations with identity, contracts) using only the shipped art
 library. Ends in playtest build 2.
 
-## The plan (order = the two queues, one live session)
-| # | Slice | Delivers | Runs after |
-|---|---|---|---|
-| 1 | S21 | stability & playtest fixes | — |
-| 2 | D15 | flight feel & feedback design (the tick sheet) | S21 |
-| 3 | S22 | feel, juice & balance | D15 (its ticks) |
-| 4 | S23 | dead content activation | S22 (`game/` collision) |
-| 4.5 | S22.5–S22.8 | the owner's follow-up rounds: asteroid toughness, inertia, mass physics, weapons cadence | S22 (owner asks 2026-09-30 → 10-01) |
-| 5 | D16 | station identity & contracts UI design | S23 |
-| 6 | S24 | world identity (stations, factions, nebula) | D16 |
-| 7 | S25 | contracts board | S24 (`station` screen + profile) |
-| 8 | S26 | bosses, arenas, insurance, vaults | S25 (Expedition seam) |
-| 9 | S27 | catalog breadth + shipyard | S26 (`game/` collision) |
-| 9.5 | D18 | map deck & panel consolidation design | S23 (owner 2026-10-03, inserted ahead of S24) |
-| 9.6 | S28 | station chrome quick-fix wave (the D17 playtest pile) | beside D18 (disjoint files) |
-| 9.7 | S29 | panel consolidation + the map deck (implements D18) | D18 + S28 |
-| 9.8 | D17 | playtest pass #1 — two in-game reviewer reports + synthesis (evidence lane) | S23/D16 (owner 2026-10-03, direct ask; fed S28/S29) |
-| 9.9 | D19 | station shell v2 design — TERMINAL drawer, OVERVIEW pane, popups | S29 (owner 2026-10-03, ahead of S24) |
-| 9.10 | S30 | station shell v2 build (implements D19) | D19 |
+## Remaining slices (order = the two queues, one live session)
+
+- [ ] **S24 — world identity.** Named stations + per-faction menus/flavours,
+      standing band effects, per-sector hostile bands, nebula clouds.
+      `slices/S24-world-identity/` · runs after: — (next) · baseline `s24_start`
+      (1152/0, 2026-10-08) · **brief re-cut 2026-10-08**: two sequential builders
+      (B1 A1–A2 → B2 A3–A5), R1 after both, F1 only on HIGH/MED
+- [ ] **S25 — contracts board.** `contract_registry` + the board panel:
+      Haul/Hunt/Gather/Escort, escrow + 100 CR cancel, standing gates, the
+      escort convoy loop. `slices/S25-contracts/` · runs after: S24 · baseline
+      `post-S24`
+- [ ] **S26 — endgame: bosses, arenas, insurance, vaults.** The Boneyard + The
+      Pyre arena runs, the Maw roaming S7, death persistence, insurance + mercy
+      clause, vaults + `u_vault`. `slices/S26-endgame/` · runs after: S25 ·
+      baseline `post-S25`
+- [ ] **S27 — catalog breadth & shipyard.** +7 affix rows with perks live, tier
+      variants, per-archetype loot, the shipyard build path
+      (recipes/queue/scrap). `slices/S27-catalog-breadth/` · runs after: S26 ·
+      baseline `post-S26`
+
+## Wave checklist (applies to every slice above)
+
+- [ ] Docs first — the owning doc amended with the real numbers, each carrying
+      its reversal path
+- [ ] Five-piece handoff re-cut against the current shell (`BRIEF` + `prompts`)
+- [ ] `verify_wave.py snapshot` + commit before the first dispatch
+- [ ] Builders run → mandatory review → fixer only if the review leaves HIGH/MED
+- [ ] Close-out: gate ×2 hermetic, `verify --baseline`, CONTRACTS §9/§10,
+      WAVEBOARD + TICKS refresh, wave-boundary commit
 
 ## Owner gates
 - **Playtest pass #1** is the owner's: the "awaiting the owner's eye" list in
   `docs/gameplay/19_testing_notes.md`. Each finding joins `LOW_BACKLOG.md` at
   the next free id and rides the wave that owns its file.
 - **Tick sheets** (marked in the 2026-09-27 doc amendments and each brief §11):
-  M1–M7 money/repair, C1–C6 content rows, W1–W3 world, J1 board, E1–E2
-  endgame, K1–K3 catalog, D15's feel sheet (T-feel-1..7 + S19's T1–T7), and
-  D19's shell sheet (N31–N41 + P22–P30).
-  Unticked rows implement at their PROPOSED value (the S19 precedent).
+  W1–W3 world, J1 board, E1–E2 endgame, K1–K3 catalog, plus M1–M7 money/repair
+  and C1–C6 content rows. Unticked rows implement at their PROPOSED value (the
+  S19 precedent).
 - **No AI art generation this round** (owner 2026-09-27): content reuses the
-  shipped library; audio may be sourced CC0 through `assetmcp`. **Carve-out
-  (owner 2026-10-03):** the shell-v2 round (D19/S30) may generate its staged
-  sprite needs on kie.ai credits — review sheet → owner approval before ship
-  (`STATION_HUB.md` §18's art-budget block).
+  shipped library; audio may be sourced CC0 through `assetmcp`.
 
 ## Exit criteria
 - [ ] Every slice `done` (findings tiered, briefs archived)
@@ -64,3 +73,5 @@ library. Ends in playtest build 2.
 - Staged (need art or design rows): L57's bolt/slug re-cut; the
   leviathan/spire/thorn bosses; the `u_vault` consumer lands in S26 with the
   vaults it extends.
+- T-138 (SERVICES deck placeholder) rides S25; the S36/S37 chrome rows retired
+  to `_archive/low_backlog_s36_s37_rows_2026-10-08.md`.

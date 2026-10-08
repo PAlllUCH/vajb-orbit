@@ -56,13 +56,13 @@ and every tool result is re-sent on each later request.
 | 12. | Implementation notes for the coder | L1194–L1273 |
 | 13. | Verification performed on the mockup | L1274–L1290 |
 | 14. | Open questions for the owner | L1291–L1324 |
-| 15. | Station services deck & station identity (amendment 2026-10-02, wave… | L1325–L1488 |
-| 16. | Panel consolidation and the inspector band (amendment 2026-10-03, ow… | L1489–L1527 |
-| 17. | The merged panels — design detail, the inspector law, the panel temp… | L1528–L1639 |
-| 18. | Shell v2 — the TERMINAL drawer, the OVERVIEW pane, the popup sinks (… | L1640–L1683 |
-| 19. | Station shell v2 design detail — the OVERVIEW pane and the one skele… | L1684–L1881 |
-| 20. | The ARMORY two-module rework (amendment 2026-10-04, owner's playtest… | L1882–L1920 |
-| 21. | The two-sector rework — ARMORY's two modes and the REFINERY queue pa… | L1921–L1967 |
+| 15. | Station services deck & station identity (amendment 2026-10-02, wave… | L1325–L1499 |
+| 16. | Panel consolidation and the inspector band (amendment 2026-10-03, ow… | L1500–L1538 |
+| 17. | The merged panels — design detail, the inspector law, the panel temp… | L1539–L1650 |
+| 18. | Shell v2 — the TERMINAL drawer, the OVERVIEW pane, the popup sinks (… | L1651–L1694 |
+| 19. | Station shell v2 design detail — the OVERVIEW pane and the one skele… | L1695–L1892 |
+| 20. | The ARMORY two-module rework (amendment 2026-10-04, owner's playtest… | L1893–L1931 |
+| 21. | The two-sector rework — ARMORY's two modes and the REFINERY queue pa… | L1932–L1978 |
 
 <!-- section-index:end -->
 
@@ -1449,6 +1449,17 @@ with the per-station emblem family (D16 brief §10).
 
 Worked mockups: `staging/mockup/d16_identity_wireframe.md` (one plate per
 faction — Halcyon Anchorage / Spanport Meridian / Emberlight).
+
+**Landing note (2026-10-08, wave S24).** The plate ships already (the header's
+`StationPlate`/`StationMark`/`StationName`/`StationLocation`,
+`ui/screens/station.tscn:94-134`, with `station.gd:_apply_identity()` doing U17's
+glyph + ramp border); S24 fills the two labels from the station row
+(`game/station_registry.gd` — `14_station_services.md`'s 2026-10-08 block) and
+retires `station.tscn:125,131`'s placeholder strings. §15.1's `SERVICES` rail
+entry stays superseded (§19.6 row 11: OVERVIEW block 4 + the SERVICES pane, P26);
+S24 ships the **service matrix** as data and the U2 unavailable state on OVERVIEW
+block 4's rows, while §15.2–§15.4's panels remain S25/S26's. Reversal: the
+placeholder strings return and the matrix stays uniform (`availability: all`).
 
 ### 15.6 Presentation values (labels and wordings — the tick detail)
 

@@ -231,3 +231,22 @@ the effects row is:
 | Row | Change | PROPOSED value | Reversal | Tick |
 |---|---|---|---|---|
 | R-S24-3 | Nebula cover effects while inside a cloud | radar/scan range ×0.5, lock-acquire range ×0.5, a 15 % hull tint overlay; no stat effects | cosmetic tint only | **W2** |
+
+## 2026-10-08 — S24: the cloud rows and the cover readings (amends §1's nebula paragraph)
+
+The clouds are **sector-row data**: `clouds: Array[Dictionary]` with
+`{centre: Vector2, radius: float}`, 0–2 rows per sector rolled on the sector's own
+seeded RNG (`game/sector.gd:populate`'s seed, so a probe seeds them), centres
+kept ≥ **1500 u** from the arena centre so the station and the spawn ring are
+never inside one — PROPOSED (**V8**), reversal 1000 u. Radius **900 u** PROPOSED
+(**V8**), reversal 600 u. The wash is `Void Haze #1A2230` at 15 % alpha
+(STYLE_BIBLE §7.2's blue-grey wash; no new palette), drawn by the cloud node
+itself in its own rect; reversal: Deep Void Blue `#111823`.
+
+R-S24-3's readings have three live sites, all ×0.5 while the ship is inside a
+cloud: `Game._lock_range()` (the lock channel, `_pick_lock_target`, and the
+weapons' fallback range), the POI scan range (the derelict 300 u channel and the
+beacon reveal), and the minimap radius `Game._minimap_radius` — the player's zoom
+state is untouched, the factor is applied at the push to the HUD, so leaving the
+cloud restores the exact radius. The 15 % tint is the player's hull `modulate`
+toward the wash while inside. Reversal: cosmetic tint only (R-S24-3's own).

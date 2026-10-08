@@ -4,28 +4,7 @@
 
 **Keep this file live-only.** It is read at the start of every orchestrator session, so its size is a recurring cost. It holds the current state, the queue, the living contracts and the enforcement rules — and nothing else. At a wave's close-out, the wave's recap (gate history, deliverables, the gates it raised) is appended to `.agents/gen/MASTER_REPORT.md` §6 and only its one-line outcome stays here. Closed-wave detail moved there on 2026-09-24; do not let it accumulate here again.
 
-**Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **2026-09-25 clear-outs (owner asks):** every closed slice folder moved to the system trash (last git tree carrying them: `7a081ef`), old session reports live in `_state/_archive/`, and the two dispatch files were purged to live-items-only (2026-09-25 ter). **2026-10-07 clear-out (owner ask):** closed slice folders moved to `_archive/slices/` (kept, not deleted), the old Updated blocks to `_archive/waveboard_updates_2026-09-25_to_2026-10-06.md`, the dispatch files' done sections to `_archive/dispatch_*_done_2026-10-07.md`, CLOSED backlog rows to `_archive/low_backlog_closed_rows_2026-10-07.md`. Citation paths into moved trees name historical files.
-
-
-**Updated 2026-10-07 (S37 closed — the chrome fit, the one INSPECT toggle, and
-a readability polish):** **S37** (`.agents/gen/slices/S37-chrome-fit/`) went
-from R1's measured list (245 surfaces, 180 too small) to F1's theme-plate cure
-(DISTORT 14→0) to B2's five replacement rail cuts generated on one sheet and
-wired at each class master 2× (C1/C2/C9 clean; the C4 band 33→67 px, C3 4→21
-px; C9 realigned to §15.1's 272×56). `verify_chrome_fit.py` too_small
-**180→95**; the residual 95 are content (C4 x, T-148) and pinned/theme
-(T-149/T-150/T-151). The owner then folded the per-row / per-cluster INSPECT
-chips into **one header INSPECT toggle** (N37 rev; lit while on, an item press
-opens the sheet) and a full live pass produced three readability fixes (the
-`StationMeta` token, the canvas hover brighten, the LAUNCH briefing pairing).
-Gate **1152/0 ×2** fresh scratch; commits `179e098` + `45aae5c`. T-147 closed;
-T-148–T-151 filed; next free **T-152**. Docs: `UI_SPEC.md` §15.3/§15.8,
-§12.3/§12.4, N28/N37/N43. **Next: S24 world identity** (§Queued row 2).
-
-**Updated 2026-10-07 (S36 closed; the owner prune stands):** S36 closed (R1 →
-F1: the drawn-space margins cure, the A4 reverts, the tooltip inset; gate
-1151/0 ×2; §15.7). Retirements in `_archive/`; T-144–T-147 rode the fresh
-design round (T-147 closed in S37).
+**Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `TICKS.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **Clear-out history:** the 2026-09-25 and 2026-10-07 owner clear-outs and their extraction files are listed in `_templates/README.md` §"2026-10-07 (owner clear-out)". **2026-10-08 clear-out (owner ask):** the board keeps only the S24–S27 queue — the S36/S37 `Updated` blocks moved to `_archive/waveboard_updates_2026-10-07_to_2026-10-08.md`, the closed S36/S37 slice folders to `_archive/slices/`, the dispatch done sections to `_archive/dispatch_done_2026-10-08.md`, the S36/S37 backlog rows to `_archive/low_backlog_s36_s37_rows_2026-10-08.md`, and the S36 baseline to `_archive/wave_state_baselines/`. Citation paths into moved trees name historical files.
 
 Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 
@@ -33,16 +12,14 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 
 | Pos | Lane item | Wave | Runs after | The collision/dependency that forces the order |
 |---|---|---|---|---|
-| 1 | coder 43 | **S36 the chrome re-skin** (**done 2026-10-07** — gate 1151/0 ×2, committed at the wave boundary; `slices/S36-chrome-reskin/`) | — | shares `vajb-orbit/ui` + `tests` with S24, so S24 waited |
-| 1b | coder 43 | **S37 the chrome fit + the one INSPECT toggle** (**done 2026-10-07** — gate 1152/0 ×2, commits `179e098` + `45aae5c`; `slices/S37-chrome-fit/`) | S36's close-out | shares `vajb-orbit/ui` + `tests` with S24; the INSPECT rev moved five pinned tests |
-| 2 | coder 30 | S24 world identity | S36's close-out | its five-piece predates shell v2 AND the 2026-10-05/06 rounds — the developer re-checks `slices/S24-world-identity/S24_BRIEF.md` against `UI_SPEC.md` §12–§15 + `STATION_HUB.md` §19–§21 and re-cuts the handoff before dispatch |
-| 3 | coder 31 | S25 contracts board | coder 30 | `ui/station/` + `autoload/player_profile.gd` + S24's `contracts_visible` seam |
-| 4 | coder 32 | S26 bosses, arenas, insurance, vaults | coder 31 | `game/` + `player_profile.gd` + S25's Expedition seam |
-| 5 | coder 33 | S27 catalog breadth & shipyard | coder 32 | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/` |
+| 1 | coder 30 | **S24 world identity** | — | **re-cut 2026-10-08** against the shipped shell (S30–S37), baseline 1152/0: two sequential builders (`S24-B1` A1–A2 → `S24-B2` A3–A5, both hold `game/game.gd`) then R1; the mechanism pins V1–V8 landed in `docs/gameplay/12|14|13|11`'s 2026-10-08 blocks |
+| 2 | coder 31 | S25 contracts board | coder 30 | `ui/station/` + `autoload/player_profile.gd` + S24's `contracts_visible` seam |
+| 3 | coder 32 | S26 bosses, arenas, insurance, vaults | coder 31 | `game/` + `player_profile.gd` + S25's Expedition seam |
+| 4 | coder 33 | S27 catalog breadth & shipyard | coder 32 | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/` |
 
-Queue rows 1–25 of the old table are closed — archived
-(`_archive/waveboard_updates_2026-09-25_to_2026-10-06.md` +
-`MASTER_REPORT.md` §6). Playtest pass #1 (the owner's, `19_testing_notes.md`'s
+These four are the whole live queue — every earlier item is closed and archived
+(`_archive/dispatch_coder_done_2026-10-07.md` + `_archive/waveboard_updates_2026-10-07_to_2026-10-08.md`
++ `MASTER_REPORT.md` §6). Playtest pass #1 (the owner's, `19_testing_notes.md`'s
 eye list) runs alongside; build 2 + the tester template are phase exit
 criteria. Every brief's §11 tick sheet feeds its wave (unticked rows implement
 at their PROPOSED value).
@@ -62,11 +39,11 @@ at their PROPOSED value).
   passed=<live count> failed=0`, run **twice on fresh scratch stores**
   (`XDG_DATA_HOME=$(mktemp -d)`), byte-identical; CONTRACTS §14's runner
   sandbox law and §9's measured block are the authority. Growth history
-  (437 → 895 across the waves) is `MASTER_REPORT.md` §6.
+  (437 → 1152 across the waves) is `MASTER_REPORT.md` §6.
 - `staging/verify_wave.py` — mechanical wave gates: `snapshot` before a
   wave, `verify --baseline <tag> [--forbidden ...] [--expect-reports ...]
   [--tests]` after. Baselines live in `.agents/gen/_state/_wave_state/`
-  (e.g. `s16_start`; the wave's brief names its own).
+  (the wave's brief names its own).
 - **`AGENTS.md` §"Designer lane — the output format"** — the standing rule for
   how planning work is delivered: docs amended first, one brief, one prompts
   file, queued in this board and in the lane's dispatch file, handed over

@@ -33,7 +33,7 @@ and every tool result is re-sent on each later request.
 | 12. | Station shell v2 design detail — the TERMINAL drawer, the popup pair… | L1111–L1345 |
 | 13. | The D20 fix wave — exchange parity, the armory browser, the hover-in… | L1346–L1383 |
 | 14. | Exchange sell cluster + the OVERVIEW tile plates (amendment 2026-10-… | L1384–L1429 |
-| 15. | The one true-aspect chrome family (amendment 2026-10-05, owner rulin… | L1430–L1827 |
+| 15. | The one true-aspect chrome family (amendment 2026-10-05, owner rulin… | L1430–L1847 |
 
 <!-- section-index:end -->
 

@@ -2,63 +2,74 @@
 slice: S24
 phase: P3
 lane: code
-status: draft
-gate_baseline: "post-S23"
+status: ready
+gate_baseline: "1152/0 (measured 2026-10-08, item 30's re-cut)"
 ---
 
-# S24 — World identity (stations, factions, nebula)
+# S24 — World identity (stations, factions, standing, bands, nebula)
 
 ## Goal
 The nine docking places become nine *places*: named stations with per-faction
-service menus, price flavours and shelf bias; faction standing starts gating
-docking, prices and perks; each sector carries its own hostile band; and
-nebula clouds finally tint and blind. The map stops being one room copied
-seven times.
+service matrices, price flavours and shelf bias; faction standing starts gating
+prices, contracts, the auction and the insurance seam; each sector carries its own
+hostile band; and nebula clouds finally tint and blind. The map stops being one
+room copied seven times.
 
 ## In scope
-- Station entities: `game/station_catalog.gd:25 (no per-station structure — this
-  wave adds one)`, `game/station_scene.gd:128`, `ui/screens/station.gd` — names
-  and character per R-S24-1, service matrix per 14 §1/§8, faction ownership per
-  sector
-- Faction flavour: `game/exchange.gd:51` (Meridian's 1.5 % commission), the
-  12 §3 demand biases, 12 §5's −15 % tech discounts, 12 §2's shelf bias
-- Standing effects (12 §4.1's band table): dock refusal (≤ −51, two-axis rule
-  13 §7 unchanged), price ±10/5 %, contract visibility (a seam S25 reads),
-  auction perks (Known ×1.5 hot slot; Trusted reserved slot)
-- Hostile bands (R-S24-2): `game/npc_registry.gd:89 (HOSTILE_FILL)` becomes
-  per-sector; densities stay 13 §4's
-- Nebula (R-S24-3, ruling 25): 0–2 clouds per sector (`sector_registry.gd:40-50`),
-  radar/lock ×0.5 + 15 % tint while inside
-- `tests/test_s24_world.gd` — new suite (A1–A5)
+- The station entity: **new** `game/station_registry.gd` (nine rows, per
+  `14_station_services.md`'s 2026-10-08 block) + the docked-station seam on
+  `autoload/player_profile.gd` + `game/game.gd`'s dock filing; the shell header's
+  plate text (`ui/screens/station.gd`, `ui/screens/station.tscn`'s placeholder
+  strings retire); OVERVIEW block 4's availability state + the vault record read
+  (`ui/station/overview_panel.gd`)
+- The price law (12's V1/V2/V6 rows): `game/repairs.gd`'s fee, the ammo pack and
+  hull prices (`game/station_catalog.gd`'s readers), the Meridian 1.5 % commission
+  (`game/exchange.gd`), the module price factor at `ui/station/armory_panel.gd` /
+  `ui/station/fitting_panel.gd`
+- Standing effects (12 §4.1 + V3/V4/V5/V7): `contracts_visible`, the auction's
+  hot-slot pair and the reserved tier slot, the insurance multiplier seam
+- Hostile bands (R-S24-2 + 13's 2026-10-08 block): `game/sector_registry.gd`'s row
+  gains `hostile_band`; `game/npc_registry.gd`'s global `HOSTILE_FILL` retires as
+  the source
+- Nebula (R-S24-3 + 11's 2026-10-08 block): the sector row's `clouds`, the cloud
+  node in `game/sector.gd`, the three ×0.5 readings + the 15 % tint in
+  `game/game.gd`
+- `tests/test_s24_world.gd` (B1) and `tests/test_s24_bands.gd` (B2)
 
 ## Out of scope
-- Contracts, insurance, vaults (S25/S26) — S24 only exposes the seams they read
-- Turrets (S23's tick C6), bosses (S26), `HOSTILE_FILL`'s hunter pressure logic
-  (stays heat-driven per 13 §3)
-- Any art (owner 2026-09-27): station identity is names + existing chrome only
-  (the D16 treatment is the design law when it exists)
+- Contracts, insurance, vaults panels (S25/S26) — S24 exposes the seams they read
+- Outpost **nodes** (the three outpost rows are data + tests only; spawning them is
+  the staged per-station POI-flavour item)
+- Turrets (S23's tick C6), bosses (S26), the SERVICES pane's §15.2–§15.4 panels
+- Any art (owner 2026-09-27): identity is names + existing chrome only
 
 ## Acceptance criteria
-See `S24_BRIEF.md` §6 (A1–A5), each probe- or gate-provable.
+See `S24_BRIEF.md` §6 (A1–A6), each probe- or gate-provable.
 
 ## Worker file sets
 | Worker | Files (becomes `VAJB_WORKER_FILES`) | Brief |
 |---|---|---|
-| S24-B1 | `vajb-orbit/game/, vajb-orbit/ui/, vajb-orbit/tests/, .agents/gen/slices/S24-world-identity/S24-B1_report.md` | `S24_BRIEF.md` |
+| S24-B1 | `vajb-orbit/game/station_registry.gd, vajb-orbit/game/station_catalog.gd, vajb-orbit/game/repairs.gd, vajb-orbit/game/exchange.gd, vajb-orbit/game/game.gd, vajb-orbit/autoload/player_profile.gd, vajb-orbit/ui/screens/station.gd, vajb-orbit/ui/station/overview_panel.gd, vajb-orbit/ui/station/launch_panel.gd, vajb-orbit/ui/station/armory_panel.gd, vajb-orbit/ui/station/fitting_panel.gd, vajb-orbit/tests/test_s24_world.gd, .agents/gen/slices/S24-world-identity/S24-B1_report.md` | `S24_BRIEF.md` |
+| S24-B2 | `vajb-orbit/game/sector_registry.gd, vajb-orbit/game/sector.gd, vajb-orbit/game/npc_registry.gd, vajb-orbit/game/auction.gd, vajb-orbit/game/game.gd, vajb-orbit/ui/station/auction_panel.gd, vajb-orbit/tests/test_s24_bands.gd, .agents/gen/slices/S24-world-identity/S24-B2_report.md` | `S24_BRIEF.md` |
 | S24-R1 | `vajb-orbit/tests/, vajb-orbit/tools/, docs/CONTRACTS.md, .agents/gen/slices/S24-world-identity/S24-R1_review.md` | `S24_BRIEF.md` |
-| S24-F1 | `vajb-orbit/game/, vajb-orbit/ui/, vajb-orbit/tests/, vajb-orbit/tools/, docs/CONTRACTS.md, .agents/gen/slices/S24-world-identity/` | `S24_BRIEF.md` |
+| S24-F1 | `vajb-orbit/game/, vajb-orbit/ui/, vajb-orbit/autoload/, vajb-orbit/tests/, vajb-orbit/tools/, docs/CONTRACTS.md, .agents/gen/slices/S24-world-identity/` | `S24_BRIEF.md` |
+
+B1 and B2 both hold `vajb-orbit/game/game.gd` and run **strictly in order** (B1
+first; B2 re-reads the file) — one live builder at a time.
 
 ## References
-- `docs/gameplay/14_station_services.md` §1/§8 + **2026-09-27 P3 block**
-  (R-S24-1's name table, tick W3)
-- `docs/gameplay/12_factions.md` §2/§3/§4.1/§5 (the flavour + band law)
-- `docs/gameplay/13_heat_bounty.md` §4/§7 + **2026-09-27 P3 block** (R-S24-2,
-  tick W1) · `docs/gameplay/11_galactic_map.md` §1/§3 + **2026-09-27 P3 block**
-  (R-S24-3, tick W2)
+- `docs/gameplay/14_station_services.md` §1/§8 + **2026-09-27 P3 block** (R-S24-1)
+  + **2026-10-08 block** (the nine rows, the seam, the plate landing)
+- `docs/gameplay/12_factions.md` §2/§3/§4.1/§5 + **2026-10-08 block** (V1–V7)
+- `docs/gameplay/13_heat_bounty.md` §4/§7 + **2026-09-27 P3 block** (R-S24-2) +
+  **2026-10-08 block** (the band moves to the row)
+- `docs/gameplay/11_galactic_map.md` §1/§3 + **2026-09-27 P3 block** (R-S24-3) +
+  **2026-10-08 block** (V8: the cloud rows, the three readings)
+- `docs/design/STATION_HUB.md` §15.5 (+ its 2026-10-08 landing note), §19.1/§19.4
+  (OVERVIEW block 4, the SERVICES pane); `docs/design/UI_SPEC.md` §12.4 (the
+  header plate row)
 - `docs/gameplay/18_engine_spec.md` §2.1 ruling 25 (read-only)
-- `slices/D16-station-ui/D16-A1_report.md` — the station identity treatment
-  (read when it exists; otherwise names + existing chrome only)
 
 ## Carries forward
-- S25 consumes the contract-visibility seam and the station screen; S26 consumes
-  the standing band's insurance ×0.8 row and `u_vault`'s faction exception.
+- S25 consumes `contracts_visible` and the SERVICES pane; S26 consumes
+  `insurance_multiplier` and `u_vault`'s faction exception.

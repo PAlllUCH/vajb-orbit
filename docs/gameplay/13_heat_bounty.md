@@ -154,3 +154,15 @@ per-sector band (the split "stated by no doc" is this row):
 | R-S24-2 | Hostile band per sector | S1–S2 `[pirate]`; S3–S4 `[pirate, swarmer]`; S5–S6 `[swarmer, sibelon, pirate]`; S7 `[pirate, swarmer]` + roaming hunter pressure (heat-driven hunters stay map-wide) | global `[pirate, swarmer]` (current) | **W1** |
 
 Turret staging is resolved by 08 §4's R-S23-6 (tick C6).
+
+## 2026-10-08 — S24: the band lives on the sector row (supersedes the global fill)
+
+`NpcRegistry.HOSTILE_FILL` retires as the band source. Each `11 §4` sector row
+carries `hostile_band: Array[StringName]`, filled from R-S24-2 verbatim: S1–S2
+`[pirate]` · S3–S4 `[pirate, swarmer]` · S5–S6 `[swarmer, sibelon, pirate]` ·
+S7 `[pirate, swarmer]`. **The row's order is the fill order** (slot 0 is present
+whenever the band's count is at least 1, slot 1 whenever it is at least 2, and so
+on) — the shipped fill rule, kept. `HOSTILE_FILL`'s own reversal (the `sibelon`
+entry removed and the row returning to its `slice_3` seam) is **spent by this
+row**: the alien is a band member in S5–S6 only. §4's densities and the two-axis
+rule are untouched; hunters stay heat-driven map-wide.
