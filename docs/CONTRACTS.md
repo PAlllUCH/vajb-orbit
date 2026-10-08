@@ -30,33 +30,34 @@ later request; one section costs ~2-3k.
 
 | Section | Topic | Lines |
 |---|---|---|
-| §1 | Input map (project settings) | L64–L84 |
-| §2 | ShipStats | L85–L105 |
-| §3 | ShipFit | L106–L123 |
-| §4 | PlayerShip | L124–L304 |
-| §5 | Combat/mining entities (slice 1 scope) | L305–L409 |
-| §6 | Sector / SectorRegistry | L410–L435 |
-| §7 | HUD — frozen API + wave-1 additions | L436–L501 |
-| §8 | Economy / state seams | L502–L545 |
-| §8.1 | Slice 0 — physics & fuel (pinned additions, 2026-09-21) | L546–L681 |
-| §8.2 | Slice 2 — fight (pinned additions, 2026-09-21) | L682–L886 |
-| §9 | Universal test gate | L887–L971 |
-| §11 | P2 ship frames (2026-09-21) | L972–L1167 |
-| §12 | P2-B1 weapon fit (2026-09-22) | L1168–L1225 |
-| §13 | P2-B proper fitting (2026-09-22) | L1226–L1347 |
-| §14 | S2.6 truth-and-feel (2026-09-22) | L1348–L1476 |
-| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1477–L1581 |
-| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L1582–L1757 |
-| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L1758–L1836 |
-| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L1837–L1909 |
-| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L1910–L2045 |
-| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2046–L2257 |
-| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2258–L2335 |
-| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L2336–L2390 |
-| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L2391–L2560 |
-| §24 | S24 world identity — stations, standing, bands, nebula (2026-10-08) | L2561–L2648 |
-| §25 | S28 economy law — the value ladder, the fee door, the battery, the b… | L2649–L2709 |
-| §10 | Changelog | L2710–L2959 |
+| §1 | Input map (project settings) | L65–L85 |
+| §2 | ShipStats | L86–L106 |
+| §3 | ShipFit | L107–L124 |
+| §4 | PlayerShip | L125–L305 |
+| §5 | Combat/mining entities (slice 1 scope) | L306–L410 |
+| §6 | Sector / SectorRegistry | L411–L436 |
+| §7 | HUD — frozen API + wave-1 additions | L437–L502 |
+| §8 | Economy / state seams | L503–L546 |
+| §8.1 | Slice 0 — physics & fuel (pinned additions, 2026-09-21) | L547–L682 |
+| §8.2 | Slice 2 — fight (pinned additions, 2026-09-21) | L683–L887 |
+| §9 | Universal test gate | L888–L989 |
+| §11 | P2 ship frames (2026-09-21) | L990–L1185 |
+| §12 | P2-B1 weapon fit (2026-09-22) | L1186–L1243 |
+| §13 | P2-B proper fitting (2026-09-22) | L1244–L1365 |
+| §14 | S2.6 truth-and-feel (2026-09-22) | L1366–L1494 |
+| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1495–L1599 |
+| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L1600–L1775 |
+| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L1776–L1854 |
+| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L1855–L1927 |
+| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L1928–L2063 |
+| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2064–L2275 |
+| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2276–L2353 |
+| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L2354–L2408 |
+| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L2409–L2578 |
+| §24 | S24 world identity — stations, standing, bands, nebula (2026-10-08) | L2579–L2666 |
+| §25 | S28 economy law — the value ladder, the fee door, the battery, the b… | L2667–L2727 |
+| §26 | S25 contracts board — the registry, the reward law, the three exits … | L2728–L2800 |
+| §10 | Changelog | L2801–L3082 |
 
 <!-- section-index:end -->
 
@@ -912,6 +913,23 @@ and `05` §10's rows off the live baselines. `test_p1_refinery.gd` alone reads
 hide-sub-convertible-stacks semantics, only its Gold fee figure and the two
 re-signed call shapes moved (disclosed in the suite's own header).
 
+- **S25's block (2026-10-08, closed):** `test_s25_contracts.gd` adds **24 rows**
+  (A1–A8) and the PASS-set diff against B1's baseline store moves exactly those
+  24 — no other suite's row moved. R1's own gate read **1223/1 twice** on fresh
+  scratch stores: `test_a7_the_staged_row_the_escrow_and_the_cancel` failed on
+  any band whose s3 Haul rolled a stack the test did not stock (R1's probe, band
+  1492912: Haul = 40× `ingot_aluminium` against the test's `ingot_iron`,
+  `tests/test_s25_contracts.gd:938`); B1's 1224/0 was such a matching band. The
+  fixer made the row stock the board's own rolled item, so it is band-independent
+  by construction (the clock was not pinned — a pinned band would leave the row
+  band-specific again). R1's second HIGH: `ContractRegistry.complete()` had no
+  production caller, so the haul/gather escrow was never deliverable and hunt had
+  no kill-credit hook — the fixer wired the three production exits (the shell's
+  dock seam for Haul/Gather, the flight scene's kill seam for Hunt, the escort's
+  own arrival/death pair unchanged), all through the one `complete()`, with a
+  negative control proving both new rows fail when either seam is removed.
+  Finished gate: **1226/0** twice on fresh scratch stores
+  (`.agents/gen/slices/S25-contracts/S25-R1_review.md`, `S25-F1_report.md`).
 - **S24's block, compressed (2026-10-08):** 1152 → 1186 (+34: s24_world +19 after
   F1's HIGH cure, s24_bands +15) twice hermetic, no other suite's row count moved,
   R1's nine-row probe list re-measured independently; the S17 `REGISTRY_MD5` re-pin
@@ -2707,6 +2725,79 @@ Tests: `test_s28_econ.gd` (10 rows, C1 — the ladder derivation, the fee column
 price their new rows from 01's L2 bands and re-cut their `14` extracts before
 dispatch; the boss caches and contract flats land with their waves.
 
+## §26 S25 contracts board — the registry, the reward law, the three exits (2026-10-08)
+
+**Wave S25** (`slices/S25-contracts/`, baseline `s25_start`, gate **1202 → 1226/0**
+×2 hermetic). The board is data: one registry of Resource-style dictionaries, a
+seeded roll per station per band, and three production exits — no fourth.
+
+**The one door family** (`game/contract_registry.gd`, all `static`):
+
+```gdscript
+const BOARD_SIZE := 6            ## R-S25-1 (tick J1); Expedition is the 6th row
+const MAX_ACTIVE := 3
+const CANCEL_FEE := 100          ## CR, charged on cancel
+const ROUND_UNIT := 100          ## every reward % 100 == 0
+const SC: Array[int] = [1100, 1500, 3000, 6000]   ## 01's block verbatim — never re-derived
+const KNOWN_FLOOR := 11          ## 12 §4.1's Known band floor (S24 ships no shared const)
+const KNOWN_HOOK := 0.05         ## 12 §4.1's "+5 %" pay hook
+
+static func visible(standing: int) -> bool            ## reads StationRegistry.contracts_visible
+static func band_index(timestamp: int = -1) -> int    ## WorldClock.BAND_SECONDS = 1200
+static func board(station_id: StringName, standing: int, timestamp: int = -1) -> Array[Dictionary]
+static func reward(contract: Dictionary) -> int       ## the law below, before the Known hook
+static func pay(contract: Dictionary, standing: int) -> int   ## reward + KNOWN_HOOK
+
+static func accept(profile: Node, contract: Dictionary) -> Dictionary
+static func cancel(profile: Node, contract_id: StringName) -> Dictionary
+static func complete(profile: Node, contract_id: StringName) -> Dictionary   ## THE one payout door
+
+# the three production exits — every one of them calls complete()
+static func delivery_station(contract: Dictionary) -> StringName
+static func deliver_at(profile: Node, station_id: StringName) -> Array[Dictionary]
+static func credit_kill(profile: Node, sector_number: int) -> Array[Dictionary]
+static func escort_won(profile: Node, contract_id: StringName) -> Dictionary
+static func escort_lost(profile: Node, contract_id: StringName) -> Dictionary
+```
+
+**The reward law** (14 §2's shapes, scaled by S28's M11 — owner-ratified green):
+each flat scales `×SC(t)/SC(1)` by the **target** sector's tier, rounded to
+100 CR. Hunt **800 / 1 100 / 2 200 / 4 400**; Escort **1 200 / 1 600 / 3 300 /
+6 500**; Haul's flat **300 / 400 / 800 / 1 600** + `Exchange.sale_quote` spot
+×1.25; Gather ×1.4 of the ore value; 12 §3's demand bias and 12 §4.1's Known
++5 % apply on top. Hunt's standing is `STANDING_HUNT × HUNT_COUNT` = **+5** (14
+§2's "+1 standing per kill"); loss files **−5**. Reversal: flat bases at every
+sector (**M11**), Haul's flat 300 at every tier.
+
+**The loop's exits** (R1's F1 HIGH, cured by F1): `complete()` is the only
+payout door and it takes the record out of the active list **before** it pays,
+so a second call pays 0. Haul delivers at its own `target_station`, Gather at
+the station it was taken at (its objective names no destination), both swept by
+the shell's dock seam (`ui/screens/station.gd on_route → _deliver_contracts`);
+Hunt credits one pirate per kill off the record's own `count` through the
+flight scene's kill seam (`game/game.gd _on_npc_died → _credit_hunt_kills`,
+reading `NpcRegistry.ARCHETYPE_PIRATE`); the escort exits are the arrival and
+the hauler's death.
+
+**Seams read, never redefined:** `PlayerProfile.contracts()` (`:1914`, read
+`:2195`, save `:2801` — the active list is this one key),
+`WorldClock.BAND_SECONDS`/`now()`/`bands_between()`, `StationRegistry.contracts_visible`
+and `insurance_multiplier`, `Exchange.sale_quote`/`exchange_price`,
+`SectorRegistry.CORRIDOR_DEPTH` (the ambush radius).
+
+**The deck:** `ui/station/contracts_panel.gd` + `.tscn` (new) implement
+STATION_HUB §15.2's U3–U8; `ui/screens/station.gd` hosts it in the SERVICES deck
+in place of the retired `MODULE OFFLINE` placeholder (**T-138 closed**), with
+§15.1's strip, the U2 unavailable reasons and the §5.2 confirm dialog. Riders
+closed: **T-152** (`launch_panel.destination_line()` reads the docked sector's
+own name) and **T-154** (`refinery.gd`'s stale fee example, comment-only).
+
+Tests: `tests/test_s25_contracts.gd` (24 rows, A1–A8; the escrow row stocks the
+board's own rolled item so it cannot depend on the band). Staged: Expedition is
+a `staged` seam row S26 flips live; INSURANCE/VAULTS keep the host's
+not-installed placeholder until S26. LOW: **T-156** (U7 dim scope), **T-157**
+(the double-accept id collision).
+
 ## §10 Changelog
 
 Rolling log of what each wave changed here. Kept verbatim only where an entry
@@ -2956,3 +3047,35 @@ bottom (the index-line form is only for retired entries).
   cite is corrected to the row's name — the pinned hide-sub-convertible-stacks
   semantics never moved, only the Gold fee figure and two call shapes did,
   disclosed in the suite's header. M8–M14 owner-ratified green 2026-10-08.
+- **v0.48 (2026-10-08, wave S25 review — S25-R1, this wave's only CONTRACTS
+  writer; gate `1202 → 1223/1 twice` on R1's fresh scratch stores, verdict
+  **blocked** pending S25-F1 — §9's S25 block carries both HIGHs)** — the
+  contracts board wave under review: `ContractRegistry` (the seeded six-row
+  board on the 20-minute clock, 14 §2's reward shapes at the target sector's
+  tier per the S28 table, 12 §3's biases and 12 §4.1's Known hook, the standing
+  gates, the max-3 rule, the escrow lifecycle and the escort plan), the escort
+  runtime in `game.gd`, the SERVICES deck and the §15.2 CONTRACTS panel, and the
+  T-152/T-154 riders. R1 graded the brief's A1–A8: A1/A2/A3/A5/A6/A7/A8 pass
+  (A5's D5/D13, D7 and D10 are tabled PROPOSED), A4 drifts on the unreachable
+  delivery door (F1 HIGH); F2 HIGH is the band-flaky A7 escrow test behind the
+  red gate; F3 MED is Hunt's flat +1 standing against the pin's per-kill row;
+  F4/F5 are LOW (T-156/T-157). The pinned-interface section for this wave lands
+  with the wave's close-out, after the fixer pass, per this review's verdict.
+- **v0.49 (2026-10-08, wave S25 close-out — the developer session; gate
+  `1202 → 1226/0` twice hermetic on fresh scratch stores, verify `"problems": []`
+  vs `s25_start`, verdict **closed**)** — the fixer cured both HIGHs and the one
+  MED: the loop's three production exits were wired through the one `complete()`
+  (the shell's dock seam for Haul/Gather, the flight scene's kill seam for Hunt;
+  the escort's arrival/death pair was already wired), with a negative control
+  proving both new rows fail when either seam is removed; the band-flaky A7
+  escrow row now stocks the board's own rolled item, so it is band-independent by
+  construction (the clock was deliberately **not** pinned — a pinned band would
+  leave the row band-specific again); Hunt's standing files 14 §2's
+  "+1 standing per kill" (+5 over the five the objective names). Gate rows:
+  `test_s25_contracts.gd` **22 → 24**, and the PASS-set diff moves no other
+  suite's row. New **§26** pins this wave's interface (the registry's doors and
+  constants, the S28-scaled reward law, the three exits, the seams read and the
+  deck); §9's S25 block carries the finished chain. Riders **T-138** (the deck
+  placeholder), **T-152** (the launch line) and **T-154** (the refinery comment)
+  closed; **T-156**/**T-157** filed LOW. J1 (R-S25-1's 6-row board, Expedition
+  staged) shipped as PROPOSED.

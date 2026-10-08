@@ -127,7 +127,7 @@ static func fee_for(mineral_id: StringName, conversions: int, mult: float = 1.0)
 
 ## R1: the wall seconds one conversion of `mineral_id` takes,
 ## `clamp(round(ingot_value / 10), 10, 60)` (04 section 7.1). Iron's 65 CR ingot
-## reads 10 s, Gold's 395 reads 40 s; an unknown mineral floors at 10.
+## reads 10 s, Gold's 259 reads 26 s; an unknown mineral floors at 10.
 static func resource_seconds(mineral_id: StringName) -> int:
 	var entry := Catalog.mineral(mineral_id)
 	if entry.is_empty():

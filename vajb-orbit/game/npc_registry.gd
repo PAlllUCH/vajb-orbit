@@ -92,6 +92,10 @@ const HOSTILE_BAND: Array[Vector2i] = [
 ## again (one call site).
 const HOSTILE_FILL: Array[StringName] = [&"pirate", &"swarmer", &"sibelon"]
 
+## The pirate row's own id (the first `HOSTILE_FILL` row and 14 section 2's Hunt objective,
+## "destroy 5 pirates"): the one home for the literal `game.gd` used to spell twice.
+const ARCHETYPE_PIRATE: StringName = &"pirate"
+
 ## Doc 13 section 3's bounty-hunter row id, the one archetype a heat tier spawns
 ## (`game.gd:HUNTER_ARCHETYPE` spells the same id for the kill's loot). `hunter_spawn`,
 ## `hunter_hull_for` and `hunter_wing_size` are this row's helpers.
@@ -683,6 +687,23 @@ static func spawns_for(sector_id: StringName) -> Array[Dictionary]:
 			continue
 		out.append_array(_expand(row, band, owner))
 	return out
+
+
+## S25 (14 section 6): the one convoy row's resolved spawn entries for a sector - the
+## hauler and its 1-2 fighter escorts, dressed for the space they fly in. The escort
+## contract's runtime reads this instead of scanning `spawns_for`, so a contracted convoy
+## and a sector's own convoy are the same rows ("same system, both directions").
+static func convoy_spawns(sector_id: StringName) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for spawn: Dictionary in spawns_for(sector_id):
+		if StringName(spawn.get(KEY_ARCHETYPE, &"")) == &"trader":
+			out.append(spawn)
+	return out
+
+
+## One convoy entry's role (`hauler` / `escort`), read off the member the row expanded to.
+static func convoy_role(spawn: Dictionary) -> StringName:
+	return StringName(spawn.get(KEY_ROLE, ROLE_HULL))
 
 
 ## One row's spawn entries for a sector band. A row with members expands to one entry per

@@ -33,29 +33,29 @@ asking the owner first.
 | # | Wave | Item | What | Status |
 |---|---|---|---|---|
 | 34 | S28 | Universal cost law | The economy's one law: the ×2.0/tier value ladder (`02`'s 2026-10-08 block), the value-relative refine fee (`04` §8), SC-scaled boss/contract payouts (`14`'s block), the battery/bloom caps (`01` L4). Five-piece: `slices/S28-economy-law/`; ticks M8–M14; two builders (C1 values+fee → C2 battery+bloom), R1, F1 on HIGH/MED. | **closed 2026-10-08** — gate 1202/0 ×2, verify clean vs `s28_start`; C1 +10 rows, C2 +6; R1 no HIGH, its one MED fixed in review, 2 LOW → T-154/T-155; CONTRACTS §25; ticks M8–M14 ratified green |
-| 31 | S25 | Contracts board | `contract_registry` + the board panel: Haul/Hunt/Gather/Escort, escrow + 100 CR cancel, standing gates, the escort convoy loop, S28's tier-scaled payouts. Five-piece: `slices/S25-contracts/`; pin R-S25-1 (14 P3 block, tick J1). | **next — brief re-cut 2026-10-08** against the shipped tree: every cite re-measured (`contracts_visible`/`insurance_multiplier` at `station_registry.gd:417/:423`, `contracts()` at `player_profile.gd:1914`), the `14` §2 reward extract re-cut against S28's block (Hunt 800/1 100/2 200/4 400, Escort 1 200/1 600/3 300/6 500, Haul's flat derived 300/400/800/1 600), the panel law pinned to `STATION_HUB.md` §15.2's U3–U8 (the D16 report cite retired), riders **T-138/T-152/T-154** in the file set. Dispatch from `S25_prompts.md` |
-| 32 | S26 | Bosses, arenas, insurance, vaults | The Boneyard + The Pyre arena runs, the Maw roaming S7 with 06 §3.4's table, death persistence, insurance + mercy clause, vaults + `u_vault`. Five-piece: `slices/S26-endgame/`; pin R-S26-1 (08 P3 block, ticks E1/E2). | queued · after 31 (Expedition seam). **Brief re-cut 2026-10-08** — boss payouts re-cut to 6 000/12 000 (M10), the premium law re-cut to M14's 1.5 %-of-list, the panel law pinned to STATION_HUB §15.3/§15.4, cites re-measured |
+| 31 | S25 | Contracts board | `contract_registry` + the board panel: Haul/Hunt/Gather/Escort, escrow + 100 CR cancel, standing gates, the escort convoy loop, S28's tier-scaled payouts. Five-piece: `slices/S25-contracts/`; pin R-S25-1 (14 P3 block, tick J1). | **closed 2026-10-08** — gate 1226/0 ×2, verify clean vs `s25_start`; B1 +22 rows; R1 blocked on 2 HIGH (the loop had no production caller; a band-flaky escrow row) + 1 MED (Hunt's flat standing), F1 cured all three (+2 rows, negative control) → 1226/0; 2 LOW → T-156/T-157; **T-138/T-152/T-154 closed**; CONTRACTS §26; tick J1 shipped as PROPOSED |
+| 32 | S26 | Bosses, arenas, insurance, vaults | The Boneyard + The Pyre arena runs, the Maw roaming S7 with 06 §3.4's table, death persistence, insurance + mercy clause, vaults + `u_vault`. Five-piece: `slices/S26-endgame/`; pin R-S26-1 (08 P3 block, ticks E1/E2). | **next** — S25's Expedition seam is the `staged` row `contract_registry` ships, waiting for its arena payout. **Brief re-cut 2026-10-08** — boss payouts re-cut to 6 000/12 000 (M10), the premium law re-cut to M14's 1.5 %-of-list, the panel law pinned to STATION_HUB §15.3/§15.4, cites re-measured |
 | 33 | S27 | Catalog breadth & shipyard | +7 affix rows with perks live, tier variants, per-archetype loot, the 10 §3 shipyard (recipes/queue/scrap), prices from 01's L2 bands. Five-piece: `slices/S27-catalog-breadth/`; pins R-S27-1..3 (09/15 P3 blocks, ticks K1–K3). | queued · after 32 (`game/`); carries **T-153** (a tier-4 module row). **Brief re-cut 2026-10-08** — prices re-pointed to 01's L2 bands (nothing restates a price; recipe CR totals re-derive from the live values), T-153 folded in, cites re-measured |
 
 ## Parked (owner-gated — not queued; say the word and the five-piece lands)
 
 ## Done
 
-Items 1–44 closed (gate 437 → 1202/0 through the waves). Detail:
+Items 1–44 closed (gate 437 → 1226/0 through the waves). Detail:
 `_archive/dispatch_coder_done_2026-10-07.md`,
 `_archive/dispatch_done_2026-10-08.md` and `MASTER_REPORT.md` §6.
 
 ## Handoff (live)
 
-**Item 31 = S25 contracts board — next** (its brief was **re-cut 2026-10-08**
-against the shipped tree — S24's seams re-measured, S28's payout scaling folded
-into the extract, the panel law pinned to STATION_HUB §15.2's deck rows, the
-T-138/T-152/T-154 riders in the file set; dispatch from
-`slices/S25-contracts/S25_prompts.md`). Items 32–33 then run in order; re-cut
-each brief the way S24's and S25's were before dispatch — S26's R-S26-1
-extract re-cuts against S28's `14` block (6 000/12 000 boss payouts, M14's
-insurance option). The owner's fresh design round may regenerate the planning
-before any dispatch — check `dispatch_designer.md` first.
+**Item 32 = S26 bosses, arenas, insurance, vaults — next** (its brief was
+**re-cut 2026-10-08** — the boss payouts to M10's 6 000/12 000, the premium law
+to M14's 1.5 %-of-list, the panel law pinned to STATION_HUB §15.3/§15.4, every
+cite re-measured; dispatch from `slices/S26-endgame/S26_prompts.md`). It flips
+`contract_registry`'s `staged` Expedition row live with its arena payout and
+carries the SERVICES strip's INSURANCE/VAULTS placeholders. Item 33 then runs;
+re-cut its brief the way S24's, S25's and S26's were before dispatch. The
+owner's fresh design round may regenerate the planning before any dispatch —
+check `dispatch_designer.md` first.
 
 The whole queue is phase **P3** (`phases/P3-content-feel-push/PHASE.md`);
 order and the collisions that force it are in `WAVEBOARD.md` §Queued. The

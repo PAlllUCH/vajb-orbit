@@ -1197,6 +1197,16 @@
     "res://ui/station/auction_panel.gd"
    ]
   },
+  "res://ui/station/contracts_panel.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "VBoxContainer",
+   "scripts": [
+    "res://ui/station/contracts_panel.gd"
+   ]
+  },
   "res://ui/station/exchange_panel.tscn": {
    "assets": [
     "res://assets/icons/cargo/icon_credits.svg"
@@ -1439,6 +1449,26 @@
    ],
    "signals": []
   },
+  "res://game/contract_registry.gd": {
+   "autoload": "",
+   "class_name": "ContractRegistry",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [
+    "res://assets/env/pickup/env_pickup_ore_pod.png",
+    "res://assets/icons/contract/",
+    "res://autoload/world_clock.gd",
+    "res://game/component_catalog.gd",
+    "res://game/economy_log.gd",
+    "res://game/exchange.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/npc_registry.gd",
+    "res://game/sector_registry.gd",
+    "res://game/ship_fit.gd",
+    "res://game/station_registry.gd"
+   ],
+   "signals": []
+  },
   "res://game/corridor.gd": {
    "autoload": "",
    "class_name": "Corridor",
@@ -1504,6 +1534,7 @@
     "res://autoload/world_clock.gd",
     "res://game/affixes.gd",
     "res://game/asteroid.gd",
+    "res://game/contract_registry.gd",
     "res://game/damage.gd",
     "res://game/economy_log.gd",
     "res://game/impact.gd",
@@ -4732,6 +4763,30 @@
    ],
    "signals": []
   },
+  "res://tests/test_s25_contracts.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/contract_registry.gd",
+    "res://game/exchange.gd",
+    "res://game/game.gd",
+    "res://game/game.tscn",
+    "res://game/mineral_catalog.gd",
+    "res://game/npc_registry.gd",
+    "res://game/refinery.gd",
+    "res://game/sector_registry.gd",
+    "res://game/ship_fit.gd",
+    "res://game/station_registry.gd",
+    "res://ui/screens/station.tscn",
+    "res://ui/station/contracts_panel.gd",
+    "res://ui/station/launch_panel.gd",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
   "res://tests/test_s28_econ.gd": {
    "autoload": "",
    "class_name": "",
@@ -5924,6 +5979,8 @@
    "autoload": "",
    "class_name": "",
    "connects": [
+    "_confirm_cancel.pressed \u2192 _on_confirm_answered.bind(false",
+    "_confirm_ok.pressed \u2192 _on_confirm_answered.bind(true",
     "_drawer_scrim.gui_input \u2192 _on_scrim_input",
     "_hover_timer.timeout \u2192 _show_hover_tooltip",
     "_inspect_button.toggled \u2192 _on_inspect_toggled",
@@ -5938,6 +5995,7 @@
    "refs": [
     "res://assets/icons/cargo/icon_cargo_ore.svg",
     "res://assets/icons/cargo/icon_credits.svg",
+    "res://assets/icons/contract/icon_contract_haul.svg",
     "res://assets/icons/equip/icon_equip_module.png",
     "res://assets/icons/hud/icon_hull.svg",
     "res://assets/icons/hud/icon_logout.svg",
@@ -5947,6 +6005,7 @@
     "res://assets/icons/tint/icon_map_node_station_48.png",
     "res://autoload/player_profile.gd",
     "res://autoload/world_clock.gd",
+    "res://game/contract_registry.gd",
     "res://game/exchange.gd",
     "res://game/station_catalog.gd",
     "res://game/station_registry.gd",
@@ -6061,6 +6120,25 @@
     "status_requested"
    ]
   },
+  "res://ui/station/contracts_panel.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "VBoxContainer",
+   "refs": [
+    "res://assets/icons/tint/icon_insignia_%s_48.png",
+    "res://game/contract_registry.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/sector_registry.gd",
+    "res://game/station_registry.gd",
+    "res://ui/theme/chrome_family.gd"
+   ],
+   "signals": [
+    "confirm_requested",
+    "inspect_requested",
+    "status_requested"
+   ]
+  },
   "res://ui/station/exchange_panel.gd": {
    "autoload": "",
    "class_name": "",
@@ -6144,7 +6222,9 @@
     "res://assets/icons/cargo/icon_cargo_crate.svg",
     "res://autoload/player_profile.gd",
     "res://game/repairs.gd",
+    "res://game/sector_registry.gd",
     "res://game/station_catalog.gd",
+    "res://game/station_registry.gd",
     "res://game/weapons.gd",
     "res://ui/paths.gd",
     "res://ui/theme/chrome_family.gd"

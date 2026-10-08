@@ -28,6 +28,8 @@ const Catalog := preload("res://game/station_catalog.gd")
 ## 14's 2026-10-08 block: the docked place (the plate's name + character line, and the
 ## faction the plate's glyph and border step by).
 const StationRegistryScript := preload("res://game/station_registry.gd")
+## S25 (14 section 2): the dock is where the board's goods half closes (`deliver_at`).
+const ContractRegistryScript := preload("res://game/contract_registry.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
 const ExchangeScript := preload("res://game/exchange.gd")
 const Clock := preload("res://autoload/world_clock.gd")
@@ -106,6 +108,19 @@ const ICON_LOGOUT := "res://assets/icons/hud/icon_logout.svg"
 
 const OVERVIEW_LABEL := "OVERVIEW"
 const SERVICES_LABEL := "SERVICES"
+## S25 (STATION_HUB section 15.1/15.2): the SERVICES deck's one service strip and the panel
+## that fills it. U2's three labels verbatim; the CONTRACTS row is the one S25 ships, so the
+## other two mount the host's own not-installed placeholder until S26's panels land.
+const SERVICES_STRIP: Array[Dictionary] = [
+	{&"service": &"contracts", &"label": "CONTRACTS", &"panel": "contracts"},
+	{&"service": &"insurance", &"label": "INSURANCE", &"panel": "insurance"},
+	{&"service": &"vaults", &"label": "VAULTS", &"panel": "vaults"},
+]
+const SERVICES_STRIP_HEIGHT := 56.0
+## P25's interim CONTRACTS glyph (the staged `icon_service_contracts` completes it).
+const SERVICES_ICON := "res://assets/icons/contract/icon_contract_haul.svg"
+## P29's SERVICES pane hint (STATION_HUB section 19.4).
+const SERVICES_HINT := "ONE SERVICE AT A TIME · ESC BACK"
 ## S36 (UI_SPEC section 15.1 C13, section 13.3): the pane-content backdrops. BG-1 ARMORY,
 ## BG-2 REFINERY, BG-3 EXCHANGE + AUCTION, BG-4 SHIPYARD + LAUNCH + OVERVIEW; SERVICES
 ## carries none (no assignment). Reversal: one backdrop per deck.
@@ -181,6 +196,10 @@ const PULSE_DOWN_SECONDS := 0.12
 const PULSE_UP_SECONDS := 0.16
 
 const STATUS_DOCKED := "DOCKED · ALL SYSTEMS NOMINAL"
+## S25 (14 section 2): the dock's own delivery readout, in the shape the CONTRACTS panel
+## already uses for a closed contract (`CONTRACT CANCELLED · %d CR FEE`). PROPOSED (no doc
+## pins a delivery wording); reversal: the docked status line alone.
+const STATUS_DELIVERED := "CONTRACT DELIVERED · %d CR"
 
 ## S30 (UI_SPEC section 12.2/12.3): the popup layer. The tooltip is N27's hover sink of the
 ## `inspect_requested` chain; the sheet is N28's explicit sink. The tooltip rides its own
@@ -191,6 +210,13 @@ const SHEET_LAYER := 20
 ## S30 (UI_SPEC section 12.1): the TERMINAL drawer's overlay, on section 2.3's dialog layer
 ## (20), added before the sheet so the sheet stacks above it.
 const DRAWER_LAYER := 20
+## S25 (UI_SPEC section 5.2): the confirm dialog's overlay, on the same dialog layer and
+## added last, so a pane's confirm stacks above the drawer and the sheet.
+const CONFIRM_LAYER := 20
+const CONFIRM_WIDTH := 420.0
+const CONFIRM_MARGIN := 16
+const CONFIRM_SEPARATION := 12
+const CONFIRM_DIMMER := 0.6
 const TOOLTIP_DELAY := 0.25
 ## N46 (T-124's A reading): the hover popup lingers 0.5 s (2x TOOLTIP_DELAY) after the
 ## pointer leaves and holds steady across a row's own child churn.
@@ -235,6 +261,13 @@ var _module: int = OVERVIEW
 var _panels: Array[CanvasItem] = []
 var _overview: CanvasItem = null
 var _services: CanvasItem = null
+## S25: the SERVICES deck's own parts - the U2 strip's buttons, the U2 reason caption, the
+## one-at-a-time panel host and the service it is showing.
+var _service_buttons: Dictionary = {}
+var _service_panes: Dictionary = {}
+var _service_reason: Label = null
+var _service_host: VBoxContainer = null
+var _active_service: StringName = &"contracts"
 ## N37 rev (owner 2026-10-07): the one persistent INSPECT toggle. When on, the active pane
 ## routes an item press to its sheet instead of its normal action, and no per-row chip ships.
 var _inspect_mode := false
@@ -270,6 +303,16 @@ var _hover_body := ""
 var _hover_danger := false
 var _sheet_trigger: Control = null
 
+## S25 (UI_SPEC section 5.2): the confirm dialog's overlay and the pane it is answering.
+var _confirm_layer: CanvasLayer = null
+var _confirm: Control = null
+var _confirm_title: Label = null
+var _confirm_body: Label = null
+var _confirm_ok: Button = null
+var _confirm_cancel: Button = null
+var _confirm_owner: Node = null
+var _confirm_payload: Dictionary = {}
+
 
 func _ready() -> void:
 	_build_drawer()
@@ -300,7 +343,26 @@ func _exit_tree() -> void:
 
 func on_route(_params: Dictionary) -> void:
 	_normalise_market()
+	_deliver_contracts()
 	_focus_active_panel()
+
+
+## S25 (14 section 2): the board's goods half closes at the dock. A routed-to station is the
+## arrival the delivery waits for - a Haul at its own destination, a Gather at the station it
+## was taken at (`ContractRegistry.delivery_station`) - and the shell says so in the status
+## strip. The sweep is the registry's own door, so the escrow is consumed once and the purse
+## moves once; a station nothing was routed to delivers nothing.
+func _deliver_contracts() -> void:
+	var profile := _profile()
+	if profile == null:
+		return
+	var delivered := ContractRegistryScript.deliver_at(profile, _docked_station_id())
+	if delivered.is_empty():
+		return
+	var paid := 0
+	for result: Dictionary in delivered:
+		paid += int(result.get(&"paid", 0))
+	_set_status(STATUS_DELIVERED % paid, false)
 
 
 ## A4a / L18: the market is normalised **at the dock** - once, when the station is routed
@@ -404,6 +466,7 @@ func _build_popups() -> void:
 	_sheet.name = "InspectSheet"
 	_sheet_layer.add_child(_sheet)
 	_sheet.connect(&"closed", _on_sheet_closed)
+	_build_confirm()
 	_hover_timer = Timer.new()
 	_hover_timer.name = "HoverDelay"
 	_hover_timer.one_shot = true
@@ -419,7 +482,126 @@ func _build_popups() -> void:
 	add_child(_linger_timer)
 
 
-## S30's TERMINAL drawer (UI_SPEC section 12.1, N26): a full-rect overlay on layer 20, the
+## S25 (UI_SPEC section 5.2): the confirm/message dialog, built by the shell because the
+## overlay belongs to the screen and not to a pane - `DialogRoot` full rect with
+## `MOUSE_FILTER_STOP`, the `void_base` 60 % dimmer, a centred `PanelContainer`
+## (`panel_raised`, min 420 wide), `MarginContainer` 16, `VBoxContainer` 12, the title and
+## body labels and the `CANCEL` / `CONFIRM` pair right-aligned. A pane asks for it through
+## `confirm_requested` and the shell hands the answer back through `confirm_action`, so no
+## pane ever owns a modal.
+func _build_confirm() -> void:
+	_confirm_layer = CanvasLayer.new()
+	_confirm_layer.name = "ConfirmLayer"
+	_confirm_layer.layer = CONFIRM_LAYER
+	add_child(_confirm_layer)
+	_confirm = Control.new()
+	_confirm.name = "DialogRoot"
+	_confirm.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_confirm.mouse_filter = Control.MOUSE_FILTER_STOP
+	_confirm.visible = false
+	_confirm.theme = theme
+	_confirm_layer.add_child(_confirm)
+	var dimmer := ColorRect.new()
+	dimmer.name = "Dimmer"
+	dimmer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	dimmer.color = Color(_token(&"void_base"), CONFIRM_DIMMER)
+	dimmer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_confirm.add_child(dimmer)
+	var centre := CenterContainer.new()
+	centre.name = "Center"
+	centre.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	centre.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_confirm.add_child(centre)
+	var panel := PanelContainer.new()
+	panel.name = "Panel"
+	panel.theme_type_variation = &"PanelRaised"
+	panel.custom_minimum_size = Vector2(CONFIRM_WIDTH, 0.0)
+	centre.add_child(panel)
+	var margin := MarginContainer.new()
+	margin.name = "PanelMargin"
+	for side: String in ["left", "top", "right", "bottom"]:
+		margin.add_theme_constant_override(StringName("margin_" + side), CONFIRM_MARGIN)
+	panel.add_child(margin)
+	var stack := VBoxContainer.new()
+	stack.name = "PanelBox"
+	stack.add_theme_constant_override(&"separation", CONFIRM_SEPARATION)
+	margin.add_child(stack)
+	_confirm_title = Label.new()
+	_confirm_title.name = "Title"
+	_confirm_title.add_theme_font_size_override(&"font_size", 18)
+	_confirm_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	stack.add_child(_confirm_title)
+	_confirm_body = Label.new()
+	_confirm_body.name = "Body"
+	_confirm_body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_confirm_body.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	stack.add_child(_confirm_body)
+	var buttons := HBoxContainer.new()
+	buttons.name = "Buttons"
+	buttons.alignment = BoxContainer.ALIGNMENT_END
+	buttons.add_theme_constant_override(&"separation", 8)
+	stack.add_child(buttons)
+	_confirm_cancel = Button.new()
+	_confirm_cancel.name = "CancelButton"
+	_confirm_cancel.text = "CANCEL"
+	_confirm_cancel.pressed.connect(_on_confirm_answered.bind(false))
+	buttons.add_child(_confirm_cancel)
+	_confirm_ok = Button.new()
+	_confirm_ok.name = "ConfirmButton"
+	_confirm_ok.text = "CONFIRM"
+	_confirm_ok.pressed.connect(_on_confirm_answered.bind(true))
+	buttons.add_child(_confirm_ok)
+
+
+## A pane's confirm request (S25): the §5.2 dialog opens with the pane's own title, body and
+## button words, `CONFIRM` focused, and remembers the pane to answer.
+func _on_panel_confirm(payload: Dictionary, pane: Node) -> void:
+	if not _owns_pane(pane) or _confirm == null:
+		return
+	_confirm_owner = pane
+	_confirm_payload = payload
+	_confirm_title.text = String(payload.get(&"title", ""))
+	_confirm_body.text = String(payload.get(&"body", ""))
+	_confirm_ok.text = String(payload.get(&"confirm_text", "CONFIRM"))
+	_confirm_cancel.text = String(payload.get(&"cancel_text", "CANCEL"))
+	_confirm.visible = true
+	_confirm_ok.grab_focus()
+
+
+## The dialog's answer: one operation (P19) - close, return focus to the opener and hand the
+## pane its action.
+func _on_confirm_answered(confirmed: bool) -> void:
+	if _confirm == null or not _confirm.visible:
+		return
+	var owner: Node = _confirm_owner
+	var payload := _confirm_payload
+	_confirm.visible = false
+	_confirm_owner = null
+	_confirm_payload = {}
+	if owner != null and is_instance_valid(owner) and confirmed:
+		if owner.has_method(&"confirm_action"):
+			owner.call(
+				&"confirm_action",
+				StringName(payload.get(&"action", &"")),
+				StringName(payload.get(&"id", &""))
+			)
+	_focus_active_panel()
+
+
+func confirm_open() -> bool:
+	return _confirm != null and _confirm.visible
+
+
+## True when the pane that emitted is the one on screen (a deck's own sub-panel included,
+## the SERVICES deck's services being descendants of the deck's pane).
+func _owns_pane(pane: Node) -> bool:
+	var active := _panel_for(_module)
+	if active == null or pane == null:
+		return false
+	return active == pane or active.is_ancestor_of(pane)
+
+
+## The TERMINAL drawer (S30, UI_SPEC section 12.1, N26): a full-rect overlay on layer 20, the
 ## section 5.2 dimmer over the Body band only (N40), and the ModuleRail's box re-homed as
 ## an overlay plate. The plate lands on the body band by containers (a header gap and a
 ## footer gap mirror section 3.1's bands), never by coordinates (A5.2).
@@ -632,6 +814,15 @@ func _docked_faction() -> StringName:
 	)
 
 
+## The docked place's own row id: the key `game.gd:_file_docked_station` files at the dock and
+## the id a contract's own delivery station is compared against (S25).
+func _docked_station_id() -> StringName:
+	var profile := _profile()
+	if profile == null:
+		return &""
+	return StringName(StationRegistryScript.docked_station(profile).get(&"id", &""))
+
+
 ## N33: the delay elapsed with the payload still live, so the tooltip opens at the cursor.
 func _show_hover_tooltip() -> void:
 	if _tooltip == null or (_hover_title.is_empty() and _hover_body.is_empty()):
@@ -791,6 +982,7 @@ func _apply_tokens() -> void:
 	_grain.modulate = Color(1.0, 1.0, 1.0, GRAIN_IDLE_ALPHA)
 	_apply_status_colour()
 	_apply_identity()
+	_sync_service_state()
 	_reserve_credits_width()
 
 
@@ -887,10 +1079,155 @@ func _build_panels() -> void:
 		_host_margin.add_child(_overview)
 		## The header's identity text reaches OVERVIEW from `_apply_identity` (the one source
 		## of truth for the name and character line, section 15.5).
-	_services = _make_placeholder(SERVICES, PANEL_DIR + "services" + PANEL_SUFFIX)
+	_services = _build_services()
 	_services.name = "Services"
 	_services.visible = false
 	_host_margin.add_child(_services)
+
+
+## S25 (STATION_HUB section 15.1/15.2, P26): the SERVICES deck in place of the retired
+## `MODULE OFFLINE` placeholder (T-138). P7's skeleton at the pane level - `PaneHeader`,
+## the content split, the foot band - carrying section 15.1's three-button service strip,
+## one service panel below it, the U2 unavailable state and P29's hint. One service shows at
+## a time; the strip is a command, so switching is a rebuild and never a state mutation
+## (UI_SPEC section 12.5's command clause).
+func _build_services() -> CanvasItem:
+	var pane := VBoxContainer.new()
+	pane.name = "ServicesPane"
+	pane.add_theme_constant_override(&"separation", 12)
+	var header := HBoxContainer.new()
+	header.name = "PaneHeader"
+	header.custom_minimum_size = Vector2(0.0, 40.0)
+	header.add_theme_constant_override(&"separation", 12)
+	pane.add_child(header)
+	var icon := TextureRect.new()
+	icon.name = "PaneIcon"
+	icon.custom_minimum_size = Vector2(40.0, 40.0)
+	icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	icon.texture = load(SERVICES_ICON)
+	header.add_child(icon)
+	var title := Label.new()
+	title.name = "PaneTitle"
+	title.theme_type_variation = &"StationPanelTitle"
+	title.text = SERVICES_LABEL
+	title.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	header.add_child(title)
+	var strip := HBoxContainer.new()
+	strip.name = "ServiceStrip"
+	strip.add_theme_constant_override(&"separation", 8)
+	pane.add_child(strip)
+	_service_buttons.clear()
+	for row: Dictionary in SERVICES_STRIP:
+		var button := Button.new()
+		button.name = "Service%s" % String(row[&"label"]).capitalize()
+		button.text = String(row[&"label"])
+		button.toggle_mode = true
+		button.focus_mode = Control.FOCUS_ALL
+		button.custom_minimum_size = Vector2(0.0, SERVICES_STRIP_HEIGHT)
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		button.pressed.connect(_on_service_pressed.bind(StringName(row[&"service"])))
+		strip.add_child(button)
+		_service_buttons[String(row[&"service"])] = button
+	_service_reason = Label.new()
+	_service_reason.name = "ServiceReason"
+	_service_reason.theme_type_variation = &"StationCaption"
+	_service_reason.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pane.add_child(_service_reason)
+	_service_host = VBoxContainer.new()
+	_service_host.name = "ServiceHost"
+	_service_host.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_service_host.add_theme_constant_override(&"separation", 12)
+	pane.add_child(_service_host)
+	for row: Dictionary in SERVICES_STRIP:
+		var service := StringName(row[&"service"])
+		var file := String(row[&"panel"])
+		var path := PANEL_DIR + file + PANEL_SUFFIX
+		var content: CanvasItem = null
+		if ResourceLoader.exists(path):
+			var packed := load(path) as PackedScene
+			if packed != null:
+				content = packed.instantiate() as CanvasItem
+		if content == null:
+			content = _make_service_placeholder(String(row[&"label"]), path)
+		content.name = String(row[&"label"]).to_pascal_case()
+		content.visible = false
+		_connect_panel(content)
+		_service_host.add_child(content)
+		_service_panes[service] = content
+	var foot := HBoxContainer.new()
+	foot.name = "PaneFoot"
+	foot.custom_minimum_size = Vector2(0.0, 56.0)
+	foot.add_theme_constant_override(&"separation", 16)
+	pane.add_child(foot)
+	var hint := Label.new()
+	hint.name = "PaneHint"
+	hint.theme_type_variation = &"StationCaption"
+	hint.text = SERVICES_HINT
+	hint.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hint.size_flags_vertical = Control.SIZE_SHRINK_END
+	hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	foot.add_child(hint)
+	var actions := HBoxContainer.new()
+	actions.name = "PaneActions"
+	actions.custom_minimum_size = Vector2(0.0, 56.0)
+	actions.add_theme_constant_override(&"separation", 16)
+	foot.add_child(actions)
+	_show_service(&"contracts")
+	return pane
+
+
+## One service panel at a time (section 15.1): the strip's own command.
+func _on_service_pressed(service: StringName) -> void:
+	_show_service(service)
+
+
+func _show_service(service: StringName) -> void:
+	if _service_panes.is_empty():
+		return
+	if not _service_panes.has(service):
+		return
+	_active_service = service
+	for key: Variant in _service_panes:
+		var pane: CanvasItem = _service_panes[key]
+		if pane != null:
+			pane.visible = StringName(key) == service
+	for key: Variant in _service_buttons:
+		var button: Button = _service_buttons[key]
+		if button != null:
+			button.set_pressed_no_signal(StringName(key) == service)
+	_sync_service_state()
+
+
+## U2's unavailable state: the strip button keeps its label at `button_disabled` with the
+## station matrix's own reason caption under the strip (14's two verbatim captions).
+func _sync_service_state() -> void:
+	var row := StationRegistryScript.docked_station(_profile())
+	var reason := ""
+	for entry: Dictionary in SERVICES_STRIP:
+		var service := StringName(entry[&"service"])
+		var button: Button = _service_buttons.get(String(service))
+		if button == null:
+			continue
+		var offered := row.is_empty() or StationRegistryScript.offers(row, service)
+		button.disabled = not offered
+		if not offered and reason.is_empty():
+			reason = StationRegistryScript.service_reason(row, service)
+	_service_reason.text = reason
+	_service_reason.visible = not reason.is_empty()
+
+
+## The panel the deck is showing (the one the shell's inspect/confirm wiring must own).
+func service_panel(service: StringName) -> CanvasItem:
+	return _service_panes.get(String(service)) as CanvasItem
+
+
+func active_service() -> StringName:
+	return _active_service
 
 
 func _load_panel(index: int) -> CanvasItem:
@@ -919,6 +1256,10 @@ func _connect_panel(pane: Node) -> void:
 		pane.connect(&"sheet_requested", _on_panel_sheet.bind(pane))
 	if pane.has_signal(&"navigate_requested"):
 		pane.connect(&"navigate_requested", _on_pane_navigate.bind(pane))
+	## S25 (UI_SPEC section 5.2): a pane asks for the confirm dialog; the shell owns the
+	## overlay and hands the answer back through the pane's own `confirm_action`.
+	if pane.has_signal(&"confirm_requested"):
+		pane.connect(&"confirm_requested", _on_panel_confirm.bind(pane))
 
 
 func _make_placeholder(index: int, path: String) -> CanvasItem:
@@ -940,6 +1281,28 @@ func _make_placeholder(index: int, path: String) -> CanvasItem:
 	stack.add_child(_make_label(&"StationPanelTitle", "MODULE OFFLINE"))
 	stack.add_child(
 		_make_label(&"StationCaption", "%s PANEL IS NOT INSTALLED YET" % _label_for(index))
+	)
+	stack.add_child(_make_label(&"StationCaption", "EXPECTED AT %s" % path))
+	return pane
+
+
+## One service panel that is not written yet (INSURANCE and VAULTS are S26's) keeps the
+## host's own not-installed idiom (`_make_placeholder`), with the service's own name in it.
+func _make_service_placeholder(label_text: String, path: String) -> CanvasItem:
+	var pane := VBoxContainer.new()
+	pane.add_to_group(PLACEHOLDER_GROUP)
+	pane.add_theme_constant_override(&"separation", 12)
+	var center := CenterContainer.new()
+	center.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pane.add_child(center)
+	var stack := VBoxContainer.new()
+	stack.add_theme_constant_override(&"separation", 6)
+	stack.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	center.add_child(stack)
+	stack.add_child(_make_label(&"StationPanelTitle", "MODULE OFFLINE"))
+	stack.add_child(
+		_make_label(&"StationCaption", "%s PANEL IS NOT INSTALLED YET" % label_text)
 	)
 	stack.add_child(_make_label(&"StationCaption", "EXPECTED AT %s" % path))
 	return pane
@@ -1110,6 +1473,11 @@ func overview_pane() -> CanvasItem:
 	return _overview
 
 
+## The pane one deck index is showing (the shell's own reader, beside `overview_pane`).
+func pane_for(module: int) -> CanvasItem:
+	return _panel_for(module)
+
+
 ## ------------------------------------------------------------------- the deck switch
 
 
@@ -1207,6 +1575,15 @@ func _focus_active_panel() -> void:
 	## ui_down still walk into the tiles.
 	if _module == OVERVIEW:
 		return
+	## S25: the SERVICES deck's own first focusable is its service strip (the deck is built
+	## in code, so it carries no `focus_primary` of its own).
+	if _module == SERVICES:
+		var service_button: Button = _service_buttons.get(String(_active_service))
+		if service_button != null:
+			service_button.grab_focus()
+			return
+		_focus_terminal()
+		return
 	## A pane with nothing focusable (the offline placeholder) leaves the ring on a hidden
 	## row, so the TERMINAL button takes it instead.
 	var panel := _panel_for(_module)
@@ -1293,6 +1670,12 @@ func _on_profile_changed(key: StringName) -> void:
 	for pane: CanvasItem in _panels:
 		if pane != null and pane.has_method(&"refresh_profile"):
 			pane.call(&"refresh_profile", key)
+	## S25: the SERVICES deck's sub-panels are descendants of the deck's pane, so they are
+	## refreshed here (the deck itself declares no profile read of its own).
+	for key_service: Variant in _service_panes:
+		var service_pane: CanvasItem = _service_panes[key_service]
+		if service_pane != null and service_pane.has_method(&"refresh_profile"):
+			service_pane.call(&"refresh_profile", key)
 
 
 func _on_purchase_failed(reason: StringName, id: StringName) -> void:
@@ -1421,6 +1804,10 @@ func _pulse(node: CanvasItem) -> void:
 ## P19's unwind, topmost-first, one operation per step (S29-F1's `game.gd:951`
 ## precedent): INSPECT modal -> drawer -> LAUNCH disarm -> leave confirm.
 func _handle_cancel() -> void:
+	## S25: the confirm dialog is the topmost overlay (UI_SPEC section 5.2's Escape = CANCEL).
+	if _confirm != null and _confirm.visible:
+		_on_confirm_answered(false)
+		return
 	if _sheet != null and bool(_sheet.call(&"is_open")):
 		_sheet.call(&"close")
 		return

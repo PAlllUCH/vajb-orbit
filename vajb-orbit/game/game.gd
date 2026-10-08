@@ -36,6 +36,9 @@ const Registry := preload("res://game/sector_registry.gd")
 ## 14's 2026-10-08 block: the docked **place**, filed beside the faction so the station
 ## shell and the price readers resolve the row the dock landed at.
 const StationRegistryScript := preload("res://game/station_registry.gd")
+## S25 (14 section 2/6): the contracts board's escort runtime. The registry owns the plan,
+## the reward and the win/loss transactions; this scene owns the convoy's nodes.
+const ContractRegistryScript := preload("res://game/contract_registry.gd")
 ## The developer tuning overlay (S13, owner ask 2026-09-25): mounted by this
 ## scene so F1 reaches OreTuning in flight. It reads user://dev_tuning.cfg only
 ## when opened, so the gate stays byte-identical on any store. S28's A7 (D17-P2
@@ -207,6 +210,21 @@ const HUNTER_RESPAWN_SECONDS := 60.0
 ## (13 §3 says only that the wing spawns on entry); reversal: the sector's own field anchor
 ## (`sector.gd:_add_npc`'s default), which is one line less.
 const HUNTER_SPAWN_RADIUS := 600.0
+
+## S25 (14 section 6): the escort convoy's own presentation values. The ambushers are placed
+## on a ring around the corridor midpoint so the ambush arrives as a wing; the cargo pods
+## dress the hauler's hold line at the shipped pickup pod's own art scale. All three are
+## PROPOSED (no doc pins a placement ring or a mark layout); reversal: the ambush ring to
+## zero (all ambushers on the midpoint) and the pod marks to one per hold unit.
+const AMBUSH_SPAWN_RADIUS := 300.0
+const POD_MARK_SCALE := 0.35
+const POD_MARK_SPACING := 9.0
+const POD_MARK_OFFSET := 0.0
+
+## S25 (14 section 2): the flight scene's own readout for a contract the kill seam closed -
+## the board's pay, in the shape the escort's arrival line already uses. PROPOSED (no doc pins
+## a contract-outcome prompt); reversal: no prompt, the panel's status line alone.
+const CONTRACT_DONE_PROMPT := "CONTRACT COMPLETE · %d CR"
 
 ## 12 §4.1's Outlaw standing band: at or below this floor a faction denies docking. The
 ## **dock** refusal reads this axis; the **gate** refusal reads the heat tier (13 §3).
@@ -430,6 +448,12 @@ static var _heat_play_time := 0.0
 var _hunter_wave_spawned := false
 var _hunter_respawn := 0.0
 
+## S25 (14 section 6): the live escorts, one convoy per active escort contract, keyed by
+## the contract's own id. Rebuilt on sector entry from the profile's active list
+## (`_restore_escorts`), so a dock/launch cycle or a crossing re-spawns the convoy at the
+## accepting station and a contract that left the list (a loss) is never re-spawned.
+var _escorts: Dictionary = {}
+
 
 func _ready() -> void:
 	## S28's A7: the developer overlay is a debug-build tool; a release never mounts it.
@@ -501,6 +525,7 @@ func _physics_process(delta: float) -> void:
 	_update_clouds()
 	_decay_heat(delta)
 	_update_hunters(delta)
+	_update_escorts(delta)
 	_tick_prompt_timers(delta)
 	_update_dock_prompt()
 	_update_warp(delta)
@@ -817,6 +842,10 @@ func _spawn_sector(row: Dictionary) -> void:
 	## §2 dec. 7 / L23: the wreck's uncollected drops belong to the sector, so the entry
 	## that knows which sector this scene is now in is the one that re-materialises them.
 	_materialise_wreck_drops()
+	## S25 (14 section 6): an escort contract accepted at this sector's station has its
+	## convoy waiting on the pad, so the entry that knows the sector is the one that puts it
+	## back - a dock/launch cycle therefore re-spawns it at the accepting station.
+	_restore_escorts()
 
 
 ## 15 section 4's Cartograph (CONTRACTS section 20): a launch whose fitted instances
@@ -2576,6 +2605,10 @@ func _on_npc_died(_position: Vector2, archetype: StringName, ship: Node2D) -> vo
 		_apply_standing(profile, standing)
 	EconomyLogScript.append(EVENT_KILL, archetype, 1, 0, int(profile.call(&"credits")))
 	_spawn_kill_loot(_position, archetype, ship)
+	## S25 (14 section 2): the Hunt row's own channel - "Destroy 5 pirates in S2". The kill
+	## credits the active hunts for this sector through the registry's door, and the fifth
+	## closes the contract at the destination pay.
+	_credit_hunt_kills(profile, archetype)
 	## 15 section 4's Leeches (CONTRACTS section 20): the kill pays 5 % of the hull's
 	## maximum back. It sits inside this handler's credited path - a death that reaches
 	## here has already filed heat, standing and loot - because K0's F6 measured that
@@ -2650,6 +2683,300 @@ func _apply_standing(profile: Node, delta: int) -> void:
 	var key := String(_sector_owner())
 	standing[key] = int(standing.get(key, 0)) + delta
 	profile.call(&"set_standing", standing)
+
+
+## S25 (14 section 2): the Hunt row, seen from the kill seam - "Destroy 5 pirates in S2".
+## Only a pirate counts (the sector's swarmer and sibelon rows are not the row's own word) and
+## only in the contract's own sector, so a hunt taken at a station is finished in that
+## station's space. The credit itself is the registry's door; this scene answers what died.
+func _credit_hunt_kills(profile: Node, archetype: StringName) -> void:
+	if archetype != NpcRegistryScript.ARCHETYPE_PIRATE:
+		return
+	for result: Dictionary in ContractRegistryScript.credit_kill(
+		profile, Registry.sector_number(_sector_row_id)
+	):
+		var paid := int(result.get(&"paid", 0))
+		if paid > 0:
+			_push_prompt(CONTRACT_DONE_PROMPT % paid)
+
+
+## --- S25: the escort loop (14 section 6) --------------------------------------------
+
+
+## One convoy per active escort contract accepted at this sector's station: "spawn point:
+## the accepting station" (14 section 6). Read off the profile's active list, so the
+## contract survives the dock/launch cycle and the convoy is rebuilt from it, while a
+## contract that left the list (a loss, a cancel) is never re-spawned.
+func _restore_escorts() -> void:
+	_clear_escorts()
+	if _sector == null or not _sector.has_station():
+		return
+	var profile := _profile()
+	if profile == null:
+		return
+	var here := Registry.sector_number(_sector_row_id)
+	for record: Dictionary in ContractRegistryScript.active(profile):
+		if StringName(record.get(&"type", &"")) != ContractRegistryScript.TYPE_ESCORT:
+			continue
+		if int(record.get(&"origin_sector", 0)) != here:
+			continue
+		_spawn_escort_convoy(record)
+
+
+## The convoy's own ships leave the tree - a crossing, a launch or a fresh population
+## rebuilds them from the active list, so the old ones must not keep flying the old route.
+func _clear_escorts() -> void:
+	for key: String in _escorts.keys():
+		_dismiss_convoy(_escorts[key], null)
+	_escorts.clear()
+
+
+## The convoy itself: "1 hauler-class AI hull + 1-2 fighter escorts" (14 section 6), the
+## hauler carrying the plan's own pod count as visible cargo pods, all of them flying the
+## fixed route to the target sector's gate at the hauler's own freighter speed.
+func _spawn_escort_convoy(record: Dictionary) -> void:
+	var spawns := NpcRegistryScript.convoy_spawns(_sector_row_id)
+	if spawns.is_empty():
+		return
+	var plan := ContractRegistryScript.escort_plan(record)
+	var station: Vector2 = _sector.call(&"station_position")
+	var route := _escort_route(int(record.get(&"sector", 0)), station)
+	var members: Array[Node2D] = []
+	var hauler: Node2D = null
+	for spawn: Dictionary in spawns:
+		var role := NpcRegistryScript.convoy_role(spawn)
+		if role == &"hauler":
+			hauler = _make_convoy_hull(spawn, station, route)
+			if hauler != null:
+				members.append(hauler)
+				_dress_convoy_pods(hauler, int(plan.get(&"pod_marks", 0)))
+			continue
+		for _index in int(plan.get(&"fighters", 0)):
+			var fighter := _make_convoy_hull(spawn, station, route)
+			if fighter != null:
+				members.append(fighter)
+	if hauler == null:
+		return
+	hauler.connect(&"died", _on_escort_hauler_died.bind(StringName(record.get(&"id", &"")), hauler))
+	_escorts[String(record.get(&"id", &""))] = {
+		&"record": record,
+		&"hauler": hauler,
+		&"members": members,
+		&"route": route,
+		&"gate": _escort_gate(int(record.get(&"sector", 0))),
+		&"ambush": false,
+		&"target": int(record.get(&"sector", 0)),
+	}
+
+
+## One convoy hull: the row's own archetype, hull, sprite and faction, homed at the
+## accepting station and flying the contract's route (the PATROL state's fixed route).
+func _make_convoy_hull(spawn: Dictionary, station: Vector2, route: Array[Vector2]) -> Node2D:
+	var archetype := StringName(spawn.get(NpcRegistryScript.KEY_ARCHETYPE, &""))
+	var hull_id := StringName(spawn.get(NpcRegistryScript.KEY_HULL_ID, &""))
+	var ship: Node2D = NpcShipScript.new() as Node2D
+	if ship == null:
+		return null
+	ship.name = "Convoy%s" % String(hull_id).to_pascal_case()
+	add_child(ship)
+	ship.global_position = station
+	ship.call(
+		&"setup",
+		archetype,
+		ShipFitScript.resolve(hull_id, ShipFitScript.STANDARD_FIT),
+		hull_id,
+		{
+			NpcShipScript.OPT_HOME: station,
+			NpcShipScript.OPT_ROUTE: route,
+			NpcShipScript.OPT_SPACE_OWNER: StringName(
+				spawn.get(NpcRegistryScript.KEY_FACTION_ID, &"")
+			),
+			NpcShipScript.OPT_SPRITE_PATH: String(
+				spawn.get(NpcRegistryScript.KEY_SPRITE_PATH, "")
+			),
+		}
+	)
+	return ship
+
+
+## 14 section 6's "50 % of hold filled with visible cargo pods": the plan's own pod marks,
+## in the shipped pickup pod's own art, laid along the hauler's hold line. They are the
+## convoy's visible load - the number the contract carries is the same hold, and a loss
+## drops it (the pirates keep the loot).
+func _dress_convoy_pods(hauler: Node2D, marks: int) -> void:
+	if marks <= 0:
+		return
+	var texture := load(ContractRegistryScript.ESCORT_POD_TEXTURE) as Texture2D
+	if texture == null:
+		return
+	for index in marks:
+		var pod := Sprite2D.new()
+		pod.name = "CargoPod%d" % (index + 1)
+		pod.texture = texture
+		pod.scale = Vector2.ONE * POD_MARK_SCALE
+		pod.position = Vector2(
+			(float(index) - float(marks - 1) * 0.5) * POD_MARK_SPACING, POD_MARK_OFFSET
+		)
+		pod.z_index = -1
+		hauler.add_child(pod)
+
+
+## The route's world points, in `ContractRegistry.ESCORT_LEGS` order: the accepting station,
+## the corridor midpoint toward the target (11 section 2.2's ambush site) and that gate.
+func _escort_route(target_sector: int, station: Vector2) -> Array[Vector2]:
+	var route: Array[Vector2] = [station]
+	var midpoint := station
+	if _sector != null:
+		for corridor: Node in _sector.call(&"corridors"):
+			if corridor == null or not is_instance_valid(corridor):
+				continue
+			if int(corridor.get(&"dest_sector")) != target_sector:
+				continue
+			var band: Rect2 = corridor.get(&"edge")
+			midpoint = corridor.to_global(band.get_center())
+			break
+	var gate := _escort_gate(target_sector)
+	if midpoint == station and gate != null:
+		midpoint = gate.global_position
+	route.append(midpoint)
+	route.append(gate.global_position if gate != null else midpoint)
+	return route
+
+
+## The ring the convoy has to reach: the corridor's own gate to the target sector (14
+## section 6's "target sector's gate").
+func _escort_gate(target_sector: int) -> Node:
+	if _sector == null:
+		return null
+	for gate: Node in _sector.call(&"gates"):
+		if gate == null or not is_instance_valid(gate):
+			continue
+		if int(gate.get(&"dest_sector")) == target_sector:
+			return gate
+	return null
+
+
+## One escort step: the corridor-midpoint ambush fires once per convoy (11 section 2.2),
+## and the hauler reaching the target's gate ring pays the contract at the destination.
+func _update_escorts(_delta: float) -> void:
+	if _escorts.is_empty():
+		return
+	var arrived: Array[String] = []
+	for key: String in _escorts.keys():
+		var state: Dictionary = _escorts[key]
+		var hauler: Node2D = state.get(&"hauler")
+		if hauler == null or not is_instance_valid(hauler):
+			continue
+		var route: Array = state.get(&"route", [])
+		if route.size() < ContractRegistryScript.ESCORT_LEGS.size():
+			continue
+		var midpoint: Vector2 = route[ContractRegistryScript.ESCORT_AMBUSH_LEG]
+		if not bool(state.get(&"ambush", false)):
+			if hauler.global_position.distance_to(midpoint) <= ContractRegistryScript.ESCORT_AMBUSH_RADIUS:
+				state[&"ambush"] = true
+				_spawn_escort_ambush(midpoint)
+		var gate: Node = state.get(&"gate")
+		if gate != null and is_instance_valid(gate):
+			if bool(gate.call(&"contains", hauler.global_position)):
+				arrived.append(key)
+	for key: String in arrived:
+		_finish_escort(key)
+
+
+## 14 section 6's "pirates ambush at the corridor midpoint": the sector's own pirate band
+## (`spawns_for`'s pirate row), one wing, re-homed on the ambush point through the same
+## `_add_npc` seam the hunter wing uses - so the ambushers are the sector's own hulls, with
+## its own blips, loot and respawn bookkeeping.
+func _spawn_escort_ambush(at: Vector2) -> void:
+	if _sector == null or not _sector.has_method(&"_add_npc"):
+		return
+	for spawn: Dictionary in NpcRegistryScript.spawns_for(_sector_row_id):
+		if (
+			StringName(spawn.get(NpcRegistryScript.KEY_ARCHETYPE, &""))
+			!= NpcRegistryScript.ARCHETYPE_PIRATE
+		):
+			continue
+		var count := _rng_band(spawn)
+		for index in count:
+			_sector.call(&"_add_npc", spawn)
+			_home_ambusher(index, count, at)
+		return
+
+
+## Where one ambusher is placed: the corridor midpoint, spread on a small ring so the wing
+## arrives as a wing. The hull's body is the mover, so both are set (the hunter wing's own
+## idiom) and the node reads right for a caller that never advances a frame.
+func _home_ambusher(index: int, count: int, at: Vector2) -> void:
+	var npcs: Array = _sector.call(&"npcs")
+	if npcs.is_empty():
+		return
+	var hull := npcs[npcs.size() - 1] as Node2D
+	if hull == null or not is_instance_valid(hull):
+		return
+	var bearing := TAU * float(index) / float(maxi(count, 1))
+	var place := at + Vector2(AMBUSH_SPAWN_RADIUS, 0.0).rotated(bearing)
+	hull.global_position = place
+	if hull.has_method(&"impact_body"):
+		var body := hull.call(&"impact_body") as RigidBody2D
+		if body != null:
+			body.global_position = place
+	if hull.has_method(&"set_home"):
+		hull.call(&"set_home", place)
+
+
+## The band's own count for one spawn row, rolled on the scene's own stream.
+func _rng_band(spawn: Dictionary) -> int:
+	var low := int(spawn.get(NpcRegistryScript.KEY_MIN, 0))
+	var high := int(spawn.get(NpcRegistryScript.KEY_MAX, low))
+	if high < low:
+		high = low
+	if high <= 0:
+		return 0
+	return randi_range(maxi(low, 1), high)
+
+
+## The hauler's own `died`: 14 section 6's loss row (no payout, -5 standing, the pirates
+## keep the loot) and the convoy's own ships stand down.
+func _on_escort_hauler_died(position: Vector2, _archetype: StringName, contract_id: StringName, hauler: Node2D) -> void:
+	var key := String(contract_id)
+	var state: Dictionary = _escorts.get(key, {})
+	var profile := _profile()
+	if profile != null:
+		var result := ContractRegistryScript.escort_lost(profile, contract_id)
+		for raw_id: Variant in (result.get(&"loot", {}) as Dictionary).keys():
+			_spawn_drop(StringName(raw_id), int(result[&"loot"][raw_id]), position)
+		_push_prompt("CONVOY LOST · %d STANDING" % ContractRegistryScript.STANDING_LOSS)
+	_dismiss_convoy(state, hauler)
+	_escorts.erase(key)
+
+
+## The convoy reached its gate: 14 section 6's win row pays the contract at the destination
+## station, and the ships stand down.
+func _finish_escort(key: String) -> void:
+	var state: Dictionary = _escorts.get(key, {})
+	var profile := _profile()
+	if profile != null:
+		var record: Dictionary = state.get(&"record", {})
+		var result := ContractRegistryScript.escort_won(profile, StringName(key))
+		if bool(result.get(&"ok", false)):
+			var destination := StringName(record.get(&"target_station", &""))
+			_push_prompt(
+				"CONVOY ARRIVED · %s · %d CR"
+				% [
+					String(StationRegistryScript.station(destination).get(&"name", destination)),
+					int(result.get(&"paid", 0)),
+				]
+			)
+	_dismiss_convoy(state, null)
+	_escorts.erase(key)
+
+
+## The convoy's ships leave the tree (14 section 6's one convoy, one route).
+func _dismiss_convoy(state: Dictionary, except: Node2D) -> void:
+	for member: Node2D in state.get(&"members", []):
+		if member == null or not is_instance_valid(member) or member == except:
+			continue
+		member.call(&"despawn")
 
 
 ## --- Doc 13's heat, witnesses, hunters and the bounty (wave S6, CONTRACTS §19) ------

@@ -33,14 +33,17 @@ library. Ends in playtest build 2.
       1202/0 ×2, verify `"problems": []` vs `s28_start` · two builders
       (C1 values+fee → C2 battery+bloom), R1, no F1 (no HIGH; its one MED fixed
       in review) · **ticks M8–M14 owner-ratified green 2026-10-08**
-- [ ] **S25 — contracts board.** `contract_registry` + the board panel:
+- [x] **S25 — contracts board.** `contract_registry` + the board panel:
       Haul/Hunt/Gather/Escort, escrow + 100 CR cancel, standing gates, the
-      escort convoy loop. `slices/S25-contracts/` · runs after: S28 · baseline
-      `post-S28`
+      escort convoy loop. `slices/S25-contracts/` · **closed 2026-10-08**, gate
+      1226/0 ×2, verify `"problems": []` vs `s25_start` · one builder (B1 +22
+      rows), R1 blocked on 2 HIGH + 1 MED, F1 cured all three (+2 rows) · riders
+      T-138/T-152/T-154 closed, T-156/T-157 filed · **tick J1 shipped as
+      PROPOSED** (6-row board, Expedition staged to S26)
 - [ ] **S26 — endgame: bosses, arenas, insurance, vaults.** The Boneyard + The
       Pyre arena runs, the Maw roaming S7, death persistence, insurance + mercy
-      clause, vaults + `u_vault`. `slices/S26-endgame/` · runs after: S25 ·
-      baseline `post-S25`
+      clause, vaults + `u_vault`. `slices/S26-endgame/` · runs after: S25 (its
+      Expedition seam) · baseline `post-S25` · **brief re-cut 2026-10-08**
 - [ ] **S27 — catalog breadth & shipyard.** +7 affix rows with perks live, tier
       variants, per-archetype loot, the shipyard build path
       (recipes/queue/scrap). `slices/S27-catalog-breadth/` · runs after: S26 ·
@@ -61,7 +64,7 @@ library. Ends in playtest build 2.
   `docs/gameplay/19_testing_notes.md`. Each finding joins `LOW_BACKLOG.md` at
   the next free id and rides the wave that owns its file.
 - **Tick sheets** (marked in the 2026-09-27 doc amendments and each brief §11):
-  W1–W3 world, J1 board, E1–E2 endgame, K1–K3 catalog, plus M1–M14
+  W1–W3 world, J1 board (shipped with S25), E1–E2 endgame, K1–K3 catalog, plus M1–M14
   money/economy (M8–M14 = S28's block) and C1–C6 content rows. Unticked rows implement at their PROPOSED value (the
   S19 precedent).
 - **No AI art generation this round** (owner 2026-09-27): content reuses the

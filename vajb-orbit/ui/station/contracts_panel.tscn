@@ -1,0 +1,126 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://ui/station/contracts_panel.gd" id="1_contracts"]
+
+[node name="Contracts" type="VBoxContainer"]
+layout_mode = 3
+anchors_preset = 0
+theme_override_constants/separation = 12
+script = ExtResource("1_contracts")
+
+[node name="PaneHeader" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PaneIcon" type="TextureRect" parent="PaneHeader"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PaneTitle" type="Label" parent="PaneHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationPanelTitle"
+text = "CONTRACTS"
+
+[node name="Body" type="HBoxContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="BoardHalf" type="VBoxContainer" parent="Body"]
+custom_minimum_size = Vector2(640, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="HeaderRow" type="HBoxContainer" parent="Body/BoardHalf"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="BoardNote" type="Label" parent="Body/BoardHalf"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "THE BOARD PAYS OVER THE EXCHANGE'S BUY PRICE — GOODS LOCK INTO ESCROW AT ACCEPT · CANCEL FEE 100 CR"
+autowrap_mode = 2
+
+[node name="BoardScroll" type="ScrollContainer" parent="Body/BoardHalf"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="BoardList" type="VBoxContainer" parent="Body/BoardHalf/BoardScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="BoardEmpty" type="Label" parent="Body/BoardHalf"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "NO OPEN JOBS — NEW JOBS ROLL ON THE 20-MINUTE CLOCK"
+
+[node name="ActiveColumn" type="VBoxContainer" parent="Body"]
+custom_minimum_size = Vector2(420, 0)
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ActiveHead" type="HBoxContainer" parent="Body/ActiveColumn"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ActiveCounter" type="Label" parent="Body/ActiveColumn/ActiveHead"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationValue"
+text = "ACTIVE CONTRACTS 0/3"
+
+[node name="ActiveChip" type="PanelContainer" parent="Body/ActiveColumn/ActiveHead"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="ActiveChipLabel" type="Label" parent="Body/ActiveColumn/ActiveHead/ActiveChip"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "MAX 3 ACTIVE"
+
+[node name="ActiveScroll" type="ScrollContainer" parent="Body/ActiveColumn"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="ActiveList" type="VBoxContainer" parent="Body/ActiveColumn/ActiveScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="PaneFoot" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="PaneHint" type="Label" parent="PaneFoot"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 7
+theme_type_variation = &"StationCaption"
+text = "ONE SERVICE AT A TIME · ESC BACK"
+
+[node name="PaneActions" type="HBoxContainer" parent="PaneFoot"]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+theme_override_constants/separation = 16

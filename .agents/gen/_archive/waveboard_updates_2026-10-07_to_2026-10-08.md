@@ -84,3 +84,24 @@ rows ship off the live catalogue; (4) the `s28_start` tag collides with the
 retired S28-station-chrome wave's baseline name — the archived snapshot json is
 preserved at `_archive/wave_state_baselines/s28_start.json` and the tag now
 points at this wave's baseline commit.
+
+## The S25-closed Updated block (2026-10-08, moved when the board went back to live-only)
+
+**Updated 2026-10-08 (S25 contracts board closed — item 31).** Gate **1202 →
+1226/0**, twice hermetic on fresh scratch stores; verify `"problems": []` vs
+`s25_start`. One builder (`hyper/deepseek-v4.1-flash` @ xhigh) shipped the whole
+board — `game/contract_registry.gd`, the escort runtime in `game/game.gd`, the
+new `ui/station/contracts_panel.gd`/`.tscn` hosted by the SERVICES deck — at
+**1224/0** (+22 rows, 16 tabled deviations). **R1** (`hyper/glm-5.3-flash` @
+max) returned **blocked** on its own runs (**1223/1 twice**): **F1 HIGH** —
+`complete()` had no production caller, so the escrow was never deliverable and a
+Hunt's count could never move (the loop was unfinishable in play); **F2 HIGH** —
+the A7 escrow row stocked a fixed item while the accept locks the band-rolled
+Haul stack; **F3 MED** — Hunt filed a flat +1 standing against 14 §2's per-kill
+row. **F1** cured all three at their named sites (the three production exits
+through the one `complete()`, the band-independent row, the per-kill standing)
+with a negative control proving both new rows fail when either seam is removed;
++2 rows. Two LOW → **T-156**/**T-157**; **T-138/T-152/T-154 closed**. CONTRACTS
+gains **§26**, §9's S25 block carries the finished chain and §10 gets v0.49.
+**Tick J1 shipped at its PROPOSED value** (6 rows per board, Expedition staged to
+S26).

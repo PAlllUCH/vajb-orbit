@@ -27,6 +27,10 @@ const Paths := preload("res://ui/paths.gd")
 const Catalog := preload("res://game/station_catalog.gd")
 const RepairsService := preload("res://game/repairs.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
+## T-152 (S24-R1/F2): the docked place's own sector, so the undock line names the space the
+## account is actually docked in (14's 2026-10-08 block's docked-station seam).
+const StationRegistryScript := preload("res://game/station_registry.gd")
+const SectorRegistryScript := preload("res://game/sector_registry.gd")
 ## The `weapon_id` bridge every weapon list in the tree uses (`w_cannon` -> `cannon`,
 ## family-less `w_mining` -> `""`), so the AMMUNITION strip names the same families the
 ## launch's `PlayerState.weapons` carries.
@@ -49,9 +53,12 @@ const DESTINATION_ROUTE: StringName = &"game"
 ## degrades to its own upper-cased id instead of a blank row. A destination the route table
 ## does not hold cannot be handed to the loading bridge, so the row says so, and the panel
 ## still arms because the failure belongs to routing and not to this screen (section 5.4).
-const DESTINATION_LINES: Dictionary = {
-	&"game": "OPEN SPACE · HELIOS DRIFT",
-}
+##
+## T-152 (S24-R1/F2): the undock line names the **docked sector's own row name** (11 section
+## 1's seven names, read through the docked station's own row) - the mockup-era
+## `OPEN SPACE · HELIOS DRIFT` named a sector the map does not carry. Reversal: the flat
+## flavour line.
+const DESTINATION_LINE_FORMAT := "OPEN SPACE · %s"
 const DESTINATION_UNRESOLVED := "NO ROUTE IN THE TABLE"
 
 const ARM_SECONDS := 3.0
@@ -275,7 +282,22 @@ func destination_line() -> String:
 	var route := destination_route()
 	if route == &"":
 		return DESTINATION_UNRESOLVED
-	return String(DESTINATION_LINES.get(route, String(route).to_upper()))
+	var sector := _docked_sector_name()
+	if not sector.is_empty():
+		return DESTINATION_LINE_FORMAT % sector.to_upper()
+	return String(route).to_upper()
+
+
+## The docked sector's own name (11 section 1), resolved from the place the account is
+## docked at: an empty answer for a profile with no station row, so the caller falls back.
+func _docked_sector_name() -> String:
+	var row := StationRegistryScript.docked_station(_profile())
+	if row.is_empty():
+		return ""
+	var sector := SectorRegistryScript.sector(
+		SectorRegistryScript.sector_id_for(int(row.get(&"sector", 0)))
+	)
+	return String(sector.get(&"name", ""))
 
 
 func _apply_tokens() -> void:
