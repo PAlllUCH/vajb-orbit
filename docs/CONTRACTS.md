@@ -30,31 +30,32 @@ later request; one section costs ~2-3k.
 
 | Section | Topic | Lines |
 |---|---|---|
-| §1 | Input map (project settings) | L62–L82 |
-| §2 | ShipStats | L83–L103 |
-| §3 | ShipFit | L104–L121 |
-| §4 | PlayerShip | L122–L302 |
-| §5 | Combat/mining entities (slice 1 scope) | L303–L407 |
-| §6 | Sector / SectorRegistry | L408–L433 |
-| §7 | HUD — frozen API + wave-1 additions | L434–L499 |
-| §8 | Economy / state seams | L500–L543 |
-| §8.1 | Slice 0 — physics & fuel (pinned additions, 2026-09-21) | L544–L679 |
-| §8.2 | Slice 2 — fight (pinned additions, 2026-09-21) | L680–L884 |
-| §9 | Universal test gate | L885–L967 |
-| §11 | P2 ship frames (2026-09-21) | L968–L1163 |
-| §12 | P2-B1 weapon fit (2026-09-22) | L1164–L1221 |
-| §13 | P2-B proper fitting (2026-09-22) | L1222–L1343 |
-| §14 | S2.6 truth-and-feel (2026-09-22) | L1344–L1472 |
-| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1473–L1577 |
-| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L1578–L1753 |
-| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L1754–L1832 |
-| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L1833–L1905 |
-| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L1906–L2040 |
-| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2041–L2252 |
-| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2253–L2329 |
-| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L2330–L2384 |
-| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L2385–L2554 |
-| §10 | Changelog | L2555–L2769 |
+| §1 | Input map (project settings) | L63–L83 |
+| §2 | ShipStats | L84–L104 |
+| §3 | ShipFit | L105–L122 |
+| §4 | PlayerShip | L123–L303 |
+| §5 | Combat/mining entities (slice 1 scope) | L304–L408 |
+| §6 | Sector / SectorRegistry | L409–L434 |
+| §7 | HUD — frozen API + wave-1 additions | L435–L500 |
+| §8 | Economy / state seams | L501–L544 |
+| §8.1 | Slice 0 — physics & fuel (pinned additions, 2026-09-21) | L545–L680 |
+| §8.2 | Slice 2 — fight (pinned additions, 2026-09-21) | L681–L885 |
+| §9 | Universal test gate | L886–L965 |
+| §11 | P2 ship frames (2026-09-21) | L966–L1161 |
+| §12 | P2-B1 weapon fit (2026-09-22) | L1162–L1219 |
+| §13 | P2-B proper fitting (2026-09-22) | L1220–L1341 |
+| §14 | S2.6 truth-and-feel (2026-09-22) | L1342–L1470 |
+| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1471–L1575 |
+| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L1576–L1751 |
+| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L1752–L1830 |
+| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L1831–L1903 |
+| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L1904–L2038 |
+| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2039–L2250 |
+| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2251–L2327 |
+| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L2328–L2382 |
+| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L2383–L2552 |
+| §24 | S24 world identity — stations, standing, bands, nebula (2026-10-08) | L2553–L2639 |
+| §10 | Changelog | L2640–L2872 |
 
 <!-- section-index:end -->
 
@@ -891,11 +892,13 @@ is affected, bounded by the rounds actually fired.
 #   res://tests/headless_runner.tscn --quit-after 1200`)
 ```
 
-Expected (S24, 2026-10-08): **`[SUMMARY] passed=1185 failed=0`**, exit 0, twice
-hermetic on fresh scratch stores with a byte-identical replay (S24-R1's own runs;
-baseline 1152 = the re-cut's own 2026-10-08 measurement). Growth **1152 → 1185
-(+33)**: `test_s24_world.gd` +18 (S24-B1), `test_s24_bands.gd` +15 (S24-B2); a
-count-vs-HEAD sweep shows **no other suite's row count moved**, and the S17
+Expected (S24, 2026-10-08): **`[SUMMARY] passed=1186 failed=0`**, exit 0, twice
+hermetic on fresh scratch stores with a byte-identical replay (S24-R1's own runs
+plus the close-out's; baseline 1152 = the re-cut's own 2026-10-08 measurement).
+Growth **1152 → 1186 (+34)**: `test_s24_world.gd` +19 (S24-B1's 18 + the row
+S24-F1's HIGH cure added), `test_s24_bands.gd` +15 (S24-B2); R1 measured 1185 and
+F1's fix moved the count one further, the close-out's two runs agreeing at 1186.
+A count-vs-HEAD sweep shows **no other suite's row count moved**, and the S17
 `REGISTRY_MD5` re-pin on `sector_registry.gd` (applied by the orchestrator because
 B2's file set held only its own suite, disclosed in the pin's own comment) is the
 finished tree's md5. The wave's reviewer probe (`tests/probe_s24_r1.tscn`, scratch
@@ -2853,7 +2856,9 @@ bottom (the index-line form is only for retired entries).
   the next free row read from §10 at write time, sequenced after S30's v0.45 — the
   S31–S37 waves left no §10 row; gate `1152 → 1185/0` twice on fresh scratch stores
   with a byte-identical replay, §9's stale S30 figure `1089` corrected to the
-  measured chain)** — adds **§24**, the wave's pinned interface: `StationRegistry`'s
+  measured chain; the close-out re-ran the gate twice more after S24-F1's cure of
+  R1's one HIGH — the shell's refusal strip now prices through `StationRegistry`
+  — which added the wave's last row, so §9 reads the finished **1186/0**)** — adds **§24**, the wave's pinned interface: `StationRegistry`'s
   accessors and the nine-row service matrix, the transient `docked_station` profile
   seam filed beside the faction, the two sector row keys (`hostile_band` verbatim
   R-S24-2 in fill order with `HOSTILE_FILL` retired as the band source; `clouds` per
