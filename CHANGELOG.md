@@ -4,6 +4,13 @@ Player-facing history of Vajb Orbit. Versions are the numbers shown on the
 main menu; each entry summarizes what changed for a player, drawn from the
 wave history in `.agents/gen/MASTER_REPORT.md` §6.
 
+## Vote site (2026-10-07)
+
+- **Release voting is live:** the community can vote on what the next release
+  ships at https://pallluch.github.io/vajb-orbit-site/ — a thumbs-up on a
+  candidate's GitHub issue is a vote, and the top-voted candidate when the
+  cycle is cut is what ships next. Spec: `docs/design/VOTE_SITE_SPEC.md`.
+
 ## 0.3 — the content & feel push (2026-09-27 → 2026-10-03, playtest-2 cycle)
 
 - **Flight feel:** every landed hit reads — hit flashes, kick, damage numbers

@@ -1,8 +1,9 @@
 # dispatch_designer.md — the graphics lane's queue of record
 
-Purged and regenerated 2026-10-07 (owner clear-out: live items only; the done
+Purged and regenerated 2026-10-08 (owner clear-out: live items only — the done
 items and closed handoff entries live verbatim in
-`_archive/dispatch_designer_done_2026-10-07.md`, the wave recaps in
+`_archive/dispatch_designer_done_2026-10-07.md` and
+`_archive/dispatch_done_2026-10-08.md`, the wave recaps in
 `MASTER_REPORT.md` §6). Execute one item per order; briefs/prompts live in the
 slice folders.
 
@@ -28,8 +29,8 @@ prefix, nor one `staging/` driver). One live session per workspace.
 
 (empty — no live design item. **Owner 2026-10-07:** a fresh design round
 regenerates the planning; this queue refills from it. The chrome family's
-design law D21 closed 2026-10-06; its implementation runs as coder item 43 /
-S36.)
+design law D21 closed 2026-10-06 and its implementation shipped as S36/S37,
+both closed and archived; the next design round owns the S24–S27 planning.)
 
 ## Parked (owner-gated — not queued; say the item and its five-piece lands)
 

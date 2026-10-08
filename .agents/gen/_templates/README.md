@@ -94,3 +94,12 @@ the display, SLICE.md is the record.
 `.agents/gen/_archive/slices/` (moved, not deleted); `_state/_archive/` keeps
 the session reports; extracted list history (waveboard blocks, dispatch done
 sections, CLOSED backlog rows) sits beside them in `_archive/`.
+
+**2026-10-08 (owner clear-out):** the live state files (`WAVEBOARD.md`,
+`TICKS.md`, `LOW_BACKLOG.md`, both dispatch files, the P3 `PHASE.md`) hold only
+the open S24–S27 work; everything else was extracted verbatim to `_archive/`
+(`waveboard_updates_2026-10-07_to_2026-10-08.md`,
+`dispatch_done_2026-10-08.md`, `low_backlog_s36_s37_rows_2026-10-08.md`) and the
+closed S36/S37 slice folders moved to `_archive/slices/`. A phase manifest lists
+its **remaining** slices as a checkbox list, ticked at each slice's close-out
+(`_templates/PHASE.md`).
