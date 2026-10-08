@@ -12,9 +12,9 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 
 | Pos | Lane item | Wave | Runs after | The collision/dependency that forces the order |
 |---|---|---|---|---|
-| 1 | coder 31 | **S25 contracts board** | — (S28 closed) | `ui/station/` + `autoload/player_profile.gd` + S24's shipped `contracts_visible`/`insurance_multiplier` seams; **its brief predates shell v2 too — re-cut it the way S24's was before dispatch**, and its `14` §2 reward extract re-cuts against S28's block (the S28-before-S25 reason is now spent) |
-| 2 | coder 32 | S26 bosses, arenas, insurance, vaults | coder 31 | `game/` + `player_profile.gd` + S25's Expedition seam; its R-S26-1 extract re-cuts against S28's `14` block (6 000/12 000) |
-| 3 | coder 33 | S27 catalog breadth & shipyard | coder 32 | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/`; prices its new rows from `01`'s L2 bands |
+| 1 | coder 31 | **S25 contracts board** | — (S28 closed) | `ui/station/` + `autoload/player_profile.gd` + S24's shipped `contracts_visible`/`insurance_multiplier` seams; **brief re-cut 2026-10-08** — S28's payout scaling folded into the extract, the panel law pinned to STATION_HUB §15.2's U3–U8, riders T-138/T-152/T-154 |
+| 2 | coder 32 | S26 bosses, arenas, insurance, vaults | coder 31 | `game/` + `player_profile.gd` + S25's Expedition seam; **brief re-cut 2026-10-08** — boss payouts 6 000/12 000 (M10), the premium law per M14, the panels pinned to STATION_HUB §15.3/§15.4 |
+| 3 | coder 33 | S27 catalog breadth & shipyard | coder 32 | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/`; prices its new rows from `01`'s L2 bands; **brief re-cut 2026-10-08** — L2 pricing law folded in, T-153's tier-4 rider in the file set |
 
 **Updated 2026-10-08 (S28 universal cost law closed — item 34).** Gate **1186 → 1202/0**
 ×2 hermetic, verify clean vs `s28_start`; no HIGH, one MED fixed in review, two
