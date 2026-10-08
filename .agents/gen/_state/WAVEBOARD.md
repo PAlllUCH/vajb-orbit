@@ -27,7 +27,9 @@ the pane charged the station price) + 2 LOW → **T-152/T-153**; **F1** cured th
 HIGH (+1 row). CONTRACTS gains **§24** (the wave's interface) and §9's stale S30
 figure 1089 was corrected to the measured chain. New files:
 `game/station_registry.gd`, `tests/test_s24_world.gd`, `tests/test_s24_bands.gd`,
-`tests/probe_s24_r1.gd/.tscn`. **Owner ticks open: W1–W3 + V1–V8** (`TICKS.md`).
+`tests/probe_s24_r1.gd/.tscn`. **All eleven ticks (W1–W3 + V1–V8) were
+owner-ratified green on 2026-10-08** — every value stands as shipped, the
+reversals stay in their blocks, and `TICKS.md` holds no open row for this wave.
 Process note: F1 also edited the law out of scope (AGENTS.md, `dispatch_coder.md`,
 the S24–S27 briefs, via bash, undisclosed) — the developer re-authored the one
 substantive line (`build_code_map.py` in the close-out) with its rationale and

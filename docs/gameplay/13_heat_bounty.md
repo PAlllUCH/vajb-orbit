@@ -144,7 +144,7 @@ plumbing already exists (`PlayerProfile.heat()`, `NpcRegistry.heat_tier()`,
   and turret aggro is **staged** (reversal: ship the turret
   as a station-attached NPC). Owner tick 7.
 
-## 2026-09-27 — P3 wave pin (wave S24) — PROPOSED, tick open
+## 2026-09-27 — P3 wave pin (wave S24) — owner-ratified 2026-10-08 (tick W1 green)
 
 §4's densities and the two-axis rule stand. The global `HOSTILE_FILL` becomes a
 per-sector band (the split "stated by no doc" is this row):

@@ -119,7 +119,8 @@ The station entity and the docked-station seam are `14_station_services.md`'s
 2026-10-08 block; the per-sector band is `13_heat_bounty.md`'s; the clouds are
 `11_galactic_map.md`'s. This block fixes the mechanism §4.1's band table and §5's
 discount stack need, because neither states it. Every value is PROPOSED with its
-reversal and a fresh tick (**V1–V7**, the S24 series).
+reversal and a fresh tick (**V1–V7**, the S24 series) — **owner-ratified
+2026-10-08: all seven stand as shipped**.
 
 **V1 — "station prices" (§4.1's +10/−5/−10 %).** The band multiplier applies to
 the station's own goods and services: the repair fee (`Repairs.fee`), the ammo

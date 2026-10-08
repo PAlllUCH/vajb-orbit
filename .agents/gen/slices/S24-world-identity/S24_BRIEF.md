@@ -249,6 +249,10 @@ Any other count moving is a bucket-2 pause: report it, leave it, stop.
 | V7 | the insurance seam (12) | 0.8 at Champion, 1.0 elsewhere |
 | V8 | the cloud rows (11) | 0–2 per sector, radius 900 u, centres ≥ 1500 u from the arena centre |
 
+**Closed 2026-10-08: all eleven rows (W1–W3 + V1–V8) were owner-ratified green** —
+this table is the dispatch record; the ruling's own record is `MASTER_REPORT.md`
+§6 (S24) and the 2026-10-08 blocks of `docs/gameplay/12|14|13|11`.
+
 ## 12. Close-out (the orchestrator)
 1. Gate twice on fresh scratch stores (identical counts).
 2. `python3 staging/verify_wave.py verify --baseline s24_start --forbidden

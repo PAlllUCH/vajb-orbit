@@ -54,8 +54,8 @@ later request; one section costs ~2-3k.
 | §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2251–L2327 |
 | §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L2328–L2382 |
 | §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L2383–L2552 |
-| §24 | S24 world identity — stations, standing, bands, nebula (2026-10-08) | L2553–L2639 |
-| §10 | Changelog | L2640–L2872 |
+| §24 | S24 world identity — stations, standing, bands, nebula (2026-10-08) | L2553–L2640 |
+| §10 | Changelog | L2641–L2874 |
 
 <!-- section-index:end -->
 
@@ -2557,8 +2557,9 @@ each sector carries its hostile band; nebula clouds ship their cover readings. T
 spec side is `docs/gameplay/14_station_services.md` (the nine rows + the seam + the
 plate landing), `12_factions.md` (V1–V7), `13_heat_bounty.md` (R-S24-2) and
 `11_galactic_map.md` (V8), all 2026-10-08 blocks — this section pins the shipped
-interface those blocks mandate. V1–V8 are **PROPOSED, ticks open**; each value below
-carries its reversal in its own doc block.
+interface those blocks mandate. V1–V8 are **owner-ratified 2026-10-08** (all
+eleven S24 ticks, W1–W3 + V1–V8, green); each value below carries its reversal in
+its own doc block.
 
 ```gdscript
 # game/station_registry.gd — NEW, class_name StationRegistry extends RefCounted.
@@ -2865,7 +2866,8 @@ bottom (the index-line form is only for retired entries).
   V8 with the 1500/4100 annulus, the Void Haze wash and the three ×0.5 readings at
   the push), and the one price order (catalogue list → `1 + band_delta −
   tech_discount` → the hot −20 % last; the exchange band-free at its own 1.5 %/2 %
-  commission). V1–V8 are PROPOSED with their ticks open; the second hot row ships
-  **derived** from the shelf's own digest (§15's four-member pin held) and the
-  reserved slot's tier is clamped into the catalogue's 1–3, both graded and pinned
-  with their reversals.
+  commission). V1–V8 shipped PROPOSED and were **owner-ratified 2026-10-08** with
+  W1–W3 (all eleven S24 ticks green, the row closed in `TICKS.md`); the second hot
+  row ships **derived** from the shelf's own digest (§15's four-member pin held) and
+  the reserved slot's tier is clamped into the catalogue's 1–3, both graded and
+  pinned with their reversals.

@@ -152,12 +152,13 @@ a reason to exist without diluting the service deck.
   (10), contract re-roll, arena cooldowns, sector respawn (11) — one timer,
   five consumers.
 
-## 2026-09-27 — P3 wave pins (waves S24/S25) — PROPOSED, ticks open
+## 2026-09-27 — P3 wave pins (waves S24/S25) — S24's tick W3 owner-ratified 2026-10-08; S25's J1 still open
 
 ### S24 — the nine docking places get names (amends §1/§8)
 
 Service menus stand exactly as §1/§8's matrix. Names and character were not
-stated; proposed (tick **W3** covers the whole set):
+stated; proposed (tick **W3** covers the whole set) — **owner-ratified
+2026-10-08**:
 
 | Place | PROPOSED name | Character (one line) |
 |---|---|---|

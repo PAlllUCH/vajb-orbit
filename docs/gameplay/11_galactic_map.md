@@ -223,7 +223,7 @@ Reversal: restore `sector.gd`'s `_add_gate` to
 `centre + _gate_bearing(dest) * GATE_RING_RADIUS` (900 u) and revert this
 section.
 
-## 2026-09-27 — P3 wave pin (wave S24) — PROPOSED, tick open
+## 2026-09-27 — P3 wave pin (wave S24) — owner-ratified 2026-10-08 (tick W2 green)
 
 Ruling 25's nebulae ship in S24. Counts stand at §1's 0–2 clouds per sector;
 the effects row is:
@@ -238,8 +238,8 @@ The clouds are **sector-row data**: `clouds: Array[Dictionary]` with
 `{centre: Vector2, radius: float}`, 0–2 rows per sector rolled on the sector's own
 seeded RNG (`game/sector.gd:populate`'s seed, so a probe seeds them), centres
 kept ≥ **1500 u** from the arena centre so the station and the spawn ring are
-never inside one — PROPOSED (**V8**), reversal 1000 u. Radius **900 u** PROPOSED
-(**V8**), reversal 600 u. The wash is `Void Haze #1A2230` at 15 % alpha
+never inside one — **V8**, owner-ratified 2026-10-08 (reversal 1000 u). Radius
+**900 u** **V8**, reversal 600 u. The wash is `Void Haze #1A2230` at 15 % alpha
 (STYLE_BIBLE §7.2's blue-grey wash; no new palette), drawn by the cloud node
 itself in its own rect; reversal: Deep Void Blue `#111823`.
 

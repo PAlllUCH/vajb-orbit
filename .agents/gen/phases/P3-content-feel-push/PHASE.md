@@ -25,8 +25,8 @@ library. Ends in playtest build 2.
       standing band effects, per-sector hostile bands, nebula clouds.
       `slices/S24-world-identity/` · **closed 2026-10-08**, gate 1186/0 ×2, verify
       `"problems": []` vs `s24_start` · re-cut before dispatch (two sequential
-      builders B1 A1–A2 → B2 A3–A5, R1, F1 on its one HIGH) · **owner ticks
-      W1–W3 + V1–V8 still open** (`TICKS.md`)
+      builders B1 A1–A2 → B2 A3–A5, R1, F1 on its one HIGH) · **all eleven ticks
+      (W1–W3 + V1–V8) owner-ratified green 2026-10-08**
 - [ ] **S25 — contracts board.** `contract_registry` + the board panel:
       Haul/Hunt/Gather/Escort, escrow + 100 CR cancel, standing gates, the
       escort convoy loop. `slices/S25-contracts/` · runs after: S24 · baseline
