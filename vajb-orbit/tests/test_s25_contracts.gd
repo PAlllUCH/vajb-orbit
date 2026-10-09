@@ -1033,6 +1033,41 @@ func test_a7_the_services_deck_holds_the_contracts_panel() -> void:
 	assert_eq(String(panel.call(&"confirm_body_text")), CONFIRM_BODY, "U4's confirm body verbatim")
 
 
+## T-160 (the owner's playtest, 2026-10-09): the shell's service host hands each mounted
+## pane the deck's own height. A VBoxContainer child that does not expand answers its
+## minimum, and the CONTRACTS panel's minimum is its header, its note and its foot - so
+## the board's scroll collapsed to its own 2 px minimum and drew **no row at all** on the
+## real screen, while every data-level read (the board, the empty text, the countdown)
+## still answered correctly. A pane does not size itself (A5.1); the flag is the host's.
+func test_a7_the_services_host_expands_every_pane() -> void:
+	_profile.call(&"set_docked_station", STATION)
+	var screen := _mount()
+	var deck: Control = screen.call(&"pane_for", 7) as Control
+	assert_true(deck != null, "the SERVICES deck exists")
+	var host := deck.get_node_or_null(NodePath("ServiceHost")) as Control
+	assert_true(host != null, "and it carries its own service host")
+	assert_eq(host.get_child_count(), 3, "one pane per service in the strip")
+	for child: Node in host.get_children():
+		var pane := child as Control
+		assert_true(pane != null, "a service pane is a Control")
+		assert_true(
+			bool(pane.size_flags_vertical & Control.SIZE_EXPAND),
+			"%s fills the deck's height (T-160)" % pane.name
+		)
+	var panel: Control = screen.call(&"service_panel", &"contracts") as Control
+	assert_true(panel != null, "the CONTRACTS panel is mounted")
+	assert_true(
+		bool(panel.size_flags_vertical & Control.SIZE_EXPAND),
+		"and the CONTRACTS pane is one of the panes that expand"
+	)
+	var board := panel.get_node_or_null(NodePath("Body/BoardHalf/BoardScroll")) as Control
+	assert_true(board != null, "the board's own scroll is in the panel")
+	assert_true(
+		bool(board.size_flags_vertical & Control.SIZE_EXPAND),
+		"the scroll is what takes the height the pane was given"
+	)
+
+
 ## A7: the board row anatomy - the type glyph and name, the objective verbatim, the reward
 ## right-aligned and the faction glyph - and the ACCEPT pressable that takes the contract.
 func test_a7_the_board_rows_and_accept() -> void:

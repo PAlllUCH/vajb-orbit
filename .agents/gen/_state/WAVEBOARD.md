@@ -15,6 +15,18 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | 1 | coder 32 | **S26 bosses, arenas, insurance, vaults** | — (S25 and S38 closed) | `game/` + `player_profile.gd` + S25's Expedition seam (the `staged` row `contract_registry` ships); **brief re-cut 2026-10-08** — boss payouts 6 000/12 000 (M10), the premium law per M14, the panels pinned to STATION_HUB §15.3/§15.4. It ran behind S38 because both hold `game/` + `ui/screens/station.gd` and S26 needs a hub that is readable on the menu path |
 | 2 | coder 33 | S27 catalog breadth & shipyard | coder 32 | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/`; prices its new rows from `01`'s L2 bands; **brief re-cut 2026-10-08** — L2 pricing law folded in, T-153's tier-4 rider in the file set |
 
+**Updated 2026-10-09 (the owner's playtest — the board drew no rows).** The
+owner's first eye over S38 reported "there are no contracts available, even when
+they refresh". The board **was** rolled, live and undimmed — but the shell's
+service host mounted each service pane without a vertical size flag, so the
+CONTRACTS pane answered its 173 px minimum and the board's scroll collapsed to
+its **2 px** minimum: the deck drew a header, a note and nothing else, with the
+countdown the only thing still visible. Fixed at the host (`station.gd:1164`,
+`content.size_flags_vertical = SIZE_EXPAND_FILL`, A5.1's own rule), which also
+restores the collapsed `MODULE OFFLINE` INSURANCE/VAULTS placeholders. Gate
+**1236 → 1237/0**; measured off a rendered 1920×1080 frame (board 568 px, scroll
+397 px, five rows drawn plus the sixth on scroll); **T-160** filed and closed;
+CONTRACTS §10 **v0.52**. No pinned number or registry signature moved.
 **Updated 2026-10-08 (S38 board clock + hub cold start closed — item 35).** Gate
 **1226 → 1236/0** ×2 hermetic on fresh scratch stores, **zero** `SCRIPT ERROR`
 lines; verify clean vs `s38_start`; B1 +10 rows, one MED (a stale test message)

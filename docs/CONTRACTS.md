@@ -58,7 +58,7 @@ later request; one section costs ~2-3k.
 | §25 | S28 economy law — the value ladder, the fee door, the battery, the b… | L2690–L2750 |
 | §26 | S25 contracts board — the registry, the reward law, the three exits … | L2751–L2823 |
 | §27 | S38 — the hub's cold start and the board's clock (2026-10-08) | L2824–L2898 |
-| §10 | Changelog | L2899–L3213 |
+| §10 | Changelog | L2899–L3236 |
 
 <!-- section-index:end -->
 
@@ -3210,3 +3210,26 @@ bottom (the index-line form is only for retired entries).
   to `get()`, found by S38-F1 as an outside-mandate observation after R1's review
   and landed by the orchestrator. Both are corrections to a *measured claim*, not
   pins. Reversal: restore the two-line sentence and the `call()`.
+- **v0.52 (2026-10-09, owner playtest after S38 — the orchestrator; gate
+  `1237/0`, +1 row, the same single tolerated red line as the S38 close-out)** —
+  the owner reported "there are no contracts available, even when they refresh".
+  Measured on the shipped scene with the live account: the board **was** rolled
+  (six rows, `empty_text` empty, `NEW JOBS IN mm:ss` live and counting) and every
+  row node was in the tree, laid out and undimmed — but the shell's service host
+  never handed the pane the deck's height. `_build_services` mounts each service
+  pane into a `VBoxContainer` (`_service_host`, `station.gd:1141`) without a
+  vertical size flag, so the pane answered its own minimum (173 px: header, note
+  and foot), its `Body` got 53 px and the board's `ScrollContainer` collapsed to
+  its **2 px** minimum: the deck drew a header, a note and nothing else. The
+  countdown in the header row is the only thing that stayed visible, which is why
+  the defect read as "the board is empty". Fixed at the host, where the law puts
+  it (A5.1: a pane does not size itself) — `content.size_flags_vertical =
+  Control.SIZE_EXPAND_FILL` for every service pane, which also restores the
+  `MODULE OFFLINE` INSURANCE/VAULTS placeholders that were collapsed the same
+  way. No pinned number, panel scene or registry signature moved; the board is
+  now 568 px tall with a 397 px scroll (five rows visible, the sixth on scroll).
+  Filed and closed as **T-160**; the missing test class is the point — every
+  existing row read the board's *data* and the harness runs a whole suite inside
+  one frame, so no row could have seen a collapsed layout. The new
+  `test_a7_the_services_host_expands_every_pane` pins the flag instead.
+  Reversal: drop the flag (the board's scroll returns to 2 px).

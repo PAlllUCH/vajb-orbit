@@ -1156,6 +1156,12 @@ func _build_services() -> CanvasItem:
 			content = _make_service_placeholder(String(row[&"label"]), path)
 		content.name = String(row[&"label"]).to_pascal_case()
 		content.visible = false
+		## The host's own law (A5.1): a pane inside a VBoxContainer is only as tall as
+		## its minimum unless it expands, and the host is what owns that flag - a panel
+		## scene does not size itself. Without this the pane answers its own minimum
+		## (the header, the note and the foot) and every scroll inside it collapses to
+		## its 2 px minimum: the contracts board drew no rows at all.
+		content.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		_connect_panel(content)
 		_service_host.add_child(content)
 		_service_panes[service] = content
