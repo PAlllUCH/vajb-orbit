@@ -1,0 +1,150 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://ui/station/insurance_panel.gd" id="1_insurance"]
+
+[node name="Insurance" type="VBoxContainer"]
+layout_mode = 3
+anchors_preset = 0
+theme_override_constants/separation = 12
+script = ExtResource("1_insurance")
+
+[node name="PaneHeader" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PaneIcon" type="TextureRect" parent="PaneHeader"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PaneTitle" type="Label" parent="PaneHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationPanelTitle"
+text = "INSURANCE"
+
+[node name="Body" type="HBoxContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="PremiumHalf" type="VBoxContainer" parent="Body"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="PremiumHeader" type="HBoxContainer" parent="Body/PremiumHalf"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ChampionNote" type="Label" parent="Body/PremiumHalf"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "Champion standing multiplies the premium ×0.8"
+autowrap_mode = 2
+
+[node name="PremiumScroll" type="ScrollContainer" parent="Body/PremiumHalf"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="PremiumList" type="VBoxContainer" parent="Body/PremiumHalf/PremiumScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="PolicyColumn" type="VBoxContainer" parent="Body"]
+custom_minimum_size = Vector2(420, 0)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PolicyHead" type="HBoxContainer" parent="Body/PolicyColumn"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="StateChip" type="PanelContainer" parent="Body/PolicyColumn/PolicyHead"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="StateLabel" type="Label" parent="Body/PolicyColumn/PolicyHead/StateChip"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "UNINSURED"
+
+[node name="MercyChip" type="PanelContainer" parent="Body/PolicyColumn/PolicyHead"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="MercyLabel" type="Label" parent="Body/PolicyColumn/PolicyHead/MercyChip"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "MERCY AVAILABLE"
+
+[node name="OneDeathLine" type="Label" parent="Body/PolicyColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "THE PAYOUT COVERS ONE LOSS · THE POLICY DOES NOT RENEW MID-FLIGHT"
+autowrap_mode = 2
+
+[node name="MercyCaption" type="Label" parent="Body/PolicyColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "mercy clause: if you have no other hull, the Concord reissues a bare Fighter — once per profile"
+autowrap_mode = 2
+
+[node name="LossWarning" type="PanelContainer" parent="Body/PolicyColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="LossWarningLabel" type="Label" parent="Body/PolicyColumn/LossWarning"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "UNINSURED LOSS: HULL AND ALL INSTALLED MODULES ARE GONE"
+autowrap_mode = 2
+
+[node name="PremiumLine" type="Label" parent="Body/PolicyColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationValue"
+text = "PREMIUM 0 CR PER LAUNCH · CHARGED AT LAUNCH"
+
+[node name="OptInToggle" type="Button" parent="Body/PolicyColumn"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 32)
+layout_mode = 2
+size_flags_horizontal = 0
+text = "INSURE LAUNCHES"
+
+[node name="PaneFoot" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="PaneHint" type="Label" parent="PaneFoot"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 7
+theme_type_variation = &"StationCaption"
+text = "ONE SERVICE AT A TIME · ESC BACK"
+
+[node name="PaneActions" type="HBoxContainer" parent="PaneFoot"]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+theme_override_constants/separation = 16

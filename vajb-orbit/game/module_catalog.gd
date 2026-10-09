@@ -730,14 +730,35 @@ static func roll_sources() -> Array[StringName]:
 ## last, so an exclusive can never come out Common whatever the source: its legal
 ## range is Magic..Rare, and 15 section 9.2's own `faction_lot` row is the split the
 ## F lot uses.
-static func roll_rarity(source: StringName, base_id: StringName = &"") -> String:
+static func roll_rarity(source: StringName, base_id: StringName = &"", floor: String = "") -> String:
 	var table: Dictionary = SOURCE_ROLLS.get(source, {})
 	if table.is_empty():
 		return ""
 	var rarity := _weighted_rarity(table)
 	if EXCLUSIVES.has(base_id) and _rarity_index(rarity) < _rarity_index(EXCLUSIVE_FLOOR):
-		return EXCLUSIVE_FLOOR
+		rarity = EXCLUSIVE_FLOOR
+	## S26 (14 section 5): the arena reward's own floor - the Boneyard's magic module
+	## roll and the Pyre's guaranteed rare - applied last, exactly as 15 section 5's
+	## exclusive floor is. An empty floor is the pre-S26 reading.
+	if floor != "" and _rarity_index(rarity) < _rarity_index(floor):
+		return floor
 	return rarity
+
+
+## S26 (14 section 5): the base module ids the arena reward rolls one instance from -
+## every catalogue module that is not a 15 section 5 exclusive (an exclusive rolls
+## only in its own faction's space) and carries a price (a zero-cost row is a service,
+## not a reward). PROPOSED (no doc pins the pool); reversal: the whole catalogue.
+static func arena_pool() -> Array[StringName]:
+	var out: Array[StringName] = []
+	for id: Variant in MODULES:
+		var base := StringName(id)
+		if EXCLUSIVES.has(base):
+			continue
+		if int((MODULES[id] as Dictionary).get(&"cost", 0)) <= 0:
+			continue
+		out.append(base)
+	return out
 
 
 ## 15 section 1's affix count for a rarity: Common 0, Magic 1, Rare 2. An unknown

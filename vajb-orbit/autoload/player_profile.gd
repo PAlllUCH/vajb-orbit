@@ -79,6 +79,12 @@ const Log := preload("res://game/economy_log.gd")
 ## S34: the refinery queue's own constants (04 section 7.2's R3/R4/R5), so the
 ## profile's default slot count and its clamp share one source with the module.
 const RefineryData := preload("res://game/refinery.gd")
+## S26: the station rows (faction, the vault tier ceiling) the insurance premium and
+## the vault capacity read. Read-only here; the registry owns the rows.
+const StationData := preload("res://game/station_registry.gd")
+## S26: the arena's own cooldown (14 section 5), read from its one home in the NPC
+## registry rather than re-typed here.
+const NpcData := preload("res://game/npc_registry.gd")
 
 const SAVE_FILE := "user://profile.cfg"
 const SECTION := "profile"
@@ -113,6 +119,60 @@ const KEY_STANDING: StringName = &"standing"
 ## tank moved. A vitals write is otherwise silent (17 section 3); fuel is the one
 ## exception, so a station-side refuel can tell the flight side.
 const KEY_FUEL: StringName = &"fuel"
+
+## --- S26: insurance, vaults, arena runs (14 sections 3/4/5) -----------------------
+##
+## 14 section 3, M14 (owner-ratified green 2026-10-08): the premium is 1.5 % of the
+## hull's list per class (the 135-1 080 band). Reversal: the section 3 flats.
+const KEY_ARENA_RUNS: String = "arena_runs"
+const INSURANCE_PREMIUM_PERMILLE := 15
+## The six section 3 class rows, hull id -> the row's own class name, and the tier's
+## cheapest base hull the payout flow replaces into ("a base hull of your class
+## tier's cheapest ship"). Section 3 groups Delver/Trader/Corvette and Hauler/Gunship;
+## the premium itself is per class (M14), the replacement hull per group.
+const INSURANCE_TIER_OF: Dictionary = {
+	&"ship_fighter": &"fighter",
+	&"ship_vanguard": &"cutter",
+	&"ship_miner": &"delver_trader_corvette",
+	&"ship_trader": &"delver_trader_corvette",
+	&"ship_corvette": &"delver_trader_corvette",
+	&"ship_freighter": &"hauler_gunship",
+	&"ship_gunship": &"hauler_gunship",
+	&"ship_patrol": &"frigate",
+	&"ship_destroyer": &"destroyer",
+}
+const INSURANCE_TIER_CHEAPEST: Dictionary = {
+	&"fighter": &"ship_fighter",
+	&"cutter": &"ship_vanguard",
+	&"delver_trader_corvette": &"ship_miner",
+	&"hauler_gunship": &"ship_freighter",
+	&"frigate": &"ship_patrol",
+	&"destroyer": &"ship_destroyer",
+}
+## The section 3 premium table's six rows, in the doc's own order, with its own class
+## words - the INSURANCE panel renders these and their M14 prices.
+const INSURANCE_TIER_ROWS: Array[Dictionary] = [
+	{&"tier": &"fighter", &"label": "Fighter"},
+	{&"tier": &"cutter", &"label": "Cutter"},
+	{&"tier": &"delver_trader_corvette", &"label": "Delver / Trader / Corvette"},
+	{&"tier": &"hauler_gunship", &"label": "Hauler / Gunship"},
+	{&"tier": &"frigate", &"label": "Frigate"},
+	{&"tier": &"destroyer", &"label": "Destroyer"},
+]
+## 14 section 3's mercy clause: the bare hull the Concord reissues when the account
+## has no other hull, once per profile.
+const MERCY_HULL: StringName = &"ship_fighter"
+## 14 section 4's vault law.
+const VAULT_BASE_UNITS := 20
+const VAULT_TIER_UNITS := 20
+const VAULT_MAX_TIER := 3
+const VAULT_TIER_COSTS: Array[int] = [500, 1200, 2400]
+const VAULT_MERIDIAN_BASE := 40
+const VAULT_MERIDIAN_MULT := 1.25
+## 15 section 5's `u_vault` row (14 section 4's own `vault_add`): +20 units to every
+## vault, at every station.
+const VAULT_U_VOID_ADD := 20
+const U_VOID_ID: StringName = &"u_vault"
 
 ## `set_vitals`'s "this caller is not filing a tank" sentinel. Fuel is stored in
 ## whole points, so a negative value can never collide with a real reading, and the
@@ -295,6 +355,13 @@ var _contracts: Array = []
 var _vaults: Dictionary = {}
 var _insured := false
 var _mercy_used := false
+## S26: transient (not a save key) - the last death spent the policy, so the panel's
+## U10 chip reads `PAID OUT · POLICY SPENT` until the next launch's charge clears it.
+var _insurance_paid_out := false
+## S26 (14 section 5): one run per boss per 20-minute clock per profile, keyed by the
+## boss archetype id -> the WorldClock stamp the run opened at. Save key `arena_runs`;
+## an absent key (every pre-S26 file) reads as no runs.
+var _arena_runs: Dictionary = {}
 var _vitals: Dictionary = {}
 var _instance_counter := 0
 var _auction: Dictionary = {"last_band": 0, "hulls": [], "modules": {}, "hot": &""}
@@ -759,10 +826,10 @@ func instances_of(base_id: StringName) -> Array[StringName]:
 ## writing nothing when the catalogue does not ship the base id or the source is not
 ## one of `ModuleCatalog.SOURCE_ROLLS`' rows. The outcome persists in the record
 ## and is never re-rolled (15 section 6).
-func roll_instance(base_id: StringName, source: StringName) -> StringName:
+func roll_instance(base_id: StringName, source: StringName, floor: String = "") -> StringName:
 	if ModuleData.module(base_id).is_empty():
 		return &""
-	var rarity := ModuleData.roll_rarity(source, base_id)
+	var rarity := ModuleData.roll_rarity(source, base_id, floor)
 	if rarity == "":
 		return &""
 	var affixes := ModuleData.roll_affixes(base_id, rarity)
@@ -1957,6 +2024,322 @@ func set_mercy_used(value: bool) -> void:
 	_mark_dirty()
 
 
+## --- S26: arena runs (14 section 5) -----------------------------------------------
+
+
+## The boss archetype id -> the WorldClock stamp its last run opened at.
+func arena_runs() -> Dictionary:
+	return _arena_runs.duplicate(true)
+
+
+func set_arena_runs(value: Dictionary) -> void:
+	var candidate: Dictionary = _to_plain(value)
+	if candidate == _arena_runs:
+		return
+	_arena_runs = candidate
+	_mark_dirty()
+
+
+## The stamp one boss's last run opened at, 0 if it has never run.
+func arena_last_run(boss_id: StringName) -> int:
+	return int(_arena_runs.get(String(boss_id), 0))
+
+
+## 14 section 5: "one run per boss per 20-minute clock (per profile)". A boss with no
+## run yet is always ready.
+func arena_ready(boss_id: StringName, now: int) -> bool:
+	var last := arena_last_run(boss_id)
+	if last <= 0:
+		return true
+	return now - last >= NpcData.ARENA_COOLDOWN_SECONDS
+
+
+## File the run's opening stamp, so the cooldown starts now.
+func arena_mark_run(boss_id: StringName, now: int) -> void:
+	_arena_runs[String(boss_id)] = now
+	_mark_dirty()
+
+
+## --- S26: vaults (14 section 4) ---------------------------------------------------
+
+
+## The tier rented at one station, 0 for none. Clamped to the station's ceiling.
+func vault_tier(station_id: StringName) -> int:
+	return clampi(int(_vault_record(station_id).get(&"tier", 0)), 0, VAULT_MAX_TIER)
+
+
+## One station's whole record in the shipped shape (14 section 9: `station_id ->
+## {tier, contents}`), a deep copy. The vault is furniture: a station with no entry has
+## never been used, not an error. `overview_panel.gd` reads the same record.
+func _vault_record(station_id: StringName) -> Dictionary:
+	var entry: Variant = _vaults.get(String(station_id), null)
+	if entry is Dictionary:
+		return (entry as Dictionary).duplicate(true)
+	return {}
+
+
+## One station's contents (`{item_id: qty}`), a deep copy.
+func vault_contents(station_id: StringName) -> Dictionary:
+	var contents: Variant = _vault_record(station_id).get(&"contents", {})
+	if contents is Dictionary:
+		return (contents as Dictionary).duplicate(true)
+	return {}
+
+
+## One station's record written back in the shipped shape.
+func _write_vault(station_id: StringName, tier: int, contents: Dictionary) -> void:
+	_vaults[String(station_id)] = {&"tier": tier, &"contents": contents}
+	_mark_dirty()
+
+
+## The units stored at one station.
+func vault_used(station_id: StringName) -> int:
+	var total := 0
+	var contents := vault_contents(station_id)
+	for key: Variant in contents:
+		total += int(contents[key])
+	return total
+
+
+## Whether the account holds the Meridian `u_vault` module (15 section 5's
+## `vault_add`): +20 units to every vault, at every station.
+func owns_u_vault() -> bool:
+	return module_count(U_VOID_ID) > 0
+
+
+## 14 section 4's capacity: 20 units base, +20 per rented tier, +20 for `u_vault`,
+## and Meridian's stations rent 40-unit vaults instead of 20.
+func vault_capacity(station_row: Dictionary) -> int:
+	var base := VAULT_BASE_UNITS
+	if StringName(station_row.get(&"faction", &"")) == &"meridian":
+		base = VAULT_MERIDIAN_BASE
+	var capacity := base + VAULT_TIER_UNITS * vault_tier(StringName(station_row.get(&"id", &"")))
+	if owns_u_vault():
+		capacity += VAULT_U_VOID_ADD
+	return capacity
+
+
+## One station's tier price: 14 section 4's 500/1 200/2 400, x1.25 at a Meridian
+## station ("the rental tiers cost 25 % more"). 0 for a tier outside 1..3.
+func vault_tier_cost(tier: int, station_row: Dictionary) -> int:
+	if tier < 1 or tier > VAULT_TIER_COSTS.size():
+		return 0
+	var cost := float(VAULT_TIER_COSTS[tier - 1])
+	if StringName(station_row.get(&"faction", &"")) == &"meridian":
+		cost *= VAULT_MERIDIAN_MULT
+	return roundi(cost)
+
+
+## Rent one tier up at a station: the station's own ceiling (`vault_tiers`), a tier at
+## or below the one already held, and the price are all checked. All-or-nothing
+## (17 section 5): a refusal writes nothing.
+func vault_rent(station_id: StringName, tier: int, station_row: Dictionary) -> Dictionary:
+	if station_row.is_empty() or tier <= vault_tier(station_id):
+		return {&"ok": false, &"reason": REASON_UNKNOWN, &"cost": 0}
+	var ceiling := int(station_row.get(&"vault_tiers", 0))
+	if tier > ceiling or tier > VAULT_MAX_TIER:
+		return {&"ok": false, &"reason": REASON_UNKNOWN, &"cost": 0}
+	var cost := vault_tier_cost(tier, station_row)
+	if not _charge(cost):
+		return {&"ok": false, &"reason": REASON_INSUFFICIENT, &"cost": 0}
+	_write_vault(station_id, tier, vault_contents(station_id))
+	return {&"ok": true, &"reason": &"", &"cost": cost, &"capacity": vault_capacity(station_row)}
+
+
+## A free deposit (14 section 4: "deposits and withdrawals are free"): the stack moves
+## from the hold into the vault, refused whole when it would overfill the vault.
+func vault_deposit(
+	station_id: StringName, item_id: StringName, quantity: int, station_row: Dictionary
+) -> bool:
+	if station_id == &"" or item_id == &"" or quantity <= 0:
+		return false
+	if vault_used(station_id) + quantity > vault_capacity(station_row):
+		return false
+	if not remove_cargo(item_id, quantity):
+		return false
+	var contents := vault_contents(station_id)
+	contents[String(item_id)] = int(contents.get(String(item_id), 0)) + quantity
+	_write_vault(station_id, vault_tier(station_id), contents)
+	return true
+
+
+## A free withdrawal: the stack moves from the vault back into the hold. Refused when
+## the vault does not hold that much.
+func vault_withdraw(station_id: StringName, item_id: StringName, quantity: int) -> bool:
+	if station_id == &"" or item_id == &"" or quantity <= 0:
+		return false
+	var contents := vault_contents(station_id)
+	var held := int(contents.get(String(item_id), 0))
+	if held < quantity:
+		return false
+	if held == quantity:
+		contents.erase(String(item_id))
+	else:
+		contents[String(item_id)] = held - quantity
+	_write_vault(station_id, vault_tier(station_id), contents)
+	add_cargo(item_id, quantity)
+	return true
+
+
+## --- S26: insurance (14 section 3, M14) -------------------------------------------
+
+
+## The class tier one hull id belongs to (the six section 3 rows), `&""` for an
+## unknown hull.
+func insurance_tier(ship_id: StringName) -> StringName:
+	return StringName(INSURANCE_TIER_OF.get(ship_id, &""))
+
+
+## M14: 1.5 % of the hull's list per class, rounded (the 135-1 080 band). The reading is
+## the section 3 **class row** (the six-row premium table) priced off that row's own
+## cheapest hull, so the premium and the payout's replacement hull share one tier.
+## Reversal: the active hull's own list (a Corvette then pays 405, not the row's 240).
+func insurance_premium() -> int:
+	return insurance_tier_premium(insurance_tier(_active_ship))
+
+
+## One section 3 class row's premium, 0 for an unknown row.
+func insurance_tier_premium(tier: StringName) -> int:
+	var hull := StringName(INSURANCE_TIER_CHEAPEST.get(tier, &""))
+	if hull == &"":
+		return 0
+	var cost := int(Catalog.ship(hull).get(&"cost", 0))
+	if cost <= 0:
+		return 0
+	return roundi(float(cost) * float(INSURANCE_PREMIUM_PERMILLE) / 1000.0)
+
+
+## The replacement hull one death pays into: the tier's cheapest base hull.
+func insurance_replacement() -> StringName:
+	var tier := insurance_tier(_active_ship)
+	return StringName(INSURANCE_TIER_CHEAPEST.get(tier, MERCY_HULL))
+
+
+## One fitted entry's list value: an instance's rarity-aware list price, or a plain
+## catalogue module's own cost.
+func _entry_value(entry: StringName) -> int:
+	if entry == &"":
+		return 0
+	var record := _module_record(entry)
+	if record.is_empty():
+		return int(ModuleData.module(entry).get(&"cost", 0))
+	var base := StringName(str(record.get("base_id", entry)))
+	return ModuleData.list_price(base, StringName(str(record.get("rarity", ModuleData.RARITY_COMMON))))
+
+
+## One hull's replacement value (14 section 3: "ship + installed modules at full
+## value"): the hull's list price plus every fitted entry's list value.
+func hull_fit_value(ship_id: StringName) -> int:
+	var row := Catalog.ship(ship_id)
+	var total := int(row.get(&"cost", 0))
+	var fit := fit_for(ship_id)
+	if fit.is_empty():
+		return total
+	for slot_key: Variant in FitData.FIT_SLOT_KEYS:
+		var key := StringName(slot_key)
+		var cell: Variant = fit.get(key, null)
+		if cell is Array:
+			for entry: Variant in cell:
+				total += _entry_value(StringName(str(entry)))
+		elif cell is String or cell is StringName:
+			total += _entry_value(StringName(str(cell)))
+	return total
+
+
+## S24's seam (V7, `StationRegistry.insurance_multiplier`): the premium scales with the
+## standing the account holds with the faction that owns the docked station - Champion
+## pays x0.8. The launch's charge reads it; the INSURANCE panel's U9 note names the same
+## rule. An unknown or factionless row answers 1.0 (the seam's own default).
+func insurance_standing_multiplier() -> float:
+	var row := StationData.docked_station(self)
+	return StationData.insurance_multiplier(standing_of(StringName(row.get(&"faction", &""))))
+
+
+## Charge the premium at launch (14 section 3: "charged at launch") and mark the policy
+## active. The Champion standing scales the figure through S24's seam before it is taken.
+## Returns false - writing nothing - when the intent is off, the hull has no price, or the
+## purse cannot pay; the launch then flies uninsured.
+func insurance_charge() -> bool:
+	if not _insured:
+		return false
+	var premium := insurance_premium()
+	if premium <= 0:
+		return false
+	premium = roundi(float(premium) * insurance_standing_multiplier())
+	if premium <= 0:
+		return false
+	if not _charge(premium):
+		## The purse could not cover the premium: the launch flies uninsured (no refusal).
+		_insured = false
+		_mark_dirty()
+		return false
+	_insurance_paid_out = false
+	_mark_dirty()
+	Log.append("INSURANCE_PREMIUM", &"insurance", premium, -premium, _credits)
+	return true
+
+
+## The U10 chip state: `insured` (covers one loss), `paid_out` (policy spent) or
+## `uninsured`.
+func insurance_state() -> StringName:
+	if _insured:
+		return &"insured"
+	if _insurance_paid_out:
+		return &"paid_out"
+	return &"uninsured"
+
+
+## 14 section 3's payout flow, on death. The lost hull leaves the fleet; the policy
+## (if active) credits the hull+fit value back into the dock; the account respawns in
+## a base hull of its tier's cheapest, and - if it would have no hull at all - the
+## Concord's mercy clause reissues a bare Fighter once per profile. A second total loss
+## leaves the account shipless. Returns what moved.
+func insurance_payout() -> Dictionary:
+	var lost := _active_ship
+	var replacement := insurance_replacement()
+	var credited := 0
+	var insured := _insured
+	if insured:
+		credited = hull_fit_value(lost)
+		if credited > 0:
+			add_credits(credited)
+		_insured = false
+		_insurance_paid_out = true
+	_owned_ships.erase(lost)
+	## 14 section 3: the lost hull and its fit are gone. An uninsured loss grants no
+	## replacement - the policy is what reissues the tier's base hull - so the account falls
+	## back to a surviving hull; the mercy clause covers the shipless account.
+	_fits.erase(String(lost))
+	var mercy := false
+	var hull := &""
+	if _owned_ships.is_empty():
+		if not _mercy_used:
+			_mercy_used = true
+			mercy = true
+			hull = MERCY_HULL
+	elif insured:
+		hull = replacement
+	if hull != &"":
+		if not _owned_ships.has(hull):
+			_owned_ships.append(hull)
+			_fits.erase(String(hull))
+		_active_ship = hull
+	elif _owned_ships.is_empty():
+		_active_ship = &""
+	else:
+		_active_ship = StringName(_owned_ships[0])
+	_mark_dirty()
+	Log.append("INSURANCE_PAYOUT", lost, credited, credited, _credits)
+	return {
+		&"ok": true,
+		&"credited": credited,
+		&"hull": hull,
+		&"insured": insured,
+		&"mercy": mercy,
+		&"lost": lost,
+	}
+
+
 ## The stored report for one hull: {hull, shield} plus `fuel` once a launch or a
 ## station has filed a tank (18_engine_spec section 12 item 13). A record written
 ## before save v3 simply carries no fuel entry, which the launch handshake reads as
@@ -2160,6 +2543,8 @@ func _apply_defaults() -> void:
 	_vaults.clear()
 	_insured = false
 	_mercy_used = false
+	_insurance_paid_out = false
+	_arena_runs.clear()
 	_vitals.clear()
 	_instance_counter = 0
 	_auction = _auction_default()
@@ -2196,6 +2581,7 @@ func _read_values() -> void:
 	_vaults = _read_plain_dict("vaults")
 	_insured = _read_bool("insured", false)
 	_mercy_used = _read_bool("mercy_used", false)
+	_arena_runs = _read_plain_dict(KEY_ARENA_RUNS)
 	_vitals = _read_vitals()
 	_instance_counter = maxi(0, _read_int(KEY_INSTANCE_COUNTER, 0))
 	_auction = _normalise_auction(_read_plain_dict(KEY_AUCTION))
@@ -2802,6 +3188,7 @@ func _write_profile() -> void:
 	_config.set_value(SECTION, "vaults", _vaults)
 	_config.set_value(SECTION, "insured", _insured)
 	_config.set_value(SECTION, "mercy_used", _mercy_used)
+	_config.set_value(SECTION, KEY_ARENA_RUNS, _arena_runs)
 	_config.set_value(SECTION, "vitals", _vitals)
 	var err := _config.save(save_path)
 	if err != OK:

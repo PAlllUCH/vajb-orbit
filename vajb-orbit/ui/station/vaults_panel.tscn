@@ -1,0 +1,165 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://ui/station/vaults_panel.gd" id="1_vaults"]
+
+[node name="Vaults" type="VBoxContainer"]
+layout_mode = 3
+anchors_preset = 0
+theme_override_constants/separation = 12
+script = ExtResource("1_vaults")
+
+[node name="PaneHeader" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PaneIcon" type="TextureRect" parent="PaneHeader"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PaneTitle" type="Label" parent="PaneHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationPanelTitle"
+text = "VAULTS"
+
+[node name="Body" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="TierList" type="VBoxContainer" parent="Body"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="OutpostCaption" type="Label" parent="Body"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "tier 1 only — this is an outpost"
+autowrap_mode = 2
+
+[node name="MeridianNote" type="Label" parent="Body"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "Meridian's stations rent 40-unit vaults and the rental tiers cost 25 % more (they know what a vault is worth)."
+autowrap_mode = 2
+
+[node name="ContentsSplit" type="HBoxContainer" parent="Body"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="HoldColumn" type="VBoxContainer" parent="Body/ContentsSplit"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="HoldHeader" type="Label" parent="Body/ContentsSplit/HoldColumn"]
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "YOUR HOLD"
+
+[node name="HoldList" type="ItemList" parent="Body/ContentsSplit/HoldColumn"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 220)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="FreeCaption" type="Label" parent="Body/ContentsSplit/HoldColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "DEPOSITS AND WITHDRAWALS ARE FREE"
+
+[node name="DepositButton" type="Button" parent="Body/ContentsSplit/HoldColumn"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 32)
+layout_mode = 2
+size_flags_horizontal = 0
+text = "DEPOSIT"
+
+[node name="VaultColumn" type="VBoxContainer" parent="Body/ContentsSplit"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="VaultHead" type="HBoxContainer" parent="Body/ContentsSplit/VaultColumn"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="VaultHeader" type="Label" parent="Body/ContentsSplit/VaultColumn/VaultHead"]
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "VAULT CONTENTS"
+
+[node name="NotCargoChip" type="PanelContainer" parent="Body/ContentsSplit/VaultColumn/VaultHead"]
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="NotCargoLabel" type="Label" parent="Body/ContentsSplit/VaultColumn/VaultHead/NotCargoChip"]
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "NOT CARGO"
+
+[node name="CapacityReadout" type="Label" parent="Body/ContentsSplit/VaultColumn/VaultHead"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_type_variation = &"StationValue"
+text = "THIS VAULT — 0 / 20 UNITS"
+horizontal_alignment = 2
+
+[node name="VaultList" type="ItemList" parent="Body/ContentsSplit/VaultColumn"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 220)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="NotCargoCaption" type="Label" parent="Body/ContentsSplit/VaultColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "VAULT CONTENTS DO NOT COUNT AGAINST CARGO ON LAUNCH"
+autowrap_mode = 2
+
+[node name="PersistCaption" type="Label" parent="Body/ContentsSplit/VaultColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+text = "CONTENTS PERSIST PER-STATION — THE VAULT IS FURNITURE, NOT A POCKET"
+autowrap_mode = 2
+
+[node name="WithdrawButton" type="Button" parent="Body/ContentsSplit/VaultColumn"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 32)
+layout_mode = 2
+size_flags_horizontal = 0
+text = "WITHDRAW"
+
+[node name="PaneFoot" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="PaneHint" type="Label" parent="PaneFoot"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 7
+theme_type_variation = &"StationCaption"
+text = "ONE SERVICE AT A TIME · ESC BACK"
+
+[node name="PaneActions" type="HBoxContainer" parent="PaneFoot"]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+theme_override_constants/separation = 16

@@ -48,6 +48,7 @@ const SectorRegistryScript := preload("res://game/sector_registry.gd")
 const ExchangeScript := preload("res://game/exchange.gd")
 const MineralCatalogScript := preload("res://game/mineral_catalog.gd")
 const ComponentCatalogScript := preload("res://game/component_catalog.gd")
+const ModuleCatalogScript := preload("res://game/module_catalog.gd")
 const ShipFitScript := preload("res://game/ship_fit.gd")
 const NpcRegistryScript := preload("res://game/npc_registry.gd")
 const Log := preload("res://game/economy_log.gd")
@@ -147,6 +148,28 @@ const OBJECTIVE_HUNT := "Destroy %d pirates in S%d"
 const OBJECTIVE_GATHER := "%d× %s ore (raw)"
 const OBJECTIVE_ESCORT := "Protect convoy %d to S%d gate"
 const OBJECTIVE_EXPEDITION := "arena contract"
+## S26 (14 section 5): the live Expedition row's objective. Reversal: `OBJECTIVE_EXPEDITION`.
+const OBJECTIVE_ARENA := "arena contract: %s · %s"
+
+## --- S26: the arena run (14 section 5, R-S26-1, S28's block M10) -------------------
+##
+## The two arena bosses' payouts, 14's 2026-10-08 S28 block verbatim: the flat
+## pre-S28 15 000/40 000 re-priced to **6 000/12 000** (M10). Reversal: the flats.
+## The reward module rolls from `ModuleCatalog.SOURCE_ARENA` (15 section 2's
+## 20/40/40 table): the Boneyard's floor is Magic ("the magic module roll"), the
+## Pyre's is Rare ("the guaranteed rare-module roll").
+const EXPEDITION_PAYOUTS: Dictionary = {
+	NpcRegistryScript.ARCHETYPE_BONEYARD: 6000,
+	NpcRegistryScript.ARCHETYPE_PYRE: 12000,
+}
+const ARENA_REWARD_FLOOR: Dictionary = {
+	NpcRegistryScript.ARCHETYPE_BONEYARD: "magic",
+	NpcRegistryScript.ARCHETYPE_PYRE: "rare",
+}
+const ARENA_REWARD_SOURCE: StringName = &"arena"
+## The refusal a boss still on its 20-minute cooldown answers.
+const REASON_COOLDOWN: StringName = &"arena_cooldown"
+const ARENA_ENTRY_WINDOW := NpcRegistryScript.ARENA_ENTRY_WINDOW
 
 ## 12 section 3's demand-bias categories. The biases are the doc's own floats, per
 ## category; the exchange's `DEMAND_MIN`/`DEMAND_MAX` clamp the reading.
@@ -342,15 +365,29 @@ static func _standing_order(origin_station: StringName, origin_sector: int, band
 
 
 ## R-S25-1's seam: the Expedition row exists, draws greyed with the `STAGED` chip and
-## refuses accept until S26's arenas flip it live (tick J1).
+## refuses accept until S26's arenas flip it live (tick J1). **S26:** at a station whose
+## sector carries a physical arena (14 section 5) the row is live - its boss, its payout
+## and its cooldown ride the row - and elsewhere it stays the greyed seam.
 static func _expedition_row(origin_station: StringName, origin_sector: int, band: int) -> Dictionary:
 	var row := _base_row(TYPE_EXPEDITION, origin_station, origin_sector, band, BOARD_SIZE - 1, origin_sector)
 	row[&"faction"] = _sector_owner(origin_sector)
-	row[&"staged"] = true
 	row[&"standing"] = standing_for(TYPE_EXPEDITION)
-	row[&"objective"] = OBJECTIVE_EXPEDITION
+	var boss := NpcRegistryScript.arena_boss(origin_sector)
+	row[&"staged"] = boss == &""
+	row[&"boss"] = boss
+	row[&"arena"] = boss != &""
+	row[&"objective"] = expedition_objective(origin_sector)
 	row[&"reward"] = 0
 	return row
+
+
+## S26 (14 section 5): the Expedition row's objective, naming the arena and its boss.
+## Reversal: the flat `arena contract` wording.
+static func expedition_objective(sector_number: int) -> String:
+	var zone := NpcRegistryScript.arena_zone(sector_number)
+	if zone.is_empty():
+		return OBJECTIVE_EXPEDITION
+	return OBJECTIVE_ARENA % [String(zone.get(&"name", "")), String(zone.get(&"boss", ""))]
 
 
 static func _base_row(
@@ -644,8 +681,20 @@ static func accept(
 		return {&"ok": false, &"reason": REASON_GATED, &"contract": contract}
 	if active_count(profile) >= MAX_ACTIVE:
 		return {&"ok": false, &"reason": REASON_FULL, &"contract": contract}
+	var now := Clock.now()
+	var boss := StringName(contract.get(&"boss", &""))
+	## S26 (14 section 5): an arena run opens at accept, and a boss still on its
+	## 20-minute clock refuses here - before anything is written.
+	if StringName(contract.get(&"type", &"")) == TYPE_EXPEDITION and boss != &"":
+		if not bool(profile.call(&"arena_ready", boss, now)):
+			return {&"ok": false, &"reason": REASON_COOLDOWN, &"contract": contract}
 	var record: Dictionary = contract.duplicate(true)
-	record[&"accepted_at"] = Clock.now()
+	record[&"accepted_at"] = now
+	if boss != &"":
+		record[&"arena_opened_at"] = now
+		record[&"arena_expires"] = now + int(ARENA_ENTRY_WINDOW)
+		record[&"arena_killed"] = false
+		profile.call(&"arena_mark_run", boss, now)
 	var escrow := _reserve(profile, record)
 	if not bool(escrow.get(&"ok", false)):
 		return {&"ok": false, &"reason": escrow.get(&"reason", REASON_UNKNOWN), &"contract": contract}
@@ -905,3 +954,112 @@ static func escort_lost(profile: Node, contract_id: StringName) -> Dictionary:
 		EVENT_FAILED, contract_id, active_count(profile), 0, int(profile.call(&"credits"))
 	)
 	return {&"ok": true, &"reason": &"", &"paid": 0, &"standing": STANDING_LOSS, &"loot": loot}
+
+
+## ---------------------------------------------------------------------------
+## The arena run (14 section 5, S26)
+## ---------------------------------------------------------------------------
+
+
+## Whether one row is an arena (Expedition) contract.
+static func is_expedition(contract: Dictionary) -> bool:
+	return StringName(contract.get(&"type", &"")) == TYPE_EXPEDITION
+
+
+## The arena boss one contract names, `&""` for a non-arena row.
+static func arena_boss_of(contract: Dictionary) -> StringName:
+	return StringName(contract.get(&"boss", &""))
+
+
+## 14 section 5's "a 60 s window to fly there": the run is open until its stamp.
+static func arena_entry_open(contract: Dictionary, now: int) -> bool:
+	if not is_expedition(contract):
+		return false
+	var expires := int(contract.get(&"arena_expires", 0))
+	return expires > 0 and now <= expires
+
+
+## The M10 payout one boss pays (14's 2026-10-08 S28 block), 0 for a boss with none.
+static func arena_payout(boss_id: StringName) -> int:
+	return int(EXPEDITION_PAYOUTS.get(boss_id, 0))
+
+
+## The rarity floor one boss's reward module rolls at (15 section 5).
+static func arena_reward_floor(boss_id: StringName) -> String:
+	return String(ARENA_REWARD_FLOOR.get(boss_id, ""))
+
+
+## 14 section 5's kill credit: **the player** landed the boss's last hit. Records it on
+## the active arena contract for that boss, so the settle can pay it. A drone's or an
+## escort's kill never reaches here (it has no player last-hit).
+static func arena_credit_kill(profile: Node, boss_id: StringName) -> bool:
+	if profile == null or boss_id == &"":
+		return false
+	for record: Dictionary in active(profile):
+		if not is_expedition(record) or arena_boss_of(record) != boss_id:
+			continue
+		var id := StringName(record.get(&"id", &""))
+		var rows := active(profile)
+		for index in rows.size():
+			if StringName(rows[index].get(&"id", &"")) == id:
+				rows[index][&"arena_killed"] = true
+				break
+		profile.call(&"set_contracts", rows)
+		return true
+	return false
+
+
+## The reward module one boss's payout rolls: one instance from the arena pool at the
+## boss's own floor (the Boneyard's magic roll, the Pyre's guaranteed rare). Seeded by
+## the run's own stamp, so a probe re-derives the same base id.
+static func arena_roll_reward(profile: Node, boss_id: StringName) -> StringName:
+	if profile == null:
+		return &""
+	var pool := ModuleCatalogScript.arena_pool()
+	if pool.is_empty():
+		return &""
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash("%s|arena|%d" % [String(boss_id), int(profile.call(&"arena_last_run", boss_id))])
+	var base: StringName = pool[rng.randi_range(0, pool.size() - 1)]
+	return StringName(
+		profile.call(&"roll_instance", base, ARENA_REWARD_SOURCE, arena_reward_floor(boss_id))
+	)
+
+
+## 14 section 5's settle at return-to-station: the run closes - win or lose the record
+## leaves the list - and, when the player landed the kill, the M10 payout and its reward
+## module land. A run with no kill credit pays nothing (a drone or an escort stole the
+## glory). The Expedition's +3 standing files either way (the run was flown).
+static func arena_settle(profile: Node, contract_id: StringName) -> Dictionary:
+	var record := find(profile, contract_id)
+	if record.is_empty() or not is_expedition(record):
+		return {&"ok": false, &"reason": REASON_NOT_ACTIVE, &"paid": 0, &"module": &""}
+	var boss := arena_boss_of(record)
+	_remove(profile, contract_id)
+	var paid := 0
+	var module: StringName = &""
+	if bool(record.get(&"arena_killed", false)):
+		paid = arena_payout(boss)
+		if paid > 0:
+			profile.call(&"add_credits", paid)
+		module = arena_roll_reward(profile, boss)
+	var faction := StringName(record.get(&"faction", &""))
+	file_standing(profile, faction, int(record.get(&"standing", 0)))
+	Log.append(
+		EVENT_COMPLETE, contract_id, active_count(profile), paid, int(profile.call(&"credits"))
+	)
+	return {&"ok": true, &"reason": &"", &"paid": paid, &"module": module, &"boss": boss}
+
+
+## Every open arena run a dock settles: one per active Expedition contract. Called by the
+## dock route (`game.gd`), so a return-to-station always closes the run.
+static func arena_settle_all(profile: Node) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	if profile == null:
+		return out
+	for record: Dictionary in active(profile):
+		if not is_expedition(record):
+			continue
+		out.append(arena_settle(profile, StringName(record.get(&"id", &""))))
+	return out
+

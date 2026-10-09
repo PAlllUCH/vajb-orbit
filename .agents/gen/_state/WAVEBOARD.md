@@ -12,9 +12,23 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 
 | Pos | Lane item | Wave | Runs after | The collision/dependency that forces the order |
 |---|---|---|---|---|
-| 1 | coder 32 | **S26 bosses, arenas, insurance, vaults** | — (S25 and S38 closed) | `game/` + `player_profile.gd` + S25's Expedition seam (the `staged` row `contract_registry` ships); **brief re-cut 2026-10-08** — boss payouts 6 000/12 000 (M10), the premium law per M14, the panels pinned to STATION_HUB §15.3/§15.4. It ran behind S38 because both hold `game/` + `ui/screens/station.gd` and S26 needs a hub that is readable on the menu path |
-| 2 | coder 33 | S27 catalog breadth & shipyard | coder 32 | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/`; prices its new rows from `01`'s L2 bands; **brief re-cut 2026-10-08** — L2 pricing law folded in, T-153's tier-4 rider in the file set |
+| 1 | coder 33 | **S27 catalog breadth & shipyard** | — (S26 closed 2026-10-10) | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/`; prices its new rows from `01`'s L2 bands; **brief re-cut 2026-10-08** — L2 pricing law folded in, T-153's tier-4 rider in the file set. Carries T-161/T-162/T-163 if its file set reaches them |
 
+**Updated 2026-10-10 (S26 endgame closed — item 32).** Gate **1237 → 1258/0** ×2
+hermetic on fresh scratch stores (the row sets byte-identical; only T-155's salvo
+jitter differs), verify clean vs `s26_start`, `build_code_map.py` re-run. B1
+landed A1–A8 (+20 `test_s26_endgame.gd` rows); the mandatory review left **1 HIGH
++ 4 MED** (Champion's ×0.8 never reached the premium; the payout's replacement
+branch granted an unowned hull and wiped a survivor's fit; the Maw's in-game kill
+rolled the ×2.0 tier scale over 06 §3.4's flat table; two §15.4 captions
+unrendered) and F1 cured all five at their named sites, moving no test row
+(reviewer's probe 80/1 → 81/0). The brief §8's tests-that-move list held exactly
+(+20 new, `test_s25_contracts.gd` **+1 net** — three seam rows re-pointed to the
+S26 reading, re-cut by the orchestrator before the review, S38's precedent).
+2 LOW → **T-161/T-162/T-163** (next free **T-164**); **CONTRACTS §28** added, §10
+**v0.54**, and the wave's own numbers landed in `14`'s **2026-10-10 S26 block**;
+ticks E1/E2 shipped as PROPOSED. R1's first dispatch no-op'd (a
+reasoning-only turn with no tool call) and was re-dispatched unchanged.
 **Updated 2026-10-09 (the owner's playtest — the board drew no rows).** The
 owner's first eye over S38 reported "there are no contracts available, even when
 they refresh". The board **was** rolled, live and undimmed — but the shell's

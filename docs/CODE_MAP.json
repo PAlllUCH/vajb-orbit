@@ -572,6 +572,16 @@
     "res://tests/probe_s25_pixels.gd"
    ]
   },
+  "res://tests/probe_s26_r1.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s26_r1.gd"
+   ]
+  },
   "res://tests/probe_s2_5_feel.tscn": {
    "assets": [],
    "connections": [],
@@ -1251,6 +1261,16 @@
     "res://ui/station/fitting_panel.gd"
    ]
   },
+  "res://ui/station/insurance_panel.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "VBoxContainer",
+   "scripts": [
+    "res://ui/station/insurance_panel.gd"
+   ]
+  },
   "res://ui/station/launch_panel.tscn": {
    "assets": [
     "res://assets/icons/map/icon_map_route.png"
@@ -1308,6 +1328,16 @@
    "scripts": [
     "res://ui/station/shipyard_panel.gd"
    ]
+  },
+  "res://ui/station/vaults_panel.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "VBoxContainer",
+   "scripts": [
+    "res://ui/station/vaults_panel.gd"
+   ]
   }
  },
  "scripts": {
@@ -1347,9 +1377,11 @@
     "res://game/auction.gd",
     "res://game/economy_log.gd",
     "res://game/module_catalog.gd",
+    "res://game/npc_registry.gd",
     "res://game/refinery.gd",
     "res://game/ship_fit.gd",
     "res://game/station_catalog.gd",
+    "res://game/station_registry.gd",
     "res://game/weapons.gd"
    ],
    "signals": [
@@ -1482,6 +1514,7 @@
     "res://game/economy_log.gd",
     "res://game/exchange.gd",
     "res://game/mineral_catalog.gd",
+    "res://game/module_catalog.gd",
     "res://game/npc_registry.gd",
     "res://game/sector_registry.gd",
     "res://game/ship_fit.gd",
@@ -1739,8 +1772,11 @@
    "connects": [],
    "extends": "RefCounted",
    "refs": [
+    "res://assets/env/prop/env_arena_barricade.png",
+    "res://assets/env/prop/env_arena_nav_pylon.png",
     "res://assets/ships/",
-    "res://game/sector_registry.gd"
+    "res://game/sector_registry.gd",
+    "res://game/ship_fit.gd"
    ],
    "signals": []
   },
@@ -3084,6 +3120,28 @@
    "refs": [
     "res://game/speed_fantasy.gd",
     "res://tests/probe_s25_pixels.tscn"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s26_r1.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/component_catalog.gd",
+    "res://game/contract_registry.gd",
+    "res://game/game.gd",
+    "res://game/game.tscn",
+    "res://game/loot_tables.gd",
+    "res://game/module_catalog.gd",
+    "res://game/npc_registry.gd",
+    "res://game/sector_registry.gd",
+    "res://game/ship_fit.gd",
+    "res://game/station_catalog.gd",
+    "res://game/station_registry.gd",
+    "res://tests/probe_s26_r1.tscn --quit-after 2400"
    ],
    "signals": []
   },
@@ -4837,6 +4895,28 @@
    ],
    "signals": []
   },
+  "res://tests/test_s26_endgame.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/component_catalog.gd",
+    "res://game/contract_registry.gd",
+    "res://game/game.gd",
+    "res://game/game.tscn",
+    "res://game/loot_tables.gd",
+    "res://game/npc_registry.gd",
+    "res://game/sector_registry.gd",
+    "res://game/ship_fit.gd",
+    "res://game/station_catalog.gd",
+    "res://game/station_registry.gd",
+    "res://ui/screens/station.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
   "res://tests/test_s28_econ.gd": {
    "autoload": "",
    "class_name": "",
@@ -6276,6 +6356,24 @@
     "status_requested"
    ]
   },
+  "res://ui/station/insurance_panel.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "_toggle.pressed \u2192 _on_toggle_pressed"
+   ],
+   "extends": "VBoxContainer",
+   "refs": [
+    "res://assets/icons/service/icon_service_insurance.svg",
+    "res://autoload/player_profile.gd",
+    "res://game/station_registry.gd",
+    "res://ui/theme/chrome_family.gd"
+   ],
+   "signals": [
+    "inspect_requested",
+    "status_requested"
+   ]
+  },
   "res://ui/station/launch_panel.gd": {
    "autoload": "",
    "class_name": "",
@@ -6425,6 +6523,26 @@
    "signals": [
     "inspect_requested",
     "sheet_requested",
+    "status_requested"
+   ]
+  },
+  "res://ui/station/vaults_panel.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "_deposit.pressed \u2192 _on_deposit_pressed",
+    "_withdraw.pressed \u2192 _on_withdraw_pressed",
+    "action.pressed \u2192 _on_rent_pressed.bind(tier"
+   ],
+   "extends": "VBoxContainer",
+   "refs": [
+    "res://assets/icons/service/icon_service_vault.svg",
+    "res://autoload/player_profile.gd",
+    "res://game/station_registry.gd",
+    "res://ui/theme/chrome_family.gd"
+   ],
+   "signals": [
+    "inspect_requested",
     "status_requested"
    ]
   },

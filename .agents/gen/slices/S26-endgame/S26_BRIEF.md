@@ -177,7 +177,7 @@ Read-only throughout: `game/station_registry.gd`, `game/exchange.gd`,
 
 | Suite | Why | Verdict |
 |---|---|---|
-| `test_s25_contracts.gd` | A2 flips the Expedition seam | one listed row may appear (the seam test); note it here if so |
+| `test_s25_contracts.gd` | A2 flips the Expedition seam | **moved as predicted; re-cut by the orchestrator 2026-10-09 before the review (S38's precedent).** Three rows re-pointed to the S26 reading: a1's staged assertion now expects the live Expedition row at the arena station *and* the greyed seam off it, a3's seam refusal moved to `s1_primary`, and the a7 row renamed `test_a7_the_escrow_and_the_cancel` (escrow + cancel only) with **one row added** (`test_a7_the_seam_row_greys_off_arena`) keeping U7's greyed-render coverage. Net **+1 row**; `REASON_STAGED` is now reachable only off an arena. Reversal: restore the staged expectation at `s3_primary` (breaks A2) |
 | `test_engine2_loot.gd`, `test_s6_poi_loot.gd` | A3's Maw table feed | unchanged counts (EV bound preserved) |
 | `test_p2b_retirement.gd`, `test_engine2_fixes.gd` | A4/A5's death flow | unchanged (death rows read the same signals) |
 | `test_p2b_services.gd` | A6's vaults | unchanged (new service rows) |

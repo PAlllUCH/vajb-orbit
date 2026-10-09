@@ -30,35 +30,36 @@ later request; one section costs ~2-3k.
 
 | Section | Topic | Lines |
 |---|---|---|
-| §1 | Input map (project settings) | L66–L86 |
-| §2 | ShipStats | L87–L107 |
-| §3 | ShipFit | L108–L125 |
-| §4 | PlayerShip | L126–L306 |
-| §5 | Combat/mining entities (slice 1 scope) | L307–L411 |
-| §6 | Sector / SectorRegistry | L412–L437 |
-| §7 | HUD — frozen API + wave-1 additions | L438–L503 |
-| §8 | Economy / state seams | L504–L547 |
-| §8.1 | Slice 0 — physics & fuel (pinned additions, 2026-09-21) | L548–L683 |
-| §8.2 | Slice 2 — fight (pinned additions, 2026-09-21) | L684–L888 |
-| §9 | Universal test gate | L889–L1012 |
-| §11 | P2 ship frames (2026-09-21) | L1013–L1208 |
-| §12 | P2-B1 weapon fit (2026-09-22) | L1209–L1266 |
-| §13 | P2-B proper fitting (2026-09-22) | L1267–L1388 |
-| §14 | S2.6 truth-and-feel (2026-09-22) | L1389–L1517 |
-| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1518–L1622 |
-| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L1623–L1798 |
-| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L1799–L1877 |
-| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L1878–L1950 |
-| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L1951–L2086 |
-| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2087–L2298 |
-| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2299–L2376 |
-| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L2377–L2431 |
-| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L2432–L2601 |
-| §24 | S24 world identity — stations, standing, bands, nebula (2026-10-08) | L2602–L2689 |
-| §25 | S28 economy law — the value ladder, the fee door, the battery, the b… | L2690–L2750 |
-| §26 | S25 contracts board — the registry, the reward law, the three exits … | L2751–L2823 |
-| §27 | S38 — the hub's cold start and the board's clock (2026-10-08) | L2824–L2898 |
-| §10 | Changelog | L2899–L3236 |
+| §1 | Input map (project settings) | L67–L87 |
+| §2 | ShipStats | L88–L108 |
+| §3 | ShipFit | L109–L126 |
+| §4 | PlayerShip | L127–L307 |
+| §5 | Combat/mining entities (slice 1 scope) | L308–L412 |
+| §6 | Sector / SectorRegistry | L413–L438 |
+| §7 | HUD — frozen API + wave-1 additions | L439–L504 |
+| §8 | Economy / state seams | L505–L548 |
+| §8.1 | Slice 0 — physics & fuel (pinned additions, 2026-09-21) | L549–L684 |
+| §8.2 | Slice 2 — fight (pinned additions, 2026-09-21) | L685–L889 |
+| §9 | Universal test gate | L890–L1022 |
+| §11 | P2 ship frames (2026-09-21) | L1023–L1218 |
+| §12 | P2-B1 weapon fit (2026-09-22) | L1219–L1276 |
+| §13 | P2-B proper fitting (2026-09-22) | L1277–L1398 |
+| §14 | S2.6 truth-and-feel (2026-09-22) | L1399–L1527 |
+| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1528–L1632 |
+| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L1633–L1808 |
+| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L1809–L1887 |
+| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L1888–L1960 |
+| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L1961–L2096 |
+| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2097–L2308 |
+| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2309–L2386 |
+| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L2387–L2441 |
+| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L2442–L2611 |
+| §24 | S24 world identity — stations, standing, bands, nebula (2026-10-08) | L2612–L2699 |
+| §25 | S28 economy law — the value ladder, the fee door, the battery, the b… | L2700–L2760 |
+| §26 | S25 contracts board — the registry, the reward law, the three exits … | L2761–L2833 |
+| §27 | S38 — the hub's cold start and the board's clock (2026-10-08) | L2834–L2908 |
+| §28 | S26 — bosses, arenas, insurance, vaults (2026-10-09/10) | L2909–L3065 |
+| §10 | Changelog | L3066–L3458 |
 
 <!-- section-index:end -->
 
@@ -1010,6 +1011,15 @@ one file at a time between printed markers (`vajb-orbit/tests/probe_w5_lint.tscn
 reference implementation: zero warnings in all nine D5 files, 19 in the `weapons.gd`
 positive control). Never record "verified by reading the source" while this one-command
 ledger exists.
+
+**Sixth harness limit, measured in the S26 review (2026-10-10):** `test_wiring_map.gd`
+scans every `tests/` script's `preload("res://…")` literals, so a probe file written or
+edited *between* two gate runs flips `test_script_preloads_resolve` on its own — S26-R1's
+first pair measured `1258/0` then `1257/1` from exactly this (a stale scene path in the
+reviewer's own probe, fixed before the clean pair). Reach a scene from a probe with
+`load(<CONST>)` carrying the path in a `const` String, and only run the close-out pair
+once every probe file is final.
+
 ## §11 P2 ship frames (2026-09-21)
 
 Pinned before any code worker starts, so five parallel workers agree. Additive only:
@@ -2896,6 +2906,163 @@ Tests: `tests/test_s38_start_and_clock.gd` (10 rows, A1–A6) and
 `tests/probe_s38_start_board.tscn` (the evidence probe); R1's re-measurement
 probe is `tests/probe_s38_r1_remeasure.tscn`.
 
+## §28 S26 — bosses, arenas, insurance, vaults (2026-10-09/10)
+
+**Wave S26** (`slices/S26-endgame/`, baseline `s26_start`, gate **1237 → 1258/0**
+×2 hermetic on fresh scratch stores, the row sets byte-identical and the only
+whole-log diff the known T-155 salvo jitter). 14 §3/§4/§5 plus its 2026-10-08
+S28 block (M10's boss payouts, M14's premium), 06 §3.4 and 08's 2026-09-27 P3
+block (R-S26-1) are the law; STATION_HUB §15.3/§15.4 are the panels'. This
+section pins the shipped interface. Every new number below is **PROPOSED**
+(tick **E1** the three hull rows, tick **E2** the Maw's roam) except M10/M14,
+which are owner-ratified green.
+
+**The arenas are places (A1).** `game/npc_registry.gd`:
+
+```gdscript
+const ARCHETYPE_BONEYARD := &"boneyard"
+const ARCHETYPE_PYRE := &"pyre"
+const ARCHETYPE_MAW := &"boss"
+const ARENAS: Dictionary            # 3 -> Meridian's The Boneyard, 6 -> Choir's The Pyre
+const ARENA_ZONE_RADIUS := 1200.0
+const ARENA_ZONE_OFFSET := Vector2(0.0, -2600.0)
+const ARENA_ZONE_PYLONS := 8        # env_arena_nav_pylon (shipped renders)
+const ARENA_ZONE_BARRICADES := 8    # env_arena_barricade
+const ARENA_ENTRY_WINDOW := 60.0    # 14 section 5: a 60 s window to fly there
+const ARENA_COOLDOWN_SECONDS := 1200  # 14 section 5: one run per boss per 20-minute clock
+static func arena_zone(sector_number: int) -> Dictionary
+static func has_arena(sector_number: int) -> bool
+static func arena_boss(sector_number: int) -> StringName
+static func arena_for_boss(boss_id: StringName) -> Dictionary
+static func boss_ids() -> Array[StringName]
+```
+
+`game/game.gd:_build_arena_zone()` mounts the lit ring (8 pylons + 8
+barricades) as a sector child, visible from any distance; an entry with no open
+run spawns nothing. Reversal: the sector origin and no ring.
+
+**The bosses (A3, R-S26-1).** `BOSS_HULLS` + `boss_row/boss_stats/boss_weapons/
+boss_sprite`. The two arena bosses are **synthesised** in `archetype()` from
+`BOSS_HULLS`, so `NPCS` stays at the shipped nine (`test_engine2_npc`'s pin):
+
+| Boss | Hull (R-S26-1) | Payout (M10) |
+|---|---|---|
+| Boneyard Behemoth (S3) | gunship ×2.5 = 3 500/1 625, 5 W | **6 000 CR** + the magic module roll (was 15 000) |
+| Pyre Hierophant (S6) | frigate ×2.5 = 4 500/2 000, 4 W | **12 000 CR** + the guaranteed rare (was 40 000) |
+| The Maw (S7) | 12 000/6 000, 7 W, 0.5× freighter speed | 06 section 3.4 — EV 1 584.75, floor 1 025 |
+
+Reversal: the retired flat 15 000/40 000 and a per-row hull edit.
+
+**The arena contract loop (A2).** `game/contract_registry.gd`:
+
+```gdscript
+const EXPEDITION_PAYOUTS: Dictionary   # boss -> M10's CR
+const ARENA_REWARD_FLOOR: Dictionary   # boss -> the module floor's rarity
+const ARENA_REWARD_SOURCE := &"arena"
+static func _expedition_row(...)       # staged=false at an arena station; the greyed seam elsewhere
+static func arena_boss_of(contract: Dictionary) -> StringName
+static func arena_entry_open(contract: Dictionary, now: int) -> bool
+static func arena_payout(boss_id: StringName) -> int
+static func arena_reward_floor(boss_id: StringName) -> String
+static func arena_credit_kill(profile: Node, boss_id: StringName) -> bool
+static func arena_roll_reward(profile: Node, boss_id: StringName) -> StringName
+static func arena_settle(profile: Node, contract_id: StringName) -> Dictionary
+static func arena_settle_all(profile: Node) -> Array[Dictionary]
+```
+
+`accept` opens the 60 s window; the run closes at dock or respawn **win or
+lose**; the payout requires the **player's own last hit** — the kill is latched
+and only the player's `hit_landed` consumes it (`game.gd:_on_player_hit`), so a
+drone or escort kill never pays (14 section 5, brief rule 5). The per-profile
+clock lives in the save key `arena_runs`
+(`player_profile.gd:arena_runs/arena_last_run/arena_ready/arena_mark_run`).
+Reversal: leave the Expedition row staged (breaks A2).
+
+**The Maw's table (A3).** `loot_tables.gd`'s `MAW_LINES` finally has a feeder,
+and the kill path pins the band **flat**:
+
+```gdscript
+const MAW_BAND: StringName = &"maw"
+static func cache_scale(tier: int) -> float
+static func cache_scale_for(kind: StringName, tier: int) -> float  # 1.0 for MAW_BAND
+```
+
+`game.gd:_spawn_kill_loot` calls `cache_scale_for`, so S7 (tier 4) pays 06
+section 3.4 flat: EV 1 581.68 (±5 % of the pin's 1 584.75) and the exact 1 025
+floor over 20 000 seeded rolls. S26-R1's F4: without the pin the tier scale
+×2.0 read EV 2 582.75 / floor 1 825 while the suite's scale-1.0 row passed.
+Reversal: `cache_scale(tier)` at the call site (the retired reading).
+
+**Death persists (A4, 18 §2/§7).** The wreck ledger is a **static**
+(`game.gd:307 static var _wreck_drops`), so `_drop_cargo_at_wreck` →
+`_materialise_wreck_drops` re-materialises the pre-death pickup in a rebuilt
+scene and `_respawn_docked` routes the last station visited. Reversal: the
+per-scene ledger (the deferred slice-4 shape).
+
+**Insurance (A5, M14).** `autoload/player_profile.gd`:
+
+```gdscript
+const INSURANCE_PREMIUM_PERMILLE := 15          # 1.5 % of list (M14)
+const INSURANCE_TIER_OF: Dictionary             # hull -> its section 3 class row
+const INSURANCE_TIER_CHEAPEST: Dictionary       # class row -> the payout's replacement hull
+const INSURANCE_TIER_ROWS: Array[Dictionary]    # the six rows, in the doc's order
+const MERCY_HULL := &"ship_fighter"
+func insurance_premium() -> int                 # the base figure (the panel/U9 reads this)
+func insurance_standing_multiplier() -> float   # the docked faction's standing
+func insurance_charge() -> bool                 # premium x multiplier, charged at launch
+func insurance_payout() -> Dictionary
+```
+
+The band is **135–1 080** across the six §3 rows; Champion is **×0.8** through
+`StationRegistry.insurance_multiplier` (`station_registry.gd:444`, S24's seam —
+S26-R1's F1 gave it its first production caller); Choir sells none; the policy
+covers **one** loss and is charged at launch only. The payout flow is §3's
+verbatim: respawn docked in the tier's cheapest base hull, hull+fit paid back
+into the dock. The replacement is gated on `insured` (an uninsured loss grants
+nothing — F2), a surviving hull keeps its own fit (F3), and the **mercy clause**
+reissues a bare Fighter exactly once per profile. Reversal: the §3 flats
+200–700 and the pre-F1 charge.
+
+**Vaults (A6).**
+
+```gdscript
+const VAULT_BASE_UNITS := 20
+const VAULT_TIER_UNITS := 20
+const VAULT_MAX_TIER := 3
+const VAULT_TIER_COSTS: Array[int] = [500, 1200, 2400]
+const VAULT_MERIDIAN_BASE := 40
+const VAULT_MERIDIAN_MULT := 1.25
+const VAULT_U_VOID_ADD := 20        # 15 section 5's u_vault row
+func vault_capacity/vault_tier_cost/vault_rent/vault_deposit/vault_withdraw/
+     vault_used/vault_contents/vault_tier/owns_u_vault
+```
+
+One vault per station in the shipped `{tier, contents}` record (S24's
+`overview_panel.gd` reads the same shape), free deposits and withdrawals,
+contents persistent per station and outside `cargo_items()`; `u_vault` adds +20
+to every vault. Reversal: the flat 40-unit reading (T-162 tracks the OVERVIEW
+row's disagreement at tier 0).
+
+**The panels (A7).** `ui/station/insurance_panel.{gd,tscn}` and
+`ui/station/vaults_panel.{gd,tscn}` mount **real** in the SERVICES deck beside
+S25's contracts strip — `station.gd`'s `SERVICES_STRIP` already carries the
+`insurance`/`vaults` rows, so no `station.gd` change was needed. §15.3/§15.4's
+surfaces ship, including U15's `VAULT CONTENTS DO NOT COUNT AGAINST CARGO ON
+LAUNCH` and U16's `tier 1 only — this is an outpost` (F5 rendered both, and the
+outpost greys the whole tier row). Every pane keeps
+`size_flags_vertical = SIZE_EXPAND_FILL` (T-160's law, at the host). Reversal:
+S25's D11 not-installed placeholder.
+
+**Tests + the moved rows.** `tests/test_s26_endgame.gd` (20 rows, A1–A8) and
+`tests/probe_s26_r1.tscn` (the reviewer's 81-check probe). The brief §8's
+"tests that move" list held exactly: +20 new rows and `test_s25_contracts.gd`
+**+1 net** — a1 re-pointed to the S26 reading (the live Expedition row at an
+arena station, the greyed seam off one), a3's seam refusal moved to
+`s1_primary`, the a7 row renamed `test_a7_the_escrow_and_the_cancel` with
+`test_a7_the_seam_row_greys_off_arena` added. The orchestrator re-cut §8 for
+those three seam rows **before** the review (S38's precedent). No other test
+file moved; `REASON_STAGED` is now reachable only off an arena.
+
 ## §10 Changelog
 
 Rolling log of what each wave changed here. Kept verbatim only where an entry
@@ -3233,3 +3400,63 @@ bottom (the index-line form is only for retired entries).
   one frame, so no row could have seen a collapsed layout. The new
   `test_a7_the_services_host_expands_every_pane` pins the flag instead.
   Reversal: drop the flag (the board's scroll returns to 2 px).
+- **v0.53 (2026-10-10, wave S26 review — S26-R1, this wave's only CONTRACTS
+  writer; gate `1237/0 → 1258/0` twice hermetic on fresh scratch stores, the
+  row sets byte-identical and the only whole-log diff the known `[s5-racks]`
+  salvo jitter, T-155)** — adds the sixth harness limit to §9's known traps
+  (the wiring map's preload scan over `tests/` probes: a probe written between
+  two gate runs flips `test_script_preloads_resolve` by itself). §26–§27's
+  numbers are untouched; **§28 (the S26 wave section) is the close-out's, not
+  written here.** R1's findings, graded against the brief's §5 extract:
+  **F1 HIGH** — M14's premium never applies Champion's ×0.8:
+  `StationRegistry.insurance_multiplier` (S24's seam, `station_registry.gd:444`)
+  has zero production callers, the INSURANCE panel renders U9's ×0.8 note while
+  `insurance_charge` moves the full base figure (probe: Champion standing, base
+  1 080, charged 1 080, expected 864). **F2 MED** — the death payout's
+  replacement branch grants a base hull the account never owned when the loss
+  is uninsured (14 §3's "hull and all installed modules are gone" contradicted;
+  probe: uninsured freighter loss with a surviving fighter → the fleet gains a
+  free bare freighter and the account is forced into it), which also makes the
+  mercy clause's "no other hull" rescue incoherent — the respawn hull cannot be
+  unconditional. **F3 MED** — the same branch erases the fit of a replacement
+  hull that *survived* the loss (probe: fleet gunship+fitted freighter, the
+  gunship dies insured, the surviving freighter's fit record is wiped). **F4
+  MED** — the Maw's in-game kill does not roll 06 §3.4 flat:
+  `game.gd:2700-2701` passes the sector's cache scale, S7 is tier 4 → ×2.0, so
+  the shipped kill pays EV ≈ 2 582.75 with a 1 825 floor over the pin's
+  1 584.75/1 025 — the suite's 20k row rolls scale 1.0, so the lab passes while
+  the game pays differently (fix: pin the maw band's scale at 1.0, or an
+  owner-ticked 06 amendment moves the numbers). **F5 MED** — §15.4's U15
+  caption `VAULT CONTENTS DO NOT COUNT AGAINST CARGO ON LAUNCH` and U16's
+  caption `tier 1 only — this is an outpost` are declared but never rendered
+  (`vaults_panel.gd:33,44`, zero usages), and the outpost grey disables only
+  the RENT action, not the whole row. LOW ticketed **T-161** (STATION_HUB
+  §15.3's premium rows still quote the §3 flats the M14 implementation
+  superseded — the deck law needs its re-cut note), **T-162** (D8:
+  `overview_panel.gd:74`'s `VAULT_BASE_CAPACITY := 40` vs §4's 20 — the
+  OVERVIEW row and the VAULTS panel disagree at tier 0), **T-163** (the arena
+  props `env_arena_nav_pylon`/`env_arena_barricade` ship and render but are
+  absent from `ASSET_CATALOG.md`). Next free ticket **T-164**.
+- **v0.54 (2026-10-10, wave S26 close-out — the orchestrator; gate `1237/0`
+  (s26_start) → `1258/0` ×2 hermetic on fresh scratch stores, the row sets
+  byte-identical)** — adds **§28** (the S26 wave section: the arenas, the three
+  bosses, the contract loop, the Maw's flat band, death persistence, M14's
+  insurance with F1–F3's fixes, the vaults, the two panels, and the moved test
+  rows). The fixer **S26-F1** cured all five findings at their named sites and
+  moved no test row: F1 HIGH (`insurance_standing_multiplier` gives S24's
+  `insurance_multiplier` seam its first production caller, so Champion's ×0.8
+  reaches the charge — probe R2 reads 864 = 1080 × 0.8), F2/F3 MED (the payout's
+  replacement is gated on `insured`, and a surviving hull keeps its own fit),
+  F4 MED (`loot_tables.gd:MAW_BAND` + `cache_scale_for` pin the Maw's band at
+  scale 1.0, so the in-game kill pays 06 §3.4 flat — probe R7's scaled run now
+  equals the flat run), F5 MED (the VAULTS panel renders U15's and U16's pinned
+  captions and the outpost greys the whole tier row). Reviewer's probe
+  `80/1 → 81/0`. The three `test_s25_contracts.gd` seam rows moved as §8
+  predicted (+1 net), re-cut by the orchestrator **before** the review (S38's
+  precedent). The wave's own new numbers also landed in the law doc they belong
+  to — `14_station_services.md`'s **2026-10-10 S26 block** (the arena geometry,
+  E2's roam rows PROPOSED, the kill-credit rule, §3's policy bookkeeping, §4's
+  vaults, and §2's Expedition seam closed; §5's payouts and §3's premium stay
+  tabled in the 2026-10-08 S28 block, never restated). **Reversal for the
+  close-out as a whole:** drop §28, the §8 re-cut and 14's S26 block; the pins
+  live in the shipped code either way.

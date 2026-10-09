@@ -171,8 +171,28 @@ func _mount() -> Control:
 	return screen
 
 
-func _station_row() -> Dictionary:
-	return StationRegistryScript.station(STATION)
+func _station_row(station_id: StringName = STATION) -> Dictionary:
+	return StationRegistryScript.station(station_id)
+
+
+## The board's staged row at a station, or `{}` (S26 keeps the seam greyed off an arena).
+func _staged_row(row: Dictionary) -> Dictionary:
+	for entry: Dictionary in RegistryScript.board(row, NEUTRAL, NOW):
+		if bool(entry.get(&"staged", false)):
+			return entry
+	return {}
+
+
+## The mounted board's rows carrying U7's greyed staged caption.
+func _staged_rows(board: Control) -> int:
+	var count := 0
+	for child: Node in board.get_children():
+		var row := child as Button
+		if row == null:
+			continue
+		if row.get_node("RowInner").get_node("RowBox").get_node_or_null("StagedCaption") != null:
+			count += 1
+	return count
 
 
 ## A synthetic contract of one type, for the reward law's own arithmetic. Its reward and
@@ -236,10 +256,19 @@ func test_a1_the_board_is_six_seeded_rows_on_the_clock() -> void:
 		)
 		if StringName(entry.get(&"type", &"")) == RegistryScript.TYPE_EXPEDITION:
 			staged += 1
-			assert_true(bool(entry.get(&"staged", false)), "the Expedition row is staged (U7)")
+			## S26 (14 section 5): an arena station's own Expedition row is live; the greyed
+			## seam survives off an arena and is proven at the end of this row.
+			assert_false(
+				bool(entry.get(&"staged", false)),
+				"the Expedition row is live at an arena station (S26)"
+			)
 			continue
 		assert_false(bool(entry.get(&"staged", false)), "a live row is not staged")
-	assert_eq(staged, 1, "exactly one Expedition seam row (R-S25-1)")
+	assert_eq(staged, 1, "exactly one Expedition row (R-S25-1)")
+	assert_false(
+		_staged_row(_station_row(&"s1_primary")).is_empty(),
+		"and the seam stays greyed off an arena station (S26)"
+	)
 	assert_eq(
 		RegistryScript.board(StationRegistryScript.station(&"s7_primary"), NEUTRAL, NOW).size(),
 		0,
@@ -460,16 +489,14 @@ func test_a3_the_gates_and_the_standing_order() -> void:
 	)
 
 
-## A3: the Expedition seam refuses accept until S26 flips it live.
+## A3: the Expedition seam refuses accept where no arena opens it (S26 flips it live at an
+## arena station; the greyed seam survives everywhere else).
 func test_a3_the_expedition_seam_refuses() -> void:
-	var board := RegistryScript.board(_station_row(), NEUTRAL, NOW)
-	var staged := {}
-	for entry: Dictionary in board:
-		if bool(entry.get(&"staged", false)):
-			staged = entry
-	assert_false(staged.is_empty(), "the seam row is on the board")
+	var row := _station_row(&"s1_primary")
+	var staged := _staged_row(row)
+	assert_false(staged.is_empty(), "the seam row is on the board off an arena")
 	assert_eq(
-		RegistryScript.accept(_profile, _station_row(), NEUTRAL, staged)[&"reason"],
+		RegistryScript.accept(_profile, row, NEUTRAL, staged)[&"reason"],
 		RegistryScript.REASON_STAGED, "and it refuses accept (R-S25-1's seam)"
 	)
 	assert_eq(
@@ -1142,28 +1169,14 @@ func test_a7_the_max_three_counter_and_chip() -> void:
 	assert_gt(disabled, 0, "at least one open row shows the chip")
 
 
-## A7: U7's staged Expedition row, U5's escrow readout and U4's cancel path end to end.
-func test_a7_the_staged_row_the_escrow_and_the_cancel() -> void:
+## A7: U5's escrow readout and U4's cancel path end to end. This is an arena station, so
+## S26's live Expedition row renders here and the greyed seam is proven by the row below.
+func test_a7_the_escrow_and_the_cancel() -> void:
 	_profile.call(&"set_docked_station", STATION)
 	var screen := _mount()
 	var panel: Control = screen.call(&"service_panel", &"contracts") as Control
 	var board: Control = panel.get_node("%BoardList") as Control
-	var staged_rows := 0
-	for child: Node in board.get_children():
-		var row := child as Button
-		if row == null:
-			continue
-		var box := row.get_node("RowInner").get_node("RowBox")
-		var caption := box.get_node_or_null("StagedCaption") as Label
-		if caption == null:
-			continue
-		staged_rows += 1
-		assert_eq(caption.text, CAPTION_STAGED, "U7's caption verbatim")
-		assert_true(row.disabled, "the Expedition row is greyed whole")
-		for node: Node in box.get_children():
-			if node is Button:
-				assert_eq((node as Button).text, CHIP_STAGED, "and carries the STAGED chip")
-	assert_eq(staged_rows, 1, "one staged Expedition row")
+	assert_eq(_staged_rows(board), 0, "no greyed seam row at an arena station (S26)")
 	var haul := _find_board(panel, RegistryScript.TYPE_HAUL)
 	assert_false(haul.is_empty(), "a Haul row rolled")
 	## The band's own roll decides the good, so the stack that backs the accept is the **row's
@@ -1190,6 +1203,29 @@ func test_a7_the_staged_row_the_escrow_and_the_cancel() -> void:
 		"and the reserved goods unlock"
 	)
 	assert_eq(RegistryScript.active_count(_profile), 0, "the contract is gone")
+
+
+## A7 (S26): U7's staged Expedition row renders greyed at a station whose sector has no
+## arena. At an arena station the row is live, so the seam's only home is off-arena.
+func test_a7_the_seam_row_greys_off_arena() -> void:
+	_profile.call(&"set_docked_station", &"s1_primary")
+	var screen := _mount()
+	var panel: Control = screen.call(&"service_panel", &"contracts") as Control
+	var board: Control = panel.get_node("%BoardList") as Control
+	assert_eq(_staged_rows(board), 1, "one staged Expedition row off an arena")
+	for child: Node in board.get_children():
+		var row := child as Button
+		if row == null:
+			continue
+		var box := row.get_node("RowInner").get_node("RowBox")
+		var caption := box.get_node_or_null("StagedCaption") as Label
+		if caption == null:
+			continue
+		assert_eq(caption.text, CAPTION_STAGED, "U7's caption verbatim")
+		assert_true(row.disabled, "the Expedition row is greyed whole")
+		for node: Node in box.get_children():
+			if node is Button:
+				assert_eq((node as Button).text, CHIP_STAGED, "and carries the STAGED chip")
 
 
 ## A7: U8's two empty states, verbatim - the gated board and a board with nothing to roll.

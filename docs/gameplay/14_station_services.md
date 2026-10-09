@@ -305,3 +305,68 @@ next band's board differs (`next_roll_differs=true`).
 own board (one `_refresh()`, so the next band's rows appear and the readout
 restarts at `20:00`) with no scene change and no player action. Reversal: the
 board changes only on the next mount (**H3**).
+
+## 2026-10-10 — S26: the arenas, the bosses, insurance and the vaults (amends §3/§4/§5)
+
+*(S26's block, landed with the wave; gate `1237 → 1258/0` ×2 hermetic. The two
+re-pricings it implements — §5's boss payouts at **M10** (6 000 / 12 000) and
+§3's premium at **M14** (1.5 % of list, 135–1 080) — are already tabled in the
+**2026-10-08 S28 block** above and are owner-ratified green; nothing here
+restates them. The rows below are the ones no earlier block carried, each with
+its reversal. Ticks **E1** (the three hull rows, 08's P3 block) and **E2** (the
+Maw's roam) are **PROPOSED — unticked as of this writing**.)*
+
+**§5's geometry — an arena is a place, and now it has a size.** The ring, its
+props and the arena's spawn are new values; `game/npc_registry.gd` owns them and
+`game.gd:_build_arena_zone` builds the zone as a sector child.
+
+| Value | Shipped | Site | Reversal |
+|---|---|---|---|
+| Ring radius | 1 200 u | `npc_registry.gd:ARENA_ZONE_RADIUS` | the sector origin, no ring |
+| Ring centre offset | `(0, −2600)` from the sector centre | `:ARENA_ZONE_OFFSET` | the sector centre |
+| Nav pylons / barricades | 8 + 8, on the ring | `:ARENA_ZONE_PYLONS`/`:ARENA_ZONE_BARRICADES` | a bare ring |
+| Entry window | 60 s | `:ARENA_ENTRY_WINDOW` (§5's own text) | no window |
+| Cooldown | 1 200 s (one run per boss per 20-minute clock) | `:ARENA_COOLDOWN_SECONDS` | no clock |
+| Arena reward pool | the priced non-exclusive module catalogue | `module_catalog.gd:arena_pool()` | the full catalogue |
+| Boss spawn points | the ring centre; The Maw at `(0, −4200)` | `game.gd:_spawn_arena_boss`/`_spawn_maw` | the sector origin |
+
+**§5's E2 — the Maw's roam.** PROPOSED until the owner ticks E2: The Maw
+respawns on the 20-minute clock after a death, roams S7's field band at **0.5×
+freighter speed** and aggros within **600 u**; its loot rolls 06 §3.4 **flat**
+(`loot_tables.gd:MAW_BAND` + `cache_scale_for`, which pins the band's cache
+scale at 1.0 so S7's tier-4 ×2.0 multiplier does not inflate the table's
+1 025 CR floor / 1 584.75 EV). Reversal: the staged boss row and
+`cache_scale(tier)` at the kill site.
+
+**§5's kill credit.** The last hit must be the **player's**: the kill is latched
+and only the player's own `hit_landed` consumes it (`game.gd:_on_player_hit`), so
+an escort's or a drone's kill never pays. Reversal: pay on the boss's death
+whoever fired.
+
+**§3's policy bookkeeping.** The premium is charged **at launch only** (a sector
+crossing is not a launch), covers exactly one loss, and the payout replaces into
+the tier's cheapest base hull with hull + fit paid back into the dock; the
+replacement is gated on the policy being live, so an **uninsured** loss grants no
+hull (and a surviving hull keeps its own fit); Champion's ×0.8 reaches the charge
+through `station_registry.gd:insurance_multiplier` (S24's seam); Choir sells
+none; the mercy clause reissues a bare Fighter **once per profile**. The
+per-boss run clock is the new save key `arena_runs`
+(`player_profile.gd:arena_ready/arena_mark_run`). Reversal: the pre-fix flow in
+`CONTRACTS.md` §28's v0.54 entry.
+
+**§4's vaults.** One vault per station in the shipped `{tier, contents}` record
+(20 units base, +20 per tier, tiers 500/1 200/2 400; Meridian 40 units at ×1.25
+tier prices), deposits and withdrawals free, contents persistent per station and
+**outside launch cargo**; `u_vault` adds +20 to every vault (§5's own row in
+`15`). Reversal: the flat 40-unit reading (**T-162** tracks the OVERVIEW row's
+disagreement at tier 0).
+
+**§2's seam closes.** `R-S25-1`'s "Expedition is a seam row until S26's arenas"
+is now spent: the Expedition row is **live at an arena station** (S3, S6) and
+stays the greyed `STAGED` seam everywhere else, so `REASON_STAGED` is reachable
+only off an arena. Reversal: leave the row staged (breaks the arena loop).
+
+**Panels.** §15.3's INSURANCE and §15.4's VAULTS panel laws are unchanged by
+this wave; **T-161** records that §15.3's premium *rows* still quote the §3
+flats the M14 implementation superseded (and the per-row keying question), for
+the deck law's next touch.

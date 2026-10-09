@@ -182,10 +182,93 @@ const HOSTILITY_NONE: StringName = &"none"
 const SPAWN_SECTOR: StringName = &"sector"
 const SPAWN_STATION: StringName = &"station"
 const SPAWN_SEAM: StringName = &"seam"
+## S26 (14 section 5): an arena boss is spawned by the arena run (`game.gd`), never by
+## the sector band, so it is neither a `sector` row nor a `station` row.
+const SPAWN_ARENA: StringName = &"arena"
 
 const SEAM_NONE: StringName = &""
 const SEAM_SLICE_3: StringName = &"slice_3"
 const SEAM_SLICE_4: StringName = &"slice_4"
+
+## --- S26: the arena bosses (14 section 5, R-S26-1) --------------------------------
+##
+## 14's 2026-09-27 P3 block, tick E1: Boneyard Behemoth = `ship_boss_boneyard`,
+## gunship-tier vitals x 2.5, 5 W; Pyre Hierophant = `ship_boss_pyre`, frigate-tier
+## vitals x 2.5, 4 W; The Maw = `ship_boss_maw`, hull 12 000 / shield 6 000, 7 W.
+## `ship_fit.gd` (read-only this wave) carries no boss class row, so a boss flies a
+## **real class hull's** resolved stats scaled by its own row, and draws the boss
+## render through `sprite_base`. The Maw's `speed_from` is E2's "0.5 x freighter
+## speed" (PROPOSED until E2 ticks; reversal: the class hull's own speed).
+const ARCHETYPE_MAW: StringName = &"boss"
+const ARCHETYPE_BONEYARD: StringName = &"boneyard"
+const ARCHETYPE_PYRE: StringName = &"pyre"
+const BOSS_TIER_MULT := 2.5
+const BOSS_HULLS: Dictionary = {
+	ARCHETYPE_BONEYARD: {
+		&"class_hull": &"ship_gunship",
+		&"hull_mult": BOSS_TIER_MULT,
+		&"shield_mult": BOSS_TIER_MULT,
+		&"weapons": 5,
+		&"sprite": &"ship_boss_boneyard",
+	},
+	ARCHETYPE_PYRE: {
+		&"class_hull": &"ship_patrol",
+		&"hull_mult": BOSS_TIER_MULT,
+		&"shield_mult": BOSS_TIER_MULT,
+		&"weapons": 4,
+		&"sprite": &"ship_boss_pyre",
+	},
+	ARCHETYPE_MAW: {
+		&"class_hull": &"ship_destroyer",
+		&"hull": 12000.0,
+		&"shield": 6000.0,
+		&"weapons": 7,
+		&"sprite": &"ship_boss_maw",
+		&"speed_from": &"ship_freighter",
+		&"speed_mult": 0.5,
+	},
+}
+
+## The Maw's roam (14 section 5, tick E2 PROPOSED): it spawns in S7's band only.
+const MAW_ROAM_SECTOR := 7
+const MAW_AGGRO_RADIUS := 600.0
+
+## The two physical arenas (14 section 5): a marked, barricaded ring zone in its
+## sector, visible from any distance as a lit ring of nav pylons. The centre is
+## PROPOSED (no doc places it) at `ARENA_ZONE_OFFSET` from the sector centre on the
+## field side, with `ARENA_ZONE_PYLONS` pylons and `ARENA_ZONE_BARRICADES` segments
+## on the `ARENA_ZONE_RADIUS` ring. Reversal: the centre at the sector origin.
+const ARENA_ZONE_RADIUS := 1200.0
+const ARENA_ZONE_OFFSET := Vector2(0.0, -2600.0)
+const ARENA_ZONE_PYLONS := 8
+const ARENA_ZONE_BARRICADES := 8
+const ARENA_ZONE_ENTRY_RADIUS := ARENA_ZONE_RADIUS
+const PYLON_TEXTURE := "res://assets/env/prop/env_arena_nav_pylon.png"
+const BARRICADE_TEXTURE := "res://assets/env/prop/env_arena_barricade.png"
+## The pylon/barricade draws: the source renders are ~1217 px wide, so the drawn mark
+## is the render scaled to this many sector units. PROPOSED (no doc pins a scale).
+const PYLON_DRAW_SIZE := 180.0
+const BARRICADE_DRAW_SIZE := 220.0
+const ARENAS: Dictionary = {
+	3: {
+		&"sector": 3,
+		&"boss": ARCHETYPE_BONEYARD,
+		&"name": "The Boneyard",
+		&"faction": &"meridian",
+		&"centre": ARENA_ZONE_OFFSET,
+	},
+	6: {
+		&"sector": 6,
+		&"boss": ARCHETYPE_PYRE,
+		&"name": "The Pyre",
+		&"faction": &"choir",
+		&"centre": ARENA_ZONE_OFFSET,
+	},
+}
+## 14 section 5: "accept -> arena opens (a 60 s window to fly there)".
+const ARENA_ENTRY_WINDOW := 60.0
+## 14 section 5: "one run per boss per 20-minute clock (per profile)".
+const ARENA_COOLDOWN_SECONDS := 1200
 
 ## Section 8's minimap blip classes: hostile (pirates, hunters, swarmers) and neutral
 ## (a trader's convoy). `self`/`friendly` are other owners' blips.
@@ -203,6 +286,7 @@ const GROUP_NONE: StringName = &""
 static var NPCS: Array[Dictionary] = []
 
 const SectorRegistryScript := preload("res://game/sector_registry.gd")
+const ShipFitScript := preload("res://game/ship_fit.gd")
 
 
 static func _static_init() -> void:
@@ -431,16 +515,18 @@ static func _ensure() -> void:
 			],
 		},
 		{
-			KEY_ID: &"boss",
+			KEY_ID: ARCHETYPE_MAW,
 			KEY_FACTION: FACTION_ARENA,
 			KEY_HULL_ID: &"ship_boss_maw",
 			KEY_SPRITE_BASE: &"ship_boss_maw",
 			KEY_LIVERY_SOURCE: &"",
-			KEY_TIER: 0,
-			## 06 carries the Maw table, but section 5's boss death "pays through 14
-			## section 5", which is slice 4's contract; the row rolls no 06 table.
-			KEY_LOOT_KIND: &"",
-			KEY_AGGRO_RADIUS: 0.0,
+			KEY_TIER: 3,
+			## S26: released. 06 section 3.4's Maw table is the row's loot band now (its
+			## Grade III line is the only Voidshard source), and the roam is S7's
+			## (`game.gd` spawns it from `boss_stats`, never the sector band, so its
+			## R-S26-1 vitals apply). 14 section 5, tick E2 (PROPOSED).
+			KEY_LOOT_KIND: &"maw",
+			KEY_AGGRO_RADIUS: MAW_AGGRO_RADIUS,
 			KEY_SCAN_RADIUS: 0.0,
 			KEY_FLEE_HULL: 0.0,
 			KEY_FLEE_TIER: &"",
@@ -451,8 +537,8 @@ static func _ensure() -> void:
 			KEY_BLIP_KIND: BLIP_HOSTILE,
 			KEY_HEAT_ON_KILL: NO_HEAT,
 			KEY_STANDING_ON_KILL: NO_STANDING,
-			KEY_SPAWN: SPAWN_SEAM,
-			KEY_SEAM: SEAM_SLICE_4,
+			KEY_SPAWN: SPAWN_ARENA,
+			KEY_SEAM: SEAM_NONE,
 			KEY_DENSITY: _zero_column(),
 			KEY_GROUP_KIND: GROUP_NONE,
 			KEY_MEMBERS: [],
@@ -570,13 +656,51 @@ static func _zero_column() -> Array[Vector2i]:
 	return column
 
 
-## One archetype row by id, or an empty dictionary for an unknown id.
+## One archetype row by id, or an empty dictionary for an unknown id. S26: the two arena
+## bosses are **not** sector-population rows (their `NPCS` count stays the shipped nine),
+## so their row is synthesised from `BOSS_HULLS` here - the one door `NpcShip.setup` reads.
 static func archetype(id: StringName) -> Dictionary:
 	_ensure()
 	for row: Dictionary in NPCS:
 		if StringName(row[KEY_ID]) == id:
 			return row
+	if BOSS_HULLS.has(id) and id != ARCHETYPE_MAW:
+		return _arena_boss_row(id)
 	return {}
+
+
+## The synthesised row one arena boss flies (14 section 5): the arena's own render, its
+## faction, and the behaviour its fight needs (hostile to everything, no 06 table - the
+## arena run pays through 14 section 5).
+static func _arena_boss_row(boss_id: StringName) -> Dictionary:
+	var hull := StringName((BOSS_HULLS.get(boss_id, {}) as Dictionary).get(&"sprite", &""))
+	if hull == &"":
+		return {}
+	return {
+		KEY_ID: boss_id,
+		KEY_FACTION: FACTION_ARENA,
+		KEY_HULL_ID: hull,
+		KEY_SPRITE_BASE: hull,
+		KEY_LIVERY_SOURCE: &"",
+		KEY_TIER: 3,
+		KEY_LOOT_KIND: &"",
+		KEY_AGGRO_RADIUS: 0.0,
+		KEY_SCAN_RADIUS: 0.0,
+		KEY_FLEE_HULL: 0.0,
+		KEY_FLEE_TIER: &"",
+		KEY_SCAN_TIER: &"",
+		KEY_ATTACK_TIER: &"",
+		KEY_HOSTILITY: HOSTILITY_EVERYTHING,
+		KEY_STATIC: false,
+		KEY_BLIP_KIND: BLIP_HOSTILE,
+		KEY_HEAT_ON_KILL: NO_HEAT,
+		KEY_STANDING_ON_KILL: NO_STANDING,
+		KEY_SPAWN: SPAWN_ARENA,
+		KEY_SEAM: SEAM_NONE,
+		KEY_DENSITY: _zero_column(),
+		KEY_GROUP_KIND: GROUP_NONE,
+		KEY_MEMBERS: [],
+	}
 
 
 static func has(id: StringName) -> bool:
@@ -588,6 +712,104 @@ static func ids() -> Array[StringName]:
 	var out: Array[StringName] = []
 	for row: Dictionary in NPCS:
 		out.append(StringName(row[KEY_ID]))
+	return out
+
+
+## --- S26: bosses and arena zones (14 section 5, R-S26-1) ---------------------------
+
+
+## One boss's R-S26-1 row (`BOSS_HULLS`), empty for an id that is not a boss.
+static func boss_row(boss_id: StringName) -> Dictionary:
+	return BOSS_HULLS.get(boss_id, {})
+
+
+## Whether `id` names one of the three released bosses (the two arena bosses and the
+## roaming Maw).
+static func is_boss(id: StringName) -> bool:
+	return BOSS_HULLS.has(id)
+
+
+## The resolved `ShipStats` one boss flies (R-S26-1): a real class hull's own resolved
+## snapshot scaled by the boss row - hull/shield x 2.5 (the arena bosses), the Maw's
+## explicit 12 000/6 000, and the Maw's E2 roam speed (0.5 x a freighter's own
+## maximum). `null` for an id that is not a boss. `ship_fit.gd` carries no boss class
+## row, so this is the one place a boss's vitals are derived.
+static func boss_stats(boss_id: StringName) -> ShipStats:
+	var row: Dictionary = BOSS_HULLS.get(boss_id, {})
+	if row.is_empty():
+		return null
+	var stats := ShipFitScript.resolve(StringName(row[&"class_hull"]), ShipFitScript.STANDARD_FIT)
+	if stats == null:
+		return null
+	if row.has(&"hull"):
+		stats.hull_max = float(row[&"hull"])
+	else:
+		stats.hull_max *= float(row.get(&"hull_mult", 1.0))
+	if row.has(&"shield"):
+		stats.shield_max = float(row[&"shield"])
+	else:
+		stats.shield_max *= float(row.get(&"shield_mult", 1.0))
+	if row.has(&"speed_from"):
+		var ref := ShipFitScript.resolve(
+			StringName(row[&"speed_from"]), ShipFitScript.STANDARD_FIT
+		)
+		if ref != null:
+			stats.max_speed = float(ref.max_speed) * float(row.get(&"speed_mult", 1.0))
+	return stats
+
+
+## One boss's weapon count (R-S26-1: Boneyard 5 W, Pyre 4 W, the Maw 7 W), 0 for an
+## id that is not a boss.
+static func boss_weapons(boss_id: StringName) -> int:
+	return int((BOSS_HULLS.get(boss_id, {}) as Dictionary).get(&"weapons", 0))
+
+
+## The sprite path one boss draws (its own render, no rotation sheet), `""` for a
+## non-boss.
+static func boss_sprite(boss_id: StringName) -> String:
+	var row: Dictionary = BOSS_HULLS.get(boss_id, {})
+	if row.is_empty():
+		return ""
+	return sprite_path({KEY_SPRITE_BASE: StringName(row.get(&"sprite", &"")), KEY_LIVERY_SOURCE: &""})
+
+
+## The arena zone one sector number carries (14 section 5), `{}` for a sector with no
+## arena. The Maw's S7 is not a zone: it roams, so it is not in `ARENAS`.
+static func arena_zone(sector_number: int) -> Dictionary:
+	return ARENAS.get(sector_number, {})
+
+
+## Whether one sector number carries a physical arena (S3, S6).
+static func has_arena(sector_number: int) -> bool:
+	return ARENAS.has(sector_number)
+
+
+## The boss archetype an arena sector hosts, `&""` for a sector with no arena.
+static func arena_boss(sector_number: int) -> StringName:
+	return StringName((ARENAS.get(sector_number, {}) as Dictionary).get(&"boss", &""))
+
+
+## The physical place one arena boss fights at: its sector, the zone's name, the ring
+## centre and the ring radius. `{}` for a boss with no arena.
+static func arena_for_boss(boss_id: StringName) -> Dictionary:
+	for sector: Variant in ARENAS:
+		var row: Dictionary = ARENAS[sector]
+		if StringName(row.get(&"boss", &"")) == boss_id:
+			return row
+	return {}
+
+
+## The roam anchor the Maw spawns at in S7 (E2, PROPOSED): the field side of the sector
+## centre, clear of the arena ring. Reversal: the sector origin.
+static func maw_spawn_point() -> Vector2:
+	return Vector2(0.0, -4200.0)
+
+
+## Every released boss id, in table order.
+static func boss_ids() -> Array[StringName]:
+	var out: Array[StringName] = []
+	for id: Variant in BOSS_HULLS:
+		out.append(StringName(id))
 	return out
 
 

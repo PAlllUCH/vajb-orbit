@@ -96,6 +96,11 @@ const MAW_LINES: Array[Dictionary] = [
 	{&"item": CREDIT_ITEM, &"chance": 1.00, &"min": 800, &"max": 1200},
 ]
 
+## The Maw's own 06 §3.4 band key (the Grade III table, 14 §5's roam boss). Named so the
+## kill path that must roll it flat - the pin's floor is 1 025 CR - does not re-spell the
+## string, and so `TABLES` and that caller cannot drift.
+const MAW_BAND: StringName = &"maw"
+
 ## The four 06 §3 tables, each with the hull band its §3 heading states (06 §1.4:
 ## "a hull's table can only contain component grades at or below its own band") and
 ## its lines in the doc's order. Every cache line is last, as 06 §2.4 requires
@@ -106,7 +111,7 @@ const TABLES: Dictionary = {
 	&"hunter": {&"band": 1, &"lines": HUNTER_LINES},
 	&"freighter": {&"band": 1, &"lines": FREIGHTER_LINES},
 	&"corvette": {&"band": 2, &"lines": CORVETTE_LINES},
-	&"maw": {&"band": 3, &"lines": MAW_LINES},
+	MAW_BAND: {&"band": 3, &"lines": MAW_LINES},
 }
 
 ## 06 §7's sector-scaled caches, built in now (S23 A6): the credit-cache lines
@@ -120,6 +125,16 @@ const CACHE_SCALE: Dictionary = {1: 1.0, 2: 1.0, 3: 1.5, 4: 2.0}
 ## The cache multiplier one sector tier rolls at; 1.0 for an unknown tier.
 static func cache_scale(tier: int) -> float:
 	return float(CACHE_SCALE.get(tier, 1.0))
+
+
+## 06 §7's sector-cache factor **for one band**: `cache_scale(tier)` for every table, with
+## the Maw's own band pinned flat (14 §5 / 06 §3.4: it rolls the doc's table verbatim, the
+## 1 025 CR floor). One owner, so the game's kill path and the probes cannot disagree on
+## what the Maw's in-game roll scales by.
+static func cache_scale_for(kind: StringName, tier: int) -> float:
+	if kind == MAW_BAND:
+		return 1.0
+	return cache_scale(tier)
 
 ## 06 §8's amendment (13 §3's "`comp_elec`-weighted table", owner tick 8): the
 ## electronics a hunter drops **in addition to** its band table. The rows are the

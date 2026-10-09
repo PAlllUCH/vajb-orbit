@@ -456,6 +456,20 @@ var _hunter_respawn := 0.0
 ## accepting station and a contract that left the list (a loss) is never re-spawned.
 var _escorts: Dictionary = {}
 
+## S26 (14 section 5): the arena zone's lit ring node (a child of the sector, so it moves
+## with the sector's own transform), the boss it spawned, and the Maw's roam node with its
+## E2 respawn clock.
+var _arena_zone_node: Node2D = null
+var _arena_boss: Node2D = null
+var _maw_node: Node2D = null
+var _maw_respawn := 0.0
+## 14 section 5's "the player's last hit": a boss death latches here in `_on_npc_died`,
+## and the player's own weapon `hit_landed` (which fires immediately after the fatal
+## delivery) is what consumes the latch and credits the kill. A drone's or an escort's
+## fatal hit never raises `hit_landed` on the player's guns, so it never credits.
+var _pending_boss_death: Node2D = null
+var _pending_boss_archetype: StringName = &""
+
 
 func _ready() -> void:
 	## S28's A7: the developer overlay is a debug-build tool; a release never mounts it.
@@ -480,6 +494,9 @@ func _ready() -> void:
 	_seed_vitals()
 	if _transit_destination.is_empty():
 		_seed_ammo()
+		## S26 (14 section 3, M14): the premium is charged at launch - a crossing is not
+		## a launch, so it is not charged again.
+		_charge_insurance()
 	else:
 		## A sector crossing, not a launch: the packs come back from the store the
 		## outgoing scene just filed, with no hold draw (`_seed_ammo_from_store`).
@@ -528,6 +545,8 @@ func _physics_process(delta: float) -> void:
 	_decay_heat(delta)
 	_update_hunters(delta)
 	_update_escorts(delta)
+	_update_arena(delta)
+	_update_maw(delta)
 	_tick_prompt_timers(delta)
 	_update_dock_prompt()
 	_update_warp(delta)
@@ -848,6 +867,12 @@ func _spawn_sector(row: Dictionary) -> void:
 	## convoy waiting on the pad, so the entry that knows the sector is the one that puts it
 	## back - a dock/launch cycle therefore re-spawns it at the accepting station.
 	_restore_escorts()
+	## S26 (14 section 5): the arena is a physical place, so the entry that knows the
+	## sector is the one that builds its lit ring (S3's Boneyard, S6's The Pyre).
+	_build_arena_zone()
+	_arena_boss = null
+	_maw_node = null
+	_maw_respawn = 0.0
 
 
 ## 15 section 4's Cartograph (CONTRACTS section 20): a launch whose fitted instances
@@ -886,6 +911,10 @@ func _spawn_ship() -> void:
 	_guns = _ship.get_node_or_null(NodePath(PlayerShipScript.WEAPONS_NODE))
 	if _guns != null:
 		_guns.connect(&"locks_broken", _on_locks_broken)
+		## S26 (14 section 5): the player's own landed hits are the only evidence of the
+		## boss's last hit, so the arena kill credit rides this one seam.
+		if _guns.has_signal(&"hit_landed") and not _guns.is_connected(&"hit_landed", _on_player_hit):
+			_guns.connect(&"hit_landed", _on_player_hit)
 		## S5 (09 section 11, CONTRACTS section 17): the launch hands the component the
 		## composed racks its `weapon_1..7` keys address, resolved from the profile's
 		## persisted cell refs into the component's own barrel positions.
@@ -1440,6 +1469,9 @@ func _request_dock() -> void:
 	_file_damage_report()
 	_file_docked_faction()
 	_file_docked_station()
+	## S26 (14 section 5): "payout on return-to-station, win or lose" - a dock is a
+	## return, so an open arena run settles here.
+	_settle_arena_runs()
 	route_requested.emit(ROUTE_LOADING, {PARAM_DESTINATION: DESTINATION_STATION})
 
 
@@ -2598,6 +2630,15 @@ func _on_npc_spawned(ship: Node2D) -> void:
 func _on_npc_died(_position: Vector2, archetype: StringName, ship: Node2D) -> void:
 	if _lock_target == ship:
 		_cancel_lock()
+	## S26 (14 section 5): a boss death is the one the arena cares about. The Maw's roam
+	## clock re-arms here; an arena boss latches its death for the player's own hit to
+	## confirm (`_on_player_hit`), so a drone's or an escort's kill credits nobody.
+	if archetype == NpcRegistryScript.ARCHETYPE_MAW:
+		_maw_node = null
+		_maw_respawn = float(ClockScript.BAND_SECONDS)
+	elif NpcRegistryScript.is_boss(archetype):
+		_pending_boss_death = ship
+		_pending_boss_archetype = archetype
 	var profile := _profile()
 	if profile == null:
 		push_warning("game: an NPC died with no profile service; heat and standing not filed")
@@ -2655,10 +2696,11 @@ func _spawn_kill_loot(kill_position: Vector2, _archetype: StringName, ship: Node
 	## S23 A6: the hunter rolls its own promoted table (`hunter` = the fighter band's
 	## lines with 06 §8's extra), so the band rolls exactly once - the old
 	## `roll_band` + `roll_hunter_extra` double roll is gone - and every cache line
-	## scales by 06 §7's sector-tier factor (`SectorRegistry.sector_tier`).
-	var payload: Array[Dictionary] = LootTablesScript.roll_band(
-		kind, 0, LootTablesScript.cache_scale(Registry.sector_tier(_sector_row_id))
-	)
+	## scales by 06 §7's sector-tier factor (`SectorRegistry.sector_tier`). The Maw's
+	## own band is the one exception: 14 §5 / 06 §3.4 pin it flat (the 1 025 CR floor),
+	## which `LootTables.cache_scale_for` owns.
+	var scale := LootTablesScript.cache_scale_for(kind, Registry.sector_tier(_sector_row_id))
+	var payload: Array[Dictionary] = LootTablesScript.roll_band(kind, 0, scale)
 	var site: Node2D = PoiScript.new() as Node2D
 	site.name = &"WreckSite"
 	_sector.call(&"add_wreck_site", site)
@@ -2985,6 +3027,194 @@ func _dismiss_convoy(state: Dictionary, except: Node2D) -> void:
 		if member == null or not is_instance_valid(member) or member == except:
 			continue
 		member.call(&"despawn")
+
+
+## --- S26: the arenas and their bosses (14 section 5) --------------------------------
+
+
+## The zone the current sector carries, `{}` for a sector with no arena.
+func _arena_zone() -> Dictionary:
+	return NpcRegistryScript.arena_zone(Registry.sector_number(_sector_row_id))
+
+
+## 14 section 5: the arena is a physical place - a marked, barricaded ring of nav pylons,
+## visible from any distance. Built from the shipped arena props (`env_arena_nav_pylon` /
+## `env_arena_barricade`) as a child of the sector, so it rides the sector's own transform;
+## no art is generated and entering it without an active run does nothing but mark it.
+func _build_arena_zone() -> void:
+	if _arena_zone_node != null and is_instance_valid(_arena_zone_node):
+		_arena_zone_node.free()
+	_arena_zone_node = null
+	var zone := _arena_zone()
+	if zone.is_empty() or _sector == null:
+		return
+	var ring := Node2D.new()
+	ring.name = &"ArenaZone"
+	_sector.add_child(ring)
+	ring.global_position = _sector.to_global(zone.get(&"centre", Vector2.ZERO))
+	var radius := NpcRegistryScript.ARENA_ZONE_RADIUS
+	var pylon_count := NpcRegistryScript.ARENA_ZONE_PYLONS
+	for index in pylon_count:
+		var bearing := TAU * float(index) / float(maxi(pylon_count, 1))
+		var pylon := _make_arena_mark(
+			NpcRegistryScript.PYLON_TEXTURE, NpcRegistryScript.PYLON_DRAW_SIZE
+		)
+		if pylon != null:
+			ring.add_child(pylon)
+			pylon.position = Vector2(radius, 0.0).rotated(bearing)
+	var barricade_count := NpcRegistryScript.ARENA_ZONE_BARRICADES
+	for index in barricade_count:
+		var bearing := TAU * (float(index) + 0.5) / float(maxi(barricade_count, 1))
+		var barricade := _make_arena_mark(
+			NpcRegistryScript.BARRICADE_TEXTURE, NpcRegistryScript.BARRICADE_DRAW_SIZE
+		)
+		if barricade != null:
+			ring.add_child(barricade)
+			barricade.position = Vector2(radius, 0.0).rotated(bearing)
+			barricade.rotation = bearing + PI * 0.5
+	_arena_zone_node = ring
+
+
+## One shipped arena prop as a scaled sprite mark. A missing texture draws nothing rather
+## than erroring (the `sprite_path` tolerance).
+func _make_arena_mark(texture_path: String, size: float) -> Sprite2D:
+	var texture := load(texture_path) as Texture2D
+	if texture == null:
+		return null
+	var sprite := Sprite2D.new()
+	sprite.texture = texture
+	var texture_size := texture.get_size()
+	if texture_size.x > 0.0:
+		var factor := size / texture_size.x
+		sprite.scale = Vector2(factor, factor)
+	return sprite
+
+
+## 14 section 5's arena run, seen from the flight side: while a run is open for this
+## sector's boss (the active Expedition contract inside its 60 s window), entering the ring
+## spawns the boss; a run outside its window, or a sector with no arena, does nothing.
+func _update_arena(_delta: float) -> void:
+	if _arena_boss != null and is_instance_valid(_arena_boss):
+		return
+	var zone := _arena_zone()
+	if zone.is_empty() or _ship == null or _sector == null:
+		return
+	var contract := _open_arena_contract()
+	if contract.is_empty():
+		return
+	var centre: Vector2 = _sector.to_global(zone.get(&"centre", Vector2.ZERO))
+	if _ship.global_position.distance_to(centre) > NpcRegistryScript.ARENA_ZONE_ENTRY_RADIUS:
+		return
+	_spawn_arena_boss(StringName(contract.get(&"boss", &"")), centre)
+
+
+## The one active Expedition contract whose 60 s window is still open and whose boss is
+## this sector's arena boss, `{}` otherwise.
+func _open_arena_contract() -> Dictionary:
+	var profile := _profile()
+	if profile == null or not profile.has_method(&"contracts"):
+		return {}
+	var boss := NpcRegistryScript.arena_boss(Registry.sector_number(_sector_row_id))
+	if boss == &"":
+		return {}
+	var now := ClockScript.now()
+	for record: Dictionary in (profile.call(&"contracts") as Array):
+		if not ContractRegistryScript.is_expedition(record):
+			continue
+		if ContractRegistryScript.arena_boss_of(record) != boss:
+			continue
+		if ContractRegistryScript.arena_entry_open(record, now):
+			return record
+	return {}
+
+
+## One arena boss: the R-S26-1 vitals (`NpcRegistry.boss_stats`) on its own render, homed
+## at the ring centre. Its death flows through the same `_on_npc_died` seam every hull
+## uses, so heat, loot and the kill credit need no second path.
+func _spawn_arena_boss(boss_id: StringName, centre: Vector2) -> void:
+	if _sector == null or boss_id == &"":
+		return
+	var stats := NpcRegistryScript.boss_stats(boss_id)
+	if stats == null:
+		return
+	var ship: Node2D = NpcShipScript.new() as Node2D
+	if ship == null:
+		return
+	ship.name = "ArenaBoss%s" % String(boss_id).to_pascal_case()
+	_sector.add_child(ship)
+	ship.global_position = centre
+	ship.call(
+		&"setup",
+		boss_id,
+		stats,
+		boss_id,
+		{
+			NpcShipScript.OPT_HOME: centre,
+			NpcShipScript.OPT_SPACE_OWNER: NpcRegistryScript.space_owner(_sector_row_id),
+			NpcShipScript.OPT_SPRITE_PATH: NpcRegistryScript.boss_sprite(boss_id),
+		}
+	)
+	if ship.has_signal(&"died") and not ship.is_connected(&"died", _on_npc_died):
+		ship.connect(&"died", _on_npc_died.bind(ship))
+	_arena_boss = ship
+
+
+## The Maw's roam (14 section 5, E2 PROPOSED): it spawns in S7 and re-spawns on the
+## 20-minute clock after it dies.
+func _update_maw(delta: float) -> void:
+	if Registry.sector_number(_sector_row_id) != NpcRegistryScript.MAW_ROAM_SECTOR:
+		return
+	if _maw_node != null and is_instance_valid(_maw_node):
+		return
+	if _maw_respawn > 0.0:
+		_maw_respawn -= delta
+		if _maw_respawn > 0.0:
+			return
+	_spawn_maw()
+
+
+func _spawn_maw() -> void:
+	if _sector == null:
+		return
+	var stats := NpcRegistryScript.boss_stats(NpcRegistryScript.ARCHETYPE_MAW)
+	if stats == null:
+		return
+	var ship: Node2D = NpcShipScript.new() as Node2D
+	if ship == null:
+		return
+	ship.name = "Maw"
+	var place := NpcRegistryScript.maw_spawn_point()
+	_sector.add_child(ship)
+	ship.global_position = place
+	ship.call(
+		&"setup",
+		NpcRegistryScript.ARCHETYPE_MAW,
+		stats,
+		NpcRegistryScript.ARCHETYPE_MAW,
+		{
+			NpcShipScript.OPT_HOME: place,
+			NpcShipScript.OPT_SPACE_OWNER: NpcRegistryScript.space_owner(_sector_row_id),
+			NpcShipScript.OPT_SPRITE_PATH: NpcRegistryScript.boss_sprite(
+				NpcRegistryScript.ARCHETYPE_MAW
+			),
+		}
+	)
+	if ship.has_signal(&"died") and not ship.is_connected(&"died", _on_npc_died):
+		ship.connect(&"died", _on_npc_died.bind(ship))
+	_maw_node = ship
+
+
+## The player's own landed hits (weapons' one `hit_landed`): a boss death latched in
+## `_on_npc_died` is credited to the player only when the fatal delivery is the player's
+## own, so a drone's or an escort's kill never pays (14 section 5).
+func _on_player_hit(target: Object, _amount: float) -> void:
+	if _pending_boss_death == null or target != _pending_boss_death:
+		return
+	var profile := _profile()
+	if profile != null and _pending_boss_archetype != &"":
+		ContractRegistryScript.arena_credit_kill(profile, _pending_boss_archetype)
+	_pending_boss_death = null
+	_pending_boss_archetype = &""
 
 
 ## --- Doc 13's heat, witnesses, hunters and the bounty (wave S6, CONTRACTS §19) ------
@@ -3389,6 +3619,11 @@ func _clear_drop_faces() -> void:
 ## prompt and the safe warp use. A sector with no station (S7) has nowhere to respawn and
 ## says so; the insurance payout, the mercy clause and the replacement hull are slice 4.
 func _respawn_docked() -> void:
+	## S26 (14 section 5): a death is a return-to-station, so any open arena run closes
+	## here (win or lose), and 14 section 3's payout flow runs (the hull+fit credit and the
+	## replacement hull; the mercy clause is the profile's own).
+	_settle_arena_runs()
+	_apply_insurance_payout()
 	if _sector == null or not _sector.has_station():
 		push_warning(
 			"game: the hull was lost in a sector with no station; 14 section 3's respawn "
@@ -3404,3 +3639,38 @@ func _respawn_docked() -> void:
 	## reason).
 	_clear_transit_flag()
 	route_requested.emit(ROUTE_LOADING, {PARAM_DESTINATION: DESTINATION_STATION})
+
+
+## S26 (14 section 3, M14): the launch's insurance charge. The policy is the profile's
+## own toggle; a launch whose purse cannot pay the premium simply flies uninsured (the
+## launch is not refused), so this never blocks.
+func _charge_insurance() -> void:
+	var profile := _profile()
+	if profile == null or not profile.has_method(&"insurance_charge"):
+		return
+	profile.call(&"insurance_charge")
+
+
+## S26 (14 section 3): the death's payout flow, run at the respawn. The profile owns the
+## arithmetic (the hull+fit credit, the replacement hull, the mercy clause); this scene
+## only reports the credit.
+func _apply_insurance_payout() -> void:
+	var profile := _profile()
+	if profile == null or not profile.has_method(&"insurance_payout"):
+		return
+	var result: Dictionary = profile.call(&"insurance_payout")
+	var credited := int(result.get(&"credited", 0))
+	if credited > 0:
+		_push_prompt("INSURANCE PAYOUT · %d CR" % credited)
+
+
+## S26 (14 section 5): close every open arena run at a return-to-station. The registry
+## pays the ones the player killed (6000/12000 + the reward module) and closes the rest.
+func _settle_arena_runs() -> void:
+	var profile := _profile()
+	if profile == null or not profile.has_method(&"contracts"):
+		return
+	for result: Dictionary in ContractRegistryScript.arena_settle_all(profile):
+		var paid := int(result.get(&"paid", 0))
+		if paid > 0:
+			_push_prompt("ARENA CONTRACT PAID · %d CR" % paid)
