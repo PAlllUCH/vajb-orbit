@@ -702,6 +702,26 @@
     "res://tests/probe_s37_r1_scene.gd"
    ]
   },
+  "res://tests/probe_s38_r1_remeasure.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s38_r1_remeasure.gd"
+   ]
+  },
+  "res://tests/probe_s38_start_board.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s38_start_board.gd"
+   ]
+  },
   "res://tests/probe_s3_levers.tscn": {
    "assets": [],
    "connections": [],
@@ -3323,6 +3343,36 @@
    ],
    "signals": []
   },
+  "res://tests/probe_s38_r1_remeasure.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://autoload/world_clock.gd",
+    "res://game/contract_registry.gd",
+    "res://game/station_registry.gd",
+    "res://tests/probe_s38_r1_remeasure.tscn --quit-after 1200",
+    "res://ui/screens/station.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_s38_start_board.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://autoload/world_clock.gd",
+    "res://game/contract_registry.gd",
+    "res://game/station_registry.gd",
+    "res://tests/probe_s38_start_board.tscn --quit-after 1200",
+    "res://ui/screens/station.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
   "res://tests/probe_s3_levers.gd": {
    "autoload": "",
    "class_name": "",
@@ -4993,6 +5043,24 @@
    ],
    "signals": []
   },
+  "res://tests/test_s38_start_and_clock.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://autoload/world_clock.gd",
+    "res://game/contract_registry.gd",
+    "res://game/game.tscn",
+    "res://game/sector_registry.gd",
+    "res://game/station_registry.gd",
+    "res://ui/screens/station.tscn",
+    "res://ui/station/contracts_panel.gd",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
   "res://tests/test_s3_auction.gd": {
    "autoload": "",
    "class_name": "",
@@ -6123,10 +6191,13 @@
   "res://ui/station/contracts_panel.gd": {
    "autoload": "",
    "class_name": "",
-   "connects": [],
+   "connects": [
+    "_tick_timer.timeout \u2192 _tick"
+   ],
    "extends": "VBoxContainer",
    "refs": [
     "res://assets/icons/tint/icon_insignia_%s_48.png",
+    "res://autoload/world_clock.gd",
     "res://game/contract_registry.gd",
     "res://game/mineral_catalog.gd",
     "res://game/sector_registry.gd",

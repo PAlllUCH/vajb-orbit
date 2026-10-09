@@ -4,9 +4,16 @@ extends VBoxContainer
 ## and their escrow on the right. Contract: docs/design/STATION_HUB.md section 15.2 (the
 ## deck law: the U3 header strip and note, the board row anatomy, the ACCEPT pressable, the
 ## U6 max-3 counter and chip, the U7 Expedition staged row, the U5 escrow readout, the U4
-## cancel affordance and its confirm dialog, the two U8 empty states) plus section 5.2 (the
-## confirm dialog's own idiom) and section 19.3/19.4 (the pane skeleton this content sits
-## in, which the shell owns).
+## cancel affordance and its confirm dialog, the two U8 empty states, and - S38 - the U22
+## roll countdown at the U3 strip's right end with its 1 Hz tick and the re-roll at the band
+## boundary) plus section 5.2 (the confirm dialog's own idiom) and section 19.3/19.4 (the
+## pane skeleton this content sits in, which the shell owns).
+##
+## **S38 (14's 2026-10-08 S38 block, H2/H3).** The readout is `WorldClock.BAND_SECONDS`
+## minus `now` modulo it, read live at 1 Hz (never a value written once at build), and the
+## board re-rolls in place the moment the band changes. Riders: U7's staged row dims whole
+## (T-156) and an accepted row leaves the board so one id cannot be accepted twice in a band
+## (T-157).
 ##
 ## The panel never prices, never pays and never writes the profile directly: every number is
 ## a `ContractRegistry` read and every write is a `ContractRegistry` transaction, which in
@@ -29,6 +36,9 @@ const ContractRegistryScript := preload("res://game/contract_registry.gd")
 const StationRegistryScript := preload("res://game/station_registry.gd")
 const SectorRegistryScript := preload("res://game/sector_registry.gd")
 const MineralCatalogScript := preload("res://game/mineral_catalog.gd")
+## The one 20-minute station clock (14 section 9): the countdown's constants come from it,
+## never re-derived, never hardcoded.
+const Clock := preload("res://autoload/world_clock.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
@@ -95,6 +105,14 @@ const STANDING_NEGATIVE_FORMAT := "%d STANDING"
 ## The pane's foot hint (STATION_HUB section 19.4's SERVICES row, tick P29).
 const PANE_HINT := "ONE SERVICE AT A TIME · ESC BACK"
 
+## U22 (STATION_HUB section 15.2, 14's 2026-10-08 S38 block H2/H3): the roll countdown at
+## the U3 header strip's right end. The figure is always `WorldClock.BAND_SECONDS` minus
+## `now` modulo it, read live at 1 Hz (the refinery panel's own `TICK_SECONDS` idiom), so a
+## readout that disagrees with the rows behind it cannot happen; at the band boundary the
+## panel re-rolls itself once. Reversal: the U8 caption alone, no countdown.
+const TICK_SECONDS := 1.0
+const ROLL_FORMAT := "NEW JOBS IN %s"
+
 ## The refusal and outcome lines the shell's status strip carries. PROPOSED (no doc pins a
 ## contract refusal wording; the shapes follow station.gd's own `REFUSED · …` copy and
 ## 09 section 2's `<n> NEEDED` idiom). Reversal: silent refusals.
@@ -128,6 +146,13 @@ var _accept_buttons: Array[Button] = []
 var _cancel_buttons: Dictionary = {}
 var _escrow_lines: Array[String] = []
 var _card_labels: Array[String] = []
+## U22's readout node (built with the U3 headers) and its 1 Hz tick.
+var _roll_label: Label = null
+var _tick_timer: Timer = null
+## The band the drawn board was rolled in, so a boundary re-roll is one comparison.
+var _board_band := -1
+## U7 (T-156): the staged rows' inner boxes, dimmed whole in `_apply_tokens`.
+var _dim_rows: Array[Control] = []
 
 
 func _ready() -> void:
@@ -141,6 +166,7 @@ func _ready() -> void:
 	_build_headers()
 	_chip_label.text = CHIP_MAX
 	_refresh()
+	_make_tick_timer()
 
 
 func _notification(what: int) -> void:
@@ -194,6 +220,17 @@ func _build_headers() -> void:
 		else:
 			label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		_header_row.add_child(label)
+	## U22: the roll countdown sits at the strip's right end - the OBJECTIVE header expands,
+	## so the readout, as the last child, is pushed there by the container itself.
+	_roll_label = Label.new()
+	_roll_label.name = "RollCountdown"
+	_roll_label.theme_type_variation = &"StationCaption"
+	_roll_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_roll_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_roll_label.size_flags_horizontal = Control.SIZE_SHRINK_END
+	_roll_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_header_row.add_child(_roll_label)
+	_sync_roll_readout()
 
 
 ## One board row: STATION_HUB section 15.2's own anatomy, the AUCTION row idiom (a `Button`
@@ -231,8 +268,6 @@ func _build_board_row(contract: Dictionary) -> Button:
 		type_cell.add_child(icon)
 	var type_label := _make_label(&"StationValue", ContractRegistryScript.label_for(type))
 	type_label.name = "TypeLabel"
-	if staged:
-		type_label.modulate = _token(&"text_dim")
 	type_cell.add_child(type_label)
 	## objective: section 2's own line for the row, verbatim
 	var objective := _make_label(&"", String(contract.get(&"objective", "")))
@@ -275,6 +310,10 @@ func _build_board_row(contract: Dictionary) -> Button:
 		var caption := _make_label(&"StationCaption", CAPTION_STAGED)
 		caption.name = "StagedCaption"
 		box.add_child(caption)
+		## U7 (T-156): the staged Expedition row greys **whole** - the one modulate on the
+		## row's inner box tints every cell under it, the type icon included. Applied in
+		## `_apply_tokens` so a theme change re-reads the token.
+		_dim_rows.append(inner)
 	return row
 
 
@@ -425,14 +464,17 @@ func _refresh() -> void:
 	var profile := _profile()
 	_station_row = StationRegistryScript.docked_station(profile)
 	_standing = _station_standing(profile)
-	_board = ContractRegistryScript.board(_station_row, _standing)
 	_active = ContractRegistryScript.active(profile)
+	_board = _without_active(ContractRegistryScript.board(_station_row, _standing), _active)
+	## The band this board was rolled in: `_tick` re-rolls when the clock leaves it (H3).
+	_board_band = ContractRegistryScript.band_index()
 	_clear_list(_board_list)
 	_clear_list(_active_list)
 	_accept_buttons.clear()
 	_cancel_buttons.clear()
 	_escrow_lines.clear()
 	_card_labels.clear()
+	_dim_rows.clear()
 	var gated := not _station_row.is_empty() and not ContractRegistryScript.visible(_standing)
 	for contract: Dictionary in _board:
 		_board_list.add_child(_build_board_row(contract))
@@ -445,7 +487,73 @@ func _refresh() -> void:
 	_board_empty.visible = not _empty_text.is_empty()
 	_counter.text = COUNTER_FORMAT % _active.size()
 	_chip.visible = _at_max()
+	_sync_roll_readout()
 	_apply_tokens()
+
+
+## T-157: a row whose id is already active has been accepted this band - the seeded re-roll
+## would re-present it, so it leaves the board and the same id cannot be accepted twice.
+func _without_active(
+	rows: Array[Dictionary], active: Array[Dictionary]
+) -> Array[Dictionary]:
+	if active.is_empty():
+		return rows
+	var taken: Dictionary = {}
+	for record: Dictionary in active:
+		taken[String(record.get(&"id", &""))] = true
+	var out: Array[Dictionary] = []
+	for row: Dictionary in rows:
+		if taken.has(String(row.get(&"id", &""))):
+			continue
+		out.append(row)
+	return out
+
+
+## ------------------------------------------------------------------ U22: the countdown
+
+
+## The refinery panel's tick idiom (`refinery_panel.gd:250`): one 1 Hz Timer, no polling.
+## It runs whether or not the deck is showing it - the readout is a clock, not a job queue,
+## so the band boundary is never missed (H3: "no player action").
+func _make_tick_timer() -> void:
+	_tick_timer = Timer.new()
+	_tick_timer.name = "ContractsTick"
+	_tick_timer.one_shot = false
+	_tick_timer.wait_time = TICK_SECONDS
+	_tick_timer.autostart = true
+	_tick_timer.timeout.connect(_tick)
+	add_child(_tick_timer)
+
+
+## U22's 1 Hz tick: the readout follows the clock, and the board re-rolls the moment the
+## band changes - one `_refresh()`, no scene change and no player action (H3).
+func _tick() -> void:
+	if not is_node_ready():
+		return
+	_sync_roll_readout()
+	var band := ContractRegistryScript.band_index()
+	if band != _board_band:
+		_refresh()
+
+
+## H2's figure: `WorldClock.BAND_SECONDS - now % WorldClock.BAND_SECONDS`, so it reads
+## 20:00 at the boundary and never disagrees with the band the rows were rolled in.
+func _roll_remaining() -> int:
+	return Clock.BAND_SECONDS - Clock.now() % Clock.BAND_SECONDS
+
+
+func _sync_roll_readout() -> void:
+	if _roll_label == null:
+		return
+	_roll_label.text = ROLL_FORMAT % _mmss(_roll_remaining())
+
+
+## The refinery panel's own `_mmss` shape (`refinery_panel.gd:1191`): two-digit minutes.
+func _mmss(seconds: int) -> String:
+	var clamped := maxi(seconds, 0)
+	@warning_ignore("integer_division")
+	var minutes := clamped / 60
+	return "%02d:%02d" % [minutes, clamped % 60]
 
 
 func _at_max() -> bool:
@@ -569,6 +677,13 @@ func _apply_tokens() -> void:
 		_note.add_theme_color_override(&"font_color", _token(&"text_dim"))
 	if _board_empty != null:
 		_board_empty.add_theme_color_override(&"font_color", _token(&"text_dim"))
+	if _roll_label != null:
+		_roll_label.add_theme_color_override(&"font_color", _token(&"text_dim"))
+	## U7 (T-156): the staged rows' whole inner box at `text_dim`, icons included.
+	var dim := _token(&"text_dim")
+	for box: Control in _dim_rows:
+		if box != null and is_instance_valid(box):
+			box.modulate = dim
 
 
 ## U6's chip: the label plus a 1 px danger frame (never colour alone - the ARMORY chip's own
@@ -598,6 +713,26 @@ func _token(name: StringName) -> Color:
 ## The board the panel is drawing, in the deck law's own order.
 func board_rows() -> Array[Dictionary]:
 	return _board
+
+
+## U22's readout, as rendered (`""` before the strip is built).
+func roll_readout() -> String:
+	return _roll_label.text if _roll_label != null else ""
+
+
+## H2's figure, recomputed from the clock at the moment of the read.
+func roll_remaining() -> int:
+	return _roll_remaining()
+
+
+## The band the drawn board was rolled in.
+func board_band() -> int:
+	return _board_band
+
+
+## U7's dimmed inner boxes (one per staged row), so a probe can read the whole-row dim.
+func dimmed_rows() -> Array[Control]:
+	return _dim_rows
 
 
 ## The active contracts the panel is drawing.
@@ -645,11 +780,11 @@ func escrow_readout() -> Array[String]:
 	return _escrow_lines
 
 
-## U3's four column headers, as rendered.
+## U3's four column headers, as rendered (U22's readout shares the strip, so it is skipped).
 func column_headers() -> Array[String]:
 	var out: Array[String] = []
 	for child: Node in _header_row.get_children():
-		if child is Label:
+		if child is Label and child != _roll_label:
 			out.append((child as Label).text)
 	return out
 

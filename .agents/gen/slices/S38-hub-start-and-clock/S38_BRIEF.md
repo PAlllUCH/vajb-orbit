@@ -167,11 +167,31 @@ Rules:
 
 | Suite | Row | Why | Verdict |
 |---|---|---|---|
-| `test_s24_world.gd:306` | `test_a_place_resolves_from_the_profile_seam`, first assertion (`"nothing filed, no place"`) | H1: an empty id now answers the starting place | **moves** — assert the starting row instead |
-| `test_s25_contracts.gd:1171-1179` | `test_a7_the_two_empty_states`, second half (empty id → `EMPTY_NO_JOBS`) | H1: an empty id now offers the starting board | **moves** — dock a place that genuinely offers nothing, or assert the starting board |
+| `test_s24_world.gd:306` | `test_a_place_resolves_from_the_profile_seam`, first assertion (`"nothing filed, no place"`) | H1: an empty id now answers the starting place | **moved** — asserts `s1_primary` from both seams (and its doc comment restated) |
+| `test_s25_contracts.gd:1171-1179` | `test_a7_the_two_empty_states`, second half (empty id → `EMPTY_NO_JOBS`) | H1: an empty id now offers the starting board | **moved** — files `&"sector_7"`, a place that genuinely offers nothing, so U8's second state stays proven |
 | `test_s25_contracts.gd:1204-1207` | `test_a8_the_launch_line_names_the_docked_sector`, last leg | H1: the empty-id line now names the starting sector | **outcome unchanged** (still no `HELIOS`) but its wording is stale — restate |
 | `test_s24_world.gd:307, :322-323` | the null-profile and unparseable-id legs | H1 covers the **empty** id only | unchanged |
-| `test_s25_contracts.gd` A7 rows | the staged-row dim (T-156) and the accepted-row filter (T-157) | the panel's own behaviour changes | check each; disclose any that move |
+| `test_s25_contracts.gd` A7 rows | the staged-row dim (T-156) and the accepted-row filter (T-157) | the panel's own behaviour changes | unchanged — the riders' own rows are in `test_s38_start_and_clock.gd` |
+
+**Added at dispatch (bucket 2, orchestrator, 2026-10-08).** B1's first gate read
+`1229/7`: the table above listed three rows, but H1 reaches **four more**, all of
+them premises that used an *empty filed id* as a proxy for "not at a station".
+B1 reported them and left them (its file set did not hold those suites, and the
+worker-files hook refused the edits); the developer session re-cut all seven by
+hand and the gate then read `1236/0`. The four this table had missed:
+
+| Suite | Row | Why | Verdict |
+|---|---|---|---|
+| `test_s17_gate_edges.gd:56` | `REGISTRY_MD5`, the frozen hash of `game/sector_registry.gd` | H1 moves the starting-sector constant into that file, which the hash freezes | **moved** — re-pinned to `71e7d4f488b510d70e09f6f65540b840` (the third re-pin; S23's and S24's are its precedents) |
+| `test_s24_world.gd:505` | `test_the_band_multiplier_moves_the_repair_fee`, last leg | the "no station" leg filed `&""`, which H1 now reads as the cold start (Concord at Champion → 623, not the Neutral 692) | **moved** — files `&"sector_7"`, so the leg still proves the section 6 number |
+| `test_s29_station_panels.gd:195, :265` | `test_the_hyperdrive_row_is_visible_at_tier_3`, `test_the_buy_flow_checks_credits_first` | the suite mounted with no place filed, so H1 priced `e_hyperdrive` through the starting row's Concord engines discount (`12 000` → `10 200`) | **moved** — `setup()` files `&"sector_7"` (with `_docked_station` saved and restored in `suite_setup`/`suite_teardown`), restoring the factor 1.0 fixture the rows always meant; both numbers stand |
+| `test_s3_auction.gd:445` | `test_the_hot_slot_arithmetic` | the shelf's plain rows price through `_station_price`, so the cold start's station discount became a second discount and the test's stated premise ("the one discount") broke | **moved** — the profile files `&"sector_7"`, so the hot slot stays the only discount |
+
+Every one of the seven is a **premise re-cut**, not a number moved: the four
+`&""` → `&"sector_7"` sites restore the exact "not at a station" fixture the
+rows were written against (`sector_7` carries no station row, so `docked_station`
+answers `{}` and the price factor is 1.0), and the one row that genuinely
+changed is S24's own seam test, where the starting place is the law.
 
 Any other count moving is a bucket-2 pause: report it, leave it, stop.
 

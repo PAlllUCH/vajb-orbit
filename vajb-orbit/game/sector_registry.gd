@@ -37,6 +37,13 @@ const SECTOR_SIZE := Vector2(10000.0, 10000.0)
 
 const UNALIGNED: StringName = &"unaligned"
 
+## 14's 2026-10-08 S38 block (H1): the starting sector, moved here from
+## `game/game.gd`'s `SECTOR_ID_DEFAULT` so the registry that owns sectors owns the
+## start. `StationRegistry.starting_station()` reads it for the cold-start place and
+## `game.gd` reads it for its own default row. Reversal: the constant returns to
+## `game.gd` and the cold start falls back to nothing.
+const DEFAULT_SECTOR_ID: StringName = &"sector_1"
+
 ## 11 §3's population targets, identical in every sector (the per-sector
 ## differences are the pirate band, stations, outposts and convoys below):
 ## 4-8 fields, 6-12 rocks each (ENGINE_SPEC §8), 1-3 wreck fields of 3-6 hulks

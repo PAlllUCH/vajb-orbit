@@ -110,7 +110,9 @@ const PROFILE_SERVICE: StringName = &"PlayerProfile"
 const PROFILE_CARGO_KEY: StringName = &"cargo"
 
 const HULL_ID_DEFAULT: StringName = &"ship_vanguard"
-const SECTOR_ID_DEFAULT: StringName = &"sector_1"
+## 14's 2026-10-08 S38 block (H1): the starting sector now has one home, the registry
+## that owns sectors (`SectorRegistry.DEFAULT_SECTOR_ID`), so the cold-start place and
+## this scene's default row cannot drift apart.
 
 ## Section 4.3's group keys, **five** since S15 (09 section 12's hardcap): `weapon_1..5`
 ## and `GROUPS_MAX` are one number, because a composed battery is addressed by the same
@@ -823,7 +825,7 @@ func _spawn_sector(row: Dictionary) -> void:
 		## `scanned` reward can raise the cache feed without the sector knowing the HUD.
 		_sector.connect(&"poi_spawned", _on_poi_spawned)
 		add_child(_sector)
-	_sector_row_id = StringName(row.get(&"id", SECTOR_ID_DEFAULT))
+	_sector_row_id = StringName(row.get(&"id", Registry.DEFAULT_SECTOR_ID))
 	## 11 §1 / K0 F15: the label is the row's own name, so a launch and a transition
 	## both read the sector the player is actually in.
 	_sector_name = String(row.get(&"name", _sector_name))
@@ -970,7 +972,7 @@ func _seat_ship(spawn: Vector2) -> void:
 
 func _row_for(sector_key: String) -> Dictionary:
 	if sector_key.is_empty():
-		return Registry.sector(SECTOR_ID_DEFAULT)
+		return Registry.sector(Registry.DEFAULT_SECTOR_ID)
 	var by_id := Registry.sector(StringName(sector_key))
 	if not by_id.is_empty():
 		return by_id
@@ -1454,13 +1456,19 @@ func _file_docked_faction() -> void:
 ## 14's 2026-10-08 block: the docked place is filed beside the faction, so the station
 ## shell's plate, the OVERVIEW rows and every station price read the row this dock landed
 ## at. Only a sector's primary spawns a station node today (14's own block), so the place is
-## that row; a sector with no station (S7) files an empty id and the readers fall back.
+## that row; a sector with no primary row files its **own sector id** (S7 files
+## `&"sector_7"`), so an empty filed id means "no run has filed a place" and nothing else -
+## the cold start (`StationRegistry.starting_station`) and the S7 fallback both read it that
+## way (14's 2026-10-08 S38 block, H1).
 func _file_docked_station() -> void:
 	var profile := _profile()
 	if profile == null or not profile.has_method(&"set_docked_station"):
 		return
 	var row := StationRegistryScript.primary_for(_sector_row_id)
-	profile.call(&"set_docked_station", StringName(row.get(&"id", &"")))
+	var filed := StringName(row.get(&"id", &""))
+	if filed == &"":
+		filed = _sector_row_id
+	profile.call(&"set_docked_station", filed)
 
 
 ## Section 7: `warp` channels for WARP_CHANNEL seconds and lands docked. The gate

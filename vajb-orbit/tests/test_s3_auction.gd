@@ -425,7 +425,10 @@ func test_the_hot_slot_arithmetic() -> void:
 	)
 	assert_eq(AuctionScript.hot_price(0), 0, "no price discounts to nothing")
 	## On a drawn shelf: one row carries the discount and every other row charges the list.
+	## S38's H1 makes an empty filed id the cold start, so "no station" (the factor 1.0 that
+	## leaves the hot slot as the only discount) is spelled by a sector with no station row.
 	var profile := _fresh()
+	profile.call(&"set_docked_station", &"sector_7")
 	var shelf: Dictionary = _draw_shelf(profile)
 	profile.call(&"set_auction", shelf)
 	var hot := AuctionScript.hot_id(profile)

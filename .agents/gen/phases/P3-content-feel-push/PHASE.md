@@ -40,17 +40,20 @@ library. Ends in playtest build 2.
       rows), R1 blocked on 2 HIGH + 1 MED, F1 cured all three (+2 rows) · riders
       T-138/T-152/T-154 closed, T-156/T-157 filed · **tick J1 shipped as
       PROPOSED** (6-row board, Expedition staged to S26)
-- [ ] **S38 — the board's clock and the hub's cold start.** The owner's
+- [x] **S38 — the board's clock and the hub's cold start.** The owner's
       2026-10-08 playtest finding: the hub entered from the main menu offers no
       contracts (the docked place is never filed on that path) and the 20-minute
-      roll has no visible countdown. `slices/S38-hub-start-and-clock/` · runs
-      after: S25 · baseline `post-S25` (1226/0) · **runs before S26** (both hold
+      roll has no visible countdown. `slices/S38-hub-start-and-clock/` · ran
+      after: S25 · baseline `post-S25` (1226/0) · **ran before S26** (both hold
       `game/` + `ui/screens/station.gd`) · ticks H1–H3 PROPOSED, riders
-      T-156/T-157
+      T-156/T-157 · **closed 2026-10-08**: gate 1236/0 ×2 hermetic, zero
+      `SCRIPT ERROR` lines, verify clean vs `s38_start`, one MED cured by F1,
+      T-156/T-157 closed, 2 LOW → T-158/T-159
 - [ ] **S26 — endgame: bosses, arenas, insurance, vaults.** The Boneyard + The
       Pyre arena runs, the Maw roaming S7, death persistence, insurance + mercy
       clause, vaults + `u_vault`. `slices/S26-endgame/` · runs after: S38 (its
-      Expedition seam) · baseline `post-S25` · **brief re-cut 2026-10-08**
+      Expedition seam) · baseline `post-S38` (1236/0) · **brief re-cut
+      2026-10-08**
 - [ ] **S27 — catalog breadth & shipyard.** +7 affix rows with perks live, tier
       variants, per-archetype loot, the shipyard build path
       (recipes/queue/scrap). `slices/S27-catalog-breadth/` · runs after: S26 ·

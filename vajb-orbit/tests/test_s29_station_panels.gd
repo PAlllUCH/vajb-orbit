@@ -33,6 +33,7 @@ var _previous_fits: Dictionary = {}
 var _previous_owned: Array = []
 var _previous_modules: Dictionary = {}
 var _previous_credits := 0
+var _previous_docked: StringName = &""
 var _statuses: Array[String] = []
 
 
@@ -56,6 +57,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_owned = (_profile.get(&"_owned_ships") as Array).duplicate(true)
 	_previous_modules = (_profile.get(&"_modules") as Dictionary).duplicate(true)
 	_previous_credits = int(_profile.call(&"credits"))
+	_previous_docked = StringName(_profile.get(&"_docked_station"))
 	_profile.set(&"save_path", PROFILE_PATH)
 	_delete_file(PROFILE_PATH)
 
@@ -68,6 +70,7 @@ func suite_teardown() -> void:
 	_profile.set(&"_owned_ships", _previous_owned)
 	_profile.set(&"_modules", _previous_modules)
 	_profile.set(&"_credits", _previous_credits)
+	_profile.call(&"set_docked_station", _previous_docked)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
 	_delete_file(PROFILE_PATH)
@@ -81,6 +84,10 @@ func setup() -> void:
 	_profile.set(&"_fits", {})
 	_profile.set(&"_modules", {})
 	_profile.set(&"_credits", 50000)
+	## S38's H1 makes an empty filed id the cold start, so the panes mount with no place at
+	## all spelled by a sector with no station row (S7's own sentinel) - the fixture these
+	## rows always meant, and the one that keeps the list prices.
+	_profile.call(&"set_docked_station", &"sector_7")
 
 
 func _delete_file(path: String) -> void:

@@ -30,34 +30,35 @@ later request; one section costs ~2-3k.
 
 | Section | Topic | Lines |
 |---|---|---|
-| §1 | Input map (project settings) | L65–L85 |
-| §2 | ShipStats | L86–L106 |
-| §3 | ShipFit | L107–L124 |
-| §4 | PlayerShip | L125–L305 |
-| §5 | Combat/mining entities (slice 1 scope) | L306–L410 |
-| §6 | Sector / SectorRegistry | L411–L436 |
-| §7 | HUD — frozen API + wave-1 additions | L437–L502 |
-| §8 | Economy / state seams | L503–L546 |
-| §8.1 | Slice 0 — physics & fuel (pinned additions, 2026-09-21) | L547–L682 |
-| §8.2 | Slice 2 — fight (pinned additions, 2026-09-21) | L683–L887 |
-| §9 | Universal test gate | L888–L989 |
-| §11 | P2 ship frames (2026-09-21) | L990–L1185 |
-| §12 | P2-B1 weapon fit (2026-09-22) | L1186–L1243 |
-| §13 | P2-B proper fitting (2026-09-22) | L1244–L1365 |
-| §14 | S2.6 truth-and-feel (2026-09-22) | L1366–L1494 |
-| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1495–L1599 |
-| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L1600–L1775 |
-| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L1776–L1854 |
-| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L1855–L1927 |
-| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L1928–L2063 |
-| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2064–L2275 |
-| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2276–L2353 |
-| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L2354–L2408 |
-| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L2409–L2578 |
-| §24 | S24 world identity — stations, standing, bands, nebula (2026-10-08) | L2579–L2666 |
-| §25 | S28 economy law — the value ladder, the fee door, the battery, the b… | L2667–L2727 |
-| §26 | S25 contracts board — the registry, the reward law, the three exits … | L2728–L2800 |
-| §10 | Changelog | L2801–L3082 |
+| §1 | Input map (project settings) | L66–L86 |
+| §2 | ShipStats | L87–L107 |
+| §3 | ShipFit | L108–L125 |
+| §4 | PlayerShip | L126–L306 |
+| §5 | Combat/mining entities (slice 1 scope) | L307–L411 |
+| §6 | Sector / SectorRegistry | L412–L437 |
+| §7 | HUD — frozen API + wave-1 additions | L438–L503 |
+| §8 | Economy / state seams | L504–L547 |
+| §8.1 | Slice 0 — physics & fuel (pinned additions, 2026-09-21) | L548–L683 |
+| §8.2 | Slice 2 — fight (pinned additions, 2026-09-21) | L684–L888 |
+| §9 | Universal test gate | L889–L1012 |
+| §11 | P2 ship frames (2026-09-21) | L1013–L1208 |
+| §12 | P2-B1 weapon fit (2026-09-22) | L1209–L1266 |
+| §13 | P2-B proper fitting (2026-09-22) | L1267–L1388 |
+| §14 | S2.6 truth-and-feel (2026-09-22) | L1389–L1517 |
+| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1518–L1622 |
+| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L1623–L1798 |
+| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L1799–L1877 |
+| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L1878–L1950 |
+| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L1951–L2086 |
+| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2087–L2298 |
+| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2299–L2376 |
+| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L2377–L2431 |
+| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L2432–L2601 |
+| §24 | S24 world identity — stations, standing, bands, nebula (2026-10-08) | L2602–L2689 |
+| §25 | S28 economy law — the value ladder, the fee door, the battery, the b… | L2690–L2750 |
+| §26 | S25 contracts board — the registry, the reward law, the three exits … | L2751–L2823 |
+| §27 | S38 — the hub's cold start and the board's clock (2026-10-08) | L2824–L2898 |
+| §10 | Changelog | L2899–L3213 |
 
 <!-- section-index:end -->
 
@@ -913,6 +914,24 @@ and `05` §10's rows off the live baselines. `test_p1_refinery.gd` alone reads
 hide-sub-convertible-stacks semantics, only its Gold fee figure and the two
 re-signed call shapes moved (disclosed in the suite's own header).
 
+- **S38's block (2026-10-08, closed):** gate **1226 → 1236/0** twice hermetic on
+  fresh scratch stores (R1's own runs; growth is exactly
+  `test_s38_start_and_clock.gd`'s **10 new rows**, and per-suite `func test_`
+  counts diffed against the pre-wave tree move no other row). B1's first read was
+  **1229/7**: all seven red rows were premises that used an *empty filed id* as a
+  proxy for "not at a station", which H1 redefines; four sat outside §8's original
+  table, so the brief's §8 was extended with them and the developer session
+  re-cut all seven by hand (the file sets were not widened — the S28 precedent,
+  the intervention and its reversal recorded in the brief §8 addendum). R1
+  re-measured the wave independently of the suites
+  (`tests/probe_s38_r1_remeasure.gd`, fresh scratch store): the cold start
+  resolves `s1_primary` with a 6-row board and the row's own plate pair, the U22
+  readout tracked `BAND_SECONDS − now % BAND_SECONDS` at nine 0.35 s-spaced
+  samples (4 distinct texts, lag ≤ 1 tick, timer 1.0 s repeating), the driven
+  boundary rolled band+1's own rows in place with the readout restarting at
+  `20:00`, S7 / null-profile / unparseable-id kept their answers, and §26's pin
+  block read byte-identical (board 6, max 3, fee 100, SC 1100/1500/3000/6000,
+  flats 800/1200/300, Known 11/+5 %, gate floor −11).
 - **S25's block (2026-10-08, closed):** `test_s25_contracts.gd` adds **24 rows**
   (A1–A8) and the PASS-set diff against B1's baseline store moves exactly those
   24 — no other suite's row moved. R1's own gate read **1223/1 twice** on fresh
@@ -951,11 +970,15 @@ to `.agents/gen/_archive/contracts_retired_2026-10-07.md`; wave recaps live in
   wrapper needed, and it never touches the owner's live account. Close-outs still
   run it **twice on fresh scratch stores** (`XDG_DATA_HOME=$(mktemp -d)`) and
   expect byte-identical results: `[SUMMARY] passed=<N> failed=0`, exit 0.
-- **The two tolerated red lines** are pre-existing and not regressions while the
-  suite exits 0: one `SCRIPT ERROR` from `tests/test_weapon_fx_f4.gd`'s `_clear()`
-  freeing the rig's `guns` node one line too early (backlog L61, retired
-  2026-10-07), and `Parameter "data.tree" is null.` from `weapons.gd:_world_parent`
-  on a detached hull.
+- **The one tolerated red line** is pre-existing and not a regression while the
+  suite exits 0: `Parameter "data.tree" is null.` from `weapons.gd:_world_parent`
+  on a detached hull. A second line, a `SCRIPT ERROR` from
+  `tests/test_weapon_fx_f4.gd`'s `_clear()` freeing the rig's `guns` node one line
+  too early, was named here until S38's close-out (2026-10-08) struck it: the
+  pre-wave `s38_start` baseline log (`1226/0`) carries **zero** `SCRIPT ERROR`
+  lines and so does every S38 run, so the error no longer occurs and a "two
+  tolerated lines" count was wrong. Measured, not assumed — the strike is
+  `v0.51` in §10.
 - **Discovery is automatic** (`tests/headless_runner.gd` finds `test_*.gd`); no
   registration file exists to edit. `--suite=<name>` matches the file basename:
   pass `--suite=test_<file>` — `--suite=s2_6_burst` selects nothing and prints
@@ -2798,6 +2821,81 @@ a `staged` seam row S26 flips live; INSURANCE/VAULTS keep the host's
 not-installed placeholder until S26. LOW: **T-156** (U7 dim scope), **T-157**
 (the double-accept id collision).
 
+## §27 S38 — the hub's cold start and the board's clock (2026-10-08)
+
+**Wave S38** (`slices/S38-hub-start-and-clock/`, baseline `s38_start`, gate
+**1226 → 1236/0** ×2 hermetic). The owner's playtest finding: the hub entered
+from the menu had no board at all and the 20-minute roll was invisible. 14's
+2026-10-08 S38 block (H1–H3, each with its reversal) and STATION_HUB §15.2's
+**U22** are the law; this section pins the shipped interface.
+
+**The cold start (H1).** An empty filed id means "no run has filed a place" and
+nothing else:
+
+```gdscript
+# game/sector_registry.gd
+const DEFAULT_SECTOR_ID: StringName = &"sector_1"
+    ## was game.gd's SECTOR_ID_DEFAULT; game.gd reads it at its two default sites
+
+# game/station_registry.gd
+static func starting_station() -> Dictionary
+    ## primary_for(SectorRegistry.DEFAULT_SECTOR_ID); {} when that sector has no primary
+static func docked_station_id(profile: Node) -> StringName
+    ## an EMPTY filed id answers the starting row's id; a null profile and a
+    ## station-less starting sector still answer &""
+static func docked_station(profile: Node) -> Dictionary
+    ## an EMPTY filed id answers starting_station(); every other input unchanged
+    ## (an id the registry does not ship still falls to its sector's primary, an
+    ## unparseable id still answers {})
+
+# game/game.gd _file_docked_station
+    ## a sector with no primary row files its OWN sector id (S7 files &"sector_7"),
+    ## so an empty id can never mean "this sector has no station"
+```
+
+Unchanged answers (pinned): a null profile `{}`, an unparseable id `{}` with the
+id seam returning the filed id, and a station-less sector — the readers'
+no-place fallback and the plate's scene placeholder copy
+(`station.tscn`'s `ORBITAL DRYDOCK KEPLER-9` / `DOCKING RING 04 · HELIOS DRIFT ·
+HULL TRAFFIC LOW`) stay as the last resort. Reversal (H1): every reader falls
+back to nothing again and the constant returns to `game.gd`.
+
+**The countdown (H2, U22).** `ui/station/contracts_panel.gd`:
+
+```gdscript
+const TICK_SECONDS := 1.0
+const ROLL_FORMAT := "NEW JOBS IN %s"
+func _roll_remaining() -> int
+    ## WorldClock.BAND_SECONDS - WorldClock.now() % WorldClock.BAND_SECONDS
+```
+
+One repeating 1 Hz `Timer` (the refinery panel's own idiom) re-derives the
+readout at every tick — never a value written once at build — with two-digit
+minutes so the maximum reads `20:00` and it never reads `00:00`; the timer runs
+whether or not the deck is showing the panel, so the boundary is never missed.
+The readout is a `StationCaption` at the U3 header strip's right end, and
+`column_headers()` keeps answering U3's four headers. Reversal (H2): the U8
+caption alone, no countdown.
+
+**The re-roll (H3).** `_tick` compares `ContractRegistry.band_index()` with the
+band the drawn board was rolled in (`_board_band`, filed at `_refresh`) and
+re-rolls once with one `_refresh()` when the clock leaves it — the next band's
+rows, the readout restarted at `20:00`, no scene change and no player action.
+Reversal (H3): the board changes only on the next mount.
+
+**The riders.** T-156: a staged row dims **whole** — one `modulate` at
+`text_dim` on the row's inner box (`_dim_rows`, applied in `_apply_tokens` so a
+theme change re-reads the token), the type icon included; the per-label dim is
+retired. T-157: board rows whose id is already active are filtered at
+`_refresh` (`_without_active`), so an accepted row leaves the board and the
+same id cannot be accepted twice in one band (the panel's `accept` door refuses
+a second attempt of a drawn id with `REASON_UNKNOWN`). Reversal: the
+label-only dim; the re-presented row.
+
+Tests: `tests/test_s38_start_and_clock.gd` (10 rows, A1–A6) and
+`tests/probe_s38_start_board.tscn` (the evidence probe); R1's re-measurement
+probe is `tests/probe_s38_r1_remeasure.tscn`.
+
 ## §10 Changelog
 
 Rolling log of what each wave changed here. Kept verbatim only where an entry
@@ -3079,3 +3177,36 @@ bottom (the index-line form is only for retired entries).
   placeholder), **T-152** (the launch line) and **T-154** (the refinery comment)
   closed; **T-156**/**T-157** filed LOW. J1 (R-S25-1's 6-row board, Expedition
   staged) shipped as PROPOSED.
+- **v0.50 (2026-10-08, wave S38 review — S38-R1, this wave's only CONTRACTS
+  writer; gate `1226 → 1236/0` twice hermetic on fresh scratch stores, B1's first
+  read `1229/7` re-cut by the developer session per the brief §8's extended
+  table)** — adds **§27**, the wave's pinned interface: the cold-start place
+  (`SectorRegistry.DEFAULT_SECTOR_ID`, `StationRegistry.starting_station()`, the
+  empty-filed-id answers in both seams, `game.gd` filing a station-less sector's
+  own id so the sentinel stays exact), the U22 countdown (`TICK_SECONDS` 1.0,
+  `ROLL_FORMAT`, the live `BAND_SECONDS − now % BAND_SECONDS` figure re-derived
+  at every 1 Hz tick, maximum `20:00`) and the in-place band re-roll. §26's
+  numbers are byte-identical (`game/contract_registry.gd` untouched; R1's pin
+  block re-read off the live tables). Riders **T-156** (whole-row dim, icon
+  included) and **T-157** (an accepted row leaves the board; a second accept of
+  the same id is refused) closed in code and re-measured. R1's findings: F1 MED
+  is the §8-mandated A8 restatement not executed (`test_s25_contracts.gd:1209`
+  still says "a profile with no place" under H1 — outcome green, wording stale,
+  one fixer line); F2/F3 LOW ticketed **T-158**/**T-159** (the shipped probe's
+  1.2 s countdown window can false-negative on one slow frame; `world_clock.gd`'s
+  "no per-consumer Timers, ever" header sentence against the two shipped 1 Hz
+  display ticks). Next free ticket **T-160**.
+- **v0.51 (2026-10-08, wave S38 close-out — the developer session; gate `1236/0`
+  twice hermetic on fresh scratch stores, **zero** `SCRIPT ERROR` lines, where the
+  reviewed tree carried one)** — two post-review corrections, both recorded in the
+  wave's slice reports and in `MASTER_REPORT.md` §6. (1) §9's tolerated-red-line
+  sentence struck the `test_weapon_fx_f4.gd` `_clear()` error: measured absent
+  from the pre-wave `s38_start` baseline log (`1226/0`) and from every S38 run, so
+  it no longer occurs and the "two tolerated red lines" count was wrong — the log
+  carries one. (2) `tests/test_s38_start_and_clock.gd:204` read the panel's
+  `_station_row` **variable** through `call()` instead of `get()`, which raised the
+  wave's only new `SCRIPT ERROR` and silently aborted that row's tail asserts
+  while the harness printed `[PASS]` (the S18-F1/L237 silent-abort class); fixed
+  to `get()`, found by S38-F1 as an outside-mandate observation after R1's review
+  and landed by the orchestrator. Both are corrections to a *measured claim*, not
+  pins. Reversal: restore the two-line sentence and the `call()`.

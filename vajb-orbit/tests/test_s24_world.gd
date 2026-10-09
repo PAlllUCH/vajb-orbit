@@ -299,11 +299,18 @@ func test_the_unavailable_reasons_are_the_two_u2_captions() -> void:
 
 
 ## The seam: the profile's own row when it names one, the sector's primary row for an id
-## this wave does not ship, and an empty dictionary for no profile / no id - never a crash
-## (the brief's rule 6).
+## this wave does not ship, the starting sector's primary for an **empty** filed id (S38's
+## H1 cold start: an empty id means "no run has filed a place" and nothing else), and an
+## empty dictionary for no profile / an unparseable id - never a crash (the brief's rule 6).
 func test_a_place_resolves_from_the_profile_seam() -> void:
 	var profile := _fresh()
-	assert_true(RegistryScript.docked_station(profile).is_empty(), "nothing filed, no place")
+	assert_eq(
+		String(RegistryScript.docked_station(profile)[&"id"]), "s1_primary",
+		"nothing filed is the cold start, the starting sector's primary (S38 H1)"
+	)
+	assert_eq(
+		RegistryScript.docked_station_id(profile), &"s1_primary", "and both seams answer it"
+	)
 	assert_true(RegistryScript.docked_station(null).is_empty(), "a null profile is a normal path")
 	profile.set_docked_station(&"s2_outpost")
 	assert_eq(
@@ -502,7 +509,7 @@ func test_the_band_multiplier_moves_the_repair_fee() -> void:
 			RepairsScript.fee(profile, SHIP), int(band[1]),
 			"standing %d prices the same repair" % int(band[0])
 		)
-	profile.set_docked_station(&"")
+	profile.set_docked_station(&"sector_7")
 	assert_eq(RepairsScript.fee(profile, SHIP), neutral, "no station is the section 6 number")
 
 

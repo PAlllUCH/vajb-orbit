@@ -53,7 +53,11 @@ const GATE_MD5 := "c13574f6af658c1fcd4728c34901caf3"
 ## 2026-10-08 because B2's file set held only its own suite): A4/A5 add the
 ## `hostile_band` and `clouds` row keys the wave's brief mandates, so the pin is
 ## the finished tree's reading again, the same procedure.
-const REGISTRY_MD5 := "3661a0d21ad2de97811e40460c597f2a"
+## S38 re-pin (disclosed in `S38-B1_report.md`, applied by the orchestrator
+## 2026-10-08 because the file sits outside B1's set): H1 moves the starting
+## sector constant into this registry, so the pin is the finished tree's reading
+## once more, the same procedure.
+const REGISTRY_MD5 := "71e7d4f488b510d70e09f6f65540b840"
 
 var _sectors: Array[Node2D] = []
 

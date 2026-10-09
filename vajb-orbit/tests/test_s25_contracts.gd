@@ -1168,7 +1168,9 @@ func test_a7_the_two_empty_states() -> void:
 		"a Shunned board shows 14 section 2's own line"
 	)
 	assert_eq(EMPTY_GATED, "REDEMPTION MUST PRECEDE EMPLOYMENT", "verbatim")
-	_profile.call(&"set_docked_station", &"")
+	## S38's H1: an empty filed id is the cold start and now answers the starting place, so
+	## "no place at all" is spelled by a sector with no station row (S7's own sentinel).
+	_profile.call(&"set_docked_station", &"sector_7")
 	panel.call(&"refresh_profile", &"contracts")
 	assert_eq(
 		String(panel.call(&"empty_state_text")), EMPTY_NO_JOBS, "an empty board shows the other"
@@ -1201,10 +1203,13 @@ func test_a8_the_launch_line_names_the_docked_sector() -> void:
 		String(launch.call(&"destination_line")), "OPEN SPACE · HALCYON REACH",
 		"another dock answers its own sector"
 	)
+	## S38's H1: an empty filed id is the cold start and now answers the starting place
+	## (Halcyon), not "no place"; the leg's outcome is unchanged (HALCYON REACH carries
+	## no HELIOS).
 	_profile.call(&"set_docked_station", &"")
 	assert_false(
 		String(launch.call(&"destination_line")).contains("HELIOS"),
-		"and a profile with no place still names no dead sector"
+		"an empty filed id is the cold start and still names no dead sector"
 	)
 
 

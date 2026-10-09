@@ -6,9 +6,17 @@ extends RefCounted
 ##
 ## Contract: docs/gameplay/14_station_services.md section 1/8 + its 2026-09-27 P3 block
 ## (R-S24-1, the nine names, tick W3) + its 2026-10-08 block (the rows, the docked-station
-## seam, the plate landing); docs/gameplay/12_factions.md section 4.1/5 + its 2026-10-08
+## seam, the plate landing) + its 2026-10-08 S38 block (H1: the cold-start place, read
+## only); docs/gameplay/12_factions.md section 4.1/5 + its 2026-10-08
 ## block (V1 the band multiplier, V2 the additive stack, V6 the shelf bias). Contract:
 ## docs/CONTRACTS.md section 24.
+##
+## **The cold start (H1).** An empty filed id means "no run has filed a place" and nothing
+## else: `docked_station`/`docked_station_id` answer `starting_station()` =
+## `primary_for(SectorRegistry.DEFAULT_SECTOR_ID)`. A sector with no station files its own
+## sector id at the dock (`game.gd:_file_docked_station`), so S7 keeps the no-place
+## fallback; a null profile, an unparseable id and a station-less starting sector are
+## unchanged.
 ##
 ## **Row keys.** `id`, `name`, `character` (the W3 pair verbatim, lowercase as the doc
 ## writes it), `sector` (1-7), `kind` (`primary`/`outpost`), `faction` (the four owner ids
@@ -278,17 +286,30 @@ static func stations() -> Array[Dictionary]:
 	return STATIONS.duplicate(true)
 
 
+## The cold-start place (14's 2026-10-08 S38 block, H1): the starting sector's primary row,
+## `{}` when that sector has no primary (a station-less sector answers no place, the
+## readers' existing fallback). Read-only: no screen writes the profile for it.
+static func starting_station() -> Dictionary:
+	return primary_for(SectorRegistry.DEFAULT_SECTOR_ID)
+
+
 ## The row id the profile is docked at, or `&""` when it is not docked and when the
-## profile predates the seam.
+## profile predates the seam. An **empty** filed id is the cold start - no run has filed a
+## place - and answers the starting row's id (H1); a null profile and a station-less
+## starting sector still answer `&""`.
 static func docked_station_id(profile: Node) -> StringName:
 	if profile == null or not profile.has_method(&"docked_station"):
 		return &""
-	return StringName(profile.call(&"docked_station"))
+	var filed := StringName(profile.call(&"docked_station"))
+	if filed == &"":
+		return StringName(starting_station().get(&"id", &""))
+	return filed
 
 
-## The place the account is docked at: the profile's own row when the seam names one, else
-## the **sector's primary** row (an id this wave does not ship still resolves to its
-## sector's capital), else an empty dictionary. A null profile and an unknown id are normal
+## The place the account is docked at: the profile's own row when the seam names one, the
+## **starting** row for an empty filed id (H1's cold start), else the **sector's primary**
+## row (an id this wave does not ship still resolves to its sector's capital), else an
+## empty dictionary. A null profile, an unparseable id and a station-less sector are normal
 ## paths, never errors - the shell keeps the scene's placeholder strings for an empty row.
 static func docked_station(profile: Node) -> Dictionary:
 	var id := docked_station_id(profile)
