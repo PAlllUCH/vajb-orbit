@@ -248,3 +248,60 @@ sector (**M11**). These land with S25 — R-S25-1's extract re-cuts likewise.
 
 **§3's insurance premiums stay** the per-class flats (200–700); **M14** holds
 the optional 1.5 %-of-list re-derivation (135–1 080) for S26's implementation.
+
+## 2026-10-08 — S38: the board's clock and the hub's cold start (amends §2/§9)
+
+*(S38's block, from the owner's playtest finding verbatim: "there is 20 minute
+refresh timer for contrats but i cannot see in real time how much time is left
+for refresh and there should be contracts on the start". Ticks **H1–H3**,
+PROPOSED until the owner ticks them; each row carries its reversal.)*
+
+**H1 — the hub's cold start.** The main menu's PLAY routes straight to the
+station hub (`ui/screens/main_menu.gd:223`), and nothing on that path files the
+docked place: only `game.gd:_file_docked_station` (`:1458`, called from the
+docking route `:1440`) writes it. Measured on the real scene with a fresh
+profile (`vajb-orbit/tests/probe_s38_start_board.tscn`): the profile's
+`docked_station()` empty, `StationRegistry.docked_station` `{}`,
+`ContractRegistry.board({}, 0)` **0 rows**, the panel reading U8's
+`NO OPEN JOBS …` state, and the header plate falling back to the scene's
+mockup-era copy (`ui/screens/station.tscn:129` `ORBITAL DRYDOCK KEPLER-9`,
+`:135` `DOCKING RING 04 · HELIOS DRIFT · HULL TRAFFIC LOW` — a sector name 11 §1
+does not carry).
+
+- **An empty filed id means "no run has filed a place" and nothing else.** A
+  sector with no station files its **own sector id** (`game.gd:_file_docked_station`
+  writes `_sector_row_id` when the sector has no primary row), so S7 keeps the
+  readers' existing no-place fallback and the sentinel cannot be read as a cold
+  start.
+- **The starting place is the starting sector's primary.** `SectorRegistry` gains
+  `DEFAULT_SECTOR_ID := &"sector_1"` — the game scene's own default
+  (`game.gd:113 SECTOR_ID_DEFAULT`), moved to the registry that owns sectors,
+  with `game.gd` reading it. `StationRegistry` gains
+  `starting_station() -> Dictionary` = `primary_for(SectorRegistry.DEFAULT_SECTOR_ID)`,
+  and **both** `docked_station` and `docked_station_id` answer it when the
+  profile's id is empty, so every reader (the plate, the OVERVIEW service matrix,
+  the price law, the vault record, the contracts board) agrees, with no write
+  from a screen.
+- Measured after: the board reads **6 rows** (first row `haul · 4 500 CR · 40×
+  ingot_aluminium to Marchgate Post`) and the plate reads the row's own name and
+  character line.
+- Reversal: every reader falls back to nothing again and the scene's placeholder
+  copy returns (**H1**).
+
+**H2 — the countdown.** The roll is invisible today and nothing re-rolls at the
+boundary: `ui/station/contracts_panel.gd` carries no timer and no time readout,
+and its board re-derives from `band_index()` only on `_refresh()` (mount and
+profile writes). Measured: `WorldClock.BAND_SECONDS` **1200**, `elapsed = now %
+1200`, `remaining = 1200 − elapsed` (the probe read `remaining=667`), and the
+next band's board differs (`next_roll_differs=true`).
+
+- The U3 header strip's right end carries **`NEW JOBS IN mm:ss`** (the countdown
+  at `WorldClock.BAND_SECONDS − now % WorldClock.BAND_SECONDS`, two-digit minutes
+  so the maximum reads `20:00`), ticking at **1 Hz** — the refinery panel's own
+  `TICK_SECONDS` idiom (`ui/station/refinery_panel.gd:57/250/272`).
+- Reversal: the U8 caption alone, no countdown (**H2**).
+
+**H3 — the re-roll at zero.** When the countdown reaches 0 the panel re-rolls its
+own board (one `_refresh()`, so the next band's rows appear and the readout
+restarts at `20:00`) with no scene change and no player action. Reversal: the
+board changes only on the next mount (**H3**).

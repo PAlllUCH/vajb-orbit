@@ -12,8 +12,9 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 
 | Pos | Lane item | Wave | Runs after | The collision/dependency that forces the order |
 |---|---|---|---|---|
-| 1 | coder 32 | **S26 bosses, arenas, insurance, vaults** | — (S25 closed) | `game/` + `player_profile.gd` + S25's Expedition seam (the `staged` row `contract_registry` ships); **brief re-cut 2026-10-08** — boss payouts 6 000/12 000 (M10), the premium law per M14, the panels pinned to STATION_HUB §15.3/§15.4 |
-| 2 | coder 33 | S27 catalog breadth & shipyard | coder 32 | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/`; prices its new rows from `01`'s L2 bands; **brief re-cut 2026-10-08** — L2 pricing law folded in, T-153's tier-4 rider in the file set |
+| 1 | coder 35 | **S38 the board's clock and the hub's cold start** | — (S25 closed) | the owner's 2026-10-08 playtest finding: the hub entered from the main menu never has its docked place filed (`main_menu.gd:223` → the hub; only `game.gd:_file_docked_station` writes it), so the contracts board reads 0 rows; and the 20-minute roll has no visible countdown. **Runs before 32** — both hold `game/` + `ui/screens/station.gd`, and S26 needs a readable hub; ticks H1–H3, riders T-156/T-157 |
+| 2 | coder 32 | **S26 bosses, arenas, insurance, vaults** | coder 35 | `game/` + `player_profile.gd` + S25's Expedition seam (the `staged` row `contract_registry` ships); **brief re-cut 2026-10-08** — boss payouts 6 000/12 000 (M10), the premium law per M14, the panels pinned to STATION_HUB §15.3/§15.4 |
+| 3 | coder 33 | S27 catalog breadth & shipyard | coder 32 | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/`; prices its new rows from `01`'s L2 bands; **brief re-cut 2026-10-08** — L2 pricing law folded in, T-153's tier-4 rider in the file set |
 
 **Updated 2026-10-08 (S25 contracts board closed — item 31).** Gate **1202 → 1226/0**
 ×2 hermetic, verify clean vs `s25_start`; R1 blocked on 2 HIGH (the loop had no
@@ -29,7 +30,7 @@ closed**; CONTRACTS **§26** + §9's finished chain + §10 v0.49. Full block:
 ×2 hermetic; R1's 1 HIGH cured by F1, 2 LOW → T-152/T-153; ticks W1–W3 + V1–V8
 owner-ratified green. Recap: `MASTER_REPORT.md` §6.
 
-These two are the whole live queue — every earlier item is closed and archived
+These three are the whole live queue — every earlier item is closed and archived
 (`_archive/dispatch_coder_done_2026-10-07.md` + `_archive/dispatch_done_2026-10-08.md`
 + `MASTER_REPORT.md` §6). Playtest pass #1 (the owner's, `19_testing_notes.md`'s
 eye list) runs alongside; build 2 + the tester template are phase exit

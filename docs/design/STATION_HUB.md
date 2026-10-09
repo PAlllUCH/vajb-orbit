@@ -56,13 +56,13 @@ and every tool result is re-sent on each later request.
 | 12. | Implementation notes for the coder | L1194–L1273 |
 | 13. | Verification performed on the mockup | L1274–L1290 |
 | 14. | Open questions for the owner | L1291–L1324 |
-| 15. | Station services deck & station identity (amendment 2026-10-02, wave… | L1325–L1501 |
-| 16. | Panel consolidation and the inspector band (amendment 2026-10-03, ow… | L1502–L1540 |
-| 17. | The merged panels — design detail, the inspector law, the panel temp… | L1541–L1652 |
-| 18. | Shell v2 — the TERMINAL drawer, the OVERVIEW pane, the popup sinks (… | L1653–L1696 |
-| 19. | Station shell v2 design detail — the OVERVIEW pane and the one skele… | L1697–L1894 |
-| 20. | The ARMORY two-module rework (amendment 2026-10-04, owner's playtest… | L1895–L1933 |
-| 21. | The two-sector rework — ARMORY's two modes and the REFINERY queue pa… | L1934–L1980 |
+| 15. | Station services deck & station identity (amendment 2026-10-02, wave… | L1325–L1504 |
+| 16. | Panel consolidation and the inspector band (amendment 2026-10-03, ow… | L1505–L1543 |
+| 17. | The merged panels — design detail, the inspector law, the panel temp… | L1544–L1655 |
+| 18. | Shell v2 — the TERMINAL drawer, the OVERVIEW pane, the popup sinks (… | L1656–L1699 |
+| 19. | Station shell v2 design detail — the OVERVIEW pane and the one skele… | L1700–L1897 |
+| 20. | The ARMORY two-module rework (amendment 2026-10-04, owner's playtest… | L1898–L1936 |
+| 21. | The two-sector rework — ARMORY's two modes and the REFINERY queue pa… | L1937–L1983 |
 
 <!-- section-index:end -->
 
@@ -1383,6 +1383,7 @@ Left half: the board, **6 rows visible** (R-S25-1, tick J1), re-rolled on §9's
 | Active-contract card | one 76-tall card per active contract: type icon + objective + reward + faction glyph (board row anatomy), then the **escrow readout** line(s): `ESCROW — RESERVED FROM YOUR HOLD`, one `StationCaption` line per reserved stack: `40× ingot_titanium · RESERVED`. Reversal: the `RESERVED` lines only, no block header. **U5** | A5.4-4 | 14 §2:48-49 ("quantity reserved from the manifest") |
 | Cancel affordance | `CANCEL · 100 CR FEE` — the fee at the decision point — then the §5.2 confirm dialog, body `CANCEL THIS CONTRACT? — 100 CR FEE · THE RESERVED GOODS UNLOCK.` (the fee is therefore visible at both decision points, with U3's note at accept). Reversal: the button reads `CANCEL` and the fee appears in the confirm only. **U4** | A5.4 `Pressables`; §5.2 dialog | 14 §2:49 (100 CR fee) |
 | Empty states | no jobs at a roll: `NO OPEN JOBS — NEW JOBS ROLL ON THE 20-MINUTE CLOCK`; standing-gated (Shunned/Outlaw): `REDEMPTION MUST PRECEDE EMPLOYMENT` (pin verbatim). Reversal: silent empty board. **U8** | `StationCaption` on the empty list | 14 §2:28, :50-51 |
+| Roll countdown | right end of the header strip, one `StationCaption` readout: `NEW JOBS IN mm:ss` at `WorldClock.BAND_SECONDS − now % WorldClock.BAND_SECONDS` (two-digit minutes; the maximum reads `20:00`), ticking at **1 Hz** (the refinery panel's `TICK_SECONDS` idiom). At `0` the board re-rolls and the readout restarts at `20:00`, with no scene change and no player action. Reversal: the U8 caption alone, no countdown. **U22** | `StationCaption` on the U3 strip's right end | 14 §2:28 + its 2026-10-08 S38 block (H2/H3) |
 
 ### 15.3 INSURANCE panel (14 §3)
 
@@ -1497,6 +1498,8 @@ block, R-S24-1).
 | SALVO drum: four `ui_seg_*` cells 18×32 on the 20 pitch, `SALVO s` caption, figures `0073` style (UI_SPEC §7) | UI_SPEC §7 | U18 | `salvo_cells 3` + `SALVO_MAX 999` + the pin rows back (L263's reversal) |
 | contents-list height `min (0, 200)` (new presentation value) | §15.4 / UI_SPEC §7 A5.4-5 | U19 | `min (0, 110)` — the shipped `CargoList` height |
 | 24 px stack icon in `ItemList` rows (**PROPOSED** — the shipped `CargoList` is plain text with no row icons) | §15.4 / UI_SPEC §7 A5.4-5 | U20 | plain-text `40× ingot_titanium` rows, no row icon |
+| S25's unpinned contract presentation values, as shipped: row column widths `140/220/130` + the 420 right column; the refusal/outcome wording shapes `REFUSED · MAX 3 ACTIVE`, `REFUSED · %d× %s NEEDED`, `ACCEPTED · <objective>`, `CONTRACT CANCELLED · 100 CR FEE`; the escort's `AMBUSH_SPAWN_RADIUS` 300, `POD_MARK_SCALE` 0.35, `POD_MARK_SPACING` 9 and the 4 pod marks; `KNOWN_FLOOR := 11`; the panel's own `CONTRACTS` pane header | §15.2 | U21 | the S25-B1 report's own reversals (§3.1's `40/130/110/160`; silent refusals; one mark per hold unit; a shared Known floor once S24 ships one; the deck header only) |
+| `NEW JOBS IN mm:ss` (e.g. `NEW JOBS IN 11:07`) — the roll countdown | §15.2 | U22 | the U8 caption alone |
 
 
 ## 16. Panel consolidation and the inspector band (amendment 2026-10-03, owner ruling; waves D18/S28/S29)
