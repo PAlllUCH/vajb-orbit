@@ -12,8 +12,11 @@ code item. Gate **1275 → 1300/0** ×2 hermetic on fresh scratch stores; CONTRA
 slot). Ticks **K1** (15 `<base>_mk2` variants, +15 %/step), **K2** (the seven
 R-S27-2 rows, incl. `PYRE_RING_RADIUS` 240.0) and **K3** (every suffix perk live at
 its flight seam) shipped at their PROPOSED values and were not separately ruled —
-they now live in `CONTRACTS.md` §20 and `15`/`09`'s P3 blocks. Next free ticket
-**T-179**. The queue is now **P3's exit** (playtest build 2); the playtest pass #1
+they now live in `CONTRACTS.md` §20 and `15`/`09`'s P3 blocks. A post-fix
+verification review (**S27-R2**, glm-5.3-flash) returned **clean** — no HIGH, no
+MED — and filed **T-179** (the Pyre ring can chain-detonate through its own kills;
+an owner ruling on interaction density). Next free ticket **T-180**. The queue is
+now **P3's exit** (playtest build 2); the playtest pass #1
 row below stays open — the owner's own eye is still the phase's exit criterion)*
 *Previously 2026-10-10 (S40 legibility — the owner's visibility review of the
 station decks. Gate **1267 → 1275/0** ×2 hermetic; UI_SPEC **§16**; the measured
@@ -73,6 +76,14 @@ plan)*
   (building still saves), but the doc band is false on the live ladder. 10 §4
   names the lever (labour %, never the frozen list prices, never the ore table);
   needs an owner-ticked amendment. Reversal: none (drift, not a code defect).
+- **The Pyre ring's own-kill cascade (S27, T-179).** A ring kill is itself a
+  below-quarter kill, so in a dense spawn one Pyre kill can chain-detonate rings
+  from each new victim's position (it terminates — dead hulls do not refire and
+  each victim is excluded from its own ring — but N kills can pay N × 50 across
+  the group). 15 §4's literal text already says a below-quarter kill detonates
+  its ring, so this is a ruling on **interaction density**, not a code defect:
+  ratify the cascade or gate the ring on the killing blow's source (player shots
+  only). Code stays as shipped until ruled.
 
 ## Open actions — no decision needed, just waiting
 

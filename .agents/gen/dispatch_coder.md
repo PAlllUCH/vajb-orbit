@@ -54,8 +54,10 @@ Items 1–44 closed (gate 437 → 1300/0 through the waves). Detail:
 owner's eye, not a wave: playtest build 2 and the tester template
 (`docs/gameplay/19_testing_notes.md`) are the phase's exit criteria. The next code
 work follows a fresh planning round — check `dispatch_designer.md` first, and note
-**T-178** (the shipyard build band post-S28) needs an owner tick before any
-shipyard-price change. S27's lessons for the next wave: a brief's `VAJB_WORKER_FILES`
+two owner ticks before touching the shipyard or the Pyre perk: **T-178** (the
+shipyard build band post-S28) and **T-179** (the Pyre ring's own-kill cascade;
+next free ticket **T-180**). S27's lessons for the next wave: a brief's
+`VAJB_WORKER_FILES`
 set must cover every file an acceptance item's own text reaches (B1's omitted the
 A2 flight call sites and `tests/`); a `tests/` pin a wave's own rows obsolete is the
 developer's bucket-2 re-cut, not a builder's; and the four S19 sealed files

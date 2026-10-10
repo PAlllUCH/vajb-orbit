@@ -1057,8 +1057,9 @@ static func prefix_value(prefix_id: StringName, tier: int) -> float:
 ## The prefix ids to store on a new instance of `base_id` at `rarity`: one for a
 ## Magic, two distinct ones for a Rare, none for a Common, drawn from the module's
 ## own family pool. A family with fewer rows than the rarity asks for contributes
-## all of them (15 section 3 gives armour, the engine, power, the boosters and
-## utility one prefix row each, so a Rare plate carries Lightened alone) -- the
+## all of them (the engine, power, the boosters and utility carry one prefix row
+## each, so a Rare of theirs carries its single row alone; armour's second row
+## landed with S27/R-S27-2, so a Rare plate now bends two) -- the
 ## count is `min(affixes, pool)`. 15 section 3's law is per **property**, not per
 ## row: two rows can bend the same stat (`keen`/`dense` both `damage_add`), so a
 ## pick drops every remaining row carrying its `stat` (S27-F1) and a Rare's two

@@ -29,7 +29,11 @@ roll two same-property prefixes (cured by F1 — a `stat`-level dedupe in
 by F1 — a `NpcShip.pre_hit_hull_fraction()` store, its AC6 seal re-pinned, the
 S22 procedure). F3 → **T-178** (the shipyard build band post-S28). **T-153
 closed.** CONTRACTS **§20 S27 block** + §9 + §10 **v0.56/v0.57**; ticks **K1–K3**
-shipped PROPOSED, not separately ruled. Next free ticket **T-179**. The queue is
+shipped PROPOSED, not separately ruled. A post-fix verification review
+(**S27-R2**, glm-5.3-flash) returned **clean** — no HIGH, no MED, both fixes
+proven (the prefix dedupe over 27k seeded Rare rolls; the Pyre gate in live
+flight) — and filed **T-179** (the Pyre ring's own-kill cascade, an owner ruling).
+Next free ticket **T-180**. The queue is
 now empty — P3's exit is the owner's playtest (build 2).
 
 **Updated 2026-10-10 (owner visibility review — S40).** The owner's follow-up to
