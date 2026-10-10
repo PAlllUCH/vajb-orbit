@@ -109,7 +109,8 @@ const FORBIDDEN_FILES: Dictionary = {
 	## (`_step_weapon` + `_fire_volley` + the `_weapon`/`_weapon_cooldown`/
 	## `_weapon_volleys` state) is the wave's edit to this file; this pin is the
 	## finished tree's reading (the S22 procedure).
-	"res://game/npc_ship.gd": "31f5ac426bbb20a1ba017ea8ed595959abe2062a704cd8d4b6066523b7062e65",
+	## S27-F1 re-pin (disclosed in `S27-F1_report.md`): the Pyre's pre-blow hull store (`_pre_hit_hull_fraction` + `pre_hit_hull_fraction()`) is the fixer's edit to this file; this pin is the finished tree's reading.
+	"res://game/npc_ship.gd": "754a261fd0480e4d5646e49b23dd8ced1094d1c1c4905700e759db3feda4b6f1",
 	## S39 re-pin (the same wave): T-168's route-leg advance (`_leg_reached` +
 	## `_route_last`/`_route_last_set`) is the wave's edit to this file; this pin is
 	## the finished tree's reading.
@@ -128,7 +129,10 @@ const FORBIDDEN_FILES: Dictionary = {
 	## S23-F1 re-pin (disclosed in `S23-F1_report.md`): the two family rows'
 	## pinned `draw` keys (R-S23-1's 12, R-S23-2's 8) are the fixer's edit to
 	## this file; this pin is the finished tree's reading (the S22 procedure).
-	"res://game/weapons.gd": "6848270a0a0c0952173546ab88492aa9dc3e1c0f0256611e81db41d288429f50",
+	## S27-B2 re-pin (disclosed in `S27-B2_report.md` and the wave brief's §8):
+	## A2's `of Echoes` gate (`_shots_released` + `Affixes.echoes_refunds`) is the
+	## wave's edit to this file; this pin is the finished tree's reading.
+	"res://game/weapons.gd": "8c9f0707fc4623f324cd64aca5b797055025632cae7f4937bbccd1e5f02f2c5b",
 }
 
 var _staged: Array[Node] = []

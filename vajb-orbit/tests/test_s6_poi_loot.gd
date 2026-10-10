@@ -38,6 +38,10 @@ const EV_TOLERANCE := 0.05
 
 const KIND_FIGHTER: StringName = &"fighter"
 const KIND_CORVETTE: StringName = &"corvette"
+## S27 (A4): the four kinds B1's wave added 06 §3 tables for. 06 §6 check 1 pins the
+## five slice-2 bands only, so the ±5 % expected-haul loop skips these (their own
+## seeded EV is `test_s27_catalog.gd`'s A4 row).
+const NEW_KINDS: Array[StringName] = [&"interceptor", &"turret", &"sibelon", &"boss"]
 
 
 ## A player stand-in for the pure channel tests: the POI reads `global_position` and,
@@ -133,6 +137,10 @@ func test_roll_band_expected_hauls_hold_within_five_percent() -> void:
 			## it is 06 §8's additive extra over the fighter band, and the two §8 rows
 			## below measure that composition.
 			continue
+		if NEW_KINDS.has(kind):
+			## S27 (A4): 06 §6 check 1 pins the five slice-2 bands, not A4's four new
+			## tables - those carry their own seeded EV in `test_s27_catalog.gd`.
+			continue
 		var expected := _expected_haul(kind)
 		var sample := _sample_haul(kind)
 		var tolerance := EV_TOLERANCE * maxf(float(expected[&"credits"]), 1.0)
@@ -202,14 +210,18 @@ func test_wreck_pickup_lifetime_is_ninety_seconds() -> void:
 	assert_eq(LootTablesScript.WRECK_PICKUP_LIFETIME, 90.0, "06 §4's 90 s window")
 
 
-## The shipped five-kind table is untouched: the band roll adds a delegate, never a
-## second table (test_engine2_loot.gd pins the shape; this is the guard that K2 did
-## not reshape it).
+## The shipped kind tables are untouched by the ±5 % band roll (which adds a delegate,
+## never a second table) and now carry S27's four A4 kinds beside the five slice-2
+## tables and the S23 hunter table.
 func test_the_shipped_tables_and_roll_are_untouched() -> void:
 	var kinds: Array[StringName] = [
 		&"fighter", &"swarmer", &"hunter", &"freighter", &"corvette", &"maw",
 	]
-	assert_eq(LootTablesScript.TABLES.size(), 6, "the five slice-2 tables plus the S23 hunter table")
+	assert_eq(
+		LootTablesScript.TABLES.size(),
+		10,
+		"the five slice-2 tables, the S23 hunter table and S27's four A4 kinds"
+	)
 	for kind: StringName in kinds:
 		assert_true(LootTablesScript.has(kind), "%s is still a shipped kind" % kind)
 		var payload: Array = LootTablesScript.roll(kind, 1, SAMPLE_SEED)

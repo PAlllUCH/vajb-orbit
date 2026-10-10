@@ -12,7 +12,25 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 
 | Pos | Lane item | Wave | Runs after | The collision/dependency that forces the order |
 |---|---|---|---|---|
-| 1 | coder 33 | **S27 catalog breadth & shipyard** | — (S39 closed 2026-10-10) | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/`; prices its new rows from `01`'s L2 bands; **brief re-cut 2026-10-08** — L2 pricing law folded in, T-153's tier-4 rider in the file set. Carries T-161/T-162/T-163 if its file set reaches them |
+| — | — | **queue empty — P3's exit is the playtest** | S27 closed 2026-10-10 | P3's remaining work is the owner's eye (playtest build 2, `docs/gameplay/19_testing_notes.md`), not a wave. The next code work follows a fresh planning round. |
+
+**Updated 2026-10-10 (S27 catalog breadth & the shipyard closed — item 33, P3's last code wave).**
+Gate **1275 → 1300/0** ×2 hermetic on fresh scratch stores (only T-155's salvo
+jitter differs), verify clean vs `s27_start`, `build_code_map.py` re-run. Two
+builders: B1 landed A1–A7's data (the seven R-S27-2 rows, the 15 tier variants,
+the four loot kinds, `game/shipyard.gd`, the tier-4 rider) but its file set was
+under-scoped — the flight call sites A2 needs (`weapons.gd:_consume_ammo_at`,
+`game.gd:_update_lock`/`_on_npc_died`) and A5's `Shipyard.note_flight` caller sit
+outside it, and four pinned rows its own rows obsoleted were in `tests/`; B2
+closed both gaps (the brief §7/§8 amendments are the developer's bucket-2
+resolution). R1 (glm-5.3-flash) left **no HIGH**, 2 MED and 1 LOW: a Rare could
+roll two same-property prefixes (cured by F1 — a `stat`-level dedupe in
+`roll_prefixes`) and the Pyre's below-quarter gate was vacuous in flight (cured
+by F1 — a `NpcShip.pre_hit_hull_fraction()` store, its AC6 seal re-pinned, the
+S22 procedure). F3 → **T-178** (the shipyard build band post-S28). **T-153
+closed.** CONTRACTS **§20 S27 block** + §9 + §10 **v0.56/v0.57**; ticks **K1–K3**
+shipped PROPOSED, not separately ruled. Next free ticket **T-179**. The queue is
+now empty — P3's exit is the owner's playtest (build 2).
 
 **Updated 2026-10-10 (owner visibility review — S40).** The owner's follow-up to
 playtest #2 (the armory's installed-modules overview has no background; the

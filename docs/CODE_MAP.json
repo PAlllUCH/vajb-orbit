@@ -1613,6 +1613,7 @@
     "res://game/sector.gd",
     "res://game/sector_registry.gd",
     "res://game/ship_fit.gd",
+    "res://game/shipyard.gd",
     "res://game/speed_fantasy.gd",
     "res://game/station_registry.gd",
     "res://game/weapons.gd",
@@ -2032,6 +2033,18 @@
    "refs": [],
    "signals": []
   },
+  "res://game/shipyard.gd": {
+   "autoload": "",
+   "class_name": "Shipyard",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [
+    "res://game/component_catalog.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/module_catalog.gd"
+   ],
+   "signals": []
+  },
   "res://game/speed_fantasy.gd": {
    "autoload": "",
    "class_name": "SpeedFantasy",
@@ -2115,6 +2128,7 @@
     "res://assets/fx/fx_muzzle_flash_f2.png",
     "res://assets/fx/fx_muzzle_flash_f3.png",
     "res://assets/fx/fx_muzzle_flash_f4.png",
+    "res://game/affixes.gd",
     "res://game/fx.gd",
     "res://game/impact.gd",
     "res://game/ore_tuning.gd",
@@ -2762,6 +2776,19 @@
    "connects": [],
    "extends": "RefCounted",
    "refs": [],
+   "signals": []
+  },
+  "res://tests/probe_r1_s27.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "SceneTree",
+   "refs": [
+    "res://game/component_catalog.gd",
+    "res://game/loot_tables.gd",
+    "res://game/module_catalog.gd",
+    "res://game/shipyard.gd"
+   ],
    "signals": []
   },
   "res://tests/probe_r1_v5_migration.gd": {
@@ -4939,6 +4966,30 @@
    ],
    "signals": []
   },
+  "res://tests/test_s27_catalog.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/affixes.gd",
+    "res://game/auction.gd",
+    "res://game/component_catalog.gd",
+    "res://game/contract_registry.gd",
+    "res://game/game.gd",
+    "res://game/game.tscn",
+    "res://game/loot_tables.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/module_catalog.gd",
+    "res://game/npc_registry.gd",
+    "res://game/player_state.gd",
+    "res://game/sector_registry.gd",
+    "res://game/shipyard.gd",
+    "res://game/weapons.gd"
+   ],
+   "signals": []
+  },
   "res://tests/test_s28_econ.gd": {
    "autoload": "",
    "class_name": "",
@@ -6554,7 +6605,14 @@
    "class_name": "",
    "connects": [
     "_action.pressed \u2192 _on_action_pressed",
+    "_mode_build.pressed \u2192 _set_mode.bind(MODE_BUILD",
+    "_mode_hangar.pressed \u2192 _set_mode.bind(MODE_HANGAR",
+    "_mode_queue.pressed \u2192 _set_mode.bind(MODE_QUEUE",
+    "_mode_scrap.pressed \u2192 _set_mode.bind(MODE_SCRAP",
+    "_queue_cancel.pressed \u2192 _on_queue_cancel",
+    "_queue_collect.pressed \u2192 _on_queue_collect",
     "_repair_button.pressed \u2192 _on_repair_pressed",
+    "button.pressed \u2192 _on_build_row_pressed.bind(kind",
     "line.mouse_entered \u2192 _on_damage_hovered.bind(payload",
     "line.mouse_exited \u2192 _on_damage_hovered.bind(payload",
     "plate.gui_input \u2192 _on_plate_input.bind(cell",
@@ -6571,6 +6629,7 @@
     "res://autoload/player_profile.gd",
     "res://game/auction.gd",
     "res://game/repairs.gd",
+    "res://game/shipyard.gd",
     "res://game/station_catalog.gd",
     "res://ui/station/repairs_panel.gd",
     "res://ui/theme/chrome_family.gd"

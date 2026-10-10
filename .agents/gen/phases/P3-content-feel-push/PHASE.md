@@ -54,10 +54,12 @@ library. Ends in playtest build 2.
       clause, vaults + `u_vault`. `slices/S26-endgame/` · runs after: S38 (its
       Expedition seam) · baseline `post-S38` (1236/0) · **brief re-cut
       2026-10-08**
-- [ ] **S27 — catalog breadth & shipyard.** +7 affix rows with perks live, tier
+- [x] **S27 — catalog breadth & shipyard.** +7 affix rows with perks live, tier
       variants, per-archetype loot, the shipyard build path
       (recipes/queue/scrap). `slices/S27-catalog-breadth/` · runs after: S26 ·
-      baseline `post-S26`
+      baseline `post-S26` (1275/0) · **closed 2026-10-10**: gate 1275 → 1300/0 ×2
+      hermetic, verify clean vs `s27_start`, R1 left no HIGH (2 MED cured by F1),
+      T-153 closed, F3 → T-178
 
 ## Wave checklist (applies to every slice above)
 

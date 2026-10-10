@@ -5,7 +5,17 @@ file when decided or done** (deleted at the wave close-out or the ruling — the
 record lives in the cited file and `MASTER_REPORT.md` §6, this is the index
 only). Refreshed at every wave close-out and after every owner ruling.
 
-*Last refreshed: 2026-10-10 (S40 legibility — the owner's visibility review of the
+*Last refreshed: 2026-10-10 (S27 catalog breadth & the shipyard closed — P3's last
+code item. Gate **1275 → 1300/0** ×2 hermetic on fresh scratch stores; CONTRACTS
+**§20 S27 block** + §9 + §10 **v0.56/v0.57**; B1+B2 built, R1 left **no HIGH**,
+2 MED (both cured by F1), 1 LOW → **T-178**; **T-153 closed** (the tier-4 reserved
+slot). Ticks **K1** (15 `<base>_mk2` variants, +15 %/step), **K2** (the seven
+R-S27-2 rows, incl. `PYRE_RING_RADIUS` 240.0) and **K3** (every suffix perk live at
+its flight seam) shipped at their PROPOSED values and were not separately ruled —
+they now live in `CONTRACTS.md` §20 and `15`/`09`'s P3 blocks. Next free ticket
+**T-179**. The queue is now **P3's exit** (playtest build 2); the playtest pass #1
+row below stays open — the owner's own eye is still the phase's exit criterion)*
+*Previously 2026-10-10 (S40 legibility — the owner's visibility review of the
 station decks. Gate **1267 → 1275/0** ×2 hermetic; UI_SPEC **§16**; the measured
 below-AA share across the eight decks **241/607 (39.7 %) → 34/610 (5.6 %)**;
 **T-171/T-172/T-173 filed and closed in S40**, **T-174/T-175/T-176 filed open**
@@ -56,6 +66,13 @@ plan)*
   countdown (2, `contracts_panel.gd:677,681`). Each cure is one line; each
   supersedes a pinned idiom, so it is the owner's call. **T-174/T-175/T-176**
   carry the surface-level ones.
+- **The shipyard's build band post-S28 (S27, T-178).** Change 02's 2026-10-08 ore
+  values moved under 10 §3.1's untouched material rows, so the nine hull builds
+  now re-derive at **47.7–59.1 %** of auction list (materials 15.2–19.3 %), under
+  the doc's own "materials ≈ 20–30 % … a build totals ≈ 55–70 %" band. Play-safe
+  (building still saves), but the doc band is false on the live ladder. 10 §4
+  names the lever (labour %, never the frozen list prices, never the ore table);
+  needs an owner-ticked amendment. Reversal: none (drift, not a code defect).
 
 ## Open actions — no decision needed, just waiting
 

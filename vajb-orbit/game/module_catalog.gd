@@ -30,6 +30,12 @@ extends RefCounted
 ## global RNG and are the **creation** step only: nothing here is applied to a
 ## flight stat (15 section 9.3).
 ##
+## S27 additions (2026-10-08): 15's 2026-09-27 P3 block's four new prefix rows
+## (`dense`/`quickwarm`/`layered`/`farflung`) and three new suffix rows
+## (`echoes`/`long_watch`/`pyre`), each suffix carrying its live `consumer`
+## (R-S27-3); and the `VARIANTS` table (R-S27-1) - the `<base>_mk2` rows one tier up,
+## answered by `module()` beside `MODULES` so the pinned 36-row `MODULES` count holds.
+##
 ## Not here: the ammo packs and weapon families (`PlayerState.WEAPONS`,
 ## `StationCatalog`), module instances and inventory (15 section 6,
 ## `PlayerProfile`), and every acquisition price flow (10 section 2). A row's `cost`
@@ -217,44 +223,133 @@ const PREFIXES: Dictionary = {
 		&"unit": &"units",
 		&"band": [5.0, 8.0, 12.0],
 	},
+	## S27 (15's 2026-09-27 P3 block, R-S27-2, tick K2): the four new prefix rows.
+	## Family bands stand (rule 1): each row's `slot` is the family its stat belongs
+	## to, and its band is that family's own band shape at the three tier columns.
+	## `dense` and `quickwarm` bend the same weapon stats `keen`/`rapid` already own
+	## (so both are live through CONTRACTS section 20); `layered` adds armour pool and
+	## `farflung` weapon range, two stats no shipped prefix carries yet (staged: the
+	## aggregation law stores them, no flight consumer reads them). Reversal: rows
+	## deleted.
+	&"dense": {
+		&"name": "Dense",
+		&"slot": &"weapons",
+		&"stat": &"damage_add",
+		&"unit": &"percent",
+		&"band": [0.08, 0.12, 0.16],
+	},
+	&"quickwarm": {
+		&"name": "Quickwarm",
+		&"slot": &"weapons",
+		&"stat": &"fire_rate_mult",
+		&"unit": &"percent",
+		&"band": [0.08, 0.12, 0.16],
+	},
+	&"layered": {
+		&"name": "Layered",
+		&"slot": &"armour",
+		&"stat": &"hull_add",
+		&"unit": &"percent",
+		&"band": [0.10, 0.15, 0.20],
+	},
+	&"farflung": {
+		&"name": "Farflung",
+		&"slot": &"weapons",
+		&"stat": &"range_mult",
+		&"unit": &"percent",
+		&"band": [0.10, 0.15, 0.20],
+	},
 }
 
-## 15 section 4's ten suffix rows, verbatim: the display spelling, the perk line the
-## UI shows (15 section 9.3: named and displayed, applied by nothing in S3), and the
-## faction a bound one rolls in (`&""` = rolls anywhere). Three are bound (`of the
-## Choir`, `of the Concord`, `of the Ports`), so they only reach a pool whose
-## faction is their own.
+## 15 section 4's suffix rows: the display spelling, the perk line the UI shows, the
+## seam that applies it (`consumer`, S27/R-S27-3, tick K3: every perk names its live
+## consumer, so the S3 "displayed, never applied" note is gone), and the faction a bound
+## one rolls in (`&""` = rolls anywhere). Three are bound (`of the Choir`,
+## `of the Concord`, `of the Ports`), so they only reach a pool whose faction is their
+## own.
 const SUFFIXES: Dictionary = {
 	&"whale": {
 		&"name": "of the Whale",
 		&"perk": "+50 max hull structure",
+		&"consumer": &"ship_fit:resolve",
 		&"faction": &"",
 	},
 	&"embers": {
 		&"name": "of Embers",
 		&"perk": "10 % of damage dealt returns as shield",
+		&"consumer": &"weapons:_deliver",
 		&"faction": &"",
 	},
-	&"ledger": {&"name": "of the Ledger", &"perk": "sell value +25 %", &"faction": &""},
+	&"ledger": {
+		&"name": "of the Ledger",
+		&"perk": "sell value +25 %",
+		&"consumer": &"auction:sell_price",
+		&"faction": &"",
+	},
 	&"silence": {
 		&"name": "of Silence",
 		&"perk": "hunters take 2x time to detect you (13 section 3)",
+		&"consumer": &"",
 		&"faction": &"",
 	},
 	&"cartograph": {
 		&"name": "of the Cartograph",
 		&"perk": "reveals sector POIs without scanning (11 section 3.3)",
+		&"consumer": &"game:reveal_pois",
 		&"faction": &"",
 	},
-	&"leeches": {&"name": "of Leeches", &"perk": "kills restore 5 % hull", &"faction": &""},
+	&"leeches": {
+		&"name": "of Leeches",
+		&"perk": "kills restore 5 % hull",
+		&"consumer": &"game:_on_npc_died",
+		&"faction": &"",
+	},
 	&"vault": {
 		&"name": "of the Vault",
 		&"perk": "cargo spill on death -50 % (insurance-adjacent)",
+		&"consumer": &"",
 		&"faction": &"",
 	},
-	&"choir": {&"name": "of the Choir", &"perk": "+1 power output", &"faction": &"choir"},
-	&"concord": {&"name": "of the Concord", &"perk": "+5 % armour effect", &"faction": &"concord"},
-	&"ports": {&"name": "of the Ports", &"perk": "+10 % booster duration", &"faction": &"meridian"},
+	&"choir": {
+		&"name": "of the Choir",
+		&"perk": "+1 power output",
+		&"consumer": &"",
+		&"faction": &"choir",
+	},
+	&"concord": {
+		&"name": "of the Concord",
+		&"perk": "+5 % armour effect",
+		&"consumer": &"",
+		&"faction": &"concord",
+	},
+	&"ports": {
+		&"name": "of the Ports",
+		&"perk": "+10 % booster duration",
+		&"consumer": &"",
+		&"faction": &"meridian",
+	},
+	## S27 (15's 2026-09-27 P3 block, R-S27-2, tick K2): the three new suffix rows.
+	## Each is a binary boon (section 4) and each names the consumer `game/affixes.gd`
+	## exposes at the CONTRACTS section 20 seam (R-S27-3, tick K3). Reversal: rows
+	## deleted.
+	&"echoes": {
+		&"name": "of Echoes",
+		&"perk": "every 5th shot costs no ammo",
+		&"consumer": &"affixes:echoes_refunds",
+		&"faction": &"",
+	},
+	&"long_watch": {
+		&"name": "of the Long Watch",
+		&"perk": "+2 s lock hold",
+		&"consumer": &"affixes:lock_channel_seconds",
+		&"faction": &"",
+	},
+	&"pyre": {
+		&"name": "of the Pyre",
+		&"perk": "a kill below 25 % hull detonates a 50-damage ring",
+		&"consumer": &"affixes:pyre_ring_damage",
+		&"faction": &"",
+	},
 }
 
 const MODULES: Dictionary = {
@@ -634,14 +729,152 @@ const MODULES: Dictionary = {
 	},
 }
 
+## S27 (15's 2026-09-27 P3 block, R-S27-1, tick K1; the `p_mk2` precedent generalised):
+## the tier-variant rows. A variant `<base>_mk2` is the base one tier up (capped at
+## `MAX_MODULE_TIER`, the 01 section S28 block's tier 4), carries **+15 %** on its
+## family's headline stat (R-S27-1 / brief rule 3), draws its base's own icon (no new
+## art, owner 2026-09-27) and so lives in `ICON_REUSE`.
+##
+## Price law (brief rule 3, S28's A2): a variant's `cost` is the base's own 09 price
+## scaled by the ladder's own tier step and clamped into 01's L2 band for its tier
+## (`SC(tier) .. 2 x SC(tier)`), where SC is 01's 2026-10-08 block
+## (`[1100, 1500, 3000, 6000]`, the table `ContractRegistry.SC` carries):
+##     cost = clamp(round(base_cost x SC(tier) / SC(base_tier)), SC(tier), 2 x SC(tier))
+## Nothing here is a hand-picked flat: every figure derives from `SC` and the base
+## row's own 09 cost, and `tests/test_s27_catalog.gd` re-derives every literal from the
+## live `ContractRegistry.SC`. Reversal: rows deleted (no variants ship).
+##
+## Variants are **additive**: `MODULES` keeps its 36 pinned rows (test_ship_grids'
+## transcribed count), so a variant id is answered by `module()` and reaches the
+## auction shelf through `Auction.sale_pool`, never through `MODULES`.
+const MAX_MODULE_TIER := 4
+const VARIANTS: Dictionary = {
+	&"s_light_mk2": {
+		&"base": &"s_light", &"name": "Light Shield Mk2", &"slot": &"shields",
+		&"draw": 2, &"tier": 2, &"cost": 1909,
+		&"effects": {&"shield_add": 230.0, &"regen_add": 4.0},
+		&"description": "Light Shield one tier up, its pool fifteen percent deeper.",
+	},
+	&"h_plate_light_mk2": {
+		&"base": &"h_plate_light", &"name": "Light Plate Mk2", &"slot": &"armour",
+		&"draw": 0, &"tier": 2, &"cost": 1500,
+		&"effects": {&"hull_add": 287.5, &"speed_penalty": -0.05},
+		&"description": "Light Plate one tier up, fifteen percent more structure.",
+	},
+	&"c_target_mk2": {
+		&"base": &"c_target", &"name": "Targeting Computer Mk2", &"slot": &"computers",
+		&"draw": 1, &"tier": 2, &"cost": 2182,
+		&"effects": {&"damage_add": 0.1725},
+		&"description": "Targeting Computer one tier up, its damage term fifteen percent sharper.",
+	},
+	&"c_scanner_mk2": {
+		&"base": &"c_scanner", &"name": "Deep Scanner Mk2", &"slot": &"computers",
+		&"draw": 1, &"tier": 2, &"cost": 2045,
+		&"effects": {&"scanner_add": 0.2875},
+		&"description": "Deep Scanner one tier up, its reach fifteen percent wider.",
+	},
+	&"b_afterburner_mk2": {
+		&"base": &"b_afterburner", &"name": "Afterburner Mk2", &"slot": &"boosters",
+		&"draw": 2, &"tier": 2, &"cost": 2591,
+		&"effects": {&"boost_speed_mult": 1.84, &"duration": 3.0, &"cooldown": 8.0},
+		&"description": "Afterburner one tier up, its burn fifteen percent harder.",
+	},
+	&"u_cargo_mk2": {
+		&"base": &"u_cargo", &"name": "Cargo Expansion Mk2", &"slot": &"utility",
+		&"draw": 0, &"tier": 2, &"cost": 1636,
+		&"effects": {&"cargo_add": 17.25},
+		&"description": "Cargo Expansion one tier up, its hold fifteen percent larger.",
+	},
+	&"s_heavy_mk2": {
+		&"base": &"s_heavy", &"name": "Heavy Shield Mk2", &"slot": &"shields",
+		&"draw": 3, &"tier": 3, &"cost": 6000,
+		&"effects": {&"shield_add": 460.0, &"regen_add": 5.0},
+		&"description": "Heavy Shield one tier up, its pool fifteen percent deeper.",
+	},
+	&"h_plate_heavy_mk2": {
+		&"base": &"h_plate_heavy", &"name": "Heavy Plate Mk2", &"slot": &"armour",
+		&"draw": 0, &"tier": 3, &"cost": 5800,
+		&"effects": {&"hull_add": 690.0, &"speed_penalty": -0.12},
+		&"description": "Heavy Plate one tier up, fifteen percent more structure.",
+	},
+	&"c_twin_mk2": {
+		&"base": &"c_twin", &"name": "Twin Targeting Mk2", &"slot": &"computers",
+		&"draw": 1, &"tier": 3, &"cost": 6000,
+		&"effects": {&"damage_add": 0.1725},
+		&"description": "Twin Targeting one tier up, its damage term fifteen percent sharper.",
+	},
+	&"s_ion_mk2": {
+		&"base": &"s_ion", &"name": "Ion Shield Mk2", &"slot": &"shields",
+		&"draw": 3, &"tier": 4, &"cost": 11200,
+		&"effects": {&"shield_add": 402.5, &"regen_add": 9.0},
+		&"description": "Ion Shield one tier up, its pool fifteen percent deeper.",
+	},
+	&"h_composite_mk2": {
+		&"base": &"h_composite", &"name": "Composite Plate Mk2", &"slot": &"armour",
+		&"draw": 0, &"tier": 4, &"cost": 11600,
+		&"effects": {&"hull_add": 1150.0, &"speed_penalty": -0.10, &"mass_add": 0.10},
+		&"description": "Composite Plate one tier up, fifteen percent more structure.",
+	},
+	&"c_nexus_mk2": {
+		&"base": &"c_nexus", &"name": "Nexus Computer Mk2", &"slot": &"computers",
+		&"draw": 1, &"tier": 4, &"cost": 12000,
+		&"effects": {&"damage_add": 0.1725, &"scanner_add": 0.25},
+		&"description": "Nexus Computer one tier up, its damage term fifteen percent sharper.",
+	},
+	&"b_fold_mk2": {
+		&"base": &"b_fold", &"name": "Fold Drive Mk2", &"slot": &"boosters",
+		&"draw": 2, &"tier": 4, &"cost": 12000,
+		&"effects": {&"blink_distance": 460.0, &"cooldown": 20.0},
+		&"description": "Fold Drive one tier up, its blink fifteen percent longer.",
+	},
+	&"u_holds_mk2": {
+		&"base": &"u_holds", &"name": "Cargo Holds Mk2", &"slot": &"utility",
+		&"draw": 0, &"tier": 4, &"cost": 9000,
+		&"effects": {&"cargo_add": 46},
+		&"description": "Cargo Holds one tier up, its hold fifteen percent larger.",
+	},
+	&"p_core_mk2": {
+		&"base": &"p_core", &"name": "Reactor Core Mk2", &"slot": &"power",
+		&"draw": 0, &"tier": 4, &"cost": 12000,
+		&"effects": {&"power_add": 4.6},
+		&"description": "Reactor Core one tier up, its output fifteen percent higher.",
+	},
+}
+
 
 ## One module row, or `{}` for an unknown id. The returned dictionary is the
-## catalogue's own read-only row: read it, never write to it.
+## catalogue's own read-only row: read it, never write to it. S27: a `<base>_mk2`
+## variant id is answered here too (its row plus the base's own icon path), so the
+## variant is priceable, rollable and fittable without entering `MODULES`.
 static func module(id: StringName) -> Dictionary:
-	var row: Variant = MODULES.get(id, {})
-	if row is Dictionary:
-		return row
+	if MODULES.has(id):
+		var row: Variant = MODULES[id]
+		return row if row is Dictionary else {}
+	if VARIANTS.has(id):
+		var variant: Dictionary = (VARIANTS[id] as Dictionary).duplicate()
+		variant[&"icon"] = icon_path(id)
+		return variant
 	return {}
+
+
+## S27 (R-S27-1): every variant id, in `VARIANTS`' own order.
+static func variant_ids() -> Array[StringName]:
+	var ids: Array[StringName] = []
+	for id: Variant in VARIANTS:
+		ids.append(StringName(str(id)))
+	return ids
+
+
+## S27 (R-S27-1): the variant ids at `tier`, in `VARIANTS`' own order. The auction
+## shelf draws from this beside `tier_pool` (the base rows), so a variant appears one
+## tier up from its base.
+static func variant_pool(tier: int) -> Array[StringName]:
+	var ids: Array[StringName] = []
+	for id: Variant in VARIANTS:
+		var key := StringName(str(id))
+		if int((VARIANTS[id] as Dictionary).get(&"tier", 0)) == tier:
+			ids.append(key)
+	return ids
 
 
 ## The id's 48 px icon path (CONTRACTS section 11's rule), or `""` when the id is
@@ -653,6 +886,9 @@ static func icon_path(id: StringName) -> String:
 		return ICON_REUSE[id]
 	if WEAPON_ICON_FAMILIES.has(id):
 		return "%sicon_weapon_%s%s" % [WEAPON_ICON_DIR, WEAPON_ICON_FAMILIES[id], ICON_SUFFIX]
+	## S27 (rule 3, no new art): a variant draws its base's own glyph.
+	if VARIANTS.has(id):
+		return icon_path(StringName((VARIANTS[id] as Dictionary).get(&"base", &"")))
 	if not MODULES.has(id):
 		return ""
 	return "%sicon_module_%s%s" % [MODULE_ICON_DIR, id, ICON_SUFFIX]
@@ -698,8 +934,9 @@ static func list_price(base_id: StringName, rarity: StringName) -> int:
 
 
 ## 15 section 6 / 10 section 2.3's sell-back: `base x rarity x 60 %`, with no suffix
-## term (`of the Ledger` is displayed, never applied -- 15 section 9.3). `0` for an
-## id the catalogue does not ship, so the profile refuses a sale it cannot price.
+## term (`of the Ledger`'s +25 % lives at `Auction.sell_price`, CONTRACTS section 20 --
+## S27 deleted the S3 "displayed, never applied" note here, tick K3). `0` for an id the
+## catalogue does not ship, so the profile refuses a sale it cannot price.
 static func sell_price(base_id: StringName, rarity: StringName) -> int:
 	@warning_ignore("integer_division")
 	return list_price(base_id, rarity) * SELL_PERCENT / 100
@@ -822,8 +1059,10 @@ static func prefix_value(prefix_id: StringName, tier: int) -> float:
 ## own family pool. A family with fewer rows than the rarity asks for contributes
 ## all of them (15 section 3 gives armour, the engine, power, the boosters and
 ## utility one prefix row each, so a Rare plate carries Lightened alone) -- the
-## count is `min(affixes, pool)`, and the roll never repeats a row (a Rare's two
-## prefixes must be different properties).
+## count is `min(affixes, pool)`. 15 section 3's law is per **property**, not per
+## row: two rows can bend the same stat (`keen`/`dense` both `damage_add`), so a
+## pick drops every remaining row carrying its `stat` (S27-F1) and a Rare's two
+## prefixes always bend different properties.
 static func roll_prefixes(base_id: StringName, rarity: StringName) -> Array:
 	var wanted := affix_count(rarity)
 	var tier := int(module(base_id).get(&"tier", 1))
@@ -834,6 +1073,12 @@ static func roll_prefixes(base_id: StringName, rarity: StringName) -> Array:
 		var id := pool[index]
 		pool.remove_at(index)
 		picked.append({"id": id, "value": prefix_value(id, tier)})
+		var stat := StringName((PREFIXES[id] as Dictionary).get(&"stat", &""))
+		var kept: Array[String] = []
+		for remaining: String in pool:
+			if StringName((PREFIXES[remaining] as Dictionary).get(&"stat", &"")) != stat:
+				kept.append(remaining)
+		pool = kept
 	return picked
 
 

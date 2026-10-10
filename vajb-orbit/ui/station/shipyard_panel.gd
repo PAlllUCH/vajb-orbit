@@ -43,6 +43,8 @@ const AuctionScript := preload("res://game/auction.gd")
 ## `hull_render` reads too.
 const RepairsPanelScript := preload("res://ui/station/repairs_panel.gd")
 const RepairsService := preload("res://game/repairs.gd")
+## S27 (10 section 3): the shipyard build path the BUILD / QUEUE / SCRAP views drive.
+const ShipyardScript := preload("res://game/shipyard.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
@@ -129,6 +131,26 @@ const REPAIR_ROW_SEPARATION := 6
 
 const SUBTITLE := "YOUR HULLS · %d IN THE HANGAR · SIDE VIEWS ONLY"
 const TAG_ACTIVE_HULL := "ACTIVE HULL %s"
+
+## S27 (10 section 3): the SHIPYARD pane's four views beside the hangar. The mode strip
+## swaps `ShipyardBody` for one of the three new views; every value is a `Shipyard`,
+## `MineralCatalog`, `ComponentCatalog` or `ModuleCatalog` read.
+const MODE_HANGAR := "hangar"
+const MODE_BUILD := "build"
+const MODE_QUEUE := "queue"
+const MODE_SCRAP := "scrap"
+const BUILD_HULL_FORMAT := "%s · %d CR TO BUY · %d CR TO BUILD"
+const BUILD_MODULE_FORMAT := "%s · %d CR LIST · %d CR TO BUILD"
+const BUILD_ACTION := "BUILD"
+const BUILD_REFUSED := "BUILD REFUSED · MISSING MATERIALS OR CREDITS"
+const BUILD_QUEUED := "QUEUED · %s"
+const QUEUE_IDLE := "NO BUILD IN PROGRESS · ONE BUILD AT A TIME (10 §3.3)"
+const QUEUE_RUNNING := "IN PROGRESS · %s\nREADY WHEN YOU RETURN FROM YOUR NEXT FLIGHT"
+const QUEUE_READY := "READY · %s\nCOLLECT TO DELIVER IT TO THE STATION"
+const QUEUE_CANCELLED := "BUILD CANCELLED · MATERIALS AND LABOUR REFUNDED"
+const SCRAP_ACTION := "SCRAP"
+const SCRAP_ROW_FORMAT := "%s · %d CR OF MATERIALS"
+const SCRAP_EMPTY := "NO HULL TO BREAK DOWN"
 ## Section 5.11's row: the name, the class and the `ACTIVE` badge, no icon (none ships).
 ## The class is `ShipFit.HULLS`' own `ship_class` column, the value the AUCTION's hull rows
 ## render as `%s CLASS` too.
@@ -186,6 +208,23 @@ const STATUS_ACTIVE := "ACTIVE HULL IS NOW %s"
 @onready var _repair_footer: Label = %RepairFooter
 @onready var _repair_button: Button = %RepairButton
 @onready var _action: Button = %ShipAction
+@onready var _mode_hangar: Button = %ModeHangar
+@onready var _mode_build: Button = %ModeBuild
+@onready var _mode_queue: Button = %ModeQueue
+@onready var _mode_scrap: Button = %ModeScrap
+@onready var _hangar_body: Control = $ShipyardBody
+@onready var _build_view: Control = %BuildView
+@onready var _build_list: VBoxContainer = %BuildList
+@onready var _build_footer: Label = %BuildFooter
+@onready var _queue_view: Control = %QueueView
+@onready var _queue_body: Label = %QueueBody
+@onready var _queue_collect: Button = %QueueCollect
+@onready var _queue_cancel: Button = %QueueCancel
+@onready var _scrap_view: Control = %ScrapView
+@onready var _scrap_list: VBoxContainer = %ScrapList
+@onready var _scrap_footer: Label = %ScrapFooter
+
+var _mode := MODE_HANGAR
 
 var _payloads: Array[Dictionary] = []
 var _stat_cells: Dictionary = {}
@@ -228,7 +267,21 @@ func _ready() -> void:
 	ChromeFamily.apply_action(_repair_button)
 	_action.pressed.connect(_on_action_pressed)
 	_repair_button.pressed.connect(_on_repair_pressed)
+	## S27 (10 section 3): the mode strip and the build path's actions.
+	_mode_hangar.pressed.connect(_set_mode.bind(MODE_HANGAR))
+	_mode_build.pressed.connect(_set_mode.bind(MODE_BUILD))
+	_mode_queue.pressed.connect(_set_mode.bind(MODE_QUEUE))
+	_mode_scrap.pressed.connect(_set_mode.bind(MODE_SCRAP))
+	_queue_collect.pressed.connect(_on_queue_collect)
+	_queue_cancel.pressed.connect(_on_queue_cancel)
+	ChromeFamily.apply_action(_mode_hangar)
+	ChromeFamily.apply_action(_mode_build)
+	ChromeFamily.apply_action(_mode_queue)
+	ChromeFamily.apply_action(_mode_scrap)
+	ChromeFamily.apply_action(_queue_collect)
+	ChromeFamily.apply_action(_queue_cancel)
 	_refresh_all()
+	_set_mode(_mode)
 
 
 func _notification(what: int) -> void:
@@ -259,6 +312,9 @@ func refresh_profile(key: StringName) -> void:
 	if key == &"credits" or key == &"ships":
 		if not _sync_rows():
 			_refresh_all()
+	## S27 (10 section 3): a hold or a queue write redraws the build path's views.
+	if key == &"credits" or key == &"cargo" or key == &"ships" or key == &"shipyard":
+		_refresh_views()
 
 
 ## Rebuilds the rows when the account's owned roster moved since they were built, and
@@ -1522,3 +1578,167 @@ func repair_row_values() -> Array[Dictionary]:
 			&"state": String((payload[&"state"] as Label).text),
 		})
 	return out
+
+
+## --- S27: the build path's views (10 section 3) -------------------------------------
+
+
+## Swap the pane's body for one mode's view. Every view is a read of `Shipyard` plus the
+## live catalogues; the hangar keeps its own `ShipyardBody`.
+func _set_mode(mode: String) -> void:
+	_mode = mode
+	_hangar_body.visible = mode == MODE_HANGAR
+	_build_view.visible = mode == MODE_BUILD
+	_queue_view.visible = mode == MODE_QUEUE
+	_scrap_view.visible = mode == MODE_SCRAP
+	_mode_hangar.button_pressed = mode == MODE_HANGAR
+	_mode_build.button_pressed = mode == MODE_BUILD
+	_mode_queue.button_pressed = mode == MODE_QUEUE
+	_mode_scrap.button_pressed = mode == MODE_SCRAP
+	_refresh_views()
+
+
+## Redraw the active build-path view from the live profile and catalogues.
+func _refresh_views() -> void:
+	if not is_node_ready():
+		return
+	match _mode:
+		MODE_BUILD:
+			_fill_build_view()
+		MODE_QUEUE:
+			_fill_queue_view()
+		MODE_SCRAP:
+			_fill_scrap_view()
+
+
+## BUILD: one row per buildable hull and module, each a `StationButton` naming the
+## recipe's live CR total. A press queues the build (10 section 3.3).
+func _fill_build_view() -> void:
+	_clear(_build_list)
+	var profile := _profile()
+	for ship_id: StringName in ShipyardScript.buildable_hulls():
+		var recipe := ShipyardScript.hull_recipe(ship_id)
+		_build_list.add_child(_build_action_row(
+			ShipyardScript.KIND_HULL, ship_id,
+			BUILD_HULL_FORMAT % [
+				_ship_name(ship_id),
+				_ship_list_price(ship_id),
+				ShipyardScript.recipe_total(recipe),
+			]
+		))
+	for module_id: StringName in ShipyardScript.buildable_modules():
+		var recipe := ShipyardScript.module_recipe(module_id)
+		if recipe.is_empty():
+			continue
+		_build_list.add_child(_build_action_row(
+			ShipyardScript.KIND_MODULE, module_id,
+			BUILD_MODULE_FORMAT % [
+				_module_name(module_id),
+				int(ModuleCatalog.module(module_id).get(&"cost", 0)),
+				ShipyardScript.recipe_total(recipe),
+			]
+		))
+	_build_footer.text = _queue_footer(profile)
+
+
+## QUEUE: the one active job and its state (10 section 3.3), with COLLECT / CANCEL.
+func _fill_queue_view() -> void:
+	var profile := _profile()
+	var job := ShipyardScript.job(profile)
+	if job.is_empty():
+		_queue_body.text = QUEUE_IDLE
+	else:
+		var label := _job_label(job)
+		_queue_body.text = QUEUE_READY % label if ShipyardScript.is_ready(profile, job) else QUEUE_RUNNING % label
+	_queue_collect.disabled = job.is_empty() or not ShipyardScript.is_ready(profile, job)
+	_queue_cancel.disabled = job.is_empty() or ShipyardScript.is_ready(profile, job)
+
+
+## SCRAP: one row per owned hull, naming 50 % of its recipe materials (10 section 3.3).
+func _fill_scrap_view() -> void:
+	_clear(_scrap_list)
+	var profile := _profile()
+	var owned := _owned_roster(profile)
+	if owned.is_empty():
+		_scrap_footer.text = SCRAP_EMPTY
+		return
+	for ship_id: StringName in owned:
+		var recipe := ShipyardScript.hull_recipe(ship_id)
+		if recipe.is_empty():
+			continue
+		var scrap := ShipyardScript.scrap_materials(recipe.get(ShipyardScript.KEY_MATERIALS, {}))
+		_scrap_list.add_child(_build_action_row(
+			&"scrap", ship_id,
+			SCRAP_ROW_FORMAT % [_ship_name(ship_id), ShipyardScript.materials_value(scrap)]
+		))
+	_scrap_footer.text = SCRAP_ACTION
+
+
+## One build/scrap row: a `StationButton` whose press routes to the mode's action.
+func _build_action_row(kind: StringName, id: StringName, text: String) -> Button:
+	var button := Button.new()
+	button.custom_minimum_size = Vector2(0, 44)
+	button.theme_type_variation = &"StationButton"
+	button.text = text
+	button.pressed.connect(_on_build_row_pressed.bind(kind, id))
+	return button
+
+
+func _on_build_row_pressed(kind: StringName, id: StringName) -> void:
+	if kind == &"scrap":
+		_scrap_ship(id)
+		return
+	if ShipyardScript.queue_job(_profile(), kind, id):
+		status_requested.emit(BUILD_QUEUED % _job_label(ShipyardScript.job(_profile())), false)
+	else:
+		status_requested.emit(BUILD_REFUSED, true)
+	_refresh_views()
+
+
+func _on_queue_collect() -> void:
+	if ShipyardScript.collect(_profile()):
+		status_requested.emit(BUILD_QUEUED % "DELIVERED", false)
+	_refresh_views()
+
+
+func _on_queue_cancel() -> void:
+	if ShipyardScript.cancel_job(_profile()):
+		status_requested.emit(QUEUE_CANCELLED, false)
+	_refresh_views()
+
+
+## Break one owned hull down for 50 % of its recipe materials (10 section 3.3). The
+## materials land in the hold and the hull leaves the owned list.
+func _scrap_ship(ship_id: StringName) -> void:
+	var profile := _profile()
+	var recipe := ShipyardScript.hull_recipe(ship_id)
+	if recipe.is_empty() or not profile.owns_ship(ship_id):
+		return
+	var scrap := ShipyardScript.scrap_materials(recipe.get(ShipyardScript.KEY_MATERIALS, {}))
+	for key: Variant in scrap:
+		profile.add_cargo(StringName(str(key)), int(scrap[key]))
+	profile.remove_ship(ship_id)
+	_refresh_views()
+
+
+func _job_label(job: Dictionary) -> String:
+	var kind := StringName(str(job.get(ShipyardScript.KEY_KIND, &"")))
+	var id := StringName(str(job.get(ShipyardScript.KEY_ID, &"")))
+	if kind == ShipyardScript.KIND_HULL:
+		return _ship_name(id)
+	return _module_name(id)
+
+
+func _queue_footer(profile: ProfileScript) -> String:
+	var job := ShipyardScript.job(profile)
+	if job.is_empty():
+		return QUEUE_IDLE
+	return QUEUE_RUNNING % _job_label(job)
+
+
+func _module_name(module_id: StringName) -> String:
+	return String(ModuleCatalog.module(module_id).get(&"name", String(module_id)))
+
+
+func _ship_list_price(ship_id: StringName) -> int:
+	return int(Catalog.ship(ship_id).get(&"cost", 0))

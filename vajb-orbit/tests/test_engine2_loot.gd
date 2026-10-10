@@ -429,13 +429,14 @@ func test_the_only_uncatalogued_items_are_the_two_countermeasures() -> void:
 ## The kind axis is the 06 table name, so an 18 §5 archetype with no 06 table is
 ## refused rather than guessed (the caller maps archetype -> band).
 func test_unknown_kinds_are_not_tables() -> void:
-	## S23 (A6): the hunter kind is a table now (the promoted extra); the sibelon
-	## archetype still rolls no table of its own - its row names the corvette kind.
+	## S23 (A6): the hunter kind is a table now (the promoted extra). S27 (A4) ships the
+	## `interceptor`, `turret`, `sibelon` and `boss` tables, so those kinds are no longer
+	## in the no-table list; the archetypes still without a 06 table answer false.
 	for kind: StringName in [
 		KIND_FIGHTER, KIND_SWARMER, KIND_FREIGHTER, KIND_CORVETTE, KIND_MAW, &"hunter",
 	]:
 		assert_true(LootTablesScript.has(kind), "%s is shipped" % kind)
-	for kind: StringName in [&"boss", &"patrol", &"turret", &"sibelon", &"apex", &""]:
+	for kind: StringName in [&"patrol", &"apex", &""]:
 		assert_false(LootTablesScript.has(kind), "%s has no 06 table" % kind)
 
 

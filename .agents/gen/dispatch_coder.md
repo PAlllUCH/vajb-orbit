@@ -38,29 +38,29 @@ asking the owner first.
 | 31 | S25 | Contracts board | `contract_registry` + the board panel: Haul/Hunt/Gather/Escort, escrow + 100 CR cancel, standing gates, the escort convoy loop, S28's tier-scaled payouts. Five-piece: `slices/S25-contracts/`; pin R-S25-1 (14 P3 block, tick J1). | **closed 2026-10-08** — gate 1226/0 ×2, verify clean vs `s25_start`; B1 +22 rows; R1 blocked on 2 HIGH (the loop had no production caller; a band-flaky escrow row) + 1 MED (Hunt's flat standing), F1 cured all three (+2 rows, negative control) → 1226/0; 2 LOW → T-156/T-157; **T-138/T-152/T-154 closed**; CONTRACTS §26; tick J1 shipped as PROPOSED |
 | 35 | S38 | The board's clock and the hub's cold start | The owner's 2026-10-08 playtest finding: the hub entered from the main menu offers no contracts (the docked place is never filed on that path) and the board's 20-minute roll has no visible countdown. Five-piece: `slices/S38-hub-start-and-clock/`; ticks H1–H3; riders T-156/T-157. | **closed 2026-10-08** — gate 1226 → **1236/0** ×2 hermetic on fresh scratch stores, **zero** `SCRIPT ERROR` lines, verify clean vs `s38_start`; B1 +10 rows (H1 the cold-start place, H2/H3 the U22 countdown and the in-place re-roll), one MED (a stale test message) cured by F1, 2 LOW → T-158/T-159; **T-156/T-157 closed**; CONTRACTS **§27** + §10 v0.50/v0.51; ticks H1–H3 shipped as PROPOSED |
 | 32 | S26 | Bosses, arenas, insurance, vaults | The Boneyard + The Pyre arena runs, the Maw roaming S7 with 06 §3.4's table, death persistence, insurance + mercy clause, vaults + `u_vault`. Five-piece: `slices/S26-endgame/`; pin R-S26-1 (08 P3 block, ticks E1/E2). | **closed 2026-10-10** — gate **1237 → 1258/0** ×2 hermetic on fresh scratch stores (row sets byte-identical), verify clean vs `s26_start`, `build_code_map.py` re-run; B1 landed A1–A8 (+20 `test_s26_endgame.gd` rows), R1 left **1 HIGH + 4 MED**, F1 cured all five at their named sites moving no test row (reviewer's probe 80/1 → 81/0); the §8 list held exactly (+20 new, `test_s25_contracts.gd` +1 net — three seam rows re-cut by the orchestrator before the review); 2 LOW → **T-161/T-162/T-163**; CONTRACTS **§28** + §10 **v0.54**; ticks E1/E2 shipped as PROPOSED |
-| 33 | S27 | Catalog breadth & shipyard | +7 affix rows with perks live, tier variants, per-archetype loot, the 10 §3 shipyard (recipes/queue/scrap), prices from 01's L2 bands. Five-piece: `slices/S27-catalog-breadth/`; pins R-S27-1..3 (09/15 P3 blocks, ticks K1–K3). | queued · after 32 (`game/`); carries **T-153** (a tier-4 module row). **Brief re-cut 2026-10-08** — prices re-pointed to 01's L2 bands (nothing restates a price; recipe CR totals re-derive from the live values), T-153 folded in, cites re-measured |
+| 33 | S27 | Catalog breadth & shipyard | +7 affix rows with perks live, tier variants, per-archetype loot, the 10 §3 shipyard (recipes/queue/scrap), prices from 01's L2 bands. Five-piece: `slices/S27-catalog-breadth/`; pins R-S27-1..3 (09/15 P3 blocks, ticks K1–K3). | **closed 2026-10-10** — gate **1275 → 1300/0** ×2 hermetic on fresh scratch stores, verify clean vs `s27_start`, `build_code_map.py` re-run; two builders (B1's set was under-scoped for A2/A5's flight call sites and four `tests/` pins — the brief §7/§8 amendments re-scoped it, B2 closed both), R1 (glm-5.3-flash) left **no HIGH** / 2 MED / 1 LOW, F1 cured both MEDs (a `stat`-level prefix dedupe; a `NpcShip.pre_hit_hull_fraction()` Pyre gate, its AC6 seal re-pinned); **T-153 closed**, F3 → **T-178**; CONTRACTS **§20 S27 block** + §9 + §10 **v0.56/v0.57**; ticks K1–K3 shipped PROPOSED |
 
 ## Parked (owner-gated — not queued; say the word and the five-piece lands)
 
 ## Done
 
-Items 1–44 closed (gate 437 → 1226/0 through the waves). Detail:
+Items 1–44 closed (gate 437 → 1300/0 through the waves). Detail:
 `_archive/dispatch_coder_done_2026-10-07.md`,
 `_archive/dispatch_done_2026-10-08.md` and `MASTER_REPORT.md` §6.
 
 ## Handoff (live)
 
-**Item 33 = S27 catalog breadth & shipyard — next** (its brief was re-cut
-2026-10-08; dispatch from `slices/S27-catalog-breadth/S27_prompts.md`). S39 closed
-2026-10-10 and S40 closed the same day (its file set — `tools/build_theme.gd`,
-`ui/theme/vajb_theme.tres`, `ui/station/armory_panel.tscn`,
-`ui/station/overview_panel.gd` — is free; **S27's brief must not touch
-`vajb_theme.tres` without re-reading UI_SPEC §16 and T-177**, the uid trap);
-S27's set reaches `game/module_catalog.gd`
-(S26's `roll_rarity` floor + `arena_pool` are now live there) and
-`game/loot_tables.gd` (`MAW_BAND`/`cache_scale_for`), and it carries **T-153** plus
-whichever of T-161/T-162/T-163 its set reaches. The owner's fresh design round may
-regenerate the planning before any dispatch — check `dispatch_designer.md` first.
+**Queue empty — item 33 (S27) closed 2026-10-10.** P3's remaining work is the
+owner's eye, not a wave: playtest build 2 and the tester template
+(`docs/gameplay/19_testing_notes.md`) are the phase's exit criteria. The next code
+work follows a fresh planning round — check `dispatch_designer.md` first, and note
+**T-178** (the shipyard build band post-S28) needs an owner tick before any
+shipyard-price change. S27's lessons for the next wave: a brief's `VAJB_WORKER_FILES`
+set must cover every file an acceptance item's own text reaches (B1's omitted the
+A2 flight call sites and `tests/`); a `tests/` pin a wave's own rows obsolete is the
+developer's bucket-2 re-cut, not a builder's; and the four S19 sealed files
+(`damage.gd`, `npc_ship.gd`, `npc_brain.gd`, `weapons.gd`) re-pin to the finished
+tree by the S22 procedure when a wave edits one.
 
 The whole queue is phase **P3** (`phases/P3-content-feel-push/PHASE.md`);
 order and the collisions that force it are in `WAVEBOARD.md` §Queued. The

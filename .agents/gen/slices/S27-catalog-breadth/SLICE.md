@@ -49,8 +49,9 @@ See `S27_BRIEF.md` §6 (A1–A7), each probe- or gate-provable.
 | Worker | Files (becomes `VAJB_WORKER_FILES`) | Brief |
 |---|---|---|
 | S27-B1 | `vajb-orbit/game/module_catalog.gd, vajb-orbit/game/loot_tables.gd, vajb-orbit/game/affixes.gd, vajb-orbit/game/shipyard.gd, vajb-orbit/game/shipyard.gd.uid, vajb-orbit/game/auction.gd, vajb-orbit/autoload/player_profile.gd, vajb-orbit/ui/station/shipyard_panel.gd, vajb-orbit/ui/station/shipyard_panel.tscn, vajb-orbit/tests/test_s27_catalog.gd, .agents/gen/slices/S27-catalog-breadth/S27-B1_report.md` | `S27_BRIEF.md` |
+| S27-B2 | `vajb-orbit/game/weapons.gd, vajb-orbit/game/game.gd, vajb-orbit/tests/test_engine2_loot.gd, vajb-orbit/tests/test_s3_instances.gd, vajb-orbit/tests/test_s6_poi_loot.gd, vajb-orbit/tests/test_s27_catalog.gd, .agents/gen/slices/S27-catalog-breadth/S27-B2_report.md` | `S27_BRIEF.md` §7/§8 amendment |
 | S27-R1 | `vajb-orbit/tests/, docs/CONTRACTS.md, .agents/gen/slices/S27-catalog-breadth/S27-R1_review.md` | `S27_BRIEF.md` |
-| S27-F1 | B1's set + `vajb-orbit/tests/, docs/CONTRACTS.md, .agents/gen/slices/S27-catalog-breadth/` | `S27_BRIEF.md` |
+| S27-F1 | B1's set + B2's set + `vajb-orbit/game/npc_ship.gd` + `vajb-orbit/tests/, docs/CONTRACTS.md, .agents/gen/slices/S27-catalog-breadth/` | `S27_BRIEF.md` |
 
 Read-only (never in a set): `game/exchange.gd`, `game/mineral_catalog.gd`,
 `game/sector_registry.gd`, `game/station_registry.gd`, `docs/`.

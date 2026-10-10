@@ -101,6 +101,54 @@ const MAW_LINES: Array[Dictionary] = [
 ## string, and so `TABLES` and that caller cannot drift.
 const MAW_BAND: StringName = &"maw"
 
+## --- S27 (A4): the four new archetype tables -----------------------------------------
+##
+## Each is a 06 §3 table in the doc's own format - independent per-line odds, a
+## `min`/`max` amount, any credit cache last (06 §2.4) - and each is grade-clean against
+## its own band (06 §1.4). The kind is the archetype id `NpcRegistry` spells; a registry
+## row whose `KEY_LOOT_KIND` names one of these rolls it verbatim through `roll_band`.
+## Every line is a 03 §3 catalogue row or the credit key, so `uncatalogued_items`
+## stays empty and `cap_violations` stays empty for them.
+## Reversal: the four kinds and their line arrays deleted.
+
+## `interceptor` (08 §5's hostile fast-attack hull, Grade I): a lighter fighter.
+const INTERCEPTOR_LINES: Array[Dictionary] = [
+	{&"item": &"comp_scrap_1", &"chance": 0.45, &"min": 1, &"max": 2},
+	{&"item": &"comp_weap_1", &"chance": 0.25, &"min": 1, &"max": 1},
+	{&"item": &"comp_pow_1", &"chance": 0.20, &"min": 1, &"max": 1},
+	{&"item": &"cm_chaff", &"chance": 0.15, &"min": 1, &"max": 1},
+	{&"item": &"cm_flare", &"chance": 0.15, &"min": 1, &"max": 1},
+]
+
+## `turret` (13 §5's station platform, Grade II): its own parts, not a hull's.
+const TURRET_LINES: Array[Dictionary] = [
+	{&"item": &"comp_scrap_2", &"chance": 0.40, &"min": 1, &"max": 2},
+	{&"item": &"comp_mech_2", &"chance": 0.30, &"min": 1, &"max": 1},
+	{&"item": &"comp_elec_2", &"chance": 0.25, &"min": 1, &"max": 1},
+	{&"item": CREDIT_ITEM, &"chance": 0.25, &"min": 60, &"max": 140},
+]
+
+## `sibelon` (18 §5's anomaly entity, Grade II): the corvette band's own table now,
+## rather than the corvette table borrowed (`NpcRegistry`'s sibelon row).
+const SIBELON_LINES: Array[Dictionary] = [
+	{&"item": &"comp_scrap_2", &"chance": 0.45, &"min": 1, &"max": 2},
+	{&"item": &"comp_ore_2", &"chance": 0.35, &"min": 1, &"max": 2},
+	{&"item": &"comp_elec_2", &"chance": 0.25, &"min": 1, &"max": 1},
+	{&"item": &"comp_mech_2", &"chance": 0.20, &"min": 1, &"max": 1},
+	{&"item": CREDIT_ITEM, &"chance": 0.10, &"min": 120, &"max": 250},
+]
+
+## `boss` (the boss archetypes, Grade III): the boneyard/pyre/apex rows' own table. Its
+## cache line stands at 1.00, so a boss always pays a floor (06 §3.4's own idiom).
+const BOSS_LINES: Array[Dictionary] = [
+	{&"item": &"comp_scrap_3", &"chance": 1.00, &"min": 3, &"max": 5},
+	{&"item": &"comp_weap_3", &"chance": 0.60, &"min": 1, &"max": 1},
+	{&"item": &"comp_mech_3", &"chance": 0.60, &"min": 1, &"max": 1},
+	{&"item": &"comp_elec_3", &"chance": 0.50, &"min": 1, &"max": 1},
+	{&"item": &"comp_ore_3", &"chance": 0.30, &"min": 1, &"max": 1},
+	{&"item": CREDIT_ITEM, &"chance": 1.00, &"min": 800, &"max": 1200},
+]
+
 ## The four 06 §3 tables, each with the hull band its §3 heading states (06 §1.4:
 ## "a hull's table can only contain component grades at or below its own band") and
 ## its lines in the doc's order. Every cache line is last, as 06 §2.4 requires
@@ -112,6 +160,11 @@ const TABLES: Dictionary = {
 	&"freighter": {&"band": 1, &"lines": FREIGHTER_LINES},
 	&"corvette": {&"band": 2, &"lines": CORVETTE_LINES},
 	MAW_BAND: {&"band": 3, &"lines": MAW_LINES},
+	## S27 (A4): the four new archetype kinds.
+	&"interceptor": {&"band": 1, &"lines": INTERCEPTOR_LINES},
+	&"turret": {&"band": 2, &"lines": TURRET_LINES},
+	&"sibelon": {&"band": 2, &"lines": SIBELON_LINES},
+	&"boss": {&"band": 3, &"lines": BOSS_LINES},
 }
 
 ## 06 §7's sector-scaled caches, built in now (S23 A6): the credit-cache lines

@@ -31,22 +31,40 @@ cd "$VAJB_WORKSPACE" && source ~/.profile \
   > /tmp/s27_b1.log 2>&1
 ```
 
+## S27-B2 — completion (added 2026-10-10; runs after B1, before R1)
+
+B1's set was under-scoped for A2/A5 (the flight call sites) and for the four
+§8 pins its own rows obsoleted. The brief's §7/§8 amendments are law; this
+worker lands them. Dispatch with the same env as B1 but the B2 set:
+
+```bash
+cd "$VAJB_WORKSPACE" && source ~/.profile \
+  && VAJB_SLIM=1 VAJB_WORKER_FILES='vajb-orbit/game/weapons.gd,vajb-orbit/game/game.gd,vajb-orbit/tests/test_engine2_loot.gd,vajb-orbit/tests/test_s3_instances.gd,vajb-orbit/tests/test_s6_poi_loot.gd,vajb-orbit/tests/test_s27_catalog.gd,.agents/gen/slices/S27-catalog-breadth/S27-B2_report.md' \
+     crush run "$(cat /tmp/s27_b2_prompt.txt)" \
+     -m hyper/deepseek-v4.1-flash --reasoning-effort xhigh --cwd "$VAJB_WORKSPACE" \
+  > /tmp/s27_b2.log 2>&1
+```
+
 ## S27-R1 — mandatory review (after B1 reports)
 
 ```bash
 cd "$VAJB_WORKSPACE" && source ~/.profile \
   && VAJB_SLIM=1 VAJB_WORKER_FILES='vajb-orbit/tests/,docs/CONTRACTS.md,.agents/gen/slices/S27-catalog-breadth/S27-R1_review.md' \
-     crush run "You are worker S27-R1, the mandatory reviewer of wave S27 (brief .agents/gen/slices/S27-catalog-breadth/S27_BRIEF.md; diff findings against its section 5 extract - the 2026-09-27 P3 blocks plus 15's format law plus 10's shape rule plus 01's L2 price bands are law - never against B1's report). Grade A1 to A7 first, re-measuring yourself on scratch stores: the seven affix rows over 5k seeded rolls (family bands, rarity contract), every suffix perk's consumer firing at the section 20 seam incl. the three named examples, the variant pricing at plus 15 percent per step with CR prices inside the L2 band for their tier, the four new loot tables over 20k seeded rolls, the shipyard recipes re-derived from the live ore and component values (a stale pre-S28 CR figure is HIGH), the queue and scrap semantics, the tier-4 row and the relaxed clamp with the reserved slot reserving tier 4 at a tier-4 sector, and the shipyard views in the shell-v2 idiom. Diff moved gate rows against the brief's section 8 list; an unlisted row moved or a pinned value that moved is HIGH. A price not derivable from the ladder is HIGH. Update docs/CONTRACTS.md section 20 and section 9 and 10 at the next free rows read at write time. Write slices/S27-catalog-breadth/S27-R1_review.md (REVIEW template, 150 lines max), findings S27-B1/F## with tier and one evidence line each, LOW rows at the next free ids from .agents/gen/_state/LOW_BACKLOG.md at write time - T-153's disposition names its closure. Never fix code. Bounded probes only." \
+     crush run "You are worker S27-R1, the mandatory reviewer of wave S27 (brief .agents/gen/slices/S27-catalog-breadth/S27_BRIEF.md, including its 2026-10-10 section 7 and section 8 amendments; diff findings against its section 5 extract - the 2026-09-27 P3 blocks plus 15's format law plus 10's shape rule plus 01's L2 price bands are law - never against a builder's report). The wave had two builders: read slices/S27-catalog-breadth/S27-B1_report.md and S27-B2_report.md. Grade A1 to A7 first, re-measuring yourself on scratch stores: the seven affix rows over 5k seeded rolls (family bands, rarity contract); every suffix perk's consumer firing in play, not only at the section 20 seam - of Echoes refunds every fifth shot's ammo at game/weapons.gd _consume_ammo_at, of the Long Watch holds the lock two seconds longer at game/game.gd _update_lock, of the Pyre detonates its 50-damage ring on a below-quarter-hull kill at game/game.gd _on_npc_died - and confirm Shipyard.note_flight runs on the launch path so the queue advances one in-space session per launch; the variant pricing at plus 15 percent per step with CR prices inside the L2 band for their tier; the four new loot tables over 20k seeded rolls; the shipyard recipes re-derived from the live ore and component values (a stale pre-S28 CR figure is HIGH); the queue and scrap semantics; the tier-4 row and the relaxed clamp with the reserved slot reserving tier 4 at a tier-4 sector; and the shipyard views in the shell-v2 idiom. Diff moved gate rows against the brief's section 8 list (now five rows including the S19 weapons.gd seal); an unlisted row moved or a pinned value that moved is HIGH - re-derive each re-cut pin against section 5's extract, never against a builder's stated new value. A price not derivable from the ladder is HIGH. Ratify or re-cut PYRE_RING_RADIUS 240.0 (PROPOSED, no doc reach). Update docs/CONTRACTS.md section 20 and section 9 and 10 at the next free rows read at write time. Write slices/S27-catalog-breadth/S27-R1_review.md (REVIEW template, 150 lines max), findings S27-B2/F## with tier and one evidence line each, prefixing S27-B1/F## where the finding is in B1's own data; LOW rows at the next free ids from .agents/gen/_state/LOW_BACKLOG.md at write time - T-153's disposition names its closure. Never fix code. Bounded probes only." \
      -m hyper/glm-5.3-flash --reasoning-effort max --cwd "$VAJB_WORKSPACE" \
   > /tmp/s27_r1.log 2>&1
 ```
 
 ## S27-F1 — fixer (only if R1 leaves HIGH or MED)
 
+R1 left two MEDs (S27-B1/F1 the prefix property dedupe; S27-B2/F2 the Pyre
+flight gate, escalated to the developer per bucket 2 — its `npc_ship.gd` is now
+in F1's set, brief §7 amendment 2). The prompt is `/tmp/s27_f1_prompt.txt`:
+
 ```bash
 cd "$VAJB_WORKSPACE" && source ~/.profile \
-  && VAJB_SLIM=1 VAJB_WORKER_FILES='vajb-orbit/game/module_catalog.gd,vajb-orbit/game/loot_tables.gd,vajb-orbit/game/affixes.gd,vajb-orbit/game/shipyard.gd,vajb-orbit/game/shipyard.gd.uid,vajb-orbit/game/auction.gd,vajb-orbit/autoload/player_profile.gd,vajb-orbit/ui/station/shipyard_panel.gd,vajb-orbit/ui/station/shipyard_panel.tscn,vajb-orbit/tests/test_s27_catalog.gd,vajb-orbit/tests/,docs/CONTRACTS.md,.agents/gen/slices/S27-catalog-breadth/' \
-     crush run "You are worker S27-F1, the fixer of wave S27 (brief .agents/gen/slices/S27-catalog-breadth/S27_BRIEF.md - read it for the pinned law; review .agents/gen/slices/S27-catalog-breadth/S27-R1_review.md). Fix ONLY the HIGH and MED findings at their named file:line; adjust tests only where a fix changes what is proven. No LOW items, no refactors, no pinned value changed. Re-run the gate twice on fresh scratch stores and report slices/S27-catalog-breadth/S27-F1_report.md with a finding-by-finding disposition and both gate lines." \
+  && VAJB_SLIM=1 VAJB_WORKER_FILES='vajb-orbit/game/module_catalog.gd,vajb-orbit/game/loot_tables.gd,vajb-orbit/game/affixes.gd,vajb-orbit/game/shipyard.gd,vajb-orbit/game/shipyard.gd.uid,vajb-orbit/game/auction.gd,vajb-orbit/autoload/player_profile.gd,vajb-orbit/ui/station/shipyard_panel.gd,vajb-orbit/ui/station/shipyard_panel.tscn,vajb-orbit/game/weapons.gd,vajb-orbit/game/game.gd,vajb-orbit/game/npc_ship.gd,vajb-orbit/tests/,docs/CONTRACTS.md,.agents/gen/slices/S27-catalog-breadth/' \
+     crush run "$(cat /tmp/s27_f1_prompt.txt)" \
      -m hyper/deepseek-v4.1-flash --reasoning-effort xhigh --cwd "$VAJB_WORKSPACE" \
   > /tmp/s27_f1.log 2>&1
 ```

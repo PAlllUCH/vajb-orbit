@@ -145,25 +145,53 @@ prefixes, +3 suffixes, tick K2), R-S27-3 (perks go live, tick K3).
 | ID | Role | `VAJB_WORKER_FILES` | Deliverable |
 |---|---|---|---|
 | S27-B1 | coder (builder) | `vajb-orbit/game/module_catalog.gd, vajb-orbit/game/loot_tables.gd, vajb-orbit/game/affixes.gd, vajb-orbit/game/shipyard.gd, vajb-orbit/game/shipyard.gd.uid, vajb-orbit/game/auction.gd, vajb-orbit/autoload/player_profile.gd, vajb-orbit/ui/station/shipyard_panel.gd, vajb-orbit/ui/station/shipyard_panel.tscn, vajb-orbit/tests/test_s27_catalog.gd, .agents/gen/slices/S27-catalog-breadth/S27-B1_report.md` | A1–A7 + `S27-B1_report.md` |
+| S27-B2 | coder (builder, completion) | `vajb-orbit/game/weapons.gd, vajb-orbit/game/game.gd, vajb-orbit/tests/test_engine2_loot.gd, vajb-orbit/tests/test_s3_instances.gd, vajb-orbit/tests/test_s6_poi_loot.gd, vajb-orbit/tests/test_s27_catalog.gd, .agents/gen/slices/S27-catalog-breadth/S27-B2_report.md` | the A2/A5 flight call sites + §8's four corrected pins + `S27-B2_report.md` |
 | S27-R1 | reviewer | `vajb-orbit/tests/, docs/CONTRACTS.md, .agents/gen/slices/S27-catalog-breadth/S27-R1_review.md` | `S27-R1_review.md` + CONTRACTS §20 + §9/§10 + LOW rows |
-| S27-F1 | fixer (only on HIGH/MED) | B1's set + `vajb-orbit/tests/, docs/CONTRACTS.md, .agents/gen/slices/S27-catalog-breadth/` | `S27-F1_report.md` |
+| S27-F1 | fixer (only on HIGH/MED) | B1's set + B2's set + `vajb-orbit/game/npc_ship.gd` + `vajb-orbit/tests/, docs/CONTRACTS.md, .agents/gen/slices/S27-catalog-breadth/` | `S27-F1_report.md` |
+
+**§7 amendment 2 (2026-10-10, developer — R1's F2 bucket-2 ruling).** R1's F2
+MED (the Pyre ring's below-quarter gate is vacuous in flight) sits in
+`game/npc_ship.gd`, a file no earlier worker set held. R1 escalated it to the
+developer, which re-opens the set rather than ruling the 0.0 reading: F1 now
+carries `npc_ship.gd` and the seal re-pin that edit mandates. Reversal: rule
+the shipped "handler is the gate" reading and drop the set entry.
+
+**§7 amendment 2026-10-10 (developer, bucket 2 — S27-B1's set was under-scoped).**
+B1 landed A1–A7's data at the §20 seam but the file set omitted the flight
+call sites A2's own text requires (`of Echoes` refunds a shot's ammo, `of the
+Long Watch` holds a lock, `of the Pyre` detonates its ring — all gameplay, not
+just seam arithmetic) and A5's play gate caller. It also could not edit the
+four §8 rows its own rows obsoleted (`tests/` was not in its set). B2's set
+above adds the two flight files and the three moved suites. Reversal: revert
+to B1's set and ship the perks seam-only (the R-S27-3 defect).
 
 Read-only throughout: `game/exchange.gd`, `game/mineral_catalog.gd`,
 `game/sector_registry.gd`, `game/station_registry.gd`, `docs/`.
 
 ## 8. Run order + the tests that move
-**B1 → R1 → F1 only on HIGH/MED.** Expected gate growth: **+
+**B1 → B2 → R1 → F1 only on HIGH/MED.** Expected gate growth: **+
 `test_s27_catalog.gd` rows (one per AC)** only. Candidates:
 
 | Suite | Why | Verdict |
 |---|---|---|
 | `test_s7_affixes.gd`, `test_s7_suffixes.gd`, `test_s7r1_*` | A1/A2's rows + live perks | unchanged counts (new rows are additive; existing perk rows now *pass harder*) |
 | `test_p1_catalogues.gd`, `test_p1_pricing.gd` | A3's variants | unchanged (variant rows are additive) |
-| `test_engine2_loot.gd`, `test_s6_poi_loot.gd` | A4's tables | unchanged |
+| `test_engine2_loot.gd` | A4's tables | **moves** — `:431`'s "no table" list drops `boss`/`turret`/`sibelon` (A4 ships them); `patrol`/`apex`/`""` stay table-less |
+| `test_s6_poi_loot.gd` | A4's tables | **moves** — `:129`'s ±5 % loop skips the four new kinds (06 §6 pins the five slice-2 bands, not A4's rows); `:208`'s `TABLES.size()` 6 → 10 |
+| `test_s3_instances.gd` | A1's new suffix rows join the roll pools | **moves** — `:192`'s seeded outcomes re-derive (`c_target` from a derelict rolls `echoes` where it rolled `leeches`) |
+| `test_s19_quadrants.gd` | A2's `weapons.gd` edit moves the AC6 byte seal | **moves** — `:131` re-pins `weapons.gd`'s SHA-256 to the finished tree (the S22 procedure; disclosed in `S27-B2_report.md`) |
+| `test_s19_quadrants.gd` (again) | F2's `npc_ship.gd` edit moves the AC6 byte seal | **moves** — the `res://game/npc_ship.gd` row re-pins to the finished tree (the S22 procedure; disclosed in `S27-F1_report.md`) |
 | `test_p2b_services.gd`, `test_d7_armory.gd` | A5's shipyard views | unchanged (additive panel) |
 | `test_s28_econ.gd`, `test_s25_contracts.gd`, `test_s26_endgame.gd` | S28's law; the seam and endgame rows this wave builds beside | unchanged |
 
-Any other count moving is a bucket-2 pause: report it, leave it, stop.
+**§8 amendment 2026-10-10 (developer, bucket 2 — the tests-that-move list was
+wrong).** B1's own A1/A4 rows obsolete four pinned rows in three suites (the
+three above); `tests/` was not in B1's set, so B1 reported them and stopped, as
+the brief demanded. B2 re-cuts them to the wave's own law (the four `assert`
+lines above are the whole change) — a reviewer re-checks each against §5's
+extract, so the pin's baseline is the spec, not B1's output.
+
+Any *other* count moving is a bucket-2 pause: report it, leave it, stop.
 
 ## 9. Hard rules
 - Docs read-only. `--forbidden` at verify: `docs/`,

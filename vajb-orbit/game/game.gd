@@ -80,6 +80,9 @@ const ShipFitScript := preload("res://game/ship_fit.gd")
 ## fitted instances' rows out of the summary here, so the per-cell weapon-affix walk
 ## and `ShipFit.resolve` read one shape.
 const AffixesScript := preload("res://game/affixes.gd")
+## S27 (10 section 3.3): the shipyard's queue. The launch is the one in-space session a
+## build waits on, so the scene advances the profile's own counter through this door.
+const ShipyardScript := preload("res://game/shipyard.gd")
 ## The three prefixes 09 section 3.1 lets a weapon cell roll: the per-barrel walk keeps
 ## only these out of a cell's row (a weapon instance carries no other prefix a barrel
 ## could apply).
@@ -94,6 +97,11 @@ const FLAG_CARTOGRAPH: StringName = &"cartograph"
 ## 15 section 4's Leeches band, verbatim: "kills restore 5 % hull". Read against the
 ## hull's own `hull_max`, so a bigger hull restores more.
 const LEECHES_FRACTION := 0.05
+## S27 (15 section 4, `of the Pyre`): the radius the kill's 50-damage ring sweeps. The
+## perk's own text names the damage (50) and the hull line (25 %) but no reach, so this
+## is **proposed** at a hair past the mine's 60 u trigger and well inside every weapon
+## envelope; reversal is deleting this constant and the ring loop's radius test.
+const PYRE_RING_RADIUS := 240.0
 ## The screen-space speed fantasy and the hull-critical vignette (FX_SPEC section 5,
 ## section 6 row 1): one node owns the blur, the camera's applied zoom, the dust and the
 ## vignette, and this scene pushes it the single input it reads.
@@ -497,6 +505,10 @@ func _ready() -> void:
 		## S26 (14 section 3, M14): the premium is charged at launch - a crossing is not
 		## a launch, so it is not charged again.
 		_charge_insurance()
+		## S27 (10 section 3.3): a launch is the one in-space session a shipyard build
+		## waits on ("ready when you return from your next flight"). A crossing is not a
+		## launch, so it does not advance the counter either.
+		ShipyardScript.note_flight(_profile())
 	else:
 		## A sector crossing, not a launch: the packs come back from the store the
 		## outgoing scene just filed, with no hold draw (`_seed_ammo_from_store`).
@@ -1817,10 +1829,15 @@ func _update_lock(delta: float) -> void:
 	if not _in_lock_range(target_position) or not _lock_clear_line(target_position):
 		_reset_lock_channel()
 		return
+	## S27 (15 section 4, `of the Long Watch`, CONTRACTS section 20): the channel's own
+	## duration, `LOCK_CHANNEL` unless the launch's fitted instances carry the perk, which
+	## holds it `LONG_WATCH_SECONDS` longer. Read once per frame from the same summary the
+	## other suffix seams read, so a launch without it keeps the pinned 1.2 s.
+	var channel := AffixesScript.lock_channel_seconds(_launch_summary, LOCK_CHANNEL)
 	_lock_elapsed += delta
-	_lock_progress = clampf(_lock_elapsed / LOCK_CHANNEL, 0.0, 1.0)
+	_lock_progress = clampf(_lock_elapsed / channel, 0.0, 1.0)
 	_push_lock_progress()
-	if _lock_elapsed >= LOCK_CHANNEL:
+	if _lock_elapsed >= channel:
 		_acquire_lock()
 
 
@@ -2666,6 +2683,36 @@ func _on_npc_died(_position: Vector2, archetype: StringName, ship: Node2D) -> vo
 	## the pin's fallback applies: the handler itself is the gate.
 	if AffixesScript.has_suffix(_launch_summary, FLAG_LEECHES):
 		_heal_leeches()
+	## S27 (15 section 4, `of the Pyre`, CONTRACTS section 20): the kill's ring. The
+	## victim's hull share **before** the killing blow gates it (S27-F1: the post-blow
+	## reading is always 0.0), and a positive `pyre_ring_damage` charges every NPC hull
+	## inside `PYRE_RING_RADIUS` once.
+	_detonate_pyre_ring(_position, ship)
+
+
+## S27 (15 section 4, `of the Pyre`): the 50-damage ring a below-quarter-hull kill
+## detonates. `Affixes.pyre_ring_damage` is the gate and the amount (0.0 for a launch
+## with no Pyre, or a victim at or above the quarter line); a positive figure sweeps
+## `PYRE_RING_RADIUS` around `at` and hands every NPC hull inside it one `take_damage`,
+## the victim excluded. The share read is the victim's **pre-blow** hull fraction
+## (`NpcShip.pre_hit_hull_fraction`), so a full-hull one-shot reads 1.0 and pays nothing.
+## A victim that answers no `pre_hit_hull_fraction` (a bare stub) reads 0.0, which is
+## below the quarter line.
+func _detonate_pyre_ring(at: Vector2, victim: Node2D) -> void:
+	var share := 0.0
+	if victim != null and is_instance_valid(victim) and victim.has_method(&"pre_hit_hull_fraction"):
+		share = float(victim.call(&"pre_hit_hull_fraction"))
+	var damage := AffixesScript.pyre_ring_damage(_launch_summary, share)
+	if damage <= 0.0:
+		return
+	for node: Node in get_tree().get_nodes_in_group(&"npc_ship"):
+		var hull := node as Node2D
+		if hull == null or not is_instance_valid(hull) or hull == victim:
+			continue
+		if hull.global_position.distance_to(at) > PYRE_RING_RADIUS:
+			continue
+		if hull.has_method(&"take_damage"):
+			hull.call(&"take_damage", damage)
 
 
 ## 15 section 4's Leeches payout (CONTRACTS section 20): 5 % of the hull's own maximum

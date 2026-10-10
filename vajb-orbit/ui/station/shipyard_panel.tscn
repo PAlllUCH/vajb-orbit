@@ -46,6 +46,38 @@ layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"StationCaption"
 
+[node name="ModeRow" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ModeHangar" type="Button" parent="ModeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 44)
+layout_mode = 2
+theme_type_variation = &"StationButton"
+text = "HANGAR"
+
+[node name="ModeBuild" type="Button" parent="ModeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 44)
+layout_mode = 2
+theme_type_variation = &"StationButton"
+text = "BUILD"
+
+[node name="ModeQueue" type="Button" parent="ModeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 44)
+layout_mode = 2
+theme_type_variation = &"StationButton"
+text = "QUEUE"
+
+[node name="ModeScrap" type="Button" parent="ModeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 44)
+layout_mode = 2
+theme_type_variation = &"StationButton"
+text = "SCRAP"
+
 [node name="ShipyardBody" type="HBoxContainer" parent="."]
 layout_mode = 2
 size_flags_vertical = 3
@@ -163,6 +195,101 @@ theme_override_constants/separation = 6
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
+
+[node name="BuildView" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="BuildCaption" type="Label" parent="BuildView"]
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "BUILD · HULLS & MODULES"
+
+[node name="BuildScroll" type="ScrollContainer" parent="BuildView"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="BuildList" type="VBoxContainer" parent="BuildView/BuildScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="BuildFooter" type="Label" parent="BuildView"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+autowrap_mode = 3
+
+[node name="QueueView" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="QueueCaption" type="Label" parent="QueueView"]
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "BUILD QUEUE"
+
+[node name="QueueBody" type="Label" parent="QueueView"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_type_variation = &"StationCaption"
+autowrap_mode = 3
+
+[node name="QueueActions" type="HBoxContainer" parent="QueueView"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="QueueCollect" type="Button" parent="QueueView/QueueActions"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 48)
+layout_mode = 2
+theme_type_variation = &"StationButton"
+text = "COLLECT"
+
+[node name="QueueCancel" type="Button" parent="QueueView/QueueActions"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 48)
+layout_mode = 2
+theme_type_variation = &"StationButton"
+text = "CANCEL BUILD"
+
+[node name="ScrapView" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="ScrapCaption" type="Label" parent="ScrapView"]
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "SCRAP · 50 % OF THE RECIPE MATERIALS"
+
+[node name="ScrapScroll" type="ScrollContainer" parent="ScrapView"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="ScrapList" type="VBoxContainer" parent="ScrapView/ScrapScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="ScrapFooter" type="Label" parent="ScrapView"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StationCaption"
+autowrap_mode = 3
 
 [node name="PaneFoot" type="HBoxContainer" parent="."]
 custom_minimum_size = Vector2(0, 56)

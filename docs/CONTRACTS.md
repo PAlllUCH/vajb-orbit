@@ -40,27 +40,27 @@ later request; one section costs ~2-3k.
 | §8 | Economy / state seams | L506–L549 |
 | §8.1 | Slice 0 — physics & fuel (pinned additions, 2026-09-21) | L550–L685 |
 | §8.2 | Slice 2 — fight (pinned additions, 2026-09-21) | L686–L890 |
-| §9 | Universal test gate | L891–L1023 |
-| §11 | P2 ship frames (2026-09-21) | L1024–L1219 |
-| §12 | P2-B1 weapon fit (2026-09-22) | L1220–L1277 |
-| §13 | P2-B proper fitting (2026-09-22) | L1278–L1399 |
-| §14 | S2.6 truth-and-feel (2026-09-22) | L1400–L1528 |
-| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1529–L1633 |
-| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L1634–L1809 |
-| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L1810–L1888 |
-| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L1889–L1961 |
-| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L1962–L2097 |
-| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2098–L2309 |
-| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2310–L2387 |
-| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L2388–L2442 |
-| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L2443–L2612 |
-| §24 | S24 world identity — stations, standing, bands, nebula (2026-10-08) | L2613–L2700 |
-| §25 | S28 economy law — the value ladder, the fee door, the battery, the b… | L2701–L2761 |
-| §26 | S25 contracts board — the registry, the reward law, the three exits … | L2762–L2834 |
-| §27 | S38 — the hub's cold start and the board's clock (2026-10-08) | L2835–L2909 |
-| §28 | S26 — bosses, arenas, insurance, vaults (2026-10-09/10) | L2910–L3066 |
-| §29 | S39 — flight feel, hostile fire and cargo (2026-10-10) | L3067–L3154 |
-| §10 | Changelog | L3155–L3568 |
+| §9 | Universal test gate | L891–L1055 |
+| §11 | P2 ship frames (2026-09-21) | L1056–L1251 |
+| §12 | P2-B1 weapon fit (2026-09-22) | L1252–L1309 |
+| §13 | P2-B proper fitting (2026-09-22) | L1310–L1431 |
+| §14 | S2.6 truth-and-feel (2026-09-22) | L1432–L1560 |
+| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1561–L1665 |
+| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L1666–L1841 |
+| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L1842–L1920 |
+| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L1921–L1993 |
+| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L1994–L2129 |
+| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2130–L2416 |
+| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2417–L2494 |
+| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L2495–L2549 |
+| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L2550–L2719 |
+| §24 | S24 world identity — stations, standing, bands, nebula (2026-10-08) | L2720–L2807 |
+| §25 | S28 economy law — the value ladder, the fee door, the battery, the b… | L2808–L2868 |
+| §26 | S25 contracts board — the registry, the reward law, the three exits … | L2869–L2941 |
+| §27 | S38 — the hub's cold start and the board's clock (2026-10-08) | L2942–L3016 |
+| §28 | S26 — bosses, arenas, insurance, vaults (2026-10-09/10) | L3017–L3173 |
+| §29 | S39 — flight feel, hostile fire and cargo (2026-10-10) | L3174–L3261 |
+| §10 | Changelog | L3262–L3701 |
 
 <!-- section-index:end -->
 
@@ -916,6 +916,38 @@ and `05` §10's rows off the live baselines. `test_p1_refinery.gd` alone reads
 hide-sub-convertible-stacks semantics, only its Gold fee figure and the two
 re-signed call shapes moved (disclosed in the suite's own header).
 
+- **S27's block (2026-10-10, review — R1's own runs):** baseline `s27_start`
+  **1275/0** (B1's record; not re-measurable — the tree is post-wave) →
+  **1291/4** (B1: the four §8 rows throw, B1 cannot edit `tests/`) →
+  **1298/1** (B2: the four re-cut by §8's own law; the failing one is the
+  §8-listed S19 `weapons.gd` seal, re-pinned by the S22 procedure) → R1's pair
+  **1299/0 ×2**, fresh scratch stores, byte-identical `[SUMMARY]`s. Growth
+  1275 → 1299 (+24: `test_s27_catalog.gd` 24 rows, A1–A7); no row outside §8's
+  five-row list moved. R1 re-measured independently of the new suite
+  (`tests/probe_r1_s27.gd`, fresh scratch store): a 5k seeded affix probe (zero
+  band/family/suffix-count violations, the §1 counts and the 0/1/2 rarity
+  contract holding, suffix hit-table flat), the four re-cut seeded outcome pins
+  re-derived at `seed(20260922)` (magic/surefire+echoes, deep_hold+embers,
+  rapid+echoes, spry+leeches — nothing weakened), all 15 variant prices
+  re-derived from the live table exactly, four 20k loot EVs (16.5/68.4/91.2/
+  1545.7 CR), and the shipyard totals re-derived live. Exit noise, pre-existing:
+  the runner's end-of-run leaked-RID lines (5 on every whole-suite run; the
+  `test_s19_quadrants` control shows the same count), beside §9's tolerated
+  `data.tree` line. R1's findings: **F1 MED** — a Rare weapon can roll two
+  prefixes of the same property (`roll_prefixes` dedupes ids, not `stat`s; probe
+  282/2000, first pair `dense`+`keen`), against §3's "different properties" pin
+  (fix: stat-level dedupe, one pool-walk, plus a suite row; fixer's move).
+  **F2 MED** — the Pyre's below-quarter gate is vacuous in flight (`hull_fraction`
+  reads 0.0 at the handler, so every kill detonates; needs a pre-blow share in
+  `NpcShip.take_damage`, bucket 2: `npc_ship.gd` is in no wave set). **F3 LOW** —
+  02's S28 ore values put the 9 shipyard builds at 47.7–59.1 % of list, under
+  10 §3.1's 55–70 % band (materials 15–19 % of the 20–30 % band); 10 §4's
+  labour-% lever is an owner pass — ticketed **T-178**. `PYRE_RING_RADIUS` 240.0
+  ratified (no doc reach; owner tick K2 carries the reversal). **Both MEDs cured
+  by S27-F1** (gate **1299 → 1300/0** ×2 hermetic): the prefix walk dedupes by
+  `stat`, and the Pyre gate reads the new `NpcShip.pre_hit_hull_fraction()` (its
+  AC6 seal re-pinned, the S22 procedure). Next free ticket
+  **T-179**.
 - **S38's block (2026-10-08, closed):** gate **1226 → 1236/0** twice hermetic on
   fresh scratch stores (R1's own runs; growth is exactly
   `test_s38_start_and_clock.gd`'s **10 new rows**, and per-suite `func test_`
@@ -2307,6 +2339,81 @@ static func sell_price(base_id: StringName, rarity: StringName, suffixes: Array 
 *K0–K3 dispositions (orchestrator, 2026-09-24) retired 2026-10-07 — per-wave
 disposition logs; the landed outcome is the pin text above and the gate history is
 `MASTER_REPORT.md` §6. Verbatim: `.agents/gen/_archive/contracts_retired_2026-10-07.md`.*
+
+### S27's block (2026-10-10, wave S27 review — S27-R1; the seven R-S27-2 rows, R-S27-3's live perks, R-S27-1's variants, the shipyard, the four loot tables)
+
+Whole-block reversal: the seven rows' deleted reversals, the `VARIANTS` dict
+dropped (`MAX_MODULE_TIER` back to 3), `sale_pool`/the tier-4 clamp dropped
+(T-153 reopens, reversal: clamp back at 3 and skip the slot), `game/shipyard.gd`
+deleted and `Shipyard.note_flight` de-wired at `game.gd:511`, the four loot kinds
+deleted, the three flight guards removed (Echoes' counter+return at
+`weapons.gd:_consume_ammo_at:2261-2265`, Long Watch at `game.gd:1836`, the Pyre's
+`_detonate_pyre_ring` + its call), 15 §9.3's staged sentence restored.
+
+- **The seven R-S27-2 rows** (`module_catalog.gd:234-261,335-352`; tick K2):
+  prefixes `dense`/`quickwarm` (weapons, +damage / +fire-rate, 8/12/16 — `keen`/`rapid`'s
+  own columns), `layered` (armour, `hull_add` +10/15/20, Sturdy's pool shape),
+  `farflung` (weapons, `range_mult` +10/15/20); suffixes `echoes` (every 5th shot
+  free, `ECHOES_EVERY` 5), `long_watch` (+2.0 s lock, `LONG_WATCH_SECONDS`),
+  `pyre` (50-damage ring below the quarter line, `PYRE_HULL_THRESHOLD` 0.25,
+  `PYRE_RING_DAMAGE` 50.0). Binary boons, per-family pools (`prefix_pool` keeps
+  the slot filter — a shield never rolls a damage prefix), the §1 counts hold
+  (0/1/1,2). **Rare pairs bend different properties (S27-F1):** `roll_prefixes`
+  drops every remaining pool row whose `stat` matches the just-picked row's
+  (`keen`/`dense` both `damage_add`, `rapid`/`quickwarm` both `fire_rate_mult`),
+  so 15 §3's per-property law holds; the count stays `min(affixes, pool)`.
+  **Reversal: rows deleted (each row's own).**
+- **Every live suffix names a `consumer` (R-S27-3, tick K3)** — the §3
+  "displayed, never applied" note is gone. The three new consumers are the §20
+  seam's pure readers (`affixes.gd:126-148`) plus three flight guards: Echoes at
+  `weapons.gd:_consume_ammo_at` (the component's own release ordinal, the free
+  5th pays nothing), Long Watch at `game.gd:_update_lock` (the channel reads
+  `lock_channel_seconds(_launch_summary, LOCK_CHANNEL)`; a launch without it
+  holds the pinned 1.2 s), Pyre at `game.gd:_on_npc_died` → `_detonate_pyre_ring`
+  (every `npc_ship` inside the ring, victim excluded, one `take_damage` each).
+  `PYRE_RING_RADIUS` **240.0** is the owner's PROPOSED figure, **ratified by
+  R1 2026-10-10** (no doc reach; reversal: delete the constant and the loop's
+  radius test). **F2 MED fixed by S27-F1:** the gate now reads
+  `NpcShip.pre_hit_hull_fraction()` — the share recorded at the top of
+  `take_damage`, before the blow lands — so a full-hull one-shot reads 1.0 and
+  pays nothing while a finish below the quarter line fires the ring. Reversal:
+  read `hull_fraction()` again (the vacuous gate — every kill detonates). The S7
+  five staged suffixes
+  (`silence`/`vault`/`choir`/`concord`/`ports`) keep `consumer` `""` — §20's own
+  staging stands (no system, no caller, no defect).
+- **Variants (R-S27-1, tick K1).** `MAX_MODULE_TIER := 4`, `VARIANTS` = 15
+  `<base>_mk2` rows (every non-weapon, non-exclusive base with a numeric
+  headline; weapons excluded — no `weapons.gd FAMILIES` row; engines excluded —
+  `speed_mult` clamps at `ENGINE_MULT_CEILING` 1.40). One tier up, family
+  headline ×1.15, base's own icon. **Price law (01's L2 bands, S28's A2 — no
+  restated price):** `cost = clamp(round(base_cost × SC(tier)/SC(base_tier)),
+  SC(tier), 2 × SC(tier))`, SC per 01's 2026-10-08 block; all 15 re-derive
+  exactly (worst: c_nexus 12 800 → 12 000, b_fold 13 600 → 12 000). The shelf
+  reads `Auction.sale_pool(tier)` = `tier_pool` ∪ `variant_pool` (`auction.gd:515-520`);
+  `tier_pool` keeps the pinned tiers 1–3 partition.
+- **T-153 closes.** `tier_pool(4)` carries the six tier-4 variants (9 000–12 000
+  CR, the L2 band) and `_reserved_tier` clamps to `MAX_MODULE_TIER`
+  (`auction.gd:423-427`), so a tier-4 sector's reserved slot reserves tier 4.
+  Reversal: the clamp back at 3, the slot skipped at tier 4.
+- **The shipyard (10 §3 verbatim, `game/shipyard.gd`).** `HULL_RECIPES` = §3.1's
+  nine rows byte-for-byte (labour the doc's own figures — 35 % of the frozen
+  list); module recipes mechanical: `2 × the tier's comp family + 12 × the
+  matching-tier ore + 20 % of list as labour`, totals re-derive from the live
+  02/03 catalogues at `materials_value` (no stored CR figure can go stale).
+  Queue: one job, commit at queue (hold + credits), full refund on cancel until
+  ready, hull → `grant_ship` / module → the bag always-Common, one in-space
+  session gated by `Shipyard.note_flight(profile)` — called on `game.gd`'s
+  launch branch (`:511`), never on a crossing; store persisted under
+  `shipyard` (`player_profile.gd:1919-1943`). Scrap: 50 % of recipe materials,
+  round down, hold-receiving. **F3 LOW rides:** with 02's 2026-10-08 ore values
+  the 9 builds now total 47.7–59.1 % of list (materials 15–19 % of the 20–30 %
+  band) — 10 §4's lever is labour %, an owner pass (ticketed T-178).
+- **Four loot kinds (`loot_tables.gd:115-168`):** `interceptor` band 1,
+  `turret` band 2, `sibelon` band 2, `boss` band 3 — 06 §3 format, per-line
+  independent odds, caches last, grade-clean, `TABLES` 10 kinds;
+  `patrol`/`apex`/`""` stay table-less (18 §5's roster keeps those
+  archetype→band maps empty). Seeded EV (R1's 20k probe): 16.5 / 68.4 / 91.2 /
+  1 545.7 CR, empty 24.1 / 24.1 / 19.5 / 0.0 %.
 ## §21 S8 QA playtest fixes (2026-09-24) — the independent QA wave
 
 **Docs-first (developer session, 2026-09-24)** from the independent playtest
@@ -3565,3 +3672,29 @@ bottom (the index-line form is only for retired entries).
   is owner-locked, so the figures await the owner's fold-in. Next free ticket
   **T-171**. **Reversal for the close-out as a whole:** drop §29 and the re-pins;
   the PROPOSED values revert to their §29-stated pre-S39 forms.
+- **v0.56 (2026-10-10, wave S27 review — S27-R1, this wave's only CONTRACTS
+  writer; gate `1275/0 (baseline) → 1291/4 → 1298/1 → 1299/0` ×2 hermetic on
+  fresh scratch stores, ±24 rows, no row outside §8's five-row list moved)** —
+  adds the **§20 S27 block** (the seven R-S27-2 rows with their bands, the three
+  live suffix perks' flight seams with the ratified `PYRE_RING_RADIUS` 240.0 and
+  F2's vacuous-gate note, the 15 priced variants with 01's L2 clamp-ladder
+  formula, T-153's tier-4 closure, the shipyard's §3 contract with the
+  live-value derivation, and four A4 loot kinds with R1's measured EVs) and the
+  **§9 measured block** (B1/B2 gate chain, the probe list, F1–F3). The fixer
+  owes exactly one row: **F1 MED** (a same-property prefix pair rolls on Rare
+  weapons — stat-level dedupe in `roll_prefixes` + a suite row); **F2 MED**
+  escalates (bucket 2 — `npc_ship.gd` in no wave set), **F3 LOW** ticketed
+  **T-178** (the shipyard build band post-S28; next free ticket **T-179**).
+  **Reversal:** drop the §20 S27 block, the §9 block and this entry; the §20
+  pins live in the shipped code either way (each row's own deletion reversal
+  stands in §20).
+- **v0.57 (2026-10-10, wave S27 fixer — S27-F1; gate 1299 → 1300/0 ×2 hermetic
+  on fresh scratch stores, +1 row)** — the two MEDs v0.56 left are cured, so the
+  **§20 S27 block**'s two "rides"/"owes" notes are corrected in place (the
+  prefix walk dedupes by `stat`; the Pyre gate reads
+  `NpcShip.pre_hit_hull_fraction()`), and `test_s19_quadrants.gd`'s
+  `npc_ship.gd` AC6 seal is re-pinned to the finished tree (the S22 procedure —
+  F2's edit, disclosed in `S27-F1_report.md`; the `weapons.gd` seal was B2's).
+  **Reversal:** revert both §20 corrections to the v0.56 wording, drop the new
+  suite row, and restore the two seals' pre-S27 hashes (`npc_ship.gd`
+  `31f5ac42…`, `weapons.gd` `6848270a…`).

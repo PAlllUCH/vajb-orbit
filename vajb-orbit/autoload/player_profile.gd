@@ -233,6 +233,12 @@ const KEY_REFINERY_INPUT := "refinery_input"
 const KEY_REFINERY_OUTPUT := "refinery_output"
 const KEY_REFINERY_JOBS := "refinery_jobs"
 const KEY_REFINERY_NEXT_ID := "refinery_next_job_id"
+## S27 (10 section 3.3): the shipyard's build queue store. One job at a time, committed
+## at queue, refunded in full on cancel, and a per-profile session counter the queue's
+## "one in-space session" gate reads. Reversal: drop the two keys and the four doors.
+const KEY_SHIPYARD: StringName = &"shipyard"
+const KEY_SHIPYARD_JOB := "shipyard_job"
+const KEY_SHIPYARD_SESSION := "shipyard_session"
 ## S30's **R-S30-2** (T-102's default): the map deck's per-profile filter states. The
 ## save key is `map_filters`, a string-keyed dictionary of booleans, exactly the shape
 ## `ui/hud/map_deck.gd` stores. Reversal: the deck's private `_config` borrow.
@@ -378,6 +384,12 @@ var _refinery_input: Dictionary = {}
 var _refinery_output: Dictionary = {}
 var _refinery_jobs: Array = []
 var _refinery_next_job_id := 1
+
+## S27's shipyard queue (10 section 3.3): the one active job (`{}` when idle) and the
+## session counter its "one in-space session" gate reads. Every field private; the
+## `shipyard_*` doors below are the only writers, and each write emits `&"shipyard"`.
+var _shipyard_job: Dictionary = {}
+var _shipyard_session := 0
 
 
 func _ready() -> void:
@@ -599,6 +611,34 @@ func set_active_ship(ship_id: StringName) -> bool:
 	if not _owned_ships.has(ship_id) or _active_ship == ship_id:
 		return _refuse(REASON_ALREADY_OWNED, ship_id)
 	_active_ship = ship_id
+	_touch(KEY_SHIPS)
+	return true
+
+
+## S27 (10 section 3.3): deliver a built hull to the owned roster without a charge. The
+## shipyard's recipe table is the gate, so no `_known_ships` check applies; an id already
+## on the roster is a no-op that still answers true, so a completed build never wedges.
+func grant_ship(ship_id: StringName) -> bool:
+	if ship_id == &"":
+		return false
+	if not _owned_ships.has(ship_id):
+		_owned_ships.append(ship_id)
+		_touch(KEY_SHIPS)
+	return true
+
+
+## S27 (10 section 3.3's scrap path): remove one owned hull from the roster. Refuses an
+## id the roster does not carry. A scrapped **active** hull moves the active flag to the
+## next owned hull, or to the default when the roster empties, so the account always has
+## a hull to fly.
+func remove_ship(ship_id: StringName) -> bool:
+	if not _owned_ships.has(ship_id):
+		return _refuse(REASON_UNKNOWN, ship_id)
+	_owned_ships.erase(ship_id)
+	if _active_ship == ship_id:
+		_active_ship = _owned_ships[0] if not _owned_ships.is_empty() else DEFAULT_SHIP
+		if not _owned_ships.has(_active_ship):
+			_owned_ships.append(_active_ship)
 	_touch(KEY_SHIPS)
 	return true
 
@@ -1874,6 +1914,33 @@ func set_refinery_next_job_id(value: int) -> void:
 	_touch(KEY_REFINERY)
 
 
+## S27 (10 section 3.3): the shipyard's one active build job, a deep copy (`{}` idle).
+## `game/shipyard.gd` is the only production caller.
+func shipyard_job() -> Dictionary:
+	return _shipyard_job.duplicate(true)
+
+
+func set_shipyard_job(value: Dictionary) -> void:
+	var candidate: Dictionary = _to_plain(value) if not value.is_empty() else {}
+	if candidate == _shipyard_job:
+		return
+	_shipyard_job = candidate
+	_touch(KEY_SHIPYARD)
+
+
+## S27 (10 section 3.3): the flights flown, the queue's "one in-space session" clock.
+func shipyard_session() -> int:
+	return _shipyard_session
+
+
+func set_shipyard_session(value: int) -> void:
+	var candidate := maxi(0, value)
+	if candidate == _shipyard_session:
+		return
+	_shipyard_session = candidate
+	_touch(KEY_SHIPYARD)
+
+
 func standing() -> Dictionary:
 	return _standing.duplicate(true)
 
@@ -2554,6 +2621,8 @@ func _apply_defaults() -> void:
 	_refinery_output.clear()
 	_refinery_jobs.clear()
 	_refinery_next_job_id = 1
+	_shipyard_job = {}
+	_shipyard_session = 0
 
 
 func _read_values() -> void:
@@ -2595,6 +2664,8 @@ func _read_values() -> void:
 	_refinery_output = _read_qty(KEY_REFINERY_OUTPUT)
 	_refinery_jobs = _read_plain_array(KEY_REFINERY_JOBS)
 	_refinery_next_job_id = maxi(1, _read_int(KEY_REFINERY_NEXT_ID, 1))
+	_shipyard_job = _read_plain_dict(KEY_SHIPYARD_JOB)
+	_shipyard_session = maxi(0, _read_int(KEY_SHIPYARD_SESSION, 0))
 
 
 func _read_int(key: String, fallback: int) -> int:
@@ -3180,6 +3251,8 @@ func _write_profile() -> void:
 	_config.set_value(SECTION, KEY_REFINERY_OUTPUT, _keys_to_strings(_refinery_output))
 	_config.set_value(SECTION, KEY_REFINERY_JOBS, _refinery_jobs)
 	_config.set_value(SECTION, KEY_REFINERY_NEXT_ID, _refinery_next_job_id)
+	_config.set_value(SECTION, KEY_SHIPYARD_JOB, _shipyard_job)
+	_config.set_value(SECTION, KEY_SHIPYARD_SESSION, _shipyard_session)
 	_config.set_value(SECTION, "fits", _fits)
 	_config.set_value(SECTION, "market", _market)
 	_config.set_value(SECTION, "heat", _heat)

@@ -145,6 +145,11 @@ var _shield_max := 0.0
 var _regen_quiet := REGEN_QUIET_FALLBACK
 var _damage_quiet := REGEN_QUIET_FALLBACK
 
+## S27-F1 (15 section 4's Pyre): the hull share immediately before the current hit
+## lands, recorded at the top of `take_damage` so a kill can gate on the blow's own
+## starting hull instead of the victim's post-blow 0.0. `1.0` until a hit reaches it.
+var _pre_hit_hull_fraction := 1.0
+
 ## The last hit's item-5 context (section 4.2 item 5): accepted and recorded, a no-op
 ## until slice 3's quadrants read the direction.
 var _last_damage_ctx: Dictionary = {}
@@ -370,6 +375,7 @@ func take_damage(amount: float, bypass_shield: bool = false, ctx: Dictionary = {
 	_attacked = true
 	if amount <= 0.0:
 		return
+	_pre_hit_hull_fraction = hull_fraction()
 	if _hull_max <= 0.0:
 		## No snapshot means no structure: the hull has no pool to charge, so it cannot
 		## absorb the hit and dies on the first one. Announced once in `setup` (the turret
@@ -1119,6 +1125,13 @@ func hull_fraction() -> float:
 	if _hull_max <= 0.0:
 		return 0.0
 	return _hull / _hull_max
+
+
+## S27-F1: the hull share at the moment before the most recent hit landed (`1.0` for a
+## hull no hit has reached yet). `game.gd:_detonate_pyre_ring` reads it off the victim so
+## a below-quarter **finish** gates the ring and a full-hull one-shot does not.
+func pre_hit_hull_fraction() -> float:
+	return _pre_hit_hull_fraction
 
 
 func is_alive() -> bool:

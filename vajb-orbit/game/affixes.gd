@@ -100,6 +100,54 @@ static func has_suffix(data: Dictionary, id: StringName) -> bool:
 	return false
 
 
+## --- S27 (15's 2026-09-27 P3 block, R-S27-2/3, ticks K2/K3) ------------------------
+##
+## The three new suffix perks' consumers, at the same CONTRACTS section 20 seam
+## `has_suffix` reads. Each is a pure function over the summary + its own argument, so
+## a caller (the ammo bank, the lock channel, the kill handler) reads the flag once and
+## asks the perk what it does. The three shipped perks (Embers/Leeches/Cartograph) keep
+## their own call sites; these are the new rows' named consumers.
+const PERK_ECHOES: StringName = &"echoes"
+const PERK_LONG_WATCH: StringName = &"long_watch"
+const PERK_PYRE: StringName = &"pyre"
+
+## 15 section 4, `of Echoes`: "every 5th shot costs no ammo".
+const ECHOES_EVERY := 5
+## 15 section 4, `of the Long Watch`: "+2 s lock hold".
+const LONG_WATCH_SECONDS := 2.0
+## 15 section 4, `of the Pyre`: "a kill below 25 % hull detonates a 50-damage ring".
+const PYRE_HULL_THRESHOLD := 0.25
+const PYRE_RING_DAMAGE := 50.0
+
+
+## Whether the shot at `shot_index` (1-based, the instance's own release count) is the
+## free one when the summary carries `of Echoes`: every `ECHOES_EVERY`-th release costs
+## no ammo. False for a summary without the perk, so the caller's ordinary spend stands.
+static func echoes_refunds(data: Dictionary, shot_index: int) -> bool:
+	if shot_index <= 0 or not has_suffix(data, PERK_ECHOES):
+		return false
+	return shot_index % ECHOES_EVERY == 0
+
+
+## The lock channel's duration with `of the Long Watch` applied: `base` plus
+## `LONG_WATCH_SECONDS` when the summary carries the perk, `base` otherwise.
+static func lock_channel_seconds(data: Dictionary, base: float) -> float:
+	if not has_suffix(data, PERK_LONG_WATCH):
+		return base
+	return base + LONG_WATCH_SECONDS
+
+
+## The Pyre's ring damage: `PYRE_RING_DAMAGE` when the summary carries `of the Pyre`,
+## else 0.0. `hull_fraction` is the victim's hull share at the killing blow; a kill at
+## or above `PYRE_HULL_THRESHOLD` is not a below-quarter-hull kill and pays no ring.
+static func pyre_ring_damage(data: Dictionary, hull_fraction: float) -> float:
+	if not has_suffix(data, PERK_PYRE):
+		return 0.0
+	if hull_fraction >= PYRE_HULL_THRESHOLD:
+		return 0.0
+	return PYRE_RING_DAMAGE
+
+
 ## One cell's `instances` row, accumulating its prefixes into `totals` and its
 ## suffixes into `flags` as it is built. `fallback` is the cell's own id, used as
 ## the base id when the record does not name one (a record keyed by its base).

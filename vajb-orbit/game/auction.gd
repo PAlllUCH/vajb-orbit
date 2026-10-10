@@ -399,14 +399,14 @@ static func _draw_listings(profile: Node, rng: RandomNumberGenerator) -> Diction
 		if reserved:
 			tier = _reserved_tier(station)
 			reserved = false
-		var pool := tier_pool(tier)
+		var pool := sale_pool(tier)
 		if pool.is_empty():
 			continue
 		var base: StringName = _pick_base(pool, station, rng)
 		_mint(profile, base, ModuleData.SOURCE_AUCTION, listings)
 	## The stock ten stay 10 section 2.1's fixed tier-I rows: V6's bias is the **rolled**
 	## draw's, and these are the amendment's "always something to mount" slots.
-	var stock_pool := tier_pool(1)
+	var stock_pool := sale_pool(1)
 	for _slot: int in range(STOCK_SLOTS):
 		if stock_pool.is_empty():
 			continue
@@ -416,13 +416,15 @@ static func _draw_listings(profile: Node, rng: RandomNumberGenerator) -> Diction
 
 
 ## V5's reserved tier: the docked sector's own band (`SectorRegistry.sector_tier`, 11
-## section 1.1's mix), clamped into the catalogue's own three tiers because a tier-4 sector
-## (S6-S7) has no tier-4 module rows. Reversal: the reserved slot is an added 21st row.
+## section 1.1's mix), clamped into the catalogue's own ladder. S27 (A6/T-153): the
+## ladder now reaches `ModuleCatalog.MAX_MODULE_TIER` (4), so a tier-4 sector's reserved
+## slot reserves tier 4 (`sale_pool(4)` carries the tier-4 variant rows). Reversal: the
+## clamp at `TIER_ORDER`'s top (3) and the slot skipped at tier 4.
 static func _reserved_tier(station: Dictionary) -> int:
 	var tier := SectorData.sector_tier(
 		SectorData.sector_id_for(int(station.get(&"sector", 0)))
 	)
-	return clampi(tier, TIER_ORDER[0], TIER_ORDER[TIER_ORDER.size() - 1])
+	return clampi(tier, TIER_ORDER[0], ModuleData.MAX_MODULE_TIER)
 
 
 ## V6 (12 section 5, 2026-10-08 block): one rolled slot's base id. The station's owner
@@ -491,12 +493,29 @@ static func draw_tier(rng: RandomNumberGenerator = null) -> int:
 ## Every catalogue module row at `tier`, in `ModuleCatalog.MODULES`' order. The
 ## three 15 section 9.1 exclusives are excluded: they are the F lot's own three,
 ## never a tier-roll outcome (15 section 5: exclusives live at faction stations).
+## S27 (A6/T-153): the `<base>_mk2` variant rows join the pool above the base ladder's
+## top, so `tier_pool(4)` is non-empty and the reserved slot can reserve tier 4. Tiers
+## 1-3 keep the pinned partition (`test_s3_auction`'s own law).
 static func tier_pool(tier: int) -> Array[StringName]:
 	var ids: Array[StringName] = []
 	for id: StringName in ModuleData.MODULES:
 		if ModuleData.EXCLUSIVES.has(id):
 			continue
 		if int(ModuleData.module(id).get(&"tier", 0)) == tier:
+			ids.append(id)
+	if tier > TIER_ORDER[TIER_ORDER.size() - 1]:
+		ids.append_array(ModuleData.variant_pool(tier))
+	return ids
+
+
+## S27 (R-S27-1/A3): the shelf's own draw pool - `tier_pool` (the base catalogue) plus
+## the `<base>_mk2` variant rows at that tier, so a variant appears one tier up from its
+## base. `tier_pool` keeps the pinned tiers 1-3 partition; this is what `_draw_listings`
+## reads, so a variant is listable without moving that pin.
+static func sale_pool(tier: int) -> Array[StringName]:
+	var ids := tier_pool(tier)
+	for id: StringName in ModuleData.variant_pool(tier):
+		if not ids.has(id):
 			ids.append(id)
 	return ids
 

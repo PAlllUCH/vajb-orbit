@@ -74,6 +74,10 @@ const FxScript := preload("res://game/fx.gd")
 ## S13's live balance surface (S13_BRIEF §2 rule 1): the chip rate below stays
 ## declared as the default, and the live arithmetic reads `OreTuning.gun_chip_rate`.
 const OreTuningScript := preload("res://game/ore_tuning.gd")
+## S27 (15 section 4, `of Echoes`, CONTRACTS section 20): the suffix consumer the ammo
+## bank reads. The launch hands the fitted flags in through `set_affix_flags`, and the
+## seam `has_suffix` reads is the same one Embers' flag uses.
+const AffixesScript := preload("res://game/affixes.gd")
 
 ## CONTRACTS section 23.4, owner-ruled 2026-09-24: a kinetic slug and a beam do not stop
 ## in the dark. 30 000 u is past a sector's own 14 142 u diagonal (`sector_registry.gd:32`)
@@ -479,6 +483,12 @@ var _firing := false
 var _was_firing := false
 var _external_trigger := false
 var _dry_noted := false
+
+## S27 (15 section 4, `of Echoes`): this component's own release count, 1-based, fed
+## to `Affixes.echoes_refunds` so every fifth release is free. One count per component
+## (one flight's mounted weapons), the granularity the launch's aggregated suffix flag
+## has; a fresh component starts at zero.
+var _shots_released := 0
 
 ## One cadence timer per barrel of `fitted()` (CONTRACTS section 16 rule 4: "the single
 ## `_shot_timer` becomes one timer per barrel"), so three cannons deliver three shots
@@ -2243,6 +2253,15 @@ func _consume_ammo(weapon: StringName, barrel: int = -1) -> void:
 ## magnitude spends the launched fit's own slot for its family (section 21's H1).
 func _consume_ammo_at(barrel: int, weapon: StringName) -> void:
 	if _state == null:
+		return
+	## S27 (15 section 4, `of Echoes`): every fifth release costs no ammo. The count is
+	## this component's own release ordinal and the summary is the launch's fitted suffix
+	## list (`set_affix_flags`), shaped for `Affixes.echoes_refunds`; a launch without the
+	## perk pays the ordinary spend below.
+	_shots_released += 1
+	if AffixesScript.echoes_refunds(
+		{AffixesScript.KEY_SUFFIXES: _state.affix_flags}, _shots_released
+	):
 		return
 	var sum := _prefix_magnitude(_barrel_affixes(barrel), PREFIX_FRUGAL)
 	if sum == 0.0:

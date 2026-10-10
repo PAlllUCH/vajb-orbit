@@ -187,8 +187,9 @@ func test_the_roll_reads_the_source_table_and_the_family_pools() -> void:
 
 ## The seeded outcomes, measured and then pinned: five shapes, one per row that matters -
 ## an auction Common (§2's 65 %), a derelict Magic's prefix+suffix pair, the F lot's own
-## `faction_lot` row (§9.2), an exclusive floored to Magic by a 100 % Common source with
-## its faction's own suffix (§5), and an arena Magic. The numbers are §3's band columns.
+## `faction_lot` row (§9.2), an exclusive floored to Magic by a 100 % Common source, and
+## an arena Magic. The numbers are §3's band columns. S27 (A1) adds three suffix rows to
+## the pools, so the seeded suffix picks re-derive (the pool size is what the RNG reads).
 func test_the_seeded_outcomes_are_pinned() -> void:
 	var cases: Array[Dictionary] = [
 		{
@@ -203,28 +204,28 @@ func test_the_seeded_outcomes_are_pinned() -> void:
 			&"source": ModuleData.SOURCE_DERELICT,
 			&"rarity": "magic",
 			&"prefixes": [{"id": "surefire", "value": 0.05}],
-			&"suffixes": ["leeches"],
+			&"suffixes": ["echoes"],
 		},
 		{
 			&"base": EXCLUSIVE_VAULT,
 			&"source": ModuleData.SOURCE_FACTION_LOT,
 			&"rarity": "magic",
 			&"prefixes": [{"id": "deep_hold", "value": 12.0}],
-			&"suffixes": ["leeches"],
+			&"suffixes": ["embers"],
 		},
 		{
 			&"base": PROTON,
 			&"source": ModuleData.SOURCE_SHIPYARD,
 			&"rarity": "magic",
 			&"prefixes": [{"id": "rapid", "value": 0.16}],
-			&"suffixes": ["choir"],
+			&"suffixes": ["echoes"],
 		},
 		{
 			&"base": FOLD,
 			&"source": ModuleData.SOURCE_ARENA,
 			&"rarity": "magic",
 			&"prefixes": [{"id": "spry", "value": -0.25}],
-			&"suffixes": ["silence"],
+			&"suffixes": ["leeches"],
 		},
 	]
 	for entry: Dictionary in cases:
