@@ -185,6 +185,15 @@ const CREDITS_ICON: Texture2D = preload("res://assets/icons/cargo/icon_credits.s
 const CREDITS_ICON_SIZE := Vector2(28.0, 28.0)
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 const PROFILE_KEY_CREDITS: StringName = &"credits"
+## S39 (T-170): the hold readout's own constants. The block sits beside credits in the
+## bottom-left column, so the owner's "i cannot see my current cargo while in flight" is
+## answered without un-retiring section 3.7's old column: `CARGO used/max` is the count
+## and one `name x qty` row per held item is the contents.
+const CARGO_BLOCK := "CargoBlock"
+const CARGO_TITLE := "CARGO"
+const PROFILE_KEY_CARGO: StringName = &"cargo"
+const CARGO_ROW_FORMAT := "%s  x%d"
+const CARGO_EMPTY := "EMPTY"
 
 ## Section 3.10 amendment 9.8: the target window's captions carry a grouped
 ## number, so a 4-digit range reads `1 240 u` rather than `1240 u`, in the **unit**
@@ -385,6 +394,10 @@ var _credits_block: VBoxContainer = null
 var _credits_value: Label = null
 var _credits_icon: TextureRect = null
 var _profile_service: Node = null
+## S39 (T-170): the hold readout's nodes (built in code, `hud.tscn` carries no cargo block).
+var _cargo_block: VBoxContainer = null
+var _cargo_block_value: Label = null
+var _cargo_block_list: VBoxContainer = null
 var _emergency: bool = false
 var _emergency_banner: Label = null
 ## D8 item 10's two additions: the minimap legend and the zoom glyphs' drawn marks
@@ -401,6 +414,9 @@ func _ready() -> void:
 	_apply_ammo_panel_style()
 	_build_pool_blocks()
 	_build_credits_block()
+	## S39 (T-170): the hold's own readout, beside credits - the flight answer to the
+	## owner's "i cannot see my current cargo while in flight".
+	_build_cargo_block()
 	_connect_profile()
 	_connect_ui_scale_watch()
 	_build_hud_widgets()
@@ -1361,6 +1377,119 @@ func _build_credits_block() -> void:
 	_refresh_credits()
 
 
+## S39 (T-170): the hold readout, built in code like the credits block and appended to
+## the same bottom-left column. `CARGO used/max` is the slot count the owner asked for
+## ("how do i know that i have 5 slots"); one row per held item is the contents. It
+## reads `PlayerProfile.cargo_items()` and never writes the profile, refreshing on the
+## HUD's own `cargo_changed` feed and on the profile's `&"cargo"` key.
+func _build_cargo_block() -> void:
+	if _blocks == null:
+		return
+	var block := VBoxContainer.new()
+	block.name = CARGO_BLOCK
+	block.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	block.add_theme_constant_override(&"separation", POOL_BLOCK_SEPARATION)
+	var header := HBoxContainer.new()
+	header.name = "CargoHeader"
+	header.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	header.add_theme_constant_override(&"separation", POOL_HEADER_SEPARATION)
+	var title := Label.new()
+	title.name = "CargoTitle"
+	title.theme_type_variation = &"HudReadout"
+	title.text = CARGO_TITLE
+	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var spacer := Control.new()
+	spacer.name = "CargoSpacer"
+	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var value := Label.new()
+	value.name = "CargoValue"
+	value.theme_type_variation = &"HudReadout"
+	value.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	value.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	header.add_child(title)
+	header.add_child(spacer)
+	header.add_child(value)
+	var list := VBoxContainer.new()
+	list.name = "CargoList"
+	list.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	list.add_theme_constant_override(&"separation", POOL_ROW_SEPARATION)
+	block.add_child(header)
+	block.add_child(list)
+	_blocks.add_child(block)
+	_cargo_block = block
+	_cargo_block_value = value
+	_cargo_block_list = list
+	_refresh_cargo_block()
+
+
+## The hold's contents as the readout's rows: one `name x qty` line per item, the
+## mineral/economy catalogue's own display name where it knows one and the raw id
+## otherwise, sorted by id so the list never reshuffles between frames. Empty hold
+## reads `EMPTY`.
+func _cargo_entries() -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	var profile := _profile()
+	if profile == null or not profile.has_method(&"cargo_items"):
+		return out
+	var items: Variant = profile.call(&"cargo_items")
+	if not (items is Dictionary):
+		return out
+	var ids: Array = (items as Dictionary).keys()
+	ids.sort()
+	for id: Variant in ids:
+		var qty := int((items as Dictionary)[id])
+		if qty <= 0:
+			continue
+		out.append({&"id": StringName(id), &"qty": qty})
+	return out
+
+
+func _refresh_cargo_block() -> void:
+	if _cargo_block_value == null or _cargo_block_list == null:
+		return
+	_cargo_block_value.text = "%d/%d" % [_cargo_used, _cargo_max]
+	_set_text_alert(_cargo_block_value, _cargo_is_full(), TOKEN_DANGER)
+	for child: Node in _cargo_block_list.get_children():
+		child.queue_free()
+	var entries := _cargo_entries()
+	if entries.is_empty():
+		_cargo_block_list.add_child(_cargo_row(CARGO_EMPTY))
+		return
+	for entry: Dictionary in entries:
+		_cargo_block_list.add_child(
+			_cargo_row(CARGO_ROW_FORMAT % [_item_label(StringName(entry[&"id"])), int(entry[&"qty"])])
+		)
+
+
+## One contents row: a `HudReadout` label, dim so it never competes with the count.
+func _cargo_row(text: String) -> Label:
+	var label := Label.new()
+	label.theme_type_variation = &"HudReadout"
+	label.text = text
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_push_tint(label, TOKEN_TEXT_DIM)
+	return label
+
+
+## A cargo item id's display name: the mineral catalogue's own name for an ore/ingot,
+## the station catalogue's for an ammo pack, else the id with underscores spaced and
+## upper-cased. Never invents a label.
+func _item_label(item_id: StringName) -> String:
+	var mineral: Dictionary = MineralCatalog.entry_for_item(item_id)
+	if not mineral.is_empty():
+		var mineral_name: Variant = mineral.get(&"name", "")
+		if mineral_name is String and not (mineral_name as String).is_empty():
+			return mineral_name as String
+	var family := StationCatalog.ammo_family(item_id)
+	if family != &"":
+		var pack: Dictionary = StationCatalog.ammo_pack(family)
+		var pack_name: Variant = pack.get(&"name", "")
+		if pack_name is String and not (pack_name as String).is_empty():
+			return pack_name as String
+	return String(item_id).replace("_", " ").to_upper()
+
+
 ## D8 item 10's minimap legend: one row per kind `Minimap.draw_kinds()` names, each
 ## carrying the marker that kind draws on the map (the shape `minimap.gd::_draw_blip`
 ## draws, in the token `_color_for` resolves). It sits inside the minimap bezel's own
@@ -1510,11 +1639,14 @@ func _connect_profile() -> void:
 	_refresh_credits()
 
 
-## Only the `credits` key moves this block; every other profile change belongs to another
-## surface (CONTRACTS section 23.3).
+## The credits key moves the credits block; S39 (T-170) adds the hold key so a purchase
+## at the station (which writes cargo through the profile) refreshes the flight readout
+## the moment the hull next launches.
 func _on_profile_changed(key: StringName) -> void:
 	if key == PROFILE_KEY_CREDITS:
 		_refresh_credits()
+	elif key == PROFILE_KEY_CARGO:
+		_refresh_cargo_block()
 
 
 func _refresh_credits() -> void:
@@ -1814,6 +1946,7 @@ func _refresh_cargo() -> void:
 	_set_text_alert(_cargo_footer_label, full, TOKEN_DANGER)
 	for index: int in _cargo_cells.size():
 		_cargo_cells[index].set_icon_token(TOKEN_TEXT_PRIMARY if index < _cargo_used else TOKEN_TEXT_DIM)
+	_refresh_cargo_block()
 
 
 func _refresh_pools() -> void:

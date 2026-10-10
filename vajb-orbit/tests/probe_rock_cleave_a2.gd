@@ -861,7 +861,7 @@ func _invariants() -> void:
 		"invariant_collision_rows",
 		is_equal_approx(ImpactScript.COLLISION_FACTOR, 2.0e-5)
 			and is_equal_approx(ImpactScript.COLLISION_MIN_DV, 40.0)
-			and is_equal_approx(ImpactScript.KNOCKBACK_FRACTION, 0.40)
+			and is_equal_approx(ImpactScript.KNOCKBACK_FRACTION, 0.15)
 			and is_equal_approx(ImpactScript.EXPLOSION_P0, 4000.0)
 			and is_equal_approx(ImpactScript.EXPLOSION_WINDOW, 0.2)
 			and is_equal_approx(ProjectileScript.MIN_SHOCKWAVE_IMPULSE, 1.0)

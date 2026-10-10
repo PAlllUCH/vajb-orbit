@@ -98,7 +98,7 @@ const STATUS_REMOVED := "REMOVED · %s · BACK IN INVENTORY"
 ## The pane's own chrome, in the D13 mockup's words (the chrome line and the caption
 ## line). The subtitle counts the racks the pane draws (`GROUPS_MAX`, `game/weapons.gd`)
 ## and the packs the catalogue carries, so neither figure can go stale.
-const SUBTITLE := "BATTERY RACKS AND AMMUNITION - %d RACKS - %d PACKS"
+const SUBTITLE := "BATTERY RACKS AND AMMUNITION - %d RACKS - %d PACKS - HOLD %d/%d"
 ## P38's own subtitle, the FIT CELLS twin of `SUBTITLE` (the same shape: the mode's subject +
 ## its two live counts). The subject is the cell grid and the equipment list; the counts are
 ## the active hull's fit cells and the module bases the bag owns. **PROPOSED (S35-F1,
@@ -1038,9 +1038,39 @@ func _update_subtitle() -> void:
 	if _subtitle == null:
 		return
 	if _mode == MODE_BATTERY:
-		_subtitle.text = SUBTITLE % [RACK_COUNT, Catalog.AMMO_PACKS.size()]
+		var profile := _profile()
+		_subtitle.text = SUBTITLE % [
+			RACK_COUNT,
+			Catalog.AMMO_PACKS.size(),
+			_cargo_used(profile),
+			_hold_capacity(profile),
+		]
 	else:
 		_subtitle.text = SUBTITLE_FIT % [_cell_total(), _owned_module_total()]
+
+
+## S39 (T-170): the hold's used units, the profile's own cargo summed - the ammo
+## subtitle's live "how many slots do I have" figure. The owner: "how do i know that i
+## have 5 slots while buying ammo and how many slots and ammo i have left?"
+func _cargo_used(profile: ProfileScript) -> int:
+	if profile == null:
+		return 0
+	var raw: Variant = profile.call(&"cargo_items")
+	if not raw is Dictionary:
+		return 0
+	var used := 0
+	for key: Variant in (raw as Dictionary):
+		used += int((raw as Dictionary)[key])
+	return used
+
+
+## The active hull's hold capacity, from the same resolved snapshot the flight hold reads
+## (`ShipStats.cargo_max`), so the armory and the HUD cannot disagree about the total.
+func _hold_capacity(profile: ProfileScript) -> int:
+	if profile == null:
+		return 0
+	var hull := _active_hull(profile)
+	return int(ShipFit.resolve(hull, _resolved_fit(profile, hull)).cargo_max)
 
 
 ## The active hull's fit cells, summed over `ShipFit.FIT_SLOT_KEYS` (one POWER cell, the

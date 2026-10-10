@@ -87,6 +87,12 @@ var _home := Vector2.ZERO
 var _has_home := false
 var _route: Array[Vector2] = []
 var _route_index := 0
+## S39 (T-168): the previous route point, i.e. where the current leg began. Set when
+## the leg advances; the along-track "has this leg been passed" test in
+## `_leg_reached` reads it. `_route_last_set` is false until the first advance, so
+## the test never fires against an unseeded origin.
+var _route_last := Vector2.ZERO
+var _route_last_set := false
 var _leg_bearing := 0.0
 var _strafe := 1.0
 var _los: Callable = Callable()
@@ -112,6 +118,8 @@ func setup(archetype: StringName, row: Dictionary, home := Vector2.ZERO) -> void
 	_aggro_lost = 0.0
 	_route.clear()
 	_route_index = 0
+	_route_last = Vector2.ZERO
+	_route_last_set = false
 	_leg_bearing = 0.0
 	_strafe = 1.0
 
@@ -134,6 +142,7 @@ func set_home(pos: Vector2) -> void:
 func set_route(points: Array[Vector2]) -> void:
 	_route = points.duplicate()
 	_route_index = 0
+	_route_last_set = false
 
 
 func state() -> int:
@@ -358,8 +367,11 @@ func _intent(pos: Vector2, threat: Dictionary, suspect: Dictionary) -> Dictionar
 func _patrol_waypoint(pos: Vector2) -> Vector2:
 	if not _route.is_empty():
 		var point := _route[_route_index % _route.size()]
-		if pos.distance_to(point) <= PlayerShip.ARRIVE_RADIUS:
+		if _leg_reached(pos, point):
+			_route_last = point
+			_route_last_set = true
 			_route_index = (_route_index + 1) % _route.size()
+			point = _route[_route_index % _route.size()]
 		return point
 	var radius := _patrol_leg_radius()
 	var leg := _home + Vector2.RIGHT.rotated(_leg_bearing) * radius
@@ -367,6 +379,26 @@ func _patrol_waypoint(pos: Vector2) -> Vector2:
 		_leg_bearing += PATROL_LEG_TURN
 		leg = _home + Vector2.RIGHT.rotated(_leg_bearing) * radius
 	return leg if _has_home else pos
+
+
+## S39 (T-168): has the hull finished the leg to `point`? The ring test is the
+## section 13 arrive radius, but a freighter's turn radius is wider than that ring,
+## so a hull nudged off course passes *beside* its waypoint, never advances the leg,
+## and then stalls with the point behind it (`_order_speed` returns 0 past 90
+## degrees) -- the owner's "even a slightest change in its course ... makes it unable
+## to return to path". The along-track test closes that: once the hull has carried
+## past the plane through the waypoint perpendicular to the leg, the leg is behind it
+## however far off the ring it flew. Only a hull with a seeded leg start uses it, so
+## the first leg still advances on the ring alone.
+func _leg_reached(pos: Vector2, point: Vector2) -> bool:
+	if pos.distance_to(point) <= PlayerShip.ARRIVE_RADIUS:
+		return true
+	if not _route_last_set:
+		return false
+	var leg := point - _route_last
+	if leg.length_squared() <= 0.0001:
+		return false
+	return (pos - point).dot(leg.normalized()) >= 0.0
 
 
 ## The patrol leg's radius: the row's own aggro radius, so a hull that "guards asteroid

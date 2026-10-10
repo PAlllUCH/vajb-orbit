@@ -105,8 +105,15 @@ const FORBIDDEN_FILES: Dictionary = {
 	## (`_targeting_slow` + `_resolve_targeting_slow` + the `_order_turn` scale) is
 	## the wave's edit to this file, and this pin is the finished tree's reading -
 	## the S22 re-pin procedure.
-	"res://game/npc_ship.gd": "b91b0cbb49712d2b13cfcaced4fdb33345857d12ef5d29431630fe2cd99ef98a",
-	"res://game/npc_brain.gd": "e39440bf410b535c50f924208290e54dc8085eea52731890b778a4ad3fbe5d22",
+	## S39 re-pin (disclosed in `S39_BRIEF.md` / the wave recap): T-164's gun
+	## (`_step_weapon` + `_fire_volley` + the `_weapon`/`_weapon_cooldown`/
+	## `_weapon_volleys` state) is the wave's edit to this file; this pin is the
+	## finished tree's reading (the S22 procedure).
+	"res://game/npc_ship.gd": "31f5ac426bbb20a1ba017ea8ed595959abe2062a704cd8d4b6066523b7062e65",
+	## S39 re-pin (the same wave): T-168's route-leg advance (`_leg_reached` +
+	## `_route_last`/`_route_last_set`) is the wave's edit to this file; this pin is
+	## the finished tree's reading.
+	"res://game/npc_brain.gd": "cd867f9faba75c483d713051e9bee65acfcda604433abe009584823500d03731",
 	## S22 (amendment 6, disclosed in `S22-B3_report.md`): B1's one `hit_landed` delivery
 	## seam (`ab861ce9…`) and B2's mine cue row (`FIRE_CUES[&"mine"]`) are the wave's
 	## edits, so B3 - the wave's last editor of this file - re-pins it once from the

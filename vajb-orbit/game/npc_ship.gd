@@ -114,6 +114,14 @@ const PROFILE_SERVICE: StringName = &"PlayerProfile"
 ## value: nothing in the brain depends on reading it on any particular frame.
 const HEAT_POLL_SECONDS := 0.5
 
+## S39 (T-164): the gun's own presentation constants. `GUN_FAN` is the half-angle
+## (radians) a multi-barrel volley spreads over; `GUN_SHOT_MASS` is the projectile mass
+## the section 4.2 item 7 knockback term reads (section 13's `SHOT_MASS`, the same one a
+## player shot carries). The node name is what a probe counts.
+const GUN_PROJECTILE_NODE := "NpcShot"
+const GUN_FAN := 0.05
+const GUN_SHOT_MASS := 1.0
+
 var _archetype: StringName = &""
 var _hull_id: StringName = &""
 var _row: Dictionary = {}
@@ -146,9 +154,16 @@ var _last_damage_ctx: Dictionary = {}
 var _attacked := false
 var _engaged_last := false
 
-## The last intent the brain produced, kept for the wiring (the fire flag has no consumer
-## yet - see the brain's file doc).
+## The last intent the brain produced. Since S39 (T-164) its `fire` flag **does** have
+## a consumer: `_step_weapon` reads it (see `INTENT_FIRE`).
 var _intent: Dictionary = {}
+
+## S39 (T-164): the hull's gun. `_weapon` is the registry's per-archetype row (empty
+## for a neutral or unarmed hull, so a trader never fires); `_weapon_cooldown` is the
+## cadence clock; `_weapon_volleys` counts the volleys fired, the reading a probe takes.
+var _weapon: Dictionary = {}
+var _weapon_cooldown := 0.0
+var _weapon_volleys := 0
 
 var _heat_tier := NpcRegistryScript.HEAT_CLEAN
 var _heat_clock := 0.0
@@ -208,6 +223,10 @@ func setup(
 	var route: Variant = opts.get(OPT_ROUTE, [])
 	if route is Array:
 		_route.assign(route)
+	## S39 (T-164): the archetype's gun, if it has one (an empty row for a neutral).
+	_weapon = NpcRegistryScript.weapon_row(archetype)
+	_weapon_cooldown = 0.0
+	_weapon_volleys = 0
 	_apply_vitals()
 	_build()
 	_build_brain(String(opts.get(OPT_SPRITE_PATH, "")))
@@ -479,6 +498,94 @@ func _steer_frame(delta: float) -> void:
 		float(_intent.get(BrainScript.INTENT_SPEED, 0.0)),
 		delta
 	)
+	## S39 (T-164): the gun, driven by the intent just produced. A neutral or unarmed
+	## hull's `_weapon` is empty and this is a no-op.
+	_step_weapon(delta)
+
+
+## S39 (T-164): the gun's own frame. The brain's `fire` intent (Engage with LOS clear,
+## `npc_brain.gd:_intent`) is the trigger, the registry row is the numbers, and the
+## shipped `projectile.gd` is the shot -- so damage, knockback and the hit FX are the
+## same pipeline a player's gun uses, not a second combat path. A hull with no row, no
+## target, an out-of-range target or a cooling gun fires nothing.
+func _step_weapon(delta: float) -> void:
+	if _weapon_cooldown > 0.0:
+		_weapon_cooldown = maxf(_weapon_cooldown - delta, 0.0)
+	if _weapon.is_empty() or _done:
+		return
+	if not bool(_intent.get(BrainScript.INTENT_FIRE, false)):
+		return
+	var target := _brain_target()
+	if target == null:
+		return
+	var reach := float(_weapon.get(&"range", 0.0))
+	if reach > 0.0 and global_position.distance_to(target.global_position) > reach:
+		return
+	if _weapon_cooldown > 0.0:
+		return
+	_fire_volley(target.global_position)
+	_weapon_cooldown = maxf(float(_weapon.get(&"cadence", 1.0)), 0.01)
+
+
+## The brain's live target (null when it holds none, or the node left the tree).
+func _brain_target() -> Node2D:
+	if _brain == null:
+		return null
+	var target: Variant = _brain.call(&"target")
+	var node := target as Node2D
+	if node == null or not is_instance_valid(node):
+		return null
+	return node
+
+
+## One volley: `shots` projectiles fanned about the bearing to `aim`, spawned at the
+## hull's own nose. The world parent is the running scene (the convention the player's
+## weapons component uses), so a shot outlives a hull that dies mid-flight.
+func _fire_volley(aim: Vector2) -> void:
+	var parent := _world_parent()
+	if parent == null:
+		return
+	var origin := global_position + Vector2.RIGHT.rotated(_heading()) * _hull_radius()
+	var bearing := (aim - global_position).angle()
+	var shots := maxi(int(_weapon.get(&"shots", 1)), 1)
+	for index in shots:
+		var angle := 0.0 if shots == 1 else lerpf(-GUN_FAN, GUN_FAN, float(index) / float(shots - 1))
+		var shot := PROJECTILE.new() as Node2D
+		if shot == null:
+			return
+		shot.name = GUN_PROJECTILE_NODE
+		shot.call(&"configure", {
+			&"kind": &"bolt",
+			&"speed": float(_weapon.get(&"speed", 900.0)),
+			&"damage": float(_weapon.get(&"damage", 0.0)),
+			&"source": self,
+			&"direction": Vector2.RIGHT.rotated(bearing + angle),
+			&"range": float(_weapon.get(&"range", 0.0)),
+			&"mass": GUN_SHOT_MASS,
+		})
+		parent.add_child(shot)
+		shot.global_position = origin
+	_weapon_volleys += 1
+
+
+## The scene the shots are parented to: the running scene, else the tree root. The same
+## lookup `weapons.gd:_world_parent` makes.
+func _world_parent() -> Node:
+	var tree := get_tree()
+	if tree == null:
+		return null
+	var scene := tree.current_scene
+	return scene if scene != null else tree.root
+
+
+## The volleys this hull has fired, for a probe (S39, T-164).
+func weapon_volleys() -> int:
+	return _weapon_volleys
+
+
+## Whether this hull carries a gun at all (S39, T-164).
+func armed() -> bool:
+	return not _weapon.is_empty()
 
 
 ## Fly the intent: the arrive steering of section 3.1/3.2, at the class's own rates. A

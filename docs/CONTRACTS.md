@@ -30,36 +30,37 @@ later request; one section costs ~2-3k.
 
 | Section | Topic | Lines |
 |---|---|---|
-| §1 | Input map (project settings) | L67–L87 |
-| §2 | ShipStats | L88–L108 |
-| §3 | ShipFit | L109–L126 |
-| §4 | PlayerShip | L127–L307 |
-| §5 | Combat/mining entities (slice 1 scope) | L308–L412 |
-| §6 | Sector / SectorRegistry | L413–L438 |
-| §7 | HUD — frozen API + wave-1 additions | L439–L504 |
-| §8 | Economy / state seams | L505–L548 |
-| §8.1 | Slice 0 — physics & fuel (pinned additions, 2026-09-21) | L549–L684 |
-| §8.2 | Slice 2 — fight (pinned additions, 2026-09-21) | L685–L889 |
-| §9 | Universal test gate | L890–L1022 |
-| §11 | P2 ship frames (2026-09-21) | L1023–L1218 |
-| §12 | P2-B1 weapon fit (2026-09-22) | L1219–L1276 |
-| §13 | P2-B proper fitting (2026-09-22) | L1277–L1398 |
-| §14 | S2.6 truth-and-feel (2026-09-22) | L1399–L1527 |
-| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1528–L1632 |
-| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L1633–L1808 |
-| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L1809–L1887 |
-| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L1888–L1960 |
-| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L1961–L2096 |
-| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2097–L2308 |
-| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2309–L2386 |
-| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L2387–L2441 |
-| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L2442–L2611 |
-| §24 | S24 world identity — stations, standing, bands, nebula (2026-10-08) | L2612–L2699 |
-| §25 | S28 economy law — the value ladder, the fee door, the battery, the b… | L2700–L2760 |
-| §26 | S25 contracts board — the registry, the reward law, the three exits … | L2761–L2833 |
-| §27 | S38 — the hub's cold start and the board's clock (2026-10-08) | L2834–L2908 |
-| §28 | S26 — bosses, arenas, insurance, vaults (2026-10-09/10) | L2909–L3065 |
-| §10 | Changelog | L3066–L3458 |
+| §1 | Input map (project settings) | L68–L88 |
+| §2 | ShipStats | L89–L109 |
+| §3 | ShipFit | L110–L127 |
+| §4 | PlayerShip | L128–L308 |
+| §5 | Combat/mining entities (slice 1 scope) | L309–L413 |
+| §6 | Sector / SectorRegistry | L414–L439 |
+| §7 | HUD — frozen API + wave-1 additions | L440–L505 |
+| §8 | Economy / state seams | L506–L549 |
+| §8.1 | Slice 0 — physics & fuel (pinned additions, 2026-09-21) | L550–L685 |
+| §8.2 | Slice 2 — fight (pinned additions, 2026-09-21) | L686–L890 |
+| §9 | Universal test gate | L891–L1023 |
+| §11 | P2 ship frames (2026-09-21) | L1024–L1219 |
+| §12 | P2-B1 weapon fit (2026-09-22) | L1220–L1277 |
+| §13 | P2-B proper fitting (2026-09-22) | L1278–L1399 |
+| §14 | S2.6 truth-and-feel (2026-09-22) | L1400–L1528 |
+| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1529–L1633 |
+| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L1634–L1809 |
+| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L1810–L1888 |
+| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L1889–L1961 |
+| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L1962–L2097 |
+| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2098–L2309 |
+| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2310–L2387 |
+| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L2388–L2442 |
+| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L2443–L2612 |
+| §24 | S24 world identity — stations, standing, bands, nebula (2026-10-08) | L2613–L2700 |
+| §25 | S28 economy law — the value ladder, the fee door, the battery, the b… | L2701–L2761 |
+| §26 | S25 contracts board — the registry, the reward law, the three exits … | L2762–L2834 |
+| §27 | S38 — the hub's cold start and the board's clock (2026-10-08) | L2835–L2909 |
+| §28 | S26 — bosses, arenas, insurance, vaults (2026-10-09/10) | L2910–L3066 |
+| §29 | S39 — flight feel, hostile fire and cargo (2026-10-10) | L3067–L3154 |
+| §10 | Changelog | L3155–L3568 |
 
 <!-- section-index:end -->
 
@@ -3063,8 +3064,95 @@ arena station, the greyed seam off one), a3's seam refusal moved to
 those three seam rows **before** the review (S38's precedent). No other test
 file moved; `REASON_STAGED` is now reachable only off an arena.
 
-## §10 Changelog
+## §29 S39 — flight feel, hostile fire and cargo (2026-10-10)
 
+**Wave S39** (`slices/S39-flight-feel/`, baseline `s39_start`, gate **1258 → 1266/0**
+×2 hermetic). The owner's second playtest filed seven findings (T-164–T-170); this
+section pins the shipped interface. **Every new number below is PROPOSED** (no doc
+pins one) and carries its reversal; `18_engine_spec.md` is owner-locked, so these
+figures live here and in the wave recap until the owner folds them into §3.2/§4.2/
+§13.
+
+**A1 — enemies fire (T-164).** `game/npc_registry.gd`:
+
+```gdscript
+const NPC_WEAPONS: Dictionary   # archetype -> {damage, cadence, range, speed, shots}
+static func weapon_row(archetype: StringName) -> Dictionary
+static func has_weapon(archetype: StringName) -> bool
+```
+
+Armed: `pirate` 6 dmg / 0.7 s / 700 u / 900 u/s / 1; `swarmer` 4 / 0.5 / 550 / 950 / 1;
+`patrol` 8 / 0.6 / 800 / 1000 / 1; `turret` 14 / 0.9 / 900 / 1100 / 2; `boneyard` 12 /
+0.6 / 900 / 1000 / 2; `pyre` 10 / 0.5 / 850 / 1000 / 2; `boss` 16 / 0.6 / 1000 / 1100 /
+3. `trader` (the neutral convoy) is absent **by design** (18 §5: "flies fixed route;
+flees from Suspect+"). `game/npc_ship.gd` consumes the brain's `INTENT_FIRE`
+(`_step_weapon` + `_fire_volley` + `weapon_volleys()`/`armed()`), firing on the shipped
+`projectile.gd` pipeline (one `NpcShot` per barrel, `GUN_FAN` 0.05 rad, `GUN_SHOT_MASS`
+1.0). **Reversal: an empty `NPC_WEAPONS` table** (the pre-S39 state where the fire
+intent had no consumer).
+
+**A2 — the reversal assist (T-165).** `game/player_ship.gd`:
+
+```gdscript
+const REVERSAL_ASSIST_MULT := 1.6
+```
+
+`_step_speed` multiplies the class rate by it when the commanded speed is non-zero and
+opposite the hull's travel along the nose (a turnaround). The coast-down (`desired` 0)
+and the §23.5 release are untouched. **Reversal: 1.0** (byte-identical).
+
+**A3/A4 — the baseline boost and its stacking (T-166/T-167).** `game/player_ship.gd`:
+
+```gdscript
+const BOOST_BASE_MULT := 1.25
+const BOOST_BASE_BURN_FRACTION := 0.5
+```
+
+While the `boost` action (Shift) is held and the tank can pay, `_base_boost` multiplies
+both `_max_speed()` and `_accel_rate()` — so a boost buys **thrust**, not only a
+ceiling (T-166's "faster turns"). The afterburner's `boost_speed_mult` (1.6) multiplies
+**on top** of the baseline (T-167); the baseline burn is `BOOST_BASE_BURN_FRACTION` of
+the afterburner's own `_boost_burn_rate()` and is skipped while the burst is lit (no
+double bill). `_boost_burn_rate()` and `_burn_boost_fuel()` are unmoved, so S22.7's
+fuel rows stand. **Reversal: `BOOST_BASE_MULT = 1.0`, `BOOST_BASE_BURN_FRACTION = 0.0`**
+(Shift did nothing without an afterburner).
+
+**A5 — the convoy recovers its leg (T-168).** `game/npc_brain.gd`:
+
+```gdscript
+func _leg_reached(pos: Vector2, point: Vector2) -> bool
+var _route_last: Vector2
+var _route_last_set: bool
+```
+
+`_patrol_waypoint` advances the route index on the §13 arrive ring **or** once the hull
+has carried past the plane through the waypoint perpendicular to the leg (the
+along-track test), so a hull nudged off course no longer stalls on a waypoint it can
+never hit. **Reversal: the 40 u ring alone.**
+
+**A6 — gentler knockback (T-169).** `game/impact.gd`:
+
+```gdscript
+const KNOCKBACK_FRACTION := 0.15   # was 0.40
+```
+
+A hit's delivered speed is `sqrt(2 * share / M)`, so this cuts it to `sqrt(0.15/0.40)`
+= 0.61x. `Damage.knockback` and `Projectile._hit_body` are unmoved (they read the
+constant). **Reversal: 0.40.**
+
+**A7 — the hold is visible (T-170).** `ui/hud/hud.gd` adds a code-built `CargoBlock` to
+the bottom-left column (`_cargo_block`, `_cargo_block_value`, `_cargo_block_list`,
+`_cargo_entries()`), reading `PlayerProfile.cargo_items()` — the flight answer to "i
+cannot see my current cargo while in flight", without un-retiring §3.7's old column.
+`ui/station/armory_panel.gd`'s `SUBTITLE` gains `HOLD %d/%d` (`_cargo_used`,
+`_hold_capacity`). **Reversal: drop the block and the subtitle token.**
+
+**Tests that moved.** New suite `tests/test_s39_feel.gd` (A1–A7, 9 rows);
+`tests/test_s19_quadrants.gd` re-pinned `npc_ship.gd`/`npc_brain.gd` (the S22
+procedure, disclosed here); `tests/probe_rock_cleave_a2.gd`'s knockback invariant
+re-pinned to 0.15. No other suite changed.
+
+## §10 Changelog
 Rolling log of what each wave changed here. Kept verbatim only where an entry
 carries a standing rule, an owner ruling or a reversal path; every other entry is
 one index line with its full text in `.agents/gen/_archive/contracts_retired_2026-10-07.md` (compressed 2026-10-07 — wave
@@ -3460,3 +3548,20 @@ bottom (the index-line form is only for retired entries).
   tabled in the 2026-10-08 S28 block, never restated). **Reversal for the
   close-out as a whole:** drop §28, the §8 re-cut and 14's S26 block; the pins
   live in the shipped code either way.
+- **v0.55 (2026-10-10, wave S39 close-out — the orchestrator; gate `1258/0`
+  (s39_start) → `1267/0` ×2 hermetic)** — adds **§29** (the S39 wave section: the
+  owner's second playtest, T-164–T-170). A1 arms the hostile archetypes and gives
+  the brain's `fire` intent its first consumer (`npc_ship.gd:_step_weapon` on the
+  shipped `projectile.gd` pipeline); A2 adds the reversal assist
+  (`REVERSAL_ASSIST_MULT` 1.6); A3/A4 add the baseline Shift boost
+  (`BOOST_BASE_MULT` 1.25, `BOOST_BASE_BURN_FRACTION` 0.5) that buys **thrust** and
+  that the afterburner stacks on top of; A5 fixes the convoy's route recovery
+  (`npc_brain.gd:_leg_reached`, the along-track leg advance); A6 drops
+  `Impact.KNOCKBACK_FRACTION` 0.40 → 0.15; A7 adds the flight HUD's `CargoBlock`
+  and the armory's `HOLD %d/%d` subtitle. New suite `tests/test_s39_feel.gd`
+  (A1–A7, 9 rows); `test_s19_quadrants.gd` re-pinned `npc_ship.gd`/`npc_brain.gd`
+  (the S22 procedure) and `probe_rock_cleave_a2.gd`'s invariant re-pinned to 0.15.
+  Every new number is **PROPOSED** with its reversal in §29; `18_engine_spec.md`
+  is owner-locked, so the figures await the owner's fold-in. Next free ticket
+  **T-171**. **Reversal for the close-out as a whole:** drop §29 and the re-pins;
+  the PROPOSED values revert to their §29-stated pre-S39 forms.

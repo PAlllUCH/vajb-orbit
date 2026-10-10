@@ -28,7 +28,13 @@ const COLLISION_MIN_DV := 40.0
 ## ENGINE_SPEC section 13: the share of a hit's remaining kinetic energy that reaches
 ## the target (section 4.2 item 7), the detonation pressure at the epicenter, and the
 ## window the blast front takes to deliver it (section 4.2 item 8).
-const KNOCKBACK_FRACTION := 0.40
+##
+## S39 (owner playtest #2, T-169): the knockback share drops 0.40 -> 0.15. The owner:
+## "the hitting of ships with equipment throws them way too much like they dont have
+## their own inertia, they move like ragdolls". A hit's delivered speed is
+## `sqrt(2 * share / M)`, so this cuts it to `sqrt(0.15/0.40)` = 0.61x: a hit nudges a
+## hull instead of flinging it. **PROPOSED; reversal: 0.40**, the pinned section 13 row.
+const KNOCKBACK_FRACTION := 0.15
 const EXPLOSION_P0 := 4000.0
 const EXPLOSION_WINDOW := 0.2
 

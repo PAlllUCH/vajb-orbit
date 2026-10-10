@@ -173,6 +173,27 @@ const DASH_FUEL_REF := 25.0
 ## the flat 25 was the burn of.
 const DASH_FUEL_REFERENCE_MASS := 110.0
 
+## S39 (owner playtest #2, T-167): the baseline Shift boost. While the `boost`
+## action is held the hull's speed ceiling *and* its commanded acceleration are
+## multiplied by this, with the tank paying `BOOST_BASE_BURN_FRACTION` of the
+## afterburner's own burn. Before S39 the `boost` action did nothing at all
+## without a fitted afterburner; the afterburner's `boost_speed_mult` now stacks
+## **on top** of this baseline (owner: "afterburner and other mods should be on
+## top of standard boost to speed while pressing shift"). PROPOSED values, no doc
+## pins them. **Reversal: `BOOST_BASE_MULT = 1.0` and `BOOST_BASE_BURN_FRACTION =
+## 0.0`, which is the pre-S39 law byte-for-byte.**
+const BOOST_BASE_MULT := 1.25
+const BOOST_BASE_BURN_FRACTION := 0.5
+
+## S39 (owner playtest #2, T-165): the reversal assist. Thrust commanded *against*
+## the hull's own travel along the nose (a 180 degree turnaround, or S-brake past
+## a standstill) accelerates at this multiple of the class rate, so coming about is
+## one move rather than two `accel_time`s (owner: "thrust in different direction
+## should be faster maybe"). Applied only when the commanded speed is non-zero and
+## opposite the travel, so the coast-down and the section 23.5 single-vector release
+## are untouched. PROPOSED; **reversal: 1.0** (the pre-S39 law).
+const REVERSAL_ASSIST_MULT := 1.6
+
 ## ENGINE_SPEC section 7: safe warp is available after 5 s without a hit.
 const WARP_DAMAGE_QUIET := 5.0
 
@@ -308,6 +329,9 @@ var _has_aim_override := false
 
 var _boost_remaining := 0.0
 var _boost_cooldown := 0.0
+## S39 (T-167): the baseline Shift boost's own latch, set every frame by
+## `_update_base_boost` while the `boost` action is held and the tank can pay.
+var _base_boost := false
 
 var _damage_quiet := WARP_DAMAGE_QUIET
 var _last_hull := 0.0
@@ -717,6 +741,9 @@ func die() -> void:
 	_has_aim_override = false
 	_applied_force = Vector2.ZERO
 	_applied_torque = 0.0
+	## S39: a wreck does not boost, and `_physics_process` stops updating the latch.
+	_base_boost = false
+	_boost_remaining = 0.0
 	set_process_unhandled_input(false)
 	PROJECTILE.spawn_hull_death(self, self)
 	PROJECTILE.release_shield(self)
@@ -1249,9 +1276,17 @@ func _step_lateral_drag(delta: float) -> void:
 ## over accel_time, S brakes at BRAKE_MULT times that, and the autopilot's arrive
 ## ramp obeys the same law.
 func _step_speed(desired_speed: float, rate: float, delta: float) -> void:
-	_thrust_axis(
-		Vector2.RIGHT.rotated(_heading()), desired_speed, rate, delta, _linear_damp()
-	)
+	var nose := Vector2.RIGHT.rotated(_heading())
+	## S39 (T-165): the reversal assist. A commanded speed *opposite* the hull's
+	## current travel along the nose is a turnaround, not an acceleration, and the
+	## class rate is multiplied for it. Guarded on a non-zero command so a coasting
+	## hull (`desired_speed` 0) and the 23.5 release (`_step_release`, a different
+	## caller) keep their own decay; `REVERSAL_ASSIST_MULT = 1.0` is the pre-S39 law.
+	if _body != null and not is_zero_approx(desired_speed):
+		var along := _body.linear_velocity.dot(nose)
+		if desired_speed * along < 0.0:
+			rate *= REVERSAL_ASSIST_MULT
+	_thrust_axis(nose, desired_speed, rate, delta, _linear_damp())
 
 
 ## The body owns the hull's live transform and this node mirrors it: the sprite, the
@@ -1525,9 +1560,14 @@ func _angular_inertia_class() -> float:
 ## max_speed / coast_time, turn_rate / turn_spinup), so nothing is retuned: the
 ## section 3.2 times stay the shipped times.
 func _accel_rate() -> float:
-	if _stats.accel_time <= 0.0:
-		return _stats.max_speed
-	return _stats.max_speed / _stats.accel_time
+	## S39 (T-166): a lit boost buys **thrust**, not only a higher ceiling. The
+	## class rate is multiplied by the same boost multiplier `_max_speed` carries,
+	## so `accel_time` to the boosted ceiling is unchanged while the absolute force
+	## is higher -- which is what lets a boost swing the velocity vector (a turn)
+	## and a reversal faster. `_boost_multiplier` is 1.0 with nothing lit, so the
+	## unboosted rate is byte-identical.
+	var base := _stats.max_speed if _stats.accel_time <= 0.0 else _stats.max_speed / _stats.accel_time
+	return base * _boost_multiplier()
 
 
 func _coast_rate() -> float:
@@ -1641,6 +1681,9 @@ func _update_boosters(delta: float) -> void:
 		## instead of burning on credit.
 		if not _burn_boost_fuel(delta):
 			_boost_remaining = 0.0
+	## S39 (T-167): the baseline Shift boost is its own latch, updated every frame
+	## and independent of the afterburner's burst/cooldown gate below.
+	_update_base_boost(delta)
 	if _boost_remaining > 0.0 or _boost_cooldown > 0.0:
 		return
 	if not has_booster(BOOSTER_AFTERBURNER):
@@ -1703,9 +1746,32 @@ func _dash_fuel() -> float:
 
 
 func _boost_multiplier() -> float:
-	if _boost_remaining <= 0.0:
-		return 1.0
-	return float(_booster_effect(BOOSTER_AFTERBURNER).get(&"boost_speed_mult", 1.0))
+	## S39 (T-167): the baseline Shift boost first, the afterburner's own burst
+	## multiplied **on top** of it. With nothing lit this is exactly 1.0.
+	var mult := BOOST_BASE_MULT if _base_boost else 1.0
+	if _boost_remaining > 0.0:
+		mult *= float(_booster_effect(BOOSTER_AFTERBURNER).get(&"boost_speed_mult", 1.0))
+	return mult
+
+
+## S39 (T-167): the baseline Shift boost's own frame. The `boost` action held lights
+## it while the tank can pay `BOOST_BASE_BURN_FRACTION` of the afterburner's burn;
+## a hull with no state (a probe's bare ship) still boosts without a tank to bill,
+## exactly as the afterburner's own gate tolerates one. While the afterburner's
+## burst is lit its own burn already owns the tank, so the baseline rides free for
+## those frames (no double bill) and only the module's own share is charged.
+func _update_base_boost(delta: float) -> void:
+	_base_boost = false
+	if _dead or not InputMap.has_action(BOOST_ACTION):
+		return
+	if not Input.is_action_pressed(BOOST_ACTION):
+		return
+	if _boost_remaining > 0.0:
+		_base_boost = true
+		return
+	if not _burn_boost_fuel(delta * BOOST_BASE_BURN_FRACTION):
+		return
+	_base_boost = true
 
 
 func _booster_effect(id: StringName) -> Dictionary:

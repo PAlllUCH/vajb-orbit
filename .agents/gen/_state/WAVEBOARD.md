@@ -12,8 +12,22 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 
 | Pos | Lane item | Wave | Runs after | The collision/dependency that forces the order |
 |---|---|---|---|---|
-| 1 | coder 33 | **S27 catalog breadth & shipyard** | — (S26 closed 2026-10-10) | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/`; prices its new rows from `01`'s L2 bands; **brief re-cut 2026-10-08** — L2 pricing law folded in, T-153's tier-4 rider in the file set. Carries T-161/T-162/T-163 if its file set reaches them |
+| 1 | coder 33 | **S27 catalog breadth & shipyard** | — (S39 closed 2026-10-10) | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/`; prices its new rows from `01`'s L2 bands; **brief re-cut 2026-10-08** — L2 pricing law folded in, T-153's tier-4 rider in the file set. Carries T-161/T-162/T-163 if its file set reaches them |
 
+**Updated 2026-10-10 (owner playtest #2 closed — item 36, S39).** The owner's
+second eye over the live build filed seven findings, all riders on the wave **S39**
+and ticketed **T-164–T-170**, now **closed**: enemies shoot back (a per-archetype
+`NPC_WEAPONS` table + the brain's `INTENT_FIRE` consumed on the shipped
+`projectile.gd` pipeline); a 180° reversal accelerates at `REVERSAL_ASSIST_MULT`
+1.6; Shift is a baseline boost (`BOOST_BASE_MULT` 1.25) that buys **thrust** and
+the afterburner stacks on top; a convoy recovers its route (the along-track
+`_leg_reached` leg advance); `Impact.KNOCKBACK_FRACTION` drops 0.40 → 0.15; and
+the hold is visible in flight (a HUD `CargoBlock`) and at the armory (`HOLD %d/%d`).
+Gate **1258 → 1267/0** ×2 hermetic; new suite `tests/test_s39_feel.gd` (9 rows);
+`test_s19_quadrants.gd` re-pinned `npc_ship.gd`/`npc_brain.gd`; CONTRACTS **§29** +
+§10 **v0.55**; every new number **PROPOSED** with its reversal (awaiting the
+owner's fold-in to the owner-locked `18_engine_spec.md`); next free **T-171**. The
+queue is now **S27 alone**.
 **Updated 2026-10-10 (S26 endgame closed — item 32).** Gate **1237 → 1258/0** ×2
 hermetic on fresh scratch stores (the row sets byte-identical; only T-155's salvo
 jitter differs), verify clean vs `s26_start`, `build_code_map.py` re-run. B1

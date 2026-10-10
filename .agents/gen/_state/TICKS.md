@@ -5,7 +5,14 @@ file when decided or done** (deleted at the wave close-out or the ruling — the
 record lives in the cited file and `MASTER_REPORT.md` §6, this is the index
 only). Refreshed at every wave close-out and after every owner ruling.
 
-*Last refreshed: 2026-10-10 (S26 endgame closed — gate 1237 → **1258/0**, CONTRACTS
+*Last refreshed: 2026-10-10 (S39 flight feel, hostile fire and cargo — the owner's
+second playtest. Gate **1258 → 1267/0** ×2 hermetic; CONTRACTS **§29** + §10
+**v0.55**; **T-164–T-170 filed and closed in S39**; next free **T-171**. Every new
+number is **PROPOSED** with its reversal in §29 and awaits the owner's fold-in to
+the owner-locked `18_engine_spec.md`. The queue is now **S27**, then the rest of
+P3. The playtest pass #1 row below stays open — the owner's own eye is still the
+phase's exit criterion)*
+*Previously 2026-10-10 (S26 endgame closed — gate 1237 → **1258/0**, CONTRACTS
 **§28** + §10 **v0.54**, 1 HIGH + 4 MED cured by the fixer, **T-161/T-162/T-163**
 filed, next free **T-164**. **Ticks E1/E2 shipped at their PROPOSED values and
 were not separately ruled** — E1 (the three boss hull rows, 08's P3 block) and E2

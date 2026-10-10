@@ -196,6 +196,19 @@ above).
 - Content: `GridContainer` 5 columns of 40×40 `TextureButton` cells (same texture states as §3.2, item art instead of weapons), plus an `HBoxContainer` footer: `Label` "CARGO 12/40" and a close `TextureButton` (16×16).
 - Full-cargo state: footer label turns `accent_danger`.
 
+> **Amendment 2026-10-10 (wave S39, T-170).** §3.7 retired this panel from the
+> flight HUD ("all of old HUD should be gone") and left cargo with no readout;
+> the owner's second playtest found the gap ("i cannot see my current cargo while
+> in flight"). S39 answers it **additively** without un-retiring the old column:
+> `hud.gd` builds a code-built `CargoBlock` (`_cargo_block`, `_cargo_block_value`,
+> `_cargo_block_list`, `_cargo_entries()`) into the bottom-left column beside
+> `CreditsBlock`, reading `PlayerProfile.cargo_items()` — the header reads
+> `CARGO used/max`, one `name x qty` row per held item (empty hold reads `EMPTY`).
+> `armory_panel.gd`'s ammo `SUBTITLE` gains `HOLD used/max` (`_cargo_used`,
+> `_hold_capacity`), so the slots are visible while buying ammo. The retired
+> `CargoPanel`/`CargoToggle` stay hidden and on `retired_widgets()` unchanged.
+> **Reversal: drop the `CargoBlock` and the subtitle token.**
+
 ### 3.5 Target reticle
 
 - `TargetReticle` is a bare `Control` with custom `_draw()`, repositioned each frame to the target's screen position (script projects world→screen via `get_viewport().get_screen_transform()` chain from the camera node).

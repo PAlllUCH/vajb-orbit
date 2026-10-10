@@ -5141,6 +5141,26 @@
    ],
    "signals": []
   },
+  "res://tests/test_s39_feel.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/impact.gd",
+    "res://game/npc_brain.gd",
+    "res://game/npc_registry.gd",
+    "res://game/npc_ship.gd",
+    "res://game/player_ship.gd",
+    "res://game/player_ship.tscn",
+    "res://game/player_state.gd",
+    "res://game/ship_fit.gd",
+    "res://ui/hud/hud.tscn",
+    "res://ui/station/armory_panel.gd",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
   "res://tests/test_s3_auction.gd": {
    "autoload": "",
    "class_name": "",

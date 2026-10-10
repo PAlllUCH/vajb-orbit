@@ -270,6 +270,42 @@ const ARENA_ENTRY_WINDOW := 60.0
 ## 14 section 5: "one run per boss per 20-minute clock (per profile)".
 const ARENA_COOLDOWN_SECONDS := 1200
 
+## --- S39: hostile fire (T-164) ------------------------------------------------------
+##
+## The owner: "enemies dont shoot back". 18 section 5 gives each archetype a behaviour
+## but never a weapon, so `npc_ship.gd`'s `fire` intent had no consumer and no hull
+## carried a gun. This table is the first to arm them: a row means the archetype fires
+## at its brain's target while the brain's `INTENT_FIRE` is set (Engage with LOS clear,
+## `npc_brain.gd:_intent`). Neutrals (trader/convoy) are absent **by design** - section
+## 5's convoy "flies fixed route; flees from Suspect+", it never fights.
+##
+## `damage` is per shot, `cadence` the seconds between volleys, `range` the engagement
+## distance, `speed` the muzzle velocity and `shots` the barrels per volley (the
+## turret's "high damage" is its two barrels and its flat 14). Every number is
+## **PROPOSED** (no doc pins an NPC weapon); reversal: an empty table, which is the
+## pre-S39 state where the fire intent had no consumer.
+const NPC_WEAPONS: Dictionary = {
+	&"pirate": {&"damage": 6.0, &"cadence": 0.7, &"range": 700.0, &"speed": 900.0, &"shots": 1},
+	&"swarmer": {&"damage": 4.0, &"cadence": 0.5, &"range": 550.0, &"speed": 950.0, &"shots": 1},
+	&"patrol": {&"damage": 8.0, &"cadence": 0.6, &"range": 800.0, &"speed": 1000.0, &"shots": 1},
+	&"turret": {&"damage": 14.0, &"cadence": 0.9, &"range": 900.0, &"speed": 1100.0, &"shots": 2},
+	&"boneyard": {&"damage": 12.0, &"cadence": 0.6, &"range": 900.0, &"speed": 1000.0, &"shots": 2},
+	&"pyre": {&"damage": 10.0, &"cadence": 0.5, &"range": 850.0, &"speed": 1000.0, &"shots": 2},
+	&"boss": {&"damage": 16.0, &"cadence": 0.6, &"range": 1000.0, &"speed": 1100.0, &"shots": 3},
+}
+
+## One archetype's weapon row, or an empty dictionary when the archetype does not fire
+## (a neutral hull, an unarmed seam row).
+static func weapon_row(archetype: StringName) -> Dictionary:
+	var row: Variant = NPC_WEAPONS.get(archetype, {})
+	return (row as Dictionary).duplicate() if row is Dictionary else {}
+
+
+## True when the archetype carries a gun.
+static func has_weapon(archetype: StringName) -> bool:
+	return not weapon_row(archetype).is_empty()
+
+
 ## Section 8's minimap blip classes: hostile (pirates, hunters, swarmers) and neutral
 ## (a trader's convoy). `self`/`friendly` are other owners' blips.
 const BLIP_HOSTILE: StringName = &"hostile"
