@@ -49,7 +49,7 @@ library. Ends in playtest build 2.
       T-156/T-157 · **closed 2026-10-08**: gate 1236/0 ×2 hermetic, zero
       `SCRIPT ERROR` lines, verify clean vs `s38_start`, one MED cured by F1,
       T-156/T-157 closed, 2 LOW → T-158/T-159
-- [ ] **S26 — endgame: bosses, arenas, insurance, vaults.** The Boneyard + The
+- [x] **S26 — endgame: bosses, arenas, insurance, vaults.** The Boneyard + The
       Pyre arena runs, the Maw roaming S7, death persistence, insurance + mercy
       clause, vaults + `u_vault`. `slices/S26-endgame/` · runs after: S38 (its
       Expedition seam) · baseline `post-S38` (1236/0) · **brief re-cut
