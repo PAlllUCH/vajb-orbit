@@ -238,7 +238,9 @@ func _make_tile(tile_data: Dictionary) -> Button:
 	glyph.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	glyph.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	glyph.texture = load(String(tile_data[&"icon"]))
-	glyph.modulate = _token(&"text_dim") if bool(tile_data[&"tinted"]) else Color.WHITE
+	## S40 (UI_SPEC section 16, A3): the tinted glyphs carry the caption tone, not
+	## `text_dim` - the C1 slab's interior measures 3.32-3.55:1 against `text_dim`.
+	glyph.modulate = _token(&"text_caption") if bool(tile_data[&"tinted"]) else Color.WHITE
 	head.add_child(glyph)
 	_tile_glyphs.append(glyph)
 	var title := Label.new()
@@ -285,7 +287,7 @@ func _on_tile_hover(button: Button, glyph: TextureRect, title: String, caption: 
 
 
 func _on_tile_unhover(_button: Button, glyph: TextureRect) -> void:
-	glyph.modulate = _token(&"text_dim")
+	glyph.modulate = _token(&"text_caption")
 	inspect_requested.emit("", "", false)
 
 
@@ -402,7 +404,7 @@ func _make_chevron() -> Control:
 	chevron.custom_minimum_size = Vector2(16.0, 16.0)
 	chevron.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	chevron.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	chevron.colour = _token(&"text_dim")
+	chevron.colour = _token(&"text_caption")
 	return chevron
 
 

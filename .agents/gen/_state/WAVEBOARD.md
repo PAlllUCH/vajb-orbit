@@ -14,6 +14,24 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 |---|---|---|---|---|
 | 1 | coder 33 | **S27 catalog breadth & shipyard** | — (S39 closed 2026-10-10) | `game/module_catalog.gd`/`loot_tables.gd` + `ui/station/`; prices its new rows from `01`'s L2 bands; **brief re-cut 2026-10-08** — L2 pricing law folded in, T-153's tier-4 rider in the file set. Carries T-161/T-162/T-163 if its file set reaches them |
 
+**Updated 2026-10-10 (owner visibility review — S40).** The owner's follow-up to
+playtest #2 (the armory's installed-modules overview has no background; the
+OVERVIEW tiles' icons and texts are unreadable on theirs; "a review of visibility
+is needed and composition") became the review **`slices/S40-legibility/S40_REVIEW.md`**
+— ten decks rendered at 1920×1080 and **607 text labels measured for WCAG contrast
+against the framebuffer behind their own ink rect** (`tests/probe_s40_panes.gd`).
+It found one root cause repeated 235 times: the shared `SectionHeader` /
+`StationCaption` / `FlavourText` variations were wired to `text_dim` `#6b7484`,
+which reads **2.85–2.96:1** on the shipped row/plate fills. The cure was already
+in the tree on the armory's own path (`armory_caption` `#acb2ba`, §3.10 A4.3);
+S40 generalised it as **`text_caption`/`text_caption_void`** (UI_SPEC **§16**),
+gave the armory's FitCells left column the flat Tokens box, and moved the OVERVIEW
+tile ink onto the caption tone. Measured: below-AA **241/607 (39.7 %) → 34/610
+(5.6 %)**, below-3.0:1 **47 → 5**. Gate **1267 → 1275/0** ×2 hermetic; new suite
+`tests/test_s40_legibility.gd` (8 rows). **T-171/T-172/T-173 closed**;
+**T-174/T-175/T-176** (the launch briefing column, the four header-caption
+surfaces, the staged row's 1.61:1) and **T-177** (the theme generator drops the
+`.tres` uids) filed open; next free **T-178**. The queue is unchanged — **S27**.
 **Updated 2026-10-10 (owner playtest #2 closed — item 36, S39).** The owner's
 second eye over the live build filed seven findings, all riders on the wave **S39**
 and ticketed **T-164–T-170**, now **closed**: enemies shoot back (a per-archetype

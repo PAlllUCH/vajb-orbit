@@ -772,6 +772,16 @@
     "res://tests/probe_s3_trail_quad.gd"
    ]
   },
+  "res://tests/probe_s40_panes.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tests/probe_s40_panes.gd"
+   ]
+  },
   "res://tests/probe_s7r1_affixes.tscn": {
    "assets": [],
    "connections": [],
@@ -3480,6 +3490,18 @@
    ],
    "signals": []
   },
+  "res://tests/probe_s40_panes.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://tests/probe_s40_panes.tscn --quit-after 3000",
+    "res://ui/screens/station.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
   "res://tests/probe_s4h4_stream.gd": {
    "autoload": "",
    "class_name": "",
@@ -5201,6 +5223,19 @@
    "refs": [
     "res://autoload/player_profile.gd",
     "res://game/module_catalog.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s40_legibility.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://ui/station/armory_panel.tscn",
+    "res://ui/station/overview_panel.gd",
+    "res://ui/station/overview_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
    ],
    "signals": []
   },

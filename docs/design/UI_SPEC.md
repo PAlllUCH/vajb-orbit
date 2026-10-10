@@ -19,21 +19,22 @@ and every tool result is re-sent on each later request.
 
 | Section | Topic | Lines |
 |---|---|---|
-| 1. | Colour Tokens | L41–L66 |
-| 2. | Theme Architecture | L67–L109 |
-| 3. | In-Game HUD | L110–L699 |
-| 4. | Settings | L700–L761 |
-| 5. | Tooltips, Dialogs & Nine-Patch Panels | L762–L839 |
-| 6. | Font & Sizing Reference (coding checklist) | L840–L859 |
-| 7. | Station surfaces chrome — the A5.4 extension (amendment 2026-10-02, … | L860–L895 |
-| 8. | Station action buttons and the one focus language (amendment 2026-10… | L896–L928 |
-| 9. | The map deck — flight minimap and navigation (amendment 2026-10-03, … | L929–L956 |
-| 10. | The map deck and the navigation pin — design detail (amendment 2026-… | L957–L1054 |
-| 11. | Station shell v2 — the TERMINAL drawer, the popups, the one skeleton… | L1055–L1110 |
-| 12. | Station shell v2 design detail — the TERMINAL drawer, the popup pair… | L1111–L1345 |
-| 13. | The D20 fix wave — exchange parity, the armory browser, the hover-in… | L1346–L1383 |
-| 14. | Exchange sell cluster + the OVERVIEW tile plates (amendment 2026-10-… | L1384–L1429 |
-| 15. | The one true-aspect chrome family (amendment 2026-10-05, owner rulin… | L1430–L1847 |
+| 1. | Colour Tokens | L42–L67 |
+| 2. | Theme Architecture | L68–L110 |
+| 3. | In-Game HUD | L111–L713 |
+| 4. | Settings | L714–L775 |
+| 5. | Tooltips, Dialogs & Nine-Patch Panels | L776–L853 |
+| 6. | Font & Sizing Reference (coding checklist) | L854–L873 |
+| 7. | Station surfaces chrome — the A5.4 extension (amendment 2026-10-02, … | L874–L909 |
+| 8. | Station action buttons and the one focus language (amendment 2026-10… | L910–L942 |
+| 9. | The map deck — flight minimap and navigation (amendment 2026-10-03, … | L943–L970 |
+| 10. | The map deck and the navigation pin — design detail (amendment 2026-… | L971–L1068 |
+| 11. | Station shell v2 — the TERMINAL drawer, the popups, the one skeleton… | L1069–L1124 |
+| 12. | Station shell v2 design detail — the TERMINAL drawer, the popup pair… | L1125–L1359 |
+| 13. | The D20 fix wave — exchange parity, the armory browser, the hover-in… | L1360–L1397 |
+| 14. | Exchange sell cluster + the OVERVIEW tile plates (amendment 2026-10-… | L1398–L1443 |
+| 15. | The one true-aspect chrome family (amendment 2026-10-05, owner rulin… | L1444–L1861 |
+| 16. | The legibility pass — the caption token and the two unroofed surface… | L1862–L1898 |
 
 <!-- section-index:end -->
 
@@ -1857,3 +1858,40 @@ Three follow-on fixes, all from the walk's notes:
 
 Reversal: `git revert` this block (the token, the two hooks and `COL_LABEL`).
 
+
+## 16. The legibility pass — the caption token and the two unroofed surfaces (amendment 2026-10-10, owner's playtest #2 follow-up; wave S40)
+
+**The owner's words (2026-10-10, verbatim — the wave's source, `.agents/gen/slices/S40-legibility/S40_REVIEW.md` §0):** *"In armory the overview of installed modules is hardly readible, need a background. the icons in Overview are hardly readible on the background, same as texts. in general i think a review of visibility is needed and composition."*
+
+**The review this amendment implements** (`.agents/gen/slices/S40-legibility/S40_REVIEW.md`): ten rendered 1920×1080 decks, every visible text label measured for WCAG contrast against the framebuffer behind its own ink rect (`tests/probe_s40_panes.gd`). **607 labels; 241 below AA 4.5:1; 47 below 3.0:1; and 235 of the 241 wear one token, `text_dim` `#6b7484`.**
+
+Measured on the shipped fills: `#6b7484` reads **2.85–2.96:1** on the row/plate fills `#2b2e31`–`#2d2f33`, **4.02–4.42:1** on the void seats, worst **2.04:1**. §1 already records the cause (`text_dim` on `void_base` ≈ 4.0:1) and §3 Amendment 3 already names "`text_dim` captions (HIGH-2)" as the reversal. The armory carries the cure on its own path (`armory_caption` `#acb2ba`, `tools/build_theme.gd:99`); this amendment generalises it.
+
+### 16.1 The pins (A1–A3)
+
+| Pin | Law | Reversal |
+|---|---|---|
+| **A1** | A **`text_caption`** token `#acb2ba` joins the base palette (the armory's already-ratified CAP, §3 A4.3), with **`text_caption_void`** `#969da5` for the host/void side. The shared variations **`SectionHeader`**, **`StationCaption`** and **`FlavourText`** are wired to `text_caption` (`tools/build_theme.gd` `_register_variations`). Measured on the same fills: `#acb2ba` reads **6.15–6.77:1**, and **5.13:1** on the brightest seat `#2e3334`. `text_dim` keeps its jobs (the disabled ink, the `Button`/`PopupMenu`/`TabBar` disabled colours, the tooltip hint) and moves nowhere | `text_dim` on the three variations (the shipped state; 235 measured AA failures) |
+| **A2** | The ARMORY's FitCells left column — `GridBlock` (the SLOT LAYOUT grid) and `CellInfoBlock` (the CELL INFO block) — sits inside **one flat Tokens box** (`bay_bg` + 1 px `metal_mid`, §3.10 A5.3/A5.4's inner-surface chrome), because the deck backdrop shows through the host's banded `ui_panel_frame` and the column had no roof: `SlotCaption` measured **2.79:1** and the CELL INFO block drew across a bright brass cartridge in BG-1 | the bare `VBoxContainer` column (T-172) |
+| **A3** | The six OVERVIEW department tiles' ink clears AA on the C1 `ui_tile_slab` interior: the four `tinted` tiles' glyphs modulate **`text_caption`** instead of `text_dim` (`overview_panel.gd:_make_tile`), and the title (`SectionHeader`) and caption (`StationCaption`) follow A1. The slab itself is already opaque (`#1d1f21`–`#252628`) — the tiles have a background; only their ink failed (3.32–3.55:1) | `text_dim` on the tinted glyph (T-173) |
+
+Every pin is **PROPOSED** with its reversal column. A1 is a **tone change to shared
+chrome** and awaits the owner's ratify; A2/A3 are the two surfaces the owner named.
+
+### 16.2 Recorded, not fixed here (T-174/T-175/T-176)
+
+Same mechanism, different surfaces, none in this wave's file set: the LAUNCH
+briefing column (ten labels, 4.04–4.28:1 over BG-4), the REFINERY/EXCHANGE/
+AUCTION/SHIPYARD header captions (2.04–4.42:1), and the SERVICES staged
+EXPEDITION row (1.61:1 — the row's own dim, not the token).
+
+### 16.3 The gate pin
+
+`tests/test_s40_legibility.gd` — a headless contrast table over the generated
+theme (A1: every caption variation against every registered surface fill
+≥ 4.5:1) plus the structural rows for A2 and A3. No framebuffer needed, so it
+runs inside the universal gate. `tests/probe_s40_panes.gd` stays the review
+tool (pixels, outside the gate).
+
+Reversal: `git revert` this block (the two tokens, the three variation wires, the
+armory column's box, the tile glyph's modulate).

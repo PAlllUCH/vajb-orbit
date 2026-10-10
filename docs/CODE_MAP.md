@@ -8,10 +8,10 @@ entry. addons/ is vendored and excluded. The JSON twin
 | Section | Lines |
 |---|---|
 | 1. Autoloads | L18–L27 |
-| 2. Scenes | L28–L154 |
-| 3. Signal wiring | L155–L409 |
-| 4. Scripts | L410–L718 |
-| 5. Orphan scripts | L719–L734 |
+| 2. Scenes | L28–L155 |
+| 3. Signal wiring | L156–L410 |
+| 4. Scripts | L411–L721 |
+| 5. Orphan scripts | L722–L737 |
 
 
 ## 1. Autoloads (project.godot)
@@ -102,6 +102,7 @@ entry. addons/ is vendored and excluded. The JSON twin
 | res://tests/probe_s3_mine.tscn | Node | res://tests/probe_s3_mine.gd | — | — |
 | res://tests/probe_s3_rewire.tscn | Node | res://tests/probe_s3_rewire.gd | — | — |
 | res://tests/probe_s3_trail_quad.tscn | Node2D | res://tests/probe_s3_trail_quad.gd | — | — |
+| res://tests/probe_s40_panes.tscn | Node | res://tests/probe_s40_panes.gd | — | — |
 | res://tests/probe_s7r1_affixes.tscn | Node | res://tests/probe_s7r1_affixes.gd | — | — |
 | res://tests/probe_s7r1_delivery.tscn | Node | res://tests/probe_s7r1_delivery.gd | — | — |
 | res://tests/probe_s7r1_prestats.tscn | Node | res://tests/probe_s7r1_prestats.gd | — | — |
@@ -540,6 +541,7 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://tests/probe_s3_mine.gd | Node | — | res://game/fx.gd, res://game/projectile.gd, res://tests/probe_s3_mine.tscn | res://tests/probe_s3_mine.tscn, res://tests/probe_s3_mine.tscn (ext_resource) |
 | res://tests/probe_s3_rewire.gd | Node | — | res://game/projectile.gd, res://game/speed_fantasy.gd, res://game/weapons.gd, res://tests/probe_s3_rewire.tscn | res://tests/probe_s3_rewire.tscn, res://tests/probe_s3_rewire.tscn (ext_resource) |
 | res://tests/probe_s3_trail_quad.gd | Node2D | — | res://game/fx.gd, res://game/projectile.gd, res://tests/probe_s2_5_node_scale_world.gd …(+1) | res://tests/probe_s3_trail_quad.tscn, res://tests/probe_s3_trail_quad.tscn (ext_resource) |
+| res://tests/probe_s40_panes.gd | Node | — | res://tests/probe_s40_panes.tscn --quit-after 3000, res://ui/screens/station.tscn …(+1) | res://tests/probe_s40_panes.tscn, res://tests/probe_s40_panes.tscn (ext_resource) |
 | res://tests/probe_s4h4_stream.gd | SceneTree | — | res://game/player_state.gd, res://game/weapons.gd | — |
 | res://tests/probe_s5_hardpoints.gd | SceneTree | — | res://assets/ships/ship_, res://assets/ships/ship_%s_side.png, res://game/ship_fit.gd | res://game/ship_fit.gd |
 | res://tests/probe_s7r1_affixes.gd | Node | — | res://autoload/player_profile.gd, res://game/affixes.gd, res://game/module_catalog.gd, res://game/ship_fit.gd …(+1) | res://tests/probe_s7r1_affixes.tscn, res://tests/probe_s7r1_affixes.tscn (ext_resource) |
@@ -648,6 +650,7 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://tests/test_s3_auction.gd | McpTestSuite | — | res://autoload/player_profile.gd, res://autoload/world_clock.gd, res://game/auction.gd …(+8) | — |
 | res://tests/test_s3_instances.gd | McpTestSuite | — | res://autoload/player_profile.gd, res://game/module_catalog.gd, res://game/ship_fit.gd | — |
 | res://tests/test_s3_migration.gd | McpTestSuite | — | res://autoload/player_profile.gd, res://game/module_catalog.gd | — |
+| res://tests/test_s40_legibility.gd | McpTestSuite | — | res://ui/station/armory_panel.tscn, res://ui/station/overview_panel.gd, res://ui/station/overview_panel.tscn …(+1) | — |
 | res://tests/test_s4_batteries.gd | McpTestSuite | — | res://game/module_catalog.gd, res://game/ship_fit.gd, res://game/station_catalog.gd …(+2) | — |
 | res://tests/test_s5_ammo_cargo.gd | McpTestSuite | — | res://assets/icons/module/icon_module_w_railgun.svg, res://autoload/player_profile.gd …(+11) | — |
 | res://tests/test_s5_batteries_v2.gd | McpTestSuite | — | res://game/game.gd, res://game/game.tscn, res://game/module_catalog.gd, res://game/player_state.gd …(+9) | — |
@@ -712,7 +715,7 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://ui/station/fitting_panel.gd | VBoxContainer | inspect_requested, sheet_requested, status_requested | res://assets/icons/slot/, res://assets/icons/tint/, res://assets/icons/weapon/icon_weapon_cannon.svg …(+4) | res://tests/probe_r1_fit_panes.gd, res://tests/probe_r1_p2b1_review.gd, res://tests/probe_s8_q0_armory.gd …(+8) |
 | res://ui/station/insurance_panel.gd | VBoxContainer | inspect_requested, status_requested | res://assets/icons/service/icon_service_insurance.svg, res://autoload/player_profile.gd …(+2) | res://ui/station/insurance_panel.tscn, res://ui/station/insurance_panel.tscn (ext_resource) |
 | res://ui/station/launch_panel.gd | VBoxContainer | inspect_requested, launch_requested, status_requested | res://assets/icons/cargo/, res://assets/icons/cargo/icon_cargo_crate.svg, res://autoload/player_profile.gd …(+7) | res://tests/probe_g3_lint.gd, res://tests/probe_g3_shadow.gd, res://tests/probe_g4_lint.gd …(+10) |
-| res://ui/station/overview_panel.gd | VBoxContainer | inspect_requested, navigate_requested, status_requested | res://assets/icons/cargo/icon_cargo_ore.svg, res://assets/icons/cargo/icon_credits.svg …(+14) | res://tests/test_s24_world.gd, res://ui/station/overview_panel.tscn …(+1) |
+| res://ui/station/overview_panel.gd | VBoxContainer | inspect_requested, navigate_requested, status_requested | res://assets/icons/cargo/icon_cargo_ore.svg, res://assets/icons/cargo/icon_credits.svg …(+14) | res://tests/test_s24_world.gd, res://tests/test_s40_legibility.gd, res://ui/station/overview_panel.tscn …(+1) |
 | res://ui/station/refinery_panel.gd | VBoxContainer | inspect_requested, sheet_requested, status_requested | res://assets/icons/tint/, res://autoload/player_profile.gd, res://game/mineral_catalog.gd …(+3) | res://tests/probe_w3_lint.gd, res://tests/probe_w5_lint.gd, res://ui/station/refinery_panel.tscn …(+1) |
 | res://ui/station/repairs_panel.gd | VBoxContainer | inspect_requested, status_requested | res://autoload/player_profile.gd, res://game/repairs.gd, res://game/station_catalog.gd | res://tests/probe_s19r1_review.gd, res://tests/probe_s22r1_review.gd, res://tests/probe_s8_q3_lint.gd …(+6) |
 | res://ui/station/shipyard_panel.gd | VBoxContainer | inspect_requested, sheet_requested, status_requested | res://assets/icons/slot/, res://autoload/player_profile.gd, res://game/auction.gd, res://game/repairs.gd …(+3) | res://tests/probe_g3_lint.gd, res://tests/probe_g3_shadow.gd, res://tests/probe_g4_lint.gd …(+7) |

@@ -82,6 +82,14 @@ const TOKENS: Dictionary = {
 	## S37 rev (owner 2026-10-07): the row meta line's own token - `text_dim` read under
 	## WCAG AA on the dark row plates, so the meta gets a brighter grey (>= 4.5:1).
 	&"text_meta": "#9aa3b0",
+	## S40 (UI_SPEC section 16, A1): the caption ink. `text_dim` read 2.85-2.96:1 on the
+	## shipped row/plate fills and 4.02-4.42:1 on the void seats (235 of the 241 below-AA
+	## labels measured across the eight station decks), so the caption variations move to
+	## the armory's already-ratified CAP tone (section 3.10 A4.3). Measured 6.15-6.77:1 on
+	## those fills, 5.13:1 on the brightest seat. `text_dim` keeps the disabled ink.
+	&"text_caption": "#acb2ba",
+	## S40 (A1): the same caption tone for the host/void side (the armory's CAP_VOID).
+	&"text_caption_void": "#969da5",
 	&"accent_danger": "#c8471f",
 	&"accent_danger_bright": "#e8622a",
 	&"menu_glow": "#e8703a",
@@ -354,7 +362,7 @@ func _register_variations(theme: Theme) -> void:
 	for variation: StringName in LABEL_VARIATIONS:
 		theme.set_font_size(&"font_size", variation, LABEL_VARIATIONS[variation])
 	theme.set_color(&"font_color", &"ScreenTitle", _c(&"text_primary"))
-	theme.set_color(&"font_color", &"SectionHeader", _c(&"text_dim"))
+	theme.set_color(&"font_color", &"SectionHeader", _c(&"text_caption"))
 	theme.set_color(&"font_color", &"HudReadout", _c(&"text_primary"))
 	theme.set_color(&"font_color", &"DialogTitle", _c(&"text_primary"))
 	theme.set_color(&"font_color", &"Version", _c(&"text_dim"))
@@ -362,9 +370,9 @@ func _register_variations(theme: Theme) -> void:
 	theme.set_color(&"font_color", &"HeroTitle", _c(&"text_primary"))
 	theme.set_color(&"font_color", &"StationPanelTitle", _c(&"text_primary"))
 	theme.set_color(&"font_color", &"StationValue", _c(&"text_primary"))
-	theme.set_color(&"font_color", &"StationCaption", _c(&"text_dim"))
+	theme.set_color(&"font_color", &"StationCaption", _c(&"text_caption"))
 	theme.set_color(&"font_color", &"StationMeta", _c(&"text_meta"))
-	theme.set_color(&"font_color", &"FlavourText", _c(&"text_dim"))
+	theme.set_color(&"font_color", &"FlavourText", _c(&"text_caption"))
 	_register_plate_variations(theme)
 	theme.set_stylebox(&"background", &"HudHullBar", _boxes[&"progress_bg"])
 	theme.set_stylebox(&"fill", &"HudHullBar", _flat(_c(&"accent_danger"), _c(&"accent_danger")))

@@ -5,13 +5,19 @@ file when decided or done** (deleted at the wave close-out or the ruling — the
 record lives in the cited file and `MASTER_REPORT.md` §6, this is the index
 only). Refreshed at every wave close-out and after every owner ruling.
 
-*Last refreshed: 2026-10-10 (S39 flight feel, hostile fire and cargo — the owner's
+*Last refreshed: 2026-10-10 (S40 legibility — the owner's visibility review of the
+station decks. Gate **1267 → 1275/0** ×2 hermetic; UI_SPEC **§16**; the measured
+below-AA share across the eight decks **241/607 (39.7 %) → 34/610 (5.6 %)**;
+**T-171/T-172/T-173 filed and closed in S40**, **T-174/T-175/T-176 filed open**
+(the launch briefing column, the four header-caption surfaces, the staged row's
+1.61:1), **T-177 filed** (the theme generator drops the `.tres` uids); next free
+**T-178**. The queue is now **S27**, then the rest of P3. The playtest pass #1 row
+below stays open — the owner's own eye is still the phase's exit criterion)*
+*Previously 2026-10-10 (S39 flight feel, hostile fire and cargo — the owner's
 second playtest. Gate **1258 → 1267/0** ×2 hermetic; CONTRACTS **§29** + §10
-**v0.55**; **T-164–T-170 filed and closed in S39**; next free **T-171**. Every new
-number is **PROPOSED** with its reversal in §29 and awaits the owner's fold-in to
-the owner-locked `18_engine_spec.md`. The queue is now **S27**, then the rest of
-P3. The playtest pass #1 row below stays open — the owner's own eye is still the
-phase's exit criterion)*
+**v0.55**; **T-164–T-170 filed and closed in S39**. Every new number is
+**PROPOSED** with its reversal in §29 and awaits the owner's fold-in to the
+owner-locked `18_engine_spec.md`)*
 *Previously 2026-10-10 (S26 endgame closed — gate 1237 → **1258/0**, CONTRACTS
 **§28** + §10 **v0.54**, 1 HIGH + 4 MED cured by the fixer, **T-161/T-162/T-163**
 filed, next free **T-164**. **Ticks E1/E2 shipped at their PROPOSED values and
@@ -36,7 +42,20 @@ plan)*
 
 ## Waiting on the owner
 
-(none)
+- **The caption tone (S40, brief §10 T1).** `text_caption` `#acb2ba` /
+  `text_caption_void` `#969da5` are **PROPOSED** in `docs/design/UI_SPEC.md` §16.1
+  A1 and shipped: the shared `SectionHeader` / `StationCaption` / `FlavourText`
+  variations moved off `text_dim` onto them (measured 6.15–6.77:1 where
+  `text_dim` read 2.85–2.96:1). Ratify or re-cut the tone. Reversal: `text_dim`
+  on the three variations.
+- **Four pinned-idiom legibility sites (S40, brief §10 T2).** Recorded in
+  `.agents/gen/slices/S40-legibility/S40_REVIEW.md` "After": the AUCTION family-tab
+  ink (9 labels, 3.47:1, the theme's `font_unselected_color`), the SHIPYARD
+  comparison rows (18, 4.08:1 = §1's documented ≈4.0:1 floor), the SHIPYARD
+  `NOMINAL` reads (3, P13 pins `text_dim`), the SERVICES board note + roll
+  countdown (2, `contracts_panel.gd:677,681`). Each cure is one line; each
+  supersedes a pinned idiom, so it is the owner's call. **T-174/T-175/T-176**
+  carry the surface-level ones.
 
 ## Open actions — no decision needed, just waiting
 
