@@ -46,23 +46,23 @@ and every tool result is re-sent on each later request.
 | 2. | Navigation model | L88–L138 |
 | 3. | Composition | L139–L279 |
 | 4. | Node tree (exact) | L280–L406 |
-| 5. | Per-module spec | L407–L1022 |
-| 6. | Type scale | L1023–L1044 |
-| 7. | Art map | L1045–L1095 |
-| 8. | Theme items used (all present in | L1096–L1117 |
-| 9. | Motion table | L1118–L1145 |
-| 10. | Focus and input | L1146–L1166 |
-| 11. | Audio hooks | L1167–L1193 |
-| 12. | Implementation notes for the coder | L1194–L1273 |
-| 13. | Verification performed on the mockup | L1274–L1290 |
-| 14. | Open questions for the owner | L1291–L1324 |
-| 15. | Station services deck & station identity (amendment 2026-10-02, wave… | L1325–L1504 |
-| 16. | Panel consolidation and the inspector band (amendment 2026-10-03, ow… | L1505–L1543 |
-| 17. | The merged panels — design detail, the inspector law, the panel temp… | L1544–L1655 |
-| 18. | Shell v2 — the TERMINAL drawer, the OVERVIEW pane, the popup sinks (… | L1656–L1699 |
-| 19. | Station shell v2 design detail — the OVERVIEW pane and the one skele… | L1700–L1897 |
-| 20. | The ARMORY two-module rework (amendment 2026-10-04, owner's playtest… | L1898–L1936 |
-| 21. | The two-sector rework — ARMORY's two modes and the REFINERY queue pa… | L1937–L1983 |
+| 5. | Per-module spec | L407–L1032 |
+| 6. | Type scale | L1033–L1054 |
+| 7. | Art map | L1055–L1105 |
+| 8. | Theme items used (all present in | L1106–L1127 |
+| 9. | Motion table | L1128–L1155 |
+| 10. | Focus and input | L1156–L1176 |
+| 11. | Audio hooks | L1177–L1203 |
+| 12. | Implementation notes for the coder | L1204–L1283 |
+| 13. | Verification performed on the mockup | L1284–L1300 |
+| 14. | Open questions for the owner | L1301–L1334 |
+| 15. | Station services deck & station identity (amendment 2026-10-02, wave… | L1335–L1514 |
+| 16. | Panel consolidation and the inspector band (amendment 2026-10-03, ow… | L1515–L1553 |
+| 17. | The merged panels — design detail, the inspector law, the panel temp… | L1554–L1665 |
+| 18. | Shell v2 — the TERMINAL drawer, the OVERVIEW pane, the popup sinks (… | L1666–L1709 |
+| 19. | Station shell v2 design detail — the OVERVIEW pane and the one skele… | L1710–L1907 |
+| 20. | The ARMORY two-module rework (amendment 2026-10-04, owner's playtest… | L1908–L1946 |
+| 21. | The two-sector rework — ARMORY's two modes and the REFINERY queue pa… | L1947–L1993 |
 
 <!-- section-index:end -->
 
