@@ -317,8 +317,9 @@ func _build_board_row(contract: Dictionary) -> Button:
 	return row
 
 
-## One active-contract card: the board row's anatomy over the escrow readout (U5) and the
-## cancel affordance (U4).
+## One active-contract card: two stack rows - the board row's anatomy (the head) over
+## one action row carrying the escrow readout (U5) with the cancel affordance (U4)
+## right-aligned beside it (S41, D23 F13).
 func _build_active_card(contract: Dictionary) -> PanelContainer:
 	var card := PanelContainer.new()
 	card.name = "Active%s" % String(contract.get(&"id", &"")).to_pascal_case()
@@ -360,25 +361,41 @@ func _build_active_card(contract: Dictionary) -> PanelContainer:
 	)
 	if glyph != null:
 		head.add_child(glyph)
-	## U5's escrow readout, one caption line per reserved stack.
+	## S41 (D23 F13): the card is two stack rows - the head, then one action row that
+	## carries the escrow summary with CANCEL right-aligned, so the chip shares the row
+	## instead of crowding the reward figure below it. Container children only.
+	var action_row := HBoxContainer.new()
+	action_row.name = "CardActionRow"
+	action_row.add_theme_constant_override(&"separation", COLUMN_SEPARATION)
+	action_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	stack.add_child(action_row)
+	## U5's escrow readout, one caption line per reserved stack (its own column in the
+	## action row, so it pushes the CANCEL chip to the right edge even when empty).
+	var escrow_box := VBoxContainer.new()
+	escrow_box.name = "CardEscrow"
+	escrow_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	escrow_box.add_theme_constant_override(&"separation", CELL_SEPARATION)
+	escrow_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	action_row.add_child(escrow_box)
 	var escrow: Dictionary = contract.get(&"escrow", {})
 	if not escrow.is_empty():
 		var header := _make_label(&"StationCaption", ESCROW_HEADER)
 		header.name = "EscrowHeader"
-		stack.add_child(header)
+		escrow_box.add_child(header)
 		_escrow_lines.append(ESCROW_HEADER)
 		for key: Variant in escrow:
 			var line := ESCROW_LINE % [int(escrow[key]), String(key)]
 			var label := _make_label(&"StationCaption", line)
 			label.name = "Escrow%s" % String(key).to_pascal_case()
-			stack.add_child(label)
+			escrow_box.add_child(label)
 			_escrow_lines.append(line)
 	## U4's cancel affordance, the fee at the decision point.
 	var cancel := _make_action(ACTION_CANCEL)
 	cancel.name = "CancelButton"
 	cancel.size_flags_horizontal = Control.SIZE_SHRINK_END
+	cancel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	cancel.pressed.connect(_on_cancel_pressed.bind(StringName(contract.get(&"id", &""))))
-	stack.add_child(cancel)
+	action_row.add_child(cancel)
 	_cancel_buttons[String(contract.get(&"id", &""))] = cancel
 	return card
 

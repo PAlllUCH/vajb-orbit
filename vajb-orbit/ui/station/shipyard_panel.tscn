@@ -52,30 +52,34 @@ theme_override_constants/separation = 8
 
 [node name="ModeHangar" type="Button" parent="ModeRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(200, 44)
+custom_minimum_size = Vector2(200, 32)
 layout_mode = 2
 theme_type_variation = &"StationButton"
+theme_override_font_sizes/font_size = 18
 text = "HANGAR"
 
 [node name="ModeBuild" type="Button" parent="ModeRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(200, 44)
+custom_minimum_size = Vector2(200, 32)
 layout_mode = 2
 theme_type_variation = &"StationButton"
+theme_override_font_sizes/font_size = 18
 text = "BUILD"
 
 [node name="ModeQueue" type="Button" parent="ModeRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(200, 44)
+custom_minimum_size = Vector2(200, 32)
 layout_mode = 2
 theme_type_variation = &"StationButton"
+theme_override_font_sizes/font_size = 18
 text = "QUEUE"
 
 [node name="ModeScrap" type="Button" parent="ModeRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(200, 44)
+custom_minimum_size = Vector2(200, 32)
 layout_mode = 2
 theme_type_variation = &"StationButton"
+theme_override_font_sizes/font_size = 18
 text = "SCRAP"
 
 [node name="ShipyardBody" type="HBoxContainer" parent="."]

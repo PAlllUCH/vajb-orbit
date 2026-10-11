@@ -120,6 +120,14 @@ const TAG_LIST_SEPARATOR := " · "
 ## The ARMORY is one pane with two full-screen modes behind a two-entry switch in the
 ## header band. Exactly one mode root is visible at a time and the switch is a pure
 ## visibility operation (A5.5/N24: no size, no position, no in-flow rebuild).
+##
+## F14 (D23-R1, MED): the action pair rides the pane's own foot band (`PaneFoot`, the
+## skeleton's 56 px band - UI_SPEC section 8 P2, STATION_HUB section 19.3) on **both** modes,
+## so the cluster keeps one place on the whole deck. The mode roots keep the pane's full
+## height (`offset_bottom` 68 = the band 56 + the pane root's own 12 px gutter in
+## `armory_panel.tscn`), and each mode reserves that band under its list with a 56 px slot
+## (`FitFoot`, `EqFoot`) so no row ever scrolls in behind the pair. `ModeHost` is a plain
+## `Control` (not a `MarginContainer`) so those anchors and offsets are the mode roots' own.
 const MODE_FIT: StringName = &"fit"
 const MODE_BATTERY: StringName = &"battery"
 const MODE_FIT_LABEL := "FIT CELLS"
@@ -157,6 +165,11 @@ const LIST_EMPTY_CELL := "NOTHING FITS THIS CELL"
 const BAND_MODULE := "MODULE"
 const BAND_STATE := "STATE"
 const BAND_COST := "COST"
+## F3 (D23-R1, MED): BATTERY CONFIG's rows print fit states in both value columns (`FITTED`
+## / `OWNED x n` - `READ_FITTED`, `OWNED_FORMAT`), so the browser's `COST` header mislabels
+## its column and the two columns double-report the same state. The battery band reads its
+## own second word; the builder takes the pair as an argument already.
+const BAND_HELD := "HELD"
 const BAND_TAG_COLUMN := 96.0
 const BAND_COST_COLUMN := 130.0
 ## A rack's empty hull W cell reads read-only (09 section 10's idiom): `W<n> — EMPTY`.
@@ -1006,6 +1019,9 @@ func _apply_mode() -> void:
 	var host: Control = _fit_right if fitting else _eq_sector
 	if _menu_sector != null and host != null and _menu_sector.get_parent() != host:
 		_menu_sector.reparent(host, false)
+		## F14: the host's own reserved slot (`EqFoot`) closes the sector, so the shared menu
+		## opens it - a reparent appends, and the slot is the sector's last child.
+		host.move_child(_menu_sector, 0)
 	if _fit_cells != null:
 		_fit_cells.visible = fitting
 	if _battery_config != null:
@@ -1014,6 +1030,12 @@ func _apply_mode() -> void:
 		_mode_fit.set_pressed_no_signal(fitting)
 	if _mode_battery != null:
 		_mode_battery.set_pressed_no_signal(not fitting)
+	## F3: the one band's value-column words follow the mode (a content swap in the pinned
+	## box, N31's legal set) - the shared menu is one subtree both modes render.
+	if _browser_band != null:
+		_build_list_band(
+			_browser_band, _band_captions(), [BAND_TAG_COLUMN, BAND_COST_COLUMN], BAND_MODULE
+		)
 	_update_subtitle()
 	_update_hint()
 
@@ -1615,10 +1637,23 @@ func _update_chrome() -> void:
 		for cell in 4:
 			cells.append(_style.bay_cell_rect(cell, bay))
 		ledges.append(_style.ledge_rect(bay))
-	var wells: Array[Rect2] = [
-		_style.well_half_rect(0, console), _style.well_half_rect(1, console)
-	]
+	var wells: Array[Rect2] = []
+	for half: Control in [_empty_margin, _summary_margin]:
+		wells.append(_well_plate_rect(half, _console))
 	_chrome.configure(_style, bays, cells, ledges, wells)
+
+
+## F4 (D23-R1, LOW): a well half's plate is the half's own box capped at its **content
+## block**, so a caption-only half draws a caption-high plate instead of a 92 px empty box
+## (`get_combined_minimum_size` is the container's own answer - no hand number here). The
+## half itself keeps the band's box: the layout pins read it, only the drawn plate collapses.
+func _well_plate_rect(half: Control, console: Control) -> Rect2:
+	if half == null or console == null:
+		return Rect2()
+	return Rect2(
+		half.global_position - console.global_position,
+		Vector2(half.size.x, minf(half.size.y, half.get_combined_minimum_size().y))
+	)
 
 
 ## ------------------------------------------------------------------ the token lookup
@@ -3887,8 +3922,16 @@ func _build_browser() -> void:
 		button.pressed.connect(_on_tab_pressed.bind(StringName(tab[&"id"])))
 		_tabs.add_child(button)
 	_build_list_band(
-		_browser_band, [BAND_STATE, BAND_COST], [BAND_TAG_COLUMN, BAND_COST_COLUMN], BAND_MODULE
+		_browser_band, _band_captions(), [BAND_TAG_COLUMN, BAND_COST_COLUMN], BAND_MODULE
 	)
+
+
+## F3 (D23-R1, MED): the one band's value-column words, per mode. FIT CELLS lists a state
+## tag and a cost/owned read (`STATE` / `COST`); BATTERY CONFIG's rows print `FITTED` and
+## `OWNED x n` in the same two columns, so its band reads `STATE` / `HELD`. The pair is a
+## content swap in the one shared band (N31's legal set) - the band itself never moves.
+func _band_captions() -> Array:
+	return [BAND_STATE, BAND_HELD] if _mode == MODE_BATTERY else [BAND_STATE, BAND_COST]
 
 
 ## One list's AUCTION-idiom column-header band (P40): a leading caption cell over the title

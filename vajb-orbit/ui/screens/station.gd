@@ -116,11 +116,20 @@ const SERVICES_STRIP: Array[Dictionary] = [
 	{&"service": &"insurance", &"label": "INSURANCE", &"panel": "insurance"},
 	{&"service": &"vaults", &"label": "VAULTS", &"panel": "vaults"},
 ]
-const SERVICES_STRIP_HEIGHT := 56.0
+## F15 (D23-R1, LOW): the deck's segments wear the chip row's own height and ink, so the two
+## switch families - this strip and the SHIPYARD's mode plates - read as one. The strip keeps
+## its own count and semantics (three services, not filters). PROPOSED, reversal: the shipped
+## 56 px plate with the base `Button` ink, and no chip chrome on the segments.
+const SERVICES_STRIP_HEIGHT := 32.0
+## The ink the chip row's own labels wear (the AUCTION's `TAB_LABEL_VARIATION`), read from the
+## theme rather than retyped, so the two families cannot drift apart.
+const SERVICES_CHIP_INK: StringName = &"StationValue"
 ## P25's interim CONTRACTS glyph (the staged `icon_service_contracts` completes it).
 const SERVICES_ICON := "res://assets/icons/contract/icon_contract_haul.svg"
-## P29's SERVICES pane hint (STATION_HUB section 19.4).
-const SERVICES_HINT := "ONE SERVICE AT A TIME · ESC BACK"
+## P29's SERVICES pane hint lives on the pane, not on the shell (F12, D23-R1): the mounted
+## service panel carries it (`contracts_panel.tscn:121`), so the shell's copy retired.
+## Reversal: restore `const SERVICES_HINT := "ONE SERVICE AT A TIME · ESC BACK"` and the
+## label that wrote it into the deck's `PaneFoot`.
 ## S36 (UI_SPEC section 15.1 C13, section 13.3): the pane-content backdrops. BG-1 ARMORY,
 ## BG-2 REFINERY, BG-3 EXCHANGE + AUCTION, BG-4 SHIPYARD + LAUNCH + OVERVIEW; SERVICES
 ## carries none (no assignment). Reversal: one backdrop per deck.
@@ -528,7 +537,10 @@ func _build_confirm() -> void:
 	margin.add_child(stack)
 	_confirm_title = Label.new()
 	_confirm_title.name = "Title"
-	_confirm_title.add_theme_font_size_override(&"font_size", 18)
+	## D23-R1 A3's tidy: the title's 18 px was an inline override; it is the theme's own
+	## dialog-title token (`build_theme.gd`'s `LABEL_VARIATIONS[&"DialogTitle"]`, the size
+	## `ui/dialogs/dialog.tscn` already wears), so the two dialog titles cannot drift.
+	_confirm_title.theme_type_variation = &"DialogTitle"
 	_confirm_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	stack.add_child(_confirm_title)
 	_confirm_body = Label.new()
@@ -1088,9 +1100,9 @@ func _build_panels() -> void:
 ## S25 (STATION_HUB section 15.1/15.2, P26): the SERVICES deck in place of the retired
 ## `MODULE OFFLINE` placeholder (T-138). P7's skeleton at the pane level - `PaneHeader`,
 ## the content split, the foot band - carrying section 15.1's three-button service strip,
-## one service panel below it, the U2 unavailable state and P29's hint. One service shows at
-## a time; the strip is a command, so switching is a rebuild and never a state mutation
-## (UI_SPEC section 12.5's command clause).
+## one service panel below it, and the U2 unavailable state. One service shows at a time;
+## the strip is a command, so switching is a rebuild and never a state mutation
+## (UI_SPEC section 12.5's command clause). P29's hint is the mounted pane's own (F12).
 func _build_services() -> CanvasItem:
 	var pane := VBoxContainer.new()
 	pane.name = "ServicesPane"
@@ -1128,6 +1140,10 @@ func _build_services() -> CanvasItem:
 		button.toggle_mode = true
 		button.focus_mode = Control.FOCUS_ALL
 		button.custom_minimum_size = Vector2(0.0, SERVICES_STRIP_HEIGHT)
+		button.add_theme_font_size_override(&"font_size", _chip_ink_size())
+		## F15: the chip row's own C3 `ui_inline_chip` chrome, the same plate the SHIPYARD's
+		## four mode plates and the ARMORY's two mode chips wear.
+		ChromeFamily.apply_chip(button)
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		button.pressed.connect(_on_service_pressed.bind(StringName(row[&"service"])))
@@ -1170,21 +1186,27 @@ func _build_services() -> CanvasItem:
 	foot.custom_minimum_size = Vector2(0.0, 56.0)
 	foot.add_theme_constant_override(&"separation", 16)
 	pane.add_child(foot)
-	var hint := Label.new()
-	hint.name = "PaneHint"
-	hint.theme_type_variation = &"StationCaption"
-	hint.text = SERVICES_HINT
-	hint.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	hint.size_flags_vertical = Control.SIZE_SHRINK_END
-	hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	foot.add_child(hint)
+	## F12 (D23-R1, LOW): the shell carried its own copy of P29's hint here
+	## (`SERVICES_HINT`, `ONE SERVICE AT A TIME · ESC BACK`), which the mounted pane's own
+	## `%PaneHint` (`contracts_panel.tscn:121`) already renders - the deck printed the words
+	## twice. The words now have one source: the pane. The action slot keeps the band's
+	## right-aligned seat (UI_SPEC section 19.3, section 8 P1) that the retired label's
+	## expansion used to hold.
 	var actions := HBoxContainer.new()
 	actions.name = "PaneActions"
 	actions.custom_minimum_size = Vector2(0.0, 56.0)
+	actions.alignment = BoxContainer.ALIGNMENT_END
+	actions.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	actions.add_theme_constant_override(&"separation", 16)
 	foot.add_child(actions)
 	_show_service(&"contracts")
 	return pane
+
+
+## F15: the chip row's ink size, read off the theme's own variation (never retyped), so the
+## SERVICES segments and the SHIPYARD's mode plates cannot drift apart.
+func _chip_ink_size() -> int:
+	return get_theme_font_size(&"font_size", SERVICES_CHIP_INK)
 
 
 ## One service panel at a time (section 15.1): the strip's own command.

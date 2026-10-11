@@ -765,6 +765,16 @@ plates from 56 px so the column stops stacking an 88 px plate over two 56 px one
 heights live in `refinery_panel.tscn` as the one source. No stepper tick is a transaction; only the
 two action buttons are.
 
+**S41 amendment (2026-10-11, the D23 design audit's F14 — the three action geographies).** The
+shipped cluster is **`QUEUE` / `LOAD` / `COLLECT ALL` at 360×56 in the pane's `PaneFoot/ActionsRow`**
+(§8 P1's size, on EXCHANGE's anchor, `QUEUE` rightmost), because the audit found the refinery was the
+only deck whose actions sat mid-column instead of in the pinned foot band; `QUEUE ALL` / `CANCEL`
+still sit in the conversion column. The **88 px** reading above is superseded for the cluster (P1
+pins 360×56), and the **words** are now `QUEUE n` / `QUEUE ALL` / `LOAD` / `COLLECT ALL` rather than
+`REFINE N` / `REFINERY ALL`. Whether the buttons should be *renamed* to the pinned words is an owner
+call — tracked as **T-181**. **Reversal:** return the three plates to `RefineBox` at 88 px and rename
+to `REFINE N` · `REFINERY ALL` · `CANCEL`.
+
 Actions: `REFINE N` calls `Refinery.refine(profile, id, n)`; `REFINERY ALL` calls `Refinery.refine_all(profile)`.
 Success -> the credits counter animates to the new balance and the rows rebuild (a stack that fell below 3 ore
 disappears), status strip `REFINED · GOLD · 3 INGOTS · 45 CR FEE`. Refusal -> section 5.6
@@ -1364,7 +1374,7 @@ modules. Every service below is a panel under it."
 |---|---|---|---|
 | Rail entry `SERVICES` | rail entry 8 between REPAIRS and LAUNCH (LAUNCH becomes entry 9). Nine 56 px entries + 8 × 6 px separation = 552 px inside the 769 px rail content box; the spacer absorbs the rest. Reversal: SERVICES appended below LAUNCH — LAUNCH keeps entry 8, its live entry. Tick **U1** | `StationButton` → `ui_button_plate_*` (A5.4 `Pressables`) | 14 §1:13; live rail `ui/screens/station.gd:67` (`enum Module`, 8 entries) + `:80-87` (`MODULE_LABELS`, LAUNCH eighth); ASSET_CATALOG.md:437 |
 | Rail icon | the station's faction glyph `icon_insignia_<faction>_48.png` at the rail idiom's 40×40 (as `icon_equip_module_48` at 40, §7.1), `modulate text_primary`. Reversal: `icon_map_node_station_48` returns. **U1** | own `TextureRect` (A5.2(iii)) | ASSET_CATALOG.md:332-334 (the _16/_48/_96/_192 cuts) |
-| Service strip | three `Button`s (base `Button` theme, `toggle_mode`, min (0, 56)): `CONTRACTS` / `INSURANCE` / `VAULTS`; one service panel below at a time. Reversal: labels `BOARD`/`POLICY`/`STORAGE`. **U2** | base `Button` bevel (`button_*`, UI_SPEC §2.1 — theme cite) | 14 §1:19-22; UI_SPEC.md:63-71 |
+| Service strip | three `Button`s (base `Button` theme, `toggle_mode`, min (0, **32**)): `CONTRACTS` / `INSURANCE` / `VAULTS`; one service panel below at a time. **S41 amendment (2026-10-11, D23's F15):** the strip wears the chip row's 32 px height and its `StationValue` ink so it shares visual DNA with the SHIPYARD's mode plates (the earlier min (0, 56) is superseded; **T-182**). Reversal: the strip back to 56 px; the labels `BOARD`/`POLICY`/`STORAGE` (U2's own). | base `Button` bevel (`button_*`, UI_SPEC §2.1 — theme cite) | 14 §1:19-22; UI_SPEC.md:63-71 |
 | Unavailable service | the strip button keeps its label at `button_disabled` + `text_dim` and a `StationCaption` reason sits under the strip: Choir station → "the Choir does not believe in accidents"; outpost → "fly to a capital" (both 14 verbatim). State by label + disabled plate, never colour alone. Reversal: hide unavailable services instead. **U2** | §3.1/§3.1b label idiom (A5.4 `State chips`) | 14 §1:21; 14 §8 |
 | PAY BOUNTY strip | heat > 0 only, below the service strip: `PAY BOUNTY` (the pin's own words — nothing to tick), one confirm (14 §7) | `icon_service_bounty.svg` 24×24 in its own rect + flat chip | 14 §7:133-134; ASSET_CATALOG.md:391 |
 
@@ -1795,7 +1805,7 @@ one is pinned; §19.4 names each.
 |---|---|---|---|---|
 | OVERVIEW | `OVERVIEW` + the N41 glyph | the five blocks (§19.1) | none — the band is kept (P28's uniformity) | `PICK A TILE TO CHANGE DECKS` (**P29**) |
 | ARMORY | `ARMORY` + `icon_equip_module.png` (`station.gd:92`) | P4's landscape split: the ship grid (§17.1 left, FITTING's own numbers) + the inventory browser in the §15 spine's 420 right column | `REMOVE` + `BUY & FIT` (P14) | `PWR %d / %d · CANDIDATE %d / %d` (§17.1's footer power meter) |
-| REFINERY | `REFINERY` + `icon_cargo_ore.svg` | §5.7's `RefineryTable` rows + `RefineBox` (the stepper + the `ORE IN` / `INGOTS OUT` / `FEE` totals) | `REFINE N` + `REFINERY ALL` + `CANCEL` | `3 ORE = 1 INGOT · FEE 15 CR PER CONVERSION` (§5.7; empty state `BRING RAW ORE FROM THE BELT`) |
+| REFINERY | `REFINERY` + `icon_cargo_ore.svg` | §5.7's `RefineryTable` rows + `RefineBox` (the stepper + the `ORE IN` / `INGOTS OUT` / `FEE` totals) | **S41 (2026-10-11, D23's F14):** `QUEUE` + `LOAD` + `COLLECT ALL` at 360×56 in `PaneFoot/ActionsRow` (the earlier `REFINE N` + `REFINERY ALL` + `CANCEL` at 88 px is superseded; `QUEUE ALL`/`CANCEL` stay in the conversion column — **T-181**) | `3 ORE = 1 INGOT · FEE 15 CR PER CONVERSION` (§5.7; empty state `BRING RAW ORE FROM THE BELT`) |
 | EXCHANGE | `EXCHANGE` + `icon_credits.svg` | §5.8's three columns: `HoldBox` + `MarketBoard` + `TradeBox` | `SELL ALL RAW` + `CANCEL` + `SELL` | `THE STATION BUYS · IT DOES NOT SELL` (§5.8; S28's wording, recorded 2026-10-05) |
 | AUCTION | `AUCTION` + `icon_credits.svg` | §5.10's two shelf sections (HULLS 6, MODULES 20) + the `SELL MODULES` sub-list | none at pane level — the row press is the action (§5.10; `auction_panel.gd:750,798`) | `NEXT RESTOCK <m:ss>` (§5.10) |
 | SHIPYARD | `SHIPYARD` + `icon_hull.svg` | P5/§17.2 whole: the hull list + `PreviewFrame` + the labelled pairs + the comparison block + `INSTALLED MODULES` + the repair block | `SET ACTIVE` + `REPAIR` (§17.2) | `REPAIR AVAILABLE · %d CR` / `ALL SYSTEMS NOMINAL` (§17.2) |

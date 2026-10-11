@@ -52,6 +52,74 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 4
 
+[node name="ShelfChrome" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="HullsMargin" type="MarginContainer" parent="ShelfChrome"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_right = 12
+
+[node name="HullsBox" type="VBoxContainer" parent="ShelfChrome/HullsMargin"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="HullsCaption" type="Label" parent="ShelfChrome/HullsMargin/HullsBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "HULLS"
+
+[node name="HullsHeader" type="HBoxContainer" parent="ShelfChrome/HullsMargin/HullsBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ModulesMargin" type="MarginContainer" parent="ShelfChrome"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_right = 12
+
+[node name="ModulesBox" type="VBoxContainer" parent="ShelfChrome/ModulesMargin"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="ModulesCaption" type="Label" parent="ShelfChrome/ModulesMargin/ModulesBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "MODULES"
+
+[node name="ModulesHeader" type="HBoxContainer" parent="ShelfChrome/ModulesMargin/ModulesBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="SellMargin" type="MarginContainer" parent="ShelfChrome"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_right = 12
+
+[node name="SellBox" type="VBoxContainer" parent="ShelfChrome/SellMargin"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="SellCaption" type="Label" parent="ShelfChrome/SellMargin/SellBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "SELL MODULES"
+
+[node name="SellHeader" type="HBoxContainer" parent="ShelfChrome/SellMargin/SellBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
 [node name="AuctionScroll" type="ScrollContainer" parent="."]
 unique_name_in_owner = true
 horizontal_scroll_mode = 0
@@ -64,79 +132,17 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 12
 
-[node name="HullsMargin" type="MarginContainer" parent="AuctionScroll/AuctionBody"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_right = 12
-
-[node name="HullsBox" type="VBoxContainer" parent="AuctionScroll/AuctionBody/HullsMargin"]
-layout_mode = 2
-theme_override_constants/separation = 2
-
-[node name="HullsCaption" type="Label" parent="AuctionScroll/AuctionBody/HullsMargin/HullsBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"SectionHeader"
-text = "HULLS"
-
-[node name="HullsHeader" type="HBoxContainer" parent="AuctionScroll/AuctionBody/HullsMargin/HullsBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 12
-
 [node name="HullRows" type="VBoxContainer" parent="AuctionScroll/AuctionBody"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
-[node name="ModulesMargin" type="MarginContainer" parent="AuctionScroll/AuctionBody"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_right = 12
-
-[node name="ModulesBox" type="VBoxContainer" parent="AuctionScroll/AuctionBody/ModulesMargin"]
-layout_mode = 2
-theme_override_constants/separation = 2
-
-[node name="ModulesCaption" type="Label" parent="AuctionScroll/AuctionBody/ModulesMargin/ModulesBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"SectionHeader"
-text = "MODULES"
-
-[node name="ModulesHeader" type="HBoxContainer" parent="AuctionScroll/AuctionBody/ModulesMargin/ModulesBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 12
-
 [node name="ModuleRows" type="VBoxContainer" parent="AuctionScroll/AuctionBody"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
-
-[node name="SellMargin" type="MarginContainer" parent="AuctionScroll/AuctionBody"]
-layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_right = 12
-
-[node name="SellBox" type="VBoxContainer" parent="AuctionScroll/AuctionBody/SellMargin"]
-layout_mode = 2
-theme_override_constants/separation = 2
-
-[node name="SellCaption" type="Label" parent="AuctionScroll/AuctionBody/SellMargin/SellBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"SectionHeader"
-text = "SELL MODULES"
-
-[node name="SellHeader" type="HBoxContainer" parent="AuctionScroll/AuctionBody/SellMargin/SellBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 12
 
 [node name="SellRows" type="VBoxContainer" parent="AuctionScroll/AuctionBody"]
 unique_name_in_owner = true

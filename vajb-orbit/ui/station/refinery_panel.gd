@@ -1,11 +1,12 @@
 extends VBoxContainer
 ## REFINERY module panel: the queue pane (STATION_HUB section 21.3 P42/P43, the
 ## model is 04 section 7). Three blocks: LEFT the hold ore stacks plus the input
-## inventory (rows tagged LOADED); CENTRE the stepper, the ORE IN / INGOTS OUT /
-## FEE / TIME totals and the QUEUE N / QUEUE ALL / CANCEL / LOAD / COLLECT ALL
-## actions; RIGHT the job list (running rows with an mm:ss countdown, pending rows,
-## done rows awaiting collection). The SLOTS n/5 readout and UPGRADE live in the
-## pane header band.
+## inventory (rows tagged LOADED, under one `IN INPUT` sub-header - D23 F5);
+## CENTRE the stepper, the ORE IN / INGOTS OUT / FEE / TIME totals and the
+## QUEUE ALL / CANCEL pair; RIGHT the job list (running rows with an mm:ss
+## countdown, pending rows, done rows awaiting collection). The pane foot band
+## carries the QUEUE N / LOAD / COLLECT ALL cluster (UI_SPEC section 8 P1/P2,
+## D23 F14). The SLOTS n/5 readout and UPGRADE live in the pane header band.
 ##
 ## The station shell loads this scene into its host, so the panel never routes and
 ## never writes the profile directly: it emits status_requested up, reads Refinery
@@ -61,6 +62,10 @@ const HEADER_ORE := "ORE"
 const HEADER_STATE := "STATE"
 const HEADER_JOB := "JOB"
 const HEADER_TIME := "TIME"
+## S41 (D23 F5): the sub-header that separates the input inventory from the hold
+## stacks in the one `HoldRows` VBox. The `LOADED` tag on every input row stays -
+## colour is not the only channel.
+const HEADER_INPUT := "IN INPUT"
 
 const TAG_FORMAT := "%s · %s READY"
 const TAG_EMPTY := "NO CONVERTIBLE STACKS"
@@ -82,8 +87,11 @@ const COLLECT_WORD := "COLLECT ALL"
 const SLOTS_FORMAT := "SLOTS %d/%d"
 const UPGRADE_FORMAT := "UPGRADE (%s CR)"
 ## S28 (04 section 8): the fee is value-relative, so the legend prints the live combined
-## charge of the QUEUE ALL button beside it instead of one flat figure.
-const FOOTER_FORMAT := "%d ORE = 1 INGOT · FEE %d CR QUEUED"
+## charge of the QUEUE ALL button beside it instead of one flat figure. The fee slot is
+## `%s`: `_format_int` hands back the house-grouped string (the shipped `%d` threw a
+## formatting error and left the footer blank whenever the input was queueable - fixed
+## here as an incidental, S41-B4).
+const FOOTER_FORMAT := "%d ORE = 1 INGOT · FEE %s CR QUEUED"
 const FOOTER_EMPTY := "BRING RAW ORE FROM THE BELT"
 const FOOTER_LOAD := "LOAD ORE TO START A JOB"
 const EMPTY_HOLD_ROW := "NO ORE IN HOLD"
@@ -160,9 +168,10 @@ func _ready() -> void:
 	_build_jobs()
 	_apply_tokens()
 	_wire_controls()
-	## S36-F1 (A4, F2): the four QUEUE / QUEUE ALL / LOAD / COLLECT ALL bars live at
-	## 114-176 px wide, under C2's 272 h-band floor - they revert to their pre-swap
-	## StationButton style (reported as new-plate candidates). CANCEL stays native too.
+	## S36-F1 (A4, F2): the QUEUE ALL / CANCEL bars live at 114-176 px wide, under C2's
+	## 272 h-band floor - they revert to their pre-swap StationButton style (reported as
+	## new-plate candidates). S41 (D23 F14): QUEUE / LOAD / COLLECT ALL moved into the
+	## pane foot cluster at the section 8 P1 360x56 token, so they are not in this list.
 	## S37-F1 (section 15.1 C8): the 48x48 StepperLess/StepperMore wear the flat Tokens
 	## box, not the plate - the census's C8 square slot plate is a TextureButton variation
 	## a plain Button cannot resolve (measured StyleBoxFlat), so the tscn drops their
@@ -358,6 +367,8 @@ func _build_rows() -> void:
 	else:
 		for stack: Dictionary in hold:
 			_payloads.append(_build_row(stack, false))
+		if not input.is_empty():
+			_build_section_header(HEADER_INPUT)
 		for stack: Dictionary in input:
 			_payloads.append(_build_row(stack, true))
 		_add_slack()
@@ -391,6 +402,21 @@ func _build_empty_row() -> void:
 	label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	box.add_child(label)
+	_hold_rows.add_child(row)
+
+
+## S41 (D23 F5): one `SectionHeader` sub-header row inside the hold list, inset by the
+## row's own text margin so it sits over the title column. Containers only - the row
+## hugs its label, and no payload is built for it (it is not selectable).
+func _build_section_header(text: String) -> void:
+	var row := MarginContainer.new()
+	row.name = "Section%s" % text.to_pascal_case()
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_theme_constant_override(&"margin_left", ROW_INNER_MARGIN.x)
+	row.add_theme_constant_override(&"margin_right", ROW_INNER_MARGIN.x)
+	var label := _make_label(&"SectionHeader", text)
+	label.name = "SectionLabel"
+	row.add_child(label)
 	_hold_rows.add_child(row)
 
 

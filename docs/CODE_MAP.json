@@ -402,6 +402,16 @@
     "res://tests/probe_r1_v5_migration.gd"
    ]
   },
+  "res://tests/probe_r2_s27_flight.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node2D",
+   "scripts": [
+    "res://tests/probe_r2_s27_flight.gd"
+   ]
+  },
   "res://tests/probe_rock_cleave.tscn": {
    "assets": [],
    "connections": [],
@@ -2801,6 +2811,40 @@
     "res://game/module_catalog.gd",
     "res://game/station_catalog.gd",
     "res://tests/probe_r1_v5_migration.tscn --quit-after 600"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_r2_s27.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "SceneTree",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/affixes.gd",
+    "res://game/auction.gd",
+    "res://game/component_catalog.gd",
+    "res://game/contract_registry.gd",
+    "res://game/loot_tables.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/module_catalog.gd",
+    "res://game/ship_fit.gd",
+    "res://game/shipyard.gd"
+   ],
+   "signals": []
+  },
+  "res://tests/probe_r2_s27_flight.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node2D",
+   "refs": [
+    "res://game/game.gd",
+    "res://game/game.tscn",
+    "res://game/npc_registry.gd",
+    "res://game/npc_ship.gd",
+    "res://game/ship_fit.gd",
+    "res://tests/probe_r2_s27_flight.tscn --quit-after 400"
    ],
    "signals": []
   },
@@ -5290,6 +5334,61 @@
    ],
    "signals": []
   },
+  "res://tests/test_s41_armory.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://ui/station/armory_panel.gd",
+    "res://ui/station/armory_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s41_panels_a.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/auction.gd",
+    "res://ui/station/auction_panel.tscn",
+    "res://ui/station/exchange_panel.tscn",
+    "res://ui/station/overview_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s41_panels_b.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/contract_registry.gd",
+    "res://ui/station/contracts_panel.tscn",
+    "res://ui/station/launch_panel.tscn",
+    "res://ui/station/refinery_panel.tscn",
+    "res://ui/station/shipyard_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s41_shell.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://tools/build_theme.gd",
+    "res://ui/components/tooltip.tscn",
+    "res://ui/screens/station.gd",
+    "res://ui/screens/station.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
   "res://tests/test_s4_batteries.gd": {
    "autoload": "",
    "class_name": "",
@@ -6345,6 +6444,8 @@
    "connects": [
     ".visibility_changed \u2192 _queue_header_fit",
     "_scroll.resized \u2192 _queue_header_fit",
+    "_scroll.resized \u2192 _sync_shelf_chrome",
+    "bar.value_changed \u2192 _on_shelf_scrolled",
     "button.pressed \u2192 _on_tab_pressed.bind(tab_id",
     "cell.resized \u2192 _queue_section_fit.bind(section",
     "header.resized \u2192 _queue_section_fit.bind(section",
@@ -6609,6 +6710,7 @@
     "_mode_hangar.pressed \u2192 _set_mode.bind(MODE_HANGAR",
     "_mode_queue.pressed \u2192 _set_mode.bind(MODE_QUEUE",
     "_mode_scrap.pressed \u2192 _set_mode.bind(MODE_SCRAP",
+    "_preview_frame.resized \u2192 _resize_preview_box",
     "_queue_cancel.pressed \u2192 _on_queue_cancel",
     "_queue_collect.pressed \u2192 _on_queue_collect",
     "_repair_button.pressed \u2192 _on_repair_pressed",

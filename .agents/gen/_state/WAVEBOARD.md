@@ -12,7 +12,29 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 
 | Pos | Lane item | Wave | Runs after | The collision/dependency that forces the order |
 |---|---|---|---|---|
-| — | — | **queue empty — P3's exit is the playtest** | S27 closed 2026-10-10 | P3's remaining work is the owner's eye (playtest build 2, `docs/gameplay/19_testing_notes.md`), not a wave. The next code work follows a fresh planning round. |
+| — | — | **queue empty — P3's exit is the playtest** | S41 closed 2026-10-11 | P3's remaining work is the owner's eye (playtest build 2, `docs/gameplay/19_testing_notes.md`), not a wave. The next code work follows a fresh planning round. |
+
+**Updated 2026-10-11 (S41 the composition pass closed — the D23 design audit implemented).**
+Gate **1300 → 1330/0** ×2 hermetic on fresh scratch stores (only T-155's salvo
+jitter differs), verify clean vs `s41_start`, `build_code_map.py` re-run (126
+scenes / 317 scripts). The source is **`slices/D23-panel-audit/D23-R1_audit.md`**
+— a visual / UI designer's audit of the ten station decks at 1920×1080 (all ten
+renders viewed, every finding source-verified), **16 findings: 1 HIGH, 8 MED,
+7 LOW**. Five builders ran: B1 (theme + shell), B2 (overview / exchange /
+auction), B3 (armory), B4 (refinery / launch / contracts / shipyard) in parallel
+on disjoint file sets, then **B5** — the completion pass the file-set stop forced
+(F8's auction chrome needed `auction_panel.gd`; F15's services half needed
+`station.gd`), which is the S27 lesson working as designed. **R1**
+(glm-5.3-flash, **code and visual**) returned **passed-with-followups**: all 16
+findings fixed at their named sites and **visible on ten fresh renders**, the
+layout and token laws held, and the gate's §6 rows were unmoved. **T-177 closed**
+(the theme generator now preserves the `.tres`'s 19 uid lines; a regeneration is
+a byte no-op — proved by R1's own run). One MED is an owner call (B2/F01: the
+OVERVIEW hull block now sits below the fold, because all three service rows took
+the unscrolled seat); three LOW → **T-180/T-181/T-182** (the tooltip vs a pane's
+own header; STATION_HUB §5.7's refinery wording; §19.4's strip height); next free
+ticket **T-183**. Every new chrome value is **PROPOSED** on TICKS. The queue is
+still empty — P3's exit is the owner's playtest (build 2).
 
 **Updated 2026-10-10 (S27 catalog breadth & the shipyard closed — item 33, P3's last code wave).**
 Gate **1275 → 1300/0** ×2 hermetic on fresh scratch stores (only T-155's salvo

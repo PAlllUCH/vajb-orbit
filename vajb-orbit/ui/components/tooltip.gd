@@ -20,6 +20,9 @@ const CAP_WIDTH := 360.0
 const BODY_FONT_SIZE := 15
 const CURSOR_OFFSET := Vector2(12.0, 12.0)
 const VIEWPORT_MARGIN := 8.0
+## F16: the pane header band's bottom edge (UI_SPEC section 19.3). The tooltip's top never
+## sits inside the band, so a hovered top row never has its pane identity covered.
+const HEADER_BAND_BOTTOM := 163.0
 const HINT_TEXT := "INSPECT"
 const DANGER_FALLBACK := Color("c8471f")
 
@@ -114,6 +117,11 @@ func _compose() -> String:
 
 ## N32's clamp: flip to the cursor's opposite quadrant on an overflowing axis, then keep
 ## the box 8 px inside the viewport. The anchor is the tooltip's own top-left (N27).
+##
+## F16 (D23-R1, LOW): the pane header band is 163 px tall (UI_SPEC section 19.3), so a
+## tooltip the viewport clamp has flipped above its cursor lands *on* the pane's own
+## identity line when the cursor sits in a top row. A box whose top would fall inside that
+## band flips back below the cursor, never closer than the band's own bottom edge.
 func _place(cursor: Vector2, viewport_size: Vector2) -> void:
 	reset_size()
 	var box := size
@@ -122,6 +130,8 @@ func _place(cursor: Vector2, viewport_size: Vector2) -> void:
 		pos.x = cursor.x - CURSOR_OFFSET.x - box.x
 	if pos.y + box.y > viewport_size.y - VIEWPORT_MARGIN:
 		pos.y = cursor.y - CURSOR_OFFSET.y - box.y
+	if pos.y < HEADER_BAND_BOTTOM:
+		pos.y = maxf(cursor.y + CURSOR_OFFSET.y, HEADER_BAND_BOTTOM)
 	pos.x = clampf(pos.x, VIEWPORT_MARGIN, maxf(VIEWPORT_MARGIN, viewport_size.x - box.x - VIEWPORT_MARGIN))
 	pos.y = clampf(pos.y, VIEWPORT_MARGIN, maxf(VIEWPORT_MARGIN, viewport_size.y - box.y - VIEWPORT_MARGIN))
 	position = pos

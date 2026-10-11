@@ -79,11 +79,6 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 110)
 layout_mode = 2
 
-[node name="BriefSpacer" type="Control" parent="LaunchBody/BriefBox"]
-layout_mode = 2
-size_flags_vertical = 3
-mouse_filter = 2
-
 [node name="BriefNote" type="Label" parent="LaunchBody/BriefBox"]
 unique_name_in_owner = true
 layout_mode = 2

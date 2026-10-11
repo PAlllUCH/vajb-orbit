@@ -5,7 +5,15 @@ file when decided or done** (deleted at the wave close-out or the ruling — the
 record lives in the cited file and `MASTER_REPORT.md` §6, this is the index
 only). Refreshed at every wave close-out and after every owner ruling.
 
-*Last refreshed: 2026-10-10 (S27 catalog breadth & the shipyard closed — P3's last
+*Last refreshed: 2026-10-11 (S41 the composition pass closed — the design audit D23
+implemented. Gate **1300 → 1330/0** ×2 hermetic on fresh scratch stores; five
+builders (B1–B4 parallel, B5 the completion pass), R1 (glm-5.3-flash, code **and**
+visual) returned **passed-with-followups** — all 16 findings plus **T-177** fixed
+at their named sites and **visible on the ten fresh renders**. **T-177 closed**
+(the theme generator preserves the `.tres` uids; a regeneration is a byte no-op).
+**T-180/T-181/T-182 filed**; next free **T-183**. Every new token is **PROPOSED**
+(below). One owner call rides the wave: the OVERVIEW tradeoff.)*
+*Previously 2026-10-10 (S27 catalog breadth & the shipyard closed — P3's last
 code item. Gate **1275 → 1300/0** ×2 hermetic on fresh scratch stores; CONTRACTS
 **§20 S27 block** + §9 + §10 **v0.56/v0.57**; B1+B2 built, R1 left **no HIGH**,
 2 MED (both cured by F1), 1 LOW → **T-178**; **T-153 closed** (the tier-4 reserved
@@ -84,6 +92,23 @@ plan)*
   its ring, so this is a ruling on **interaction density**, not a code defect:
   ratify the cascade or gate the ring on the killing blow's source (player shots
   only). Code stays as shipped until ruled.
+- **The OVERVIEW tradeoff (S41, B2/F01).** The HIGH fix moved the services block
+  (CONTRACTS · INSURANCE · VAULTS) **out of the scroll** so all three deep-link
+  rows are visible unscrolled — the deck's navigation promise (P26) now holds. The
+  cost: the hull block (hull/shield readouts and the pane's only REPAIR chip) moved
+  **below the fold** inside `%BlockScroll`, so it needs a scroll. Both P22 and P26
+  are satisfied; which one the owner would rather lead with is a taste call.
+  Reversal: the services rows return to `%BlockStack` (`overview_panel.gd`).
+- **S41's new chrome tokens (all PROPOSED; the owner ratifies shared-chrome
+  tones).** F7 gave every disabled plate a 1 px `metal_mid` edge
+  (`DISABLED_EDGE`, `build_theme.gd:133`); F9 moved the scrollbar grabber to
+  `text_meta` and gave the track a `metal_dark` edge with a new
+  `SCROLL_GRABBER_MIN_HEIGHT` 48 px floor (`:137`); F16 pinned
+  `HEADER_BAND_BOTTOM` 163 px (`ui/components/tooltip.gd:25`); F10 pinned
+  `PREVIEW_FRACTION` 0.60 (`shipyard_panel.gd:104`) and F15 set the four shipyard
+  mode plates to the chip row's 32 px / 18 px ink. **No colour value changed** —
+  every token is an existing one reused, so no contrast re-measurement is owed.
+  Reversals are in `S41-B1_report.md` and `S41-B4_report.md`.
 
 ## Open actions — no decision needed, just waiting
 

@@ -78,6 +78,7 @@ const OVERVIEW_FALLBACK_ICON := "res://assets/icons/tint/icon_map_node_station_4
 
 @onready var _pane_icon: TextureRect = %PaneIcon
 @onready var _stack: VBoxContainer = %BlockStack
+@onready var _service_host: VBoxContainer = %ServiceHost
 
 var _identity_plate: PanelContainer = null
 var _identity_mark: TextureRect = null
@@ -156,7 +157,14 @@ func _faction_icon(faction: StringName) -> String:
 
 
 ## Block 1: the section 15.5 name plate (UI_SPEC section 7 A5.4-1) - a flat Tokens box,
-## faction glyph 48 at its own cut, the station name and the character line.
+## faction glyph 48 at its own cut and the station name.
+##
+## S41 (D23-R1 F1): the shell header (`station.gd`'s `_apply_identity`) already renders the
+## station name AND its character line, and the pane's copy repeated both ~200 px below it
+## in a block that was tall enough to push two of the three deep-link rows under the fold.
+## The plate keeps the identity it owns - the faction mark and the name - and drops the
+## duplicated character line, which is the block's one line. Reversal: restore the
+## `_identity_character` label under the name (the shell keeps passing the line in).
 func _build_identity() -> void:
 	_identity_plate = PanelContainer.new()
 	_identity_plate.name = "IdentityBlock"
@@ -189,9 +197,9 @@ func _build_identity() -> void:
 	_identity_name = Label.new()
 	_identity_name.theme_type_variation = &"HeroTitle"
 	box.add_child(_identity_name)
-	_identity_character = Label.new()
-	_identity_character.theme_type_variation = &"StationCaption"
-	box.add_child(_identity_character)
+	## S41 (F1): the character line is not built - the shell header carries it. The field
+	## stays null so `set_identity`'s own guard skips it (reversal: build the label again).
+	_identity_character = null
 
 
 ## Block 2: the 3x2 department tiles (P23). A tile is a Button (container children), the
@@ -330,13 +338,32 @@ func _on_repair_pressed() -> void:
 
 ## Block 4: the U2 services rows (P25) - the section 3.1 76-tall row idiom, an icon 24, the
 ## name, a right-aligned readout and a trailing `OPEN` chip, deep-linking to SERVICES (P26).
+##
+## S41 (D23-R1 F1): the three deep-link rows are the pane's navigation promise (P26), and
+## the measured 16:9 arithmetic (`STATION_HUB` section 19.1's own block minima against the
+## 636-tall split) cannot show them at the bottom of the block stack - the stack's content
+## is taller than the scroll's viewport, so the fold cut the block after CONTRACTS and left
+## INSURANCE and VAULTS unreachable without a scroll. The block therefore sits outside
+## `BlockScroll`, in `%ServiceHost` directly under the fold, where all three rows are
+## visible unscrolled; its bottom `size_flags_vertical = 3` spacer keeps the rows flush
+## against the fold when the host has slack. Reversal: `_build_services` adds the rows back
+## to `%BlockStack` and the `ServiceHost` node is dropped.
 func _build_services() -> void:
 	var rows := VBoxContainer.new()
 	rows.name = "ServiceRows"
 	rows.add_theme_constant_override(&"separation", 6)
-	_stack.add_child(rows)
+	_service_host.add_child(rows)
 	for service: Dictionary in SERVICE_ROWS:
 		rows.add_child(_make_service_row(service))
+	## The block's own slack owner (A2), after the rows: it keeps the three rows flush
+	## against the fold whenever the host has slack (the scroll above owns it at 16:9). It
+	## sits beside `ServiceRows`, never inside it, so the block still holds exactly three
+	## rows (P25).
+	var slack := Control.new()
+	slack.name = "ServiceSlack"
+	slack.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	slack.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_service_host.add_child(slack)
 
 
 func _make_service_row(service: Dictionary) -> Button:

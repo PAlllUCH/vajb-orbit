@@ -2,6 +2,11 @@ extends SceneTree
 ## Generates res://ui/theme/vajb_theme.tres. Re-runnable and deterministic.
 ## Contract: docs/design/IMPLEMENTATION_PLAN.md section 3.2. This file is the only
 ## place in the project allowed to hold hex literals.
+##
+## T-177: the generated file keeps the `uid="uid://…"` lines it already carried (its own
+## and one per `ext_resource`), so a regeneration is a no-op diff and no resource that
+## references the theme loses its uid. See `_read_uid_index`. Reversal: drop the two
+## calls in `_run` and edit the `.tres` in place by hand (the S37/S40 precedent).
 
 const PATHS := preload("res://ui/paths.gd")
 
@@ -119,6 +124,18 @@ const TOKEN_ALPHA: Dictionary = {
 	&"menu_glow": 0.60,
 }
 
+## F7 (D23-R1, MED). A disabled control wore a borderless `metal_dark` plate, so at 1080p it
+## read as *absent* rather than as *disabled* (the refinery `-`/`+` steppers and the QUEUE
+## row nearly vanish). Every plate a disabled state draws now keeps a 1 px `metal_mid` edge -
+## the `_flat()` call's border argument, one per disabled box. The disabled ink stays
+## `text_dim` (S40's A1 territory, untouched). Reversal: put `metal_dark` back as the border
+## of the three disabled boxes.
+const DISABLED_EDGE: StringName = &"metal_mid"
+## F9 (D23-R1, MED). The scrollbar's grabber floor: a `VScrollBar` sizes its grabber from the
+## grabber stylebox's own minimum height, so 48 px is carried as top/bottom content margins
+## either side of the 1 px borders (23 + 23 + 2). Reversal: zero the two margins.
+const SCROLL_GRABBER_MIN_HEIGHT := 48.0
+
 ## RichTextLabel resolves each of these against default_font_size when it is
 ## unset, so all five must be pinned or bold text would not follow the body size.
 const RICH_TEXT_FONT_ITEMS: Array[StringName] = [
@@ -204,6 +221,10 @@ const FOCUS_PROBE: Dictionary = {
 const DISPLAY_ROLE: StringName = &"display"
 
 var _boxes: Dictionary = {}
+## T-177: the uid lines read off the committed file before it is overwritten.
+var _resource_uid: String = ""
+var _ext_resource_uids: Dictionary = {}
+var _uids_written: int = 0
 
 
 func _initialize() -> void:
@@ -212,6 +233,9 @@ func _initialize() -> void:
 
 
 func _run() -> void:
+	## T-177: the uid index is read off the file this run is about to overwrite, before
+	## `_build()` and the save, because the save is what destroys it.
+	_read_uid_index()
 	var theme: Theme = _build()
 	var theme_dir: String = PATHS.THEME.get_base_dir()
 	if not DirAccess.dir_exists_absolute(theme_dir):
@@ -223,7 +247,85 @@ func _run() -> void:
 	if save_error != OK:
 		printerr("build_theme: save failed for %s (error %d)" % [PATHS.THEME, save_error])
 		return
+	_restore_uids()
 	_report(theme)
+
+
+## T-177 (S41-W1). `ResourceSaver.save` writes a uid-less file: the header `uid="…"` and
+## every `ext_resource` uid come from the editor's uid cache, which a `--headless
+## --script` run does not load, so a plain generation strips all 19 uid lines off the
+## committed `.tres`. Loading the committed theme and re-saving it does not help (measured
+## 2026-10-11: it strips the uids *and* re-ids every sub_resource, 160 lines of churn).
+## So the generator carries them itself: the uid index of the file it is about to
+## overwrite is read first and re-applied, as text, to the file it just wrote.
+func _read_uid_index() -> void:
+	_resource_uid = ""
+	_ext_resource_uids.clear()
+	var file: FileAccess = FileAccess.open(PATHS.THEME, FileAccess.READ)
+	if file == null:
+		return
+	while not file.eof_reached():
+		var line: String = file.get_line()
+		if line.begins_with("[gd_resource"):
+			_resource_uid = _uid_attr(line, "uid")
+		elif line.begins_with("[ext_resource"):
+			var path: String = _uid_attr(line, "path")
+			var uid: String = _uid_attr(line, "uid")
+			if not path.is_empty() and not uid.is_empty():
+				_ext_resource_uids[path] = uid
+	file.close()
+
+
+## Re-applies the preserved uids to the file the save just wrote. An `ext_resource` whose
+## path the index does not know (a texture or face this run adds) keeps the uid-less line
+## the engine wrote and takes its uid from the editor's next save.
+func _restore_uids() -> void:
+	_uids_written = 0
+	if _resource_uid.is_empty() and _ext_resource_uids.is_empty():
+		return
+	var file: FileAccess = FileAccess.open(PATHS.THEME, FileAccess.READ)
+	if file == null:
+		printerr("build_theme: cannot re-read %s for the uid pass" % PATHS.THEME)
+		return
+	var lines: PackedStringArray = file.get_as_text().split("\n")
+	file.close()
+	for index in lines.size():
+		var patched: String = _uid_line(lines[index])
+		if patched != lines[index]:
+			_uids_written += 1
+		lines[index] = patched
+	var out: FileAccess = FileAccess.open(PATHS.THEME, FileAccess.WRITE)
+	if out == null:
+		printerr("build_theme: cannot rewrite %s for the uid pass" % PATHS.THEME)
+		return
+	out.store_string("\n".join(lines))
+	out.close()
+
+
+func _uid_line(line: String) -> String:
+	if line.begins_with("[gd_resource"):
+		if _resource_uid.is_empty() or line.contains("uid="):
+			return line
+		return line.replace("]", " uid=\"%s\"]" % _resource_uid)
+	if not line.begins_with("[ext_resource"):
+		return line
+	var path: String = _uid_attr(line, "path")
+	if path.is_empty() or not _ext_resource_uids.has(path) or line.contains("uid="):
+		return line
+	return line.replace(" path=", " uid=\"%s\" path=" % String(_ext_resource_uids[path]))
+
+
+## Reads one `name="value"` attribute off a resource header line.
+static func _uid_attr(line: String, name: String) -> String:
+	var marker: String = name + "=\""
+	var start: int = line.find(marker)
+	if start == -1:
+		return ""
+	start += marker.length()
+	var end: int = line.find("\"", start)
+	if end == -1:
+		return ""
+	return line.substr(start, end - start)
 
 
 func _build() -> Theme:
@@ -314,7 +416,7 @@ func _register_tabs(theme: Theme) -> void:
 	var selected: StyleBoxFlat = _flat(_c(&"void_panel_raised"), _c(&"metal_light"))
 	var unselected: StyleBoxFlat = _flat(_c(&"metal_dark"), _c(&"metal_mid"))
 	var hovered: StyleBoxFlat = _flat(_c(&"metal_mid"), _c(&"metal_light"))
-	var disabled: StyleBoxFlat = _flat(_c(&"metal_dark"), _c(&"metal_dark"))
+	var disabled: StyleBoxFlat = _flat(_c(&"metal_dark"), _c(DISABLED_EDGE))
 	for box: StyleBoxFlat in [selected, unselected, hovered, disabled]:
 		box.content_margin_left = 16.0
 		box.content_margin_right = 16.0
@@ -411,10 +513,14 @@ func _register_chrome(theme: Theme) -> void:
 
 
 func _register_scroll_chrome(theme: Theme) -> void:
+	## F9 (D23-R1, MED): on the full-res crops of the OVERVIEW, AUCTION and ARMORY right
+	## edges no grabber read at 1080p while all three lists scroll. The track gains the
+	## 1 px `metal_dark` edge and the grabber family moves off `metal_light` (which is the
+	## track's own neighbour tone) onto the row-meta grey, so a list that scrolls shows it.
 	theme.set_stylebox(&"panel", &"ScrollContainer", _boxes[&"panel"])
-	theme.set_stylebox(&"scroll", &"VScrollBar", _scroll_box(_c(&"metal_mid"), _c(&"metal_mid")))
-	theme.set_stylebox(&"grabber", &"VScrollBar", _scroll_box(_c(&"metal_light"), _c(&"metal_light")))
-	theme.set_stylebox(&"grabber_highlight", &"VScrollBar", _scroll_box(_c(&"metal_light"), _c(&"accent_danger")))
+	theme.set_stylebox(&"scroll", &"VScrollBar", _scroll_box(_c(&"metal_mid"), _c(&"metal_dark")))
+	theme.set_stylebox(&"grabber", &"VScrollBar", _scroll_grabber_box(_c(&"text_meta"), _c(&"text_meta")))
+	theme.set_stylebox(&"grabber_highlight", &"VScrollBar", _scroll_grabber_box(_c(&"text_meta"), _c(&"accent_danger")))
 
 
 func _register_list_chrome(theme: Theme) -> void:
@@ -433,7 +539,7 @@ func _register_list_chrome(theme: Theme) -> void:
 	theme.set_stylebox(&"title_button_normal", &"Tree", _bevel(_c(&"metal_dark")))
 	theme.set_stylebox(&"title_button_hover", &"Tree", hovered)
 	theme.set_stylebox(&"title_button_pressed", &"Tree", _flat(_c(&"void_panel_raised"), _c(&"metal_dark")))
-	theme.set_stylebox(&"title_button_disabled", &"Tree", _flat(_c(&"metal_dark"), _c(&"metal_dark")))
+	theme.set_stylebox(&"title_button_disabled", &"Tree", _flat(_c(&"metal_dark"), _c(DISABLED_EDGE)))
 	theme.set_stylebox(&"selected", &"Tree", selected)
 	theme.set_stylebox(&"cursor", &"Tree", _boxes[&"focus"])
 	theme.set_color(&"font_color", &"Tree", _c(&"text_primary"))
@@ -460,7 +566,7 @@ func _make_boxes() -> Dictionary:
 	boxes[&"button_normal"] = _bevel(_c(&"metal_dark"))
 	boxes[&"button_hover"] = _flat(_c(&"metal_mid"), _c(&"metal_light"))
 	boxes[&"button_pressed"] = _flat(_c(&"void_panel_raised"), _c(&"metal_dark"))
-	boxes[&"button_disabled"] = _flat(_c(&"metal_dark"), _c(&"metal_dark"))
+	boxes[&"button_disabled"] = _flat(_c(&"metal_dark"), _c(DISABLED_EDGE))
 	boxes[&"progress_bg"] = _flat(_c(&"void_base"), _c(&"metal_mid"))
 	boxes[&"progress_fill"] = _flat(_c(&"accent_danger"), _c(&"accent_danger"))
 	boxes[&"focus"] = _focus_box()
@@ -547,6 +653,18 @@ func _scroll_box(background: Color, border: Color) -> StyleBoxFlat:
 	return box
 
 
+## F9: the grabber's floor. A `VScrollBar` takes the grabber's own minimum size as the
+## smallest it may draw, and a `StyleBoxFlat`'s minimum size is its content margins (the 1 px
+## border is not counted), so the 48 px minimum is 24 + 24 - the left/right 5 px of
+## `_scroll_box` stay. Reversal: zero the two margins.
+func _scroll_grabber_box(background: Color, border: Color) -> StyleBoxFlat:
+	var box: StyleBoxFlat = _scroll_box(background, border)
+	var vertical_margin: float = SCROLL_GRABBER_MIN_HEIGHT * 0.5
+	box.content_margin_top = vertical_margin
+	box.content_margin_bottom = vertical_margin
+	return box
+
+
 func _plate(path: String) -> StyleBoxTexture:
 	var texture: Texture2D = load(path)
 	if texture == null:
@@ -578,6 +696,9 @@ func _c(token: StringName) -> Color:
 
 func _report(theme: Theme) -> void:
 	print("[build_theme] saved %s" % PATHS.THEME)
+	print("[build_theme] uids preserved: %d (1 resource + %d ext_resource)" % [
+		_uids_written, _ext_resource_uids.size(),
+	])
 	var token_names: PackedStringArray = theme.get_color_list(&"Tokens")
 	print("[build_theme] Tokens colours: %d" % token_names.size())
 	for token: StringName in token_names:

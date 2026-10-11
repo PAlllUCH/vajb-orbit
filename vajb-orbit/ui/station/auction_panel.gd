@@ -186,6 +186,7 @@ const TITLE_PATH := ^"RowInner/RowBox/ThemeBox/Title"
 @onready var _module_caption: Label = %ModulesCaption
 @onready var _module_header: HBoxContainer = %ModulesHeader
 @onready var _module_rows: VBoxContainer = %ModuleRows
+@onready var _sell_margin: MarginContainer = %SellMargin
 @onready var _sell_caption: Label = %SellCaption
 @onready var _sell_header: HBoxContainer = %SellHeader
 @onready var _sell_rows: VBoxContainer = %SellRows
@@ -403,11 +404,13 @@ func _apply_family() -> void:
 	var entry := _family_entry(_family)
 	var section := StringName(entry.get(&"section", &"all"))
 	var slot := StringName(entry.get(&"slot", &""))
-	## The HULLS block is a caption/header margin plus its rows, and the MODULES block a
-	## margin plus the listing rows, so both move as one: the block's captions hide with its
-	## rows and every row carries its own `visible` flag (what `shown_*_ids` reads back).
-	_hull_margin.visible = section != &"listings"
-	_module_margin.visible = section != &"hulls"
+	## Every row carries its own `visible` flag (what `shown_*_ids` reads back), and the tab
+	## that does not show a section hides that section's whole row host: a filtered section
+	## leaves the shelf entirely, so its empty-state line cannot outlive it. Which of the shelf
+	## chrome's own blocks shows follows the section those rows leave visible, which is the
+	## last write pass of this function (F8, `_sync_shelf_chrome`).
+	_hull_rows.visible = section != &"listings"
+	_module_rows.visible = section != &"hulls"
 	for payload: Dictionary in _hulls:
 		payload[&"row"].visible = section != &"listings"
 	for payload: Dictionary in _listings:
@@ -422,6 +425,59 @@ func _apply_family() -> void:
 			&"font_color",
 			_token(&"text_primary") if tab[&"id"] == _family else _token(&"text_dim")
 		)
+	_sync_shelf_chrome()
+
+
+## F8 (D23-R1, MED): the shelf's section captions and their column bands are fixed chrome
+## above `AuctionScroll` (the armory's `FITS W1 - W9` pattern), so the fold can only ever cut
+## rows. Hoisted above one scroll, the three caption+band blocks would otherwise stack above
+## the rows as a legend; one block shows at a time instead -- the topmost section that is
+## still showing rows, the section the band's own column words describe -- so every band sits
+## over the rows it labels.
+func _sync_shelf_chrome() -> void:
+	if _sections.is_empty():
+		return
+	var top := StringName(_topmost_shelf_section().get(&"key", &""))
+	for section: Dictionary in _sections:
+		var block: Control = section.get(&"block", null)
+		if block != null:
+			block.visible = StringName(section.get(&"key", &"")) == top
+
+
+## The section whose rows the shelf is showing at the top of the scroll: the first one whose
+## rows still reach below the visible top. Before the first layout pass every host measures
+## zero, so the answer is the first section that shows rows at all.
+func _topmost_shelf_section() -> Dictionary:
+	var fallback: Dictionary = {}
+	var top := float(_scroll.scroll_vertical)
+	for section: Dictionary in _sections:
+		if not _section_shows_rows(section):
+			continue
+		if fallback.is_empty():
+			fallback = section
+		var rows: Control = section[&"rows"]
+		if rows.position.y + rows.size.y > top:
+			return section
+	return fallback
+
+
+## Whether a section's row host still shows any row. Read in the tree, so a section the tab
+## filtered out (its host hidden, its rows hidden) answers false and its empty-state line with
+## it.
+func _section_shows_rows(section: Dictionary) -> bool:
+	var rows: Node = section.get(&"rows", null)
+	if rows == null:
+		return false
+	for child: Node in rows.get_children():
+		var row := child as CanvasItem
+		if row != null and row.is_visible_in_tree():
+			return true
+	return false
+
+
+## The scroll's own pass: the chrome follows the topmost visible section as the shelf moves.
+func _on_shelf_scrolled(_value: float) -> void:
+	_sync_shelf_chrome()
 
 
 ## Whether the current tab shows one payload's row.
@@ -1243,10 +1299,15 @@ func _connect_layout() -> void:
 	## widens that cell, so any event that can move the rows' columns queues a re-fit of
 	## that section's header onto its own rows' box.
 	_sections.clear()
-	_sections.append(_make_section(&"hulls", _hull_header, _hull_rows, _hull_cells()))
-	_sections.append(_make_section(&"listings", _module_header, _module_rows, _module_cells()))
-	_sections.append(_make_section(&"sales", _sell_header, _sell_rows, _sell_cells()))
+	_sections.append(_make_section(&"hulls", _hull_margin, _hull_header, _hull_rows, _hull_cells()))
+	_sections.append(
+		_make_section(&"listings", _module_margin, _module_header, _module_rows, _module_cells())
+	)
+	_sections.append(_make_section(&"sales", _sell_margin, _sell_header, _sell_rows, _sell_cells()))
 	_scroll.resized.connect(_queue_header_fit)
+	## F8: a shorter shelf can leave the visible top over a later section, so the chrome's own
+	## pass follows the scroll's rect as well as its offset.
+	_scroll.resized.connect(_sync_shelf_chrome)
 	_scroll.get_v_scroll_bar().visibility_changed.connect(_queue_header_fit)
 	for section: Dictionary in _sections:
 		var header: HBoxContainer = section[&"header"]
@@ -1256,10 +1317,15 @@ func _connect_layout() -> void:
 
 
 func _make_section(
-	key: StringName, header: HBoxContainer, rows: VBoxContainer, cells: Array[StringName]
+	key: StringName,
+	block: MarginContainer,
+	header: HBoxContainer,
+	rows: VBoxContainer,
+	cells: Array[StringName]
 ) -> Dictionary:
 	return {
 		&"key": key,
+		&"block": block,
 		&"header": header,
 		&"rows": rows,
 		&"cells": cells,
@@ -1342,6 +1408,10 @@ func _connect_cells(box: HBoxContainer, section: Dictionary) -> void:
 func _connect_scroll() -> void:
 	if _scroll.has_signal(&"scroll_started"):
 		_scroll.connect(&"scroll_started", _on_scroll_started)
+	## F8: the shelf chrome's band is sticky, so the bar's own offset is what swaps the block.
+	var bar := _scroll.get_v_scroll_bar()
+	if bar != null and not bar.value_changed.is_connected(_on_shelf_scrolled):
+		bar.value_changed.connect(_on_shelf_scrolled)
 
 
 func _on_scroll_started() -> void:

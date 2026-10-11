@@ -40,27 +40,27 @@ later request; one section costs ~2-3k.
 | §8 | Economy / state seams | L506–L549 |
 | §8.1 | Slice 0 — physics & fuel (pinned additions, 2026-09-21) | L550–L685 |
 | §8.2 | Slice 2 — fight (pinned additions, 2026-09-21) | L686–L890 |
-| §9 | Universal test gate | L891–L1055 |
-| §11 | P2 ship frames (2026-09-21) | L1056–L1251 |
-| §12 | P2-B1 weapon fit (2026-09-22) | L1252–L1309 |
-| §13 | P2-B proper fitting (2026-09-22) | L1310–L1431 |
-| §14 | S2.6 truth-and-feel (2026-09-22) | L1432–L1560 |
-| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1561–L1665 |
-| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L1666–L1841 |
-| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L1842–L1920 |
-| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L1921–L1993 |
-| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L1994–L2129 |
-| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2130–L2416 |
-| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2417–L2494 |
-| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L2495–L2549 |
-| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L2550–L2719 |
-| §24 | S24 world identity — stations, standing, bands, nebula (2026-10-08) | L2720–L2807 |
-| §25 | S28 economy law — the value ladder, the fee door, the battery, the b… | L2808–L2868 |
-| §26 | S25 contracts board — the registry, the reward law, the three exits … | L2869–L2941 |
-| §27 | S38 — the hub's cold start and the board's clock (2026-10-08) | L2942–L3016 |
-| §28 | S26 — bosses, arenas, insurance, vaults (2026-10-09/10) | L3017–L3173 |
-| §29 | S39 — flight feel, hostile fire and cargo (2026-10-10) | L3174–L3261 |
-| §10 | Changelog | L3262–L3701 |
+| §9 | Universal test gate | L891–L1077 |
+| §11 | P2 ship frames (2026-09-21) | L1078–L1273 |
+| §12 | P2-B1 weapon fit (2026-09-22) | L1274–L1331 |
+| §13 | P2-B proper fitting (2026-09-22) | L1332–L1453 |
+| §14 | S2.6 truth-and-feel (2026-09-22) | L1454–L1582 |
+| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1583–L1687 |
+| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L1688–L1863 |
+| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L1864–L1942 |
+| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L1943–L2015 |
+| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L2016–L2151 |
+| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2152–L2438 |
+| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2439–L2516 |
+| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L2517–L2571 |
+| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L2572–L2741 |
+| §24 | S24 world identity — stations, standing, bands, nebula (2026-10-08) | L2742–L2829 |
+| §25 | S28 economy law — the value ladder, the fee door, the battery, the b… | L2830–L2893 |
+| §26 | S25 contracts board — the registry, the reward law, the three exits … | L2894–L2966 |
+| §27 | S38 — the hub's cold start and the board's clock (2026-10-08) | L2967–L3041 |
+| §28 | S26 — bosses, arenas, insurance, vaults (2026-10-09/10) | L3042–L3198 |
+| §29 | S39 — flight feel, hostile fire and cargo (2026-10-10) | L3199–L3286 |
+| §10 | Changelog | L3287–L3741 |
 
 <!-- section-index:end -->
 
@@ -948,6 +948,28 @@ re-signed call shapes moved (disclosed in the suite's own header).
   `stat`, and the Pyre gate reads the new `NpcShip.pre_hit_hull_fraction()` (its
   AC6 seal re-pinned, the S22 procedure). Next free ticket
   **T-179**.
+- **S41's block (2026-10-11, wave S41 the composition pass — the D23 design
+  audit implemented):** baseline `s41_start` **1300/0** → **1330/0** ×2 hermetic
+  on fresh scratch stores (only T-155's salvo jitter differs), verify clean,
+  `build_code_map.py` re-run (126 scenes / 317 scripts). Growth is exactly the
+  four new suites' **30 rows** (`test_s41_shell` 14, `test_s41_panels_a` 6,
+  `test_s41_armory` 6, `test_s41_panels_b` 4); **no §6 row moved**. Five builders
+  ran (B1 theme+shell, B2 overview/exchange/auction, B3 armory, B4
+  refinery/launch/contracts/shipyard in parallel, then **B5** the completion pass
+  the file-set stop forced — F8's auction chrome reached `auction_panel.gd` and
+  F15's services half reached `station.gd`). **R1** (glm-5.3-flash, code **and**
+  visual) returned **passed-with-followups**: all 16 D23 findings fixed at their
+  named sites and **visible on ten fresh renders**; layout law held (no
+  code-written `position`/`offset_*`; new filler flags only on slack-owning
+  containers); token law held (no new hex — F7/F9 reuse `metal_mid`/`text_meta`/
+  `metal_dark`); F1's acceptance proved by geometry (the three service rows
+  656..896 inside a pane at 214..970, `scroll_vertical == 0`); F14 checked
+  against §8 P1's 360×56 foot-band anchor. **T-177 closed** (the theme generator
+  preserves the `.tres`'s 19 `uid://` lines; a regeneration is a byte no-op,
+  re-proved by R1's own run). One MED is an owner call (B2/F01: the OVERVIEW hull
+  block and its REPAIR chip moved below the fold when all three service rows took
+  the unscrolled seat) — **no fixer ran**; three LOW → **T-180/T-181/T-182**;
+  next free **T-183**. New chrome values are all **PROPOSED** on TICKS.
 - **S38's block (2026-10-08, closed):** gate **1226 → 1236/0** twice hermetic on
   fresh scratch stores (R1's own runs; growth is exactly
   `test_s38_start_and_clock.gd`'s **10 new rows**, and per-suite `func test_`
@@ -2839,7 +2861,10 @@ static func fee_for(mineral_id: StringName, conversions: int, mult: float = 1.0)
   the P1 suite reads (`refinery.gd:39`; no fee path reads it). Its callers: the
   panel's four (`refinery_panel.gd:403/:887/:1062/:1140`) and `stacks`/`queue`/
   `queue_all` — the panel hardcodes no number, and its footer legend prints the
-  live combined QUEUE ALL charge (`"FEE %d CR QUEUED"`, `_queueable_fee()`), not a
+  live combined QUEUE ALL charge (`"FEE %s CR QUEUED"` — `%s` since S41, 2026-10-11:
+  `_format_int` hands back the house-grouped **string**, so the shipped `%d` threw a
+  formatting error and blanked the footer whenever the input was queueable;
+  `refinery_panel.gd`'s `FOOTER_FORMAT`, `_queueable_fee()`), not a
   restated flat. `resource_seconds` keeps R1's formula and derives (iron 10,
   gold 26, krilium 60 ceiling); durations are restated nowhere.
 
@@ -3698,3 +3723,18 @@ bottom (the index-line form is only for retired entries).
   **Reversal:** revert both §20 corrections to the v0.56 wording, drop the new
   suite row, and restore the two seals' pre-S27 hashes (`npc_ship.gd`
   `31f5ac42…`, `weapons.gd` `6848270a…`).
+- **v0.58 (2026-10-11, wave S41 the composition pass — S41-R1's review, the wave's
+  only CONTRACTS writer; gate 1300 → 1330/0 ×2 hermetic on fresh scratch stores,
+  +30 rows, no §6 row moved)** — adds the **§9 S41 block** (the D23 design
+  audit's 16 findings, the five-builder chain, R1's code-and-visual verdict,
+  T-177's closure, the one owner-call MED and the three LOW tickets) and corrects
+  **§25**'s stale refinery footer format (`"FEE %d CR QUEUED"` → `%s` — S41-B4's
+  incidental fix: the `%d` blanked the footer whenever the input was queueable).
+  **No new pinned interface:** the wave is composition, so no signature, constant
+  or price moved; every new chrome value (the disabled plate's 1 px `metal_mid`
+  edge, the scrollbar's `text_meta` grabber with a `metal_dark` track edge and a
+  48 px `SCROLL_GRABBER_MIN_HEIGHT` floor, the tooltip's `HEADER_BAND_BOTTOM`
+  163 px, the shipyard's `PREVIEW_FRACTION` 0.60 and the four 32 px mode plates)
+  is **PROPOSED** on TICKS with its reversal. **Reversal:** drop the §9 S41 block
+  and this entry, restore §25's `%d`, and revert each chrome token at its own
+  named reversal in `S41-B1_report.md` / `S41-B4_report.md`.

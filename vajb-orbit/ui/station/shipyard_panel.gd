@@ -97,9 +97,13 @@ const PREVIEW_SCALE := 0.70
 const PREVIEW_MAX_WIDTH := 480.0
 ## S30 census row 3 (UI_SPEC section 12.5): the preview image keeps one pinned box and the
 ## hull scales inside it (a texture swap in a fixed box is legal; resizing the node on
-## selection is not). 240 x 180 is 08 section 3's side-view envelope at `PREVIEW_SCALE`,
-## rounded to a Tokens-grid box - PROPOSED, reversal: the shipped per-selection
-## `custom_minimum_size` write (`_update_preview_size`, deleted here).
+## selection is not). S41 (D23 F10): the box is a fixed fraction of `PreviewFrame`'s own
+## size, re-pinned whenever the frame is laid out, so the hull owns the frame instead of
+## sitting in a 240 x 180 island inside it. PROPOSED 0.60 (the audit's "about 60 % of the
+## box"), reversal: the shipped 240 x 180 pin at `PREVIEW_BOX`.
+const PREVIEW_FRACTION := 0.60
+## The pre-layout floor (the shipped S30 pin, 08 section 3's side-view envelope at
+## `PREVIEW_SCALE`): the box is never smaller than this, and a laid-out frame widens it.
 const PREVIEW_BOX := Vector2(240.0, 180.0)
 
 ## CONTRACTS section 11: `hull`, `shield` and `cargo` are catalogue fields; `engines`
@@ -200,6 +204,7 @@ const STATUS_ACTIVE := "ACTIVE HULL IS NOW %s"
 @onready var _list: VBoxContainer = %ShipList
 @onready var _preview_caption: Label = %PreviewCaption
 @onready var _preview_image: TextureRect = %PreviewImage
+@onready var _preview_frame: PanelContainer = %PreviewFrame
 @onready var _preview_name: Label = %PreviewName
 @onready var _stats: VBoxContainer = %ShipStats
 @onready var _hardpoint_caption: Label = %HardpointCaption
@@ -274,10 +279,13 @@ func _ready() -> void:
 	_mode_scrap.pressed.connect(_set_mode.bind(MODE_SCRAP))
 	_queue_collect.pressed.connect(_on_queue_collect)
 	_queue_cancel.pressed.connect(_on_queue_cancel)
-	ChromeFamily.apply_action(_mode_hangar)
-	ChromeFamily.apply_action(_mode_build)
-	ChromeFamily.apply_action(_mode_queue)
-	ChromeFamily.apply_action(_mode_scrap)
+	## S41 (D23 F15): the four mode plates wear the chip family's own C3 `ui_inline_chip`
+	## chrome (the height/ink half lives in the scene), so mode, filter and service read
+	## as one family while each keeps its own count.
+	ChromeFamily.apply_chip(_mode_hangar)
+	ChromeFamily.apply_chip(_mode_build)
+	ChromeFamily.apply_chip(_mode_queue)
+	ChromeFamily.apply_chip(_mode_scrap)
 	ChromeFamily.apply_action(_queue_collect)
 	ChromeFamily.apply_action(_queue_cancel)
 	_refresh_all()
@@ -821,12 +829,25 @@ func hover_block_text() -> String:
 	return _hover_block_text
 
 
-## S30 census row 3 (UI_SPEC section 12.5): the preview keeps one pinned box; a selection
-## swaps the texture inside it and never writes `custom_minimum_size`.
+## S30 census row 3 (UI_SPEC section 12.5): the preview keeps one pinned box and a selection
+## swaps the texture inside it (it never sizes the node per selection).
+## S41 (D23 F10): the pinned box is `PREVIEW_FRACTION` of `PreviewFrame`'s own size, so the
+## hull owns the frame; the frame's own `resized` re-pins it (containers, never coordinates -
+## the fraction is relative to the frame).
 func _pin_preview_box() -> void:
 	_preview_image.custom_minimum_size = PREVIEW_BOX
 	_preview_image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_preview_image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	if not _preview_frame.resized.is_connected(_resize_preview_box):
+		_preview_frame.resized.connect(_resize_preview_box)
+	_resize_preview_box()
+
+
+func _resize_preview_box() -> void:
+	var box := _preview_frame.size * PREVIEW_FRACTION
+	if box.x <= 0.0 or box.y <= 0.0:
+		return
+	_preview_image.custom_minimum_size = box
 
 
 ## ------------------------------------------------- the INSPECT sheet (N28/N37, S30)
