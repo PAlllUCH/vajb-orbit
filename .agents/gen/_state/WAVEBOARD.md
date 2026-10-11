@@ -32,9 +32,13 @@ layout and token laws held, and the gate's §6 rows were unmoved. **T-177 closed
 a byte no-op — proved by R1's own run). One MED is an owner call (B2/F01: the
 OVERVIEW hull block now sits below the fold, because all three service rows took
 the unscrolled seat); three LOW → **T-180/T-181/T-182** (the tooltip vs a pane's
-own header; STATION_HUB §5.7's refinery wording; §19.4's strip height); next free
-ticket **T-183**. Every new chrome value is **PROPOSED** on TICKS. The queue is
-still empty — P3's exit is the owner's playtest (build 2).
+own header; STATION_HUB §5.7's refinery wording; §19.4's strip height), plus
+**T-183** filed at close-out: a suite row that raises a `SCRIPT ERROR` still
+reports `[PASS]`, so the gate hid a broken premise (`test_s24_world.gd:383` read
+the identity character line S41's F1 retired) until the orchestrator read the gate
+log; the row is re-cut and the gate now carries **zero** `SCRIPT ERROR` lines.
+Next free ticket **T-184**. Every new chrome value is **PROPOSED** on TICKS. The
+queue is still empty — P3's exit is the owner's playtest (build 2).
 
 **Updated 2026-10-10 (S27 catalog breadth & the shipyard closed — item 33, P3's last code wave).**
 Gate **1275 → 1300/0** ×2 hermetic on fresh scratch stores (only T-155's salvo

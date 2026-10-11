@@ -11,8 +11,8 @@ builders (B1–B4 parallel, B5 the completion pass), R1 (glm-5.3-flash, code **a
 visual) returned **passed-with-followups** — all 16 findings plus **T-177** fixed
 at their named sites and **visible on the ten fresh renders**. **T-177 closed**
 (the theme generator preserves the `.tres` uids; a regeneration is a byte no-op).
-**T-180/T-181/T-182 filed**; next free **T-183**. Every new token is **PROPOSED**
-(below). One owner call rides the wave: the OVERVIEW tradeoff.)*
+**T-180/T-181/T-182 + T-183 filed**; next free **T-184**. Every new token is
+**PROPOSED** (below). One owner call rides the wave: the OVERVIEW tradeoff.)*
 *Previously 2026-10-10 (S27 catalog breadth & the shipyard closed — P3's last
 code item. Gate **1275 → 1300/0** ×2 hermetic on fresh scratch stores; CONTRACTS
 **§20 S27 block** + §9 + §10 **v0.56/v0.57**; B1+B2 built, R1 left **no HIGH**,

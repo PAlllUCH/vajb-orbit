@@ -363,7 +363,8 @@ func test_the_dock_files_the_station_beside_the_faction() -> void:
 
 ## The plate (STATION_HUB section 15.5 / 14's landing note): the two labels read the row's
 ## name and character line, the placeholder strings are gone, and the OVERVIEW identity block
-## carries the same pair.
+## carries the same name. S41 (2026-10-11) retired the block's character line so all three
+## service rows sit unscrolled at the pane's fold, so the pair now lives only in the shell.
 func test_the_shell_plate_reads_the_row() -> void:
 	_dock(&"s3_primary")
 	var screen := _mount()
@@ -378,11 +379,14 @@ func test_the_shell_plate_reads_the_row() -> void:
 	var overview := _overview(screen)
 	assert_eq(
 		(overview.get(&"_identity_name") as Label).text, "Spanport Meridian",
-		"OVERVIEW's identity block reads the same pair"
+		"OVERVIEW's identity block reads the same name"
 	)
+	## S41 (D23's F1): the identity block's character line is retired, and asserted as
+	## **absence** - the earlier form read `.text` off a label that no longer exists, which
+	## raised a `SCRIPT ERROR` and still reported PASS (the silent-abort false-green class).
 	assert_eq(
-		(overview.get(&"_identity_character") as Label).text,
-		"the merchant's harbour, best contract rates", "character line included"
+		overview.get(&"_identity_character"), null,
+		"the identity character line is retired (S41/F1)"
 	)
 	assert_eq(
 		(overview.get(&"_identity_faction") as StringName), &"meridian",
