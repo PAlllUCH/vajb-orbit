@@ -1,24 +1,35 @@
 # asset-library
 
-**Search here first for any art.** This folder is the home of every generated asset and is not
-part of the Godot project, so nothing here is imported by the engine and nothing here can ship
-in an export or inflate `.godot/`. `vajb-orbit/assets/` holds only what has been pulled in.
+**Search here first for anything about the generation corpus** — what was generated, what a
+file shows, where it came from. For **what the game can load today**, read
+`docs/design/ASSET_CATALOG.md` instead: it is generated from `vajb-orbit/assets/`, the only
+place engine imports resolve. This folder is not part of the Godot project, so nothing here
+is imported by the engine and nothing here can ship in an export or inflate `.godot/`.
+`vajb-orbit/assets/` holds only what has been pulled in.
+
+**Workspace reality (2026-10-08, owner clear-out): the staging trees, their `_archive/` zips,
+`raw/` and the `_keying/` answer cache are all gone.** The JSON manifests are the surviving
+record of the full 638-file corpus; **do not run `build_library.py` in write mode here**
+(`--check` is safe). Every shipped asset carries its own job manifest and generation log under
+`vajb-orbit/assets/`, so provenance lives in the project.
 
 ## Read this before you use an asset
 
 **The description is the truth; the file name is a hint.** Names in this library come from the
-generation runs, and some of them lie outright: nine renders ignored the brief that produced
-them and hold a spaceship where the name says "tileable layer" or "glow orb". Every one is
-listed under `name_issue` in `_library.json` and at the end of `INDEX.md`. When a name and a
-description disagree, the description was read off the pixels and the name was not.
+generation runs, and some of them lied outright: nine renders ignored the brief that produced
+them and held a spaceship where the name said "tileable layer" or "glow orb". The rename chain
+cleared those; `validate_names.py --library` re-proves every name the specs and the code
+require is present. When a name and a description disagree, the description was read off the
+pixels and the name was not.
 
-Three ways to find what you need:
+Four ways to find what you need:
 
 | Want | Use |
 |---|---|
 | A sentence about one file | `INDEX.md`, or `_library.json` -> `assets["cut/<name>.png"]` -> `description` |
 | Something matching a need | search `_library.json` -> `assets[*].search_terms` |
-| Something that ships | only rows whose `role` is `sprite`; `name_issue` must be null first |
+| Something that ships today | `docs/design/ASSET_CATALOG.md` — the shipped `res://` tree; `_library.json`'s `role: sprite` says what *was* shippable from the corpus |
+| Which script uses which asset | `docs/CODE_MAP.md` — the per-script assets column |
 
 `role` decides whether a file may be shipped at all:
 

@@ -28,11 +28,11 @@ are in `docs/AGENT_PIPELINE_NOTES.md`. New detail belongs in the owning spec.
 - `docs/design/ASSET_CATALOG.md` — index of every shipped file in
   `vajb-orbit/assets/` (path, size, alpha, purpose, Phase B/D/E, audio facts).
   Check it before wiring art or audio into scenes.
-- `asset-library/` — **where every generated asset lives.** Search here first
-  for any art; `vajb-orbit/assets/` holds only what a feature has actually
-  pulled in. `raw/` is the untouched renders, `cut/` is one centred, named file
-  per asset, `_review/` is the contact sheets. How to rebuild any of it, and
-  what each generated file records, is in `asset-library/README.md`.
+- `asset-library/` — **the record of every generated asset** (manifests, vision
+  descriptions, provenance, the keying reversal store and the review contact
+  sheets); the binaries themselves ship in `vajb-orbit/assets/`. What ships
+  today: `docs/design/ASSET_CATALOG.md`. How the record works and what each
+  generated file holds: `asset-library/README.md`.
 - This file — agent rules and commands. Read before any work.
 
 ## Where to look
@@ -62,12 +62,17 @@ are in `docs/AGENT_PIPELINE_NOTES.md`. New detail belongs in the owning spec.
 `docs/CODE_MAP.md`), `staging/check_wiring.py` (every `res://` reference
 resolves), hooks `.crush/hooks/protect_archive.py` (seals the archive) and
 `.crush/hooks/enforce_worker_files.py` (per-worker file set via
-`VAJB_WORKER_FILES`), and the universal test gate:
+`VAJB_WORKER_FILES`), and the universal test gate — always run through the
+wrapper (T-183, CONTRACTS §9's seventh harness limit: a row that raises a
+runtime `SCRIPT ERROR` still prints `[PASS]`, so the engine's own counts are
+blind to it and the wrapper is the only eye):
 
 ```bash
-$GODOT_CONSOLE --headless --path "$VAJB_PROJ" res://tests/headless_runner.tscn --quit-after 1200
-# -> [SUMMARY] passed=437 failed=0   (the live count is whatever the gate
-#    prints; zero failures is the law)
+python3 staging/gate.py --times 2
+# -> [SUMMARY] passed=1330 failed=0   (the live count is whatever the gate
+#    prints; zero failures is the law), byte-identical across runs, hard fail
+#    on any SCRIPT ERROR line. The raw form, for reference only:
+#    $GODOT_CONSOLE --headless --path "$VAJB_PROJ" res://tests/headless_runner.tscn --quit-after 1200
 ```
 
 The repo (`github.com/PAlllUCH/vajb-orbit`) is text-only — binary assets are
@@ -386,47 +391,49 @@ is written loose in `.agents/gen/`. Full law and migration rules:
   `$GODOT_*`/`$VAJB_*` variables resolve per host from `crushrc`.
 - **Assets live in `asset-library/`, not in the project.** Generated art flows one
   way: `raw/` → `cut/` → `vajb-orbit/assets/<family>/` only when a feature needs
-  it. Never bulk-restore the project's art. **`raw/`, `cut/` and `_dropped/` are
-  archived to `asset-library/_archive/*.zip` and are not loose** — every one of the
-  488 shippable cuts is already in the project, so run
-  `py -3.14 staging/cut/archive.py --restore cut` (or `raw`) before any step that
-  reads that tree, and `--make`/`--prune` to re-archive. `_prekey_backup/` and
-  `_keying/` stay loose (the keying pass's reversal store and its paid answer
-  cache). The four rebuild steps, in order:
-  `py -3.14 staging/cut/build_plan.py` → re-derive `_sheets.json` from the
-  manifests; `py -3.14 staging/cut/deepseek_layout.py` → ask a vision model for
-  each sheet's arrangement; `py -3.14 staging/cut/cut_sheets.py` → cut every sheet
-  (`--check` reports only, `--only <text>` narrows it);
-  `py -3.14 staging/cut/build_review.py` → refresh the contact sheets. A sheet's
-  *arrangement* is read from the render, because the prompts contradict each other
-  on it and a wrong guess mis-names every icon on the sheet; the *cell count and
-  the names* come from the recovered Phase D/E/F specs, so the names cannot drift
-  from the set the game knows. Objects are found by masking the ink, never by
-  cutting on a divider. `_originals_manifest.json` holds every run's exact prompt
-  and job id. Panel evidence and the two measured failure modes:
-  `docs/AGENT_PIPELINE_NOTES.md`.
-- **To find out what an asset is, read `asset-library/INDEX.md` or
-  `asset-library/_library.json`.** Every file has a record: a description read off
-  the picture itself by `py -3.14 staging/cut/tag_vision.py`, plus subject, kind,
-  pixels, bytes, alpha share, md5, the sheet and panel it was cut from, the job and
-  prompt that rendered that sheet, the docs and code that name it, and a
-  `name_issue` when the file name cannot be trusted. **The description is the truth
-  and the file name is a hint**: nine renders ignored their brief and show a
-  spaceship where the name says "tileable layer" or "glow orb", all listed under
-  `name_issue: content-mismatch`. Read `role` before using a file — `sprite`
-  ships, `plate` is a whole-frame layer used as-is, `sheet` is provenance and never
-  ships. Regenerate with `py -3.14 staging/cut/build_library.py`; never hand-edit.
-  Naming law: `docs/design/ASSET_NAMING_SPEC.md`. The rename chain is
-  `find_matches.py` → `build_naming_digest.py` → `naming_assignments.py` →
-  `apply_names.py` (reversible through `_rename_map.json`) → `validate_names.py`,
-  whose `--library` mode proves every name the specs and the code require is
-  present: run it after any asset change. `pull.py` is the only thing that copies
-  `cut/` into the project.
-- **Keying is done and it is scripted, cached and reversible.** 441 sprites carry
+  it. Never bulk-restore the project's art. **Workspace reality (2026-10-08, owner
+  clear-out): the staging trees, their zips, `raw/` and the `_keying/` answer
+  cache are all gone** — what remains is the record: the JSON manifests
+  (`_library.json`, `_vision.json`, `_sheets.json`, `_cuts_manifest.json`,
+  `_originals_manifest.json`), the keying reversal store `_prekey_backup/`, the
+  contact sheets `_review/` and the frozen `INDEX.md`. Every shipped asset's own
+  prompt/model/seed manifest and generation log lives next to it under
+  `vajb-orbit/assets/`, so provenance never depended on the staging trees. Do
+  **not** run `staging/cut/build_library.py` in write mode here — with the trees
+  gone it would build a partial index over the 638-record one; `--check` is safe.
+  The four-step rebuild chain (`build_plan.py` → `deepseek_layout.py` →
+  `cut_sheets.py` → `build_review.py`; a sheet's *arrangement* is read from the
+  render because the prompts contradict each other on it, while the *cell count
+  and names* come from the recovered Phase D/E/F specs; panel evidence and the
+  two measured failure modes in `docs/AGENT_PIPELINE_NOTES.md`) is inoperative
+  until the corpus is restored from a backup. A re-key re-pays: the recraft
+  answer cache went with the clear-out.
+- **To find out what an asset is, read `asset-library/_library.json`.** Every
+  record carries what the picture shows (`description`, read off the render by a
+  vision model — **the description is the truth and the file name is a hint**;
+  the nine early mismatches were cleared by the rename chain, and
+  `validate_names.py --library` re-proves every name the specs and the code
+  require is present — run it after any asset change), its `role` (`sprite`
+  ships, `plate` is a whole-frame layer used as-is, `sheet` is provenance and
+  never ships), pixels, alpha share, md5, the sheet and job it was cut from, and
+  the docs and code that cite it. Naming law: `docs/design/ASSET_NAMING_SPEC.md`.
+- **Which index answers which question.** *What can my code load today* →
+  `docs/design/ASSET_CATALOG.md` (generated from `vajb-orbit/assets/` by
+  `staging/phase_d/build_catalog.py`; regenerate at the close-out of any wave
+  that lands, replaces or moves asset files — it stamps its generation time, so
+  a no-change re-run still diffs). *What was generated, search by need* →
+  `_library.json` (`assets[*].search_terms`) — the corpus record, not a list of
+  loadable files. *Which script uses which asset* → `docs/CODE_MAP.md`'s
+  per-script assets column. *UI chrome law and prompts* →
+  `docs/design/UI_CHROME_ASSETS_SPEC.md` §13 (the chrome cuts live in
+  `vajb-orbit/assets/ui/` and the catalog, not the library). *Audio cues* →
+  `docs/design/ASSET_WIRING_HANDOFF.md`.
+- **Keying is done and it is scripted and reversible.** 441 sprites carry
   alpha; the routes, the evidence and the two known failure modes are in
   `asset-library/README.md` §"Keying is done". `key_assets.py --recraft` keys
   through `recraft/remove-background` on kie.ai (1 credit each, resumable per
-  sprite, 20 submissions a minute, answers cached under `_keying/recraft/`);
+  sprite, 20 submissions a minute; the `_keying/` answer cache went with the
+  2026-10-08 clear-out, so a re-key re-pays);
   `key_flat.py --check <name>…` is the region-based Python key for flat icons where
   the paid matte inverts; `center_check.py --report|--apply` centres every object on
   its canvas. Every original is in `_prekey_backup/` (md5-stamped manifest) and

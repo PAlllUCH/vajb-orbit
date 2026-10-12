@@ -1,6 +1,7 @@
 # Vajb Orbit asset index
 
 **Generated:** 2026-09-21T00:32:02 by `staging/cut/build_library.py`. Regenerate, never hand-edit.
+**FROZEN 2026-10-08:** the staging trees, their zips, `raw/` and the `_keying/` cache are gone\nfrom this workspace — do **not** regenerate here (with the trees gone, a re-run would build a\npartial index over this 638-record one); this file and `_library.json` are the corpus record.\nWhat ships today: `docs/design/ASSET_CATALOG.md`. See `README.md`.
 
 One row per file. `what it is` is read off the picture itself, so it is the column to trust when a name and a description disagree; `name issue` says when they do.
 

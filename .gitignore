@@ -77,3 +77,4 @@ __pycache__/
 
 # The voting site lives in its own repo nested in the workspace
 /vajb-orbit-site/
+.venv/

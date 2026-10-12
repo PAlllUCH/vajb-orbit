@@ -1,6 +1,6 @@
 # Vajb Orbit - Asset Catalog
 
-**Generated:** 2026-10-06 20:16 from `vajb-orbit/assets/` by `staging/phase_d/build_catalog.py`. Tables are mechanical (filesystem); do not hand-edit - regenerate instead.
+**Generated:** 2026-10-08 20:59 from `vajb-orbit/assets/` by `staging/phase_d/build_catalog.py`. Tables are mechanical (filesystem); do not hand-edit - regenerate instead.
 
 **Scope:** Phase B (109 files, `GENERATION_PLAN.md`) + Phase D expansion (141 files, `ASSET_EXPANSION_SPEC.md`) + Phase E expansion (67 files, `ASSET_EXPANSION_SPEC_E.md`) + Phase F RPG/economy layer (`docs/gameplay/16_art_design_brief.md`) + the F.1 resolution and integrity pass (icon quartet, `ICONS_SPEC.md` 9.7) + the audio family (95 files, `AUDIO_SPEC.md` section 8), all imported by the live editor.
 
@@ -447,7 +447,7 @@
 | `ui_backdrop_market_deck.png` | 2048x874 | rgb | D | UI sprite. |
 | `ui_backdrop_refinery_deck.png` | 2048x874 | rgb | D | UI sprite. |
 | `ui_backdrop_starmap.png` | 2048x1152 | rgb | D | Starmap screen backdrop, 16:9 opaque (expansion spec 8) |
-| `ui_bar_caps.png` | 84x28 | rgba | B | Status bar end caps (42x14) |
+| `ui_bar_caps.png` | 42x14 | rgba | B | Status bar end caps (42x14) |
 | `ui_bar_caps_alt.png` | 317x178 | rgba | B | UI sprite. |
 | `ui_button_plate_disabled.png` | 280x56 | rgba | B | UI button plate, disabled state, 280x56 (UI_CHROME_ASSETS_SPEC). |
 | `ui_button_plate_hover.png` | 280x56 | rgba | B | UI button plate, hover state, 280x56 (UI_CHROME_ASSETS_SPEC). |
@@ -457,7 +457,7 @@
 | `ui_cockpit_panel.png` | 928x512 | rgba | B | UI sprite. |
 | `ui_compass_lubber.png` | 32x24 | rgba | B | UI sprite. |
 | `ui_compass_rose.png` | 192x192 | rgba | B | UI sprite. |
-| `ui_drawer_entry.png` | 720x112 | rgba | B | UI sprite. |
+| `ui_drawer_entry.png` | 544x112 | rgba | B | UI sprite. |
 | `ui_gauge_face.png` | 240x240 | rgba | B | UI sprite. |
 | `ui_gauge_needle.png` | 16x192 | rgba | B | UI sprite. |
 | `ui_inline_chip.png` | 192x64 | rgba | B | UI sprite. |
@@ -465,7 +465,7 @@
 | `ui_insignia_mmo.png` | 865x976 | rgba | D | Company emblem: Mars Mining Operations (MENU_FLOW 3.3-3.7) |
 | `ui_insignia_neutral.png` | 865x976 | rgba | D | Company emblem: neutral plate (MENU_FLOW 3.3-3.7) |
 | `ui_insignia_ven.png` | 865x976 | rgba | D | Company emblem: Venus Resources (MENU_FLOW 3.3-3.7) |
-| `ui_minimap_bezel.png` | 400x400 | rgba | B | Minimap bezel ring, 200x200. |
+| `ui_minimap_bezel.png` | 200x200 | rgba | B | Minimap bezel ring, 200x200. |
 | `ui_panel_frame.png` | 192x192 | rgba | B | 9-slice panel frame, 96x96 with a 32 px painted border band (the nine-slice margin; ICONS_SPEC 9.8 C1) |
 | `ui_panel_frame_alt.png` | 1841x1831 | rgba | B | UI sprite. |
 | `ui_rack_bay_card.png` | 520x384 | rgba | B | UI sprite. |
@@ -485,15 +485,15 @@
 | `ui_seg_pct.png` | 48x88 | rgba | B | UI sprite. |
 | `ui_slot_cargo_disabled.png` | 40x40 | rgba | B | Slot plate: cargo slot, disabled state (UI_CHROME_ASSETS_SPEC). |
 | `ui_slot_cargo_hover.png` | 40x40 | rgba | B | Slot plate: cargo slot, hover state (UI_CHROME_ASSETS_SPEC). |
-| `ui_slot_cargo_normal.png` | 112x112 | rgba | B | Slot plate: cargo slot, normal state (UI_CHROME_ASSETS_SPEC). |
+| `ui_slot_cargo_normal.png` | 40x40 | rgba | B | Slot plate: cargo slot, normal state (UI_CHROME_ASSETS_SPEC). |
 | `ui_slot_cargo_pressed.png` | 40x40 | rgba | B | Slot plate: cargo slot, pressed state (UI_CHROME_ASSETS_SPEC). |
 | `ui_slot_inventory_disabled.png` | 56x56 | rgba | B | Slot plate: inventory slot, disabled state (UI_CHROME_ASSETS_SPEC). |
 | `ui_slot_inventory_hover.png` | 56x56 | rgba | B | Slot plate: inventory slot, hover state (UI_CHROME_ASSETS_SPEC). |
-| `ui_slot_inventory_normal.png` | 112x112 | rgba | B | Slot plate: inventory slot, normal state (UI_CHROME_ASSETS_SPEC). |
+| `ui_slot_inventory_normal.png` | 56x56 | rgba | B | Slot plate: inventory slot, normal state (UI_CHROME_ASSETS_SPEC). |
 | `ui_slot_inventory_pressed.png` | 56x56 | rgba | B | Slot plate: inventory slot, pressed state (UI_CHROME_ASSETS_SPEC). |
 | `ui_slot_weapon_disabled.png` | 48x48 | rgba | B | Slot plate: weapon slot, disabled state (UI_CHROME_ASSETS_SPEC). |
 | `ui_slot_weapon_hover.png` | 48x48 | rgba | B | Slot plate: weapon slot, hover state (UI_CHROME_ASSETS_SPEC). |
-| `ui_slot_weapon_normal.png` | 112x112 | rgba | B | Slot plate: weapon slot, normal state (UI_CHROME_ASSETS_SPEC). |
+| `ui_slot_weapon_normal.png` | 48x48 | rgba | B | Slot plate: weapon slot, normal state (UI_CHROME_ASSETS_SPEC). |
 | `ui_slot_weapon_pressed.png` | 48x48 | rgba | B | Slot plate: weapon slot, pressed state (UI_CHROME_ASSETS_SPEC). |
 | `ui_status_panel.png` | 1440x1040 | rgba | B | UI sprite. |
 | `ui_tile_slab.png` | 1134x280 | rgba | B | UI sprite. |
