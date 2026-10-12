@@ -12,7 +12,7 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 
 | Pos | Lane item | Wave | Runs after | The collision/dependency that forces the order |
 |---|---|---|---|---|
-| 1 | **S42 — the OVERVIEW 3×3 grid rework** (P4's first implementation wave, re-cut from D24's amendments) | S42 | the owner's tick sheet (unticked rows implement at their PROPOSED values) | D24 closed 2026-10-12: §23's P44–P47 + T-184 rework `overview_panel.gd` and its nine tiles only — the smallest blast radius of the eight amendment clusters, and TICKS' S41 chrome-token row re-presents with the reworked OVERVIEW. The remaining clusters (buy-confirm doors, Cargo overlay, launch+audio, armory list, refinery/CRAFT, bulk sell, shipyard view) queue after it. Brief pending (the brief loop). |
+| 1 | **S42 — the OVERVIEW 3×3 grid rework** (P4's first implementation wave, re-cut from D24's amendments) | S42 | the owner's tick sheet (unticked rows implement at their PROPOSED values) | D24 closed 2026-10-12: §23's P44–P47 + T-184 rework `overview_panel.gd` and its nine tiles only — the smallest blast radius of the eight amendment clusters, and TICKS' S41 chrome-token row re-presents with the reworked OVERVIEW. The full P4 implementation split (items 46–53 / S42–S49) is the queue of record in `dispatch_coder.md`; briefs pending (the brief loop). |
 
 **Updated 2026-10-12 (D24 the station-overhaul design round closed — P4's opener).**
 The owner's nine build-2 asks became pinned design in six docs, every new value
