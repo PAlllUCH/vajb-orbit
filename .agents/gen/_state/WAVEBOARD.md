@@ -12,7 +12,26 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 
 | Pos | Lane item | Wave | Runs after | The collision/dependency that forces the order |
 |---|---|---|---|---|
-| 1 | **D24 — the station-overhaul design round** (design lane) | D24 | P3 closed 2026-10-12; D24 is the phase opener | **Design before code** (owner: "workers need a design, they cannot work blindly"): every P4 implementation wave's brief re-cuts from D24's amendments, so D24 owns `STATION_HUB.md` + the design docs first and no S-wave may hold them. Brief: `slices/D24-station-overhaul-design/D24_BRIEF.md`; prompts: `D24_prompts.md`. |
+| 1 | **S42 — the OVERVIEW 3×3 grid rework** (P4's first implementation wave, re-cut from D24's amendments) | S42 | the owner's tick sheet (unticked rows implement at their PROPOSED values) | D24 closed 2026-10-12: §23's P44–P47 + T-184 rework `overview_panel.gd` and its nine tiles only — the smallest blast radius of the eight amendment clusters, and TICKS' S41 chrome-token row re-presents with the reworked OVERVIEW. The remaining clusters (buy-confirm doors, Cargo overlay, launch+audio, armory list, refinery/CRAFT, bulk sell, shipyard view) queue after it. Brief pending (the brief loop). |
+
+**Updated 2026-10-12 (D24 the station-overhaul design round closed — P4's opener).**
+The owner's nine build-2 asks became pinned design in six docs, every new value
+**PROPOSED** with its reversal: STATION_HUB **§23** (P44–P54: the 3×3 nine-tile
+grid at `TILE_MIN` (240, 120), the 3.0 s departure sequence, the armory
+EQUIPPED list, `LOAD ALL` + the machine strip + the REFINE/CRAFT pair, the
+exchange `CheckChip` bulk sell, the shipyard house-style build view;
+**T-184** cured by the `text_caption` modulate; T-174/175/176 cures folded;
+§23.10 tick table + §23.11 supersession ledger), UI_SPEC **§17/§18** (the
+buy-confirmation law A4–A6; the C-key Cargo overlay A7–A9, one surface both
+planes), AUDIO_SPEC **§8.7** (S27/S28 cues), **04 §9** R9–R12, **07 §6**
+C1–C10 (crafting specced for real), **10 §3.5**. Ran A1 (`hyper/glm-5.3` —
+before the owner's mid-wave model directive) → R1 → F1 (both
+`xiaomi/mimo-v2.6-pro` @ high): R1 left **no HIGH, 4 MED, 5 LOW** (F2 cured in
+review, disclosed); F1 cured F1/F3/F4/F5; 5 LOW → **T-186–T-190**. Gate
+**1330/0 ×2 byte-identical**, verify clean vs `d24_start`. The **§23.10 tick
+table is the owner's tick sheet** (15 rows + 4 flagged decisions). The P4
+implementation waves are staged: **S42 — the OVERVIEW grid rework** (P44–P47
++ T-184) queued first. Full block: `MASTER_REPORT.md` §6's "D24".
 
 **Updated 2026-10-12 (P3 CLOSED — the owner's build-2 playtest ran; P4 opened).**
 The exit pass filed **T-184** (the OVERVIEW's ARMORY/LAUNCH tile glyphs not

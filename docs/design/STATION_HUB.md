@@ -42,28 +42,29 @@ and every tool result is re-sent on each later request.
 
 | Section | Topic | Lines |
 |---|---|---|
-| 1. | Intent | L71–L88 |
-| 2. | Navigation model | L89–L139 |
-| 3. | Composition | L140–L280 |
-| 4. | Node tree (exact) | L281–L407 |
-| 5. | Per-module spec | L408–L1034 |
-| 6. | Type scale | L1035–L1056 |
-| 7. | Art map | L1057–L1107 |
-| 8. | Theme items used (all present in | L1108–L1129 |
-| 9. | Motion table | L1130–L1157 |
-| 10. | Focus and input | L1158–L1178 |
-| 11. | Audio hooks | L1179–L1205 |
-| 12. | Implementation notes for the coder | L1206–L1285 |
-| 13. | Verification performed on the mockup | L1286–L1302 |
-| 14. | Open questions for the owner | L1303–L1336 |
-| 15. | Station services deck & station identity (amendment 2026-10-02, wave… | L1337–L1516 |
-| 16. | Panel consolidation and the inspector band (amendment 2026-10-03, ow… | L1517–L1555 |
-| 17. | The merged panels — design detail, the inspector law, the panel temp… | L1556–L1667 |
-| 18. | Shell v2 — the TERMINAL drawer, the OVERVIEW pane, the popup sinks (… | L1668–L1711 |
-| 19. | Station shell v2 design detail — the OVERVIEW pane and the one skele… | L1712–L1909 |
-| 20. | The ARMORY two-module rework (amendment 2026-10-04, owner's playtest… | L1910–L1948 |
-| 21. | The two-sector rework — ARMORY's two modes and the REFINERY queue pa… | L1949–L1995 |
-| 22. | The station overhaul — owner rulings and asks (2026-10-12, phase P4 … | L1996–L2096 |
+| 1. | Intent | L72–L89 |
+| 2. | Navigation model | L90–L140 |
+| 3. | Composition | L141–L281 |
+| 4. | Node tree (exact) | L282–L408 |
+| 5. | Per-module spec | L409–L1035 |
+| 6. | Type scale | L1036–L1057 |
+| 7. | Art map | L1058–L1108 |
+| 8. | Theme items used (all present in | L1109–L1130 |
+| 9. | Motion table | L1131–L1158 |
+| 10. | Focus and input | L1159–L1179 |
+| 11. | Audio hooks | L1180–L1206 |
+| 12. | Implementation notes for the coder | L1207–L1286 |
+| 13. | Verification performed on the mockup | L1287–L1303 |
+| 14. | Open questions for the owner | L1304–L1337 |
+| 15. | Station services deck & station identity (amendment 2026-10-02, wave… | L1338–L1517 |
+| 16. | Panel consolidation and the inspector band (amendment 2026-10-03, ow… | L1518–L1556 |
+| 17. | The merged panels — design detail, the inspector law, the panel temp… | L1557–L1668 |
+| 18. | Shell v2 — the TERMINAL drawer, the OVERVIEW pane, the popup sinks (… | L1669–L1712 |
+| 19. | Station shell v2 design detail — the OVERVIEW pane and the one skele… | L1713–L1910 |
+| 20. | The ARMORY two-module rework (amendment 2026-10-04, owner's playtest… | L1911–L1949 |
+| 21. | The two-sector rework — ARMORY's two modes and the REFINERY queue pa… | L1950–L1996 |
+| 22. | The station overhaul — owner rulings and asks (2026-10-12, phase P4 … | L1997–L2099 |
+| 23. | The station overhaul — the D24 design detail (amendment 2026-10-12, … | L2100–L2219 |
 
 <!-- section-index:end -->
 
@@ -1993,13 +1994,15 @@ Ticks **T-132/T-133** carry the interpretation call and the value pack. Every
 pin is PROPOSED with its reversal column; A5.5/N24 govern every hover and
 focus state.
 
-## 22. The station overhaul — owner rulings and asks (2026-10-12, phase P4 input; design pending D24)
+## 22. The station overhaul — owner rulings and asks (2026-10-12, phase P4 input; designed in §23, D24)
 
 The owner's playtest of build 2 (2026-10-12) closed P3 and opened P4. The
 rulings below are **owner-ruled direction**; the actual layout numbers, tokens
 and acceptance rows land in the **D24 design round**
 (`.agents/gen/slices/D24-station-overhaul-design/`), which amends the owning
-sections of this file, `UI_SPEC.md`, `07_crafting.md` and `AUDIO_SPEC.md`.
+sections of this file, `UI_SPEC.md`, `07_crafting.md` and `AUDIO_SPEC.md` —
+landed 2026-10-12 as **§23** here, UI_SPEC §17/§18, AUDIO_SPEC §8.7,
+`04_refinery.md` §9 and `07_crafting.md` §6.
 Nothing here is a worker's choice: D24 derives every number from the standing
 laws (§3 composition, §19.1 P-numbers, UI_SPEC §3.10 A5, §16) or writes it
 **PROPOSED** with its reversal. Verbatim owner words are quoted per item.
@@ -2093,3 +2096,123 @@ ruling); they re-present after the grid rework.
 (§15.1, T-182), and the live shipyard build band (10 §3.1, T-178). The
 T-174/T-175/T-176 cures are owner-approved and ride the D24-following
 implementation waves.
+
+## 23. The station overhaul — the D24 design detail (amendment 2026-10-12, phase P4; wave D24 — D24-A1)
+
+§22's rulings and asks, turned into numbers. Every value this section
+introduces is **PROPOSED** with its reversal and lands in §23.10's tick table
+(ticks continue the P series from §21.3's P43); unticked rows implement at
+their PROPOSED value (the S19 precedent). Composition is UI_SPEC §3.10
+A5.1–A5.5 throughout; ink is the ratified `text_caption` law (UI_SPEC §16.1
+A1 — no new hex anywhere in this round); the owner-locked
+`docs/gameplay/18_engine_spec.md` is untouched. §22 quotes the owner verbatim;
+this section does not re-quote. The dialog sink, the measured tiles, the
+756 px pane and the shipped launch/exchange/shipyard facts are §22's and the
+brief's own measurements — cited, not re-derived.
+
+### 23.1 A1 — the OVERVIEW 3×3 grid (P44–P47; closes the S41 fold tradeoff)
+
+| Pin | Law | Reversal |
+|---|---|---|
+| **P44** | the OVERVIEW deck is **one `GridContainer`, columns 3, separation 16** (P23's own grid numbers stand), row-major: **ARMORY · REFINERY · EXCHANGE / AUCTION · SHIPYARD · LAUNCH / CONTRACTS · INSURANCE · VAULTS** — the P25 service rows retire into the grid as tiles. `TILE_MIN` re-derives to **(240, 120)**: the arithmetic is 3×240 + 2×16 = **752 ≤ 756** (the S41-measured pane, §22's own note) and the block stack 90 + (3×120 + 2×16) + 84 + 18 + 3×12 = **620 ≤ 633** (§19.3's content split), so the four-block deck fits **unscrolled at 16:9** — P22's `ScrollContainer` stays as the `expand`-aspect safety, and §19.1's scroll arithmetic is superseded by this row's. The tile interior is P23's unchanged (margin 16, `VBox` 8, glyph 48, `SectionHeader` title, one caption line). Reversal: P18's 3×2 grid of six tiles at min 300×140 plus the P25 service rows (the S41 fold tradeoff returns) | as stated — the 3×2 grid + rows |
+| **P45** | the nine tiles' chrome is the **flat Tokens box** (`_flat()`, 1 px `metal_mid`, UI_SPEC §3.10 A5.1/A5.4) at the P44 tile size, because the C1 tile slab's true-aspect band (**h 510–624, v 126–154**, UI_SPEC §15.1's census row) cannot seat a 3-column row in the 756 px pane and UI_SPEC §15.2's "respected always" bars stretching it. The C1 slab — and with it the S41 chrome tokens — **re-presents only on a pane re-widen or a slab re-cut** (the owner's own postponed row, §22). Tile states are P23's (hover bevel, P3 focus ring, pressed stylebox; no state changes any box) | C1 `ui_tile_slab` on the D19 full-body pane (drawn 567–578×140) |
+| **P46** | the deck's block order is **identity → the 3×3 grid → active hull + repair (P24's anatomy unchanged) → flavour line (P27)** — block 4 (the P25 services rows) dies with the rows. The three service tiles deep-link to the **SERVICES pane with that service's panel showing** (P26's law, reachability re-pointed from rows to tiles; the U6/U10/U16 readouts now live only in §15.2–§15.4's panels). The three service captions (**PROPOSED**, P23's caption law): CONTRACTS `JOBS · ESCROW · STANDING` · INSURANCE `COVERS ONE LOSS` · VAULTS `STAYS BEHIND WHEN YOU FLY`. **AUCTION's caption re-cuts to `THE 20-MINUTE SHELF`** (the P23 verbatim `THE HOUSE SHELF · 20-MINUTE RESTOCK` measures ≈ 34 chars ≈ 238 px at `StationCaption` 13 — it overruns the 240-tile's 208 px caption width; the other five P23 captions fit). P30's trailing `OPEN →` chip dies with the rows; the tile affordance mark stands | P25's 76-px rows with their readouts and `OPEN →` chips; AUCTION's P23 caption verbatim |
+| **P47** | **T-184's cure:** the two raster tile glyphs — ARMORY `icon_equip_module.png`, LAUNCH `icon_map_route.png` (`overview_panel.gd:33,38`, `tinted: false`) — **modulate `text_caption`** like the four tinted SVG glyphs (UI_SPEC §16.1 A3's ratified cure, generalized; the S40/S41 ink law stays intact). The SVG remaster alternative stays **staged** as §19.7's `icon_tile_armory` / `icon_tile_launch` masters — which ship modulate `text_caption` when the owner approves their sheet, so the cure composes either way | the `Color.WHITE` modulate (`overview_panel.gd:251`) |
+
+### 23.2 A3 (station side) — the C-key Cargo overlay
+
+The overlay's law is UI_SPEC §18 (one law, station and flight). Station side:
+`cargo_toggle` (C, already bound in `project.godot` for flight) is handled by
+the station shell from **any pane**, opening the read-only overlay above the
+pane (above panes, below the drawer/sheet stacking order — the §12.2 stack
+law); `ui_cancel` closes it as P19's topmost step. The station's hold read
+seams stay as they are (§5.8's hold rows, the armory `HOLD %d/%d` subtitle);
+the overlay adds no transaction anywhere. Reversal: the station ignores C
+(today) and the hold stays pane-fragmented.
+
+### 23.3 A4 — the launch sequence (P48; the cue rows are AUDIO_SPEC §8.7's)
+
+| Pin | Law | Reversal |
+|---|---|---|
+| **P48** | the LAUNCH control's **two-press law stands untouched** (§2: press 1 arms — colour, pulse, `ARMED · PRESS LAUNCH AGAIN WITHIN 3 s TO UNDOCK`, the 3 s disarm `Timer`, breaker cue §11; press 2 fires). On press 2 a **departure sequence** plays **in-scene before the loading route**, as a full-rect presentation overlay (Tokens only; it never reflows the pane — A5.5): **t+0.0 s** the dock-clamp cue **S27** `sfx_station_undock` (AUDIO_SPEC §8.7) + strip `UNDOCKING · <station name>`; **t+1.0 s** the spool bed **S28** `sfx_station_spool_loop` (§8.7) fades in under; **t+2.4 s** the existing fired pair `sfx_ship_boost_01` + `sfx_ship_jump_01` re-points from the route instant to the sequence's tail (§11's LAUNCH-fired row); **t+3.0 s** route `&"loading"` (`launch_panel.gd:48,859` unchanged — the sequence's exit, not a new route). **Total 3.0 s, PROPOSED.** The sequence is **not cancellable** (the second press is the commit — §2's own reading; P19's ESC steps live before it). The overlay's own fade envelope obeys N29 (≤ 0.2 s); the 3 s of sequence is a game-state presentation, not a chrome transition — the reading is this wave's, reported (bucket 1) | no sequence — press 2 routes immediately (today); or a 1.5 s cut; or a separate cinematic scene |
+
+### 23.4 A5 — the ARMORY equipped list (P49)
+
+| Pin | Law | Reversal |
+|---|---|---|
+| **P49** | FIT CELLS' **left sector** (§21.1 P38) gains a third block under CELL INFO: caption **`EQUIPPED — <n>/<slot count>`** (`StationCaption`, A5.4-3), then **one row per fitted module/weapon in the SLOT LAYOUT grid's own cell order** (09 §8's matrix order): cell id (`W3`/`S1`/`E2`, `StationValue`), the module's name (`StationValue`), and **one stat line** — the module's 09 §3 effect column verbatim (e.g. `+400 POOL · REGEN 5/S`), plus the family glyph 24 at its own cut. Row idiom: the A5.3 inventory row (flat Tokens box `item_bg` + 1 px `metal_mid`, inset 6); the list scrolls in its own `ScrollContainer` when it outgrows the sector. **Pressing a row selects that cell** (the same selection state as the grid — one selection, two views; CELL INFO follows). Empty cells are not listed. BATTERY CONFIG shows no list (the racks are the weapons' view, P34) | no list (today — the grid + CELL INFO only); or an independently-selected list |
+
+### 23.5 A6 — refinery LOAD ALL, the machine read, the button layout (P50–P51; the model rows are 04 §9's)
+
+| Pin | Law | Reversal |
+|---|---|---|
+| **P50** | the foot-band cluster (T-181's own 360×56 plates and anchor) gains the fourth plate: **`QUEUE` (primary, rightmost) · `LOAD` · `LOAD ALL` · `COLLECT ALL`** — 4×360 + 3×16 = 1 408 ≤ 1 765 (§19.3's foot band), seats with the hint cell intact. **`LOAD ALL`** transfers every hold ore stack into `refinery_input` whole-stack at a time, up to R5's 60-unit cap; overflow stays in the hold (R8's idiom); **no credits move** (the `LOAD` law); status `LOADED · <n> ORE` / refusal `INPUT FULL` (the §5.6 family). T-181's closure stands — the words and the 360×56 band are unchanged; the cluster widens (04 §9 R11 records the extension). `QUEUE ALL` / `CANCEL` stay in the conversion column (T-181) | the T-181 three-plate cluster (`LOAD ALL` dropped) |
+| **P51** | the SLOTS readout (P42: `n/5 · UPGRADE (3,000 CR)`, header band) becomes the **machine strip** in the same seat: `SLOTS 2/5` first, then **one chip per owned slot** (A5.4 State chips — label + 1 px frame, **never colour alone**): **`AVAILABLE`** (free slot) / **`RUNNING <mm:ss>`** (its job's countdown, 04 §7 R6's 1 Hz tick) / **`DONE`** (finished, awaiting collection), then a `+ <n> QUEUED` caption for pending jobs (04 §7 R7), the `UPGRADE (3,000 CR)` `ActionInline` rightmost (its door is UI_SPEC §17's A4 list) | the P42 text-only `n/5 · UPGRADE` readout |
+
+### 23.6 A7 (surface) — the REFINERY CRAFT tab (P52; the economy is 07 §6's)
+
+| Pin | Law | Reversal |
+|---|---|---|
+| **P52** | the REFINERY pane gains a **two-entry mode switch** in the header band (P32's idiom: a P2 `ActionInline` pair): **`REFINE` / `CRAFT`**, exactly one mode visible, switching a pure visibility operation (A5.5). **CRAFT mode's body is one AUCTION-idiom list** (P40's column-header band + N45 trim law; rows are `Button` + container children): columns **`RECIPE · INPUTS · FEE · STATE`**; one row per recipe (07 §6's four): the output name + its stat line, the inputs as `<n>× <name>` runs with the family glyph 24 at its own cut, the fee `<n> CR LABOUR`, and a per-row state chip **`READY` / `MISSING <n>× <input>`** computed from `cargo_qty` (read-only seam, no price recomputed). The row press opens the **N28 sheet** (the recipe's full bill, read-only); the per-row `CRAFT` chip is the commit — through UI_SPEC §17's confirm door. Foot band kept (P28 uniformity), no cluster; hint **`EVERY INPUT IS CONSUMED ON CRAFT · THE FEE IS LABOUR`**. Empty state: `NOTHING TO CRAFT` caption (§19.4's idiom) | a FOUNDRY station module (07 §2's old direction — superseded by the owner's "in refinery another tab", §22); a `TabBar` |
+
+### 23.7 A8 — the EXCHANGE bulk sell (P53)
+
+| Pin | Law | Reversal |
+|---|---|---|
+| **P53** | **selection model: checkboxes.** Each hold row gains a leading **`CheckChip`**, 24×24 flat `Button`: bare 1 px `metal_mid` frame unchecked; checked = the frame steps to `metal_light` **plus a check mark drawn in its own child rect** (A5.2(iii) — state by frame + mark, never colour alone; no font-glyph check, §5.8's tofu finding). The row press keeps its single-sale arm (`TradeBox`, N49); the chip toggles the **bulk set**. The `YOUR HOLD` caption band gains a **`MARK ALL` / `CLEAR`** `ActionInline` pair. `TradeBox` gains the marked read under the `ConfirmStrip` (05 §6's shape): **`MARKED 3 STACKS — GROSS 8 120 · FEE 162 · YOU GET 7 958`** (sum of `Exchange.quote` per marked stack at press time — the clock law §5.8, no new pricing). The foot cluster is **not** re-laid: `SELL` / `SELL ALL RAW` / `CANCEL` **keep their pinned seats and sizes** — the N48/N49 trade-column stack inside `TradeBox`, `SELL` at §5.8's 88 px and the two secondaries at 56 px (N48/N49 and §5.8 stand; the four-plate cluster drafted here is dropped pre-land). The stack gains **`SELL MARKED`** (56 px, §5.8's secondary size) directly beneath `SELL`, selling every marked stack (ore, components, ingots alike — the owner's "my items") as one confirmed action, disabled at an empty set (A5.4-2's unavailable idiom). Refusal path §5.6; `SELL ALL RAW`'s raw-only law stands (05 §6). The **per-row 56 px SELL plate retires** (`exchange_panel.gd:39,51`) — single sale arms by row press, bulk by the chips; the per-row INSPECT chip stands | the select-all + `SELL ALL` single door (the owner's other offered option); the per-row SELL plates return, chips and `SELL MARKED` dropped — the four-plate foot-cluster re-lay is this pin's dropped draft (N48/N49's seats and §5.8's sizes stand) |
+
+### 23.8 A9 — the SHIPYARD build segment rework (P54; the economics are 10 §3's, unchanged)
+
+| Pin | Law | Reversal |
+|---|---|---|
+| **P54** | the build band (T-178's live band and `BUILD_HULL_FORMAT`'s CR figures, `shipyard_panel.gd:146`) **retires**; the build surface becomes the **AUCTION house style**: a build list of two category sections wearing §5.10's shelf idiom — **`HULLS`** (10 §3.1's nine recipes) and **`MODULES`** (10 §3.2's shape rule; its rows land with the module-catalogue wave — the section ships with the caption `MODULE BUILDS LAND WITH THE MODULE CATALOGUE`). Each HULLS row (P40's band + N45 trim; `Button` + container children): the name + `<class> CLASS · <hull> · <slots>` meta; **the materials bill as materials** — one run per material, `<n>× <name>` with the family glyph 24 at its own cut, each run reading `<held>/<needed>` from `cargo_qty` (read-only seam); the labour line `<labour> CR LABOUR`; a per-row chip **`READY` / `MISSING <n>× <material>`** (label + frame, never colour alone); the **`BUILD`** `ActionInline` rightmost. The row press opens the **N28 sheet** (the full bill). The `BUILD` press routes through UI_SPEC §17's shipyard door — the dialog body carries the bill. `BUILD_HULL_FORMAT`'s two CR figures die with the band: the auction owns the buy price (its own list), the build side carries materials + labour only. The queue's commit/refund law (10 §3.3) is untouched | the CR build band (T-178's live figures return); CR-only presentation |
+
+### 23.9 A10 — the approved cures folded (owner-approved 2026-10-12; cite the tickets)
+
+- **T-174** — the LAUNCH briefing column (`FLIGHT BRIEFING` and its ten labels, §5.4) sits inside **one flat Tokens box** (`bay_bg` + 1 px `metal_mid`, UI_SPEC §3.10 A5.3/A5.4's inner-surface chrome — T-172's own cure), containers and relative sizing only. Reversal: the bare column (LOW_BACKLOG T-174).
+- **T-175** — the four header-caption surfaces re-point their ink to the **A1 variations**: REFINERY's column headers and `CONVERSION`/`ORE IN`/`INGOTS OUT`/`FEE` captions, EXCHANGE's `YOUR HOLD` caption and pane footer, AUCTION's shelf `Title` and `MODULE` band header, SHIPYARD's pane subtitle and `PORT`/`STBD` labels render through `SectionHeader`/`StationCaption` (`text_caption`, 6.15–6.77:1 measured, UI_SPEC §16.1) — the surfaces are §5.7/§5.8/§5.10/§17.2's own. Reversal: the bare headers (LOW_BACKLOG T-175).
+- **T-176** — the SERVICES staged EXPEDITION row's dim factor floors the row's ink at **`text_caption`** (the grey state stays legible; the `STAGED` chip + `button_disabled` plate carry the state — label + state, never colour alone). Reversal: the current dim factor (`#2c3444` on `#050a0f`, 1.61:1; LOW_BACKLOG T-176).
+
+### 23.10 A11 — the owner tick list (every new value this round, PROPOSED)
+
+| Tick | Where | Value | Reversal |
+|---|---|---|---|
+| **P44** | §23.1 | the 3×3 nine-tile grid, `TILE_MIN` (240, 120), separation 16, the 752/756 and 620/633 arithmetic | P18's 3×2 + 300×140 + the P25 rows |
+| **P45** | §23.1 | the flat Tokens box tile chrome; C1 re-presents only on pane/slab re-cut | C1 `ui_tile_slab` at the D19 pane |
+| **P46** | §23.1 | the four-block deck; the three service captions; AUCTION's `THE 20-MINUTE SHELF`; P26 re-pointed | the P25 rows; AUCTION's P23 caption |
+| **P47** | §23.1 | T-184: the two raster glyphs modulate `text_caption` (SVG remaster staged) | the WHITE modulate |
+| **P48** | §23.3 | the 3.0 s departure sequence (S27 t+0 / S28 t+1 / fired pair t+2.4 / route t+3), non-cancellable | no sequence (today) |
+| **P49** | §23.4 | the EQUIPPED list (cell id + name + one stat line, grid order, press selects the cell) | no list |
+| **P50** | §23.5 | the four-plate foot cluster + `LOAD ALL` (cap 60, overflow stays) | the T-181 three-plate cluster |
+| **P51** | §23.5 | the machine strip: `SLOTS n/5` + per-slot `AVAILABLE`/`RUNNING mm:ss`/`DONE` chips + `+ n QUEUED` | the P42 text readout |
+| **P52** | §23.6 | the `REFINE`/`CRAFT` mode pair; the CRAFT list (`RECIPE · INPUTS · FEE · STATE`, READY/MISSING chips) | the FOUNDRY module; a TabBar |
+| **P53** | §23.7 | the `CheckChip` bulk set, `MARK ALL`/`CLEAR`, `SELL MARKED`, the marked read; the per-row SELL plate retires | select-all + `SELL ALL`; the plates return |
+| **P54** | §23.8 | the build list (HULLS/MODULES shelves, material runs `<held>/<needed>`, `BUILD` chip, N28 sheet); `BUILD_HULL_FORMAT` retires | the CR build band (T-178's) |
+| **A4–A6** | UI_SPEC §17 | the buy-confirmation law (door list, `confirm` route, wording) | no dialogs (today) |
+| **A7–A9** | UI_SPEC §18 | the C-key Cargo overlay (surface, groups, read-only seams) | station-unbound C |
+| **AUDIO-4/5** | AUDIO_SPEC §8.7 | S27 `sfx_station_undock` ≤ 1.0 s; S28 `sfx_station_spool_loop` 2.0 s; the §11 re-point | silence between press 2 and the route |
+| **R9–R12** | 04 §9 | `LOAD ALL`, the machine strip, the fourth plate, the CRAFT tab (model pointers) | as each row's |
+| **C1–C10** | 07 §6 | the crafting spec (recipes, fees, outputs, scrap-back, the tab door) | as each row's |
+
+The 10 §3.5 note and §23.9's three cures carry no new ticks (owner-approved
+cures and view-law pointers; their reversals are their own rows).
+
+### 23.11 Supersession ledger (D24)
+
+| # | Old cite (what it says) | New cite (what supersedes it) |
+|---|---|---|
+| 1 | §18 **P18**'s tile row ("6 department tiles (3×2 `PanelRaised` grid, min 300×140) / services rows") and §19.1's five-block table (rows 2 and 4) | P44/P46: the 3×3 grid, the four-block deck |
+| 2 | §19.2 **P23**'s min (300, 140) and 3×2 row-major set; its caption set (AUCTION's row) | P44/P46 (P23's interior, states and grid numbers stand) |
+| 3 | §19.1's scroll arithmetic ("minima sum to ~776 … scrolls at 16:9") | P44's 620/633 arithmetic (P22's scroll stays as the safety) |
+| 4 | §19.1 block 4 + **P25** (the services rows) + **P30**'s `OPEN →` chip | P46 (the tiles; P26's SERVICES pane stands, re-pointed) |
+| 5 | §18.1's **P26** "reachable from OVERVIEW's rows" | P46: reachable from the three service tiles |
+| 6 | UI_SPEC §15.1's census tile row (C1 at the D19 1765 pane) | P45's flat-box chrome at the 756 pane; C1 re-presents per its own row |
+| 7 | §11's "LAUNCH fired" row (`sfx_ship_boost_01` + `sfx_ship_jump_01` at the route instant) | P48: the pair fires at the sequence's t+2.4 tail |
+| 8 | §21.3 **P42**'s SLOTS readout shape | P51 (the strip; the header-band seat and the UPGRADE chip stand) |
+| 9 | 07 §2 "Where: a new station module, FOUNDRY" | P52 / 07 §6 C1 (the owner's tab ask, §22; bucket 3 discharged at the request) |
+| 10 | §5.2's build presentation (via `BUILD_HULL_FORMAT`, `shipyard_panel.gd:146`) and 10 §3.1's live-band note as the *view* law | P54 / 10 §3.5 (the economics stand; the view becomes the house style) |
+
+Named and **not** superseded: §2's two-press law (P48's preamble re-states it);
+T-181's words and 360×56 band (P50 extends the cluster, the closure stands);
+T-182's 32 px strip; the P29 hint set; P28's skeleton; A5/A5.4's chrome table;
+UI_SPEC §16.1's A1; 10 §3.1/§3.2/§3.3's economics in full.

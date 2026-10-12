@@ -198,3 +198,20 @@ value-relative with the historical flat as its floor:
   Iron 10 s (unchanged) · Gold **26 s** (was 40) · Krillum **60 s** (the
   ceiling holds). `test_s34_refinery_queue.gd`'s duration rows move with the
   values; its 15/30/45 CR fee rows survive (T1 keeps the floor).
+
+## 9. 2026-10-12 — D24: LOAD ALL, the machine read, the fourth plate, the CRAFT tab (owner request; wave D24)
+
+Owner request verbatim (STATION_HUB §22): "i like refinery slots but it needs
+a buttons for 'Load all' and a better graphical representation of current
+available machines and running ones. Also i think the layout of buttons might
+need a bit of work. also in refinery another tab for crafting items and
+components not only refining ores." §7's model stands in full (jobs, slots,
+R1–R8, the S28 fee law §8); this amendment adds four rows and points at the
+surface law (STATION_HUB §23.5/§23.6). Ticks continue the R series.
+
+| # | Value | Reversal |
+|---|---|---|
+| **R9** | **`LOAD ALL`** transfers every hold ore stack into `refinery_input` whole-stack at a time, up to R5's **60-unit** cap; overflow stays in the hold (R8's idiom); no credits move (the `LOAD` law); status `LOADED · <n> ORE`, refusal `INPUT FULL` (the pane's §5.6 family) | per-stack LOAD only (today) |
+| **R10** | **the machine read**: the pane models per-slot machine state for the strip — `AVAILABLE` (no job), `RUNNING` with the job's `ready_at` countdown, `DONE` (settled into `refinery_output`, awaiting collection), plus a pending-queue count (R7's FIFO) — state is data the strip reads; the chips never colour alone (STATION_HUB §23.5 P51) | slot count only (P42's readout) |
+| **R11** | **the fourth plate**: the foot-band cluster gains `LOAD ALL` beside `QUEUE`/`LOAD`/`COLLECT ALL` at 360×56 — T-181's words and band stand, the cluster widens (STATION_HUB §23.5 P50's 1 408/1 765 arithmetic) | the three-plate cluster (T-181's shape) |
+| **R12** | **the CRAFT tab**: the pane gains the `REFINE`/`CRAFT` mode pair (STATION_HUB §23.6 P52); crafting's economy is `07_crafting.md` §6's (the C ticks) — this doc owns no recipe number | a FOUNDRY module (07 §2's old direction) |

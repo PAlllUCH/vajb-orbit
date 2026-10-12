@@ -5,7 +5,12 @@ file when decided or done** (deleted at the wave close-out or the ruling — the
 record lives in the cited file and `MASTER_REPORT.md` §6, this is the index
 only). Refreshed at every wave close-out and after every owner ruling.
 
-*Last refreshed: 2026-10-12 (the owner's build-2 playtest **ran** — P3's exit pass. The
+*Last refreshed: 2026-10-12 (D24 **closed** — the station-overhaul design landed in six docs
+(STATION_HUB §23, UI_SPEC §17/§18, AUDIO_SPEC §8.7, 04 §9, 07 §6, 10 §3.5), every value
+**PROPOSED** with its reversal. The **§23.10 tick table is this round's tick sheet** (the row
+below). 5 LOW → T-186–T-190, next free **T-191**. S42 (the OVERVIEW grid rework) is the queued
+first implementation wave.)*
+*Previously 2026-10-12 (the owner's build-2 playtest **ran** — P3's exit pass. The
 ten presented rulings folded: caption tone **RATIFIED**, T-174/T-175/T-176 cures **approved**
 (ride P4), T-178/T-181/T-182 **closed**, the OVERVIEW tradeoff **superseded** by STATION_HUB
 §22's 3×3 grid ruling, T-179 **postponed**; **T-184/T-185 filed** (the overview tile glyphs;
@@ -80,6 +85,16 @@ plan)*
 
 *Decided rows from the 2026-10-12 pass left this file per the law — the record lives in the owning docs and `MASTER_REPORT.md` §6: the caption tone RATIFIED (UI_SPEC §16.1 A1), the T-174/T-175/T-176 cures approved (LOW_BACKLOG), T-178/T-181/T-182 closed (10 §3.1 / STATION_HUB §5.7 / §15.1), the OVERVIEW tradeoff superseded by STATION_HUB §22's 3×3 grid ruling.*
 
+- **D24's tick table — 15 rows, every new station-overhaul value PROPOSED
+  (STATION_HUB §23.10: P44–P54, A4–A9, AUDIO-4/5, R9–R12, C1–C10).** Each row
+  carries its value and its reversal; unticked rows implement at their PROPOSED
+  value (the S19 precedent). Four flagged decisions ride the table: Rail Refit's
+  45.4 %-of-list (below T-178's floor; lever +2 ingot → 49.9 %), the two exotic
+  list values (Shield Lattice 8 500 = 1.42 × SC(4) in band; Deep Scanner 11 400),
+  07 §3's stale "3–6 sessions" supply math (re-measure at playtest), and A2's
+  door boundary (QUEUE/REPAIR/PAY BOUNTY/CANCEL-CONTRACT carry no confirm
+  dialog). The S41 chrome-token row below re-presents with the S42 OVERVIEW rework.
+
 - **S41's new chrome tokens (all PROPOSED; the owner ratifies shared-chrome
   tones).** F7 gave every disabled plate a 1 px `metal_mid` edge
   (`DISABLED_EDGE`, `build_theme.gd:133`); F9 moved the scrollbar grabber to
@@ -104,11 +119,11 @@ plan)*
 
 ## Open actions — no decision needed, just waiting
 
-- **P4 — the station overhaul.** The owner's 2026-10-12 asks (verbatim in
-  `docs/design/STATION_HUB.md` §22 and `phases/P4-station-overhaul/PHASE.md`) are
-  queued as the **D24 design round** — the design the implementation workers need
-  before any code. Dispatch with the short prompt in §"Designer lane" handoff;
-  brief `slices/D24-station-overhaul-design/D24_BRIEF.md`.
+- **P4 — the station overhaul.** D24 (the design round) closed 2026-10-12 — the
+  amendments live in STATION_HUB §23 / UI_SPEC §17–§18 / AUDIO_SPEC §8.7 /
+  04 §9 / 07 §6 / 10 §3.5. Next: the owner's tick sheet (§23.10), then the
+  implementation waves re-cut from the amendments — **S42 (the OVERVIEW 3×3 grid
+  rework, P44–P47 + T-184)** is queued first.
 - **The next playtest.** After P4's waves land, the owner's eye over the next
   build (the P4 exit pass) — T-179 (the Pyre cascade) re-presents there, and the
   S41 chrome tokens re-present with the reworked OVERVIEW.

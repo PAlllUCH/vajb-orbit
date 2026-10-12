@@ -35,7 +35,7 @@ and every tool result is re-sent on each later request.
 | 5. | Format, conversion and looping | L236–L270 |
 | 6. | Import layout and naming convention | L271–L358 |
 | 7. | TODO list (confirmation before import batch) | L359–L376 |
-| 8. | Implementation amendments (2026-09-17 - sources downloaded and impor… | L377–L487 |
+| 8. | Implementation amendments (2026-09-17 - sources downloaded and impor… | L377–L508 |
 
 <!-- section-index:end -->
 
@@ -484,3 +484,24 @@ with manifest + `CREDITS.md` rows before any wiring.
 **Owner ticks (recorded 2026-09-29):** AUDIO-1 y · AUDIO-2 y · **AUDIO-3 y** —
 the PROPOSED wins: take 04 drops now and the returning 0.06–0.09 s trim stays
 staged (L49 resolved). Every row ships as its PROPOSED value above.
+
+### 8.7 Amendment 2026-10-12 (D24 — the launch sequence cues; PROPOSED, ticks AUDIO-4/AUDIO-5)
+
+The launch-sequence ask (STATION_HUB §22, owner verbatim: *"i want a launch
+sequence not only loading screen and some sound"*) lands as STATION_HUB §23.3's
+P48 beats; these are its cue rows. The row law is §3's own shape (cue id,
+primary take, source, duration, bus, pool, the seam that fires it). Audio
+stays **CC0 1.0 only** (AGENTS.md); both rows build [P] from **already-owned**
+CC0 takes, so no new sourcing is owed. Unticked rows implement at the
+PROPOSED value.
+
+| Tick | Row | PROPOSED | Reversal | Supersedes / implements (evidence) |
+|---|---|---|---|---|
+| AUDIO-4 | the undock cue | §3's S-table gains **S27 — Undock (dock clamp release)**: cue `sfx_station_undock`, primary take `sfx_station_undock_01.ogg`, **[P]** mechanical clunk + sub-thump layered from the owned Kenney Sci-Fi / Impact takes (§3's S4 layer recipe at 1:1), **≤ 1.0 s**, `SFX` bus (SFXWorld send, §4.3), **world pool cap 2** — §4.1's cap list gains `world 2` (one-shots that are neither weapon, impact, mining nor UI; S19/S21's family), anti-flam §4.1 as shipped; **seam: the launch sequence's t+0.0 s** (the second press, STATION_HUB §23.3 P48; `launch_panel.gd`'s fire path) | any other cue name; silence at the seam (today); no world pool (direct `play_sfx`, anti-flam only) | §3's S-table gap (no row for undock/dock-clamp); STATION_HUB §22's ask; §11's table (no undock row — LAUNCH armed/fired only) |
+| AUDIO-5 | the spool bed | **S28 — Undock spool bed**: cue `sfx_station_spool_loop`, take `sfx_station_spool_loop.ogg`, **[P]** from the owned Kenney engine beds (§3's S16 candidates), **2.0 s**, `SFX` bus (SFXWorld), held-bed law §4.5 (lease, cue-scoped stop) — starts at the sequence's **t+1.0 s**, **stops at the route** (t+3.0 s); **seam: STATION_HUB §23.3 P48's beat 2** | silence between the clamp and the burn (today); a third new asset | P48's beat 2; §4.5's bed law extended to a sequence-scoped bed |
+
+Also re-pointed (a STATION_HUB §23.11 ledger row, not an edit here): the fired
+pair `sfx_ship_boost_01` + `sfx_ship_jump_01` (§11's "LAUNCH fired" row) moves
+from the route instant to the sequence's t+2.4 s tail. The existing owned
+files cover it; nothing is sourced, converted or re-imported by these two rows
+beyond the two [P] builds.

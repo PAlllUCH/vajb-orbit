@@ -340,3 +340,25 @@ this pin:
 | Row | Change | PROPOSED value | Reversal | Tick |
 |---|---|---|---|---|
 | R-S29-1 | new engine-family module `e_hyperdrive` | name "Hyperdrive", tier 3, slot `engine`, cost **12 000 CR**, draw **3**; effect: enables the map deck's hold-to-jump (`UI_SPEC.md` §9 N4 — hold LMB ≥ 0.5 s on the pin jumps the ship there); one jump per **30 s** cooldown, **1 s** spool, no fuel charge; rolls: the AUCTION `SOURCE_ROLLS` engine column + the ARMORY browser at tier 3 | delete the row; the pin + autopilot remain (N4's short-press path) | **N5** |
+
+## 3.5 2026-10-12 — D24: the build view contract (owner request; wave D24 — the surface note)
+
+Owner request verbatim (STATION_HUB §22): "the SHIPYARD build segment needs
+rework as well. i want it looking more like refinery/auction, the same style.
+now it only uses credits. it should be separated into different categories and
+use materials."
+
+**The economics of §3.1–§3.3 stand untouched** (materials + 35 % labour,
+committed at queue time, refunded on cancel, scrap at 50 % — the law was
+already materials-by-law; only the *view* presented CR). The view law is
+STATION_HUB §23.8's P54: the build surface becomes the AUCTION house style —
+the `HULLS` / `MODULES` category shelves, one materials run per input
+(`<n>× <name>` with `<held>/<needed>` from `cargo_qty`), the labour line as
+the only CR figure, the `READY` / `MISSING` chips, the `BUILD` chip through
+UI_SPEC §17's confirm door (the bill in the dialog body). **`BUILD_HULL_FORMAT`
+("%s · %d CR TO BUY · %d CR TO BUILD", `shipyard_panel.gd:146`) retires** —
+the auction pane owns the buy price (its own list), the build side carries
+materials + labour only. §6.1's build-band note stands (T-178's 47.7–59.1 %).
+The MODULES shelf's rows land with the module-catalogue wave (§3.2's shape
+rule; the shelf ships with its staged caption). Reversal: the CR build band
+(T-178's live figures) returns.

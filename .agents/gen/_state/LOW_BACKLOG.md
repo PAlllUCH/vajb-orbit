@@ -21,7 +21,7 @@ Legend: **[DOC]** = a docs pass, **[SPEC]** = needs the owner's spec lock,
 **[CODE]** = a code change when someone owns the file, **[HARNESS]** = agent
 tooling, **[TOOL]** = a shipped repo tool/script.
 
-**Tickets:** new items take the next global `T-###` (next free **T-186**) and
+**Tickets:** new items take the next global `T-###` (next free **T-191**) and
 follow `_templates/TICKET.md` — one row here is the index; skip a detail file
 when the row says it all. **2026-10-08 (S24-R1): T-152/T-153 filed; the next free
 ticket is T-154.**
@@ -82,3 +82,10 @@ referenced by an open row survives until the row closes.
 | T-185 | **The launch sequence (owner playtest, build 2, 2026-10-12):** "the button itself is ok. i want a launch sequence not only loading screen and some sound." Today undock emits `launch_requested()` and routes straight to `&"loading"` (`launch_panel.gd:48,859`); there is no departure beat and no launch cue in AUDIO_SPEC §3's S-table. | [UI]+[AUDIO] `ui/station/launch_panel.gd` / the loading route / `docs/design/AUDIO_SPEC.md` §3 (new cue rows) | OPEN — P4 ask, recorded in STATION_HUB §22; D24 pins the sequence beats, the audio cues and where the sequence plays. Reversal: the plain loading route. |
 
 **2026-10-12 (owner playtest of build 2 — P3's exit pass): the ten presented rulings folded (caption tone RATIFIED, T-174/T-175/T-176 cures approved, T-178/T-181/T-182 closed, the OVERVIEW tradeoff superseded by the §22 3×3 grid ruling, T-179 postponed); T-184/T-185 filed; the next free ticket is T-186. The station-overhaul asks are the P4 input (STATION_HUB §22, `phases/P4-station-overhaul/`).**
+| T-186 | **The craft door's buy-confirm row has no worked example (D24-R1/F6):** UI_SPEC §17 A4's #8 carries only the generic `BUILD/CRAFT` template while the brief's six named doors each instantiate one (the craft door rides A5's material-door template). | [DOC] `docs/design/UI_SPEC.md` §17 (instantiate the craft door's worked example) | OPEN — one line at the next UI_SPEC touch. Reversal: none (the generic template covers it). |
+| T-187 | **P47 calls §16.1 A3 "the ratified cure"; only A1 is RATIFIED (D24-R1/F7):** A2/A3 remain PROPOSED pins, so the wording over-claims the owner's 2026-10-12 ruling. | [DOC] `docs/design/STATION_HUB.md` §23.1 P47 (say PROPOSED, or obtain the ratification) | OPEN — wording only. Reversal: none. |
+| T-188 | **Cue ids S27/S28 collide with the S28 value law inside the same derivations (D24-R1/F8):** AUDIO_SPEC §8.7's audio S-series numbers share tokens with the wave-id series that 07 §6's cost prose cites (the pre-existing collision reaches the cost prose here). | [DOC] `docs/design/AUDIO_SPEC.md` §8.7 (re-letter the cue series at its next growth) | OPEN — cosmetic, prose only. Reversal: renumber on growth. |
+| T-189 | **P44 spends the whole measured pane width (D24-R1/F9):** 752 ≤ 756 leaves 4 px with no content-inset allowance, and the arithmetic mixes S41's pane-width frame with D19's content-split height frame. | [MEASURE] `docs/design/STATION_HUB.md` §23.1 P44 (re-measure the grid seat at the S42 implementation) | OPEN — re-measure before the grid lands. Reversal: 300×140 (does not seat). |
+| T-190 | **P53's CheckChip leaves the check mark's ink unnamed (D24-R1/F10):** the frame step carries the state (no §16 violation) but §1's success law (`metal_light` + `text_primary`) is never written into the pin. | [DOC] `docs/design/STATION_HUB.md` §23.7 P53 (name the mark's ink) | OPEN — one line at the next §23 touch. Reversal: none. |
+
+**2026-10-12 (D24 the station-overhaul design round): T-186–T-190 filed (D24-R1's five LOW — the craft door's worked example, P47's RATIFIED over-claim, the S-cue/wave-id collision, P44's full-pane-width spend, P53's unnamed check ink); the review's provisional T-187–T-191 shift down one because this file's next free was T-186, not T-187. The next free ticket is T-191.**

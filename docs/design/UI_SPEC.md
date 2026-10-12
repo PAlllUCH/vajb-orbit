@@ -19,22 +19,24 @@ and every tool result is re-sent on each later request.
 
 | Section | Topic | Lines |
 |---|---|---|
-| 1. | Colour Tokens | L42–L67 |
-| 2. | Theme Architecture | L68–L110 |
-| 3. | In-Game HUD | L111–L713 |
-| 4. | Settings | L714–L775 |
-| 5. | Tooltips, Dialogs & Nine-Patch Panels | L776–L853 |
-| 6. | Font & Sizing Reference (coding checklist) | L854–L873 |
-| 7. | Station surfaces chrome — the A5.4 extension (amendment 2026-10-02, … | L874–L909 |
-| 8. | Station action buttons and the one focus language (amendment 2026-10… | L910–L942 |
-| 9. | The map deck — flight minimap and navigation (amendment 2026-10-03, … | L943–L970 |
-| 10. | The map deck and the navigation pin — design detail (amendment 2026-… | L971–L1068 |
-| 11. | Station shell v2 — the TERMINAL drawer, the popups, the one skeleton… | L1069–L1124 |
-| 12. | Station shell v2 design detail — the TERMINAL drawer, the popup pair… | L1125–L1359 |
-| 13. | The D20 fix wave — exchange parity, the armory browser, the hover-in… | L1360–L1397 |
-| 14. | Exchange sell cluster + the OVERVIEW tile plates (amendment 2026-10-… | L1398–L1443 |
-| 15. | The one true-aspect chrome family (amendment 2026-10-05, owner rulin… | L1444–L1861 |
-| 16. | The legibility pass — the caption token and the two unroofed surface… | L1862–L1900 |
+| 1. | Colour Tokens | L44–L69 |
+| 2. | Theme Architecture | L70–L112 |
+| 3. | In-Game HUD | L113–L715 |
+| 4. | Settings | L716–L777 |
+| 5. | Tooltips, Dialogs & Nine-Patch Panels | L778–L855 |
+| 6. | Font & Sizing Reference (coding checklist) | L856–L875 |
+| 7. | Station surfaces chrome — the A5.4 extension (amendment 2026-10-02, … | L876–L911 |
+| 8. | Station action buttons and the one focus language (amendment 2026-10… | L912–L944 |
+| 9. | The map deck — flight minimap and navigation (amendment 2026-10-03, … | L945–L972 |
+| 10. | The map deck and the navigation pin — design detail (amendment 2026-… | L973–L1070 |
+| 11. | Station shell v2 — the TERMINAL drawer, the popups, the one skeleton… | L1071–L1126 |
+| 12. | Station shell v2 design detail — the TERMINAL drawer, the popup pair… | L1127–L1361 |
+| 13. | The D20 fix wave — exchange parity, the armory browser, the hover-in… | L1362–L1399 |
+| 14. | Exchange sell cluster + the OVERVIEW tile plates (amendment 2026-10-… | L1400–L1445 |
+| 15. | The one true-aspect chrome family (amendment 2026-10-05, owner rulin… | L1446–L1863 |
+| 16. | The legibility pass — the caption token and the two unroofed surface… | L1864–L1902 |
+| 17. | The buy-confirmation law (amendment 2026-10-12, phase P4; wave D24 —… | L1903–L1920 |
+| 18. | The C-key Cargo overlay (amendment 2026-10-12, phase P4; wave D24 — … | L1921–L1939 |
 
 <!-- section-index:end -->
 
@@ -1897,3 +1899,40 @@ tool (pixels, outside the gate).
 
 Reversal: `git revert` this block (the two tokens, the three variation wires, the
 armory column's box, the tile glyph's modulate).
+
+## 17. The buy-confirmation law (amendment 2026-10-12, phase P4; wave D24 — D24-A1; STATION_HUB §22's ask)
+
+**The owner's words (2026-10-12, verbatim):** *"every buy action needs to have
+popup with 'OK' button. So when i buy a ship there should be a popup: Are you
+sure you want to buy SHIP X for Y credits."* The sink exists:
+`autoload/dialog_manager.gd` `confirm(id, title, body, confirm_text,
+cancel_text)` / `message(...)`, through `Router.push_overlay`
+(IMPLEMENTATION_PLAN §3.5); §5.2's dialog idiom (modal, layer 20, focus grab,
+ESC → CANCEL) is unchanged. Pins continue the A series from §16.1's A3.
+
+### 17.1 The pins (A4–A6)
+
+| Pin | Law | Reversal |
+|---|---|---|
+| **A4** | **the door list** — closed by criterion: *every action whose primary effect is acquiring something for CR and/or materials*. The doors: (1) **hull buy** — the AUCTION's hull row purchase (§5.10, 10 §2.3); (2) **module buy** — the ARMORY browser's `BUY` (STATION_HUB §21.1 P38); (3) **ammo** — the OUTFITTING ammo pack purchase (§5.1, `buy_ammo`); (4) **insurance** — the `INSURE LAUNCHES` opt-in (STATION_HUB §15.3 U13; the per-launch premium itself is charged at launch, 14 §3 — no dialog on the charge); (5) **vault rent** — `RENT` (STATION_HUB §15.4 U14); (6) **shipyard queue** — `BUILD` (STATION_HUB §23.8, 10 §3.3's commit); (7) **refinery slot** — `UPGRADE (3,000 CR)` (STATION_HUB §23.5, 04 §7 R4) — the criterion's own addition; (8) **craft** — the CRAFT tab's commit (STATION_HUB §23.6, 07 §6) when it ships. **Explicitly out** (service spends with their own verify/refusal paths, STATION_HUB §5.6 — the boundary reading is this wave's, reported; the owner may widen): refinery `QUEUE`, `REPAIR`, `PAY BOUNTY`, contract `CANCEL · 100 CR FEE`; the LAUNCH commit is P48's two-press law, not a dialog | no dialogs (today: every purchase commits on the press) |
+| **A5** | **the route:** every door goes through `DialogManager.confirm(id, title, body, "OK", "CANCEL")` — never `message` (one-way notices stay `message`'s job). `dialog_confirmed(id)` runs the existing transaction path unchanged (a confirmed press can still refuse — §5.6's strip wording follows); `dialog_cancelled(id)` returns focus to the trigger (N39). The buttons carry the existing dialog cue (§5.2's CLICK). Esc maps to CANCEL (§5.2) | a second bespoke dialog scene; `message` at a door |
+| **A6** | **the wording law:** title `CONFIRM PURCHASE`; body **`ARE YOU SURE YOU WANT TO BUY <NAME> FOR <PRICE> CREDITS?`** — the owner's own sentence, upper-cased to the house caption law, `<NAME>`/`<PRICE>` from the owning catalogue (never hardcoded). Material doors (shipyard build, craft) swap the verb and price line: **`ARE YOU SURE YOU WANT TO BUILD/CRAFT <NAME> FOR <BILL> + <FEE> CR LABOUR?`** where `<BILL>` is the materials list (`60× TUNGSTEN ORE · 35× COBALT ORE · 4× WRECK ALLOY`). Worked examples: hull `ARE YOU SURE YOU WANT TO BUY CORVETTE FOR 27 000 CREDITS?` (10 §3.1); module `…BUY S_ION FOR 5 600 CREDITS?` (09 §3.2); ammo `…BUY LASER CELLS (300 ROUNDS) FOR <PACK.COST> CREDITS?` (§5.1's row fields, 01 §4 K1's 120–320 band); insurance `…BUY LAUNCH INSURANCE FOR 200 CREDITS PER LAUNCH?` (14 §3, the class's own premium); vault rent `…BUY VAULT TIER 2 FOR 1 200 CREDITS?` (U14); shipyard `…BUILD CORVETTE FOR 60× TUNGSTEN ORE · 35× COBALT ORE · 4× WRECK ALLOY + 9 450 CR LABOUR?`; refinery slot `…BUY A REFINERY SLOT FOR 3 000 CREDITS?` (04 §7 R4) | bespoke per-door wording; lowercase; the CR-only shipyard line |
+
+## 18. The C-key Cargo overlay (amendment 2026-10-12, phase P4; wave D24 — D24-A1; STATION_HUB §22's ask)
+
+**The owner's words (2026-10-12, verbatim):** *"i cannot see my current
+inventory anywhere on station, i can buy ammo but cannot see what i have on
+ship (ammo, materials, etc). a button for Cargo (C) to popup would be nice,
+same in space."* One law, both planes: **C pops this same read-only overlay
+in space too** (the flight seat is A7's half below). Flight's HUD `CargoBlock` (S39/T-170) stays as it is.
+
+### 18.1 The pins (A7–A9)
+
+| Pin | Law | Reversal |
+|---|---|---|
+| **A7** | **the C key, both planes — one law.** `cargo_toggle` (bound to C, `project.godot`) opens the overlay in **both** planes (the owner's "same in space"). **Station:** the station shell handles the action from any pane (STATION_HUB §23.2) and opens the overlay above the pane, below the drawer/sheet overlays (§12.2's stacking). **Flight — the overlay's seat:** the same surface (A8) over the flight HUD, on the layer-20 overlay `CanvasLayer` (§2.3's dialog layer — above the HUD's layer 10), topmost: `ui_cancel` closes it as the one topmost step before the map-deck step (P19's idiom; flight's own topmost-first poll, `game.gd:1040-1056`). The HUD `CargoBlock` (S39/T-170) stays as it is (the always-on summary; the overlay is the full read). One at a time (§5.2's queue); it opens over an open pane or the live HUD without pausing anything | the station ignores C (today) and flight's C stays on the `cargo_toggle` path with no overlay — the overlay is station-only |
+| **A8** | **the surface: the N28 sheet idiom, read-only — one surface, both planes** (§12.3; A7's two seats — over the station pane, over the flight HUD): `DialogRoot` full-rect `MOUSE_FILTER_STOP` → dimmer `void_base` 60 % → `CenterContainer` → `PanelContainer` `panel_raised` → `MarginContainer` 16 → `VBoxContainer` 12; width size-to-content in **420/720** (N28), height under N32's 80 %-viewport scroll rule. Title row: **`CARGO — <n>/<cap> UNITS`** (cap = the active hull's cargo, 08 §3). Close: ESC (one operation — P19's topmost step station-side, the same one step in flight per A7), the scrim (N38), C again; focus returns to the trigger (N39); open/close envelope N29 (≤ 0.2 s). **No transactional control inside** (N28's reversal bars one — the overlay is the look, the panes are the act) | a bespoke scene; SELL/BUY affordances inside |
+| **A9** | **the contents rows, the owner's five groups** (each group a `StationCaption` band, §12.3's row grammar; rows `Label` 13 with the family glyph 24 at its own rect, A5.2(iii)): **AMMUNITION** — one row per weapon, `<weapon name> · <rounds> ROUNDS` (`ammo_of`, §5.1's read); **ORE** — `<name> · <n>` per ore stack (`cargo_qty`, tier tint, 02 §6); **INGOTS** — same, ingot ids; **COMPONENTS** — per component id (03 §3, grade tint, 03 §4.1); **FUEL CELLS** — the `pow` family's rows (`comp_pow_1`…, 03 §3) drawn as their own group so nothing double-counts. Empty group: a `NONE HELD` caption row (§5.8's empty-state idiom). **Read-only seams:** every number reads `cargo_items()` / `cargo_qty()` / `ammo_of()` only (the exchange-free read, STATION_HUB §5.8's hold rows) — no price, no quote, no recomputation | fewer groups; priced rows; a live market read |
+
+STATION_HUB §23.10's tick table carries A4–A9 (this section's rows are the
+detail it indexes).
