@@ -5,7 +5,15 @@ file when decided or done** (deleted at the wave close-out or the ruling — the
 record lives in the cited file and `MASTER_REPORT.md` §6, this is the index
 only). Refreshed at every wave close-out and after every owner ruling.
 
-*Last refreshed: 2026-10-11 (S41 the composition pass closed — the design audit D23
+*Last refreshed: 2026-10-12 (phase-prep close — the developer session, housekeeping
+not a wave: gate **1330/0 ×2 hermetic**, **T-183 closed** via `staging/gate.py` (the
+SCRIPT ERROR guard), the 2026-10-08 clear-out landed in git, and **playtest build 2
+delivered** at `builds/vajb-orbit-0.4-2026-10-12-d77aba6-{linux,windows}/` — v0.4,
+Linux smoke-tested, Windows verified structurally; `19_testing_notes.md`'s 2026-10-12
+amendment is the build-2 eye list. P3's remaining work is the owner's alone; the next
+code work follows a fresh P4 planning round. Every open decision below is unchanged
+and still waiting.)*
+*Previously 2026-10-11 (S41 the composition pass closed — the design audit D23
 implemented. Gate **1300 → 1330/0** ×2 hermetic on fresh scratch stores; five
 builders (B1–B4 parallel, B5 the completion pass), R1 (glm-5.3-flash, code **and**
 visual) returned **passed-with-followups** — all 16 findings plus **T-177** fixed
@@ -112,6 +120,9 @@ plan)*
 
 ## Open actions — no decision needed, just waiting
 
-- **Playtest pass #1** — the owner's own eye over the live build: the
-  "awaiting the owner's eye" list in `docs/gameplay/19_testing_notes.md`, plus
-  build 2 and the tester template (the phase's exit criteria).
+- **Playtest pass (build 2) — the owner's own eye over the delivered build:** the
+  2026-10-12 eye list in `docs/gameplay/19_testing_notes.md` (B2-1/B2-2, everything
+  P3 shipped after 0.3, the S41 composition, the menu keyboard row), plus the
+  ALREADY-KNOWN table in the build's README (the tester template). The build is
+  `builds/vajb-orbit-0.4-2026-10-12-d77aba6-{linux,windows}/` (v0.4, gate 1330/0 ×2
+  hermetic, Linux smoke-tested). This pass is P3's exit criterion.

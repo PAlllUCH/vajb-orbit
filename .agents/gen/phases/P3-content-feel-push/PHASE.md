@@ -1,7 +1,7 @@
 ---
 phase: P3
 title: Content & feel push (playtest-2 cycle)
-status: active
+status: exit-pending (build 2 delivered 2026-10-12; awaiting the owner's playtest)
 slices: [S24, S28, S25, S38, S26, S27]
 ---
 
@@ -83,11 +83,16 @@ library. Ends in playtest build 2.
   shipped library; audio may be sourced CC0 through `assetmcp`.
 
 ## Exit criteria
-- [ ] Every slice `done` (findings tiered, briefs archived)
-- [ ] Playtest build 2 exported (both presets, Linux smoke-tested) and the
-      tester feedback template added to `19_testing_notes.md`
-- [ ] `docs/CONTRACTS.md` updated by each closing review wave (§9 gate figure)
-- [ ] Phase summary appended to `MASTER_REPORT.md` §6
+- [x] Every slice `done` (findings tiered, briefs archived) — S24/S28/S25/S38/S26/S27
+      all closed; the playtest-driven follow-ups S39/S40/S41 closed alongside
+- [x] Playtest build 2 exported (both presets, Linux smoke-tested) and the
+      tester feedback template added to `19_testing_notes.md` —
+      `builds/vajb-orbit-0.4-2026-10-12-d77aba6-{linux,windows}/`, v0.4, gate
+      1330/0 ×2 hermetic; the tester template is the build README, pointed to
+      by `19`'s 2026-10-12 amendment (its own eye list is the build-2 pass)
+- [x] `docs/CONTRACTS.md` updated by each closing review wave (§9 gate figure —
+      v0.58 at S41; v0.59 at the 2026-10-12 phase-prep pass, T-183)
+- [x] Phase summary appended to `MASTER_REPORT.md` §6 (2026-10-12)
 
 ## Carries forward
 - Parked unchanged: the S12 ore caps/scale rows (owner's §10 ticks), slice 2.5's

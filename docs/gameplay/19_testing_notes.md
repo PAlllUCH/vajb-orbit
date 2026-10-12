@@ -8,6 +8,39 @@ w7 fixes, review2). Wave-1 amendment: `docs/design/IMPLEMENTATION_PLAN.md` §9.8
 
 ---
 
+## 2026-10-12 amendment (phase-3 close — this file is now the playtest-2 eye list)
+
+The batch-2 era below is **history**: the owner's playtests #1 (2026-10-09) and #2
+(2026-10-10) ran over the live build, and every finding they filed closed inside the
+P3 waves (T-160; T-164–T-170 — all CLOSED, `LOW_BACKLOG.md`). What P3 still owes is the
+**owner's eye over build 2** — `builds/vajb-orbit-0.4-2026-10-12-<sha>/` (v0.4; built
+from the phase-close tree, gate 1330/0 ×2 hermetic) — against this list, plus the
+ALREADY-KNOWN table in `builds/README.txt` (the tester template). That pass is P3's exit
+criterion; the next code work follows a fresh planning round (WAVEBOARD).
+
+**The build-2 eye list** (everything below it in this file that no playtest has covered
+stands as history; these are the live rows):
+
+- **B2-1 and B2-2 still open** — the menu hover look (the direction pick: flicker /
+  directional glow / tick-carried ember) and the blurry station backdrops (source
+  resolution, an art pass). Both are the owner's calls, unchanged since batch 2.
+- **Everything P3 shipped after build 0.3** (first owner eyes, none yet): the contracts
+  loop (board roll, accept, deliver, payout, the 20-minute re-roll clock), the shipyard
+  build band with the tier-4 catalogue and the 15 mk2 variants, the endgame (hazard
+  arenas, the champion bosses incl. the Maw, ship insurance, station vaults), and the
+  S39 flight feel (enemies firing back, the baseline Shift boost the afterburner stacks
+  on, reversal assist, the softened knockback).
+- **The station decks after the S41 composition pass**: the ten screens re-composed and
+  the caption ink cleared AA — does the whole read right? One known tradeoff rides
+  TICKS: the OVERVIEW hull block sits below the fold (the services block took the
+  unscrolled seat).
+- **The menu keyboard row** (Enter on the focused verb) — still untested by hand.
+- **T-178 / T-179 / T-181 / T-182** — the four open owner rulings (shipyard build band,
+  the Pyre ring cascade, the refinery wording, the services strip height) need the
+  owner's ticks at the planning round.
+
+---
+
 ## Owner findings to fix in batch 2
 
 ### B2-1 — Menu hover look (design change, owner decides)
@@ -69,7 +102,12 @@ ESC → dock to Kepler-9 confirmed working in the live build (hint + route both 
 
 ---
 
-## Still awaiting the owner's eye (not yet tested)
+## Still awaiting the owner's eye (not yet tested) — batch-2 era, history
+
+*(Superseded as a live list by the 2026-10-12 amendment above: the flight-feel and
+station rows were covered by playtests #1/#2 and the S38–S41 waves; the refinery
+button sizes and the outfitting column changed again in S27/S41. Kept as the record
+of what batch 2 set out to cover.)*
 
 - **Station**: OUTFITTING `HELD / MAX` column alignment (reviewer measured ±0.00 across six
   states — needs a look), REFINERY three-button sizes (360×88 ×3), REPAIRS/LAUNCH frames

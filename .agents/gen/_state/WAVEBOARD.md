@@ -12,7 +12,29 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 
 | Pos | Lane item | Wave | Runs after | The collision/dependency that forces the order |
 |---|---|---|---|---|
-| — | — | **queue empty — P3's exit is the playtest** | S41 closed 2026-10-11 | P3's remaining work is the owner's eye (playtest build 2, `docs/gameplay/19_testing_notes.md`), not a wave. The next code work follows a fresh planning round. |
+| — | — | **queue empty — build 2 delivered; P3's exit is the owner's eye, then a fresh P4 planning round** | S41 closed 2026-10-11; phase-prep closed 2026-10-12 | Playtest build 2 exists at `builds/vajb-orbit-0.4-2026-10-12-d77aba6-{linux,windows}/` (v0.4, gate 1330/0 ×2 hermetic, Linux smoke-tested). The owner plays it against `19_testing_notes.md`'s 2026-10-12 eye list; the next code work follows a fresh planning round. |
+
+**Updated 2026-10-12 (phase-prep pass closed — the developer session, housekeeping
+not a wave).** The gate re-read **1330/0 ×2 hermetic on fresh scratch stores,
+byte-identical, zero `SCRIPT ERROR` lines**. **T-183 closed:** `staging/gate.py` is
+now the gate's mechanical wrapper (the pinned §9 command unchanged; a fresh
+`XDG_DATA_HOME` scratch store per run; `[SUMMARY]` byte-identity across `--times 2`;
+a hard fail on any `SCRIPT ERROR` line, attributed to the row that follows it —
+`EngineDebugger` message capture is measured blind to runtime errors, so no
+in-process guard exists; a nil-property canary failed the wrapper while the engine
+still printed `[PASS]`, then was removed). `verify_wave.py --tests` routes through
+the same check. **Repo hygiene:** the 2026-10-08 owner clear-out (1 009 deletions
+plus its doc updates) was never committed — landed now (`d77aba6`), with the five
+missing `.uid` sidecars; trash removed (a stray `package-lock.json`, `__pycache__`,
+the unreferenced `mine_deploy-mechanical/` extraction). **Playtest build 2
+delivered:** `builds/vajb-orbit-0.4-2026-10-12-d77aba6-{linux,windows}/` — v0.4 on
+the menu, CHANGELOG 0.4, the tester README re-cut (six of 0.3's eight
+ALREADY-KNOWN rows are fixed in code; three live owner-call quirks listed), Linux
+smoke-tested clean (Vulkan, exit 0, benign leaks only), Windows verified
+structurally, zips + SHA256SUMS written. `19_testing_notes.md`'s 2026-10-12
+amendment re-cuts the eye list for build 2. **P3's remaining work is the owner's
+alone:** the eye list, the TICKS ratifications, and the rulings T-178/T-179/
+T-181/T-182. Full block: `MASTER_REPORT.md` §6's "P3 phase-prep close".
 
 **Updated 2026-10-11 (S41 the composition pass closed — the D23 design audit implemented).**
 Gate **1300 → 1330/0** ×2 hermetic on fresh scratch stores (only T-155's salvo
