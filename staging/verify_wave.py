@@ -11,7 +11,8 @@ Modes:
                                      - modified / added / deleted files
                                      - fails (exit 1) if any modified file is in --forbidden
                                      - fails if any --expect-reports file is missing/empty
-                                     - optionally runs the headless test gate (--tests)
+                                     - optionally runs the headless test gate (--tests) through
+                                       staging/gate.py (SCRIPT ERROR guard included, T-183)
 
 Examples:
   py -3.14 staging/verify_wave.py snapshot --name wave2_start
@@ -22,7 +23,6 @@ import argparse
 import hashlib
 import json
 import os
-import subprocess
 import sys
 
 WORKSPACE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -34,36 +34,15 @@ SKIP_DIRS = {
 }
 MAX_FILE_BYTES = 10 * 1024 * 1024
 
-def _godot_binary():
-    """Resolve the headless Godot binary for this host.
-
-    Order: $VAJB_GODOT, $GODOT_CONSOLE (the host-neutral name every project
-    document uses; set in crushrc), then the Windows console build (so the
-    mirrored Windows workspace keeps working unchanged), then a bare `godot` on
-    PATH - the Linux host symlinks it to the 4.7.2 stable build.
+def _gate():
+    """The shared gate wrapper (staging/gate.py) - the single owner of the
+    pinned CONTRACTS section 9 command, the SCRIPT ERROR guard (T-183) and
+    the scratch-store hermeticity.
     """
-    for env in ("VAJB_GODOT", "GODOT_CONSOLE"):
-        override = os.environ.get(env)
-        if override:
-            return override
-    windows = "C:/Godot_4_7_2/Godot_v4.7.2-stable_win64_console.exe"
-    if os.path.exists(windows):
-        return windows
-    linux = os.path.expanduser("~/.local/bin/godot")
-    if os.path.exists(linux):
-        return linux
-    return "godot"
-
-
-TEST_CMD = [
-    _godot_binary(),
-    "--headless",
-    "--path",
-    os.path.join(WORKSPACE, "vajb-orbit"),
-    "res://tests/headless_runner.tscn",
-    "--quit-after",
-    "1200",
-]
+    here = os.path.dirname(os.path.abspath(__file__))
+    sys.path.insert(0, here)
+    import gate
+    return gate
 
 
 SKIP_FILES = {"crush.log"}
@@ -161,10 +140,8 @@ def cmd_verify(args):
 
     if args.tests:
         print("--- running headless test gate ---")
-        proc = subprocess.run(TEST_CMD, capture_output=True, text=True, cwd=WORKSPACE, timeout=600)
-        tail = "\n".join((proc.stdout + proc.stderr).splitlines()[-15:])
-        print(tail)
-        ok = proc.returncode == 0 and "[SUMMARY]" in proc.stdout + proc.stderr and "failed=0" in proc.stdout + proc.stderr
+        ok, _ = _gate().run_once("verify")
+        print("--- gate %s ---" % ("ok" if ok else "FAIL"))
         if not ok:
             problems.append("headless test gate failed")
             summary["problems"] = problems

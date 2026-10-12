@@ -164,11 +164,13 @@ at their PROPOSED value).
 - `docs/gameplay/18_engine_spec.md` — the engine contract. §2.1 carries
   owner rulings 8–26. **Owner-locked**: no worker may edit it; owed spec
   edits are the owner's (MASTER_REPORT §3 item 1).
-- Universal test gate: `res://tests/headless_runner.tscn` → `[SUMMARY]
-  passed=<live count> failed=0`, run **twice on fresh scratch stores**
-  (`XDG_DATA_HOME=$(mktemp -d)`), byte-identical; CONTRACTS §14's runner
+- Universal test gate: run **`staging/gate.py --times 2`** — the pinned §9
+  command on fresh scratch stores, `[SUMMARY] passed=<live count> failed=0`
+  byte-identical across runs, **and a hard fail on any `SCRIPT ERROR` line**
+  (T-183, closed 2026-10-12: an erroring row still prints `[PASS]`, so the
+  wrapper is the only eye; CONTRACTS §9's seventh harness limit); §14's runner
   sandbox law and §9's measured block are the authority. Growth history
-  (437 → 1236 across the waves) is `MASTER_REPORT.md` §6.
+  (437 → 1330 across the waves) is `MASTER_REPORT.md` §6.
 - `staging/verify_wave.py` — mechanical wave gates: `snapshot` before a
   wave, `verify --baseline <tag> [--forbidden ...] [--expect-reports ...]
   [--tests]` after. Baselines live in `.agents/gen/_state/_wave_state/`

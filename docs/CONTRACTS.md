@@ -40,27 +40,27 @@ later request; one section costs ~2-3k.
 | §8 | Economy / state seams | L506–L549 |
 | §8.1 | Slice 0 — physics & fuel (pinned additions, 2026-09-21) | L550–L685 |
 | §8.2 | Slice 2 — fight (pinned additions, 2026-09-21) | L686–L890 |
-| §9 | Universal test gate | L891–L1077 |
-| §11 | P2 ship frames (2026-09-21) | L1078–L1273 |
-| §12 | P2-B1 weapon fit (2026-09-22) | L1274–L1331 |
-| §13 | P2-B proper fitting (2026-09-22) | L1332–L1453 |
-| §14 | S2.6 truth-and-feel (2026-09-22) | L1454–L1582 |
-| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1583–L1687 |
-| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L1688–L1863 |
-| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L1864–L1942 |
-| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L1943–L2015 |
-| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L2016–L2151 |
-| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2152–L2438 |
-| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2439–L2516 |
-| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L2517–L2571 |
-| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L2572–L2741 |
-| §24 | S24 world identity — stations, standing, bands, nebula (2026-10-08) | L2742–L2829 |
-| §25 | S28 economy law — the value ladder, the fee door, the battery, the b… | L2830–L2893 |
-| §26 | S25 contracts board — the registry, the reward law, the three exits … | L2894–L2966 |
-| §27 | S38 — the hub's cold start and the board's clock (2026-10-08) | L2967–L3041 |
-| §28 | S26 — bosses, arenas, insurance, vaults (2026-10-09/10) | L3042–L3198 |
-| §29 | S39 — flight feel, hostile fire and cargo (2026-10-10) | L3199–L3286 |
-| §10 | Changelog | L3287–L3741 |
+| §9 | Universal test gate | L891–L1095 |
+| §11 | P2 ship frames (2026-09-21) | L1096–L1291 |
+| §12 | P2-B1 weapon fit (2026-09-22) | L1292–L1349 |
+| §13 | P2-B proper fitting (2026-09-22) | L1350–L1471 |
+| §14 | S2.6 truth-and-feel (2026-09-22) | L1472–L1600 |
+| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1601–L1705 |
+| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L1706–L1881 |
+| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L1882–L1960 |
+| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L1961–L2033 |
+| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L2034–L2169 |
+| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2170–L2456 |
+| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2457–L2534 |
+| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L2535–L2589 |
+| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L2590–L2759 |
+| §24 | S24 world identity — stations, standing, bands, nebula (2026-10-08) | L2760–L2847 |
+| §25 | S28 economy law — the value ladder, the fee door, the battery, the b… | L2848–L2911 |
+| §26 | S25 contracts board — the registry, the reward law, the three exits … | L2912–L2984 |
+| §27 | S38 — the hub's cold start and the board's clock (2026-10-08) | L2985–L3059 |
+| §28 | S26 — bosses, arenas, insurance, vaults (2026-10-09/10) | L3060–L3216 |
+| §29 | S39 — flight feel, hostile fire and cargo (2026-10-10) | L3217–L3304 |
+| §10 | Changelog | L3305–L3773 |
 
 <!-- section-index:end -->
 
@@ -1074,6 +1074,24 @@ first pair measured `1258/0` then `1257/1` from exactly this (a stale scene path
 reviewer's own probe, fixed before the clean pair). Reach a scene from a probe with
 `load(<CONST>)` carrying the path in a `const` String, and only run the close-out pair
 once every probe file is final.
+
+**Seventh harness limit, measured at the S41 close-out (2026-10-11, ticketed T-183, cured
+2026-10-12):** a suite row that raises a runtime `SCRIPT ERROR` mid-method still reports
+`[PASS]` — the engine aborts only the method, the harness never learns, and
+`passed=1330 failed=0` hid a broken premise (`test_s24_world.gd:383` read a label S41's
+F1 had retired) until the orchestrator read the gate log by hand.
+`EngineDebugger.register_message_capture` does **not** see runtime errors (measured
+2026-10-12: a nil-property error printed with the capture registered, debugger off and
+on — zero captured messages), so no in-process guard is possible. The cure is mechanical
+and outside the engine: **the gate is run through `staging/gate.py`** — the pinned
+command above, unchanged; a fresh `XDG_DATA_HOME` scratch store per run (POSIX; §14's
+in-process sandbox is the Windows isolation); `[SUMMARY]` byte-identity across `--times
+2` runs; and a **hard fail on any `SCRIPT ERROR` line**, each attributed to the row line
+that follows it (the row whose execution raised it — the engine prints a row's
+`[PASS]`/`[FAIL]` only after the method returns). A canary row that read a nil property
+failed the wrapper while the engine still printed `[PASS]` (the negative control that
+proves the guard), then was removed; the clean pair read **1330/0 ×2 byte-identical**.
+The manual close-out grep for `SCRIPT ERROR` is retired.
 
 ## §11 P2 ship frames (2026-09-21)
 
@@ -3738,3 +3756,17 @@ bottom (the index-line form is only for retired entries).
   is **PROPOSED** on TICKS with its reversal. **Reversal:** drop the §9 S41 block
   and this entry, restore §25's `%d`, and revert each chrome token at its own
   named reversal in `S41-B1_report.md` / `S41-B4_report.md`.
+- **v0.59 (2026-10-12, phase-prep pass — the developer session, not a wave;
+  gate 1330/0 ×2 hermetic, no row moved)** — closes **T-183**: §9 gains the
+  **seventh harness limit** (a row that raises a runtime `SCRIPT ERROR` still
+  reports `[PASS]`; `EngineDebugger` message capture is measured blind to
+  runtime errors, so no in-process guard exists) and the cure,
+  **`staging/gate.py`** — the pinned §9 command unchanged, a fresh
+  `XDG_DATA_HOME` scratch store per run, `[SUMMARY]` byte-identity across
+  `--times 2`, and a hard fail on any `SCRIPT ERROR` line attributed to the
+  row line that follows it. A nil-property canary row failed the wrapper while
+  the engine printed `[PASS]` (the negative control), then was removed; the
+  clean pair read **1330/0 ×2 byte-identical**. `verify_wave.py --tests` now
+  routes through the same check. **No pinned interface moved.**
+  **Reversal:** run the raw §9 command by hand and grep its log for
+  `SCRIPT ERROR` (the pre-2026-10-12 close-out ritual).
