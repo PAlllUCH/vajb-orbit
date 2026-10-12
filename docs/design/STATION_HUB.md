@@ -42,27 +42,28 @@ and every tool result is re-sent on each later request.
 
 | Section | Topic | Lines |
 |---|---|---|
-| 1. | Intent | L70–L87 |
-| 2. | Navigation model | L88–L138 |
-| 3. | Composition | L139–L279 |
-| 4. | Node tree (exact) | L280–L406 |
-| 5. | Per-module spec | L407–L1032 |
-| 6. | Type scale | L1033–L1054 |
-| 7. | Art map | L1055–L1105 |
-| 8. | Theme items used (all present in | L1106–L1127 |
-| 9. | Motion table | L1128–L1155 |
-| 10. | Focus and input | L1156–L1176 |
-| 11. | Audio hooks | L1177–L1203 |
-| 12. | Implementation notes for the coder | L1204–L1283 |
-| 13. | Verification performed on the mockup | L1284–L1300 |
-| 14. | Open questions for the owner | L1301–L1334 |
-| 15. | Station services deck & station identity (amendment 2026-10-02, wave… | L1335–L1514 |
-| 16. | Panel consolidation and the inspector band (amendment 2026-10-03, ow… | L1515–L1553 |
-| 17. | The merged panels — design detail, the inspector law, the panel temp… | L1554–L1665 |
-| 18. | Shell v2 — the TERMINAL drawer, the OVERVIEW pane, the popup sinks (… | L1666–L1709 |
-| 19. | Station shell v2 design detail — the OVERVIEW pane and the one skele… | L1710–L1907 |
-| 20. | The ARMORY two-module rework (amendment 2026-10-04, owner's playtest… | L1908–L1946 |
-| 21. | The two-sector rework — ARMORY's two modes and the REFINERY queue pa… | L1947–L1993 |
+| 1. | Intent | L71–L88 |
+| 2. | Navigation model | L89–L139 |
+| 3. | Composition | L140–L280 |
+| 4. | Node tree (exact) | L281–L407 |
+| 5. | Per-module spec | L408–L1034 |
+| 6. | Type scale | L1035–L1056 |
+| 7. | Art map | L1057–L1107 |
+| 8. | Theme items used (all present in | L1108–L1129 |
+| 9. | Motion table | L1130–L1157 |
+| 10. | Focus and input | L1158–L1178 |
+| 11. | Audio hooks | L1179–L1205 |
+| 12. | Implementation notes for the coder | L1206–L1285 |
+| 13. | Verification performed on the mockup | L1286–L1302 |
+| 14. | Open questions for the owner | L1303–L1336 |
+| 15. | Station services deck & station identity (amendment 2026-10-02, wave… | L1337–L1516 |
+| 16. | Panel consolidation and the inspector band (amendment 2026-10-03, ow… | L1517–L1555 |
+| 17. | The merged panels — design detail, the inspector law, the panel temp… | L1556–L1667 |
+| 18. | Shell v2 — the TERMINAL drawer, the OVERVIEW pane, the popup sinks (… | L1668–L1711 |
+| 19. | Station shell v2 design detail — the OVERVIEW pane and the one skele… | L1712–L1909 |
+| 20. | The ARMORY two-module rework (amendment 2026-10-04, owner's playtest… | L1910–L1948 |
+| 21. | The two-sector rework — ARMORY's two modes and the REFINERY queue pa… | L1949–L1995 |
+| 22. | The station overhaul — owner rulings and asks (2026-10-12, phase P4 … | L1996–L2096 |
 
 <!-- section-index:end -->
 
@@ -771,8 +772,9 @@ shipped cluster is **`QUEUE` / `LOAD` / `COLLECT ALL` at 360×56 in the pane's `
 only deck whose actions sat mid-column instead of in the pinned foot band; `QUEUE ALL` / `CANCEL`
 still sit in the conversion column. The **88 px** reading above is superseded for the cluster (P1
 pins 360×56), and the **words** are now `QUEUE n` / `QUEUE ALL` / `LOAD` / `COLLECT ALL` rather than
-`REFINE N` / `REFINERY ALL`. Whether the buttons should be *renamed* to the pinned words is an owner
-call — tracked as **T-181**. **Reversal:** return the three plates to `RefineBox` at 88 px and rename
+`REFINE N` / `REFINERY ALL`. **T-181 closed 2026-10-12 (owner "ok"): the shipped words and the
+360×56 foot band stand as this section's law; the `REFINE N`/`REFINERY ALL`/88 px reading above is
+superseded in full.** **Reversal:** return the three plates to `RefineBox` at 88 px and rename
 to `REFINE N` · `REFINERY ALL` · `CANCEL`.
 
 Actions: `REFINE N` calls `Refinery.refine(profile, id, n)`; `REFINERY ALL` calls `Refinery.refine_all(profile)`.
@@ -1374,7 +1376,7 @@ modules. Every service below is a panel under it."
 |---|---|---|---|
 | Rail entry `SERVICES` | rail entry 8 between REPAIRS and LAUNCH (LAUNCH becomes entry 9). Nine 56 px entries + 8 × 6 px separation = 552 px inside the 769 px rail content box; the spacer absorbs the rest. Reversal: SERVICES appended below LAUNCH — LAUNCH keeps entry 8, its live entry. Tick **U1** | `StationButton` → `ui_button_plate_*` (A5.4 `Pressables`) | 14 §1:13; live rail `ui/screens/station.gd:67` (`enum Module`, 8 entries) + `:80-87` (`MODULE_LABELS`, LAUNCH eighth); ASSET_CATALOG.md:437 |
 | Rail icon | the station's faction glyph `icon_insignia_<faction>_48.png` at the rail idiom's 40×40 (as `icon_equip_module_48` at 40, §7.1), `modulate text_primary`. Reversal: `icon_map_node_station_48` returns. **U1** | own `TextureRect` (A5.2(iii)) | ASSET_CATALOG.md:332-334 (the _16/_48/_96/_192 cuts) |
-| Service strip | three `Button`s (base `Button` theme, `toggle_mode`, min (0, **32**)): `CONTRACTS` / `INSURANCE` / `VAULTS`; one service panel below at a time. **S41 amendment (2026-10-11, D23's F15):** the strip wears the chip row's 32 px height and its `StationValue` ink so it shares visual DNA with the SHIPYARD's mode plates (the earlier min (0, 56) is superseded; **T-182**). Reversal: the strip back to 56 px; the labels `BOARD`/`POLICY`/`STORAGE` (U2's own). | base `Button` bevel (`button_*`, UI_SPEC §2.1 — theme cite) | 14 §1:19-22; UI_SPEC.md:63-71 |
+| Service strip | three `Button`s (base `Button` theme, `toggle_mode`, min (0, **32**)): `CONTRACTS` / `INSURANCE` / `VAULTS`; one service panel below at a time. **S41 amendment (2026-10-11, D23's F15):** the strip wears the chip row's 32 px height and its `StationValue` ink so it shares visual DNA with the SHIPYARD's mode plates (the earlier min (0, 56) is superseded). **T-182 closed 2026-10-12 (owner "ok"): the 32 px strip stands.** Reversal: the strip back to 56 px; the labels `BOARD`/`POLICY`/`STORAGE` (U2's own). | base `Button` bevel (`button_*`, UI_SPEC §2.1 — theme cite) | 14 §1:19-22; UI_SPEC.md:63-71 |
 | Unavailable service | the strip button keeps its label at `button_disabled` + `text_dim` and a `StationCaption` reason sits under the strip: Choir station → "the Choir does not believe in accidents"; outpost → "fly to a capital" (both 14 verbatim). State by label + disabled plate, never colour alone. Reversal: hide unavailable services instead. **U2** | §3.1/§3.1b label idiom (A5.4 `State chips`) | 14 §1:21; 14 §8 |
 | PAY BOUNTY strip | heat > 0 only, below the service strip: `PAY BOUNTY` (the pin's own words — nothing to tick), one confirm (14 §7) | `icon_service_bounty.svg` 24×24 in its own rect + flat chip | 14 §7:133-134; ASSET_CATALOG.md:391 |
 
@@ -1990,3 +1992,104 @@ P34 / P35 stand.
 Ticks **T-132/T-133** carry the interpretation call and the value pack. Every
 pin is PROPOSED with its reversal column; A5.5/N24 govern every hover and
 focus state.
+
+## 22. The station overhaul — owner rulings and asks (2026-10-12, phase P4 input; design pending D24)
+
+The owner's playtest of build 2 (2026-10-12) closed P3 and opened P4. The
+rulings below are **owner-ruled direction**; the actual layout numbers, tokens
+and acceptance rows land in the **D24 design round**
+(`.agents/gen/slices/D24-station-overhaul-design/`), which amends the owning
+sections of this file, `UI_SPEC.md`, `07_crafting.md` and `AUDIO_SPEC.md`.
+Nothing here is a worker's choice: D24 derives every number from the standing
+laws (§3 composition, §19.1 P-numbers, UI_SPEC §3.10 A5, §16) or writes it
+**PROPOSED** with its reversal. Verbatim owner words are quoted per item.
+
+**Ruling — the OVERVIEW deck becomes one 3×3 grid of nine module buttons
+(closes the S41 fold tradeoff, B2/F01).** Owner: *"i want it the same as [the
+six-tile grid] above, so a grid of 9 3x3 buttons in total."* Today the deck is
+the P23 six department tiles (`overview_panel.gd` `TILES`, 3×2, `TILE_MIN`
+300×140, 3 columns) plus the P25 three service rows; the S41 tradeoff sat the
+hull block below the fold to give the service rows the unscrolled seat. The
+nine buttons are the deck's whole deep-link set: **ARMORY, REFINERY, EXCHANGE,
+AUCTION, SHIPYARD, LAUNCH, CONTRACTS, INSURANCE, VAULTS** — the P25 service
+rows retire into the grid as tiles. The grid re-derives its own tile minimum
+(a 3-column row of 300 px tiles cannot seat in the ~756 px pane; the D24
+amendment pins the tile size, separation and the hull-block seat with the
+S40/S41 ink law intact). Reversal: the 3×2 tiles + the P25 rows.
+
+**Finding — T-184: the OVERVIEW's ARMORY and LAUNCH tile glyphs are not
+visible (owner playtest).** The two tiles are the only untinted ones
+(`overview_panel.gd:33,38`, `tinted: false`) and the only ones whose icons are
+raster masters (`icon_equip_module.png`, `icon_map_route.png`) modulated
+`Color.WHITE` (`:251`), while the four tinted SVG glyphs modulate
+`text_caption` and read fine. Proposed mechanism: the raster masters render
+dark on the C1 slab `#1d1f21–#252628`. Cure rides the grid rework: modulate
+`text_caption` (or remaster the two icons as SVG). Reversal: WHITE modulate.
+
+**Ask — every buy action carries a confirmation popup.** Owner: *"every buy
+action needs to have popup with 'OK' button. So when i buy a ship there should
+be a popup: Are you sure you want to buy SHIP X for Y credits."* The popup
+sink already exists: `autoload/dialog_manager.gd` `confirm(id, title, body,
+confirm_text, cancel_text)` / `message(..., "OK")` through `Router.push_overlay`
+(IMPLEMENTATION_PLAN §3.5). D24 pins which doors count as "buy" (hull buy,
+module buy, ammo, insurance, vault rent, shipyard queue) and the wording law.
+
+**Ask — the hold is visible everywhere as a C-key Cargo popup.** Owner: *"i
+cannot see my current inventory anywhere on station, i can buy ammo but cannot
+see what i have on ship (ammo, materials, etc). a button for Cargo (C) to
+popup would be nice, same in space."* Today: flight has the HUD `CargoBlock`
+(S39/T-170) and `cargo_toggle` is bound to C (`project.godot`); the station
+shows the hold only through the exchange's hold list (what the station buys)
+and the armory's `HOLD %d/%d` subtitle. D24 pins one cargo overlay law for
+both contexts, contents (ammo rounds, ore, ingots, components, fuel cells) and
+the C binding.
+
+**Ask — the LAUNCH deck gets a launch sequence with sound.** Owner: *"the
+button itself is ok. i want a launch sequence not only loading screen and some
+sound."* Today undock emits `launch_requested()` → route `&"loading"`
+(`launch_panel.gd:48,859`). D24 pins the sequence beats (P29's two-press law
+stands), the audio cue rows (AUDIO_SPEC §3's S-table gains them) and where the
+sequence plays (an overlay before the loading route, or in-scene departure).
+
+**Ask — the ARMORY gains an equipped list.** Owner: *"the current way of
+seeing ship overview in armory is okay but a list of all equipped items in
+slots would be nice as well."* Today the armory shows the SLOT LAYOUT grid
+(`GridBlock`), CELL INFO and the five weapon racks. D24 pins the list: one row
+per fitted module/weapon, its slot cell, its name and its stat line.
+
+**Ask — the REFINERY gains Load all, a machine read and a crafting tab.**
+Owner: *"i like refinery slots but it needs a buttons for 'Load all' and a
+better graphical representation of current available machines and running
+ones. Also i think the layout of buttons might need a bit of work. also in
+refinery another tab for crafting items and components not only refining
+ores."* Today: `QUEUE`/`LOAD`/`COLLECT ALL` at 360×56 in the foot band
+(§5.7), the job list on the right, the SLOTS readout in the header band (P42).
+D24 pins the `LOAD ALL` door, the machine-state idiom (available / running /
+done), the button layout and the CRAFT tab — whose economy is
+`07_crafting.md`'s to spec for real (its §5).
+
+**Ask — the EXCHANGE gains bulk sell.** Owner: *"in exchange add a button to
+my items: sell or add checkbox so that i can check them and sell in bulk."*
+Today each hold row carries its own INSPECT chip and a 56 px SELL plate
+(`exchange_panel.gd:39,51`). D24 pins the selection model (checkboxes vs a
+select-all + SELL ALL door) and the wording.
+
+**Ask — the SHIPYARD build segment is reworked.** Owner: *"the SHIPYARD build
+segment needs rework as well. i want it looking more like refinery/auction,
+the same style. now it only uses credits. it should be separated into
+different categories and use materials."* Today the build is materials + labour
+by law (`game/shipyard.gd` §3.1's hull bills, §3.2's module shape rule) but
+the view presents CR figures (`BUILD_HULL_FORMAT "%s · %d CR TO BUY · %d CR
+TO BUILD"`, `shipyard_panel.gd:146`). D24 pins the refinery/auction-style
+presentation: category separation and the material bill shown as materials.
+
+**Postponed (owner):** the Pyre ring cascade ruling (**T-179**, *"didn't
+test, postpone"*) — code stays as shipped. The S41 chrome tokens stay
+**PROPOSED** (the owner's reply to that row carried T-184 instead of a
+ruling); they re-present after the grid rework.
+
+**Also ratified 2026-10-12 and recorded in place:** the caption tone (UI_SPEC
+§16.1 A1), the refinery action words (§5.7, T-181), the 32 px service strip
+(§15.1, T-182), and the live shipyard build band (10 §3.1, T-178). The
+T-174/T-175/T-176 cures are owner-approved and ride the D24-following
+implementation waves.

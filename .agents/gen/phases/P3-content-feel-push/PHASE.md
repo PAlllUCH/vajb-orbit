@@ -1,7 +1,7 @@
 ---
 phase: P3
 title: Content & feel push (playtest-2 cycle)
-status: exit-pending (build 2 delivered 2026-10-12; awaiting the owner's playtest)
+status: closed (2026-10-12 — the owner's build-2 playtest ran; rulings folded; P4 opened)
 slices: [S24, S28, S25, S38, S26, S27]
 ---
 
@@ -10,6 +10,12 @@ slices: [S24, S28, S25, S38, S26, S27]
 > trimmed to the remaining slices and reworked as a checkbox list, ticked as
 > each slice closes. S21–S23, the D15–D22 design rounds and S28–S37 shipped and
 > are archived (`_archive/slices/`, `MASTER_REPORT.md` §6).
+
+**2026-10-12 (phase close):** the owner's eye over build 2 ran — findings **T-184**
+(the overview's ARMORY/LAUNCH tile glyphs invisible) and **T-185** (a launch
+sequence with sound), the ten presented rulings folded (STATION_HUB §22 records
+them, MASTER_REPORT §6), and the station-overhaul asks opened **P4**
+(`phases/P4-station-overhaul/`). P3 is **closed**.
 
 # P3 — Content & feel push (playtest-2 cycle)
 

@@ -10,6 +10,17 @@ w7 fixes, review2). Wave-1 amendment: `docs/design/IMPLEMENTATION_PLAN.md` §9.8
 
 ## 2026-10-12 amendment (phase-3 close — this file is now the playtest-2 eye list)
 
+**The pass ran the same day (2026-10-12, the owner's eye over build 2).** Findings:
+**T-184** (the OVERVIEW's ARMORY and LAUNCH tile glyphs not visible) and **T-185**
+(a launch sequence with sound, not only the loading screen); the ten presented
+rulings folded into the owning docs (STATION_HUB §22 records them all); and the
+station-overhaul asks (armory equipped list, the C-key Cargo popup on station and
+in space, refinery Load all + machine read + the crafting tab, exchange bulk
+sell, buy-confirmation popups, the shipyard build rework, the OVERVIEW 3×3 grid)
+opened **P4** — `phases/P4-station-overhaul/`, queued as the **D24 design round**.
+B2-1 and B2-2 below remain the owner's direction picks and ride P4 with the rest.
+**P3 is closed.**
+
 The batch-2 era below is **history**: the owner's playtests #1 (2026-10-09) and #2
 (2026-10-10) ran over the live build, and every finding they filed closed inside the
 P3 waves (T-160; T-164–T-170 — all CLOSED, `LOW_BACKLOG.md`). What P3 still owes is the

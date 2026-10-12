@@ -27,10 +27,18 @@ prefix, nor one `staging/` driver). One live session per workspace.
 
 ## Queue
 
-(empty — no live design item. **Owner 2026-10-07:** a fresh design round
-regenerates the planning; this queue refills from it. The chrome family's
-design law D21 closed 2026-10-06 and its implementation shipped as S36/S37,
-both closed and archived; the next design round owns the S24–S27 planning.)
+1. **D24 — the station-overhaul design round (P4 opener; queued 2026-10-12).**
+   The owner's build-2 playtest asks (nine items, verbatim in
+   `phases/P4-station-overhaul/PHASE.md`, measured state in
+   `docs/design/STATION_HUB.md` §22) become pinned design: the OVERVIEW 3×3
+   grid of nine, the buy-confirmation law, the C-key Cargo overlay, the launch
+   sequence + cues, the armory equipped list, refinery LOAD ALL + machine read
+   + the CRAFT tab, exchange bulk sell, the shipyard build rework, and the
+   T-174/T-175/T-176 cures folded in. Brief:
+   `slices/D24-station-overhaul-design/D24_BRIEF.md`; prompts:
+   `D24_prompts.md` (A1 `hyper/glm-5.3` @ high, then the mandatory R1).
+   **No implementation wave dispatches before this closes** (owner: workers
+   need a design).
 
 ## Parked (owner-gated — not queued; say the item and its five-piece lands)
 

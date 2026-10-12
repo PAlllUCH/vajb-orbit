@@ -185,6 +185,13 @@ miners, not refiners) and 03 components. One recipe per class. **Rule:
 materials ≈ 20–30 % of list value, labour = 35 % of list, so a build totals
 ≈ 55–70 % of the auction list (§4).**
 
+**T-178 closed 2026-10-12 (owner, playtest build 2 — "ok for now"):** after S28's
+ore values the nine live builds re-derive at **47.7–59.1 %** of auction list with
+materials at 15.2–19.3 %, under this rule's own sketch band. The owner accepts the
+live band for now — no labour change, no band re-cut. The sketch above stays the
+doc's own arithmetic; the live ladder is the shipped numbers. Reversal: none
+(drift, owner-accepted).
+
 | Class | Materials | Labour (CR) | vs list 08 §2 |
 |-------|-----------|------------:|--------------:|
 | Fighter | 45× `mineral_iron`, 25× `mineral_chromium`, 2× `comp_scrap_1` | 3 150 | 9 000 |

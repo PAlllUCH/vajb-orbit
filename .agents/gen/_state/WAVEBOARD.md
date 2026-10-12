@@ -8,11 +8,29 @@
 
 Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 
-## Queued (phase P3 — `phases/P3-content-feel-push/`; one live session, one item per order)
+## Queued (phase P4 — `phases/P4-station-overhaul/`; one live session, one item per order)
 
 | Pos | Lane item | Wave | Runs after | The collision/dependency that forces the order |
 |---|---|---|---|---|
-| — | — | **queue empty — build 2 delivered; P3's exit is the owner's eye, then a fresh P4 planning round** | S41 closed 2026-10-11; phase-prep closed 2026-10-12 | Playtest build 2 exists at `builds/vajb-orbit-0.4-2026-10-12-d77aba6-{linux,windows}/` (v0.4, gate 1330/0 ×2 hermetic, Linux smoke-tested). The owner plays it against `19_testing_notes.md`'s 2026-10-12 eye list; the next code work follows a fresh planning round. |
+| 1 | **D24 — the station-overhaul design round** (design lane) | D24 | P3 closed 2026-10-12; D24 is the phase opener | **Design before code** (owner: "workers need a design, they cannot work blindly"): every P4 implementation wave's brief re-cuts from D24's amendments, so D24 owns `STATION_HUB.md` + the design docs first and no S-wave may hold them. Brief: `slices/D24-station-overhaul-design/D24_BRIEF.md`; prompts: `D24_prompts.md`. |
+
+**Updated 2026-10-12 (P3 CLOSED — the owner's build-2 playtest ran; P4 opened).**
+The exit pass filed **T-184** (the OVERVIEW's ARMORY/LAUNCH tile glyphs not
+visible — the two untinted raster icons modulate WHITE against the C1 slab) and
+**T-185** (a launch sequence with sound), and ruled on the ten presented ticks:
+**caption tone RATIFIED** (UI_SPEC §16.1 A1); **T-174/T-175/T-176 cures
+approved** (ride P4); **T-178 closed** ("ok for now" — 10 §3.1's block);
+**T-181/T-182 closed** (STATION_HUB §5.7/§15.1 carry the rulings); **the
+OVERVIEW tradeoff superseded** by the owner's 3×3-grid ruling; **T-179
+postponed** ("didn't test, postpone"); the **S41 chrome tokens stay PROPOSED**
+(the reply carried T-184 instead of a ruling; they re-present with the
+reworked OVERVIEW). The station-overhaul asks — the armory equipped list, the
+C-key Cargo popup, refinery LOAD ALL + machine read + the CRAFT tab, exchange
+bulk sell, buy-confirmation popups, the shipyard build rework, the 3×3 grid —
+are recorded verbatim in **STATION_HUB §22** and `phases/P4-station-overhaul/`,
+queued as **D24** in the design lane (`dispatch_designer.md` item 1). Next free
+ticket **T-186**. Full block: `MASTER_REPORT.md` §6's "P3 close — the owner's
+playtest of build 2".
 
 **Updated 2026-10-12 (phase-prep pass closed — the developer session, housekeeping
 not a wave).** The gate re-read **1330/0 ×2 hermetic on fresh scratch stores,

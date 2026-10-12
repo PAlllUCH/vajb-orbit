@@ -34,7 +34,7 @@ and every tool result is re-sent on each later request.
 | 13. | The D20 fix wave — exchange parity, the armory browser, the hover-in… | L1360–L1397 |
 | 14. | Exchange sell cluster + the OVERVIEW tile plates (amendment 2026-10-… | L1398–L1443 |
 | 15. | The one true-aspect chrome family (amendment 2026-10-05, owner rulin… | L1444–L1861 |
-| 16. | The legibility pass — the caption token and the two unroofed surface… | L1862–L1898 |
+| 16. | The legibility pass — the caption token and the two unroofed surface… | L1862–L1900 |
 
 <!-- section-index:end -->
 
@@ -1877,6 +1877,8 @@ Measured on the shipped fills: `#6b7484` reads **2.85–2.96:1** on the row/plat
 
 Every pin is **PROPOSED** with its reversal column. A1 is a **tone change to shared
 chrome** and awaits the owner's ratify; A2/A3 are the two surfaces the owner named.
+**A1 RATIFIED 2026-10-12 (owner "ok", playtest build 2):** `text_caption` /
+`text_caption_void` stand as shipped; the reversal column stays for the record.
 
 ### 16.2 Recorded, not fixed here (T-174/T-175/T-176)
 

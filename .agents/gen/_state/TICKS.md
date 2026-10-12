@@ -5,7 +5,14 @@ file when decided or done** (deleted at the wave close-out or the ruling — the
 record lives in the cited file and `MASTER_REPORT.md` §6, this is the index
 only). Refreshed at every wave close-out and after every owner ruling.
 
-*Last refreshed: 2026-10-12 (phase-prep close — the developer session, housekeeping
+*Last refreshed: 2026-10-12 (the owner's build-2 playtest **ran** — P3's exit pass. The
+ten presented rulings folded: caption tone **RATIFIED**, T-174/T-175/T-176 cures **approved**
+(ride P4), T-178/T-181/T-182 **closed**, the OVERVIEW tradeoff **superseded** by STATION_HUB
+§22's 3×3 grid ruling, T-179 **postponed**; **T-184/T-185 filed** (the overview tile glyphs;
+the launch sequence), next free **T-186**. The station-overhaul asks are the **P4 input**
+(STATION_HUB §22, `phases/P4-station-overhaul/`), queued as the D24 design round — the
+design the workers need before code. **P3 is closed.**)*
+*Previously 2026-10-12 (phase-prep close — the developer session, housekeeping
 not a wave: gate **1330/0 ×2 hermetic**, **T-183 closed** via `staging/gate.py` (the
 SCRIPT ERROR guard), the 2026-10-08 clear-out landed in git, and **playtest build 2
 delivered** at `builds/vajb-orbit-0.4-2026-10-12-d77aba6-{linux,windows}/` — v0.4,
@@ -71,42 +78,8 @@ plan)*
 
 ## Waiting on the owner
 
-- **The caption tone (S40, brief §10 T1).** `text_caption` `#acb2ba` /
-  `text_caption_void` `#969da5` are **PROPOSED** in `docs/design/UI_SPEC.md` §16.1
-  A1 and shipped: the shared `SectionHeader` / `StationCaption` / `FlavourText`
-  variations moved off `text_dim` onto them (measured 6.15–6.77:1 where
-  `text_dim` read 2.85–2.96:1). Ratify or re-cut the tone. Reversal: `text_dim`
-  on the three variations.
-- **Four pinned-idiom legibility sites (S40, brief §10 T2).** Recorded in
-  `.agents/gen/slices/S40-legibility/S40_REVIEW.md` "After": the AUCTION family-tab
-  ink (9 labels, 3.47:1, the theme's `font_unselected_color`), the SHIPYARD
-  comparison rows (18, 4.08:1 = §1's documented ≈4.0:1 floor), the SHIPYARD
-  `NOMINAL` reads (3, P13 pins `text_dim`), the SERVICES board note + roll
-  countdown (2, `contracts_panel.gd:677,681`). Each cure is one line; each
-  supersedes a pinned idiom, so it is the owner's call. **T-174/T-175/T-176**
-  carry the surface-level ones.
-- **The shipyard's build band post-S28 (S27, T-178).** Change 02's 2026-10-08 ore
-  values moved under 10 §3.1's untouched material rows, so the nine hull builds
-  now re-derive at **47.7–59.1 %** of auction list (materials 15.2–19.3 %), under
-  the doc's own "materials ≈ 20–30 % … a build totals ≈ 55–70 %" band. Play-safe
-  (building still saves), but the doc band is false on the live ladder. 10 §4
-  names the lever (labour %, never the frozen list prices, never the ore table);
-  needs an owner-ticked amendment. Reversal: none (drift, not a code defect).
-- **The Pyre ring's own-kill cascade (S27, T-179).** A ring kill is itself a
-  below-quarter kill, so in a dense spawn one Pyre kill can chain-detonate rings
-  from each new victim's position (it terminates — dead hulls do not refire and
-  each victim is excluded from its own ring — but N kills can pay N × 50 across
-  the group). 15 §4's literal text already says a below-quarter kill detonates
-  its ring, so this is a ruling on **interaction density**, not a code defect:
-  ratify the cascade or gate the ring on the killing blow's source (player shots
-  only). Code stays as shipped until ruled.
-- **The OVERVIEW tradeoff (S41, B2/F01).** The HIGH fix moved the services block
-  (CONTRACTS · INSURANCE · VAULTS) **out of the scroll** so all three deep-link
-  rows are visible unscrolled — the deck's navigation promise (P26) now holds. The
-  cost: the hull block (hull/shield readouts and the pane's only REPAIR chip) moved
-  **below the fold** inside `%BlockScroll`, so it needs a scroll. Both P22 and P26
-  are satisfied; which one the owner would rather lead with is a taste call.
-  Reversal: the services rows return to `%BlockStack` (`overview_panel.gd`).
+*Decided rows from the 2026-10-12 pass left this file per the law — the record lives in the owning docs and `MASTER_REPORT.md` §6: the caption tone RATIFIED (UI_SPEC §16.1 A1), the T-174/T-175/T-176 cures approved (LOW_BACKLOG), T-178/T-181/T-182 closed (10 §3.1 / STATION_HUB §5.7 / §15.1), the OVERVIEW tradeoff superseded by STATION_HUB §22's 3×3 grid ruling.*
+
 - **S41's new chrome tokens (all PROPOSED; the owner ratifies shared-chrome
   tones).** F7 gave every disabled plate a 1 px `metal_mid` edge
   (`DISABLED_EDGE`, `build_theme.gd:133`); F9 moved the scrollbar grabber to
@@ -116,13 +89,26 @@ plan)*
   `PREVIEW_FRACTION` 0.60 (`shipyard_panel.gd:104`) and F15 set the four shipyard
   mode plates to the chip row's 32 px / 18 px ink. **No colour value changed** —
   every token is an existing one reused, so no contrast re-measurement is owed.
-  Reversals are in `S41-B1_report.md` and `S41-B4_report.md`.
+  The owner's 2026-10-12 reply to this row carried the T-184 finding instead of
+  a ruling; re-present after the P4 overview grid rework. Reversals are in
+  `S41-B1_report.md` and `S41-B4_report.md`.
+- **The Pyre ring's own-kill cascade (S27, T-179 — POSTPONED).** A ring kill is
+  itself a below-quarter kill, so in a dense spawn one Pyre kill can
+  chain-detonate rings from each new victim's position (it terminates; N kills
+  can pay N × 50 across the group). 15 §4's literal text already says a
+  below-quarter kill detonates its ring, so this is a ruling on **interaction
+  density**, not a code defect: ratify the cascade or gate the ring on the
+  killing blow's source (player shots only). The owner postponed it 2026-10-12
+  ("didn't test, postpone"); code stays as shipped; re-present at the next
+  playtest.
 
 ## Open actions — no decision needed, just waiting
 
-- **Playtest pass (build 2) — the owner's own eye over the delivered build:** the
-  2026-10-12 eye list in `docs/gameplay/19_testing_notes.md` (B2-1/B2-2, everything
-  P3 shipped after 0.3, the S41 composition, the menu keyboard row), plus the
-  ALREADY-KNOWN table in the build's README (the tester template). The build is
-  `builds/vajb-orbit-0.4-2026-10-12-d77aba6-{linux,windows}/` (v0.4, gate 1330/0 ×2
-  hermetic, Linux smoke-tested). This pass is P3's exit criterion.
+- **P4 — the station overhaul.** The owner's 2026-10-12 asks (verbatim in
+  `docs/design/STATION_HUB.md` §22 and `phases/P4-station-overhaul/PHASE.md`) are
+  queued as the **D24 design round** — the design the implementation workers need
+  before any code. Dispatch with the short prompt in §"Designer lane" handoff;
+  brief `slices/D24-station-overhaul-design/D24_BRIEF.md`.
+- **The next playtest.** After P4's waves land, the owner's eye over the next
+  build (the P4 exit pass) — T-179 (the Pyre cascade) re-presents there, and the
+  S41 chrome tokens re-present with the reworked OVERVIEW.
