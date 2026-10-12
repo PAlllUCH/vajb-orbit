@@ -32,8 +32,6 @@ const PROFILE_SERVICE: StringName = &"PlayerProfile"
 const SHELF_SEED := 20261011
 ## STATION_HUB section 19.3's pane content box, as the mounted shell measures it.
 const PANE_SIZE := Vector2(1768.0, 756.0)
-## The three OVERVIEW service rows F1 must keep above the fold.
-const SERVICE_ROWS: Array[String] = ["ContractsRow", "InsuranceRow", "VaultsRow"]
 ## F1's one-line identity block: the faction glyph (48) + the block's 8/8 margins + the
 ## 1 px border. A second text line puts it back over 70.
 const IDENTITY_ONE_LINE_MAX := 70.0
@@ -72,6 +70,9 @@ func teardown() -> void:
 
 ## ------------------------------------------------------------------ F1 (OVERVIEW, A4)
 
+## S42 (STATION_HUB section 23.1 P44/P46) re-cut: the three service rows are retired into
+## the 3x3 grid, so the fold law they proved is now proven by the deck itself - the whole
+## block stack fits its scroll viewport unscrolled at 16:9, every tile inside the pane.
 func test_f1_the_three_service_rows_sit_inside_the_pane_unscrolled() -> void:
 	_mount(OverviewScene)
 	var pane := _panel.get_global_rect()
@@ -80,22 +81,29 @@ func test_f1_the_three_service_rows_sit_inside_the_pane_unscrolled() -> void:
 	if scroll == null:
 		return
 	assert_eq(scroll.scroll_vertical, 0, "the assertion reads the deck unscrolled")
-	for row_name: String in SERVICE_ROWS:
-		var row := _panel.find_child(row_name, true, false) as Control
-		assert_true(row != null, "%s is built" % row_name)
-		if row == null:
+	var stack := _panel.get_node_or_null(NodePath("%BlockStack")) as Control
+	assert_true(stack != null, "the block stack is built")
+	if stack == null:
+		return
+	assert_true(
+		stack.size.y <= scroll.size.y + 0.5,
+		(
+			"the block stack (%.1f tall) fits the scroll viewport (%.1f) unscrolled - P44's 620/633 arithmetic"
+			% [stack.size.y, scroll.size.y]
+		)
+	)
+	for tile_name: String in ["ArmoryTile", "RefineryTile", "ContractsTile", "VaultsTile"]:
+		var tile := _panel.find_child(tile_name, true, false) as Control
+		assert_true(tile != null, "%s is built" % tile_name)
+		if tile == null:
 			continue
-		var bottom := row.global_position.y + row.size.y
+		var bottom := tile.global_position.y + tile.size.y
 		assert_true(
-			bottom <= pane.end.y and row.global_position.y >= pane.position.y,
+			bottom <= pane.end.y and tile.global_position.y >= pane.position.y,
 			(
 				"%s spans y %.1f..%.1f, inside the pane's content box %.1f..%.1f (unscrolled)"
-				% [row_name, row.global_position.y, bottom, pane.position.y, pane.end.y]
+				% [tile_name, tile.global_position.y, bottom, pane.position.y, pane.end.y]
 			)
-		)
-		assert_false(
-			scroll.is_ancestor_of(row),
-			"%s is outside the scroll, so the fold cannot clip it" % row_name
 		)
 
 

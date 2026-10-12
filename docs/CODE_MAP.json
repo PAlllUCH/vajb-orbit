@@ -5389,6 +5389,21 @@
    ],
    "signals": []
   },
+  "res://tests/test_s42_overview_grid.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/station_registry.gd",
+    "res://ui/screens/station.gd",
+    "res://ui/screens/station.tscn",
+    "res://ui/station/overview_panel.gd",
+    "res://ui/station/overview_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
   "res://tests/test_s4_batteries.gd": {
    "autoload": "",
    "class_name": "",
@@ -6617,11 +6632,8 @@
    "connects": [
     "button.mouse_entered \u2192 _on_tile_hover.bind(button",
     "button.mouse_exited \u2192 _on_tile_unhover.bind(button",
-    "button.pressed \u2192 _on_tile_pressed.bind(deck",
-    "chip.pressed \u2192 _on_repair_pressed",
-    "chip.pressed \u2192 _on_service_pressed",
-    "row.mouse_exited \u2192 _on_row_unhover",
-    "row.pressed \u2192 _on_service_pressed"
+    "button.pressed \u2192 _on_tile_pressed.bind(tile_data",
+    "chip.pressed \u2192 _on_repair_pressed"
    ],
    "extends": "VBoxContainer",
    "refs": [

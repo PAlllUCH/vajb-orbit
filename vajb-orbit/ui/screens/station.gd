@@ -1606,6 +1606,13 @@ func _focus_active_panel() -> void:
 	## S25: the SERVICES deck's own first focusable is its service strip (the deck is built
 	## in code, so it carries no `focus_primary` of its own).
 	if _module == SERVICES:
+		## S42 (P46): an OVERVIEW service tile's deep-link hint names its service, so the
+		## deck mounts showing that service's panel; the strip's CONTRACTS default stands
+		## when the hint is not a service the deck carries.
+		if not _focus_hint.is_empty() and _service_panes.has(_focus_hint):
+			var service_hint: StringName = _focus_hint
+			_focus_hint = &""
+			_show_service(service_hint)
 		var service_button: Button = _service_buttons.get(String(_active_service))
 		if service_button != null:
 			service_button.grab_focus()

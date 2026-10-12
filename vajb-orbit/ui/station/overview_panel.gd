@@ -1,14 +1,17 @@
 extends VBoxContainer
-## OVERVIEW pane (S30, STATION_HUB section 18 P17/P18 + section 19): the landing pane on
+## OVERVIEW pane (S42, STATION_HUB section 23.1 P44-P47 + section 19): the landing pane on
 ## dock, wearing P7's one skeleton (PaneHeader / content split / foot band). Its split
-## carries P18's five blocks as one stack inside a vertical `ScrollContainer` (P22): the
-## identity plate (section 15 treatment), the 3x2 department tiles (P23), the active hull
-## and repair summary (P24), the U2 services rows (P25) and one flavour line (P27).
+## carries P46's four blocks as one stack inside a vertical `ScrollContainer` (P22, kept
+## as the expand-aspect safety): the identity plate (section 15 treatment), P44's 3x3
+## tile grid, the active hull and repair summary (P24) and one flavour line (P27). The
+## P25 service rows retired into the grid as tiles (P44); the three service tiles
+## deep-link to the SERVICES pane with that service's panel showing (P46).
 ##
-## Contract: STATION_HUB section 19.1/19.2/19.4, UI_SPEC section 12 (A5.5 everywhere -
-## hover mutates colour and `modulate` only, never a box). Tokens only (N29); every glyph
-## is a shipped asset reused at its own cut. The pane never routes and never writes the
-## profile: it emits `navigate_requested` up and reads the catalogue down.
+## Contract: STATION_HUB section 23.1 (P44-P47) and section 19.2 (P23's tile interior and
+## states), UI_SPEC section 3.10 A5.1-A5.5 (composition, the flat Tokens box chrome) and
+## section 16.1 (the ink law). Tokens only (N29); every glyph is a shipped asset reused at
+## its own cut. The pane never routes and never writes the profile: it emits
+## `navigate_requested` up and reads the catalogue down.
 
 const TOKENS_TYPE: StringName = &"Tokens"
 const ChromeFamily := preload("res://ui/theme/chrome_family.gd")
@@ -17,8 +20,8 @@ const Catalog := preload("res://game/station_catalog.gd")
 const ShipFit := preload("res://game/ship_fit.gd")
 const RepairsService := preload("res://game/repairs.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
-## 14's 2026-10-08 block: the docked place - its service matrix (block 4's unavailable
-## state) and its own vault record.
+## 14's 2026-10-08 block: the docked place - its service matrix is the service tiles'
+## unavailable state (U2, re-seated on the tiles by P46).
 const StationRegistryScript := preload("res://game/station_registry.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
@@ -27,58 +30,47 @@ signal status_requested(message: String, danger: bool)
 signal inspect_requested(title: String, body: String, danger: bool)
 signal navigate_requested(deck: int, hint: StringName)
 
-## The six department tiles (P23), row-major ARMORY / REFINERY / EXCHANGE then AUCTION /
-## SHIPYARD / LAUNCH. `deck` is the shell's Module enum index.
-const TILES: Array[Dictionary] = [
-	{&"deck": 0, &"title": "ARMORY", &"caption": "BUY, FIT AND SWAP MODULES", &"icon": "res://assets/icons/equip/icon_equip_module.png", &"tinted": false},
-	{&"deck": 1, &"title": "REFINERY", &"caption": "3 ORE = 1 INGOT", &"icon": "res://assets/icons/cargo/icon_cargo_ore.svg", &"tinted": true},
-	{&"deck": 2, &"title": "EXCHANGE", &"caption": "SELL YOUR HOLD", &"icon": "res://assets/icons/cargo/icon_credits.svg", &"tinted": true},
-	{&"deck": 3, &"title": "AUCTION", &"caption": "THE HOUSE SHELF · 20-MINUTE RESTOCK", &"icon": "res://assets/icons/cargo/icon_credits.svg", &"tinted": true},
-	{&"deck": 4, &"title": "SHIPYARD", &"caption": "HULLS, MODULES AND REPAIRS", &"icon": "res://assets/icons/hud/icon_hull.svg", &"tinted": true},
-	{&"deck": 5, &"title": "LAUNCH", &"caption": "BRIEF, CARGO, UNDOCK", &"icon": "res://assets/icons/map/icon_map_route.png", &"tinted": false},
-]
-
-## P26: the SERVICES pane's own deck index (the deep-link target), outside P20's cycle.
+## P26: the SERVICES pane's own deck index (the three service tiles' deep-link target,
+## P46), outside P20's cycle.
 const SERVICES := 7
 
-## P25's three rows: the U2 service names, their shipped glyphs, and the readout key.
-const SERVICE_ROWS: Array[Dictionary] = [
-	{&"key": &"contracts", &"name": "CONTRACTS", &"icon": "res://assets/icons/contract/icon_contract_haul.svg"},
-	{&"key": &"insurance", &"name": "INSURANCE", &"icon": "res://assets/icons/service/icon_service_insurance.svg"},
-	{&"key": &"vaults", &"name": "VAULTS", &"icon": "res://assets/icons/service/icon_service_vault.svg"},
+## P44's nine tiles, row-major ARMORY / REFINERY / EXCHANGE then AUCTION / SHIPYARD /
+## LAUNCH then CONTRACTS / INSURANCE / VAULTS - the P25 service rows retire into the grid
+## as tiles. `deck` is the shell's deck index; the three service tiles carry the
+## `service` key P46's deep-link emits. The captions: the five P23 strings verbatim,
+## AUCTION's P46 re-cut and the three service captions (P46, PROPOSED). `tinted` is the
+## rest-ink branch P47 (T-184) generalized: every glyph joins the tinted set, so no tile
+## glyph renders WHITE on the flat box.
+const TILES: Array[Dictionary] = [
+	{&"deck": 0, &"title": "ARMORY", &"caption": "BUY, FIT AND SWAP MODULES", &"icon": "res://assets/icons/equip/icon_equip_module.png", &"tinted": true},
+	{&"deck": 1, &"title": "REFINERY", &"caption": "3 ORE = 1 INGOT", &"icon": "res://assets/icons/cargo/icon_cargo_ore.svg", &"tinted": true},
+	{&"deck": 2, &"title": "EXCHANGE", &"caption": "SELL YOUR HOLD", &"icon": "res://assets/icons/cargo/icon_credits.svg", &"tinted": true},
+	{&"deck": 3, &"title": "AUCTION", &"caption": "THE 20-MINUTE SHELF", &"icon": "res://assets/icons/cargo/icon_credits.svg", &"tinted": true},
+	{&"deck": 4, &"title": "SHIPYARD", &"caption": "HULLS, MODULES AND REPAIRS", &"icon": "res://assets/icons/hud/icon_hull.svg", &"tinted": true},
+	{&"deck": 5, &"title": "LAUNCH", &"caption": "BRIEF, CARGO, UNDOCK", &"icon": "res://assets/icons/map/icon_map_route.png", &"tinted": true},
+	{&"deck": SERVICES, &"service": &"contracts", &"title": "CONTRACTS", &"caption": "JOBS · ESCROW · STANDING", &"icon": "res://assets/icons/contract/icon_contract_haul.svg", &"tinted": true},
+	{&"deck": SERVICES, &"service": &"insurance", &"title": "INSURANCE", &"caption": "COVERS ONE LOSS", &"icon": "res://assets/icons/service/icon_service_insurance.svg", &"tinted": true},
+	{&"deck": SERVICES, &"service": &"vaults", &"title": "VAULTS", &"caption": "STAYS BEHIND WHEN YOU FLY", &"icon": "res://assets/icons/service/icon_service_vault.svg", &"tinted": true},
 ]
 
-## STATION_HUB section 19.1's own numbers (reused, not re-derived).
-const TILE_MIN := Vector2(300.0, 140.0)
+## P44's own numbers: three 240x120 tiles plus two 16 px separations seat 752 (the pin's
+## arithmetic); the P23 interior numbers stand unchanged.
+const TILE_MIN := Vector2(240.0, 120.0)
 const TILE_COLUMNS := 3
 const TILE_SEPARATION := 16
 const TILE_MARGIN := 16
 const GLYPH_SIZE := 48.0
-const ROW_HEIGHT := 76.0
-const ROW_ICON := 24.0
-const ROW_INNER_MARGIN := Vector2i(12, 8)
 const CHIP_SIZE := Vector2(96.0, 32.0)
 const CAPTION_ACTIVE_HULL := "ACTIVE HULL"
 const META_FORMAT := "%s CLASS · %d HULL · %d SLOTS"
 const REPAIR_AVAILABLE := "REPAIR AVAILABLE · %s CR"
 const ALL_NOMINAL := "ALL SYSTEMS NOMINAL"
-const CONTRACTS_FORMAT := "ACTIVE CONTRACTS %d/3"
-const CONTRACTS_MAX := 3
-const INSURED_TEXT := "INSURED · COVERS ONE LOSS"
-const UNINSURED_TEXT := "UNINSURED"
-const VAULT_FORMAT := "THIS VAULT — %d / %d UNITS"
-## U14's base capacity (PROPOSED 40/60/80 by tier). The record read below resolves the
-## docked station's own vault (14's 2026-10-08 block); the capacity stays the base tier's
-## reading, because section 4's tiers are rented per station and S26 owns the tier pane.
-## Reversal: read the record's own tier into the denominator.
-const VAULT_BASE_CAPACITY := 40
 const FLAVOUR_LINE := "THE DOCK CLAMPS ARE CHEAP. THE AMMUNITION IS NOT."
 const FACTION_ICON_TEMPLATE := "res://assets/icons/tint/icon_insignia_%s_48.png"
 const OVERVIEW_FALLBACK_ICON := "res://assets/icons/tint/icon_map_node_station_48.png"
 
 @onready var _pane_icon: TextureRect = %PaneIcon
 @onready var _stack: VBoxContainer = %BlockStack
-@onready var _service_host: VBoxContainer = %ServiceHost
 
 var _identity_plate: PanelContainer = null
 var _identity_mark: TextureRect = null
@@ -88,11 +80,10 @@ var _hull_name: Label = null
 var _hull_meta: Label = null
 var _hull_stats: Label = null
 var _hull_repair: Label = null
-var _service_reads: Dictionary = {}
-var _service_rows: Dictionary = {}
-var _service_chips: Dictionary = {}
-var _service_names: Dictionary = {}
 var _tile_glyphs: Array[TextureRect] = []
+## The three service tiles' seats (P46's deep-link emitters, U2's disabled state), keyed
+## by the registry's service id.
+var _service_tiles: Dictionary = {}
 var _identity_faction: StringName = &""
 
 
@@ -102,7 +93,6 @@ func _ready() -> void:
 	_build_identity()
 	_build_tiles()
 	_build_hull_block()
-	_build_services()
 	_build_flavour()
 	_refresh_blocks()
 
@@ -202,8 +192,9 @@ func _build_identity() -> void:
 	_identity_character = null
 
 
-## Block 2: the 3x2 department tiles (P23). A tile is a Button (container children), the
-## theme's `panel_raised` flat bevel, navigating on press.
+## Block 2: P44's 3x3 tile grid - one GridContainer, columns 3, separation 16, nine tiles
+## row-major, the deck's whole deep-link set (P46). A tile seats at its own (240, 120)
+## minimum (P44's arithmetic) and never expands into the pane's slack.
 func _build_tiles() -> void:
 	var grid := GridContainer.new()
 	grid.name = "TileGrid"
@@ -219,6 +210,11 @@ func _make_tile(tile_data: Dictionary) -> Button:
 	var button := Button.new()
 	button.name = "%sTile" % String(tile_data[&"title"]).to_pascal_case()
 	button.custom_minimum_size = TILE_MIN
+	## Developer bucket-1 at the S42 close-out (disclosed): P23's tiles expand to fill
+	## the pane's width (the D19 tile look — the drawn ~570-wide tile P45's reversal row
+	## itself cites), so TILE_MIN (240, 120) is the floor the pin says it is, not the
+	## seat. Reversal: drop the flag and the tiles hug the 752-px minimum, stranding
+	## ~1000 px of the 1756-px content box.
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.focus_mode = Control.FOCUS_ALL
 	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
@@ -246,9 +242,10 @@ func _make_tile(tile_data: Dictionary) -> Button:
 	glyph.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	glyph.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	glyph.texture = load(String(tile_data[&"icon"]))
-	## S40 (UI_SPEC section 16, A3): the tinted glyphs carry the caption tone, not
-	## `text_dim` - the C1 slab's interior measures 3.32-3.55:1 against `text_dim`.
-	glyph.modulate = _token(&"text_caption") if bool(tile_data[&"tinted"]) else Color.WHITE
+	## P47 (T-184): the rest ink is the caption tone and the hover ink is `text_primary` -
+	## every glyph joins the tinted set (S42-R0/F2: the branch's WHITE arm dropped; the
+	## `tinted` key stays the census's own data).
+	glyph.modulate = _token(&"text_caption")
 	head.add_child(glyph)
 	_tile_glyphs.append(glyph)
 	var title := Label.new()
@@ -267,28 +264,43 @@ func _make_tile(tile_data: Dictionary) -> Button:
 	foot.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(foot)
 	foot.add_child(_make_chevron())
-	var deck := int(tile_data[&"deck"])
-	button.pressed.connect(_on_tile_pressed.bind(deck))
+	var key: StringName = tile_data.get(&"service", &"")
+	if not String(key).is_empty():
+		_service_tiles[key] = {&"button": button, &"caption": caption}
+	button.pressed.connect(_on_tile_pressed.bind(tile_data))
 	button.mouse_entered.connect(_on_tile_hover.bind(button, glyph, String(tile_data[&"title"]), String(tile_data[&"caption"])))
 	button.mouse_exited.connect(_on_tile_unhover.bind(button, glyph))
 	return button
 
 
-## P23's tile chrome (S36, UI_SPEC section 15.1/15.6): the C1 `ui_tile_slab` rail cut drawn
-## as a uniform canvas at the tile rect - the transparent pad is the owner's accepted look
-## (never cropped to fill). States stay tint-only (A7).
+## P45: the tile chrome is the flat Tokens box at rest - `_flat()`'s own shape, the
+## `void_panel` fill and the 1 px `metal_mid` border (UI_SPEC section 3.10 A5.1/A5.4) -
+## the same box the identity block wears; the C1 canvas retires with the slab's
+## re-presentation row. The states stay P23's own theme boxes: the `button_hover` bevel,
+## the `button_pressed` stylebox, the `button_disabled` plate and UI_SPEC section 8 P3's
+## 1 px `accent_danger_bright` focus ring - no state changes any box.
 func _apply_tile_chrome(button: Button) -> void:
-	ChromeFamily.apply_tile(button)
+	var flat := StyleBoxFlat.new()
+	flat.bg_color = _token(&"void_panel")
+	flat.border_color = _token(&"metal_mid")
+	flat.set_border_width_all(1)
+	flat.set_corner_radius_all(0)
+	button.add_theme_stylebox_override(&"normal", flat)
+	for state: StringName in [&"hover", &"pressed", &"disabled", &"focus"]:
+		var box := get_theme_stylebox(state, &"Button")
+		if box != null:
+			button.add_theme_stylebox_override(state, box)
 
 
-func _on_tile_pressed(deck: int) -> void:
-	navigate_requested.emit(deck, &"")
+func _on_tile_pressed(tile_data: Dictionary) -> void:
+	var hint: StringName = tile_data.get(&"service", &"")
+	navigate_requested.emit(int(tile_data[&"deck"]), hint)
 
 
-## P23's hover state (A5.5 legal): the glyph brightens. Hover also publishes the tile's
-## own description on the chain (P21).
+## P23's hover state (A5.5 legal): the glyph brightens; a disabled service tile keeps its
+## rest ink. Hover also publishes the tile's own description on the chain (P21).
 func _on_tile_hover(button: Button, glyph: TextureRect, title: String, caption: String) -> void:
-	if button.button_pressed:
+	if button.button_pressed or button.disabled:
 		return
 	glyph.modulate = _token(&"text_primary")
 	inspect_requested.emit(title, caption, false)
@@ -336,85 +348,7 @@ func _on_repair_pressed() -> void:
 	navigate_requested.emit(4, &"repair")
 
 
-## Block 4: the U2 services rows (P25) - the section 3.1 76-tall row idiom, an icon 24, the
-## name, a right-aligned readout and a trailing `OPEN` chip, deep-linking to SERVICES (P26).
-##
-## S41 (D23-R1 F1): the three deep-link rows are the pane's navigation promise (P26), and
-## the measured 16:9 arithmetic (`STATION_HUB` section 19.1's own block minima against the
-## 636-tall split) cannot show them at the bottom of the block stack - the stack's content
-## is taller than the scroll's viewport, so the fold cut the block after CONTRACTS and left
-## INSURANCE and VAULTS unreachable without a scroll. The block therefore sits outside
-## `BlockScroll`, in `%ServiceHost` directly under the fold, where all three rows are
-## visible unscrolled; its bottom `size_flags_vertical = 3` spacer keeps the rows flush
-## against the fold when the host has slack. Reversal: `_build_services` adds the rows back
-## to `%BlockStack` and the `ServiceHost` node is dropped.
-func _build_services() -> void:
-	var rows := VBoxContainer.new()
-	rows.name = "ServiceRows"
-	rows.add_theme_constant_override(&"separation", 6)
-	_service_host.add_child(rows)
-	for service: Dictionary in SERVICE_ROWS:
-		rows.add_child(_make_service_row(service))
-	## The block's own slack owner (A2), after the rows: it keeps the three rows flush
-	## against the fold whenever the host has slack (the scroll above owns it at 16:9). It
-	## sits beside `ServiceRows`, never inside it, so the block still holds exactly three
-	## rows (P25).
-	var slack := Control.new()
-	slack.name = "ServiceSlack"
-	slack.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	slack.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_service_host.add_child(slack)
-
-
-func _make_service_row(service: Dictionary) -> Button:
-	var row := Button.new()
-	row.name = "%sRow" % String(service[&"name"]).to_pascal_case()
-	row.custom_minimum_size = Vector2(0.0, ROW_HEIGHT)
-	row.focus_mode = Control.FOCUS_ALL
-	row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	## S36 (UI_SPEC section 15.1): the service row wears C4 `ui_row_strip`.
-	ChromeFamily.apply_row(row)
-	var box := _make_inner(row)
-	box.add_child(_make_icon(String(service[&"icon"]), ROW_ICON, true))
-	var name_label := Label.new()
-	name_label.text = String(service[&"name"])
-	name_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	box.add_child(name_label)
-	_service_names[service[&"key"]] = name_label
-	var read := Label.new()
-	read.theme_type_variation = &"StationValue"
-	read.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	read.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	read.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	read.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	box.add_child(read)
-	_service_reads[service[&"key"]] = read
-	var chip := _make_chip("OPEN")
-	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	chip.pressed.connect(_on_service_pressed)
-	box.add_child(chip)
-	_service_rows[service[&"key"]] = row
-	_service_chips[service[&"key"]] = chip
-	row.pressed.connect(_on_service_pressed)
-	row.mouse_entered.connect(_on_row_hover.bind(String(service[&"name"])))
-	row.mouse_exited.connect(_on_row_unhover)
-	return row
-
-
-func _on_service_pressed() -> void:
-	navigate_requested.emit(SERVICES, &"")
-
-
-func _on_row_hover(name: String) -> void:
-	inspect_requested.emit(name, "OPEN THE SERVICES DECK", false)
-
-
-func _on_row_unhover() -> void:
-	inspect_requested.emit("", "", false)
-
-
-## Block 5: one flavour line (P27).
+## Block 4: one flavour line (P27).
 func _build_flavour() -> void:
 	var line := Label.new()
 	line.name = "FlavourLine"
@@ -463,34 +397,6 @@ func _make_chip(text: String) -> Button:
 	return button
 
 
-func _make_inner(button: Button) -> HBoxContainer:
-	var inner := MarginContainer.new()
-	inner.name = "RowInner"
-	inner.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	inner.add_theme_constant_override(&"margin_left", ROW_INNER_MARGIN.x)
-	inner.add_theme_constant_override(&"margin_top", ROW_INNER_MARGIN.y)
-	inner.add_theme_constant_override(&"margin_right", ROW_INNER_MARGIN.x)
-	inner.add_theme_constant_override(&"margin_bottom", ROW_INNER_MARGIN.y)
-	button.add_child(inner)
-	inner.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	var box := HBoxContainer.new()
-	box.add_theme_constant_override(&"separation", 12)
-	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	inner.add_child(box)
-	return box
-
-
-func _make_icon(path: String, icon_size: float, tinted: bool) -> TextureRect:
-	var icon := TextureRect.new()
-	icon.custom_minimum_size = Vector2(icon_size, icon_size)
-	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	icon.texture = load(path)
-	icon.modulate = _token(&"text_primary") if tinted else Color.WHITE
-	return icon
-
-
 func _tile_buttons() -> Array[Button]:
 	var out: Array[Button] = []
 	for child: Node in _stack.get_children():
@@ -503,7 +409,7 @@ func _tile_buttons() -> Array[Button]:
 
 func _refresh_blocks() -> void:
 	_refresh_hull()
-	_refresh_services()
+	_apply_service_availability()
 
 
 func _refresh_hull() -> void:
@@ -551,74 +457,32 @@ func _repair_summary(profile: ProfileScript, active: StringName) -> String:
 	return REPAIR_AVAILABLE % Catalog.group_int(fee)
 
 
-func _refresh_services() -> void:
-	var profile := _profile()
-	var contracts := 0
-	var insured := false
-	var vault_units := 0
-	if profile != null:
-		contracts = mini(int((profile.call(&"contracts") as Array).size()), CONTRACTS_MAX)
-		insured = bool(profile.call(&"insured"))
-		vault_units = _vault_units(profile)
-	if _service_reads.has(&"contracts"):
-		(_service_reads[&"contracts"] as Label).text = CONTRACTS_FORMAT % contracts
-	if _service_reads.has(&"insurance"):
-		(_service_reads[&"insurance"] as Label).text = INSURED_TEXT if insured else UNINSURED_TEXT
-	if _service_reads.has(&"vaults"):
-		(_service_reads[&"vaults"] as Label).text = VAULT_FORMAT % [vault_units, VAULT_BASE_CAPACITY]
-	_apply_service_availability(profile)
-
-
-## STATION_HUB section 15.1 U2 / 14's 2026-10-08 block: a service the docked station's
-## matrix does not carry keeps its label and goes `button_disabled`, and its readout cell
-## carries the section 1 / section 8 reason caption in `text_dim` - the label plus the
+## STATION_HUB section 15.1 U2, re-seated on the tiles by P46: a service the docked
+## station's matrix does not carry keeps its label and goes `button_disabled`, and the
+## tile's caption line carries the registry's reason in `text_dim` - the label plus the
 ## disabled plate is the state, never colour alone. A place the registry cannot resolve
-## leaves every row exactly as shipped. A5.5 (UI_SPEC section 12.5): the caption is N31's
-## in-place content swap in the pinned 76-tall row, so the row box, the chip and the
-## caption's own line box never move - only the text and its colour.
-func _apply_service_availability(profile: ProfileScript) -> void:
+## leaves every tile exactly as shipped. A5.5 (UI_SPEC section 12.5): the reason is an
+## in-place content swap on the caption's own line, so no box moves.
+func _apply_service_availability() -> void:
+	var profile := _profile()
 	var station := StationRegistryScript.docked_station(profile)
-	for service: Dictionary in SERVICE_ROWS:
-		var key: StringName = service[&"key"]
-		if not _service_rows.has(key) or not _service_reads.has(key):
+	for tile_data: Dictionary in TILES:
+		var key: StringName = tile_data.get(&"service", &"")
+		if String(key).is_empty():
 			continue
-		var available := station.is_empty() or StationRegistryScript.offers(station, key)
-		(_service_rows[key] as Button).disabled = not available
-		(_service_chips[key] as Button).disabled = not available
-		var read := _service_reads[key] as Label
-		var name_label := _service_names[key] as Label
-		var reason := "" if available else StationRegistryScript.service_reason(station, key)
-		if reason.is_empty():
-			read.remove_theme_color_override(&"font_color")
-			name_label.remove_theme_color_override(&"font_color")
+		var seat: Dictionary = _service_tiles.get(key, {})
+		if seat.is_empty():
 			continue
-		read.text = reason
-		read.add_theme_color_override(&"font_color", _token(&"text_dim"))
-		name_label.add_theme_color_override(&"font_color", _token(&"text_dim"))
-
-
-## The docked station's own vault record (14 section 9's `station_id -> {tier, contents}`):
-## the place's record alone, never the sum of every station (14's 2026-10-08 block gives the
-## seam that resolves the id). No place, no record and no contents all read 0.
-func _vault_units(profile: ProfileScript) -> int:
-	if profile == null:
-		return 0
-	var vaults: Variant = profile.call(&"vaults")
-	if not vaults is Dictionary:
-		return 0
-	var station_id := StationRegistryScript.docked_station_id(profile)
-	if station_id == &"":
-		return 0
-	var record: Variant = (vaults as Dictionary).get(String(station_id), {})
-	if not record is Dictionary:
-		return 0
-	var contents: Variant = (record as Dictionary).get(&"contents", {})
-	if not contents is Dictionary:
-		return 0
-	var total := 0
-	for value: Variant in (contents as Dictionary).values():
-		total += int(value)
-	return total
+		var available: bool = station.is_empty() or StationRegistryScript.offers(station, key)
+		var button: Button = seat[&"button"]
+		var caption := seat[&"caption"] as Label
+		button.disabled = not available
+		if available:
+			caption.text = String(tile_data[&"caption"])
+			caption.remove_theme_color_override(&"font_color")
+			continue
+		caption.text = StationRegistryScript.service_reason(station, key)
+		caption.add_theme_color_override(&"font_color", _token(&"text_dim"))
 
 
 func _apply_tokens() -> void:

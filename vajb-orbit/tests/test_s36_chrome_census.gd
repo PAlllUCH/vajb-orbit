@@ -202,8 +202,9 @@ func test_a_every_class_cut_matches_its_master_aspect() -> void:
 		)
 
 
-## The OVERVIEW tile draws the C1 cut as a uniform canvas (the drawn rect is the cut's
-## aspect, never a stretch): the canvas is aspect-preserving and pointer-transparent.
+## S42 (STATION_HUB section 23.1 P45): the OVERVIEW tiles wear the flat Tokens box,
+## not the C1 canvas - the C1 slab's true-aspect band cannot seat the 756-pane's
+## 3-column row. Asserted as absence plus the flat box's own shape.
 func test_a_the_tile_draws_the_c1_canvas_at_its_own_aspect() -> void:
 	var screen := _mount()
 	var tile := _find(screen, "ArmoryTile") as Button
@@ -211,23 +212,16 @@ func test_a_the_tile_draws_the_c1_canvas_at_its_own_aspect() -> void:
 	if tile == null:
 		return
 	var canvas := tile.get_node_or_null(NodePath("ChromeCanvas")) as TextureRect
-	assert_true(canvas != null, "the tile carries its C1 chrome canvas")
-	if canvas == null:
+	assert_true(canvas == null, "the tile carries no C1 chrome canvas (P45 retired it)")
+	var box := tile.get_theme_stylebox(&"normal") as StyleBoxFlat
+	assert_true(box != null, "the tile wears the flat Tokens box")
+	if box == null:
 		return
 	assert_eq(
-		canvas.texture.resource_path, ChromeFamily.cut_path("C1"), "the C1 ui_tile_slab cut"
+		box.border_color, ThemeRes.get_color(&"metal_mid", &"Tokens"), "the 1 px metal_mid border"
 	)
-	assert_eq(
-		canvas.stretch_mode, TextureRect.STRETCH_KEEP_ASPECT_CENTERED,
-		"drawn uniformly (the pad canvas is the look, never cropped to fill)"
-	)
-	assert_eq(canvas.mouse_filter, Control.MOUSE_FILTER_IGNORE, "and never eats the pointer")
-	var slot := Vector2(567.0, 140.0)
-	var drawn := ChromeFamily.canvas_rect(slot, "C1")
-	assert_true(
-		_aspect_close(_aspect(drawn.size), ChromeFamily.cut_aspect("C1")),
-		"the drawn rect keeps the cut's aspect"
-	)
+	assert_eq(box.border_width_left, 1, "one pixel, the _flat() shape")
+	assert_eq(tile.custom_minimum_size, Vector2(240.0, 120.0), "seated at P44's (240, 120)")
 
 
 ## The drawer entry draws the C9 rail cut as a uniform canvas at its slot rect.
@@ -362,8 +356,12 @@ func test_b_the_action_bars_draw_the_c2_canvas() -> void:
 ## The pane row strips draw the C4 nine-slice; the tooltip draws the C7 nine-slice.
 func test_b_the_rows_and_the_tooltip_wear_their_nine_slice() -> void:
 	var screen := _mount()
-	var row := _find(screen, "ContractsRow") as Button
-	assert_true(row != null, "the OVERVIEW CONTRACTS row ships")
+	## S42 (P46): the OVERVIEW's service rows retired into the 3x3 grid's flat tiles, so
+	## the C4 ui_row_strip census re-points to the VAULTS panel's tier rows - the same
+	## apply_row idiom, still shipped (the overview tile wears the flat box, asserted in
+	## the C1 row above).
+	var row := _find(screen, "Tier1") as Button
+	assert_true(row != null, "the VAULTS tier row ships (the C4 row census's surface)")
 	if row != null:
 		assert_eq(
 			_stylebox_texture(row.get_theme_stylebox(&"normal")), ChromeFamily.cut_path("C4"),

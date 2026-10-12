@@ -198,6 +198,9 @@ func test_the_drawer_focus_trap_wraps() -> void:
 ## ----------------------------------------------------------- OVERVIEW (P17/P18)
 
 
+## S42 (STATION_HUB section 23.1 P44/P46): the five-block deck is the four-block deck -
+## the 3x3 nine-tile grid seats between the identity plate and the hull block, and the
+## P25 service rows are tiles in it (block 4 dies).
 func test_the_overview_carries_the_five_blocks() -> void:
 	var screen := _mount()
 	var overview := screen.call(&"overview_pane") as Control
@@ -212,35 +215,42 @@ func test_the_overview_carries_the_five_blocks() -> void:
 	var grid := overview.find_child("TileGrid", true, false) as GridContainer
 	assert_true(grid != null, "block 2: the tile grid ships")
 	if grid != null:
-		assert_eq(grid.columns, 3, "P23: three columns")
-		assert_eq(grid.get_child_count(), 6, "and six tiles")
+		assert_eq(grid.columns, 3, "P44: three columns")
+		assert_eq(grid.get_child_count(), 9, "and nine tiles (P44)")
 		assert_eq(
-			(grid.get_child(0) as Button).custom_minimum_size, Vector2(300.0, 140.0),
-			"each tile is at least 300x140 (P18)"
+			(grid.get_child(0) as Button).custom_minimum_size, Vector2(240.0, 120.0),
+			"each tile is at least 240x120 (P44)"
 		)
 	assert_true(overview.find_child("HullBlock", true, false) != null, "block 3: the hull block")
 	assert_true(
-		overview.find_child("ServiceRows", true, false) != null, "block 4: the services rows"
+		overview.find_child("ServiceRows", true, false) == null,
+		"block 4 is retired: the services rows are tiles now (P46)"
 	)
 	assert_true(
-		overview.find_child("FlavourLine", true, false) != null, "block 5: the flavour line"
+		overview.find_child("FlavourLine", true, false) != null, "block 4: the flavour line"
 	)
 
 
+## S42 (P46): the U2 service names ride the 3x3 grid's own tiles - the same three names,
+## one tile each (the P25 rows are gone).
 func test_the_services_rows_carry_the_u2_names() -> void:
 	var screen := _mount()
 	var overview := screen.call(&"overview_pane") as Control
-	var rows := overview.find_child("ServiceRows", true, false) as VBoxContainer
-	assert_true(rows != null, "the services rows ship")
-	if rows == null:
+	var grid := overview.find_child("TileGrid", true, false) as GridContainer
+	assert_true(grid != null, "the tile grid ships")
+	if grid == null:
 		return
-	assert_eq(rows.get_child_count(), 3, "P25: three rows")
 	var names: Array[String] = []
-	for row: Node in rows.get_children():
-		names.append(String(row.name))
+	for tile: Node in grid.get_children():
+		if String(tile.name).ends_with("Tile") and (
+			String(tile.name).begins_with("Contracts")
+			or String(tile.name).begins_with("Insurance")
+			or String(tile.name).begins_with("Vaults")
+		):
+			names.append(String(tile.name))
 	assert_eq(
-		names, ["ContractsRow", "InsuranceRow", "VaultsRow"] as Array[String],
-		"CONTRACTS / INSURANCE / VAULTS (U2)"
+		names, ["ContractsTile", "InsuranceTile", "VaultsTile"] as Array[String],
+		"CONTRACTS / INSURANCE / VAULTS (U2) as tiles (P46)"
 	)
 
 

@@ -12,7 +12,26 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 
 | Pos | Lane item | Wave | Runs after | The collision/dependency that forces the order |
 |---|---|---|---|---|
-| 1 | **S42 — the OVERVIEW 3×3 grid rework** (P4's first implementation wave, re-cut from D24's amendments) | S42 | the owner's tick sheet (unticked rows implement at their PROPOSED values) | D24 closed 2026-10-12: §23's P44–P47 + T-184 rework `overview_panel.gd` and its nine tiles only — the smallest blast radius of the eight amendment clusters, and TICKS' S41 chrome-token row re-presents with the reworked OVERVIEW. The full P4 implementation split (items 46–53 / S42–S49) is the queue of record in `dispatch_coder.md`; briefs pending (the brief loop). |
+| 1 | **S43 — the armory equipped list + its buy doors** (P49 + UI_SPEC §17 A4–A6 at the armory seats) | S43 | S42 (closed) | disjoint files (`armory_panel.gd/.tscn`), but sequenced for one live session (L82), not by collision. Brief written (`slices/S43-armory-equipped/`); the §17 door route is the shell's §5.2 confirm seam (the disclosed reading in the brief). |
+| 2 | **S44 — exchange bulk sell** (P53 + T-175's EXCHANGE surfaces verified + T-190) | S44 | S43 closes | disjoint files (`exchange_panel.gd/.tscn`, `exchange.gd` read seams); sequenced for one live session. Brief written (`slices/S44-exchange-bulk-sell/`); T-190's ink amendment landed docs-first. |
+| 3 | **S45 — refinery LOAD ALL + machine strip + CRAFT** (P50/P51/P52, 04 §9 R9–R12, 07 §6 C1–C10) | S45 | S44 closes | the biggest wave; runs as two **sequential** builders (V0 panel controls + model seam, W0 the craft model + list) — one shared file, never parallel. Briefs written (`slices/S45-refinery-craft/`). |
+| 4 | **S46 — the shipyard build view** (P54 + 10 §3.5) | S46 | S45 closes | disjoint files (`shipyard_panel.gd/.tscn`, `shipyard.gd` read seams); sequenced for one live session. Brief written (`slices/S46-shipyard-build/`). |
+| 5 | **S47 — the launch sequence + its audio** (P48 + AUDIO_SPEC §8.7 + T-174/T-188 riders) | S47 | S46 closes | `launch_panel.gd` untouched since S41; the orchestrator sources/builds the two cue assets before the builder dispatches (raw packs gone with the clear-out). Brief written (`slices/S47-launch-sequence/`). |
+| 6 | **S48 — the C-key Cargo overlay, both planes** (UI_SPEC §18 A7–A9 + STATION_HUB §23.2) | S48 | S47 closes | touches `station.gd` (S42's shell edit) and `game.gd` + new overlay files + `tests/` rows. Brief written (`slices/S48-cargo-overlay/`). |
+| 7 | **S49 — the A2 doors on untouched surfaces + the wording law** (UI_SPEC §17 completed) | S49 | S48 closes | three panels + wording-law test rows; last so its dialog seam reads every earlier wave's settled tree. Brief written (`slices/S49-confirm-doors/`); T-186's worked example lands docs-first at its boundary. |
+
+**Updated 2026-10-12 (S42 the OVERVIEW 3×3 grid rework closed — P4's first implementation wave).**
+Gate **1330 → 1341/0** ×2 hermetic on fresh scratch stores (only T-155's salvo
+jitter differs), verify clean vs `s42_start`, `build_code_map.py` re-run (126
+scenes / 318 scripts). S42-V0 landed P44–P47 (nine tiles, flat Tokens chrome,
+the service deep-links, U2 on tiles, **T-184 cured**); the T-189 re-measure
+found P44's "756 pane" is the pane **height** (the content box is 1768×756) —
+the grid seats either way, the premise ticketed. Six premise rows (s24/s30/
+s36/s41) were the developer's bucket-2 re-cuts; one bucket-1 composition call
+(tiles expand-fill, **T-192** owner's call). R1 left **no HIGH, 2 MED** (both
+cured: the report's disclosure + the dead WHITE arm); 3 LOW → **T-191–T-193**;
+next free **T-194**. **T-184/T-187/T-189/T-162 closed.** The S41 chrome-token
+row **re-presents on TICKS now**. Full block: `MASTER_REPORT.md` §6's "S42".
 
 **Updated 2026-10-12 (D24 the station-overhaul design round closed — P4's opener).**
 The owner's nine build-2 asks became pinned design in six docs, every new value

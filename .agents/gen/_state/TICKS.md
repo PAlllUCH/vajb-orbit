@@ -5,7 +5,14 @@ file when decided or done** (deleted at the wave close-out or the ruling — the
 record lives in the cited file and `MASTER_REPORT.md` §6, this is the index
 only). Refreshed at every wave close-out and after every owner ruling.
 
-*Last refreshed: 2026-10-12 (D24 **closed** — the station-overhaul design landed in six docs
+*Last refreshed: 2026-10-12 (S42 **closed** — the OVERVIEW 3×3 grid rework (P44–P47) landed:
+gate **1341/0 ×2 byte-identical**, verify clean vs `s42_start`. **T-184 closed** (all nine
+tile glyphs modulate `text_caption`), **T-187 closed** (the P47 wording fixed),
+**T-189 closed** (the re-measure: grid min 752×392 exact, deck unscrolled at 16:9, 0 px
+slack; P44's width premise → T-193), **T-162 closed** (the vault readout retired with the
+P25 rows). The S41 chrome-token row below **re-presents now** as promised. R0's LOW →
+T-191–T-193, next free **T-194**. S43 (the armory) is next in the queue.)*
+*Previously 2026-10-12 (D24 **closed** — the station-overhaul design landed in six docs
 (STATION_HUB §23, UI_SPEC §17/§18, AUDIO_SPEC §8.7, 04 §9, 07 §6, 10 §3.5), every value
 **PROPOSED** with its reversal. The **§23.10 tick table is this round's tick sheet** (the row
 below). 5 LOW → T-186–T-190, next free **T-191**. S42 (the OVERVIEW grid rework) is the queued

@@ -394,73 +394,72 @@ func test_the_shell_plate_reads_the_row() -> void:
 	)
 
 
-## OVERVIEW block 4 (P25 + U2): an unavailable service keeps its label and goes
-## `button_disabled`, its readout carries the section 1 / section 8 reason in `text_dim`, and
-## an available one reads as shipped.
+## S42 (P46): the availability law re-seated on the 3x3 grid's service tiles - an
+## unavailable service keeps its label and goes `button_disabled`, the tile's caption
+## line carries the section 1 / section 8 reason in `text_dim`, and an available one
+## reads its own P46 caption.
 func test_the_overview_marks_an_unavailable_service() -> void:
 	_dock(&"s3_primary")
 	var screen := _mount()
 	var overview := _overview(screen)
-	var rows := overview.get(&"_service_rows") as Dictionary
-	var reads := overview.get(&"_service_reads") as Dictionary
-	assert_false((rows[&"insurance"] as Button).disabled, "a Meridian primary insures")
-	assert_eq(
-		(reads[&"insurance"] as Label).text, "UNINSURED", "and reads the shipped state"
-	)
+	var seats := overview.get(&"_service_tiles") as Dictionary
+	var insurance_btn := (seats[&"insurance"] as Dictionary)[&"button"] as Button
+	var insurance_cap := (seats[&"insurance"] as Dictionary)[&"caption"] as Label
+	assert_false(insurance_btn.disabled, "a Meridian primary insures")
+	assert_eq(insurance_cap.text, "COVERS ONE LOSS", "and reads its own P46 caption")
 	_dock(&"s5_primary")
-	overview.call(&"_refresh_services")
-	assert_true((rows[&"insurance"] as Button).disabled, "the Choir's station does not insure")
+	overview.call(&"_apply_service_availability")
+	assert_true(insurance_btn.disabled, "the Choir's station does not insure")
 	assert_eq(
-		(reads[&"insurance"] as Label).text, "the Choir does not believe in accidents",
+		insurance_cap.text, "the Choir does not believe in accidents",
 		"section 1's reason caption"
 	)
-	assert_true(
-		(overview.get(&"_service_names")[&"insurance"] as Label).text == "INSURANCE",
-		"the row keeps its label"
-	)
 	_dock(&"s2_outpost")
-	overview.call(&"_refresh_services")
-	assert_true((rows[&"insurance"] as Button).disabled, "an outpost does not insure either")
-	assert_eq((reads[&"insurance"] as Label).text, "fly to a capital", "section 8's reason")
-	assert_false((rows[&"vaults"] as Button).disabled, "an outpost still rents vault tier 1")
-	assert_false((rows[&"contracts"] as Button).disabled, "and still offers contracts")
+	overview.call(&"_apply_service_availability")
+	assert_true(insurance_btn.disabled, "an outpost does not insure either")
+	assert_eq(insurance_cap.text, "fly to a capital", "section 8's reason")
+	assert_false(
+		((seats[&"vaults"] as Dictionary)[&"button"] as Button).disabled,
+		"an outpost still rents vault tier 1"
+	)
+	assert_false(
+		((seats[&"contracts"] as Dictionary)[&"button"] as Button).disabled,
+		"and still offers contracts"
+	)
 
 
-## UI_SPEC section 12.5's A5.5 test on the same rows: the availability state change mutates
-## colour and the disabled flag only - no box (size, `custom_minimum_size`, position) moves.
+## UI_SPEC section 12.5's A5.5 test on the same tiles (S42/P46 re-seat): the availability
+## state change mutates colour and the disabled flag only - no box (size,
+## `custom_minimum_size`, position) moves.
 func test_the_overview_state_change_moves_no_box() -> void:
 	_dock(&"s3_primary")
 	var screen := _mount()
 	var overview := _overview(screen)
-	var rows := overview.get(&"_service_rows") as Dictionary
-	var row := rows[&"insurance"] as Button
-	var read := (overview.get(&"_service_reads")[&"insurance"]) as Label
+	var seats := overview.get(&"_service_tiles") as Dictionary
+	var row := (seats[&"insurance"] as Dictionary)[&"button"] as Button
+	var read := (seats[&"insurance"] as Dictionary)[&"caption"] as Label
 	var before := [row.custom_minimum_size, row.position, row.size]
 	var line_box := read.custom_minimum_size.y
-	var chip := (overview.get(&"_service_chips")[&"insurance"]) as Button
-	var chip_before := [chip.custom_minimum_size, chip.position, chip.size]
 	_dock(&"s5_primary")
-	overview.call(&"_refresh_services")
+	overview.call(&"_apply_service_availability")
 	assert_true(row.disabled, "the state changed")
 	assert_true(read.has_theme_color_override(&"font_color"), "the caption is dimmed")
 	assert_eq(
 		[row.custom_minimum_size, row.position, row.size], before,
-		"the pinned row box did not move (A5.5)"
-	)
-	assert_eq(
-		[chip.custom_minimum_size, chip.position, chip.size], chip_before,
-		"nor the chip beside it"
+		"the pinned tile box did not move (A5.5)"
 	)
 	assert_eq(
 		read.custom_minimum_size.y, line_box,
 		"the caption keeps its line box: N31's in-place content swap in a pinned box"
 	)
 	assert_eq(
-		row.custom_minimum_size.y, OverviewScript.ROW_HEIGHT, "the row stays the pinned 76 tall"
+		row.custom_minimum_size, Vector2(240.0, 120.0), "the tile stays at P44's (240, 120)"
 	)
 
 
-## The vault read: the docked station's own record, never the sum of every station.
+## S42 (P46): the U6/U10/U16 readouts retired with the P25 rows - the vault read lives
+## only in the VAULTS panel now (14's 2026-10-08 block). Asserted as absence, the S41/F1
+## precedent: the read seam's fields are gone, the record itself still resolves.
 func test_the_vault_read_resolves_the_docked_station() -> void:
 	_profile.call(&"set_vaults", {
 		"s3_primary": {&"tier": 1, &"contents": {&"ingot_iron": 12}},
@@ -469,14 +468,11 @@ func test_the_vault_read_resolves_the_docked_station() -> void:
 	_dock(&"s3_primary")
 	var screen := _mount()
 	var overview := _overview(screen)
-	assert_eq(int(overview.call(&"_vault_units", _profile)), 12, "the docked station's own stack")
-	var read := (overview.get(&"_service_reads")[&"vaults"]) as Label
-	assert_eq(
-		read.text, OverviewScript.VAULT_FORMAT % [12, OverviewScript.VAULT_BASE_CAPACITY],
-		"and the row reads that figure"
-	)
-	_dock(&"s5_primary")
-	assert_eq(int(overview.call(&"_vault_units", _profile)), 7, "the other place's own stack")
+	assert_eq(overview.get(&"_vault_units"), null, "the overview's vault read is retired (P46)")
+	assert_eq(overview.get(&"_service_reads"), null, "and the readout cells with it")
+	assert_eq(overview.get(&"_service_rows"), null, "the P25 rows are gone")
+	var station_id: StringName = RegistryScript.docked_station_id(_profile)
+	assert_eq(String(station_id), "s3_primary", "the docked station still resolves")
 
 
 ## The dead branch (the brief's rule 8): S30's `has_method(&"n")` fallback named a method that
