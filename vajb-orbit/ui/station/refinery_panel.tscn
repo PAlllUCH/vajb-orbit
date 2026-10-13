@@ -42,6 +42,28 @@ layout_mode = 2
 theme_type_variation = &"StationCaption"
 text = "ORE PROCESSING"
 
+[node name="ModeSwitch" type="HBoxContainer" parent="PaneHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 6
+
+[node name="ModeRefine" type="Button" parent="PaneHeader/ModeSwitch"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 32)
+layout_mode = 2
+toggle_mode = true
+focus_mode = 1
+text = "REFINE"
+
+[node name="ModeCraft" type="Button" parent="PaneHeader/ModeSwitch"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 32)
+layout_mode = 2
+toggle_mode = true
+focus_mode = 1
+text = "CRAFT"
+
 [node name="PanelTag" type="Label" parent="PaneHeader"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -54,15 +76,27 @@ layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"StationValue"
 
-[node name="UpgradeButton" type="Button" parent="PaneHeader"]
+[node name="SlotStrip" type="HBoxContainer" parent="PaneHeader"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 size_flags_vertical = 4
-theme_type_variation = &"StationButton"
+theme_override_constants/separation = 8
+
+[node name="QueuedCaption" type="Label" parent="PaneHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationCaption"
+
+[node name="UpgradeButton" type="Button" parent="PaneHeader"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 32)
+layout_mode = 2
+size_flags_vertical = 4
 text = "UPGRADE"
 
 [node name="RefineryBody" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 16
@@ -268,6 +302,55 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
+[node name="CraftBody" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="CraftScroll" type="ScrollContainer" parent="CraftBody"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="CraftList" type="VBoxContainer" parent="CraftBody/CraftScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="CraftHeadMargin" type="MarginContainer" parent="CraftBody/CraftScroll/CraftList"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 0
+
+[node name="CraftHeader" type="HBoxContainer" parent="CraftBody/CraftScroll/CraftList/CraftHeadMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="CraftRows" type="VBoxContainer" parent="CraftBody/CraftScroll/CraftList"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="CraftEmpty" type="Label" parent="CraftBody/CraftScroll/CraftList"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 3
+theme_type_variation = &"StationCaption"
+text = "NOTHING TO CRAFT"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="PaneFoot" type="HBoxContainer" parent="."]
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
@@ -286,14 +369,6 @@ layout_mode = 2
 size_flags_vertical = 4
 theme_override_constants/separation = 16
 
-[node name="LoadButton" type="Button" parent="PaneFoot/ActionsRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(360, 56)
-layout_mode = 2
-size_flags_vertical = 4
-theme_type_variation = &"StationButton"
-text = "LOAD"
-
 [node name="CollectButton" type="Button" parent="PaneFoot/ActionsRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(360, 56)
@@ -301,6 +376,22 @@ layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"StationButton"
 text = "COLLECT ALL"
+
+[node name="LoadAllButton" type="Button" parent="PaneFoot/ActionsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 56)
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationButton"
+text = "LOAD ALL"
+
+[node name="LoadButton" type="Button" parent="PaneFoot/ActionsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 56)
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationButton"
+text = "LOAD"
 
 [node name="QueueButton" type="Button" parent="PaneFoot/ActionsRow"]
 unique_name_in_owner = true

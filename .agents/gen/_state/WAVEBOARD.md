@@ -18,6 +18,22 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | 6 | **S48 — the C-key Cargo overlay, both planes** (UI_SPEC §18 A7–A9 + STATION_HUB §23.2) | S48 | S47 closes | touches `station.gd` (S42's shell edit) and `game.gd` + new overlay files + `tests/` rows. Brief written (`slices/S48-cargo-overlay/`). |
 | 7 | **S49 — the A2 doors on untouched surfaces + the wording law** (UI_SPEC §17 completed) | S49 | S48 closes | three panels + wording-law test rows; last so its dialog seam reads every earlier wave's settled tree. Brief written (`slices/S49-confirm-doors/`); T-186's worked example lands docs-first at its boundary. |
 
+**Updated 2026-10-12 (S45 the refinery wave closed — LOAD ALL, the machine strip, the CRAFT tab).**
+Gate **1358 → 1379/0** ×2 hermetic, verify clean vs `s45_start`, code map re-run
+(323 scripts). Two sequential builders on the shared file: **V0** landed the
+`load_all` seam (04 §9 R9), the four-plate foot cluster, P51's machine strip
+(per-slot `AVAILABLE`/`RUNNING mm:ss`/`DONE` chips + `+ n QUEUED` + the UPGRADE
+confirm door) and the REFINE/CRAFT pair with the empty body; **W0** landed the
+craft catalog (the four recipes, fees 2 500/3 000/2 800/4 000, all-or-nothing
+`craft`, C8's `scrap_value`) and the AUCTION-idiom CRAFT list with the N28 bill
+sheet and the CRAFT confirm door. **R0 blocked on 1 HIGH** — the developer's
+`project.godot` message-queue bump sat outside every file set on an
+ops-restricted file; cured by the review's own alternative (bump reverted, the
+gate re-proved 1379/0 ×2 on the **runner frame-yield** — one process frame per
+suite, the churn-drain the no-yield loop lacked; disclosed, reversal in file).
+1 LOW → **T-198**; W0's wording disclosure → **T-199**; next free **T-200**.
+Full block: `MASTER_REPORT.md` §6's "S45".
+
 **Updated 2026-10-12 (S44 the exchange bulk sell closed).**
 Gate **1351 → 1358/0** ×2 hermetic (the last three runs byte-identical after
 F1's band cure), verify clean vs `s44_start`, code map re-run (320 scripts).

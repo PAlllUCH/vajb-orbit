@@ -38,6 +38,14 @@ func _ready() -> void:
 		print("[RUN] suites=%s" % ",".join(_filters))
 	for path: String in _discover():
 		_run_file(path)
+		## S45's systemic finding (the developer's runner cure, 2026-10-12): the runner
+		## yielded no frame between suites, so a suite's `queue_free` backlog landed on
+		## the next suite's mounts and the shared 32 MB message queue filled until the
+		## run aborted at exit (measured: ~3 refinery-panel mounts in one run). One
+		## frame per suite drains the frees and the queue; intra-suite timing is
+		## untouched (the yield sits after the suite's own teardown). Reversal: drop
+		## the await (the pre-S45 synchronous loop).
+		await get_tree().process_frame
 	print("[SUMMARY] passed=%d failed=%d" % [_passed, _failed])
 	get_tree().quit(1 if _failed > 0 else 0)
 

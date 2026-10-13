@@ -1552,6 +1552,18 @@
     "crossed"
    ]
   },
+  "res://game/crafting_catalog.gd": {
+   "autoload": "",
+   "class_name": "CraftingCatalog",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [
+    "res://game/component_catalog.gd",
+    "res://game/economy_log.gd",
+    "res://game/mineral_catalog.gd"
+   ],
+   "signals": []
+  },
   "res://game/damage.gd": {
    "autoload": "",
    "class_name": "Damage",
@@ -5435,6 +5447,36 @@
    ],
    "signals": []
   },
+  "res://tests/test_s45_craft.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/component_catalog.gd",
+    "res://game/crafting_catalog.gd",
+    "res://game/economy_log.gd",
+    "res://game/mineral_catalog.gd",
+    "res://ui/station/refinery_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s45_refinery.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/economy_log.gd",
+    "res://game/refinery.gd",
+    "res://ui/station/refinery_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
   "res://tests/test_s4_batteries.gd": {
    "autoload": "",
    "class_name": "",
@@ -6705,15 +6747,23 @@
    "connects": [
     "_cancel_button.pressed \u2192 _on_cancel_pressed",
     "_collect_button.pressed \u2192 _on_collect_pressed",
+    "_load_all_button.pressed \u2192 _on_load_all_pressed",
     "_load_button.pressed \u2192 _on_load_pressed",
+    "_mode_craft.pressed \u2192 set_mode.bind(MODE_CRAFT",
+    "_mode_refine.pressed \u2192 set_mode.bind(MODE_REFINE",
     "_queue_all_button.pressed \u2192 _on_queue_all_pressed",
     "_queue_button.pressed \u2192 _on_queue_pressed",
     "_stepper_more.pressed \u2192 _on_stepper_pressed.bind(1",
     "_tick_timer.timeout \u2192 _tick",
     "_upgrade_button.pressed \u2192 _on_upgrade_pressed",
+    "chip.pressed \u2192 _on_craft_chip_pressed.bind(payload",
+    "row.focus_entered \u2192 _on_craft_row_focused.bind(payload",
     "row.focus_entered \u2192 _on_row_focused.bind(row",
+    "row.mouse_entered \u2192 _on_craft_hovered.bind(payload",
     "row.mouse_entered \u2192 _on_row_hovered.bind(payload",
+    "row.mouse_exited \u2192 _on_craft_hovered.bind(payload",
     "row.mouse_exited \u2192 _on_row_hovered.bind(payload",
+    "row.pressed \u2192 _on_craft_row_pressed.bind(payload",
     "row.pressed \u2192 _on_job_pressed.bind(job_id",
     "row.pressed \u2192 _on_row_pressed.bind(payload",
     "visibility_changed \u2192 _on_visibility_changed"
@@ -6722,12 +6772,15 @@
    "refs": [
     "res://assets/icons/tint/",
     "res://autoload/player_profile.gd",
+    "res://game/component_catalog.gd",
+    "res://game/crafting_catalog.gd",
     "res://game/mineral_catalog.gd",
     "res://game/refinery.gd",
     "res://game/station_catalog.gd",
     "res://ui/theme/chrome_family.gd"
    ],
    "signals": [
+    "confirm_requested",
     "inspect_requested",
     "sheet_requested",
     "status_requested"

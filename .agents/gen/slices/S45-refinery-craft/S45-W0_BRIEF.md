@@ -2,15 +2,13 @@
 slice: S45
 worker: S45-W0
 role: coder
-status: draft
+status: ready
 tier: paid
 ---
 
 # S45-W0 — the CRAFT tab: the crafting model + the craft list (P52, R12, C1–C10)
 
-**Dispatches only after S45-V0's close-out** — one shared file
-(`refinery_panel.gd`), never parallel. Status moves `draft → ready` when the
-orchestrator re-verifies the anchors against V0's landed tree.
+**Dispatched only after S45-V0's report landed** — one shared file (`refinery_panel.gd`), never parallel.
 
 ## Context (read in this order, by range)
 1. `docs/gameplay/07_crafting.md` §6 (lines ~67–121, verbatim below) — the
@@ -102,6 +100,12 @@ availability chip reads `cargo_qty`; refusal path STATION_HUB §5.6."
    item with a cite.
 
 ## Hard constraints
+- **The 5-minute failsafe (the S43 process law):** every shell command you run must be
+  bounded — run anything that can take longer than a minute as `timeout 280 <command>
+  > /tmp/<log>.txt 2>&1; tail -n 40 /tmp/<log>.txt` and read the log; **never** wait on a
+  background job, never use a background-run feature; poll the log file with short sleeps.
+  If any single wait exceeds five minutes, stop, write the report with what is done, and
+  say so.
 - File set: `vajb-orbit/ui/station/refinery_panel.gd`,
   `vajb-orbit/ui/station/refinery_panel.tscn`,
   `vajb-orbit/game/crafting_catalog.gd`, `vajb-orbit/tests/test_s45_craft.gd`.

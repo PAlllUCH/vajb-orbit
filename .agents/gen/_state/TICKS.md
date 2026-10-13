@@ -5,7 +5,12 @@ file when decided or done** (deleted at the wave close-out or the ruling — the
 record lives in the cited file and `MASTER_REPORT.md` §6, this is the index
 only). Refreshed at every wave close-out and after every owner ruling.
 
-*Last refreshed: 2026-10-12 (S44 **closed** — the exchange bulk sell (P53) landed: the
+*Last refreshed: 2026-10-12 (S45 **closed** — the refinery LOAD ALL, the machine strip and
+the CRAFT tab landed (two sequential builders); gate **1379/0 ×2 byte-identical**. The
+gate's systemic message-queue ceiling was cured by a runner frame-yield (the project.godot
+bump reverted — the owner may prefer the cap bump; both are one line). 1 LOW → T-198,
+next free **T-200**. S46 next.)*
+*Previously 2026-10-12 (S44 **closed** — the exchange bulk sell (P53) landed: the
 CheckChip bulk set, MARK ALL/CLEAR, the marked read, SELL MARKED; gate **1358/0 ×2
 byte-identical**. **T-190 closed** (the mark's ink is `text_primary`, landed docs-first);
 **T-175's EXCHANGE surfaces verified already-shipped.** 1 MED cured (the caption band

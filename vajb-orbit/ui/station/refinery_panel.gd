@@ -5,8 +5,12 @@ extends VBoxContainer
 ## CENTRE the stepper, the ORE IN / INGOTS OUT / FEE / TIME totals and the
 ## QUEUE ALL / CANCEL pair; RIGHT the job list (running rows with an mm:ss
 ## countdown, pending rows, done rows awaiting collection). The pane foot band
-## carries the QUEUE N / LOAD / COLLECT ALL cluster (UI_SPEC section 8 P1/P2,
-## D23 F14). The SLOTS n/5 readout and UPGRADE live in the pane header band.
+## carries the QUEUE / LOAD / LOAD ALL / COLLECT ALL cluster (UI_SPEC section 8
+## P1/P2, D23 F14 + R11's fourth plate). The header band carries the P51 machine
+## strip (SLOTS n/5, one chip per owned slot, the queued caption, the UPGRADE
+## ActionInline) and the P52 REFINE / CRAFT mode switch; CRAFT mode's body is the
+## one AUCTION-idiom recipe list over 07 section 6's table (`crafting_catalog.gd`),
+## with the section 19.4 empty-state caption for a table that cannot be empty.
 ##
 ## The station shell loads this scene into its host, so the panel never routes and
 ## never writes the profile directly: it emits status_requested up, reads Refinery
@@ -37,12 +41,17 @@ const RefineryModule := preload("res://game/refinery.gd")
 const Catalog := preload("res://game/mineral_catalog.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
 const StationCatalogScript := preload("res://game/station_catalog.gd")
+const CraftingCatalogScript := preload("res://game/crafting_catalog.gd")
+const ComponentCatalogScript := preload("res://game/component_catalog.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
 signal status_requested(message: String, danger: bool)
 signal inspect_requested(title: String, body: String, danger: bool)
 signal sheet_requested(payload: Dictionary)
+## UI_SPEC section 17 A5: the pane asks for the section 5.2 confirm dialog; the shell
+## owns the overlay and hands the answer back through `confirm_action` (the S25 seam).
+signal confirm_requested(payload: Dictionary)
 
 const ROW_HEIGHT := 76.0
 const JOB_ROW_HEIGHT := 56.0
@@ -83,9 +92,66 @@ const QUEUE_FORMAT := "QUEUE %d"
 const QUEUE_ALL_WORD := "QUEUE ALL"
 const CANCEL_WORD := "CANCEL"
 const LOAD_WORD := "LOAD"
+## D24 R11 (STATION_HUB section 23.5 P50): the foot cluster's fourth plate.
+const LOAD_ALL_WORD := "LOAD ALL"
 const COLLECT_WORD := "COLLECT ALL"
 const SLOTS_FORMAT := "SLOTS %d/%d"
 const UPGRADE_FORMAT := "UPGRADE (%s CR)"
+## P51's machine strip: the chips read the model's own job states (04 section 9 R10);
+## the strip computes no state itself.
+const CHIP_AVAILABLE := "AVAILABLE"
+const CHIP_RUNNING_FORMAT := "RUNNING %s"
+const CHIP_DONE := "DONE"
+const QUEUED_FORMAT := "+ %d QUEUED"
+## P52's mode switch (STATION_HUB section 23.6): the P32 ActionInline pair in the
+## header band; exactly one mode body is visible and switching is a pure visibility
+## operation (A5.5).
+const MODE_REFINE: StringName = &"refine"
+const MODE_CRAFT: StringName = &"craft"
+const MODE_REFINE_LABEL := "REFINE"
+const MODE_CRAFT_LABEL := "CRAFT"
+## P52's CRAFT list (S45-W0): one AUCTION-idiom list - the P40 column-header band +
+## N45 trim law, rows `Button` + container children - over the four pinned columns
+## RECIPE · INPUTS · FEE · STATE, one row per 07 section 6.2 recipe. Every figure is
+## a CraftingCatalog read (C2: no price, fee or effect is computed here); the
+## availability chip and the refusal read `cargo_qty` (C10's read-only seam).
+const CRAFT_HEADER_RECIPE := "RECIPE"
+const CRAFT_HEADER_INPUTS := "INPUTS"
+const CRAFT_HEADER_FEE := "FEE"
+const CRAFT_HEADER_STATE := "STATE"
+const CRAFT_COL_INPUTS := 560.0
+const CRAFT_COL_FEE := 150.0
+const CRAFT_COL_STATE := 250.0
+const CRAFT_COL_ACTION := 96.0
+const CRAFT_RUN_GLYPH := 24.0
+const CRAFT_RUN_FORMAT := "%d× %s"
+const CRAFT_BILL_JOIN := " · "
+const CRAFT_FEE_CAPTION := "CR LABOUR"
+const CRAFT_READY := "READY"
+const CRAFT_MISSING_FORMAT := "MISSING %d× %s"
+const CRAFT_CHIP_WORD := "CRAFT"
+const CRAFT_EMPTY := "NOTHING TO CRAFT"
+const CRAFT_HINT := "EVERY INPUT IS CONSUMED ON CRAFT · THE FEE IS LABOUR"
+## UI_SPEC section 17 A4 door (8) / A6: the CRAFT chip opens the confirm dialog
+## through the S25 seam; the confirmed answer runs the catalog's `craft` unchanged,
+## so it can still refuse (section 5.6's strip). The payload's `id` is the recipe
+## id itself - the confirmed action crafts exactly that row's recipe.
+const ACTION_CRAFT: StringName = &"craft_recipe"
+const CRAFT_CONFIRM_BODY := "ARE YOU SURE YOU WANT TO CRAFT %s FOR %s + %s CR LABOUR?"
+const CRAFT_INSPECT_FORMAT := "%s · %s CR LABOUR"
+const CRAFT_SHEET_INPUTS := "INPUTS · %s"
+const CRAFT_SHEET_FEE := "FEE · %s CR LABOUR"
+const CRAFT_SHEET_OUTPUT := "OUTPUT · %s"
+const STATUS_CRAFTED := "CRAFTED · %s"
+const STATUS_REFUSED_MISSING := "REFUSED · MISSING %d× %s"
+## UI_SPEC section 17 A4 door (7) / A6: the UPGRADE press opens the confirm dialog
+## through the S25 seam; the confirmed answer runs `upgrade_slots` unchanged.
+const CONFIRM_TITLE := "CONFIRM PURCHASE"
+const CONFIRM_BODY := "ARE YOU SURE YOU WANT TO BUY A REFINERY SLOT FOR %s CREDITS?"
+const CONFIRM_OK := "OK"
+const CONFIRM_CANCEL := "CANCEL"
+const CONFIRM_ID: StringName = &"refinery_slot"
+const ACTION_BUY_SLOT: StringName = &"buy_refinery_slot"
 ## S28 (04 section 8): the fee is value-relative, so the legend prints the live combined
 ## charge of the QUEUE ALL button beside it instead of one flat figure. The fee slot is
 ## `%s`: `_format_int` hands back the house-grouped string (the shipped `%d` threw a
@@ -114,6 +180,9 @@ const STATUS_REFUSED_UNKNOWN := "REFUSED · UNKNOWN MINERAL"
 const STATUS_REFUSED_MAX_SLOTS := "REFUSED · ALL SLOTS BOUGHT"
 const STATUS_CANCELLED := "CANCELLED · %s · %s RETURNED"
 const STATUS_LOADED := "LOADED · %s · %s"
+## R9's LOAD ALL status and its two refusals (the section 5.6 family).
+const STATUS_LOADED_ALL := "LOADED · %s ORE"
+const STATUS_REFUSED_NOTHING_TO_LOAD := "REFUSED · NOTHING TO LOAD"
 const STATUS_COLLECTED := "COLLECTED · %s"
 const STATUS_OUTPUT_FULL := "OUTPUT FULL · COLLECT FIRST"
 const STATUS_UPGRADED := "SLOTS UPGRADED · %d"
@@ -141,7 +210,19 @@ const DEDICATED_ICON_PREFIX := "icon_mineral_"
 @onready var _queue_all_button: Button = %QueueAllButton
 @onready var _cancel_button: Button = %CancelButton
 @onready var _load_button: Button = %LoadButton
+@onready var _load_all_button: Button = %LoadAllButton
 @onready var _collect_button: Button = %CollectButton
+@onready var _mode_refine: Button = %ModeRefine
+@onready var _mode_craft: Button = %ModeCraft
+@onready var _refine_body: Control = %RefineryBody
+@onready var _craft_body: Control = %CraftBody
+@onready var _craft_scroll: ScrollContainer = %CraftScroll
+@onready var _craft_header: HBoxContainer = %CraftHeader
+@onready var _craft_rows: VBoxContainer = %CraftRows
+@onready var _craft_empty: Label = %CraftEmpty
+@onready var _actions_row: HBoxContainer = %ActionsRow
+@onready var _slot_strip: HBoxContainer = %SlotStrip
+@onready var _queued_caption: Label = %QueuedCaption
 @onready var _jobs_header: HBoxContainer = %JobsHeader
 @onready var _jobs_scroll: ScrollContainer = %JobsScroll
 @onready var _jobs_rows: VBoxContainer = %JobsRows
@@ -149,10 +230,13 @@ const DEDICATED_ICON_PREFIX := "icon_mineral_"
 
 var _payloads: Array[Dictionary] = []
 var _job_payloads: Array[Dictionary] = []
+var _strip_payloads: Array[Dictionary] = []
+var _craft_payloads: Array[Dictionary] = []
 var _selected_id: StringName = &""
 var _selected_row: Button = null
 var _selected_job_id: int = -1
 var _focused_payload: Dictionary = {}
+var _focused_craft: Dictionary = {}
 var _stepper: int = STEPPER_MIN
 var _stepper_max: int = 0
 var _job_signature := PackedStringArray()
@@ -160,14 +244,18 @@ var _transaction := false
 var _rebuild_pending := false
 var _tick_timer: Timer = null
 var _tweens: Array[Tween] = []
+var _mode: StringName = MODE_REFINE
 
 
 func _ready() -> void:
 	_build_headers()
 	_build_rows()
 	_build_jobs()
+	_build_craft()
 	_apply_tokens()
+	_apply_chrome()
 	_wire_controls()
+	_apply_mode()
 	## S36-F1 (A4, F2): the QUEUE ALL / CANCEL bars live at 114-176 px wide, under C2's
 	## 272 h-band floor - they revert to their pre-swap StationButton style (reported as
 	## new-plate candidates). S41 (D23 F14): QUEUE / LOAD / COLLECT ALL moved into the
@@ -179,6 +267,44 @@ func _ready() -> void:
 	_connect_scroll()
 	_make_tick_timer()
 	visibility_changed.connect(_on_visibility_changed)
+
+
+## The P52 mode pair and the P51 UPGRADE ActionInline wear the C3 chip chrome (the
+## armory mode switch's own wiring, `armory_panel.gd` P32).
+func _apply_chrome() -> void:
+	ChromeFamily.apply_chip(_mode_refine)
+	ChromeFamily.apply_chip(_mode_craft)
+	ChromeFamily.apply_chip(_upgrade_button)
+
+
+## The pane's mode, `MODE_REFINE` by default.
+func mode() -> StringName:
+	return _mode
+
+
+## P52's mode switch (the P32 idiom): `MODE_REFINE` and `MODE_CRAFT` are the only
+## legal values; exactly one mode body ends up visible and the switch is a pure
+## visibility operation (A5.5 - a command, never a hover/focus/selection state).
+func set_mode(wanted: StringName) -> void:
+	if wanted != MODE_REFINE and wanted != MODE_CRAFT:
+		return
+	if wanted == _mode:
+		return
+	_mode = wanted
+	_apply_mode()
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+
+
+func _apply_mode() -> void:
+	var refining := _mode == MODE_REFINE
+	_refine_body.visible = refining
+	_craft_body.visible = not refining
+	## P52: the foot band is kept (P28's uniformity) but carries no cluster in
+	## CRAFT mode - the plates are the REFINE pane's own actions.
+	_actions_row.visible = refining
+	_mode_refine.set_pressed_no_signal(refining)
+	_mode_craft.set_pressed_no_signal(not refining)
+	_refresh_footer()
 
 
 func _notification(what: int) -> void:
@@ -208,6 +334,11 @@ func refresh_profile(key: StringName) -> void:
 func focus_primary() -> void:
 	## A disabled control must not take the ring: when nothing enabled can, the panel
 	## returns without grabbing and the shell's rail fallback runs (station.gd:401-410).
+	## CRAFT mode's list is its own focus unit - the first recipe row takes the ring.
+	if _mode == MODE_CRAFT:
+		if not _craft_payloads.is_empty():
+			(_craft_payloads[0][&"row"] as Button).grab_focus()
+		return
 	for payload: Dictionary in _payloads:
 		var row: Button = payload[&"row"]
 		if not row.disabled:
@@ -219,7 +350,10 @@ func focus_primary() -> void:
 
 func disarm() -> bool:
 	## ui_cancel step 2 (STATION_HUB section 2) and the CANCEL button's idle path: the
-	## job selection first, then the mineral selection.
+	## job selection first, then the mineral selection. CRAFT mode keeps no selection
+	## of its own, so it is never the step that eats the press.
+	if _mode == MODE_CRAFT:
+		return false
 	if _selected_job_id >= 0:
 		_select_job(-1)
 		return true
@@ -230,6 +364,11 @@ func disarm() -> bool:
 
 
 func inspect_focused() -> void:
+	if _mode == MODE_CRAFT:
+		if _focused_craft.is_empty():
+			return
+		_emit_craft_sheet(_focused_craft)
+		return
 	if _focused_payload.is_empty():
 		return
 	_emit_sheet(_focused_payload)
@@ -245,8 +384,11 @@ func _wire_controls() -> void:
 	_queue_all_button.pressed.connect(_on_queue_all_pressed)
 	_cancel_button.pressed.connect(_on_cancel_pressed)
 	_load_button.pressed.connect(_on_load_pressed)
+	_load_all_button.pressed.connect(_on_load_all_pressed)
 	_collect_button.pressed.connect(_on_collect_pressed)
 	_upgrade_button.pressed.connect(_on_upgrade_pressed)
+	_mode_refine.pressed.connect(set_mode.bind(MODE_REFINE))
+	_mode_craft.pressed.connect(set_mode.bind(MODE_CRAFT))
 
 
 func _connect_scroll() -> void:
@@ -277,7 +419,8 @@ func _on_visibility_changed() -> void:
 
 
 ## R6's 1 Hz tick: settle finished jobs, then refresh the countdowns in place (a
-## full rebuild would drop the focus ring). A state change rebuilds the list.
+## full rebuild would drop the focus ring). A state change rebuilds the list and
+## the machine strip with it.
 func _tick() -> void:
 	if not is_visible_in_tree():
 		return
@@ -287,6 +430,7 @@ func _tick() -> void:
 		_refresh_slots()
 		return
 	_refresh_countdowns()
+	_refresh_strip_countdowns()
 
 
 func _settle() -> void:
@@ -307,6 +451,8 @@ func _build_headers() -> void:
 		_hold_header.add_child(_make_header_cell(cell))
 	for cell: Dictionary in _job_header_cells():
 		_jobs_header.add_child(_make_header_cell(cell))
+	for cell: Dictionary in _craft_header_cells():
+		_craft_header.add_child(_make_header_cell(cell))
 	_refresh_slots()
 
 
@@ -343,12 +489,99 @@ func _make_header_cell(cell: Dictionary) -> Control:
 	return label
 
 
+## P51's machine strip: `SLOTS n/5` first, one chip per owned slot, the
+## `+ <n> QUEUED` caption, the UPGRADE ActionInline rightmost - the readout's
+## own header-band seat. The chips read the model's job states (R10): running
+## jobs claim their chips first (the machines at work), done jobs take the
+## remaining chips (awaiting collection), the rest read AVAILABLE; pending jobs
+## are the FIFO caption. A slot-count or state change lands here through
+## `_rebuild_all` / the tick; the countdowns tick in place (`_refresh_strip_countdowns`).
 func _refresh_slots() -> void:
 	var profile := _profile()
 	var current := RefineryModule.slots(profile) if profile != null else RefineryModule.BASE_SLOTS
 	_slots_label.text = SLOTS_FORMAT % [current, RefineryModule.MAX_SLOTS]
 	_upgrade_button.text = UPGRADE_FORMAT % _format_cost(RefineryModule.SLOT_UPGRADE_COST)
 	_upgrade_button.disabled = current >= RefineryModule.MAX_SLOTS
+	_build_strip()
+
+
+func _build_strip() -> void:
+	_clear_strip()
+	var profile := _profile()
+	var owned := RefineryModule.slots(profile) if profile != null else RefineryModule.BASE_SLOTS
+	var running: Array[Dictionary] = []
+	var done: Array[Dictionary] = []
+	for job: Dictionary in RefineryModule.jobs(profile):
+		var state := StringName(job.get(&"state", RefineryModule.JOB_PENDING))
+		if state == RefineryModule.JOB_RUNNING:
+			running.append(job)
+		elif state == RefineryModule.JOB_DONE:
+			done.append(job)
+	var claims: Array[Dictionary] = []
+	claims.append_array(running)
+	claims.append_array(done)
+	for slot in range(owned):
+		var job: Dictionary = claims[slot] if slot < claims.size() else {}
+		_strip_payloads.append(_make_strip_chip(job, slot))
+	var pending := RefineryModule.pending_count(profile)
+	_queued_caption.text = QUEUED_FORMAT % pending
+	_queued_caption.visible = pending > 0
+
+
+func _clear_strip() -> void:
+	_strip_payloads.clear()
+	for child: Node in _slot_strip.get_children():
+		_slot_strip.remove_child(child)
+		child.queue_free()
+
+
+## One A5.4 State chip: the label carries the state, the 1 px `metal_mid` frame over
+## the flat `chip_bg` fill carries the chrome - never colour alone (label + frame).
+func _make_strip_chip(job: Dictionary, slot: int) -> Dictionary:
+	var chip := PanelContainer.new()
+	chip.name = "SlotChip%d" % (slot + 1)
+	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	chip.add_theme_stylebox_override(&"panel", _strip_chip_box())
+	var label := _make_label(&"StationCaption", "")
+	label.name = "ChipLabel"
+	chip.add_child(label)
+	var state := StringName(job.get(&"state", &""))
+	var text := CHIP_AVAILABLE
+	if state == RefineryModule.JOB_RUNNING:
+		text = CHIP_RUNNING_FORMAT % _job_time_text(job)
+	elif state == RefineryModule.JOB_DONE:
+		text = CHIP_DONE
+	label.text = text
+	_slot_strip.add_child(chip)
+	return {&"id": int(job.get(&"id", -1)), &"chip": chip, &"label": label, &"state": state}
+
+
+func _strip_chip_box() -> StyleBoxFlat:
+	var box := StyleBoxFlat.new()
+	box.bg_color = _token(&"armory_chip_bg")
+	box.border_color = _token(&"metal_mid")
+	box.set_border_width_all(1)
+	box.set_corner_radius_all(0)
+	box.content_margin_left = 8.0
+	box.content_margin_top = 3.0
+	box.content_margin_right = 8.0
+	box.content_margin_bottom = 3.0
+	return box
+
+
+func _refresh_strip_countdowns() -> void:
+	var jobs := RefineryModule.jobs(_profile())
+	var by_id: Dictionary = {}
+	for job: Dictionary in jobs:
+		by_id[int(job.get(&"id", -1))] = job
+	for payload: Dictionary in _strip_payloads:
+		if StringName(payload[&"state"]) != RefineryModule.JOB_RUNNING:
+			continue
+		var job: Dictionary = by_id.get(int(payload[&"id"]), {})
+		if job.is_empty():
+			continue
+		var label: Label = payload[&"label"]
+		label.text = CHIP_RUNNING_FORMAT % _job_time_text(job)
 
 
 ## ------------------------------------------------------------- the LEFT block rows
@@ -371,7 +604,7 @@ func _build_rows() -> void:
 			_build_section_header(HEADER_INPUT)
 		for stack: Dictionary in input:
 			_payloads.append(_build_row(stack, true))
-		_add_slack()
+		_add_slack(_hold_rows)
 		_reselect()
 	_rebuild_pending = false
 	_refresh_tag()
@@ -516,6 +749,7 @@ func _make_inner(button: Button) -> HBoxContainer:
 	button.add_child(inner)
 	inner.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var box := HBoxContainer.new()
+	box.name = "RowBox"
 	box.add_theme_constant_override(&"separation", COLUMN_SEPARATION)
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	inner.add_child(box)
@@ -561,12 +795,12 @@ func _icon_tint(entry: Dictionary) -> Color:
 	return ink
 
 
-func _add_slack() -> void:
+func _add_slack(parent: VBoxContainer) -> void:
 	var slack := Control.new()
 	slack.name = "Slack"
 	slack.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	slack.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_hold_rows.add_child(slack)
+	parent.add_child(slack)
 
 
 func _reselect() -> void:
@@ -673,6 +907,11 @@ func _refresh_tag() -> void:
 
 
 func _refresh_footer() -> void:
+	## P52: the CRAFT mode's own hint (the reserved cell's content swap, N31's legal
+	## set); REFINE keeps the legend it ships with.
+	if _mode == MODE_CRAFT:
+		_footer.text = CRAFT_HINT
+		return
 	if _queueable_total() >= 1:
 		_footer.text = FOOTER_FORMAT % [
 			RefineryModule.ORE_PER_INGOT,
@@ -1007,6 +1246,31 @@ func _on_load_pressed() -> void:
 	status_requested.emit(_refusal_text(result.get(&"reason", &""), 0, 0), true)
 
 
+## R9's LOAD ALL: the whole hold's ore iterates `load_all`'s per-stack transfers,
+## up to the 60-unit cap; the status counts the units that moved and the two
+## refusals ride the section 5.6 strip.
+func _on_load_all_pressed() -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	var profile := _profile()
+	if profile == null:
+		return
+	_begin()
+	var result: Dictionary = RefineryModule.load_all(profile)
+	_end()
+	if bool(result.get(&"ok", false)):
+		AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
+		status_requested.emit(
+			STATUS_LOADED_ALL % _format_int(int(result.get(&"loaded", 0))),
+			false
+		)
+		return
+	AudioManager.play_ui(AudioManager.UiCue.DENIED)
+	if StringName(result.get(&"reason", &"")) == RefineryModule.REASON_INPUT_FULL:
+		status_requested.emit(STATUS_REFUSED_INPUT, true)
+		return
+	status_requested.emit(STATUS_REFUSED_NOTHING_TO_LOAD, true)
+
+
 func _on_collect_pressed() -> void:
 	AudioManager.play_ui(AudioManager.UiCue.CLICK)
 	var profile := _profile()
@@ -1026,8 +1290,29 @@ func _on_collect_pressed() -> void:
 	status_requested.emit(STATUS_OUTPUT_FULL, true)
 
 
+## UI_SPEC section 17 A4 door (7): the UPGRADE press opens the A6 confirm dialog
+## through the S25 seam (the shell owns the overlay); the confirmed answer runs
+## the transaction unchanged, so it can still refuse (section 5.6's strip).
 func _on_upgrade_pressed() -> void:
 	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	confirm_requested.emit({
+		&"id": CONFIRM_ID,
+		&"title": CONFIRM_TITLE,
+		&"body": CONFIRM_BODY % _format_int(RefineryModule.SLOT_UPGRADE_COST),
+		&"confirm_text": CONFIRM_OK,
+		&"cancel_text": CONFIRM_CANCEL,
+		&"action": ACTION_BUY_SLOT,
+	})
+
+
+func confirm_action(action: StringName, id: StringName) -> void:
+	if action == ACTION_BUY_SLOT:
+		_run_upgrade()
+	elif action == ACTION_CRAFT:
+		_run_craft(id)
+
+
+func _run_upgrade() -> void:
 	var profile := _profile()
 	if profile == null:
 		return
@@ -1063,6 +1348,7 @@ func _end() -> void:
 func _rebuild_all() -> void:
 	_build_rows()
 	_build_jobs()
+	_build_craft()
 	_refresh_slots()
 
 
@@ -1079,6 +1365,364 @@ func _refusal_text(reason: Variant, fee: int, conversions: int) -> String:
 	if key == &"nothing_to_queue" or key == &"nothing_to_refine":
 		return STATUS_REFUSED_EMPTY
 	return STATUS_REFUSED_UNKNOWN
+
+
+## ------------------------------------------------------------------ the CRAFT list
+##
+## P52 (STATION_HUB section 23.6): one AUCTION-idiom list - the P40 column-header
+## band + N45 trim law, rows `Button` + container children - over the four columns
+## RECIPE · INPUTS · FEE · STATE, one row per 07 section 6.2 recipe. The row press
+## opens the N28 sheet (the recipe's full bill, read-only); the per-row CRAFT chip
+## is the commit through UI_SPEC section 17's confirm door. Every figure is a
+## CraftingCatalog read (C2); the state chip reads `cargo_qty` (C10's read-only
+## seam). The foot band keeps its seat with no cluster, and the hint cell carries
+## P52's own wording (`_refresh_footer`).
+
+
+func _craft_header_cells() -> Array[Dictionary]:
+	return [
+		{&"text": CRAFT_HEADER_RECIPE, &"width": 0.0, &"expand": true},
+		{&"text": CRAFT_HEADER_INPUTS, &"width": CRAFT_COL_INPUTS, &"expand": false},
+		{&"text": CRAFT_HEADER_FEE, &"width": CRAFT_COL_FEE, &"expand": false},
+		{&"text": CRAFT_HEADER_STATE, &"width": CRAFT_COL_STATE, &"expand": false},
+		{&"text": "", &"width": CRAFT_COL_ACTION, &"expand": false},
+	]
+
+
+func _build_craft() -> void:
+	_build_craft_from(CraftingCatalogScript.recipes())
+
+
+## The build's one seam over the table source, so the suite can drive the empty
+## branch (the catalog itself can never be empty in production - C9's four recipes
+## are the table).
+func _build_craft_from(recipes: Array[Dictionary]) -> void:
+	_clear_craft()
+	_focused_craft = {}
+	var empty := recipes.is_empty()
+	_craft_header.visible = not empty
+	_craft_rows.visible = not empty
+	_craft_empty.visible = empty
+	if empty:
+		return
+	for recipe: Dictionary in recipes:
+		_craft_payloads.append(_build_craft_row(recipe))
+	_add_slack(_craft_rows)
+
+
+func _clear_craft() -> void:
+	_craft_payloads.clear()
+	for child: Node in _craft_rows.get_children():
+		_craft_rows.remove_child(child)
+		child.queue_free()
+
+
+func _build_craft_row(recipe: Dictionary) -> Dictionary:
+	var recipe_id: StringName = recipe.get(&"id", &"")
+	var name_text := String(recipe.get(&"name", String(recipe_id)))
+	var effect := String(recipe.get(&"output", {}).get(&"effect", ""))
+	var fee := int(recipe.get(&"fee", 0))
+	var row := Button.new()
+	row.name = "Craft%s" % String(recipe_id).to_pascal_case()
+	row.focus_mode = Control.FOCUS_ALL
+	row.custom_minimum_size = Vector2(0.0, ROW_HEIGHT)
+	row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	row.set_meta(&"id", recipe_id)
+	## S36 (UI_SPEC section 15.1): the list row wears C4 `ui_row_strip`, the AUCTION
+	## idiom's own plate.
+	ChromeFamily.apply_row(row)
+	var box := _make_inner(row)
+	box.add_child(_make_craft_title(name_text, effect))
+	box.add_child(_make_craft_inputs(recipe.get(&"inputs", {})))
+	box.add_child(_make_craft_fee(fee))
+	var state := _make_craft_state_cell()
+	box.add_child(state[0])
+	var chip := _make_craft_chip()
+	box.add_child(chip)
+	var payload := {
+		&"id": recipe_id,
+		&"name": name_text,
+		&"recipe": recipe,
+		&"row": row,
+		&"state": state[1],
+		&"chip": chip,
+	}
+	_refresh_craft_state(payload)
+	row.pressed.connect(_on_craft_row_pressed.bind(payload))
+	row.focus_entered.connect(_on_craft_row_focused.bind(payload))
+	row.mouse_entered.connect(_on_craft_hovered.bind(payload, true))
+	row.mouse_exited.connect(_on_craft_hovered.bind(payload, false))
+	chip.pressed.connect(_on_craft_chip_pressed.bind(payload))
+	_craft_rows.add_child(row)
+	return payload
+
+
+func _make_craft_title(name_text: String, effect: String) -> VBoxContainer:
+	var box := VBoxContainer.new()
+	box.name = "TitleBox"
+	box.add_theme_constant_override(&"separation", CELL_SEPARATION)
+	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var title := _make_label(&"StationValue", name_text)
+	title.name = "Title"
+	## N45's trim law: a catalogue name of any length trims inside its own column.
+	title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	box.add_child(title)
+	var meta := _make_label(&"StationMeta", effect.to_upper())
+	meta.name = "Meta"
+	meta.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	box.add_child(meta)
+	return box
+
+
+func _make_craft_inputs(inputs: Dictionary) -> HBoxContainer:
+	var cell := HBoxContainer.new()
+	cell.name = "InputsBox"
+	cell.custom_minimum_size = Vector2(CRAFT_COL_INPUTS, 0.0)
+	cell.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	cell.add_theme_constant_override(&"separation", COLUMN_SEPARATION)
+	cell.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	for input_id: StringName in inputs:
+		cell.add_child(_make_craft_run(input_id, int(inputs[input_id])))
+	return cell
+
+
+## One `<n>× <name>` run with the item's own glyph 24 at its own cut (A5.2(iii):
+## the glyph in its own rect, never stretched over the text).
+func _make_craft_run(item_id: StringName, count: int) -> HBoxContainer:
+	var run := HBoxContainer.new()
+	run.name = "Run%s" % String(item_id).to_pascal_case()
+	run.add_theme_constant_override(&"separation", 6)
+	run.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var glyph := _make_craft_glyph(item_id)
+	if glyph != null:
+		run.add_child(glyph)
+	var label := _make_label(
+		&"StationMeta", CRAFT_RUN_FORMAT % [count, _craft_item_name(item_id)]
+	)
+	label.name = "RunLabel"
+	run.add_child(label)
+	return run
+
+
+func _make_craft_fee(fee: int) -> VBoxContainer:
+	var cell := VBoxContainer.new()
+	cell.name = "FeeBox"
+	cell.custom_minimum_size = Vector2(CRAFT_COL_FEE, 0.0)
+	cell.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	cell.add_theme_constant_override(&"separation", CELL_SEPARATION)
+	cell.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var value := _make_label(&"StationValue", _format_int(fee))
+	value.name = "Value"
+	cell.add_child(value)
+	var caption := _make_label(&"StationMeta", CRAFT_FEE_CAPTION)
+	caption.name = "Caption"
+	cell.add_child(caption)
+	return cell
+
+
+## The A5.4 State chip (the machine strip chip's own anatomy): the label carries the
+## state, the 1 px `metal_mid` frame over the flat `armory_chip_bg` fill carries the
+## chrome - never colour alone.
+func _make_craft_state_cell() -> Array:
+	var cell := HBoxContainer.new()
+	cell.name = "State"
+	cell.custom_minimum_size = Vector2(CRAFT_COL_STATE, 0.0)
+	cell.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	cell.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var chip := PanelContainer.new()
+	chip.name = "StateChip"
+	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	chip.add_theme_stylebox_override(&"panel", _strip_chip_box())
+	var label := _make_label(&"StationCaption", "")
+	label.name = "ChipLabel"
+	chip.add_child(label)
+	cell.add_child(chip)
+	return [cell, label]
+
+
+## The commit chip wears the C3 ActionInline chrome (the mode pair's own wiring);
+## it keeps no focus of its own so the row stays the list's focus unit (the
+## exchange CheckChip's idiom).
+func _make_craft_chip() -> Button:
+	var chip := Button.new()
+	chip.name = "CraftChip"
+	chip.text = CRAFT_CHIP_WORD
+	chip.custom_minimum_size = Vector2(CRAFT_COL_ACTION, 32.0)
+	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	chip.focus_mode = Control.FOCUS_NONE
+	chip.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	ChromeFamily.apply_chip(chip)
+	return chip
+
+
+## The per-row availability chip (C10): `READY` when the hold covers every input,
+## else `MISSING <n>× <input>` for the first short input, in the recipe's own
+## order. Read off `cargo_qty` only - no price, no quote, no recomputation.
+func _refresh_craft_state(payload: Dictionary) -> void:
+	var label: Label = payload[&"state"]
+	var missing := CraftingCatalogScript.first_missing(_profile(), payload[&"recipe"])
+	if missing.is_empty():
+		label.text = CRAFT_READY
+		return
+	label.text = CRAFT_MISSING_FORMAT % [
+		int(missing[&"count"]),
+		_craft_item_name(StringName(missing[&"id"])),
+	]
+
+
+func _on_craft_row_pressed(payload: Dictionary) -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	_emit_craft_sheet(payload)
+
+
+func _on_craft_row_focused(payload: Dictionary) -> void:
+	_focused_craft = payload
+	_inspect_craft(payload, true)
+
+
+func _on_craft_hovered(payload: Dictionary, hovered: bool) -> void:
+	_inspect_craft(payload, hovered)
+
+
+## CONTRACTS section 23.1's additive inspector line, the hold row's own shape: the
+## recipe's name + fee the title, the catalogue's own description the body.
+func _inspect_craft(payload: Dictionary, shown: bool) -> void:
+	if not shown:
+		inspect_requested.emit("", "", false)
+		return
+	var recipe: Dictionary = payload[&"recipe"]
+	inspect_requested.emit(
+		CRAFT_INSPECT_FORMAT % [
+			String(payload[&"name"]).to_upper(),
+			_format_int(int(recipe.get(&"fee", 0))),
+		],
+		String(recipe.get(&"description", "")),
+		false
+	)
+
+
+func _emit_craft_sheet(payload: Dictionary) -> void:
+	sheet_requested.emit(_craft_sheet_payload(payload[&"recipe"]))
+
+
+## The N28 sheet's payload (UI_SPEC section 12.3): the recipe's name and its full
+## bill - the input runs, the labour fee, the output effect. Rows appear only where
+## the data carries them (N35): no affixes, no family, no price, no owned count.
+func _craft_sheet_payload(recipe: Dictionary) -> Dictionary:
+	var effect := String(recipe.get(&"output", {}).get(&"effect", ""))
+	return {
+		&"name": String(recipe.get(&"name", "")),
+		&"stats": "%s\n%s\n%s" % [
+			CRAFT_SHEET_INPUTS % _craft_runs_text(recipe),
+			CRAFT_SHEET_FEE % _format_int(int(recipe.get(&"fee", 0))),
+			CRAFT_SHEET_OUTPUT % effect.to_upper(),
+		],
+	}
+
+
+## UI_SPEC section 17 A4 door (8): the CRAFT chip is the commit - the confirm
+## dialog opens here and the confirmed answer runs the catalog's `craft`
+## unchanged, so it can still refuse (section 5.6's strip).
+func _on_craft_chip_pressed(payload: Dictionary) -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	var recipe: Dictionary = payload[&"recipe"]
+	confirm_requested.emit({
+		&"id": StringName(recipe.get(&"id", &"")),
+		&"title": CONFIRM_TITLE,
+		&"body": CRAFT_CONFIRM_BODY % [
+			String(recipe.get(&"name", "")).to_upper(),
+			_craft_runs_text(recipe),
+			_format_int(int(recipe.get(&"fee", 0))),
+		],
+		&"confirm_text": CONFIRM_OK,
+		&"cancel_text": CONFIRM_CANCEL,
+		&"action": ACTION_CRAFT,
+	})
+
+
+func _run_craft(recipe_id: StringName) -> void:
+	var profile := _profile()
+	if profile == null:
+		return
+	_begin()
+	var result: Dictionary = CraftingCatalogScript.craft(profile, recipe_id)
+	_end()
+	if bool(result.get(&"ok", false)):
+		AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
+		var crafted := String(
+			CraftingCatalogScript.recipe(recipe_id).get(&"name", String(recipe_id))
+		)
+		status_requested.emit(STATUS_CRAFTED % crafted.to_upper(), false)
+		return
+	AudioManager.play_ui(AudioManager.UiCue.DENIED)
+	var reason := StringName(result.get(&"reason", &""))
+	if reason == CraftingCatalogScript.REASON_INSUFFICIENT_MATERIALS:
+		status_requested.emit(
+			STATUS_REFUSED_MISSING % [
+				int(result.get(&"missing_count", 0)),
+				_craft_item_name(StringName(result.get(&"missing_id", &""))),
+			],
+			true
+		)
+		return
+	if reason == CraftingCatalogScript.REASON_INSUFFICIENT_CREDITS:
+		status_requested.emit(
+			STATUS_REFUSED_CREDITS % _format_int(int(result.get(&"fee", 0))), true
+		)
+		return
+	status_requested.emit(STATUS_REFUSED_UNKNOWN, true)
+
+
+## The item names come through the shipped catalogue reads - the house naming law's
+## own shape (`exchange_panel.gd`'s `_item_name`): an `ingot_*` id reads
+## `<MINERAL> INGOT`, a component id its catalogue name, upper-cased either way.
+func _craft_item_name(item_id: StringName) -> String:
+	if item_id == &"":
+		return ""
+	if Catalog.is_ingot(item_id):
+		return "%s INGOT" % String(
+			Catalog.entry_for_item(item_id).get(&"name", String(item_id))
+		).to_upper()
+	return String(
+		ComponentCatalogScript.component(item_id).get(&"name", String(item_id))
+	).to_upper()
+
+
+## The bill's `<n>× <name>` runs, in the recipe's own order, ` · `-joined (A6's
+## `<BILL>` idiom).
+func _craft_runs_text(recipe: Dictionary) -> String:
+	var runs := PackedStringArray()
+	var inputs: Dictionary = recipe.get(&"inputs", {})
+	for input_id: StringName in inputs:
+		runs.append(CRAFT_RUN_FORMAT % [int(inputs[input_id]), _craft_item_name(input_id)])
+	return CRAFT_BILL_JOIN.join(runs)
+
+
+func _make_craft_glyph(item_id: StringName) -> TextureRect:
+	var path := _craft_icon_path(item_id)
+	if path.is_empty() or not ResourceLoader.exists(path):
+		return null
+	var glyph := TextureRect.new()
+	glyph.name = "Glyph"
+	glyph.custom_minimum_size = Vector2(CRAFT_RUN_GLYPH, CRAFT_RUN_GLYPH)
+	glyph.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	glyph.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	glyph.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	glyph.texture = load(path)
+	## The catalogues' own SVG masters are the render source here (no tint stencil
+	## ships for the cargo/ingot families), drawn at the rows' idle alpha.
+	var ink := Color.WHITE
+	ink.a = ROW_ICON_IDLE_ALPHA
+	glyph.modulate = ink
+	return glyph
+
+
+func _craft_icon_path(item_id: StringName) -> String:
+	if Catalog.is_ingot(item_id):
+		return String(Catalog.entry_for_item(item_id).get(&"icon_ingot", ""))
+	return String(ComponentCatalogScript.component(item_id).get(&"icon", ""))
 
 
 ## ------------------------------------------------------------------------- helpers

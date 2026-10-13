@@ -74,6 +74,7 @@ const REASON_INSUFFICIENT_ORE: StringName = &"insufficient_ore"
 const REASON_INSUFFICIENT_CREDITS: StringName = &"insufficient_credits"
 const REASON_NOTHING_TO_REFINE: StringName = &"nothing_to_refine"
 const REASON_NOTHING_TO_QUEUE: StringName = &"nothing_to_queue"
+const REASON_NOTHING_TO_LOAD: StringName = &"nothing_to_load"
 const REASON_INPUT_FULL: StringName = &"input_full"
 const REASON_OUTPUT_FULL: StringName = &"output_full"
 const REASON_MAX_SLOTS: StringName = &"max_slots"
@@ -454,6 +455,44 @@ static func load_ore(profile: Node, mineral_id: StringName, units: int) -> Dicti
 		return {&"ok": false, &"reason": REASON_INSUFFICIENT_ORE, &"mineral_id": mineral_id, &"units": 0, &"input_total": input_total(profile)}
 	_add_input(profile, ore_id, units)
 	return {&"ok": true, &"reason": &"", &"mineral_id": mineral_id, &"units": units, &"input_total": input_total(profile)}
+
+
+## R9's LOAD ALL (04 section 9): transfer the hold's ore stacks into
+## `refinery_input` whole-stack at a time, up to R5's 60-unit cap. Each stack
+## moves through `load_ore` whole or not at all - a stack larger than the
+## remaining space stays in the hold (R8's overflow idiom) - and no credits
+## move (the LOAD law). Not all-or-nothing across stacks: every moved stack is
+## its own verified transfer, in catalogue order, until the cap stops the run.
+## Returns `{ok, reason, loaded, input_total}` - `loaded` is the units that
+## moved; a hold with nothing to move refuses `nothing_to_load`, an input
+## already at cap refuses `input_full`.
+static func load_all(profile: Node) -> Dictionary:
+	if profile == null:
+		return {&"ok": false, &"reason": REASON_NOTHING_TO_LOAD, &"loaded": 0, &"input_total": 0}
+	var loaded := 0
+	var had_ore := false
+	for entry: Dictionary in Catalog.MINERALS:
+		var mineral_id: StringName = entry.get(&"id", &"")
+		if mineral_id == &"":
+			continue
+		var ore_id: StringName = Catalog.ore_id(mineral_id)
+		var held := int(profile.call(&"cargo_qty", ore_id))
+		if held < 1:
+			continue
+		had_ore = true
+		var space := INPUT_CAP - input_total(profile)
+		if space < 1:
+			break
+		if held > space:
+			continue
+		var result := load_ore(profile, mineral_id, held)
+		if bool(result.get(&"ok", false)):
+			loaded += int(result.get(&"units", 0))
+	if loaded > 0:
+		return {&"ok": true, &"reason": &"", &"loaded": loaded, &"input_total": input_total(profile)}
+	if not had_ore:
+		return {&"ok": false, &"reason": REASON_NOTHING_TO_LOAD, &"loaded": 0, &"input_total": input_total(profile)}
+	return {&"ok": false, &"reason": REASON_INPUT_FULL, &"loaded": 0, &"input_total": input_total(profile)}
 
 
 ## R8's COLLECT ALL: move `refinery_output` into the hold, space permitting; the
