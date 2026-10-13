@@ -62,17 +62,29 @@ const POOL_CAPS: Dictionary = {
 	&"impacts": 6,
 	&"mining": 1,
 	&"ui": 2,
+	&"world": 2,
 }
 const POOL_CLASS_BY_PREFIX: Dictionary = {
 	&"sfx_weapon_": &"weapons",
 	&"sfx_impact_": &"impacts",
 	&"sfx_mining_": &"mining",
 	&"ui_": &"ui",
+	&"sfx_station_": &"world",
+	&"sfx_stinger_": &"world",
 }
 
 ## AUDIO_SPEC section 8's cue table with section 4.1's variant rules. The table is
 ## data, not policy: a caller asks for a cue name and gets a take.
 const CUE_POOLS: Dictionary = {
+	## AUDIO-4 (AUDIO_SPEC section 8.7): the undock dock-clamp cue rides the anti-flam
+	## gate at its pinned seam - one take, tier mode (stays put), no pitch or volume
+	## range, class `world` (cap 2, section 4.1's list as amended).
+	&"sfx_station_undock": {
+		&"takes": [&"sfx_station_undock_01"],
+		&"mode": POOL_TIER,
+		&"pitch": 0.0,
+		&"volume_db": [0.0, 0.0],
+	},
 	## S1: "round-robin of 3-4 laser one-shots, pitch +/-10 %, vol +/-3 dB".
 	&"sfx_weapon_laser": {
 		## AUDIO-3 (ticked 2026-09-29): take 04 (1.244 s against the pool's 0.064-0.092 s)

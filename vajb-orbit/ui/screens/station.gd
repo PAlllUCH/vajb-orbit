@@ -57,6 +57,17 @@ const PLACEHOLDER_GROUP: StringName = &"station_placeholder"
 const SFX_MODULE_SWITCH: StringName = &"sfx_station_breaker_on_01"
 const SFX_LAUNCH_BOOST: StringName = &"sfx_ship_boost_01"
 const SFX_LAUNCH_JUMP: StringName = &"sfx_ship_jump_01"
+## P48 (STATION_HUB section 23.3; AUDIO_SPEC section 8.7 AUDIO-4/5): the departure
+## sequence's own cues and beat instants. The fired pair keeps its section 11 row's
+## cues and moves from the route instant to the sequence's tail (section 8.7's
+## re-point note); the overlay's fade obeys N29 (UI_SPEC section 11.1).
+const SEQUENCE_UNDOCK: StringName = &"sfx_station_undock"
+const SEQUENCE_SPOOL: StringName = &"sfx_station_spool_loop"
+const SEQUENCE_SPOOL_AT := 1.0
+const SEQUENCE_PAIR_AT := 2.4
+const SEQUENCE_ROUTE_AT := 3.0
+const SEQUENCE_FADE := 0.18
+const DEPARTURE_STRIP := "UNDOCKING · %s"
 const BED_ROOM: StringName = &"amb_station_room_01"
 const BED_PUMP: StringName = &"amb_station_pump_loop_01"
 const BED_NOISE: StringName = &"amb_station_noise_loop_01"
@@ -322,12 +333,25 @@ var _confirm_cancel: Button = null
 var _confirm_owner: Node = null
 var _confirm_payload: Dictionary = {}
 
+## The departure sequence (P48): the presentation overlay, its three one-shot beat
+## timers, the running flag and the one-shot cue record the beats leave for a probe.
+var _departure: Control = null
+var _departure_dim: ColorRect = null
+var _departure_strip: Label = null
+var _departure_spool_timer: Timer = null
+var _departure_pair_timer: Timer = null
+var _departure_route_timer: Timer = null
+var _departure_running := false
+var _departure_spool_held := false
+var _departure_cues: Array[StringName] = []
+
 
 func _ready() -> void:
 	_build_drawer()
 	_build_popups()
 	_build_backdrops()
 	_build_panels()
+	_build_departure()
 	_apply_tokens()
 	_refresh_credits()
 	_wire_controls()
@@ -489,6 +513,66 @@ func _build_popups() -> void:
 	_linger_timer.wait_time = TOOLTIP_LINGER
 	_linger_timer.timeout.connect(_on_linger_timeout)
 	add_child(_linger_timer)
+
+
+## P48 (STATION_HUB section 23.3): the departure sequence's presentation overlay, built
+## by the shell because it belongs to the screen and not to a pane (the section 5.2
+## overlay law). A full-rect Control in the screen's own layer - the LeaveConfirm seat:
+## above the panes by draw order (it is added after the bands and the host), below the
+## drawer/sheet/dialog overlays because those ride CanvasLayers 19/20 (section 12.2's
+## stack law) - so it cannot reflow the pane (A5.5). Chrome is the shell's own tokens:
+## the `void_base` modal dim and the theme's own centred panel carrying the strip.
+func _build_departure() -> void:
+	_departure = Control.new()
+	_departure.name = "Departure"
+	_departure.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_departure.mouse_filter = Control.MOUSE_FILTER_STOP
+	_departure.visible = false
+	add_child(_departure)
+	_departure_dim = ColorRect.new()
+	_departure_dim.name = "DepartureDim"
+	_departure_dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_departure_dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_departure.add_child(_departure_dim)
+	var centre := CenterContainer.new()
+	centre.name = "DepartureCenter"
+	centre.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	centre.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_departure.add_child(centre)
+	var plate := PanelContainer.new()
+	plate.name = "DeparturePlate"
+	centre.add_child(plate)
+	var margin := MarginContainer.new()
+	margin.name = "PlateMargin"
+	for side: String in ["left", "top", "right", "bottom"]:
+		margin.add_theme_constant_override(StringName("margin_" + side), CONFIRM_MARGIN)
+	plate.add_child(margin)
+	_departure_strip = Label.new()
+	_departure_strip.name = "DepartureStrip"
+	_departure_strip.theme_type_variation = &"StationPanelTitle"
+	_departure_strip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	margin.add_child(_departure_strip)
+	_departure_spool_timer = _make_departure_timer(
+		&"DepartureSpoolTimer", SEQUENCE_SPOOL_AT, _on_departure_spool
+	)
+	_departure_pair_timer = _make_departure_timer(
+		&"DeparturePairTimer", SEQUENCE_PAIR_AT, _on_departure_pair
+	)
+	_departure_route_timer = _make_departure_timer(
+		&"DepartureRouteTimer", SEQUENCE_ROUTE_AT, _on_departure_route
+	)
+
+
+## One beat timer: a child of the screen, so the sequence's own timers die with it (no
+## global timer), one-shot, bound to its beat handler.
+func _make_departure_timer(timer_name: StringName, wait: float, handler: Callable) -> Timer:
+	var timer := Timer.new()
+	timer.name = timer_name
+	timer.one_shot = true
+	timer.wait_time = wait
+	timer.timeout.connect(handler)
+	add_child(timer)
+	return timer
 
 
 ## S25 (UI_SPEC section 5.2): the confirm/message dialog, built by the shell because the
@@ -982,6 +1066,8 @@ func _apply_tokens() -> void:
 	var modal: Color = _token(&"void_base")
 	modal.a = MODAL_DIM_ALPHA
 	_leave_dimmer.color = modal
+	if _departure_dim != null:
+		_departure_dim.color = modal
 	var scrim: Color = _token(&"void_base")
 	scrim.a = DRAWER_SCRIM_ALPHA
 	if _drawer_scrim != null:
@@ -1684,10 +1770,84 @@ func _clear_inspector() -> void:
 
 func _on_launch_requested() -> void:
 	## LAUNCH panels declare the undock; only the shell routes (Screen intent contract).
-	AudioManager.play_sfx(SFX_LAUNCH_BOOST)
-	AudioManager.play_sfx(SFX_LAUNCH_JUMP)
+	## P48: press 2 is the commit, so the shell plays the departure sequence in-scene
+	## and routes at its 3.0 s tail - the fired pair no longer plays at the route
+	## instant (AUDIO_SPEC section 8.7's re-point note), and a second intent while the
+	## sequence runs is not another commit.
+	if _departure_running:
+		return
+	_begin_departure_sequence()
+
+
+## --- The departure sequence (P48, STATION_HUB section 23.3) ----------------
+##
+## Four beats on the sequence's own clock, all of them the screen's (the beat timers
+## are children, so they die with the screen): t+0.0 the dock-clamp cue S27 and the
+## UNDOCKING strip, t+1.0 the spool bed S28 fades in under the held-bed law
+## (AUDIO_SPEC section 4.5: lease, cue-scoped stop), t+2.4 the section 11 fired pair,
+## t+3.0 the cue-scoped bed stop and the route. Not cancellable: section 2's ESC
+## steps live before press 2, so `_handle_cancel` stands down while the sequence runs.
+
+func _begin_departure_sequence() -> void:
+	_departure_running = true
+	_departure_spool_held = false
+	_departure_cues.clear()
+	_departure_strip.text = DEPARTURE_STRIP % _station_name.text
+	_departure.modulate.a = 0.0
+	_departure.visible = true
+	var tween := _make_tween()
+	tween.tween_property(_departure, "modulate:a", 1.0, SEQUENCE_FADE)
+	_clear_inspector()
+	## The commit owns the pad: the focus behind the overlay stands down, so no second
+	## ui_accept can re-arm the control the sequence has already consumed.
+	get_viewport().gui_release_focus()
+	_play_departure_cue(SEQUENCE_UNDOCK)
+	_departure_spool_timer.start()
+	_departure_pair_timer.start()
+	_departure_route_timer.start()
+
+
+func _on_departure_spool() -> void:
+	_departure_spool_held = true
+	## The bed enters with the held-bed API's own fade (`play_loop`'s LOOP_FADE).
+	AudioManager.play_loop(SEQUENCE_SPOOL)
+
+
+func _on_departure_pair() -> void:
+	_play_departure_cue(SFX_LAUNCH_BOOST)
+	_play_departure_cue(SFX_LAUNCH_JUMP)
+
+
+func _on_departure_route() -> void:
+	## The bed stops at the route instant, cue-scoped and before the loading scene
+	## mounts (the stop is immediate, so no tail crosses into loading); the ambience
+	## stop rides the route as it always did.
+	_departure_spool_held = false
+	AudioManager.stop_bed(SEQUENCE_SPOOL, 0.0)
 	AudioManager.stop_ambience(EXIT_AMBIENCE_FADE)
+	_departure_running = false
 	route_requested.emit(ROUTE_LOADING, {PARAM_DESTINATION: DESTINATION_GAME})
+
+
+## The sequence's one-shot record (the probe seam): every cue the sequence plays is
+## appended in play order, so a headless probe reads the beats where a listener would
+## hear them. The spool bed is proven through `sounding_loops()`/`bed_voice()` instead,
+## the manager's own read-back for held beds. The cues ride `play_pool`, the gated
+## route (AUDIO-4's anti-flam + world cap at the undock's seam); a cue with no pool
+## row falls back to the plain call there, so the pair plays as it always did.
+func _play_departure_cue(cue: StringName) -> void:
+	_departure_cues.append(cue)
+	AudioManager.play_pool(cue)
+
+
+func _process(_delta: float) -> void:
+	## The spool bed is held for the sequence's whole second act (t+1.0..t+3.0), longer
+	## than the 1.2 s lease, so it is re-asked every frame the sequence holds it - the
+	## held-bed law's own model (AUDIO_SPEC section 4.5): a re-asked bed never expires,
+	## and a bed whose stop was skipped (the screen unmounted mid-sequence) still dies
+	## by the lease.
+	if _departure_running and _departure_spool_held:
+		AudioManager.play_loop(SEQUENCE_SPOOL)
 
 
 func _on_logout_pressed() -> void:
@@ -1839,6 +1999,10 @@ func _pulse(node: CanvasItem) -> void:
 ## P19's unwind, topmost-first, one operation per step (S29-F1's `game.gd:951`
 ## precedent): INSPECT modal -> drawer -> LAUNCH disarm -> leave confirm.
 func _handle_cancel() -> void:
+	## P48: the departure sequence is the commit - section 2's ESC steps live before
+	## press 2, so ESC does nothing while the sequence runs.
+	if _departure_running:
+		return
 	## S25: the confirm dialog is the topmost overlay (UI_SPEC section 5.2's Escape = CANCEL).
 	if _confirm != null and _confirm.visible:
 		_on_confirm_answered(false)

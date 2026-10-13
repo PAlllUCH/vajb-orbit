@@ -8,9 +8,10 @@ extends VBoxContainer
 ##
 ## The station shell loads this scene into its host, so the panel never routes and never
 ## writes the profile: it emits launch_requested up, reads StationCatalog / PlayerProfile
-## down, leaves the boost and jump cues and the fade to the shell and the Router, and asks
-## `Repairs` for the two free power services instead of touching credits or vitals itself
-## (STATION_HUB sections 2, 5.4 and 12.4).
+## down, leaves the departure sequence (P48: the undock and spool cues, the fired pair at
+## its t+2.4 tail, the route at t+3.0) to the shell and the Router, and asks `Repairs` for
+## the two free power services instead of touching credits or vitals itself (STATION_HUB
+## sections 2, 5.4 and 12.4, 23.3).
 ##
 ## Panel contract with the shell:
 ##   signal status_requested(message: String, danger: bool)   write the footer strip
@@ -189,6 +190,7 @@ const STATUS_FIRED := "LAUNCH CONFIRMED · UNDOCKING"
 @onready var _hull_center: CenterContainer = %HullCenter
 @onready var _hull_image: TextureRect = %HullImage
 @onready var _hull_caption: Label = %HullCaption
+@onready var _brief_roof: PanelContainer = %BriefRoof
 
 var _brief_values: Dictionary = {}
 var _plates: Array[TextureButton] = []
@@ -302,8 +304,24 @@ func _docked_sector_name() -> String:
 
 func _apply_tokens() -> void:
 	_refresh_plate_textures()
+	_roof_briefing_column()
 	if _armed:
 		_launch_button.add_theme_color_override(&"font_color", _token(&"accent_danger_bright"))
+
+
+## T-174 (STATION_HUB section 23.9): the briefing column sits inside one flat Tokens
+## box - the `bay_bg` fill and the 1 px `metal_mid` border of A5.3/A5.4's inner-surface
+## chrome - so the ten labels it roofs never float on the deck backdrop again. The box
+## is read from the live theme, so the Router's replacement re-inks it.
+func _roof_briefing_column() -> void:
+	if _brief_roof == null:
+		return
+	var box := StyleBoxFlat.new()
+	box.bg_color = _token(&"armory_bay_bg")
+	box.border_color = _token(&"metal_mid")
+	box.set_border_width_all(1)
+	box.set_corner_radius_all(0)
+	_brief_roof.add_theme_stylebox_override(&"panel", box)
 
 
 func _token(token: StringName) -> Color:
@@ -887,8 +905,10 @@ func _arm() -> void:
 
 
 func _fire() -> void:
-	## Inside the window: the shell owns the boost and jump cues, the ambience stop and the
-	## route; the panel only declares the intent (section 11 and the Screen contract).
+	## Inside the window: the shell owns the departure sequence - the undock and spool
+	## cues, the fired pair at its t+2.4 tail, the ambience stop and the route at t+3.0
+	## (P48, STATION_HUB section 23.3); the panel only declares the intent (section 11
+	## and the Screen contract).
 	_clear_arm()
 	_set_confirm(FIRED_TEXT % [_bridge_label(), String(destination_route()).to_upper()], false)
 	status_requested.emit(STATUS_FIRED, false)

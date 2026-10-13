@@ -5491,6 +5491,21 @@
    ],
    "signals": []
   },
+  "res://tests/test_s47_launch_sequence.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://assets/audio/sfx/sfx_station_spool_loop.ogg",
+    "res://autoload/audio_manager.gd",
+    "res://ui/screens/station.gd",
+    "res://ui/screens/station.tscn",
+    "res://ui/station/launch_panel.gd",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
   "res://tests/test_s4_batteries.gd": {
    "autoload": "",
    "class_name": "",
@@ -6444,7 +6459,8 @@
     "_linger_timer.timeout \u2192 _on_linger_timeout",
     "_terminal_button.pressed \u2192 _toggle_drawer",
     "entry.pressed \u2192 _on_drawer_pressed.bind(deck",
-    "logout.pressed \u2192 _on_drawer_logout"
+    "logout.pressed \u2192 _on_drawer_logout",
+    "timer.timeout \u2192 handler"
    ],
    "extends": "Screen",
    "refs": [

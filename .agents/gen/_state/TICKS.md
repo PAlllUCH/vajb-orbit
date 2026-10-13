@@ -5,7 +5,8 @@ file when decided or done** (deleted at the wave close-out or the ruling — the
 record lives in the cited file and `MASTER_REPORT.md` §6, this is the index
 only). Refreshed at every wave close-out and after every owner ruling.
 
-*Last refreshed: 2026-10-13 (S46 **closed** — the shipyard build view (P54) landed in the AUCTION house style: the HULLS shelf with live recipe rows, the materials bill as materials, labour the only CR figure, BUILD through the shell's confirm seam; gate **1387/0 ×2 byte-identical**. **T-175's SHIPYARD surfaces verified already-shipped.** No HIGH, no MED; 1 LOW → T-200, next free **T-201**. The staged-MODULES question re-presents below. S47 next.)*
+*Last refreshed: 2026-10-13 (S47 **closed** — the launch sequence (P48) + its audio (AUDIO-4/5) landed: the non-cancellable 3.0 s departure overlay, the two Kenney CC0 cues built and imported, T-174's briefing box; gate **1396/0 ×2 byte-identical** after the developer's pool-cap cure. **T-174 closed, T-185 closed**; next free **T-201**. S48 next.)*
+*Previously 2026-10-13 (S46 **closed** — the shipyard build view (P54) landed in the AUCTION house style: the HULLS shelf with live recipe rows, the materials bill as materials, labour the only CR figure, BUILD through the shell's confirm seam; gate **1387/0 ×2 byte-identical**. **T-175's SHIPYARD surfaces verified already-shipped.** No HIGH, no MED; 1 LOW → T-200, next free **T-201**. The staged-MODULES question re-presents below. S47 next.)*
 *Previously 2026-10-12 (S45 **closed** — the refinery LOAD ALL, the machine strip and
 the CRAFT tab landed (two sequential builders); gate **1379/0 ×2 byte-identical**. The
 gate's systemic message-queue ceiling was cured by a runner frame-yield (the project.godot
@@ -155,9 +156,9 @@ plan)*
 - **P4 — the station overhaul.** D24 (the design round) closed 2026-10-12 — the
   amendments live in STATION_HUB §23 / UI_SPEC §17–§18 / AUDIO_SPEC §8.7 /
   04 §9 / 07 §6 / 10 §3.5. Implementation waves running on the dispatch queue:
-  **S42–S46 done** (the grid, the armory equipped list, the bulk sell, the
-  craft tab, the shipyard build view; gate 1330 → 1387/0) — **S47 (the launch
-  sequence + its audio) is next**, then S48/S49.
+  **S42–S47 done** (the grid, the armory equipped list, the bulk sell, the
+  craft tab, the shipyard build view, the launch sequence + audio; gate
+  1330 → 1396/0) — **S48 (the C-key cargo overlay) is next**, then S49.
 - **The next playtest.** After P4's waves land, the owner's eye over the next
   build (the P4 exit pass) — T-179 (the Pyre cascade) re-presents there, and the
   S41 chrome tokens re-present with the reworked OVERVIEW.

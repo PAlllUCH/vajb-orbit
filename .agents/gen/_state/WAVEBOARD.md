@@ -18,6 +18,23 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | 6 | **S48 — the C-key Cargo overlay, both planes** (UI_SPEC §18 A7–A9 + STATION_HUB §23.2) | S48 | S47 closes | touches `station.gd` (S42's shell edit) and `game.gd` + new overlay files + `tests/` rows. Brief written (`slices/S48-cargo-overlay/`). |
 | 7 | **S49 — the A2 doors on untouched surfaces + the wording law** (UI_SPEC §17 completed) | S49 | S48 closes | three panels + wording-law test rows; last so its dialog seam reads every earlier wave's settled tree. Brief written (`slices/S49-confirm-doors/`); T-186's worked example lands docs-first at its boundary. |
 
+**Updated 2026-10-13 (S47 the launch sequence + its audio closed — P48 + AUDIO-4/5).**
+Gate **1387 → 1395/0** in the wave, **1396/0 ×2** byte-identical after the cure;
+verify clean vs `s47_start`, code map re-run (325 scripts). The orchestrator's
+prep re-sourced the two Kenney CC0 packs, built `sfx_station_undock_01.ogg`
+(0.571 s, S4's 1:1 clunk+sub premix) and `sfx_station_spool_loop.ogg` (2.0 s,
+seam 0.1 dB, loop flag set) and recorded the derivation in the generation log.
+S47-V0 landed P48 + T-174: the non-cancellable 3.0 s departure overlay in the
+shell (t+0.0 undock + `UNDOCKING · <name>` / t+1.0 the held spool bed,
+re-asked per frame per §4.5 / t+2.4 the fired pair / t+3.0 the cue-scoped bed
+stop + the unchanged route seam) and the briefing column in one flat Tokens
+box. **R0: passed-with-followups** — F1 MED (AUDIO-4's `world 2` pool cap had
+no implementation home; the manager was locked) **cured by the developer
+amendment** (the world class + cap + the undock's pool row + the gated seam
+route, pinned by a ninth suite row); F2 LOW cured as the T-174 label-reading
+note. **T-174/T-185 closed**; next free **T-201**. Full block:
+`MASTER_REPORT.md` §6's "S47".
+
 **Updated 2026-10-13 (S46 the shipyard build view closed — the AUCTION house style, P54).**
 Gate **1379 → 1387/0** ×2 hermetic, verify clean vs `s46_start`, code map re-run
 (324 scripts). S46-V0 landed P54 + 10 §3.5: the `HULLS` shelf (nine live
