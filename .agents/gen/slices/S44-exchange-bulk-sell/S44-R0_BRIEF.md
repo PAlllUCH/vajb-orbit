@@ -23,6 +23,11 @@ tier: paid
    (`git diff --stat vajb-orbit/game/exchange.gd` must be empty).
 
 ## Task
+Note: the developer also re-cuts moved-premise rows after the build (the S43
+precedent); if the tree's gate shows failures outside the brief's three files,
+verify each is a moved premise, not a regression, and grade it.
+
+## Task
 Review: acceptance items, then the diff against the pins. Check specifically:
 - No new pricing path: the marked read and SELL MARKED derive every figure
   from `Exchange.quote` at press time; no cached total survives a refresh.

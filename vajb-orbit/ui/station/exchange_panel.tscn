@@ -60,9 +60,38 @@ layout_mode = 2
 theme_override_constants/separation = 8
 
 [node name="HoldCaption" type="Label" parent="ExchangeBody/HoldBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
 theme_type_variation = &"SectionHeader"
 text = "YOUR HOLD"
+
+[node name="CaptionPair" type="HBoxContainer" parent="ExchangeBody/HoldBox/HoldCaption"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -204.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 32.0
+grow_horizontal = 0
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="MarkAllButton" type="Button" parent="ExchangeBody/HoldBox/HoldCaption/CaptionPair"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 32)
+layout_mode = 2
+size_flags_vertical = 4
+text = "MARK ALL"
+
+[node name="ClearButton" type="Button" parent="ExchangeBody/HoldBox/HoldCaption/CaptionPair"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 32)
+layout_mode = 2
+size_flags_vertical = 4
+text = "CLEAR"
 
 [node name="HoldScroll" type="ScrollContainer" parent="ExchangeBody/HoldBox"]
 unique_name_in_owner = true
@@ -83,6 +112,7 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
 [node name="BoardCaption" type="Label" parent="ExchangeBody/MarketBoard"]
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
 theme_type_variation = &"SectionHeader"
 text = "MARKET BOARD"
@@ -174,6 +204,13 @@ layout_mode = 2
 theme_type_variation = &"StationValue"
 autowrap_mode = 3
 
+[node name="MarkedStrip" type="Label" parent="ExchangeBody/TradeBox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"StationValue"
+autowrap_mode = 3
+
 [node name="TradeTail" type="Control" parent="ExchangeBody/TradeBox"]
 layout_mode = 2
 size_flags_vertical = 3
@@ -213,6 +250,14 @@ layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"StationButton"
 text = "CANCEL"
+
+[node name="SellMarkedButton" type="Button" parent="PaneFoot/ActionsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 56)
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"StationButton"
+text = "SELL MARKED"
 
 [node name="SellButton" type="Button" parent="PaneFoot/ActionsRow"]
 unique_name_in_owner = true

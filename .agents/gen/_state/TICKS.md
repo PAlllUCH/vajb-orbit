@@ -5,7 +5,12 @@ file when decided or done** (deleted at the wave close-out or the ruling — the
 record lives in the cited file and `MASTER_REPORT.md` §6, this is the index
 only). Refreshed at every wave close-out and after every owner ruling.
 
-*Last refreshed: 2026-10-12 (S43 **closed** — the armory EQUIPPED list (P49) and the
+*Last refreshed: 2026-10-12 (S44 **closed** — the exchange bulk sell (P53) landed: the
+CheckChip bulk set, MARK ALL/CLEAR, the marked read, SELL MARKED; gate **1358/0 ×2
+byte-identical**. **T-190 closed** (the mark's ink is `text_primary`, landed docs-first);
+**T-175's EXCHANGE surfaces verified already-shipped.** 1 MED cured (the caption band
+asymmetry); 2 LOW → T-196/T-197, next free **T-198**. S45 next.)*
+*Previously 2026-10-12 (S43 **closed** — the armory EQUIPPED list (P49) and the
 module/ammo buy doors (§17 A4–A6) landed; gate **1351/0 ×2 byte-identical**. The MED F1
 (the BUY & FIT cluster + buyable-row flow doorless) was cured by the developer under the
 owner's own "EVERY buy action" criterion — reversal recorded; 1 LOW → T-194, next free

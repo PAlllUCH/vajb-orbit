@@ -5420,6 +5420,21 @@
    ],
    "signals": []
   },
+  "res://tests/test_s44_exchange_bulk.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/world_clock.gd",
+    "res://game/economy_log.gd",
+    "res://game/exchange.gd",
+    "res://ui/station/exchange_panel.gd",
+    "res://ui/station/exchange_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
   "res://tests/test_s4_batteries.gd": {
    "autoload": "",
    "class_name": "",
@@ -6537,11 +6552,15 @@
    "class_name": "",
    "connects": [
     "_cancel.pressed \u2192 _on_cancel_pressed",
+    "_clear_marks.pressed \u2192 _on_clear_pressed",
+    "_mark_all.pressed \u2192 _on_mark_all_pressed",
     "_sell.pressed \u2192 _on_sell_pressed",
     "_sell_all.pressed \u2192 _on_sell_all_pressed",
+    "_sell_marked.pressed \u2192 _on_sell_marked_pressed",
     "_sell_max.pressed \u2192 _on_sell_max_pressed",
     "_sell_plus.pressed \u2192 _on_sell_units_pressed.bind(1",
     "_sell_zero.pressed \u2192 _on_sell_zero_pressed",
+    "chip.toggled \u2192 _on_check_toggled.bind(payload",
     "row.focus_entered \u2192 _on_row_focused.bind(row",
     "row.mouse_entered \u2192 _on_row_hovered.bind(payload",
     "row.mouse_exited \u2192 _on_row_hovered.bind(payload",

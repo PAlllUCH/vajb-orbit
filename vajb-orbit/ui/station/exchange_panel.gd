@@ -50,6 +50,13 @@ const STEPPER_SIZE := 48.0
 ## plate at the token size; the old 88 px SELL plate retires with the six measured sizes.
 const SELL_HEIGHT := 56.0
 const ACTION_HEIGHT := 56.0
+## P53 (STATION_HUB section 23.7): the hold row's leading CheckChip, a 24x24 flat button
+## whose only chrome is the 1 px frame (unchecked `metal_mid`, checked `metal_light`) and
+## the code-drawn mark inside its own child rect. The hold band takes the same lead so its
+## caption cells keep their seats over the row's value columns.
+const CHECK_CHIP_SIZE := 24.0
+const CHECK_MARK_INSET := 5.0
+const CHECK_CHIP_LEAD := CHECK_CHIP_SIZE + COLUMN_SEPARATION
 const COL_ICON := 40.0
 ## N43: the hold value columns rebalance to <= 60/64/80 so the expand-fill title keeps
 ## >= 180 px inside the 500 px hold box (measured in the S31 report).
@@ -127,6 +134,13 @@ const SELL_UNITS_CAPTION := "SELL UNITS"
 ## stepper - `MAX` fills the row's units, `0` empties the selector (SELL then disables).
 const SELL_MAX_WORD := "MAX"
 const SELL_ZERO_WORD := "0"
+## P53: the YOUR HOLD caption band's bulk-set pair (the P2 ActionInline idiom) and the
+## marked read the TradeBox carries under the confirm strip - 05 section 6's shape, with
+## the T-119 two-line cure this 360 px box already ships for the confirm strip.
+const MARK_ALL_WORD := "MARK ALL"
+const CLEAR_WORD := "CLEAR"
+const SELL_MARKED_WORD := "SELL MARKED"
+const MARKED_FORMAT := "MARKED %s — GROSS %s · FEE %s\nYOU GET %s"
 const TITLE_FORMAT := "%s · %d HELD"
 ## T-119: the total rides its own line so the 360 px TradeBox never wraps and orphans it.
 const CONFIRM_FORMAT := "SELL %d %s — GROSS %s · FEE %s\nYOU GET %s"
@@ -150,6 +164,10 @@ const STATUS_REFUSED_RAW := "REFUSED · NO RAW STACK TO SELL"
 const STATUS_REFUSED_UNKNOWN := "REFUSED · NOT FOR SALE"
 const STATUS_REFUSED_QTY := "REFUSED · PICK AT LEAST ONE UNIT"
 const STATUS_REFUSED_CARGO := "REFUSED · NOT ENOUGH IN THE HOLD"
+## P53: the marked run's own lines - the success line in the STATUS_ALL idiom, the
+## refusal in section 5.6's family with the stack it stopped on named.
+const STATUS_MARKED := "SOLD MARKED · %s · +%s CR"
+const STATUS_REFUSED_MARKED := "REFUSED · %s · %s"
 
 const REASON_UNKNOWN: StringName = &"unknown_item"
 const REASON_INVALID_QTY: StringName = &"invalid_qty"
@@ -173,6 +191,10 @@ const REASON_INSUFFICIENT_CARGO: StringName = &"insufficient_cargo"
 @onready var _confirm_strip: Label = %ConfirmStrip
 @onready var _sell: Button = %SellButton
 @onready var _sell_all: Button = %SellAllButton
+@onready var _sell_marked: Button = %SellMarkedButton
+@onready var _mark_all: Button = %MarkAllButton
+@onready var _clear_marks: Button = %ClearButton
+@onready var _marked_strip: Label = %MarkedStrip
 @onready var _cancel: Button = %CancelButton
 
 var _hold_ids: Array[StringName] = []
@@ -187,6 +209,11 @@ var _focused_payload: Dictionary = {}
 ## + `text_dim`). The `MAX` and `0` quick-set chips move the same value a SELL press moves.
 var _sell_units := 0
 var _quoted: Dictionary = {}
+## P53: the bulk set - the hold ids the CheckChips mark - and the per-stack quotes the
+## marked read last displayed, which a SELL MARKED press commits (the single sale's
+## shown-figure law, CONTRACTS section 21 M3, applied per stack).
+var _marked: Dictionary = {}
+var _marked_quotes: Dictionary = {}
 var _tweens: Array[Tween] = []
 
 
@@ -258,6 +285,7 @@ func _apply_tokens() -> void:
 	_pane_icon.modulate = _token(&"text_primary")
 	for payload: Dictionary in _hold_payloads:
 		_apply_icon_tokens(payload)
+		_apply_check_tokens(payload)
 	for payload: Dictionary in _board_payloads:
 		_apply_icon_tokens(payload)
 
@@ -303,7 +331,9 @@ func _build_header() -> void:
 ## and column separations as the row's own grid, so the caption cells seat exactly over
 ## their value columns. The band rides inside its scroll, above its rows (the AUCTION idiom,
 ## whose section headers scroll with their sections), so both lists' viewports begin on one y.
-func _add_band(parent: VBoxContainer, node_name: String, columns: Array[Dictionary]) -> void:
+func _add_band(
+	parent: VBoxContainer, node_name: String, columns: Array[Dictionary], lead := 0.0
+) -> void:
 	var margin := MarginContainer.new()
 	margin.name = node_name
 	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -316,6 +346,14 @@ func _add_band(parent: VBoxContainer, node_name: String, columns: Array[Dictiona
 	box.add_theme_constant_override(&"separation", COLUMN_SEPARATION)
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	margin.add_child(box)
+	## P53: the hold band's leading gap, the CheckChip seat plus the row's own separation,
+	## so the band's caption cells stay seated over the value columns they name.
+	if lead > 0.0:
+		var check_gap := Control.new()
+		check_gap.name = "CheckGap"
+		check_gap.custom_minimum_size = Vector2(lead, 0.0)
+		check_gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		box.add_child(check_gap)
 	var icon_gap := Control.new()
 	icon_gap.name = "IconGap"
 	icon_gap.custom_minimum_size = Vector2(COL_ICON, 0.0)
@@ -495,8 +533,11 @@ func _rebuild_hold() -> void:
 	if not _hold_ids.has(_selected_id):
 		_selected_id = &""
 		_sell_units = 0
+	## P53: the marked set keeps only the stacks the hold still lists - a stack a sale
+	## emptied leaves the set with the row that carried it.
+	_prune_marked()
 	## N42: the hold list wears the same column-header band as the board.
-	_add_band(_hold_rows, "HoldHeader", _hold_columns())
+	_add_band(_hold_rows, "HoldHeader", _hold_columns(), CHECK_CHIP_LEAD)
 	if _hold_ids.is_empty():
 		_hold_rows.add_child(_make_caption_row(HOLD_EMPTY, "HoldEmpty"))
 		return
@@ -506,6 +547,7 @@ func _rebuild_hold() -> void:
 	for payload: Dictionary in _hold_payloads:
 		_apply_icon_tokens(payload)
 	_restore_selection()
+	_restore_marks()
 
 
 func _sellable_ids(profile: ProfileScript) -> Array[StringName]:
@@ -571,6 +613,18 @@ func _build_hold_row(item_id: StringName) -> Dictionary:
 	payload[&"id"] = item_id
 	payload[&"name"] = _item_name(item_id)
 	payload[&"tint"] = _icon_tint(icon_path, _tint_of(item_id))
+	## P53: the row leads with its CheckChip (the bulk set's toggle); the row press keeps
+	## its single-sale arm. The chip takes no focus - the row stays the list's focus unit.
+	var chip := _make_check_chip()
+	var mark: CheckMark = chip.get_node(NodePath("CheckMark"))
+	var row_box: HBoxContainer = row.get_node(NodePath("RowInner/RowBox"))
+	row_box.add_child(chip)
+	row_box.move_child(chip, 0)
+	payload[&"chip"] = chip
+	payload[&"check_mark"] = mark
+	_style_check_chip(chip, false)
+	mark.colour = _token(&"text_primary")
+	chip.toggled.connect(_on_check_toggled.bind(payload))
 	## N43: the hold list is an N37 cluster - no per-row INSPECT chip. The trade column's
 	## single INSPECT ActionInline acts on the focused/selected row.
 	row.pressed.connect(_on_row_pressed.bind(payload))
@@ -590,6 +644,27 @@ func _restore_selection() -> void:
 			row.set_pressed_no_signal(true)
 			_selected_row = row
 			return
+
+
+## P53: the rebuilt rows re-mark themselves from the surviving set - the marking is the
+## panel's state, not the row widget's.
+func _restore_marks() -> void:
+	for payload: Dictionary in _hold_payloads:
+		var on := _marked.has(payload[&"id"])
+		var chip: Button = payload[&"chip"]
+		chip.set_pressed_no_signal(on)
+		_style_check_chip(chip, on)
+		var mark: CheckMark = payload[&"check_mark"]
+		mark.checked = on
+		mark.queue_redraw()
+
+
+func _prune_marked() -> void:
+	var kept: Dictionary = {}
+	for item_id: StringName in _hold_ids:
+		if _marked.has(item_id):
+			kept[item_id] = true
+	_marked = kept
 
 
 func _refresh_hold() -> void:
@@ -648,6 +723,16 @@ func _wire_trade() -> void:
 	## S36 (UI_SPEC section 15.1): the MAX / 0 quick-set chips wear C3 `ui_inline_chip`.
 	ChromeFamily.apply_chip(_sell_max)
 	ChromeFamily.apply_chip(_sell_zero)
+	## P53: the caption band's MARK ALL / CLEAR pair wears the same ActionInline chip; the
+	## foot's fourth plate keeps the P1 Pressables seat its three siblings hold.
+	_mark_all.text = MARK_ALL_WORD
+	_clear_marks.text = CLEAR_WORD
+	ChromeFamily.apply_chip(_mark_all)
+	ChromeFamily.apply_chip(_clear_marks)
+	_mark_all.pressed.connect(_on_mark_all_pressed)
+	_clear_marks.pressed.connect(_on_clear_pressed)
+	_sell_marked.text = SELL_MARKED_WORD
+	_sell_marked.pressed.connect(_on_sell_marked_pressed)
 
 
 func _refresh_trade() -> void:
@@ -689,6 +774,7 @@ func _refresh_trade() -> void:
 	_quoted = _quote(profile, _selected_id, _sell_units) if armed and _sell_units > 0 else {}
 	_confirm_strip.text = _confirm_text() if armed and _sell_units > 0 else CONFIRM_IDLE
 	_refresh_hold()
+	_refresh_marked()
 
 
 func _confirm_text() -> String:
@@ -699,6 +785,145 @@ func _confirm_text() -> String:
 		_format_int(int(_quoted.get(&"fee", 0))),
 		_format_int(int(_quoted.get(&"paid", 0))),
 	]
+
+
+## ---------------------------------------------------------------------------
+## The marked set (P53)
+## ---------------------------------------------------------------------------
+
+
+## The marked set in the hold's own order - the order a SELL MARKED press runs and the
+## read sums in, whatever order the chips were toggled in.
+func _marked_ids() -> Array[StringName]:
+	var ids: Array[StringName] = []
+	for item_id: StringName in _hold_ids:
+		if _marked.has(item_id):
+			ids.append(item_id)
+	return ids
+
+
+## P53: the marked read under the confirm strip - the sum of `Exchange.quote` per marked
+## stack (each stack's own held quantity, the clock law's one price read), shown only
+## while the set is non-empty. The quotes are kept: a SELL MARKED press commits exactly
+## these figures, the single sale's shown-figure law per stack.
+func _refresh_marked() -> void:
+	var profile := _profile()
+	var targets := _marked_ids()
+	_sell_marked.disabled = targets.is_empty()
+	_mark_all.disabled = _hold_ids.is_empty()
+	_clear_marks.disabled = _marked.is_empty()
+	_marked_quotes.clear()
+	if targets.is_empty():
+		_marked_strip.visible = false
+		_marked_strip.text = ""
+		return
+	var gross := 0
+	var fee := 0
+	var paid := 0
+	for item_id: StringName in targets:
+		var held := int(profile.call(&"cargo_qty", item_id)) if profile != null else 0
+		var quote: Dictionary = _quote(profile, item_id, held)
+		_marked_quotes[item_id] = quote
+		gross += int(quote.get(&"gross", 0))
+		fee += int(quote.get(&"fee", 0))
+		paid += int(quote.get(&"paid", 0))
+	_marked_strip.text = MARKED_FORMAT % [
+		StationCatalogScript.plural(targets.size(), "STACK"),
+		_format_int(gross),
+		_format_int(fee),
+		_format_int(paid),
+	]
+	_marked_strip.visible = true
+
+
+## A chip's move: the set gains or loses the stack, the chip restyles (the frame steps
+## and the mark draws or clears) and the read re-quotes.
+func _on_check_toggled(pressed: bool, payload: Dictionary) -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	var item_id: StringName = payload[&"id"]
+	if pressed:
+		_marked[item_id] = true
+	else:
+		_marked.erase(item_id)
+	_style_check_chip(payload[&"chip"] as Button, pressed)
+	var mark: CheckMark = payload[&"check_mark"]
+	mark.checked = pressed
+	mark.queue_redraw()
+	_refresh_trade()
+
+
+## MARK ALL / CLEAR: the whole set moves at once, every chip restyles with it, and no
+## row is rebuilt - the row stack never reflows (A5.5's content-swap law).
+func _set_marked_all(on: bool) -> void:
+	for payload: Dictionary in _hold_payloads:
+		var item_id: StringName = payload[&"id"]
+		if on:
+			_marked[item_id] = true
+		else:
+			_marked.erase(item_id)
+		var chip: Button = payload[&"chip"]
+		chip.set_pressed_no_signal(on)
+		_style_check_chip(chip, on)
+		var mark: CheckMark = payload[&"check_mark"]
+		mark.checked = on
+		mark.queue_redraw()
+	_refresh_trade()
+
+
+func _on_mark_all_pressed() -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	_set_marked_all(true)
+
+
+func _on_clear_pressed() -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	_set_marked_all(false)
+
+
+## P53: one confirmed action that sells every marked stack - ore, components, ingots
+## alike - through the same per-stack `sell()` the single sale arms: quote per stack at
+## press, sell per stack, and the first refused stack stops the run with section 5.6's
+## wording naming it. The stacks sold before the refusal stay sold (all-or-nothing per
+## stack, never per run).
+func _on_sell_marked_pressed() -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	var profile := _profile()
+	if profile == null:
+		return
+	if _marked_ids().is_empty():
+		return
+	var sold := 0
+	var paid_total := 0
+	var queued := 0
+	for item_id: StringName in _marked_ids():
+		var held := int(profile.call(&"cargo_qty", item_id))
+		var quoted: Dictionary = _marked_quotes.get(item_id, {})
+		var result: Dictionary = ExchangeScript.sell(
+			profile, item_id, held, Clock.now(), null, int(quoted.get(&"gross", -1))
+		)
+		if not bool(result[&"ok"]):
+			_after_sale()
+			## Section 5.6's wording with the stopped stack named: the reason text's own
+			## `REFUSED · ` head becomes the strip's head, the name rides between.
+			_deny(STATUS_REFUSED_MARKED % [
+				_item_name(item_id),
+				_reason_text(result[&"reason"]).trim_prefix("REFUSED · "),
+			])
+			return
+		sold += 1
+		paid_total += int(result[&"paid"])
+		queued += int(result[&"queued"])
+	_after_sale()
+	if sold <= 0:
+		_deny(STATUS_REFUSED_EMPTY)
+		return
+	AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
+	var line := STATUS_MARKED % [
+		StationCatalogScript.plural(sold, "STACK"), _format_int(paid_total)
+	]
+	if queued > 0:
+		line += STATUS_ALL_QUEUED % StationCatalogScript.plural(queued, "UNIT")
+	_report(line)
 
 
 func _select(item_id: StringName) -> void:
@@ -1046,6 +1271,52 @@ func _make_caption_row(text: String, node_name: String) -> Label:
 	return label
 
 
+## P53: the hold row's CheckChip - a 24x24 flat button (no text, no icon, no focus: the
+## row stays the list's focus unit) whose mark is the code-drawn child (A5.2(iii)), never
+## a font glyph (section 5.8's tofu finding).
+func _make_check_chip() -> Button:
+	var chip := Button.new()
+	chip.name = "CheckChip"
+	chip.toggle_mode = true
+	chip.focus_mode = Control.FOCUS_NONE
+	chip.custom_minimum_size = Vector2(CHECK_CHIP_SIZE, CHECK_CHIP_SIZE)
+	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	chip.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	var mark := CheckMark.new()
+	mark.name = "CheckMark"
+	mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	mark.set_anchors_and_offsets_preset(
+		Control.PRESET_FULL_RECT, Control.PRESET_MODE_MINSIZE, int(CHECK_MARK_INSET)
+	)
+	chip.add_child(mark)
+	return chip
+
+
+## The chip's two states (P53/T-190): a bare 1 px frame - `metal_mid` unchecked,
+## `metal_light` checked - and the mark's `text_primary` ink carries the state with it,
+## never colour alone. No fill and no invented state boxes: the pin names exactly these
+## two states and the row strip behind carries the hover.
+func _style_check_chip(chip: Button, checked: bool) -> void:
+	var box := StyleBoxFlat.new()
+	box.draw_center = false
+	box.border_color = _token(&"metal_light") if checked else _token(&"metal_mid")
+	box.set_border_width_all(1)
+	box.set_corner_radius_all(0)
+	for state: StringName in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"]:
+		chip.add_theme_stylebox_override(state, box)
+
+
+## The theme-change pass: the chip's frame and the mark's ink re-read the tokens.
+func _apply_check_tokens(payload: Dictionary) -> void:
+	var chip: Button = payload.get(&"chip", null)
+	if chip == null:
+		return
+	_style_check_chip(chip, chip.button_pressed)
+	var mark: CheckMark = payload[&"check_mark"]
+	mark.colour = _token(&"text_primary")
+	mark.queue_redraw()
+
+
 func _make_label(variation: StringName, text: String, trim := false) -> Label:
 	var label := Label.new()
 	label.theme_type_variation = variation
@@ -1293,3 +1564,22 @@ func _format_int(value: int) -> String:
 		if count % 3 == 0 and index > 0:
 			grouped = " " + grouped
 	return ("-" if value < 0 else "") + grouped
+
+
+## The CheckChip's check mark (P53, T-190's cure): a code-drawn polyline inside its own
+## child rect (A5.2(iii), the Chevron idiom), drawn only while the chip is checked - the
+## state signal the frame's step carries with it. The ink is `text_primary`, the section 1
+## success law's ink; never a font glyph (section 5.8's tofu finding).
+class CheckMark extends Control:
+	var checked := false
+	var colour: Color = Color.WHITE
+
+	func _draw() -> void:
+		if not checked:
+			return
+		var points := PackedVector2Array([
+			Vector2(size.x * 0.20, size.y * 0.55),
+			Vector2(size.x * 0.42, size.y * 0.78),
+			Vector2(size.x * 0.82, size.y * 0.25),
+		])
+		draw_polyline(points, colour, 2.0, true)

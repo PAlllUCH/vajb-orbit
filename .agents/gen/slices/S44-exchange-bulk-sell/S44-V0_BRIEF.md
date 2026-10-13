@@ -114,6 +114,12 @@ arm or the foot trio. Add the new suite `tests/test_s44_exchange_bulk.gd`.
    row each); the report answers every item with a cite.
 
 ## Hard constraints
+- **The 5-minute failsafe (the S43 process law):** every shell command you run must be
+  bounded — run anything that can take longer than a minute as `timeout 280 <command>
+  > /tmp/<log>.txt 2>&1; tail -n 40 /tmp/<log>.txt` and read the log; **never** wait on a
+  background job, never use a background-run feature; poll the log file with short sleeps.
+  If any single wait exceeds five minutes, stop, write the report with what is done, and
+  say so.
 - File set: `vajb-orbit/ui/station/exchange_panel.gd`,
   `vajb-orbit/ui/station/exchange_panel.tscn`,
   `vajb-orbit/tests/test_s44_exchange_bulk.gd`. `game/exchange.gd` is

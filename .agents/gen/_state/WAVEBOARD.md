@@ -12,12 +12,24 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 
 | Pos | Lane item | Wave | Runs after | The collision/dependency that forces the order |
 |---|---|---|---|---|
-| 1 | **S44 — exchange bulk sell** (P53 + T-175's EXCHANGE surfaces verified + T-190) | S44 | S43 (closed) | disjoint files (`exchange_panel.gd/.tscn`, `exchange.gd` read seams); sequenced for one live session. Brief written; T-190's ink amendment landed docs-first. |
 | 3 | **S45 — refinery LOAD ALL + machine strip + CRAFT** (P50/P51/P52, 04 §9 R9–R12, 07 §6 C1–C10) | S45 | S44 closes | the biggest wave; runs as two **sequential** builders (V0 panel controls + model seam, W0 the craft model + list) — one shared file, never parallel. Briefs written (`slices/S45-refinery-craft/`). |
 | 4 | **S46 — the shipyard build view** (P54 + 10 §3.5) | S46 | S45 closes | disjoint files (`shipyard_panel.gd/.tscn`, `shipyard.gd` read seams); sequenced for one live session. Brief written (`slices/S46-shipyard-build/`). |
 | 5 | **S47 — the launch sequence + its audio** (P48 + AUDIO_SPEC §8.7 + T-174/T-188 riders) | S47 | S46 closes | `launch_panel.gd` untouched since S41; the orchestrator sources/builds the two cue assets before the builder dispatches (raw packs gone with the clear-out). Brief written (`slices/S47-launch-sequence/`). |
 | 6 | **S48 — the C-key Cargo overlay, both planes** (UI_SPEC §18 A7–A9 + STATION_HUB §23.2) | S48 | S47 closes | touches `station.gd` (S42's shell edit) and `game.gd` + new overlay files + `tests/` rows. Brief written (`slices/S48-cargo-overlay/`). |
 | 7 | **S49 — the A2 doors on untouched surfaces + the wording law** (UI_SPEC §17 completed) | S49 | S48 closes | three panels + wording-law test rows; last so its dialog seam reads every earlier wave's settled tree. Brief written (`slices/S49-confirm-doors/`); T-186's worked example lands docs-first at its boundary. |
+
+**Updated 2026-10-12 (S44 the exchange bulk sell closed).**
+Gate **1351 → 1358/0** ×2 hermetic (the last three runs byte-identical after
+F1's band cure), verify clean vs `s44_start`, code map re-run (320 scripts).
+S44-V0 landed P53: the `CheckChip` bulk set (24×24, frame `metal_mid` →
+`metal_light` + a code-drawn `text_primary` mark in its own child rect —
+**T-190's ink**), `MARK ALL`/`CLEAR` in the caption band, the marked read
+under `ConfirmStrip` (per-stack `Exchange.quote` sums at press time), and
+`SELL MARKED` (360×56) before `SELL` — the trio's seats untouched, the
+per-stack `sell()` unchanged, refusals name the stack on §5.6's strip. One
+MED cured (F1: the caption re-seat left `BoardCaption` 11 px above the hold
+band — the board band raised to match); 2 LOW → **T-196/T-197**; next free
+**T-198**. Full block: `MASTER_REPORT.md` §6's "S44".
 
 **Updated 2026-10-12 (S43 the armory equipped list + its buy doors closed).**
 Gate **1341 → 1351/0** ×2 hermetic, verify clean vs `s43_start`, code map re-run
