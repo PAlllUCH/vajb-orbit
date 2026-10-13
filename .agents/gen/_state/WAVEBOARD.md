@@ -18,6 +18,22 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | 6 | **S48 — the C-key Cargo overlay, both planes** (UI_SPEC §18 A7–A9 + STATION_HUB §23.2) | S48 | S47 closes | touches `station.gd` (S42's shell edit) and `game.gd` + new overlay files + `tests/` rows. Brief written (`slices/S48-cargo-overlay/`). |
 | 7 | **S49 — the A2 doors on untouched surfaces + the wording law** (UI_SPEC §17 completed) | S49 | S48 closes | three panels + wording-law test rows; last so its dialog seam reads every earlier wave's settled tree. Brief written (`slices/S49-confirm-doors/`); T-186's worked example lands docs-first at its boundary. |
 
+**Updated 2026-10-13 (S46 the shipyard build view closed — the AUCTION house style, P54).**
+Gate **1379 → 1387/0** ×2 hermetic, verify clean vs `s46_start`, code map re-run
+(324 scripts). S46-V0 landed P54 + 10 §3.5: the `HULLS` shelf (nine live
+`buildable_hulls()` rows) then the `MODULES` shelf with its pinned staged
+caption (S27's module recipes are already live in the model — the owner
+question re-presents on TICKS), hull rows carrying the materials bill as
+materials (`<n>× <name>` runs, glyph 24, `<held>/<needed>` off `cargo_qty`),
+the labour line the only CR figure, `READY`/`MISSING` chips, `BUILD` through
+the shell's confirm seam with A6's verbatim wording and `queue_job` unchanged;
+`BUILD_HULL_FORMAT`/`BUILD_MODULE_FORMAT`/`_ship_list_price` retired;
+`game/shipyard.gd` and the `.tscn` byte-identical. T-175's SHIPYARD rider
+verified already-shipped. R0: **passed-with-followups, no HIGH, no MED**;
+F1 LOW (the brief's own +8 process-law lines — the developer's pre-dispatch
+amendment, attribution confirmed, no ticket); F2 LOW → **T-200**; next free
+**T-201**. Full block: `MASTER_REPORT.md` §6's "S46".
+
 **Updated 2026-10-12 (S45 the refinery wave closed — LOAD ALL, the machine strip, the CRAFT tab).**
 Gate **1358 → 1379/0** ×2 hermetic, verify clean vs `s45_start`, code map re-run
 (323 scripts). Two sequential builders on the shared file: **V0** landed the

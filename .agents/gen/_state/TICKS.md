@@ -5,7 +5,8 @@ file when decided or done** (deleted at the wave close-out or the ruling — the
 record lives in the cited file and `MASTER_REPORT.md` §6, this is the index
 only). Refreshed at every wave close-out and after every owner ruling.
 
-*Last refreshed: 2026-10-12 (S45 **closed** — the refinery LOAD ALL, the machine strip and
+*Last refreshed: 2026-10-13 (S46 **closed** — the shipyard build view (P54) landed in the AUCTION house style: the HULLS shelf with live recipe rows, the materials bill as materials, labour the only CR figure, BUILD through the shell's confirm seam; gate **1387/0 ×2 byte-identical**. **T-175's SHIPYARD surfaces verified already-shipped.** No HIGH, no MED; 1 LOW → T-200, next free **T-201**. The staged-MODULES question re-presents below. S47 next.)*
+*Previously 2026-10-12 (S45 **closed** — the refinery LOAD ALL, the machine strip and
 the CRAFT tab landed (two sequential builders); gate **1379/0 ×2 byte-identical**. The
 gate's systemic message-queue ceiling was cured by a runner frame-yield (the project.godot
 bump reverted — the owner may prefer the cap bump; both are one line). 1 LOW → T-198,
@@ -129,6 +130,16 @@ plan)*
   The owner's 2026-10-12 reply to this row carried the T-184 finding instead of
   a ruling; re-present after the P4 overview grid rework. Reversals are in
   `S41-B1_report.md` and `S41-B4_report.md`.
+- **The staged-MODULES shelf (S46's rider): the pin stages the caption, but the
+  module recipes are already live.** P54 pins the BUILD view's `MODULES` shelf
+  to its staged caption, yet S27 already landed real module recipes
+  (`Shipyard.buildable_modules()`, `test_s27_catalog.gd:426-448`). The staged
+  caption shipped per the pin (reviewer-graded proceed-correct; the confirm
+  path's `kind` plumbing is ticketed T-200 for that wave). Owner's call:
+  green-light the module rows as a small wave (one pass — rows, the `kind`
+  payload, the suite rows), or leave the staging as pinned.
+  Reversal: none (the pin is the current law).
+
 - **The Pyre ring's own-kill cascade (S27, T-179 — POSTPONED).** A ring kill is
   itself a below-quarter kill, so in a dense spawn one Pyre kill can
   chain-detonate rings from each new victim's position (it terminates; N kills
@@ -143,9 +154,10 @@ plan)*
 
 - **P4 — the station overhaul.** D24 (the design round) closed 2026-10-12 — the
   amendments live in STATION_HUB §23 / UI_SPEC §17–§18 / AUDIO_SPEC §8.7 /
-  04 §9 / 07 §6 / 10 §3.5. Next: the owner's tick sheet (§23.10), then the
-  implementation waves re-cut from the amendments — **S42 (the OVERVIEW 3×3 grid
-  rework, P44–P47 + T-184)** is queued first.
+  04 §9 / 07 §6 / 10 §3.5. Implementation waves running on the dispatch queue:
+  **S42–S46 done** (the grid, the armory equipped list, the bulk sell, the
+  craft tab, the shipyard build view; gate 1330 → 1387/0) — **S47 (the launch
+  sequence + its audio) is next**, then S48/S49.
 - **The next playtest.** After P4's waves land, the owner's eye over the next
   build (the P4 exit pass) — T-179 (the Pyre cascade) re-presents there, and the
   S41 chrome tokens re-present with the reworked OVERVIEW.

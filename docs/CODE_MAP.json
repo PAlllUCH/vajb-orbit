@@ -5477,6 +5477,20 @@
    ],
    "signals": []
   },
+  "res://tests/test_s46_shipyard_build.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/player_profile.gd",
+    "res://game/shipyard.gd",
+    "res://game/station_catalog.gd",
+    "res://ui/station/shipyard_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
   "res://tests/test_s4_batteries.gd": {
    "autoload": "",
    "class_name": "",
@@ -6818,7 +6832,8 @@
     "_queue_cancel.pressed \u2192 _on_queue_cancel",
     "_queue_collect.pressed \u2192 _on_queue_collect",
     "_repair_button.pressed \u2192 _on_repair_pressed",
-    "button.pressed \u2192 _on_build_row_pressed.bind(kind",
+    "button.pressed \u2192 _on_scrap_row_pressed.bind(id",
+    "chip.pressed \u2192 _on_build_chip_pressed.bind(payload",
     "line.mouse_entered \u2192 _on_damage_hovered.bind(payload",
     "line.mouse_exited \u2192 _on_damage_hovered.bind(payload",
     "plate.gui_input \u2192 _on_plate_input.bind(cell",
@@ -6827,6 +6842,7 @@
     "row.focus_entered \u2192 _on_row_focused.bind(row",
     "row.mouse_entered \u2192 _on_row_hovered.bind(payload",
     "row.mouse_exited \u2192 _on_row_hovered.bind(payload",
+    "row.pressed \u2192 _on_build_row_pressed.bind(payload",
     "row.pressed \u2192 _on_row_pressed.bind(payload"
    ],
    "extends": "VBoxContainer",
@@ -6834,6 +6850,8 @@
     "res://assets/icons/slot/",
     "res://autoload/player_profile.gd",
     "res://game/auction.gd",
+    "res://game/component_catalog.gd",
+    "res://game/mineral_catalog.gd",
     "res://game/repairs.gd",
     "res://game/shipyard.gd",
     "res://game/station_catalog.gd",
@@ -6841,6 +6859,7 @@
     "res://ui/theme/chrome_family.gd"
    ],
    "signals": [
+    "confirm_requested",
     "inspect_requested",
     "sheet_requested",
     "status_requested"

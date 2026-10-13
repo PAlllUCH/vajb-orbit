@@ -45,6 +45,10 @@ const RepairsPanelScript := preload("res://ui/station/repairs_panel.gd")
 const RepairsService := preload("res://game/repairs.gd")
 ## S27 (10 section 3): the shipyard build path the BUILD / QUEUE / SCRAP views drive.
 const ShipyardScript := preload("res://game/shipyard.gd")
+## S46 (P54): the build rows' material names and family glyphs read the 02 ore and 03
+## component tables directly - the shipyard's own bill idiom, never a restated name.
+const MineralData := preload("res://game/mineral_catalog.gd")
+const ComponentData := preload("res://game/component_catalog.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
@@ -59,6 +63,11 @@ signal inspect_requested(title: String, body: String, danger: bool)
 ## `station_inspect` on the focused row) publishes the sheet's payload here; the shell opens
 ## the N28 sheet from it. Rows appear only where the data carries them (N35).
 signal sheet_requested(payload: Dictionary)
+## S46 (UI_SPEC section 17 A4 door 6): the build view's one door. The shell owns the
+## dialog (the S25 seam it wires for every pane that carries the signal) and hands the
+## answer back through `confirm_action` - the confirmed press runs `Shipyard.queue_job`
+## unchanged, so it can still refuse on the section 5.6 strip.
+signal confirm_requested(payload: Dictionary)
 
 const ROW_HEIGHT := 76.0
 const COL_TAG := 130.0
@@ -143,11 +152,51 @@ const MODE_HANGAR := "hangar"
 const MODE_BUILD := "build"
 const MODE_QUEUE := "queue"
 const MODE_SCRAP := "scrap"
-const BUILD_HULL_FORMAT := "%s · %d CR TO BUY · %d CR TO BUILD"
-const BUILD_MODULE_FORMAT := "%s · %d CR LIST · %d CR TO BUILD"
+## S46 (STATION_HUB section 23.8 P54): the build view is the AUCTION house style - two
+## category sections wearing section 5.10's shelf idiom. HULLS carries 10 section 3.1's
+## nine recipe rows (the P40 column band + N45 trim, `Button` + container children); the
+## materials bill renders as materials - one `<n>× <name>` run per material with the
+## family glyph 24 at its own cut and the `<held>/<needed>` read from `cargo_qty` - the
+## labour line is the build view's **only** CR figure (the auction owns the buy price),
+## the per-row chip names READY or the first missing material in recipe order, and the
+## BUILD ActionInline sits rightmost. MODULES ships its staged caption; its rows land
+## with the module-catalogue wave.
 const BUILD_ACTION := "BUILD"
 const BUILD_REFUSED := "BUILD REFUSED · MISSING MATERIALS OR CREDITS"
 const BUILD_QUEUED := "QUEUED · %s"
+const SECTION_HULLS := "HULLS"
+const SECTION_MODULES := "MODULES"
+const MODULES_STAGED := "MODULE BUILDS LAND WITH THE MODULE CATALOGUE"
+const BUILD_HEADER_HULL := "HULL"
+const BUILD_HEADER_MATERIALS := "MATERIALS"
+const BUILD_HEADER_LABOUR := "LABOUR"
+const BUILD_HEADER_STATE := "STATE"
+## The P40 column band's fixed cells, the craft list's own widths grown for the
+## held/needed read (the craft list's 560 px INPUTS column carried runs without one).
+const BUILD_COL_MATERIALS := 640.0
+const BUILD_COL_LABOUR := 150.0
+const BUILD_COL_STATE := 250.0
+const BUILD_COL_ACTION := 96.0
+const BUILD_RUN_GLYPH := 24.0
+## The craft run's idle alpha (refinery_panel.gd's ROW_ICON_IDLE_ALPHA), the same
+## presentation value for the same glyph-in-a-row anatomy.
+const BUILD_GLYPH_ALPHA := 0.72
+const BUILD_RUN_FORMAT := "%d× %s"
+const BUILD_RUN_JOIN := " · "
+const BUILD_HELD_FORMAT := "%d/%d"
+const BUILD_LABOUR_CAPTION := "CR LABOUR"
+const BUILD_READY := "READY"
+const BUILD_MISSING_FORMAT := "MISSING %d× %s"
+const BUILD_SHEET_MATERIALS := "MATERIALS · %s"
+const BUILD_SHEET_LABOUR := "LABOUR · %s CR"
+## UI_SPEC section 17 A6's shipyard door. `<NAME>` is the hull's class word - the
+## recipe's own 10 section 3.1 row name, the worked example's "BUILD CORVETTE" - read
+## from `ShipFit.HULLS`'s `ship_class`, never hardcoded.
+const BUILD_CONFIRM_BODY := "ARE YOU SURE YOU WANT TO BUILD %s FOR %s + %s CR LABOUR?"
+const CONFIRM_TITLE := "CONFIRM PURCHASE"
+const CONFIRM_OK := "OK"
+const CONFIRM_CANCEL := "CANCEL"
+const ACTION_QUEUE_BUILD: StringName = &"queue_build"
 const QUEUE_IDLE := "NO BUILD IN PROGRESS · ONE BUILD AT A TIME (10 §3.3)"
 const QUEUE_RUNNING := "IN PROGRESS · %s\nREADY WHEN YOU RETURN FROM YOUR NEXT FLIGHT"
 const QUEUE_READY := "READY · %s\nCOLLECT TO DELIVER IT TO THE STATION"
@@ -230,6 +279,9 @@ const STATUS_ACTIVE := "ACTIVE HULL IS NOW %s"
 @onready var _scrap_footer: Label = %ScrapFooter
 
 var _mode := MODE_HANGAR
+## The kind the open confirm door will queue (the payload's own `kind`): hulls this
+## wave, the module wave extends it without touching the shell seam again.
+var _pending_kind: StringName = ShipyardScript.KIND_HULL
 
 var _payloads: Array[Dictionary] = []
 var _stat_cells: Dictionary = {}
@@ -538,12 +590,13 @@ func _make_inner(button: Button) -> HBoxContainer:
 	return box
 
 
-func _add_slack() -> void:
+func _add_slack(parent: VBoxContainer = null) -> void:
+	var target := parent if parent != null else _list
 	var slack := Control.new()
 	slack.name = "Slack"
 	slack.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	slack.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_list.add_child(slack)
+	target.add_child(slack)
 
 
 func _build_comparison() -> void:
@@ -1632,34 +1685,393 @@ func _refresh_views() -> void:
 			_fill_scrap_view()
 
 
-## BUILD: one row per buildable hull and module, each a `StationButton` naming the
-## recipe's live CR total. A press queues the build (10 section 3.3).
+## BUILD (STATION_HUB section 23.8 P54): the AUCTION house style - two category
+## sections wearing section 5.10's shelf idiom. HULLS carries 10 section 3.1's nine
+## recipe rows; MODULES ships its staged caption (the rows land with the
+## module-catalogue wave). The rows' anatomy is `_build_hull_row`'s; the foot band keeps
+## the queue hint it has carried since S27.
 func _fill_build_view() -> void:
 	_clear(_build_list)
 	var profile := _profile()
+	_add_build_section_header(SECTION_HULLS)
+	_add_build_header_band()
 	for ship_id: StringName in ShipyardScript.buildable_hulls():
-		var recipe := ShipyardScript.hull_recipe(ship_id)
-		_build_list.add_child(_build_action_row(
-			ShipyardScript.KIND_HULL, ship_id,
-			BUILD_HULL_FORMAT % [
-				_ship_name(ship_id),
-				_ship_list_price(ship_id),
-				ShipyardScript.recipe_total(recipe),
-			]
-		))
-	for module_id: StringName in ShipyardScript.buildable_modules():
-		var recipe := ShipyardScript.module_recipe(module_id)
-		if recipe.is_empty():
-			continue
-		_build_list.add_child(_build_action_row(
-			ShipyardScript.KIND_MODULE, module_id,
-			BUILD_MODULE_FORMAT % [
-				_module_name(module_id),
-				int(ModuleCatalog.module(module_id).get(&"cost", 0)),
-				ShipyardScript.recipe_total(recipe),
-			]
-		))
+		_build_list.add_child(_build_hull_row(ship_id))
+	_add_build_section_header(SECTION_MODULES)
+	_add_modules_staged_caption()
+	_add_slack(_build_list)
 	_build_footer.text = _queue_footer(profile)
+
+
+## S41 (D23 F5)'s inset section caption, the refinery hold list's own sub-header idiom:
+## one `SectionHeader` label inset by the rows' own text margin, containers only, no
+## payload (it is not selectable).
+func _add_build_section_header(text: String) -> void:
+	var margin := MarginContainer.new()
+	margin.name = "Section%s" % text.to_pascal_case()
+	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	margin.add_theme_constant_override(&"margin_left", ROW_INNER_MARGIN.x)
+	margin.add_theme_constant_override(&"margin_right", ROW_INNER_MARGIN.x)
+	var label := _make_label(&"SectionHeader", text)
+	label.name = "SectionLabel"
+	margin.add_child(label)
+	_build_list.add_child(margin)
+
+
+## P40's column-header band over the HULLS rows: the same `SectionHeader` cells the
+## craft list bands its RECIPE / INPUTS / FEE / STATE columns with, the chip's seat
+## unnamed.
+func _add_build_header_band() -> void:
+	var margin := MarginContainer.new()
+	margin.name = "HullBandMargin"
+	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	margin.add_theme_constant_override(&"margin_left", ROW_INNER_MARGIN.x)
+	margin.add_theme_constant_override(&"margin_right", ROW_INNER_MARGIN.x)
+	var band := HBoxContainer.new()
+	band.name = "HullBand"
+	band.add_theme_constant_override(&"separation", COLUMN_SEPARATION)
+	band.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	margin.add_child(band)
+	band.add_child(_build_header_cell(BUILD_HEADER_HULL, 0.0, true))
+	band.add_child(_build_header_cell(BUILD_HEADER_MATERIALS, BUILD_COL_MATERIALS, false))
+	band.add_child(_build_header_cell(BUILD_HEADER_LABOUR, BUILD_COL_LABOUR, false))
+	band.add_child(_build_header_cell(BUILD_HEADER_STATE, BUILD_COL_STATE, false))
+	band.add_child(_build_header_cell("", BUILD_COL_ACTION, false))
+	_build_list.add_child(margin)
+
+
+func _build_header_cell(text: String, width: float, expand: bool) -> Control:
+	if text.is_empty():
+		var spacer := Control.new()
+		spacer.custom_minimum_size = Vector2(width, 0.0)
+		spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		return spacer
+	var label := Label.new()
+	label.theme_type_variation = &"SectionHeader"
+	label.text = text
+	label.custom_minimum_size = Vector2(width, 0.0)
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL if expand else Control.SIZE_FILL
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return label
+
+
+## The staged MODULES section (P54): the caption and nothing else - the rows are one
+## pass away at the owner's word, and the pin ships the caption, not the rows.
+func _add_modules_staged_caption() -> void:
+	var margin := MarginContainer.new()
+	margin.name = "ModulesStaged"
+	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	margin.add_theme_constant_override(&"margin_left", ROW_INNER_MARGIN.x)
+	margin.add_theme_constant_override(&"margin_right", ROW_INNER_MARGIN.x)
+	var label := _make_label(&"StationCaption", MODULES_STAGED)
+	label.name = "StagedCaption"
+	margin.add_child(label)
+	_build_list.add_child(margin)
+
+
+## One HULLS row (P54, the craft row's own anatomy): `Button` + container children -
+## the name + its `<class> CLASS · <hull> · <slots>` meta (the hangar META_FORMAT's
+## own words), the materials bill as runs, the labour line, the state chip, the BUILD
+## chip rightmost. The row press opens the N28 sheet; the chip is the door.
+func _build_hull_row(ship_id: StringName) -> Button:
+	var recipe := ShipyardScript.hull_recipe(ship_id)
+	var materials: Dictionary = recipe.get(ShipyardScript.KEY_MATERIALS, {})
+	var ship := Catalog.ship(ship_id)
+	var name_text := String(ship.get(&"name", String(ship_id)))
+	var hull: Dictionary = ShipFit.HULLS.get(ship_id, {})
+	var class_word := String(hull.get(&"ship_class", "")).to_upper()
+	var meta := META_FORMAT % [class_word, int(ship.get(&"hull", 0)), _slot_cell_count(ship_id)]
+	var row := Button.new()
+	row.name = "Build%s" % String(ship_id).trim_prefix("ship_").to_pascal_case()
+	row.focus_mode = Control.FOCUS_ALL
+	row.custom_minimum_size = Vector2(0.0, ROW_HEIGHT)
+	row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	row.set_meta(&"id", ship_id)
+	## S36 (UI_SPEC section 15.1): the list row wears C4 `ui_row_strip`, the AUCTION
+	## idiom's own plate.
+	ChromeFamily.apply_row(row)
+	var box := _make_inner(row)
+	## The craft row's own node grammar (RowInner/RowBox): the box is named here, not
+	## in `_make_inner`, so the hangar's rows stay byte-stable.
+	box.name = "RowBox"
+	box.add_child(_make_build_title(name_text, meta))
+	box.add_child(_make_build_materials(materials))
+	box.add_child(_make_build_labour(int(recipe.get(ShipyardScript.KEY_LABOUR, 0))))
+	var state := _make_build_state_cell()
+	box.add_child(state[0])
+	var chip := _make_build_chip()
+	box.add_child(chip)
+	var payload := {
+		&"id": ship_id,
+		&"name": name_text,
+		&"class": class_word,
+		&"recipe": recipe,
+		&"row": row,
+		&"state": state[1],
+		&"chip": chip,
+	}
+	_refresh_build_state(payload)
+	row.pressed.connect(_on_build_row_pressed.bind(payload))
+	chip.pressed.connect(_on_build_chip_pressed.bind(payload))
+	return row
+
+
+func _make_build_title(name_text: String, meta: String) -> VBoxContainer:
+	var box := VBoxContainer.new()
+	box.name = "TitleBox"
+	box.add_theme_constant_override(&"separation", CELL_SEPARATION)
+	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var title := _make_label(&"StationValue", name_text)
+	title.name = "Title"
+	## N45's trim law: a catalogue name of any length trims inside its own column.
+	title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	box.add_child(title)
+	var meta_label := _make_label(&"StationMeta", meta)
+	meta_label.name = "Meta"
+	meta_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	box.add_child(meta_label)
+	return box
+
+
+func _make_build_materials(materials: Dictionary) -> HBoxContainer:
+	var cell := HBoxContainer.new()
+	cell.name = "MaterialsBox"
+	cell.custom_minimum_size = Vector2(BUILD_COL_MATERIALS, 0.0)
+	cell.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	cell.add_theme_constant_override(&"separation", COLUMN_SEPARATION)
+	cell.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var profile := _profile()
+	for key: Variant in materials:
+		var item_id := StringName(str(key))
+		var needed := int(materials[key])
+		var held := 0 if profile == null else int(profile.call(&"cargo_qty", item_id))
+		cell.add_child(_make_build_run(item_id, needed, held))
+	return cell
+
+
+## One `<n>× <name>` run with the item's own glyph 24 at its own cut (A5.2(iii): the
+## glyph in its own rect, never stretched over the text) and the `<held>/<needed>`
+## read from `cargo_qty` (P54's read-only seam).
+func _make_build_run(item_id: StringName, needed: int, held: int) -> HBoxContainer:
+	var run := HBoxContainer.new()
+	run.name = "Run%s" % String(item_id).to_pascal_case()
+	run.add_theme_constant_override(&"separation", 6)
+	run.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var glyph := _make_build_glyph(item_id)
+	if glyph != null:
+		run.add_child(glyph)
+	var label := _make_label(
+		&"StationMeta", BUILD_RUN_FORMAT % [needed, _material_name(item_id)]
+	)
+	label.name = "RunLabel"
+	run.add_child(label)
+	var held_label := _make_label(&"StationCaption", BUILD_HELD_FORMAT % [held, needed])
+	held_label.name = "HeldLabel"
+	run.add_child(held_label)
+	return run
+
+
+func _make_build_labour(labour: int) -> VBoxContainer:
+	var cell := VBoxContainer.new()
+	cell.name = "LabourBox"
+	cell.custom_minimum_size = Vector2(BUILD_COL_LABOUR, 0.0)
+	cell.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	cell.add_theme_constant_override(&"separation", CELL_SEPARATION)
+	cell.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var value := _make_label(&"StationValue", _format_int(labour))
+	value.name = "Value"
+	cell.add_child(value)
+	var caption := _make_label(&"StationMeta", BUILD_LABOUR_CAPTION)
+	caption.name = "Caption"
+	cell.add_child(caption)
+	return cell
+
+
+## The A5.4 State chip (the machine strip chip's own anatomy): the label carries the
+## state, the 1 px `metal_mid` frame over the flat `armory_chip_bg` fill carries the
+## chrome - never colour alone.
+func _make_build_state_cell() -> Array:
+	var cell := HBoxContainer.new()
+	cell.name = "State"
+	cell.custom_minimum_size = Vector2(BUILD_COL_STATE, 0.0)
+	cell.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	cell.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var chip := PanelContainer.new()
+	chip.name = "StateChip"
+	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	chip.add_theme_stylebox_override(&"panel", _strip_chip_box())
+	var label := _make_label(&"StationCaption", "")
+	label.name = "ChipLabel"
+	chip.add_child(label)
+	cell.add_child(chip)
+	return [cell, label]
+
+
+## The commit chip wears the C3 ActionInline chrome (the mode pair's own wiring); it
+## keeps no focus of its own so the row stays the list's focus unit (the exchange
+## CheckChip's idiom).
+func _make_build_chip() -> Button:
+	var chip := Button.new()
+	chip.name = "BuildChip"
+	chip.text = BUILD_ACTION
+	chip.custom_minimum_size = Vector2(BUILD_COL_ACTION, 32.0)
+	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	chip.focus_mode = Control.FOCUS_NONE
+	chip.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	ChromeFamily.apply_chip(chip)
+	return chip
+
+
+func _strip_chip_box() -> StyleBoxFlat:
+	var box := StyleBoxFlat.new()
+	box.bg_color = _token(&"armory_chip_bg")
+	box.border_color = _token(&"metal_mid")
+	box.set_border_width_all(1)
+	box.set_corner_radius_all(0)
+	box.content_margin_left = 8.0
+	box.content_margin_top = 3.0
+	box.content_margin_right = 8.0
+	box.content_margin_bottom = 3.0
+	return box
+
+
+## The per-row availability chip (P54): `READY` when the hold covers every material,
+## else `MISSING <n>× <name>` for the first short material in the recipe's own order,
+## the shortfall named (the craft chip's own law). Reads `cargo_qty` only - no price,
+## no quote, no recomputation.
+func _refresh_build_state(payload: Dictionary) -> void:
+	var label: Label = payload[&"state"]
+	var missing := _first_missing_material(payload[&"recipe"])
+	if missing.is_empty():
+		label.text = BUILD_READY
+		return
+	label.text = BUILD_MISSING_FORMAT % [
+		int(missing[&"count"]),
+		_material_name(StringName(missing[&"id"])),
+	]
+
+
+func _first_missing_material(recipe: Dictionary) -> Dictionary:
+	var materials: Dictionary = recipe.get(ShipyardScript.KEY_MATERIALS, {})
+	var profile := _profile()
+	for key: Variant in materials:
+		var item_id := StringName(str(key))
+		var needed := int(materials[key])
+		var held := 0 if profile == null else int(profile.call(&"cargo_qty", item_id))
+		if held < needed:
+			return {&"id": item_id, &"count": needed - held}
+	return {}
+
+
+func _make_build_glyph(item_id: StringName) -> TextureRect:
+	var path := _material_icon_path(item_id)
+	if path.is_empty() or not ResourceLoader.exists(path):
+		return null
+	var glyph := TextureRect.new()
+	glyph.name = "Glyph"
+	glyph.custom_minimum_size = Vector2(BUILD_RUN_GLYPH, BUILD_RUN_GLYPH)
+	glyph.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	glyph.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	glyph.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	glyph.texture = load(path)
+	## The catalogues' own SVG masters are the render source here (no tint stencil
+	## ships for the cargo families), drawn at the rows' idle alpha.
+	var ink := Color.WHITE
+	ink.a = BUILD_GLYPH_ALPHA
+	glyph.modulate = ink
+	return glyph
+
+
+## The ore/component icon the catalogues themselves point at (02's `icon_ore`, 03's
+## `icon`) - the craft run's own source law.
+func _material_icon_path(item_id: StringName) -> String:
+	if MineralData.is_ore(item_id):
+		return String(MineralData.entry_for_item(item_id).get(&"icon_ore", ""))
+	return String(ComponentData.component(item_id).get(&"icon", ""))
+
+
+## The house naming law's own shape (`exchange_panel.gd`'s `_item_name`): an ore id
+## reads `<MINERAL> ORE`, a component id its catalogue name, upper-cased either way.
+func _material_name(item_id: StringName) -> String:
+	if item_id == &"":
+		return ""
+	if MineralData.is_ore(item_id):
+		return "%s ORE" % String(
+			MineralData.entry_for_item(item_id).get(&"name", String(item_id))
+		).to_upper()
+	return String(ComponentData.component(item_id).get(&"name", String(item_id))).to_upper()
+
+
+## The bill's `<n>× <name>` runs, in the recipe's own order, ` · `-joined (A6's
+## `<BILL>` idiom).
+func _build_runs_text(recipe: Dictionary) -> String:
+	var runs := PackedStringArray()
+	var materials: Dictionary = recipe.get(ShipyardScript.KEY_MATERIALS, {})
+	for key: Variant in materials:
+		runs.append(BUILD_RUN_FORMAT % [int(materials[key]), _material_name(StringName(str(key)))])
+	return BUILD_RUN_JOIN.join(runs)
+
+
+func _on_build_row_pressed(payload: Dictionary) -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	sheet_requested.emit(_build_sheet_payload(payload))
+
+
+## The N28 sheet's payload (UI_SPEC section 12.3): the hull's name and its full bill -
+## the material runs in the recipe's own order and the labour. Rows appear only where
+## the data carries them (N35): no price (the auction owns the buy price, P54), no
+## owned count.
+func _build_sheet_payload(payload: Dictionary) -> Dictionary:
+	var recipe: Dictionary = payload[&"recipe"]
+	return {
+		&"name": String(payload[&"name"]),
+		&"stats": "%s\n%s" % [
+			BUILD_SHEET_MATERIALS % _build_runs_text(recipe),
+			BUILD_SHEET_LABOUR % _format_int(int(recipe.get(ShipyardScript.KEY_LABOUR, 0))),
+		],
+	}
+
+
+## UI_SPEC section 17 A4 door (6): the BUILD chip is the commit - the confirm dialog
+## opens here and the confirmed answer runs `Shipyard.queue_job` unchanged, so it can
+## still refuse (section 5.6's strip).
+func _on_build_chip_pressed(payload: Dictionary) -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	var recipe: Dictionary = payload[&"recipe"]
+	_pending_kind = StringName(str(payload.get(&"kind", ShipyardScript.KIND_HULL)))
+	confirm_requested.emit({
+		&"id": StringName(payload[&"id"]),
+		&"kind": ShipyardScript.KIND_HULL,
+		&"title": CONFIRM_TITLE,
+		&"body": BUILD_CONFIRM_BODY % [
+			String(payload[&"class"]),
+			_build_runs_text(recipe),
+			_format_int(int(recipe.get(ShipyardScript.KEY_LABOUR, 0))),
+		],
+		&"confirm_text": CONFIRM_OK,
+		&"cancel_text": CONFIRM_CANCEL,
+		&"action": ACTION_QUEUE_BUILD,
+	})
+
+
+## The shell's answer to `confirm_requested` (the S25 seam's own contract): the one
+## action this panel asks about - 10 section 3.3's queue, unchanged. A refusal names
+## the shipped BUILD_REFUSED strip line (section 5.6's family).
+func confirm_action(action: StringName, id: StringName) -> void:
+	if action != ACTION_QUEUE_BUILD:
+		return
+	var profile := _profile()
+	if profile == null:
+		return
+	if ShipyardScript.queue_job(profile, _pending_kind, id):
+		AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
+		status_requested.emit(BUILD_QUEUED % _job_label(ShipyardScript.job(profile)), false)
+	else:
+		AudioManager.play_ui(AudioManager.UiCue.DENIED)
+		status_requested.emit(BUILD_REFUSED, true)
+	_refresh_views()
 
 
 ## QUEUE: the one active job and its state (10 section 3.3), with COLLECT / CANCEL.
@@ -1689,31 +2101,27 @@ func _fill_scrap_view() -> void:
 			continue
 		var scrap := ShipyardScript.scrap_materials(recipe.get(ShipyardScript.KEY_MATERIALS, {}))
 		_scrap_list.add_child(_build_action_row(
-			&"scrap", ship_id,
-			SCRAP_ROW_FORMAT % [_ship_name(ship_id), ShipyardScript.materials_value(scrap)]
+			SCRAP_ROW_FORMAT % [_ship_name(ship_id), ShipyardScript.materials_value(scrap)],
+			ship_id
 		))
 	_scrap_footer.text = SCRAP_ACTION
 
 
-## One build/scrap row: a `StationButton` whose press routes to the mode's action.
-func _build_action_row(kind: StringName, id: StringName, text: String) -> Button:
+## One scrap row: a `StationButton` naming 50 % of the recipe's materials (the S27
+## wiring, byte-stable).
+func _build_action_row(text: String, id: StringName) -> Button:
 	var button := Button.new()
 	button.custom_minimum_size = Vector2(0, 44)
 	button.theme_type_variation = &"StationButton"
 	button.text = text
-	button.pressed.connect(_on_build_row_pressed.bind(kind, id))
+	button.pressed.connect(_on_scrap_row_pressed.bind(id))
 	return button
 
 
-func _on_build_row_pressed(kind: StringName, id: StringName) -> void:
-	if kind == &"scrap":
-		_scrap_ship(id)
-		return
-	if ShipyardScript.queue_job(_profile(), kind, id):
-		status_requested.emit(BUILD_QUEUED % _job_label(ShipyardScript.job(_profile())), false)
-	else:
-		status_requested.emit(BUILD_REFUSED, true)
-	_refresh_views()
+## The scrap row's press (10 section 3.3's scrap path). The BUILD view's rows route
+## through their own payload handlers; the queue's commit door is `confirm_action`.
+func _on_scrap_row_pressed(id: StringName) -> void:
+	_scrap_ship(id)
 
 
 func _on_queue_collect() -> void:
@@ -1759,7 +2167,3 @@ func _queue_footer(profile: ProfileScript) -> String:
 
 func _module_name(module_id: StringName) -> String:
 	return String(ModuleCatalog.module(module_id).get(&"name", String(module_id)))
-
-
-func _ship_list_price(ship_id: StringName) -> int:
-	return int(Catalog.ship(ship_id).get(&"cost", 0))
