@@ -417,7 +417,11 @@ func test_buy_on_a_buyable_row_buys_then_fits() -> void:
 	if payload.is_empty():
 		return
 	_panel.call(&"_on_buy_pressed", payload)
-	assert_true(int(_profile.call(&"credits")) < before, "BUY charged the catalogue's price")
+	## S43 (UI_SPEC section 17 A4/A5): the module BUY is a confirm door - the press opens
+	## the dialog and charges nothing; the confirmed answer buys and fits.
+	assert_eq(int(_profile.call(&"credits")), before, "the press alone charged nothing (the door)")
+	_panel.call(&"confirm_action", PanelScript.ACTION_BUY_MODULE, &"e_ion")
+	assert_true(int(_profile.call(&"credits")) < before, "the confirmed BUY charged the catalogue's price")
 	var fit: Dictionary = _profile.call(&"fit_for", VANGUARD)
 	assert_eq(
 		StringName(String((fit.get(ENGINE_SLOT, []) as Array)[0])), &"e_ion",
@@ -757,7 +761,10 @@ func test_mode_actions_intact_through_the_public_doors() -> void:
 	if not buyable.is_empty():
 		var before := int(_profile.call(&"credits"))
 		_panel.call(&"_on_buy_pressed", buyable)
-		assert_true(int(_profile.call(&"credits")) < before, "BUY charged the catalogue price")
+		## S43: the confirm door fronts the BUY - the confirmed answer charges and fits.
+		assert_eq(int(_profile.call(&"credits")), before, "the press alone charged nothing (the door)")
+		_panel.call(&"confirm_action", PanelScript.ACTION_BUY_MODULE, &"e_ion")
+		assert_true(int(_profile.call(&"credits")) < before, "the confirmed BUY charged the catalogue price")
 		var bought: Dictionary = _profile.call(&"fit_for", VANGUARD)
 		assert_eq(
 			StringName(String((bought.get(ENGINE_SLOT, []) as Array)[0])), &"e_ion",

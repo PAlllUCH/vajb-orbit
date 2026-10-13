@@ -5,7 +5,12 @@ file when decided or done** (deleted at the wave close-out or the ruling — the
 record lives in the cited file and `MASTER_REPORT.md` §6, this is the index
 only). Refreshed at every wave close-out and after every owner ruling.
 
-*Last refreshed: 2026-10-12 (S42 **closed** — the OVERVIEW 3×3 grid rework (P44–P47) landed:
+*Last refreshed: 2026-10-12 (S43 **closed** — the armory EQUIPPED list (P49) and the
+module/ammo buy doors (§17 A4–A6) landed; gate **1351/0 ×2 byte-identical**. The MED F1
+(the BUY & FIT cluster + buyable-row flow doorless) was cured by the developer under the
+owner's own "EVERY buy action" criterion — reversal recorded; 1 LOW → T-194, next free
+**T-195**. S44 next.)*
+*Previously 2026-10-12 (S42 **closed** — the OVERVIEW 3×3 grid rework (P44–P47) landed:
 gate **1341/0 ×2 byte-identical**, verify clean vs `s42_start`. **T-184 closed** (all nine
 tile glyphs modulate `text_caption`), **T-187 closed** (the P47 wording fixed),
 **T-189 closed** (the re-measure: grid min 752×392 exact, deck unscrolled at 16:9, 0 px

@@ -12,13 +12,27 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 
 | Pos | Lane item | Wave | Runs after | The collision/dependency that forces the order |
 |---|---|---|---|---|
-| 1 | **S43 — the armory equipped list + its buy doors** (P49 + UI_SPEC §17 A4–A6 at the armory seats) | S43 | S42 (closed) | disjoint files (`armory_panel.gd/.tscn`), but sequenced for one live session (L82), not by collision. Brief written (`slices/S43-armory-equipped/`); the §17 door route is the shell's §5.2 confirm seam (the disclosed reading in the brief). |
-| 2 | **S44 — exchange bulk sell** (P53 + T-175's EXCHANGE surfaces verified + T-190) | S44 | S43 closes | disjoint files (`exchange_panel.gd/.tscn`, `exchange.gd` read seams); sequenced for one live session. Brief written (`slices/S44-exchange-bulk-sell/`); T-190's ink amendment landed docs-first. |
+| 1 | **S44 — exchange bulk sell** (P53 + T-175's EXCHANGE surfaces verified + T-190) | S44 | S43 (closed) | disjoint files (`exchange_panel.gd/.tscn`, `exchange.gd` read seams); sequenced for one live session. Brief written; T-190's ink amendment landed docs-first. |
 | 3 | **S45 — refinery LOAD ALL + machine strip + CRAFT** (P50/P51/P52, 04 §9 R9–R12, 07 §6 C1–C10) | S45 | S44 closes | the biggest wave; runs as two **sequential** builders (V0 panel controls + model seam, W0 the craft model + list) — one shared file, never parallel. Briefs written (`slices/S45-refinery-craft/`). |
 | 4 | **S46 — the shipyard build view** (P54 + 10 §3.5) | S46 | S45 closes | disjoint files (`shipyard_panel.gd/.tscn`, `shipyard.gd` read seams); sequenced for one live session. Brief written (`slices/S46-shipyard-build/`). |
 | 5 | **S47 — the launch sequence + its audio** (P48 + AUDIO_SPEC §8.7 + T-174/T-188 riders) | S47 | S46 closes | `launch_panel.gd` untouched since S41; the orchestrator sources/builds the two cue assets before the builder dispatches (raw packs gone with the clear-out). Brief written (`slices/S47-launch-sequence/`). |
 | 6 | **S48 — the C-key Cargo overlay, both planes** (UI_SPEC §18 A7–A9 + STATION_HUB §23.2) | S48 | S47 closes | touches `station.gd` (S42's shell edit) and `game.gd` + new overlay files + `tests/` rows. Brief written (`slices/S48-cargo-overlay/`). |
 | 7 | **S49 — the A2 doors on untouched surfaces + the wording law** (UI_SPEC §17 completed) | S49 | S48 closes | three panels + wording-law test rows; last so its dialog seam reads every earlier wave's settled tree. Brief written (`slices/S49-confirm-doors/`); T-186's worked example lands docs-first at its boundary. |
+
+**Updated 2026-10-12 (S43 the armory equipped list + its buy doors closed).**
+Gate **1341 → 1351/0** ×2 hermetic, verify clean vs `s43_start`, code map re-run
+(319 scripts). S43-V0 landed P49's EQUIPPED list (cell id + name + one stat
+line, grid order, press selects the cell, flat rows in their own scroll,
+BATTERY CONFIG shows none) and the A4/A5/A6 doors (module BUY, ammo BUY) —
+through the shell's §5.2 confirm seam (the disclosed reading; R0 graded it
+pass). Two frozen runs cost one resume + one fresh dispatch; the
+5-minute-failsafe law entered the brief. R0 left **no HIGH, 1 MED** — F1: the
+BUY & FIT cluster and a BUYABLE row's select-to-fit were doorless
+acquisitions; the developer cured (the owner's "EVERY buy action" is the
+criterion's own reading) and pinned it with a new row; 1 LOW → **T-194**;
+next free **T-195**. The developer re-cut three moved-premise rows
+(p2b1 ammo purchase, s32 ×2) to answer the door. Full block:
+`MASTER_REPORT.md` §6's "S43".
 
 **Updated 2026-10-12 (S42 the OVERVIEW 3×3 grid rework closed — P4's first implementation wave).**
 Gate **1330 → 1341/0** ×2 hermetic on fresh scratch stores (only T-155's salvo

@@ -4427,7 +4427,9 @@
   "res://tests/test_p2b1_outfitting_panel.gd": {
    "autoload": "",
    "class_name": "",
-   "connects": [],
+   "connects": [
+    "panel.confirm_requested \u2192 _capture_confirm"
+   ],
    "extends": "McpTestSuite",
    "refs": [
     "res://game/module_catalog.gd",
@@ -5400,6 +5402,20 @@
     "res://ui/screens/station.tscn",
     "res://ui/station/overview_panel.gd",
     "res://ui/station/overview_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
+  "res://tests/test_s43_armory_equipped.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/module_catalog.gd",
+    "res://game/ship_fit.gd",
+    "res://ui/station/armory_panel.gd",
+    "res://ui/station/armory_panel.tscn",
     "res://ui/theme/vajb_theme.tres"
    ],
    "signals": []
@@ -6415,10 +6431,13 @@
     "resized \u2192 _lay",
     "row.focus_entered \u2192 _on_browser_focused.bind(row",
     "row.mouse_entered \u2192 _on_browser_hovered.bind(payload",
+    "row.mouse_entered \u2192 _on_equipped_hovered.bind(payload",
     "row.mouse_entered \u2192 _on_rack_inspected.bind(salvo_line",
     "row.mouse_exited \u2192 _on_browser_hovered.bind(payload",
+    "row.mouse_exited \u2192 _on_equipped_hovered.bind(payload",
     "row.mouse_exited \u2192 _on_rack_inspected.bind(salvo_line",
     "row.pressed \u2192 _on_browser_pressed.bind(payload",
+    "row.pressed \u2192 _on_equipped_pressed.bind(payload",
     "strip.resized \u2192 _position_bay.bind(row"
    ],
    "extends": "Control",
@@ -6436,6 +6455,7 @@
     "res://ui/theme/chrome_family.gd"
    ],
    "signals": [
+    "confirm_requested",
     "inspect_requested",
     "sheet_requested",
     "status_requested"

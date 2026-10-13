@@ -76,6 +76,9 @@ var _danger: Array[bool] = []
 ## S30: the titles published on the `inspect_requested` chain (the N27 tooltip's sink).
 var _inspect_titles: Array[String] = []
 var _previous_path := ""
+## S43's door watcher: the confirm payload the last BUY press emitted (a lambda cannot
+## write a captured local, so the capture lives on the suite).
+var _confirm_capture: Dictionary = {}
 var _previous_ship: StringName = &""
 var _previous_credits := 0
 var _previous_fits: Dictionary = {}
@@ -481,8 +484,23 @@ func test_ammo_purchase_charges_the_catalogue_price_and_greys_when_short() -> vo
 	var cost := int(pack[&"cost"])
 	var units := int(ceili(float(rounds) / float(Catalog.ROUNDS_PER_CARGO_UNIT)))
 	assert_eq(_held(&"rocket"), 40, "the fixture holds a 40-unit rocket stack")
+	## S43 (UI_SPEC section 17 A4/A5): the ammo BUY is a confirm door - the press opens
+	## the shell's dialog and charges nothing; the confirmed answer runs the purchase.
+	_confirm_capture = {}
+	if not panel.confirm_requested.is_connected(_capture_confirm):
+		panel.confirm_requested.connect(_capture_confirm)
 	_press_ammo(panel, &"rocket")
-	assert_eq(_credits(), START_CREDITS - cost, "the buy charged the catalogue's cost")
+	var dialog: Dictionary = _confirm_capture
+	assert_eq(_credits(), START_CREDITS, "the press alone charged nothing (the door)")
+	assert_true(
+		String(dialog.get(&"body", "")).begins_with("ARE YOU SURE YOU WANT TO BUY"),
+		"the A6 wording"
+	)
+	assert_eq(
+		StringName(dialog.get(&"action", &"")), PanelScript.ACTION_BUY_AMMO, "the ammo door's action"
+	)
+	panel.call(&"confirm_action", dialog.get(&"action"), dialog.get(&"id"))
+	assert_eq(_credits(), START_CREDITS - cost, "the confirmed buy charged the catalogue's cost")
 	assert_eq(_held(&"rocket"), 40 + units, "and added the pack's own units to the hold")
 	assert_eq(_profile.call(&"cargo_qty", &"ammo_rocket"), 40 + units, "under the ammo id")
 	assert_eq(
@@ -922,3 +940,8 @@ func test_profile_changed_drives_the_refresh() -> void:
 	_profile.call(&"add_module", &"w_railgun", 1)
 	assert_eq((panel.call(&"inventory_rows") as Array).size(), 1, "a modules write moved the list")
 	assert_eq(_cells(VANGUARD)[1], &"w_railgun", "and wrote no fit cell")
+
+
+## S43's door watcher: the confirm payload the last BUY press emitted.
+func _capture_confirm(payload: Dictionary) -> void:
+	_confirm_capture = payload

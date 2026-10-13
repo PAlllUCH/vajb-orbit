@@ -76,6 +76,10 @@ signal inspect_requested(title: String, body: String, danger: bool)
 ## S30 (UI_SPEC section 12.3, N28/P21): the explicit sink. A row's own INSPECT chip (or
 ## `station_inspect` on the focused row / cell) publishes the sheet's payload here.
 signal sheet_requested(payload: Dictionary)
+## S25's own seam (UI_SPEC section 17 A5): the pane publishes a purchase's confirm dialog
+## and the shell answers through `confirm_action` - the overlay belongs to the screen, the
+## pane never owns a modal. The focus return and the ESC-to-CANCEL are the seam's own.
+signal confirm_requested(payload: Dictionary)
 
 ## The three refusal wordings, byte-equivalent to `ui/station/fitting_panel.gd:147-149`
 ## (CONTRACTS section 16 rule 9, the L116 precedent): ARMORY may not preload the pane
@@ -138,12 +142,51 @@ const MODE_BATTERY_LABEL := "BATTERY CONFIG"
 ## word), its power draw, the fitted module (or EMPTY) and a proactive legality line built
 ## from the pane's own refusal strings (lines above).
 const CELL_INFO_CAPTION := "CELL INFO"
-const CELL_INFO_ID := "%s%d · %s CELL"
+## The cell's own id composition (`W3`/`S1`/`E2`): the token plus the 1-based layout
+## index. CELL_INFO_ID spells the full CELL INFO line from it, so the grid's info line
+## and the EQUIPPED rows never spell one cell two ways.
+const CELL_ID_FORMAT := "%s%d"
+const CELL_INFO_ID := CELL_ID_FORMAT + " · %s CELL"
 const CELL_INFO_POWER := "POWER DRAW %d · PWR %d / %d"
 const CELL_INFO_FITTED := "FITTED · %s"
 const CELL_INFO_FITTED_EMPTY := "EMPTY"
 const CELL_INFO_LEGAL_OK := "LEGAL · THIS CELL FITS"
 const CELL_INFO_SELECT := "SELECT A CELL FOR ITS FACTS AND ITS FITS"
+
+## ------------------------------------------------- the EQUIPPED block (P49, STATION_HUB 23.4)
+## The left sector's third block, under CELL INFO: the caption's fitted/total counts and
+## one row per fitted module in the grid's own cell order, each carrying the cell id, the
+## module's name, one stat line (the catalogue's `effects` through the stat_line idiom)
+## and the family glyph 24. A row's press is the grid's own selection (`select_cell`) and
+## BATTERY CONFIG never shows the list (the block rides FitCells; the racks are the
+## weapons' view, P34).
+const EQUIPPED_CAPTION := "EQUIPPED — %d/%d"
+## The A5.3 inventory row's own numbers (UI_SPEC section 3.10 A5.3/A5.4): the 6 px
+## content inset, the 24 px family glyph at its own cut, and the row's id and stat
+## columns. The row's minimum height is the glyph plus the inset pair.
+const EQUIPPED_ROW_INSET := 6.0
+const EQUIPPED_ICON := 24.0
+const EQUIPPED_ROW_HEIGHT := 36.0
+const EQUIPPED_ID_COLUMN := 36.0
+const EQUIPPED_STAT_COLUMN := 150.0
+## The stat line idiom's own separators and suffix rules (`fitting_panel.gd:144-150`).
+const STAT_JOIN := " · "
+const STAT_ADD_SUFFIX := " ADD"
+const STAT_MULT_SUFFIX := " MULT"
+const MULTIPLIER_PREFIX := "×"
+
+## ------------------------------------------------------- the buy doors (UI_SPEC section 17)
+## A6's wording law: the title, the owner's own sentence upper-cased to the house caption
+## law, and the button pair the shell's dialog opens with. The name and the price come
+## from the owning catalogue row at press time, never hardcoded; the pack's name carries
+## its rounds (`LASER CELLS (300 ROUNDS)`).
+const BUY_CONFIRM_TITLE := "CONFIRM PURCHASE"
+const BUY_CONFIRM_BODY := "ARE YOU SURE YOU WANT TO BUY %s FOR %s CREDITS?"
+const BUY_CONFIRM_OK := "OK"
+const BUY_CONFIRM_CANCEL := "CANCEL"
+const AMMO_CONFIRM_NAME := "%s (%d ROUNDS)"
+const ACTION_BUY_MODULE: StringName = &"buy_module"
+const ACTION_BUY_AMMO: StringName = &"buy_ammo"
 
 ## ----------------------------------------- the one equipment list (P38, its two states)
 ## The right sector of FIT CELLS is ONE list in two states. With no cell selected it browses
@@ -894,6 +937,10 @@ class ConsolePanels extends Control:
 @onready var _cell_info_power: Label = %CellInfoPower
 @onready var _cell_info_fitted: Label = %CellInfoFitted
 @onready var _cell_info_legal: Label = %CellInfoLegal
+@onready var _equipped_block: VBoxContainer = %EquippedBlock
+@onready var _equipped_caption: Label = %EquippedCaption
+@onready var _equipped_scroll: ScrollContainer = %EquippedScroll
+@onready var _equipped_rows: VBoxContainer = %EquippedRows
 @onready var _tabs: HBoxContainer = %FamilyTabs
 @onready var _browser_caption: Label = %BrowserCaption
 @onready var _browser_band: HBoxContainer = %BrowserBand
@@ -932,6 +979,8 @@ var _selected_rack: int = 0
 ## shapes, so the fit arithmetic ports cell for cell).
 var _cells: Array[Dictionary] = []
 var _selected: Dictionary = {}
+## The equipped rows (P49): one payload per built row, the block's own read of the fit.
+var _equipped: Array[Dictionary] = []
 var _candidate: StringName = &""
 var _grid_hull: StringName = &""
 var _line_override := ""
@@ -1137,6 +1186,7 @@ func refresh_profile(key: StringName) -> void:
 	if key == &"fits" or key == &"ships" or key == &"modules":
 		_sync_grid(_active_hull(_profile()))
 		_refresh_footer()
+		_sync_equipped()
 	_refresh_cell_info()
 	_update_subtitle()
 
@@ -1864,7 +1914,7 @@ func _icon_source(icon_path: String) -> String:
 
 func _connect_scroll() -> void:
 	## The scroll cue has no other home: the station shell owns no list of its own.
-	for scroll: ScrollContainer in [_browser_scroll]:
+	for scroll: ScrollContainer in [_browser_scroll, _equipped_scroll]:
 		if scroll != null and scroll.has_signal(&"scroll_started"):
 			scroll.connect(&"scroll_started", _on_scroll_started)
 
@@ -1921,24 +1971,11 @@ func _on_row_pressed(payload: Dictionary) -> void:
 	row.set_pressed_no_signal(true)
 	_selected_row = row
 	_inspect_row(payload, true)
-	var profile := _profile()
-	if profile == null:
-		return
-	var bought := bool(
-		profile.call(
-			&"buy_ammo", payload[&"id"], int(payload[&"rounds"]), int(payload[&"cost"])
-		)
-	)
-	if not bought:
-		## The refusal text and the denied cue belong to the shell, which hears
-		## purchase_failed; the row only marks its own price cell (section 5.6) and
-		## wears the section 3.1b danger frame.
-		_pulse(payload[&"price"] as Label)
-		_style_danger(payload, true)
-		return
-	AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
-	status_requested.emit(
-		STATUS_BOUGHT % [String(payload[&"name"]).to_upper(), int(payload[&"rounds"])], false
+	## UI_SPEC section 17 A4/A5: the pack purchase is a door - the confirm dialog opens
+	## here and the confirmed answer runs `_purchase_ammo`, the transaction unchanged.
+	_request_buy_confirm(
+		AMMO_CONFIRM_NAME % [String(payload[&"name"]).to_upper(), int(payload[&"rounds"])],
+		int(payload[&"cost"]), ACTION_BUY_AMMO, StringName(payload[&"id"])
 	)
 
 
@@ -2154,6 +2191,185 @@ func _cell_legality(
 	if bool(legal.get(&"legal", true)):
 		return CELL_INFO_LEGAL_OK
 	return _fit_refusal(legal)
+
+
+## ------------------------------------------------- the EQUIPPED block (P49)
+
+
+## The block's refresh: the caption's fitted/total counts, then one row per fitted
+## module in the SLOT LAYOUT grid's own cell order (`_cells`, row-major). Empty cells
+## are not listed. BATTERY CONFIG never reaches here - the block rides `FitCells`, so
+## the racks stay the weapons' only list there (P34).
+func _sync_equipped() -> void:
+	if _equipped_rows == null:
+		return
+	_clear(_equipped_rows)
+	_equipped.clear()
+	var profile := _profile()
+	var fit := _resolved_fit(profile, _active_hull(profile))
+	var fitted := 0
+	for cell: Dictionary in _cells:
+		var entry := _cell_module(fit, StringName(cell[&"type"]), int(cell[&"index"]))
+		if entry == &"":
+			continue
+		fitted += 1
+		_equipped.append(_make_equipped_row(cell, profile, entry))
+	if _equipped_caption != null:
+		_equipped_caption.text = EQUIPPED_CAPTION % [fitted, _cells.size()]
+	_apply_equipped_selection()
+
+
+## One equipped row (the A5.3 inventory row's idiom: the flat Tokens box `item_bg` + the
+## 1 px `metal_mid` border at the 6 px content inset, UI_SPEC section 3.10 A5.3/A5.4;
+## the family glyph 24 leads in its own rect, A5.4-4). The row's press is the grid cell's
+## own selection - one selection, two views - and CELL INFO follows it.
+func _make_equipped_row(
+	cell: Dictionary, profile: ProfileScript, entry: StringName
+) -> Dictionary:
+	var slot_key: StringName = cell[&"type"]
+	var index := int(cell[&"index"])
+	var base := _base_id(profile, entry)
+	var module_row := ModuleData.module(base)
+	var row := Button.new()
+	row.name = "Equipped%s%02d" % [String(cell[&"token"]), index + 1]
+	row.toggle_mode = true
+	row.focus_mode = Control.FOCUS_ALL
+	row.custom_minimum_size = Vector2(0.0, EQUIPPED_ROW_HEIGHT)
+	row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	_apply_flat_chrome(row)
+	var inner := MarginContainer.new()
+	inner.name = "RowInner"
+	inner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	inner.add_theme_constant_override(&"margin_left", int(EQUIPPED_ROW_INSET))
+	inner.add_theme_constant_override(&"margin_top", int(EQUIPPED_ROW_INSET))
+	inner.add_theme_constant_override(&"margin_right", int(EQUIPPED_ROW_INSET))
+	inner.add_theme_constant_override(&"margin_bottom", int(EQUIPPED_ROW_INSET))
+	row.add_child(inner)
+	inner.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var box := HBoxContainer.new()
+	box.name = "RowBox"
+	box.add_theme_constant_override(&"separation", 8)
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	inner.add_child(box)
+	var icon := _make_icon(String(module_row.get(&"icon", "")), EQUIPPED_ICON)
+	if icon != null:
+		box.add_child(icon)
+	var id_label := _make_label(&"StationValue", _cell_id(cell))
+	id_label.name = "CellId"
+	id_label.custom_minimum_size = Vector2(EQUIPPED_ID_COLUMN, 0.0)
+	id_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	box.add_child(id_label)
+	var name_label := _make_label(&"StationValue", _module_name(base), true)
+	name_label.name = "ModuleName"
+	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	name_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	box.add_child(name_label)
+	var stat_text := _effect_line(module_row)
+	var stat_label := _make_label(&"StationMeta", stat_text, true)
+	stat_label.name = "Stats"
+	stat_label.custom_minimum_size = Vector2(EQUIPPED_STAT_COLUMN, 0.0)
+	stat_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	stat_label.visible = not stat_text.is_empty()
+	box.add_child(stat_label)
+	var payload := {
+		&"cell": {
+			&"type": slot_key,
+			&"token": String(cell[&"token"]),
+			&"index": index,
+		},
+		&"row": row,
+		&"icon": icon,
+		&"id": id_label,
+		&"name": name_label,
+		&"stats": stat_label,
+	}
+	row.pressed.connect(_on_equipped_pressed.bind(payload))
+	row.mouse_entered.connect(_on_equipped_hovered.bind(payload, true))
+	row.mouse_exited.connect(_on_equipped_hovered.bind(payload, false))
+	_equipped_rows.add_child(row)
+	return payload
+
+
+func _on_equipped_pressed(payload: Dictionary) -> void:
+	var cell: Dictionary = payload[&"cell"]
+	select_cell(StringName(cell[&"type"]), int(cell[&"index"]))
+
+
+func _on_equipped_hovered(payload: Dictionary, hovered: bool) -> void:
+	var icon := payload.get(&"icon", null) as TextureRect
+	if icon == null or not is_instance_valid(icon):
+		return
+	var target := 1.0 if hovered else ROW_ICON_IDLE_ALPHA
+	var tween := _make_tween()
+	tween.tween_property(icon, "modulate:a", target, HOVER_SECONDS)
+
+
+## The rows' own view of the one selection: pressed with the cell the grid holds, clear
+## otherwise, so a selection made anywhere reads on both views (P49).
+func _apply_equipped_selection() -> void:
+	for payload: Dictionary in _equipped:
+		var row := payload[&"row"] as Button
+		if row != null and is_instance_valid(row):
+			row.set_pressed_no_signal(_is_selected(payload[&"cell"]))
+
+
+## The A5.3 inventory row's flat Tokens box on a pressable: the `item_bg` fill and the
+## 1 px `metal_mid` border at rest (UI_SPEC section 3.10 A5.3/A5.4, the overview tile's
+## own shape, P45); the theme's own state boxes stay above it (P45's states rule).
+func _apply_flat_chrome(row: Button) -> void:
+	var flat := StyleBoxFlat.new()
+	flat.bg_color = _token(ROLE_ITEM_BG)
+	flat.border_color = _token(ROLE_METAL_MID)
+	flat.set_border_width_all(1)
+	flat.set_corner_radius_all(0)
+	row.add_theme_stylebox_override(&"normal", flat)
+	for state: StringName in [&"hover", &"pressed", &"disabled", &"focus"]:
+		var box := row.get_theme_stylebox(state, &"Button")
+		if box != null:
+			row.add_theme_stylebox_override(state, box)
+
+
+## The cell's short id - CELL_INFO_ID's own leading pair (`W3`/`S1`/`E2`).
+func _cell_id(cell: Dictionary) -> String:
+	return CELL_ID_FORMAT % [String(cell[&"token"]), int(cell[&"index"]) + 1]
+
+
+## The stat line's own vocabulary: the catalogue's `effects` dict through the stat_line
+## idiom (`fitting_panel.gd:1634`'s own rule - the pane may not preload the fitting pane
+## whose constants are the pin's single home, so the twins live here, as the refusal
+## strings above do). A module with no effects (every weapon) carries no line.
+static func _effect_line(module_row: Dictionary) -> String:
+	var parts := PackedStringArray()
+	var effects: Dictionary = module_row.get(&"effects", {})
+	for key: Variant in effects:
+		parts.append(_stat_line(StringName(str(key)), float(effects[key])))
+	return STAT_JOIN.join(parts)
+
+
+static func _stat_line(stat_key: StringName, value: float) -> String:
+	var key := String(stat_key)
+	if key.ends_with("_mult") or key.ends_with("_multiplier"):
+		return "%s %s%s" % [_stat_label(stat_key), MULTIPLIER_PREFIX, String.num(value, 2)]
+	var text := _signed_percent(value) if absf(value) < 1.0 else _signed_number(value)
+	return "%s %s" % [_stat_label(stat_key), text]
+
+
+static func _stat_label(stat_key: StringName) -> String:
+	var words := String(stat_key).to_upper().replace("_", " ")
+	for suffix: String in [STAT_ADD_SUFFIX, STAT_MULT_SUFFIX, " MULTIPLIER"]:
+		if words.ends_with(suffix):
+			return words.substr(0, words.length() - suffix.length())
+	return words
+
+
+static func _signed_percent(value: float) -> String:
+	return "%+d %%" % int(roundf(value * 100.0))
+
+
+static func _signed_number(value: float) -> String:
+	if is_equal_approx(value, roundf(value)):
+		return "%+d" % int(roundf(value))
+	return "%+.2f" % value
 
 
 ## Release one container's children at the end of the frame: the plate whose own
@@ -3095,6 +3311,7 @@ func _refresh_all() -> void:
 	_refresh_browser()
 	_refresh_footer()
 	_refresh_cell_info()
+	_sync_equipped()
 
 
 func _profile() -> ProfileScript:
@@ -3400,6 +3617,7 @@ func _select(payload: Dictionary, clicked: bool) -> void:
 	_line_override = ""
 	_line_danger = false
 	_apply_cell_selection()
+	_apply_equipped_selection()
 	_refresh_footer()
 	_refresh_browser()
 	_refresh_cell_info()
@@ -3436,6 +3654,7 @@ func clear_selection() -> void:
 	_line_override = ""
 	_line_danger = false
 	_apply_cell_selection()
+	_apply_equipped_selection()
 	_refresh_footer()
 	_refresh_browser()
 	_refresh_cell_info()
@@ -3792,7 +4011,84 @@ func _on_remove_pressed() -> void:
 
 func _on_buy_fit_pressed() -> void:
 	AudioManager.play_ui(AudioManager.UiCue.CLICK)
-	_buy_into_cell(_browser_focused)
+	## UI_SPEC section 17 A4/A5 (S43-R0/F1's cure): the cluster always buys, so the press
+	## is a door - the confirm opens and the confirmed answer runs the same buy-then-fit.
+	if _browser_focused.is_empty():
+		return
+	_request_buy_confirm(
+		String(_browser_focused.get(&"name", "")),
+		int(_browser_focused.get(&"price", 0)),
+		ACTION_BUY_MODULE,
+		StringName(_browser_focused.get(&"base", &""))
+	)
+
+
+## ------------------------------------------- the buy-confirmation doors (UI_SPEC 17)
+
+
+## The door's dialog request (A5/A6): the shell's section 5.2 overlay opens with the
+## pinned wording, the name and the price quoted from the catalogue row the confirmed
+## press will charge - the payload's own figures, at press time (section 5.8's clock).
+func _request_buy_confirm(
+	name_text: String, price: int, action: StringName, id: StringName
+) -> void:
+	confirm_requested.emit({
+		&"id": id,
+		&"title": BUY_CONFIRM_TITLE,
+		&"body": BUY_CONFIRM_BODY % [name_text, _format_int(price)],
+		&"confirm_text": BUY_CONFIRM_OK,
+		&"cancel_text": BUY_CONFIRM_CANCEL,
+		&"action": action,
+	})
+
+
+## The shell's answer to `confirm_requested` (the S25 seam's own contract): the one
+## action pair this panel asks about. The confirmed press runs the transaction exactly
+## as it always ran, so it can still refuse (section 5.6's strip wording, never a dialog).
+func confirm_action(action: StringName, id: StringName) -> void:
+	if action == ACTION_BUY_MODULE:
+		_run_module_buy(id)
+	elif action == ACTION_BUY_AMMO:
+		_run_ammo_buy(id)
+
+
+## The confirmed module buy: the row payload the press quoted, resolved by its base id.
+func _run_module_buy(id: StringName) -> void:
+	for payload: Dictionary in _browser_payloads:
+		if StringName(payload[&"base"]) == id:
+			_buy_into_cell(payload)
+			return
+
+
+## The confirmed ammo purchase: the card payload the press quoted, resolved by pack id.
+func _run_ammo_buy(id: StringName) -> void:
+	for payload: Dictionary in _payloads:
+		if StringName(payload[&"id"]) == id:
+			_purchase_ammo(payload)
+			return
+
+
+## The confirmed pack purchase - `_on_row_pressed`'s own transaction, unchanged.
+func _purchase_ammo(payload: Dictionary) -> void:
+	var profile := _profile()
+	if profile == null:
+		return
+	var bought := bool(
+		profile.call(
+			&"buy_ammo", payload[&"id"], int(payload[&"rounds"]), int(payload[&"cost"])
+		)
+	)
+	if not bought:
+		## The refusal text and the denied cue belong to the shell, which hears
+		## purchase_failed; the row only marks its own price cell (section 5.6) and
+		## wears the section 3.1b danger frame.
+		_pulse(payload[&"price"] as Label)
+		_style_danger(payload, true)
+		return
+	AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
+	status_requested.emit(
+		STATUS_BOUGHT % [String(payload[&"name"]).to_upper(), int(payload[&"rounds"])], false
+	)
 
 
 func _notice(message: String, danger: bool) -> void:
@@ -4333,6 +4629,15 @@ func _on_browser_pressed(payload: Dictionary) -> void:
 	## CELLS cell selected the press is the select-to-fit flow; BATTERY CONFIG has no filter.
 	if _mode != MODE_FIT or _selected.is_empty():
 		return
+	## UI_SPEC section 17 A4/A5 (S43-R0/F1's cure): a BUYABLE row's select-to-fit buys
+	## as it fits, so the flow is a door - the confirm opens and the confirmed answer
+	## runs the same buy-then-fit. An owned row fits a held instance and stays dialog-free.
+	if not bool(payload.get(&"owned", false)):
+		_request_buy_confirm(
+			String(payload[&"name"]), int(payload[&"price"]),
+			ACTION_BUY_MODULE, StringName(payload[&"base"])
+		)
+		return
 	_flow_row_into_cell(payload)
 
 
@@ -4342,7 +4647,12 @@ func _on_buy_pressed(payload: Dictionary) -> void:
 	## T-118: only a pointer over the row publishes the hover line.
 	if _pointer_over(payload[&"row"] as Button):
 		_inspect_browser(payload, true)
-	_buy_into_cell(payload)
+	## UI_SPEC section 17 A4/A5: the browser's BUY is a door - the confirm dialog opens
+	## here and the confirmed answer runs `_buy_into_cell`, the buy-then-fit unchanged.
+	_request_buy_confirm(
+		String(payload[&"name"]), int(payload[&"price"]),
+		ACTION_BUY_MODULE, StringName(payload[&"base"])
+	)
 
 
 func _on_browser_focused(row: Button, payload: Dictionary) -> void:
