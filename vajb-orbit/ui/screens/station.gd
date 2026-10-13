@@ -35,6 +35,9 @@ const ExchangeScript := preload("res://game/exchange.gd")
 const Clock := preload("res://autoload/world_clock.gd")
 const TooltipScene := preload("res://ui/components/tooltip.tscn")
 const SheetScene := preload("res://ui/components/inspect_sheet.tscn")
+## UI_SPEC section 18 A7: the C-key cargo overlay, the same read-only surface the flight
+## seat opens (the scene carries its own theme, like the sheet's).
+const CargoOverlayScene := preload("res://ui/dialogs/cargo_overlay.tscn")
 const OverviewScene := preload("res://ui/station/overview_panel.tscn")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
@@ -227,6 +230,11 @@ const STATUS_DELIVERED := "CONTRACT DELIVERED · %d CR"
 ## stacking), and the sheet rides section 5.2's layer 20.
 const TOOLTIP_LAYER := 19
 const SHEET_LAYER := 20
+## UI_SPEC section 18 A7 (STATION_HUB section 23.2): the cargo overlay sits above the
+## panes and below the drawer/sheet/dialog overlays (section 12.2's stack law), so it
+## rides the tooltip's own layer, added after it so a cargo overlay draws over a stale
+## tooltip.
+const CARGO_LAYER := 19
 ## S30 (UI_SPEC section 12.1): the TERMINAL drawer's overlay, on section 2.3's dialog layer
 ## (20), added before the sheet so the sheet stacks above it.
 const DRAWER_LAYER := 20
@@ -322,6 +330,9 @@ var _hover_title := ""
 var _hover_body := ""
 var _hover_danger := false
 var _sheet_trigger: Control = null
+## UI_SPEC section 18 A7: the C-key cargo overlay's shell seat.
+var _cargo_layer: CanvasLayer = null
+var _cargo_overlay: Control = null
 
 ## S25 (UI_SPEC section 5.2): the confirm dialog's overlay and the pane it is answering.
 var _confirm_layer: CanvasLayer = null
@@ -437,6 +448,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		_handle_cancel()
 		get_viewport().set_input_as_handled()
 		return
+	if event.is_action_pressed(&"cargo_toggle"):
+		_toggle_cargo()
+		get_viewport().set_input_as_handled()
+		return
 	if event is InputEventKey:
 		# station_prev_module / station_next_module / station_inspect / station_terminal
 		# are not in the input map, so the keycodes are read directly (STATION_HUB
@@ -491,6 +506,13 @@ func _build_popups() -> void:
 	_tooltip = TooltipScene.instantiate() as Control
 	_tooltip.name = "Tooltip"
 	_tooltip_layer.add_child(_tooltip)
+	_cargo_layer = CanvasLayer.new()
+	_cargo_layer.name = "CargoLayer"
+	_cargo_layer.layer = CARGO_LAYER
+	add_child(_cargo_layer)
+	_cargo_overlay = CargoOverlayScene.instantiate() as Control
+	_cargo_overlay.name = "CargoOverlay"
+	_cargo_layer.add_child(_cargo_overlay)
 	_sheet_layer = CanvasLayer.new()
 	_sheet_layer.name = "SheetLayer"
 	_sheet_layer.layer = SHEET_LAYER
@@ -1047,6 +1069,24 @@ func _on_sheet_closed() -> void:
 	if _sheet_trigger != null and is_instance_valid(_sheet_trigger):
 		_sheet_trigger.grab_focus()
 	_sheet_trigger = null
+
+
+## UI_SPEC section 18 A7: the C step joins the shell's ladder - the overlay opens from
+## any pane, above it and below the drawer/sheet/dialog overlays (section 12.2's stack
+## law), and C again closes it. One at a time (section 5.2): while an overlay above the
+## cargo seat is up, or the departure sequence owns the screen, C does nothing.
+func _toggle_cargo() -> void:
+	if _cargo_open():
+		_cargo_overlay.call(&"close")
+		return
+	if _departure_running or confirm_open() or _drawer_open \
+			or (_sheet != null and bool(_sheet.call(&"is_open"))):
+		return
+	_cargo_overlay.call(&"open")
+
+
+func _cargo_open() -> bool:
+	return _cargo_overlay != null and bool(_cargo_overlay.call(&"is_open"))
 
 
 func _connect_profile() -> void:
@@ -2012,6 +2052,9 @@ func _handle_cancel() -> void:
 		return
 	if _drawer_open:
 		_close_drawer()
+		return
+	if _cargo_open():
+		_cargo_overlay.call(&"close")
 		return
 	var panel := _panel_for(_module)
 	if panel != null and panel.has_method(&"disarm") and bool(panel.call(&"disarm")):

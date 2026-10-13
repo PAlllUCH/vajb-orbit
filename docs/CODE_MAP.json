@@ -1077,6 +1077,18 @@
     "res://ui/dev/dev_tuning_menu.gd"
    ]
   },
+  "res://ui/dialogs/cargo_overlay.tscn": {
+   "assets": [
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Control",
+   "scripts": [
+    "res://ui/dialogs/cargo_overlay.gd"
+   ]
+  },
   "res://ui/dialogs/dialog.tscn": {
    "assets": [
     "res://ui/theme/vajb_theme.tres"
@@ -1640,6 +1652,7 @@
     "res://game/station_registry.gd",
     "res://game/weapons.gd",
     "res://ui/dev/dev_tuning_menu.tscn",
+    "res://ui/dialogs/cargo_overlay.tscn",
     "res://ui/paths.gd"
    ],
    "signals": [
@@ -5506,6 +5519,25 @@
    ],
    "signals": []
   },
+  "res://tests/test_s48_cargo_overlay.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://game/component_catalog.gd",
+    "res://game/game.gd",
+    "res://game/game.tscn",
+    "res://game/mineral_catalog.gd",
+    "res://game/station_catalog.gd",
+    "res://ui/dialogs/cargo_overlay.gd",
+    "res://ui/dialogs/cargo_overlay.tscn",
+    "res://ui/screens/station.gd",
+    "res://ui/screens/station.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
   "res://tests/test_s4_batteries.gd": {
    "autoload": "",
    "class_name": "",
@@ -6156,6 +6188,24 @@
    ],
    "signals": []
   },
+  "res://ui/dialogs/cargo_overlay.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "_dimmer.gui_input \u2192 _on_dimmer_input"
+   ],
+   "extends": "Control",
+   "refs": [
+    "res://game/component_catalog.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/module_catalog.gd",
+    "res://game/station_catalog.gd",
+    "res://game/weapons.gd"
+   ],
+   "signals": [
+    "closed"
+   ]
+  },
   "res://ui/dialogs/dialog.gd": {
    "autoload": "",
    "class_name": "",
@@ -6482,6 +6532,7 @@
     "res://game/station_registry.gd",
     "res://ui/components/inspect_sheet.tscn",
     "res://ui/components/tooltip.tscn",
+    "res://ui/dialogs/cargo_overlay.tscn",
     "res://ui/station/",
     "res://ui/station/ and",
     "res://ui/station/overview_panel.tscn",

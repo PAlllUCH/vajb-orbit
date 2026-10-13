@@ -46,6 +46,12 @@ const ContractRegistryScript := preload("res://game/contract_registry.gd")
 ## gated to debug builds; the scene may still ride the export pack as data, but a
 ## release build never instantiates it and F1 reaches nothing.
 const DevTuningMenuScene := preload("res://ui/dev/dev_tuning_menu.tscn")
+## UI_SPEC section 18 A7: the flight seat of the C-key cargo overlay - the same
+## read-only surface the station shell opens, hosted on this scene's own
+## dialog-layer CanvasLayer (section 2.3's layer 20, above the HUD's layer 10).
+const CargoOverlayScene := preload("res://ui/dialogs/cargo_overlay.tscn")
+## Section 2.3's dialog layer: the overlay's seat over the HUD's own layer 10.
+const OVERLAY_LAYER := 20
 ## The one module catalogue (W1, CONTRACTS section 11): reached by path like every
 ## other cross-file table here, because the HUD's slot cells carry a module's own icon
 ## path and the catalogue is the single owner of that rule.
@@ -387,6 +393,10 @@ var _jump_cooldown := 0.0
 var _jump_target := Vector2.ZERO
 var _jump_read_cache := ""
 var _cargo_open := false
+## The cargo overlay's flight seat (UI_SPEC section 18 A7): the layer-20 host and
+## the overlay it carries.
+var _cargo_overlay_layer: CanvasLayer = null
+var _cargo_overlay: Control = null
 ## The wheel's clamped target. `_camera_zoom_shown` is the same wheel value after the
 ## 0.18 s tween, and it is the one `speed_fantasy.gd` multiplies by the pull-back: this
 ## scene owns the target and the smoothing, the effects node owns the applied value, so
@@ -516,6 +526,7 @@ func _ready() -> void:
 		_transit_destination = &""
 	_hud = _instantiate_hud()
 	_bind_hud()
+	_build_cargo_overlay()
 	_connect_profile()
 	_state.died.connect(_on_ship_died)
 	_spawn_sector(_row_for(String(_sector_row_id)))
@@ -1039,6 +1050,11 @@ func _row_for(sector_key: String) -> Dictionary:
 ## and the pin's issued order dies on every map close.
 func _update_cancel_input() -> void:
 	if not Input.is_action_just_pressed(&"ui_cancel"):
+		return
+	## UI_SPEC section 18 A7: the cargo overlay's close is the one topmost step
+	## before the map-deck step (P19's idiom).
+	if _cargo_open:
+		_set_cargo_open(false)
 		return
 	var deck_open := false
 	if _hud != null and _hud.has_method(&"map_deck_open"):
@@ -1695,9 +1711,33 @@ func _update_countermeasure_input() -> void:
 
 
 func _update_cargo_input() -> void:
-	if _hud == null or not Input.is_action_just_pressed(&"cargo_toggle"):
+	if not Input.is_action_just_pressed(&"cargo_toggle"):
 		return
-	_hud.call(&"set_cargo_open", not _cargo_open)
+	_set_cargo_open(not _cargo_open)
+
+
+## UI_SPEC section 18 A7: C toggles the read-only overlay over the live HUD; nothing
+## is paused and the game keeps running under it. The mirror stays in step through
+## this one writer, and the HUD's frozen setter keeps latching its own flag (its
+## panel stays hidden) and emitting `cargo_toggled` exactly as before.
+func _set_cargo_open(open: bool) -> void:
+	if open == _cargo_open:
+		return
+	_cargo_open = open
+	_sync_cargo_overlay(open)
+	if _hud != null and _hud.has_method(&"set_cargo_open"):
+		_hud.call(&"set_cargo_open", open)
+
+
+func _sync_cargo_overlay(open: bool) -> void:
+	if _cargo_overlay == null or not is_instance_valid(_cargo_overlay):
+		return
+	if open == bool(_cargo_overlay.call(&"is_open")):
+		return
+	if open:
+		_cargo_overlay.call(&"open")
+	else:
+		_cargo_overlay.call(&"close")
 
 
 ## --- Targeting: the lock channel and the target window (ENGINE_SPEC §4.1/§10) -----
@@ -2515,6 +2555,21 @@ func _on_weapon_slot_selected(slot: int) -> void:
 func _on_cargo_toggled(open: bool) -> void:
 	_cargo_open = open
 	_refresh_hud()
+
+
+## The overlay's host: a layer-20 CanvasLayer this scene owns (section 2.3's dialog
+## layer), built once in `_ready` so the seat exists with or without a HUD.
+func _build_cargo_overlay() -> void:
+	_cargo_overlay_layer = CanvasLayer.new()
+	_cargo_overlay_layer.name = "CargoOverlayLayer"
+	_cargo_overlay_layer.layer = OVERLAY_LAYER
+	add_child(_cargo_overlay_layer)
+	_cargo_overlay = CargoOverlayScene.instantiate() as Control
+	if _cargo_overlay == null:
+		return
+	_cargo_overlay.name = "CargoOverlay"
+	_cargo_overlay.theme = Router.live_theme()
+	_cargo_overlay_layer.add_child(_cargo_overlay)
 
 
 func _on_minimap_zoom_changed(delta: int) -> void:

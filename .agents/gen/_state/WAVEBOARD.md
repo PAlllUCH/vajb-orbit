@@ -18,6 +18,22 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | 6 | **S48 — the C-key Cargo overlay, both planes** (UI_SPEC §18 A7–A9 + STATION_HUB §23.2) | S48 | S47 closes | touches `station.gd` (S42's shell edit) and `game.gd` + new overlay files + `tests/` rows. Brief written (`slices/S48-cargo-overlay/`). |
 | 7 | **S49 — the A2 doors on untouched surfaces + the wording law** (UI_SPEC §17 completed) | S49 | S48 closes | three panels + wording-law test rows; last so its dialog seam reads every earlier wave's settled tree. Brief written (`slices/S49-confirm-doors/`); T-186's worked example lands docs-first at its boundary. |
 
+**Updated 2026-10-13 (S48 the C-key cargo overlay, both planes — clean).**
+Gate **1396 → 1404/0** for the station half, **1409/0 ×2** byte-identical after
+the fixer; verify clean vs `s48_start`, code map re-run (327 scripts). One
+shared scene (`ui/dialogs/cargo_overlay.gd`/`.tscn`) serves both planes: the
+station's C branch opens it on layer 19 (below drawer/sheet/confirm, above the
+panes; C again/scrim/ESC close, N39 focus return, live refresh on the profile's
+`cargo`/`ammo` keys); the five A9 groups read `cargo_items()`/`ammo_of()` only,
+zero `BaseButton` in the built tree. The flight half — the V0 dispatch's
+file-set typo (`vajb-orbit/game.gd` vs the repo's `game/game.gd`) was the
+bucket-2 pause, the brief's own path right — landed by **F0** from the prepared
+patch verbatim: the game scene's layer-20 host above the HUD's 10, the one
+driver poll through `_set_cargo_open` (the HUD's frozen setter mirrored),
+ESC the topmost step before the map-deck, nothing paused. **R0: clean**;
+1 LOW → **T-201** (the C branch's Router-overlay depth guard); next free
+**T-202**. Full block: `MASTER_REPORT.md` §6's "S48".
+
 **Updated 2026-10-13 (S47 the launch sequence + its audio closed — P48 + AUDIO-4/5).**
 Gate **1387 → 1395/0** in the wave, **1396/0 ×2** byte-identical after the cure;
 verify clean vs `s47_start`, code map re-run (325 scripts). The orchestrator's

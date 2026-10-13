@@ -92,7 +92,7 @@ overlay adds no transaction anywhere."
 - The family glyphs ship at `assets/icons/…` (`icon_cargo_ore.svg`,
   `icon_credits.svg`, the module/slot families — reuse the shipped files at
   their own cut; the catalogue rows carry each item's icon field).
-- Gate baseline 1330/0 (2026-10-12).
+- Gate baseline **1396/0** (2026-10-13, post-S47; the dispatch line repeats it).
 
 ## Task
 Build the shared read-only cargo overlay (scene + script), wire it into both
