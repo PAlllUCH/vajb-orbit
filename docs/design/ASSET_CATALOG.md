@@ -1,6 +1,6 @@
 # Vajb Orbit - Asset Catalog
 
-**Generated:** 2026-10-08 20:59 from `vajb-orbit/assets/` by `staging/phase_d/build_catalog.py`. Tables are mechanical (filesystem); do not hand-edit - regenerate instead.
+**Generated:** 2026-10-13 22:08 from `vajb-orbit/assets/` by `staging/phase_d/build_catalog.py`. Tables are mechanical (filesystem); do not hand-edit - regenerate instead.
 
 **Scope:** Phase B (109 files, `GENERATION_PLAN.md`) + Phase D expansion (141 files, `ASSET_EXPANSION_SPEC.md`) + Phase E expansion (67 files, `ASSET_EXPANSION_SPEC_E.md`) + Phase F RPG/economy layer (`docs/gameplay/16_art_design_brief.md`) + the F.1 resolution and integrity pass (icon quartet, `ICONS_SPEC.md` 9.7) + the audio family (95 files, `AUDIO_SPEC.md` section 8), all imported by the live editor.
 
@@ -28,10 +28,10 @@
 | Audio folder | Files |
 |---|---|
 | `res://assets/audio/music/` | 6 |
-| `res://assets/audio/sfx/` | 62 |
+| `res://assets/audio/sfx/` | 64 |
 | `res://assets/audio/ambience/` | 16 |
 | `res://assets/audio/ui/` | 11 |
-| **Audio total** | **95** |
+| **Audio total** | **97** |
 
 ## ships - hulls, bosses, liveries
 
@@ -722,6 +722,8 @@ Cue resolution and the names the code can pass today: `docs/design/ASSET_WIRING_
 | `sfx_station_machine_loop_02.ogg` | 0.111 | 2 | yes | copy | S18 machine loop 2/3 | sfx_loops (OpenGameArt community) |
 | `sfx_station_machine_loop_03.ogg` | 0.121 | 2 | yes | copy | S18 machine loop 3/3 | sfx_loops (OpenGameArt community) |
 | `sfx_station_power_off_01.ogg` | 2.207 | 2 | - | copy | S19 blackout event | raw-audio-oga_machine_power_off (OpenGameArt community) |
+| `sfx_station_spool_loop.ogg` | 2.0 | 2 | yes | encode | S28 undock spool bed (spaceEngineLow_003, 2.0 s seam-cut by premix_s47.py; loop; AUDIO-5) | derived (Kenney takes remixed in-repo) |
+| `sfx_station_undock_01.ogg` | 0.571 | 2 | - | encode | S27 undock dock-clamp (premix 1:1: impactPlate_heavy_000 pitched 0.8x + lowFrequency_explosion_000 sub; staging/audio/premix_s47.py; AUDIO-4) | derived (Kenney takes remixed in-repo) |
 | `sfx_stinger_anomaly_01.ogg` | 2.774 | 2 | - | encode | S24 anomaly stinger 1/3 | dark_magic (OpenGameArt community) |
 | `sfx_stinger_anomaly_02.ogg` | 0.985 | 2 | - | encode | S24 anomaly stinger 2/3 | dark_magic (OpenGameArt community) |
 | `sfx_stinger_anomaly_03.ogg` | 2.356 | 2 | - | encode | S24 anomaly stinger 3/3 | dark_magic (OpenGameArt community) |

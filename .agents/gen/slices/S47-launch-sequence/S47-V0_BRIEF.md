@@ -2,7 +2,7 @@
 slice: S47
 worker: S47-V0
 role: coder
-status: draft
+status: ready
 tier: paid
 ---
 
@@ -98,7 +98,14 @@ box** (`bay_bg` + 1 px `metal_mid`), containers and relative sizing only.
 - T-188 (the S-cue/wave-id collision) is a docs follow-up — do not renumber
   anything in code; the cue ids are the pinned `sfx_station_undock` /
   `sfx_station_spool_loop`.
-- Gate baseline 1330/0 (2026-10-12).
+- Gate baseline **1387/0** (2026-10-13, post-S46; the dispatch line repeats it).
+- **Orchestrator prep record (2026-10-13):** the two cue assets landed and imported —
+  `sfx/sfx_station_undock_01.ogg` (0.571 s, one-shot) and `sfx/sfx_station_spool_loop.ogg`
+  (2.0 s, loop import flag `true`, seam 0.1 dB), both CC0 Kenney derivations by
+  `staging/audio/premix_s47.py` → `build_audio.py --only` (provenance in
+  `assets/audio/generation_log_audio.md`'s 2026-10-13 amendment;
+  `docs/design/ASSET_CATALOG.md` regenerated). Loading is via the shipped
+  `AudioManager` streams — no import work is yours.
 
 ## Task
 Build the 3.0 s departure sequence (the overlay, the four beats, the

@@ -17,6 +17,42 @@
       "source_url": "https://opengameart.org/content/7-mechanical-clicks-and-buzzes",
       "title": "7 mechanical clicks and buzzes",
       "warnings": []
+    },
+    {
+      "added_at": "2026-10-13T20:05:22.146833+00:00",
+      "attribution_required": false,
+      "attribution_text": null,
+      "author": "Kenney",
+      "checksum_sha256": "029d734af1582474edf3a694d1b0cebc97c1c152f2f39fa34d4c2bafc5de77f8",
+      "files": [
+        "/home/kamil-paluszkiewicz/VajbOrbit/asset-library/kenney-impact-sounds/kenney_impact-sounds.zip"
+      ],
+      "id": "Kenney:Impact Sounds",
+      "license": "CC0",
+      "license_status": "allowed_public_domain",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "source_name": "Kenney",
+      "source_url": "https://kenney.nl/assets/impact-sounds",
+      "title": "Impact Sounds",
+      "warnings": []
+    },
+    {
+      "added_at": "2026-10-13T20:05:31.980013+00:00",
+      "attribution_required": false,
+      "attribution_text": null,
+      "author": "Kenney",
+      "checksum_sha256": "119340f351a5098ad814f78719438c0da355a9ce8a4c8a3af6a8d48aa3d49e04",
+      "files": [
+        "/home/kamil-paluszkiewicz/VajbOrbit/asset-library/kenney-sci-fi-sounds/kenney_sci-fi-sounds.zip"
+      ],
+      "id": "Kenney:Sci-fi Sounds",
+      "license": "CC0",
+      "license_status": "allowed_public_domain",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "source_name": "Kenney",
+      "source_url": "https://kenney.nl/assets/sci-fi-sounds",
+      "title": "Sci-fi Sounds",
+      "warnings": []
     }
   ],
   "version": 1

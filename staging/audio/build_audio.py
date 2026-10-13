@@ -76,6 +76,9 @@ PACKS: dict[str, tuple[str, str]] = {
     "raw-audio-oga_joth_space_sounds": ("Joth", "https://opengameart.org/content/7-space-sounds"),
     "raw-audio-oga_jordan4ibanez_mining": ("jordan4ibanez", "https://opengameart.org/content/mining-sample"),
     "raw-audio-oga_qubodup_energy_loop": ("qubodup", "https://opengameart.org/content/seamless-energy-emission-loop"),
+    "kenney-impact-sounds": ("Kenney", "https://kenney.nl/assets/impact-sounds"),
+    "kenney-sci-fi-sounds": ("Kenney", "https://kenney.nl/assets/sci-fi-sounds"),
+    "derived": ("Kenney takes remixed in-repo", "https://kenney.nl/assets/impact-sounds + https://kenney.nl/assets/sci-fi-sounds; mix by staging/audio/premix_s47.py"),
 }
 
 # (source relative to asset-library, destination relative to assets/audio,
@@ -154,6 +157,9 @@ ENTRIES: list[tuple[str, str, str, int, bool, bool, str]] = [
     ("sfx_loops/machine_03.ogg", "sfx/sfx_station_machine_loop_03.ogg", C, 0, True, False, "S18 machine loop 3/3"),
     ("raw-audio-oga_bart_boiler_loop/generator_loop.wav", "sfx/sfx_station_boiler_loop_01.ogg", E, 5, True, False, "S18 boiler body layer"),
     ("raw-audio-oga_qubodup_device_loop/qubodup-edev.flac", "sfx/sfx_station_hum_loop_01.ogg", E, 5, True, False, "S18 electrical hum layer"),
+    # ---- launch sequence (S27-S28, AUDIO_SPEC 8.7 AUDIO-4/5) --------------
+    ("derived/s47/sfx_station_undock_01.wav", "sfx/sfx_station_undock_01.ogg", E, 5, False, True, "S27 undock dock-clamp (premix 1:1: impactPlate_heavy_000 pitched 0.8x + lowFrequency_explosion_000 sub; staging/audio/premix_s47.py; AUDIO-4)"),
+    ("derived/s47/sfx_station_spool_loop.wav", "sfx/sfx_station_spool_loop.ogg", E, 5, True, False, "S28 undock spool bed (spaceEngineLow_003, 2.0 s seam-cut by premix_s47.py; loop; AUDIO-5)"),
     ("raw-audio-oga_machine_power_off/machinepoweroff.ogg", "sfx/sfx_station_power_off_01.ogg", C, 0, False, False, "S19 blackout event"),
     ("circuit-breaker/switch on.wav", "sfx/sfx_station_breaker_on_01.ogg", E, 5, False, True, "S19 breaker ON"),
     ("circuit-breaker/switch off.wav", "sfx/sfx_station_breaker_off_01.ogg", E, 5, False, True, "S19 breaker OFF"),
@@ -408,6 +414,18 @@ def main() -> int:
             print(f"  loop-prep {before} dB -> {after} dB {prep}")
         report.append(entry)
     if not args.dry_run:
+        # An --only run rebuilds a subset; merge over the prior report so the
+        # full generation log (every cue's provenance row) survives it.
+        if wanted and REPORT.exists():
+            try:
+                prior = json.loads(REPORT.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError):
+                prior = []
+            if prior:
+                merged = {entry["dest"]: entry for entry in prior}
+                for entry in report:
+                    merged[entry["dest"]] = entry
+                report = sorted(merged.values(), key=entry_key)
         REPORT.write_text(json.dumps(report, indent=2), encoding="utf-8")
         write_log(report)
     if failures:

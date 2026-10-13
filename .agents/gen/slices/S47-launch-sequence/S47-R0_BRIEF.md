@@ -2,7 +2,7 @@
 slice: S47
 reviewer: S47-R0
 role: reviewer
-status: draft
+status: ready
 tier: paid
 ---
 

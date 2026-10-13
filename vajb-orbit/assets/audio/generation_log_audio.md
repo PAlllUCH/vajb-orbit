@@ -12,12 +12,6 @@ first and last 50 ms of a loop: a small number means the seam is level-continuou
 Loop candidates whose seam exceeded 3 dB were loop-prepared (dead air trimmed, tail
 crossfaded into the head); `seam was` shows the before value for those.
 
-**2026-09-30 (S22 A7):** two S26 takes (`sfx_weapon_mine_drop_01/02.ogg`) added from a
-fresh `assetmcp` pass (qubodup, "7 mechanical clicks and buzzes", CC0 1.0; manifest entry
-in `asset-library/ASSET_MANIFEST.json`). They ran through the same pipeline rules as the
-rows below - Ogg Vorbis q5, peak normalisation to -1 dBFS, silence trim on the one-shot -
-executed inline for the two files.
-
 | File | Cue | Source pack | Author | Mode | Len s | Ch | Hz | seam dB | seam was |
 |---|---|---|---|---|---|---|---|---|---|
 | `assets/audio/ambience/amb_space_drone_01.ogg` | S13 dead-ship sector drone | projects | yd | loopfix | 223.52 | 2 | 44100 | 0.07 | 57.06 |
@@ -86,6 +80,8 @@ executed inline for the two files.
 | `assets/audio/sfx/sfx_station_machine_loop_02.ogg` | S18 machine loop 2/3 | sfx_loops | OpenGameArt community | copy | 0.111 | 2 | 48000 | 1.16 | - |
 | `assets/audio/sfx/sfx_station_machine_loop_03.ogg` | S18 machine loop 3/3 | sfx_loops | OpenGameArt community | copy | 0.121 | 2 | 48000 | 0.08 | - |
 | `assets/audio/sfx/sfx_station_power_off_01.ogg` | S19 blackout event | raw-audio-oga_machine_power_off | OpenGameArt community | copy | 2.207 | 2 | 96000 | - | - |
+| `assets/audio/sfx/sfx_station_spool_loop.ogg` | S28 undock spool bed (spaceEngineLow_003, 2.0 s seam-cut by premix_s47.py; loop; AUDIO-5) | derived | Kenney takes remixed in-repo | encode | 2.0 | 2 | 44100 | 0.1 | - |
+| `assets/audio/sfx/sfx_station_undock_01.ogg` | S27 undock dock-clamp (premix 1:1: impactPlate_heavy_000 pitched 0.8x + lowFrequency_explosion_000 sub; staging/audio/premix_s47.py; AUDIO-4) | derived | Kenney takes remixed in-repo | encode | 0.571 | 2 | 44100 | - | - |
 | `assets/audio/sfx/sfx_stinger_anomaly_01.ogg` | S24 anomaly stinger 1/3 | dark_magic | OpenGameArt community | encode | 2.774 | 2 | 44100 | - | - |
 | `assets/audio/sfx/sfx_stinger_anomaly_02.ogg` | S24 anomaly stinger 2/3 | dark_magic | OpenGameArt community | encode | 0.985 | 2 | 44100 | - | - |
 | `assets/audio/sfx/sfx_stinger_anomaly_03.ogg` | S24 anomaly stinger 3/3 | dark_magic | OpenGameArt community | encode | 2.356 | 2 | 44100 | - | - |
@@ -104,8 +100,6 @@ executed inline for the two files.
 | `assets/audio/sfx/sfx_weapon_laser_04.ogg` | S1 laser round-robin 4/4 | sci-fi-sfx | rubberduck | copy | 1.244 | 2 | 44100 | - | - |
 | `assets/audio/sfx/sfx_weapon_rocket_01.ogg` | S3 rocket launch layer | sci-fi-sfx | rubberduck | copy | 2.051 | 2 | 48000 | - | - |
 | `assets/audio/sfx/sfx_weapon_rocket_02_warhead.ogg` | S3 warhead layer (+80 ms offset in code) | 25-cc0-bang-sfx | OpenGameArt community | copy | 1.085 | 2 | 48000 | - | - |
-| `assets/audio/sfx/sfx_weapon_mine_drop_01.ogg` | S26 mine deploy clunk 1/2 (AUDIO-1; primary take) | mine_deploy-mechanical | qubodup | encode | 0.351 | 2 | 44100 | - | - |
-| `assets/audio/sfx/sfx_weapon_mine_drop_02.ogg` | S26 mine deploy clunk 2/2 (AUDIO-1) | mine_deploy-mechanical | qubodup | encode | 0.359 | 2 | 96000 | - | - |
 | `assets/audio/ui/ui_click.ogg` | S9 UI click (primary, exact name the AudioManager resolves) | kenney_interface-sounds | Kenney | copy | 0.1 | 1 | 44100 | - | - |
 | `assets/audio/ui/ui_click_02.ogg` | S9 UI click pool 2/5 | kenney_interface-sounds | Kenney | copy | 0.012 | 1 | 44100 | - | - |
 | `assets/audio/ui/ui_click_03.ogg` | S9 UI click pool 3/5 | kenney_interface-sounds | Kenney | copy | 0.01 | 1 | 44100 | - | - |
@@ -124,12 +118,14 @@ executed inline for the two files.
 - **circuit-breaker** - OpenGameArt community - https://opengameart.org/content/sfx-circuit-breaker - CC0 1.0 Universal (public domain)
 - **dark_magic** - OpenGameArt community - https://opengameart.org/content/3-dark-magic-spells - CC0 1.0 Universal (public domain)
 - **deep_breaks** - OpenGameArt community - https://opengameart.org/content/deep-bone-crack-break-sfx - CC0 1.0 Universal (public domain)
+- **derived** - Kenney takes remixed in-repo - https://kenney.nl/assets/impact-sounds + https://kenney.nl/assets/sci-fi-sounds; mix by staging/audio/premix_s47.py - CC0 1.0 Universal (public domain)
 - **horror_sfx** - TinyWorlds - https://opengameart.org/content/horror-sfx - CC0 1.0 Universal (public domain)
+- **kenney-impact-sounds** - Kenney - https://kenney.nl/assets/impact-sounds - CC0 1.0 Universal (public domain)
+- **kenney-sci-fi-sounds** - Kenney - https://kenney.nl/assets/sci-fi-sounds - CC0 1.0 Universal (public domain)
 - **kenney_impact-sounds** - Kenney - https://kenney.nl/assets/impact-sounds - CC0 1.0 Universal (public domain)
 - **kenney_interface-sounds** - Kenney - https://kenney.nl/assets/interface-sounds - CC0 1.0 Universal (public domain)
 - **launch** - qubodup - https://opengameart.org/content/rocket-launch - CC0 1.0 Universal (public domain)
 - **metal_interactions** - OpenGameArt community - https://opengameart.org/content/metal-interactions - CC0 1.0 Universal (public domain)
-- **mine_deploy-mechanical** - qubodup - https://opengameart.org/content/7-mechanical-clicks-and-buzzes - CC0 1.0 Universal (public domain)
 - **projects** - yd - https://opengameart.org/content/background-space-track - CC0 1.0 Universal (public domain)
 - **raw-audio-oga_bart_boiler_loop** - bart - https://opengameart.org/content/steam-boiler-sound-loop - CC0 1.0 Universal (public domain)
 - **raw-audio-oga_combat_loops** - Ville Nousiainen / XCVG - https://opengameart.org/content/fast-fight-battle-music-looped - CC0 1.0 Universal (public domain)
@@ -155,3 +151,20 @@ executed inline for the two files.
 - **sfx_breaking_and_falling** - OpenGameArt community - https://opengameart.org/content/75-cc0-breaking-falling-hit-sfx - CC0 1.0 Universal (public domain)
 - **sfx_loops** - OpenGameArt community - https://opengameart.org/content/30-cc0-sfx-loops - CC0 1.0 Universal (public domain)
 - **space-shield-sounds** - bart - https://opengameart.org/content/space-ship-shield-sounds - CC0 1.0 Universal (public domain)
+
+## 2026-10-13 amendment (S47 — the launch sequence cues, AUDIO-4/5)
+
+Two cues added by `staging/audio/build_audio.py --only sfx_station_undock_01,sfx_station_spool_loop`
+after `staging/audio/premix_s47.py` derived their sources (the raw packs were
+re-sourced fresh this day — the 2026-10-08 clear-out removed the originals;
+checksums are in `asset-library/ASSET_MANIFEST.json`, rows `Kenney:Impact Sounds`
+and `Kenney:Sci-fi Sounds`, both CC0):
+
+- **S27 `sfx_station_undock_01.ogg` (0.571 s, ≤ 1.0 s cap)** — §3's S4 layer
+  recipe at 1:1: `impactPlate_heavy_000` (Kenney Impact Sounds) pitched down
+  20 % (playback-rate resample) + `lowFrequency_explosion_000` (Kenney Sci-Fi
+  Sounds) lead-trimmed and cut, summed at equal RMS, −1 dBFS headroom.
+- **S28 `sfx_station_spool_loop.ogg` (exactly 2.0 s, loop)** — `spaceEngineLow_003`
+  (Kenney Sci-Fi Sounds, 5.0 s) cut at the 2.0 s window whose head/tail RMS
+  difference is smallest (0.01 dB pre-encode, 0.1 dB after); loop import flag
+  set by `set_loop_flags.py` and reimported headless.
