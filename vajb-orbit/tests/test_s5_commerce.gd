@@ -73,6 +73,7 @@ var _panel: Control = null
 var _status: Array[String] = []
 var _danger: Array[bool] = []
 var _changes: Array[StringName] = []
+var _asks: Array[Dictionary] = []
 var _previous_path := ""
 var _previous_credits := 0
 var _previous_owned: Array = []
@@ -192,12 +193,19 @@ func _mount(scene: PackedScene) -> Control:
 	_host.add_child(_panel)
 	if _panel.has_signal(&"status_requested"):
 		_panel.connect(&"status_requested", _on_status)
+	_asks.clear()
+	if _panel.has_signal(&"confirm_requested"):
+		_panel.connect(&"confirm_requested", _on_ask)
 	return _panel
 
 
 func _on_status(message: String, danger: bool) -> void:
 	_status.append(message)
 	_danger.append(danger)
+
+
+func _on_ask(payload: Dictionary) -> void:
+	_asks.append(payload)
 
 
 ## The runner calls every test from inside its own `_ready`, so the root viewport is still
@@ -539,7 +547,8 @@ func _assert_s3_rendering(panel: Control, profile: Node, tab_id: StringName) -> 
 
 
 ## Buying on the AUCTION is the one door for a hull (10 sections 2.1 and 6.1): the sheet's
-## buy rows stay here, and a press charges the price the row showed and adds the hull.
+## buy rows stay here, the press opens the confirm door charging nothing, and the
+## confirmed answer charges the price the row showed and adds the hull (S49's A4/A5).
 func test_the_auction_keeps_the_hulls_buy_door() -> void:
 	var profile := _borrow_autoload()
 	assert_true(profile != null, "the autoload is the pane's store")
@@ -554,8 +563,19 @@ func test_the_auction_keeps_the_hulls_buy_door() -> void:
 	var row: Button = rows[0]
 	assert_eq(String(row.get_meta(&"id", &"")), String(target[&"id"]), "the first row is the first hull")
 	row.pressed.emit()
+	assert_eq(int(profile.call(&"credits")), before, "the press itself charges nothing")
+	assert_eq(_asks.size(), 1, "and opens the one confirm door")
+	if _asks.is_empty():
+		return
+	var ask: Dictionary = _asks[0]
+	assert_eq(String(ask[&"title"]), "CONFIRM PURCHASE", "worded as A6's door")
+	assert_true(
+		String(ask[&"body"]).begins_with("ARE YOU SURE YOU WANT TO BUY "), "with A6's sentence"
+	)
+	panel.call(&"confirm_action", StringName(ask[&"action"]), StringName(ask[&"id"]))
 	assert_eq(
-		int(profile.call(&"credits")), before - int(target[&"price"]), "the row charged its own price"
+		int(profile.call(&"credits")),
+		before - int(target[&"price"]), "the confirmed answer charged its own price"
 	)
 	assert_true(
 		bool(profile.call(&"owns_ship", target[&"id"])), "and the hull is the account's now"

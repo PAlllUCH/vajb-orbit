@@ -24,6 +24,11 @@ const ICON := "res://assets/icons/service/icon_service_vault.svg"
 
 signal status_requested(message: String, danger: bool)
 signal inspect_requested(title: String, body: String, danger: bool)
+## UI_SPEC section 17 A5 (S49): the pane asks the shell's section 5.2 overlay for its
+## rent confirmations through the S25 seam's own contract - the overlay belongs to the
+## screen and the shell hands the answer back through the pane's own `confirm_action`,
+## so this pane never owns a modal.
+signal confirm_requested(payload: Dictionary)
 
 const PANEL_TITLE := "VAULTS"
 const PANEL_HINT := "ONE SERVICE AT A TIME · ESC BACK"
@@ -47,6 +52,18 @@ const ACTION_WITHDRAW := "WITHDRAW"
 const STACK_FORMAT := "%d× %s"
 const REFUSED_FULL := "REFUSED · VAULT FULL"
 const REFUSED_EMPTY := "REFUSED · NOTHING SELECTED"
+
+## UI_SPEC section 17 A5/A6 (S49): the rent door's pinned wording - the tier row's own
+## identity (`VAULT TIER <n>`, A6's worked example) and the seam's own button words.
+## `<cost>` is the tier's own price (the profile's derivation), never a literal here.
+const BUY_CONFIRM_TITLE := "CONFIRM PURCHASE"
+const BUY_CONFIRM_BODY := "ARE YOU SURE YOU WANT TO BUY %s FOR %s CREDITS?"
+const BUY_CONFIRM_TIER_FORMAT := "VAULT TIER %d"
+const BUY_CONFIRM_OK := "OK"
+const BUY_CONFIRM_CANCEL := "CANCEL"
+## The one action this panel asks the shell about (A4's door 5); deposits and
+## withdrawals are free, so they stay out of the door list.
+const ACTION_RENT: StringName = &"rent_vault"
 
 const ROW_HEIGHT := 76.0
 const ROW_INNER_MARGIN := Vector2i(12, 8)
@@ -205,6 +222,37 @@ func _on_rent_pressed(tier: int) -> void:
 	if profile == null:
 		return
 	var row := _station_row(profile)
+	## UI_SPEC section 17 A4/A5 (S49): the rent is the door - the confirm opens here and
+	## the confirmed answer runs `vault_rent`, the transaction unchanged (which can still
+	## refuse). The quoted cost is the tier row's own figure, re-read at press time
+	## (section 5.8's clock).
+	confirm_requested.emit({
+		&"id": StringName(str(tier)),
+		&"title": BUY_CONFIRM_TITLE,
+		&"body": BUY_CONFIRM_BODY % [
+			BUY_CONFIRM_TIER_FORMAT % tier,
+			_format_int(_tier_cost(profile, tier, row)),
+		],
+		&"confirm_text": BUY_CONFIRM_OK,
+		&"cancel_text": BUY_CONFIRM_CANCEL,
+		&"action": ACTION_RENT,
+	})
+
+
+## The shell's answer to `confirm_requested` (the S25 seam's own contract): the one
+## action this panel asks about. The confirmed press runs the transaction exactly as it
+## always ran, so it can still refuse (the strip's own wording, never a dialog).
+func confirm_action(action: StringName, id: StringName) -> void:
+	if action == ACTION_RENT:
+		_rent(int(String(id)))
+
+
+## The rent's own transaction, unchanged.
+func _rent(tier: int) -> void:
+	var profile := _profile()
+	if profile == null:
+		return
+	var row := _station_row(profile)
 	var result: Dictionary = profile.call(&"vault_rent", StringName(row.get(&"id", &"")), tier, row)
 	if not bool(result.get(&"ok", false)):
 		status_requested.emit(REFUSED_FULL, true)
@@ -263,6 +311,18 @@ func _station_row(profile: Node) -> Dictionary:
 	if profile == null or not profile.has_method(&"docked_station"):
 		return {}
 	return StationRegistryScript.docked_station(profile)
+
+
+func _format_int(value: int) -> String:
+	var digits := str(absi(value))
+	var grouped := ""
+	var count := 0
+	for index in range(digits.length() - 1, -1, -1):
+		grouped = digits[index] + grouped
+		count += 1
+		if count % 3 == 0 and index > 0:
+			grouped = " " + grouped
+	return ("-" if value < 0 else "") + grouped
 
 
 func _vault_tier(profile: Node, station_id: StringName) -> int:

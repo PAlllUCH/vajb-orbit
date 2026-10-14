@@ -78,6 +78,7 @@ var _host: Control = null
 var _panel: Control = null
 var _status: Array[String] = []
 var _danger: Array[bool] = []
+var _asks: Array[Dictionary] = []
 var _previous_path := ""
 var _previous_credits := 0
 var _previous_modules: Dictionary = {}
@@ -188,6 +189,9 @@ func _mount(theme: Theme) -> Control:
 	_panel = PanelScene.instantiate() as Control
 	_host.add_child(_panel)
 	_panel.connect(&"status_requested", _on_status)
+	_asks.clear()
+	if _panel.has_signal(&"confirm_requested"):
+		_panel.connect(&"confirm_requested", _on_ask)
 	return _panel
 
 
@@ -201,6 +205,10 @@ func _fixture_host() -> Node:
 func _on_status(message: String, danger: bool) -> void:
 	_status.append(message)
 	_danger.append(danger)
+
+
+func _on_ask(payload: Dictionary) -> void:
+	_asks.append(payload)
 
 
 func _delete_file(path: String) -> void:
@@ -855,27 +863,40 @@ func test_the_pane_renders_the_shelf_the_sell_list_and_its_own_footer() -> void:
 			_rows_of(panel, "HullRows").has(focus as Button),
 			"focus enters on a HULLS row"
 		)
-	## BUY through the row's own signal: the listing moves into the bag and the shelf loses
-	## its row.
+	## BUY through the row's own signal (S49's A4/A5 door): the press opens the confirm
+	## charging nothing, and the confirmed answer moves the instance into the bag.
 	var target: Dictionary = AuctionScript.listing_rows(profile)[0]
 	var before := int(profile.call(&"credits"))
 	var buy_row := _rows_of(panel, "ModuleRows")[0]
 	buy_row.pressed.emit()
+	assert_eq(int(profile.call(&"credits")), before, "the press itself charges nothing")
+	assert_eq(_asks.size(), 1, "and opens the one confirm door")
+	if _asks.is_empty():
+		return
+	var ask: Dictionary = _asks[0]
+	assert_eq(String(ask[&"title"]), "CONFIRM PURCHASE", "worded as A6's door")
+	panel.call(&"confirm_action", StringName(ask[&"action"]), StringName(ask[&"id"]))
 	assert_eq(
 		int(profile.call(&"credits")),
 		before - int(target[&"price"]),
-		"the row's press charged the price the row showed"
+		"the confirmed answer charged the price the row showed"
 	)
 	var banked: Dictionary = profile.call(&"instance", target[&"id"])
 	assert_eq(int(banked[&"count"]), 1, "and put the instance in the bag at count 1")
 	## A refusal the pane can see refuses in its own strip, with 09 section 2's own wording.
-	## The row pressed is the one the pane still holds: the shelf's rebuild is queued
+	## The door defers the refusal to the confirmed answer: the press opens the confirm,
+	## the answer runs the transaction, and the refusal is the strip's own line. The row
+	## pressed is the one the pane still holds: the shelf's rebuild is queued
 	## (`_queue_rebuild`) and a queued call has not run inside this synchronous test, so the
 	## price named is that row's own, read back off the pane.
 	assert_true(bool(profile.call(&"spend", int(profile.call(&"credits")))), "drain the balance")
 	var next_row := _rows_of(panel, "ModuleRows")[0]
 	var next_price := int(panel.call(&"module_payloads")[0][&"cost"])
 	next_row.pressed.emit()
+	assert_eq(_asks.size(), 2, "the drained press opens its own door")
+	if _asks.size() == 2:
+		var refused: Dictionary = _asks[1]
+		panel.call(&"confirm_action", StringName(refused[&"action"]), StringName(refused[&"id"]))
 	assert_eq(
 		String(panel.call(&"status_text")),
 		PanelScript.STATUS_REFUSED_CREDITS % _group(next_price),

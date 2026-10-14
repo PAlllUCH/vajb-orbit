@@ -5538,6 +5538,29 @@
    ],
    "signals": []
   },
+  "res://tests/test_s49_confirm_doors.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "McpTestSuite",
+   "refs": [
+    "res://autoload/world_clock.gd",
+    "res://game/auction.gd",
+    "res://game/station_catalog.gd",
+    "res://ui/station/auction_panel.gd",
+    "res://ui/station/auction_panel.tscn",
+    "res://ui/station/contracts_panel.gd",
+    "res://ui/station/insurance_panel.gd",
+    "res://ui/station/insurance_panel.tscn",
+    "res://ui/station/launch_panel.gd",
+    "res://ui/station/refinery_panel.gd",
+    "res://ui/station/repairs_panel.gd",
+    "res://ui/station/vaults_panel.gd",
+    "res://ui/station/vaults_panel.tscn",
+    "res://ui/theme/vajb_theme.tres"
+   ],
+   "signals": []
+  },
   "res://tests/test_s4_batteries.gd": {
    "autoload": "",
    "class_name": "",
@@ -6643,6 +6666,7 @@
     "res://ui/theme/chrome_family.gd"
    ],
    "signals": [
+    "confirm_requested",
     "inspect_requested",
     "sheet_requested",
     "status_requested"
@@ -6754,6 +6778,7 @@
     "res://ui/theme/chrome_family.gd"
    ],
    "signals": [
+    "confirm_requested",
     "inspect_requested",
     "status_requested"
    ]
@@ -6948,6 +6973,7 @@
     "res://ui/theme/chrome_family.gd"
    ],
    "signals": [
+    "confirm_requested",
     "inspect_requested",
     "status_requested"
    ]

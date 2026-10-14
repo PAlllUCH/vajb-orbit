@@ -18,6 +18,25 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 | 6 | **S48 — the C-key Cargo overlay, both planes** (UI_SPEC §18 A7–A9 + STATION_HUB §23.2) | S48 | S47 closes | touches `station.gd` (S42's shell edit) and `game.gd` + new overlay files + `tests/` rows. Brief written (`slices/S48-cargo-overlay/`). |
 | 7 | **S49 — the A2 doors on untouched surfaces + the wording law** (UI_SPEC §17 completed) | S49 | S48 closes | three panels + wording-law test rows; last so its dialog seam reads every earlier wave's settled tree. Brief written (`slices/S49-confirm-doors/`); T-186's worked example lands docs-first at its boundary. |
 
+**Updated 2026-10-14 (S49 the A2 doors on the untouched surfaces — P4's last code wave closed).**
+Gate **1409 → 1420/2** at the report (2 moved-premise rows over the doors),
+**1422/0 ×2** byte-identical after the developer re-cut both through the seam's
+public `confirm_action` (the S43 pattern; the `:870` SCRIPT ERROR cured with
+them); verify clean vs `s49_start`, code map re-run. S49-V0 fronted the four
+A4 doors with the shell's §5.2 confirm overlay through the S25 seam — the
+AUCTION's hull buy and its module listing buy (the rolled instance's own
+name/price word the dialog), the INSURANCE opt-in (on-path only; the premium
+is `_tier_premium`'s own derivation = the launch charge's figure) and the
+VAULTS `RENT` per tier — every transaction unchanged and still refusing
+through the strips; the out-boundary surfaces (QUEUE, REPAIR, PAY BOUNTY,
+contract CANCEL, the LAUNCH commit, insurance-OFF) diff-proven dialog-free;
+A6's worked-example rows pin the exact strings off the catalogues (SPEARHEAD
+per the catalogue-name law; the insurance premium derived, no class yields
+the doc's illustrative 200). **R0: passed-with-followups** — 3 LOW: F1 cured
+by the dated report amendment (the CANCEL cite; no ticket), F2/F3 → **T-202**
+(the `_format_int` consolidation + the duplicate read); next free **T-203**.
+Full block: `MASTER_REPORT.md` §6's "S49".
+
 **Updated 2026-10-13 (S48 the C-key cargo overlay, both planes — clean).**
 Gate **1396 → 1404/0** for the station half, **1409/0 ×2** byte-identical after
 the fixer; verify clean vs `s48_start`, code map re-run (327 scripts). One

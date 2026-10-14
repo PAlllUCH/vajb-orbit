@@ -25,6 +25,11 @@ const ICON := "res://assets/icons/service/icon_service_insurance.svg"
 
 signal status_requested(message: String, danger: bool)
 signal inspect_requested(title: String, body: String, danger: bool)
+## UI_SPEC section 17 A5 (S49): the pane asks the shell's section 5.2 overlay for its
+## opt-in confirmation through the S25 seam's own contract - the overlay belongs to the
+## screen and the shell hands the answer back through the pane's own `confirm_action`,
+## so this pane never owns a modal.
+signal confirm_requested(payload: Dictionary)
 
 const PANEL_TITLE := "INSURANCE"
 const PANEL_HINT := "ONE SERVICE AT A TIME · ESC BACK"
@@ -47,6 +52,19 @@ const TOGGLE_ON := "INSURE LAUNCHES"
 const TOGGLE_OFF := "CANCEL POLICY"
 const PREMIUM_LINE := "PREMIUM %d CR PER LAUNCH · CHARGED AT LAUNCH"
 const REFUSED := "REFUSED · %s"
+
+## UI_SPEC section 17 A5/A6 (S49): the opt-in door's pinned wording - A6's own worked
+## example carries the PER LAUNCH tail - and the seam's own button words. `<PREMIUM>` is
+## the active hull's class premium (M14's re-derivation), never a literal here.
+const BUY_CONFIRM_TITLE := "CONFIRM PURCHASE"
+const BUY_CONFIRM_BODY := (
+	"ARE YOU SURE YOU WANT TO BUY LAUNCH INSURANCE FOR %s CREDITS PER LAUNCH?"
+)
+const BUY_CONFIRM_OK := "OK"
+const BUY_CONFIRM_CANCEL := "CANCEL"
+## The one action this panel asks the shell about (A4's door 4); the OFF path stays
+## dialog-free and the per-launch charge is the launch flow's own (A4's note).
+const ACTION_INSURE: StringName = &"insure_launches"
 
 const ROW_HEIGHT := 76.0
 const ROW_INNER_MARGIN := Vector2i(12, 8)
@@ -218,6 +236,45 @@ func _on_toggle_pressed() -> void:
 	if profile == null:
 		return
 	var next := not bool(profile.call(&"insured"))
+	## UI_SPEC section 17 A4/A5 (S49): the opt-in is the door - the confirm opens here and
+	## the confirmed answer runs `set_insured(true)`; the OFF path stays dialog-free (A4).
+	if next:
+		_request_insure_confirm(profile)
+		return
+	_set_insured(next)
+
+
+## The door's dialog request (A5/A6): the shell's section 5.2 overlay opens with the
+## pinned wording, the active hull's class premium quoted at press time (section 5.8's
+## clock) - M14's re-derivation read off the profile's own tier table.
+func _request_insure_confirm(profile: Node) -> void:
+	var tier := StringName(
+		profile.call(&"insurance_tier", StringName(profile.call(&"active_ship")))
+	)
+	confirm_requested.emit({
+		&"id": tier,
+		&"title": BUY_CONFIRM_TITLE,
+		&"body": BUY_CONFIRM_BODY % _format_int(_tier_premium(profile, tier)),
+		&"confirm_text": BUY_CONFIRM_OK,
+		&"cancel_text": BUY_CONFIRM_CANCEL,
+		&"action": ACTION_INSURE,
+	})
+
+
+## The shell's answer to `confirm_requested` (the S25 seam's own contract): the one
+## action this panel asks about. The confirmed press runs the opt-in exactly as it
+## always ran (A5); the per-launch charge stays dialog-free (A4's own note).
+func confirm_action(action: StringName, id: StringName) -> void:
+	if action != ACTION_INSURE:
+		return
+	_set_insured(true)
+
+
+## The toggle's own transaction, unchanged - both paths report through the strip.
+func _set_insured(next: bool) -> void:
+	var profile := _profile()
+	if profile == null:
+		return
 	profile.call(&"set_insured", next)
 	_refresh()
 	status_requested.emit(
@@ -280,6 +337,18 @@ func _token(name: StringName) -> Color:
 	if has_theme_color(name, TOKENS_TYPE):
 		return get_theme_color(name, TOKENS_TYPE)
 	return Color.WHITE
+
+
+func _format_int(value: int) -> String:
+	var digits := str(absi(value))
+	var grouped := ""
+	var count := 0
+	for index in range(digits.length() - 1, -1, -1):
+		grouped = digits[index] + grouped
+		count += 1
+		if count % 3 == 0 and index > 0:
+			grouped = " " + grouped
+	return ("-" if value < 0 else "") + grouped
 
 
 ## --- the probes' reads --------------------------------------------------------------

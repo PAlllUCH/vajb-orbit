@@ -64,6 +64,11 @@ signal inspect_requested(title: String, body: String, danger: bool)
 ## S30 (UI_SPEC section 12.3, N28/P21): the explicit sink. A shelf row's own INSPECT chip
 ## (or `station_inspect` on the focused row) publishes the sheet's payload here.
 signal sheet_requested(payload: Dictionary)
+## UI_SPEC section 17 A5 (S49): the pane asks the shell's section 5.2 overlay for its
+## buy confirmations the way the S25 seam's own contract spells it - the overlay belongs
+## to the screen and the shell hands the answer back through the pane's own
+## `confirm_action`, so this pane never owns a modal.
+signal confirm_requested(payload: Dictionary)
 
 ## ------------------------------------------------------------------ 12.3 constants
 const ROW_HEIGHT := 76.0
@@ -169,6 +174,19 @@ const STATUS_REFUSED_UNKNOWN := "REFUSED · NOT FOR SALE"
 const STATUS_REFUSED_OWNED := "REFUSED · ALREADY OWNED · %s"
 const STATUS_REFUSED_CREDITS := "REFUSED · NOT ENOUGH CREDITS · %s NEEDED"
 const STATUS_IDLE := "BUYOUT AT LIST PRICE · SELL AT %d %%"
+
+## UI_SPEC section 17 A5/A6 (S49): the doors' pinned wording - the owner's own sentence,
+## upper-cased to the house caption law - and the seam's own button words. `<NAME>` and
+## `<PRICE>` are the row payload's own figures (the catalogue's name, the buyout the
+## confirmed press will charge), never literals here.
+const BUY_CONFIRM_TITLE := "CONFIRM PURCHASE"
+const BUY_CONFIRM_BODY := "ARE YOU SURE YOU WANT TO BUY %s FOR %s CREDITS?"
+const BUY_CONFIRM_OK := "OK"
+const BUY_CONFIRM_CANCEL := "CANCEL"
+## The two actions this panel asks the shell about (A4's doors 1 and 2); the SELL press
+## stays out of the door list (a sale is not an acquisition).
+const ACTION_BUY_HULL: StringName = &"buy_hull"
+const ACTION_BUY_LISTING: StringName = &"buy_listing"
 
 ## The rows' own node path to the tinted title label, built in script: the row Button's
 ## `RowInner` margin holds one HBox (`RowBox`), which holds `ThemeBox`, which holds `Title`.
@@ -631,6 +649,35 @@ func _set_status(message: String, danger: bool) -> void:
 		&"font_color", _token(&"accent_danger") if danger else _token(&"text_primary")
 	)
 	status_requested.emit(message, danger)
+
+
+## ------------------------------------- the buy-confirmation doors (UI_SPEC section 17)
+
+
+## The door's dialog request (A5/A6): the shell's section 5.2 overlay opens with the
+## pinned wording, the name and the price quoted from the row the confirmed press will
+## charge - the payload's own figures, at press time (section 5.8's clock).
+func _request_buy_confirm(
+	name_text: String, price: int, action: StringName, id: StringName
+) -> void:
+	confirm_requested.emit({
+		&"id": id,
+		&"title": BUY_CONFIRM_TITLE,
+		&"body": BUY_CONFIRM_BODY % [name_text, _format_int(price)],
+		&"confirm_text": BUY_CONFIRM_OK,
+		&"cancel_text": BUY_CONFIRM_CANCEL,
+		&"action": action,
+	})
+
+
+## The shell's answer to `confirm_requested` (the S25 seam's own contract): the two
+## actions this panel asks about. The confirmed press runs the transaction exactly as it
+## always ran, so it can still refuse (section 5.6's strip wording, never a dialog).
+func confirm_action(action: StringName, id: StringName) -> void:
+	if action == ACTION_BUY_HULL:
+		buy_hull(id)
+	elif action == ACTION_BUY_LISTING:
+		buy_listing(id)
 
 
 ## ----------------------------------------------------------- the restock reading
@@ -1104,9 +1151,19 @@ func _on_action_pressed(payload: Dictionary, kind: StringName) -> void:
 	_inspect_row(payload, true)
 	match kind:
 		&"hull":
-			buy_hull(payload[&"id"])
+			## UI_SPEC section 17 A4/A5 (S49): the hull buy is a door - the confirm opens
+			## here and the confirmed answer runs `buy_hull`, the transaction unchanged.
+			_request_buy_confirm(
+				String(payload[&"name"]).to_upper(), int(payload[&"cost"]),
+				ACTION_BUY_HULL, StringName(payload[&"id"])
+			)
 		&"listing":
-			buy_listing(payload[&"id"])
+			## The listing buy is the same door: the rolled instance's own name and price
+			## word the dialog (never the tier's list).
+			_request_buy_confirm(
+				String(payload[&"name"]).to_upper(), int(payload[&"cost"]),
+				ACTION_BUY_LISTING, StringName(payload[&"id"])
+			)
 		_:
 			sell_row(payload[&"id"])
 

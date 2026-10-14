@@ -80,7 +80,7 @@ modal). `confirm_text: "OK"`, `cancel_text: "CANCEL"`.
   CREDITS?`).
 - The dialog cue: the shell's confirm overlay carries §5.2's CLICK on its
   buttons already (the seam's own behaviour) — you add no cue.
-- Gate baseline 1330/0 (2026-10-12).
+- Gate baseline **1409/0** (2026-10-13, post-S48; the dispatch line repeats it).
 
 ## Task
 Front the four doors with the confirm dialog (A6's wording, the shell seam),
