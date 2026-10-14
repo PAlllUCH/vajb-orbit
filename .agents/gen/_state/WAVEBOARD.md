@@ -4,342 +4,97 @@
 
 **Keep this file live-only.** It is read at the start of every orchestrator session, so its size is a recurring cost. It holds the current state, the queue, the living contracts and the enforcement rules — and nothing else. At a wave's close-out, the wave's recap (gate history, deliverables, the gates it raised) is appended to `.agents/gen/MASTER_REPORT.md` §6 and only its one-line outcome stays here. Closed-wave detail moved there on 2026-09-24; do not let it accumulate here again.
 
-**Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `TICKS.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **Clear-out history:** the 2026-09-25 and 2026-10-07 owner clear-outs and their extraction files are listed in `_templates/README.md` §"2026-10-07 (owner clear-out)". **2026-10-08 clear-out (owner ask):** the board keeps only the S24–S27 queue — the S36/S37 `Updated` blocks moved to `_archive/waveboard_updates_2026-10-07_to_2026-10-08.md`, the closed S36/S37 slice folders to `_archive/slices/`, the dispatch done sections to `_archive/dispatch_done_2026-10-08.md`, the S36/S37 backlog rows to `_archive/low_backlog_s36_s37_rows_2026-10-08.md`, and the S36 baseline to `_archive/wave_state_baselines/`. Citation paths into moved trees name historical files.
+**Paths (folder law adopted 2026-09-22):** state files live in `.agents/gen/_state/` — `WAVEBOARD.md` (this file), `LOW_BACKLOG.md`, `TICKS.md`, `_wave_state/` baselines; the folder/ID law and the six templates in `.agents/gen/_templates/`; one folder per slice in `.agents/gen/slices/`, one manifest per phase in `.agents/gen/phases/`. Nothing new is written loose in `.agents/gen/` root. **Clear-out history:** the 2026-09-25 and 2026-10-07 owner clear-outs and their extraction files are listed in `_templates/README.md` §"2026-10-07 (owner clear-out)". **2026-10-08 clear-out (owner ask):** the board keeps only the S24–S27 queue — the S36/S37 `Updated` blocks moved to `_archive/waveboard_updates_2026-10-07_to_2026-10-08.md`, the closed S36/S37 slice folders to `_archive/slices/`, the dispatch done sections to `_archive/dispatch_done_2026-10-08.md`, the S36/S37 backlog rows to `_archive/low_backlog_s36_s37_rows_2026-10-08.md`, and the S36 baseline to `_archive/wave_state_baselines/`. Citation paths into moved trees name historical files. **2026-10-14 collapse (P4 code-lane close):** every closed-wave `Updated` block accumulated since (the S24–S41 era, the P3 close, the phase-prep and P4's D24 + S42–S49) was collapsed to the one-liners below — each block's full recap lives in `MASTER_REPORT.md` §6 under the same wave name, so nothing was lost.
 
 Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 
 ## Queued (phase P4 — `phases/P4-station-overhaul/`; one live session, one item per order)
 
-| Pos | Lane item | Wave | Runs after | The collision/dependency that forces the order |
-|---|---|---|---|---|
-| 3 | **S45 — refinery LOAD ALL + machine strip + CRAFT** (P50/P51/P52, 04 §9 R9–R12, 07 §6 C1–C10) | S45 | S44 closes | the biggest wave; runs as two **sequential** builders (V0 panel controls + model seam, W0 the craft model + list) — one shared file, never parallel. Briefs written (`slices/S45-refinery-craft/`). |
-| 4 | **S46 — the shipyard build view** (P54 + 10 §3.5) | S46 | S45 closes | disjoint files (`shipyard_panel.gd/.tscn`, `shipyard.gd` read seams); sequenced for one live session. Brief written (`slices/S46-shipyard-build/`). |
-| 5 | **S47 — the launch sequence + its audio** (P48 + AUDIO_SPEC §8.7 + T-174/T-188 riders) | S47 | S46 closes | `launch_panel.gd` untouched since S41; the orchestrator sources/builds the two cue assets before the builder dispatches (raw packs gone with the clear-out). Brief written (`slices/S47-launch-sequence/`). |
-| 6 | **S48 — the C-key Cargo overlay, both planes** (UI_SPEC §18 A7–A9 + STATION_HUB §23.2) | S48 | S47 closes | touches `station.gd` (S42's shell edit) and `game.gd` + new overlay files + `tests/` rows. Brief written (`slices/S48-cargo-overlay/`). |
-| 7 | **S49 — the A2 doors on untouched surfaces + the wording law** (UI_SPEC §17 completed) | S49 | S48 closes | three panels + wording-law test rows; last so its dialog seam reads every earlier wave's settled tree. Brief written (`slices/S49-confirm-doors/`); T-186's worked example lands docs-first at its boundary. |
+The code queue is **empty** — P4's eight implementation waves are closed (S49,
+the last, 2026-10-14; gate 1330 → **1422/0 ×2 byte-identical**, re-verified at
+the review pass below; the done rows verbatim in
+`_archive/dispatch_done_2026-10-14.md`). Before the next queued code:
 
-**Updated 2026-10-14 (S49 the A2 doors on the untouched surfaces — P4's last code wave closed).**
-Gate **1409 → 1420/2** at the report (2 moved-premise rows over the doors),
-**1422/0 ×2** byte-identical after the developer re-cut both through the seam's
-public `confirm_action` (the S43 pattern; the `:870` SCRIPT ERROR cured with
-them); verify clean vs `s49_start`, code map re-run. S49-V0 fronted the four
-A4 doors with the shell's §5.2 confirm overlay through the S25 seam — the
-AUCTION's hull buy and its module listing buy (the rolled instance's own
-name/price word the dialog), the INSURANCE opt-in (on-path only; the premium
-is `_tier_premium`'s own derivation = the launch charge's figure) and the
-VAULTS `RENT` per tier — every transaction unchanged and still refusing
-through the strips; the out-boundary surfaces (QUEUE, REPAIR, PAY BOUNTY,
-contract CANCEL, the LAUNCH commit, insurance-OFF) diff-proven dialog-free;
-A6's worked-example rows pin the exact strings off the catalogues (SPEARHEAD
-per the catalogue-name law; the insurance premium derived, no class yields
-the doc's illustrative 200). **R0: passed-with-followups** — 3 LOW: F1 cured
-by the dated report amendment (the CANCEL cite; no ticket), F2/F3 → **T-202**
-(the `_format_int` consolidation + the duplicate read); next free **T-203**.
-Full block: `MASTER_REPORT.md` §6's "S49".
+- **In flight, designer lane (owner, 2026-10-14): the C-key cargo overlay's
+  redesign.** S48's built overlay is being redone; that round owns its slice
+  folder and `dispatch_designer.md`. Its implementation wave queues through
+  the brief loop (docs-first five-piece) once the round closes.
+- **Then the P4 exit pass** — playtest build 3 + the owner's eye over it
+  (`phases/P4-station-overhaul/PHASE.md`'s exit criteria; T-179 and the S41
+  chrome tokens re-present there). The build waits for the cargo redo so the
+  owner tests the finished surface.
 
-**Updated 2026-10-13 (S48 the C-key cargo overlay, both planes — clean).**
-Gate **1396 → 1404/0** for the station half, **1409/0 ×2** byte-identical after
-the fixer; verify clean vs `s48_start`, code map re-run (327 scripts). One
-shared scene (`ui/dialogs/cargo_overlay.gd`/`.tscn`) serves both planes: the
-station's C branch opens it on layer 19 (below drawer/sheet/confirm, above the
-panes; C again/scrim/ESC close, N39 focus return, live refresh on the profile's
-`cargo`/`ammo` keys); the five A9 groups read `cargo_items()`/`ammo_of()` only,
-zero `BaseButton` in the built tree. The flight half — the V0 dispatch's
-file-set typo (`vajb-orbit/game.gd` vs the repo's `game/game.gd`) was the
-bucket-2 pause, the brief's own path right — landed by **F0** from the prepared
-patch verbatim: the game scene's layer-20 host above the HUD's 10, the one
-driver poll through `_set_cargo_open` (the HUD's frozen setter mirrored),
-ESC the topmost step before the map-deck, nothing paused. **R0: clean**;
-1 LOW → **T-201** (the C branch's Router-overlay depth guard); next free
-**T-202**. Full block: `MASTER_REPORT.md` §6's "S48".
+**Updated 2026-10-14 (P4 code-lane close — the developer session's review and
+cleanup pass; housekeeping, not a wave).** Evaluation: the gate re-read
+**1422/0 ×2 hermetic, byte-identical, zero `SCRIPT ERROR` lines** (S49's
+close-out figure re-verified from scratch) and the game boots headless clean
+(exit 0). Every wave's mandatory review closed with nothing left open above
+LOW (S42's 2 MED, S43's 1, S44's 1, S45's 1 HIGH, S47's 1 MED all cured in
+their fixer passes; S48's R0 clean; S49 left 3 LOW — one cured, two →
+T-202). **The record gap found and backfilled (CONTRACTS v0.60):** the eight
+close-outs refreshed this board, MASTER_REPORT §6 and the code map but
+**skipped CONTRACTS §9/§10** — §9's Expected figure still read the S28-era
+1202 and §10 stopped at v0.59. §9 now carries the S42–S49 chain block (1330 →
+1422, +92 rows, the eight suites named) and §10 the v0.60 backfill;
+record-only drift — every wave's gate pair ran and passed, no number or pin
+moved. **Board cleanup per its own live-only law:** the closed-wave Updated
+blocks collapsed to the one-liners below; `dispatch_coder.md` purged (items
+46–53 → `_archive/dispatch_done_2026-10-14.md`, the stale S43 "queued" status
+cured, the queue empty); LOW_BACKLOG's header next-free corrected (T-203); the
+P4 manifest's slice boxes ticked. **Trash removed:** the regenerable
+`__pycache__` bytecode caches under `staging/`, `.crush/hooks/` and the D21
+archive slice. Full block: `MASTER_REPORT.md` §6's "P4 code-lane close".
 
-**Updated 2026-10-13 (S47 the launch sequence + its audio closed — P48 + AUDIO-4/5).**
-Gate **1387 → 1395/0** in the wave, **1396/0 ×2** byte-identical after the cure;
-verify clean vs `s47_start`, code map re-run (325 scripts). The orchestrator's
-prep re-sourced the two Kenney CC0 packs, built `sfx_station_undock_01.ogg`
-(0.571 s, S4's 1:1 clunk+sub premix) and `sfx_station_spool_loop.ogg` (2.0 s,
-seam 0.1 dB, loop flag set) and recorded the derivation in the generation log.
-S47-V0 landed P48 + T-174: the non-cancellable 3.0 s departure overlay in the
-shell (t+0.0 undock + `UNDOCKING · <name>` / t+1.0 the held spool bed,
-re-asked per frame per §4.5 / t+2.4 the fired pair / t+3.0 the cue-scoped bed
-stop + the unchanged route seam) and the briefing column in one flat Tokens
-box. **R0: passed-with-followups** — F1 MED (AUDIO-4's `world 2` pool cap had
-no implementation home; the manager was locked) **cured by the developer
-amendment** (the world class + cap + the undock's pool row + the gated seam
-route, pinned by a ninth suite row); F2 LOW cured as the T-174 label-reading
-note. **T-174/T-185 closed**; next free **T-201**. Full block:
-`MASTER_REPORT.md` §6's "S47".
+One-line outcomes, newest first (full blocks: `MASTER_REPORT.md` §6, same-named
+entries):
 
-**Updated 2026-10-13 (S46 the shipyard build view closed — the AUCTION house style, P54).**
-Gate **1379 → 1387/0** ×2 hermetic, verify clean vs `s46_start`, code map re-run
-(324 scripts). S46-V0 landed P54 + 10 §3.5: the `HULLS` shelf (nine live
-`buildable_hulls()` rows) then the `MODULES` shelf with its pinned staged
-caption (S27's module recipes are already live in the model — the owner
-question re-presents on TICKS), hull rows carrying the materials bill as
-materials (`<n>× <name>` runs, glyph 24, `<held>/<needed>` off `cargo_qty`),
-the labour line the only CR figure, `READY`/`MISSING` chips, `BUILD` through
-the shell's confirm seam with A6's verbatim wording and `queue_job` unchanged;
-`BUILD_HULL_FORMAT`/`BUILD_MODULE_FORMAT`/`_ship_list_price` retired;
-`game/shipyard.gd` and the `.tscn` byte-identical. T-175's SHIPYARD rider
-verified already-shipped. R0: **passed-with-followups, no HIGH, no MED**;
-F1 LOW (the brief's own +8 process-law lines — the developer's pre-dispatch
-amendment, attribution confirmed, no ticket); F2 LOW → **T-200**; next free
-**T-201**. Full block: `MASTER_REPORT.md` §6's "S46".
-
-**Updated 2026-10-12 (S45 the refinery wave closed — LOAD ALL, the machine strip, the CRAFT tab).**
-Gate **1358 → 1379/0** ×2 hermetic, verify clean vs `s45_start`, code map re-run
-(323 scripts). Two sequential builders on the shared file: **V0** landed the
-`load_all` seam (04 §9 R9), the four-plate foot cluster, P51's machine strip
-(per-slot `AVAILABLE`/`RUNNING mm:ss`/`DONE` chips + `+ n QUEUED` + the UPGRADE
-confirm door) and the REFINE/CRAFT pair with the empty body; **W0** landed the
-craft catalog (the four recipes, fees 2 500/3 000/2 800/4 000, all-or-nothing
-`craft`, C8's `scrap_value`) and the AUCTION-idiom CRAFT list with the N28 bill
-sheet and the CRAFT confirm door. **R0 blocked on 1 HIGH** — the developer's
-`project.godot` message-queue bump sat outside every file set on an
-ops-restricted file; cured by the review's own alternative (bump reverted, the
-gate re-proved 1379/0 ×2 on the **runner frame-yield** — one process frame per
-suite, the churn-drain the no-yield loop lacked; disclosed, reversal in file).
-1 LOW → **T-198**; W0's wording disclosure → **T-199**; next free **T-200**.
-Full block: `MASTER_REPORT.md` §6's "S45".
-
-**Updated 2026-10-12 (S44 the exchange bulk sell closed).**
-Gate **1351 → 1358/0** ×2 hermetic (the last three runs byte-identical after
-F1's band cure), verify clean vs `s44_start`, code map re-run (320 scripts).
-S44-V0 landed P53: the `CheckChip` bulk set (24×24, frame `metal_mid` →
-`metal_light` + a code-drawn `text_primary` mark in its own child rect —
-**T-190's ink**), `MARK ALL`/`CLEAR` in the caption band, the marked read
-under `ConfirmStrip` (per-stack `Exchange.quote` sums at press time), and
-`SELL MARKED` (360×56) before `SELL` — the trio's seats untouched, the
-per-stack `sell()` unchanged, refusals name the stack on §5.6's strip. One
-MED cured (F1: the caption re-seat left `BoardCaption` 11 px above the hold
-band — the board band raised to match); 2 LOW → **T-196/T-197**; next free
-**T-198**. Full block: `MASTER_REPORT.md` §6's "S44".
-
-**Updated 2026-10-12 (S43 the armory equipped list + its buy doors closed).**
-Gate **1341 → 1351/0** ×2 hermetic, verify clean vs `s43_start`, code map re-run
-(319 scripts). S43-V0 landed P49's EQUIPPED list (cell id + name + one stat
-line, grid order, press selects the cell, flat rows in their own scroll,
-BATTERY CONFIG shows none) and the A4/A5/A6 doors (module BUY, ammo BUY) —
-through the shell's §5.2 confirm seam (the disclosed reading; R0 graded it
-pass). Two frozen runs cost one resume + one fresh dispatch; the
-5-minute-failsafe law entered the brief. R0 left **no HIGH, 1 MED** — F1: the
-BUY & FIT cluster and a BUYABLE row's select-to-fit were doorless
-acquisitions; the developer cured (the owner's "EVERY buy action" is the
-criterion's own reading) and pinned it with a new row; 1 LOW → **T-194**;
-next free **T-195**. The developer re-cut three moved-premise rows
-(p2b1 ammo purchase, s32 ×2) to answer the door. Full block:
-`MASTER_REPORT.md` §6's "S43".
-
-**Updated 2026-10-12 (S42 the OVERVIEW 3×3 grid rework closed — P4's first implementation wave).**
-Gate **1330 → 1341/0** ×2 hermetic on fresh scratch stores (only T-155's salvo
-jitter differs), verify clean vs `s42_start`, `build_code_map.py` re-run (126
-scenes / 318 scripts). S42-V0 landed P44–P47 (nine tiles, flat Tokens chrome,
-the service deep-links, U2 on tiles, **T-184 cured**); the T-189 re-measure
-found P44's "756 pane" is the pane **height** (the content box is 1768×756) —
-the grid seats either way, the premise ticketed. Six premise rows (s24/s30/
-s36/s41) were the developer's bucket-2 re-cuts; one bucket-1 composition call
-(tiles expand-fill, **T-192** owner's call). R1 left **no HIGH, 2 MED** (both
-cured: the report's disclosure + the dead WHITE arm); 3 LOW → **T-191–T-193**;
-next free **T-194**. **T-184/T-187/T-189/T-162 closed.** The S41 chrome-token
-row **re-presents on TICKS now**. Full block: `MASTER_REPORT.md` §6's "S42".
-
-**Updated 2026-10-12 (D24 the station-overhaul design round closed — P4's opener).**
-The owner's nine build-2 asks became pinned design in six docs, every new value
-**PROPOSED** with its reversal: STATION_HUB **§23** (P44–P54: the 3×3 nine-tile
-grid at `TILE_MIN` (240, 120), the 3.0 s departure sequence, the armory
-EQUIPPED list, `LOAD ALL` + the machine strip + the REFINE/CRAFT pair, the
-exchange `CheckChip` bulk sell, the shipyard house-style build view;
-**T-184** cured by the `text_caption` modulate; T-174/175/176 cures folded;
-§23.10 tick table + §23.11 supersession ledger), UI_SPEC **§17/§18** (the
-buy-confirmation law A4–A6; the C-key Cargo overlay A7–A9, one surface both
-planes), AUDIO_SPEC **§8.7** (S27/S28 cues), **04 §9** R9–R12, **07 §6**
-C1–C10 (crafting specced for real), **10 §3.5**. Ran A1 (`hyper/glm-5.3` —
-before the owner's mid-wave model directive) → R1 → F1 (both
-`xiaomi/mimo-v2.6-pro` @ high): R1 left **no HIGH, 4 MED, 5 LOW** (F2 cured in
-review, disclosed); F1 cured F1/F3/F4/F5; 5 LOW → **T-186–T-190**. Gate
-**1330/0 ×2 byte-identical**, verify clean vs `d24_start`. The **§23.10 tick
-table is the owner's tick sheet** (15 rows + 4 flagged decisions). The P4
-implementation waves are staged: **S42 — the OVERVIEW grid rework** (P44–P47
-+ T-184) queued first. Full block: `MASTER_REPORT.md` §6's "D24".
-
-**Updated 2026-10-12 (P3 CLOSED — the owner's build-2 playtest ran; P4 opened).**
-The exit pass filed **T-184** (the OVERVIEW's ARMORY/LAUNCH tile glyphs not
-visible — the two untinted raster icons modulate WHITE against the C1 slab) and
-**T-185** (a launch sequence with sound), and ruled on the ten presented ticks:
-**caption tone RATIFIED** (UI_SPEC §16.1 A1); **T-174/T-175/T-176 cures
-approved** (ride P4); **T-178 closed** ("ok for now" — 10 §3.1's block);
-**T-181/T-182 closed** (STATION_HUB §5.7/§15.1 carry the rulings); **the
-OVERVIEW tradeoff superseded** by the owner's 3×3-grid ruling; **T-179
-postponed** ("didn't test, postpone"); the **S41 chrome tokens stay PROPOSED**
-(the reply carried T-184 instead of a ruling; they re-present with the
-reworked OVERVIEW). The station-overhaul asks — the armory equipped list, the
-C-key Cargo popup, refinery LOAD ALL + machine read + the CRAFT tab, exchange
-bulk sell, buy-confirmation popups, the shipyard build rework, the 3×3 grid —
-are recorded verbatim in **STATION_HUB §22** and `phases/P4-station-overhaul/`,
-queued as **D24** in the design lane (`dispatch_designer.md` item 1). Next free
-ticket **T-186**. Full block: `MASTER_REPORT.md` §6's "P3 close — the owner's
-playtest of build 2".
-
-**Updated 2026-10-12 (phase-prep pass closed — the developer session, housekeeping
-not a wave).** The gate re-read **1330/0 ×2 hermetic on fresh scratch stores,
-byte-identical, zero `SCRIPT ERROR` lines**. **T-183 closed:** `staging/gate.py` is
-now the gate's mechanical wrapper (the pinned §9 command unchanged; a fresh
-`XDG_DATA_HOME` scratch store per run; `[SUMMARY]` byte-identity across `--times 2`;
-a hard fail on any `SCRIPT ERROR` line, attributed to the row that follows it —
-`EngineDebugger` message capture is measured blind to runtime errors, so no
-in-process guard exists; a nil-property canary failed the wrapper while the engine
-still printed `[PASS]`, then was removed). `verify_wave.py --tests` routes through
-the same check. **Repo hygiene:** the 2026-10-08 owner clear-out (1 009 deletions
-plus its doc updates) was never committed — landed now (`d77aba6`), with the five
-missing `.uid` sidecars; trash removed (a stray `package-lock.json`, `__pycache__`,
-the unreferenced `mine_deploy-mechanical/` extraction). **Playtest build 2
-delivered:** `builds/vajb-orbit-0.4-2026-10-12-d77aba6-{linux,windows}/` — v0.4 on
-the menu, CHANGELOG 0.4, the tester README re-cut (six of 0.3's eight
-ALREADY-KNOWN rows are fixed in code; three live owner-call quirks listed), Linux
-smoke-tested clean (Vulkan, exit 0, benign leaks only), Windows verified
-structurally, zips + SHA256SUMS written. `19_testing_notes.md`'s 2026-10-12
-amendment re-cuts the eye list for build 2. **P3's remaining work is the owner's
-alone:** the eye list, the TICKS ratifications, and the rulings T-178/T-179/
-T-181/T-182. Full block: `MASTER_REPORT.md` §6's "P3 phase-prep close".
-
-**Updated 2026-10-11 (S41 the composition pass closed — the D23 design audit implemented).**
-Gate **1300 → 1330/0** ×2 hermetic on fresh scratch stores (only T-155's salvo
-jitter differs), verify clean vs `s41_start`, `build_code_map.py` re-run (126
-scenes / 317 scripts). The source is **`slices/D23-panel-audit/D23-R1_audit.md`**
-— a visual / UI designer's audit of the ten station decks at 1920×1080 (all ten
-renders viewed, every finding source-verified), **16 findings: 1 HIGH, 8 MED,
-7 LOW**. Five builders ran: B1 (theme + shell), B2 (overview / exchange /
-auction), B3 (armory), B4 (refinery / launch / contracts / shipyard) in parallel
-on disjoint file sets, then **B5** — the completion pass the file-set stop forced
-(F8's auction chrome needed `auction_panel.gd`; F15's services half needed
-`station.gd`), which is the S27 lesson working as designed. **R1**
-(glm-5.3-flash, **code and visual**) returned **passed-with-followups**: all 16
-findings fixed at their named sites and **visible on ten fresh renders**, the
-layout and token laws held, and the gate's §6 rows were unmoved. **T-177 closed**
-(the theme generator now preserves the `.tres`'s 19 uid lines; a regeneration is
-a byte no-op — proved by R1's own run). One MED is an owner call (B2/F01: the
-OVERVIEW hull block now sits below the fold, because all three service rows took
-the unscrolled seat); three LOW → **T-180/T-181/T-182** (the tooltip vs a pane's
-own header; STATION_HUB §5.7's refinery wording; §19.4's strip height), plus
-**T-183** filed at close-out: a suite row that raises a `SCRIPT ERROR` still
-reports `[PASS]`, so the gate hid a broken premise (`test_s24_world.gd:383` read
-the identity character line S41's F1 retired) until the orchestrator read the gate
-log; the row is re-cut and the gate now carries **zero** `SCRIPT ERROR` lines.
-Next free ticket **T-184**. Every new chrome value is **PROPOSED** on TICKS. The
-queue is still empty — P3's exit is the owner's playtest (build 2).
-
-**Updated 2026-10-10 (S27 catalog breadth & the shipyard closed — item 33, P3's last code wave).**
-Gate **1275 → 1300/0** ×2 hermetic on fresh scratch stores (only T-155's salvo
-jitter differs), verify clean vs `s27_start`, `build_code_map.py` re-run. Two
-builders: B1 landed A1–A7's data (the seven R-S27-2 rows, the 15 tier variants,
-the four loot kinds, `game/shipyard.gd`, the tier-4 rider) but its file set was
-under-scoped — the flight call sites A2 needs (`weapons.gd:_consume_ammo_at`,
-`game.gd:_update_lock`/`_on_npc_died`) and A5's `Shipyard.note_flight` caller sit
-outside it, and four pinned rows its own rows obsoleted were in `tests/`; B2
-closed both gaps (the brief §7/§8 amendments are the developer's bucket-2
-resolution). R1 (glm-5.3-flash) left **no HIGH**, 2 MED and 1 LOW: a Rare could
-roll two same-property prefixes (cured by F1 — a `stat`-level dedupe in
-`roll_prefixes`) and the Pyre's below-quarter gate was vacuous in flight (cured
-by F1 — a `NpcShip.pre_hit_hull_fraction()` store, its AC6 seal re-pinned, the
-S22 procedure). F3 → **T-178** (the shipyard build band post-S28). **T-153
-closed.** CONTRACTS **§20 S27 block** + §9 + §10 **v0.56/v0.57**; ticks **K1–K3**
-shipped PROPOSED, not separately ruled. A post-fix verification review
-(**S27-R2**, glm-5.3-flash) returned **clean** — no HIGH, no MED, both fixes
-proven (the prefix dedupe over 27k seeded Rare rolls; the Pyre gate in live
-flight) — and filed **T-179** (the Pyre ring's own-kill cascade, an owner ruling).
-Next free ticket **T-180**. The queue is
-now empty — P3's exit is the owner's playtest (build 2).
-
-**Updated 2026-10-10 (owner visibility review — S40).** The owner's follow-up to
-playtest #2 (the armory's installed-modules overview has no background; the
-OVERVIEW tiles' icons and texts are unreadable on theirs; "a review of visibility
-is needed and composition") became the review **`slices/S40-legibility/S40_REVIEW.md`**
-— ten decks rendered at 1920×1080 and **607 text labels measured for WCAG contrast
-against the framebuffer behind their own ink rect** (`tests/probe_s40_panes.gd`).
-It found one root cause repeated 235 times: the shared `SectionHeader` /
-`StationCaption` / `FlavourText` variations were wired to `text_dim` `#6b7484`,
-which reads **2.85–2.96:1** on the shipped row/plate fills. The cure was already
-in the tree on the armory's own path (`armory_caption` `#acb2ba`, §3.10 A4.3);
-S40 generalised it as **`text_caption`/`text_caption_void`** (UI_SPEC **§16**),
-gave the armory's FitCells left column the flat Tokens box, and moved the OVERVIEW
-tile ink onto the caption tone. Measured: below-AA **241/607 (39.7 %) → 34/610
-(5.6 %)**, below-3.0:1 **47 → 5**. Gate **1267 → 1275/0** ×2 hermetic; new suite
-`tests/test_s40_legibility.gd` (8 rows). **T-171/T-172/T-173 closed**;
-**T-174/T-175/T-176** (the launch briefing column, the four header-caption
-surfaces, the staged row's 1.61:1) and **T-177** (the theme generator drops the
-`.tres` uids) filed open; next free **T-178**. The queue is unchanged — **S27**.
-**Updated 2026-10-10 (owner playtest #2 closed — item 36, S39).** The owner's
-second eye over the live build filed seven findings, all riders on the wave **S39**
-and ticketed **T-164–T-170**, now **closed**: enemies shoot back (a per-archetype
-`NPC_WEAPONS` table + the brain's `INTENT_FIRE` consumed on the shipped
-`projectile.gd` pipeline); a 180° reversal accelerates at `REVERSAL_ASSIST_MULT`
-1.6; Shift is a baseline boost (`BOOST_BASE_MULT` 1.25) that buys **thrust** and
-the afterburner stacks on top; a convoy recovers its route (the along-track
-`_leg_reached` leg advance); `Impact.KNOCKBACK_FRACTION` drops 0.40 → 0.15; and
-the hold is visible in flight (a HUD `CargoBlock`) and at the armory (`HOLD %d/%d`).
-Gate **1258 → 1267/0** ×2 hermetic; new suite `tests/test_s39_feel.gd` (9 rows);
-`test_s19_quadrants.gd` re-pinned `npc_ship.gd`/`npc_brain.gd`; CONTRACTS **§29** +
-§10 **v0.55**; every new number **PROPOSED** with its reversal (awaiting the
-owner's fold-in to the owner-locked `18_engine_spec.md`); next free **T-171**. The
-queue is now **S27 alone**.
-**Updated 2026-10-10 (S26 endgame closed — item 32).** Gate **1237 → 1258/0** ×2
-hermetic on fresh scratch stores (the row sets byte-identical; only T-155's salvo
-jitter differs), verify clean vs `s26_start`, `build_code_map.py` re-run. B1
-landed A1–A8 (+20 `test_s26_endgame.gd` rows); the mandatory review left **1 HIGH
-+ 4 MED** (Champion's ×0.8 never reached the premium; the payout's replacement
-branch granted an unowned hull and wiped a survivor's fit; the Maw's in-game kill
-rolled the ×2.0 tier scale over 06 §3.4's flat table; two §15.4 captions
-unrendered) and F1 cured all five at their named sites, moving no test row
-(reviewer's probe 80/1 → 81/0). The brief §8's tests-that-move list held exactly
-(+20 new, `test_s25_contracts.gd` **+1 net** — three seam rows re-pointed to the
-S26 reading, re-cut by the orchestrator before the review, S38's precedent).
-2 LOW → **T-161/T-162/T-163** (next free **T-164**); **CONTRACTS §28** added, §10
-**v0.54**, and the wave's own numbers landed in `14`'s **2026-10-10 S26 block**;
-ticks E1/E2 shipped as PROPOSED. R1's first dispatch no-op'd (a
-reasoning-only turn with no tool call) and was re-dispatched unchanged.
-**Updated 2026-10-09 (the owner's playtest — the board drew no rows).** The
-owner's first eye over S38 reported "there are no contracts available, even when
-they refresh". The board **was** rolled, live and undimmed — but the shell's
-service host mounted each service pane without a vertical size flag, so the
-CONTRACTS pane answered its 173 px minimum and the board's scroll collapsed to
-its **2 px** minimum: the deck drew a header, a note and nothing else, with the
-countdown the only thing still visible. Fixed at the host (`station.gd:1164`,
-`content.size_flags_vertical = SIZE_EXPAND_FILL`, A5.1's own rule), which also
-restores the collapsed `MODULE OFFLINE` INSURANCE/VAULTS placeholders. Gate
-**1236 → 1237/0**; measured off a rendered 1920×1080 frame (board 568 px, scroll
-397 px, five rows drawn plus the sixth on scroll); **T-160** filed and closed;
-CONTRACTS §10 **v0.52**. No pinned number or registry signature moved.
-**Updated 2026-10-08 (S38 board clock + hub cold start closed — item 35).** Gate
-**1226 → 1236/0** ×2 hermetic on fresh scratch stores, **zero** `SCRIPT ERROR`
-lines; verify clean vs `s38_start`; B1 +10 rows, one MED (a stale test message)
-cured by F1, two LOW → T-158/T-159; **T-156/T-157 closed**; CONTRACTS **§27** +
-§10 **v0.50/v0.51**. The wave also exposed the limits of the brief's §8
-"tests-that-move" list: H1 reaches seven premises, not three, and the orchestrator
-re-cut the four it had missed (`&""` → `&"sector_7"` fixture restorations plus the
-`REGISTRY_MD5` re-pin) before the review — disclosed in `S38-B1_report.md` and
-CONTRACTS §10. Full block:
-`_archive/waveboard_updates_2026-10-07_to_2026-10-08.md`; recap:
-`MASTER_REPORT.md` §6.
-**Updated 2026-10-08 (S25 contracts board closed — item 31).** Gate **1202 → 1226/0**
-×2 hermetic, verify clean vs `s25_start`; R1 blocked on 2 HIGH (the loop had no
-production caller; a band-flaky escrow row) + 1 MED (Hunt's flat standing), F1
-cured all three with a negative control, 2 LOW → T-156/T-157; **T-138/T-152/T-154
-closed**; CONTRACTS **§26** + §9's finished chain + §10 v0.49. Full block:
-`_archive/waveboard_updates_2026-10-07_to_2026-10-08.md`; recap:
-`MASTER_REPORT.md` §6.
-**Updated 2026-10-08 (S28 universal cost law closed — item 34).** Gate 1186 → 1202/0
-×2 hermetic; no HIGH, one MED fixed in review, two LOW → T-154/T-155; CONTRACTS
-§25; ticks M8–M14 owner-ratified green. Recap: `MASTER_REPORT.md` §6.
-**Updated 2026-10-08 (S24 world identity closed — item 30).** Gate 1152 → 1186/0
-×2 hermetic; R1's 1 HIGH cured by F1, 2 LOW → T-152/T-153; ticks W1–W3 + V1–V8
-owner-ratified green. Recap: `MASTER_REPORT.md` §6.
-
-These two are the whole live queue — every earlier item is closed and archived
-(`_archive/dispatch_coder_done_2026-10-07.md` + `_archive/dispatch_done_2026-10-08.md`
-+ `MASTER_REPORT.md` §6). Playtest pass #1 (the owner's, `19_testing_notes.md`'s
-eye list) runs alongside; build 2 + the tester template are phase exit
-criteria. Every brief's §11 tick sheet feeds its wave (unticked rows implement
-at their PROPOSED value).
+- **S49** (2026-10-14) — the A2 confirm doors on the untouched surfaces
+  (auction hull + listing, insurance opt-in, vault rent); gate 1409 →
+  **1422/0 ×2**; 2 LOW → T-202.
+- **S48** (2026-10-13) — the C-key cargo overlay, both planes (one read-only
+  scene, station layer-19 + flight layer-20); gate 1396 → **1409/0 ×2**; R0
+  clean; 1 LOW → T-201.
+- **S47** (2026-10-13) — the 3.0 s launch sequence + its two CC0 cues
+  (AUDIO-4/5); gate 1387 → **1396/0 ×2**; T-174/T-185 closed.
+- **S46** (2026-10-13) — the shipyard build view in the AUCTION house style;
+  gate 1379 → **1387/0 ×2**; 1 LOW → T-200; the staged-MODULES question on
+  TICKS.
+- **S45** (2026-10-12) — refinery LOAD ALL + the machine strip + the CRAFT
+  tab (two sequential builders); gate 1358 → **1379/0 ×2** (the runner
+  frame-yield is the message-queue ceiling cure); 2 LOW → T-198/T-199.
+- **S44** (2026-10-12) — the exchange bulk sell (CheckChip, MARK ALL/CLEAR,
+  SELL MARKED); gate 1351 → **1358/0 ×2**; T-190 closed; 2 LOW → T-196/T-197.
+- **S43** (2026-10-12) — the armory EQUIPPED list + its buy doors; gate 1341
+  → **1351/0 ×2**; 1 LOW → T-194.
+- **S42** (2026-10-12) — the OVERVIEW 3×3 nine-tile grid; gate 1330 →
+  **1341/0 ×2**; T-184/T-187/T-189/T-162 closed; 3 LOW → T-191–T-193.
+- **D24** (2026-10-12) — the station-overhaul design round: the owner's nine
+  asks pinned across six docs, every value PROPOSED; gate unmoved 1330/0; 5
+  LOW → T-186–T-190.
+- **P3 close + phase-prep** (2026-10-12) — the owner's build-2 playtest ruled
+  the ten ticks, P3 closed and P4 opened; `staging/gate.py` became the gate
+  wrapper (T-183); playtest build 2 delivered (v0.4).
+- **S41** (2026-10-11) — the composition pass (the D23 visual audit's 16
+  findings); gate 1300 → **1330/0 ×2**; T-177 closed; 4 follow-ups →
+  T-180–T-183.
+- **S27** (2026-10-10) — catalog breadth + the shipyard; gate 1275 →
+  **1300/0 ×2**; T-153 closed; T-178/T-179 filed.
+- **S40** (2026-10-10) — the owner visibility review: the caption ink
+  WCAG-fixed (241/607 below-AA → 34/610); gate 1267 → **1275/0 ×2**;
+  T-171/T-172/T-173 closed; T-174/T-175/T-176/T-177 filed.
+- **S39** (2026-10-10) — flight feel, hostile fire, visible cargo (the
+  owner's playtest #2); gate 1258 → **1267/0 ×2**; T-164–T-170 closed.
+- **S26** (2026-10-10) — bosses, arenas, insurance, vaults; gate 1237 →
+  **1258/0 ×2**; T-161/T-162/T-163 filed.
+- **S38 + the board-draws-no-rows fix** (2026-10-08/09) — the hub cold start
+  + the countdown, then T-160's service-host fix; gate 1226 → **1237/0**;
+  T-156/T-157 closed; T-158/T-159 filed.
+- **S25** (2026-10-08) — the contracts board; gate 1202 → **1226/0 ×2**;
+  T-138/T-152/T-154 closed; T-156/T-157 filed.
+- **S28** (2026-10-08) — the universal cost law (SC(t), the fee door, the
+  battery, the bloom); gate 1186 → **1202/0 ×2**; T-154/T-155 filed.
+- **S24** (2026-10-08) — world identity (stations, standing, bands,
+  nebula); gate 1152 → **1186/0 ×2**; T-152/T-153 filed.
 
 ## Living contracts
 
@@ -358,7 +113,7 @@ at their PROPOSED value).
   (T-183, closed 2026-10-12: an erroring row still prints `[PASS]`, so the
   wrapper is the only eye; CONTRACTS §9's seventh harness limit); §14's runner
   sandbox law and §9's measured block are the authority. Growth history
-  (437 → 1330 across the waves) is `MASTER_REPORT.md` §6.
+  (437 → 1422 across the waves) is `MASTER_REPORT.md` §6.
 - `staging/verify_wave.py` — mechanical wave gates: `snapshot` before a
   wave, `verify --baseline <tag> [--forbidden ...] [--expect-reports ...]
   [--tests]` after. Baselines live in `.agents/gen/_state/_wave_state/`

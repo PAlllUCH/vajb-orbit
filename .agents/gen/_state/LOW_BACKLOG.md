@@ -21,10 +21,11 @@ Legend: **[DOC]** = a docs pass, **[SPEC]** = needs the owner's spec lock,
 **[CODE]** = a code change when someone owns the file, **[HARNESS]** = agent
 tooling, **[TOOL]** = a shipped repo tool/script.
 
-**Tickets:** new items take the next global `T-###` (next free **T-191**) and
+**Tickets:** new items take the next global `T-###` (next free **T-203**) and
 follow `_templates/TICKET.md` — one row here is the index; skip a detail file
-when the row says it all. **2026-10-08 (S24-R1): T-152/T-153 filed; the next free
-ticket is T-154.**
+when the row says it all. The filing blocks below carry the history of the
+next-free moves; the header figure is refreshed at every close-out
+(2026-10-14, S49: T-202 filed, next free T-203).
 
 **Closure protocol:** when an item closes, record it in its Disposition as
 `CLOSED in <slice/wave>` with the evidence pointer — never delete the row. A

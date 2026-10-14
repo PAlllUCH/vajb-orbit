@@ -40,27 +40,27 @@ later request; one section costs ~2-3k.
 | §8 | Economy / state seams | L506–L549 |
 | §8.1 | Slice 0 — physics & fuel (pinned additions, 2026-09-21) | L550–L685 |
 | §8.2 | Slice 2 — fight (pinned additions, 2026-09-21) | L686–L890 |
-| §9 | Universal test gate | L891–L1095 |
-| §11 | P2 ship frames (2026-09-21) | L1096–L1291 |
-| §12 | P2-B1 weapon fit (2026-09-22) | L1292–L1349 |
-| §13 | P2-B proper fitting (2026-09-22) | L1350–L1471 |
-| §14 | S2.6 truth-and-feel (2026-09-22) | L1472–L1600 |
-| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1601–L1705 |
-| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L1706–L1881 |
-| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L1882–L1960 |
-| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L1961–L2033 |
-| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L2034–L2169 |
-| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2170–L2456 |
-| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2457–L2534 |
-| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L2535–L2589 |
-| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L2590–L2759 |
-| §24 | S24 world identity — stations, standing, bands, nebula (2026-10-08) | L2760–L2847 |
-| §25 | S28 economy law — the value ladder, the fee door, the battery, the b… | L2848–L2911 |
-| §26 | S25 contracts board — the registry, the reward law, the three exits … | L2912–L2984 |
-| §27 | S38 — the hub's cold start and the board's clock (2026-10-08) | L2985–L3059 |
-| §28 | S26 — bosses, arenas, insurance, vaults (2026-10-09/10) | L3060–L3216 |
-| §29 | S39 — flight feel, hostile fire and cargo (2026-10-10) | L3217–L3304 |
-| §10 | Changelog | L3305–L3773 |
+| §9 | Universal test gate | L891–L1112 |
+| §11 | P2 ship frames (2026-09-21) | L1113–L1308 |
+| §12 | P2-B1 weapon fit (2026-09-22) | L1309–L1366 |
+| §13 | P2-B proper fitting (2026-09-22) | L1367–L1488 |
+| §14 | S2.6 truth-and-feel (2026-09-22) | L1489–L1617 |
+| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1618–L1722 |
+| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L1723–L1898 |
+| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L1899–L1977 |
+| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L1978–L2050 |
+| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L2051–L2186 |
+| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2187–L2473 |
+| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2474–L2551 |
+| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L2552–L2606 |
+| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L2607–L2776 |
+| §24 | S24 world identity — stations, standing, bands, nebula (2026-10-08) | L2777–L2864 |
+| §25 | S28 economy law — the value ladder, the fee door, the battery, the b… | L2865–L2928 |
+| §26 | S25 contracts board — the registry, the reward law, the three exits … | L2929–L3001 |
+| §27 | S38 — the hub's cold start and the board's clock (2026-10-08) | L3002–L3076 |
+| §28 | S26 — bosses, arenas, insurance, vaults (2026-10-09/10) | L3077–L3233 |
+| §29 | S39 — flight feel, hostile fire and cargo (2026-10-10) | L3234–L3321 |
+| §10 | Changelog | L3322–L3800 |
 
 <!-- section-index:end -->
 
@@ -1092,6 +1092,23 @@ that follows it (the row whose execution raised it — the engine prints a row's
 failed the wrapper while the engine still printed `[PASS]` (the negative control that
 proves the guard), then was removed; the clean pair read **1330/0 ×2 byte-identical**.
 The manual close-out grep for `SCRIPT ERROR` is retired.
+
+**S42–S49 chain (2026-10-12 → 2026-10-14, the eight P4 implementation waves;
+backfilled 2026-10-14 at the phase review):** the chain's Expected line is
+**`[SUMMARY] passed=1422 failed=0`**, exit 0, twice hermetic through
+`staging/gate.py`, byte-identical, zero `SCRIPT ERROR` lines — re-measured at
+the 2026-10-14 phase review, the same pair S49's close-out read. Growth
+**1330 → 1422 (+92)**: S42 +11 (`test_s42_overview_grid.gd`), S43 +10
+(`test_s43_armory_equipped.gd`), S44 +7 (`test_s44_exchange_bulk.gd`), S45 +21
+(`test_s45_refinery.gd` + `test_s45_craft.gd`), S46 +8
+(`test_s46_shipyard_build.gd`), S47 +9 (`test_s47_launch_sequence.gd`), S48
++13 (`test_s48_cargo_overlay.gd`), S49 +13 (`test_s49_confirm_doors.gd`);
+each wave's own close-out (baseline, review verdict, per-row breakdown) is its
+`MASTER_REPORT.md` §6 block. **Why this block is backfilled:** the eight
+close-outs refreshed the WAVEBOARD, MASTER_REPORT and the code map but skipped
+this section — §9's Expected figure above still read the S28-era 1202 until
+now. The drift is record-only: every wave's gate pair ran and passed, and the
+live count was re-verified from scratch for this entry.
 
 ## §11 P2 ship frames (2026-09-21)
 
@@ -3770,3 +3787,13 @@ bottom (the index-line form is only for retired entries).
   routes through the same check. **No pinned interface moved.**
   **Reversal:** run the raw §9 command by hand and grep its log for
   `SCRIPT ERROR` (the pre-2026-10-12 close-out ritual).
+- **v0.60 (2026-10-14, P4 code-lane close — the developer session's review
+  pass, not a wave; gate 1330 → 1422/0 across the eight waves, re-measured
+  1422/0 ×2 byte-identical)** — backfills the record the S42–S49 close-outs
+  owed but skipped: §9 gains the **S42–S49 chain block** (growth 1330 → 1422,
+  +92 rows, the eight suites named, the drift disclosure). No pinned interface
+  is added here: the P4 waves pinned their seams in the D24 design docs
+  (STATION_HUB §23, UI_SPEC §17/§18, AUDIO_SPEC §8.7, 04 §9, 07 §6, 10 §3.5)
+  per D24's design law, so CONTRACTS carries no new §-section for them.
+  **Reversal:** drop the §9 chain block and this entry (the waves' own record
+  stays in `MASTER_REPORT.md` §6 and the WAVEBOARD one-liners).

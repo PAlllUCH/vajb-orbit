@@ -49,13 +49,22 @@ measured current state and its owning section).
 
 ## Slices (one checkbox per slice — tick at close-out)
 
-- [ ] **D24 — the station-overhaul design round.** Amend the owning docs with
+- [x] **D24 — the station-overhaul design round.** Amend the owning docs with
       the actual numbers for all nine items above; every new value PROPOSED
       with its reversal; the tick list for the owner. `slices/D24-station-overhaul-design/`
-      · runs after: — (phase opener) · baseline `d24_start`
-- [ ] **S42.. — implementation waves, re-cut from D24's output.** Shape and
-      count follow D24 (the design decides the file-collision split); each
-      opens with its own five-piece after D24 closes. Staged, not queued.
+      · runs after: — (phase opener) · baseline `d24_start` · closed 2026-10-12
+- [x] **S42–S49 — the implementation waves, re-cut from D24's output.** Eight
+      waves closed 2026-10-12 → 2026-10-14 (the grid, the armory equipped
+      list + buy doors, the bulk sell, the refinery craft tab, the shipyard
+      build view, the launch sequence + audio, the cargo overlay, the confirm
+      doors); gate 1330 → **1422/0 ×2** at every boundary; the done rows
+      verbatim in `_archive/dispatch_done_2026-10-14.md` and each recap in
+      `MASTER_REPORT.md` §6.
+- [ ] **The C-key cargo overlay redesign + its implementation wave.** The
+      owner (2026-10-14) wants S48's built overlay redone; the design round is
+      in flight in the designer lane (its slice folder and dispatch queue are
+      that lane's to open), and the wave that lands the redo in code follows
+      its amendments. Opened by the designer round, not yet staged here.
 
 ## Wave checklist (applies to every slice above)
 
@@ -68,10 +77,12 @@ measured current state and its owning section).
       §9/§10 (code waves only), WAVEBOARD + TICKS refresh, wave-boundary commit
 
 ## Exit criteria
-- [ ] D24 closed (all nine items designed, owner ticks presented)
-- [ ] The implementation waves closed per D24's split; gate green at every
-      boundary
-- [ ] Playtest build 3 exported, smoke-tested, and the owner's eye over it
+- [x] D24 closed (all nine items designed, owner ticks presented)
+- [x] The implementation waves closed per D24's split; gate green at every
+      boundary (1422/0 ×2, re-verified 2026-10-14)
+- [ ] Playtest build 3 exported, smoke-tested, and the owner's eye over it —
+      waits for the cargo redo to land so the owner tests the finished
+      surface
 
 ## Carries forward
 - T-179 (the Pyre cascade, owner-postponed) re-presents at the next playtest;
