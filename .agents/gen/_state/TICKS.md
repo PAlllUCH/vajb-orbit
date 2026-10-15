@@ -5,7 +5,14 @@ file when decided or done** (deleted at the wave close-out or the ruling — the
 record lives in the cited file and `MASTER_REPORT.md` §6, this is the index
 only). Refreshed at every wave close-out and after every owner ruling.
 
-*Last refreshed: 2026-10-14 night (the C-key cargo overlay **reworked in the orchestrator session itself** per the owner's "do the rework yourself" — UI_SPEC §18.2 A10–A13, gate **1426/0 ×2 byte-identical**, the tree uncommitted awaiting the owner's reviewer pass; the designer-lane round that was queued here is cancelled. Playtest build 3 is the next step before P4's exit pass.)*
+*Last refreshed: 2026-10-15 (the owner's **visual audit round closed in one
+session**: the cargo overlay's three audit bugs cured under UI_SPEC §18.3
+A14–A16, the container bounds under A17 + the OVERVIEW slack, the visual round
+V1–V4 under UI_SPEC §19; gate **1429/0 ×2 byte-identical**; commits `9675aa1`,
+`2e915b4`, `ffcf86e`; CONTRACTS v0.62. **The P4 exit pass is the one open
+action** — the owner's eye over a fresh build; T-179 and the S41 chrome tokens
+re-present there. New owner questions at the bottom.)*
+*Previously 2026-10-14 night (the C-key cargo overlay **reworked in the orchestrator session itself** per the owner's "do the rework yourself" — UI_SPEC §18.2 A10–A13, gate **1426/0 ×2 byte-identical**, the tree uncommitted awaiting the owner's reviewer pass; the designer-lane round that was queued here is cancelled. Playtest build 3 is the next step before P4's exit pass.)*
 *Last refreshed: 2026-10-14 (S49 **closed** — the A2 confirm doors landed on the untouched surfaces (the AUCTION hull + listing buys, the insurance opt-in, the vault rent; every transaction unchanged, the boundary dialog-free); gate **1422/0 ×2 byte-identical** after the developer's two moved-premise re-cuts. R0: passed-with-followups, 3 LOW (one cured at close-out, two → T-202), next free **T-203**. **P4's code waves are done — the P4 exit pass (the owner's eye over a new build) is next.**)*
 *Previously 2026-10-13 (S48 **closed** — the C-key cargo overlay landed in both planes: one read-only scene, the station's layer-19 seat, the flight's layer-20 host over the HUD, zero transactional control; gate **1409/0 ×2 byte-identical**. R0 **clean**; 1 LOW → T-201, next free **T-202**. S49 next.)*
 *Previously 2026-10-13 (S47 **closed** — the launch sequence (P48) + its audio (AUDIO-4/5) landed: the non-cancellable 3.0 s departure overlay, the two Kenney CC0 cues built and imported, T-174's briefing box; gate **1396/0 ×2 byte-identical** after the developer's pool-cap cure. **T-174 closed, T-185 closed**; next free **T-201**. S48 next.)*
@@ -171,3 +178,21 @@ plan)*
   owner's eye over it (the P4 exit pass) — T-179 (the Pyre cascade)
   re-presents there, and the S41 chrome tokens re-present with the reworked
   OVERVIEW.
+
+## Open decisions — the owner's answers wanted
+
+- **The dark pack art (T-203, LOW).** The cargo overlay's ammunition rows read
+  their pack icons nearly black at the 40 px slot (dark source art under the
+  idle-alpha ink law). Modulate cannot brighten below-1 art; a fix needs the
+  icons regenerated — which waits on the owner restoring the generation corpus
+  (the 2026-10-08 clear-out retired the rebuild chain). Rider on any future
+  asset round; no wave blocked.
+- **The flight readout cap is a ruling made for you (A17).** The HUD cargo
+  block now caps at 6 rows with a `+<n> MORE · PRESS C` tail — your
+  "containers expand/retract" complaint applied to it. If you want the full
+  list always visible instead, the cap number is one line; say so and it
+  re-presents.
+- **The audit instrument is yours to keep or drop.** `tools/audit_sweep.gd`
+  walks every screen and writes full-resolution captures to `/tmp` (it never
+  touches the real save). It rides the repo in `tools/`; if you would rather
+  not carry it, say so and it retires to `_archive/`.

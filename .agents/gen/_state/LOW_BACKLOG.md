@@ -21,11 +21,11 @@ Legend: **[DOC]** = a docs pass, **[SPEC]** = needs the owner's spec lock,
 **[CODE]** = a code change when someone owns the file, **[HARNESS]** = agent
 tooling, **[TOOL]** = a shipped repo tool/script.
 
-**Tickets:** new items take the next global `T-###` (next free **T-203**) and
+**Tickets:** new items take the next global `T-###` (next free **T-204**) and
 follow `_templates/TICKET.md` — one row here is the index; skip a detail file
 when the row says it all. The filing blocks below carry the history of the
 next-free moves; the header figure is refreshed at every close-out
-(2026-10-14, S49: T-202 filed, next free T-203).
+(2026-10-15, the visual audit round: T-203 filed, next free T-204).
 
 **Closure protocol:** when an item closes, record it in its Disposition as
 `CLOSED in <slice/wave>` with the evidence pointer — never delete the row. A
@@ -115,6 +115,15 @@ referenced by an open row survives until the row closes.
 
 **2026-10-13 (S48 the C-key cargo overlay, both planes): the wave closed (gate 1396 → 1404/0 for the station half, 1409/0 ×2 byte-identical after F0 landed A7's flight half from the prepared patch; +13 suite rows; the V0 dispatch's `vajb-orbit/game.gd` file-set typo was the bucket-2 pause — the brief's own `game/game.gd` path was right; R0 returned clean). R0's one LOW → T-201 (the review row first printed "T-202"; corrected at close-out — T-201 was the free slot); next free T-202.**
 | T-201 | **The C branch lacks the Router-overlay depth guard (S48-R0/F1):** with a Router overlay pushed over the station, C opens the cargo overlay on layer 19 beneath it and it lingers after the pop. Harmless today (read-only; C/ESC closes it) but the ladder's other steps check `Router.overlay_depth()` first. | [CODE] `vajb-orbit/ui/screens/station.gd` (`_unhandled_input`'s C branch, add the `:446` guard) | Fix when the shell's input ladder is next touched. Reversal: none (the guard is the ladder's own law). |
+
+**2026-10-15 (the owner's visual audit round — the cargo overlay audit fixes,
+the container bounds and the visual round, one session): the round closed
+(gate 1426 → 1428 → 1429/0 ×2 byte-identical; commits `9675aa1`, `2e915b4`,
+`ffcf86e`). The audit's HIGH findings all cured in the round itself (the
+AMOUNT-0 ammo rows, the collapsed title column, the per-tab resizing, the
+unbounded flight readout, the OVERVIEW's borderline scrollbar); one LOW filed:
+next free T-204.**
+| T-203 | **The pack icon art reads near-black at the 40 px slot (the audit's legibility LOW):** the cargo overlay's ammunition rows render their pack icons almost invisible (dark source art under the idle-0.72 ink law); modulate cannot brighten below-1 art, so the cure is regenerated icon art — which waits on the owner restoring the generation corpus (the 2026-10-08 clear-out retired the rebuild chain). | [SPEC] `asset-library/` regeneration round (the pack icons) | Rider on any future asset round; no wave blocked. Reversal: a lighter ink alpha would break A10's pinned idle ink for every other family. |
 
 **2026-10-14 (S49 the A2 doors on the untouched surfaces — P4's last code wave): the wave closed (gate 1409 → 1420/2 at the report, **1422/0 ×2 byte-identical** after the developer re-cut the two moved-premise rows through the seam's `confirm_action` (the S43 pattern; the `:870` SCRIPT ERROR cured with them); +13 suite rows; R0 graded the re-cuts pass). R0: passed-with-followups — F1 LOW (the report's item-1 CANCEL cite) cured by the dated close-out amendment in the report itself, no ticket; F2/F3 LOW → T-202 (the review's first-printed T-203 corrected — F1 took no ticket, so the IDs shift one; nothing external referenced the old IDs); next free T-203.**
 | T-202 | **`_format_int` exists in four copies (S49-R0/F2, with F3 folded in):** the auction's pre-existing helper (`auction_panel.gd:1544`) plus the two new service-panel copies (`insurance_panel.gd:342`, `vaults_panel.gd:316`) and the suite's own (`test_s49_confirm_doors.gd:612`) duplicate the grouped-number formatting. F3 rides: `vaults_panel.gd`'s press fetches `_station_row(profile)` that `_rent` fetches again — a duplicate read-only call, fold its removal into the same touch. | [CODE] the three panels (+ the suite's copy when the helper lands where tests can reach it) | Consolidate into one shared helper when any panel is next touched. Reversal: keep the copies (a shared helper must not become a new cross-panel dependency without the owner's nod). |
