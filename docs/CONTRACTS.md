@@ -1120,6 +1120,18 @@ dispose and flight-dispose rows land). The owning pins are UI_SPEC §18.2
 (A10–A13); the docs-first record and the supersessions are STATION_HUB §23.10/
 §23.11 rows 11–12.
 
+**Cargo overlay audit round + container bounds + the visual round (2026-10-15,
+owner-directed single session):** the Expected line is **`[SUMMARY] passed=1429
+failed=0`**, exit 0, twice hermetic through `staging/gate.py`, byte-identical,
+zero `SCRIPT ERROR` lines. Growth **1426 → 1429 (+3)**: the s48 suite re-pins
+§18.3 (A14–A16: the zero-hold ammo law, the one-geometry law, the measured
+title column — 17 → 19 rows), the s39 suite carries A17's bounded flight readout
+(+1), and the S11/S30/S41 probes re-seat for V1's plates, V2's header band and
+V3's tail without losing their substance. The owning pins are UI_SPEC §18.3 and
+§19 (V1–V4); STATION_HUB §23.11 rows 13–14 carry the supersessions. The audit
+instrument is `tools/audit_sweep.gd` (a standalone scripted capture walk, 21
+full-resolution shots per run).
+
 ## §11 P2 ship frames (2026-09-21)
 
 Pinned before any code worker starts, so five parallel workers agree. Additive only:
@@ -3807,6 +3819,19 @@ bottom (the index-line form is only for retired entries).
   per D24's design law, so CONTRACTS carries no new §-section for them.
   **Reversal:** drop the §9 chain block and this entry (the waves' own record
   stays in `MASTER_REPORT.md` §6 and the WAVEBOARD one-liners).
+- **v0.62 (2026-10-15, the cargo overlay audit round + container bounds + the
+  visual round — the owner's visual audit, one session; gate 1426 → 1429/0 ×2
+  byte-identical)** — UI_SPEC **§18.3** pins **A14–A16** (an ammunition row
+  exists only when the hold carries units; the overlay holds ONE geometry while
+  open — 720 wide, the 80 % cap tall, the scroller always drawn; the title
+  column is measured off the live layout and never collapses) and **§18.3.2 A17**
+  (the flight readout bounded at 6 rows plus a `+<n> MORE · PRESS C` tail);
+  **§19** pins **V1–V4** (the HUD blocks on the `ui_panel_frame` nine-slice at
+  the 48 px emblem, the panes' header bands backed `void_base` 45 % at the
+  shell's mount, the AUCTION body's 10 px scroll tail, the SETTINGS console
+  bounded at 980 and centred on a void backdrop). STATION_HUB §23.11 rows 13–14
+  carry the supersessions. The scripted visual audit (`tools/audit_sweep.gd`,
+  21 full-resolution captures) found the three cargo bugs the pins cure.
 - **v0.61 (2026-10-14, the C-key cargo overlay rework — owner-directed,
   implemented in the orchestrator session itself per the owner's "do the
   rework yourself"; gate 1422 → 1426/0 ×2 byte-identical)** — UI_SPEC §18.2

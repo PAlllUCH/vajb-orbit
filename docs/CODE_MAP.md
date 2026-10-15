@@ -684,7 +684,7 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://tests/test_s34_refinery_queue.gd | McpTestSuite | — | res://autoload/player_profile.gd, res://game/economy_log.gd, res://game/mineral_catalog.gd …(+1) | — |
 | res://tests/test_s36_chrome_census.gd | McpTestSuite | — | res://assets/ui/ui_bar_caps.png, res://assets/ui/ui_button_plate_normal.png …(+7) | — |
 | res://tests/test_s38_start_and_clock.gd | McpTestSuite | — | res://autoload/player_profile.gd, res://autoload/world_clock.gd, res://game/contract_registry.gd …(+6) | — |
-| res://tests/test_s39_feel.gd | McpTestSuite | — | res://game/impact.gd, res://game/npc_brain.gd, res://game/npc_registry.gd, res://game/npc_ship.gd …(+7) | — |
+| res://tests/test_s39_feel.gd | McpTestSuite | — | res://game/impact.gd, res://game/npc_brain.gd, res://game/npc_registry.gd, res://game/npc_ship.gd …(+8) | — |
 | res://tests/test_s3_auction.gd | McpTestSuite | — | res://autoload/player_profile.gd, res://autoload/world_clock.gd, res://game/auction.gd …(+8) | — |
 | res://tests/test_s3_instances.gd | McpTestSuite | — | res://autoload/player_profile.gd, res://game/module_catalog.gd, res://game/ship_fit.gd | — |
 | res://tests/test_s3_migration.gd | McpTestSuite | — | res://autoload/player_profile.gd, res://game/module_catalog.gd | — |
@@ -747,7 +747,7 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://ui/dialogs/dialog.gd | Screen | — | — | res://ui/dialogs/dialog.tscn, res://ui/dialogs/dialog.tscn (ext_resource) |
 | res://ui/hud/cockpit_cluster.gd | Control | — | res://ui/hud/cockpit_style.gd | — |
 | res://ui/hud/cockpit_style.gd | Resource | — | res://assets/icons/hud/icon_close.svg, res://assets/ui/, res://assets/ui/ui_cockpit_frame.png …(+5) | res://tests/test_d7_armory.gd, res://tests/test_d7_cockpit.gd, res://tests/test_d7_status.gd …(+5) |
-| res://ui/hud/hud.gd | Control | cargo_toggled, map_autopilot_cancel, map_autopilot_to, map_jump_requested, minimap_zoom_changed …(+1) | res://assets/icons/cargo/icon_cargo_container.svg, res://assets/icons/cargo/icon_cargo_crate.svg …(+18) | res://tests/probe_s22r1_review.gd, res://tests/probe_s8_q3_lint.gd, res://tests/probe_w5_lint.gd …(+4) |
+| res://ui/hud/hud.gd | Control | cargo_toggled, map_autopilot_cancel, map_autopilot_to, map_jump_requested, minimap_zoom_changed …(+1) | res://assets/icons/cargo/icon_cargo_container.svg, res://assets/icons/cargo/icon_cargo_crate.svg …(+19) | res://tests/probe_s22r1_review.gd, res://tests/probe_s8_q3_lint.gd, res://tests/probe_w5_lint.gd …(+5) |
 | res://ui/hud/map_deck.gd | PanelContainer | autopilot_cancel, autopilot_to, filters_changed, jump_requested, pin_changed | res://ui/hud/minimap.gd | res://tests/test_s29_map_deck.gd, res://ui/hud/hud.gd |
 | res://ui/hud/minimap.gd | Control | — | — | res://tests/probe_g1_lint.gd, res://tests/probe_g2_lint.gd, res://tests/probe_g3_lint.gd …(+7) |
 | res://ui/hud/ship_status_screen.gd | Control | — | res://assets/icons/slot/, res://ui/hud/cockpit_style.gd, res://ui/station/repairs_panel.gd | res://tests/probe_s19r1_review.gd, res://tests/test_d6_status.gd, res://tests/test_s19_quadrants.gd …(+1) |

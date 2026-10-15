@@ -64,7 +64,7 @@ and every tool result is re-sent on each later request.
 | 20. | The ARMORY two-module rework (amendment 2026-10-04, owner's playtest… | L1911–L1949 |
 | 21. | The two-sector rework — ARMORY's two modes and the REFINERY queue pa… | L1950–L1996 |
 | 22. | The station overhaul — owner rulings and asks (2026-10-12, phase P4 … | L1997–L2099 |
-| 23. | The station overhaul — the D24 design detail (amendment 2026-10-12, … | L2100–L2222 |
+| 23. | The station overhaul — the D24 design detail (amendment 2026-10-12, … | L2100–L2224 |
 
 <!-- section-index:end -->
 

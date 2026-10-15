@@ -63,8 +63,29 @@ P4 manifest's slice boxes ticked. **Trash removed:** the regenerable
 `__pycache__` bytecode caches under `staging/`, `.crush/hooks/` and the D21
 archive slice. Full block: `MASTER_REPORT.md` §6's "P4 code-lane close".
 
+**Updated 2026-10-15 (the owner's visual audit — one session: the cargo overlay
+audit round, the container bounds, and the visual round).** The owner's verdict
+on the rework ("shows ammo even if i have 0 ammo", "different categories have
+different sizes", "containers expand/retract") drove a scripted visual audit
+(`tools/audit_sweep.gd`, 21 full-res captures per run) whose findings were
+pinned docs-first and cured in three commits: **9675aa1** (the overlay: A14
+zero-hold ammo law, A15 one-geometry law, A16 measured title column — the
+audit's invisible names, eight AMOUNT-0 ammo rows and per-tab resizing all
+cured; gate 1426 → 1428/0 ×2), **2e915b4** (A17's bounded flight readout + the
+OVERVIEW stack's 20 px slack; 1428 → 1429/0 ×2), and the visual round commit
+(**V1–V4**: the HUD blocks on the nine-slice plates, the panes' header bands,
+the AUCTION tail, the SETTINGS console; gate held 1429/0 ×2). UI_SPEC §18.3 +
+§19 and STATION_HUB §23.11 rows 13–14 are the pins; CONTRACTS v0.62. The
+audit's instrument ships in `tools/` (boot scene + sweep worker, runs
+standalone, never touches the real save).
+
 One-line outcomes, newest first (full blocks: `MASTER_REPORT.md` §6, same-named
 entries):
+
+- **Visual audit round** (2026-10-15, owner-directed single session) — the
+  cargo overlay fixes (A14–A16), the container bounds (A17 + the OVERVIEW
+  slack) and the visual round (V1–V4); gate 1426 → **1429/0 ×2**; uncommitted
+  pending the owner's eye, then closed as the three commits above.
 
 - **Cargo overlay rework** (2026-10-14, owner-directed single session) — the
   refinery/armory rework of the C-key overlay (A10–A13: slot rows, categories,

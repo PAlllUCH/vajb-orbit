@@ -19,24 +19,25 @@ and every tool result is re-sent on each later request.
 
 | Section | Topic | Lines |
 |---|---|---|
-| 1. | Colour Tokens | L44–L69 |
-| 2. | Theme Architecture | L70–L112 |
-| 3. | In-Game HUD | L113–L715 |
-| 4. | Settings | L716–L777 |
-| 5. | Tooltips, Dialogs & Nine-Patch Panels | L778–L855 |
-| 6. | Font & Sizing Reference (coding checklist) | L856–L875 |
-| 7. | Station surfaces chrome — the A5.4 extension (amendment 2026-10-02, … | L876–L911 |
-| 8. | Station action buttons and the one focus language (amendment 2026-10… | L912–L944 |
-| 9. | The map deck — flight minimap and navigation (amendment 2026-10-03, … | L945–L972 |
-| 10. | The map deck and the navigation pin — design detail (amendment 2026-… | L973–L1070 |
-| 11. | Station shell v2 — the TERMINAL drawer, the popups, the one skeleton… | L1071–L1126 |
-| 12. | Station shell v2 design detail — the TERMINAL drawer, the popup pair… | L1127–L1361 |
-| 13. | The D20 fix wave — exchange parity, the armory browser, the hover-in… | L1362–L1399 |
-| 14. | Exchange sell cluster + the OVERVIEW tile plates (amendment 2026-10-… | L1400–L1445 |
-| 15. | The one true-aspect chrome family (amendment 2026-10-05, owner rulin… | L1446–L1863 |
-| 16. | The legibility pass — the caption token and the two unroofed surface… | L1864–L1902 |
-| 17. | The buy-confirmation law (amendment 2026-10-12, phase P4; wave D24 —… | L1903–L1920 |
-| 18. | The C-key Cargo overlay (amendment 2026-10-12, phase P4; wave D24 — … | L1921–L1968 |
+| 1. | Colour Tokens | L45–L70 |
+| 2. | Theme Architecture | L71–L113 |
+| 3. | In-Game HUD | L114–L716 |
+| 4. | Settings | L717–L778 |
+| 5. | Tooltips, Dialogs & Nine-Patch Panels | L779–L856 |
+| 6. | Font & Sizing Reference (coding checklist) | L857–L876 |
+| 7. | Station surfaces chrome — the A5.4 extension (amendment 2026-10-02, … | L877–L912 |
+| 8. | Station action buttons and the one focus language (amendment 2026-10… | L913–L945 |
+| 9. | The map deck — flight minimap and navigation (amendment 2026-10-03, … | L946–L973 |
+| 10. | The map deck and the navigation pin — design detail (amendment 2026-… | L974–L1071 |
+| 11. | Station shell v2 — the TERMINAL drawer, the popups, the one skeleton… | L1072–L1127 |
+| 12. | Station shell v2 design detail — the TERMINAL drawer, the popup pair… | L1128–L1362 |
+| 13. | The D20 fix wave — exchange parity, the armory browser, the hover-in… | L1363–L1400 |
+| 14. | Exchange sell cluster + the OVERVIEW tile plates (amendment 2026-10-… | L1401–L1446 |
+| 15. | The one true-aspect chrome family (amendment 2026-10-05, owner rulin… | L1447–L1864 |
+| 16. | The legibility pass — the caption token and the two unroofed surface… | L1865–L1903 |
+| 17. | The buy-confirmation law (amendment 2026-10-12, phase P4; wave D24 —… | L1904–L1921 |
+| 18. | The C-key Cargo overlay (amendment 2026-10-12, phase P4; wave D24 — … | L1922–L2011 |
+| 19. | The 2026-10-15 visual round — chrome, backing and the empty edges (a… | L2012–L2027 |
 
 <!-- section-index:end -->
 
@@ -2007,3 +2008,19 @@ stack count beyond its own cap.
 |---|---|---|
 | **A17** | the HUD `CargoBlock`'s contents list is bounded: 6 rows maximum, the overflow folded into one `+<n> MORE · PRESS C` tail row; the count line (`<used>/<max>`) and the alert tinting stand | the unbounded one-row-per-stack list (S39/T-170's shipped shape) |
 
+
+## 19. The 2026-10-15 visual round — chrome, backing and the empty edges (amendment; the owner's "full visual overhaul" ask, its highest-quality-pictures clause answered with the shipped art at its own cuts)
+
+**The owner's words (2026-10-15, verbatim):** *"When you fix these things then
+you are going to do full visual overhaul. Maku sure to use as high quality
+pictures as possible."* The overhaul spends no new generation: the shipped art
+already carries its quality (the backdrops import lossless with mipmaps, the
+ship renders are the catalogue's own cuts), so the round spends it where the
+audit showed the pictures fighting the surfaces around them.
+
+| Item | Law | Reversal |
+|---|---|---|
+| **V1** | the flight HUD's top-left blocks (credits, cargo) wear the HUD's own chrome: each block sits on the `ui_panel_frame` nine-slice (the 96×96 cut with the 32 px painted border band, ICONS_SPEC 9.8 C1) at the gauges' plate language, 12 px inner padding, the emblem at its 48 px HUD cut (never the raw 96 px master blown up) | the raw label stacks (the audit's unstyled top-left corner) |
+| **V2** | every station pane's header band (the P7 skeleton's `PaneHeader`, modules, overview and services alike) carries a flat backing band of `void_base` at 45 % behind the caption row, applied by the shell at mount so the backdrops' hot spots (the refinery's furnace glow) never bleed through the captions; the band adds no height (content margins 0) | the transparent header over bare art |
+| **V3** | the AUCTION body scrolls with a 10 px tail inside its own viewport, so a half-scrolled row never kisses the restock caption | the flush cut at the scroll's bottom edge |
+| **V4** | the SETTINGS screen reads as a console, not a barren full-bleed sheet: the panel is bounded at 980 wide, centred in the route, and grows with its content vertically | the full-rect panel with four rows in a 1872-wide sheet |

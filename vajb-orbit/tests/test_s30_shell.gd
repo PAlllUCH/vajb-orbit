@@ -208,7 +208,8 @@ func test_the_overview_carries_the_five_blocks() -> void:
 	if overview == null:
 		return
 	assert_true(
-		overview.get_node_or_null(^"PaneHeader/PaneTitle") != null, "P7's PaneHeader ships"
+		overview.get_node_or_null(^"HeaderBand/PaneHeader/PaneTitle") != null,
+		"P7's PaneHeader ships (V2's backing band seats it)"
 	)
 	var plate := overview.find_child("IdentityBlock", true, false)
 	assert_true(plate != null, "block 1: the identity plate ships")

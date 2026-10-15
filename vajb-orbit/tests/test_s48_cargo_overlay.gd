@@ -684,8 +684,8 @@ func test_the_poll_drives_the_overlay_and_the_mirror_stays_in_step() -> void:
 	assert_true(bool(hud.get(&"_cargo_open")), "the HUD's own flag latched true")
 	var panel := hud.get_node(NodePath("%CargoPanel")) as Control
 	assert_false(panel.visible, "the retired HUD panel stays hidden")
-	var block := hud.get_node(NodePath("CanvasLayer/TopLeft/Blocks/CargoBlock")) as Control
-	assert_true(block.visible, "the HUD's CargoBlock stays visible and untouched")
+	var block := hud.get_node(NodePath("CanvasLayer/TopLeft/Blocks/CargoPlate/CargoBlock")) as Control
+	assert_true(block.visible, "the HUD's CargoBlock stays visible and untouched (V1's plate seat)")
 	_poll_cargo()
 	assert_false(bool(overlay.call(&"is_open")), "C again closes it (A8's close law)")
 	assert_false(bool(_game.get(&"_cargo_open")), "and the mirror is false again")

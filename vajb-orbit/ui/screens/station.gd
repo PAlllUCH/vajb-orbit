@@ -1178,6 +1178,34 @@ func _token(token: StringName) -> Color:
 	return Color.WHITE
 
 
+## V2 (UI_SPEC section 19): every pane's header band carries a flat backing of
+## `void_base` at 45 % so a backdrop's hot spot (the refinery's furnace glow)
+## never bleeds through the captions. The header is re-seated under a
+## content-margin-0 PanelContainer: the band adds no height, the pane's own
+## slack survives, and the unique-name map (owner-scoped) is untouched.
+const HEADER_BAND_ALPHA := 0.45
+
+func _back_header(pane: Node) -> void:
+	var header := pane.get_node_or_null(NodePath("PaneHeader")) as Control
+	if header == null or header.get_parent() is PanelContainer:
+		return
+	var parent := header.get_parent()
+	if parent == null:
+		return
+	var band := PanelContainer.new()
+	band.name = "HeaderBand"
+	band.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var stylebox := StyleBoxFlat.new()
+	stylebox.bg_color = _token(&"void_base")
+	stylebox.bg_color.a = HEADER_BAND_ALPHA
+	band.add_theme_stylebox_override(&"panel", stylebox)
+	var index := header.get_index()
+	parent.remove_child(header)
+	band.add_child(header)
+	parent.add_child(band)
+	parent.move_child(band, index)
+
+
 ## S36 (UI_SPEC section 15.1 C13, section 13.3): the four pane-content backdrops as layers
 ## on the module host, behind the pane content. Cover-fit (1765:753), `mouse_filter` IGNORE
 ## so they never touch the pointer. One layer per BG id; the active deck's layer shows.
@@ -1208,6 +1236,7 @@ func _build_panels() -> void:
 		var pane := _load_panel(index)
 		pane.visible = false
 		_host_margin.add_child(pane)
+		_back_header(pane)
 		_panels.append(pane)
 	_overview = OverviewScene.instantiate() as CanvasItem
 	if _overview != null:
@@ -1215,12 +1244,14 @@ func _build_panels() -> void:
 		_connect_panel(_overview)
 		_overview.visible = false
 		_host_margin.add_child(_overview)
+		_back_header(_overview)
 		## The header's identity text reaches OVERVIEW from `_apply_identity` (the one source
 		## of truth for the name and character line, section 15.5).
 	_services = _build_services()
 	_services.name = "Services"
 	_services.visible = false
 	_host_margin.add_child(_services)
+	_back_header(_services)
 
 
 ## S25 (STATION_HUB section 15.1/15.2, P26): the SERVICES deck in place of the retired

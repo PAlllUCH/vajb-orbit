@@ -182,7 +182,11 @@ const CAPTION_TINTS: Array[String] = [
 const CREDITS_BLOCK := "CreditsBlock"
 const CREDITS_TITLE := "CREDITS"
 const CREDITS_ICON: Texture2D = preload("res://assets/icons/cargo/icon_credits.svg")
-const CREDITS_ICON_SIZE := Vector2(28.0, 28.0)
+## V1: the emblem at its 48 px HUD cut - the svg's own import scale used to blow
+## it up past the block (the audit's oversized emblem).
+const CREDITS_ICON_SIZE := Vector2(48.0, 48.0)
+## V1 (UI_SPEC section 19): the top-left blocks' nine-slice chrome.
+const HUD_PANEL_FRAME: Texture2D = preload("res://assets/ui/ui_panel_frame.png")
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 const PROFILE_KEY_CREDITS: StringName = &"credits"
 ## S39 (T-170): the hold readout's own constants. The block sits beside credits in the
@@ -1374,10 +1378,11 @@ func _build_credits_block() -> void:
 	value.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	block.add_child(header)
 	block.add_child(value)
-	_blocks.add_child(block)
+	_blocks.add_child(_chrome_plate(block, "CreditsPlate"))
 	_credits_block = block
 	_credits_icon = icon
 	_credits_value = value
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_push_tint(icon, TOKEN_TEXT_PRIMARY)
 	_refresh_credits()
 
@@ -1421,11 +1426,28 @@ func _build_cargo_block() -> void:
 	list.add_theme_constant_override(&"separation", POOL_ROW_SEPARATION)
 	block.add_child(header)
 	block.add_child(list)
-	_blocks.add_child(block)
+	_blocks.add_child(_chrome_plate(block, "CargoPlate"))
 	_cargo_block = block
 	_cargo_block_value = value
 	_cargo_block_list = list
 	_refresh_cargo_block()
+
+
+## V1 (UI_SPEC section 19): the top-left blocks wear the HUD's own chrome - the
+## `ui_panel_frame` nine-slice at the gauges' plate language, 12 px inner
+## padding. The block stays the probe surface; the plate is its seat.
+func _chrome_plate(block: Control, plate_name: String) -> PanelContainer:
+	var plate := PanelContainer.new()
+	plate.name = plate_name
+	plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var stylebox := StyleBoxTexture.new()
+	stylebox.texture = HUD_PANEL_FRAME
+	for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]:
+		stylebox.set_texture_margin(side, 32.0)
+		stylebox.set_content_margin(side, 12.0)
+	plate.add_theme_stylebox_override(&"panel", stylebox)
+	plate.add_child(block)
+	return plate
 
 
 ## The hold's contents as the readout's rows: one `name x qty` line per item, the

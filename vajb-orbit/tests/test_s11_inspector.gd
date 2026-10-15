@@ -28,7 +28,7 @@ const HudTheme := preload("res://ui/theme/vajb_theme.tres")
 
 ## The credits block's node path, from the HUD's own top-left column (CONTRACTS section
 ## 23.3: `CreditsBlock` appended below the fuel block, its `CreditsValue` the HudReadout).
-const CREDITS_VALUE_PATH := ^"CanvasLayer/TopLeft/Blocks/CreditsBlock/CreditsValue"
+const CREDITS_VALUE_PATH := ^"CanvasLayer/TopLeft/Blocks/CreditsPlate/CreditsBlock/CreditsValue"
 ## The autoload's own name, renamed for one test to prove the guarded lookup is absent-safe.
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
@@ -532,7 +532,7 @@ func test_the_hud_credits_block_reads_the_profile() -> void:
 
 func test_the_hud_credits_block_carries_the_pinned_nodes() -> void:
 	var hud := _mount_hud()
-	var block := hud.get_node_or_null(^"CanvasLayer/TopLeft/Blocks/CreditsBlock")
+	var block := hud.get_node_or_null(^"CanvasLayer/TopLeft/Blocks/CreditsPlate/CreditsBlock")
 	assert_true(block != null, "CreditsBlock ships in the top-left column")
 	if block == null:
 		_unmount_hud(hud)
@@ -549,9 +549,10 @@ func test_the_hud_credits_block_carries_the_pinned_nodes() -> void:
 		assert_true(false, "CreditsTitle ships")
 	assert_true(spacer != null, "the spacer ships")
 	var fuel := hud.get_node_or_null(^"CanvasLayer/TopLeft/Blocks/FuelBlock") as Control
+	var plate := block.get_parent() as Control
 	assert_true(
-		fuel != null and block.get_index() > fuel.get_index(),
-		"the block sits below the fuel block"
+		fuel != null and plate != null and plate.get_index() > fuel.get_index(),
+		"the block sits below the fuel block (V1's plate carries it)"
 	)
 	_unmount_hud(hud)
 

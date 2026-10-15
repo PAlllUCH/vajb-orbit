@@ -200,11 +200,11 @@ func test_f8_the_all_tab_leaves_no_header_for_the_fold_to_cut() -> void:
 	assert_true(body != null, "the shelf body is built")
 	if body == null:
 		return
-	var row_hosts: Array[String] = ["HullRows", "ModuleRows", "SellRows"]
+	var row_hosts: Array[String] = ["HullRows", "ModuleRows", "SellRows", "ScrollTail"]
 	for child: Node in body.get_children():
 		assert_true(
 			row_hosts.has(child.name),
-			"the shelf body holds rows only (%s is not a header)" % child.name
+			"the shelf body holds rows and V3's tail only (%s is not a header)" % child.name
 		)
 	for section: Array in SHELF_SECTIONS:
 		var chrome := _panel.find_child(String(section[0]), true, false) as Control
