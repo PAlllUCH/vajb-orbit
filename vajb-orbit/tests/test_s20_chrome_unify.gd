@@ -285,7 +285,9 @@ func test_ac2_the_cells_and_the_pressables_wear_the_family() -> void:
 	assert_true(card != null, "the rocket pack has a card")
 	if card == null:
 		return
-	var buy := card.get_node_or_null(^"Buy") as Button
+	## A18: the chip rides the row's container grammar (the browser rows' own
+	## depth), so the read goes through the tree.
+	var buy := card.find_child("Buy", true, false) as Button
 	assert_true(buy != null, "the card carries its BUY chip")
 	if buy != null:
 		assert_eq(buy.theme_type_variation, &"StationButton", "BUY is a StationButton")
@@ -377,7 +379,7 @@ func test_ac4_the_over_cap_label_clears_the_contrast_floor() -> void:
 	assert_true(card != null, "the rocket pack has a card")
 	if card == null:
 		return
-	var tag := (card.get_node(^"Status") as Control).get_node(^"Value") as Label
+	var tag := (card.find_child("Status", true, false) as Control).get_node(^"Value") as Label
 	assert_eq(tag.text, PanelScript.TAG_OVER_CAP, "the fixture's rocket reads OVER CAP")
 	var fill: Color = style.colour(&"chip_danger_bg")
 	var card_ratio := _contrast(tag.get_theme_color(&"font_color"), fill)

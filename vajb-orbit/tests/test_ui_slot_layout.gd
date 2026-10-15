@@ -96,7 +96,6 @@ const PLATE_SITES: Array[String] = [
 	"res://ui/components/slot_button.tscn",
 	"res://ui/components/slot_button.gd",
 	"res://ui/station/shipyard_panel.gd",
-	"res://ui/station/launch_panel.gd",
 	"res://ui/hud/hud.gd",
 ]
 const PLATE_LITERAL := "ignore_texture_size = true"
@@ -642,70 +641,46 @@ func test_the_launch_brief_rows_are_the_nine_pinned_rows() -> void:
 	)
 
 
-func test_the_cargo_strip_is_five_40px_cells() -> void:
+## A20 (the owner's 2026-10-15 pass): the cargo plate strip retired - the
+## manifest is the C overlay's read-only instance (the shared summary
+## builder's banded rows over the A14 slots), and no plate art can grow the
+## panel because no plate exists.
+func test_the_launch_manifest_is_the_summary_rows() -> void:
 	var panel := _mount(LaunchScene)
 	assert_true(panel != null, "launch_panel.tscn instantiates")
-	var strip: HBoxContainer = panel.get(&"_cargo_slots")
-	assert_true(strip != null, "the cargo strip exists")
-	assert_eq(strip.get_child_count(), CARGO_CELLS, "five cargo plates")
-
-	var separation: float = float(strip.get_theme_constant(&"separation"))
-	assert_eq(separation, CARGO_SEPARATION, "the documented 6 px separation")
-	for index: int in strip.get_child_count():
-		var plate := strip.get_child(index) as TextureButton
-		assert_true(plate != null, "cargo plate %d is a TextureButton" % (index + 1))
-		assert_true(plate.ignore_texture_size, "cargo plate %d ignores its texture size" % (index + 1))
-		assert_eq(plate.custom_minimum_size, CARGO_CELL, "cargo plate %d keeps the 40 px cell" % (index + 1))
-		assert_eq(
-			plate.get_combined_minimum_size(),
-			CARGO_CELL,
-			"cargo plate %d measures 40 px (art %s)" % [(index + 1), _plate_art(plate)]
-		)
-
-	var expected: float = (
-		float(CARGO_CELLS) * CARGO_CELL.x
-		+ float(CARGO_CELLS - 1) * separation
+	var rows: VBoxContainer = panel.get(&"_cargo_list")
+	assert_true(rows != null, "the cargo manifest rows box ships")
+	assert_true(
+		rows is VBoxContainer, "the manifest is a rows container, not the retired ItemList"
 	)
-	assert_eq(strip.get_combined_minimum_size().x, expected, "the strip is 5 x 40 + 4 x 6 = 224")
-
-	var viewport := viewport_size()
+	_fixture_host().call(&"add_cargo", &"mineral_iron", 7)
+	panel.call(&"refresh_profile", &"cargo")
 	var measured: Vector2 = panel.get_combined_minimum_size()
-	var art: Vector2 = _plate_art(strip.get_child(0) as TextureButton)
-	assert_true(measured.x <= viewport.x, "the launch panel minimum %s must fit the %s viewport" % [measured, viewport])
+	var viewport := viewport_size()
+	assert_true(
+		measured.x <= viewport.x,
+		"the launch panel minimum %s must fit the %s viewport" % [measured, viewport]
+	)
+	var band := rows.get_node_or_null(NodePath("SummaryBand")) as Control
+	assert_true(band != null, "the summary band ships (the overlay's ITEM/AMOUNT headers)")
+	var slot := rows.find_child("Slot*", true, false) as Control
+	assert_true(slot != null, "the iron ore row rides the overlay's row grammar")
+	if slot != null:
+		var amount := slot.find_child("Amount", true, false) as Label
+		assert_true(amount != null, "the row carries the AMOUNT cell")
+		assert_eq(
+			amount.horizontal_alignment, HORIZONTAL_ALIGNMENT_RIGHT,
+			"the AMOUNT cell reads right-aligned (P40's value-column law)"
+		)
 	var launch: Button = panel.get(&"_launch_button")
 	assert_true(launch != null, "the LAUNCH button exists")
-	print(
-		"[ui_slot_layout] launch: strip %s (art %s), panel minimum %s, LaunchButton minimum %s, viewport %s"
-		% [strip.get_combined_minimum_size(), art, measured, launch.get_combined_minimum_size(), viewport]
-	)
 	assert_true(
 		launch.get_combined_minimum_size().x <= viewport.x,
 		"and the LAUNCH button stays inside the frame, not at x = 3178"
 	)
 
 
-func test_oversized_plate_art_cannot_grow_the_launch_panel() -> void:
-	var panel := _mount(LaunchScene)
-	var strip: HBoxContainer = panel.get(&"_cargo_slots")
-	var before: Vector2 = panel.get_combined_minimum_size()
-	var art := _huge_art()
-	for child: Node in strip.get_children():
-		_push_art(child as TextureButton, art)
-	var strip_after: Vector2 = strip.get_combined_minimum_size()
-	var after: Vector2 = panel.get_combined_minimum_size()
-	var expected: float = (
-		float(CARGO_CELLS) * CARGO_CELL.x
-		+ float(CARGO_CELLS - 1) * CARGO_SEPARATION
-	)
-	print(
-		"[ui_slot_layout] launch with %s art: strip %s, panel %s (before %s)"
-		% [HUGE_ART, strip_after, after, before]
-	)
-	assert_eq(strip_after.x, expected, "a %s plate cannot widen one 40 px cell" % HUGE_ART)
-	assert_eq(after, before, "a %s plate cannot move the panel minimum" % HUGE_ART)
 
-
-## ---------------------------------------------------------------------------
 ## The in-flight HUD, which paints the same plates from the launched hull
 ## ---------------------------------------------------------------------------
 

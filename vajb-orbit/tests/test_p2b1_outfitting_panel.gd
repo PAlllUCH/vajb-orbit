@@ -395,8 +395,8 @@ func test_ammo_rows_are_the_catalogue_in_order() -> void:
 			continue
 		assert_eq(
 			String(row.find_child("Title", true, false).text),
-			String(pack[&"name"]),
-			"%s's title is the catalogue's name" % pack_id
+			String(pack[&"name"]).to_upper(),
+			"%s's title is the catalogue's name (A18: the rows print upper-case, the C overlay's own read)" % pack_id
 		)
 		assert_eq(
 			String(row.find_child("Meta", true, false).text),

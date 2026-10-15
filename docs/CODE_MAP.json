@@ -1022,6 +1022,16 @@
     "res://tools/d8_glyph_audit.gd"
    ]
   },
+  "res://tools/probe_t204.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tools/probe_t204.gd"
+   ]
+  },
   "res://tools/s226_r1_probe.tscn": {
    "assets": [],
    "connections": [],
@@ -5882,7 +5892,6 @@
     "res://ui/components/slot_button.tscn",
     "res://ui/hud/hud.gd",
     "res://ui/hud/hud.tscn",
-    "res://ui/station/launch_panel.gd",
     "res://ui/station/launch_panel.tscn",
     "res://ui/station/shipyard_panel.gd",
     "res://ui/station/shipyard_panel.tscn",
@@ -6035,6 +6044,25 @@
     "res://assets/icons",
     "res://assets/icons/tint"
    ],
+   "signals": []
+  },
+  "res://tools/probe_t204.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://tools/probe_t204.tscn",
+    "res://tools/probe_t204_worker.gd"
+   ],
+   "signals": []
+  },
+  "res://tools/probe_t204_worker.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [],
    "signals": []
   },
   "res://tools/r1_s13_ac3_replay.gd": {
@@ -6253,10 +6281,8 @@
    ],
    "extends": "Control",
    "refs": [
-    "res://assets/icons/tint/",
-    "res://game/component_catalog.gd",
-    "res://game/mineral_catalog.gd",
     "res://game/station_catalog.gd",
+    "res://ui/station/cargo_summary.gd",
     "res://ui/theme/chrome_family.gd"
    ],
    "signals": [
@@ -6614,7 +6640,6 @@
     "card.mouse_entered \u2192 _on_row_hovered.bind(payload",
     "card.mouse_exited \u2192 _on_row_hovered.bind(payload",
     "card.pressed \u2192 _on_row_pressed.bind(payload",
-    "card.resized \u2192 _on_card_resized.bind(card",
     "chip.mouse_entered \u2192 _on_barrel_inspected.bind(rack",
     "chip.mouse_exited \u2192 _on_barrel_inspected.bind(rack",
     "chip.sort_children \u2192 _position_cell_children.bind(chip",
@@ -6648,6 +6673,7 @@
     "res://game/station_catalog.gd",
     "res://game/station_registry.gd",
     "res://ui/station/armory_style.gd",
+    "res://ui/station/cargo_summary.gd",
     "res://ui/theme/chrome_family.gd"
    ],
    "signals": [
@@ -6706,6 +6732,21 @@
     "sheet_requested",
     "status_requested"
    ]
+  },
+  "res://ui/station/cargo_summary.gd": {
+   "autoload": "",
+   "class_name": "CargoSummary",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [
+    "res://assets/icons/tint/",
+    "res://game/component_catalog.gd",
+    "res://game/mineral_catalog.gd",
+    "res://game/station_catalog.gd",
+    "res://ui/hud/hud.gd",
+    "res://ui/theme/chrome_family.gd"
+   ],
+   "signals": []
   },
   "res://ui/station/contracts_panel.gd": {
    "autoload": "",
@@ -6831,8 +6872,6 @@
    ],
    "extends": "VBoxContainer",
    "refs": [
-    "res://assets/icons/cargo/",
-    "res://assets/icons/cargo/icon_cargo_crate.svg",
     "res://autoload/player_profile.gd",
     "res://game/repairs.gd",
     "res://game/sector_registry.gd",
@@ -6840,6 +6879,7 @@
     "res://game/station_registry.gd",
     "res://game/weapons.gd",
     "res://ui/paths.gd",
+    "res://ui/station/cargo_summary.gd",
     "res://ui/theme/chrome_family.gd"
    ],
    "signals": [

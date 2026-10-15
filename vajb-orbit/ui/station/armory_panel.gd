@@ -60,6 +60,9 @@ const ChromeFamily := preload("res://ui/theme/chrome_family.gd")
 const Catalog := preload("res://game/station_catalog.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
 const ModuleData := preload("res://game/module_catalog.gd")
+## A19: the CARGO HOLD block reads through the shared summary builder (the
+## slots law's and the row grammar's single home).
+const Summary := preload("res://ui/station/cargo_summary.gd")
 ## 12's 2026-10-08 V1/V2 block: the one owner of the station's price factor, read by
 ## `_module_price` and the pack cards' `Catalog.ammo_pack_price`.
 const StationRegistryScript := preload("res://game/station_registry.gd")
@@ -215,11 +218,17 @@ const BAND_COST := "COST"
 const BAND_HELD := "HELD"
 const BAND_TAG_COLUMN := 96.0
 const BAND_COST_COLUMN := 130.0
+## A18: the ammunition row's own held column (the P5 worded line's seat; the
+## band's HELD caption reads the same width).
+const BAND_HELD_COLUMN := 200.0
 ## A rack's empty hull W cell reads read-only (09 section 10's idiom): `W<n> — EMPTY`.
 const EMPTY_CELL_FORMAT := "W%d — EMPTY"
 const EMPTY_CELLS_CAPTION := "EMPTY CELLS - %d"
-## The ammunition card's own box in the shared menu: the shipped 320 x 68 pack card.
-const AMMO_CARD := Vector2(320.0, 68.0)
+## A18: the ammunition rows are the shared menu's own full-width rows - the
+## P38 browser row's container grammar at the pack's own content. The row
+## keeps the card's four text lines' content (the P5 worded held line rides
+## its own column) at the shared row height.
+const AMMO_ROW_HEIGHT := 76.0
 
 ## ------------------------------------------- the shared right menu (P39a, S35)
 ## Both modes' right sector render ONE shared menu component (P39a): identical categories,
@@ -291,13 +300,6 @@ const STATUS_BOUGHT := "PURCHASED · %s · +%d ROUNDS"
 
 ## A row's inner padding, in drawn pixels (the plates carry the chrome, not the margins).
 const ROW_TEXT_INSET := 6.0
-## The pack card's four 13 px lines at the base item height (68): the first line's top
-## offset and the pitch between them (4 x 13 + 3 x 3 = 61, so every line and both chips sit
-## inside the card). The card's own anatomy, not the style's (a restyle moves the grid, not
-## the lines).
-const CARD_LINE_FIRST := 1.0
-const CARD_LINE_PITCH := 16.0
-
 ## The drag payloads (`_get_drag_data` / `_can_drop_data` / `_drop_data`):
 ## an inventory row carries its base id, a barrel its address in the racks.
 const DRAG_INVENTORY: StringName = &"inventory"
@@ -941,6 +943,9 @@ class ConsolePanels extends Control:
 @onready var _equipped_caption: Label = %EquippedCaption
 @onready var _equipped_scroll: ScrollContainer = %EquippedScroll
 @onready var _equipped_rows: VBoxContainer = %EquippedRows
+## A19: the left column's CARGO HOLD block (code-built under the equipped
+## block; the caption carries the overlay's own title words).
+@onready var _fit_left_stack: VBoxContainer = %FitLeftStack
 @onready var _tabs: HBoxContainer = %FamilyTabs
 @onready var _browser_caption: Label = %BrowserCaption
 @onready var _browser_band: HBoxContainer = %BrowserBand
@@ -990,6 +995,9 @@ var _line_danger := false
 var _browser_payloads: Array[Dictionary] = []
 var _browser_tab: StringName = &"all"
 var _browser_focused: Dictionary = {}
+## A19: the left column's CARGO HOLD block (built in `_build_cargo_preview`).
+var _cargo_caption: Label = null
+var _cargo_rows: VBoxContainer = null
 var _browser_signature: Array[String] = []
 var _grid_tweens: Array[Tween] = []
 ## The mode in force (P32). Exactly one of `_fit_cells` / `_battery_config` is visible.
@@ -1003,6 +1011,7 @@ func _ready() -> void:
 	_build_empty_cells()
 	_build_grid_surface()
 	_build_browser()
+	_build_cargo_preview()
 	_wire_actions()
 	_apply_tokens()
 	_connect_scroll()
@@ -1083,7 +1092,7 @@ func _apply_mode() -> void:
 	## box, N31's legal set) - the shared menu is one subtree both modes render.
 	if _browser_band != null:
 		_build_list_band(
-			_browser_band, _band_captions(), [BAND_TAG_COLUMN, BAND_COST_COLUMN], BAND_MODULE
+			_browser_band, _band_captions(), _band_widths(), BAND_MODULE
 		)
 	_update_subtitle()
 	_update_hint()
@@ -1178,6 +1187,7 @@ func refresh_profile(key: StringName) -> void:
 	if key == &"credits" or key == &"ammo" or key == &"cargo":
 		_refresh_rows()
 		_refresh_browser()
+		_refresh_cargo_preview()
 	if key == &"fits" or key == &"ships" or key == &"batteries":
 		_refresh_racks()
 		_refresh_empty_cells()
@@ -1396,7 +1406,6 @@ func _lay() -> void:
 	if was_hidden:
 		_battery_config.visible = false
 	_lay_bays()
-	_lay_cards()
 	_update_chrome()
 
 
@@ -1593,83 +1602,6 @@ func _position_drop_cells(cells: Control) -> void:
 			cue.size = cell.size
 
 
-## The AMMUNITION cards of the EQ container (P39): one stacked card per catalogue pack, each
-## the pinned 320 x 68. The container places the cards; the pane places each card's children.
-func _lay_cards() -> void:
-	if _browser_rows == null:
-		return
-	for child: Node in _browser_rows.get_children():
-		var control := child as Control
-		if control == null:
-			continue
-		_position_card(control, Rect2(Vector2.ZERO, control.size))
-
-
-func _on_card_resized(card: Control) -> void:
-	_position_card(card, Rect2(Vector2.ZERO, card.size))
-
-
-## One pack card's own children, at the card's four lines: title + price, meta + state
-## chip, the worded held line, the state line + BUY chip, plus the trailing INSPECT chip
-## (S30-F1, F7) in its reserved 96 px cell on the right.
-func _position_card(card: Control, rect: Rect2) -> void:
-	var inset: float = ROW_TEXT_INSET
-	var icon := card.get_node_or_null(^"Icon") as Control
-	if icon != null:
-		icon.position = Vector2(inset, maxf((rect.size.y - _style.item_icon) * 0.5, 0.0))
-		icon.size = Vector2(_style.item_icon, _style.item_icon)
-	var text_x: float = inset + _style.item_icon + 8.0
-	var title := card.get_node_or_null(^"Title") as Control
-	if title != null:
-		title.position = Vector2(text_x, _card_line(0))
-		title.size = Vector2(maxf(rect.size.x - text_x - 84.0, 0.0), 18.0)
-	var price := card.get_node_or_null(^"Price") as Control
-	if price != null:
-		price.position = Vector2(maxf(rect.size.x - 76.0 - inset, 0.0), _card_line(0))
-		price.size = Vector2(76.0, 18.0)
-		var value := price.get_node_or_null(^"Value") as Control
-		if value != null:
-			value.position = Vector2.ZERO
-			value.size = Vector2(76.0, 18.0)
-	var meta := card.get_node_or_null(^"Meta") as Control
-	if meta != null:
-		meta.position = Vector2(text_x, _card_line(1))
-		meta.size = Vector2(maxf(rect.size.x - text_x - 112.0, 0.0), 18.0)
-	var status := card.get_node_or_null(^"Status") as Control
-	if status != null:
-		status.position = Vector2(maxf(rect.size.x - 104.0 - inset, 0.0), _card_line(1) - 6.0)
-		status.size = Vector2(104.0, 22.0)
-		var value := status.get_node_or_null(^"Value") as Control
-		if value != null:
-			value.position = Vector2(16.0, 2.0)
-			value.size = Vector2(status.size.x - 20.0, 18.0)
-	var held := card.get_node_or_null(^"Held") as Control
-	if held != null:
-		held.position = Vector2(text_x, _card_line(2))
-		## S30-F1 (F7): the card reserves the trailing 96 px cell for the INSPECT chip.
-		held.size = Vector2(maxf(rect.size.x - text_x - CHIP_WIDTH - 12.0, 0.0), 36.0)
-		var value := held.get_node_or_null(^"Value") as Control
-		if value != null:
-			value.position = Vector2.ZERO
-			value.size = Vector2(held.size.x, 18.0)
-		var caption := held.get_node_or_null(^"Caption") as Control
-		if caption != null:
-			caption.position = Vector2(0.0, 18.0)
-			caption.size = Vector2(held.size.x, 18.0)
-	var buy := card.get_node_or_null(^"Buy") as Control
-	if buy != null:
-		buy.position = Vector2(maxf(rect.size.x - CHIP_WIDTH - 8.0 - 64.0 - inset, 0.0), _card_line(3))
-		buy.size = Vector2(64.0, 16.0)
-		var label := buy.get_node_or_null(^"Label") as Control
-		if label != null:
-			label.position = Vector2(4.0, 2.0)
-			label.size = Vector2(buy.size.x - 8.0, 18.0)
-
-
-## One card line's top offset inside the 68 px base card.
-func _card_line(index: int) -> float:
-	return CARD_LINE_FIRST + CARD_LINE_PITCH * float(index)
-
 
 ## Hand the console's chrome node the rects the style derives (all console-local): the
 ## bays (A4.1 frames), the wells halves (A4.1 frames), the four slot-chrome cells of every
@@ -1754,11 +1686,14 @@ func _id_list() -> PackedStringArray:
 	return ids
 
 
-## One ammunition **card** (T4/P2/P5): the pack's name and price, its rounds-per-pack,
-## the worded held line, the section 5.1 state tag and state line, and the `BUY` chip, on
-## the theme's panel-frame plate (A4.1). Every cell the S5 suites read is still built here
-## (`Title`, `Meta`, `Held`/`Value` + `Held`/`Caption`, `Price`/`Value` + `Price`/`Caption`,
-## `Status`), so the state lines and figures keep one home.
+## One ammunition **row** (A18, the owner's 2026-10-15 pass): the shared
+## menu's own full-width container row at the pack's content - the P5 worded
+## held line, the section 5.1 state chip and state line, and the `BUY` chip,
+## on the row's C4 plate (`RowPlate` draws it at the row's own rect now, so
+## the nine-slice no longer crushes at 320). Every cell the S5 suites read is
+## still built here (`Title`, `Meta`, `Held`/`Value` + `Held`/`Caption`,
+## `Price`/`Value`, `Status`/`Value`), so the state lines and figures keep
+## one home.
 func _build_card(pack: Dictionary) -> Dictionary:
 	var pack_id: StringName = pack.get(&"id", &"")
 	var name_text := String(pack.get(&"name", ""))
@@ -1773,70 +1708,120 @@ func _build_card(pack: Dictionary) -> Dictionary:
 	card.focus_mode = Control.FOCUS_ALL
 	card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	card.disabled = not complete
-	card.clip_contents = true
-	## The EQ container's own card box (P39): the 320 x 68 pack card, one per catalogue pack,
-	## stacked left-aligned in the container. The card's children are placed from this box.
-	card.custom_minimum_size = Vector2(AMMO_CARD.x, AMMO_CARD.y)
-	card.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-	card.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	## A18: the row spans the shared menu (the browser rows' own fill), 76 tall
+	## like every other segment's rows.
+	card.custom_minimum_size = Vector2(0.0, AMMO_ROW_HEIGHT)
 	var frame := RowPlate.new()
 	frame.name = "RowPlate"
 	card.add_child(frame)
 	frame.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	frame.configure(_style)
-	var icon := _make_icon(String(pack.get(&"icon", "")), _style.item_icon)
+	var inner := MarginContainer.new()
+	inner.name = "RowInner"
+	inner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	inner.add_theme_constant_override(&"margin_left", ROW_TEXT_INSET * 2.0)
+	inner.add_theme_constant_override(&"margin_top", 8.0)
+	inner.add_theme_constant_override(&"margin_right", ROW_TEXT_INSET * 2.0)
+	inner.add_theme_constant_override(&"margin_bottom", 8.0)
+	card.add_child(inner)
+	inner.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var box := HBoxContainer.new()
+	box.name = "RowBox"
+	box.add_theme_constant_override(&"separation", 12)
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	inner.add_child(box)
+	var icon := _make_icon(String(pack.get(&"icon", "")), BROWSER_ICON)
 	if icon != null:
-		card.add_child(icon)
-	var title := _make_caption(name_text if complete else TAG_UNAVAILABLE, ROLE_BONE)
+		box.add_child(icon)
+	else:
+		var gap := Control.new()
+		gap.name = "IconGap"
+		gap.custom_minimum_size = Vector2(BROWSER_ICON, 0.0)
+		gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		box.add_child(gap)
+	var title_box := VBoxContainer.new()
+	title_box.name = "TitleBox"
+	title_box.add_theme_constant_override(&"separation", 2)
+	## N45: the shared menu's own fixed title column - long names trim instead
+	## of pushing the value columns past the window.
+	title_box.custom_minimum_size = Vector2(BROWSER_TITLE_COLUMN, 0.0)
+	title_box.size_flags_horizontal = Control.SIZE_FILL
+	title_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	title_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(title_box)
+	## The C overlay's own read: the pack names print upper-case, so the
+	## ammunition rows read like the module rows beside them.
+	var title := _make_label(
+		&"StationValue", (name_text if complete else TAG_UNAVAILABLE).to_upper(), true
+	)
 	title.name = "Title"
-	card.add_child(title)
-	var meta := _make_caption(ROUNDS_CAPTION % rounds if complete else META_INCOMPLETE)
+	title_box.add_child(title)
+	var meta := _make_label(
+		&"StationMeta", ROUNDS_CAPTION % rounds if complete else META_INCOMPLETE, true
+	)
 	meta.name = "Meta"
-	card.add_child(meta)
-	var price := Control.new()
-	price.name = "Price"
-	price.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(price)
-	var price_value := _make_caption("")
-	price_value.name = "Value"
-	price.add_child(price_value)
-	var price_caption := _make_caption("")
-	price_caption.name = "Caption"
-	price.add_child(price_caption)
-	var held := Control.new()
+	title_box.add_child(meta)
+	var slack := Control.new()
+	slack.name = "TitleSlack"
+	slack.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	slack.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(slack)
+	var held_col := VBoxContainer.new()
+	held_col.name = "HeldCol"
+	held_col.add_theme_constant_override(&"separation", 2)
+	held_col.custom_minimum_size = Vector2(BAND_HELD_COLUMN, 0.0)
+	held_col.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	held_col.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(held_col)
+	var held := VBoxContainer.new()
 	held.name = "Held"
 	held.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(held)
+	held_col.add_child(held)
 	var held_value := _make_caption("")
 	held_value.name = "Value"
+	held_value.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	held.add_child(held_value)
 	var held_caption := _make_caption("")
 	held_caption.name = "Caption"
+	held_caption.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	held.add_child(held_caption)
 	var status := ChipPlate.new()
 	status.name = "Status"
-	card.add_child(status)
+	status.custom_minimum_size = Vector2(BAND_TAG_COLUMN, 22.0)
+	status.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	box.add_child(status)
 	var tag := _make_caption(TAG_EMPTY)
 	tag.name = "Value"
 	tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	tag.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	status.add_child(tag)
-	var tag_caption := _make_caption("")
-	tag_caption.name = "Caption"
-	status.add_child(tag_caption)
+	var price_col := VBoxContainer.new()
+	price_col.name = "PriceCol"
+	price_col.custom_minimum_size = Vector2(BAND_COST_COLUMN, 0.0)
+	price_col.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	price_col.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(price_col)
+	var price := VBoxContainer.new()
+	price.name = "Price"
+	price.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	price_col.add_child(price)
+	var price_value := _make_caption("")
+	price_value.name = "Value"
+	price_value.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	price.add_child(price_value)
 	var buy := Button.new()
 	buy.name = "Buy"
-	## A4.2: `BUY` is a pressable chip, so it wears the `StationButton` plate
-	## (`ui_button_plate_*`) instead of the code-drawn chip. Mouse-only (FOCUS_NONE): the
-	## card keeps the pane's focus order, and a press on the chip buys through the same
-	## handler the card's own press uses.
+	## A18: the chip is the shared menu's own ActionInline press (the browser
+	## rows' `BUY`), so the ammunition rows carry the segment's own action
+	## language. Mouse-only (FOCUS_NONE): the row keeps the pane's focus order,
+	## and a press on the chip buys through the same handler the row's own
+	## press uses.
 	buy.theme_type_variation = &"StationButton"
+	buy.custom_minimum_size = ACTION_INLINE
+	buy.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	buy.focus_mode = Control.FOCUS_NONE
 	buy.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	card.add_child(buy)
-	var buy_label := _make_caption(BUY_CHIP, ROLE_CAPTION)
-	buy_label.name = "Label"
-	buy_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	buy.add_child(buy_label)
+	buy.text = BUY_CHIP
+	box.add_child(buy)
 	var payload := {
 		&"id": pack_id,
 		&"name": name_text,
@@ -1852,7 +1837,6 @@ func _build_card(pack: Dictionary) -> Dictionary:
 		&"held": held_value,
 		&"held_caption": held_caption,
 		&"price": price_value,
-		&"price_caption": price_caption,
 		&"tag": tag,
 		&"status": status,
 		&"buy": buy,
@@ -1866,8 +1850,6 @@ func _build_card(pack: Dictionary) -> Dictionary:
 	_browser_rows.add_child(card)
 	frame.configure(_style)
 	status.configure(_style, false, false)
-	_position_card(card, Rect2(Vector2.ZERO, AMMO_CARD))
-	card.resized.connect(_on_card_resized.bind(card))
 	return payload
 
 
@@ -3312,6 +3294,47 @@ func _refresh_all() -> void:
 	_refresh_footer()
 	_refresh_cell_info()
 	_sync_equipped()
+	_refresh_cargo_preview()
+
+
+## A19: the left column's CARGO HOLD block - the read-only instance of the
+## overlay's grammar (the shared builder's rows over the A14 slots), so the
+## armory answers "how much ammo do i have" without opening C. The block sits
+## at the stack's bottom, after the equipped block, and the caption carries
+## the overlay's own title words so the two surfaces read one figure pair.
+func _build_cargo_preview() -> void:
+	if _fit_left_stack == null:
+		return
+	var block := VBoxContainer.new()
+	block.name = "CargoBlock"
+	block.add_theme_constant_override(&"separation", 6)
+	block.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_fit_left_stack.add_child(block)
+	_cargo_caption = Label.new()
+	_cargo_caption.name = "CargoCaption"
+	_cargo_caption.theme_type_variation = &"SectionHeader"
+	_cargo_caption.text = Summary.TITLE_FORMAT % [0, 0]
+	_cargo_caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	block.add_child(_cargo_caption)
+	_cargo_rows = VBoxContainer.new()
+	_cargo_rows.name = "CargoRows"
+	_cargo_rows.add_theme_constant_override(&"separation", 6)
+	_cargo_rows.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	block.add_child(_cargo_rows)
+
+
+func _refresh_cargo_preview() -> void:
+	if _cargo_rows == null or not is_node_ready():
+		return
+	var profile := _profile()
+	var items: Dictionary = {}
+	if profile != null and profile.has_method(&"cargo_items"):
+		var raw: Variant = profile.call(&"cargo_items")
+		items = raw if raw is Dictionary else {}
+	_cargo_caption.text = Summary.TITLE_FORMAT % [
+		Summary.held_units(items), Summary.cargo_capacity(profile)
+	]
+	Summary.populate_rows(_cargo_rows, profile, self)
 
 
 func _profile() -> ProfileScript:
@@ -4218,7 +4241,7 @@ func _build_browser() -> void:
 		button.pressed.connect(_on_tab_pressed.bind(StringName(tab[&"id"])))
 		_tabs.add_child(button)
 	_build_list_band(
-		_browser_band, _band_captions(), [BAND_TAG_COLUMN, BAND_COST_COLUMN], BAND_MODULE
+		_browser_band, _band_captions(), _band_widths(), BAND_MODULE
 	)
 
 
@@ -4227,7 +4250,18 @@ func _build_browser() -> void:
 ## `OWNED x n` in the same two columns, so its band reads `STATE` / `HELD`. The pair is a
 ## content swap in the one shared band (N31's legal set) - the band itself never moves.
 func _band_captions() -> Array:
+	## A18: the AMMUNITION tab's rows carry their own held column, so the band
+	## seats a HELD caption over it before STATE/COST.
+	if _browser_tab == EQ_TAB_AMMO:
+		return [BAND_HELD, BAND_STATE, BAND_COST]
 	return [BAND_STATE, BAND_HELD] if _mode == MODE_BATTERY else [BAND_STATE, BAND_COST]
+
+
+## The value columns' own widths, paired with `_band_captions()`'s captions.
+func _band_widths() -> Array:
+	if _browser_tab == EQ_TAB_AMMO:
+		return [BAND_HELD_COLUMN, BAND_TAG_COLUMN, BAND_COST_COLUMN]
+	return [BAND_TAG_COLUMN, BAND_COST_COLUMN]
 
 
 ## One list's AUCTION-idiom column-header band (P40): a leading caption cell over the title
@@ -4405,7 +4439,6 @@ func _refresh_browser() -> void:
 	if _browser_caption != null:
 		_browser_caption.text = _menu_caption(ammo, rows)
 	if ammo:
-		_lay_cards()
 		for payload: Dictionary in _payloads:
 			_refresh_row(payload)
 	else:
@@ -4452,7 +4485,6 @@ func _build_browser_rows(rows: Array[Dictionary], profile: ProfileScript, ammo: 
 	if ammo:
 		for pack: Dictionary in Catalog.AMMO_PACKS:
 			_payloads.append(_build_card(pack))
-		_lay_cards()
 		return
 	if rows.is_empty():
 		var empty := _make_caption(_list_empty_text())

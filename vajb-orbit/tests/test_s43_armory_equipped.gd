@@ -304,7 +304,12 @@ func _ammo_card(pack_id: StringName) -> Control:
 
 
 func _card_price_text(card: Control) -> String:
-	return String((card.get_node(NodePath("Price/Value")) as Label).text)
+	## A18: the price rides the row's container grammar (the browser rows' own
+	## depth), so the read goes through the tree.
+	var price := card.find_child("Price", true, false) as Control
+	if price == null:
+		return ""
+	return String((price.get_node(NodePath("Value")) as Label).text)
 
 
 ## ------------------------------------------------------------------ P49, items 1-2
@@ -347,6 +352,36 @@ func test_p49_the_block_sits_under_cell_info_with_its_caption() -> void:
 			fitted, total
 		]
 	)
+
+
+## A19 (the owner's 2026-10-15 pass): the left column's CARGO HOLD block - the
+## read-only instance of the overlay's grammar, so the armory answers "how
+## much ammo do i have" without opening C. The block sits at the stack's
+## bottom, carries the overlay's own title words, and its rows ride the A14
+## slots through the shared summary builder.
+func test_a19_the_cargo_block_reads_the_hold_under_the_equipped() -> void:
+	_settle()
+	var stack := _node(STACK_PATH)
+	var block := stack.get_node_or_null(NodePath("CargoBlock")) as VBoxContainer
+	assert_true(block != null, "the CARGO HOLD block ships in the left stack")
+	if block == null:
+		return
+	assert_eq(block.get_index(), stack.get_child_count() - 1, "the stack's last block")
+	var caption := block.get_node(NodePath("CargoCaption")) as Label
+	assert_true(
+		caption.text.begins_with("CARGO — "),
+		"the overlay's own title words (%s)" % caption.text
+	)
+	assert_true(caption.text.contains("/"), "and the n/cap figure pair")
+	var rows := block.get_node(NodePath("CargoRows")) as VBoxContainer
+	assert_true(rows.get_child_count() > 0, "the summary carries the empty state at least")
+	_profile.call(&"add_cargo", &"ammo_laser", 2)
+	_panel.call(&"refresh_profile", &"cargo")
+	var slot := rows.find_child("Slot*", true, false) as Control
+	assert_true(slot != null, "the held ammo rides the summary rows")
+	if slot != null:
+		var amount := slot.find_child("Amount", true, false) as Label
+		assert_eq(amount.text, "2", "the AMOUNT cell is the hold stack (A14's law)")
 
 
 func test_p49_one_row_per_fitted_module_in_the_grid_order() -> void:
@@ -577,7 +612,7 @@ func test_a4_the_ammo_door_opens_the_confirm() -> void:
 	assert_true(card != null, "the laser pack card built")
 	if card == null:
 		return
-	var buy := card.get_node_or_null(NodePath("Buy")) as Button
+	var buy := card.get_node_or_null(NodePath("RowInner/RowBox/Buy")) as Button
 	assert_true(buy != null, "the card carries its BUY chip")
 	if buy == null:
 		return
@@ -588,7 +623,7 @@ func test_a4_the_ammo_door_opens_the_confirm() -> void:
 	if _confirms.is_empty():
 		return
 	var payload := _confirms[0]
-	var name_text := String((card.get_node(NodePath("Title")) as Label).text).to_upper()
+	var name_text := String((card.get_node(NodePath("RowInner/RowBox/TitleBox/Title")) as Label).text).to_upper()
 	var price_text := _card_price_text(card).trim_suffix(" CR")
 	assert_eq(
 		String(payload[&"body"]),
@@ -615,7 +650,7 @@ func test_a5_the_ammo_refusal_keeps_the_strip() -> void:
 	assert_true(card != null, "the plasma pack card built")
 	if card == null:
 		return
-	var buy := card.get_node_or_null(NodePath("Buy")) as Button
+	var buy := card.get_node_or_null(NodePath("RowInner/RowBox/Buy")) as Button
 	assert_true(buy != null, "the unaffordable card still offers its BUY chip")
 	if buy == null:
 		return

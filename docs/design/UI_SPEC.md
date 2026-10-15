@@ -19,25 +19,26 @@ and every tool result is re-sent on each later request.
 
 | Section | Topic | Lines |
 |---|---|---|
-| 1. | Colour Tokens | L45–L70 |
-| 2. | Theme Architecture | L71–L113 |
-| 3. | In-Game HUD | L114–L716 |
-| 4. | Settings | L717–L778 |
-| 5. | Tooltips, Dialogs & Nine-Patch Panels | L779–L856 |
-| 6. | Font & Sizing Reference (coding checklist) | L857–L876 |
-| 7. | Station surfaces chrome — the A5.4 extension (amendment 2026-10-02, … | L877–L912 |
-| 8. | Station action buttons and the one focus language (amendment 2026-10… | L913–L945 |
-| 9. | The map deck — flight minimap and navigation (amendment 2026-10-03, … | L946–L973 |
-| 10. | The map deck and the navigation pin — design detail (amendment 2026-… | L974–L1071 |
-| 11. | Station shell v2 — the TERMINAL drawer, the popups, the one skeleton… | L1072–L1127 |
-| 12. | Station shell v2 design detail — the TERMINAL drawer, the popup pair… | L1128–L1362 |
-| 13. | The D20 fix wave — exchange parity, the armory browser, the hover-in… | L1363–L1400 |
-| 14. | Exchange sell cluster + the OVERVIEW tile plates (amendment 2026-10-… | L1401–L1446 |
-| 15. | The one true-aspect chrome family (amendment 2026-10-05, owner rulin… | L1447–L1864 |
-| 16. | The legibility pass — the caption token and the two unroofed surface… | L1865–L1903 |
-| 17. | The buy-confirmation law (amendment 2026-10-12, phase P4; wave D24 —… | L1904–L1921 |
-| 18. | The C-key Cargo overlay (amendment 2026-10-12, phase P4; wave D24 — … | L1922–L2011 |
-| 19. | The 2026-10-15 visual round — chrome, backing and the empty edges (a… | L2012–L2027 |
+| 1. | Colour Tokens | L46–L71 |
+| 2. | Theme Architecture | L72–L114 |
+| 3. | In-Game HUD | L115–L717 |
+| 4. | Settings | L718–L779 |
+| 5. | Tooltips, Dialogs & Nine-Patch Panels | L780–L857 |
+| 6. | Font & Sizing Reference (coding checklist) | L858–L877 |
+| 7. | Station surfaces chrome — the A5.4 extension (amendment 2026-10-02, … | L878–L913 |
+| 8. | Station action buttons and the one focus language (amendment 2026-10… | L914–L946 |
+| 9. | The map deck — flight minimap and navigation (amendment 2026-10-03, … | L947–L974 |
+| 10. | The map deck and the navigation pin — design detail (amendment 2026-… | L975–L1072 |
+| 11. | Station shell v2 — the TERMINAL drawer, the popups, the one skeleton… | L1073–L1128 |
+| 12. | Station shell v2 design detail — the TERMINAL drawer, the popup pair… | L1129–L1363 |
+| 13. | The D20 fix wave — exchange parity, the armory browser, the hover-in… | L1364–L1401 |
+| 14. | Exchange sell cluster + the OVERVIEW tile plates (amendment 2026-10-… | L1402–L1447 |
+| 15. | The one true-aspect chrome family (amendment 2026-10-05, owner rulin… | L1448–L1865 |
+| 16. | The legibility pass — the caption token and the two unroofed surface… | L1866–L1904 |
+| 17. | The buy-confirmation law (amendment 2026-10-12, phase P4; wave D24 —… | L1905–L1922 |
+| 18. | The C-key Cargo overlay (amendment 2026-10-12, phase P4; wave D24 — … | L1923–L2012 |
+| 19. | The 2026-10-15 visual round — chrome, backing and the empty edges (a… | L2013–L2029 |
+| 20. | The 2026-10-15 playtest pass — the ammunition rows, the armory's car… | L2030–L2063 |
 
 <!-- section-index:end -->
 
@@ -2024,3 +2025,38 @@ audit showed the pictures fighting the surfaces around them.
 | **V2** | every station pane's header band (the P7 skeleton's `PaneHeader`, modules, overview and services alike) carries a flat backing band of `void_base` at 45 % behind the caption row, applied by the shell at mount so the backdrops' hot spots (the refinery's furnace glow) never bleed through the captions; the band adds no height (content margins 0) | the transparent header over bare art |
 | **V3** | the AUCTION body scrolls with a 10 px tail inside its own viewport, so a half-scrolled row never kisses the restock caption | the flush cut at the scroll's bottom edge |
 | **V4** | the SETTINGS screen reads as a console, not a barren full-bleed sheet: the panel is bounded at 980 wide, centred in the route, and grows with its content vertically | the full-rect panel with four rows in a 1872-wide sheet |
+
+
+## 20. The 2026-10-15 playtest pass — the ammunition rows, the armory's cargo preview and the launch manifest (amendment; the owner's first pass over the fixed surfaces)
+
+**The owner's words (2026-10-15, verbatim):** *"In LAUNCH there is a cargo
+segment. Can we match it to look like the one on C? The one on C seems to be
+decent for not."* · *"Can we check in Armory? Ammunition why they arent on
+whole width like every other segment but are for some reason warped?"* ·
+*"Also beneath the slot layout in armory maybe add another instance of Cargo
+preview? So that i can see how much ammo do i have?"*
+
+**The shared builder.** One new file, `ui/station/cargo_summary.gd`
+(`class_name CargoSummary`, RefCounted), becomes the single home of two laws
+the C overlay owned alone until now:
+
+- the **slots law** — A14's five-category slot derivation (the ammunition
+  families only when the hold carries units, the pack read on the meta line,
+  the ore/ingot pairs, the components split into the power and fuel grades)
+  and the icon ink law (`_icon_ink`/`_icon_source`) move here wholesale; the
+  overlay delegates its `_slots()`/`_icon_ink()` reads to it (its public
+  `slot_rows()`/`band_texts()` seams and every s48 row stand untouched);
+- the **read-only row grammar** — the A10 row shape (C4 strip, `RowInner`
+  12/8, the 40 px icon at its own rect, the title box, the right-aligned
+  AMOUNT cell) **without the DISPOSE chip**, plus the A13 group headers and
+  the `NONE HELD` empty state. `populate_rows()` builds it into any VBox.
+
+The A17 bound rides along: the summaries cap at the HUD's own
+`CARGO_BLOCK_ROWS` and close with the HUD's own `CARGO_MORE_FORMAT` tail
+(one home each — `hud.gd` keeps the consts, the builder reads them).
+
+| Pin | Law | Reversal |
+|---|---|---|
+| **A18** | the armory's AMMUNITION rows are the shared menu's own full-width rows: the P38 browser row's container grammar (76 tall, `RowInner` 12/8, `RowBox` HBox, the fixed 160 px title column, `SIZE_FILL`), every cell a container child — icon 24 (A5.4's own pack-icon pin standing), the title column (`Title`/`Meta`), the slack, then the value columns `Held` (the P5 worded held line + its state caption, its own `HELD` band header at the column's pinned width), `Status` (the §3.1/3.1b chip: the state word + caption over `STATE`), `Price` (over `COST`) and the `BUY` chip at the browser rows' own ActionInline — the band carrying three captions for this tab (HELD/STATE/COST at the columns' own widths); the row keeps every cell name, every word and the `Ammo<PascalCase>` naming so the suites' reads stand; the danger treatment (§3.1/3.1b's 1 px frame + the bright tag) stands on `RowPlate`, which now draws its C4 strip at the row's own full rect instead of the crushed 320 nine-slice | the pinned 320×68 card and its hand-placed children (`_position_card`'s coordinates — the A5 composition law's violation; the crushed nine-slice at 320 wide the owner read as "warped") |
+| **A19** | the armory's left column gains a `CARGO HOLD` block at the stack's bottom (after `EQUIPPED`): the `CargoSummary` read-only rows over the A14 slots, the overlay's own title words `CARGO — <n>/<cap> UNITS` as the block caption, capped at the A17 bound with its tail; it refreshes on the profile's `cargo`/`ammo` keys like every other block | the empty stretch under `EQUIPPED — 9/11` (the owner had no ammo readout in the armory at all) |
+| **A20** | the LAUNCH manifest is the C overlay's read-only instance: the cargo plate strip retires, the manifest builds `CargoSummary`'s banded rows (`ITEM`/`AMOUNT` band, the A14 slots, no chip, no sort — the launch surface reads, it never disposes), capped at the A17 bound with its tail; the rows container keeps the `%CargoList` name so the briefing column's own order law (the `BriefNote` following the cargo) stands, and `%CargoCaption` keeps its `CARGO HOLD · <n> STACKS` words | the faint plate strip + the bare `ItemList` (the audit's least-dressed segment) |

@@ -591,7 +591,11 @@ func test_the_items_ride_the_code_drawn_plate() -> void:
 	assert_eq(style.item_gap, 8.0, "on the style's own gap")
 	var card := _ammo_card(panel, &"cannon")
 	assert_true(card != null, "the cannon pack has a card")
-	assert_eq(card.size, ITEM, "the card is the half's own 320 x 68 box (actual %s)" % str(card.size))
+	## A18 (the owner's 2026-10-15 pass): the row is the shared menu's own
+	## full-width row - 76 tall like every other segment's rows, never the
+	## 320 px half-cell again.
+	assert_eq(card.size.y, 76.0, "at the shared row's own height (actual %s)" % str(card.size))
+	assert_gt(card.size.x, ITEM.x, "spanning the shared menu, not a 320 px half-cell")
 	var plate := _plate(card)
 	assert_true(plate != null, "the card rides a plate")
 	assert_true(
@@ -604,12 +608,12 @@ func test_the_items_ride_the_code_drawn_plate() -> void:
 		"one card per pack, no slack row (MED-1's cure)"
 	)
 	assert_eq(
-		(rows.get_child(1) as Control).position, Vector2(0.0, ITEM.y + 6.0),
+		(rows.get_child(1) as Control).position, Vector2(0.0, 76.0 + 6.0),
 		"the second card sits one row below (the shared menu stacks them, P39a)"
 	)
 	## P39a: the ammunition cards are a vertical list in the shared menu, not a 2x3 grid.
 	assert_eq(
-		(rows.get_child(2) as Control).position, Vector2(0.0, (ITEM.y + 6.0) * 2.0),
+		(rows.get_child(2) as Control).position, Vector2(0.0, (76.0 + 6.0) * 2.0),
 		"and the third two rows down (actual %s)"
 			% str((rows.get_child(2) as Control).position)
 	)

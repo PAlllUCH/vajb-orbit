@@ -81,15 +81,10 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"SectionHeader"
 
-[node name="CargoSlots" type="HBoxContainer" parent="LaunchBody/BriefRoof/BriefInset/BriefBox"]
+[node name="CargoList" type="VBoxContainer" parent="LaunchBody/BriefRoof/BriefInset/BriefBox"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 6
-
-[node name="CargoList" type="ItemList" parent="LaunchBody/BriefRoof/BriefInset/BriefBox"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 110)
-layout_mode = 2
 
 [node name="BriefNote" type="Label" parent="LaunchBody/BriefRoof/BriefInset/BriefBox"]
 unique_name_in_owner = true

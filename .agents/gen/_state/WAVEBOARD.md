@@ -63,6 +63,25 @@ P4 manifest's slice boxes ticked. **Trash removed:** the regenerable
 `__pycache__` bytecode caches under `staging/`, `.crush/hooks/` and the D21
 archive slice. Full block: `MASTER_REPORT.md` §6's "P4 code-lane close".
 
+**Updated 2026-10-15 (the owner's playtest pass — the ammunition rows, the
+armory's cargo preview and the launch manifest; one session).** The owner's
+first pass over the fixed surfaces raised three items, pinned docs-first as
+UI_SPEC **§20 A18–A20** and cured the same session: **A18** the armory's
+AMMUNITION rows are the shared menu's own full-width container rows (the
+pinned 320×68 hand-placed card retired — `_position_card`'s coordinates were
+the A5 composition law's own violation; the crushed nine-slice at 320 was the
+"warped" the owner saw; the band seats HELD/STATE/COST; every cell name, word
+and the danger frame stand); **A19** the armory's left column gains the CARGO
+HOLD block (the overlay's title words + the capped summary rows — the owner
+can now see his ammo in the armory); **A20** the LAUNCH manifest is the C
+overlay's read-only instance (the faint plate strip retired, the banded rows
+ride `%CargoList`). The slots law's and the read-only row grammar's single
+home is the new `ui/station/cargo_summary.gd` — the overlay delegates (the
+s48 seams stand; one label-set slip — a missing `ALL` key — caught by the
+suite and cured in-session). Gate **1429/0 ×2 byte-identical, net 0 rows**
+(the strip rows −2, the new pins +2); `check_wiring.py` clean (1628 hard
+refs). Full block: `MASTER_REPORT.md` §6's "the playtest pass".
+
 **Updated 2026-10-15 (T-203 closed — the pack icon masters regenerated bright;
 the owner's three audit-round questions all answered).** The owner ruled
 "Ok, regenerate" (the icons), "Keep for now" (the A17 6-row cap) and "keep"
@@ -99,6 +118,11 @@ standalone, never touches the real save).
 
 One-line outcomes, newest first (full blocks: `MASTER_REPORT.md` §6, same-named
 entries):
+
+- **The playtest pass** (2026-10-15, owner-directed single session) — the
+  ammunition rows full-width (A18), the armory's CARGO HOLD block (A19), the
+  launch manifest as the C overlay's read-only instance (A20); gate held
+  **1429/0 ×2**, net 0 rows; `cargo_summary.gd` the shared grammar's home.
 
 - **Pack icon regeneration** (2026-10-15, owner-directed single session) —
   T-203 closed: both pack masters regenerated on Qwen-Image 2.1 to ICONS_SPEC

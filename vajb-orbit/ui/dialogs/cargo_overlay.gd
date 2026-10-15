@@ -28,10 +28,12 @@ extends Control
 
 signal closed
 
-const MineralCatalogScript := preload("res://game/mineral_catalog.gd")
-const ComponentCatalogScript := preload("res://game/component_catalog.gd")
 const Catalog := preload("res://game/station_catalog.gd")
 const ChromeFamily := preload("res://ui/theme/chrome_family.gd")
+const Summary := preload("res://ui/station/cargo_summary.gd")
+## Section 20: the slots law, the icon ink law and the grouped formatter's
+## single home is the shared summary builder; this overlay delegates its reads
+## and keeps its own chip-bearing rows.
 
 const TOKENS_TYPE: StringName = &"Tokens"
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
@@ -56,9 +58,6 @@ const ACTION_INLINE := Vector2(96.0, 32.0)
 const ROW_INNER_MARGIN := Vector2i(12, 8)
 const COLUMN_SEPARATION := 12
 const TITLE_SEPARATION := 2
-const ROW_ICON_IDLE_ALPHA := 0.72
-const TINT_DIR := "res://assets/icons/tint/"
-const DEDICATED_ICON_PREFIX := "icon_mineral_"
 ## A11: the armory strip's own tab minimum (S35's `armory_panel.gd`).
 const TAB_MIN_SIZE := Vector2(0.0, 32.0)
 ## A13: the sort chip's own box; the words ride SORT_LABELS.
@@ -76,46 +75,14 @@ const TITLE_COL: float = (
 ## the 40 px icon, so the captions seat exactly over the row's columns.
 const BAND_LEAD_GAP: float = COL_ICON + float(ROW_INNER_MARGIN.x)
 
-## A8/A10's pinned copy.
-const TITLE_FORMAT := "CARGO — %d/%d UNITS"
+## A8/A10's pinned copy — the single home is the shared builder's
+## `TITLE_FORMAT`; this overlay reads it through `Summary`.
 const DISPOSE_WORD := "DISPOSE"
 const EMPTY_ROW := "NONE HELD"
 const CLOSE_HINT := "ESC · CLOSE"
 const BAND_ITEM := "ITEM"
 const BAND_AMOUNT := "AMOUNT"
 const BAND_ACTION := "ACTION"
-const ROUNDS_IN_PACK := "%d ROUNDS IN PACK"
-const TIER_ORE_META := "TIER %d ORE"
-const TIER_INGOT_META := "TIER %d INGOT"
-const GRADE_COMPONENT_META := "GRADE %d COMPONENT"
-const GRADE_FUEL_META := "GRADE %d FUEL CELL"
-
-## A11's five words + ALL, in A9's order; the section headers reuse the labels.
-const CATEGORY_AMMO: StringName = &"ammo"
-const CATEGORY_ORE: StringName = &"ore"
-const CATEGORY_INGOTS: StringName = &"ingots"
-const CATEGORY_COMPONENTS: StringName = &"components"
-const CATEGORY_FUEL: StringName = &"fuel"
-const TAB_ALL: StringName = &"all"
-const CATEGORY_ORDER: Array[StringName] = [
-	CATEGORY_AMMO, CATEGORY_ORE, CATEGORY_INGOTS, CATEGORY_COMPONENTS, CATEGORY_FUEL,
-]
-const CARGO_TABS: Array[Dictionary] = [
-	{&"id": CATEGORY_AMMO, &"label": "AMMUNITION"},
-	{&"id": CATEGORY_ORE, &"label": "ORE"},
-	{&"id": CATEGORY_INGOTS, &"label": "INGOTS"},
-	{&"id": CATEGORY_COMPONENTS, &"label": "COMPONENTS"},
-	{&"id": CATEGORY_FUEL, &"label": "FUEL CELLS"},
-	{&"id": TAB_ALL, &"label": "ALL"},
-]
-const CATEGORY_LABELS := {
-	CATEGORY_AMMO: "AMMUNITION",
-	CATEGORY_ORE: "ORE",
-	CATEGORY_INGOTS: "INGOTS",
-	CATEGORY_COMPONENTS: "COMPONENTS",
-	CATEGORY_FUEL: "FUEL CELLS",
-	TAB_ALL: "ALL",
-}
 
 ## A13's cycle.
 const SORT_CATEGORY: StringName = &"category"
@@ -129,8 +96,16 @@ const SORT_LABELS := {
 }
 const SORT_CHIP_FORMAT := "SORT: %s"
 
-## 03 section 3's power family, the FUEL CELLS category's own filter.
-const POW_FAMILY: StringName = &"pow"
+## A11's strip: the summary's five category ids + ALL (their single home is
+## the shared builder's).
+const CARGO_TABS: Array[Dictionary] = [
+	{&"id": Summary.CATEGORY_AMMO, &"label": "AMMUNITION"},
+	{&"id": Summary.CATEGORY_ORE, &"label": "ORE"},
+	{&"id": Summary.CATEGORY_INGOTS, &"label": "INGOTS"},
+	{&"id": Summary.CATEGORY_COMPONENTS, &"label": "COMPONENTS"},
+	{&"id": Summary.CATEGORY_FUEL, &"label": "FUEL CELLS"},
+	{&"id": Summary.TAB_ALL, &"label": "ALL"},
+]
 
 @onready var _dimmer: ColorRect = %CargoDimmer
 @onready var _panel: PanelContainer = %CargoPanel
@@ -146,7 +121,7 @@ const POW_FAMILY: StringName = &"pow"
 var _tween: Tween = null
 var _open := false
 var _trigger: Control = null
-var _category: StringName = TAB_ALL
+var _category: StringName = Summary.TAB_ALL
 var _sort: StringName = SORT_CATEGORY
 var _slot_payloads: Array[Dictionary] = []
 var _band_texts: PackedStringArray = PackedStringArray()
@@ -249,7 +224,7 @@ func active_category() -> StringName:
 
 
 func select_category(id: StringName) -> void:
-	if not CATEGORY_LABELS.has(id) or id == _category:
+	if not Summary.CATEGORY_LABELS.has(id) or id == _category:
 		return
 	_category = id
 	_apply_tab_states()
@@ -368,17 +343,17 @@ func _refresh() -> void:
 	_clear_rows()
 	var profile := _profile()
 	var items := _cargo_items()
-	_title.text = TITLE_FORMAT % [_held_units(items), _cargo_capacity()]
+	_title.text = Summary.TITLE_FORMAT % [_held_units(items), _cargo_capacity()]
 	var slots := _slots(profile, items)
-	if _category != TAB_ALL:
+	if _category != Summary.TAB_ALL:
 		slots = _filter_category(slots, _category)
 	_apply_sort(slots)
-	if _category == TAB_ALL and _sort == SORT_CATEGORY:
-		for category: StringName in CATEGORY_ORDER:
+	if _category == Summary.TAB_ALL and _sort == SORT_CATEGORY:
+		for category: StringName in Summary.CATEGORY_ORDER:
 			var held := _filter_category(slots, category)
 			if held.is_empty():
 				continue
-			_build_section_header(String(CATEGORY_LABELS[category]))
+			_build_section_header(String(Summary.CATEGORY_LABELS[category]))
 			for slot: Dictionary in held:
 				_add_row(slot)
 	else:
@@ -615,162 +590,47 @@ func _cargo_items() -> Dictionary:
 	return raw if raw is Dictionary else {}
 
 
-## A8's `<n>`: the hold's own units summed (the armory/launch `_cargo_used` exemplar).
+## A8's `<n>`: the hold's own units summed - the shared builder's read.
 func _held_units(items: Dictionary) -> int:
-	var used := 0
-	for quantity: Variant in items.values():
-		used += int(quantity)
-	return used
+	return Summary.held_units(items)
 
 
-## A8's `<cap>`: the active hull's cargo column (08 section 3), the OVERVIEW's own
-## `Catalog.ship` read.
+## A8's `<cap>`: the active hull's cargo column (08 section 3), the OVERVIEW's
+## own `Catalog.ship` read - the shared builder's read.
 func _cargo_capacity() -> int:
-	var profile := _profile()
-	if profile == null or not profile.has_method(&"active_ship"):
-		return 0
-	var ship: Dictionary = Catalog.ship(StringName(profile.call(&"active_ship")))
-	return int(ship.get(&"cargo", 0))
-
-
-func _held(items: Dictionary, item_id: StringName) -> int:
-	return int(items.get(item_id, 0))
+	return Summary.cargo_capacity(_profile())
 
 
 ## The one slot list, A9's five categories in order, the catalogue's own order
-## within each. AMMUNITION carries only the families the hold lists (A14: hold
-## units are the row's existence test); its amount is the hold stack, the pack
-## rides the meta line.
+## within each - the A14 law's single home is the shared builder; this overlay
+## reads through it (the public `slot_rows()` seam unchanged).
 func _slots(profile: Node, items: Dictionary) -> Array[Dictionary]:
-	var slots: Array[Dictionary] = []
-	if profile != null and profile.has_method(&"ammo_of"):
-		for family: StringName in Catalog.ammo_ids():
-			var pack := Catalog.ammo_pack(family)
-			if pack.is_empty():
-				continue
-			var item_id := Catalog.ammo_item_id(family)
-			var rounds := int(profile.call(&"ammo_of", family))
-			var units := _held(items, item_id)
-			## A14: the zero-hold ammo law - the hold's units are the row's own
-			## existence test; the fitted pack's rounds never summon one.
-			if units <= 0:
-				continue
-			slots.append({
-				&"id": item_id,
-				&"category": CATEGORY_AMMO,
-				&"name": String(pack.get(&"name", String(family))).to_upper(),
-				&"meta": ROUNDS_IN_PACK % rounds,
-				&"amount": units,
-				&"dispose": units > 0,
-				&"icon": String(pack.get(&"icon", &"")),
-				&"tint": Color.WHITE,
-			})
-	for mineral_id: StringName in MineralCatalogScript.mineral_ids():
-		var mineral: Dictionary = MineralCatalogScript.mineral(mineral_id)
-		if mineral.is_empty():
-			continue
-		_add_mineral_slot(slots, items, mineral_id, mineral, true)
-		_add_mineral_slot(slots, items, mineral_id, mineral, false)
-	for entry: Dictionary in ComponentCatalogScript.COMPONENTS:
-		var component_id := StringName(entry.get(&"id", &""))
-		var family := StringName(entry.get(&"family", &""))
-		if component_id == &"" or (family == POW_FAMILY) != false:
-			continue
-		var qty := _held(items, component_id)
-		if qty <= 0:
-			continue
-		slots.append({
-			&"id": component_id,
-			&"category": CATEGORY_COMPONENTS,
-			&"name": String(entry.get(&"name", String(component_id))).to_upper(),
-			&"meta": GRADE_COMPONENT_META % int(entry.get(&"grade", 0)),
-			&"amount": qty,
-			&"dispose": true,
-			&"icon": String(entry.get(&"icon", &"")),
-			&"tint": _grade_tint(int(entry.get(&"grade", 0))),
-		})
-	for entry: Dictionary in ComponentCatalogScript.COMPONENTS:
-		var component_id := StringName(entry.get(&"id", &""))
-		var family := StringName(entry.get(&"family", &""))
-		if component_id == &"" or (family == POW_FAMILY) != true:
-			continue
-		var qty := _held(items, component_id)
-		if qty <= 0:
-			continue
-		slots.append({
-			&"id": component_id,
-			&"category": CATEGORY_FUEL,
-			&"name": String(entry.get(&"name", String(component_id))).to_upper(),
-			&"meta": GRADE_FUEL_META % int(entry.get(&"grade", 0)),
-			&"amount": qty,
-			&"dispose": true,
-			&"icon": String(entry.get(&"icon", &"")),
-			&"tint": _grade_tint(int(entry.get(&"grade", 0))),
-		})
-	return slots
-
-
-func _add_mineral_slot(
-		slots: Array[Dictionary], items: Dictionary, mineral_id: StringName,
-		mineral: Dictionary, ore: bool
-) -> void:
-	var item_id := MineralCatalogScript.ore_id(mineral_id) if ore \
-			else MineralCatalogScript.ingot_id(mineral_id)
-	var qty := _held(items, item_id)
-	if qty <= 0:
-		return
-	slots.append({
-		&"id": item_id,
-		&"category": CATEGORY_ORE if ore else CATEGORY_INGOTS,
-		&"name": ("%s ORE" if ore else "%s INGOT") % String(mineral.get(&"name", String(mineral_id))).to_upper(),
-		&"meta": (TIER_ORE_META if ore else TIER_INGOT_META) % int(mineral.get(&"tier", 0)),
-		&"amount": qty,
-		&"dispose": true,
-		&"icon": String(mineral.get(&"icon_ore" if ore else &"icon_ingot", &"")),
-		&"tint": _tier_tint(int(mineral.get(&"tier", 0))),
-	})
+	return Summary.slots(profile, items)
 
 
 func _tier_tint(tier: int) -> Color:
-	if MineralCatalogScript.TIER_TINTS.has(tier):
-		return MineralCatalogScript.TIER_TINTS[tier]
-	return Color.WHITE
+	return Summary.tier_tint(tier)
 
 
 func _grade_tint(grade: int) -> Color:
-	if ComponentCatalogScript.GRADE_TINTS.has(grade):
-		return ComponentCatalogScript.GRADE_TINTS[grade]
-	return Color.WHITE
+	return Summary.grade_tint(grade)
 
 
-## --- the icon laws (the refinery's own, verbatim) --------------------------------------
+## --- the icon laws (the refinery's own, verbatim; the single home is the
+## shared builder) ------------------------------------------------------
 
 
 ## The stencil route: prefer `assets/icons/tint/` when a stencil of the same
 ## file exists, the catalogue path otherwise.
 func _icon_source(icon_path: String) -> String:
-	if icon_path.is_empty():
-		return ""
-	var stencil := TINT_DIR + icon_path.get_file()
-	if stencil != icon_path and ResourceLoader.exists(stencil):
-		return stencil
-	return icon_path
+	return Summary.icon_source(icon_path)
 
 
 ## The refinery's ink law: `text_primary` on the dedicated `icon_mineral_*`
 ## stencils, the row's tier/grade tint on other stenciled art, WHITE on raw
 ## catalogue art - the idle alpha always.
 func _icon_ink(slot: Dictionary) -> Color:
-	var ink := Color.WHITE
-	var source := _icon_source(String(slot.get(&"icon", &"")))
-	if source.begins_with(TINT_DIR):
-		if source.get_file().begins_with(DEDICATED_ICON_PREFIX):
-			ink = _token(&"text_primary")
-		else:
-			var tint: Variant = slot.get(&"tint", Color.WHITE)
-			if tint is Color:
-				ink = tint
-	ink.a = ROW_ICON_IDLE_ALPHA
+	var ink := Summary.icon_ink(slot, self)
 	return ink
 
 
@@ -833,15 +693,7 @@ func _measure_title_col() -> void:
 
 ## The refinery's space-grouped integer.
 func _format_int(value: int) -> String:
-	var digits := str(absi(value))
-	var grouped := ""
-	var count := 0
-	for index in range(digits.length() - 1, -1, -1):
-		grouped = digits[index] + grouped
-		count += 1
-		if count % 3 == 0 and index > 0:
-			grouped = " " + grouped
-	return ("-" if value < 0 else "") + grouped
+	return Summary.format_int(value)
 
 
 func _animate(target: float, then_hide: bool = false) -> void:

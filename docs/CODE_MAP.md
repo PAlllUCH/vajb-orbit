@@ -8,10 +8,10 @@ entry. addons/ is vendored and excluded. The JSON twin
 | Section | Lines |
 |---|---|
 | 1. Autoloads | L18–L27 |
-| 2. Scenes | L28–L158 |
-| 3. Signal wiring | L159–L442 |
-| 4. Scripts | L443–L775 |
-| 5. Orphan scripts | L776–L791 |
+| 2. Scenes | L28–L159 |
+| 3. Signal wiring | L160–L442 |
+| 4. Scripts | L443–L778 |
+| 5. Orphan scripts | L779–L794 |
 
 
 ## 1. Autoloads (project.godot)
@@ -127,6 +127,7 @@ entry. addons/ is vendored and excluded. The JSON twin
 | res://tests/probe_w5_overlay.tscn | Node | res://tests/probe_w5_overlay.gd | — | — |
 | res://tools/audit_boot.tscn | Node | res://tools/audit_boot.gd | — | — |
 | res://tools/d8_glyph_audit.tscn | Node | res://tools/d8_glyph_audit.gd | — | — |
+| res://tools/probe_t204.tscn | Node | res://tools/probe_t204.gd | — | — |
 | res://tools/s226_r1_probe.tscn | Node2D | res://tools/s226_r1_probe.gd | — | — |
 | res://ui/components/inspect_sheet.tscn | Control | res://ui/components/inspect_sheet.gd | — | — |
 | res://ui/components/menu_button.tscn | Control | res://ui/components/glow_underlay.gd, res://ui/components/menu_button.gd | — | — |
@@ -318,7 +319,6 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://ui/station/armory_panel.gd | card.mouse_entered → _on_row_hovered.bind(payload |
 | res://ui/station/armory_panel.gd | card.mouse_exited → _on_row_hovered.bind(payload |
 | res://ui/station/armory_panel.gd | card.pressed → _on_row_pressed.bind(payload |
-| res://ui/station/armory_panel.gd | card.resized → _on_card_resized.bind(card |
 | res://ui/station/armory_panel.gd | chip.mouse_entered → _on_barrel_inspected.bind(rack |
 | res://ui/station/armory_panel.gd | chip.mouse_exited → _on_barrel_inspected.bind(rack |
 | res://ui/station/armory_panel.gd | chip.sort_children → _position_cell_children.bind(chip |
@@ -487,7 +487,7 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://game/ship_stats.gd | RefCounted | — | — | — |
 | res://game/shipyard.gd | RefCounted | — | res://game/component_catalog.gd, res://game/mineral_catalog.gd, res://game/module_catalog.gd | res://game/game.gd, res://tests/probe_r1_s27.gd, res://tests/probe_r2_s27.gd, res://tests/test_s27_catalog.gd …(+2) |
 | res://game/speed_fantasy.gd | Node | — | res://assets/fx/fx_hull_critical_vignette_f1.png, res://game/fx.gd, res://game/projectile.gd …(+1) | res://game/game.gd, res://game/game.tscn, res://game/game.tscn (ext_resource), res://tests/probe_s25_pixels.gd …(+6) |
-| res://game/station_catalog.gd | RefCounted | — | res://assets/icons/module/icon_module_w_railgun.svg, res://assets/icons/weapon/icon_ammo_laser.png …(+14) | res://autoload/player_profile.gd, res://game/auction.gd, res://game/exchange.gd, res://game/repairs.gd …(+44) |
+| res://game/station_catalog.gd | RefCounted | — | res://assets/icons/module/icon_module_w_railgun.svg, res://assets/icons/weapon/icon_ammo_laser.png …(+14) | res://autoload/player_profile.gd, res://game/auction.gd, res://game/exchange.gd, res://game/repairs.gd …(+45) |
 | res://game/station_registry.gd | RefCounted | — | res://game/module_catalog.gd | res://autoload/player_profile.gd, res://game/auction.gd, res://game/contract_registry.gd …(+21) |
 | res://game/station_scene.gd | Node2D | — | res://assets/env/poi/env_station_arm_a.png, res://assets/env/poi/env_station_arm_b.png …(+12) | res://game/sector.gd, res://tests/test_d11_station.gd |
 | res://game/weapons.gd | Node2D | countermeasure_used, dry_fired, hit_landed, locks_broken, shot_fired | res://assets/fx/fx_muzzle_flash_f1.png, res://assets/fx/fx_muzzle_flash_f2.png …(+9) | res://autoload/player_profile.gd, res://game/game.gd, res://game/player_ship.gd …(+54) |
@@ -717,7 +717,7 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://tests/test_s8_qa_fixes.gd | McpTestSuite | — | res://autoload/world_clock.gd, res://game/asteroid.gd, res://game/asteroid_field.gd, res://game/exchange.gd …(+9) | — |
 | res://tests/test_ship_grids.gd | McpTestSuite | — | res://../docs/gameplay/08_ship_classes.md, res://assets/icons/module/icon_module_%s.svg …(+3) | — |
 | res://tests/test_slice2_5_feel.gd | McpTestSuite | — | res://assets/audio/sfx/sfx_ship_boost_01.ogg, res://assets/audio/sfx/sfx_ship_engine_01.ogg …(+18) | — |
-| res://tests/test_ui_slot_layout.gd | McpTestSuite | — | res://assets/icons/slot/, res://assets/icons/slot/icon_slot_w.svg, res://game/module_catalog.gd …(+12) | — |
+| res://tests/test_ui_slot_layout.gd | McpTestSuite | — | res://assets/icons/slot/, res://assets/icons/slot/icon_slot_w.svg, res://game/module_catalog.gd …(+11) | — |
 | res://tests/test_weapon_fx_f1.gd | McpTestSuite | — | res://assets/, res://assets/audio/sfx/sfx_mining_beam_01.ogg, res://assets/fx/fx_laser_bolt_f1.png …(+11) | — |
 | res://tests/test_weapon_fx_f2.gd | McpTestSuite | — | res://assets/, res://assets/fx/fx_arc_spark_f1.png, res://assets/fx/fx_explosion_f1.png …(+13) | res://tests/probe_rock_cleave_lint.gd |
 | res://tests/test_weapon_fx_f4.gd | McpTestSuite | — | res://assets/fx/fx_explosion_f1.png, res://assets/fx/fx_shield_ripple_f1.png, res://autoload/audio_manager.gd …(+5) | — |
@@ -727,6 +727,8 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://tools/build_theme.gd | SceneTree | — | res://assets/fonts/Oxanium, res://assets/fonts/Rajdhani-Medium.ttf, res://assets/fonts/Rajdhani-Regular.ttf …(+8) | res://tests/probe_s20_review.gd, res://tests/test_s41_shell.gd |
 | res://tools/d8_glyph_audit.gd | Node | — | res://assets/fonts/Oxanium, res://assets/fonts/Rajdhani-Medium.ttf, res://assets/fonts/Rajdhani-Regular.ttf …(+5) | res://tools/d8_glyph_audit.tscn, res://tools/d8_glyph_audit.tscn (ext_resource) |
 | res://tools/derive_icon_tints.gd | SceneTree | — | res://assets/icons, res://assets/icons/tint | — |
+| res://tools/probe_t204.gd | Node | — | res://tools/probe_t204.tscn, res://tools/probe_t204_worker.gd | res://tools/probe_t204.tscn, res://tools/probe_t204.tscn (ext_resource) |
+| res://tools/probe_t204_worker.gd | Node | — | — | res://tools/probe_t204.gd |
 | res://tools/r1_s13_ac3_replay.gd | SceneTree | — | res://game/asteroid.gd, res://game/mining_laser.gd, res://game/ore_tuning.gd | — |
 | res://tools/r1_s14_ac_replay.gd | SceneTree | — | res://game/asteroid.gd, res://game/asteroid_field.gd, res://game/ore_tuning.gd | — |
 | res://tools/r1_s15_ac_replay.gd | SceneTree | — | res://autoload/player_profile.gd, res://game/ship_fit.gd, res://game/weapons.gd | — |
@@ -743,11 +745,11 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://ui/components/slot_button.gd | TextureButton | — | — | res://tests/probe_g3_lint.gd, res://tests/probe_g3_shadow.gd, res://tests/probe_g4_lint.gd …(+4) |
 | res://ui/components/tooltip.gd | PanelContainer | — | res://ui/theme/chrome_family.gd | res://ui/components/tooltip.tscn, res://ui/components/tooltip.tscn (ext_resource) |
 | res://ui/dev/dev_tuning_menu.gd | CanvasLayer | — | res://game/ore_tuning.gd | res://tests/test_s13_devmenu.gd, res://ui/dev/dev_tuning_menu.tscn …(+1) |
-| res://ui/dialogs/cargo_overlay.gd | Control | closed | res://assets/icons/tint/, res://game/component_catalog.gd, res://game/mineral_catalog.gd …(+2) | res://tests/test_s48_cargo_overlay.gd, res://ui/dialogs/cargo_overlay.tscn …(+1) |
+| res://ui/dialogs/cargo_overlay.gd | Control | closed | res://game/station_catalog.gd, res://ui/station/cargo_summary.gd, res://ui/theme/chrome_family.gd | res://tests/test_s48_cargo_overlay.gd, res://ui/dialogs/cargo_overlay.tscn …(+1) |
 | res://ui/dialogs/dialog.gd | Screen | — | — | res://ui/dialogs/dialog.tscn, res://ui/dialogs/dialog.tscn (ext_resource) |
 | res://ui/hud/cockpit_cluster.gd | Control | — | res://ui/hud/cockpit_style.gd | — |
 | res://ui/hud/cockpit_style.gd | Resource | — | res://assets/icons/hud/icon_close.svg, res://assets/ui/, res://assets/ui/ui_cockpit_frame.png …(+5) | res://tests/test_d7_armory.gd, res://tests/test_d7_cockpit.gd, res://tests/test_d7_status.gd …(+5) |
-| res://ui/hud/hud.gd | Control | cargo_toggled, map_autopilot_cancel, map_autopilot_to, map_jump_requested, minimap_zoom_changed …(+1) | res://assets/icons/cargo/icon_cargo_container.svg, res://assets/icons/cargo/icon_cargo_crate.svg …(+19) | res://tests/probe_s22r1_review.gd, res://tests/probe_s8_q3_lint.gd, res://tests/probe_w5_lint.gd …(+5) |
+| res://ui/hud/hud.gd | Control | cargo_toggled, map_autopilot_cancel, map_autopilot_to, map_jump_requested, minimap_zoom_changed …(+1) | res://assets/icons/cargo/icon_cargo_container.svg, res://assets/icons/cargo/icon_cargo_crate.svg …(+19) | res://tests/probe_s22r1_review.gd, res://tests/probe_s8_q3_lint.gd, res://tests/probe_w5_lint.gd …(+6) |
 | res://ui/hud/map_deck.gd | PanelContainer | autopilot_cancel, autopilot_to, filters_changed, jump_requested, pin_changed | res://ui/hud/minimap.gd | res://tests/test_s29_map_deck.gd, res://ui/hud/hud.gd |
 | res://ui/hud/minimap.gd | Control | — | — | res://tests/probe_g1_lint.gd, res://tests/probe_g2_lint.gd, res://tests/probe_g3_lint.gd …(+7) |
 | res://ui/hud/ship_status_screen.gd | Control | — | res://assets/icons/slot/, res://ui/hud/cockpit_style.gd, res://ui/station/repairs_panel.gd | res://tests/probe_s19r1_review.gd, res://tests/test_d6_status.gd, res://tests/test_s19_quadrants.gd …(+1) |
@@ -761,20 +763,21 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://ui/screens/settings.gd | Screen | — | res://ui/screens/settings_rebind_row.tscn | res://ui/screens/settings.tscn, res://ui/screens/settings.tscn (ext_resource) |
 | res://ui/screens/settings_rebind_row.gd | HBoxContainer | binding_pressed, reset_pressed | — | res://ui/screens/settings_rebind_row.tscn, res://ui/screens/settings_rebind_row.tscn (ext_resource) |
 | res://ui/screens/station.gd | Screen | — | res://assets/icons/cargo/icon_cargo_ore.svg, res://assets/icons/cargo/icon_credits.svg …(+21) | res://tests/probe_r1_fit_panes.gd, res://tests/probe_r1_p2b1_review.gd, res://tests/probe_s20_review.gd …(+21) |
-| res://ui/station/armory_panel.gd | Control | confirm_requested, inspect_requested, sheet_requested, status_requested | res://assets/icons/slot/, res://assets/icons/tint/, res://assets/icons/weapon/icon_weapon_cannon.svg …(+8) | res://tests/probe_s20_review.gd, res://tests/probe_s33_review.gd, res://tests/probe_s35_f1_subtitle.gd …(+19) |
+| res://ui/station/armory_panel.gd | Control | confirm_requested, inspect_requested, sheet_requested, status_requested | res://assets/icons/slot/, res://assets/icons/tint/, res://assets/icons/weapon/icon_weapon_cannon.svg …(+9) | res://tests/probe_s20_review.gd, res://tests/probe_s33_review.gd, res://tests/probe_s35_f1_subtitle.gd …(+19) |
 | res://ui/station/armory_style.gd | "res://ui/hud/cockpit_style.gd" | — | res://ui/hud/cockpit_style.gd, res://ui/station/armory_style_user.tres, res://ui/theme/vajb_theme.tres | res://tests/probe_s20_review.gd, res://tests/test_d7_armory.gd, res://tests/test_s18_armory_rework.gd …(+2) |
 | res://ui/station/auction_panel.gd | VBoxContainer | confirm_requested, inspect_requested, sheet_requested, status_requested | res://assets/icons/tint/, res://assets/icons/weapon/icon_weapon_cannon.svg …(+9) | res://tests/test_p2b1_outfitting_panel.gd, res://tests/test_s3_auction.gd …(+4) |
+| res://ui/station/cargo_summary.gd | RefCounted | — | res://assets/icons/tint/, res://game/component_catalog.gd, res://game/mineral_catalog.gd …(+3) | res://ui/dialogs/cargo_overlay.gd, res://ui/station/armory_panel.gd, res://ui/station/launch_panel.gd |
 | res://ui/station/contracts_panel.gd | VBoxContainer | confirm_requested, inspect_requested, status_requested | res://assets/icons/tint/icon_insignia_%s_48.png, res://autoload/world_clock.gd …(+5) | res://tests/test_s25_contracts.gd, res://tests/test_s38_start_and_clock.gd …(+3) |
 | res://ui/station/exchange_panel.gd | VBoxContainer | inspect_requested, sheet_requested, status_requested | res://assets/icons/, res://assets/icons/tint/, res://autoload/player_profile.gd, res://autoload/world_clock.gd …(+5) | res://tests/probe_g3_lint.gd, res://tests/probe_g3_shadow.gd, res://tests/probe_g4_lint.gd …(+5) |
 | res://ui/station/fitting_panel.gd | VBoxContainer | inspect_requested, sheet_requested, status_requested | res://assets/icons/slot/, res://assets/icons/tint/, res://assets/icons/weapon/icon_weapon_cannon.svg …(+4) | res://tests/probe_r1_fit_panes.gd, res://tests/probe_r1_p2b1_review.gd, res://tests/probe_s8_q0_armory.gd …(+8) |
 | res://ui/station/insurance_panel.gd | VBoxContainer | confirm_requested, inspect_requested, status_requested | res://assets/icons/service/icon_service_insurance.svg, res://autoload/player_profile.gd …(+2) | res://tests/test_s49_confirm_doors.gd, res://ui/station/insurance_panel.tscn …(+1) |
-| res://ui/station/launch_panel.gd | VBoxContainer | inspect_requested, launch_requested, status_requested | res://assets/icons/cargo/, res://assets/icons/cargo/icon_cargo_crate.svg, res://autoload/player_profile.gd …(+7) | res://tests/probe_g3_lint.gd, res://tests/probe_g3_shadow.gd, res://tests/probe_g4_lint.gd …(+12) |
+| res://ui/station/launch_panel.gd | VBoxContainer | inspect_requested, launch_requested, status_requested | res://autoload/player_profile.gd, res://game/repairs.gd, res://game/sector_registry.gd …(+6) | res://tests/probe_g3_lint.gd, res://tests/probe_g3_shadow.gd, res://tests/probe_g4_lint.gd …(+11) |
 | res://ui/station/overview_panel.gd | VBoxContainer | inspect_requested, navigate_requested, status_requested | res://assets/icons/cargo/icon_cargo_ore.svg, res://assets/icons/cargo/icon_credits.svg …(+14) | res://tests/test_s24_world.gd, res://tests/test_s40_legibility.gd, res://tests/test_s42_overview_grid.gd …(+2) |
 | res://ui/station/refinery_panel.gd | VBoxContainer | confirm_requested, inspect_requested, sheet_requested, status_requested | res://assets/icons/tint/, res://autoload/player_profile.gd, res://game/component_catalog.gd …(+5) | res://tests/probe_w3_lint.gd, res://tests/probe_w5_lint.gd, res://tests/test_s49_confirm_doors.gd …(+2) |
 | res://ui/station/repairs_panel.gd | VBoxContainer | inspect_requested, status_requested | res://autoload/player_profile.gd, res://game/repairs.gd, res://game/station_catalog.gd | res://tests/probe_s19r1_review.gd, res://tests/probe_s22r1_review.gd, res://tests/probe_s8_q3_lint.gd …(+7) |
 | res://ui/station/shipyard_panel.gd | VBoxContainer | confirm_requested, inspect_requested, sheet_requested, status_requested | res://assets/icons/slot/, res://autoload/player_profile.gd, res://game/auction.gd …(+7) | res://tests/probe_g3_lint.gd, res://tests/probe_g3_shadow.gd, res://tests/probe_g4_lint.gd …(+7) |
 | res://ui/station/vaults_panel.gd | VBoxContainer | confirm_requested, inspect_requested, status_requested | res://assets/icons/service/icon_service_vault.svg, res://autoload/player_profile.gd …(+2) | res://tests/test_s49_confirm_doors.gd, res://ui/station/vaults_panel.tscn …(+1) |
-| res://ui/theme/chrome_family.gd | RefCounted | — | res://assets/ui/ | res://tests/probe_s36_r1_scene.gd, res://tests/probe_s37_r1_scene.gd, res://tests/test_s36_chrome_census.gd …(+14) |
+| res://ui/theme/chrome_family.gd | RefCounted | — | res://assets/ui/ | res://tests/probe_s36_r1_scene.gd, res://tests/probe_s37_r1_scene.gd, res://tests/test_s36_chrome_census.gd …(+15) |
 
 ## 5. Orphan scripts (attached nowhere, referenced by nothing)
 Deletion or archival candidates; tests/ is exempt (the runner discovers it).

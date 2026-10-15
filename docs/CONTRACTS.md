@@ -1132,6 +1132,21 @@ V3's tail without losing their substance. The owning pins are UI_SPEC §18.3 and
 instrument is `tools/audit_sweep.gd` (a standalone scripted capture walk, 21
 full-resolution shots per run).
 
+**The playtest pass — the ammunition rows, the armory's cargo preview and the
+launch manifest (2026-10-15, owner-directed single session):** the Expected
+line is **`[SUMMARY] passed=1429 failed=0`**, exit 0, twice hermetic through
+`staging/gate.py`, byte-identical, zero `SCRIPT ERROR` lines — **net 0** (the
+retired strip rows −2, the new pins +2): `test_d7_armory.gd`'s 320×68 card
+geometry rows re-cut to A18's full-width container row, `test_s20_chrome_unify.gd`
+and `test_s43_armory_equipped.gd` re-seat their cell reads through the row's
+container depth (plus s43's new A19 block row), `test_p2b1_outfitting_panel.gd`
+reads the upper-case pack title, and `test_ui_slot_layout.gd` trades its two
+plate-strip rows for the A20 manifest row. The owning pin is UI_SPEC **§20**
+(A18–A20: the full-width ammunition rows, the armory's CARGO HOLD block, the
+launch manifest as the overlay's read-only instance); STATION_HUB §23.11 rows
+15–16 carry the supersessions. The slots law's and the row grammar's single
+home is the new `ui/station/cargo_summary.gd` (the overlay delegates).
+
 ## §11 P2 ship frames (2026-09-21)
 
 Pinned before any code worker starts, so five parallel workers agree. Additive only:
@@ -3819,6 +3834,17 @@ bottom (the index-line form is only for retired entries).
   per D24's design law, so CONTRACTS carries no new §-section for them.
   **Reversal:** drop the §9 chain block and this entry (the waves' own record
   stays in `MASTER_REPORT.md` §6 and the WAVEBOARD one-liners).
+- **v0.63 (2026-10-15, the playtest pass — the owner's first pass over the
+  fixed surfaces; gate held 1429/0 ×2 byte-identical, net 0 rows)** — UI_SPEC
+  **§20** pins **A18** (the armory's AMMUNITION rows are the shared menu's own
+  full-width container rows — the 320×68 hand-placed card retires, every cell
+  name and word stands, the band seats HELD/STATE/COST), **A19** (the armory's
+  left column gains the CARGO HOLD block — the overlay's title words, the
+  capped summary rows) and **A20** (the LAUNCH manifest is the overlay's
+  read-only instance — the plate strip retires, the banded rows ride
+  `%CargoList`). `ui/station/cargo_summary.gd` is the slots law's and the
+  read-only row grammar's single home (the overlay delegates; the s48 seams
+  stand). STATION_HUB §23.11 rows 15–16 carry the supersessions.
 - **v0.62 (2026-10-15, the cargo overlay audit round + container bounds + the
   visual round — the owner's visual audit, one session; gate 1426 → 1429/0 ×2
   byte-identical)** — UI_SPEC **§18.3** pins **A14–A16** (an ammunition row

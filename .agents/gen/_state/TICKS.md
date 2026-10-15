@@ -5,13 +5,12 @@ file when decided or done** (deleted at the wave close-out or the ruling — the
 record lives in the cited file and `MASTER_REPORT.md` §6, this is the index
 only). Refreshed at every wave close-out and after every owner ruling.
 
-*Last refreshed: 2026-10-15 evening (the owner answered the audit round's three
-questions — regenerate / keep cap / keep tool — and the **T-203 pack-icon
-regeneration round closed in the same session**: both masters bright on
-Qwen-Image 2.1 per ICONS_SPEC §10, gate **1429/0 ×2 byte-identical**, the
-asset-only commit follows. **The P4 exit pass is the one open action** — the
-owner's eye over a fresh build; T-179 and the S41 chrome tokens re-present
-there. New owner questions at the bottom.)*
+*Last refreshed: 2026-10-15 night (the owner's **playtest pass answered in the
+same session**: the ammunition rows full-width (A18), the armory's CARGO HOLD
+block (A19), the launch manifest as the C overlay's read-only instance (A20) —
+UI_SPEC §20, gate **1429/0 ×2 byte-identical**, net 0 rows. **The P4 exit pass
+continues** — these three items were its first findings; the next pass reads
+the fixed surfaces. T-179 and the S41 chrome tokens re-present there.)*
 *Previously 2026-10-15 (the owner's **visual audit round closed in one
 session**: the cargo overlay's three audit bugs cured under UI_SPEC §18.3
 A14–A16, the container bounds under A17 + the OVERVIEW slack, the visual round

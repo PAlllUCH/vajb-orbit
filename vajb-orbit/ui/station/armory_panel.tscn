@@ -128,6 +128,7 @@ theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 10
 
 [node name="FitLeftStack" type="VBoxContainer" parent="ModeHost/FitCells/FitSectors/FitLeft/FitLeftBox/FitLeftInset"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 0
 theme_override_constants/separation = 6

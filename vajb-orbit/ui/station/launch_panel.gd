@@ -66,15 +66,10 @@ const ARM_SECONDS := 3.0
 const ARM_PULSE_MIN_ALPHA := 0.70
 const ARM_PULSE_SECONDS := 0.16
 
-const CARGO_PLATES := 5
-const CARGO_PLATE_VARIATION: StringName = &"SlotButtonCargo"
-const CARGO_PLATE_SIZE := 40.0
-const CARGO_PLATE_SEPARATION := 6
-const CARGO_ICON_SIZE := 24.0
-const CARGO_ICON_INSET := 8.0
-const CARGO_ICON_DIR := "res://assets/icons/cargo/"
-const CARGO_ICON_TEMPLATE := "icon_cargo_%s.svg"
-const CARGO_ICON_FALLBACK := "res://assets/icons/cargo/icon_cargo_crate.svg"
+## A20 (the owner's 2026-10-15 pass): the cargo plate strip retired - the
+## manifest is the C overlay's read-only instance, built by the shared
+## summary builder into the %CargoList rows box.
+const Summary := preload("res://ui/station/cargo_summary.gd")
 
 ## S23 A5: the damaged side view a hurt hull shows (the same swap REPAIRS ships).
 const SIDE_SUFFIX := "_side.png"
@@ -148,8 +143,6 @@ const TAG_FORMAT := "TWO PRESSES · %d s WINDOW"
 const CARGO_CAPTION := "CARGO HOLD · %s"
 const CARGO_FORMAT := "%d / %d"
 const AMMO_FORMAT := "%s ROUNDS ACROSS %s"
-const MANIFEST_FORMAT := "%s   %d"
-const HOLD_EMPTY := "HOLD EMPTY"
 ## S28's A6 (D17-P2: dev-speak in player copy): the note tells the pilot what the
 ## manifest is and where trade happens, in play words; the derivation of names is a
 ## build fact and lives in the code, not on the pane.
@@ -180,8 +173,7 @@ const STATUS_FIRED := "LAUNCH CONFIRMED · UNDOCKING"
 @onready var _tag: Label = %PanelTag
 @onready var _brief_rows: VBoxContainer = %BriefRows
 @onready var _cargo_caption: Label = %CargoCaption
-@onready var _cargo_slots: HBoxContainer = %CargoSlots
-@onready var _cargo_list: ItemList = %CargoList
+@onready var _cargo_list: VBoxContainer = %CargoList
 @onready var _brief_note: Label = %BriefNote
 @onready var _launch_button: Button = %LaunchButton
 @onready var _actions_row: HBoxContainer = %ActionsRow
@@ -193,8 +185,6 @@ const STATUS_FIRED := "LAUNCH CONFIRMED · UNDOCKING"
 @onready var _brief_roof: PanelContainer = %BriefRoof
 
 var _brief_values: Dictionary = {}
-var _plates: Array[TextureButton] = []
-var _plate_icons: Array[TextureRect] = []
 ## The service actions, built into DECK CONTROL's own box (the section 5.4 amendment); the
 ## labels are the catalogue's, so nothing here is a literal to drift. The bounty row (13
 ## section 7 / 14 section 7, wave S6) is the third and lives in the same row.
@@ -210,7 +200,6 @@ var _tweens: Array[Tween] = []
 
 func _ready() -> void:
 	_build_brief_rows()
-	_build_cargo_plates()
 	_build_arm_timer()
 	_build_service_rows()
 	_subtitle.text = SUBTITLE % [_bridge_label(), String(destination_route()).to_upper()]
@@ -303,7 +292,6 @@ func _docked_sector_name() -> String:
 
 
 func _apply_tokens() -> void:
-	_refresh_plate_textures()
 	_roof_briefing_column()
 	if _armed:
 		_launch_button.add_theme_color_override(&"font_color", _token(&"accent_danger_bright"))
@@ -351,66 +339,6 @@ func _build_brief_rows() -> void:
 		line.add_child(value)
 		_brief_values[row[&"key"]] = value
 
-
-func _build_cargo_plates() -> void:
-	_cargo_slots.add_theme_constant_override(&"separation", CARGO_PLATE_SEPARATION)
-	for index in CARGO_PLATES:
-		var plate := _make_plate(_cargo_slots, CARGO_PLATE_VARIATION, CARGO_PLATE_SIZE)
-		plate.name = "CargoSlot%02d" % (index + 1)
-		plate.disabled = true
-		var icon := TextureRect.new()
-		icon.name = "Icon"
-		icon.custom_minimum_size = Vector2(CARGO_ICON_SIZE, CARGO_ICON_SIZE)
-		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		icon.visible = false
-		plate.add_child(icon)
-		icon.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		icon.offset_left = CARGO_ICON_INSET
-		icon.offset_top = CARGO_ICON_INSET
-		icon.offset_right = -CARGO_ICON_INSET
-		icon.offset_bottom = -CARGO_ICON_INSET
-		_plates.append(plate)
-		_plate_icons.append(icon)
-
-
-func _make_plate(parent: HBoxContainer, variation: StringName, plate_size: float) -> TextureButton:
-	# ui/components/slot_button.gd copies the theme plate textures onto the node, because a
-	# TextureButton has no stylebox items, so SlotButtonCargo/styles/* is never read by the
-	# engine on a bare theme_type_variation. The panel repeats that lookup (the mockup's own
-	# construct) so the strip also renders without instancing the HUD component.
-	var plate := TextureButton.new()
-	plate.theme_type_variation = variation
-	plate.ignore_texture_size = true
-	plate.custom_minimum_size = Vector2(plate_size, plate_size)
-	plate.focus_mode = Control.FOCUS_NONE
-	plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	parent.add_child(plate)
-	_apply_plate_textures(plate)
-	return plate
-
-
-func _apply_plate_textures(plate: TextureButton) -> void:
-	var variation: StringName = plate.theme_type_variation
-	plate.texture_normal = _plate_texture(variation, &"normal")
-	plate.texture_hover = _plate_texture(variation, &"hover")
-	plate.texture_pressed = _plate_texture(variation, &"pressed")
-	plate.texture_disabled = _plate_texture(variation, &"disabled")
-
-
-func _plate_texture(variation: StringName, state: StringName) -> Texture2D:
-	if not has_theme_stylebox(state, variation):
-		return null
-	var box := get_theme_stylebox(state, variation)
-	if box is StyleBoxTexture:
-		return (box as StyleBoxTexture).texture
-	return null
-
-
-func _refresh_plate_textures() -> void:
-	for plate: TextureButton in _plates:
-		_apply_plate_textures(plate)
 
 
 ## DECK CONTROL's service actions (STATION_HUB section 5.4's 2026-09-22 amendment). S28's
@@ -649,53 +577,10 @@ func _slot_cell_count(hull_id: StringName) -> int:
 func _refresh_cargo() -> void:
 	var items := _cargo_items()
 	_cargo_caption.text = CARGO_CAPTION % Catalog.plural(items.size(), "STACK")
-	_refresh_plates(items)
-	_refresh_manifest(items)
-
-
-func _refresh_plates(items: Dictionary) -> void:
-	var keys := items.keys()
-	for index in _plates.size():
-		var used := index < keys.size()
-		var plate := _plates[index]
-		var icon := _plate_icons[index]
-		plate.disabled = not used
-		icon.visible = used
-		if used:
-			icon.texture = load(_cargo_icon_path(keys[index])) as Texture2D
-		else:
-			icon.texture = null
-
-
-func _refresh_manifest(items: Dictionary) -> void:
-	_cargo_list.clear()
-	var keys := items.keys()
-	if keys.is_empty():
-		_cargo_list.add_item(HOLD_EMPTY)
-		_cargo_list.set_item_disabled(0, true)
-		return
-	for key: Variant in keys:
-		var item_id := StringName(str(key))
-		_cargo_list.add_item(MANIFEST_FORMAT % [_cargo_display_name(item_id), int(items[key])])
-	_cargo_list.select(0)
-
-
-func _cargo_display_name(item_id: StringName) -> String:
-	## No item catalogue exists in v1: PlayerProfile counts ids and a mining/loot spec owns
-	## the display data later, so the name comes from the id itself.
-	return String(item_id).capitalize()
-
-
-func _cargo_icon_path(item_id: StringName) -> String:
-	## The catalogue the mockup stubbed does not exist, so the glyph is resolved against the
-	## derived tint stencils on disk: the whole id first, then its leading token, then a
-	## generic crate. Never a literal path per item.
-	var id := String(item_id)
-	for token: String in PackedStringArray([id, id.get_slice("_", 0)]):
-		var candidate := CARGO_ICON_DIR + CARGO_ICON_TEMPLATE % token
-		if ResourceLoader.exists(candidate):
-			return candidate
-	return CARGO_ICON_FALLBACK
+	## A20: the manifest is the C overlay's read-only instance - the shared
+	## builder's banded rows over the A14 slots, capped at the A17 bound with
+	## its tail; the surface reads, it never disposes.
+	Summary.populate_rows(_cargo_list, _profile(), self)
 
 
 func _cargo_items() -> Dictionary:
