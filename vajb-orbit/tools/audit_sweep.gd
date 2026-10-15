@@ -97,8 +97,12 @@ func _run() -> void:
 	var laser_item := Catalog.ammo_item_id(StringName("laser"))
 	if laser_item != StringName(""):
 		profile.add_cargo(laser_item, 3)
+	var rocket_item := Catalog.ammo_item_id(StringName("rocket"))
+	if rocket_item != StringName(""):
+		profile.add_cargo(rocket_item, 2)
 	if profile.has_method(&"set_ammo"):
 		profile.call(&"set_ammo", StringName("laser"), 137)
+		profile.call(&"set_ammo", StringName("rocket"), 24)
 	overlay.open()
 	overlay.select_category(StringName("all"))
 	await _wait(0.4)

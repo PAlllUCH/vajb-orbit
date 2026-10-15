@@ -5,7 +5,14 @@ file when decided or done** (deleted at the wave close-out or the ruling — the
 record lives in the cited file and `MASTER_REPORT.md` §6, this is the index
 only). Refreshed at every wave close-out and after every owner ruling.
 
-*Last refreshed: 2026-10-15 (the owner's **visual audit round closed in one
+*Last refreshed: 2026-10-15 evening (the owner answered the audit round's three
+questions — regenerate / keep cap / keep tool — and the **T-203 pack-icon
+regeneration round closed in the same session**: both masters bright on
+Qwen-Image 2.1 per ICONS_SPEC §10, gate **1429/0 ×2 byte-identical**, the
+asset-only commit follows. **The P4 exit pass is the one open action** — the
+owner's eye over a fresh build; T-179 and the S41 chrome tokens re-present
+there. New owner questions at the bottom.)*
+*Previously 2026-10-15 (the owner's **visual audit round closed in one
 session**: the cargo overlay's three audit bugs cured under UI_SPEC §18.3
 A14–A16, the container bounds under A17 + the OVERVIEW slack, the visual round
 V1–V4 under UI_SPEC §19; gate **1429/0 ×2 byte-identical**; commits `9675aa1`,
@@ -181,18 +188,7 @@ plan)*
 
 ## Open decisions — the owner's answers wanted
 
-- **The dark pack art (T-203, LOW).** The cargo overlay's ammunition rows read
-  their pack icons nearly black at the 40 px slot (dark source art under the
-  idle-alpha ink law). Modulate cannot brighten below-1 art; a fix needs the
-  icons regenerated — which waits on the owner restoring the generation corpus
-  (the 2026-10-08 clear-out retired the rebuild chain). Rider on any future
-  asset round; no wave blocked.
-- **The flight readout cap is a ruling made for you (A17).** The HUD cargo
-  block now caps at 6 rows with a `+<n> MORE · PRESS C` tail — your
-  "containers expand/retract" complaint applied to it. If you want the full
-  list always visible instead, the cap number is one line; say so and it
-  re-presents.
-- **The audit instrument is yours to keep or drop.** `tools/audit_sweep.gd`
-  walks every screen and writes full-resolution captures to `/tmp` (it never
-  touches the real save). It rides the repo in `tools/`; if you would rather
-  not carry it, say so and it retires to `_archive/`.
+*(none — the 2026-10-15 trio is answered and executed: "Ok, regenerate" ran the
+T-203 pack-icon round the same day (ICONS_SPEC §10, both masters bright and
+proven at the 40 px slot); "Keep for now" keeps the A17 6-row flight-readout
+cap; "keep" keeps `tools/audit_*` in the repo.)*

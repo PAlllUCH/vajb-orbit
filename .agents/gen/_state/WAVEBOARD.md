@@ -63,6 +63,24 @@ P4 manifest's slice boxes ticked. **Trash removed:** the regenerable
 `__pycache__` bytecode caches under `staging/`, `.crush/hooks/` and the D21
 archive slice. Full block: `MASTER_REPORT.md` §6's "P4 code-lane close".
 
+**Updated 2026-10-15 (T-203 closed — the pack icon masters regenerated bright;
+the owner's three audit-round questions all answered).** The owner ruled
+"Ok, regenerate" (the icons), "Keep for now" (the A17 6-row cap) and "keep"
+(the audit tool). The round needed no corpus restore: the pack masters are
+single unsuffixed files with no panel render behind them, so they regenerated
+as fresh runs on **Qwen-Image 2.1** (the owner's model pick, 1K, native
+transparency), lifted to ICONS_SPEC §10.2's brightness gates by the scripted
+`staging/cut/lift_pack_icons.py` and centred to the 1.5 px law. Measured:
+laser avg 90 / p90 154 (was 42/87), rocket 90/168 (was 42/81); the four SVG
+packs were never dark and proton/flak follow their donors. Docs-first: ICONS
+SPEC **§10** (the defect measured, the brightness law, the execution record);
+ASSET_CATALOG regenerated; the pre-regeneration bytes backed up to
+`_prekey_backup/pack_icons_2026-10-15/`. The audit sweep gained the rocket
+pack in its mixed-hold fixture and the standalone run proved both icons
+legible at the 40 px slot (21 shots, zero SCRIPT ERROR). Gate **1429/0 ×2
+byte-identical** (asset-only round, no suite rows moved). Full block:
+`MASTER_REPORT.md` §6's "pack icon regeneration".
+
 **Updated 2026-10-15 (the owner's visual audit — one session: the cargo overlay
 audit round, the container bounds, and the visual round).** The owner's verdict
 on the rework ("shows ammo even if i have 0 ammo", "different categories have
@@ -81,6 +99,11 @@ standalone, never touches the real save).
 
 One-line outcomes, newest first (full blocks: `MASTER_REPORT.md` §6, same-named
 entries):
+
+- **Pack icon regeneration** (2026-10-15, owner-directed single session) —
+  T-203 closed: both pack masters regenerated on Qwen-Image 2.1 to ICONS_SPEC
+  §10's brightness gates (42 → 90 avg); gate held 1429/0 ×2; no corpus restore
+  needed.
 
 - **Visual audit round** (2026-10-15, owner-directed single session) — the
   cargo overlay fixes (A14–A16), the container bounds (A17 + the OVERVIEW

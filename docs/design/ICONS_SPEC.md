@@ -17,15 +17,16 @@ and every tool result is re-sent on each later request.
 
 | Section | Topic | Lines |
 |---|---|---|
-| 1. | Grid and stroke rules | L33–L51 |
-| 2. | Icon list — weapons (5) | L52–L61 |
-| 3. | Icon list — cargo and ore (6) | L62–L72 |
-| 4. | Icon list — glyphs (9) | L73–L86 |
-| 5. | Generation panels | L87–L96 |
-| 6. | Generation notes | L97–L104 |
-| 7. | File naming convention | L105–L122 |
-| 8. | Amendment 2026-09-18 (Phase F — RPG/economy icon families) | L123–L256 |
-| 9. | Amendment 2026-09-18 (Phase F.1 — resolution standard and integrity … | L257–L514 |
+| 1. | Grid and stroke rules | L34–L52 |
+| 2. | Icon list — weapons (5) | L53–L62 |
+| 3. | Icon list — cargo and ore (6) | L63–L73 |
+| 4. | Icon list — glyphs (9) | L74–L87 |
+| 5. | Generation panels | L88–L97 |
+| 6. | Generation notes | L98–L105 |
+| 7. | File naming convention | L106–L123 |
+| 8. | Amendment 2026-09-18 (Phase F — RPG/economy icon families) | L124–L257 |
+| 9. | Amendment 2026-09-18 (Phase F.1 — resolution standard and integrity … | L258–L515 |
+| 10. | Amendment 2026-10-15 (T-203 — the pack icon masters regenerate brigh… | L516–L583 |
 
 <!-- section-index:end -->
 
@@ -511,3 +512,71 @@ are reproducible with `wave_f.py f2_drone_swarm --post-only`, the post-defringe 
 defect), the tint stencils regenerate with `tools/derive_icon_tints.gd`, and the pre-thicken
 glyph masters are in `_f2_backup/`. `DESIGNER_TODO.MD` is closed and carries a status header;
 every stage of it is executed.
+
+## 10. Amendment 2026-10-15 (T-203 — the pack icon masters regenerate bright)
+
+**Source:** the 2026-10-15 visual audit's legibility LOW, filed as `T-203`
+(`.agents/gen/_state/LOW_BACKLOG.md`); the owner green-lit the regeneration the
+same day ("Ok, regenerate"). The 2026-10-08 clear-out is not a blocker for this
+round: the pack icons are single masters with no quartet and no panel render
+behind them, so they regenerate as fresh single runs — the corpus restore
+remains open only for the full rebuild chain, which this round does not need.
+
+### 10.1 The defect, measured
+
+The two ammunition-pack masters are painted near-black. Method: Pillow over the
+shipped PNGs, opaque pixels only (alpha > 40):
+
+| Master | Size | Opaque share | avg luminance | p90 luminance |
+|---|---|---|---|---|
+| `icon_ammo_laser.png` | 512×512 | 26.5 % | 42 | 87 |
+| `icon_ammo_rocket.png` | 512×512 | 33.9 % | 42 | 81 |
+
+Their render path makes the darkness unavoidable in code:
+`cargo_overlay.gd`'s `_icon_source()` falls back to the raw catalogue art (the
+`tint/` stencils carry only the `_16..192` suffixed quartet names, so
+`tint/icon_ammo_laser.png` resolves false), and `_icon_ink()` gives raw art
+WHITE at the idle 0.72 alpha. Modulate multiplies, so it cannot brighten source
+art below 1. The four SVG packs (cannon, mine, plasma, railgun) carry bright
+fills (`#E8703A` / `#C9CDD2`) and were never affected; proton borrows the
+rocket master and flak the cannon SVG, so both follow their donor's fix.
+
+### 10.2 The brightness law
+
+A regenerated pack master must measure, over its opaque pixels (Pillow,
+alpha > 40):
+
+- **average luminance ≥ 90**, **p90 luminance ≥ 140** — legible at the 40 px
+  cargo slot under the idle 0.72 ink law, against the void panel;
+
+while keeping:
+
+- the painted grimdark family style and the style block's palette (the ember
+  glow `#E8703A` stays the only glow);
+- the silhouette semantics: laser = the capacitor canister with its ember
+  charge window; rocket = two shells in a riveted launch rack;
+- the same 512×512 master filenames — no rename, no code change;
+- true alpha (more than 10 % of pixels at alpha 0), clean edges, no matte
+  fringe.
+
+### 10.3 Execution record (2026-10-15)
+
+- Both masters regenerated as single runs on **Qwen-Image 2.1** (`qwen2-1/text-to-image`,
+  the owner's model pick) at 1K with native transparency, lifted to the §10.2
+  average gate by the scripted linear-gain pass `staging/cut/lift_pack_icons.py`,
+  then downscaled to the 512 masters (downscale-from-master only, §9.3) and
+  centred to the 1.5 px tolerance. Measured after placement: laser avg **90** /
+  p90 **154**, rocket avg **90** / p90 **168** — both gates of §10.2 held. The
+  raw 1024 renders and their task ids are recorded in the weapon generation
+  log's regeneration section (four superseded attempts also recorded there).
+- Pre-regeneration bytes backed up to
+  `asset-library/_prekey_backup/pack_icons_2026-10-15/` (the reversal path).
+- Provenance (prompt, model, job id, stamp) recorded in the appended
+  regeneration section of `vajb-orbit/assets/icons/weapon/generation_log.md`;
+  spend in the kie usage ledger.
+- Reimport by the F.2 rule: touch the sources, then force the import — the
+  editor's `reimport` alone marked the replaced files current while the `.ctex`
+  stayed stale; the working combo this round was touch + full
+  `EditorFileSystem` scan + `reimport` (both `.ctex` regenerated, verified by
+  mtime).
+- Reversal: restore the two backed-up masters and reimport the same way.
