@@ -64,7 +64,7 @@ and every tool result is re-sent on each later request.
 | 20. | The ARMORY two-module rework (amendment 2026-10-04, owner's playtest… | L1911–L1949 |
 | 21. | The two-sector rework — ARMORY's two modes and the REFINERY queue pa… | L1950–L1996 |
 | 22. | The station overhaul — owner rulings and asks (2026-10-12, phase P4 … | L1997–L2099 |
-| 23. | The station overhaul — the D24 design detail (amendment 2026-10-12, … | L2100–L2219 |
+| 23. | The station overhaul — the D24 design detail (amendment 2026-10-12, … | L2100–L2222 |
 
 <!-- section-index:end -->
 
@@ -2190,6 +2190,7 @@ the overlay adds no transaction anywhere. Reversal: the station ignores C
 | **P54** | §23.8 | the build list (HULLS/MODULES shelves, material runs `<held>/<needed>`, `BUILD` chip, N28 sheet); `BUILD_HULL_FORMAT` retires | the CR build band (T-178's) |
 | **A4–A6** | UI_SPEC §17 | the buy-confirmation law (door list, `confirm` route, wording) | no dialogs (today) |
 | **A7–A9** | UI_SPEC §18 | the C-key Cargo overlay (surface, groups, read-only seams) | station-unbound C |
+| **A10–A13** | UI_SPEC §18.2 | the 2026-10-14 owner-directed rework: A10 the refinery slot row, A11 the armory category strip, A12 the DISPOSE chip, A13 the sort cycle — owner-ruled in the request, not PROPOSED | the A9 caption rows; the A8 read-only bar |
 | **AUDIO-4/5** | AUDIO_SPEC §8.7 | S27 `sfx_station_undock` ≤ 1.0 s; S28 `sfx_station_spool_loop` 2.0 s; the §11 re-point | silence between press 2 and the route |
 | **R9–R12** | 04 §9 | `LOAD ALL`, the machine strip, the fourth plate, the CRAFT tab (model pointers) | as each row's |
 | **C1–C10** | 07 §6 | the crafting spec (recipes, fees, outputs, scrap-back, the tab door) | as each row's |
@@ -2211,6 +2212,9 @@ cures and view-law pointers; their reversals are their own rows).
 | 8 | §21.3 **P42**'s SLOTS readout shape | P51 (the strip; the header-band seat and the UPGRADE chip stand) |
 | 9 | 07 §2 "Where: a new station module, FOUNDRY" | P52 / 07 §6 C1 (the owner's tab ask, §22; bucket 3 discharged at the request) |
 | 10 | §5.2's build presentation (via `BUILD_HULL_FORMAT`, `shipyard_panel.gd:146`) and 10 §3.1's live-band note as the *view* law | P54 / 10 §3.5 (the economics stand; the view becomes the house style) |
+| 11 | UI_SPEC §18.1 **A8** ("No transactional control inside" — the overlay is the look, the panes are the act) | UI_SPEC §18.2 **A12**: the DISPOSE chip, the owner's 2026-10-14 carve-out (one transactional control, `remove_cargo` only) |
+| 12 | UI_SPEC §18.1 **A9**'s row grammar (the `<name> · <n>` caption rows, the 24 px family glyph, the five always-drawn groups) | UI_SPEC §18.2 **A10/A11/A13**: the refinery slot row, the category strip, the sort cycle (A9's seams and its five words stand) |
+| 13 | UI_SPEC §18.1 **A8**'s width law ("width size-to-content in 420/720") and §18.2 **A11**'s ammunition clause ("a pack read or hold units, fitted or not") | UI_SPEC §18.3 **A15/A14** (the owner's 2026-10-15 audit round): the surface holds one geometry while open (720 wide, the 80 % cap tall), and an ammunition row exists only when the hold carries units — the pack read rides the meta line |
 
 Named and **not** superseded: §2's two-press law (P48's preamble re-states it);
 T-181's words and 360×56 band (P50 extends the cluster, the closure stands);

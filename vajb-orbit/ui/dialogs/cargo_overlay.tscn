@@ -58,17 +58,41 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 12
 
-[node name="CargoTitle" type="Label" parent="CargoCenter/CargoPanel/CargoMargin/CargoScroll/CargoContent"]
+[node name="CargoTitleRow" type="HBoxContainer" parent="CargoCenter/CargoPanel/CargoMargin/CargoScroll/CargoContent"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"StationValue"
-autowrap_mode = 3
+theme_override_constants/separation = 12
 
-[node name="CargoGroups" type="VBoxContainer" parent="CargoCenter/CargoPanel/CargoMargin/CargoScroll/CargoContent"]
+[node name="CargoTitle" type="Label" parent="CargoCenter/CargoPanel/CargoMargin/CargoScroll/CargoContent/CargoTitleRow"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+theme_type_variation = &"StationValue"
+text_overrun_behavior = 3
+autowrap_mode = 3
+
+[node name="CargoSort" type="Button" parent="CargoCenter/CargoPanel/CargoMargin/CargoScroll/CargoContent/CargoTitleRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 32)
+layout_mode = 2
+size_flags_vertical = 4
+focus_mode = 2
+
+[node name="CargoTabs" type="HBoxContainer" parent="CargoCenter/CargoPanel/CargoMargin/CargoScroll/CargoContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="CargoBand" type="HBoxContainer" parent="CargoCenter/CargoPanel/CargoMargin/CargoScroll/CargoContent"]
+unique_name_in_owner = true
+layout_mode = 2
 theme_override_constants/separation = 12
+
+[node name="CargoRows" type="VBoxContainer" parent="CargoCenter/CargoPanel/CargoMargin/CargoScroll/CargoContent"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
 
 [node name="CargoHint" type="Label" parent="CargoCenter/CargoPanel/CargoMargin/CargoScroll/CargoContent"]
 unique_name_in_owner = true

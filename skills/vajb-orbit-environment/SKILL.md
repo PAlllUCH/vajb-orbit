@@ -22,6 +22,14 @@ absolute paths or secrets belong in project documents.
    - `cmd /c start ...` from this shell → swallowed by clink, nothing launches.
 4. Working method (verified): `Start-Process` with **`-WorkingDirectory`** on the project and only `--editor` as arg (no `--path`), which detaches the process so Crush restarts don't kill it.
 
+Second incident, 2026-10-12 → 2026-10-15 (Linux host): a 4.3.0 server
+process held 8000/9500 while the plugin was 4.2.2, so the editor could neither
+adopt it nor bind its own port and showed no session for three days. After the
+plugin was updated to 4.3.0 the *launch* path itself failed instead — the plugin
+cannot own a `uvx`-launched server on Linux. Both the diagnosis and the working
+arrangement (start the backend yourself, the plugin adopts it) are in the
+section below.
+
 ## Exact recovery procedure
 
 1. Launch editor detached:
@@ -37,11 +45,70 @@ absolute paths or secrets belong in project documents.
 4. Warm the gdscript LSP: it is lazy — create/edit any `.gd` in the project and run LSP diagnostics once, then check status is `ready`. With zero `.gd` files it stays `not_started`.
 5. Optional cross-check: `godot-lsp-bridge doctor` (on `PATH` via `crushrc`) must pass both checks when the editor is open.
 
+## The plugin cannot own a `uvx`-launched server on Linux (measured 2026-10-15)
+
+With plugin 4.2.2 or 4.3.0 the editor starts, loads the plugin, and then logs:
+
+```
+MCP | using uvx (godot-ai==<version>)
+MCP | Probing the configured server endpoint.
+MCP | server start blocked: The launched server process exited or changed identity
+      before publishing capabilities. Identity capture: stage=launch
+      category=identity_mismatch pid=<pid> creation_identity=linux:<ticks> attempt=1 elapsed_ms=0.
+```
+
+`session_manage` then reports `count: 0` while a server the plugin spawned keeps
+listening on 8000/9500. **The plugin never retries.**
+
+Cause: on Linux a process identity is `linux:<starttime>|<cmdline>`
+(`utils/linux_proc.gd`), and the plugin verifies the pid it launched against that
+identity before minting process authority (`utils/server_lifecycle.gd`,
+`_owned_process_disposition` → `replaced`). The `uvx` shim rewrites its own argv
+milliseconds after spawn (`…/bin/uvx …` → `…/bin/uv tool uvx …`), so the launch
+fingerprint no longer matches the grant. The three tiers in
+`client_configurator.gd::get_server_command` are the workaround space:
+`dev_venv` (`python -m godot_ai`, stable argv) → `uvx` (broken here) →
+`godot-ai` on `PATH` (stable argv). A project `.venv` is *not* picked up unless a
+sibling `src/godot_ai/` exists, so the practical fix is the adopted server below.
+
+**Fix — start the backend before the editor; the plugin adopts it** (this is the
+plugin's own supported path, "a compatible external server is adopted for
+transport"). The version must equal the plugin's, i.e. `crushrc`'s pin:
+
+```bash
+setsid nohup uvx --isolated --no-config --no-env-file --no-sources --no-build \
+  --index-strategy first-index --keyring-provider disabled \
+  --index https://pypi.org/simple --default-index https://pypi.org/simple \
+  --find-links https://pypi.org/simple/godot-ai/ --link-mode copy \
+  --from godot-ai==4.3.0 godot-ai --transport streamable-http \
+  --port 8000 --ws-port 9500 >/tmp/godot-ai-backend.log 2>&1 &
+```
+
+Then launch the editor. Healthy log, in order:
+
+```
+MCP | Probing the configured server endpoint.
+MCP | adopted external server
+MCP | connected to server; authenticating
+MCP | authenticated with server
+```
+
+and `session_manage(op="list")` → `count: 1` with `plugin_version` ==
+`server_version` == the pin. The backend outlives the editor (it is not
+plugin-owned), so an editor restart re-adopts it; if the backend dies, the
+editor falls back to the broken `uvx` spawn and reports no session again.
+
+A backend of a *different* version is refused, not adopted — that is what left
+the 2026-10-12..15 editor dead: a 4.3.0 server held 8000/9500 while the plugin
+was 4.2.2, so the plugin could neither adopt it nor bind its own port
+(`godot_ai_server_startup.json`: `[Errno 98] HTTP port 8000 is already in use`).
+
 ## Diagnosis cheat-sheet
 
 | Symptom | Meaning |
 |---|---|
-| `godot-ai` = connected, `session_manage` count 0 | MCP server alive, **editor closed**. Ports 8000/9500 belong to the MCP server itself — they are not proof the editor runs. |
+| `godot-ai` = connected, `session_manage` count 0 | MCP server alive, **editor closed** — or the plugin failed to own its launched server (see the section above); check the editor log for `server start blocked`. Ports 8000/9500 belong to the MCP server itself — they are not proof the editor runs. |
+| Editor log: `category=identity_mismatch`, `stage=launch`, `elapsed_ms=0` | The `uvx` argv rewrite beat the plugin's identity capture. Start the backend yourself (section above) and relaunch the editor. |
 | LSP log: `os error 10061` on 127.0.0.1:6005, 300 s timeout | Editor's language server not listening → editor closed (or still booting; wait and retest). |
 | `gdscript = not_started` in crush_info | LSP is lazy; trigger it with any `.gd` operation. Not an error by itself. |
 | Skills show 0/109 loaded | Normal — skills load on demand when a task matches. |

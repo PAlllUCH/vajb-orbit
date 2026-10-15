@@ -1110,6 +1110,16 @@ this section — §9's Expected figure above still read the S28-era 1202 until
 now. The drift is record-only: every wave's gate pair ran and passed, and the
 live count was re-verified from scratch for this entry.
 
+**Cargo overlay rework (2026-10-14, owner-directed single session — not a wave;
+no worker dispatched):** the Expected line is **`[SUMMARY] passed=1426 failed=0`**,
+exit 0, twice hermetic through `staging/gate.py`, byte-identical, zero
+`SCRIPT ERROR` lines. Growth **1422 → 1426 (+4)**: the s48 suite re-pins the
+reworked surface (`test_s48_cargo_overlay.gd`, 13 → 17 rows — the five-group
+and no-transaction rows retire; the category-strip, slot-row, sort-cycle,
+dispose and flight-dispose rows land). The owning pins are UI_SPEC §18.2
+(A10–A13); the docs-first record and the supersessions are STATION_HUB §23.10/
+§23.11 rows 11–12.
+
 ## §11 P2 ship frames (2026-09-21)
 
 Pinned before any code worker starts, so five parallel workers agree. Additive only:
@@ -3797,3 +3807,16 @@ bottom (the index-line form is only for retired entries).
   per D24's design law, so CONTRACTS carries no new §-section for them.
   **Reversal:** drop the §9 chain block and this entry (the waves' own record
   stays in `MASTER_REPORT.md` §6 and the WAVEBOARD one-liners).
+- **v0.61 (2026-10-14, the C-key cargo overlay rework — owner-directed,
+  implemented in the orchestrator session itself per the owner's "do the
+  rework yourself"; gate 1422 → 1426/0 ×2 byte-identical)** — UI_SPEC §18.2
+  pins **A10–A13** (the refinery slot row, the armory category strip, the
+  DISPOSE chip as the one transactional control through
+  `PlayerProfile.remove_cargo`, the CATEGORY/NAME/AMOUNT sort cycle); A8's
+  no-transaction bar is narrowed by the owner's own carve-out and A9's row
+  grammar superseded (STATION_HUB §23.11 rows 11–12). §9 carries the rework's
+  chain entry (+4 rows in the s48 suite). One S48 defect cured in passing: the
+  pinned `CLOSE_HINT` ("ESC · CLOSE") was never wired — it now reads on the
+  hint row and the suite pins it.
+  **Reversal:** the A8 read-only bar restored (no DISPOSE anywhere) and the A9
+  caption rows back, per §23.11 rows 11–12.

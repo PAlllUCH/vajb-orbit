@@ -467,7 +467,9 @@ etc.), not 20 distinct minerals. Plan:
 2. **Tractoring** is the existing pickup behaviour; a pickup that is not
    collected despawns after 60 s (data: `ORE_PICKUP_LIFETIME`).
 3. **Hold full** → further pickups are not collected and stay drifting
-   (bounded by pickup lifetime). No auto-sell, no auto-jettison.
+   (bounded by pickup lifetime). No auto-sell, no auto-jettison. *(2026-10-14:
+   a manual DISPOSE from the C-key overlay — UI_SPEC §18.2 A12 — is the
+   player's own jettison; this law governs automatic disposal.)*
 4. When an asteroid's yield reaches 0 it cracks and despawns (existing
    mining FX spec covers the visual).
 5. **Cargo identity, not homogenised sludge.** Ore is tracked per mineral in

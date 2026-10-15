@@ -1,69 +1,164 @@
 extends Control
-## UI_SPEC section 18 A7-A9: the C-key cargo overlay, one read-only surface for both
-## planes. The seat differs per plane (the station's own CanvasLayer under the shell,
-## flight's layer-20 host in game.gd); the surface, the rows and the close law are this
-## scene's.
+## UI_SPEC section 18 A7-A13: the C-key cargo overlay, one surface for both
+## planes. The seat differs per plane (the station's own CanvasLayer under the
+## shell, flight's layer-20 host in game.gd); the surface, the slot rows and the
+## close law are this scene's.
 ##
-## The surface is the N28 sheet idiom (section 12.3): a full-rect MOUSE_FILTER_STOP root,
-## a void_base 60 % dimmer, a centred panel_raised PanelContainer, a 16 px margin and a
-## 12 px VBox, size-to-content inside the 420/720 width band and N32's 80 %-viewport
-## scroll rule. Open/close is N29's envelope: `modulate:a` 0 -> 1 / 1 -> 0 in 0.18 s
-## TRANS_CUBIC EASE_OUT (an overlay, so A5.5 never touches the layout).
+## The 18.2 rework (owner 2026-10-14, "look like refinery, categories like in
+## armory, each slot: icon + amount + dispose, sort by categories"): the body is
+## the refinery row idiom (A10) - C4 row strips 76 tall, RowInner 12/8, the 40 px
+## material icon at its own rect, a StationValue/StationMeta title box, the 130
+## AMOUNT cell and one ActionInline DISPOSE chip per row (A12); the armory
+## MENU_TABS strip (A11) sorts the one list into the five A9 categories + ALL;
+## the title row's SORT chip cycles CATEGORY / NAME / AMOUNT (A13).
 ##
-## The contents are A9's five groups, every figure read off the profile's own seams
-## (`cargo_items` / `cargo_qty` / `ammo_of`) with no price, no quote and no recomputation,
-## and no transactional control anywhere (the panes are the act, the overlay is the look).
+## The one transaction is A12's DISPOSE: the whole hold stack of the row's id,
+## through PlayerProfile.remove_cargo (all-or-nothing, no refund, nothing
+## dropped); an ammunition row disposes only the hold's ammo_* units - the
+## loaded pack stays. Every read stays A9's seams (cargo_items / cargo_qty /
+## ammo_of). Rows are detached and queue_freed on rebuild, so a dispose that
+## fires from inside a chip's own press emission is safe (a freed emitter is
+## not).
 ##
-## Close paths (each one operation, P19): the owner plane's ESC step, the scrim (N38), C
-## again - the shell drives all three through close(); focus returns to the trigger (N39).
+## Close paths (each one operation, P19): the owner plane's ESC step, the scrim
+## (N38), C again - the shell drives all three through close(); focus returns
+## to the trigger (N39). The surface geometry is A15's one-geometry law (§18.3):
+## 720 wide, the 80 % viewport cap tall, held for the whole open session; the
+## rows scroll under the cap.
 
 signal closed
 
 const MineralCatalogScript := preload("res://game/mineral_catalog.gd")
 const ComponentCatalogScript := preload("res://game/component_catalog.gd")
-const ModuleCatalogScript := preload("res://game/module_catalog.gd")
-const WeaponScript := preload("res://game/weapons.gd")
 const Catalog := preload("res://game/station_catalog.gd")
+const ChromeFamily := preload("res://ui/theme/chrome_family.gd")
 
 const TOKENS_TYPE: StringName = &"Tokens"
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
+## A15's floor: the surface may never go under 420 wide (A8's outer band).
 const MIN_WIDTH := 420.0
 const MAX_WIDTH := 720.0
+## A15: the one geometry law - the surface holds ONE geometry while it is open:
+## width at the 720 ceiling, height at the 80 % viewport cap. The 420 floor is
+## the minimum the surface may never go under, not a target it seeks.
+const PANEL_WIDTH := MAX_WIDTH
 const PANEL_MARGIN := 16.0
 const MAX_HEIGHT_RATIO := 0.8
 const DIMMER_ALPHA := 0.6
 const MOTION_SECONDS := 0.18
-const GLYPH_SIZE := 24.0
-const ROW_SEPARATION := 8
 
-## A8/A9's pinned copy.
+## A10: the refinery row grammar's own numbers (S45's `refinery_panel.gd`).
+const ROW_HEIGHT := 76.0
+const COL_ICON := 40.0
+const COL_AMOUNT := 130.0
+const ACTION_INLINE := Vector2(96.0, 32.0)
+const ROW_INNER_MARGIN := Vector2i(12, 8)
+const COLUMN_SEPARATION := 12
+const TITLE_SEPARATION := 2
+const ROW_ICON_IDLE_ALPHA := 0.72
+const TINT_DIR := "res://assets/icons/tint/"
+const DEDICATED_ICON_PREFIX := "icon_mineral_"
+## A11: the armory strip's own tab minimum (S35's `armory_panel.gd`).
+const TAB_MIN_SIZE := Vector2(0.0, 32.0)
+## A13: the sort chip's own box; the words ride SORT_LABELS.
+const SORT_CHIP := Vector2(150.0, 32.0)
+## A16: the title column never collapses. The column is measured off the live
+## layout (the fixed geometry makes the last layout the truth for this one);
+## before the first measure a static floor stands in. The AMOUNT cell and its
+## band caption read right-aligned (P40's value-column law).
+const SCROLL_RIDE := 12.0
+const TITLE_COL: float = (
+	PANEL_WIDTH - PANEL_MARGIN * 2.0 - SCROLL_RIDE - float(ROW_INNER_MARGIN.x) * 2.0
+		- COL_ICON - COL_AMOUNT - ACTION_INLINE.x - float(COLUMN_SEPARATION) * 3.0
+)
+## The column band's lead gap: the row's own 12 px inner margin rides in front of
+## the 40 px icon, so the captions seat exactly over the row's columns.
+const BAND_LEAD_GAP: float = COL_ICON + float(ROW_INNER_MARGIN.x)
+
+## A8/A10's pinned copy.
 const TITLE_FORMAT := "CARGO — %d/%d UNITS"
-const AMMO_FORMAT := "%s · %d ROUNDS"
-const STACK_FORMAT := "%s · %d"
+const DISPOSE_WORD := "DISPOSE"
 const EMPTY_ROW := "NONE HELD"
 const CLOSE_HINT := "ESC · CLOSE"
+const BAND_ITEM := "ITEM"
+const BAND_AMOUNT := "AMOUNT"
+const BAND_ACTION := "ACTION"
+const ROUNDS_IN_PACK := "%d ROUNDS IN PACK"
+const TIER_ORE_META := "TIER %d ORE"
+const TIER_INGOT_META := "TIER %d INGOT"
+const GRADE_COMPONENT_META := "GRADE %d COMPONENT"
+const GRADE_FUEL_META := "GRADE %d FUEL CELL"
 
-const BAND_AMMUNITION := "AMMUNITION"
-const BAND_ORE := "ORE"
-const BAND_INGOTS := "INGOTS"
-const BAND_COMPONENTS := "COMPONENTS"
-const BAND_FUEL_CELLS := "FUEL CELLS"
-## 03 section 3's power family, drawn as its own group so nothing double-counts.
+## A11's five words + ALL, in A9's order; the section headers reuse the labels.
+const CATEGORY_AMMO: StringName = &"ammo"
+const CATEGORY_ORE: StringName = &"ore"
+const CATEGORY_INGOTS: StringName = &"ingots"
+const CATEGORY_COMPONENTS: StringName = &"components"
+const CATEGORY_FUEL: StringName = &"fuel"
+const TAB_ALL: StringName = &"all"
+const CATEGORY_ORDER: Array[StringName] = [
+	CATEGORY_AMMO, CATEGORY_ORE, CATEGORY_INGOTS, CATEGORY_COMPONENTS, CATEGORY_FUEL,
+]
+const CARGO_TABS: Array[Dictionary] = [
+	{&"id": CATEGORY_AMMO, &"label": "AMMUNITION"},
+	{&"id": CATEGORY_ORE, &"label": "ORE"},
+	{&"id": CATEGORY_INGOTS, &"label": "INGOTS"},
+	{&"id": CATEGORY_COMPONENTS, &"label": "COMPONENTS"},
+	{&"id": CATEGORY_FUEL, &"label": "FUEL CELLS"},
+	{&"id": TAB_ALL, &"label": "ALL"},
+]
+const CATEGORY_LABELS := {
+	CATEGORY_AMMO: "AMMUNITION",
+	CATEGORY_ORE: "ORE",
+	CATEGORY_INGOTS: "INGOTS",
+	CATEGORY_COMPONENTS: "COMPONENTS",
+	CATEGORY_FUEL: "FUEL CELLS",
+	TAB_ALL: "ALL",
+}
+
+## A13's cycle.
+const SORT_CATEGORY: StringName = &"category"
+const SORT_NAME: StringName = &"name"
+const SORT_AMOUNT: StringName = &"amount"
+const SORT_ORDER: Array[StringName] = [SORT_CATEGORY, SORT_NAME, SORT_AMOUNT]
+const SORT_LABELS := {
+	SORT_CATEGORY: "CATEGORY",
+	SORT_NAME: "NAME",
+	SORT_AMOUNT: "AMOUNT",
+}
+const SORT_CHIP_FORMAT := "SORT: %s"
+
+## 03 section 3's power family, the FUEL CELLS category's own filter.
 const POW_FAMILY: StringName = &"pow"
 
 @onready var _dimmer: ColorRect = %CargoDimmer
 @onready var _panel: PanelContainer = %CargoPanel
 @onready var _scroll: ScrollContainer = %CargoScroll
-@onready var _content: VBoxContainer = %CargoContent
+@onready var _title_row: HBoxContainer = %CargoTitleRow
 @onready var _title: Label = %CargoTitle
-@onready var _groups: VBoxContainer = %CargoGroups
+@onready var _sort_chip: Button = %CargoSort
+@onready var _tabs: HBoxContainer = %CargoTabs
+@onready var _band: HBoxContainer = %CargoBand
+@onready var _rows: VBoxContainer = %CargoRows
 @onready var _hint: Label = %CargoHint
 
 var _tween: Tween = null
 var _open := false
 var _trigger: Control = null
-var _text_labels: Array[Label] = []
+var _category: StringName = TAB_ALL
+var _sort: StringName = SORT_CATEGORY
+var _slot_payloads: Array[Dictionary] = []
+var _band_texts: PackedStringArray = PackedStringArray()
+## The dispose transaction's own guard (the refinery's `_transaction` idiom): a
+## refresh seen mid-transaction is deferred to one rebuild right after the
+## write returns, so the chip's press emission never rides a rebuild.
+var _transaction := false
+var _rebuild_pending := false
+## The panel chrome's own insets (the PanelRaised stylebox's content margins) and
+## the measured title column - the static floor until the first live measure.
+var _panel_inset := Vector2.ZERO
+var _title_col := TITLE_COL
 
 
 func _ready() -> void:
@@ -71,13 +166,31 @@ func _ready() -> void:
 	visible = false
 	modulate.a = 0.0
 	_apply_tokens()
+	_measure_panel_inset()
+	_hint.text = CLOSE_HINT
+	_build_tabs()
+	_build_band()
+	ChromeFamily.apply_chip(_sort_chip)
+	_refresh_sort_chip()
+	_sort_chip.pressed.connect(_on_sort_pressed)
 	_dimmer.gui_input.connect(_on_dimmer_input)
 	_connect_profile()
+
+
+func _measure_panel_inset() -> void:
+	var stylebox := _panel.get_theme_stylebox(&"panel")
+	if stylebox == null:
+		return
+	_panel_inset = Vector2(
+		stylebox.get_margin(SIDE_LEFT) + stylebox.get_margin(SIDE_RIGHT),
+		stylebox.get_margin(SIDE_TOP) + stylebox.get_margin(SIDE_BOTTOM),
+	)
 
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_THEME_CHANGED and is_node_ready():
 		_apply_tokens()
+		_measure_panel_inset()
 
 
 func _exit_tree() -> void:
@@ -100,6 +213,9 @@ func open() -> void:
 	_refresh()
 	_fit()
 	_animate(1.0)
+	## The geometry is fixed, so the layout that follows this frame's pass is the
+	## truth for every later one - re-measure the title column off it.
+	_fit.call_deferred()
 
 
 ## Close is one operation (P19): `_open` flips immediately, the fade is cosmetic.
@@ -119,20 +235,69 @@ func title_text() -> String:
 	return _title.text
 
 
-## The probe surface: every visible band / row / empty text in draw order, title and
-## hint excluded (the tests assert those separately).
-func row_texts() -> PackedStringArray:
-	var out := PackedStringArray()
-	for child: Node in _groups.get_children():
-		var label := child as Label
-		if label != null:
-			if label.visible:
-				out.append(label.text)
-			continue
-		var text := child.get_node_or_null(NodePath("Text")) as Label
-		if text != null and text.visible:
-			out.append(text.text)
+## A11 probes: the strip's ids in draw order, the active one, and the one door
+## both the tab press and a probe share.
+func category_ids() -> Array[StringName]:
+	var ids: Array[StringName] = []
+	for tab: Dictionary in CARGO_TABS:
+		ids.append(StringName(tab[&"id"]))
+	return ids
+
+
+func active_category() -> StringName:
+	return _category
+
+
+func select_category(id: StringName) -> void:
+	if not CATEGORY_LABELS.has(id) or id == _category:
+		return
+	_category = id
+	_apply_tab_states()
+	_refresh()
+	_fit()
+
+
+## A13 probes: the active mode and the cycle the chip drives.
+func sort_mode() -> StringName:
+	return _sort
+
+
+func cycle_sort() -> void:
+	var index := SORT_ORDER.find(_sort)
+	_sort = SORT_ORDER[wrapi(index + 1, 0, SORT_ORDER.size())]
+	_refresh_sort_chip()
+	_refresh()
+	_fit()
+
+
+## The slot rows in draw order, one dictionary per row (id, category, name,
+## meta, amount, dispose) - the probe surface for the A10/A12 law.
+func slot_rows() -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for payload: Dictionary in _slot_payloads:
+		var slot: Dictionary = payload[&"slot"]
+		out.append({
+			&"id": slot[&"id"],
+			&"category": slot[&"category"],
+			&"name": slot[&"name"],
+			&"meta": slot[&"meta"],
+			&"amount": slot[&"amount"],
+			&"dispose": slot[&"dispose"],
+		})
 	return out
+
+
+## The drawn band captions and empty rows in order (A13's grouped view).
+func band_texts() -> PackedStringArray:
+	return _band_texts.duplicate()
+
+
+## The row's A12 chip, for probes (null when the id is not drawn).
+func dispose_button(item_id: StringName) -> Button:
+	for payload: Dictionary in _slot_payloads:
+		if StringName(payload[&"id"]) == item_id:
+			return payload[&"chip"]
+	return null
 
 
 func _connect_profile() -> void:
@@ -143,10 +308,14 @@ func _connect_profile() -> void:
 		profile.connect(&"profile_changed", _on_profile_changed)
 
 
-## The overlay rides a live plane (a pickup can land while it is up), so an open read
-## tracks the hold and the packs; a closed one stays silent.
+## The overlay rides a live plane (a pickup or a pane's transaction can land
+## while it is up), so an open read tracks the hold and the packs; a closed one
+## stays silent.
 func _on_profile_changed(key: StringName) -> void:
 	if not _open or (key != &"cargo" and key != &"ammo"):
+		return
+	if _transaction:
+		_rebuild_pending = true
 		return
 	_refresh()
 	_fit()
@@ -157,60 +326,227 @@ func _on_dimmer_input(event: InputEvent) -> void:
 		close()
 
 
-## A9's five groups, in the pin's order, every figure read off the profile's seams.
+func _on_sort_pressed() -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	cycle_sort()
+
+
+func _on_tab_pressed(id: StringName) -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	select_category(id)
+
+
+## A12: the one transaction. One press, the row's whole hold stack, through the
+## model's own writer; the rebuild rides `profile_changed` (deferred through
+## `_transaction` so the chip's emission never walks a freed row) and one flush
+## lands after the write returns either way.
+func _on_dispose_pressed(payload: Dictionary) -> void:
+	if _transaction:
+		return
+	var item_id := StringName(payload[&"id"])
+	var quantity := int(payload[&"dispose_qty"])
+	if item_id == &"" or quantity <= 0:
+		return
+	var profile := _profile()
+	if profile == null or not profile.has_method(&"remove_cargo"):
+		return
+	_transaction = true
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	var removed: bool = profile.call(&"remove_cargo", item_id, quantity)
+	_transaction = false
+	_rebuild_pending = false
+	if not removed:
+		return
+	_refresh()
+	_fit()
+
+
+## The list: A9's five categories (A11's strip) filtered to the active tab,
+## ordered by A13's cycle - CATEGORY groups the ALL view under the five bands
+## (empty bands skipped), NAME and AMOUNT read it flat.
 func _refresh() -> void:
 	_clear_rows()
+	var profile := _profile()
 	var items := _cargo_items()
 	_title.text = TITLE_FORMAT % [_held_units(items), _cargo_capacity()]
-	_build_group(BAND_AMMUNITION, _ammunition_rows(), &"")
-	_build_group(BAND_ORE, _mineral_rows(items, true), &"ore")
-	_build_group(BAND_INGOTS, _mineral_rows(items, false), &"ingot")
-	_build_group(BAND_COMPONENTS, _component_rows(items, false), &"comp")
-	_build_group(BAND_FUEL_CELLS, _component_rows(items, true), &"pow")
+	var slots := _slots(profile, items)
+	if _category != TAB_ALL:
+		slots = _filter_category(slots, _category)
+	_apply_sort(slots)
+	if _category == TAB_ALL and _sort == SORT_CATEGORY:
+		for category: StringName in CATEGORY_ORDER:
+			var held := _filter_category(slots, category)
+			if held.is_empty():
+				continue
+			_build_section_header(String(CATEGORY_LABELS[category]))
+			for slot: Dictionary in held:
+				_add_row(slot)
+	else:
+		for slot: Dictionary in slots:
+			_add_row(slot)
+	if _slot_payloads.is_empty():
+		_build_empty_row()
 
 
-func _build_group(band: String, rows: Array[Dictionary], stem: StringName) -> void:
-	var band_name := "Band" + band.replace(" ", "")
-	var caption := _make_label(&"StationCaption", band)
-	caption.name = band_name
-	_groups.add_child(caption)
-	if rows.is_empty():
-		var empty := _make_label(&"StationCaption", EMPTY_ROW)
-		empty.name = "Empty" + band.replace(" ", "")
-		_groups.add_child(empty)
-		return
-	for row: Dictionary in rows:
-		var row_id := StringName(row.get(&"id", &""))
-		var node_name := "Row%s" % String(row_id).to_pascal_case() if row_id != &"" \
-				else "Row%s" % String(stem).to_pascal_case()
-		_groups.add_child(_make_row(row, node_name))
+## The strip (the armory `_build_browser` idiom): six toggle tabs, the active
+## one `text_primary` + pressed, the rest `text_dim`.
+func _build_tabs() -> void:
+	for tab: Dictionary in CARGO_TABS:
+		var button := Button.new()
+		button.name = "Tab%s" % String(tab[&"id"]).to_pascal_case()
+		button.toggle_mode = true
+		button.focus_mode = Control.FOCUS_ALL
+		button.custom_minimum_size = TAB_MIN_SIZE
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		button.text = String(tab[&"label"])
+		button.set_meta(&"tab", StringName(tab[&"id"]))
+		button.add_theme_color_override(
+			&"font_color",
+			_token(&"text_primary") if tab[&"id"] == _category else _token(&"text_dim")
+		)
+		button.pressed.connect(_on_tab_pressed.bind(StringName(tab[&"id"])))
+		_tabs.add_child(button)
+	_apply_tab_states()
 
 
-## One A9 row: the family glyph 24 at its own rect (A5.2(iii)) beside the 13 px read.
-func _make_row(row: Dictionary, node_name: String) -> HBoxContainer:
+func _apply_tab_states() -> void:
+	for button: Node in _tabs.get_children():
+		var tab_button := button as Button
+		if tab_button == null:
+			continue
+		var active := StringName(tab_button.get_meta(&"tab", &"")) == _category
+		tab_button.set_pressed_no_signal(active)
+		tab_button.add_theme_color_override(
+			&"font_color", _token(&"text_primary") if active else _token(&"text_dim")
+		)
+
+
+## The P40 column-header band: a leading caption over the title column, one
+## caption seated over each fixed column at that column's own width.
+func _build_band() -> void:
+	var icon_gap := Control.new()
+	icon_gap.name = "IconGap"
+	icon_gap.custom_minimum_size = Vector2(BAND_LEAD_GAP, 0.0)
+	icon_gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_band.add_child(icon_gap)
+	var lead := _make_label(&"StationCaption", BAND_ITEM)
+	lead.name = "HeaderLead"
+	lead.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_band.add_child(lead)
+	var amount := _make_label(&"StationCaption", BAND_AMOUNT)
+	amount.name = "HeaderAmount"
+	amount.custom_minimum_size = Vector2(COL_AMOUNT, 0.0)
+	amount.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_band.add_child(amount)
+	var action := _make_label(&"StationCaption", BAND_ACTION)
+	action.name = "HeaderAction"
+	action.custom_minimum_size = Vector2(ACTION_INLINE.x, 0.0)
+	_band.add_child(action)
+
+
+## One A13 group band (the refinery's `_build_section_header` idiom).
+func _build_section_header(text: String) -> void:
+	var row := MarginContainer.new()
+	row.name = "Band%s" % text.replace(" ", "")
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_theme_constant_override(&"margin_left", float(ROW_INNER_MARGIN.x))
+	row.add_theme_constant_override(&"margin_right", float(ROW_INNER_MARGIN.x))
+	var label := _make_label(&"SectionHeader", text)
+	label.name = "SectionLabel"
+	row.add_child(label)
+	_rows.add_child(row)
+	_band_texts.append(text)
+
+
+## Section 5.8's empty-state caption.
+func _build_empty_row() -> void:
+	var label := _make_label(&"StationCaption", EMPTY_ROW)
+	label.name = "EmptyRow"
+	_rows.add_child(label)
+	_band_texts.append(EMPTY_ROW)
+
+
+## One A10 slot row: the refinery grammar - C4 strip, RowInner 12/8, the 40 px
+## icon at its own rect, the title box, the AMOUNT cell, A12's chip.
+func _add_row(slot: Dictionary) -> void:
+	var row := Button.new()
+	row.name = "Slot%s" % String(slot[&"id"]).to_pascal_case()
+	row.toggle_mode = true
+	row.focus_mode = Control.FOCUS_ALL
+	row.custom_minimum_size = Vector2(0.0, ROW_HEIGHT)
+	row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	ChromeFamily.apply_row(row)
+	var inner := MarginContainer.new()
+	inner.name = "RowInner"
+	inner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	inner.add_theme_constant_override(&"margin_left", float(ROW_INNER_MARGIN.x))
+	inner.add_theme_constant_override(&"margin_top", float(ROW_INNER_MARGIN.y))
+	inner.add_theme_constant_override(&"margin_right", float(ROW_INNER_MARGIN.x))
+	inner.add_theme_constant_override(&"margin_bottom", float(ROW_INNER_MARGIN.y))
+	row.add_child(inner)
+	inner.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var box := HBoxContainer.new()
-	box.name = node_name
-	box.add_theme_constant_override(&"separation", int(ROW_SEPARATION))
+	box.name = "RowBox"
+	box.add_theme_constant_override(&"separation", COLUMN_SEPARATION)
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var icon := TextureRect.new()
-	icon.name = "Glyph"
-	icon.custom_minimum_size = Vector2(GLYPH_SIZE, GLYPH_SIZE)
-	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var icon_path := String(row.get(&"icon", ""))
-	if icon_path != "" and ResourceLoader.exists(icon_path):
-		icon.texture = load(icon_path)
-	icon.modulate = row.get(&"tint", Color.WHITE)
-	box.add_child(icon)
-	var label := _make_label(&"StationCaption", String(row.get(&"text", "")))
-	label.name = "Text"
-	label.add_theme_color_override(&"font_color", _token(&"text_primary"))
-	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	box.add_child(label)
-	_text_labels.append(label)
+	inner.add_child(box)
+	var ink := _icon_ink(slot)
+	var icon := _make_icon(String(slot.get(&"icon", &"")), ink)
+	if icon != null:
+		box.add_child(icon)
+	else:
+		var gap := Control.new()
+		gap.name = "IconGap"
+		gap.custom_minimum_size = Vector2(COL_ICON, 0.0)
+		gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		box.add_child(gap)
+	box.add_child(_make_title_box(slot))
+	var amount := _make_label(&"StationValue", _format_int(int(slot[&"amount"])))
+	amount.name = "Amount"
+	amount.custom_minimum_size = Vector2(COL_AMOUNT, 0.0)
+	amount.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	amount.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	box.add_child(amount)
+	var chip := Button.new()
+	chip.name = "Dispose"
+	chip.custom_minimum_size = ACTION_INLINE
+	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	chip.focus_mode = Control.FOCUS_ALL
+	chip.text = DISPOSE_WORD
+	chip.disabled = not bool(slot[&"dispose"])
+	chip.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	ChromeFamily.apply_chip(chip)
+	var payload := {
+		&"id": StringName(slot[&"id"]),
+		&"dispose_qty": int(slot[&"amount"]),
+		&"slot": slot,
+		&"row": row,
+		&"chip": chip,
+	}
+	chip.pressed.connect(_on_dispose_pressed.bind(payload))
+	box.add_child(chip)
+	_rows.add_child(row)
+	_slot_payloads.append(payload)
+
+
+func _make_title_box(slot: Dictionary) -> VBoxContainer:
+	var box := VBoxContainer.new()
+	box.name = "TitleBox"
+	box.add_theme_constant_override(&"separation", TITLE_SEPARATION)
+	## A16: an explicit minimum - the measured title column; the ellipsis-trim
+	## labels alone would collapse it to zero.
+	box.custom_minimum_size = Vector2(_title_col, 0.0)
+	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var title := _make_label(&"StationValue", String(slot[&"name"]))
+	title.name = "Title"
+	title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	box.add_child(title)
+	var meta := _make_label(&"StationMeta", String(slot[&"meta"]))
+	meta.name = "Meta"
+	meta.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	box.add_child(meta)
 	return box
 
 
@@ -222,16 +558,47 @@ func _make_label(variation: StringName, text: String) -> Label:
 	return label
 
 
+## Detached first, then deferred-deleted: the container's minimum drops the row
+## the same frame (the fit re-measures immediately), and a dispose that fires
+## from inside a chip's own press emission never walks a freed node (the
+## S48 clear's `free()` would - measured 2026-10-14).
 func _clear_rows() -> void:
-	## Freed, not queued: the fit measures the content's minimum the same frame the rows
-	## rebuild, and a queued child still counts into it.
-	for child: Node in _groups.get_children():
-		_groups.remove_child(child)
-		child.free()
-	_text_labels.clear()
+	for child: Node in _rows.get_children():
+		_rows.remove_child(child)
+		child.queue_free()
+	_slot_payloads.clear()
+	_band_texts = PackedStringArray()
 
 
-## --- the read-only seams -------------------------------------------------------------
+func _refresh_sort_chip() -> void:
+	_sort_chip.text = SORT_CHIP_FORMAT % String(SORT_LABELS[_sort])
+
+
+func _apply_sort(slots: Array[Dictionary]) -> void:
+	match _sort:
+		SORT_NAME:
+			slots.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+				return String(a[&"name"]) < String(b[&"name"]))
+		SORT_AMOUNT:
+			slots.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+				var left := int(a[&"amount"])
+				var right := int(b[&"amount"])
+				if left != right:
+					return left > right
+				return String(a[&"name"]) < String(b[&"name"]))
+		_:
+			pass
+
+
+func _filter_category(slots: Array[Dictionary], category: StringName) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for slot: Dictionary in slots:
+		if StringName(slot[&"category"]) == category:
+			out.append(slot)
+	return out
+
+
+## --- the read seams (A9's, unchanged) -------------------------------------------------
 
 
 func _profile() -> Node:
@@ -270,93 +637,98 @@ func _held(items: Dictionary, item_id: StringName) -> int:
 	return int(items.get(item_id, 0))
 
 
-## A9's AMMUNITION rows: one per fitted weapon family in cell order (duplicates share
-## one pack), `<weapon name> · <rounds> ROUNDS`, the rounds read off `ammo_of` - the
-## battery's own pack, never the hold's ammo units.
-func _ammunition_rows() -> Array[Dictionary]:
-	var rows: Array[Dictionary] = []
-	var profile := _profile()
-	if profile == null or not profile.has_method(&"resolved_fit") \
-			or not profile.has_method(&"active_ship") or not profile.has_method(&"base_module_id"):
-		return rows
-	var fit: Variant = profile.call(&"resolved_fit", StringName(profile.call(&"active_ship")))
-	if not fit is Dictionary:
-		return rows
-	var fitted: Variant = (fit as Dictionary).get(&"weapons", [])
-	if not fitted is Array:
-		return rows
-	var seen: Dictionary = {}
-	for entry: Variant in fitted as Array:
-		var cell := StringName(str(entry))
-		if cell == &"":
-			continue
-		var base := StringName(str(profile.call(&"base_module_id", cell)))
-		var family := WeaponScript.weapon_id(base)
-		if family == &"" or seen.has(family):
-			continue
-		seen[family] = true
-		var module := ModuleCatalogScript.module(base)
-		if module.is_empty():
-			continue
-		var rounds := 0
-		if profile.has_method(&"ammo_of"):
-			rounds = int(profile.call(&"ammo_of", family))
-		rows.append({
-			&"id": family,
-			&"text": AMMO_FORMAT % [
-				String(module.get(&"name", String(base))).to_upper(), rounds
-			],
-			&"icon": String(module.get(&"icon", "")),
-			&"tint": Color.WHITE,
-		})
-	return rows
-
-
-## A9's ORE / INGOTS rows: one per held stack in catalogue order (05 section 8's hold
-## ordering), the mineral entry's own icon field, the tier tint (02 section 6).
-func _mineral_rows(items: Dictionary, ore: bool) -> Array[Dictionary]:
-	var rows: Array[Dictionary] = []
+## The one slot list, A9's five categories in order, the catalogue's own order
+## within each. AMMUNITION carries only the families the hold lists (A14: hold
+## units are the row's existence test); its amount is the hold stack, the pack
+## rides the meta line.
+func _slots(profile: Node, items: Dictionary) -> Array[Dictionary]:
+	var slots: Array[Dictionary] = []
+	if profile != null and profile.has_method(&"ammo_of"):
+		for family: StringName in Catalog.ammo_ids():
+			var pack := Catalog.ammo_pack(family)
+			if pack.is_empty():
+				continue
+			var item_id := Catalog.ammo_item_id(family)
+			var rounds := int(profile.call(&"ammo_of", family))
+			var units := _held(items, item_id)
+			## A14: the zero-hold ammo law - the hold's units are the row's own
+			## existence test; the fitted pack's rounds never summon one.
+			if units <= 0:
+				continue
+			slots.append({
+				&"id": item_id,
+				&"category": CATEGORY_AMMO,
+				&"name": String(pack.get(&"name", String(family))).to_upper(),
+				&"meta": ROUNDS_IN_PACK % rounds,
+				&"amount": units,
+				&"dispose": units > 0,
+				&"icon": String(pack.get(&"icon", &"")),
+				&"tint": Color.WHITE,
+			})
 	for mineral_id: StringName in MineralCatalogScript.mineral_ids():
-		var item_id := MineralCatalogScript.ore_id(mineral_id) if ore \
-				else MineralCatalogScript.ingot_id(mineral_id)
-		var qty := _held(items, item_id)
-		if qty <= 0:
+		var mineral: Dictionary = MineralCatalogScript.mineral(mineral_id)
+		if mineral.is_empty():
 			continue
-		var entry: Dictionary = MineralCatalogScript.mineral(mineral_id)
-		var name_text := String(entry.get(&"name", String(mineral_id))).to_upper()
-		rows.append({
-			&"id": item_id,
-			&"text": STACK_FORMAT % [("%s ORE" if ore else "%s INGOT") % name_text, qty],
-			&"icon": String(entry.get(&"icon_ore" if ore else &"icon_ingot", "")),
-			&"tint": _tier_tint(int(entry.get(&"tier", 0))),
-		})
-	return rows
-
-
-## A9's COMPONENTS / FUEL CELLS rows: the component catalogue's own rows in catalogue
-## order, the `pow` family drawn as its own group so nothing double-counts, the grade
-## tint (03 section 4.1). An id no catalogue answers is not drawn (section 5.8's rule).
-func _component_rows(items: Dictionary, fuel: bool) -> Array[Dictionary]:
-	var rows: Array[Dictionary] = []
+		_add_mineral_slot(slots, items, mineral_id, mineral, true)
+		_add_mineral_slot(slots, items, mineral_id, mineral, false)
 	for entry: Dictionary in ComponentCatalogScript.COMPONENTS:
 		var component_id := StringName(entry.get(&"id", &""))
-		if component_id == &"":
-			continue
 		var family := StringName(entry.get(&"family", &""))
-		if (family == POW_FAMILY) != fuel:
+		if component_id == &"" or (family == POW_FAMILY) != false:
 			continue
 		var qty := _held(items, component_id)
 		if qty <= 0:
 			continue
-		rows.append({
+		slots.append({
 			&"id": component_id,
-			&"text": STACK_FORMAT % [
-				String(entry.get(&"name", String(component_id))).to_upper(), qty
-			],
-			&"icon": String(entry.get(&"icon", "")),
+			&"category": CATEGORY_COMPONENTS,
+			&"name": String(entry.get(&"name", String(component_id))).to_upper(),
+			&"meta": GRADE_COMPONENT_META % int(entry.get(&"grade", 0)),
+			&"amount": qty,
+			&"dispose": true,
+			&"icon": String(entry.get(&"icon", &"")),
 			&"tint": _grade_tint(int(entry.get(&"grade", 0))),
 		})
-	return rows
+	for entry: Dictionary in ComponentCatalogScript.COMPONENTS:
+		var component_id := StringName(entry.get(&"id", &""))
+		var family := StringName(entry.get(&"family", &""))
+		if component_id == &"" or (family == POW_FAMILY) != true:
+			continue
+		var qty := _held(items, component_id)
+		if qty <= 0:
+			continue
+		slots.append({
+			&"id": component_id,
+			&"category": CATEGORY_FUEL,
+			&"name": String(entry.get(&"name", String(component_id))).to_upper(),
+			&"meta": GRADE_FUEL_META % int(entry.get(&"grade", 0)),
+			&"amount": qty,
+			&"dispose": true,
+			&"icon": String(entry.get(&"icon", &"")),
+			&"tint": _grade_tint(int(entry.get(&"grade", 0))),
+		})
+	return slots
+
+
+func _add_mineral_slot(
+		slots: Array[Dictionary], items: Dictionary, mineral_id: StringName,
+		mineral: Dictionary, ore: bool
+) -> void:
+	var item_id := MineralCatalogScript.ore_id(mineral_id) if ore \
+			else MineralCatalogScript.ingot_id(mineral_id)
+	var qty := _held(items, item_id)
+	if qty <= 0:
+		return
+	slots.append({
+		&"id": item_id,
+		&"category": CATEGORY_ORE if ore else CATEGORY_INGOTS,
+		&"name": ("%s ORE" if ore else "%s INGOT") % String(mineral.get(&"name", String(mineral_id))).to_upper(),
+		&"meta": (TIER_ORE_META if ore else TIER_INGOT_META) % int(mineral.get(&"tier", 0)),
+		&"amount": qty,
+		&"dispose": true,
+		&"icon": String(mineral.get(&"icon_ore" if ore else &"icon_ingot", &"")),
+		&"tint": _tier_tint(int(mineral.get(&"tier", 0))),
+	})
 
 
 func _tier_tint(tier: int) -> Color:
@@ -371,51 +743,105 @@ func _grade_tint(grade: int) -> Color:
 	return Color.WHITE
 
 
-## --- the N28 surface laws ------------------------------------------------------------
+## --- the icon laws (the refinery's own, verbatim) --------------------------------------
 
 
-## Size-to-content inside N28's band: measure the title and every row's natural width,
-## floor at 420, cap at 720 (the rows then wrap at that edge), then cap the height at
-## N32's 80 % viewport. The content node is re-sized, never the anchor-laid-out root
-## (the sheet's own S30-F1 note: a root reset collapses the full-rect overlay).
+## The stencil route: prefer `assets/icons/tint/` when a stencil of the same
+## file exists, the catalogue path otherwise.
+func _icon_source(icon_path: String) -> String:
+	if icon_path.is_empty():
+		return ""
+	var stencil := TINT_DIR + icon_path.get_file()
+	if stencil != icon_path and ResourceLoader.exists(stencil):
+		return stencil
+	return icon_path
+
+
+## The refinery's ink law: `text_primary` on the dedicated `icon_mineral_*`
+## stencils, the row's tier/grade tint on other stenciled art, WHITE on raw
+## catalogue art - the idle alpha always.
+func _icon_ink(slot: Dictionary) -> Color:
+	var ink := Color.WHITE
+	var source := _icon_source(String(slot.get(&"icon", &"")))
+	if source.begins_with(TINT_DIR):
+		if source.get_file().begins_with(DEDICATED_ICON_PREFIX):
+			ink = _token(&"text_primary")
+		else:
+			var tint: Variant = slot.get(&"tint", Color.WHITE)
+			if tint is Color:
+				ink = tint
+	ink.a = ROW_ICON_IDLE_ALPHA
+	return ink
+
+
+func _make_icon(icon_path: String, ink: Color) -> TextureRect:
+	var source := _icon_source(icon_path)
+	if source.is_empty() or not ResourceLoader.exists(source):
+		return null
+	var icon := TextureRect.new()
+	icon.name = "Icon"
+	icon.custom_minimum_size = Vector2(COL_ICON, COL_ICON)
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	icon.texture = load(source)
+	icon.modulate = ink
+	return icon
+
+
+## --- the N28 surface laws (A8's, unchanged) ---------------------------------------------
+
+
+## A15: the one geometry law. The panel's width is the 720 ceiling and the
+## scroll's height the 80 % viewport cap, every time - no per-tab or per-content
+## re-fit; the rows scroll under the cap while the surface holds still.
 func _fit() -> void:
-	_panel.custom_minimum_size.x = MIN_WIDTH
-	_scroll.custom_minimum_size.y = 0.0
-	_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	_content.reset_size()
-	var widest := _text_width(_title)
-	for label: Label in _text_labels:
-		widest = maxf(widest, _row_width(label))
-	var target := clampf(widest + PANEL_MARGIN * 2.0, MIN_WIDTH, MAX_WIDTH)
-	_panel.custom_minimum_size.x = target
-	var text_width := target - PANEL_MARGIN * 2.0 - GLYPH_SIZE - ROW_SEPARATION
-	_title.custom_minimum_size.x = target - PANEL_MARGIN * 2.0
-	for label: Label in _text_labels:
-		label.custom_minimum_size.x = text_width
-	_content.reset_size()
-	var cap := _viewport_size().y * MAX_HEIGHT_RATIO - PANEL_MARGIN * 2.0
-	var content_h := _content.get_combined_minimum_size().y
-	_scroll.custom_minimum_size.y = maxf(0.0, minf(content_h, cap))
-	_scroll.vertical_scroll_mode = (
-		ScrollContainer.SCROLL_MODE_AUTO
-		if content_h > cap
-		else ScrollContainer.SCROLL_MODE_DISABLED
-	)
+	_panel.custom_minimum_size.x = PANEL_WIDTH
+	_panel.custom_minimum_size.y = 0.0
+	var cap := _viewport_size().y * MAX_HEIGHT_RATIO - PANEL_MARGIN * 2.0 \
+			- _panel_inset.y
+	_scroll.custom_minimum_size.y = maxf(0.0, cap)
+	_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_ALWAYS
+	_measure_title_col()
 
 
-func _row_width(label: Label) -> float:
-	return GLYPH_SIZE + ROW_SEPARATION + _text_width(label)
+## A16: the title column measured off the live layout - a laid-out row's own
+## width is the engine's truth for the space the columns share (the scroll's
+## model can be one layout early). Existing rows are re-seated on the spot.
+func _measure_title_col() -> void:
+	var row_w := 0.0
+	for payload: Dictionary in _slot_payloads:
+		var laid_row: Button = payload[&"row"]
+		row_w = laid_row.size.x
+		break
+	if row_w < 300.0:
+		var bar: VScrollBar = _scroll.get_v_scroll_bar()
+		row_w = _scroll.size.x - bar.size.x
+	if row_w < 300.0:
+		return
+	var col := row_w - float(ROW_INNER_MARGIN.x) * 2.0 - COL_ICON - COL_AMOUNT \
+			- ACTION_INLINE.x - float(COLUMN_SEPARATION) * 3.0
+	if col <= 0.0:
+		return
+	_title_col = col
+	for payload: Dictionary in _slot_payloads:
+		var row: Button = payload[&"row"]
+		var box := row.get_node_or_null(NodePath("RowInner/RowBox/TitleBox")) as VBoxContainer
+		if box != null:
+			box.custom_minimum_size.x = _title_col
 
 
-func _text_width(label: Label) -> float:
-	var font := label.get_theme_font(&"font")
-	if font == null:
-		return 0.0
-	var size := label.get_theme_font_size(&"font_size")
-	var widest := 0.0
-	for line: String in label.text.split("\n"):
-		widest = maxf(widest, font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x)
-	return widest
+## The refinery's space-grouped integer.
+func _format_int(value: int) -> String:
+	var digits := str(absi(value))
+	var grouped := ""
+	var count := 0
+	for index in range(digits.length() - 1, -1, -1):
+		grouped = digits[index] + grouped
+		count += 1
+		if count % 3 == 0 and index > 0:
+			grouped = " " + grouped
+	return ("-" if value < 0 else "") + grouped
 
 
 func _animate(target: float, then_hide: bool = false) -> void:
@@ -441,7 +867,7 @@ func _return_focus() -> void:
 		return
 	if _trigger.is_inside_tree() and _trigger.focus_mode != Control.FOCUS_NONE:
 		_trigger.grab_focus()
-	_trigger = null
+		_trigger = null
 
 
 func _apply_tokens() -> void:

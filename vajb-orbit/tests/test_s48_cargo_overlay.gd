@@ -1,26 +1,44 @@
 @tool
 extends McpTestSuite
-## Suite s48_cargo_overlay: wave S48 - UI_SPEC section 18 A7-A9's C-key cargo overlay
-## (STATION_HUB section 23.2's station half). One row per pinned acceptance:
+## Suite s48_cargo_overlay: UI_SPEC section 18 A7-A13's C-key cargo overlay - the
+## 18.2 rework (owner 2026-10-14: refinery look, armory categories, per-slot
+## dispose, sort by categories) on the two A7 planes. One row per pinned
+## acceptance:
 ##   1. the surface is the N28 sheet idiom, one scene for both planes: full-rect STOP
 ##      root, void_base 60 % dimmer, centred panel_raised panel, margin 16, VBox 12,
-##      420/720 width band, the 80 %-viewport scroll rule, the <= 0.2 s envelope;
+##      A15's one geometry (720 wide, the 80 %-viewport cap tall, held while open),
+##      the <= 0.2 s envelope;
 ##   2. the title reads CARGO - <n>/<cap> UNITS (the summed hold over the active hull's
 ##      cargo column, 08 section 3);
-##   3. the five StationCaption groups carry A9's rows (ammo per fitted weapon, ore /
-##      ingots / components / fuel cells per held stack), the tier / grade tints, the
-##      24 px glyphs at their own rect, NONE HELD on an empty group;
-##   4. no transactional control anywhere in the overlay;
-##   5. the station shell handles C from any pane; C again, ESC (its P19 ladder step) or
+##   3. A11's category strip is the armory MENU_TABS idiom: six tabs (the A9 five +
+##      ALL), the active one pressed and `text_primary`, the rest `text_dim`, and a tab
+##      filters the one list;
+##   4. A10's slot rows are the refinery grammar: 76-tall C4 strips, the 40 px material
+##      icon at its own rect (the refinery ink law), StationValue/StationMeta title box,
+##      the 130 AMOUNT cell, A12's 96x32 DISPOSE chip per row, the ITEM/AMOUNT/ACTION
+##      column band, the A13 group bands in A9's order;
+##   5. A13's sort chip cycles CATEGORY -> NAME -> AMOUNT (NAME flat A-Z, AMOUNT biggest
+##      stack first, CATEGORY the grouped default);
+##   6. A12's DISPOSE is the one transaction: the row's whole hold stack through
+##      remove_cargo, the refresh landing the same frame, ammunition rows disposing only
+##      the hold's ammo_* units (the loaded pack stays, the chip disables at 0 units);
+##   7. the station shell handles C from any pane; C again, ESC (its P19 ladder step) or
 ##      the scrim closes it; focus returns to the trigger;
-##   6. the flight plane: the layer-20 host above the HUD's own layer 10, the poll
+##   8. the flight plane: the layer-20 host above the HUD's own layer 10, the poll
 ##      driving the overlay and both mirrors, ESC as the one topmost step before the
-##      map-deck step, nothing paused, the same fixture rows from the same overlay.
+##      map-deck step, nothing paused, the same slot rows from the same overlay and the
+##      same dispose writing the shared profile.
 ##
 ## The flight rows ride one game.tscn mounted once in suite_setup (the
 ## test_engine2_wiring.gd discipline): the launch `_ready` runs against the suite's
-## staged fixture, and the hold carries no ammo item, so the launch's auto-load draw
-## cannot move the hold the flight rows read.
+## staged fixture, and every row's `setup()` re-stages the fixture afterwards, so
+## the launch's auto-load draw (which consumes hold units) cannot move the hold
+## the flight rows read.
+##
+##   9. the 2026-10-15 round (UI_SPEC section 18.3): A14 - hold units are an
+##      ammunition row's existence test (a loaded pack over an empty hold lists
+##      nothing); A15 - the surface holds one geometry while it is open; A16 -
+##      the title column never collapses.
 
 const StationScene := preload("res://ui/screens/station.tscn")
 const StationScript := preload("res://ui/screens/station.gd")
@@ -29,8 +47,6 @@ const OverlayScript := preload("res://ui/dialogs/cargo_overlay.gd")
 const GameScene := preload("res://game/game.tscn")
 const GameScript := preload("res://game/game.gd")
 const Catalog := preload("res://game/station_catalog.gd")
-const MineralCatalogScript := preload("res://game/mineral_catalog.gd")
-const ComponentCatalogScript := preload("res://game/component_catalog.gd")
 const ThemeRes := preload("res://ui/theme/vajb_theme.tres")
 
 const SUITE_ID := "s48_cargo_overlay"
@@ -57,8 +73,24 @@ const FIXTURE_CARGO: Dictionary = {
 	&"comp_elec_2": 1,
 	&"comp_pow_1": 5,
 	&"comp_pow_3": 2,
+	&"ammo_laser": 2,
 }
-const FIXTURE_HELD := 24
+const FIXTURE_HELD := 26
+## The A10/A12 fixture in A9's category order: [id, category, name, meta, amount,
+## dispose-armed]. A14: the cannon family (its 60-round pack loaded, the hold
+## empty) lists NO row - hold units are the row's existence test.
+const FIXTURE_SLOTS := [
+	[&"ammo_laser", &"ammo", "LASER CELLS", "120 ROUNDS IN PACK", 2, true],
+	[&"mineral_iron", &"ore", "IRON ORE", "TIER 1 ORE", 7, true],
+	[&"mineral_gold", &"ore", "GOLD ORE", "TIER 3 ORE", 3, true],
+	[&"ingot_titanium", &"ingots", "TITANIUM INGOT", "TIER 2 INGOT", 4, true],
+	[&"comp_scrap_1", &"components", "TORN PLATING", "GRADE 1 COMPONENT", 2, true],
+	[&"comp_elec_2", &"components", "LOGIC ARRAY", "GRADE 2 COMPONENT", 1, true],
+	[&"comp_pow_1", &"fuel", "FUEL CELL", "GRADE 1 FUEL CELL", 5, true],
+	[&"comp_pow_3", &"fuel", "EMBER CELL", "GRADE 3 FUEL CELL", 2, true],
+]
+const FIXTURE_BANDS := ["AMMUNITION", "ORE", "INGOTS", "COMPONENTS", "FUEL CELLS"]
+const IDLE_INK := Color(1.0, 1.0, 1.0, 0.72)
 
 var _profile: Node = null
 var _station: Control = null
@@ -131,7 +163,7 @@ func setup() -> void:
 func _free_screen() -> void:
 	if _station != null and is_instance_valid(_station):
 		_station.get_parent().free()
-	_station = null
+		_station = null
 
 
 func _stage_cargo(cargo: Dictionary) -> void:
@@ -214,6 +246,26 @@ func _capacity() -> int:
 	return int(Catalog.ship(SHIP).get(&"cargo", 0))
 
 
+func _open_overlay() -> Control:
+	var screen := _mount()
+	screen.call(&"_toggle_cargo")
+	return _overlay(screen)
+
+
+func _slot_names(overlay: Control) -> PackedStringArray:
+	var out := PackedStringArray()
+	for row: Dictionary in overlay.call(&"slot_rows"):
+		out.append(String(row[&"name"]))
+	return out
+
+
+func _slot_ids(overlay: Control) -> Array:
+	var out: Array = []
+	for row: Dictionary in overlay.call(&"slot_rows"):
+		out.append(StringName(row[&"id"]))
+	return out
+
+
 ## ------------------------------------------------- 1. the surface is the N28 idiom (item 1)
 
 func test_the_surface_is_the_n28_idiom() -> void:
@@ -237,9 +289,8 @@ func test_the_surface_is_the_n28_idiom() -> void:
 	var content := overlay.get_node(NodePath("%CargoContent")) as VBoxContainer
 	assert_eq(content.get_theme_constant(&"separation"), 12, "the VBox separates by 12")
 	assert_true(
-		panel.custom_minimum_size.x >= OverlayScript.MIN_WIDTH
-			and panel.custom_minimum_size.x <= OverlayScript.MAX_WIDTH,
-		"the width is size-to-content inside the 420/720 band"
+		panel.custom_minimum_size.x == OverlayScript.PANEL_WIDTH,
+		"A15's one geometry: the panel's width is the 720 ceiling, not a fit"
 	)
 	var scroll := overlay.get_node(NodePath("%CargoScroll")) as ScrollContainer
 	assert_true(scroll != null, "the body scrolls under the 80 %-viewport rule")
@@ -249,6 +300,18 @@ func test_the_surface_is_the_n28_idiom() -> void:
 	assert_true(
 		float(OverlayScript.MOTION_SECONDS) <= 0.2, "the envelope obeys N29 (<= 0.2 s)"
 	)
+	## The rework's own skeleton: the title row (title + sort chip), the tab strip, the
+	## column band and the rows list, all inside the one content VBox.
+	assert_true(overlay.get_node(NodePath("%CargoTitleRow")) != null, "the title row exists")
+	assert_true(overlay.get_node(NodePath("%CargoSort")) != null, "with A13's sort chip")
+	var tabs := overlay.get_node(NodePath("%CargoTabs")) as HBoxContainer
+	assert_true(tabs != null, "the A11 tab strip exists")
+	var band := overlay.get_node(NodePath("%CargoBand")) as HBoxContainer
+	assert_true(band != null, "the A10 column band exists")
+	var rows := overlay.get_node(NodePath("%CargoRows")) as VBoxContainer
+	assert_eq(rows.get_theme_constant(&"separation"), 8, "the rows separate by 8")
+	var hint := overlay.get_node(NodePath("%CargoHint")) as Label
+	assert_eq(hint.text, "ESC · CLOSE", "the close hint is wired (S48 left it dead)")
 	var layer := screen.get(&"_cargo_layer") as CanvasLayer
 	assert_eq(layer.layer, StationScript.CARGO_LAYER, "the shell seat rides its own layer")
 	assert_true(
@@ -261,106 +324,280 @@ func test_the_surface_is_the_n28_idiom() -> void:
 	)
 
 
-## ----------------------------------------------- 2/3. the title and the rows (items 2, 3)
+## ----------------------------------------------- 2. the title (item 2)
 
 func test_the_title_carries_the_hold_and_the_hull_capacity() -> void:
-	var screen := _mount()
-	screen.call(&"_toggle_cargo")
-	var overlay := _overlay(screen)
+	var overlay := _open_overlay()
 	assert_eq(
-		(overlay as Control).call(&"title_text"),
+		overlay.call(&"title_text"),
 		"CARGO — %d/%d UNITS" % [FIXTURE_HELD, _capacity()],
 		"the title sums the hold over the active hull's cargo column (08 section 3)"
 	)
 
 
-func test_the_five_groups_carry_the_pinned_rows() -> void:
-	var screen := _mount()
-	screen.call(&"_toggle_cargo")
-	var overlay := _overlay(screen) as Control
-	var rows: PackedStringArray = overlay.call(&"row_texts")
-	var expected := PackedStringArray([
-		"AMMUNITION",
-		"LASER MKII · 120 ROUNDS",
-		"CANNON MKI · 60 ROUNDS",
-		"ORE",
-		"IRON ORE · 7",
-		"GOLD ORE · 3",
-		"INGOTS",
-		"TITANIUM INGOT · 4",
-		"COMPONENTS",
-		"TORN PLATING · 2",
-		"LOGIC ARRAY · 1",
-		"FUEL CELLS",
-		"FUEL CELL · 5",
-		"EMBER CELL · 2",
-	])
-	assert_eq(rows, expected, "the five groups in A9's order with A9's words")
-	for text: String in rows:
-		assert_false(text.contains(" CR"), "no priced row anywhere (item 4's seam law)")
-	var groups := overlay.get_node(NodePath("%CargoContent/%CargoGroups")) as Node
-	var iron := groups.get_node_or_null(NodePath("RowMineralIron/Glyph")) as TextureRect
-	assert_eq(iron.custom_minimum_size, Vector2(24, 24), "the glyph sits at its own 24 rect")
+## ------------------------------- 2b. A15's one geometry (the owner's 2026-10-15 round)
+
+func test_the_surface_holds_one_geometry_while_open() -> void:
+	var overlay := _open_overlay()
+	var panel := overlay.get_node(NodePath("%CargoPanel")) as PanelContainer
+	var scroll := overlay.get_node(NodePath("%CargoScroll")) as ScrollContainer
+	var stylebox := panel.get_theme_stylebox(&"panel")
+	var inset := 0.0
+	if stylebox != null:
+		inset = stylebox.get_margin(SIDE_TOP) + stylebox.get_margin(SIDE_BOTTOM)
+	var cap: float = float(HOST.y) * OverlayScript.MAX_HEIGHT_RATIO \
+			- OverlayScript.PANEL_MARGIN * 2.0 - inset
+	assert_eq(panel.custom_minimum_size.x, OverlayScript.PANEL_WIDTH, "the width is the 720 ceiling")
+	assert_eq(scroll.custom_minimum_size.y, cap, "the scroll holds the 80 % viewport cap")
+	for category in [&"ore", &"ingots", &"components", &"fuel", &"all"]:
+		overlay.call(&"select_category", category)
+	for mode in 3:
+		overlay.call(&"cycle_sort")
+	assert_eq(panel.custom_minimum_size.x, OverlayScript.PANEL_WIDTH, "tab switches do not resize")
+	assert_eq(scroll.custom_minimum_size.y, cap, "sort cycles do not resize")
+	var chip: Button = overlay.call(&"dispose_button", &"mineral_iron")
+	chip.pressed.emit()
+	assert_eq(panel.custom_minimum_size.x, OverlayScript.PANEL_WIDTH, "a dispose does not resize")
+	assert_eq(scroll.custom_minimum_size.y, cap, "and the height holds too")
+	var band := overlay.get_node(NodePath("%CargoBand")) as HBoxContainer
+	var gap := band.get_node(NodePath("IconGap")) as Control
 	assert_eq(
-		iron.modulate, MineralCatalogScript.TIER_TINTS[1], "the ore glyph takes the tier tint"
+		gap.custom_minimum_size.x, OverlayScript.BAND_LEAD_GAP,
+		"the band's lead gap carries the row's inner margin (the captions seat over the columns)"
 	)
-	var gold := groups.get_node_or_null(NodePath("RowMineralGold/Glyph")) as TextureRect
-	assert_eq(gold.modulate, MineralCatalogScript.TIER_TINTS[3], "tier 3's own tint")
-	var scrap := groups.get_node_or_null(NodePath("RowCompScrap1/Glyph")) as TextureRect
-	assert_eq(
-		scrap.modulate, ComponentCatalogScript.GRADE_TINTS[1], "the component glyph takes the grade tint"
-	)
-	var elec := groups.get_node_or_null(NodePath("RowCompElec2/Glyph")) as TextureRect
-	assert_eq(elec.modulate, ComponentCatalogScript.GRADE_TINTS[2], "grade II's own tint")
-	var laser := groups.get_node_or_null(NodePath("RowLaser/Glyph")) as TextureRect
-	assert_eq(laser.modulate, Color.WHITE, "the weapon glyph is the dedicated art, untinted")
 
 
-func test_an_empty_group_reads_none_held() -> void:
-	var screen := _mount()
-	screen.call(&"_toggle_cargo")
-	var overlay := _overlay(screen) as Control
-	(overlay as Control).call(&"close")
-	_stage_cargo({})
-	(overlay as Control).call(&"open")
-	var rows: PackedStringArray = overlay.call(&"row_texts")
+## ------------------------------- 3. A11's category strip - the armory idiom (item 3)
+
+func test_the_category_strip_is_the_armory_idiom() -> void:
+	var overlay := _open_overlay()
+	var ids: Array = overlay.call(&"category_ids")
 	assert_eq(
-		rows, PackedStringArray([
-			"AMMUNITION",
-			"LASER MKII · 120 ROUNDS",
-			"CANNON MKI · 60 ROUNDS",
-			"ORE", "NONE HELD",
-			"INGOTS", "NONE HELD",
-			"COMPONENTS", "NONE HELD",
-			"FUEL CELLS", "NONE HELD",
+		ids, [&"ammo", &"ore", &"ingots", &"components", &"fuel", &"all"],
+		"six tabs: A9's five words + ALL, in A9's order"
+	)
+	assert_eq(
+		StringName(overlay.call(&"active_category")), &"all",
+		"the default tab is ALL"
+	)
+	var tabs := overlay.get_node(NodePath("%CargoTabs")) as HBoxContainer
+	var labels := PackedStringArray()
+	for child: Node in tabs.get_children():
+		labels.append((child as Button).text)
+	assert_eq(
+		labels, PackedStringArray(["AMMUNITION", "ORE", "INGOTS", "COMPONENTS", "FUEL CELLS", "ALL"]),
+		"the armory's own tab words"
+	)
+	var all_tab := tabs.get_node(NodePath("TabAll")) as Button
+	assert_true(all_tab.toggle_mode, "the tabs are the armory's toggle buttons")
+	assert_eq(all_tab.custom_minimum_size.y, 32.0, "at the armory's own 32 px minimum")
+	assert_true(all_tab.button_pressed, "the default tab is pressed")
+	assert_eq(
+		all_tab.get_theme_color(&"font_color"), _token(&"text_primary"),
+		"the active tab reads text_primary"
+	)
+	var ore_tab := tabs.get_node(NodePath("TabOre")) as Button
+	assert_false(ore_tab.button_pressed, "an inactive tab is not pressed")
+	assert_eq(
+		ore_tab.get_theme_color(&"font_color"), _token(&"text_dim"),
+		"and reads text_dim (the theme's TabBar language)"
+	)
+	## The one door both the tab press and a probe share filters the list.
+	overlay.call(&"select_category", &"ore")
+	assert_eq(_slot_ids(overlay), [&"mineral_iron", &"mineral_gold"], "the ORE tab lists the ore stacks only")
+	assert_eq(PackedStringArray(overlay.call(&"band_texts")), PackedStringArray(), "no bands in a single-category view")
+	assert_true(ore_tab.button_pressed, "the ORE tab took the pressed state")
+	assert_false(all_tab.button_pressed, "and ALL gave it up")
+
+
+## ------------------------------- 4. A10's slot rows - the refinery grammar (item 4)
+
+func test_the_slot_rows_carry_the_refinery_grammar() -> void:
+	var overlay := _open_overlay()
+	var rows: Array = overlay.call(&"slot_rows")
+	assert_eq(rows.size(), FIXTURE_SLOTS.size(), "one slot per held stack (A14: no pack-only rows)")
+	for index in rows.size():
+		var row: Dictionary = rows[index]
+		var pinned: Array = FIXTURE_SLOTS[index]
+		assert_eq(StringName(row[&"id"]), StringName(pinned[0]), "slot %d's id" % index)
+		assert_eq(StringName(row[&"category"]), StringName(pinned[1]), "slot %d's category" % index)
+		assert_eq(String(row[&"name"]), String(pinned[2]), "slot %d's name" % index)
+		assert_eq(String(row[&"meta"]), String(pinned[3]), "slot %d's meta line" % index)
+		assert_eq(int(row[&"amount"]), int(pinned[4]), "slot %d's amount is its hold stack" % index)
+		assert_eq(bool(row[&"dispose"]), bool(pinned[5]), "slot %d's chip arming" % index)
+	assert_eq(
+		PackedStringArray(overlay.call(&"band_texts")), PackedStringArray(FIXTURE_BANDS),
+		"BY CATEGORY groups the ALL view under the five A9 bands"
+	)
+	## The band's own captions, seated over the row's columns.
+	var band := overlay.get_node(NodePath("%CargoBand")) as HBoxContainer
+	var lead := band.get_node(NodePath("HeaderLead")) as Label
+	assert_eq(lead.text, "ITEM", "the leading caption")
+	var amount_header := band.get_node(NodePath("HeaderAmount")) as Label
+	assert_eq(amount_header.text, "AMOUNT", "the amount column's caption")
+	assert_eq(amount_header.custom_minimum_size.x, 130.0, "at the 130 cell")
+	assert_eq(
+		(band.get_node(NodePath("HeaderAction")) as Label).text, "ACTION",
+		"the chip column's caption"
+	)
+	## The row's own anatomy: the C4 strip at 76, the 40 px icon at its own rect with
+	## the refinery's idle ink, the chip at the ActionInline box.
+	var iron := overlay.get_node(NodePath("%CargoRows/SlotMineralIron")) as Button
+	assert_eq(iron.custom_minimum_size.y, 76.0, "the row is the refinery's 76-tall strip")
+	assert_eq(String(iron.get_meta(&"chrome_class", "")), "C4", "wearing the C4 row strip")
+	var icon := iron.get_node(NodePath("RowInner/RowBox/Icon")) as TextureRect
+	assert_eq(icon.custom_minimum_size, Vector2(40, 40), "the material icon at its own 40 rect")
+	assert_eq(icon.modulate, IDLE_INK, "raw catalogue art takes the refinery's idle ink")
+	var chip := iron.get_node(NodePath("RowInner/RowBox/Dispose")) as Button
+	assert_eq(chip.custom_minimum_size, Vector2(96, 32), "the DISPOSE chip is the ActionInline 96x32")
+	assert_eq(chip.text, "DISPOSE", "with the pinned word")
+	assert_false(chip.disabled, "armed on a held stack")
+	var laser_chip := overlay.get_node(NodePath("%CargoRows/SlotAmmoLaser/RowInner/RowBox/Dispose")) as Button
+	assert_false(laser_chip.disabled, "a held ammo family arms its chip")
+	## A14: the cannon pack rides loaded (60 rounds) with an empty hold - it lists
+	## no row at all; the owner's "shows ammo even if i have 0 ammo".
+	assert_true(
+		overlay.call(&"dispose_button", &"ammo_cannon") == null,
+		"a pack with rounds and an empty hold lists no row"
+	)
+	assert_false(_slot_ids(overlay).has(&"ammo_cannon"), "the cannon family is not drawn")
+	## A16: the title column never collapses - the box carries the fixed column.
+	var title_box := iron.get_node(NodePath("RowInner/RowBox/TitleBox")) as VBoxContainer
+	assert_eq(
+		title_box.custom_minimum_size.x, float(overlay.get(&"_title_col")),
+		"the title box carries the overlay's title column (A16: it never collapses)"
+	)
+	assert_gt(OverlayScript.TITLE_COL, 200.0, "the column leaves the names room")
+
+
+## ----------------------------------------------- 5. A13's sort cycle (item 5)
+
+func test_the_sort_chip_cycles_the_three_modes() -> void:
+	var overlay := _open_overlay()
+	var chip := overlay.get_node(NodePath("%CargoSort")) as Button
+	assert_eq(
+		StringName(overlay.call(&"sort_mode")), &"category",
+		"CATEGORY is the default (the grouped view)"
+	)
+	assert_eq(chip.text, "SORT: CATEGORY", "the chip reads the mode")
+	overlay.call(&"cycle_sort")
+	assert_eq(StringName(overlay.call(&"sort_mode")), &"name", "one press reads NAME")
+	assert_eq(chip.text, "SORT: NAME", "the chip follows")
+	assert_eq(
+		_slot_names(overlay),
+		PackedStringArray([
+			"EMBER CELL", "FUEL CELL", "GOLD ORE", "IRON ORE",
+			"LASER CELLS", "LOGIC ARRAY", "TITANIUM INGOT", "TORN PLATING",
 		]),
-		"an empty group shows the NONE HELD caption; the packs stay the battery's own read"
+		"NAME reads A-Z flat across the whole hold"
+	)
+	assert_eq(PackedStringArray(overlay.call(&"band_texts")), PackedStringArray(), "no bands in a flat read")
+	overlay.call(&"cycle_sort")
+	assert_eq(StringName(overlay.call(&"sort_mode")), &"amount", "the next press reads AMOUNT")
+	assert_eq(
+		_slot_names(overlay),
+		PackedStringArray([
+			"IRON ORE", "FUEL CELL", "TITANIUM INGOT", "GOLD ORE", "EMBER CELL",
+			"LASER CELLS", "TORN PLATING", "LOGIC ARRAY",
+		]),
+		"AMOUNT reads the biggest stack first, ties by name"
+	)
+	overlay.call(&"cycle_sort")
+	assert_eq(StringName(overlay.call(&"sort_mode")), &"category", "the cycle wraps")
+	assert_eq(
+		PackedStringArray(overlay.call(&"band_texts")), PackedStringArray(FIXTURE_BANDS),
+		"and CATEGORY re-groups the five bands"
+	)
+
+
+## ----------------------------------------------- 6. A12's dispose (item 6)
+
+func test_dispose_removes_the_whole_stack_through_the_profile() -> void:
+	var overlay := _open_overlay()
+	var chip: Button = overlay.call(&"dispose_button", &"mineral_iron")
+	assert_true(chip != null and not chip.disabled, "the iron row's chip is live")
+	chip.pressed.emit()
+	assert_eq(
+		int(_profile.call(&"cargo_qty", &"mineral_iron")), 0,
+		"one press removes the row's whole hold stack through remove_cargo"
+	)
+	assert_false(_slot_ids(overlay).has(&"mineral_iron"), "the row left the list the same frame")
+	assert_true(
+		overlay.get_node_or_null(NodePath("%CargoRows/SlotMineralIron")) == null,
+		"and the row node left the tree"
 	)
 	assert_eq(
-		(overlay as Control).call(&"title_text"),
-		"CARGO — 0/%d UNITS" % _capacity(),
+		int(_profile.call(&"cargo_qty", &"mineral_gold")), 3,
+		"the other stacks are untouched"
+	)
+	assert_eq(
+		overlay.call(&"title_text"), "CARGO — %d/%d UNITS" % [FIXTURE_HELD - 7, _capacity()],
+		"the title recounts the emptied hold"
+	)
+
+
+func test_ammo_rows_dispose_only_the_hold_units() -> void:
+	var cargo := FIXTURE_CARGO.duplicate()
+	cargo[&"ammo_laser"] = 3
+	_stage_cargo(cargo)
+	var overlay := _open_overlay()
+	var laser: Dictionary = {}
+	for row: Dictionary in overlay.call(&"slot_rows"):
+		if StringName(row[&"id"]) == &"ammo_laser":
+			laser = row
+	assert_eq(int(laser[&"amount"]), 3, "the laser cells row reads the hold units")
+	assert_true(bool(laser[&"dispose"]), "with an armed chip")
+	assert_eq(String(laser[&"meta"]), "120 ROUNDS IN PACK", "the pack read rides the meta line")
+	var chip: Button = overlay.call(&"dispose_button", &"ammo_laser")
+	chip.pressed.emit()
+	assert_eq(
+		int(_profile.call(&"cargo_qty", &"ammo_laser")), 0,
+		"the dispose removed the hold's ammo units"
+	)
+	assert_eq(
+		int(_profile.call(&"ammo_of", &"laser")), 120,
+		"the loaded pack is the ship's and stays (A12's carve-out)"
+	)
+	var chip_after: Button = overlay.call(&"dispose_button", &"ammo_laser")
+	assert_true(chip_after == null, "A14: with the hold empty the row leaves the list")
+	assert_eq(
+		int(_profile.call(&"ammo_of", &"laser")), 120,
+		"the loaded pack is the ship's and stays (A12's carve-out)"
+	)
+
+
+func test_a_zero_hold_with_loaded_packs_lists_nothing() -> void:
+	## A14's own row: the packs ride loaded, the hold is empty - nothing lists,
+	## whichever way the sort reads (the owner's "shows ammo even if i have 0 ammo").
+	_stage_cargo({})
+	var overlay := _open_overlay()
+	assert_eq((overlay.call(&"slot_rows") as Array).size(), 0, "no rows at an empty hold")
+	assert_eq(
+		PackedStringArray(overlay.call(&"band_texts")), PackedStringArray(["NONE HELD"]),
+		"the empty state reads NONE HELD"
+	)
+	assert_eq(
+		overlay.call(&"title_text"), "CARGO — 0/%d UNITS" % _capacity(),
 		"and the title's <n> is the emptied hold"
 	)
 
 
-## ------------------------------------------------- 4. no transaction inside (item 4)
-
-func test_no_transactional_control_inside() -> void:
-	var screen := _mount()
-	screen.call(&"_toggle_cargo")
-	var overlay := _overlay(screen) as Control
-	var buttons := 0
-	var stack: Array[Node] = [overlay]
-	while not stack.is_empty():
-		var node: Node = stack.pop_back()
-		if node is BaseButton:
-			buttons += 1
-		for child: Node in node.get_children():
-			stack.append(child)
-	assert_eq(buttons, 0, "the overlay ships no button - the panes are the act")
+func test_an_empty_category_reads_none_held() -> void:
+	_stage_cargo({})
+	var overlay := _open_overlay()
+	overlay.call(&"select_category", &"fuel")
+	assert_eq(
+		PackedStringArray(overlay.call(&"band_texts")), PackedStringArray(["NONE HELD"]),
+		"an empty single category reads the 5.8 empty-state caption"
+	)
+	overlay.call(&"select_category", &"all")
+	assert_eq(
+		PackedStringArray(overlay.call(&"band_texts")), PackedStringArray(["NONE HELD"]),
+		"the grouped ALL view reads one empty state (A14: the packs summon nothing)"
+	)
 
 
-## ------------------------------------------- 5. the shell's station wiring (item 5)
+## ------------------------------------------- 7. the shell's station wiring (item 7)
 
 func test_the_shell_handles_c_from_any_pane() -> void:
 	var screen := _mount()
@@ -421,7 +658,7 @@ func test_the_cargo_binding_is_the_pinned_c_key() -> void:
 	assert_true(InputMap.has_action(&"cargo_toggle"), "and the action exists in the input map")
 
 
-## ------------------------------------------- 6. the flight plane's wiring (item 6)
+## ------------------------------------------- 8. the flight plane's wiring (item 8)
 ##
 ## The polls are called directly: the runner grants no frames, so a press stays
 ## "just pressed" for every direct call that follows it in the same frame.
@@ -474,32 +711,30 @@ func test_the_overlay_pauses_nothing_in_flight() -> void:
 	assert_false(tree.paused, "nothing pauses under the overlay (A7's live HUD)")
 
 
-func test_the_flight_overlay_reads_the_fixture_rows() -> void:
+func test_the_flight_overlay_reads_the_fixture_slots() -> void:
 	var overlay := _game.get(&"_cargo_overlay") as Control
 	_poll_cargo()
-	var rows: PackedStringArray = overlay.call(&"row_texts")
-	var expected := PackedStringArray([
-		"AMMUNITION",
-		"LASER MKII · 120 ROUNDS",
-		"CANNON MKI · 60 ROUNDS",
-		"ORE",
-		"IRON ORE · 7",
-		"GOLD ORE · 3",
-		"INGOTS",
-		"TITANIUM INGOT · 4",
-		"COMPONENTS",
-		"TORN PLATING · 2",
-		"LOGIC ARRAY · 1",
-		"FUEL CELLS",
-		"FUEL CELL · 5",
-		"EMBER CELL · 2",
-	])
+	var rows: Array = overlay.call(&"slot_rows")
+	assert_eq(rows.size(), FIXTURE_SLOTS.size(), "the same overlay reads the same fixture slots in flight")
+	for index in rows.size():
+		assert_eq(
+			String((rows[index] as Dictionary)[&"name"]), String(FIXTURE_SLOTS[index][2]),
+			"flight slot %d's name" % index
+		)
 	assert_eq(
-		rows, expected,
-		"the same overlay reads the same fixture rows in flight (hold and packs)"
-	)
-	assert_eq(
-		(overlay as Control).call(&"title_text"),
-		"CARGO — %d/%d UNITS" % [FIXTURE_HELD, _capacity()],
+		overlay.call(&"title_text"), "CARGO — %d/%d UNITS" % [FIXTURE_HELD, _capacity()],
 		"and the title carries the hold over the hull's cargo column"
 	)
+
+
+func test_the_flight_dispose_writes_the_shared_profile() -> void:
+	var overlay := _game.get(&"_cargo_overlay") as Control
+	_poll_cargo()
+	var chip: Button = overlay.call(&"dispose_button", &"mineral_gold")
+	assert_true(chip != null and not chip.disabled, "the flight overlay carries the same chips")
+	chip.pressed.emit()
+	assert_eq(
+		int(_profile.call(&"cargo_qty", &"mineral_gold")), 0,
+		"a dispose in flight writes the shared profile (the one law, both planes)"
+	)
+	assert_false(_slot_ids(overlay).has(&"mineral_gold"), "and the flight list recounts")

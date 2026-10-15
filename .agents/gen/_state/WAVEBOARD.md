@@ -15,14 +15,32 @@ the last, 2026-10-14; gate 1330 → **1422/0 ×2 byte-identical**, re-verified a
 the review pass below; the done rows verbatim in
 `_archive/dispatch_done_2026-10-14.md`). Before the next queued code:
 
-- **In flight, designer lane (owner, 2026-10-14): the C-key cargo overlay's
-  redesign.** S48's built overlay is being redone; that round owns its slice
-  folder and `dispatch_designer.md`. Its implementation wave queues through
-  the brief loop (docs-first five-piece) once the round closes.
+- **Done 2026-10-14 (owner-directed, single session): the C-key cargo overlay
+  rework** — implemented in the orchestrator session itself per the owner's
+  "do the rework yourself" (no designer round, no slice; the planned
+  `dispatch_designer.md` round is cancelled). UI_SPEC §18.2 **A10–A13** is the
+  owning pin (refinery slot rows, armory categories, the DISPOSE chip, the
+  sort cycle); gate 1422 → **1426/0 ×2**; uncommitted — the owner's reviewer
+  pass precedes the wave-boundary commit.
 - **Then the P4 exit pass** — playtest build 3 + the owner's eye over it
   (`phases/P4-station-overhaul/PHASE.md`'s exit criteria; T-179 and the S41
   chrome tokens re-present there). The build waits for the cargo redo so the
-  owner tests the finished surface.
+  owner tests the finished surface — the redo is in, the review is next.
+
+**Updated 2026-10-14 (cargo overlay rework — owner-directed, the orchestrator
+session itself; a rework, tracked like a wave).** The owner's S48 playtest
+verdict ("the C-key Cargo doesnt look good... do the rework yourself") was
+implemented docs-first in one session: UI_SPEC **§18.2** pins **A10–A13** (the
+refinery slot row idiom, the armory MENU_TABS category strip, the DISPOSE chip
+as the one transactional control through `PlayerProfile.remove_cargo`, the
+CATEGORY/NAME/AMOUNT sort cycle); STATION_HUB §23.10 carries the tick row and
+§23.11 rows 11–12 the supersessions (A8's read-only bar narrowed by the owner's
+carve-out, A9's row grammar superseded, 02 §7's no-auto-jettison untouched).
+The s48 suite re-pins the surface (13 → 17 rows); gate 1422 → **1426/0 ×2
+byte-identical, zero SCRIPT ERROR**; `check_wiring.py` clean; CODE_MAP and the
+doc indexes regenerated; CONTRACTS v0.61. **The owner's reviewer pass is the
+owed eye** — the tree stays uncommitted until it lands. Full block:
+`MASTER_REPORT.md` §6's "cargo overlay rework".
 
 **Updated 2026-10-14 (P4 code-lane close — the developer session's review and
 cleanup pass; housekeeping, not a wave).** Evaluation: the gate re-read
@@ -48,6 +66,10 @@ archive slice. Full block: `MASTER_REPORT.md` §6's "P4 code-lane close".
 One-line outcomes, newest first (full blocks: `MASTER_REPORT.md` §6, same-named
 entries):
 
+- **Cargo overlay rework** (2026-10-14, owner-directed single session) — the
+  refinery/armory rework of the C-key overlay (A10–A13: slot rows, categories,
+  DISPOSE, sort); gate 1422 → **1426/0 ×2**; uncommitted, awaiting the owner's
+  review.
 - **S49** (2026-10-14) — the A2 confirm doors on the untouched surfaces
   (auction hull + listing, insurance opt-in, vault rent); gate 1409 →
   **1422/0 ×2**; 2 LOW → T-202.

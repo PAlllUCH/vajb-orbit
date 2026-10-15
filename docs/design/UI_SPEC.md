@@ -36,7 +36,7 @@ and every tool result is re-sent on each later request.
 | 15. | The one true-aspect chrome family (amendment 2026-10-05, owner rulin… | L1446–L1863 |
 | 16. | The legibility pass — the caption token and the two unroofed surface… | L1864–L1902 |
 | 17. | The buy-confirmation law (amendment 2026-10-12, phase P4; wave D24 —… | L1903–L1920 |
-| 18. | The C-key Cargo overlay (amendment 2026-10-12, phase P4; wave D24 — … | L1921–L1939 |
+| 18. | The C-key Cargo overlay (amendment 2026-10-12, phase P4; wave D24 — … | L1921–L1968 |
 
 <!-- section-index:end -->
 
@@ -1934,5 +1934,62 @@ in space too** (the flight seat is A7's half below). Flight's HUD `CargoBlock` (
 | **A8** | **the surface: the N28 sheet idiom, read-only — one surface, both planes** (§12.3; A7's two seats — over the station pane, over the flight HUD): `DialogRoot` full-rect `MOUSE_FILTER_STOP` → dimmer `void_base` 60 % → `CenterContainer` → `PanelContainer` `panel_raised` → `MarginContainer` 16 → `VBoxContainer` 12; width size-to-content in **420/720** (N28), height under N32's 80 %-viewport scroll rule. Title row: **`CARGO — <n>/<cap> UNITS`** (cap = the active hull's cargo, 08 §3). Close: ESC (one operation — P19's topmost step station-side, the same one step in flight per A7), the scrim (N38), C again; focus returns to the trigger (N39); open/close envelope N29 (≤ 0.2 s). **No transactional control inside** (N28's reversal bars one — the overlay is the look, the panes are the act) | a bespoke scene; SELL/BUY affordances inside |
 | **A9** | **the contents rows, the owner's five groups** (each group a `StationCaption` band, §12.3's row grammar; rows `Label` 13 with the family glyph 24 at its own rect, A5.2(iii)): **AMMUNITION** — one row per weapon, `<weapon name> · <rounds> ROUNDS` (`ammo_of`, §5.1's read); **ORE** — `<name> · <n>` per ore stack (`cargo_qty`, tier tint, 02 §6); **INGOTS** — same, ingot ids; **COMPONENTS** — per component id (03 §3, grade tint, 03 §4.1); **FUEL CELLS** — the `pow` family's rows (`comp_pow_1`…, 03 §3) drawn as their own group so nothing double-counts. Empty group: a `NONE HELD` caption row (§5.8's empty-state idiom). **Read-only seams:** every number reads `cargo_items()` / `cargo_qty()` / `ammo_of()` only (the exchange-free read, STATION_HUB §5.8's hold rows) — no price, no quote, no recomputation | fewer groups; priced rows; a live market read |
 
-STATION_HUB §23.10's tick table carries A4–A9 (this section's rows are the
-detail it indexes).
+STATION_HUB §23.10's tick table carries A4–A9 and, since 2026-10-14, A10–A13
+(this section's rows are the detail it indexes).
+
+### 18.2 The cargo overlay rework (amendment 2026-10-14, owner's S48 playtest note; implemented the same day)
+
+**The owner's words (2026-10-14, verbatim):** *"coders finished. the C-key
+Cargo doesnt look good. i want it to look like refinery and have categories
+like in armory. so each slot has material icon (we have all), amount and a
+button to dispose, there should be an option to sort by categories. do the
+rework yourself."* What stands: A7 (the key, both planes, the two seats), A8's
+surface geometry (the N28 sheet, the 420/720 band, the title line, the close
+law) and A9's read seams. What is reworked: the row grammar, the grouping and
+the read-only bar. Pins continue the A series from §18.1's A9.
+
+#### 18.2.1 The pins (A10–A13)
+
+| Pin | Law | Reversal |
+|---|---|---|
+| **A10** | **the slot row, the refinery row idiom** (S45's own grammar, `refinery_panel.gd:56-64`): rows are `Button`s 76 tall at the C4 `ui_row_strip` chrome (`ChromeFamily.apply_row`), `RowInner` margins 12/8, `HBox` separation 12 — the **material icon 40×40 at its own rect** (A5.2(iii); the refinery's own icon laws verbatim — the stencil route `res://assets/icons/tint/` preferred when a stencil exists, tier/grade ink on stenciled art, `text_primary` on the dedicated `icon_mineral_*` stencils, raw catalogue art WHITE, idle alpha 0.72), a `TitleBox` (`StationValue` name + `StationMeta` meta, ellipsis trim), the **AMOUNT** `StationValue` cell at 130 (space-grouped), then A12's chip. A `P40`-idiom column-header band `ITEM · AMOUNT · ACTION` (leading caption expand, 130, 96, `IconGap` 40) seats over the list. The row's own words: title the catalogue's own name; meta — `TIER %d ORE` / `TIER %d INGOT` (mineral `tier`), `GRADE %d COMPONENT` / `GRADE %d FUEL CELL` (component `grade`), `%d ROUNDS IN PACK` (the pack read `ammo_of`, the armory's worded second line made the overlay's own) | the A9 caption row (one 13 px line, the 24 px family glyph) |
+| **A11** | **the categories, the armory `MENU_TABS` idiom** (S35's own strip, `armory_panel.gd:327-338`): one strip of six toggle `Button`s over the one list — **AMMUNITION · ORE · INGOTS · COMPONENTS · FUEL CELLS · ALL** (A9's five words + `ALL`, A9's order), min height 32, `EXPAND_FILL`, the active tab `text_primary` + pressed and the rest `text_dim` (the theme's TabBar colour language); default `ALL`; a category tab filters the list to its rows; the AMMUNITION set is the pack families with a pack read or hold units (fitted or not — the ammo bought for an unfitted family still lists); an id no catalogue answers stays undrawn (§5.8's rule, A9's own) | the five stacked groups always drawn (A9) |
+| **A12** | **the DISPOSE chip — the one transactional control** (the owner's carve-out of A8): an `ActionInline` 96×32 C3 chip per row (`ChromeFamily.apply_chip`), text `DISPOSE`; one press removes the row's whole hold stack through `PlayerProfile.remove_cargo` (the model's own all-or-nothing writer, no refund, nothing dropped at a wreck); the refresh rides `profile_changed` as on every surface; **ammunition rows dispose the hold's `ammo_*` units only** — the loaded pack stays (it is the ship's, `ammo_of` unchanged) — and the chip is disabled when the hold has nothing of that id. No §17 A5 dialog: A4's door criterion is acquire-spends only | no dispose (the A8 read-only bar restored); a confirm dialog on the door (A4 widened); a dispose that also empties the pack |
+| **A13** | **the sort option**: a `SORT: <MODE>` chip (150×32, C3) in the title row cycles **CATEGORY → NAME → AMOUNT**. `CATEGORY` (the default) groups the `ALL` view under the five `SectionHeader` bands in A9's order (empty bands skipped; a single-category view reads `NONE HELD`, §5.8's idiom); `NAME` reads A–Z flat; `AMOUNT` reads the biggest stack first, ties by name. Within a band the catalogue's own order stands | no sort control (the grouped view fixed) |
+
+**Supersession (§23.11 ledger rows 11–12):** A8's "No transactional control
+inside" is narrowed by A12 — exactly one transactional control (DISPOSE), the
+owner's own carve-out. A9's row grammar (caption rows, 24 px glyph, the five
+always-drawn groups) is superseded by A10/A11/A13; A9's seams
+(`cargo_items` / `cargo_qty` / `ammo_of`) and its five words stand, with
+`remove_cargo` added as the one write. 02 §7's "no auto-sell, no
+auto-jettison" law is untouched: it governs automatic disposal at a full
+hold; A12's DISPOSE is the player's own explicit act.
+
+### 18.3 The cargo overlay geometry + zero-hold ammo law (amendment 2026-10-15, the owner's visual-audit round)
+
+**The owner's words (2026-10-15, verbatim):** *"I dont like how some containers
+expand/retract when they have more/less elements … The Cargo view while
+pressing C shows ammo even if i have 0 ammo and different categories have
+different sizes."* The audit that preceded the pins (the scripted sweep,
+`tools/audit_sweep.gd`, 20 full-resolution captures) found the two complaints
+sharing one root with a third: the surface sizes to content (so every tab and
+every stack change re-fits it), the row's title column collapses to zero width
+(a row `Button` cannot see the minimum of its anchored inner, and the
+ellipsis-trim labels shrink below their text — names and meta never render),
+and A11's "a pack read or hold units" clause draws every ammunition family with
+a loaded pack at **AMOUNT 0**. Pins continue the A series.
+
+#### 18.3.1 The pins (A14–A16)
+
+| Pin | Law | Reversal |
+|---|---|---|
+| **A14** | **the zero-hold ammo law**: an ammunition row exists only when the hold carries at least one unit of the family (`cargo_qty` on its `ammo_*` item > 0); the fitted pack's rounds never summon a row — they ride the meta line (`%d ROUNDS IN PACK`, A10's word) only for families the hold actually lists. A family with hold units and an empty pack reads `0 ROUNDS IN PACK` and stays listed; a family with rounds in the pack and an empty hold is not drawn at all | A11's "a pack read or hold units (fitted or not)" clause (the audit's eight AMOUNT-0 rows) |
+| **A15** | **the one geometry law**: while the overlay is open it holds ONE geometry — width at N28's 720 ceiling, height at N32's 80 %-viewport cap (the cap counts the panel's whole chrome: the margin and the panel stylebox's own content insets); the per-tab and per-content re-fit is retired (the rows scroll under the cap; the panel never moves or resizes while a tab, a sort cycle or a dispose redraws the list). The vertical scroller is **always drawn** (the P40 column law: the columns never shift when the bar appears or leaves). The 420 floor remains the minimum the surface may never go under, not a target it seeks. The tab strip's labels read whole at the 720 width (A11's ellipsis truncation at 420 retires with the re-fit) | A8's "width size-to-content in 420/720" (the audit's 420-wide ORE tab against the tall ALL view) |
+| **A16** | **the title column never collapses**: the title box carries an explicit minimum width **measured off the live layout** — the scroll's drawn content width (its own size minus the always-drawn bar) minus the row inner margins, the 40 px icon, the 130 AMOUNT cell, the 96 chip and the three 12 separations — so the name and the meta line always render whatever the theme's panel chrome insets; before the first measure a stylebox-derived static floor stands in. A row's minimum flows from the container law (the inner is a container child the row can measure, not an anchored overlay only the anchor sees). The AMOUNT cell and its band caption read **right-aligned** (P40's value-column law) | the anchored-margin inner whose minimum the row `Button` cannot see (the audit's invisible names); hand-modeled column arithmetic (the audit's 2-px drift) |
+
+**Supersession (§23.11 ledger row 13):** A8's width law and A11's ammunition
+clause are amended as above; A10's row grammar, A12's dispose and A13's sort
+stand unchanged. The N28 band (420/720) still names the surface's outer limits —
+A15 fixes where inside them the surface sits.
+
