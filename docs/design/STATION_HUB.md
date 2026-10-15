@@ -2215,6 +2215,7 @@ cures and view-law pointers; their reversals are their own rows).
 | 11 | UI_SPEC §18.1 **A8** ("No transactional control inside" — the overlay is the look, the panes are the act) | UI_SPEC §18.2 **A12**: the DISPOSE chip, the owner's 2026-10-14 carve-out (one transactional control, `remove_cargo` only) |
 | 12 | UI_SPEC §18.1 **A9**'s row grammar (the `<name> · <n>` caption rows, the 24 px family glyph, the five always-drawn groups) | UI_SPEC §18.2 **A10/A11/A13**: the refinery slot row, the category strip, the sort cycle (A9's seams and its five words stand) |
 | 13 | UI_SPEC §18.1 **A8**'s width law ("width size-to-content in 420/720") and §18.2 **A11**'s ammunition clause ("a pack read or hold units, fitted or not") | UI_SPEC §18.3 **A15/A14** (the owner's 2026-10-15 audit round): the surface holds one geometry while open (720 wide, the 80 % cap tall), and an ammunition row exists only when the hold carries units — the pack read rides the meta line |
+| 14 | UI_SPEC §18.1 **A7**'s "the HUD `CargoBlock` stays as it is" (the unbounded one-row-per-stack readout) | UI_SPEC §18.3.2 **A17** (the same round): the readout is bounded at 6 rows with a `+<n> MORE · PRESS C` tail |
 
 Named and **not** superseded: §2's two-press law (P48's preamble re-states it);
 T-181's words and 360×56 band (P50 extends the cluster, the closure stands);

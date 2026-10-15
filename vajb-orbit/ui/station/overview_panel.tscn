@@ -5,7 +5,7 @@
 [node name="Overview" type="VBoxContainer"]
 layout_mode = 3
 anchors_preset = 0
-theme_override_constants/separation = 12
+theme_override_constants/separation = 8
 script = ExtResource("1_overview")
 
 [node name="PaneHeader" type="HBoxContainer" parent="."]

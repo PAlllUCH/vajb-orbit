@@ -43,10 +43,23 @@ func _run() -> void:
 		station._select_module(i, true)
 		await _wait(0.4)
 		await _shot("1%d_station_module" % i)
+	_probe_pane_fit(station)
+	station._select_module(7, true)
+	await _wait(0.4)
 	for service in ["contracts", "insurance", "vaults"]:
 		station._show_service(StringName(service))
 		await _wait(0.4)
 		await _shot("2%s_station_service" % service)
+	_probe_pane_fit(station, true)
+	var overview: Control = station.get("_overview")
+	if overview == null:
+		print("AUDIT OVSCROLL no overview pane")
+	else:
+		var scroll: ScrollContainer = overview.get_node(NodePath("BlockScroll"))
+		var stack: VBoxContainer = overview.get_node(NodePath("BlockScroll/BlockStack"))
+		print("AUDIT OVSCROLL size=", str(scroll.size), " stack_min=", str(stack.get_combined_minimum_size()))
+		for child in stack.get_children():
+			print("AUDIT OVBLK ", child.name, " min=", str(child.get_combined_minimum_size()))
 
 	## --- cargo overlay, station plane -----------------------------------
 	var overlay := station.get_node_or_null(NodePath("CargoLayer/CargoOverlay"))
@@ -112,14 +125,14 @@ func _run() -> void:
 		get_tree().quit()
 		return
 	await _shot("41_hud_flight")
-	if game.has_method(&"set_cargo_open"):
-		game.call(&"set_cargo_open", true)
+	if game.has_method(&"_set_cargo_open"):
+		game.call(&"_set_cargo_open", true)
 		await _wait(0.4)
 		var flight_overlay: Node = game.find_child("CargoOverlay", true, false)
 		if flight_overlay != null:
 			_print_rows(flight_overlay)
 		await _shot("42_hud_flight_cargo")
-		game.call(&"set_cargo_open", false)
+		game.call(&"_set_cargo_open", false)
 
 	print("AUDIT DONE index=", _index)
 	get_tree().quit()
@@ -187,6 +200,36 @@ func _print_rows(overlay: Node) -> void:
 			for child in inner.get_child(0).get_children():
 				print("AUDIT COL ", child.name, " size=", str(child.size),
 						" min=", str(child.get_combined_minimum_size()))
+
+
+## The pane-fit probe: every pane's own minimum against the space the shell's
+## host actually gives it - the container-stability audit's hard numbers.
+func _probe_pane_fit(station: Node, services: bool = false) -> void:
+	var host_margin: Control = station.get_node_or_null(NodePath("Layout/Page/Body/ModuleHost/HostMargin"))
+	var available := Vector2.ZERO
+	if host_margin != null:
+		available = host_margin.size
+		print("AUDIT HOST available=", str(available))
+	var panes: Array = []
+	if services:
+		var map: Dictionary = station.get("_service_panes")
+		for key in map:
+			panes.append(map[key])
+	else:
+		panes = station.get("_panels")
+		var overview: Control = station.get("_overview")
+		if overview != null:
+			panes.append(overview)
+	for pane in panes:
+		if pane == null:
+			continue
+		var minimum: Vector2 = pane.get_combined_minimum_size()
+		var over := minimum.y - available.y
+		print("AUDIT PANE ", pane.name, " min=", str(minimum), " over_h=", "%.1f" % over)
+		if over > 0.0:
+			for child in pane.get_children():
+				print("AUDIT   BLK ", child.name, " min_y=",
+						"%.1f" % child.get_combined_minimum_size().y)
 
 
 func _ore_id(mineral: String) -> StringName:

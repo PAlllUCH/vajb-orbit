@@ -320,7 +320,7 @@ func _build_hull_block() -> void:
 	_stack.add_child(block)
 	var left := VBoxContainer.new()
 	left.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	left.add_theme_constant_override(&"separation", 6)
+	left.add_theme_constant_override(&"separation", 4)
 	block.add_child(left)
 	var caption := Label.new()
 	caption.theme_type_variation = &"SectionHeader"

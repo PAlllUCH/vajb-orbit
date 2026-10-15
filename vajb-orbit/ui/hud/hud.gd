@@ -188,12 +188,17 @@ const PROFILE_KEY_CREDITS: StringName = &"credits"
 ## S39 (T-170): the hold readout's own constants. The block sits beside credits in the
 ## bottom-left column, so the owner's "i cannot see my current cargo while in flight" is
 ## answered without un-retiring section 3.7's old column: `CARGO used/max` is the count
-## and one `name x qty` row per held item is the contents.
+## and one `name x qty` row per held item is the contents. A17 (the owner's 2026-10-15
+## round): the contents are bounded - at most CARGO_BLOCK_ROWS rows, the overflow folded
+## into one `+<n> MORE · PRESS C` tail row, so the block's height never follows the
+## stack count.
 const CARGO_BLOCK := "CargoBlock"
 const CARGO_TITLE := "CARGO"
 const PROFILE_KEY_CARGO: StringName = &"cargo"
 const CARGO_ROW_FORMAT := "%s  x%d"
 const CARGO_EMPTY := "EMPTY"
+const CARGO_BLOCK_ROWS := 6
+const CARGO_MORE_FORMAT := "+%d MORE · PRESS C"
 
 ## Section 3.10 amendment 9.8: the target window's captions carry a grouped
 ## number, so a 4-digit range reads `1 240 u` rather than `1240 u`, in the **unit**
@@ -1451,14 +1456,23 @@ func _refresh_cargo_block() -> void:
 	_cargo_block_value.text = "%d/%d" % [_cargo_used, _cargo_max]
 	_set_text_alert(_cargo_block_value, _cargo_is_full(), TOKEN_DANGER)
 	for child: Node in _cargo_block_list.get_children():
+		## Detached first, then queued: the block re-fills the same frame (the
+		## S48 clear's law - a queue_free alone would double-render one frame).
+		_cargo_block_list.remove_child(child)
 		child.queue_free()
 	var entries := _cargo_entries()
 	if entries.is_empty():
 		_cargo_block_list.add_child(_cargo_row(CARGO_EMPTY))
 		return
-	for entry: Dictionary in entries:
+	var shown := mini(entries.size(), CARGO_BLOCK_ROWS)
+	for index in shown:
+		var entry: Dictionary = entries[index]
 		_cargo_block_list.add_child(
 			_cargo_row(CARGO_ROW_FORMAT % [_item_label(StringName(entry[&"id"])), int(entry[&"qty"])])
+		)
+	if entries.size() > shown:
+		_cargo_block_list.add_child(
+			_cargo_row(CARGO_MORE_FORMAT % [entries.size() - shown])
 		)
 
 

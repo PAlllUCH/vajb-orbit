@@ -23,6 +23,7 @@ const ShipFitScript := preload("res://game/ship_fit.gd")
 const ImpactScript := preload("res://game/impact.gd")
 const HudScene := preload("res://ui/hud/hud.tscn")
 const HudTheme := preload("res://ui/theme/vajb_theme.tres")
+const HudScript := preload("res://ui/hud/hud.gd")
 const ArmoryPanelScript := preload("res://ui/station/armory_panel.gd")
 
 const HULL: StringName = &"ship_fighter"
@@ -298,6 +299,45 @@ func test_a7_the_flight_hud_carries_a_live_hold_readout() -> void:
 	assert_true(value != null, "with a value label")
 	_hud.call(&"_on_cargo_changed", 3, 5)
 	assert_eq(value.text, "3/5", "which reads the hold's slots")
+
+
+## A17 (the owner's 2026-10-15 round): the readout is bounded - 6 rows plus the
+## `+<n> MORE` tail, whatever the hold carries.
+func test_a17_the_flight_readout_is_bounded() -> void:
+	_hud = HudScene.instantiate() as Control
+	if _hud == null:
+		assert_true(false, "hud.tscn did not instantiate")
+		return
+	_hud.theme = HudTheme
+	_host().add_child(_hud)
+	var tree := Engine.get_main_loop() as SceneTree
+	var profile: Node = tree.root.get_node_or_null(NodePath("PlayerProfile"))
+	assert_true(profile != null, "the profile autoload backs the read")
+	if profile == null:
+		return
+	var previous: Dictionary = (profile.get(&"_cargo") as Dictionary).duplicate(true)
+	var staged := {}
+	var ids := ["iron", "copper", "chromium", "silicon", "aluminium", "titanium", "nickel", "gold"]
+	for index in ids.size():
+		staged[StringName("mineral_%s" % ids[index])] = index + 1
+	profile.set(&"_cargo", staged)
+	_hud.call(&"_refresh_cargo_block")
+	var list: Control = _hud.get(&"_cargo_block_list")
+	assert_eq(
+		list.get_child_count(), HudScript.CARGO_BLOCK_ROWS + 1,
+		"eight stacks read six rows and the overflow tail, not eight"
+	)
+	var tail := list.get_child(HudScript.CARGO_BLOCK_ROWS) as Label
+	assert_eq(
+		tail.text, HudScript.CARGO_MORE_FORMAT % 2,
+		"the tail names the hidden remainder and the way to it"
+	)
+	profile.set(&"_cargo", previous)
+	_hud.call(&"_refresh_cargo_block")
+	assert_eq(
+		(list.get_child(0) as Label).text, HudScript.CARGO_EMPTY,
+		"the emptied hold reads its one row again"
+	)
 
 
 func test_a7_the_armory_subtitle_carries_the_hold_slots() -> void:

@@ -1993,3 +1993,17 @@ clause are amended as above; A10's row grammar, A12's dispose and A13's sort
 stand unchanged. The N28 band (420/720) still names the surface's outer limits —
 A15 fixes where inside them the surface sits.
 
+#### 18.3.2 A17 — the flight readout is bounded (the same round)
+
+The owner's "containers expand/retract when they have more/less elements"
+reaches flight through the HUD `CargoBlock` (S39/T-170): one `name x qty` row
+per held stack makes the block's height follow the hold. The block becomes
+**bounded**: at most **6** contents rows; a hold beyond that reads a final
+`+<n> MORE · PRESS C` tail row (the overlay is one C away), and an empty hold
+reads its one `HOLD EMPTY` row. The block's height therefore never follows the
+stack count beyond its own cap.
+
+| Pin | Law | Reversal |
+|---|---|---|
+| **A17** | the HUD `CargoBlock`'s contents list is bounded: 6 rows maximum, the overflow folded into one `+<n> MORE · PRESS C` tail row; the count line (`<used>/<max>`) and the alert tinting stand | the unbounded one-row-per-stack list (S39/T-170's shipped shape) |
+
