@@ -78,3 +78,8 @@ __pycache__/
 # The voting site lives in its own repo nested in the workspace
 /vajb-orbit-site/
 .venv/
+
+# rclone bisync access canary (the sync's --check-access needs one on each
+# mirror side; never versioned)
+/RCLONE_TEST
+
