@@ -60,11 +60,14 @@ measured current state and its owning section).
       doors); gate 1330 → **1422/0 ×2** at every boundary; the done rows
       verbatim in `_archive/dispatch_done_2026-10-14.md` and each recap in
       `MASTER_REPORT.md` §6.
-- [ ] **The C-key cargo overlay redesign + its implementation wave.** The
-      owner (2026-10-14) wants S48's built overlay redone; the design round is
-      in flight in the designer lane (its slice folder and dispatch queue are
-      that lane's to open), and the wave that lands the redo in code follows
-      its amendments. Opened by the designer round, not yet staged here.
+- [x] **The C-key cargo overlay rework + its follow-up rounds (owner-directed,
+      in-session; the designer-lane round cancelled).** The rework (2026-10-14,
+      UI_SPEC §18.2 A10–A13) closed, then the owner's audit verdict drove the
+      visual audit round (2026-10-15, A14–A17 + V1–V4, `tools/audit_sweep.gd`),
+      the playtest-pass answers (A18–A20), the cargo-windows round (2026-10-16,
+      `slices/S50-cargo-window/`, A21–A24) and the capacity + stock laws
+      (A25/A26); gate 1422 → **1430/0 ×2**, CONTRACTS v0.68, everything
+      committed through the stock verdict. Recaps: `MASTER_REPORT.md` §6.
 
 ## Wave checklist (applies to every slice above)
 
