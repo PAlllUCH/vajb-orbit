@@ -64,7 +64,7 @@ and every tool result is re-sent on each later request.
 | 20. | The ARMORY two-module rework (amendment 2026-10-04, owner's playtest… | L1911–L1949 |
 | 21. | The two-sector rework — ARMORY's two modes and the REFINERY queue pa… | L1950–L1996 |
 | 22. | The station overhaul — owner rulings and asks (2026-10-12, phase P4 … | L1997–L2099 |
-| 23. | The station overhaul — the D24 design detail (amendment 2026-10-12, … | L2100–L2229 |
+| 23. | The station overhaul — the D24 design detail (amendment 2026-10-12, … | L2100–L2231 |
 
 <!-- section-index:end -->
 
@@ -2222,6 +2222,7 @@ cures and view-law pointers; their reversals are their own rows).
 | 18 | UI_SPEC §20.1 **A21.1**'s single-stack seat (the window expand-filling the one left stack, after EQUIPPED) | UI_SPEC §20.1 **A21.3** (the owner's 2026-10-16 "two tabs if needed" authorization): the armory's left column splits into `LAYOUT` (grid + cell info, the default) and `HOLD` (equipped + the cargo window, which then owns ≈ 436 px of the column) |
 | 19 | UI_SPEC §20.1 **A21.3**'s LAYOUT/HOLD page split and §20 **A19**/A21.1's armory cargo block | UI_SPEC §20.2 **A22/A23** (the owner's 2026-10-16 third instruction): the armory's column restores to the pre-split stack (equipped beneath cell info), the armory's embedded block retires, and the cargo readout becomes the shell's global HOLD chip (beneath INSPECT, every module) over the now-moveable overlay with its CLOSE chip |
 | 20 | UI_SPEC §20.2 **A22**'s InspectColumn (the stacked chip pair) and §20.1 **A21.2**'s launch manifest seat | UI_SPEC §20.2 **A22.1/A24** (the owner's 2026-10-16 fourth instruction): the header's chips seat in a 2×2 grid (TERMINAL | INSPECT over HOLD), and the launch's embedded manifest retires too — every module reads the hold through the HOLD chip or the C step over the one moveable window |
+| 21 | the raw `ship.get(&"cargo")` capacity reads (the OVERVIEW stat pair printing the base twice, the launch's CARGO row, the overlay title's catalogue read) | UI_SPEC §20.2 **A25** (the owner's 2026-10-16 capacity verdict: 55 owned, 40 shown): every capacity figure reads the resolved snapshot through `PlayerProfile.cargo_capacity()` |
 
 Named and **not** superseded: §2's two-press law (P48's preamble re-states it);
 T-181's words and 360×56 band (P50 extends the cluster, the closure stands);

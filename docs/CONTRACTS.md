@@ -1201,6 +1201,20 @@ window; the launch's brief column keeps its briefing count rows and the note).
 home keeps the slots law, the icon ink law, `format_int` and the strip
 constants. STATION_HUB §23.11 row 20 carries the supersession.
 
+**The capacity law (2026-10-16, the owner's fifth instruction, the same
+directed session):** the Expected line is **`[SUMMARY] passed=1430 failed=0`**,
+exit 0, twice hermetic through `staging/gate.py`, byte-identical, zero
+`SCRIPT ERROR` lines — **net +1** (s48 gains the A25 expansion row). UI_SPEC
+§20.2 pins **A25**: every capacity figure on every surface reads the resolved
+snapshot (`ShipStats.cargo_max` — the hull row plus the fitted cargo
+expansions and the deep-hold affix) through the profile's own
+`cargo_capacity()`/`cargo_used()`; the catalogue row's base is a fallback,
+never the figure. The readers re-seated: the OVERVIEW stat pair (which printed
+the base twice), the launch's CARGO row, the overlay title's
+`Summary.cargo_capacity`, and the armory's `_hold_capacity` now delegates. The
+S50-B-style edge: the flight's `PlayerState` already read the snapshot and
+stands. STATION_HUB §23.11 row 21 carries the supersession.
+
 ## §11 P2 ship frames (2026-09-21)
 
 Pinned before any code worker starts, so five parallel workers agree. Additive only:
@@ -3898,6 +3912,14 @@ bottom (the index-line form is only for retired entries).
   caller). **Reversal:** restore A22's InspectColumn, A21.2's launch seat and
   the window half per the git history; drop §20.2's A22.1/A24 rows and the
   ledger row.
+- **v0.67 (2026-10-16, the capacity law — the owner's fifth instruction; gate
+  1429 → 1430/0 ×2 byte-identical)** — UI_SPEC §20.2 pins **A25**: every
+  capacity figure reads the resolved snapshot (`ShipStats.cargo_max`) through
+  `PlayerProfile.cargo_capacity()`/`cargo_used()`; the raw `ship.get(&"cargo")`
+  reads retire (the OVERVIEW stat pair, the launch's CARGO row,
+  `Summary.cargo_capacity`'s catalogue read; the armory's `_hold_capacity`
+  delegates). **Reversal:** restore the three readers' catalogue reads and
+  drop the profile pair per the git history.
 - **v0.65 (2026-10-16, the moveable-window round — the owner's third
   instruction; gate 1429 → 1430/0 ×2 byte-identical)** — UI_SPEC **§20.2**
   pins **A22** (the shell's global HOLD chip beneath INSPECT) and **A23**

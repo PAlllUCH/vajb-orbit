@@ -83,7 +83,11 @@ canvas on the measured stretch. Gate **1430/0 ×2**; CONTRACTS v0.65.
 (TERMINAL | INSPECT over HOLD — A22.1) and the launch's embedded manifest
 retires (A24 — every module reads the hold through HOLD or C over the one
 moveable window; `cargo_summary`'s window half retired with it). Gate
-**1429/0 ×2**; CONTRACTS v0.66.
+**1429/0 ×2**; CONTRACTS v0.66. **Same-day fifth instruction (the capacity
+law, A25):** every capacity figure reads the resolved snapshot through the
+profile's `cargo_capacity()` — the OVERVIEW's pair printed the base twice and
+the overlay title/launch row read the raw hull field; the flight already read
+it. Gate **1430/0 ×2**; CONTRACTS v0.67.
 
 **Updated 2026-10-15 (the owner's playtest pass — the ammunition rows, the
 armory's cargo preview and the launch manifest; one session).** The owner's

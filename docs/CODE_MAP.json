@@ -6773,8 +6773,7 @@
     "res://assets/icons/tint/",
     "res://game/component_catalog.gd",
     "res://game/mineral_catalog.gd",
-    "res://game/station_catalog.gd",
-    "res://ui/theme/chrome_family.gd"
+    "res://game/station_catalog.gd"
    ],
    "signals": []
   },
@@ -6909,7 +6908,6 @@
     "res://game/station_registry.gd",
     "res://game/weapons.gd",
     "res://ui/paths.gd",
-    "res://ui/station/cargo_summary.gd",
     "res://ui/theme/chrome_family.gd"
    ],
    "signals": [

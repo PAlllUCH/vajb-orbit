@@ -1139,8 +1139,7 @@ func _cargo_used(profile: ProfileScript) -> int:
 func _hold_capacity(profile: ProfileScript) -> int:
 	if profile == null:
 		return 0
-	var hull := _active_hull(profile)
-	return int(ShipFit.resolve(hull, _resolved_fit(profile, hull)).cargo_max)
+	return profile.cargo_capacity()
 
 
 ## The active hull's fit cells, summed over `ShipFit.FIT_SLOT_KEYS` (one POWER cell, the

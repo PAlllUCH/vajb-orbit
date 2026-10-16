@@ -441,7 +441,7 @@ func _stat_pairs(profile: ProfileScript, active: StringName, ship: Dictionary) -
 	var parts: Array[String] = [
 		"HULL %d / %d" % [int(current.get(&"hull", maxima.get(&"hull", 0))), int(maxima.get(&"hull", 0))],
 		"SHIELD %d / %d" % [int(current.get(&"shield", maxima.get(&"shield", 0))), int(maxima.get(&"shield", 0))],
-		"CARGO %d / %d" % [int(ship.get(&"cargo", 0)), int(ship.get(&"cargo", 0))],
+		"CARGO %d / %d" % [profile.cargo_used(), int(maxima.get(&"cargo_max", int(ship.get(&"cargo", 0))))],
 		"ENGINES %d" % int(ShipFit.grid_counts(active).get(&"engines", 0)),
 		"SLOT CELLS %d" % _slot_cell_count(active),
 	]
@@ -537,7 +537,7 @@ func _maxima(profile: ProfileScript, ship_id: StringName, ship: Dictionary) -> D
 	var stats: ShipStats = ShipFit.resolve(ship_id, fit, summary if summary is Dictionary else {})
 	if stats == null:
 		return fallback
-	return {&"hull": int(round(stats.hull_max)), &"shield": int(round(stats.shield_max))}
+	return {&"hull": int(round(stats.hull_max)), &"shield": int(round(stats.shield_max)), &"cargo_max": int(stats.cargo_max)}
 
 
 func _active_ship(profile: ProfileScript) -> StringName:

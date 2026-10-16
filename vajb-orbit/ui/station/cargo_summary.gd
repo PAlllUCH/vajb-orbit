@@ -181,7 +181,13 @@ static func held_units(items: Dictionary) -> int:
 
 ## A8's `<cap>`: the active hull's cargo column (08 section 3).
 static func cargo_capacity(profile: Node) -> int:
-	if profile == null or not profile.has_method(&"active_ship"):
+	## A25: the resolved snapshot through the profile - the catalogue row's base
+	## is the fallback, never the figure.
+	if profile == null:
+		return 0
+	if profile.has_method(&"cargo_capacity"):
+		return int(profile.call(&"cargo_capacity"))
+	if not profile.has_method(&"active_ship"):
 		return 0
 	var ship: Dictionary = Catalog.ship(StringName(profile.call(&"active_ship")))
 	return int(ship.get(&"cargo", 0))

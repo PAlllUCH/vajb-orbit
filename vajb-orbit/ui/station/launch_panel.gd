@@ -535,7 +535,7 @@ func _refresh_brief() -> void:
 	_set_brief(&"engines", str(int(ShipFit.grid_counts(active_id).get(&"engines", 0))))
 	_set_brief(&"hardpoints", str(int(ship.get(&"hardpoints", 0))))
 	_set_brief(&"slots", str(_slot_cell_count(active_id)))
-	_set_brief(&"cargo", CARGO_FORMAT % [_cargo_used(profile), int(ship.get(&"cargo", 0))])
+	_set_brief(&"cargo", CARGO_FORMAT % [_cargo_used(profile), profile.cargo_capacity()])
 	_set_brief(
 		&"ammo",
 		AMMO_FORMAT % [

@@ -243,7 +243,8 @@ func _token(name: StringName) -> Color:
 
 
 func _capacity() -> int:
-	return int(Catalog.ship(SHIP).get(&"cargo", 0))
+	## A25: the resolved snapshot - the hull row plus the fitted expansions.
+	return int(_profile.call(&"cargo_capacity"))
 
 
 func _open_overlay() -> Control:
@@ -426,6 +427,26 @@ func test_a23_the_window_moves_and_closes() -> void:
 		panel.position.x + panel.size.x <= view.x + 0.01
 			and panel.position.y + panel.size.y <= view.y + 0.01,
 		"and the window clamps inside its viewport"
+	)
+	overlay.call(&"close")
+
+
+## A25 (the owner's 2026-10-16 capacity verdict): the title's cap reads the
+## resolved snapshot - the hull row plus the fitted cargo expansions - not the
+## base. A fitted u_cargo lifts the cap by its own cargo_add (15).
+func test_a25_the_title_capacity_counts_the_fitted_expansions() -> void:
+	_settle_cargo()
+	var base: int = _profile.call(&"cargo_capacity")
+	var fit: Dictionary = _profile.call(&"fit_for", SHIP)
+	fit[&"utility"] = [&"u_cargo"]
+	_profile.call(&"set_fit", SHIP, fit)
+	_settle_cargo()
+	var expanded: int = _profile.call(&"cargo_capacity")
+	assert_eq(expanded, base + 15, "the fitted u_cargo lifts the cap by its own cargo_add (A25)")
+	var overlay := _open_overlay()
+	assert_true(
+		overlay.title_text().contains("/%d UNITS" % expanded),
+		"the window's title carries the resolved cap (%s)" % overlay.title_text()
 	)
 	overlay.call(&"close")
 

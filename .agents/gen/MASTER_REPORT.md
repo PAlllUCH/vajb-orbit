@@ -2058,3 +2058,26 @@ the overlay reads (the slim-down briefly dropped `format_int` and orphaned a
 `check_wiring.py` clean (1628 hard refs); `docs_index.py`; `build_code_map.py`
 (130 scenes / 335 scripts); CONTRACTS **v0.66**; WAVEBOARD/TICKS amended in
 place. **The P4 exit pass continues.**
+
+**The capacity law (the owner's fifth instruction, the same directed session,
+2026-10-16; gate 1429 → 1430/0 ×2 byte-identical, zero `SCRIPT ERROR`; net +1
+rows).** The owner: "Cargo in Mainmenu doesnt show real capability. Right now
+i have 55 with cargo expansions and it says 40." The audit: `ShipFit.resolve`
+computes the true capacity into `ShipStats.cargo_max` (the hull row + the
+fitted `cargo_add` effects + the deep-hold affix), but the readouts read the
+raw catalogue row — the OVERVIEW's stat pair even printed the base **twice**
+("CARGO 40 / 40"), the launch's CARGO row and the overlay title read
+`ship.get(&"cargo")`, and the flight's own `PlayerState` already read the
+resolved snapshot. **A25** (UI_SPEC §20.2): every capacity figure on every
+surface reads the resolved snapshot through the profile's own
+`cargo_capacity()` (and `cargo_used()` for the used side); `Summary.cargo_capacity`
+delegates to it (the overlay's seam stands), the launch's CARGO row and the
+OVERVIEW's pair re-seat, and the armory's `_hold_capacity` now delegates too.
+**Test:** s48 gains the A25 row — the fixture's cap, then a fitted `u_cargo`
+(+15) lifts it, and the window's title carries the expanded figure; the four
+s48 title rows re-seat through the suite's `_capacity()` helper, which now
+reads the resolved law. Suite-caught slip: the slim-down dropped `format_int`
+(the overlay's parse chain) and the s30 grid asserts used a nonexistent
+`get_index_of_child` — both caught by the gate and cured. Close-out:
+`check_wiring.py` clean; `docs_index.py`; `build_code_map.py`; CONTRACTS
+**v0.67**; WAVEBOARD/TICKS amended in place. **The P4 exit pass continues.**

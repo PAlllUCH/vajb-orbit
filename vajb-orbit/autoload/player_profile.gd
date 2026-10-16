@@ -1118,6 +1118,27 @@ func resolved_fit(ship_id: StringName) -> Dictionary:
 		return stored
 	return FitData.standard_fit(ship_id)
 
+## A25: the active hull's hold capacity, from the same resolved snapshot the
+## flight hold reads (`ShipStats.cargo_max`: the hull row plus the fitted cargo
+## expansions and the deep-hold affix), so every reader agrees with the flight.
+func cargo_capacity() -> int:
+	var ship: Dictionary = Catalog.ship(active_ship())
+	if ship.is_empty():
+		return 0
+	var stored: Variant = resolved_fit(active_ship())
+	var fit: Dictionary = base_fit(stored as Dictionary) if stored is Dictionary else {}
+	var summary: Variant = affix_summary(active_ship())
+	var stats: ShipStats = ShipFit.resolve(active_ship(), fit, summary if summary is Dictionary else {})
+	return int(stats.cargo_max) if stats != null else int(ship.get(&"cargo", 0))
+
+
+## A25's used side: the hold's own units, the same sum `held_units` makes.
+func cargo_used() -> int:
+	var used := 0
+	for quantity: Variant in _cargo.values():
+		used += int(quantity)
+	return used
+
 
 ## The affixes this hull's fitted instances carry, summed per prefix, with one row
 ## per fitted instance (CONTRACTS section 20): the bridge `game.gd`'s launch hands
