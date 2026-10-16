@@ -1187,6 +1187,20 @@ re-fit on a viewport resize), F03 (the stale drag across a close) and F04
 `canvas_items`+`expand` stretch measured a 1920×1080 logical viewport in
 every window the resolution sweep ran.
 
+**The 2×2 header grid + the launch manifest retirement (2026-10-16, the
+owner's fourth instruction, the same directed session):** the Expected line is
+**`[SUMMARY] passed=1429 failed=0`**, exit 0, twice hermetic through
+`staging/gate.py`, byte-identical, zero `SCRIPT ERROR` lines — **net −1**
+(the launch's A21.2 window row retires; the s30 A22 row re-cuts to the grid
+law). UI_SPEC **§20.2** pins **A22.1** (the header's chips seat in a 2×2 grid
+— TERMINAL top-left, INSPECT top-right, HOLD beneath TERMINAL) and **A24**
+(the launch's embedded manifest retires with the armory's block — every module
+reads the hold through the HOLD chip or the C step over the one moveable
+window; the launch's brief column keeps its briefing count rows and the note).
+`cargo_summary.gd`'s window half retires with its last caller — the shared
+home keeps the slots law, the icon ink law, `format_int` and the strip
+constants. STATION_HUB §23.11 row 20 carries the supersession.
+
 ## §11 P2 ship frames (2026-09-21)
 
 Pinned before any code worker starts, so five parallel workers agree. Additive only:
@@ -3874,6 +3888,16 @@ bottom (the index-line form is only for retired entries).
   per D24's design law, so CONTRACTS carries no new §-section for them.
   **Reversal:** drop the §9 chain block and this entry (the waves' own record
   stays in `MASTER_REPORT.md` §6 and the WAVEBOARD one-liners).
+- **v0.66 (2026-10-16, the header grid + the launch retirement — the owner's
+  fourth instruction; gate 1430 → 1429/0 ×2 byte-identical)** — UI_SPEC
+  **§20.2** pins **A22.1** (the header's chips seat in a 2×2 grid: TERMINAL
+  top-left, INSPECT top-right, HOLD beneath TERMINAL — the owner's
+  misalignment verdict) and **A24** (the launch's embedded manifest retires
+  with the armory's block; every module reads the hold through the HOLD chip
+  or the C step; `cargo_summary.gd`'s window half retires with its last
+  caller). **Reversal:** restore A22's InspectColumn, A21.2's launch seat and
+  the window half per the git history; drop §20.2's A22.1/A24 rows and the
+  ledger row.
 - **v0.65 (2026-10-16, the moveable-window round — the owner's third
   instruction; gate 1429 → 1430/0 ×2 byte-identical)** — UI_SPEC **§20.2**
   pins **A22** (the shell's global HOLD chip beneath INSPECT) and **A23**

@@ -17,7 +17,10 @@ cell info, the split and its block retired), the shell gained the global
 HOLD chip beneath INSPECT (A22) and the overlay is now a moveable,
 always-on-top window with a CLOSE chip (A23) — verified live (open centered,
 drag rides the cursor, CLOSE and the C step both close, reopen re-centers).
-Gate **1430/0 ×2 byte-identical**. The resolution sweep (720p → 4K,
+**And the owner's fourth instruction:** the header chips seat in a 2×2 grid
+(TERMINAL | INSPECT over HOLD — A22.1) and the launch's embedded manifest
+retired (A24 — the launch reads its hold through HOLD or C like every other
+module). Gate **1429/0 ×2 byte-identical**. The resolution sweep (720p → 4K,
 16:9/21:9/32:9) ran clean — 16:9 scales uniformly, the wide layouts hold.
 **The P4 exit pass continues** — the owner's next pass reads these surfaces;
 T-179 and the S41 chrome tokens re-present there.)*

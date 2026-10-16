@@ -142,8 +142,8 @@ func test_the_header_carries_the_terminal_button_the_plate_and_the_credits() -> 
 
 
 ## A22 (the owner's 2026-10-16 third instruction): the HOLD chip rides the
-## header's own column beneath INSPECT and toggles the cargo overlay through
-## the C step's own guard ladder, on every module.
+## header's own 2x2 grid beneath TERMINAL, INSPECT to its right, and toggles
+## the cargo overlay through the C step's own guard ladder, on every module.
 func test_a22_the_hold_chip_toggles_the_cargo_overlay() -> void:
 	var screen := _mount()
 	var hold := screen.get_node_or_null(NodePath("%HoldButton")) as Button
@@ -152,12 +152,14 @@ func test_a22_the_hold_chip_toggles_the_cargo_overlay() -> void:
 		return
 	assert_eq(hold.text, "HOLD", "and carries the pinned word")
 	assert_eq(hold.custom_minimum_size, Vector2(96.0, 32.0), "at the ActionInline size")
+	var grid := hold.get_parent() as GridContainer
+	var terminal := screen.get_node(NodePath("%TerminalButton")) as Control
 	var inspect := screen.get_node(NodePath("%InspectButton")) as Control
-	assert_true(
-		inspect.get_parent() == hold.get_parent(),
-		"beneath INSPECT: the two chips share one column"
-	)
-	assert_eq(hold.get_index(), inspect.get_index() + 1, "HOLD is the column's second row")
+	assert_eq(grid.columns, 2, "the chip grid is two wide (A22.1)")
+	assert_eq(grid.get_child_count(), 3, "TERMINAL, INSPECT and HOLD, one empty cell")
+	assert_eq(terminal.get_index(), 0, "TERMINAL is the grid's first cell")
+	assert_eq(inspect.get_index(), 1, "INSPECT is the grid's second cell")
+	assert_eq(hold.get_index(), 2, "HOLD is beneath TERMINAL (A22.1)")
 	assert_false(bool(screen.call(&"_cargo_open")), "the overlay starts closed")
 	hold.pressed.emit()
 	assert_true(bool(screen.call(&"_cargo_open")), "the press opens it, the C step's own route")

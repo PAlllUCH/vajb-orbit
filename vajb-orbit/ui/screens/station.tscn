@@ -76,18 +76,21 @@ custom_minimum_size = Vector2(0, 76)
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="TerminalButton" type="Button" parent="Layout/Page/Header"]
+[node name="ButtonGrid" type="GridContainer" parent="Layout/Page/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+columns = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+
+[node name="TerminalButton" type="Button" parent="Layout/Page/Header/ButtonGrid"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(96, 32)
 layout_mode = 2
 size_flags_vertical = 4
 text = "TERMINAL"
 
-[node name="InspectColumn" type="VBoxContainer" parent="Layout/Page/Header"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="InspectButton" type="Button" parent="Layout/Page/Header/InspectColumn"]
+[node name="InspectButton" type="Button" parent="Layout/Page/Header/ButtonGrid"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(96, 32)
 layout_mode = 2
@@ -95,7 +98,7 @@ size_flags_vertical = 4
 toggle_mode = true
 text = "INSPECT"
 
-[node name="HoldButton" type="Button" parent="Layout/Page/Header/InspectColumn"]
+[node name="HoldButton" type="Button" parent="Layout/Page/Header/ButtonGrid"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(96, 32)
 layout_mode = 2

@@ -276,10 +276,6 @@ func test_a1_f11_the_brief_note_leaves_the_foot_region() -> void:
 		brief.get_node_or_null(NodePath("BriefSpacer")) == null,
 		"no expanding spacer pushes it to the column's bottom"
 	)
-	var cargo := _launch.find_child("CargoWindow", true, false) as Control
-	assert_true(cargo != null, "the cargo window ships")
-	if cargo != null:
-		assert_eq(note.get_index(), cargo.get_index() + 1, "the note follows the cargo it comments on")
 	assert_eq(strip.get_parent(), foot, "the live confirm line keeps the foot band")
 	assert_false(note.get_parent() == foot, "the note is not foot-band text")
 

@@ -79,6 +79,11 @@ the global HOLD chip beneath INSPECT (A22) and the overlay becomes a moveable,
 always-on-top window with a CLOSE chip (A23) — the S50-B review accepted the
 resize re-fit, the stale-drag reset and the idiom flag, declined the sub-720
 canvas on the measured stretch. Gate **1430/0 ×2**; CONTRACTS v0.65.
+**Same-day fourth instruction:** the header's chips seat in a 2×2 grid
+(TERMINAL | INSPECT over HOLD — A22.1) and the launch's embedded manifest
+retires (A24 — every module reads the hold through HOLD or C over the one
+moveable window; `cargo_summary`'s window half retired with it). Gate
+**1429/0 ×2**; CONTRACTS v0.66.
 
 **Updated 2026-10-15 (the owner's playtest pass — the ammunition rows, the
 armory's cargo preview and the launch manifest; one session).** The owner's

@@ -2038,3 +2038,23 @@ probe's live evidence: open (600,108) → drag (760,168) → CLOSE → reopen
 re-centered. Close-out: `check_wiring.py` clean (1628 hard refs);
 `docs_index.py`; `build_code_map.py` (130 scenes / 335 scripts); CONTRACTS
 **v0.65**; WAVEBOARD/TICKS amended in place. **The P4 exit pass continues.**
+
+**The 2×2 header grid + the launch manifest retirement (the owner's fourth
+instruction, the same directed session, 2026-10-16; gate 1430 → 1429/0 ×2
+byte-identical, zero `SCRIPT ERROR`; net −1 rows).** The owner's verdict: the
+stacked chip pair misaligned the header ("TERMINAL and HOLD are misaligned,
+what a sight!") and the launch still carried a cargo segment. **A22.1** seats
+the header's chips in a 2×2 grid — TERMINAL top-left, INSPECT top-right, HOLD
+beneath TERMINAL (the InspectColumn becomes a two-column `ButtonGrid`).
+**A24** retires the launch's embedded manifest with the armory's block: every
+module reads the hold through the shell's HOLD chip or the C step over the one
+moveable window, and the launch's brief column keeps its briefing count rows
+plus the note, now simply the column's last row. `cargo_summary.gd`'s window
+half (`build_window`/`populate_window`/`apply_tab_states`/`filter_category`
+and the summary row builders) retired with its last caller — the shared home
+keeps the slots law, the icon ink law, `format_int` and the strip constants
+the overlay reads (the slim-down briefly dropped `format_int` and orphaned a
+`stack` in the p49 re-cut; both caught by the gate and cured). Close-out:
+`check_wiring.py` clean (1628 hard refs); `docs_index.py`; `build_code_map.py`
+(130 scenes / 335 scripts); CONTRACTS **v0.66**; WAVEBOARD/TICKS amended in
+place. **The P4 exit pass continues.**

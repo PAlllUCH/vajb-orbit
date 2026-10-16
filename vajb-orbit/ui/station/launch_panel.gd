@@ -66,11 +66,6 @@ const ARM_SECONDS := 3.0
 const ARM_PULSE_MIN_ALPHA := 0.70
 const ARM_PULSE_SECONDS := 0.16
 
-## A21 (the owner's 2026-10-16 "same window, wider" ask): the manifest is the
-## C overlay's own window — chrome, tab strip, category grouping and the
-## uncapped scroll — built by the shared builder into the briefing column.
-const Summary := preload("res://ui/station/cargo_summary.gd")
-
 ## S23 A5: the damaged side view a hurt hull shows (the same swap REPAIRS ships).
 const SIDE_SUFFIX := "_side.png"
 const DAMAGED_SIDE_SUFFIX := "_damaged_side.png"
@@ -171,7 +166,6 @@ const STATUS_FIRED := "LAUNCH CONFIRMED · UNDOCKING"
 @onready var _subtitle: Label = %PaneSubtitle
 @onready var _tag: Label = %PanelTag
 @onready var _brief_rows: VBoxContainer = %BriefRows
-@onready var _brief_box: VBoxContainer = %BriefBox
 @onready var _brief_note: Label = %BriefNote
 @onready var _launch_button: Button = %LaunchButton
 @onready var _actions_row: HBoxContainer = %ActionsRow
@@ -194,15 +188,8 @@ var _armed := false
 var _arm_tween: Tween = null
 var _native_preview := Vector2.ZERO
 var _tweens: Array[Tween] = []
-## A21: the manifest's window (built in `_build_cargo_window`) and the tab in
-## force; a tab press filters exactly the overlay's split.
-var _cargo_window: Dictionary = {}
-var _cargo_category: StringName = Summary.TAB_ALL
-
-
 func _ready() -> void:
 	_build_brief_rows()
-	_build_cargo_window()
 	_build_arm_timer()
 	_build_service_rows()
 	_subtitle.text = SUBTITLE % [_bridge_label(), String(destination_route()).to_upper()]
@@ -239,8 +226,6 @@ func refresh_profile(key: StringName) -> void:
 	## STATION_HUB section 12.4: &"cargo" rebuilds the manifest and the plate strip,
 	## &"ships" moves the active hull and the limits, &"ammo" moves the ammunition line.
 	## A paid bounty moves the credits key, so the row re-reads itself there (13 section 7).
-	if key == &"cargo" or key == &"ships":
-		_refresh_cargo()
 	if key == &"cargo" or key == &"ships" or key == &"ammo":
 		_refresh_brief()
 	if key == &"credits":
@@ -530,7 +515,6 @@ func _build_arm_timer() -> void:
 
 func _refresh_all() -> void:
 	_refresh_brief()
-	_refresh_cargo()
 
 
 func _refresh_brief() -> void:
@@ -575,33 +559,6 @@ func _slot_cell_count(hull_id: StringName) -> int:
 	for count: Variant in ShipFit.grid_counts(hull_id).values():
 		total += int(count)
 	return total
-
-
-func _refresh_cargo() -> void:
-	if _cargo_window.is_empty() or not is_node_ready():
-		return
-	## A21: the manifest is the C overlay's own window — the A8 title words on
-	## the window's own title row, the banded rows under the tab strip, the
-	## scroll owning the length; the surface reads, it never disposes.
-	Summary.populate_window(_cargo_window, _profile(), self, _cargo_category)
-
-
-## A21: the window takes the briefing column's leftover height (expand-fill in
-## `BriefBox`, between the briefing rows and `BriefNote` — the s47 order law:
-## the note still follows the cargo) and scrolls its rows under that bound.
-func _build_cargo_window() -> void:
-	_cargo_window = Summary.build_window(
-		_brief_box, "CargoWindow", Callable(self, "_on_cargo_tab")
-	)
-	var note := _brief_box.get_node_or_null(NodePath("BriefNote"))
-	if note != null:
-		_brief_box.move_child(_cargo_window[&"window"], note.get_index())
-
-
-func _on_cargo_tab(id: StringName) -> void:
-	AudioManager.play_ui(AudioManager.UiCue.CLICK)
-	_cargo_category = id
-	_refresh_cargo()
 
 
 func _cargo_items() -> Dictionary:
