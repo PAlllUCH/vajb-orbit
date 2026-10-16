@@ -83,13 +83,24 @@ layout_mode = 2
 size_flags_vertical = 4
 text = "TERMINAL"
 
-[node name="InspectButton" type="Button" parent="Layout/Page/Header"]
+[node name="InspectColumn" type="VBoxContainer" parent="Layout/Page/Header"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="InspectButton" type="Button" parent="Layout/Page/Header/InspectColumn"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(96, 32)
 layout_mode = 2
 size_flags_vertical = 4
 toggle_mode = true
 text = "INSPECT"
+
+[node name="HoldButton" type="Button" parent="Layout/Page/Header/InspectColumn"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 32)
+layout_mode = 2
+size_flags_vertical = 4
+text = "HOLD"
 
 [node name="StationPlate" type="PanelContainer" parent="Layout/Page/Header"]
 unique_name_in_owner = true

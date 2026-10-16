@@ -74,7 +74,28 @@ func _run() -> void:
 		overlay_node.call(&"open")
 		await _wait(0.4)
 		await _shot("overlay_open")
-	for host_node: Node in [armory, launch, overlay_node]:
+		var panel: Control = overlay_node.get_node_or_null(^"%CargoPanel")
+		if panel != null:
+			print("T204 SEAT open pos=", str(panel.position), " size=", str(panel.size))
+			var press := InputEventMouseButton.new()
+			press.button_index = MOUSE_BUTTON_LEFT
+			press.pressed = true
+			press.global_position = Vector2(200.0, 200.0)
+			overlay_node.call(&"_on_title_row_input", press)
+			var motion := InputEventMouseMotion.new()
+			motion.button_mask = MOUSE_BUTTON_MASK_LEFT
+			motion.global_position = Vector2(360.0, 260.0)
+			overlay_node.call(&"_on_title_row_input", motion)
+			print("T204 SEAT dragged pos=", str(panel.position))
+			var close_chip: Button = overlay_node.get_node_or_null(^"%CargoClose")
+			if close_chip != null:
+				close_chip.pressed.emit()
+				await _wait(0.3)
+				print("T204 SEAT closed is_open=", str(overlay_node.call(&"is_open")))
+			overlay_node.call(&"open")
+			await _wait(0.4)
+			print("T204 SEAT reopened pos=", str(panel.position))
+	for host_node: Node in [launch, overlay_node]:
 		if host_node == null:
 			continue
 		var title: Label = host_node.find_child("CargoTitle", true, false)

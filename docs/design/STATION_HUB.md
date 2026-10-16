@@ -64,7 +64,7 @@ and every tool result is re-sent on each later request.
 | 20. | The ARMORY two-module rework (amendment 2026-10-04, owner's playtest… | L1911–L1949 |
 | 21. | The two-sector rework — ARMORY's two modes and the REFINERY queue pa… | L1950–L1996 |
 | 22. | The station overhaul — owner rulings and asks (2026-10-12, phase P4 … | L1997–L2099 |
-| 23. | The station overhaul — the D24 design detail (amendment 2026-10-12, … | L2100–L2228 |
+| 23. | The station overhaul — the D24 design detail (amendment 2026-10-12, … | L2100–L2229 |
 
 <!-- section-index:end -->
 
@@ -2220,6 +2220,7 @@ cures and view-law pointers; their reversals are their own rows).
 | 16 | UI_SPEC §3.10 **A5.4**'s pack card 320×68 | UI_SPEC §20 **A18** (the 2026-10-15 playtest pass): the full-width ammunition browser rows |
 | 17 | UI_SPEC §20 **A20**'s `CARGO HOLD · <n> STACKS` caption words and the `%CargoCaption`/`%CargoList` scene nodes | UI_SPEC §20.1 **A21.2**: the window's `CargoTitle` carries the A8 `CARGO — <n>/<cap> UNITS` words; the two scene nodes retire (the `BriefNote` order law stands) |
 | 18 | UI_SPEC §20.1 **A21.1**'s single-stack seat (the window expand-filling the one left stack, after EQUIPPED) | UI_SPEC §20.1 **A21.3** (the owner's 2026-10-16 "two tabs if needed" authorization): the armory's left column splits into `LAYOUT` (grid + cell info, the default) and `HOLD` (equipped + the cargo window, which then owns ≈ 436 px of the column) |
+| 19 | UI_SPEC §20.1 **A21.3**'s LAYOUT/HOLD page split and §20 **A19**/A21.1's armory cargo block | UI_SPEC §20.2 **A22/A23** (the owner's 2026-10-16 third instruction): the armory's column restores to the pre-split stack (equipped beneath cell info), the armory's embedded block retires, and the cargo readout becomes the shell's global HOLD chip (beneath INSPECT, every module) over the now-moveable overlay with its CLOSE chip |
 
 Named and **not** superseded: §2's two-press law (P48's preamble re-states it);
 T-181's words and 360×56 band (P50 extends the cluster, the closure stands);

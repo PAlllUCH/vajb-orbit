@@ -246,7 +246,7 @@ static func icon_ink(slot: Dictionary, host: Control) -> Color:
 ## column) carrying the title row, the tab strip, the ITEM/AMOUNT band and the
 ## rows box. The sort chip and the close hint stay the overlay's own dialog
 ## affordances. The children keep the overlay's node names so probes read one
-## grammar; the host names the root (the armory's `CargoWindow` cannot collide
+## grammar; the host names the root (the launch's `CargoWindow` cannot collide
 ## with the station's `CargoLayer/CargoOverlay` in a tree search). Returns the
 ## nodes the host keeps: window/scroll/title/tabs/rows.
 static func build_window(parent: Control, window_name: String, on_tab: Callable) -> Dictionary:

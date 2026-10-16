@@ -9,9 +9,9 @@ entry. addons/ is vendored and excluded. The JSON twin
 |---|---|
 | 1. Autoloads | L18–L27 |
 | 2. Scenes | L28–L160 |
-| 3. Signal wiring | L161–L445 |
-| 4. Scripts | L446–L783 |
-| 5. Orphan scripts | L784–L799 |
+| 3. Signal wiring | L161–L446 |
+| 4. Scripts | L447–L784 |
+| 5. Orphan scripts | L785–L800 |
 
 
 ## 1. Autoloads (project.godot)
@@ -241,8 +241,10 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://ui/dev/dev_tuning_menu.gd | control.value_changed → _on_slider_changed.bind(key |
 | res://ui/dev/dev_tuning_menu.gd | reset_button.pressed → reset |
 | res://ui/dev/dev_tuning_menu.gd | save_button.pressed → save |
+| res://ui/dialogs/cargo_overlay.gd | _close_chip.pressed → _on_close_pressed |
 | res://ui/dialogs/cargo_overlay.gd | _dimmer.gui_input → _on_dimmer_input |
 | res://ui/dialogs/cargo_overlay.gd | _sort_chip.pressed → _on_sort_pressed |
+| res://ui/dialogs/cargo_overlay.gd | _title_row.gui_input → _on_title_row_input |
 | res://ui/dialogs/cargo_overlay.gd | chip.pressed → _on_dispose_pressed.bind(payload |
 | res://ui/dialogs/dialog.gd | _cancel_button.pressed → _on_cancel_pressed |
 | res://ui/dialogs/dialog.gd | _confirm_button.pressed → _on_confirm_pressed |
@@ -299,6 +301,7 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://ui/screens/station.gd | _confirm_cancel.pressed → _on_confirm_answered.bind(false |
 | res://ui/screens/station.gd | _confirm_ok.pressed → _on_confirm_answered.bind(true |
 | res://ui/screens/station.gd | _drawer_scrim.gui_input → _on_scrim_input |
+| res://ui/screens/station.gd | _hold_button.pressed → _on_hold_pressed |
 | res://ui/screens/station.gd | _hover_timer.timeout → _show_hover_tooltip |
 | res://ui/screens/station.gd | _inspect_button.toggled → _on_inspect_toggled |
 | res://ui/screens/station.gd | _leave_cancel.pressed → _close_leave_confirm |
@@ -313,8 +316,6 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://ui/station/armory_panel.gd | _mode_fit.pressed → set_mode.bind(MODE_FIT |
 | res://ui/station/armory_panel.gd | _rack_rows.sort_children → _lay_bays |
 | res://ui/station/armory_panel.gd | _remove_button.pressed → _on_remove_pressed |
-| res://ui/station/armory_panel.gd | _tab_hold.pressed → _on_left_tab.bind(LEFT_TAB_HOLD |
-| res://ui/station/armory_panel.gd | _tab_layout.pressed → _on_left_tab.bind(LEFT_TAB_LAYOUT |
 | res://ui/station/armory_panel.gd | box.sort_children → _position_bay.bind(row |
 | res://ui/station/armory_panel.gd | buy.pressed → _on_buy_pressed.bind(payload |
 | res://ui/station/armory_panel.gd | buy.pressed → _on_row_pressed.bind(payload |
@@ -768,10 +769,10 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://ui/screens/settings.gd | Screen | — | res://ui/screens/settings_rebind_row.tscn | res://ui/screens/settings.tscn, res://ui/screens/settings.tscn (ext_resource) |
 | res://ui/screens/settings_rebind_row.gd | HBoxContainer | binding_pressed, reset_pressed | — | res://ui/screens/settings_rebind_row.tscn, res://ui/screens/settings_rebind_row.tscn (ext_resource) |
 | res://ui/screens/station.gd | Screen | — | res://assets/icons/cargo/icon_cargo_ore.svg, res://assets/icons/cargo/icon_credits.svg …(+21) | res://tests/probe_r1_fit_panes.gd, res://tests/probe_r1_p2b1_review.gd, res://tests/probe_s20_review.gd …(+21) |
-| res://ui/station/armory_panel.gd | Control | confirm_requested, inspect_requested, sheet_requested, status_requested | res://assets/icons/slot/, res://assets/icons/tint/, res://assets/icons/weapon/icon_weapon_cannon.svg …(+9) | res://tests/probe_s20_review.gd, res://tests/probe_s33_review.gd, res://tests/probe_s35_f1_subtitle.gd …(+19) |
+| res://ui/station/armory_panel.gd | Control | confirm_requested, inspect_requested, sheet_requested, status_requested | res://assets/icons/slot/, res://assets/icons/tint/, res://assets/icons/weapon/icon_weapon_cannon.svg …(+8) | res://tests/probe_s20_review.gd, res://tests/probe_s33_review.gd, res://tests/probe_s35_f1_subtitle.gd …(+19) |
 | res://ui/station/armory_style.gd | "res://ui/hud/cockpit_style.gd" | — | res://ui/hud/cockpit_style.gd, res://ui/station/armory_style_user.tres, res://ui/theme/vajb_theme.tres | res://tests/probe_s20_review.gd, res://tests/test_d7_armory.gd, res://tests/test_s18_armory_rework.gd …(+2) |
 | res://ui/station/auction_panel.gd | VBoxContainer | confirm_requested, inspect_requested, sheet_requested, status_requested | res://assets/icons/tint/, res://assets/icons/weapon/icon_weapon_cannon.svg …(+9) | res://tests/test_p2b1_outfitting_panel.gd, res://tests/test_s3_auction.gd …(+4) |
-| res://ui/station/cargo_summary.gd | RefCounted | — | res://assets/icons/tint/, res://game/component_catalog.gd, res://game/mineral_catalog.gd …(+2) | res://ui/dialogs/cargo_overlay.gd, res://ui/station/armory_panel.gd, res://ui/station/launch_panel.gd |
+| res://ui/station/cargo_summary.gd | RefCounted | — | res://assets/icons/tint/, res://game/component_catalog.gd, res://game/mineral_catalog.gd …(+2) | res://ui/dialogs/cargo_overlay.gd, res://ui/station/launch_panel.gd |
 | res://ui/station/contracts_panel.gd | VBoxContainer | confirm_requested, inspect_requested, status_requested | res://assets/icons/tint/icon_insignia_%s_48.png, res://autoload/world_clock.gd …(+5) | res://tests/test_s25_contracts.gd, res://tests/test_s38_start_and_clock.gd …(+3) |
 | res://ui/station/exchange_panel.gd | VBoxContainer | inspect_requested, sheet_requested, status_requested | res://assets/icons/, res://assets/icons/tint/, res://autoload/player_profile.gd, res://autoload/world_clock.gd …(+5) | res://tests/probe_g3_lint.gd, res://tests/probe_g3_shadow.gd, res://tests/probe_g4_lint.gd …(+5) |
 | res://ui/station/fitting_panel.gd | VBoxContainer | inspect_requested, sheet_requested, status_requested | res://assets/icons/slot/, res://assets/icons/tint/, res://assets/icons/weapon/icon_weapon_cannon.svg …(+4) | res://tests/probe_r1_fit_panes.gd, res://tests/probe_r1_p2b1_review.gd, res://tests/probe_s8_q0_armory.gd …(+8) |

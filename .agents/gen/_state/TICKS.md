@@ -11,8 +11,13 @@ own window — sorted by category, tabbed, scrollable, uncapped — UI_SPEC §20
 A21; the armory's left column split into LAYOUT/HOLD pages under the owner's
 "two tabs if needed" authorization (A21.3); the S50-A reviewer dispatch's
 findings cured or answered (F01/F03/F04 fixed, F02 by A21.3, F05 declined);
-the title-collapse defect fixed on the overlay too. Gate **1429/0 ×2
-byte-identical**, net 0 rows. The resolution sweep (720p → 4K,
+the title-collapse defect fixed on the overlay too. **The owner's third
+instruction the same day:** the armory's column restored (equipped beneath
+cell info, the split and its block retired), the shell gained the global
+HOLD chip beneath INSPECT (A22) and the overlay is now a moveable,
+always-on-top window with a CLOSE chip (A23) — verified live (open centered,
+drag rides the cursor, CLOSE and the C step both close, reopen re-centers).
+Gate **1430/0 ×2 byte-identical**. The resolution sweep (720p → 4K,
 16:9/21:9/32:9) ran clean — 16:9 scales uniformly, the wide layouts hold.
 **The P4 exit pass continues** — the owner's next pass reads these surfaces;
 T-179 and the S41 chrome tokens re-present there.)*

@@ -73,7 +73,12 @@ needed" authorization). The S50-A review dispatch found the two escapes
 (fixed), the band's 108 px mis-seat (fixed) and the title-collapse defect
 (the overlay's own title too — fixed). Resolution sweep: 16:9 = uniform scale;
 the wide layouts (2016/2657/3373 logical) hold with no overflow. CONTRACTS
-v0.64.
+v0.64. **Same-day third instruction:** the A21.3 split and the armory's block
+retire (the column restores to grid → CELL INFO → EQUIPPED); the shell gains
+the global HOLD chip beneath INSPECT (A22) and the overlay becomes a moveable,
+always-on-top window with a CLOSE chip (A23) — the S50-B review accepted the
+resize re-fit, the stale-drag reset and the idiom flag, declined the sub-720
+canvas on the measured stretch. Gate **1430/0 ×2**; CONTRACTS v0.65.
 
 **Updated 2026-10-15 (the owner's playtest pass — the ammunition rows, the
 armory's cargo preview and the launch manifest; one session).** The owner's

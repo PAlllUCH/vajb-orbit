@@ -38,7 +38,7 @@ and every tool result is re-sent on each later request.
 | 17. | The buy-confirmation law (amendment 2026-10-12, phase P4; wave D24 —… | L1905–L1922 |
 | 18. | The C-key Cargo overlay (amendment 2026-10-12, phase P4; wave D24 — … | L1923–L2012 |
 | 19. | The 2026-10-15 visual round — chrome, backing and the empty edges (a… | L2013–L2029 |
-| 20. | The 2026-10-15 playtest pass — the ammunition rows, the armory's car… | L2030–L2107 |
+| 20. | The 2026-10-15 playtest pass — the ammunition rows, the armory's car… | L2030–L2130 |
 
 <!-- section-index:end -->
 
@@ -2104,3 +2104,26 @@ and the A14 slots law stand untouched.
 | **A21.1** | the armory seat: `CargoWindow` at the `FitLeftStack`'s bottom (after EQUIPPED), expand-fill into the empty stretch under the equipped block; the stack itself grows to fill its panel (`FitLeftStack` vertical 3) so the scroll owns the leftover height | the A19 caption+rows block |
 | **A21.2** | the launch seat: the window inside `BriefBox` between the briefing rows and `BriefNote` (the s47 briefing-order law stands — the note still follows the cargo), expand-fill; the `%CargoCaption`/`%CargoList` scene nodes retire and the window's `CargoTitle` carries the A8 `CARGO — <n>/<cap> UNITS` words (A20's `CARGO HOLD · <n> STACKS` caption retires) | A20's manifest grammar and its caption words |
 | **A21.3** | the armory's left column splits into two tabs — the owner's 2026-10-16 authorization, verbatim: *"where elements dont fit we can do a separation to two tabs if needed"*. The measured case: the column's own blocks (slot grid 231 px, CELL INFO 101 px, EQUIPPED 133 px) leave the expand-filling window ≈ 111 px of its 617 px stack — chrome only, no row visible. The stack becomes a `LeftTabs` strip (two toggle chips, `LAYOUT` / `HOLD`, the A11 idiom) over two pages: `PageLayout` (the slot grid + CELL INFO, the default tab — the pane opens exactly as before) and `PageHold` (EQUIPPED at its own minimum, then the cargo window expand-filling everything left — ≈ 436 px on the measured fighter, ≥ a full chrome + three rows on any hull). The window's seat law becomes "the HOLD page's bottom, after EQUIPPED"; the A19 caption's one-stack seat is the superseded shape | the single-stack seat (A19/A21.1's "the stack's bottom") |
+
+### 20.2 The moveable cargo window + the shell's HOLD chip (amendment 2026-10-16, the owner's third instruction of the round)
+
+**The owner's words (2026-10-16, verbatim):** *"In armory: restore the
+"equipped" to "layout" and move them beneath cell info. remove the "HOLD" and
+add "HOLD" button beneath "INSPECT" we will have a button working the same as
+pressing C to open cargo view. can we make the cargo view moveable, always on
+top with close button? The same goes for LAUNCH. Just add "HOLD" globally in
+space station"*
+
+**What changes.** The A21.3 two-page split retires: the armory's left column
+restores to the one stack — the slot grid, CELL INFO, then EQUIPPED beneath it
+(P49's own order, the pre-split look) — and the armory's embedded cargo block
+retires with it (A19's block and A21.1's seat; the armory's cargo readout is
+the overlay, one press away). The launch's embedded manifest **stands** (A21.2
+— "the same goes for LAUNCH" reads as the overlay treatment being global, and
+the global chip covering the launch module; the manifest stays the module's
+own readout).
+
+| Pin | Law | Reversal |
+|---|---|---|
+| **A22** | the station shell's header gains a **HOLD** chip in a column beneath INSPECT (a 96×32 chip, the header's own button idiom), present on **every module** — the chip toggles the cargo overlay exactly the C step does (`_toggle_cargo` and its guards: the departure sequence, the drawer/sheet/dialog stack, one at a time) | the armory-only HOLD page (A21.3) and the armory-only cargo block (A19/A21.1) |
+| **A23** | the cargo overlay is a **moveable window**: it opens centered (A15's geometry unchanged — 720 wide, the 80 % cap tall), the **title row is the drag handle** (the chips keep their own presses), the panel clamps inside its viewport while dragging, and the position resets to center on every open; **always on top** = the plane-layer seat it already holds, unchanged; a **CLOSE** chip joins the title row (the C step, ESC and the dimmer click close as before). The flight plane rides the same scene, so the treatment is global | the centered modal-only overlay (A8's read-only seat law and the dimmer stand) |

@@ -272,6 +272,7 @@ const CREDITS_WIDTH_RESERVE := 999999999
 @onready var _credits_value: Label = %CreditsValue
 @onready var _terminal_button: Button = %TerminalButton
 @onready var _inspect_button: Button = %InspectButton
+@onready var _hold_button: Button = %HoldButton
 @onready var _station_plate: PanelContainer = %StationPlate
 @onready var _station_mark: TextureRect = %StationMark
 @onready var _station_name: Label = %StationName
@@ -493,6 +494,7 @@ func _wire_controls() -> void:
 	_leave_logout.pressed.connect(_on_logout_pressed)
 	_terminal_button.pressed.connect(_toggle_drawer)
 	_inspect_button.toggled.connect(_on_inspect_toggled)
+	_hold_button.pressed.connect(_on_hold_pressed)
 
 
 ## S30's popup layer (UI_SPEC section 12.2/12.3): the N27 tooltip on its own CanvasLayer
@@ -1087,6 +1089,13 @@ func _toggle_cargo() -> void:
 
 func _cargo_open() -> bool:
 	return _cargo_overlay != null and bool(_cargo_overlay.call(&"is_open"))
+
+
+## A22: the shell's HOLD chip is the mouse's twin of the C step - one toggle
+## through the same guard ladder, on every module.
+func _on_hold_pressed() -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	_toggle_cargo()
 
 
 func _connect_profile() -> void:

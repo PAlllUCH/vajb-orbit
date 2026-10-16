@@ -60,9 +60,6 @@ const ChromeFamily := preload("res://ui/theme/chrome_family.gd")
 const Catalog := preload("res://game/station_catalog.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
 const ModuleData := preload("res://game/module_catalog.gd")
-## A19: the CARGO HOLD block reads through the shared summary builder (the
-## slots law's and the row grammar's single home).
-const Summary := preload("res://ui/station/cargo_summary.gd")
 ## 12's 2026-10-08 V1/V2 block: the one owner of the station's price factor, read by
 ## `_module_price` and the pack cards' `Catalog.ammo_pack_price`.
 const StationRegistryScript := preload("res://game/station_registry.gd")
@@ -943,16 +940,6 @@ class ConsolePanels extends Control:
 @onready var _equipped_caption: Label = %EquippedCaption
 @onready var _equipped_scroll: ScrollContainer = %EquippedScroll
 @onready var _equipped_rows: VBoxContainer = %EquippedRows
-## A19: the left column's CARGO HOLD block (code-built under the equipped
-## block; the caption carries the overlay's own title words).
-## A21.3: the left column's two pages (the owner's "two tabs if needed") —
-## LAYOUT carries the slot grid + cell info, HOLD the equipped rows + the
-## cargo window.
-@onready var _left_tabs: HBoxContainer = %LeftTabs
-@onready var _tab_layout: Button = %TabLayout
-@onready var _tab_hold: Button = %TabHold
-@onready var _page_layout: VBoxContainer = %PageLayout
-@onready var _page_hold: VBoxContainer = %PageHold
 @onready var _tabs: HBoxContainer = %FamilyTabs
 @onready var _browser_caption: Label = %BrowserCaption
 @onready var _browser_band: HBoxContainer = %BrowserBand
@@ -1002,14 +989,6 @@ var _line_danger := false
 var _browser_payloads: Array[Dictionary] = []
 var _browser_tab: StringName = &"all"
 var _browser_focused: Dictionary = {}
-## A21: the left column's cargo window (built in `_build_cargo_preview`) —
-## the C overlay's own window; the tab in force filters the rows.
-var _cargo_window: Dictionary = {}
-var _cargo_category: StringName = Summary.TAB_ALL
-## A21.3: the page in force; the pane opens on LAYOUT exactly as before.
-const LEFT_TAB_LAYOUT: StringName = &"layout"
-const LEFT_TAB_HOLD: StringName = &"hold"
-var _left_tab: StringName = LEFT_TAB_LAYOUT
 var _browser_signature: Array[String] = []
 var _grid_tweens: Array[Tween] = []
 ## The mode in force (P32). Exactly one of `_fit_cells` / `_battery_config` is visible.
@@ -1023,8 +1002,6 @@ func _ready() -> void:
 	_build_empty_cells()
 	_build_grid_surface()
 	_build_browser()
-	_build_left_tabs()
-	_build_cargo_preview()
 	_wire_actions()
 	_apply_tokens()
 	_connect_scroll()
@@ -1200,7 +1177,6 @@ func refresh_profile(key: StringName) -> void:
 	if key == &"credits" or key == &"ammo" or key == &"cargo":
 		_refresh_rows()
 		_refresh_browser()
-		_refresh_cargo_preview()
 	if key == &"fits" or key == &"ships" or key == &"batteries":
 		_refresh_racks()
 		_refresh_empty_cells()
@@ -3307,53 +3283,6 @@ func _refresh_all() -> void:
 	_refresh_footer()
 	_refresh_cell_info()
 	_sync_equipped()
-	_refresh_cargo_preview()
-
-
-## A21: the left column's cargo window — the C overlay's own window (the A15
-## chrome, the tab strip, the uncapped scroll) expand-filling the HOLD page's
-## space under the equipped block, so the rows can never run past the panel
-## onto the footer again.
-func _build_cargo_preview() -> void:
-	if _page_hold == null:
-		return
-	_cargo_window = Summary.build_window(
-		_page_hold, "CargoWindow", Callable(self, "_on_cargo_tab")
-	)
-
-
-func _on_cargo_tab(id: StringName) -> void:
-	AudioManager.play_ui(AudioManager.UiCue.CLICK)
-	_cargo_category = id
-	_refresh_cargo_preview()
-
-
-## A21.3's page switch: one page at a time, the states riding the shared
-## builder's own tab-state idiom.
-func _build_left_tabs() -> void:
-	_tab_layout.set_meta(&"tab", LEFT_TAB_LAYOUT)
-	_tab_hold.set_meta(&"tab", LEFT_TAB_HOLD)
-	_tab_layout.pressed.connect(_on_left_tab.bind(LEFT_TAB_LAYOUT))
-	_tab_hold.pressed.connect(_on_left_tab.bind(LEFT_TAB_HOLD))
-	_apply_left_tab()
-
-
-func _on_left_tab(id: StringName) -> void:
-	AudioManager.play_ui(AudioManager.UiCue.CLICK)
-	_left_tab = id
-	_apply_left_tab()
-
-
-func _apply_left_tab() -> void:
-	_page_layout.visible = _left_tab == LEFT_TAB_LAYOUT
-	_page_hold.visible = _left_tab == LEFT_TAB_HOLD
-	Summary.apply_tab_states(_left_tabs, _left_tab, self)
-
-
-func _refresh_cargo_preview() -> void:
-	if _cargo_window.is_empty() or not is_node_ready():
-		return
-	Summary.populate_window(_cargo_window, _profile(), self, _cargo_category)
 
 
 func _profile() -> ProfileScript:

@@ -1169,6 +1169,24 @@ wrote them). The window chrome's single home stays
 `ui/station/cargo_summary.gd` (`build_window`/`populate_window`;
 `populate_rows` retires; the A17 cap is the HUD block's law alone).
 
+**The moveable cargo window + the shell HOLD chip (2026-10-16, the owner's
+third instruction, the same directed session):** the Expected line is
+**`[SUMMARY] passed=1430 failed=0`**, exit 0, twice hermetic through
+`staging/gate.py`, byte-identical, zero `SCRIPT ERROR` lines — **net +1**
+(the armory's A21 window row retires with its block; s30 gains the A22 chip
+row, s48 the A23 window row). UI_SPEC **§20.2** pins **A22** (the shell's
+HOLD chip beneath INSPECT, on every module, toggling through `_toggle_cargo`'s
+own guard ladder) and **A23** (the overlay opens centered at A15's geometry,
+the title row drags it under a viewport clamp, the position resets on open,
+and the CLOSE chip joins the SORT chip; the flight plane rides the same
+scene). STATION_HUB §23.11 row 19 carries the supersession (the A21.3 split
+and the armory's A19/A21.1 block retire; the launch's A21.2 manifest stands).
+The S50-B review dispatch (`hyper/glm-5.3-flash`) graded the delta: F02 (the
+re-fit on a viewport resize), F03 (the stale drag across a close) and F04
+(the chip idiom flag) accepted; F01 (a sub-720 canvas) declined — the pinned
+`canvas_items`+`expand` stretch measured a 1920×1080 logical viewport in
+every window the resolution sweep ran.
+
 ## §11 P2 ship frames (2026-09-21)
 
 Pinned before any code worker starts, so five parallel workers agree. Additive only:
@@ -3856,6 +3874,18 @@ bottom (the index-line form is only for retired entries).
   per D24's design law, so CONTRACTS carries no new §-section for them.
   **Reversal:** drop the §9 chain block and this entry (the waves' own record
   stays in `MASTER_REPORT.md` §6 and the WAVEBOARD one-liners).
+- **v0.65 (2026-10-16, the moveable-window round — the owner's third
+  instruction; gate 1429 → 1430/0 ×2 byte-identical)** — UI_SPEC **§20.2**
+  pins **A22** (the shell's global HOLD chip beneath INSPECT) and **A23**
+  (the cargo overlay as a moveable, always-on-top, close-chip window across
+  both planes); the A21.3 page split and the armory's A19/A21.1 block retire
+  (the column restores to grid → CELL INFO → EQUIPPED; the launch's A21.2
+  manifest stands). The S50-B review accepted the resize re-fit, the stale
+  drag reset and the chip idiom flag, and declined the sub-720-canvas finding
+  on the measured stretch behavior. **Reversal:** drop §20.2, the ledger row,
+  the InspectColumn/HoldButton pair, the overlay's positioning/drag/close
+  half and `_center_panel`/`_clamp_panel`; restore the A21.3 split per its own
+  row.
 - **v0.64 (2026-10-16, the cargo windows round — the owner's second pass over
   the surfaces; gate held 1429/0 ×2 byte-identical, net 0 rows)** — UI_SPEC
   **§20.1** pins **A21** (both station surfaces render the C overlay's own

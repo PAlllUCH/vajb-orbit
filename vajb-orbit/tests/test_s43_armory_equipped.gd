@@ -317,21 +317,22 @@ func _card_price_text(card: Control) -> String:
 
 func test_p49_the_block_sits_under_cell_info_with_its_caption() -> void:
 	_settle()
+	var stack := _node(STACK_PATH)
 	var info := _panel.get_node("%CellInfoBlock") as Control
 	var block := _panel.get_node("%EquippedBlock") as Control
 	var caption := _panel.get_node("%EquippedCaption") as Label
-	var page_layout := _panel.get_node("%PageLayout") as Control
-	var page_hold := _panel.get_node("%PageHold") as Control
 	assert_true(
-		info != null and block != null and caption != null
-			and page_layout != null and page_hold != null,
+		stack != null and info != null and block != null and caption != null,
 		"the equipped block mounts with its caption"
 	)
-	if info == null or block == null or caption == null \
-			or page_layout == null or page_hold == null:
+	if stack == null or info == null or block == null or caption == null:
 		return
-	assert_true(page_hold.is_ancestor_of(block), "the block rides the HOLD page (A21.3)")
-	assert_true(page_layout.is_ancestor_of(info), "the cell info rides the LAYOUT page (A21.3)")
+	assert_true(stack.is_ancestor_of(block), "the block rides the left sector's stack")
+	var children := stack.get_children()
+	assert_true(
+		children.find(block) > children.find(info),
+		"the block is the third one, under CELL INFO"
+	)
 	assert_eq(
 		caption.theme_type_variation, &"StationCaption",
 		"the caption wears StationCaption (P49)"
@@ -351,72 +352,6 @@ func test_p49_the_block_sits_under_cell_info_with_its_caption() -> void:
 			fitted, total
 		]
 	)
-
-
-## A21 (the owner's 2026-10-16 pass): the left column's cargo window - the C
-## overlay's own window (the A15 chrome, the tab strip, the uncapped scroll)
-## expand-filling the empty stretch under the equipped block, so the rows can
-## never run past the panel again. Its rows ride the A14 slots through the
-## shared summary builder.
-func test_a21_the_cargo_window_reads_the_hold_under_the_equipped() -> void:
-	_settle()
-	var stack := _node(STACK_PATH)
-	var tabs := stack.get_node_or_null(NodePath("LeftTabs")) as HBoxContainer
-	assert_true(tabs != null, "the left column's page tabs ship (A21.3)")
-	if tabs == null:
-		return
-	assert_eq(tabs.get_child_count(), 2, "the LAYOUT / HOLD pair")
-	var page_layout := stack.get_node_or_null(NodePath("PageLayout")) as VBoxContainer
-	var page_hold := stack.get_node_or_null(NodePath("PageHold")) as VBoxContainer
-	assert_true(page_layout != null and page_hold != null, "the two pages ship")
-	if page_layout == null or page_hold == null:
-		return
-	assert_true(
-		page_layout.visible and not page_hold.visible,
-		"the pane opens on the LAYOUT page (A21.3's default)"
-	)
-	var window := page_hold.get_node_or_null(NodePath("CargoWindow")) as PanelContainer
-	assert_true(window != null, "the cargo window ships in the HOLD page")
-	if window == null:
-		return
-	assert_eq(window.get_index(), page_hold.get_child_count() - 1, "the HOLD page's last block")
-	assert_eq(
-		window.size_flags_vertical, Control.SIZE_EXPAND_FILL,
-		"the window expand-fills the HOLD page's leftover (A21.1)"
-	)
-	var title := window.get_node(
-		NodePath("CargoMargin/CargoScroll/CargoContent/CargoTitleRow/CargoTitle")
-	) as Label
-	assert_true(
-		title.text.begins_with("CARGO — "),
-		"the overlay's own title words (%s)" % title.text
-	)
-	assert_true(title.text.contains("/"), "and the n/cap figure pair")
-	var scroll := window.get_node(NodePath("CargoMargin/CargoScroll")) as ScrollContainer
-	assert_eq(
-		scroll.vertical_scroll_mode, ScrollContainer.SCROLL_MODE_SHOW_ALWAYS,
-		"the rows scroll under the window's own bound (A21)"
-	)
-	var cargo_tabs := window.get_node(
-		NodePath("CargoMargin/CargoScroll/CargoContent/CargoTabs")
-	) as HBoxContainer
-	assert_eq(cargo_tabs.get_child_count(), 6, "the overlay's own tab strip rides the window")
-	var rows := window.get_node(
-		NodePath("CargoMargin/CargoScroll/CargoContent/CargoRows")
-	) as VBoxContainer
-	assert_true(rows.get_child_count() > 0, "the summary carries the empty state at least")
-	_panel.call(&"_on_left_tab", PanelScript.LEFT_TAB_HOLD)
-	assert_true(
-		page_hold.visible and not page_layout.visible,
-		"the HOLD page shows the equipped rows and the window"
-	)
-	_profile.call(&"add_cargo", &"ammo_laser", 2)
-	_panel.call(&"refresh_profile", &"cargo")
-	var slot := rows.find_child("Slot*", true, false) as Control
-	assert_true(slot != null, "the held ammo rides the summary rows")
-	if slot != null:
-		var amount := slot.find_child("Amount", true, false) as Label
-		assert_eq(amount.text, "2", "the AMOUNT cell is the hold stack (A14's law)")
 
 
 func test_p49_one_row_per_fitted_module_in_the_grid_order() -> void:
@@ -553,10 +488,6 @@ func test_p49_battery_config_shows_no_list() -> void:
 	assert_true(block != null and cells != null, "the block and its mode root exist")
 	if block == null or cells == null:
 		return
-	## A21.3: the equipped list rides the HOLD page now - the visibility law is
-	## read with that page showing.
-	_panel.call(&"_on_left_tab", PanelScript.LEFT_TAB_HOLD)
-	_settle()
 	assert_true(block.is_visible_in_tree(), "FIT CELLS shows the list")
 	_panel.call(&"set_mode", PanelScript.MODE_BATTERY)
 	_settle()

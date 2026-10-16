@@ -2001,3 +2001,40 @@ page flip. Close-out: `check_wiring.py` clean (1629 hard refs);
 `docs_index.py`; `build_code_map.py` (130 scenes / 335 scripts); CONTRACTS
 **v0.64**; WAVEBOARD/TICKS refreshed; slice S50 (`slices/S50-cargo-window/`)
 closed with the S50-A report archived in place. **The P4 exit pass continues.**
+
+**The moveable cargo window + the shell HOLD chip (the owner's third
+instruction, the same directed session, 2026-10-16; gate 1429 → 1430/0 ×2
+byte-identical, zero `SCRIPT ERROR`; net +1 rows).** The owner's verdict on
+the same-day windows: restore the armory's left column (EQUIPPED beneath CELL
+INFO, the pre-split stack), remove the HOLD page **and** the armory's
+embedded cargo block, and instead put a **HOLD chip beneath INSPECT** —
+globally, on every module — that toggles the cargo overlay exactly the C step
+does (`_toggle_cargo` and its guard ladder, `_on_hold_pressed` playing the
+shell's own CLICK cue; the chip shares a column with INSPECT, 32+8+32 inside
+the 76 px band). The **cargo overlay became a moveable window** (UI_SPEC
+§20.2 **A23**): `CargoCenter` stepped down from CenterContainer to a plain
+full-rect Control so the panel owns a free seat; `open()` centers it
+(`reset_size` after `_fit`, so the seat is exactly A15's 720 × the 80 % cap —
+measured (600,108) at the base shell); the **title row is the drag handle**
+(STOP + `CURSOR_DRAG`, the press recording the panel-to-cursor offset, the
+motion riding it through `_clamp_panel`, the chips keeping their own presses
+because a child's STOP consumes before the row sees); the **CLOSE chip** joins
+the SORT chip (the C step, ESC and the dimmer click close as before); the
+position resets to center on every open. The flight plane rides the same
+scene, so the treatment is global there too; the launch module's embedded
+manifest stands (A21.2). **The S50-B review dispatch** (the same standing
+reviewer, read-only, report in the slice folder) graded the delta: F02
+(a viewport resize while open left a stale oversized panel —
+`NOTIFICATION_RESIZED` now re-fits and re-centers), F03 (a close mid-drag
+armed a stale drag that teleport-anchored the next open — `close()` resets
+`_dragging` and the motion branch gates on the left-button mask) and F04 (the
+HOLD chip's missing `size_flags_vertical`) accepted; F01 (a sub-720 canvas
+pinning the window) **declined** — the pinned `canvas_items`+`expand` stretch
+measured a 1920×1080 logical viewport in every window the resolution sweep
+ran, so the state is unreachable, and the clamp's pin-at-origin is the safe
+failure anyway. The synthetic-drag tests and probe now set the left-button
+mask (the mask gate rejects maskless motion — one suite-caught slip). The
+probe's live evidence: open (600,108) → drag (760,168) → CLOSE → reopen
+re-centered. Close-out: `check_wiring.py` clean (1628 hard refs);
+`docs_index.py`; `build_code_map.py` (130 scenes / 335 scripts); CONTRACTS
+**v0.65**; WAVEBOARD/TICKS amended in place. **The P4 exit pass continues.**

@@ -44,11 +44,6 @@ func _run() -> void:
 	station._select_module(0, true)
 	await _wait(0.5)
 	await _shot("armory")
-	var armory: Node = (station.get("_panels") as Array)[0]
-	if armory != null and armory.has_method(&"_on_left_tab"):
-		armory.call(&"_on_left_tab", StringName(&"hold"))
-		await _wait(0.4)
-		await _shot("armory_hold")
 	station._select_module(5, true)
 	await _wait(0.5)
 	await _shot("launch")

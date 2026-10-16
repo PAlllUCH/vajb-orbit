@@ -96,12 +96,17 @@ const SORT_LABELS := {
 }
 const SORT_CHIP_FORMAT := "SORT: %s"
 
+## A23's window chrome: the title row is the drag handle and the CLOSE chip is
+## the mouse's twin of the C step.
+const CLOSE_WORD := "CLOSE"
+
 @onready var _dimmer: ColorRect = %CargoDimmer
 @onready var _panel: PanelContainer = %CargoPanel
 @onready var _scroll: ScrollContainer = %CargoScroll
 @onready var _title_row: HBoxContainer = %CargoTitleRow
 @onready var _title: Label = %CargoTitle
 @onready var _sort_chip: Button = %CargoSort
+@onready var _close_chip: Button = %CargoClose
 @onready var _tabs: HBoxContainer = %CargoTabs
 @onready var _band: HBoxContainer = %CargoBand
 @onready var _rows: VBoxContainer = %CargoRows
@@ -123,6 +128,10 @@ var _rebuild_pending := false
 ## the measured title column - the static floor until the first live measure.
 var _panel_inset := Vector2.ZERO
 var _title_col := TITLE_COL
+## A23's drag state: the press's panel-to-cursor offset, live only while the
+## title row holds the press.
+var _dragging := false
+var _drag_offset := Vector2.ZERO
 
 
 func _ready() -> void:
@@ -135,8 +144,12 @@ func _ready() -> void:
 	_build_tabs()
 	_build_band()
 	ChromeFamily.apply_chip(_sort_chip)
+	ChromeFamily.apply_chip(_close_chip)
+	_close_chip.text = CLOSE_WORD
 	_refresh_sort_chip()
 	_sort_chip.pressed.connect(_on_sort_pressed)
+	_close_chip.pressed.connect(_on_close_pressed)
+	_title_row.gui_input.connect(_on_title_row_input)
 	_dimmer.gui_input.connect(_on_dimmer_input)
 	_connect_profile()
 
@@ -155,6 +168,12 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_THEME_CHANGED and is_node_ready():
 		_apply_tokens()
 		_measure_panel_inset()
+	elif what == NOTIFICATION_RESIZED and is_node_ready() and _open:
+		## S50-B F02: a viewport resize while the window is up re-fits - the
+		## 80 % cap and the clamp ride the new bounds instead of waiting for
+		## the next incidental refresh.
+		_fit()
+		_center_panel()
 
 
 func _exit_tree() -> void:
@@ -176,6 +195,7 @@ func open() -> void:
 	modulate.a = 0.0
 	_refresh()
 	_fit()
+	_center_panel()
 	_animate(1.0)
 	## The geometry is fixed, so the layout that follows this frame's pass is the
 	## truth for every later one - re-measure the title column off it.
@@ -187,6 +207,7 @@ func close() -> void:
 	if not _open:
 		return
 	_open = false
+	_dragging = false
 	_animate(0.0, true)
 
 
@@ -293,6 +314,25 @@ func _on_dimmer_input(event: InputEvent) -> void:
 func _on_sort_pressed() -> void:
 	AudioManager.play_ui(AudioManager.UiCue.CLICK)
 	cycle_sort()
+
+
+func _on_close_pressed() -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	close()
+
+
+## A23: the title row drags the window. The press records the panel-to-cursor
+## offset; motion rides it through `_clamp_panel`, and the chips keep their
+## own presses (a child's STOP consumes the event before the row sees it).
+func _on_title_row_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT:
+		_dragging = (event as InputEventMouseButton).pressed
+		if _dragging:
+			_drag_offset = _panel.position - (event as InputEventMouseButton).global_position
+	elif event is InputEventMouseMotion and _dragging \
+			and (event as InputEventMouseMotion).button_mask & MOUSE_BUTTON_MASK_LEFT:
+		_panel.position = (event as InputEventMouseMotion).global_position + _drag_offset
+		_clamp_panel()
 
 
 func _on_tab_pressed(id: StringName) -> void:
@@ -652,6 +692,21 @@ func _fit() -> void:
 	_scroll.custom_minimum_size.y = maxf(0.0, cap)
 	_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_ALWAYS
 	_measure_title_col()
+	_clamp_panel()
+
+
+## A23: the window seats itself — centered on open, clamped to the viewport on
+## every later fit; the drag owns the position while the surface is open.
+func _center_panel() -> void:
+	_panel.reset_size()
+	_panel.position = ((_viewport_size() - _panel.size) / 2.0).floor()
+	_clamp_panel()
+
+
+func _clamp_panel() -> void:
+	var view := _viewport_size()
+	var max_pos := (view - _panel.size).max(Vector2.ZERO)
+	_panel.position = _panel.position.clamp(Vector2.ZERO, max_pos)
 
 
 ## A16: the title column measured off the live layout - a laid-out row's own

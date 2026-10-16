@@ -6304,8 +6304,10 @@
    "autoload": "",
    "class_name": "",
    "connects": [
+    "_close_chip.pressed \u2192 _on_close_pressed",
     "_dimmer.gui_input \u2192 _on_dimmer_input",
     "_sort_chip.pressed \u2192 _on_sort_pressed",
+    "_title_row.gui_input \u2192 _on_title_row_input",
     "chip.pressed \u2192 _on_dispose_pressed.bind(payload"
    ],
    "extends": "Control",
@@ -6615,6 +6617,7 @@
     "_confirm_cancel.pressed \u2192 _on_confirm_answered.bind(false",
     "_confirm_ok.pressed \u2192 _on_confirm_answered.bind(true",
     "_drawer_scrim.gui_input \u2192 _on_scrim_input",
+    "_hold_button.pressed \u2192 _on_hold_pressed",
     "_hover_timer.timeout \u2192 _show_hover_tooltip",
     "_inspect_button.toggled \u2192 _on_inspect_toggled",
     "_leave_cancel.pressed \u2192 _close_leave_confirm",
@@ -6662,8 +6665,6 @@
     "_mode_fit.pressed \u2192 set_mode.bind(MODE_FIT",
     "_rack_rows.sort_children \u2192 _lay_bays",
     "_remove_button.pressed \u2192 _on_remove_pressed",
-    "_tab_hold.pressed \u2192 _on_left_tab.bind(LEFT_TAB_HOLD",
-    "_tab_layout.pressed \u2192 _on_left_tab.bind(LEFT_TAB_LAYOUT",
     "box.sort_children \u2192 _position_bay.bind(row",
     "buy.pressed \u2192 _on_buy_pressed.bind(payload",
     "buy.pressed \u2192 _on_row_pressed.bind(payload",
@@ -6704,7 +6705,6 @@
     "res://game/station_catalog.gd",
     "res://game/station_registry.gd",
     "res://ui/station/armory_style.gd",
-    "res://ui/station/cargo_summary.gd",
     "res://ui/theme/chrome_family.gd"
    ],
    "signals": [

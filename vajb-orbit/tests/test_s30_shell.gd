@@ -141,6 +141,30 @@ func test_the_header_carries_the_terminal_button_the_plate_and_the_credits() -> 
 	)
 
 
+## A22 (the owner's 2026-10-16 third instruction): the HOLD chip rides the
+## header's own column beneath INSPECT and toggles the cargo overlay through
+## the C step's own guard ladder, on every module.
+func test_a22_the_hold_chip_toggles_the_cargo_overlay() -> void:
+	var screen := _mount()
+	var hold := screen.get_node_or_null(NodePath("%HoldButton")) as Button
+	assert_true(hold != null, "the HOLD chip ships")
+	if hold == null:
+		return
+	assert_eq(hold.text, "HOLD", "and carries the pinned word")
+	assert_eq(hold.custom_minimum_size, Vector2(96.0, 32.0), "at the ActionInline size")
+	var inspect := screen.get_node(NodePath("%InspectButton")) as Control
+	assert_true(
+		inspect.get_parent() == hold.get_parent(),
+		"beneath INSPECT: the two chips share one column"
+	)
+	assert_eq(hold.get_index(), inspect.get_index() + 1, "HOLD is the column's second row")
+	assert_false(bool(screen.call(&"_cargo_open")), "the overlay starts closed")
+	hold.pressed.emit()
+	assert_true(bool(screen.call(&"_cargo_open")), "the press opens it, the C step's own route")
+	hold.pressed.emit()
+	assert_false(bool(screen.call(&"_cargo_open")), "and the second press closes it")
+
+
 ## ----------------------------------------------------------- the TERMINAL drawer (N25/N26)
 
 

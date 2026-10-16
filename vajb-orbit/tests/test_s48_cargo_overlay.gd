@@ -367,6 +367,69 @@ func test_the_surface_holds_one_geometry_while_open() -> void:
 	)
 
 
+## A23 (the owner's 2026-10-16 third instruction): the overlay is a moveable
+## window - the title row drags it, a CLOSE chip closes it, and the seat is
+## free (the panel rides a plain control, centered on open, clamped inside the
+## viewport). A15's own geometry law is untouched.
+func test_a23_the_window_moves_and_closes() -> void:
+	var overlay := _open_overlay()
+	var title_row := overlay.get_node(NodePath("%CargoTitleRow")) as Control
+	assert_true(title_row != null, "the title row ships")
+	if title_row == null:
+		return
+	assert_eq(
+		title_row.mouse_filter, Control.MOUSE_FILTER_STOP,
+		"the title row takes the drag press"
+	)
+	assert_eq(
+		title_row.mouse_default_cursor_shape, Control.CURSOR_DRAG,
+		"and it advertises the drag"
+	)
+	var close_chip := overlay.get_node(NodePath("%CargoClose")) as Button
+	assert_true(close_chip != null, "the CLOSE chip ships (A23)")
+	if close_chip == null:
+		return
+	assert_eq(close_chip.text, "CLOSE", "and carries its word")
+	var panel := overlay.get_node(NodePath("%CargoPanel")) as PanelContainer
+	var seat := panel.get_parent() as Control
+	assert_true(
+		seat != null and seat.name == StringName("CargoCenter")
+			and not (seat is CenterContainer),
+		"the window rides a free seat, not a centering container"
+	)
+	var view := overlay.get_viewport_rect().size
+	assert_true(
+		panel.position.x >= 0.0 and panel.position.y >= 0.0
+			and panel.position.x + panel.size.x <= view.x
+			and panel.position.y + panel.size.y <= view.y,
+		"the open seats the whole window inside its viewport"
+	)
+	var before := panel.position
+	var press := InputEventMouseButton.new()
+	press.button_index = MOUSE_BUTTON_LEFT
+	press.pressed = true
+	press.global_position = Vector2(100.0, 100.0)
+	overlay.call(&"_on_title_row_input", press)
+	var motion := InputEventMouseMotion.new()
+	motion.button_mask = MOUSE_BUTTON_MASK_LEFT
+	motion.global_position = Vector2(160.0, 140.0)
+	overlay.call(&"_on_title_row_input", motion)
+	assert_true(
+		panel.position.x > before.x and panel.position.y > before.y,
+		"the drag moves the window"
+	)
+	var far := InputEventMouseMotion.new()
+	far.button_mask = MOUSE_BUTTON_MASK_LEFT
+	far.global_position = Vector2(100000.0, 100000.0)
+	overlay.call(&"_on_title_row_input", far)
+	assert_true(
+		panel.position.x + panel.size.x <= view.x + 0.01
+			and panel.position.y + panel.size.y <= view.y + 0.01,
+		"and the window clamps inside its viewport"
+	)
+	overlay.call(&"close")
+
+
 ## ------------------------------- 3. A11's category strip - the armory idiom (item 3)
 
 func test_the_category_strip_is_the_armory_idiom() -> void:
