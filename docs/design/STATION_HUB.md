@@ -64,7 +64,7 @@ and every tool result is re-sent on each later request.
 | 20. | The ARMORY two-module rework (amendment 2026-10-04, owner's playtest… | L1911–L1949 |
 | 21. | The two-sector rework — ARMORY's two modes and the REFINERY queue pa… | L1950–L1996 |
 | 22. | The station overhaul — owner rulings and asks (2026-10-12, phase P4 … | L1997–L2099 |
-| 23. | The station overhaul — the D24 design detail (amendment 2026-10-12, … | L2100–L2224 |
+| 23. | The station overhaul — the D24 design detail (amendment 2026-10-12, … | L2100–L2228 |
 
 <!-- section-index:end -->
 
@@ -2216,6 +2216,10 @@ cures and view-law pointers; their reversals are their own rows).
 | 12 | UI_SPEC §18.1 **A9**'s row grammar (the `<name> · <n>` caption rows, the 24 px family glyph, the five always-drawn groups) | UI_SPEC §18.2 **A10/A11/A13**: the refinery slot row, the category strip, the sort cycle (A9's seams and its five words stand) |
 | 13 | UI_SPEC §18.1 **A8**'s width law ("width size-to-content in 420/720") and §18.2 **A11**'s ammunition clause ("a pack read or hold units, fitted or not") | UI_SPEC §18.3 **A15/A14** (the owner's 2026-10-15 audit round): the surface holds one geometry while open (720 wide, the 80 % cap tall), and an ammunition row exists only when the hold carries units — the pack read rides the meta line |
 | 14 | UI_SPEC §18.1 **A7**'s "the HUD `CargoBlock` stays as it is" (the unbounded one-row-per-stack readout) | UI_SPEC §18.3.2 **A17** (the same round): the readout is bounded at 6 rows with a `+<n> MORE · PRESS C` tail |
+| 15 | UI_SPEC §20 **A19**'s caption+rows block (capped at the A17 bound, no scroll) and **A20**'s capped manifest | UI_SPEC §20.1 **A21** (the owner's 2026-10-16 "same window, wider" ask): both surfaces render the C overlay's own window — chrome, tab strip, category grouping, uncapped scroll; the A17 cap retires on the station surfaces (HUD-only law) |
+| 16 | UI_SPEC §3.10 **A5.4**'s pack card 320×68 | UI_SPEC §20 **A18** (the 2026-10-15 playtest pass): the full-width ammunition browser rows |
+| 17 | UI_SPEC §20 **A20**'s `CARGO HOLD · <n> STACKS` caption words and the `%CargoCaption`/`%CargoList` scene nodes | UI_SPEC §20.1 **A21.2**: the window's `CargoTitle` carries the A8 `CARGO — <n>/<cap> UNITS` words; the two scene nodes retire (the `BriefNote` order law stands) |
+| 18 | UI_SPEC §20.1 **A21.1**'s single-stack seat (the window expand-filling the one left stack, after EQUIPPED) | UI_SPEC §20.1 **A21.3** (the owner's 2026-10-16 "two tabs if needed" authorization): the armory's left column splits into `LAYOUT` (grid + cell info, the default) and `HOLD` (equipped + the cargo window, which then owns ≈ 436 px of the column) |
 
 Named and **not** superseded: §2's two-press law (P48's preamble re-states it);
 T-181's words and 360×56 band (P50 extends the cluster, the closure stands);

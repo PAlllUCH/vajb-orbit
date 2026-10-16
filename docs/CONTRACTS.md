@@ -1147,6 +1147,28 @@ launch manifest as the overlay's read-only instance); STATION_HUB §23.11 rows
 15–16 carry the supersessions. The slots law's and the row grammar's single
 home is the new `ui/station/cargo_summary.gd` (the overlay delegates).
 
+**The cargo windows — the C overlay's own window at the station surfaces
+(2026-10-16, owner-directed single session):** the Expected line is
+**`[SUMMARY] passed=1429 failed=0`**, exit 0, twice hermetic through
+`staging/gate.py`, byte-identical, zero `SCRIPT ERROR` lines — **net 0** (the
+renames and re-seats ride inside the existing rows). `test_s43_armory_equipped.gd`
+re-cuts its A19 block row into the A21 window row (the HOLD page, the window's
+chrome, tab strip and scroll mode), re-seats the P49 page law (the equipped
+block rides the HOLD page; the LAYOUT page carries the grid + cell info) and
+reads the battery-config visibility through the page flip;
+`test_s47_launch_sequence.gd` reads the cargo title through the window and
+splits t174's one-box law (the briefing labels share the roof, the cargo title
+backs on the window's own raised box); `test_s41_panels_b.gd` and
+`test_ui_slot_layout.gd` re-seat their reads on the code-built window
+(`find_child("CargoWindow")`, the rows box, the always-on scroll). The owning
+pin is UI_SPEC **§20.1** (A21/A21.1/A21.2/A21.3: the shared window law, the
+armory's two-page split under the owner's "two tabs if needed" authorization,
+the launch seat); STATION_HUB §23.11 rows 15–18 carry the supersessions (rows
+15–16 were owed by the previous round's entry but had not landed; this round
+wrote them). The window chrome's single home stays
+`ui/station/cargo_summary.gd` (`build_window`/`populate_window`;
+`populate_rows` retires; the A17 cap is the HUD block's law alone).
+
 ## §11 P2 ship frames (2026-09-21)
 
 Pinned before any code worker starts, so five parallel workers agree. Additive only:
@@ -3834,6 +3856,25 @@ bottom (the index-line form is only for retired entries).
   per D24's design law, so CONTRACTS carries no new §-section for them.
   **Reversal:** drop the §9 chain block and this entry (the waves' own record
   stays in `MASTER_REPORT.md` §6 and the WAVEBOARD one-liners).
+- **v0.64 (2026-10-16, the cargo windows round — the owner's second pass over
+  the surfaces; gate held 1429/0 ×2 byte-identical, net 0 rows)** — UI_SPEC
+  **§20.1** pins **A21** (both station surfaces render the C overlay's own
+  window — the A15 chrome, the working tab strip, the category grouping, the
+  uncapped scroll; the A17 cap retires on the station surfaces and stays the
+  HUD block's law), **A21.1/A21.2** (the armory and launch seats) and
+  **A21.3** (the armory's left column splits into the LAYOUT/HOLD pages under
+  the owner's "two tabs if needed" authorization — the measured 111 px window
+  left chrome only). The review dispatch (S50-A, `hyper/glm-5.3-flash`) found
+  F01/F03 (the two escapes, fixed by the windows), F04 (the browser band rode
+  the chip's 108 px — fixed with the band's trailing chip cell), F02 (answered
+  by A21.3) and F05 (declined: canvas_items + expand keeps the logical width at
+  the 1920 base or wider). The title-collapse defect (an autowrap label in the
+  title row renders 1 px; the overlay's own title had it too) is fixed in
+  `cargo_summary.gd`'s builder and `cargo_overlay.tscn`. STATION_HUB §23.11
+  rows 15–18 carry the supersessions. **Reversal:** the §20.1 block + the four
+  ledger rows + the builder's window half (`build_window`/`populate_window`/
+  `apply_tab_states`/`filter_category` and the two hosts' seats) revert to the
+  A19/A20 blocks; the overlay's `autowrap_mode` line returns.
 - **v0.63 (2026-10-15, the playtest pass — the owner's first pass over the
   fixed surfaces; gate held 1429/0 ×2 byte-identical, net 0 rows)** — UI_SPEC
   **§20** pins **A18** (the armory's AMMUNITION rows are the shared menu's own

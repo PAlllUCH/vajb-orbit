@@ -57,14 +57,53 @@ func _run() -> void:
 	station._select_module(5, true)
 	await _wait(0.5)
 	var launch: Node = (station.get("_panels") as Array)[5]
-	for pair: Array in [["%CargoCaption", launch.get_node_or_null(^"%CargoCaption")],
-			["%CargoSlots", launch.get_node_or_null(^"%CargoSlots")],
-			["%CargoList", launch.get_node_or_null(^"%CargoList")]]:
-		var node: Control = pair[1]
-		if node != null:
-			print("T204 LAUNCH ", pair[0], " size=", str(node.size),
-					" min=", str(node.get_combined_minimum_size()), " pos=", str(node.position))
+	var cargo_window: Control = launch.find_child("CargoWindow", true, false)
+	if cargo_window != null:
+		print("T204 LAUNCH CargoWindow size=", str(cargo_window.size),
+				" min=", str(cargo_window.get_combined_minimum_size()), " pos=", str(cargo_window.position))
+		var cargo_rows: Control = cargo_window.get_node_or_null(
+				^"CargoMargin/CargoScroll/CargoContent/CargoRows")
+		if cargo_rows != null:
+			for row in cargo_rows.get_children():
+				if row is Control:
+					print("T204 LROW ", row.name, " min=", str((row as Control).get_combined_minimum_size()))
 	await _shot("launch_cargo")
+
+	var overlay_node: Node = station.get_node_or_null(NodePath("CargoLayer/CargoOverlay"))
+	if overlay_node != null and overlay_node.has_method(&"open"):
+		overlay_node.call(&"open")
+		await _wait(0.4)
+		await _shot("overlay_open")
+	for host_node: Node in [armory, launch, overlay_node]:
+		if host_node == null:
+			continue
+		var title: Label = host_node.find_child("CargoTitle", true, false)
+		if title == null:
+			print("T204 TITLE no title node in ", host_node.name)
+			continue
+		print("T204 TITLE ", host_node.name, " text='", title.text, "' size=", str(title.size),
+				" rect=", str(title.get_global_rect()), " visible=", title.is_visible_in_tree())
+		var walker: Node = title
+		while walker != null and walker != host_node:
+			if walker is Control and not (walker as Control).visible:
+				print("T204 HIDDENBY ", host_node.name, " <- ", walker.get_class(), "::", walker.name)
+			walker = walker.get_parent()
+		var win_node: Control = host_node.find_child("CargoWindow", true, false)
+		if win_node == null and host_node.name == StringName("CargoOverlay"):
+			win_node = host_node.find_child("CargoPanel", true, false)
+		if win_node != null:
+			var scroll_node: ScrollContainer = win_node.find_child("CargoScroll", true, false)
+			if scroll_node != null:
+				print("T204 WIN ", host_node.name, " scroll_v=", scroll_node.scroll_vertical,
+						" scroll_size=", str(scroll_node.size))
+			var content: Control = win_node.find_child("CargoContent", true, false)
+			if content != null:
+				for child in content.get_children():
+					if child is Control:
+						print("T204 CONTENT ", host_node.name, " ", child.name,
+								" size=", str((child as Control).size),
+								" min=", str((child as Control).get_combined_minimum_size()),
+								" vis=", (child as Control).is_visible_in_tree())
 
 	print("T204 DONE index=", _index)
 	get_tree().quit()

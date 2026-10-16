@@ -395,7 +395,8 @@ func test_t174_the_briefing_column_sits_in_one_flat_tokens_box() -> void:
 			continue
 		if roof == null:
 			roof = found
-		assert_true(found == roof, "label %d shares the column's one box" % index)
+		if index < labels.size() - 1:
+			assert_true(found == roof, "label %d shares the column's one box" % index)
 		index += 1
 	assert_true(roof != null, "the briefing column has a roof at all")
 	if roof == null:
@@ -417,11 +418,21 @@ func test_t174_the_briefing_column_sits_in_one_flat_tokens_box() -> void:
 		roof.get_script() == null,
 		"the roof is a plain PanelContainer - containers and styleboxes only (A5.2)"
 	)
+	## A21: the column's last label is the cargo window's own title - it backs
+	## on the window's raised box nested inside the roof, the overlay's chrome
+	## being a backed surface of its own.
+	var cargo_title := labels[labels.size() - 1]
+	var window_box := _roof(cargo_title, pane)
+	assert_true(
+		window_box != null and window_box != roof and window_box.name == "CargoWindow",
+		"the cargo title backs on the window's own box, nested in the roof"
+	)
 
 
 ## The briefing column's labels in column order: the FLIGHT BRIEFING header, one
 ## caption per BRIEF_ROWS row (the row HBox's first child - the rows are built by
-## `_build_brief_rows`, so they carry no unique names), then the CARGO HOLD caption.
+## `_build_brief_rows`, so they carry no unique names), then the cargo window's
+## own title (A21: the caption retired into the window).
 func _briefing_labels(pane: Node) -> Array[Label]:
 	var labels: Array[Label] = []
 	var brief_caption := pane.get_node_or_null(NodePath("%BriefCaption")) as Label
@@ -433,9 +444,13 @@ func _briefing_labels(pane: Node) -> Array[Label]:
 		var row_box := rows_box.get_node_or_null(NodePath(row_name)) as HBoxContainer
 		if row_box != null and row_box.get_child_count() > 0:
 			labels.append(row_box.get_child(0) as Label)
-	var cargo_caption := pane.get_node_or_null(NodePath("%CargoCaption")) as Label
-	if cargo_caption != null:
-		labels.append(cargo_caption)
+	var cargo_window := pane.find_child("CargoWindow", true, false) as Control
+	if cargo_window != null:
+		var cargo_title := cargo_window.get_node_or_null(
+			NodePath("CargoMargin/CargoScroll/CargoContent/CargoTitleRow/CargoTitle")
+		) as Label
+		if cargo_title != null:
+			labels.append(cargo_title)
 	return labels
 
 
@@ -460,10 +475,10 @@ func test_t174_the_brief_rows_keep_their_labels_and_values() -> void:
 		)
 		var value := row_box.get_child(1) as Label
 		assert_true(value != null and not value.text.is_empty(), "with its value line filled")
-	var cargo_caption := pane.get_node_or_null(NodePath("%CargoCaption")) as Label
+	var cargo_title := pane.find_child("CargoTitle", true, false) as Label
 	assert_true(
-		cargo_caption != null and cargo_caption.text.begins_with("CARGO HOLD · "),
-		"the cargo caption is unchanged"
+		cargo_title != null and cargo_title.text.begins_with("CARGO — "),
+		"the cargo window's title carries the A8 words"
 	)
 	assert_eq(
 		(pane.get_node(NodePath("%BriefNote")) as Label).text,

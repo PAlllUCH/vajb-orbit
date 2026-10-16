@@ -641,17 +641,27 @@ func test_the_launch_brief_rows_are_the_nine_pinned_rows() -> void:
 	)
 
 
-## A20 (the owner's 2026-10-15 pass): the cargo plate strip retired - the
-## manifest is the C overlay's read-only instance (the shared summary
-## builder's banded rows over the A14 slots), and no plate art can grow the
-## panel because no plate exists.
-func test_the_launch_manifest_is_the_summary_rows() -> void:
+## A21 (the owner's 2026-10-16 pass): the manifest is the C overlay's own
+## window — the shared builder's chrome, tab strip and uncapped banded rows —
+## and no plate art can grow the panel because no plate exists.
+func test_the_launch_manifest_is_the_summary_window() -> void:
 	var panel := _mount(LaunchScene)
 	assert_true(panel != null, "launch_panel.tscn instantiates")
-	var rows: VBoxContainer = panel.get(&"_cargo_list")
-	assert_true(rows != null, "the cargo manifest rows box ships")
+	var parts: Dictionary = panel.get(&"_cargo_window")
+	var window := parts.get(&"window") as PanelContainer
+	assert_true(window != null, "the cargo window ships (A21)")
+	var rows := parts.get(&"rows") as VBoxContainer
 	assert_true(
 		rows is VBoxContainer, "the manifest is a rows container, not the retired ItemList"
+	)
+	var scroll := parts.get(&"scroll") as ScrollContainer
+	assert_eq(
+		scroll.vertical_scroll_mode, ScrollContainer.SCROLL_MODE_SHOW_ALWAYS,
+		"the manifest scrolls its full list (A21: no cap, no tail)"
+	)
+	assert_eq(
+		(scroll.get_node_or_null(NodePath("../..")) as Control).name,
+		"CargoWindow", "the window root keeps the armory-safe name"
 	)
 	_fixture_host().call(&"add_cargo", &"mineral_iron", 7)
 	panel.call(&"refresh_profile", &"cargo")
@@ -661,7 +671,9 @@ func test_the_launch_manifest_is_the_summary_rows() -> void:
 		measured.x <= viewport.x,
 		"the launch panel minimum %s must fit the %s viewport" % [measured, viewport]
 	)
-	var band := rows.get_node_or_null(NodePath("SummaryBand")) as Control
+	var band := window.get_node_or_null(
+		NodePath("CargoMargin/CargoScroll/CargoContent/CargoBand")
+	) as Control
 	assert_true(band != null, "the summary band ships (the overlay's ITEM/AMOUNT headers)")
 	var slot := rows.find_child("Slot*", true, false) as Control
 	assert_true(slot != null, "the iron ore row rides the overlay's row grammar")

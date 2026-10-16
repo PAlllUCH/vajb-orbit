@@ -5,7 +5,18 @@ file when decided or done** (deleted at the wave close-out or the ruling — the
 record lives in the cited file and `MASTER_REPORT.md` §6, this is the index
 only). Refreshed at every wave close-out and after every owner ruling.
 
-*Last refreshed: 2026-10-15 night (the owner's **playtest pass answered in the
+*Last refreshed: 2026-10-16 (the owner's **second pass answered in the same
+session**: the armory's and launch's cargo surfaces now render the C overlay's
+own window — sorted by category, tabbed, scrollable, uncapped — UI_SPEC §20.1
+A21; the armory's left column split into LAYOUT/HOLD pages under the owner's
+"two tabs if needed" authorization (A21.3); the S50-A reviewer dispatch's
+findings cured or answered (F01/F03/F04 fixed, F02 by A21.3, F05 declined);
+the title-collapse defect fixed on the overlay too. Gate **1429/0 ×2
+byte-identical**, net 0 rows. The resolution sweep (720p → 4K,
+16:9/21:9/32:9) ran clean — 16:9 scales uniformly, the wide layouts hold.
+**The P4 exit pass continues** — the owner's next pass reads these surfaces;
+T-179 and the S41 chrome tokens re-present there.)*
+*Previously 2026-10-15 night (the owner's **playtest pass answered in the
 same session**: the ammunition rows full-width (A18), the armory's CARGO HOLD
 block (A19), the launch manifest as the C overlay's read-only instance (A20) —
 UI_SPEC §20, gate **1429/0 ×2 byte-identical**, net 0 rows. **The P4 exit pass

@@ -38,7 +38,7 @@ and every tool result is re-sent on each later request.
 | 17. | The buy-confirmation law (amendment 2026-10-12, phase P4; wave D24 —… | L1905–L1922 |
 | 18. | The C-key Cargo overlay (amendment 2026-10-12, phase P4; wave D24 — … | L1923–L2012 |
 | 19. | The 2026-10-15 visual round — chrome, backing and the empty edges (a… | L2013–L2029 |
-| 20. | The 2026-10-15 playtest pass — the ammunition rows, the armory's car… | L2030–L2063 |
+| 20. | The 2026-10-15 playtest pass — the ammunition rows, the armory's car… | L2030–L2107 |
 
 <!-- section-index:end -->
 
@@ -2060,3 +2060,47 @@ The A17 bound rides along: the summaries cap at the HUD's own
 | **A18** | the armory's AMMUNITION rows are the shared menu's own full-width rows: the P38 browser row's container grammar (76 tall, `RowInner` 12/8, `RowBox` HBox, the fixed 160 px title column, `SIZE_FILL`), every cell a container child — icon 24 (A5.4's own pack-icon pin standing), the title column (`Title`/`Meta`), the slack, then the value columns `Held` (the P5 worded held line + its state caption, its own `HELD` band header at the column's pinned width), `Status` (the §3.1/3.1b chip: the state word + caption over `STATE`), `Price` (over `COST`) and the `BUY` chip at the browser rows' own ActionInline — the band carrying three captions for this tab (HELD/STATE/COST at the columns' own widths); the row keeps every cell name, every word and the `Ammo<PascalCase>` naming so the suites' reads stand; the danger treatment (§3.1/3.1b's 1 px frame + the bright tag) stands on `RowPlate`, which now draws its C4 strip at the row's own full rect instead of the crushed 320 nine-slice | the pinned 320×68 card and its hand-placed children (`_position_card`'s coordinates — the A5 composition law's violation; the crushed nine-slice at 320 wide the owner read as "warped") |
 | **A19** | the armory's left column gains a `CARGO HOLD` block at the stack's bottom (after `EQUIPPED`): the `CargoSummary` read-only rows over the A14 slots, the overlay's own title words `CARGO — <n>/<cap> UNITS` as the block caption, capped at the A17 bound with its tail; it refreshes on the profile's `cargo`/`ammo` keys like every other block | the empty stretch under `EQUIPPED — 9/11` (the owner had no ammo readout in the armory at all) |
 | **A20** | the LAUNCH manifest is the C overlay's read-only instance: the cargo plate strip retires, the manifest builds `CargoSummary`'s banded rows (`ITEM`/`AMOUNT` band, the A14 slots, no chip, no sort — the launch surface reads, it never disposes), capped at the A17 bound with its tail; the rows container keeps the `%CargoList` name so the briefing column's own order law (the `BriefNote` following the cargo) stands, and `%CargoCaption` keeps its `CARGO HOLD · <n> STACKS` words | the faint plate strip + the bare `ItemList` (the audit's least-dressed segment) |
+
+### 20.1 The cargo windows (amendment 2026-10-16, the owner's second pass — the "same window, wider" ask)
+
+**The owner's words (2026-10-16, verbatim):** *"The Cargo in Armory and Launch
+dont match the one in C button Cargo. First of all they arent sorted by
+category, they arent scrollable (the extend over container). Cant we just do
+exactly the same window but wider? You can check current game scene to see how
+it looks"*
+
+**What the screen showed.** The audit sweep's own captures at `2d620ae`: the
+armory's cargo rows run past the left panel's bottom edge and cover the footer
+bar, and the launch's `BriefNote` is squeezed under the sixth row — both
+because the A19/A20 blocks cap at the A17 bound with no scroll of their own,
+while the C window scrolls under its own 80 % cap.
+
+**A21 — the two surfaces render the C overlay's own window, wider.** The
+shared builder gains `build_window()`: the A15 chrome at the host column's
+width — the `PanelRaised` panel filling its column (expand both axes), the
+16 px margin, the vertical scroll always shown and horizontal disabled, the
+content column (separation 12) carrying the title row (`CargoTitle`,
+StationValue, expand, ellipsis), the six-tab strip (A11's tabs, separation 4,
+the overlay's own toggle + primary/dim colour states, working filters), the
+ITEM/AMOUNT band, then the read-only rows (separation 8). The rows are
+**uncapped** — the scroll replaces the A17 bound on these two surfaces (the
+cap stays the HUD block's law; `hud.gd` keeps its consts) and the
+`+<n> MORE` tail retires with it. A tab press filters like the overlay's:
+a category shows that band's rows flat, ALL shows the A13 group headers over
+the full list; the `NONE HELD` empty state stands. Two deliberate omissions,
+both the overlay's dialog affordances: the `SORT:` chip (the summaries are
+pinned category-ordered reads — the tab strip is the sorting the owner asked
+for) and the `ESC · CLOSE` hint. The window's children keep the overlay's own
+node names (`CargoMargin`/`CargoScroll`/`CargoContent`/`CargoTitleRow`/
+`CargoTitle`/`CargoTabs`/`CargoBand`/`CargoRows`) so probes read one grammar;
+the armory's window root is named `CargoWindow` so it cannot collide with the
+station's own `CargoLayer/CargoOverlay` in a tree search. `populate_rows()`
+retires — both call sites move to `populate_window()`; A18's ammunition rows
+and the A14 slots law stand untouched.
+
+| Pin | Law | Reversal |
+|---|---|---|
+| **A21** | the shared window law above — the A15 chrome, the working tab strip, the uncapped scroll, the two dialog affordances staying overlay-only | the A19/A20 capped caption+rows blocks (`populate_rows` and its A17 adoption) |
+| **A21.1** | the armory seat: `CargoWindow` at the `FitLeftStack`'s bottom (after EQUIPPED), expand-fill into the empty stretch under the equipped block; the stack itself grows to fill its panel (`FitLeftStack` vertical 3) so the scroll owns the leftover height | the A19 caption+rows block |
+| **A21.2** | the launch seat: the window inside `BriefBox` between the briefing rows and `BriefNote` (the s47 briefing-order law stands — the note still follows the cargo), expand-fill; the `%CargoCaption`/`%CargoList` scene nodes retire and the window's `CargoTitle` carries the A8 `CARGO — <n>/<cap> UNITS` words (A20's `CARGO HOLD · <n> STACKS` caption retires) | A20's manifest grammar and its caption words |
+| **A21.3** | the armory's left column splits into two tabs — the owner's 2026-10-16 authorization, verbatim: *"where elements dont fit we can do a separation to two tabs if needed"*. The measured case: the column's own blocks (slot grid 231 px, CELL INFO 101 px, EQUIPPED 133 px) leave the expand-filling window ≈ 111 px of its 617 px stack — chrome only, no row visible. The stack becomes a `LeftTabs` strip (two toggle chips, `LAYOUT` / `HOLD`, the A11 idiom) over two pages: `PageLayout` (the slot grid + CELL INFO, the default tab — the pane opens exactly as before) and `PageHold` (EQUIPPED at its own minimum, then the cargo window expand-filling everything left — ≈ 436 px on the measured fighter, ≥ a full chrome + three rows on any hull). The window's seat law becomes "the HOLD page's bottom, after EQUIPPED"; the A19 caption's one-stack seat is the superseded shape | the single-stack seat (A19/A21.1's "the stack's bottom") |

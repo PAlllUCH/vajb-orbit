@@ -69,7 +69,6 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"StationValue"
 text_overrun_behavior = 3
-autowrap_mode = 3
 
 [node name="CargoSort" type="Button" parent="CargoCenter/CargoPanel/CargoMargin/CargoScroll/CargoContent/CargoTitleRow"]
 unique_name_in_owner = true

@@ -96,17 +96,6 @@ const SORT_LABELS := {
 }
 const SORT_CHIP_FORMAT := "SORT: %s"
 
-## A11's strip: the summary's five category ids + ALL (their single home is
-## the shared builder's).
-const CARGO_TABS: Array[Dictionary] = [
-	{&"id": Summary.CATEGORY_AMMO, &"label": "AMMUNITION"},
-	{&"id": Summary.CATEGORY_ORE, &"label": "ORE"},
-	{&"id": Summary.CATEGORY_INGOTS, &"label": "INGOTS"},
-	{&"id": Summary.CATEGORY_COMPONENTS, &"label": "COMPONENTS"},
-	{&"id": Summary.CATEGORY_FUEL, &"label": "FUEL CELLS"},
-	{&"id": Summary.TAB_ALL, &"label": "ALL"},
-]
-
 @onready var _dimmer: ColorRect = %CargoDimmer
 @onready var _panel: PanelContainer = %CargoPanel
 @onready var _scroll: ScrollContainer = %CargoScroll
@@ -214,7 +203,7 @@ func title_text() -> String:
 ## both the tab press and a probe share.
 func category_ids() -> Array[StringName]:
 	var ids: Array[StringName] = []
-	for tab: Dictionary in CARGO_TABS:
+	for tab: Dictionary in Summary.CARGO_TABS:
 		ids.append(StringName(tab[&"id"]))
 	return ids
 
@@ -366,7 +355,7 @@ func _refresh() -> void:
 ## The strip (the armory `_build_browser` idiom): six toggle tabs, the active
 ## one `text_primary` + pressed, the rest `text_dim`.
 func _build_tabs() -> void:
-	for tab: Dictionary in CARGO_TABS:
+	for tab: Dictionary in Summary.CARGO_TABS:
 		var button := Button.new()
 		button.name = "Tab%s" % String(tab[&"id"]).to_pascal_case()
 		button.toggle_mode = true

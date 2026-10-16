@@ -945,7 +945,14 @@ class ConsolePanels extends Control:
 @onready var _equipped_rows: VBoxContainer = %EquippedRows
 ## A19: the left column's CARGO HOLD block (code-built under the equipped
 ## block; the caption carries the overlay's own title words).
-@onready var _fit_left_stack: VBoxContainer = %FitLeftStack
+## A21.3: the left column's two pages (the owner's "two tabs if needed") —
+## LAYOUT carries the slot grid + cell info, HOLD the equipped rows + the
+## cargo window.
+@onready var _left_tabs: HBoxContainer = %LeftTabs
+@onready var _tab_layout: Button = %TabLayout
+@onready var _tab_hold: Button = %TabHold
+@onready var _page_layout: VBoxContainer = %PageLayout
+@onready var _page_hold: VBoxContainer = %PageHold
 @onready var _tabs: HBoxContainer = %FamilyTabs
 @onready var _browser_caption: Label = %BrowserCaption
 @onready var _browser_band: HBoxContainer = %BrowserBand
@@ -995,9 +1002,14 @@ var _line_danger := false
 var _browser_payloads: Array[Dictionary] = []
 var _browser_tab: StringName = &"all"
 var _browser_focused: Dictionary = {}
-## A19: the left column's CARGO HOLD block (built in `_build_cargo_preview`).
-var _cargo_caption: Label = null
-var _cargo_rows: VBoxContainer = null
+## A21: the left column's cargo window (built in `_build_cargo_preview`) —
+## the C overlay's own window; the tab in force filters the rows.
+var _cargo_window: Dictionary = {}
+var _cargo_category: StringName = Summary.TAB_ALL
+## A21.3: the page in force; the pane opens on LAYOUT exactly as before.
+const LEFT_TAB_LAYOUT: StringName = &"layout"
+const LEFT_TAB_HOLD: StringName = &"hold"
+var _left_tab: StringName = LEFT_TAB_LAYOUT
 var _browser_signature: Array[String] = []
 var _grid_tweens: Array[Tween] = []
 ## The mode in force (P32). Exactly one of `_fit_cells` / `_battery_config` is visible.
@@ -1011,6 +1023,7 @@ func _ready() -> void:
 	_build_empty_cells()
 	_build_grid_surface()
 	_build_browser()
+	_build_left_tabs()
 	_build_cargo_preview()
 	_wire_actions()
 	_apply_tokens()
@@ -3297,44 +3310,50 @@ func _refresh_all() -> void:
 	_refresh_cargo_preview()
 
 
-## A19: the left column's CARGO HOLD block - the read-only instance of the
-## overlay's grammar (the shared builder's rows over the A14 slots), so the
-## armory answers "how much ammo do i have" without opening C. The block sits
-## at the stack's bottom, after the equipped block, and the caption carries
-## the overlay's own title words so the two surfaces read one figure pair.
+## A21: the left column's cargo window — the C overlay's own window (the A15
+## chrome, the tab strip, the uncapped scroll) expand-filling the HOLD page's
+## space under the equipped block, so the rows can never run past the panel
+## onto the footer again.
 func _build_cargo_preview() -> void:
-	if _fit_left_stack == null:
+	if _page_hold == null:
 		return
-	var block := VBoxContainer.new()
-	block.name = "CargoBlock"
-	block.add_theme_constant_override(&"separation", 6)
-	block.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_fit_left_stack.add_child(block)
-	_cargo_caption = Label.new()
-	_cargo_caption.name = "CargoCaption"
-	_cargo_caption.theme_type_variation = &"SectionHeader"
-	_cargo_caption.text = Summary.TITLE_FORMAT % [0, 0]
-	_cargo_caption.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	block.add_child(_cargo_caption)
-	_cargo_rows = VBoxContainer.new()
-	_cargo_rows.name = "CargoRows"
-	_cargo_rows.add_theme_constant_override(&"separation", 6)
-	_cargo_rows.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	block.add_child(_cargo_rows)
+	_cargo_window = Summary.build_window(
+		_page_hold, "CargoWindow", Callable(self, "_on_cargo_tab")
+	)
+
+
+func _on_cargo_tab(id: StringName) -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	_cargo_category = id
+	_refresh_cargo_preview()
+
+
+## A21.3's page switch: one page at a time, the states riding the shared
+## builder's own tab-state idiom.
+func _build_left_tabs() -> void:
+	_tab_layout.set_meta(&"tab", LEFT_TAB_LAYOUT)
+	_tab_hold.set_meta(&"tab", LEFT_TAB_HOLD)
+	_tab_layout.pressed.connect(_on_left_tab.bind(LEFT_TAB_LAYOUT))
+	_tab_hold.pressed.connect(_on_left_tab.bind(LEFT_TAB_HOLD))
+	_apply_left_tab()
+
+
+func _on_left_tab(id: StringName) -> void:
+	AudioManager.play_ui(AudioManager.UiCue.CLICK)
+	_left_tab = id
+	_apply_left_tab()
+
+
+func _apply_left_tab() -> void:
+	_page_layout.visible = _left_tab == LEFT_TAB_LAYOUT
+	_page_hold.visible = _left_tab == LEFT_TAB_HOLD
+	Summary.apply_tab_states(_left_tabs, _left_tab, self)
 
 
 func _refresh_cargo_preview() -> void:
-	if _cargo_rows == null or not is_node_ready():
+	if _cargo_window.is_empty() or not is_node_ready():
 		return
-	var profile := _profile()
-	var items: Dictionary = {}
-	if profile != null and profile.has_method(&"cargo_items"):
-		var raw: Variant = profile.call(&"cargo_items")
-		items = raw if raw is Dictionary else {}
-	_cargo_caption.text = Summary.TITLE_FORMAT % [
-		Summary.held_units(items), Summary.cargo_capacity(profile)
-	]
-	Summary.populate_rows(_cargo_rows, profile, self)
+	Summary.populate_window(_cargo_window, _profile(), self, _cargo_category)
 
 
 func _profile() -> ProfileScript:
@@ -4288,6 +4307,15 @@ func _build_list_band(
 		cell.name = "Header%s" % String(captions[index]).to_pascal_case()
 		cell.custom_minimum_size = Vector2(float(widths[index]), 0.0)
 		band.add_child(cell)
+	## Every browser row ends with the ACTION_INLINE chip cell (the ammo rows'
+	## A18 `Buy`, the module rows' own), so the band carries the same trailing
+	## cell and the captions seat over the columns instead of riding the chip's
+	## 108 px (S50-A F04).
+	var chip_gap := Control.new()
+	chip_gap.name = "ChipGap"
+	chip_gap.custom_minimum_size = Vector2(ACTION_INLINE.x, 0.0)
+	chip_gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	band.add_child(chip_gap)
 
 
 func _on_tab_pressed(tab_id: StringName) -> void:

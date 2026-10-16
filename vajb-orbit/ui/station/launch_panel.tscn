@@ -62,6 +62,7 @@ theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 10
 
 [node name="BriefBox" type="VBoxContainer" parent="LaunchBody/BriefRoof/BriefInset"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 8
 
@@ -72,16 +73,6 @@ theme_type_variation = &"SectionHeader"
 text = "FLIGHT BRIEFING"
 
 [node name="BriefRows" type="VBoxContainer" parent="LaunchBody/BriefRoof/BriefInset/BriefBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 6
-
-[node name="CargoCaption" type="Label" parent="LaunchBody/BriefRoof/BriefInset/BriefBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"SectionHeader"
-
-[node name="CargoList" type="VBoxContainer" parent="LaunchBody/BriefRoof/BriefInset/BriefBox"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 6

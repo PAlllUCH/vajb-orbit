@@ -63,6 +63,18 @@ P4 manifest's slice boxes ticked. **Trash removed:** the regenerable
 `__pycache__` bytecode caches under `staging/`, `.crush/hooks/` and the D21
 archive slice. Full block: `MASTER_REPORT.md` §6's "P4 code-lane close".
 
+**Updated 2026-10-16 (the cargo windows round — the owner's second pass; gate
+held 1429/0 ×2 byte-identical, net 0 rows).** UI_SPEC §20.1 pins **A21** (the
+armory's and launch's cargo surfaces render the C overlay's own window —
+chrome, tab strip, category grouping, uncapped scroll; the A17 cap retires on
+the station surfaces), **A21.1/A21.2** (the seats) and **A21.3** (the armory's
+left column splits into LAYOUT/HOLD pages under the owner's "two tabs if
+needed" authorization). The S50-A review dispatch found the two escapes
+(fixed), the band's 108 px mis-seat (fixed) and the title-collapse defect
+(the overlay's own title too — fixed). Resolution sweep: 16:9 = uniform scale;
+the wide layouts (2016/2657/3373 logical) hold with no overflow. CONTRACTS
+v0.64.
+
 **Updated 2026-10-15 (the owner's playtest pass — the ammunition rows, the
 armory's cargo preview and the launch manifest; one session).** The owner's
 first pass over the fixed surfaces raised three items, pinned docs-first as

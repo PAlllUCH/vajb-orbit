@@ -1022,6 +1022,16 @@
     "res://tools/d8_glyph_audit.gd"
    ]
   },
+  "res://tools/probe_res.tscn": {
+   "assets": [],
+   "connections": [],
+   "groups": [],
+   "instanced": [],
+   "root_type": "Node",
+   "scripts": [
+    "res://tools/probe_res.gd"
+   ]
+  },
   "res://tools/probe_t204.tscn": {
    "assets": [],
    "connections": [],
@@ -6046,6 +6056,25 @@
    ],
    "signals": []
   },
+  "res://tools/probe_res.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [
+    "res://tools/probe_res.tscn",
+    "res://tools/probe_res_worker.gd"
+   ],
+   "signals": []
+  },
+  "res://tools/probe_res_worker.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
+   "extends": "Node",
+   "refs": [],
+   "signals": []
+  },
   "res://tools/probe_t204.gd": {
    "autoload": "",
    "class_name": "",
@@ -6633,6 +6662,8 @@
     "_mode_fit.pressed \u2192 set_mode.bind(MODE_FIT",
     "_rack_rows.sort_children \u2192 _lay_bays",
     "_remove_button.pressed \u2192 _on_remove_pressed",
+    "_tab_hold.pressed \u2192 _on_left_tab.bind(LEFT_TAB_HOLD",
+    "_tab_layout.pressed \u2192 _on_left_tab.bind(LEFT_TAB_LAYOUT",
     "box.sort_children \u2192 _position_bay.bind(row",
     "buy.pressed \u2192 _on_buy_pressed.bind(payload",
     "buy.pressed \u2192 _on_row_pressed.bind(payload",
@@ -6743,7 +6774,6 @@
     "res://game/component_catalog.gd",
     "res://game/mineral_catalog.gd",
     "res://game/station_catalog.gd",
-    "res://ui/hud/hud.gd",
     "res://ui/theme/chrome_family.gd"
    ],
    "signals": []
