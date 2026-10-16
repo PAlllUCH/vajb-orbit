@@ -225,6 +225,13 @@ the token-budget guards; `crush.json` keeps only host-neutral parts (`lsp`,
 `options.skills_paths`) plus the original Windows values renamed to
 `_windows_mcp_legacy` / `_windows_hooks_legacy`.
 
+On the Linux host the mirror itself is rclone: an hourly user timer runs
+`bisync` between `gdrive:Projekty/Vajb Orbit` and the workspace, and a
+second service mounts `gdrive:` at `~/GoogleDrive`. Its mechanism, failure
+modes and the verified recovery recipe (dead token, the `RCLONE_TEST`
+canary, `--resync-mode path2` being mandatory here) are in
+`docs/AGENT_PIPELINE_NOTES.md` §"Google Drive mirror (the Linux host)".
+
 **`mcp add` / `hook add` append, they never replace.** `mcp remove` and
 `hook remove` in `crushrc` do not cancel entries that `crush.json` contributes —
 the definitions merge. Symptom: the MCP server's args arrive **twice** (the

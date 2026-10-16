@@ -233,3 +233,63 @@ into `crushrc`: `uv`/`uvx` 0.12.17 (resolves `godot-ai` from PyPI), `rg` 15.2.0,
 session-wide (`environment.d`, profile, bashrc) pointing at the 4.7.2-stable
 binary and this workspace. Restart Crush after changing any of this — the
 MCP/LSP clients and the `rg` lookup are resolved once at startup.
+
+## Google Drive mirror (the Linux host) — mechanism and the 2026-10-16 recovery
+
+The two-host mirror is rclone on this box: a user-level systemd pair —
+`rclone-vajb-sync.timer` (OnCalendar=hourly, Persistent=true) running
+`rclone bisync "gdrive:Projekty/Vajb Orbit" ~/VajbOrbit --filters-file
+~/.config/rclone/vajb-filter.txt --check-access --max-delete 500 ...`, and
+`rclone-gdrive.service` mounting `gdrive:` at `~/GoogleDrive`
+(Restart=on-failure, so it self-heals once its cause clears). Bisync state:
+`~/.cache/rclone/bisync/`; the filter carries an `.md5` sibling refreshed on
+every edit. The clear-out law ("builds/ stays out of the Drive mirror") is
+implemented in the filter as `- builds/**` (added 2026-10-16 — before that,
+the first live sync would have pushed ~6 GB of release binaries; the outage
+that hid the gap also prevented it).
+
+How it failed (found 2026-10-16): the timer fired correctly the whole time —
+every run failed. Two stacked causes: (1) the Google OAuth token died
+(`invalid_grant`); every run since at least 2026-10-15 01:03 logged it, and
+the bisync state's last write was 2026-09-22 20:02 — three weeks of October
+work (the P3 close, build 2, all of P4, the v0.5 release) existed only on
+the local box and GitHub. (2) `--check-access` requires an `RCLONE_TEST`
+file on BOTH sides and neither side had one, so runs would have kept
+failing even with a live token. The `~/GoogleDrive` mount crash-looped on
+the same dead token (restart counter in the thousands) and self-healed on
+its next automatic restart after the fix.
+
+The recovery recipe, in order (verify each step before the next):
+1. `rclone config reconnect gdrive: --auto-confirm` — interactive OAuth in
+   the desktop browser (it prints the 127.0.0.1:53682 URL; without
+   `--auto-confirm` it first asks y/n on stdin and dies on EOF when
+   driven from a shell). `rclone about gdrive:` proves the token.
+2. Create `RCLONE_TEST` on both sides (the repo's `.gitignore` ignores the
+   local one; `rclone copyto` plants the remote one).
+3. `rclone bisync --resync` defaults to `--resync-mode path1` — **the Drive
+   side wins differing files**. For this mirror the local box is the
+   canonical side (it holds the git-pushed tree), so a resync must run with
+   `--resync-mode path2`, always `--dry-run` first. The first preview here
+   showed it would have clobbered the local record (the remote's
+   `MASTER_REPORT.md` was a 12 KiB relic against the local 266 KiB).
+4. Any filter change makes bisync demand `--resync`. The stale
+   remote-unique leftovers (paths absent locally, all with pre-October
+   mtimes — zero October files existed remotely) were pruned first with
+   `rclone delete "gdrive:Projekty/Vajb Orbit" --filter-from <include-list>
+   --rmdirs` (3,814 files, all into Drive trash ~30 days).
+5. Then a one-way `rclone sync ~/VajbOrbit gdrive:Projekty/Vajb Orbit
+   --filter-from ~/.config/rclone/vajb-filter.txt` (dry-run first; 0 file
+   deletions, 649.9 MiB up) made the trees identical (`rclone check`:
+   10,123 matching; the only diffs are Crush's live `crush.db-wal`,
+   `crush.db-shm` and `crush.log`, which churn mid-session), then
+   `--resync --resync-mode path2` rebuilt the bisync baseline over
+   identical trees, and a plain bisync run — the timer's exact command —
+   returned exit 0.
+
+Operational notes: touching the filter forces a one-time `--resync` again;
+the `.crush/` runtime trio re-transfers every hour and is the natural
+candidate for a future `- /RCLONE_TEST`-style filter addition
+(`- .crush/crush.db*`, `- .crush/logs/**`) — owner's call; the Windows box
+pulls the recovered mirror on its next Drive-client refresh, so the v0.5
+record, the October state files and the regenerated pack icons all ride
+along.
