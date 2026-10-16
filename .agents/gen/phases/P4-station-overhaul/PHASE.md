@@ -83,9 +83,11 @@ measured current state and its owning section).
 - [x] D24 closed (all nine items designed, owner ticks presented)
 - [x] The implementation waves closed per D24's split; gate green at every
       boundary (1422/0 ×2, re-verified 2026-10-14)
-- [ ] Playtest build 3 exported, smoke-tested, and the owner's eye over it —
-      waits for the cargo redo to land so the owner tests the finished
-      surface
+- [x] Playtest build 3 exported (v0.5, `4b5b65f`), smoke-tested clean
+      (Linux, Vulkan, exit 0), packaged in
+      `builds/vajb-orbit-0.5-2026-10-16-4b5b65f-{linux,windows}/`
+- [ ] The owner's eye over build 3 — the phase's last exit criterion;
+      T-179 and the S41 chrome tokens re-present there
 
 ## Carries forward
 - T-179 (the Pyre cascade, owner-postponed) re-presents at the next playtest;

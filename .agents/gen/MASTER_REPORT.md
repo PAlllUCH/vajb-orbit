@@ -2116,3 +2116,32 @@ leftover call the wrapper's `[PASS]` print hid). Close-out: `docs_index.py`
 scripts); `contracts_index.py`; CONTRACTS **v0.68**; WAVEBOARD amended in
 place (TICKS needs nothing — no owner decision raised). **The P4 exit pass
 continues.**
+
+**The P4 release close-out — build 3 delivered (the developer session,
+2026-10-16; the owner rules P4 finished).** The owner's order — *"Phase 4
+finished. Lets commit, push, then publish new version, changelog, version
+update etc"* — closed the phase's work and cut the release. **Gate
+re-verified from scratch: `staging/gate.py --times 2` → 1430/0 ×2
+byte-identical, zero SCRIPT ERROR, exit 0** — CONTRACTS §9's live figure
+(v0.68) confirmed on the release tree; §9/§10 owed nothing (the release
+moves no contract). **Version stamp bumped** v0.4 → **v0.5**
+(`ui/screens/main_menu.tscn:275`, the only pin — no test reads it) and
+committed at `4b5b65f` together with the phase manifest's cargo-overlay
+slice line corrected to record how the rework actually landed
+(owner-directed, in-session; the designer round cancelled); pushed
+(`bb83a71..4b5b65f`). **Playtest build 3:** both presets exported clean
+from that tree (Linux `vajb-orbit.x86_64` 552,342,976 B; Windows
+`vajb-orbit.exe` 587,992,208 B — the same embedded pack, the Windows
+binary verified structurally per the release law), the Linux binary
+smoke-tested on Vulkan (Forward+ on the host's RADV device, `--quit-after
+400`, exit 0, zero warnings — cleaner than the usual benign ObjectDB
+line), packaged as
+`builds/vajb-orbit-0.5-2026-10-16-4b5b65f-{linux,windows}/`, each folder
+carrying the full-history `CHANGELOG.md` (the new 0.5 section, player-facing
+from the §6 record) and `README.txt` (the build id, the new-since paragraph,
+the known-issues list refreshed — the fixed overview-fold and fuel-cell rows
+dropped; B2-1/B2-2, the packs-not-loose-cargo note, T-180 and T-179 kept),
+and the two zips SHA256-summed into `builds/SHA256SUMS.txt` (linux
+`fc49631f…`, windows `b1941c63…`). **The owner's playtest of build 3 is
+P4's last exit criterion** — T-179 and the S41 chrome tokens re-present
+there.

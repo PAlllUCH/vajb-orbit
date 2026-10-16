@@ -10,22 +10,33 @@ Closed-wave recaps live in `.agents/gen/MASTER_REPORT.md` §6.
 
 ## Queued (phase P4 — `phases/P4-station-overhaul/`; one live session, one item per order)
 
-The code queue is **empty** — P4's eight implementation waves are closed (S49,
-the last, 2026-10-14; gate 1330 → **1422/0 ×2 byte-identical**, re-verified at
-the review pass below; the done rows verbatim in
-`_archive/dispatch_done_2026-10-14.md`). Before the next queued code:
+The queue is **empty** — the owner ruled **P4 finished** (2026-10-16) and the
+release close-out ran the same day: the eight implementation waves closed
+2026-10-12 → 2026-10-14 (gate 1330 → 1422/0 ×2; done rows in
+`_archive/dispatch_done_2026-10-14.md`), the owner-directed rework and its
+four follow-up rounds closed 2026-10-14 → 2026-10-16 (gate 1422 →
+**1430/0 ×2**; CONTRACTS v0.68), and playtest build 3 (**v0.5**, `4b5b65f`)
+is exported, smoke-tested and packaged
+(`builds/vajb-orbit-0.5-2026-10-16-4b5b65f-{linux,windows}/`). The one open
+item:
 
-- **Done 2026-10-14 (owner-directed, single session): the C-key cargo overlay
-  rework** — implemented in the orchestrator session itself per the owner's
-  "do the rework yourself" (no designer round, no slice; the planned
-  `dispatch_designer.md` round is cancelled). UI_SPEC §18.2 **A10–A13** is the
-  owning pin (refinery slot rows, armory categories, the DISPOSE chip, the
-  sort cycle); gate 1422 → **1426/0 ×2**; uncommitted — the owner's reviewer
-  pass precedes the wave-boundary commit.
-- **Then the P4 exit pass** — playtest build 3 + the owner's eye over it
-  (`phases/P4-station-overhaul/PHASE.md`'s exit criteria; T-179 and the S41
-  chrome tokens re-present there). The build waits for the cargo redo so the
-  owner tests the finished surface — the redo is in, the review is next.
+- **The owner's playtest of build 3** — P4's last exit criterion
+  (`phases/P4-station-overhaul/PHASE.md`); T-179 and the S41 chrome tokens
+  re-present there. After the verdict: P4 closes and the next phase plans
+  from it.
+
+**Updated 2026-10-16 (P4 release close-out — the owner rules the phase
+finished; housekeeping, not a wave).** The owner's order ("Phase 4 finished.
+commit, push, then publish new version, changelog, version update etc")
+closed P4: the gate re-verified from scratch at **1430/0 ×2 byte-identical,
+zero SCRIPT ERROR** (CONTRACTS §9's live figure; §10 stands at v0.68 — the
+release moves no contract), the version stamp bumped v0.4 → **v0.5**
+(`main_menu.tscn:275`, the only pin) and committed at `4b5b65f` (pushed), and
+playtest build 3 exported from that tree — both presets clean, the Linux
+binary smoke-tested on Vulkan (exit 0, zero warnings), packaged with the
+full-history changelog and a refreshed known-issues README, the zips
+SHA256-summed into `builds/SHA256SUMS.txt`. Full block: `MASTER_REPORT.md`
+§6's release block.
 
 **Updated 2026-10-14 (cargo overlay rework — owner-directed, the orchestrator
 session itself; a rework, tracked like a wave).** The owner's S48 playtest
@@ -152,6 +163,10 @@ standalone, never touches the real save).
 
 One-line outcomes, newest first (full blocks: `MASTER_REPORT.md` §6, same-named
 entries):
+
+- **P4 release close-out** (2026-10-16, the owner rules the phase finished) —
+  gate re-verified **1430/0 ×2**; stamp v0.5 at `4b5b65f`; build 3 exported,
+  smoke-tested, packaged; the owner's playtest is the last exit criterion.
 
 - **The playtest pass** (2026-10-15, owner-directed single session) — the
   ammunition rows full-width (A18), the armory's CARGO HOLD block (A19), the

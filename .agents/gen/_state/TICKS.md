@@ -5,7 +5,18 @@ file when decided or done** (deleted at the wave close-out or the ruling — the
 record lives in the cited file and `MASTER_REPORT.md` §6, this is the index
 only). Refreshed at every wave close-out and after every owner ruling.
 
-*Last refreshed: 2026-10-16 (the owner's **second pass answered in the same
+*Last refreshed: 2026-10-16 evening (**the owner rules P4 finished** — the
+release close-out ran the same session: the gate re-verified from scratch at
+**1430/0 ×2 byte-identical** (CONTRACTS v0.68 stands; the release moves no
+contract), the version stamp bumped **v0.4 → v0.5** (`main_menu.tscn:275`,
+committed `4b5b65f`, pushed) and **playtest build 3 delivered** as
+`builds/vajb-orbit-0.5-2026-10-16-4b5b65f-{linux,windows}/` — Linux
+smoke-tested clean on Vulkan (exit 0, zero warnings), Windows verified
+structurally, both zips SHA256-summed; the full-history changelog and the
+refreshed known-issues README ship inside each build. **The owner's playtest
+of build 3 is P4's last exit criterion** — T-179 and the S41 chrome tokens
+re-present there.)*
+*Previously 2026-10-16 (the owner's **second pass answered in the same
 session**: the armory's and launch's cargo surfaces now render the C overlay's
 own window — sorted by category, tabbed, scrollable, uncapped — UI_SPEC §20.1
 A21; the armory's left column split into LAYOUT/HOLD pages under the owner's
@@ -191,21 +202,17 @@ plan)*
 
 ## Open actions — no decision needed, just waiting
 
-- **P4 — the station overhaul.** D24 (the design round) closed 2026-10-12 — the
-  amendments live in STATION_HUB §23 / UI_SPEC §17–§18 / AUDIO_SPEC §8.7 /
-  04 §9 / 07 §6 / 10 §3.5. **S42–S49 done** — the implementation waves are
-  complete (the grid, the armory equipped list, the bulk sell, the craft tab, the
-  shipyard build view, the launch sequence + audio, the cargo overlay, the
-  confirm doors; gate 1330 → 1422/0 ×2, re-verified 2026-10-14; the CONTRACTS
-  backfill is v0.60). **The cargo overlay rework landed 2026-10-14, owner-directed
-  and single-session** (UI_SPEC §18.2 A10–A13; the s48 suite re-pinned, gate
-  1426/0 ×2; CONTRACTS v0.61) — the owner's reviewer pass over the reworked
-  surface is the one open item, then **the P4 exit pass** — the owner's eye
-  over a fresh build (the playtest row below).
-- **The next playtest.** After the cargo redo's review and build 3 is cut, the
-  owner's eye over it (the P4 exit pass) — T-179 (the Pyre cascade)
-  re-presents there, and the S41 chrome tokens re-present with the reworked
-  OVERVIEW.
+- **P4 — the station overhaul. Ruled finished by the owner 2026-10-16.** D24
+  closed 2026-10-12; S42–S49 closed 2026-10-12 → 2026-10-14 (gate 1330 →
+  1422/0 ×2); the owner-directed rework plus its audit, cargo-window,
+  capacity and stock rounds closed 2026-10-14 → 2026-10-16 (gate 1422 →
+  1430/0 ×2, CONTRACTS v0.68, everything committed). **Playtest build 3
+  (v0.5, `4b5b65f`) is delivered** —
+  `builds/vajb-orbit-0.5-2026-10-16-4b5b65f-{linux,windows}/`, Linux
+  smoke-tested clean. The one open item: the owner's playtest of it.
+- **The next playtest.** The owner's eye over build 3 (P4's last exit
+  criterion) — T-179 (the Pyre cascade) re-presents there, and the S41
+  chrome tokens re-present with the reworked OVERVIEW.
 
 ## Open decisions — the owner's answers wanted
 
