@@ -5,7 +5,7 @@ extends McpTestSuite
 ##   0. P32 - the two modes behind the header switch, exactly one visible, the hint swapping.
 ##   1. P38 - FIT CELLS is two equal sectors (probe widths); the grid + CELL INFO stay left.
 ##   2. P38 - the right list's two states: browse (bag units union fitted bases, `FIT`/`STORED`)
-##      and selected (owned-that-fits `OWNED` first, then buyable-that-fits `BUYABLE`, legality
+##      and selected (the owned candidates `OWNED`, legality per row — A26: the buyable half retires)
 ##      per row).
 ##   3. P39a (S35) - BATTERY CONFIG is two equal sectors; ONE shared right menu carries the
 ##      category strip, the band and the rows both modes render (the EQ container merges in).
@@ -314,7 +314,7 @@ func test_the_hint_line_follows_the_mode_and_the_selection() -> void:
 	)
 
 
-func test_the_selected_list_lists_owned_then_buyable_with_legality() -> void:
+func test_the_selected_list_lists_the_owned_candidates_with_legality() -> void:
 	_settle()
 	for base: StringName in [LASER, CANNON, &"w_railgun"]:
 		_profile.call(&"add_module", base, 1)
@@ -324,32 +324,14 @@ func test_the_selected_list_lists_owned_then_buyable_with_legality() -> void:
 	var rows := _panel.get_node("%BrowserRows") as VBoxContainer
 	var tags := _tags_of(rows)
 	assert_true(tags.has(PanelScript.TAG_OWNED), "the selected state lists OWNED rows")
-	assert_true(tags.has(PanelScript.TAG_BUYABLE), "and BUYABLE rows")
-	## Owned-that-fits first, then buyable-that-fits (P38's order).
-	var seen_buyable := false
-	for child: Node in rows.get_children():
-		var tag := _row_tag(child)
-		if tag == PanelScript.TAG_BUYABLE:
-			seen_buyable = true
-		elif tag == PanelScript.TAG_OWNED:
-			assert_false(seen_buyable, "every OWNED row precedes every BUYABLE row (P38)")
+	assert_false(tags.has("BUYABLE"), "and no BUYABLE rows — the armory sells no equipment (A26)")
 	## The legality line is per row and is the CELL INFO vocabulary.
 	for child: Node in rows.get_children():
 		var legal := _row_legal(child)
 		assert_false(legal.is_empty(), "each row carries its legality line (P38)")
-	## A BUYABLE row carries BUY + INSPECT; the press buys-then-fits.
-	var buyable := _first_row_with_tag(rows, PanelScript.TAG_BUYABLE)
-	assert_true(buyable != null, "a buyable row ships")
-	if buyable != null:
 		assert_true(
-			buyable.get_node_or_null(NodePath("RowInner/RowBox/Buy")) != null,
-			"a BUYABLE row carries its BUY chip"
-		)
-		## N37 rev (owner 2026-10-07): the per-row INSPECT chip is retired - the station's one
-		## INSPECT toggle routes the row press to the sheet.
-		assert_true(
-			buyable.get_node_or_null(NodePath("RowInner/RowBox/InspectChip")) == null,
-			"and carries no per-row INSPECT chip"
+			child.get_node_or_null(NodePath("RowInner/RowBox/Buy")) == null,
+			"no row carries a BUY chip (A26)"
 		)
 
 
@@ -393,40 +375,24 @@ func _expected_candidates(slot_key: StringName, index: int) -> Array[StringName]
 	return out
 
 
-## --------------------------------------------------- 4. BUY on a buyable row (P38)
+## --------------------------------------------------- 4. A26: the armory sells no equipment
 
 
-func test_buy_on_a_buyable_row_buys_then_fits() -> void:
+func test_an_unowned_module_never_lists_and_the_fit_is_dialog_free() -> void:
 	_settle()
 	assert_true(bool(_panel.call(&"select_cell", ENGINE_SLOT, 0)), "the engine cell selects")
 	var ids: Array[StringName] = _panel.call(&"module_row_ids")
-	assert_true(ids.has(&"e_ion"), "an engine that fits the cell lists")
+	assert_false(ids.has(&"e_ion"), "an unowned engine never lists — the AUCTION is the buy door (A26)")
 	assert_false(ids.has(LASER), "a weapon never lists on an E cell (P38's cell filter)")
 	for module_id: StringName in ids:
 		assert_eq(
 			ModuleData.fit_slot_of(module_id), ENGINE_SLOT,
 			"every listed module is the cell's own family"
 		)
-	var before := int(_profile.call(&"credits"))
-	var payload: Dictionary = {}
-	for entry: Dictionary in _panel.get(&"_browser_payloads"):
-		if StringName(entry[&"base"]) == &"e_ion":
-			payload = entry
-			break
-	assert_true(not payload.is_empty(), "the e_ion row is built")
-	if payload.is_empty():
-		return
-	_panel.call(&"_on_buy_pressed", payload)
-	## S43 (UI_SPEC section 17 A4/A5): the module BUY is a confirm door - the press opens
-	## the dialog and charges nothing; the confirmed answer buys and fits.
-	assert_eq(int(_profile.call(&"credits")), before, "the press alone charged nothing (the door)")
-	_panel.call(&"confirm_action", PanelScript.ACTION_BUY_MODULE, &"e_ion")
-	assert_true(int(_profile.call(&"credits")) < before, "the confirmed BUY charged the catalogue's price")
-	var fit: Dictionary = _profile.call(&"fit_for", VANGUARD)
-	assert_eq(
-		StringName(String((fit.get(ENGINE_SLOT, []) as Array)[0])), &"e_ion",
-		"and fitted the module into the selected cell"
-	)
+	## The module-buy machinery retired with the buy rows (A26): the panel answers
+	## the fit flow only, and the shell's one armory door left is the ammo purchase.
+	assert_false(_panel.has_method(&"_on_buy_pressed"), "no row BUY handler survives on the panel")
+	assert_false(_panel.has_method(&"_buy_into_cell"), "and no buy-into-cell behind it")
 
 
 ## --------------------------------------------- 5. the rack drag persists (P34)
@@ -750,26 +716,11 @@ func test_mode_actions_intact_through_the_public_doors() -> void:
 		"and the drag-to-fit persists it"
 	)
 	assert_true(bool(_profile.call(&"clear_fit_slot", VANGUARD, WEAPON_SLOT, 1)), "W2 empties again")
-	## FIT CELLS BUY: a buyable row's BUY buys then fits the selected cell.
+	## FIT CELLS BUY, A26: the buy half retired — an unowned engine never lists on the
+	## selected E cell, so there is no row BUY to press and nothing to charge.
 	assert_true(bool(_panel.call(&"select_cell", ENGINE_SLOT, 0)), "the engine cell selects")
-	var buyable: Dictionary = {}
-	for entry: Dictionary in _panel.get(&"_browser_payloads"):
-		if StringName(entry[&"base"]) == &"e_ion":
-			buyable = entry
-			break
-	assert_true(not buyable.is_empty(), "the e_ion row is buyable")
-	if not buyable.is_empty():
-		var before := int(_profile.call(&"credits"))
-		_panel.call(&"_on_buy_pressed", buyable)
-		## S43: the confirm door fronts the BUY - the confirmed answer charges and fits.
-		assert_eq(int(_profile.call(&"credits")), before, "the press alone charged nothing (the door)")
-		_panel.call(&"confirm_action", PanelScript.ACTION_BUY_MODULE, &"e_ion")
-		assert_true(int(_profile.call(&"credits")) < before, "the confirmed BUY charged the catalogue price")
-		var bought: Dictionary = _profile.call(&"fit_for", VANGUARD)
-		assert_eq(
-			StringName(String((bought.get(ENGINE_SLOT, []) as Array)[0])), &"e_ion",
-			"and BUY fitted the engine cell"
-		)
+	var ids: Array[StringName] = _panel.call(&"module_row_ids")
+	assert_false(ids.has(&"e_ion"), "the e_ion row never lists unowned (A26)")
 	_panel.call(&"clear_selection")
 	## BATTERY CONFIG drag-to-rack: an owned weapon row drags the rack route and persists.
 	_panel.call(&"set_mode", PanelScript.MODE_BATTERY)
@@ -931,13 +882,6 @@ func _read_of_base(rows: VBoxContainer, base: StringName) -> String:
 			var read := (child as Control).get_node_or_null(NodePath("RowInner/RowBox/Read")) as Label
 			return read.text if read != null else ""
 	return ""
-
-
-func _first_row_with_tag(rows: VBoxContainer, tag: String) -> Control:
-	for child: Node in rows.get_children():
-		if _row_tag(child) == tag:
-			return child as Control
-	return null
 
 
 func _payload_of(rows: VBoxContainer, base: StringName) -> Dictionary:

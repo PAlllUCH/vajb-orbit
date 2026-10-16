@@ -539,8 +539,9 @@ func test_the_band_multiplier_moves_the_hull_list_price() -> void:
 
 
 ## V2's own worked example: a Champion of the Choir buying a proton missile launcher reads
-## 0.75 x list (-15 % faction tech + -10 % band, added not multiplied), and the armory pane's
-## own row read is the same figure.
+## 0.75 x list (-15 % faction tech + -10 % band, added not multiplied). A26 (2026-10-16):
+## the armory's own row read retired with its module rows — the registry's arithmetic is
+## what the AUCTION's shelf pricing and the shell's refusal strip still read.
 func test_the_module_price_stacks_the_tech_discount_additively() -> void:
 	var choir := RegistryScript.station(&"s5_primary")
 	assert_eq(ModuleData.module(&"w_proton")[&"cost"], 5200, "the launcher's list price")
@@ -556,28 +557,16 @@ func test_the_module_price_stacks_the_tech_discount_additively() -> void:
 		RegistryScript.apply_price(5200, RegistryScript.station(&"s3_primary"), CHAMPION, &"w_proton"),
 		4680, "the Choir's family is not discounted in Meridian space"
 	)
-	_dock(&"s5_primary", {"choir": CHAMPION})
-	var screen := _mount()
-	var armory := (screen.get(&"_panels") as Array)[StationScript.Module.OUTFITTING] as Node
-	assert_eq(
-		int(armory.call(&"_module_price", &"w_proton")), 3900,
-		"the armory's own row read is the station price"
-	)
-	assert_eq(
-		int(armory.call(&"_module_price", &"h_composite")), 5220,
-		"and a family the Choir does not own takes the band alone"
-	)
 
 
 ## F1 (S24-R1): the shell's refusal strip prices through the registry's one reader, so at a
 ## non-Neutral band its figure is the one the pane that triggered the refusal charged - the
-## armory's pack card and module row, the auction's hull row. With no place filed the
-## catalogue's own number is still the copy (the shipped station-less path).
+## armory's pack card and the shell's module figure, the auction's hull row. With no place
+## filed the catalogue's own number is still the copy (the shipped station-less path).
 func test_the_refusal_strip_prices_through_the_registry() -> void:
 	_dock(&"s2_primary", {"concord": SHUNNED})
 	var screen := _mount()
 	var station := RegistryScript.station(&"s2_primary")
-	var armory := (screen.get(&"_panels") as Array)[StationScript.Module.OUTFITTING] as Node
 	assert_eq(
 		CatalogScript.ammo_pack_price(&"laser", station, SHUNNED), 132, "+10 % Shunned over 120"
 	)
@@ -587,8 +576,8 @@ func test_the_refusal_strip_prices_through_the_registry() -> void:
 	)
 	assert_eq(
 		_refusal_cost(screen, &"h_composite"),
-		_digits_only(str(int(armory.call(&"_module_price", &"h_composite")))),
-		"a module's copy is the armory's own row figure, the tech step included"
+		_digits_only(str(int(screen.call(&"_entry_cost", &"h_composite")))),
+		"a module's copy is the shell's own station figure, the tech step included"
 	)
 	assert_eq(
 		_refusal_cost(screen, &"ship_fighter"),

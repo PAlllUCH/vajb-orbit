@@ -9,9 +9,9 @@ entry. addons/ is vendored and excluded. The JSON twin
 |---|---|
 | 1. Autoloads | L18–L27 |
 | 2. Scenes | L28–L160 |
-| 3. Signal wiring | L161–L446 |
-| 4. Scripts | L447–L784 |
-| 5. Orphan scripts | L785–L800 |
+| 3. Signal wiring | L161–L445 |
+| 4. Scripts | L446–L783 |
+| 5. Orphan scripts | L784–L799 |
 
 
 ## 1. Autoloads (project.godot)
@@ -311,13 +311,12 @@ Rows are `.connect()` calls, scene `[connection]` rows if any ever appear.
 | res://ui/screens/station.gd | entry.pressed → _on_drawer_pressed.bind(deck |
 | res://ui/screens/station.gd | logout.pressed → _on_drawer_logout |
 | res://ui/screens/station.gd | timer.timeout → handler |
-| res://ui/station/armory_panel.gd | _buy_fit_button.pressed → _on_buy_fit_pressed |
+| res://ui/station/armory_panel.gd | _buy_fit_button.pressed → _on_fit_pressed |
 | res://ui/station/armory_panel.gd | _mode_battery.pressed → set_mode.bind(MODE_BATTERY |
 | res://ui/station/armory_panel.gd | _mode_fit.pressed → set_mode.bind(MODE_FIT |
 | res://ui/station/armory_panel.gd | _rack_rows.sort_children → _lay_bays |
 | res://ui/station/armory_panel.gd | _remove_button.pressed → _on_remove_pressed |
 | res://ui/station/armory_panel.gd | box.sort_children → _position_bay.bind(row |
-| res://ui/station/armory_panel.gd | buy.pressed → _on_buy_pressed.bind(payload |
 | res://ui/station/armory_panel.gd | buy.pressed → _on_row_pressed.bind(payload |
 | res://ui/station/armory_panel.gd | card.focus_entered → _on_row_focused.bind(card |
 | res://ui/station/armory_panel.gd | card.mouse_entered → _on_row_hovered.bind(payload |

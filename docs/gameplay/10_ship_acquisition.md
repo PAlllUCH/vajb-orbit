@@ -20,14 +20,16 @@ and every tool result is re-sent on each later request.
 
 | Section | Topic | Lines |
 |---|---|---|
-| 1. | The two doors, one question | L35–L50 |
-| 2. | The Auction House | L51–L173 |
-| 3. | The Shipyard build path | L174–L222 |
-| 4. | Worked example (verify the coder's math against this) | L223–L234 |
-| 5. | Legacy upgrade retirement | L235–L253 |
-| 6. | Module inventory | L254–L284 |
-| 6. | 1 Amendment 2026-09-23 (playtest: hulls are auction-only, consumable… | L285–L301 |
-| 7. | Acquisition pacing (check against 01 §5.4) | L302–L336 |
+| 1. | The two doors, one question | L37–L52 |
+| 2. | The Auction House | L53–L187 |
+| 3. | The Shipyard build path | L188–L243 |
+| 4. | Worked example (verify the coder's math against this) | L244–L255 |
+| 5. | Legacy upgrade retirement | L256–L274 |
+| 6. | Module inventory | L275–L305 |
+| 6. | 1 Amendment 2026-09-23 (playtest: hulls are auction-only, consumable… | L306–L322 |
+| 6. | 2 Amendment 2026-10-16 (playtest: the armory sells common goods only) | L323–L346 |
+| 7. | Acquisition pacing (check against 01 §5.4) | L347–L381 |
+| 3. | 5 2026-10-12 — D24: the build view contract (owner request; wave D24… | L382–L403 |
 
 <!-- section-index:end -->
 
@@ -77,6 +79,18 @@ record shape — §2.3's buying rules are unchanged, and a buyer who just bought
 always finds something to mount. **Reversal:** drop the stock loop in
 `Auction._draw_listings` and the `auction_stock` row in `ModuleCatalog.SOURCE_ROLLS`;
 the shelf returns to 10 rolled listings.
+
+**Amendment 2026-10-16 (owner-ruled: the stock shelf's starter trio).** The stock
+ten's first three slots stop drawing: they always mint **one Mining Laser
+(`w_mining`), one Cannon MkI (`w_cannon`) and one Laser MkII (`w_laser`)** —
+minted through `SOURCE_AUCTION_STOCK`, so all three are always **Common** (the
+owner's "normal quality") and never affixed — and the remaining seven stock
+slots draw tier I uniformly as before. The shelf's size does not move (still
+6 hulls + 20 modules), the trio rides the same restock, discard and hot-slot
+law, and the rolled ten are untouched — the guarantee is the stock shelf's own
+job: a hull buyer always finds something to mount, and a fresh player is never
+stuck unarmed. **Reversal:** drop the reserved trio loop in
+`Auction._draw_listings`; the stock ten return to a uniform tier-I draw.
 
 ### 2.2 Hull availability weights
 
@@ -305,6 +319,30 @@ ammunition-only.
   ("etc." resolved later). **Reversal:** packs refill from the store as before.
 - **Fuel cells are delisted from every sale surface** (14 §1's free refuel is the
   reserve; existing stacks keep working on `R`). **Reversal:** the row returns.
+
+## 6.2 Amendment 2026-10-16 (playtest: the armory sells common goods only)
+
+**The owner's words, verbatim:** *"In armory i shouldnt be able to buy items that
+arent in auction, this should be common stock between them, i can only buy common
+goods like ammo, fuel cells etc."*
+
+- **The ARMORY sells no equipment.** The browser's BUYABLE rows retire — with a
+  cell selected it lists the owned candidates only (`OWNED`, select-to-fit and
+  drag-to-fit) — and with them the row `BUY` chip, the `BUY & FIT` cluster
+  label (the primary becomes a plain `FIT`, `FIT SELECTED` with a cell
+  selected, and fits a held entry dialog-free), `_module_price` and the
+  panel's whole module-buy machinery. The AUCTION is the one equipment door,
+  and §2.1's 2026-10-16 amendment guarantees it always stocks the three
+  starter weapons at Common quality.
+- **The armory's one purchase surface is the common stock: the AMMUNITION
+  category** — the `AMMO_PACKS` cards through `buy_ammo` (A6's ammo door
+  unchanged). Fuel cells stay delisted per §6.1 — the free refuel is the
+  reserve; the owner's "fuel cells" example reads as the common-goods class,
+  not a re-listing, and the row returns per §6.1's own reversal when the
+  owner ticks it.
+- **Reversal:** restore `_equip_rows`' BUYABLE loop, `_module_price`, the
+  cluster's confirm door and the `BUY & FIT` labels. (UI face:
+  `UI_SPEC.md` §20.3 A26; supersession rows: `STATION_HUB.md` §23.11.)
 
 ## 7. Acquisition pacing (check against 01 §5.4)
 

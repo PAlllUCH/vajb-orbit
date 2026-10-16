@@ -87,7 +87,15 @@ moveable window; `cargo_summary`'s window half retired with it). Gate
 law, A25):** every capacity figure reads the resolved snapshot through the
 profile's `cargo_capacity()` — the OVERVIEW's pair printed the base twice and
 the overlay title/launch row read the raw hull field; the flight already read
-it. Gate **1430/0 ×2**; CONTRACTS v0.67.
+it. Gate **1430/0 ×2**; CONTRACTS v0.67. **Same-day sixth instruction (the
+stock law, A26 + the starter trio):** the armory sells common goods only — the
+module BUYABLE rows, the row BUY chip, `BUY & FIT` (now plain `FIT`) and the
+whole module-buy machinery retired with their last caller; the auction is the
+one equipment door and its stock ten's first three slots always mint one Mining
+Laser, one Cannon MkI and one Laser MkII, Common and never affixed
+(`Auction.STOCK_TRIO`). Owning pins: 10 §6.2 + 10 §2.1's 2026-10-16 amendment,
+UI_SPEC §20.3 A26, STATION_HUB §23.11 row 22. Gate **1430/0 ×2**; CONTRACTS
+v0.68.
 
 **Updated 2026-10-15 (the owner's playtest pass — the ammunition rows, the
 armory's cargo preview and the launch manifest; one session).** The owner's

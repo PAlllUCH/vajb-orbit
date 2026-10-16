@@ -64,6 +64,12 @@ const HULL_SLOTS := 6
 const MODULE_SLOTS := 10
 const STOCK_SLOTS := 10
 
+## 10 section 2.1's 2026-10-16 amendment: the stock shelf's guaranteed starter trio,
+## in catalogue order. The first three stock slots always mint these bases through
+## `SOURCE_AUCTION_STOCK` (100 % Common, never affixed), so every shelf carries one
+## Mining Laser, one Cannon MkI and one Laser MkII at normal quality.
+const STOCK_TRIO: Array[StringName] = [&"w_mining", &"w_cannon", &"w_laser"]
+
 ## 10 section 2.2's availability weights, keyed by 08 section 2's asset ids and
 ## read against `StationCatalog.SHIPS`' own order (the 2026-09-22 correction:
 ## "the shelf keys off 08 section 2's asset ids ... the class name is the shelf's
@@ -405,9 +411,15 @@ static func _draw_listings(profile: Node, rng: RandomNumberGenerator) -> Diction
 		var base: StringName = _pick_base(pool, station, rng)
 		_mint(profile, base, ModuleData.SOURCE_AUCTION, listings)
 	## The stock ten stay 10 section 2.1's fixed tier-I rows: V6's bias is the **rolled**
-	## draw's, and these are the amendment's "always something to mount" slots.
+	## draw's, and these are the amendment's "always something to mount" slots. The
+	## 2026-10-16 amendment reserves the first three for the starter trio — one Mining
+	## Laser, one Cannon MkI, one Laser MkII, minted through `SOURCE_AUCTION_STOCK` so
+	## all three are always Common and never affixed — and the remaining seven draw
+	## tier I uniformly as before.
 	var stock_pool := sale_pool(1)
-	for _slot: int in range(STOCK_SLOTS):
+	for base_id: StringName in STOCK_TRIO:
+		_mint(profile, base_id, ModuleData.SOURCE_AUCTION_STOCK, listings)
+	for _slot: int in range(STOCK_SLOTS - STOCK_TRIO.size()):
 		if stock_pool.is_empty():
 			continue
 		var base: StringName = _pick_base(stock_pool, {}, rng)

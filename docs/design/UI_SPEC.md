@@ -38,7 +38,7 @@ and every tool result is re-sent on each later request.
 | 17. | The buy-confirmation law (amendment 2026-10-12, phase P4; wave D24 —… | L1905–L1922 |
 | 18. | The C-key Cargo overlay (amendment 2026-10-12, phase P4; wave D24 — … | L1923–L2012 |
 | 19. | The 2026-10-15 visual round — chrome, backing and the empty edges (a… | L2013–L2029 |
-| 20. | The 2026-10-15 playtest pass — the ammunition rows, the armory's car… | L2030–L2134 |
+| 20. | The 2026-10-15 playtest pass — the ammunition rows, the armory's car… | L2030–L2150 |
 
 <!-- section-index:end -->
 
@@ -2130,4 +2130,20 @@ own readout).
 | **A22.1** | the header's chips seat in a **2×2 grid** — TERMINAL top-left, INSPECT top-right, HOLD beneath TERMINAL (the owner's 2026-10-16 misalignment verdict on the stacked column) | A22's InspectColumn (the stacked shape) |
 | **A24** | the launch's embedded manifest retires with the armory's block — the owner's verdict: *"Launch still has CARGO, why?"* Every module reads the hold through the shell's HOLD chip or the C step, over the one moveable window; the launch's brief column keeps its briefing rows (the CARGO/AMMUNITION count lines stand) and the note, which is simply the column's last row. `cargo_summary`'s window half (`build_window`/`populate_window`/`apply_tab_states`/`filter_category` and the summary row builders) retires with its last caller — the shared home keeps the slots law, the icon ink law, the formatters, the title words and the strip constants the overlay reads | A21.2's launch seat and A20's manifest |
 | **A25** | every capacity figure on every surface reads the **resolved snapshot** (`ShipStats.cargo_max` — the hull row plus the fitted cargo expansions and the deep-hold affix) through the profile's own `cargo_capacity()`; the catalogue row's base is a fallback, never the figure. The owner's verdict: *"Cargo in Mainmenu doesnt show real capability. Right now i have 55 with cargo expansions and it says 40"* — the OVERVIEW's stat pair printed the base twice, and the overlay title and the launch row read the raw hull field. The armory's own `_hold_capacity` and the flight's `PlayerState` already read the resolved figure and stand as the reference | the raw `ship.get(&"cargo")` reads (the overview's stat pair, the launch's CARGO row, `Summary.cargo_capacity`'s catalogue read) |
-| **A24** | the launch's embedded manifest retires with the armory's block — the owner's verdict: *"Launch still has CARGO, why?"* Every module reads the hold through the shell's HOLD chip or the C step, over the one moveable window; the launch's brief column keeps its briefing rows (the CARGO/AMMUNITION count lines stand) and the note, which is simply the column's last row. `cargo_summary`'s window half (`build_window`/`populate_window`/`apply_tab_states`/`filter_category` and the summary row builders) retires with its last caller — the shared home keeps the slots law, the icon ink law, the formatters, the title words and the strip constants the overlay reads | A21.2's launch seat and A20's manifest |
+
+### 20.3 The armory sells common goods only (amendment 2026-10-16, the owner's playtest verdict)
+
+**The owner's words (2026-10-16, verbatim):** *"In armory i shouldnt be able to
+buy items that arent in auction, this should be common stock between them, i can
+only buy common goods like ammo, fuel cells etc."*
+
+**What changes.** The ARMORY's browser stops selling equipment: the BUYABLE rows
+retire, so the armory lists the profile's owned stock only and the AUCTION is
+the one equipment door. The armory's one purchase surface is the AMMUNITION
+category — the common goods the owner names (fuel cells themselves stay delisted
+per 10 §6.1; the free refuel is the reserve). The economy law is 10 §6.2; the
+auction's guaranteed starter trio is 10 §2.1's 2026-10-16 amendment.
+
+| Pin | Law | Reversal |
+|---|---|---|
+| **A26** | the armory's stock law, UI face: the browser lists **owned modules only** (browse rows `FIT`/`STORED`; with a cell selected the `OWNED` candidates, select-to-fit and drag-to-fit) — the `BUYABLE` tag, the row `BUY` chip, the `MODULES · OWNED & BUYABLE` caption (now `MODULES · OWNED`) and `_module_price` retire with the loop; the cluster primary reads **`FIT`** (`FIT SELECTED` with a cell selected) and fits a held entry dialog-free — the confirm door exists to guard a credit charge, and fitting is reversible (REMOVE). A4's door (2) (module buy) retires; A6's module worked example retires with it; the ammo door stands untouched | the BUYABLE loop, the confirm-door cluster (`BUY & FIT`), P14's label, P38's buyable-that-fits half |

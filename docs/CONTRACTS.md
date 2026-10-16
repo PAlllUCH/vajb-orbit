@@ -40,27 +40,27 @@ later request; one section costs ~2-3k.
 | §8 | Economy / state seams | L506–L549 |
 | §8.1 | Slice 0 — physics & fuel (pinned additions, 2026-09-21) | L550–L685 |
 | §8.2 | Slice 2 — fight (pinned additions, 2026-09-21) | L686–L890 |
-| §9 | Universal test gate | L891–L1112 |
-| §11 | P2 ship frames (2026-09-21) | L1113–L1308 |
-| §12 | P2-B1 weapon fit (2026-09-22) | L1309–L1366 |
-| §13 | P2-B proper fitting (2026-09-22) | L1367–L1488 |
-| §14 | S2.6 truth-and-feel (2026-09-22) | L1489–L1617 |
-| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1618–L1722 |
-| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L1723–L1898 |
-| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L1899–L1977 |
-| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L1978–L2050 |
-| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L2051–L2186 |
-| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2187–L2473 |
-| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2474–L2551 |
-| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L2552–L2606 |
-| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L2607–L2776 |
-| §24 | S24 world identity — stations, standing, bands, nebula (2026-10-08) | L2777–L2864 |
-| §25 | S28 economy law — the value ladder, the fee door, the battery, the b… | L2865–L2928 |
-| §26 | S25 contracts board — the registry, the reward law, the three exits … | L2929–L3001 |
-| §27 | S38 — the hub's cold start and the board's clock (2026-10-08) | L3002–L3076 |
-| §28 | S26 — bosses, arenas, insurance, vaults (2026-10-09/10) | L3077–L3233 |
-| §29 | S39 — flight feel, hostile fire and cargo (2026-10-10) | L3234–L3321 |
-| §10 | Changelog | L3322–L3800 |
+| §9 | Universal test gate | L891–L1237 |
+| §11 | P2 ship frames (2026-09-21) | L1238–L1433 |
+| §12 | P2-B1 weapon fit (2026-09-22) | L1434–L1491 |
+| §13 | P2-B proper fitting (2026-09-22) | L1492–L1613 |
+| §14 | S2.6 truth-and-feel (2026-09-22) | L1614–L1742 |
+| §15 | S3 item economy — instances and the AUCTION (2026-09-22) | L1743–L1847 |
+| §16 | S4 weapon batteries (2026-09-22, rewritten 2026-09-23 as v0.8.0) | L1848–L2023 |
+| §17 | S5 playtest fixes (2026-09-23) — commerce, consumables, batteries v2… | L2024–L2102 |
+| §18 | D6 cockpit instruments (2026-09-23) — cluster + ship status screen | L2103–L2175 |
+| §19 | S6 travel + RPG P3 (2026-09-24) — gates, corridors, POIs, scanner, h… | L2176–L2311 |
+| §20 | S7 affix application (2026-09-24) — the staged wave of 15 §9.3, slic… | L2312–L2598 |
+| §21 | S8 QA playtest fixes (2026-09-24) — the independent QA wave | L2599–L2676 |
+| §22 | Item 15 flight-feel numbers (2026-09-24 — PROPOSED, tick-gated) | L2677–L2731 |
+| §23 | Item 18 — station legibility, space gunnery, one-vector inertia (202… | L2732–L2901 |
+| §24 | S24 world identity — stations, standing, bands, nebula (2026-10-08) | L2902–L2989 |
+| §25 | S28 economy law — the value ladder, the fee door, the battery, the b… | L2990–L3053 |
+| §26 | S25 contracts board — the registry, the reward law, the three exits … | L3054–L3126 |
+| §27 | S38 — the hub's cold start and the board's clock (2026-10-08) | L3127–L3201 |
+| §28 | S26 — bosses, arenas, insurance, vaults (2026-10-09/10) | L3202–L3358 |
+| §29 | S39 — flight feel, hostile fire and cargo (2026-10-10) | L3359–L3446 |
+| §10 | Changelog | L3447–L4032 |
 
 <!-- section-index:end -->
 
@@ -1214,6 +1214,26 @@ the base twice), the launch's CARGO row, the overlay title's
 `Summary.cargo_capacity`, and the armory's `_hold_capacity` now delegates. The
 S50-B-style edge: the flight's `PlayerState` already read the snapshot and
 stands. STATION_HUB §23.11 row 21 carries the supersession.
+
+**The armory's common-goods stock law + the auction's starter trio
+(2026-10-16, the owner's playtest verdict, the same directed session):** the
+Expected line is **`[SUMMARY] passed=1430 failed=0`**, exit 0, twice hermetic
+through `staging/gate.py`, byte-identical, zero `SCRIPT ERROR` lines — **net 0**
+(the two module-buy door rows retire; the A26 stock row, the trio row and the
+re-cut owned-only rows replace them). 10 §6.2 pins the law (the owner's
+verbatim verdict): the ARMORY sells common goods only — the browser lists owned
+stock, and the `BUYABLE` tag, the row BUY chip, `MODULES · OWNED & BUYABLE`,
+`_module_price` and the whole module-buy machinery (the confirm door's module
+action, `_buy_into_cell`, the shortfall wording, the drag payload's
+owned/price keys) retire with their last caller; the AMMUNITION category is the
+one purchase surface and the AUCTION the one equipment door. UI_SPEC §20.3
+pins **A26** (the UI face: the cluster reads `FIT`/`FIT SELECTED` and fits
+dialog-free — A4's door (2) retires). 10 §2.1's 2026-10-16 amendment pins the
+**starter trio**: the stock ten's first three slots always mint one Mining
+Laser, one Cannon MkI and one Laser MkII through `SOURCE_AUCTION_STOCK`
+(100 % Common, never affixed), the remaining seven draw tier I uniformly, the
+shelf's size unmoved (`Auction.STOCK_TRIO`). STATION_HUB §23.11 row 22 carries
+the supersession.
 
 ## §11 P2 ship frames (2026-09-21)
 
@@ -3892,16 +3912,35 @@ bottom (the index-line form is only for retired entries).
   routes through the same check. **No pinned interface moved.**
   **Reversal:** run the raw §9 command by hand and grep its log for
   `SCRIPT ERROR` (the pre-2026-10-12 close-out ritual).
-- **v0.60 (2026-10-14, P4 code-lane close — the developer session's review
-  pass, not a wave; gate 1330 → 1422/0 across the eight waves, re-measured
-  1422/0 ×2 byte-identical)** — backfills the record the S42–S49 close-outs
-  owed but skipped: §9 gains the **S42–S49 chain block** (growth 1330 → 1422,
-  +92 rows, the eight suites named, the drift disclosure). No pinned interface
-  is added here: the P4 waves pinned their seams in the D24 design docs
-  (STATION_HUB §23, UI_SPEC §17/§18, AUDIO_SPEC §8.7, 04 §9, 07 §6, 10 §3.5)
-  per D24's design law, so CONTRACTS carries no new §-section for them.
-  **Reversal:** drop the §9 chain block and this entry (the waves' own record
-  stays in `MASTER_REPORT.md` §6 and the WAVEBOARD one-liners).
+- **v0.68 (2026-10-16, the armory's stock law + the auction's starter trio —
+  the owner's playtest verdict; gate held 1430/0 ×2 byte-identical, net 0)** —
+  10 §6.2 pins the stock law (the owner's verbatim verdict: *"In armory i
+  shouldnt be able to buy items that arent in auction, this should be common
+  stock between them, i can only buy common goods like ammo, fuel cells etc."*):
+  the ARMORY sells common goods only — the browser lists owned stock, and the
+  `BUYABLE` tag, the row BUY chip, `MODULES · OWNED & BUYABLE`, `_module_price`
+  and the whole module-buy machinery retire with their last caller; the
+  AMMUNITION category is the one purchase surface and the AUCTION the one
+  equipment door. UI_SPEC §20.3 pins **A26** (the cluster reads
+  `FIT`/`FIT SELECTED`, fits dialog-free; §17 A4's door (2) retires with A6's
+  module worked example). 10 §2.1's 2026-10-16 amendment pins the **starter
+  trio** (`Auction.STOCK_TRIO`): the stock ten's first three slots always mint
+  one Mining Laser, one Cannon MkI and one Laser MkII through
+  `SOURCE_AUCTION_STOCK` (100 % Common, never affixed), the remaining seven
+  draw tier I uniformly, the shelf's size unmoved. STATION_HUB §23.11 row 22
+  carries the supersession. Fuel cells stay delisted (10 §6.1; the free refuel
+  is the reserve — the row returns only on the owner's tick). **Reversal:**
+  restore `_equip_rows`' BUYABLE loop, `_module_price`, the cluster's confirm
+  door and the `BUY & FIT` labels; drop the reserved trio loop in
+  `Auction._draw_listings`.
+- **v0.67 (2026-10-16, the capacity law — the owner's fifth instruction; gate
+  1429 → 1430/0 ×2 byte-identical)** — UI_SPEC §20.2 pins **A25**: every
+  capacity figure reads the resolved snapshot (`ShipStats.cargo_max`) through
+  `PlayerProfile.cargo_capacity()`/`cargo_used()`; the raw `ship.get(&"cargo")`
+  reads retire (the OVERVIEW stat pair, the launch's CARGO row,
+  `Summary.cargo_capacity`'s catalogue read; the armory's `_hold_capacity`
+  delegates). **Reversal:** restore the three readers' catalogue reads and
+  drop the profile pair per the git history.
 - **v0.66 (2026-10-16, the header grid + the launch retirement — the owner's
   fourth instruction; gate 1430 → 1429/0 ×2 byte-identical)** — UI_SPEC
   **§20.2** pins **A22.1** (the header's chips seat in a 2×2 grid: TERMINAL
@@ -3912,14 +3951,6 @@ bottom (the index-line form is only for retired entries).
   caller). **Reversal:** restore A22's InspectColumn, A21.2's launch seat and
   the window half per the git history; drop §20.2's A22.1/A24 rows and the
   ledger row.
-- **v0.67 (2026-10-16, the capacity law — the owner's fifth instruction; gate
-  1429 → 1430/0 ×2 byte-identical)** — UI_SPEC §20.2 pins **A25**: every
-  capacity figure reads the resolved snapshot (`ShipStats.cargo_max`) through
-  `PlayerProfile.cargo_capacity()`/`cargo_used()`; the raw `ship.get(&"cargo")`
-  reads retire (the OVERVIEW stat pair, the launch's CARGO row,
-  `Summary.cargo_capacity`'s catalogue read; the armory's `_hold_capacity`
-  delegates). **Reversal:** restore the three readers' catalogue reads and
-  drop the profile pair per the git history.
 - **v0.65 (2026-10-16, the moveable-window round — the owner's third
   instruction; gate 1429 → 1430/0 ×2 byte-identical)** — UI_SPEC **§20.2**
   pins **A22** (the shell's global HOLD chip beneath INSPECT) and **A23**
@@ -3988,3 +4019,14 @@ bottom (the index-line form is only for retired entries).
   hint row and the suite pins it.
   **Reversal:** the A8 read-only bar restored (no DISPOSE anywhere) and the A9
   caption rows back, per §23.11 rows 11–12.
+
+- **v0.60 (2026-10-14, P4 code-lane close — the developer session's review
+  pass, not a wave; gate 1330 → 1422/0 across the eight waves, re-measured
+  1422/0 ×2 byte-identical)** — backfills the record the S42–S49 close-outs
+  owed but skipped: §9 gains the **S42–S49 chain block** (growth 1330 → 1422,
+  +92 rows, the eight suites named, the drift disclosure). No pinned interface
+  is added here: the P4 waves pinned their seams in the D24 design docs
+  (STATION_HUB §23, UI_SPEC §17/§18, AUDIO_SPEC §8.7, 04 §9, 07 §6, 10 §3.5)
+  per D24's design law, so CONTRACTS carries no new §-section for them.
+  **Reversal:** drop the §9 chain block and this entry (the waves' own record
+  stays in `MASTER_REPORT.md` §6 and the WAVEBOARD one-liners).

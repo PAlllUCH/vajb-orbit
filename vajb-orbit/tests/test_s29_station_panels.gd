@@ -191,15 +191,18 @@ func test_n45_the_browser_half_and_the_title_column() -> void:
 
 func test_the_hyperdrive_row_is_visible_at_tier_3() -> void:
 	var panel := _mount(ArmoryScene)
-	## P38: a buyable row appears when a cell of its family is selected.
+	## A26: an unowned row never lists, even with a cell of its family selected — the
+	## owned row is the browser's only grammar now (the AUCTION is the buy door).
 	assert_true(bool(panel.call(&"select_cell", &"engines", 0)), "an engine cell selects")
 	var ids: Array[StringName] = panel.call(&"module_row_ids")
-	assert_true(ids.has(HYPERDRIVE), "the list carries e_hyperdrive (R-S29-1's tier 3 row)")
+	assert_false(ids.has(HYPERDRIVE), "the unowned hyperdrive never lists (A26)")
+	_profile.call(&"add_module", HYPERDRIVE, 1)
+	panel.call(&"refresh_profile", &"modules")
 	var read := ""
 	for payload: Dictionary in panel.get(&"_browser_payloads"):
 		if payload[&"base"] == HYPERDRIVE:
 			read = String((payload[&"read"] as Label).text)
-	assert_eq(read, "12 000 CR", "a buyable row reads its own price")
+	assert_eq(read, "OWNED ×1", "an owned row reads its own held count")
 	panel.call(&"select_tab", &"drives")
 	assert_true(
 		(panel.call(&"module_row_ids") as Array).has(HYPERDRIVE),
@@ -220,8 +223,6 @@ func test_a_wrong_slot_drop_refuses_with_words_and_a_flash() -> void:
 		&"kind": ArmoryScript.DRAG_BROWSER,
 		ArmoryScript.DRAG_KEY_BASE: HYPERDRIVE,
 		ArmoryScript.DRAG_KEY_ENTRY: HYPERDRIVE,
-		ArmoryScript.DRAG_KEY_OWNED: false,
-		ArmoryScript.DRAG_KEY_PRICE: 12000,
 	}
 	assert_true(bool(panel.call(&"cell_can_drop", cell, data)), "a module payload reaches a cell")
 	panel.call(&"cell_drop", cell, data)
@@ -258,8 +259,10 @@ func test_a_fit_confirms_with_p11_and_the_meter_renames_the_candidate() -> void:
 	_free_host(panel)
 
 
-func test_the_buy_flow_checks_credits_first() -> void:
+func test_the_unowned_buy_never_reaches_the_panel() -> void:
 	var panel := _mount(ArmoryScene)
+	## A26: the buy flow retired — with an empty purse and an empty bag the pane offers
+	## no purchase at all; the shortfall wording and `_buy_into_cell` retired with it.
 	_profile.set(&"_credits", 10)
 	_profile.set(&"_modules", {})
 	panel.call(&"select_cell", &"engines", 0)
@@ -267,19 +270,9 @@ func test_the_buy_flow_checks_credits_first() -> void:
 	for entry: Dictionary in panel.get(&"_browser_payloads"):
 		if entry[&"base"] == HYPERDRIVE:
 			payload = entry
-	assert_true(not payload.is_empty(), "the hyperdrive row exists")
-	panel.call(&"_buy_into_cell", payload)
-	assert_eq(
-		_last_status(), "REFUSED · NOT ENOUGH CREDITS · 12 000 NEEDED",
-		"the shipped shortfall wording, before any purchase"
-	)
-	assert_eq(
-		int(_profile.call(&"module_count", HYPERDRIVE)), 0, "and nothing was bought"
-	)
-	_profile.set(&"_credits", 50000)
-	panel.call(&"_buy_into_cell", payload)
-	assert_eq(_last_status(), "FITTED · HYPERDRIVE", "one press buys-then-fits")
-	assert_eq(int(_profile.call(&"module_count", HYPERDRIVE)), 0, "the buy went straight into the cell")
+	assert_true(payload.is_empty(), "the hyperdrive row never lists unowned (A26)")
+	assert_false(panel.has_method(&"_buy_into_cell"), "and no buy-into-cell survives")
+	assert_eq(int(_profile.call(&"module_count", HYPERDRIVE)), 0, "nothing was bought")
 	_free_host(panel)
 
 
@@ -362,12 +355,12 @@ func test_the_cluster_is_the_p1_pair_with_the_primary_rightmost() -> void:
 	var remove := armory.get_node("%RemoveButton") as Button
 	var buy_fit := armory.get_node("%BuyFitButton") as Button
 	assert_eq(remove.custom_minimum_size, Vector2(360.0, 56.0), "REMOVE is the P1 secondary")
-	assert_eq(buy_fit.custom_minimum_size, Vector2(360.0, 56.0), "BUY & FIT the primary")
+	assert_eq(buy_fit.custom_minimum_size, Vector2(360.0, 56.0), "FIT the primary")
 	assert_true(buy_fit.get_index() > remove.get_index(), "and the primary sits rightmost")
-	assert_eq(String(buy_fit.text), "BUY & FIT", "P14's own label")
+	assert_eq(String(buy_fit.text), "FIT", "A26's own label (the buy half retired)")
 	armory.call(&"select_cell", &"weapons", 0)
 	assert_eq(
-		String(buy_fit.text), "BUY & FIT SELECTED", "P14 appends SELECTED when a cell is selected"
+		String(buy_fit.text), "FIT SELECTED", "A26 appends SELECTED when a cell is selected"
 	)
 	_free_host(armory)
 	_free_host(panel)

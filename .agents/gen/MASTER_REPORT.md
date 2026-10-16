@@ -2081,3 +2081,38 @@ reads the resolved law. Suite-caught slip: the slim-down dropped `format_int`
 `get_index_of_child` — both caught by the gate and cured. Close-out:
 `check_wiring.py` clean; `docs_index.py`; `build_code_map.py`; CONTRACTS
 **v0.67**; WAVEBOARD/TICKS amended in place. **The P4 exit pass continues.**
+
+**The armory's common-goods stock law + the auction's starter trio (the owner's
+sixth instruction, the same directed session, 2026-10-16 — gate held
+1430/0 ×2 byte-identical, zero SCRIPT ERROR, net 0 rows).** The owner's
+playtest verdict, verbatim: *"In armory i shouldnt be able to buy items that
+arent in auction, this should be common stock between them, i can only buy
+common goods like ammo, fuel cells etc."* **Docs first:** 10 §6.2 pins the
+stock law — the ARMORY sells common goods only, the AUCTION is the one
+equipment door; 10 §2.1's 2026-10-16 amendment pins the **starter trio** (the
+stock ten's first three slots always mint one Mining Laser, one Cannon MkI and
+one Laser MkII through `SOURCE_AUCTION_STOCK` — 100 % Common, never affixed —
+the remaining seven draw tier I uniformly, the shelf's size unmoved); UI_SPEC
+§20.3 pins **A26** (the UI face; §17 A4's door (2) retires with A6's module
+worked example); STATION_HUB §23.11 row 22 carries the supersessions. **Code:**
+`armory_panel.gd` — `_equip_rows`' BUYABLE loop retires (the cell-selected
+list is the owned candidates only), and with it `TAG_BUYABLE`, the row BUY
+chip, `BROWSER_CAPTION` ("MODULES · OWNED"), `_module_price`, `STATUS_SHORTFALL`,
+`ACTION_BUY_MODULE`, `_buy_into_cell`, `_run_module_buy`, `_on_buy_pressed`,
+the drag payload's owned/price keys and `_fit_entry_at`'s buy/price half; the
+cluster reads `FIT`/`FIT SELECTED` (A26) and fits a held entry dialog-free;
+`auction.gd` — `STOCK_TRIO` (`w_mining`, `w_cannon`, `w_laser`) reserved in
+`_draw_listings`' stock draw. Fuel cells stay delisted (10 §6.1's
+reversal owns the return; the owner's example reads as the common-goods
+class). **Tests:** s3 gains the trio row (three fresh shelves, each carries
+the trio Common and unaffixed); s43's two module-buy door rows retire, the f1
+row re-cuts to the dialog-free cluster fit and the A26 stock row lands; s32's
+owned-then-buyable row and its BUY rows re-cut to the owned-only law (the
+retired handlers asserted absent); s29's hyperdrive/buy/label rows re-cut;
+s24's module-price rows re-point to the registry's and the shell's own
+readers (`_module_price` died — the raw runner's SCRIPT ERROR trap caught the
+leftover call the wrapper's `[PASS]` print hid). Close-out: `docs_index.py`
+(10 §6.2's row; UI_SPEC §20.3); `build_code_map.py` (130 scenes / 335
+scripts); `contracts_index.py`; CONTRACTS **v0.68**; WAVEBOARD amended in
+place (TICKS needs nothing — no owner decision raised). **The P4 exit pass
+continues.**

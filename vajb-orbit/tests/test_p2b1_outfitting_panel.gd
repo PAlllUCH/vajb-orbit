@@ -531,9 +531,9 @@ func test_ammo_purchase_charges_the_catalogue_price_and_greys_when_short() -> vo
 ## this pane), so they are asserted present here and measured in their own tests.
 func test_the_module_rows_return_as_the_p4_inventory_browser() -> void:
 	## S5's retirement row MOVES (S29 P4 supersedes it): the merged ARMORY carries module
-	## rows again - P4's inventory browser over owned + buyable rows - plus the fit flow's
-	## own confirmation wording (P11 `FITTED · <MODULE>`). The battery racks and the wells
-	## band stay exactly as the retirement row pinned them.
+	## rows again - P4's inventory browser over owned rows (A26: the buyable half retired
+	## 2026-10-16) - plus the fit flow's own confirmation wording (P11 `FITTED · <MODULE>`).
+	## The battery racks and the wells band stay exactly as the retirement row pinned them.
 	var panel := _mount()
 	assert_true(
 		panel.get_node_or_null("%RackRows") != null, "the battery racks are drawn"
@@ -552,7 +552,7 @@ func test_the_module_rows_return_as_the_p4_inventory_browser() -> void:
 	assert_true(
 		panel.get_node_or_null("%BrowserBand") != null, "with its AUCTION-idiom band (P40)"
 	)
-	for constant: String in ["STATUS_FITTED", "ACTION_BUY_FIT"]:
+	for constant: String in ["STATUS_FITTED", "ACTION_FIT_CLUSTER"]:
 		assert_true(_has_member(PanelScript, constant), "the script carries %s" % constant)
 	for method: String in ["module_row_ids", "install_module", "remove_selected"]:
 		assert_true(_has_member(PanelScript, method), "the script carries %s()" % method)

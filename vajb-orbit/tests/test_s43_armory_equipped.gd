@@ -13,9 +13,9 @@ extends McpTestSuite
 ##   4. pressing a row selects that cell through the grid's own selection door
 ##      (`select_cell`), CELL INFO following - one selection, two views;
 ##   5. BATTERY CONFIG shows no list (the block rides FitCells);
-##   6. the browser's module BUY opens the confirm dialog (A6's wording, the catalogue
-##      row's own name and price) and the confirmed answer runs the existing buy path -
-##      which can still refuse;
+##   6. the module BUY is retired (A26, 2026-10-16): the armory lists owned stock only,
+##      an unowned module never lists and no row BUY chip exists — the AUCTION is the
+##      one equipment door;
 ##   7. the ammo pack buy opens the same dialog with the pack's own name and price and
 ##      the confirmed answer runs `buy_ammo` (the refusal strip still works).
 ##
@@ -146,63 +146,54 @@ func _settle() -> void:
 	_panel.call(&"_lay")
 
 
-## S43-R0/F1's cure row: the cluster's BUY & FIT and a BUYABLE row's select-to-fit are
-## acquisition doors too (A4's criterion) - the confirm opens, nothing charges before
-## the answer, and the confirmed answer buys-then-fits through the existing path.
-func test_f1_the_buy_fit_cluster_and_the_buyable_flow_are_doors() -> void:
+## A26's cluster row: the cluster reads `FIT` (`FIT SELECTED` with a cell selected) and
+## fits a held entry dialog-free — no confirm opens, no credits move; the confirm doors
+## guard credit charges and buying is the AUCTION's door. An unowned module never lists,
+## so there is no buyable row for the cluster to act on.
+func test_f1_the_cluster_fits_a_held_row_dialog_free() -> void:
 	_settle()
-	assert_true(bool(_panel.call(&"select_cell", &"engines", 0)), "the engine cell selects")
-	_confirms.clear()
-	## The cluster door: BUY & FIT on the focused buyable row.
+	assert_true(bool(_panel.call(&"select_cell", &"shields", 0)), "S1 selects")
+	_profile.call(&"add_module", ION, 1)
+	_panel.call(&"refresh_profile", &"modules")
 	var focus: Dictionary = {}
 	for entry: Dictionary in _panel.get(&"_browser_payloads"):
-		if StringName(entry[&"base"]) == ENGINE:
+		if StringName(entry[&"base"]) == ION:
 			focus = entry
 			break
-	assert_true(not focus.is_empty(), "the ion row is the cluster's focused buyable")
+	assert_true(not focus.is_empty(), "the owned ion row lists")
 	if focus.is_empty():
 		return
 	_panel.set(&"_browser_focused", focus)
 	var cluster := _panel.get_node_or_null(NodePath("%BuyFitButton")) as Button
-	assert_true(cluster != null, "the cluster's BUY & FIT button built")
+	assert_true(cluster != null, "the cluster's FIT button built")
 	if cluster == null:
 		return
+	_confirms.clear()
 	var before := int(_profile.call(&"credits"))
 	cluster.pressed.emit()
-	assert_eq(_confirms.size(), 1, "the cluster press opened exactly one confirm")
-	assert_eq(int(_profile.call(&"credits")), before, "and charged nothing before the answer")
-	if _confirms.is_empty():
-		return
-	_panel.call(&"confirm_action", PanelScript.ACTION_BUY_MODULE, ENGINE)
-	assert_true(int(_profile.call(&"credits")) < before, "the confirmed answer charged")
-	assert_eq(
-		String((_profile.call(&"fit_for", VANGUARD).get(&"engines", []) as Array)[0]),
-		"e_ion", "and fitted the selected cell through the existing path"
-	)
-	## The flow door: a buyable row's select-to-fit. Shields are not a mandatory slot, so
-	## the flow test fits there (engines cannot empty - `MANDATORY_SLOT_KEYS`): select S1,
-	## restore its stock module, and press the ion row (a cell selected, the flow buys).
-	assert_true(bool(_panel.call(&"select_cell", &"shields", 0)), "the shield cell selects")
-	assert_true(bool(_profile.call(&"clear_fit_slot", VANGUARD, &"shields", 0)), "S1 empties")
-	_profile.call(&"fit_module_at", VANGUARD, &"shields", 0, SHIELD)
-	_confirms.clear()
-	var row := _module_row_of(ION)
-	assert_true(row != null, "the ion row built")
-	if row == null:
-		return
-	row.pressed.emit()
-	assert_eq(_confirms.size(), 1, "the buyable row's flow opened exactly one confirm")
-	if _confirms.is_empty():
-		return
+	assert_eq(_confirms.size(), 0, "the fit is dialog-free (A26)")
+	assert_eq(int(_profile.call(&"credits")), before, "and no credits moved")
 	assert_eq(
 		String((_profile.call(&"fit_for", VANGUARD).get(&"shields", []) as Array)[0]),
-		"s_light", "and nothing moved before the answer"
+		"s_ion", "and the held entry fitted the selected cell"
 	)
-	_panel.call(&"confirm_action", PanelScript.ACTION_BUY_MODULE, ION)
-	assert_eq(
-		String((_profile.call(&"fit_for", VANGUARD).get(&"shields", []) as Array)[0]),
-		"s_ion", "and the confirmed flow fitted the cell"
-	)
+
+
+## A26's stock law row: an unowned module never lists on the selected cell and no row
+## carries a BUY chip — the armory sells common goods only (10 §6.2).
+func test_a26_an_unowned_module_never_lists_and_no_row_sells() -> void:
+	_settle()
+	assert_true(bool(_panel.call(&"select_cell", &"shields", 0)), "S1 selects")
+	_profile.call(&"add_module", SHIELD, 1)
+	_panel.call(&"refresh_profile", &"modules")
+	var rows := _panel.get_node("%BrowserRows") as VBoxContainer
+	assert_true(_module_row_of(ENGINE) == null, "the unowned ion row never lists")
+	assert_true(_module_row_of(ION) == null, "and no other unowned module rides along")
+	for child: Node in rows.get_children():
+		var buy := child.get_node_or_null(NodePath("RowInner/RowBox/Buy")) as Button
+		assert_true(buy == null, "no module row carries a BUY chip (A26)")
+		var read := child.get_node_or_null(NodePath("RowInner/RowBox/Read")) as Label
+		assert_true(read != null and read.text != "", "every listed row carries its owned/fitted read")
 
 
 func _on_confirm_requested(payload: Dictionary) -> void:
@@ -287,13 +278,6 @@ func _module_row_of(base: StringName) -> Control:
 		if child.name == "Module%s" % String(base).to_pascal_case():
 			return child as Control
 	return null
-
-
-func _buy_chip_of(base: StringName) -> Button:
-	var row := _module_row_of(base)
-	if row == null:
-		return null
-	return row.get_node_or_null(NodePath("RowInner/RowBox/Buy")) as Button
 
 
 func _ammo_card(pack_id: StringName) -> Control:
@@ -499,80 +483,10 @@ func test_p49_battery_config_shows_no_list() -> void:
 
 
 ## ---------------------------------------------------------------- A4-A6, items 6-7
-
-
-func test_a4_the_module_buy_door_opens_the_confirm() -> void:
-	_settle()
-	assert_true(bool(_panel.call(&"select_cell", &"engines", 0)), "the engine cell selects")
-	var buy := _buy_chip_of(ENGINE)
-	assert_true(buy != null, "the ion row carries its BUY chip")
-	if buy == null:
-		return
-	var before := int(_profile.call(&"credits"))
-	buy.pressed.emit()
-	assert_eq(_confirms.size(), 1, "the press opened exactly one confirm")
-	if _confirms.is_empty():
-		return
-	var payload := _confirms[0]
-	var row := _module_row_of(ENGINE)
-	var name_text := String(
-		(row.get_node(NodePath("RowInner/RowBox/TitleBox/Title")) as Label).text
-	)
-	var price_text := String(
-		(row.get_node(NodePath("RowInner/RowBox/Read")) as Label).text
-	).trim_suffix(" CR")
-	assert_eq(String(payload[&"title"]), PanelScript.BUY_CONFIRM_TITLE, "A6's title")
-	assert_eq(
-		String(payload[&"body"]),
-		"ARE YOU SURE YOU WANT TO BUY %s FOR %s CREDITS?" % [name_text, price_text],
-		"A6's wording with the catalogue row's own name and price (%s)" % price_text
-	)
-	assert_eq(String(payload[&"confirm_text"]), "OK", "the confirm word is OK (A5)")
-	assert_eq(String(payload[&"cancel_text"]), "CANCEL", "the cancel word is CANCEL (A5)")
-	assert_eq(
-		int(_profile.call(&"credits")), before,
-		"nothing is charged before the answer"
-	)
-	assert_eq(
-		String((_profile.call(&"fit_for", VANGUARD).get(&"engines", []) as Array)[0]),
-		"e_std", "and the cell still holds its module"
-	)
-	_panel.call(&"confirm_action", PanelScript.ACTION_BUY_MODULE, ENGINE)
-	assert_true(int(_profile.call(&"credits")) < before, "the confirmed answer charged")
-	assert_eq(
-		String((_profile.call(&"fit_for", VANGUARD).get(&"engines", []) as Array)[0]),
-		"e_ion", "and fitted the selected cell through the existing path"
-	)
-
-
-func test_a5_a_confirmed_module_press_can_still_refuse() -> void:
-	_settle()
-	_profile.set(&"_credits", 0)
-	_panel.call(&"refresh_profile", &"credits")
-	assert_true(bool(_panel.call(&"select_cell", &"engines", 0)), "the engine cell selects")
-	var buy := _buy_chip_of(ENGINE)
-	assert_true(buy != null, "the unaffordable row still offers its BUY chip")
-	if buy == null:
-		return
-	buy.pressed.emit()
-	assert_eq(_confirms.size(), 1, "the door opens whatever the purse says")
-	if _confirms.is_empty():
-		return
-	var statuses_before := _statuses.size()
-	_panel.call(&"confirm_action", PanelScript.ACTION_BUY_MODULE, ENGINE)
-	assert_true(_statuses.size() > statuses_before, "the refusal reached the strip")
-	var price_text := String(
-		(_module_row_of(ENGINE).get_node(NodePath("RowInner/RowBox/Read")) as Label).text
-	).trim_suffix(" CR")
-	assert_eq(
-		String(_statuses.back()[0]),
-		PanelScript.STATUS_SHORTFALL % price_text,
-		"the strip carries section 5.6's own refusal wording"
-	)
-	assert_eq(
-		String((_profile.call(&"fit_for", VANGUARD).get(&"engines", []) as Array)[0]),
-		"e_std", "and the cell keeps its module"
-	)
+##
+## A26 (2026-10-16): the module BUY door retired — the AUCTION is the one equipment
+## door, so the panel's confirm doors are the ammo purchase alone (the suite's ammo
+## rows below carry A4-A6's wording and refusal law). `_buy_chip_of` retired with them.
 
 
 func test_a4_the_ammo_door_opens_the_confirm() -> void:

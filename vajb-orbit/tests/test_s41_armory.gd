@@ -296,7 +296,7 @@ func test_f14_the_action_pair_rides_the_pane_foot_band_on_both_modes() -> void:
 	)
 	assert_true(foot.is_ancestor_of(remove), "the cluster's home is the pane's foot band")
 	assert_eq(remove.custom_minimum_size, ACTION_P1, "REMOVE is P1's 360x56 secondary")
-	assert_eq(buy_fit.custom_minimum_size, ACTION_P1, "BUY & FIT the 360x56 primary")
+	assert_eq(buy_fit.custom_minimum_size, ACTION_P1, "FIT the 360x56 primary (A26)")
 	assert_true(
 		buy_fit.get_index() > remove.get_index(), "P2: the primary sits rightmost"
 	)

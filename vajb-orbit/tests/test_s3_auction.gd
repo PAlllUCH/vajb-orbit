@@ -325,6 +325,37 @@ func test_the_rotation_draws_six_hulls_and_ten_listings() -> void:
 	assert_eq(int(shelf[&"last_band"]), 0, "a fresh shelf carries no stamp of its own")
 
 
+## 10 section 2.1's 2026-10-16 amendment: every shelf always carries the starter trio —
+## one Mining Laser, one Cannon MkI, one Laser MkII — minted through `SOURCE_AUCTION_STOCK`,
+## so each is Common ("normal quality") and never affixed. Measured over fresh shelves so
+## "always" is the draw's own property, not one seed's luck.
+func test_the_stock_shelf_always_carries_the_starter_trio() -> void:
+	for shelf_index in range(3):
+		var profile := _fresh()
+		var shelf: Dictionary = _draw_shelf(profile)
+		var listings: Dictionary = shelf[&"modules"]
+		for base_id: StringName in AuctionScript.STOCK_TRIO:
+			var found := false
+			for key: Variant in listings:
+				var record: Dictionary = listings[key]
+				if StringName(record[&"base_id"]) != base_id:
+					continue
+				var prefixes: Array = record.get("prefixes", [])
+				var suffixes: Array = record.get("suffixes", [])
+				if not prefixes.is_empty() or not suffixes.is_empty():
+					continue
+				assert_eq(
+					String(record.get("rarity", "")), "common",
+					"%s's stock row is normal quality" % base_id
+				)
+				found = true
+				break
+			assert_true(
+				found,
+				"shelf %d carries its guaranteed %s" % [shelf_index, base_id]
+			)
+
+
 ## 10 section 2.2's chance column, measured over `HULL_DRAWS` seeded shelves: the two
 ## starter hulls always, the ladder ordered exactly as the pin orders it, and every class
 ## present. The shelf is exactly six every time, which is the reconciliation's own law.

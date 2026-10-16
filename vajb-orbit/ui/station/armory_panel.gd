@@ -61,7 +61,7 @@ const Catalog := preload("res://game/station_catalog.gd")
 const ProfileScript := preload("res://autoload/player_profile.gd")
 const ModuleData := preload("res://game/module_catalog.gd")
 ## 12's 2026-10-08 V1/V2 block: the one owner of the station's price factor, read by
-## `_module_price` and the pack cards' `Catalog.ammo_pack_price`.
+## the pack cards' `Catalog.ammo_pack_price`.
 const StationRegistryScript := preload("res://game/station_registry.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
@@ -185,20 +185,18 @@ const BUY_CONFIRM_BODY := "ARE YOU SURE YOU WANT TO BUY %s FOR %s CREDITS?"
 const BUY_CONFIRM_OK := "OK"
 const BUY_CONFIRM_CANCEL := "CANCEL"
 const AMMO_CONFIRM_NAME := "%s (%d ROUNDS)"
-const ACTION_BUY_MODULE: StringName = &"buy_module"
 const ACTION_BUY_AMMO: StringName = &"buy_ammo"
 
 ## ----------------------------------------- the one equipment list (P38, its two states)
 ## The right sector of FIT CELLS is ONE list in two states. With no cell selected it browses
 ## everything the profile owns (rows tagged `FIT` when the active hull carries a cell of the
-## module's family, `STORED` otherwise). With a cell selected it lists every possibility for
-## that cell - the owned candidates first (`OWNED`, select-to-fit and drag-to-fit) then the
-## catalogue's buyable ones (`BUYABLE`, BUY + INSPECT) - each row carrying the legality line
-## the CELL INFO block speaks (the refusal strings above, wired proactively).
+## module's family, `STORED` otherwise). With a cell selected it lists the owned candidates
+## for that cell (`OWNED`, select-to-fit and drag-to-fit), each row carrying the legality
+## line the CELL INFO block speaks (the refusal strings above, wired proactively). A26
+## (2026-10-16): the buyable half retires — the armory sells no equipment (10 §6.2).
 const TAG_FIT := "FIT"
 const TAG_STORED := "STORED"
 const TAG_OWNED := "OWNED"
-const TAG_BUYABLE := "BUYABLE"
 const LIST_CAPTION_BROWSE := "OWNED EQUIPMENT - %d"
 const LIST_CAPTION_CELL := "FITS %s%d - %d"
 const LIST_EMPTY_BROWSE := "NOTHING OWNED TO SHOW"
@@ -321,7 +319,8 @@ const PULSE_UP_SECONDS := 0.16
 ## module row and fits no cell; D18-A1's judgment, reversal: ship the tab disabled) over
 ## owned + buyable module rows in the auction row idiom. P39a (S35): the SAME strip is the
 ## one category set both modes render, with `AMMUNITION` (the P39 EQ container's own
-## category) leading.
+## category) leading. A26: the browser's module rows are the profile's owned stock —
+## the `& BUYABLE` half of P8's caption retires with the buy rows (10 §6.2).
 const TAB_ALL: StringName = &"all"
 const MENU_TABS: Array[Dictionary] = [
 	{&"id": &"ammo", &"label": "AMMUNITION", &"slot": &""},
@@ -337,7 +336,7 @@ const MENU_TABS: Array[Dictionary] = [
 ]
 const TAB_MIN_SIZE := Vector2(0.0, 32.0)
 ## P8 (section 17.5): the browser caption. Reversal: `OWNED MODULES` (the fitting label).
-const BROWSER_CAPTION := "MODULES · OWNED & BUYABLE"
+const BROWSER_CAPTION := "MODULES · OWNED"
 const BROWSER_META_FORMAT := "SLOT %s · DRAW %d"
 const BROWSER_ROW_HEIGHT := 76.0
 const BROWSER_ICON := 24.0
@@ -390,14 +389,13 @@ const READ_FITTED := "FITTED"
 const REFUSAL_DROP := "DROP REFUSED — %s FITS NO %s CELL"
 const SLOT_FLASH_SECONDS := 0.5
 const STATUS_FITTED := "FITTED · %s"
-const STATUS_SHORTFALL := "REFUSED · NOT ENOUGH CREDITS · %s NEEDED"
 const ACTION_REMOVE := "REMOVE"
-const ACTION_BUY_FIT := "BUY & FIT"
-const ACTION_BUY_FIT_SELECTED := "BUY & FIT SELECTED"
+## A26 (2026-10-16): the cluster fits a held entry — buying is the AUCTION's door,
+## so P14's `BUY & FIT` reads plain `FIT` (`SELECTED` appended when a cell is selected).
+const ACTION_FIT_CLUSTER := "FIT"
+const ACTION_FIT_CLUSTER_SELECTED := "FIT SELECTED"
 const DRAG_BROWSER: StringName = &"browser"
 const DRAG_KEY_ENTRY: StringName = &"entry"
-const DRAG_KEY_OWNED: StringName = &"owned"
-const DRAG_KEY_PRICE: StringName = &"price"
 
 ## Audit anomaly C16: these three catalogue icons are flat Phase B glyphs (mean RGB about
 ## 40, 44, 47) that read as near-black shapes on the row chrome, so the row draws the
@@ -985,7 +983,7 @@ var _grid_hull: StringName = &""
 var _line_override := ""
 var _line_danger := false
 ## The browser: one payload per built row, the tab in force and the focused row (the one
-## the cluster's `BUY & FIT` acts on).
+## the cluster's `FIT` acts on).
 var _browser_payloads: Array[Dictionary] = []
 var _browser_tab: StringName = &"all"
 var _browser_focused: Dictionary = {}
@@ -2060,8 +2058,8 @@ func _row_title(payload: Dictionary) -> String:
 
 
 ## CONTRACTS section 23.1: the inspector's additive hover surface. The row's own
-## identity line is the title, the catalogue description is the body, and a row that is
-## not buyable wears the danger colour. A leave clears both by handing the shell
+## identity line is the title, the catalogue description is the body, and an
+## incomplete hold wears the danger colour. A leave clears both by handing the shell
 ## `title == ""`.
 func _inspect_row(payload: Dictionary, shown: bool) -> void:
 	if not shown:
@@ -2714,13 +2712,13 @@ func _list_empty_text() -> String:
 
 
 ## Select-to-fit (P38): an `OWNED` row's press fits the held instance into the selected cell
-## (the same composed flow the buyable row uses). With no cell selected the press is inert -
+## (the same composed flow the browser row uses). With no cell selected the press is inert -
 ## the browse state is a browse surface, not a fit flow.
 func _on_equip_pressed(base_id: StringName) -> void:
 	AudioManager.play_ui(AudioManager.UiCue.CLICK)
 	if _mode != MODE_FIT or _selected.is_empty():
 		return
-	_flow_row_into_cell({&"base": base_id, &"owned": true, &"price": 0})
+	_flow_row_into_cell({&"base": base_id})
 
 
 ## S32's own row-press door, kept as the one alias the older suites drive.
@@ -3316,18 +3314,10 @@ func _station_standing() -> int:
 
 
 ## V1+V2 (12's 2026-10-08 block): one module's list price at this station - the catalogue's
-## own `cost` through the registry's one factor, so the band and the station faction's -15 %
-## tech step (added to the band, never multiplied) are live on the row, the `BUY & FIT`
-## chip and the charge alike: `_buy` hands this same figure to `PlayerProfile.buy_module`.
-func _module_price(base_id: StringName) -> int:
-	return StationRegistryScript.apply_price(
-		int(ModuleData.module(base_id).get(&"cost", 0)),
-		_docked_station(),
-		_station_standing(),
-		base_id,
-	)
-
-
+## own `cost` through the registry's one factor. A26 (2026-10-16): the armory's module rows
+## carry no price any more (the AUCTION is the one equipment door), so the armory's own read
+## of this factor retires with its loop; the station's pack cards price through
+## `Catalog.ammo_pack_price`, which wraps the same reader.
 func _pulse(node: CanvasItem) -> void:
 	if node == null:
 		return
@@ -3377,7 +3367,7 @@ func _build_grid_surface() -> void:
 func _wire_actions() -> void:
 	_remove_button.text = ACTION_REMOVE
 	_remove_button.pressed.connect(_on_remove_pressed)
-	_buy_fit_button.pressed.connect(_on_buy_fit_pressed)
+	_buy_fit_button.pressed.connect(_on_fit_pressed)
 
 
 ## ------------------------------------------------- the INSPECT sheet (N28/N37, S30)
@@ -3700,7 +3690,7 @@ func _refresh_footer() -> void:
 		_meter.remove_theme_color_override(&"font_color")
 	_remove_button.disabled = not can_remove()
 	_buy_fit_button.text = (
-		ACTION_BUY_FIT_SELECTED if not _selected.is_empty() else ACTION_BUY_FIT
+		ACTION_FIT_CLUSTER_SELECTED if not _selected.is_empty() else ACTION_FIT_CLUSTER
 	)
 	_buy_fit_button.disabled = _browser_focused.is_empty()
 
@@ -3843,9 +3833,7 @@ func install_module(module_id: StringName) -> bool:
 	if profile == null or cell.is_empty():
 		_notice(ACTION_SELECT, false)
 		return false
-	return _fit_entry_at(
-		module_id, StringName(cell[&"type"]), int(cell[&"index"]), false, 0
-	)
+	return _fit_entry_at(module_id, StringName(cell[&"type"]), int(cell[&"index"]))
 
 
 ## The cell one entry's row acts on: the selected cell when it is of the entry's own
@@ -3873,53 +3861,41 @@ func module_action(module_id: StringName) -> StringName:
 	return ACTION_SWAP if occupant != &"" else ACTION_FIT
 
 
-## The buy-into-cell one flow (P4): one press, credits checked first. An owned entry fits
-## at once; an unowned row buys-then-fits (`PlayerProfile.buy_module` then the same
-## composed install). A shortfall refuses through the shell's status line with the shipped
-## wording; a legal fit confirms with P11's `FITTED · <MODULE>`.
-func _fit_entry_at(
-	entry: StringName, slot_key: StringName, index: int, buy: bool, price: int
-) -> bool:
+## The fit-into-cell one flow (P4): one press, legality checked first. A legal fit
+## confirms with P11's `FITTED · <MODULE>`; a refusal goes through the shell's status line.
+## A26 (2026-10-16): every listed entry is held — the AUCTION is the one equipment door —
+## so the buy half of P4's flow retires with the BUYABLE rows.
+func _fit_entry_at(entry: StringName, slot_key: StringName, index: int) -> bool:
 	var profile := _profile()
 	if profile == null:
 		return false
 	var hull := _active_hull(profile)
-	var base := _base_id(profile, entry)
 	var candidate := _with_cell(_resolved_fit(profile, hull), slot_key, index, entry)
 	var legal := ShipFit.fit_legal(hull, _base_fit(profile, candidate))
 	if not bool(legal[&"legal"]):
 		return _refuse(_fit_refusal(legal))
-	if buy:
-		if int(profile.call(&"credits")) < price:
-			return _refuse(STATUS_SHORTFALL % _format_int(price))
-		if not bool(profile.call(&"buy_module", base, price)):
-			return false
 	if not bool(profile.call(&"fit_module_at", hull, slot_key, index, entry)):
 		return _refuse(REFUSAL_FIT_ILLEGAL)
 	_clear_notice()
 	AudioManager.play_ui(AudioManager.UiCue.CONFIRM)
-	status_requested.emit(STATUS_FITTED % _module_name(base), false)
+	status_requested.emit(STATUS_FITTED % _module_name(_base_id(profile, entry)), false)
 	return true
 
 
-## The row's own fit-into-cell flow: an owned row fits its held entry, a buyable row
-## buys-then-fits (P4's one flow). The target is the selected cell (a selected cell of
-## another family refuses with P9's line and P10's flash) or the next free legal cell.
+## The row's own fit-into-cell flow: every listed row is held, so the flow fits it. The
+## target is the selected cell (a selected cell of another family refuses with P9's line
+## and P10's flash) or the next free legal cell.
 func _flow_row_into_cell(payload: Dictionary) -> bool:
 	var profile := _profile()
 	if profile == null:
 		return false
 	var base: StringName = payload.get(&"base", &"")
 	var slot_key := _slot_key_of(base)
-	var owned := bool(payload.get(&"owned", false))
-	var entry: StringName = _row_entry(profile, base) if owned else base
+	var entry: StringName = _row_entry(profile, base)
 	var target := _flow_target(slot_key, base, payload)
 	if target.is_empty():
 		return false
-	return _fit_entry_at(
-		entry, StringName(target[&"type"]), int(target[&"index"]), not owned,
-		int(payload.get(&"price", 0))
-	)
+	return _fit_entry_at(entry, StringName(target[&"type"]), int(target[&"index"]))
 
 
 ## The target cell of a flow: the selected cell when it is of the module's own family
@@ -3958,39 +3934,19 @@ func _selected_cell_payload() -> Dictionary:
 	return {}
 
 
-## The row-corner BUY and the cluster's `BUY & FIT` (P4/P14): always buys-then-fits into
-## the selected cell or the next free legal cell, credits checked first.
-func _buy_into_cell(payload: Dictionary) -> bool:
-	if payload.is_empty():
-		return false
-	var base: StringName = payload.get(&"base", &"")
-	var slot_key := _slot_key_of(base)
-	var target := _flow_target(slot_key, base, payload)
-	if target.is_empty():
-		return false
-	return _fit_entry_at(
-		base, StringName(target[&"type"]), int(target[&"index"]), true,
-		int(payload.get(&"price", 0))
-	)
-
-
 func _on_remove_pressed() -> void:
 	AudioManager.play_ui(AudioManager.UiCue.CLICK)
 	remove_selected()
 
 
-func _on_buy_fit_pressed() -> void:
+## The cluster's primary (P14, A26): fits the focused owned row — into the selected cell
+## or the next free legal cell, dialog-free (fitting is reversible; the confirm doors guard
+## credit charges, and buying is the AUCTION's door).
+func _on_fit_pressed() -> void:
 	AudioManager.play_ui(AudioManager.UiCue.CLICK)
-	## UI_SPEC section 17 A4/A5 (S43-R0/F1's cure): the cluster always buys, so the press
-	## is a door - the confirm opens and the confirmed answer runs the same buy-then-fit.
 	if _browser_focused.is_empty():
 		return
-	_request_buy_confirm(
-		String(_browser_focused.get(&"name", "")),
-		int(_browser_focused.get(&"price", 0)),
-		ACTION_BUY_MODULE,
-		StringName(_browser_focused.get(&"base", &""))
-	)
+	_flow_row_into_cell(_browser_focused)
 
 
 ## ------------------------------------------- the buy-confirmation doors (UI_SPEC 17)
@@ -4013,21 +3969,11 @@ func _request_buy_confirm(
 
 
 ## The shell's answer to `confirm_requested` (the S25 seam's own contract): the one
-## action pair this panel asks about. The confirmed press runs the transaction exactly
+## action this panel asks about. The confirmed press runs the transaction exactly
 ## as it always ran, so it can still refuse (section 5.6's strip wording, never a dialog).
 func confirm_action(action: StringName, id: StringName) -> void:
-	if action == ACTION_BUY_MODULE:
-		_run_module_buy(id)
-	elif action == ACTION_BUY_AMMO:
+	if action == ACTION_BUY_AMMO:
 		_run_ammo_buy(id)
-
-
-## The confirmed module buy: the row payload the press quoted, resolved by its base id.
-func _run_module_buy(id: StringName) -> void:
-	for payload: Dictionary in _browser_payloads:
-		if StringName(payload[&"base"]) == id:
-			_buy_into_cell(payload)
-			return
 
 
 ## The confirmed ammo purchase: the card payload the press quoted, resolved by pack id.
@@ -4090,8 +4036,6 @@ func drag_browser(payload: Dictionary) -> Dictionary:
 		&"kind": DRAG_BROWSER,
 		DRAG_KEY_BASE: base,
 		DRAG_KEY_ENTRY: _row_entry(profile, base),
-		DRAG_KEY_OWNED: bool(payload.get(&"owned", false)),
-		DRAG_KEY_PRICE: int(payload.get(&"price", 0)),
 	}
 
 
@@ -4121,11 +4065,7 @@ func cell_drop(cell: Dictionary, data: Variant) -> void:
 		if _slot_key_of(base) != slot_key:
 			_refuse_drop(base, slot_key, cell)
 			return
-		_fit_entry_at(
-			browser.get(DRAG_KEY_ENTRY, base), slot_key, index,
-			not bool(browser.get(DRAG_KEY_OWNED, false)),
-			int(browser.get(DRAG_KEY_PRICE, 0))
-		)
+		_fit_entry_at(browser.get(DRAG_KEY_ENTRY, base), slot_key, index)
 		return
 	var inv := _payload_of(data)
 	if String(inv.get(DRAG_KEY_KIND, "")) != String(DRAG_INVENTORY):
@@ -4134,7 +4074,7 @@ func cell_drop(cell: Dictionary, data: Variant) -> void:
 	if _slot_key_of(base_id) != slot_key:
 		_refuse_drop(base_id, slot_key, cell)
 		return
-	_fit_entry_at(_row_entry(_profile(), base_id), slot_key, index, false, 0)
+	_fit_entry_at(_row_entry(_profile(), base_id), slot_key, index)
 
 
 ## The wrong-slot refusal: P9's line in the shell's status strip and P10's 0.5 s slot
@@ -4256,10 +4196,10 @@ func _on_tab_pressed(tab_id: StringName) -> void:
 ## browses everything the profile owns (the tab's family) - the bag's units UNION the active
 ## hull's fitted bases, so a base owned only as a fitted instance still lists - tagged `FIT`
 ## when the hull carries a cell of that family and `STORED` otherwise. With a cell selected
-## (FIT CELLS only - BATTERY CONFIG has no socket filter) it lists every possibility for that
-## cell - the owned candidates first (`OWNED`, select-to-fit and drag-to-fit) then the
-## catalogue's buyable ones (`BUYABLE`, BUY + INSPECT) - each row carrying the legality line
-## the CELL INFO block speaks.
+## (FIT CELLS only - BATTERY CONFIG has no socket filter) it lists the owned candidates for
+## that cell (`OWNED`, select-to-fit and drag-to-fit), each row carrying the legality line
+## the CELL INFO block speaks. A26 (2026-10-16): the armory sells no equipment — the
+## BUYABLE half (P38's buyable-that-fits) retires; the AUCTION is the one equipment door.
 func _equip_rows(profile: ProfileScript) -> Array[Dictionary]:
 	var rows: Array[Dictionary] = []
 	if profile == null:
@@ -4282,10 +4222,10 @@ func _equip_rows(profile: ProfileScript) -> Array[Dictionary]:
 			if owned <= 0 and not is_fitted:
 				continue
 			var tag: String = TAG_FIT if is_fitted else TAG_STORED
-			rows.append(_equip_entry(module_id, tag, owned, 0, ""))
+			rows.append(_equip_entry(module_id, tag, owned, ""))
 		if wanted == &"":
 			for entry: StringName in _lost_entries(profile):
-				rows.append(_equip_entry(entry, TAG_STORED, 0, 0, ""))
+				rows.append(_equip_entry(entry, TAG_STORED, 0, ""))
 		return rows
 	var slot_key: StringName = _selected[&"type"]
 	var index := int(_selected[&"index"])
@@ -4297,33 +4237,19 @@ func _equip_rows(profile: ProfileScript) -> Array[Dictionary]:
 		if not _cell_refusal(profile, hull, index, module_id).is_empty():
 			continue
 		rows.append(_equip_entry(
-			module_id, TAG_OWNED, _owned_total(profile, module_id), 0,
-			_row_legality(profile, hull, index, module_id)
-		))
-	for module_id: StringName in ModuleData.MODULES:
-		if _slot_key_of(module_id) != slot_key:
-			continue
-		if _owned_total(profile, module_id) > 0:
-			continue
-		if not _cell_refusal(profile, hull, index, module_id).is_empty():
-			continue
-		rows.append(_equip_entry(
-			module_id, TAG_BUYABLE, 0, _module_price(module_id),
+			module_id, TAG_OWNED, _owned_total(profile, module_id),
 			_row_legality(profile, hull, index, module_id)
 		))
 	return rows
 
 
 ## One list row's shape, the one place the two states agree.
-func _equip_entry(
-	base_id: StringName, tag: String, owned: int, price: int, legal: String
-) -> Dictionary:
+func _equip_entry(base_id: StringName, tag: String, owned: int, legal: String) -> Dictionary:
 	return {
 		&"base": base_id,
 		&"name": _module_name(base_id),
 		&"tag": tag,
 		&"owned": owned,
-		&"price": price,
 		&"legal": legal,
 		&"slot": ModuleData.slot_of(base_id),
 		&"draw": int(ModuleData.module(base_id).get(&"draw", 0)),
@@ -4467,8 +4393,7 @@ func _apply_tab_states() -> void:
 
 ## One list row (the auction row idiom: 76 tall, `RowInner` 12/8): the module's icon, its
 ## name and `SLOT <TYPE> · DRAW <n>` meta, its proactive legality line, its state tag
-## (`FIT`/`STORED`/`OWNED`/`BUYABLE`), its `OWNED ×n` / price read and - on a `BUYABLE` row -
-## the row-corner BUY chip (P1's `ActionInline` 96x32). Every row is a drag source.
+## (`FIT`/`STORED`/`OWNED`) and its `OWNED ×n` / `FITTED` read. Every row is a drag source.
 func _build_browser_row(entry: Dictionary, _profile_unused: ProfileScript) -> Dictionary:
 	var base_id: StringName = entry[&"base"]
 	var module_row := ModuleData.module(base_id)
@@ -4506,7 +4431,7 @@ func _build_browser_row(entry: Dictionary, _profile_unused: ProfileScript) -> Di
 	title_box.name = "TitleBox"
 	title_box.add_theme_constant_override(&"separation", 2)
 	## N45: a fixed 160 px ellipsis column - long catalogue names trim instead of pushing the
-	## BUY / INSPECT chips past the window.
+	## row's trailing chrome past the window.
 	title_box.custom_minimum_size = Vector2(BROWSER_TITLE_COLUMN, 0.0)
 	title_box.size_flags_horizontal = Control.SIZE_FILL
 	title_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
@@ -4543,21 +4468,11 @@ func _build_browser_row(entry: Dictionary, _profile_unused: ProfileScript) -> Di
 	read.custom_minimum_size = Vector2(COL_OWNED, 0.0)
 	read.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	box.add_child(read)
-	var buy: Button = null
-	if tag_text == TAG_BUYABLE:
-		buy = Button.new()
-		buy.name = "Buy"
-		buy.custom_minimum_size = ACTION_INLINE
-		buy.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		buy.focus_mode = Control.FOCUS_ALL
-		buy.text = BUY_CHIP
-		box.add_child(buy)
 	var payload := {
 		&"base": base_id,
 		&"name": name_text,
 		&"slot": StringName(module_row.get(&"slot", &"")),
 		&"draw": int(module_row.get(&"draw", 0)),
-		&"price": int(entry[&"price"]),
 		&"tag": tag_text,
 		&"legal": String(entry[&"legal"]),
 		&"owned": int(entry[&"owned"]) > 0,
@@ -4565,7 +4480,6 @@ func _build_browser_row(entry: Dictionary, _profile_unused: ProfileScript) -> Di
 		&"read": read,
 		&"tag_label": tag,
 		&"legal_label": legal,
-		&"buy": buy,
 		&"icon": icon,
 	}
 	row.payload = payload
@@ -4573,8 +4487,6 @@ func _build_browser_row(entry: Dictionary, _profile_unused: ProfileScript) -> Di
 	row.focus_entered.connect(_on_browser_focused.bind(row, payload))
 	row.mouse_entered.connect(_on_browser_hovered.bind(payload, true))
 	row.mouse_exited.connect(_on_browser_hovered.bind(payload, false))
-	if buy != null:
-		buy.pressed.connect(_on_buy_pressed.bind(payload))
 	_browser_rows.add_child(row)
 	return payload
 
@@ -4586,10 +4498,8 @@ func _refresh_browser_row(payload: Dictionary, profile: ProfileScript) -> void:
 	var read: Label = payload[&"read"]
 	if owned > 0:
 		read.text = OWNED_FORMAT % owned
-	elif String(payload[&"tag"]) == TAG_FIT:
-		read.text = READ_FITTED
 	else:
-		read.text = PRICE_FORMAT % _format_int(int(payload[&"price"]))
+		read.text = READ_FITTED
 	var legal: Label = payload[&"legal_label"]
 	var legal_text := String(payload[&"legal"])
 	legal.text = legal_text
@@ -4615,32 +4525,11 @@ func _on_browser_pressed(payload: Dictionary) -> void:
 		_inspect_browser(payload, true)
 	## P38/P39a: the browse state is a browse surface - a press only inspects it. With a FIT
 	## CELLS cell selected the press is the select-to-fit flow; BATTERY CONFIG has no filter.
+	## A26 (2026-10-16): every row is held, so the flow fits a held instance dialog-free —
+	## the BUYABLE row's confirm door retires with the buy half.
 	if _mode != MODE_FIT or _selected.is_empty():
 		return
-	## UI_SPEC section 17 A4/A5 (S43-R0/F1's cure): a BUYABLE row's select-to-fit buys
-	## as it fits, so the flow is a door - the confirm opens and the confirmed answer
-	## runs the same buy-then-fit. An owned row fits a held instance and stays dialog-free.
-	if not bool(payload.get(&"owned", false)):
-		_request_buy_confirm(
-			String(payload[&"name"]), int(payload[&"price"]),
-			ACTION_BUY_MODULE, StringName(payload[&"base"])
-		)
-		return
 	_flow_row_into_cell(payload)
-
-
-func _on_buy_pressed(payload: Dictionary) -> void:
-	AudioManager.play_ui(AudioManager.UiCue.CLICK)
-	_browser_focused = payload
-	## T-118: only a pointer over the row publishes the hover line.
-	if _pointer_over(payload[&"row"] as Button):
-		_inspect_browser(payload, true)
-	## UI_SPEC section 17 A4/A5: the browser's BUY is a door - the confirm dialog opens
-	## here and the confirmed answer runs `_buy_into_cell`, the buy-then-fit unchanged.
-	_request_buy_confirm(
-		String(payload[&"name"]), int(payload[&"price"]),
-		ACTION_BUY_MODULE, StringName(payload[&"base"])
-	)
 
 
 func _on_browser_focused(row: Button, payload: Dictionary) -> void:
