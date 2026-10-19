@@ -37,6 +37,11 @@ python3 staging/gate.py --times 2
 `vajb-orbit/tests/probe_*.gd` are instruments, not tests: each one measures a
 single behaviour and prints numbers for a report. They are not part of the gate.
 
+The same audit + gate pair runs on every push: install the versioned pre-push
+hook once per clone with `python3 staging/install_hooks.py` (the hook file is
+host-local; `staging/pre_push.py` is the versioned half). `VAJB_SKIP_GATE=1`
+is the deliberate incident escape hatch.
+
 ## Building a playtest build
 
 `vajb-orbit/export_presets.cfg` defines two desktop presets — `Linux` and
