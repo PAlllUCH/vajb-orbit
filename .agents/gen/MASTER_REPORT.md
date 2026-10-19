@@ -2193,4 +2193,4 @@ build 136 ms on rail hover, entry 29 ms; a direct selection with no prefetch is
 156 ms — the hover prefetch already absorbs the build, and the 29 ms entry is
 the shelf advance `enter_pane()` must do (it writes the rotation), so no
 further prewarm was added. **Commits:** `100b465` (tooling + docs), `b564e33`
-(code + tests), and this P1 pass.
+(code + tests), `1d2af6d` (P1).
