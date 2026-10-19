@@ -1,0 +1,2560 @@
+extends Node2D
+##
+## **Split (CODE_AUDIT 2026-10-19 P2):** this file is the scene's declaration and core
+## half - the constants, state, launch resolution, HUD wiring, travel, docking and the
+## shared helpers. The entry hooks and the population/combat half are `game.gd`, which
+## extends this file; the scene still attaches that script. Reversal: concatenate the two
+## bodies and restore the single `game.gd` (the pre-split history holds every line).
+## Flight scene: starfield, the player ship, the sector and the HUD wiring.
+## Contract: docs/design/IMPLEMENTATION_PLAN.md sections 3.9, 3.10 and 4.6, with
+## the section 9.9 engine-wave amendments: ENGINE_SPEC section 3 (hybrid flight,
+## ESC cancels the order and the lock), section 7 (dock-zone prompt, safe warp),
+## section 8 (sector population and blips) and section 9 (ShipFit owns the launch
+## snapshot). It also owns the two cross-file seams the wave left open: the profile's
+## cargo manifest is mirrored into PlayerState (`_sync_cargo`) and the mining reticle
+## state is pushed from the shaft (`_push_reticle_state`). Retired by section 9.9:
+## the MOCK_* constants, the mock shield/hull drain, the orbiting mock target and
+## ESC docking.
+##
+## Slice 2 (fight) adds the targeting and death wiring, all of it this scene's because
+## every part of it spans two owners:
+##   * the NPC hulls the sector spawns (§8) and their live blips;
+##   * the timed lock channel of §4.1 (a click on a hostile inside `lock_range` starts
+##     1.2 s of line of sight, rocks and hulls blocking) and its reticle ring;
+##   * the target window's payload (§10: range state and threat) and the reticle reading
+##     (in range / out of range / hostile);
+##   * the two countermeasures' triggers (§4.6) and the hit marker (§4.2 item 4);
+##   * the radial speedometer push (§10, UI_SPEC §3.6) and the chaff ghost blips (§4.6);
+##   * the real safe-warp gate (§7) and the death flow (§7: cargo drops at the wreck,
+##     respawn docked).
+## The HUD, the ship and the sector are preloaded by path (project convention, see
+## _instantiate_hud): the scene must load while a parallel wave's file is still
+## landing, and a headless caller and the editor agree on the same tables.
+
+signal route_requested(route: StringName, params: Dictionary)
+
+const Paths := preload("res://ui/paths.gd")
+const PlayerStateScript := preload("res://game/player_state.gd")
+const PlayerShipScene := preload("res://game/player_ship.tscn")
+const PlayerShipScript := preload("res://game/player_ship.gd")
+const SectorScript := preload("res://game/sector.gd")
+const Registry := preload("res://game/sector_registry.gd")
+## 14's 2026-10-08 block: the docked **place**, filed beside the faction so the station
+## shell and the price readers resolve the row the dock landed at.
+const StationRegistryScript := preload("res://game/station_registry.gd")
+## S25 (14 section 2/6): the contracts board's escort runtime. The registry owns the plan,
+## the reward and the win/loss transactions; this scene owns the convoy's nodes.
+const ContractRegistryScript := preload("res://game/contract_registry.gd")
+## The developer tuning overlay (S13, owner ask 2026-09-25): mounted by this
+## scene so F1 reaches OreTuning in flight. It reads user://dev_tuning.cfg only
+## when opened, so the gate stays byte-identical on any store. S28's A7 (D17-P2
+## flight: "a DevTuningMenu ships inside the flight scene tree"): the mount below is
+## gated to debug builds; the scene may still ride the export pack as data, but a
+## release build never instantiates it and F1 reaches nothing.
+const DevTuningMenuScene := preload("res://ui/dev/dev_tuning_menu.tscn")
+## UI_SPEC section 18 A7: the flight seat of the C-key cargo overlay - the same
+## read-only surface the station shell opens, hosted on this scene's own
+## dialog-layer CanvasLayer (section 2.3's layer 20, above the HUD's layer 10).
+const CargoOverlayScene := preload("res://ui/dialogs/cargo_overlay.tscn")
+## Section 2.3's dialog layer: the overlay's seat over the HUD's own layer 10.
+const OVERLAY_LAYER := 20
+## The one module catalogue (W1, CONTRACTS section 11): reached by path like every
+## other cross-file table here, because the HUD's slot cells carry a module's own icon
+## path and the catalogue is the single owner of that rule.
+const ModuleCatalogScript := preload("res://game/module_catalog.gd")
+
+## Slice 2's cross-file reaches, by path (never by global class name: a `class_name`
+## resolves only after the editor has scanned the project, and this scene must load in a
+## headless run of a tree a parallel worker is still writing). Every one of them is a
+## single-owner table read through its own API: the registry's rows and bands, the hull's
+## published queries, the pipe's context arithmetic and the pickup's handshake.
+const NpcRegistryScript := preload("res://game/npc_registry.gd")
+const NpcShipScript := preload("res://game/npc_ship.gd")
+const AsteroidScript := preload("res://game/asteroid.gd")
+const DamageScript := preload("res://game/damage.gd")
+const ImpactScript := preload("res://game/impact.gd")
+const PickupScript := preload("res://game/pickup.gd")
+const WeaponsScript := preload("res://game/weapons.gd")
+const EconomyLogScript := preload("res://game/economy_log.gd")
+## 17 §4's one timer: the 20-minute station clock. The wreck ledger's expiry is an
+## absolute stamp on it (seconds), so the window keeps running while no flight scene
+## exists - and a probe pins it through `WorldClock.set_override`.
+const ClockScript := preload("res://autoload/world_clock.gd")
+## S6's POI and loot tables (CONTRACTS §19): the kill roll and the wreck site the
+## kill leaves, reached by path like every other cross-file table here.
+const PoiScript := preload("res://game/poi.gd")
+const LootTablesScript := preload("res://game/loot_tables.gd")
+## 13 §7's witness range is **derived** from the tree's only scan range, so the two can
+## never drift: `WITNESS_RANGE` below is `ShipFit.BASE_SCAN_RANGE` and this preload is the
+## only reason it is reachable from here.
+const ShipFitScript := preload("res://game/ship_fit.gd")
+## The affix summary's own key spellings (CONTRACTS section 20): the launch reads the
+## fitted instances' rows out of the summary here, so the per-cell weapon-affix walk
+## and `ShipFit.resolve` read one shape.
+const AffixesScript := preload("res://game/affixes.gd")
+## S27 (10 section 3.3): the shipyard's queue. The launch is the one in-space session a
+## build waits on, so the scene advances the profile's own counter through this door.
+const ShipyardScript := preload("res://game/shipyard.gd")
+## The three prefixes 09 section 3.1 lets a weapon cell roll: the per-barrel walk keeps
+## only these out of a cell's row (a weapon instance carries no other prefix a barrel
+## could apply).
+const BARREL_PREFIXES: Array[StringName] = [&"keen", &"rapid", &"frugal"]
+## The two suffix flags this scene's own seams read (CONTRACTS section 20): `leeches`
+## (15 section 4's kill heal, paid in `_on_npc_died`) and `cartograph` (15 section 4 /
+## 11 section 3.3's sector reveal, paid at entry in `_spawn_sector`). Embers rides
+## `PlayerState.affix_flags` into K2's two delivery seams; `whale` and `ledger` are
+## resolved and priced elsewhere; the remaining five stage (the pin's own list).
+const FLAG_LEECHES: StringName = &"leeches"
+const FLAG_CARTOGRAPH: StringName = &"cartograph"
+## 15 section 4's Leeches band, verbatim: "kills restore 5 % hull". Read against the
+## hull's own `hull_max`, so a bigger hull restores more.
+const LEECHES_FRACTION := 0.05
+## S27 (15 section 4, `of the Pyre`): the radius the kill's 50-damage ring sweeps. The
+## perk's own text names the damage (50) and the hull line (25 %) but no reach, so this
+## is **proposed** at a hair past the mine's 60 u trigger and well inside every weapon
+## envelope; reversal is deleting this constant and the ring loop's radius test.
+const PYRE_RING_RADIUS := 240.0
+## The screen-space speed fantasy and the hull-critical vignette (FX_SPEC section 5,
+## section 6 row 1): one node owns the blur, the camera's applied zoom, the dust and the
+## vignette, and this scene pushes it the single input it reads.
+const SpeedFantasyScript := preload("res://game/speed_fantasy.gd")
+const SPEED_FANTASY_NODE: StringName = &"SpeedFantasy"
+
+const ROUTE_LOADING: StringName = &"loading"
+const PARAM_DESTINATION: StringName = &"destination"
+const PARAM_SECTOR: StringName = &"sector"
+const DESTINATION_STATION: StringName = &"station"
+const DESTINATION_GAME: StringName = &"game"
+const PROFILE_SERVICE: StringName = &"PlayerProfile"
+## 01 section 7 / 02 section 7.5: the profile signal key that says the manifest moved.
+const PROFILE_CARGO_KEY: StringName = &"cargo"
+
+const HULL_ID_DEFAULT: StringName = &"ship_vanguard"
+## 14's 2026-10-08 S38 block (H1): the starting sector now has one home, the registry
+## that owns sectors (`SectorRegistry.DEFAULT_SECTOR_ID`), so the cold-start place and
+## this scene's default row cannot drift apart.
+
+## Section 4.3's group keys, **five** since S15 (09 section 12's hardcap): `weapon_1..5`
+## and `GROUPS_MAX` are one number, because a composed battery is addressed by the same
+## ordinal the ARMORY pane's racks `B1..B5` render and the cockpit's five lamps name.
+## `weapon_6`/`weapon_7` stay in `project.godot` (that edit is the owner's optional
+## pass) but are read by nothing: they have no rack to select, so the pair is inert.
+## The readers stay behind `InputMap.has_action` guards anyway.
+const WEAPON_ACTIONS: Array[StringName] = [
+	&"weapon_1",
+	&"weapon_2",
+	&"weapon_3",
+	&"weapon_4",
+	&"weapon_5",
+]
+
+const HUD_REFRESH_INTERVAL := 0.1
+const MINIMAP_RADIUS_DEFAULT := 3200.0
+const MINIMAP_RADIUS_STEP := 800.0
+const MINIMAP_RADIUS_MIN := 800.0
+const MINIMAP_RADIUS_MAX := 6400.0
+
+## S29 (R-S29-1, `10_ship_acquisition.md`'s 2026-10-03 block): the hyperdrive's own
+## numbers - 1 s spool, one jump per 30 s cooldown, no fuel charge - and the N11-N13
+## read spellings verbatim (UI_SPEC.md section 10; the `\u00b7` escape keeps the source
+## ASCII the way `GATE_REFUSED_FUNDS` does). The flight scene owns these clocks: the
+## hull only answers `has_hyperdrive` and performs `jump_to`.
+const HYPERDRIVE_SPOOL := 1.0
+const HYPERDRIVE_COOLDOWN := 30.0
+const HYPERDRIVE_ARRIVAL := 2.0
+const JUMP_SPOOL: StringName = &"spool"
+const JUMP_ARRIVE: StringName = &"arrive"
+const JUMP_COOLDOWN: StringName = &"cooldown"
+const JUMP_READY: StringName = &"ready"
+const JUMP_READ_READY := "JUMP READY"
+const JUMP_READ_SPOOL := "HYPERDRIVE SPOOLING"
+const JUMP_READ_COOLDOWN := "JUMP COOLDOWN %d s"
+const JUMP_READ_ARRIVED := "ARRIVED \u00b7 %s"
+const PIN_CAPTION_NO_DRIVE := "NO HYPERDRIVE INSTALLED"
+
+## Section 9.8 item 4: mouse-wheel camera zoom, script-side so the input map stays
+## untouched. Wheel up reads as zoom in, which is a larger Camera2D.zoom.
+const CAMERA_ZOOM_STEP := 0.10
+const CAMERA_ZOOM_MIN := 0.70
+const CAMERA_ZOOM_MAX := 1.50
+const CAMERA_ZOOM_SECONDS := 0.18
+
+## The dock prompt (ENGINE_SPEC section 7) and the two input actions section 11
+## adds. The actions are orchestrator-applied after this wave, so both are read
+## behind `InputMap.has_action` guards.
+const DOCK_PROMPT := "F · DOCK"
+## 11 §5's gate prompt lines, verbatim (CONTRACTS §19). The em dash is the pin's own
+## copy; it is written as a `\u2014` escape so the source file stays plain ASCII.
+## `GATE_REFUSED_FUNDS` is L153's missing rung, in the same ladder and the same shape as
+## the Outlaw line: `Gate.jump` has always answered -2 for an unaffordable fee and the
+## ladder threw it away, so a short account read the priced line and the confirm was
+## silently inert.
+const GATE_PROMPT_FORMAT := "JUMP TO %s \u2014 %d CR"
+const GATE_REFUSED_PROMPT := "GATE REFUSED \u2014 OUTLAW"
+const GATE_REFUSED_FUNDS_PROMPT := "GATE REFUSED \u2014 NOT ENOUGH CR"
+const INTERACT_ACTION: StringName = &"interact"
+const WARP_ACTION: StringName = &"warp"
+## ENGINE_SPEC section 13 `WARP_CHANNEL`.
+const WARP_CHANNEL := 3.0
+
+## 11 §5's scanner readout (`SCANNING nn %`, 4 Hz) and 06 §5's cache feed
+## (`+120 CR SALVAGE`), both riding the frozen `set_prompt` seam (CONTRACTS §19: no
+## `ui/hud/**` writes). The feed lingers `SALVAGE_FEED_SECONDS`; the scan readout is
+## repainted at `SCAN_PROMPT_HZ` so a 5 s channel is ~20 distinct lines.
+const SCAN_PROMPT_FORMAT := "SCANNING %d %%"
+const SCAN_PROMPT_PREFIX := "SCANNING"
+const SCAN_PROMPT_HZ := 4.0
+const SALVAGE_FEED_FORMAT := "+%d CR SALVAGE"
+const SALVAGE_FEED_SECONDS := 2.0
+
+## 13 §3's hunter archetype: the one row that drops `LootTables.HUNTER_EXTRA` in
+## addition to its band table (06 §8). The id has one home - `NpcRegistry.ARCHETYPE_HUNTER`,
+## the row the heat tier's wing spawns - so this scene and the registry cannot drift.
+const HUNTER_ARCHETYPE: StringName = NpcRegistryScript.ARCHETYPE_HUNTER
+
+## 13 §5/§7's witness rule. `WITNESS_RANGE` is **derived**, not proposed: it is the tree's
+## only scan range (`ShipFit.BASE_SCAN_RANGE`, `game/ship_fit.gd`), and the +5 is 13 §2's
+## own "witness survives (any crime) +5 extra" row. Heat is clamped to 13 §2's 0-100 on
+## every gain.
+const WITNESS_RANGE := ShipFitScript.BASE_SCAN_RANGE
+const WITNESS_EXTRA := 5
+const HEAT_MAX := 100
+
+## 13 §7's decay: "-1 per minute of play", accrued by this scene's own float play-time
+## accumulator (no Timer node, 17 §4's one-timer rule; `WorldClock` stays the station-band
+## clock). The accumulator is scene-scoped, so a transition restarts it (reported).
+const HEAT_DECAY_SECONDS := 60.0
+
+## 13 §3's Outlaw perma-tail: a wing respawns this long after the previous one dies.
+const HUNTER_RESPAWN_SECONDS := 60.0
+## Where a wing is placed when it spawns: a ring around the player, inside the wing's own
+## 900 u aggro radius so the tail is immediate. **Proposed** - no doc gives the placement
+## (13 §3 says only that the wing spawns on entry); reversal: the sector's own field anchor
+## (`sector.gd:_add_npc`'s default), which is one line less.
+const HUNTER_SPAWN_RADIUS := 600.0
+
+## S25 (14 section 6): the escort convoy's own presentation values. The ambushers are placed
+## on a ring around the corridor midpoint so the ambush arrives as a wing; the cargo pods
+## dress the hauler's hold line at the shipped pickup pod's own art scale. All three are
+## PROPOSED (no doc pins a placement ring or a mark layout); reversal: the ambush ring to
+## zero (all ambushers on the midpoint) and the pod marks to one per hold unit.
+const AMBUSH_SPAWN_RADIUS := 300.0
+const POD_MARK_SCALE := 0.35
+const POD_MARK_SPACING := 9.0
+const POD_MARK_OFFSET := 0.0
+
+## S25 (14 section 2): the flight scene's own readout for a contract the kill seam closed -
+## the board's pay, in the shape the escort's arrival line already uses. PROPOSED (no doc pins
+## a contract-outcome prompt); reversal: no prompt, the panel's status line alone.
+const CONTRACT_DONE_PROMPT := "CONTRACT COMPLETE · %d CR"
+
+## 12 §4.1's Outlaw standing band: at or below this floor a faction denies docking. The
+## **dock** refusal reads this axis; the **gate** refusal reads the heat tier (13 §3).
+const STANDING_OUTLAW := -51
+## The dock refusal's readout, mirroring 11 §5's pinned gate line's own words. 11 §5 pins
+## no dock copy, so this is the panel-facing reading of 12 §4.1's "denied docking"
+## (reported, not invented: reversal is deleting this constant and its rung).
+const DOCK_REFUSED_PROMPT := "DOCK REFUSED \u2014 OUTLAW"
+
+## ENGINE_SPEC section 13, "Lock & countermeasures (rulings 21/22)": the lock channel's
+## 1.2 s of uninterrupted line of sight, the passive radius the radar tags within, and
+## the two countermeasure items the hold's stacks are spent by (section 4.6).
+const LOCK_CHANNEL := 1.2
+const PASSIVE_RADIUS := 1500.0
+const CHAFF_ITEM: StringName = &"cm_chaff"
+const FLARE_ITEM: StringName = &"cm_flare"
+
+## Section 4.1: "rocks and hulls block it". The channel's ray therefore tests the rock
+## layer and the hull layer - the same pair `weapons.gd` masks for its shots - read off
+## their owners rather than restated (`Asteroid.COLLISION_LAYER`, `NpcShip.HULL_LAYER`).
+const LOCK_LOS_MASK: int = AsteroidScript.COLLISION_LAYER | NpcShipScript.HULL_LAYER
+
+## Section 11 names no key for either countermeasure (`interact`/`warp`/
+## `consume_fuel_cell` are the three it adds), so the two triggers are read behind
+## `InputMap.has_action` guards and these are the action names the orchestrator would
+## bind. The mechanic ships either way: `WeaponComponent.use_countermeasure` is the seam
+## a binding, a probe or a future panel reaches.
+const COUNTERMEASURE_ACTIONS: Dictionary = {
+	CHAFF_ITEM: &"countermeasure_chaff",
+	FLARE_ITEM: &"countermeasure_flare",
+}
+
+## Section 11's `target_next` (Q in the shipped input map, section 3.1 "cycles locks").
+const TARGET_NEXT_ACTION: StringName = &"target_next"
+
+## Section 2.7 / decision 7: a death's cargo drops at the wreck with a 5-minute recovery
+## window. The window is a `Pickup.setup` lifetime argument (L23's seam) rather than an
+## age offset against the shared 60 s field lifetime, and it is an absolute stamp on the
+## one WorldClock so the wreck outlives the scene that drew it (see `_wreck_drops`).
+const DROP_WINDOW := 300.0
+
+## The group `PlayerShip` joins in `_ready` and both the pickups' tractor and the NPCs'
+## early-warning checks resolve the player through (`Pickup.PLAYER_GROUP`,
+## `NpcShip.PLAYER_GROUP`). The wreck leaves it on death (see `_switch_ship_off`).
+const PLAYER_GROUP: StringName = &"player_ship"
+
+## 01 section 7's log vocabulary, extended by the three events this scene adds: the packs
+## filed on dock, the hold dropped at a wreck and the hull that was lost.
+const EVENT_AMMO := "AMMO"
+const EVENT_DROP := "DROP"
+const EVENT_KILL := "KILL"
+
+## 11 §2.3 / CONTRACTS §19: a sector transition routes through `loading`, which reloads
+## this scene, so `_ready` runs a second time - and the launch's ammo auto-load
+## (`_seed_ammo`, which draws cargo units out of the hold) must not run on that second
+## boot, or the magazine would refill from the hold mid-flight and the hold would shrink
+## across the crossing. The outgoing scene names the destination here before it routes;
+## `_ready` reads it and seeds the packs from the filed store instead. A static because
+## the instance that wrote it is gone by the time the new one boots.
+##
+## L154's stale flag: only a route that lands a *game* scene consumes it, so every route
+## that lands something else (a dock, the respawn) drops it (`_clear_transit_flag`), and a
+## scene that leaves while a flag it never armed is set clears it in `_exit_tree`. Without
+## that, a crossing whose route was dropped leaves the flag armed through a station visit
+## and the next launch reads `_seed_ammo_from_store` instead of drawing the hold.
+static var _transit_destination: StringName = &""
+
+## L23 / §2 dec. 7's recovery window, one entry per **uncollected** stack a wreck dropped:
+## `{sector, position, item, amount, expires, face}` with `expires` an absolute WorldClock
+## stamp and `face` the scene's live pickup (null once that scene is gone). The window
+## belongs to the sector, not to the scene that happened to draw it: the respawn route and
+## a crossing discard the flight scene, so a scene's drop would otherwise die with it and
+## §2 dec. 7's "5-minute recovery window" would be a 1.4-second one. Each game scene
+## re-materialises the entries of its own sector with the seconds they have left, through
+## the same `Pickup.setup` lifetime seam a fresh drop uses (`_materialise_wreck_drops`),
+## and a collected stack leaves the ledger at once (`Pickup.collected`). Static for the
+## same reason `_transit_destination` is: the scene that wrote it is gone by then.
+static var _wreck_drops: Array[Dictionary] = []
+
+const HUD_METHODS: Array[StringName] = [
+	&"bind",
+	&"set_sector_name",
+	&"set_minimap_scale",
+	&"set_minimap_blips",
+	&"set_target",
+	&"set_target_info",
+	&"clear_target",
+	&"set_cargo_open",
+	&"toggle_map_deck",
+	&"map_deck_open",
+	&"set_map_jump_read",
+	&"set_map_pin_caption",
+	&"map_recenter",
+]
+const HUD_SIGNALS: Array[StringName] = [
+	&"weapon_slot_selected",
+	&"cargo_toggled",
+	&"minimap_zoom_changed",
+	&"map_autopilot_to",
+	&"map_autopilot_cancel",
+	&"map_jump_requested",
+]
+
+@onready var _camera: Camera2D = $Camera
+@onready var _speed_fantasy: SpeedFantasyScript = (
+	get_node_or_null(NodePath(SPEED_FANTASY_NODE)) as SpeedFantasyScript
+)
+
+var _state: PlayerStateScript
+var _stats: ShipStats = null
+var _ship: PlayerShipScript = null
+
+## The launch's own hull and fit (CONTRACTS section 11): `_resolve_stats` picks both
+## once, and every reader of them - the snapshot, `PlayerState.set_weapons`, the
+## ship's fit ids, the mount anchors and the HUD's slot cells - reads these, so a
+## launch can never mix one hull's frame with another's fit.
+var _launch_hull: StringName = HULL_ID_DEFAULT
+var _launch_fit: Dictionary = {}
+## The launch's affix summary (CONTRACTS section 20): the profile's fitted instances
+## summed per prefix, resolved once beside `_launch_fit` and handed to
+## `ShipFit.resolve` as its optional `affixes` argument. Kept on the scene because
+## the wave's later suffix seams (K3's Leeches and Cartograph) read the same summary
+## the snapshot resolved from, so they can never disagree about what is fitted.
+var _launch_summary: Dictionary = {}
+var _sector: SectorScript = null
+var _pending_spawn := Vector2.ZERO
+var _sector_row_id: StringName = &""
+## 11 §1 / K0 F15: the sector label is the registry row's own name, set on spawn and on
+## transition (`_spawn_sector`); the stale "Helios Drift" interim is gone.
+var _sector_name := ""
+var _hud: Control = null
+var _laser: Node = null
+var _guns: Node2D = null
+var _reticle_state: int = TargetReticle.State.PLAIN
+var _weapon_index := 0
+var _minimap_radius := MINIMAP_RADIUS_DEFAULT
+## R-S24-3: the cloud factor of the frame's last reading (`1.0` outside every cloud, `0.5`
+## inside one) and the value last pushed to the HUD. The player's own zoom state is
+## `_minimap_radius`, which nothing here writes - the factor is applied at the push, so
+## leaving a cloud restores the exact radius. The tint's own flag tracks the hull's
+## `modulate`, which is handed back untouched on exit.
+var _cloud_factor := 1.0
+var _cloud_pushed := -1.0
+var _cloud_tinted := false
+## S29's N5 machine state (UI_SPEC.md section 10's hyperdrive reads): the phase, its
+## clock, the cooldown's clock from the teleport and the pin the spool is folding to.
+var _jump_phase: StringName = JUMP_READY
+var _jump_clock := 0.0
+var _jump_cooldown := 0.0
+var _jump_target := Vector2.ZERO
+var _jump_read_cache := ""
+var _cargo_open := false
+## The cargo overlay's flight seat (UI_SPEC section 18 A7): the layer-20 host and
+## the overlay it carries.
+var _cargo_overlay_layer: CanvasLayer = null
+var _cargo_overlay: Control = null
+## The wheel's clamped target. `_camera_zoom_shown` is the same wheel value after the
+## 0.18 s tween, and it is the one `speed_fantasy.gd` multiplies by the pull-back: this
+## scene owns the target and the smoothing, the effects node owns the applied value, so
+## neither ever writes the other's number and the pull-back never returns to the wheel.
+var _camera_zoom := 1.0
+var _camera_zoom_shown := 1.0
+var _camera_zoom_tween: Tween = null
+var _hud_accumulator := 0.0
+var _prompt := ""
+var _warp_active := false
+var _warp_elapsed := 0.0
+var _warp_progress := -1.0
+
+## S6's scan channel and cache feed (11 §3.1/§5, 06 §5): the derelict the channel is
+## running on (null when none), the readout's own 4 Hz accumulator, and the salvage
+## feed's text and remaining seconds. One prompt line, one owner (`_update_dock_prompt`).
+var _scan_poi: Node = null
+var _scan_prompt_accumulator := 0.0
+var _feed_text := ""
+var _feed_remaining := 0.0
+
+## The marked signature (ENGINE_SPEC section 4.1): the hull a click is channelling at, or
+## the one the lock landed on, or the one Q tagged from the passive radar. `_lock_elapsed`
+## is the channel's clock, `_lock_channeling` says whether it is still running, and the
+## landed lock itself stays the component's own answer (`WeaponComponent.lock_target`), so
+## no second copy of it lives here.
+var _lock_target: Node2D = null
+var _lock_elapsed := 0.0
+var _lock_channeling := false
+var _lock_progress := -1.0
+var _lock_progress_pushed := -2.0
+
+## The packs as they were seeded at launch, **one entry per live weapon slot** in
+## `PlayerState.weapons` order: the dock files the difference (section 4.3), so a store
+## the launch could not load whole is never overwritten by a clamped live figure. Per
+## slot rather than per family, because a fit may carry two of one family (a Lancer's
+## two lasers): each slot files its own fired delta against the one pack the family
+## owns, and the two deltas add up exactly as the packs' per-family rule requires.
+var _ammo_seed: Array[int] = []
+
+var _dead := false
+
+## L154's bookkeeping: whether *this* scene armed `_transit_destination` for a crossing
+## whose successor game scene is still coming. A route can be dropped while the Router is
+## busy, and the scene then leaves by another route (a dock), so `_exit_tree` may only
+## clear a flag this scene did not arm itself.
+var _crossing_routed := false
+
+## The gate ring the ship is inside, as the prompt ladder last read it, so leaving the ring
+## (or entering another) disarms a running charge (L152: `cancel_jump` was dead code).
+var _gate_in_ring: Node = null
+
+## The wreck drops this scene has materialised, so a sector change takes its own faces
+## down while the ledger keeps their entries (`_clear_drop_faces`).
+var _drop_faces: Array[Node2D] = []
+
+## 13 §7's heat clock: seconds of play since the last decay tick. A float on this scene's
+## own tick, not a Timer (17 §4); `WorldClock` is untouched and keeps its five consumers.
+## **Static** (L150, beside `_transit_destination`): `Router.route` rebuilds this scene on
+## every crossing and every launch, so a scene-scoped bank would discard the minute in
+## progress - up to one heat point per rebuild - against 13 §2's "−1 per minute of play,
+## **anywhere**".
+static var _heat_play_time := 0.0
+## 13 §3's hunter bookkeeping, all of it per sector entry (`_spawn_sector` re-arms it):
+## whether a Wanted/Outlaw wing has already been spawned for this entry, and the countdown
+## to the perma-tail respawn after the wing dies. The faction is never stored - it is the
+## space owner, read fresh each frame, which is what keeps a wing in that faction's space
+## only.
+var _hunter_wave_spawned := false
+var _hunter_respawn := 0.0
+
+## S25 (14 section 6): the live escorts, one convoy per active escort contract, keyed by
+## the contract's own id. Rebuilt on sector entry from the profile's active list
+## (`_restore_escorts`), so a dock/launch cycle or a crossing re-spawns the convoy at the
+## accepting station and a contract that left the list (a loss) is never re-spawned.
+var _escorts: Dictionary = {}
+
+## S26 (14 section 5): the arena zone's lit ring node (a child of the sector, so it moves
+## with the sector's own transform), the boss it spawned, and the Maw's roam node with its
+## E2 respawn clock.
+var _arena_zone_node: Node2D = null
+var _arena_boss: Node2D = null
+var _maw_node: Node2D = null
+var _maw_respawn := 0.0
+## 14 section 5's "the player's last hit": a boss death latches here in `_on_npc_died`,
+## and the player's own weapon `hit_landed` (which fires immediately after the fatal
+## delivery) is what consumes the latch and credits the kill. A drone's or an escort's
+## fatal hit never raises `hit_landed` on the player's guns, so it never credits.
+var _pending_boss_death: Node2D = null
+var _pending_boss_archetype: StringName = &""
+
+
+## Section 9.8 item 4: the wheel zooms the flight camera, and section 3.1's LMB
+## lock order rides the same handler (`_unhandled_input`, so a UI control that wants the
+## click keeps it, and the input map is not touched).
+##
+## The target is clamped and the shown value is tweened to it, exactly as it was when the
+## tween wrote `Camera2D.zoom` directly; what changed with the speed fantasy (2026-09-21)
+## is only *who* writes the camera: `speed_fantasy.gd` applies
+## `_camera_zoom_shown * pullback(ratio)`, so the pull-back stacks with the wheel instead
+## of fighting it, and `Camera2D.zoom` has one writer.
+func _set_camera_zoom(target: float) -> void:
+	_camera_zoom = clampf(target, CAMERA_ZOOM_MIN, CAMERA_ZOOM_MAX)
+	if _camera_zoom_tween != null and _camera_zoom_tween.is_valid():
+		_camera_zoom_tween.kill()
+	_camera_zoom_tween = create_tween()
+	_camera_zoom_tween.tween_property(
+		self, "_camera_zoom_shown", _camera_zoom, CAMERA_ZOOM_SECONDS
+	).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+
+
+## ENGINE_SPEC section 9: the launch snapshot is the active hull plus **that hull's
+## own fit** - the profile's stored fit when the account holds one, 09 section 9's
+## standard fit otherwise - resolved by ShipFit; PlayerState's maxima come from it,
+## so armour, engines and computers are felt from the first module swap.
+##
+## Before this wave the launch resolved one global `ShipFit.STANDARD_FIT` (the
+## Vanguard's row) for every hull, which is the measured root cause of a Lancer
+## reporting five weapon families it does not mount (the owner's launch-fit gate).
+## The flight scene only ever *reads* the profile: a hull with no fit launches on
+## the standard fit and the fitting panel (P2-B) stays the one writer.
+func _resolve_stats() -> ShipStats:
+	var hull_id := HULL_ID_DEFAULT
+	var profile := _profile()
+	if profile != null:
+		hull_id = StringName(profile.call(&"active_ship"))
+	if not ShipFit.HULLS.has(hull_id):
+		hull_id = HULL_ID_DEFAULT
+	_launch_hull = hull_id
+	_launch_fit = _launch_fit_for(hull_id, profile)
+	_launch_summary = _affix_summary_for(hull_id, profile)
+	return ShipFit.resolve(hull_id, _launch_fit, _launch_summary)
+
+
+## The launch's affix summary (CONTRACTS section 20): the profile's fitted instances
+## for this hull, summed per prefix, handed to `ShipFit.resolve` beside the base-id
+## fit. The fit `_launch_fit_for` returns holds **base** ids and the summary's
+## `instances` rows name the base id they were fitted as, which is how the resolver's
+## own alignment works (K1's D3). `{}` when the profile has no affix bridge (a stub, a
+## probe) or holds no fit for the hull - the same two cases the standard fit covers.
+func _affix_summary_for(hull_id: StringName, profile: Node) -> Dictionary:
+	if profile == null or not profile.has_method(&"affix_summary"):
+		return {}
+	var summary: Variant = profile.call(&"affix_summary", hull_id)
+	if summary is Dictionary:
+		return summary as Dictionary
+	return {}
+
+
+## The fit this launch flies: the profile's own when it holds one, 09 section 9's
+## `ShipFit.standard_fit(hull_id)` when the account has no fit for the hull (or holds
+## only empty cells), and `{}` for a hull with no frame at all - which `_resolve_stats`
+## has already replaced with the default hull. `standard_fit` returns `{}` only for a
+## hull outside the nine player hulls, so the fallback is always a legal fit here.
+func _launch_fit_for(hull_id: StringName, profile: Node) -> Dictionary:
+	var stored := _profile_fit(hull_id, profile)
+	if stored.is_empty():
+		return ShipFit.standard_fit(hull_id)
+	return stored
+
+
+## One hull's stored fit in the shape `ShipFit.resolve` reads, or `{}` when the profile
+## holds nothing usable for it. A fit stores a module *instance* id (15 section 6) and
+## the resolver reads base ids, so every entry goes through
+## `PlayerProfile.base_module_id`; `power` stays one id (CONTRACTS section 11 rule 1)
+## and the seven list types keep the hull's padded array shape. `{}` comes back when
+## the profile has no fit API, has no fit for the hull (a fresh account, an NPC id) or
+## holds only empty cells - the three cases the standard fit is for.
+func _profile_fit(hull_id: StringName, profile: Node) -> Dictionary:
+	if profile == null or not profile.has_method(&"fit_for"):
+		return {}
+	var normalised: Dictionary = profile.call(&"fit_for", hull_id)
+	if normalised.is_empty():
+		return {}
+	var fit: Dictionary = {}
+	var holds_one := false
+	for key: StringName in ShipFit.FIT_SLOT_KEYS:
+		if key == &"power":
+			var power := _base_module_id(StringName(str(normalised.get(key, ""))), profile)
+			fit[key] = power
+			holds_one = holds_one or power != &""
+			continue
+		var entries: Array[StringName] = []
+		var raw: Variant = normalised.get(key, [])
+		if raw is Array:
+			for entry: Variant in raw:
+				var base := _base_module_id(StringName(str(entry)), profile)
+				entries.append(base)
+				holds_one = holds_one or base != &""
+		fit[key] = entries
+	if not holds_one:
+		return {}
+	return fit
+
+
+## The catalogue id behind one fit entry: an inventory instance id resolves through the
+## profile, and a plain base id (every pre-v4 fixture, and every account that never
+## bought a rolled module) comes back unchanged. A profile without the helper keeps the
+## entry as it is rather than silently dropping a module from the fit.
+func _base_module_id(entry: StringName, profile: Node) -> StringName:
+	if entry == &"" or profile == null or not profile.has_method(&"base_module_id"):
+		return entry
+	return StringName(profile.call(&"base_module_id", entry))
+
+
+## The launched fit's weapon ids mapped to families, one entry per **fitted** W cell in
+## layout order (CONTRACTS section 11): the list `PlayerState` sizes its ammo to and
+## the ids its `weapon_changed` announcements carry. The fit stores module ids
+## (`w_laser`), while the ammo packs and the HUD's labels are keyed by family
+## (`laser`), and `Weapons.weapon_id` is that one bridge. An unfitted cell
+## contributes nothing, so a hull whose standard fit fills one of three W cells
+## launches with one weapon slot and two empty cells; a fitted cell whose module has
+## no firing family (`w_mining`, the tool that shares the W column) is a slot with no
+## pack rather than a dropped cell, so the slot order still follows the fit.
+func _launch_weapons() -> Array[StringName]:
+	var ids: Array[StringName] = []
+	var fitted: Array = _launch_fit.get(&"weapons", [])
+	for entry: Variant in fitted:
+		var module := StringName(str(entry))
+		if module == &"":
+			continue
+		ids.append(WeaponsScript.weapon_id(module))
+	return ids
+
+
+## The launch's per-slot weapon affixes (CONTRACTS section 20): one
+## `{keen, rapid, frugal}` magnitude dict per entry of `_launch_weapons()`, in the same
+## order and with the same empty-cell skipping, so `PlayerState.weapon_affixes[i]`
+## lines up with `PlayerState.weapons[i]`. A cell whose summary row carries none of the
+## three prefixes answers `{}`, which a consumer reads as no affix; the values are the
+## magnitudes the roll stored, never re-derived from the band.
+func _launch_weapon_affixes() -> Array[Dictionary]:
+	var per_cell: Array[Dictionary] = []
+	var fitted: Array = _launch_fit.get(&"weapons", [])
+	for index in fitted.size():
+		var module := StringName(str(fitted[index]))
+		if module == &"":
+			continue
+		per_cell.append(_cell_affixes(index))
+	return per_cell
+
+
+## One W cell's three per-barrel prefixes, summed from the launch summary's instance
+## rows (`_launch_summary`, built from the profile's raw fit, so a row knows both the
+## cell that fitted it and the prefix it carries). Only `BARREL_PREFIXES` are kept -
+## every other prefix a weapon instance can carry is not a barrel rule - and `{}` comes
+## back for a cell the summary does not carry.
+func _cell_affixes(index: int) -> Dictionary:
+	var out: Dictionary = {}
+	for row: Variant in _summary_rows():
+		if not row is Dictionary:
+			continue
+		var entry: Dictionary = row
+		if not _cell_matches(entry, &"weapons", index):
+			continue
+		for raw: Variant in _prefix_rows(entry):
+			if not raw is Dictionary:
+				continue
+			var prefix: Dictionary = raw
+			var id := StringName(str(_keyed(prefix, AffixesScript.KEY_ID, "")))
+			if not BARREL_PREFIXES.has(id):
+				continue
+			var value := float(_keyed(prefix, AffixesScript.KEY_VALUE, 0.0))
+			out[id] = float(out.get(id, 0.0)) + value
+	return out
+
+
+## The launch's fitted suffix flags (CONTRACTS section 20): one entry per perk, once.
+## `[]` for a summary the profile does not carry (the standard fit, a stub profile).
+func _launch_affix_flags() -> Array[StringName]:
+	var flags: Array[StringName] = []
+	var raw: Variant = _launch_summary.get(
+		AffixesScript.KEY_SUFFIXES,
+		_launch_summary.get(String(AffixesScript.KEY_SUFFIXES), null)
+	)
+	if not raw is Array:
+		return flags
+	for entry: Variant in (raw as Array):
+		var id := StringName(str(entry))
+		if id != &"" and not flags.has(id):
+			flags.append(id)
+	return flags
+
+
+## The launch summary's `instances` rows, `[]` for a summary with none.
+func _summary_rows() -> Array:
+	var raw: Variant = _launch_summary.get(
+		AffixesScript.KEY_INSTANCES,
+		_launch_summary.get(String(AffixesScript.KEY_INSTANCES), null)
+	)
+	if raw is Array:
+		return raw
+	return []
+
+
+## One summary row's `prefixes` list, `[]` for a row with none.
+static func _prefix_rows(row: Dictionary) -> Array:
+	var raw: Variant = _keyed(row, AffixesScript.KEY_PREFIXES, null)
+	if raw is Array:
+		return raw
+	return []
+
+
+## Whether one summary row names the given slot's cell at `index`. The rows carry both
+## spellings' keys robustly through `_keyed`, because a hand-built fixture may use
+## plain String keys while the shipped summary uses StringName.
+static func _cell_matches(row: Dictionary, slot: StringName, index: int) -> bool:
+	if StringName(str(_keyed(row, AffixesScript.KEY_SLOT, ""))) != slot:
+		return false
+	return int(_keyed(row, AffixesScript.KEY_INDEX, -1)) == index
+
+
+## One value out of a dictionary that may key it by StringName or String.
+static func _keyed(data: Dictionary, key: StringName, fallback: Variant) -> Variant:
+	if data.has(key):
+		return data[key]
+	return data.get(String(key), fallback)
+
+
+## STATION_SPEC section 6 rule 5: the active hull owns the pool maxima. An unknown
+## hull keeps PlayerState's defaults, which are the Cutter's. The reactor figures
+## join in engine slice 0 (ENGINE_SPEC section 9): the snapshot is the one owner of
+## `energy_max`/`energy_regen`/`fuel_max`, so a hull whose tank differs from the
+## 100/200 base is felt from the first frame, and the station's refuel fills the
+## same tank this seeds.
+func _apply_ship_maxima() -> void:
+	if _stats == null:
+		return
+	if _stats.hull_max > 0.0:
+		_state.hull_max = _stats.hull_max
+	if _stats.shield_max > 0.0:
+		_state.shield_max = _stats.shield_max
+	if _stats.cargo_max > 0:
+		_state.cargo_max = _stats.cargo_max
+	if _stats.energy_max > 0.0:
+		_state.energy_max = _stats.energy_max
+	if _stats.energy_regen > 0.0:
+		_state.energy_regen = _stats.energy_regen
+	if _stats.fuel_max > 0.0:
+		_state.fuel_max = _stats.fuel_max
+	## Section 4.2 item 2: the shield's regeneration rate is the fit's own (base 2/s plus
+	## the S module's `regen_add`, resolved by `ShipFit`), so a fitted shield recovers at
+	## its real rate instead of `PlayerState`'s base default (W2 report, gap 3).
+	if _stats.shield_regen > 0.0:
+		_state.shield_regen = _stats.shield_regen
+
+
+## 15 section 4's Cartograph (CONTRACTS section 20): a launch whose fitted instances
+## carry `of the Cartograph` enters a sector with every POI already revealed, through
+## the shipped beacon seam (`Sector.reveal_pois`, 11 section 3.3's own call) rather
+## than a second fog rule. One call per entry, after `populate` has spawned the POIs
+## (a beacon and a wreck site start revealed by their own kind; a derelict and an
+## anomaly do not, which is the fog this lifts). A launch with no flag - every pre-S7
+## launch - leaves the fog exactly as it was.
+func _reveal_pois_for_cartograph() -> void:
+	if _sector == null or not AffixesScript.has_suffix(_launch_summary, FLAG_CARTOGRAPH):
+		return
+	_sector.reveal_pois()
+
+
+func _spawn_ship() -> void:
+	_ship = PlayerShipScene.instantiate() as PlayerShipScript
+	if _ship == null:
+		push_warning("game: player_ship.tscn did not instantiate as a PlayerShip")
+		return
+	add_child(_ship)
+	# The launched fit gates the W-slot mining laser (09 section 4.5): a fit that
+	# carries no `w_mining` mounts no laser and `E` mines nothing until the module is
+	# fitted. The fit is the active hull's own now, so a Lancer's two lasers and a
+	# Delver's mining laser are the fit's own list rather than one global row.
+	_ship.set_hull_id(_launch_hull)
+	_ship.setup(_stats, _state, ShipFit.fitted_ids(_launch_fit))
+	_ship.damage_taken.connect(_on_ship_damage_taken)
+	# The mount is part of `setup`, so the reference is resolved once here rather
+	# than per frame: the reticle push reads the shaft's own range and target state
+	# through it, and stays inert while the fit carries no laser.
+	_laser = _ship.get_node_or_null(NodePath(PlayerShipScript.MINING_LASER_NODE))
+	# The weapons mount the same way (slice 2): the HUD's slots, the lock and the two
+	# countermeasures all address the component, and it is absent on a fit that carries no
+	# weapon module, exactly as the laser is absent without `w_mining`.
+	_guns = _ship.get_node_or_null(NodePath(PlayerShipScript.WEAPONS_NODE))
+	if _guns != null:
+		_guns.connect(&"locks_broken", _on_locks_broken)
+		## S26 (14 section 5): the player's own landed hits are the only evidence of the
+		## boss's last hit, so the arena kill credit rides this one seam.
+		if _guns.has_signal(&"hit_landed") and not _guns.is_connected(&"hit_landed", _on_player_hit):
+			_guns.connect(&"hit_landed", _on_player_hit)
+		## S5 (09 section 11, CONTRACTS section 17): the launch hands the component the
+		## composed racks its `weapon_1..7` keys address, resolved from the profile's
+		## persisted cell refs into the component's own barrel positions.
+		if _guns.has_method(&"set_batteries"):
+			_guns.call(&"set_batteries", _launch_batteries())
+	## S22 A1 (L28): the HUD consumes the component's one `hit_landed` signal, so the
+	## marker fires for any hull the player's fire lands on (not only the marked one).
+	## Guarded like every other HUD push, so a HUD that predates the wave stays inert.
+	if _hud != null and _hud.has_method(&"bind_weapons"):
+		_hud.call(&"bind_weapons", _guns)
+	_seat_ship(_pending_spawn)
+
+
+## The launched fit's batteries in the mounted component's own index space: the
+## profile's rack record for the launched hull (`PlayerProfile.battery_groups`, cell
+## refs into the hull's W cells) with every cell translated to the **barrel position**
+## `ShipFit.fitted_ids` gives that cell, plus one trailing rack for a barrel the record
+## does not mention - so a rack the ARMORY pane composed fires the barrels it holds and
+## nothing is left unfireable. `[]` for a hull with no racks, which leaves the
+## component on its own per-family grouping (S4's).
+##
+## The translation is `game.gd`'s because it is the only place that holds both spaces:
+## §16 rule 3's divergence means a W-cell index and a barrel position differ as soon as
+## a cell holds a family-less module (`w_mining`), so the positions are derived from
+## `fitted_ids`' own walk of the fit rather than guessed from the cell index.
+func _launch_batteries() -> Array:
+	var profile := _profile()
+	if profile == null or not profile.has_method(&"battery_groups"):
+		return []
+	var groups: Array = profile.call(&"battery_groups", _launch_hull)
+	if groups.is_empty():
+		return []
+	var positions: Array = _weapon_barrel_positions()
+	var racks: Array = []
+	for stored: Variant in groups:
+		if not stored is Array:
+			continue
+		var rack: Array = []
+		for raw_cell: Variant in (stored as Array):
+			var cell := int(raw_cell)
+			if cell < 0 or cell >= positions.size():
+				continue
+			var position := int(positions[cell])
+			if position < 0 or rack.has(position):
+				continue
+			rack.append(position)
+		racks.append(rack)
+	return racks
+
+
+## The barrel position `ShipFit.fitted_ids` gives each W cell of the launched fit:
+## one entry per **layout index** of the hull's W cells, `-1` for a cell that holds
+## nothing or holds a family-less module (the component drops `w_mining` from its
+## barrel list, which is the divergence §16 rule 3 records). The walk is
+## `fitted_ids`' own - weapons first, in cell order - so the two can never drift.
+func _weapon_barrel_positions() -> Array:
+	var fitted: Array = _launch_fit.get(&"weapons", [])
+	var positions: Array = []
+	var position := 0
+	for cell: Dictionary in ShipFit.grid_cells(_launch_hull):
+		if StringName(cell[&"type"]) != &"weapons":
+			continue
+		var index := int(cell[&"index"])
+		var module := &""
+		if index >= 0 and index < fitted.size():
+			module = StringName(str(fitted[index]))
+		while positions.size() <= index:
+			positions.append(-1)
+		if module != &"" and WeaponsScript.weapon_id(module) != &"":
+			positions[index] = position
+			position += 1
+	return positions
+
+
+## Places the ship on the sector's spawn point and starts the follow camera there,
+## so the first frame does not sweep in from the arena origin.
+func _seat_ship(spawn: Vector2) -> void:
+	if _ship == null:
+		return
+	_ship.global_position = spawn
+	_camera.global_position = spawn
+	_push_sector_name()
+
+
+func _row_for(sector_key: String) -> Dictionary:
+	if sector_key.is_empty():
+		return Registry.sector(Registry.DEFAULT_SECTOR_ID)
+	var by_id := Registry.sector(StringName(sector_key))
+	if not by_id.is_empty():
+		return by_id
+	for row: Dictionary in Registry.SECTORS:
+		if String(row.get(&"name", "")).nocasecmp_to(sector_key) == 0:
+			return row
+	return {}
+
+
+## Section 3.1 / section 9.9: ESC cancels the fly-to order and the lock. Docking
+## is the dock zone's `interact` prompt now, not a key.
+##
+## S29's N1 gives the same key the map deck's toggle (M and the corner EXPAND button
+## are its other two routes), so one press does exactly one thing: a press that closes
+## an open deck is the toggle alone - the pin's order must survive the map (its own
+## cancel routes are stick input (player_ship.gd), the pin's remove and arrival) - and
+## a press while the deck is closed opens it **and** keeps section 9.9 verbatim - and
+## because section 9.9's cancel and section 10's pin-remove are one operation (the
+## S29-F1 designer ruling, 2026-10-03; reversal: drop the `clear_map_pin` call below
+## and the two are separate operations again), that same press clears the pin, so the
+## deck never reopens on an orderless pin.
+## Reversal: drop `cancel_orders` below and ESC is map-only; restore it on both presses
+## and the pin's issued order dies on every map close.
+func _update_cancel_input() -> void:
+	if not Input.is_action_just_pressed(&"ui_cancel"):
+		return
+	## UI_SPEC section 18 A7: the cargo overlay's close is the one topmost step
+	## before the map-deck step (P19's idiom).
+	if _cargo_open:
+		_set_cargo_open(false)
+		return
+	var deck_open := false
+	if _hud != null and _hud.has_method(&"map_deck_open"):
+		deck_open = bool(_hud.call(&"map_deck_open"))
+		if _hud.has_method(&"toggle_map_deck"):
+			_hud.call(&"toggle_map_deck")
+	if deck_open:
+		return
+	if _ship != null:
+		_ship.cancel_orders()
+		if _hud != null and _hud.has_method(&"clear_map_pin"):
+			_hud.call(&"clear_map_pin")
+	_cancel_lock()
+	if _hud != null:
+		_hud.call(&"clear_target")
+
+
+## Section 7: fly into the station's dock zone, read the prompt, press `interact`.
+##
+## The prompt line's one owner (K0 1.4 constraint 2 / CONTRACTS §19): `_update_dock_prompt`
+## writes the line every frame, so every later claimant joins this ladder here rather
+## than calling `set_prompt` itself. The order is the pin's: the gate outranks the
+## scanner's channel, which outranks the salvage feed, which outranks the dock.
+func _update_dock_prompt() -> void:
+	var gate := _gate_under_ship()
+	_track_gate_ring(gate)
+	if gate != null:
+		_push_gate_prompt(gate)
+		return
+	var scan := _scan_prompt_text()
+	if not scan.is_empty():
+		_push_prompt(scan)
+		return
+	if not _feed_text.is_empty():
+		_push_prompt(_feed_text)
+		return
+	var inside := _inside_dock_zone()
+	## 12 §4.1's Outlaw band denies docking in faction space (13 §5). The refusal is the
+	## prompt's, not the route's: the line says why and `interact` never reaches
+	## `_request_dock`, so nothing is filed and nothing is written.
+	if inside and _dock_refused():
+		_push_prompt(DOCK_REFUSED_PROMPT)
+		return
+	_push_prompt(DOCK_PROMPT if inside else "")
+	if not inside:
+		return
+	if InputMap.has_action(INTERACT_ACTION) and Input.is_action_just_pressed(INTERACT_ACTION):
+		_request_dock()
+
+
+## 12 §4.1's second refusal axis, read from its own doc: the docked station's faction
+## denies docking at or below its Outlaw standing floor (-51). The **gate** refusal reads
+## the heat tier instead (13 §3) - two axes, each from its own doc, and neither writes
+## anything.
+func _dock_refused() -> bool:
+	var profile := _profile()
+	if profile == null or not profile.has_method(&"standing_of"):
+		return false
+	var faction := _sector_owner()
+	if faction == NpcRegistryScript.UNALIGNED or faction == &"":
+		return false
+	return int(profile.call(&"standing_of", faction)) <= STANDING_OUTLAW
+
+
+## 11 §5's gate readout, the one ladder that carries every gate line: `GATE_REFUSED_PROMPT`
+## at the Outlaw heat tier (13 §3), `GATE_REFUSED_FUNDS_PROMPT` when the account cannot pay
+## `Gate.fee_for` (L153: the ring has always answered -2 and no rung read it), otherwise the
+## jump line (`GATE_PROMPT_FORMAT`, the destination's name and fee). `interact` confirms
+## through `Gate.jump` (17 §5's law; a refusal writes nothing), and the ring's own charge-up
+## raises `jumped` when it completes.
+##
+## A running charge-up skips the refusal rungs: the fee is already paid, so a hull that is
+## short *because* it paid must not be told it cannot afford its own jump.
+func _push_gate_prompt(gate: Node) -> void:
+	var tier := _player_heat_tier()
+	var line := GATE_PROMPT_FORMAT % [
+		String(gate.call(&"destination_name")), int(gate.call(&"fee_for", tier))
+	]
+	if not bool(gate.call(&"is_charging")):
+		if tier == NpcRegistryScript.HEAT_OUTLAW:
+			line = GATE_REFUSED_PROMPT
+		elif not _gate_affordable(gate, tier):
+			line = GATE_REFUSED_FUNDS_PROMPT
+	_push_prompt(line)
+	if bool(gate.call(&"is_charging")):
+		return
+	if InputMap.has_action(INTERACT_ACTION) and Input.is_action_just_pressed(INTERACT_ACTION):
+		_request_gate_jump(gate)
+
+
+## Whether the account can pay the ring's fee at the player's own heat tier - the same
+## `fee_for` and the same `can_afford` call `Gate.jump` makes, read here so the prompt and
+## the refusal can never disagree. A missing profile reads as "cannot pay", which is what
+## `jump` answers too (17 §5's law).
+func _gate_affordable(gate: Node, tier: StringName) -> bool:
+	var profile := _profile()
+	if profile == null or not profile.has_method(&"can_afford"):
+		return false
+	return bool(profile.call(&"can_afford", int(gate.call(&"fee_for", tier))))
+
+
+## L152: the ring the ship is inside, tracked as the ladder reads it, so leaving it (or
+## entering another) calls off a running charge. The charge is the ring's own tick, so
+## nothing else in this scene may stop it - and the fee paid at confirm stays paid, which is
+## 11 §2.1's own reading (the confirm is the transaction).
+func _track_gate_ring(gate: Node) -> void:
+	if gate == _gate_in_ring:
+		return
+	if _gate_in_ring != null and is_instance_valid(_gate_in_ring):
+		_gate_in_ring.call(&"cancel_jump")
+	_gate_in_ring = gate
+
+
+## Calls off a running charge on the ring the ship is inside - the damage and death halves
+## of L152 (`_on_ship_damage_taken`, `_on_ship_died`); the zone-exit half is
+## `_track_gate_ring`.
+func _cancel_gate_charge() -> void:
+	if _gate_in_ring != null and is_instance_valid(_gate_in_ring):
+		_gate_in_ring.call(&"cancel_jump")
+
+
+## The ring under the ship, or null. The gate is the sector's geometry (its own
+## `contains`); this scene owns only the prompt and the jump.
+func _gate_under_ship() -> Node:
+	if _ship == null or _sector == null:
+		return null
+	if not _sector.has_method(&"gates"):
+		return null
+	for gate: Node in _sector.call(&"gates"):
+		if gate != null and bool(gate.call(&"contains", _ship.global_position)):
+			return gate
+	return null
+
+
+func _request_gate_jump(gate: Node) -> void:
+	var profile := _profile()
+	if profile == null:
+		return
+	gate.call(&"jump", profile, _player_heat_tier())
+
+
+## The player's heat tier in the current space, read through the profile (13 §1's only
+## heat owner) under the space owner's key - the same key `_apply_heat` writes.
+func _player_heat_tier() -> StringName:
+	var profile := _profile()
+	if profile == null:
+		return NpcRegistryScript.HEAT_CLEAN
+	var heat: Dictionary = profile.call(&"heat")
+	return NpcRegistryScript.heat_tier(int(heat.get(String(_sector_owner()), 0)))
+
+
+## 11 §2.2/§5: the corridors accrue their 15 s presence hold off the ship's own position
+## every physics frame. The corridor owns the rule; this scene owns the ship reference.
+func _update_travel(delta: float) -> void:
+	if _ship == null or _sector == null:
+		return
+	if not _sector.has_method(&"corridors"):
+		return
+	for corridor: Node in _sector.call(&"corridors"):
+		if corridor != null:
+			corridor.call(&"update_presence", delta, _ship.global_position)
+
+
+## Binds the sector's travel geometry to this scene's two transition triggers: a gate's
+## completed charge-up and a corridor's completed hold both mean "cross into the
+## destination sector".
+func _bind_travel_seams() -> void:
+	if _sector == null:
+		return
+	for gate: Node in _sector.call(&"gates"):
+		if gate != null and not gate.is_connected(&"jumped", _on_gate_jumped):
+			gate.connect(&"jumped", _on_gate_jumped)
+	for corridor: Node in _sector.call(&"corridors"):
+		if corridor != null and not corridor.is_connected(&"crossed", _on_corridor_crossed):
+			corridor.connect(&"crossed", _on_corridor_crossed)
+
+
+## 11 §2.3 / CONTRACTS §19: the transition goes through the `loading` route and files the
+## vitals **first**, because `Router.route` reloads this scene and the new one seeds
+## hull/shield/fuel from the filed record only - an unfiled crossing would silently reset
+## the pools to the last docked state. Fields and pickups reset because the scene is
+## rebuilt; the hold and heat live on `PlayerProfile` and are untouched.
+func _transition_to_sector(dest_number: int) -> void:
+	var row := Registry.sector(Registry.sector_id_for(dest_number))
+	if row.is_empty():
+		push_warning("game: no registry row for sector %d; the crossing is inert" % dest_number)
+		return
+	_request_sector_route(row)
+
+
+## Arms the crossing flag and asks the `loading` bridge for the destination game scene.
+## `_crossing_routed` records that *this* scene armed it: the Router can drop the request
+## while it is busy, and the scene then leaves by another route, so `_exit_tree` may only
+## clear a flag somebody else armed (L154).
+func _request_sector_route(row: Dictionary) -> void:
+	if route_requested.get_connections().is_empty():
+		return
+	_transit_destination = StringName(row.get(&"id", &""))
+	_crossing_routed = true
+	_file_damage_report()
+	route_requested.emit(
+		ROUTE_LOADING,
+		{PARAM_DESTINATION: DESTINATION_GAME, PARAM_SECTOR: StringName(row[&"id"])}
+	)
+
+
+## L154's one clear: the crossing flag is consumed by the next game scene's `_ready`, so
+## any route that lands something else - a dock, the respawn, a scene leaving on a route it
+## did not arm - drops it here rather than leaving it for a launch to misread.
+func _clear_transit_flag() -> void:
+	_transit_destination = &""
+	_crossing_routed = false
+
+
+func _on_gate_jumped(dest_sector: int) -> void:
+	_transition_to_sector(dest_sector)
+
+
+func _on_corridor_crossed(dest_sector: int) -> void:
+	_transition_to_sector(dest_sector)
+
+
+## S6's POIs, driven every physics frame (11 §3.2/§5): an anomaly inside its 200 u
+## radius fires its one-roll event, an active rift drains shields at `RIFT_DRAIN`/s
+## through the ship's own damage sink, and the nearest unspent derelict gets the scan
+## channel. The sector owns the POIs; this scene owns the ship reference and the
+## prompt line.
+func _update_pois(delta: float) -> void:
+	if _ship == null or _sector == null or not _sector.has_method(&"pois"):
+		return
+	for poi: Node in _sector.call(&"pois"):
+		if poi == null or not is_instance_valid(poi):
+			continue
+		var poi_kind := StringName(poi.get(&"kind"))
+		if poi_kind == PoiScript.KIND_ANOMALY:
+			if not bool(poi.call(&"is_consumed")) and bool(poi.call(&"in_trigger_radius", _ship)):
+				poi.call(&"trigger", _ship)
+			var drain := float(poi.call(&"update_presence", delta, _ship))
+			if drain > 0.0:
+				_ship.call(&"take_damage", drain)
+	_update_scan(delta)
+
+
+## 11 §3.1's 5 s interruptible channel on the nearest derelict in scan range, and
+## 11 §3.3's beacon reveal on the nearest beacon (a beacon answers at once, so it has
+## no channel and never holds `_scan_poi`). The channel resets when the ship leaves
+## range (the POI's own `scan` reports it), and `_on_ship_damage_taken` forwards a
+## hull hit to the same `interrupt`.
+func _update_scan(delta: float) -> void:
+	var nearest := _nearest_scannable()
+	if nearest != null and _in_scan_range(nearest):
+		var code := int(nearest.call(&"scan", _ship))
+		if code == PoiScript.SCAN_OK and bool(nearest.call(&"is_channelling")):
+			nearest.call(&"advance_scan", delta)
+			_scan_poi = nearest
+			return
+		if _scan_poi != null and _scan_poi != nearest:
+			_scan_poi = null
+		return
+	if _scan_poi != null:
+		if is_instance_valid(_scan_poi):
+			## Out of range: the POI's own call cancels the channel and reports it.
+			_scan_poi.call(&"scan", _ship)
+		_scan_poi = null
+
+
+## R-S24-3's POI scan reading (11's 2026-10-08 block): the derelict's 300 u channel and
+## the beacon reveal, both at `_scan_range()`. The POI owns its own range check
+## (`Poi.in_scan_range`, the registry's `DERELICT_SCAN_RANGE`), so the cloud factor is
+## applied here, at the one site that gates the channel - outside a cloud the shipped check
+## is the only one that runs.
+func _in_scan_range(poi: Node) -> bool:
+	if poi == null or not is_instance_valid(poi):
+		return false
+	if not bool(poi.call(&"in_scan_range", _ship)):
+		return false
+	var factor := _cloud_factor_now()
+	if factor >= 1.0:
+		return true
+	if _ship == null:
+		return false
+	return (
+		_ship.global_position.distance_to((poi as Node2D).global_position)
+		<= Registry.DERELICT_SCAN_RANGE * factor
+	)
+
+
+## The POI scan range the frame reads: 11 §5's 300 u, halved inside a cloud.
+func _scan_range() -> float:
+	return Registry.DERELICT_SCAN_RANGE * _cloud_factor_now()
+
+
+## R-S24-3's cover factor: `0.5` while the ship is inside one of the live sector's nebula
+## clouds, `1.0` outside every one of them (and with no sector, no ship or no clouds, so a
+## headless probe reads the shipped value exactly). Feedback and range math only - no stat,
+## no damage, no AI change (ruling 25).
+func _cloud_factor_now() -> float:
+	if _ship == null or _sector == null or not _sector.has_method(&"clouds"):
+		return 1.0
+	if Registry.in_cloud(_sector.call(&"clouds"), _ship.global_position):
+		return Registry.CLOUD_RANGE_FACTOR
+	return 1.0
+
+
+## The frame's cloud pass: the factor, the hull's 15 % wash tint, and the minimap radius
+## pushed to the HUD when the factor changed. `_minimap_radius` - the player's own zoom
+## state - is never written here, so leaving a cloud restores the exact radius.
+func _update_clouds() -> void:
+	_cloud_factor = _cloud_factor_now()
+	if _ship != null:
+		if _cloud_factor < 1.0 and not _cloud_tinted:
+			_ship.modulate = Color.WHITE.lerp(
+				Registry.CLOUD_WASH, Registry.CLOUD_WASH_ALPHA
+			)
+			_cloud_tinted = true
+		elif _cloud_factor >= 1.0 and _cloud_tinted:
+			_ship.modulate = Color.WHITE
+			_cloud_tinted = false
+	if not is_equal_approx(_cloud_factor, _cloud_pushed):
+		_cloud_pushed = _cloud_factor
+		_push_minimap_scale()
+
+
+## The minimap radius the HUD reads: the player's own zoom state through the cloud factor.
+## The push is the only place the factor reaches the HUD (11's block: "applied at the push").
+func _push_minimap_scale() -> void:
+	if _hud == null:
+		return
+	_hud.call(&"set_minimap_scale", _minimap_radius * _cloud_factor)
+
+
+## The radius the HUD is showing this frame, for the probes and the gate.
+func _minimap_radius_shown() -> float:
+	return _minimap_radius * _cloud_factor
+
+
+## The closest POI the scanner reaches: an unspent derelict or a beacon (11 §3.1/
+## §3.3), or null.
+func _nearest_scannable() -> Node:
+	if _sector == null or _ship == null or not _sector.has_method(&"pois"):
+		return null
+	var nearest: Node = null
+	var nearest_distance := INF
+	for poi: Node in _sector.call(&"pois"):
+		if poi == null or not is_instance_valid(poi):
+			continue
+		var poi_kind := StringName(poi.get(&"kind"))
+		if poi_kind == PoiScript.KIND_DERELICT and bool(poi.call(&"is_consumed")):
+			continue
+		if poi_kind != PoiScript.KIND_DERELICT and poi_kind != PoiScript.KIND_BEACON:
+			continue
+		var distance := _ship.global_position.distance_to((poi as Node2D).global_position)
+		if distance < nearest_distance:
+			nearest_distance = distance
+			nearest = poi
+	return nearest
+
+
+## Binds a POI's own reward signals (S6, 11 §3.1/06 §5): the derelict's data core pays
+## credits through the profile, and a wreck site's credit cache reports its collection,
+## so both feed lines ride the one prompt seam.
+func _on_poi_spawned(poi: Node2D) -> void:
+	if poi == null:
+		return
+	if poi.has_signal(&"scanned") and not poi.is_connected(&"scanned", _on_poi_scanned):
+		poi.connect(&"scanned", _on_poi_scanned)
+	if poi.has_signal(&"cache_collected") and not poi.is_connected(
+		&"cache_collected", _on_poi_cache_collected
+	):
+		poi.connect(&"cache_collected", _on_poi_cache_collected)
+
+
+func _on_poi_scanned(_reward: StringName, credits: int) -> void:
+	if credits > 0:
+		_push_cache_feed(credits)
+
+
+func _on_poi_cache_collected(amount: int) -> void:
+	if amount > 0:
+		_push_cache_feed(amount)
+
+
+## 06 §5's one-line feed (`+120 CR SALVAGE`), on the frozen prompt seam. A new feed
+## replaces the previous one and restarts its own window.
+func _push_cache_feed(amount: int) -> void:
+	_feed_text = SALVAGE_FEED_FORMAT % amount
+	_feed_remaining = SALVAGE_FEED_SECONDS
+
+
+## The feed's window, and the scan readout's 4 Hz repaint (11 §5). Both are the
+## prompt ladder's own state; nothing here writes a HUD widget.
+func _tick_prompt_timers(delta: float) -> void:
+	if _feed_remaining > 0.0:
+		_feed_remaining = maxf(_feed_remaining - delta, 0.0)
+		if _feed_remaining <= 0.0:
+			_feed_text = ""
+	_scan_prompt_accumulator += delta
+
+
+## The scan readout for the current channel, or "" when no channel is running. The
+## 4 Hz gate is the accumulator `_tick_prompt_timers` advances.
+func _scan_prompt_text() -> String:
+	if _scan_poi == null or not is_instance_valid(_scan_poi):
+		return ""
+	if not bool(_scan_poi.call(&"is_channelling")):
+		return ""
+	if _scan_prompt_accumulator < 1.0 / SCAN_PROMPT_HZ:
+		return _prompt if _prompt.begins_with(SCAN_PROMPT_PREFIX) else ""
+	_scan_prompt_accumulator = 0.0
+	var percent := int(round(float(_scan_poi.call(&"channel_progress")) * 100.0))
+	return SCAN_PROMPT_FORMAT % percent
+
+
+## The dock zone is the sector's geometry (W4's `dock_zone_contains`); game.gd
+## owns only the prompt and the route.
+func _inside_dock_zone() -> bool:
+	if _ship == null or _sector == null:
+		return false
+	if not _sector.has_method(&"dock_zone_contains"):
+		return false
+	return bool(_sector.call(&"dock_zone_contains", _ship.global_position))
+
+
+## Section 7: docking files the damage report and routes through `loading` to the
+## station. The connection guard keeps a standalone run (F6, a probe) inert
+## instead of routing into nothing.
+##
+## 12 §4.1 / 13 §5: a faction whose standing is Outlaw denies docking. The refusal is
+## checked **before** `_file_damage_report`, so it writes nothing at all - no vitals, no
+## route, no `docked_faction` - and the profile is byte-identical after it. On a real dock
+## the docked faction is filed for the station's LAUNCH pane (13 §7's bounty row).
+func _request_dock() -> void:
+	if _dock_refused():
+		return
+	if route_requested.get_connections().is_empty():
+		return
+	## L154: the station route boots no game scene, so a crossing flag still armed (its own
+	## route was dropped while the Router was busy) must not survive into the next launch.
+	_clear_transit_flag()
+	_file_damage_report()
+	_file_docked_faction()
+	_file_docked_station()
+	## S26 (14 section 5): "payout on return-to-station, win or lose" - a dock is a
+	## return, so an open arena run settles here.
+	_settle_arena_runs()
+	route_requested.emit(ROUTE_LOADING, {PARAM_DESTINATION: DESTINATION_STATION})
+
+
+## 13 §7's bounty row is the docked station's faction's, so the docking route names that
+## faction on the profile before it leaves. Transient (not a save key); a profile without
+## the setter leaves the row hidden rather than guessing a faction.
+func _file_docked_faction() -> void:
+	var profile := _profile()
+	if profile == null or not profile.has_method(&"set_docked_faction"):
+		return
+	profile.call(&"set_docked_faction", _sector_owner())
+
+
+## 14's 2026-10-08 block: the docked place is filed beside the faction, so the station
+## shell's plate, the OVERVIEW rows and every station price read the row this dock landed
+## at. Only a sector's primary spawns a station node today (14's own block), so the place is
+## that row; a sector with no primary row files its **own sector id** (S7 files
+## `&"sector_7"`), so an empty filed id means "no run has filed a place" and nothing else -
+## the cold start (`StationRegistry.starting_station`) and the S7 fallback both read it that
+## way (14's 2026-10-08 S38 block, H1).
+func _file_docked_station() -> void:
+	var profile := _profile()
+	if profile == null or not profile.has_method(&"set_docked_station"):
+		return
+	var row := StationRegistryScript.primary_for(_sector_row_id)
+	var filed := StringName(row.get(&"id", &""))
+	if filed == &"":
+		filed = _sector_row_id
+	profile.call(&"set_docked_station", filed)
+
+
+## Section 7: `warp` channels for WARP_CHANNEL seconds and lands docked. The gate
+## is "no hostile engaged" (`_enemy_engaged`), no damage for 5 s (the ship's own
+## query) and a station in the sector to land at.
+func _update_warp(delta: float) -> void:
+	if _warp_active:
+		## Section 7: the channel "breaks on damage or new aggro". Damage rides the ship's
+		## own signal (`_on_ship_damage_taken`); new aggro is the gate above, re-read every
+		## frame while the channel runs.
+		if _enemy_engaged():
+			_cancel_warp()
+			return
+		_warp_elapsed += delta
+		if _warp_elapsed >= WARP_CHANNEL:
+			_finish_warp()
+			return
+		_push_warp_channel(_warp_elapsed / WARP_CHANNEL)
+		return
+	if not _warp_ready():
+		return
+	if InputMap.has_action(WARP_ACTION) and Input.is_action_just_pressed(WARP_ACTION):
+		_start_warp()
+
+
+func _warp_ready() -> bool:
+	if _ship == null or _sector == null:
+		return false
+	if _enemy_engaged():
+		return false
+	if not bool(_ship.call(&"warp_available")):
+		return false
+	return _sector.has_station()
+
+
+## Section 7's "no hostile is engaged": a hostile signature (section 8's blip class, so
+## pirates, swarmers and patrols count and a convoy does not) in Alert or Engage with the
+## player as its target. `NpcShip.engaged_with` is the hull's own answer to exactly that
+## question, so the gate reads the real brain state instead of guessing from a distance.
+##
+## The 5 s damage half of the gate is the ship's own query (`warp_available`,
+## `WARP_DAMAGE_QUIET`) and is ANDed in `_warp_ready`.
+func _enemy_engaged() -> bool:
+	if _ship == null or not is_inside_tree():
+		return false
+	for node: Node in get_tree().get_nodes_in_group(NpcRegistryScript.GROUP):
+		if node == null or not node.has_method(&"engaged_with"):
+			continue
+		if not _is_hostile(node):
+			continue
+		if bool(node.call(&"engaged_with", _ship)):
+			return true
+	return false
+
+
+func _start_warp() -> void:
+	_warp_active = true
+	_warp_elapsed = 0.0
+	_push_warp_channel(0.0)
+
+
+func _cancel_warp() -> void:
+	if not _warp_active:
+		return
+	_warp_active = false
+	_warp_elapsed = 0.0
+	_push_warp_channel(0.0)
+
+
+func _finish_warp() -> void:
+	_cancel_warp()
+	_request_dock()
+
+
+## Section 7: the channel breaks on damage. The ship raises this from the hull and
+## shield signals, so a hit fully absorbed by the shield breaks it too. S6 extends the
+## same break to the derelict scan channel (11 §3.1: "interruptible"), and L152 gives the
+## gate's charge-up the same break: a paid jump that a hull hit interrupts calls off the
+## ring's charge (`cancel_jump`), which was dead code until S21.
+func _on_ship_damage_taken(_amount: float) -> void:
+	_cancel_warp()
+	if _scan_poi != null and is_instance_valid(_scan_poi):
+		_scan_poi.call(&"interrupt")
+	_cancel_gate_charge()
+
+
+## The two section 9.9 HUD additions land with W5, so the calls are method-guarded
+## and the pushed value is remembered (the HUD is addressed dynamically for the
+## same cross-wave reason).
+func _push_prompt(text: String) -> void:
+	if text == _prompt:
+		return
+	_prompt = text
+	if _hud != null and _hud.has_method(&"set_prompt"):
+		_hud.call(&"set_prompt", text)
+
+
+func _push_warp_channel(progress: float) -> void:
+	if is_equal_approx(progress, _warp_progress):
+		return
+	_warp_progress = progress
+	if _hud != null and _hud.has_method(&"set_warp_channel"):
+		_hud.call(&"set_warp_channel", progress)
+
+
+func _push_sector_name() -> void:
+	if _hud == null:
+		return
+	_hud.call(&"set_sector_name", _sector_name)
+
+
+## ENGINE_SPEC section 10 / IMPLEMENTATION_PLAN section 9.9: the cursor reticle's
+## reading, pushed every physics frame so it follows the cursor at input rate. Slice 2's
+## order is targeting first, mining second: a hull under the cursor reads `HOSTILE` when
+## section 8 calls it hostile and in/out of range otherwise (the selected weapon's range
+## against the distance, section 10), and only with no hull under the cursor does the
+## mining laser's own reading (`MINE_LASER_RANGE` 220 u and the cycle live in
+## `MiningLaser`, so `has_target()` already answers "the beam reaches the rock under the
+## cursor") still drive the box. The value is mirrored so the HUD is only addressed on a
+## change.
+func _push_reticle_state() -> void:
+	if _hud == null or not _hud.has_method(&"set_reticle_state"):
+		return
+	var state := _reticle_state_for(_cursor_world_position())
+	if state == _reticle_state:
+		return
+	_reticle_state = state
+	_hud.call(&"set_reticle_state", state)
+
+
+## The reticle reading for one world point, so a caller (the frame loop, a probe) can ask
+## the question at a point of its own instead of only at the cursor.
+func _reticle_state_for(world_point: Vector2) -> int:
+	var hull := _pick_hull(world_point)
+	if hull != null:
+		if _is_hostile(hull):
+			return TargetReticle.State.HOSTILE
+		return (
+			TargetReticle.State.IN_RANGE
+			if _in_weapon_range(hull)
+			else TargetReticle.State.OUT_OF_RANGE
+		)
+	if _laser != null and bool(_laser.call(&"is_active")):
+		return (
+			TargetReticle.State.IN_RANGE
+			if bool(_laser.call(&"has_target"))
+			else TargetReticle.State.OUT_OF_RANGE
+		)
+	return TargetReticle.State.PLAIN
+
+
+## Section 4.3: `weapon_1..5` selects a group. The trigger itself is *not* read here any
+## more: the mounted `WeaponComponent` samples `fire_primary` (held = fire the selected
+## group) and owns the shot, its pack and its Energy draw, so the slice-1 placeholder that
+## spent a round per key press is retired (it would double-spend against the real shot).
+func _update_weapon_input() -> void:
+	for slot in WEAPON_ACTIONS.size():
+		## The five actions are read behind the same `InputMap.has_action` guard the
+		## countermeasures and the dock prompt use: an action the map does not carry must
+		## not push an engine error every frame of flight. `weapon_6`/`weapon_7` are not
+		## in this table any more (S15): they have no rack to select.
+		if not InputMap.has_action(WEAPON_ACTIONS[slot]):
+			continue
+		if Input.is_action_just_pressed(WEAPON_ACTIONS[slot]):
+			_select_weapon(slot + 1)
+
+
+## Section 4.6's two one-shot items. Section 11 binds no key for either, so both triggers
+## are read behind `InputMap.has_action` guards and the mechanic ships through the seam
+## (`WeaponComponent.use_countermeasure`), spend and all.
+func _update_countermeasure_input() -> void:
+	if _guns == null:
+		return
+	for item: StringName in COUNTERMEASURE_ACTIONS:
+		var action: StringName = COUNTERMEASURE_ACTIONS[item]
+		if not InputMap.has_action(action):
+			continue
+		if Input.is_action_just_pressed(action):
+			_guns.call(&"use_countermeasure", item)
+
+
+func _update_cargo_input() -> void:
+	if not Input.is_action_just_pressed(&"cargo_toggle"):
+		return
+	_set_cargo_open(not _cargo_open)
+
+
+## UI_SPEC section 18 A7: C toggles the read-only overlay over the live HUD; nothing
+## is paused and the game keeps running under it. The mirror stays in step through
+## this one writer, and the HUD's frozen setter keeps latching its own flag (its
+## panel stays hidden) and emitting `cargo_toggled` exactly as before.
+func _set_cargo_open(open: bool) -> void:
+	if open == _cargo_open:
+		return
+	_cargo_open = open
+	_sync_cargo_overlay(open)
+	if _hud != null and _hud.has_method(&"set_cargo_open"):
+		_hud.call(&"set_cargo_open", open)
+
+
+func _sync_cargo_overlay(open: bool) -> void:
+	if _cargo_overlay == null or not is_instance_valid(_cargo_overlay):
+		return
+	if open == bool(_cargo_overlay.call(&"is_open")):
+		return
+	if open:
+		_cargo_overlay.call(&"open")
+	else:
+		_cargo_overlay.call(&"close")
+
+
+## --- Targeting: the lock channel and the target window (ENGINE_SPEC §4.1/§10) -----
+
+
+## One hull under a world point, resolved from whatever body the point query returns (a
+## hull's collider is its own `HullBody`, whose owner is the ship). Null when the point is
+## empty space. Public in the sense that a probe or a future aiming mode may ask it; it
+## reads nothing but the physics state.
+func _pick_hull(world_point: Vector2) -> Node2D:
+	if not is_inside_tree() or _ship == null:
+		return null
+	var space := get_world_2d().direct_space_state
+	if space == null:
+		return null
+	var query := PhysicsPointQueryParameters2D.new()
+	query.position = world_point
+	query.collision_mask = NpcShipScript.HULL_LAYER
+	query.collide_with_bodies = true
+	query.collide_with_areas = false
+	var best: Node2D = null
+	var best_distance := INF
+	for hit: Dictionary in space.intersect_point(query, NpcShipScript.HULL_LAYER):
+		var hull := _hull_of(hit.get("collider"))
+		if hull == null:
+			continue
+		var distance := _ship.global_position.distance_to(hull.global_position)
+		if distance < best_distance:
+			best_distance = distance
+			best = hull
+	return best
+
+
+## Section 4.1's "clicking a hostile inside lock range", so the pick is a hostile hull
+## under the cursor and inside `ShipStats.lock_range` (the scanner's range, section 9,
+## which is what gives `c_scanner` a combat job). Anything else - an empty point, a
+## friendly hull, a hostile out of range - is not a lock order and falls through to the
+## ship's own fly-to.
+func _pick_lock_target(world_point: Vector2) -> Node2D:
+	var hull := _pick_hull(world_point)
+	if hull == null or not _is_hostile(hull):
+		return null
+	if _ship.global_position.distance_to(hull.global_position) > _lock_range():
+		return null
+	return hull
+
+
+## The hull a collider belongs to: the collider itself when it is one (a future hull with
+## a script), else its nearest ancestor in the NPC group.
+func _hull_of(collider: Variant) -> Node2D:
+	var node := collider as Node
+	if node == null:
+		return null
+	var cursor: Node = node
+	while cursor != null:
+		if cursor.is_in_group(NpcRegistryScript.GROUP):
+			return cursor as Node2D
+		cursor = cursor.get_parent()
+	return null
+
+
+## Section 8's blip class for a hull, which is also what §7's warp gate and §4.1's lock
+## order read: only a hostile signature is a lock target, so a convoy cannot be locked.
+func _is_hostile(node: Node) -> bool:
+	if node == null or not node.has_method(&"blip_kind"):
+		return false
+	return StringName(node.call(&"blip_kind")) == NpcRegistryScript.BLIP_HOSTILE
+
+
+## R-S24-3: the lock range (the lock channel, `_pick_lock_target` and the weapons'
+## fallback range all read this one function) through the cloud factor.
+func _lock_range() -> float:
+	var reach := _stats.lock_range if _stats != null else 0.0
+	return reach * _cloud_factor_now()
+
+
+## The selected group's own range against the target's distance (§10's range state). A
+## family with no range row (the mine is dropped, not aimed) has no envelope of its own,
+## so it reads against the lock's range - the only range the weapon has.
+func _in_weapon_range(target: Node2D) -> bool:
+	if target == null or _ship == null:
+		return false
+	return _ship.global_position.distance_to(target.global_position) <= _weapon_range()
+
+
+func _weapon_range() -> float:
+	var reach := 0.0
+	if _guns != null and _guns.has_method(&"selected_weapon"):
+		reach = WeaponsScript.range_of(StringName(_guns.call(&"selected_weapon")))
+	return reach if reach > 0.0 else _lock_range()
+
+
+## Section 3.1: LMB on a hostile hull starts the channel instead of ordering a fly-to. The
+## ship's own handler has already taken the click by the time this runs (it is a later
+## child, and unhandled input walks the tree bottom-up), so a lock order cancels the
+## order the same click placed - deferred, so the outcome does not depend on that order.
+func _unhandled_input(event: InputEvent) -> void:
+	var button := event as InputEventMouseButton
+	if button == null or not button.pressed:
+		return
+	if button.button_index == MOUSE_BUTTON_LEFT:
+		_on_left_click()
+		return
+	if button.button_index == MOUSE_BUTTON_WHEEL_UP:
+		_set_camera_zoom(_camera_zoom + CAMERA_ZOOM_STEP)
+	elif button.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+		_set_camera_zoom(_camera_zoom - CAMERA_ZOOM_STEP)
+
+
+func _on_left_click() -> void:
+	if _dead:
+		return
+	var target := _pick_lock_target(_cursor_world_position())
+	if target == null:
+		return
+	if _ship != null:
+		_ship.call_deferred(&"cancel_orders")
+	_start_lock(target)
+
+
+## One frame of the lock channel (§4.1): 1.2 s of uninterrupted line of sight, restarted
+## from zero by anything that breaks it, and the lock lands when the clock completes. A
+## target that died, left the scanner's range or left the tree drops the lock entirely.
+func _update_lock(delta: float) -> void:
+	_prune_lock()
+	if _lock_target == null or not _lock_channeling:
+		return
+	var target_position: Vector2 = _lock_target.global_position
+	if not _in_lock_range(target_position) or not _lock_clear_line(target_position):
+		_reset_lock_channel()
+		return
+	## S27 (15 section 4, `of the Long Watch`, CONTRACTS section 20): the channel's own
+	## duration, `LOCK_CHANNEL` unless the launch's fitted instances carry the perk, which
+	## holds it `LONG_WATCH_SECONDS` longer. Read once per frame from the same summary the
+	## other suffix seams read, so a launch without it keeps the pinned 1.2 s.
+	var channel := AffixesScript.lock_channel_seconds(_launch_summary, LOCK_CHANNEL)
+	_lock_elapsed += delta
+	_lock_progress = clampf(_lock_elapsed / channel, 0.0, 1.0)
+	_push_lock_progress()
+	if _lock_elapsed >= channel:
+		_acquire_lock()
+
+
+func _in_lock_range(target_position: Vector2) -> bool:
+	return _ship != null and _ship.global_position.distance_to(target_position) <= _lock_range()
+
+
+## "rocks and hulls block it": a ray from the hull to the target against the rock and hull
+## layers, with both hulls' own bodies excluded (a hull does not block its own lock). An
+## unobstructed ray is an empty hit.
+func _lock_clear_line(target_position: Vector2) -> bool:
+	if not is_inside_tree() or _ship == null:
+		return false
+	var space := get_world_2d().direct_space_state
+	if space == null:
+		return false
+	var from: Vector2 = _ship.global_position
+	var query := PhysicsRayQueryParameters2D.create(
+		from, target_position, LOCK_LOS_MASK, _lock_exclusions()
+	)
+	query.collide_with_areas = false
+	query.collide_with_bodies = true
+	return space.intersect_ray(query).is_empty()
+
+
+## Both hulls' collision bodies, so the ray tests the world between them and not the two
+## endpoints: the ship's own body (a `HullBody` at its origin) and the target's.
+func _lock_exclusions() -> Array[RID]:
+	var out: Array[RID] = []
+	for root: Node in [_ship, _lock_target]:
+		if root == null:
+			continue
+		var stack: Array[Node] = [root]
+		while not stack.is_empty():
+			var node: Node = stack.pop_back()
+			var body := node as CollisionObject2D
+			if body != null and not body.is_queued_for_deletion():
+				out.append(body.get_rid())
+			for child: Node in node.get_children():
+				stack.append(child)
+	return out
+
+
+## Section 4.1: the channel starts here, and section 4.6's chaff refuses it - "active locks
+## break immediately and cannot re-acquire the real hull while ghosts live".
+func _start_lock(target: Node2D) -> void:
+	if _jamming():
+		return
+	_lock_target = target
+	_lock_elapsed = 0.0
+	_lock_channeling = true
+	_lock_progress = 0.0
+	if _guns != null and _guns.has_method(&"clear_lock_target"):
+		_guns.call(&"clear_lock_target")
+	_push_lock_progress()
+
+
+## An interrupted channel restarts from zero ("uninterrupted line of sight"), but the mark
+## stays: the player can re-acquire by holding the position, which is what the ring going
+## dark under a rock is telling them.
+func _reset_lock_channel() -> void:
+	_lock_elapsed = 0.0
+	_lock_progress = 0.0
+	_push_lock_progress()
+
+
+func _acquire_lock() -> void:
+	_lock_channeling = false
+	_lock_progress = 1.0
+	if _guns != null and _guns.has_method(&"set_lock_target"):
+		_guns.call(&"set_lock_target", _lock_target)
+	_push_lock_progress()
+
+
+## ESC, a dead target, a broken lock and a sector transition all land here: the mark, the
+## channel, the lock the seeker follows and the ring all clear together.
+func _cancel_lock() -> void:
+	_lock_target = null
+	_lock_elapsed = 0.0
+	_lock_channeling = false
+	_lock_progress = -1.0
+	if _guns != null and _guns.has_method(&"clear_lock_target"):
+		_guns.call(&"clear_lock_target")
+	_push_lock_progress()
+
+
+## §4.6: chaff breaks the lock the moment it fires; the component raises this and clears
+## its own target, and the channel's owner does the same on its side.
+func _on_locks_broken() -> void:
+	_cancel_lock()
+
+
+func _jamming() -> bool:
+	return _guns != null and _guns.has_method(&"jamming") and bool(_guns.call(&"jamming"))
+
+
+## A mark with no lock: Q cycles the passive radar's tags (§3.1's `target_next`, §4.1's
+## "passive radar auto-tags signatures within `PASSIVE_RADIUS`"). A tag is a reading, not a
+## lock - the ring and the seeker still need the channel.
+func _update_target_input() -> void:
+	if not InputMap.has_action(TARGET_NEXT_ACTION):
+		return
+	if not Input.is_action_just_pressed(TARGET_NEXT_ACTION):
+		return
+	_cycle_mark()
+
+
+## Q's cycle: the nearest hostile signature that is not already the mark, wrapping back to
+## the only contact when it is the only one. Nearest-first rather than list-order, so the
+## cycle stays predictable while everything in the sector is moving.
+func _cycle_mark() -> void:
+	var signatures := _passive_signatures()
+	if signatures.is_empty():
+		_cancel_lock()
+		return
+	var nearest: Node2D = null
+	var nearest_distance := INF
+	for hull: Node2D in signatures:
+		if hull == _lock_target:
+			continue
+		var distance: float = _ship.global_position.distance_to(hull.global_position)
+		if distance < nearest_distance:
+			nearest_distance = distance
+			nearest = hull
+	_mark(nearest if nearest != null else signatures[0])
+
+
+## Every hostile signature inside `PASSIVE_RADIUS` (§4.1's passive radar).
+func _passive_signatures() -> Array[Node2D]:
+	var out: Array[Node2D] = []
+	if _ship == null or not is_inside_tree():
+		return out
+	for node: Node in get_tree().get_nodes_in_group(NpcRegistryScript.GROUP):
+		var hull := node as Node2D
+		if hull == null or not _is_hostile(hull):
+			continue
+		if _ship.global_position.distance_to(hull.global_position) <= PASSIVE_RADIUS:
+			out.append(hull)
+	return out
+
+
+func _mark(target: Node2D) -> void:
+	_lock_target = target
+	_lock_elapsed = 0.0
+	_lock_channeling = false
+	_lock_progress = -1.0
+	if _guns != null and _guns.has_method(&"clear_lock_target"):
+		_guns.call(&"clear_lock_target")
+	_push_lock_progress()
+
+
+## A target that died, left the tree or left the scanner's range is no target (§4.1's lock
+## is dropped when the contact is lost).
+func _prune_lock() -> void:
+	if _lock_target == null:
+		return
+	if not is_instance_valid(_lock_target):
+		_cancel_lock()
+		return
+	if _lock_target.has_method(&"is_alive") and not bool(_lock_target.call(&"is_alive")):
+		_cancel_lock()
+		return
+	if not _in_lock_range(_lock_target.global_position):
+		_cancel_lock()
+
+
+func _push_lock_progress() -> void:
+	if _hud == null or not _hud.has_method(&"set_lock_progress"):
+		return
+	if is_equal_approx(_lock_progress, _lock_progress_pushed):
+		return
+	_lock_progress_pushed = _lock_progress
+	_hud.call(&"set_lock_progress", _lock_progress)
+
+
+## §10's target window: the marked hull's name (08 §2's own hull name where the hull has a
+## row), its two pools as fractions, the distance, §10's range state and §8's threat class.
+## The marker no longer rides this push: since S22 A1 the confirmed hit is the delivery
+## seam's own `hit_landed` signal (`hud.gd`'s `bind_weapons`), so the window is a pure
+## reading again and a regenerating pool cannot be mistaken for one.
+func _push_target() -> void:
+	if _hud == null:
+		return
+	if _lock_target == null or not is_instance_valid(_lock_target):
+		_hud.call(&"clear_target")
+		return
+	var hull := _hull_read(_lock_target, &"hull")
+	var shield := _hull_read(_lock_target, &"shield")
+	var hull_max := maxf(_hull_read(_lock_target, &"hull_max"), 0.0)
+	var shield_max := maxf(_hull_read(_lock_target, &"shield_max"), 0.0)
+	var distance: float = _ship.global_position.distance_to(_lock_target.global_position)
+	_hud.call(
+		&"set_target",
+		_screen_position_of(_lock_target.global_position),
+		clampf(hull / hull_max, 0.0, 1.0) if hull_max > 0.0 else 0.0
+	)
+	_hud.call(
+		&"set_target_info",
+		{
+			"name": _target_name(_lock_target),
+			"hull": clampf(hull / hull_max, 0.0, 1.0) if hull_max > 0.0 else 0.0,
+			"shield": clampf(shield / shield_max, 0.0, 1.0) if shield_max > 0.0 else 0.0,
+			"distance_m": distance,
+			"in_range": _in_weapon_range(_lock_target),
+			"threat": _threat_reading(_lock_target),
+		}
+	)
+
+
+## 08 §2's hull name ("Lancer", "Vanguard", ...) for the hull the target flies, falling back
+## to the archetype's own id where the hull has no class row (W3's D9: the turret platform).
+func _target_name(target: Node2D) -> String:
+	if target.has_method(&"hull_id"):
+		var row: Dictionary = ShipFit.HULLS.get(StringName(target.call(&"hull_id")), {})
+		var hull_name := String(row.get(&"name", ""))
+		if not hull_name.is_empty():
+			return hull_name
+	if target.has_method(&"archetype"):
+		return String(target.call(&"archetype")).to_upper()
+	return ""
+
+
+func _threat_reading(target: Node2D) -> StringName:
+	if target.has_method(&"blip_kind"):
+		return StringName(target.call(&"blip_kind"))
+	return &""
+
+
+func _hull_read(target: Node2D, method: StringName) -> float:
+	if not target.has_method(method):
+		return 0.0
+	return float(target.call(method))
+
+
+## Where a world point lands on screen, for the reticle's marked-target position
+## (`set_target`): the viewport's canvas transform is the camera's own world-to-viewport
+## mapping, so the reticle stays on the hull at every zoom.
+func _screen_position_of(world_position: Vector2) -> Vector2:
+	var viewport := get_viewport()
+	if viewport == null:
+		return world_position
+	return viewport.get_canvas_transform() * world_position
+
+
+func _cursor_world_position() -> Vector2:
+	if _ship != null:
+		return _ship.get_global_mouse_position()
+	return get_global_mouse_position()
+
+
+func _follow_ship() -> void:
+	if _ship == null:
+		return
+	_camera.global_position = _ship.global_position
+
+
+## The profile is an autoload, so it is a child of /root; a bare ^"PlayerProfile"
+## path would resolve against this node instead (STATION_SPEC section 1, see
+## station.gd), so the lookup is anchored at the tree root and stays optional.
+func _profile() -> Node:
+	if not is_inside_tree():
+		return null
+	return get_tree().root.get_node_or_null(NodePath(PROFILE_SERVICE))
+
+
+## The profile owns the cargo (17 section 5 rule 2) and the HUD reads PlayerState,
+## so the manifest is mirrored across that one seam: on every cargo change (a
+## pickup's collection, a sale, a refinery job) and on the 0.1 s HUD refresh.
+func _connect_profile() -> void:
+	var profile := _profile()
+	if profile == null or not profile.has_signal(&"profile_changed"):
+		return
+	if not profile.is_connected(&"profile_changed", _on_profile_changed):
+		profile.connect(&"profile_changed", _on_profile_changed)
+
+
+func _disconnect_profile() -> void:
+	var profile := _profile()
+	if profile == null or not profile.has_signal(&"profile_changed"):
+		return
+	if profile.is_connected(&"profile_changed", _on_profile_changed):
+		profile.disconnect(&"profile_changed", _on_profile_changed)
+
+
+func _on_profile_changed(key: StringName) -> void:
+	if key == PROFILE_CARGO_KEY:
+		_sync_cargo()
+
+
+## 02 section 1.2's hold fill, summed from the profile's manifest and handed to
+## PlayerState, which is the only channel the HUD reads (section 3.9). Without this
+## the cargo bar and the hold-full state stay at zero while the hold fills.
+func _sync_cargo() -> void:
+	if _state == null:
+		return
+	var profile := _profile()
+	if profile == null:
+		return
+	var used := 0
+	var items: Dictionary = profile.call(&"cargo_items")
+	for quantity: Variant in items.values():
+		used += int(quantity)
+	if used == _state.cargo_used:
+		return
+	_state.set_cargo_used(used)
+
+
+## 01 section 6: seed the live pools from the stored report, so a ship that was
+## launched damaged comes back the way it left. No record means full pools.
+## Fuel persists across the launch (ENGINE_SPEC section 12 item 13, section 4.4) and
+## Energy does not — `setup` has already recomputed the buffer — so only a report
+## that actually filed a tank moves this one: a pre-v3 record, or one a dock filed
+## while the tank was never reported, leaves the launch-full tank alone instead of
+## dropping the ship into Emergency Flight Mode with no fuel to fly on.
+func _seed_vitals() -> void:
+	var profile := _profile()
+	if profile == null:
+		return
+	var stored: Variant = profile.call(&"vitals_of", profile.call(&"active_ship"))
+	if not stored is Dictionary:
+		return
+	var record: Dictionary = stored
+	if record.is_empty():
+		return
+	_state.set_hull(minf(float(record.get("hull", _state.hull_max)), _state.hull_max))
+	_state.set_shield(minf(float(record.get("shield", _state.shield_max)), _state.shield_max))
+	if record.has("fuel"):
+		_state.set_fuel(minf(float(record["fuel"]), _state.fuel_max))
+
+
+## 01 section 6 / ENGINE_SPEC section 12 item 13: the station's REPAIRS module reads
+## the profile's vitals, so docking files the live state as this ship's damage report
+## — hull and shield for the repair fee, the tank for the free refuel service, which
+## is the same report and the same write. The packs are filed in the same breath
+## (section 4.3), so one dock event settles everything the flight scene owns.
+func _file_damage_report() -> void:
+	var profile := _profile()
+	if profile == null:
+		return
+	profile.call(
+		&"set_vitals",
+		profile.call(&"active_ship"),
+		int(_state.hull),
+		int(_state.shield),
+		int(round(_state.fuel)),
+	)
+	_file_ammo_report()
+
+
+## Section 4.3 / 01 section 6: the packs are profile-owned, `PlayerState` seeds them at
+## launch and the *deltas* go back on dock. The seed is remembered in `_ammo_seed`, so a
+## store the launch's own ceiling could not load whole is never overwritten by a clamped
+## live figure - the filing only ever spends what was actually fired.
+##
+## The write rides `PlayerProfile.set_ammo` (the dock report's absolute writer; `buy_ammo`
+## could only ever add). Since S5 (10 section 6.1) that store is the **magazine the launch
+## loaded from the hold**, not a purchase target: `buy_ammo` delivers cargo units, the
+## launch draws them through `load_ammo_from_hold`, and this filing takes the fired rounds
+## off what the load left, so the next launch tops up from whatever the hold still carries.
+func _file_ammo_report() -> void:
+	var profile := _profile()
+	if profile == null or _state == null:
+		return
+	if not profile.has_method(&"set_ammo"):
+		return
+	for slot in _state.weapons.size():
+		if slot >= _ammo_seed.size():
+			continue
+		var weapon_id: StringName = _state.weapons[slot]
+		var seeded := _ammo_seed[slot]
+		var live: int = _state.ammo[slot]
+		var fired := seeded - live
+		if fired <= 0:
+			continue
+		var stored := int(profile.call(&"ammo_of", weapon_id))
+		profile.call(&"set_ammo", weapon_id, maxi(stored - fired, 0))
+		_ammo_seed[slot] = live
+		EconomyLogScript.append(
+			EVENT_AMMO, weapon_id, fired, 0, int(profile.call(&"credits"))
+		)
+
+
+## The other half of the same pattern, and since S5 it is a **cargo** load (10 section 6.1,
+## CONTRACTS section 17): each fitted weapon's pack auto-fills from the hold's `ammo_*` units
+## of its family up to `ammo_max`, once per launch, and the drawn units leave the hold. The
+## slots are the launched fit's own (`weapons`), so a hull that mounts two lasers loads the
+## one `laser` pack **once** and seeds both slots from it, and a hull that mounts none loads
+## nothing. The load is a profile write (`load_ammo_from_hold` tops the pack up and returns
+## what it holds), so each slot is seeded from the pack's own post-load figure and
+## `_ammo_seed` still records what the flight started with. Nothing here runs in flight: a
+## pack that empties during a sortie stays empty until the next launch.
+func _seed_ammo() -> void:
+	var profile := _profile()
+	if profile == null or _state == null:
+		return
+	_ammo_seed.clear()
+	var loaded: Dictionary = {}
+	for slot in _state.weapons.size():
+		var weapon_id: StringName = _state.weapons[slot]
+		_state.set_ammo(slot, _auto_load_ammo(profile, weapon_id, loaded))
+		_ammo_seed.append(_state.ammo[slot])
+
+
+## The sector crossing's pack seed (11 §2.3 / CONTRACTS §19): the packs the outgoing
+## scene just filed, with **no** hold draw. The launch's auto-load is once per launch and
+## a crossing is not a launch, so the hold is not spent a second time; the seeded packs
+## then become this leg's dock-filing baseline, exactly as `_seed_ammo`'s do.
+func _seed_ammo_from_store() -> void:
+	var profile := _profile()
+	if profile == null or _state == null:
+		return
+	_ammo_seed.clear()
+	for slot in _state.weapons.size():
+		var weapon_id: StringName = _state.weapons[slot]
+		_state.set_ammo(slot, int(profile.call(&"ammo_of", weapon_id)))
+		_ammo_seed.append(_state.ammo[slot])
+
+
+## One family's auto-load, answered from `loaded` after the first cell that asks for it so a
+## twin-weapon fit draws the hold exactly once. A profile without the cargo auto-load (a
+## stub, or an older store) keeps the pre-S5 read of its own pack.
+func _auto_load_ammo(profile: Node, weapon_id: StringName, loaded: Dictionary) -> int:
+	if loaded.has(weapon_id):
+		return int(loaded[weapon_id])
+	var rounds := 0
+	if profile.has_method(&"load_ammo_from_hold"):
+		rounds = int(profile.call(&"load_ammo_from_hold", weapon_id))
+	else:
+		rounds = int(profile.call(&"ammo_of", weapon_id))
+	loaded[weapon_id] = rounds
+	return rounds
+
+
+func _refresh_hud() -> void:
+	if _hud == null:
+		return
+	_sync_cargo()
+	_push_pools()
+	_push_target()
+	# String keys: the HUD minimap reads blip["pos"] / blip["kind"] (section 3.10).
+	var blips: Array[Dictionary] = []
+	if _ship != null:
+		blips.append({"pos": _ship.global_position, "kind": &"self"})
+	if _sector != null:
+		blips.append_array(_sector.blips())
+	blips.append_array(_ghost_blips())
+	_hud.call(&"set_minimap_blips", blips)
+
+
+## Section 4.6 / UI_SPEC section 3.3: the chaff's ghost signatures ride the minimap as
+## their own blip kind while the component keeps them alive (3.0 s), so the blip count and
+## the window cannot disagree with the lock rule - both read the component's list. (The
+## kind's 6 Hz alpha flicker is the minimap's draw and is reported: `ui/hud/minimap.gd` is
+## outside this worker's file set.)
+func _ghost_blips() -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	if _guns == null or not _guns.has_method(&"ghosts"):
+		return out
+	for ghost: Variant in _guns.call(&"ghosts"):
+		var node := ghost as Node2D
+		if node == null or not is_instance_valid(node):
+			continue
+		out.append({"pos": node.global_position, "kind": &"ghost"})
+	return out
+
+
+## ENGINE_SPEC section 10 / UI_SPEC section 3.6: the radial speedometer. The ratio is the
+## hull's live speed against its class maximum (`ShipStats.max_speed`, the same figure the
+## flight law reads), the prograde leg is the actual velocity vector and the heading leg is
+## the nose, so the dial needs no second opinion about either - the HUD takes the angles.
+##
+## That one ratio is engine spec section 3.4's single input, so it is computed here and
+## nowhere else, and the three readers all take this frame's value: the screen-space stack
+## (blur, pull-back, dust), the hull's own thruster driver (trail and bed) and the dial.
+func _push_speedometer() -> void:
+	if _ship == null or _stats == null:
+		return
+	var velocity: Vector2 = _ship.velocity()
+	var maximum: float = _stats.max_speed
+	var ratio := 0.0
+	if maximum > 0.0:
+		ratio = clampf(velocity.length() / maximum, 0.0, 1.0)
+	_push_speed_fantasy(ratio, velocity)
+	if _ship.has_method(&"set_speed_ratio"):
+		_ship.call(&"set_speed_ratio", ratio)
+	if _hud == null or not _hud.has_method(&"set_speedometer"):
+		return
+	_hud.call(&"set_speedometer", ratio, velocity, Vector2.RIGHT.rotated(_ship.global_rotation))
+
+
+## The screen-space stack's own push: the wheel's shown value, the frame's ratio and the
+## hull's fraction. FX_SPEC section 6: the damage states key off `PlayerState`'s pools, so
+## the fraction comes from the same state the HUD's hull bar reads.
+func _push_speed_fantasy(ratio: float, velocity: Vector2) -> void:
+	if _speed_fantasy == null:
+		return
+	_speed_fantasy.set_wheel_zoom(_camera_zoom_shown)
+	_speed_fantasy.set_ratio(ratio, velocity)
+	_speed_fantasy.set_hull_fraction(_hull_fraction())
+
+
+## The flight camera and the screen-space stack meet here: the dust emitter is parented to
+## the camera (FX_SPEC section 5 row 3), and the camera's zoom has exactly one writer.
+func _bind_speed_fantasy() -> void:
+	if _speed_fantasy == null:
+		return
+	_speed_fantasy.bind_camera(_camera)
+
+
+func _hull_fraction() -> float:
+	if _state == null or _state.hull_max <= 0.0:
+		return 1.0
+	return clampf(_state.hull / _state.hull_max, 0.0, 1.0)
+
+
+## ENGINE_SPEC section 10 / UI_SPEC section 3.1b: the Energy and Fuel bars and the
+## Emergency Flight Mode banner. PlayerState is the single source (section 3.9), so
+## the values are read from it here rather than mirrored in this scene; the calls are
+## method-guarded and the HUD is addressed dynamically for the same cross-wave reason
+## as the prompt strip and the warp bar (a HUD that predates slice 0 stays inert).
+func _push_pools() -> void:
+	if _hud == null or _state == null:
+		return
+	if _hud.has_method(&"set_pool"):
+		_hud.call(&"set_pool", &"energy", _state.energy, _state.energy_max)
+		_hud.call(&"set_pool", &"fuel", _state.fuel, _state.fuel_max)
+	if _hud.has_method(&"set_emergency"):
+		_hud.call(&"set_emergency", _state.emergency_mode)
+
+
+## Section 4.3 / 09 section 11: a **rack ordinal** (1-based, `weapon_1..5`) selects
+## the battery the mounted component fires. Both callers hand one in - the input map's
+## `weapon_N` key as `N` and the HUD's W-slot button as the ordinal of the rack its
+## cell belongs to (`ui/hud/hud.gd`) - because a composed rack may hold several kinds
+## and one rack need not sit at its own cell's index. A fit with no guns carries no
+## node and the selection stays a `PlayerState` reading, exactly as it was in slice 1.
+func _select_weapon(battery: int) -> void:
+	if battery < 1 or battery > WeaponsScript.GROUPS_MAX:
+		return
+	_weapon_index = battery - 1
+	if _guns != null and _guns.has_method(&"select_group"):
+		_guns.call(&"select_group", battery)
+	if _hud != null and _hud.has_method(&"select_battery"):
+		_hud.call(&"select_battery", battery)
+
+
+func _bind_hud() -> void:
+	if _hud == null:
+		return
+	_hud.call(&"bind", _state)
+	_push_sector_name()
+	_push_hull_slots()
+	_hud.call(&"set_minimap_scale", _minimap_radius * _cloud_factor)
+	_hud.connect(&"weapon_slot_selected", _on_weapon_slot_selected)
+	_hud.connect(&"cargo_toggled", _on_cargo_toggled)
+	_hud.connect(&"minimap_zoom_changed", _on_minimap_zoom_changed)
+	_hud.connect(&"map_autopilot_to", _on_map_autopilot_to)
+	_hud.connect(&"map_autopilot_cancel", _on_map_autopilot_cancel)
+	_hud.connect(&"map_jump_requested", _on_map_jump_requested)
+
+
+## CONTRACTS section 11's `set_hull_slots`: the launched hull's W cells, pushed once per
+## launch because the fit only changes in the station. Guarded like every other HUD push
+## here, so a HUD that predates this wave stays inert rather than failing the launch.
+func _push_hull_slots() -> void:
+	if _hud == null or not _hud.has_method(&"set_hull_slots"):
+		return
+	_hud.call(&"set_hull_slots", _launch_hull, _hull_slot_cells())
+
+
+## One entry per W cell of the launched hull, in the matrix's own layout order (09
+## section 4 item 5's index): `module` is the fitted base id (`&""` for an unfitted
+## cell), `icon` is the catalogue's own path for it - the HUD draws the `w` slot glyph
+## for an empty cell - and `battery` is the **1-based rack ordinal** the cell fires
+## from, `0` for a cell that belongs to no rack (09 section 11 / CONTRACTS section 17:
+## the HUD's W-slot buttons address battery ordinals, not cell indices, because a
+## composed rack may hold several cells and several kinds). `selectable` follows from
+## the battery: a cell with no rack, or one whose ordinal the input map cannot reach
+## (`GROUPS_MAX`), displays without a key. The cells come from `ShipFit.grid_cells`,
+## so the HUD's grid is the hull's own matrix and no second layout table exists.
+##
+## `position` is the **barrel slot** the cell's own ammo lives at - its index in
+## `PlayerState.weapons`/`ammo`, which is the array the HUD's readout reads
+## (`_hull_slot_cells` and `_launch_weapons` count the same cells in the same order, so
+## the two can never drift). It is what makes a **mixed** rack's readout follow the
+## barrel it names rather than the family that happens to sit at the ordinal's index
+## (`ui/hud/hud.gd`, the S5 review's R1-MED-1). It equals `_weapon_barrel_positions()`'
+## entry for the cell whenever every fitted cell carries a firing family - which is
+## every standard fit and every auction fit - and differs only where 09 section 11 /
+## CONTRACTS section 16 rule 3's divergence bites (a family-less `w_mining` cell, which
+## `WeaponsComponent.set_fitted` drops from its own barrel list but `_launch_weapons`
+## keeps as a slot with no pack). `-1` for a cell the fit leaves empty.
+func _hull_slot_cells() -> Array:
+	var cells: Array = []
+	var fitted: Array = _launch_fit.get(&"weapons", [])
+	var batteries: Array = _launch_batteries()
+	var barrels: Array = _weapon_barrel_positions()
+	var position := 0
+	for cell: Dictionary in ShipFit.grid_cells(_launch_hull):
+		if StringName(cell[&"type"]) != &"weapons":
+			continue
+		var index := int(cell[&"index"])
+		var module := &""
+		if index >= 0 and index < fitted.size():
+			module = StringName(str(fitted[index]))
+		## CONTRACTS section 21 (H2): the ordinal is read in the **barrel-position** space
+		## `_launch_batteries` composes, never the layout index - the two part company as
+		## soon as a W cell holds a family-less module (`w_mining` is `-1`, no barrel to
+		## fire), which was `W1 B1 Mining Laser` beside a rack-less `W2 B0 Laser MkII`.
+		var barrel := -1
+		if index >= 0 and index < barrels.size():
+			barrel = int(barrels[index])
+		var battery := _rack_ordinal(batteries, barrel)
+		cells.append({
+			&"slot": &"weapons",
+			&"index": index,
+			&"module": module,
+			&"icon": ModuleCatalogScript.icon_path(module) if module != &"" else "",
+			&"fitted": module != &"",
+			&"battery": battery,
+			&"position": position if module != &"" else -1,
+			&"selectable": battery >= 1 and battery <= WeaponsScript.GROUPS_MAX,
+		})
+		if module != &"":
+			position += 1
+	return cells
+
+
+## The 1-based ordinal of the rack holding one W cell's **barrel position**, 0 for a cell
+## no rack claims (an empty or family-less cell answers `-1`, which no rack holds):
+## the `battery` field of `_hull_slot_cells`, read by the HUD's slot buttons.
+static func _rack_ordinal(batteries: Array, barrel: int) -> int:
+	for position in batteries.size():
+		var rack: Array = batteries[position]
+		if rack.has(barrel):
+			return position + 1
+	return 0
+
+
+func _instantiate_hud() -> Control:
+	var hud_path := Paths.route_path(&"hud")
+	if not ResourceLoader.exists(hud_path):
+		push_warning("game: HUD scene %s is not available yet, running without a HUD" % hud_path)
+		return null
+	var packed := load(hud_path) as PackedScene
+	if packed == null:
+		push_warning("game: HUD scene %s did not load as a PackedScene, running without a HUD" % hud_path)
+		return null
+	var instance := packed.instantiate() as Control
+	if instance == null or not _hud_api_ready(instance):
+		push_warning("game: HUD instance from %s has no section 3.10 API, running without a HUD" % hud_path)
+		if instance != null:
+			instance.free()
+		return null
+	add_child(instance)
+	# The game root is a Node2D, so Router.route() never hands the HUD the live theme.
+	instance.theme = Router.live_theme()
+	return instance
+
+
+func _hud_api_ready(instance: Control) -> bool:
+	for method in HUD_METHODS:
+		if not instance.has_method(method):
+			return false
+	for hud_signal in HUD_SIGNALS:
+		if not instance.has_signal(hud_signal):
+			return false
+	return true
+
+
+func _on_weapon_slot_selected(slot: int) -> void:
+	_select_weapon(slot)
+
+
+func _on_cargo_toggled(open: bool) -> void:
+	_cargo_open = open
+	_refresh_hud()
+
+
+## The overlay's host: a layer-20 CanvasLayer this scene owns (section 2.3's dialog
+## layer), built once in `_ready` so the seat exists with or without a HUD.
+func _build_cargo_overlay() -> void:
+	_cargo_overlay_layer = CanvasLayer.new()
+	_cargo_overlay_layer.name = "CargoOverlayLayer"
+	_cargo_overlay_layer.layer = OVERLAY_LAYER
+	add_child(_cargo_overlay_layer)
+	_cargo_overlay = CargoOverlayScene.instantiate() as Control
+	if _cargo_overlay == null:
+		return
+	_cargo_overlay.name = "CargoOverlay"
+	_cargo_overlay.theme = Router.live_theme()
+	_cargo_overlay_layer.add_child(_cargo_overlay)
+
+
+func _on_minimap_zoom_changed(delta: int) -> void:
+	_minimap_radius = clampf(
+		_minimap_radius + float(delta) * MINIMAP_RADIUS_STEP,
+		MINIMAP_RADIUS_MIN,
+		MINIMAP_RADIUS_MAX,
+	)
+	_push_minimap_scale()
+
+
+## --- S29 A2: the pin's orders and the N5 hyperdrive machine (UI_SPEC.md section 9 N4,
+## section 10's hyperdrive reads) ---------------------------------------------------
+
+
+## N4's short press: the existing autopilot order (ENGINE_SPEC section 3.1,
+## `player_ship.gd`'s `set_move_target`) to the pin the deck already placed.
+func _on_map_autopilot_to(pos: Vector2) -> void:
+	if _ship != null:
+		_ship.set_move_target(pos)
+
+
+## The fixer's precedence law: a short press on the pin removes it and cancels orders
+## (UI_SPEC.md section 10, `cancel_orders`).
+func _on_map_autopilot_cancel() -> void:
+	if _ship != null:
+		_ship.cancel_orders()
+
+
+## N4's hold (>= 0.5 s): the hyperdrive jump when N5 is fitted, N4's
+## `NO HYPERDRIVE INSTALLED` caption under the pin otherwise. A press inside the
+## cooldown is refused by the cooldown read itself (N12: label + state, never colour
+## alone) - nothing else changes.
+func _on_map_jump_requested(pos: Vector2) -> void:
+	if _dead or _ship == null:
+		return
+	if not _ship.has_hyperdrive():
+		if _hud != null and _hud.has_method(&"set_map_pin_caption"):
+			_hud.call(&"set_map_pin_caption", PIN_CAPTION_NO_DRIVE)
+		return
+	if _jump_phase != JUMP_READY:
+		return
+	_jump_target = pos
+	_jump_phase = JUMP_SPOOL
+	_jump_clock = 0.0
+	_push_jump_read()
+
+
+## The N5 clocks: 1 s spool (N11), the arrival read for ~2 s (N13) and the 30 s
+## cooldown (N12), all as the deck footer's caption-strip reads. The arrival state is
+## the read plus the blip re-centring only (the arrival FX is staged on the art budget).
+func _update_hyperdrive(delta: float) -> void:
+	var step := maxf(delta, 0.0)
+	if _jump_phase == JUMP_SPOOL:
+		_jump_clock += step
+		if _jump_clock >= HYPERDRIVE_SPOOL:
+			_arrive_at_pin()
+	elif _jump_phase == JUMP_ARRIVE:
+		_jump_clock += step
+		if _jump_clock >= HYPERDRIVE_ARRIVAL:
+			_jump_phase = JUMP_COOLDOWN
+	if _jump_cooldown > 0.0:
+		_jump_cooldown = maxf(0.0, _jump_cooldown - step)
+		if _jump_cooldown <= 0.0:
+			_jump_phase = JUMP_READY
+	_push_jump_read()
+
+
+func _arrive_at_pin() -> void:
+	if _ship != null:
+		## The hull's `jump_to` is the position's single writer (it moves the solver's
+		## body, which `_sync_hull_transform` mirrors).
+		_ship.jump_to(_jump_target)
+	_jump_phase = JUMP_ARRIVE
+	_jump_clock = 0.0
+	_jump_cooldown = HYPERDRIVE_COOLDOWN
+	if _hud != null and _hud.has_method(&"map_recenter"):
+		_hud.call(&"map_recenter")
+
+
+func _push_jump_read() -> void:
+	var text := ""
+	if _ship != null and _ship.has_hyperdrive():
+		text = jump_read_text(_jump_phase, int(ceil(_jump_cooldown)), _sector_name)
+	if text == _jump_read_cache:
+		return
+	_jump_read_cache = text
+	if _hud != null and _hud.has_method(&"set_map_jump_read"):
+		_hud.call(&"set_map_jump_read", text)
+
+
+## N11-N13's wordings in one place (the gate reads them off this builder):
+## `HYPERDRIVE SPOOLING`, `JUMP COOLDOWN <t> s` / `JUMP READY`, `ARRIVED \u00b7 <name>`.
+static func jump_read_text(phase: StringName, cooldown_seconds: int, arrived_name: String) -> String:
+	if phase == JUMP_SPOOL:
+		return JUMP_READ_SPOOL
+	if phase == JUMP_ARRIVE:
+		return JUMP_READ_ARRIVED % arrived_name.to_upper()
+	if phase == JUMP_COOLDOWN:
+		return JUMP_READ_COOLDOWN % cooldown_seconds
+	return JUMP_READ_READY
+
+
+
+## The player's own landed hits (weapons' one `hit_landed`): a boss death latched in
+## `_on_npc_died` is credited to the player only when the fatal delivery is the player's
+## own, so a drone's or an escort's kill never pays (14 section 5).
+func _on_player_hit(target: Object, _amount: float) -> void:
+	if _pending_boss_death == null or target != _pending_boss_death:
+		return
+	var profile := _profile()
+	if profile != null and _pending_boss_archetype != &"":
+		ContractRegistryScript.arena_credit_kill(profile, _pending_boss_archetype)
+	_pending_boss_death = null
+	_pending_boss_archetype = &""
+
+
+## --- Doc 13's heat, witnesses, hunters and the bounty (wave S6, CONTRACTS §19) ------
+
+
+func _sector_owner() -> StringName:
+	if _sector == null or not is_inside_tree():
+		return NpcRegistryScript.UNALIGNED
+	return NpcRegistryScript.space_owner(_sector_row_id)
+
+
+## S26 (14 section 5): close every open arena run at a return-to-station. The registry
+## pays the ones the player killed (6000/12000 + the reward module) and closes the rest.
+func _settle_arena_runs() -> void:
+	var profile := _profile()
+	if profile == null or not profile.has_method(&"contracts"):
+		return
+	for result: Dictionary in ContractRegistryScript.arena_settle_all(profile):
+		var paid := int(result.get(&"paid", 0))
+		if paid > 0:
+			_push_prompt("ARENA CONTRACT PAID · %d CR" % paid)

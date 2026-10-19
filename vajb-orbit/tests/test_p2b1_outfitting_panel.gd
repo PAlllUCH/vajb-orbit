@@ -537,9 +537,14 @@ func _has_member(script: GDScript, name: String) -> bool:
 	for entry: Dictionary in script.get_script_property_list():
 		if String(entry.get("name", "")) == name:
 			return true
-	for key: Variant in script.get_script_constant_map():
-		if String(key) == name:
-			return true
+	## `get_script_constant_map()` is the script's own map; inherited constants live on
+	## the base chain (the 2026-10-19 armory split), so walk it.
+	var current: Script = script
+	while current != null:
+		for key: Variant in current.get_script_constant_map():
+			if String(key) == name:
+				return true
+		current = current.get_base_script()
 	return false
 
 

@@ -339,6 +339,7 @@ func test_the_credits_section_is_a_no_op_without_a_profile_and_at_boot() -> void
 ## because the gate itself is a debug run and cannot stand in the release branch.
 func test_the_flight_scene_gates_the_overlay_to_debug_builds() -> void:
 	var source := FileAccess.get_file_as_string("res://game/game.gd")
+	source += FileAccess.get_file_as_string("res://game/game_base.gd")
 	var gate := source.find("if OS.is_debug_build():")
 	var mount := source.find("add_child(DevTuningMenuScene.instantiate())")
 	assert_true(mount >= 0, "the mount ships")

@@ -14,9 +14,10 @@ editor on the Linux host, Godot 4.7.2-stable, Forward+, 1920×1080. The gate was
 
 ## 0. Headline
 
-- **171,885 GDScript lines**: 69,538 production (106 files) + 102,347 tests
+- **171,934 GDScript lines**: 69,568 production (108 files) + 102,366 tests
   (233 files). 35 production scenes, 129 scenes total, 53 production
-  `class_name`s, 6 project autoloads.
+  `class_name`s, 6 project autoloads. The split's two extra files are the
+  armory/game declaration halves.
 - **Duplication is down across the board.** Production: **102 → 88 duplicate
   clusters**, **1,526 → 942 redundant lines**. Tests: **255 → 238 clusters**,
   **4,560 → 3,376 redundant lines**. The 18 `_token`\* entries left in the raw
@@ -266,7 +267,7 @@ the rotation), so no further prewarm was added.
 | `README.md:34` | quoted `passed=524` | fixed to the gate wrapper / 1436 |
 | `CHANGELOG.md` | had 0.2, 0.3 and vote-site only; the records say 0.4 and 0.5 shipped | 0.4/0.5 entries added |
 | `docs/CODE_MAP.md` orphan list | listed `ship_stats.gd`, `cockpit_cluster.gd` and every `tools/` script as orphans | fixed in `staging/build_code_map.py`: `class_name` consumers count, `tools/` is separate |
-| God files | `armory_panel.gd` 4,493; `game.gd` 3,778; `player_profile.gd` 3,305; `hud.gd` 2,686; `weapons.gd` 2,664 | do not split speculatively; split only at the next feature that touches them |
+| God files | `armory_panel.gd` 3,401 + `armory_panel_base.gd` 1,118; `game.gd` 1,234 + `game_base.gd` 2,560; `player_profile.gd` 3,305; `hud.gd` 2,686; `weapons.gd` 2,664 | the first pair split 2026-10-19 at its declaration/behavior seam; the rest split only at the next feature that touches them |
 
 ## 7. Recommendations, ranked
 
@@ -296,12 +297,31 @@ the rotation), so no further prewarm was added.
 9. ~~Repoint the `UI_SPEC.md` `inspect_chip.gd` citation and delete the orphan.~~
    Done in the sweep.
 
-### P2 — only when the owning feature moves
+### P2 — the first split landed 2026-10-19
 
-10. Split `armory_panel.gd` and `game.gd` along their existing comment banners;
-    do not split for line count alone.
-11. A shared test fixture base class for the suite lifecycle hooks, if the test
-    suite keeps growing.
+10. **Done.** Both god files split along their own seams, using path-based
+    script inheritance as the partial-class mechanism:
+    - `ui/station/armory_panel.gd` (behavior: 4,493 → **3,401**) extends
+      `armory_panel_base.gd` (**1,118**: constants, the 11 widget classes,
+      `@onready` nodes, state, token/caption helpers). The scene still attaches
+      `armory_panel.gd`.
+    - `game/game.gd` (entry + population/combat: 3,778 → **1,234**) extends
+      `game_base.gd` (**2,560**: constants, state, launch/HUD/travel/dock core).
+      The scene still attaches `game.gd`.
+    The base can only call its own functions; the child may call the base. The
+    two child-only handlers the base needs as callables (`_on_player_hit`; the
+    armory's `_style_bay` family) were moved into the base or wired from the
+    child, so neither script has an unresolved self-reference.
+    **Gotcha:** `get_script_constant_map()` does not return inherited constants;
+    a test that pins a constant reads it off the base or through
+    `ChildScript.CONST` (which does inherit). The two source-text pins that read
+    the child (`test_s13_devmenu`, `test_s5_batteries_v2`) now read both files /
+    the base.
+11. A shared test fixture base class for the suite lifecycle hooks stays
+    deferred: the remaining duplicates are suite-local state (`teardown` frees
+    its own nodes, `_fresh` seeds its own store), so a base class would add
+    order-coupled hooks rather than remove logic. Revisit only if a new suite
+    repeats a full lifecycle verbatim.
 12. Keep the catalogs separate; add a table test when a new one lands (the NPC
     one is the template).
 
@@ -323,6 +343,13 @@ the rotation), so no further prewarm was added.
 - Added `ui/components/ui_tokens.gd` and `autoload/service_lookup.gd`; the 18
   remaining `_token` helpers delegate, the HUD derives its rack ids from
   `PlayerState.WEAPONS`, and the four autoloads share one lookup.
+- Split `armory_panel.gd` and `game.gd` into a declaration/core base plus a
+  behavior/child script (P2 item 10); the scenes keep their original script
+  paths. No gameplay code moved between owners except `_on_player_hit` (base)
+  and the entry hooks (child).
+- Added `staging/pre_push.py` + `staging/install_hooks.py`: the pre-push hook
+  runs the audit and `gate.py --times 2` and refuses a failing push;
+  `VAJB_SKIP_GATE=1` is the incident escape hatch.
 - Deleted `_mockup_station.gd` / `.tscn` / `.uid` (the dead approval mockup)
   and the last orphan, `ui/components/inspect_chip.gd`; `CODE_MAP` now reports
   zero orphans.

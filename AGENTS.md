@@ -77,6 +77,12 @@ python3 staging/gate.py --times 2
 #    $GODOT_CONSOLE --headless --path "$VAJB_PROJ" res://tests/headless_runner.tscn --quit-after 1200
 ```
 
+The **pre-push hook** runs `staging/pre_push.py` (the audit, then
+`gate.py --times 2`) and refuses a failing push. Install it once per clone with
+`python3 staging/install_hooks.py` — `.git/hooks/pre-push` is host-local, the
+versioned half is `staging/pre_push.py`. `VAJB_SKIP_GATE=1` is the deliberate
+incident escape hatch; it warns and skips.
+
 The repo (`github.com/PAlllUCH/vajb-orbit`) is text-only — binary assets are
 gitignored; commit at every wave boundary.
 
@@ -393,9 +399,12 @@ is written loose in `.agents/gen/`. Full law and migration rules:
   delegates to `ui/components/ui_tokens.gd` and a `_format_int` to its
   `format_int`; `PlayerState.WEAPONS` is the five-family source and the HUD adds
   its extras explicitly; a node autoload's `_service` delegates to
-  `autoload/service_lookup.gd`; `staging/code_audit.py` measures the tree and
-  `tests/test_code_health.gd` is the guard. Never copy a shared helper into a
-  second home.
+  `autoload/service_lookup.gd`; the two split scenes keep their declarations
+  and core helpers on `armory_panel_base.gd` / `game_base.gd` and their
+  behavior on the child the scene attaches (`armory_panel.gd` / `game.gd`) — a
+  base never calls a child-only method; `staging/code_audit.py` measures the
+  tree and `tests/test_code_health.gd` is the guard. Never copy a shared helper
+  into a second home.
 - **UI composition (owner ruling 2026-09-26): containers and relative positioning,
   never coordinates.** A panel's layout is containers + anchors +
   `custom_minimum_size` + size flags; a surface's chrome is a theme stylebox or a

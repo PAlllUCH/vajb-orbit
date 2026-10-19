@@ -2177,7 +2177,7 @@ service lookup); `Auction.hot_price` delegates to
 (`.gd`/`.tscn`/`.uid`; its plan rows are marked DONE) and the orphan
 `inspect_chip.gd` after repointing UI_SPEC's citation. **Tooling:** CODE_MAP's
 orphan logic now follows `class_name` consumers and `tools/` is reported as
-standalone (0 orphans, 129 scenes / 337 scripts / 7 autoloads); its section
+standalone (0 orphans, 129 scenes / 341 scripts / 7 autoloads); its section
 index arithmetic was off by the index height and is fixed. **The shipyard
 `_format_int` nuance resolved:** its removed copy returned
 `StationCatalog.group_int`, which is the same space-grouped algorithm the base
@@ -2192,5 +2192,16 @@ autoloads' `_service` doors delegate. **Auction cold open re-measured:** pane
 build 136 ms on rail hover, entry 29 ms; a direct selection with no prefetch is
 156 ms — the hover prefetch already absorbs the build, and the 29 ms entry is
 the shelf advance `enter_pane()` must do (it writes the rotation), so no
-further prewarm was added. **Commits:** `100b465` (tooling + docs), `b564e33`
-(code + tests), `1d2af6d` (P1).
+further prewarm was added. **P2 split + hook (same day):**
+`armory_panel.gd` 4,493 → **3,401** + `armory_panel_base.gd` 1,118 and
+`game.gd` 3,778 → **1,234** + `game_base.gd` 2,560, both split by path-based
+script inheritance (the scene still attaches the child); the base holds the
+declarations and the child the behavior, and no base method calls a child-only
+function. The two reflection pins that read inherited constants were updated
+(`test_s13_devmenu`, `test_s5_batteries_v2`, `test_p2b1_outfitting_panel`,
+`test_s11_describe`); `get_script_constant_map()` omits inherited constants, so
+a future constant pin must walk the base chain or use `ChildScript.CONST`.
+`staging/pre_push.py` + `staging/install_hooks.py` add the pre-push hook (audit,
+then gate ×2; `VAJB_SKIP_GATE=1` bypass). **Commits:** `100b465` (tooling +
+docs), `b564e33` (code + tests), `1d2af6d` (P1), `a198531` (record), and the
+split/hook commit.

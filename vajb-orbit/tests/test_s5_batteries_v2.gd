@@ -334,7 +334,7 @@ func test_groups_max_is_seven_across_its_consumers() -> void:
 		7,
 		"and its icons"
 	)
-	var game := load("res://game/game.gd") as GDScript
+	var game := load("res://game/game_base.gd") as GDScript
 	## `weapon_6`/`weapon_7` retire from the table (09 section 12): they have no rack to
 	## select, so the flight scene reads five actions and the pair is inert.
 	assert_eq(

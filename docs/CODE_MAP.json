@@ -1633,8 +1633,19 @@
    "autoload": "",
    "class_name": "",
    "connects": [
-    "_ship.damage_taken \u2192 _on_ship_damage_taken",
     "_state.died \u2192 _on_ship_died"
+   ],
+   "extends": "\"res://game/game_base.gd\"",
+   "refs": [
+    "res://game/game_base.gd"
+   ],
+   "signals": []
+  },
+  "res://game/game_base.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [
+    "_ship.damage_taken \u2192 _on_ship_damage_taken"
    ],
    "extends": "Node2D",
    "refs": [
@@ -4034,6 +4045,7 @@
     "res://ui/",
     "res://ui/hud/hud.gd",
     "res://ui/station/",
+    "res://ui/station/armory_panel_base.gd",
     "res://ui/station/station_panel.gd"
    ],
    "signals": []
@@ -4631,6 +4643,7 @@
     "res://game/station_catalog.gd",
     "res://tests/support.gd",
     "res://ui/screens/station.tscn",
+    "res://ui/station/armory_panel.gd",
     "res://ui/theme/vajb_theme.tres"
    ],
    "signals": []
@@ -4686,6 +4699,7 @@
    "refs": [
     "res://game/asteroid.gd",
     "res://game/game.gd",
+    "res://game/game_base.gd",
     "res://game/ore_tuning.gd",
     "res://ui/dev/dev_tuning_menu.gd",
     "res://ui/dev/dev_tuning_menu.tscn"
@@ -5738,8 +5752,8 @@
    "connects": [],
    "extends": "McpTestSuite",
    "refs": [
-    "res://game/game.gd",
     "res://game/game.tscn",
+    "res://game/game_base.gd",
     "res://game/module_catalog.gd",
     "res://game/player_state.gd",
     "res://game/ship_fit.gd",
@@ -6807,6 +6821,16 @@
     "row.pressed \u2192 _on_equipped_pressed.bind(payload",
     "strip.resized \u2192 _position_bay.bind(row"
    ],
+   "extends": "\"res://ui/station/armory_panel_base.gd\"",
+   "refs": [
+    "res://ui/station/armory_panel_base.gd"
+   ],
+   "signals": []
+  },
+  "res://ui/station/armory_panel_base.gd": {
+   "autoload": "",
+   "class_name": "",
+   "connects": [],
    "extends": "\"res://ui/station/station_panel.gd\"",
    "refs": [
     "res://assets/icons/tint/",

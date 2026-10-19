@@ -19,6 +19,7 @@ const Support := preload("res://tests/support.gd")
 ## so the six panes sit in their real ancestor chain and are read as the shell loads them.
 
 const StationScene := preload("res://ui/screens/station.tscn")
+const ArmoryScript := preload("res://ui/station/armory_panel.gd")
 const Catalog := preload("res://game/station_catalog.gd")
 const ThemeRes := preload("res://ui/theme/vajb_theme.tres")
 
@@ -255,7 +256,7 @@ func test_fitting_title_is_the_identity_with_no_hint_verb() -> void:
 		var title := String(seen[0][0])
 		assert_eq(title, "MAULER", "the merged ARMORY title is the row's own name")
 		assert_true(title.find("ENTER") == -1, "the title carries no key-hint verb")
-	var fit_word := String(pane.get_script().get_script_constant_map()["ACTION_FIT"])
+	var fit_word := String(ArmoryScript.ACTION_FIT)
 	var lines: Array[String] = []
 	var recorder := func(message: String, _danger: bool) -> void:
 		lines.append(message)

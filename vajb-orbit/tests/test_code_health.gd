@@ -3,7 +3,8 @@ extends McpTestSuite
 ## It pins the structural invariants the refactor introduced and the one
 ## data-table integrity rule the audit found unmeasured:
 ##
-##   1. every station panel extends the shared `StationPanel` base;
+##   1. every station panel extends the shared `StationPanel` base (the armory does so
+##      through `armory_panel_base.gd`, its declaration half);
 ##   2. no station panel re-declares a helper the base owns (the armory's
 ##      `_token` override is the one documented exception);
 ##   3. every NPC archetype row carries its required keys, so a copy-paste row
@@ -35,6 +36,10 @@ const PANELS: Array[String] = [
 	"vaults_panel",
 ]
 const BASE_EXTENDS := 'extends "res://ui/station/station_panel.gd"'
+## The armory's P2 split: the scene attaches `armory_panel.gd`, whose declaration half
+## (`armory_panel_base.gd`) is the direct StationPanel child.
+const ARMORY_BASE := "armory_panel_base.gd"
+const ARMORY_EXTENDS := 'extends "res://ui/station/armory_panel_base.gd"'
 
 ## The helpers `StationPanel` owns. `_token` is checked separately because the
 ## armory's style object answers before the theme, so it keeps its override.
@@ -88,10 +93,17 @@ func test_every_station_panel_extends_the_shared_base() -> void:
 		var path := PANEL_DIR + name + ".gd"
 		var text := FileAccess.get_file_as_string(path)
 		assert_false(text.is_empty(), "%s is readable" % path)
+		var expected := ARMORY_EXTENDS if name == "armory_panel" else BASE_EXTENDS
 		assert_true(
-			text.begins_with(BASE_EXTENDS),
+			text.begins_with(expected),
 			"%s extends the StationPanel base" % path
 		)
+		if name == "armory_panel":
+			var base := FileAccess.get_file_as_string(PANEL_DIR + ARMORY_BASE)
+			assert_true(
+				base.begins_with(BASE_EXTENDS),
+				"%s extends the StationPanel base" % (PANEL_DIR + ARMORY_BASE)
+			)
 
 
 func test_no_station_panel_redeclares_a_shared_helper() -> void:

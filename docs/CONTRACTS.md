@@ -1235,8 +1235,9 @@ Laser, one Cannon MkI and one Laser MkII through `SOURCE_AUCTION_STOCK`
 shelf's size unmoved (`Auction.STOCK_TRIO`). STATION_HUB §23.11 row 22 carries
 the supersession.
 
-**The code audit sweep + P1 (2026-10-19, the developer session's housekeeping
-pass — not a wave; gate 1430 → 1436/0 ×2 byte-identical, zero `SCRIPT ERROR`).**
+**The code audit sweep + P1 + P2 split (2026-10-19, the developer session's
+housekeeping pass — not a wave; gate 1430 → 1436/0 ×2 byte-identical, zero
+`SCRIPT ERROR`).**
 The Expected line is **`[SUMMARY] passed=1436 failed=0`**, exit 0, twice
 hermetic through `staging/gate.py`. The owner's "codebase evaluation" ask
 produced `staging/code_audit.py` and `docs/CODE_AUDIT.md`, then the P0/P1
@@ -1253,10 +1254,18 @@ doors; `ui/components/ui_tokens.gd` is the one token read and `format_int`
 autoloads; the 1,356-line `_mockup_station` and the orphan `inspect_chip.gd`
 are deleted after their doc citations were repointed. `tests/test_code_health.gd`
 grows to **6 rows** (base class, no re-declared helper, NPC keys, token
-delegation, weapon-id join, service delegation). `docs/CODE_MAP.md` reports
-129 scenes / 339 scripts / 0 orphans. **Reversal:** per item — copy the helper
-back into the pane, restore the literal rack list, and restore the four
-`_service` bodies from the pre-2026-10-19 history.
+delegation, weapon-id join, service delegation). The two god files split by
+path-based script inheritance (the scenes keep their script paths):
+`armory_panel.gd` 4,493 → **3,401** + `armory_panel_base.gd` **1,118**, and
+`game.gd` 3,778 → **1,234** + `game_base.gd` **2,560**; the base holds the
+declarations/core and the child the behavior/entry hooks, and no base method
+calls a child-only function. `docs/CODE_MAP.md` reports 129 scenes / **341
+scripts** / 0 orphans. `staging/pre_push.py` + `staging/install_hooks.py` add
+the pre-push hook (audit, then `gate.py --times 2`; `VAJB_SKIP_GATE=1` is the
+incident escape hatch). **Reversal:** per item — copy the helper back into the
+pane, restore the literal rack list, restore the four `_service` bodies, and
+concatenate each split child under its base (the pre-2026-10-19 history holds
+every removed line).
 
 ## §11 P2 ship frames (2026-09-21)
 
@@ -3935,17 +3944,19 @@ bottom (the index-line form is only for retired entries).
   routes through the same check. **No pinned interface moved.**
   **Reversal:** run the raw §9 command by hand and grep its log for
   `SCRIPT ERROR` (the pre-2026-10-12 close-out ritual).
-- **v0.69 (2026-10-19, the code audit sweep + P1 — the developer session, not a
-  wave; gate 1430 → 1436/0 ×2 byte-identical, +3 guardrail rows net)** — the
-  audit's P0/P1 repairs: `StationPanel` as the shared station-pane base,
+- **v0.69 (2026-10-19, the code audit sweep + P1 + P2 split — the developer
+  session, not a wave; gate 1430 → 1436/0 ×2 byte-identical, +3 guardrail rows
+  net)** — the audit's P0/P1/P2 repairs: `StationPanel` as the shared station-pane base,
   `ShipSlots` as the one slot-glyph table, `tests/support.gd` as the stateless
   test fixtures, lazy station panes with the rail hover/focus prefetch and the
   public pane doors, `UiTokens` as the one token read and `format_int`,
   `Hud.WEAPON_IDS` derived from `PlayerState.WEAPONS`, and `ServiceLookup` as
-  the one autoload root lookup. `tests/test_code_health.gd` grows from 3 to 6
-  rows. The mockup and orphan deletions are recorded in §9's block.
-  **Reversal:** per item, as §9's block names; the pre-2026-10-19 history holds
-  every removed body.
+  the one autoload root lookup. The armory and flight scripts split into a
+declaration/core base plus a behavior/child script (`armory_panel_base.gd`,
+`game_base.gd`), and `staging/pre_push.py` adds the audit+gate pre-push hook.
+`tests/test_code_health.gd` grows from 3 to 6 rows. The mockup and orphan
+deletions are recorded in §9's block. **Reversal:** per item, as §9's block
+names; the pre-2026-10-19 history holds every removed body.
 - **v0.68 (2026-10-16, the armory's stock law + the auction's starter trio —
   the owner's playtest verdict; gate held 1430/0 ×2 byte-identical, net 0)** —
   10 §6.2 pins the stock law (the owner's verbatim verdict: *"In armory i
